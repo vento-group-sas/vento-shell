@@ -14036,7 +14036,1024 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO`
-### [ ] ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO
+### ✅ ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-012 — Ocultar precios cuando no correspondan
+**Tarea siguiente:** ORIGO-UX-014 — Conectar recepción con entrada de inventario
+**Tipo de tarea:** diseño documental integral de la experiencia ORIGO → NEXO que elimina la doble captura manual de una misma recepción de compra, preserva la recepción comercial/documental propietaria de ORIGO, entrega un handoff correlacionado e idempotente hacia NEXO y reserva a NEXO únicamente la validación y captura de datos físicos que le pertenecen, sin materializar todavía el movimiento de inventario; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, componentes, rutas, eventos físicos, permisos, tablas, RPC, RLS, grants, migraciones, Supabase, datos, contratos generados, ORIGO, NEXO, NUMERA ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar una experiencia en la que una recepción ya registrada y aceptada en ORIGO continúe hacia NEXO sin obligar al trabajador a capturar por segunda vez el mismo hecho empresarial.
+
+La regla raíz queda:
+
+```text
+RECEPCION ORIGO IDENTIFICADA Y ACEPTADA
+→ HANDOFF CORRELACIONADO
+→ NEXO RECIBE CONTEXTO DE ORIGEN
+→ NEXO REVALIDA SU PROPIA AUTORIDAD Y DATOS FISICOS
+→ CONTINUA EL EFECTO FISICO
+```
+
+Nunca:
+
+```text
+ORIGO REGISTRA RECEPCION
+→ TRABAJADOR ABRE NEXO
+→ VUELVE A ESCOGER PROVEEDOR
+→ VUELVE A BUSCAR ORDEN
+→ VUELVE A CAPTURAR LINEAS
+→ VUELVE A DIGITAR CANTIDADES
+```
+
+La eliminación de doble captura no transfiere propiedad entre aplicaciones.
+
+---
+
+#### 2. Resultado sustantivo
+
+La experiencia objetivo deja definidos estos resultados:
+
+1. ORIGO conserva la recepción comercial y documental de `VPROC-0022`.
+2. NEXO conserva el efecto físico de `VPROC-0024`.
+3. El hecho normal que habilita el handoff físico sigue siendo `VPROC-0022.EVT-004`.
+4. El estado fuente sigue siendo `VPROC-0022.PUTAWAY_PENDING`.
+5. NEXO inicia o recupera su flujo en `VPROC-0024.INBOUND_MOVEMENT_REQUESTED` cuando corresponde efecto físico.
+6. La persona no vuelve a crear la recepción en NEXO como si fuera un hecho nuevo.
+7. NEXO recibe una referencia durable a la recepción ORIGO mediante `purchase_receipt_ref` o identidad canónica equivalente del contrato materializado.
+8. El reintento de la misma continuidad recupera el mismo resultado o estado; no crea una segunda entrada.
+9. Una segunda entrega real legítima conserva identidad propia y no se confunde con replay.
+10. La recepción `record_only` no crea un ingreso físico ficticio.
+11. La contingencia de NEXO permanece excepcional y no compite con un handoff normal ya existente.
+12. `ORIGO-UX-014` conserva la responsabilidad de conectar materialmente la recepción con la entrada de inventario.
+13. No se crean ni modifican requisitos de prueba.
+
+---
+
+#### 3. Handoff recibido de ORIGO-UX-009 a ORIGO-UX-012
+
+Esta tarea consume sin reinterpretación:
+
+- recepción total diseñada en `ORIGO-UX-009`;
+- recepción parcial y saldo restante de `ORIGO-UX-010`;
+- diferencias contra orden de `ORIGO-UX-011`;
+- proyección económica mínima y field masking de `ORIGO-UX-012`.
+
+Por tanto, la 013 no vuelve a decidir:
+
+- qué significa recepción total;
+- qué significa parcialidad;
+- cómo se resuelve una diferencia;
+- quién puede ver precios o costos.
+
+Su responsabilidad es la continuidad de experiencia entre propietarias.
+
+---
+
+#### 4. Topología y frontera física
+
+La topología vigente para esta familia es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- la tarea define el contrato de experiencia una sola vez;
+- no crea instancia física propia;
+- no modifica `vento-origo` ni `vento-nexo`;
+- no implementa eventos, colas, RPC, tablas ni listeners;
+- no modifica `active-sequence.json` manualmente;
+- la materialización posterior pertenece a tareas y paquetes físicos ya existentes.
+
+---
+
+#### 5. Fuentes y snapshot de preparación
+
+La preparación se ancla a:
+
+```text
+vento-shell/main
+5057ad57fa296e3e6396f57c8d2761162d46542b
+
+owner ORIGO
+5a19a4b0e520e1717b4a1a96fa1b990f41b4cc51
+
+integraciones compras/recepcion/inventario
+e8d31faf44253fc6e4d31ab59067ec3f23cfe758
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+vento-nexo/main
+f0a12557a1a258c84b025933653dc756de4b5a59
+```
+
+Se contrastaron además:
+
+- `INT-PROC-002`;
+- `INT-PROC-003`;
+- `INT-PROC-005`;
+- `VPROC-0022`;
+- `VPROC-0024`;
+- Registro 04A ORIGO y cobertura de integración vigente;
+- runtime actual de recepción ORIGO;
+- runtime actual de entradas NEXO;
+- políticas de autorización y propiedad ya aprobadas.
+
+---
+
+#### 6. Problema empresarial exacto
+
+La experiencia no puede exigir que el mismo hecho sea reconstruido manualmente en dos aplicaciones.
+
+La doble captura produce riesgos de:
+
+- proveedor distinto;
+- orden distinta;
+- líneas omitidas;
+- cantidades distintas;
+- presentación distinta;
+- recepción duplicada;
+- inventario duplicado;
+- estado comercial y físico divergentes;
+- pérdida de correlación;
+- errores por copiar información entre pantallas.
+
+La regla queda:
+
+```text
+UN HECHO EMPRESARIAL
+→ UNA CAPTURA EN SU PROPIETARIA
+→ PROPAGACION POR CONTRATO
+```
+
+No:
+
+```text
+UN HECHO EMPRESARIAL
+→ DOS CAPTURAS MANUALES COMPETIDORAS
+```
+
+---
+
+#### 7. Propiedad empresarial preservada
+
+La separación continúa siendo:
+
+```text
+ORIGO
+VPROC-0022
+RECEPCION COMERCIAL Y DOCUMENTAL
+        ↓
+HANDOFF
+        ↓
+NEXO
+VPROC-0024
+INGRESO, UBICACION Y CUSTODIA FISICA
+```
+
+ORIGO no se convierte en propietario del ledger físico.
+
+NEXO no se convierte en propietario de la aceptación comercial.
+
+---
+
+#### 8. Hecho canónico que habilita el handoff
+
+El hecho normal preservado es:
+
+```text
+VPROC-0022.EVT-004
+vento.process.vproc-0022.putaway-pending.v1
+HANDOFF_FACT
+```
+
+Hecho confirmado:
+
+```text
+LOS BIENES ACEPTADOS
+ESPERAN INGRESO Y UBICACION FISICA EN NEXO
+```
+
+No habilitan ese handoff por sí solos:
+
+- orden aprobada;
+- orden emitida;
+- llegada registrada;
+- factura recibida;
+- verificación física en curso;
+- estado legacy `received`;
+- una cadena `source_app` enviada por cliente.
+
+---
+
+#### 9. Inicio de NEXO
+
+Cuando el efecto físico corresponde, NEXO continúa desde:
+
+```text
+VPROC-0024.INBOUND_MOVEMENT_REQUESTED
+```
+
+La existencia aún no se considera:
+
+```text
+INGRESADA
+UBICADA
+POSTEADA
+RECONCILIADA
+```
+
+La continuidad de experiencia no presenta el handoff como inventario ya disponible.
+
+---
+
+#### 10. Principio de no repetición manual
+
+Para una recepción ORIGO que ya tiene identidad y alcance aceptado:
+
+```text
+PROVEEDOR
+ORDEN
+RECEPCION
+LINEAS
+PRODUCTOS
+CANTIDADES ACEPTADAS
+UNIDADES / PRESENTACIONES
+SEDE FUENTE
+EVIDENCIA DE ORIGEN
+```
+
+se transfieren como contexto autoritativo o referencias resolubles.
+
+El trabajador no vuelve a digitarlos para crear una segunda verdad.
+
+---
+
+#### 11. Datos que NEXO no vuelve a solicitar como captura de origen
+
+Cuando ya provienen de un handoff válido, la experiencia no vuelve a pedir al usuario como autoridad:
+
+- proveedor de la recepción;
+- compra u orden de origen;
+- identificador de recepción;
+- líneas aceptadas;
+- producto de cada línea;
+- cantidad aceptada por ORIGO;
+- unidad/presentación observada y aceptada;
+- evidencia ya vinculada al hecho fuente;
+- actor ORIGO del hecho original;
+- clasificación normal frente a replay.
+
+NEXO puede mostrarlos como contexto de solo lectura o resolverlos server-side.
+
+---
+
+#### 12. Datos físicos que sí pertenecen a NEXO
+
+NEXO puede requerir, validar o completar únicamente datos físicos bajo su propiedad, según aplique:
+
+- ubicación destino;
+- LOC;
+- posición;
+- LPN;
+- lote o serial físico cuando no quede resuelto por el handoff;
+- condición física relevante;
+- cuarentena;
+- confirmación de destino;
+- evidencia física adicional;
+- actor efectivo de la operación NEXO;
+- datos necesarios para posting y custodia.
+
+La necesidad de esos datos no reabre la captura comercial de ORIGO.
+
+---
+
+#### 13. Identidad compartida sin proceso paralelo
+
+Se preserva la decisión canónica:
+
+```text
+ORIGO Y NEXO
+COMPARTEN REFERENCIA DE RECEPCION
+NO CREAN DOS RECEPCIONES EMPRESARIALES PARA EL MISMO HECHO
+```
+
+La identidad fuente nace en la recepción ORIGO y se conserva en la correlación del efecto NEXO.
+
+NEXO crea su propia identidad de movimiento físico, no una segunda identidad empresarial competidora de recepción.
+
+---
+
+#### 14. `purchase_receipt_ref`
+
+Para una entrada NEXO originada en compra, `purchase_receipt_ref` o la referencia canónica equivalente debe identificar la recepción aceptada que origina el efecto físico.
+
+La referencia:
+
+- no se deriva de texto libre;
+- no se confía a una cadena cliente;
+- no cambia en un retry de la misma intención;
+- permite recuperar un efecto ya creado;
+- permite distinguir una nueva entrega legítima de un replay.
+
+---
+
+#### 15. Idempotencia de continuidad
+
+La experiencia debe operar con esta semántica:
+
+```text
+MISMA RECEPCION FUENTE
++ MISMO EFECTO FISICO LOGICO
++ MISMA VERSION
+→ RECUPERAR MISMO RESULTADO
+→ NO CREAR OTRA ENTRADA
+```
+
+Y:
+
+```text
+MISMA IDENTIDAD
++ CONTENIDO INCOMPATIBLE
+→ CONFLICTO
+→ NO ELEGIR SILENCIOSAMENTE
+```
+
+---
+
+#### 16. Retry de la misma intención
+
+Doble click, refresh, timeout, pérdida de respuesta o reintento automático no deben cambiar la intención empresarial.
+
+La UX no ofrece como respuesta primaria:
+
+```text
+REGISTRAR OTRA VEZ
+```
+
+Ofrece semánticamente:
+
+```text
+CONSULTAR ESTADO
+RECUPERAR RESULTADO
+REINTENTAR LA MISMA OPERACION
+RESOLVER CONFLICTO SI EXISTE
+```
+
+---
+
+#### 17. Segunda entrega legítima
+
+Una orden puede tener más de una recepción legítima.
+
+Por tanto:
+
+```text
+MISMA ORDEN
+!=
+MISMA RECEPCION
+```
+
+Una nueva entrega real obtiene una nueva identidad ORIGO y puede producir un nuevo handoff físico correlacionado.
+
+No se deduplica únicamente por:
+
+- proveedor;
+- orden;
+- factura;
+- fecha;
+- producto;
+- sede.
+
+---
+
+#### 18. Recepción parcial
+
+Una recepción parcial de ORIGO transfiere únicamente el alcance aceptado de esa recepción.
+
+NEXO no debe:
+
+- completar artificialmente el saldo pendiente;
+- interpretar líneas no entregadas como recibidas;
+- volver a pedir toda la orden como si empezara de cero;
+- fusionar una entrega posterior con la parcial anterior sin identidad propia.
+
+---
+
+#### 19. Diferencias
+
+Una diferencia abierta o un alcance no aceptado no se transforma en ingreso físico por el hecho de abrir NEXO.
+
+Solo el alcance habilitado por la decisión ORIGO puede continuar al handoff.
+
+La UX conserva visible que:
+
+```text
+DIFERENCIA ORIGO
+!=
+ERROR DE CAPTURA NEXO
+```
+
+---
+
+#### 20. Modalidad `record_only`
+
+Cuando la recepción sea exclusivamente registral y no deba mover inventario:
+
+```text
+RECEPCION ORIGO
+→ SIN HANDOFF FISICO NEXO
+```
+
+La experiencia no muestra una tarea NEXO pendiente inexistente ni obliga a abrir una entrada de inventario ficticia.
+
+---
+
+#### 21. Contingencia de NEXO
+
+El carril de entrada de emergencia NEXO permanece excepcional.
+
+Solo representa una contingencia cuando el flujo normal de ORIGO no puede utilizarse conforme al contrato vigente.
+
+No puede usarse para:
+
+- duplicar una recepción ORIGO ya aceptada;
+- crear un segundo efecto porque el usuario no encontró el resultado;
+- evitar la correlación del handoff;
+- reemplazar silenciosamente una operación con resultado desconocido.
+
+---
+
+#### 22. Reconciliación de una contingencia
+
+Si una contingencia NEXO produce un efecto físico válido antes de que el flujo ORIGO pueda completar su correlación, la recuperación posterior debe reconciliar identidades y evidencia.
+
+Nunca:
+
+```text
+EFECTO NEXO YA APLICADO
++ ORIGO SE RECUPERA
+→ APLICAR OTRA ENTRADA
+```
+
+El contrato técnico de reconciliación permanece fuera de esta tarea.
+
+---
+
+#### 23. Corrección y reversión
+
+Una corrección no se presenta como una nueva recepción ordinaria sin vínculo.
+
+Se preserva:
+
+```text
+ORIGINAL
+↔ REVERSA / COMPENSACION CUANDO CORRESPONDA
+↔ REEMPLAZO
+```
+
+La UX debe mantener referencia a la operación original y no ofrecer el formulario normal como mecanismo para borrar la historia.
+
+---
+
+#### 24. Resultado desconocido
+
+Cuando ORIGO no conoce todavía si NEXO aplicó el efecto:
+
+```text
+RESULTADO = DESCONOCIDO
+```
+
+La experiencia bloquea la creación impulsiva de una segunda entrada.
+
+Debe priorizar:
+
+- consulta del resultado durable;
+- conciliación;
+- recuperación del mismo intento;
+- resolución de conflicto.
+
+---
+
+#### 25. Versión obsoleta
+
+Si el handoff fue preparado sobre una versión stale de la recepción:
+
+- no se aplica sobre la versión nueva silenciosamente;
+- se revalida el alcance vigente;
+- el usuario recibe un estado claro de conflicto o actualización requerida;
+- no se crea una segunda recepción para evitar el conflicto.
+
+---
+
+#### 26. Concurrencia
+
+La experiencia debe resistir:
+
+- dos pestañas;
+- dos dispositivos;
+- dos trabajadores;
+- retry automático concurrente;
+- worker y UI simultáneos;
+- reentrega del mismo evento.
+
+La UX representa un solo resultado empresarial por identidad de operación.
+
+---
+
+#### 27. Autoridad en NEXO
+
+El handoff no concede autoridad física.
+
+NEXO debe revalidar:
+
+- actor/principal;
+- permiso exacto;
+- sede;
+- ubicación;
+- recurso;
+- estado;
+- versión;
+- condición física;
+- contrato aplicable.
+
+Un deep link o contexto prellenado nunca sustituye autorización server-side.
+
+---
+
+#### 28. Separación de lectura y mutación
+
+Poder ver que existe una recepción pendiente de continuidad no autoriza crear el movimiento físico.
+
+La experiencia distingue:
+
+```text
+VER CONTEXTO
+!=
+EJECUTAR EFECTO FISICO
+```
+
+---
+
+#### 29. Protección de precios y costos
+
+Se consume `ORIGO-UX-012` sin ampliar exposición.
+
+El contexto entregado a NEXO para recepción operativa no requiere por defecto:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+```
+
+Si un dato económico es necesario para un proceso autorizado distinto, su proyección sigue la finalidad y field mask correspondiente.
+
+---
+
+#### 30. Estado de continuidad visible en ORIGO
+
+ORIGO debe poder representar el avance del efecto físico sin apropiarse del estado NEXO.
+
+La experiencia puede proyectar estados de presentación derivados como:
+
+```text
+SIN_EFECTO_FISICO_REQUERIDO
+PENDIENTE_DE_CONTINUIDAD
+EN_PROCESO_EN_NEXO
+RESULTADO_FISICO_CONFIRMADO
+REQUIERE_REVISION
+RESULTADO_DESCONOCIDO
+```
+
+Estas etiquetas son de experiencia y no crean estados nuevos de `VPROC-0022` o `VPROC-0024`.
+
+---
+
+#### 31. `VSCREEN-0075` — detalle y seguimiento de orden
+
+El detalle de orden puede mostrar:
+
+- recepción ORIGO vinculada;
+- alcance recibido;
+- si requiere efecto físico;
+- referencia de continuidad NEXO;
+- estado proyectado del handoff;
+- resultado físico conocido cuando corresponda;
+- conflictos o pendientes.
+
+No debe ofrecer una segunda captura de recepción como camino normal.
+
+---
+
+#### 32. `VSCREEN-0077` — recepción total o parcial
+
+Después de confirmar una recepción aceptada:
+
+- si no existe efecto físico, el flujo termina esa continuidad sin tarea NEXO;
+- si existe efecto físico, se crea o recupera la continuidad hacia NEXO;
+- el usuario recibe una siguiente acción inequívoca;
+- la siguiente acción nunca es volver a introducir toda la recepción.
+
+---
+
+#### 33. `VSCREEN-0078` — diferencias
+
+Una diferencia resuelta puede habilitar solo el alcance finalmente aceptado.
+
+La continuidad hacia NEXO no incluye:
+
+- líneas rechazadas;
+- cantidades retenidas;
+- alcance en cuarentena sin habilitación;
+- datos que ORIGO aún no ha aceptado.
+
+---
+
+#### 34. `VSCREEN-0079` — historial y auditoría
+
+El historial debe poder reconstruir:
+
+```text
+RECEPCION ORIGO
+→ HANDOFF
+→ INTENTO / RECUPERACION
+→ EFECTO NEXO
+→ RESULTADO
+```
+
+sin que una segunda entrada manual aparezca como si fuera un hecho independiente cuando en realidad era replay.
+
+---
+
+#### 35. Continuidad hacia NEXO
+
+Cuando todavía exista trabajo físico humano, la navegación puede continuar hacia NEXO con contexto ya resuelto.
+
+La transición de aplicación debe preservar como mínimo:
+
+- referencia de recepción;
+- compra relacionada;
+- sede;
+- alcance aceptado;
+- correlación;
+- versión;
+- acción pendiente;
+- destino de retorno.
+
+NEXO vuelve a resolver los datos protegidos desde fuentes autoritativas.
+
+---
+
+#### 36. Retorno desde NEXO
+
+Al volver a ORIGO, el usuario no debe depender de recordar manualmente lo que hizo en NEXO.
+
+ORIGO consulta la correlación y muestra el resultado conocido.
+
+Si el efecto sigue pendiente, mantiene el mismo pendiente.
+
+Si está reconciliado, lo refleja como proyección del hecho NEXO.
+
+---
+
+#### 37. Evento físico reconciliado
+
+Cuando aplique, `VPROC-0024.EVT-006` representa:
+
+```text
+vento.process.vproc-0024.inbound-movement-reconciled.v1
+```
+
+Su significado para ORIGO es evidencia correlacionable de que el ingreso físico quedó contabilizado dentro del proceso propietario de NEXO.
+
+No crea otra recepción ORIGO.
+
+---
+
+#### 38. AS-IS ORIGO
+
+El runtime observado de ORIGO ya contiene recepción propia y persistencia física relacionada sobre estructuras de inventario.
+
+Además, su documentación histórica reconoce que la sinergia con NEXO para recepción contra orden todavía debía cerrarse.
+
+La tarea registra:
+
+```text
+AS_IS_ORIGO_RECEIPT_AND_PHYSICAL_EFFECT_COLLAPSED
+```
+
+sin convertir esa implementación en contrato objetivo.
+
+---
+
+#### 39. AS-IS NEXO
+
+El runtime observado de NEXO conserva una entrada normal capaz de recibir `purchase_order_id`, precargar líneas y capturar proveedor, fecha, cantidades, ubicación y otros datos mediante formulario.
+
+También acepta desde formulario valores de:
+
+```text
+source_app
+entry_mode
+```
+
+La tarea registra:
+
+```text
+AS_IS_NEXO_NORMAL_ENTRY_MANUAL_CONFIRMATION_EXISTS
+AS_IS_NEXO_SOURCE_APP_CLIENT_DECLARATION_EXISTS
+```
+
+Esto no demuestra todavía un handoff durable `VPROC-0022.EVT-004` con identidad de recepción canónica.
+
+---
+
+#### 40. Brecha de doble captura observada
+
+La existencia de `purchase_order_id` y prefill reduce trabajo, pero no demuestra por sí sola eliminación de doble digitación.
+
+Mientras el usuario pueda volver a construir manualmente el mismo hecho normal en NEXO sin una referencia autoritativa a la recepción ORIGO y sin deduplicación por identidad, persiste la brecha:
+
+```text
+AS_IS_ORIGO_NEXO_DURABLE_HANDOFF_NOT_DEMONSTRATED
+```
+
+---
+
+#### 41. Frontera con ORIGO-UX-014
+
+`ORIGO-UX-013` define:
+
+- experiencia sin doble captura;
+- identidad de continuidad;
+- navegación y recuperación;
+- datos que no deben volver a pedirse;
+- datos físicos que sí pertenecen a NEXO;
+- tratamiento UX de retry, conflicto y resultado desconocido.
+
+`ORIGO-UX-014` queda responsable de:
+
+```text
+CONECTAR RECEPCION
+CON
+ENTRADA DE INVENTARIO
+```
+
+incluyendo el handoff físico material que haga efectiva esa relación conforme a los contratos propietarios.
+
+---
+
+#### 42. Frontera con ORIGO-UX-015
+
+La eliminación de doble captura NEXO no autoriza crear ni duplicar el evento financiero.
+
+El efecto económico posterior permanece separado y reservado a `ORIGO-UX-015` y a los contratos NUMERA correspondientes.
+
+---
+
+#### 43. Frontera con ORIGO-UX-016
+
+`ORIGO-UX-016` deberá validar el prototipo completo, incluido que:
+
+- una recepción no se capture dos veces;
+- una parcial legítima sí permita una entrega posterior distinta;
+- un retry no cree otra entrada;
+- la contingencia no compita con el flujo normal;
+- el usuario entienda qué queda pendiente en ORIGO y qué en NEXO.
+
+Esta tarea no ejecuta esa validación operativa.
+
+---
+
+#### 44. Frontera con INT-PROC-002
+
+Se conserva:
+
+```text
+ORIGO
+VPROC-0022.PUTAWAY_PENDING
+VPROC-0022.EVT-004
+```
+
+como origen del handoff físico.
+
+La 013 no redefine estados ni eventos de recepción.
+
+---
+
+#### 45. Frontera con INT-PROC-003
+
+Se conserva:
+
+```text
+NEXO
+VPROC-0024.INBOUND_MOVEMENT_REQUESTED
+```
+
+como inicio del proceso físico cuando corresponde.
+
+NEXO valida el origen y la autoridad antes del efecto.
+
+---
+
+#### 46. Frontera con INT-PROC-005
+
+Se consume el control end-to-end ya aprobado:
+
+```text
+UNA RECEPCION REAL
+→ UNA IDENTIDAD CANONICA ORIGO
+→ EFECTOS FISICOS LEGITIMOS IDENTIFICADOS UNA SOLA VEZ EN NEXO
+→ NINGUN REPLAY CREA EFECTO ADICIONAL
+```
+
+La tarea no crea un segundo mecanismo de deduplicación paralelo.
+
+---
+
+#### 47. No se crean estados, eventos ni permisos
+
+Esta tarea no crea:
+
+- estados nuevos de `VPROC-0022`;
+- estados nuevos de `VPROC-0024`;
+- eventos nuevos;
+- permission keys nuevas;
+- un objeto empresarial paralelo `NEXO_RECEIPT`;
+- una segunda orden de compra;
+- una segunda recepción por cada entrada física.
+
+---
+
+#### 48. Hallazgos y propietarios
+
+| Hallazgo | Estado | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| handoff durable ORIGO → NEXO no demostrado en runtime inspeccionado | `OPEN_NON_BLOCKING_DOCUMENTARY` | `ORIGO-UX-014` + materialización técnica de integración | entrada NEXO nace o se recupera desde identidad autoritativa de recepción ORIGO |
+| `source_app` puede provenir del formulario NEXO actual | `OPEN_NON_BLOCKING_DOCUMENTARY` | materialización de `INT-PROC-003` / autorización server-side | procedencia se resuelve desde contrato durable, no desde cliente |
+| formulario NEXO normal todavía permite reconstruir contexto de recepción | `OPEN_NON_BLOCKING_DOCUMENTARY` | `ORIGO-UX-014` + UX física correspondiente | flujo normal consume handoff y pide solo datos físicos propietarios |
+| control end-to-end completo no demostrado físicamente | `OPEN_NON_BLOCKING_DOCUMENTARY` | `INT-PROC-005` + paquetes ya asignados | replay y concurrencia certificados sin segundo efecto |
+
+No se crea backlog nuevo.
+
+---
+
+#### 49. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** evitar la doble captura y el doble efecto ya está protegido por requisitos vigentes de ORIGO, NEXO, integración y autorización. La tarea especializa esa cobertura en experiencia y continuidad ORIGO → NEXO sin introducir una obligación verificable nueva fuera del registro existente.
+
+---
+
+#### 50. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para evitar que repetición o conversión duplique cantidades, costos, orden recibida o evento financiero;
+- `TREQ-ORIGO-003` para operación idempotente, durable y reconciliable de recepción;
+- `TREQ-NEXO-011` para ledger físico, proyecciones, idempotencia y no doble contabilización;
+- `TREQ-INTEGRATION-003` para identidad estable, huella lógica, retry, resultado desconocido y deduplicación;
+- `TREQ-INTEGRATION-005` para conservar contexto y revalidar autoridad en el handoff;
+- `TREQ-INTEGRATION-006` para una sola fuente empresarial y eliminación de doble digitación competitiva;
+- `TREQ-AUTH-013` para enforcement server-side de mutaciones;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, recurso, decisión, versión y resultado.
+
+Esta sección es únicamente trazabilidad de cobertura existente.
+
+---
+
+#### 51. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental y regeneración del plan se ejecutarán en el checkout local cuando se incorpore el artefacto. |
+| LOCAL | `NOT_EXECUTED` | Formato, quality, delivery, topología, plan, TREQ y `git diff --check` quedan pendientes del checkout local. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main@5057ad57fa296e3e6396f57c8d2761162d46542b`, owner ORIGO `5a19a4b0e520e1717b4a1a96fa1b990f41b4cc51`, integración `e8d31faf44253fc6e4d31ab59067ec3f23cfe758`, `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad` y `vento-nexo/main@f0a12557a1a258c84b025933653dc756de4b5a59`, incluidos `INT-PROC-002`, `INT-PROC-003`, `INT-PROC-005` y runtime de entradas/recepciones. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutaron recepciones reales, handoffs, retries, fallos de red, concurrencia, entradas NEXO ni reconciliaciones sobre ambientes desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no materializa código ni infraestructura. |
+
+---
+
+#### 52. Walkthroughs adversariales documentales
+
+La experiencia debe conservar respuesta segura ante:
+
+1. doble click después de aceptar recepción;
+2. timeout antes de conocer el resultado NEXO;
+3. refresh de ORIGO;
+4. apertura simultánea en dos dispositivos;
+5. handoff entregado dos veces;
+6. misma identidad con distinto contenido;
+7. segunda entrega real de la misma orden;
+8. parcial anterior más complemento legítimo;
+9. recepción `record_only`;
+10. NEXO en contingencia mientras ORIGO se recupera;
+11. usuario sin permiso NEXO;
+12. ubicación inválida;
+13. versión stale;
+14. diferencia ORIGO todavía abierta;
+15. recepción corregida o reversada;
+16. efecto NEXO aplicado pero respuesta perdida.
+
+Ningún caso autoriza una segunda captura normal como mecanismo de recuperación.
+
+---
+
+#### 53. Criterios de aceptación
+
+- [ ] ORIGO queda propietaria de `VPROC-0022`.
+- [ ] NEXO queda propietario de `VPROC-0024`.
+- [ ] Se preserva `VPROC-0022.EVT-004` como handoff normal hacia NEXO.
+- [ ] Se preserva `VPROC-0024.INBOUND_MOVEMENT_REQUESTED` como inicio físico cuando aplica.
+- [ ] La recepción ORIGO aceptada no se vuelve a crear manualmente como una segunda recepción empresarial en NEXO.
+- [ ] Proveedor, orden, recepción, líneas, productos y cantidades aceptadas viajan como contexto/resolución y no como nueva captura autoritativa.
+- [ ] NEXO puede exigir únicamente información física propia que todavía deba resolverse.
+- [ ] `purchase_receipt_ref` o referencia canónica equivalente vincula el efecto físico con la recepción fuente.
+- [ ] El replay recupera el resultado existente y no crea otra entrada.
+- [ ] La reutilización conflictiva de identidad produce conflicto.
+- [ ] Una segunda entrega real conserva identidad nueva y no se deduplica por compartir orden.
+- [ ] Una parcial no marca el saldo pendiente como recibido.
+- [ ] `record_only` no genera entrada física ficticia.
+- [ ] Contingencia NEXO no compite con un handoff normal ya aplicado.
+- [ ] Resultado desconocido bloquea la duplicación y prioriza consulta/conciliación.
+- [ ] Corrección y reversión conservan vínculo con original.
+- [ ] El handoff no concede permiso físico en NEXO.
+- [ ] NEXO revalida actor, sede, ubicación, recurso, estado y versión.
+- [ ] Los costos/precios permanecen enmascarados según `ORIGO-UX-012`.
+- [ ] ORIGO puede mostrar el estado proyectado del efecto NEXO sin apropiarse de él.
+- [ ] `VSCREEN-0075`, `VSCREEN-0077`, `VSCREEN-0078` y `VSCREEN-0079` conservan continuidad sin doble captura.
+- [ ] `VPROC-0024.EVT-006` puede proyectarse como evidencia física reconciliada sin crear otra recepción.
+- [ ] La implementación AS-IS queda documentada sin declararla contrato objetivo.
+- [ ] `source_app` enviado por cliente no se presenta como prueba autoritativa de origen.
+- [ ] Los hallazgos tienen propietario y condición de salida.
+- [ ] `ORIGO-UX-014` recibe handoff suficiente para conectar recepción con inventario.
+- [ ] `ORIGO-UX-015` conserva el efecto financiero posterior.
+- [ ] `ORIGO-UX-016` conserva la validación integral del prototipo.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 54. Límites
+
+Esta tarea no:
+
+- implementa el handoff ORIGO → NEXO;
+- crea entrada de inventario;
+- mueve stock;
+- crea LOC, posición o LPN;
+- modifica `VPROC-0022` o `VPROC-0024`;
+- crea eventos;
+- crea permission keys;
+- modifica `source_app` físico;
+- elimina formularios del runtime;
+- cambia `vento-origo`;
+- cambia `vento-nexo`;
+- modifica Supabase, tablas, RLS, RPC, grants, Storage, Realtime, Edge Functions o datos;
+- ejecuta migraciones;
+- modifica contratos generados;
+- modifica Registro 04A;
+- define el evento financiero;
+- implementa idempotencia física;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-014`.
+
+---
+
+#### 55. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-012 — Ocultar precios cuando no correspondan`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-014 — Conectar recepción con entrada de inventario`
 ### [ ] ORIGO-UX-014 — Conectar recepción con entrada de inventario
 ### [ ] ORIGO-UX-015 — Conectar compra con evento financiero
 ### [ ] ORIGO-UX-016 — Validar el prototipo con compras y recepción

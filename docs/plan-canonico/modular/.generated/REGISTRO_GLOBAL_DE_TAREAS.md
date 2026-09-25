@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1348** |
+| Aprobadas | **1349** |
 | En propuesta | **0** |
-| No iniciadas | **248** |
+| No iniciadas | **247** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.46% (1348/1596)** |
+| Porcentaje de completamiento | **84.52% (1349/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **248** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1249** |
+| ⏸ NO_EVALUADA | **247** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1250** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-UX-012` — Ocultar precios cuando no correspondan | ✅ APROBADA |
-| Tarea actual | `ORIGO-UX-013` — Evitar repetir recepción manualmente en NEXO | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-UX-014` — Conectar recepción con entrada de inventario | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-UX-013` — Evitar repetir recepción manualmente en NEXO | ✅ APROBADA |
+| Tarea actual | `ORIGO-UX-014` — Conectar recepción con entrada de inventario | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-UX-015` — Conectar compra con evento financiero | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1111,7 +1111,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-010` | Diseñar recepción parcial | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-011` | Diseñar diferencias contra orden | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-012` | Ocultar precios cuando no correspondan | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-013` | Evitar repetir recepción manualmente en NEXO | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-013` | Evitar repetir recepción manualmente en NEXO | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-014` | Conectar recepción con entrada de inventario | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-015` | Conectar compra con evento financiero | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-016` | Validar el prototipo con compras y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
