@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1328** |
+| Aprobadas | **1329** |
 | En propuesta | **0** |
-| No iniciadas | **268** |
+| No iniciadas | **267** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.21% (1328/1596)** |
+| Porcentaje de completamiento | **83.27% (1329/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **268** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1229** |
+| ⏸ NO_EVALUADA | **267** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1230** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-INT-002` — Definir integración PULSO → PASS para redención | ✅ APROBADA |
-| Tarea actual | `PASS-INT-003` — Definir administración laboral de productos de fidelización | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-INT-004` — Definir administración laboral de clientes cuando corresponda | ⬜ NO INICIADA |
+| Última aprobada | `PASS-INT-003` — Definir administración laboral de productos de fidelización | ✅ APROBADA |
+| Tarea actual | `PASS-INT-004` — Definir administración laboral de clientes cuando corresponda | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-INT-005` — Evitar mezclar identidad cliente y trabajador | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1430,7 +1430,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-013` | Ejecutar pruebas con clientes reales | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-001` | Definir integración PULSO → PASS para acumulación | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-002` | Definir integración PULSO → PASS para redención | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-003` | Definir administración laboral de productos de fidelización | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-003` | Definir administración laboral de productos de fidelización | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-004` | Definir administración laboral de clientes cuando corresponda | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-005` | Evitar mezclar identidad cliente y trabajador | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-QA-001` | Probar flujo completo de acumulación | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |

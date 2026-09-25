@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1328** |
+| Tareas aprobadas | **1329** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **268** |
+| Tareas no iniciadas | **267** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.21% (1328/1596)** |
+| Porcentaje de completamiento | **83.27% (1329/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-INT-002 — Definir integración PULSO → PASS para redención** |
-| Tarea actual | **PASS-INT-003 — Definir administración laboral de productos de fidelización** |
+| Última tarea aprobada | **PASS-INT-003 — Definir administración laboral de productos de fidelización** |
+| Tarea actual | **PASS-INT-004 — Definir administración laboral de clientes cuando corresponda** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-INT-004 — Definir administración laboral de clientes cuando corresponda** |
+| Siguiente tarea | **PASS-INT-005 — Evitar mezclar identidad cliente y trabajador** |
 | Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 2: PASS_LOYALTY_INTEGRATIONS** |
-| Progreso del bloque | **CARRIL PASS: 2 de 5 aprobadas; PASS-INT-003 pendiente** |
+| Progreso del bloque | **CARRIL PASS: 3 de 5 aprobadas; PASS-INT-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-INT-003** |
+| Carril documental | **ACTIVO — PASS-INT-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-INT-002` — Definir integración PULSO → PASS para redención |
-| Tarea actual | `PASS-INT-003` — Definir administración laboral de productos de fidelización — **NO INICIADA** |
-| Siguiente tarea | `PASS-INT-004` — Definir administración laboral de clientes cuando corresponda |
+| Última aprobada | `PASS-INT-003` — Definir administración laboral de productos de fidelización |
+| Tarea actual | `PASS-INT-004` — Definir administración laboral de clientes cuando corresponda — **NO INICIADA** |
+| Siguiente tarea | `PASS-INT-005` — Evitar mezclar identidad cliente y trabajador |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 2 DE 5 APROBADAS — ACTUAL PASS-INT-003** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 3 DE 5 APROBADAS — ACTUAL PASS-INT-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-INT-002 — Definir integración PULSO → PASS para redención
-        ↓
-TAREA ACTUAL
 PASS-INT-003 — Definir administración laboral de productos de fidelización
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
+        ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 2 de 5 tareas aprobadas
+CARRIL PASS — 3 de 5 tareas aprobadas
 ```
