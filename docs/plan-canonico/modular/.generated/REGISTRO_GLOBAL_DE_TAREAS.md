@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1351** |
+| Aprobadas | **1352** |
 | En propuesta | **0** |
-| No iniciadas | **245** |
+| No iniciadas | **244** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.65% (1351/1596)** |
+| Porcentaje de completamiento | **84.71% (1352/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **245** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1252** |
+| ⏸ NO_EVALUADA | **244** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1253** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-UX-015` — Conectar compra con evento financiero | ✅ APROBADA |
-| Tarea actual | `ORIGO-UX-016` — Validar el prototipo con compras y recepción | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-UX-016` — Validar el prototipo con compras y recepción | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón | ⬜ NO INICIADA |
+| Siguiente reservada | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1114,7 +1114,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-013` | Evitar repetir recepción manualmente en NEXO | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-014` | Conectar recepción con entrada de inventario | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-015` | Conectar compra con evento financiero | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-016` | Validar el prototipo con compras y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-016` | Validar el prototipo con compras y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-001` | Inventariar vistas POS | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-002` | Inventariar órdenes | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-003` | Inventariar salón | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
