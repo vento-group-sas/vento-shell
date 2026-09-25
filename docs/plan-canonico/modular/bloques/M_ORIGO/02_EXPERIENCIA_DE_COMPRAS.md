@@ -17550,4 +17550,1608 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-016 — Validar el prototipo con compras y recepción`
-### [ ] ORIGO-UX-016 — Validar el prototipo con compras y recepción
+### ✅ ORIGO-UX-016 — Validar el prototipo con compras y recepción
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-015 — Conectar compra con evento financiero
+**Tarea siguiente:** PULSO-UX-001 — Inventariar procesos de venta, caja y salón
+**Tipo de tarea:** validación documental integral del prototipo contractual de experiencia de compras y recepción definido por `ORIGO-UX-001..015`, verificando cobertura de actores, procesos, pantallas, estados, decisiones, recepción total y parcial, diferencias, minimización de datos, handoffs hacia NEXO y NUMERA, idempotencia, recuperación, auditoría y fronteras de propiedad contra las fuentes canónicas vigentes, con registro explícito de lo validado documentalmente y de la validación física/usabilidad aún pendiente, sin materialización física propia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, componentes, rutas, pantallas reales, eventos físicos, tablas, RPC, RLS, grants, migraciones, Supabase, datos, contratos generados, ORIGO, NEXO, NUMERA ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Cerrar documentalmente el mini-bloque `ORIGO-UX-001..016` mediante una validación integral del prototipo contractual de abastecimiento, compra y recepción, demostrando que las decisiones de experiencia aprobadas forman un flujo coherente, sin solapamientos de autoridad ni vacíos de handoff conocidos dentro de su alcance documental.
+
+La tarea responde cinco preguntas:
+
+```text
+1. ¿CADA ACTOR SABE DÓNDE EMPIEZA Y QUÉ PUEDE HACER?
+2. ¿CADA PANTALLA CANÓNICA TIENE UNA RESPONSABILIDAD COHERENTE?
+3. ¿SOLICITAR, COMPRAR, APROBAR Y RECIBIR SIGUEN SEPARADOS?
+4. ¿LOS EFECTOS NEXO Y NUMERA NACEN SIN DOBLE CAPTURA NI ESCRITURA CRUZADA?
+5. ¿LOS CASOS ORDINARIOS, PARCIALES, CON DIFERENCIAS Y RECUPERACIÓN TIENEN SALIDA SEGURA?
+```
+
+La aprobación documental de esta tarea no equivale a afirmar que:
+
+- el runtime ya materializa todo el prototipo;
+- la experiencia fue probada con trabajadores reales;
+- las pantallas definitivas están implementadas;
+- los handoffs físicos están desplegados;
+- la recepción AS-IS ya es atómica e idempotente;
+- el consumidor económico de NUMERA ya existe de extremo a extremo.
+
+---
+
+#### 2. Resultado sustantivo
+
+La validación documental concluye:
+
+```text
+PROTOTIPO CONTRACTUAL ORIGO-UX-001..015
+→ COHERENTE PARA CIERRE DOCUMENTAL
+```
+
+con estas condiciones explícitas:
+
+1. las cuatro funciones `SOLICITAR`, `COMPRAR`, `APROBAR` y `RECIBIR` permanecen separadas;
+2. los cuatro procesos `VPROC-0019..0022` conservan propósito, identidad y lifecycle propios;
+3. las catorce pantallas canónicas ORIGO quedan cubiertas por el diseño contractual del mini-bloque;
+4. creación de orden no equivale a aprobación, emisión, recepción ni hecho económico;
+5. aprobación no equivale a emisión ni aceptación física;
+6. recepción total y parcial conservan cardinalidad e identidad diferenciables;
+7. parcialidad no se confunde con diferencia;
+8. diferencias no se resuelven reescribiendo silenciosamente orden, recepción, inventario o hecho económico;
+9. la minimización de precios y costos se aplica de extremo a extremo y no solo al render;
+10. la continuidad ORIGO → NEXO elimina la doble captura sin transferir propiedad física;
+11. la continuidad ORIGO → NUMERA produce un hecho económico correlacionable sin crear obligación o pago por inferencia;
+12. replay, concurrencia y resultado desconocido no autorizan un segundo efecto;
+13. `record_only` no crea inventario ficticio;
+14. la auditoría puede reconstruir el expediente de abastecimiento y sus handoffs;
+15. los gaps físicos observados conservan propietario y condición de salida existentes;
+16. la validación con personas y estaciones reales permanece pendiente bajo `UX-QA-026`, `UX-STATION-008` y los paquetes E5 aplicables;
+17. no se crean ni modifican requisitos de prueba.
+
+---
+
+#### 3. Handoff recibido de ORIGO-UX-015
+
+`ORIGO-UX-015` cierra el último contrato funcional previo a esta validación:
+
+```text
+COMPROMISO COMERCIAL ORIGO
+→ RECEPCIÓN ACEPTADA ORIGO
+→ VPROC-0022.EVT-005
+→ VPROC-0051.ECONOMIC_EVENT_RECEIVED EN NUMERA
+```
+
+preservando:
+
+```text
+HECHO COMERCIAL
+!= HECHO FÍSICO
+!= HECHO ECONÓMICO
+!= OBLIGACIÓN
+!= PAGO
+```
+
+La 016 no vuelve a diseñar ese handoff. Lo incluye como escenario de validación del prototipo completo.
+
+---
+
+#### 4. Topología y frontera física
+
+La topología aplicable permanece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto esta tarea:
+
+- valida contratos documentales;
+- registra cobertura y hallazgos documentales;
+- no crea una instancia física propia;
+- no ejecuta pruebas productivas;
+- no abre un package E5;
+- no modifica código;
+- no modifica Supabase;
+- no simula resultados físicos inexistentes.
+
+---
+
+#### 5. Universo validado
+
+La validación cubre exactamente:
+
+```text
+ORIGO-UX-001..016
+ORIGO-AUTH-001..015 como contrato de autoridad consumido
+VPROC-0019
+VPROC-0020
+VPROC-0021
+VPROC-0022
+VPROC-0024 como proceso físico consumidor relacionado
+VPROC-0051 como proceso económico consumidor relacionado
+VPROC-0052 como obligación posterior separada
+VSCREEN-0068..0079
+VSCREEN-0145..0146
+INT-PROC-001..005 según fronteras ya aprobadas
+```
+
+No se incorporan identidades nuevas.
+
+---
+
+#### 6. Regla principal de validación
+
+La validación documental utiliza esta regla:
+
+```text
+IDENTIDAD CANÓNICA
++
+PROPIETARIA
++
+ACTOR / FUNCIÓN
++
+ESTADO
++
+ACCIÓN
++
+AUTORIDAD
++
+HANDOFF
++
+EVIDENCIA
++
+RECUPERACIÓN
+=
+FLUJO DOCUMENTALMENTE CERRADO
+```
+
+Una pantalla existente en código no demuestra por sí sola ese cierre.
+
+---
+
+#### 7. Cuatro funciones validadas
+
+| Función | Responsabilidad validada | No puede absorber |
+| --- | --- | --- |
+| solicitante | expresar y seguir una necesidad | sourcing, aprobación, recepción |
+| comprador | evaluar opciones y preparar compra | autoaprobación, recepción, pago |
+| aprobador | decidir sobre una versión exacta | edición material silenciosa, recepción |
+| receptor | verificar entrega y aceptar alcance observado | aprobación de compra, ledger NEXO, ledger NUMERA |
+
+Resultado documental:
+
+```text
+4/4 FUNCIONES
+→ FRONTERAS DISTINGUIBLES
+```
+
+---
+
+#### 8. Procesos empresariales validados
+
+| Proceso | Propósito conservado | Resultado de validación documental |
+| --- | --- | --- |
+| `VPROC-0019` | registrar y priorizar necesidades de compra | conforme |
+| `VPROC-0020` | comparar proveedores y condiciones con evidencia | conforme |
+| `VPROC-0021` | aprobar y emitir compras | conforme |
+| `VPROC-0022` | recibir compras, verificar conformidad y resolver diferencias | conforme |
+
+No se detecta una razón documental para fusionarlos.
+
+---
+
+#### 9. Secuencia empresarial validada
+
+La secuencia objetivo continúa:
+
+```text
+NECESIDAD
+→ SOLICITUD
+→ SOURCING
+→ DECISIÓN DE PROVEEDOR
+→ PREPARACIÓN DE ORDEN
+→ APROBACIÓN / RECHAZO / DEVOLUCIÓN
+→ EMISIÓN
+→ CONFIRMACIÓN DEL PROVEEDOR
+→ COMPROMISO FORMALIZADO
+→ RECEPCIÓN ESPERADA
+→ VERIFICACIÓN
+→ ACEPTACIÓN / DIFERENCIA
+→ HANDOFF FÍSICO CUANDO APLICA
+→ HANDOFF ECONÓMICO CUANDO APLICA
+→ RECONCILIACIÓN
+```
+
+No se valida ningún atajo que omita autoridad o evidencia.
+
+---
+
+#### 10. Inventario de pantallas ORIGO
+
+El catálogo canónico vigente contiene catorce identidades ORIGO relevantes para esta experiencia:
+
+| ID | Pantalla |
+| --- | --- |
+| `VSCREEN-0068` | Bandeja de necesidades de compra |
+| `VSCREEN-0069` | Solicitud de compra |
+| `VSCREEN-0070` | Catálogo de proveedores |
+| `VSCREEN-0071` | Alta y expediente de proveedor |
+| `VSCREEN-0072` | Comparación de cotizaciones |
+| `VSCREEN-0073` | Editor de orden de compra |
+| `VSCREEN-0074` | Bandeja de aprobaciones de compra |
+| `VSCREEN-0075` | Detalle y seguimiento de orden |
+| `VSCREEN-0076` | Cola de recepciones |
+| `VSCREEN-0077` | Recepción total o parcial |
+| `VSCREEN-0078` | Resolución de diferencias de recepción |
+| `VSCREEN-0079` | Historial y auditoría de abastecimiento |
+| `VSCREEN-0145` | Contratos, precios y condiciones de proveedor |
+| `VSCREEN-0146` | Desempeño y reclamaciones de proveedor |
+
+Conteo esperado:
+
+```text
+14
+```
+
+Conteo validado documentalmente:
+
+```text
+14
+```
+
+---
+
+#### 11. Cobertura de VSCREEN-0068
+
+`VSCREEN-0068 — Bandeja de necesidades de compra` conserva:
+
+- priorización de necesidades;
+- contexto del solicitante y comprador;
+- ausencia de creación automática de orden;
+- separación entre necesidad y compra;
+- navegación por trabajo pendiente y estado.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 12. Cobertura de VSCREEN-0069
+
+`VSCREEN-0069 — Solicitud de compra` conserva:
+
+- necesidad;
+- sede;
+- centro de costo;
+- fecha;
+- justificación;
+- seguimiento sin conceder autoridad de compra o aprobación.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 13. Cobertura de VSCREEN-0070
+
+`VSCREEN-0070 — Catálogo de proveedores` se valida como superficie de consulta de proveedores y condiciones autorizadas.
+
+No:
+
+```text
+CONSULTAR PROVEEDOR
+→ SELECCIONARLO AUTOMÁTICAMENTE
+```
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 14. Cobertura de VSCREEN-0071
+
+`VSCREEN-0071 — Alta y expediente de proveedor` conserva separación entre:
+
+```text
+IDENTIDAD DEL PROVEEDOR
+DOCUMENTOS
+CONDICIONES
+VIGENCIAS
+ESTADO
+```
+
+No convierte un alta administrativa en autorización de compra.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 15. Cobertura de VSCREEN-0072
+
+`VSCREEN-0072 — Comparación de cotizaciones` conserva:
+
+- ofertas comparables;
+- presentaciones;
+- tiempos;
+- condiciones;
+- evidencia;
+- recomendación separada de aprobación.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 16. Cobertura de VSCREEN-0073
+
+`VSCREEN-0073 — Editor de orden de compra` conserva:
+
+```text
+CREAR / PREPARAR
+!= APROBAR
+!= EMITIR
+!= RECIBIR
+```
+
+También conserva:
+
+- versión;
+- proveedor;
+- líneas;
+- precios e impuestos cuando la finalidad lo autoriza;
+- sede;
+- centro de costo;
+- edición ordinaria solo en estados elegibles;
+- cambio material posterior mediante revisión y nueva aprobación cuando corresponda.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 17. Cobertura de VSCREEN-0074
+
+`VSCREEN-0074 — Bandeja de aprobaciones de compra` conserva:
+
+- versión exacta;
+- autoridad;
+- segregación;
+- aprobación;
+- rechazo;
+- devolución;
+- evidencia de decisión.
+
+La aprobación no emite por sí sola la compra ni crea recepción.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 18. Cobertura de VSCREEN-0075
+
+`VSCREEN-0075 — Detalle y seguimiento de orden` conserva el expediente de seguimiento y proyecciones autorizadas.
+
+Puede mostrar:
+
+- estado de orden;
+- documentos;
+- entregas;
+- pendientes;
+- evidencia de emisión;
+- proyección de efectos posteriores dentro de minimización.
+
+No se convierte en propietaria de inventario o finanzas.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 19. Cobertura de VSCREEN-0076
+
+`VSCREEN-0076 — Cola de recepciones` conserva:
+
+- órdenes y entregas realmente susceptibles de recepción;
+- sede y responsabilidad;
+- estado suficiente para actuar;
+- separación frente a historial genérico;
+- acceso compatible con actor efectivo.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 20. Cobertura de VSCREEN-0077
+
+`VSCREEN-0077 — Recepción total o parcial` conserva:
+
+- identidad de recepción;
+- orden/compromiso fuente;
+- líneas;
+- presentación;
+- observado;
+- aceptado;
+- residual;
+- total/parcial;
+- modalidad física o `record_only`;
+- bloqueo por diferencia;
+- idempotencia y recuperación.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 21. Cobertura de VSCREEN-0078
+
+`VSCREEN-0078 — Resolución de diferencias de recepción` conserva diferencias de:
+
+```text
+CANTIDAD
+CALIDAD / CONDICIÓN
+PRECIO / CONDICIÓN COMERCIAL
+DOCUMENTO
+PRESENTACIÓN / UNIDAD
+```
+
+La diferencia no se resuelve editando silenciosamente la fuente.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 22. Cobertura de VSCREEN-0079
+
+`VSCREEN-0079 — Historial y auditoría de abastecimiento` conserva capacidad de reconstruir:
+
+```text
+NECESIDAD
+→ SOURCING
+→ ORDEN
+→ DECISIÓN
+→ EMISIÓN
+→ RECEPCIÓN
+→ DIFERENCIA
+→ HANDOFFS
+→ CORRECCIONES
+```
+
+sin duplicar ledgers propietarios de NEXO o NUMERA.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 23. Cobertura de VSCREEN-0145
+
+`VSCREEN-0145 — Contratos, precios y condiciones de proveedor` conserva:
+
+- vigencias;
+- moneda;
+- impuestos;
+- descuentos;
+- fletes;
+- mínimos;
+- condiciones de pago;
+- versiones;
+- sensibilidad.
+
+Una condición nueva no reescribe una orden histórica.
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 24. Cobertura de VSCREEN-0146
+
+`VSCREEN-0146 — Desempeño y reclamaciones de proveedor` conserva evaluación derivada de hechos y evidencia.
+
+No:
+
+```text
+VALORACIÓN MANUAL
+→ BORRAR HISTORIA OBJETIVA
+```
+
+Resultado:
+
+```text
+CONFORME_DOCUMENTAL
+```
+
+---
+
+#### 25. Validación de inicios por actor
+
+| Actor funcional | Entrada principal validada | Resultado |
+| --- | --- | --- |
+| solicitante | `VSCREEN-0068` / `VSCREEN-0069` | conforme |
+| comprador | cola/caso de `VPROC-0020` con superficies `VSCREEN-0068`, `0070`, `0071`, `0072`, `0073`, `0145`, `0146` según estado | conforme |
+| aprobador | `VSCREEN-0074` con contexto `VSCREEN-0075` | conforme |
+| receptor | `VSCREEN-0076` con ejecución `VSCREEN-0077` | conforme |
+
+No se crea un rol nuevo por cada función.
+
+---
+
+#### 26. Validación de creación de orden
+
+Escenario ordinario:
+
+```text
+SOURCING VÁLIDO
+→ PREPARAR ORDEN
+→ ESTADO NO APROBADO / NO EMITIDO
+→ VERSIONAR
+→ ENVIAR A DECISIÓN
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+Escenario bloqueante:
+
+```text
+SIN PROVEEDOR / SIN SEDE / SIN LÍNEAS / FUERA DE ALCANCE
+→ NO CREAR EFECTO AUTORIZADO
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 27. Validación de aprobación y rechazo
+
+Escenario de aprobación:
+
+```text
+VERSIÓN ELEGIBLE
++ AUTORIDAD VÁLIDA
++ SEGREGACIÓN VÁLIDA
+→ DECISIÓN TRAZABLE
+```
+
+Escenario de rechazo/devolución:
+
+```text
+RECHAZAR / DEVOLVER
+→ CONSERVAR PROPUESTA Y EVIDENCIA
+→ NO CREAR COMPROMISO FORMALIZADO
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 28. Validación de cambio material posterior
+
+Regla:
+
+```text
+CAMBIO MATERIAL DESPUÉS DE APROBACIÓN
+→ NO REUTILIZAR DECISIÓN PREVIA COMO SI FUERA EQUIVALENTE
+→ VERSIONAR / REVISAR / REAPROBAR CUANDO CORRESPONDA
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 29. Validación de recepción total
+
+Escenario:
+
+```text
+SALDO RECIBIBLE COMPLETO
++ VERIFICACIÓN FÍSICA Y DOCUMENTAL APLICABLE
++ CERO DIFERENCIA BLOQUEANTE
+→ ACEPTAR ALCANCE TOTAL
+```
+
+La palabra `total` describe el alcance recibido frente al saldo aplicable, no que sea la primera ni la única recepción histórica.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 30. Validación de recepción parcial
+
+Escenario:
+
+```text
+RECIBIDO AHORA < SALDO RECIBIBLE
+→ ACEPTAR SOLO ALCANCE OBSERVADO
+→ CONSERVAR RESIDUAL EXPLÍCITO
+→ PERMITIR RECEPCIÓN FUTURA CON IDENTIDAD PROPIA
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 31. Validación de diferencia contra orden
+
+Escenario:
+
+```text
+OBSERVADO != COMPROMETIDO
+→ CLASIFICAR DIFERENCIA
+→ CONSERVAR FUENTES
+→ DECIDIR POR ALCANCE
+→ NO REESCRIBIR PARA FORZAR CONFORMIDAD
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 32. Validación de precios ocultos
+
+Escenario receptor sin finalidad económica:
+
+```text
+RECURSO VISIBLE
++
+SIN AUTORIZACIÓN DE CAMPOS ECONÓMICOS
+→ PROYECCIÓN OPERATIVA SIN PRECIOS / COSTOS / TOTALES
+```
+
+La validación exige:
+
+```text
+FIELD MASK
+→ SELECT MÍNIMO
+→ SERIALIZACIÓN MÍNIMA
+→ RENDER MÍNIMO
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 33. Validación de diferencia económica sin revelar importes
+
+Regla:
+
+```text
+PRECIO OCULTO
+!=
+DIFERENCIA OCULTA
+```
+
+Un actor puede saber que existe una diferencia que requiere revisión sin recibir los importes protegidos.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 34. Validación de handoff ORIGO → NEXO
+
+Escenario normal:
+
+```text
+VPROC-0022.PUTAWAY_PENDING
++ VPROC-0022.EVT-004
+→ HANDOFF CORRELACIONADO
+→ VPROC-0024.INBOUND_MOVEMENT_REQUESTED
+```
+
+Se valida documentalmente que:
+
+- ORIGO no debe escribir la verdad física propietaria final;
+- NEXO no debe pedir de nuevo la recepción de origen;
+- NEXO revalida sus datos físicos y autoridad;
+- replay no crea segunda entrada.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 35. Validación de `record_only`
+
+Escenario:
+
+```text
+RECEPCIÓN COMERCIAL / DOCUMENTAL
++ MODALIDAD record_only
+→ CERO MOVIMIENTO FÍSICO FICTICIO
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 36. Validación de handoff ORIGO → NUMERA
+
+Escenario ordinario:
+
+```text
+VPROC-0022.ECONOMIC_RECONCILIATION_PENDING
++ VPROC-0022.EVT-005
+→ VPROC-0051.ECONOMIC_EVENT_RECEIVED
+```
+
+Se valida que:
+
+```text
+COMPROMISO
+!= RECEPCIÓN
+!= HECHO ECONÓMICO
+!= OBLIGACIÓN
+!= PAGO
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 37. Validación de evidencia física para NUMERA
+
+Cuando la compra produce inventario:
+
+```text
+VPROC-0024.EVT-006
+```
+
+puede actuar como evidencia física correlacionable.
+
+No crea por sí solo:
+
+- gasto;
+- obligación;
+- asiento;
+- pago.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 38. Validación de idempotencia
+
+Regla transversal:
+
+```text
+MISMA IDENTIDAD
++ MISMA HUELLA LÓGICA
+→ MISMO RESULTADO
+```
+
+Y:
+
+```text
+MISMA IDENTIDAD
++ CONTENIDO INCOMPATIBLE
+→ CONFLICTO
+```
+
+La validación documental cubre:
+
+- creación de orden cuando aplique;
+- recepción;
+- handoff NEXO;
+- handoff NUMERA;
+- efectos derivados.
+
+Resultado:
+
+```text
+PASS_CONTRACTUAL
+```
+
+La prueba de efecto físico exactamente una vez permanece pendiente de materialización y E2E.
+
+---
+
+#### 39. Validación de resultado desconocido
+
+Escenario:
+
+```text
+TIMEOUT / RESPUESTA PERDIDA
+→ NO ASUMIR FALLO
+→ CONSULTAR RESULTADO
+→ CONCILIAR
+→ NO REEMITIR CON IDENTIDAD NUEVA
+```
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 40. Validación de concurrencia
+
+Dos actores o dispositivos no pueden resolver el mismo recurso mediante `last write wins` silencioso.
+
+La experiencia debe detectar:
+
+- versión obsoleta;
+- estado cambiado;
+- decisión concurrente;
+- recepción ya aplicada;
+- efecto ya materializado.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 41. Validación de corrección y reversión
+
+Regla:
+
+```text
+CORREGIR
+!= BORRAR ORIGINAL
+```
+
+Una corrección conserva:
+
+- original;
+- causa;
+- actor;
+- versión;
+- efecto previo;
+- reemplazo o compensación;
+- evidencia.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 42. Validación de contingencia manual
+
+La contingencia manual:
+
+- requiere activación gobernada;
+- no compite con un handoff normal conocido;
+- conserva identidad y folio;
+- debe reconciliarse;
+- no puede crear un segundo efecto al recuperar conectividad.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 43. Validación de dispositivo compartido y actor efectivo
+
+El prototipo conserva separación entre:
+
+```text
+ROL BASE
+ROL OPERATIVO
+ACTOR EFECTIVO
+SEDE
+ÁREA
+TURNO
+CHECK-IN
+DISPOSITIVO
+```
+
+Un check-in o dispositivo no concede por sí mismo permisos administrativos de compra.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 44. Validación de terminología y estado
+
+El prototipo debe permitir distinguir al menos:
+
+- pendiente;
+- en revisión;
+- bloqueado;
+- aprobado;
+- rechazado/devuelto;
+- emitido;
+- recepción esperada;
+- recepción parcial;
+- diferencia;
+- pendiente de handoff;
+- confirmado;
+- resultado desconocido;
+- conciliación requerida.
+
+Los enums internos no son por sí mismos etiquetas finales para trabajadores.
+
+Resultado documental:
+
+```text
+CONTRATO_COERENTE
+PRUEBA_HUMANA_PENDIENTE
+```
+
+---
+
+#### 45. Validación de cantidades, unidades y presentaciones
+
+Se valida documentalmente la necesidad de mostrar conjuntamente:
+
+```text
+VALOR
++
+UNIDAD
++
+PRESENTACIÓN
++
+FUENTE
++
+ACCIÓN
++
+EFECTO
+```
+
+Se prohíbe confundir:
+
+- solicitado con recibido;
+- recibido con aceptado;
+- cantidad actual con acumulada;
+- unidad con presentación;
+- cero con ausencia de observación;
+- parcial con diferencia.
+
+Resultado documental:
+
+```text
+PASS_CONTRACTUAL
+```
+
+---
+
+#### 46. Matriz de escenarios mínimos
+
+| ID | Escenario | Resultado documental |
+| --- | --- | --- |
+| `ORIGO-PROT-SCN-001` | solicitante crea necesidad sin crear orden | PASS |
+| `ORIGO-PROT-SCN-002` | comprador recibe necesidad y compara proveedores | PASS |
+| `ORIGO-PROT-SCN-003` | comprador prepara orden desde sourcing válido | PASS |
+| `ORIGO-PROT-SCN-004` | aprobador aprueba versión exacta | PASS |
+| `ORIGO-PROT-SCN-005` | aprobador rechaza o devuelve sin borrar propuesta | PASS |
+| `ORIGO-PROT-SCN-006` | cambio material invalida equivalencia de aprobación | PASS |
+| `ORIGO-PROT-SCN-007` | recepción total sin diferencias | PASS |
+| `ORIGO-PROT-SCN-008` | recepción parcial conserva residual | PASS |
+| `ORIGO-PROT-SCN-009` | diferencia de cantidad/calidad/documento/presentación | PASS |
+| `ORIGO-PROT-SCN-010` | receptor sin autorización económica no recibe importes | PASS |
+| `ORIGO-PROT-SCN-011` | recepción ORIGO continúa a NEXO sin doble captura | PASS |
+| `ORIGO-PROT-SCN-012` | `record_only` no crea inventario ficticio | PASS |
+| `ORIGO-PROT-SCN-013` | replay recupera resultado existente | PASS |
+| `ORIGO-PROT-SCN-014` | misma identidad con payload conflictivo falla cerrado | PASS |
+| `ORIGO-PROT-SCN-015` | resultado desconocido exige consulta/conciliación | PASS |
+| `ORIGO-PROT-SCN-016` | recepción aceptada produce handoff económico correlacionable | PASS |
+| `ORIGO-PROT-SCN-017` | movimiento NEXO no crea obligación por sí solo | PASS |
+| `ORIGO-PROT-SCN-018` | corrección conserva original y compensación/reemplazo | PASS |
+| `ORIGO-PROT-SCN-019` | contingencia manual se reconcilia antes de reaplicar | PASS |
+| `ORIGO-PROT-SCN-020` | historial reconstruye ciclo y handoffs sin ledger competidor | PASS |
+
+Conteo esperado:
+
+```text
+20
+```
+
+Conteo documentado:
+
+```text
+20
+```
+
+---
+
+#### 47. Matriz de riesgos críticos del prototipo
+
+| Riesgo | Control documental validado | Propietario de materialización/prueba |
+| --- | --- | --- |
+| orden sin necesidad/sourcing válido | `ORIGO-UX-003..007` | E5 ORIGO / `UX-QA-026` |
+| autoaprobación o decisión sobre versión distinta | `ORIGO-UX-005`, `008` | E5 ORIGO / AUTH QA |
+| recepción duplicada | `ORIGO-UX-009`, `010`, `013`, `014`, `016` | `GAP-PKG-039`, integración y E2E |
+| recepción parcial tratada como total | `ORIGO-UX-010` | E5 ORIGO / `UX-QA-026` |
+| diferencia resuelta sobrescribiendo fuente | `ORIGO-UX-011` | E5 ORIGO / integración |
+| exposición de precios al receptor | `ORIGO-UX-012` | E5 ORIGO / AUTH |
+| doble captura ORIGO/NEXO | `ORIGO-UX-013` | integración ORIGO–NEXO |
+| doble escritura física | `ORIGO-UX-014` | E5 / Supabase / integración |
+| hecho económico duplicado | `ORIGO-UX-015` | NUMERA + integración |
+| obligación/pago inferidos | `ORIGO-UX-015` | NUMERA |
+| pérdida de actor/contexto en dispositivo compartido | `ORIGO-AUTH-*` + UX transversal | AUTH / `UX-QA-026` |
+| resultado desconocido reintentado a ciegas | contratos UX/integración | E2E / resiliencia |
+
+---
+
+#### 48. Revisión del runtime ORIGO observado
+
+El snapshot técnico vigente de `vento-origo` contiene superficies reales para:
+
+- proveedores;
+- creación y edición de proveedores;
+- órdenes de compra;
+- creación de orden;
+- detalle y edición de orden;
+- PDF de orden;
+- recepciones;
+- nueva recepción;
+- revisión de maestro de producto.
+
+Ese snapshot demuestra una base funcional parcial.
+
+No demuestra por sí mismo la materialización completa de las catorce identidades `VSCREEN-*` ni de todos los contratos `ORIGO-UX-001..015`.
+
+Clasificación:
+
+```text
+AS_IS_REAL
++
+AS_IS_PARTIAL
+```
+
+---
+
+#### 49. Runtime observado frente a prototipo objetivo
+
+| Dimensión | Snapshot observado | Objetivo documental |
+| --- | --- | --- |
+| necesidades | materialización parcial/no demostrada como pantalla canónica completa | `VSCREEN-0068..0069` |
+| sourcing | proveedores presentes; comparación/expediente integral no demostrados E2E | `VSCREEN-0070..0072`, `0145..0146` |
+| orden | rutas reales de listado/creación/detalle/edición/PDF | `VSCREEN-0073..0075` bajo lifecycle y autorización completos |
+| aprobación | no se toma la mera existencia de estados como prueba E2E | `VSCREEN-0074` con autoridad y versión |
+| recepción | rutas reales de lista/nueva recepción | `VSCREEN-0076..0078` con total/parcial/diferencias e idempotencia |
+| auditoría | vistas actuales no prueban expediente canónico completo | `VSCREEN-0079` |
+| NEXO | existe capacidad física separada | handoff correlacionado sin doble escritura |
+| NUMERA | existe captura económica manual parcial | consumo de evento `VPROC-0022.EVT-005` hacia `VPROC-0051` |
+
+---
+
+#### 50. Hallazgo físico crítico ya conocido: recepción ORIGO
+
+La validación conserva el hallazgo vigente de que recepción y corrección ORIGO pueden quedar parcialmente aplicadas en el runtime actual.
+
+Eso implica riesgo sobre:
+
+- cabecera;
+- líneas;
+- movimientos;
+- stock;
+- costos;
+- cantidades recibidas;
+- estado de orden;
+- solicitudes de maestro;
+- auditoría;
+- efectos posteriores.
+
+Propietarios existentes:
+
+```text
+ORIGO-UX-009
+ORIGO-UX-010
+ORIGO-UX-014
+ORIGO-UX-016
+INT-PROC-002
+INT-PROC-003
+INT-PROC-005
+SUPA-AUD-019
+SUPA-AUD-023
+GAP-PKG-039
+```
+
+La 016 no corrige físicamente ese riesgo.
+
+---
+
+#### 51. Hallazgo físico conocido: autorización de órdenes y PDF
+
+La validación conserva como gap materializado pendiente:
+
+- permisos exactos;
+- sede/centro de costo;
+- estado;
+- columnas;
+- token de documento externo;
+- expiración;
+- revocación;
+- secreto sin fallback.
+
+Propietarios existentes incluyen:
+
+```text
+ORIGO-AUTH-004..010
+AUTH-SRV-005
+AUTH-SRV-006
+AUTH-SRV-011
+AUTH-SRV-012
+AUTH-DB-002
+AUTH-DB-004
+SUPA-AUD-015
+GAP-PKG-102
+```
+
+La 016 no reabre esos contratos.
+
+---
+
+#### 52. Hallazgo físico conocido: consumidor económico NUMERA
+
+El snapshot vigente de NUMERA mantiene una base económica y captura manual, pero no demuestra de extremo a extremo:
+
+```text
+VPROC-0022.EVT-005
+→ RECEPCIÓN IDEMPOTENTE EN NUMERA
+→ VPROC-0051.ECONOMIC_EVENT_RECEIVED
+→ VALIDACIÓN
+→ CLASIFICACIÓN
+→ RECONOCIMIENTO
+→ CONCILIACIÓN
+```
+
+Propietarios existentes:
+
+```text
+INT-PROC-004
+NUMERA-DOM-003
+INT-APP-001..010
+INT-DB-001..008
+paquetes E5 aplicables
+```
+
+No se crea una tarea nueva.
+
+---
+
+#### 53. Validación documental versus validación con trabajadores
+
+Esta tarea ejecuta:
+
+```text
+VALIDACIÓN DOCUMENTAL DE COHERENCIA DEL PROTOTIPO
+```
+
+No ejecuta:
+
+```text
+VALIDACIÓN FÍSICA CON TRABAJADORES REALES
+```
+
+La prueba futura deberá respetar el contrato transversal vigente:
+
+- prototipo suficientemente realista;
+- dispositivo objetivo;
+- datos realistas no sensibles;
+- secuencia completa;
+- escenario ordinario;
+- al menos un bloqueo o diferencia;
+- participantes sin haber recibido la respuesta;
+- medición de comprensión y acción, no preferencia estética.
+
+Propietarios:
+
+```text
+UX-STATION-008
+UX-QA-026 — Probar ORIGO por etapa de compra
+```
+
+---
+
+#### 54. Escenarios obligatorios para UX-QA-026
+
+La futura validación con personas deberá incluir como mínimo:
+
+1. solicitante crea necesidad;
+2. comprador identifica trabajo pendiente;
+3. comparación de proveedor/condiciones;
+4. preparación de orden;
+5. aprobación;
+6. rechazo/devolución;
+7. versión modificada después de aprobación;
+8. recepción total;
+9. recepción parcial;
+10. diferencia de cantidad;
+11. diferencia de calidad/condición;
+12. diferencia de documento/presentación;
+13. actor receptor sin precios;
+14. handoff hacia NEXO;
+15. resultado desconocido o replay;
+16. handoff económico hacia NUMERA;
+17. corrección o reversión;
+18. reconstrucción desde historial/auditoría.
+
+Esta lista no sustituye la especificación posterior de `UX-QA-026`.
+
+---
+
+#### 55. Criterios de comprensión que no se declaran ejecutados
+
+La futura prueba humana deberá comprobar, según riesgo:
+
+- identificación correcta del objeto y estado;
+- comprensión de acción primaria;
+- tiempo hasta primera acción correcta;
+- errores de interpretación;
+- necesidad de ayuda;
+- distinción entre pendiente, confirmado, fallido y desconocido;
+- capacidad de corregir;
+- comprensión de cantidad/unidad/presentación;
+- comprensión de autoridad y actor;
+- comprensión de qué no debe repetirse.
+
+Estado en esta tarea:
+
+```text
+NOT_EXECUTED
+```
+
+---
+
+#### 56. Accesibilidad y recuperación
+
+El contrato documental exige que estados, bloqueos y acciones críticas no dependan únicamente de:
+
+- color;
+- sonido;
+- posición;
+- memoria;
+- abreviaturas internas.
+
+La prueba real de accesibilidad queda pendiente en la certificación propietaria.
+
+---
+
+#### 57. Auditoría end-to-end esperada
+
+Para una compra cerrada deberá poder responderse:
+
+```text
+¿QUÉ NECESIDAD ORIGINÓ LA COMPRA?
+¿QUIÉN LA SOLICITÓ?
+¿QUÉ SOURCING Y EVIDENCIA EXISTIERON?
+¿QUÉ PROVEEDOR Y CONDICIONES SE USARON?
+¿QUÉ VERSIÓN SE APROBÓ?
+¿QUIÉN APROBÓ O RECHAZÓ?
+¿QUÉ SE EMITIÓ AL PROVEEDOR?
+¿QUÉ SE RECIBIÓ REALMENTE?
+¿FUE TOTAL O PARCIAL?
+¿QUÉ DIFERENCIAS EXISTIERON?
+¿QUÉ ALCANCE SE ACEPTÓ?
+¿QUÉ EFECTO NEXO SE PRODUJO?
+¿QUÉ HECHO NUMERA SE PRODUJO?
+¿HUBO CORRECCIÓN O REPLAY?
+¿CUÁL ES EL RESULTADO FINAL Y QUÉ SIGUE PENDIENTE?
+```
+
+El prototipo contractual conserva una respuesta para cada pregunta sin exigir un ledger único que sustituya a las aplicaciones propietarias.
+
+---
+
+#### 58. No equivalencias finales del mini-bloque
+
+Se preservan:
+
+```text
+NECESIDAD != ORDEN
+SOLICITUD != APROBACIÓN
+SELECCIÓN DE PROVEEDOR != APROBACIÓN
+CREAR ORDEN != APROBAR ORDEN
+APROBAR ORDEN != EMITIR ORDEN
+EMITIR ORDEN != RECEPCIÓN
+RECEPCIÓN PARCIAL != DIFERENCIA
+RECEPCIÓN ORIGO != ENTRADA NEXO
+ENTRADA NEXO != HECHO ECONÓMICO NUMERA
+HECHO ECONÓMICO != OBLIGACIÓN
+OBLIGACIÓN != PAGO
+OCULTAR PRECIO EN UI != PROTEGER EL DATO
+REINTENTO != OPERACIÓN NUEVA
+RESULTADO DESCONOCIDO != FALLO CONFIRMADO
+CORRECCIÓN != BORRADO DEL ORIGINAL
+```
+
+---
+
+#### 59. Resultado de la validación del mini-bloque
+
+Resultado documental:
+
+```text
+ORIGO-UX PROTOTYPE CONTRACT REVIEW
+STATUS: PASS_DOCUMENTAL
+SCREENS_EXPECTED: 14
+SCREENS_COVERED: 14
+CORE_PROCESSES_EXPECTED: 4
+CORE_PROCESSES_COVERED: 4
+SCENARIOS_EXPECTED: 20
+SCENARIOS_DOCUMENTED: 20
+TREQ_CREATED_OR_MODIFIED: 0
+PHYSICAL_VALIDATION: NOT_EXECUTED
+WORKER_USABILITY_VALIDATION: NOT_EXECUTED
+RUNTIME_FULL_PARITY: NOT_DEMONSTRATED
+```
+
+`PASS_DOCUMENTAL` significa coherencia documental del prototipo y no certificación de implementación.
+
+---
+
+#### 60. Handoff fuera del mini-bloque ORIGO
+
+Con esta tarea se cierra la secuencia documental de experiencia de compras ORIGO.
+
+La siguiente tarea de la ruta canónica pertenece a la siguiente secuencia:
+
+```text
+PULSO-UX-001 — Inventariar procesos de venta, caja y salón
+```
+
+No existe handoff funcional de dominio ORIGO → PULSO creado por esta tarea.
+
+El handoff es de continuidad documental de la ruta maestra.
+
+---
+
+#### 61. Hallazgos y propietarios
+
+| Hallazgo pendiente | Bloquea cierre documental 016 | Propietario existente | Condición de salida |
+| --- | --- | --- | --- |
+| atomicidad/idempotencia física de recepción no demostrada | no | `GAP-PKG-039` + owners de recepción/integración | E2E con fallos y replay sin duplicados |
+| autorización/PDF endurecidos físicamente no demostrados | no | `GAP-PKG-102` + ORIGO-AUTH/AUTH | pruebas por rol/sede/estado y token fail-closed |
+| paridad completa de pantallas target vs runtime | no | E5 ORIGO / screen materialization | implementación y pruebas del paquete aplicable |
+| handoff ORIGO→NEXO físico E2E | no | `INT-PROC-003`, E5, integración | una recepción produce un único efecto NEXO correlacionado |
+| handoff ORIGO→NUMERA físico E2E | no | `INT-PROC-004`, NUMERA-DOM-003, E5 | evento económico idempotente y reconciliable |
+| validación con trabajadores | no | `UX-QA-026`, `UX-STATION-008` | evidencia de sesiones según contrato transversal |
+| accesibilidad/terminología reales | no | `UX-QA-026` + QA transversal | cero hallazgo bloqueante en prueba aplicable |
+
+No se inventan nuevos owners.
+
+---
+
+#### 62. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** esta tarea valida documentalmente comportamientos ya protegidos por requisitos vigentes de ORIGO, autorización, integración, UX, NEXO, NUMERA y Supabase. No introduce una conducta ejecutable nueva ni modifica el significado de una regla de prueba existente. La ejecución física y la validación con trabajadores permanecen bajo requisitos y tareas ya registradas.
+
+---
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+Se conserva sin modificar la cobertura de:
+
+- `TREQ-ORIGO-001`, modalidad de recepción y prevención de duplicación;
+- `TREQ-ORIGO-002`, autorización de órdenes y protección de documento externo;
+- `TREQ-ORIGO-003`, atomicidad, durabilidad, idempotencia y corrección de recepción;
+- `TREQ-ORIGO-004`, separación del ciclo de abastecimiento, aprobación y urgencia;
+- `TREQ-ORIGO-005`, proveedor, condiciones, vigencia, sensibilidad y evaluación;
+- `TREQ-INTEGRATION-003`, identidad, huella, reintento, concurrencia y resultado desconocido;
+- `TREQ-INTEGRATION-004`, trazabilidad de causa, payload, actor, recurso y efecto;
+- `TREQ-INTEGRATION-005`, conservación de contexto y revalidación en handoff;
+- `TREQ-INTEGRATION-006`, fuente única y eliminación de doble digitación;
+- `TREQ-INTEGRATION-017`, llegada de hechos de compra/recepción/inventario a NUMERA mediante contratos versionados e idempotentes;
+- `TREQ-NEXO-011`, ledger físico y no doble contabilización de inventario;
+- `TREQ-NUMERA-001`, reconciliación con hechos fuente sin doble registro manual;
+- `TREQ-NUMERA-002`, identidad económica, fuente, correlación y evidencia;
+- `TREQ-NUMERA-003`, separación de obligación, aprobación, pago y conciliación;
+- `TREQ-AUTH-013`, autorización server-side de mutaciones;
+- `TREQ-AUTH-015`, evidencia correlacionable de acciones protegidas;
+- los requisitos UX transversales aplicables a estado visible, accesibilidad, conectividad, recuperación y prueba con personas.
+
+Ninguna fila se crea, modifica, difiere, descarta u obsolete en esta tarea.
+
+---
+
+#### 64. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | esta tarea no compila producto ni materializa código; la batería documental posterior ejecutará los validadores del plan sobre el artefacto incorporado |
+| LOCAL | PASS | revisión estática del artefacto, continuidad, inventario de 14 pantallas, matriz de 20 escenarios, fronteras y cero cambios TREQ |
+| REMOTA | PASS | fuentes canónicas y snapshots remotos vigentes consultados para owner ORIGO, catálogo de pantallas, procesos, contratos de integración, registro 04A y runtime ORIGO |
+| OPERATIVA | NOT_EXECUTED | no se realizaron sesiones con compradores, aprobadores, receptores ni trabajadores sobre estaciones reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la materialización pertenece a E5 y la validación real a QA posterior |
+
+---
+
+#### 65. Criterios de aceptación
+
+- [ ] Se validan exactamente catorce pantallas canónicas ORIGO.
+- [ ] Se validan `VPROC-0019`, `VPROC-0020`, `VPROC-0021` y `VPROC-0022` como procesos distintos.
+- [ ] Solicitante, comprador, aprobador y receptor conservan fronteras distinguibles.
+- [ ] Necesidad no se confunde con orden.
+- [ ] Creación de orden no se confunde con aprobación.
+- [ ] Aprobación no se confunde con emisión ni recepción.
+- [ ] Una versión aprobada queda identificable.
+- [ ] Cambio material posterior exige tratamiento de versión y aprobación aplicable.
+- [ ] Recepción total conserva definición por saldo recibible.
+- [ ] Recepción parcial conserva residual.
+- [ ] Parcialidad no se confunde con diferencia.
+- [ ] Las diferencias conservan fuentes y decisión separada.
+- [ ] Precio/costo sensible se minimiza de extremo a extremo.
+- [ ] Un receptor sin finalidad económica no recibe importes protegidos.
+- [ ] `record_only` no crea inventario ficticio.
+- [ ] ORIGO → NEXO no exige doble captura de la recepción.
+- [ ] ORIGO no se apropia del ledger físico de NEXO.
+- [ ] ORIGO → NUMERA conserva `VPROC-0022.EVT-005` como fuente ordinaria.
+- [ ] `VPROC-0024.EVT-006` permanece evidencia física y no obligación automática.
+- [ ] `VPROC-0051` permanece separado de `VPROC-0052`.
+- [ ] Replay equivalente no crea segundo efecto.
+- [ ] Payload conflictivo con misma identidad falla cerrado.
+- [ ] Resultado desconocido se consulta antes de reemitir.
+- [ ] Corrección conserva original y vínculo con reemplazo/compensación.
+- [ ] Contingencia manual no compite con flujo normal conocido.
+- [ ] Dispositivo compartido no concede autoridad administrativa por sí solo.
+- [ ] Historial/auditoría puede reconstruir el ciclo sin duplicar ledgers.
+- [ ] Se documentan veinte escenarios mínimos y su resultado contractual.
+- [ ] Los gaps físicos tienen owners existentes y condición de salida.
+- [ ] La prueba con trabajadores queda explícitamente `NOT_EXECUTED`.
+- [ ] No se presenta `PASS_DOCUMENTAL` como certificación física.
+- [ ] `UX-QA-026` permanece propietaria de la validación por etapa de compra.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica Registro 04A.
+- [ ] No se ejecutan cambios físicos.
+- [ ] El mini-bloque ORIGO-UX queda documentalmente cerrado y la continuidad pasa a `PULSO-UX-001`.
+
+---
+
+#### 66. Límites
+
+Esta tarea no:
+
+- implementa pantallas;
+- modifica `vento-origo`;
+- modifica `vento-nexo`;
+- modifica `vento-numera`;
+- modifica `vento-pulso`;
+- ejecuta sesiones con trabajadores;
+- certifica usabilidad física;
+- certifica accesibilidad física;
+- ejecuta E2E sobre staging;
+- corrige la atomicidad AS-IS de recepción;
+- implementa idempotencia física;
+- implementa handoff ORIGO → NEXO;
+- implementa handoff ORIGO → NUMERA;
+- crea movimientos de inventario;
+- crea hechos económicos reales;
+- crea obligaciones o pagos;
+- crea permission keys;
+- modifica roles, grants o scopes;
+- crea tablas, columnas, constraints o índices;
+- crea RPC, funciones, triggers, colas, outbox, inbox o workers;
+- modifica RLS;
+- ejecuta migraciones;
+- modifica Supabase o datos;
+- modifica contratos generados;
+- modifica Registro 04A;
+- ejecuta packages;
+- crea instancia física;
+- desarrolla `PULSO-UX-001`.
+
+---
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-015 — Conectar compra con evento financiero`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-016 — Validar el prototipo con compras y recepción`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-001 — Inventariar procesos de venta, caja y salón`
