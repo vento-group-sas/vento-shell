@@ -16806,4 +16806,1381 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-015 — Ejecutar pruebas integrales`
 
-### [ ] ORIGO-AUTH-015 — Ejecutar pruebas integrales
+### ✅ ORIGO-AUTH-015 — Ejecutar pruebas integrales
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
+**Tarea siguiente:** ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento
+**Tipo de tarea:** documental; contrato canónico de certificación integral por `implementation_unit_id` para el alcance `ORIGO-AUTH-001..014`, reuniendo inventario de superficies, permisos, carriles base y operativos, territorio, datos sensibles, actor, dispositivo compartido, adopción de packages, autorización server-side, atomicidad, idempotencia, seguridad adversarial, rollback y evidencia atribuible sin sustituir la experiencia posterior de ORIGO ni la certificación transversal final de VENTO OS
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno durante este marcador global; no ejecuta suites físicas, no modifica código, tests, fixtures, packages, permisos, grants, dependencias, lockfiles, Supabase, RLS, RPC, datos, configuración, CI, releases, despliegues ni consumidores; toda ejecución futura requiere `ORIGO-AUTH-015::<implementation_unit_id>`, package propietario aplicable, `E5-GATE-008::<package_id> = PASS`, ambiente autorizado y autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué deberá demostrar una futura unidad física para considerar certificada la porción de autorización ORIGO que le corresponda después de materializar los contratos `ORIGO-AUTH-001..014` aplicables.
+
+La regla raíz queda:
+
+```text
+CONTRATOS ORIGO MATERIALIZADOS
++
+PACKAGE ADOPTION CERTIFICADA CUANDO APLIQUE
++
+ALLOW PATHS PASS
++
+DENY PATHS PASS
++
+SERVER-SIDE REVALIDATION PASS
++
+TERRITORIO / RECURSO / ESTADO PASS
++
+ACTOR / CONTEXTO / CARRIL PASS
++
+ATOMICIDAD / IDEMPOTENCIA PASS CUANDO APLIQUE
++
+SEGURIDAD DE DATOS Y DOCUMENTOS PASS
++
+ROLLBACK / RECOVERY PASS CUANDO APLIQUE
++
+EVIDENCIA FRESCA Y ATRIBUIBLE
+=
+ORIGO AUTH UNIT PASS
+```
+
+Y siempre:
+
+```text
+CI009 BASELINE PASS
+!=
+ORIGO AUTH INTEGRAL PASS
+```
+
+```text
+ORIGO AUTH UNIT PASS
+!=
+ORIGO UX COMPLETE
+```
+
+```text
+ORIGO AUTH UNIT PASS
+!=
+VENTO OS FINAL CERTIFICATION
+```
+
+Este marcador documental no ejecuta las pruebas físicas.
+
+---
+
+#### 2. Handoff obligatorio recibido de ORIGO-AUTH-014
+
+`ORIGO-AUTH-014` entrega a esta tarea, para cada futura unidad aplicable:
+
+- package compartido efectivamente adoptado;
+- versión exacta y release elegible;
+- relación `PKG-COMP-MX-*` de ORIGO correspondiente;
+- relación `PKG-PR-REL-*` correspondiente;
+- manifest y lockfile del consumidor;
+- superficie ORIGO exacta afectada;
+- contrato objetivo ya materializado para esa superficie;
+- resultado de paridad o corrección intencional;
+- estado de cutover;
+- ausencia de doble side effect durante coexistencia;
+- rollback seguro probado antes del cutover cuando aplique;
+- clasificación de aliases, adapters y legacy conservado;
+- evidencia de frescura y lineage de implementación.
+
+Si una superficie permanece bloqueada por package, capacidad ausente, drift contractual, backend o dependencia propietaria, 015 no la normaliza a PASS.
+
+---
+
+#### 3. Topología y cardinalidad física
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+ORIGO-AUTH-009..015
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+ORIGO-AUTH-015::<implementation_unit_id>
+```
+
+Toda ejecución física requiere:
+
+1. `implementation_unit_id` asignado por el sistema gobernado;
+2. package propietario aplicable;
+3. `E5-GATE-008::<package_id> = PASS`;
+4. contratos físicos previos aplicables de `ORIGO-AUTH-009..014` para la misma unidad;
+5. autorización física explícita;
+6. ambiente de prueba autorizado;
+7. evidencia perteneciente a la misma combinación de código, contracts, configuración y backend.
+
+La aprobación documental de esta tarea no autoriza ejecutar una instancia física.
+
+---
+
+#### 4. Universo documental que certifica
+
+La certificación cubre únicamente las responsabilidades de autorización definidas en el mini-bloque `ORIGO-AUTH-001..014`:
+
+| Tarea | Responsabilidad que debe quedar probada cuando aplique a la unidad |
+| --- | --- |
+| `ORIGO-AUTH-001` | inventario y protección de vistas de compras |
+| `ORIGO-AUTH-002` | inventario y protección de vistas de proveedores |
+| `ORIGO-AUTH-003` | inventario y protección de vistas de recepción |
+| `ORIGO-AUTH-004` | permisos de consulta exactos |
+| `ORIGO-AUTH-005` | permisos de creación exactos |
+| `ORIGO-AUTH-006` | permiso y segregación de aprobación |
+| `ORIGO-AUTH-007` | recepción nueva protegida por carril operativo |
+| `ORIGO-AUTH-008` | corrección, cancelación, estado de proveedor y reversión separados |
+| `ORIGO-AUTH-009` | territorio de orden por sede o centro de costo |
+| `ORIGO-AUTH-010` | precios, datos sensibles y documento externo protegidos |
+| `ORIGO-AUTH-011` | actor humano de recepción atribuible |
+| `ORIGO-AUTH-012` | contexto operativo donde corresponde |
+| `ORIGO-AUTH-013` | administración base sin dependencia artificial de turno/check-in |
+| `ORIGO-AUTH-014` | adopción gobernada de packages compartidos y retiro de autoridad legacy permisiva |
+
+Una responsabilidad que no pertenezca a la unidad debe justificar `NOT_APPLICABLE`; no puede omitirse silenciosamente.
+
+---
+
+#### 5. Frontera con ORIGO-UX-001 y el mini-bloque de experiencia
+
+`ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento` inicia el mini-bloque posterior de experiencia de compras.
+
+Por tanto:
+
+```text
+ORIGO-AUTH-015 PASS
+!=
+PROCESO COMPLETO DE ABASTECIMIENTO DISEÑADO O CERTIFICADO
+```
+
+015 no diseña:
+
+- experiencia de solicitante;
+- experiencia de comprador;
+- solicitud de compra;
+- comparación de cotizaciones;
+- flujo visual de aprobación;
+- experiencia de recepción;
+- gestión visual de diferencias;
+- experiencia de proveedores;
+- estados de interfaz todavía reservados a `ORIGO-UX-001..016`.
+
+La certificación de autorización puede probar fronteras ya materializadas, pero no anticipa decisiones UX todavía no desarrolladas.
+
+---
+
+#### 6. Frontera con certificación transversal posterior
+
+La certificación integral de una unidad ORIGO no sustituye los contratos de calidad, seguridad y experiencia transversales posteriores de VENTO OS.
+
+Por tanto:
+
+```text
+ORIGO-AUTH-015::<implementation_unit_id> = PASS
+```
+
+significa exclusivamente:
+
+```text
+LA PORCIÓN DE AUTORIZACIÓN ORIGO DE ESA UNIDAD
+CUMPLE LOS ORACLES APLICABLES
+```
+
+No significa que todo ORIGO, todo Supabase, todos los packages o todo VENTO OS estén certificados globalmente.
+
+---
+
+#### 7. Baseline técnico AS-IS de vento-origo
+
+El consumidor ORIGO observado dispone de:
+
+```text
+npm run lint
+npm run typecheck
+npm run test:ci009
+npm run ci009:baseline
+npm run build:ci009
+```
+
+El `package.json` actual usa `build:ci009 = next build` como entrypoint de build seguro del baseline, separado del `build` ordinario que conserva `prebuild` de sincronización de navegación.
+
+La baseline CI009 reconoce:
+
+- cuatro packages canónicos;
+- doce superficies ORIGO;
+- ocho contratos fuente;
+- cuatro perfiles especializados de package;
+- identidad de manifest y lockfile;
+- identidad de contrato, suite, fixtures, rutas y fuentes;
+- invalidación por cambios materiales;
+- bloqueo de ambiente productivo para evidencia sintética;
+- bloqueo de secretos dentro de la evidencia;
+- prohibición de mutar Supabase o usar datos productivos durante la baseline.
+
+La baseline es evidencia técnica de preparación; no es certificación empresarial integral.
+
+---
+
+#### 8. Descomposición exacta de los 42 casos CI009
+
+El baseline actual declara exactamente 42 casos contractuales:
+
+```text
+12 superficies × 1 caso positivo = 12
+12 superficies × 1 caso negativo = 12
+4 perfiles × 1 caso positivo = 4
+4 perfiles × 1 caso negativo = 4
+regresiones globales = 10
+TOTAL = 42
+```
+
+Las diez regresiones actuales validan, entre otras cosas:
+
+- campos contractuales completos de evidencia;
+- imposibilidad de normalizar cero pruebas a PASS;
+- identidad exacta del consumidor ORIGO;
+- invalidación STALE por cambio de commit;
+- invalidación STALE por cambio del package set;
+- bloqueo de ambiente productivo;
+- bloqueo de secretos;
+- orden canónico de conjuntos multi-package;
+- inventario exacto de rutas;
+- bloqueo ante drift de páginas o handlers.
+
+015 reutiliza esa baseline sin convertirla en oracle suficiente para las reglas empresariales que no cubre.
+
+---
+
+#### 9. Inventario mínimo de doce superficies
+
+La certificación debe conservar las doce superficies reconocidas por CI009:
+
+| ID | Superficie | Cobertura integral esperada |
+| --- | --- | --- |
+| `ORIGO-SURFACE-001` | identidad, sesión y acceso ORIGO | sesión, acceso, permiso y expiración |
+| `ORIGO-SURFACE-002` | contexto operativo, sede, actor y recurso | actor, territorio, dispositivo, manipulación y contexto efectivo |
+| `ORIGO-SURFACE-003` | inventario de rutas y navegación | trece páginas, tres dinámicas, un handler, doce sincronizadas y cuatro menús |
+| `ORIGO-SURFACE-004` | proveedores y relación comercial | identidad, estado, relación, capacidades y datos permitidos |
+| `ORIGO-SURFACE-005` | maestro de producto, presentación y UOM | contrato consumido sin apropiación de dominio NEXO |
+| `ORIGO-SURFACE-006` | orden de compra y líneas | proveedor, sede, líneas, cantidades, presentación, costos y total |
+| `ORIGO-SURFACE-007` | estados, edición y autorización de orden | permiso, estado, segregación y transición |
+| `ORIGO-SURFACE-008` | PDF, token y privilegio de servicio | token, secreto, proyección y privilegio técnico posterior a validación |
+| `ORIGO-SURFACE-009` | recepción y modalidad | view/register, modalidad, actor, contexto y destino |
+| `ORIGO-SURFACE-010` | atomicidad, idempotencia, corrección y costos | transacción, compensación, replay y consistencia |
+| `ORIGO-SURFACE-011` | integración y fronteras de dominio | Supabase técnico sin transferencia de ownership |
+| `ORIGO-SURFACE-012` | UI, SSR, interacción, accesibilidad y exportación | presentación no autoritativa y exportación protegida |
+
+Un PASS de una superficie no compensa el FAIL de otra superficie requerida por la misma unidad.
+
+---
+
+#### 10. Ocho contratos fuente que deben seguir reconciliados
+
+La unidad deberá conservar control explícito de:
+
+```text
+ORIGO-SOURCE-001 → middleware
+ORIGO-SOURCE-002 → auth/guard
+ORIGO-SOURCE-003 → shared-device-signature
+ORIGO-SOURCE-004 → purchase-orders/actions
+ORIGO-SOURCE-005 → receipts/new
+ORIGO-SOURCE-006 → sync-navigation
+ORIGO-SOURCE-007 → public PDF token
+ORIGO-SOURCE-008 → purchase-order PDF route
+```
+
+Cambiar, retirar o sustituir una de estas fuentes invalida la evidencia asociada hasta que vuelva a reconciliarse su responsabilidad.
+
+---
+
+#### 11. Perfiles de package aplicables
+
+Cuando la unidad haya adoptado la familia correspondiente mediante `ORIGO-AUTH-014`, deberá conservar:
+
+| Package | Relación de compatibilidad | Relación de actualización | Perfil |
+| --- | --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-005` | `PKG-PR-REL-005` | `ORIGO-PROFILE-CONTRACTS` |
+| `@vento/os-context` | `PKG-COMP-MX-012` | `PKG-PR-REL-012` | `ORIGO-PROFILE-OS-CONTEXT` |
+| `@vento/supabase` | `PKG-COMP-MX-019` | `PKG-PR-REL-019` | `ORIGO-PROFILE-SUPABASE` |
+| `@vento/ui-web` | `PKG-COMP-MX-026` | `PKG-PR-REL-026` | `ORIGO-PROFILE-UI-WEB` |
+
+El perfil mínimo exige:
+
+- contratos: tipos, shapes, serialización, semántica de identificadores y cero cast global permisivo;
+- os-context: sesión, site/resource context, allow, deny, shared-device signature y cero elevación cliente;
+- supabase: cliente browser, server, permission RPC, deny path, schema aislado, cero fixture `service_role` y build seguro;
+- ui-web: server render, client render, hidratación, formularios, accesibilidad y exportación PDF.
+
+Un package no adoptado por la unidad no se marca PASS por transitividad.
+
+---
+
+#### 12. Estados de resultado de una ejecución física
+
+Una futura ejecución puede producir:
+
+```text
+PASS
+FAIL
+BLOCKED
+STALE
+NOT_APPLICABLE
+```
+
+`PASS` exige todos los oracles aplicables satisfechos.
+
+`FAIL` significa que la prueba se ejecutó y demostró una violación.
+
+`BLOCKED` significa que falta una dependencia necesaria para interpretar o ejecutar el caso.
+
+`STALE` significa que la evidencia dejó de pertenecer a la versión actual de código, contracts, package, configuración, fixtures o backend.
+
+`NOT_APPLICABLE` requiere una justificación canónica y verificable; no se usa para esconder un fallo.
+
+---
+
+#### 13. Ambientes de prueba
+
+Se distinguen al menos:
+
+```text
+ISOLATED / CI
+STAGING / INTEGRATION
+CONTROLLED OPERATIONAL OR DEVICE ENVIRONMENT WHEN APPLICABLE
+```
+
+Reglas:
+
+1. la baseline CI009 sintética no usa producción;
+2. los escenarios que dependan de RPC, RLS, Storage, triggers o transacciones reales usan un backend autorizado y atribuible;
+3. no se necesitan datos productivos para demostrar autorización;
+4. secretos, JWT completos, PIN y `service_role` no se copian a fixtures ni evidencia;
+5. una prueba de dispositivo identifica el dispositivo utilizado;
+6. un PASS de CI no sustituye staging o dispositivo cuando esa capa sea material.
+
+---
+
+#### 14. Identidad mínima de evidencia
+
+Cada ejecución debe vincular, según aplicabilidad:
+
+- `implementation_unit_id`;
+- package owner;
+- consumer repository;
+- consumer branch o build;
+- consumer commit;
+- manifest identity;
+- lockfile identity;
+- test contract identity;
+- test suite identity;
+- fixture set identity;
+- route inventory identity;
+- source contract identity;
+- environment identity;
+- runtime identity;
+- framework identity;
+- target package set;
+- compatibility refs;
+- profile set ORIGO;
+- backend/migration identity aplicable;
+- cutover state aplicable;
+- inicio y finalización;
+- resultado;
+- razón de bloqueo o invalidación cuando exista.
+
+Evidencia de otro commit, unidad, ambiente, package set o backend no satisface la ejecución actual.
+
+---
+
+#### 15. Universo cerrado de quince capacidades objetivo
+
+La certificación conserva exactamente las quince capacidades definidas por `ORIGO-AUTH-013` y entregadas a 014:
+
+| # | Capacidad | Modalidad objetivo | Prerrequisito |
+| ---: | --- | --- | --- |
+| 1 | `origo.access` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T` |
+| 2 | `origo.procurement.purchase_orders.view` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T+C` |
+| 3 | `origo.procurement.receipts.view` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T+C` |
+| 4 | `origo.procurement.suppliers.view` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T` |
+| 5 | `origo.catalog.product_reviews.view` | `BASE_ONLY` | `N` |
+| 6 | `origo.procurement.purchase_orders.create` | `BASE_ONLY` | `N` |
+| 7 | `origo.procurement.suppliers.create` | `BASE_ONLY` | `N` |
+| 8 | `origo.procurement.purchase_orders.approve` | `BASE_ONLY` | `N` |
+| 9 | `origo.procurement.receipts.register` | `OPERATIONAL_ONLY` | `T+C` |
+| 10 | `origo.procurement.purchase_orders.update` | `BASE_ONLY` | `N` |
+| 11 | `origo.procurement.purchase_orders.cancel` | `BASE_ONLY` | `N` |
+| 12 | `origo.procurement.suppliers.update` | `BASE_ONLY` | `N` |
+| 13 | `origo.procurement.suppliers.activate` | `BASE_ONLY` | `N` |
+| 14 | `origo.procurement.suppliers.deactivate` | `BASE_ONLY` | `N` |
+| 15 | `origo.procurement.receipts.reverse` | `BASE_AND_OPERATIONAL` | base `N`; operativo `T+C` |
+
+No se certifican permisos inventados de emisión, borrado u otras acciones no aprobadas.
+
+---
+
+#### 16. Regla universal de allow y deny
+
+Toda capacidad aplicable debe demostrar al menos:
+
+```text
+ALLOW VÁLIDO
++
+DENY POR CAPACIDAD AUSENTE
++
+DENY POR TERRITORIO O RECURSO
++
+DENY POR ESTADO O CONTEXTO INCOMPATIBLE
++
+DENY POR INPUT MANIPULADO CUANDO APLIQUE
++
+CERO EFECTO EMPRESARIAL EN DENY
+```
+
+Una prueba positiva aislada nunca certifica una capacidad.
+
+---
+
+#### 17. Carriles BASE_ONLY, OPERATIONAL_ONLY, BASE_OR_OPERATIONAL y BASE_AND_OPERATIONAL
+
+La suite debe demostrar las diferencias de modalidad.
+
+Para `BASE_ONLY`:
+
+```text
+PERMISO BASE EXACTO
++
+COBERTURA ADMINISTRATIVA
++
+RECURSO / ESTADO / TERRITORIO
++
+CONTROLES ADICIONALES APLICABLES
+```
+
+sin exigir artificialmente turno o check-in.
+
+Para `OPERATIONAL_ONLY`:
+
+```text
+PERMISO OPERATIVO EXACTO
++
+TURNO VIGENTE
++
+CHECK-IN ACTIVO CUANDO CORRESPONDE
++
+ROL OPERATIVO EFECTIVO
++
+SEDE / ÁREA / RECURSO COMPATIBLES
+```
+
+Para `BASE_OR_OPERATIONAL`, los carriles se prueban de forma independiente. Un `ALLOW` completo de cualquiera de los dos puede autorizar cuando el contrato de permiso así lo establece; una falla en un carril no puede deformar ni ampliar el otro.
+
+Para `BASE_AND_OPERATIONAL`:
+
+```text
+COMPONENTE BASE VÁLIDO
++
+COMPONENTE OPERATIVO VÁLIDO
+=
+ALLOW POSIBLE
+```
+
+Ambos componentes son obligatorios para el mismo actor efectivo y conservan sus propios prerrequisitos. Ninguno autoriza por sí solo. Para `origo.procurement.receipts.reverse`, la suite deberá demostrar simultáneamente el componente base con prerrequisito `N` y el componente operativo con `T+C`, además de recurso, territorio, estado, causal, actor y evidencia aplicables.
+
+---
+
+#### 18. ORIGO-AUTH-004 — consultas
+
+La certificación de consulta debe cubrir, cuando aplique:
+
+- órdenes visibles únicamente dentro del contrato de recurso y territorio;
+- recepciones visibles únicamente dentro del recurso autorizado;
+- proveedores con proyección adecuada al carril;
+- revisión de maestro mediante `origo.catalog.product_reviews.view` sin fabricar territorio desde una sede seleccionada;
+- acceso de aplicación sin convertir `origo.access` en permiso de datos interno;
+- acceso directo por `id` sin autoridad adicional;
+- respuesta segura ante permiso ausente o backend de autorización fallido.
+
+`view` nunca concede create, approve, update, cancel, register, reverse, activate o deactivate.
+
+---
+
+#### 19. ORIGO-AUTH-005 — creación
+
+Para órdenes y proveedores se debe demostrar:
+
+- permiso de creación exacto;
+- actor autenticado;
+- recurso y relaciones válidas;
+- proveedor y sede compatibles cuando la orden los requiera;
+- ausencia de autoridad derivada únicamente de la página visible;
+- acceso directo a Server Action sin permiso produce cero creación;
+- una capacidad de consulta no sustituye create;
+- una creación no concede aprobación, recepción ni mutaciones posteriores.
+
+---
+
+#### 20. ORIGO-AUTH-006 — aprobación
+
+La aprobación debe probar:
+
+- `origo.procurement.purchase_orders.approve` exacto;
+- recurso dentro de cobertura;
+- estado aprobable;
+- segregación aplicable entre solicitante, comprador y aprobador;
+- decisión server-side antes de la transición;
+- versión o concurrencia cuando la materialización la exija;
+- cero autoaprobación por crear la orden;
+- cero aprobación implícita porque el runtime cambie de `draft` a `sent`;
+- evidencia de la decisión y del actor.
+
+Una transición técnica de estado no se considera aprobación si no demuestra el contrato de autorización.
+
+---
+
+#### 21. ORIGO-AUTH-007 — recepción nueva
+
+`origo.procurement.receipts.register` debe certificarse como:
+
+```text
+authorization_requirement = OPERATIONAL_ONLY
+operational_prerequisite = T+C
+BASE LANE = NO APLICA
+```
+
+Debe demostrarse, como mínimo:
+
+- rol operativo autorizado;
+- actor humano efectivo;
+- turno y check-in requeridos;
+- sede, área y recurso compatibles;
+- proveedor, orden y destino válidos cuando apliquen;
+- modalidad de recepción explícita;
+- idempotencia estable;
+- firma shared-device cuando aplique;
+- cero efecto ante deny;
+- cero grant base efectivo.
+
+La existencia de un rol base administrativo no concede `receipts.register`.
+
+---
+
+#### 22. Drift histórico de receipts.register
+
+La certificación debe demostrar que la versión compartida realmente consumida por la unidad ya no conserva el drift documentado por 014.
+
+El PASS requiere:
+
+```text
+TARGET = OPERATIONAL_ONLY
+BASE GRANTS = 0
+OPERATIONAL GRANTS APROBADOS = PRESENTES
+T+C = EXIGIDO
+```
+
+Los grants operativos objetivo incluyen:
+
+```text
+bodeguero
+gerencia_operativa
+```
+
+Si el package consumido todavía declara `BASE_OR_OPERATIONAL` o mantiene grants base incompatibles, la unidad queda `FAIL` o `BLOCKED` según si el contrato incorrecto fue efectivamente adoptado o todavía impide el cutover.
+
+---
+
+#### 23. ORIGO-AUTH-008 — corrección y mutaciones posteriores
+
+La certificación debe separar:
+
+```text
+purchase_orders.update
+purchase_orders.cancel
+suppliers.update
+suppliers.activate
+suppliers.deactivate
+receipts.reverse
+```
+
+Reglas:
+
+- ninguna identidad se deriva de `origo.suppliers.manage`;
+- update de orden respeta estado y versión autorizables;
+- cancelación no equivale a borrado silencioso;
+- activate y deactivate son acciones distintas;
+- supplier update no concede create ni estado;
+- `receipts.reverse` no es `receipts.register`;
+- una corrección que use reversión + reemplazo demuestra ambos contratos aplicables y conserva linkage durable;
+- delete físico de proveedor u orden no se certifica como capacidad autorizada si no existe una capacidad aprobada que lo sustente.
+
+---
+
+#### 24. ORIGO-AUTH-009 — sede y centro de costo
+
+Las pruebas territoriales deben incluir:
+
+- recurso dentro de sede autorizada;
+- recurso fuera de sede autorizada;
+- centro de costo correcto e incorrecto cuando aplique;
+- orden con múltiples relaciones territoriales cuando el contrato la contemple;
+- `site_id` manipulado por query, formulario o Server Action;
+- selected site distinto de autoridad efectiva;
+- cambio de cobertura entre lectura y mutación;
+- acceso por identificador directo;
+- proyección parcial cuando una lectura no autoriza todos los extremos mostrables.
+
+Una sede enviada por cliente no se acepta como hecho autoritativo sin resolución server-side.
+
+---
+
+#### 25. ORIGO-AUTH-010 — precios, datos sensibles y PDF
+
+La suite debe demostrar:
+
+- field masks adecuados al permiso y propósito;
+- precios y condiciones visibles únicamente cuando corresponda;
+- datos bancarios, tributarios o contractuales sensibles fuera de proyecciones no autorizadas;
+- Storage privado cuando el contrato lo requiera;
+- exportación autorizada;
+- secreto PDF obligatorio y sin fallback predecible;
+- token aplicable a la orden correcta;
+- vigencia temporal del token;
+- revocación o invalidez conforme al contrato materializado;
+- validación del token antes de utilizar privilegio técnico;
+- `service_role` nunca tratado como autoridad humana;
+- sesión autenticada sin token sometida al permiso correspondiente;
+- respuestas cerradas ante token inválido, permiso ausente o recurso inexistente.
+
+El runtime AS-IS con fallback de secreto no puede participar en un PASS final mientras ese fallback siga alcanzable en la unidad certificada.
+
+---
+
+#### 26. ORIGO-AUTH-011 — actor de recepción
+
+Cada recepción o reversión aplicable debe poder atribuir:
+
+- principal técnico;
+- actor humano efectivo;
+- método de identificación;
+- dispositivo cuando aplique;
+- turno y check-in cuando correspondan;
+- sede y área;
+- permiso;
+- recurso;
+- correlación con el efecto empresarial.
+
+La firma no puede quedar definitivamente huérfana del efecto sin un estado durable de reconciliación.
+
+Un principal técnico de shared device no sustituye al actor humano.
+
+---
+
+#### 27. ORIGO-AUTH-012 — contexto operativo
+
+La suite debe demostrar que:
+
+- sede y área efectivas provienen de autoridad server-side;
+- `preferredSiteId` o `preferredAreaId` del caller no se convierten por sí solos en hechos efectivos;
+- `navigation_role` no se convierte en rol operativo efectivo;
+- app permitida en dispositivo no equivale a humano autorizado;
+- turno y check-in se evalúan cuando la modalidad lo exige;
+- cambios de actor, turno, sede, área, dispositivo o asignación invalidan autoridad stale;
+- una simulación o override visual no se convierte en autoridad de mutación.
+
+---
+
+#### 28. ORIGO-AUTH-013 — administración sin check-in
+
+Para capacidades administrativas base permitidas, debe demostrarse simultáneamente:
+
+1. el carril base funciona sin turno ni check-in cuando el contrato lo permite;
+2. sigue exigiendo permiso exacto;
+3. sigue exigiendo cobertura administrativa;
+4. sigue validando recurso, estado y territorio;
+5. sigue aplicando field mask, sensibilidad y segregación;
+6. no hereda un permiso `OPERATIONAL_ONLY`;
+7. no convierte el carril base de una capacidad `BASE_AND_OPERATIONAL` en sustituto del carril operativo;
+8. una denegación de base no cae a una lista local de roles.
+
+La ausencia de turno no es bypass; es una propiedad explícita del carril base cuando corresponde.
+
+---
+
+#### 29. ORIGO-AUTH-014 — packages compartidos
+
+Cuando la unidad haya adoptado packages, 015 debe comprobar nuevamente:
+
+- versión exacta consumida;
+- manifest y lockfile coherentes;
+- relación de compatibilidad ORIGO vigente;
+- perfil especializado de familia;
+- imports/adapters realmente usados por la unidad;
+- ausencia de imports internos o shortcuts no gobernados;
+- paridad contractual;
+- correcciones intencionales justificadas;
+- cero fallback más permisivo;
+- cero doble side effect durante coexistencia;
+- rollback disponible;
+- evidencia no STALE.
+
+Un PASS histórico de 014 no se reutiliza si cambió commit, package, versión, lockfile, adapter, backend o suite.
+
+---
+
+#### 30. Aliases, helpers y autoridad legacy
+
+La certificación debe impedir que sigan actuando como autoridad final:
+
+```text
+origo.procurement.receipts
+origo.suppliers.manage
+role_override
+lista local de nombres de rol
+navigation_role
+selected_site_id
+can_operate
+booleanos legacy de permiso
+```
+
+cuando sustituyan o amplíen el contrato canónico.
+
+Un adapter temporal solo puede sobrevivir si:
+
+- está explícitamente clasificado;
+- no agrega grants;
+- no amplía territorio;
+- no transforma deny en allow;
+- no oculta la procedencia de la decisión;
+- conserva condición de retiro.
+
+---
+
+#### 31. Acceso directo y bypass de interfaz
+
+Para toda mutación o lectura sensible aplicable, la suite deberá intentar, cuando sea materialmente posible:
+
+- URL directa;
+- `id` de otro recurso;
+- query parameter manipulado;
+- formulario alterado;
+- llamada directa a Server Action;
+- RPC directa desde el consumidor autorizado para la prueba;
+- contexto cliente modificado;
+- cookie o override legacy;
+- navegación no registrada;
+- ruta omitida del menú.
+
+La autoridad debe resolverse nuevamente en servidor antes del efecto.
+
+---
+
+#### 32. Backend, RPC y RLS
+
+Cuando el contrato dependa del backend, los mocks no sustituyen la prueba real de:
+
+- RPC de autorización;
+- RLS aplicable;
+- constraints;
+- atomicidad transaccional;
+- funciones propietarias;
+- triggers;
+- Storage;
+- idempotencia;
+- auditoría persistida.
+
+Toda modificación o migración Supabase de VENTO continúa perteneciendo a `vento-group-sas/vento-shell` y a su owner físico correspondiente.
+
+La certificación ORIGO consume el backend autorizado; no lo modifica desde esta tarea.
+
+---
+
+#### 33. Atomicidad de recepción
+
+Cuando una unidad cubra recepción con efectos empresariales, debe demostrar que cabecera, líneas y efectos asociados se comportan como una sola operación empresarial o como un estado durable reconciliable.
+
+Según aplicabilidad, se verifica correlación entre:
+
+- recepción;
+- líneas;
+- orden y cantidades recibidas;
+- movimiento o registro de inventario propietario;
+- LOC/posición propietaria;
+- costos y eventos de costo;
+- solicitudes de maestro;
+- firma;
+- auditoría;
+- reemplazo correctivo.
+
+Un error intermedio no puede producir un falso estado final de éxito.
+
+---
+
+#### 34. Idempotencia, replay y concurrencia
+
+Las mutaciones aplicables deben probar:
+
+- clave idempotente estable cuando el contrato la exige;
+- replay de la misma operación;
+- doble submit;
+- retry después de timeout;
+- concurrencia sobre la misma orden o recepción;
+- estado cambiado entre evaluación y efecto;
+- repetición de una corrección;
+- repetición de una firma;
+- rollback o compensación después de un fallo parcial.
+
+El resultado aceptable conserva cero duplicación de cantidades, costos, recepción, orden recibida, auditoría o eventos financieros.
+
+---
+
+#### 35. Frontera ORIGO–NEXO
+
+La certificación debe preservar:
+
+```text
+ORIGO
+→ verdad comercial de compra, proveedor, orden y recepción documental/empresarial
+
+NEXO
+→ verdad propietaria de inventario, stock, LOC, posición y movimiento físico
+```
+
+Una integración puede correlacionar ambos dominios, pero:
+
+- ORIGO no obtiene autoridad de inventario por registrar recepción;
+- NEXO no obtiene autoridad de compra por mover stock;
+- el actor de recepción no se convierte en autoridad de bodega fuera de su permiso;
+- un fallo de integración queda reconciliable y no se oculta como éxito de ambos dominios;
+- los IDs cruzados mantienen trazabilidad sin fusionar ownership.
+
+---
+
+#### 36. Seguridad de dispositivo compartido
+
+Cuando la unidad incluya shared device, debe demostrarse:
+
+- dispositivo activo y permitido para ORIGO;
+- aplicación permitida no equivale a capacidad interna;
+- principal técnico separado del actor humano;
+- firma requerida en acciones que la exijan;
+- rol de navegación separado del rol operativo efectivo;
+- sede/área del dispositivo no ampliadas por input cliente;
+- cambio de trabajador invalida contexto previo cuando corresponda;
+- configurador o administrador no presta privilegios al operador posterior;
+- una denegación produce cero mutación.
+
+La prueba de un dispositivo no certifica todos los dispositivos.
+
+---
+
+#### 37. Stale, sesión y cambios de autoridad
+
+La certificación debe revalidar autoridad ante:
+
+- sesión expirada;
+- cambio de rol base;
+- cambio de rol operativo;
+- cambio de turno;
+- check-out;
+- cambio de sede;
+- cambio de área;
+- cambio de dispositivo;
+- cambio de asignación;
+- cambio de package o contrato;
+- cambio de backend relevante.
+
+Una decisión cacheada o token derivado no puede sobrevivir más allá de su autoridad válida.
+
+---
+
+#### 38. Navegación e inventario de rutas
+
+La suite debe conservar el contrato de inventario:
+
+```text
+PÁGINAS FUENTE = 13
+PATRONES DINÁMICOS = 3
+ROUTE HANDLERS = 1
+RUTAS SINCRONIZADAS = 12
+CANDIDATAS DE MENÚ = 4
+```
+
+Además:
+
+- `[id]` conserva su literal de patrón;
+- query parameters no crean rutas nuevas;
+- layout, helper, action o loading state no se cuenta como ruta;
+- `/` permanece en inventario fuente aunque no sea menú;
+- `/login` y `/no-access` conservan sus contratos propios;
+- el PDF se mantiene como handler separado;
+- una ruta fuera del menú sigue protegida;
+- drift de inventario invalida la evidencia afectada.
+
+---
+
+#### 39. PDF, token y service role
+
+La ruta PDF debe probar dos caminos separados:
+
+```text
+TOKEN PÚBLICO VÁLIDO
+→ token validado contra la orden
+→ solo entonces cliente técnico privilegiado permitido
+
+SIN TOKEN VÁLIDO
+→ sesión autenticada
+→ permiso aplicable
+→ lectura autorizada
+```
+
+Nunca:
+
+```text
+SERVICE_ROLE PRESENTE
+=
+AUTORIDAD HUMANA
+```
+
+El secreto no puede tener fallback predecible en una combinación certificada.
+
+---
+
+#### 40. Proveedores y datos sensibles
+
+La certificación de proveedores debe cubrir:
+
+- identidad estable;
+- deduplicación;
+- estado activo/inactivo;
+- create/update/activate/deactivate separados;
+- ausencia de wildcard `manage` como autoridad final;
+- relación producto–proveedor atribuible;
+- datos contractuales y bancarios bajo proyección restringida;
+- historial no destruido por desactivación;
+- delete físico no tratado como capacidad canónica aprobada;
+- auditoría suficiente de cambios sensibles.
+
+---
+
+#### 41. Orden de compra y segregación
+
+Para orden de compra se debe probar, según materialización:
+
+- lectura;
+- creación;
+- aprobación;
+- actualización;
+- cancelación;
+- emisión o entrega documental sin inventar permiso adicional;
+- estado previo legal;
+- sede/centro de costo;
+- proveedor;
+- líneas;
+- precios/proyección;
+- versionado o concurrencia;
+- segregación de funciones;
+- auditoría.
+
+Una orden aprobada o enviada no puede volver a editarse destructivamente por reutilizar un permiso anterior.
+
+---
+
+#### 42. Recepción y corrección
+
+La matriz mínima de recepción incluye:
+
+| Caso | Autoridad mínima |
+| --- | --- |
+| consultar recepción | `origo.procurement.receipts.view` |
+| registrar recepción nueva | `origo.procurement.receipts.register` |
+| reversar recepción | `origo.procurement.receipts.reverse` |
+| reemplazo correctivo | autoridad de reversión + autoridad de registro, con linkage durable y reglas propietarias |
+
+Se debe demostrar que `correction_entry_id`, `draft_id`, `site_id`, modo de operación y demás inputs no amplían autoridad por sí solos.
+
+---
+
+#### 43. Matriz mínima integral por familia
+
+| Familia | Allow válido | Deny capacidad | Deny territorio/recurso | Deny estado/contexto | Acceso directo | Replay/concurrencia | Stale | Device/UI bypass | Legacy bypass |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| acceso ORIGO | obligatorio | obligatorio | según recurso | obligatorio | obligatorio | no aplica | obligatorio | obligatorio | obligatorio |
+| consultas | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | no aplica | obligatorio | obligatorio | obligatorio |
+| creación | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando aplique | obligatorio | obligatorio | obligatorio |
+| aprobación | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| update/cancel | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| proveedores | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| recepción register | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| recepción reverse/corrección | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| PDF/token | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | no aplica | obligatorio | obligatorio | obligatorio |
+| packages compartidos | obligatorio para superficies migradas | obligatorio | obligatorio | obligatorio | obligatorio | cuando muta | obligatorio | obligatorio | obligatorio |
+
+La matriz es un mínimo contractual, no un máximo de escenarios.
+
+---
+
+#### 44. Criterio de PASS de una unidad
+
+Una unidad solo puede declarar `PASS` cuando:
+
+1. todos los casos requeridos fueron ejecutados;
+2. no existe ningún `FAIL`;
+3. no existe ningún `BLOCKED` sin resolver;
+4. todo `NOT_APPLICABLE` tiene justificación;
+5. la evidencia no está `STALE`;
+6. la baseline técnica aplicable está verde;
+7. los perfiles de packages adoptados están verdes;
+8. allow y deny están demostrados;
+9. cada deny deja cero efecto no autorizado;
+10. el acceso directo no evita el guard server-side;
+11. territorio, recurso, estado y columnas se revalidan cuando corresponde;
+12. los carriles base y operativos conservan sus prerequisitos;
+13. `receipts.register` no tiene carril base;
+14. actor y principal técnico permanecen separados;
+15. `service_role` no actúa como autoridad humana;
+16. aliases y helpers legacy no conceden autoridad;
+17. idempotencia y concurrencia no duplican efectos;
+18. rollback no restaura un estado más permisivo;
+19. la evidencia pertenece a la misma identidad de unidad.
+
+---
+
+#### 45. Criterio de FAIL
+
+La unidad termina `FAIL` ante evidencia de cualquiera de estos comportamientos:
+
+- capacidad concedida por nombre local de rol;
+- `origo.access` utilizado como permiso interno suficiente;
+- `origo.procurement.receipts` actuando como permiso agregado final;
+- `origo.suppliers.manage` actuando como wildcard final;
+- `receipts.register` permitido por carril base;
+- actor ausente en recepción shared-device protegida;
+- `navigation_role` tratado como rol operativo efectivo;
+- site/area manipulados aceptados como autoridad;
+- selected site convertido en territorio;
+- create usado como approve;
+- view usado como write;
+- update o cancel fuera de estado permitido;
+- delete físico certificado sin capacidad canónica aprobada;
+- token PDF con secreto fallback alcanzable;
+- `service_role` usado antes de validar token o como identidad empresarial;
+- field mask sensible ignorado;
+- replay que duplica recepción, costo o cantidad;
+- corrección que pierde la recepción original o el reemplazo;
+- fallo de integración presentado como éxito final;
+- deny canónico convertido a allow por legacy.
+
+---
+
+#### 46. Criterio de BLOCKED
+
+La unidad permanece `BLOCKED` cuando falta una precondición necesaria, por ejemplo:
+
+- package propietario no identificado;
+- E5 gate no está en PASS;
+- autorización física no existe;
+- una de las nueve capacidades todavía no materializadas requerida por la unidad sigue ausente;
+- persiste el drift de `receipts.register` en el package objetivo;
+- release compartida no es elegible;
+- compatibilidad ORIGO no está demostrada;
+- backend requerido no está materializado;
+- RLS/RPC/Storage propietario necesario no está disponible;
+- fixture no representa el contrato;
+- ambiente no está autorizado;
+- dispositivo requerido no está disponible;
+- predecessor físico aplicable no está cerrado;
+- evidencia no permite atribuir una decisión.
+
+Un bloqueo no se resuelve relajando el oracle ni usando un alias legacy.
+
+---
+
+#### 47. Rollback y recuperación
+
+Toda unidad que modifique comportamiento consumido debe demostrar un rollback independiente o una estrategia explícita de corrección hacia adelante cuando no exista versión anterior segura.
+
+El rollback nunca puede:
+
+- restaurar grants base de `receipts.register`;
+- restaurar `origo.procurement.receipts` como autoridad agregada;
+- restaurar `origo.suppliers.manage` como wildcard;
+- restaurar autorización por lista local de roles;
+- reactivar un role override como autoridad final;
+- convertir `navigation_role` en rol operativo;
+- perder actor, firma o auditoría;
+- borrar hechos empresariales confirmados;
+- revertir datos para acomodar una versión de código;
+- exigir bajar simultáneamente todos los consumidores VENTO.
+
+---
+
+#### 48. Auditoría mínima de certificación
+
+Cada caso material de allow, deny o mutación debe poder reconstruir, según aplique:
+
+- principal;
+- actor efectivo;
+- rol/carril;
+- turno y check-in;
+- dispositivo;
+- sede y área;
+- permiso;
+- recurso;
+- estado/version;
+- propósito o acción;
+- decisión;
+- razones;
+- correlación/idempotencia;
+- timestamp;
+- efecto observado o ausencia de efecto;
+- versión contractual y package relevante.
+
+La evidencia no registra secretos, JWT completos, service-role keys, PIN ni payload sensible innecesario.
+
+---
+
+#### 49. Relación con DELIV-PKG-016 y gates físicos
+
+La ejecución futura reutiliza los fixtures, oracles, ambientes, gates y matrices ya definidos por la planificación E5 aplicable y por el Registro 04A.
+
+Cuando corresponda se consumen perfiles como:
+
+```text
+TP-AUTH-001
+TP-UI-001
+TP-DB-001
+TP-CONTROL-001
+```
+
+según el requisito y package afectado.
+
+015 no crea una segunda planificación E5 ni selecciona manualmente package, unidad o entorno.
+
+---
+
+#### 50. Reejecución después de un fallo
+
+Después de corregir una violación se deben reejecutar:
+
+- el caso fallido;
+- sus deny paths;
+- la capacidad relacionada;
+- la superficie CI009 afectada;
+- el perfil de package afectado;
+- acceso directo relacionado;
+- stale/context cuando aplique;
+- replay/concurrencia cuando aplique;
+- device/UI bypass cuando aplique;
+- legacy bypass relacionado;
+- regresiones suficientes para volver a sostener PASS.
+
+Un PASS posterior no borra el FAIL histórico ni su evidencia.
+
+---
+
+#### 51. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la certificación integral ORIGO ya está cubierta por requisitos vigentes de recepción, órdenes, proveedores, inventario de rutas, autorización exacta, contexto, segregación, seguridad, atomicidad, idempotencia, compatibilidad de packages, rollback y evidencia. Esta tarea consolida esos oracles y define su futura ejecución por unidad sin introducir una obligación empresarial independiente nueva.
+
+---
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones, secuencia ni propietario:
+
+- `TREQ-AUTH-001` para impedir autorización final por lista local de roles;
+- `TREQ-AUTH-002` para exigir identificadores de permiso válidos;
+- `TREQ-AUTH-003` para el ciclo seguro de dispositivos compartidos;
+- `TREQ-AUTH-004` para equivalencia de decisiones entre evaluadores;
+- `TREQ-AUTH-008` para separación de carriles administrativos y operativos;
+- `TREQ-AUTH-009` para resolución territorial y contextual;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-013` para revalidación server-side y defensa ante bypass directo;
+- `TREQ-AUTH-014` para invalidación de autoridad stale;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones;
+- `TREQ-SHELL-002` para responsabilidades compartidas sin copias divergentes;
+- `TREQ-SHELL-006` para pruebas de package y matriz de compatibilidad antes de adoptar;
+- `TREQ-SHELL-007` para rollback independiente y compatible;
+- `TREQ-SHELL-008` para evidencia reproducible y trazabilidad de requisitos;
+- `TREQ-SHELL-043` y `TREQ-SHELL-044` para contratos de contexto y namespaces cerrados;
+- `TREQ-SHELL-064` para mantener `@vento/os-context@0.1.0` como transitorio hasta una primera estable elegible;
+- `TREQ-SHELL-065` para aislar compatibilidad legacy y evitar nuevos consumidores;
+- `TREQ-ORIGO-001` para modalidad de recepción e idempotencia de efectos;
+- `TREQ-ORIGO-002` para autorización, territorio, columnas y token seguro de órdenes;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, costos, firma, corrección y reconciliación de recepción;
+- `TREQ-ORIGO-004` para segregación y lifecycle de abastecimiento, únicamente en la porción ya materializada por autorización;
+- `TREQ-ORIGO-005` para identidad de proveedor, condiciones y protección sensible, únicamente en la porción aplicable a esta unidad;
+- `TREQ-ORIGO-006` a `TREQ-ORIGO-025` para inventario de rutas, identidad estable, middleware, denegación, PDF, acceso directo, evidencia de snapshot y fronteras de ownership.
+
+La cobertura parcial de requisitos que continúan hacia `ORIGO-UX-*` no cambia su estado global ni los declara verificados desde esta tarea.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 53. Estado AS-IS observado al definir la certificación
+
+La evidencia remota disponible no permite declarar un PASS físico integral ORIGO.
+
+Se observan todavía, entre otros:
+
+- `vento-origo` no declara dependencias `@vento/*` aunque posee baseline CI009 para las cuatro familias;
+- el catálogo compartido observado materializa 6 de las 15 capacidades objetivo;
+- nueve capacidades objetivo todavía no están materializadas en el package compartido;
+- `receipts.register` materializado conserva drift respecto de `OPERATIONAL_ONLY`;
+- el runtime usa `origo.procurement.receipts` como identidad amplia en recepción;
+- el runtime conserva `origo.suppliers.manage` y fallback local por rol;
+- `resolveOperationalSession` acepta hints de sede/área y conserva `navigation_role` en superficies shared-device;
+- el token público de PDF conserva fallbacks de secreto en el runtime observado;
+- el handler PDF usa cliente `service_role` después de validar token, frontera que debe permanecer estrictamente técnica;
+- actions de orden todavía no demuestran todos los bindings atómicos objetivo;
+- la baseline CI009 de 42 casos es útil pero insuficiente por sí sola para certificar todas las reglas empresariales de `ORIGO-AUTH-001..014`.
+
+Por tanto:
+
+```text
+CERTIFICATION CONTRACT DEFINED
+PHYSICAL INTEGRAL PASS NOT YET DEMONSTRATED
+```
+
+---
+
+#### 54. Hallazgos AS-IS y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| baseline CI009 existe sin adopción demostrada de `@vento/*` | no bloquea la definición; bloquea tratar baseline como adopción | `ORIGO-AUTH-014::<implementation_unit_id>` | package elegible, compatibilidad, consumer update, paridad y cutover demostrados |
+| catálogo compartido conserva 6/15 capacidades objetivo | algunas unidades no pueden certificar capacidades ausentes | owner físico del contrato + unidad ORIGO aplicable | capacidad requerida materializada y consumida mediante lifecycle gobernado |
+| `receipts.register` conserva drift de modalidad/grants | bloquearía PASS de recepción si se adopta así | owner físico de contracts/grants + `ORIGO-AUTH-014::<implementation_unit_id>` | `OPERATIONAL_ONLY`, cero grants base y grants operativos compatibles con `T+C` |
+| alias `origo.procurement.receipts` sigue en runtime | lectura y mutación pueden quedar agregadas | `ORIGO-AUTH-014::<implementation_unit_id>` | consumidor usa `.view`, `.register` y `.reverse` según acción |
+| `origo.suppliers.manage` y fallback de roles siguen en runtime | puede conceder mutaciones sin capacidades atómicas | `ORIGO-AUTH-014::<implementation_unit_id>` | capacidades atómicas consumidas y fallback local sin autoridad |
+| hints de site/area y `navigation_role` siguen en contexto local | riesgo de autoridad derivada de input o navegación | owner `@vento/os-context` + unidad ORIGO | contexto efectivo y rol operativo resueltos server-side según contrato |
+| secreto PDF conserva fallback de desarrollo | impediría certificar token seguro en una combinación alcanzable | unidad ORIGO de PDF + owner de configuración/seguridad | secreto obligatorio sin fallback y token conforme al contrato |
+| actions de orden no demuestran aún todos los permisos atómicos | bloquea PASS de create/approve/update/cancel según superficie | unidades ORIGO aplicables | cada punto de efecto revalida permiso, recurso, estado, territorio y segregación |
+| PASS físico integral ORIGO aún no existe | no bloquea este contrato documental | `ORIGO-AUTH-015::<implementation_unit_id>` | todos los oracles aplicables PASS con evidencia fresca |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 55. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Build, lint, typecheck, CI009 y suites integrales pertenecen a la futura unidad física y a su checkout autorizado. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global, TREQ y lifecycle documental quedan pendientes del checkout local posterior a la incorporación. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@f27022b394353713adeda289d8414998abc91052`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, owner ORIGO, políticas de formato/desarrollo, Registro 04A AUTH/SHELL/ORIGO, artefacto completo aprobado de `ORIGO-AUTH-014` usado como entrada, y `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad` con CI009 de 42 casos, doce superficies, ocho contratos fuente, cuatro perfiles y runtime relevante. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron órdenes, proveedores, recepciones, tokens, dispositivos, correcciones, replays, concurrencia, rollback ni pruebas adversariales sobre operación real. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó ninguna instancia `ORIGO-AUTH-015::<implementation_unit_id>` ni se produjo certificación integral física. |
+
+---
+
+#### 56. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [ ] define la identidad futura `ORIGO-AUTH-015::<implementation_unit_id>`;
+- [ ] certifica únicamente responsabilidades `ORIGO-AUTH-001..014` aplicables a la unidad;
+- [ ] no adelanta decisiones de `ORIGO-UX-001..016`;
+- [ ] diferencia CI009 baseline de certificación integral;
+- [ ] conserva exactamente 42 casos baseline como base técnica;
+- [ ] conserva doce superficies ORIGO y ocho contratos fuente;
+- [ ] conserva cuatro perfiles package y relaciones `PKG-COMP-MX-005/012/019/026`;
+- [ ] conserva relaciones `PKG-PR-REL-005/012/019/026`;
+- [ ] conserva las quince capacidades objetivo sin inventar identidades;
+- [ ] exige allow y deny para cada capacidad aplicable;
+- [ ] diferencia BASE_ONLY, OPERATIONAL_ONLY, BASE_OR_OPERATIONAL y BASE_AND_OPERATIONAL;
+- [ ] `receipts.register` queda certificado únicamente como `OPERATIONAL_ONLY` con `T+C`;
+- [ ] cero grants base de `receipts.register` participan en un PASS;
+- [ ] `receipts.reverse` conserva ambos carriles cuando correspondan;
+- [ ] consulta no concede mutación;
+- [ ] creación no concede aprobación ni recepción;
+- [ ] aprobación demuestra segregación y estado;
+- [ ] update/cancel/activate/deactivate/reverse se prueban como capacidades separadas;
+- [ ] territorio de orden revalida sede, centro de costo y recurso;
+- [ ] field masks y datos sensibles se prueban;
+- [ ] PDF usa secreto sin fallback en la combinación certificada;
+- [ ] `service_role` permanece técnico y posterior a validación de token;
+- [ ] actor humano y principal técnico permanecen separados;
+- [ ] dispositivo compartido no presta privilegios;
+- [ ] `navigation_role` no se trata como rol operativo efectivo;
+- [ ] administración base funciona sin turno solo cuando el contrato lo permite;
+- [ ] capacidades operativas siguen exigiendo contexto operativo;
+- [ ] aliases y helpers legacy no conceden autoridad final;
+- [ ] acceso directo y payload manipulado fallan cerrado;
+- [ ] backend real se prueba cuando el contrato depende de RPC/RLS/Storage/transacción;
+- [ ] atomicidad e idempotencia se prueban donde corresponden;
+- [ ] replay y concurrencia no duplican efectos;
+- [ ] frontera ORIGO–NEXO conserva ownership separado;
+- [ ] rollback no restaura bypasses ni datos inconsistentes;
+- [ ] evidencia de PASS pertenece a la misma unidad, commit, packages y backend;
+- [ ] hallazgos AS-IS tienen owner y condición de salida;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador;
+- [ ] `ORIGO-UX-001` recibe una frontera explícita sin desarrollar su contenido.
+
+---
+
+#### 57. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-origo`;
+- modifica físicamente `vento-shell`;
+- crea tests o fixtures físicos;
+- publica packages;
+- cambia versiones, tags o registry;
+- añade dependencias `@vento/*`;
+- modifica lockfiles;
+- materializa las nueve capacidades faltantes;
+- corrige físicamente el drift de `receipts.register`;
+- cambia grants;
+- crea roles, permisos o scopes;
+- cambia Server Actions o Route Handlers;
+- crea o modifica RLS, RPC, tablas, vistas, funciones, triggers o migraciones;
+- ejecuta cambios Supabase;
+- modifica datos reales;
+- modifica Storage;
+- cambia secretos;
+- ejecuta órdenes, proveedores o recepciones reales;
+- ejecuta cutover de packages;
+- retira legacy físicamente;
+- autoriza una instancia física;
+- declara PASS físico integral sin evidencia;
+- cambia el estado global de TREQ reutilizados;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-UX-001`.
+
+---
+
+#### 58. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-014 — Migrar a paquetes de vento-shell`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-015 — Ejecutar pruebas integrales`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento`
