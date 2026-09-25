@@ -1977,5 +1977,919 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-INT-004 — Definir administración laboral de clientes cuando corresponda`
-### [ ] PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
+### ✅ PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-INT-003 — Definir administración laboral de productos de fidelización
+**Tarea siguiente:** PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
+**Tipo de tarea:** documental; define una sola vez el contrato de administración laboral de clientes de fidelización cuando exista finalidad autorizada, incluyendo identidad y dominio del recurso, autorización base sensible, alcance por dominio cliente o negocio, separación de sesión cliente y RBAC laboral, minimización, field masks, búsqueda/listado/detalle, actividad por sede como filtro y no ownership, cliente ocasional, vinculación de cuenta, deduplicación, fusión reversible, consentimientos, privacidad, historial, proyecciones operativas mínimas, exportación separada, auditoría, concurrencia, resultado desconocido y handoff hacia implementación sin crear una instancia física propia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — INTEGRACIONES DE FIDELIZACIÓN
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pass`, `vento-viso`, `vento-pulso`, Supabase, Auth, tablas, vistas, RPC, RLS, Storage, contratos, permisos, rutas, pantallas, datos personales, consentimientos, ledger, puntos, redenciones, campañas, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico mediante el cual un trabajador explícitamente autorizado puede consultar y, únicamente cuando exista una capacidad mutante también explícita, administrar información de clientes de fidelización sin convertir la sesión de cliente, la relación con una sede, una coincidencia de contacto, un rol laboral o una pantalla operativa en autoridad sobre la identidad personal.
+
+El resultado debe permitir que implementación y pruebas posteriores respondan de forma inequívoca:
+
+```text
+¿QUÉ REPRESENTA UN LOYALTY_CUSTOMER?
+¿QUÉ PARTE DE SU INFORMACIÓN PUEDE VER UN TRABAJADOR?
+¿QUÉ FINALIDAD JUSTIFICA ESA CONSULTA?
+¿QUÉ ALCANCE EMPRESARIAL LIMITA EL CONJUNTO?
+¿CUÁNDO UNA SEDE ES SOLO FILTRO DE ACTIVIDAD?
+¿CÓMO SE EVITA CONFUNDIR PERSONA, CUENTA Y CONTACTO?
+¿CÓMO SE RESUELVEN DUPLICADOS SIN FUSIÓN AUTOMÁTICA?
+¿QUIÉN PUEDE CORREGIR, FUSIONAR, EXPORTAR O TRATAR CONSENTIMIENTOS?
+¿QUÉ DATOS SON PROYECCIÓN MÍNIMA PARA PULSO?
+¿CÓMO SE PRESERVAN PRIVACIDAD, AUDITORÍA Y REVERSIBILIDAD?
+```
+
+PASS conserva el dominio de identidad cliente y fidelización. La superficie laboral obtiene únicamente la proyección y las acciones que la finalidad, el permiso y el alcance autoricen.
+
+---
+
+#### 2. Reconciliación topológica
+
+`PASS-INT-004` pertenece al mini-bloque `PASS-INT-001..005`, cuya reconciliación vigente establece:
+
+```text
+DEFINE_ONCE
++
+NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea define contrato, responsabilidades, invariantes, restricciones de datos y handoff. No crea una pantalla, no modifica permisos, no toca datos reales, no ejecuta fusiones y no altera Supabase.
+
+La materialización posterior pertenece a los consumidores y packages propietarios junto con los gates de autorización, privacidad, datos, integración y UX administrativa aplicables.
+
+---
+
+#### 3. Base documental consumida
+
+La base inmediata es `PASS-INT-003`, que definió la administración laboral de productos de fidelización y reservó expresamente los clientes individuales para `PASS-INT-004`.
+
+Esta tarea conserva además decisiones canónicas vigentes:
+
+- `LOYALTY_CUSTOMER` pertenece al dominio cliente aunque su consulta sea laboral;
+- la identidad cliente se separa de identidad laboral y de sesión de trabajador;
+- persona, cuenta autenticada, contactos, verificaciones, relación de marca, perfil, preferencias y consentimientos no son el mismo objeto;
+- puede existir un cliente ocasional sin cuenta autenticada;
+- una cuenta puede vincularse posteriormente sin duplicar historia legítima;
+- coincidencias de correo, teléfono o nombre no autorizan fusión automática;
+- toda fusión debe ser revisada, trazable y reversible;
+- consentimientos conservan finalidad, canal, versión, fuente, vigencia y retiro;
+- la sede puede filtrar actividad, pero no convierte al cliente en recurso laboral de esa sede;
+- las superficies operativas de PULSO reciben una proyección mínima por finalidad;
+- marketing no obtiene acceso nominal general a clientes por consultar productos o campañas;
+- solicitudes de privacidad utilizan un caso trazable y no una eliminación directa improvisada.
+
+---
+
+#### 4. Definición canónica de `LOYALTY_CUSTOMER`
+
+Para esta tarea, `LOYALTY_CUSTOMER` es el recurso administrativo que representa la relación de un cliente con el dominio PASS y permite resolver una identidad estable y sus proyecciones autorizadas sin colapsar todos los datos de la persona en una sola fila conceptual.
+
+Su identidad lógica de recurso es:
+
+```text
+customer_id
+```
+
+El recurso no equivale automáticamente a:
+
+```text
+PERSONA
+=
+CUENTA AUTENTICADA
+=
+CORREO
+=
+TELÉFONO
+=
+PERFIL
+=
+CONSENTIMIENTO
+=
+SALDO
+```
+
+Cada concepto conserva semántica y autoridad propias.
+
+---
+
+#### 5. Modelo de identidad de cliente
+
+La administración debe preservar, cuando corresponda, la separación entre:
+
+- persona;
+- cuenta autenticada;
+- contactos;
+- verificaciones de contacto o identidad;
+- relación con marca o negocio;
+- perfil de cliente;
+- preferencias;
+- consentimientos;
+- historial de actividad;
+- relación de fidelización;
+- ledger y saldo proyectado;
+- pedidos, ventas, reservas, reclamos u otros procesos relacionados.
+
+Una proyección administrativa puede reunir referencias de varios componentes, pero no adquiere autoridad para fusionarlos ni mutarlos por aparecer juntos en una pantalla.
+
+---
+
+#### 6. Ownership empresarial
+
+Se conserva la siguiente propiedad:
+
+| Materia | Propietaria o autoridad | Frontera |
+| --- | --- | --- |
+| identidad y relación de cliente | `PASS` | no se deriva de identidad laboral |
+| cuenta/sesión del cliente | autenticación y contratos cliente de PASS | no se sustituye por RBAC laboral |
+| contactos y verificaciones | dominio cliente correspondiente | minimizados según finalidad |
+| preferencias y consentimientos | `PASS` / contratos de privacidad aplicables | marketing consume autorización, no la fabrica |
+| ledger y saldo de fidelización | `PASS` | no se editan desde administración general de cliente |
+| pedido, venta y operación comercial | `PULSO` | se referencian; no se copian como maestro cliente |
+| campañas y audiencias | `AURA` cuando corresponda | no adquieren identidad nominal por inferencia |
+| autorización laboral | catálogo/evaluadores canónicos | limita acceso, no cambia ownership de cliente |
+
+Ninguna superficie laboral puede reclamar propiedad de la persona por haberla consultado.
+
+---
+
+#### 7. Administración laboral versus autoservicio del cliente
+
+Se conserva obligatoriamente:
+
+```text
+ADMINISTRACIÓN LABORAL DE CLIENTE
+!=
+AUTOSERVICIO DEL CLIENTE
+```
+
+Por tanto:
+
+- la sesión normal de cliente no recibe permisos laborales;
+- un trabajador autorizado no actúa como si fuera el cliente;
+- el cliente no obtiene `viso.loyalty.customers.view` por iniciar sesión en PASS;
+- el trabajador no hereda consentimientos, preferencias ni autoridad personal del cliente;
+- un cambio permitido al cliente en autoservicio no se vuelve automáticamente una acción laboral;
+- una acción laboral sensible requiere su propia capacidad, finalidad, alcance y evidencia.
+
+`PASS-INT-005` conserva la separación final entre identidad cliente y trabajador cuando una misma persona posea ambas relaciones.
+
+---
+
+#### 8. Recurso y alcance administrativo
+
+La capacidad canónica de consulta observada protege el recurso:
+
+```text
+LOYALTY_CUSTOMER
+```
+
+mediante:
+
+```text
+viso.loyalty.customers.view
+```
+
+con alcance:
+
+```text
+CLIENT_DOMAIN
+```
+
+El conjunto autorizado se resuelve por organización o negocio del cliente.
+
+La sede:
+
+- puede utilizarse como filtro de actividad;
+- no representa propiedad territorial del cliente;
+- no concede `OWN` laboral;
+- no transforma una visita, compra o redención local en pertenencia del cliente a esa sede;
+- no autoriza campos adicionales por coincidencia con `employee_sites`.
+
+Un conjunto global de clientes requiere concesión base sensible explícita.
+
+---
+
+#### 9. Modalidad de autorización
+
+`viso.loyalty.customers.view` pertenece a:
+
+```text
+BASE_ONLY
+```
+
+Por tanto:
+
+- no depende de turno;
+- no depende de check-in;
+- no pertenece a la sesión cliente;
+- no se concede a roles operativos por inferencia;
+- no se convierte en autoridad global por ser base;
+- requiere responsabilidad específica y finalidad autorizada;
+- mantiene el alcance exacto resuelto por servidor.
+
+La ausencia de una concesión válida debe denegar la consulta sin degradarse a filtros locales permisivos.
+
+---
+
+#### 10. Entrada a superficie y permiso de datos son decisiones distintas
+
+Cuando una administración laboral se exponga mediante una superficie PASS, `pass.access` solo podrá representar entrada laboral o administrativa a esa aplicación.
+
+Se conserva:
+
+```text
+pass.access
+!=
+viso.loyalty.customers.view
+```
+
+La entrada a la aplicación no expone automáticamente clientes, puntos, recompensas, canjes o actividad.
+
+Del mismo modo, una capacidad de datos no autoriza por sí sola una ruta, una aplicación o una acción mutante distinta de su contrato.
+
+Esta tarea no decide la ruta física definitiva de la administración.
+
+---
+
+#### 11. Lectura no implica mutación, exportación ni suplantación
+
+Se conserva:
+
+```text
+viso.loyalty.customers.view
+!=
+EDITAR CLIENTE
+!=
+FUSIONAR CLIENTES
+!=
+EXPORTAR DATOS
+!=
+CAMBIAR CONSENTIMIENTO
+!=
+CAMBIAR SALDO
+!=
+ACTUAR COMO CLIENTE
+```
+
+Esta tarea no inventa nombres de permisos de edición, fusión, exportación, supresión o gestión de consentimiento.
+
+La implementación futura solo podrá habilitar una mutación sensible cuando exista una capacidad canónica explícita con actor, finalidad, alcance, condiciones y evidencia definidos. De lo contrario, la acción debe fallar cerrada.
+
+---
+
+#### 12. Significado de «cuando corresponda»
+
+La administración laboral de clientes no es un directorio empresarial abierto.
+
+Solo corresponde consultar o intervenir un cliente cuando exista una finalidad administrativa autorizada, por ejemplo:
+
+- resolver un duplicado o vínculo de identidad;
+- atender una solicitud de privacidad;
+- revisar una inconsistencia de consentimiento;
+- investigar una actividad de fidelización dentro de un caso autorizado;
+- resolver un caso de servicio al cliente que requiera la identidad mínima necesaria;
+- verificar una correlación con pedido, venta, redención o historial cuando el proceso lo permita.
+
+La existencia de curiosidad operativa, cercanía con una sede, relación personal, campaña o rol genérico no constituye finalidad válida.
+
+---
+
+#### 13. Listado y búsqueda
+
+La colección de clientes debe construirse del lado servidor sobre el conjunto autorizado.
+
+Se conserva:
+
+```text
+CONJUNTO AUTORIZADO EN SERVIDOR
+->
+PAGINACIÓN / FILTRO AUTORIZADO
+->
+PROYECCIÓN MÍNIMA
+```
+
+No se admite:
+
+```text
+OBTENER MASIVAMENTE TODOS LOS CLIENTES
+->
+FILTRAR EN EL CLIENTE
+```
+
+Los filtros enviados por interfaz pueden reducir el conjunto, nunca ampliarlo.
+
+Una búsqueda o listado debe:
+
+- respetar `CLIENT_DOMAIN`;
+- aplicar minimización y field masks;
+- paginar desde servidor;
+- evitar enumeración masiva no autorizada;
+- no usar sede, correo, teléfono o nombre como bypass de alcance;
+- no persistir resultados más allá de la necesidad autorizada.
+
+---
+
+#### 14. Detalle y minimización
+
+La vista detallada debe presentar únicamente los campos necesarios para la finalidad y capacidad autorizadas.
+
+Una proyección administrativa puede diferir de otra operativa o de autoservicio.
+
+Se conserva:
+
+```text
+MISMO CUSTOMER_ID
++
+FINALIDADES DISTINTAS
+->
+PROYECCIONES DISTINTAS
+```
+
+No se asume que un trabajador que pueda consultar identidad básica pueda ver simultáneamente:
+
+- todos los contactos;
+- todas las verificaciones;
+- todos los consentimientos;
+- todo el historial de compra;
+- todos los pedidos;
+- todos los reclamos;
+- todo el ledger;
+- saldo detallado;
+- datos de seguridad;
+- datos retenidos por obligación legal.
+
+Cada campo sensible permanece sujeto a finalidad, permiso y contrato del recurso.
+
+---
+
+#### 15. Actividad por sede no es propiedad del cliente
+
+Una interacción puede referenciar una sede para explicar actividad histórica o reciente.
+
+Esto permite filtros como:
+
+```text
+ACTIVIDAD EN SEDE X
+```
+
+pero no autoriza inferir:
+
+```text
+CLIENTE PERTENECE A SEDE X
+```
+
+Consecuencias:
+
+- el cliente puede tener actividad en múltiples sedes;
+- una sede no obtiene propiedad de su identidad;
+- un gerente local no recibe acceso general a clientes por actividad local si su matriz no lo concede;
+- una sede cerrada no borra ni reasigna identidad histórica;
+- el historial debe conservar atribución determinista o declarar explícitamente ausencia de atribución cuando corresponda.
+
+---
+
+#### 16. Cliente ocasional y vinculación posterior
+
+Una persona puede existir como cliente ocasional sin cuenta autenticada.
+
+Se conserva:
+
+```text
+PERSONA / CLIENTE OCASIONAL
+!=
+CUENTA AUTENTICADA OBLIGATORIA
+```
+
+Cuando posteriormente exista vinculación válida con una cuenta:
+
+- debe conservarse la identidad empresarial estable;
+- la historia legítima no debe duplicarse;
+- la vinculación debe ser trazable;
+- coincidencias nominales no constituyen prueba suficiente;
+- la operación no debe fabricar compras, puntos o consentimientos faltantes;
+- una cuenta nueva no borra la procedencia de actividad previa.
+
+---
+
+#### 17. Detección de duplicados
+
+La administración puede detectar candidatos a duplicado, pero no fusionarlos automáticamente por coincidencia débil.
+
+Se conserva:
+
+```text
+MISMO NOMBRE
+O
+MISMO CORREO
+O
+MISMO TELÉFONO
+!=
+MISMA PERSONA DEMOSTRADA
+```
+
+La detección debe separar:
+
+- señal de posible duplicado;
+- evidencia disponible;
+- contradicciones;
+- relaciones ya verificadas;
+- riesgo de mezclar dos personas reales;
+- decisión administrativa posterior.
+
+Un algoritmo de matching puede asistir la revisión, pero no sustituye el gate de decisión requerido.
+
+---
+
+#### 18. Fusión y reversibilidad
+
+Cuando exista una capacidad canónica futura para fusionar clientes, la operación deberá ser revisada, trazable y reversible.
+
+La fusión debe poder reconstruir, según aplicabilidad:
+
+- identidad primaria resultante;
+- identidades vinculadas;
+- evidencia usada;
+- actor decisor;
+- motivo;
+- contactos y verificaciones preservados;
+- relaciones de marca;
+- preferencias y consentimientos sin ampliación por inferencia;
+- historia de pedidos/ventas;
+- ledger y redenciones sin duplicación;
+- conflictos no resueltos;
+- mecanismo de reversa.
+
+No se elimina historia únicamente para “limpiar” duplicados.
+
+---
+
+#### 19. Corrección de datos de cliente
+
+Una corrección laboral futura no equivale a editar libremente cualquier dato personal.
+
+Cada cambio debe distinguir:
+
+- dato corregible por autoservicio del cliente;
+- dato que requiere verificación;
+- dato que requiere caso o soporte;
+- dato derivado de otro dominio;
+- dato histórico que no debe reescribirse;
+- dato retenido por obligación válida;
+- dato que solo puede rectificarse mediante una capacidad sensible específica.
+
+La interfaz no puede utilizar un campo editable para cambiar silenciosamente identidad, verificación, consentimiento o ledger.
+
+---
+
+#### 20. Consentimientos y preferencias
+
+Consentimiento y preferencia no son flags administrativos genéricos.
+
+Todo consentimiento debe conservar, cuando aplique:
+
+- finalidad;
+- canal;
+- versión;
+- fuente;
+- evidencia;
+- vigencia;
+- retiro o revocación.
+
+Un trabajador no puede marcar consentimiento afirmativo porque el cliente compró, acumuló puntos, visitó una sede, respondió una campaña o aparece en una base de datos.
+
+La administración puede resolver inconsistencias únicamente mediante el proceso y autoridad aprobados.
+
+Marketing consume la autorización mínima necesaria y no obtiene acceso nominal general por esta tarea.
+
+---
+
+#### 21. Solicitudes de privacidad
+
+Las solicitudes de acceso, actualización, rectificación, información de uso o supresión deben tratarse como casos trazables.
+
+Se conserva:
+
+```text
+SOLICITUD DE SUPRESIÓN
+!=
+DELETE DIRECTO DE TODO EL CLIENTE
+```
+
+La resolución debe considerar categorías y obligaciones aplicables sobre:
+
+- cuenta y acceso;
+- contactos;
+- preferencias y consentimientos;
+- historial comercial;
+- facturación;
+- fraude y seguridad;
+- puntos y fidelización;
+- auditoría;
+- copias controladas en otros dominios.
+
+La tarea no redefine los contratos del dominio de información y privacidad ni autoriza borrado físico inmediato.
+
+---
+
+#### 22. Historial y actividad
+
+La administración puede necesitar una proyección de actividad autorizada para investigar o resolver un caso.
+
+La proyección debe conservar:
+
+- identidad de cliente correcta;
+- origen del hecho;
+- negocio o marca cuando corresponda;
+- sede atribuida cuando exista evidencia determinista;
+- estado sin atribución cuando la fuente no permita resolver sede;
+- correlación con pedido, venta, movimiento, redención o caso sin copiar maestros completos.
+
+El historial no se usa como fuente para cambiar identidad ni como prueba de propiedad territorial.
+
+---
+
+#### 23. Ledger, puntos y redenciones permanecen separados
+
+La administración laboral de clientes no autoriza alterar el ledger.
+
+Se conserva:
+
+```text
+VER CLIENTE
+!=
+FIJAR SALDO
+!=
+OTORGAR PUNTOS
+!=
+AJUSTAR PUNTOS
+!=
+REDIMIR
+!=
+REVERSAR
+```
+
+Las acumulaciones y redenciones permanecen gobernadas por `PASS-INT-001` y `PASS-INT-002` y por sus contratos de servidor.
+
+Una eventual proyección de saldo dentro de una vista administrativa continúa siendo una lectura derivada y no un campo editable.
+
+---
+
+#### 24. Proyección operativa hacia PULSO
+
+La identificación operacional de un cliente en PULSO no equivale a abrir la administración laboral completa.
+
+PULSO debe recibir únicamente una proyección mínima para la acción autorizada.
+
+Se conserva:
+
+```text
+PROYECCIÓN OPERATIVA MÍNIMA
+!=
+FICHA ADMINISTRATIVA COMPLETA
+```
+
+Por tanto:
+
+- un código debe resolverse en servidor;
+- la finalidad operacional limita los campos;
+- nombre, contacto o saldo deben aplicar minimización/enmascaramiento cuando corresponda;
+- no se habilita búsqueda masiva;
+- el estado debe limpiarse al terminar, cambiar cliente o expirar la operación;
+- PULSO no adquiere permiso administrativo sobre el cliente.
+
+---
+
+#### 25. Marketing, audiencias y campañas
+
+La administración nominal de clientes no se concede a Marketing por implicación.
+
+La planeación comercial debe preferir:
+
+- métricas agregadas;
+- segmentos gobernados;
+- audiencias minimizadas;
+- identificadores o proyecciones específicas cuando exista contrato aprobado.
+
+Consultar productos de fidelización no concede clientes.
+
+Crear una campaña no concede identidades.
+
+Una correlación de campaña no amplía consentimiento ni convierte actividad de fidelización en autorización de contacto.
+
+---
+
+#### 26. Casos de servicio y administración de cliente
+
+El patrón administrativo vigente incluye la necesidad de resolver duplicados, consentimientos y solicitudes de privacidad mediante un administrador autorizado de clientes.
+
+La administración debe conservar separado el expediente o caso que justifica una acción de la identidad del cliente sobre la que se actúa.
+
+Un caso puede referenciar cliente, pedido, venta, sede, recompensa o comunicación sin convertir todos esos dominios en una sola entidad editable.
+
+Cerrar el caso no debe mutar automáticamente ledger, consentimiento, pago, devolución o identidad salvo que el contrato propietario haya ejecutado el efecto correspondiente.
+
+---
+
+#### 27. Exportación y uso secundario
+
+La capacidad de consulta no concede exportación masiva.
+
+Se conserva:
+
+```text
+VIEW
+!=
+EXPORT
+```
+
+Cualquier exportación futura de datos personales deberá exigir una capacidad sensible específica y definir, como mínimo:
+
+- finalidad;
+- actor;
+- alcance;
+- campos;
+- población;
+- enmascaramiento;
+- formato;
+- destino;
+- retención;
+- evidencia de generación y acceso.
+
+Copiar lateralmente datos hacia hojas, archivos, campañas o sistemas externos sin contrato aprobado no constituye administración canónica.
+
+---
+
+#### 28. Concurrencia, idempotencia y resultado desconocido
+
+Las mutaciones sensibles que existan en una implementación futura deberán tratar reintentos, concurrencia y resultado desconocido de forma explícita.
+
+Como mínimo:
+
+- un retry de la misma corrección no crea otra identidad;
+- una fusión repetida no duplica relaciones ni ledger;
+- dos decisiones concurrentes sobre el mismo vínculo no pueden sobrescribirse silenciosamente;
+- una decisión basada en versión obsoleta debe producir conflicto o revalidación;
+- un timeout posterior al commit debe recuperar el resultado durable antes de repetir la mutación;
+- una solicitud de privacidad no se marca como resuelta dos veces por reintento;
+- un identificador reutilizado con contenido incompatible produce conflicto.
+
+Esta tarea no define el mecanismo físico de locking o idempotency key.
+
+---
+
+#### 29. Fallo cerrado y resultados administrativos
+
+La superficie laboral deberá distinguir, según aplicabilidad:
+
+- lectura autorizada;
+- sin resultados dentro del conjunto autorizado;
+- identidad no encontrada;
+- lectura denegada;
+- alcance irresoluble;
+- campo restringido;
+- acción mutante no autorizada;
+- conflicto de identidad;
+- candidato a duplicado pendiente de revisión;
+- cambio confirmado;
+- resultado ya aplicado;
+- resultado desconocido;
+- fallo técnico.
+
+Una ausencia de datos no puede convertirse en permiso, identidad nueva o confirmación de una mutación.
+
+Un error de módulos laborales tampoco puede impedir el acceso normal de un cliente válido ni degradarse a privilegios por defecto.
+
+---
+
+#### 30. Auditoría mínima
+
+La administración materializada deberá poder reconstruir, según aplicabilidad:
+
+```text
+QUE CUSTOMER_ID
+QUE FINALIDAD
+QUE ACTOR LABORAL
+QUE PERMISO / ALCANCE
+QUE PROYECCION FUE CONSULTADA
+QUE FILTROS SE USARON
+QUE CAMPOS SENSIBLES FUERON EXPUESTOS
+QUE CASO O PROCESO JUSTIFICO LA ACCION
+QUE CAMBIO SE SOLICITO
+QUE VERSION / ESTADO BASE EXISTIA
+QUE RESULTADO QUEDO
+CUANDO
+CON QUE CORRELACION
+```
+
+Para fusiones, correcciones sensibles, privacidad o exportaciones deberá conservarse la evidencia adicional necesaria para reconstruir la decisión y revertirla cuando el contrato lo permita.
+
+La auditoría no debe almacenar secretos ni copias innecesarias de datos personales.
+
+---
+
+#### 31. Retención, caché y limpieza
+
+Las proyecciones laborales de clientes deben minimizar persistencia local.
+
+La implementación futura deberá:
+
+- limitar caché a lo estrictamente necesario;
+- limpiar datos al cambiar de cliente, finalidad o sesión cuando corresponda;
+- no conservar fichas completas en almacenamiento local por conveniencia;
+- no reutilizar datos stale como autoridad;
+- respetar retención y supresión por categoría;
+- impedir que una simulación laboral conserve datos reales innecesarios;
+- impedir que un dispositivo compartido mantenga datos de un cliente anterior.
+
+Un dato retenido por obligación válida no queda disponible para cualquier finalidad posterior.
+
+---
+
+#### 32. Experiencia administrativa mínima
+
+La implementación futura debe permitir que el trabajador autorizado comprenda antes de actuar:
+
+- qué cliente está consultando;
+- qué identidad está confirmada y qué coincidencias son solo candidatos;
+- qué negocio o dominio cliente limita la consulta;
+- qué finalidad habilita la operación;
+- qué campos están ocultos o enmascarados;
+- si la sede mostrada es actividad y no ownership;
+- qué cambio requiere verificación o aprobación adicional;
+- qué operación afectaría consentimiento, identidad o privacidad;
+- si existe conflicto, resultado desconocido o información stale;
+- qué resultado autoritativo devolvió el servidor.
+
+La interfaz no debe presentar una acción sensible como un CRUD ordinario sin contexto ni evidencia.
+
+---
+
+#### 33. Separación de responsabilidades dentro del mini-bloque
+
+| Tarea | Responsabilidad |
+| --- | --- |
+| `PASS-INT-001` | contrato PULSO → PASS para acumulación |
+| `PASS-INT-002` | contrato PULSO → PASS para redención |
+| `PASS-INT-003` | administración laboral de productos de fidelización |
+| `PASS-INT-004` | administración laboral de clientes cuando corresponda |
+| `PASS-INT-005` | impedir mezcla de identidad cliente y trabajador |
+
+`PASS-INT-004` no redefine la administración de productos y no cierra por sí sola la identidad dual cliente/trabajador reservada a `PASS-INT-005`.
+
+---
+
+#### 34. Handoff hacia implementación
+
+La materialización posterior deberá conservar este contrato en las capas propietarias:
+
+- fuente PASS de identidad y relación de cliente;
+- autorización laboral canónica y `CLIENT_DOMAIN`;
+- separación de `pass.access` y capacidad de datos;
+- proyecciones minimizadas y field masks;
+- paginación y filtros de servidor;
+- casos de deduplicación, privacidad y soporte;
+- contratos de fusión reversible cuando exista capacidad autorizada;
+- contratos de consentimiento y derechos del titular;
+- integración PULSO con proyección operativa mínima;
+- contratos compartidos cuando sean necesarios;
+- persistencia, RLS, grants, funciones y migraciones de Supabase exclusivamente desde `vento-shell` cuando corresponda;
+- pruebas de autorización, privacidad, minimización, concurrencia, integración y regresión.
+
+La implementación no podrá usar `viso.loyalty.customers.view` como sustituto de autoridad mutante o exportación.
+
+---
+
+#### 35. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** las obligaciones verificables de identidad cliente separada, deduplicación y fusión reversible, privacidad, consentimientos, administración laboral sensible, minimización, proyección operativa, aislamiento cliente-trabajador, autorización y alcance ya están cubiertas por requisitos canónicos vigentes. Esta tarea organiza esas obligaciones para `LOYALTY_CUSTOMER` sin introducir una conducta material nueva que requiera otra fila de prueba.
+
+---
+
+#### 36. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-PASS-003` para atribución determinista de actividad histórica por sede o estado explícito sin atribución;
+- `TREQ-PASS-010` para separar persona, cuenta, contactos, verificaciones, relación de marca, perfil, preferencias, consentimientos y fidelización, además de deduplicación y fusión reversible;
+- `TREQ-PASS-012` para finalidad, preferencias, revocaciones, derechos del titular, supresión por categoría y reconciliación de copias;
+- `TREQ-PASS-016` para mostrar controles laborales únicamente con perfil laboral vigente y capacidad aprobada;
+- `TREQ-PASS-017` para minimizar la proyección laboral y evitar que datos cliente eleven autoridad;
+- `TREQ-PASS-023` para identificación de cliente resuelta en servidor y proyección mínima operacional;
+- `TREQ-PASS-024` para minimización, enmascaramiento, finalidad, retención y prohibición de búsqueda masiva o persistencia indebida en PULSO;
+- `TREQ-PASS-033` para que módulos laborales fallen cerrados sin afectar la experiencia válida del cliente;
+- `TREQ-PASS-034` para preservar propiedad y fronteras entre PASS y PULSO;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-006` para separación y minimización de identidad cliente frente a datos privilegiados;
+- `TREQ-AUTH-007` para exigir capacidad administrativa explícita y alcance;
+- `TREQ-AUTH-014` para invalidar autoridad derivada cuando cambie el contexto y evitar decisiones stale;
+- `TREQ-INTEGRATION-003` para idempotencia, retry y recuperación de resultados distribuidos;
+- `TREQ-INTEGRATION-014` para preservar identidad, consentimiento y contratos de cliente entre dominios relacionados.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 37. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `PASS-INT-004` mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | La tarea todavía no ha sido insertada en un checkout para ejecutar formateador, quality, delivery check, validadores proporcionales y batería global. |
+| REMOTA | `PASS` | Se verificaron en `vento-shell/main` protocolo, contrato de entrega, manifiesto, continuidad, topología/políticas, archivo propietario, recurso `LOYALTY_CUSTOMER`, permiso `viso.loyalty.customers.view`, modalidad `BASE_ONLY`, `CLIENT_DOMAIN`, minimización/field masks, matrices laborales, experiencia administrativa, cobertura 04A y scripts documentales vigentes. |
+| OPERATIVA | `NOT_EXECUTED` | No se consultaron, editaron, fusionaron, exportaron ni suprimieron clientes reales y no se ejecutaron flujos runtime, campañas, casos de privacidad o acciones PULSO. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-INT-004` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la implementación pertenece a consumidores/packages posteriores. |
+
+---
+
+#### 38. Criterios de aceptación
+
+- [x] Se define `LOYALTY_CUSTOMER` como recurso del dominio cliente con identidad lógica estable.
+- [x] Se separan persona, cuenta, contactos, verificaciones, relación de marca, perfil, preferencias, consentimientos y fidelización.
+- [x] Se conserva cliente ocasional sin exigir cuenta autenticada.
+- [x] Se conserva vinculación posterior sin duplicar historia legítima.
+- [x] Se impide fusión automática por nombre, correo o teléfono coincidente.
+- [x] Se exige que toda fusión futura sea revisada, trazable y reversible.
+- [x] Se conserva `CLIENT_DOMAIN` por organización/negocio y sede únicamente como filtro de actividad.
+- [x] Se declara que no existe `OWN` laboral sobre clientes.
+- [x] Se conserva `viso.loyalty.customers.view` como `BASE_ONLY`.
+- [x] Se separa `pass.access` de la capacidad de consultar clientes.
+- [x] Se declara que `view` no concede edición, fusión, exportación, consentimiento, saldo ni suplantación.
+- [x] No se inventan permisos mutantes.
+- [x] Se define «cuando corresponda» mediante finalidad administrativa autorizada.
+- [x] Se exige listado/búsqueda construidos y paginados desde servidor.
+- [x] Se definen minimización y field masks por finalidad.
+- [x] Se impide usar actividad por sede como propiedad territorial del cliente.
+- [x] Se preservan consentimientos con finalidad, canal, versión, fuente, vigencia y retiro.
+- [x] Se preservan solicitudes de privacidad como casos trazables y no deletes directos.
+- [x] Se separa administración de cliente de mutaciones de ledger, puntos y redenciones.
+- [x] Se separa ficha administrativa de proyección operativa mínima PULSO.
+- [x] Se impide otorgar acceso nominal general a Marketing por inferencia.
+- [x] Se separa consulta de exportación y uso secundario.
+- [x] Se definen concurrencia, idempotencia, conflictos y resultado desconocido para mutaciones futuras.
+- [x] Se define auditoría mínima y retención/caché controladas.
+- [x] Se conserva ownership posterior de `PASS-INT-005` para identidad cliente/trabajador.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza implementación física ni cambios de Supabase.
+
+---
+
+#### 39. Límites
+
+Esta tarea no:
+
+- implementa una pantalla laboral de clientes;
+- decide la ruta física definitiva de VISO o PASS;
+- crea nombres de permisos de edición, fusión, exportación o privacidad;
+- modifica el catálogo canónico de autorización;
+- concede permisos a roles;
+- consulta o modifica datos reales de clientes;
+- crea, fusiona o elimina clientes;
+- vincula cuentas reales;
+- verifica contactos reales;
+- modifica consentimientos o preferencias reales;
+- exporta datos personales;
+- cambia saldo o ledger;
+- otorga, ajusta, revierte o redime puntos;
+- ejecuta pedidos, ventas, pagos o devoluciones;
+- crea campañas o audiencias nominales;
+- modifica Auth, tablas, vistas, RPC, RLS, Storage, grants, Edge Functions o migraciones;
+- resuelve por completo identidad dual cliente/trabajador;
+- declara que una implementación actual ya cumple este contrato;
+- modifica 04A;
+- crea requisitos de prueba;
+- inicia una instancia física o package.
+
+---
+
+#### 40. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-INT-003 — Definir administración laboral de productos de fidelización`
+
+**TAREA ACTUAL APROBADA**
+`PASS-INT-004 — Definir administración laboral de clientes cuando corresponda`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-INT-005 — Evitar mezclar identidad cliente y trabajador`
 ### [ ] PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
