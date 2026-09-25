@@ -10312,7 +10312,1393 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-010 — Diseñar recepción parcial`
-### [ ] ORIGO-UX-010 — Diseñar recepción parcial
+### ✅ ORIGO-UX-010 — Diseñar recepción parcial
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-009 — Diseñar recepción total
+**Tarea siguiente:** ORIGO-UX-011 — Diseñar diferencias contra orden
+**Tipo de tarea:** diseño documental integral de la experiencia de recepción parcial sobre `VSCREEN-0077` y `VPROC-0022`, definiendo saldo recibible por línea, múltiples recepciones legítimas contra un mismo compromiso, identidad e idempotencia por llegada, aceptación del alcance parcial mediante `VPROC-0022.TR-007`, persistencia explícita del residual y handoffs correlacionados hacia NEXO y NUMERA, sin convertir parcialidad en diferencia, cierre de compra, movimiento físico ni conciliación económica; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación, componentes, procesos, permisos, roles, grants, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para registrar una **recepción parcial** de compra en ORIGO, de forma que el receptor pueda:
+
+- recibir una parte válida de una orden o compromiso sin cerrar falsamente el saldo restante;
+- visualizar por línea qué cantidad estaba comprometida, cuánto fue aceptado previamente, cuánto se observa ahora y cuánto seguirá pendiente;
+- conservar cada llegada real como una recepción distinta de `VPROC-0022`;
+- distinguir una parcialidad legítima de una diferencia material contra lo esperado;
+- preservar la versión de orden/compromiso y no reducirla silenciosamente para hacer coincidir lo recibido;
+- aceptar únicamente el alcance efectivamente observado y verificado;
+- conservar residual recibible explícito para recepciones futuras;
+- evitar que retries, concurrencia o correcciones vuelvan a sumar cantidades ya aceptadas;
+- producir handoffs físicos y económicos únicamente por el alcance parcial aceptado;
+- mantener separadas la recepción comercial de ORIGO, el ingreso físico de NEXO y la conciliación económica de NUMERA.
+
+La tarea diseña la experiencia objetivo sobre:
+
+```text
+VSCREEN-0077 — Recepción total o parcial
+VPROC-0022    — Recibir compras, verificar conformidad y resolver diferencias
+```
+
+No implementa la superficie ni modifica autorización física.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-009
+
+`ORIGO-UX-009` entrega la regla de cardinalidad:
+
+```text
+1 PURCHASE_COMMITMENT
+→ 0..N RECEPCIONES VPROC-0022
+```
+
+Y la frontera:
+
+```text
+TOTAL
+→ residual recibible = 0
+
+PARCIAL
+→ residual recibible > 0
+```
+
+La tarea actual consume además:
+
+- identidades de recepciones anteriores;
+- saldo por línea;
+- versión de orden/compromiso;
+- cantidades acumuladas válidas;
+- una identidad nueva para cada llegada real distinta;
+- prohibición de cerrar la compra por la primera recepción parcial.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-UX-010` se define una sola vez;
+2. no existe una instancia física propia de esta tarea;
+3. no se crea ni modifica una ruta o componente de `vento-origo`;
+4. no se implementan Server Actions, RPC, RLS, migraciones, tablas ni contratos de eventos;
+5. las brechas AS-IS se documentan con propietario y condición de salida;
+6. la materialización posterior deberá consumir este contrato sin introducir un estado empresarial `PARTIAL` ajeno a `VPROC-0022`.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva:
+
+- `ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento`;
+- `ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`;
+- `ORIGO-UX-006 — Diseñar inicio para receptor`;
+- `ORIGO-UX-007 — Diseñar creación de orden de compra`;
+- `ORIGO-UX-008 — Diseñar aprobación y rechazo`;
+- `ORIGO-UX-009 — Diseñar recepción total` como base inmediata aprobada;
+- `ORIGO-AUTH-004 — Definir permisos de consulta`;
+- `ORIGO-AUTH-007 — Definir permisos de recepción`;
+- `ORIGO-AUTH-008 — Definir permisos de corrección`;
+- `ORIGO-AUTH-009..013` para territorio, sensibilidad, actor, contexto y administración;
+- `VPROC-0022` y sus nueve estados canónicos;
+- `VPROC-0022.TR-001..009`;
+- `VPROC-0022.EX-001..004`;
+- `VPROC-0022.CCR-001..004`;
+- `VPROC-0022.EVT-001..006`;
+- `VSCREEN-0076`, `VSCREEN-0077` y `VSCREEN-0078`;
+- contratos de idempotencia y recepción parcial de `INT-PROC-002` e `INT-PROC-005`;
+- frontera ORIGO–NEXO de `GAP-OWN-004`;
+- Registro 04A vigente de ORIGO y AUTH;
+- runtime observado de `src/app/receipts/new/page.tsx` en `vento-origo`;
+- `vento-shell/main@8eebf934d80f589339c013d4c7da158863b6b3de` y owner blob `37194a5bb920f82bce3222fb249450331a645ae2` observados durante esta preparación;
+- `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, con `src/app/receipts/new/page.tsx` blob `0b13c026365cb9eb1be0a9c737f373e6a46635b2`;
+- artefacto aprobado `ORIGO-UX-009_APROBADA_PARA_REEMPLAZAR.md` con SHA-256 `3a08757263cad827f418fdbc097fb5087f414f69d03a398ffc951b27038ad101` y SHA semántico `a8bd5c18a074a89de3710c66f9f29805bb09f1659cd854d4971f268e9bab47bd`.
+
+La base 009 puede permanecer pendiente de publicación durante esta preparación anticipada; esta tarea no altera su lifecycle.
+
+---
+
+#### 5. Identidad canónica de la superficie
+
+La recepción parcial utiliza la identidad existente:
+
+```text
+VSCREEN-0077
+Recepción total o parcial
+origo
+VPROC-0022
+OWNER_WORKSPACE
+```
+
+Propósito canónico:
+
+```text
+REGISTRAR LA RECEPCION FISICA Y DOCUMENTAL
+DE UNA COMPRA POR LINEA Y PRESENTACION
+```
+
+La tarea no crea una pantalla `VSCREEN-*` adicional.
+
+---
+
+#### 6. Binding de proceso y paso
+
+La superficie se vincula a:
+
+```text
+VPROC-0022::STEP-RECEIVE_PURCHASE
+```
+
+con interacción:
+
+```text
+EXECUTE
+IN_PROGRESS
+```
+
+La parcialidad es una característica del alcance de una recepción y del saldo del compromiso relacionado; no crea un proceso paralelo ni un paso alternativo.
+
+---
+
+#### 7. Definición contractual de recepción parcial
+
+Una recepción es **parcial** cuando existe una llegada real y aceptable que consume solo una parte del saldo recibible vigente del compromiso relacionado.
+
+Condición general:
+
+```text
+CANTIDAD ACEPTADA ACTUAL > 0
+AND
+RESIDUAL RECIBIBLE POSTERIOR > 0
+```
+
+La parcialidad puede ocurrir porque:
+
+- se reciben solo algunas líneas;
+- se recibe una cantidad menor al saldo de una o más líneas;
+- algunas líneas quedan programadas para una llegada posterior;
+- una entrega válida cubre únicamente una fracción del compromiso vigente.
+
+La tarea no inventa tolerancias cuantitativas ni políticas de backorder.
+
+---
+
+#### 8. Parcial no equivale a total
+
+Regla:
+
+```text
+PARCIAL
+→ residual recibible > 0
+
+TOTAL
+→ residual recibible = 0
+```
+
+Si después de aplicar el alcance aceptado no queda residual recibible y no existen diferencias abiertas, la experiencia debe tratar el resultado como cierre del saldo recibible conforme a `ORIGO-UX-009`, no etiquetarlo artificialmente como parcial.
+
+---
+
+#### 9. Parcialidad no equivale a diferencia
+
+Regla crítica:
+
+```text
+ENTREGA PARCIAL LEGITIMA
+!=
+DIFERENCIA CONTRA ORDEN
+```
+
+Una entrega fraccionada puede ser válida y esperada.
+
+Existe diferencia cuando el hecho observado contradice materialmente el compromiso, condición o expectativa aplicable y requiere una decisión gobernada.
+
+Por tanto:
+
+```text
+PARCIALIDAD PLANIFICADA / ADMISIBLE
+→ conserva residual
+→ no exige por sí sola DIFFERENCE_UNDER_REVIEW
+
+DISCREPANCIA MATERIAL
+→ ORIGO-UX-011
+→ VSCREEN-0078 cuando corresponda
+```
+
+La tarea no decide tolerancias ni resuelve el efecto de una discrepancia.
+
+---
+
+#### 10. Cardinalidad de recepciones
+
+Se conserva exactamente:
+
+```text
+1 PURCHASE_COMMITMENT
+→ 0..N RECEPCIONES VPROC-0022
+```
+
+Cada llegada real distinta que se registra como una recepción separada:
+
+- obtiene una instancia distinta de `VPROC-0022`;
+- obtiene identidad propia de recepción;
+- obtiene su propia identidad idempotente;
+- se correlaciona con el mismo `purchase_commitment_ref` cuando aplique;
+- suma únicamente su alcance aceptado;
+- conserva efectos posteriores independientes e idempotentes.
+
+---
+
+#### 11. Saldo recibible por línea
+
+La UX debe presentar un saldo actual por línea derivado de información autoritativa vigente.
+
+Modelo conceptual:
+
+```text
+COMPROMETIDO_RECIBIBLE_i
+-
+ACEPTADO_VALIDO_PREVIO_i
+=
+SALDO_PREVIO_i
+```
+
+Después de la recepción actual:
+
+```text
+SALDO_POSTERIOR_i
+=
+SALDO_PREVIO_i
+-
+ACEPTADO_ACTUAL_i
+```
+
+El saldo no se deriva únicamente de una cifra cliente ni de una suma no reconciliada de filas técnicas.
+
+---
+
+#### 12. Cantidad acumulada válida
+
+`ACEPTADO_VALIDO_PREVIO` representa cantidades de recepciones previas que siguen siendo válidas para el compromiso actual.
+
+No deben contarse como saldo consumido de forma ciega:
+
+- recepciones anuladas;
+- efectos revertidos;
+- registros duplicados;
+- intentos fallidos;
+- efectos en estado desconocido no reconciliado;
+- cantidades reemplazadas mediante corrección gobernada.
+
+La materialización deberá calcular el saldo desde resultados durables y vigentes.
+
+---
+
+#### 13. Condición de entrada
+
+Para una recepción parcial ordinaria debe existir, como mínimo:
+
+```text
+COMPROMISO / ORDEN ELEGIBLE
++
+PROVEEDOR COHERENTE
++
+SEDE RECEPTORA AUTORIZADA
++
+AL MENOS UNA LINEA CON SALDO RECIBIBLE > 0
++
+ACTOR AUTORIZADO
++
+CONTEXTO OPERATIVO VIGENTE
++
+VERSION / SNAPSHOT EVALUABLE
+```
+
+Una orden cerrada, anulada, completamente recibida o no elegible no vuelve a abrirse por una cantidad capturada desde cliente.
+
+---
+
+#### 14. Permiso exacto de recepción
+
+La autoridad objetivo permanece:
+
+```text
+origo.procurement.receipts.register
+```
+
+Recurso:
+
+```text
+PURCHASE_RECEIPT
+```
+
+Objetivo previo a persistencia:
+
+```text
+RECEIPT_DESTINATION_DRAFT
+```
+
+La parcialidad no crea una permission key adicional como:
+
+```text
+receipts.register_partial
+receipts.partial
+```
+
+---
+
+#### 15. Modalidad de autorización
+
+Se conserva:
+
+```text
+authorization_requirement = OPERATIONAL_ONLY
+is_read_only = false
+PRERREQUISITO = T+C
+```
+
+La mutación exige:
+
+```text
+TURNO VIGENTE
++
+CHECK-IN ACTIVO
++
+ROL OPERATIVO EFECTIVO
++
+SEDE / AREA COMPATIBLES
++
+PERMISO EXACTO
++
+RECURSO ELEGIBLE
+```
+
+Roles operativos objetivo ya definidos:
+
+```text
+bodeguero
+gerencia_operativa
+```
+
+---
+
+#### 16. Consulta no concede registro parcial
+
+La consulta puede usar:
+
+```text
+origo.procurement.receipts.view
+```
+
+Pero:
+
+```text
+receipts.view
+!=
+receipts.register
+```
+
+Y:
+
+```text
+origo.access
+!=
+receipts.register
+```
+
+La visualización de saldos o entregas previas no concede autoridad de mutación.
+
+---
+
+#### 17. Snapshot requerido antes de capturar
+
+Antes de presentar la recepción parcial, la experiencia debe resolver un snapshot coherente que incluya, cuando aplique:
+
+- orden/compromiso y versión;
+- proveedor;
+- sede receptora;
+- líneas comprometidas;
+- presentación y unidad canónicas;
+- cantidad comprometida recibible;
+- cantidades aceptadas válidas previas;
+- saldo vigente por línea;
+- recepciones relacionadas relevantes;
+- documentos requeridos;
+- modalidad de recepción;
+- diferencias o bloqueos abiertos conocidos.
+
+El snapshot no es autorización permanente.
+
+---
+
+#### 18. Modelo de línea en la experiencia
+
+Cada línea debe poder distinguir como mínimo:
+
+```text
+LINEA / PRODUCTO
+PRESENTACION / UNIDAD
+CANTIDAD COMPROMETIDA
+ACEPTADO PREVIO VALIDO
+SALDO ANTES DE ESTA RECEPCION
+CANTIDAD OBSERVADA AHORA
+CANTIDAD ACEPTADA AHORA
+SALDO DESPUES DE ESTA RECEPCION
+```
+
+Cuando aplique también:
+
+- lote;
+- vencimiento;
+- condición;
+- temperatura;
+- documento asociado;
+- observación o evidencia.
+
+---
+
+#### 19. Cantidad observada y cantidad aceptada
+
+La UX no debe colapsar:
+
+```text
+OBSERVADO
+=
+ACEPTADO
+```
+
+por defecto.
+
+Si todo lo observado es conforme, ambas cantidades pueden coincidir.
+
+Si existe una diferencia, rechazo parcial, cuarentena u otra decisión, la cantidad aceptada puede diferir y el caso debe conservar evidencia y derivación al contrato propietario correspondiente.
+
+---
+
+#### 20. Presentación y conversión de unidades
+
+La parcialidad se calcula sobre cantidades comparables.
+
+Reglas:
+
+1. la línea conserva presentación y unidad de la fuente comprometida;
+2. una presentación recibida distinta no se convierte silenciosamente en equivalencia;
+3. una conversión válida requiere perfil o contrato de unidad reconocido;
+4. la cantidad canónica utilizada para saldo e idempotencia debe ser reproducible;
+5. una presentación no reconocida o pendiente de maestro bloquea cualquier cierre engañoso.
+
+---
+
+#### 21. Recepción de subconjunto de líneas
+
+Una recepción parcial puede incluir solo un subconjunto de líneas de la orden.
+
+La experiencia deberá:
+
+- preservar las líneas no recibidas;
+- mantener sus saldos;
+- no crear líneas recibidas en cero para simular procesamiento;
+- no marcar el compromiso completo como recibido;
+- permitir que llegadas posteriores consuman únicamente el saldo vigente.
+
+---
+
+#### 22. Recepción parcial sobre líneas ya parcialmente recibidas
+
+Una nueva llegada puede consumir el saldo restante de una línea previamente parcial.
+
+Regla:
+
+```text
+SALDO_PREVIO_i > 0
++
+NUEVA LLEGADA REAL
+→
+NUEVA RECEPCION
+→
+NUEVA CANTIDAD ACEPTADA_i
+```
+
+No:
+
+```text
+EDITAR RECEPCION ANTERIOR
+PARA AUMENTAR SU CANTIDAD
+```
+
+salvo un flujo correctivo explícito y gobernado.
+
+---
+
+#### 23. Identidad nueva por cada llegada real
+
+Dos entregas reales distintas contra una misma orden no son duplicados por compartir:
+
+- orden;
+- proveedor;
+- producto;
+- factura;
+- fecha;
+- sede;
+- línea.
+
+Cada llegada real que representa una nueva recepción obtiene identidad propia.
+
+Regla canónica:
+
+```text
+MISMA ORDEN + DOS ENTREGAS REALES
+!= DUPLICADO
+```
+
+---
+
+#### 24. Idempotencia de una misma llegada
+
+Una misma intención de registro conserva la misma identidad idempotente durante retries técnicos.
+
+Regla:
+
+```text
+MISMA ENTREGA REAL
++
+MISMA IDENTIDAD / HUELLA
++
+RETRY
+→
+MISMO RESULTADO DURABLE
+```
+
+No:
+
+```text
+RETRY
+→
+SEGUNDA RECEPCION
+→
+SEGUNDA SUMA DEL SALDO
+```
+
+Una llegada real posterior usa una identidad distinta y correlacionada.
+
+---
+
+#### 25. Documento o factura no son identidad idempotente
+
+`invoice_number` y `supplier_document_refs` aportan evidencia y correlación, pero no constituyen por sí solos la identidad de una recepción.
+
+Por tanto:
+
+- una factura puede abarcar varias entregas;
+- una entrega puede traer varios documentos;
+- dos recepciones no se fusionan solo por compartir documento;
+- una coincidencia documental puede producir revisión, no deduplicación automática.
+
+---
+
+#### 26. Concurrencia sobre saldo
+
+Dos sesiones pueden intentar recibir simultáneamente contra la misma línea.
+
+Antes del commit autoritativo, la ejecución futura debe reevaluar:
+
+```text
+VERSION / SNAPSHOT
++
+SALDO VIGENTE
++
+RECEPCIONES CONFIRMADAS
++
+CORRECCIONES / REVERSAS
++
+ESTADO DE ORDEN / COMPROMISO
++
+AUTORIZACION
+```
+
+No se permite confiar únicamente en el saldo mostrado al abrir la pantalla.
+
+---
+
+#### 27. Snapshot desactualizado
+
+Si el saldo cambió desde que el receptor abrió la pantalla:
+
+```text
+VERSION_DESACTUALIZADA / STALE_VERSION
+→ BLOQUEAR CONFIRMACION CIEGA
+→ RECARGAR / RECONCILIAR
+→ REEVALUAR
+```
+
+La UX debe mostrar el nuevo saldo y preservar lo capturado de forma segura cuando sea posible, sin aplicar automáticamente cantidades incompatibles.
+
+---
+
+#### 28. Exceso sobre saldo
+
+Si:
+
+```text
+OBSERVADO_ACTUAL_i > SALDO_PREVIO_i
+```
+
+el exceso no se oculta ni se recorta silenciosamente para fabricar una parcialidad válida.
+
+Debe conservarse:
+
+```text
+SALDO ESPERADO
++
+OBSERVADO
++
+EXCESO
++
+EVIDENCIA
+```
+
+Y derivarse a `ORIGO-UX-011` cuando constituya diferencia material.
+
+---
+
+#### 29. Cantidad menor al saldo
+
+Si:
+
+```text
+0 < ACEPTADO_ACTUAL_i < SALDO_PREVIO_i
+```
+
+la línea conserva residual.
+
+Esto puede representar:
+
+- entrega parcial planificada;
+- entrega fraccionada admisible;
+- backorder permitido por política;
+- una discrepancia que requiere decisión.
+
+La UX no decide la clasificación únicamente por la desigualdad numérica; utiliza condiciones, documentos y políticas vigentes, y deriva diferencias a `ORIGO-UX-011`.
+
+---
+
+#### 30. Cero no significa recepción
+
+Una línea con cantidad observada o aceptada igual a cero:
+
+- no consume saldo;
+- no debe crear un efecto de recepción de esa línea;
+- no se utiliza para simular que fue procesada;
+- puede permanecer pendiente o formar parte de una diferencia según el contexto.
+
+Una recepción parcial debe contener al menos un alcance positivo válido.
+
+---
+
+#### 31. La orden no se reescribe para coincidir con lo recibido
+
+La parcialidad preserva:
+
+```text
+CANTIDAD COMPROMETIDA ORIGINAL / VERSIONADA
++
+RECEPCIONES ACEPTADAS
++
+SALDO PENDIENTE
+```
+
+No:
+
+```text
+ORDEN 100
+RECIBIDO 60
+→ EDITAR ORDEN A 60
+→ DECLARAR CIERRE
+```
+
+Si el negocio decide modificar o cancelar el saldo restante, esa decisión pertenece al contrato propietario de la compra y debe conservar versión, motivo y autoridad.
+
+---
+
+#### 32. Lifecycle de cada recepción parcial
+
+Cada recepción parcial conserva el mismo lifecycle de `VPROC-0022`:
+
+```text
+VPROC-0022.TR-001  RECEIPT_EXPECTED -> ARRIVAL_REGISTERED
+VPROC-0022.TR-002  ARRIVAL_REGISTERED -> PHYSICAL_CHECK_IN_PROGRESS
+VPROC-0022.TR-003  PHYSICAL_CHECK_IN_PROGRESS -> DOCUMENT_CHECK_IN_PROGRESS
+VPROC-0022.TR-004  DOCUMENT_CHECK_IN_PROGRESS -> DIFFERENCE_UNDER_REVIEW
+VPROC-0022.TR-005  DOCUMENT_CHECK_IN_PROGRESS -> ACCEPTANCE_PENDING
+VPROC-0022.TR-006  DIFFERENCE_UNDER_REVIEW -> ACCEPTANCE_PENDING
+VPROC-0022.TR-007  ACCEPTANCE_PENDING -> PUTAWAY_PENDING
+VPROC-0022.TR-008  PUTAWAY_PENDING -> ECONOMIC_RECONCILIATION_PENDING
+VPROC-0022.TR-009  ECONOMIC_RECONCILIATION_PENDING -> RECEIPT_RECONCILED
+```
+
+No se crea un estado:
+
+```text
+PARTIAL
+PARTIALLY_RECEIVED
+PARTIAL_ACCEPTED
+```
+
+como noveno o décimo estado canónico del proceso.
+
+---
+
+#### 33. Llegada de una parcial
+
+Se conserva:
+
+```text
+VPROC-0022.TR-001
+RECEIPT_EXPECTED
+→ ARRIVAL_REGISTERED
+```
+
+La llegada registra el hecho de una entrega concreta.
+
+No significa:
+
+- aceptación;
+- cantidad conciliada;
+- saldo consumido definitivamente;
+- stock disponible.
+
+---
+
+#### 34. Verificación física y documental
+
+Se preservan:
+
+```text
+VPROC-0022.TR-002
+ARRIVAL_REGISTERED
+→ PHYSICAL_CHECK_IN_PROGRESS
+
+VPROC-0022.TR-003
+PHYSICAL_CHECK_IN_PROGRESS
+→ DOCUMENT_CHECK_IN_PROGRESS
+```
+
+La parcialidad no permite saltar la verificación de:
+
+- producto;
+- presentación;
+- cantidad;
+- condición;
+- lote/vencimiento cuando aplique;
+- documentos;
+- correspondencia con el compromiso.
+
+---
+
+#### 35. Parcial limpia sin diferencia
+
+Cuando la entrega parcial es válida y no existe una diferencia que requiera revisión, se conserva el bypass:
+
+```text
+VPROC-0022.TR-005
+DOCUMENT_CHECK_IN_PROGRESS
+→ ACCEPTANCE_PENDING
+```
+
+con su condición de ausencia de diferencias aplicables.
+
+El hecho de que exista saldo futuro no obliga por sí solo a `DIFFERENCE_UNDER_REVIEW`.
+
+---
+
+#### 36. Parcial con diferencia y acciones excepcionales
+
+Cuando existe una discrepancia material:
+
+```text
+VPROC-0022.TR-004
+DOCUMENT_CHECK_IN_PROGRESS
+→ DIFFERENCE_UNDER_REVIEW
+```
+
+Y, una vez tratada suficientemente:
+
+```text
+VPROC-0022.TR-006
+DIFFERENCE_UNDER_REVIEW
+→ ACCEPTANCE_PENDING
+```
+
+Se preservan además exactamente las acciones excepcionales del proceso:
+
+```text
+VPROC-0022.EX-001 — QUARANTINE
+VPROC-0022.EX-002 — HOLD
+VPROC-0022.EX-003 — ESCALATE
+VPROC-0022.EX-004 — REJECT
+```
+
+`ORIGO-UX-011` diseña la experiencia de decisión de esa diferencia.
+
+La 010 conserva la observación y el residual; no decide silenciosamente el efecto de la discrepancia.
+
+---
+
+#### 37. Aceptación del alcance parcial
+
+La aceptación canónica permanece:
+
+```text
+VPROC-0022.TR-007
+ACCEPTANCE_PENDING
+→ PUTAWAY_PENDING
+```
+
+La transición acepta **el alcance de esa recepción**, no todo el compromiso de compra.
+
+Por tanto:
+
+```text
+RECEPCION PARCIAL ACEPTADA
+→ PUTAWAY_PENDING PARA SU ALCANCE
++
+SALDO DEL COMPROMISO AUN PENDIENTE
+```
+
+---
+
+#### 38. Aceptación parcial no cierra la compra
+
+Después de una recepción parcial aceptada:
+
+```text
+RESIDUAL RECIBIBLE > 0
+```
+
+La experiencia debe mantener visible que existen cantidades futuras pendientes.
+
+No:
+
+```text
+TR-007 DE UNA PARCIAL
+→ ORDEN COMPLETA RECIBIDA
+```
+
+ni:
+
+```text
+TR-007 DE UNA PARCIAL
+→ PURCHASE_COMMITMENT CERRADO
+```
+
+---
+
+#### 39. La instancia parcial sí puede reconciliarse
+
+Una recepción parcial individual puede avanzar posteriormente hasta:
+
+```text
+VPROC-0022.RECEIPT_RECONCILED
+```
+
+para **su propio alcance**, siempre que sus efectos físicos, documentales y económicos aplicables estén conciliados.
+
+Regla:
+
+```text
+RECEIPT_RECONCILED DE UNA RECEPCION PARCIAL
+!=
+ORDEN COMPLETAMENTE RECIBIDA
+```
+
+La orden o compromiso conserva residual hasta que los efectos válidos acumulados y cualquier decisión propietaria posterior lo resuelvan.
+
+---
+
+#### 40. Handoff parcial hacia NEXO
+
+Al alcanzar:
+
+```text
+VPROC-0022.PUTAWAY_PENDING
+```
+
+se preserva:
+
+```text
+VPROC-0022.EVT-004
+vento.process.vproc-0022.putaway-pending.v1
+```
+
+El handoff contiene únicamente el alcance parcial aceptado.
+
+NEXO:
+
+- no recibe el saldo futuro como si ya hubiera llegado;
+- no vuelve a capturar manualmente la misma recepción ORIGO;
+- revalida su propia autoridad y contrato;
+- aplica el efecto físico una sola vez.
+
+---
+
+#### 41. Handoff parcial hacia NUMERA
+
+Cuando corresponda la conciliación económica se preserva:
+
+```text
+VPROC-0022.EVT-005
+vento.process.vproc-0022.economic-reconciliation-pending.v1
+```
+
+La proyección económica debe limitarse al alcance aceptado y correlacionado.
+
+Una recepción parcial no afirma por sí sola:
+
+```text
+FACTURA TOTAL VALIDADA
+OBLIGACION TOTAL RECONOCIDA
+PAGO TOTAL AUTORIZADO
+```
+
+---
+
+#### 42. Modalidad `inventory` y `record_only`
+
+Se conserva la modalidad declarada de recepción:
+
+```text
+inventory
+record_only
+```
+
+Una parcial puede ser registral o pretender efecto físico según el contrato aplicable.
+
+Reglas:
+
+```text
+record_only
+!=
+SIN AUTORIZACION
+```
+
+Y:
+
+```text
+inventory
+!=
+ORIGO PROPIETARIA DEL LEDGER NEXO
+```
+
+La modalidad permanece visible y auditable.
+
+---
+
+#### 43. Recepción directa o de emergencia
+
+Sin una orden o compromiso que defina un saldo recibible, no puede afirmarse una parcialidad contra orden por inferencia.
+
+Una recepción directa o de emergencia puede registrarse cuando el contrato lo autoriza, pero debe conservar:
+
+- causa;
+- actor;
+- sede;
+- proveedor;
+- líneas;
+- evidencia;
+- autoridad;
+- regularización aplicable.
+
+Si posteriormente se crea una orden o compromiso, la regularización debe correlacionarse con la recepción original sin duplicarla.
+
+---
+
+#### 44. Maestro de datos pendiente
+
+Una presentación o producto pendiente de aprobación de maestro no puede utilizarse para cerrar o recalcular silenciosamente el saldo como si la relación fuera definitiva.
+
+La experiencia debe distinguir:
+
+```text
+HECHO FISICO CAPTURADO
+!=
+DATO MAESTRO APROBADO
+!=
+ALCANCE ACEPTADO DEFINITIVO
+```
+
+El owner de maestro conserva su decisión.
+
+---
+
+#### 45. Corrección, reversión y acciones CCR
+
+Registrar una nueva parcial no concede autoridad para:
+
+```text
+CORREGIR RECEPCION PREVIA
+REVERSAR RECEPCION PREVIA
+```
+
+Se preservan exactamente las acciones CCR de `VPROC-0022`:
+
+```text
+VPROC-0022.CCR-001 — CANCEL
+VPROC-0022.CCR-002 — VOID
+VPROC-0022.CCR-003 — REVERSE
+VPROC-0022.CCR-004 — RESTATE
+```
+
+Las fronteras correctivas pertenecen a `ORIGO-AUTH-008`.
+
+Si una recepción previa válida es posteriormente anulada, revertida o corregida, el saldo debe derivarse nuevamente de efectos vigentes y no de una suma histórica ciega.
+
+---
+
+#### 46. Recepciones futuras
+
+Mientras exista saldo recibible elegible:
+
+```text
+SALDO > 0
++
+NUEVA ENTREGA REAL
+→
+NUEVA RECEPCION VPROC-0022
+```
+
+La nueva recepción:
+
+- no reutiliza el `receipt_id` previo;
+- no reutiliza la idempotency key de otra llegada;
+- sí conserva correlación con el mismo compromiso;
+- parte del saldo vigente después de todas las recepciones válidas anteriores.
+
+---
+
+#### 47. Disposición del saldo restante
+
+Una recepción parcial no decide por sí sola qué ocurrirá con el residual.
+
+El residual puede permanecer pendiente o ser objeto, según contrato propietario, de:
+
+- nueva entrega;
+- cambio material de la compra;
+- cancelación autorizada;
+- backorder;
+- sustitución;
+- diferencia o reclamación.
+
+La UX de recepción no debe marcar cantidad pendiente como recibida únicamente para cerrar la orden.
+
+---
+
+#### 48. Composición de la pantalla
+
+Para una parcial, `VSCREEN-0077` debe permitir comprender simultáneamente:
+
+```text
+CONTEXTO DE COMPRA
++
+RECEPCIONES PREVIAS RELEVANTES
++
+SALDO VIGENTE POR LINEA
++
+CAPTURA DE ESTA LLEGADA
++
+RESULTADO DE VERIFICACION
++
+RESIDUAL POSTERIOR
++
+ACCION AUTORIZADA
+```
+
+La superficie no necesita mostrar datos sensibles ajenos a la finalidad de recepción.
+
+---
+
+#### 49. Estados UX de parcialidad
+
+La experiencia puede distinguir condiciones UX sin crear estados nuevos de `VPROC-0022`:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `LISTO_PARA_PARCIAL` | existe saldo y una entrega parcial elegible | permitir captura y verificación si existe autoridad |
+| `COMPLETA_SALDO` | lo capturado dejaría residual cero | tratar como caso total de `ORIGO-UX-009` |
+| `RESIDUAL_PENDIENTE` | después de aceptar seguirá existiendo saldo | mostrar cantidad pendiente explícita |
+| `DIFERENCIA_REQUIERE_DECISION` | existe discrepancia material | derivar a `ORIGO-UX-011` |
+| `SALDO_CAMBIO` | otra operación alteró cantidades pendientes | recargar y revalidar |
+| `SIN_SALDO` | no queda cantidad recibible | bloquear nueva recepción ordinaria contra ese alcance |
+| `SOLO_CONSULTA` | actor puede ver pero no registrar | no serializar capacidad mutante |
+| `FALLO_TECNICO` | no puede resolverse fuente necesaria | no representarlo como saldo cero |
+
+---
+
+#### 50. Auditoría mínima
+
+Una recepción parcial debe conservar evidencia correlacionable de:
+
+- `receipt_id` e identidad idempotente;
+- `purchase_commitment_ref` u orden relacionada;
+- versión/snapshot usado;
+- proveedor;
+- sede/área;
+- actor real y actor efectivo;
+- rol operativo;
+- turno/check-in;
+- permiso exacto;
+- línea/presentación/unidad;
+- cantidad comprometida;
+- cantidad aceptada previa válida;
+- saldo antes de esta recepción;
+- cantidad observada actual;
+- cantidad aceptada actual;
+- saldo posterior;
+- documentos y evidencia;
+- modalidad `inventory` o `record_only`;
+- diferencia o ausencia de ella;
+- decisión y resultado;
+- timestamp;
+- correlación con NEXO y NUMERA cuando aplique.
+
+---
+
+#### 51. Contraste AS-IS de `vento-origo`
+
+La implementación observada ya soporta parcialmente el escenario:
+
+1. al abrir una orden calcula por línea:
+
+```text
+pending = max(quantity_ordered - quantity_received, 0)
+```
+
+2. precarga únicamente líneas con saldo positivo;
+3. una nueva recepción acumula `quantity_received` por línea;
+4. cuando todas las líneas cumplen `received >= ordered`, calcula `allReceived` y puede marcar técnicamente la orden como `received`;
+5. la acción de recepción también puede producir efectos de inventario/costo y solicitudes de maestro dentro del mismo flujo.
+
+Esto demuestra capacidad AS-IS de cantidades parciales, pero no el contrato objetivo completo de identidad, idempotencia, aceptación, ownership y reconciliación.
+
+---
+
+#### 52. Brechas AS-IS y propietarios
+
+| Brecha | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `quantity_received` acumulada es una proyección técnica sin demostrar deduplicación integral | retry o concurrencia pueden duplicar saldo consumido | `TREQ-ORIGO-003` + package DB/integración | acumulación deriva de operación idempotente durable/reconciliable |
+| prefill `ordered - received` depende del estado físico observado | saldo puede divergir ante reversas, correcciones o efectos parciales | materialización `ORIGO-UX-010/016` | saldo se deriva de efectos vigentes y versionados |
+| `allReceived` puede marcar PO técnica `received` | cierre técnico puede confundirse con cierre empresarial | `ORIGO-UX-009/010/016` | total/parcial y lifecycle canónico se proyectan separadamente |
+| recepción parcial y diferencia no tienen separación UX completa | entrega fraccionada puede confundirse con incumplimiento o viceversa | `ORIGO-UX-010/011` | parcialidad y diferencia tienen criterios y destinos explícitos |
+| ORIGO escribe inventario/costo en el mismo flujo | propiedad física/económica aparece acoplada | `ORIGO-UX-013..015` + integraciones propietarias | handoffs correlacionados materializan verdades NEXO/NUMERA |
+| permiso runtime amplio/legacy | autoridad mutante puede no corresponder a `receipts.register` | `ORIGO-AUTH-014` + package consumidor | permission key exacta aplicada server-side |
+| múltiples escrituras secuenciales | fallo intermedio puede dejar recepción parcialmente aplicada | `TREQ-ORIGO-003` + package DB/integración | operación atómica o estado durable/reconciliable |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 53. Handoff inmediato a ORIGO-UX-011
+
+`ORIGO-UX-011 — Diseñar diferencias contra orden` recibe:
+
+```text
+COMPROMETIDO / ESPERADO
++
+ACEPTADO PREVIO
++
+SALDO VIGENTE
++
+OBSERVADO ACTUAL
++
+PRESENTACION / UNIDAD / CONDICION / DOCUMENTOS
++
+EVIDENCIA
+```
+
+La 011 deberá resolver la experiencia cuando exista una diferencia material en:
+
+- cantidad;
+- producto;
+- presentación;
+- calidad o condición;
+- lote o vencimiento;
+- precio o documento cuando corresponda;
+- proveedor;
+- referencia o evidencia.
+
+La 010 no borra la diferencia ni la convierte en simple saldo pendiente.
+
+---
+
+#### 54. Handoff al resto de ORIGO-UX
+
+| Tarea | Entrada exacta proveniente de ORIGO-UX-010 |
+| --- | --- |
+| `ORIGO-UX-011` | diferencia compara compromiso, saldo, observado y evidencia sin reescribir la orden ni la recepción |
+| `ORIGO-UX-012` | costos/precios proyectados durante recepción siguen finalidad y field mask |
+| `ORIGO-UX-013` | cada parcial aceptada ORIGO conserva identidad para no repetirse manualmente en NEXO |
+| `ORIGO-UX-014` | cada `PUTAWAY_PENDING` parcial entrega solo su alcance aceptado a NEXO de forma idempotente |
+| `ORIGO-UX-015` | conciliación económica consume alcance parcial aceptado sin reconocer automáticamente el total del compromiso |
+| `ORIGO-UX-016` | prototipo demuestra múltiples parciales, saldo, total posterior, diferencias y handoffs sin doble aplicación |
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: modalidad de recepción, no duplicación, atomicidad, idempotencia, separación de funciones, autorización operacional, revalidación server-side y conservación del ciclo de abastecimiento ya cuentan con obligaciones verificables vigentes. Esta tarea especializa la recepción parcial de `VSCREEN-0077` sin introducir una obligación nueva ni modificar el Registro 04A.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-ORIGO-001` para declarar modalidad `inventory`/`record_only` y evitar duplicación de cantidades, costos, orden recibida o evento financiero;
+- `TREQ-ORIGO-003` para tratar la recepción como una operación atómica o durable/reconciliable con clave idempotente estable y sin doble suma de cantidades;
+- `TREQ-ORIGO-004` para mantener recepción separada de compra/aprobación y evitar reescrituras destructivas del compromiso;
+- `TREQ-AUTH-001` para resolver autoridad mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-008` para exigir `T+C`, rol operativo y territorio en capacidades operativas;
+- `TREQ-AUTH-010` para preservar segregación y evitar que recepción herede aprobación;
+- `TREQ-AUTH-013` para revalidar server-side permiso, actor, territorio, contexto, estado y campos;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de actor, contexto, permiso, recurso, decisión, razones y timestamp.
+
+Esta enumeración es trazabilidad vigente y no constituye una actualización del registro.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ, batería global y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@8eebf934d80f589339c013d4c7da158863b6b3de`, owner blob `37194a5bb920f82bce3222fb249450331a645ae2`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VPROC-0022`, `VSCREEN-0077`, `ORIGO-AUTH-007`, reglas de recepciones parciales e idempotencia en integración, 04A ORIGO/AUTH y `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad` con cálculo AS-IS de `pending`, acumulación de `quantity_received` y `allReceived`. La entrada inmediata 009 se consume desde el artefacto aprobado SHA-256 `3a08757263cad827f418fdbc097fb5087f414f69d03a398ffc951b27038ad101`. |
+| OPERATIVA | NOT_EXECUTED | No se registraron recepciones reales ni se ejecutaron cambios sobre órdenes, inventario, proveedores, NEXO o NUMERA. |
+| FÍSICA | NOT_APPLICABLE | `ORIGO-UX-010` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 58. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0077` permanece como superficie canónica de total/parcial;
+- [ ] `VPROC-0022::STEP-RECEIVE_PURCHASE` queda preservado;
+- [ ] parcial se define por residual recibible posterior mayor que cero;
+- [ ] total se mantiene separado y corresponde a residual cero;
+- [ ] parcialidad legítima no se confunde automáticamente con diferencia;
+- [ ] una diferencia material se deriva a `ORIGO-UX-011`;
+- [ ] una orden/compromiso puede tener `0..N` recepciones;
+- [ ] cada llegada real distinta crea identidad de recepción propia;
+- [ ] un retry de la misma llegada no crea una segunda recepción;
+- [ ] factura/documentos no son por sí solos identidad idempotente;
+- [ ] el saldo se conserva por línea;
+- [ ] cantidades comprometidas, aceptadas previas, observadas actuales, aceptadas actuales y residuales son distinguibles;
+- [ ] recepciones anuladas/revertidas/duplicadas no consumen saldo por suma ciega;
+- [ ] un subconjunto de líneas puede recibirse sin cerrar las demás;
+- [ ] una línea previamente parcial puede recibir una nueva llegada con identidad nueva;
+- [ ] cantidad cero no se usa para simular recepción;
+- [ ] exceso sobre saldo no se recorta silenciosamente;
+- [ ] una cantidad menor al saldo puede ser parcial legítima o diferencia según contrato y evidencia;
+- [ ] presentación y unidad conservan conversión canónica verificable;
+- [ ] la orden original no se reduce para hacer coincidir lo recibido;
+- [ ] `receipts.register` queda como permiso exacto de nueva recepción;
+- [ ] `receipts.register` sigue `OPERATIONAL_ONLY` con `T+C`;
+- [ ] `receipts.view` y `origo.access` no conceden mutación;
+- [ ] concurrencia revalida saldo, versión, estado y autoridad antes del commit;
+- [ ] `STALE_VERSION` bloquea aplicación ciega de un saldo viejo;
+- [ ] cada parcial conserva el lifecycle completo de `VPROC-0022`;
+- [ ] no se crea un estado canónico `PARTIAL`;
+- [ ] parcial limpia puede usar `TR-005` sin pasar por diferencias;
+- [ ] parcial con diferencia conserva `TR-004` y `TR-006`;
+- [ ] aceptación del alcance parcial usa `VPROC-0022.TR-007`;
+- [ ] `TR-007` de una parcial no cierra el compromiso completo;
+- [ ] una recepción parcial individual puede reconciliarse sin implicar orden completa;
+- [ ] `EVT-004` transporta únicamente el alcance parcial aceptado a NEXO;
+- [ ] `EVT-005` no afirma obligación o pago total;
+- [ ] `inventory` y `record_only` permanecen distinguibles y protegidos;
+- [ ] recepción directa/emergencia sin saldo de compromiso no se etiqueta parcial contra orden por inferencia;
+- [ ] maestro de datos pendiente no produce cierre engañoso;
+- [ ] corrección/reversión permanecen fuera de `receipts.register`;
+- [ ] futuras recepciones consumen el saldo vigente con identidad nueva;
+- [ ] el residual no se marca recibido para cerrar artificialmente;
+- [ ] la pantalla muestra saldo antes y después de la recepción;
+- [ ] vacío, sin saldo, stale, diferencia, solo consulta y fallo técnico no se confunden;
+- [ ] auditoría conserva cantidades y residual por línea;
+- [ ] `pending = ordered - received` y `allReceived` del runtime se tratan como evidencia AS-IS, no contrato canónico suficiente;
+- [ ] cada brecha AS-IS conserva propietario y condición de salida;
+- [ ] `ORIGO-UX-011` recibe handoff suficiente para diseñar diferencias;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0077`;
+- crea rutas, componentes o Server Actions;
+- crea permission keys;
+- activa `receipts.register` en catálogo o grants;
+- crea estados nuevos de `VPROC-0022`;
+- define tolerancias numéricas de recepción;
+- define política empresarial de backorder;
+- decide sustituciones de producto;
+- resuelve diferencias contra orden;
+- corrige ni reversa recepciones;
+- modifica la orden para hacerla coincidir con lo recibido;
+- cancela el saldo de una orden;
+- registra una recepción real;
+- mueve stock propietario de NEXO;
+- crea LOC/LPN o ubicación física;
+- reconoce obligación económica definitiva;
+- ejecuta pagos;
+- aprueba datos maestros;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants, Storage o datos;
+- modifica contratos generados;
+- modifica el Registro 04A;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-011`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-009 — Diseñar recepción total`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-010 — Diseñar recepción parcial`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-011 — Diseñar diferencias contra orden`
 ### [ ] ORIGO-UX-011 — Diseñar diferencias contra orden
 ### [ ] ORIGO-UX-012 — Ocultar precios cuando no correspondan
 ### [ ] ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO
