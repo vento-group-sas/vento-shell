@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1326** |
+| Aprobadas | **1327** |
 | En propuesta | **0** |
-| No iniciadas | **270** |
+| No iniciadas | **269** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.08% (1326/1596)** |
+| Porcentaje de completamiento | **83.15% (1327/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **270** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1227** |
+| ⏸ NO_EVALUADA | **269** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1228** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-UX-013` — Ejecutar pruebas con clientes reales | ✅ APROBADA |
-| Tarea actual | `PASS-INT-001` — Definir integración PULSO → PASS para acumulación | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-INT-002` — Definir integración PULSO → PASS para redención | ⬜ NO INICIADA |
+| Última aprobada | `PASS-INT-001` — Definir integración PULSO → PASS para acumulación | ✅ APROBADA |
+| Tarea actual | `PASS-INT-002` — Definir integración PULSO → PASS para redención | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-INT-003` — Definir administración laboral de productos de fidelización | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1428,7 +1428,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-011` | Consolidar navegación y rutas canónicas de la experiencia cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-012` | Simplificar interfaz móvil, estados de carga, error, offline y recuperación | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-013` | Ejecutar pruebas con clientes reales | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-001` | Definir integración PULSO → PASS para acumulación | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-001` | Definir integración PULSO → PASS para acumulación | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-002` | Definir integración PULSO → PASS para redención | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-003` | Definir administración laboral de productos de fidelización | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-004` | Definir administración laboral de clientes cuando corresponda | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
