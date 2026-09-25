@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1343** |
+| Aprobadas | **1344** |
 | En propuesta | **0** |
-| No iniciadas | **253** |
+| No iniciadas | **252** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.15% (1343/1596)** |
+| Porcentaje de completamiento | **84.21% (1344/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **253** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1244** |
+| ⏸ NO_EVALUADA | **252** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1245** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-UX-007` — Diseñar creación de orden de compra | ✅ APROBADA |
-| Tarea actual | `ORIGO-UX-008` — Diseñar aprobación y rechazo | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-UX-009` — Diseñar recepción total | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-UX-008` — Diseñar aprobación y rechazo | ✅ APROBADA |
+| Tarea actual | `ORIGO-UX-009` — Diseñar recepción total | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-UX-010` — Diseñar recepción parcial | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1106,7 +1106,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-005` | Diseñar inicio para aprobador | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-006` | Diseñar inicio para receptor | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-007` | Diseñar creación de orden de compra | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-008` | Diseñar aprobación y rechazo | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-008` | Diseñar aprobación y rechazo | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-009` | Diseñar recepción total | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-010` | Diseñar recepción parcial | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-011` | Diseñar diferencias contra orden | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |

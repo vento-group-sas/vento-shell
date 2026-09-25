@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1343** |
+| Tareas aprobadas | **1344** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **253** |
+| Tareas no iniciadas | **252** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **84.15% (1343/1596)** |
+| Porcentaje de completamiento | **84.21% (1344/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-UX-007 — Diseñar creación de orden de compra** |
-| Tarea actual | **ORIGO-UX-008 — Diseñar aprobación y rechazo** |
+| Última tarea aprobada | **ORIGO-UX-008 — Diseñar aprobación y rechazo** |
+| Tarea actual | **ORIGO-UX-009 — Diseñar recepción total** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-UX-009 — Diseñar recepción total** |
+| Siguiente tarea | **ORIGO-UX-010 — Diseñar recepción parcial** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 56 de 65 aprobadas; ORIGO-UX-008 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 57 de 65 aprobadas; ORIGO-UX-009 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-UX-008** |
+| Carril documental | **ACTIVO — ORIGO-UX-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-UX-007` — Diseñar creación de orden de compra |
-| Tarea actual | `ORIGO-UX-008` — Diseñar aprobación y rechazo — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-UX-009` — Diseñar recepción total |
+| Última aprobada | `ORIGO-UX-008` — Diseñar aprobación y rechazo |
+| Tarea actual | `ORIGO-UX-009` — Diseñar recepción total — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-UX-010` — Diseñar recepción parcial |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 56 DE 65 APROBADAS — ACTUAL ORIGO-UX-008** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 57 DE 65 APROBADAS — ACTUAL ORIGO-UX-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-UX-007 — Diseñar creación de orden de compra
-        ↓
-TAREA ACTUAL
 ORIGO-UX-008 — Diseñar aprobación y rechazo
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-UX-009 — Diseñar recepción total
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-UX-010 — Diseñar recepción parcial
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 56 de 65 tareas aprobadas
+BLOQUES L Y M — 57 de 65 tareas aprobadas
 ```

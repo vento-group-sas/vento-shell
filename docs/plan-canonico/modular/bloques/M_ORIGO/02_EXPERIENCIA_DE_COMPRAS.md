@@ -7578,7 +7578,1394 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-008 — Diseñar aprobación y rechazo`
-### [ ] ORIGO-UX-008 — Diseñar aprobación y rechazo
+### ✅ ORIGO-UX-008 — Diseñar aprobación y rechazo
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-007 — Diseñar creación de orden de compra
+**Tarea siguiente:** ORIGO-UX-009 — Diseñar recepción total
+**Tipo de tarea:** diseño documental integral de la decisión de aprobación, rechazo y devolución controlada de compras sobre `VSCREEN-0074`, con `VSCREEN-0075` como contexto de detalle y `VPROC-0021` como proceso propietario, preservando versión evaluada, política, segregación, urgencia/excepción, idempotencia, concurrencia, evidencia y separación estricta entre aprobar, preparar, emitir y recibir, sin crear estados, permission keys ni materialización física adicionales; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, navegación, componentes, permisos, roles, grants, procesos, estados, contratos generados, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para **aprobar, rechazar o devolver de forma gobernada una compra** en ORIGO sin fusionar la decisión con edición, emisión al proveedor, recepción, inventario ni efecto financiero.
+
+La experiencia debe garantizar que:
+
+- la decisión actúe únicamente sobre una compra realmente elegible;
+- el aprobador evalúe una versión exacta y reproducible;
+- la autorización se resuelva mediante la capacidad canónica de aprobación y no por acceso, cargo visual o participación previa;
+- aprobar, rechazar y devolver produzcan resultados distinguibles y auditables;
+- rechazo y devolución no inventen estados principales ni permission keys inexistentes;
+- urgencia y excepción conserven autoridad, límites, evidencia y regularización;
+- la segregación se evalúe antes de producir cualquier efecto;
+- una versión obsoleta, un resultado desconocido o un conflicto concurrente fallen cerrado;
+- la aprobación no emita la orden por sí sola;
+- una orden rechazada no genere recepción esperada ni compromiso comercial formalizado;
+- un cambio material posterior a la aprobación invalide la equivalencia de la decisión previa;
+- el resultado quede trazable hacia preparación/emisión y, cuando corresponda, hacia recepción posterior.
+
+La superficie principal es:
+
+```text
+VSCREEN-0074 — Bandeja de aprobaciones de compra
+VPROC-0021    — Aprobar y emitir compras separando flujo ordinario, urgencia y excepción
+```
+
+`VSCREEN-0075 — Detalle y seguimiento de orden` funciona únicamente como contexto autorizado de consulta y trazabilidad.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-007
+
+`ORIGO-UX-007` entrega una propuesta de compra versionada y suficientemente completa:
+
+```text
+PURCHASE_ORDER / VPROC-0021 IDENTIFICABLE
++
+VERSION EVALUABLE
++
+NECESIDAD Y SOURCING TRAZABLES
++
+PROVEEDOR
++
+LINEAS / PRESENTACIONES / CANTIDADES
++
+PRECIOS / IMPORTES AUTORIZADOS
++
+SEDE / CENTRO DE COSTO
++
+CONDICIONES / FECHAS
++
+EVIDENCIA
++
+CLASIFICACION ORDINARIA / URGENTE / EXCEPCIONAL
+→
+DECISION DE APROBACION / RECHAZO / DEVOLUCION
+```
+
+La 008 consume ese handoff sin reconstruir el contenido desde valores no versionados y sin tratar el literal AS-IS `draft -> sent` como decisión de aprobación.
+
+---
+
+#### 3. Contrato heredado del inicio del aprobador
+
+`ORIGO-UX-005` ya fijó la experiencia inicial del aprobador sobre:
+
+```text
+VSCREEN-0074
+VSCREEN-0075
+VPROC-0021
+```
+
+Y dejó como fronteras obligatorias:
+
+```text
+COMPRADOR != APROBADOR
+APROBACION != EMISION
+APROBACION != RECEPCION
+VERSION_REVISADA = VERSION_DECIDIDA
+```
+
+La presente tarea no rediseña el home del aprobador; desarrolla el comportamiento detallado de las decisiones y sus resultados.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-UX-008` se define una sola vez;
+2. no existe una instancia física propia de esta tarea;
+3. no se crea ni modifica una ruta, formulario, Server Action, RPC, RLS o migración;
+4. no se crean estados persistidos ni permission keys;
+5. las brechas AS-IS se documentan con propietario y condición de salida;
+6. la materialización posterior deberá consumir este contrato sin reinterpretar rechazo, devolución o urgencia.
+
+---
+
+#### 5. Fuentes verificadas
+
+El diseño consume y conserva:
+
+- `ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`;
+- `ORIGO-UX-005 — Diseñar inicio para aprobador`;
+- `ORIGO-UX-007 — Diseñar creación de orden de compra` como base inmediata aprobada;
+- `ORIGO-AUTH-006 — Definir permisos de aprobación`;
+- `ORIGO-AUTH-008 — Definir permisos de corrección`;
+- `ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`;
+- `ORIGO-AUTH-010 — Proteger precios y datos sensibles`;
+- `ORIGO-AUTH-012..015` para contexto administrativo, materialización compartida y pruebas integrales;
+- `VPROC-0021` y sus ocho estados canónicos;
+- `VPROC-0021.TR-001..007`;
+- `VPROC-0021.EX-001 — OVERRIDE`;
+- `VPROC-0021.EX-002 — HOLD`;
+- `VPROC-0021.EX-003 — REQUEST_INFO`;
+- `VPROC-0021.EX-004 — REJECT`;
+- `VSCREEN-0074` y `VSCREEN-0075`;
+- contratos de actores, segregación, territorio, autorización, versionado, idempotencia y auditoría;
+- Registro 04A vigente de ORIGO y AUTH;
+- runtime AS-IS de detalle y envío de órdenes de `vento-origo`;
+- `vento-shell/main@841d0b455e2567fa0b5ef11cb48f07da8904989f` y owner blob `f1d87caf21d5ea56bcea224c2c7af8c30dd968ae` observados durante esta preparación;
+- artefacto aprobado `ORIGO-UX-007_APROBADA_PARA_REEMPLAZAR.md` como fuente inmediata de la versión de compra entregada a decisión.
+
+---
+
+#### 6. Identidad canónica de la superficie de decisión
+
+La experiencia utiliza una identidad ya existente:
+
+```text
+VSCREEN-0074
+Bandeja de aprobaciones de compra
+origo
+VPROC-0021
+OWNER_WORKSPACE
+```
+
+Su responsabilidad es presentar compras que requieren decisión dentro del alcance del actor y conducir una acción de decisión gobernada.
+
+No es:
+
+- editor general de orden;
+- consola de emisión;
+- bandeja de recepción;
+- atajo para modificar la orden;
+- permiso universal sobre compras.
+
+---
+
+#### 7. Contexto de detalle
+
+`VSCREEN-0075 — Detalle y seguimiento de orden` aporta contexto autorizado para revisar:
+
+- necesidad y origen;
+- proveedor;
+- líneas, presentaciones y cantidades;
+- precios e importes visibles según finalidad;
+- sede y centro de costo;
+- fechas y condiciones;
+- versión;
+- evidencia;
+- historial de decisiones y cambios permitidos.
+
+Regla:
+
+```text
+PODER VER DETALLE
+!=
+PODER DECIDIR
+```
+
+La autoridad de decisión se evalúa por separado.
+
+---
+
+#### 8. Paso canónico de aprobación
+
+La superficie se vincula a:
+
+```text
+VPROC-0021::STEP-APPROVE_PURCHASE
+— Aprobar o rechazar compra
+```
+
+Tipo de interacción:
+
+```text
+APPROVE
+DECISION
+```
+
+La UX puede expresar aprobar, rechazar y devolver, pero no inventa una segunda autoridad paralela para cada resultado.
+
+---
+
+#### 9. Autoridad canónica
+
+La única identity key de autoridad de aprobación definida por las fuentes consumidas es:
+
+```text
+origo.procurement.purchase_orders.approve
+```
+
+Contrato:
+
+```text
+resource = PURCHASE_ORDER
+action = approve
+mode = BASE_ONLY
+```
+
+No se crean:
+
+```text
+origo.procurement.purchase_orders.reject
+origo.procurement.purchase_orders.return
+origo.procurement.purchase_orders.send
+```
+
+La autoridad de entrar al punto de decisión se gobierna por `purchase_orders.approve`; el resultado concreto de la decisión se conserva como dato/proceso gobernado.
+
+---
+
+#### 10. Autoridad funcional del aprobador
+
+Para `VPROC-0021`, los aprobadores funcionales son:
+
+```text
+GERENCIA_GENERAL
+OR
+COORDINACION_DE_OPERACIONES
+```
+
+El `RESPONSABLE_DE_COMPRAS` permanece como iniciador/ejecutor principal del proceso y no obtiene aprobación automática por haber preparado la compra.
+
+Una función empresarial aprobadora no se transforma en un rol técnico nuevo llamado `aprobador`.
+
+---
+
+#### 11. Modalidad administrativa
+
+La capacidad de aprobación es:
+
+```text
+BASE_ONLY
+```
+
+Por tanto:
+
+```text
+TURNO
+CHECK-IN
+ROL OPERATIVO
+```
+
+no son fuentes de autoridad para aprobar, rechazar o devolver una compra.
+
+La administración puede resolver la decisión sin exigir check-in artificial.
+
+---
+
+#### 12. Estado elegible para aprobación positiva
+
+La transición positiva exacta es:
+
+```text
+VPROC-0021.TR-003
+PENDING_APPROVAL
+→
+APPROVED
+```
+
+Clase de autoridad:
+
+```text
+CONTROL_ACEPTACION
+```
+
+Puertas preservadas:
+
+```text
+G01,G02,G03,G04,G05
+```
+
+La UX no permite representar una aprobación efectiva si el recurso no está exactamente en estado elegible o si la versión ya cambió.
+
+---
+
+#### 13. Revisión previa a la decisión
+
+Antes del punto positivo de aprobación, el proceso conserva:
+
+```text
+PURCHASE_REQUEST_PENDING_APPROVAL
+→ VPROC-0021.TR-001
+UNDER_REVIEW
+→ VPROC-0021.TR-002
+PENDING_APPROVAL
+```
+
+La experiencia debe distinguir:
+
+- propuesta todavía incompleta o bajo revisión;
+- propuesta lista para decidir;
+- evidencia faltante;
+- política no resuelta;
+- conflicto de segregación;
+- versión obsoleta;
+- resultado técnico indeterminado.
+
+Ninguna de estas condiciones equivale a aprobación.
+
+---
+
+#### 14. Contenido mínimo evaluable
+
+Antes de decidir deben existir, según aplique:
+
+- necesidad o justificación trazable;
+- sourcing o excepción gobernada;
+- proveedor identificado y admisible;
+- líneas, presentaciones y cantidades;
+- precios/importes suficientes para la decisión;
+- moneda, impuestos y condiciones materiales cuando correspondan;
+- sede y centro de costo aplicables;
+- fecha o condición de entrega material;
+- presupuesto o evidencia financiera cuando la política lo exija;
+- riesgo, urgencia y excepción clasificados;
+- documentos/evidencia exigibles;
+- solicitante, preparador/comprador y aprobador identificables;
+- versión lógica exacta sometida a decisión.
+
+Una recomendación automática o prefill no sustituye ninguno de estos requisitos.
+
+---
+
+#### 15. Política de aprobación
+
+La política puede depender de:
+
+```text
+empresa
+sede
+centro de costo
+categoria
+importe
+presupuesto
+riesgo
+contrato
+urgencia
+excepcion
+```
+
+La tarea no inventa umbrales numéricos.
+
+La experiencia debe poder explicar de forma segura:
+
+- por qué el caso llegó a ese aprobador;
+- qué dimensión material está siendo evaluada;
+- si existe autoridad adicional o doble control;
+- si la política bloquea la decisión;
+- si se está usando una excepción.
+
+No se exponen internamente reglas sensibles innecesarias.
+
+---
+
+#### 16. Segregación obligatoria
+
+Se conserva:
+
+```text
+SOLICITANTE
+!=
+COMPRADOR
+!=
+APROBADOR
+!=
+RECEPTOR
+```
+
+Para la decisión crítica:
+
+```text
+INICIADOR / PREPARADOR / EJECUTOR
+→ NO EMITE SU PROPIA APROBACION FINAL
+```
+
+Si existe conflicto de segregación no autorizado:
+
+```text
+DECISION
+→ BLOCKED
+→ CERO EFECTOS
+```
+
+La interfaz no puede ocultar el conflicto ni ofrecer un bypass manual.
+
+---
+
+#### 17. Regla autoritativa de aprobación
+
+Una aprobación positiva solo puede proceder cuando se satisfaga simultáneamente:
+
+```text
+APPROVE_ALLOW
+=
+APP_ACCESS
+AND
+EXACT_APPROVE_PERMISSION
+AND
+BASE_LANE_VALID
+AND
+APPROVER_AUTHORITY_VALID
+AND
+RESOURCE_SCOPE_VALID
+AND
+CURRENT_STATE_ELIGIBLE
+AND
+APPROVAL_POLICY_MATCHES
+AND
+SEGREGATION_VALID
+AND
+EVIDENCE_COMPLETE
+AND
+NO_CONFLICT_BLOCKING
+```
+
+Ausencia, ambigüedad o fallo de cualquiera de estas dimensiones produce decisión segura distinta de `ALLOW`.
+
+---
+
+#### 18. Compra ordinaria
+
+La compra ordinaria debe alcanzar `PENDING_APPROVAL` con evidencia suficiente y resolver una decisión explícita.
+
+Está prohibido:
+
+```text
+create
+→ autoapprove
+→ send
+```
+
+como una sola acción implícita.
+
+El flujo ordinario conserva autoridad, política, versión, segregación y evidencia.
+
+---
+
+#### 19. Compra urgente y `VPROC-0021.EX-001`
+
+La urgencia utiliza un carril expedito, no un carril sin control.
+
+Se preserva:
+
+```text
+VPROC-0021.EX-001 — OVERRIDE
+```
+
+antes de la aprobación cuando corresponda.
+
+El caso urgente debe conservar, como mínimo cuando aplique:
+
+- causa estructurada;
+- necesidad de urgencia;
+- autoridad válida o reforzada;
+- límite aplicable;
+- vigencia;
+- proveedor y líneas;
+- evidencia;
+- responsable y plazo de regularización;
+- auditoría.
+
+Regla:
+
+```text
+URGENTE
+!=
+SIN APROBACION
+```
+
+---
+
+#### 20. Excepción de autoaprobación
+
+El comprador no puede autoaprobar por:
+
+- cargo;
+- propiedad del negocio;
+- urgencia;
+- falta de otro usuario disponible;
+- acceso a ORIGO;
+- haber creado la orden.
+
+Una excepción válida debe demostrar:
+
+- causa;
+- política habilitante;
+- autoridad que la concedió;
+- alcance;
+- vigencia;
+- límites;
+- actor;
+- tratamiento del conflicto;
+- regularización posterior cuando aplique;
+- evidencia auditable.
+
+La UX debe mostrar que se trata de una excepción, no de una aprobación ordinaria.
+
+---
+
+#### 21. Acción Aprobar
+
+Cuando la decisión sea positiva y la frontera autoritativa confirme el efecto:
+
+```text
+VPROC-0021.PENDING_APPROVAL
+→ VPROC-0021.TR-003
+→ VPROC-0021.APPROVED
+```
+
+La verdad empresarial resultante es exclusivamente:
+
+```text
+LA VERSION EVALUADA DE LA COMPRA
+FUE AUTORIZADA POR LA AUTORIDAD APLICABLE
+```
+
+No significa todavía:
+
+```text
+ORDER_ISSUED
+SUPPLIER_ACKNOWLEDGED
+RECEIPT_ACCEPTED
+STOCK_INCREASED
+PAYABLE_RECOGNIZED
+PAYMENT_EXECUTED
+```
+
+---
+
+#### 22. Evidencia mínima de aprobación
+
+Una aprobación confirmada debe conservar, como mínimo cuando aplique:
+
+```text
+purchase_order_id
+version evaluada
+principal
+actor efectivo
+actor aprobador
+permission_key
+scope
+territorio / centro de costo
+politica / regla aplicada
+decision
+razon o comentario
+clasificacion ordinaria / urgente / excepcional
+timestamp
+resultado
+idempotency identity / correlacion
+```
+
+La evidencia debe permitir demostrar qué contenido exacto fue aprobado y bajo qué autoridad.
+
+---
+
+#### 23. Acción Rechazar
+
+La experiencia preserva:
+
+```text
+VPROC-0021.EX-004 — REJECT
+```
+
+`REJECT` cierra excepcionalmente la solicitud antes de emitir la orden y exige motivo y notificación.
+
+La decisión de rechazo debe conservar:
+
+- orden e instancia afectadas;
+- versión evaluada;
+- actor y autoridad;
+- razón estructurada o suficiente;
+- evidencia relevante;
+- timestamp;
+- resultado;
+- destinatarios de la notificación o continuidad cuando el contrato lo requiera.
+
+No se crea una permission key `.reject`.
+
+---
+
+#### 24. Rechazo no crea un estado principal nuevo
+
+El lifecycle principal de `VPROC-0021` no expone un estado terminal dedicado llamado `REJECTED`.
+
+Por tanto:
+
+```text
+VPROC-0021.EX-004
+!=
+INVENTAR VPROC-0021.REJECTED
+```
+
+La UX puede mostrar el resultado de decisión como **rechazado** para comprensión humana, pero la materialización deberá conservar el contrato excepcional propietario y su evidencia sin fabricar un alias persistente.
+
+---
+
+#### 25. Rechazo no equivale a cancelación, anulación o reversión
+
+Se preservan acciones distintas:
+
+```text
+VPROC-0021.EX-004 — REJECT
+VPROC-0021.CCR-001 — CANCEL
+VPROC-0021.CCR-002 — VOID
+VPROC-0021.CCR-003 — REVERSE
+VPROC-0021.CCR-004 — RESTATE
+```
+
+Regla:
+
+```text
+REJECT
+!=
+CANCEL
+!=
+VOID
+!=
+REVERSE
+!=
+RESTATE
+```
+
+El rechazo decide que la propuesta no cruza el punto de aprobación/emisión; las acciones CCR gobiernan otros momentos y efectos.
+
+---
+
+#### 26. Acción Devolver para ajuste
+
+La experiencia puede devolver una propuesta para ajuste sin inventar un estado `RETURNED_FOR_CHANGES`.
+
+Se preserva:
+
+```text
+VPROC-0021.EX-002 — HOLD
+```
+
+La devolución controlada debe conservar:
+
+- razón;
+- versión afectada;
+- evidencia faltante o cambio solicitado;
+- actor que devuelve;
+- owner de reanudación;
+- condición de salida del bloqueo;
+- timestamp y correlación.
+
+Mientras el caso esté bajo HOLD, no puede avanzar a emisión como si estuviera aprobado.
+
+---
+
+#### 27. Reanudación después de devolución
+
+La devolución no constituye aprobación negativa irreversible por sí sola.
+
+Secuencia conceptual:
+
+```text
+PROPUESTA EN DECISION
+→ HOLD / DEVOLUCION CONTROLADA
+→ AJUSTE POR OWNER AUTORIZADO
+→ NUEVA VERSION CUANDO CAMBIE CONTENIDO MATERIAL
+→ REVALIDACION
+→ NUEVA DECISION CUANDO CORRESPONDA
+```
+
+La tarea no inventa una transición principal exacta de retorno que las fuentes no hayan definido.
+
+---
+
+#### 28. Cambio material postaprobación y `VPROC-0021.EX-003`
+
+Después de una aprobación válida y antes de la emisión, un cambio material conserva:
+
+```text
+VPROC-0021.EX-003 — REQUEST_INFO
+```
+
+Regla:
+
+```text
+VERSION A APROBADA
+→ CAMBIO MATERIAL
+→ VERSION B
+→ APROBACION A NO AUTORIZA B
+→ NUEVA REVISION / NUEVA DECISION SEGUN POLITICA
+```
+
+Queda prohibido:
+
+```text
+APPROVED
+→ EDITAR PROVEEDOR / IMPORTE / LINEAS
+→ CONSERVAR APROBACION ANTERIOR
+→ EMITIR
+```
+
+---
+
+#### 29. Materialidad de cambios
+
+Esta tarea no inventa una lista cerrada de cambios no materiales.
+
+Como mínimo, una huella lógica de aprobación debe poder distinguir cambios en:
+
+- proveedor;
+- líneas;
+- cantidades;
+- unidades o presentaciones;
+- precios;
+- moneda;
+- impuestos o condiciones que alteren el total;
+- fecha o condición de entrega material;
+- sede o centro de costo;
+- contrato;
+- anticipo;
+- urgencia o excepción;
+- información de transporte cuando sea material;
+- otras dimensiones declaradas materiales por la política.
+
+Ante ambigüedad:
+
+```text
+FAIL CLOSED
+→ REVISION
+```
+
+---
+
+#### 30. Versión evaluada
+
+La decisión siempre se liga a una versión exacta:
+
+```text
+VERSION_REVISADA
+=
+VERSION_DECIDIDA
+```
+
+Si la orden cambia mientras está abierta en la bandeja:
+
+```text
+VERSION_DESACTUALIZADA
+→ BLOQUEAR EFECTO
+→ RECARGAR / REEVALUAR
+```
+
+Nunca:
+
+```text
+APROBAR VERSION 7
+→ APLICAR SOBRE VERSION 8
+```
+
+---
+
+#### 31. Concurrencia
+
+Dos aprobadores, dos pestañas, dos dispositivos o un retry concurrente no pueden producir decisiones incompatibles.
+
+La frontera autoritativa debe comprobar estado y versión esperados antes del efecto.
+
+Ejemplo:
+
+```text
+ACTOR A REVISA VERSION 7
+ACTOR B PRODUCE VERSION 8
+ACTOR A INTENTA DECIDIR VERSION 7
+→ STALE_VERSION / CONFLICT
+→ CERO EFECTO SOBRE VERSION 8
+```
+
+---
+
+#### 32. Idempotencia de la decisión
+
+La solicitud de decisión adopta el contrato transversal de idempotencia.
+
+Resultados lógicos preservados:
+
+```text
+APPLIED
+DUPLICATE_RESULT_RETURNED
+CONFLICTING_REUSE
+IN_PROGRESS_RECOVERABLE
+STALE_VERSION
+OUT_OF_ORDER_DEFERRED
+RECONCILIATION_REQUIRED
+REJECTED
+```
+
+Reglas:
+
+1. la misma identidad con el mismo contenido lógico no produce dos aprobaciones;
+2. un replay exitoso devuelve el resultado durable original;
+3. reutilización con contenido incompatible produce conflicto;
+4. una idempotency key conocida no concede autoridad;
+5. cada intento revalida actor, permiso, alcance, estado y versión;
+6. una respuesta perdida no justifica una segunda decisión independiente.
+
+---
+
+#### 33. Resultado desconocido y reintento
+
+La frontera puede distinguir resultados técnicos como:
+
+```text
+REJECTED_AUTHORIZATION
+ACCEPTED_PENDING
+EFFECT_CONFIRMED
+PRIOR_RESULT_REPLAYED
+CONFLICT
+RESULT_UNKNOWN
+PARTIALLY_APPLIED
+RECONCILIATION_REQUIRED
+```
+
+Reglas UX:
+
+- `EFFECT_CONFIRMED` puede mostrarse como aprobación confirmada solo si el efecto durable corresponde a `VPROC-0021.TR-003`;
+- `PRIOR_RESULT_REPLAYED` muestra el resultado durable previo;
+- `CONFLICT` no se presenta como aprobación;
+- `RESULT_UNKNOWN` bloquea preparación/emisión hasta reconciliar;
+- un HTTP exitoso o ACK técnico no equivale por sí solo a decisión confirmada.
+
+---
+
+#### 34. Aprobación no equivale a emisión
+
+Regla central:
+
+```text
+APPROVE
+!=
+SEND
+!=
+ORDER_ISSUED
+```
+
+Después de `APPROVED`, el proceso continúa mediante:
+
+```text
+VPROC-0021.TR-004
+APPROVED
+→ ORDER_PREPARING
+
+VPROC-0021.TR-005
+ORDER_PREPARING
+→ ORDER_ISSUED
+```
+
+Aprobar no envía al proveedor ni genera por sí solo evidencia de emisión.
+
+---
+
+#### 35. Emisión debe conservar la versión aprobada
+
+La preparación posterior a aprobación debe construir el instrumento que corresponde a la versión autorizada.
+
+Regla:
+
+```text
+VERSION APROBADA
+→ ORDER_PREPARING
+→ VERSION EMITIDA IDENTIFICABLE
+```
+
+No:
+
+```text
+VERSION A APROBADA
+→ EDITAR A B
+→ EMITIR B CON APROBACION A
+```
+
+La evidencia de emisión pertenece a la transición posterior y no a la decisión de aprobación.
+
+---
+
+#### 36. Confirmación del proveedor y compromiso
+
+Después de emitir se preserva:
+
+```text
+VPROC-0021.TR-006
+ORDER_ISSUED
+→ SUPPLIER_ACK_PENDING
+
+VPROC-0021.TR-007
+SUPPLIER_ACK_PENDING
+→ PURCHASE_COMMITMENT_FORMALIZED
+```
+
+La confirmación del proveedor:
+
+- no sustituye aprobación interna;
+- no puede ampliar unilateralmente líneas, precio o condiciones;
+- no representa recepción física;
+- no crea obligación económica definitiva por sí sola.
+
+---
+
+#### 37. Aprobación no equivale a recepción
+
+Una decisión positiva no produce:
+
+```text
+RECEIPT_EXPECTED
+ARRIVAL_REGISTERED
+RECEIPT_RECONCILED
+```
+
+La recepción comienza sobre una compra/entrega elegible y correlacionada conforme a `VPROC-0022`.
+
+Una compra rechazada o retenida antes de emisión no puede aparecer como entrega normalmente esperada por la sola existencia de la propuesta.
+
+---
+
+#### 38. Datos sensibles
+
+La decisión puede necesitar precios, importes, presupuesto, condiciones comerciales, contratos y riesgo.
+
+Pero:
+
+```text
+purchase_orders.approve
+!=
+ACCESO IRRESTRICTO A TODO DATO SENSIBLE
+```
+
+La proyección debe ser suficiente para decidir y mínima para la finalidad.
+
+La protección final de precios y datos sensibles permanece en `ORIGO-AUTH-010` y `ORIGO-UX-012`.
+
+---
+
+#### 39. Territorio y centro de costo
+
+La decisión se ejerce sobre una orden concreta y su alcance real.
+
+No bastan como autoridad:
+
+- `site_id` enviado por cliente;
+- una sede visible;
+- un centro de costo escrito en formulario;
+- conocer el `purchase_order_id`;
+- estar relacionado con otra sede de la orden.
+
+La resolución exacta de territorio y centro de costo permanece propietaria de `ORIGO-AUTH-009`.
+
+---
+
+#### 40. Dispositivo compartido
+
+Un dispositivo compartido no se convierte en aprobador por sesión, PIN, estación o rol operativo.
+
+La ejecución futura debe resolver, como mínimo:
+
+```text
+principal
+actor humano efectivo
+permiso exacto
+autoridad funcional
+segregacion
+recurso
+politica vigente
+version
+```
+
+Sin actor humano y autoridad administrativa válidos, la decisión falla cerrada.
+
+---
+
+#### 41. Simulación
+
+Una simulación puede explicar:
+
+- política aplicable;
+- razones;
+- bloqueos;
+- resultado hipotético.
+
+Pero conserva:
+
+```text
+SIMULATE_APPROVAL
+→ ZERO BUSINESS WRITES
+→ ZERO ORDER_STATE_MUTATION
+→ ZERO SEND
+```
+
+Una simulación favorable no es aprobación real, rechazo real ni devolución real.
+
+---
+
+#### 42. Estados de experiencia
+
+La experiencia puede distinguir, como proyección no persistente:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `LISTO` | compra elegible para decisión | mostrar acciones autorizadas |
+| `SIN_PENDIENTES` | no existen decisiones visibles en alcance | estado vacío real |
+| `SIN_AUTORIDAD` | recurso visible sin capacidad de decidir | no serializar acción protegida |
+| `CONFLICTO_DE_SEGREGACION` | actor incompatible con la decisión | bloquear efecto |
+| `EVIDENCIA_INCOMPLETA` | falta soporte exigido | consulta sí; aprobación no |
+| `VERSION_DESACTUALIZADA` | cambió el contenido evaluado | recargar y reevaluar |
+| `POLITICA_NO_RESUELTA` | no existe decisión de política concluyente | fail-closed |
+| `RESULTADO_DESCONOCIDO` | efecto técnico no reconciliado | bloquear continuidad |
+| `FALLO_TECNICO` | fuente o servicio falló | no convertir en vacío ni rechazo |
+
+Estas etiquetas UX no son estados nuevos de `VPROC-0021`.
+
+---
+
+#### 43. Errores y bloqueos
+
+La experiencia debe distinguir al menos:
+
+```text
+NO_SESSION
+NO_APP_ACCESS
+MISSING_APPROVE_PERMISSION
+APPROVER_AUTHORITY_INVALID
+RESOURCE_NOT_ELIGIBLE
+STATE_NOT_APPROVABLE
+VERSION_MISMATCH
+POLICY_NOT_SATISFIED
+SEGREGATION_CONFLICT
+OUT_OF_SCOPE
+TERRITORY_INVALID
+EVIDENCE_INCOMPLETE
+CONFLICT
+RESULT_UNKNOWN
+TECHNICAL_FAILURE
+```
+
+No deben colapsarse:
+
+```text
+DENY
+!=
+REJECT BUSINESS DECISION
+!=
+HOLD
+!=
+STALE VERSION
+!=
+TECHNICAL FAILURE
+```
+
+---
+
+#### 44. Eventos empresariales
+
+`VPROC-0021` conserva los eventos ya aprobados:
+
+```text
+VPROC-0021.EVT-001
+VPROC-0021.EVT-002
+VPROC-0021.EVT-003
+VPROC-0021.EVT-004
+VPROC-0021.EVT-005
+VPROC-0021.EVT-006
+```
+
+No existe una definición normal de evento dedicada a `APPROVED` en el catálogo consumido.
+
+Por tanto, esta tarea no inventa eventos como:
+
+```text
+purchase-approved
+purchase-rejected
+purchase-returned
+```
+
+La aprobación se demuestra mediante `VPROC-0021.TR-003`, estado resultante y auditoría; los resultados excepcionales conservan sus contratos propietarios.
+
+---
+
+#### 45. Auditoría de decisión
+
+La auditoría de `VPROC-0021` debe permitir reconstruir, cuando aplique:
+
+- solicitud y necesidad;
+- sourcing y proveedor;
+- líneas e importes;
+- versión;
+- actor y principal;
+- autoridad y alcance;
+- política aplicada;
+- segregación;
+- decisión y razones;
+- urgencia o excepción;
+- HOLD, REQUEST_INFO o REJECT;
+- reintentos, conflictos y resultados desconocidos;
+- cambios posteriores;
+- emisión y confirmación externa;
+- correlación con recepción y conciliación posteriores.
+
+Las denegaciones técnicas o de autorización también conservan evidencia según el contrato transversal.
+
+---
+
+#### 46. Contraste AS-IS de vento-origo
+
+El runtime observado no materializa una superficie dedicada equivalente a `VSCREEN-0074`.
+
+La acción cercana observada es:
+
+```text
+setPurchaseOrderSent(id)
+```
+
+con transición simplificada:
+
+```text
+draft
+→ sent
+```
+
+En la acción inspeccionada no se demuestra de forma integral:
+
+- `origo.procurement.purchase_orders.approve`;
+- actor aprobador;
+- política de aprobación;
+- segregación;
+- transición `PENDING_APPROVAL -> APPROVED`;
+- versión exacta aprobada;
+- razón/decisión;
+- rechazo/devolución gobernados;
+- separación entre aprobación y emisión.
+
+---
+
+#### 47. No elevar el AS-IS a contrato objetivo
+
+Quedan prohibidas equivalencias como:
+
+```text
+draft = PENDING_APPROVAL
+sent = APPROVED
+sent = ORDER_ISSUED correctamente
+received = proceso completo
+```
+
+También:
+
+```text
+setPurchaseOrderSent
+=
+APROBAR + PREPARAR + EMITIR
+```
+
+El runtime actual es evidencia parcial y colapsada; no define el lifecycle objetivo.
+
+---
+
+#### 48. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe `VSCREEN-0074` materializada | aprobación puede quedar implícita en detalle/envío | materialización UX consumiendo `ORIGO-UX-005/008` | bandeja dedicada separa consulta, decisión y emisión |
+| `setPurchaseOrderSent` colapsa `draft -> sent` | aprobación y emisión pueden confundirse | `ORIGO-AUTH-014` + package propietario + materialización UX | `TR-003`, `TR-004` y `TR-005` quedan materialmente distinguibles |
+| no se demuestra permission check exacto de aprobación en acción AS-IS | acceso a ORIGO podría aparentar autoridad | `ORIGO-AUTH-014` + consumer | decisión revalida `purchase_orders.approve` server-side |
+| rechazo/devolución no tienen estados principales propios | riesgo de inventar aliases persistentes | materialización de `ORIGO-UX-008` + propietario de `VPROC-0021` | EX-002/EX-004 se representan con evidencia sin nuevos estados |
+| versión evaluada no está materializada integralmente en UX AS-IS | stale approval sobre contenido modificado | implementación propietaria | decisión compara versión esperada y falla cerrado |
+| no existen umbrales numéricos cerrados en esta tarea | riesgo de hardcode arbitrario | política/configuración propietaria de compras | umbrales versionados y probados antes de enforcement |
+| urgencia puede confundirse con bypass | compra expedita sin autoridad suficiente | política propietaria + materialización de `EX-001` | causa, límites, autoridad, regularización y auditoría quedan exigibles |
+| datos sensibles e importes requieren minimización | exposición excesiva en bandeja | `ORIGO-AUTH-010`, `ORIGO-UX-012` | field masks y finalidad gobiernan proyección |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 49. Handoff inmediato a ORIGO-UX-009
+
+`ORIGO-UX-009 — Diseñar recepción total` recibe una frontera estricta:
+
+```text
+APROBACION CONFIRMADA
+!=
+EMISION
+!=
+COMPROMISO FORMALIZADO
+!=
+RECEPCION
+```
+
+Para que una recepción total pueda existir debe haber una compra/entrega elegible y correlacionable conforme al lifecycle posterior, con identidad estable de orden/compromiso, proveedor, destino, líneas, cantidades y versión.
+
+Una propuesta:
+
+```text
+REJECT
+HOLD
+RESULT_UNKNOWN
+CONFLICT
+VERSION_DESACTUALIZADA
+```
+
+no puede generar una recepción total normal por la sola existencia del registro de compra.
+
+---
+
+#### 50. Handoff al resto de ORIGO-UX
+
+| Tarea | Entrada exacta proveniente de ORIGO-UX-008 |
+| --- | --- |
+| `ORIGO-UX-009` | recepción total consume compra/entrega elegible; aprobación aislada no equivale a recepción |
+| `ORIGO-UX-010` | recepción parcial conserva versión emitida y saldo por línea; rechazo o HOLD no generan saldo recibible normal |
+| `ORIGO-UX-011` | diferencias comparan contra versión/condiciones efectivamente autorizadas y emitidas, sin reescribir la decisión histórica |
+| `ORIGO-UX-012` | proyección de precios/importes/condiciones al aprobador y seguimiento respeta finalidad y field masks |
+| `ORIGO-UX-013` | aprobación o recepción ORIGO no producen una segunda recepción manual en NEXO |
+| `ORIGO-UX-014` | entrada física NEXO deriva de recepción aceptada, no de aprobación aislada |
+| `ORIGO-UX-015` | aprobación o emisión pueden informar compromiso financiero, pero no crean obligación/pago definitivo |
+| `ORIGO-UX-016` | prototipo demuestra creación → decisión → preparación/emisión → recepción con versiones, actores y evidencias separadas |
+
+---
+
+#### 51. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: autorización exacta, segregación, mutaciones server-side, versionado de órdenes, rechazo/devolución gobernados, idempotencia, concurrencia, auditoría, urgencia/excepción y separación entre aprobación, emisión y recepción ya están cubiertos por obligaciones canónicas vigentes. Esta tarea especializa la experiencia de decisión de `VSCREEN-0074` sin crear una obligación empresarial nueva ni modificar el Registro 04A.
+
+---
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-ORIGO-002` para limitar lectura y mutación de órdenes por permiso, territorio, estado y columnas y proteger documentos externos;
+- `TREQ-ORIGO-004` para separar necesidad, sourcing, selección, aprobación, orden y recepción, impedir autoaprobación y exigir revisión/versionado ante cambios materiales;
+- `TREQ-ORIGO-005` para preservar proveedor, condiciones, precio, moneda, impuestos, descuentos, flete, mínimos, plazo, pago, fuente, versión y vigencia;
+- `TREQ-AUTH-001` para resolver la autorización mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-002` para impedir consumo físico de una permission key no incorporada al catálogo vigente;
+- `TREQ-AUTH-010` para preservar segregación de funciones;
+- `TREQ-AUTH-013` para revalidar server-side permiso exacto, actor, territorio, estado y columnas permitidas;
+- `TREQ-AUTH-014` para impedir que contexto o decisiones obsoletas sigan autorizando efectos;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de actor, permiso, recurso, decisión, razones, versión y timestamp.
+
+Estas referencias son cobertura vigente y no constituyen una actualización del registro.
+
+---
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ, batería global y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@841d0b455e2567fa0b5ef11cb48f07da8904989f`, owner blob `f1d87caf21d5ea56bcea224c2c7af8c30dd968ae`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VSCREEN-0074/0075`, `VPROC-0021`, `TR-001..007`, `EX-001..004`, permiso `purchase_orders.approve`, actores aprobadores, segregación, cobertura territorial/sensible, 04A ORIGO/AUTH y runtime AS-IS `draft -> sent`. La entrada inmediata 007 se consume desde el artefacto completo aprobado por el usuario. |
+| OPERATIVA | NOT_EXECUTED | No se aprobaron, rechazaron, devolvieron, emitieron ni recibieron compras reales; no se probaron usuarios, políticas, sedes, proveedores, concurrencia ni reintentos reales. |
+| FÍSICA | NOT_APPLICABLE | `ORIGO-UX-008` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 54. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0074` queda como superficie canónica de decisión y no como editor general;
+- [ ] `VSCREEN-0075` queda como contexto autorizado de detalle y seguimiento;
+- [ ] `VPROC-0021::STEP-APPROVE_PURCHASE` queda preservado;
+- [ ] `origo.procurement.purchase_orders.approve` queda como única identity key de autoridad definida para el punto de decisión;
+- [ ] no se crean `.reject`, `.return` ni `.send`;
+- [ ] la capacidad permanece `BASE_ONLY`;
+- [ ] `GERENCIA_GENERAL` y `COORDINACION_DE_OPERACIONES` permanecen autoridades funcionales de aprobación;
+- [ ] solicitante, comprador, aprobador y receptor permanecen funciones separadas;
+- [ ] `PENDING_APPROVAL -> APPROVED` usa exactamente `VPROC-0021.TR-003`;
+- [ ] `APPROVED` no equivale a `ORDER_PREPARING` ni `ORDER_ISSUED`;
+- [ ] la decisión usa una versión exacta y reproducible;
+- [ ] política, territorio, importe, riesgo, urgencia y evidencia se resuelven antes del efecto cuando apliquen;
+- [ ] un conflicto de segregación bloquea la decisión;
+- [ ] una compra ordinaria no puede usar `create -> autoapprove -> send`;
+- [ ] la urgencia conserva `VPROC-0021.EX-001` y no se convierte en bypass;
+- [ ] autoaprobación solo existe bajo excepción explícita, acotada y auditada;
+- [ ] aprobación conserva actor, política, versión, decisión y timestamp;
+- [ ] rechazo consume `VPROC-0021.EX-004` con motivo y notificación;
+- [ ] rechazo no inventa `VPROC-0021.REJECTED`;
+- [ ] rechazo se diferencia de CANCEL, VOID, REVERSE y RESTATE;
+- [ ] devolución para ajuste consume `VPROC-0021.EX-002 — HOLD` sin inventar `RETURNED_FOR_CHANGES`;
+- [ ] la reanudación después de devolución exige revalidación y nueva versión cuando corresponda;
+- [ ] cambio material postaprobación consume `VPROC-0021.EX-003 — REQUEST_INFO` y no reutiliza ciegamente la aprobación anterior;
+- [ ] ante materialidad ambigua se falla cerrado;
+- [ ] versión obsoleta bloquea la decisión;
+- [ ] concurrencia no permite aplicar una decisión sobre una versión distinta;
+- [ ] reintento/idempotencia no duplican aprobación o rechazo;
+- [ ] `RESULT_UNKNOWN` bloquea preparación/emisión hasta reconciliar;
+- [ ] `TR-004` y `TR-005` permanecen posteriores y separadas de la aprobación;
+- [ ] la versión emitida corresponde al contenido autorizado;
+- [ ] confirmación de proveedor no sustituye aprobación ni recepción;
+- [ ] aprobación no produce recepción, stock ni obligación financiera definitiva;
+- [ ] datos sensibles se minimizan por finalidad;
+- [ ] `site_id` o centro de costo enviado por cliente no conceden territorio;
+- [ ] dispositivo compartido no concede autoridad administrativa por inferencia;
+- [ ] simulación produce cero writes;
+- [ ] los estados UX no se persisten como estados nuevos de `VPROC-0021`;
+- [ ] deny, rechazo empresarial, HOLD, stale y fallo técnico permanecen distinguibles;
+- [ ] no se inventan eventos empresariales de aprobación/rechazo/devolución;
+- [ ] el AS-IS `draft -> sent` no se eleva a contrato objetivo;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] `ORIGO-UX-009` recibe una frontera limpia hacia recepción total;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 55. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0074` ni `VSCREEN-0075`;
+- crea rutas, componentes o Server Actions;
+- crea permission keys nuevas;
+- activa `purchase_orders.approve` en catálogo o grants;
+- crea `.reject`, `.return` o `.send`;
+- crea estados nuevos de `VPROC-0021`;
+- define umbrales numéricos de aprobación;
+- concede autoaprobación;
+- modifica una orden real;
+- aprueba o rechaza una compra real;
+- devuelve una compra real;
+- emite o envía una orden real;
+- confirma respuesta de proveedor;
+- registra recepción;
+- mueve inventario;
+- crea obligación, asiento o pago;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants, Storage o datos;
+- modifica contratos generados;
+- modifica el Registro 04A;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-009`.
+
+---
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-007 — Diseñar creación de orden de compra`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-008 — Diseñar aprobación y rechazo`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-009 — Diseñar recepción total`
 ### [ ] ORIGO-UX-009 — Diseñar recepción total
 ### [ ] ORIGO-UX-010 — Diseñar recepción parcial
 ### [ ] ORIGO-UX-011 — Diseñar diferencias contra orden
