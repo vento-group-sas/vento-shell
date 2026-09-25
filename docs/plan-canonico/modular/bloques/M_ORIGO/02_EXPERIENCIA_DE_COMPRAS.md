@@ -8966,7 +8966,1352 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-009 — Diseñar recepción total`
-### [ ] ORIGO-UX-009 — Diseñar recepción total
+### ✅ ORIGO-UX-009 — Diseñar recepción total
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-008 — Diseñar aprobación y rechazo
+**Tarea siguiente:** ORIGO-UX-010 — Diseñar recepción parcial
+**Tipo de tarea:** diseño documental integral de la experiencia de recepción total sobre `VSCREEN-0077` y `VPROC-0022`, definiendo entrada elegible, captura física y documental por línea/presentación, cierre del saldo recibible, aceptación total mediante `VPROC-0022.TR-007`, idempotencia, concurrencia, modalidad `inventory`/`record_only` y handoffs correlacionados hacia NEXO y NUMERA, sin convertir aceptación en movimiento físico, conciliación económica ni cierre artificial de la compra; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación, componentes, procesos, permisos, roles, grants, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para registrar una **recepción total** de compra en ORIGO, de forma que el receptor pueda:
+
+- partir de una compra o entrega elegible y correlacionable;
+- preservar la identidad de la orden o compromiso y de cada recepción previa;
+- comparar por línea lo esperado contra lo observado sin reescribir el pedido;
+- capturar producto, presentación, cantidad, lote, vencimiento, condición y documentos cuando apliquen;
+- distinguir llegada, verificación física, verificación documental y aceptación;
+- determinar si la recepción cubre todo el saldo recibible pendiente del alcance relacionado;
+- bloquear el cierre total ante diferencias, datos maestros pendientes, evidencia insuficiente, versión obsoleta o resultado incierto;
+- aceptar el alcance total únicamente mediante la transición canónica correspondiente;
+- producir los handoffs posteriores sin apropiarse de la verdad física de NEXO ni de la verdad económica de NUMERA;
+- conservar idempotencia, auditoría, concurrencia y recuperación ante reintentos.
+
+La tarea diseña la experiencia objetivo sobre:
+
+```text
+VSCREEN-0077 — Recepción total o parcial
+VPROC-0022    — Recibir compras, verificar conformidad y resolver diferencias
+```
+
+No implementa la superficie ni modifica autorización física.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-008
+
+`ORIGO-UX-008` entrega una frontera estricta:
+
+```text
+APROBACION CONFIRMADA
+!=
+EMISION
+!=
+COMPROMISO FORMALIZADO
+!=
+RECEPCION
+```
+
+La recepción total consume una compra/entrega elegible y correlacionable con:
+
+- identidad estable de orden o compromiso;
+- proveedor;
+- destino;
+- líneas;
+- cantidades;
+- versión vigente;
+- evidencia suficiente.
+
+Los resultados:
+
+```text
+REJECT
+HOLD
+RESULT_UNKNOWN
+CONFLICT
+VERSION_DESACTUALIZADA
+```
+
+no generan por sí solos una recepción total normal.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-UX-009` se define una sola vez;
+2. no existe una instancia física propia de esta tarea;
+3. no se crea ni modifica una ruta o componente de `vento-origo`;
+4. no se implementan Server Actions, RPC, RLS, migraciones, tablas ni contratos de eventos;
+5. las brechas AS-IS se documentan con propietario y condición de salida;
+6. la materialización posterior debe consumir este contrato sin convertir recepción en inventario, pago o conciliación automática.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva:
+
+- `ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento`;
+- `ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`;
+- `ORIGO-UX-005 — Diseñar inicio para aprobador`;
+- `ORIGO-UX-006 — Diseñar inicio para receptor`;
+- `ORIGO-UX-007 — Diseñar creación de orden de compra`;
+- `ORIGO-UX-008 — Diseñar aprobación y rechazo` como base inmediata aprobada;
+- `ORIGO-AUTH-004 — Definir permisos de consulta`;
+- `ORIGO-AUTH-007 — Definir permisos de recepción`;
+- `ORIGO-AUTH-008 — Definir permisos de corrección`;
+- `ORIGO-AUTH-009..013` para territorio, sensibilidad, actor, contexto y administración;
+- `VPROC-0022` y sus nueve estados canónicos;
+- `VPROC-0022.TR-001..009`;
+- `VPROC-0022.EX-001..004`;
+- `VPROC-0022.CCR-001..004`;
+- `VSCREEN-0076`, `VSCREEN-0077` y `VSCREEN-0078`;
+- frontera ORIGO–NEXO de `GAP-OWN-004`;
+- contratos de integración de recepción, entrada física y conciliación económica;
+- Registro 04A vigente de ORIGO y AUTH;
+- runtime observado de `src/app/receipts/new/page.tsx` en `vento-origo`;
+- `vento-shell/main@d98d8955bf9ab87db3c852885c079790f35abdce` y owner blob `e039a91ed89a7f1e3fc9887feb5073797eba32bc`;
+- `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, con `src/app/receipts/new/page.tsx` blob `0b13c026365cb9eb1be0a9c737f373e6a46635b2`;
+- artefacto aprobado `ORIGO-UX-008_APROBADA_PARA_REEMPLAZAR.md` con SHA-256 `148bf2ad96d89430e8d48a7427b42f197f3afd83fb8f5246dda962681ffe4c65` y SHA semántico `54ab6fd828f7bb9abccb6274dc8c48ae6ea7adc8fb957851a598b5c4c9bd642c`.
+
+La base 008 puede permanecer pendiente de publicación durante esta preparación anticipada; esta tarea no altera su lifecycle.
+
+---
+
+#### 5. Identidad canónica de la superficie
+
+La recepción total utiliza la identidad existente:
+
+```text
+VSCREEN-0077
+Recepción total o parcial
+origo
+VPROC-0022
+OWNER_WORKSPACE
+```
+
+Propósito canónico:
+
+```text
+REGISTRAR LA RECEPCION FISICA Y DOCUMENTAL
+DE UNA COMPRA POR LINEA Y PRESENTACION
+```
+
+La tarea no crea una pantalla `VSCREEN-*` adicional.
+
+---
+
+#### 6. Binding de proceso y paso
+
+La superficie se vincula a:
+
+```text
+VPROC-0022::STEP-RECEIVE_PURCHASE
+```
+
+con interacción:
+
+```text
+EXECUTE
+IN_PROGRESS
+```
+
+La recepción total pertenece a `VPROC-0022`; no reabre `VPROC-0020` ni `VPROC-0021` salvo que una excepción o diferencia exija volver a un owner anterior mediante un flujo gobernado.
+
+---
+
+#### 7. Definición contractual de recepción total
+
+Una recepción es **total** cuando, para el alcance correlacionado que está siendo recibido:
+
+```text
+SALDO RECIBIBLE PENDIENTE AL INICIAR
+=
+ALCANCE OBSERVADO, VERIFICADO Y ACEPTADO
+```
+
+Y además:
+
+```text
+DIFERENCIAS ABIERTAS = 0
+RESIDUAL RECIBIBLE DEL ALCANCE = 0
+RESULTADO DE ACEPTACION = CONOCIDO
+```
+
+La totalidad se evalúa contra el saldo vigente, no contra una copia histórica desactualizada de la orden.
+
+---
+
+#### 8. Total no significa primera ni única recepción
+
+Una compra puede producir múltiples recepciones legítimas:
+
+```text
+1 PURCHASE_COMMITMENT
+→ 0..N RECEPCIONES VPROC-0022
+```
+
+Por tanto, una recepción puede ser la que **complete el saldo pendiente** después de una o más recepciones parciales anteriores.
+
+Reglas:
+
+- no se borran las recepciones anteriores;
+- no se reutiliza la identidad de una recepción anterior;
+- no se vuelve a sumar una cantidad ya confirmada;
+- completar el saldo no convierte todo el historial en una sola recepción.
+
+`ORIGO-UX-010` desarrolla la experiencia de parcialidad y saldo pendiente.
+
+---
+
+#### 9. Condición de entrada
+
+Para una recepción total ordinaria debe existir, como mínimo:
+
+```text
+COMPRA / COMPROMISO ELEGIBLE
++
+ENTREGA IDENTIFICABLE
++
+PROVEEDOR COHERENTE
++
+SEDE RECEPTORA AUTORIZADA
++
+LINEAS RECIBIBLES
++
+SALDOS VIGENTES
++
+ACTOR RECEPTOR ATRIBUIBLE
++
+AUTORIDAD OPERATIVA VIGENTE
+```
+
+La aprobación aislada no basta. Una orden no emitida, un resultado incierto o una compra rechazada no son entrada normal de recepción total.
+
+---
+
+#### 10. Permiso exacto de registro
+
+La autoridad objetivo es:
+
+```text
+origo.procurement.receipts.register
+```
+
+Contrato:
+
+```text
+RECURSO = PURCHASE_RECEIPT
+ACCION = register
+MODALIDAD = OPERATIONAL_ONLY
+PRERREQUISITO = T+C
+```
+
+`receipts.view` no concede registro y `origo.access` no actúa como wildcard.
+
+---
+
+#### 11. Turno, check-in y rol operativo
+
+Para registrar la recepción se exige:
+
+```text
+TURNO VIGENTE
++
+CHECK-IN ACTIVO
++
+ROL OPERATIVO AUTORIZADO
++
+SEDE / AREA COMPATIBLES
+```
+
+Roles operativos objetivo con concesión:
+
+```text
+bodeguero
+gerencia_operativa
+```
+
+Ningún rol base concede `receipts.register` por sí solo.
+
+---
+
+#### 12. Recurso protegido
+
+La recepción nueva se autoriza sobre:
+
+```text
+PURCHASE_RECEIPT
+```
+
+Antes de persistirla, el objetivo debe quedar suficientemente determinado como:
+
+```text
+RECEIPT_DESTINATION_DRAFT
+```
+
+con, según aplique:
+
+- sede;
+- área;
+- orden/compromiso o causa excepcional;
+- proveedor;
+- líneas;
+- presentación/unidad;
+- modalidad;
+- actor efectivo.
+
+La recepción persistida conserva `receipt_id` estable.
+
+---
+
+#### 13. Territorio
+
+El territorio no se deriva de un `site_id` enviado por cliente.
+
+La decisión exige:
+
+```text
+SEDE AUTORIZADA
++
+AREA COMPATIBLE
++
+RECURSO COMPATIBLE
++
+CONTEXTO OPERATIVO COINCIDENTE
+```
+
+Una orden de otra sede, un destino incompatible o un recurso fuera de alcance bloquean la mutación.
+
+---
+
+#### 14. Identidad de la operación
+
+Cada recepción total necesita una identidad de operación estable y distinta de:
+
+- la identidad de la orden;
+- la identidad de otras recepciones de la misma compra;
+- la identidad de una corrección;
+- la identidad de una reversión;
+- la identidad del handoff físico posterior.
+
+La misma intención lógica conserva identidad durante retries técnicos; una llegada física distinta crea una nueva identidad correlacionada.
+
+---
+
+#### 15. Snapshot esperado antes de capturar
+
+La experiencia debe presentar un snapshot vigente de:
+
+- orden/compromiso;
+- proveedor;
+- sede y destino;
+- líneas recibibles;
+- cantidad ordenada;
+- cantidad recibida previamente;
+- saldo recibible pendiente;
+- presentación/unidad;
+- condiciones relevantes;
+- documentos esperados;
+- versión o referencia estable.
+
+El snapshot es contexto de comparación, no verdad editable por el receptor.
+
+---
+
+#### 16. Lo pedido y lo observado permanecen separados
+
+Regla central:
+
+```text
+PEDIDO ORIGINAL
+!=
+HECHO RECIBIDO
+```
+
+Por cada línea se conservan separadamente:
+
+- cantidad ordenada;
+- cantidad recibida previamente;
+- saldo pendiente;
+- cantidad observada en esta recepción;
+- presentación esperada;
+- presentación observada;
+- condición esperada;
+- condición observada;
+- documentos esperados;
+- documentos observados.
+
+No se edita la orden para forzar conformidad.
+
+---
+
+#### 17. Líneas y presentaciones
+
+La recepción total debe operar por línea y presentación identificable.
+
+Como mínimo, cada línea aplicable conserva:
+
+- `purchase_order_item` o referencia equivalente;
+- producto;
+- presentación/unidad;
+- factor de conversión cuando aplique;
+- cantidad del saldo pendiente;
+- cantidad observada;
+- lote y vencimiento cuando aplique;
+- condición física;
+- evidencia documental asociada.
+
+Una presentación distinta a la pactada no se normaliza silenciosamente como si fuera la misma.
+
+---
+
+#### 18. Criterio cuantitativo de totalidad
+
+Para cada línea del alcance total:
+
+```text
+CANTIDAD OBSERVADA Y ACEPTADA EN ESTA RECEPCION
+=
+SALDO RECIBIBLE VIGENTE DE LA LINEA
+```
+
+La comparación debe usar la unidad/presentación gobernada y sus conversiones aprobadas.
+
+Quedan prohibidos:
+
+```text
+RECIBIDO > SALDO
+→ MARCAR TOTAL SIN DIFERENCIA
+```
+
+Y:
+
+```text
+RECIBIDO < SALDO
+→ MARCAR TOTAL
+```
+
+Exceso, faltante o sustitución pertenecen al tratamiento de diferencias o parcialidad según corresponda.
+
+---
+
+#### 19. Llegada y apertura de verificación
+
+El lifecycle conserva:
+
+```text
+VPROC-0022.TR-001
+RECEIPT_EXPECTED
+→ ARRIVAL_REGISTERED
+
+VPROC-0022.TR-002
+ARRIVAL_REGISTERED
+→ PHYSICAL_CHECK_IN_PROGRESS
+```
+
+`ARRIVAL_REGISTERED` solo confirma que la llegada fue identificada; todavía no declara conformidad ni aceptación.
+
+---
+
+#### 20. Verificación física
+
+La verificación física debe preservar, según aplique:
+
+- producto;
+- presentación;
+- cantidad;
+- lote;
+- vencimiento;
+- condición;
+- temperatura;
+- integridad de empaque;
+- observaciones relevantes.
+
+El hecho observado permanece aunque después exista rechazo, diferencia, cuarentena o corrección.
+
+---
+
+#### 21. Verificación documental
+
+La transición:
+
+```text
+VPROC-0022.TR-003
+PHYSICAL_CHECK_IN_PROGRESS
+→ DOCUMENT_CHECK_IN_PROGRESS
+```
+
+permite contrastar, según aplique:
+
+- orden/compromiso;
+- factura;
+- remisión;
+- certificados;
+- referencias contractuales;
+- cantidades y unidades;
+- condiciones comerciales necesarias para decidir recepción.
+
+La verificación documental no sustituye la física.
+
+---
+
+#### 22. Ruta limpia sin diferencias
+
+Para una recepción total sin discrepancias se conserva:
+
+```text
+VPROC-0022.TR-005
+DOCUMENT_CHECK_IN_PROGRESS
+→ ACCEPTANCE_PENDING
+```
+
+con:
+
+```text
+NORMAL_BYPASS
+OMISION_JUSTIFICADA DE DIFFERENCE_UNDER_REVIEW
+```
+
+El bypass solo aplica cuando no existe una diferencia que requiera tratamiento.
+
+---
+
+#### 23. Diferencia detectada
+
+Si aparece una diferencia material:
+
+```text
+VPROC-0022.TR-004
+DOCUMENT_CHECK_IN_PROGRESS
+→ DIFFERENCE_UNDER_REVIEW
+```
+
+La experiencia de recepción total deja de poder confirmar un cierre limpio mientras la diferencia permanezca abierta.
+
+Si la diferencia queda tratada de forma gobernada y el alcance vuelve a ser elegible para decisión, se conserva:
+
+```text
+VPROC-0022.TR-006
+DIFFERENCE_UNDER_REVIEW
+→ ACCEPTANCE_PENDING
+```
+
+La recepción solo puede volver al carril de aceptación total cuando el tratamiento deja cero diferencias abiertas sobre el alcance que se pretende aceptar totalmente.
+
+`ORIGO-UX-011` conserva el diseño de cantidad, calidad, precio, documento o presentación discrepantes.
+
+---
+
+#### 24. Excepciones antes de aceptación
+
+Se preservan exactamente las acciones excepcionales de `VPROC-0022`:
+
+```text
+VPROC-0022.EX-001 — QUARANTINE
+VPROC-0022.EX-002 — HOLD
+VPROC-0022.EX-003 — ESCALATE
+VPROC-0022.EX-004 — REJECT
+```
+
+Reglas para recepción total:
+
+- `QUARANTINE` impide representar los bienes como aceptados y utilizables mientras la condición permanezca abierta;
+- `HOLD` suspende la decisión y mantiene evidencia y mercancía segregadas según corresponda;
+- `ESCALATE` aumenta el nivel de decisión sin conceder aceptación por sí mismo;
+- `REJECT` conserva llegada, motivo, evidencia y tratamiento de retorno, y no se transforma en total aceptada.
+
+Ninguna excepción se resuelve editando el hecho observado para forzar conformidad.
+
+---
+
+#### 25. `ACCEPTANCE_PENDING`
+
+El estado:
+
+```text
+VPROC-0022.ACCEPTANCE_PENDING
+```
+
+significa que la recepción fue verificada y espera decisión.
+
+No significa:
+
+- aceptación tácita;
+- stock disponible;
+- putaway confirmado;
+- obligación económica definitiva;
+- pago autorizado.
+
+---
+
+#### 26. Decisión de aceptación total
+
+La transición autoritativa es:
+
+```text
+VPROC-0022.TR-007
+ACCEPTANCE_PENDING
+→ PUTAWAY_PENDING
+```
+
+Clase:
+
+```text
+CONTROL_ACEPTACION
+```
+
+Para una recepción total, la decisión debe cubrir exactamente todas las líneas del alcance correlacionado que completan el saldo recibible pendiente.
+
+---
+
+#### 27. Condiciones para confirmar aceptación total
+
+La acción de aceptación total solo puede proceder cuando, como mínimo:
+
+```text
+ACTOR Y AUTORIDAD VALIDOS
+AND
+RECURSO Y TERRITORIO VALIDOS
+AND
+ESTADO ELEGIBLE
+AND
+VERSION / SNAPSHOT VIGENTES
+AND
+TODAS LAS LINEAS DEL ALCANCE VERIFICADAS
+AND
+SALDO DEL ALCANCE = 0 DESPUES DE ESTA RECEPCION
+AND
+DIFERENCIAS ABIERTAS = 0
+AND
+EVIDENCIA REQUERIDA COMPLETA
+AND
+RESULTADO DE LA OPERACION CONOCIDO
+```
+
+Cualquier ambigüedad falla cerrado.
+
+---
+
+#### 28. Total no equivale a cierre final de VPROC-0022
+
+Después de aceptar totalmente:
+
+```text
+PUTAWAY_PENDING
+```
+
+El proceso todavía puede requerir:
+
+```text
+VPROC-0022.TR-008
+PUTAWAY_PENDING
+→ ECONOMIC_RECONCILIATION_PENDING
+
+VPROC-0022.TR-009
+ECONOMIC_RECONCILIATION_PENDING
+→ RECEIPT_RECONCILED
+```
+
+Por tanto:
+
+```text
+RECEPCION TOTAL ACEPTADA
+!=
+RECEIPT_RECONCILED
+```
+
+---
+
+#### 29. Frontera con NEXO
+
+Se conserva:
+
+```text
+VPROC-0022 / ORIGO
+ACEPTACION COMERCIAL Y DOCUMENTAL
+        ↓
+VPROC-0022.PUTAWAY_PENDING
+        ↓
+VPROC-0024 / NEXO
+ENTRADA, UBICACION Y CUSTODIA FISICA
+```
+
+Regla:
+
+```text
+ACEPTACION TOTAL ORIGO
+!=
+STOCK DISPONIBLE NEXO
+```
+
+El hecho normal de handoff es:
+
+```text
+VPROC-0022.EVT-004
+vento.process.vproc-0022.putaway-pending.v1
+```
+
+---
+
+#### 30. Frontera con NUMERA
+
+La recepción total tampoco reconoce por sí sola una obligación económica definitiva.
+
+Se conserva:
+
+```text
+VPROC-0022.ECONOMIC_RECONCILIATION_PENDING
+```
+
+Y el hecho:
+
+```text
+VPROC-0022.EVT-005
+vento.process.vproc-0022.economic-reconciliation-pending.v1
+```
+
+La recepción aceptada se correlaciona con factura, obligación y diferencias; no ejecuta pago.
+
+---
+
+#### 31. Modalidad `inventory`
+
+La modalidad AS-IS `inventory` representa una recepción que pretende producir efecto físico posterior.
+
+Contrato objetivo:
+
+```text
+ORIGO
+→ REGISTRA / VERIFICA / ACEPTA
+
+NEXO
+→ MATERIALIZA ENTRADA / UBICACION / CUSTODIA
+```
+
+La UX no presenta las escrituras físicas actuales de ORIGO como ownership objetivo.
+
+---
+
+#### 32. Modalidad `record_only`
+
+La modalidad `record_only` conserva un hecho empresarial sin movimiento de inventario.
+
+Regla:
+
+```text
+SIN MOVIMIENTO DE INVENTARIO
+!=
+SIN AUTORIZACION
+```
+
+También requiere `receipts.register`, actor efectivo, `T+C`, territorio y evidencia.
+
+No puede utilizarse para simular que una recepción inventariable ya produjo el efecto físico requerido.
+
+---
+
+#### 33. Recepción directa o de emergencia
+
+Una recepción total sin orden ordinaria solo puede existir bajo un carril gobernado que conserve:
+
+```text
+receipts.register VALIDO
++
+T+C
++
+SEDE / AREA AUTORIZADAS
++
+ACTOR EFECTIVO
++
+PROVEEDOR Y LINEAS VALIDOS
++
+CAUSA OBLIGATORIA
++
+EVIDENCIA
++
+REGULARIZACION APLICABLE
+```
+
+No se fabrica una aprobación histórica ni un compromiso inexistente.
+
+---
+
+#### 34. Datos maestros pendientes
+
+Si una línea requiere producto o presentación nueva pendiente de revisión, la recepción puede conservar la observación y el handoff de maestro, pero no debe presentarse como cierre total limpio mientras la dependencia impida demostrar conformidad completa.
+
+Regla:
+
+```text
+MASTER DATA PENDING
+!=
+TOTAL ACEPTADA SIN BLOQUEO
+```
+
+La aprobación del maestro conserva owner y autoridad propios.
+
+---
+
+#### 35. Lotes, vencimientos y condición
+
+Cuando el producto lo exige, una recepción total debe conservar:
+
+- lote;
+- vencimiento;
+- condición;
+- temperatura u otra medición aplicable;
+- evidencia de inspección.
+
+La cantidad completa no compensa una condición no aceptable.
+
+```text
+CANTIDAD COMPLETA
+!=
+CONFORMIDAD COMPLETA
+```
+
+---
+
+#### 36. Documentos
+
+La totalidad exige la documentación requerida por el caso.
+
+Una factura, remisión o certificado faltante no se sustituye por una marca visual de “completo”.
+
+La UX debe diferenciar:
+
+```text
+DOCUMENTO AUSENTE
+DOCUMENTO PRESENTE
+DOCUMENTO VERIFICADO
+DOCUMENTO CON DIFERENCIA
+```
+
+sin crear estados principales nuevos de `VPROC-0022`.
+
+---
+
+#### 37. Precios y costos
+
+La recepción puede necesitar precio/costo aplicable para verificar o correlacionar, pero el receptor recibe únicamente la proyección necesaria.
+
+`receipts.register` no concede acceso irrestricto a:
+
+- contratos completos;
+- cuentas bancarias;
+- negociación histórica;
+- márgenes;
+- datos financieros ajenos a la recepción.
+
+`ORIGO-UX-012` conserva la protección de precios en experiencia.
+
+---
+
+#### 38. Idempotencia
+
+La recepción total adopta el contrato transversal:
+
+```text
+APPLIED
+DUPLICATE_RESULT_RETURNED
+CONFLICTING_REUSE
+IN_PROGRESS_RECOVERABLE
+STALE_VERSION
+OUT_OF_ORDER_DEFERRED
+RECONCILIATION_REQUIRED
+REJECTED
+```
+
+La misma identidad con la misma huella lógica no produce una segunda recepción ni vuelve a sumar cantidades.
+
+---
+
+#### 39. Replay y retry
+
+Un retry técnico:
+
+- conserva identidad de operación;
+- no cambia el alcance lógico;
+- revalida actor, recurso, estado, territorio y versión;
+- devuelve el resultado durable si ya fue aplicado;
+- no vuelve a incrementar cantidades recibidas;
+- no vuelve a producir movimientos o costos;
+- no avanza ante `RESULT_UNKNOWN` sin reconciliación.
+
+---
+
+#### 40. Concurrencia
+
+Dos pestañas, dos dispositivos o dos receptores no pueden cerrar el mismo saldo de manera incompatible.
+
+Antes del efecto se reevalúan:
+
+- saldo pendiente;
+- recepción previa concurrente;
+- versión;
+- estado;
+- actor;
+- territorio;
+- idempotencia.
+
+Si el saldo cambió:
+
+```text
+STALE_VERSION / CONFLICT
+→ RECARGAR Y REEVALUAR
+```
+
+---
+
+#### 41. Cierre técnico de cantidades de orden
+
+El runtime AS-IS observado:
+
+1. acumula `quantity_received` por línea de orden;
+2. consulta todas las líneas;
+3. considera `allReceived` cuando cada `quantity_received >= quantity_ordered`;
+4. actualiza la orden técnica a `status = received`.
+
+Este comportamiento demuestra una noción física de saldo completo, pero no sustituye el lifecycle canónico de `VPROC-0022` ni demuestra por sí solo aceptación comercial, handoff NEXO o conciliación económica.
+
+---
+
+#### 42. Estados técnicos AS-IS no son verdad canónica
+
+El runtime usa:
+
+```text
+received
+recorded
+pending_review
+reversed
+corrected
+```
+
+Y la orden usa:
+
+```text
+draft
+sent
+received
+```
+
+Quedan prohibidas equivalencias como:
+
+```text
+purchase_orders.status = received
+=
+RECEIPT_RECONCILED
+```
+
+O:
+
+```text
+inventory_entries.status = received
+=
+PUTAWAY CONFIRMADO EN NEXO
+```
+
+---
+
+#### 43. Corrección y reversión fuera del alcance
+
+Una recepción total nueva utiliza:
+
+```text
+origo.procurement.receipts.register
+```
+
+No concede:
+
+```text
+origo.procurement.receipts.reverse
+```
+
+ni autoridad correctiva general.
+
+Una corrección con sustitución debe conservar recepción original, reversión autorizada, reemplazo correlacionado y consistencia de efectos.
+
+---
+
+#### 44. Resolución de diferencias fuera del alcance
+
+Registrar o detectar una diferencia no concede autoridad para resolverla.
+
+```text
+CAPTURAR DIFERENCIA
+!=
+RESOLVER DIFERENCIA
+```
+
+`VSCREEN-0078` y `ORIGO-UX-011` conservan esa decisión.
+
+---
+
+#### 45. Recepción total frente a recepción parcial
+
+La separación queda:
+
+```text
+TOTAL
+→ esta recepción completa el saldo recibible del alcance
+→ residual recibible = 0
+
+PARCIAL
+→ queda saldo recibible explícito
+→ puede existir una recepción posterior legítima
+```
+
+Una recepción parcial no se etiqueta como total por conveniencia operativa.
+
+`ORIGO-UX-010` desarrolla el segundo caso.
+
+---
+
+#### 46. Historial de recepciones
+
+La experiencia debe preservar todas las recepciones correlacionadas con la compra.
+
+Como mínimo debe poder distinguir:
+
+- recepción actual;
+- recepciones previas válidas;
+- cantidades acumuladas;
+- saldo previo;
+- saldo posterior;
+- correcciones/reversiones correlacionadas;
+- estado del handoff posterior.
+
+Completar una orden no elimina ese historial.
+
+---
+
+#### 47. Dispositivo compartido y actor humano
+
+Regla:
+
+```text
+DISPOSITIVO AUTORIZADO
+!=
+ACTOR AUTORIZADO
+```
+
+Antes de mutar deben resolverse:
+
+```text
+principal
+actor humano efectivo
+rol operativo efectivo
+turno
+check-in
+sede
+area
+permiso exacto
+recurso
+```
+
+Firma o PIN aportan atribución, no sustituyen autoridad.
+
+---
+
+#### 48. Estados de experiencia de recepción total
+
+La UX debe distinguir, sin convertirlos en estados persistentes nuevos:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `TOTAL_LISTA_PARA_VERIFICAR` | el saldo completo está presentado para inspección | permitir captura si autoridad y contexto son válidos |
+| `VERIFICACION_EN_CURSO` | existe captura física/documental incompleta | no ofrecer aceptación total final |
+| `LISTA_PARA_ACEPTACION_TOTAL` | todas las líneas están verificadas y sin diferencias abiertas | permitir decisión autorizada |
+| `SALDO_REMANENTE` | queda cantidad recibible | derivar a tratamiento parcial; no marcar total |
+| `DIFERENCIA_ABIERTA` | existe discrepancia material | bloquear aceptación limpia y dirigir al owner de diferencias |
+| `MASTER_DATA_PENDIENTE` | una dependencia de maestro impide cierre limpio | conservar observación y bloquear conclusión total |
+| `VERSION_DESACTUALIZADA` | cambió el saldo/estado/recurso | recargar y reevaluar |
+| `SOLO_CONSULTA` | puede ver pero no registrar | no serializar acción mutante como disponible |
+| `CONTEXTO_OPERATIVO_REQUERIDO` | falta T+C o rol operativo | bloquear mutación |
+| `FALLO_TECNICO` | una fuente necesaria falló | no convertirlo en total ni en cero pendientes |
+
+---
+
+#### 49. Vacío, deny, stale y fallo técnico
+
+Reglas:
+
+```text
+SALDO = 0 POR RECEPCION YA CERRADA
+!=
+PUEDE CREAR OTRA RECEPCION TOTAL
+
+SIN AUTORIDAD
+!=
+SIN SALDO
+
+VERSION_DESACTUALIZADA
+!=
+DIFERENCIA
+
+FALLO_TECNICO
+!=
+RECEPCION TOTAL COMPLETADA
+```
+
+La interfaz conserva razón suficiente sin exponer información protegida.
+
+---
+
+#### 50. Auditoría mínima
+
+Una recepción total debe conservar evidencia correlacionable de:
+
+- `receipt_id` e identidad idempotente;
+- orden/compromiso o causa excepcional;
+- proveedor;
+- sede/área;
+- actor real y actor efectivo;
+- rol operativo;
+- turno/check-in;
+- permiso exacto;
+- versión/snapshot;
+- líneas y presentaciones;
+- cantidades esperadas, previas, observadas y aceptadas;
+- lote/vencimiento/condición cuando aplique;
+- documentos;
+- modalidad `inventory` o `record_only`;
+- decisión de aceptación;
+- diferencias o ausencia de ellas;
+- resultado;
+- timestamp;
+- correlación con handoffs posteriores.
+
+---
+
+#### 51. Contraste AS-IS de `vento-origo`
+
+La implementación observada ya contiene una recepción funcional relevante:
+
+- `createReceipt` exige usuario y sede;
+- resuelve sesión operativa;
+- verifica un permiso legacy/amplio de recepción;
+- distingue `inventory` y `record_only`;
+- soporta orden normal y carril de emergencia;
+- valida proveedor y orden/sede;
+- captura líneas, presentaciones, cantidades, costos, lotes y vencimientos;
+- persiste `inventory_entries` e `inventory_entry_items`;
+- puede generar solicitudes de revisión de maestro;
+- suma `quantity_received` por línea de orden;
+- marca técnicamente la orden como `received` cuando todas las líneas alcanzan la cantidad ordenada.
+
+También se observa acoplamiento AS-IS con stock/costos y corrección que el contrato objetivo no eleva a ownership final.
+
+---
+
+#### 52. Brechas AS-IS y propietarios
+
+| Brecha | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| permiso runtime `origo.procurement.receipts` no coincide con `receipts.register` | autoridad demasiado amplia o ambigua | `ORIGO-AUTH-014` + package consumidor | mutación usa la permission key exacta server-side |
+| `createReceipt` acepta estados técnicos `draft/sent` | elegibilidad puede divergir del lifecycle empresarial | materialización UX/proceso de `VPROC-0021/0022` | recepción se habilita desde compromiso/entrega canónicamente elegibles |
+| escrituras de inventario/costo ocurren dentro de ORIGO | ownership físico/económico aparece acoplado | `ORIGO-UX-013..015` + integraciones propietarias | ORIGO acepta y handoff NEXO/NUMERA materializa sus verdades |
+| `allReceived` marca orden técnica `received` | cierre técnico puede confundirse con recepción conciliada | `ORIGO-UX-009/010/016` + implementación propietaria | saldo técnico y lifecycle `VPROC-0022` se proyectan separadamente |
+| corrección está acoplada a `createReceipt` | register puede aparentar autoridad de reverse/replace | `ORIGO-AUTH-008/014` | register y reverse se autorizan por separado |
+| master data pending produce estado técnico propio | cierre puede confundirse con aceptación final | owner de maestro + materialización UX | dependencia se resuelve antes de representar conformidad total |
+| operación multi-step no demuestra atomicidad integral | fallo intermedio puede dejar efectos divergentes | package DB/integración + `TREQ-ORIGO-003` | efecto atómico o durable/reconciliable e idempotente |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 53. Handoff inmediato a ORIGO-UX-010
+
+`ORIGO-UX-010 — Diseñar recepción parcial` recibe:
+
+```text
+1 PURCHASE_COMMITMENT
+→ 0..N RECEPCIONES VPROC-0022
+
+TOTAL
+→ residual recibible = 0
+
+PARCIAL
+→ residual recibible > 0
+```
+
+La 010 deberá conservar:
+
+- identidades de recepciones anteriores;
+- saldo por línea;
+- versión de orden/compromiso;
+- cantidades acumuladas;
+- nueva identidad para cada llegada legítima;
+- prohibición de cerrar la compra por la primera parcial.
+
+---
+
+#### 54. Handoff al resto de ORIGO-UX
+
+| Tarea | Entrada exacta proveniente de ORIGO-UX-009 |
+| --- | --- |
+| `ORIGO-UX-010` | parcialidad conserva saldo por línea, recepciones previas e identidad nueva por llegada |
+| `ORIGO-UX-011` | diferencia conserva pedido, observado, decisión y efectos; total limpia exige cero diferencias abiertas |
+| `ORIGO-UX-012` | precios/costos visibles en recepción se minimizan por finalidad y field mask |
+| `ORIGO-UX-013` | recepción aceptada ORIGO no se repite manualmente como segunda recepción en NEXO |
+| `ORIGO-UX-014` | `PUTAWAY_PENDING` entrega a NEXO el alcance aceptado de forma correlacionada e idempotente |
+| `ORIGO-UX-015` | conciliación económica consume recepción aceptada sin convertirla en obligación o pago por sí sola |
+| `ORIGO-UX-016` | prototipo demuestra total, parcial, diferencias, handoff físico y conciliación sin fusionar owners |
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: modalidad de recepción, no duplicación, atomicidad, idempotencia, separación de funciones, autorización operacional, verificación server-side, aceptación comercial/documental y fronteras ORIGO–NEXO–NUMERA ya cuentan con obligaciones verificables vigentes. Esta tarea especializa la recepción total de `VSCREEN-0077` sin introducir una obligación nueva ni modificar el Registro 04A.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-ORIGO-001` para declarar modalidad `inventory`/`record_only` y evitar duplicación de cantidades, costos, orden recibida o evento financiero;
+- `TREQ-ORIGO-003` para tratar cabecera, líneas, stock, costos, cantidades recibidas, orden, maestro, firma y auditoría como una operación atómica o durable/reconciliable e idempotente;
+- `TREQ-ORIGO-004` para mantener recepción separada de solicitud, compra y aprobación, y conservar funciones distintas;
+- `TREQ-AUTH-001` para resolver autoridad mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-008` para exigir `T+C`, rol operativo y territorio en capacidades operativas;
+- `TREQ-AUTH-010` para preservar segregación y evitar que recepción herede aprobación;
+- `TREQ-AUTH-013` para revalidar server-side permiso, actor, territorio, contexto, estado y campos;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de actor, contexto, permiso, recurso, decisión, razones y timestamp.
+
+Esta enumeración es trazabilidad vigente y no constituye actualización del registro.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ, batería global y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@d98d8955bf9ab87db3c852885c079790f35abdce`, owner blob `e039a91ed89a7f1e3fc9887feb5073797eba32bc`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VPROC-0022`, sus nueve transiciones, excepciones y acciones CCR, `VSCREEN-0076/0077/0078`, `ORIGO-AUTH-007`, 04A ORIGO/AUTH, fronteras NEXO/NUMERA y `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad` con el runtime actual de recepción. La entrada inmediata 008 se consume desde el artefacto aprobado SHA-256 `148bf2ad96d89430e8d48a7427b42f197f3afd83fb8f5246dda962681ffe4c65`. |
+| OPERATIVA | NOT_EXECUTED | No se registraron recepciones reales, no se ejecutaron aceptaciones, inventario, costos, órdenes, proveedores, documentos, NEXO ni NUMERA. |
+| FÍSICA | NOT_APPLICABLE | `ORIGO-UX-009` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 58. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0077` queda como superficie canónica de recepción total o parcial;
+- [ ] `VPROC-0022::STEP-RECEIVE_PURCHASE` queda preservado;
+- [ ] recepción total se define contra el saldo recibible vigente y no contra una copia histórica;
+- [ ] una recepción que completa el saldo no elimina parciales anteriores;
+- [ ] cada llegada legítima conserva identidad de recepción propia;
+- [ ] `receipts.register` queda como permiso exacto de nueva recepción;
+- [ ] la modalidad permanece `OPERATIONAL_ONLY` con `T+C`;
+- [ ] `bodeguero` y `gerencia_operativa` requieren rol operativo vigente y territorio compatible;
+- [ ] `receipts.view` y `origo.access` no conceden registro;
+- [ ] pedido original y hecho recibido permanecen separados;
+- [ ] cantidad ordenada, recibida previa, saldo y cantidad observada son distinguibles;
+- [ ] la totalidad exige cubrir todo el saldo del alcance sin residual recibible;
+- [ ] un exceso no se oculta como recepción total válida;
+- [ ] una cantidad menor al saldo no se marca total;
+- [ ] producto/presentación/unidad se validan y no se normalizan silenciosamente;
+- [ ] lote, vencimiento, condición y temperatura se preservan cuando aplican;
+- [ ] `TR-001`, `TR-002` y `TR-003` mantienen llegada y verificaciones separadas;
+- [ ] `TR-005` solo omite revisión de diferencias cuando no existen diferencias;
+- [ ] una diferencia abierta bloquea el cierre limpio y pertenece a `ORIGO-UX-011`;
+- [ ] `ACCEPTANCE_PENDING` no equivale a aceptación tácita;
+- [ ] aceptación total usa `VPROC-0022.TR-007`;
+- [ ] `PUTAWAY_PENDING` no equivale a stock disponible;
+- [ ] recepción total aceptada no equivale a `RECEIPT_RECONCILED`;
+- [ ] `EVT-004` se preserva como handoff físico y no como stock confirmado;
+- [ ] `EVT-005` se preserva como conciliación pendiente y no como obligación pagada;
+- [ ] `inventory` y `record_only` permanecen modalidades distintas y ambas protegidas;
+- [ ] emergencia/directa exige causa, autoridad, actor, territorio y regularización;
+- [ ] master data pendiente no se representa como cierre total limpio;
+- [ ] idempotencia impide doble recepción y doble suma de cantidades;
+- [ ] retries revalidan autorización y no repiten efectos;
+- [ ] concurrencia reevalúa saldo, estado y versión;
+- [ ] `allReceived` y `status=received` del runtime se tratan como evidencia AS-IS, no lifecycle canónico;
+- [ ] corrección/reversión quedan fuera de `receipts.register`;
+- [ ] total y parcial quedan explícitamente separados;
+- [ ] historial de recepciones se preserva al completar el saldo;
+- [ ] actor humano efectivo se conserva en dispositivos compartidos;
+- [ ] vacío, deny, stale, diferencia y fallo técnico no se confunden;
+- [ ] auditoría conserva recepción, orden, actor, cantidades, modalidad, decisión y correlación;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] `ORIGO-UX-010` recibe un handoff suficiente para diseñar recepción parcial;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0077`;
+- crea rutas, componentes o Server Actions;
+- crea permission keys;
+- activa `receipts.register` en el catálogo físico;
+- modifica grants o matrices;
+- registra una recepción real;
+- diseña en detalle la recepción parcial;
+- resuelve diferencias;
+- crea tolerancias cuantitativas;
+- corrige ni reversa recepciones;
+- modifica una orden para hacerla coincidir con lo recibido;
+- mueve stock propietario de NEXO;
+- crea LOC/LPN o ubicación física;
+- reconoce obligación económica definitiva;
+- ejecuta pagos;
+- modifica costos productivos;
+- aprueba maestro de productos/presentaciones;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants, Storage o datos;
+- modifica contratos generados;
+- modifica el Registro 04A;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-010`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-008 — Diseñar aprobación y rechazo`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-009 — Diseñar recepción total`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-010 — Diseñar recepción parcial`
 ### [ ] ORIGO-UX-010 — Diseñar recepción parcial
 ### [ ] ORIGO-UX-011 — Diseñar diferencias contra orden
 ### [ ] ORIGO-UX-012 — Ocultar precios cuando no correspondan
