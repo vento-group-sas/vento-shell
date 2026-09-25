@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1331** |
+| Tareas aprobadas | **1332** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **265** |
+| Tareas no iniciadas | **264** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.40% (1331/1596)** |
+| Porcentaje de completamiento | **83.46% (1332/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-AUTH-010 — Proteger precios y datos sensibles** |
-| Tarea actual | **ORIGO-AUTH-011 — Registrar actor de recepción** |
+| Última tarea aprobada | **ORIGO-AUTH-011 — Registrar actor de recepción** |
+| Tarea actual | **ORIGO-AUTH-012 — Integrar contexto operativo donde aplique** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-012 — Integrar contexto operativo donde aplique** |
+| Siguiente tarea | **ORIGO-AUTH-013 — Mantener administración sin check-in** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 44 de 65 aprobadas; ORIGO-AUTH-011 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 45 de 65 aprobadas; ORIGO-AUTH-012 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-AUTH-011** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles |
-| Tarea actual | `ORIGO-AUTH-011` — Registrar actor de recepción — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique |
+| Última aprobada | `ORIGO-AUTH-011` — Registrar actor de recepción |
+| Tarea actual | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-013` — Mantener administración sin check-in |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 44 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-011** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 45 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-012** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-AUTH-010 — Proteger precios y datos sensibles
-        ↓
-TAREA ACTUAL
 ORIGO-AUTH-011 — Registrar actor de recepción
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-013 — Mantener administración sin check-in
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 44 de 65 tareas aprobadas
+BLOQUES L Y M — 45 de 65 tareas aprobadas
 ```

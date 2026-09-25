@@ -11038,7 +11038,1487 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-011 — Registrar actor de recepción`
 
-### [ ] ORIGO-AUTH-011 — Registrar actor de recepción
+### ✅ ORIGO-AUTH-011 — Registrar actor de recepción
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-010 — Proteger precios y datos sensibles
+**Tarea siguiente:** ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición de la atribución canónica del actor humano que registra, corrige, reversa o participa en una recepción ORIGO, separando principal autenticado, actor efectivo, receptor, actor de corrección/reversión, firma y evidencia, y preservando esa identidad en auditoría y handoffs sin materializar todavía ninguna unidad física
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `ORIGO-AUTH-011::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **a quién se atribuye cada hecho empresarial de recepción en ORIGO**, sin confundir autenticación, dispositivo, sesión, rol, firma, permiso, territorio o identidad técnica con el humano responsable de la acción.
+
+La regla raíz queda:
+
+```text
+PRINCIPAL AUTENTICADO
++
+IDENTIDAD DE DOMINIO RESUELTA
++
+ACTOR EFECTIVO RESUELTO
++
+AUTORIDAD APLICABLE
++
+RECURSO / INTENCIÓN DE RECEPCIÓN
++
+EVIDENCIA CORRELACIONABLE
+=
+ACCIÓN ATRIBUIBLE
+```
+
+Nunca:
+
+```text
+AUTH USER
+OR
+DISPOSITIVO
+OR
+navigation_role
+OR
+PIN PRESENTADO
+OR
+site_id
+OR
+ÚLTIMO ACTOR
+=
+ACTOR RECEPTOR
+```
+
+La tarea no crea autoridad nueva. Cierra la atribución de acciones cuya autoridad ya fue definida por tareas anteriores.
+
+---
+
+#### 2. Handoff recibido de ORIGO-AUTH-007..010
+
+La tarea consume sin reinterpretación estas decisiones:
+
+1. `ORIGO-AUTH-007` definió `origo.procurement.receipts.register` como capacidad `OPERATIONAL_ONLY` con prerrequisito `T+C` sobre `PURCHASE_RECEIPT` y dejó a la 011 la granularidad final de actor y firma;
+2. `ORIGO-AUTH-008` separó `origo.procurement.receipts.reverse` de `receipts.register` y definió la corrección con sustitución como `reverse + register` con correlación durable;
+3. `ORIGO-AUTH-009` cerró el alcance territorial de órdenes sin convertir `site_id` cliente en autoridad;
+4. `ORIGO-AUTH-010` cerró field masks y datos sensibles, y reservó expresamente a la 011 la definición de cómo queda registrado el actor de recepción.
+
+Por tanto:
+
+```text
+AUTORIZAR RECEPCIÓN
+!=
+ATRIBUIR RECEPCIÓN
+```
+
+Y:
+
+```text
+ATRIBUIR RECEPCIÓN
+!=
+INTEGRAR TODO EL CONTEXTO OPERATIVO
+```
+
+La segunda frontera permanece en `ORIGO-AUTH-012`.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente para `ORIGO-AUTH-009..015` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global de atribución;
+2. no crea una instancia física durante su aprobación documental;
+3. cada materialización futura usa `ORIGO-AUTH-011::<implementation_unit_id>`;
+4. el package propietario debe haber superado `E5-GATE-008::<package_id>` antes de materializar la unidad;
+5. el marcador no selecciona `package_id`, `implementation_unit_id`, rutas físicas ni ambiente;
+6. cualquier cambio VENTO de Supabase continúa perteneciendo a `vento-shell`;
+7. ninguna observación AS-IS autoriza modificar runtime desde esta tarea documental.
+
+---
+
+#### 4. Fuentes y snapshots de preparación
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+4127bba82c033f8cd4a65bcb9109d59bc8c885d3
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+owner blob
+2437ccbbfd57b179bf76c0de3592ddf33f4feb05
+```
+
+Se contrastaron como mínimo:
+
+- protocolo, contrato de entrega, continuidad, topología y políticas documentales;
+- `ORIGO-AUTH-007`, `ORIGO-AUTH-008`, `ORIGO-AUTH-009` y `ORIGO-AUTH-010`;
+- contrato canónico de identidad, principal y actor efectivo;
+- contrato de dispositivos compartidos y firma humana;
+- contrato de recurso `PURCHASE_RECEIPT`;
+- `VPROC-0022` y el contrato `INT-PROC-002`;
+- Registro 04A ORIGO y AUTH vigente;
+- runtime de `src/app/receipts/new/page.tsx` y `src/app/receipts/page.tsx`;
+- helpers observados de sesión operativa y firma de actor.
+
+---
+
+#### 5. Identidades que deben permanecer separadas
+
+La tarea reconoce estas identidades conceptuales:
+
+| Identidad | Significado | Puede sustituir al actor receptor |
+| --- | --- | --- |
+| principal autenticado | sujeto que presentó credencial válida | no |
+| usuario Auth | identidad técnica de autenticación cuando exista | no por sí sola |
+| dispositivo compartido | principal técnico / contexto de estación | no |
+| actor efectivo | humano o sistema resuelto canónicamente | solo cuando la acción permita ese tipo de actor |
+| actor receptor | humano responsable del hecho de recepción | sí, como atribución del hecho |
+| actor de reversión | humano efectivo que ejecuta/participa en la reversión autorizada | no sustituye al receptor original |
+| actor de reemplazo | humano que registra la recepción correctiva nueva | no sustituye al receptor original |
+| actor de resolución de diferencia | humano autorizado que decide una diferencia | debe permanecer separado cuando la segregación lo exija |
+| servicio técnico | proceso o credencial de integración | nunca se presenta como receptor humano |
+
+Regla:
+
+```text
+RECEPTOR
+ES UNA RELACIÓN AUDITADA
+NO ES PROPIETARIO AUTOMÁTICO DEL PURCHASE_RECEIPT
+```
+
+---
+
+#### 6. Regla canónica de identidad y atribución
+
+Se preserva el modelo transversal:
+
+```text
+AUTENTICACIÓN
+→ quién presenta la credencial
+
+IDENTIDAD DE DOMINIO
+→ qué entidad representa
+
+ACTOR EFECTIVO
+→ a quién se atribuye la acción
+
+PERMISO / CONTEXTO / RECURSO
+→ si la acción se autoriza
+```
+
+La recepción solo es atribuible cuando estas etapas no se confunden.
+
+---
+
+#### 7. Actor receptor de `VPROC-0022`
+
+`VPROC-0022` exige un receptor identificable y conserva como entrada empresarial:
+
+```text
+receiver_actor_ref
+```
+
+Contrato:
+
+```text
+receiver_actor_ref
+→ referencia estable al humano efectivo responsable del hecho de recepción
+→ resuelta en servidor
+→ correlacionable con principal y evidencia
+→ inmutable como historia del hecho una vez confirmado
+```
+
+No es:
+
+```text
+auth_user_id sin resolución
+shared_device_id
+navigation_role
+employee.site_id
+selected_site_id
+PIN crudo
+nombre visible
+texto libre
+```
+
+---
+
+#### 8. Sesión personal
+
+Cuando el principal autenticado es una persona:
+
+```text
+SESIÓN PERSONAL VÁLIDA
++
+IDENTIDAD LABORAL RESUELTA
++
+EMPLEADO ACTIVO
++
+ACTOR EFECTIVO = EMPLEADO
++
+AUTORIDAD DE RECEPCIÓN
+=
+ACTOR RECEPTOR CANDIDATO
+```
+
+La sola existencia de `auth.users.id` no permite saltar la resolución de identidad laboral.
+
+El contrato físico deberá usar la identidad canónica resuelta del actor, aunque una implementación concreta reutilice técnicamente el mismo UUID entre Auth y empleado.
+
+---
+
+#### 9. Dispositivo compartido
+
+En dispositivo compartido:
+
+```text
+PRINCIPAL AUTENTICADO = DISPOSITIVO TÉCNICO
+ACTOR EFECTIVO = EMPLEADO HUMANO
+```
+
+Y obligatoriamente:
+
+```text
+DISPOSITIVO AUTORIZADO
+!=
+ACTOR AUTORIZADO
+```
+
+El receptor se obtiene únicamente después de resolver al humano real mediante el mecanismo canónico de sesión/firma aplicable.
+
+---
+
+#### 10. Firma humana en dispositivo compartido
+
+Para una acción que exige firma individual:
+
+```text
+DISPOSITIVO TÉCNICO AUTENTICADO
++
+PRUEBA HUMANA VALIDADA EN SERVIDOR
++
+EMPLEADO HUMANO RESUELTO
++
+EVIDENCIA DE FIRMA CORRELACIONABLE
+=
+ACTOR HUMANO IDENTIFICABLE
+```
+
+Pero:
+
+```text
+ACTOR HUMANO IDENTIFICABLE
+!=
+ACCIÓN AUTORIZADA
+```
+
+La firma:
+
+- identifica o confirma al humano;
+- no concede permiso;
+- no crea turno;
+- no crea check-in;
+- no crea rol operativo;
+- no amplía territorio;
+- no sustituye reautenticación fuerte cuando otra política la exige.
+
+---
+
+#### 11. Secreto y referencia de firma
+
+El secreto presentado por el humano, incluido un PIN cuando aplique:
+
+```text
+NO SE PERSISTE EN RECEPCIÓN
+NO SE PROPAGA A EVENTOS
+NO SE REGISTRA EN LOGS
+NO SE SERIALIZA A CONSUMIDORES
+```
+
+La evidencia persistible es una referencia opaca generada/resuelta en servidor.
+
+Regla:
+
+```text
+FIRMA AUDITABLE
+!=
+SECRETO AUDITADO
+```
+
+---
+
+#### 12. Relación con `origo.procurement.receipts.register`
+
+La capacidad ya definida continúa siendo:
+
+```text
+origo.procurement.receipts.register
+```
+
+Esta tarea añade una condición de atribución, no un permiso nuevo:
+
+```text
+receipts.register AUTORIZADO
++
+ACTOR RECEPTOR RESUELTO
++
+EVIDENCIA APLICABLE
+=
+REGISTRO ATRIBUIBLE
+```
+
+Si el actor requerido es ausente, ambiguo, inactivo, stale o no correlacionable, la acción falla cerrada.
+
+---
+
+#### 13. Actor y recurso de recepción
+
+El recurso empresarial sigue siendo:
+
+```text
+PURCHASE_RECEIPT
+```
+
+La relación mínima debe poder reconstruir:
+
+```text
+receipt_id o intención estable
+↔ receiver_actor_ref
+↔ principal autenticado
+↔ sede / área aplicables
+↔ orden o causa controlada
+↔ proveedor
+↔ líneas / cantidades
+↔ modalidad
+↔ timestamp del hecho
+↔ evidencia de autorización / firma
+```
+
+El receptor no adquiere propiedad del recurso por estar relacionado con él.
+
+---
+
+#### 14. Recepción contra orden de compra
+
+Cuando la recepción deriva de una orden:
+
+```text
+PURCHASE_ORDER ELEGIBLE
++
+RECEIPT_DESTINATION_DRAFT AUTORIZADO
++
+ACTOR RECEPTOR RESUELTO
++
+receipts.register
+=
+RECEPCIÓN NUEVA ATRIBUIBLE
+```
+
+El actor receptor no se infiere del comprador, aprobador ni creador de la orden.
+
+---
+
+#### 15. Recepción directa o de emergencia
+
+Una recepción sin orden o por carril de emergencia sigue exigiendo actor receptor real.
+
+```text
+CAUSA CONTROLADA
+!=
+ACTOR IMPLÍCITO
+```
+
+La urgencia no permite:
+
+- usar el principal técnico como receptor;
+- omitir firma cuando sea requerida;
+- usar el último actor del dispositivo;
+- registrar un receptor genérico;
+- perder la correlación con el motivo de excepción.
+
+---
+
+#### 16. Modo inventariable y modo solo registro
+
+La modalidad no cambia la obligación de atribución.
+
+| Modalidad | Actor receptor requerido | Efecto físico |
+| --- | --- | --- |
+| `inventory` | sí | puede producir handoff físico autorizado |
+| `record_only` | sí | no produce stock por esa sola modalidad |
+
+Regla:
+
+```text
+SOLO REGISTRO
+!=
+SIN ACTOR
+```
+
+---
+
+#### 17. Recepción total y parcial
+
+Una recepción parcial conserva su propio actor y no hereda automáticamente el actor de una recepción previa o posterior.
+
+Para cada hecho confirmado:
+
+```text
+RECEPCIÓN PARCIAL A
+→ actor A
+
+RECEPCIÓN PARCIAL B
+→ actor B o actor A si fue resuelto nuevamente
+```
+
+La identidad debe provenir de la ejecución concreta, no de una copia silenciosa.
+
+---
+
+#### 18. Momento del hecho y momento técnico
+
+La auditoría distingue:
+
+```text
+received_at
+→ momento empresarial declarado/confirmado del hecho
+
+created_at / recorded_at
+→ momento técnico de persistencia
+```
+
+El actor receptor pertenece al hecho empresarial confirmado.
+
+Cambiar o corregir timestamps no permite cambiar silenciosamente al receptor histórico.
+
+---
+
+#### 19. Actor original en una corrección
+
+Una corrección nunca reescribe quién recibió originalmente.
+
+```text
+RECEPCIÓN ORIGINAL
+→ conserva receiver_actor_ref ORIGINAL
+
+REVERSIÓN
+→ registra reverse_actor_ref / evidencia equivalente
+
+REEMPLAZO
+→ registra receiver_actor_ref DEL REEMPLAZO
+```
+
+Los nombres de campos físicos concretos se deciden en la materialización propietaria; la separación semántica es obligatoria.
+
+---
+
+#### 20. Corrección con sustitución
+
+Se preserva:
+
+```text
+CORRECCIÓN
+=
+receipts.reverse
++
+receipts.register
++
+CORRELACIÓN DURABLE
+```
+
+La atribución completa debe poder reconstruir:
+
+```text
+ORIGINAL
+↔ actor receptor original
+↔ actor de reversión
+↔ motivo
+↔ REEMPLAZO
+↔ actor receptor del reemplazo
+```
+
+La firma del reemplazo no puede atribuir retrospectivamente la reversión anterior.
+
+---
+
+#### 21. Actor de reversión
+
+`origo.procurement.receipts.reverse` es una acción distinta y sensible.
+
+Su evidencia debe identificar al actor efectivo que ejecutó o confirmó la reversión conforme al contrato materializado.
+
+Regla:
+
+```text
+ACTOR RECEPTOR ORIGINAL
+!=
+ACTOR DE REVERSIÓN POR DEFECTO
+```
+
+Aunque sean la misma persona en un caso concreto, ambas relaciones deben derivarse de sus respectivas acciones.
+
+---
+
+#### 22. Componentes base y operativo de reversión
+
+La autorización de reversión ya definida puede requerir componentes base y operativos.
+
+La atribución no los fusiona.
+
+Cuando una implementación requiera dos participantes o una decisión + ejecución:
+
+```text
+ACTOR QUE AUTORIZA
++
+ACTOR QUE EJECUTA
+```
+
+se conservan como identidades auditables separadas cuando sean distintas.
+
+No se reduce todo a un único `created_by` si ello elimina una separación exigida por el flujo.
+
+---
+
+#### 23. Resolución de diferencias
+
+`VPROC-0022` establece que una diferencia puede requerir un actor distinto del receptor.
+
+Por tanto:
+
+```text
+RECEPTOR
+!=
+RESOLVEDOR DE DIFERENCIA
+```
+
+La aceptación condicionada, rechazo o resolución de discrepancia no puede sobrescribir `receiver_actor_ref`.
+
+El contrato específico de autoridad para esa decisión permanece en sus tareas propietarias; esta tarea solo preserva la identidad de cada participante.
+
+---
+
+#### 24. Actor externo y proveedor
+
+El proveedor puede iniciar una entrega o aportar documentos.
+
+No se convierte por ello en receptor interno.
+
+```text
+PROVEEDOR / MENSAJERO / EVENTO EXTERNO
+→ fuente o participante
+
+RECEPTOR EMPRESARIAL
+→ actor humano interno resuelto cuando corresponda
+```
+
+Esta tarea no autoriza una recepción empresarial autónoma sin receptor humano cuando `VPROC-0022` exige `receiver_actor_ref`; un proveedor, evento externo o adaptador permanece como fuente o participante técnico y nunca fabrica un empleado receptor.
+
+---
+
+#### 25. Servicio técnico y `service_role`
+
+Una credencial privilegiada, RPC o proceso técnico no explica autoridad empresarial.
+
+```text
+service_role
+!=
+ACTOR RECEPTOR
+```
+
+Si un servicio transporta o persiste la decisión de recepción:
+
+- conserva el principal técnico;
+- conserva el actor humano que originó la decisión cuando exista;
+- conserva la delegación explícita si aplica;
+- no se autoatribuye la recepción por ejecutar la escritura.
+
+---
+
+#### 26. Actor efectivo y simulación
+
+Una simulación nunca cambia la atribución real.
+
+Una recepción real debe conservar:
+
+```text
+simulation = false
+```
+
+o equivalente contractual verificable cuando la acción real no provenga de simulación.
+
+Una identidad simulada no puede convertirse en `receiver_actor_ref` real.
+
+---
+
+#### 27. Frontera de confianza server-side
+
+El actor se resuelve en servidor.
+
+Quedan prohibidos como autoridad final:
+
+```text
+employee_id DEL FORMULARIO
+actor_id DEL CLIENTE
+receiver_id DEL QUERY
+navigation_role
+último actor cacheado
+nombre visible
+cookie no validada
+site_id seleccionado
+```
+
+La interfaz puede transportar una prueba humana o referencia permitida, pero el servidor resuelve la identidad autoritativa.
+
+---
+
+#### 28. Fail-closed de identidad
+
+La acción se deniega o bloquea antes del efecto cuando el actor requerido resulte:
+
+- ausente;
+- ambiguo;
+- inactivo;
+- no resoluble;
+- incompatible con el principal;
+- incompatible con la sesión de actor;
+- stale;
+- no correlacionable con la firma requerida;
+- transferido desde otro dispositivo o contexto sin resolución válida.
+
+No existe fallback a:
+
+```text
+user.id técnico
+último empleado
+rol de navegación
+usuario administrador
+```
+
+---
+
+#### 29. Frescura del actor
+
+El actor efectivo debe corresponder a la acción que realmente cruza la frontera autoritativa.
+
+Un cambio de:
+
+- trabajador;
+- sesión de actor;
+- turno;
+- check-in;
+- dispositivo;
+- rol;
+- asignación;
+
+puede invalidar el contexto previo.
+
+Esta tarea exige que la atribución no use un actor stale; la mecánica completa de contexto operativo e invalidación permanece en contratos transversales y `ORIGO-AUTH-012`.
+
+---
+
+#### 30. Auditoría mínima del registro de recepción
+
+Toda recepción confirmada debe permitir reconstruir, según aplique:
+
+- principal autenticado;
+- tipo e identidad no secreta del principal;
+- actor efectivo;
+- actor receptor;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- dispositivo;
+- sede;
+- área;
+- permiso exacto;
+- recurso e intención;
+- orden o causa de recepción directa;
+- proveedor;
+- modalidad;
+- estado/transición;
+- decisión y razones;
+- evidencia o referencia de firma;
+- versión contractual;
+- timestamp del hecho;
+- timestamp técnico;
+- correlación;
+- idempotencia;
+- resultado.
+
+No todos estos datos deben vivir en una sola tabla. Deben ser correlacionables de forma durable.
+
+---
+
+#### 31. Inmutabilidad histórica del receptor
+
+Una vez confirmado el hecho:
+
+```text
+receiver_actor_ref ORIGINAL
+```
+
+no se sobrescribe por:
+
+- corrección posterior;
+- reversión;
+- cambio de actor del dispositivo;
+- baja del empleado;
+- cambio de rol;
+- cambio de sede;
+- migración de contexto;
+- conciliación económica;
+- ingreso físico en NEXO.
+
+La identidad puede conservarse como referencia histórica aunque la persona ya no esté activa.
+
+---
+
+#### 32. Lectura e historial
+
+`origo.procurement.receipts.view` puede exponer identidad de receptor únicamente dentro de la proyección autorizada y finalidad correspondiente.
+
+El historial debe distinguir:
+
+```text
+QUIÉN RECIBIÓ
+QUIÉN REVERSÓ
+QUIÉN CORRIGIÓ / REGISTRÓ REEMPLAZO
+QUIÉN RESOLVIÓ DIFERENCIA
+```
+
+cuando esas acciones existan.
+
+No se presenta un único actor como autor de toda la cadena.
+
+---
+
+#### 33. Minimización de la identidad mostrada
+
+Registrar identidad no significa exponer todo el expediente del empleado.
+
+Una proyección ordinaria puede usar:
+
+```text
+actor_ref
++
+identidad visible mínima autorizada
+```
+
+La recepción no concede acceso a documentos laborales, teléfono, correo, información médica ni otros datos personales ajenos a la finalidad.
+
+---
+
+#### 34. Handoff ORIGO → NEXO
+
+Cuando la recepción produzca un handoff físico, la proyección debe preservar según aplique:
+
+- referencia de recepción;
+- proceso e instancia;
+- principal pertinente;
+- actor efectivo / receptor pertinente;
+- sede y área;
+- productos y cantidades aceptadas;
+- modalidad;
+- correlación e idempotencia;
+- evidencia mínima;
+- versión contractual.
+
+NEXO revalida su propia autoridad y no convierte al receptor ORIGO en propietario del ledger físico.
+
+---
+
+#### 35. Handoff ORIGO → NUMERA
+
+Cuando exista efecto económico posterior, NUMERA puede recibir una referencia correlacionada al actor y recepción fuente dentro del sobre transversal autorizado.
+
+Eso no significa:
+
+```text
+RECEPTOR ORIGO
+=
+ACTOR CONTABLE
+```
+
+NUMERA conserva sus propios actores, decisiones y auditoría.
+
+---
+
+#### 36. Una operación empresarial, múltiples efectos
+
+Una recepción puede producir:
+
+```text
+HECHO ORIGO
+→ handoff físico NEXO
+→ handoff económico NUMERA
+→ solicitudes de maestro u otros efectos derivados
+```
+
+La cadena conserva causalidad:
+
+```text
+ACTOR RECEPTOR ORIGO
+→ causa del hecho fuente
+```
+
+sin atribuirle automáticamente las acciones que cada consumidora ejecute después.
+
+---
+
+#### 37. Actor y eventos derivados internos
+
+Si ORIGO crea eventos derivados durante la misma operación, estos deben conservar la causalidad con el actor fuente o declarar correctamente su actor técnico.
+
+No se permite que:
+
+```text
+EVENTO DERIVADO
+→ pierda al actor fuente
+```
+
+ni que:
+
+```text
+PROCESO TÉCNICO
+→ se presente como humano receptor
+```
+
+---
+
+#### 38. Concurrencia y actor
+
+Dos pestañas, dispositivos, receptores o retries concurrentes no pueden fusionar identidades.
+
+Cada intento conserva:
+
+- principal;
+- actor resuelto;
+- correlación;
+- idempotency key o identidad lógica aplicable;
+- resultado durable.
+
+Un retry que devuelve un resultado ya aplicado conserva el actor de la operación originalmente aplicada; no reasigna el hecho al actor que ejecutó el retry.
+
+---
+
+#### 39. Idempotencia y atribución
+
+Para un replay legítimo:
+
+```text
+MISMA INTENCIÓN
++
+MISMO RESULTADO DURABLE
+→ devuelve resultado previo
+→ NO cambia receiver_actor_ref
+```
+
+Si una clave idempotente se reutiliza con actor, recurso o contenido incompatible, la operación debe entrar en conflicto o denegación conforme al contrato transversal; nunca reatribuir silenciosamente.
+
+---
+
+#### 40. AS-IS — creación de recepción
+
+El runtime actual de `createReceipt`:
+
+1. obtiene el principal autenticado;
+2. resuelve sesión operativa;
+3. verifica la capacidad de recepción observada;
+4. en dispositivo compartido exige firma mediante `requireSharedDeviceActorSignature`;
+5. cuando la firma es requerida usa `signatureResult.actorEmployeeId` como `created_by`;
+6. en sesión no compartida usa `user.id` como `created_by`;
+7. vincula la firma al `inventory_entries.id` después del insert cuando corresponde.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_CREATED_BY_HAS_SHARED_ACTOR_ATTRIBUTION
+```
+
+Es una base útil, pero no demuestra por sí sola el contrato completo de identidad, auditoría y handoff.
+
+---
+
+#### 41. AS-IS — identidad personal escrita como `user.id`
+
+En sesión no compartida el runtime observado persiste:
+
+```text
+created_by = user.id
+```
+
+La superficie inspeccionada no demuestra explícitamente, en ese punto de escritura, una resolución separada:
+
+```text
+AUTH USER
+→ IDENTIDAD LABORAL
+→ ACTOR EFECTIVO
+```
+
+Clasificación:
+
+```text
+AS_IS_PERSONAL_RECEIPT_ACTOR_USES_AUTH_USER_ID
+```
+
+No se afirma que los UUID sean distintos ni que la relación sea incorrecta en datos reales. La condición de salida es demostrar que el valor persistido representa al actor canónico resuelto y no una equivalencia asumida por conveniencia técnica.
+
+---
+
+#### 42. AS-IS — firma de dispositivo compartido
+
+El runtime observado intenta adjuntar una firma opaca al registro de recepción después del insert. Si `attachSharedDeviceActionSignatureTarget` falla, la superficie inspeccionada registra el error en consola y continúa; por tanto, el `inventory_entries` ya creado puede quedar sin ese target de firma enlazado desde esta secuencia.
+
+Eso aporta correlación técnica cuando el attach resulta exitoso, pero no satisface todavía atomicidad/reconciliación de evidencia. La materialización final debe demostrar:
+
+```text
+firma válida
+↔ actor humano resuelto
+↔ principal/dispositivo
+↔ acción exacta
+↔ recepción exacta
+↔ timestamp
+↔ decisión/autorización aplicable
+```
+
+Clasificación:
+
+```text
+AS_IS_SHARED_RECEIPT_SIGNATURE_PARTIAL_TRACE
+```
+
+---
+
+#### 43. AS-IS — historial no proyecta receptor
+
+La lista actual de recepciones inspeccionada selecciona campos de `inventory_entries` sin incluir `created_by` en `EntryRow` ni mostrar explícitamente el receptor en la tabla.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_HISTORY_ACTOR_NOT_PROJECTED
+```
+
+Esto es una brecha de proyección/auditoría visible, no prueba ausencia del dato persistido.
+
+---
+
+#### 44. AS-IS — reversión sin actor explícito en la Server Action
+
+`reverseReceipt` obtiene un `user`, valida recurso/estado/ventana observada y llama:
+
+```text
+origo_reverse_inventory_entry
+```
+
+con:
+
+```text
+p_entry_id
+p_comment
+```
+
+La superficie inspeccionada no pasa explícitamente un actor ni una referencia de firma al RPC y no demuestra, por sí sola, cómo queda atribuida la reversión dentro de la capa autoritativa.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_REVERSAL_ACTOR_NOT_EXPLICIT_AT_ACTION_BOUNDARY
+```
+
+No se concluye que el RPC carezca de toda auditoría interna; esa capa debe verificarse durante la materialización propietaria.
+
+---
+
+#### 45. AS-IS — corrección reversa antes de obtener la firma del reemplazo
+
+En el flujo observado de corrección con `correction_entry_id`:
+
+```text
+1. valida recepción original
+2. llama origo_reverse_inventory_entry
+3. después ejecuta requireSharedDeviceActorSignature
+4. después crea el reemplazo
+```
+
+Por tanto, la firma obtenida después no puede presentarse como evidencia previa del actor que ya ejecutó la reversión.
+
+Clasificación:
+
+```text
+AS_IS_CORRECTION_REVERSAL_PRECEDES_REPLACEMENT_ACTOR_SIGNATURE
+```
+
+Condición de salida:
+
+```text
+ACTOR / AUTORIDAD DE REVERSIÓN
+SE RESUELVEN ANTES DE LA REVERSIÓN
++
+ACTOR DEL REEMPLAZO
+SE RESUELVE PARA EL REGISTER
++
+AMBOS QUEDAN CORRELACIONADOS
+```
+
+---
+
+#### 46. AS-IS — eventos de costo derivados
+
+El runtime observado reutiliza el mismo actor derivado (`actorEmployeeId` o `user.id`) como `created_by` en eventos de costo generados durante la recepción.
+
+Esto conserva causalidad útil, pero no convierte al receptor en actor financiero de NUMERA ni elimina el requisito de que cada dominio conserve su propio actor para decisiones posteriores.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_ACTOR_PROPAGATED_TO_LOCAL_COST_EVENT
+```
+
+---
+
+#### 47. AS-IS — movimientos físicos derivados
+
+La inserción observada de `inventory_movements` no muestra un campo de actor en el payload construido por esta superficie.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_MOVEMENT_ACTOR_NOT_EXPLICIT_IN_INSERT_PAYLOAD
+```
+
+No se concluye ausencia de trazabilidad en capas inferiores. La arquitectura objetivo exige que el handoff físico conserve actor/causalidad suficiente y que NEXO materialice su verdad propietaria.
+
+---
+
+#### 48. Matriz de hechos y actores
+
+| Hecho | Actor que debe conservarse | Puede heredar actor de otro hecho |
+| --- | --- | --- |
+| registrar recepción nueva | receptor efectivo | no |
+| registrar recepción parcial posterior | receptor de esa ejecución | no automáticamente |
+| reversar recepción | actor de reversión | no |
+| crear reemplazo correctivo | receptor del reemplazo | no |
+| resolver diferencia | actor de resolución | no; segregación cuando aplique |
+| handoff NEXO | actor/causa fuente + actor NEXO posterior | no fusionar |
+| handoff NUMERA | actor/causa fuente + actor NUMERA posterior | no fusionar |
+| retry idempotente | actor original del resultado aplicado | no reasignar |
+| proceso técnico | actor `SYSTEM` o delegado explícito | nunca fabricar receptor humano |
+
+---
+
+#### 49. Matriz de canales
+
+| Canal | Principal | Actor receptor permitido | Evidencia mínima |
+| --- | --- | --- | --- |
+| sesión personal | humano autenticado | empleado efectivo resuelto | sesión + actor + decisión + recurso |
+| dispositivo compartido | dispositivo técnico | empleado efectivo resuelto | sesión/firma opaca + dispositivo + actor + decisión + recurso |
+| servicio interno | servicio técnico | no como receptor humano salvo delegación explícita válida | proceso + delegación/actor + decisión + recurso |
+| simulación | principal real del simulador | nunca como receptor real | solo evidencia simulada; cero efecto real |
+| anónimo | ninguno | ninguno | DENY |
+
+---
+
+#### 50. Matriz de separación de actor y autoridad
+
+| Elemento | Identifica actor | Concede autoridad | Define territorio |
+| --- | --- | --- | --- |
+| sesión Auth | no por sí sola | no por sí sola | no |
+| sesión de actor | sí, cuando válida | no por sí sola | no |
+| firma/PIN validado | ayuda a identificar/confirmar | no | no |
+| permiso exacto | no | componente de autoridad | no por sí solo |
+| turno/check-in | no | prerrequisito contextual | limita contexto |
+| sede/área | no | no | componente territorial |
+| dispositivo | no | solo techo/restricción | puede restringir |
+| recurso | no | objeto de decisión | aporta territorio propio |
+
+---
+
+#### 51. Denegaciones de atribución
+
+La materialización debe distinguir al menos:
+
+```text
+ACTOR_MISSING
+ACTOR_AMBIGUOUS
+ACTOR_INACTIVE
+ACTOR_SESSION_INVALID
+ACTOR_SIGNATURE_REQUIRED
+ACTOR_SIGNATURE_INVALID
+ACTOR_PRINCIPAL_MISMATCH
+ACTOR_STALE
+ACTOR_RESOURCE_MISMATCH
+TECHNICAL_FAILURE
+```
+
+Los nombres físicos de reason codes pertenecen al contrato transversal aplicable; esta lista define las clases semánticas que no deben colapsarse en `ALLOW` ni en un único error ambiguo.
+
+---
+
+#### 52. Actor y dispositivo en auditoría
+
+En dispositivo compartido deben coexistir:
+
+```text
+principal = dispositivo técnico
+actor = empleado humano
+```
+
+Registrar solo uno de los dos es insuficiente para reconstruir la acción.
+
+El dispositivo no hereda al administrador que lo configuró y el empleado no hereda las capacidades técnicas del principal.
+
+---
+
+#### 53. Actor y rol operativo
+
+El rol operativo explica **por qué** un actor puede ejecutar una capacidad en contexto, pero no identifica al actor.
+
+```text
+bodeguero
+!=
+actor_employee_id
+```
+
+Y:
+
+```text
+gerencia_operativa
+!=
+actor_employee_id
+```
+
+La auditoría conserva ambos cuando correspondan.
+
+---
+
+#### 54. Receptor y propiedad del recurso
+
+El contrato de recurso mantiene:
+
+```text
+PURCHASE_RECEIPT
+→ Receptor solo como relación
+```
+
+Consecuencias:
+
+- conocer una recepción propia no concede acceso global;
+- ser receptor no concede corregir o reversar;
+- ser receptor no concede ver todos los datos sensibles;
+- ser receptor no convierte el recurso en `OWN` salvo que otro contrato lo declare explícitamente.
+
+---
+
+#### 55. Receptor y cambio de trabajador
+
+Cambiar de trabajador en una estación compartida:
+
+```text
+NO CAMBIA
+el actor histórico de recepciones previas
+```
+
+Y debe impedir que el nuevo actor continúe una acción sensible iniciada por el anterior sin revalidación cuando el contrato así lo requiera.
+
+La política completa de cambio de actor y contexto permanece transversal.
+
+---
+
+#### 56. Receptor y cierre de sesión
+
+Cerrar sesión, expirar actor, terminar turno o check-out no borra la atribución histórica.
+
+```text
+ACTOR YA REGISTRADO
+→ permanece como evidencia histórica
+
+AUTORIDAD FUTURA
+→ se reevalúa
+```
+
+---
+
+#### 57. Receptor y baja posterior del empleado
+
+La desactivación del empleado:
+
+- invalida autoridad futura conforme al contrato transversal;
+- no reescribe recepciones históricas;
+- no anonimiza por defecto una evidencia que deba conservar trazabilidad empresarial;
+- sí debe respetar las políticas de minimización y retención aplicables a proyecciones.
+
+---
+
+#### 58. Receptor y datos personales
+
+La referencia de actor es necesaria para responsabilidad empresarial, pero las consumidoras reciben solo lo necesario.
+
+```text
+ACTOR_REF
+!=
+EXPEDIENTE LABORAL COMPLETO
+```
+
+La auditoría puede resolver detalles adicionales únicamente con la autorización correspondiente.
+
+---
+
+#### 59. Handoff hacia ORIGO-AUTH-012
+
+La 011 deja preparado este contrato:
+
+```text
+ACTOR EFECTIVO / RECEPTOR
+→ definido y atribuible
+```
+
+`ORIGO-AUTH-012` deberá integrar, donde aplique:
+
+```text
+turno
+check-in
+sede
+área
+rol operativo
+contexto de dispositivo
+recurso activo
+```
+
+sin redefinir quién es el actor.
+
+Frontera:
+
+```text
+011 = QUIÉN ACTÚA Y CÓMO QUEDA ATRIBUIDO
+012 = EN QUÉ CONTEXTO OPERATIVO PUEDE ACTUAR
+```
+
+---
+
+#### 60. Frontera con ORIGO-AUTH-013
+
+`ORIGO-AUTH-013` conserva la administración sin check-in cuando el contrato lo permita.
+
+Esta tarea no transforma la recepción operativa en administración ni exige check-in para acciones administrativas ajenas.
+
+La identidad del actor debe existir tanto en carriles administrativos como operativos cuando la acción sea protegida; los prerrequisitos contextuales pueden diferir.
+
+---
+
+#### 61. Frontera con ORIGO-AUTH-014
+
+`ORIGO-AUTH-014` conserva la materialización del enforcement de permisos/consumidores correspondiente.
+
+La 011 no activa catálogos ni reescribe guards.
+
+La materialización futura deberá combinar:
+
+```text
+PERMISO EXACTO
++
+ACTOR CANÓNICO
++
+RECURSO
++
+CONTEXTO / TERRITORIO
+```
+
+sin listas locales de roles como autoridad final.
+
+---
+
+#### 62. Frontera con ORIGO-AUTH-015
+
+`ORIGO-AUTH-015` deberá probar integralmente que:
+
+- el actor correcto queda atribuido;
+- actor equivocado o stale falla cerrado;
+- shared device conserva principal + actor;
+- register y reverse no mezclan actores;
+- corrección conserva original/reversión/reemplazo;
+- handoffs preservan causalidad;
+- retries no reatribuyen resultados;
+- auditoría es correlacionable end-to-end.
+
+La 011 define el oracle contractual, no ejecuta esas pruebas físicas.
+
+---
+
+#### 63. Materialización física posterior
+
+Cada unidad futura `ORIGO-AUTH-011::<implementation_unit_id>` deberá demostrar, para sus targets reales:
+
+1. resolución canónica del actor antes de la acción protegida;
+2. separación principal/actor en dispositivo compartido;
+3. firma o sesión de actor cuando aplique;
+4. persistencia o correlación durable de `receiver_actor_ref` equivalente;
+5. atribución independiente de reversión/corrección;
+6. conservación de actor en handoffs y auditoría;
+7. denegaciones negativas;
+8. ausencia de secretos crudos;
+9. idempotencia sin reatribución;
+10. rollback o recuperación que no destruya historia de actor.
+
+La evidencia de una unidad no certifica otra unidad automáticamente.
+
+---
+
+#### 64. Inventario de brechas AS-IS y propietarios
+
+| Brecha | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `created_by=user.id` en sesión personal sin resolución de empleado visible en el punto inspeccionado | identidad Auth tratada como actor por equivalencia implícita | `ORIGO-AUTH-011::<implementation_unit_id>` + fundación AUTH aplicable | actor canónico resuelto y correlación Auth→empleado demostrada |
+| firma shared device se adjunta después del insert y el fallo observado del attach solo se registra en consola | la recepción puede quedar persistida sin el target de firma enlazado por esa secuencia | `ORIGO-AUTH-011::<implementation_unit_id>` + owner de firma | firma y efecto quedan atómicos o durablemente reconciliables; fallo de attach no queda como éxito silencioso |
+| historial de recepciones no proyecta actor en superficie inspeccionada | operador no puede ver atribución necesaria | `ORIGO-AUTH-011::<implementation_unit_id>` / UX propietaria | proyección autorizada muestra receptor cuando la finalidad lo exige |
+| `reverseReceipt` no pasa actor/firma explícitos al RPC en la superficie inspeccionada | reversión no atribuible desde esa frontera por evidencia visible | `ORIGO-AUTH-011::<implementation_unit_id>` + `ORIGO-AUTH-014` | límite autoritativo registra principal/actor/permiso/recurso/motivo antes del efecto |
+| corrección ejecuta reverse antes de obtener la firma usada por el reemplazo | firma posterior no prueba actor de la reversión ya aplicada | `ORIGO-AUTH-011::<implementation_unit_id>` + owner de corrección | actor/autoridad de reverse se resuelven antes de reverse; actor del replacement se resuelve para register |
+| `inventory_movements` no muestra actor en payload de inserción observado | causalidad física puede perderse entre ORIGO y ledger actual | integración ORIGO→NEXO + unidad 011 aplicable | handoff/evento conserva actor fuente y NEXO registra su actor/causa propietaria |
+| actor de eventos de costo locales reutiliza receptor | puede confundirse causa fuente con actor financiero | integración ORIGO→NUMERA | evento conserva causalidad sin atribuir decisiones financieras posteriores al receptor |
+| un retry concurrente puede ser ejecutado por actor distinto | resultado histórico podría reatribuirse al reintento | idempotencia transversal + unidad 011 | resultado aplicado conserva actor original y conflicting reuse no sobrescribe |
+
+Ninguna brecha queda sin dueño ni condición de salida.
+
+---
+
+#### 65. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la identificación del humano real, la separación principal/actor, el registro de dispositivo y contexto, la revalidación server-side, la segregación entre receptor y otros actores, la auditoría correlacionable, la idempotencia y la preservación de causalidad ya están protegidas por requisitos canónicos vigentes. Esta tarea especializa esas obligaciones para `PURCHASE_RECEIPT` sin introducir una obligación empresarial independiente que requiera ampliar el registro.
+
+---
+
+#### 66. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para modalidad visible/auditable de recepción y prevención de efectos duplicados;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, cantidades, costos, orden y corrección correlacionada;
+- `TREQ-ORIGO-004` para separar solicitante, comprador, aprobador y receptor y preservar el ciclo de abastecimiento;
+- `TREQ-AUTH-001` para permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-011` para principal técnico, humano identificado y atribución en dispositivo compartido;
+- `TREQ-AUTH-013` para validación server-side de principal, actor, permiso, territorio, contexto, estado y recurso;
+- `TREQ-AUTH-014` para invalidación de contexto/tokens derivados ante cambios de actor, turno, área, dispositivo o asignación;
+- `TREQ-AUTH-015` para evidencia correlacionable de principal, actor efectivo, dispositivo, contexto, permiso, recurso, decisión y timestamp;
+- requisitos vigentes de integración e idempotencia para preservar actor/causalidad en handoffs ORIGO→NEXO/NUMERA.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 67. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en el archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación de este artefacto. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-origo/main`, owner, continuidad, topología, contratos de identidad/actor/dispositivo, recurso `PURCHASE_RECEIPT`, `VPROC-0022`, Registro 04A y runtime actual de recepción/corrección. |
+| OPERATIVA | `NOT_EXECUTED` | No se creó, corrigió, reversó ni recibió mercancía real; no se ejecutaron RPC, RLS, datos productivos ni flujos desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global especifica el contrato; las futuras materializaciones ocurren por `ORIGO-AUTH-011::<implementation_unit_id>` bajo `POST_E5_PACKAGE`. |
+
+---
+
+#### 68. Criterios de aceptación
+
+- [x] La tarea define atribución sin crear un permiso nuevo.
+- [x] Se preserva `PURCHASE_RECEIPT` y el receptor como relación, no propiedad.
+- [x] Se separan principal autenticado y actor efectivo.
+- [x] Se separan dispositivo compartido y humano receptor.
+- [x] Se establece que Auth user no sustituye por sí solo la resolución laboral.
+- [x] Se preserva la firma/PIN como evidencia de identidad, no como permiso.
+- [x] Se prohíbe persistir el secreto crudo como evidencia.
+- [x] Se define `receiver_actor_ref` como relación empresarial estable equivalente, sin imponer columna física.
+- [x] Recepción total, parcial, inventariable y solo registro conservan actor.
+- [x] Recepción directa/emergencia no omite atribución.
+- [x] Receptor original no se sobrescribe por corrección o reversión.
+- [x] Reversión conserva actor propio.
+- [x] Reemplazo correctivo conserva actor propio.
+- [x] Resolución de diferencias conserva actor separado cuando la segregación lo exige.
+- [x] Retry idempotente no reatribuye el hecho aplicado.
+- [x] Se preserva principal + actor en dispositivo compartido.
+- [x] Se preserva causalidad hacia NEXO y NUMERA sin fusionar actores de dominio.
+- [x] Se registran brechas AS-IS sin afirmar ausencia de controles no inspeccionados.
+- [x] La corrección que reversa antes de obtener firma queda identificada explícitamente.
+- [x] La reversión sin actor explícito en la Server Action queda identificada como evidencia incompleta de esa frontera, no como ausencia probada del RPC.
+- [x] Se mantiene la frontera con contexto operativo para `ORIGO-AUTH-012`.
+- [x] Se mantiene la frontera de enforcement/materialización para `ORIGO-AUTH-014`.
+- [x] Se mantiene la prueba integral para `ORIGO-AUTH-015`.
+- [x] La topología queda `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] No se modifica Registro 04A.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se autoriza cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-AUTH-012` queda reservada y no se desarrolla aquí.
+
+---
+
+#### 69. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica `vento-origo`;
+- crea columnas `receiver_actor_ref`, `reverse_actor_ref` u otras;
+- crea tablas de auditoría;
+- crea o modifica `shared_device_action_signatures`;
+- define hashing o almacenamiento físico de PIN;
+- cambia la política global de sesiones de actor;
+- redefine roles base u operativos;
+- concede `receipts.register`;
+- concede `receipts.reverse`;
+- redefine territorio de recepción;
+- redefine estados de `VPROC-0022`;
+- resuelve diferencias comerciales;
+- modifica NEXO;
+- modifica NUMERA;
+- crea eventos nuevos;
+- modifica contratos de idempotencia transversales;
+- crea RLS;
+- crea RPC;
+- modifica Server Actions;
+- modifica datos;
+- ejecuta Supabase;
+- crea migraciones;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza una instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-AUTH-012`.
+
+---
+
+#### 70. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-010 — Proteger precios y datos sensibles`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-011 — Registrar actor de recepción`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-012 — Integrar contexto operativo donde aplique`
+
 ### [ ] ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
 ### [ ] ORIGO-AUTH-013 — Mantener administración sin check-in
 ### [ ] ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
