@@ -2840,7 +2840,1053 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-004 — Diseñar inicio para comprador`
-### [ ] ORIGO-UX-004 — Diseñar inicio para comprador
+### ✅ ORIGO-UX-004 — Diseñar inicio para comprador
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-003 — Diseñar inicio para solicitante
+**Tarea siguiente:** ORIGO-UX-005 — Diseñar inicio para aprobador
+**Tipo de tarea:** diseño documental integral de la experiencia inicial del comprador sobre `VPROC-0020` y el handoff controlado hacia `VPROC-0021`, con composición orientada por trabajo sobre proveedores, cotizaciones, recomendación, decisión pendiente y seguimiento autorizado, reutilizando `VSCREEN-0070`, `VSCREEN-0072`, `VSCREEN-0075` y accesos condicionales a `VSCREEN-0071`, `VSCREEN-0145` y `VSCREEN-0146`, sin crear una pantalla canónica nueva ni absorber aprobación, editor de orden o recepción; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, navegación, componentes, procesos, permisos, roles, grants, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para la entrada de una persona que actúa como comprador dentro del ciclo de abastecimiento ORIGO, de forma que pueda:
+
+- recibir necesidades transferidas sin reescribir la intención del solicitante;
+- identificar qué casos requieren búsqueda, cotización, comparación, recomendación o seguimiento;
+- consultar proveedores y condiciones dentro del alcance autorizado;
+- comparar evidencia homogénea sin convertir una cotización en selección automática;
+- preparar una recomendación separada de la decisión aprobatoria;
+- conducir el handoff hacia `VPROC-0021` cuando la decisión de sourcing ya sea válida;
+- seguir compras y proveedores relacionados sin absorber aprobación, recepción, inventario o pago;
+- operar con una experiencia enfocada por trabajo y estado, no con un dashboard administrativo irrestricto.
+
+La tarea diseña el inicio del comprador sobre el proceso principal:
+
+```text
+VPROC-0020 — Comparar proveedores y condiciones con evidencia suficiente para decidir
+```
+
+sin crear una identidad `VSCREEN-*` adicional.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-003
+
+`ORIGO-UX-003` entrega una frontera cerrada:
+
+```text
+SOLICITANTE YA TIENE SU ENTRADA
+VPROC-0019 CONSERVA NECESIDAD Y HANDOFF
+VSCREEN-0068/0069 NO SON WORKSPACE DE SOURCING DEL COMPRADOR
+SOLICITANTE NO SELECCIONA PROVEEDOR
+SOLICITANTE NO EDITA ORDEN
+SOLICITANTE NO APRUEBA
+SOLICITANTE NO RECIBE
+HANDOFF COMPLETADO -> COMPRADOR CONTINUA EN VPROC-0020 / VPROC-0021
+```
+
+Por tanto, el comprador recibe una necesidad ya identificable y trazable. No vuelve a crear la solicitud ni modifica silenciosamente su origen para hacerla coincidir con una opción de compra.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-UX-004` se define una sola vez;
+2. no existe una instancia física propia de esta tarea;
+3. no se crea una ruta, página o componente en `vento-origo`;
+4. no se implementa sourcing, cotizaciones, autorización, Server Actions, RLS, RPC o migraciones;
+5. la materialización posterior pertenece a los packages y propietarios físicos aplicables;
+6. una brecha AS-IS se documenta y se entrega a su owner; no se corrige desde este marcador.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva:
+
+- `ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento`;
+- `ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`;
+- `ORIGO-UX-003 — Diseñar inicio para solicitante` como entrada inmediata aprobada y publicada;
+- `ORIGO-AUTH-001..015` como frontera de autorización, segregación, territorio, sensibilidad y auditoría;
+- `VPROC-0019`, `VPROC-0020` y `VPROC-0021` como continuidad necesidad → sourcing → compra;
+- los ocho estados canónicos de `VPROC-0020`;
+- `VSCREEN-0070`, `VSCREEN-0071`, `VSCREEN-0072`, `VSCREEN-0073`, `VSCREEN-0075`, `VSCREEN-0145` y `VSCREEN-0146`;
+- matrices E2 de propósito, iniciadores, ejecutores, aprobadores, pasos, estados y segregación;
+- Registro 04A vigente de ORIGO y AUTH;
+- catálogo compartido vigente de permisos ORIGO y su normalización legacy;
+- runtime observado `vento-group-sas/vento-origo@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`;
+- `vento-group-sas/vento-shell@e2633c54c62b48088e2c908d187a96d891867275` como estado remoto publicado de las fuentes canónicas consultadas.
+
+La entrada inmediata `ORIGO-UX-003` se consume desde la versión aprobada ya publicada en `main`.
+
+---
+
+#### 5. Identidad funcional del comprador
+
+La función empresarial principal es:
+
+```text
+RESPONSABLE_DE_COMPRAS
+```
+
+En `VPROC-0020` actúa como:
+
+- iniciador primario;
+- ejecutor principal;
+- responsable de búsqueda, comparación y recomendación;
+- punto operativo de continuidad hacia la compra.
+
+Puede recibir apoyo de:
+
+- `AREA_SOLICITANTE`;
+- `RESPONSABLE_FINANCIERO`;
+- `RESPONSABLE_DE_CALIDAD_E_INOCUIDAD`.
+
+La decisión crítica de recomendación/selección conserva autoridad separada de:
+
+```text
+GERENCIA_GENERAL
+COORDINACION_DE_OPERACIONES
+```
+
+cuando el contrato exige aprobación por materialidad, riesgo, excepción o conflicto.
+
+---
+
+#### 6. Condición de entrada al inicio del comprador
+
+El inicio del comprador no nace de una pantalla genérica ni de la mera existencia de una orden borrador.
+
+La entrada nominal es:
+
+```text
+NECESIDAD VALIDA / TRANSFERIDA
++
+ACTOR COMPRADOR AUTORIZADO
++
+CONTEXTO Y ALCANCE VIGENTES
++
+CASO DE SOURCING O TRABAJO PENDIENTE IDENTIFICABLE
+=
+TRABAJO DEL COMPRADOR
+```
+
+Para abrir `VPROC-0020.SOURCING_CASE_OPENED` debe existir una necesidad válida y mercado o proveedores potenciales por evaluar.
+
+Nunca:
+
+```text
+ABRIR ORIGO
+=
+PODER COMPRAR
+```
+
+ni:
+
+```text
+CREAR ORDEN DRAFT
+=
+HABER COMPLETADO SOURCING
+```
+
+---
+
+#### 7. No se crea una pantalla canónica nueva de inicio
+
+El catálogo actual no contiene una identidad `VSCREEN-*` dedicada llamada “Inicio comprador”.
+
+Esta tarea no inventa una.
+
+El inicio se define como una composición orientada por trabajo que enlaza identidades canónicas existentes y proyecciones de proceso:
+
+```text
+TRABAJO PENDIENTE DE SOURCING
++
+VSCREEN-0070 PROVEEDORES
++
+VSCREEN-0072 COMPARACION
++
+ESTADO / RECOMENDACION / DECISION
++
+SEGUIMIENTO AUTORIZADO
+=
+EXPERIENCIA INICIAL DEL COMPRADOR
+```
+
+La ruta física final, el layout concreto y la materialización de esta composición quedan fuera de esta tarea.
+
+---
+
+#### 8. Pregunta operativa del inicio
+
+La experiencia del comprador se organiza alrededor de:
+
+```text
+¿QUE NECESIDAD DEBO ABASTECER AHORA Y QUE FALTA PARA TOMAR UNA DECISION TRAZABLE?
+```
+
+No alrededor de:
+
+```text
+¿QUE TABLA ADMINISTRATIVA QUIERO ABRIR?
+```
+
+ni de:
+
+```text
+¿QUE ORDEN QUIERO CREAR?
+```
+
+El ordenamiento de la experiencia debe reflejar trabajo y estado, no únicamente módulos técnicos.
+
+---
+
+#### 9. Composición lógica del inicio
+
+La experiencia inicial del comprador contiene, como mínimo:
+
+| Zona lógica | Contenido | Acción primaria | Límite |
+| --- | --- | --- | --- |
+| contexto | actor, alcance, sede/territorio cuando aplique y frescura | revalidar si existe bloqueo | no concede autoridad |
+| necesidades recibidas | necesidades transferidas o aceptadas para sourcing | abrir/continuar caso | no reescribe la solicitud |
+| sourcing activo | casos en revisión de mercado, cotización o comparación | continuar trabajo | no aprueba selección |
+| decisiones pendientes | recomendaciones preparadas o selección esperando autoridad | enviar/consultar decisión | comprador no se autoaprueba |
+| proveedores | acceso al catálogo permitido | consultar proveedor | consulta no adjudica |
+| seguimiento de compra | referencia mínima de compra posterior cuando exista | consultar estado | no edita ni aprueba por visibilidad |
+| bloqueos | evidencia faltante, permiso, stale o fallo técnico | resolver por owner | no convierte incertidumbre en PASS |
+
+---
+
+#### 10. Acción primaria por estado
+
+No existe una única mutación universal para todos los casos. La acción primaria depende del estado canónico:
+
+| Estado | Acción UX principal del comprador | Acción prohibida por inferencia |
+| --- | --- | --- |
+| necesidad transferida sin caso | abrir caso de sourcing | crear orden directa por defecto |
+| `SOURCING_CASE_OPENED` | iniciar revisión de mercado | seleccionar proveedor |
+| `MARKET_REVIEW_IN_PROGRESS` | identificar opciones y condiciones | aprobar compra |
+| `QUOTES_PENDING` | completar/esperar evidencia comparable | tratar silencio como cotización válida |
+| `COMPARISON_IN_PROGRESS` | comparar ofertas y criterios | adjudicar sin decisión autorizada |
+| `RECOMMENDATION_PREPARED` | someter recomendación / completar evidencia | autoaprobar recomendación |
+| `DECISION_PENDING` | esperar o atender devolución permitida | forzar `SUPPLIER_SELECTED` |
+| `SUPPLIER_SELECTED` | preparar handoff a compra | marcar orden emitida |
+| `SOURCING_DECISION_COMPLETED` | continuar hacia `VPROC-0021` | saltar controles de compra |
+
+---
+
+#### 11. Lifecycle completo de VPROC-0020
+
+La experiencia debe distinguir exactamente:
+
+```text
+SOURCING_CASE_OPENED
+MARKET_REVIEW_IN_PROGRESS
+QUOTES_PENDING
+COMPARISON_IN_PROGRESS
+RECOMMENDATION_PREPARED
+DECISION_PENDING
+SUPPLIER_SELECTED
+SOURCING_DECISION_COMPLETED
+```
+
+Semántica mínima:
+
+- `SOURCING_CASE_OPENED`: existe caso válido; no hay proveedor seleccionado;
+- `MARKET_REVIEW_IN_PROGRESS`: se identifican opciones, disponibilidad y condiciones;
+- `QUOTES_PENDING`: faltan respuestas válidas comparables;
+- `COMPARISON_IN_PROGRESS`: se comparan precio, calidad, servicio, riesgo, cumplimiento y costo total;
+- `RECOMMENDATION_PREPARED`: existe recomendación sustentada sin selección definitiva;
+- `DECISION_PENDING`: la evaluación espera decisión autorizada;
+- `SUPPLIER_SELECTED`: existe selección autorizada para preparar compra, sin orden emitida;
+- `SOURCING_DECISION_COMPLETED`: la evaluación quedó cerrada y aceptada por el proceso de compra.
+
+---
+
+#### 12. No equivalencias del comprador
+
+La experiencia conserva:
+
+```text
+PROVEEDOR CONSULTADO
+!=
+PROVEEDOR COTIZADO
+!=
+PROVEEDOR RECOMENDADO
+!=
+PROVEEDOR SELECCIONADO
+```
+
+También:
+
+```text
+COTIZACION RECIBIDA
+!=
+COMPARACION COMPLETA
+!=
+DECISION AUTORIZADA
+!=
+COMPRA APROBADA
+!=
+ORDEN EMITIDA
+```
+
+Y:
+
+```text
+SOURCING_DECISION_COMPLETED
+!=
+PURCHASE_COMMITMENT_FORMALIZED
+```
+
+---
+
+#### 13. VSCREEN-0070 — Catálogo de proveedores
+
+Contrato canónico:
+
+```text
+VSCREEN-0070
+Catálogo de proveedores
+VPROC-0020::STEP-CONSULT_SUPPLIER_CATALOG
+MONITOR / IN_PROGRESS
+```
+
+En el inicio del comprador sirve para:
+
+- consultar proveedores autorizados;
+- identificar estado y categorías aplicables;
+- revisar condiciones y cobertura permitidas;
+- localizar opciones potenciales para un caso concreto.
+
+Regla:
+
+```text
+CONSULTAR PROVEEDOR
+!=
+SELECCIONAR PROVEEDOR
+```
+
+El catálogo no se presenta como botón de adjudicación.
+
+---
+
+#### 14. VSCREEN-0071 — Alta y expediente de proveedor
+
+Contrato canónico:
+
+```text
+VSCREEN-0071
+Alta y expediente de proveedor
+VPROC-0020::STEP-ONBOARD_SUPPLIER
+CONFIGURE / IN_PROGRESS
+```
+
+Su acceso desde la experiencia inicial es condicional.
+
+El comprador puede necesitar abrir el expediente cuando:
+
+- un proveedor potencial no existe;
+- falta información necesaria;
+- el estado o documentación impide continuar;
+- una condición gobernada requiere actualización por su owner.
+
+Pero:
+
+```text
+SER COMPRADOR
+!=
+PODER CREAR / EDITAR / ACTIVAR / DESACTIVAR PROVEEDORES
+```
+
+La mutación depende de capacidades exactas y puede pertenecer a un carril administrativo distinto.
+
+---
+
+#### 15. VSCREEN-0072 — Comparación de cotizaciones
+
+Contrato canónico:
+
+```text
+VSCREEN-0072
+Comparación de cotizaciones
+VPROC-0020::STEP-COMPARE_QUOTES
+REVIEW / DECISION
+```
+
+Es la superficie central de decisión preparatoria del comprador.
+
+Debe permitir comparar evidencia homogénea suficiente, incluyendo cuando aplique:
+
+- proveedor;
+- alcance de la oferta;
+- presentación/unidad;
+- cantidad;
+- precio y moneda;
+- impuestos y descuentos;
+- flete;
+- mínimos;
+- plazo de entrega;
+- condición de pago;
+- vigencia;
+- calidad/especificación;
+- riesgo;
+- servicio/cumplimiento;
+- costo total comparable.
+
+La presencia de una dimensión en la comparación no concede por sí sola acceso irrestricto a datos sensibles del proveedor.
+
+---
+
+#### 16. Evidencia de cotización
+
+Una cotización válida debe conservar suficiente trazabilidad para demostrar:
+
+```text
+QUIEN / QUE PROVEEDOR
+QUE OFRECIO
+PARA QUE NECESIDAD
+EN QUE VERSION
+BAJO QUE CONDICIONES
+CON QUE VIGENCIA
+CUANDO SE RECIBIO
+QUE EVIDENCIA RESPALDA EL DATO
+```
+
+La experiencia no debe convertir valores copiados manualmente sin origen identificable en verdad equivalente a una oferta gobernada.
+
+Esta tarea no crea el modelo físico de `quote`, archivos o Storage; define la necesidad de que la UX consuma evidencia propietaria cuando exista.
+
+---
+
+#### 17. Recomendación del comprador
+
+El comprador puede preparar una recomendación sustentada.
+
+La recomendación debe distinguir como mínimo:
+
+- opción recomendada;
+- criterios considerados;
+- alternativas comparadas;
+- diferencias relevantes;
+- riesgos o excepciones;
+- vigencia de la evidencia;
+- conflicto de interés declarado cuando aplique;
+- información faltante que impida una decisión.
+
+Regla:
+
+```text
+RECOMMENDATION_PREPARED
+!=
+SUPPLIER_SELECTED
+```
+
+La recomendación no cambia por sí sola la selección final.
+
+---
+
+#### 18. Decisión y segregación
+
+El proceso exige separación para la decisión crítica de recomendación/selección cuando aplique la política.
+
+La experiencia debe conservar:
+
+```text
+COMPRADOR
+PREPARA / COMPARA / RECOMIENDA
+        ↓
+AUTORIDAD APLICABLE
+DECIDE
+        ↓
+COMPRADOR
+CONTINUA CON RESULTADO AUTORIZADO
+```
+
+Nunca:
+
+```text
+COMPRADOR PREPARA
++
+COMPRADOR CLIC EN "SELECCIONAR"
+=
+APROBACION FINAL IMPLICITA
+```
+
+La recomendación y la selección de `VPROC-0020` conservan aprobación obligatoria por `GERENCIA_GENERAL` o `COORDINACION_DE_OPERACIONES`; esta tarea UX no define ningún bypass ni ruta sin esa autoridad.
+
+---
+
+#### 19. VSCREEN-0145 — Contratos, precios y condiciones
+
+Contrato canónico:
+
+```text
+VSCREEN-0145
+Contratos, precios y condiciones de proveedor
+VPROC-0020::STEP-GOVERN_SUPPLIER_TERMS
+CONFIGURE / IN_PROGRESS
+```
+
+El inicio del comprador puede enlazar esta superficie cuando el actor tenga autoridad y la decisión requiera consultar o mantener condiciones gobernadas.
+
+No se muestra por defecto como una tabla abierta de todos los precios o contratos.
+
+Regla:
+
+```text
+PARTICIPAR EN SOURCING
+!=
+VER TODO PRECIO / CONTRATO / DATO SENSIBLE
+```
+
+La proyección se limita por finalidad y field mask.
+
+---
+
+#### 20. VSCREEN-0146 — Desempeño y reclamaciones
+
+Contrato canónico:
+
+```text
+VSCREEN-0146
+Desempeño y reclamaciones de proveedor
+VPROC-0020::STEP-REVIEW_SUPPLIER_PERFORMANCE
+REVIEW / DECISION
+```
+
+Puede aportar evidencia al sourcing cuando exista historial suficiente.
+
+El comprador no fabrica un score manual universal. La experiencia debe distinguir:
+
+- hechos observados;
+- métricas derivadas;
+- reclamaciones;
+- decisiones manuales;
+- motivo y evidencia de cualquier valoración subjetiva.
+
+La ausencia AS-IS de esta superficie no autoriza a inventar una puntuación local en `ORIGO-UX-004`.
+
+---
+
+#### 21. Relación con VSCREEN-0073 — Editor de orden
+
+`VSCREEN-0073` pertenece a `VPROC-0021`:
+
+```text
+VPROC-0021::STEP-PREPARE_PURCHASE_ORDER
+```
+
+El inicio del comprador puede conducir al editor únicamente después de una entrada válida para compra.
+
+Regla:
+
+```text
+SOURCING VALIDO / DECISION ACEPTADA
+        ↓
+HANDOFF A VPROC-0021
+        ↓
+VSCREEN-0073
+```
+
+No:
+
+```text
+INICIO COMPRADOR
+→ NUEVA ORDEN
+→ LUEGO JUSTIFICAR
+```
+
+El diseño detallado del editor pertenece a `ORIGO-UX-007`.
+
+---
+
+#### 22. Relación con VSCREEN-0075 — Seguimiento de orden
+
+`VSCREEN-0075 — Detalle y seguimiento de orden` puede aparecer como continuidad de trabajo ya formalizado.
+
+El comprador puede consultar, según autorización:
+
+- estado;
+- versión;
+- proveedor;
+- entregas;
+- cambios;
+- documentos;
+- pendientes.
+
+Pero el seguimiento posterior no sustituye el sourcing ni convierte el inicio del comprador en una bandeja universal de todas las órdenes.
+
+---
+
+#### 23. Frontera con el solicitante
+
+El comprador recibe suficiente contexto de `VPROC-0019` para abastecer, como mínimo cuando sea necesario:
+
+- origen de la necesidad;
+- descripción/especificación;
+- ítems o servicios;
+- cantidades;
+- fecha requerida;
+- justificación;
+- prioridad/urgencia ya resuelta cuando aplique;
+- restricciones relevantes.
+
+No puede reescribir silenciosamente:
+
+- la unidad solicitante;
+- la cantidad original;
+- la fecha requerida;
+- la justificación;
+- el origen de la necesidad.
+
+Si cambia el alcance de manera material, la experiencia debe conservar la diferencia y el owner de la decisión correspondiente.
+
+---
+
+#### 24. Frontera con el aprobador
+
+`ORIGO-UX-005` recibe la decisión protegida.
+
+El comprador prepara y entrega:
+
+```text
+NECESIDAD / ALCANCE
++
+PROVEEDOR / OPCIONES
++
+COTIZACIONES / CONDICIONES
++
+COMPARACION
++
+RECOMENDACION
++
+RIESGO / EXCEPCION
++
+VERSION DE EVIDENCIA
+```
+
+El aprobador decide sobre una versión identificable.
+
+La 004 no diseña la bandeja del aprobador ni sus botones de aprobar, rechazar o devolver.
+
+---
+
+#### 25. Frontera con el receptor
+
+El comprador puede conocer el estado de la compra y de la entrega como seguimiento autorizado, pero no recibe por defecto.
+
+Regla:
+
+```text
+COMPRADOR
+!=
+RECEPTOR
+```
+
+Una persona que acumule ambas funciones sigue ejecutando cada acción con capacidad, recurso, estado y evidencia propios.
+
+`VPROC-0022` y `ORIGO-UX-006` permanecen fuera del inicio del comprador.
+
+---
+
+#### 26. Contexto y territorio
+
+El inicio debe consumir contexto efectivo y autorización server-side.
+
+Como mínimo, la experiencia no puede ampliar acceso mediante:
+
+- `site_id` enviado por cliente;
+- centro de costo escrito manualmente;
+- proveedor conocido;
+- `purchase_order_id` conocido;
+- filtro de UI;
+- última sede usada;
+- nombre de rol local;
+- `origo.access` por sí solo.
+
+Los filtros de interfaz únicamente reducen un conjunto ya autorizado.
+
+---
+
+#### 27. Catálogo de permisos y brecha de materialización
+
+El catálogo compartido publicado contiene actualmente las capacidades ORIGO:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.receipts.register
+origo.procurement.suppliers.view
+origo.catalog.product_reviews.view
+```
+
+No se observa en ese catálogo publicado una capacidad atómica final para:
+
+- abrir/actualizar un caso de sourcing;
+- registrar cotizaciones;
+- comparar/recomendar;
+- crear/actualizar/aprobar una compra.
+
+Además, el runtime legacy utiliza:
+
+```text
+origo.suppliers.manage
+```
+
+que el canon clasifica como:
+
+```text
+DECOMPOSE_REQUIRED
+→ familia origo.procurement.suppliers.*
+```
+
+`ORIGO-UX-004` no inventa permisos faltantes y no convierte el legacy en autoridad canónica final.
+
+---
+
+#### 28. Mutaciones de proveedor no heredadas
+
+La familia contractual objetivo separa, cuando corresponda:
+
+```text
+origo.procurement.suppliers.view
+origo.procurement.suppliers.create
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+La UX del comprador debe tratar esas mutaciones como capacidades distintas.
+
+Por tanto:
+
+```text
+PUEDE CONSULTAR PROVEEDOR
+!=
+PUEDE CREARLO
+!=
+PUEDE EDITARLO
+!=
+PUEDE ACTIVARLO
+!=
+PUEDE DESACTIVARLO
+```
+
+La materialización permanece fail-closed cuando la capacidad exacta no esté disponible.
+
+---
+
+#### 29. Estados de experiencia
+
+La experiencia del comprador debe distinguir al menos:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `TRABAJO_DISPONIBLE` | existen necesidades/casos autorizados para actuar | mostrar siguiente acción válida |
+| `SIN_TRABAJO` | contexto válido sin casos visibles | estado vacío real |
+| `COTIZACIONES_PENDIENTES` | faltan respuestas comparables | mostrar qué falta sin inventar decisión |
+| `COMPARACION_EN_CURSO` | evidencia suficiente parcial o completa en revisión | continuar análisis |
+| `DECISION_PENDIENTE` | comprador terminó su preparación y espera autoridad | bloquear selección final del comprador |
+| `DEVUELTO_PARA_AJUSTE` | la decisión requiere corrección o evidencia adicional según contrato | preservar versión y motivo |
+| `SIN_PERMISO` | actor/contexto no autoriza la superficie o acción | denegar sin datos protegidos |
+| `CONTEXTO_INVALIDO` | no puede resolverse alcance aplicable | bloquear trabajo |
+| `DATOS_DESACTUALIZADOS` | la frescura no puede demostrarse | revalidar antes de acción sensible |
+| `FALLO_TECNICO` | la fuente requerida falló | no representar como lista vacía |
+
+No se introducen estos rótulos como estados persistidos de `VPROC-0020`.
+
+---
+
+#### 30. Vacío, deny, stale y error no son equivalentes
+
+La experiencia conserva:
+
+```text
+SIN CASOS
+!=
+SIN PERMISO
+!=
+SIN CONTEXTO
+!=
+DATOS STALE
+!=
+FALLO TECNICO
+```
+
+Un error de proveedor, comparación o autorización no puede presentarse como “no hay cotizaciones” ni como “no hay trabajo”.
+
+---
+
+#### 31. Minimización de datos
+
+El inicio no necesita cargar por defecto:
+
+- expediente tributario completo de todos los proveedores;
+- cuentas bancarias;
+- contratos completos;
+- todas las listas de precios;
+- notas internas irrelevantes;
+- órdenes de otras sedes o centros de costo;
+- recepciones ajenas;
+- historial completo de auditoría;
+- datos financieros de NUMERA;
+- campos sensibles que no participen en la decisión actual.
+
+La comparación recibe únicamente la proyección necesaria para el caso y la finalidad autorizada.
+
+---
+
+#### 32. Contraste con el AS-IS de proveedores
+
+El runtime actual materializa `/suppliers`, `/suppliers/new` y `/suppliers/[id]/edit`.
+
+La lista permite buscar y filtrar proveedores y presenta información básica de contacto, estado y condiciones de pago.
+
+Sin embargo:
+
+- utiliza acceso general ORIGO para entrar;
+- la gestión se apoya en `origo.suppliers.manage` o una lista local de roles;
+- el catálogo canónico exige descomposición de esa mutación;
+- no existe allí un caso de sourcing;
+- no existe comparación de cotizaciones;
+- no existe decisión de selección;
+- no existe `VSCREEN-0146` dedicada;
+- `VSCREEN-0145` está representada solo parcialmente por condiciones básicas.
+
+Por tanto:
+
+```text
+/suppliers
+!=
+INICIO DEL COMPRADOR
+```
+
+---
+
+#### 33. Contraste con el AS-IS de órdenes
+
+El runtime actual permite `/purchase-orders/new` y crea una orden `draft` directamente desde proveedor, sede y líneas.
+
+También observa:
+
+```text
+setPurchaseOrderSent
+
+draft -> sent
+```
+
+Esto demuestra una capacidad física parcial de orden, pero no sustituye:
+
+```text
+VPROC-0020
+SOURCING / COMPARACION / RECOMENDACION / DECISION
+```
+
+ni el lifecycle completo de `VPROC-0021`.
+
+La experiencia objetivo no usa “Nueva orden” como acción inicial universal del comprador.
+
+---
+
+#### 34. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe superficie AS-IS dedicada de comparación de cotizaciones | sourcing puede ocurrir fuera del sistema o sin evidencia homogénea | materialización UX propietaria consumiendo `ORIGO-UX-004` | `VSCREEN-0072` materializada y vinculada a `VPROC-0020` |
+| no existe `VSCREEN-*` dedicada de home comprador | riesgo de inventar una identidad paralela o usar una pantalla ajena como home universal | `ORIGO-UX-004` + materialización posterior | composición de inicio usa identidades existentes sin registrar pantalla ficticia |
+| `/suppliers` es catálogo parcial, no sourcing | proveedor visible puede confundirse con proveedor elegido | `ORIGO-UX-004` | catálogo y selección permanecen acciones distintas |
+| `origo.suppliers.manage` es legacy monolítico | gestión de proveedor puede conceder más mutaciones de las aprobadas | autorización propietaria + materialización | familia `origo.procurement.suppliers.*` consumida por acción exacta |
+| no existen capacidades atómicas publicadas para sourcing/cotización | riesgo de habilitar workflow por `origo.access` | contrato/paquete de autorización ORIGO asociado al flujo | acciones de sourcing cuentan con permiso exacto y enforcement server-side antes de habilitarse |
+| `/purchase-orders/new` permite crear `draft` directamente | comprador puede saltar necesidad y sourcing | `ORIGO-UX-007` + materialización | editor consume handoff válido de necesidad/sourcing/decisión |
+| `draft -> sent` colapsa aprobación y emisión | comprador puede parecer autoaprobador | `ORIGO-UX-005`, `ORIGO-UX-008` + autorización | decisión aprobatoria y emisión quedan separadas |
+| `VSCREEN-0145` está solo parcialmente representada | comparación puede usar condiciones sin versión/vigencia gobernadas | `ORIGO-UX-004`, `ORIGO-UX-012` + owners de proveedor | condiciones sensibles provienen de fuente versionada y autorizada |
+| `VSCREEN-0146` no tiene superficie observada | desempeño/reclamación puede quedar fuera de la evaluación | `ORIGO-UX-016` + contrato propietario de proveedor/evidencia | prototipo consume hechos y reclamaciones sin inventar score |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 35. Handoff inmediato a ORIGO-UX-005
+
+`ORIGO-UX-005 — Diseñar inicio para aprobador` recibe:
+
+```text
+COMPRADOR = RESPONSABLE_DE_COMPRAS
+PROCESO PRINCIPAL DE SOURCING = VPROC-0020
+NECESIDAD YA TRANSFERIDA DESDE VPROC-0019
+COMPARACION Y RECOMENDACION PREPARADAS POR COMPRADOR
+DECISION_CRITICA != AUTOAPROBACION
+RECOMMENDATION_PREPARED -> DECISION_PENDING
+AUTORIDAD APLICABLE DECIDE
+SUPPLIER_SELECTED REQUIERE DECISION AUTORIZADA CUANDO APLIQUE
+HANDOFF HACIA VPROC-0021 CONSERVA VERSION Y EVIDENCIA
+```
+
+La 005 diseñará la entrada del aprobador sin reabrir el sourcing ni permitir que la visibilidad del comprador se convierta en autoridad de decisión.
+
+---
+
+#### 36. Handoff al resto de ORIGO-UX
+
+| Tarea | Entrada exacta proveniente de ORIGO-UX-004 |
+| --- | --- |
+| `ORIGO-UX-005` | recomendación/evidencia separadas de la decisión final; aprobador recibe una versión identificable |
+| `ORIGO-UX-006` | receptor no hereda funciones de sourcing ni catálogo administrativo del comprador |
+| `ORIGO-UX-007` | editor de orden consume sourcing/selección válidos; no funciona como home comprador |
+| `ORIGO-UX-008` | aprobación/rechazo/devolución permanecen separados de comparación y emisión |
+| `ORIGO-UX-009` | recepción total no altera retrospectivamente sourcing ni selección |
+| `ORIGO-UX-010` | recepción parcial proyecta seguimiento sin reabrir decisión de proveedor |
+| `ORIGO-UX-011` | diferencias de recepción pueden alimentar desempeño/reclamación sin editar sourcing histórico |
+| `ORIGO-UX-012` | precios, contratos y condiciones se proyectan por finalidad y autorización |
+| `ORIGO-UX-013` | seguimiento comprador no produce una segunda recepción NEXO |
+| `ORIGO-UX-014` | handoff físico conserva compra/recepción fuente e idempotencia |
+| `ORIGO-UX-015` | estado financiero posterior no se convierte en estado local de sourcing |
+| `ORIGO-UX-016` | prototipo demuestra necesidad → sourcing → aprobación → orden → recepción sin fusionar funciones |
+
+---
+
+#### 37. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: separación de necesidad, sourcing, selección, aprobación y orden; gobierno de proveedor y condiciones; segregación entre comprador y aprobador; autorización server-side y auditoría ya cuentan con obligaciones verificables vigentes. Esta tarea especializa la composición UX del comprador sin introducir una obligación observable nueva ni modificar el registro.
+
+---
+
+#### 38. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-ORIGO-004` para conservar identidades y estados separados entre necesidad, solicitud, sourcing, selección, aprobación, orden y revisión, y capacidades separadas por función;
+- `TREQ-ORIGO-005` para identidad estable de proveedor, oferta, contrato, condición comercial, precios versionados, sensibilidad y desempeño derivado de hechos;
+- `TREQ-AUTH-001` para exigir autorización por permiso, contexto y alcance en lugar de nombres de rol;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC y revalidar mutaciones en servidor;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de actor, permiso, contexto, recurso y decisión.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 39. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@e2633c54c62b48088e2c908d187a96d891867275`, `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VPROC-0020`, sus ocho estados, roles y segregación, `VSCREEN-0070/0071/0072/0073/0075/0145/0146`, 04A ORIGO/AUTH, catálogo de permisos ORIGO y runtime AS-IS de proveedores y órdenes. La entrada inmediata `ORIGO-UX-003` se consume desde la versión aprobada ya publicada en `main`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron necesidades reales, sourcing, cotizaciones, comparaciones, recomendaciones, decisiones, órdenes, proveedores ni pruebas con usuarios. |
+| FÍSICA | NOT_APPLICABLE | `ORIGO-UX-004` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 40. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `RESPONSABLE_DE_COMPRAS` queda definido como función principal del inicio;
+- [ ] el inicio consume necesidades transferidas y no recrea la solicitud;
+- [ ] no se crea una nueva identidad `VSCREEN-*` de home comprador;
+- [ ] la composición del inicio reutiliza identidades canónicas existentes;
+- [ ] `VPROC-0020` permanece como proceso principal de sourcing;
+- [ ] los ocho estados de `VPROC-0020` quedan distinguibles y comprensibles;
+- [ ] la acción primaria cambia según el estado del caso;
+- [ ] `VSCREEN-0070` se usa para consulta de proveedores sin adjudicación implícita;
+- [ ] `VSCREEN-0071` queda condicionada a capacidad administrativa exacta;
+- [ ] `VSCREEN-0072` queda como superficie central de comparación;
+- [ ] una cotización conserva origen, versión, vigencia y condiciones comparables;
+- [ ] `RECOMMENDATION_PREPARED` no equivale a `SUPPLIER_SELECTED`;
+- [ ] `DECISION_PENDING` bloquea autoaprobación del comprador;
+- [ ] la selección crítica conserva autoridad separada cuando aplica;
+- [ ] `VSCREEN-0145` queda protegido por finalidad y sensibilidad;
+- [ ] `VSCREEN-0146` no inventa score manual sin hechos;
+- [ ] `VSCREEN-0073` queda como handoff posterior y no como home comprador;
+- [ ] `VSCREEN-0075` se consume como seguimiento autorizado y no como permiso universal;
+- [ ] el comprador no edita silenciosamente origen, cantidad, fecha o justificación de la necesidad;
+- [ ] el aprobador recibe una versión identificable de recomendación/evidencia;
+- [ ] comprador y receptor permanecen funciones distintas;
+- [ ] filtros de UI no conceden territorio ni acceso;
+- [ ] `origo.access` no actúa como wildcard;
+- [ ] `origo.suppliers.manage` se trata como legacy y no como permiso final;
+- [ ] consulta, creación, actualización, activación y desactivación de proveedor permanecen capacidades distintas;
+- [ ] las acciones de sourcing faltantes en el catálogo publicado quedan fail-closed para materialización;
+- [ ] vacío, deny, contexto inválido, stale y fallo técnico no se confunden;
+- [ ] datos sensibles se minimizan desde la fuente según finalidad;
+- [ ] `/suppliers` no se eleva a inicio comprador;
+- [ ] `/purchase-orders/new` no se eleva a inicio comprador;
+- [ ] `draft -> sent` no sustituye sourcing + aprobación + emisión;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] `ORIGO-UX-005` recibe un handoff suficiente para diseñar aprobador sin reabrir sourcing;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 41. Límites
+
+Esta tarea no:
+
+- implementa un home de comprador;
+- crea una ruta física nueva;
+- crea una identidad `VSCREEN-*` nueva;
+- crea componentes, endpoints o Server Actions;
+- crea permisos nuevos;
+- modifica el catálogo de autorización;
+- concede sourcing por `origo.access`;
+- convierte `origo.suppliers.manage` en permiso canónico;
+- crea modelo físico de cotizaciones;
+- crea tablas, archivos, buckets o Storage para evidencia;
+- crea o modifica proveedor real;
+- crea o modifica orden de compra real;
+- selecciona proveedor real;
+- aprueba compra real;
+- registra recepción real;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants o datos;
+- modifica NEXO o NUMERA;
+- diseña el editor final de orden de `ORIGO-UX-007`;
+- diseña la bandeja final del aprobador de `ORIGO-UX-005`;
+- diseña recepción de `ORIGO-UX-006`;
+- ejecuta E5;
+- crea instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-UX-005`.
+
+---
+
+#### 42. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-003 — Diseñar inicio para solicitante`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-004 — Diseñar inicio para comprador`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-005 — Diseñar inicio para aprobador`
 ### [ ] ORIGO-UX-005 — Diseñar inicio para aprobador
 ### [ ] ORIGO-UX-006 — Diseñar inicio para receptor
 ### [ ] ORIGO-UX-007 — Diseñar creación de orden de compra
