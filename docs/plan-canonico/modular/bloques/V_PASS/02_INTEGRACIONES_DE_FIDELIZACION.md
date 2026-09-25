@@ -552,7 +552,635 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-INT-002 — Definir integración PULSO → PASS para redención`
-### [ ] PASS-INT-002 — Definir integración PULSO → PASS para redención
+### ✅ PASS-INT-002 — Definir integración PULSO → PASS para redención
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-INT-001 — Definir integración PULSO → PASS para acumulación
+**Tarea siguiente:** PASS-INT-003 — Definir administración laboral de productos de fidelización
+**Tipo de tarea:** documental; define una sola vez el contrato de integración PULSO → PASS para validar y consumir redenciones creadas desde PASS, separando intención de redención y consumo, y fijando identidad, elegibilidad, territorialidad, autorización, actor/dispositivo, uso único, atomicidad, idempotencia, estados, ledger, resultado desconocido, concurrencia, auditoría, recuperación y handoff hacia implementación/pruebas sin crear una instancia física propia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — INTEGRACIONES DE FIDELIZACIÓN
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, `vento-pass`, Supabase, RPC, tablas, RLS, Edge Functions, catálogo de recompensas, reglas de puntos, pantallas, permisos, packages, datos, secretos ni despliegues, y no ejecuta redenciones reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico mediante el cual PULSO valida y consume una intención de redención creada por PASS sin permitir que la interfaz, el operador, un código presentado, una política amplia, un reintento o una condición de carrera puedan fabricar un canje válido, usarlo dos veces o convertir un resultado incierto en consumo confirmado.
+
+El resultado de esta tarea debe permitir que implementación y pruebas posteriores respondan de forma inequívoca:
+
+```text
+¿QUÉ REPRESENTA EL TICKET / QR DE REDENCIÓN?
+¿CUÁNDO UNA REDENCIÓN PUEDE CONSUMIRSE?
+¿QUÉ ESTADO DEBE TENER ANTES DEL CONSUMO?
+¿QUÉ SEDE PUEDE VALIDARLA?
+¿QUIÉN PUEDE EJECUTAR LA VALIDACIÓN?
+¿CÓMO SE IMPIDE EL DOBLE USO?
+¿QUÉ OCURRE CON LOS PUNTOS YA DEBITADOS O RESERVADOS?
+¿QUÉ SE CONFIRMA ATÓMICAMENTE?
+¿QUÉ OCURRE SI LA RESPUESTA SE PIERDE?
+¿CÓMO SE RECONSTRUYE Y AUDITA EL RESULTADO?
+```
+
+PASS conserva la semántica de fidelización y origina la intención de redención del cliente. PULSO constituye la superficie operacional que solicita validar y consumir esa intención dentro del contexto autorizado de caja/sede. El servidor conserva la autoridad final sobre elegibilidad, estado, ledger y resultado durable.
+
+---
+
+#### 2. Reconciliación topológica
+
+`PASS-INT-002` pertenece al mini-bloque `PASS-INT-001..005`, cuya reconciliación vigente establece:
+
+```text
+DEFINE_ONCE
++
+NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea define contrato, responsabilidades, invariantes, estados y handoff. No implementa RPC, no altera Supabase, no cambia código de PULSO o PASS, no crea rutas y no ejecuta canjes.
+
+La materialización posterior pertenece a los consumidores y packages propietarios, además de los gates de autorización, base de datos, integración, dispositivos compartidos y QA aplicables.
+
+---
+
+#### 3. Base documental consumida
+
+La base inmediata es `PASS-INT-001`, que define la frontera PULSO → PASS para acumulación y deja como siguiente responsabilidad la redención.
+
+`PASS-INT-002` conserva las invariantes compartidas ya fijadas por esa base:
+
+- servidor como autoridad de mutaciones de fidelización;
+- ledger como evidencia durable;
+- saldo como proyección y no como valor fijable por cliente;
+- identidad idempotente del efecto;
+- tratamiento seguro de resultado desconocido;
+- separación entre cliente, trabajador, principal técnico, dispositivo y sede;
+- permiso exacto por acción;
+- territorialidad efectiva;
+- confirmación empresarial antes de mostrar éxito;
+- auditoría suficiente para reconciliación y fraude.
+
+La tarea consume además la experiencia PASS ya aprobada donde `VSCREEN-0110` representa **Ticket o QR de redención** y `VPROC-0045::STEP-CREATE_REDEMPTION_INTENT` representa la creación de la intención de redención. Crear esa intención no equivale a consumirla.
+
+---
+
+#### 4. Estado AS-IS que el contrato debe reconciliar
+
+Las auditorías e inventarios canónicos vigentes registran, como estado observado o brecha confirmada:
+
+- una acción PULSO inventariada como `processRedemptionAction`;
+- una superficie operativa PULSO `/scanner` donde identificación y redención conviven como modos del mismo contenedor runtime;
+- una implementación histórica de redención desde cliente que ejecutaba múltiples pasos separados: lectura de recompensa, lectura de saldo, generación de QR, inserción de redención, inserción de transacción y compensación manual si fallaba la segunda inserción;
+- falta de atomicidad confirmada en ese flujo histórico;
+- políticas generales `staff_select_all_redemptions` y `staff_validate_redemptions` identificadas como ampliaciones inseguras de lectura/validación;
+- cobertura posterior que exige permiso exacto, sede efectiva, actor, estado, uso único y transición idempotente;
+- estados UI que no pueden adelantarse al resultado confirmado de servidor.
+
+Esta tarea no congela esas piezas como diseño objetivo. Define el contrato que la materialización posterior debe satisfacer o reconciliar.
+
+---
+
+#### 5. Separación canónica entre crear intención y consumir redención
+
+La redención se divide obligatoriamente en dos momentos empresariales distintos:
+
+| Momento | Propietario lógico | Resultado |
+| --- | --- | --- |
+| crear intención/ticket | PASS | existe una redención identificable, de un solo uso, con estado, recompensa, cliente, vigencia y reglas aplicables |
+| validar y consumir | PULSO → contrato servidor PASS | la intención elegible cambia a estado usado/consumido exactamente una vez dentro del contexto autorizado |
+
+Por tanto:
+
+```text
+TICKET CREADO
+!=
+REDENCIÓN USADA
+```
+
+Y también:
+
+```text
+QR MOSTRADO
+!=
+CANJE VALIDADO
+```
+
+PULSO no crea una nueva redención para “hacer funcionar” un ticket presentado. Debe resolver y validar la intención existente.
+
+PASS no puede presentar una intención recién creada como consumo realizado por PULSO.
+
+---
+
+#### 6. Contrato mínimo de la intención de redención
+
+Antes del consumo, la redención debe poder resolverse mediante una identidad estable y debe conservar, como mínimo, la información empresarial necesaria para demostrar:
+
+- identidad de redención/ticket;
+- identidad canónica del cliente;
+- recompensa o beneficio solicitado;
+- regla/version aplicable;
+- sede o ámbito territorial permitido cuando corresponda;
+- estado actual;
+- vigencia/expiración;
+- costo o efecto en puntos;
+- condición del saldo asociada al ticket cuando aplique;
+- referencia de ledger o relación reconciliable con el movimiento de fidelización;
+- evidencia de si el efecto de puntos quedó debitado, reservado o bajo otro estado canónico explícito;
+- identidad idempotente del consumo cuando corresponda;
+- fecha/hora autoritativa y correlación necesaria para auditoría.
+
+La posesión del código o QR no sustituye ninguna de esas validaciones.
+
+---
+
+#### 7. Validaciones obligatorias antes del consumo
+
+La solicitud PULSO → PASS debe fallar cerrada salvo que el servidor pueda demostrar simultáneamente, según aplique:
+
+```text
+REDENCIÓN EXISTENTE
++
+CLIENTE CORRECTO
++
+RECOMPENSA CORRECTA
++
+SEDE AUTORIZADA
++
+ESTADO CONSUMIBLE
++
+VIGENCIA ACTIVA
++
+SALDO / EFECTO DE PUNTOS COHERENTE
++
+ACTOR AUTORIZADO
++
+DISPOSITIVO / CONTEXTO VÁLIDO
++
+NO UTILIZACIÓN PREVIA
+```
+
+Una validación positiva del formato del código no basta para autorizar el consumo.
+
+El servidor debe consultar el estado vigente y no confiar en el estado almacenado en la interfaz.
+
+---
+
+#### 8. Identidad de cliente y recompensa
+
+La redención debe permanecer ligada a la identidad canónica de cliente y a la recompensa/beneficio exactos que originaron la intención.
+
+Queda prohibido:
+
+- cambiar el cliente destino durante el consumo;
+- sustituir una recompensa por otra desde PULSO;
+- interpretar un código de otra entidad como redención;
+- usar una coincidencia de correo, teléfono o nombre como sustituto de identidad;
+- consumir una redención cuyo vínculo cliente-recompensa no pueda demostrarse;
+- mezclar identidad del cliente con identidad del trabajador que valida el canje.
+
+`PASS-INT-004` conserva ownership de administración laboral de clientes y `PASS-INT-005` conserva ownership de separación cliente/trabajador. Esta tarea consume esas fronteras sin absorberlas.
+
+---
+
+#### 9. Territorialidad por sede
+
+Una redención solo puede consumirse en una sede compatible con su contrato de elegibilidad.
+
+El servidor debe resolver la sede efectiva desde contexto autorizado y no aceptar como autoridad suficiente una sede enviada libremente por cliente.
+
+Cuando una recompensa sea válida en múltiples sedes, esa condición debe provenir de una regla/version aprobada; no se infiere desde el frontend.
+
+Un ticket de otra sede o fuera del ámbito permitido se rechaza sin marcarlo como usado y sin generar un efecto alternativo.
+
+---
+
+#### 10. Autoridad, permiso y actor
+
+Toda validación de redención desde PULSO debe demostrar:
+
+```text
+SESION VALIDA
++
+ACCESO A PULSO
++
+SEDE EFECTIVA
++
+PERMISO EXACTO DE REDENCION
++
+ACTOR HUMANO VALIDO CUANDO APLIQUE
++
+PRINCIPAL TECNICO / DISPOSITIVO VALIDO CUANDO APLIQUE
+```
+
+El permiso general `pos.main` no sustituye una capacidad específica de redención cuando el contrato de autorización exija separación de acciones.
+
+En dispositivo compartido, la sesión técnica del equipo no transfiere por sí sola autoridad al trabajador. La acción debe vincular principal técnico, actor humano, dispositivo, sede, permiso y resultado.
+
+`PULSO-AUTH-010` conserva ownership de la protección operacional de redenciones; `PASS-INT-002` define la frontera que esa protección debe satisfacer.
+
+---
+
+#### 11. Secreto efímero del trabajador
+
+Cuando la validación requiera PIN o firma del trabajador real en dispositivo compartido:
+
+- se captura únicamente para autenticar/atribuir esa acción;
+- no se persiste como parte del ticket o ledger;
+- no se registra en logs, métricas ni mensajes;
+- no se reutiliza para una segunda redención;
+- se limpia después de éxito, rechazo, error, cambio de modo, cambio de cliente o expiración;
+- su manejo conserva límites de intentos, bloqueo y respuesta uniforme según el contrato de autenticación aplicable.
+
+Esta tarea no define el mecanismo físico del PIN; conserva su frontera de seguridad.
+
+---
+
+#### 12. Atomicidad del consumo
+
+La transición empresarial de una redención consumible a usada debe ser atómica o poseer una garantía equivalente explícitamente aprobada.
+
+La operación confirmada debe mantener una única verdad:
+
+```text
+REDENCIÓN = USADA
++
+LEDGER / EFECTO DE PUNTOS COHERENTE
++
+ACTOR / SEDE / RESULTADO AUDITABLES
+```
+
+No es válido confirmar el consumo cuando:
+
+- la redención cambió a usada pero el ledger requerido quedó inconsistente;
+- el ledger cambió pero la redención continúa consumible;
+- la evidencia de sede/actor se perdió;
+- el proceso depende de “borrar después” una fila si falla otra escritura;
+- el servidor no puede demostrar el estado final.
+
+La compensación manual desde cliente no sustituye atomicidad.
+
+---
+
+#### 13. Relación con puntos debitados o reservados
+
+El consumo en PULSO no debe volver a aplicar el costo de puntos si la creación de intención ya produjo un débito o reserva conforme al contrato vigente.
+
+Antes de usar la redención, el servidor debe verificar el significado real del estado de puntos asociado:
+
+- si el costo ya fue debitado de forma durable, el consumo no genera un segundo débito;
+- si existe reserva, el consumo debe resolverla según el contrato propietario sin duplicar el efecto;
+- si no puede demostrarse el estado esperado del saldo/ledger, la redención no se consume a ciegas;
+- una discrepancia entre ticket, ledger y saldo se deriva a reconciliación en lugar de improvisar un ajuste desde PULSO.
+
+`PASS-INT-002` no inventa una política nueva de reserva versus débito; exige que cualquiera de las dos sea explícita, consistente y verificable.
+
+---
+
+#### 14. Estado consumible y estados no consumibles
+
+El contrato debe distinguir al menos entre una intención actualmente consumible y estados que ya no permiten un nuevo efecto.
+
+Una redención en estado equivalente a **pendiente válida/consumible** puede avanzar únicamente después de todas las validaciones.
+
+Una redención equivalente a cualquiera de estos estados no genera un nuevo consumo:
+
+```text
+USADA
+CANCELADA
+VENCIDA / EXPIRADA
+INVALIDA
+FUERA DE SEDE / TERRITORIO
+NO AUTORIZADA
+```
+
+La denominación física exacta de enums pertenece a la implementación propietaria; la semántica anterior es obligatoria.
+
+---
+
+#### 15. Uso único e idempotencia
+
+Una redención de un solo uso debe converger a un solo consumo durable aunque PULSO envíe la solicitud más de una vez.
+
+Para el mismo ticket y el mismo intento empresarial:
+
+1. un retry no crea otro consumo;
+2. el servidor detecta que el efecto ya fue aplicado;
+3. la respuesta recupera el resultado durable existente;
+4. la redención permanece usada una sola vez;
+5. no se vuelve a debitar/reservar saldo;
+6. no se crea otro movimiento de ledger por conveniencia de transporte.
+
+Si la misma identidad de operación llega con parámetros materialmente incompatibles, se trata como conflicto y no como nuevo canje.
+
+---
+
+#### 16. Concurrencia
+
+Dos cajas, dispositivos, pestañas o requests que intenten consumir simultáneamente la misma redención deben converger en un único ganador empresarial o en el mismo resultado durable idempotente.
+
+La implementación posterior debe impedir el patrón:
+
+```text
+A LEE PENDIENTE
+B LEE PENDIENTE
+A USA
+B USA
+```
+
+La decisión debe producirse con bloqueo, compare-and-set, constraint, transacción o mecanismo equivalente que garantice uso único.
+
+El chequeo previo en UI no constituye control de concurrencia.
+
+---
+
+#### 17. Resultado semántico de validación
+
+Sin imponer nombres físicos de enum, el contrato debe distinguir como mínimo:
+
+| Clase | Significado |
+| --- | --- |
+| consumo confirmado | la redención fue validada y usada exactamente una vez |
+| ya aplicada/usada | el mismo efecto ya existe; no se vuelve a consumir |
+| rechazada por autorización | actor, permiso, dispositivo o contexto no autorizan la acción |
+| rechazada por territorio | sede efectiva incompatible con la redención |
+| rechazada por estado | redención cancelada, vencida, inválida o no consumible |
+| rechazada por elegibilidad/integridad | cliente, recompensa, saldo/ledger o reglas no satisfacen el contrato |
+| conflicto | misma identidad con contenido incompatible o estado concurrente incompatible |
+| resultado desconocido | el solicitante no puede demostrar éxito ni fallo y debe reconciliar antes de repetir |
+| fallo técnico sin efecto demostrado | existe error técnico, pero no se presenta como canje confirmado |
+
+La interfaz puede mapear estos significados a mensajes humanos; no puede colapsarlos todos en “error”.
+
+---
+
+#### 18. Resultado desconocido y recuperación
+
+Una pérdida de respuesta después de enviar el consumo no autoriza a tratar el ticket como disponible ni a repetir con una operación nueva.
+
+Ante resultado desconocido:
+
+```text
+NO MOSTRAR CANJE CONFIRMADO SIN EVIDENCIA
+NO VOLVER A MARCAR EL TICKET COMO PENDIENTE POR CLIENTE
+NO CREAR UN SEGUNDO TICKET
+NO APLICAR OTRO DÉBITO
+NO REPETIR CON IDENTIDAD NUEVA
+CONSULTAR / RECONCILIAR EL RESULTADO DURABLE
+```
+
+La reconciliación debe poder determinar si:
+
+- la redención fue usada;
+- ya estaba usada antes del retry;
+- fue rechazada sin efecto;
+- permanece consumible;
+- quedó en condición de conciliación;
+- existe conflicto o inconsistencia que requiere intervención autorizada.
+
+---
+
+#### 19. Frontera de la superficie `/scanner`
+
+Mientras identificación y redención compartan el mismo contenedor runtime de PULSO, deben seguir registradas como modos subordinados de una sola superficie y no como rutas ficticias independientes.
+
+Cambiar entre modos debe limpiar todo estado incompatible, incluyendo cuando aplique:
+
+- código anterior;
+- cliente resuelto;
+- monto o referencia de acumulación;
+- ticket/redención anterior;
+- mensajes de éxito/error;
+- credencial efímera del trabajador;
+- estado de procesamiento.
+
+Una redención no puede aplicarse accidentalmente al cliente o código de la operación anterior.
+
+---
+
+#### 20. Experiencia operacional de PULSO
+
+PULSO solo presenta `canje validado` cuando existe resultado confirmado de servidor.
+
+La UI debe distinguir, de acuerdo con el contrato de experiencia vigente:
+
+- leyendo/resolviendo ticket;
+- verificando elegibilidad;
+- esperando autorización;
+- procesando;
+- confirmado;
+- ya aplicado/usado;
+- denegado;
+- inválido o vencido;
+- conflicto;
+- resultado desconocido/requiere conciliación;
+- fallo técnico recuperable cuando corresponda.
+
+Un cambio local de color, toast, sonido, cierre de modal o lectura correcta del QR no constituye confirmación empresarial.
+
+---
+
+#### 21. Offline y degradación
+
+El consumo de una redención no se confirma desde caché ni se almacena localmente como hecho definitivo cuando el servidor no está disponible.
+
+La capacidad puede conservar datos de referencia necesarios para explicar el estado, pero la mutación requiere autoridad vigente y resultado durable.
+
+Si una arquitectura futura incorpora cola/outbox, deberá demostrar uso único, identidad estable, actor, sede, vigencia, expiración, revalidación y reconciliación antes de considerarse equivalente. Esta tarea no crea ni selecciona esa arquitectura.
+
+---
+
+#### 22. Auditoría mínima
+
+La evidencia de una redención consumida debe permitir reconstruir:
+
+```text
+QUE REDENCIÓN / TICKET
+QUE CLIENTE
+QUE RECOMPENSA
+QUE REGLA / VERSION
+QUE COSTO O EFECTO DE PUNTOS
+QUE ESTADO PREVIO
+QUE ESTADO RESULTANTE
+QUE SEDE
+QUE ACTOR
+QUE PRINCIPAL TECNICO / DISPOSITIVO CUANDO APLIQUE
+QUE PERMISO / CONTEXTO
+QUE IDENTIDAD IDEMPOTENTE
+QUE MOVIMIENTO / REFERENCIA DE LEDGER
+CUANDO
+QUE RESULTADO
+CON QUE CORRELACION
+```
+
+La auditoría no almacena PIN, secretos, tokens o datos personales innecesarios.
+
+El registro debe permitir investigar doble uso, fraude, uso fuera de sede, reintentos, conflictos y conciliación.
+
+---
+
+#### 23. Fallo parcial, compensación y rollback
+
+El contrato objetivo evita depender de compensaciones realizadas por la interfaz después de escrituras parciales.
+
+Ante un fallo antes del commit empresarial:
+
+- no se declara consumo;
+- la redención conserva un estado coherente;
+- no aparece un movimiento huérfano.
+
+Ante un fallo después de commit pero antes de respuesta:
+
+- el efecto durable se conserva;
+- el cliente recibe `resultado desconocido` hasta reconciliar;
+- el retry recupera el resultado existente sin repetir el consumo.
+
+Una reversión administrativa posterior de un canje confirmado, cuando el negocio la permita, es un nuevo hecho auditable y autorizado; no se implementa eliminando evidencia histórica.
+
+---
+
+#### 24. Separación de responsabilidades dentro del mini-bloque
+
+| Tarea | Responsabilidad |
+| --- | --- |
+| `PASS-INT-001` | contrato PULSO → PASS para acumulación |
+| `PASS-INT-002` | contrato PULSO → PASS para redención |
+| `PASS-INT-003` | administración laboral de productos de fidelización |
+| `PASS-INT-004` | administración laboral de clientes cuando corresponda |
+| `PASS-INT-005` | impedir mezcla de identidad cliente y trabajador |
+
+`PASS-INT-002` no define CRUD laboral de recompensas, no administra clientes y no reemplaza los contratos de identidad laboral.
+
+---
+
+#### 25. Handoff hacia implementación y QA
+
+La materialización posterior debe conservar este contrato en las capas propietarias:
+
+- autorización PULSO y permiso exacto de redención;
+- acción servidor para validar/consumir;
+- estado y persistencia de la redención;
+- ledger y saldo/proyección asociados;
+- RLS/grants/funciones de Supabase en `vento-shell` cuando corresponda;
+- consumidores PULSO y PASS;
+- dispositivos compartidos y firma de actor cuando apliquen;
+- paquetes E5 propietarios;
+- pruebas de integración, seguridad, concurrencia e idempotencia;
+- `PASS-QA-002` para probar el flujo completo de redención materializado.
+
+`PASS-INT-002` no certifica que la implementación actual cumpla esas obligaciones.
+
+---
+
+#### 26. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** el comportamiento verificable de redención ya está cubierto por requisitos vigentes de PASS, autorización e integración para servidor autorizado, uso único, atomicidad, idempotencia, estado pendiente/consumible, vigencia, sede, actor, dispositivo, saldo/ledger, transición a usada, rechazo de estados no válidos, experiencia confirmada y resultado recuperable. Esta tarea organiza y especializa esa cobertura como contrato documental sin introducir una obligación material nueva.
+
+---
+
+#### 27. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-PASS-008` para mutaciones de puntos/redención únicamente mediante contratos servidor autorizados, atómicos e idempotentes;
+- `TREQ-PASS-010` para ledger inmutable/reconciliable, reglas/versiones y reintentos sin duplicación;
+- `TREQ-PASS-022` para sesión válida, acceso PULSO, sede efectiva y permisos exactos por acción;
+- `TREQ-PASS-027` para comprobar código, usuario, recompensa, sede, estado pendiente, vigencia, saldo debitado/reservado, actor efectivo y no utilización previa, y para transición atómica/idempotente a usada;
+- `TREQ-PASS-028` para conservar identificación y redención como modos subordinados de `/scanner` mientras compartan contenedor;
+- `TREQ-PASS-029` para atribución del trabajador real y vínculo de principal técnico, actor, dispositivo, sede, permiso y resultado;
+- `TREQ-PASS-030` para tratamiento efímero y seguro del PIN/firma del trabajador;
+- `TREQ-PASS-032` para impedir éxito visual antes de confirmación y distinguir error recuperable, duplicado, conflicto, denegación y resultado ya aplicado;
+- `TREQ-INTEGRATION-003` para identidad estable del efecto, retry, deduplicación, resultado durable, resultado desconocido y conciliación;
+- los requisitos PULSO y AUTH ya relacionados por esas filas para autoridad, territorio, sesión y protección de servidor.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 28. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `PASS-INT-002` en su rama propia mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | El artefacto todavía no ha sido insertado en el checkout del usuario ni sometido allí a formateador, quality, delivery check, validadores proporcionales y batería global. |
+| REMOTA | `PASS` | Se verificaron en `vento-shell/main` el protocolo, contrato de entrega, manifiesto, continuidad, topología/políticas, propietario de `PASS-INT-002`, inventario PULSO-PASS, proceso `VPROC-0045`, auditoría de redención no atómica, políticas RLS históricas, scripts documentales y cobertura 04A vigente; la base inmediata `PASS-INT-001` se toma de su artefacto completo aprobado por el usuario mientras su publicación está pendiente. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutaron redenciones, escaneos, consumos, retries, concurrencia, sesiones de caja ni pruebas E2E reales. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-INT-002` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la implementación pertenece a consumidores/packages posteriores. |
+
+---
+
+#### 29. Criterios de aceptación
+
+- [x] Se define exactamente la integración PULSO → PASS para redención sin adelantar administración laboral de productos.
+- [x] Se separa creación de intención/ticket en PASS de validación/consumo en PULSO.
+- [x] Un ticket creado no se interpreta como redención usada.
+- [x] Se exige validar redención, cliente, recompensa, sede, estado consumible, vigencia y no utilización previa.
+- [x] Se exige coherencia con saldo debitado o reservado y ledger, sin aplicar un segundo débito.
+- [x] La transición a usada es atómica o conserva una garantía equivalente aprobada.
+- [x] Una redención de un solo uso converge a un solo efecto ante concurrencia y retries.
+- [x] Estados usados, cancelados, vencidos, inválidos o fuera de territorio no generan un nuevo efecto.
+- [x] Se exige permiso exacto y sede efectiva.
+- [x] Se conserva atribución de actor, principal técnico y dispositivo cuando corresponda.
+- [x] El PIN/firma laboral permanece efímero y fuera de ledger/logs.
+- [x] La posesión del QR/código no constituye autoridad suficiente.
+- [x] La UI no presenta éxito antes de confirmación de servidor.
+- [x] Se distinguen ya aplicado, denegado, inválido, conflicto, fallo técnico y resultado desconocido.
+- [x] Un timeout se reconcilia antes de repetir el consumo.
+- [x] Se preserva la única superficie `/scanner` mientras los modos sigan embebidos en ella.
+- [x] Se elimina del contrato objetivo la compensación cliente como sustituto de atomicidad.
+- [x] Se define evidencia auditable sin secretos ni datos personales innecesarios.
+- [x] Se preserva ownership de `PASS-INT-003..005`, `PULSO-AUTH-010` y `PASS-QA-002`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza implementación física ni cambios de Supabase.
+
+---
+
+#### 30. Límites
+
+Esta tarea no:
+
+- crea tickets o QR de redención en runtime;
+- consume redenciones reales;
+- implementa ni modifica `processRedemptionAction`;
+- modifica `loyalty_redemptions`, `loyalty_transactions` ni contratos físicos equivalentes;
+- modifica funciones, triggers, grants, RLS, Realtime, Edge Functions o migraciones de Supabase;
+- reactiva políticas amplias históricas de lectura o validación de redenciones;
+- fija catálogo, costo, elegibilidad, promoción, vigencia o disponibilidad de recompensas fuera de sus contratos propietarios;
+- define CRUD laboral de productos de fidelización;
+- administra el perfil completo del cliente;
+- resuelve por completo identidad cliente/trabajador;
+- crea una ruta independiente de redención si el runtime sigue usando `/scanner` por modos;
+- activa componentes de cámara dormantes;
+- crea una cola offline para consumos;
+- declara cumplimiento de la implementación actual;
+- cierra `PASS-QA-002`;
+- modifica 04A;
+- crea requisitos de prueba;
+- inicia una instancia física o package.
+
+---
+
+#### 31. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-INT-001 — Definir integración PULSO → PASS para acumulación`
+
+**TAREA ACTUAL APROBADA**
+`PASS-INT-002 — Definir integración PULSO → PASS para redención`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-INT-003 — Definir administración laboral de productos de fidelización`
 ### [ ] PASS-INT-003 — Definir administración laboral de productos de fidelización
 ### [ ] PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
 ### [ ] PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
