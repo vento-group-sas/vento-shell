@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1340** |
+| Tareas aprobadas | **1341** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **256** |
+| Tareas no iniciadas | **255** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.96% (1340/1596)** |
+| Porcentaje de completamiento | **84.02% (1341/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-UX-004 — Diseñar inicio para comprador** |
-| Tarea actual | **ORIGO-UX-005 — Diseñar inicio para aprobador** |
+| Última tarea aprobada | **ORIGO-UX-005 — Diseñar inicio para aprobador** |
+| Tarea actual | **ORIGO-UX-006 — Diseñar inicio para receptor** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-UX-006 — Diseñar inicio para receptor** |
+| Siguiente tarea | **ORIGO-UX-007 — Diseñar creación de orden de compra** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 53 de 65 aprobadas; ORIGO-UX-005 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 54 de 65 aprobadas; ORIGO-UX-006 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-UX-005** |
+| Carril documental | **ACTIVO — ORIGO-UX-006** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-UX-004` — Diseñar inicio para comprador |
-| Tarea actual | `ORIGO-UX-005` — Diseñar inicio para aprobador — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-UX-006` — Diseñar inicio para receptor |
+| Última aprobada | `ORIGO-UX-005` — Diseñar inicio para aprobador |
+| Tarea actual | `ORIGO-UX-006` — Diseñar inicio para receptor — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-UX-007` — Diseñar creación de orden de compra |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 53 DE 65 APROBADAS — ACTUAL ORIGO-UX-005** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 54 DE 65 APROBADAS — ACTUAL ORIGO-UX-006** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-UX-004 — Diseñar inicio para comprador
-        ↓
-TAREA ACTUAL
 ORIGO-UX-005 — Diseñar inicio para aprobador
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-UX-006 — Diseñar inicio para receptor
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-UX-007 — Diseñar creación de orden de compra
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 53 de 65 tareas aprobadas
+BLOQUES L Y M — 54 de 65 tareas aprobadas
 ```
