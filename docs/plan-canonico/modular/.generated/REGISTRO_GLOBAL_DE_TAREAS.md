@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1337** |
+| Aprobadas | **1338** |
 | En propuesta | **0** |
-| No iniciadas | **259** |
+| No iniciadas | **258** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.77% (1337/1596)** |
+| Porcentaje de completamiento | **83.83% (1338/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **259** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1238** |
+| ⏸ NO_EVALUADA | **258** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1239** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-UX-001` — Inventariar el proceso completo de abastecimiento | ✅ APROBADA |
-| Tarea actual | `ORIGO-UX-002` — Separar solicitud, compra, aprobación y recepción | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-UX-003` — Diseñar inicio para solicitante | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-UX-002` — Separar solicitud, compra, aprobación y recepción | ✅ APROBADA |
+| Tarea actual | `ORIGO-UX-003` — Diseñar inicio para solicitante | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-UX-004` — Diseñar inicio para comprador | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1100,7 +1100,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-014` | Migrar a paquetes de vento-shell | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-015` | Ejecutar pruebas integrales | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-001` | Inventariar el proceso completo de abastecimiento | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-002` | Separar solicitud, compra, aprobación y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-002` | Separar solicitud, compra, aprobación y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-003` | Diseñar inicio para solicitante | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-004` | Diseñar inicio para comprador | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-005` | Diseñar inicio para aprobador | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
