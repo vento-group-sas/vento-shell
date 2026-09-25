@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1325** |
+| Tareas aprobadas | **1326** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **271** |
+| Tareas no iniciadas | **270** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.02% (1325/1596)** |
+| Porcentaje de completamiento | **83.08% (1326/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación** |
-| Tarea actual | **PASS-UX-013 — Ejecutar pruebas con clientes reales** |
+| Última tarea aprobada | **PASS-UX-013 — Ejecutar pruebas con clientes reales** |
+| Tarea actual | **PASS-INT-001 — Definir integración PULSO → PASS para acumulación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-INT-001 — Definir integración PULSO → PASS para acumulación** |
-| Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE** |
-| Progreso del bloque | **CARRIL PASS: 12 de 13 aprobadas; PASS-UX-013 pendiente** |
+| Siguiente tarea | **PASS-INT-002 — Definir integración PULSO → PASS para redención** |
+| Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 2: PASS_LOYALTY_INTEGRATIONS** |
+| Progreso del bloque | **CARRIL PASS: 0 de 5 aprobadas; PASS-INT-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-UX-013** |
+| Carril documental | **ACTIVO — PASS-INT-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-UX-012` — Simplificar interfaz móvil, estados de carga, error, offline y recuperación |
-| Tarea actual | `PASS-UX-013` — Ejecutar pruebas con clientes reales — **NO INICIADA** |
-| Siguiente tarea | `PASS-INT-001` — Definir integración PULSO → PASS para acumulación |
+| Última aprobada | `PASS-UX-013` — Ejecutar pruebas con clientes reales |
+| Tarea actual | `PASS-INT-001` — Definir integración PULSO → PASS para acumulación — **NO INICIADA** |
+| Siguiente tarea | `PASS-INT-002` — Definir integración PULSO → PASS para redención |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 12 DE 13 APROBADAS — ACTUAL PASS-UX-013** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 0 DE 5 APROBADAS — ACTUAL PASS-INT-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
-        ↓
-TAREA ACTUAL
 PASS-UX-013 — Ejecutar pruebas con clientes reales
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PASS-INT-001 — Definir integración PULSO → PASS para acumulación
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-INT-002 — Definir integración PULSO → PASS para redención
+        ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 12 de 13 tareas aprobadas
+CARRIL PASS — 0 de 5 tareas aprobadas
 ```
