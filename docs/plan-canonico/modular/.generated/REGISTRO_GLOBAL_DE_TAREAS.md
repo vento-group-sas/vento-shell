@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1330** |
+| Aprobadas | **1331** |
 | En propuesta | **0** |
-| No iniciadas | **266** |
+| No iniciadas | **265** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.33% (1330/1596)** |
+| Porcentaje de completamiento | **83.40% (1331/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **266** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1231** |
+| ⏸ NO_EVALUADA | **265** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1232** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,8 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-INT-004` — Definir administración laboral de clientes cuando corresponda | ✅ APROBADA |
-| Tarea actual | `PASS-INT-005` — Evitar mezclar identidad cliente y trabajador | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-011` — Registrar actor de recepción | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1431,7 +1432,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-002` | Definir integración PULSO → PASS para redención | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-003` | Definir administración laboral de productos de fidelización | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-004` | Definir administración laboral de clientes cuando corresponda | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-005` | Evitar mezclar identidad cliente y trabajador | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-005` | Evitar mezclar identidad cliente y trabajador | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-QA-001` | Probar flujo completo de acumulación | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-QA-002` | Probar flujo completo de redención | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-001` | Confirmar repositorio propietario | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
