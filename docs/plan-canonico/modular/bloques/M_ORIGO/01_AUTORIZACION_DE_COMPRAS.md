@@ -12519,7 +12519,1722 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-012 — Integrar contexto operativo donde aplique`
 
-### [ ] ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
+### ✅ ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-011 — Registrar actor de recepción
+**Tarea siguiente:** ORIGO-AUTH-013 — Mantener administración sin check-in
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — integración cerrada del contexto operativo canónico en las capacidades ORIGO cuyo contrato admite o exige carril operativo, preservando modalidad, prerrequisitos `N`/`T`/`T+C`, actor efectivo, turno, check-in, rol operativo, sede, área, dispositivo, recurso, territorio, frescura y auditoría sin imponer contexto operativo sobre capacidades administrativas ni materializar todavía ninguna unidad física
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `ORIGO-AUTH-012::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **cuándo ORIGO debe integrar contexto operativo y qué dimensiones debe resolver**, sin convertir turno, check-in, sede seleccionada, dispositivo, interfaz o rol de navegación en autoridad por sí mismos.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++
+PERMISO EXACTO
++
+CONTRATO DEL PERMISO
++
+CARRIL APLICABLE
++
+PRERREQUISITO APLICABLE
++
+CONTEXTO RESUELTO EN SERVIDOR
++
+RECURSO Y TERRITORIO RESUELTOS
++
+FRESCURA VÁLIDA
++
+SIN DENEGACIÓN APLICABLE
+=
+DECISIÓN AUTORIZABLE
+```
+
+Nunca:
+
+```text
+site_id DEL CLIENTE
+OR
+selected_site_id AISLADO
+OR
+navigation_role
+OR
+APP VISIBLE
+OR
+DISPOSITIVO AUTENTICADO
+OR
+PIN PRESENTADO
+OR
+CHECK-IN AISLADO
+=
+CONTEXTO OPERATIVO AUTORIZANTE
+```
+
+La tarea integra contexto. No crea permisos, grants, roles, turnos, check-ins, territorios ni recursos nuevos.
+
+---
+
+#### 2. Handoff recibido de ORIGO-AUTH-011
+
+`ORIGO-AUTH-011` cerró la pregunta:
+
+```text
+¿QUIÉN ACTÚA
+Y CÓMO QUEDA ATRIBUIDO?
+```
+
+Esta tarea cierra:
+
+```text
+¿EN QUÉ CONTEXTO OPERATIVO
+PUEDE ACTUAR ESE ACTOR
+CUANDO EL CONTRATO LO EXIGE?
+```
+
+Por tanto:
+
+```text
+ACTOR EFECTIVO
+!=
+CONTEXTO OPERATIVO
+```
+
+Y:
+
+```text
+ACTOR IDENTIFICADO
+!=
+ACCIÓN AUTORIZADA
+```
+
+La 012 consume el actor efectivo ya resuelto y no vuelve a inferirlo desde Auth, dispositivo, PIN, `navigation_role`, sede o último actor.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente para `ORIGO-AUTH-009..015` establece:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto, este marcador produce un contrato global y no una implementación física.
+
+Identidad física futura:
+
+```text
+ORIGO-AUTH-012::<implementation_unit_id>
+```
+
+Condición temporal mínima:
+
+```text
+package_id propietario resuelto
++
+E5-GATE-008::<package_id> = PASS
++
+autorización física explícita
+```
+
+Antes de esas condiciones:
+
+```text
+CAMBIOS FÍSICOS = 0
+```
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+4127bba82c033f8cd4a65bcb9109d59bc8c885d3
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+owner blob remoto
+2437ccbbfd57b179bf76c0de3592ddf33f4feb05
+
+ORIGO-AUTH-011 artefacto aprobado
+03d4476ed16dbe982c035602864c818201e5fa5f197860e4c0843cdb47b580d2
+```
+
+Se contrastaron como mínimo:
+
+- protocolo, contrato de entrega, manifest, continuidad, ejecución y topología;
+- políticas de formato y desarrollo de tareas;
+- `ORIGO-AUTH-004..011`;
+- catálogo canónico de modalidad, prerrequisitos y contexto;
+- contratos `AccessContext` y `AuthorizationDecision`;
+- matrices base y operativas aplicables a ORIGO;
+- contratos de dispositivo compartido;
+- contratos de recurso de orden, recepción y proveedor;
+- Registro 04A de ORIGO y AUTH;
+- runtime actual de guards, sesión operativa, firma de dispositivo, órdenes, recepciones, proveedores y revisión de maestro;
+- evaluador transversal de autorización y cobertura vigente de `T+C`.
+
+El remoto todavía conserva el marcador de la 011 durante esta preparación adelantada; la base sustantiva de esta tarea es el artefacto completo de la 011 aprobado por el usuario.
+
+---
+
+#### 5. Regla de autoridad del contrato del permiso
+
+La aplicación ORIGO no decide localmente si una capacidad usa turno o check-in.
+
+La fuente es el contrato canónico del permiso:
+
+```text
+PermissionContractSnapshot
+```
+
+con, como mínimo:
+
+```text
+authorization_requirement
+base_prerequisite
+operational_prerequisite
+requires_active_area
+device_policy_code
+resource_contract_id
+```
+
+Regla:
+
+```text
+CATÁLOGO CANÓNICO
+→ DEFINE MODALIDAD Y PRERREQUISITO
+
+MATRIZ / GRANT
+→ DEFINE SI EL ACTOR RECIBE EL ALLOW Y SUS RESTRICCIONES
+
+CONSUMIDOR
+→ NO REINTERPRETA NINGUNO
+```
+
+---
+
+#### 6. Universo exacto integrado por la tarea
+
+La tarea reconcilia exactamente quince capacidades ORIGO ya definidas por las tareas precedentes.
+
+Resultado:
+
+```text
+CAPACIDADES ORIGO RECONCILIADAS: 15
+CON COMPONENTE OPERATIVO: 6
+EXCLUSIVAMENTE BASE / ADMINISTRATIVAS: 9
+CAPACIDADES NUEVAS: 0
+```
+
+Las seis con componente operativo son:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.suppliers.view
+origo.procurement.receipts.register
+origo.procurement.receipts.reverse
+```
+
+Las nueve exclusivamente base son:
+
+```text
+origo.catalog.product_reviews.view
+origo.procurement.purchase_orders.create
+origo.procurement.suppliers.create
+origo.procurement.purchase_orders.approve
+origo.procurement.purchase_orders.update
+origo.procurement.purchase_orders.cancel
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+---
+
+#### 7. Matriz canónica consolidada de contexto ORIGO
+
+| Capacidad | Modalidad | Base | Operativo | Integración de contexto |
+| --- | --- | --- | --- | --- |
+| `origo.access` | `BASE_OR_OPERATIONAL` | `N` | `T` | carriles alternativos; el operativo exige turno vigente |
+| `origo.procurement.purchase_orders.view` | `BASE_OR_OPERATIONAL` | `N` | `T+C` | carriles alternativos; el operativo exige turno y check-in |
+| `origo.procurement.receipts.view` | `BASE_OR_OPERATIONAL` | `N` | `T+C` | carriles alternativos; el operativo exige turno y check-in |
+| `origo.procurement.suppliers.view` | `BASE_OR_OPERATIONAL` | `N` | `T` | carriles alternativos; el operativo exige turno; restricciones del grant pueden ser más estrictas sin reescribir el contrato |
+| `origo.catalog.product_reviews.view` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.purchase_orders.create` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.suppliers.create` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.purchase_orders.approve` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.receipts.register` | `OPERATIONAL_ONLY` | `—` | `T+C` | contexto operativo obligatorio |
+| `origo.procurement.purchase_orders.update` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.purchase_orders.cancel` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.suppliers.update` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.suppliers.activate` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.suppliers.deactivate` | `BASE_ONLY` | `N` | `—` | sin carril operativo |
+| `origo.procurement.receipts.reverse` | `BASE_AND_OPERATIONAL` | `N` | `T+C` | ambos carriles obligatorios |
+
+Esta matriz no activa físicamente las claves todavía no materializadas.
+
+---
+
+#### 8. Semántica de `N`
+
+`N` significa:
+
+```text
+TURNO = NO REQUERIDO
+CHECK-IN = NO REQUERIDO
+```
+
+No significa:
+
+```text
+AUTORIZACIÓN AUTOMÁTICA
+ALCANCE GLOBAL
+SIN RECURSO
+SIN TERRITORIO
+SIN FIELD MASK
+SIN AUDITORÍA
+```
+
+El carril base continúa exigiendo actor laboral, allow aplicable, cobertura, recurso, territorio, estado y controles propios.
+
+---
+
+#### 9. Semántica de `T`
+
+`T` significa:
+
+```text
+TURNO PUBLICADO Y VIGENTE = REQUERIDO
+CHECK-IN ACTIVO = NO REQUERIDO
+```
+
+Se utiliza en ORIGO para:
+
+- entrada operativa a la aplicación mediante `origo.access`;
+- consulta operativa mínima de proveedor mediante `origo.procurement.suppliers.view` según el contrato global del permiso.
+
+Un check-in activo incompatible no se ignora: produce conflicto estructural del carril operativo.
+
+---
+
+#### 10. Semántica de `T+C`
+
+`T+C` significa:
+
+```text
+TURNO PUBLICADO Y VIGENTE
++
+CHECK-IN ACTIVO COMPATIBLE
+```
+
+Sin check-in compatible:
+
+```text
+DENY CARRIL OPERATIVO
+```
+
+La razón transversal aplicable permanece:
+
+```text
+active_checkin_required
+```
+
+La proyección pública de error podrá usar el reason code y perfil aprobados por la capa transversal; esta tarea no redefine mensajes.
+
+---
+
+#### 11. `BASE_ONLY`
+
+Para una capacidad `BASE_ONLY`:
+
+```text
+CARRIL BASE
+→ se evalúa
+
+CARRIL OPERATIVO
+→ NOT_APPLICABLE
+```
+
+Turno y check-in no son requisitos de autoridad.
+
+La ausencia de turno o check-in no puede bloquear una acción administrativa válida únicamente por tratarse de ORIGO.
+
+La política completa de administración sin check-in queda reservada a `ORIGO-AUTH-013`.
+
+---
+
+#### 12. `BASE_OR_OPERATIONAL`
+
+Para una capacidad `BASE_OR_OPERATIONAL`:
+
+```text
+BASE VÁLIDO
+→ puede autorizar sin turno
+
+OR
+
+OPERATIVO VÁLIDO
+→ puede autorizar cumpliendo T o T+C
+```
+
+No se permite construir un allow híbrido con piezas incompletas:
+
+```text
+BASE SIN ALCANCE
++
+OPERATIVO SIN TURNO
+!=
+ALLOW
+```
+
+Cada carril conserva grants, contexto, alcance, razones y evidencia propios.
+
+---
+
+#### 13. `OPERATIONAL_ONLY`
+
+Para `origo.procurement.receipts.register`:
+
+```text
+BASE
+→ NOT_APPLICABLE
+
+OPERATIVO
+→ OBLIGATORIO
+```
+
+Contrato:
+
+```text
+OPERATIONAL_ONLY
++
+T+C
+```
+
+Un rol base administrativo, una sede primaria o un permiso de app no sustituyen ese contexto.
+
+---
+
+#### 14. `BASE_AND_OPERATIONAL`
+
+Para `origo.procurement.receipts.reverse`:
+
+```text
+BASE VÁLIDO
+AND
+OPERATIVO VÁLIDO
+→ puede continuar
+```
+
+Contrato:
+
+```text
+BASE_AND_OPERATIONAL
+base = N
+operational = T+C
+```
+
+La ausencia de cualquiera de los dos componentes produce `DENY`.
+
+---
+
+#### 15. `origo.access`
+
+`origo.access` permite dos vías independientes:
+
+```text
+BASE
+→ N
+
+OPERATIVA
+→ T
+```
+
+El actor operativo puede entrar a ORIGO durante un turno vigente antes del check-in para recibir orientación y conocer por qué una acción `T+C` todavía no es ejecutable.
+
+No:
+
+```text
+ORIGO VISIBLE
+→ TODAS LAS CAPACIDADES ORIGO
+```
+
+---
+
+#### 16. `purchase_orders.view`
+
+Carril operativo:
+
+```text
+T+C
+```
+
+Además exige:
+
+- actor efectivo;
+- rol operativo con grant;
+- sede/área compatibles;
+- orden resuelta;
+- destinos y territorio autorizados según `ORIGO-AUTH-009`;
+- field mask según `ORIGO-AUTH-010`;
+- decisión fresca.
+
+La consulta operativa no se convierte en autoridad de compra.
+
+---
+
+#### 17. `receipts.view`
+
+Carril operativo:
+
+```text
+T+C
+```
+
+Además exige:
+
+- actor efectivo;
+- rol operativo con grant;
+- `PURCHASE_RECEIPT` o colección autorizada;
+- destino real de recepción;
+- sede/área compatibles;
+- proyección autorizada;
+- contexto fresco.
+
+El receptor es una relación del recurso y no su propietario automático.
+
+---
+
+#### 18. `suppliers.view`
+
+El contrato global del permiso conserva:
+
+```text
+BASE_OR_OPERATIONAL
+base = N
+operational = T
+```
+
+El carril operativo obtiene únicamente la proyección mínima del proveedor relacionado con la operación activa.
+
+No concede:
+
+- expediente completo;
+- bancos;
+- contratos;
+- negociación;
+- costos internos no requeridos;
+- administración del maestro.
+
+---
+
+#### 19. Reconciliación de la condición `T+C` del grant de `bodeguero`
+
+El catálogo canónico define `origo.procurement.suppliers.view` con prerrequisito operativo `T`.
+
+La matriz de `bodeguero` contiene una condición más restrictiva para su asignación concreta y exige check-in.
+
+La reconciliación queda:
+
+```text
+PermissionContractSnapshot.operational_prerequisite
+= T
+```
+
+Y, para el grant de `bodeguero`:
+
+```text
+GRANT OPERATIVO
++
+RESTRICCIÓN ADICIONAL DE CHECK-IN
+```
+
+No:
+
+```text
+MATRIZ DE ROL
+→ REESCRIBE EL CONTRATO DEL PERMISO A T+C
+```
+
+La restricción adicional puede reducir el uso de un allow concreto; nunca puede relajar el prerrequisito canónico del permiso ni cambiar su modalidad.
+
+---
+
+#### 20. `product_reviews.view`
+
+`origo.catalog.product_reviews.view` es:
+
+```text
+BASE_ONLY
+N
+```
+
+La revisión del maestro es administrativa.
+
+No debe adquirir turno, check-in o rol operativo como requisito por reutilizar superficies nacidas desde recepción.
+
+La independencia administrativa completa pertenece a `ORIGO-AUTH-013`.
+
+---
+
+#### 21. Capacidades administrativas de orden
+
+Se preservan como `BASE_ONLY`:
+
+```text
+origo.procurement.purchase_orders.create
+origo.procurement.purchase_orders.approve
+origo.procurement.purchase_orders.update
+origo.procurement.purchase_orders.cancel
+```
+
+El contexto operativo puede existir en paralelo para el mismo humano, pero no participa como fuente de autoridad de estas capacidades.
+
+---
+
+#### 22. Capacidades administrativas de proveedor
+
+Se preservan como `BASE_ONLY`:
+
+```text
+origo.procurement.suppliers.create
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+Un turno o check-in nunca convierte una proyección operativa de proveedor en permiso de administración.
+
+---
+
+#### 23. `receipts.register`
+
+El registro de una recepción nueva conserva:
+
+```text
+OPERATIONAL_ONLY
+T+C
+```
+
+Antes del efecto deben estar resueltos simultáneamente:
+
+- principal;
+- actor efectivo;
+- turno vigente;
+- check-in activo compatible;
+- rol operativo efectivo;
+- sede;
+- área cuando aplique;
+- permiso exacto;
+- `RECEIPT_DESTINATION_DRAFT`;
+- orden o causa controlada;
+- proveedor;
+- líneas y productos;
+- dispositivo y techo cuando aplique;
+- versión/frescura del contexto.
+
+---
+
+#### 24. `receipts.reverse`
+
+La reversión conserva:
+
+```text
+BASE_AND_OPERATIONAL
+N + T+C
+```
+
+La evaluación requiere dos decisiones de carril sobre el mismo actor, recurso y momento autoritativo.
+
+El componente operativo no puede tomarse del receptor original ni de otro trabajador.
+
+El componente base no puede derivarse de `navigation_role`, turno o check-in.
+
+---
+
+#### 25. Forma mínima del contexto consumido por ORIGO
+
+Sin imponer un DTO físico nuevo, la decisión debe poder referenciar o resolver como mínimo:
+
+```text
+principal_type
+principal_id
+auth_session_id
+actor_type
+actor_id
+actor_session_id
+base_role
+operational_role
+shift_id
+checkin_id
+effective_site_id
+effective_area_id
+device_id
+permission_key
+authorization_requirement
+operational_prerequisite
+resource_type
+resource_id / resource_request
+context_contract_version
+resolved_at
+context_fingerprint
+correlation_id
+```
+
+Los campos no aplicables permanecen explícitamente no aplicables; no se rellenan con valores inventados.
+
+---
+
+#### 26. Principal y actor
+
+Se preserva la separación de la 011:
+
+```text
+PRINCIPAL AUTENTICADO
+!=
+ACTOR EFECTIVO
+```
+
+El contexto operativo pertenece al actor efectivo.
+
+En dispositivo compartido:
+
+```text
+principal = dispositivo
+actor = empleado
+```
+
+El turno y check-in son del empleado actor, no del usuario técnico del dispositivo.
+
+---
+
+#### 27. Actor laboral activo
+
+Antes de habilitar un carril operativo debe existir un actor laboral válido y activo.
+
+No se acepta como sustituto:
+
+- Auth user técnico;
+- último actor;
+- `navigation_role`;
+- ID enviado por cliente;
+- empleado inferido por sede;
+- actor de una recepción previa.
+
+Actor ausente, ambiguo o inactivo falla cerrado.
+
+---
+
+#### 28. Turno vigente
+
+Un turno operativo válido debe ser, como mínimo:
+
+- del actor efectivo;
+- de una revisión publicada;
+- laboral;
+- vigente en el instante autoritativo;
+- no cancelado ni retirado;
+- territorialmente compatible;
+- con rol operativo válido;
+- inequívoco.
+
+Un turno futuro, borrador, retirado o ambiguo no autoriza.
+
+---
+
+#### 29. Check-in activo
+
+Cuando el permiso exige `T+C`, el check-in debe:
+
+- pertenecer al actor efectivo;
+- corresponder al turno vigente;
+- corresponder a la sede compatible;
+- estar abierto;
+- estar confirmado por servidor;
+- ser único;
+- conservar referencias resolubles.
+
+No se acepta:
+
+```text
+último evento
+booleano cliente
+solicitud offline pendiente
+limit 1 arbitrario
+check-in de otro actor
+check-in de otro turno
+```
+
+---
+
+#### 30. Rol operativo efectivo
+
+El rol operativo procede del contexto laboral del turno y de las asignaciones canónicas aplicables.
+
+No procede de:
+
+```text
+employees.role
+navigation_role
+nombre del dispositivo
+perfil visual
+último rol usado
+query param
+```
+
+La matriz de rol determina allows o restricciones del actor; no convierte el nombre del rol en autorización final.
+
+---
+
+#### 31. Sede efectiva
+
+La sede efectiva del carril operativo se resuelve en servidor.
+
+Puede depender de:
+
+- asignación laboral;
+- turno;
+- check-in;
+- dispositivo compartido;
+- recurso;
+- relaciones territoriales.
+
+Nunca:
+
+```text
+formData.site_id
+query.site_id
+selected_site_id
+employee.site_id
+```
+
+por sí solos crean autoridad.
+
+Esos valores pueden actuar como localizadores o filtros reductores cuando el contrato lo permita.
+
+---
+
+#### 32. Área efectiva
+
+Cuando la capacidad o el recurso exigen área, la decisión debe resolver un área compatible con:
+
+- actor;
+- turno;
+- sede;
+- check-in;
+- dispositivo;
+- recurso.
+
+Un área ausente no se interpreta como toda la sede.
+
+Un área enviada por cliente no sustituye el área autoritativa.
+
+---
+
+#### 33. Recurso y territorio
+
+El contexto operativo limita al recurso; no lo reemplaza.
+
+Regla:
+
+```text
+CONTEXTO DEL ACTOR
+INTERSECCIÓN
+TERRITORIO REAL DEL RECURSO
+INTERSECCIÓN
+LÍMITES DEL DISPOSITIVO CUANDO APLIQUE
+=
+ALCANCE EFECTIVO
+```
+
+Nunca:
+
+```text
+context.site_id
+→ AUTORIZA CUALQUIER RECURSO DE ESA SEDE
+```
+
+Las reglas de orden y centro de costo permanecen en `ORIGO-AUTH-009`.
+
+---
+
+#### 34. Dispositivo compartido
+
+Un dispositivo compartido agrega restricciones y evidencia contextual.
+
+Debe resolverse:
+
+- principal técnico;
+- instancia de dispositivo;
+- estado vigente;
+- aplicación permitida;
+- sede/área del dispositivo;
+- sesión del actor;
+- actor humano;
+- turno;
+- check-in cuando aplique;
+- rol operativo del actor;
+- techo de permisos;
+- recurso.
+
+El dispositivo nunca amplía al trabajador.
+
+---
+
+#### 35. `navigation_role` no es autoridad
+
+Regla canónica:
+
+```text
+navigation_role
+!=
+actor
+!=
+rol operativo efectivo
+!=
+permiso
+```
+
+Puede orientar presentación o navegación.
+
+No puede utilizarse como sustituto de la resolución del rol operativo del actor para una decisión empresarial.
+
+---
+
+#### 36. Aplicación permitida no equivale a `origo.access`
+
+En dispositivo compartido:
+
+```text
+ORIGO EN allowedAppCodes
+→ superficie permitida
+```
+
+No:
+
+```text
+ORIGO EN allowedAppCodes
+→ origo.access OPERATIVO = ALLOW
+```
+
+El carril operativo de `origo.access` sigue exigiendo actor y `T`.
+
+El techo del dispositivo y la lista de apps solo restringen.
+
+---
+
+#### 37. Hints y filtros de cliente
+
+Los siguientes valores pueden ser entradas no confiables:
+
+```text
+preferredSiteId
+preferredAreaId
+site_id
+area_id
+selected_site_id
+```
+
+Regla:
+
+```text
+HINT DEL CLIENTE
+→ puede reducir / localizar
+→ servidor resuelve
+→ servidor verifica compatibilidad
+```
+
+Nunca:
+
+```text
+HINT DEL CLIENTE
+→ effective_site_id / effective_area_id
+```
+
+sin resolución autoritativa.
+
+---
+
+#### 38. Sesión personal
+
+Una sesión Auth personal válida demuestra autenticación.
+
+No demuestra por sí sola:
+
+- empleado activo;
+- turno vigente;
+- check-in;
+- rol operativo;
+- sede efectiva;
+- área efectiva;
+- recurso autorizado.
+
+Para carril base se evalúan únicamente los componentes propios del carril base.
+
+Para carril operativo se completa el contexto operativo exigido por el permiso.
+
+---
+
+#### 39. Sesión de dispositivo compartido
+
+La credencial técnica demuestra al principal dispositivo.
+
+No puede usarse como actor.
+
+Antes de una decisión operativa debe existir actor humano resoluble y, cuando aplique, sesión de actor vigente.
+
+La firma de acción específica puede aportar evidencia adicional, pero no reemplaza el `AccessContext` ni su evaluación.
+
+---
+
+#### 40. Orden de resolución para recepción nueva
+
+Para `receipts.register` el orden contractual mínimo queda:
+
+```text
+PRINCIPAL
+→ ACTOR
+→ CONTEXTO OPERATIVO
+→ PERMISO
+→ RECURSO / TERRITORIO
+→ DECISIÓN
+→ FIRMA ESPECÍFICA CUANDO APLIQUE
+→ REVALIDACIÓN NECESARIA
+→ EFECTO
+→ AUDITORÍA
+```
+
+La materialización podrá combinar etapas atómicamente, pero nunca decidir permiso operativo para un actor técnico y atribuir después el efecto a un humano distinto.
+
+---
+
+#### 41. Orden de resolución para reversión
+
+Para `receipts.reverse`:
+
+```text
+ACTOR
++
+CARRIL BASE
++
+CARRIL OPERATIVO T+C
++
+RECURSO ORIGINAL
++
+ESTADO
++
+MOTIVO
++
+CONTEXTO FRESCO
+=
+REVERSIÓN ELEGIBLE
+```
+
+La recepción original aporta el recurso y su historia; no aporta autoridad vigente al actor actual.
+
+---
+
+#### 42. Consulta de órdenes
+
+La misma combinación de contexto utilizada para autorizar la colección debe gobernar la consulta materializada.
+
+No se admite:
+
+```text
+AUTORIZAR CONTRA SEDE A
+→ CONSULTAR FILTRO CLIENTE DE SEDE B
+```
+
+Una colección amplia no se recupera para filtrarse únicamente en frontend.
+
+---
+
+#### 43. Consulta de recepciones
+
+`receipts.view` operacional exige `T+C` y territorio de `PURCHASE_RECEIPT`.
+
+La sede elegida para filtrar debe ser compatible con el contexto ya resuelto.
+
+Un query param puede reducir la consulta; no puede escoger un territorio no autorizado.
+
+---
+
+#### 44. Consulta de proveedores
+
+La consulta operativa de proveedor debe partir de una relación válida con la operación activa y aplicar la proyección mínima definida por `ORIGO-AUTH-010`.
+
+Contexto válido no amplía field mask.
+
+Field mask válido no sustituye contexto.
+
+---
+
+#### 45. Revisión de maestro y contexto operativo
+
+La cola de revisión de maestro conserva su capacidad canónica:
+
+```text
+origo.catalog.product_reviews.view
+BASE_ONLY
+```
+
+La existencia de una `source_entry_id` de recepción no convierte la revisión en operación `T+C`.
+
+Las acciones administrativas de revisión deberán recibir su autoridad exacta cuando se materialicen; esta tarea no crea ese permiso ni redefine el flujo.
+
+---
+
+#### 46. Relación con field masks
+
+`ORIGO-AUTH-010` permanece propietaria de la proyección sensible.
+
+La decisión completa combina:
+
+```text
+AUTORIZACIÓN DE RECURSO
++
+CONTEXTO / CARRIL
++
+FIELD MASK
+```
+
+Un turno o check-in no revela costos internos.
+
+Un field mask económico no autoriza un recurso fuera del contexto.
+
+---
+
+#### 47. Relación con territorio de órdenes
+
+`ORIGO-AUTH-009` conserva:
+
+- `PO_DESTINATIONS`;
+- sede y centro de costo;
+- reglas de intersección territorial;
+- fail-closed de mutaciones multi-destino;
+- ausencia de autoridad desde `site_id` cliente.
+
+La 012 aporta contexto del actor; no redefine el territorio del recurso.
+
+---
+
+#### 48. Frescura del contexto
+
+Una decisión operativa deja de ser reutilizable cuando cambia una dimensión material, entre ellas:
+
+- actor;
+- sesión de actor;
+- turno;
+- check-in;
+- rol operativo;
+- sede;
+- área;
+- dispositivo;
+- asignación;
+- permiso/grant/deny;
+- versión contractual;
+- recurso o versión del recurso.
+
+El cierre del check-in revoca la elegibilidad `T+C`.
+
+El fin del turno revoca la elegibilidad `T` y `T+C`.
+
+---
+
+#### 49. Cambio de actor en dispositivo compartido
+
+Cuando cambia el actor:
+
+```text
+CONTEXTO ANTERIOR
+→ INVALIDADO
+
+DECISIONES ANTERIORES
+→ NO REUTILIZABLES
+```
+
+No se transfieren:
+
+- permiso;
+- turno;
+- check-in;
+- recurso;
+- firma;
+- reautenticación;
+- decisión.
+
+La siguiente acción exige nueva resolución.
+
+---
+
+#### 50. Concurrencia y TOCTOU
+
+Una decisión no es un bearer token reutilizable indefinidamente.
+
+Si entre decisión y efecto cambian contexto o recurso materialmente:
+
+```text
+REVALIDAR
+OR
+DENY / RETRY SEGURO
+```
+
+No se admite ejecutar una mutación con un snapshot anterior a un check-out, cambio de turno, cambio de actor o modificación relevante del recurso.
+
+---
+
+#### 51. Fail-closed de contexto
+
+Deben producir denegación o fallo técnico distinguible, según el contrato transversal, al menos:
+
+- actor no resuelto;
+- turno requerido ausente;
+- turno ambiguo;
+- turno fuera de ventana;
+- check-in requerido ausente;
+- check-in incompatible;
+- rol operativo ausente;
+- sede incompatible;
+- área incompatible;
+- dispositivo incompatible;
+- permiso no registrado;
+- recurso no resuelto;
+- versión incompatible;
+- error técnico del resolver.
+
+`DENY` y `TECHNICAL_FAILURE` no se confunden.
+
+---
+
+#### 52. Auditoría mínima
+
+Toda decisión operativa ORIGO debe conservar o referenciar de forma correlacionable:
+
+- principal;
+- actor efectivo;
+- sesión de actor cuando aplique;
+- rol base y operativo aplicables;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- permiso;
+- modalidad;
+- prerrequisito;
+- recurso;
+- territorio;
+- decisión y razones;
+- versión contractual;
+- fingerprint de contexto;
+- timestamp;
+- correlación.
+
+No se registran secretos, PIN crudo ni credenciales técnicas completas.
+
+---
+
+#### 53. Equivalencia entre canales
+
+El mismo contrato debe producir decisión equivalente en:
+
+- RSC/UI guard;
+- Server Action;
+- Route Handler/API;
+- RPC/PostgREST;
+- RLS/Data API cuando aplique;
+- procesos asíncronos que ejecuten la misma capacidad.
+
+Una protección de página no sustituye protección de mutación.
+
+Una RPC no puede convertir un contexto inválido en allow por omisión.
+
+---
+
+#### 54. Runtime AS-IS — `OperationalSession`
+
+El helper observado en `vento-origo` modela actualmente:
+
+```text
+mode
+userId
+displayName
+role
+navigationRole
+siteId
+areaId
+isSharedDevice
+sharedDeviceId
+sharedDeviceCode
+sharedDeviceLabel
+allowedAppCodes
+```
+
+No modela explícitamente en esa forma:
+
+```text
+actor_session_id
+actor_employee_id efectivo
+shift_id
+checkin_id
+context_contract_version
+context_fingerprint
+freshness
+```
+
+Clasificación:
+
+```text
+AS_IS_OPERATIONAL_SESSION_WITHOUT_CANONICAL_SHIFT_CHECKIN
+```
+
+Esto no demuestra ausencia de esas dimensiones en toda la plataforma; demuestra que el helper inspeccionado no las transporta como contexto canónico suficiente.
+
+---
+
+#### 55. Runtime AS-IS — `preferredSiteId` y `preferredAreaId`
+
+El helper observado acepta `preferredSiteId` y `preferredAreaId` y puede devolverlos directamente dentro de `OperationalSession`.
+
+Clasificación:
+
+```text
+AS_IS_PREFERRED_SITE_AREA_ACCEPTED_AS_EFFECTIVE_SESSION_VALUES
+```
+
+Condición de salida:
+
+```text
+HINT
+→ RESOLUCIÓN SERVER-SIDE
+→ COMPATIBILIDAD CON ACTOR / TURNO / CHECK-IN / DISPOSITIVO / RECURSO
+→ CONTEXTO EFECTIVO
+```
+
+---
+
+#### 56. Runtime AS-IS — `navigation_role`
+
+En dispositivo compartido, `checkOperationalSessionPermission` entrega actualmente `session.navigationRole` a `has_operational_role_permission`.
+
+Clasificación:
+
+```text
+AS_IS_SHARED_DEVICE_NAVIGATION_ROLE_USED_FOR_PERMISSION_CHECK
+```
+
+Condición de salida:
+
+```text
+ROL OPERATIVO EFECTIVO DEL ACTOR
+→ resuelto desde contexto canónico
+
+navigation_role
+→ solo presentación / navegación
+```
+
+---
+
+#### 57. Runtime AS-IS — app permitida versus `origo.access`
+
+Para dispositivo compartido, el helper observado considera permitido el app access cuando ORIGO está dentro del conjunto de aplicaciones del dispositivo.
+
+Contrato objetivo:
+
+```text
+APP PERMITIDA POR DISPOSITIVO
+!=
+ORIGO.ACCESS OPERATIVO AUTORIZADO
+```
+
+Clasificación:
+
+```text
+AS_IS_SHARED_DEVICE_APP_ALLOW_SUBSTITUTES_ORIGO_ACCESS_CONTEXT
+```
+
+La salida exige actor efectivo + turno `T` + límites del dispositivo + permiso/carril aplicables.
+
+---
+
+#### 58. Runtime AS-IS — permiso antes de actor en recepción
+
+En `createReceipt` observado:
+
+```text
+resolveOperationalSession
+→ checkOperationalSessionPermission / has_permission
+→ ...
+→ requireSharedDeviceActorSignature
+```
+
+Por tanto, en el carril shared-device el permiso puede evaluarse antes de conocer al actor humano de la firma específica.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_PERMISSION_DECIDED_BEFORE_SHARED_ACTOR_RESOLUTION
+```
+
+La condición de salida compartida con `ORIGO-AUTH-011` y `ORIGO-AUTH-014` es que la decisión operativa use al mismo actor humano al que se atribuye el efecto.
+
+---
+
+#### 59. Runtime AS-IS — contexto de lectura de recepciones
+
+La página de historial ejecuta `requireAppAccess` antes de resolver definitivamente el `site_id` solicitado en query y después consulta `inventory_entries` con ese valor.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_LIST_AUTH_CONTEXT_CAN_DIVERGE_FROM_QUERY_SITE
+```
+
+Condición de salida:
+
+```text
+CONTEXTO AUTORIZADO
+=
+CONTEXTO USADO PARA CONSTRUIR LA COLECCIÓN
+```
+
+---
+
+#### 60. Runtime AS-IS — contexto de formulario de recepción
+
+La página de nueva recepción ejecuta el guard antes de resolver el `site_id` final del formulario y posteriormente carga proveedores, catálogo y ubicaciones usando la sede resultante.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_FORM_AUTH_CONTEXT_CAN_DIVERGE_FROM_DATA_SITE
+```
+
+La sede del conjunto de datos debe quedar dentro del mismo contexto resuelto que autorizó la superficie.
+
+---
+
+#### 61. Runtime AS-IS — permiso legacy de recepción
+
+El runtime observado todavía reutiliza:
+
+```text
+origo.procurement.receipts
+```
+
+en lugar de las identidades atómicas finales para consulta y registro.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_CONTEXT_BOUND_TO_LEGACY_PERMISSION
+```
+
+`ORIGO-AUTH-014` conserva la incorporación física de permisos exactos y consumidores.
+
+---
+
+#### 62. Runtime AS-IS — órdenes protegidas solo por app access en superficies observadas
+
+La lista de órdenes inspeccionada usa `requireAppAccess({ appId: "origo" })` y no demuestra un guard exacto `purchase_orders.view` antes de construir la colección.
+
+Clasificación:
+
+```text
+AS_IS_PURCHASE_ORDER_READ_APP_ACCESS_ONLY
+```
+
+La condición de salida exige permiso exacto, carril correcto, contexto cuando sea operativo, recurso/territorio y field mask.
+
+---
+
+#### 63. Runtime AS-IS — revisión de maestro acoplada a recepción legacy
+
+La superficie de revisión observada usa el permiso legacy de recepción y una sede seleccionada, aunque el contrato canónico de:
+
+```text
+origo.catalog.product_reviews.view
+```
+
+es `BASE_ONLY`.
+
+Clasificación:
+
+```text
+AS_IS_PRODUCT_REVIEW_COUPLED_TO_LEGACY_RECEIPT_CONTEXT
+```
+
+Propietarios posteriores:
+
+- `ORIGO-AUTH-013` para preservar administración sin check-in;
+- `ORIGO-AUTH-014` para adoptar permiso y enforcement exactos.
+
+---
+
+#### 64. Runtime AS-IS — proveedores y fallback por nombre de rol
+
+La superficie observada de proveedores permite administrar mediante el alias legacy `origo.suppliers.manage` y conserva fallback a nombres de rol base.
+
+Clasificación:
+
+```text
+AS_IS_SUPPLIER_MANAGEMENT_LEGACY_ROLE_FALLBACK
+```
+
+No se corrige en esta tarea.
+
+La salida pertenece a las capacidades base definidas por `ORIGO-AUTH-005`, `ORIGO-AUTH-008`, la preservación administrativa de `ORIGO-AUTH-013` y la materialización de `ORIGO-AUTH-014`.
+
+---
+
+#### 65. Runtime AS-IS — reversión sin resolución explícita de contexto en la Server Action
+
+`reverseReceipt` observado autentica usuario, recibe `site_id`, valida estado/ventana y llama `origo_reverse_inventory_entry`, pero la Server Action inspeccionada no demuestra una resolución explícita del contexto `BASE_AND_OPERATIONAL` antes de invocar el RPC.
+
+Clasificación:
+
+```text
+AS_IS_REVERSE_ACTION_WITHOUT_EXPLICIT_COMBINED_CONTEXT_RESOLUTION
+```
+
+Esto no afirma que el RPC carezca de controles internos no observados; afirma que la frontera de la acción no demuestra el contrato completo.
+
+---
+
+#### 66. Matriz de brechas, owner y condición de salida
+
+| Brecha | Riesgo | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| `AS_IS_OPERATIONAL_SESSION_WITHOUT_CANONICAL_SHIFT_CHECKIN` | decisión local con contexto incompleto | `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | consumidor recibe/resuelve `AccessContext` suficiente con turno/check-in/frescura |
+| `AS_IS_PREFERRED_SITE_AREA_ACCEPTED_AS_EFFECTIVE_SESSION_VALUES` | territorio elegido por caller | `ORIGO-AUTH-009`, `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | hints solo localizan/reducen y se validan contra contexto/recurso |
+| `AS_IS_SHARED_DEVICE_NAVIGATION_ROLE_USED_FOR_PERMISSION_CHECK` | rol visual convertido en autoridad | `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | rol operativo efectivo procede del actor/turno |
+| `AS_IS_SHARED_DEVICE_APP_ALLOW_SUBSTITUTES_ORIGO_ACCESS_CONTEXT` | app visible tratada como allow operativo | `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | `origo.access` operacional evalúa actor + `T` + device ceiling |
+| `AS_IS_RECEIPT_PERMISSION_DECIDED_BEFORE_SHARED_ACTOR_RESOLUTION` | permiso evaluado para identidad distinta del receptor | `ORIGO-AUTH-011`, `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | mismo actor humano participa en contexto, decisión, firma y efecto |
+| `AS_IS_RECEIPT_LIST_AUTH_CONTEXT_CAN_DIVERGE_FROM_QUERY_SITE` | lectura cross-site por filtro | `ORIGO-AUTH-009`, `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | colección y guard comparten contexto/territorio resueltos |
+| `AS_IS_RECEIPT_FORM_AUTH_CONTEXT_CAN_DIVERGE_FROM_DATA_SITE` | precarga fuera del contexto autorizado | `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | datasets se construyen solo dentro del contexto autorizado |
+| `AS_IS_RECEIPT_CONTEXT_BOUND_TO_LEGACY_PERMISSION` | modalidad/contexto no corresponden a acción atómica | `ORIGO-AUTH-007`, `ORIGO-AUTH-008`, `ORIGO-AUTH-014` | `.view`, `.register`, `.reverse` se evalúan separadamente |
+| `AS_IS_PURCHASE_ORDER_READ_APP_ACCESS_ONLY` | lectura interna sin capacidad exacta demostrada | `ORIGO-AUTH-004`, `ORIGO-AUTH-009`, `ORIGO-AUTH-010`, `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | permiso exacto + carril + territorio + field mask |
+| `AS_IS_PRODUCT_REVIEW_COUPLED_TO_LEGACY_RECEIPT_CONTEXT` | administración bloqueada o ampliada por contexto equivocado | `ORIGO-AUTH-013`, `ORIGO-AUTH-014` | permiso BASE_ONLY exacto sin dependencia artificial de `T+C` |
+| `AS_IS_SUPPLIER_MANAGEMENT_LEGACY_ROLE_FALLBACK` | nombre de rol como autorización final | `ORIGO-AUTH-013`, `ORIGO-AUTH-014` | capacidades atómicas base, sin fallback de rol |
+| `AS_IS_REVERSE_ACTION_WITHOUT_EXPLICIT_COMBINED_CONTEXT_RESOLUTION` | reversión sin evidencia completa de ambos carriles en la frontera | `ORIGO-AUTH-008`, `ORIGO-AUTH-011`, `ORIGO-AUTH-012`, `ORIGO-AUTH-014` | `BASE_AND_OPERATIONAL` se revalida antes del RPC/efecto |
+
+Ninguna brecha autoriza una corrección física desde este marcador global.
+
+---
+
+#### 67. Handoff hacia ORIGO-AUTH-013
+
+Esta tarea deja cerrado:
+
+```text
+CUÁNDO EXISTE CARRIL OPERATIVO
++
+QUÉ CONTEXTO EXIGE
++
+CÓMO SE INTERSECTA CON RECURSO / DISPOSITIVO
+```
+
+`ORIGO-AUTH-013` recibe la frontera complementaria:
+
+```text
+CAPACIDADES ADMINISTRATIVAS
+→ NO DEBEN DEPENDER ARTIFICIALMENTE DE TURNO O CHECK-IN
+```
+
+La 013 no podrá convertir una capacidad `OPERATIONAL_ONLY` en administrativa ni eliminar el componente operativo de una capacidad `BASE_AND_OPERATIONAL`.
+
+---
+
+#### 68. Handoff hacia ORIGO-AUTH-014
+
+`ORIGO-AUTH-014` conserva la materialización/adopción de:
+
+- claves atómicas todavía no activas;
+- consumidores ORIGO;
+- guards;
+- Server Actions;
+- RPC/RLS aplicables;
+- integración con resolver/evaluador compartidos;
+- remoción de aliases y fallbacks legacy;
+- equivalencia entre canales.
+
+La 012 especifica qué debe evaluar; no realiza esa migración.
+
+---
+
+#### 69. Handoff hacia ORIGO-AUTH-015
+
+`ORIGO-AUTH-015` deberá probar integralmente, entre otros:
+
+- carril base sin turno cuando corresponde;
+- `origo.access` operacional con `T`;
+- `T+C` sin check-in → deny;
+- turno/check-in de otro actor → deny;
+- sede/área incompatibles → deny;
+- query/form site no amplía contexto;
+- cambio de actor invalida decisión;
+- checkout invalida `T+C`;
+- fin de turno invalida `T` y `T+C`;
+- shared device no usa `navigation_role` como autoridad;
+- `BASE_AND_OPERATIONAL` exige ambos carriles;
+- field mask y contexto se aplican simultáneamente.
+
+Esta tarea no ejecuta esas pruebas físicas.
+
+---
+
+#### 70. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la tarea integra para ORIGO modalidades, prerrequisitos, resolución territorial, contexto laboral, dispositivo, frescura, auditoría y enforcement ya exigidos por requisitos transversales y de recepción vigentes. No introduce una obligación empresarial o técnica verificable nueva que requiera ampliar el Registro 04A.
+
+---
+
+#### 71. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para modalidad de recepción y trazabilidad de efectos;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, firma y auditoría de recepción;
+- `TREQ-ORIGO-004` para segregación del ciclo de abastecimiento;
+- `TREQ-AUTH-001` para permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-008` para separar administración sin contexto operativo de operación con turno/check-in;
+- `TREQ-AUTH-009` para resolución determinista de sede/área;
+- `TREQ-AUTH-011` para autoridad efectiva en dispositivo compartido;
+- `TREQ-AUTH-013` para enforcement server-side con actor, contexto, territorio y recurso;
+- `TREQ-AUTH-014` para invalidación y frescura;
+- `TREQ-AUTH-015` para evidencia correlacionable;
+- `TREQ-AUTH-229` para denegación `T+C` sin check-in compatible;
+- `TREQ-AUTH-231` para identidad y compatibilidad exactas del check-in.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 72. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en el archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-origo/main`, owner, topología, catálogo de prerrequisitos, contratos de contexto/decisión, matrices operativas, Registro 04A y runtime ORIGO actual. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutaron acciones reales, turnos, check-ins, recepciones, RPC, RLS ni datos productivos. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global especifica el contrato; las futuras materializaciones ocurren por `ORIGO-AUTH-012::<implementation_unit_id>` bajo `POST_E5_PACKAGE`. |
+
+---
+
+#### 73. Criterios de aceptación
+
+- [x] La tarea integra contexto solo donde el contrato admite carril operativo.
+- [x] Se reconcilian exactamente 15 capacidades ORIGO ya definidas.
+- [x] Se identifican exactamente 6 capacidades con componente operativo.
+- [x] Se identifican exactamente 9 capacidades exclusivamente base.
+- [x] `origo.access` conserva `BASE_OR_OPERATIONAL`, base `N`, operativo `T`.
+- [x] `purchase_orders.view` conserva operativo `T+C`.
+- [x] `receipts.view` conserva operativo `T+C`.
+- [x] `suppliers.view` conserva contrato global operativo `T`.
+- [x] La condición más estricta del grant `bodeguero` no reescribe el PermissionContractSnapshot.
+- [x] `product_reviews.view` conserva `BASE_ONLY`.
+- [x] `purchase_orders.create/approve/update/cancel` conservan `BASE_ONLY`.
+- [x] `suppliers.create/update/activate/deactivate` conservan `BASE_ONLY`.
+- [x] `receipts.register` conserva `OPERATIONAL_ONLY / T+C`.
+- [x] `receipts.reverse` conserva `BASE_AND_OPERATIONAL / N + T+C`.
+- [x] Se separan principal y actor efectivo.
+- [x] Se exige actor humano para operación desde dispositivo compartido.
+- [x] `navigation_role` queda fuera de la autoridad final.
+- [x] allowed app no sustituye `origo.access` operacional.
+- [x] hints de sede/área no sustituyen resolución autoritativa.
+- [x] contexto y territorio del recurso se intersectan; ninguno sustituye al otro.
+- [x] field mask y contexto se mantienen independientes y acumulativos.
+- [x] se preserva frescura ante checkout, fin de turno y cambio de actor/contexto.
+- [x] se documentan brechas AS-IS sin afirmar ausencia de controles no inspeccionados.
+- [x] se mantiene la frontera administrativa para `ORIGO-AUTH-013`.
+- [x] se mantiene la materialización/enforcement para `ORIGO-AUTH-014`.
+- [x] se mantiene la prueba integral para `ORIGO-AUTH-015`.
+- [x] la topología queda `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] no se modifica Registro 04A.
+- [x] no se crea ni modifica requisito de prueba.
+- [x] no se autoriza cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-AUTH-013` queda reservada y no se desarrolla aquí.
+
+---
+
+#### 74. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica `vento-origo`;
+- modifica helpers de autorización;
+- modifica el evaluador transversal;
+- crea `AccessContext` físico nuevo;
+- crea permisos;
+- activa permisos definidos pero no materializados;
+- cambia grants;
+- cambia matrices;
+- crea turnos;
+- crea check-ins;
+- modifica ANIMA;
+- modifica dispositivos;
+- modifica RLS;
+- modifica RPC;
+- modifica Server Actions;
+- modifica datos;
+- ejecuta Supabase;
+- crea migraciones;
+- cambia `authorization_requirement` de permisos existentes;
+- cambia `operational_prerequisite` del catálogo;
+- convierte `navigation_role` en rol operativo;
+- convierte selected site en autoridad;
+- cambia territorio de órdenes;
+- cambia field masks;
+- redefine actor de recepción;
+- define mensajes de error nuevos;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza una instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-AUTH-013`.
+
+---
+
+#### 75. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-011 — Registrar actor de recepción`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-012 — Integrar contexto operativo donde aplique`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-013 — Mantener administración sin check-in`
+
 ### [ ] ORIGO-AUTH-013 — Mantener administración sin check-in
 ### [ ] ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
 ### [ ] ORIGO-AUTH-015 — Ejecutar pruebas integrales
