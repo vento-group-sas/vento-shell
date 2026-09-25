@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1320** |
+| Aprobadas | **1321** |
 | En propuesta | **0** |
-| No iniciadas | **276** |
+| No iniciadas | **275** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.71% (1320/1596)** |
+| Porcentaje de completamiento | **82.77% (1321/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **276** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1221** |
+| ⏸ NO_EVALUADA | **275** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1222** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-UX-007` — Diseñar catálogo de recompensas | ✅ APROBADA |
-| Tarea actual | `PASS-UX-008` — Diseñar perfil del cliente | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-UX-009` — Diferenciar estado pendiente, usado y cancelado | ⬜ NO INICIADA |
+| Última aprobada | `PASS-UX-008` — Diseñar perfil del cliente | ✅ APROBADA |
+| Tarea actual | `PASS-UX-009` — Diferenciar estado pendiente, usado y cancelado | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-UX-010` — Definir mensajes de error comprensibles | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1422,7 +1422,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-005` | Diseñar redención visible | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-006` | Diseñar historial | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-007` | Diseñar catálogo de recompensas | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-008` | Diseñar perfil del cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-008` | Diseñar perfil del cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-009` | Diferenciar estado pendiente, usado y cancelado | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-010` | Definir mensajes de error comprensibles | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-011` | Consolidar navegación y rutas canónicas de la experiencia cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |

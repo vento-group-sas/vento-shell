@@ -3473,7 +3473,599 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-008 — Diseñar perfil del cliente`
-### [ ] PASS-UX-008 — Diseñar perfil del cliente
+### ✅ PASS-UX-008 — Diseñar perfil del cliente
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-007 — Diseñar catálogo de recompensas
+**Tarea siguiente:** PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
+**Tipo de tarea:** documental; diseño objetivo de `VSCREEN-0112 — Perfil, privacidad y consentimientos` como workspace personal de autoservicio para datos autogestionables, contactos, preferencias, consentimientos, derechos de privacidad y estado de cuenta del cliente, separando persona, cuenta autenticada, perfil, preferencias y evidencia de consentimiento; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, autenticación, datos, Supabase, migraciones, RLS, RPC, Edge Functions, retención, eliminación física, PULSO, AURA, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo del perfil de cliente en PASS para que una persona autenticada pueda comprender y administrar, dentro de los límites autorizados, sus datos personales, contactos, preferencias, consentimientos y acciones de privacidad sin convertir una pantalla móvil en fuente autónoma de identidad, autorización, retención o cumplimiento.
+
+La tarea diseña `VSCREEN-0112 — Perfil, privacidad y consentimientos` como workspace personal de `VPROC-0045::STEP-MAINTAIN_CUSTOMER_PROFILE_AND_CONSENT — Gestionar perfil, privacidad y consentimientos`.
+
+El resultado fija:
+
+- separación entre persona, cuenta autenticada, perfil, contacto, preferencia y consentimiento;
+- relación entre onboarding inicial y mantenimiento posterior;
+- clasificación visible de datos autogestionables y datos que requieren verificación o solicitud de corrección;
+- contrato visible de consentimientos por finalidad, canal, versión, fuente, vigencia y retiro;
+- ejercicio de acceso, actualización, rectificación, revocación, limpieza opcional y solicitud de supresión;
+- manejo de cambios sensibles sin asumir que la UI puede sobrescribir identidad;
+- relación con retención, historial, fidelización, cuenta y contexto laboral;
+- handoff hacia las tareas canónicas propietarias de privacidad, integración, navegación, resiliencia y prueba.
+
+No implementa formularios, no cambia políticas, no crea esquema físico y no ejecuta eliminación o anonimización.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-007`, que entrega:
+
+- `VSCREEN-0109` como catálogo personal de beneficios y recompensas;
+- separación entre visibilidad, elegibilidad, redención y efecto comercial;
+- conservación de contexto, regla, versión, vigencia y condiciones sin convertir la UI en autoridad;
+- separación entre fidelización, marketing, comercio y Club.
+
+Se conserva además la base de `PASS-UX-002` a `PASS-UX-006`:
+
+- el home entrega hacia perfil y privacidad sin replicar el workspace;
+- la identidad cliente permanece separada del contexto laboral;
+- el QR personal no sustituye perfil ni consentimiento;
+- saldo, movimientos, redenciones y recompensas pertenecen a sus superficies propias;
+- errores o ausencia de lectura no deben inventar un estado confirmado;
+- la historia no se reescribe por cambios posteriores del perfil.
+
+Se consumen las obligaciones ya aprobadas de privacidad y gobierno de información que exigen distinguir cuenta, identidad, titular y expediente; conservar evidencia de consentimiento; separar preferencias de autorizaciones; y reconciliar solicitudes de privacidad antes de declararlas completadas.
+
+La frontera de esta tarea es exclusivamente la experiencia visible y semántica de `VSCREEN-0112`. No define la implementación material del caso de privacidad, la política de retención, el modelo físico de consentimientos, RLS, Edge Functions, autenticación, la integración de datos ni la navegación global.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla | `VSCREEN-0112 — Perfil, privacidad y consentimientos` |
+| Aplicación | `pass` |
+| Proceso primario | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Proceso relacionado | `VPROC-0060` para gobierno documental, privacidad, evidencia y retención cuando corresponda |
+| Paso | `VPROC-0045::STEP-MAINTAIN_CUSTOMER_PROFILE_AND_CONSENT — Gestionar perfil, privacidad y consentimientos` |
+| Acción | `SELF_SERVICE` |
+| Posición | `IN_PROGRESS` |
+| Rol | `OWNER_WORKSPACE` |
+| Superficie AS-IS inicial | `PASS-CUSTOMER-SURFACE-002 — CompleteProfile` |
+| Superficie AS-IS autenticada | `PASS-CUSTOMER-SURFACE-008 — AccountSettings` |
+| Estado físico | sin instancia propia; contrato documental `DEFINE_ONCE` |
+
+`PASS-UX-008` no crea una pantalla canónica adicional. `CompleteProfile` y `AccountSettings` son dos manifestaciones AS-IS que deben converger semánticamente sobre la misma identidad `VSCREEN-0112`.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La tarea se diseña contra los siguientes snapshots remotos observados:
+
+| Fuente | Snapshot verificado |
+| --- | --- |
+| `vento-group-sas/vento-shell` `main` | `a7461cfe69c3ed93a45f3336c61bd14cbccdbd69` |
+| archivo propietario | blob `a6ebb12184c054e8b35b5f81f131793c20e5533a` |
+| catálogo canónico de pantallas/procesos | `VSCREEN-0112` → `VPROC-0045::STEP-MAINTAIN_CUSTOMER_PROFILE_AND_CONSENT` |
+| registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` |
+| `carlosibarraariza/vento-pass` `main` | `b5a4aec908ef12226f798078577ab089a29ccda2` |
+| `App.js` | blob `162e686ff5ec363a0f6f991da58f6ce84816e8aa` |
+| `CompleteProfile.tsx` | blob `aea4a6a509f347da3f87063b18b9b07cec86e5eb` |
+| `ProfileForm.tsx` | blob `07bdc2c1cc7ef7f62fc4004234f8d0be87762f84` |
+| `profile.ts` | blob `d4cc835593093886bdb829e3e9d8379263c1194d` |
+| `AccountSettings.tsx` | blob `f9fc199ecdd1b7fbdd26e000bbdad4635bb7a308` |
+| `DeleteAccountFlow.tsx` | blob `c6317fe52420920300462f60b9d9043eb708940d` |
+| `DataCleanupFlow.tsx` | blob `e947a4967ff521ce87affdc9b8c596f279552dbd` |
+| `useAccountDeletion.ts` | blob `16b103b45b529370fa77d3b235d42fd047d2a115` |
+| `useUserData.ts` | blob `b37929f6d6f7a542fd3a37d995863265c3a38d5c` |
+
+Estos snapshots sirven como evidencia AS-IS y no autorizan implementación.
+
+---
+
+#### 5. Modelo conceptual visible
+
+`VSCREEN-0112` debe impedir que la interfaz trate como equivalentes conceptos distintos:
+
+```text
+PERSONA
+≠
+CUENTA AUTENTICADA
+≠
+PERFIL DE CLIENTE
+≠
+CONTACTO
+≠
+PREFERENCIA
+≠
+CONSENTIMIENTO
+≠
+PERFIL LABORAL
+```
+
+Consecuencias:
+
+1. iniciar sesión identifica una cuenta, no demuestra que todos los datos de perfil estén completos o verificados;
+2. un nombre, correo o teléfono coincidente no fusiona personas automáticamente;
+3. un teléfono o correo de contacto no equivale por sí mismo a autorización de marketing;
+4. una preferencia de interfaz no equivale a consentimiento;
+5. retirar un consentimiento no elimina automáticamente la cuenta ni el historial que deba conservarse;
+6. un perfil laboral asociado al mismo principal no se mezcla con el perfil personal de cliente.
+
+---
+
+#### 6. Arquitectura visible del workspace
+
+`VSCREEN-0112` se organiza conceptualmente en cinco zonas:
+
+| Zona | Contenido objetivo | Regla |
+| --- | --- | --- |
+| identidad y perfil | nombre visible y atributos personales autogestionables | solo campos autorizados; no exponer fila completa ni datos laborales |
+| contactos y verificación | correo, teléfono y estado de verificación cuando aplique | contacto y verificación permanecen separados de consentimiento |
+| preferencias y comunicaciones | preferencias personales y controles permitidos | una preferencia no concede finalidad nueva |
+| privacidad y consentimientos | finalidades, canales, versión, vigencia, estado y retiro | toda autorización debe ser trazable y reversible cuando corresponda |
+| cuenta y derechos | acceso a información, corrección, limpieza opcional, solicitudes de privacidad y eliminación de cuenta | las acciones de alto impacto conservan confirmación y proceso trazable |
+
+Las cinco zonas forman un único workspace lógico; no implican cinco pantallas nuevas.
+
+---
+
+#### 7. Onboarding inicial versus mantenimiento posterior
+
+La experiencia AS-IS contiene dos momentos distintos:
+
+```text
+CompleteProfile
+→ alta/completitud inicial
+
+AccountSettings
+→ mantenimiento posterior de cuenta y privacidad
+```
+
+El diseño objetivo conserva la diferencia sin crear dos modelos de perfil:
+
+- `CompleteProfile` puede seguir funcionando como puerta previa a navegación cuando falten datos mínimos requeridos;
+- `AccountSettings` debe representar el workspace persistente para revisar y administrar el perfil ya creado;
+- los dos consumen la misma fuente de identidad y las mismas reglas de editabilidad;
+- un dato solicitado durante onboarding no queda permanentemente ineditable por haber sido capturado allí;
+- un dato sensible tampoco se vuelve editable sin control solo porque el formulario inicial lo escribió directamente;
+- la navegación exacta y aliases permanecen reservados a `PASS-UX-011`.
+
+---
+
+#### 8. Completitud de perfil
+
+El gate de perfil no puede confundirse con consentimiento, elegibilidad comercial o verificación total de identidad.
+
+La completitud objetivo debe responder únicamente si existen los atributos mínimos requeridos para continuar la experiencia personal según el contrato vigente.
+
+Por tanto:
+
+- `PROFILE_COMPLETE` no significa `CONSENTED_FOR_MARKETING`;
+- `PROFILE_COMPLETE` no significa `IDENTITY_FULLY_VERIFIED`;
+- `PROFILE_COMPLETE` no significa `ACCOUNT_ACTIVE_FOR_ALL_PURPOSES`;
+- retirar un consentimiento opcional no convierte automáticamente el perfil en incompleto;
+- una falla de lectura no equivale a perfil incompleto confirmado;
+- los datos mínimos exigidos deben provenir de una regla versionada, no de una condición dispersa en UI.
+
+---
+
+#### 9. Clasificación de datos visibles y editabilidad
+
+La UI debe resolver cada atributo por clase y autoridad, no por conveniencia del formulario.
+
+| Atributo o clase | Tratamiento objetivo |
+| --- | --- |
+| nombre de perfil | visible y autogestionable cuando la regla vigente lo permita; actualización confirmada por servidor |
+| correo de cuenta | referencia de autenticación/contacto; cualquier cambio requiere el flujo de verificación correspondiente y no una escritura libre de perfil |
+| teléfono | contacto personal; el valor y su estado de verificación permanecen distinguibles |
+| documento de identidad | atributo sensible de identidad; no se asume libremente editable; la corrección debe usar verificación o solicitud trazable cuando corresponda |
+| fecha de nacimiento | atributo personal opcional salvo regla explícita; su finalidad debe ser visible y su uso no puede ampliarse silenciosamente |
+| saldo, nivel y ledger | solo referencia contextual cuando sea necesaria; no forman parte de los campos editables de perfil |
+| rol, sede o datos laborales | fuera del perfil personal; se mantienen separados |
+| favoritos y personalización | preferencias; no equivalen a consentimiento ni identidad |
+
+La tarea no fija nombres físicos de columnas ni reglas materiales de verificación.
+
+---
+
+#### 10. Contactos, autenticación y verificación
+
+Correo y teléfono deben proyectarse con tres dimensiones separadas:
+
+```text
+VALOR
++
+ESTADO DE VERIFICACIÓN
++
+FINALIDADES AUTORIZADAS
+```
+
+Reglas:
+
+- poseer un correo o teléfono no autoriza todos los canales de comunicación;
+- la cuenta autenticada puede usar un correo distinto de otros contactos permitidos por el dominio, sin fusionarlos por inferencia;
+- el cambio de un contacto verificado no se presenta como completado hasta que la autoridad aplicable confirme el nuevo estado;
+- una verificación de autenticación no sustituye consentimiento de marketing;
+- un opt-out de marketing no invalida mensajes estrictamente transaccionales que tengan fundamento y contrato propios.
+
+---
+
+#### 11. Contrato visible de consentimiento
+
+Todo consentimiento administrable desde `VSCREEN-0112` debe poder explicar al cliente, cuando corresponda:
+
+- finalidad concreta;
+- canal o superficie a la que aplica;
+- texto o política y versión aceptada;
+- fuente de la aceptación;
+- fecha de aceptación;
+- vigencia o condición aplicable;
+- estado actual;
+- fecha y fuente de revocación cuando exista;
+- efecto visible del retiro;
+- cualquier limitación que impida retirar inmediatamente una obligación contractual o legal diferente.
+
+Una casilla booleana aislada sin esta evidencia no constituye por sí sola el contrato completo de consentimiento.
+
+---
+
+#### 12. Política de privacidad y aceptación inicial
+
+La aceptación necesaria para completar onboarding debe distinguir:
+
+```text
+POLÍTICA MOSTRADA
+≠
+ACEPTACIÓN REGISTRADA
+≠
+CONSENTIMIENTO PARA FINALIDAD ESPECÍFICA
+```
+
+El diseño objetivo exige que, cuando una aceptación sea jurídicamente o contractualmente necesaria:
+
+1. el cliente pueda abrir el texto aplicable antes de aceptar;
+2. la versión presentada sea identificable;
+3. el acto de aceptación tenga evidencia durable;
+4. la UI no muestre el perfil como compliant basándose únicamente en estado local;
+5. las finalidades opcionales no se empaqueten dentro de una aceptación obligatoria;
+6. una política actualizada no reescriba la evidencia histórica de versiones anteriores.
+
+---
+
+#### 13. Preferencias versus consentimientos
+
+La experiencia debe mostrar una diferencia explícita entre:
+
+| Tipo | Ejemplo conceptual | Efecto |
+| --- | --- | --- |
+| preferencia de experiencia | favorito, personalización o elección de interfaz | cambia experiencia permitida; no concede tratamiento nuevo |
+| preferencia de comunicación | canal preferido cuando existe comunicación autorizada | ordena o prioriza canal; no crea fundamento por sí sola |
+| consentimiento | autorización para finalidad que lo requiera | habilita únicamente la finalidad y alcance registrados |
+| revocación | retiro de autorización revocable | detiene usos dependientes de esa autorización desde el momento aplicable |
+
+No se reutiliza una preferencia como prueba de consentimiento.
+
+---
+
+#### 14. Actualización y rectificación
+
+La interfaz debe distinguir al menos tres patrones de cambio:
+
+1. **autoservicio directo autorizado:** cambio de dato no sensible que el contrato permite editar y que el servidor confirma;
+2. **cambio sujeto a verificación:** nuevo contacto o atributo que necesita prueba antes de sustituir el vigente;
+3. **solicitud de rectificación:** dato de identidad o dato gobernado cuya modificación requiere un caso o revisión trazable.
+
+La UI no debe prometer que todos los campos son editables ni obligar al cliente a contactar soporte de forma opaca cuando ya existe una vía canónica de solicitud.
+
+---
+
+#### 15. Acceso e información sobre uso de datos
+
+`VSCREEN-0112` debe ofrecer un handoff comprensible hacia los derechos de privacidad aplicables sin intentar resolverlos todos como escrituras locales.
+
+La experiencia debe poder comunicar:
+
+- qué información personal autogestionable se muestra;
+- qué preferencias o consentimientos están activos;
+- dónde consultar políticas vigentes;
+- cómo iniciar una solicitud de acceso, corrección, revocación o supresión cuando requiera caso formal;
+- que la recepción de una solicitud no equivale a su cierre;
+- que el estado final depende de la reconciliación exigida por el dominio de privacidad.
+
+El caso transversal de privacidad permanece gobernado por `INFO-UX-004 — Diseñar portal y caso de solicitudes de privacidad para trabajadores y clientes` y sus contratos relacionados.
+
+---
+
+#### 16. Limpieza de datos opcionales
+
+Una acción de limpieza opcional debe declarar con claridad:
+
+- qué categorías pretende eliminar o desvincular;
+- qué categorías conserva;
+- si afecta favoritos, personalización o marketing;
+- si conserva cuenta, identidad, puntos, ledger y obligaciones aplicables;
+- cuándo el resultado está confirmado;
+- qué elementos pueden requerir procesamiento asíncrono o reconciliación.
+
+La etiqueta “datos opcionales” no autoriza borrar indiscriminadamente información ni tratar todos los datos no esenciales como una sola categoría.
+
+---
+
+#### 17. Eliminación de cuenta versus supresión de datos
+
+Se conserva obligatoriamente:
+
+```text
+REVOCAR ACCESO
+≠
+ELIMINAR CUENTA
+≠
+SUPRIMIR DATO
+≠
+ANONIMIZAR
+≠
+RETENER POR OBLIGACIÓN
+≠
+CERRAR CASO DE PRIVACIDAD
+```
+
+La experiencia de eliminación debe:
+
+- explicar que la cuenta y las categorías de datos no necesariamente comparten el mismo destino;
+- no prometer desaparición inmediata de información sujeta a retención válida;
+- no borrar historia transaccional o de auditoría que deba preservarse;
+- revocar el acceso cuando corresponda según el resultado autoritativo;
+- conservar un estado trazable de la solicitud;
+- declarar completado el proceso únicamente cuando el contrato de privacidad lo confirme, no por una animación o respuesta local aislada.
+
+---
+
+#### 18. Confirmación reforzada para acciones de alto impacto
+
+Cambios con efecto material sobre cuenta, identidad, contactos verificados, consentimientos o eliminación requieren una confirmación proporcional al impacto.
+
+Reglas:
+
+- una frase escrita puede ser una fricción útil, pero no sustituye reautenticación o verificación exigida por el contrato;
+- el cliente no puede autoafirmar desde el payload que una verificación ocurrió si la autoridad no la comprobó;
+- una confirmación local no convierte una solicitud en resultado final;
+- reintentos deben converger sobre la misma intención o solicitud cuando el servidor así lo defina;
+- el copy final y tratamiento detallado de errores permanece reservado a `PASS-UX-010`.
+
+---
+
+#### 19. Separación entre perfil personal y contexto laboral
+
+El perfil de cliente pertenece a la persona en su relación personal con PASS.
+
+Por tanto:
+
+- rol laboral, sede base, simulación, permisos o contexto operativo no aparecen como campos editables de perfil cliente;
+- un trabajador que también es cliente conserva las dos identidades contextuales separadas;
+- modificar nombre o contacto personal no eleva permisos laborales;
+- modificar o perder perfil laboral no borra el perfil de cliente;
+- una superficie de cliente no concede capacidad administrativa sobre otros clientes;
+- los datos laborales mínimos usados por superficies embebidas permanecen gobernados por sus tareas AUTH/PASS correspondientes.
+
+---
+
+#### 20. Relación con fidelización e historial
+
+Cambiar el perfil no reescribe hechos de fidelización anteriores.
+
+Invariantes:
+
+- puntos, saldo y ledger no son campos editables del perfil;
+- un cambio de nombre no reescribe el actor histórico de una redención ni el recibo original;
+- un cambio de contacto no duplica la cuenta ni el historial;
+- una solicitud de supresión no elimina automáticamente evidencia financiera, antifraude, de seguridad o auditoría sujeta a obligación válida;
+- el historial visible continúa gobernado por `PASS-UX-006`.
+
+---
+
+#### 21. Frescura, caché y errores
+
+El workspace debe distinguir:
+
+- valor confirmado;
+- cambio pendiente;
+- dato no verificado;
+- lectura fallida;
+- dato no disponible;
+- permiso o finalidad no aplicable.
+
+No se debe:
+
+- convertir error de lectura en dato vacío confirmado;
+- conservar perfil de otra sesión después de logout o cambio de principal;
+- presentar un dato cacheado como actualizado cuando su frescura no pueda demostrarse;
+- aplicar optimismo local a una revocación o eliminación sin resultado autoritativo.
+
+La estrategia completa de carga, offline, retry y recuperación permanece en `PASS-UX-012`.
+
+---
+
+#### 22. Accesibilidad y comprensión
+
+El diseño debe preservar:
+
+- etiquetas comprensibles para datos personales y privacidad;
+- estados que no dependan solo de color;
+- lectura clara de qué se puede editar y qué requiere verificación;
+- controles separados para acciones destructivas;
+- confirmaciones que indiquen exactamente qué acción se solicita;
+- enlaces legales accesibles sin ocultar el efecto de la acción principal;
+- foco y navegación compatibles con móvil y tecnologías de asistencia;
+- lenguaje que diferencie cuenta, perfil, preferencias, consentimiento y eliminación.
+
+---
+
+#### 23. Hallazgos AS-IS y handoff
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `CompleteProfile` exige `acceptedPrivacyPolicy` localmente, pero el `upsert` observado persiste `full_name`, `document_id`, `phone` y `birth_date` sin evidencia de aceptación | consentimiento no demostrable o imposible de versionar/revocar | `PASS-UX-008`, dominio de privacidad y transición física aplicable | aceptación y finalidades requeridas tienen evidencia durable, versionada y consultable |
+| `ProfileForm` agrupa aceptación de política dentro del formulario inicial | una aceptación obligatoria puede confundirse con finalidades opcionales | `PASS-UX-008` + contratos de privacidad | política, consentimiento opcional y preferencias quedan separados |
+| `App.js` define perfil completo por `full_name`, `document_id` y `phone`, sin integrar estado de consentimiento | completitud técnica puede presentarse como cumplimiento | `PASS-UX-008` + implementación posterior | completitud, verificación y consentimientos son estados distintos |
+| `App.js` lee `users.select('*')` para verificar perfil | exposición mayor que la proyección mínima necesaria | fronteras AUTH/PASS ya existentes | lectura usa proyección mínima autorizada según finalidad |
+| `AccountSettings` no expone edición normal de nombre, contacto, fecha de nacimiento o preferencias | onboarding y mantenimiento divergen | `PASS-UX-008` | workspace autenticado permite revisar y gestionar campos según autoridad |
+| `AccountSettings` ofrece enlaces legales, limpieza y eliminación, pero no controles por finalidad/canal | consentimiento y revocación no son visibles ni autogestionables | `PASS-UX-008`, `INFO-UX-004` y contratos de privacidad | controles o handoffs muestran finalidad, canal, versión, estado y retiro |
+| `DataCleanupFlow` comunica que elimina favoritos y preferencias de marketing/personalización | promesa visible requiere contrato verificable sobre categorías afectadas | dominio de privacidad e implementación posterior | resultado confirmado especifica categorías procesadas y conservadas |
+| `DeleteAccountFlow` comunica “Cuenta eliminada” inmediatamente tras éxito del comando | puede confundirse aceptación de solicitud con reconciliación completa | `INFO-UX-004`, dominio de privacidad y `PASS-UX-010` para copy | UI distingue solicitud, acceso revocado, procesamiento y cierre confirmado |
+| `useAccountDeletion` envía `otp_verified: true` desde cliente mientras la superficie inspeccionada no muestra una verificación OTP separada | el cliente puede afirmar una verificación de alto impacto | frontera AUTH/privacidad aplicable | servidor verifica la prueba requerida y no confía en afirmación cliente |
+| `useUserData` convierte errores de lectura en `full_name: null` y `loyalty_points: 0` | error puede parecer dato real | `PASS-UX-012` + implementación posterior | error, ausencia y cero confirmado permanecen distinguibles |
+
+Ningún hallazgo autoriza modificación física desde esta tarea.
+
+---
+
+#### 24. Responsabilidad de tareas y contratos posteriores
+
+| Responsabilidad | Propietario canónico |
+| --- | --- |
+| estados completos pendiente/usado/cancelado de redención | `PASS-UX-009` |
+| copy final, advertencias y mensajes de error | `PASS-UX-010` |
+| navegación, rutas y aliases | `PASS-UX-011` |
+| carga, error, offline y recuperación móvil | `PASS-UX-012` |
+| validación con clientes reales | `PASS-UX-013` |
+| portal y caso transversal de derechos de privacidad | `INFO-UX-004` |
+| reglas de consentimiento, retención, supresión y gobierno de información | tareas `INFO-*` propietarias ya aprobadas |
+| separación cliente-trabajador e integraciones de identidad | contratos `PASS-INT-*` y AUTH aplicables |
+| cambios de esquema, políticas, Edge Functions o datos | transición física gobernada desde `vento-shell` |
+
+`PASS-UX-008` entrega el contrato visible a esos propietarios sin materializar su backend.
+
+---
+
+#### 25. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** la tarea materializa una experiencia visible ya cubierta por obligaciones existentes sobre separación de persona/cuenta/perfil/contacto/preferencia/consentimiento, trazabilidad de aceptación y revocación, ejercicio de derechos, eliminación y retención, minimización de datos, separación cliente-trabajador y reconciliación de superficies PASS. No introduce una obligación verificable material nueva que requiera una fila adicional.
+
+Balance:
+
+- creados: **0**;
+- modificados: **0**;
+- diferidos: **0**;
+- descartados: **0**;
+- obsoletos: **0**.
+
+---
+
+#### 26. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-010`, para separar persona, cuenta autenticada, contactos, verificaciones, relación de marca, perfil, preferencias y consentimientos, con finalidad, canal, versión, fuente, vigencia y retiro;
+- `TREQ-PASS-012`, para evidencia de autorizaciones y preferencias, revocación, derechos de acceso/actualización/rectificación/supresión, eliminación de cuenta, retención y reconciliación de dominios;
+- `TREQ-PASS-015` a `TREQ-PASS-017`, para conservar la frontera cliente-trabajador y minimizar las proyecciones laborales dentro de PASS;
+- `TREQ-PASS-033`, para aislar fallos de módulos laborales de la experiencia normal de cliente;
+- `TREQ-PASS-041` y `TREQ-PASS-042`, para mantener reconciliadas las superficies AS-IS y las identidades canónicas de PASS;
+- `TREQ-AUTH-006`, como cobertura transversal de minimización y protección de atributos sensibles cuando aplique.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 27. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | No se ejecutó build; la tarea es documental y la incorporación al checkout aún no se realizó. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutó la batería local del repositorio sobre la tarea todavía no incorporada. |
+| REMOTA | `PASS` | Se inspeccionaron `main`, owner, topología, políticas, 04A, catálogo `VSCREEN/VPROC`, tareas de privacidad y snapshot runtime actual de `vento-pass`. |
+| OPERATIVA | `NOT_EXECUTED` | No se realizó prueba con cliente, sesión real ni flujo de privacidad desplegado. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-008` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+La validación real del repositorio se ejecuta únicamente después de incorporar el artefacto en la rama documental autorizada.
+
+---
+
+#### 28. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-008 — Diseñar perfil del cliente`.
+- [x] Se utiliza `VSCREEN-0112` sin crear una nueva identidad de pantalla.
+- [x] `CompleteProfile` y `AccountSettings` convergen semánticamente sobre un único workspace de perfil/privacidad.
+- [x] Persona, cuenta, perfil, contacto, preferencia, consentimiento y perfil laboral permanecen separados.
+- [x] Completitud de perfil no equivale a consentimiento ni verificación total.
+- [x] Correo y teléfono distinguen valor, verificación y finalidades autorizadas.
+- [x] Documento de identidad no se declara libremente editable por inferencia.
+- [x] Fecha de nacimiento conserva finalidad visible y no amplía su uso silenciosamente.
+- [x] Consentimientos conservan finalidad, canal, versión, fuente, fecha, vigencia y retiro cuando aplique.
+- [x] Política mostrada, aceptación registrada y consentimiento específico no se confunden.
+- [x] Preferencias no se utilizan como evidencia de consentimiento.
+- [x] Actualización directa, cambio verificado y solicitud de rectificación se distinguen.
+- [x] Solicitud de privacidad no equivale a resolución final.
+- [x] Limpieza opcional no equivale a eliminación de cuenta.
+- [x] Revocar acceso, eliminar cuenta, suprimir, anonimizar y retener permanecen acciones distintas.
+- [x] Acciones de alto impacto no confían únicamente en afirmaciones del cliente.
+- [x] Perfil personal y contexto laboral permanecen separados.
+- [x] Cambios de perfil no reescriben ledger ni historia de fidelización.
+- [x] Error, ausencia, dato no verificado y valor confirmado son estados distintos.
+- [x] Cada hallazgo AS-IS tiene propietario y condición de salida.
+- [x] Se crean cero requisitos de prueba.
+- [x] Se modifican cero requisitos de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, Supabase, Auth, datos, Edge Functions, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-009` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 29. Límites
+
+Esta tarea no:
+
+- modifica `CompleteProfile.tsx`, `ProfileForm.tsx`, `AccountSettings.tsx`, hooks ni `App.js`;
+- crea formularios, rutas o pantallas runtime nuevas;
+- define esquema físico de perfil, consentimiento, preferencias o solicitudes;
+- decide columnas, tablas, vistas, RPC, triggers, funciones o eventos;
+- modifica Auth, RLS, Storage, Realtime, Edge Functions, secretos o Supabase;
+- cambia políticas legales ni redacta textos jurídicos;
+- define qué fundamento legal aplica a una finalidad concreta;
+- ejecuta verificación de documento, teléfono, correo u OTP;
+- convierte una casilla local en evidencia canónica;
+- administra perfiles de terceros;
+- fusiona personas por nombre, correo o teléfono;
+- modifica saldo, puntos, ledger, nivel, recompensas o redenciones;
+- elimina ni anonimiza datos;
+- declara una solicitud de privacidad completada;
+- define la política material de retención;
+- define copy final de errores o confirmaciones;
+- consolida rutas, aliases o deep links;
+- define estrategia offline/retry completa;
+- autoriza packages, implementación física, CI022, piloto ni rollout;
+- declara validación operativa realizada;
+- desarrolla `PASS-UX-009`, `PASS-UX-010`, `PASS-UX-011`, `PASS-UX-012`, `INFO-UX-004` ni tareas físicas relacionadas.
+
+---
+
+#### 30. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-007 — Diseñar catálogo de recompensas`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-008 — Diseñar perfil del cliente`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado`
 ### [ ] PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
 ### [ ] PASS-UX-010 — Definir mensajes de error comprensibles
 ### [ ] PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
