@@ -15744,5 +15744,1066 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-014 — Migrar a paquetes de vento-shell`
 
-### [ ] ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
+### ✅ ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-013 — Mantener administración sin check-in
+**Tarea siguiente:** ORIGO-AUTH-015 — Ejecutar pruebas integrales
+**Tipo de tarea:** documental; contrato canónico de adopción gobernada de paquetes compartidos de `vento-shell` por ORIGO, con reconciliación del catálogo y grants materializados frente a `ORIGO-AUTH-004..013`, paridad contractual, compatibilidad, coexistencia temporal, rollback, retiro legacy y materialización posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno durante este marcador global; no modifica packages, permisos, grants, imports, dependencias, lockfiles, consumidores, Supabase, migraciones, RLS, RPC, datos, configuración, releases, registry ni despliegues; toda materialización futura requiere `ORIGO-AUTH-014::<implementation_unit_id>`, package propietario aplicable, `E5-GATE-008::<package_id> = PASS` y autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo ORIGO deberá adoptar de forma gobernada las familias compartidas canónicas de `vento-shell` sin convertir la migración en una copia indiscriminada de código, sin degradar las decisiones de `ORIGO-AUTH-004..013` y sin confundir:
+
+- package materializado con release consumible;
+- dependencia instalada con adopción certificada;
+- contrato estático con enforcement runtime;
+- cliente Supabase compartido con autoridad empresarial;
+- UI compartida con autorización;
+- paridad con reproducción de un bug legacy;
+- adapter temporal con segunda fuente de verdad;
+- rol de navegación con rol operativo efectivo;
+- sesión técnica con actor humano;
+- migración de consumidor con retiro inmediato del legacy.
+
+La regla raíz queda:
+
+```text
+CONTRATO ORIGO APROBADO
++
+SHARED RESPONSIBILITY
++
+PACKAGE CANÓNICO ELEGIBLE
++
+VERSIÓN EXACTA
++
+COMPATIBILIDAD ORIGO
++
+PARIDAD CONTRACTUAL
++
+CUTOVER FAIL-CLOSED
++
+ROLLBACK REPRODUCIBLE
+=
+ADOPCIÓN ORIGO DE PACKAGE COMPARTIDO
+```
+
+Y simultáneamente:
+
+```text
+PACKAGE PRESENTE
+!=
+PACKAGE ADOPTADO
+```
+
+```text
+CÓDIGO LOCAL EXISTENTE
+!=
+RESPONSABILIDAD QUE DEBA MOVERSE A UN PACKAGE
+```
+
+```text
+PARIDAD
+!=
+REPRODUCIR UN BUG LEGACY
+```
+
+---
+
+#### 2. Handoff recibido de ORIGO-AUTH-012 y ORIGO-AUTH-013
+
+`ORIGO-AUTH-012` cerró la frontera de contexto operativo y `ORIGO-AUTH-013` cerró su contraparte administrativa.
+
+El handoff obligatorio conserva:
+
+```text
+CARRIL BASE
+→ independiente de turno/check-in cuando el contrato lo permite
+
+CARRIL OPERATIVO
+→ exige su prerrequisito exacto T o T+C
+
+BASE_OR_OPERATIONAL
+→ carriles independientes
+
+BASE_AND_OPERATIONAL
+→ ambos componentes obligatorios para la acción final
+
+OPERATIONAL_ONLY
+→ sin vía administrativa alternativa
+```
+
+La migración a packages no puede reinterpretar esas modalidades.
+
+En particular:
+
+```text
+origo.procurement.receipts.register
+→ OPERATIONAL_ONLY
+→ T+C
+→ sin grant base
+```
+
+Y:
+
+```text
+origo.procurement.receipts.reverse
+→ BASE_AND_OPERATIONAL
+→ componente base N
+→ componente operativo T+C
+→ acción final requiere ambos
+```
+
+La tarea tampoco reabre territorios, actor de recepción, field masks, sensibilidad, segregación, reautenticación ni auditoría definidos en `ORIGO-AUTH-009..013`.
+
+---
+
+#### 3. Topología y cardinalidad física
+
+La reconciliación vigente establece:
+
+```text
+ORIGO-AUTH-009..015
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto, este marcador define el contrato global una sola vez, mientras la materialización física ocurre después mediante identidades de la forma:
+
+```text
+ORIGO-AUTH-014::<implementation_unit_id>
+```
+
+Una unidad solo puede actuar cuando:
+
+```text
+PACKAGE PROPIETARIO APLICABLE IDENTIFICADO
++
+E5-GATE-008::<package_id> = PASS
++
+DEPENDENCIAS TÉCNICAS DISPONIBLES
++
+AUTORIZACIÓN FÍSICA EXPLÍCITA
+=
+UNIDAD ELEGIBLE PARA MATERIALIZACIÓN
+```
+
+Este marcador no selecciona `package_id`, no inventa `implementation_unit_id` y no autoriza ejecución física.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla al estado remoto verificable:
+
+```text
+vento-shell/main
+f27022b394353713adeda289d8414998abc91052
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+Se contrastaron como mínimo:
+
+- `ORIGO-AUTH-004..013` y el marcador actual `ORIGO-AUTH-014`;
+- `task-work-topology.json` y `POST_E5_PACKAGE`;
+- catálogo, modalidades, scopes, recursos y matrices AUTH vigentes;
+- datasets físicos de permisos, roles base y roles operativos dentro de `@vento/contracts/authorization`;
+- relaciones de compatibilidad y actualización package–consumidor del BLOQUE T;
+- lifecycle `SHELL-MIG-001..008`;
+- `package.json` y `package-lock.json` de `vento-origo`;
+- baseline `scripts/quality/origo-consumer-baseline-gate.mjs`;
+- helpers locales de autorización, contexto, dispositivo compartido y Supabase;
+- superficies de órdenes, proveedores, recepción, revisión de maestro y PDF;
+- Registro 04A vigente de AUTH, SHELL y ORIGO.
+
+---
+
+#### 5. Envelope canónico de packages para ORIGO
+
+La adopción de ORIGO se limita a las cuatro familias compartidas canónicas:
+
+| Package | Responsabilidad aplicable a ORIGO | Relación de ORIGO |
+| --- | --- | --- |
+| `@vento/contracts` | contratos estáticos, catálogos, schemas, tipos e identidades compartidas | consumidor |
+| `@vento/os-context` | contexto efectivo y evaluación runtime compartida dentro de su frontera aprobada | consumidor |
+| `@vento/supabase` | acceso técnico compartido a Supabase | consumidor |
+| `@vento/ui-web` | presentación web compartida neutral al dominio | consumidor |
+
+No se crea una quinta familia para resolver particularidades de ORIGO.
+
+Una responsabilidad de abastecimiento, compras, proveedor, orden, recepción, costo, documento o conciliación que no pertenezca a esas cuatro fronteras permanece en ORIGO o en su owner canónico correspondiente.
+
+---
+
+#### 6. Estado físico observado de los packages
+
+El estado remoto actual no constituye todavía cuatro releases estables consumibles por ORIGO:
+
+| Package | Estado observado |
+| --- | --- |
+| `@vento/contracts` | workspace privado `1.0.0-alpha.1`; contiene materialización interna de autorización, pero no equivale a release estable adoptada por ORIGO |
+| `@vento/os-context` | workspace privado `0.1.0` que exporta directamente `./src/index.ts`; permanece transitorio |
+| `@vento/supabase` | raíz privada de autoría sin versión pública consumible |
+| `@vento/ui-web` | raíz privada de autoría sin versión pública consumible |
+
+Consecuencia:
+
+```text
+WORKSPACE MATERIALIZADO
+!=
+RELEASE ELEGIBLE PARA ADOPCIÓN ORIGO
+```
+
+La futura unidad física deberá consumir una identidad realmente elegible conforme al lifecycle propietario. No puede usar internals, paths locales o metadata privada como sustituto de una release gobernada.
+
+---
+
+#### 7. Estado físico observado de `vento-origo`
+
+El `package.json` vigente de `vento-origo` no declara dependencias `@vento/*`.
+
+Sí conserva un baseline de consumidor que reconoce exactamente las cuatro familias compartidas y ejecuta una suite contractual propia.
+
+Resultado:
+
+```text
+BASELINE ORIGO DISPONIBLE
++
+0 DEPENDENCIAS @vento/* DECLARADAS
+=
+CONSUMIDOR PREPARADO PARA MIGRACIÓN GOBERNADA,
+NO MIGRADO
+```
+
+La presencia del baseline no demuestra imports migrados, release adoptada, paridad de superficie, retiro de legacy ni despliegue.
+
+---
+
+#### 8. Relaciones package–ORIGO canónicas
+
+ORIGO conserva exactamente estas cuatro relaciones de compatibilidad y cuatro relaciones de actualización:
+
+| Package | Compatibilidad | Actualización | Perfil ORIGO |
+| --- | --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-005` | `PKG-PR-REL-005` | `ORIGO-PROFILE-CONTRACTS` |
+| `@vento/os-context` | `PKG-COMP-MX-012` | `PKG-PR-REL-012` | `ORIGO-PROFILE-OS-CONTEXT` |
+| `@vento/supabase` | `PKG-COMP-MX-019` | `PKG-PR-REL-019` | `ORIGO-PROFILE-SUPABASE` |
+| `@vento/ui-web` | `PKG-COMP-MX-026` | `PKG-PR-REL-026` | `ORIGO-PROFILE-UI-WEB` |
+
+No se crean relaciones alternativas ni IDs locales para evitar un gate existente.
+
+Las matrices de compatibilidad y actualización representan la misma combinación package–consumidor desde lifecycle distintos y no son intercambiables.
+
+---
+
+#### 9. Universo objetivo de capacidades ORIGO
+
+El contrato recibido de `ORIGO-AUTH-013` conserva exactamente quince capacidades objetivo:
+
+| # | Capacidad | Modalidad objetivo | Prerrequisito relevante |
+| ---: | --- | --- | --- |
+| 1 | `origo.access` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T` |
+| 2 | `origo.procurement.purchase_orders.view` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T+C` |
+| 3 | `origo.procurement.receipts.view` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T+C` |
+| 4 | `origo.procurement.suppliers.view` | `BASE_OR_OPERATIONAL` | base `N`; operativo `T` |
+| 5 | `origo.catalog.product_reviews.view` | `BASE_ONLY` | `N` |
+| 6 | `origo.procurement.purchase_orders.create` | `BASE_ONLY` | `N` |
+| 7 | `origo.procurement.suppliers.create` | `BASE_ONLY` | `N` |
+| 8 | `origo.procurement.purchase_orders.approve` | `BASE_ONLY` | `N` |
+| 9 | `origo.procurement.receipts.register` | `OPERATIONAL_ONLY` | `T+C` |
+| 10 | `origo.procurement.purchase_orders.update` | `BASE_ONLY` | `N` |
+| 11 | `origo.procurement.purchase_orders.cancel` | `BASE_ONLY` | `N` |
+| 12 | `origo.procurement.suppliers.update` | `BASE_ONLY` | `N` |
+| 13 | `origo.procurement.suppliers.activate` | `BASE_ONLY` | `N` |
+| 14 | `origo.procurement.suppliers.deactivate` | `BASE_ONLY` | `N` |
+| 15 | `origo.procurement.receipts.reverse` | `BASE_AND_OPERATIONAL` | base `N` + operativo `T+C` |
+
+La migración debe preservar las quince decisiones como un conjunto cerrado, sin inventar permisos de emisión, borrado u otras acciones no aprobadas.
+
+---
+
+#### 10. Delta del catálogo compartido materializado
+
+El catálogo físico actual de `@vento/contracts/authorization` materializa seis identidades ORIGO activas:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.receipts.register
+origo.procurement.suppliers.view
+origo.catalog.product_reviews.view
+```
+
+Reconciliación:
+
+```text
+CAPACIDADES OBJETIVO ORIGO: 15
+IDENTIDADES ORIGO MATERIALIZADAS EN CATÁLOGO COMPARTIDO: 6
+IDENTIDADES OBJETIVO TODAVÍA NO MATERIALIZADAS: 9
+```
+
+Las nueve pendientes son:
+
+```text
+origo.procurement.purchase_orders.create
+origo.procurement.suppliers.create
+origo.procurement.purchase_orders.approve
+origo.procurement.purchase_orders.update
+origo.procurement.purchase_orders.cancel
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+origo.procurement.receipts.reverse
+```
+
+Regla de migración:
+
+```text
+IDENTIDAD OBJETIVO DEFINIDA DOCUMENTALMENTE
+!=
+IDENTIDAD MATERIALIZADA EN PACKAGE
+```
+
+`vento-origo` no puede recrear localmente esas nueve identidades para adelantar el package. La materialización pertenece a `vento-shell` y al lifecycle físico propietario aplicable.
+
+---
+
+#### 11. Drift materializado de `receipts.register`
+
+Existe una divergencia física explícita entre el package compartido actual y el contrato ORIGO más reciente.
+
+El dataset compartido observado conserva `origo.procurement.receipts.register` con semántica `BASE_OR_OPERATIONAL` y grants base para roles administrativos.
+
+El contrato posterior aprobado de ORIGO fija:
+
+```text
+origo.procurement.receipts.register
+authorization_requirement = OPERATIONAL_ONLY
+operational_prerequisite = T+C
+BASE LANE = NO APLICA
+```
+
+También fija concesión operativa objetivo para:
+
+```text
+bodeguero
+gerencia_operativa
+```
+
+Por tanto:
+
+```text
+SHARED PACKAGE AS-IS
+!=
+ORIGO TARGET CONTRACT
+```
+
+Clasificación:
+
+```text
+AS_IS_SHARED_RECEIPTS_REGISTER_AUTHORIZATION_DRIFT
+```
+
+La condición de salida para cualquier unidad que adopte esta capacidad es demostrar que la versión compartida consumida por ORIGO:
+
+1. declara `OPERATIONAL_ONLY`;
+2. no conserva grants base de `receipts.register`;
+3. conserva los grants operativos aprobados sin inferirlos por nombre de oficio;
+4. exige `T+C`;
+5. usa actor, territorio y recurso autoritativos;
+6. no cae a un alias legacy si el contrato canónico deniega.
+
+El drift no se corrige dentro del consumidor ni se oculta con un adapter permisivo.
+
+---
+
+#### 12. Regla de adopción por responsabilidad
+
+La unidad mínima de decisión es la responsabilidad, no el archivo ni el nombre de una función.
+
+```text
+CONTRATO ESTÁTICO COMPARTIDO
+→ @vento/contracts
+
+CONTEXTO / AUTORIZACIÓN RUNTIME COMPARTIDA
+→ @vento/os-context
+
+ACCESO TÉCNICO SUPABASE COMPARTIDO
+→ @vento/supabase
+
+PRESENTACIÓN WEB COMPARTIDA
+→ @vento/ui-web
+
+LÓGICA EMPRESARIAL ORIGO
+→ PERMANECE EN ORIGO
+```
+
+Un archivo legacy puede mezclar más de una responsabilidad. La unidad física deberá descomponerlo mediante adapters o refactor controlado sin trasladar ownership empresarial al package equivocado.
+
+---
+
+#### 13. Frontera de `@vento/contracts`
+
+`@vento/contracts` es el destino canónico de identidades y contratos estáticos compartidos cuando exista una superficie publicada y compatible.
+
+Puede proveer a ORIGO:
+
+- `PermissionKey`;
+- modalidades y prerequisitos aprobados;
+- scopes y resource contracts;
+- roles base y operativos compartidos;
+- reason codes;
+- response contracts;
+- schemas y tipos serializables;
+- otros contratos estáticos expresamente publicados.
+
+No puede absorber:
+
+- queries ORIGO;
+- lógica de compras o recepción;
+- acceso Supabase;
+- evaluación runtime por sí sola;
+- cookies o sesión;
+- routing;
+- mutaciones empresariales;
+- políticas de proveedor, orden o recepción propias del dominio.
+
+La adopción de contratos estáticos requiere identidad semántica, schema compatible, serialización compatible, versión exacta y ausencia de casts globales que oculten divergencias.
+
+---
+
+#### 14. Frontera de `@vento/os-context`
+
+`@vento/os-context` es la frontera runtime compartida objetivo para contexto y autorización cuando su release aplicable satisfaga el contrato vigente.
+
+La adopción ORIGO debe preservar:
+
+```text
+PRINCIPAL AUTENTICADO
+!=
+ACTOR EFECTIVO
+!=
+ROL BASE
+!=
+ROL OPERATIVO
+!=
+NAVIGATION_ROLE
+```
+
+Y:
+
+```text
+SITE HINT DEL CLIENTE
+!=
+SEDE EFECTIVA
+
+AREA HINT DEL CLIENTE
+!=
+ÁREA EFECTIVA
+```
+
+No podrá conservar como autoridad final:
+
+- `navigation_role` del dispositivo;
+- `preferredSiteId` o `preferredAreaId` sin resolución autoritativa;
+- `role_override`;
+- cookie cliente;
+- booleano legacy;
+- `can_operate` aislado;
+- contexto simulado como input de una mutación real.
+
+La compatibilidad con RPC legacy solo puede permanecer en la frontera de compatibilidad gobernada y nunca ampliar autoridad.
+
+---
+
+#### 15. Actor y dispositivo compartido durante la migración
+
+La migración debe conservar las decisiones de `ORIGO-AUTH-011` y la frontera de dispositivo compartido:
+
+```text
+PRINCIPAL TÉCNICO DEL DISPOSITIVO
+!=
+ACTOR HUMANO
+```
+
+```text
+APP PERMITIDA EN DISPOSITIVO
+!=
+ACTOR AUTORIZADO PARA LA ACCIÓN
+```
+
+Una firma de actor debe conservar identidad, correlación y target conforme a su contrato.
+
+La adopción de contexto compartido no puede reducir la evidencia a `user.id`, `navigation_role` o una etiqueta visual cuando la acción requiere actor efectivo humano.
+
+---
+
+#### 16. Frontera de `@vento/supabase`
+
+`@vento/supabase` puede sustituir acceso técnico compartido únicamente cuando exista una superficie consumible y autorizada.
+
+Puede incluir, según la release aprobada:
+
+- cliente browser;
+- cliente server;
+- tipos generados;
+- wrappers técnicos de RPC;
+- manejo técnico de errores;
+- configuración resuelta por adapters propietarios.
+
+No puede mover al package:
+
+- autorización empresarial ORIGO;
+- selección de orden, proveedor o recepción;
+- política de aprobación;
+- política de corrección;
+- lifecycle de compra;
+- ownership de inventario;
+- field masks empresariales por conveniencia local;
+- `service_role` como sustituto de actor o permiso.
+
+Regla crítica:
+
+```text
+SERVICE_ROLE
+!=
+AUTORIDAD HUMANA
+```
+
+Toda modificación VENTO de schema, RLS, RPC, grants, funciones, triggers o configuración Supabase continúa versionándose desde `vento-shell` bajo su tarea física propietaria.
+
+---
+
+#### 17. Frontera de `@vento/ui-web`
+
+`@vento/ui-web` conserva responsabilidad presentacional.
+
+Puede recibir view models y decisiones ya resueltas, pero no se convierte en evaluador de autorización.
+
+Nunca:
+
+```text
+VISIBLE = AUTHORIZED
+DISABLED = SERVER DENY
+HIDDEN = PERMISSION CHECK
+```
+
+La adopción de componentes compartidos requiere compatibilidad SSR/client, hidratación, formularios, accesibilidad, estilos, exportación y ausencia de lógica empresarial absorbida por UI.
+
+El PDF de orden, aunque tenga presentación, conserva además contratos de token, autorización y privilegio técnico que no pertenecen automáticamente a `@vento/ui-web`.
+
+---
+
+#### 18. Inventario mínimo de consumidores ORIGO
+
+La baseline verificable de `vento-origo` conserva exactamente doce superficies que deben reconciliarse durante la migración:
+
+| ID | Superficie | Relevancia |
+| --- | --- | --- |
+| `ORIGO-SURFACE-001` | identidad, sesión y acceso ORIGO | autorización y contratos compartidos |
+| `ORIGO-SURFACE-002` | contexto operativo, sede, actor y recurso | contexto, actor y dispositivo |
+| `ORIGO-SURFACE-003` | inventario de rutas y navegación | navegación no autoritativa y cobertura de rutas |
+| `ORIGO-SURFACE-004` | proveedores y relación comercial | permisos atómicos y dominio de proveedor |
+| `ORIGO-SURFACE-005` | maestro de producto, presentación y UOM | contratos consumidos sin trasladar ownership NEXO |
+| `ORIGO-SURFACE-006` | orden de compra y líneas | lectura y mutaciones atómicas |
+| `ORIGO-SURFACE-007` | estados, edición y autorización de orden | lifecycle, segregación y permisos exactos |
+| `ORIGO-SURFACE-008` | PDF, token y privilegio de servicio | token, minimización y privilegio técnico |
+| `ORIGO-SURFACE-009` | recepción y modalidad | `view`/`register`, actor y contexto |
+| `ORIGO-SURFACE-010` | atomicidad, idempotencia, corrección y costos | transacción empresarial y compensación |
+| `ORIGO-SURFACE-011` | integración y fronteras de dominio | Supabase técnico y ownership |
+| `ORIGO-SURFACE-012` | UI, SSR, interacción, accesibilidad y exportación | presentación y exportación autorizada |
+
+Una adopción no queda completa si rompe una superficie indirectamente dependiente del contrato migrado.
+
+---
+
+#### 19. Contratos fuente mínimos del baseline ORIGO
+
+La futura unidad deberá conservar como mínimo el control de las ocho fuentes ya reconocidas por el baseline:
+
+```text
+ORIGO-SOURCE-001 → middleware
+ORIGO-SOURCE-002 → auth/guard
+ORIGO-SOURCE-003 → shared-device-signature
+ORIGO-SOURCE-004 → purchase-orders/actions
+ORIGO-SOURCE-005 → receipts/new
+ORIGO-SOURCE-006 → sync-navigation
+ORIGO-SOURCE-007 → public PDF token
+ORIGO-SOURCE-008 → purchase-order PDF route
+```
+
+La presencia de una fuente en el baseline no decide si debe eliminarse, adaptarse o permanecer local. Solo obliga a reconciliar su responsabilidad antes del cutover.
+
+---
+
+#### 20. Relación con `SHELL-MIG-001..008`
+
+`ORIGO-AUTH-014` no redefine el lifecycle compartido de migración de consumidores web.
+
+Consume:
+
+- `SHELL-MIG-001` para inventario ejecutable de consumidores;
+- `SHELL-MIG-002` para lotes reversibles por repositorio;
+- `SHELL-MIG-003` para compatibilidad temporal y bloqueo de nuevos legacy;
+- `SHELL-MIG-004..006` cuando el lote incluya scaffold, UI, accesibilidad, tema o movimiento;
+- `SHELL-MIG-007` para contrato de paridad ejecutable por package;
+- `SHELL-MIG-008` para retiro legacy con uso residual cero o migración certificada.
+
+`ORIGO-AUTH-014` aporta las invariantes específicas de ORIGO que esos mecanismos no pueden reinterpretar.
+
+---
+
+#### 21. Regla de paridad
+
+La paridad se evalúa contra el contrato correcto, no contra el legacy por igualdad ciega.
+
+Cada delta se clasifica como:
+
+```text
+IGUAL
+CORRECCIÓN_INTENCIONAL
+BRECHA_DE_DATOS
+BUG_LEGACY
+BUG_CANÓNICO
+CONTRATO_PENDIENTE
+```
+
+Solo `IGUAL` y `CORRECCIÓN_INTENCIONAL` sustentada pueden participar en un cutover.
+
+`BRECHA_DE_DATOS`, `BUG_CANÓNICO` o `CONTRATO_PENDIENTE` bloquean.
+
+Ejemplos de diferencias que deben tratarse como corrección intencional cuando el target esté materializado:
+
+```text
+legacy origo.procurement.receipts
+→ target receipts.view / receipts.register según acción
+```
+
+```text
+legacy origo.suppliers.manage
+→ capacidades atómicas de proveedor
+```
+
+```text
+lista local de roles
+→ permiso/grant canónico exacto
+```
+
+```text
+BASE_OR_OPERATIONAL materializado para receipts.register
+→ OPERATIONAL_ONLY aprobado
+```
+
+No se replica una brecha de seguridad en el package para fabricar paridad.
+
+---
+
+#### 22. Paridad de allow y deny
+
+Una prueba positiva no basta.
+
+La unidad debe comparar:
+
+```text
+LEGACY ALLOW
+CANONICAL ALLOW
+```
+
+y también:
+
+```text
+LEGACY DENY
+CANONICAL DENY
+```
+
+con escenarios adversariales para:
+
+- permiso ausente;
+- rol manipulado;
+- sede manipulada;
+- área manipulada;
+- actor ausente o distinto;
+- dispositivo no permitido;
+- firma ausente cuando aplica;
+- turno inexistente o inválido;
+- check-in inexistente para `T+C`;
+- recurso fuera de scope;
+- estado incompatible;
+- field mask insuficiente;
+- reautenticación requerida;
+- token PDF inválido o expirado;
+- sesión stale;
+- contexto simulado intentando producir efecto real.
+
+---
+
+#### 23. Capacidades todavía no materializadas
+
+Las nueve identidades objetivo ausentes del package bloquean únicamente las unidades que dependan de ellas.
+
+No obligan a bloquear una unidad independiente que consuma otra superficie ya plenamente materializada y compatible, siempre que el package propietario, el gate E5 y la evidencia de la unidad lo permitan.
+
+Regla:
+
+```text
+MISSING TARGET CONTRACT FOR SURFACE X
+→ BLOCK SURFACE X
+→ NO LOCAL REIMPLEMENTATION
+→ NO GLOBAL FALSE BLOCK IF AN INDEPENDENT UNIT IS PROVABLY SAFE
+```
+
+La governed frontier conserva la selección física; esta tarea no elige manualmente el siguiente package.
+
+---
+
+#### 24. Regla para aliases y helpers legacy
+
+Durante coexistencia puede existir un adapter temporal solo cuando sea explícito, versionado, uno-a-uno y fail-closed.
+
+No se permiten aliases ampliatorios como:
+
+```text
+origo.procurement.receipts
+→ receipts.view + receipts.register + receipts.reverse
+```
+
+Ni:
+
+```text
+origo.suppliers.manage
+→ create + update + activate + deactivate + delete
+```
+
+Un adapter no puede:
+
+- inventar una concesión;
+- reconstruir autoridad desde un nombre de rol;
+- convertir `DENY` canónico en `ALLOW` legacy;
+- ocultar la ausencia de una clave compartida;
+- ampliar territorio;
+- reutilizar un permiso de lectura para mutación;
+- convertir app access en acceso a todos los recursos.
+
+---
+
+#### 25. Compatibilidad temporal y dualidad
+
+Una transición temporal no puede dejar dos autoridades activas para el mismo efecto empresarial.
+
+Puede existir comparación shadow únicamente si:
+
+1. un solo evaluador determina el efecto;
+2. el segundo resultado no ejecuta side effects;
+3. las divergencias quedan registradas;
+4. el adapter no añade autoridad;
+5. existe condición de retiro;
+6. un `DENY` canónico nunca cae a `ALLOW` legacy.
+
+Para mutaciones de recepción, orden o proveedor queda prohibida la doble ejecución durante pruebas de paridad.
+
+---
+
+#### 26. Frontera de datos y Supabase
+
+Adoptar packages no concede autorización para ejecutar cambios de base de datos por inferencia.
+
+Si una unidad requiere modificar:
+
+- catálogo físico de permisos;
+- grants base u operativos;
+- RPC de autorización;
+- RLS;
+- funciones de firma;
+- contratos de contexto persistidos;
+- schemas o tipos generados;
+
+la modificación pertenece a `vento-shell`, debe quedar versionada bajo la tarea física propietaria y debe respetar el package E5 aplicable.
+
+La unidad no puede mutar Supabase remoto para obtener paridad antes de que su cambio documental, package y migración estén gobernados.
+
+---
+
+#### 27. Versionado, manifest y lockfile
+
+Antes de modificar dependencias de `vento-origo` debe existir para cada package adoptado:
+
+- release elegible;
+- versión SemVer exacta;
+- source commit exacto;
+- artefacto atribuible;
+- integridad verificable;
+- manifest coherente;
+- compatibilidad ORIGO vigente;
+- evidencia requerida por el lifecycle.
+
+El `package.json` y el lockfile del consumidor se tratan como unidad:
+
+```text
+VERSIÓN DECLARADA
+=
+VERSIÓN RESUELTA
+=
+RELEASE ELEGIBLE PROBADA
+```
+
+No se utiliza como atajo para cutover:
+
+- `workspace:*`;
+- `file:`;
+- path local;
+- `latest`;
+- `*`;
+- rango flotante no gobernado;
+- branch ref;
+- commit sin release cuando el lifecycle exige release.
+
+---
+
+#### 28. Perfiles de compatibilidad ORIGO
+
+La evidencia futura deberá satisfacer el perfil de cada familia adoptada.
+
+| Perfil | Cobertura mínima |
+| --- | --- |
+| `ORIGO-PROFILE-CONTRACTS` | tipos, shapes, serialización, semántica de identificadores y ausencia de cast global permisivo |
+| `ORIGO-PROFILE-OS-CONTEXT` | sesión, site/resource context, allow, deny, firma shared-device y ausencia de elevación cliente |
+| `ORIGO-PROFILE-SUPABASE` | cliente browser, server, permission RPC, deny path, schema aislado, ausencia de fixture `service_role` y build seguro |
+| `ORIGO-PROFILE-UI-WEB` | server render, client render, hidratación, formularios, accesibilidad y exportación PDF |
+
+El baseline actual contempla 42 casos contractuales, pero su PASS futuro no sustituye los gates de release, compatibilidad, consumer update, E5 ni autorización física.
+
+---
+
+#### 29. Gate de materialización por unidad
+
+Una unidad `ORIGO-AUTH-014::<implementation_unit_id>` solo es elegible cuando demuestra, como mínimo:
+
+1. `package_id` propietario identificado por el sistema gobernado;
+2. `E5-GATE-008::<package_id> = PASS`;
+3. autorización física explícita;
+4. package compartido elegible y versión exacta;
+5. relación `PKG-COMP-MX-*` aplicable evaluada con evidencia vigente;
+6. relación `PKG-PR-REL-*` aplicable elegible para el cambio consumidor;
+7. superficie ORIGO exacta inventariada;
+8. contrato target materializado para esa superficie;
+9. manifest y lockfile coherentes;
+10. paridad o corrección intencional demostrada;
+11. pruebas positivas y negativas fail-closed;
+12. cero doble side effect;
+13. rollback seguro probado;
+14. cero secretos o credenciales privilegiadas expuestas;
+15. cero autoridad cliente añadida;
+16. cero bypass por roles locales o aliases amplios;
+17. evidencia suficiente para que `ORIGO-AUTH-015` ejecute la certificación integral posterior.
+
+---
+
+#### 30. Rollback
+
+Cada unidad debe demostrar rollback independiente antes del cutover.
+
+El rollback puede restaurar una versión técnica anterior solo cuando esa versión sigue siendo segura y compatible con el contrato vigente.
+
+Queda prohibido que rollback:
+
+- restaure `origo.suppliers.manage` como autoridad amplia;
+- restaure `origo.procurement.receipts` como permiso agregado de lectura/mutación;
+- restaure grants base de `receipts.register` incompatibles con `OPERATIONAL_ONLY`;
+- reactive autorización por nombre local de rol;
+- convierta `navigation_role` en rol operativo efectivo;
+- pierda actor, firma, auditoría o razones generadas durante la ventana;
+- revierta datos empresariales confirmados por restaurar código;
+- borre evidencia de la migración;
+- requiera actualizar o bajar simultáneamente todos los consumidores VENTO.
+
+Si no existe estado anterior seguro, la unidad no está lista para cutover.
+
+---
+
+#### 31. Retiro de legacy
+
+Migrar una superficie no autoriza eliminar inmediatamente su implementación anterior.
+
+El retiro se gobierna por `SHELL-MIG-008` y exige uso residual cero o migración certificada.
+
+Antes del retiro se conservan, según aplique:
+
+- inventario de imports y referencias;
+- rutas y handlers alcanzables;
+- scripts y CI;
+- adapters;
+- aliases legacy;
+- RPC legacy;
+- referencias dinámicas;
+- evidencia de consumidores;
+- rollback validado.
+
+Un grep aislado no demuestra uso residual cero.
+
+---
+
+#### 32. Hallazgos AS-IS y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `vento-origo` tiene baseline para cuatro packages pero no declara dependencias `@vento/*`. | Preparación sin adopción. | `ORIGO-AUTH-014::<implementation_unit_id>` + `SHELL-MIG-001..008` | release elegible, consumidor migrado, compatibilidad, paridad y rollback acreditados |
+| Las cuatro raíces compartidas observadas continúan privadas o transitorias. | Bloquea tratarlas como releases estables consumibles. | owners `SHELL-PKG-*`, `SHELL-CON-*`, `SHELL-AUTH-*`, `SHELL-DB-*`, `SHELL-UI-*` aplicables | release/publicación gobernada y relación ORIGO compatible |
+| El catálogo compartido materializa 6/15 identidades objetivo ORIGO. | Nueve capacidades no pueden adoptarse todavía desde el package. | owner físico de `@vento/contracts/authorization` + unidad ORIGO correspondiente | quince identidades target materializadas solo cuando su package/lifecycle lo autorice; cada unidad consume únicamente las que necesita |
+| `receipts.register` materializado conserva modalidad/grants incompatibles con `OPERATIONAL_ONLY`. | Riesgo de recepción autorizada por carril base. | owner físico de contratos/grants + `ORIGO-AUTH-014::<implementation_unit_id>` | package consumido declara `OPERATIONAL_ONLY`, cero grants base y grants operativos aprobados con `T+C` |
+| runtime ORIGO usa `origo.procurement.receipts` como identidad amplia. | Lectura y mutación pueden quedar agregadas. | `ORIGO-AUTH-014::<implementation_unit_id>` | consumidor usa `.view`, `.register` y `.reverse` según acción y disponibilidad contractual |
+| `origo.suppliers.manage` y fallback local por rol siguen presentes. | Mutaciones de proveedor sin separación atómica. | `ORIGO-AUTH-014::<implementation_unit_id>` | consumidor usa capacidades atómicas materializadas; sin fallback de rol ni wildcard amplio |
+| acciones de orden aún no demuestran bindings atómicos completos. | Creación, edición, cancelación o aprobación pueden divergir del contrato. | `ORIGO-AUTH-014::<implementation_unit_id>` | cada punto de efecto usa permiso, recurso, estado, segregación y scope exactos |
+| `resolveOperationalSession` acepta hints y usa `navigation_role` en shared device. | Riesgo de contexto o rol efectivo derivados de datos no autoritativos. | owner `@vento/os-context` + unidad ORIGO | contexto efectivo resuelto server-side y actor/rol operativo no derivados de navegación |
+| revisión de maestro usa un permiso legacy de recepción y selected site. | Capacidad `BASE_ONLY` puede quedar acoplada a una superficie/contexto incorrectos. | `ORIGO-AUTH-014::<implementation_unit_id>` | usa `origo.catalog.product_reviews.view` y scope organizacional sin fabricar territorio desde site seleccionado |
+| PDF combina token público y cliente privilegiado. | Riesgo de confundir validación técnica con autoridad humana. | unidad ORIGO de superficie PDF + contrato de token/seguridad aplicable | token validado antes de privilegio, proyección mínima y `service_role` nunca usado como autoridad humana |
+| firma shared-device puede existir separada del target final. | Riesgo de atribución parcial durante errores o compensaciones. | unidad ORIGO de recepción + owner de firma/auditoría | firma y efecto quedan atómicos o durablemente reconciliables conforme al contrato aprobado |
+
+No queda un hallazgo narrativo sin owner ni condición de salida.
+
+---
+
+#### 33. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: adopción de packages, compatibilidad, paridad, rollback, autorización, contexto, atomicidad, seguridad de compras/recepción/proveedores y retiro legacy ya cuentan con requisitos vigentes. Esta tarea especializa cómo deben aplicarse a ORIGO sin crear una obligación verificable nueva fuera de esa cobertura.
+
+---
+
+#### 34. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones, secuencia ni propietario:
+
+- `TREQ-AUTH-001` para impedir autorización final basada en listas locales de roles;
+- `TREQ-AUTH-002` para utilizar únicamente identidades de permisos válidas;
+- `TREQ-AUTH-004` para equivalencia entre evaluadores sobre el mismo principal, actor y contexto;
+- `TREQ-AUTH-008` para separación entre capacidades administrativas y operativas y sus prerequisitos;
+- `TREQ-AUTH-013` para revalidación server-side de permiso, principal, actor, territorio, contexto, estado y columnas/efectos;
+- `TREQ-AUTH-014` para invalidación de autoridad stale;
+- `TREQ-AUTH-015` para evidencia correlacionable y auditoría también en rollback;
+- `TREQ-SHELL-002` para que responsabilidades compartidas provengan de implementación compartida, generada o local clasificada;
+- `TREQ-SHELL-006` para pruebas propias y matriz de compatibilidad antes de publicar o adoptar packages;
+- `TREQ-SHELL-007` para rollback independiente sin restaurar bypasses ni perder datos o auditoría;
+- `TREQ-SHELL-008` para evidencia reproducible de requisitos afectados por package y PR;
+- `TREQ-SHELL-043` y `TREQ-SHELL-044` para contratos compartidos de contexto y namespaces cerrados;
+- `TREQ-SHELL-064` para mantener `@vento/os-context@0.1.0` como transitorio hasta una release estable elegible;
+- `TREQ-SHELL-065` para aislar compatibilidad legacy sin consumidores nuevos ni autoridad adicional;
+- `TREQ-ORIGO-001` para modalidad de recepción e idempotencia de efectos;
+- `TREQ-ORIGO-002` para autorización, territorio, estado, columnas y token seguro de órdenes;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, corrección, costos, firma y reconciliación de recepción;
+- `TREQ-ORIGO-004` para segregación y lifecycle completo de abastecimiento;
+- `TREQ-ORIGO-005` para maestro de proveedores, condiciones, privacidad y datos sensibles;
+- `TREQ-ORIGO-006` para conservar el inventario completo de superficies ORIGO.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 35. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Build, typecheck, lint y suites del consumidor corresponden a las unidades físicas y al checkout local posterior a la incorporación documental. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle documental permanecen pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell` y `vento-origo` vigentes, topología, owner ORIGO, packages compartidos, manifests, relaciones `PKG-COMP-MX-005/012/019/026`, `PKG-PR-REL-005/012/019/026`, baseline ORIGO de 12 superficies y 42 casos, catálogo físico de 6 identidades ORIGO, datasets base/operativos, `SHELL-MIG-001..008`, runtime de autorización/contexto/Supabase y Registro 04A relevante. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó migración de consumidor, recepción, orden, proveedor, PDF, shadow, cutover ni rollback real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron packages, datasets, Supabase, `vento-origo`, dependencias, lockfiles, releases, packages E5 ni instancias físicas. |
+
+---
+
+#### 36. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] conserva `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`;
+- [ ] limita el envelope a `@vento/contracts`, `@vento/os-context`, `@vento/supabase` y `@vento/ui-web`;
+- [ ] conserva las cuatro relaciones ORIGO `PKG-COMP-MX-005/012/019/026`;
+- [ ] conserva las cuatro relaciones ORIGO `PKG-PR-REL-005/012/019/026`;
+- [ ] diferencia workspace materializado, release elegible y package adoptado;
+- [ ] conserva las 15 capacidades objetivo de `ORIGO-AUTH-013` sin inventar identidades;
+- [ ] registra 6 identidades compartidas materializadas y 9 todavía ausentes;
+- [ ] trata el drift de `receipts.register` como delta a corregir, no como contrato vigente;
+- [ ] prohíbe grants base de `receipts.register` en la versión compatible objetivo;
+- [ ] conserva `bodeguero` y `gerencia_operativa` como grants operativos objetivo de `receipts.register`;
+- [ ] conserva `receipts.reverse` como `BASE_AND_OPERATIONAL` sin degradarlo a un solo carril;
+- [ ] no convierte aliases legacy o helpers amplios en API canónica;
+- [ ] no autoriza por nombre local de rol;
+- [ ] no convierte `navigation_role` en rol operativo efectivo;
+- [ ] no trata site/area hints del cliente como contexto efectivo;
+- [ ] mantiene principal técnico y actor humano separados;
+- [ ] mantiene `service_role` fuera de la autoridad humana;
+- [ ] conserva las doce superficies baseline ORIGO;
+- [ ] conserva los ocho source contracts baseline;
+- [ ] consume `SHELL-MIG-001..008` sin redefinir su lifecycle;
+- [ ] exige paridad de allow y deny;
+- [ ] permite corrección intencional de bugs legacy sin imitarlos;
+- [ ] evita doble side effect en coexistencia;
+- [ ] exige release/version/manifest/lockfile atribuibles;
+- [ ] exige rollback seguro antes de cutover;
+- [ ] bloquea retiro legacy hasta uso residual cero o migración certificada;
+- [ ] mantiene cambios Supabase dentro de `vento-shell` y su owner físico;
+- [ ] no selecciona package ni implementation unit manualmente;
+- [ ] no crea ni modifica requisitos de prueba;
+- [ ] no ejecuta cambios físicos desde este marcador.
+
+---
+
+#### 37. Límites
+
+Esta tarea no:
+
+- implementa packages;
+- publica releases, tags o registry;
+- cambia exports públicos;
+- modifica `vento-origo`;
+- añade dependencias `@vento/*`;
+- modifica lockfiles;
+- migra imports;
+- ejecuta cutover;
+- retira helpers legacy;
+- materializa las nueve identidades de permiso ausentes;
+- corrige físicamente el drift de `receipts.register`;
+- modifica grants base u operativos;
+- modifica datasets de autorización;
+- cambia `has_permission` ni RPC legacy;
+- crea o modifica RLS;
+- crea o modifica tablas, vistas, funciones, triggers o migraciones;
+- ejecuta cambios Supabase;
+- modifica datos;
+- cambia permisos de producción o inventario NEXO;
+- redefine `ORIGO-AUTH-004..013`;
+- desarrolla pruebas integrales de `ORIGO-AUTH-015`;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 38. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-013 — Mantener administración sin check-in`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-014 — Migrar a paquetes de vento-shell`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-015 — Ejecutar pruebas integrales`
+
 ### [ ] ORIGO-AUTH-015 — Ejecutar pruebas integrales
