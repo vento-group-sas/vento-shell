@@ -16197,5 +16197,1357 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-015 — Conectar compra con evento financiero`
-### [ ] ORIGO-UX-015 — Conectar compra con evento financiero
+### ✅ ORIGO-UX-015 — Conectar compra con evento financiero
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-014 — Conectar recepción con entrada de inventario
+**Tarea siguiente:** ORIGO-UX-016 — Validar el prototipo con compras y recepción
+**Tipo de tarea:** diseño documental integral del contrato de experiencia e integración que conecta el compromiso de compra y la recepción aceptada de ORIGO con el hecho económico propietario de NUMERA mediante un evento fuente correlacionado, idempotente y reconciliable, preservando identidad, parcialidad, documentos, importes, moneda, impuestos, diferencias, reversos, periodos, autorización y trazabilidad, sin convertir el compromiso, la factura o el movimiento físico en obligación, asiento o pago por inferencia ni materialización física propia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, componentes, rutas, eventos físicos, tablas, RPC, RLS, grants, migraciones, Supabase, datos, contratos generados, ORIGO, NEXO, NUMERA ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo una compra gobernada por ORIGO conserva su causalidad comercial y, después de una recepción aceptada dentro del alcance aplicable, produce un handoff económico correlacionable hacia NUMERA sin duplicar capturas ni transferir a ORIGO autoridad financiera.
+
+La regla raíz queda:
+
+```text
+ORIGO
+VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED
+        ↓
+CONTEXTO COMERCIAL ESTABLE
+        ↓
+ORIGO
+VPROC-0022
+RECEPCIÓN + ACEPTACIÓN + DIFERENCIAS RESUELTAS SEGÚN ALCANCE
+        ↓
+VPROC-0022.ECONOMIC_RECONCILIATION_PENDING
++ VPROC-0022.EVT-005
+        ↓
+HANDOFF ECONÓMICO DURABLE Y CORRELACIONADO
+        ↓
+NUMERA
+VPROC-0051.ECONOMIC_EVENT_RECEIVED
+        ↓
+VALIDACIÓN + CLASIFICACIÓN + RECONOCIMIENTO + CONCILIACIÓN
+```
+
+Nunca:
+
+```text
+ORDEN APROBADA
+→ OBLIGACIÓN AUTOMÁTICA
+```
+
+Nunca:
+
+```text
+FACTURA CAPTURADA
+→ PAGO APROBADO
+```
+
+Nunca:
+
+```text
+MOVIMIENTO NEXO
+→ ASIENTO DEFINITIVO
+```
+
+Nunca:
+
+```text
+REINTENTO DEL MISMO EVENTO
+→ SEGUNDO HECHO ECONÓMICO
+```
+
+---
+
+#### 2. Resultado sustantivo
+
+La tarea deja definido un único contrato documental de experiencia ORIGO → NUMERA para compra y recepción con los siguientes resultados:
+
+1. `VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED` queda como antecedente comercial estable, no como prueba de recepción, obligación reconocida o pago.
+2. `VPROC-0022.EVT-005` queda como señal fuente ordinaria del handoff económico asociado a una recepción aceptada.
+3. NUMERA queda confirmada como propietaria de `VPROC-0051` y del efecto económico derivado.
+4. `VPROC-0024.EVT-006` puede actuar como evidencia física correlacionable cuando la compra produce inventario, sin sustituir a ORIGO ni crear obligación por sí solo.
+5. una misma recepción, documento o reintento no puede producir dos efectos económicos equivalentes.
+6. recepciones parciales y complementos legítimos conservan identidades diferenciables.
+7. servicios y compras `record_only` pueden producir tratamiento económico sin inventar movimiento físico NEXO.
+8. documento, recepción, ingreso físico, hecho económico, obligación y pago permanecen separados.
+9. ORIGO puede mostrar una proyección del estado económico correlacionado, pero no editar ni simular la verdad financiera de NUMERA.
+10. la captura manual NUMERA permanece contingencia controlada y no fuente competidora frente a un evento canónico existente.
+11. no se crean eventos, permission keys, estados ni requisitos de prueba nuevos.
+12. no se ejecuta implementación física.
+
+---
+
+#### 3. Handoff recibido de ORIGO-UX-014
+
+`ORIGO-UX-014` deja disponible una frontera clara entre aceptación comercial ORIGO y efecto físico NEXO.
+
+La 015 consume esa separación y añade el eje económico sin fusionar dominios:
+
+```text
+ORIGO-UX-014
+RECEPCIÓN ACEPTADA
++ REFERENCIA DE EFECTO FÍSICO CUANDO APLICA
+        ↓
+ORIGO-UX-015
+EVENTO ECONÓMICO CORRELACIONABLE
+        ↓
+NUMERA
+```
+
+La ausencia de inventario físico no invalida por sí sola un efecto económico legítimo de una compra no inventariable.
+
+---
+
+#### 4. Topología y frontera física
+
+La tarea pertenece a:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define contrato reutilizable;
+- no crea instancia física propia;
+- no publica eventos reales;
+- no registra gastos reales;
+- no crea obligaciones;
+- no ejecuta pagos;
+- no modifica Supabase;
+- no cambia código de producto.
+
+La materialización posterior pertenece a tareas y paquetes físicos propietarios.
+
+---
+
+#### 5. Fuentes canónicas consumidas
+
+La tarea conserva y especializa decisiones ya aprobadas en:
+
+- `VPROC-0021`, para compromiso de compra;
+- `VPROC-0022`, para recepción y aceptación comercial;
+- `VPROC-0024`, para ingreso físico NEXO cuando aplique;
+- `VPROC-0051`, para hechos económicos;
+- `VPROC-0052`, para obligación, aprobación y pago posterior;
+- `INT-PROC-004`, para el handoff económico hacia NUMERA;
+- `INT-PROC-005`, para prevención end-to-end de duplicación;
+- catálogo transversal de eventos y procesos;
+- contratos de autorización server-side y trazabilidad;
+- requisitos de prueba vigentes de ORIGO, NEXO, NUMERA, AUTH e INTEGRATION.
+
+Esta tarea no redefine ninguno de esos contratos.
+
+---
+
+#### 6. Propiedad empresarial preservada
+
+La propiedad queda:
+
+```text
+VPROC-0021
+COMPROMISO DE COMPRA
+ORIGO
+        ↓
+VPROC-0022
+RECEPCIÓN Y ACEPTACIÓN COMERCIAL
+ORIGO
+        ↓
+VPROC-0024
+INGRESO FÍSICO
+NEXO
+CUANDO APLICA
+        ↓
+VPROC-0051
+HECHO ECONÓMICO
+NUMERA
+        ↓
+VPROC-0052
+OBLIGACIÓN / APROBACIÓN / PAGO
+NUMERA
+CUANDO CORRESPONDA
+```
+
+Una base técnica compartida no convierte estas verdades en copropiedad.
+
+---
+
+#### 7. Compromiso de compra formalizado
+
+El estado:
+
+```text
+VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED
+```
+
+demuestra que la compra autorizada fue emitida y aceptada o reconocida por el proveedor con alcance, precio, condiciones, fechas y referencias estables.
+
+No demuestra:
+
+- entrega;
+- recepción conforme;
+- cantidad aceptada;
+- ingreso físico;
+- hecho económico reconocido;
+- obligación exigible;
+- pago.
+
+Por tanto, no se usa como gatillo único de reconocimiento financiero.
+
+---
+
+#### 8. Evento fuente ordinario
+
+Para una recepción de compra aceptada, la señal económica ordinaria queda:
+
+```text
+VPROC-0022.EVT-005
+vento.process.vproc-0022.economic-reconciliation-pending.v1
+```
+
+Clase:
+
+```text
+RECONCILIATION_FACT
+```
+
+Estado fuente:
+
+```text
+VPROC-0022.ECONOMIC_RECONCILIATION_PENDING
+```
+
+Sensibilidad:
+
+```text
+RESTRICTED_FINANCIAL
+```
+
+---
+
+#### 9. Verdad mínima del evento fuente
+
+`VPROC-0022.EVT-005` confirma como mínimo:
+
+```text
+EXISTE UNA RECEPCIÓN ACEPTADA DENTRO DE SU ALCANCE
+Y SE REQUIERE CORRELACIONAR
+RECEPCIÓN + DOCUMENTO + OBLIGACIÓN + DIFERENCIAS
+```
+
+No confirma todavía:
+
+- obligación aprobada;
+- asiento definitivo;
+- pago;
+- conciliación bancaria;
+- cierre de periodo;
+- ausencia de diferencias económicas posteriores.
+
+---
+
+#### 10. Inicio propietario en NUMERA
+
+El handoff ordinario inicia o recupera idempotentemente:
+
+```text
+VPROC-0051.ECONOMIC_EVENT_RECEIVED
+```
+
+Nacimiento mínimo:
+
+```text
+evento canónico o soporte correlacionable
++ origen identificable
++ entidad
++ fecha
++ dimensión económica mínima
+```
+
+Al nacer continúa siendo verdadero:
+
+```text
+NO RECONOCIDO
+NO CONTABILIZADO DEFINITIVAMENTE
+NO DISTRIBUIDO
+NO CONCILIADO
+NO PAGADO
+```
+
+---
+
+#### 11. Identidad del handoff
+
+La identidad deberá preservar, como mínimo, cuando el contrato transversal la provea:
+
+```text
+event_id
+event_definition_id
+event_type
+event_version
+process_id
+process_instance_id
+producer_application
+aggregate_id
+aggregate_version
+occurred_at
+recorded_at
+correlation_id
+causation_id
+request_id
+idempotency_key
+schema_version
+```
+
+No se reconstruyen esos valores desde etiquetas humanas si existen identidades canónicas.
+
+---
+
+#### 12. Cadena de correlación empresarial
+
+La experiencia debe poder reconstruir:
+
+```text
+purchase_commitment_ref
+→ receipt_ref
+→ source_event_ref
+→ inventory_movement_ref cuando aplique
+→ source_document_ref
+→ economic_process_instance_ref
+→ economic_effect_ref
+```
+
+La nomenclatura física de columnas queda reservada para implementación posterior.
+
+---
+
+#### 13. Referencia de compra
+
+`purchase_commitment_ref` conserva la relación con la decisión comercial que originó el abastecimiento.
+
+No puede usarse sola como:
+
+- idempotency key del efecto económico;
+- prueba de recepción;
+- prueba de obligación;
+- prueba de pago.
+
+Una orden admite múltiples recepciones, documentos y efectos legítimos.
+
+---
+
+#### 14. Referencia de recepción
+
+`receipt_ref` distingue el hecho comercial recibido y aceptado.
+
+Debe permitir diferenciar:
+
+- recepción total;
+- recepción parcial;
+- complemento posterior;
+- corrección;
+- reversión vinculada;
+- `record_only`;
+- recepción con efecto físico.
+
+---
+
+#### 15. Referencia física cuando aplica
+
+Cuando la compra mueve inventario, la evidencia física relevante puede incluir:
+
+```text
+VPROC-0024.EVT-006
+vento.process.vproc-0024.inbound-movement-reconciled.v1
+```
+
+Esa evidencia demuestra el cierre físico propietario de NEXO dentro de su alcance.
+
+No crea por sí sola:
+
+- conformidad comercial;
+- gasto;
+- obligación;
+- cuenta por pagar;
+- asiento;
+- pago.
+
+---
+
+#### 16. Compras `record_only`
+
+Cuando la recepción legítimamente no mueve inventario:
+
+```text
+record_only
+→ no inventar VPROC-0024
+→ no crear inventory_movement_ref ficticio
+```
+
+El handoff económico podrá continuar si cumple las condiciones financieras y documentales aplicables.
+
+La ausencia de inventario físico es una condición válida cuando la naturaleza de la compra lo justifica.
+
+---
+
+#### 17. Servicios y compras no inventariables
+
+Un servicio aceptado puede producir efecto económico sin entrada de stock.
+
+Debe conservar:
+
+- compromiso comercial;
+- evidencia de aceptación;
+- proveedor o contraparte;
+- documento;
+- importe y moneda;
+- centro o dimensión aplicable;
+- correlación;
+- actor y evidencia.
+
+No se crea una recepción física ficticia para satisfacer una integración financiera.
+
+---
+
+#### 18. Documento fuente
+
+`source_document_ref` no puede reducirse a texto libre cuando exista documento identificable.
+
+El documento:
+
+- soporta el hecho;
+- no reemplaza la recepción;
+- no reemplaza el evento fuente;
+- no concede aprobación financiera;
+- no prueba pago.
+
+Un documento recibido sin recepción válida no inventa una recepción conforme.
+
+---
+
+#### 19. Múltiples documentos
+
+Una recepción puede relacionarse con más de un soporte.
+
+La multiplicidad documental no produce automáticamente múltiples hechos económicos.
+
+Cada soporte deberá clasificarse como:
+
+- soporte del mismo hecho;
+- complemento;
+- corrección;
+- reverso;
+- hecho distinto.
+
+La decisión pertenece al contrato económico de NUMERA.
+
+---
+
+#### 20. Recepción parcial
+
+Una recepción parcial conserva:
+
+- alcance aceptado;
+- cantidades aceptadas;
+- saldo pendiente;
+- referencias por línea;
+- documento aplicable;
+- diferencias;
+- identidad propia.
+
+Regla:
+
+```text
+PARCIAL
+!=
+COMPLETO
+```
+
+NUMERA no debe reconocer por defecto cantidades o importes aún no ocurridos.
+
+---
+
+#### 21. Complemento posterior
+
+Una entrega posterior puede producir un hecho económico adicional solo si representa un efecto económico real y diferenciable.
+
+Debe usar identidad distinta de la recepción previa.
+
+No se considera replay únicamente por compartir:
+
+- orden;
+- proveedor;
+- producto;
+- documento relacionado;
+- periodo.
+
+---
+
+#### 22. Diferencia entre complemento y replay
+
+```text
+MISMA IDENTIDAD
++ MISMO CONTENIDO LÓGICO
+→ REPLAY
+→ RECUPERAR RESULTADO
+
+NUEVA RECEPCIÓN REAL
++ NUEVO ALCANCE MATERIAL
+→ COMPLEMENTO
+→ NUEVA IDENTIDAD CORRELACIONADA
+```
+
+El consumidor no inventa una identidad nueva para escapar de la deduplicación.
+
+---
+
+#### 23. Diferencias de cantidad
+
+Cuando existan diferencias de cantidad:
+
+- NUMERA conserva el alcance real aceptado;
+- no usa cantidad ordenada como recibida por defecto;
+- no usa cantidad físicamente observada como aceptada por defecto;
+- no cierra saldos pendientes por inferencia;
+- no duplica efecto por un replay;
+- conserva vínculo con complementos y correcciones.
+
+---
+
+#### 24. Diferencias de importe
+
+Si orden, documento, recepción y valoración no coinciden:
+
+- se preservan valores fuente;
+- se identifica la diferencia;
+- no se altera silenciosamente una fuente para cuadrar;
+- la clasificación y reconocimiento dependen del tratamiento financiero aplicable.
+
+ORIGO puede exponer que existe una diferencia sin asumir la resolución financiera.
+
+---
+
+#### 25. Moneda
+
+La moneda debe ser explícita.
+
+No se permite:
+
+- asumir `COP` porque la interfaz actual lo usa por defecto;
+- comparar importes de monedas distintas sin regla;
+- sobrescribir la moneda fuente para ajustar una proyección;
+- perder la moneda en el handoff.
+
+---
+
+#### 26. Impuestos
+
+Cuando apliquen, los impuestos conservan:
+
+- fuente;
+- base;
+- regla;
+- versión;
+- fecha;
+- dimensión;
+- efecto;
+- corrección.
+
+La UI ORIGO no se convierte en autoridad tributaria por mostrar importes.
+
+---
+
+#### 27. Centro de costo y dimensiones
+
+El handoff puede transportar referencias necesarias como:
+
+- entidad legal;
+- sede;
+- centro de costo;
+- contraparte;
+- documento;
+- inventario o activo;
+- dimensiones tributarias.
+
+NUMERA valida y gobierna el tratamiento económico de esas referencias.
+
+ORIGO no inventa clasificaciones contables faltantes.
+
+---
+
+#### 28. Idempotencia
+
+La regla es:
+
+```text
+MISMA IDENTIDAD DE EVENTO
++ MISMO CONTENIDO ECONÓMICO LÓGICO
+→ MISMA INSTANCIA / MISMO RESULTADO
+```
+
+Y:
+
+```text
+MISMA IDENTIDAD
++ CONTENIDO INCOMPATIBLE
+→ CONFLICTO
+```
+
+No:
+
+```text
+RETRY
+→ NUEVO GASTO / NUEVO HECHO / NUEVA OBLIGACIÓN
+```
+
+---
+
+#### 29. Huella lógica
+
+La deduplicación debe comparar una huella lógica coherente con el contrato, no solo proveedor, fecha o total.
+
+Debe distinguir al menos:
+
+- identidad fuente;
+- versión;
+- recepción;
+- alcance de líneas;
+- importes y moneda;
+- documento;
+- naturaleza del evento;
+- correcciones y reversos.
+
+---
+
+#### 30. Retry
+
+Todo reintento conserva la misma identidad y debe poder recuperar el resultado previo.
+
+No deberá duplicar:
+
+- hecho económico;
+- costo;
+- impuesto;
+- clasificación;
+- asiento;
+- obligación.
+
+---
+
+#### 31. Resultado desconocido
+
+Ante timeout o pérdida de respuesta:
+
+```text
+NO ASUMIR FALLO
+NO CREAR OTRA IDENTIDAD
+NO REGISTRAR MANUALMENTE PARA COMPENSAR SIN CONSULTAR
+```
+
+El estado debe resolverse mediante consulta o conciliación.
+
+---
+
+#### 32. Concurrencia
+
+Dos consumidores o reintentos concurrentes del mismo hecho no pueden producir dos efectos equivalentes.
+
+La definición documental exige:
+
+- identidad estable;
+- conflicto detectable;
+- resultado durable;
+- recuperación;
+- reconciliación.
+
+La tecnología física queda fuera de esta tarea.
+
+---
+
+#### 33. Eventos tardíos
+
+Un evento tardío conserva:
+
+- `occurred_at` original;
+- momento real de recepción;
+- periodo aplicable;
+- causa y correlación.
+
+No se mueve silenciosamente de periodo para mejorar resultados ni se descarta solo por llegar tarde.
+
+---
+
+#### 34. Eventos fuera de orden
+
+Si el evento económico llega antes de una evidencia corroborante esperada:
+
+- se conserva identidad;
+- no se inventa el hecho faltante;
+- no se fuerza cierre;
+- se mantiene validación o conciliación pendiente;
+- se enlaza la evidencia posterior cuando sea válida.
+
+---
+
+#### 35. Periodos protegidos
+
+Un evento tardío no abre un periodo cerrado por sí solo.
+
+El tratamiento posterior deberá usar las acciones autorizadas de suspensión, reversión, reapertura o reexpresión según contrato financiero.
+
+La fecha real del hecho no se pierde.
+
+---
+
+#### 36. Excepciones de VPROC-0051
+
+Se preservan:
+
+```text
+VPROC-0051.EX-001 — QUARANTINE
+VPROC-0051.EX-002 — REQUEST_INFO
+VPROC-0051.EX-003 — HOLD
+VPROC-0051.EX-004 — REOPEN
+```
+
+ORIGO puede mostrar el estado proyectado o la necesidad de información cuando sea relevante, pero no ejecutar esas decisiones en nombre de NUMERA.
+
+---
+
+#### 37. Acciones correctivas
+
+Las correcciones económicas posteriores conservan historia y vínculo con el hecho original.
+
+No se permite:
+
+- sobrescribir destructivamente un hecho reconocido;
+- reutilizar el evento original como si la corrección fuera el mismo hecho;
+- modificar retrospectivamente la recepción ORIGO desde NUMERA.
+
+---
+
+#### 38. Separación frente a VPROC-0052
+
+`VPROC-0052` conserva la obligación, aprobación y pago a proveedor.
+
+Por tanto:
+
+```text
+VPROC-0051.ECONOMIC_EVENT_RECEIVED
+!=
+VPROC-0052.PAYABLE_REGISTERED
+```
+
+Y:
+
+```text
+HECHO ECONÓMICO RECONCILIADO
+!=
+PAGO EJECUTADO
+```
+
+La 015 no autoriza crear, aprobar, programar, pagar ni conciliar banco.
+
+---
+
+#### 39. Separación entre costo, gasto, obligación y pago
+
+No son equivalentes:
+
+```text
+costo de inventario
+gasto operativo
+hecho económico
+obligación a proveedor
+pago
+```
+
+La clasificación pertenece a NUMERA conforme a fuente, naturaleza, periodo y reglas aplicables.
+
+---
+
+#### 40. Frontera con NEXO
+
+NEXO aporta verdad física cuando corresponde.
+
+No escribe directamente:
+
+- `VPROC-0051`;
+- clasificación económica;
+- obligación;
+- asiento financiero;
+- conciliación financiera.
+
+ORIGO y NUMERA no reescriben stock NEXO para cuadrar un efecto económico.
+
+---
+
+#### 41. Frontera con ORIGO
+
+ORIGO conserva:
+
+- necesidad y abastecimiento;
+- proveedor y condiciones;
+- compromiso de compra;
+- recepción y aceptación comercial;
+- diferencias de recepción;
+- documentos comerciales propios;
+- causalidad del evento fuente.
+
+ORIGO no conserva como verdad propietaria:
+
+- clasificación financiera;
+- periodo financiero final;
+- asiento;
+- obligación;
+- pago;
+- conciliación bancaria.
+
+---
+
+#### 42. Experiencia en VSCREEN-0075
+
+`VSCREEN-0075 — Detalle y seguimiento de orden` puede mostrar una proyección resumida del eje económico sin apropiarse de NUMERA.
+
+Estados de experiencia permitidos conceptualmente:
+
+```text
+SIN HECHO ECONÓMICO TODAVÍA
+PENDIENTE DE HANDOFF
+RECIBIDO POR NUMERA
+EN VALIDACIÓN
+REQUIERE INFORMACIÓN
+EN CONCILIACIÓN
+CONCILIADO
+CONFLICTO / REVISIÓN
+```
+
+Los nombres físicos finales de componentes quedan reservados para implementación.
+
+---
+
+#### 43. Experiencia en VSCREEN-0077
+
+Después de aceptar una recepción dentro del alcance aplicable, `VSCREEN-0077` debe poder comunicar que el hecho comercial fue confirmado y que el efecto económico posterior tiene identidad propia.
+
+No debe presentar:
+
+```text
+"gasto registrado"
+"cuenta por pagar creada"
+"pago pendiente"
+```
+
+si NUMERA no ha confirmado esos hechos.
+
+---
+
+#### 44. Experiencia en VSCREEN-0078
+
+Una diferencia resuelta puede afectar el contenido económico del handoff.
+
+La experiencia debe distinguir:
+
+```text
+DIFERENCIA COMERCIAL RESUELTA
+!=
+DIFERENCIA FINANCIERA CONCILIADA
+```
+
+Un rechazo comercial puede impedir el handoff aplicable; una diferencia financiera posterior pertenece a NUMERA.
+
+---
+
+#### 45. Experiencia en VSCREEN-0079
+
+El historial de abastecimiento debe reconstruir la relación entre:
+
+- orden;
+- recepción;
+- diferencia;
+- handoff físico;
+- evento económico;
+- documento;
+- resultado correlacionado.
+
+No requiere copiar el ledger financiero completo dentro de ORIGO.
+
+---
+
+#### 46. Proyección de estado NUMERA
+
+La proyección visible en ORIGO es lectura derivada.
+
+Regla:
+
+```text
+PROYECCIÓN
+!=
+AUTORIDAD
+```
+
+Si NUMERA no puede consultarse o el resultado es desconocido, ORIGO muestra incertidumbre y conserva la referencia; no inventa un estado final.
+
+---
+
+#### 47. Minimización de datos financieros
+
+La proyección hacia ORIGO debe aplicar necesidad y permiso.
+
+No todos los actores ORIGO necesitan:
+
+- cuenta;
+- impuesto completo;
+- detalle contable;
+- documentos financieros sensibles;
+- datos bancarios;
+- conciliación bancaria.
+
+`ORIGO-UX-012` continúa gobernando ocultación de precios/costos donde corresponda.
+
+---
+
+#### 48. Incorporación manual NUMERA
+
+`VPROC-0051` admite incorporación manual autorizada como contingencia.
+
+Pero:
+
+```text
+EVENTO CANÓNICO EXISTENTE
+→ RECUPERAR / CORRELACIONAR
+→ NO CREAR COPIA MANUAL
+```
+
+Una incorporación manual deberá justificar por qué no existe un evento canónico utilizable y conservar soporte, actor, motivo y fuente conocida.
+
+---
+
+#### 49. Recuperación cuando aparece el evento canónico
+
+Si una contingencia manual legítima existe y después aparece el evento canónico:
+
+- se correlaciona con el caso existente;
+- no se crea un segundo efecto equivalente;
+- se conserva lineage;
+- se mantiene la propietaria del hecho operativo original.
+
+---
+
+#### 50. AS-IS ORIGO
+
+El runtime vigente de ORIGO ya conserva información de recepción, costos, cantidades y relación con órdenes y puede producir efectos sobre inventario en la implementación observada.
+
+Esa capacidad AS-IS no se interpreta como autorización para escribir el ledger financiero NUMERA.
+
+La 015 documenta el target de handoff; no materializa un consumidor económico.
+
+---
+
+#### 51. AS-IS NUMERA
+
+El árbol vigente de `vento-numera` contiene superficies como:
+
+```text
+/
+/break-even
+/cost-centers
+/expenses
+/profitability
+```
+
+En `/expenses`, el runtime observado permite una captura manual mediante permiso `expenses.manage` que inserta directamente en:
+
+```text
+numera_expenses
+```
+
+con datos como:
+
+```text
+period_id
+category_id
+cost_center_id
+expense_date
+description
+amount
+currency = COP
+source_app = numera
+```
+
+---
+
+#### 52. Brecha AS-IS principal
+
+El snapshot vigente de `vento-numera` no muestra en su árbol `src` una superficie específica de consumidor que materialice de extremo a extremo:
+
+```text
+VPROC-0022.EVT-005
+→ recepción idempotente
+→ VPROC-0051.ECONOMIC_EVENT_RECEIVED
+→ validación
+→ clasificación
+→ reconocimiento
+→ conciliación
+```
+
+La captura manual de `numera_expenses` no se declara equivalente a ese contrato.
+
+---
+
+#### 53. Fuente competidora prohibida
+
+La meta es:
+
+```text
+UN HECHO
+→ UNA IDENTIDAD ECONÓMICA CANÓNICA
+→ MÚLTIPLES PROYECCIONES
+```
+
+No:
+
+```text
+MISMA COMPRA
+→ COSTO NEXO
++ EVENTO ORIGO
++ GASTO MANUAL NUMERA
++ HOJA EXTERNA
+COMO VERDADES INDEPENDIENTES
+```
+
+Las fuentes corroboran; no compiten.
+
+---
+
+#### 54. Frontera con INT-PROC-004
+
+`INT-PROC-004` es el contrato de integración propietario que define:
+
+- evento fuente;
+- identidad;
+- estados `VPROC-0051`;
+- idempotencia;
+- excepciones;
+- periodos;
+- reversos;
+- reconciliación.
+
+`ORIGO-UX-015` materializa ese contrato en la experiencia y continuidad ORIGO sin redefinirlo.
+
+---
+
+#### 55. Frontera con INT-PROC-005
+
+`INT-PROC-005` conserva el control end-to-end que impide que una recepción repetida produzca efectos duplicados en ORIGO, NEXO y consumidores relacionados.
+
+La 015 consume esa regla para el eje económico, pero no desarrolla el control transversal completo.
+
+---
+
+#### 56. Frontera con NUMERA-DOM-003
+
+`NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción` permanece propietaria de la definición de dominio financiero detallada.
+
+La 015 no adelanta esa tarea ni fija tablas contables, cuentas o asientos físicos.
+
+Define el handoff y la experiencia que NUMERA deberá consumir coherentemente.
+
+---
+
+#### 57. Frontera con ORIGO-UX-016
+
+`ORIGO-UX-016` conserva la validación integral del prototipo con escenarios de compra y recepción.
+
+Debe incluir, entre otros:
+
+- compra formalizada sin recepción;
+- recepción total;
+- recepción parcial;
+- complemento posterior;
+- `record_only`;
+- servicio no inventariable;
+- diferencia de cantidad;
+- diferencia de importe;
+- moneda;
+- documento faltante;
+- múltiples documentos;
+- replay;
+- timeout / resultado desconocido;
+- concurrencia;
+- corrección;
+- reversión;
+- periodo cerrado;
+- contingencia manual;
+- recuperación del evento canónico;
+- visibilidad de datos sensibles;
+- no duplicación física ni económica.
+
+La 015 no ejecuta esa validación operativa.
+
+---
+
+#### 58. Hallazgos y propietarios
+
+| Hallazgo | Bloquea esta definición | Propietario canónico | Condición de salida |
+| --- | --- | --- | --- |
+| NUMERA observado permite captura manual de `numera_expenses` | no bloquea definición documental; bloquea adopción del target como único flujo | `NUMERA-DOM-003`, `INT-PROC-004`, paquetes físicos NUMERA e integración aplicable | consumidor canónico correlacionado demostrado y captura manual reconciliada como contingencia o dominio distinto |
+| no se observa consumidor físico completo de `VPROC-0022.EVT-005` en `vento-numera` | no bloquea definición documental | `NUMERA-DOM-003`, `INT-APP-*`, `INT-DB-*`, paquetes E5 propietarios | evento fuente crea o recupera `VPROC-0051` con idempotencia y evidencia |
+| `currency = COP` está fijada en la captura manual `/expenses` observada | no bloquea definición documental | dominio NUMERA e implementación financiera propietaria | moneda del hecho se preserva desde contrato y se valida sin inferencia de UI |
+| ORIGO/NEXO actuales contienen efectos de costo y recepción que podrían competir con capturas manuales | no bloquea definición; exige reconciliación | `INT-PROC-004`, `INT-PROC-005`, `TREQ-INTEGRATION-006` y paquetes físicos | una identidad económica canónica y proyecciones reconciliadas sin fuentes paralelas |
+| obligación y pago permanecen separados del evento económico | no bloquea; es frontera obligatoria | `VPROC-0052`, NUMERA dominio/UX/autorización aplicable | obligación nace solo bajo condiciones de su proceso y conserva aprobación/pago independientes |
+
+No se crea una tarea administrativa nueva para estos hallazgos.
+
+---
+
+#### 59. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA NUEVOS NI MODIFICA REQUISITOS EXISTENTES.
+
+**Justificación:** la tarea especializa para la experiencia ORIGO un contrato económico ya protegido por requisitos vigentes sobre fuente económica única, correlación, identidad, idempotencia, no doble digitación, recepción como operación reconciliable, separación entre hecho operativo y financiero, autorización server-side, auditoría y llegada de hechos de compra/recepción a NUMERA. No introduce una conducta verificable materialmente distinta que exija una fila nueva.
+
+---
+
+#### 60. Cobertura de prueba vigente reutilizada
+
+Se conserva sin modificar la cobertura existente para:
+
+- `TREQ-NUMERA-001`, sobre reconciliación de indicadores, costos, gastos, cierres, saldos y reportes con hechos y documentos fuente sin doble registro manual;
+- `TREQ-NUMERA-002`, sobre identidad estable, entidad, sede, centro, contraparte, moneda, fechas, fuente, correlación, documento, importe, impuesto, estado, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003`, sobre separación entre obligación, aprobación, pago, conciliación y sus autorizaciones;
+- `TREQ-INTEGRATION-003`, sobre identidad estable, huella, retry, resultado desconocido, concurrencia, idempotencia y recuperación;
+- `TREQ-INTEGRATION-004`, sobre reconstrucción de causa, payload, actor, recurso, intento, resultado, error y efecto;
+- `TREQ-INTEGRATION-005`, sobre preservación de contexto y revalidación en handoffs;
+- `TREQ-INTEGRATION-006`, sobre una fuente empresarial de verdad y prohibición de doble digitación o fuentes competidoras;
+- `TREQ-INTEGRATION-017`, sobre llegada de hechos de compra, recepción, inventario y otros dominios a NUMERA mediante contratos versionados, correlacionados e idempotentes;
+- `TREQ-ORIGO-001`, sobre prevención de duplicación de cantidades, costos, orden recibida o evento financiero;
+- `TREQ-ORIGO-003`, sobre atomicidad o estado durable reconciliable de la recepción y replay seguro;
+- `TREQ-NEXO-011`, sobre ledger físico, proyecciones, atomicidad, idempotencia y no doble contabilización de inventario;
+- `TREQ-AUTH-013`, sobre autorización server-side antes de mutaciones;
+- `TREQ-AUTH-015`, sobre evidencia correlacionable de actor, contexto, permiso, decisión, versión y tiempo.
+
+Esta trazabilidad no actualiza el Registro 04A.
+
+---
+
+#### 61. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | tarea `DEFINE_ONCE`; no existe build físico autorizado por este artefacto |
+| LOCAL | NOT_EXECUTED | la incorporación al archivo propietario y sus validadores pertenecen al lifecycle documental posterior |
+| REMOTA | NOT_EXECUTED | la aprobación de este artefacto no publica evento, despliegue ni mutación remota |
+| OPERATIVA | NOT_EXECUTED | `ORIGO-UX-016` conserva la validación integral con escenarios reales/controlados de compras y recepción |
+| FÍSICA | NOT_APPLICABLE | `NO_PHYSICAL_INSTANCE`; la tarea no crea instancia física propia |
+
+La evidencia AS-IS observada se utiliza como entrada de diseño y no se presenta como PASS de implementación.
+
+---
+
+#### 62. Walkthroughs adversariales documentales
+
+##### Caso A — compra formalizada sin recepción
+
+```text
+PURCHASE_COMMITMENT_FORMALIZED
++ sin recepción aceptada
+→ no afirmar VPROC-0022.EVT-005
+→ no afirmar obligación ni pago
+```
+
+Resultado esperado: compromiso visible; hecho económico de recepción todavía no confirmado.
+
+##### Caso B — recepción total inventariable
+
+```text
+recepción aceptada
+→ VPROC-0022.EVT-005
+→ correlación con VPROC-0024.EVT-006 cuando aplique
+→ VPROC-0051.ECONOMIC_EVENT_RECEIVED
+```
+
+Resultado esperado: un único handoff económico correlacionado.
+
+##### Caso C — parcial y complemento
+
+```text
+parcial A
+→ evento A
+complemento B real
+→ evento B correlacionado
+```
+
+Resultado esperado: dos efectos legítimos diferenciables; no replay.
+
+##### Caso D — replay del parcial A
+
+```text
+misma identidad + mismo contenido
+→ recuperar A
+→ cero efecto adicional
+```
+
+##### Caso E — servicio `record_only`
+
+```text
+aceptación válida
++ sin inventario
+→ evento económico si aplica
+→ cero movimiento NEXO ficticio
+```
+
+##### Caso F — factura sin recepción válida
+
+```text
+documento presente
++ recepción no confirmada
+→ soporte/revisión
+→ no inventar recepción
+→ no inventar obligación exigible
+```
+
+##### Caso G — timeout NUMERA
+
+```text
+handoff enviado
++ respuesta desconocida
+→ consultar/reconciliar
+→ no enviar con identidad nueva
+→ no crear gasto manual duplicado
+```
+
+##### Caso H — captura manual previa y evento posterior
+
+```text
+contingencia manual autorizada
++ evento canónico posterior
+→ correlacionar caso existente
+→ cero segundo efecto equivalente
+```
+
+##### Caso I — periodo cerrado
+
+```text
+evento tardío
++ periodo protegido
+→ conservar fecha real
+→ HOLD / acción correctiva aplicable
+→ no reescritura silenciosa
+```
+
+##### Caso J — diferencia de importe
+
+```text
+orden != factura != recepción/valoración
+→ conservar fuentes
+→ marcar diferencia
+→ NUMERA clasifica/resuelve
+→ ORIGO no fuerza importe financiero
+```
+
+---
+
+#### 63. Criterios de aceptación
+
+- [ ] `VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED` queda tratado como antecedente comercial y no como obligación o pago.
+- [ ] `VPROC-0022.EVT-005` queda como evento fuente ordinario del handoff económico de recepción.
+- [ ] `VPROC-0051.ECONOMIC_EVENT_RECEIVED` queda como estado inicial propietario de NUMERA.
+- [ ] `VPROC-0024.EVT-006` queda como evidencia física correlacionable cuando aplica y no como creador de obligación.
+- [ ] La cadena `purchase_commitment_ref → receipt_ref → source_event_ref → economic_process_instance_ref` queda reconstruible.
+- [ ] Una orden con múltiples recepciones no usa `purchase_order_id` como idempotency key suficiente.
+- [ ] Parcial y complemento quedan diferenciados de replay.
+- [ ] `record_only` no crea inventario ficticio.
+- [ ] Servicios no inventariables pueden conservar efecto económico sin movimiento NEXO ficticio.
+- [ ] Documento fuente no sustituye recepción ni aprobación financiera.
+- [ ] Múltiples documentos no generan automáticamente múltiples hechos económicos.
+- [ ] Cantidad ordenada, recibida, aceptada y económicamente reconocida no se confunden.
+- [ ] Moneda queda explícita y no se infiere desde la UI.
+- [ ] Impuestos conservan fuente y regla.
+- [ ] La misma identidad y contenido recuperan el mismo resultado.
+- [ ] Misma identidad con contenido incompatible produce conflicto.
+- [ ] Retry no crea segundo hecho, obligación, costo, impuesto ni asiento.
+- [ ] Resultado desconocido prioriza consulta/conciliación y bloquea duplicación.
+- [ ] Concurrencia no produce efectos duplicados.
+- [ ] Eventos tardíos conservan `occurred_at`.
+- [ ] Periodos cerrados no se modifican silenciosamente.
+- [ ] Se preservan `QUARANTINE`, `REQUEST_INFO`, `HOLD` y `REOPEN`.
+- [ ] Correcciones conservan historia y vínculo con el original.
+- [ ] `VPROC-0051` permanece separado de `VPROC-0052`.
+- [ ] Hecho económico, obligación y pago permanecen distintos.
+- [ ] ORIGO no escribe clasificación o estado financiero propietario de NUMERA.
+- [ ] NEXO no escribe ledger financiero propietario de NUMERA.
+- [ ] NUMERA no reescribe recepción ni inventario.
+- [ ] `VSCREEN-0075` puede mostrar proyección económica sin convertirse en autoridad.
+- [ ] `VSCREEN-0077` no declara gasto, obligación o pago antes de confirmación NUMERA.
+- [ ] `VSCREEN-0078` distingue diferencia comercial de conciliación financiera.
+- [ ] `VSCREEN-0079` permite reconstruir lineage sin copiar el ledger completo.
+- [ ] La proyección financiera aplica minimización de datos.
+- [ ] Captura manual NUMERA no compite con evento canónico existente.
+- [ ] Se documenta el AS-IS `/expenses` sin presentarlo como consumidor `VPROC-0051`.
+- [ ] Cada hallazgo conserva propietario y condición de salida.
+- [ ] `ORIGO-UX-016` queda reservada para validación integral.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica Registro 04A.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 64. Límites
+
+Esta tarea no:
+
+- implementa el handoff ORIGO → NUMERA;
+- publica eventos reales;
+- modifica `vento-origo`;
+- modifica `vento-nexo`;
+- modifica `vento-numera`;
+- elimina captura manual existente;
+- crea gastos reales;
+- crea obligaciones;
+- aprueba obligaciones;
+- programa pagos;
+- ejecuta pagos;
+- concilia bancos;
+- crea asientos contables;
+- implementa contabilidad formal;
+- modifica `VPROC-0021`, `VPROC-0022`, `VPROC-0024`, `VPROC-0051` o `VPROC-0052`;
+- crea estados o eventos nuevos;
+- crea permission keys;
+- cambia roles, grants o scopes;
+- crea tablas, columnas, índices o constraints;
+- crea RPC, funciones, triggers, outbox, inbox, colas o workers;
+- modifica RLS;
+- ejecuta migraciones;
+- modifica Supabase o datos;
+- modifica contratos generados;
+- modifica el Registro 04A;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-016`.
+
+---
+
+#### 65. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-014 — Conectar recepción con entrada de inventario`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-015 — Conectar compra con evento financiero`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-016 — Validar el prototipo con compras y recepción`
 ### [ ] ORIGO-UX-016 — Validar el prototipo con compras y recepción
