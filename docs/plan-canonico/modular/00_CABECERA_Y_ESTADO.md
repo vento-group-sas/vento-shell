@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1330** |
+| Tareas aprobadas | **1331** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **266** |
+| Tareas no iniciadas | **265** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.33% (1330/1596)** |
+| Porcentaje de completamiento | **83.40% (1331/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-INT-004 — Definir administración laboral de clientes cuando corresponda** |
-| Tarea actual | **PASS-INT-005 — Evitar mezclar identidad cliente y trabajador** |
+| Última tarea aprobada | **ORIGO-AUTH-010 — Proteger precios y datos sensibles** |
+| Tarea actual | **ORIGO-AUTH-011 — Registrar actor de recepción** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NINGUNA — CIERRE SIN HANDOFF DECLARADO** |
-| Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 2: PASS_LOYALTY_INTEGRATIONS** |
-| Progreso del bloque | **CARRIL PASS: 4 de 5 aprobadas; PASS-INT-005 pendiente** |
+| Siguiente tarea | **ORIGO-AUTH-012 — Integrar contexto operativo donde aplique** |
+| Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
+| Progreso del bloque | **BLOQUES L Y M: 44 de 65 aprobadas; ORIGO-AUTH-011 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-INT-005** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-011** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-INT-004` — Definir administración laboral de clientes cuando corresponda |
-| Tarea actual | `PASS-INT-005` — Evitar mezclar identidad cliente y trabajador — **NO INICIADA** |
-| Siguiente tarea | NINGUNA — CIERRE SIN HANDOFF DECLARADO |
+| Última aprobada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles |
+| Tarea actual | `ORIGO-AUTH-011` — Registrar actor de recepción — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 4 DE 5 APROBADAS — ACTUAL PASS-INT-005** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 44 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-011** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,11 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
+ORIGO-AUTH-010 — Proteger precios y datos sensibles
         ↓
 TAREA ACTUAL
-PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
+ORIGO-AUTH-011 — Registrar actor de recepción
+        ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
         ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 4 de 5 tareas aprobadas
+BLOQUES L Y M — 44 de 65 tareas aprobadas
 ```

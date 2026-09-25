@@ -2892,4 +2892,1054 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-INT-005 — Evitar mezclar identidad cliente y trabajador`
-### [ ] PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
+### ✅ PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
+**Tarea siguiente:** PASS-QA-001 — Probar flujo completo de acumulación
+**Tipo de tarea:** documental; define una sola vez el contrato de separación entre identidad cliente y trabajador en PASS y sus integraciones, incluyendo principal autenticado, identidad de dominio, actor efectivo, sujeto cliente, identidad laboral, sesiones, namespaces, selección por dominio, ambigüedad fail-closed, dispositivos compartidos, delegación técnica, acumulación, redención, administración laboral, autoservicio cliente, simulación, auditoría, privacidad, invalidación y handoff hacia QA sin crear una instancia física propia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — INTEGRACIONES DE FIDELIZACIÓN
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código de `vento-pass`, `vento-pulso`, `vento-viso` o consumidores, ni Supabase, Auth, tablas, vistas, RPC, RLS, contratos runtime, tipos, permisos, sesiones, perfiles, datos cliente, datos laborales, ledger, puntos, redenciones, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico que impide que VENTO trate la identidad de cliente y la identidad laboral como si fueran el mismo objeto cuando una persona pueda participar en ambos dominios.
+
+El resultado debe permitir que implementación y pruebas posteriores respondan de forma inequívoca:
+
+```text
+¿QUIÉN PRESENTÓ LA CREDENCIAL?
+¿QUÉ IDENTIDAD DE DOMINIO APLICA A ESTA OPERACIÓN?
+¿QUIÉN ES EL ACTOR EFECTIVO?
+¿QUIÉN ES EL CLIENTE SUJETO DE LA OPERACIÓN?
+¿CUÁNDO LA MISMA PERSONA PUEDE SER EMPLOYEE O CUSTOMER?
+¿CÓMO SE EVITA QUE AUTH_USER_ID, CORREO O PERFIL FUSIONEN IDENTIDADES?
+¿QUÉ OCURRE SI EXISTEN DOS IDENTIDADES VÁLIDAS Y EL DOMINIO NO RESUELVE UNA?
+¿CÓMO SE ATRIBUYE UNA ACCIÓN PULSO SOBRE UN CLIENTE?
+¿CÓMO SE MANTIENE SEPARADA LA SESIÓN DE CLIENTE DEL RBAC LABORAL?
+¿QUÉ SE AUDITA PARA RECONSTRUIR ACTOR, CLIENTE, DISPOSITIVO Y CONTEXTO?
+```
+
+La misma persona física puede participar como cliente y como trabajador. Esa coexistencia es válida. Lo prohibido es convertir la coexistencia en identidad única, autoridad combinada o actor híbrido.
+
+---
+
+#### 2. Reconciliación topológica
+
+`PASS-INT-005` cierra el mini-bloque `PASS-INT-001..005`, cuya reconciliación vigente es:
+
+```text
+DEFINE_ONCE
++
+NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea define contrato, invariantes, fallos cerrados, auditoría y handoff. No implementa resolvers, guards, acciones de servidor, tipos, RLS, migraciones ni cambios de aplicación.
+
+La materialización posterior pertenece a los consumidores y packages propietarios y deberá conservar el contrato transversal de identidad y actor ya aprobado por VENTO.
+
+---
+
+#### 3. Base documental consumida
+
+La base inmediata es `PASS-INT-004`, que definió la administración laboral de clientes y reservó expresamente para `PASS-INT-005` la separación final entre cliente y trabajador.
+
+Esta tarea consume además decisiones canónicas vigentes:
+
+- `principal` identifica quién presentó la credencial técnica;
+- `domain_identity` identifica la identidad empresarial aplicable al dominio;
+- `actor_effective` identifica a quién se atribuye la acción;
+- `auth_user_id` no equivale a `employee_id`, `customer_id` ni `actor_id`;
+- un mismo `HUMAN_USER` puede estar vinculado a identidades `EMPLOYEE` y `CUSTOMER`;
+- el principal no selecciona una identidad por fallback;
+- la aplicación, el dominio funcional y el contrato del proceso determinan la identidad aceptada;
+- existe exactamente un actor efectivo por contexto;
+- la ambigüedad produce un actor no resuelto y no una elección silenciosa;
+- una identidad cliente no concede autoridad laboral;
+- una identidad laboral no sustituye la identidad cliente cuando la acción pertenece al dominio cliente;
+- un dispositivo compartido conserva separados principal técnico, actor humano y cliente sujeto;
+- las mutaciones de fidelización deben conservar actor, dispositivo, sede, resultado e identidad cliente aplicable.
+
+---
+
+#### 4. Modelo canónico de separación
+
+Se conserva obligatoriamente:
+
+```text
+PRINCIPAL
+!=
+IDENTIDAD DE DOMINIO
+!=
+ACTOR EFECTIVO
+!=
+SUJETO CLIENTE
+!=
+IDENTIDAD LABORAL
+!=
+ROL
+!=
+PERMISO
+```
+
+Cada concepto responde una pregunta distinta:
+
+| Concepto | Pregunta que responde |
+| --- | --- |
+| principal | quién presentó la credencial técnica |
+| identidad de dominio | qué identidad empresarial aplica al dominio actual |
+| actor efectivo | a quién se atribuye la acción |
+| sujeto cliente | sobre qué cliente recae la operación cuando corresponda |
+| identidad laboral | qué relación laboral canónica posee el trabajador |
+| rol | qué clasificación base u operativa aplica |
+| permiso | qué capacidad exacta se evalúa |
+
+Ninguna coincidencia entre valores elimina estas fronteras.
+
+---
+
+#### 5. Namespaces de identidad
+
+Las identidades `EMPLOYEE` y `CUSTOMER` pertenecen a namespaces distintos.
+
+Se conserva:
+
+```text
+(EMPLOYEE, employee_id)
+!=
+(CUSTOMER, customer_id)
+```
+
+Consecuencias:
+
+- `employee_id` identifica el registro laboral canónico;
+- `customer_id` identifica el cliente canónico;
+- un UUID no se interpreta sin conocer su namespace;
+- la coincidencia accidental de valores no fusiona identidades;
+- `actor_id` siempre se interpreta junto con `actor_type`;
+- ninguna aplicación puede decidir que un identificador es laboral o cliente por forma, longitud o procedencia visual.
+
+---
+
+#### 6. `auth_user_id` no es identidad empresarial
+
+`auth_user_id` representa el sujeto técnico autenticado cuando la clase de principal utiliza Auth.
+
+Se conserva:
+
+```text
+auth_user_id
+!=
+employee_id
+!=
+customer_id
+!=
+actor_id
+```
+
+Un mismo `auth_user_id` puede estar relacionado con más de una identidad de dominio válida.
+
+Por tanto:
+
+- no se usa `auth_user_id` como `employee_id` por convenio;
+- no se usa `auth_user_id` como `customer_id` por convenio;
+- no se elige la primera identidad asociada;
+- no se usa el orden de consulta como regla de negocio;
+- no se convierte autenticación válida en autorización laboral o cliente por inferencia.
+
+---
+
+#### 7. Misma persona, identidades diferentes
+
+La coexistencia canónica puede ser:
+
+```text
+MISMA PERSONA
+├── IDENTIDAD EMPLOYEE
+└── IDENTIDAD CUSTOMER
+```
+
+Esta coexistencia no es una contradicción.
+
+Para una operación laboral:
+
+```text
+DOMAIN_IDENTITY = EMPLOYEE
+ACTOR_EFFECTIVE = EMPLOYEE
+```
+
+Para una operación de cliente en PASS:
+
+```text
+DOMAIN_IDENTITY = CUSTOMER
+ACTOR_EFFECTIVE = CUSTOMER
+```
+
+La selección silenciosa sin dominio, aplicación, proceso o vía de acceso inequívoca sí es una contradicción operacional y debe fallar cerrada.
+
+---
+
+#### 8. Exactamente un actor efectivo
+
+Un contexto canónico conserva exactamente un actor efectivo.
+
+No se admite:
+
+```text
+ACTOR = EMPLOYEE + CUSTOMER
+```
+
+ni:
+
+```text
+ACTOR EMPLOYEE
++
+PERMISOS CUSTOMER
+```
+
+ni:
+
+```text
+ACTOR CUSTOMER
++
+RBAC LABORAL HEREDADO
+```
+
+Si una operación requiere simultáneamente un trabajador y un cliente, uno será el actor y el otro será un sujeto o recurso relacionado según el contrato empresarial.
+
+---
+
+#### 9. Selección por dominio y proceso
+
+La identidad aplicable se determina por el contrato de la operación, no por preferencia de interfaz.
+
+Se conserva:
+
+```text
+DOMINIO LABORAL
+-> EMPLOYEE
+
+DOMINIO CLIENTE PASS
+-> CUSTOMER
+```
+
+La selección debe considerar como mínimo:
+
+- aplicación o consumidor;
+- proceso empresarial;
+- acción solicitada;
+- vía de acceso;
+- principal autenticado;
+- identidades de dominio resolubles;
+- reglas de atribución aprobadas.
+
+No se admiten fallbacks basados en “la identidad disponible”.
+
+---
+
+#### 10. Ambigüedad y fallo cerrado
+
+Cuando existan dos o más candidatos válidos y el contrato no determine uno de forma inequívoca:
+
+```text
+AMBIGÜEDAD
+-> ACTOR UNRESOLVED
+-> SIN AUTORIDAD EMPRESARIAL
+```
+
+No se escogerá silenciosamente:
+
+- el registro más reciente;
+- el primero devuelto por una consulta;
+- el perfil con más permisos;
+- la identidad laboral porque exista un empleo activo;
+- la identidad cliente porque la aplicación sea PASS;
+- la identidad asociada a la sede seleccionada;
+- la identidad guardada previamente en caché.
+
+---
+
+#### 11. Sesión cliente versus sesión laboral
+
+Se conserva:
+
+```text
+SESIÓN CLIENTE
+!=
+SESIÓN LABORAL
+```
+
+La sesión normal del cliente:
+
+- no concede `pass.access` laboral por sí sola;
+- no concede permisos `viso.*`;
+- no crea contexto laboral;
+- no crea rol base u operativo;
+- no crea sede o área operativa;
+- no habilita simulación laboral.
+
+La sesión laboral:
+
+- no actúa como cliente por defecto;
+- no acepta consentimientos en nombre del cliente;
+- no accede a autoservicio personal por autoridad laboral;
+- no redime beneficios como si fuera el titular salvo contrato explícito distinto;
+- no convierte datos administrativos en sesión cliente.
+
+---
+
+#### 12. `pass.access` permanece separado
+
+Dentro del catálogo laboral:
+
+```text
+pass.access
+!=
+SESIÓN NORMAL DEL CLIENTE
+```
+
+Además:
+
+```text
+pass.access
+!=
+IDENTIDAD CUSTOMER
+!=
+AUTORIDAD SOBRE LOYALTY_CUSTOMER
+```
+
+`pass.access` solo puede representar entrada laboral o administrativa a una superficie PASS cuando esa superficie exista y sea autorizada.
+
+No autentica al cliente, no concede puntos, no permite redenciones y no expone datos de cliente por implicación.
+
+---
+
+#### 13. Identidad cliente no eleva autoridad laboral
+
+Una identidad `CUSTOMER` nunca autoriza por sí sola:
+
+- Hub laboral;
+- aplicaciones laborales;
+- permisos base u operativos;
+- administración de clientes;
+- administración de productos de fidelización;
+- selección de sede laboral;
+- simulación de rol;
+- acumulación o redención desde PULSO como trabajador;
+- acceso a datos de otros clientes.
+
+Si la misma persona también posee identidad `EMPLOYEE`, la autorización laboral debe resolverse por el carril laboral completo y no por la existencia de la identidad cliente.
+
+---
+
+#### 14. Identidad laboral no absorbe la identidad cliente
+
+Una identidad `EMPLOYEE` nunca autoriza por sí sola:
+
+- actuar como titular de la cuenta cliente;
+- cambiar preferencias personales del cliente;
+- aceptar consentimiento comercial por el cliente;
+- usar recompensas personales;
+- convertir historial laboral en historial cliente;
+- fusionar automáticamente el perfil de cliente con el expediente laboral;
+- considerar que el cliente pertenece a la sede del trabajador.
+
+Cuando la acción pertenece al dominio cliente, la identidad cliente aplicable debe resolverse explícitamente.
+
+---
+
+#### 15. Cliente sujeto de una operación laboral
+
+En una operación laboral sobre fidelización pueden coexistir:
+
+```text
+ACTOR EMPLOYEE
++
+SUJETO CUSTOMER
+```
+
+Ejemplos conceptuales:
+
+- identificar un cliente en caja;
+- otorgar puntos por una compra elegible;
+- validar una redención;
+- consultar una proyección mínima para atender una operación autorizada.
+
+En estos casos:
+
+- el trabajador no se convierte en cliente;
+- el cliente no se convierte en actor laboral;
+- el `customer_id` no sustituye `actor_id`;
+- el `employee_id` no sustituye la identidad cliente;
+- la auditoría debe preservar ambos lados de la relación.
+
+---
+
+#### 16. Acumulación PULSO -> PASS
+
+Para acumulación, se conserva la separación:
+
+```text
+ACTOR EFECTIVO
+-> TRABAJADOR AUTORIZADO
+
+CLIENTE SUJETO
+-> CUSTOMER DESTINATARIO DE LOS PUNTOS
+```
+
+La operación debe validar independientemente:
+
+- actor laboral;
+- permiso exacto;
+- contexto territorial;
+- dispositivo cuando corresponda;
+- identidad cliente;
+- compra elegible;
+- regla vigente;
+- referencia empresarial estable;
+- resultado autoritativo.
+
+El hecho de que el trabajador sea también cliente no permite otorgarse puntos usando su identidad laboral como sustituto del cliente sujeto.
+
+---
+
+#### 17. Redención PULSO -> PASS
+
+Para redención, se conserva:
+
+```text
+ACTOR EFECTIVO
+-> TRABAJADOR QUE VALIDA
+
+CLIENTE SUJETO
+-> TITULAR DE LA REDENCIÓN
+```
+
+La validación debe distinguir de forma inequívoca:
+
+- trabajador que ejecuta la acción;
+- cliente titular;
+- recompensa;
+- ticket o intento;
+- sede aplicable;
+- estado;
+- dispositivo;
+- resultado.
+
+La coincidencia entre trabajador y cliente en la misma persona no elimina ninguna de estas validaciones ni permite tratar la redención como autoaprobada.
+
+---
+
+#### 18. Dispositivo compartido
+
+En un dispositivo compartido se conserva:
+
+```text
+PRINCIPAL
+-> SHARED_DEVICE
+
+ACTOR EFECTIVO
+-> EMPLOYEE IDENTIFICADO
+
+SUJETO DE FIDELIZACIÓN
+-> CUSTOMER CUANDO CORRESPONDA
+```
+
+El dispositivo no se convierte en actor humano.
+
+El cliente mostrado o escaneado no se convierte en actor laboral.
+
+La sesión técnica del dispositivo no transfiere privilegios al trabajador y la identidad del trabajador no transfiere autoridad cliente.
+
+---
+
+#### 19. Principal técnico y delegación
+
+Un `SYSTEM_SERVICE` puede ejecutar procesos técnicos bajo su propio contrato o bajo una delegación explícita permitida.
+
+Se conserva:
+
+```text
+SERVICE_ROLE
+!=
+ACTOR EMPRESARIAL AUTORIZADO
+```
+
+Por tanto:
+
+- una credencial técnica privilegiada no se interpreta como trabajador;
+- una función de servidor no se interpreta como cliente;
+- una operación delegada a un empleado conserva el empleado exacto;
+- un cliente sujeto continúa identificado separadamente;
+- una delegación inexistente o vencida no se reconstruye desde historial, creador del job o último usuario conocido.
+
+---
+
+#### 20. Correo, teléfono, nombre y documento no son puentes de identidad
+
+Se conserva:
+
+```text
+MISMO CORREO
+O
+MISMO TELÉFONO
+O
+MISMO NOMBRE
+O
+MISMO DOCUMENTO OBSERVADO
+!=
+EMPLOYEE = CUSTOMER
+```
+
+Estos atributos pueden participar en verificaciones o reconciliación bajo contratos propios, pero no crean por sí mismos una equivalencia de namespaces.
+
+La vinculación debe provenir de una relación canónica resoluble y no de matching nominal improvisado.
+
+---
+
+#### 21. Perfil, rol y permisos no son identidad
+
+Se conserva:
+
+```text
+ROL BASE
+!=
+ROL OPERATIVO
+!=
+IDENTIDAD EMPLOYEE
+!=
+IDENTIDAD CUSTOMER
+```
+
+Un rol describe capacidad potencial bajo un carril, no quién es la persona.
+
+Un permiso autoriza una acción dentro de condiciones, no define el namespace de identidad.
+
+No se utilizarán como fuente de identidad:
+
+- nombre de rol;
+- etiqueta de UI;
+- permiso disponible;
+- navegación visible;
+- sede seleccionada;
+- último turno;
+- último check-in;
+- última pantalla utilizada.
+
+---
+
+#### 22. Simulación no cambia identidad real
+
+Una simulación de rol, sede o contexto laboral:
+
+- no cambia `auth_user_id`;
+- no cambia `employee_id`;
+- no cambia `customer_id`;
+- no cambia el actor real;
+- no crea una identidad cliente;
+- no convierte un cliente en trabajador;
+- no convierte un trabajador en cliente.
+
+La simulación debe permanecer visualmente explícita, temporal y separada de la autoridad real y de cualquier dato cliente no necesario.
+
+---
+
+#### 23. Cambio de dominio exige nueva resolución
+
+Un cambio de superficie o proceso que cruza entre dominio laboral y dominio cliente exige volver a resolver la identidad aplicable.
+
+No se admite transportar como autoridad:
+
+- actor anterior;
+- rol anterior;
+- sede anterior;
+- cliente anterior;
+- permiso anterior;
+- proyección de datos anterior;
+- simulación anterior.
+
+Una transición puede conservar referencias de continuidad aprobadas, pero no reutilizar autoridad stale.
+
+---
+
+#### 24. Inactividad y retiro laboral
+
+Que una persona conserve identidad `CUSTOMER` después de perder su relación laboral es válido.
+
+Se conserva:
+
+```text
+EMPLOYEE INACTIVO
++
+CUSTOMER ACTIVO
+```
+
+sin que esto reactive autoridad laboral.
+
+Cuando la identidad laboral queda inactiva:
+
+- las capacidades laborales quedan bloqueadas;
+- los permisos residuales no reactivan al trabajador;
+- la identidad cliente puede seguir operando bajo sus propios contratos;
+- la auditoría conserva la identidad laboral histórica sin convertirla en autoridad presente.
+
+---
+
+#### 25. Baja o cierre de cuenta cliente
+
+Que una persona mantenga relación laboral después de cerrar, suspender o perder su cuenta cliente no elimina su identidad laboral.
+
+Se conserva:
+
+```text
+CUSTOMER INACTIVO O SIN CUENTA
++
+EMPLOYEE ACTIVO
+```
+
+La pérdida de acceso cliente no debe:
+
+- desactivar al trabajador;
+- borrar su expediente laboral;
+- alterar sus permisos laborales por inferencia;
+- eliminar auditoría laboral;
+- convertir el `employee_id` en reemplazo del `customer_id` ausente.
+
+---
+
+#### 26. Administración laboral de clientes
+
+`PASS-INT-004` permite consulta o administración laboral únicamente cuando exista finalidad y capacidad autorizadas.
+
+`PASS-INT-005` añade la frontera:
+
+```text
+TRABAJADOR ADMINISTRA CLIENTE
+!=
+TRABAJADOR ES CLIENTE
+```
+
+Por tanto:
+
+- consultar un `LOYALTY_CUSTOMER` no cambia al actor efectivo;
+- editar una proyección futura no cambia el namespace del actor;
+- resolver un duplicado no fusiona identidad laboral;
+- una fusión de clientes nunca fusiona automáticamente expedientes laborales;
+- un caso de privacidad cliente no se procesa como novedad laboral.
+
+---
+
+#### 27. Autoservicio del trabajador versus autoservicio del cliente
+
+Una persona con ambas identidades puede tener experiencias separadas de autoservicio.
+
+Se conserva:
+
+```text
+AUTOSERVICIO LABORAL
+!=
+AUTOSERVICIO CLIENTE
+```
+
+Cada uno debe tener:
+
+- actor y dominio explícitos;
+- campos autogestionables propios;
+- autorización propia;
+- validaciones propias;
+- evidencia propia;
+- retención y privacidad propias.
+
+No se crea una pantalla híbrida que permita editar indistintamente perfil laboral y perfil cliente bajo una sola autoridad.
+
+---
+
+#### 28. Privacidad y minimización
+
+La coexistencia de identidades no autoriza a correlacionar o mostrar todos los datos disponibles de la persona.
+
+Una proyección cliente no debe incorporar por conveniencia:
+
+- rol laboral;
+- historial laboral;
+- sedes de trabajo;
+- turnos;
+- permisos laborales;
+- notas internas de personal.
+
+Una proyección laboral no debe incorporar por conveniencia:
+
+- saldo de puntos;
+- recompensas personales;
+- historial de compra;
+- preferencias comerciales;
+- consentimientos de marketing;
+- reclamos cliente no requeridos por finalidad laboral autorizada.
+
+La correlación entre identidades se limita a la finalidad exacta aprobada.
+
+---
+
+#### 29. Persistencia y caché
+
+Los consumidores no deben persistir una identidad resuelta como si fuera universal para todas las operaciones posteriores.
+
+Debe invalidarse o re-resolverse el contexto cuando cambie materialmente:
+
+- sesión;
+- aplicación;
+- dominio;
+- estado laboral;
+- vínculo cliente;
+- actor de dispositivo compartido;
+- simulación;
+- permiso;
+- vigencia de delegación;
+- contexto territorial relevante.
+
+La caché puede optimizar lectura, pero no convertirse en fuente de autoridad.
+
+---
+
+#### 30. Resultado desconocido y reintentos
+
+Una respuesta perdida no permite reconstruir el actor o el cliente usando estado local ambiguo.
+
+Ante resultado desconocido:
+
+- se conserva la identidad empresarial estable de la operación;
+- se reutiliza la referencia idempotente correspondiente;
+- se vuelve a resolver autoridad vigente;
+- se reconcilia contra el resultado autoritativo;
+- no se genera una nueva identidad;
+- no se cambia de namespace para “hacer pasar” el reintento.
+
+Esto aplica especialmente a acumulación y redención.
+
+---
+
+#### 31. Idempotencia no depende de identidad visual
+
+La identidad de la operación no debe derivarse únicamente de:
+
+- timestamp de interfaz;
+- aleatoriedad local;
+- correo mostrado;
+- nombre del cliente;
+- usuario autenticado actual;
+- último trabajador;
+- dispositivo por sí solo.
+
+Una referencia estable de negocio permite reintentar el mismo hecho sin duplicar efectos aun cuando se vuelva a resolver actor y contexto.
+
+---
+
+#### 32. Auditoría mínima
+
+Una operación que involucre cliente y trabajador deberá poder reconstruir, según aplicabilidad:
+
+- principal técnico;
+- tipo de principal;
+- identidad de dominio;
+- tipo e identificador del actor efectivo;
+- `employee_id` cuando el actor sea trabajador;
+- `customer_id` sujeto de la operación cuando corresponda;
+- aplicación y acción;
+- permiso evaluado;
+- sede y área efectivas cuando apliquen;
+- dispositivo y sesión de actor cuando existan;
+- delegación cuando exista;
+- referencia empresarial e idempotencia;
+- resultado y estado autoritativo;
+- fecha de servidor;
+- correlación con ledger, redención, venta o caso cuando corresponda.
+
+La auditoría no colapsa estos identificadores en un único “user_id”.
+
+---
+
+#### 33. Mensajes y errores
+
+Los errores deben preservar privacidad y distinguir al menos:
+
+- identidad cliente no resoluble;
+- identidad laboral no resoluble;
+- actor ambiguo;
+- actor inactivo;
+- sesión inválida;
+- permiso denegado;
+- cliente sujeto inválido;
+- conflicto de contexto;
+- resultado desconocido;
+- fallo técnico.
+
+La interfaz no debe revelar si existe otra identidad sensible de la persona cuando el actor no está autorizado a conocerla.
+
+---
+
+#### 34. Integraciones entre aplicaciones
+
+Un handoff entre PASS, PULSO, SHELL, VISO u otra aplicación conserva referencias necesarias, pero cada consumidora revalida su propio contrato.
+
+Se conserva:
+
+```text
+HANDOFF
+!=
+TRANSFERENCIA DE AUTORIDAD
+```
+
+Por tanto:
+
+- PULSO no hereda sesión cliente como autoridad laboral;
+- PASS no hereda sesión laboral como autoridad cliente;
+- SHELL no fabrica home híbrido;
+- VISO no obtiene identidad cliente completa por conocer el trabajador;
+- ninguna aplicación copia un maestro competidor de identidad para evitar la resolución canónica.
+
+---
+
+#### 35. Contrato de prueba del caso dual
+
+Las pruebas posteriores deberán cubrir, como mínimo, estos escenarios conceptuales:
+
+1. persona solo cliente;
+2. persona solo trabajador;
+3. misma persona con identidad cliente y laboral válidas;
+4. trabajador activo con cuenta cliente inactiva;
+5. cliente activo con relación laboral inactiva;
+6. principal con dos identidades válidas y dominio inequívoco;
+7. principal con dos identidades válidas y dominio ambiguo;
+8. dispositivo compartido con trabajador A y cliente B;
+9. trabajador A que además es el cliente sujeto;
+10. acumulación con reintento y nueva resolución de contexto;
+11. redención con cliente y actor distintos;
+12. cambio de sesión o actor con datos cliente stale;
+13. simulación laboral sobre una persona que también es cliente;
+14. transición entre superficie laboral y superficie cliente;
+15. intento de usar `auth_user_id`, correo o rol como sustituto de identidad.
+
+La salida esperada debe demostrar ausencia de actor híbrido, ausencia de escalamiento y atribución inequívoca.
+
+---
+
+#### 36. Separación de responsabilidades del mini-bloque
+
+| Tarea | Responsabilidad |
+| --- | --- |
+| `PASS-INT-001` | contrato PULSO -> PASS para acumulación |
+| `PASS-INT-002` | contrato PULSO -> PASS para redención |
+| `PASS-INT-003` | administración laboral de productos de fidelización |
+| `PASS-INT-004` | administración laboral de clientes cuando corresponda |
+| `PASS-INT-005` | separación cliente-trabajador y atribución inequívoca |
+
+`PASS-INT-005` no reabre reglas de acumulación, redención, producto o administración de cliente; fija la frontera de identidad que todas ellas deben respetar.
+
+---
+
+#### 37. Cierre del mini-bloque de integraciones
+
+Con `PASS-INT-005` quedan definidos documentalmente:
+
+- acumulación PULSO -> PASS;
+- redención PULSO -> PASS;
+- administración laboral de productos de fidelización;
+- administración laboral de clientes;
+- separación entre cliente y trabajador.
+
+El siguiente bloque puede probar acumulación completa sin asumir que identidad, actor y sujeto cliente son equivalentes.
+
+---
+
+#### 38. Handoff hacia QA
+
+`PASS-QA-001` deberá consumir esta separación al probar acumulación completa.
+
+Como mínimo deberá poder demostrar:
+
+```text
+ACTOR EMPLOYEE AUTORIZADO
++
+CUSTOMER SUJETO CORRECTO
++
+HECHO EMPRESARIAL ELEGIBLE
++
+REFERENCIA IDEMPOTENTE ESTABLE
++
+LEDGER Y SALDO COHERENTES
++
+REINTENTO SIN DUPLICACIÓN
+```
+
+La prueba no podrá considerarse válida si únicamente demuestra que un usuario autenticado consiguió sumar puntos sin distinguir actor laboral, cliente destinatario y resultado servidor.
+
+`PASS-QA-002` deberá reutilizar la misma frontera para redención.
+
+---
+
+#### 39. Handoff hacia implementación
+
+La materialización posterior deberá preservar este contrato en las capas propietarias:
+
+- resolución canónica de principal, identidad de dominio y actor efectivo;
+- namespaces separados para `employee_id` y `customer_id`;
+- sesión cliente separada de RBAC laboral;
+- autorización laboral independiente de identidad cliente;
+- selección por dominio y fail-closed ante ambigüedad;
+- dispositivo compartido con principal y actor separados;
+- cliente sujeto separado del actor laboral en PULSO;
+- contratos de acumulación y redención;
+- invalidación de contexto stale;
+- auditoría con identidades no colapsadas;
+- contratos compartidos cuando correspondan;
+- persistencia, RLS, grants, funciones y migraciones de Supabase exclusivamente desde `vento-shell` cuando la implementación lo requiera;
+- pruebas de identidad dual, autorización, privacidad, idempotencia e integración.
+
+Esta tarea no autoriza ninguna de esas modificaciones físicas.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** las obligaciones verificables de separación entre identidad cliente y laboral, principal, identidad de dominio, actor efectivo, sesión, autorización, dispositivo compartido, proyección mínima, acumulación, redención, idempotencia, privacidad y auditoría ya están cubiertas por requisitos canónicos vigentes. Esta tarea compone y cierra esas obligaciones para el mini-bloque PASS-INT sin crear una conducta material nueva que requiera otra fila de prueba.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-PASS-010` para separar persona, cuenta, contactos, verificaciones, perfil, preferencias, consentimientos y fidelización;
+- `TREQ-PASS-015` para impedir que presencia de perfil laboral convierta una pantalla cliente en superficie laboral autorizada;
+- `TREQ-PASS-016` para exigir perfil laboral vigente y capacidad aprobada antes de exponer controles laborales;
+- `TREQ-PASS-017` para vincular la consulta laboral al usuario autenticado y prohibir que datos cliente eleven rol;
+- `TREQ-PASS-019` y `TREQ-PASS-020` para separar simulación de autoridad real y bloquear mutaciones críticas bajo contexto ficticio;
+- `TREQ-PASS-022` para exigir permisos exactos por acción PULSO-PASS;
+- `TREQ-PASS-023` y `TREQ-PASS-024` para identificación servidor y proyección mínima del cliente;
+- `TREQ-PASS-025` para acumulación autorizada, territorial, atómica e idempotente con actor y dispositivo;
+- `TREQ-PASS-026` para referencia estable de acumulación independiente del estado visual;
+- `TREQ-PASS-027` para redención con cliente, recompensa, sede, actor y estado validados;
+- `TREQ-PASS-029` y `TREQ-PASS-030` para actor humano real y secreto efímero en dispositivo compartido;
+- `TREQ-PASS-033` para aislamiento entre soporte laboral y experiencia cliente;
+- `TREQ-PASS-034` para preservar propiedad y fronteras entre PASS y PULSO;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-004` para equivalencia de decisión entre evaluadores;
+- `TREQ-AUTH-006` para proteger identidad cliente y campos privilegiados mediante separación y minimización;
+- `TREQ-AUTH-007` para exigir capacidad administrativa explícita y alcance;
+- `TREQ-AUTH-011` para vincular actor real, dispositivo y límites aplicables en dispositivos compartidos;
+- `TREQ-AUTH-012` para impedir que simulación sustituya autoridad real;
+- `TREQ-AUTH-014` para invalidar autoridad derivada ante cambios de contexto;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de decisión y resultado;
+- `TREQ-AUTH-018` para proteger datos cliente de forma equivalente entre superficies y canales;
+- `TREQ-INTEGRATION-003` para idempotencia, retry y reconciliación de resultados distribuidos;
+- `TREQ-INTEGRATION-014` para preservar identidad, consentimiento y contratos del dominio cliente entre aplicaciones.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `PASS-INT-005` mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | La tarea todavía no ha sido insertada en un checkout para ejecutar formateador, quality, delivery check, validadores proporcionales y batería global. |
+| REMOTA | `PASS` | Se verificaron en `vento-shell/main` protocolo, contrato de entrega, manifiesto, continuidad, topología/políticas, archivo propietario, contratos de principal/identidad/actor, frontera SHELL cliente-laboral, cobertura PASS, permisos y scripts documentales vigentes. |
+| OPERATIVA | `NOT_EXECUTED` | No se probaron cuentas duales reales, acumulaciones, redenciones, dispositivos compartidos, simulaciones ni transiciones runtime. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-INT-005` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni autoriza implementación física propia. |
+
+---
+
+#### 43. Criterios de aceptación
+
+- [x] Se separan principal, identidad de dominio, actor efectivo, sujeto cliente, identidad laboral, rol y permiso.
+- [x] Se preservan namespaces distintos `EMPLOYEE/employee_id` y `CUSTOMER/customer_id`.
+- [x] Se declara que `auth_user_id` no sustituye ninguna identidad empresarial.
+- [x] Se admite que una misma persona posea ambas identidades sin fusionarlas.
+- [x] Se exige exactamente un actor efectivo por contexto.
+- [x] Se prohíbe el actor híbrido cliente-trabajador.
+- [x] Se define selección de identidad por dominio, aplicación, proceso y acción.
+- [x] Se exige fail-closed ante ambigüedad.
+- [x] Se separa sesión cliente de sesión laboral.
+- [x] Se conserva `pass.access` fuera de la sesión normal del cliente.
+- [x] Se impide que identidad cliente eleve autoridad laboral.
+- [x] Se impide que identidad laboral absorba autoridad cliente.
+- [x] Se distingue actor trabajador de cliente sujeto en operaciones PULSO-PASS.
+- [x] Se aplica la separación a acumulación.
+- [x] Se aplica la separación a redención.
+- [x] Se separan principal de dispositivo, actor humano y cliente sujeto.
+- [x] Se separan principal técnico, delegación y actor empresarial.
+- [x] Se prohíben puentes de identidad por correo, teléfono, nombre o documento.
+- [x] Se prohíbe tratar rol o permiso como identidad.
+- [x] Se impide que simulación cambie identidad real.
+- [x] Se exige nueva resolución al cambiar de dominio o contexto material.
+- [x] Se preserva cliente activo con trabajador inactivo y viceversa sin transferencia de autoridad.
+- [x] Se separa administración laboral de clientes de identidad laboral del sujeto.
+- [x] Se separan autoservicio laboral y autoservicio cliente.
+- [x] Se define minimización cruzada entre dominios.
+- [x] Se impide que caché stale se convierta en autoridad.
+- [x] Se define reconciliación de resultado desconocido sin cambiar namespace.
+- [x] Se preserva idempotencia independiente de identidad visual.
+- [x] Se define auditoría mínima con identificadores separados.
+- [x] Se definen escenarios mínimos para QA de identidad dual.
+- [x] Se cierra el mini-bloque PASS-INT y se entrega handoff a `PASS-QA-001`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza implementación física ni cambios de Supabase.
+
+---
+
+#### 44. Límites
+
+Esta tarea no:
+
+- implementa resolvers de identidad;
+- modifica `AccessContext`;
+- cambia contratos publicados de AUTH;
+- crea una identidad empresarial nueva;
+- fusiona `employee_id` y `customer_id`;
+- crea una cuenta cliente desde un trabajador;
+- crea un trabajador desde una cuenta cliente;
+- modifica Auth;
+- cambia relaciones reales entre cuentas, clientes o empleados;
+- crea permisos;
+- concede permisos a roles;
+- modifica sesiones;
+- implementa simulación;
+- implementa acciones de acumulación o redención;
+- modifica ledger o saldo;
+- ejecuta casos cliente reales;
+- modifica tablas, vistas, RPC, RLS, Storage, grants, Edge Functions o migraciones;
+- redefine `PASS-INT-001` a `PASS-INT-004`;
+- ejecuta `PASS-QA-001` o `PASS-QA-002`;
+- declara que consumidores actuales ya cumplen el contrato;
+- modifica 04A;
+- crea requisitos de prueba;
+- inicia una instancia física o package.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-INT-004 — Definir administración laboral de clientes cuando corresponda`
+
+**TAREA ACTUAL APROBADA**
+`PASS-INT-005 — Evitar mezclar identidad cliente y trabajador`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-QA-001 — Probar flujo completo de acumulación`
