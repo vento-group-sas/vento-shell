@@ -6195,7 +6195,1389 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-007 — Diseñar creación de orden de compra`
-### [ ] ORIGO-UX-007 — Diseñar creación de orden de compra
+### ✅ ORIGO-UX-007 — Diseñar creación de orden de compra
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-006 — Diseñar inicio para receptor
+**Tarea siguiente:** ORIGO-UX-008 — Diseñar aprobación y rechazo
+**Tipo de tarea:** diseño documental integral de la creación y preparación versionada de una orden de compra sobre `VSCREEN-0073` y `VPROC-0021`, consumiendo una necesidad y decisión de sourcing válidas, separando creación, actualización preaprobación, aprobación, preparación postaprobación, emisión, recepción y efectos posteriores, y preservando autorización, territorio, sensibilidad, versión y trazabilidad sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, navegación, componentes, permisos, roles, grants, procesos, estados, contratos generados, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para **crear y preparar una orden de compra** en ORIGO de forma que el actor autorizado pueda transformar una decisión de abastecimiento válida en un objeto de compra trazable sin convertir la creación en aprobación, emisión, recepción, movimiento de inventario ni hecho económico.
+
+La tarea debe garantizar que la experiencia:
+
+- nazca desde una necesidad y sourcing válidos, no desde un formulario huérfano;
+- preserve la identidad de origen, proveedor, condiciones y evidencia que justifican la compra;
+- cree una orden no aprobada y no emitida;
+- permita edición ordinaria únicamente mientras el estado y la autoridad la admitan;
+- conserve versión y huella lógica suficiente para que el aprobador decida sobre contenido identificable;
+- separe la autorización para crear de la autorización para actualizar, aprobar, emitir, recibir, cancelar o corregir;
+- valide territorio, sede, centro de costo y relaciones en servidor;
+- minimice precios, condiciones y datos sensibles según finalidad;
+- preserve una transición segura hacia aprobación y, después, hacia la preparación de la versión autorizada;
+- entregue una orden correlacionable con recepción posterior sin registrar recepción desde el editor.
+
+La superficie canónica principal es:
+
+```text
+VSCREEN-0073 — Editor de orden de compra
+VPROC-0021    — Aprobar y emitir compras separando flujo ordinario, urgencia y excepción
+```
+
+La tarea no implementa esa superficie ni modifica el runtime.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-006
+
+`ORIGO-UX-006` entrega una frontera cerrada para cualquier orden que luego pueda ser recibida:
+
+```text
+ORDEN / COMPROMISO CONSERVA IDENTIDAD ESTABLE
+PROVEEDOR QUEDA CORRELACIONABLE
+DESTINO / SEDE RECEPTORA QUEDA IDENTIFICABLE
+LINEAS, PRESENTACIONES Y CANTIDADES QUEDAN IDENTIFICABLES
+VERSION Y CONDICIONES NECESARIAS PARA RECEPCION SE CONSERVAN
+CREAR ORDEN != REGISTRAR RECEPCION
+```
+
+La creación de orden debe producir una fuente suficientemente trazable para `VPROC-0022`, pero no hereda autoridad receptora ni puede afirmar que algo fue recibido.
+
+---
+
+#### 3. Entradas previas del ciclo que siguen vigentes
+
+La tarea consume además decisiones ya cerradas del minibloque:
+
+```text
+ORIGO-UX-002
+SOLICITUD != COMPRA != APROBACION != RECEPCION
+
+ORIGO-UX-004
+SOURCING VALIDO / DECISION ACEPTADA
+→ HANDOFF A VPROC-0021
+→ VSCREEN-0073
+
+ORIGO-UX-005
+CREADOR / COMPRADOR != APROBADOR
+APPROVED != ORDER_ISSUED
+```
+
+Por tanto:
+
+```text
+ABRIR EDITOR
+!=
+HABER COMPLETADO SOURCING
+
+CREAR ORDEN
+!=
+APROBAR COMPRA
+
+GENERAR DOCUMENTO
+!=
+EMITIR ORDEN
+```
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-UX-007` se define una sola vez;
+2. no existe una instancia física propia de esta tarea;
+3. no se crea ni modifica `/purchase-orders/new`, `/purchase-orders/[id]/edit` ni otra ruta;
+4. no se implementan Server Actions, RLS, RPC, migraciones, enums, tablas ni contratos de eventos;
+5. las brechas AS-IS se documentan con propietario y condición de salida;
+6. la materialización posterior deberá consumir este contrato sin reinterpretar creación como aprobación o emisión.
+
+---
+
+#### 5. Fuentes verificadas
+
+El diseño consume y conserva:
+
+- `ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento`;
+- `ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`;
+- `ORIGO-UX-004 — Diseñar inicio para comprador`;
+- `ORIGO-UX-005 — Diseñar inicio para aprobador`;
+- `ORIGO-UX-006 — Diseñar inicio para receptor` como base inmediata aprobada;
+- `ORIGO-AUTH-004 — Definir permisos de consulta`;
+- `ORIGO-AUTH-005 — Definir permisos de creación`;
+- `ORIGO-AUTH-006 — Definir permisos de aprobación`;
+- `ORIGO-AUTH-008 — Definir permisos de corrección`;
+- `ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`;
+- `ORIGO-AUTH-010 — Proteger precios y datos sensibles`;
+- `ORIGO-AUTH-013 — Mantener administración sin check-in`;
+- `VPROC-0021` y sus ocho estados canónicos;
+- `VPROC-0021.TR-001..007`;
+- `VSCREEN-0073`, `VSCREEN-0074`, `VSCREEN-0075` y `VSCREEN-0145`;
+- matrices de actores, autorización, territorio y segregación;
+- Registro 04A vigente de ORIGO y AUTH;
+- runtime AS-IS de creación, edición, detalle y envío de órdenes en `vento-origo`;
+- `vento-shell/main@9d0106192de83699af0cddc0dcd1431072ac1876` y owner blob `f1d87caf21d5ea56bcea224c2c7af8c30dd968ae` observados durante esta preparación;
+- artefacto aprobado `ORIGO-UX-006_APROBADA_PARA_REEMPLAZAR.md` con SHA-256 `083e1104d5ff0d5951b01cc4b7f75e9e185a4330757c0887d8835a1de2a7f323` y SHA semántico `c81931dc78f88aadc13339515e3e893847cf5f0faf54bd0d050c30d457a1df53`.
+
+La base 006 puede seguir pendiente de publicación durante esta preparación anticipada; eso no autoriza incorporar la 007 antes de su cierre.
+
+---
+
+#### 6. Identidad canónica de la superficie
+
+La creación de orden utiliza la identidad existente:
+
+```text
+VSCREEN-0073
+Editor de orden de compra
+origo
+VPROC-0021
+OWNER_WORKSPACE
+```
+
+Propósito canónico:
+
+```text
+PREPARAR Y VERSIONAR UNA ORDEN DE COMPRA
+CON LINEAS, PRECIOS, IMPUESTOS, SEDE Y CENTRO DE COSTO
+```
+
+La tarea no crea una nueva pantalla `VSCREEN-*`.
+
+---
+
+#### 7. Paso canónico del proceso
+
+La superficie se vincula a:
+
+```text
+VPROC-0021::STEP-PREPARE_PURCHASE_ORDER
+```
+
+La preparación de la orden pertenece al proceso de compra, no al proceso de sourcing ni al proceso de recepción.
+
+Regla:
+
+```text
+VPROC-0020 COMPLETADO
++
+ENTRADA VALIDA A VPROC-0021
+→
+VSCREEN-0073
+```
+
+No:
+
+```text
+VSCREEN-0073
+→
+CREA RETROACTIVAMENTE NECESIDAD Y SOURCING
+```
+
+---
+
+#### 8. Condición de entrada al editor
+
+Para una creación ordinaria debe existir, como mínimo:
+
+```text
+NECESIDAD / SOLICITUD TRAZABLE
++
+DECISION DE SOURCING VALIDA O EXCEPCION GOBERNADA
++
+PROVEEDOR ADMISIBLE
++
+ACTOR CON AUTORIDAD DE CREACION
++
+TERRITORIO / COBERTURA VALIDOS
++
+DATOS MINIMOS DE LA COMPRA
+```
+
+Una compra urgente o excepcional puede seguir un carril expedito, pero no elimina necesidad de causa, autoridad, proveedor, líneas, recepción posterior y regularización aplicable.
+
+---
+
+#### 9. Permiso exacto de creación
+
+La autoridad objetivo es:
+
+```text
+origo.procurement.purchase_orders.create
+```
+
+Identidad contractual:
+
+```text
+APLICACION = origo
+MODULO = procurement
+RECURSO = PURCHASE_ORDER
+ACCION = create
+MODALIDAD = BASE_ONLY
+```
+
+Significado:
+
+> Permite materializar una orden de compra no aprobada y no emitida con cabecera y líneas válidas dentro del ámbito autorizado, sin conceder aprobación, emisión, recepción, corrección, cancelación ni eliminación.
+
+Estado contractual:
+
+```text
+IDENTIDAD OBJETIVO DEFINIDA
+!=
+CLAVE ACTIVA EN CATALOGO COMPARTIDO
+!=
+GRANT MATERIALIZADO
+!=
+ENFORCEMENT FINAL EN RUNTIME
+```
+
+Hasta la materialización propietaria de `ORIGO-AUTH-014`, la UX no puede tratar la existencia documental de la clave como evidencia de que el consumidor ya la aplica físicamente.
+
+---
+
+#### 10. Modalidad administrativa
+
+`purchase_orders.create` pertenece al carril administrativo:
+
+```text
+BASE_ONLY
+```
+
+Por tanto:
+
+```text
+TURNO
+CHECK-IN
+ROL OPERATIVO
+GERENCIA_OPERATIVA
+BODEGUERO
+```
+
+no pueden fabricar autoridad para crear una orden.
+
+La ausencia de turno o check-in tampoco bloquea por sí sola una capacidad base válida.
+
+---
+
+#### 11. Grants base objetivo para creación
+
+La política contractual aprobada para `purchase_orders.create` queda:
+
+| Rol base | Decisión | Límite |
+| --- | --- | --- |
+| `propietario` | `ASIGNAR` | organización productiva ordinaria; no aprueba automáticamente |
+| `gerente_general` | `ASIGNAR` | organización productiva ordinaria; no aprueba automáticamente |
+| `gerente` | `ASIGNAR` | cobertura administrativa autorizada |
+| `auxiliar_administrativa` | `ASIGNAR` | soporte documental de compras; puede preparar, no aprobar |
+| `supervisor` | `NO_ASIGNAR` | seguimiento local no equivale a creación administrativa |
+| `contador` | `NO_ASIGNAR` | consulta/conciliación no permiten crear órdenes |
+| `marketing` | `NO_ASIGNAR` | fuera del dominio de abastecimiento |
+| `trabajador_operativo` | `NO_ASIGNAR` | operación física no crea órdenes |
+
+La matriz no sustituye el chequeo exacto de permiso, recurso, territorio, estado y field mask.
+
+---
+
+#### 12. Consulta no concede creación
+
+La lectura de contexto puede requerir:
+
+```text
+origo.procurement.purchase_orders.view
+origo.procurement.suppliers.view
+```
+
+pero:
+
+```text
+purchase_orders.view
+!=
+purchase_orders.create
+
+suppliers.view
+!=
+purchase_orders.create
+
+origo.access
+!=
+purchase_orders.create
+```
+
+La UI puede mostrar el editor o datos auxiliares solo dentro del alcance permitido; el primer write exige revalidación de `purchase_orders.create` en servidor.
+
+---
+
+#### 13. Recurso y territorio
+
+El recurso protegido es:
+
+```text
+PURCHASE_ORDER
+```
+
+La orden puede involucrar:
+
+- negocio;
+- proveedor;
+- sede o destinos;
+- centro de costo;
+- líneas y presentaciones;
+- condiciones y fechas.
+
+Regla:
+
+```text
+site_id EN FORMULARIO
+!=
+AUTORIDAD SOBRE ESA SEDE
+```
+
+La resolución completa de sede, centro de costo, cruces territoriales y relaciones obligatorias pertenece a `ORIGO-AUTH-009` y debe aplicarse antes del write.
+
+---
+
+#### 14. Identidades upstream obligatorias
+
+La orden debe conservar referencias suficientes para reconstruir su origen sin copiar objetos previos como si fueran la misma identidad.
+
+Como mínimo, cuando apliquen:
+
+```text
+purchase_need_ref
+purchase_request_ref
+sourcing_case_ref
+sourcing_decision_ref
+supplier_ref
+```
+
+Regla:
+
+```text
+CORRELACIONAR
+!=
+FUSIONAR
+```
+
+Crear la orden no elimina ni reescribe la necesidad, solicitud o decisión de sourcing que la originaron.
+
+---
+
+#### 15. Cabecera mínima de creación
+
+El runtime actual evidencia como mínimo:
+
+```text
+supplier_id
+site_id
+expected_at
+notes
+```
+
+El contrato objetivo exige tratar esos valores como entradas a validar, no como autoridad.
+
+La cabecera debe poder conservar además las referencias gobernadas necesarias para:
+
+- negocio aplicable;
+- centro de costo cuando corresponda;
+- decisión de sourcing;
+- clasificación ordinaria, urgente o excepcional;
+- moneda y condiciones comerciales cuando formen parte del compromiso;
+- versión del contenido lógico.
+
+No se inventa en esta tarea una columna física nueva para cada concepto.
+
+---
+
+#### 16. Líneas de la orden
+
+Cada línea debe conservar identidad y semántica suficientes para reconstruir qué se pretende comprar.
+
+El runtime actual evidencia:
+
+```text
+product_id
+presentation_id
+quantity
+unit_cost
+```
+
+La experiencia debe garantizar, según aplique:
+
+- producto válido y activo;
+- presentación válida, activa y perteneciente al producto;
+- cantidad positiva y unidad/presentación explícita;
+- relación proveedor–producto válida cuando el contrato lo exija;
+- costo y total derivados con reglas coherentes;
+- separación entre cantidad solicitada, cantidad ordenada y cantidad recibida futura.
+
+Regla:
+
+```text
+LINEA DE ORDEN
+!=
+LINEA DE RECEPCION
+```
+
+---
+
+#### 17. Proveedor
+
+La orden consume un proveedor existente y admisible.
+
+`purchase_orders.create` no concede:
+
+```text
+origo.procurement.suppliers.create
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+Si el proveedor no existe o no puede utilizarse, el flujo debe bloquearse o derivar a su propietario; no puede crear o alterar el maestro silenciosamente desde el editor.
+
+---
+
+#### 18. Condiciones y evidencia de sourcing
+
+El editor debe conservar suficiente trazabilidad de las condiciones que justifican la orden, incluyendo cuando apliquen:
+
+- oferta o cotización fuente;
+- presentación/unidad;
+- precio y moneda;
+- impuestos;
+- descuentos;
+- flete;
+- mínimo;
+- plazo de entrega;
+- condición de pago;
+- vigencia;
+- contrato o referencia comercial;
+- evidencia de la decisión de sourcing.
+
+La orden no debe convertirse en una copia mutable de la cotización sin identidad de fuente y versión.
+
+---
+
+#### 19. Precios, importes y datos sensibles
+
+La creación de una orden puede requerir precios y condiciones, pero la visibilidad y escritura de campos sensibles siguen bajo `ORIGO-AUTH-010` y el contrato de proveedor.
+
+Regla:
+
+```text
+PUEDE CREAR ORDEN
+!=
+PUEDE VER / EDITAR TODO DATO SENSIBLE
+```
+
+El field mask debe limitar:
+
+- precios y totales no necesarios para la función;
+- condiciones comerciales restringidas;
+- contratos;
+- datos tributarios;
+- cuentas bancarias;
+- documentos internos;
+- información no requerida para crear la orden.
+
+---
+
+#### 20. Estado empresarial al nacer VPROC-0021
+
+El estado inicial canónico es:
+
+```text
+VPROC-0021.PURCHASE_REQUEST_PENDING_APPROVAL
+```
+
+Semántica:
+
+```text
+COMPRA PENDIENTE DE APROBACION
+```
+
+Condición mínima:
+
+```text
+EXISTE PROPUESTA DE COMPRA COMPLETA
+CON NECESIDAD, PROVEEDOR, CONDICIONES, ALCANCE Y EVIDENCIA SUFICIENTE
+```
+
+Invariante de nacimiento:
+
+```text
+NO APPROVED
+NO ORDER_ISSUED
+NO ENVIADA AL PROVEEDOR
+```
+
+---
+
+#### 21. `draft` AS-IS no es un estado canónico adicional
+
+El runtime actual crea físicamente:
+
+```text
+status = draft
+```
+
+La tarea conserva ese literal como evidencia AS-IS.
+
+No se permite afirmar:
+
+```text
+draft
+=
+PURCHASE_REQUEST_PENDING_APPROVAL
+```
+
+sin un mapping contractual explícito de materialización.
+
+La UX objetivo debe proyectar la verdad empresarial canónica y evitar que un literal técnico se convierta en una novena etapa de `VPROC-0021`.
+
+---
+
+#### 22. Lifecycle completo que el editor debe respetar
+
+`VPROC-0021` conserva exactamente:
+
+```text
+PURCHASE_REQUEST_PENDING_APPROVAL
+UNDER_REVIEW
+PENDING_APPROVAL
+APPROVED
+ORDER_PREPARING
+ORDER_ISSUED
+SUPPLIER_ACK_PENDING
+PURCHASE_COMMITMENT_FORMALIZED
+```
+
+La creación de la orden no salta estados.
+
+---
+
+#### 23. Transiciones preservadas
+
+La UX debe respetar las siete transiciones normales:
+
+```text
+VPROC-0021.TR-001
+PURCHASE_REQUEST_PENDING_APPROVAL -> UNDER_REVIEW
+
+VPROC-0021.TR-002
+UNDER_REVIEW -> PENDING_APPROVAL
+
+VPROC-0021.TR-003
+PENDING_APPROVAL -> APPROVED
+
+VPROC-0021.TR-004
+APPROVED -> ORDER_PREPARING
+
+VPROC-0021.TR-005
+ORDER_PREPARING -> ORDER_ISSUED
+
+VPROC-0021.TR-006
+ORDER_ISSUED -> SUPPLIER_ACK_PENDING
+
+VPROC-0021.TR-007
+SUPPLIER_ACK_PENDING -> PURCHASE_COMMITMENT_FORMALIZED
+```
+
+`ORIGO-UX-007` no crea una transición alternativa para “guardar”, “enviar” o “emitir”.
+
+---
+
+#### 24. Creación no equivale a aprobación
+
+Invariantes:
+
+```text
+CREATE
+→ NO APPROVED
+→ NO ORDER_ISSUED
+→ NO SUPPLIER_ACK
+→ NO RECEIPT
+→ NO PAYMENT
+```
+
+Y:
+
+```text
+CREADOR
+!=
+APROBADOR
+```
+
+La capacidad de aprobación sigue siendo:
+
+```text
+origo.procurement.purchase_orders.approve
+```
+
+con `ORIGO-UX-008` como tarea UX propietaria del detalle de aprobación y rechazo.
+
+---
+
+#### 25. Edición preaprobación
+
+La edición ordinaria de una orden existente no usa `purchase_orders.create`.
+
+Capacidad separada:
+
+```text
+origo.procurement.purchase_orders.update
+```
+
+Modalidad:
+
+```text
+BASE_ONLY
+```
+
+Puede aplicar, conforme a política, durante:
+
+```text
+PURCHASE_REQUEST_PENDING_APPROVAL
+UNDER_REVIEW
+PENDING_APPROVAL
+```
+
+sin conceder aprobación, emisión o cancelación.
+
+---
+
+#### 26. Field mask de actualización
+
+La edición preaprobación exige simultáneamente:
+
+```text
+PERMISO EXACTO
++
+ESTADO EDITABLE
++
+VERSION VIGENTE
++
+ALCANCE DEL RECURSO
++
+FIELD MASK AUTORIZADO
+```
+
+No se permite editar como campos ordinarios:
+
+- estado empresarial protegido;
+- actor creador o aprobador;
+- evidencia de aprobación;
+- evidencia de emisión;
+- cantidades recibidas;
+- timestamps de procesos posteriores;
+- datos sensibles fuera del field mask.
+
+---
+
+#### 27. Versionado antes de aprobación
+
+Cada cambio material que llegue a decisión debe producir una versión identificable.
+
+La huella lógica debe poder distinguir cambios en, al menos:
+
+- proveedor;
+- líneas;
+- cantidades;
+- unidad o presentación;
+- precios;
+- moneda;
+- impuestos;
+- descuentos o flete cuando alteren el total;
+- fecha o condición de entrega material;
+- sede o destino;
+- centro de costo;
+- contrato;
+- anticipo;
+- urgencia o excepción;
+- otras condiciones materiales definidas por política.
+
+El aprobador debe poder saber exactamente qué versión está decidiendo.
+
+---
+
+#### 28. Envío a revisión y aprobación
+
+Cuando la propuesta está completa, el editor puede conducir el trabajo hacia:
+
+```text
+UNDER_REVIEW
+→
+PENDING_APPROVAL
+```
+
+pero no aprobar.
+
+La experiencia debe distinguir:
+
+```text
+GUARDAR CAMBIOS
+!=
+ENVIAR A REVISION
+!=
+ENVIAR A APROBACION
+!=
+APROBAR
+```
+
+La transición autoritativa de aprobación sigue siendo `VPROC-0021.TR-003` y no se ejecuta por guardar o cerrar el editor.
+
+---
+
+#### 29. Postaprobación y `ORDER_PREPARING`
+
+Después de una aprobación válida:
+
+```text
+VPROC-0021.TR-004
+APPROVED
+→
+ORDER_PREPARING
+```
+
+La preparación postaprobación construye el instrumento exacto que se emitirá.
+
+Regla crítica:
+
+```text
+ORDEN APROBADA VERSION A
+→
+ORDER_PREPARING
+→
+MISMA VERSION MATERIAL A
+```
+
+No se permite usar el editor para alterar silenciosamente la versión aprobada antes de emitirla.
+
+---
+
+#### 30. Cambio material después de aprobación
+
+Una modificación material postaprobación no se representa como simple `update` destructivo.
+
+Debe conservar:
+
+```text
+VERSION APROBADA
++
+NUEVA VERSION PROPUESTA
++
+MOTIVO / DIFERENCIA
++
+NUEVA REVISION
++
+NUEVA APROBACION CUANDO CORRESPONDA
+```
+
+`VPROC-0021.EX-003 — REQUEST_INFO` conserva la posibilidad de solicitar nueva aprobación por cambio material después de la aprobación y antes de emisión.
+
+La 007 preserva esa frontera sin diseñar la decisión final de la 008.
+
+---
+
+#### 31. Emisión no pertenece al botón de crear
+
+La emisión normal ocurre mediante:
+
+```text
+VPROC-0021.TR-005
+ORDER_PREPARING
+→
+ORDER_ISSUED
+```
+
+Por tanto:
+
+```text
+CREAR
+!=
+EMITIR
+
+GUARDAR
+!=
+EMITIR
+
+GENERAR PDF
+!=
+EMITIR
+
+PREPARAR MENSAJE
+!=
+EMITIR
+```
+
+`ORDER_ISSUED` requiere una versión identificable enviada al proveedor con evidencia de emisión.
+
+---
+
+#### 32. Confirmación del proveedor y compromiso
+
+La creación tampoco produce:
+
+```text
+SUPPLIER_ACK_PENDING
+PURCHASE_COMMITMENT_FORMALIZED
+```
+
+La secuencia posterior permanece:
+
+```text
+ORDER_ISSUED
+→ SUPPLIER_ACK_PENDING
+→ PURCHASE_COMMITMENT_FORMALIZED
+```
+
+Una respuesta externa no puede sobrescribir líneas, precios o condiciones internas sin validación y nueva autoridad cuando exista cambio material.
+
+---
+
+#### 33. Eventos preservados
+
+La tarea no inventa eventos.
+
+Se preservan las definiciones normales existentes de `VPROC-0021`, incluyendo:
+
+```text
+VPROC-0021.EVT-001 — purchase-request-pending-approval
+VPROC-0021.EVT-004 — order-preparing
+VPROC-0021.EVT-005 — order-issued
+VPROC-0021.EVT-006 — purchase-commitment-formalized
+```
+
+No existe un evento normal nuevo creado por esta tarea para “draft”, “saved” o “approved”.
+
+---
+
+#### 34. VSCREEN-0075 como continuidad y seguimiento
+
+Después de crear una orden, `VSCREEN-0075 — Detalle y seguimiento de orden` puede presentar, según autorización:
+
+- identidad de orden;
+- estado canónico/proyección contractual;
+- versión;
+- proveedor;
+- líneas;
+- destinos;
+- documentos;
+- pendientes;
+- emisión y confirmación cuando existan;
+- referencias posteriores de recepción permitidas.
+
+La 007 usa `VSCREEN-0075` como continuidad de lectura/seguimiento, no como permiso compuesto de mutación.
+
+---
+
+#### 35. Documento para proveedor
+
+Un PDF, enlace o documento externo puede representar una versión de orden, pero:
+
+```text
+DOCUMENTO GENERADO
+!=
+ORDEN EMITIDA
+```
+
+Además, cualquier acceso externo debe respetar alcance, expiración, revocación, secreto sin fallback y minimización según el contrato propietario.
+
+`purchase_orders.create` no concede publicación pública ni acceso externo irrestricto.
+
+---
+
+#### 36. Dispositivo compartido
+
+`purchase_orders.create` y `purchase_orders.update` son capacidades administrativas `BASE_ONLY`.
+
+No deben habilitarse en un dispositivo compartido por inferencia.
+
+Regla fail-closed:
+
+```text
+SHARED_DEVICE
++
+CAPACIDAD NO INCLUIDA EXPLICITAMENTE EN DEVICE CEILING
+→ DENY
+```
+
+Si una materialización futura habilita administración en dispositivo compartido deberá exigir actor humano efectivo, permiso base exacto, aplicación permitida, techo de dispositivo y demás controles sin usar check-in como sustituto de autoridad administrativa.
+
+---
+
+#### 37. Simulación
+
+La simulación puede explicar o previsualizar:
+
+- permiso;
+- scope;
+- territorio;
+- proveedor;
+- líneas;
+- campos bloqueados;
+- estado resultante hipotético.
+
+Pero:
+
+```text
+SIMULATED_ALLOW
+→ ZERO BUSINESS WRITE
+```
+
+No crea ni actualiza una orden real.
+
+---
+
+#### 38. Primer efecto y orden de validación
+
+El primer write empresarial solo puede ocurrir después de:
+
+```text
+AUTHENTICATE
+→ RESOLVE ACTOR
+→ RESOLVE EXACT CREATE/UPDATE PERMISSION
+→ RESOLVE SCOPE / TERRITORY
+→ VALIDATE UPSTREAM REFERENCES
+→ VALIDATE SUPPLIER / PRODUCT / PRESENTATION
+→ VALIDATE FIELD SET
+→ VALIDATE CURRENT VERSION / STATE
+→ WRITE
+```
+
+Está prohibido:
+
+```text
+WRITE
+→ LUEGO COMPROBAR PERMISO O ESTADO
+```
+
+Si la creación requiere cabecera y múltiples líneas, forman una sola intención empresarial y deben conservar resultado coherente, correlación y recuperación segura.
+
+---
+
+#### 39. Errores y estados UX
+
+La experiencia debe distinguir, como mínimo:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `LISTO_PARA_CREAR` | upstream, autoridad y datos suficientes | permitir creación |
+| `UPSTREAM_INCOMPLETO` | necesidad/sourcing no habilitan compra | volver al owner correspondiente |
+| `PERMISO_DENEGADO` | falta create/update exacto | no mostrar mutación como disponible |
+| `TERRITORIO_INVALIDO` | sede/centro de costo fuera de alcance | bloquear sin fallback |
+| `RELACION_INVALIDA` | proveedor/producto/presentación no admisibles | corregir fuente, no forzar |
+| `DATOS_INCOMPLETOS` | faltan campos obligatorios | completar sin crear |
+| `VERSION_STALE` | recurso cambió desde la lectura | refrescar/reconciliar antes de mutar |
+| `PENDING_APPROVAL` | propuesta esperando decisión | bloquear autoaprobación |
+| `POST_APPROVAL_LOCKED` | existe versión aprobada | impedir edición material destructiva |
+| `TECHNICAL_FAILURE` | fallo de infraestructura | conservar incertidumbre; no asumir éxito |
+
+No se confunden deny, invalidez, stale, vacío y error técnico.
+
+---
+
+#### 40. Idempotencia y doble envío
+
+Una creación empresarial no debe duplicarse por:
+
+- doble clic;
+- retry de red;
+- refresh;
+- reenvío del mismo formulario;
+- timeout con resultado desconocido.
+
+La materialización deberá usar una identidad/referencia estable suficiente para recuperar el mismo resultado cuando corresponda.
+
+La tarea no inventa aquí una columna física ni un RPC; fija la conducta UX y contractual esperada.
+
+---
+
+#### 41. AS-IS de `/purchase-orders/new`
+
+La implementación observada permite:
+
+```text
+/purchase-orders/new
+→ requireAppAccess(origo)
+→ cargar proveedores y sedes
+→ createPurchaseOrder
+```
+
+`createPurchaseOrder` observa, entre otros:
+
+- usuario autenticado;
+- `supplier_id`;
+- `site_id`;
+- líneas;
+- producto/presentación/proveedor;
+- `created_by = user.id`;
+- `status = draft`;
+- inserción de líneas;
+- cálculo posterior del total.
+
+Eso demuestra una superficie real de creación, pero no demuestra por sí solo el contrato completo de autoridad y lifecycle objetivo.
+
+---
+
+#### 42. Brecha AS-IS de autorización de creación
+
+No se observa en la acción inspeccionada un check equivalente explícito de:
+
+```text
+has_permission("origo.procurement.purchase_orders.create")
+```
+
+Clasificación heredada:
+
+```text
+AS_IS_GAP_PURCHASE_ORDER_CREATE_BINDING
+```
+
+La tarea no concluye que RLS u otra capa sean inexistentes; concluye que la acción observada no constituye evidencia suficiente del permiso exacto objetivo.
+
+Propietario de materialización:
+
+```text
+ORIGO-AUTH-014 + package físico propietario
+```
+
+Condición de salida:
+
+```text
+CREATE CONSUME purchase_orders.create EXACTO EN EL LIMITE DE CONFIANZA
+```
+
+---
+
+#### 43. AS-IS de edición
+
+La implementación observada permite editar órdenes mientras están en `draft` y reconstruir líneas físicas.
+
+La técnica AS-IS no se eleva por sí sola a contrato objetivo.
+
+El contrato exige:
+
+```text
+EDICION ORDINARIA PREAPROBACION
+→ purchase_orders.update
+→ estado editable
+→ version vigente
+→ field mask
+```
+
+Y:
+
+```text
+CAMBIO MATERIAL POST-APROBACION
+→ NUEVA VERSION / REVISION
+→ NO SOBRESCRITURA SILENCIOSA
+```
+
+---
+
+#### 44. AS-IS `draft -> sent`
+
+La acción física observada `setPurchaseOrderSent` efectúa:
+
+```text
+draft
+→ sent
+```
+
+Ese cambio no equivale al lifecycle canónico:
+
+```text
+UNDER_REVIEW
+→ PENDING_APPROVAL
+→ APPROVED
+→ ORDER_PREPARING
+→ ORDER_ISSUED
+```
+
+Regla:
+
+```text
+sent AS-IS
+!=
+APPROVED
+!=
+ORDER_PREPARING
+!=
+ORDER_ISSUED
+```
+
+La reconciliación detallada de aprobación/rechazo pertenece a `ORIGO-UX-008`.
+
+---
+
+#### 45. Frontera con recepción
+
+La orden creada debe dejar disponible, cuando corresponda y con finalidad autorizada, una proyección futura suficiente para recepción:
+
+- identidad estable de la orden/compromiso;
+- proveedor;
+- sede/destino receptor;
+- líneas;
+- producto/presentación;
+- cantidad ordenada;
+- versión relevante;
+- fecha/condición de entrega;
+- documentos y condiciones necesarias para verificar.
+
+Pero:
+
+```text
+ORDEN CREADA
+!=
+RECEIPT_EXPECTED POR INFERENCIA
+!=
+LLEGADA
+!=
+RECEPCION REGISTRADA
+```
+
+El ciclo receptor permanece propietario de `VPROC-0022`.
+
+---
+
+#### 46. Frontera con NEXO y NUMERA
+
+La creación de orden puede alimentar proyecciones futuras, pero no produce:
+
+```text
+STOCK
+LOC
+LPN
+MOVIMIENTO NEXO
+OBLIGACION NUMERA
+CUENTA POR PAGAR
+PAGO
+```
+
+NEXO y NUMERA consumen contratos posteriores y no escriben `VPROC-0021` directamente.
+
+---
+
+#### 47. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `/purchase-orders/new` comienza directamente en proveedor/sede/líneas | puede perder trazabilidad de necesidad y sourcing | materialización UX consumiendo `ORIGO-UX-007` | editor recibe upstream válido y referencias de origen |
+| `createPurchaseOrder` no demuestra permiso create exacto | acceso a ORIGO podría confundirse con autoridad mutante | `ORIGO-AUTH-014` + package propietario | acción revalida `purchase_orders.create` server-side |
+| `site_id` proviene del formulario | cliente puede aparentar territorio | `ORIGO-AUTH-009` + consumer | sede/centro de costo se resuelven y validan server-side |
+| precios/condiciones aparecen en editor | riesgo de exposición o mutación excesiva | `ORIGO-AUTH-010`, `ORIGO-UX-012` | field masks y finalidad limitan lectura/escritura |
+| edición AS-IS usa `draft` como frontera | literal técnico puede sustituir lifecycle empresarial | `ORIGO-UX-007`, `ORIGO-UX-008` + materialización | edición se gobierna por estado canónico/versionado |
+| `draft -> sent` colapsa aprobación y emisión | una orden podría parecer emitida sin decisión explícita | `ORIGO-UX-008` + materialización | aprobación, preparación y emisión quedan separadas |
+| PDF/mensaje pueden parecer emisión | evidencia de emisión ambigua | materialización de `VPROC-0021.TR-005` | `ORDER_ISSUED` exige versión y evidencia de envío |
+| reintento de creación puede duplicar orden | compras duplicadas y trazabilidad divergente | implementación propietaria | creación recuperable/idempotente para la misma intención |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 48. Handoff inmediato a ORIGO-UX-008
+
+`ORIGO-UX-008 — Diseñar aprobación y rechazo` recibe una propuesta de compra versionada y suficientemente completa.
+
+Handoff exacto:
+
+```text
+PURCHASE_ORDER / VPROC-0021 IDENTIFICABLE
++
+VERSION EVALUABLE
++
+NECESIDAD Y SOURCING TRAZABLES
++
+PROVEEDOR
++
+LINEAS / PRESENTACIONES / CANTIDADES
++
+PRECIOS / IMPORTES AUTORIZADOS
++
+SEDE / CENTRO DE COSTO
++
+CONDICIONES / FECHAS
++
+EVIDENCIA
++
+CLASIFICACION ORDINARIA / URGENTE / EXCEPCIONAL
+→
+DECISION DE APROBACION / RECHAZO / DEVOLUCION
+```
+
+La 008 no deberá reconstruir el contenido desde valores no versionados ni tratar `draft -> sent` como aprobación.
+
+---
+
+#### 49. Handoff al resto de ORIGO-UX
+
+| Tarea | Entrada exacta proveniente de ORIGO-UX-007 |
+| --- | --- |
+| `ORIGO-UX-008` | decisión sobre versión exacta de compra; crear/editar no concede aprobar ni emitir |
+| `ORIGO-UX-009` | recepción total consume orden/compromiso elegible con líneas, versión y destino identificables |
+| `ORIGO-UX-010` | recepción parcial conserva cantidades ordenadas y saldo pendiente por línea sin modificar la versión emitida |
+| `ORIGO-UX-011` | diferencia compara observado contra orden/version/condiciones sin reescribir el pedido original |
+| `ORIGO-UX-012` | precios, importes, contratos y condiciones del editor/seguimiento se proyectan por finalidad y field mask |
+| `ORIGO-UX-013` | la orden y recepción conservan identidades separadas antes de cualquier efecto NEXO |
+| `ORIGO-UX-014` | la entrada física deriva de recepción aceptada, no de orden creada ni emitida por sí sola |
+| `ORIGO-UX-015` | compromiso y recepción entregan referencias económicas sin crear obligación o pago por la sola creación de orden |
+| `ORIGO-UX-016` | prototipo reconstruye necesidad → sourcing → orden → aprobación → emisión → recepción mediante identidades/versiones trazables |
+
+---
+
+#### 50. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: creación y actualización de órdenes, segregación, territorio, protección de datos, versionado postaprobación y separación entre orden, aprobación y recepción ya están protegidos por obligaciones canónicas vigentes. Esta tarea especializa la experiencia de `VSCREEN-0073` sin introducir una obligación empresarial nueva ni modificar el Registro 04A.
+
+---
+
+#### 51. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-ORIGO-002` para limitar lectura y mutación de órdenes por permiso, sede/centro de costo, estado y columnas, y proteger documentos externos;
+- `TREQ-ORIGO-004` para separar necesidad, sourcing, selección, aprobación, orden y recepción, evitar autoaprobación y preservar revisión/versionado ante cambios materiales;
+- `TREQ-ORIGO-005` para proveedor, presentación, precio, moneda, impuestos, descuentos, flete, mínimos, plazo, pago, versión y vigencia de condiciones;
+- `TREQ-AUTH-001` para resolver autorización mediante permiso, contexto y alcance canónicos en lugar de listas locales de roles;
+- `TREQ-AUTH-002` para impedir consumo físico de una permission key no incorporada al catálogo vigente;
+- `TREQ-AUTH-010` para preservar segregación entre quien crea compra y quien aprueba/recibe;
+- `TREQ-AUTH-013` para revalidar server-side permiso exacto, actor, territorio, estado y field mask;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de decisión, recurso, actor, resultado y versión.
+
+Esta enumeración es trazabilidad vigente y no constituye una actualización del registro.
+
+---
+
+#### 52. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ, batería global y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@9d0106192de83699af0cddc0dcd1431072ac1876`, owner blob `f1d87caf21d5ea56bcea224c2c7af8c30dd968ae`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VSCREEN-0073/0075`, `VPROC-0021`, sus ocho estados y siete transiciones, permisos `purchase_orders.create/update/approve`, cobertura territorial, protección sensible, 04A ORIGO/AUTH y runtime AS-IS de creación/edición/envío. La entrada inmediata 006 se consume desde el artefacto aprobado SHA-256 `083e1104d5ff0d5951b01cc4b7f75e9e185a4330757c0887d8835a1de2a7f323`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, editaron, aprobaron, emitieron ni recibieron órdenes reales; no se probaron usuarios, sedes, proveedores ni documentos externos. |
+| FÍSICA | NOT_APPLICABLE | `ORIGO-UX-007` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 53. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0073` queda identificada como superficie canónica de editor de orden;
+- [ ] `VPROC-0021` queda identificado como proceso propietario;
+- [ ] `VPROC-0021::STEP-PREPARE_PURCHASE_ORDER` queda preservado;
+- [ ] la creación consume necesidad/sourcing válidos y no nace de un formulario huérfano;
+- [ ] `origo.procurement.purchase_orders.create` queda como capacidad exacta de creación;
+- [ ] `purchase_orders.create` permanece `BASE_ONLY`;
+- [ ] propietario, gerente general, gerente y auxiliar administrativa quedan como grants base objetivo según alcance;
+- [ ] supervisor, contador, marketing y trabajador operativo no reciben create por defecto;
+- [ ] `.view` y `origo.access` no conceden create;
+- [ ] el primer write exige revalidación server-side;
+- [ ] `PURCHASE_ORDER` conserva recurso y territorio verificables;
+- [ ] `site_id` cliente no se convierte en autoridad territorial;
+- [ ] necesidad, solicitud, sourcing, orden y recepción conservan identidades distintas;
+- [ ] proveedor, producto y presentación se validan como relaciones existentes/admisibles;
+- [ ] la relación producto–proveedor no se crea implícitamente desde la orden;
+- [ ] la línea conserva producto, presentación, cantidad y costo aplicables;
+- [ ] precio y condiciones conservan fuente/versión cuando corresponda;
+- [ ] field masks protegen datos sensibles;
+- [ ] el estado inicial empresarial se conserva como `PURCHASE_REQUEST_PENDING_APPROVAL`;
+- [ ] `draft` AS-IS no se eleva a estado canónico nuevo;
+- [ ] los ocho estados de `VPROC-0021` quedan diferenciados;
+- [ ] las siete transiciones normales se preservan;
+- [ ] crear no equivale a aprobar;
+- [ ] `purchase_orders.update` queda separado de create y limitado a edición preaprobación permitida;
+- [ ] el aprobador recibe una versión exacta y evaluable;
+- [ ] un cambio material postaprobación no sobrescribe silenciosamente la versión autorizada;
+- [ ] `APPROVED -> ORDER_PREPARING` conserva el contenido material aprobado;
+- [ ] crear/guardar/generar PDF no equivale a emitir;
+- [ ] `ORDER_ISSUED` exige una versión identificable y evidencia de envío;
+- [ ] confirmación del proveedor no amplía la orden unilateralmente;
+- [ ] `VSCREEN-0075` se usa como seguimiento autorizado y no como wildcard de mutación;
+- [ ] dispositivo compartido no habilita creación administrativa por inferencia;
+- [ ] simulación produce cero writes;
+- [ ] deny, invalidez, stale, pendiente de aprobación y fallo técnico no se confunden;
+- [ ] doble envío/retry no debe duplicar la intención empresarial;
+- [ ] `/purchase-orders/new` queda reconocido como AS-IS real pero parcial;
+- [ ] el gap de permiso exacto de creación queda asignado a su propietario;
+- [ ] `draft -> sent` no sustituye aprobación + preparación + emisión;
+- [ ] la orden deja referencias suficientes para recepción futura sin registrar recepción;
+- [ ] ORIGO no crea stock NEXO ni obligación NUMERA desde la creación;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] `ORIGO-UX-008` recibe un handoff versionado y completo;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 54. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0073` ni `VSCREEN-0075`;
+- crea rutas, layouts, componentes o formularios físicos;
+- crea o modifica una orden real;
+- crea o modifica un proveedor real;
+- selecciona proveedor;
+- aprueba, rechaza o devuelve una compra;
+- emite una orden real;
+- confirma respuesta del proveedor;
+- registra recepción;
+- corrige o reversa recepción;
+- mueve inventario;
+- crea obligaciones o pagos;
+- crea permission keys nuevas;
+- activa `purchase_orders.create` o `purchase_orders.update` en catálogo/grants;
+- modifica matrices RBAC;
+- modifica estados o transiciones de `VPROC-0021`;
+- crea eventos empresariales;
+- modifica PDF/token externo;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants, Storage o datos;
+- ejecuta E5;
+- crea instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-UX-008`.
+
+---
+
+#### 55. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-006 — Diseñar inicio para receptor`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-007 — Diseñar creación de orden de compra`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-008 — Diseñar aprobación y rechazo`
 ### [ ] ORIGO-UX-008 — Diseñar aprobación y rechazo
 ### [ ] ORIGO-UX-009 — Diseñar recepción total
 ### [ ] ORIGO-UX-010 — Diseñar recepción parcial
