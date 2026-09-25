@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1339** |
+| Aprobadas | **1340** |
 | En propuesta | **0** |
-| No iniciadas | **257** |
+| No iniciadas | **256** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.90% (1339/1596)** |
+| Porcentaje de completamiento | **83.96% (1340/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **257** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1240** |
+| ⏸ NO_EVALUADA | **256** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1241** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-UX-003` — Diseñar inicio para solicitante | ✅ APROBADA |
-| Tarea actual | `ORIGO-UX-004` — Diseñar inicio para comprador | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-UX-005` — Diseñar inicio para aprobador | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-UX-004` — Diseñar inicio para comprador | ✅ APROBADA |
+| Tarea actual | `ORIGO-UX-005` — Diseñar inicio para aprobador | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-UX-006` — Diseñar inicio para receptor | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1102,7 +1102,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-001` | Inventariar el proceso completo de abastecimiento | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-002` | Separar solicitud, compra, aprobación y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-003` | Diseñar inicio para solicitante | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-004` | Diseñar inicio para comprador | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-004` | Diseñar inicio para comprador | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-005` | Diseñar inicio para aprobador | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-006` | Diseñar inicio para receptor | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-007` | Diseñar creación de orden de compra | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
