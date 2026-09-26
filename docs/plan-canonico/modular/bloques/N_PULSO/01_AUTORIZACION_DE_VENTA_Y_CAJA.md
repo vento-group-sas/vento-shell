@@ -9626,7 +9626,1037 @@ La matriz supervisor de esta tarea debe consumirse sin reinterpretar sus concesi
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-008 — Definir permisos de cierre y anulación`
-### [ ] PULSO-AUTH-008 — Definir permisos de cierre y anulación
+### ✅ PULSO-AUTH-008 — Definir permisos de cierre y anulación
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-007 — Definir permisos de supervisor
+**Tarea siguiente:** PULSO-AUTH-009 — Proteger acumulación de puntos
+**Tipo de tarea:** definición documental del contrato de autorización de acciones sensibles de cancelación, anulación, reembolso y cierre de caja en PULSO, separando autoridad ordinaria de cajero, coordinación supervisora y autoridad excepcional de doble condición, sin reutilizar `pulso.pos.main`, sin fusionar cancelación con refund, sin convertir `orders.update` o `payments.collect` en permisos de excepción, y sin materializar runtime; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, permisos runtime, roles, matrices runtime, RLS, RPC, funciones, Server Actions, tablas, datos, Supabase, migraciones, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada quién puede cancelar pedidos, anular una venta consolidada, reembolsar pagos, cerrar una caja y reabrir una caja cerrada, preservando separación de funciones, territorio, actor real, estado actual, idempotencia, motivo y trazabilidad.
+
+La tarea evita que acciones sensibles se deriven de permisos amplios o de visibilidad de pantalla.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-006
+
+`PULSO-AUTH-006` reserva explícitamente para esta tarea:
+
+```text
+pulso.sales.orders.cancel
+pulso.payments.transactions.refund
+pulso.cash.sessions.close
+```
+
+También entrega estas restricciones:
+
+- `orders.update` no concede cancelación;
+- `payments.collect` no concede refund;
+- `cash.sessions.start` no concede cierre;
+- `pulso.pos.main` no es permiso final suficiente;
+- cierre, arqueo, diferencias, reapertura y corrección requieren autoridad explícita.
+
+---
+
+#### 3. Handoff recibido de PULSO-AUTH-007
+
+`PULSO-AUTH-007` confirma que:
+
+- supervisor no equivale a `cajero_satelite + wildcard`;
+- `orders.view` no concede `cancel`;
+- `payments.transactions.view` no concede `refund`;
+- `cash.sessions.view` no concede `close`;
+- el rol base `supervisor` y `gerencia_operativa` permanecen separados;
+- cualquier autoridad supervisora sobre cancelación, refund o cierre debe definirse aquí de forma explícita.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- esta tarea define contrato, no implementación;
+- no existe instancia física propia;
+- no crea migraciones;
+- no inserta PermissionKeys en Supabase;
+- no modifica RLS ni RPC;
+- no cambia Server Actions;
+- no reescribe datos históricos;
+- no ejecuta refund, cancelación o cierre real.
+
+---
+
+#### 5. Principio rector
+
+Las acciones sensibles se autorizan por capacidad exacta.
+
+```text
+VIEW
+!=
+UPDATE
+!=
+CANCEL
+!=
+VOID
+!=
+REFUND
+!=
+CLOSE
+!=
+REOPEN
+```
+
+Ninguna de estas capacidades se hereda de otra.
+
+---
+
+#### 6. `pulso.pos.main` permanece fuera del diseño final
+
+`pulso.pos.main` conserva clasificación:
+
+```text
+DECOMPOSE_REQUIRED
+NO_DIRECT_CANONICAL_ALIAS
+```
+
+No autoriza por sí solo:
+
+- cancelar pedidos;
+- anular ventas;
+- reembolsar pagos;
+- cerrar caja;
+- reabrir caja.
+
+---
+
+#### 7. Universo sensible evaluado
+
+Esta tarea evalúa exactamente cinco identidades de permiso objetivo:
+
+```text
+pulso.sales.orders.cancel
+pulso.sales.orders.void
+pulso.payments.transactions.refund
+pulso.cash.sessions.close
+pulso.cash.sessions.reopen
+```
+
+Cardinalidad:
+
+```text
+PULSO_SENSITIVE_PERMISSIONS_EVALUATED = 5
+EXISTING_STRUCTURAL_IDENTITIES = 3
+NEW_TARGET_IDENTITIES = 2
+DUPLICATES = 0
+UNRESOLVED_SENSITIVE_DECISIONS = 0
+```
+
+---
+
+#### 8. Identidades estructurales existentes
+
+Ya existen como contrato estructural previo:
+
+```text
+pulso.sales.orders.cancel
+pulso.payments.transactions.refund
+pulso.cash.sessions.close
+```
+
+Esta tarea cierra su significado de autorización.
+
+---
+
+#### 9. Nuevas identidades objetivo
+
+Se definen dos identidades adicionales porque cancelación y cierre ordinario no cubren sus efectos:
+
+```text
+pulso.sales.orders.void
+pulso.cash.sessions.reopen
+```
+
+No representan existencia runtime actual.
+
+Son claves objetivo para materialización posterior.
+
+---
+
+#### 10. Cancelación y anulación son distintas
+
+```text
+CANCEL
+=
+interrumpir un pedido antes de su consolidación final
+```
+
+```text
+VOID
+=
+anular una venta o pedido ya consolidado sin borrar historia
+```
+
+La anulación no elimina el registro original.
+
+---
+
+#### 11. Anulación y eliminación son distintas
+
+`pulso.sales.orders.void` no equivale a:
+
+```text
+pulso.sales.orders.delete
+```
+
+Regla:
+
+```text
+VOID
+!=
+DELETE
+```
+
+La historia comercial y los efectos correlacionados deben conservarse.
+
+---
+
+#### 12. Refund y anulación son distintas
+
+```text
+ORDER_VOID
+!=
+PAYMENT_REFUND
+```
+
+Una anulación no puede marcar automáticamente un pago como reembolsado sin ejecutar el contrato de refund.
+
+---
+
+#### 13. Devolución permanece separada
+
+La devolución física o comercial de bienes no se modela como alias de cancelación, void o refund.
+
+```text
+RETURN
+!=
+CANCEL
+!=
+VOID
+!=
+REFUND
+```
+
+La devolución integral permanece en el contrato funcional propietario posterior y en las integraciones con inventario, fiscalidad y fidelización.
+
+---
+
+#### 14. Cierre y reapertura son distintas
+
+```text
+CLOSE
+!=
+REOPEN
+```
+
+Cerrar consolida una sesión de caja.
+
+Reabrir modifica una sesión ya cerrada y por tanto exige autoridad superior.
+
+---
+
+#### 15. Matriz de autoridad principal
+
+| Permiso | `cajero_satelite` | `gerencia_operativa` | Modalidad objetivo | Decisión |
+| --- | --- | --- | --- | --- |
+| `pulso.sales.orders.cancel` | NO ASIGNAR | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | cancelación sensible supervisora dentro de estado cancelable |
+| `pulso.sales.orders.void` | NO ASIGNAR | ASIGNAR SOLO COMPONENTE OPERATIVO | `BASE_AND_OPERATIONAL` / `N + T+C` | anulación consolidada exige autoridad base adicional |
+| `pulso.payments.transactions.refund` | NO ASIGNAR | ASIGNAR SOLO COMPONENTE OPERATIVO | `BASE_AND_OPERATIONAL` / `N + T+C` | refund exige autoridad base adicional y transacción original |
+| `pulso.cash.sessions.close` | ASIGNAR OPERATIVO | NO ASIGNAR COMO CIERRE ORDINARIO | `OPERATIONAL_ONLY` / `T+C` | cajero cierra únicamente su propia sesión válida |
+| `pulso.cash.sessions.reopen` | NO ASIGNAR | ASIGNAR SOLO COMPONENTE OPERATIVO | `BASE_AND_OPERATIONAL` / `N + T+C` | reapertura excepcional exige autoridad base adicional |
+
+---
+
+#### 16. Resultado cuantitativo por carril
+
+```text
+CASHIER_DIRECT_GRANTED = 1
+SUPERVISOR_DIRECT_GRANTED = 1
+SUPERVISOR_OPERATIONAL_COMPONENT_ONLY = 3
+CASHIER_NOT_GRANTED = 4
+```
+
+La suma por carril no convierte estas cinco identidades en un wildcard.
+
+---
+
+#### 17. Regla para `pulso.sales.orders.cancel`
+
+`pulso.sales.orders.cancel` autoriza una cancelación explícita del pedido actual cuando el estado sea cancelable.
+
+Requiere como mínimo:
+
+- actor humano identificado;
+- turno vigente;
+- check-in cuando aplique;
+- sede del recurso resuelta en servidor;
+- permiso exacto;
+- pedido existente;
+- estado actual permitido;
+- motivo no vacío;
+- operación idempotente;
+- auditoría de estado anterior y nuevo.
+
+---
+
+#### 18. Estados no cancelables
+
+Como mínimo, `orders.cancel` debe denegar:
+
+```text
+delivered
+voided
+```
+
+También debe denegar cualquier pedido cuyo contrato ya exija una compensación previa no resuelta.
+
+---
+
+#### 19. Pago confirmado bloquea cancelación simple
+
+Si existe pago confirmado o liquidado, la cancelación simple no puede completar silenciosamente la operación.
+
+```text
+PAID ORDER
++
+CANCEL REQUEST
+→
+REQUIERE RESOLVER EFECTO DE PAGO
+```
+
+La resolución económica usa `pulso.payments.transactions.refund` cuando corresponda.
+
+---
+
+#### 20. Cancelación no revierte efectos por inferencia
+
+`orders.cancel` no concede por sí sola autoridad para:
+
+- refund;
+- reverso fiscal;
+- devolución física;
+- devolución de inventario;
+- reversión de puntos;
+- compensación al cliente;
+- eliminación de evidencia.
+
+Cada efecto debe conservar su contrato propietario.
+
+---
+
+#### 21. Estado AS-IS de cancelación
+
+El runtime actual de `/orders` expone `mark_cancelled` dentro de `update_order_operational_state`.
+
+La función observada protege la operación con `pulso.pos.main` y permite cancelación para pedidos no entregados.
+
+Ese comportamiento es evidencia AS-IS, no autoridad objetivo suficiente.
+
+---
+
+#### 22. Brecha AS-IS de cancelación
+
+La implementación observada actualmente:
+
+- no utiliza `pulso.sales.orders.cancel`;
+- no exige un motivo empresarial explícito en la firma observada;
+- comparte RPC con otras transiciones operativas;
+- depende de `pulso.pos.main`;
+- no separa autoridad de cancelación de otras operaciones del tablero.
+
+La brecha se materializa posteriormente; esta tarea no modifica el RPC.
+
+---
+
+#### 23. Regla para `pulso.sales.orders.void`
+
+`pulso.sales.orders.void` representa anulación de una venta o pedido consolidado conservando historia y referencias.
+
+No se utiliza para cancelación ordinaria.
+
+---
+
+#### 24. Evidencia física de anulación
+
+El esquema remoto observado contiene campos en `public.orders` como:
+
+```text
+voided_at
+voided_by
+void_reason
+```
+
+La existencia de esos campos demuestra capacidad de representación, no un flujo autorizado completo.
+
+---
+
+#### 25. Modalidad de anulación
+
+`pulso.sales.orders.void` se define como:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+Requiere simultáneamente:
+
+- autoridad base compatible;
+- contexto operativo válido;
+- territorio compatible;
+- permiso exacto;
+- motivo;
+- reautenticación cuando aplique;
+- ausencia de denegación superior.
+
+---
+
+#### 26. Supervisor base no obtiene `void`
+
+El rol base `supervisor` no recibe por defecto el componente base de `orders.void`.
+
+Por tanto:
+
+```text
+employees.role = supervisor
++
+gerencia_operativa
+!=
+VOID AUTORIZADO
+```
+
+sin componente base compatible.
+
+---
+
+#### 27. Anulación preserva efectos emitidos
+
+La anulación no puede borrar efectos previamente confirmados.
+
+Debe conservar referencias a:
+
+- pago;
+- documento fiscal;
+- inventario;
+- loyalty;
+- preparación/fulfillment;
+- actor;
+- motivo;
+- evidencia de compensaciones posteriores.
+
+---
+
+#### 28. Regla para `pulso.payments.transactions.refund`
+
+Refund siempre opera sobre una transacción de pago original identificada.
+
+No opera sobre el total visible del pedido como único dato.
+
+---
+
+#### 29. Condiciones mínimas de refund
+
+El contrato debe validar como mínimo:
+
+- transacción original existente;
+- sede y pedido correlacionados;
+- estado reembolsable;
+- monto solicitado positivo;
+- monto acumulado reembolsado no mayor al monto original;
+- proveedor y referencia original cuando existan;
+- motivo;
+- actor;
+- idempotency key estable;
+- resultado confirmado o reconciliable.
+
+---
+
+#### 30. Refund parcial
+
+La misma PermissionKey cubre refund total o parcial.
+
+La diferencia se expresa en el recurso y el monto, no creando permisos por monto.
+
+---
+
+#### 31. Timeout de refund
+
+Un timeout del proveedor no se interpreta como refund fallido.
+
+```text
+RESULTADO DESCONOCIDO
+→
+CONSULTAR / RECONCILIAR
+→
+NO REPETIR CIEGAMENTE
+```
+
+---
+
+#### 32. Modalidad de refund
+
+`pulso.payments.transactions.refund` se define como:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+`gerencia_operativa` aporta únicamente el componente operativo.
+
+La autoridad final requiere componente base compatible.
+
+---
+
+#### 33. Cajero no ejecuta refund
+
+`cajero_satelite` no recibe `pulso.payments.transactions.refund`.
+
+El cajero puede registrar o escalar una incidencia según contratos posteriores, pero no convertirla en refund por inferencia.
+
+---
+
+#### 34. Refund no implica devolución
+
+```text
+REFUND
+!=
+RETURN
+```
+
+Un refund no demuestra que el producto haya regresado físicamente ni que inventario, fiscalidad o loyalty hayan sido compensados.
+
+---
+
+#### 35. Regla para `pulso.cash.sessions.close`
+
+El cierre ordinario corresponde al cajero responsable de su propia sesión de caja.
+
+```text
+ACTOR EFECTIVO
+=
+OWNER DE LA SESIÓN
+```
+
+es una condición obligatoria del cierre ordinario.
+
+---
+
+#### 36. Condiciones mínimas de cierre
+
+`cash.sessions.close` debe validar:
+
+- sesión existente;
+- estado `open` o equivalente vigente;
+- sede compatible;
+- actor efectivo propietario;
+- turno y contexto válidos;
+- movimientos asociados;
+- pagos pendientes de reconciliación;
+- efectivo esperado calculado en servidor;
+- efectivo contado capturado;
+- diferencia calculada en servidor;
+- idempotencia;
+- timestamp de servidor;
+- auditoría.
+
+---
+
+#### 37. Diferencia de caja
+
+La diferencia no puede editarse manualmente como resultado final.
+
+```text
+DIFFERENCE
+=
+COUNTED_AMOUNT - EXPECTED_AMOUNT
+```
+
+según el contrato numérico aprobado para la implementación.
+
+El servidor debe calcularla desde datos autoritativos.
+
+---
+
+#### 38. Diferencia no crea ajuste automático
+
+Una diferencia de caja no puede crear por inferencia:
+
+- movimiento compensatorio;
+- asiento contable;
+- descuento laboral;
+- ingreso extraordinario;
+- salida de efectivo;
+- corrección destructiva.
+
+La diferencia se registra como hecho a resolver por el proceso propietario.
+
+---
+
+#### 39. Supervisor no cierra la caja ordinaria de otro actor
+
+`gerencia_operativa` no recibe `cash.sessions.close` como facultad ordinaria sobre sesiones de terceros.
+
+La ausencia del cajero no convierte al supervisor en owner de la sesión.
+
+---
+
+#### 40. Cierre forzado permanece separado
+
+Un cierre forzado por indisponibilidad, abandono o contingencia no se trata como alias de `cash.sessions.close`.
+
+Mientras no exista una capacidad atómica específica de cierre forzado:
+
+```text
+FORCED_CLOSE
+→
+DEFAULT_DENY
+```
+
+---
+
+#### 41. Regla para `pulso.cash.sessions.reopen`
+
+`cash.sessions.reopen` representa una excepción sobre una sesión ya cerrada.
+
+No forma parte del ciclo ordinario del cajero.
+
+---
+
+#### 42. Modalidad de reapertura
+
+`pulso.cash.sessions.reopen` se define como:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+`gerencia_operativa` aporta solo el componente operativo.
+
+La autoridad final exige componente base compatible.
+
+---
+
+#### 43. Reapertura no borra cierre anterior
+
+La reapertura debe conservar:
+
+- cierre original;
+- actor que cerró;
+- importes originales;
+- diferencia original;
+- actor que reabre;
+- motivo;
+- timestamp;
+- versión;
+- nueva secuencia de eventos.
+
+---
+
+#### 44. Reapertura no permite edición destructiva
+
+Reabrir una caja no autoriza a sobrescribir movimientos, pagos o conteos anteriores.
+
+Las correcciones deben ser hechos nuevos y auditables.
+
+---
+
+#### 45. Autoridad base para doble condición
+
+Esta tarea no convierte el rol base `supervisor` en autoridad financiera permanente.
+
+Los permisos:
+
+```text
+pulso.sales.orders.void
+pulso.payments.transactions.refund
+pulso.cash.sessions.reopen
+```
+
+requieren un componente base compatible definido por matrices canónicas o por una excepción individual válida.
+
+---
+
+#### 46. `gerencia_operativa` no es suficiente por sí sola
+
+Para las tres capacidades de doble condición:
+
+```text
+gerencia_operativa
++
+T+C
+!=
+ALLOW
+```
+
+sin componente base compatible.
+
+---
+
+#### 47. Reautenticación
+
+Void, refund y reopen son acciones sensibles.
+
+El contrato de materialización debe exigir reautenticación o confirmación reforzada conforme al mecanismo canónico vigente cuando se ejecute la acción.
+
+Esta tarea no define credenciales nuevas.
+
+---
+
+#### 48. Motivo obligatorio
+
+Las siguientes acciones exigen motivo empresarial no vacío:
+
+```text
+orders.cancel
+orders.void
+payments.transactions.refund
+cash.sessions.reopen
+```
+
+El cierre ordinario puede aceptar notas, pero no depende de una justificación excepcional si el cierre es normal.
+
+---
+
+#### 49. Actor efectivo
+
+Toda acción sensible debe registrar al trabajador humano efectivo.
+
+La sesión técnica del dispositivo no sustituye el actor.
+
+La materialización de actor real continúa en `PULSO-AUTH-013`.
+
+---
+
+#### 50. Dispositivo compartido
+
+En terminal compartida, PIN o firma de actor no concede permisos adicionales.
+
+```text
+ACTOR SIGNATURE
+!=
+AUTHORITY GRANT
+```
+
+La integración técnica continúa en `PULSO-AUTH-012`.
+
+---
+
+#### 51. Territorio
+
+Toda acción se limita al recurso y sede autorizados.
+
+`site_id` recibido desde UI no concede autoridad.
+
+La resolución territorial vinculante continúa en `PULSO-AUTH-011`.
+
+---
+
+#### 52. Estado actual
+
+El servidor debe leer el estado vigente dentro de la operación autorizada.
+
+No se confía en un estado enviado por el cliente.
+
+---
+
+#### 53. Concurrencia
+
+Cancel, void, refund, close y reopen deben resistir dos solicitudes concurrentes.
+
+El resultado válido debe ser exactamente uno de:
+
+```text
+APLICADO UNA VEZ
+YA APLICADO
+CONFLICTO DE ESTADO
+RESULTADO DESCONOCIDO RECONCILIABLE
+```
+
+Nunca dos efectos equivalentes independientes.
+
+---
+
+#### 54. Idempotencia
+
+Las acciones con efecto económico o de cierre deben usar una identidad estable del intento empresarial.
+
+Un nuevo `Date.now()`, UUID aleatorio o referencia regenerada en UI no demuestra idempotencia del mismo hecho.
+
+---
+
+#### 55. Auditoría mínima
+
+Cada acción debe registrar al menos:
+
+- permiso evaluado;
+- actor efectivo;
+- principal técnico;
+- sede;
+- recurso;
+- estado anterior;
+- estado nuevo;
+- motivo cuando aplique;
+- importe cuando aplique;
+- referencia/idempotency key;
+- timestamp de servidor;
+- resultado.
+
+---
+
+#### 56. Estado runtime de caja
+
+El remoto observado contiene tablas:
+
+```text
+public.pos_cash_shifts
+public.pos_cash_movements
+public.pos_payments
+```
+
+`pos_cash_shifts` incluye actualmente, entre otros:
+
+```text
+status
+opened_at
+closed_at
+opening_amount
+expected_amount
+counted_amount
+difference
+```
+
+La existencia de estas columnas no certifica el flujo de cierre objetivo.
+
+---
+
+#### 57. Estado runtime de pagos
+
+`public.pos_payments` contiene evidencia de pagos ligados a pedido, sesión y turno.
+
+La existencia de un `status` o de una referencia no demuestra un contrato de refund completo.
+
+---
+
+#### 58. RLS AS-IS no sustituye permiso atómico
+
+La política observada de `public.orders` permite UPDATE a empleados con acceso a la sede.
+
+Ese alcance es demasiado amplio para representar por sí solo cancelación o anulación.
+
+La implementación objetivo debe validar la acción exacta además del territorio.
+
+---
+
+#### 59. Fronteras con UX
+
+`PULSO-UX-009` debe diseñar experiencia y semántica visibles para:
+
+```text
+cancelación
+anulación
+devolución
+refund
+```
+
+`PULSO-UX-010` debe diseñar apertura, cierre, arqueo, diferencias y reapertura de caja.
+
+Esta tarea fija autoridad; no diseña la pantalla final.
+
+---
+
+#### 60. Fronteras con dominios propietarios
+
+La ejecución de estas acciones puede requerir efectos en otros dominios:
+
+```text
+NEXO → inventario y devolución física
+NUMERA → registro económico y conciliación
+PASS → puntos y beneficios
+proveedor fiscal → documento fiscal
+proveedor de pagos → refund/reversal
+```
+
+PULSO no absorbe esos ownerships.
+
+---
+
+#### 61. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La cobertura vigente ya exige separación semántica, autorización exacta, estado, idempotencia, conciliación y auditoría para estas operaciones.
+
+---
+
+#### 62. Cobertura de prueba vigente reutilizada
+
+Cobertura relevante, sin modificación del Registro 04A:
+
+- `TREQ-AUTH-001`
+- `TREQ-AUTH-002`
+- `TREQ-AUTH-004`
+- `TREQ-AUTH-008`
+- `TREQ-AUTH-013`
+- `TREQ-PULSO-004`
+- `TREQ-PULSO-005`
+- `TREQ-PULSO-006`
+- `TREQ-PULSO-007`
+- `TREQ-PULSO-014`
+- `TREQ-PULSO-015`
+- `TREQ-PULSO-016`
+- `TREQ-PULSO-017`
+- `TREQ-PULSO-018`
+- `TREQ-PULSO-024`
+- `TREQ-PULSO-026`
+
+La mención es únicamente trazabilidad.
+
+---
+
+#### 63. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de producto; tarea documental sin cambios físicos |
+| LOCAL | PASS | se validó el artefacto descargable en entorno de trabajo sin modificar el repositorio del usuario |
+| REMOTA | PASS | se verificaron `vento-shell`, `vento-pulso`, catálogo, matrices, 04A, RPC `update_order_operational_state`, esquema y políticas Supabase relevantes |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron cancelaciones, refunds, cierres o reaperturas reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; sin instancia física propia |
+
+---
+
+#### 64. Criterios de aceptación
+
+- [ ] Se evalúan exactamente cinco identidades sensibles.
+- [ ] Tres identidades estructurales previas conservan nombre exacto.
+- [ ] Se definen `pulso.sales.orders.void` y `pulso.cash.sessions.reopen` como identidades objetivo nuevas.
+- [ ] Cancel, void, refund, close y reopen permanecen semánticamente separados.
+- [ ] `orders.update` no concede cancel o void.
+- [ ] `payments.collect` no concede refund.
+- [ ] `cash.sessions.start` no concede close.
+- [ ] `cash.sessions.close` no concede reopen.
+- [ ] `cajero_satelite` solo recibe cierre ordinario de su propia caja entre estas cinco capacidades.
+- [ ] `gerencia_operativa` recibe cancelación directa y solo componentes operativos de void, refund y reopen.
+- [ ] Supervisor base no recibe automáticamente autoridad financiera sensible.
+- [ ] Cancelación simple no revierte pago, fiscalidad, inventario o loyalty por inferencia.
+- [ ] Refund exige transacción original e idempotencia.
+- [ ] Cierre calcula expected/count/difference desde contrato server-side.
+- [ ] Diferencia no crea ajuste automático.
+- [ ] Reapertura preserva cierre previo y crea nueva evidencia.
+- [ ] Cierre forzado permanece `DEFAULT_DENY` sin PermissionKey específica.
+- [ ] Se conserva separación de actor técnico y actor humano.
+- [ ] Se conserva territorio server-side.
+- [ ] Se reutiliza cobertura TREQ sin modificar 04A.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 65. Límites
+
+Esta tarea no:
+
+- inserta PermissionKeys;
+- modifica matrices runtime;
+- cambia `pulso.pos.main` físicamente;
+- modifica `update_order_operational_state`;
+- implementa refund;
+- implementa cierre de caja;
+- implementa reapertura;
+- implementa devolución;
+- implementa compensaciones;
+- implementa integración fiscal;
+- implementa integración con proveedor de pagos;
+- implementa reversión de inventario;
+- implementa reversión de loyalty;
+- crea permisos de cierre forzado;
+- define UI final;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica el Registro 04A;
+- crea instancia física;
+- ejecuta E5.
+
+---
+
+#### 66. Handoff a PULSO-AUTH-009
+
+`PULSO-AUTH-009 — Proteger acumulación de puntos` recibe:
+
+- cancelación, void y refund separados de loyalty;
+- prohibición de revertir puntos por inferencia desde una acción PULSO;
+- necesidad de correlacionar cualquier compensación loyalty con el hecho comercial original;
+- actor, sede, recurso e idempotencia como requisitos transversales.
+
+---
+
+#### 67. Handoff a PULSO-AUTH-010
+
+`PULSO-AUTH-010 — Proteger redenciones` recibe la misma separación de efectos:
+
+```text
+REFUND / VOID / CANCEL
+!=
+AUTOMATIC LOYALTY RESTORE
+```
+
+La restitución de puntos debe ocurrir mediante contrato PASS autorizado, correlacionado e idempotente.
+
+---
+
+#### 68. Handoff a PULSO-AUTH-011..016
+
+Las tareas posteriores reciben:
+
+```text
+011 → hacer vinculante territorio de turno y recurso
+012 → integrar terminal compartida sin ampliar permisos
+013 → registrar actor humano efectivo
+014 → conservar configuración administrativa separada
+015 → materializar PermissionKeys, contratos server-side y migración desde broad authority
+016 → certificar allow/deny, estado, concurrencia, idempotencia e integraciones
+```
+
+---
+
+#### 69. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-007 — Definir permisos de supervisor`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-008 — Definir permisos de cierre y anulación`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-009 — Proteger acumulación de puntos`
 ### [ ] PULSO-AUTH-009 — Proteger acumulación de puntos
 ### [ ] PULSO-AUTH-010 — Proteger redenciones
 ### [ ] PULSO-AUTH-011 — Limitar operación a sede del turno
