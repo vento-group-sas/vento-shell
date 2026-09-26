@@ -6705,7 +6705,792 @@ Quedan congeladas para continuidad:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios`
-### [ ] NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
+### ✅ NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
+**Tarea siguiente:** NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
+**Tipo de tarea:** auditoría documental AS-IS de la captura manual de NUMERA frente a hechos, eventos y soportes cuyo origen pertenece a otros dominios o autoridades, distinguiendo duplicidad confirmada, riesgo estructural de duplicidad, captura manual legítima y datos de planificación, sin corregir código ni absorber las auditorías posteriores de fórmulas, cierres, aprobaciones, exportaciones o trazabilidad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, Supabase, datos, gastos, compras, inventario, pagos, producción, asistencia, presupuestos, integraciones, permisos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Determinar si la captura manual vigente de NUMERA puede representar nuevamente hechos cuyo origen pertenece a PULSO, ORIGO, NEXO, FOGO, ANIMA u otra autoridad, y distinguir ese riesgo de las capturas que sí pueden permanecer manuales mientras no exista otra fuente canónica disponible.
+
+La tarea separa cuatro estados:
+
+```text
+DUPLICADO_CONFIRMADO
+RIESGO_DE_DUPLICIDAD_ABIERTO
+CAPTURA_MANUAL_LEGITIMA
+DATO_DE_PLANIFICACION_NO_TRANSACCIONAL
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-006
+
+La predecesora dejó congelado que:
+
+- `actual_expenses` proviene de `numera_expenses` y representa únicamente las filas capturadas en NUMERA;
+- esa captura no constituye verdad económica empresarial completa;
+- PULSO, ORIGO, FOGO y NEXO no tienen hoy un consumidor económico físico identificado dentro de `vento-numera`;
+- los reportes actuales no demuestran conciliación integral con los dominios operativos;
+- la decisión sobre si una fila manual duplica un hecho externo quedó reservada expresamente a esta tarea.
+
+Esta tarea consume ese handoff sin reabrir la auditoría de reportes.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `NUMERA-AUD-001..012` conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+No existe instancia física propia ni autorización para modificar datos o consumidores.
+
+---
+
+#### 4. Fuentes verificadas
+
+Se contrastaron:
+
+- `NUMERA-AUD-001` a `NUMERA-AUD-005` publicados;
+- `NUMERA-AUD-006` aprobado por el usuario como base inmediata;
+- `CAP-SCOPE-012` y su asignación de propiedad económica y operativa;
+- `INT-PROC-004 — Definir contrato para que NUMERA reciba el evento económico`;
+- `04A_13_NUMERA.md` sin modificación;
+- `vento-numera/main` en commit `c4d50282e30e46d0abb3d871f9604cf913ebbabd`;
+- la Server Action `createExpense` de `/expenses`;
+- la Server Action `upsertBudget` de `/cost-centers`;
+- la estructura remota de `public.numera_expenses`;
+- fuentes remotas de compra, inventario, pagos, producción y asistencia mediante consultas Supabase de solo lectura.
+
+---
+
+#### 5. Regla canónica de propiedad
+
+La propiedad objetivo vigente conserva:
+
+```text
+PULSO -> venta, pago, caja y reversión operativa
+ORIGO -> compra, proveedor, orden, recepción empresarial y disputa
+NEXO -> movimiento físico, valoración de inventario, activos y logística
+FOGO -> consumo, producción, rendimiento y merma
+ANIMA -> hechos laborales y fuentes autorizadas para costo laboral
+NUMERA -> hechos económicos, conciliación, costos, obligaciones, cierres y analítica
+```
+
+NUMERA reconoce el efecto económico sin reconstruir ni duplicar el hecho operativo propietario.
+
+---
+
+#### 6. Regla cardinal contra duplicidad
+
+El contrato de integración de compra ya fija expresamente:
+
+```text
+RECEPCION COMERCIAL EN ORIGO
++ HECHO FISICO CORRELACIONADO EN NEXO
+-> EVENTO ECONOMICO CORRELACIONABLE
+-> NUMERA
+```
+
+Y prohíbe:
+
+```text
+RECEPCION CREADA
+-> GASTO CREADO MANUALMENTE SIN FUENTE
+```
+
+La misma identidad causal no puede competir entre una captura manual y un evento canónico ya recibido.
+
+---
+
+#### 7. Universo de escrituras manuales NUMERA
+
+En el snapshot actual existen dos Server Actions de escritura de negocio:
+
+```text
+MANUAL_WRITE_ACTIONS = 2
+MANUAL_ECONOMIC_FACT_ACTIONS = 1
+MANUAL_PLANNING_ACTIONS = 1
+```
+
+- `createExpense` crea una fila económica manual en `numera_expenses`;
+- `upsertBudget` actualiza presupuesto, ingreso esperado y margen objetivo como datos de planificación.
+
+Solo `createExpense` entra al universo principal de duplicidad de hechos.
+
+---
+
+#### 8. Captura manual observada de gastos
+
+`createExpense` recibe desde la UI:
+
+```text
+period_id
+category_id
+cost_center_id
+expense_date
+description
+amount
+```
+
+Y agrega de forma fija:
+
+```text
+currency = COP
+source_app = numera
+```
+
+No recibe del formulario una identidad del hecho operativo externo que pueda haber originado el gasto.
+
+---
+
+#### 9. Campos de origen disponibles en persistencia
+
+`public.numera_expenses` dispone de:
+
+```text
+source_app
+source_table
+source_id
+metadata
+```
+
+La tabla puede representar procedencia técnica parcial, pero la Server Action actual solo escribe `source_app = numera`.
+
+---
+
+#### 10. Campos de correlación no escritos por el flujo manual
+
+El flujo actual no escribe explícitamente:
+
+```text
+source_table
+source_id
+```
+
+Tampoco construye en `metadata` una referencia canónica obligatoria a evento, documento o correlación empresarial.
+
+Resultado:
+
+```text
+MANUAL_SOURCE_APP_WRITTEN = 1
+MANUAL_SOURCE_CORRELATION_FIELDS_WRITTEN = 0
+```
+
+---
+
+#### 11. Ausencia de restricción única de origen
+
+La tabla `numera_expenses` no presenta una restricción `UNIQUE` que impida dos filas con la misma identidad de fuente.
+
+Las restricciones observadas cubren:
+
+- monto no negativo;
+- descripción no vacía;
+- moneda no vacía;
+- existencia de centro de costo o sede;
+- foreign keys de periodo, categoría, centro y sede.
+
+No existe una clave única `(source_app, source_table, source_id)` ni equivalente.
+
+---
+
+#### 12. Ausencia de matching en `vento-numera`
+
+El snapshot actual de `vento-numera` no contiene consumidores o consultas directas a:
+
+```text
+purchase_orders
+inventory_entries
+payments.transactions
+production_batches
+attendance_logs
+```
+
+Tampoco se localizaron referencias a `source_table`, `source_id`, idempotencia o detección de duplicados en el código de aplicación auditado.
+
+---
+
+#### 13. Estado remoto de la captura manual
+
+El corte remoto confirma:
+
+```text
+NUMERA_EXPENSE_ROWS = 0
+ROWS_WITH_SOURCE_TABLE = 0
+ROWS_WITH_SOURCE_ID = 0
+ROWS_WITH_NON_NUMERA_SOURCE_APP = 0
+```
+
+Por tanto no existe una fila manual actual que pueda compararse contra otra fuente para demostrar una duplicidad materializada.
+
+---
+
+#### 14. Resultado ejecutivo
+
+El resultado de esta auditoría queda:
+
+```text
+CONFIRMED_DUPLICATE_MANUAL_ROWS = 0
+MANUAL_FACT_CREATION_PATHS = 1
+MANUAL_PLANNING_PATHS = 1
+CROSS_DOMAIN_DUPLICATION_RISK_DOMAINS = 5
+SOURCE_DOMAINS_WITH_CURRENT_REMOTE_FACTS = 4
+UNIQUE_SOURCE_DEDUP_CONSTRAINTS = 0
+CROSS_DOMAIN_MATCHING_CONSUMERS_IN_VENTO_NUMERA = 0
+```
+
+La ausencia de filas duplicadas actuales no elimina el riesgo estructural de crear una duplicidad en el primer registro manual que represente un hecho ya existente fuera de NUMERA.
+
+---
+
+#### 15. Definición de duplicidad confirmada
+
+Una fila se clasificaría como `DUPLICADO_CONFIRMADO` únicamente si pudiera demostrarse que:
+
+1. existe una fila `numera_expenses`;
+2. existe un hecho externo identificable;
+3. ambos representan el mismo efecto económico;
+4. la fila manual no es una corrección, reclasificación o ajuste gobernado independiente;
+5. la identidad, documento, monto, periodo y causa permiten sostener la equivalencia.
+
+Con cero filas en `numera_expenses`, ese umbral no se alcanza actualmente.
+
+---
+
+#### 16. Definición de riesgo de duplicidad abierto
+
+Existe `RIESGO_DE_DUPLICIDAD_ABIERTO` cuando:
+
+- el dominio fuente ya posee o podrá poseer el hecho propietario;
+- NUMERA permite registrar manualmente un efecto equivalente;
+- el flujo manual no exige referencia a la fuente;
+- no existe deduplicación por identidad o correlación;
+- el sistema no bloquea que ambos caminos convivan.
+
+Esta condición sí está demostrada.
+
+---
+
+#### 17. ORIGO — compra y recepción empresarial
+
+ORIGO conserva la propiedad de compra, orden y recepción empresarial.
+
+El estado remoto observado contiene:
+
+```text
+PURCHASE_ORDERS = 3
+PURCHASE_ORDER_ITEMS = 9
+PURCHASE_ORDER_STATUSES = received | sent
+```
+
+Los tres purchase orders observados contienen `total_amount`.
+
+Una fila manual de gasto que represente el mismo compromiso, recepción o documento de compra abre riesgo de doble reconocimiento económico si posteriormente NUMERA consume el evento canónico de ORIGO.
+
+Clasificación:
+
+```text
+ORIGO_MANUAL_DUPLICATION_RISK = OPEN
+CURRENT_CONFIRMED_DUPLICATE_ROW = NO
+```
+
+---
+
+#### 18. NEXO — entrada, movimiento y valoración física
+
+NEXO conserva entrada física, movimientos, inventario, valoración física, activos y logística.
+
+El snapshot remoto contiene:
+
+```text
+INVENTORY_ENTRIES = 4
+INVENTORY_MOVEMENTS = 803
+INVENTORY_ENTRIES_WITH_SOURCE_APP_ORIGO = PRESENT
+```
+
+Una de las entradas observadas está vinculada a `purchase_order_id` y las entradas identifican `source_app = origo` cuando corresponde.
+
+Estos hechos no crean automáticamente el gasto legal, pero sí forman parte del lineage que debe impedir que NUMERA registre manualmente un segundo efecto económico sin correlación.
+
+---
+
+#### 19. Cadena ORIGO → NEXO → NUMERA
+
+La cadena canónica de compra con inventario queda:
+
+```text
+ORIGO = HECHO COMERCIAL
+NEXO = HECHO FISICO CORRELACIONADO
+NUMERA = HECHO ECONOMICO
+```
+
+Por tanto, una captura manual NUMERA solo puede coexistir con esa cadena si representa un hecho distinto, una excepción gobernada o un ajuste correlacionado.
+
+No puede utilizarse para volver a registrar la misma recepción por descripción y monto libres.
+
+---
+
+#### 20. PULSO — venta, pago, caja y reversión
+
+PULSO conserva la operación comercial y los efectos de pago y caja.
+
+El snapshot remoto contiene:
+
+```text
+PAYMENTS_TRANSACTIONS = 7
+PAYMENT_STATUSES = approved | cancelled
+POS_PAYMENTS = 0
+POS_CASH_MOVEMENTS = 0
+```
+
+La existencia de transacciones de pago no significa que cada pago sea un gasto NUMERA.
+
+El riesgo aparece únicamente cuando una captura manual pretende representar nuevamente una comisión, devolución, diferencia de caja, reverso u otro efecto económico que ya tenga un hecho comercial o de pago identificable.
+
+Clasificación:
+
+```text
+PULSO_MANUAL_DUPLICATION_RISK = CONDITIONAL_OPEN
+CURRENT_CONFIRMED_DUPLICATE_ROW = NO
+```
+
+---
+
+#### 21. FOGO — producción, consumo, rendimiento y merma
+
+FOGO conserva los hechos de producción, consumo, rendimiento y merma que pueden originar efectos de costo en NUMERA.
+
+El corte remoto seleccionado contiene:
+
+```text
+PRODUCTION_BATCHES = 0
+PRODUCTION_BATCH_CONSUMPTIONS = 0
+```
+
+No existe un hecho productivo actual de esas tablas contra el cual comparar una fila NUMERA.
+
+Sin embargo, el canal manual permanece abierto y podría competir con futuros costos productivos cuando esos hechos se materialicen.
+
+Clasificación:
+
+```text
+FOGO_MANUAL_DUPLICATION_RISK = STRUCTURAL_FUTURE
+CURRENT_CONFIRMED_DUPLICATE_ROW = NO
+```
+
+---
+
+#### 22. ANIMA — hechos laborales y costo laboral
+
+ANIMA conserva hechos laborales y fuentes autorizadas para costo laboral, mientras el sistema interno no se declara motor de nómina.
+
+El snapshot remoto contiene:
+
+```text
+ATTENDANCE_LOGS = 6759
+ATTENDANCE_ACTIONS = check_in | check_out
+```
+
+La categoría manual `Nomina` existe en NUMERA.
+
+Una marcación de asistencia no es por sí misma un gasto de nómina y no se clasifica como duplicado monetario. El riesgo surge cuando NUMERA registre manualmente un monto de nómina que posteriormente vuelva a recibirse desde el paquete laboral o proveedor autorizado.
+
+Clasificación:
+
+```text
+ANIMA_PAYROLL_MANUAL_CAPTURE = TEMPORARY_BRIDGE_CANDIDATE
+CURRENT_CONFIRMED_DUPLICATE_ROW = NO
+```
+
+---
+
+#### 23. PASS no se convierte en owner económico por inferencia
+
+PASS conserva identidad de cliente, experiencia, fidelización y objetos propios de cliente.
+
+Esta tarea no crea una sexta familia de duplicidad directa para PASS.
+
+Cuando exista un efecto económico asociado a pedido o pago de cliente, la deduplicación deberá seguir el contrato propietario de venta/pago y el hecho económico correlacionado, no una copia manual basada en datos de PASS.
+
+---
+
+#### 24. Autoridades externas fuera del conteo de cinco dominios
+
+Proveedor fiscal, sistema contable externo, bancos, procesadores de pago y proveedor de nómina pueden ser fuentes o soportes autorizados.
+
+Se excluyen del conteo `CROSS_DOMAIN_DUPLICATION_RISK_DOMAINS = 5` porque no son aplicaciones propietarias del conjunto PULSO/ORIGO/NEXO/FOGO/ANIMA.
+
+Su tratamiento sigue exigiendo identidad, documento, correlación y conciliación; esta tarea no diseña esos adaptadores.
+
+---
+
+#### 25. Universo actual de categorías manuales de gasto
+
+El snapshot remoto conserva siete categorías activas:
+
+```text
+rent -> Arriendo -> fixed
+payroll -> Nomina -> fixed
+utilities -> Servicios publicos -> fixed
+maintenance -> Mantenimiento -> variable
+marketing -> Mercadeo -> variable
+supplies -> Insumos no inventariables -> variable
+other -> Otros gastos -> one_time
+```
+
+La categoría clasifica el gasto; no identifica su fuente empresarial.
+
+---
+
+#### 26. Matriz de categorías y riesgo de duplicidad
+
+| Categoría | Fuente manual posible | Solapamiento con otro dominio | Decisión AS-IS |
+| --- | --- | --- | --- |
+| `rent` | factura, contrato o soporte externo | no obligatorio en otro dominio VENTO observado | `CAPTURA_MANUAL_LEGITIMA_CON_SOPORTE` |
+| `payroll` | paquete laboral o proveedor autorizado | ANIMA / autoridad externa | `PUENTE_MANUAL_CON_RIESGO_FUTURO` |
+| `utilities` | factura o soporte externo | no obligatorio en otro dominio VENTO observado | `CAPTURA_MANUAL_LEGITIMA_CON_SOPORTE` |
+| `maintenance` | servicio externo o compra | ORIGO/NEXO cuando exista orden, recepción, activo o movimiento correlacionado | `RIESGO_CONDICIONAL` |
+| `marketing` | servicio externo o compra | ORIGO cuando exista procurement correlacionado | `RIESGO_CONDICIONAL` |
+| `supplies` | compra no inventariable | ORIGO y eventualmente NEXO según el objeto recibido | `RIESGO_ALTO_DE_COMPETENCIA` |
+| `other` | cualquier causa | cualquiera de los cinco dominios | `RIESGO_NO_ACOTADO` |
+
+---
+
+#### 27. La categoría `Nomina` no convierte asistencia en gasto
+
+El sistema no puede derivar por inferencia:
+
+```text
+ATTENDANCE_LOG
+-> PAYROLL_EXPENSE
+```
+
+El gasto de nómina deberá provenir de un resultado laboral/económico autorizado y reconciliable.
+
+La captura manual puede actuar como puente temporal, pero deberá retirarse o vincularse cuando exista el hecho canónico correspondiente.
+
+---
+
+#### 28. La categoría `Insumos no inventariables` no omite procurement
+
+Que un insumo no aumente inventario no elimina la compra o aceptación comercial.
+
+Cuando el gasto provenga de una compra gestionada por ORIGO, la identidad de esa compra o recepción deberá preservarse aunque NEXO no produzca una existencia física equivalente.
+
+La categoría no autoriza duplicar el documento o la obligación mediante una fila manual libre.
+
+---
+
+#### 29. `Otros gastos` es el mayor punto de ambigüedad
+
+`other / Otros gastos` no restringe semánticamente el origen.
+
+Puede recibir una descripción que corresponda a:
+
+- compra;
+- diferencia de caja;
+- comisión de pago;
+- merma o efecto productivo;
+- ajuste logístico;
+- nómina;
+- servicio externo.
+
+Sin referencia de fuente, esa categoría deja abierto el mayor espacio para duplicidad transversal.
+
+---
+
+#### 30. Las categorías no sustituyen el lineage
+
+Ningún valor de `category_id` demuestra:
+
+- owner del hecho;
+- documento fuente;
+- evento fuente;
+- correlación;
+- idempotency key;
+- si el registro ya fue recibido por otro canal;
+- si la fila es gasto original, ajuste o reclasificación.
+
+Por tanto la deduplicación no puede basarse únicamente en categoría, fecha, descripción y monto.
+
+---
+
+#### 31. `upsertBudget` queda fuera del universo de duplicidad transaccional
+
+`upsertBudget` escribe:
+
+- presupuesto;
+- ingreso esperado;
+- margen bruto objetivo.
+
+Esos valores son planificación y no hechos operativos realizados.
+
+No se clasifican como duplicados de ventas PULSO, compras ORIGO o movimientos NEXO por compartir una cifra o dimensión temporal.
+
+---
+
+#### 32. Ingreso esperado no es venta duplicada
+
+`expected_revenue` permanece como objetivo o expectativa manual.
+
+Una venta realizada por PULSO y un ingreso esperado en presupuesto son objetos distintos:
+
+```text
+EXPECTED_REVENUE != REALIZED_SALE
+```
+
+La tarea no convierte una similitud de monto en duplicidad.
+
+---
+
+#### 33. Duplicados confirmados en el corte actual
+
+Resultado:
+
+```text
+CONFIRMED_DUPLICATE_MANUAL_ROWS = 0
+```
+
+Razón verificable:
+
+```text
+NUMERA_EXPENSE_ROWS = 0
+```
+
+No se infiere un duplicado inexistente a partir de compras, pagos, movimientos o asistencia presentes en otros dominios.
+
+---
+
+#### 34. Riesgo estructural confirmado
+
+Aunque no existen duplicados materializados, sí queda confirmado:
+
+```text
+MANUAL_FORM_CAN_CREATE_UNCORRELATED_ECONOMIC_FACT = YES
+CROSS_DOMAIN_SOURCE_MATCHING_BEFORE_INSERT = NO
+SOURCE_ID_REQUIRED_BY_MANUAL_FORM = NO
+UNIQUE_SOURCE_DEDUP_CONSTRAINT = NO
+```
+
+Ese es el hallazgo principal de `NUMERA-AUD-007`.
+
+---
+
+#### 35. Matriz de dominios y decisión
+
+| Dominio | Hecho propietario relevante | Evidencia remota seleccionada | Duplicado actual probado | Riesgo manual |
+| --- | --- | ---: | --- | --- |
+| ORIGO | compra, orden, recepción empresarial | 3 órdenes / 9 líneas | no | `OPEN` |
+| NEXO | entrada, movimiento, valoración física | 4 entradas / 803 movimientos | no | `OPEN` |
+| PULSO | venta, pago, caja, reversión | 7 transacciones de pago | no | `CONDITIONAL_OPEN` |
+| FOGO | producción, consumo, rendimiento, merma | 0 batches / 0 consumos seleccionados | no | `STRUCTURAL_FUTURE` |
+| ANIMA | hechos laborales para costo laboral | 6759 marcaciones | no | `TEMPORARY_BRIDGE_RISK` |
+
+---
+
+#### 36. Hallazgos confirmados
+
+| ID | Hallazgo | Severidad documental | Propietario de salida |
+| --- | --- | --- | --- |
+| `H-NUMERA-007-001` | `createExpense` permite crear un hecho económico manual sin `source_table` ni `source_id` | crítica | `NUMERA-DOM-002`, `NUMERA-DOM-005`, `NUMERA-UX-009` |
+| `H-NUMERA-007-002` | `numera_expenses` no posee restricción única de identidad de fuente | crítica | `NUMERA-DOM-002`, `INT-APP-*`, `INT-DB-*` |
+| `H-NUMERA-007-003` | `vento-numera` no hace matching previo contra fuentes de otros dominios | crítica | `NUMERA-UX-014`, integraciones propietarias |
+| `H-NUMERA-007-004` | una compra/recepción ORIGO puede competir con un gasto manual si se registra por descripción y monto | crítica | `NUMERA-DOM-003`, `NUMERA-DOM-005`, `INT-PROC-004` |
+| `H-NUMERA-007-005` | los efectos de inventario NEXO pueden quedar económicamente duplicados si se crea un gasto manual no correlacionado | crítica | `NUMERA-DOM-004`, `NUMERA-DOM-007`, integración NEXO→NUMERA |
+| `H-NUMERA-007-006` | efectos económicos ligados a pago/caja PULSO pueden competir con captura manual cuando representen la misma causa | crítica | `NUMERA-DOM-002`, `NUMERA-UX-017`, integración PULSO→NUMERA |
+| `H-NUMERA-007-007` | el canal manual permanece abierto para costos productivos FOGO futuros | alta | `NUMERA-DOM-004`, `NUMERA-DOM-007`, integración FOGO→NUMERA |
+| `H-NUMERA-007-008` | `Nomina` puede actuar como puente manual, pero debe evitar doble reconocimiento cuando exista paquete laboral autorizado | alta | `NUMERA-DOM-005`, `ANIMA`, integración laboral/económica |
+| `H-NUMERA-007-009` | `Otros gastos` permite representar cualquier causa sin owner o fuente obligatoria | crítica | `NUMERA-DOM-005`, `NUMERA-UX-009` |
+| `H-NUMERA-007-010` | la categoría de gasto no demuestra owner, documento, evento ni correlación | crítica | `NUMERA-DOM-002`, `NUMERA-DOM-005` |
+| `H-NUMERA-007-011` | el corte actual contiene cero gastos NUMERA y por ello cero duplicados manuales materializados demostrables | informativa | cerrado por evidencia AS-IS |
+| `H-NUMERA-007-012` | presupuesto, ingreso esperado y margen objetivo son datos de planificación y no deben marcarse como duplicados transaccionales | informativa | `NUMERA-DOM-006`, `NUMERA-AUD-008` |
+
+---
+
+#### 37. Condición de salida para la captura manual
+
+La captura manual podrá conservarse cuando se demuestre al menos una de estas condiciones:
+
+1. no existe otro sistema o dominio con el hecho propietario;
+2. la fuente es un soporte externo que todavía no dispone de integración;
+3. el registro es un ajuste o reclasificación gobernado y no una segunda copia del hecho;
+4. existe referencia explícita a la fuente y control de idempotencia;
+5. la tarea propietaria ha definido una excepción manual documentada y auditable.
+
+Si ya existe un evento canónico de la misma causa, la captura manual competidora deberá bloquearse o transformarse en una acción correlacionada.
+
+---
+
+#### 38. Límite con NUMERA-AUD-008
+
+Esta tarea no valida métodos de costo, margen, rentabilidad, variación ni punto de equilibrio.
+
+Los costos detectados en ORIGO, NEXO o FOGO se usan únicamente para identificar posible doble reconocimiento de una misma causa.
+
+La corrección matemática permanece en `NUMERA-AUD-008`.
+
+---
+
+#### 39. Límite con NUMERA-AUD-009
+
+Esta tarea no decide soporte obligatorio, aprobación, anulación, cierre, reapertura o segregación del registro manual.
+
+Esas reglas permanecen en `NUMERA-AUD-009` y tareas de dominio posteriores.
+
+---
+
+#### 40. Límite con NUMERA-AUD-010
+
+Esta tarea no evalúa exportaciones, clasificación de información sensible, custodia de archivos ni trazabilidad fuera de la aplicación.
+
+Ese alcance permanece en `NUMERA-AUD-010`.
+
+---
+
+#### 41. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la prohibición de duplicar manualmente un hecho ya está protegida por requisitos vigentes de conciliación, identidad, fuente, correlación e idempotencia. Esta auditoría materializa el estado AS-IS y no introduce una conducta nueva.
+
+---
+
+#### 42. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-NUMERA-001` para reconciliar indicadores, costos, gastos, saldos y reportes con fuentes propietarias y prohibir la duplicación mediante registro manual;
+- `TREQ-NUMERA-002` para identidad estable, fuente, correlación, documento, monto y evidencia del hecho económico;
+- `TREQ-NUMERA-003` para objetos financieros independientes y matching gobernado de pagos, obligaciones y tesorería;
+- `TREQ-NUMERA-018` para revalidación y origen explícito en creación de gastos;
+- requisitos de integración vigentes para idempotencia, correlación y escrituras entre dominios.
+
+Esta sección es trazabilidad heredada y no actualiza 04A.
+
+---
+
+#### 43. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build del producto permanece reservado a `NUMERA-AUD-011`. |
+| LOCAL | NOT_EXECUTED | La incorporación y batería estructural contra el checkout del usuario se ejecutarán al publicar la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, `vento-numera/main`, Server Actions, esquema y constraints de `numera_expenses`, categorías y conteos agregados de fuentes remotas mediante solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se creó gasto, compra, recepción, movimiento, pago, producción ni ajuste para probar duplicidad mediante mutaciones. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no hay materialización física autorizada. |
+
+---
+
+#### 44. Validaciones documentales de coherencia
+
+Se comprueba que:
+
+1. `NUMERA-AUD-006` permanece como predecesora inmediata;
+2. `NUMERA-AUD-008` permanece como sucesora inmediata;
+3. cero filas `numera_expenses` impiden declarar duplicados materiales actuales;
+4. el riesgo estructural se documenta sin inventar filas;
+5. ORIGO, NEXO, PULSO, FOGO y ANIMA conservan su ownership;
+6. PASS no se convierte en owner económico por inferencia;
+7. presupuesto e ingreso esperado no se confunden con hechos realizados;
+8. la captura manual legítima no se prohíbe de forma absoluta;
+9. fórmulas permanecen en `NUMERA-AUD-008`;
+10. gastos, cierres y aprobaciones permanecen en `NUMERA-AUD-009`;
+11. exportaciones y sensibilidad permanecen en `NUMERA-AUD-010`;
+12. no se crean ni modifican requisitos de prueba.
+
+---
+
+#### 45. Criterios de aceptación
+
+`NUMERA-AUD-007` queda aceptable cuando:
+
+- se identifica el único flujo actual de creación manual de hecho económico;
+- se distingue ese flujo del presupuesto y demás datos de planificación;
+- se documentan los campos de origen disponibles y los realmente escritos;
+- se verifica si existe una clave única de deduplicación;
+- se informa el conteo real de filas manuales;
+- no se declara un duplicado sin equivalencia material demostrable;
+- cada dominio propietario relevante tiene una decisión explícita;
+- las siete categorías manuales tienen tratamiento AS-IS;
+- la captura manual legítima conserva una vía válida;
+- el contrato ORIGO→NEXO→NUMERA se respeta;
+- cada hallazgo diferido conserva owner y condición de salida;
+- no se modifica código, datos ni Supabase;
+- no se crean ni modifican requisitos de prueba;
+- `NUMERA-AUD-008` queda como única continuidad inmediata.
+
+---
+
+#### 46. Límites
+
+Esta tarea no demuestra:
+
+- que una orden de compra deba reconocerse siempre como gasto;
+- que un movimiento de inventario sea automáticamente una obligación financiera;
+- que una transacción de pago sea un gasto;
+- que una marcación de asistencia equivalga a nómina;
+- que un batch productivo cree por sí solo un asiento o gasto;
+- que todo gasto manual sea incorrecto;
+- que toda coincidencia de fecha y monto sea duplicidad;
+- que una categoría determine el owner del hecho;
+- que la ausencia de filas actuales elimine el riesgo futuro;
+- que las fórmulas financieras actuales sean correctas o incorrectas;
+- que un hallazgo autorice eliminar datos o bloquear físicamente formularios.
+
+---
+
+#### 47. Decisiones congeladas
+
+Quedan congeladas para continuidad:
+
+1. existe una sola Server Action actual que crea hechos económicos manuales: `createExpense`;
+2. `upsertBudget` es planificación y queda fuera del conteo de duplicidad transaccional;
+3. `numera_expenses` contiene cero filas en el corte remoto;
+4. por tanto existen cero duplicados manuales materializados demostrables;
+5. el formulario manual no escribe `source_table` ni `source_id`;
+6. la tabla no posee una restricción única de identidad de fuente;
+7. `vento-numera` no hace matching actual contra fuentes propietarias de otros dominios;
+8. existen cinco dominios relevantes de riesgo: PULSO, ORIGO, NEXO, FOGO y ANIMA;
+9. ORIGO, NEXO, PULSO y ANIMA poseen hechos remotos actuales seleccionados; FOGO conserva riesgo estructural futuro en el corte observado;
+10. una recepción ORIGO no debe convertirse en gasto manual sin fuente;
+11. una captura manual puede permanecer cuando sea fuente primaria legítima, soporte externo sin integración o ajuste gobernado;
+12. las siete categorías actuales clasifican gasto pero no sustituyen source lineage;
+13. `Otros gastos` es la categoría con mayor ambigüedad transversal;
+14. 04A permanece sin cambios.
+
+---
+
+#### 48. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio`
 ### [ ] NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
 ### [ ] NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
 ### [ ] NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
