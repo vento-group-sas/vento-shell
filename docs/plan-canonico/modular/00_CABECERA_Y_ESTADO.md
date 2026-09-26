@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1371** |
+| Tareas aprobadas | **1372** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **225** |
+| Tareas no iniciadas | **224** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.90% (1371/1596)** |
+| Porcentaje de completamiento | **85.96% (1372/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-UX-002 — Diseñar inicio para cajero** |
-| Tarea actual | **PULSO-UX-003 — Diseñar inicio para servicio de salón** |
+| Última tarea aprobada | **PULSO-UX-003 — Diseñar inicio para servicio de salón** |
+| Tarea actual | **PULSO-UX-004 — Diseñar inicio para mostrador** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-UX-004 — Diseñar inicio para mostrador** |
+| Siguiente tarea | **PULSO-UX-005 — Diseñar inicio para operador integral** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 19 de 38 aprobadas; PULSO-UX-003 pendiente** |
+| Progreso del bloque | **BLOQUE N: 20 de 38 aprobadas; PULSO-UX-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-UX-003** |
+| Carril documental | **ACTIVO — PULSO-UX-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-UX-002` — Diseñar inicio para cajero |
-| Tarea actual | `PULSO-UX-003` — Diseñar inicio para servicio de salón — **NO INICIADA** |
-| Siguiente tarea | `PULSO-UX-004` — Diseñar inicio para mostrador |
+| Última aprobada | `PULSO-UX-003` — Diseñar inicio para servicio de salón |
+| Tarea actual | `PULSO-UX-004` — Diseñar inicio para mostrador — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-005` — Diseñar inicio para operador integral |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 19 DE 38 APROBADAS — ACTUAL PULSO-UX-003** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 20 DE 38 APROBADAS — ACTUAL PULSO-UX-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-UX-002 — Diseñar inicio para cajero
-        ↓
-TAREA ACTUAL
 PULSO-UX-003 — Diseñar inicio para servicio de salón
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-UX-004 — Diseñar inicio para mostrador
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-005 — Diseñar inicio para operador integral
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 19 de 38 tareas aprobadas
+BLOQUE N — 20 de 38 tareas aprobadas
 ```
