@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1396** |
+| Tareas aprobadas | **1397** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **200** |
+| Tareas no iniciadas | **199** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **87.47% (1396/1596)** |
+| Porcentaje de completamiento | **87.53% (1397/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada** |
-| Tarea actual | **NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios** |
+| Última tarea aprobada | **NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios** |
+| Tarea actual | **NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio** |
+| Siguiente tarea | **NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 6 de 74 aprobadas; NUMERA-AUD-007 pendiente** |
+| Progreso del bloque | **BLOQUE O: 7 de 74 aprobadas; NUMERA-AUD-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUD-007** |
+| Carril documental | **ACTIVO — NUMERA-AUD-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUD-006` — Detectar reportes sin conciliación o sin fuente de verdad aprobada |
-| Tarea actual | `NUMERA-AUD-007` — Detectar registros manuales duplicados frente a otros dominios — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUD-008` — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio |
+| Última aprobada | `NUMERA-AUD-007` — Detectar registros manuales duplicados frente a otros dominios |
+| Tarea actual | `NUMERA-AUD-008` — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUD-009` — Auditar gastos, centros de costo, cierres y aprobaciones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 6 DE 74 APROBADAS — ACTUAL NUMERA-AUD-007** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 7 DE 74 APROBADAS — ACTUAL NUMERA-AUD-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
-        ↓
-TAREA ACTUAL
 NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 6 de 74 tareas aprobadas
+BLOQUE O — 7 de 74 tareas aprobadas
 ```
