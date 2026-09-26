@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1395** |
+| Aprobadas | **1396** |
 | En propuesta | **0** |
-| No iniciadas | **201** |
+| No iniciadas | **200** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **87.41% (1395/1596)** |
+| Porcentaje de completamiento | **87.47% (1396/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **201** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1296** |
+| ⏸ NO_EVALUADA | **200** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1297** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUD-005` — Detectar datos simulados, hardcodes, TODO y lógica provisional | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUD-006` — Detectar reportes sin conciliación o sin fuente de verdad aprobada | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUD-007` — Detectar registros manuales duplicados frente a otros dominios | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUD-006` — Detectar reportes sin conciliación o sin fuente de verdad aprobada | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUD-007` — Detectar registros manuales duplicados frente a otros dominios | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUD-008` — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1158,7 +1158,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-003` | Inventariar tablas, vistas, eventos y sistemas fuente | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-004` | Identificar módulos completos, parciales, prototipos y ausentes | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-005` | Detectar datos simulados, hardcodes, TODO y lógica provisional | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-006` | Detectar reportes sin conciliación o sin fuente de verdad aprobada | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-006` | Detectar reportes sin conciliación o sin fuente de verdad aprobada | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-007` | Detectar registros manuales duplicados frente a otros dominios | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-008` | Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-009` | Auditar gastos, centros de costo, cierres y aprobaciones | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |

@@ -6027,7 +6027,684 @@ Quedan congeladas para continuidad:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada`
-### [ ] NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
+### ✅ NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
+**Tarea siguiente:** NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
+**Tipo de tarea:** auditoría documental AS-IS de reportes, proyecciones y métricas visibles de NUMERA frente a su lineage, periodo, conciliación y fuente de verdad aprobada, sin corregir código ni absorber las auditorías posteriores de duplicidad manual, fórmulas financieras, cierres, exportaciones o pruebas; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, Supabase, datos, periodos, vistas, RPC, fórmulas, integraciones, navegación, permisos, reportes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Determinar qué superficies actuales de NUMERA presentan información financiera o analítica sin conciliación suficiente o sin una fuente de verdad empresarial completa y aprobada.
+
+La tarea conserva cuatro preguntas separadas:
+
+```text
+QUE MUESTRA EL REPORTE
+DE DONDE SALE CADA VALOR
+QUE HECHO EMPRESARIAL LO RESPALDA
+SI EXISTE CONCILIACION QUE CIERRE LA DIFERENCIA
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-005
+
+La predecesora dejó congelado que:
+
+- `ADM-APP-REVIEW / App Review (Demo)` es un dato demo persistido y activo;
+- `currency = "COP"` y `source_app = "numera"` están fijados en la captura manual actual;
+- equilibrio y rentabilidad permanecen provisionales hasta `NUMERA-AUD-008`;
+- la captura manual no equivale a un hecho operativo externo conciliado;
+- no se localizaron marcadores `TODO`, `FIXME` o `HACK` en el snapshot auditado.
+
+Esta tarea no reabre esas decisiones; evalúa su impacto sobre reportes y proyecciones.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `NUMERA-AUD-001..012` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+No se crea instancia física ni se modifica el estado remoto.
+
+---
+
+#### 4. Fuentes verificadas
+
+Se contrastaron:
+
+- `NUMERA-AUD-001` a `NUMERA-AUD-004` publicados;
+- `NUMERA-AUD-005` aprobado por el usuario como base inmediata;
+- `CAP-SCOPE-012` y sus reglas de propiedad, conciliación y proyección;
+- `04A_13_NUMERA.md` sin modificación;
+- `vento-numera/main` en commit `c4d50282e30e46d0abb3d871f9604cf913ebbabd`;
+- `/`, `/cost-centers`, `/expenses`, `/break-even` y `/profitability`;
+- `public.numera_cost_center_monthly_summary`;
+- `public.numera_current_period_summary()`;
+- snapshot remoto de solo lectura de Supabase `vento-os-dev` (`clzdpinthhtknkmefsxx`) con fecha de base `2026-09-26`.
+
+---
+
+#### 5. Regla canónica de lectura
+
+Se conserva la regla aprobada:
+
+```text
+UN REPORTE ES UNA PROYECCION
+UN REPORTE NO ES FUENTE DE VERDAD
+UN AGREGADO NO SE CORRIGE COMO SI FUERA EL HECHO ORIGEN
+```
+
+La fuente operativa conserva el hecho y NUMERA debe consumirlo, reconocer su efecto económico y conciliarlo sin recrear el objeto operacional.
+
+---
+
+#### 6. Definiciones de esta auditoría
+
+| Estado | Definición |
+| --- | --- |
+| `RECONCILIADO` | el valor puede navegar a hechos fuente, diferencias y resolución suficientes para sostener el significado mostrado |
+| `NO_RECONCILIADO` | existe proyección o agregado, pero no un cierre demostrado contra las fuentes empresariales requeridas |
+| `FUENTE_COMPLETA_APROBADA` | el significado mostrado descansa sobre fuentes propietarias aprobadas y cobertura suficiente |
+| `FUENTE_INTERNA_PARCIAL` | existe persistencia NUMERA válida para el dato capturado, pero no demuestra la totalidad del hecho empresarial |
+| `SIN_FUENTE_COMPLETA_APROBADA` | la proyección carece de cobertura suficiente para presentarse como verdad empresarial completa |
+| `AUSENCIA_CONVERTIDA_EN_CERO` | no existe dato o periodo aplicable, pero la UI presenta cero mediante fallback |
+| `ALCANCE_TEMPORAL_NO_ACOTADO` | la consulta puede mezclar periodos porque no restringe explícitamente el periodo mostrado |
+
+---
+
+#### 7. Universo de superficies de reporte
+
+Se materializa el siguiente universo:
+
+```text
+REPORT_SURFACES = 4
+```
+
+1. `RPT-NUMERA-001` — `/` — panel de inteligencia económica operativa;
+2. `RPT-NUMERA-002` — `/cost-centers` — modelo económico por centro de costo;
+3. `RPT-NUMERA-003` — `/break-even` — punto de equilibrio;
+4. `RPT-NUMERA-004` — `/profitability` — lectura de rentabilidad.
+
+---
+
+#### 8. Superficies excluidas del conteo de reportes
+
+`/expenses` se conserva como lista transaccional y superficie de captura manual. Es una fuente de entrada para reportes, no un reporte financiero completo por sí misma.
+
+`/login` y `/no-access` son superficies técnicas de acceso.
+
+---
+
+#### 9. Resultado ejecutivo
+
+El corte produce:
+
+```text
+REPORT_SURFACES = 4
+FULLY_RECONCILED_REPORTS = 0
+REPORTS_WITH_COMPLETE_APPROVED_SOURCE_OF_TRUTH = 0
+REPORTS_WITH_PARTIAL_INTERNAL_SOURCE = 4
+REPORTS_WITH_PERIOD_SCOPE_FINDING = 4
+REPORTS_EXPOSED_TO_DEMO_DATA = 3
+CURRENT_ROOT_ZERO_FALLBACK = YES
+```
+
+`REPORTS_EXPOSED_TO_DEMO_DATA = 3` incluye el panel raíz por lineage potencial de su RPC y las dos tablas que hoy no excluyen el centro demo. El panel raíz no materializa actualmente esa fila porque no existe periodo del mes corriente.
+
+---
+
+#### 10. Matriz canónica de reportes
+
+| ID | Superficie | Fuente técnica inmediata | Conciliación actual | Fuente empresarial completa | Estado |
+| --- | --- | --- | --- | --- | --- |
+| `RPT-NUMERA-001` | `/` | `numera_current_period_summary()` | no demostrada | no | `NO_RECONCILIADO / SIN_FUENTE_COMPLETA_APROBADA` |
+| `RPT-NUMERA-002` | `/cost-centers` | `numera_cost_center_monthly_summary` | no demostrada | no | `NO_RECONCILIADO / FUENTE_INTERNA_PARCIAL` |
+| `RPT-NUMERA-003` | `/break-even` | `numera_cost_center_monthly_summary` | no demostrada | no | `NO_RECONCILIADO / SIN_FUENTE_COMPLETA_APROBADA` |
+| `RPT-NUMERA-004` | `/profitability` | `numera_cost_center_monthly_summary` | no demostrada | no | `NO_RECONCILIADO / SIN_FUENTE_COMPLETA_APROBADA` |
+
+---
+
+#### 11. Lineage del panel raíz
+
+La cadena observada es:
+
+```text
+/
+-> numera_current_period_summary()
+-> numera_cost_center_monthly_summary
+-> numera_periods
+-> cost_centers
+-> numera_cost_center_budgets
+-> numera_expenses
+-> numera_expense_categories
+```
+
+El panel muestra `Gasto operativo`, `Presupuesto`, `Ingreso esperado` y `Punto de equilibrio`.
+
+---
+
+#### 12. Ausencia de periodo convertida en cero
+
+El estado remoto verificado es:
+
+```text
+DB_CURRENT_DATE = 2026-09-26
+CURRENT_MONTH = 2026-09-01
+NUMERA_PERIOD_ROWS = 1
+CURRENT_MONTH_PERIOD_ROWS = 0
+CURRENT_SUMMARY_ROWS = 0
+```
+
+El único periodo observado es `2026-06`.
+
+La página raíz toma la primera fila del RPC o `null`; sus formatters convierten `null` o ausencia en `0`. Por tanto, en el corte actual la ausencia de un periodo de septiembre puede presentarse visualmente como cero para gasto, presupuesto, ingreso esperado y equilibrio.
+
+Clasificación:
+
+```text
+RPT-NUMERA-001 = AUSENCIA_CONVERTIDA_EN_CERO
+```
+
+Cero económico y ausencia de periodo no son equivalentes.
+
+---
+
+#### 13. Semántica temporal divergente del panel raíz
+
+`numera_current_period_summary()` exige que `period_month` sea exactamente el mes calendario de `current_date`.
+
+Las otras superficies no utilizan esa misma regla. Por tanto, NUMERA no conserva hoy una única semántica temporal compartida para “periodo actual”.
+
+---
+
+#### 14. Lineage de `/cost-centers`
+
+La superficie consulta:
+
+- el último registro de `numera_periods` por `period_month` para `currentPeriod`;
+- toda la vista `numera_cost_center_monthly_summary` sin filtro de periodo.
+
+La UI denomina al registro seleccionado `Periodo activo`, pero los rows y agregados no están restringidos a ese `currentPeriod`.
+
+---
+
+#### 15. Alcance temporal no acotado en `/cost-centers`
+
+La consulta a la vista no aplica `.eq(period_id, currentPeriod.id)` ni una condición equivalente.
+
+Con un solo periodo remoto el defecto no mezcla filas todavía. Con más de un periodo, `totalBudget`, `totalExpectedRevenue`, `totalBreakEven`, `actual_expenses` y `budget_variance` podrían agregar varias ventanas temporales mientras la cabecera muestra un único `Periodo activo`.
+
+Clasificación:
+
+```text
+RPT-NUMERA-002 = ALCANCE_TEMPORAL_NO_ACOTADO
+```
+
+---
+
+#### 16. Lineage de `/break-even`
+
+La superficie lee directamente:
+
+```text
+numera_cost_center_monthly_summary
+-> fixed_expenses
+-> variable_expenses
+-> target_gross_margin_pct
+-> break_even_revenue
+```
+
+No existe filtro de periodo en la consulta de la página.
+
+---
+
+#### 17. Fuente de verdad de punto de equilibrio
+
+La vista calcula `break_even_revenue` desde gasto fijo agregado y margen objetivo almacenado en presupuesto.
+
+Esta tarea no juzga la fórmula; esa responsabilidad queda en `NUMERA-AUD-008`.
+
+Sí se concluye que los inputs actuales no están conciliados con PULSO, ORIGO, FOGO y NEXO y que el margen objetivo no constituye ingreso realizado ni costo completo.
+
+Clasificación:
+
+```text
+RPT-NUMERA-003 = NO_RECONCILIADO
+RPT-NUMERA-003 = SIN_FUENTE_COMPLETA_APROBADA
+RPT-NUMERA-003 = ALCANCE_TEMPORAL_NO_ACOTADO
+```
+
+---
+
+#### 18. Lineage de `/profitability`
+
+La superficie lee:
+
+```text
+expected_revenue
+actual_expenses
+budget_amount
+budget_variance
+```
+
+desde `numera_cost_center_monthly_summary` y no aplica filtro de periodo.
+
+---
+
+#### 19. Semántica actual de rentabilidad
+
+La UI denomina la superficie `Rentabilidad`, pero el contenido visible se limita a ingreso esperado, gasto registrado, presupuesto y variación por centro de costo.
+
+No consume ingreso realizado, costo completo trazable, producto, línea, cliente, pedido o canal.
+
+La decisión canónica ya establece que la rentabilidad real deberá utilizar ingreso realizado y costo trazable.
+
+Clasificación:
+
+```text
+RPT-NUMERA-004 = NO_RECONCILIADO
+RPT-NUMERA-004 = SIN_FUENTE_COMPLETA_APROBADA
+RPT-NUMERA-004 = ALCANCE_TEMPORAL_NO_ACOTADO
+```
+
+---
+
+#### 20. Sobrepromesa de cobertura en el acceso a rentabilidad
+
+El panel raíz describe `/profitability` como:
+
+```text
+Margen por producto, linea, sede y canal.
+```
+
+La implementación observada de `/profitability` solo presenta filas por centro de costo con ingreso esperado, gasto, presupuesto y variación.
+
+No existe evidencia en esa superficie de margen por producto, línea o canal.
+
+---
+
+#### 21. `/expenses` como fuente interna parcial
+
+La lista de gastos consume `numera_expenses` y la Server Action actual escribe manualmente en esa tabla.
+
+Esto permite afirmar:
+
+```text
+SOURCE_FOR_RECORDED_MANUAL_EXPENSE_ROWS = numera_expenses
+```
+
+No permite afirmar:
+
+```text
+numera_expenses = COMPLETE_ENTERPRISE_EXPENSE_TRUTH
+```
+
+La conciliación de gastos con compras, inventario, producción, caja, bancos u otros dominios no está materializada en el repositorio actual.
+
+---
+
+#### 22. Fuente interna de presupuestos
+
+`numera_cost_center_budgets` es la persistencia actual de presupuesto, ingreso esperado y margen objetivo del modelo manual.
+
+La fuente es técnicamente definida para esos registros, pero el contrato aprobado exige versiones, escenarios, aprobación y forecast separados. La persistencia actual no demuestra ese workflow completo.
+
+---
+
+#### 23. La vista mensual es una proyección
+
+`numera_cost_center_monthly_summary`:
+
+- cruza periodos con centros de costo activos;
+- incorpora presupuesto cuando existe;
+- suma gastos capturados;
+- clasifica gastos por categoría;
+- calcula variación;
+- deriva equilibrio.
+
+Por diseño es una proyección derivada y no debe elevarse a fuente de verdad primaria.
+
+---
+
+#### 24. El RPC de periodo actual es una segunda proyección
+
+`numera_current_period_summary()` agrega la vista mensual para el mes calendario actual.
+
+La cadena es:
+
+```text
+HECHOS / OBJETIVOS CAPTURADOS
+-> VISTA MENSUAL
+-> RPC AGREGADO
+-> DASHBOARD
+```
+
+Cada nivel posterior conserva dependencia de la calidad y cobertura de las entradas anteriores.
+
+---
+
+#### 25. Estado remoto de las entradas
+
+El snapshot remoto confirma:
+
+```text
+PERIODS = 1
+EXPENSES = 0
+BUDGETS = 0
+MONTHLY_SUMMARY_ROWS = 6
+```
+
+Las seis filas de resumen existen por el cruce estructural entre el periodo `2026-06` y los seis centros de costo activos; no prueban actividad financiera.
+
+---
+
+#### 26. Cero derivado no equivale a hecho confirmado
+
+En las seis filas remotas observadas:
+
+```text
+budget_amount = 0
+expected_revenue = 0
+actual_expenses = 0
+fixed_expenses = 0
+variable_expenses = 0
+one_time_expenses = 0
+budget_variance = 0
+break_even_revenue = null
+```
+
+Esos valores describen ausencia de entradas registradas en la fundación actual. No certifican que el negocio haya tenido cero presupuesto, cero ventas, cero gastos o equilibrio cero.
+
+---
+
+#### 27. Inconsistencia de aislamiento del dato demo
+
+`/cost-centers` filtra filas cuyo nombre o código contenga `app review` o `demo`.
+
+`/break-even` y `/profitability` no aplican ese filtro y consumen directamente la vista completa.
+
+El snapshot de la vista contiene:
+
+```text
+ADM-APP-REVIEW / App Review (Demo)
+```
+
+Por tanto las dos tablas analíticas pueden presentar una fila demo que la superficie de centros de costo oculta.
+
+---
+
+#### 28. Exposición potencial del dato demo en el panel raíz
+
+`numera_current_period_summary()` agrega todos los centros activos de la vista y no excluye `ADM-APP-REVIEW`.
+
+En el corte actual no existe fila del mes corriente, por lo que el panel raíz no materializa la contaminación. Si se crea un periodo corriente manteniendo ese centro activo, el agregado incluiría el centro demo salvo otra regla no observada.
+
+Clasificación:
+
+```text
+ROOT_DEMO_EXPOSURE = POTENTIAL_BY_CURRENT_LINEAGE
+```
+
+---
+
+#### 29. Fuentes empresariales aprobadas por dominio
+
+La propiedad objetivo vigente separa:
+
+```text
+PULSO -> venta, pago y caja
+ORIGO -> compra y recepción empresarial
+NEXO -> inventario, logística y efectos físicos
+FOGO -> producción, consumo, rendimiento y merma
+ANIMA -> hechos laborales autorizados
+PASS -> cliente, pedidos, fidelización y pagos de canal
+NUMERA -> hecho económico, conciliación, costo, cartera, cierre y analítica financiera
+```
+
+NUMERA consume sin recrear los objetos operativos propietarios.
+
+---
+
+#### 30. Conciliación actual con fuentes operativas
+
+`NUMERA-AUD-003` ya confirmó que el snapshot de `vento-numera` no contiene consumidor físico identificado de PULSO, ORIGO, FOGO o NEXO.
+
+Por tanto:
+
+```text
+PULSO_RECONCILIATION = NOT_IMPLEMENTED_IN_CURRENT_NUMERA
+ORIGO_RECONCILIATION = NOT_IMPLEMENTED_IN_CURRENT_NUMERA
+FOGO_RECONCILIATION = NOT_IMPLEMENTED_IN_CURRENT_NUMERA
+NEXO_RECONCILIATION = NOT_IMPLEMENTED_IN_CURRENT_NUMERA
+```
+
+Los cuatro reportes permanecen fuera de una conciliación empresarial de extremo a extremo demostrada.
+
+---
+
+#### 31. Relaciones económicas adyacentes
+
+El proyecto remoto contiene relaciones económicas adicionales como políticas/eventos de costo, listas internas de precio, documentos POS, transacciones y ledgers de wallet.
+
+Su existencia no las convierte automáticamente en fuente aprobada de los reportes actuales porque `vento-numera` no las consume y el contrato de ownership no autoriza enlazarlas por inferencia.
+
+---
+
+#### 32. Matriz de métricas visibles y fuente actual
+
+| Métrica | Fuente actual | Tipo de dato | Fuente completa aprobada hoy |
+| --- | --- | --- | --- |
+| gasto operativo / gasto real | `numera_expenses` agregado | captura manual interna | no |
+| presupuesto | `numera_cost_center_budgets` | objetivo manual interno | no como workflow completo |
+| ingreso esperado | `numera_cost_center_budgets` | expectativa manual | no es ingreso realizado |
+| variación | presupuesto menos gasto agregado | derivado | no |
+| gasto fijo / variable / one-time | gastos + categoría | derivado de captura manual | no |
+| punto de equilibrio | gasto fijo + margen objetivo | derivado | no |
+| rentabilidad mostrada | ingreso esperado + gasto + presupuesto | proyección simplificada | no |
+
+---
+
+#### 33. Hallazgos confirmados
+
+| ID | Hallazgo | Severidad documental | Propietario de salida |
+| --- | --- | --- | --- |
+| `H-NUMERA-006-001` | el panel raíz convierte ausencia de periodo corriente en valores cero | crítica | `NUMERA-UX-014`, `NUMERA-UX-024`, `NUMERA-DOM-011` |
+| `H-NUMERA-006-002` | las superficies no comparten una semántica temporal única de periodo actual | alta | `NUMERA-DOM-011`, `NUMERA-UX-023`, `NUMERA-UX-024` |
+| `H-NUMERA-006-003` | `/cost-centers` etiqueta un periodo como activo pero consulta la vista sin acotar rows a ese periodo | crítica | `NUMERA-UX-010`, `NUMERA-DOM-006`, `NUMERA-DOM-011` |
+| `H-NUMERA-006-004` | `/break-even` consulta todos los periodos sin dimensión temporal visible | crítica | `NUMERA-AUD-008`, `NUMERA-UX-019`, `NUMERA-DOM-007` |
+| `H-NUMERA-006-005` | `/profitability` consulta todos los periodos sin dimensión temporal visible | crítica | `NUMERA-AUD-008`, `NUMERA-UX-022`, `NUMERA-DOM-008` |
+| `H-NUMERA-006-006` | ningún reporte actual demuestra conciliación con PULSO, ORIGO, FOGO y NEXO | crítica | `NUMERA-DOM-002..004`, `NUMERA-UX-014`, integraciones propietarias |
+| `H-NUMERA-006-007` | `expected_revenue` es entrada manual y se usa en superficies analíticas sin ser ingreso realizado | alta | `NUMERA-AUD-008`, `NUMERA-DOM-008`, `NUMERA-UX-022` |
+| `H-NUMERA-006-008` | `actual_expenses` representa gastos capturados en NUMERA, no gasto empresarial completo reconciliado | crítica | `NUMERA-AUD-007`, `NUMERA-AUD-009`, `NUMERA-DOM-005` |
+| `H-NUMERA-006-009` | la tarjeta de rentabilidad promete producto, línea, sede y canal, pero la página observada solo trabaja por centro de costo | alta | `NUMERA-DOM-008`, `NUMERA-UX-022`, `NUMERA-UX-028` |
+| `H-NUMERA-006-010` | `/break-even` y `/profitability` exponen el centro demo que `/cost-centers` filtra | alta | `NUMERA-UX-019`, `NUMERA-UX-022`, gobierno de APP-REVIEW |
+| `H-NUMERA-006-011` | el RPC raíz incorporaría el centro demo al agregado de un periodo corriente mientras siga activo | alta | `NUMERA-UX-014`, `NUMERA-DOM-006`, gobierno de APP-REVIEW |
+| `H-NUMERA-006-012` | la UI de centros de costo anuncia remisiones valorizadas NEXO como fuente futura aunque no existe consumidor físico actual | media | integración NEXO→NUMERA y `NUMERA-DOM-007` |
+
+---
+
+#### 34. Condiciones de salida de los hallazgos
+
+Un hallazgo de esta tarea solo podrá cerrarse cuando su tarea propietaria demuestre, según corresponda:
+
+- periodo explícito y consistente;
+- diferencia entre `sin dato` y `0`;
+- fuente propietaria identificable;
+- ingestión idempotente;
+- conciliación y resolución de diferencias;
+- exclusión canónica de datos demo;
+- métricas con significado igual al mostrado;
+- navegación desde agregado hasta entradas y hechos fuente.
+
+---
+
+#### 35. Límite con NUMERA-AUD-007
+
+Esta tarea detecta que `actual_expenses` proviene de captura manual y no constituye verdad económica completa.
+
+No decide todavía si una fila manual duplica una compra, recepción, producción, pago, venta u otro hecho. Esa decisión pertenece exclusivamente a `NUMERA-AUD-007`.
+
+---
+
+#### 36. Límite con NUMERA-AUD-008
+
+Esta tarea registra el lineage de `break_even_revenue`, variación y rentabilidad para juzgar sus fuentes.
+
+No certifica ni refuta la fórmula matemática, método de costo, margen, drivers o punto de equilibrio. Ese análisis pertenece a `NUMERA-AUD-008`.
+
+---
+
+#### 37. Límite con NUMERA-AUD-009
+
+Esta tarea identifica que periodos, gastos y presupuestos alimentan reportes sin cierre integral demostrado.
+
+No audita workflows de aprobación, cierre, reapertura, anulación o soporte. Esa responsabilidad pertenece a `NUMERA-AUD-009`.
+
+---
+
+#### 38. Límite con NUMERA-AUD-010
+
+Esta tarea no evalúa exportaciones, minimización, sensibilidad, custodia o trazabilidad de archivos/reportes fuera de la aplicación. Ese alcance permanece en `NUMERA-AUD-010`.
+
+---
+
+#### 39. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: los hallazgos están cubiertos por obligaciones de prueba vigentes sobre conciliación, lineage, reportes, equilibrio, rentabilidad y periodos. Esta auditoría materializa evidencia AS-IS y no crea comportamiento nuevo.
+
+---
+
+#### 40. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-NUMERA-001` para reconciliación de indicador, costo, margen, gasto, cierre, saldo o reporte con hechos y documentos fuente;
+- `TREQ-NUMERA-002` para identidad, fuente, correlación y prohibición de tratar agregados como fuente;
+- `TREQ-NUMERA-004` para fuente, entradas y trazabilidad de costo, presupuesto, equilibrio y rentabilidad;
+- `TREQ-NUMERA-019` para evitar presentar ausencia de margen o cálculo como valor económico confirmado;
+- `TREQ-NUMERA-020` para conservar separados ingreso esperado, gasto real, presupuesto y variación;
+- `TREQ-NUMERA-024` para delta explícito frente al baseline técnico aprobado.
+
+Esta sección es trazabilidad heredada y no actualiza 04A.
+
+---
+
+#### 41. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build del producto permanece reservado a `NUMERA-AUD-011`. |
+| LOCAL | NOT_EXECUTED | La incorporación y la batería estructural contra el checkout del usuario se ejecutarán al publicar la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, `vento-numera/main`, las cuatro superficies de reporte, la vista, el RPC y el snapshot Supabase de solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron cierres, gastos, presupuestos, ventas, compras, conciliaciones ni flujos financieros. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no hay materialización física autorizada. |
+
+---
+
+#### 42. Validaciones documentales de coherencia
+
+Se comprueba que:
+
+1. `NUMERA-AUD-005` permanece como predecesora inmediata;
+2. `NUMERA-AUD-007` permanece como sucesora inmediata;
+3. el universo de reportes queda fijado en cuatro superficies;
+4. `/expenses` se conserva como fuente/lista transaccional, no se infla como reporte independiente;
+5. conciliación y fuente de verdad se analizan sin resolver duplicidad manual;
+6. las fórmulas se transfieren intactas a `NUMERA-AUD-008`;
+7. cierres y aprobaciones permanecen en `NUMERA-AUD-009`;
+8. exportaciones y sensibilidad permanecen en `NUMERA-AUD-010`;
+9. no se crean ni modifican requisitos de prueba.
+
+---
+
+#### 43. Criterios de aceptación
+
+`NUMERA-AUD-006` queda aceptable cuando:
+
+- todas las superficies actuales de reporte tienen identidad estable;
+- cada superficie tiene lineage técnico inmediato;
+- conciliación y fuente completa se clasifican por separado;
+- ausencia de periodo y valor cero no se confunden;
+- el alcance temporal de cada consulta queda documentado;
+- el dato demo tiene impacto explícito por reporte;
+- `expected_revenue`, `actual_expenses`, presupuesto, variación, equilibrio y rentabilidad tienen fuente actual declarada;
+- la propiedad de PULSO, ORIGO, NEXO, FOGO, ANIMA, PASS y NUMERA no se altera;
+- cada hallazgo tiene propietario y condición de salida;
+- no se corrigen fórmulas, código, datos ni integraciones;
+- no se crean ni modifican requisitos de prueba;
+- `NUMERA-AUD-007` queda como única continuidad inmediata.
+
+---
+
+#### 44. Límites
+
+Esta tarea no demuestra:
+
+- que un valor mostrado sea contablemente correcto;
+- que toda venta, compra, inventario, producción o nómina deba entrar en un mismo reporte;
+- que una fuente adyacente sea automáticamente la fuente canónica futura;
+- que `0` sea incorrecto cuando exista un hecho confirmado con valor cero;
+- que la fórmula de equilibrio sea correcta o incorrecta;
+- que la rentabilidad deba usar una fórmula específica distinta de la definida posteriormente;
+- que exista una duplicidad manual concreta;
+- que un periodo de junio deba cerrarse o eliminarse;
+- que APP-REVIEW deba borrarse físicamente;
+- que un reporte deba exportarse.
+
+---
+
+#### 45. Decisiones congeladas
+
+Quedan congeladas para continuidad:
+
+1. existen cuatro superficies actuales de reporte/proyección financiera en NUMERA;
+2. ninguna demuestra conciliación integral con los cuatro dominios operativos objetivo;
+3. ninguna constituye por sí sola fuente de verdad empresarial completa;
+4. el panel raíz convierte ausencia de periodo corriente en ceros visibles;
+5. la semántica temporal del panel raíz difiere de las otras superficies;
+6. `/cost-centers`, `/break-even` y `/profitability` consultan la vista sin filtro de periodo;
+7. `/break-even` y `/profitability` incluyen actualmente la fila `App Review (Demo)`;
+8. el RPC raíz también incluiría ese centro activo cuando exista periodo corriente;
+9. `actual_expenses` es verdad técnica de las filas manuales capturadas, no verdad económica empresarial completa;
+10. `expected_revenue` es expectativa manual, no ingreso realizado;
+11. rentabilidad y equilibrio conservan sus fórmulas sin juicio hasta `NUMERA-AUD-008`;
+12. 04A permanece sin cambios.
+
+---
+
+#### 46. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios`
 ### [ ] NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
 ### [ ] NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
 ### [ ] NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
