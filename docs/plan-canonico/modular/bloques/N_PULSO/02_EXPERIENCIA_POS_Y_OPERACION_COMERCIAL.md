@@ -5788,7 +5788,1154 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-006 — Diseñar inicio para supervisor`
-### [ ] PULSO-UX-006 — Diseñar inicio para supervisor
+### ✅ PULSO-UX-006 — Diseñar inicio para supervisor
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-005 — Diseñar inicio para operador integral
+**Tarea siguiente:** PULSO-UX-007 — Simplificar creación de venta
+**Tipo de tarea:** diseño documental integral del inicio PULSO para supervisión, reconciliando el rol base `supervisor`, el carril operativo `gerencia_operativa`, `VSCREEN-0080 — Inicio POS`, `VSCREEN-0093 — Revisión de ventas, caja y terminales`, `GAP-PULSO-015`, el catálogo de autorización 1.0.0 y el runtime actual, para definir carga, alertas, prioridades, historial, excepciones y escalamiento sin convertir supervisión en ejecución ordinaria, sin asumir permisos no publicados y sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, pantallas, permisos, catálogo, matrices, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, packages, dispositivos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada el inicio de PULSO para una persona que supervisa la operación comercial de una sede, de manera que pueda comprender carga, bloqueos, excepciones, envejecimiento, historial y estado de cajas o terminales dentro de autoridad explícita, sin recibir por la interfaz una capacidad que el catálogo de autorización no haya concedido.
+
+La tarea debe resolver simultáneamente:
+
+```text
+QUE NECESITA OBSERVAR EL SUPERVISOR
++
+QUE PUEDE VER SEGUN AUTORIZACION
++
+QUE DEBE ESCALAR
++
+QUE NO PUEDE EJECUTAR
++
+COMO SE DISTINGUE FALTA DE DATOS DE FALTA DE PERMISO
+```
+
+El resultado no es un dashboard genérico. Es una composición gobernada de trabajo supervisor PULSO.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-005
+
+`PULSO-UX-005` entrega a esta tarea:
+
+```text
+VSCREEN-0080 SIGUE SIENDO IDENTIDAD COMPARTIDA DE INICIO POS
+OPERADOR INTEGRAL NO ES SUPERUSUARIO
+CAPACIDAD ORDINARIA DIRECTA != COMPONENTE SENSIBLE DE DOBLE CARRIL
+SUPERVISOR NO RECIBE POR MATRIZ LOS COMPONENTES BASE PULSO DE AUTH-CAT-023
+SUPERVISION != EJECUCION ORDINARIA DE CAJA
+VISIBILIDAD DE EXCEPCIONES != PERMISO DE MUTAR
+REALTIME != AUTORIDAD
+PULSO.POS.MAIN NO PUEDE SER FALLBACK
+```
+
+La tarea anterior exige que 006 se concentre en carga, excepciones, bloqueos y decisiones gobernadas.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- la experiencia se define una sola vez;
+- no crea una instancia física propia;
+- no modifica el runtime PULSO;
+- no publica nuevas PermissionKeys;
+- no asigna grants;
+- no cambia `active-sequence.json` manualmente;
+- no ejecuta acciones comerciales reales;
+- no modifica Supabase;
+- no autoriza implementación física.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+La decisión consume, como mínimo:
+
+- `PULSO-UX-001` a `PULSO-UX-005`;
+- `PULSO-AUTH-006` a `PULSO-AUTH-016`;
+- `AUTH-RBAC-004 — Crear matriz de supervisor`;
+- `AUTH-RBAC-019 — Crear matriz de gerencia_operativa`;
+- `AUTH-CAT-020` a `AUTH-CAT-024`;
+- datasets canónicos `base-role-grants@1.0.0` y `operational-role-grants@1.0.0`;
+- catálogo y bindings de `VSCREEN-*`;
+- catálogo de procesos y estados `VPROC-*`;
+- `GAP-PULSO-015`;
+- Registro 04A vigente de AUTH, PULSO y UX;
+- código actual de `vento-pulso` como evidencia AS-IS.
+
+Las decisiones posteriores de AUTH-CAT prevalecen sobre propuestas históricas no publicadas del catálogo.
+
+---
+
+#### 5. Reconciliación de PULSO-AUTH-007
+
+`PULSO-AUTH-007` definió documentalmente un conjunto objetivo de lecturas y coordinaciones supervisoras, incluyendo nombres propuestos para pedidos, caja, pagos, salón, llamados, conversaciones, facturación visible, delivery e importaciones.
+
+Posteriormente, `AUTH-CAT-021` clasificó:
+
+```text
+GAP-PULSO-015
+=
+NEEDS_FUNCTIONAL_ROADMAP
+DESTINO = PULSO-AUTH-007 + PULSO-UX-006
+```
+
+Y el catálogo `vento.authorization@1.0.0` no publicó aquellas once claves históricamente propuestas.
+
+Por tanto:
+
+```text
+PROPUESTA HISTORICA DE PULSO-AUTH-007
+!=
+PERMISSIONKEY CANONICA VIGENTE
+```
+
+Esta tarea madura el contrato funcional. No reactiva nombres de permisos por inferencia.
+
+---
+
+#### 6. Identidades que deben permanecer separadas
+
+La palabra “supervisor” aparece en planos distintos:
+
+```text
+ROL BASE
+supervisor
+
+ROL OPERATIVO DE COORDINACION
+gerencia_operativa
+
+FUNCION DE PROCESO
+SUPERVISOR / REVIEWER
+
+EXPERIENCIA UX
+inicio PULSO orientado a supervisión
+```
+
+Ninguno de esos conceptos autoriza automáticamente a los demás.
+
+---
+
+#### 7. Estado vigente del rol base supervisor
+
+El dataset canónico `base-role-grants@1.0.0` contiene:
+
+```text
+SUPERVISOR_BASE_GRANTS_TOTAL = 58
+SUPERVISOR_BASE_PULSO_GRANTS = 0
+```
+
+Por tanto:
+
+```text
+ROL BASE supervisor
+!=
+pulso.access
+```
+
+Una persona que sea únicamente `supervisor` no obtiene PULSO por su rol base.
+
+---
+
+#### 8. Estado vigente de gerencia_operativa en PULSO
+
+El dataset `operational-role-grants@1.0.0` contiene siete grants PULSO para `gerencia_operativa`:
+
+- `pulso.access` como concesión operativa directa;
+- componente operativo de `pulso.delivery.deliveries.override`;
+- componente operativo de `pulso.payments.transactions.refund`;
+- componente operativo de `pulso.payments.transactions.reverse`;
+- componente operativo de `pulso.sales.discounts.apply`;
+- componente operativo de `pulso.sales.orders.cancel`;
+- componente operativo de `pulso.sales.returns.create`.
+
+No recibe por matriz:
+
+```text
+pulso.sales.orders.create
+pulso.payments.transactions.collect
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+```
+
+---
+
+#### 9. El supervisor tampoco completa acciones sensibles por defecto
+
+`AUTH-CAT-023` excluye expresamente al rol base `supervisor` de los componentes base de las cinco capacidades PULSO `BASE_AND_OPERATIONAL` creadas en el diff contractual.
+
+Así:
+
+```text
+supervisor base
++
+gerencia_operativa
+!=
+autorizacion final para cancel / return / refund / reverse / discount
+```
+
+La UI no mostrará esas acciones como disponibles por jerarquía.
+
+---
+
+#### 10. Condición de existencia del inicio supervisor PULSO
+
+La experiencia PULSO de supervisión existe únicamente cuando el actor efectivo tiene una vía válida para entrar a PULSO.
+
+Contrato mínimo:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++
+CONTEXTO OPERATIVO VALIDO
++
+PERMISO pulso.access RESUELTO POR EL CARRIL CORRESPONDIENTE
++
+SEDE / AREA EFECTIVAS
++
+DISPOSITIVO COMPATIBLE CUANDO APLIQUE
++
+AUSENCIA DE DENY
+=
+PUEDE ABRIR EL INICIO PULSO
+```
+
+El rol base `supervisor` por sí solo no satisface esa ecuación.
+
+---
+
+#### 11. Regla ante supervisor base sin acceso operativo PULSO
+
+Si la persona posee rol base `supervisor`, pero no tiene una concesión operativa válida de `pulso.access`:
+
+- SHELL no debe presentar PULSO como aplicación operable por inferencia;
+- una URL directa debe fallar cerrado;
+- no se renderiza información operacional PULSO;
+- no se usa `pulso.pos.main` como fallback;
+- la salida correcta es una explicación de acceso/contexto, no un home vacío con datos ocultos.
+
+---
+
+#### 12. Identidad canónica de inicio
+
+Se conserva:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+No se crea un segundo “Inicio Supervisor PULSO”.
+
+`VSCREEN-0080` adapta su composición al actor y capacidades efectivas.
+
+---
+
+#### 13. Workspace primario de supervisión
+
+La pantalla especializada principal para supervisión es:
+
+```text
+VSCREEN-0093 — Revisión de ventas, caja y terminales
+```
+
+Binding canónico:
+
+```text
+PROCESO PRINCIPAL = VPROC-0044
+PROCESOS RELACIONADOS = VPROC-0043, VPROC-0061
+PASO = VPROC-0044::STEP-REVIEW_SALES_AND_TERMINALS
+INTERACCION = REVIEW
+FASE = CROSS_CUTTING
+```
+
+Su identidad es revisar. No ejecutar caja ordinaria.
+
+---
+
+#### 14. Relación entre VSCREEN-0080 y VSCREEN-0093
+
+La navegación objetivo es:
+
+```text
+VSCREEN-0080
+→ resume contexto y trabajo supervisor
+→ prioriza anomalías / carga / pendientes
+→ abre VSCREEN-0093 para revisión profunda
+```
+
+Nunca:
+
+```text
+VSCREEN-0093
+→ se convierte en una ruta privilegiada que omite autorización
+```
+
+---
+
+#### 15. Principio de composición del home
+
+El inicio supervisor responde primero:
+
+1. ¿qué sede y contexto estoy supervisando?;
+2. ¿qué requiere atención ahora?;
+3. ¿qué está bloqueado o envejeciendo?;
+4. ¿qué diferencia necesita revisión?;
+5. ¿qué sistema o actor debe continuar?;
+6. ¿qué puedo observar?;
+7. ¿qué puedo ejecutar realmente?;
+
+La prioridad es **triage y coordinación**, no volumen de widgets.
+
+---
+
+#### 16. Contrato funcional de GAP-PULSO-015
+
+`GAP-PULSO-015` se descompone funcionalmente en cinco proyecciones distintas:
+
+```text
+A. CARGA OPERATIVA ACTUAL
+B. ALERTAS Y ENVEJECIMIENTO
+C. PRIORIDAD / TRIAGE
+D. HISTORIAL OPERATIVO
+E. REVISION COMERCIAL, CAJA Y TERMINALES
+```
+
+Estas proyecciones no se fusionan en un único permiso broad.
+
+---
+
+#### 17. Proyección A — carga operativa actual
+
+Debe permitir entender, dentro del territorio autorizado:
+
+- cantidad de compromisos activos;
+- distribución por canal o modalidad cuando corresponda;
+- etapa actual de preparación/cumplimiento;
+- trabajo pendiente de handoff;
+- trabajo pendiente de cobro o conciliación cuando la proyección autorizada lo permita;
+- llamados o incidencias abiertas cuando exista contrato de lectura;
+- sesiones de caja abiertas o en cierre cuando exista contrato de lectura.
+
+No autoriza mutaciones.
+
+---
+
+#### 18. La carga no puede inventar semántica de estado
+
+Los contadores deben provenir de estados canónicos o de un mapeo aprobado.
+
+Queda prohibido:
+
+```text
+NOMBRE AS-IS DEL RUNTIME
+→ elevarlo automáticamente a estado canónico
+```
+
+La reconciliación detallada de estados continúa en las tareas PULSO propietarias.
+
+---
+
+#### 19. Proyección B — alertas y envejecimiento
+
+El home puede mostrar que un caso requiere atención por:
+
+- espera prolongada;
+- falta de responsable;
+- conflicto o concurrencia;
+- estado de pago ambiguo;
+- fallo de canal;
+- falta de confirmación;
+- sesión/cierre pendiente;
+- terminal o dispositivo con estado problemático;
+- evento esperado no observado.
+
+La alerta no concede autoridad para resolver.
+
+---
+
+#### 20. Umbrales de alerta
+
+Esta tarea no inventa minutos, porcentajes ni SLA.
+
+Regla:
+
+```text
+UMBRAL PUBLICADO Y VIGENTE
+→ puede clasificar alerta
+
+SIN UMBRAL CANONICO
+→ mostrar edad / estado observado
+→ no afirmar incumplimiento
+```
+
+---
+
+#### 21. Proyección C — prioridad y triage
+
+La prioridad de atención puede considerar:
+
+- riesgo de pérdida de venta;
+- cliente esperando;
+- pedido bloqueado;
+- pago no reconciliado;
+- riesgo de duplicidad;
+- pedido listo sin handoff;
+- dependencia externa fallida;
+- cierre de caja pendiente;
+- diferencia que requiere otro responsable.
+
+La prioridad debe explicar su razón y no convertirse en un score opaco.
+
+---
+
+#### 22. Prioridad no equivale a autoridad
+
+Se conserva:
+
+```text
+ALTA PRIORIDAD
+!=
+PERMISO PARA EJECUTAR
+```
+
+Un caso crítico puede exigir escalamiento a un actor con otra función o permiso.
+
+---
+
+#### 23. Proyección D — historial operativo
+
+El supervisor necesita reconstruir qué ocurrió sin abrir un log técnico crudo.
+
+La historia funcional debe conservar, según autorización:
+
+- evento o transición;
+- actor efectivo;
+- timestamp de servidor;
+- estado anterior y posterior cuando aplique;
+- motivo o referencia;
+- correlación con pedido, pago, caja, entrega o llamado;
+- resultado confirmado, rechazado, pendiente o desconocido.
+
+---
+
+#### 24. Historial operativo no es auditoría global
+
+```text
+TIMELINE DEL RECURSO
+!=
+AUDIT LOG DE TODA LA PLATAFORMA
+```
+
+La vista supervisora debe limitarse al caso y territorio necesarios.
+
+---
+
+#### 25. Proyección E — revisión comercial, caja y terminales
+
+`VSCREEN-0093` concentra la revisión de:
+
+- ventas y pedidos relevantes;
+- estado de cobros cuando exista proyección autorizada;
+- sesiones de caja y cierres cuando exista proyección autorizada;
+- diferencias y bloqueos;
+- estado de terminales o estaciones;
+- incidencias que afectan continuidad operativa.
+
+No convierte revisión en ejecución.
+
+---
+
+#### 26. Ventas y pedidos en supervisión
+
+La proyección supervisora de pedidos debe permitir responder:
+
+- qué está abierto;
+- qué está atrasado o bloqueado;
+- qué espera preparación;
+- qué espera handoff;
+- qué espera pago;
+- qué cambió recientemente;
+- quién tiene la responsabilidad operativa actual cuando el contrato lo exponga.
+
+No debe mostrar botones de transición por mera visibilidad.
+
+---
+
+#### 27. Caja en supervisión
+
+La revisión de caja distingue:
+
+```text
+VER SESION
+VER ESTADO DE CIERRE
+VER DIFERENCIA
+REVISAR EVIDENCIA
+```
+
+frente a:
+
+```text
+ABRIR
+COBRAR
+CERRAR
+APROBAR DIFERENCIA
+CORREGIR
+```
+
+La segunda familia requiere capacidades distintas.
+
+---
+
+#### 28. Terminales y estaciones
+
+La supervisión puede necesitar conocer:
+
+- terminal activa/inactiva;
+- estación o dispositivo relacionado;
+- última señal operativa cuando exista contrato;
+- bloqueo o capacidad indisponible;
+- contexto de sede/área;
+- actor actual únicamente cuando sea necesario y autorizado.
+
+No debe exponer secretos, tokens ni configuración sensible.
+
+---
+
+#### 29. Estado de salud no concede control del dispositivo
+
+```text
+VER TERMINAL
+!=
+ADMINISTRAR TERMINAL
+```
+
+Activación, configuración, revocación, paquetes y políticas de dispositivo conservan sus propietarios.
+
+---
+
+#### 30. Excepciones visibles
+
+El home supervisor puede agrupar excepciones por intención:
+
+- “requiere atención del cajero”;
+- “requiere atención de salón”;
+- “requiere preparación”;
+- “requiere coordinación de entrega”;
+- “requiere revisión de pago”;
+- “requiere revisión de caja”;
+- “requiere soporte técnico”;
+- “requiere autoridad superior”.
+
+No debe agruparlas bajo un botón genérico “Resolver”.
+
+---
+
+#### 31. Escalamiento como acción UX
+
+Cuando el supervisor no posee la capacidad resolutiva, la UI puede ofrecer una salida de escalamiento si el contrato correspondiente existe.
+
+El escalamiento debe preservar:
+
+- recurso;
+- motivo;
+- actor que escala;
+- destino funcional;
+- estado;
+- timestamp;
+- correlación.
+
+Esta tarea no crea el mecanismo técnico de escalamiento.
+
+---
+
+#### 32. Diferencia entre observar, asignar, escalar y decidir
+
+```text
+OBSERVAR
+!=
+ASIGNAR
+!=
+ESCALAR
+!=
+APROBAR
+!=
+EJECUTAR
+```
+
+La interfaz debe usar verbos compatibles con la autoridad real.
+
+---
+
+#### 33. Supervisión de salón
+
+El supervisor puede requerir visibilidad de:
+
+- mesas/sesiones abiertas;
+- llamados activos;
+- llamados sin responsable;
+- acumulación de espera;
+- pedidos ligados a servicio.
+
+La administración de mesas y transiciones de llamados sigue el contrato de salón y no nace de esta pantalla.
+
+---
+
+#### 34. Supervisión de mostrador y entrega
+
+Puede requerir visibilidad de:
+
+- pedidos listos;
+- handoffs pendientes;
+- pedidos externos en espera;
+- asignaciones de entrega;
+- incidencias de canal;
+- pedidos detenidos entre preparación y entrega.
+
+No convierte al supervisor en mostrador, conductor o receptor.
+
+---
+
+#### 35. Supervisión de pagos
+
+La UI debe distinguir:
+
+```text
+PAGO PENDIENTE
+PAGO EN PROCESO
+PAGO CONFIRMADO
+PAGO RECHAZADO
+PAGO DE RESULTADO DESCONOCIDO
+```
+
+cuando esos estados existan en el contrato propietario.
+
+Nunca:
+
+```text
+TIMEOUT
+→ PAGO FALLIDO
+```
+
+---
+
+#### 36. Supervisión de diferencias de caja
+
+Una diferencia puede ser visible para triage sin que el supervisor tenga capacidad de aprobarla o corregirla.
+
+La UI debe mostrar, según autorización:
+
+- existencia de diferencia;
+- magnitud o clasificación permitida;
+- estado de revisión;
+- responsable actual;
+- evidencia disponible;
+- siguiente función competente.
+
+---
+
+#### 37. Supervisor no es gerente autorizado por inferencia
+
+El nombre del rol no permite completar acciones sensibles.
+
+En particular:
+
+```text
+supervisor
+!=
+gerente
+!=
+gerente_general
+!=
+propietario
+```
+
+Las matrices permanecen independientes.
+
+---
+
+#### 38. Supervisor + gerencia_operativa tampoco hereda caja
+
+Aunque una persona tenga:
+
+```text
+ROL BASE = supervisor
+ROL OPERATIVO = gerencia_operativa
+```
+
+no recibe por matriz:
+
+- crear venta;
+- cobrar;
+- abrir caja;
+- cerrar caja.
+
+La interfaz no mostrará esas capacidades como ordinarias.
+
+---
+
+#### 39. Supervisor + gerencia_operativa tampoco completa doble carril sensible
+
+El componente operativo de `gerencia_operativa` no basta para:
+
+- cancelar venta;
+- registrar devolución;
+- reverse de pago;
+- refund;
+- aplicar descuento;
+- override excepcional de entrega.
+
+El rol base `supervisor` no aporta el componente base por defecto.
+
+---
+
+#### 40. Cobertura del territorio
+
+El home se limita al contexto operativo efectivo.
+
+```text
+TERRITORIO VISIBLE
+=
+INTERSECCION(
+  permiso,
+  carril,
+  sede,
+  area,
+  recurso,
+  dispositivo,
+  deny
+)
+```
+
+La cobertura administrativa multisede no crea una vista operacional global automática.
+
+---
+
+#### 41. Cambio de sede
+
+Cambiar sede en la interfaz es una solicitud de contexto.
+
+No es autoridad.
+
+La nueva sede debe resolverse de nuevo contra:
+
+- asignaciones;
+- carril operativo;
+- turno/check-in cuando aplique;
+- permisos;
+- recurso;
+- dispositivo;
+- denegaciones.
+
+---
+
+#### 42. Filtros y query parameters
+
+Filtros por estado, canal, modalidad, severidad o fecha:
+
+- reducen o reorganizan una proyección ya autorizada;
+- no crean acceso;
+- no cambian territorio;
+- no convierten una vista en otra pantalla canónica.
+
+---
+
+#### 43. Realtime
+
+Realtime puede actualizar contadores, tarjetas y timelines, pero:
+
+```text
+EVENTO RECIBIDO
+!=
+PERMISO
+```
+
+Antes de renderizar un recurso nuevo o cambiado debe preservarse la misma frontera territorial y contractual de la consulta inicial.
+
+---
+
+#### 44. Frescura
+
+Toda proyección supervisora debe poder distinguir:
+
+- dato vigente;
+- dato potencialmente stale;
+- sincronización en curso;
+- fallo de actualización;
+- resultado desconocido.
+
+La UI no debe presentar un snapshot stale como estado actual confirmado.
+
+---
+
+#### 45. Offline y degradación
+
+La supervisión offline o degradada no puede aceptar decisiones sensibles basadas en datos que no puedan reconciliarse.
+
+Puede conservar:
+
+- snapshot marcado;
+- edad de datos;
+- filtros locales;
+- navegación a evidencia ya obtenida.
+
+No debe fabricar confirmaciones ni mutaciones pendientes fuera de un contrato de reincorporación aprobado.
+
+---
+
+#### 46. Privacidad y minimización
+
+La vista supervisora debe mostrar únicamente campos necesarios para coordinación.
+
+No justifica por sí sola acceso completo a:
+
+- datos personales del cliente;
+- datos financieros sensibles;
+- documentos fiscales completos;
+- credenciales;
+- tokens;
+- datos de otras sedes;
+- conversaciones ajenas al caso.
+
+---
+
+#### 47. Orden visual objetivo
+
+El inicio supervisor se organiza en este orden:
+
+```text
+1. CONTEXTO EFECTIVO
+2. EXCEPCIONES QUE REQUIEREN ATENCION
+3. CARGA OPERATIVA
+4. CAJA / PAGOS / TERMINALES SEGUN CAPACIDAD
+5. HISTORIAL RECIENTE RELEVANTE
+6. HANDOFFS Y ESCALAMIENTOS
+7. ACCESOS SECUNDARIOS AUTORIZADOS
+```
+
+No empieza por un menú de módulos.
+
+---
+
+#### 48. Acción principal
+
+La acción dominante del inicio supervisor es:
+
+```text
+REVISAR OPERACION
+→ VSCREEN-0093
+```
+
+Solo se habilita cuando existen las capacidades de lectura necesarias.
+
+Si aún no existen, el home debe mostrar contexto y bloqueo explícito, no datos protegidos ni un fallback broad.
+
+---
+
+#### 49. Acciones secundarias
+
+Pueden existir enlaces a:
+
+- pedidos;
+- salón;
+- seguimiento de preparación/entrega;
+- caja;
+- casos o incidencias;
+
+únicamente si la navegación y la lectura de destino están autorizadas.
+
+El enlace no concede la capacidad interna.
+
+---
+
+#### 50. Estados vacíos
+
+Se distinguen al menos:
+
+```text
+SIN TRABAJO
+SIN PERMISO
+FUERA DE TERRITORIO
+CONTEXTO INCOMPLETO
+STALE
+FALLO TECNICO
+RESULTADO DESCONOCIDO
+```
+
+No deben colapsar en “No hay datos”.
+
+---
+
+#### 51. AS-IS de vento-pulso
+
+El runtime vigente observado mantiene:
+
+- `/` montando `ScannerPage`;
+- `/orders` usando `requireAppAccess` con `permissionCode: ["pos.main"]`;
+- acciones distintas de pedidos detrás del mismo permiso broad;
+- `site_id` entrando como parámetro de contexto;
+- resolución operativa que todavía usa roles/navegación legacy;
+- ausencia de una ruta o implementación física de `VSCREEN-0093` como workspace supervisor completo.
+
+Ese estado es evidencia de deuda, no el diseño objetivo.
+
+---
+
+#### 52. Brechas AS-IS y salida
+
+| Brecha | Riesgo | Propietario canónico | Condición de salida |
+| --- | --- | --- | --- |
+| `VSCREEN-0093` no materializada como workspace supervisor | no existe revisión PULSO objetivo | paquete PULSO correspondiente | pantalla consume contrato funcional y permisos atómicos publicados |
+| `/orders` usa `pos.main` | lectura y mutación comparten autoridad broad | `PULSO-AUTH-015/016` + paquete PULSO | cero fallback final a `pos.main` |
+| no existen PermissionKeys publicadas para GAP-PULSO-015 | home no puede leer datos internos por `pulso.access` | evolución de catálogo AUTH tras roadmap funcional | claves atómicas versionadas, asignadas y probadas |
+| rol base supervisor tiene 0 grants PULSO | jerarquía no debe abrir la aplicación | AUTH/RBAC vigente | se conserva deny por defecto salvo otro carril válido |
+| `gerencia_operativa` tiene `pulso.access` pero no lecturas supervisoras | entrada no equivale a supervisión | evolución de catálogo + matrices | permisos de lectura/coordinación publicados |
+| Realtime puede mezclar señal y autoridad | datos no autorizados podrían llegar a UI | paquete PULSO + políticas de datos | filtros y RLS demuestran mismo territorio que consulta |
+| estados AS-IS no son canon automático | alertas/contadores podrían mentir | `PULSO-UX-020/021` | mapeo contractual aprobado |
+
+No queda hallazgo de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 53. Resultado funcional de GAP-PULSO-015
+
+Después de esta tarea, `GAP-PULSO-015` queda funcionalmente descompuesto en:
+
+1. lectura de carga de pedidos/servicio;
+2. lectura de estado de caja;
+3. lectura de estado de pagos necesaria para coordinación;
+4. lectura de terminales/estaciones;
+5. lectura de historial operativo por recurso;
+6. alertas derivadas de estados y políticas publicadas;
+7. prioridad explicable de triage;
+8. navegación a detalle autorizado;
+9. escalamiento sin absorción de la acción resolutiva.
+
+La posterior evolución de catálogo deberá decidir PermissionKeys exactas para estas capacidades. Esta tarea no les asigna nombres canónicos.
+
+---
+
+#### 54. Frontera frente a GAP-PULSO-016
+
+Esta tarea puede **mostrar** incidencias y excepciones, pero no define su resolución completa.
+
+`GAP-PULSO-016` conserva:
+
+- pedidos no reclamados;
+- entregas parciales;
+- incidencias;
+- canales fallidos;
+- resolución sin override genérico.
+
+Sus owners funcionales siguen en `PULSO-UX-009`, `PULSO-UX-013` y el flujo de entrega.
+
+---
+
+#### 55. Handoff inmediato a PULSO-UX-007
+
+`PULSO-UX-007 — Simplificar creación de venta` recibe:
+
+```text
+VSCREEN-0080 CONSERVA IDENTIDAD COMPARTIDA
+SUPERVISOR NO CREA VENTAS POR SU ROL
+CREAR VENTA REQUIERE pulso.sales.orders.create
+GERENCIA_OPERATIVA NO RECIBE orders.create POR MATRIZ
+SUPERVISOR BASE NO RECIBE PULSO POR MATRIZ
+HOME PUEDE MOSTRAR INTENCION SOLO SI EXISTE AUTORIDAD DE DESTINO
+NAVEGACION != PERMISO
+PRIORIDAD != AUTORIDAD
+```
+
+La 007 deberá simplificar creación sin convertir visibilidad o contexto supervisor en capacidad de venta.
+
+---
+
+#### 56. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-006 |
+| --- | --- |
+| `PULSO-UX-007` | creación de venta exige capacidad exacta y no nace de supervisión |
+| `PULSO-UX-008` | cobro permanece separado de revisión de pagos |
+| `PULSO-UX-009` | excepciones visibles no equivalen a cancelación, devolución o refund |
+| `PULSO-UX-010` | revisión de caja no equivale a abrir/cerrar/aprobar diferencias |
+| `PULSO-UX-013` | escalamiento y confirmación sensible conservan actor, motivo, recurso y autoridad |
+| `PULSO-UX-015` | densidad supervisor prioriza triage, carga y excepciones |
+| `PULSO-UX-020` | estados AS-IS no alimentan alertas canónicas sin mapeo aprobado |
+| `PULSO-UX-021` | arquitectura objetivo debe separar proyecciones read-only de acciones mutadoras |
+
+---
+
+#### 57. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: acceso fail-closed, permisos exactos, territorio, separación de mutaciones, estados diferenciados, frescura, Realtime, trazabilidad y experiencia por actor ya cuentan con obligaciones verificables vigentes. Esta tarea madura el roadmap funcional de supervisión sin introducir una obligación de prueba nueva en 04A.
+
+---
+
+#### 58. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-004` para mutaciones de pedidos mediante acciones nombradas y estado/columnas permitidos;
+- `TREQ-PULSO-005` para separar pedido, preparación, cumplimiento, pago, mesa y venta;
+- `TREQ-PULSO-006` para separar venta, pago, caja, anulaciones y cierres;
+- `TREQ-PULSO-014` para acceso PULSO fail-closed;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio;
+- `TREQ-PULSO-016` para impedir que `/orders` conceda mutaciones por mera apertura;
+- `TREQ-PULSO-018` para separar lectura y acciones de salón;
+- `TREQ-PULSO-019` para mantener filtros/query parameters fuera de la autoridad;
+- `TREQ-PULSO-024` para no confundir infraestructura con autorización;
+- `TREQ-PULSO-026` para no tratar `pulso.pos.main` como permiso exacto suficiente;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance;
+- `TREQ-AUTH-011` para separar dispositivo y actor humano;
+- `TREQ-AUTH-013` para revalidación server-side;
+- `TREQ-AUTH-015` para auditoría correlacionable;
+- `TREQ-UX-001` para tarea, acción y estado identificables;
+- `TREQ-UX-003` para adaptar densidad y acciones al actor efectivo;
+- `TREQ-UX-006` para recuperación segura;
+- `TREQ-UX-008` y `TREQ-UX-009` para navegación y contexto coherentes.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 59. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron main vigente de `vento-shell`, continuidad, topología `DEFINE_ONCE`, `PULSO-AUTH-007`, `AUTH-RBAC-004`, reconciliación `AUTH-CAT-020..024`, datasets 1.0.0, `VSCREEN-0080/0093`, `VPROC-0044`, Registro 04A aplicable y runtime vigente de `vento-pulso`. |
+| OPERATIVA | NOT_EXECUTED | No se supervisaron ventas, cajas, terminales, pedidos, pagos, mesas, llamadas ni entregas reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-006` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 60. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0080` se conserva como identidad compartida del inicio POS;
+- [ ] no se crea un home canónico paralelo para supervisor;
+- [ ] `VSCREEN-0093` queda como workspace principal de revisión supervisora;
+- [ ] se distingue rol base `supervisor` de rol operativo `gerencia_operativa`;
+- [ ] se registra que supervisor posee 58 grants base y 0 grants PULSO en dataset 1.0.0;
+- [ ] se registra que `gerencia_operativa` posee siete grants PULSO vigentes;
+- [ ] se registra que `gerencia_operativa` no recibe `orders.create`, `collect`, `cash.start` ni `cash.close` por matriz;
+- [ ] se registra que supervisor no aporta componentes base de las cinco acciones PULSO sensibles de AUTH-CAT-023;
+- [ ] el rol base supervisor no abre PULSO por sí solo;
+- [ ] URL directa falla cerrado sin acceso PULSO válido;
+- [ ] `pulso.access` no concede lectura interna;
+- [ ] `pulso.pos.main` no se usa como fallback;
+- [ ] `GAP-PULSO-015` queda descompuesto funcionalmente;
+- [ ] carga, alertas, prioridad, historial y revisión se mantienen como proyecciones distintas;
+- [ ] no se inventan SLA ni umbrales;
+- [ ] prioridad explica razón y no concede autoridad;
+- [ ] historial funcional no se convierte en audit log global;
+- [ ] revisión de caja no concede abrir/cerrar/aprobar diferencia;
+- [ ] revisión de pagos no concede collect/reverse/refund;
+- [ ] revisión de pedidos no concede create/update/cancel;
+- [ ] revisión de terminal no concede administración de dispositivo;
+- [ ] excepciones no usan un botón genérico de resolución;
+- [ ] observar, asignar, escalar, aprobar y ejecutar permanecen distintos;
+- [ ] supervisor no se convierte en mostrador, cajero, salón, conductor u operador integral;
+- [ ] cobertura multisede base no crea vista operacional global;
+- [ ] filtros no amplían territorio;
+- [ ] Realtime no concede autoridad;
+- [ ] stale, fallo y unknown permanecen distintos;
+- [ ] privacidad aplica minimización por recurso;
+- [ ] el runtime AS-IS se documenta como deuda y no como canon objetivo;
+- [ ] cada brecha tiene propietario y condición de salida;
+- [ ] 007 recibe handoff suficiente sin heredar autoridad supervisora;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 61. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0080`;
+- implementa `VSCREEN-0093`;
+- crea rutas nuevas;
+- modifica `/orders`, `/salon`, `/scanner` o `/`;
+- crea PermissionKeys;
+- reactiva automáticamente los nombres propuestos en `PULSO-AUTH-007`;
+- modifica el catálogo 1.0.0;
+- modifica matrices base u operativas;
+- concede `pulso.access` al rol base supervisor;
+- concede creación de venta, cobro, apertura o cierre de caja a `gerencia_operativa`;
+- concede acciones sensibles por jerarquía;
+- crea SLAs;
+- crea scores opacos;
+- ejecuta cancelaciones, devoluciones, refunds, reversos o descuentos;
+- ejecuta override de entrega;
+- configura terminales;
+- modifica dispositivos compartidos;
+- cambia RLS, RPC, Server Actions o Realtime;
+- modifica Supabase;
+- modifica el Registro 04A;
+- crea instancia física;
+- desarrolla `PULSO-UX-007`.
+
+---
+
+#### 62. Decisión final de experiencia
+
+El inicio supervisor queda resumido por la siguiente regla:
+
+```text
+SIN pulso.access VALIDO
+→ NO HAY HOME PULSO
+
+CON pulso.access VALIDO
+→ VSCREEN-0080 RESUELVE CONTEXTO
+→ NO EXPONE DATOS INTERNOS SIN CAPACIDAD DE LECTURA
+→ PRIORIZA EXCEPCIONES, CARGA Y BLOQUEOS AUTORIZADOS
+→ VSCREEN-0093 ES WORKSPACE DE REVISION
+→ CADA ACCION MUTADORA EXIGE AUTORIDAD PROPIA
+```
+
+La supervisión aporta comprensión y coordinación. No absorbe ejecución.
+
+---
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-005 — Diseñar inicio para operador integral`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-006 — Diseñar inicio para supervisor`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-007 — Simplificar creación de venta`
 ### [ ] PULSO-UX-007 — Simplificar creación de venta
 ### [ ] PULSO-UX-008 — Simplificar cobro y medios de pago
 ### [ ] PULSO-UX-009 — Separar anulación, devolución y reembolso
