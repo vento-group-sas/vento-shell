@@ -8206,7 +8206,1437 @@ La simplificación elimina pasos redundantes; no elimina controles empresariales
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-008 — Simplificar cobro y medios de pago`
-### [ ] PULSO-UX-008 — Simplificar cobro y medios de pago
+### ✅ PULSO-UX-008 — Simplificar cobro y medios de pago
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-007 — Simplificar creación de venta
+**Tarea siguiente:** PULSO-UX-009 — Separar anulación, devolución y reembolso
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0084 — Cobro y medios de pago` para reducir el cobro ordinario PULSO a una obligación comercial autoritativa, total revalidado, selección explícita de medio permitido y confirmación correlacionada mediante `VPROC-0043::STEP-COLLECT_PAYMENT` y `pulso.payments.transactions.collect`, preservando pagos parciales y combinados, efectivo y cambio, idempotencia, resultado desconocido, proveedor, soporte fiscal, conciliación y separación estricta entre venta, pago, caja, documento fiscal, devolución, reembolso y cierre; sin inventar medios, propinas, secretos o autoridad no publicados y sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, pantallas, contratos generados, PermissionKeys, grants, matrices, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, proveedores, secretos, packages, dispositivos, terminales, datáfonos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Simplificar el cobro ordinario en PULSO sin colapsar en una sola acción hechos que el modelo canónico mantiene separados.
+
+La experiencia debe permitir que un actor autorizado parta de una venta u obligación comercial válida y llegue a un resultado de pago verificable con la menor carga operativa compatible con autorización, importe, medio, proveedor, caja, idempotencia, auditoría y reconciliación.
+
+La regla de experiencia es:
+
+```text
+OBLIGACION COMERCIAL AUTORITATIVA
++
+TOTAL REVALIDADO
++
+ACTOR / SEDE / PUNTO / CAJA COMPATIBLES
++
+MEDIO PERMITIDO
++
+UNA INTENCION DE COBRO CORRELACIONADA
+=
+RESULTADO DE PAGO AUTORITATIVO
+```
+
+sin convertir el cobro en creación de venta, modificación genérica del pedido, cierre de caja, emisión fiscal implícita, anulación, devolución, reembolso, loyalty o conciliación contable final.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-007
+
+`PULSO-UX-007` entrega como condiciones de entrada:
+
+```text
+VENTA CREADA != PAGO CONFIRMADO
+VSCREEN-0081 TERMINA CON RECURSO AUTORITATIVO
+COBRO USA pulso.payments.transactions.collect
+CREACION NO CAPTURA MEDIO DE PAGO COMO EFECTO
+TOTAL MOSTRADO DEBE REVALIDARSE EN COBRO
+UNKNOWN CREATE RESULT SE RESUELVE ANTES DE COBRAR
+ACTOR / SEDE / CAJA / RECURSO DEBEN CORRELACIONARSE
+```
+
+Por tanto, `PULSO-UX-008` nunca intenta cobrar una creación cuyo resultado siga siendo desconocido y nunca interpreta `pulso.sales.orders.create` como autoridad de recaudo.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- la experiencia de cobro se define una sola vez;
+- no crea instancia física propia;
+- no materializa `VSCREEN-0084`;
+- no publica rutas ni componentes;
+- no crea ni modifica PermissionKeys;
+- no modifica el dataset de grants;
+- no crea proveedores de pago;
+- no modifica Supabase;
+- no autoriza procesamiento real de pagos;
+- no autoriza implementación física.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+La decisión consume como mínimo:
+
+- `PULSO-UX-001..007`;
+- `PULSO-AUTH-006..016`;
+- `AUTH-CAT-022..024`;
+- dataset `vento.authorization.operational-role-grants@1.0.0`;
+- `VSCREEN-0084` y sus bindings aprobados;
+- `VPROC-0039`, `VPROC-0043`, `VPROC-0044` y `VPROC-0051`;
+- `VPROC-0043::STEP-COLLECT_PAYMENT`;
+- estados y eventos canónicos de `VPROC-0043`;
+- matriz E2 de prototipos, estaciones y gramática de interacción;
+- Registro 04A vigente de PULSO;
+- brechas `H-CAP-SCOPE-009-016`, `017`, `019`, `020` y `H-CODE-011-010`;
+- runtime actual de `vento-pulso` como evidencia AS-IS, no como autoridad del diseño objetivo.
+
+---
+
+#### 5. Identidad canónica de la pantalla
+
+La identidad existente es:
+
+```text
+VSCREEN-0084 — Cobro y medios de pago
+```
+
+Su propósito canónico es:
+
+- calcular o revalidar el total aplicable;
+- aplicar medios de pago autorizados;
+- confirmar recaudo;
+- emitir o enlazar soporte autorizado según corresponda.
+
+Esta tarea no crea una pantalla paralela llamada “pago rápido”, “caja rápida”, “checkout” o equivalente.
+
+---
+
+#### 6. Binding principal de proceso
+
+`VSCREEN-0084` conserva:
+
+```text
+PROCESO PRINCIPAL: VPROC-0043
+PASO: VPROC-0043::STEP-COLLECT_PAYMENT
+NOMBRE: Cobrar y confirmar pago
+FUNCION: EXECUTE
+FASE: DECISION
+```
+
+La simplificación UX no sustituye ni renombra este binding.
+
+---
+
+#### 7. Propósito de VPROC-0043
+
+`VPROC-0043` existe para:
+
+```text
+COBRAR
+→ CONFIRMAR PAGO
+→ CONSERVAR SOPORTE FISCAL APLICABLE
+→ RECONCILIAR MEDIO / VALOR / VENTA / RESULTADO
+```
+
+Su verdad de negocio no es un booleano visual `paid = true`.
+
+El proceso conserva el vínculo entre obligación, intento, medio, importe, proveedor o mecanismo, resultado, soporte y reconciliación.
+
+---
+
+#### 8. Relación con VPROC-0039
+
+La venta de mostrador o para llevar puede alcanzar estados de pago dentro de `VPROC-0039`, pero el subproceso que gobierna el cobro es `VPROC-0043`.
+
+Regla:
+
+```text
+ESTADO DE VENTA SOBRE PAGO
+!=
+DETALLE AUTORITATIVO DEL PROCESO DE PAGO
+```
+
+`VPROC-0039.PAYMENT_CONFIRMED` solo puede reflejar una confirmación que haya sido demostrada por el contrato propietario del cobro; no puede fabricarla la UI.
+
+---
+
+#### 9. Relación con VPROC-0051
+
+`VSCREEN-0084` conserva relación secundaria con `VPROC-0051` para el hecho económico correlacionado que corresponda a NUMERA.
+
+La relación es un handoff y no una absorción de responsabilidades:
+
+```text
+PULSO GOBIERNA COBRO OPERATIVO
+NUMERA GOBIERNA HECHO ECONOMICO / CONCILIACION PROPIETARIA
+```
+
+La pantalla no escribe contabilidad ni declara conciliación NUMERA por sí sola.
+
+---
+
+#### 10. PermissionKey exacta
+
+El cobro ordinario consume:
+
+```text
+pulso.payments.transactions.collect
+```
+
+Esta capacidad es distinta de:
+
+- `pulso.sales.orders.create`;
+- permisos de descuento;
+- permisos de cancelación;
+- permisos de refund;
+- permisos de reverso;
+- apertura de caja;
+- cierre de caja.
+
+---
+
+#### 11. Grants operativos publicados
+
+En `vento.authorization.operational-role-grants@1.0.0`, `pulso.payments.transactions.collect` tiene exactamente dos grants publicados:
+
+```text
+cajero_satelite
+operador_integral_satelite
+```
+
+Ambos son:
+
+```text
+authorization_mode = OPERATIONAL_ONLY
+grant_type = DIRECT_OPERATIONAL
+effect = ALLOW
+```
+
+No existe un tercer grant de esa PermissionKey en el dataset vigente.
+
+---
+
+#### 12. Contexto de cajero_satelite
+
+El grant de `cajero_satelite` limita el cobro ordinario a:
+
+- sede activa;
+- área o punto compatible;
+- turno activo;
+- check-in cuando aplica;
+- actor humano identificado;
+- recurso vigente;
+- transición idempotente;
+- auditoría;
+- sesión de caja personal cuando corresponda.
+
+La UI no puede ampliar ese territorio ni reutilizar la identidad de caja de otro actor.
+
+---
+
+#### 13. Contexto de operador_integral_satelite
+
+El grant de `operador_integral_satelite` exige además que la sede integrada y la función de caja estén habilitadas dentro de su contexto efectivo.
+
+Ser operador integral no convierte cualquier dispositivo, sede o sesión en punto válido de cobro.
+
+---
+
+#### 14. Roles sin grant no cobran por inferencia
+
+No se infiere `pulso.payments.transactions.collect` para:
+
+- `servicio_salon`;
+- `mostrador_satelite`;
+- `gerencia_operativa`;
+- cualquier otro rol no publicado en los dos grants vigentes.
+
+Regla:
+
+```text
+PROXIMIDAD A CAJA
+!=
+AUTORIDAD DE COBRO
+```
+
+---
+
+#### 15. Acceso a PULSO no basta
+
+Se conserva:
+
+```text
+pulso.access
+!=
+pulso.payments.transactions.collect
+```
+
+Poder entrar a PULSO no concede recaudo.
+
+---
+
+#### 16. Permiso broad legacy no basta
+
+Ningún permiso broad o navegación existente puede sustituir la PermissionKey exacta del cobro.
+
+La futura implementación deberá validar `pulso.payments.transactions.collect` de forma explícita y server-side.
+
+---
+
+#### 17. Precondición: obligación comercial identificable
+
+`VPROC-0043.PAYMENT_PENDING` nace únicamente cuando existe como mínimo:
+
+- obligación comercial identificable;
+- monto;
+- moneda;
+- medio permitido o conjunto de opciones permitidas;
+- referencia a venta o documento aplicable.
+
+No se abre un pago huérfano sin recurso comercial correlacionado.
+
+---
+
+#### 18. Resultado de creación desconocido bloquea cobro
+
+Si la creación de la venta terminó con resultado desconocido:
+
+```text
+UNKNOWN CREATE RESULT
+→ RECONCILIAR CREACION
+→ IDENTIFICAR RECURSO AUTORITATIVO
+→ SOLO DESPUES EVALUAR COBRO
+```
+
+Cobrar antes de reconciliar puede producir pago sin venta o cobro duplicado sobre una venta ya creada por el primer intento.
+
+---
+
+#### 19. Total mostrado no es autoridad final
+
+El total presentado por la UI es una proyección útil, pero el cobro debe revalidar el importe contra el recurso y las reglas comerciales vigentes aplicables.
+
+La pantalla no autoriza:
+
+- editar total como texto libre;
+- escribir impuestos manualmente;
+- fabricar descuentos;
+- alterar precio maestro;
+- ocultar una diferencia material entre lo mostrado y lo autoritativo.
+
+---
+
+#### 20. Cambio material del total
+
+Si el total autoritativo cambia antes de iniciar o confirmar el cobro:
+
+- se detiene la confirmación automática;
+- se muestra el total vigente;
+- se identifica la diferencia material;
+- se exige una nueva decisión del actor cuando corresponda;
+- no se cobra silenciosamente el valor anterior.
+
+---
+
+#### 21. Moneda
+
+La moneda forma parte de la obligación y de cada efecto de pago.
+
+La UI no convierte moneda por inferencia ni reutiliza un importe sin su moneda correspondiente.
+
+---
+
+#### 22. Medio de pago como opción gobernada
+
+La pantalla muestra únicamente medios admitidos por el contexto, la configuración y el contrato vigente.
+
+No existe un campo libre para escribir un medio arbitrario.
+
+Regla:
+
+```text
+MEDIO DISPONIBLE
+=
+MEDIO PUBLICADO / SOPORTADO / APLICABLE
+```
+
+---
+
+#### 23. Seleccionar medio no equivale a cobrar
+
+`VPROC-0043.METHOD_SELECTED` significa que se eligieron medio y condiciones.
+
+Todavía no demuestra:
+
+- autorización;
+- captura;
+- recepción del valor;
+- documento fiscal;
+- conciliación.
+
+---
+
+#### 24. Autorización en curso
+
+`VPROC-0043.AUTHORIZATION_IN_PROGRESS` representa una solicitud activa al mecanismo correspondiente.
+
+Mientras exista:
+
+- la UI no declara pago confirmado;
+- la acción principal evita envíos paralelos de la misma intención;
+- un timeout no se transforma automáticamente en rechazo;
+- el actor conserva una forma clara de conocer que el resultado aún no es definitivo.
+
+---
+
+#### 25. Autorizado no equivale a capturado
+
+El estado:
+
+```text
+VPROC-0043.AUTHORIZED
+```
+
+no equivale a:
+
+```text
+VPROC-0043.CAPTURED
+```
+
+La experiencia no usa “aprobado” como sinónimo universal de dinero recibido cuando el medio exige una fase posterior de captura o confirmación.
+
+---
+
+#### 26. Captura pendiente
+
+`VPROC-0043.CAPTURE_PENDING` conserva la verdad de que existe autorización o intención válida, pero todavía falta captura, confirmación o recepción definitiva del valor.
+
+No se avanza por optimismo a pago conciliado.
+
+---
+
+#### 27. Capturado no equivale a conciliado
+
+`VPROC-0043.CAPTURED` confirma el valor según el medio correspondiente, pero todavía puede faltar:
+
+- correlación fiscal;
+- correlación con la venta;
+- comisión o liquidación aplicable;
+- conciliación financiera.
+
+Por tanto:
+
+```text
+CAPTURED
+!=
+PAYMENT_RECONCILED
+```
+
+---
+
+#### 28. Documento fiscal pendiente
+
+`VPROC-0043.FISCAL_DOCUMENT_PENDING` conserva la separación entre pago y soporte fiscal.
+
+El pago no se vuelve “no realizado” porque el documento fiscal esté pendiente, ni el documento se considera emitido por el solo hecho de cobrar.
+
+---
+
+#### 29. Conciliación pendiente
+
+`VPROC-0043.RECONCILIATION_PENDING` compara como mínimo la evidencia disponible de:
+
+- venta u obligación;
+- medio;
+- valor;
+- documento;
+- comisión cuando aplique;
+- abono o liquidación cuando aplique.
+
+La UI operativa puede mostrar el pendiente, pero no declarar conciliación contable por inferencia.
+
+---
+
+#### 30. Pago reconciliado
+
+`VPROC-0043.PAYMENT_RECONCILED` es el final normal del proceso cuando intento, resultado, valor, medio, venta, soporte y liquidación aplicable coinciden dentro de su alcance.
+
+Aun así:
+
+```text
+PAYMENT_RECONCILED
+!=
+VENTA CERRADA
+!=
+CAJA CERRADA
+!=
+ENTREGA COMPLETADA
+!=
+REFUND IMPOSIBLE
+```
+
+---
+
+#### 31. Eventos canónicos de VPROC-0043
+
+La experiencia futura deberá respetar los seis eventos definidos:
+
+```text
+VPROC-0043.EVT-001  payment-pending
+VPROC-0043.EVT-002  method-selected
+VPROC-0043.EVT-003  authorization-in-progress
+VPROC-0043.EVT-004  capture-pending
+VPROC-0043.EVT-005  reconciliation-pending
+VPROC-0043.EVT-006  payment-reconciled
+```
+
+Todos pertenecen a información financiera restringida.
+
+La UI no inventa eventos alternos para saltarse la máquina de estados.
+
+---
+
+#### 32. Pago único ordinario
+
+Para un cobro simple con un solo medio, la UX objetivo evita pasos administrativos redundantes:
+
+```text
+VENTA / OBLIGACION
+→ TOTAL REVALIDADO
+→ ELEGIR MEDIO SI HAY MAS DE UNO
+→ CONFIRMAR COBRO
+→ ESPERAR RESULTADO AUTORITATIVO
+→ MOSTRAR RESULTADO
+```
+
+Los pasos internos del proveedor o del proceso pueden existir sin convertirse en formularios manuales si no requieren decisión humana.
+
+---
+
+#### 33. Efectivo
+
+El efectivo sigue siendo un medio de pago gobernado y no un atajo fuera del proceso.
+
+Cuando aplique, el cobro en efectivo debe conservar:
+
+- actor real;
+- sede y punto;
+- sesión de caja compatible cuando sea requerida;
+- monto de la obligación;
+- monto recibido cuando deba calcularse cambio;
+- resultado confirmado;
+- correlación con venta y movimiento de caja.
+
+Recibir efectivo no autoriza cerrar la sesión de caja.
+
+---
+
+#### 34. Cambio o vuelto
+
+El cambio es un resultado derivado del efectivo entregado frente a la obligación pendiente; no es:
+
+- un descuento;
+- una segunda venta;
+- un medio adicional;
+- un ajuste destructivo del total.
+
+La experiencia debe mostrarlo de forma explícita cuando aplique y conservar la relación con el cobro que lo originó.
+
+---
+
+#### 35. Pago electrónico o mediado por proveedor
+
+Cuando el medio dependa de datáfono, pasarela u otro proveedor:
+
+- secretos y credenciales permanecen fuera del cliente;
+- la UI no decide autorización por su cuenta;
+- la referencia del proveedor se conserva cuando el contrato la produzca;
+- un callback, webhook o respuesta repetida no genera un segundo cobro;
+- el resultado se reconcilia por identidad estable.
+
+El nombre físico del proveedor no se convierte en identidad universal del pago.
+
+---
+
+#### 36. Pagos parciales
+
+El contrato vigente exige soportar pagos parciales sin confundirlos con pago total.
+
+Cada tramo confirmado debe conservar conceptualmente:
+
+- importe;
+- moneda;
+- medio;
+- actor;
+- referencia o identidad correlacionable;
+- estado.
+
+Mientras exista saldo pendiente:
+
+```text
+PAGO PARCIAL CONFIRMADO
+!=
+OBLIGACION TOTALMENTE PAGADA
+```
+
+---
+
+#### 37. Medios combinados
+
+Cuando se permita pagar una misma obligación con más de un medio:
+
+- cada tramo conserva identidad y resultado propios;
+- el saldo pendiente se recalcula desde efectos confirmados;
+- un tramo fallido no borra los tramos confirmados;
+- el total no se declara cubierto hasta que la suma autoritativa de tramos aplicables satisfaga la obligación;
+- reintentar un tramo no duplica los anteriores.
+
+La UI presenta un único objetivo comercial con varios efectos de pago correlacionados, no varias ventas.
+
+---
+
+#### 38. Monto por tramo
+
+En pago parcial o combinado, el monto de cada tramo debe validarse contra el saldo pendiente y las reglas del medio.
+
+La UI no permite que un valor digitado convierta por sí solo una obligación en pagada.
+
+---
+
+#### 39. Propina sin fuente inventada
+
+Las fuentes canónicas registran que propina, servicio y reparto no tienen todavía una fuente histórica completamente confirmada.
+
+Por tanto, esta tarea fija una frontera segura:
+
+- no se agrega propina automática;
+- no se inventa porcentaje por defecto;
+- no se distribuye propina por inferencia;
+- no se incorpora una propina al total sin una política aplicable y trazable;
+- la ausencia de contrato de propina no bloquea el cobro ordinario del valor comercial debido.
+
+Cualquier materialización futura de propina deberá consumir su fuente gobernada y conservarla como concepto separado.
+
+---
+
+#### 40. Pago, venta, caja y documento son hechos distintos
+
+Se conserva la separación canónica:
+
+```text
+VENTA
+!=
+PAGO
+!=
+MOVIMIENTO DE CAJA
+!=
+DOCUMENTO FISCAL
+```
+
+Una sola pantalla puede coordinar el handoff entre esos hechos sin colapsarlos en una única fila, estado o permiso.
+
+---
+
+#### 41. Sesión de caja
+
+`VSCREEN-0084` no abre una caja implícitamente.
+
+Si el medio y la política requieren sesión de caja y no existe una compatible:
+
+```text
+NO COBRAR
+→ HANDOFF AL OWNER DE APERTURA
+```
+
+`PULSO-UX-010` conserva apertura, fondo, movimientos, arqueo y cierre.
+
+---
+
+#### 42. Caja personal y actor real
+
+Una sesión de caja no sustituye la identidad del actor humano.
+
+En terminal compartida:
+
+```text
+DISPOSITIVO
+!=
+SESION TECNICA
+!=
+ACTOR HUMANO
+```
+
+`PULSO-UX-014` conserva el diseño detallado de identificación del actor real.
+
+---
+
+#### 43. Acción principal
+
+La acción primaria de la superficie representa conceptualmente:
+
+```text
+COBRAR / CONFIRMAR PAGO
+```
+
+pero su resultado visual debe reflejar el estado real del medio y de `VPROC-0043`.
+
+No representa:
+
+- crear venta;
+- aplicar descuento sensible;
+- cancelar venta;
+- devolver;
+- reembolsar;
+- reversar;
+- cerrar caja;
+- cerrar contabilidad.
+
+---
+
+#### 44. Confirmación proporcional
+
+La UX no agrega confirmaciones redundantes a cada toque, pero sí exige confirmación proporcional antes de un efecto financiero irreversible o material.
+
+`PULSO-UX-013` conserva el patrón transversal de confirmaciones sensibles.
+
+Esta tarea entrega como datos mínimos para esa confirmación:
+
+- recurso;
+- importe;
+- moneda;
+- medio;
+- actor;
+- contexto de caja cuando aplique.
+
+---
+
+#### 45. Idempotencia de la intención de cobro
+
+Una misma intención no puede cobrar dos veces por:
+
+- doble toque;
+- reenvío del formulario;
+- timeout;
+- navegación;
+- reintento de red;
+- webhook repetido;
+- callback duplicado.
+
+La materialización debe conservar una identidad estable de intento o correlación suficiente para recuperar el resultado original o detectar conflicto.
+
+Esta tarea no fija el nombre físico de esa identidad.
+
+---
+
+#### 46. Acción pendiente
+
+Mientras exista una autorización o captura en curso:
+
+- la acción principal no produce otra intención paralela;
+- se muestra estado pendiente;
+- se mantiene visible el recurso y el importe;
+- volver a tocar no crea un cobro independiente;
+- salir y volver no convierte el pendiente en fallo.
+
+---
+
+#### 47. Resultado desconocido
+
+Ante timeout, pérdida de conectividad o respuesta ambigua después de enviar el cobro:
+
+```text
+UNKNOWN PAYMENT RESULT
+!=
+DECLINED
+!=
+FAILED
+```
+
+La experiencia debe consultar o reconciliar por referencia antes de permitir un nuevo intento equivalente.
+
+Nunca:
+
+```text
+TIMEOUT
+→ COBRAR OTRA VEZ A CIEGAS
+```
+
+---
+
+#### 48. Rechazo explícito
+
+Un rechazo confirmado del medio puede permitir elegir otro medio o crear un nuevo intento autorizado.
+
+El intento rechazado no se reescribe como inexistente y tampoco se contabiliza como pago confirmado.
+
+---
+
+#### 49. Fallo técnico
+
+Un fallo técnico local o del proveedor no debe presentarse como rechazo financiero si no existe evidencia de rechazo.
+
+La UI distingue:
+
+- rechazo;
+- error de validación;
+- indisponibilidad;
+- timeout;
+- resultado desconocido;
+- conflicto de idempotencia.
+
+---
+
+#### 50. Operación degradada
+
+Una captura local o una marca visual offline no prueba que el pago se haya confirmado.
+
+Si existe una modalidad degradada aprobada por contratos posteriores, deberá conservar:
+
+- identidad de intento;
+- evidencia local mínima;
+- protección contra doble captura;
+- reconciliación posterior obligatoria;
+- estado explícito no confirmado hasta demostrar el resultado.
+
+Esta tarea no inventa un nuevo modo offline.
+
+---
+
+#### 51. Server-side como autoridad
+
+La futura acción de cobro debe revalidar como mínimo:
+
+- `pulso.payments.transactions.collect`;
+- actor efectivo;
+- rol operativo;
+- turno y check-in;
+- sede, área y punto;
+- sesión de caja cuando aplique;
+- recurso comercial;
+- total y moneda;
+- saldo pendiente;
+- medio permitido;
+- estado de proceso;
+- identidad de intento;
+- denegaciones vigentes.
+
+El payload del cliente no concede autoridad ni fija por sí solo el resultado.
+
+---
+
+#### 52. Datos sensibles y secretos
+
+La superficie carga y conserva solo los datos necesarios para operar el cobro.
+
+No expone por defecto:
+
+- secretos de proveedor;
+- credenciales internas;
+- tokens reutilizables;
+- claves privadas;
+- datos financieros ajenos a la transacción;
+- ledger contable completo;
+- pagos de otras sedes sin autoridad.
+
+Los secretos del proveedor permanecen en su frontera server-side correspondiente.
+
+---
+
+#### 53. Soporte fiscal
+
+El soporte fiscal se mantiene correlacionado pero separado del hecho de pago.
+
+La experiencia debe poder distinguir al menos:
+
+```text
+PAGO CONFIRMADO + DOCUMENTO PENDIENTE
+PAGO CONFIRMADO + DOCUMENTO EMITIDO / VALIDADO
+PAGO EN RECONCILIACION
+```
+
+sin cobrar de nuevo para “arreglar” un documento pendiente.
+
+---
+
+#### 54. Reimpresión separada del cobro
+
+Reimprimir o volver a mostrar un soporte existente no crea un nuevo pago.
+
+Regla:
+
+```text
+REIMPRIMIR SOPORTE
+!=
+REPETIR COBRO
+```
+
+La impresora es opcional según el medio y la estación; el documento digital puede conservarse cuando el contrato lo permita.
+
+---
+
+#### 55. Resultado visible
+
+La gramática E2 exige para `VPROC-0043`:
+
+```text
+PAGO_CONFIRMADO + RESULTADO_VISIBLE
+```
+
+Por tanto, después de cada decisión material la UI muestra un estado inequívoco:
+
+- pendiente;
+- confirmado dentro del alcance correspondiente;
+- rechazado;
+- desconocido;
+- requiere conciliación;
+- requiere soporte fiscal cuando aplique.
+
+---
+
+#### 56. Estación y periféricos
+
+El perfil canónico de operación es `SERVICE_CHECKOUT`.
+
+Periféricos posibles:
+
+- datáfono según medio;
+- impresora opcional.
+
+La ausencia de un periférico no autoriza a falsificar el resultado ni a degradar un pago electrónico a efectivo sin decisión explícita y contrato permitido.
+
+---
+
+#### 57. Composición visual mínima
+
+La experiencia objetivo se organiza en cuatro zonas lógicas:
+
+1. identidad de la obligación;
+2. total y saldo autoritativos;
+3. medio o distribución de medios;
+4. acción de cobro y resultado.
+
+La superficie no se convierte en un formulario financiero administrativo general.
+
+---
+
+#### 58. Encabezado de obligación
+
+La cabecera puede mostrar de forma compacta:
+
+- referencia de venta o pedido;
+- sede y punto;
+- total;
+- saldo pendiente;
+- actor;
+- estado de pago relevante.
+
+Los valores derivados no se editan libremente.
+
+---
+
+#### 59. Selección de medio
+
+Cuando solo existe un medio aplicable y no requiere decisión adicional, la UI puede evitar un selector redundante.
+
+Cuando existen varios medios aplicables:
+
+```text
+MOSTRAR SOLO OPCIONES AUTORIZADAS
+→ ELEGIR MEDIO
+→ MOSTRAR CONDICIONES MATERIALES
+```
+
+La disponibilidad de un botón nunca concede autoridad.
+
+---
+
+#### 60. Resumen antes del efecto
+
+Antes de confirmar un cobro material, la experiencia permite verificar:
+
+- venta u obligación;
+- monto a cobrar;
+- moneda;
+- medio o tramos;
+- actor/contexto;
+- cambio estimado cuando aplique;
+- cualquier diferencia material revalidada.
+
+No exige revisar datos irrelevantes para el efecto.
+
+---
+
+#### 61. Recuperación al reabrir
+
+Al volver a `VSCREEN-0084`, la superficie consulta el estado autoritativo antes de ofrecer un nuevo cobro.
+
+Debe poder distinguir:
+
+```text
+SIN INTENTO
+INTENTO PENDIENTE
+INTENTO CON RESULTADO DESCONOCIDO
+PAGO PARCIAL
+PAGO CONFIRMADO
+RECONCILIACION PENDIENTE
+PAGO RECONCILIADO
+```
+
+No reconstruye verdad desde el último estado visual del navegador.
+
+---
+
+#### 62. Corrección posterior del medio
+
+Una vez un pago fue capturado o confirmado, “cambiar el medio” no se implementa como edición destructiva de la fila original.
+
+La corrección posterior requiere el flujo auditable propietario de compensación, reverso, anulación, devolución o reembolso según el hecho real.
+
+`PULSO-UX-009` conserva esa separación detallada.
+
+---
+
+#### 63. Cancelación, reverso y refund quedan fuera
+
+`pulso.payments.transactions.collect` no concede por implicación:
+
+- cancelación de venta;
+- reverso de transacción;
+- devolución;
+- reembolso;
+- corrección destructiva del pago.
+
+Cada efecto conserva PermissionKey, estado, motivo y trazabilidad propios.
+
+---
+
+#### 64. Cierre de caja queda fuera
+
+Confirmar o reconciliar un pago no cierra la sesión de caja.
+
+`PULSO-UX-010` recibe los movimientos resultantes y gobierna:
+
+- fondo;
+- ingresos;
+- retiros;
+- gastos;
+- efectivo esperado;
+- conteo;
+- diferencia;
+- aprobación;
+- cierre.
+
+---
+
+#### 65. PASS queda separado
+
+El resultado de pago puede ser una condición para efectos posteriores de fidelización, pero `VSCREEN-0084` no:
+
+- mantiene ledger PASS;
+- acredita puntos por sí sola;
+- redime beneficios;
+- convierte el medio de pago en identidad de cliente.
+
+Las tareas de loyalty conservan sus owners.
+
+---
+
+#### 66. NUMERA queda separado
+
+La confirmación del pago produce o alimenta un hecho económico correlacionable, pero PULSO no:
+
+- crea asientos contables libres;
+- declara conciliación bancaria final;
+- edita libros;
+- sustituye el owner financiero.
+
+`PULSO-UX-017` conserva la conexión detallada con NUMERA.
+
+---
+
+#### 67. Handoff a la venta
+
+Cuando `VPROC-0043` demuestra el resultado suficiente, PULSO puede reflejar el estado correspondiente sobre la venta sin perder la identidad del pago.
+
+Regla:
+
+```text
+PAGO CONFIRMADO
+→ ACTUALIZAR PROYECCION / ESTADO DE VENTA SEGUN CONTRATO
+
+NO
+PAGO CONFIRMADO
+→ SOBRESCRIBIR HISTORIA DE LA VENTA
+```
+
+---
+
+#### 68. Accesibilidad
+
+La futura materialización debe conservar:
+
+- total y saldo legibles;
+- medio seleccionado identificable;
+- acción principal clara;
+- foco y navegación comprensibles;
+- resultado no dependiente solo del color;
+- errores asociados a la acción o tramo correspondiente;
+- estado pendiente distinguible de fallo;
+- información de cambio legible cuando aplique.
+
+La especificación táctil detallada permanece en `PULSO-UX-015`.
+
+---
+
+#### 69. Flujo objetivo de pago simple
+
+```text
+RECURSO AUTORITATIVO
+→ REVALIDAR TOTAL / SALDO
+→ VALIDAR ACTOR + CONTEXTO + CAJA CUANDO APLIQUE
+→ MOSTRAR MEDIOS PERMITIDOS
+→ SELECCIONAR MEDIO
+→ CONFIRMAR INTENCION
+→ VPROC-0043
+→ ESPERAR RESULTADO AUTORITATIVO
+→ MOSTRAR RESULTADO
+→ HANDOFFS POSTERIORES
+```
+
+---
+
+#### 70. Flujo objetivo de pago combinado
+
+```text
+OBLIGACION TOTAL
+→ DEFINIR TRAMO 1
+→ COBRAR / CONFIRMAR TRAMO 1
+→ RECALCULAR SALDO
+→ DEFINIR TRAMO 2
+→ COBRAR / CONFIRMAR TRAMO 2
+→ ...
+→ SALDO CUBIERTO
+→ CONTINUAR RECONCILIACION
+```
+
+Un fallo en un tramo no elimina los confirmados ni duplica la obligación.
+
+---
+
+#### 71. Flujo objetivo ante timeout
+
+```text
+ENVIAR INTENCION
+→ TIMEOUT / RESPUESTA AMBIGUA
+→ MARCAR RESULTADO DESCONOCIDO
+→ CONSULTAR POR REFERENCIA / IDENTIDAD
+→ RECONCILIAR
+→ SOLO SI SE DEMUESTRA AUSENCIA DE EFECTO, PERMITIR NUEVO INTENTO
+```
+
+---
+
+#### 72. AS-IS de vento-pulso
+
+El runtime actual inspeccionado conserva `/orders` como tablero operativo y expone `payment_status` dentro del recurso de pedido.
+
+También contiene lógica que bloquea ciertas operaciones de domicilio cuando el pago online no aparece confirmado.
+
+No se observa en el runtime actual inspeccionado:
+
+- una superficie dedicada equivalente a `VSCREEN-0084`;
+- un consumidor de `pulso.payments.transactions.collect`;
+- un binding físico explícito a `VPROC-0043::STEP-COLLECT_PAYMENT`;
+- un flujo UI completo de pagos parciales y medios combinados gobernado por `VPROC-0043`.
+
+Por tanto:
+
+```text
+payment_status EN /orders
+!=
+VSCREEN-0084 MATERIALIZADA
+```
+
+---
+
+#### 73. Brechas AS-IS y salida
+
+| Brecha observada | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe superficie física dedicada de cobro canónico | pago queda disperso en operación de pedidos | paquete PULSO / `PULSO-UX-021` | `VSCREEN-0084` materializada con contrato aprobado |
+| no se observa consumidor de `pulso.payments.transactions.collect` | cobro puede depender de autorización broad o lógica indirecta | paquete PULSO + autorización | acción server-side consume PermissionKey exacta y pruebas allow/deny |
+| `payment_status` existe como proyección operativa | un campo simple puede confundirse con verdad completa del pago | arquitectura PULSO | estado se deriva de proceso/efectos autoritativos y conserva referencias |
+| pagos parciales/combinados no aparecen materializados integralmente | saldo o doble cobro inconsistentes | paquete PULSO | tramos correlacionados, saldo y recuperación certificados |
+| secretos/proveedor requieren frontera server-side | exposición o autorización manipulable desde cliente | `AUTH-SRV-*` + paquete PULSO | proveedor y secretos permanecen en servidor con contrato probado |
+| soporte fiscal y conciliación no forman una experiencia integral demostrada | cobrar de nuevo o perder correlación documental | integración POS / NUMERA | referencia, estado y reconciliación quedan correlacionados |
+| corrección de medio posterior no tiene flujo manual auditable probado | historia financiera destructiva | `PULSO-UX-009` + autorización | compensación/reverso/refund usa flujo propietario auditable |
+
+No queda brecha de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 74. Resultado funcional de la simplificación
+
+La simplificación no elimina estados financieros; elimina decisiones repetidas o técnicas de la superficie principal.
+
+El actor ve:
+
+```text
+QUE SE ESTA COBRANDO
+CUANTO FALTA
+COMO SE PAGARA
+QUE RESULTADO TUVO
+QUE QUEDA PENDIENTE
+```
+
+mientras el sistema conserva por debajo autorización, correlación, estados, idempotencia y conciliación.
+
+---
+
+#### 75. Matriz de decisiones de cobro
+
+| Decisión | Resultado |
+| --- | --- |
+| recurso | venta/obligación autoritativa; no texto libre |
+| total | revalidado; no editable libremente |
+| moneda | parte de la obligación y de cada efecto |
+| actor | derivado del actor efectivo |
+| sede/punto | contexto autorizado |
+| caja | requerida solo cuando política/medio lo exijan; nunca abierta implícitamente |
+| medio | solo opciones publicadas y aplicables |
+| efectivo | soporta recibido/cambio bajo sesión compatible cuando aplique |
+| pago parcial | conserva saldo; no marca total pagado |
+| medios combinados | tramos independientes correlacionados a la misma obligación |
+| pago electrónico | proveedor server-side; autorización/captura diferenciadas |
+| timeout | resultado desconocido hasta reconciliación |
+| doble toque | misma intención; no doble cobro |
+| propina | no automática ni inventada sin política gobernada |
+| documento fiscal | correlacionado y separado del pago |
+| reimpresión | no repite cobro |
+| refund/reverso | fuera; `PULSO-UX-009` |
+| cierre de caja | fuera; `PULSO-UX-010` |
+| NUMERA | handoff correlacionado; no contabilidad embebida |
+| PASS | efecto posterior separado |
+
+---
+
+#### 76. Handoff inmediato a PULSO-UX-009
+
+`PULSO-UX-009 — Separar anulación, devolución y reembolso` recibe:
+
+```text
+COBRO != REVERSO
+PAGO CONFIRMADO != REFUND
+CAMBIAR MEDIO DESPUES DE CAPTURA != EDITAR HISTORIA
+INTENTO RECHAZADO != TRANSACCION A REEMBOLSAR
+RESULTADO DESCONOCIDO SE RECONCILIA ANTES DE COMPENSAR
+CADA EFECTO POSTERIOR REQUIERE AUTORIDAD PROPIA
+```
+
+La 009 no deberá corregir pagos confirmados sobrescribiendo el efecto original.
+
+---
+
+#### 77. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-008 |
+| --- | --- |
+| `PULSO-UX-009` | reverso, anulación, devolución y refund son efectos posteriores separados |
+| `PULSO-UX-010` | cobros producen movimientos/saldos que la caja debe conciliar sin cerrarse implícitamente |
+| `PULSO-UX-011` | acumulación solo consume una venta elegible y el resultado que su contrato requiera |
+| `PULSO-UX-012` | redención no se mezcla con autoridad de cobro |
+| `PULSO-UX-013` | cobro entrega recurso, importe, moneda, medio y actor para confirmación sensible proporcional |
+| `PULSO-UX-014` | actor efectivo debe sobrevivir terminal compartida y sesión de caja |
+| `PULSO-UX-015` | pantalla de cobro debe adaptar targets y densidad a operación táctil sin cambiar contrato |
+| `PULSO-UX-017` | pago confirmado/reconciliable se correlaciona con NUMERA sin crear ledger paralelo |
+| `PULSO-UX-018` | cliente/loyalty permanecen separados del medio y del proveedor de pago |
+| `PULSO-UX-019` | validación operativa debe incluir simple, parcial, combinado, efectivo, electrónico y recuperación |
+| `PULSO-UX-021` | arquitectura objetivo materializa `VSCREEN-0084`, `VPROC-0043`, permiso exacto y proveedor server-side |
+
+---
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el Registro 04A vigente ya contiene cobertura explícita para cobro, pago, movimientos de caja, documento fiscal, pagos parciales, medios combinados, monto, moneda, proveedor, referencia, estado, actor, timeout, conciliación, acciones nombradas, autorización, seguridad, idempotencia y validación operativa; además, la fila vigente ya identifica expresamente esta tarea dentro de su cobertura.
+
+---
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-004` para acciones nombradas, permiso, sede, estado y columnas permitidas;
+- `TREQ-PULSO-006` como cobertura principal de venta, cobro, pago, caja, documento fiscal, parciales, combinados, proveedor, referencia, timeout y conciliación;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance;
+- `TREQ-AUTH-013` para revalidación server-side frente a payload manipulado;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, territorio, permiso, recurso y decisión;
+- `TREQ-UX-001` para acción y estado identificables;
+- `TREQ-UX-006` para recuperación segura;
+- `TREQ-NUMERA-001` para mantener el hecho financiero bajo su dominio propietario;
+- `TREQ-INTEGRATION-006` para captura única y ausencia de fuentes competidoras.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron `main` vigente de `vento-shell`, protocolo, contrato de entrega, manifest, continuidad, topología `DEFINE_ONCE`, políticas de formato/desarrollo, archivo propietario, `PULSO-UX-007` aprobada como base anticipada, `VSCREEN-0084`, `VPROC-0043::STEP-COLLECT_PAYMENT`, estados y eventos de `VPROC-0043`, dataset operativo 1.0.0, Registro 04A PULSO aplicable y runtime actual de `vento-pulso`. |
+| OPERATIVA | NOT_EXECUTED | No se procesaron ventas, cobros, pagos, efectivo, medios combinados, proveedores, documentos fiscales, caja, refunds ni conciliaciones reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-008` no crea instancia física propia ni autoriza cambios de producto, datos, proveedores o infraestructura. |
+
+---
+
+#### 81. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0084` se conserva como identidad canónica única de cobro y medios de pago;
+- [ ] `VPROC-0043::STEP-COLLECT_PAYMENT` permanece como binding principal;
+- [ ] `pulso.payments.transactions.collect` queda como PermissionKey exacta;
+- [ ] se registra que solo `cajero_satelite` y `operador_integral_satelite` tienen el grant publicado;
+- [ ] ningún otro rol recibe cobro por inferencia;
+- [ ] `pulso.access` no concede cobro;
+- [ ] la obligación comercial existe antes de iniciar pago;
+- [ ] resultado desconocido de creación se resuelve antes de cobrar;
+- [ ] total y moneda se revalidan antes del efecto;
+- [ ] el total no es editable libremente;
+- [ ] solo se muestran medios permitidos;
+- [ ] seleccionar medio no equivale a confirmar pago;
+- [ ] autorización, captura y conciliación permanecen estados distintos;
+- [ ] `AUTHORIZED` no equivale a `CAPTURED`;
+- [ ] `CAPTURED` no equivale a `PAYMENT_RECONCILED`;
+- [ ] soporte fiscal permanece separado del pago;
+- [ ] pago reconciliado no cierra por sí solo venta, caja o entrega;
+- [ ] los eventos `VPROC-0043.EVT-001..006` permanecen como secuencia canónica;
+- [ ] efectivo conserva actor y caja compatible cuando aplica;
+- [ ] cambio no se confunde con descuento o pago adicional;
+- [ ] proveedor electrónico permanece server-side;
+- [ ] pagos parciales conservan saldo pendiente;
+- [ ] medios combinados conservan tramos independientes;
+- [ ] un tramo fallido no borra tramos confirmados;
+- [ ] propina no se inventa ni se aplica automáticamente;
+- [ ] venta, pago, caja y documento fiscal permanecen hechos distintos;
+- [ ] la pantalla no abre caja implícitamente;
+- [ ] actor real se conserva en terminal compartida;
+- [ ] una intención de cobro es idempotente;
+- [ ] doble toque no duplica cobro;
+- [ ] timeout no se interpreta como fallo ni rechazo;
+- [ ] resultado desconocido se reconcilia antes de reintentar;
+- [ ] rechazo explícito no se contabiliza como pago;
+- [ ] fallo técnico no se presenta como rechazo financiero sin evidencia;
+- [ ] operación degradada no fabrica confirmación;
+- [ ] server-side revalida permiso, contexto, recurso, total, medio y estado;
+- [ ] secretos de proveedor no se exponen en cliente;
+- [ ] reimpresión no repite cobro;
+- [ ] resultado del pago queda visible e inequívoco;
+- [ ] corrección posterior del medio no sobrescribe historia;
+- [ ] refund, reverso y devolución quedan fuera de `collect`;
+- [ ] cierre de caja queda en `PULSO-UX-010`;
+- [ ] NUMERA y PASS permanecen en sus owners;
+- [ ] el runtime AS-IS se registra como no materializado para `VSCREEN-0084`;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] `PULSO-UX-009` recibe handoff suficiente para compensaciones sin reescritura destructiva;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 82. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0084`;
+- crea una ruta física nueva;
+- modifica `/orders` ni otra página;
+- crea componentes, Server Actions, RPC o Edge Functions;
+- crea o cambia PermissionKeys;
+- modifica grants, matrices o datasets;
+- procesa cobros reales;
+- configura proveedores de pago;
+- almacena secretos;
+- configura datáfonos;
+- abre o cierra caja;
+- modifica sesiones de caja;
+- aplica descuentos;
+- crea ventas;
+- modifica pedidos genéricamente;
+- anula ventas;
+- procesa devoluciones;
+- ejecuta refunds;
+- ejecuta reversos;
+- inventa reglas de propina;
+- emite documentos fiscales por sí sola;
+- crea asientos o conciliación contable;
+- acredita o redime loyalty;
+- cambia catálogo, oferta o precio maestro;
+- modifica Supabase, RLS, tablas, datos, Realtime o migraciones;
+- modifica packages compartidos;
+- modifica el Registro 04A;
+- crea instancia física;
+- desarrolla `PULSO-UX-009`.
+
+---
+
+#### 83. Decisión final de experiencia
+
+El cobro simplificado queda resumido así:
+
+```text
+VENTA / OBLIGACION AUTORITATIVA
+→ REVALIDAR TOTAL Y SALDO
+→ VALIDAR ACTOR + TERRITORIO + CAJA CUANDO APLIQUE
+→ MOSTRAR SOLO MEDIOS PERMITIDOS
+→ SELECCIONAR MEDIO O TRAMOS
+→ CONFIRMAR UNA INTENCION CORRELACIONADA
+→ VPROC-0043
+→ ESPERAR RESULTADO AUTORITATIVO
+→ NO REINTENTAR A CIEGAS
+→ MOSTRAR CONFIRMACION / PENDIENTE / RECHAZO / UNKNOWN
+→ CORRELACIONAR SOPORTE Y HANDOFFS SIN COLAPSAR DOMINIOS
+```
+
+La simplificación reduce decisiones redundantes para el operador; no reduce controles financieros.
+
+---
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-007 — Simplificar creación de venta`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-008 — Simplificar cobro y medios de pago`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-009 — Separar anulación, devolución y reembolso`
 ### [ ] PULSO-UX-009 — Separar anulación, devolución y reembolso
 ### [ ] PULSO-UX-010 — Diseñar apertura y cierre de caja
 ### [ ] PULSO-UX-011 — Integrar acumulación de puntos
