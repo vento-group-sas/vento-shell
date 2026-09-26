@@ -24896,5 +24896,926 @@ UX-QA-027 CONSERVA PILOTO REAL
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable`
-### [ ] PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
+### ✅ PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador
+**Tarea siguiente:** PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico
+**Tipo de tarea:** auditoría documental forense del prototipo POS histórico de `devVentoGroup/vento-platform`, consumiendo la evidencia aprobada de `CODE-AUD-015`, la matriz de consumidores vigente, el contrato de `PULSO-UX-019` y el requisito existente que prohíbe adoptar piezas por mera existencia; clasifica de forma exhaustiva cada pieza histórica relevante como reutilizable, adaptable o descartable, con disposición detallada `REUTILIZAR`, `ADAPTAR`, `REESCRIBIR`, `REEMPLAZAR`, `RETIRAR` o `CONSERVAR_SOLO_COMO_HISTORIA`, sin convertir el prototipo histórico en arquitectura objetivo ni ejecutar cambios físicos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, componentes, Server Actions, RPC, esquemas, tablas, datos, RLS, permisos, migraciones, Supabase, repositorios históricos, consumidores actuales, despliegues ni configuración productiva
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Auditar el prototipo POS histórico de `vento-platform` como evidencia forense y clasificar cada pieza relevante sin convertir su existencia, su nombre o su uso histórico en contrato para el POS integral objetivo.
+
+La regla raíz es:
+
+```text
+EXISTE EN EL PROTOTIPO HISTORICO
+!=
+DEBE EXISTIR EN EL POS OBJETIVO
+```
+
+Cada decisión debe quedar trazable a una pieza concreta, su consumidor conocido, el contrato canónico vigente y la disposición necesaria para `PULSO-UX-021`.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-019
+
+`PULSO-UX-019` entrega como invariantes:
+
+```text
+PROTOTIPO CANONICO PULSO = DOCUMENTALMENTE COHERENTE CON CARRYOVER
+CINCO PUNTOS OPERATIVOS = MATRIZ DE VALIDACION CERRADA
+AS-IS RUNTIME != CONTRATO OBJETIVO
+ESTACION / ROL / UBICACION != AUTORIDAD
+ACTOR REAL + CONTEXTO + IDEMPOTENCIA + RECUPERACION = INVARIANTES
+PIEZAS HISTORICAS AUN NO ESTAN CLASIFICADAS
+UX-QA-027 CONSERVA PILOTO REAL
+```
+
+Esta tarea resuelve exclusivamente la clasificación pendiente de las piezas históricas.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable permanece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+La tarea produce una decisión documental completa y no genera instancia física propia.
+
+---
+
+#### 4. Fuente forense canónica
+
+La auditoría consume la evidencia ya aprobada en `CODE-AUD-015`, que documentó el antecedente histórico de PULSO en:
+
+```text
+devVentoGroup/vento-platform
+apps/vento-os/modules/pos
+apps/vento-os/app/staff/pos/page.tsx
+```
+
+La ausencia de acceso directo actual al repositorio archivado no autoriza reconstruir ni reinterpretar esa evidencia. Las decisiones de esta tarea se apoyan en el inventario forense ya incorporado al plan canónico y en contratos PULSO posteriores.
+
+---
+
+#### 5. Regla de no herencia
+
+El prototipo histórico se acepta únicamente como:
+
+- inventario forense;
+- referencia de necesidades detectadas;
+- fuente de piezas puntuales evaluables;
+- evidencia de contratos o datos que pudieron existir;
+- insumo para migración, adaptación, reemplazo o retiro.
+
+No constituye una base arquitectónica aprobada.
+
+---
+
+#### 6. Clasificación macro obligatoria
+
+Toda pieza histórica del universo de esta tarea recibe exactamente una de estas tres clases:
+
+```text
+REUTILIZABLE
+ADAPTABLE
+DESCARTABLE
+```
+
+Las tres clases responden al título canónico de la tarea y son mutuamente excluyentes por pieza.
+
+---
+
+#### 7. Disposición detallada
+
+La clasificación macro se complementa con una disposición concreta:
+
+| Clasificación macro | Disposición detallada permitida | Significado |
+| --- | --- | --- |
+| `REUTILIZABLE` | `REUTILIZAR` | la identidad o pieza puede conservarse dentro de su alcance demostrado, sin convertir otros atributos históricos en contrato |
+| `ADAPTABLE` | `ADAPTAR` | la pieza conserva utilidad sustantiva, pero requiere ajuste contractual limitado antes de incorporarse |
+| `ADAPTABLE` | `REESCRIBIR` | la necesidad o semántica se conserva, pero la implementación histórica no debe trasladarse |
+| `DESCARTABLE` | `REEMPLAZAR` | la pieza histórica no satisface el contrato objetivo y debe ser sustituida por una solución nueva |
+| `DESCARTABLE` | `RETIRAR` | la pieza no aporta valor objetivo y puede retirarse cuando el owner físico y la evidencia lo autoricen |
+| `DESCARTABLE` | `CONSERVAR_SOLO_COMO_HISTORIA` | se mantiene únicamente como evidencia o antecedente, no como dependencia runtime |
+
+Esta tarea no ejecuta ninguna disposición física.
+
+---
+
+#### 8. Criterio de suficiencia para reutilización
+
+Una pieza solo puede clasificarse `REUTILIZABLE` cuando existe evidencia suficiente de que:
+
+- su identidad sigue teniendo consumidor actual válido;
+- su semántica no contradice contratos posteriores;
+- no introduce autoridad implícita;
+- no acopla dominios que hoy son independientes;
+- no depende de mocks o supuestos históricos;
+- su reutilización limitada no impide a `PULSO-UX-021` diseñar la arquitectura objetivo.
+
+`REUTILIZABLE` no significa que cada columna, helper, policy o implementación asociada quede congelada.
+
+---
+
+#### 9. Criterio de adaptabilidad
+
+Una pieza se clasifica `ADAPTABLE` cuando su necesidad empresarial o identidad sigue siendo útil, pero al menos una de estas condiciones impide reutilizarla sin cambios:
+
+- contrato incompleto;
+- falta de idempotencia;
+- falta de atomicidad;
+- concurrencia no demostrada;
+- autorización broad o implícita;
+- consumidor histórico dormido;
+- dependencia de modelos antiguos;
+- estado o integración divergentes;
+- mezcla de responsabilidades;
+- necesidad de reconciliación con contratos actuales.
+
+---
+
+#### 10. Criterio de descarte
+
+Una pieza se clasifica `DESCARTABLE` cuando conservar su implementación o contrato histórico produciría una de estas consecuencias:
+
+- elevar un prototipo parcial a arquitectura objetivo;
+- mantener un contrato demostrado como divergente;
+- duplicar una capacidad ya propietaria de otro dominio;
+- conservar mocks o documentación como fuente runtime;
+- perpetuar efectos acoplados que hoy deben ser independientes;
+- mantener una superficie histórica sin encaje con el flujo aprobado.
+
+---
+
+#### 11. Entrada histórica `/staff/pos`
+
+La entrada histórica `apps/vento-os/app/staff/pos/page.tsx` alcanzaba scanner de cliente, loyalty y canjes, mientras el control de POS completo permanecía marcado como próximo y deshabilitado.
+
+Decisión:
+
+```text
+PIEZA: /staff/pos COMO POS COMPLETO
+CLASE: DESCARTABLE
+DISPOSICION: REEMPLAZAR
+```
+
+La ruta histórica no se adopta como home, workspace ni composición del POS objetivo.
+
+---
+
+#### 12. Documentación histórica que declaraba “POS funcional”
+
+La documentación histórica sobreestimaba la capacidad frente al build y las acciones realmente conectadas.
+
+Decisión:
+
+```text
+CLASE: DESCARTABLE
+DISPOSICION: CONSERVAR_SOLO_COMO_HISTORIA
+```
+
+No puede utilizarse como prueba de paridad ni de completitud.
+
+---
+
+#### 13. Capacidad de identificación QR de cliente
+
+La identificación QR sí tuvo consumidor histórico y también existe una capacidad actual equivalente en PULSO.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: ADAPTAR
+```
+
+Se conserva la necesidad de identificación, pero debe obedecer actor efectivo, cliente, contexto, limpieza de estado, privacidad y autoridad actuales.
+
+---
+
+#### 14. Capacidad de canje PASS
+
+El canje es una necesidad vigente, pero PASS conserva autoridad sobre ticket, cuenta, estado, ledger y consumo.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: ADAPTAR
+```
+
+PULSO puede conservar la interacción y el handoff; no adopta la lógica histórica como fuente de verdad.
+
+---
+
+#### 15. Capacidad histórica de otorgamiento manual de puntos
+
+La necesidad operativa de un eventual ajuste autorizado no justifica conservar una escritura histórica de puntos ni una acumulación controlada por UI.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+Cualquier ajuste futuro deberá ser una acción server-side explícita, auditada y propietaria de PASS.
+
+---
+
+#### 16. `decodeQRCode`
+
+El helper demuestra una necesidad de decodificación, no un contrato final de identidad ni autorización.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+La nueva implementación deberá consumir el contrato vigente de scanner e identidad sin heredar supuestos históricos sobre payload, cliente o sesión.
+
+---
+
+#### 17. `processRedemptionAction`
+
+El action histórico no se conserva como autoridad de redención porque PASS mantiene la semántica propietaria de intención, validación, consumo e idempotencia.
+
+Decisión:
+
+```text
+CLASE: DESCARTABLE
+DISPOSICION: REEMPLAZAR
+```
+
+La capacidad permanece, pero su implementación deberá provenir del contrato PASS vigente.
+
+---
+
+#### 18. `awardPointsAction`
+
+El action histórico de otorgamiento no se adopta como mecanismo de acumulación o ajuste.
+
+Decisión:
+
+```text
+CLASE: DESCARTABLE
+DISPOSICION: REEMPLAZAR
+```
+
+La UI nunca fija ledger ni saldo por sí sola.
+
+---
+
+#### 19. `createOrderAction`
+
+La acción histórica demuestra necesidades reales de orden, líneas, mesas, sesiones y vínculo de pedido, pero la implementación observada usa pasos sucesivos, compensaciones manuales y no demuestra atomicidad, idempotencia, concurrencia de mesa, cierre, split, merge, transferencia ni corrección.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+Se conserva la intención empresarial, no el algoritmo histórico.
+
+---
+
+#### 20. `processPaymentAction`
+
+La acción histórica demuestra la necesidad de orquestar un pago, pero estaba dormida respecto del build POS inspeccionado y depende de una RPC cuyo contrato diverge de su comentario.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+El pago objetivo deberá respetar intento, resultado, conciliación, partialidad, medios combinados, timeout e idempotencia.
+
+---
+
+#### 21. RPC `process_order_payment`
+
+La RPC histórica actualizaba orden, insertaba pago, actualizaba puntos e insertaba loyalty en una misma operación, mientras el comentario afirmaba además movimientos de inventario que no se observaron en la implementación auditada.
+
+Decisión:
+
+```text
+CLASE: DESCARTABLE
+DISPOSICION: REEMPLAZAR
+```
+
+PULSO, NEXO, NUMERA y PASS deben conservar efectos independientes y reconciliables.
+
+---
+
+#### 22. `types.ts` histórico
+
+El archivo mezclaba tipos de tablas reales, modelos tentativos, caja, pagos, mesas, zonas, cursos y datos mock.
+
+Decisión:
+
+```text
+CLASE: DESCARTABLE
+DISPOSICION: REEMPLAZAR
+```
+
+La arquitectura objetivo deberá generar o definir tipos desde contratos canónicos vigentes y no desde una mezcla de prototipo y fixtures.
+
+---
+
+#### 23. Datos mock del prototipo
+
+Menú de demostración, precios ficticios, meseros ficticios, órdenes mock y modificadores mock no constituyen datos ni contratos productivos.
+
+Decisión:
+
+```text
+CLASE: DESCARTABLE
+DISPOSICION: CONSERVAR_SOLO_COMO_HISTORIA
+```
+
+Los futuros fixtures de prueba se diseñarán desde contratos actuales.
+
+---
+
+#### 24. `orders` y `order_items`
+
+Las identidades de orden y línea permanecen activas fuera del prototipo histórico, pero su uso por el POS objetivo debe ajustarse a snapshots, estados, acciones nombradas, autorización, versiones y efectos desacoplados.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: ADAPTAR
+```
+
+No se reutiliza automáticamente la mutación histórica asociada.
+
+---
+
+#### 25. `pos_zones`
+
+La entidad conserva consumidor actual en salón y representa una identidad operativa vigente.
+
+Decisión limitada:
+
+```text
+CLASE: REUTILIZABLE
+DISPOSICION: REUTILIZAR
+ALCANCE: IDENTIDAD FUNCIONAL DE ZONA
+```
+
+La decisión no congela columnas, policies, naming derivado ni APIs históricas.
+
+---
+
+#### 26. `pos_tables`
+
+La entidad conserva consumidor actual en salón y una necesidad canónica de mesa.
+
+Decisión limitada:
+
+```text
+CLASE: REUTILIZABLE
+DISPOSICION: REUTILIZAR
+ALCANCE: IDENTIDAD FUNCIONAL DE MESA
+```
+
+Sesión, cuenta, pedido y mesa permanecen identidades separadas.
+
+---
+
+#### 27. `pos_sessions`
+
+La entidad conserva consumidor actual y representa una necesidad vigente de sesión de servicio.
+
+Decisión limitada:
+
+```text
+CLASE: REUTILIZABLE
+DISPOSICION: REUTILIZAR
+ALCANCE: IDENTIDAD FUNCIONAL DE SESION
+```
+
+Su lifecycle, concurrencia, transferencia, cierre y vínculos deberán validarse dentro de la arquitectura objetivo.
+
+---
+
+#### 28. `pos_table_service_calls`
+
+Esta entidad aparece como consumidor actual de salón, pero no pertenecía al prototipo POS inicial auditado.
+
+Por tanto:
+
+```text
+UNIVERSO_HISTORICO_020: FUERA
+USO: CONTROL DE COMPARACION DEL AS-IS ACTUAL
+```
+
+No se contabiliza entre las 26 piezas históricas clasificadas y su contrato permanece en los owners actuales de salón.
+
+---
+
+#### 29. `pos_session_orders`
+
+La relación existía en la acción histórica, pero no se localizó como consumidor actual en la auditoría base.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+El vínculo entre sesión y pedido debe derivarse de la arquitectura objetivo y no del shape histórico por defecto.
+
+---
+
+#### 30. `pos_payments`
+
+La entidad tuvo consumo histórico indirecto mediante la RPC dormida, pero el contrato objetivo exige intentos, referencias, estados, parcialidad, combinación, conciliación y resultado recuperable.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+La necesidad de persistir pagos permanece; el modelo histórico no se adopta sin rediseño.
+
+---
+
+#### 31. `pos_cash_shifts`
+
+El prototipo declaraba el tipo, pero no existe consumidor ejecutable histórico o actual confirmado en la auditoría base.
+
+La necesidad de sesión de caja sí está aprobada por contratos posteriores.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+No se infieren columnas ni lifecycle desde el tipo histórico.
+
+---
+
+#### 32. `pos_cash_movements`
+
+La necesidad de movimientos de caja permanece, pero la pieza histórica carece de consumidor ejecutable confirmado y debe ajustarse a conciliación, actor, motivo, moneda, sesión y auditoría.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+---
+
+#### 33. `pos_modifiers`
+
+Los modificadores son una necesidad funcional válida, pero el prototipo mezclaba tipos y mocks y no demuestra un consumidor ejecutable confirmado para esta pieza.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+El diseño objetivo deberá resolver versión, disponibilidad, precio, composición y snapshot.
+
+---
+
+#### 34. `pos_modifier_options`
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+La opción debe definirse desde el contrato vigente de producto/modificador y no por shape heredado.
+
+---
+
+#### 35. `pos_product_modifiers`
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+La asignación producto→modificador debe ser versionable, trazable y compatible con oferta/sede.
+
+---
+
+#### 36. `pos_order_item_modifiers`
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+La línea vendida deberá conservar el snapshot aplicable sin depender de una relación mutable que reescriba historia.
+
+---
+
+#### 37. Cursos y `TODO` histórico
+
+La acción histórica dejaba pendiente el manejo de cursos. El concepto puede ser necesario para secuenciación de servicio, pero el prototipo no entrega contrato suficiente.
+
+Decisión:
+
+```text
+CLASE: ADAPTABLE
+DISPOSICION: REESCRIBIR
+```
+
+`PULSO-UX-021` decidirá su representación final sin heredar el `TODO` como diseño.
+
+---
+
+#### 38. Matriz maestra de clasificación
+
+| # | Pieza histórica | Evidencia principal | Clase | Disposición | Handoff |
+| ---: | --- | --- | --- | --- | --- |
+| 1 | `/staff/pos` como POS completo | ruta parcial + control “Próximamente” | `DESCARTABLE` | `REEMPLAZAR` | nueva composición objetivo |
+| 2 | documentación “POS funcional” | contradice build observado | `DESCARTABLE` | `CONSERVAR_SOLO_COMO_HISTORIA` | no usar como evidencia de paridad |
+| 3 | identificación QR de cliente | consumidor histórico y actual | `ADAPTABLE` | `ADAPTAR` | contrato actual de identidad/scanner |
+| 4 | canje PASS | consumidor histórico y actual | `ADAPTABLE` | `ADAPTAR` | handoff a PASS |
+| 5 | otorgamiento manual de puntos | capacidad histórica con semántica actual más estricta | `ADAPTABLE` | `REESCRIBIR` | acción server-side autorizada si aplica |
+| 6 | `decodeQRCode` | helper histórico | `ADAPTABLE` | `REESCRIBIR` | payload e identidad canónicos |
+| 7 | `processRedemptionAction` | action histórico | `DESCARTABLE` | `REEMPLAZAR` | contrato PASS vigente |
+| 8 | `awardPointsAction` | action histórico | `DESCARTABLE` | `REEMPLAZAR` | contrato PASS vigente |
+| 9 | `createOrderAction` | consumidor histórico dormido | `ADAPTABLE` | `REESCRIBIR` | orden atómica/idempotente |
+| 10 | `processPaymentAction` | consumidor histórico dormido | `ADAPTABLE` | `REESCRIBIR` | orquestación de pago reconciliable |
+| 11 | `process_order_payment` | RPC histórica acoplada y divergente | `DESCARTABLE` | `REEMPLAZAR` | efectos separados |
+| 12 | `types.ts` histórico | tipos + contratos tentativos + mocks | `DESCARTABLE` | `REEMPLAZAR` | tipos desde contratos vigentes |
+| 13 | dataset mock | datos de demostración | `DESCARTABLE` | `CONSERVAR_SOLO_COMO_HISTORIA` | fixtures nuevos posteriores |
+| 14 | `orders` + `order_items` | dominio activo, creación POS no conectada | `ADAPTABLE` | `ADAPTAR` | acciones nombradas + snapshots |
+| 15 | `pos_zones` | consumidor actual | `REUTILIZABLE` | `REUTILIZAR` | identidad funcional limitada |
+| 16 | `pos_tables` | consumidor actual | `REUTILIZABLE` | `REUTILIZAR` | identidad funcional limitada |
+| 17 | `pos_sessions` | consumidor actual | `REUTILIZABLE` | `REUTILIZAR` | identidad funcional limitada |
+| 18 | `pos_session_orders` | histórico dormido, sin consumidor actual localizado | `ADAPTABLE` | `REESCRIBIR` | vínculo sesión/pedido objetivo |
+| 19 | `pos_payments` | histórico dormido, sin consumidor actual localizado | `ADAPTABLE` | `REESCRIBIR` | modelo de pagos objetivo |
+| 20 | `pos_cash_shifts` | tipo sin consumidor ejecutable confirmado | `ADAPTABLE` | `REESCRIBIR` | sesión de caja objetivo |
+| 21 | `pos_cash_movements` | tipo sin consumidor ejecutable confirmado | `ADAPTABLE` | `REESCRIBIR` | ledger/movimiento de caja objetivo |
+| 22 | `pos_modifiers` | tipo/mock sin consumidor ejecutable confirmado | `ADAPTABLE` | `REESCRIBIR` | catálogo versionado de modificadores |
+| 23 | `pos_modifier_options` | tipo/mock sin consumidor ejecutable confirmado | `ADAPTABLE` | `REESCRIBIR` | opciones versionadas |
+| 24 | `pos_product_modifiers` | tipo sin consumidor ejecutable confirmado | `ADAPTABLE` | `REESCRIBIR` | asignación producto/modificador |
+| 25 | `pos_order_item_modifiers` | tipo sin consumidor ejecutable confirmado | `ADAPTABLE` | `REESCRIBIR` | snapshot por línea |
+| 26 | cursos / `TODO` | necesidad incompleta | `ADAPTABLE` | `REESCRIBIR` | contrato por definir en 021 |
+
+La matriz contiene exactamente una decisión por cada pieza del universo histórico normalizado de esta tarea.
+
+---
+
+#### 39. Totales de clasificación
+
+```text
+UNIVERSO_HISTORICO_CLASIFICADO = 26
+REUTILIZABLE = 3
+ADAPTABLE = 16
+DESCARTABLE = 7
+TOTAL = 26
+```
+
+Distribución detallada:
+
+```text
+REUTILIZAR = 3
+ADAPTAR = 3
+REESCRIBIR = 13
+REEMPLAZAR = 5
+RETIRAR = 0
+CONSERVAR_SOLO_COMO_HISTORIA = 2
+TOTAL = 26
+```
+
+`pos_table_service_calls` se conserva fuera del denominador porque la auditoría aprobada lo identifica como capacidad actual que no corresponde al prototipo inicial.
+
+---
+
+#### 40. Regla sobre consumidores actuales
+
+Que una tabla o identidad tenga consumidor actual demuestra uso, no adecuación total de su schema histórico.
+
+Por tanto:
+
+```text
+CONSUMIDO_ACTUAL
+!=
+CONTRATO_COMPLETO_APROBADO
+```
+
+La reutilización limitada de `pos_zones`, `pos_tables` y `pos_sessions` preserva la identidad funcional y deja a `PULSO-UX-021` el diseño técnico final.
+
+---
+
+#### 41. Regla sobre consumidores históricos dormidos
+
+Una pieza `CONSUMIDO_HISTORICO_DORMIDO` no se clasifica automáticamente como descartable.
+
+Debe responder primero:
+
+- si la necesidad sigue vigente;
+- si el contrato histórico sigue siendo compatible;
+- si existe owner canónico actual;
+- si puede reescribirse sin conservar acoplamientos defectuosos.
+
+Por eso `createOrderAction`, `processPaymentAction`, `pos_session_orders` y `pos_payments` preservan necesidad, pero no implementación.
+
+---
+
+#### 42. Regla sobre ausencia de consumidor
+
+La ausencia de consumidor ejecutable confirmado no autoriza eliminación física.
+
+Antes de cualquier retiro posterior deberán comprobarse consumidores dinámicos, externos, SQL, triggers, jobs, scripts, ambientes, datos históricos y rollback conforme a los owners físicos correspondientes.
+
+Esta tarea solo clasifica.
+
+---
+
+#### 43. Frontera de autorización
+
+Ninguna pieza histórica puede conservar autoridad implícita derivada de:
+
+- ruta;
+- rol;
+- sede;
+- dispositivo;
+- owner broad;
+- usuario técnico;
+- presencia de tabla;
+- acceso directo del cliente.
+
+Las acciones sensibles del POS objetivo deberán consumir PermissionKeys, contexto y enforcement server-side vigentes.
+
+---
+
+#### 44. Frontera de atomicidad e idempotencia
+
+La clasificación rechaza como reutilización directa cualquier acción que no demuestre:
+
+- identidad de intención;
+- atomicidad requerida;
+- reintento seguro;
+- replay seguro;
+- resultado recuperable;
+- protección ante double tap;
+- tratamiento de timeout desconocido;
+- compensaciones explícitas cuando no exista transacción única.
+
+Esta regla afecta especialmente `createOrderAction`, `processPaymentAction` y la RPC histórica.
+
+---
+
+#### 45. Frontera de concurrencia
+
+Mesa, sesión, pedido, pago, caja, canje e inventario deben soportar concurrencia sin depender del último estado leído en UI.
+
+No se reutiliza una implementación histórica cuando una segunda terminal, pestaña o worker puede producir doble efecto o sobrescribir una versión posterior.
+
+---
+
+#### 46. Frontera NEXO
+
+El prototipo histórico no puede tratar un pago o una venta como prueba de movimiento físico.
+
+```text
+VENTA PULSO
+!=
+MOVIMIENTO NEXO
+```
+
+El comentario histórico que atribuía movimientos de inventario a la RPC no se conserva como contrato.
+
+---
+
+#### 47. Frontera NUMERA
+
+Venta, pago, caja, documento fiscal, hecho económico y asiento permanecen separados.
+
+Ninguna tabla o acción histórica de PULSO puede fabricar el resultado NUMERA para completar un flujo visual.
+
+---
+
+#### 48. Frontera PASS
+
+Cliente comercial, cuenta PASS, acumulación, redención, ledger, saldo, regla y reward permanecen bajo contratos PASS.
+
+La existencia histórica de `awardPointsAction` o `processRedemptionAction` no traslada ownership a PULSO.
+
+---
+
+#### 49. Frontera Supabase y datos
+
+Esta tarea no decide ni ejecuta cambios de Supabase.
+
+Las entidades o RPC históricas clasificadas aquí solo producen insumos para diseño y futuras instancias físicas. Cualquier migración, adaptación de esquema, RLS, RPC, función o dato VENTO deberá quedar versionada, documentada y ejecutada desde `vento-shell` por su owner autorizado.
+
+---
+
+#### 50. Handoff contractual a PULSO-UX-021
+
+`PULSO-UX-021` recibe:
+
+```text
+PROTOTIPO HISTORICO = INVENTARIO FORENSE, NO ARQUITECTURA BASE
+26 PIEZAS HISTORICAS = 26 DECISIONES
+REUTILIZABLE = 3
+ADAPTABLE = 16
+DESCARTABLE = 7
+REUTILIZAR IDENTIDAD != CONGELAR SCHEMA
+ADAPTAR / REESCRIBIR PRESERVA NECESIDAD, NO DEUDA HISTORICA
+PULSO / NEXO / NUMERA / PASS CONSERVAN EFECTOS INDEPENDIENTES
+AUTORIZACION + IDEMPOTENCIA + CONCURRENCIA + RECUPERACION = OBLIGATORIAS
+```
+
+021 no deberá volver a debatir si el prototipo completo es la base: esa opción queda descartada por esta auditoría.
+
+---
+
+#### 51. Cobertura de hallazgos CODE-AUD-015
+
+La matriz cierra explícitamente los hallazgos forenses que originan esta auditoría:
+
+| Hallazgo | Evidencia heredada | Decisión 020 |
+| --- | --- | --- |
+| `H-CODE-015-010` | la ruta histórica solo alcanzaba scanner, loyalty y canjes | el POS completo histórico se reemplaza; las capacidades útiles se evalúan por separado |
+| `H-CODE-015-011` | `createOrderAction` existía sin conexión al build POS inspeccionado | necesidad conservada, implementación reescrita |
+| `H-CODE-015-012` | `processPaymentAction` llamaba la RPC sin conexión al build POS inspeccionado | necesidad conservada, implementación reescrita |
+| `H-CODE-015-013` | comentario de pago e implementación de la RPC divergían sobre inventario | RPC histórica reemplazada; NEXO permanece independiente |
+| `H-CODE-015-014` | tipos reales, mocks y contratos tentativos estaban mezclados | archivo y dataset históricos no son contrato objetivo |
+| `H-CODE-015-015` | `pos_zones`, `pos_tables` y `pos_sessions` sí tienen consumidores actuales | reutilización limitada a identidad funcional |
+| `H-CODE-015-016` | `pos_session_orders`, `pos_payments` y RPC tenían consumo histórico dormido | relaciones y persistencia se reescriben; RPC se reemplaza |
+| `H-CODE-015-017` | caja y modificadores no tenían consumidor ejecutable confirmado | necesidad vigente tratada como adaptable, sin reutilización de shape |
+| `H-CODE-015-018` | búsqueda textual no demuestra ausencia total de consumidores | ningún retiro físico se autoriza; `RETIRAR = 0` en esta tarea |
+
+No queda un hallazgo de esta familia sin decisión o frontera explícita.
+
+---
+
+#### 52. Hallazgos diferidos con propietario
+
+| Hallazgo | Bloquea 020 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| acceso directo al repositorio archivado no disponible en la revisión actual | no; existe evidencia forense canónica aprobada | owners de archivo/auditoría histórica | acceso requerido solo si una decisión posterior necesita revalidar bytes históricos concretos |
+| shape técnico definitivo de piezas `ADAPTABLE` | no | `PULSO-UX-021` + packages propietarios | arquitectura objetivo aprobada y materializada |
+| consumidores externos/dinámicos antes de retirar piezas | no | owners físicos + auditorías Supabase/SHELL aplicables | evidencia negativa suficiente antes de retiro |
+| paridad y retiro de `orders-board-legacy` | no | owners PULSO/legacy ya asignados | paridad demostrada y cero imports runtime legacy tras cutover |
+| piloto humano/físico | no | `UX-QA-027` | prueba representativa sobre implementación materializada |
+
+No se crea una tarea adicional para estos hallazgos.
+
+---
+
+#### 53. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la obligación de no heredar automáticamente piezas del prototipo histórico ya está registrada y asignada a esta tarea; la auditoría materializa la decisión pieza por pieza sin introducir una conducta material nueva que requiera ampliar el registro.
+
+---
+
+#### 54. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-PULSO-001` para exigir un POS E2E antes de declararlo operativo;
+- `TREQ-PULSO-002` para paridad y retiro seguro del tablero legacy;
+- `TREQ-PULSO-003` como regla propietaria de esta auditoría: ninguna pieza histórica se incorpora por mera existencia;
+- `TREQ-PULSO-004` para mutaciones mediante acciones nombradas y autorizadas;
+- `TREQ-PULSO-005` para separación de pedido, preparación, cumplimiento, pago, inventario y fidelización;
+- `TREQ-PULSO-006` para pago, caja, anulaciones, devoluciones y conciliación;
+- `TREQ-SUPABASE-003` para decisiones sobre objetos históricos de datos antes de migrar, conservar o retirar;
+- cobertura AUTH, UX e integración vigente para actor efectivo, contexto, idempotencia, concurrencia, recuperación y auditoría.
+
+Esta enumeración es trazabilidad reutilizada y no una actualización 04A.
+
+---
+
+#### 55. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación, formateo, quality, delivery, build y tests reales corresponden a la batería documental sobre el checkout actualizado. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores en el checkout local del usuario ni se abrió el repositorio archivado desde disco local. |
+| REMOTA | PASS | Se verificaron en `vento-shell/main` la continuidad vigente, el owner de PULSO, la topología `DEFINE_ONCE`, el `package.json`, la evidencia aprobada de `CODE-AUD-015`, su matriz real de consumidores y el Registro 04A relevante; el repositorio histórico `devVentoGroup/vento-platform` no estuvo accesible directamente y por ello no se declara una reinspección de sus bytes. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, pedidos, pagos, caja, loyalty, inventario ni flujos productivos. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-020` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; cualquier reutilización, adaptación, reemplazo o retiro se materializa posteriormente mediante owners autorizados. |
+
+---
+
+#### 56. Decisiones congeladas
+
+1. el prototipo histórico completo no es arquitectura base;
+2. el universo histórico normalizado contiene 26 piezas y las 26 quedan clasificadas;
+3. tres identidades de salón se consideran reutilizables únicamente en alcance funcional limitado;
+4. dieciséis piezas conservan necesidad pero requieren adaptación o reescritura;
+5. siete piezas no deben incorporarse como implementación objetivo;
+6. una capacidad actual ajena al prototipo inicial se mantiene fuera del denominador para no inflar el inventario histórico;
+7. consumidor actual no equivale a contrato completo;
+8. consumidor histórico dormido no equivale a reutilización ni descarte automático;
+9. ausencia de consumidor no autoriza retiro físico;
+10. NEXO, NUMERA y PASS conservan ownership de sus efectos;
+11. ninguna clasificación autoriza cambios físicos;
+12. `PULSO-UX-021` recibe la matriz cerrada como restricción de diseño.
+
+---
+
+#### 57. Criterios de aceptación
+
+- [ ] las 26 piezas históricas tienen exactamente una clase macro;
+- [ ] las 26 piezas tienen exactamente una disposición detallada;
+- [ ] los totales por clase suman 26;
+- [ ] los totales por disposición suman 26;
+- [ ] ninguna pieza se reutiliza por mera existencia;
+- [ ] `pos_zones`, `pos_tables` y `pos_sessions` limitan la reutilización a identidad funcional;
+- [ ] `createOrderAction` y `processPaymentAction` preservan necesidad sin preservar implementación;
+- [ ] la RPC histórica de pago no se eleva a contrato objetivo;
+- [ ] scanner, canje y loyalty mantienen sus owners actuales;
+- [ ] la documentación histórica sobreestimada no se usa como evidencia de capacidad;
+- [ ] mocks no se convierten en datos o contratos productivos;
+- [ ] ausencia de consumidor no se interpreta como autorización de borrado;
+- [ ] Supabase no se modifica en esta tarea;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecuta trabajo físico;
+- [ ] el handoff a 021 contiene matriz, cifras y fronteras completas.
+
+---
+
+#### 58. Límites
+
+Esta tarea no:
+
+- abre ni modifica `vento-platform`;
+- reescribe código histórico;
+- cambia `vento-pulso`;
+- crea pantallas, rutas o componentes;
+- modifica Server Actions;
+- modifica RPC;
+- elimina tablas;
+- migra datos;
+- cambia RLS;
+- crea PermissionKeys o grants;
+- modifica esquemas;
+- ejecuta Supabase;
+- despliega;
+- retira legacy;
+- ejecuta paridad;
+- certifica producción;
+- redefine los contratos de NEXO, NUMERA o PASS;
+- modifica el Registro 04A;
+- crea instancia física propia;
+- desarrolla la arquitectura objetivo de `PULSO-UX-021`.
+
+---
+
+#### 59. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico`
 ### [ ] PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico
