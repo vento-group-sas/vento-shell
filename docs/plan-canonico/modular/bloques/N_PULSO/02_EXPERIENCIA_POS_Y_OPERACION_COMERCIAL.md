@@ -13887,7 +13887,1382 @@ Por tanto, el diseño queda completo, pero la ejecución de acumulación permane
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-012 — Integrar redención de puntos`
-### [ ] PULSO-UX-012 — Integrar redención de puntos
+### ✅ PULSO-UX-012 — Integrar redención de puntos
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-011 — Integrar acumulación de puntos
+**Tarea siguiente:** PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0086 — Redención de puntos o beneficios` como superficie operativa PULSO sobre `VPROC-0045::STEP-REDEEM_LOYALTY_VALUE`, separando intención PASS, presentación de ticket/QR, resolución, elegibilidad, autoridad, consumo único, efecto sobre la venta, ledger, saldo, resultado durable y conciliación; reconciliando `PULSO-AUTH-010` y `PASS-INT-002` con el catálogo y dataset de autorización vigentes, que actualmente no publican `pulso.loyalty.*`; preservando ownership de PASS, idempotencia, concurrencia, actor real, territorio, minimización de datos, resultado desconocido y fronteras con acumulación, pago, caja, inventario, compensaciones y confirmaciones sensibles; sin usar `pulso.pos.main` como sustituto de autoridad ni materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas runtime, PermissionKeys, catálogos, datasets, roles, grants, RLS, RPC, Server Actions, tablas, ledger, saldo, recompensas, redenciones, datos, Supabase, migraciones, packages, dispositivos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual PULSO recibe una intención de redención creada por PASS, resuelve el ticket presentado, revalida elegibilidad y autoridad y solicita su consumo exactamente una vez, sin convertir la mera posesión de un QR, un estado `pending`, un saldo visible, `pulso.pos.main`, una firma de dispositivo o una respuesta local en evidencia suficiente de que el canje fue autorizado o consumido.
+
+La experiencia debe dejar cerrado que:
+
+- crear una intención de redención en PASS y consumirla desde PULSO son hechos distintos;
+- PASS conserva la semántica de fidelización, la recompensa, el ledger, el saldo y el resultado durable;
+- PULSO consume únicamente una intención preexistente, inequívoca, vigente y elegible;
+- la posesión del código no concede autoridad;
+- el estado visible en UI se vuelve a validar en servidor antes del efecto;
+- el mismo ticket no puede consumirse dos veces;
+- un retry equivalente recupera el resultado previo sin repetir el efecto;
+- un resultado desconocido exige conciliación antes de reintentar;
+- venta, pago, caja, inventario, loyalty y documento fiscal conservan estados separados;
+- la ausencia actual de una PermissionKey `pulso.loyalty.*` en el catálogo activo bloquea la ejecución y no autoriza fallback a `pulso.pos.main`.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-011
+
+`PULSO-UX-011` entrega a esta tarea:
+
+```text
+IDENTIFICACION DE CLIENTE != REDENCION
+ACUMULACION CONFIRMADA != INTENCION DE REDENCION
+SALDO VISIBLE NO AUTORIZA GASTO DE PUNTOS
+PASS CONSERVA LEDGER, SALDO, REGLA Y SEMANTICA DE FIDELIZACION
+PULSO NO REUTILIZA EL COMANDO DE ACUMULACION PARA REDIMIR
+RESULTADO DESCONOCIDO DE ACUMULACION NO SE RESUELVE MEDIANTE CANJE
+LA AUTORIDAD DE REDENCION DEBE RECONCILIARSE CONTRA EL CATALOGO VIGENTE DE FORMA INDEPENDIENTE
+```
+
+Por tanto, esta tarea no hereda autoridad de acumulación ni utiliza el saldo mostrado durante identificación como autorización para redimir.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `PULSO-UX-012` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el diseño se define una sola vez;
+- no existe instancia física propia;
+- no se consume ninguna redención real;
+- no se modifica PULSO ni PASS;
+- no se modifica Supabase;
+- no se crea ni publica una PermissionKey;
+- no se cambia el dataset de grants;
+- no se crea RPC, Server Action, tabla, índice, constraint o policy;
+- no se modifica el catálogo de recompensas;
+- no se ejecutan pruebas E2E.
+
+---
+
+#### 4. Identidad canónica de la superficie
+
+La superficie propietaria de esta tarea es:
+
+| Dimensión | Valor |
+| --- | --- |
+| Pantalla | `VSCREEN-0086` |
+| Nombre | Redención de puntos o beneficios |
+| Aplicación de superficie | `pulso` |
+| Proceso principal | `VPROC-0045` |
+| Paso | `VPROC-0045::STEP-REDEEM_LOYALTY_VALUE` |
+| Interacción | `EXECUTE` |
+| Fase | `DECISION` |
+| Relación de proceso | `SUPERVISION_SURFACE` |
+| Proceso relacionado | `VPROC-0043` |
+
+Su propósito canónico es validar y consumir una redención autorizada sin duplicarla ni exponer información innecesaria.
+
+---
+
+#### 5. Ownership del proceso
+
+`VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` pertenece a PASS.
+
+La frontera queda:
+
+```text
+PASS
+→ crea y gobierna la intención, recompensa, regla,
+  ledger, saldo y estado de fidelización
+
+PULSO
+→ superficie operacional que resuelve y solicita
+  validar/consumir la intención dentro de la venta
+```
+
+Que `VSCREEN-0086` viva en PULSO no transfiere a PULSO el ownership de la redención ni del ledger.
+
+---
+
+#### 6. Relación con la intención creada en PASS
+
+La intención de redención se origina en:
+
+```text
+VSCREEN-0110 — Ticket o QR de redención
+VPROC-0045::STEP-CREATE_REDEMPTION_INTENT
+```
+
+Regla:
+
+```text
+TICKET CREADO
+!=
+REDENCION CONSUMIDA
+```
+
+Y también:
+
+```text
+QR MOSTRADO
+!=
+CANJE VALIDADO
+```
+
+PULSO no crea una redención alternativa si el ticket presentado no es válido.
+
+---
+
+#### 7. Contrato PASS consumido
+
+La tarea consume `PASS-INT-002 — Definir integración PULSO → PASS para redención` sin redefinirlo.
+
+La frontera contractual es:
+
+| Capa | Responsabilidad |
+| --- | --- |
+| PASS cliente | crear/presentar intención de redención de un solo uso con estado y vigencia visibles |
+| PULSO | capturar el ticket presentado y contexto operacional permitido |
+| contrato servidor | revalidar identidad, recompensa, regla, estado, vigencia, territorio, actor, dispositivo, ledger y uso previo |
+| PASS | gobernar estado, efecto de puntos, ledger y resultado durable |
+| PULSO UI | mostrar únicamente resultado confirmado y aplicar a la venta solo el efecto autorizado |
+
+---
+
+#### 8. Contrato de autorización objetivo aprobado
+
+`PULSO-AUTH-010 — Proteger redenciones` definió como identidad objetivo:
+
+```text
+pulso.loyalty.points.redeem
+```
+
+con semántica objetivo:
+
+```text
+aplicación = pulso
+módulo = loyalty
+recurso = points
+acción = redeem
+modalidad objetivo = OPERATIONAL_ONLY
+actor ordinario objetivo = cajero_satelite
+```
+
+También fijó que `gerencia_operativa` no recibe redención por supervisión.
+
+---
+
+#### 9. Reconciliación con el catálogo de autorización vigente
+
+El catálogo materializado vigente `permissions.json@1.0.0` contiene 140 PermissionKey activas y no contiene:
+
+```text
+pulso.loyalty.customers.identify
+pulso.loyalty.points.accumulate
+pulso.loyalty.points.redeem
+```
+
+Por tanto, `pulso.loyalty.points.redeem` se conserva como identidad objetivo aprobada de `PULSO-AUTH-010`, pero no se presenta como PermissionKey activa actualmente publicada.
+
+---
+
+#### 10. Reconciliación con operational-role-grants vigente
+
+`operational-role-grants@1.0.0` tampoco contiene grants `pulso.loyalty.*`.
+
+No existe en el dataset vigente un grant activo de redención para `cajero_satelite`, `operador_integral_satelite` ni `gerencia_operativa`.
+
+Regla vigente:
+
+```text
+CONTRATO OBJETIVO DE REDENCION EXISTE
++
+PERMISSIONKEY ACTIVA AUSENTE
++
+GRANT OPERATIVO ACTIVO AUSENTE
+=
+REDENCION NO EJECUTABLE
+```
+
+La experiencia debe fallar cerrada hasta que una reconciliación canónica posterior publique autoridad ejecutable compatible.
+
+---
+
+#### 11. Prohibición de fallback a pulso.pos.main
+
+El runtime actual utiliza `pulso.pos.main` en `processRedemptionAction`.
+
+Esta tarea no adopta ese permiso broad como autoridad suficiente.
+
+```text
+pulso.pos.main
+!=
+pulso.loyalty.points.redeem
+```
+
+Visibilidad del scanner y capacidad de consumir una redención son decisiones distintas.
+
+---
+
+#### 12. Actor ordinario objetivo versus actor ejecutable vigente
+
+El contrato histórico aprobado identifica a `cajero_satelite` como actor ordinario objetivo bajo turno/check-in/contexto compatible.
+
+Sin embargo, mientras el catálogo y grants vigentes no publiquen autoridad de redención:
+
+```text
+ACTOR OBJETIVO DOCUMENTADO
+!=
+ACTOR EJECUTABLE VIGENTE
+```
+
+La UI no habilita el consumo solo por reconocer el rol del trabajador.
+
+---
+
+#### 13. Operador integral
+
+`operador_integral_satelite` no recibe autoridad de redención por proximidad funcional, por compartir punto de caja ni por disponer de otras capacidades PULSO.
+
+Si una reconciliación futura le concede `pulso.loyalty.points.redeem`, la experiencia podrá habilitar la misma superficie dentro de su contexto exacto.
+
+Esta tarea no crea ese grant.
+
+---
+
+#### 14. Gerencia operativa
+
+`gerencia_operativa` no obtiene redención por supervisión.
+
+La capacidad de revisar, asistir o coordinar no equivale a consumir el ticket.
+
+```text
+SUPERVISION
+!=
+AUTORIDAD DE REDENCION
+```
+
+---
+
+#### 15. Entrada a VSCREEN-0086
+
+La superficie puede abrirse cuando existe una intención de redención presentada o un contexto de venta que permite recibirla.
+
+La entrada no implica que el ticket sea válido.
+
+Debe poder comenzar en estados como:
+
+- esperando código;
+- resolviendo ticket;
+- ticket no encontrado;
+- ticket no consumible;
+- autoridad no disponible;
+- elegibilidad pendiente;
+- conciliación requerida.
+
+---
+
+#### 16. Ticket o QR como localizador
+
+El QR o código presentado es un localizador de una intención PASS.
+
+No constituye por sí solo:
+
+- autenticación del cliente;
+- permiso del trabajador;
+- vigencia;
+- sede aplicable;
+- recompensa activa;
+- saldo suficiente;
+- efecto de puntos coherente;
+- estado consumible;
+- autorización para aplicar el beneficio a una venta.
+
+---
+
+#### 17. Identidad estable de la redención
+
+La resolución debe conducir a una identidad durable e inequívoca de redención.
+
+La experiencia no opera sobre una cadena de QR como identidad empresarial final cuando el servidor no puede demostrar a qué intención corresponde.
+
+Un código ambiguo falla cerrado.
+
+---
+
+#### 18. Identidad del cliente
+
+La redención permanece asociada a su cliente canónico.
+
+PULSO no puede:
+
+- sustituir el cliente por el seleccionado previamente en modo identificación;
+- usar nombre, correo o teléfono para inferir otro titular;
+- convertir al trabajador en cliente;
+- aplicar un ticket a otra cuenta por conveniencia de caja.
+
+---
+
+#### 19. Identidad de la recompensa
+
+La recompensa o beneficio consumido es exactamente el definido por la intención PASS.
+
+La UI de PULSO puede mostrar una proyección mínima del nombre y efecto permitido, pero no sustituye `reward_id`, costo, regla, producto o beneficio desde payload cliente.
+
+---
+
+#### 20. Regla y versión
+
+La validez del canje depende de la regla/version PASS aplicable.
+
+PULSO no fija localmente:
+
+- costo de puntos;
+- vigencia;
+- restricciones de sede;
+- límites de uso;
+- sustituciones;
+- disponibilidad;
+- compatibilidad con venta o producto.
+
+---
+
+#### 21. Saldo y efecto de puntos
+
+El saldo visible es una proyección y no una autorización.
+
+Antes del consumo debe poder demostrarse la relación:
+
+```text
+REDENCION
+↔
+EFECTO DE PUNTOS ESPERADO
+↔
+LEDGER / PROYECCION COHERENTE
+```
+
+La redención no vuelve a debitar puntos si la creación de intención ya aplicó o reservó ese efecto conforme al contrato PASS.
+
+---
+
+#### 22. Estados físicos AS-IS de redención
+
+El runtime observado maneja actualmente:
+
+```text
+pending
+validated
+cancelled
+```
+
+Estos valores describen el estado físico AS-IS de `pass.loyalty_redemptions` observado por el código.
+
+No sustituyen los estados de proceso de `VPROC-0045` ni crean por sí solos elegibilidad.
+
+---
+
+#### 23. pending no equivale a consumible
+
+`status = pending` es una condición necesaria del runtime actual para intentar el cambio, pero no demuestra por sí sola:
+
+- vigencia;
+- territorio;
+- recompensa aplicable;
+- coherencia con ledger;
+- actor autorizado;
+- regla vigente;
+- ausencia de conflicto;
+- vínculo con pedido cuando aplique.
+
+---
+
+#### 24. validated
+
+Una redención `validated` no puede volver a consumirse.
+
+La interfaz debe tratarla como efecto ya aplicado o estado no consumible según la evidencia disponible, nunca como oportunidad de repetir la mutación.
+
+---
+
+#### 25. cancelled
+
+Una redención `cancelled` no es consumible.
+
+PULSO no revive el ticket ni lo transforma en `pending` desde UI.
+
+Cualquier nueva intención pertenece a PASS y conserva una identidad nueva.
+
+---
+
+#### 26. Vigencia y expiración
+
+La ausencia de una columna `expires_at` dedicada en el shape runtime observado no autoriza a omitir vigencia.
+
+La experiencia exige que el servidor pueda demostrar la vigencia desde la fuente PASS aplicable.
+
+Si la vigencia no puede resolverse con seguridad:
+
+```text
+FAIL CLOSED
+```
+
+---
+
+#### 27. Territorio
+
+La redención solo puede consumirse dentro del territorio permitido por su contrato y por el actor efectivo.
+
+`site_id` recibido desde navegador, query, componente o payload no amplía autoridad.
+
+La sede efectiva debe reconciliar:
+
+- contexto operacional;
+- turno/check-in cuando apliquen;
+- dispositivo;
+- intención/recompensa;
+- regla PASS.
+
+---
+
+#### 28. Pedido o hecho comercial asociado
+
+Cuando el beneficio requiera una venta o pedido específico, la relación se valida server-side antes del consumo.
+
+Cuando la regla PASS permita un beneficio sin pedido, esa ausencia debe provenir de la regla aplicable y no de que la UI omitió `orderId`.
+
+`orderId` enviado por cliente nunca amplía elegibilidad.
+
+---
+
+#### 29. Venta y redención permanecen separadas
+
+Aplicar una redención a una venta no convierte la venta en owner del ticket.
+
+```text
+VENTA
+!=
+REDENCION
+```
+
+La venta puede consumir el resultado autorizado como beneficio comercial, pero no reescribe el estado PASS por su cuenta.
+
+---
+
+#### 30. Pago y redención permanecen separados
+
+Un canje puede alterar el importe o beneficio aplicable conforme a la regla propietaria, pero no equivale a un pago.
+
+```text
+REDENCION
+!=
+PAYMENT
+```
+
+La redención no se registra como medio de pago salvo que exista un contrato canónico explícito que así lo defina; esta tarea no lo inventa.
+
+---
+
+#### 31. Caja y redención permanecen separadas
+
+La redención no abre, cierra, ajusta ni concilia una sesión de caja.
+
+Un efecto comercial derivado puede influir en el total de la venta, pero no se convierte en movimiento de efectivo por inferencia.
+
+---
+
+#### 32. Inventario y cumplimiento permanecen separados
+
+Si una recompensa implica producto físico, el consumo del ticket no sustituye la reserva, salida, preparación o entrega de inventario.
+
+`PULSO-UX-016` conserva la conexión venta-inventario.
+
+Esta tarea no inventa un descuento de stock ni una salida física automática.
+
+---
+
+#### 33. NUMERA permanece separado
+
+La redención puede formar parte del contexto económico de una venta, pero no crea por sí sola un hecho NUMERA ni una contabilización.
+
+`PULSO-UX-017` conserva la conexión venta-NUMERA.
+
+---
+
+#### 34. Frontera con PULSO-UX-018
+
+`PULSO-UX-018 — Conectar venta con PASS` conserva la integración amplia entre la venta y las capacidades PASS.
+
+Esta tarea se limita al contrato específico de experiencia para consumir una intención de redención en `VSCREEN-0086`.
+
+No absorbe la conexión global de venta con PASS.
+
+---
+
+#### 35. Autoridad efectiva en el punto de efecto
+
+La mutación final debe revalidar inmediatamente antes del consumo, según aplique:
+
+```text
+PRINCIPAL TECNICO
+ACTOR HUMANO EFECTIVO
+TURNO / CHECK-IN
+SEDE / AREA / PUNTO
+DISPOSITIVO
+PERMISO EXACTO
+REDENCION
+CLIENTE
+RECOMPENSA
+REGLA / VERSION
+ESTADO
+VIGENCIA
+LEDGER / EFECTO DE PUNTOS
+PEDIDO / VENTA CUANDO APLIQUE
+IDENTIDAD IDEMPOTENTE
+```
+
+La ausencia o contradicción de un componente requerido produce denegación o conciliación, no éxito.
+
+---
+
+#### 36. Dispositivo compartido
+
+Cuando la terminal es compartida, la firma del trabajador identifica al actor humano real antes del efecto.
+
+La firma no concede autoridad, no amplía territorio y no sustituye la regla PASS.
+
+```text
+FIRMA VALIDA
+!=
+PERMISO DE REDENCION
+```
+
+---
+
+#### 37. Secreto efímero
+
+PIN o firma del trabajador:
+
+- no forma parte del ticket;
+- no se muestra después de captura;
+- no se registra en logs o metadata empresarial;
+- no se reutiliza para otro canje;
+- se limpia después de éxito, error, cancelación, cambio de modo o expiración;
+- nunca se usa como identidad del cliente.
+
+---
+
+#### 38. Orden seguro de resolución y autorización
+
+El runtime actual resuelve primero el ticket y después llama `requireAppAccess`.
+
+El diseño objetivo no puede permitir que una lectura previa exponga información innecesaria o habilite una mutación con autoridad inferior.
+
+La frontera servidor debe ordenar autenticación, contexto, recurso y autorización de forma que toda información previa al permiso exacto quede minimizada y toda mutación dependa del contrato completo.
+
+---
+
+#### 39. Secuencia AS-IS de processRedemptionAction
+
+El runtime vigente ejecuta actualmente:
+
+```text
+validateRedemption(qrCode)
+→ requireAppAccess(... pos.main ...)
+→ requireSharedDeviceActorSignature(...)
+→ markRedemptionAsUsed(...)
+→ attachSharedDeviceActionSignatureTarget(...)
+```
+
+Esto es evidencia de implementación parcial, no diseño objetivo aprobado.
+
+---
+
+#### 40. Guard AS-IS
+
+`processRedemptionAction` usa:
+
+```text
+APP_ID = pulso
+POS_PERMISSION = pos.main
+```
+
+La llamada observada no aporta `siteId` al guard.
+
+Por tanto, el runtime no demuestra todavía:
+
+```text
+pulso.loyalty.points.redeem
++
+territorio efectivo de la redencion
+```
+
+---
+
+#### 41. validateRedemption AS-IS
+
+`validateRedemption` consulta `pass.loyalty_redemptions` por `qr_code`, recupera datos básicos y verifica principalmente:
+
+- existencia de una fila;
+- `status = pending`;
+- nombre de recompensa para presentación.
+
+No demuestra por sí sola el contrato completo de elegibilidad.
+
+---
+
+#### 42. Datos que validateRedemption no demuestra por sí sola
+
+La función observada no demuestra, en esa misma frontera:
+
+- PermissionKey exacta;
+- turno/check-in;
+- sede efectiva;
+- vigencia;
+- recompensa activa y aplicable;
+- compatibilidad entre sede de redención y recompensa;
+- estado autoritativo del ledger;
+- regla/version completa;
+- pedido cuando la regla lo requiere;
+- identidad idempotente de consumo.
+
+---
+
+#### 43. markRedemptionAsUsed AS-IS
+
+La mutación observada realiza:
+
+```text
+UPDATE pass.loyalty_redemptions
+SET status = validated,
+    validated_at = timestamp,
+    order_id = valor opcional
+WHERE id = redemptionId
+  AND status = pending
+```
+
+Además comprueba que existe usuario autenticado.
+
+Esto aporta una defensa parcial, no el contrato completo de redención.
+
+---
+
+#### 44. Compare-and-set como defensa parcial
+
+La condición:
+
+```text
+WHERE id = redemptionId
+AND status = pending
+```
+
+reduce el riesgo de doble update sobre la misma fila.
+
+Sin embargo:
+
+```text
+COMPARE-AND-SET
+!=
+IDEMPOTENCIA EMPRESARIAL COMPLETA
+```
+
+No recupera por sí solo el resultado durable original de un retry equivalente.
+
+---
+
+#### 45. Consumo único
+
+La experiencia exige:
+
+```text
+UNA INTENCION DE REDENCION
+→ MAXIMO UN CONSUMO EMPRESARIAL
+```
+
+Dos cajas, pestañas, dispositivos o requests concurrentes deben converger en un solo efecto autorizado.
+
+---
+
+#### 46. Identidad idempotente del consumo
+
+El consumo debe conservar una identidad estable que permita distinguir:
+
+- primer intento;
+- replay equivalente;
+- intento concurrente;
+- reutilización incompatible;
+- nueva intención legítima.
+
+Un identificador de intento técnico no sustituye la identidad empresarial.
+
+---
+
+#### 47. Replay equivalente
+
+Para una identidad ya confirmada:
+
+```text
+MISMA IDENTIDAD
++
+MISMA HUELLA EMPRESARIAL
+=
+RESULTADO DURABLE PREVIO
+```
+
+No se cambia de nuevo el estado, no se vuelve a debitar/reservar puntos y no se reaplica el beneficio.
+
+---
+
+#### 48. Reutilización incompatible
+
+Para la misma identidad con contenido materialmente distinto:
+
+```text
+MISMA IDENTIDAD
++
+HUELLA INCOMPATIBLE
+=
+IDEMPOTENCY_CONFLICT
+```
+
+El segundo contenido no crea un nuevo consumo.
+
+---
+
+#### 49. Concurrencia
+
+Si múltiples requests intentan consumir la misma redención:
+
+```text
+UN GANADOR EMPRESARIAL
++
+CERO SEGUNDO EFECTO
+```
+
+Los demás intentos recuperan el resultado previo o reciben un estado/conflicto inequívoco.
+
+La lectura previa `pending` no es suficiente como único control de concurrencia.
+
+---
+
+#### 50. Resultado desconocido
+
+Una pérdida de respuesta después de iniciar la mutación produce:
+
+```text
+UNKNOWN_OUTCOME
+```
+
+No autoriza a asumir fallo ni a repetir con una identidad nueva.
+
+Antes de reenviar debe consultarse el resultado durable del mismo consumo.
+
+Si no puede determinarse con seguridad:
+
+```text
+RECONCILIATION_REQUIRED
+```
+
+---
+
+#### 51. Offline y degradación
+
+Sin autoridad servidor disponible no existe canje definitivo local.
+
+La UI no puede:
+
+- marcar el ticket como usado localmente;
+- crear una redención sustitutiva;
+- aplicar un beneficio irreversible;
+- restaurar `pending`;
+- reintentar con identidad nueva;
+- asumir éxito por timeout.
+
+---
+
+#### 52. Clases semánticas mínimas de resultado
+
+La experiencia debe distinguir al menos:
+
+| Clase | Significado UX |
+| --- | --- |
+| `APPLIED` | la redención fue consumida exactamente una vez |
+| `ALREADY_APPLIED` | el mismo efecto ya existía y se recuperó sin repetirlo |
+| `AUTH_DENIED` | falta autoridad o contexto autorizado |
+| `TERRITORY_DENIED` | la sede efectiva no puede consumir el ticket |
+| `STATE_REJECTED` | el ticket no está en estado consumible |
+| `ELIGIBILITY_REJECTED` | cliente, recompensa, vigencia, regla o ledger no permiten consumo |
+| `IDEMPOTENCY_CONFLICT` | la misma identidad representa contenido incompatible |
+| `UNKNOWN_OUTCOME` | no puede probarse éxito ni fallo todavía |
+| `TECHNICAL_FAILURE` | fallo técnico sin efecto confirmado |
+
+Los nombres físicos pueden variar; la experiencia no colapsa estas semánticas en un único mensaje genérico.
+
+---
+
+#### 53. Estado de procesamiento visible
+
+Mientras se resuelve o consume el ticket:
+
+- la acción dominante queda bloqueada contra doble envío;
+- se conserva la identidad del ticket que está siendo procesado;
+- no se cambia anticipadamente a `validated` en UI;
+- no se limpia la referencia necesaria para recuperar un resultado incierto;
+- un spinner no constituye confirmación.
+
+---
+
+#### 54. Estado de éxito visible
+
+La UI muestra canje confirmado únicamente cuando existe resultado durable compatible con `APPLIED` o replay equivalente confirmado.
+
+El mensaje de éxito debe referirse al beneficio/recompensa realmente consumido y no a una inferencia local.
+
+---
+
+#### 55. Ya aplicado
+
+`ALREADY_APPLIED` no se presenta como un nuevo canje.
+
+La UI debe comunicar que el resultado ya existía y evitar duplicar efectos, recibos o mensajes que aparenten una segunda aplicación.
+
+---
+
+#### 56. Denegación
+
+Una denegación por autoridad o territorio:
+
+- no cambia el ticket;
+- no revela detalles innecesarios de otras sedes o clientes;
+- no ofrece un fallback broad;
+- no invita a repetir con otra identidad;
+- conserva evidencia suficiente para soporte autorizado.
+
+---
+
+#### 57. Rechazo empresarial
+
+Un ticket puede existir y ser auténtico pero no ser elegible para consumo.
+
+La experiencia distingue esa condición de:
+
+- código inexistente;
+- autoridad denegada;
+- fallo técnico;
+- resultado desconocido;
+- ticket ya usado.
+
+---
+
+#### 58. Confirmación previa al efecto
+
+La superficie puede mostrar antes del consumo un resumen mínimo de:
+
+- recompensa;
+- costo/efecto de puntos cuando sea seguro y vigente;
+- estado consumible;
+- sede o alcance cuando sea necesario;
+- relación con pedido/venta cuando aplique.
+
+La confirmación genérica de acciones sensibles permanece reservada a `PULSO-UX-013`.
+
+Esta tarea no diseña el patrón transversal de doble confirmación.
+
+---
+
+#### 59. Composición mínima de VSCREEN-0086
+
+La superficie debe poder expresar, sin imponer layout físico:
+
+1. entrada o lectura del ticket;
+2. estado de resolución;
+3. resumen mínimo de recompensa e intención;
+4. elegibilidad y estado vigente;
+5. autoridad/contexto de operación;
+6. acción de consumo cuando esté habilitada;
+7. resultado durable o estado de conciliación;
+8. retorno a la venta o contexto anterior.
+
+---
+
+#### 60. El ticket no hereda el cliente seleccionado en acumulación
+
+Cambiar desde identificación/acumulación a redención limpia el estado incompatible del cliente seleccionado.
+
+La identidad del ticket gobierna la identidad cliente de la redención.
+
+Esto evita aplicar un canje al cliente anterior por persistencia de UI.
+
+---
+
+#### 61. Cambio de modo
+
+Mientras identificación y redención compartan el contenedor runtime `/scanner`, cambiar de modo debe limpiar:
+
+- código incompatible;
+- cliente seleccionado no aplicable;
+- monto de acumulación;
+- mensajes anteriores;
+- PIN que ya no corresponda;
+- estado transitorio de operación previa.
+
+No se crean rutas ficticias por este diseño.
+
+---
+
+#### 62. Proyección mínima de datos
+
+Para consumir la redención, PULSO muestra solo los datos necesarios para identificar el beneficio y operar el canje.
+
+No necesita exponer por defecto:
+
+- email completo;
+- teléfono;
+- historial completo;
+- ledger completo;
+- consentimientos;
+- datos laborales del cliente;
+- datos de otras sedes.
+
+---
+
+#### 63. Privacidad en dispositivo compartido
+
+Al finalizar, cancelar, expirar la operación o cambiar de actor/modo, la UI limpia proyecciones personales que ya no son necesarias.
+
+El siguiente operador no hereda datos del cliente o ticket anterior por persistencia visual.
+
+---
+
+#### 64. Accesibilidad
+
+La experiencia debe:
+
+- identificar estados por texto y no solo color;
+- anunciar procesamiento, éxito, ya aplicado, rechazo y conciliación pendiente;
+- mantener foco en el error o resultado relevante;
+- ofrecer etiquetas comprensibles al input de código y acción dominante;
+- impedir doble activación accidental;
+- no usar el toast como única evidencia del resultado.
+
+---
+
+#### 65. Frescura de datos
+
+Estado, recompensa, vigencia, regla, ledger y territorio pueden cambiar entre lectura y consumo.
+
+La UI no confía en el snapshot inicial para autorizar la mutación.
+
+El servidor revalida inmediatamente antes del efecto.
+
+---
+
+#### 66. Realtime y refresco
+
+Realtime o un nuevo fetch pueden actualizar información visible, pero no conceden autoridad ni consumen el ticket.
+
+Si dos fuentes divergen, la UI no selecciona silenciosamente el valor más conveniente; conserva la fuente autoritativa y deriva a conciliación cuando corresponda.
+
+---
+
+#### 67. Estados de VPROC-0045 reutilizados
+
+La tarea reutiliza los estados canónicos existentes:
+
+1. `LOYALTY_INTERACTION_OPENED`;
+2. `IDENTITY_VALIDATING`;
+3. `ELIGIBILITY_CHECKING`;
+4. `ACTION_AUTHORIZATION_PENDING`;
+5. `MOVEMENT_PENDING`;
+6. `MOVEMENT_RECORDED`;
+7. `CONSENT_UPDATE_PENDING`;
+8. `RECONCILIATION_PENDING`;
+9. `LOYALTY_INTERACTION_RECONCILED`.
+
+No crea una segunda máquina de estados para PULSO.
+
+---
+
+#### 68. Aplicación de estados a redención
+
+Para esta experiencia:
+
+- `LOYALTY_INTERACTION_OPENED`: existe ticket presentado o intento válido de resolverlo;
+- `IDENTITY_VALIDATING`: se verifica identidad de ticket/cliente;
+- `ELIGIBILITY_CHECKING`: se verifican recompensa, regla, sede, vigencia y estado;
+- `ACTION_AUTHORIZATION_PENDING`: se verifica autoridad de consumo;
+- `MOVEMENT_PENDING`: el efecto PASS válido está listo para aplicarse;
+- `MOVEMENT_RECORDED`: el ledger/estado durable ya registró el efecto esperado;
+- `RECONCILIATION_PENDING`: ticket, venta, beneficio, saldo o ledger necesitan comparación;
+- `LOYALTY_INTERACTION_RECONCILED`: la interacción quedó aplicada una sola vez y reconciliada.
+
+`CONSENT_UPDATE_PENDING` permanece disponible para su propósito propio y no se fuerza durante un canje ordinario.
+
+---
+
+#### 69. Eventos canónicos reutilizados
+
+Se reutilizan los eventos de `VPROC-0045`:
+
+- `VPROC-0045.EVT-001` — `loyalty-interaction-opened`;
+- `VPROC-0045.EVT-002` — `identity-validating`;
+- `VPROC-0045.EVT-003` — `action-authorization-pending`;
+- `VPROC-0045.EVT-004` — `consent-update-pending`;
+- `VPROC-0045.EVT-005` — `reconciliation-pending`;
+- `VPROC-0045.EVT-006` — `loyalty-interaction-reconciled`.
+
+No se inventa un evento PULSO alternativo para simular consumo.
+
+---
+
+#### 70. Sensibilidad
+
+Los eventos de `VPROC-0045` están clasificados como `RESTRICTED_PERSONAL`.
+
+La experiencia debe minimizar datos personales en logs, errores, telemetría y soporte, y separar referencias técnicas de datos visibles al operador.
+
+---
+
+#### 71. Acciones funcionales de VSCREEN-0086
+
+El contrato generado reconoce para `VSCREEN-0086`:
+
+- una acción `PRIMARY`;
+- cuatro acciones `SECONDARY`.
+
+Los contratos generados no asignan nombres semánticos a esas cuatro acciones secundarias.
+
+Esta tarea no inventa etiquetas canónicas nuevas para ellas.
+
+---
+
+#### 72. Aplicación del beneficio a la venta
+
+Después de un consumo confirmado, PULSO puede reflejar el resultado permitido en la venta conforme al contrato propietario de la recompensa.
+
+No puede inferir desde el nombre visible de la recompensa:
+
+- qué línea modificar;
+- qué precio aplicar;
+- qué descuento crear;
+- qué producto agregar;
+- qué impuesto alterar;
+- qué inventario descargar.
+
+El efecto comercial exacto debe provenir de una regla/resultado autoritativo.
+
+---
+
+#### 73. Refund, void y cancelación posteriores
+
+Un refund, void o cancelación de venta posterior no restaura automáticamente la redención ni los puntos.
+
+Si corresponde reversión o restitución:
+
+```text
+NUEVO HECHO PASS AUTORIZADO
++
+REFERENCIA AL ORIGINAL
++
+IDEMPOTENCIA
++
+AUDITORIA
+```
+
+No se edita destructivamente el historial del canje.
+
+---
+
+#### 74. Compensación
+
+La compensación de una redención es un hecho distinto del consumo original.
+
+Esta tarea no concede una acción de “deshacer” ni un cambio local `validated -> pending`.
+
+---
+
+#### 75. Consentimiento
+
+Consumir una redención no actualiza consentimientos por inferencia.
+
+`CONSENT_UPDATE_PENDING` conserva su propia finalidad dentro de `VPROC-0045` cuando exista un cambio explícito de consentimiento.
+
+---
+
+#### 76. Estado AS-IS del contenedor scanner
+
+`ScannerPage` y `QRScanner` concentran hoy identificación/acumulación y redención en el mismo contenedor runtime.
+
+Ese contenedor puede reutilizarse físicamente si una tarea posterior lo aprueba, pero no elimina la separación canónica entre `VSCREEN-0085` y `VSCREEN-0086`.
+
+```text
+MISMA RUTA RUNTIME
+!=
+MISMA PANTALLA LOGICA
+```
+
+---
+
+#### 77. Brechas AS-IS y propietarios
+
+| Brecha observada | Riesgo | Propietario canónico | Condición de salida |
+| --- | --- | --- | --- |
+| `processRedemptionAction` usa `pos.main` | broad authority sustituye permiso exacto | `PULSO-AUTH-010` materializable + `PULSO-AUTH-015` | permiso atómico/autoridad equivalente publicada y revalidada |
+| `validateRedemption` corre antes de `requireAppAccess` | lectura previa puede partir de una frontera inferior | `PULSO-AUTH-010` materializable | orden y minimización server-side compatibles con autoridad final |
+| `validateRedemption` valida esencialmente existencia y `pending` | ticket pendiente puede no ser elegible | `PULSO-AUTH-010` + contrato PASS aplicable | vigencia, recompensa, territorio, regla, ledger y uso previo revalidados |
+| `markRedemptionAsUsed` solo exige auth + CAS `pending` | helper inferior puede quedar como bypass | `PULSO-AUTH-010` materializable | efecto encapsulado o revalidación completa equivalente |
+| no existe identidad de consumo recuperable en el shape observado | retry/timeout no recuperan resultado durable | `PULSO-AUTH-010` + integración PASS | replay equivalente devuelve resultado previo y conflicto incompatible falla cerrado |
+| `qr_code` no se demuestra único por el código inspeccionado | selección ambigua | materialización PASS propietaria | identidad inequívoca o fallo cerrado ante ambigüedad |
+| llamada UI de redención omite `orderId` | falta vínculo cuando la recompensa depende de venta | `PULSO-AUTH-010` + contrato PASS | pedido/venta se valida cuando la regla lo exige o se demuestra no aplicable |
+| catálogo activo no publica `pulso.loyalty.points.redeem` | no existe autoridad ejecutable exacta | owner de catálogo/grants + `PULSO-AUTH-015` | PermissionKey/grants vigentes publicados y consumidos sin fallback broad |
+| firma de dispositivo se adjunta después de validar el efecto | vínculo actor-resultado puede quedar incompleto ante fallo tardío | `PULSO-AUTH-012` + `PULSO-AUTH-013` | correlación durable o reconciliable entre actor, dispositivo y resultado |
+
+No queda una brecha de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 78. Matriz de decisiones UX
+
+| Condición | Acción visible | Resultado permitido |
+| --- | --- | --- |
+| sin código/ticket | solicitar presentación | cero efecto |
+| código no resoluble | informar ticket no encontrado/ambiguo | cero efecto |
+| ticket `cancelled` | informar no consumible | cero efecto |
+| ticket ya `validated` | mostrar ya aplicado/no disponible según resultado durable | cero segundo efecto |
+| ticket sin vigencia demostrable | informar no consumible | cero efecto |
+| territorio incompatible | informar indisponibilidad | cero efecto |
+| autoridad exacta no publicada | mostrar redención no habilitada | cero efecto |
+| autoridad denegada | informar denegación | cero efecto |
+| recompensa/regla/ledger incompatibles | informar rechazo empresarial | cero efecto |
+| ticket válido + autoridad válida | solicitar consumo | esperar resultado servidor |
+| `APPLIED` | mostrar canje confirmado | un efecto |
+| `ALREADY_APPLIED` | recuperar y mostrar resultado previo | cero segundo efecto |
+| `IDEMPOTENCY_CONFLICT` | detener y conservar referencia | cero segundo efecto |
+| `UNKNOWN_OUTCOME` | mostrar conciliación pendiente | no repetir con identidad nueva |
+| fallo técnico sin efecto probado | mostrar fallo técnico | retry solo según política segura |
+
+---
+
+#### 79. Handoff inmediato a PULSO-UX-013
+
+`PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles` recibe:
+
+```text
+REDENCION PUEDE REQUERIR CONFIRMACION EXPLICITA SEGUN SU EFECTO
+CONFIRMAR != AUTORIZAR
+CONFIRMAR != REAUTENTICAR
+CONFIRMAR != CONSUMIR
+EL RESUMEN PREVIO DEBE MOSTRAR RECURSO / EFECTO / CONSECUENCIA
+DOBLE CLICK / DOBLE TAP NO PUEDE DUPLICAR MUTACION
+RESULTADO DESCONOCIDO BLOQUEA NUEVA CONFIRMACION CIEGA
+UNA DENEGACION NO SE RESUELVE CON OTRA CONFIRMACION
+```
+
+Esta tarea no desarrolla el patrón transversal de confirmaciones sensibles.
+
+---
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la redención ya cuenta con cobertura verificable vigente para servidor autorizado, intención preexistente, uso único, estado, territorio, actor, dispositivo, ledger, idempotencia, concurrencia, resultado confirmado, cambio de modo, privacidad y resultado desconocido. Esta tarea organiza esas obligaciones en `VSCREEN-0086` y explicita el bloqueo de autoridad vigente sin introducir una obligación material nueva.
+
+---
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente de:
+
+- `TREQ-PULSO-001` para demostrar loyalty dentro del POS E2E antes de declarar la operación completa;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso protegido y territorio no ampliable por `site_id`;
+- `TREQ-PULSO-026` para impedir atribuir permiso exacto cuando el código o contrato activo no lo demuestran;
+- `TREQ-PASS-008` para mutaciones de fidelización mediante contratos de servidor autorizados, atómicos e idempotentes;
+- `TREQ-PASS-010` para ledger reconciliable, saldo como proyección y conservación de evento origen, regla y versión;
+- `TREQ-PASS-027` para validar código, usuario, recompensa, sede, estado, vigencia, efecto de puntos, actor y no utilización previa, con consumo atómico e idempotente;
+- `TREQ-PASS-028` para separar los modos de identificación y redención dentro del contenedor runtime sin arrastrar estado incompatible;
+- `TREQ-PASS-029` y `TREQ-PASS-030` para actor real y secreto efímero en dispositivos compartidos;
+- `TREQ-PASS-032` para que procesamiento, éxito y error correspondan al resultado confirmado de servidor;
+- `TREQ-PASS-034` para conservar ownership y consumo entre PASS y PULSO sin duplicar mutaciones;
+- cobertura AUTH vigente para autorización canónica, territorio, actor efectivo y no bypass;
+- cobertura INTEGRATION vigente para idempotencia, replay, conflicto, concurrencia y recuperación de `UNKNOWN_OUTCOME`.
+
+Esta enumeración es trazabilidad heredada y no actualiza el Registro 04A.
+
+---
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado en el checkout del usuario ni sometido allí a formateador, quality, delivery, validadores proporcionales, batería global y cierre. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, protocolo/continuidad/topología, owner PULSO, `VSCREEN-0086`, binding `VPROC-0045`, ownership PASS, estados/eventos, `PASS-INT-002`, `PULSO-AUTH-010`, Registro 04A aplicable, catálogo `permissions.json@1.0.0`, `operational-role-grants@1.0.0` y runtime `vento-pulso/main@715b5683db05caa010d725679b5ada4705a6da6e`; se constató que catálogo/dataset activos no publican `pulso.loyalty.*`. No se ejecutó una consulta live de Supabase como parte de esta tarea. |
+| OPERATIVA | NOT_EXECUTED | No se crearon ni consumieron redenciones, no se probaron concurrencia, retries, timeouts, dispositivos compartidos, ventas ni conciliaciones reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-012` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 83. Criterios de aceptación
+
+- [ ] La superficie queda anclada exactamente a `VSCREEN-0086`.
+- [ ] El binding queda anclado a `VPROC-0045::STEP-REDEEM_LOYALTY_VALUE`.
+- [ ] PASS permanece owner de `VPROC-0045`, intención, recompensa, ledger, saldo y regla.
+- [ ] La intención de redención se origina en `VSCREEN-0110` y no se confunde con consumo.
+- [ ] `PASS-INT-002` se consume sin redefinirlo.
+- [ ] `pulso.loyalty.points.redeem` se documenta como identidad objetivo aprobada de `PULSO-AUTH-010`, no como PermissionKey activa vigente.
+- [ ] Se documenta que `permissions.json@1.0.0` no contiene `pulso.loyalty.*`.
+- [ ] Se documenta que `operational-role-grants@1.0.0` no contiene grants `pulso.loyalty.*`.
+- [ ] La redención queda fail-closed mientras no exista autoridad exacta activa compatible.
+- [ ] `pulso.pos.main` no sustituye la autoridad exacta.
+- [ ] `cajero_satelite` se distingue entre actor objetivo histórico y actor ejecutable vigente.
+- [ ] `operador_integral_satelite` no recibe redención por inferencia.
+- [ ] `gerencia_operativa` no recibe redención por supervisión.
+- [ ] QR/código se trata como localizador y no como autoridad.
+- [ ] El ticket se resuelve a una identidad durable e inequívoca.
+- [ ] Cliente y trabajador permanecen identidades separadas.
+- [ ] Recompensa y regla/version se revalidan desde PASS.
+- [ ] Saldo visible no autoriza gasto.
+- [ ] `pending` no se trata como elegibilidad suficiente.
+- [ ] `validated` produce cero segundo consumo.
+- [ ] `cancelled` produce cero consumo.
+- [ ] La vigencia debe demostrarse aunque el shape runtime no exponga `expires_at` dedicado.
+- [ ] `site_id` cliente no amplía territorio.
+- [ ] `orderId` cliente no amplía elegibilidad.
+- [ ] Venta, pago, caja, inventario, NUMERA y loyalty permanecen hechos separados.
+- [ ] La firma de dispositivo identifica actor pero no concede permiso.
+- [ ] PIN/firma se trata como secreto efímero.
+- [ ] El orden server-side evita que la lectura previa se convierta en bypass o exposición indebida.
+- [ ] Se documenta la secuencia AS-IS de `processRedemptionAction` sin adoptarla como diseño objetivo.
+- [ ] Se documentan límites de `validateRedemption` y `markRedemptionAsUsed`.
+- [ ] CAS `pending -> validated` se conserva como defensa parcial y no como idempotencia completa.
+- [ ] El consumo es de un solo uso bajo concurrencia.
+- [ ] Existe identidad idempotente del consumo.
+- [ ] Replay equivalente recupera el resultado sin segundo efecto.
+- [ ] Reutilización incompatible produce conflicto.
+- [ ] `UNKNOWN_OUTCOME` se reconcilia antes de repetir.
+- [ ] Offline no confirma un canje local definitivo.
+- [ ] La UI distingue aplicado, ya aplicado, denegación, territorio, estado, elegibilidad, conflicto, resultado desconocido y fallo técnico.
+- [ ] Spinner, toast o cambio local no constituyen éxito.
+- [ ] Cambio de modo limpia cliente, código, monto, mensajes y secretos incompatibles.
+- [ ] La proyección de datos se minimiza.
+- [ ] Se reutilizan los estados y eventos canónicos de `VPROC-0045` sin inventar otra máquina.
+- [ ] No se inventan nombres para las cuatro acciones secundarias de `VSCREEN-0086`.
+- [ ] El efecto sobre la venta proviene del resultado autoritativo y no del nombre visible de la recompensa.
+- [ ] Refund/void/cancel no restauran puntos ni ticket por inferencia.
+- [ ] La compensación conserva un hecho separado.
+- [ ] Consentimiento no se actualiza por inferencia.
+- [ ] Cada brecha AS-IS tiene propietario y condición de salida.
+- [ ] `PULSO-UX-013` recibe un handoff suficiente y no es absorbida.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica el Registro 04A.
+- [ ] No se ejecuta ningún cambio físico.
+
+---
+
+#### 84. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- modifica `vento-pass`;
+- publica PermissionKeys;
+- modifica `permissions.json`;
+- modifica `operational-role-grants`;
+- concede grants a ningún rol;
+- convierte `pulso.pos.main` en permiso canónico de loyalty;
+- cambia `processRedemptionAction`;
+- cambia `validateRedemption`;
+- cambia `markRedemptionAsUsed`;
+- cambia `QRScanner` o `ScannerPage`;
+- crea tickets de redención;
+- consume redenciones reales;
+- cambia recompensas o catálogo;
+- cambia reglas, vigencias o costo de puntos;
+- inserta o modifica ledger;
+- modifica saldo;
+- cambia ventas, pagos o caja;
+- cambia inventario;
+- crea hechos NUMERA;
+- implementa conexión global venta-PASS;
+- diseña el patrón transversal de confirmaciones sensibles;
+- crea arquitectura offline/outbox;
+- crea RPC, RLS, ACL, índices, constraints o tablas;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- modifica el Registro 04A;
+- crea una instancia física;
+- ejecuta pruebas operativas;
+- desarrolla `PULSO-UX-013`.
+
+---
+
+#### 85. Decisión final de experiencia
+
+La experiencia objetivo queda resumida así:
+
+```text
+INTENCION PASS PREEXISTENTE
++
+TICKET INEQUIVOCO
++
+CLIENTE / RECOMPENSA / REGLA VALIDOS
++
+ESTADO Y VIGENCIA CONSUMIBLES
++
+TERRITORIO Y ACTOR VALIDOS
++
+AUTORIDAD ACTIVA EXACTA
++
+IDENTIDAD IDEMPOTENTE DE CONSUMO
++
+COMANDO SERVER-SIDE
++
+RESULTADO DURABLE PASS
+=
+REDENCION PRESENTABLE COMO CONSUMIDA
+```
+
+En el estado canónico vigente, la ausencia de `pulso.loyalty.*` en el catálogo y grants activos hace que `AUTORIDAD ACTIVA EXACTA` no se satisfaga todavía.
+
+Por tanto, el diseño queda completo, pero la ejecución de redención permanece bloqueada de forma fail-closed hasta reconciliación canónica posterior.
+
+---
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-011 — Integrar acumulación de puntos`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-012 — Integrar redención de puntos`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles`
 ### [ ] PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
 ### [ ] PULSO-UX-014 — Identificar actor real en terminal compartida
 ### [ ] PULSO-UX-015 — Diseñar experiencia táctil para POS
