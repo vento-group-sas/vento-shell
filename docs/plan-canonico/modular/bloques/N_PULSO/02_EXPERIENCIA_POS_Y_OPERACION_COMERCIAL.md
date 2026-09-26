@@ -9637,7 +9637,1538 @@ La simplificación reduce decisiones redundantes para el operador; no reduce con
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-009 — Separar anulación, devolución y reembolso`
-### [ ] PULSO-UX-009 — Separar anulación, devolución y reembolso
+### ✅ PULSO-UX-009 — Separar anulación, devolución y reembolso
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-008 — Simplificar cobro y medios de pago
+**Tarea siguiente:** PULSO-UX-010 — Diseñar apertura y cierre de caja
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0091 — Anulación, devolución y reembolso` para separar cancelación del compromiso comercial, devolución, reembolso, reverso de pago y compensaciones mediante `VPROC-0042::STEP-RESOLVE_REVERSAL_OR_REFUND`, consumiendo únicamente las PermissionKey activas `pulso.sales.orders.cancel`, `pulso.sales.returns.create`, `pulso.payments.transactions.refund` y `pulso.payments.transactions.reverse`, preservando historia, autorización `BASE_AND_OPERATIONAL`, segregación de efectos, idempotencia, reconciliación y ownership de inventario, fiscalidad, NUMERA y PASS; sin revivir `pulso.sales.orders.void`, sin editar destructivamente pedidos o pagos y sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, pantallas, PermissionKeys, datasets, roles, grants, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, packages, proveedores de pago, inventario, ledger PASS, NUMERA, documentos fiscales, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Separar de forma verificable los efectos que ocurren cuando una venta, pedido, pago o entrega necesitan corregirse después de haber adquirido estado empresarial, evitando que una única acción genérica destruya o sobrescriba la historia original.
+
+La experiencia debe distinguir como mínimo:
+
+```text
+CANCELAR COMPROMISO
+!=
+ANULAR EFECTO CONSOLIDADO
+!=
+REGISTRAR DEVOLUCION
+!=
+REEMBOLSAR DINERO
+!=
+REVERSAR TRANSACCION DE PAGO
+!=
+COMPENSAR AL CLIENTE
+```
+
+La simplificación buscada consiste en guiar al actor hacia el efecto correcto a partir del recurso y su estado, no en fusionar efectos diferentes bajo un botón ambiguo.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-008
+
+`PULSO-UX-008` entrega explícitamente:
+
+```text
+COBRO != REVERSO
+PAGO CONFIRMADO != REFUND
+CAMBIAR MEDIO DESPUES DE CAPTURA != EDITAR HISTORIA
+INTENTO RECHAZADO != TRANSACCION A REEMBOLSAR
+RESULTADO DESCONOCIDO SE RECONCILIA ANTES DE COMPENSAR
+CADA EFECTO POSTERIOR REQUIERE AUTORIDAD PROPIA
+```
+
+Por tanto, esta tarea parte de un cobro que conserva intento, medio, monto, referencia y estado propios, y nunca corrige un pago confirmado sobrescribiendo la transacción original.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- la experiencia se define una sola vez;
+- no crea una instancia física propia;
+- no materializa `VSCREEN-0091`;
+- no publica rutas ni componentes;
+- no crea ni modifica PermissionKeys;
+- no modifica datasets de autorización;
+- no ejecuta cancelaciones, devoluciones, refunds ni reversos;
+- no modifica Supabase;
+- no autoriza implementación física.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+La decisión consume como mínimo:
+
+- `PULSO-UX-001..008`;
+- `PULSO-AUTH-006..016`;
+- `AUTH-CAT-022..024`;
+- `vento.authorization.base-role-grants@1.1.0`;
+- `vento.authorization.operational-role-grants@1.0.0`;
+- `VSCREEN-0083`, `VSCREEN-0084` y `VSCREEN-0091`;
+- `VPROC-0042`, `VPROC-0043`, `VPROC-0046` y `VPROC-0051`;
+- estados y eventos canónicos de `VPROC-0042`;
+- Registro 04A vigente de PULSO y PASS aplicable;
+- contratos de integración que separan devolución, reembolso, inventario, fiscalidad, fidelización y efecto económico;
+- runtime actual de `vento-pulso` como evidencia AS-IS, no como autoridad del diseño objetivo.
+
+---
+
+#### 5. Identidad canónica de la pantalla
+
+La identidad existente es:
+
+```text
+VSCREEN-0091 — Anulación, devolución y reembolso
+```
+
+Su propósito canónico es gestionar anulaciones, devoluciones, compensaciones y reembolsos como acciones diferenciadas y auditables.
+
+Esta tarea no crea pantallas paralelas denominadas “void”, “refund rápido”, “devolver venta” o equivalentes para evitar resolver la separación contractual.
+
+---
+
+#### 6. Binding principal de proceso
+
+`VSCREEN-0091` conserva:
+
+```text
+PROCESO PRINCIPAL: VPROC-0042
+PASO: VPROC-0042::STEP-RESOLVE_REVERSAL_OR_REFUND
+FUNCION: CORRECT
+FASE: DECISION
+```
+
+El proceso propietario es:
+
+```text
+VPROC-0042 — Gestionar modificación, sustitución, cancelación, anulación y devolución sin confundir sus efectos
+```
+
+---
+
+#### 7. Procesos secundarios
+
+`VSCREEN-0091` también se relaciona con:
+
+```text
+VPROC-0043 — pago
+VPROC-0046 — reclamo, devolución y compensación
+VPROC-0051 — efecto económico correlacionado
+```
+
+La relación secundaria no transfiere ownership.
+
+Regla:
+
+```text
+UNA DECISION COMERCIAL
+PUEDE REQUERIR VARIOS EFECTOS
+PERO CADA EFECTO CONSERVA SU PROCESO Y AUTORIDAD
+```
+
+---
+
+#### 8. PermissionKeys activas aplicables
+
+El catálogo vigente expone exactamente estas claves sensibles para el núcleo de esta tarea:
+
+```text
+pulso.sales.orders.cancel
+pulso.sales.returns.create
+pulso.payments.transactions.refund
+pulso.payments.transactions.reverse
+```
+
+Las cuatro están clasificadas como:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+Ninguna se sustituye por `pulso.pos.main`, `pulso.access`, `orders.update`, `payments.collect` o una condición de UI.
+
+---
+
+#### 9. Reconciliación de la identidad histórica `orders.void`
+
+Una definición histórica de `PULSO-AUTH-008` utilizó la identidad propuesta:
+
+```text
+pulso.sales.orders.void
+```
+
+El catálogo activo y los datasets publicados posteriores no contienen esa PermissionKey. En cambio, publican:
+
+```text
+pulso.sales.orders.cancel
+pulso.sales.returns.create
+pulso.payments.transactions.refund
+pulso.payments.transactions.reverse
+```
+
+Por tanto, esta tarea:
+
+- no revive `pulso.sales.orders.void`;
+- no crea un alias silencioso hacia ella;
+- no introduce una quinta capacidad sensible;
+- usa las identidades publicadas vigentes y expresa “anulación” como semántica empresarial compuesta por el efecto exacto que corresponda al recurso.
+
+---
+
+#### 10. Regla raíz de autorización dual
+
+Para cualquiera de las cuatro PermissionKeys sensibles:
+
+```text
+COMPONENTE BASE
++
+COMPONENTE OPERATIVO
++
+MISMO ACTOR HUMANO
++
+MISMO PERMISO
++
+MISMO RECURSO
++
+MISMA SOLICITUD
++
+CONTEXTO VIGENTE
++
+REAUTENTICACION FUERTE
++
+MOTIVO
++
+EVIDENCIA
++
+CONTROL DE VERSION
++
+AUDITORIA
+=
+ACCION SENSIBLE AUTORIZABLE
+```
+
+Un solo componente nunca autoriza la acción.
+
+---
+
+#### 11. Componentes base publicados
+
+`vento.authorization.base-role-grants@1.1.0` publica componente base para las cuatro capacidades a exactamente:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+No publica componente base para:
+
+```text
+supervisor
+auxiliar_administrativa
+contador
+marketing
+trabajador_operativo
+```
+
+El rol base `supervisor` no obtiene estas acciones por jerarquía, proximidad ni responsabilidad de revisión.
+
+---
+
+#### 12. Componentes operativos publicados
+
+`vento.authorization.operational-role-grants@1.0.0` publica componente operativo para las cuatro capacidades a exactamente:
+
+```text
+cajero_satelite
+gerencia_operativa
+operador_integral_satelite
+```
+
+Cada fila es `OPERATIONAL_COMPONENT`, no una autorización autónoma.
+
+No existe componente operativo publicado para `servicio_salon`, `mostrador_satelite`, `barista_satelite`, `cocinero_satelite` u otros roles operativos.
+
+---
+
+#### 13. Composición por el mismo actor
+
+La autorización no permite “sumar” dos personas.
+
+Está prohibido:
+
+```text
+ACTOR A CON COMPONENTE BASE
++
+ACTOR B CON COMPONENTE OPERATIVO
+=
+AUTORIZADO
+```
+
+La composición debe ocurrir en el mismo actor humano efectivo y para la misma solicitud/recurso.
+
+Esto conserva segregación sin crear aprobación por credenciales prestadas o mezcla de identidades.
+
+---
+
+#### 14. Actor que originó la venta no se autoautoriza
+
+Haber creado, cobrado, preparado o entregado una venta no concede automáticamente autoridad para revertirla.
+
+Regla:
+
+```text
+ORIGINAR O EJECUTAR VENTA
+!=
+APROBAR SU REVERSO O COMPENSACION
+```
+
+`VPROC-0042` admite aprobación condicional según sensibilidad y umbral; esa decisión no se deriva del ownership histórico de la operación.
+
+---
+
+#### 15. Matriz semántica principal
+
+| Efecto | Objeto principal | PermissionKey activa | Resultado mínimo | No implica |
+| --- | --- | --- | --- | --- |
+| cancelación | pedido/compromiso comercial cancelable | `pulso.sales.orders.cancel` | compromiso deja de continuar conforme a estado válido | refund, retorno físico, borrado de historia |
+| devolución | líneas/unidades elegibles | `pulso.sales.returns.create` | expediente/efecto de devolución correlacionado | restock automático, refund automático |
+| reembolso | pago original elegible | `pulso.payments.transactions.refund` | devolución monetaria total o parcial correlacionada | devolución física, anulación fiscal automática |
+| reverso de pago | transacción elegible para reversión | `pulso.payments.transactions.reverse` | efecto inverso propio del ciclo de pago | refund genérico, cancelación del pedido |
+| anulación | decisión empresarial sobre un compromiso o efecto consolidado | se descompone en la PermissionKey exacta del efecto necesario | historia preservada y efectos coordinados | permiso broad `void`, borrado destructivo |
+| compensación | resultado de servicio/comercial separado | contrato propietario correspondiente | efecto explícito y trazable | refund por implicación |
+
+---
+
+#### 16. Cancelación de pedido
+
+`pulso.sales.orders.cancel` actúa sobre un pedido o compromiso comercial identificable y todavía cancelable bajo su estado y reglas.
+
+La acción debe conservar:
+
+- pedido original;
+- estado previo;
+- actor;
+- motivo;
+- instante autoritativo;
+- identidad de solicitud;
+- resultado;
+- efectos ya emitidos que deban reconciliarse.
+
+Cancelar no significa borrar.
+
+---
+
+#### 17. Cancelación no equivale a reembolso
+
+Un pedido puede cancelarse sin que exista un pago capturado.
+
+También puede existir un pago que, por su estado, requiera refund o reverse después de cancelar el compromiso.
+
+Por tanto:
+
+```text
+ORDER_CANCELLED
+!=
+PAYMENT_REFUNDED
+```
+
+La UI no presenta una cancelación exitosa como dinero devuelto si el efecto financiero no fue confirmado.
+
+---
+
+#### 18. Cancelación no equivale a devolución
+
+La cancelación opera sobre continuidad del compromiso comercial.
+
+La devolución opera sobre bienes, líneas o unidades ya entregadas, recibidas o sujetas a retorno según el caso.
+
+```text
+CANCELAR PEDIDO
+!=
+RECIBIR DEVOLUCION
+```
+
+Un pedido cancelado antes de entrega puede no requerir retorno físico alguno.
+
+---
+
+#### 19. Anulación como categoría empresarial
+
+“Anulación” describe la decisión de dejar sin continuidad o compensar un efecto ya consolidado según su naturaleza.
+
+No constituye una PermissionKey broad adicional.
+
+La experiencia debe resolver primero qué existe realmente:
+
+```text
+PEDIDO
+PAGO
+DEVOLUCION
+DOCUMENTO FISCAL
+ENTREGA
+LOYALTY
+HECHO ECONOMICO
+```
+
+Luego solicita únicamente los efectos necesarios y autorizados para ese conjunto.
+
+---
+
+#### 20. Anulación nunca elimina evidencia
+
+La anulación no:
+
+- borra el pedido original;
+- borra el pago original;
+- reescribe el precio histórico;
+- elimina eventos previos;
+- transforma un refund en edición de monto;
+- elimina el actor que ejecutó la operación;
+- oculta preparación, entrega o inventario ya afectados.
+
+Se conserva lineage entre origen, decisión y efectos compensatorios.
+
+---
+
+#### 21. Devolución comercial
+
+`pulso.sales.returns.create` registra una devolución sobre líneas, cantidades o unidades elegibles de una venta/pedido conocido.
+
+Debe permitir reconstruir conceptualmente:
+
+- venta/pedido origen;
+- línea o unidad afectada;
+- cantidad;
+- motivo;
+- condición cuando sea aplicable;
+- actor solicitante;
+- actor ejecutor;
+- autorización;
+- instante;
+- estado de la devolución;
+- efectos posteriores requeridos.
+
+Los nombres físicos de tablas y columnas pertenecen a la materialización posterior.
+
+---
+
+#### 22. Devolución parcial
+
+Una devolución puede afectar solo una parte de la venta.
+
+La UI debe impedir que una cantidad devuelta acumulada exceda lo realmente elegible después de considerar devoluciones previas, sustituciones, entregas y estado actual.
+
+```text
+CANTIDAD A DEVOLVER
+<=
+CANTIDAD ELEGIBLE RESTANTE
+```
+
+La validación final es server-side.
+
+---
+
+#### 23. Devolución no implica restock
+
+Aceptar o registrar una devolución no demuestra que el bien deba volver a inventario vendible.
+
+El recurso puede estar:
+
+- consumido;
+- preparado;
+- dañado;
+- abierto;
+- contaminado;
+- incompleto;
+- sujeto a descarte;
+- sujeto a evaluación.
+
+Por tanto:
+
+```text
+RETURN ACCEPTED
+!=
+STOCK RESTORED
+```
+
+El efecto de inventario pertenece al contrato propietario de NEXO/PULSO correspondiente.
+
+---
+
+#### 24. Reembolso
+
+`pulso.payments.transactions.refund` actúa exclusivamente sobre un pago original identificable y elegible.
+
+Debe validar como mínimo:
+
+- transacción origen;
+- monto original;
+- monto ya reembolsado;
+- monto solicitado;
+- moneda;
+- medio/proveedor cuando aplique;
+- referencia original;
+- estado actual;
+- actor;
+- motivo;
+- identidad idempotente;
+- contexto y territorio;
+- autorización dual completa.
+
+---
+
+#### 25. Reembolso parcial y total
+
+La misma PermissionKey cubre refund total o parcial.
+
+No se crean permisos diferentes por monto.
+
+La regla económica mínima es:
+
+```text
+REFUND_SOLICITADO
+<=
+SALDO_REEMBOLSABLE_VIGENTE
+```
+
+El saldo reembolsable se calcula desde hechos autoritativos, no desde un valor editable de interfaz.
+
+---
+
+#### 26. Reembolso no equivale a devolución
+
+Puede existir devolución física sin refund inmediato o con otro resultado comercial autorizado.
+
+También puede existir refund sin retorno físico cuando el contrato comercial lo permita.
+
+Por tanto:
+
+```text
+RETURN
+!=
+REFUND
+```
+
+La UI puede coordinar ambos efectos, pero nunca fingir que uno demuestra el otro.
+
+---
+
+#### 27. Reembolso no equivale a compensación
+
+Un cupón, crédito futuro, cortesía, sustitución, puntos u otra compensación no se registra como refund monetario.
+
+```text
+REFUND
+!=
+CREDIT
+!=
+COUPON
+!=
+POINTS ADJUSTMENT
+!=
+REPLACEMENT
+```
+
+Cada resultado conserva autoridad, owner y evidencia propios.
+
+---
+
+#### 28. Reverso de pago
+
+`pulso.payments.transactions.reverse` representa un efecto de reversión sobre una transacción de pago elegible de acuerdo con su estado y mecanismo.
+
+No se usa como alias universal de refund.
+
+La diferencia se conserva así:
+
+```text
+REVERSE
+→ REVIERTE UNA TRANSACCION ELEGIBLE SEGUN SU CICLO
+
+REFUND
+→ DEVUELVE VALOR DE UN PAGO ORIGINAL ELEGIBLE
+```
+
+La materialización deberá determinar elegibilidad desde el estado real del pago/proveedor.
+
+---
+
+#### 29. Pago rechazado no es reembolsable
+
+Un intento rechazado que nunca produjo captura o valor confirmado no se convierte en refund solo porque el cliente esperaba pagar.
+
+```text
+REJECTED PAYMENT
+!=
+CAPTURED VALUE
+```
+
+La interfaz debe mostrar el resultado real y evitar crear una operación compensatoria inexistente.
+
+---
+
+#### 30. Resultado desconocido antes de compensar
+
+Si el estado del cobro original es desconocido:
+
+```text
+UNKNOWN PAYMENT RESULT
+!=
+FAILED
+!=
+CAPTURED
+```
+
+Antes de cancelar efectos financieros, refundar o reversar, debe reconciliarse el resultado original.
+
+Nunca:
+
+```text
+TIMEOUT DE COBRO
+→ REFUND CIEGO
+```
+
+---
+
+#### 31. Resultado desconocido de refund o reverse
+
+El mismo principio se aplica al efecto compensatorio.
+
+Si un refund/reverse fue enviado y la respuesta se perdió:
+
+- no se asume fallo;
+- no se crea otro intento independiente;
+- se consulta/reconcilia con la misma identidad estable;
+- se conserva estado pendiente o desconocido hasta evidencia autoritativa.
+
+---
+
+#### 32. Corrección de medio de pago
+
+Cambiar el medio mostrado después de una captura no corrige el hecho original.
+
+La experiencia debe distinguir:
+
+```text
+ERROR DE CAPTURA LOCAL ANTES DEL EFECTO
+!=
+PAGO YA CONFIRMADO CON MEDIO INCORRECTO
+```
+
+Cuando el pago ya existe, cualquier corrección debe usar un flujo auditable que preserve transacción original, efecto compensatorio y nuevo pago si corresponde.
+
+No se edita destructivamente `payment_method` para esconder la historia.
+
+---
+
+#### 33. Máquina de estados VPROC-0042
+
+`VPROC-0042` conserva exactamente ocho estados:
+
+```text
+ORDER_CHANGE_REQUESTED
+UNDER_VALIDATION
+IMPACT_ASSESSMENT
+AUTHORIZATION_PENDING
+APPROVED_FOR_APPLICATION
+APPLYING_CHANGES
+RECONCILIATION_PENDING
+COMMERCIAL_CHANGE_RECONCILED
+```
+
+La UI no inventa estados alternos de “anulado” o “refund completo” como sustitución de la máquina propietaria.
+
+---
+
+#### 34. Nacimiento de la solicitud
+
+La instancia nace en:
+
+```text
+VPROC-0042.ORDER_CHANGE_REQUESTED
+```
+
+con una condición mínima:
+
+- pedido o venta identificable;
+- solicitante;
+- cambio requerido;
+- motivo.
+
+Invariante:
+
+```text
+REGISTRAR SOLICITUD
+!=
+APLICAR CAMBIO
+```
+
+La solicitud por sí sola no altera cantidad, estado, inventario, pago ni entrega.
+
+---
+
+#### 35. Validación
+
+`UNDER_VALIDATION` verifica antes de decidir:
+
+- recurso correcto;
+- estado actual;
+- actor;
+- motivo;
+- alcance;
+- timing;
+- autoridad aplicable;
+- conflictos con efectos existentes.
+
+Una solicitud inválida no avanza a mutación parcial.
+
+---
+
+#### 36. Evaluación de impacto
+
+`IMPACT_ASSESSMENT` calcula qué dominios pueden verse afectados antes de autorizar.
+
+El análisis debe considerar según aplicabilidad:
+
+- preparación;
+- inventario;
+- pago;
+- caja;
+- documento fiscal;
+- cliente;
+- entrega;
+- PASS;
+- NUMERA;
+- terceros.
+
+La existencia de posibles efectos no significa que todos se ejecuten.
+
+---
+
+#### 37. Autorización pendiente
+
+`AUTHORIZATION_PENDING` expresa que la acción propuesta espera decisión conforme a su sensibilidad.
+
+La aprobación condicional de `VPROC-0042` no reemplaza la PermissionKey exacta.
+
+Se requieren ambas capas cuando apliquen:
+
+```text
+DECISION/APROBACION DE PROCESO
++
+AUTORIZACION TECNICA/EMPRESARIAL DEL EFECTO
+```
+
+---
+
+#### 38. Aprobada para aplicación
+
+`APPROVED_FOR_APPLICATION` no significa que el efecto ya ocurrió.
+
+```text
+APPROVED
+!=
+APPLIED
+```
+
+La UI debe distinguir autorización otorgada de ejecución confirmada.
+
+---
+
+#### 39. Aplicación de cambios
+
+`APPLYING_CHANGES` coordina efectos autorizados sin sobrescribir el compromiso original.
+
+Cada efecto debe devolver su resultado propio.
+
+No se declara éxito global mientras un efecto obligatorio permanezca desconocido o pendiente de reconciliación.
+
+---
+
+#### 40. Conciliación
+
+`RECONCILIATION_PENDING` compara, según el caso:
+
+- pedido;
+- devolución;
+- pago/refund/reverse;
+- inventario;
+- preparación;
+- documento fiscal;
+- PASS;
+- NUMERA;
+- notificaciones;
+- entrega.
+
+La conciliación detecta divergencias; no las oculta editando el origen.
+
+---
+
+#### 41. Cierre de cambio comercial
+
+`COMMERCIAL_CHANGE_RECONCILED` se alcanza únicamente cuando los efectos exigidos por la decisión fueron aplicados y comparados o cuando los pendientes residuales tienen destino explícito permitido por el proceso.
+
+El cierre no transforma la solicitud en una reescritura del pedido original.
+
+---
+
+#### 42. Eventos canónicos de VPROC-0042
+
+Se conservan exactamente seis eventos:
+
+```text
+VPROC-0042.EVT-001 — order-change-requested
+VPROC-0042.EVT-002 — under-validation
+VPROC-0042.EVT-003 — authorization-pending
+VPROC-0042.EVT-004 — applying-changes
+VPROC-0042.EVT-005 — reconciliation-pending
+VPROC-0042.EVT-006 — commercial-change-reconciled
+```
+
+No se crea un evento paralelo por cada botón de UI cuando el proceso canónico ya representa el hecho.
+
+---
+
+#### 43. Preservación de historia
+
+Todo efecto posterior debe referenciar suficientemente el origen.
+
+Conceptualmente se conserva:
+
+```text
+ORIGINAL
++
+DECISION
++
+EFECTO COMPENSATORIO
++
+RESULTADO
+```
+
+No:
+
+```text
+ORIGINAL MUTADO HASTA PARECER QUE NUNCA OCURRIO
+```
+
+---
+
+#### 44. Idempotencia por efecto
+
+Cada acción sensible requiere una identidad estable de solicitud/intento.
+
+Repetir por doble toque, retry, callback, webhook o respuesta perdida debe converger sobre el mismo efecto cuando represente la misma intención empresarial.
+
+La idempotencia de un refund no se reutiliza para una devolución ni para un reverse distinto.
+
+---
+
+#### 45. Concurrencia
+
+Antes de ejecutar, el servidor revalida el estado actual y los efectos ya aplicados.
+
+Ejemplos de conflictos a bloquear o reconciliar:
+
+- dos refunds simultáneos que excederían el saldo reembolsable;
+- dos devoluciones de la misma cantidad restante;
+- cancelación mientras el pedido avanza a un estado incompatible;
+- reverse y refund concurrentes sobre la misma transacción;
+- una decisión basada en una versión anterior del recurso.
+
+---
+
+#### 46. Control de versión
+
+Las cuatro capacidades sensibles publicadas exigen control de versión.
+
+La UI puede conservar una versión/etag/referencia equivalente, pero la autoridad final revalida server-side.
+
+Un conflicto stale produce un resultado explícito; no fuerza la mutación con el estado viejo.
+
+---
+
+#### 47. Motivo obligatorio
+
+Toda acción de esta superficie debe conservar un motivo empresarial estructurado o una combinación de categoría y detalle permitidos suficiente para auditoría.
+
+El motivo:
+
+- no concede autoridad;
+- no sustituye evidencia;
+- no debe codificar secretos;
+- no se usa para introducir otra operación por texto libre.
+
+---
+
+#### 48. Reautenticación fuerte
+
+Los datasets vigentes exigen reautenticación fuerte para estas capacidades `BASE_AND_OPERATIONAL`.
+
+La futura UX debe solicitarla en el momento proporcional a la acción sensible y vincularla al actor y solicitud actuales.
+
+Una reautenticación previa no permanece reutilizable después de cambio de actor, recurso, permiso o solicitud materialmente distinta.
+
+---
+
+#### 49. Confirmación proporcional
+
+La confirmación de UI debe explicar el efecto que se ejecutará.
+
+Ejemplos conceptuales:
+
+```text
+CANCELAR PEDIDO
+DEVOLVER 2 UNIDADES
+REEMBOLSAR 38.000 COP
+REVERSAR TRANSACCION IDENTIFICADA
+```
+
+Se evita el CTA ambiguo “ANULAR TODO” cuando en realidad pueden existir varios efectos independientes.
+
+La especificación transversal de confirmaciones sensibles permanece en `PULSO-UX-013`.
+
+---
+
+#### 50. Composición visual mínima
+
+`VSCREEN-0091` se organiza en cuatro zonas lógicas:
+
+1. recurso y estado origen;
+2. efecto solicitado y alcance;
+3. impacto/efectos relacionados;
+4. autorización, confirmación y resultado.
+
+La superficie no se convierte en editor libre de pedido, pago, inventario o ledger.
+
+---
+
+#### 51. Contexto de origen visible
+
+Antes de confirmar, la pantalla muestra de forma suficiente:
+
+- venta/pedido;
+- estado;
+- líneas o unidades afectadas cuando aplique;
+- pago/transacción original cuando aplique;
+- monto y moneda cuando aplique;
+- cliente únicamente cuando sea necesario;
+- sede/punto;
+- actor efectivo.
+
+El contexto visible no es editable para ampliar territorio o cambiar el recurso objetivo.
+
+---
+
+#### 52. Selector de efecto gobernado
+
+La UI solo ofrece efectos compatibles con el estado actual y la autoridad del actor.
+
+No muestra una lista universal de acciones sensibles y luego confía en que el usuario “sepa cuál usar”.
+
+```text
+RECURSO + ESTADO + AUTORIDAD + REGLAS
+→ EFECTOS ELEGIBLES
+```
+
+---
+
+#### 53. Cancelación antes de pago
+
+Cuando el pedido es cancelable y no existe un valor capturado que requiera compensación, la experiencia puede cerrar la decisión sin inventar refund.
+
+La ausencia de efecto financiero debe quedar explícita.
+
+---
+
+#### 54. Cancelación con pago existente
+
+Cuando existe pago confirmado, cancelar el pedido no resuelve automáticamente el dinero.
+
+La pantalla debe mostrar que existe un efecto financiero pendiente y dirigirlo al contrato correspondiente de refund/reverse según elegibilidad.
+
+El pedido no se presenta como “totalmente resuelto” mientras ese efecto obligatorio permanezca abierto.
+
+---
+
+#### 55. Devolución con pago existente
+
+Una devolución puede requerir refund parcial, total u otro resultado comercial aprobado.
+
+La relación se conserva explícitamente:
+
+```text
+RETURN_ID / RETURN_EFFECT
+↔
+ORIGINAL SALE
+↔
+OPTIONAL REFUND EFFECT
+```
+
+No se usa el monto del refund como única prueba de qué mercancía regresó.
+
+---
+
+#### 56. Devolución después de entrega
+
+Si la venta ya fue entregada, la devolución no retrocede ficticiamente el evento de entrega.
+
+Se registra un nuevo hecho posterior.
+
+```text
+DELIVERED
+→ RETURN REQUEST/RETURN EFFECT
+```
+
+no:
+
+```text
+DELIVERED
+→ PRETENDER QUE NUNCA SE ENTREGO
+```
+
+---
+
+#### 57. Preparación y FOGO
+
+Si el pedido ya produjo preparación, una cancelación o devolución no elimina esa historia ni ordena a FOGO retroceder estados por escritura lateral.
+
+Cualquier efecto productivo, merma, reproceso o disposición pertenece a su contrato propietario.
+
+La UI únicamente muestra/coordina el handoff necesario.
+
+---
+
+#### 58. Inventario y NEXO
+
+Esta tarea no descuenta ni reintegra inventario directamente.
+
+Cuando el efecto comercial requiera movimiento físico:
+
+- se emite/solicita el efecto propietario;
+- se conserva correlación con la devolución/cancelación;
+- se evita doble movimiento;
+- se espera confirmación cuando sea necesaria para conciliación.
+
+`PULSO-UX-016` conserva la integración detallada venta–inventario.
+
+---
+
+#### 59. Fiscalidad
+
+Cancelar, devolver, refundar o reversar no modifica directamente un documento fiscal por implicación.
+
+Si el caso requiere anulación fiscal, nota crédito, documento de ajuste u otra acción del proveedor autorizado:
+
+- se conserva el documento original;
+- se ejecuta el contrato fiscal propietario;
+- se vincula referencia y estado;
+- la ausencia de soporte fiscal pendiente no se oculta.
+
+---
+
+#### 60. NUMERA
+
+PULSO no reescribe el hecho económico de NUMERA.
+
+El efecto comercial/financiero se correlaciona para que NUMERA registre o consuma el hecho correspondiente según su contrato.
+
+```text
+REFUND EN PULSO
+!=
+EDITAR ASIENTO HISTORICO EN NUMERA
+```
+
+`PULSO-UX-017` conserva la integración detallada.
+
+---
+
+#### 61. PASS y fidelización
+
+Si la venta original produjo acumulación, redención o beneficio, una devolución/refund puede requerir ajuste, reversión o compensación de loyalty.
+
+PULSO no edita el ledger PASS directamente.
+
+```text
+PULSO SOLICITA EFECTO CORRELACIONADO
+PASS DECIDE Y REGISTRA LEDGER
+```
+
+`PULSO-UX-018` conserva la integración detallada.
+
+---
+
+#### 62. Reclamo y VPROC-0046
+
+Una devolución puede originarse en un reclamo, pero `VSCREEN-0091` no absorbe el expediente completo de servicio al cliente.
+
+`VPROC-0046` conserva investigación, compensación y cierre de reclamo cuando apliquen.
+
+La relación con `VSCREEN-0091` es un handoff de decisión/efecto, no una fusión de procesos.
+
+---
+
+#### 63. Entrega y logística
+
+Una devolución relacionada con entrega conserva la identidad de entrega, prueba y novedad originales.
+
+El retorno físico, recolección o transporte pertenece al owner logístico correspondiente cuando exista.
+
+Un refund exitoso no demuestra que la devolución logística se completó.
+
+---
+
+#### 64. Caja
+
+Refund o reverse pueden producir efectos conciliables en caja, pero esta tarea no abre, cierra, reabre ni corrige sesiones de caja.
+
+`PULSO-UX-010` conserva:
+
+- apertura;
+- movimientos;
+- efectivo esperado;
+- conteo;
+- diferencia;
+- cierre;
+- reapertura/corrección conforme a autoridad.
+
+El efecto de 009 debe llegar a 010 como hecho trazable, no como edición silenciosa del saldo.
+
+---
+
+#### 65. Soportes y reimpresión
+
+Generar, mostrar o reimprimir un soporte de cancelación/devolución/refund no repite el efecto empresarial.
+
+```text
+PRINT / REPRINT
+!=
+EXECUTE AGAIN
+```
+
+La impresión usa la identidad del resultado ya confirmado.
+
+---
+
+#### 66. Validación server-side obligatoria
+
+La futura ejecución revalida como mínimo:
+
+- actor humano efectivo;
+- componente base y operativo del mismo actor;
+- PermissionKey exacta;
+- turno/check-in/contexto cuando aplique;
+- territorio;
+- recurso origen;
+- estado actual;
+- versión;
+- motivo;
+- reautenticación;
+- elegibilidad de líneas/cantidades/montos;
+- efectos previos;
+- idempotencia;
+- denegaciones;
+- referencias de proveedor cuando apliquen.
+
+El payload del cliente nunca es autoridad.
+
+---
+
+#### 67. Errores de negocio distinguibles
+
+La experiencia distingue al menos:
+
+- sin autoridad dual completa;
+- reautenticación inválida/expirada;
+- recurso no encontrado o fuera de territorio;
+- estado ya no elegible;
+- versión stale;
+- cantidad no retornable;
+- saldo no reembolsable suficiente;
+- transacción no reversible;
+- efecto ya aplicado;
+- conflicto concurrente;
+- resultado desconocido;
+- dependencia externa pendiente;
+- fallo técnico.
+
+No todos se presentan como “no se pudo anular”.
+
+---
+
+#### 68. Operación degradada
+
+La pérdida de conectividad puede conservar un borrador de solicitud sin efecto empresarial cuando el contrato lo permita.
+
+No se presenta como ejecutada una cancelación, devolución, refund o reverse hasta contar con confirmación autoritativa o con un protocolo offline explícito posterior que demuestre aceptación durable.
+
+Esta tarea no inventa un modo offline financiero.
+
+---
+
+#### 69. Privacidad y minimización
+
+`VSCREEN-0091` carga únicamente los datos necesarios para decidir y ejecutar el efecto actual.
+
+No requiere por defecto:
+
+- historial completo del cliente;
+- ledger PASS completo;
+- ventas de otras sedes;
+- logs técnicos irrelevantes;
+- datos laborales ajenos;
+- credenciales de proveedor;
+- secretos de pago;
+- información NUMERA no necesaria.
+
+---
+
+#### 70. Accesibilidad
+
+La futura materialización debe conservar:
+
+- efecto seleccionado claramente identificado;
+- motivo asociado a la acción;
+- alcance y monto legibles antes de confirmar;
+- warnings no dependientes solo de color;
+- foco predecible en confirmaciones;
+- estado pendiente, confirmado, rechazado y desconocido diferenciados;
+- recuperación sin doble ejecución.
+
+---
+
+#### 71. Evidencia y auditoría
+
+Cada solicitud/efecto sensible debe permitir reconstruir según aplicabilidad:
+
+- actor;
+- roles/contexto efectivos;
+- permiso;
+- recurso origen;
+- efecto solicitado;
+- motivo;
+- aprobación/reautenticación;
+- estado/versión previa;
+- monto/cantidad;
+- correlación/idempotencia;
+- proveedor/referencia externa;
+- resultado;
+- efectos relacionados;
+- timestamp autoritativo.
+
+La auditoría no se obtiene de texto de UI ni de logs de navegador.
+
+---
+
+#### 72. AS-IS de vento-pulso
+
+El runtime actual observado conserva la cancelación como operación `mark_cancelled` dentro de `/orders` y usa el tablero operativo compartido.
+
+También expone `payment_status` y puede mostrar el label `refunded`.
+
+No se observa en el runtime inspeccionado:
+
+- superficie `VSCREEN-0091`;
+- consumer de `pulso.sales.orders.cancel`;
+- consumer de `pulso.sales.returns.create`;
+- consumer de `pulso.payments.transactions.refund`;
+- consumer de `pulso.payments.transactions.reverse`;
+- flujo físico de devolución;
+- acción de refund;
+- acción de reverse.
+
+Por tanto, estado visible o transición legacy no equivalen a materialización del contrato objetivo.
+
+---
+
+#### 73. Brechas AS-IS y salida
+
+| Brecha observada | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `/orders` usa `mark_cancelled` dentro de transición operativa compartida | cancelación puede depender de autoridad broad y semántica genérica | paquete PULSO + autorización | cancelación consume PermissionKey exacta, motivo, dualidad y estado elegible |
+| no existe `VSCREEN-0091` físico | acciones sensibles quedan dispersas o ausentes | `PULSO-UX-021` / paquete PULSO | superficie objetivo materializada con binding aprobado |
+| no hay consumer exacto de las cuatro PermissionKeys | catálogo publicado no gobierna runtime observado | PULSO + autorización | acciones server-side consumen claves exactas |
+| `refunded` existe como label de estado pero no acción observada | proyección puede aparentar capacidad inexistente | paquete PULSO | refund implementado como efecto nombrado, idempotente y auditado |
+| no se observa flujo de devolución | mercancía y dinero podrían confundirse | PULSO + NEXO + integración | `returns.create` y efecto físico quedan correlacionados sin restock implícito |
+| no se observa reverse de pago | corrección puede caer en edición destructiva o refund incorrecto | PULSO + proveedor de pago | `transactions.reverse` se ejecuta solo cuando el estado original sea elegible |
+| efectos fiscal/NUMERA/PASS/inventario son externos a esta tarea | cierre aparente con dominios divergentes | `PULSO-UX-016/017/018` + contratos propietarios | efectos posteriores exactamente-una-vez y reconciliados |
+
+No queda brecha de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 74. Resultado funcional de GAP-PULSO asociado
+
+La familia histórica de reversión deja de tratarse como una mutación genérica.
+
+Queda descompuesta en:
+
+```text
+PEDIDO / COMPROMISO
+→ orders.cancel
+
+DEVOLUCION
+→ returns.create
+
+PAGO REEMBOLSABLE
+→ transactions.refund
+
+PAGO REVERSABLE
+→ transactions.reverse
+```
+
+Los efectos físicos, fiscales, contables y de loyalty permanecen coordinados pero separados.
+
+---
+
+#### 75. Matriz de decisiones de simplificación
+
+| Pregunta | Respuesta objetivo |
+| --- | --- |
+| ¿qué estoy corrigiendo? | recurso real y estado actual, no un “status” genérico |
+| ¿cancelar devuelve dinero? | no por implicación |
+| ¿devolver repone inventario? | no por implicación |
+| ¿refund demuestra devolución? | no |
+| ¿reverse es refund? | no |
+| ¿anulación borra historia? | no |
+| ¿puedo editar el medio confirmado? | no; se compensa/corrige con hechos nuevos |
+| ¿un intento rechazado se refunda? | no |
+| ¿timeout significa fallo? | no; reconciliar |
+| ¿cajero ordinario basta? | no; las claves requieren composición `BASE_AND_OPERATIONAL` |
+| ¿gerencia_operativa basta? | no; aporta solo componente operativo |
+| ¿supervisor base basta? | no; no posee componente base publicado para estas claves |
+| ¿dos personas pueden sumar componentes? | no; mismo actor, permiso, recurso y solicitud |
+| ¿la UI decide autoridad? | no; servidor revalida |
+
+---
+
+#### 76. Handoff inmediato a PULSO-UX-010
+
+`PULSO-UX-010 — Diseñar apertura y cierre de caja` recibe:
+
+```text
+REFUND / REVERSE PUEDEN AFECTAR CONCILIACION DE CAJA
+PERO NO ABREN NI CIERRAN SESION POR IMPLICACION
+MOVIMIENTO DE CAJA != PAYMENT ORIGINAL
+CIERRE DE CAJA DEBE CONSUMIR EFECTOS CONFIRMADOS Y PENDIENTES
+RESULTADO DESCONOCIDO NO PUEDE OCULTARSE EN EL ARQUEO
+REAPERTURA/CORRECCION DE CAJA CONSERVA CONTRATO PROPIO
+```
+
+009 no diseña el lifecycle completo de caja.
+
+---
+
+#### 77. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-009 |
+| --- | --- |
+| `PULSO-UX-010` | refunds/reversos son hechos conciliables separados del lifecycle de caja |
+| `PULSO-UX-011` | acumulación previa puede requerir efecto compensatorio posterior, no edición de saldo |
+| `PULSO-UX-012` | redención previa puede requerir reversión/compensación PASS con ledger propietario |
+| `PULSO-UX-013` | confirmación sensible debe identificar efecto, alcance, monto/cantidad y actor |
+| `PULSO-UX-014` | autorización dual y reautenticación deben sobrevivir terminal compartida sin mezclar actores |
+| `PULSO-UX-015` | UX táctil no puede facilitar doble ejecución por toques repetidos |
+| `PULSO-UX-016` | devolución/cancelación puede solicitar efecto de inventario sin restock implícito |
+| `PULSO-UX-017` | refund/reverse se correlacionan con hecho económico sin editar historia |
+| `PULSO-UX-018` | efectos de loyalty se realizan mediante PASS, no ledger lateral PULSO |
+| `PULSO-UX-019` | validación operativa debe probar casos de cancelación, devolución, refund y reverse separados |
+| `PULSO-UX-020` | prototipo histórico no redefine la semántica por tener un botón o status |
+| `PULSO-UX-021` | arquitectura objetivo materializa `VSCREEN-0091`, PermissionKeys exactas y coordinación de efectos |
+
+---
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: el registro vigente ya exige acciones nombradas y autorizadas para cancelación, anulación, devolución y reembolso; separación entre pedido, pago, caja, fiscalidad, inventario y fidelización; preservación de historia; efectos exactamente-una-vez; autorización contextual; idempotencia; reconciliación; devoluciones y compensaciones diferenciadas. Esta tarea especializa UX, PermissionKeys activas y handoffs sobre obligaciones ya registradas.
+
+---
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-PULSO-004` para mutaciones mediante acciones nombradas, estado, permiso y columnas permitidas;
+- `TREQ-PULSO-005` para preservar versión original y separar pedido, pago, fiscalidad, inventario y fidelización;
+- `TREQ-PULSO-006` para venta, pago, caja, anulación, devolución, reembolso y compensación como hechos separados y auditables;
+- `TREQ-PULSO-007` para devolución/entrega sin duplicación de efectos;
+- `TREQ-PASS-009` para idempotencia y eventos de pago/webhook sin doble cancelación o reembolso;
+- `TREQ-PASS-010` para reversión/compensación de loyalty mediante ledger inmutable;
+- `TREQ-PASS-011` para devolución, reembolso, reemplazo, descuento y compensación como resultados distintos;
+- `TREQ-AUTH-008` para composición correcta de autoridad base y operativa;
+- `TREQ-AUTH-013` para revalidación server-side frente a cliente manipulado;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, territorio, permiso, recurso y decisión;
+- `TREQ-INTEGRATION-003` para idempotencia, correlación y retry de efectos;
+- `TREQ-INTEGRATION-014` para coordinación de efectos de devolución entre dominios;
+- `TREQ-UX-005` y `TREQ-UX-006` para feedback y recuperación segura.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron `main` vigente de `vento-shell`, topología, catálogo y datasets de autorización, `VSCREEN-0091`, binding `VPROC-0042::STEP-RESOLVE_REVERSAL_OR_REFUND`, ocho estados y seis eventos de `VPROC-0042`, cobertura 04A y runtime actual de `vento-pulso`; también se reconcilió la identidad histórica `orders.void` contra las PermissionKeys activas publicadas. |
+| OPERATIVA | NOT_EXECUTED | No se cancelaron pedidos, no se crearon devoluciones, no se ejecutaron refunds/reversos, no se movió inventario, no se tocaron documentos fiscales, caja, NUMERA ni PASS. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-009` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 81. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0091` permanece como identidad canónica de anulación, devolución y reembolso;
+- [ ] `VPROC-0042::STEP-RESOLVE_REVERSAL_OR_REFUND` permanece como binding principal;
+- [ ] se conservan los ocho estados canónicos de `VPROC-0042`;
+- [ ] se conservan los seis eventos canónicos de `VPROC-0042`;
+- [ ] `orders.void` histórico no se revive como PermissionKey activa;
+- [ ] cancelación usa `pulso.sales.orders.cancel` cuando el efecto pertenece al pedido;
+- [ ] devolución usa `pulso.sales.returns.create`;
+- [ ] refund usa `pulso.payments.transactions.refund`;
+- [ ] reverse usa `pulso.payments.transactions.reverse`;
+- [ ] las cuatro claves permanecen `BASE_AND_OPERATIONAL`;
+- [ ] componente base publicado se limita a `propietario`, `gerente_general` y `gerente`;
+- [ ] componente operativo publicado se limita a `cajero_satelite`, `gerencia_operativa` y `operador_integral_satelite`;
+- [ ] ambos componentes pertenecen al mismo actor, permiso, recurso y solicitud;
+- [ ] `supervisor` base no adquiere estas acciones por jerarquía;
+- [ ] `servicio_salon` y `mostrador_satelite` no adquieren componente operativo por proximidad;
+- [ ] originar/cobrar una venta no autoautoriza reversión o compensación;
+- [ ] registrar solicitud no aplica efectos;
+- [ ] aprobación no equivale a ejecución;
+- [ ] cancelación no implica refund;
+- [ ] cancelación no implica devolución;
+- [ ] devolución no implica restock;
+- [ ] devolución no implica refund;
+- [ ] refund no implica devolución;
+- [ ] refund no equivale a compensación;
+- [ ] reverse no equivale a refund;
+- [ ] intento rechazado no se trata como transacción reembolsable;
+- [ ] resultado desconocido se reconcilia antes de compensar;
+- [ ] timeout de refund/reverse no dispara segundo intento ciego;
+- [ ] refund parcial respeta saldo reembolsable vigente;
+- [ ] devolución parcial respeta cantidad elegible restante;
+- [ ] concurrencia no permite doble efecto;
+- [ ] estado stale produce conflicto controlado;
+- [ ] motivo es obligatorio pero no concede autoridad;
+- [ ] reautenticación fuerte queda vinculada al actor/solicitud;
+- [ ] historia original no se edita destructivamente;
+- [ ] entrega previa no se borra por devolución;
+- [ ] preparación previa no se borra por cancelación;
+- [ ] inventario usa contrato propietario;
+- [ ] fiscalidad usa contrato propietario;
+- [ ] NUMERA conserva hechos propios;
+- [ ] PASS conserva ledger propio;
+- [ ] caja consume efectos confirmados sin fusionar lifecycle;
+- [ ] runtime AS-IS se registra como no materializado para `VSCREEN-0091` y PermissionKeys exactas;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 82. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0091`;
+- crea una ruta física;
+- modifica `/orders`;
+- modifica `mark_cancelled`;
+- crea componentes, Server Actions, RPC o Edge Functions;
+- crea o cambia PermissionKeys;
+- revive `pulso.sales.orders.void`;
+- modifica grants, matrices o datasets;
+- asigna nuevos roles;
+- ejecuta cancelaciones reales;
+- ejecuta devoluciones reales;
+- ejecuta refund real;
+- ejecuta reverse real;
+- cambia medio de pago histórico;
+- borra pedido o pago original;
+- modifica inventario;
+- ejecuta restock;
+- modifica preparación FOGO;
+- anula documentos fiscales;
+- crea notas crédito;
+- modifica hechos NUMERA;
+- modifica ledger PASS;
+- abre, cierra o reabre cajas;
+- define el detalle completo de `PULSO-UX-010`;
+- modifica Supabase, RLS, tablas, datos, Realtime o migraciones;
+- modifica packages compartidos;
+- modifica el Registro 04A;
+- crea instancia física.
+
+---
+
+#### 83. Decisión final de experiencia
+
+La separación queda resumida así:
+
+```text
+IDENTIFICAR RECURSO + ESTADO + ACTOR
+→ REGISTRAR SOLICITUD SIN EFECTO
+→ EVALUAR IMPACTO
+→ RESOLVER AUTORIDAD DUAL DEL MISMO ACTOR
+→ REAUTENTICAR + MOTIVO + VERSION
+→ ELEGIR SOLO EFECTOS EXACTOS NECESARIOS
+   orders.cancel
+   returns.create
+   transactions.refund
+   transactions.reverse
+→ EJECUTAR CADA EFECTO DE FORMA IDEMPOTENTE
+→ RECONCILIAR INVENTARIO / FISCAL / NUMERA / PASS CUANDO APLIQUE
+→ CERRAR CAMBIO COMERCIAL SIN REESCRIBIR HISTORIA
+```
+
+La simplicidad consiste en hacer evidente qué se está corrigiendo y qué efecto ocurrirá; no en colapsar operaciones distintas.
+
+---
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-008 — Simplificar cobro y medios de pago`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-009 — Separar anulación, devolución y reembolso`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-010 — Diseñar apertura y cierre de caja`
 ### [ ] PULSO-UX-010 — Diseñar apertura y cierre de caja
 ### [ ] PULSO-UX-011 — Integrar acumulación de puntos
 ### [ ] PULSO-UX-012 — Integrar redención de puntos
