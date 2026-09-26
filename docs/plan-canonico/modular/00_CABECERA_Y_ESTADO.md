@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1365** |
+| Tareas aprobadas | **1366** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **231** |
+| Tareas no iniciadas | **230** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.53% (1365/1596)** |
+| Porcentaje de completamiento | **85.59% (1366/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-AUTH-011 — Limitar operación a sede del turno** |
-| Tarea actual | **PULSO-AUTH-012 — Integrar dispositivos POS compartidos** |
+| Última tarea aprobada | **PULSO-AUTH-012 — Integrar dispositivos POS compartidos** |
+| Tarea actual | **PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación** |
+| Siguiente tarea | **PULSO-AUTH-014 — Mantener configuración administrativa separada** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 13 de 38 aprobadas; PULSO-AUTH-012 pendiente** |
+| Progreso del bloque | **BLOQUE N: 14 de 38 aprobadas; PULSO-AUTH-013 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-AUTH-012** |
+| Carril documental | **ACTIVO — PULSO-AUTH-013** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-AUTH-011` — Limitar operación a sede del turno |
-| Tarea actual | `PULSO-AUTH-012` — Integrar dispositivos POS compartidos — **NO INICIADA** |
-| Siguiente tarea | `PULSO-AUTH-013` — Registrar trabajador que ejecuta la operación |
+| Última aprobada | `PULSO-AUTH-012` — Integrar dispositivos POS compartidos |
+| Tarea actual | `PULSO-AUTH-013` — Registrar trabajador que ejecuta la operación — **NO INICIADA** |
+| Siguiente tarea | `PULSO-AUTH-014` — Mantener configuración administrativa separada |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 13 DE 38 APROBADAS — ACTUAL PULSO-AUTH-012** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 14 DE 38 APROBADAS — ACTUAL PULSO-AUTH-013** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-AUTH-011 — Limitar operación a sede del turno
-        ↓
-TAREA ACTUAL
 PULSO-AUTH-012 — Integrar dispositivos POS compartidos
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-AUTH-014 — Mantener configuración administrativa separada
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 13 de 38 tareas aprobadas
+BLOQUE N — 14 de 38 tareas aprobadas
 ```
