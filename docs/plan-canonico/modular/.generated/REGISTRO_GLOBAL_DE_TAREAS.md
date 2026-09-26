@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1358** |
+| Aprobadas | **1359** |
 | En propuesta | **0** |
-| No iniciadas | **238** |
+| No iniciadas | **237** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.09% (1358/1596)** |
+| Porcentaje de completamiento | **85.15% (1359/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **238** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1259** |
+| ⏸ NO_EVALUADA | **237** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1260** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-004` — Inventariar escáner | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-005` — Inventariar importaciones | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-006` — Definir permisos de cajero | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-005` — Inventariar importaciones | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-006` — Definir permisos de cajero | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-007` — Definir permisos de supervisor | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1119,7 +1119,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-002` | Inventariar órdenes | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-003` | Inventariar salón | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-004` | Inventariar escáner | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-005` | Inventariar importaciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-005` | Inventariar importaciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-006` | Definir permisos de cajero | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-007` | Definir permisos de supervisor | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-008` | Definir permisos de cierre y anulación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |

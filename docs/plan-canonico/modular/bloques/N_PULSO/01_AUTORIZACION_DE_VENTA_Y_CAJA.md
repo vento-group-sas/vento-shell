@@ -5452,7 +5452,1414 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-005 — Inventariar importaciones`
-### [ ] PULSO-AUTH-005 — Inventariar importaciones
+### ✅ PULSO-AUTH-005 — Inventariar importaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-004 — Inventariar escáner
+**Tarea siguiente:** PULSO-AUTH-006 — Definir permisos de cajero
+**Tipo de tarea:** inventario documental cerrado de la superficie AS-IS de importación de ventas expuesta por `PULSO-ROUTE-004` (`/sales-imports`), reconciliando carga XLSX, parser Makos, mapeos externos, hash de archivo, lotes, filas, validación, publicación, reglas de consumo, efectos sobre inventario, territorialidad, autorización, atribución de actor, idempotencia, concurrencia, recuperación y fronteras PULSO↔NEXO sin definir permisos finales ni modificar código, datos o Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, rutas, componentes, Server Actions, RPC, tablas, vistas, RLS, funciones, triggers, migraciones, Supabase, permisos, reglas de consumo, inventario, datos, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma exhaustiva, estable y verificable la superficie actual de importación de ventas de PULSO para que las tareas posteriores de autorización, integración y pruebas trabajen sobre un único contrato AS-IS y no conviertan la mera visibilidad de `/sales-imports` en autoridad implícita para cargar archivos, alterar mapeos o publicar efectos de inventario.
+
+La tarea deja resuelto:
+
+- qué ruta y archivo contienen la superficie;
+- qué acciones server-side existen;
+- qué formato de archivo se admite y cómo se interpreta;
+- cómo se calcula y conserva la huella del archivo;
+- cómo se resuelven los mapeos externos;
+- cómo se crean lotes y filas;
+- qué estados y restricciones existen;
+- qué condición habilita publicación;
+- qué RPC produce el efecto físico de inventario;
+- qué controles de idempotencia y concurrencia existen;
+- qué controles faltan o no están demostrados;
+- qué ownership permanece en NEXO y qué responsabilidad permanece en PULSO;
+- qué hallazgos se transfieren a tareas propietarias posteriores.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-004
+
+`PULSO-AUTH-004` cierra el inventario de `PULSO-ROUTE-001` y `PULSO-ROUTE-006` y entrega la continuidad documental hacia `PULSO-AUTH-005`.
+
+La transición es:
+
+```text
+PULSO-AUTH-004
+→ inventario cerrado de scanner / identificación
+→ PULSO-AUTH-005
+→ inventario de PULSO-ROUTE-004
+```
+
+No se heredan identidad de cliente, acumulación o redención como capacidades propias de importación.
+
+---
+
+#### 3. Handoff específico recibido de PULSO-AUTH-001
+
+`PULSO-AUTH-001` entrega exactamente:
+
+```text
+PULSO-ROUTE-004
+→ /sales-imports
+→ IMPORTACION_VENTAS
+→ carga / mapeo / lote / publicación
+```
+
+La obligación central recibida es separar cada acción sensible de la mera visibilidad de la vista.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el inventario se define una sola vez;
+- no existe instancia física propia;
+- no se cargan archivos reales;
+- no se crean mapeos;
+- no se publican lotes;
+- no se descuenta inventario;
+- no se crean permisos;
+- no se modifica Supabase;
+- no se corrigen los gaps detectados dentro de esta tarea.
+
+---
+
+#### 5. Snapshot técnico verificado
+
+Repositorio consumidor inspeccionado:
+
+```text
+repository = vento-group-sas/vento-pulso
+branch = main
+HEAD = 715b5683db05caa010d725679b5ada4705a6da6e
+framework = Next.js App Router
+```
+
+Archivo fuente principal:
+
+```text
+src/app/sales-imports/page.tsx
+blob = cdc69eeab9229e4e23069969e4192395291b364b
+```
+
+Baseline técnico inspeccionado:
+
+```text
+scripts/quality/pulso-consumer-baseline-gate.mjs
+blob = b50fc12744bc1eb913aee3756a383df81475938b
+```
+
+---
+
+#### 6. Identidad de la ruta
+
+La superficie conserva una sola identidad de página:
+
+| ID | Patrón | Archivo fuente | Clasificación |
+| --- | --- | --- | --- |
+| `PULSO-ROUTE-004` | `/sales-imports` | `src/app/sales-imports/page.tsx` | vista administrativa y de integración |
+
+No se crean rutas adicionales por formulario, acción, lote, mapping, fila o estado.
+
+---
+
+#### 7. Superficie técnica propietaria
+
+El baseline vigente define:
+
+```text
+PULSO-SURFACE-009
+= importación de ventas, mapeos, lotes y publicación
+```
+
+Su única ruta fuente requerida es:
+
+```text
+src/app/sales-imports/page.tsx
+```
+
+La tarea inventaría esa superficie sin confundirla con una venta POS nativa ni con un canal live.
+
+La misma página participa también en `PULSO-SURFACE-010 — atomicidad, idempotencia, concurrencia y recuperación`, sin fusionar ambas identidades técnicas.
+
+---
+
+#### 8. Contrato fuente técnico
+
+El baseline vigente define:
+
+```text
+PULSO-SOURCE-006
+```
+
+con evidencia mínima de:
+
+- `crypto.createHash("sha256")`;
+- `pulso_external_sales_item_mappings`;
+- `pulso_daily_sales_import_batches`;
+- `pulso_daily_sales_import_rows`;
+- `pulso_post_daily_sales_import`.
+
+Esas identidades se conservarán sin renombrarlas.
+
+---
+
+#### 9. Cardinalidad de acciones mutantes
+
+La página contiene exactamente tres Server Actions mutantes nombradas:
+
+```text
+saveMakosMapping
+importDailySales
+postDailySalesImport
+```
+
+Además existe la lectura SSR de `SalesImportsPage`.
+
+Conteo:
+
+```text
+MUTATING_SERVER_ACTIONS = 3
+PAGE_READ_ENTRYPOINTS = 1
+```
+
+---
+
+#### 10. Matriz de acciones AS-IS
+
+| Acción | Intención | Efecto principal |
+| --- | --- | --- |
+| `saveMakosMapping` | asociar MID externo con ítem vendible | alta/actualización/desactivación de mapping |
+| `importDailySales` | ingerir reporte de ventas | crear lote y filas staging |
+| `postDailySalesImport` | publicar lote validado | invocar RPC con efectos de inventario |
+
+Abrir la página no equivale a ejecutar ninguna de estas acciones.
+
+---
+
+#### 11. Guard observado en la vista
+
+La página ejecuta `requireAppAccess` con:
+
+```text
+appId = pulso
+permissionCode = pos.main
+requireAppAccessPermission = true
+site_id = parámetro de consulta cuando existe
+```
+
+La existencia del guard prueba una barrera técnica observada, no suficiencia contractual de `pos.main` para las tres mutaciones.
+
+---
+
+#### 12. Guard observado en las acciones
+
+Las tres acciones mutantes vuelven a ejecutar `requireAppAccess` con `pos.main` y sede.
+
+Se conserva:
+
+```text
+VIEW_ACCESS
+!=
+MAPPING_AUTHORITY
+!=
+IMPORT_AUTHORITY
+!=
+PUBLISH_AUTHORITY
+```
+
+La separación final de permisos pertenece a tareas posteriores.
+
+---
+
+#### 13. Contexto territorial
+
+La superficie utiliza `site_id` como contexto de página y payload de formularios.
+
+Cada acción vuelve a pasar la sede solicitada al guard.
+
+Regla obligatoria:
+
+```text
+site_id recibido del navegador
+!=
+autoridad territorial
+```
+
+La sede efectiva debe permanecer limitada por sesión, asignación, dispositivo y permiso server-side.
+
+---
+
+#### 14. Formato de entrada visible
+
+La UI de importación solicita:
+
+```text
+sales_date
+sales_file
+```
+
+El input del navegador declara:
+
+```text
+accept = .xlsx
+```
+
+Esto es una restricción de interfaz, no una validación server-side suficiente.
+
+---
+
+#### 15. Validación server-side del archivo
+
+`importDailySales` comprueba actualmente:
+
+- sede presente;
+- fecha presente;
+- objeto `File` existente;
+- tamaño mayor que cero;
+- que el parser produzca al menos una fila válida.
+
+No se observó validación server-side explícita de:
+
+- extensión real;
+- MIME;
+- firma de archivo;
+- tamaño máximo;
+- número máximo de filas antes de parsear.
+
+La tarea registra el estado AS-IS sin ejecutar archivos adversariales.
+
+---
+
+#### 16. Parser Makos
+
+El parser utiliza `XLSX.read` y procesa la primera hoja disponible del workbook.
+
+Busca una fila de cabecera que contenga, después de normalización:
+
+```text
+ID
+PRODUCTO
+CANTIDAD
+```
+
+Además exige columnas utilizables de:
+
+```text
+PRODUCTO
+CANTIDAD
+SUBTOTAL
+```
+
+---
+
+#### 17. Campos opcionales de importación
+
+Cuando existen, el parser consume también:
+
+```text
+Categoría
+IMPUESTOS
+DESCUENTOS
+DEVOLUCIONES
+```
+
+Su ausencia se degrada a cero o texto vacío según el campo.
+
+---
+
+#### 18. Normalización numérica
+
+`parseNumber` aplica una normalización orientada al formato esperado:
+
+- elimina espacios;
+- elimina puntos;
+- convierte coma decimal a punto;
+- devuelve cero cuando el resultado no es finito.
+
+La tarea no declara este parser válido para formatos regionales distintos del contrato esperado.
+
+---
+
+#### 19. Reglas de descarte de filas
+
+El parser omite:
+
+- fila sin nombre y sin identificador externo;
+- fila cuyo nombre normalizado es `TOTAL`;
+- fila con cantidad menor o igual a cero.
+
+La fila fuente conserva `sourceRowNumber` para trazabilidad posterior.
+
+---
+
+#### 20. Discrepancia de hoja declarada
+
+El lote registra en metadata:
+
+```text
+parser = makos_sales_by_item_v1
+sheet = Reporte
+```
+
+Sin embargo, el parser inspeccionado selecciona:
+
+```text
+workbook.SheetNames[0]
+```
+
+No se observó validación de que la primera hoja se llame `Reporte`.
+
+Por tanto:
+
+```text
+METADATA_SHEET = Reporte
+!=
+SHEET_NAME_VALIDATED
+```
+
+---
+
+#### 21. Hash de archivo
+
+Antes de crear el lote se calcula:
+
+```text
+SHA-256(bytes del archivo)
+```
+
+La huella se persiste como `source_file_hash`.
+
+La identidad del lote conserva además sede, fecha y fuente.
+
+---
+
+#### 22. Dedupe de lote
+
+La base contiene la restricción única:
+
+```text
+UNIQUE(site_id, sales_date, source, source_file_hash)
+```
+
+Esto bloquea dos lotes con la misma huella, fuente, fecha y sede.
+
+La restricción es evidencia de deduplicación del lote, no prueba por sí sola de recuperación ante un fallo parcial posterior.
+
+---
+
+#### 23. Universo de catálogo consultado
+
+Para cada importación se consultan ítems activos de catálogo filtrados por sede.
+
+El código inspeccionado aplica:
+
+```text
+limit = 2000
+```
+
+La tarea registra ese límite como parte del contrato AS-IS; no infiere cobertura total de una sede con cardinalidad superior.
+
+---
+
+#### 24. Universo de mapeos consultado
+
+Se consultan mapeos activos con:
+
+```text
+site_id = sede activa
+source = makos
+is_active = true
+limit = 2000
+```
+
+La existencia de un límite fijo no demuestra que todos los mapeos posibles queden cubiertos cuando el universo supere ese valor.
+
+---
+
+#### 25. Precedencia de matching
+
+La coincidencia de una fila sigue este orden:
+
+```text
+1. mapping MID activo
+2. code de catalog_item
+3. nombre normalizado de catalog_item
+4. unmatched
+```
+
+Los estados producidos son:
+
+```text
+matched_mid
+matched_code
+matched_name
+unmatched
+```
+
+---
+
+#### 26. Línea no identificada
+
+Una fila `unmatched` queda:
+
+```text
+catalog_item_id = null
+product_id = null
+row_status = draft
+```
+
+Además incrementa `warning_count` del lote.
+
+La línea no mapeada no queda habilitada para publicación normal.
+
+---
+
+#### 27. Acción de mapeo
+
+`saveMakosMapping` recibe:
+
+```text
+site_id
+catalog_item_id
+external_item_id
+external_item_name
+external_category
+```
+
+Exige sede e ítem de catálogo antes de mutar.
+
+---
+
+#### 28. Alta y actualización de mapping
+
+Cuando existe `external_item_id`, la acción ejecuta `upsert` sobre:
+
+```text
+pulso_external_sales_item_mappings
+```
+
+con:
+
+```text
+source = makos
+is_active = true
+created_by = user.id
+updated_by = user.id
+```
+
+El conflicto declarado por el consumidor es:
+
+```text
+site_id, source, catalog_item_id
+```
+
+---
+
+#### 29. Desactivación de mapping
+
+Cuando `external_item_id` llega vacío, la acción no elimina la fila.
+
+Ejecuta:
+
+```text
+is_active = false
+updated_by = user.id
+```
+
+para la combinación sede, fuente Makos e ítem de catálogo.
+
+La historia física de la fila se conserva.
+
+---
+
+#### 30. Restricciones de unicidad del mapping
+
+La base protege simultáneamente:
+
+```text
+UNIQUE(site_id, source, catalog_item_id)
+UNIQUE(site_id, source, external_item_id)
+```
+
+Un MID activo no puede representar silenciosamente dos ítems diferentes dentro de la misma sede y fuente.
+
+---
+
+#### 31. Sincronización de `product_id`
+
+La tabla de mapeo tiene un trigger antes de insert/update que ejecuta:
+
+```text
+pulso_sync_external_sales_item_mapping_product_id
+```
+
+La sincronización relaciona el mapping con su producto canónico a partir del ítem de catálogo.
+
+El formulario no adquiere autoridad para elegir libremente `product_id`.
+
+---
+
+#### 32. Campos descriptivos enviados por navegador
+
+`external_item_name` y `external_category` llegan como campos de formulario.
+
+Se conservan como metadata descriptiva del mapping observado.
+
+No se interpretan como autoridad para seleccionar producto, sede o permiso.
+
+---
+
+#### 33. Creación del lote
+
+`importDailySales` crea una fila en:
+
+```text
+pulso_daily_sales_import_batches
+```
+
+con, entre otros:
+
+- sede;
+- fecha de ventas;
+- nombre de archivo;
+- hash;
+- estado;
+- conteo de filas;
+- conteo de coincidencias;
+- warnings;
+- cantidades;
+- subtotal;
+- impuestos;
+- descuentos;
+- devoluciones;
+- venta neta;
+- `imported_by`;
+- metadata del parser.
+
+---
+
+#### 34. Estado inicial del lote
+
+El código asigna:
+
+```text
+warnings = 0      → validated
+warnings > 0      → draft
+```
+
+La tabla permite los estados:
+
+```text
+draft
+validated
+posted
+cancelled
+```
+
+La tarea registra la máquina AS-IS sin aprobar transiciones adicionales.
+
+---
+
+#### 35. Cálculos del lote
+
+El consumidor calcula:
+
+```text
+total_quantity
+subtotal_amount
+tax_amount
+discount_amount
+return_amount
+net_sales_amount = subtotal - descuentos - devoluciones
+```
+
+La base exige no negatividad para los agregados controlados por constraints.
+
+La tarea no certifica conciliación financiera integral de esas cifras.
+
+---
+
+#### 36. Creación de filas staging
+
+Después de crear el lote, el consumidor construye e inserta filas en:
+
+```text
+pulso_daily_sales_import_rows
+```
+
+Cada fila conserva:
+
+- `batch_id`;
+- sede;
+- fecha;
+- número de fila fuente;
+- identidad y descripción externa;
+- cantidades e importes;
+- ítem de catálogo;
+- producto;
+- estado de matching;
+- razón de matching;
+- estado de fila;
+- metadata de origen.
+
+---
+
+#### 37. Identidad de fila
+
+La base protege:
+
+```text
+UNIQUE(batch_id, source_row_number)
+```
+
+Esto impide duplicar el mismo número de fila dentro del mismo lote.
+
+No convierte dos lotes diferentes en un mismo evento empresarial.
+
+---
+
+#### 38. Ingestión lote → filas no atómica en el consumidor
+
+El código inspeccionado realiza dos operaciones Supabase separadas:
+
+```text
+1. INSERT batch
+2. INSERT rows
+```
+
+No se observó una única RPC o transacción de base que abarque ambas operaciones.
+
+Por tanto, la atomicidad completa de ingestión no está demostrada.
+
+Un fallo del segundo paso puede dejar el lote ya creado mientras las filas no se materializan.
+
+---
+
+#### 39. Recuperación después de fallo parcial de ingestión
+
+La restricción única del lote por hash puede impedir recrear con la misma identidad un lote previamente insertado si falló la inserción posterior de filas.
+
+El consumidor inspeccionado no muestra un comando explícito de reanudación o reparación de ese caso.
+
+La tarea registra la deuda de recuperación; no elimina el lote ni relaja la unicidad.
+
+---
+
+#### 40. Lecturas de la página
+
+La vista SSR consulta para la sede activa:
+
+- la sede;
+- hasta 12 lotes recientes;
+- hasta 2000 ítems de catálogo activos;
+- hasta 2000 mapeos activos Makos;
+- hasta 2000 filas con incidencias de consumo mediante vista derivada.
+
+Estas cardinalidades son límites AS-IS, no garantías de cobertura ilimitada.
+
+---
+
+#### 41. Vista de consumo pendiente
+
+La vista:
+
+```text
+pulso_sales_import_rows_pending_consumption
+```
+
+está materializada como `VIEW` con `security_invoker=true`.
+
+Evalúa filas en estado `draft` o `validated` y puede emitir:
+
+```text
+missing_catalog_item
+missing_consumption_rule
+```
+
+---
+
+#### 42. Precedencia de regla de consumo
+
+La vista y la RPC seleccionan una regla activa con esta prioridad funcional:
+
+```text
+1. catalog_item_id
+2. product_id
+3. category_label
+```
+
+Después aplican prioridad y fecha de creación de la regla.
+
+La existencia de una regla no transfiere ownership del inventario a PULSO.
+
+---
+
+#### 43. Gate visual de publicación
+
+La UI habilita el botón `Publicar` únicamente cuando:
+
+```text
+batch.status = validated
+warning_count = 0
+pendingConsumptionCount = 0
+```
+
+Ese gate visual reduce acciones inválidas, pero no sustituye la revalidación server-side.
+
+---
+
+#### 44. Acción de publicación
+
+`postDailySalesImport` vuelve a validar acceso PULSO y sede y luego invoca:
+
+```text
+pulso_post_daily_sales_import(p_batch_id)
+```
+
+La acción no ejecuta directamente escrituras de inventario desde TypeScript.
+
+---
+
+#### 45. Contrato remoto de publicación
+
+La RPC vigente es:
+
+```text
+public.pulso_post_daily_sales_import(p_batch_id uuid)
+SECURITY DEFINER
+search_path = public, pass, pg_temp
+```
+
+La función vuelve a verificar:
+
+```text
+has_permission('pulso.pos.main', batch.site_id)
+```
+
+El permiso observado sigue siendo general y no se declara suficiente como diseño final.
+
+---
+
+#### 46. Bloqueo del lote
+
+La RPC recupera el lote con:
+
+```text
+FOR UPDATE
+```
+
+Esto serializa la publicación concurrente del mismo lote.
+
+No equivale a bloquear el stock compartido frente a lotes distintos.
+
+---
+
+#### 47. Idempotencia terminal del mismo lote
+
+Si el lote ya está en estado `posted`, la RPC devuelve éxito estable sin volver a publicar líneas:
+
+```text
+status = posted
+postedLines = 0
+skippedLines = 0
+```
+
+Además, solo un lote `validated` puede iniciar publicación normal.
+
+---
+
+#### 48. Modos de consumo
+
+Las reglas vigentes admiten:
+
+```text
+stored_finished_good
+made_to_order_recipe
+direct_ingredient
+no_inventory
+```
+
+Cada modo conserva constraints propios de payload.
+
+---
+
+#### 49. `no_inventory`
+
+Cuando la regla es `no_inventory`, la RPC:
+
+- no crea movimiento físico;
+- marca la fila `posted`;
+- registra en metadata `inventoryPosting = no_inventory`;
+- incrementa el conteo de líneas omitidas de inventario.
+
+La omisión es explícita y no debe confundirse con un fallo silencioso.
+
+---
+
+#### 50. Componentes de consumo físico
+
+Para modos con inventario, la RPC deriva componentes según:
+
+- producto terminado almacenado;
+- ingrediente directo;
+- receta activa y rendimiento para preparación a pedido.
+
+Un componente nulo o con cantidad no positiva se registra como error de publicación.
+
+---
+
+#### 51. Validación de stock observada
+
+Antes de crear un movimiento, la RPC consulta:
+
+```text
+inventory_stock_by_location.current_qty
+```
+
+para ubicación y producto.
+
+Si el stock observado es menor que la cantidad requerida, registra `insufficient_stock`.
+
+---
+
+#### 52. Concurrencia de stock entre lotes
+
+En la definición remota inspeccionada no se observó `FOR UPDATE` sobre la fila de stock antes de comparar `current_qty`.
+
+El `FOR UPDATE` del lote solo protege la identidad de ese lote.
+
+Por tanto, la tarea no certifica que dos lotes distintos concurrentes no puedan superar simultáneamente la misma comprobación de stock antes de aplicar decrementos.
+
+La protección de concurrencia física permanece pendiente de materialización y prueba propietaria.
+
+---
+
+#### 53. Movimiento de inventario producido
+
+Cuando una línea es publicable, la RPC crea un movimiento:
+
+```text
+inventory_movements.movement_type = sale_out
+```
+
+con sede, producto, cantidad, nota de correlación y `created_by = auth.uid()`.
+
+Después actualiza stock por sede y por ubicación.
+
+---
+
+#### 54. Registro de posting
+
+Cada efecto físico se registra en:
+
+```text
+pulso_sales_inventory_postings
+```
+
+con relación a:
+
+- lote;
+- fila;
+- regla;
+- sede;
+- fecha;
+- ítem de catálogo;
+- ubicación fuente;
+- área;
+- producto;
+- cantidad;
+- movimiento;
+- tipo de posting.
+
+---
+
+#### 55. Dedupe de posting
+
+La base protege:
+
+```text
+UNIQUE(row_id, product_id, source_loc_id, posting_kind)
+```
+
+La RPC también comprueba existencia antes de insertar.
+
+Esto protege la repetición del mismo componente de una fila; no sustituye la correlación empresarial global entre fuentes distintas.
+
+---
+
+#### 56. Atomicidad de la RPC de publicación
+
+La publicación y sus escrituras se ejecutan dentro de una única llamada PostgreSQL.
+
+La función acumula errores y lanza excepción cuando alguno permanece.
+
+La observación del contrato SQL permite tratar el conjunto de efectos de esa llamada como una unidad transaccional de base; esta tarea no ejecutó una prueba de rollback físico.
+
+---
+
+#### 57. Estado final de publicación
+
+Cuando la publicación completa sin errores, el lote cambia a:
+
+```text
+status = posted
+posted_at = now()
+```
+
+y agrega metadata con:
+
+- timestamp de posting;
+- `auth.uid()` que publicó;
+- líneas con inventario;
+- líneas omitidas por `no_inventory`.
+
+---
+
+#### 58. RLS de tablas de importación
+
+Las políticas vigentes de:
+
+```text
+pulso_external_sales_item_mappings
+pulso_daily_sales_import_batches
+pulso_daily_sales_import_rows
+pulso_sales_consumption_rules
+```
+
+usan `has_permission('pulso.pos.main', site_id)` para las operaciones observadas de lectura y mutación.
+
+La granularidad final por acción no está resuelta.
+
+---
+
+#### 59. Atribución de actor
+
+El flujo registra referencias técnicas como:
+
+```text
+created_by
+updated_by
+imported_by
+inventoryPostedBy
+```
+
+basadas en el usuario autenticado.
+
+No se observó en esta superficie una llamada a `requireSharedDeviceActorSignature` para mapping, importación o publicación.
+
+Por tanto, en dispositivo compartido la atribución del trabajador humano para estas mutaciones no queda demostrada por esta superficie.
+
+---
+
+#### 60. Dispositivo compartido
+
+`requireAppAccess` puede resolver una sesión operacional compartida y controlar aplicación/permiso.
+
+Eso no equivale a firmar individualmente una mutación sensible.
+
+Se conserva la separación:
+
+```text
+PRINCIPAL TÉCNICO
+!=
+ACTOR HUMANO
+!=
+DISPOSITIVO
+```
+
+---
+
+#### 61. Fuente externa observada
+
+La implementación actual está especializada en Makos:
+
+```text
+mapping source = makos
+row metadata source = makos_excel
+parser = makos_sales_by_item_v1
+```
+
+La tarea no generaliza esta implementación a cualquier POS externo.
+
+---
+
+#### 62. Importación batch no equivale a venta nativa
+
+Se conserva:
+
+```text
+IMPORTACIÓN BATCH
+!=
+VENTA POS NATIVA
+!=
+PEDIDO EXTERNO LIVE
+```
+
+El archivo importado representa un adaptador de transición y no una sustitución del contrato canónico futuro de venta.
+
+---
+
+#### 63. Frontera PULSO ↔ NEXO
+
+PULSO origina y administra la importación comercial observada.
+
+El efecto físico posterior toca inventario, cuya propiedad empresarial permanece en NEXO.
+
+```text
+PULSO → hecho comercial/importado
+NEXO → stock, ubicación y movimiento físico
+```
+
+La existencia de tablas `public.inventory_*` consumidas por la RPC no transfiere ownership a PULSO.
+
+---
+
+#### 64. Fronteras PASS y NUMERA
+
+La importación consulta catálogo vendible relacionado con PASS, pero no adquiere ownership del catálogo por hacerlo.
+
+No se observó en la ruta inspeccionada un efecto directo de fidelización PASS ni una contabilización NUMERA completa durante `postDailySalesImport`.
+
+La ausencia observada no autoriza concluir que esos dominios sean innecesarios para el contrato comercial final.
+
+---
+
+#### 65. Datos remotos de desarrollo observados
+
+En el proyecto remoto de desarrollo inspeccionado, al momento de esta auditoría se observaron:
+
+```text
+active_mappings = 0
+batch_count = 0
+row_count = 0
+active_consumption_rules = 0
+posting_count = 0
+```
+
+Por tanto, la inspección remota valida estructura y contrato, no una ejecución operativa real del flujo.
+
+---
+
+#### 66. Matriz de estados AS-IS
+
+| Entidad | Estados observados |
+| --- | --- |
+| lote | `draft`, `validated`, `posted`, `cancelled` |
+| fila | `draft`, `validated`, `posted`, `cancelled` |
+| matching | `matched_mid`, `matched_code`, `matched_name`, `unmatched` |
+| consumo | `stored_finished_good`, `made_to_order_recipe`, `direct_ingredient`, `no_inventory` |
+
+Los estados no se fusionan entre capas.
+
+---
+
+#### 67. Matriz de autorización observada
+
+| Operación | Guard/permiso observado | Estado contractual |
+| --- | --- | --- |
+| abrir `/sales-imports` | `requireAppAccess` + `pos.main` + sede | observado, no final |
+| guardar mapping | `requireAppAccess` + RLS `pos.main` | observado, no final |
+| importar archivo | `requireAppAccess` + RLS `pos.main` | observado, no final |
+| publicar lote | `requireAppAccess` + RPC `has_permission(pos.main, sede)` | observado, no final |
+| leer reglas/postings | RLS `pos.main` | observado, no final |
+
+La matriz no convierte `pos.main` en permiso final aprobado.
+
+---
+
+#### 68. Matriz de idempotencia y recuperación
+
+| Frontera | Protección observada | Gap no resuelto |
+| --- | --- | --- |
+| archivo→lote | unique por sede/fecha/fuente/hash | recuperación de lote huérfano si fallan filas |
+| lote→fila | unique por lote+número fuente | batch y rows se insertan en llamadas separadas |
+| lote publicado | batch `FOR UPDATE` + estado `posted` terminal | no cubre lotes distintos sobre mismo stock |
+| fila→posting | unique por fila/producto/ubicación/tipo | no sustituye correlación cross-source |
+| stock | comprobación previa + decremento | no se observó lock explícito de fila de stock |
+
+---
+
+#### 69. Matriz de hallazgos y propietarios de salida
+
+| Hallazgo AS-IS | Efecto | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `pos.main` protege lectura, mapping, ingestión y publicación | granularidad insuficiente como diseño final | `PULSO-AUTH-006..008` + contratos transversales AUTH | permisos exactos por acción |
+| validación server-side de archivo no cubre MIME/firma/tamaño máximo | archivo adversarial o carga excesiva no descartados por contrato observado | `PULSO-AUTH-016` + package propietario | pruebas y límites explícitos |
+| metadata declara hoja `Reporte` pero parser usa primera hoja | evidencia descriptiva puede divergir del archivo real | `PULSO-AUTH-016` + package propietario | parser/metadata reconciliados y probados |
+| catálogos y mapeos se limitan a 2000 | cobertura total no demostrada para cardinalidad superior | `PULSO-AUTH-016` + package propietario | estrategia de paginación/cobertura probada |
+| lote y filas se insertan en llamadas separadas | lote huérfano y retry bloqueado por hash son posibles | `PULSO-AUTH-016` + contratos de integración | ingestión atómica o recuperación idempotente |
+| acciones no firman actor humano en dispositivo compartido | atribución humana no demostrada | `PULSO-AUTH-012/013` | actor efectivo firmado y correlacionado |
+| RLS usa `pos.main` para tablas administrativas | autorización atómica no demostrada | `PULSO-AUTH-006..008` + owner Supabase | permisos y RLS reconciliados |
+| publicación produce inventario desde contrato PULSO | frontera PULSO↔NEXO requiere gobierno de integración | `INT-POS-011..020`; `INT-SALES-001..011` | efecto físico exactamente una vez y ownership preservado |
+| stock se valida sin lock explícito de fila observado | concurrencia entre lotes distintos no certificada | contratos NEXO/integración + `PULSO-AUTH-016` | prueba concurrente y control físico aprobado |
+| adaptador está especializado en Makos | no representa cualquier canal externo | `INT-POS-011..020` / `INT-SALES-001..011` | adapter/cutover explícito por fuente |
+| remoto dev contiene cero datos de esta superficie | estructura verificada sin evidencia operativa | `PULSO-AUTH-016` | ejecución integral en ambiente controlado |
+
+No queda hallazgo material sin propietario o condición de salida.
+
+---
+
+#### 70. Handoff a PULSO-AUTH-006..008
+
+Las tareas de permisos reciben como restricciones:
+
+- visibilidad de `/sales-imports` separada de mutación;
+- mapping, importación y publicación como acciones distintas;
+- `pos.main` únicamente como permiso observado AS-IS;
+- publicación como acción con efecto físico mayor que lectura o staging;
+- necesidad de separar operación ordinaria de autoridad administrativa.
+
+Esta tarea no crea nuevas claves de permiso.
+
+---
+
+#### 71. Handoff a PULSO-AUTH-011
+
+`PULSO-AUTH-011 — Limitar operación a sede del turno` recibe:
+
+- `site_id` de ruta;
+- `site_id` oculto de formularios;
+- RLS por sede;
+- lote, filas y mappings con `site_id`;
+- reglas de consumo y publicación ligadas a sede.
+
+La condición de salida es impedir que el payload cliente amplíe territorio.
+
+---
+
+#### 72. Handoff a PULSO-AUTH-012 y PULSO-AUTH-013
+
+Estas tareas reciben la ausencia de firma humana específica en:
+
+```text
+saveMakosMapping
+importDailySales
+postDailySalesImport
+```
+
+La condición de salida es correlacionar principal técnico, dispositivo compartido, trabajador efectivo, sede y mutación sensible.
+
+---
+
+#### 73. Handoff a PULSO-AUTH-015
+
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell` recibe:
+
+- contratos de importación hoy concentrados en una page de consumidor;
+- límites PULSO↔NEXO;
+- RPC y modelos de datos compartidos;
+- necesidad de no migrar código AS-IS sin reconciliar autorización, atomicidad y ownership.
+
+---
+
+#### 74. Handoff a PULSO-AUTH-016
+
+`PULSO-AUTH-016 — Ejecutar pruebas integrales` recibe como mínimo:
+
+- validación adversarial de archivo;
+- archivo repetido;
+- fallo entre creación de lote y filas;
+- mapeos incompletos;
+- más de 2000 ítems/mapeos cuando aplique;
+- lote con warnings;
+- consumo pendiente;
+- doble publicación del mismo lote;
+- publicación concurrente de lotes distintos sobre mismo stock;
+- falta de stock;
+- modos de consumo;
+- dispositivo compartido;
+- aislamiento entre sedes;
+- recuperación y conciliación.
+
+La tarea actual no ejecuta esas pruebas.
+
+---
+
+#### 75. Drift que invalida conclusiones afectadas
+
+Obligan a revisar este inventario:
+
+- cambio de blob de `src/app/sales-imports/page.tsx` que altere comportamiento material;
+- alta o retiro de Server Actions de importación;
+- cambio del parser;
+- cambio de fuente externa;
+- cambio de algoritmo de hash;
+- cambio de precedencia de matching;
+- cambio de tablas o vistas consumidas;
+- cambio de estados;
+- cambio de RLS;
+- cambio de permiso observado;
+- cambio de RPC de publicación;
+- cambio de reglas de consumo;
+- cambio de constraints de idempotencia;
+- cambio de ownership o efectos sobre inventario.
+
+Un commit distinto sin cambio material de estas fuentes no invalida por sí solo todas las conclusiones.
+
+---
+
+#### 76. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Esta tarea no crea, modifica, difiere ni vuelve obsoleto ningún requisito de prueba.
+
+La conducta verificable necesaria para la superficie de importaciones ya está cubierta por obligaciones canónicas vigentes de PULSO e integración.
+
+---
+
+#### 77. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-PULSO-003` — piezas AS-IS requieren seguridad, atomicidad, idempotencia, concurrencia, recuperación, auditoría e integración antes de adopción final;
+- `TREQ-PULSO-005` — hechos comerciales conservan canal, identidad externa, sede, estados y actores;
+- `TREQ-PULSO-006` — acciones sensibles deben ser nombradas, autorizadas y auditables;
+- `TREQ-PULSO-015` — `site_id` no puede ampliar territorio;
+- `TREQ-PULSO-017` — abrir `/sales-imports` no autoriza carga, mapping ni publicación y cada operación exige autorización, validación, idempotencia y auditoría;
+- `TREQ-PULSO-023` — drift material exige delta explícito;
+- `TREQ-PULSO-024` — infraestructura existente no demuestra autorización completa;
+- `TREQ-PULSO-026` — `pos.main` observado no demuestra suficiencia contractual;
+- `TREQ-PULSO-027` — fronteras entre aplicaciones permanecen separadas;
+- `TREQ-INTEGRATION-006` — fuentes competidoras y conciliación deben resolverse sin sobrescribir historia;
+- `TREQ-INTEGRATION-009` — identificadores externos se mapean explícitamente y líneas sin mapping quedan en cuarentena sin efecto automático;
+- `TREQ-INTEGRATION-011` — todo efecto externo de inventario debe correlacionarse e idempotentarse hacia NEXO exactamente una vez;
+- `TREQ-INTEGRATION-014` — POS externo entra por adapter, staging, payload/hash/mapping/cuarentena/idempotencia y no puede duplicar efectos durante transición.
+
+La mención es trazabilidad; no constituye actualización del Registro 04A.
+
+---
+
+#### 78. Huella fuente verificada
+
+| Fuente | Identidad verificada |
+| --- | --- |
+| `vento-pulso/main` | `715b5683db05caa010d725679b5ada4705a6da6e` |
+| `src/app/sales-imports/page.tsx` | `cdc69eeab9229e4e23069969e4192395291b364b` |
+| `scripts/quality/pulso-consumer-baseline-gate.mjs` | `b50fc12744bc1eb913aee3756a383df81475938b` |
+| `src/lib/auth/guard.ts` | `ae708911c06e0bae35dead2343879d69ec23ee5b` |
+
+La evidencia Supabase remota fue consultada en modo de solo lectura.
+
+---
+
+#### 79. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de `vento-pulso`; no existe cambio físico en el consumidor |
+| LOCAL | NOT_EXECUTED | no se modificó checkout local de `vento-shell` ni de `vento-pulso` durante la redacción |
+| REMOTA | PASS | se verificaron fuentes canónicas de `vento-shell`, snapshot y blobs de `vento-pulso`, baseline PULSO y metadatos de solo lectura del proyecto Supabase de desarrollo para tablas, vistas, RLS, constraints, triggers y RPC relevantes |
+| OPERATIVA | NOT_EXECUTED | no se cargó XLSX, no se creó mapping, lote o fila y no se publicó inventario; el ambiente remoto inspeccionado tenía cero registros de importación, reglas activas y postings en las superficies consultadas |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no materializa una instancia propia |
+
+La evidencia remota valida el inventario documental AS-IS; no certifica el flujo E2E.
+
+---
+
+#### 80. Criterios de aceptación
+
+- [ ] Se inventaría exactamente `PULSO-ROUTE-004` para `/sales-imports`.
+- [ ] Se conserva el blob fuente verificado.
+- [ ] Se registran exactamente tres Server Actions mutantes.
+- [ ] Se separan mapping, importación y publicación.
+- [ ] Se registra `pos.main` únicamente como permiso observado.
+- [ ] Se registra la restricción visible `.xlsx` separada de validación server-side.
+- [ ] Se documenta el parser Makos y su selección de primera hoja.
+- [ ] Se documenta la discrepancia entre `sheet = Reporte` y la ausencia de validación del nombre de hoja.
+- [ ] Se conserva SHA-256 del archivo como huella de lote.
+- [ ] Se registra la restricción única de lote por sede, fecha, fuente y hash.
+- [ ] Se conserva la precedencia mapping MID → código → nombre → unmatched.
+- [ ] Una línea `unmatched` permanece fuera de publicación normal.
+- [ ] Se registran límites de consulta de 2000 como límites AS-IS.
+- [ ] Se separa creación de batch de creación de rows y se registra la falta de atomicidad integral observada.
+- [ ] Se registra la vista de consumo pendiente y sus `issue_code`.
+- [ ] Se separa gate visual de validación server-side.
+- [ ] Se inventaría `pulso_post_daily_sales_import` y su `FOR UPDATE` de lote.
+- [ ] Se registra idempotencia terminal de lote ya publicado.
+- [ ] Se inventarían los cuatro modos de consumo.
+- [ ] Se registra la frontera `no_inventory` sin movimiento físico.
+- [ ] Se registra el efecto `sale_out` y el posting correlacionado.
+- [ ] Se registra dedupe por fila/producto/ubicación/tipo.
+- [ ] Se registra que no se observó lock explícito de stock entre lotes distintos.
+- [ ] Se registra la ausencia de firma humana específica en dispositivo compartido.
+- [ ] Se preserva ownership de inventario en NEXO.
+- [ ] La importación batch no se presenta como venta nativa ni canal live.
+- [ ] Todo hallazgo queda asignado a propietario y condición de salida.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 81. Límites
+
+Esta tarea no:
+
+- define permisos finales de cajero;
+- define permisos de supervisor;
+- define permisos de cierre o anulación;
+- crea claves de permiso;
+- cambia `pos.main`;
+- modifica `/sales-imports`;
+- cambia el parser;
+- cambia el workbook esperado;
+- agrega validación MIME, firma o tamaño;
+- elimina límites de 2000;
+- crea o elimina mappings;
+- importa un archivo;
+- crea lotes o filas;
+- repara lotes huérfanos;
+- cambia RLS;
+- cambia constraints;
+- cambia triggers;
+- cambia `pulso_post_daily_sales_import`;
+- cambia reglas de consumo;
+- modifica `inventory_movements`;
+- modifica stock por sede o ubicación;
+- mueve ownership de inventario desde NEXO;
+- implementa firma de actor compartido;
+- ejecuta concurrencia;
+- ejecuta rollback;
+- migra código a packages;
+- modifica Supabase;
+- crea migraciones;
+- modifica datos remotos;
+- modifica el Registro 04A;
+- ejecuta implementación física.
+
+---
+
+#### 82. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-004 — Inventariar escáner`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-005 — Inventariar importaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-006 — Definir permisos de cajero`
 ### [ ] PULSO-AUTH-006 — Definir permisos de cajero
 ### [ ] PULSO-AUTH-007 — Definir permisos de supervisor
 ### [ ] PULSO-AUTH-008 — Definir permisos de cierre y anulación
