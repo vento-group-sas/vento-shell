@@ -23545,6 +23545,1356 @@ La 019 valida estos invariantes en escenarios operativos y perfiles reales sin r
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador`
-### [ ] PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador
+### ✅ PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-018 — Conectar venta con PASS
+**Tarea siguiente:** PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
+**Tipo de tarea:** validación documental integral del prototipo canónico PULSO en cinco puntos operativos representativos —caja, salón, barra, cocina y mostrador— mediante contratos aprobados, matriz proceso→paso→estación→interacción→periférico, evidencia remota verificable, revisión heurística y walkthroughs adversariales; consolida escenarios de venta, servicio, preparación, pago, caja, actor compartido, interacción táctil, inventario, NUMERA y PASS; produce `PASS_WITH_CARRYOVER` sin afirmar sesiones formales con trabajadores ni certificación productiva, preservando la validación humana y física posterior en `UX-QA-027`; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, componentes, pantallas runtime, PermissionKeys, grants, sesiones, dispositivos, hardware, RLS, RPC, tablas, datos, Supabase, migraciones, packages, colas, integraciones, periféricos, despliegues ni configuración productiva
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Validar que el prototipo canónico PULSO definido por las tareas anteriores puede recorrer coherentemente los cinco puntos operativos exigidos por esta tarea sin mezclar responsabilidades, autoridad, actores, estaciones o fuentes de verdad.
+
+La regla raíz es:
+
+```text
+CONTRATO CANONICO
++
+MATRIZ DE ESTACION APROBADA
++
+ESCENARIOS ADVERSARIALES
++
+EVIDENCIA AS-IS VERIFICABLE
+=
+VALIDACION DOCUMENTAL DEL PROTOTIPO
+```
+
+Esto no equivale a piloto productivo ni a certificación física.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-018
+
+`PULSO-UX-018` entrega:
+
+```text
+VENTA SIN PASS DEBE FUNCIONAR CUANDO EL CONTRATO LO PERMITA
+CLIENTE COMERCIAL != CUENTA PASS
+VENTA != ACUMULACION != REDENCION
+PASS CONSERVA LEDGER / SALDO / REGLA / REWARDS
+AUTORIDAD LOYALTY DEBE SER EXACTA Y FAIL-CLOSED
+ACTOR REAL / SEDE / DISPOSITIVO DEBEN SOBREVIVIR TERMINAL COMPARTIDA
+DOBLE TAP / RETRY NO DUPLICAN PUNTOS NI CONSUMO
+UNKNOWN SE RECONCILIA ANTES DE REEJECUTAR
+NEXO / NUMERA / PASS SON EFECTOS INDEPENDIENTES
+UI NO DECLARA EXITO SIN RESULTADO SERVIDOR
+```
+
+La validación 019 incorpora estas invariantes sin absorber ownership de PASS.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable permanece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+La tarea se agota en una decisión documental de validación y no crea instancia física propia.
+
+---
+
+#### 4. Resultado documental
+
+El resultado es:
+
+```text
+PULSO-UX-019 = PASS_WITH_CARRYOVER
+```
+
+Significa que:
+
+- el contrato canónico es coherente para continuar diseño y arquitectura;
+- la matriz de cinco puntos no presenta una contradicción documental bloqueante;
+- los escenarios adversariales tienen resultado esperado y propietario;
+- los hallazgos físicos y humanos que requieren estación real permanecen explícitamente diferidos;
+- ninguna ausencia de evidencia humana se transforma en un PASS productivo ficticio.
+
+---
+
+#### 5. Significado de PASS_WITH_CARRYOVER
+
+`PASS_WITH_CARRYOVER` autoriza continuidad documental hacia `PULSO-UX-020`, no producción.
+
+```text
+PASS_WITH_CARRYOVER
+!=
+CERTIFIED_FOR_PRODUCTION
+```
+
+El carryover obligatorio pertenece a pilotos posteriores, principalmente `UX-QA-027 — Probar PULSO por punto operativo` y las puertas integrales correspondientes.
+
+---
+
+#### 6. Base de validación aceptada
+
+La validación consume cuatro clases de evidencia:
+
+1. contratos canónicos PULSO ya aprobados;
+2. línea base `UX-STATION` aprobada como `CANONICAL_BASELINE_WITH_PILOT_CARRYOVER`;
+3. evidencia remota actual de `vento-shell` y `vento-pulso`;
+4. walkthroughs adversariales y matrices de escenario sin ejecutar operación real.
+
+No se sustituye evidencia física inexistente por una afirmación de observación.
+
+---
+
+#### 7. Frontera con validación humana
+
+Las sesiones formales con trabajadores reales no se declaran ejecutadas en esta tarea.
+
+La validación humana posterior deberá comprobar al menos:
+
+- comprensión de la siguiente acción;
+- errores críticos;
+- fricción por estación;
+- ergonomía y alcance;
+- comportamiento con guantes, humedad y ruido cuando aplique;
+- tiempos operativos reales;
+- recuperación frente a fallo;
+- uso con periféricos desplegados;
+- interacción multi-actor en terminal compartida.
+
+---
+
+#### 8. Universo obligatorio de cinco puntos
+
+La validación cubre exactamente estos cinco puntos funcionales:
+
+| Punto | Rol operativo representativo | Arquetipo de estación principal | Propósito dominante |
+| --- | --- | --- | --- |
+| caja | `cajero_satelite` | `SERVICE_CHECKOUT` | venta, cobro, caja y cliente |
+| salón | `servicio_salon` | `SERVICE_CHECKOUT + MOBILE` | mesa, servicio, pedido y cuenta |
+| barra | `barista_satelite` | `KITCHEN_PREP` | cola, preparación y cambio de estado |
+| cocina | `cocinero_satelite` | `KITCHEN_PREP` | preparación, prioridad y cumplimiento |
+| mostrador | `mostrador_satelite` | `SERVICE_CHECKOUT / KITCHEN_PREP` | venta, alistamiento, handoff y entrega |
+
+Esta tabla describe contexto de prueba; no concede permisos por rol o estación.
+
+---
+
+#### 9. Regla de autoridad transversal
+
+En todos los puntos:
+
+```text
+ROL
++
+ESTACION
++
+UBICACION
+!=
+AUTORIDAD
+```
+
+La acción solo puede ejecutarse cuando la autorización propietaria resuelve permiso exacto, actor, contexto, territorio, recurso, estado y condiciones vigentes.
+
+---
+
+#### 10. Validación de caja
+
+Caja debe poder representar de forma coherente:
+
+- entrada a `VSCREEN-0080`;
+- apertura mediante `VSCREEN-0089`;
+- creación de venta mediante `VSCREEN-0081` cuando exista autoridad;
+- cobro mediante `VSCREEN-0084`;
+- interacción de cliente mediante `VSCREEN-0085/0086` cuando el contrato PASS sea ejecutable;
+- cierre mediante `VSCREEN-0090`;
+- acciones sensibles mediante `VSCREEN-0091` cuando correspondan.
+
+La estación de caja no convierte por sí sola al actor en autoridad de cierre, refund, loyalty o anulación.
+
+---
+
+#### 11. Validación de salón
+
+Salón conserva:
+
+- `VPROC-0038` como proceso principal;
+- `VSCREEN-0082` como workspace de mesa y servicio;
+- `VSCREEN-0083` para modificación gobernada del pedido;
+- cobro como handoff a `VSCREEN-0084` cuando corresponda;
+- seguimiento mediante `VSCREEN-0088`.
+
+Mesa, sesión, pedido, cuenta y pago siguen siendo identidades distintas.
+
+---
+
+#### 12. Validación de barra
+
+Barra usa `KITCHEN_PREP` para cola visible, prioridad, preparación y cambio de estado.
+
+Debe demostrar documentalmente que:
+
+- recibe trabajo originado por un pedido válido;
+- no crea autoridad de venta por encontrarse físicamente en barra;
+- no convierte impresión o señalización en prueba de aceptación;
+- no marca preparado o entregado sin transición válida;
+- no hereda caja por proximidad;
+- puede continuar con fallback visible si falla impresión cuando el contrato lo permita.
+
+---
+
+#### 13. Validación de cocina
+
+Cocina usa `KITCHEN_PREP` para trabajo de preparación derivado de procesos PULSO aplicables.
+
+Debe conservar:
+
+- pedido y revisión de origen;
+- cola visible;
+- prioridad explícita;
+- cambio de estado autorizado;
+- separación entre preparar, completar y entregar;
+- ausencia de privilegio comercial implícito por ser estación de cocina.
+
+---
+
+#### 14. Validación de mostrador
+
+Mostrador conserva:
+
+- `VPROC-0039` como proceso principal de venta/entrega de mostrador;
+- `VPROC-0040` cuando existen pedidos externos;
+- `VSCREEN-0088` como workspace principal de seguimiento y handoff;
+- `VSCREEN-0087` como superficie secundaria de pedidos externos;
+- cobro únicamente mediante handoff autorizado a `VSCREEN-0084`.
+
+Mostrador no hereda salón, caja, barra o cocina por compartir punto físico.
+
+---
+
+#### 15. Arquetipo SERVICE_CHECKOUT
+
+`SERVICE_CHECKOUT` cubre servicio, mostrador, caja y entrega mediante interacción táctil contextual.
+
+La validación exige:
+
+- actor efectivo visible;
+- contexto de sede/punto resuelto;
+- una acción primaria;
+- estados claros;
+- pago o confirmación reforzada solo cuando corresponda;
+- recuperación sin duplicar efectos;
+- limpieza al cambiar de actor.
+
+---
+
+#### 16. Arquetipo KITCHEN_PREP
+
+`KITCHEN_PREP` cubre cocina, barra, horno, pizza y expedición mediante cola visible y cambios de estado.
+
+La validación exige:
+
+- lectura rápida a distancia operativa;
+- prioridad visible;
+- siguiente acción inequívoca;
+- controles grandes para acciones repetitivas;
+- señal visual/textual suficiente;
+- ausencia de sonido o color como única evidencia;
+- protección ante actualización concurrente.
+
+---
+
+#### 17. Inicio POS compartido
+
+`VSCREEN-0080` permanece como identidad compartida de Inicio POS.
+
+No se crea un home canónico distinto por caja, salón, barra, cocina o mostrador.
+
+La composición cambia por actor, trabajo, estado, autorización y estación, sin cambiar la identidad de la superficie.
+
+---
+
+#### 18. Actor efectivo
+
+Toda acción humana sensible debe conservar:
+
+```text
+PRINCIPAL TECNICO
+!=
+ACTOR HUMANO EFECTIVO
+```
+
+El actor efectivo debe resolverse antes del efecto y sobrevivir en la evidencia correlacionable.
+
+---
+
+#### 19. Cambio de actor A→B
+
+Cuando la estación pasa de actor A a actor B:
+
+- la autorización de A deja de gobernar acciones nuevas;
+- borradores y selecciones actor-bound aplican su política explícita;
+- datos sensibles de A se limpian;
+- B no confirma trabajo de A salvo contrato de takeover;
+- un efecto ya emitido conserva la autoría original;
+- un retry técnico no reescribe el autor empresarial.
+
+---
+
+#### 20. Dispositivo compartido sin actor
+
+Una estación compartida sin actor efectivo debe fallar cerrada para acciones que requieran atribución humana.
+
+Puede mostrar contexto mínimo seguro, pero no ejecutar por inferencia desde:
+
+- usuario técnico;
+- última persona conocida;
+- rol del dispositivo;
+- zona física;
+- PIN almacenado;
+- sesión anterior.
+
+---
+
+#### 21. Dispositivo revocado o incompatible
+
+Un dispositivo revocado, fuera de política o sin capacidades requeridas no se degrada a autorización permisiva.
+
+El prototipo debe mostrar bloqueo o alternativa controlada sin cambiar el significado empresarial de la acción.
+
+---
+
+#### 22. PIN inválido y rate limiting
+
+Cuando una acción requiere reautenticación o firma de actor:
+
+- PIN inválido no ejecuta el efecto;
+- intentos repetidos respetan límites aplicables;
+- el secreto no persiste en ledger, logs o borradores;
+- cambiar de actor limpia el secreto;
+- un error técnico no convierte la firma en opcional.
+
+---
+
+#### 23. Acción primaria única
+
+Cada estado interactivo conserva como máximo una acción primaria.
+
+La validación rechaza composiciones donde:
+
+- varias acciones compiten visualmente como primarias;
+- la acción primaria cambia por hover o foco;
+- una actualización Realtime mueve una acción destructiva bajo el dedo;
+- la ubicación visual se interprete como autoridad.
+
+---
+
+#### 24. Target táctil preferido
+
+Las acciones recurrentes nuevas deben respetar el piso operativo preferido PULSO de:
+
+```text
+48 x 48 CSS px
+```
+
+La validación documental marca como carryover cualquier control AS-IS menor hasta su corrección/materialización y prueba física.
+
+---
+
+#### 25. Separación táctil
+
+Los controles repetitivos deben conservar separación suficiente para reducir activaciones accidentales.
+
+Como preferencia ordinaria PULSO se mantiene separación aproximada de `0.75rem` entre acciones adyacentes cuando la composición lo permita, aumentando densidad segura cuando guantes, humedad o movilidad lo exijan.
+
+---
+
+#### 26. Guantes y humedad
+
+Barra y cocina deben conservar un overlay operativo para condiciones con manos húmedas, grasa o guantes cuando aplique.
+
+La validación documental exige:
+
+- targets mayores cuando sea necesario;
+- menor densidad;
+- acciones destructivas alejadas de acciones recurrentes;
+- feedback perceptible;
+- alternativa segura si el tacto pierde precisión.
+
+La eficacia física queda en carryover.
+
+---
+
+#### 27. Orientación vertical y horizontal
+
+El prototipo debe conservar semántica, acción primaria, contexto y estado tanto en orientación vertical como horizontal cuando el perfil de dispositivo lo permita.
+
+Reflow no puede:
+
+- ocultar una confirmación requerida;
+- cambiar la acción principal;
+- perder actor/contexto;
+- eliminar mensajes de error;
+- mezclar columnas de pedidos diferentes.
+
+---
+
+#### 28. Teclado virtual
+
+Cuando exista entrada numérica o textual:
+
+- el teclado virtual no cubre la acción o resumen necesario;
+- el foco permanece en el campo correcto;
+- monto/cantidad conservan unidad y formato;
+- cerrar teclado no confirma la acción;
+- reapertura no duplica el valor.
+
+---
+
+#### 29. Teclado físico y foco
+
+Las superficies compatibles con teclado deben conservar:
+
+- orden lógico de foco;
+- foco visible;
+- activación equivalente de controles;
+- escape seguro de modales cuando corresponda;
+- ausencia de trampas de foco;
+- ninguna dependencia exclusiva de pointer/touch.
+
+---
+
+#### 30. Lector de pantalla
+
+Las acciones, estados y errores críticos deben tener nombre y semántica suficientes para lector de pantalla.
+
+Color, icono, posición o animación no constituyen por sí solos la descripción del estado empresarial.
+
+---
+
+#### 31. Scanner repetido
+
+Dos lecturas sucesivas o repetidas del mismo código no deben crear dos intenciones empresariales cuando representan el mismo evento.
+
+La UI debe distinguir:
+
+- lectura recibida;
+- procesamiento pendiente;
+- resultado previo recuperado;
+- código inválido;
+- recurso distinto.
+
+---
+
+#### 32. Doble tap durante in-flight
+
+Mientras una mutación esté in-flight:
+
+- un segundo toque no crea otra intención empresarial;
+- la UI muestra estado pendiente;
+- la identidad idempotente permanece estable;
+- deshabilitar visualmente un botón no sustituye deduplicación servidor;
+- un timeout no libera automáticamente una segunda ejecución.
+
+---
+
+#### 33. Actualización Realtime durante un toque
+
+Si llega una actualización remota mientras el actor interactúa:
+
+- no se mueve una acción destructiva bajo el puntero/dedo;
+- se revalida estado antes de confirmar;
+- el actor puede comprender que cambió la base;
+- la versión anterior no sobrescribe una posterior;
+- conflicto y éxito permanecen distinguibles.
+
+---
+
+#### 34. Offline y degradación
+
+La estación debe distinguir explícitamente:
+
+- online;
+- degradado;
+- offline de solo lectura;
+- captura local permitida;
+- comando offline permitido cuando exista contrato;
+- sincronización pendiente;
+- conflicto;
+- resultado desconocido.
+
+No existe un modo offline universal para PULSO.
+
+---
+
+#### 35. Resultado desconocido
+
+Ante timeout o pérdida de confirmación después de una posible mutación:
+
+```text
+UNKNOWN_OUTCOME
+→ CONSULTAR / RECONCILIAR
+→ NO REEJECUTAR A CIEGAS
+```
+
+La UI no presenta fallo definitivo ni permite intención nueva hasta resolver la identidad anterior cuando el contrato lo requiera.
+
+---
+
+#### 36. Confirmación sensible
+
+Antes del commit de una acción sensible deben ser comprensibles, según aplique:
+
+- objeto;
+- consecuencia;
+- alcance;
+- monto o cantidad;
+- reversibilidad;
+- actor;
+- motivo;
+- autorización adicional requerida.
+
+La confirmación no concede permiso.
+
+---
+
+#### 37. Cobro simple
+
+El walkthrough de cobro simple valida:
+
+```text
+VENTA / CUENTA ELEGIBLE
+→ MEDIO
+→ AUTORIZACION / CAPTURA
+→ RESULTADO SERVIDOR
+→ SOPORTE / ESTADO CONCILIABLE
+```
+
+No se usa cambio visual de pantalla como prueba suficiente de pago.
+
+---
+
+#### 38. Pago parcial
+
+Un pago parcial debe conservar:
+
+- importe aplicado;
+- saldo pendiente;
+- moneda;
+- medio/proveedor;
+- referencia;
+- actor;
+- estado individual del intento.
+
+El pedido o cuenta no queda cerrado por un pago parcial salvo que el contrato de negocio lo determine.
+
+---
+
+#### 39. Medios combinados
+
+Los medios combinados se modelan como componentes conciliables y no como un único string de “pagado”.
+
+Retry o reverso de un componente no vuelve a ejecutar los demás.
+
+---
+
+#### 40. Efectivo
+
+El flujo de efectivo debe conservar:
+
+- importe recibido;
+- cambio calculado cuando aplique;
+- relación con sesión de caja;
+- actor efectivo;
+- soporte de movimiento;
+- conciliación posterior.
+
+Efectivo recibido no equivale por sí solo a cierre de caja.
+
+---
+
+#### 41. Pago electrónico
+
+El pago electrónico debe conservar proveedor, referencia, estado y resultado recuperable.
+
+Un timeout del proveedor no se interpreta como pago fallido ni habilita otra captura sin consulta/conciliación.
+
+---
+
+#### 42. Apertura de caja
+
+`VSCREEN-0089` valida que abrir caja sea una acción explícita con responsable, fondo, terminal y sede.
+
+Entrar a PULSO o crear una venta no abre una caja implícitamente.
+
+---
+
+#### 43. Cierre de caja sin diferencia
+
+`VSCREEN-0090` debe conciliar ventas, pagos, efectivo y soportes antes de cerrar.
+
+Un cierre sin diferencia puede avanzar solo cuando las fuentes requeridas están confirmadas y no existen pendientes que el contrato marque como bloqueantes.
+
+---
+
+#### 44. Cierre de caja con diferencia
+
+Una diferencia de caja no desaparece para permitir cierre visual.
+
+Debe quedar:
+
+- visible;
+- atribuida;
+- clasificada;
+- sometida a la autoridad requerida;
+- trazable a decisión o carryover.
+
+El supervisor no obtiene autoridad por el solo hecho de observar la diferencia.
+
+---
+
+#### 45. Cancelación, reverso, devolución y refund
+
+La validación obliga a mantener:
+
+```text
+CANCELACION
+!=
+REVERSO
+!=
+DEVOLUCION
+!=
+REFUND
+```
+
+Cada efecto conserva causalidad, autorización, resultado e integraciones compensatorias propias.
+
+---
+
+#### 46. Salón — mesa abierta
+
+Abrir o gestionar mesa requiere contexto territorial y acción aplicable.
+
+La visualización de una mesa no concede:
+
+- asignación;
+- modificación;
+- cobro;
+- cierre;
+- cancelación.
+
+---
+
+#### 47. Salón — pedido y modificación
+
+Modificar un pedido activo debe revalidar estado, permiso y columnas permitidas.
+
+La UI no convierte una corrección local o un cambio visual en mutación persistida sin confirmación autoritativa.
+
+---
+
+#### 48. Salón — preparación y entrega
+
+La mesa puede atravesar preparación y entrega sin fusionar servicio con cocina.
+
+Salón observa el estado propietario necesario y ejecuta únicamente las acciones que su contrato permita.
+
+---
+
+#### 49. Barra — cola de preparación
+
+Barra debe ver una cola suficientemente estable para:
+
+- pedido/revisión de origen;
+- producto o preparación requerida;
+- prioridad;
+- estado actual;
+- siguiente acción;
+- excepción.
+
+Una comanda impresa no demuestra aceptación o ejecución.
+
+---
+
+#### 50. Cocina — cola y prioridad
+
+Cocina debe poder diferenciar pedidos nuevos, en preparación, bloqueados, completados y excepciones sin depender de memoria oral.
+
+Una actualización tardía no debe hacer retroceder silenciosamente un estado posterior.
+
+---
+
+#### 51. Handoff de preparación
+
+El handoff entre preparación y servicio conserva:
+
+- pedido y líneas;
+- revisión aplicable;
+- estado confirmado;
+- responsable/estación cuando corresponda;
+- pendientes;
+- evidencia de entrega o acuse si el contrato la exige.
+
+Preparado no equivale automáticamente a entregado.
+
+---
+
+#### 52. Pedidos de canal externo
+
+`VPROC-0040` conserva recepción técnica separada de aceptación y preparación humana.
+
+Los canales externos no reciben autoridad para forzar:
+
+- precio interno;
+- stock;
+- estado de preparación;
+- pago interno;
+- cierre de pedido.
+
+---
+
+#### 53. Venta con una línea inventariable
+
+El walkthrough valida que una venta elegible pueda producir un efecto NEXO correlacionado sin que PULSO descuente stock directamente.
+
+La venta y el movimiento físico permanecen hechos distintos.
+
+---
+
+#### 54. Venta con varias líneas
+
+Varias líneas conservan identidad y elegibilidad por línea.
+
+El prototipo no presenta “inventario aplicado” si una parte permanece bloqueada, pendiente o no aplicable.
+
+---
+
+#### 55. Línea no inventariable
+
+Una línea explícitamente no inventariable puede formar parte de una venta válida sin fabricar un movimiento NEXO.
+
+La ausencia del efecto es `NO_APLICA`, no un error de inventario.
+
+---
+
+#### 56. Producto bloqueado y stock insuficiente
+
+Cuando el producto está bloqueado o el stock es insuficiente:
+
+- PULSO no inventa disponibilidad;
+- NEXO conserva la decisión física;
+- la UI distingue bloqueo de fallo técnico;
+- no se materializa un efecto parcial oculto;
+- la salida tiene propietario y condición de recuperación.
+
+---
+
+#### 57. UOM, conversión, receta y componentes
+
+Una venta que requiere UOM, conversión o componentes utiliza definiciones versionadas.
+
+El prototipo no:
+
+- adivina factores;
+- aplana receta a un único SKU inexistente;
+- omite componentes requeridos;
+- transforma una presentación comercial en unidad física por inferencia.
+
+---
+
+#### 58. Split y partialidad de inventario
+
+Cuando un efecto se divide entre fuentes o existe partialidad permitida:
+
+- cada componente conserva identidad;
+- el estado agregado no oculta partes pendientes;
+- una parte confirmada no se vuelve a ejecutar;
+- una parte fallida no borra las confirmadas;
+- la conciliación puede reconstruir el conjunto.
+
+---
+
+#### 59. Retry y replay de inventario
+
+Retry, redelivery o replay conservan la identidad original del efecto aplicable.
+
+No se genera un segundo movimiento físico por cambiar worker, batch, entrega o intento técnico.
+
+---
+
+#### 60. Devolución sin restock implícito
+
+Una devolución comercial no prueba que el bien volvió físicamente a inventario utilizable.
+
+Cualquier restock exige decisión física propia de NEXO y condición/ubicación demostrables.
+
+---
+
+#### 61. Receipt NEXO
+
+Un receipt NEXO demuestra el resultado físico dentro de su dominio.
+
+No demuestra:
+
+- pago;
+- cierre de caja;
+- hecho económico NUMERA;
+- acumulación PASS;
+- entrega al cliente.
+
+---
+
+#### 62. Frontera NUMERA
+
+La validación conserva:
+
+```text
+VENTA
+!=
+PAGO
+!=
+CAJA
+!=
+DOCUMENTO FISCAL
+!=
+HECHO ECONOMICO
+!=
+ASIENTO CONTABLE
+```
+
+PULSO no fabrica dimensiones financieras para “completar” el prototipo.
+
+---
+
+#### 63. Resultado NUMERA independiente
+
+Éxito o fallo de NEXO y PASS no prueba resultado NUMERA.
+
+Un estado económico pendiente debe permanecer visible como tal sin reescribir la venta original.
+
+---
+
+#### 64. Venta anónima sin PASS
+
+Cuando el contrato comercial lo permite, una venta sin cuenta PASS identificable debe continuar normalmente y producir cero acumulación automática.
+
+La falta de fidelización no invalida la venta.
+
+---
+
+#### 65. Cliente identificado sin acumulación aplicable
+
+Identificar cliente no garantiza puntos.
+
+PASS puede resolver:
+
+- cuenta no elegible;
+- regla no aplicable;
+- base insuficiente;
+- condición bloqueante;
+- resultado `NO_APLICA`.
+
+La UI no transforma estas decisiones en un saldo local.
+
+---
+
+#### 66. Acumulación elegible
+
+Una acumulación elegible debe provenir de PASS y conservar:
+
+- cliente/cuenta inequívocos;
+- venta causal;
+- regla/version;
+- base demostrable;
+- efecto idempotente;
+- movimiento de ledger;
+- saldo derivado;
+- resultado durable.
+
+---
+
+#### 67. Cuenta ambigua o base bloqueada
+
+Si la cuenta es ambigua o falta un dato requerido para la regla:
+
+- no se acreditan puntos por aproximación;
+- no se selecciona cuenta por correo/teléfono/nombre;
+- no se inventa cero para un componente desconocido;
+- se conserva estado bloqueado/reconciliable.
+
+---
+
+#### 68. Retry de acumulación
+
+Reintentar la misma acumulación recupera el resultado previo cuando ya fue aplicada.
+
+Cambiar la regla activa hoy no habilita una segunda acumulación para la misma venta histórica.
+
+---
+
+#### 69. Redención válida
+
+Una redención válida requiere que PASS pueda demostrar, según corresponda:
+
+- ticket/intención existente;
+- cliente correcto;
+- recompensa correcta;
+- sede/territorio compatible;
+- vigencia;
+- estado consumible;
+- ledger/saldo coherentes;
+- actor autorizado;
+- no utilización previa.
+
+Solo entonces la UI puede mostrar consumo confirmado.
+
+---
+
+#### 70. Redención usada, cancelada, vencida o inválida
+
+Estados no consumibles no generan otro efecto.
+
+El prototipo debe explicar el resultado sin recrear ticket, debitar otra vez ni marcarlo como pendiente desde cliente.
+
+---
+
+#### 71. Concurrencia de redención
+
+Dos cajas, pestañas o dispositivos que intenten consumir la misma redención deben converger en un único consumo durable o en el mismo resultado idempotente.
+
+No existen dos ganadores empresariales.
+
+---
+
+#### 72. Refund y compensación de loyalty
+
+Un refund monetario y una compensación de puntos son efectos diferentes.
+
+La compensación PASS:
+
+- referencia el movimiento original;
+- usa ledger append-only;
+- no actualiza saldo directamente;
+- no recrea venta o cliente;
+- no se dispara por timeout sin efecto confirmado.
+
+---
+
+#### 73. Independencia NEXO / NUMERA / PASS
+
+El prototipo debe poder representar resultados divergentes temporalmente:
+
+```text
+NEXO = CONFIRMADO
+NUMERA = PENDIENTE
+PASS = NO_APLICA
+```
+
+sin colapsarlos en un único “venta completada” técnico.
+
+---
+
+#### 74. Privacidad y limpieza entre actores
+
+Al cambiar actor o cliente:
+
+- se eliminan proyecciones no necesarias;
+- no queda saldo PASS del cliente anterior;
+- no queda PIN laboral anterior;
+- no queda borrador sensible reutilizable por defecto;
+- historial y datos de otra sede no aparecen por caché local;
+- soporte recibe evidencia mínima necesaria.
+
+---
+
+#### 75. Periféricos y fallback
+
+Datáfono, impresora, escáner, cámara y señalización son capacidades, no autoridad.
+
+La validación documental exige:
+
+- estado del periférico visible cuando sea material;
+- fallback controlado;
+- reintento sin duplicación;
+- separación entre imprimir y confirmar el hecho;
+- ausencia de dependencia de un modelo físico concreto.
+
+---
+
+#### 76. Soporte sin técnico permanente
+
+Los cinco puntos deben ser operables por el personal previsto sin técnico o supervisor tecnológico permanente.
+
+La interfaz debe resolver primer nivel mediante:
+
+- mensaje claro;
+- siguiente acción segura;
+- recuperación o bloqueo explícito;
+- evidencia para soporte;
+- escalamiento dirigido solo cuando corresponda.
+
+---
+
+#### 77. Evidencia AS-IS de vento-pulso
+
+El runtime actual observado conserva superficies físicas parciales, entre ellas:
+
+```text
+/
+/no-access
+/orders
+/sales-imports
+/salon
+/scanner
+```
+
+Existen piezas para salón, pedidos y scanner, pero no una materialización completa de todas las identidades `VSCREEN-0080..0091` ni de los cinco puntos objetivo.
+
+La existencia de estas piezas se registra como evidencia AS-IS, no como aprobación del diseño final.
+
+---
+
+#### 78. Brechas AS-IS relevantes
+
+| Brecha | Consecuencia | Propietario de salida |
+| --- | --- | --- |
+| superficies canónicas no materializadas de forma completa | no existe prototipo runtime íntegro para certificar | `PULSO-UX-021` + packages PULSO |
+| `/salon` y `/orders` son parciales frente al contrato objetivo | cobertura funcional incompleta | `PULSO-UX-020/021` |
+| scanner concentra modos de identidad/loyalty | riesgo de estado residual o autoridad broad | `PULSO-UX-020/021` + contratos PASS/PULSO |
+| controles táctiles AS-IS no son uniformes | ergonomía no demostrada | `PULSO-UX-021` + `UX-QA-027` |
+| cinco estaciones físicas no están certificadas aquí | no existe evidencia humana/ambiental final | `UX-QA-027` |
+| permisos atómicos faltantes en varias capacidades | acciones deben seguir fail-closed | tareas AUTH/PULSO propietarias + packages |
+
+No se crea una tarea nueva para ninguno de estos hallazgos.
+
+---
+
+#### 79. Matriz consolidada de validación por punto
+
+| Dimensión | Caja | Salón | Barra | Cocina | Mostrador |
+| --- | --- | --- | --- | --- | --- |
+| actor/contexto visible | requerido | requerido | requerido | requerido | requerido |
+| cambio de actor | requerido | requerido | requerido | requerido | requerido |
+| acción primaria única | requerido | requerido | requerido | requerido | requerido |
+| touch 48 px preferido | requerido | requerido | requerido | requerido | requerido |
+| guantes/humedad | condicional | condicional | prioritario | prioritario | condicional |
+| teclado/foco | condicional | condicional | secundario | secundario | condicional |
+| scanner | cliente/loyalty cuando aplica | cliente cuando aplica | condicional | condicional | pedidos/cliente cuando aplica |
+| offline/unknown | requerido | requerido | requerido | requerido | requerido |
+| pago | principal cuando autorizado | handoff | no por estación | no por estación | handoff cuando autorizado |
+| preparación | seguimiento | seguimiento | principal | principal | seguimiento/handoff |
+| caja | principal | no heredada | no heredada | no heredada | no heredada |
+| PASS | handoff autorizado | handoff autorizado | no implícito | no implícito | handoff autorizado |
+
+`requerido` describe el escenario que la futura implementación debe soportar; no significa que el runtime AS-IS ya lo cumpla.
+
+---
+
+#### 80. Matriz de resultados adversariales
+
+| Condición | Resultado esperado del prototipo |
+| --- | --- |
+| actor ausente en shared device | bloquear acción actor-bound |
+| actor expira antes del commit | revalidar/bloquear |
+| cambio A→B | limpiar estado y recalcular autoridad |
+| doble tap | misma intención; no duplicar efecto |
+| timeout post-commit posible | resultado desconocido + conciliación |
+| Realtime cambia estado | revalidar y evitar acción sobre versión vieja |
+| stock insuficiente | decisión física NEXO; no inventar disponibilidad |
+| pago electrónico incierto | consulta por referencia; no recaptura ciega |
+| cuenta PASS ambigua | bloquear loyalty; venta puede continuar si aplica |
+| redención ya usada | recuperar/rechazar sin segundo consumo |
+| diferencia de caja | tratamiento explícito; no cierre silencioso |
+| refund con puntos previos | efectos monetario y loyalty independientes |
+
+---
+
+#### 81. Taxonomía de estado de validación
+
+Para esta tarea se usan únicamente estos significados documentales:
+
+| Estado | Significado |
+| --- | --- |
+| `VALIDATED_DOCUMENTALLY` | contrato y walkthrough son coherentes con fuentes aprobadas |
+| `CARRYOVER_TO_PILOT` | requiere evidencia humana, ambiental o de hardware posterior |
+| `BLOCKED_UNTIL_IMPLEMENTED` | el runtime no materializa todavía la capacidad necesaria |
+| `FAIL_CLOSED_BY_CONTRACT` | el escenario debe bloquearse mientras falta autoridad o precondición |
+
+Estos estados no reemplazan estados runtime de procesos o integraciones.
+
+---
+
+#### 82. Resultado por los cinco puntos
+
+| Punto | Resultado documental | Carryover principal |
+| --- | --- | --- |
+| caja | `VALIDATED_DOCUMENTALLY` | flujo físico de pago/caja, periféricos y piloto `UX-QA-027` |
+| salón | `VALIDATED_DOCUMENTALLY` | ergonomía móvil, concurrencia de mesas y piloto `UX-QA-027` |
+| barra | `VALIDATED_DOCUMENTALLY` | guantes/humedad, cola física, señalización y piloto `UX-QA-027` |
+| cocina | `VALIDATED_DOCUMENTALLY` | legibilidad, calor/humedad, alcance y piloto `UX-QA-027` |
+| mostrador | `VALIDATED_DOCUMENTALLY` | handoff, densidad operativa, pago autorizado y piloto `UX-QA-027` |
+
+El resultado agregado permanece `PASS_WITH_CARRYOVER`.
+
+---
+
+#### 83. Criterios de fallo documental
+
+La tarea habría fallado si se hubiera encontrado cualquiera de estas contradicciones sin propietario:
+
+- una estación que concediera autoridad;
+- dos fuentes de verdad para el mismo efecto;
+- un flujo que obligara a duplicar venta/pago/inventario/loyalty;
+- una pantalla que fusionara hechos incompatibles;
+- una acción sin estado recuperable ante timeout;
+- un cambio de actor que reatribuyera historia;
+- un caso crítico sin owner de implementación o prueba;
+- una necesidad de crear un TREQ nuevo no registrada.
+
+No se observó una contradicción documental de esas características en la base revisada.
+
+---
+
+#### 84. Relación con UX-STATION-008
+
+`UX-STATION-008` ya aprobó sustitución de evidencia inmediata y `PASS_WITH_CARRYOVER`.
+
+PULSO-UX-019 aplica esa regla al dominio PULSO:
+
+```text
+AHORA
+→ EVIDENCIA INTERNA
+→ MATRIZ CANONICA
+→ WALKTHROUGH ADVERSARIAL
+→ EVIDENCIA AS-IS
+
+DESPUES
+→ PILOTO CON TRABAJADORES
+```
+
+No revierte ni amplía el alcance de `UX-STATION-008`.
+
+---
+
+#### 85. Relación con UX-STATION-009
+
+`UX-STATION-009` aprobó la matriz como:
+
+```text
+CANONICAL_BASELINE_WITH_PILOT_CARRYOVER
+```
+
+PULSO-UX-019 consume esa línea base para los procesos PULSO y no redefine arquetipos, patrones de interacción o capacidades periféricas.
+
+---
+
+#### 86. Carryover a UX-QA-027
+
+`UX-QA-027 — Probar PULSO por punto operativo` conserva la certificación posterior de experiencia.
+
+Debe recibir, como mínimo, los cinco puntos de esta tarea y los escenarios críticos aquí consolidados, ejecutados sobre implementación materializada y ambiente representativo.
+
+Hasta ese momento:
+
+```text
+PULSO-UX-019 PASS
+!=
+PULSO OPERATIVO CERTIFICADO
+```
+
+---
+
+#### 87. Frontera con PULSO-UX-020
+
+`PULSO-UX-020` es propietaria de auditar el prototipo POS histórico de `vento-platform` y decidir pieza por pieza:
+
+- reutilizable;
+- adaptable;
+- descartable.
+
+019 entrega criterios y escenarios de validación, pero no clasifica el inventario histórico.
+
+---
+
+#### 88. Frontera con PULSO-UX-021
+
+`PULSO-UX-021` conserva la arquitectura funcional/técnica objetivo.
+
+Debe materializar una solución compatible con las decisiones de 019 sin tratar como contrato obligatorio:
+
+- rutas actuales;
+- modales históricos;
+- tablas legacy;
+- permisos broad;
+- helpers existentes;
+- composición visual AS-IS.
+
+---
+
+#### 89. Hallazgos diferidos con propietario
+
+| Hallazgo | Bloquea esta documentación | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no hay piloto formal de los cinco puntos | no | `UX-QA-027` | pruebas representativas ejecutadas y defectos críticos resueltos |
+| runtime no materializa todo `VSCREEN-0080..0091` | no | `PULSO-UX-021` + packages | arquitectura objetivo implementada y validada |
+| prototipo histórico no está clasificado pieza a pieza | no | `PULSO-UX-020` | inventario completo con decisión reutilizar/adaptar/descartar |
+| controles táctiles físicos no están certificados | no | `UX-QA-027` | evidencia de estación real representativa |
+| autoridad exacta falta para ciertas acciones | sí para ejecutar esas acciones, no para documentar | AUTH/PULSO propietarios | PermissionKeys/grants/enforcement publicados y probados |
+| periféricos reales no están certificados | no | packages + `UX-QA-027` | hardware/capacidad desplegados y probados |
+
+No queda un pendiente narrativo sin propietario y condición de salida.
+
+---
+
+#### 90. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea consolida y valida documentalmente obligaciones ya registradas para experiencia PULSO E2E, pagos/caja, servicio, pedidos, acciones sensibles, actor efectivo, territorio, accesibilidad, estación, offline, idempotencia, inventario, loyalty, efectos económicos, compensación y certificación posterior; no introduce una conducta material nueva.
+
+---
+
+#### 91. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-PULSO-001` para demostrar el ciclo POS E2E antes de declararlo operativo;
+- `TREQ-PULSO-002` para paridad y retiro seguro del tablero legacy;
+- `TREQ-PULSO-004` para mutaciones de pedido mediante acciones nombradas y revalidación;
+- `TREQ-PULSO-005` para separar pedido, preparación, cumplimiento, pago, inventario y fidelización y gobernar comandas por estación/dispositivo;
+- `TREQ-PULSO-006` para pagos, caja, diferencias, anulaciones, devoluciones, refunds y cierre auditable;
+- `TREQ-PULSO-007` para entrega, novedad, devolución y reintentos sin duplicación;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso y territorio fail-closed;
+- `TREQ-PULSO-018` para aislamiento de salón por sede, actor, estado y acción;
+- `TREQ-PULSO-024` y `TREQ-PULSO-026` para impedir que existencia de ruta o `pulso.pos.main` prueben autorización/completitud;
+- cobertura UX vigente de interacción táctil, foco, accesibilidad, estación compartida, offline y recuperación;
+- cobertura AUTH vigente de actor efectivo, contexto, reautorización y auditoría;
+- `TREQ-PASS-008`, `TREQ-PASS-010`, `TREQ-PASS-022`, `TREQ-PASS-025`, `TREQ-PASS-027`, `TREQ-PASS-029` y `TREQ-PASS-032` para acumulación/redención server-side, ledger, actor y resultado visible;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-151`, `TREQ-INTEGRATION-160`, `TREQ-INTEGRATION-161`, `TREQ-INTEGRATION-188` y `TREQ-INTEGRATION-220` para idempotencia, retry crítico, resultados terminales, compensación y auditoría durable;
+- `UX-QA-027` como tarea posterior de prueba PULSO por punto operativo.
+
+Esta enumeración es trazabilidad reutilizada y no una actualización 04A.
+
+---
+
+#### 92. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación real al plan, formato, quality, delivery, build y tests corresponde a la batería documental sobre el checkout actualizado. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores del repositorio local del usuario ni pruebas de navegador, accesibilidad o dispositivos. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad PULSO, topología `DEFINE_ONCE`, owner PULSO, `UX-STATION-008/009`, catálogo de `VSCREEN`, bindings de procesos, 04A relevante, roles/estaciones y handoffs 013..018; además se contrastó el AS-IS vigente conocido de `vento-pulso` como evidencia no autoritativa. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, pagos, caja, mesas, preparación, redenciones, inventario, hechos económicos ni sesiones con trabajadores reales. |
+| FÍSICA | NOT_APPLICABLE | PULSO-UX-019 es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la prueba física/productiva pertenece a implementación posterior y `UX-QA-027`. |
+
+---
+
+#### 93. Decisiones, aceptación, límites y handoff inmediato a PULSO-UX-020
+
+Decisiones congeladas:
+
+1. resultado documental `PASS_WITH_CARRYOVER`;
+2. cinco puntos obligatorios: caja, salón, barra, cocina y mostrador;
+3. caja/salón/mostrador se apoyan principalmente en `SERVICE_CHECKOUT` y barra/cocina en `KITCHEN_PREP`, con handoffs según proceso;
+4. estación, rol y ubicación nunca conceden autoridad;
+5. actor efectivo y cambio A→B son parte del prototipo;
+6. 48 px permanece como piso táctil preferido para acciones recurrentes nuevas;
+7. double tap, retry, timeout y Realtime deben conservar seguridad e idempotencia;
+8. NEXO, NUMERA y PASS mantienen efectos independientes;
+9. 019 no afirma sesiones formales con trabajadores ni certificación productiva;
+10. `UX-QA-027` conserva validación humana/física posterior;
+11. `PULSO-UX-020` conserva la clasificación del prototipo histórico;
+12. `PULSO-UX-021` conserva la arquitectura objetivo.
+
+Criterios de aceptación documental:
+
+- [ ] los cinco puntos están cubiertos sin convertir estación en permiso;
+- [ ] se conserva la matriz `SERVICE_CHECKOUT` / `KITCHEN_PREP` aplicable;
+- [ ] caja cubre apertura, venta, cobro, cierre y acciones sensibles como hechos separados;
+- [ ] salón conserva mesa, pedido, preparación, cuenta y cobro separados;
+- [ ] barra y cocina reciben trabajo gobernado sin autoridad comercial implícita;
+- [ ] mostrador conserva venta, pedidos externos, handoff y cobro separados;
+- [ ] actor efectivo, cambio A→B y limpieza están validados documentalmente;
+- [ ] se incluyen touch, teclado, foco, lector de pantalla, orientación y scanner;
+- [ ] double tap, Realtime, offline y unknown tienen salida segura;
+- [ ] se recorren escenarios de pago simple, parcial, combinado, efectivo y electrónico;
+- [ ] cancelación, reverso, devolución y refund permanecen distintos;
+- [ ] los escenarios NEXO de stock/UOM/receta/split/partialidad/retry están representados;
+- [ ] NUMERA permanece efecto económico independiente;
+- [ ] PASS conserva cuenta, regla, ledger, saldo y redención;
+- [ ] el AS-IS no se eleva a arquitectura objetivo;
+- [ ] todo carryover tiene propietario;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecuta trabajo físico.
+
+Límites:
+
+Esta tarea no:
+
+- ejecuta piloto con trabajadores;
+- certifica producción;
+- implementa o modifica pantallas;
+- cambia rutas o componentes;
+- clasifica piezas históricas de `vento-platform`;
+- diseña la arquitectura técnica final;
+- crea PermissionKeys o grants;
+- cambia roles, matrices o dispositivos;
+- crea estaciones físicas;
+- compra o configura hardware;
+- procesa ventas, pagos, caja o pedidos reales;
+- procesa movimientos NEXO;
+- registra hechos NUMERA;
+- acumula o redime puntos;
+- modifica Supabase, RLS, RPC, tablas, datos o migraciones;
+- modifica el Registro 04A;
+- crea instancia física propia;
+- desarrolla `PULSO-UX-020`.
+
+Handoff inmediato a `PULSO-UX-020`:
+
+```text
+PROTOTIPO CANONICO PULSO = DOCUMENTALMENTE COHERENTE CON CARRYOVER
+CINCO PUNTOS OPERATIVOS = MATRIZ DE VALIDACION CERRADA
+AS-IS RUNTIME != CONTRATO OBJETIVO
+ESTACION / ROL / UBICACION != AUTORIDAD
+ACTOR REAL + CONTEXTO + IDEMPOTENCIA + RECUPERACION = INVARIANTES
+PIEZAS HISTORICAS AUN NO ESTAN CLASIFICADAS
+UX-QA-027 CONSERVA PILOTO REAL
+```
+
+`PULSO-UX-020` deberá usar estas decisiones para clasificar cada pieza histórica sin inferir reutilización por mera existencia.
+
+---
+
+#### 94. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-018 — Conectar venta con PASS`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable`
 ### [ ] PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
 ### [ ] PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico
