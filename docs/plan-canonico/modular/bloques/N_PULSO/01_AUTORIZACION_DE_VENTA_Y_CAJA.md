@@ -8178,7 +8178,1454 @@ Ninguna de estas materializaciones se ejecuta aquí.
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-007 — Definir permisos de supervisor`
-### [ ] PULSO-AUTH-007 — Definir permisos de supervisor
+### ✅ PULSO-AUTH-007 — Definir permisos de supervisor
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-006 — Definir permisos de cajero
+**Tarea siguiente:** PULSO-AUTH-008 — Definir permisos de cierre y anulación
+**Tipo de tarea:** definición documental del contrato de autorización del perfil supervisor de PULSO, reconciliando el rol base `supervisor` con el carril operativo `gerencia_operativa`, definiendo capacidades atómicas de consulta y coordinación sobre pedidos, caja, pagos, salón, conversaciones, facturación visible, entregas e importaciones, sin heredar autoridad de `cajero_satelite`, sin reutilizar `pulso.pos.main`, sin convertir supervisión en ejecución física ni absorber cierre, cancelación, refund, loyalty, configuración administrativa o materialización; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, catálogo runtime de permisos, roles, matrices runtime, RLS, RPC, funciones, Server Actions, páginas, datos, Supabase, migraciones, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada qué capacidades PULSO corresponden al perfil supervisor durante la coordinación operativa de una sede, sin convertir el rol base `supervisor`, el rol operativo `gerencia_operativa`, la jerarquía administrativa, `pulso.access` o la visibilidad de una pantalla en autorización implícita para vender, cobrar, cerrar caja, cancelar, reembolsar, ejecutar loyalty, mutar importaciones o sustituir a los actores físicos responsables.
+
+La tarea resuelve:
+
+- qué identidad contractual representa supervisión dentro de PULSO;
+- cómo se separan el rol base `supervisor` y el rol operativo `gerencia_operativa`;
+- qué permisos PULSO recibe el carril operativo de supervisión;
+- qué capacidades son únicamente lectura o coordinación;
+- qué capacidades ordinarias de cajero no se heredan;
+- qué acciones observadas en pedidos, salón, chat, delivery e importaciones permanecen denegadas;
+- qué parte de `pulso.delivery.deliveries.override` puede aportar `gerencia_operativa` sin autorizar el override final;
+- qué territorio, recurso y estado limitan cada concesión;
+- qué hallazgos se entregan a `PULSO-AUTH-008..016`.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-006
+
+`PULSO-AUTH-006` entrega a esta tarea:
+
+- un conjunto ordinario de cajero cerrado;
+- `pulso.pos.main` declarado `DECOMPOSE_REQUIRED`, sin alias directo ni expansión automática;
+- once capacidades atómicas del frente POS más `pulso.access` y el override de entrega existente;
+- nueve concesiones ordinarias para `cajero_satelite` contando `pulso.access`;
+- cancelación, refund y cierre reservados a `PULSO-AUTH-008`;
+- importaciones, salón, preparación, despacho, chat administrativo y facturación fuera del contrato ordinario de cajero;
+- la prohibición de construir supervisor como `cajero_satelite + todo`.
+
+Regla heredada:
+
+```text
+SUPERVISOR
+!=
+CAJERO + WILDCARD
+```
+
+---
+
+#### 3. Handoffs acumulados de PULSO-AUTH-002..005
+
+Los inventarios aprobados entregan las siguientes fronteras:
+
+- `/orders` contiene lectura, transiciones, despacho, conversaciones, facturación visible e historial como capacidades diferentes;
+- `/salon` contiene zonas, mesas, sesiones y llamados con lecturas y mutaciones distintas;
+- scanner, identificación, acumulación y redención son decisiones de autoridad independientes;
+- `/sales-imports` separa visibilidad, mappings, ingestión y publicación;
+- `site_id` es contexto y nunca autoridad;
+- `pos.main` es evidencia AS-IS y no diseño final;
+- toda mutación sensible necesita permiso exacto, actor, territorio, recurso, estado y contrato server-side.
+
+Esta tarea consume esas fronteras sin fusionarlas bajo un permiso supervisor genérico.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el contrato se define una sola vez;
+- no existe instancia física propia;
+- no se siembran permisos;
+- no se crea el rol base `supervisor` en runtime;
+- no se modifica `gerencia_operativa` en Supabase;
+- no se cambia `operational_role_permissions`;
+- no se cambia `role_permissions`;
+- no se retira `pulso.pos.main` físicamente;
+- no se alteran guards, RPC, RLS ni Server Actions;
+- no se ejecutan acciones reales de PULSO.
+
+---
+
+#### 5. Dos identidades que deben permanecer separadas
+
+La palabra supervisor aparece en dos planos diferentes:
+
+```text
+ROL BASE
+supervisor
+
+ROL OPERATIVO DE COORDINACIÓN
+gerencia_operativa
+```
+
+No son equivalentes.
+
+```text
+supervisor
+!=
+gerencia_operativa
+```
+
+El rol base representa autoridad administrativa local limitada y permanente mientras sus asignaciones sean válidas.
+
+`gerencia_operativa` representa coordinación temporal de la jornada dentro de un turno y territorio operativos válidos.
+
+---
+
+#### 6. Regla del rol base `supervisor`
+
+La matriz aprobada `AUTH-RBAC-004` establece que el rol base `supervisor`:
+
+- no recibe `pulso.access`;
+- no recibe por defecto el componente base de `pulso.delivery.deliveries.override`;
+- no obtiene capacidades `OPERATIONAL_ONLY`;
+- puede recibir únicamente capacidades administrativas compatibles con su matriz y alcance territorial.
+
+Esta tarea no modifica esa decisión.
+
+Por tanto:
+
+```text
+employees.role = supervisor
+!=
+AUTORIZACIÓN OPERATIVA PULSO
+```
+
+---
+
+#### 7. Regla del rol operativo `gerencia_operativa`
+
+La matriz aprobada `AUTH-RBAC-019` establece que `gerencia_operativa`:
+
+- coordina temporalmente la operación;
+- recibe `pulso.access` en el carril operativo;
+- aporta el componente operativo de `pulso.delivery.deliveries.override`;
+- no recibe por inferencia ventas, cobros, caja, pedidos ni cierres;
+- requiere permisos atómicos nuevos para supervisar PULSO.
+
+Esta tarea cierra esa brecha para el perfil supervisor PULSO.
+
+---
+
+#### 8. Perfil contractual `PULSO_SUPERVISOR`
+
+Para esta tarea, el perfil supervisor PULSO se materializa conceptualmente así:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ EMPLEADO ACTIVO
++ TURNO PUBLICADO Y VIGENTE
++ ROL OPERATIVO EFECTIVO gerencia_operativa
++ SEDE ACTIVA AUTORIZADA
++ ÁREA GENERAL O ÁREA COMPATIBLE
++ CHECK-IN CUANDO EL PERMISO LO EXIJA
++ PERMISO ATÓMICO EXPLÍCITO
++ RECURSO RELACIONADO CON LA JORNADA
++ AUSENCIA DE DENEGACIÓN SUPERIOR
+= SUPERVISIÓN PULSO POSIBLE
+```
+
+El rol base del trabajador puede ser `supervisor`, `gerente`, `gerente_general`, `propietario` u otro rol compatible con la asignación de `gerencia_operativa`; ese rol base no sustituye el carril operativo.
+
+---
+
+#### 9. No existe herencia entre carriles
+
+Queda prohibido:
+
+```text
+supervisor base
+→ hereda gerencia_operativa
+```
+
+También queda prohibido:
+
+```text
+gerencia_operativa
+→ hereda todos los permisos base de supervisor
+```
+
+Cada carril conserva:
+
+- concesiones;
+- modalidad;
+- alcance;
+- vigencia;
+- denegaciones;
+- evidencia;
+- auditoría.
+
+---
+
+#### 10. No existe herencia desde cajero
+
+`gerencia_operativa` no recibe automáticamente las capacidades ordinarias concedidas a `cajero_satelite`.
+
+Por tanto:
+
+```text
+cajero_satelite puede cobrar
+!=
+gerencia_operativa puede cobrar
+```
+
+```text
+cajero_satelite puede abrir caja
+!=
+gerencia_operativa puede abrir caja
+```
+
+```text
+cajero_satelite puede ejecutar loyalty
+!=
+gerencia_operativa puede ejecutar loyalty
+```
+
+La matriz de esta tarea enumera cada decisión explícitamente.
+
+---
+
+#### 11. `pulso.access` continúa siendo entrada, no autoridad interna
+
+Se conserva:
+
+```text
+pulso.access
+```
+
+como capacidad para entrar a PULSO durante un turno válido.
+
+No concede:
+
+- lectura de pedidos;
+- lectura de caja;
+- lectura de pagos;
+- salón;
+- conversaciones;
+- facturación;
+- delivery;
+- importaciones;
+- venta;
+- cobro;
+- cierre;
+- cancelación;
+- refund;
+- loyalty.
+
+---
+
+#### 12. `pulso.pos.main` continúa retirado del diseño objetivo
+
+Esta tarea conserva la decisión:
+
+```text
+pulso.pos.main
+=
+LEGACY_BROAD_PERMISSION
+DECOMPOSE_REQUIRED
+NO_DIRECT_CANONICAL_ALIAS
+NO_AUTOMATIC_GRANT_EXPANSION
+```
+
+No se crea un `pulso.supervisor.main` ni otro permiso broad equivalente.
+
+---
+
+#### 13. Convención de permisos aplicada
+
+Toda capacidad funcional nueva utiliza:
+
+```text
+app.module.resource.action
+```
+
+Módulos utilizados:
+
+```text
+sales
+payments
+cash
+delivery
+```
+
+Acciones utilizadas:
+
+```text
+view
+assign
+```
+
+No se introduce una acción nueva en el vocabulario contractual.
+
+---
+
+#### 14. Permisos heredados de PULSO-AUTH-006
+
+Se reutilizan las trece identidades ya evaluadas en la tarea anterior:
+
+```text
+pulso.access
+pulso.sales.orders.view
+pulso.sales.orders.create
+pulso.sales.orders.update
+pulso.sales.orders.cancel
+pulso.payments.transactions.collect
+pulso.payments.transactions.refund
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+pulso.loyalty.customers.identify
+pulso.loyalty.points.accumulate
+pulso.loyalty.points.redeem
+pulso.delivery.deliveries.override
+```
+
+Esta tarea no renombra ni cambia su significado.
+
+---
+
+#### 15. Capacidades nuevas de supervisión
+
+Se definen once identidades adicionales para separar lectura y coordinación supervisoras:
+
+```text
+pulso.cash.sessions.view
+pulso.payments.transactions.view
+pulso.sales.table_sessions.view
+pulso.sales.service_calls.view
+pulso.sales.service_calls.assign
+pulso.sales.conversations.view
+pulso.sales.billing_requests.view
+pulso.delivery.deliveries.view
+pulso.delivery.deliveries.assign
+pulso.sales.import_batches.view
+pulso.sales.import_mappings.view
+```
+
+Estas claves no existen todavía como afirmación de runtime. Son contrato documental objetivo.
+
+---
+
+#### 16. Cardinalidad del contrato evaluado
+
+El universo evaluado para el perfil supervisor es:
+
+```text
+13 permisos heredados de PULSO-AUTH-006
++ 11 capacidades nuevas de supervisión
+= 24 identidades
+```
+
+Resultado:
+
+```text
+PULSO_SUPERVISOR_PERMISSIONS_EVALUATED = 24
+SUPERVISOR_DIRECT_GRANTED = 13
+SUPERVISOR_OPERATIONAL_COMPONENT_ONLY = 1
+SUPERVISOR_NOT_GRANTED = 10
+DUPLICATES = 0
+UNRESOLVED_SUPERVISOR_DECISIONS = 0
+```
+
+---
+
+#### 17. Matriz canónica de supervisor PULSO
+
+| Permiso | Capacidad | Decisión `gerencia_operativa` | Modalidad / prerrequisito | Alcance máximo de esta matriz |
+| --- | --- | --- | --- | --- |
+| `pulso.access` | entrar a PULSO | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T` | entrada a PULSO dentro del turno; no concede recursos internos |
+| `pulso.sales.orders.view` | consultar pedidos de la sede coordinada | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | pedidos de la sede/jornada efectiva con proyección supervisora mínima |
+| `pulso.sales.orders.create` | crear pedido/venta | NO ASIGNAR | contrato de cajero/especialista | ninguna concesión por supervisión |
+| `pulso.sales.orders.update` | modificar pedido | NO ASIGNAR | contrato de cajero/especialista | ninguna concesión por supervisión |
+| `pulso.sales.orders.cancel` | cancelar pedido | NO ASIGNAR | reservada a `PULSO-AUTH-008` | ninguna concesión desde esta tarea |
+| `pulso.payments.transactions.collect` | cobrar pago | NO ASIGNAR | contrato de cajero | ninguna concesión por supervisión |
+| `pulso.payments.transactions.refund` | reembolsar pago | NO ASIGNAR | reservada a `PULSO-AUTH-008` | ninguna concesión desde esta tarea |
+| `pulso.cash.sessions.start` | abrir caja | NO ASIGNAR | contrato de cajero | ninguna concesión por supervisión |
+| `pulso.cash.sessions.close` | cerrar caja | NO ASIGNAR | reservada a `PULSO-AUTH-008` | ninguna concesión desde esta tarea |
+| `pulso.loyalty.customers.identify` | identificar cliente | NO ASIGNAR | contrato de cajero/flujo de cliente | ninguna concesión por supervisión |
+| `pulso.loyalty.points.accumulate` | acumular puntos | NO ASIGNAR | contrato de cajero + PASS | ninguna concesión por supervisión |
+| `pulso.loyalty.points.redeem` | redimir puntos | NO ASIGNAR | contrato de cajero + PASS | ninguna concesión por supervisión |
+| `pulso.delivery.deliveries.override` | confirmar entrega excepcionalmente | ASIGNAR SOLO COMPONENTE OPERATIVO | `BASE_AND_OPERATIONAL` / `N + T+C` | entrega exacta de la sede activa; sin componente base no existe autorización final |
+| `pulso.cash.sessions.view` | consultar estado de sesiones de caja | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | sesiones de caja de la sede/jornada efectivas, sin mutación |
+| `pulso.payments.transactions.view` | consultar pagos relacionados con operación local | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | transacciones de pedidos/sesiones de la sede con proyección mínima y referencias enmascaradas |
+| `pulso.sales.table_sessions.view` | consultar zonas, mesas y sesiones operativas | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | salón de la sede efectiva; configuración administrativa excluida |
+| `pulso.sales.service_calls.view` | consultar llamados de servicio | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | llamados de la sede efectiva y estado operativo visible |
+| `pulso.sales.service_calls.assign` | asignar responsable inicial de un llamado | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | llamado activo no resuelto de la sede efectiva; actor destino elegible |
+| `pulso.sales.conversations.view` | consultar conversaciones de pedidos | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | conversaciones de pedidos visibles de la sede; datos mínimos |
+| `pulso.sales.billing_requests.view` | consultar estado de solicitudes de facturación | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | solicitudes vinculadas a pedidos de la sede; sin emitir ni corregir documento fiscal |
+| `pulso.delivery.deliveries.view` | consultar cumplimiento y entregas | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | entregas relacionadas con pedidos de la sede y proyección mínima de cliente/tercero |
+| `pulso.delivery.deliveries.assign` | realizar asignación inicial de despacho/entrega | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | entrega no asignada y todavía no bajo custodia/tránsito; sin reasignación de emergencia |
+| `pulso.sales.import_batches.view` | consultar lotes de importación y su estado | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | lotes de la sede, métricas, errores y estado; sin publicar efecto |
+| `pulso.sales.import_mappings.view` | consultar mappings externos vigentes | ASIGNAR OPERATIVO | `OPERATIONAL_ONLY` / `T+C` | mappings aplicables a la sede para diagnóstico; sin modificación |
+
+---
+
+#### 18. Regla de entrada antes del check-in
+
+`pulso.access` conserva el prerrequisito:
+
+```text
+T
+```
+
+Esto permite abrir PULSO durante un turno vigente y mostrar el estado del contexto.
+
+Las capacidades internas de supervisión definidas aquí requieren:
+
+```text
+T+C
+```
+
+cuando el contrato operativo aplicable exige presencia activa.
+
+---
+
+#### 19. Alcance territorial del supervisor operativo
+
+Ninguna capacidad de esta matriz recibe alcance global.
+
+Regla común:
+
+```text
+EFFECTIVE_SCOPE
+=
+INTERSECCIÓN(
+  turno,
+  check-in aplicable,
+  gerencia_operativa,
+  sede activa,
+  área compatible,
+  recurso real,
+  concesión,
+  denegaciones
+)
+```
+
+La cobertura base multisede de una persona no amplía el territorio operativo del turno actual.
+
+---
+
+#### 20. `pulso.sales.orders.view`
+
+Autoriza al supervisor operativo a consultar pedidos necesarios para coordinar la jornada.
+
+Puede incluir:
+
+- identidad de pedido;
+- canal y modalidad;
+- líneas y estado;
+- preparación y fulfillment visibles;
+- estado de pago resumido;
+- despacho visible;
+- historial necesario para diagnóstico;
+- cliente mínimo cuando sea necesario.
+
+No autoriza ninguna mutación.
+
+---
+
+#### 21. `pulso.cash.sessions.view`
+
+Autoriza lectura del estado de caja necesario para supervisión local.
+
+Puede incluir:
+
+- sesión;
+- terminal;
+- actor de apertura;
+- estado;
+- fondo inicial cuando la política lo permita;
+- totales operativos necesarios;
+- pendientes;
+- diferencia visible cuando el contrato de cierre lo permita.
+
+No autoriza:
+
+- abrir;
+- cerrar;
+- reabrir;
+- aprobar diferencia;
+- corregir movimientos.
+
+---
+
+#### 22. `pulso.payments.transactions.view`
+
+Autoriza lectura de pagos relacionados con pedidos o sesiones dentro de la jornada supervisada.
+
+La proyección debe limitarse a:
+
+- monto;
+- moneda;
+- medio;
+- estado;
+- proveedor;
+- referencia enmascarada;
+- timestamps;
+- relación con pedido/sesión.
+
+No expone secretos, credenciales, tokens, datos completos de tarjeta ni información financiera ajena a la sede.
+
+---
+
+#### 23. `pulso.sales.table_sessions.view`
+
+Autoriza lectura operativa de:
+
+- zonas visibles;
+- mesas;
+- sesiones abiertas;
+- ocupación derivada;
+- relación mínima con pedidos/cuentas.
+
+No autoriza configuración de zona o mesa.
+
+Regla:
+
+```text
+SALON_VIEW
+!=
+SALON_CONFIGURATION
+```
+
+---
+
+#### 24. `pulso.sales.service_calls.view`
+
+Autoriza consultar llamados activos y su estado dentro de la sede operativa efectiva.
+
+La lectura puede incluir:
+
+- mesa;
+- sesión;
+- tipo;
+- prioridad;
+- estado;
+- actor creador cuando corresponda;
+- actor asignado cuando exista;
+- timestamps.
+
+No cambia el estado del llamado.
+
+---
+
+#### 25. `pulso.sales.service_calls.assign`
+
+Autoriza una acción de coordinación específica:
+
+```text
+ASIGNAR RESPONSABLE
+```
+
+Debe exigir:
+
+- llamado activo;
+- sede coincidente;
+- actor destino elegible y presente cuando corresponda;
+- control de versión/estado;
+- atribución del supervisor;
+- timestamp de servidor;
+- auditoría.
+
+No implica:
+
+- reconocer en nombre del actor;
+- resolver;
+- cancelar;
+- crear un llamado;
+- cambiar la mesa o sesión.
+
+---
+
+#### 26. Llamado: asignación, reconocimiento y resolución no son equivalentes
+
+Se conserva:
+
+```text
+assign
+!=
+acknowledge
+!=
+resolve
+!=
+cancel
+```
+
+Esta tarea concede únicamente `assign` al supervisor.
+
+Reconocimiento, resolución y cancelación permanecen denegados por defecto para `gerencia_operativa` mientras no exista una matriz explícita posterior que los asigne.
+
+---
+
+#### 27. `pulso.sales.conversations.view`
+
+Autoriza consultar conversaciones de pedidos visibles dentro de la sede supervisada.
+
+La lectura debe minimizar:
+
+- datos personales;
+- histórico innecesario;
+- tokens;
+- metadatos técnicos;
+- conversaciones de otras sedes.
+
+No autoriza:
+
+- enviar mensajes;
+- archivar;
+- restaurar;
+- archivar masivamente;
+- notificar.
+
+---
+
+#### 28. Mutaciones de conversación permanecen fuera
+
+Las operaciones observadas de:
+
+- persistir mensajes;
+- marcar lectura;
+- archivar/restaurar;
+- archivar masivamente;
+- invocar notificación;
+
+no se conceden desde esta tarea.
+
+La coexistencia actual de callers cliente/servidor debe reconciliarse antes de introducir una concesión supervisor de escritura.
+
+---
+
+#### 29. `pulso.sales.billing_requests.view`
+
+Autoriza consultar el estado visible de solicitudes de facturación vinculadas a pedidos de la sede.
+
+Puede exponer únicamente los campos necesarios para seguimiento operativo.
+
+No autoriza:
+
+- emitir factura;
+- cambiar número fiscal;
+- cambiar tercero;
+- corregir impuestos;
+- anular documento;
+- alterar proveedor fiscal.
+
+---
+
+#### 30. `pulso.delivery.deliveries.view`
+
+Autoriza supervisar el cumplimiento de pedidos de cliente y el estado de entregas de la sede.
+
+Puede incluir:
+
+- pedido;
+- modalidad;
+- asignación;
+- estado;
+- timestamps;
+- prueba mínima;
+- incidencia;
+- datos de destinatario estrictamente necesarios.
+
+No convierte al supervisor en conductor, domiciliario o receptor.
+
+---
+
+#### 31. `pulso.delivery.deliveries.assign`
+
+Autoriza únicamente la asignación inicial de una entrega todavía no bajo custodia o tránsito.
+
+Debe validar:
+
+- pedido y entrega elegibles;
+- sede;
+- estado previo;
+- actor/tercero destino elegible;
+- disponibilidad cuando exista contrato;
+- versión;
+- idempotencia;
+- auditoría.
+
+No autoriza reasignación de emergencia después de aceptar custodia, iniciar tránsito o registrar prueba de entrega.
+
+---
+
+#### 32. Reasignación de emergencia permanece denegada
+
+`AUTH-RBAC-019` registró expresamente que la reasignación operativa de emergencia no tiene todavía una capacidad atómica aprobada.
+
+Esta tarea no la inventa como parte de `deliveries.assign`.
+
+Regla:
+
+```text
+INITIAL_ASSIGNMENT
+!=
+EMERGENCY_REASSIGNMENT
+```
+
+La reasignación posterior requiere contrato propio de proceso, autoridad, vigencia y auditoría.
+
+---
+
+#### 33. Transiciones físicas de entrega permanecen fuera
+
+La supervisión no concede por inferencia:
+
+- iniciar tránsito;
+- marcar llegada;
+- registrar entrega;
+- aceptar recepción;
+- devolver;
+- cerrar entrega.
+
+Esas acciones pertenecen a actores operativos o excepciones específicas.
+
+---
+
+#### 34. `pulso.sales.import_batches.view`
+
+Autoriza consultar lotes de importación de la sede y su estado de reconciliación.
+
+Puede incluir:
+
+- identidad del lote;
+- hash de archivo;
+- estado;
+- conteos;
+- errores;
+- warnings;
+- actor importador;
+- timestamps;
+- estado de publicación;
+- resultado resumido.
+
+No autoriza ingestión ni publicación.
+
+---
+
+#### 35. `pulso.sales.import_mappings.view`
+
+Autoriza consultar mappings externos vigentes necesarios para diagnosticar un lote de la sede.
+
+No autoriza:
+
+- crear mapping;
+- cambiar mapping;
+- desactivar mapping;
+- alterar catálogo;
+- cambiar site_id;
+- mapear un ítem para publicar un efecto.
+
+La modificación de mappings pertenece a configuración administrativa y continúa en `PULSO-AUTH-014`.
+
+---
+
+#### 36. Mutaciones de importación permanecen fuera
+
+El supervisor no recibe por esta tarea autoridad para:
+
+```text
+saveMakosMapping
+importDailySales
+postDailySalesImport
+```
+
+Regla:
+
+```text
+IMPORT_STATUS_VIEW
+!=
+MAPPING_AUTHORITY
+!=
+IMPORT_AUTHORITY
+!=
+PUBLISH_AUTHORITY
+```
+
+La separación contractual continúa hacia `PULSO-AUTH-014/015/016` y los contratos de integración propietarios.
+
+---
+
+#### 37. `pulso.sales.orders.create` no se concede
+
+Crear pedidos o ventas corresponde al rol operativo de caja u otro actor especializado.
+
+`gerencia_operativa` no recibe `orders.create` por jerarquía, ausencia de cajero ni contingencia ordinaria.
+
+Si una persona supervisora debe cubrir caja, deberá asumir `cajero_satelite` o una excepción individual válida; no se expande esta matriz.
+
+---
+
+#### 38. `pulso.sales.orders.update` no se concede
+
+La capacidad ordinaria de actualización de pedido no se concede a supervisor porque mezcla campos y estados propios de la ejecución de venta.
+
+La supervisión puede observar y coordinar, pero una corrección específica debe tener una capacidad empresarial exacta.
+
+Regla:
+
+```text
+SUPERVISE
+!=
+MUTATE_ORDER_GENERICALLY
+```
+
+---
+
+#### 39. `pulso.sales.orders.cancel` no se concede
+
+Cancelación permanece reservada a:
+
+```text
+PULSO-AUTH-008
+```
+
+La jerarquía de supervisor no sustituye permiso, estado, motivo, confirmación, segregación ni auditoría.
+
+---
+
+#### 40. `pulso.payments.transactions.collect` no se concede
+
+Cobrar es ejecución operativa de caja.
+
+La supervisión puede consultar la transacción mediante `pulso.payments.transactions.view`, pero no cobrar en nombre del cajero.
+
+---
+
+#### 41. `pulso.payments.transactions.refund` no se concede
+
+Refund permanece reservado a `PULSO-AUTH-008`.
+
+No se deriva desde la capacidad de visualizar pagos ni desde responsabilidad administrativa local.
+
+---
+
+#### 42. `pulso.cash.sessions.start` no se concede
+
+Abrir caja pertenece al actor de caja responsable.
+
+El supervisor puede consultar el estado mediante `pulso.cash.sessions.view`.
+
+No puede abrir una sesión por ausencia del cajero sin asumir el rol operativo apropiado o una excepción válida.
+
+---
+
+#### 43. `pulso.cash.sessions.close` no se concede
+
+Cierre, arqueo, diferencia, aprobación, reapertura y corrección permanecen en `PULSO-AUTH-008`.
+
+La lectura supervisor de caja no autoriza el cierre.
+
+---
+
+#### 44. Loyalty operativo no se concede
+
+No se asignan a `gerencia_operativa`:
+
+```text
+pulso.loyalty.customers.identify
+pulso.loyalty.points.accumulate
+pulso.loyalty.points.redeem
+```
+
+Son capacidades del flujo de venta/cliente y no funciones generales de supervisión.
+
+El supervisor puede revisar efectos confirmados únicamente cuando otra proyección autorizada los exponga como parte del recurso supervisado, sin adquirir ownership de PASS.
+
+---
+
+#### 45. `pulso.delivery.deliveries.override`
+
+Se conserva la decisión aprobada de `AUTH-RBAC-019`:
+
+```text
+gerencia_operativa
+→ ASIGNAR COMPONENTE OPERATIVO
+```
+
+Pero:
+
+```text
+COMPONENTE OPERATIVO
+!=
+AUTORIZACIÓN FINAL
+```
+
+La autorización final exige además:
+
+- componente base compatible;
+- reautenticación;
+- motivo;
+- evidencia de entrega;
+- prevención de autoaprobación;
+- territorio coincidente;
+- auditoría reforzada.
+
+---
+
+#### 46. El rol base `supervisor` no completa el override por defecto
+
+`AUTH-RBAC-004` no concede el componente base de `pulso.delivery.deliveries.override` al rol base `supervisor`.
+
+Por tanto, una persona con:
+
+```text
+employees.role = supervisor
++
+operational_role = gerencia_operativa
+```
+
+continúa sin poder ejecutar el override final por defecto.
+
+Se requeriría una concesión base adicional válida o una excepción individual aprobada.
+
+---
+
+#### 47. Configuración administrativa permanece separada
+
+La supervisión no incluye modificar:
+
+- zonas;
+- mesas;
+- layout;
+- mappings de importación;
+- reglas de consumo;
+- catálogo;
+- canales;
+- dispositivos;
+- terminales;
+- permisos;
+- matrices;
+- RLS;
+- parámetros globales.
+
+Estas responsabilidades continúan en `PULSO-AUTH-014` y propietarios transversales.
+
+---
+
+#### 48. No existe alcance global operativo
+
+Aunque una persona tenga rol base `gerente_general` o `propietario`, el carril `gerencia_operativa` continúa limitado a su contexto operativo efectivo.
+
+Queda prohibido:
+
+```text
+BASE_GLOBAL
++
+gerencia_operativa
+→ PULSO_GLOBAL
+```
+
+La unión no amplía la sede del turno.
+
+---
+
+#### 49. Cobertura administrativa multisede no amplía la jornada
+
+Una persona con varias sedes administrativas asignadas puede supervisar administrativamente esas sedes conforme a sus permisos base.
+
+Pero dentro de PULSO operativo:
+
+```text
+ACTIVE_OPERATIONAL_SITE = 1 contexto resuelto
+```
+
+salvo un contrato posterior explícito de coordinación multisede.
+
+Esta tarea no crea supervisión operativa simultánea de varias sedes.
+
+---
+
+#### 50. Actor efectivo
+
+Toda acción de coordinación mutadora autorizada debe quedar atribuida al trabajador humano efectivo.
+
+En terminal compartida:
+
+```text
+PRINCIPAL TÉCNICO
+!=
+ACTOR HUMANO
+```
+
+`PULSO-AUTH-012` y `PULSO-AUTH-013` deben materializar esa separación.
+
+---
+
+#### 51. Dispositivo compartido no amplía autoridad
+
+Un dispositivo configurado como POS, terminal de gerencia o estación compartida puede restringir capacidades, pero nunca concederlas.
+
+```text
+ACTOR PERMISSION
+∩ DEVICE CAPABILITIES
+```
+
+Nunca:
+
+```text
+DEVICE CAPABILITY
+→ ACTOR PERMISSION
+```
+
+---
+
+#### 52. Server-side obligatorio
+
+Ocultar un botón o una ruta no satisface la autorización.
+
+Toda mutación futura de esta matriz debe verificar server-side:
+
+- permiso exacto;
+- actor efectivo;
+- rol operativo;
+- turno/check-in;
+- sede;
+- recurso;
+- estado actual;
+- columnas permitidas;
+- versión;
+- idempotencia;
+- denegaciones.
+
+---
+
+#### 53. RLS no sustituye permiso empresarial
+
+Una política RLS que permita por empleado, sede o `pos.main` no demuestra que la acción empresarial esté autorizada.
+
+La materialización posterior debe alinear:
+
+```text
+UI
+GUARD
+SERVER ACTION
+RPC
+RLS
+AUDITORÍA
+```
+
+con la misma PermissionKey.
+
+---
+
+#### 54. Estado runtime observado de `supervisor`
+
+En Supabase dev, el catálogo base observado no contiene actualmente:
+
+```text
+roles.code = supervisor
+```
+
+Sí existen:
+
+```text
+gerente
+gerente_general
+```
+
+La ausencia runtime del rol base `supervisor` no invalida la matriz documental `AUTH-RBAC-004`, pero confirma que esta tarea no puede tratarlo como actor físicamente materializado.
+
+---
+
+#### 55. Estado runtime observado de `gerencia_operativa`
+
+Supabase dev sí contiene:
+
+```text
+operational_roles.code = gerencia_operativa
+```
+
+activo.
+
+El dataset observado conserva permisos NEXO legacy y no demuestra todavía los permisos PULSO objetivo definidos por esta tarea.
+
+Por tanto:
+
+```text
+ROLE_EXISTS
+!=
+PULSO_SUPERVISOR_MATRIX_MATERIALIZED
+```
+
+---
+
+#### 56. Estado runtime observado de permisos PULSO
+
+El catálogo remoto de desarrollo conserva únicamente como claves PULSO físicas observadas:
+
+```text
+pulso.access
+pulso.delivery.override
+pulso.pos.main
+```
+
+Las capacidades atómicas documentadas en `PULSO-AUTH-006/007` no se declaran materializadas por su sola definición.
+
+La materialización pertenece a `PULSO-AUTH-015` y a las fundaciones AUTH propietarias.
+
+---
+
+#### 57. Regla de migración segura
+
+Queda prohibido migrar una asignación broad mediante:
+
+```text
+pulso.pos.main
+→ copiar todos los permisos de cajero
+→ copiar todos los permisos de supervisor
+```
+
+Cada grant nuevo debe provenir de una decisión explícita de matriz.
+
+En particular:
+
+```text
+cajero_satelite
+!=
+gerencia_operativa
+```
+
+Los dos datasets deben construirse por separado.
+
+---
+
+#### 58. Matriz AS-IS → capacidad supervisor objetivo
+
+| Evidencia AS-IS | Decisión objetivo |
+| --- | --- |
+| abrir PULSO | `pulso.access` |
+| leer pedidos | `pulso.sales.orders.view` |
+| observar estado de caja | `pulso.cash.sessions.view` |
+| observar pagos | `pulso.payments.transactions.view` |
+| observar salón/sesiones | `pulso.sales.table_sessions.view` |
+| observar llamados | `pulso.sales.service_calls.view` |
+| asignar responsable de llamado | `pulso.sales.service_calls.assign` |
+| observar conversaciones | `pulso.sales.conversations.view` |
+| observar solicitud de facturación | `pulso.sales.billing_requests.view` |
+| observar delivery | `pulso.delivery.deliveries.view` |
+| asignar delivery inicial | `pulso.delivery.deliveries.assign` |
+| observar lotes de importación | `pulso.sales.import_batches.view` |
+| observar mappings | `pulso.sales.import_mappings.view` |
+| crear/editar pedido | NO ASIGNAR por supervisión |
+| cobrar | NO ASIGNAR por supervisión |
+| abrir/cerrar caja | NO ASIGNAR por supervisión |
+| ejecutar loyalty | NO ASIGNAR por supervisión |
+| cancelar/refund/cierre | `PULSO-AUTH-008` |
+| override de entrega | solo componente operativo; requiere componente base adicional |
+| mapping/importación/publicación | NO ASIGNAR; configuración/integración propietaria |
+| reconocer/resolver/cancelar llamado | NO ASIGNAR desde esta matriz |
+| enviar/archivar chat | NO ASIGNAR desde esta matriz |
+| iniciar tránsito/registrar entrega | NO ASIGNAR desde esta matriz |
+
+---
+
+#### 59. Capacidades no concedidas y propietario de salida
+
+| Capacidad o brecha | Propietario | Condición de salida |
+| --- | --- | --- |
+| cancelación de pedido | `PULSO-AUTH-008` | permiso, estado, motivo, confirmación y auditoría definidos |
+| refund | `PULSO-AUTH-008` | autoridad y compensación vinculadas al pago original |
+| cierre/reapertura/corrección de caja | `PULSO-AUTH-008` | cierre segregado, arqueo y aprobación definidos |
+| acumulación robusta | `PULSO-AUTH-009` | contrato server-side territorial, atómico e idempotente |
+| redención robusta | `PULSO-AUTH-010` | autorización fail-closed y efecto idempotente |
+| territorio del turno | `PULSO-AUTH-011` | parámetros cliente no amplían sede/área |
+| dispositivo compartido | `PULSO-AUTH-012` | dispositivo restringe y actor real queda resuelto |
+| atribución humana | `PULSO-AUTH-013` | trabajador efectivo persistido/auditado |
+| mappings/configuración/importación administrativa | `PULSO-AUTH-014` | configuración separada de operación y permisos exactos |
+| migración a permisos atómicos | `PULSO-AUTH-015` | broad grants retirados y consumidores migrados |
+| prueba integral | `PULSO-AUTH-016` | allow/deny, scopes, estado, concurrencia e integración certificados |
+| reasignación logística de emergencia | `OPS-LOG-001` + diseño PULSO propietario | autoridad, vigencia y auditoría explícitas |
+| escritura/archivo de chat | diseño PULSO propietario + `PULSO-AUTH-015/016` | contrato de persistencia único y autorización reconciliada |
+| reconocer/resolver/cancelar llamados | diseño PULSO de salón + `PULSO-AUTH-015/016` | lifecycle y PermissionKeys exactas materializadas |
+| iniciar tránsito/entrega | contrato de delivery/logística propietario | actor físico, custodia y transición exactos |
+
+---
+
+#### 60. Hallazgos y propietarios
+
+| Hallazgo | Efecto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `supervisor` base no está materializado en runtime dev | la UI no puede inferirlo desde datos actuales | fundación AUTH / materialización RBAC | rol creado/validado y matriz base proyectada |
+| `gerencia_operativa` existe sin grants PULSO atómicos observados | supervisor operativo objetivo todavía no está materializado | `PULSO-AUTH-015` + AUTH-RBAC | dataset atómico reproducible |
+| `pulso.pos.main` sigue broad | puede exponer superficies incompatibles | `PULSO-AUTH-015` | cero fallback final a broad permission |
+| `/orders` mezcla acciones | una lectura supervisora no puede mutar | `PULSO-AUTH-015/016` | guards y RPC usan PermissionKey exacta |
+| `/salon` usa permisos/RLS amplios y acciones directas | assignment y demás transiciones requieren autoridad propia | `PULSO-AUTH-013/015/016` | actor, estado y permiso exactos |
+| chat tiene múltiples callers | escritura no debe concederse hasta reconciliar trust boundary | `PULSO-AUTH-015/016` | persistencia unificada o equivalencia demostrada |
+| `/sales-imports` concentra mapping/import/publish | lectura supervisora no puede mutar | `PULSO-AUTH-014/015/016` | permisos y RLS separados |
+| `delivery.override` ya es granular pero BAO | componente operativo de gerencia no basta | fundación AUTH + `PULSO-AUTH-016` | doble condición demostrada |
+| reasignación de delivery no tiene contrato de emergencia | `assign` no puede convertirse en override | `OPS-LOG-001` + diseño propietario | permiso/flujo de reasignación explícito |
+
+No queda hallazgo material sin propietario y condición de salida.
+
+---
+
+#### 61. Reglas mínimas de seguridad
+
+1. Denegación por defecto.
+2. Ningún wildcard.
+3. Ningún bypass por nombre de rol.
+4. Ninguna sede seleccionada amplía autoridad.
+5. Ningún rol base crea contexto operativo.
+6. Ningún rol operativo crea autoridad base.
+7. Toda lectura se limita al recurso necesario.
+8. Toda mutación exige PermissionKey exacta.
+9. Toda asignación usa estado de origen y control de concurrencia.
+10. Todo dato de cliente se minimiza.
+11. Todo permiso supervisor cesa al perder su contexto operativo aplicable.
+12. Las acciones BAO exigen ambos carriles completos.
+13. El dispositivo restringe; nunca amplía.
+14. La simulación no ejecuta efectos reales.
+15. APP-REVIEW y ambientes aislados no reciben acceso implícito.
+
+---
+
+#### 62. Pruebas mínimas que hereda la materialización
+
+La implementación posterior deberá demostrar al menos:
+
+- rol base `supervisor` sin rol operativo: no entra a PULSO por sí solo;
+- `gerencia_operativa` con turno válido: puede `pulso.access` según contrato;
+- contexto operativo incompleto: no obtiene las capacidades internas T+C;
+- supervisor operativo puede leer pedidos pero no crearlos ni actualizarlos;
+- puede leer caja pero no abrirla ni cerrarla;
+- puede leer pagos pero no cobrar ni refund;
+- puede leer salón y asignar responsable de llamado, pero no resolver/cancelar por inferencia;
+- puede leer conversaciones pero no enviar ni archivar;
+- puede leer billing requests pero no emitir ni corregir facturación;
+- puede leer delivery y realizar asignación inicial permitida, pero no tránsito/entrega/reasignación de emergencia;
+- puede leer lotes/mappings de importación, pero no mapear/importar/publicar;
+- no ejecuta loyalty;
+- no cancela pedidos;
+- no completa `delivery.override` sin componente base compatible;
+- `site_id` manipulado no amplía territorio;
+- lectura de otra sede falla cerrado;
+- UI, Server Action, RPC/RLS y simulación producen decisiones compatibles.
+
+---
+
+#### 63. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Esta tarea no crea, modifica, difiere ni vuelve obsoleto ningún requisito de prueba.
+
+Las obligaciones verificables de permisos atómicos, contexto operativo, pedidos, pagos, caja, delivery, salón, importaciones, territorio y validación server-side ya están cubiertas por requisitos vigentes.
+
+---
+
+#### 64. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-AUTH-001` — toda capacidad protegida se resuelve por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-002` — todo permiso consumido debe existir en catálogo y respetar convención;
+- `TREQ-AUTH-004` — los evaluadores de autorización producen decisiones equivalentes;
+- `TREQ-AUTH-008` — capacidades operativas exigen contexto laboral válido;
+- `TREQ-AUTH-013` — toda mutación valida permiso exacto, actor, territorio, estado y columnas server-side;
+- `TREQ-PULSO-004` — mutaciones de pedidos y líneas usan acciones nombradas y estado/columnas permitidos;
+- `TREQ-PULSO-005` — ciclo comercial con identidades y estados separados;
+- `TREQ-PULSO-006` — venta, pago, caja, anulación, refund y cierre usan acciones nombradas y auditables;
+- `TREQ-PULSO-007` — delivery, PIN, tracking y override permanecen controlados y separados;
+- `TREQ-PULSO-014` — acceso directo a superficies PULSO falla cerrado;
+- `TREQ-PULSO-015` — `site_id` no amplía territorio;
+- `TREQ-PULSO-016` — abrir `/orders` no concede mutaciones;
+- `TREQ-PULSO-017` — abrir `/sales-imports` no concede carga, mapping ni publicación;
+- `TREQ-PULSO-018` — salón separa lectura y acciones por actor/estado;
+- `TREQ-PULSO-024` — infraestructura existente no demuestra autorización completa;
+- `TREQ-PULSO-026` — permiso observado se mantiene separado de suficiencia contractual.
+
+La enumeración es trazabilidad y no actualiza el Registro 04A.
+
+---
+
+#### 65. Fuentes canónicas principales consumidas
+
+La decisión se apoya en:
+
+- `PULSO-AUTH-002..006` aprobadas como base inmediata;
+- `AUTH-RBAC-004 — Crear matriz de supervisor`;
+- `AUTH-RBAC-019 — Crear matriz de gerencia_operativa`;
+- `AUTH-CAT-002/003` para convención y descomposición de permisos;
+- `AUTH-CAT-006..012` para modalidad, alcance y prerrequisitos;
+- `CAP-SCOPE-009` y `CAP-SCOPE-011` para venta, caja, pagos y delivery;
+- `PULSO-UX-001` para universo funcional y pantallas PULSO;
+- matriz E2 de roles base por proceso;
+- Registro 04A vigente para AUTH y PULSO;
+- runtime remoto de desarrollo como evidencia AS-IS, no como contrato objetivo.
+
+---
+
+#### 66. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de `vento-pulso`; no existen cambios físicos de consumidor |
+| LOCAL | NOT_EXECUTED | no se modificó checkout local del repositorio canónico |
+| REMOTA | PASS | se verificaron fuentes canónicas en `vento-shell`, `PULSO-AUTH-006` aprobada localmente, matrices `AUTH-RBAC-004/019`, 04A, código/inventarios PULSO y estado read-only de roles/permisos en Supabase dev |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron ventas, pagos, caja, asignaciones, llamados, importaciones, deliveries ni overrides reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; sin materialización física propia |
+
+La evidencia REMOTA valida coherencia documental y estado AS-IS; no certifica que el runtime ya consuma la matriz objetivo.
+
+---
+
+#### 67. Criterios de aceptación
+
+- [ ] Se separa rol base `supervisor` de rol operativo `gerencia_operativa`.
+- [ ] El rol base `supervisor` no obtiene operación PULSO por sí solo.
+- [ ] `gerencia_operativa` no se interpreta como supervisor administrativo permanente.
+- [ ] No existe herencia automática desde `cajero_satelite`.
+- [ ] `pulso.access` permanece como entrada únicamente.
+- [ ] `pulso.pos.main` permanece `DECOMPOSE_REQUIRED` sin alias directo.
+- [ ] Se evalúan exactamente 24 identidades PULSO.
+- [ ] Exactamente 13 quedan como concesiones operativas directas del perfil supervisor.
+- [ ] Exactamente una queda como componente operativo de doble condición.
+- [ ] Exactamente diez permanecen sin concesión supervisor.
+- [ ] Se definen once capacidades nuevas de supervisión.
+- [ ] Todas las capacidades internas concedidas exigen contexto operativo completo aplicable.
+- [ ] No existe alcance operativo global.
+- [ ] El supervisor puede leer pedidos pero no crearlos/actualizarlos por inferencia.
+- [ ] Puede leer caja pero no abrir/cerrar.
+- [ ] Puede leer pagos pero no collect/refund.
+- [ ] Puede consultar salón y asignar responsable inicial de llamado.
+- [ ] `assign` de llamado no equivale a acknowledge/resolve/cancel.
+- [ ] Puede leer conversaciones pero no escribir/archivar.
+- [ ] Puede leer billing requests sin autoridad fiscal de emisión/corrección.
+- [ ] Puede leer delivery y realizar únicamente asignación inicial permitida.
+- [ ] `deliveries.assign` no incluye reasignación de emergencia.
+- [ ] Puede leer lotes/mappings de importación pero no mutarlos/publicarlos.
+- [ ] No ejecuta loyalty por inferencia.
+- [ ] `delivery.override` no queda autorizado por `gerencia_operativa` sola.
+- [ ] El rol base `supervisor` no completa el override por defecto.
+- [ ] Configuración administrativa permanece separada.
+- [ ] Todo hallazgo tiene propietario y condición de salida.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 68. Límites
+
+Esta tarea no:
+
+- crea el rol base `supervisor` en Supabase;
+- modifica `gerencia_operativa` físicamente;
+- modifica catálogo runtime de permisos;
+- modifica `operational_role_permissions`;
+- modifica `role_permissions`;
+- retira `pulso.pos.main`;
+- asigna permisos a personas;
+- crea excepciones individuales;
+- implementa venta;
+- implementa cobro;
+- implementa caja;
+- implementa cierre;
+- implementa cancelación;
+- implementa refund;
+- implementa loyalty;
+- implementa salón;
+- implementa chat;
+- implementa facturación;
+- implementa delivery;
+- implementa importaciones;
+- implementa reasignación de emergencia;
+- cambia RLS;
+- cambia RPC;
+- modifica Server Actions;
+- cambia guards;
+- modifica Realtime;
+- modifica Edge Functions;
+- modifica PASS;
+- modifica NEXO;
+- modifica FOGO;
+- modifica NUMERA;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica el Registro 04A;
+- crea instancia física;
+- ejecuta E5.
+
+---
+
+#### 69. Handoff a PULSO-AUTH-008
+
+`PULSO-AUTH-008 — Definir permisos de cierre y anulación` recibe explícitamente:
+
+```text
+pulso.sales.orders.cancel
+pulso.payments.transactions.refund
+pulso.cash.sessions.close
+```
+
+junto con:
+
+- el supervisor no recibe esas capacidades por jerarquía;
+- `cash.sessions.view` no concede `close`;
+- `payments.transactions.view` no concede `refund`;
+- `orders.view` no concede `cancel`;
+- cierre, arqueo, diferencia, aprobación, reapertura y corrección siguen sin autoridad final;
+- cancelación, anulación, devolución y refund siguen siendo semánticas distintas;
+- cualquier autoridad supervisor sobre estas acciones debe definirse explícitamente en `PULSO-AUTH-008`.
+
+---
+
+#### 70. Handoff a PULSO-AUTH-009..016
+
+Las tareas posteriores reciben:
+
+```text
+009 → materializar acumulación protegida
+010 → materializar redención protegida
+011 → hacer vinculante el límite territorial del turno
+012 → integrar terminal compartida sin ampliar autoridad
+013 → registrar al trabajador efectivo
+014 → separar y proteger configuración/mappings/importación administrativa
+015 → materializar PermissionKeys y migrar consumidores fuera de pos.main
+016 → certificar allow/deny, scopes, actor, estado, concurrencia e integración
+```
+
+La matriz supervisor de esta tarea debe consumirse sin reinterpretar sus concesiones como wildcard.
+
+---
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-006 — Definir permisos de cajero`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-007 — Definir permisos de supervisor`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-008 — Definir permisos de cierre y anulación`
 ### [ ] PULSO-AUTH-008 — Definir permisos de cierre y anulación
 ### [ ] PULSO-AUTH-009 — Proteger acumulación de puntos
 ### [ ] PULSO-AUTH-010 — Proteger redenciones

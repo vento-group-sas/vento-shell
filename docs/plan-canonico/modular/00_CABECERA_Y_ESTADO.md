@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1360** |
+| Tareas aprobadas | **1361** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **236** |
+| Tareas no iniciadas | **235** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.21% (1360/1596)** |
+| Porcentaje de completamiento | **85.28% (1361/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-AUTH-006 — Definir permisos de cajero** |
-| Tarea actual | **PULSO-AUTH-007 — Definir permisos de supervisor** |
+| Última tarea aprobada | **PULSO-AUTH-007 — Definir permisos de supervisor** |
+| Tarea actual | **PULSO-AUTH-008 — Definir permisos de cierre y anulación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-AUTH-008 — Definir permisos de cierre y anulación** |
+| Siguiente tarea | **PULSO-AUTH-009 — Proteger acumulación de puntos** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 8 de 38 aprobadas; PULSO-AUTH-007 pendiente** |
+| Progreso del bloque | **BLOQUE N: 9 de 38 aprobadas; PULSO-AUTH-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-AUTH-007** |
+| Carril documental | **ACTIVO — PULSO-AUTH-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-AUTH-006` — Definir permisos de cajero |
-| Tarea actual | `PULSO-AUTH-007` — Definir permisos de supervisor — **NO INICIADA** |
-| Siguiente tarea | `PULSO-AUTH-008` — Definir permisos de cierre y anulación |
+| Última aprobada | `PULSO-AUTH-007` — Definir permisos de supervisor |
+| Tarea actual | `PULSO-AUTH-008` — Definir permisos de cierre y anulación — **NO INICIADA** |
+| Siguiente tarea | `PULSO-AUTH-009` — Proteger acumulación de puntos |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 8 DE 38 APROBADAS — ACTUAL PULSO-AUTH-007** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 9 DE 38 APROBADAS — ACTUAL PULSO-AUTH-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-AUTH-006 — Definir permisos de cajero
-        ↓
-TAREA ACTUAL
 PULSO-AUTH-007 — Definir permisos de supervisor
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-AUTH-008 — Definir permisos de cierre y anulación
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-AUTH-009 — Proteger acumulación de puntos
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 8 de 38 tareas aprobadas
+BLOQUE N — 9 de 38 tareas aprobadas
 ```
