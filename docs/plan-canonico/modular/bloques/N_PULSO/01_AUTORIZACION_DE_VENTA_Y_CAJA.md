@@ -16795,5 +16795,1054 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-015 — Migrar a paquetes de vento-shell`
-### [ ] PULSO-AUTH-015 — Migrar a paquetes de vento-shell
+### ✅ PULSO-AUTH-015 — Migrar a paquetes de vento-shell
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-014 — Mantener configuración administrativa separada
+**Tarea siguiente:** PULSO-AUTH-016 — Ejecutar pruebas integrales
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) para la adopción gobernada en PULSO de las familias compartidas de `vento-shell`, con compatibilidad, paridad contractual, coexistencia controlada, rollback y preservación de ownership; sin convertir la migración en copia indiscriminada de código ni en implementación física desde este marcador
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; cada adopción futura ocurre únicamente mediante `PULSO-AUTH-015::<implementation_unit_id>` después de `E5-GATE-008::<package_id> = PASS`, con package/release elegible, evidencia de compatibilidad vigente y autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo PULSO deberá adoptar las responsabilidades compartidas canónicas de `vento-shell` sin trasladar al package lógica empresarial propia de PULSO, sin reproducir bugs legacy para aparentar paridad y sin crear dos autoridades simultáneas durante la transición.
+
+La regla raíz queda:
+
+```text
+RESPONSABILIDAD COMPARTIDA
++
+PACKAGE CANONICO ELEGIBLE
++
+VERSION EXACTA
++
+COMPATIBILIDAD VIGENTE
++
+PARIDAD CONTRACTUAL
++
+CUTOVER FAIL-CLOSED
++
+ROLLBACK REPRODUCIBLE
+=
+ADOPCION PULSO
+```
+
+Y simultáneamente:
+
+```text
+PACKAGE INSTALADO
+!=
+PACKAGE ADOPTADO
+```
+
+```text
+CODIGO LOCAL EXISTE
+!=
+CODIGO LOCAL DEBE VOLVERSE COMPARTIDO
+```
+
+```text
+PACKAGE COMPARTIDO
+!=
+OWNER DEL DOMINIO PULSO
+```
+
+---
+
+#### 2. Resultado material
+
+Este contrato deja cerrados los siguientes elementos:
+
+| Unidad | Resultado |
+| --- | ---: |
+| familias compartidas canónicas evaluadas | 4 |
+| relaciones package–PULSO de compatibilidad | 4 |
+| relaciones package–PULSO de actualización | 4 |
+| perfiles PULSO de compatibilidad | 4 |
+| superficies baseline PULSO | 12 |
+| dependencias `@vento/*` declaradas actualmente por `vento-pulso` | 0 |
+| releases estables de las cuatro familias demostradas como elegibles para adopción PULSO en el snapshot | 0 |
+| migraciones físicas ejecutadas por este marcador | 0 |
+| cambios `TREQ-*` | 0 |
+
+La ausencia actual de dependencias `@vento/*` significa **no adoptado**, no ausencia de preparación: `SHELL-CI-010::GLOBAL` ya materializó el baseline reutilizable del consumidor.
+
+---
+
+#### 3. Handoff recibido de PULSO-AUTH-014
+
+`PULSO-AUTH-014` entrega como restricciones vinculantes:
+
+- operación ordinaria, configuración y administración de integraciones son carriles distintos;
+- `pulso.pos.main` es insuficiente como autoridad final para configuración o importación;
+- lectura no concede mutación;
+- configuración de zonas/mesas, mappings, reglas de consumo e importaciones requiere acciones y permisos exactos;
+- RLS, grants, RPC y Server Actions deben converger en una decisión fail-closed;
+- actor, territorio, recurso, estado y auditoría permanecen obligatorios;
+- migrar consumidores no puede romper la lectura operativa que todavía dependa de una superficie legacy;
+- toda transición física necesita compatibilidad y rollback.
+
+`015` no redefine esa frontera: fija cómo materializarla mediante contratos y packages compartidos cuando exista una unidad física autorizada.
+
+---
+
+#### 4. Handoffs acumulados de PULSO-AUTH-011..013
+
+La migración conserva además:
+
+- `PULSO-AUTH-011`: sede/área efectivas provienen del contexto canónico y un parámetro cliente solo puede reducir, nunca ampliar autoridad;
+- `PULSO-AUTH-012`: principal técnico, dispositivo y actor humano son identidades distintas; el dispositivo restringe y nunca transfiere privilegios;
+- `PULSO-AUTH-013`: toda acción sensible conserva al trabajador humano efectivo, separado de creador, asignado, aprobador y principal técnico.
+
+Un adapter de transición no puede reintroducir como autoridad final `preferredSiteId`, `navigationRole`, una cookie, un rol simulado, el principal técnico o un device compartido.
+
+---
+
+#### 5. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = PULSO-AUTH-015::<implementation_unit_id>
+```
+
+El marcador global especifica el contrato una sola vez.
+
+Cada unidad física posterior materializa únicamente su superficie y package autorizados; no existe una migración global implícita de PULSO.
+
+---
+
+#### 6. Gate físico posterior
+
+Una unidad es elegible únicamente cuando exista:
+
+```text
+implementation_unit_id valido
++
+package_id propietario
++
+E5-GATE-008::<package_id> = PASS
++
+release/package consumible y elegible
++
+compatibilidad package–PULSO vigente
++
+baseline PULSO atribuible al commit actual
++
+autorizacion fisica explicita
+```
+
+Si falta cualquiera de esas condiciones, la adopción queda bloqueada y el consumidor no se modifica.
+
+---
+
+#### 7. Universo cerrado de packages compartidos
+
+PULSO adopta exclusivamente estas cuatro familias para este contrato:
+
+| Package | Responsabilidad compartida | Relación de PULSO |
+| --- | --- | --- |
+| `@vento/contracts` | contratos estáticos, catálogos, schemas, identificadores y tipos compartidos | consumidor |
+| `@vento/os-context` | contexto efectivo y autorización runtime compartida | consumidor |
+| `@vento/supabase` | acceso técnico compartido a Supabase | consumidor |
+| `@vento/ui-web` | presentación web compartida y composición neutral | consumidor |
+
+No se crea una quinta familia por conveniencia local.
+
+Una responsabilidad PULSO que no pertenezca a esas fronteras permanece en PULSO o en su owner canónico existente.
+
+---
+
+#### 8. Estado físico observado de los packages
+
+El snapshot de `vento-shell` conserva:
+
+| Package | Estado observado relevante |
+| --- | --- |
+| `@vento/contracts` | workspace privado `1.0.0-alpha.1`; no demuestra release estable elegible para PULSO |
+| `@vento/os-context` | workspace privado `0.1.0` con entrypoint interno; su presencia no demuestra adopción estable |
+| `@vento/supabase` | raíz privada de autoría sin versión pública consumible demostrada |
+| `@vento/ui-web` | raíz privada de autoría sin versión pública consumible demostrada |
+
+Consecuencia:
+
+```text
+WORKSPACE MATERIALIZADO
+!=
+RELEASE ESTABLE ELEGIBLE PARA PULSO
+```
+
+Este marcador no publica, versiona ni promueve esos workspaces.
+
+---
+
+#### 9. Estado físico observado de vento-pulso
+
+El `package.json` vigente de `vento-pulso` declara cero dependencias `@vento/*`.
+
+Sí contiene los entrypoints de baseline materializados por `SHELL-CI-010::GLOBAL`, incluyendo lint, typecheck, build de baseline, tests contractuales y `ci010:baseline`.
+
+Por tanto:
+
+```text
+BASELINE MATERIALIZADA
++
+ZERO @vento/* DEPENDENCIES
+=
+CONSUMIDOR PREPARADO PARA MIGRACION GOBERNADA,
+NO MIGRADO
+```
+
+---
+
+#### 10. Baseline propietaria SHELL-CI-010
+
+`SHELL-CI-010::GLOBAL` se encuentra materializada y verificada como habilitador de pruebas de PULSO antes de actualizar packages.
+
+Su baseline conserva:
+
+```text
+PACKAGE_RELATIONS = 4
+PULSO_PROFILES = 4
+PULSO_SURFACES = 12
+PAGE_FILES = 6
+DYNAMIC_PAGES = 0
+ROUTE_HANDLERS = 0
+BUSINESS_ROUTES = 5
+DENY_ROUTES = 1
+CONTRACTUAL_TESTS = 42
+```
+
+Una unidad `PULSO-AUTH-015::<implementation_unit_id>` debe reanclar esa evidencia al commit, manifest, lockfile, runtime y package set actuales; un PASS histórico no se reutiliza contra una base materialmente distinta.
+
+---
+
+#### 11. Relaciones package–PULSO exactas
+
+Las identidades vigentes son:
+
+| Package | Compatibilidad | Actualización | Perfil PULSO |
+| --- | --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-006` | `PKG-PR-REL-006` | `PULSO-PROFILE-CONTRACTS` |
+| `@vento/os-context` | `PKG-COMP-MX-013` | `PKG-PR-REL-013` | `PULSO-PROFILE-OS-CONTEXT` |
+| `@vento/supabase` | `PKG-COMP-MX-020` | `PKG-PR-REL-020` | `PULSO-PROFILE-SUPABASE` |
+| `@vento/ui-web` | `PKG-COMP-MX-027` | `PKG-PR-REL-027` | `PULSO-PROFILE-UI-WEB` |
+
+Las relaciones de compatibilidad están en estado de evidencia pendiente y las relaciones de actualización permanecen no aplicables mientras no exista release estable elegible.
+
+No se crean aliases ni relaciones alternativas para evitar esos gates.
+
+---
+
+#### 12. Universo de doce superficies PULSO
+
+La baseline reutilizable conserva exactamente:
+
+| ID | Superficie | Tratamiento en migración |
+| --- | --- | --- |
+| `PULSO-SURFACE-001` | identidad, sesión, SSO y acceso PULSO | contratos/contexto compartidos + adapter de framework cuando aplique |
+| `PULSO-SURFACE-002` | contexto operativo, sede, actor y dispositivo | `@vento/os-context`; autoridad paralela prohibida |
+| `PULSO-SURFACE-003` | inventario de rutas y navegación | contratos compartidos; routing sigue local |
+| `PULSO-SURFACE-004` | escáner e identificación de cliente | dominio PULSO/PASS permanece propietario; consume contratos compartidos |
+| `PULSO-SURFACE-005` | loyalty, redención y acreditación | dominio PULSO/PASS; contexto/contratos compartidos |
+| `PULSO-SURFACE-006` | pedidos, líneas, estado, pago y fulfillment | lógica empresarial permanece PULSO; autoridad compartida se consume, no se reimplementa |
+| `PULSO-SURFACE-007` | despacho, chat, facturación e historial | ownership de dominios/integraciones preservado |
+| `PULSO-SURFACE-008` | salón, mesas, sesiones, llamados y Realtime | operación PULSO; contexto/territorio compartidos |
+| `PULSO-SURFACE-009` | importación de ventas, mapeos, lotes y publicación | administración/integración; separación de `014` obligatoria |
+| `PULSO-SURFACE-010` | atomicidad, idempotencia, concurrencia y recuperación | controles propietarios; no se delegan por importar un package |
+| `PULSO-SURFACE-011` | integración y fronteras de dominio | contratos compartidos sin traslado de ownership |
+| `PULSO-SURFACE-012` | UI, SSR, interacción, accesibilidad y Realtime | `@vento/ui-web` solo cuando sea compatible y no autoritativo |
+
+Una unidad física debe resolver el delta real sobre las superficies que efectivamente modifica; no declara migradas las doce por asociación.
+
+---
+
+#### 13. Clasificación por responsabilidad
+
+La decisión se toma por responsabilidad, no por nombre de archivo:
+
+```text
+CONTRATO ESTATICO COMPARTIDO
+→ @vento/contracts
+
+CONTEXTO / AUTORIZACION RUNTIME COMPARTIDA
+→ @vento/os-context
+
+ACCESO TECNICO SUPABASE COMPARTIDO
+→ @vento/supabase
+
+PRESENTACION WEB COMPARTIDA
+→ @vento/ui-web
+
+LOGICA EMPRESARIAL PULSO
+→ PERMANECE EN PULSO
+```
+
+Un archivo local puede contener más de una responsabilidad y requerir separación mediante adapters antes del cutover.
+
+---
+
+#### 14. Decisiones permitidas por superficie local
+
+Cada superficie local se clasifica exactamente como una de estas decisiones:
+
+| Decisión | Significado |
+| --- | --- |
+| adopción compartida | consume directamente la API canónica elegible |
+| adapter local necesario | conserva frontera Next/PULSO sin duplicar autoridad |
+| responsabilidad PULSO | permanece local por ownership empresarial |
+| retiro posterior a paridad | reemplazo probado; retiro gobernado por lifecycle de migración |
+| migración bloqueada | falta release, contrato, backend, evidencia o dependencia |
+
+La clasificación no crea un estado físico adicional ni autoriza por sí sola un cambio.
+
+---
+
+#### 15. Adopción de @vento/contracts
+
+PULSO utilizará `@vento/contracts` para identidades y contratos estáticos compartidos cuando exista una superficie pública versionada y compatible.
+
+Puede sustituir definiciones locales equivalentes de:
+
+- códigos de aplicación;
+- PermissionKeys publicadas;
+- catálogos estáticos;
+- schemas serializables;
+- tipos compartidos;
+- reason codes y contratos de respuesta cuando correspondan;
+- metadata contractual versionada.
+
+No traslada a `@vento/contracts`:
+
+- acceso a Supabase;
+- autorización runtime;
+- cookies;
+- sesión;
+- redirects;
+- lógica de pedidos, pagos, caja, salón o loyalty;
+- RLS/RPC;
+- side effects.
+
+---
+
+#### 16. PermissionKeys y broad authority
+
+La migración consume las PermissionKeys canónicas ya definidas por `PULSO-AUTH-006..014`.
+
+Se prohíbe crear un alias que convierta:
+
+```text
+pulso.pos.main
+→
+TODAS LAS CAPACIDADES PULSO
+```
+
+`pulso.pos.main` permanece legacy broad mientras la unidad propietaria no complete la adopción y retiro gobernados.
+
+Una clave objetivo que todavía no esté físicamente materializada debe producir `DENY` para su efecto; no se simula su existencia mediante fallback al permiso broad.
+
+---
+
+#### 17. Paridad de contratos estáticos
+
+Adoptar un contrato exige demostrar:
+
+1. identidad semántica compatible;
+2. serialización compatible;
+3. schema compatible;
+4. namespaces exactos;
+5. ausencia de casts o aliases ampliatorios;
+6. tratamiento explícito de valores desconocidos;
+7. versión exacta atribuible;
+8. consumidores compilando contra la superficie publicada.
+
+Un build verde obtenido copiando la definición local dentro del package no demuestra migración.
+
+---
+
+#### 18. Adopción de @vento/os-context
+
+`@vento/os-context` es el destino compartido de responsabilidades runtime de:
+
+- contexto efectivo;
+- actor humano;
+- principal técnico;
+- turno/check-in cuando aplique;
+- sede y área efectivas;
+- dispositivo compartido;
+- evaluación de autorización compartida;
+- simulación estrictamente separada de autoridad real.
+
+La adopción no convierte cualquier API transitoria actual del package en contrato estable por inferencia.
+
+---
+
+#### 19. Guard PULSO como adapter
+
+`src/lib/auth/guard.ts` puede conservar una capa local para responsabilidades propias de Next/PULSO, por ejemplo:
+
+- `redirect`;
+- `returnTo`;
+- composición de una página;
+- traducción de errores a `/no-access`;
+- wiring del cliente de servidor.
+
+Pero no puede permanecer como segundo evaluador autónomo que:
+
+- derive autoridad de `role_override` cliente;
+- utilice `navigationRole` como autoridad final;
+- haga fallback a `has_permission` legacy cuando el evaluador canónico deniega;
+- amplíe sede/área desde query params;
+- trate acceso a una app como permiso de sus acciones internas.
+
+---
+
+#### 20. Operational session y contexto efectivo
+
+La responsabilidad compartida de contexto debe converger con `PULSO-AUTH-011..013`.
+
+La migración no preserva como autoridad correcta únicamente por “paridad” comportamientos AS-IS como:
+
+- priorizar `preferredSiteId` sobre límites autoritativos;
+- usar `preferredAreaId` como hecho efectivo sin resolución;
+- equiparar `navigationRole` y rol humano efectivo;
+- confundir principal técnico y actor;
+- resolver turno desde fallbacks incompatibles con el contrato vigente.
+
+Esos deltas se clasifican como corrección intencional o bloqueo, nunca como obligación de reproducir el bug.
+
+---
+
+#### 21. Dispositivo compartido y firma de actor
+
+La adopción preserva:
+
+```text
+TECHNICAL PRINCIPAL
+!=
+SHARED DEVICE
+!=
+HUMAN ACTOR
+```
+
+La firma del trabajador puede demostrar actor cuando el contrato lo exige, pero no concede permiso.
+
+Los wrappers locales de firma pueden permanecer como adapters PULSO si únicamente traducen parámetros del dominio/framework y delegan la autoridad al contrato compartido/servidor propietario.
+
+No se duplica un segundo lifecycle de dispositivo dentro del consumidor.
+
+---
+
+#### 22. Adopción de @vento/supabase
+
+`@vento/supabase` es la frontera técnica compartida para clientes, configuración resuelta, tipos y wrappers técnicos cuando exista una superficie elegible.
+
+Puede sustituir factories equivalentes de browser/server y otras fronteras técnicas aprobadas.
+
+No se traslada al package:
+
+- autorización empresarial PULSO;
+- decisiones de recurso;
+- reglas de pedidos/pagos/caja;
+- ownership PASS o NEXO;
+- policies funcionales;
+- definición de RLS;
+- lógica de importación;
+- selección de credenciales privilegiadas como fallback.
+
+---
+
+#### 23. Adapters Supabase de aplicación
+
+PULSO puede conservar adapters mínimos para integrar:
+
+- `next/headers`;
+- cookies;
+- variables de entorno ya resueltas por el despliegue;
+- frontera browser/server;
+- traducción de errores técnicos.
+
+El adapter no puede:
+
+- exponer `service_role` al cliente;
+- utilizar una credencial privilegiada para eludir RLS;
+- convertir un error de sesión en allow;
+- duplicar una factory compartida con semántica distinta;
+- reinterpretar sesión Supabase como autoridad empresarial.
+
+---
+
+#### 24. Supabase, RLS y RPC permanecen gobernados por vento-shell
+
+Las RPC y contratos de datos relevantes de PULSO, incluidas autorización, firma de dispositivo e importación, se encuentran dentro de la persistencia gobernada por `vento-shell`.
+
+Toda modificación futura de:
+
+- tablas;
+- vistas;
+- funciones/RPC;
+- triggers;
+- grants;
+- RLS;
+- Auth;
+- Realtime;
+- Edge Functions;
+- configuración;
+- datos;
+
+permanece versionada y ejecutada desde `vento-group-sas/vento-shell`.
+
+`@vento/supabase` puede transportar acceso técnico; no se convierte en owner del schema ni de la política empresarial.
+
+---
+
+#### 25. Adopción de @vento/ui-web
+
+`@vento/ui-web` recibe únicamente presentación neutral compartida cuando exista API consumible, compatible y versionada.
+
+La migración visual puede cubrir componentes y patrones comunes, pero jamás:
+
+```text
+VISIBLE
+=
+AUTHORIZED
+```
+
+ni:
+
+```text
+DISABLED
+=
+SERVER-SIDE DENY
+```
+
+La UI recibe decisiones/contexto ya resueltos y no ejecuta el evaluador empresarial.
+
+---
+
+#### 26. Escáner e identificación de cliente
+
+El scanner permanece dominio PULSO con fronteras PASS ya aprobadas.
+
+La adopción puede compartir:
+
+- tipos y reason codes;
+- contexto/autorización;
+- acceso técnico Supabase;
+- primitivas visuales neutrales.
+
+No transfiere a packages compartidos:
+
+- semántica de identificación comercial;
+- reglas de loyalty;
+- ownership del cliente;
+- redención;
+- acumulación;
+- reglas de la venta que origina el hecho.
+
+---
+
+#### 27. Loyalty y redención
+
+PULSO conserva la experiencia operativa y PASS conserva el dominio/ledger de fidelización.
+
+Una migración de package no puede:
+
+- convertir un wrapper PULSO en owner del ledger;
+- relajar la firma de actor;
+- perder `site_id`, actor o referencia idempotente;
+- duplicar el efecto durante shadow;
+- tratar éxito visual como confirmación empresarial.
+
+La paridad se mide contra el contrato canónico de `PULSO-AUTH-009`, `PULSO-AUTH-010`, `PULSO-AUTH-012` y `PULSO-AUTH-013`.
+
+---
+
+#### 28. Pedidos, pagos, caja y delivery
+
+La lógica empresarial de:
+
+- pedidos y líneas;
+- transiciones;
+- cobro;
+- refund;
+- caja;
+- cancelación/void;
+- delivery;
+- override;
+
+permanece en sus owners PULSO/integración.
+
+Los packages compartidos aportan contratos/contexto/acceso técnico/UI; no absorben las máquinas de estado ni los side effects.
+
+Una migración que cambie el punto de autorización debe conservar PermissionKey exacta, recurso, estado y actor inmediatamente antes del efecto.
+
+---
+
+#### 29. Salón
+
+La adopción para salón debe preservar:
+
+- `site_id` efectivo;
+- separación zona/mesa/sesión/llamado;
+- actor humano;
+- dispositivo separado;
+- operación ordinaria separada de configuración administrativa;
+- Realtime sin autoridad stale.
+
+Mover un helper de contexto no autoriza a mover/renumerar/inactivar mesas ni cambia el ownership de `OPS-POS-001`.
+
+---
+
+#### 30. Importaciones y configuración administrativa
+
+La superficie de importaciones permanece bajo la frontera de `PULSO-AUTH-014`.
+
+La adopción de packages no convierte:
+
+```text
+pulso.sales.import_batches.view
+```
+
+en autoridad para cargar, validar o publicar.
+
+Tampoco convierte:
+
+```text
+pulso.sales.import_mappings.view
+```
+
+en autoridad para crear, modificar o desactivar mappings.
+
+Las unidades que endurezcan Server Actions, RPC, RLS o grants deben consumir permisos administrativos exactos y mantener lectura operativa/administrativa compatible durante el cutover.
+
+---
+
+#### 31. Atomicidad, idempotencia, concurrencia y recuperación
+
+Esas propiedades permanecen obligaciones del efecto empresarial.
+
+Un package de acceso técnico o autorización no demuestra por sí solo:
+
+- idempotencia de una venta;
+- exclusión de doble refund;
+- publicación única de lote;
+- lock suficiente de stock;
+- transición válida de pedido;
+- conciliación después de timeout.
+
+Cada unidad mantiene los controles propietarios y los incluye en su oracle de paridad cuando la superficie modificada pueda afectarlos.
+
+---
+
+#### 32. Fronteras con PASS, NEXO y NUMERA
+
+La migración no fusiona ownerships:
+
+```text
+PULSO
+→ experiencia POS, venta, caja, salon y orquestacion comercial propia
+
+PASS
+→ identidad comercial y fidelizacion
+
+NEXO
+→ inventario, ubicaciones y movimientos propietarios
+
+NUMERA
+→ hechos y alcance financiero propietario
+```
+
+Un contrato compartido puede transportar referencias y resultados; no cambia quién posee el dato o proceso empresarial.
+
+---
+
+#### 33. Release estable como precondición
+
+Antes de tocar `package.json` o lockfile del consumidor debe existir, para el package objetivo:
+
+- release elegible;
+- versión SemVer exacta;
+- source commit identificable;
+- artefacto íntegro;
+- manifest coherente;
+- changelog/evidencia requerida por lifecycle;
+- compatibilidad PULSO vigente.
+
+Mientras una familia siga privada/transitoria sin release elegible:
+
+```text
+ADOPTION = BLOCKED
+```
+
+No se usa `file:`, `workspace:*`, ruta local o copia manual como atajo para fingir una release estable.
+
+---
+
+#### 34. Manifest y lockfile
+
+Por cada package adoptado:
+
+```text
+DECLARED VERSION
+=
+LOCKFILE ROOT VERSION
+=
+LOCKFILE RESOLVED VERSION
+=
+ELIGIBLE RELEASE VERSION
+```
+
+La versión debe ser exacta para el gate gobernado.
+
+No se acepta como evidencia de cutover:
+
+- `^`;
+- `~`;
+- `latest`;
+- `*`;
+- branch ref;
+- commit sin release;
+- path local;
+- workspace shortcut fuera del lifecycle aprobado.
+
+---
+
+#### 35. Gates compartidos de compatibilidad y actualización
+
+Cada unidad consume las relaciones vigentes de:
+
+- `PKG-COMP-MX-*` para compatibilidad;
+- `PKG-PR-REL-*` para propuesta/adopción del consumidor;
+- `SHELL-CI-010::GLOBAL` para baseline PULSO;
+- `SHELL-MIG-001..008` para inventario, lotes reversibles, compatibilidad temporal, paridad y retiro legacy.
+
+La pertenencia al mismo grupo empresarial no permite omitir release, compatibilidad, pruebas, revisión, rollback o evidencia stale.
+
+---
+
+#### 36. Oracle de paridad
+
+La paridad compara comportamiento legacy y canónico con inputs equivalentes.
+
+Cada delta se clasifica como:
+
+```text
+IGUAL
+CORRECCION_INTENCIONAL
+BRECHA_DE_DATOS
+BUG_LEGACY
+BUG_CANONICO
+CONTRATO_PENDIENTE
+```
+
+Solo `IGUAL` o una `CORRECCION_INTENCIONAL` sustentada pueden participar en cutover.
+
+`BRECHA_DE_DATOS`, `BUG_CANONICO` y `CONTRATO_PENDIENTE` bloquean.
+
+Un `BUG_LEGACY` no se copia al package para fabricar igualdad.
+
+---
+
+#### 37. Paridad de allow y deny
+
+Una migración de autorización no se certifica únicamente con casos permitidos.
+
+Debe demostrar, según superficie:
+
+- allow correcto;
+- deny correcto;
+- actor ausente;
+- sede/área manipuladas;
+- permiso ausente;
+- recurso fuera de scope;
+- contexto stale;
+- device no permitido;
+- simulación sin efectos;
+- acción administrativa intentada por actor operacional;
+- error técnico sin conversión a allow.
+
+Un deny canónico nunca cae a un allow legacy para conservar “compatibilidad”.
+
+---
+
+#### 38. Coexistencia temporal y shadow
+
+Puede existir comparación temporal únicamente si el lifecycle del package la autoriza.
+
+Durante shadow:
+
+```text
+UN SOLO RESULTADO
+→ AUTORIZA EL EFECTO REAL
+```
+
+El resultado comparador:
+
+- no ejecuta side effects;
+- no modifica datos;
+- no concede fallback;
+- registra divergencias atribuibles;
+- conserva versión, contexto y correlación suficientes para análisis.
+
+---
+
+#### 39. Gate de materialización por unidad
+
+Una instancia `PULSO-AUTH-015::<implementation_unit_id>` debe demostrar como mínimo:
+
+1. package E5 propietario identificado;
+2. `E5-GATE-008::<package_id> = PASS`;
+3. package/release elegible;
+4. relación `PKG-COMP-MX-*` exacta;
+5. relación `PKG-PR-REL-*` exacta;
+6. baseline `SHELL-CI-010` reanclada al commit candidato;
+7. superficies PULSO afectadas inventariadas;
+8. bindings de permiso/contexto/recurso resueltos sin inferencia;
+9. manifest y lockfile coherentes;
+10. pruebas de package y consumidor disponibles;
+11. paridad o corrección intencional explicada;
+12. pruebas negativas fail-closed;
+13. ausencia de doble side effect;
+14. rollback seguro probado;
+15. cero secretos o `service_role` expuestos al cliente;
+16. evidencia suficiente para `PULSO-AUTH-016`.
+
+---
+
+#### 40. Rollback
+
+Cada unidad debe demostrar rollback independiente antes del cutover.
+
+El rollback puede restaurar una versión técnica previa únicamente si mantiene el contrato de seguridad vigente.
+
+Está prohibido que rollback:
+
+- restaure `pulso.pos.main` como wildcard final;
+- reactive un bypass cliente;
+- pierda actor, turno, sede, device o auditoría;
+- revierta datos empresariales ya confirmados para restaurar código;
+- borre eventos/evidencia creados durante la ventana;
+- requiera degradar simultáneamente otros consumidores.
+
+Si el estado anterior ya es inseguro y no existe rollback seguro, la unidad no está lista para cutover.
+
+---
+
+#### 41. Retiro legacy
+
+Adoptar una superficie no autoriza eliminar inmediatamente su legacy.
+
+El retiro se gobierna por `SHELL-MIG-008` y exige:
+
+- uso residual cero o migración certificada;
+- inventario estático y dinámico aplicable;
+- rutas/framework consumers;
+- scripts y CI;
+- adapters;
+- evidencia de paridad;
+- rollback validado.
+
+La ausencia de un `grep` simple no demuestra cero consumidores.
+
+---
+
+#### 42. Candidatos legacy PULSO ya gobernados
+
+El contrato compartido de retiro conserva como candidatos PULSO, entre otros:
+
+- `src/lib/supabase/proxy.ts`;
+- `src/utils/supabase/client.ts`;
+- la rama interna `GuardOptions.requireAppAccessPermission = false`;
+- miembros inertes de AppSwitcher incluidos en el lote residual PULSO.
+
+Su presencia en el inventario **no** los declara retirados ni autoriza borrarlos desde esta tarea.
+
+Si un candidato reaparece como consumidor real o el snapshot cambia, la unidad física debe revalidar su elegibilidad.
+
+---
+
+#### 43. Hallazgos y propietarios de salida
+
+| Hallazgo AS-IS | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `vento-pulso` tiene baseline de cuatro packages pero cero dependencias `@vento/*` | preparación confundida con adopción | `PULSO-AUTH-015::<implementation_unit_id>` + lifecycle compartido | release elegible, consumidor migrado, compatibilidad, paridad y rollback acreditados |
+| las cuatro relaciones `PKG-COMP-MX` PULSO están pendientes de evidencia | package incompatible podría adoptarse | gate de compatibilidad + unidad `015` | evidencia vigente para package/version/commit/consumer exactos |
+| las cuatro relaciones `PKG-PR-REL` PULSO requieren release estable | atajo por workspace/private package | gate de actualización + unidad `015` | release estable/elegible y propuesta gobernada |
+| `guard.ts` conserva evaluación local y role override | doble autoridad o fallback permisivo | unidad `@vento/os-context` + `PULSO-AUTH-015` | adapter local sin evaluador paralelo ni bypass |
+| `operational-session.ts` conserva resolución local de contexto/device | contexto divergente de `011..013` | unidad `@vento/os-context` | contexto efectivo compartido y paridad/corrección intencional demostrada |
+| `shared-device-signature.ts` conserva wrapper local | actor o firma pueden divergir de contexto compartido | unidad os-context/auth + `012/013` | wrapper queda fino, actor/shift/device correlacionados y autorización separada |
+| factories Supabase locales siguen en PULSO | acceso técnico duplicado | unidad `@vento/supabase` | factory compartida elegible o adapter mínimo compatible, sin service-role cliente |
+| `/sales-imports` y políticas asociadas dependen de broad authority | adopción técnica sin corregir frontera administrativa | `014` + unidad DB/015 propietaria | permisos exactos y capas servidor/RLS compatibles |
+| lógica de pedidos, loyalty, salón e importación vive junto a helpers compartibles | extracción podría mover ownership empresarial | `PULSO-AUTH-015` + owners de dominio | solo responsabilidad compartida migra; lógica PULSO permanece local |
+| candidatos legacy PULSO están inventariados pero no retirados | limpieza prematura | `SHELL-MIG-008::<package_id>` | cero uso residual o migración certificada y rollback probado |
+
+No queda hallazgo de adopción detectado sin propietario y condición de salida.
+
+---
+
+#### 44. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: compatibilidad de packages, pruebas de consumidor, rollback, retiro legacy, autorización canónica, contexto, actor, separación administrativa, broad authority insuficiente, paridad y fronteras PULSO ya poseen cobertura vigente. Esta tarea especializa esas obligaciones sobre la adopción PULSO sin introducir una obligación verificable nueva.
+
+---
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-AUTH-001` para autorización final basada en permisos y contexto canónicos, no en listas locales de rol;
+- `TREQ-AUTH-002` para consumir únicamente identificadores de permiso válidos en el catálogo vigente;
+- `TREQ-AUTH-004` para decisiones equivalentes sobre el mismo principal, actor y contexto, sin excepciones locales ampliatorias;
+- `TREQ-AUTH-008` para separación base/operacional y prerrequisitos laborales aplicables;
+- `TREQ-AUTH-013` para revalidación server-side de principal, actor, territorio, contexto, estado y efecto;
+- `TREQ-AUTH-014` para invalidación de autoridad stale;
+- `TREQ-AUTH-015` para evidencia correlacionable y rollback sin pérdida de auditoría;
+- `TREQ-SHELL-002` para que responsabilidades compartidas provengan de implementación compartida/generada o local clasificada y las copias demuestren paridad;
+- `TREQ-SHELL-006` para pruebas propias y matriz de compatibilidad contra cada consumidor antes de publicar/adoptar;
+- `TREQ-SHELL-007` para rollback independiente sin restaurar bypasses ni perder datos/auditoría;
+- `TREQ-SHELL-008` para declaración y evidencia reproducible del cambio compartido;
+- `TREQ-SHELL-038` y `TREQ-SHELL-039` para migración, deprecación y retiro con evidencia de consumidores, compatibilidad y rollback;
+- `TREQ-SHELL-064` para mantener `@vento/os-context@0.1.0` como transitorio hasta satisfacer su lifecycle;
+- `TREQ-SHELL-065` para aislar compatibilidad legacy de `@vento/os-context` y gobernar su retiro;
+- `TREQ-PULSO-002` para paridad y retiro controlado de `orders-board-legacy`;
+- `TREQ-PULSO-003` para impedir adoptar una pieza histórica por su sola existencia sin seguridad, atomicidad, idempotencia, recuperación y pruebas;
+- `TREQ-PULSO-004` para mutaciones mediante acciones nombradas con permiso, sede, estado y columnas permitidas;
+- `TREQ-PULSO-014` para proteger acceso directo a rutas de negocio;
+- `TREQ-PULSO-015` para impedir ampliación territorial por `site_id`;
+- `TREQ-PULSO-016` para revalidar sede, permiso, recurso y estado en cada acción;
+- `TREQ-PULSO-024` para no confundir infraestructura existente con autorización/proceso completos;
+- `TREQ-PULSO-026` para no adoptar `pulso.pos.main` como suficiencia contractual;
+- `TREQ-PULSO-027` para preservar fronteras con PASS, SHELL, NEXO, NUMERA y proveedores.
+
+La enumeración es trazabilidad; no actualiza el Registro 04A.
+
+---
+
+#### 46. Supabase y ownership
+
+El remoto verificado conserva funciones de autorización, firma de dispositivo e importación PULSO bajo la persistencia canónica, y el repositorio `vento-shell` conserva migraciones y pruebas que inventarían/protegen esas superficies.
+
+La adopción de packages no autoriza modificar Supabase desde `vento-pulso`.
+
+Toda modificación VENTO de Supabase continúa perteneciendo a `vento-group-sas/vento-shell` y a la unidad física propietaria correspondiente.
+
+---
+
+#### 47. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó build de producto ni de un consumidor migrado; no existe cambio físico en `vento-pulso`. |
+| LOCAL | NOT_EXECUTED | El marcador aún no fue insertado en el checkout del usuario ni sometido allí a formateador, quality, delivery y batería global. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, owner PULSO, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `SHELL-CI-010::GLOBAL`, `SHELL-MIG-001..008`, estado de las cuatro familias compartidas, matrices package–PULSO, `vento-pulso/main`, baseline de 12 superficies y funciones Supabase relevantes en solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó cutover, importación, venta, pago, caja, loyalty, salón, cambio de permisos ni rollback real. |
+| FÍSICA | NOT_EXECUTED | Ninguna instancia `PULSO-AUTH-015::<implementation_unit_id>` fue creada, autorizada ni ejecutada desde este marcador. |
+
+La evidencia remota valida el contrato documental y el snapshot AS-IS; no certifica una adopción física.
+
+---
+
+#### 48. Criterios de aceptación
+
+- [ ] La topología permanece `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] Se conservan exactamente cuatro familias compartidas: contracts, os-context, supabase y ui-web.
+- [ ] Se conservan exactamente cuatro relaciones `PKG-COMP-MX` y cuatro `PKG-PR-REL` para PULSO.
+- [ ] Se conservan exactamente cuatro perfiles PULSO de package.
+- [ ] `SHELL-CI-010::GLOBAL` se trata como baseline reutilizable, no como adopción.
+- [ ] Las doce superficies PULSO permanecen como universo inicial de reconciliación.
+- [ ] Cero dependencias `@vento/*` actuales no se reinterpretan como migración completada.
+- [ ] Workspace privado no equivale a release estable elegible.
+- [ ] `@vento/contracts` no absorbe lógica runtime o de dominio.
+- [ ] `@vento/os-context` no absorbe lógica empresarial PULSO.
+- [ ] El guard local puede permanecer como adapter, pero no como autoridad paralela.
+- [ ] Contexto, actor, sede, área, turno y device convergen con `PULSO-AUTH-011..013`.
+- [ ] `navigationRole`, role override y parámetros cliente no se preservan como autoridad por paridad ciega.
+- [ ] `@vento/supabase` permanece acceso técnico y nunca convierte sesión o service-role en autoridad empresarial.
+- [ ] Toda modificación Supabase continúa gobernada desde `vento-shell`.
+- [ ] `@vento/ui-web` permanece presentacional y no sustituye guards server-side.
+- [ ] PermissionKeys se consumen por identidad canónica exacta.
+- [ ] `pulso.pos.main` no se convierte en alias de permisos atómicos.
+- [ ] Permisos objetivo no materializados producen deny, no fallback broad.
+- [ ] Scanner y loyalty preservan ownership PULSO/PASS.
+- [ ] Pedidos, pagos, caja y delivery permanecen lógica empresarial propietaria.
+- [ ] Salón conserva territorio, actor y separación de configuración.
+- [ ] Importaciones preservan la frontera administrativa de `014`.
+- [ ] Atomicidad/idempotencia/concurrencia no se consideran resueltas por importar un package.
+- [ ] Manifest y lockfile usan la misma versión exacta elegible.
+- [ ] Paridad distingue igualdad, corrección intencional y bug legacy.
+- [ ] Allow y deny se prueban; deny canónico nunca cae a allow legacy.
+- [ ] Shadow no duplica side effects.
+- [ ] Rollback no restaura bypasses ni borra auditoría/datos confirmados.
+- [ ] Retiro legacy permanece gobernado por `SHELL-MIG-008`.
+- [ ] `PULSO-AUTH-016` conserva la certificación integral posterior.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 49. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- instala packages;
+- modifica `package.json` o `package-lock.json` del consumidor;
+- publica packages, releases, tags o registry;
+- crea una release estable;
+- modifica `@vento/contracts`;
+- modifica `@vento/os-context`;
+- modifica `@vento/supabase`;
+- modifica `@vento/ui-web`;
+- modifica imports;
+- elimina helpers;
+- retira legacy;
+- cambia `pulso.pos.main` físicamente;
+- crea PermissionKeys físicas;
+- cambia matrices runtime;
+- modifica guards;
+- modifica `operational-session.ts`;
+- modifica `shared-device-signature.ts`;
+- modifica scanner, loyalty, pedidos, caja, salón o importaciones;
+- crea aliases de permisos;
+- ejecuta shadow o cutover;
+- ejecuta rollback;
+- cambia tablas, vistas, funciones, RPC, triggers, grants o RLS;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- modifica 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5;
+- ejecuta `PULSO-AUTH-016`.
+
+---
+
+#### 50. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-014 — Mantener configuración administrativa separada`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-016 — Ejecutar pruebas integrales`
 ### [ ] PULSO-AUTH-016 — Ejecutar pruebas integrales
