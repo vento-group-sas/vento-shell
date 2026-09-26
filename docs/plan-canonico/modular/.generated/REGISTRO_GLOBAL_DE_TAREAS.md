@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1363** |
+| Aprobadas | **1364** |
 | En propuesta | **0** |
-| No iniciadas | **233** |
+| No iniciadas | **232** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.40% (1363/1596)** |
+| Porcentaje de completamiento | **85.46% (1364/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **233** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1264** |
+| ⏸ NO_EVALUADA | **232** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1265** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-009` — Proteger acumulación de puntos | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-010` — Proteger redenciones | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-011` — Limitar operación a sede del turno | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-010` — Proteger redenciones | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-011` — Limitar operación a sede del turno | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-012` — Integrar dispositivos POS compartidos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1124,7 +1124,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-007` | Definir permisos de supervisor | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-008` | Definir permisos de cierre y anulación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-009` | Proteger acumulación de puntos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-010` | Proteger redenciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-010` | Proteger redenciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-011` | Limitar operación a sede del turno | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-012` | Integrar dispositivos POS compartidos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-013` | Registrar trabajador que ejecuta la operación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |

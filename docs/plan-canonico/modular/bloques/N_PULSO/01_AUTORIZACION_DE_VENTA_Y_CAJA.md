@@ -11643,7 +11643,1048 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-010 — Proteger redenciones`
-### [ ] PULSO-AUTH-010 — Proteger redenciones
+### ✅ PULSO-AUTH-010 — Proteger redenciones
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-009 — Proteger acumulación de puntos
+**Tarea siguiente:** PULSO-AUTH-011 — Limitar operación a sede del turno
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — protección server-side de la validación y consumo de redenciones PASS desde PULSO mediante permiso atómico `pulso.loyalty.points.redeem`, intención preexistente, estado consumible, actor y territorio efectivos, elegibilidad y vigencia, coherencia con ledger, uso único, atomicidad, idempotencia, concurrencia, recuperación de resultado y cierre de bypass directos por Data API o autorización legacy
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; toda materialización futura ocurre únicamente mediante `PULSO-AUTH-010::<implementation_unit_id>` después de que el paquete propietario aplicable satisfaga `E5-GATE-008::<package_id> = PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera completa de autorización, integridad y uso único para validar y consumir desde PULSO una intención de redención creada por PASS, sin permitir que la posesión de un código, un estado `pending`, `pulso.pos.main`, una lista legacy de roles, una policy amplia, una firma de dispositivo o una llamada directa a la tabla puedan convertir por sí solas el ticket en un canje válido.
+
+La regla raíz queda:
+
+```text
+INTENCION PASS EXISTENTE Y RESOLUBLE
++
+CLIENTE Y RECOMPENSA CORRECTOS
++
+ESTADO CONSUMIBLE Y VIGENCIA VALIDA
++
+ACTOR Y CONTEXTO OPERATIVO VALIDOS
++
+SEDE EFECTIVA COMPATIBLE
++
+PERMISO pulso.loyalty.points.redeem
++
+EFECTO DE PUNTOS / LEDGER COHERENTE
++
+IDENTIDAD ESTABLE DEL CONSUMO
++
+COMANDO SERVIDOR AUTORITATIVO
+=
+REDENCION AUTORIZABLE
+```
+
+Ningún elemento aislado sustituye el conjunto completo.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-009
+
+`PULSO-AUTH-009` entrega a esta tarea las siguientes reglas reutilizables:
+
+- `pulso.pos.main` es evidencia AS-IS y no autoridad final;
+- toda mutación de fidelización exige PermissionKey exacta;
+- PULSO solicita el efecto y PASS conserva ownership del ledger y saldo;
+- actor, territorio, recurso e identidad idempotente se revalidan en el punto de efecto;
+- un retry equivalente no puede producir un segundo efecto;
+- un resultado desconocido se reconcilia antes de repetir;
+- una capa inferior no puede conservar una autoridad más débil que la acción protegida.
+
+La autoridad de acumulación no se reutiliza para redención:
+
+```text
+pulso.loyalty.points.accumulate
+!=
+pulso.loyalty.points.redeem
+```
+
+---
+
+#### 3. Handoff recibido de PULSO-AUTH-008
+
+`PULSO-AUTH-008` conserva separados cancelación, void, refund y fidelización.
+
+Regla heredada:
+
+```text
+REFUND / VOID / CANCEL
+!=
+AUTOMATIC LOYALTY RESTORE
+```
+
+Una restitución posterior de puntos, cuando proceda, debe ser un hecho PASS autorizado, correlacionado, idempotente y auditable. Esta tarea no convierte el consumo de una redención en owner de compensaciones posteriores.
+
+---
+
+#### 4. Handoffs de PULSO-AUTH-006 y PULSO-AUTH-007
+
+`PULSO-AUTH-006` definió:
+
+```text
+pulso.loyalty.points.redeem
+```
+
+como capacidad ordinaria de `cajero_satelite`, con:
+
+```text
+OPERATIONAL_ONLY / T+C
+```
+
+y alcance máximo de redención vigente del cliente, sede compatible y efecto único.
+
+`PULSO-AUTH-007` confirmó que `gerencia_operativa` no recibe redención por supervisión.
+
+Por tanto:
+
+```text
+cajero_satelite + T+C + permiso exacto + recurso compatible
+→ actor ordinario autorizable
+
+gerencia_operativa
+→ NO GRANT DE REDENCION POR INFERENCIA
+```
+
+---
+
+#### 5. Contrato PASS consumido
+
+Esta tarea consume `PASS-INT-002 — Definir integración PULSO → PASS para redención` sin redefinir ownership.
+
+La frontera permanece:
+
+```text
+PASS
+→ crea y gobierna la intención, recompensa, regla, ledger y semántica de fidelización
+
+PULSO
+→ resuelve la intención presentada y solicita validarla/consumirla dentro de contexto autorizado
+```
+
+Crear un ticket no equivale a usarlo y mostrar un QR no equivale a confirmar un canje.
+
+---
+
+#### 6. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador define una sola vez el contrato global.
+
+Cada materialización futura utiliza:
+
+```text
+PULSO-AUTH-010::<implementation_unit_id>
+```
+
+No existe una identidad de unidad física autorizada por este documento.
+
+---
+
+#### 7. Gate físico posterior
+
+Una unidad física de `PULSO-AUTH-010` solo puede comenzar cuando concurran:
+
+```text
+PAQUETE PROPIETARIO APLICABLE
++
+E5-GATE-008::<package_id> = PASS
++
+implementation_unit_id RESUELTO POR EL CARRIL FISICO
++
+AUTORIZACION FISICA EXPLICITA
+```
+
+El marcador global no ejecuta cambios de producto, base de datos, permisos, RLS, grants, funciones ni datos.
+
+---
+
+#### 8. Superficie protegida
+
+La evidencia AS-IS relevante comprende:
+
+```text
+/scanner
+modo redemption
+processRedemptionAction
+validateRedemption
+markRedemptionAsUsed
+pass.loyalty_redemptions
+pass.loyalty_rewards
+pass.loyalty_transactions
+```
+
+Estas identidades describen la implementación observada. No sustituyen la PermissionKey ni convierten una función auxiliar o una tabla en contrato de autoridad.
+
+---
+
+#### 9. Autoridad efectiva
+
+La autorización de consumo se calcula como intersección de:
+
+```text
+principal autenticado
+∩ actor humano efectivo
+∩ trabajador activo
+∩ turno vigente
+∩ check-in activo
+∩ cajero_satelite
+∩ sede y area operativas efectivas
+∩ dispositivo permitido cuando aplique
+∩ pulso.loyalty.points.redeem
+∩ redencion real
+∩ estado consumible
+∩ reglas PASS vigentes
+∩ ausencia de deny prevalente
+```
+
+La ausencia, ambigüedad o incompatibilidad de cualquier componente requerido produce denegación cerrada.
+
+---
+
+#### 10. Lo que no concede autoridad
+
+No constituyen autorización suficiente:
+
+```text
+poseer el QR o codigo
+status = pending
+pulso.access
+pulso.pos.main
+employees.role = cajero
+employees.role = gerente
+is_active_staff()
+pertenecer a una sede en employee_sites
+pantalla visible
+boton visible
+sesion tecnica del dispositivo
+PIN o firma correcta
+order_id enviado por cliente
+policy RLS permisiva
+UPDATE directo sobre la tabla
+```
+
+Cada elemento puede aportar contexto o una defensa parcial, pero no sustituye la decisión empresarial completa.
+
+---
+
+#### 11. Intención y consumo permanecen separados
+
+La redención conserva dos hechos distintos:
+
+```text
+PASS CREA INTENCION
+!=
+PULSO CONSUME INTENCION
+```
+
+PULSO no crea un ticket alternativo cuando el presentado falla, no cambia el cliente, no sustituye la recompensa y no reconstruye una intención ausente desde datos de interfaz.
+
+---
+
+#### 12. Identidad estable de la redención
+
+El servidor debe resolver una identidad durable del ticket y demostrar, como mínimo:
+
+- redención exacta;
+- cliente exacto;
+- recompensa exacta;
+- regla/version aplicable;
+- costo o efecto de puntos;
+- sede o ámbito permitido;
+- estado actual;
+- vigencia;
+- correlación con ledger o efecto de puntos;
+- identidad estable del consumo o mecanismo equivalente de replay seguro.
+
+El texto del QR es un localizador; no es la autoridad empresarial.
+
+---
+
+#### 13. PermissionKey exacta
+
+La mutación objetivo exige:
+
+```text
+pulso.loyalty.points.redeem
+```
+
+No son equivalentes:
+
+```text
+pulso.access
+pulso.pos.main
+pos.loyalty.validate_redemption
+nombre del rol
+policy de tabla
+```
+
+Un action code de auditoría puede conservar identidad propia, pero no sustituye la PermissionKey evaluada para autorizar la mutación.
+
+---
+
+#### 14. Revalidación en el punto de efecto
+
+Inmediatamente antes de cambiar la redención a usada/validada, la frontera autoritativa debe recalcular:
+
+- sesión y principal;
+- actor humano;
+- turno y check-in;
+- rol operativo;
+- permiso exacto;
+- sede y área efectivas;
+- redención;
+- cliente y recompensa;
+- regla/vigencia;
+- estado de puntos/ledger;
+- estado actual de la redención;
+- orden o hecho comercial cuando corresponda;
+- identidad idempotente y estado previo de esa identidad.
+
+Una autorización obtenida antes de resolver el ticket no se reutiliza ciegamente después de cambios concurrentes.
+
+---
+
+#### 15. Secuencia AS-IS de `processRedemptionAction`
+
+La acción observada ejecuta actualmente, en este orden:
+
+```text
+validateRedemption(qrCode)
+→ requireAppAccess(... pos.main ...)
+→ requireSharedDeviceActorSignature(...)
+→ markRedemptionAsUsed(...)
+→ attachSharedDeviceActionSignatureTarget(...)
+```
+
+La lectura/resolución de la redención ocurre antes del guard PULSO.
+
+Eso constituye adopción parcial, no cumplimiento del contrato objetivo.
+
+---
+
+#### 16. Guard AS-IS
+
+El guard observado de `processRedemptionAction` usa:
+
+```text
+permissionCode = pos.main
+```
+
+sin proporcionar en esa llamada un `siteId` derivado de la redención.
+
+Por tanto, esa capa no demuestra todavía:
+
+```text
+pulso.loyalty.points.redeem
++
+territorio efectivo de la redencion
+```
+
+La materialización debe resolver ambos antes de autorizar el efecto.
+
+---
+
+#### 17. Validación AS-IS del ticket
+
+`validateRedemption` consulta `pass.loyalty_redemptions` por `qr_code` y verifica principalmente:
+
+- existencia de una fila resoluble;
+- `status = pending`;
+- nombre de recompensa para presentación.
+
+La fuente observada no demuestra en esa función:
+
+- PermissionKey exacta;
+- turno/check-in;
+- sede efectiva;
+- vigencia/expiración;
+- `is_active` de la recompensa;
+- coherencia entre `site_id` de redención y recompensa;
+- estado del ledger o débito/reserva de puntos;
+- compatibilidad con pedido cuando corresponda.
+
+---
+
+#### 18. Mutación AS-IS
+
+`markRedemptionAsUsed` realiza actualmente:
+
+```text
+auth.getUser()
+→ UPDATE pass.loyalty_redemptions
+   SET status = validated,
+       validated_at = timestamp,
+       order_id = valor opcional
+   WHERE id = redemptionId
+     AND status = pending
+```
+
+La función comprueba autenticación y una transición `pending -> validated`, pero no revalida por sí sola el contrato completo de `pulso.loyalty.points.redeem`.
+
+---
+
+#### 19. Compare-and-set como defensa parcial
+
+El filtro:
+
+```text
+WHERE id = redemptionId
+AND status = pending
+```
+
+es una defensa útil contra dos updates secuenciales o concurrentes sobre la misma fila.
+
+Sin embargo:
+
+```text
+COMPARE-AND-SET DE ESTADO
+!=
+IDEMPOTENCIA EMPRESARIAL COMPLETA
+```
+
+Un segundo intento actualmente puede recibir “ya utilizado o no disponible”, pero no existe por esta evidencia una identidad de operación que permita recuperar el resultado durable original y distinguir replay equivalente de conflicto semántico.
+
+---
+
+#### 20. Uso único e idempotencia
+
+La materialización debe garantizar:
+
+```text
+MISMA REDENCION
++
+MISMA IDENTIDAD DE CONSUMO
++
+MISMA HUELLA LOGICA
+=
+MISMO RESULTADO EMPRESARIAL
+```
+
+Y:
+
+```text
+MISMA IDENTIDAD DE CONSUMO
++
+HUELLA INCOMPATIBLE
+=
+CONFLICTO
+```
+
+Un retry no genera un segundo consumo, un segundo débito, otra intención ni un resultado contradictorio.
+
+---
+
+#### 21. Concurrencia
+
+Dos cajas, pestañas, dispositivos o requests que intenten consumir la misma redención deben converger en:
+
+```text
+UN GANADOR EMPRESARIAL
++
+CERO SEGUNDO EFECTO
+```
+
+Los demás intentos deben recuperar el resultado durable o recibir un conflicto/estado no consumible inequívoco.
+
+La lectura previa `pending` no es control suficiente de concurrencia.
+
+---
+
+#### 22. Resultado desconocido
+
+Una pérdida de respuesta después de iniciar la mutación no autoriza a asumir fallo.
+
+Ante timeout, desconexión o respuesta perdida:
+
+```text
+NO CREAR OTRO TICKET
+NO RESTAURAR pending DESDE CLIENTE
+NO REPETIR CON IDENTIDAD NUEVA
+NO VOLVER A DEBITAR PUNTOS
+NO MOSTRAR CANJE CONFIRMADO SIN EVIDENCIA
+RECONCILIAR RESULTADO DURABLE
+```
+
+Si el resultado no puede determinarse con seguridad, queda `RECONCILIATION_REQUIRED`.
+
+---
+
+#### 23. Clases semánticas mínimas de resultado
+
+La frontera de consumo debe distinguir al menos:
+
+| Clase | Significado |
+| --- | --- |
+| `APPLIED` | la redención fue consumida exactamente una vez |
+| `ALREADY_APPLIED` | el mismo efecto ya existe y se recupera sin repetirlo |
+| `AUTH_DENIED` | falta autoridad, contexto o permiso exacto |
+| `TERRITORY_DENIED` | la sede efectiva no puede consumir el ticket |
+| `STATE_REJECTED` | el ticket no está consumible |
+| `ELIGIBILITY_REJECTED` | cliente, recompensa, vigencia o ledger no satisfacen el contrato |
+| `IDEMPOTENCY_CONFLICT` | la misma identidad representa contenido incompatible |
+| `UNKNOWN_OUTCOME` | no puede demostrarse éxito ni fallo sin conciliación |
+| `TECHNICAL_FAILURE` | error técnico sin efecto confirmado |
+
+Los nombres son semánticos y no obligan un enum físico concreto.
+
+---
+
+#### 24. Territorio de la redención
+
+La sede efectiva se resuelve desde el contexto autorizado y la redención/recompensa, no desde un valor libre del navegador.
+
+El esquema observado contiene `site_id` en:
+
+```text
+pass.loyalty_redemptions
+pass.loyalty_rewards
+```
+
+La materialización debe definir y comprobar la relación válida entre ambos conforme al contrato PASS aplicable.
+
+`PULSO-AUTH-011` conserva la materialización transversal del límite territorial del turno y recurso.
+
+---
+
+#### 25. Estado canónico de RLS esperado por AUTH-DB-002
+
+La migración canónica `AUTH-DB-002` elimina las policies amplias:
+
+```text
+staff_select_all_redemptions
+staff_validate_redemptions
+```
+
+y conserva como dependencias positivas transitorias:
+
+```text
+loyalty_redemptions_select_cashier
+loyalty_redemptions_validate_cashier
+loyalty_redemptions_select_own
+```
+
+Por tanto, las policies `staff_*` no forman parte del estado endurecido objetivo ya aprobado.
+
+---
+
+#### 26. Estado remoto de desarrollo observado
+
+En Supabase dev se observaron todavía:
+
+```text
+staff_select_all_redemptions
+staff_validate_redemptions
+```
+
+junto con las policies `loyalty_redemptions_*_cashier`.
+
+Además, `supabase_migrations.schema_migrations` contiene únicamente el baseline observado y no demuestra que `AUTH-DB-002` haya sido aplicado en ese ambiente.
+
+Esta divergencia se clasifica como estado de materialización pendiente; no redefine el contrato canónico.
+
+---
+
+#### 27. Policies cashier siguen siendo transitorias
+
+Aunque `AUTH-DB-002` conserva `loyalty_redemptions_select_cashier` y `loyalty_redemptions_validate_cashier`, esas policies se basan en:
+
+- empleado activo;
+- lista de roles base;
+- sede principal o `employee_sites`;
+- `status = pending` para update.
+
+No demuestran por sí solas:
+
+```text
+cajero_satelite
++
+T+C
++
+pulso.loyalty.points.redeem
++
+actor compartido
++
+regla PASS completa
+```
+
+La materialización final debe alinear la capa DB con la misma autoridad empresarial.
+
+---
+
+#### 28. Frontera de columnas
+
+Las policies AS-IS de UPDATE controlan condición de fila y estado resultante, pero no constituyen por sí mismas un contrato de columnas inmutables.
+
+La tabla observada conserva grants amplios de UPDATE para `authenticated` y columnas empresariales como:
+
+```text
+user_id
+reward_id
+points_spent
+site_id
+order_id
+metadata
+status
+validated_at
+```
+
+La solución objetivo debe impedir que una llamada directa modifique campos distintos de los autorizados para el consumo o debe encapsular la mutación detrás de un comando propietario equivalente.
+
+---
+
+#### 29. ACL y Data API no sustituyen autorización empresarial
+
+Los grants observados permiten a roles de Data API alcanzar las relaciones, mientras RLS decide filas.
+
+La regla objetivo permanece:
+
+```text
+GRANT
++
+RLS
+!=
+PERMISO EMPRESARIAL COMPLETO
+```
+
+El consumo de redención debe quedar disponible únicamente por una frontera que revalide `pulso.loyalty.points.redeem` y el resto del contrato, sin un bypass de menor autoridad.
+
+---
+
+#### 30. Modelo de estado observado
+
+El constraint remoto observado admite:
+
+```text
+pending
+validated
+cancelled
+```
+
+La semántica contractual distingue además condiciones como vencida, inválida, fuera de territorio o no elegible aunque no deban convertirse necesariamente en nuevos valores persistidos.
+
+No se inventa un enum físico adicional desde esta tarea.
+
+---
+
+#### 31. Vigencia y expiración
+
+La tabla observada no expone una columna dedicada `expires_at` para `pass.loyalty_redemptions`.
+
+Eso no autoriza a omitir vigencia.
+
+La materialización deberá obtener la vigencia desde la fuente canónica que el contrato PASS defina y fallar cerrado cuando no pueda demostrarla.
+
+No se crea aquí una nueva política de expiración.
+
+---
+
+#### 32. Recompensa y aplicabilidad
+
+Antes del consumo deben revalidarse como mínimo:
+
+- `reward_id` correcto;
+- recompensa existente;
+- estado activo cuando corresponda;
+- sede/ámbito aplicable;
+- costo o efecto de puntos coherente;
+- regla/version vigente;
+- ausencia de sustitución de recompensa por payload cliente.
+
+El AS-IS de `validateRedemption` obtiene el nombre de la recompensa, pero esa lectura no demuestra toda la elegibilidad anterior.
+
+---
+
+#### 33. Identidad del cliente
+
+La redención permanece vinculada a su `user_id` canónico.
+
+PULSO no puede:
+
+- sustituir el cliente durante el consumo;
+- inferir otro cliente por nombre, correo o teléfono;
+- aplicar el ticket al cliente seleccionado previamente en otro modo del scanner;
+- usar el actor trabajador como identidad cliente.
+
+La identidad del trabajador y la identidad del cliente permanecen separadas.
+
+---
+
+#### 34. Ledger y efecto de puntos
+
+El consumo no debe aplicar nuevamente el costo de puntos si la creación de intención ya produjo un débito o reserva.
+
+Antes de confirmar debe poder demostrarse:
+
+```text
+REDENCION
+↔
+EFECTO DE PUNTOS ESPERADO
+↔
+LEDGER / PROYECCION COHERENTE
+```
+
+Si esa relación no es demostrable, el ticket no se consume a ciegas y pasa a rechazo o conciliación según el estado real.
+
+---
+
+#### 35. Pedido o hecho comercial asociado
+
+`markRedemptionAsUsed` acepta `orderId` opcional y la UI observada invoca `processRedemptionAction` sin proporcionar uno.
+
+Por tanto, el runtime actual no demuestra correlación obligatoria con pedido.
+
+La regla objetivo queda:
+
+- cuando la recompensa o proceso requiera pedido/venta, la relación debe resolverse y validarse server-side antes del consumo;
+- cuando el contrato PASS permita un beneficio sin pedido, esa ausencia debe estar explícitamente autorizada por la regla aplicable;
+- un `orderId` enviado por cliente nunca amplía elegibilidad.
+
+---
+
+#### 36. Ambigüedad de código
+
+En el esquema observado no existe un índice único sobre `pass.loyalty_redemptions.qr_code`.
+
+La consulta AS-IS usa resolución de una sola fila, por lo que una ambigüedad no debe convertirse en selección arbitraria.
+
+Regla objetivo:
+
+```text
+CODIGO AMBIGUO
+→ DENY / CONFLICT
+```
+
+La garantía de identidad única de la intención pertenece al contrato PASS y a su materialización propietaria; PULSO solo consume una identidad inequívoca.
+
+---
+
+#### 37. Dispositivo compartido
+
+La acción observada solicita firma de trabajador antes de la mutación cuando la sesión es compartida y utiliza como target la redención ya resuelta.
+
+Esto es una defensa parcial útil.
+
+Sin embargo:
+
+```text
+FIRMA VALIDA
+!=
+PERMISO pulso.loyalty.points.redeem
+```
+
+`PULSO-AUTH-012` conserva la integración del dispositivo y `PULSO-AUTH-013` la atribución durable del trabajador efectivo.
+
+---
+
+#### 38. Secreto efímero del trabajador
+
+Cuando exista PIN/firma:
+
+- no forma parte del ticket;
+- no se persiste en ledger;
+- no se registra en logs o metadata empresarial;
+- no se reutiliza para otro canje;
+- no amplía autoridad;
+- se limpia conforme al contrato de dispositivo compartido.
+
+Esta tarea no crea credenciales nuevas.
+
+---
+
+#### 39. Reversión o restitución posterior
+
+Consumir una redención no concede autoridad para restaurar puntos, cancelar el ticket retroactivamente o borrar evidencia.
+
+Si un hecho posterior exige restitución:
+
+```text
+NUEVO HECHO PASS AUTORIZADO
++
+REFERENCIA AL HECHO ORIGINAL
++
+IDEMPOTENCIA
++
+AUDITORIA
+```
+
+No se modifica destructivamente el historial del canje.
+
+---
+
+#### 40. Offline y degradación
+
+Sin autoridad servidor disponible no existe canje definitivo local.
+
+La interfaz puede conservar estado suficiente para informar al operador, pero no puede:
+
+- marcar localmente el ticket como usado;
+- asumir éxito;
+- crear otro ticket;
+- ejecutar una compensación local;
+- reintentar con identidad nueva.
+
+Una futura cola gobernada deberá satisfacer las mismas invariantes y no se crea aquí.
+
+---
+
+#### 41. Auditoría mínima
+
+Cada consumo debe permitir reconstruir:
+
+```text
+REDENCION / TICKET
+CLIENTE
+RECOMPENSA
+REGLA / VERSION
+EFECTO DE PUNTOS
+ESTADO ANTERIOR
+ESTADO RESULTANTE
+SEDE
+ACTOR HUMANO
+PRINCIPAL TECNICO
+DISPOSITIVO CUANDO APLIQUE
+PERMISO EVALUADO
+PEDIDO / HECHO COMERCIAL CUANDO APLIQUE
+IDENTIDAD IDEMPOTENTE
+RESULTADO DURABLE
+TIMESTAMP
+CORRELACION
+```
+
+No se almacenan PIN, secretos, tokens ni datos personales innecesarios.
+
+---
+
+#### 42. Invariantes de autorización e integridad
+
+| Escenario | Resultado obligatorio |
+| --- | --- |
+| código válido pero sin `pulso.loyalty.points.redeem` | `DENY` |
+| `pulso.pos.main` legacy sin permiso atómico objetivo | no demuestra conformidad final |
+| `gerencia_operativa` por supervisión | `DENY` |
+| cajero sin turno/check-in vigente | `DENY` |
+| lectura del ticket antes de autorización completa | no puede convertirse en mutación autorizada |
+| redención `validated` | cero segundo consumo |
+| redención `cancelled` | `DENY` |
+| redención vencida/no vigente | `DENY` |
+| sede efectiva incompatible | `DENY` |
+| recompensa inactiva/no aplicable | `DENY` |
+| ledger/efecto de puntos incoherente | rechazo o conciliación, nunca consumo ciego |
+| mismo consumo concurrente | un ganador empresarial |
+| retry equivalente | mismo resultado durable, cero segundo efecto |
+| misma identidad con huella incompatible | `IDEMPOTENCY_CONFLICT` |
+| timeout después de enviar | reconciliar antes de repetir |
+| firma compartida válida pero actor sin permiso | `DENY` |
+| UPDATE directo con autoridad menor | debe quedar bloqueado o exigir contrato equivalente |
+| código ambiguo | `DENY` o conflicto, nunca selección arbitraria |
+| refund/void/cancel posterior | no restaura loyalty por inferencia |
+
+---
+
+#### 43. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `validateRedemption` se ejecuta antes de `requireAppAccess`. | la resolución del ticket no parte del guard PULSO objetivo | `PULSO-AUTH-010::<implementation_unit_id>` | la frontera autoritativa ordena autenticación/contexto/permiso y resolución de recurso sin exponer ni mutar por una autoridad inferior |
+| `processRedemptionAction` usa `pos.main` y no pasa `siteId` al guard observado. | falta demostrar PermissionKey y territorio exactos | `PULSO-AUTH-010::<implementation_unit_id>` + `PULSO-AUTH-015` | `pulso.loyalty.points.redeem` y territorio efectivo se revalidan en la mutación |
+| `validateRedemption` comprueba esencialmente existencia y `pending`, sin demostrar vigencia, recompensa activa, territorio, ledger ni regla completa. | un ticket formalmente pendiente puede no ser elegible | `PULSO-AUTH-010::<implementation_unit_id>` + contrato PASS aplicable | todas las condiciones de elegibilidad se resuelven desde fuentes autoritativas antes del efecto |
+| `markRedemptionAsUsed` revalida autenticación y `pending`, pero no el contrato completo de autorización. | helper inferior con autoridad insuficiente puede convertirse en bypass | `PULSO-AUTH-010::<implementation_unit_id>` | la capa de efecto exige contrato completo o deja de ser invocable por consumidores de menor autoridad |
+| El compare-and-set `pending -> validated` evita parte del doble uso, pero no conserva identidad de consumo ni replay de resultado. | retry o respuesta perdida no tienen recuperación idempotente completa | `PULSO-AUTH-010::<implementation_unit_id>` | misma identidad/huella recupera el resultado durable; huella incompatible produce conflicto |
+| Supabase dev conserva `staff_select_all_redemptions` y `staff_validate_redemptions`, aunque `AUTH-DB-002` las elimina. | ambiente observado no refleja el hardening canónico | materialización DB aplicable desde `vento-shell` + `PULSO-AUTH-010::<implementation_unit_id>` | ambiente objetivo demuestra ausencia de policies broad y pruebas negativas correspondientes |
+| Las policies cashier conservadas por `AUTH-DB-002` usan rol base/sede y no PermissionKey/T+C. | hardening histórico no equivale a autorización PULSO final | `PULSO-AUTH-010::<implementation_unit_id>` + `PULSO-AUTH-015` | DB evalúa permiso/territorio/contexto equivalentes al contrato objetivo |
+| Los grants y la policy de UPDATE no demuestran restricción de columnas al efecto mínimo de consumo. | una llamada directa podría intentar modificar atributos ajenos al canje | unidad física propietaria + contratos AUTH/DB aplicables | pruebas demuestran que columnas no autorizadas no son mutables por la frontera PULSO |
+| No existe `expires_at` dedicado en la redención observada. | vigencia no puede inferirse por presencia de la fila | contrato PASS aplicable + unidad física propietaria | la fuente autoritativa de vigencia queda definida, consultada y probada fail-closed |
+| El esquema observado no impone unicidad de `qr_code`. | identidad de ticket puede no estar estructuralmente garantizada | materialización PASS propietaria + `PULSO-AUTH-010::<implementation_unit_id>` | códigos ambiguos son imposibles o fallan cerrados con identidad durable inequívoca |
+| La UI observada llama redención sin `orderId`. | no se demuestra vínculo con pedido cuando el beneficio lo requiere | `PULSO-AUTH-010::<implementation_unit_id>` | el proceso valida pedido/hecho comercial cuando la regla lo exige o demuestra explícitamente que no aplica |
+| Supabase dev no contiene redenciones ni movimientos de loyalty de evidencia operativa. | no existe prueba E2E real de allow/deny, concurrencia o retry | `PULSO-AUTH-016` | pruebas controladas materializadas demuestran consumo único, territorio, actor, ledger y recuperación |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 44. Frontera con tareas posteriores
+
+| Tarea | Responsabilidad reservada |
+| --- | --- |
+| `PULSO-AUTH-011` | hacer vinculante el límite territorial del turno y recurso |
+| `PULSO-AUTH-012` | integrar terminal compartida sin transferir privilegios |
+| `PULSO-AUTH-013` | registrar al trabajador efectivo como actor durable |
+| `PULSO-AUTH-014` | mantener configuración y administración separadas de operación |
+| `PULSO-AUTH-015` | materializar PermissionKeys, migrar consumidores y retirar broad authority |
+| `PULSO-AUTH-016` | certificar allow/deny, uso único, concurrencia, recuperación e integración |
+
+La autoridad de redimir no se reutiliza como autoridad de ninguna de esas acciones.
+
+---
+
+#### 45. Materialización física posterior
+
+La futura unidad `PULSO-AUTH-010::<implementation_unit_id>` materializa únicamente el alcance declarado por su lineage y autorización física.
+
+Puede requerir, según la unidad propietaria aprobada:
+
+- guard server-side;
+- comando/RPC propietario;
+- ajustes de RLS y ACL;
+- restricciones de columnas;
+- contrato de idempotencia/replay;
+- correlación con PASS y ledger;
+- tipos/contratos compartidos;
+- migración de consumidores;
+- pruebas de seguridad, concurrencia y recuperación.
+
+Cualquier modificación Supabase de VENTO deberá crearse, versionarse, documentarse y ejecutarse desde `vento-shell`.
+
+Este marcador global no ejecuta esos cambios.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: servidor autorizado, PermissionKey exacta, territorio, ticket consumible, vigencia, recompensa, ledger, actor, dispositivo, uso único, atomicidad, idempotencia, concurrencia, resultado desconocido, recuperación y prohibición de bypass ya poseen cobertura verificable vigente. Esta tarea especializa esa cobertura sobre la materialización PULSO → PASS de redención sin crear una obligación material nueva.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente de:
+
+- `TREQ-PASS-008` para mutaciones de puntos/redención solo mediante contratos servidor autorizados, atómicos e idempotentes;
+- `TREQ-PASS-010` para ledger inmutable/reconciliable y reintentos sin duplicación;
+- `TREQ-PASS-022` para sesión, acceso PULSO, sede efectiva y permisos exactos por acción;
+- `TREQ-PASS-027` para código, cliente, recompensa, sede, estado, vigencia, efecto de puntos, actor, uso único y transición atómica/idempotente;
+- `TREQ-PASS-028` para separación de modos del scanner y limpieza de estado incompatible;
+- `TREQ-PASS-029` para actor humano en dispositivo compartido;
+- `TREQ-PASS-030` para secreto efímero y seguro del PIN/firma;
+- `TREQ-PASS-032` para éxito solo después de resultado confirmado y diferenciación de duplicado, conflicto, denegación y ya aplicado;
+- `TREQ-PULSO-014`, `TREQ-PULSO-015`, `TREQ-PULSO-016` y `TREQ-PULSO-026` para acceso protegido, territorio, separación entre vista/mutación y suficiencia contractual del permiso;
+- `TREQ-AUTH-001`, `TREQ-AUTH-004`, `TREQ-AUTH-008`, `TREQ-AUTH-009`, `TREQ-AUTH-011`, `TREQ-AUTH-013`, `TREQ-AUTH-014` y `TREQ-AUTH-015` para autorización canónica, contexto, territorio, actor compartido, no bypass, invalidación stale y evidencia;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-111`, `TREQ-INTEGRATION-112`, `TREQ-INTEGRATION-113`, `TREQ-INTEGRATION-120`, `TREQ-INTEGRATION-121` y `TREQ-INTEGRATION-142` para identidad estable, replay, conflicto, concurrencia y reconciliación de resultado desconocido.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue insertado en un checkout del usuario ni sometido allí a formateador, quality, delivery, topología y batería global. |
+| REMOTA | PASS | Se verificaron `vento-shell` canónico, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, base aprobada `PULSO-AUTH-009`, `PASS-INT-002`, `vento-pulso/main`, Server Action/API del scanner y estado read-only de tablas, policies, constraints, índices, grants, catálogo de permisos y datos de fidelización en Supabase dev. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron canjes, redenciones, retries, timeouts, concurrencia, dispositivos compartidos, restores ni pruebas E2E reales; las redenciones y transacciones observadas estaban sin filas de evidencia operativa. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `PULSO-AUTH-010::<implementation_unit_id>` ni ejecuta cambios POST_E5. |
+
+---
+
+#### 49. Criterios de aceptación
+
+- [ ] La PermissionKey protegida es exactamente `pulso.loyalty.points.redeem`.
+- [ ] `cajero_satelite` permanece actor ordinario autorizable únicamente con `T+C` y territorio compatible.
+- [ ] `gerencia_operativa` no recibe redención por supervisión.
+- [ ] `pulso.pos.main` no se acepta como autoridad final.
+- [ ] Acumulación y redención mantienen permisos distintos.
+- [ ] Crear intención PASS y consumirla desde PULSO permanecen como hechos distintos.
+- [ ] La posesión del QR/código no concede autoridad.
+- [ ] La redención se resuelve de forma inequívoca.
+- [ ] Cliente, recompensa, regla, sede, estado y vigencia se revalidan antes del efecto.
+- [ ] El guard final evalúa `pulso.loyalty.points.redeem` y territorio efectivo.
+- [ ] La lectura previa del ticket no se convierte en autorización de mutación.
+- [ ] `pending -> validated` se conserva como compare-and-set o garantía equivalente, sin tratarla como idempotencia completa.
+- [ ] Existe identidad/replay suficiente para devolver el resultado durable del mismo consumo.
+- [ ] Misma identidad con huella incompatible produce conflicto.
+- [ ] Dos consumos concurrentes producen un único ganador empresarial.
+- [ ] Un timeout se reconcilia antes de repetir.
+- [ ] Un ticket validado/cancelado/vencido/no elegible no produce otro efecto.
+- [ ] La recompensa se revalida y no se sustituye desde cliente.
+- [ ] El consumo no debita dos veces puntos ya debitados/reservados.
+- [ ] Ledger y redención permanecen reconciliables.
+- [ ] Pedido/hecho comercial se valida cuando la regla lo exige.
+- [ ] Un `orderId` cliente no amplía elegibilidad.
+- [ ] Código ambiguo falla cerrado.
+- [ ] Policies broad `staff_*` no forman parte del estado objetivo.
+- [ ] Las policies cashier transitorias no se tratan como contrato final de PermissionKey/T+C.
+- [ ] La capa DB no permite UPDATE directo con autoridad menor ni mutación de columnas no autorizadas.
+- [ ] La firma compartida identifica al humano pero no concede permiso.
+- [ ] El PIN permanece efímero y fuera de la evidencia empresarial.
+- [ ] Refund, void o cancel no restauran puntos automáticamente.
+- [ ] Las clases de resultado distinguen aplicado, ya aplicado, denegado, rechazo, conflicto y resultado desconocido.
+- [ ] Todo hallazgo tiene propietario y condición de salida.
+- [ ] La topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 50. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- cambia `/scanner`;
+- cambia `processRedemptionAction`;
+- cambia `validateRedemption`;
+- cambia `markRedemptionAsUsed`;
+- crea una nueva pantalla de redención;
+- crea tickets o recompensas;
+- define nuevas reglas comerciales de canje;
+- inventa vigencias o costos;
+- cambia `pass.loyalty_redemptions`;
+- cambia `pass.loyalty_rewards`;
+- cambia `pass.loyalty_transactions`;
+- crea o revoca grants;
+- cambia RLS;
+- aplica `AUTH-DB-002`;
+- modifica Supabase remoto;
+- modifica datos;
+- restaura puntos;
+- ejecuta refund o void;
+- crea una cola offline;
+- implementa territorio de turno;
+- implementa dispositivo compartido;
+- implementa actor humano;
+- migra físicamente `pulso.pos.main`;
+- crea migraciones;
+- modifica el Registro 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5.
+
+---
+
+#### 51. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-009 — Proteger acumulación de puntos`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-010 — Proteger redenciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-011 — Limitar operación a sede del turno`
 ### [ ] PULSO-AUTH-011 — Limitar operación a sede del turno
 ### [ ] PULSO-AUTH-012 — Integrar dispositivos POS compartidos
 ### [ ] PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
