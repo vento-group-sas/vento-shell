@@ -25818,4 +25818,1511 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico`
-### [ ] PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico
+### ✅ PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
+**Tarea siguiente:** NUMERA-AUD-001 — Inventariar rutas, pantallas, componentes y formularios actuales
+**Tipo de tarea:** diseño documental integral de la arquitectura funcional y técnica objetivo de PULSO, consumiendo la clasificación forense cerrada de `PULSO-UX-020`, los procesos `VPROC-*`, el catálogo canónico de veinte superficies PULSO, las decisiones de experiencia `PULSO-UX-001..020`, autorización PULSO, contratos de integración y requisitos vigentes; define capas, ownership, identidades conceptuales, flujos, comandos, consultas, eventos, atomicidad, idempotencia, concurrencia, recuperación, offline/degradación, Realtime, periféricos, observabilidad y fronteras con NEXO, FOGO, NUMERA, PASS, SHELL y proveedores externos, sin adoptar schema, rutas, acciones, RPC, componentes o mocks históricos como contrato y sin ejecutar cambios físicos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, componentes, packages, Server Actions, API, RPC, tablas, vistas, funciones, triggers, RLS, grants, datos, migraciones, Supabase, colas, contratos generados, periféricos, despliegues ni configuración productiva
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la arquitectura funcional y técnica objetivo del POS integral PULSO como contrato reutilizable para la materialización posterior, sin utilizar el prototipo histórico como plantilla obligatoria.
+
+La regla raíz es:
+
+```text
+PROCESO CANONICO
++
+PANTALLA CANONICA
++
+AUTORIDAD EXACTA
++
+FUENTE DE VERDAD PROPIETARIA
++
+EFECTOS IDEMPOTENTES Y RECONCILIABLES
+=
+ARQUITECTURA OBJETIVO PULSO
+```
+
+No se acepta:
+
+```text
+CODIGO HISTORICO EXISTENTE
+=
+ARQUITECTURA OBJETIVO
+```
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-020
+
+`PULSO-UX-020` entrega una clasificación cerrada de 26 piezas históricas:
+
+```text
+REUTILIZABLE = 3
+ADAPTABLE = 16
+DESCARTABLE = 7
+TOTAL = 26
+```
+
+Disposición detallada recibida:
+
+```text
+REUTILIZAR = 3
+ADAPTAR = 3
+REESCRIBIR = 13
+REEMPLAZAR = 5
+RETIRAR = 0
+CONSERVAR_SOLO_COMO_HISTORIA = 2
+```
+
+Invariantes del handoff:
+
+```text
+PROTOTIPO HISTORICO = INVENTARIO FORENSE, NO ARQUITECTURA BASE
+26 PIEZAS HISTORICAS = 26 DECISIONES
+REUTILIZAR IDENTIDAD != CONGELAR SCHEMA
+ADAPTAR / REESCRIBIR PRESERVA NECESIDAD, NO DEUDA HISTORICA
+PULSO / NEXO / NUMERA / PASS CONSERVAN EFECTOS INDEPENDIENTES
+AUTORIZACION + IDEMPOTENCIA + CONCURRENCIA + RECUPERACION = OBLIGATORIAS
+```
+
+Esta tarea transforma esas restricciones en una arquitectura objetivo coherente.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- la arquitectura se define una sola vez;
+- no existe instancia física propia de `PULSO-UX-021`;
+- los packages posteriores consumen este contrato sin reabrir la tarea;
+- la materialización física conserva sus owners, packages, gates y autorizaciones;
+- ninguna decisión de esta tarea autoriza despliegue o mutación de datos.
+
+---
+
+#### 4. Resultado arquitectónico
+
+El resultado documental es:
+
+```text
+PULSO TARGET POS ARCHITECTURE = DEFINED
+HISTORICAL PROTOTYPE AS CONTRACT = REJECTED
+PHYSICAL IMPLEMENTATION = NOT AUTHORIZED
+```
+
+La arquitectura objetivo queda definida en cinco capas conceptuales:
+
+1. experiencia y superficies;
+2. coordinación de aplicación;
+3. dominio comercial PULSO;
+4. adaptadores e integraciones propietarias;
+5. persistencia y contratos físicos a materializar posteriormente.
+
+Las capas son responsabilidades, no packages, tablas ni rutas físicas nuevas.
+
+---
+
+#### 5. Alcance funcional obligatorio
+
+El POS integral objetivo debe soportar, como mínimo:
+
+- venta de mostrador y para llevar;
+- servicio de salón y mesas;
+- pedidos de canales externos;
+- catering y venta B2B;
+- reservas y eventos cuando el proceso lo requiera;
+- oferta, precios, disponibilidad, descuentos y cortesías gobernados;
+- preparación, barra, cocina, expedición y handoff;
+- cobro simple, parcial y con medios combinados;
+- efectivo, medios electrónicos y referencias externas;
+- apertura, operación, arqueo, cierre y diferencia de caja;
+- identificación de cliente, acumulación y redención mediante PASS;
+- inventario mediante efectos NEXO;
+- hechos económicos y conciliación mediante NUMERA;
+- documento fiscal mediante proveedor autorizado;
+- entrega mediante tercero cuando aplique;
+- anulaciones, cancelaciones, devoluciones, reversos, reembolsos y compensaciones diferenciadas;
+- operación en terminales compartidas;
+- degradación, recuperación, conciliación y auditoría.
+
+---
+
+#### 6. Fuera de alcance
+
+Esta arquitectura no:
+
+- selecciona framework nuevo;
+- define tablas físicas definitivas;
+- define nombres de columnas;
+- crea RPC;
+- crea Server Actions;
+- crea rutas físicas;
+- crea packages;
+- crea PermissionKeys;
+- publica grants;
+- diseña migraciones;
+- ejecuta Supabase;
+- reemplaza proveedores de pago o fiscales;
+- compra o configura hardware;
+- define SLO numéricos no aprobados;
+- ejecuta cutover;
+- certifica producción;
+- sustituye pruebas humanas o físicas de `UX-QA-027`.
+
+---
+
+#### 7. Principios arquitectónicos obligatorios
+
+La arquitectura conserva estos principios:
+
+1. una identidad empresarial no se fusiona por compartir pantalla;
+2. una pantalla no constituye autoridad;
+3. una ruta no constituye proceso completo;
+4. una estación no constituye permiso;
+5. PULSO conserva la operación comercial interna;
+6. NEXO conserva el hecho físico de inventario;
+7. PASS conserva identidad y fidelización del cliente;
+8. NUMERA conserva hechos económicos y conciliación financiera;
+9. FOGO conserva maestros y ejecución productiva que le pertenecen;
+10. un proveedor fiscal conserva numeración y resultado fiscal cuando sea el emisor autorizado;
+11. un canal externo conserva su autoridad de origen hasta normalización y aceptación internas;
+12. todo efecto repetible debe ser idempotente;
+13. todo resultado incierto debe poder reconciliarse;
+14. las correcciones no borran historia;
+15. los estados de dominios distintos permanecen ortogonales.
+
+---
+
+#### 8. Capas y responsabilidades
+
+| Capa | Responsabilidad | No debe hacer |
+| --- | --- | --- |
+| experiencia | presentar contexto, trabajo, estado, errores y siguiente acción | decidir autoridad o fabricar éxito |
+| coordinación de aplicación | recibir intención, resolver contexto, orquestar comandos y consultas | saltar owners o escribir varios dominios sin contrato |
+| dominio PULSO | gobernar pedido, servicio, cuenta comercial, venta, caja y correcciones comerciales | mantener stock, ledger PASS o contabilidad paralelos |
+| adaptadores | traducir contratos hacia NEXO, FOGO, PASS, NUMERA y terceros | convertirse en segunda fuente de verdad |
+| persistencia futura | conservar estado durable conforme al diseño físico aprobado | congelar el schema histórico por compatibilidad accidental |
+
+---
+
+#### 9. Ownership de hechos
+
+| Hecho | Owner objetivo | Proyección permitida en PULSO |
+| --- | --- | --- |
+| pedido y revisión comercial | PULSO | fuente propietaria |
+| mesa y sesión de servicio comercial | PULSO | fuente propietaria dentro de su alcance |
+| cuenta o check comercial | PULSO | fuente propietaria |
+| intención y resultado de cobro comercial | PULSO con proveedor cuando aplique | referencia y estado conciliable |
+| sesión y movimientos de caja | PULSO | fuente propietaria operacional |
+| movimiento físico de inventario | NEXO | receipt/estado correlacionado |
+| receta y maestro productivo | FOGO | referencia versionada necesaria para vender/preparar |
+| preparación comercial por pedido | PULSO en coordinación con estación propietaria | estado de cumplimiento del pedido, sin duplicar producción FOGO |
+| identidad y cuenta PASS | PASS | proyección mínima autorizada |
+| ledger, saldo, regla y reward | PASS | resultado correlacionado |
+| hecho económico y asiento | NUMERA | estado/referencia correlacionados |
+| documento fiscal | proveedor autorizado y contrato fiscal vigente | tipo, número, estado, referencia y error |
+| entrega de tercero | PULSO para promesa/resultado; tercero para ejecución externa | seguimiento y evidencia normalizados |
+
+---
+
+#### 10. Procesos comerciales propietarios
+
+La arquitectura se organiza alrededor de procesos canónicos y no alrededor de páginas históricas:
+
+| Proceso | Responsabilidad objetivo |
+| --- | --- |
+| `VPROC-0038` | servicio en mesa de apertura a cierre con pedido, preparación, entrega, pago y conciliación |
+| `VPROC-0039` | venta de mostrador o para llevar con entrega y cobro correlacionados |
+| `VPROC-0040` | normalización y admisión de pedidos de canales externos |
+| `VPROC-0041` | catering o venta B2B desde cotización hasta cierre |
+| `VPROC-0042` | modificación, sustitución, cancelación, anulación y devolución diferenciadas |
+| `VPROC-0043` | cobro, confirmación de pago y soporte fiscal conciliable |
+| `VPROC-0044` | apertura/cierre operativo y conciliación de caja |
+| `VPROC-0045` | identificación de cliente y fidelización con PASS |
+| `VPROC-0046` | reclamo, devolución, compensación y aprendizaje de causa |
+| `VPROC-0047` | reservas, eventos y comunicaciones asociadas |
+| `VPROC-0050` | entrega mediante tercero con seguimiento y conciliación |
+| `VPROC-0068` | medición de satisfacción separada de reclamo y compensación |
+
+`VPROC-0051` y `VPROC-0061` permanecen fuera del ownership PULSO y se consumen como fronteras NUMERA.
+
+---
+
+#### 11. Universo canónico de superficies PULSO
+
+La arquitectura consume exactamente las veinte superficies canónicas PULSO vigentes:
+
+```text
+VSCREEN-0080..VSCREEN-0093
+VSCREEN-0147..VSCREEN-0152
+```
+
+El conteo arquitectónico es:
+
+```text
+PULSO_CANONICAL_SCREENS = 20
+```
+
+No se infiere una relación uno a uno entre pantalla, ruta, componente, proceso, permiso o tabla.
+
+---
+
+#### 12. Matriz de superficies operativas 0080..0093
+
+| Pantalla | Identidad | Proceso owner | Papel arquitectónico |
+| --- | --- | --- | --- |
+| `VSCREEN-0080` | Inicio POS | `VPROC-0039` | entrada contextual al trabajo comercial y de caja |
+| `VSCREEN-0081` | Creación de venta o pedido | `VPROC-0039` | construcción de intención comercial |
+| `VSCREEN-0082` | Mapa de salón y mesas | `VPROC-0038` | workspace de servicio en mesa |
+| `VSCREEN-0083` | Detalle y modificación de pedido | `VPROC-0038` | revisión y cambio gobernado del pedido |
+| `VSCREEN-0084` | Cobro y medios de pago | `VPROC-0043` | cobro y resultado conciliable |
+| `VSCREEN-0085` | Identificación de cliente y acumulación | `VPROC-0045` | supervisión de identidad/acumulación PASS |
+| `VSCREEN-0086` | Redención de puntos o beneficios | `VPROC-0045` | supervisión de redención PASS |
+| `VSCREEN-0087` | Bandeja de pedidos de canales externos | `VPROC-0040` | admisión y normalización externa |
+| `VSCREEN-0088` | Seguimiento de preparación y entrega | `VPROC-0039` | seguimiento del cumplimiento comercial |
+| `VSCREEN-0089` | Apertura de caja | `VPROC-0044` | inicio explícito de responsabilidad de caja |
+| `VSCREEN-0090` | Cierre de caja | `VPROC-0044` | conciliación y cierre de caja |
+| `VSCREEN-0091` | Anulación, devolución y reembolso | `VPROC-0042` | correcciones comerciales diferenciadas |
+| `VSCREEN-0092` | Oferta, menú, precio comercial y disponibilidad | `VPROC-0017` | proyección vendible gobernada |
+| `VSCREEN-0093` | Revisión de ventas, caja y terminales | `VPROC-0044` | supervisión operacional y excepciones |
+
+---
+
+#### 13. Matriz de superficies ampliadas 0147..0152
+
+| Pantalla | Identidad | Proceso owner | Papel arquitectónico |
+| --- | --- | --- | --- |
+| `VSCREEN-0147` | Oportunidades y cotizaciones de catering o B2B | `VPROC-0041` | calificación y cotización |
+| `VSCREEN-0148` | Ejecución de catering o venta B2B | `VPROC-0041` | ejecución y seguimiento del compromiso |
+| `VSCREEN-0149` | Operación de reservas y eventos | `VPROC-0047` | capacidad, reserva, cambios y servicio |
+| `VSCREEN-0150` | Casos de reclamo y compensación | `VPROC-0046` | investigación, resolución y compensación |
+| `VSCREEN-0151` | Coordinación de entrega mediante tercero | `VPROC-0050` | seguimiento y conciliación de tercero |
+| `VSCREEN-0152` | Análisis de satisfacción y servicio | `VPROC-0068` | medición y análisis sin fusionar reclamo |
+
+---
+
+#### 14. Pantalla canónica, ruta y componente
+
+La arquitectura congela:
+
+```text
+VSCREEN
+!=
+URL
+!=
+PAGE.TSX
+!=
+COMPONENTE
+!=
+PERMISO
+!=
+PROCESO
+```
+
+Una implementación futura puede materializar una pantalla mediante composición, rutas, paneles o modales siempre que preserve su identidad, proceso, acción y semántica contractual.
+
+Las seis páginas AS-IS de `vento-pulso` no limitan el universo objetivo de veinte superficies.
+
+---
+
+#### 15. Inicio POS contextual
+
+`VSCREEN-0080` permanece como entrada compartida al trabajo POS.
+
+Su composición se deriva de:
+
+```text
+ACTOR EFECTIVO
++
+CONTEXTO AUTORIZADO
++
+ESTACION
++
+TRABAJO PENDIENTE
++
+ESTADO
+```
+
+No se crean homes independientes por caja, salón, barra, cocina o mostrador cuando la identidad de workspace sigue siendo la misma.
+
+---
+
+#### 16. Contexto operativo mínimo
+
+Toda intención sensible debe resolverse con un contexto equivalente a:
+
+- principal técnico autenticado;
+- actor humano efectivo cuando aplique;
+- sede efectiva;
+- área o punto cuando sea material;
+- estación;
+- dispositivo;
+- turno o sesión operacional cuando aplique;
+- recurso objetivo;
+- estado/version del recurso;
+- acción solicitada.
+
+La forma física de este contexto pertenece a contratos posteriores; su semántica es obligatoria.
+
+---
+
+#### 17. Autoridad
+
+La arquitectura no deriva autoridad desde:
+
+- rol mostrado;
+- estación;
+- ubicación;
+- ruta;
+- botón visible;
+- componente;
+- permiso broad histórico;
+- último actor conocido;
+- identidad técnica del dispositivo.
+
+Toda mutación sensible exige autorización propietaria y revalidación servidor antes del efecto.
+
+---
+
+#### 18. Territorialidad
+
+El contexto de sede funciona como restricción y nunca como ampliación.
+
+```text
+PARAMETRO DE SEDE
+<=
+TERRITORIO AUTORIZADO
+```
+
+Una sede solicitada que no pertenece al alcance efectivo debe fallar cerrada.
+
+---
+
+#### 19. Oferta comercial
+
+La oferta vendible se construye desde maestros gobernados y conserva, según aplique:
+
+- sede;
+- canal;
+- vigencia;
+- producto/presentación;
+- precio;
+- impuestos;
+- cargos;
+- disponibilidad proyectada;
+- modificadores y opciones;
+- restricciones;
+- promoción/descuento autorizado.
+
+PULSO no convierte una proyección vendible en maestro físico de inventario ni en receta propietaria.
+
+---
+
+#### 20. Separación solicitud, pedido, cuenta y venta
+
+La arquitectura mantiene identidades distintas para:
+
+```text
+SOLICITUD
+PEDIDO
+REVISION DEL PEDIDO
+CUENTA / CHECK
+VENTA
+PAGO
+```
+
+Ninguna transición visual fusiona estas identidades.
+
+La relación exacta se materializa mediante contratos y persistencia posteriores, no por reutilización de nombres históricos.
+
+---
+
+#### 21. Pedido y revisiones
+
+El pedido objetivo conserva:
+
+- identidad estable;
+- canal;
+- sede;
+- modalidad;
+- cliente opcional;
+- actor y contexto de creación;
+- líneas;
+- snapshots comerciales necesarios;
+- revisiones;
+- estado comercial;
+- referencias a preparación, entrega y efectos asociados.
+
+Una modificación material crea una transición o revisión trazable; no reescribe silenciosamente la historia previa.
+
+---
+
+#### 22. Líneas y snapshots comerciales
+
+Cada línea debe poder preservar lo necesario para reconstruir la decisión comercial histórica:
+
+- producto/presentación referenciada;
+- nombre comercial mostrado;
+- cantidad y unidad comercial;
+- precio;
+- impuesto;
+- descuento/cortesía;
+- modificadores y opciones;
+- notas/restricciones;
+- reglas/versiones materiales.
+
+El snapshot comercial no sustituye maestros vigentes ni se utiliza para recalcular retrospectivamente una venta cerrada.
+
+---
+
+#### 23. Modificadores, combos y cursos
+
+La arquitectura soporta la necesidad funcional de modificadores, opciones, combos y cursos sin adoptar los objetos históricos como schema.
+
+Debe distinguir:
+
+```text
+DEFINICION VENDIBLE
+SELECCION EN LINEA
+INSTRUCCION DE PREPARACION
+RESULTADO DE PREPARACION
+```
+
+Un modificador comercial no se convierte automáticamente en componente físico ni receta.
+
+---
+
+#### 24. Servicio de salón
+
+`VPROC-0038` conserva separadas:
+
+- zona;
+- mesa;
+- sesión de servicio;
+- pedido;
+- cuenta/check;
+- preparación;
+- pago;
+- entrega/servicio;
+- actor responsable.
+
+Transferir, unir o separar mesas no borra pedidos, cuentas ni pagos pendientes.
+
+---
+
+#### 25. Sesión de mesa
+
+La identidad funcional de `pos_sessions` puede reutilizarse conceptualmente conforme a 020, pero la arquitectura no congela su schema.
+
+La sesión debe poder representar el contexto de servicio activo y relacionarse con trabajo comercial sin convertirse en sinónimo de:
+
+```text
+MESA
+PEDIDO
+CUENTA
+PAGO
+```
+
+---
+
+#### 26. Mostrador y para llevar
+
+`VPROC-0039` gobierna el compromiso comercial de mostrador/para llevar desde selección hasta entrega y cobro correlacionados.
+
+La modalidad puede omitir mesa y sesión de salón sin omitir:
+
+- pedido;
+- líneas;
+- estado;
+- preparación aplicable;
+- pago;
+- entrega/handoff;
+- efectos externos necesarios.
+
+---
+
+#### 27. Pedidos de canales externos
+
+`VPROC-0040` recibe el pedido externo como hecho de origen, no como pedido interno ya aceptado.
+
+La arquitectura exige:
+
+```text
+RECEPCION
+→ VALIDACION
+→ DEDUPLICACION
+→ MAPEO
+→ DECISION DE ADMISION
+→ PEDIDO INTERNO CORRELACIONADO
+```
+
+El canal externo no puede imponer stock, precio interno, preparación, caja o estado económico fuera del contrato de integración.
+
+---
+
+#### 28. Catering y venta B2B
+
+`VPROC-0041` separa:
+
+- oportunidad;
+- cotización;
+- vigencia;
+- capacidad;
+- aprobación;
+- compromiso;
+- pedido/producción aplicable;
+- entrega;
+- facturación;
+- cierre.
+
+Una cotización no se interpreta como venta ni como reserva de inventario sin la transición correspondiente.
+
+---
+
+#### 29. Reservas y eventos
+
+`VPROC-0047` conserva capacidad, reserva, cambio, asistencia y servicio como hechos gobernados.
+
+Una reserva puede relacionarse con salón, catering o venta, pero no se convierte automáticamente en pedido, pago o evento económico.
+
+---
+
+#### 30. Preparación, cocina y barra
+
+La arquitectura separa la obligación comercial de preparación de los maestros y ejecución productiva propietarios de FOGO.
+
+PULSO debe poder:
+
+- emitir trabajo de preparación derivado de pedido válido;
+- enrutar por reglas versionadas de producto, sede, área, estación y capacidad;
+- observar acuse, prioridad, estado y excepción;
+- representar preparación parcial;
+- conservar handoff hacia servicio/entrega.
+
+FOGO conserva receta, lote y dominio productivo cuando el proceso productivo le pertenece.
+
+---
+
+#### 31. Comandas, KDS e impresión
+
+Comanda, KDS e impresión son proyecciones/capacidades de trabajo.
+
+```text
+IMPRESO
+!=
+ACEPTADO
+!=
+PREPARADO
+!=
+ENTREGADO
+```
+
+La arquitectura debe soportar acuse, reintento, contingencia y correlación sin usar la impresión como fuente de verdad del estado empresarial.
+
+---
+
+#### 32. Cumplimiento y handoff
+
+El cumplimiento conserva estados independientes para preparación, handoff y entrega.
+
+Debe poder expresar:
+
+- pendiente;
+- preparación en curso;
+- parcial;
+- listo;
+- entregado/servido;
+- bloqueado/excepción;
+- resultado desconocido cuando corresponda.
+
+La nomenclatura física final se gobierna por los contratos de proceso propietarios.
+
+---
+
+#### 33. Arquitectura de cobro
+
+`VPROC-0043` trata cobro y pago como un contrato conciliable.
+
+El flujo lógico es:
+
+```text
+CUENTA / VENTA ELEGIBLE
+→ INTENCION DE PAGO
+→ MEDIO / COMPONENTE
+→ AUTORIZACION O CAPTURA
+→ RESULTADO RECUPERABLE
+→ APLICACION AL SALDO
+→ SOPORTE / CONCILIACION
+```
+
+El cambio de pantalla no constituye prueba de pago.
+
+---
+
+#### 34. Pago parcial y medios combinados
+
+La arquitectura permite múltiples componentes de pago sobre un saldo elegible.
+
+Cada componente conserva, como mínimo conceptual:
+
+- importe;
+- moneda;
+- medio/proveedor;
+- referencia;
+- estado;
+- actor/contexto;
+- identidad idempotente.
+
+El retry de un componente no repite los ya confirmados.
+
+---
+
+#### 35. Resultado desconocido de pago
+
+Ante pérdida de respuesta después de una posible mutación:
+
+```text
+UNKNOWN_OUTCOME
+→ CONSULTAR POR IDENTIDAD / REFERENCIA
+→ RECONCILIAR
+→ NO RECAPTURAR A CIEGAS
+```
+
+La arquitectura debe poder recuperar el resultado durable antes de aceptar una nueva intención incompatible.
+
+---
+
+#### 36. Arquitectura de caja
+
+`VPROC-0044` conserva una sesión de caja explícita con:
+
+- sede;
+- terminal/punto;
+- responsable;
+- apertura;
+- fondo inicial;
+- movimientos operativos;
+- efectivo esperado;
+- conteo;
+- diferencia;
+- aprobación cuando corresponda;
+- cierre;
+- reapertura controlada cuando exista autoridad.
+
+Caja no es sinónimo de venta ni de pago.
+
+---
+
+#### 37. Movimientos de caja
+
+Ingresos, egresos, retiros, consignaciones y ajustes requieren identidad y causalidad propias.
+
+Un movimiento de caja:
+
+- no recrea un pago;
+- no reescribe una venta;
+- no crea un asiento NUMERA directamente por inferencia;
+- debe poder correlacionarse con el hecho que lo originó cuando aplique.
+
+---
+
+#### 38. Cancelación, anulación, reverso, devolución y reembolso
+
+La arquitectura conserva:
+
+```text
+CANCELACION
+!=
+ANULACION
+!=
+REVERSO
+!=
+DEVOLUCION
+!=
+REEMBOLSO
+!=
+COMPENSACION
+```
+
+Cada una debe tener precondiciones, autoridad, causalidad, resultado y efectos compensatorios propios.
+
+---
+
+#### 39. Identificación de cliente
+
+La venta puede continuar sin cliente identificado cuando el contrato comercial lo permita.
+
+Cuando existe identificación:
+
+- se resuelve identidad en servidor;
+- se usa una proyección mínima;
+- se limita por finalidad y sede;
+- se limpia al cambiar o terminar el contexto;
+- no se transforma automáticamente en cuenta PASS elegible.
+
+---
+
+#### 40. Arquitectura PASS
+
+PULSO actúa como consumidor de PASS para:
+
+- identificar cuenta aplicable;
+- solicitar acumulación;
+- solicitar redención;
+- recibir resultado durable;
+- mostrar saldo/proyección autorizada cuando corresponda.
+
+PULSO no mantiene:
+
+- ledger paralelo;
+- saldo editable;
+- reglas de loyalty propias;
+- rewards paralelos;
+- consumo de redención local como verdad final.
+
+---
+
+#### 41. Acumulación y redención
+
+Acumulación y redención son efectos distintos de la venta y del pago.
+
+La arquitectura exige:
+
+- identidad causal estable;
+- regla/version aplicable;
+- actor/contexto autorizado;
+- idempotencia empresarial;
+- resultado recuperable;
+- compensación separada cuando exista refund o corrección.
+
+---
+
+#### 42. Arquitectura NEXO
+
+PULSO no descuenta stock directamente.
+
+Para una línea elegible:
+
+```text
+HECHO COMERCIAL CONFIRMADO
+→ EFECTO NEXO CORRELACIONADO
+→ DECISION FISICA NEXO
+→ RECEIPT / RESULTADO
+→ PROYECCION EN PULSO
+```
+
+Stock insuficiente, producto bloqueado, UOM, receta, split o partialidad permanecen decisiones físicas propietarias de NEXO/maestros aplicables.
+
+---
+
+#### 43. Arquitectura NUMERA
+
+PULSO no crea hechos económicos o asientos contables mediante escrituras cruzadas.
+
+La frontera es:
+
+```text
+VENTA / PAGO / CAJA PULSO
+→ CONTRATO / EVENTO CORRELACIONADO
+→ NUMERA
+→ HECHO ECONOMICO / CONCILIACION
+→ RESULTADO REFERENCIABLE
+```
+
+Éxito comercial no implica éxito económico y viceversa.
+
+---
+
+#### 44. Documento fiscal
+
+La arquitectura conserva el documento fiscal como hecho separado de venta y pago.
+
+PULSO mantiene, según contrato:
+
+- referencia al documento;
+- proveedor;
+- tipo;
+- número cuando exista;
+- fecha;
+- estado;
+- error/pendiente;
+- vínculo causal con la venta.
+
+No inventa numeración ni declara emisión por cambio visual.
+
+---
+
+#### 45. Entrega mediante tercero
+
+`VPROC-0050` conserva:
+
+- promesa comercial;
+- asignación externa;
+- seguimiento;
+- intentos;
+- prueba de entrega;
+- novedad;
+- devolución cuando aplique;
+- conciliación interna.
+
+El tercero recibe únicamente el alcance temporal y mínimo que le corresponda.
+
+---
+
+#### 46. Reclamo y compensación
+
+`VPROC-0046` separa reclamo, causa, decisión, compensación y verificación.
+
+Una compensación puede generar efectos comerciales, monetarios o de loyalty, pero cada efecto se ejecuta por su owner y conserva referencia al caso original.
+
+---
+
+#### 47. Satisfacción y mejora
+
+`VPROC-0068` mantiene medición de satisfacción separada de reclamo, incentivo y compensación.
+
+PULSO conserva el contexto de servicio necesario; análisis financiero o transversal permanece en sus owners.
+
+---
+
+#### 48. Comandos de servidor
+
+Toda mutación empresarial relevante se expresa como una acción nombrada de negocio.
+
+Un comando debe poder validar:
+
+- actor/contexto;
+- autoridad;
+- territorio;
+- recurso;
+- estado/version actual;
+- payload permitido;
+- idempotencia;
+- invariantes del dominio.
+
+La forma tecnológica concreta se decide en materialización; el contrato no exige reutilizar Server Actions históricas.
+
+---
+
+#### 49. Consultas y proyecciones
+
+Las consultas deben entregar proyecciones mínimas para la superficie y acción autorizadas.
+
+Reglas:
+
+- lectura y mutación se autorizan independientemente;
+- una proyección no se vuelve fuente de verdad por estar cacheada;
+- datos de otro actor, cliente o sede se limpian al cambiar contexto;
+- una vista compuesta puede leer varios owners sin fusionarlos.
+
+---
+
+#### 50. Eventos y outbox
+
+Los efectos entre dominios requieren entrega durable y correlacionable.
+
+La arquitectura objetivo admite un patrón equivalente a:
+
+```text
+COMMIT DEL HECHO PROPIETARIO
++
+REGISTRO DURABLE DEL EFECTO A PUBLICAR
+→ ENTREGA / RETRY
+→ CONSUMIDOR IDEMPOTENTE
+→ RECEIPT / CONCILIACION
+```
+
+No se prescribe una tabla o broker concreto en esta tarea.
+
+---
+
+#### 51. Fronteras de atomicidad
+
+La atomicidad se exige dentro de cada owner para hechos que no pueden quedar parcialmente confirmados.
+
+No se simula una transacción distribuida modificando directamente múltiples dominios.
+
+Cuando un flujo cruza owners:
+
+- el hecho inicial se confirma una vez;
+- los efectos secundarios se correlacionan;
+- cada owner confirma su propio resultado;
+- fallos parciales permanecen visibles y reconciliables.
+
+---
+
+#### 52. Idempotencia
+
+Toda intención empresarial reintentable conserva una identidad estable independiente del intento técnico.
+
+La idempotencia debe cubrir, según aplique:
+
+- creación de pedido;
+- confirmación/corrección;
+- pago;
+- efecto de inventario;
+- acumulación/redención;
+- evento económico;
+- admisión de pedido externo;
+- entrega y compensación.
+
+Cambiar worker, request, pestaña o batch no crea una segunda intención empresarial.
+
+---
+
+#### 53. Concurrencia y versionado
+
+Las mutaciones sensibles deben revalidar estado/version antes de confirmar.
+
+La arquitectura debe prevenir:
+
+- doble consumo de una redención;
+- doble pago por reintento;
+- cierre de caja sobre base obsoleta;
+- edición de pedido sobre revisión vieja;
+- dos ganadores para el mismo recurso exclusivo;
+- retroceso silencioso por evento tardío.
+
+La estrategia física de locking o control optimista pertenece a la materialización propietaria.
+
+---
+
+#### 54. Recuperación y conciliación
+
+Cada efecto crítico debe poder clasificarse como:
+
+- confirmado;
+- rechazado;
+- no aplicable;
+- pendiente;
+- desconocido;
+- requiere conciliación.
+
+Una recuperación no puede convertir `UNKNOWN` en `FAIL` por conveniencia ni ejecutar de nuevo a ciegas.
+
+---
+
+#### 55. Offline y degradación
+
+No existe un modo offline universal PULSO.
+
+Cada comando define si admite:
+
+- solo lectura degradada;
+- captura local controlada;
+- cola durable;
+- operación completamente bloqueada;
+- reconciliación posterior.
+
+Pago, redención, caja y otras acciones sensibles permanecen fail-closed cuando no puede demostrarse su precondición o resultado.
+
+---
+
+#### 56. Realtime
+
+Realtime funciona como mecanismo de actualización, no como autoridad.
+
+Una actualización remota debe:
+
+- conservar identidad/version;
+- no mover una acción destructiva bajo interacción activa;
+- permitir detectar conflicto;
+- no sobrescribir un estado posterior;
+- no confirmar un efecto sin resultado propietario.
+
+---
+
+#### 57. Terminal y dispositivo compartidos
+
+La arquitectura separa:
+
+```text
+PRINCIPAL TECNICO
+ACTOR HUMANO EFECTIVO
+DISPOSITIVO
+ESTACION
+SEDE
+```
+
+Cambio A→B limpia estado actor-bound y recalcula autoridad.
+
+Un dispositivo sin actor efectivo no ejecuta acciones que exijan atribución humana.
+
+---
+
+#### 58. Periféricos
+
+Impresora, KDS, escáner, cámara, datáfono, cajón y señalización se modelan como capacidades.
+
+Un periférico:
+
+- no concede permiso;
+- no define owner;
+- no confirma por sí solo un hecho empresarial;
+- debe tener estado/fallback cuando su disponibilidad sea material.
+
+---
+
+#### 59. Privacidad y minimización
+
+La arquitectura limita datos al propósito de la operación.
+
+Debe proteger especialmente:
+
+- identidad de cliente;
+- contacto;
+- saldo/beneficios;
+- PIN o secreto laboral;
+- información de pago;
+- dirección/instrucciones de entrega;
+- evidencia y soporte sensible.
+
+Cambio de actor, cliente o sesión elimina proyecciones que ya no sean necesarias.
+
+---
+
+#### 60. Auditoría
+
+Toda acción sensible debe poder reconstruir:
+
+- intención;
+- actor real;
+- principal técnico;
+- sede/contexto;
+- recurso;
+- estado anterior/material;
+- acción;
+- resultado;
+- correlación con efectos externos;
+- motivo/aprobación cuando aplique;
+- tiempo técnico suficiente para trazabilidad.
+
+La auditoría no almacena secretos que no deban persistir.
+
+---
+
+#### 61. Observabilidad
+
+La implementación posterior deberá permitir observar sin alterar semántica:
+
+- latencia y fallo técnico;
+- comandos repetidos/deduplicados;
+- efectos pendientes;
+- resultados desconocidos;
+- divergencias de conciliación;
+- fallos de integración;
+- estado de periféricos material;
+- eventos y receipts correlacionados.
+
+No se fijan umbrales numéricos nuevos en esta tarea.
+
+---
+
+#### 62. Modelo conceptual mínimo
+
+| Identidad conceptual | Responsabilidad | Frontera |
+| --- | --- | --- |
+| solicitud/intención comercial | captura previa al compromiso | no equivale a pedido confirmado |
+| pedido | compromiso comercial versionado | no equivale a cuenta o pago |
+| revisión del pedido | historial de cambio material | no destruye revisión anterior |
+| línea comercial | unidad vendida con snapshot material | no equivale a movimiento físico |
+| cuenta/check | saldo comercial por cobrar | no equivale a pago |
+| sesión de servicio | contexto de atención presencial | no equivale a mesa ni pedido |
+| trabajo de preparación | obligación derivada del pedido | no equivale a producción FOGO |
+| intención/componente de pago | intento conciliable de recaudo | no equivale a cierre de caja |
+| sesión de caja | responsabilidad operacional de efectivo | no equivale a venta |
+| corrección/compensación | efecto ligado a un hecho previo | no borra el original |
+| efecto externo | solicitud a otro owner | no equivale a resultado del consumidor |
+| receipt externo | resultado propietario correlacionado | no reescribe el hecho causal |
+
+---
+
+#### 63. Cardinalidades conceptuales
+
+La arquitectura exige soportar sin fusionar identidades:
+
+- una mesa puede atravesar múltiples sesiones a lo largo del tiempo;
+- una sesión de servicio puede contener más de un trabajo comercial cuando el proceso lo autorice;
+- un pedido contiene una o más líneas;
+- un pedido puede tener múltiples revisiones;
+- una cuenta puede liquidarse mediante múltiples componentes de pago;
+- un componente de pago pertenece a una sola intención causal y conserva su resultado;
+- una venta puede producir cero o más efectos externos según elegibilidad;
+- un efecto externo conserva una identidad estable a través de retries;
+- una corrección referencia el hecho original sin reemplazarlo.
+
+La cardinalidad física final se valida en el diseño de datos y contratos propietarios.
+
+---
+
+#### 64. Fuentes de verdad
+
+| Dimensión | Fuente de verdad | PULSO no debe hacer |
+| --- | --- | --- |
+| pedido/servicio/caja | PULSO | duplicar el hecho en otra app |
+| stock y movimiento físico | NEXO | descontar directamente |
+| receta/producción propietaria | FOGO | mantener un maestro paralelo |
+| cliente/loyalty | PASS | editar saldo o ledger localmente |
+| hecho económico/conciliación | NUMERA | fabricar asiento o dimensión financiera |
+| documento fiscal | proveedor/contrato fiscal autorizado | inventar numeración o éxito |
+| identidad/autorización | contratos AUTH/SHELL aplicables | inferir desde UI o estación |
+| ejecución de tercero | proveedor externo dentro de su contrato | tratar webhook como verdad sin validación/correlación |
+
+---
+
+#### 65. Absorción de las 26 piezas históricas
+
+La arquitectura consume las 26 decisiones de 020 sin reabrir su clasificación:
+
+| Pieza histórica | Decisión 020 | Destino dentro de la arquitectura objetivo |
+| --- | --- | --- |
+| `/staff/pos` como POS completo | `DESCARTABLE / REEMPLAZAR` | sustituido por el universo canónico de superficies y procesos |
+| documentación histórica “POS funcional” | `DESCARTABLE / CONSERVAR_SOLO_COMO_HISTORIA` | evidencia, nunca capacidad objetivo |
+| identificación QR de cliente | `ADAPTABLE / ADAPTAR` | contrato de identificación PASS con proyección mínima |
+| canje PASS | `ADAPTABLE / ADAPTAR` | comando de redención propietario PASS |
+| otorgamiento manual de puntos | `ADAPTABLE / REESCRIBIR` | acumulación causal e idempotente PASS |
+| `decodeQRCode` | `ADAPTABLE / REESCRIBIR` | decodificación/validación bajo contrato de identidad vigente |
+| `processRedemptionAction` | `DESCARTABLE / REEMPLAZAR` | comando de redención nuevo conforme a autoridad e idempotencia |
+| `awardPointsAction` | `DESCARTABLE / REEMPLAZAR` | comando de acumulación nuevo conforme a PASS |
+| `createOrderAction` | `ADAPTABLE / REESCRIBIR` | comando de creación de pedido con atomicidad e invariantes |
+| `processPaymentAction` | `ADAPTABLE / REESCRIBIR` | orquestación de pago conciliable |
+| `process_order_payment` | `DESCARTABLE / REEMPLAZAR` | contrato de pago sin efectos cruzados implícitos |
+| `types.ts` histórico | `DESCARTABLE / REEMPLAZAR` | contratos tipados derivados de owners actuales |
+| dataset mock histórico | `DESCARTABLE / CONSERVAR_SOLO_COMO_HISTORIA` | fixture histórico, no contrato productivo |
+| `orders` + `order_items` | `ADAPTABLE / ADAPTAR` | pedido y líneas reconciliados con contrato actual, snapshots y revisiones |
+| `pos_zones` | `REUTILIZABLE / REUTILIZAR` | identidad funcional de zona sin congelar schema |
+| `pos_tables` | `REUTILIZABLE / REUTILIZAR` | identidad funcional de mesa sin congelar schema |
+| `pos_sessions` | `REUTILIZABLE / REUTILIZAR` | identidad funcional de sesión sin congelar schema |
+| `pos_session_orders` | `ADAPTABLE / REESCRIBIR` | relación explícita entre servicio y pedido |
+| `pos_payments` | `ADAPTABLE / REESCRIBIR` | modelo de componentes/resultados de pago |
+| `pos_cash_shifts` | `ADAPTABLE / REESCRIBIR` | sesión de caja objetivo |
+| `pos_cash_movements` | `ADAPTABLE / REESCRIBIR` | movimientos causales de caja |
+| `pos_modifiers` | `ADAPTABLE / REESCRIBIR` | definición comercial versionada |
+| `pos_modifier_options` | `ADAPTABLE / REESCRIBIR` | opciones comerciales versionadas |
+| `pos_product_modifiers` | `ADAPTABLE / REESCRIBIR` | asignación producto→modificador versionada, sin copiar schema |
+| `pos_order_item_modifiers` | `ADAPTABLE / REESCRIBIR` | selección/snapshot por línea, separada de la definición mutable |
+| cursos / `TODO` histórico | `ADAPTABLE / REESCRIBIR` | necesidad de curso modelada por contratos objetivo |
+
+La matriz conserva exactamente una fila de destino por cada una de las 26 decisiones de `PULSO-UX-020`.
+
+---
+
+#### 66. Relación con el AS-IS actual de vento-pulso
+
+El runtime observado de PULSO conserva seis páginas AS-IS y capacidades parciales.
+
+La arquitectura objetivo no exige que:
+
+- seis rutas se conviertan en veinte rutas;
+- cada `VSCREEN` sea una página independiente;
+- `/` permanezca scanner;
+- `/scanner` sea el inicio POS;
+- `/orders` concentre todas las acciones futuras;
+- `/salon` absorba venta o caja;
+- `/sales-imports` permanezca en la navegación objetivo.
+
+Cada decisión física se resuelve por packages y contratos posteriores.
+
+---
+
+#### 67. Componentización objetivo
+
+La implementación posterior debe preferir composición por responsabilidad:
+
+- workspace de estación;
+- presentación de pedido/cuenta;
+- controles de acción;
+- formularios de intención;
+- proyecciones de estado;
+- adaptadores de periféricos;
+- adaptadores de integraciones;
+- contratos compartidos de procesos, acciones, eventos y pantallas.
+
+Un componente compartido no fusiona owners ni autorización.
+
+---
+
+#### 68. Contratos compartidos
+
+Los identificadores y contratos canónicos reutilizables deben consumirse desde las fuentes compartidas de VENTO cuando existan.
+
+La arquitectura evita:
+
+- enums locales divergentes;
+- duplicar process IDs;
+- duplicar screen IDs;
+- redefinir eventos empresariales en UI;
+- mantener permisos broad como contrato final;
+- copiar tipos históricos sin autoridad.
+
+La ubicación física de cada contrato se decide por sus owners canónicos.
+
+---
+
+#### 69. Frontera Supabase
+
+Esta tarea no diseña ni ejecuta migraciones.
+
+Cualquier materialización posterior que requiera Supabase debe:
+
+- partir del diseño propietario aprobado;
+- residir, versionarse, documentarse y ejecutarse desde `vento-shell`;
+- preservar rollback y compatibilidad requeridos;
+- revisar RLS, grants, funciones/RPC, Realtime, datos y consumidores;
+- no adoptar objetos históricos por su mera existencia.
+
+---
+
+#### 70. Migración y coexistencia
+
+La transición física deberá permitir coexistencia gobernada mientras existan fuentes temporales, sin doble origen para la misma venta.
+
+Regla:
+
+```text
+ORIGEN EFECTIVO DE VENTA
+=
+UNO SOLO POR SEDE / TERMINAL / VENTANA DE VIGENCIA
+```
+
+La migración del tablero legacy exige paridad demostrada antes del retiro y cero dependencia runtime no autorizada después del cutover.
+
+---
+
+#### 71. Pruebas de arquitectura esperadas al materializar
+
+La futura implementación debe demostrar proporcionalmente:
+
+- contratos unitarios;
+- render y estados de UI;
+- accesibilidad;
+- regresión visual donde aplique;
+- autorización y territorio;
+- integración de flujos;
+- idempotencia;
+- concurrencia;
+- recuperación de resultado desconocido;
+- offline/degradación aplicable;
+- receipts y conciliación entre owners;
+- paridad de legacy antes de retiro;
+- E2E del ciclo comercial y caja.
+
+Esta sección define cobertura esperada; no afirma ejecución.
+
+---
+
+#### 72. Carryover humano y físico
+
+`UX-QA-027` conserva la prueba PULSO por punto operativo.
+
+La arquitectura debe llegar al piloto con, como mínimo:
+
+- caja;
+- salón;
+- barra;
+- cocina;
+- mostrador;
+- actor efectivo;
+- cambio A→B;
+- guantes/humedad donde aplique;
+- targets táctiles;
+- periféricos desplegados;
+- fallos y recuperación;
+- concurrencia real;
+- tiempos operativos representativos.
+
+La definición documental no sustituye esa evidencia.
+
+---
+
+#### 73. Hallazgos diferidos y propietarios
+
+| Hallazgo pendiente | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| materialización del universo de pantallas | no | packages PULSO y owners de UI | superficies objetivo implementadas contra contratos canónicos |
+| modelo físico de datos definitivo | no | diseño/implementación de datos y packages propietarios | schema, RLS, migraciones y pruebas aprobados |
+| permisos atómicos faltantes en runtime | sí para ejecutar acciones afectadas | AUTH/PULSO propietarios | permisos, grants y enforcement publicados y probados |
+| reemplazo de pago histórico | no | packages de PULSO/pagos | comandos y contratos conciliables implementados |
+| integración física NEXO/PASS/NUMERA | no | owners de integración y packages | efectos idempotentes y receipts probados |
+| paridad y retiro de tablero legacy | no | package propietario de legacy PULSO | paridad PASS y cero imports runtime legacy después del cutover |
+| piloto humano/físico | no | `UX-QA-027` | prueba representativa y defectos críticos resueltos |
+| hardware/periféricos | no | packages y owners de estación | capacidades desplegadas, fallback y evidencia aprobados |
+
+No queda un pendiente arquitectónico narrativo sin owner y condición de salida.
+
+---
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la arquitectura desarrolla y organiza obligaciones funcionales y técnicas ya protegidas por la cobertura canónica de PULSO, autorización, UX, integraciones, datos, PASS, NEXO, NUMERA, resiliencia y certificación; no introduce una conducta material nueva que requiera una identidad de prueba adicional.
+
+---
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A, entre otra cobertura ya vigente:
+
+- `TREQ-PULSO-001` para el ciclo POS E2E antes de declararlo operativo;
+- `TREQ-PULSO-002` para paridad y retiro gobernado del tablero legacy;
+- `TREQ-PULSO-003` para impedir herencia del prototipo por mera existencia;
+- `TREQ-PULSO-004` para mutaciones nombradas y revalidación servidor;
+- `TREQ-PULSO-005` para separar pedido, revisión, preparación, cumplimiento, mesa, cuenta y venta;
+- `TREQ-PULSO-006` para pagos, caja, diferencias, anulaciones, devoluciones, refunds y cierre;
+- `TREQ-PULSO-007` para cumplimiento y entrega sin duplicación;
+- `TREQ-PULSO-014` a `TREQ-PULSO-018` para acceso, territorio, acciones y salón;
+- `TREQ-PULSO-021` a `TREQ-PULSO-027` para evidencia, drift, navegación y fronteras técnicas;
+- cobertura PASS vigente para identificación, acumulación, redención, ledger, idempotencia y privacidad;
+- cobertura AUTH vigente para actor efectivo, autorización, territorio, dispositivo y auditoría;
+- cobertura INTEGRATION vigente para eventos, retries, compensación y resultados durables;
+- cobertura UX vigente para estación, accesibilidad, offline, recuperación y piloto;
+- `UX-QA-027` para la certificación humana/física posterior.
+
+Esta trazabilidad no actualiza el registro.
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación real al plan, formato, quality, delivery, build y tests corresponde al checkout actualizado durante el ciclo documental. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores del checkout local del usuario ni pruebas runtime de PULSO. |
+| REMOTA | PASS | Se contrastaron continuidad y topología vigentes, el archivo propietario, clasificación de 020, catálogo de veinte pantallas PULSO, bindings pantalla→proceso, procesos `VPROC-*`, CAP-09, 04A PULSO y fronteras de integración disponibles en `vento-shell/main`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, pagos, caja, pedidos, preparación, loyalty, inventario, hechos económicos, delivery ni sesiones reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-021` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la implementación y certificación física pertenecen a packages y gates posteriores. |
+
+---
+
+#### 77. Decisiones congeladas
+
+1. el POS objetivo se diseña desde procesos y contratos canónicos, no desde `vento-platform`;
+2. el universo PULSO consume veinte superficies canónicas, no seis rutas AS-IS;
+3. pantalla, ruta, componente, permiso, proceso y tabla conservan identidades distintas;
+4. PULSO posee operación comercial, pedido, servicio, cuenta comercial y caja;
+5. NEXO posee movimientos físicos de inventario;
+6. FOGO conserva maestros y ejecución productiva propietaria;
+7. PASS posee cuenta, ledger, saldo, regla y rewards de fidelización;
+8. NUMERA posee hechos económicos y conciliación financiera;
+9. pago, caja, fiscal, inventario, loyalty y economía permanecen estados independientes;
+10. los comandos sensibles son nombrados, autorizados, idempotentes y recuperables;
+11. los cruces de dominio usan efectos/receipts correlacionados en vez de escrituras directas múltiples;
+12. `UNKNOWN_OUTCOME` se reconcilia antes de reejecutar;
+13. las tres identidades reutilizables de 020 no congelan schema;
+14. las dieciséis piezas adaptables preservan necesidad, no implementación histórica;
+15. las siete piezas descartables no forman contrato objetivo;
+16. Supabase no se modifica en esta tarea;
+17. la implementación física se delega a owners/packages posteriores;
+18. `UX-QA-027` conserva el piloto real;
+19. `NUMERA-AUD-001` es la siguiente tarea documental una vez cerrada esta etapa PULSO.
+
+---
+
+#### 78. Criterios de aceptación
+
+- [ ] la arquitectura rechaza explícitamente al prototipo histórico como base contractual;
+- [ ] consume las 26 decisiones de 020 sin reabrir su clasificación;
+- [ ] cubre exactamente las veinte superficies PULSO vigentes;
+- [ ] conserva bindings y ownership de procesos canónicos;
+- [ ] define las fronteras PULSO/NEXO/FOGO/PASS/NUMERA/SHELL/terceros;
+- [ ] separa solicitud, pedido, revisión, cuenta, venta, pago y caja;
+- [ ] cubre salón, mostrador, externos, B2B, reservas, preparación, entrega y reclamos;
+- [ ] define pago parcial/combinado y resultado desconocido;
+- [ ] define sesión y movimientos de caja sin fusionarlos con venta/pago;
+- [ ] define comandos, consultas, eventos y receipts sin imponer tecnología física no aprobada;
+- [ ] exige atomicidad por owner, idempotencia, concurrencia, recuperación y conciliación;
+- [ ] conserva actor efectivo, territorio y dispositivo compartido;
+- [ ] cubre Realtime, offline/degradación, periféricos, privacidad, auditoría y observabilidad;
+- [ ] no congela schema histórico;
+- [ ] no crea rutas, tablas, RPC, grants ni PermissionKeys;
+- [ ] no modifica Supabase;
+- [ ] no crea ni modifica requisitos de prueba;
+- [ ] todo carryover tiene owner y condición de salida;
+- [ ] no se ejecuta trabajo físico;
+- [ ] la continuidad sale de PULSO hacia `NUMERA-AUD-001` sin desarrollar NUMERA.
+
+---
+
+#### 79. Límites
+
+Esta tarea no:
+
+- implementa PULSO;
+- modifica `vento-pulso`;
+- modifica `vento-platform`;
+- crea componentes o rutas;
+- crea packages;
+- cambia process IDs o screen IDs;
+- redefine owners canónicos;
+- crea esquema de base de datos;
+- crea tablas, columnas, vistas, funciones o RPC;
+- crea migraciones;
+- modifica RLS o grants;
+- modifica Supabase;
+- procesa ventas, pedidos, pagos o caja reales;
+- modifica inventario;
+- acumula o redime puntos;
+- registra hechos económicos;
+- emite documentos fiscales;
+- despliega periféricos;
+- ejecuta cutover;
+- retira legacy;
+- certifica producción;
+- modifica el Registro 04A;
+- crea instancia física propia;
+- desarrolla `NUMERA-AUD-001`.
+
+---
+
+#### 80. Handoff inmediato a NUMERA-AUD-001
+
+`NUMERA-AUD-001` recibe una frontera explícita:
+
+```text
+PULSO CONSERVA HECHOS COMERCIALES
+NUMERA CONSERVA HECHOS ECONOMICOS Y CONCILIACION
+VENTA != PAGO != CAJA != DOCUMENTO FISCAL != HECHO ECONOMICO != ASIENTO
+PULSO EMITE CONTRATOS / EVENTOS CORRELACIONADOS
+NUMERA NO RECONSTRUYE LA VENTA COMO SEGUNDA FUENTE
+ARQUITECTURA PULSO NO PRESUPONE RUTAS O COMPONENTES NUMERA
+```
+
+La siguiente etapa debe auditar NUMERA desde su propio repositorio, archivo propietario y contratos sin ampliar la arquitectura PULSO.
+
+---
+
+#### 81. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-001 — Inventariar rutas, pantallas, componentes y formularios actuales`
