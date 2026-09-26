@@ -17845,4 +17845,1249 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-016 — Ejecutar pruebas integrales`
-### [ ] PULSO-AUTH-016 — Ejecutar pruebas integrales
+### ✅ PULSO-AUTH-016 — Ejecutar pruebas integrales
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-015 — Migrar a paquetes de vento-shell
+**Tarea siguiente:** PULSO-UX-002 — Diseñar inicio para cajero
+**Tipo de tarea:** documental; contrato canónico de certificación integral de autorización PULSO, con ejecución física posterior por `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, evidencia atribuible por unidad y cierre fail-closed
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada la certificación integral que deberá demostrar que las protecciones de `PULSO-AUTH-001` a `PULSO-AUTH-015` funcionan de forma coherente, fail-closed y sin bypass sobre los consumidores PULSO realmente materializados.
+
+La regla raíz queda:
+
+```text
+PROTECCIONES PULSO APLICABLES MATERIALIZADAS
++
+CONSUMIDOR Y PACKAGE IDENTIFICADOS
++
+ACTOR / CONTEXTO / DISPOSITIVO / RECURSO / ESTADO CONTROLADOS
++
+ALLOW POSITIVO DEMOSTRADO
++
+DENY ADVERSARIAL DEMOSTRADO
++
+CERO EFECTO EN DENY
++
+IDEMPOTENCIA / CONCURRENCIA / RECUPERACION DEMOSTRADAS
++
+FRONTERAS PASS / NEXO / NUMERA PRESERVADAS
++
+PARIDAD Y ROLLBACK DE PACKAGES DEMOSTRADOS
++
+EVIDENCIA ATRIBUIBLE A LA MISMA UNIDAD
+=
+PASS INTEGRAL DE LA UNIDAD
+```
+
+Este marcador especifica qué debe probarse. No declara ejecutada ninguna certificación física.
+
+---
+
+#### 2. Resultado contractual
+
+Una unidad solo puede terminar en `PASS` cuando todos los oracles aplicables hayan sido ejecutados sobre una combinación coherente de consumidor, package, contratos, backend, datos de prueba y ambiente.
+
+Se fija:
+
+```text
+PASS INTEGRAL
+=
+TODOS LOS CASOS APLICABLES PASS
++
+CERO MUTACION NO AUTORIZADA
++
+CERO CRUCE TERRITORIAL INDEBIDO
++
+CERO DOBLE EFECTO
++
+CERO ESCALAMIENTO POR UI / DEVICE / ROLE NAME
++
+CERO FALLBACK A BROAD AUTHORITY LEGACY
++
+CERO MEZCLA DE OWNERSHIP ENTRE DOMINIOS
++
+ROLLBACK O RECUPERACION SEGUROS
+```
+
+`BLOCKED`, `NOT_EXECUTED`, `STALE` o evidencia incompleta nunca se reinterpretan como PASS parcial.
+
+---
+
+#### 3. Topología y cardinalidad física
+
+La topología aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+physical_identity = PULSO-AUTH-016::<implementation_unit_id>
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato documental de certificación PULSO;
+2. no existe una certificación física global implícita;
+3. cada ejecución física pertenece a una unidad concreta;
+4. cada unidad declara package, consumidor, versión, fixtures, ambiente, oracles, evidencia y rollback propios;
+5. la ejecución espera el package E5 y gate aplicables;
+6. el PASS de una unidad no certifica automáticamente otra unidad ni otra superficie;
+7. cualquier modificación VENTO de Supabase necesaria pertenece a `vento-group-sas/vento-shell` y a la tarea física propietaria, no a este marcador.
+
+---
+
+#### 4. Handoff recibido de `PULSO-AUTH-001..015`
+
+La certificación consume, sin reabrirlas, las decisiones aprobadas de la familia:
+
+| Fuente | Obligación que debe quedar demostrada |
+| --- | --- |
+| `PULSO-AUTH-001` | las vistas y superficies POS inventariadas no se convierten en prueba de autorización por su sola existencia |
+| `PULSO-AUTH-002` | pedidos, líneas, estados, pagos, fulfillment, despacho, chat, facturación e historial conservan acciones, estados y ownership diferenciados |
+| `PULSO-AUTH-003` | salón mantiene aislamiento territorial, lifecycle de sesiones y llamados, actor, concurrencia, Realtime y separación de configuración |
+| `PULSO-AUTH-004` | scanner, identificación, acumulación y redención conservan rutas, proyección mínima, autorización, idempotencia, actor y límites físicos diferenciados |
+| `PULSO-AUTH-005` | importación conserva archivo, hash, mapping, cuarentena, lote, warnings, publicación, inventario, recuperación y segregación administrativa |
+| `PULSO-AUTH-006` | `cajero_satelite` recibe únicamente las capacidades ordinarias aprobadas y nunca autoridad implícita desde `pulso.pos.main` |
+| `PULSO-AUTH-007` | `supervisor` y `gerencia_operativa` conservan carriles distintos; lectura supervisora no se transforma en mutación |
+| `PULSO-AUTH-008` | cancelación, void, refund, cierre y reapertura permanecen acciones sensibles distintas, con estado, actor, motivo, idempotencia y segregación propias |
+| `PULSO-AUTH-009` | acumulación PULSO → PASS es server-side, territorial, atribuible, atómica o reconciliable e idempotente |
+| `PULSO-AUTH-010` | redención es fail-closed, territorial, atómica o reconciliable, concurrente y atribuible |
+| `PULSO-AUTH-011` | `site_id` del cliente no amplía la sede o el territorio efectivo del actor |
+| `PULSO-AUTH-012` | dispositivo compartido restringe, no concede autoridad; principal técnico, dispositivo y trabajador permanecen separados |
+| `PULSO-AUTH-013` | el trabajador que ejecuta una acción sensible queda diferenciado de creador, asignado, principal técnico, cliente y proceso automático |
+| `PULSO-AUTH-014` | configuración, mappings e importación administrativa permanecen separadas de la operación ordinaria |
+| `PULSO-AUTH-015` | adopción de packages, paridad, compatibilidad, cutover y rollback no preservan broad authority ni convierten código local en fuente compartida por conveniencia |
+
+`016` no redefine estas reglas: las convierte en oracles integrales verificables.
+
+---
+
+#### 5. Prerrequisitos de una ejecución física
+
+Una instancia `PULSO-AUTH-016::<implementation_unit_id>` solo puede ejecutar certificación cuando pueda demostrar:
+
+1. `implementation_unit_id` vigente;
+2. package propietario aplicable;
+3. `E5-GATE-008::<package_id>` satisfecho cuando corresponda;
+4. autorización física explícita;
+5. protecciones PULSO aplicables materializadas para la unidad;
+6. catálogo de permisos, roles, scopes y contratos de recurso compatible con el consumidor;
+7. versiones identificables de consumidor, packages y backend;
+8. ambiente de prueba controlado;
+9. fixtures reversibles o aislados;
+10. actores, turnos/check-ins, sedes, recursos y estados de prueba reproducibles;
+11. mecanismo de captura de evidencia y auditoría;
+12. ausencia de drift concurrente no reconciliado que invalide la ejecución.
+
+Si falta una precondición material, el resultado correcto es `BLOCKED` o `NOT_EXECUTED`, nunca PASS inferido.
+
+---
+
+#### 6. Estados de certificación
+
+La certificación física por unidad usa, como mínimo:
+
+| Estado | Significado |
+| --- | --- |
+| `PASS` | todos los oracles aplicables pasaron y la evidencia es suficiente |
+| `FAIL` | al menos un oracle aplicable fue violado |
+| `BLOCKED` | falta una precondición material para ejecutar o interpretar la certificación |
+| `NOT_EXECUTED` | la certificación física no fue ejecutada |
+| `NOT_APPLICABLE` | el caso está fuera del alcance real de la unidad y existe justificación verificable |
+| `STALE` | la evidencia dejó de representar la versión, ambiente, fixture o contrato actual |
+
+La ausencia de implementación no convierte por sí sola un caso en `NOT_APPLICABLE`.
+
+---
+
+#### 7. Identidad y coherencia de evidencia
+
+Toda evidencia utilizada para un PASS debe corresponder a la misma combinación de:
+
+- implementation unit;
+- package;
+- repositorio consumidor;
+- commit del consumidor;
+- manifest y lockfile;
+- versiones de packages compartidos;
+- versión de backend y migraciones aplicables;
+- catálogo de permisos y grants;
+- ambiente;
+- fixture set;
+- runtime y framework;
+- suite y contrato de pruebas;
+- ventana de ejecución.
+
+No se mezclan resultados de versiones incompatibles para construir un PASS compuesto.
+
+---
+
+#### 8. Baseline técnica PULSO y límite de su evidencia
+
+El consumidor remoto observado mantiene `SHELL-CI-010::GLOBAL` como baseline técnica y declara:
+
+```text
+CONTRACTUAL_TEST_COUNT = 42
+CANONICAL_PACKAGES = 4
+PULSO_SURFACES = 12
+PAGE_FILES = 6
+DYNAMIC_PAGE_FILES = 0
+ROUTE_HANDLERS = 0
+BUSINESS_ROUTES = 5
+DENY_ROUTES = 1
+```
+
+Los cuatro packages reconocidos por esa baseline son:
+
+- `@vento/contracts`;
+- `@vento/os-context`;
+- `@vento/supabase`;
+- `@vento/ui-web`.
+
+Las relaciones PULSO son:
+
+| Package | Compatibilidad | Actualización | Perfil |
+| --- | --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-006` | `PKG-PR-REL-006` | `PULSO-PROFILE-CONTRACTS` |
+| `@vento/os-context` | `PKG-COMP-MX-013` | `PKG-PR-REL-013` | `PULSO-PROFILE-OS-CONTEXT` |
+| `@vento/supabase` | `PKG-COMP-MX-020` | `PKG-PR-REL-020` | `PULSO-PROFILE-SUPABASE` |
+| `@vento/ui-web` | `PKG-COMP-MX-027` | `PKG-PR-REL-027` | `PULSO-PROFILE-UI-WEB` |
+
+La baseline aporta inventario técnico, perfiles y oracles contractuales sintéticos, pero:
+
+```text
+CI010 BASELINE PASS
+!=
+PULSO-AUTH-016 PASS INTEGRAL
+```
+
+La certificación debe probar la semántica final materializada.
+
+---
+
+#### 9. Universo mínimo de superficies
+
+La certificación conserva como universo técnico inicial las doce superficies de CI010:
+
+| ID | Superficie |
+| --- | --- |
+| `PULSO-SURFACE-001` | identidad, sesión, SSO y acceso PULSO |
+| `PULSO-SURFACE-002` | contexto operativo, sede, actor y dispositivo |
+| `PULSO-SURFACE-003` | inventario de rutas y navegación |
+| `PULSO-SURFACE-004` | scanner e identificación de cliente |
+| `PULSO-SURFACE-005` | loyalty, redención y acreditación |
+| `PULSO-SURFACE-006` | pedidos, líneas, estado, pago y fulfillment |
+| `PULSO-SURFACE-007` | despacho, chat, facturación e historial |
+| `PULSO-SURFACE-008` | salón, mesas, sesiones, llamados y Realtime |
+| `PULSO-SURFACE-009` | importación de ventas, mappings, lotes y publicación |
+| `PULSO-SURFACE-010` | atomicidad, idempotencia, concurrencia y recuperación |
+| `PULSO-SURFACE-011` | integración y fronteras de dominio |
+| `PULSO-SURFACE-012` | UI, SSR, interacción, accesibilidad y Realtime |
+
+Una unidad puede especializar un subconjunto, pero debe justificar toda superficie `NOT_APPLICABLE`.
+
+---
+
+#### 10. Oracle universal de allow
+
+Un allow válido requiere simultáneamente, cuando aplique:
+
+```text
+PRINCIPAL VALIDO
++
+ACTOR EFECTIVO VALIDO
++
+CAPACIDAD EXACTA
++
+CARRIL AUTORIZANTE COMPLETO
++
+SCOPE Y TERRITORIO COMPATIBLES
++
+RECURSO COMPATIBLE
++
+ESTADO / VERSION VIGENTES
++
+CONTEXTO FRESCO
++
+DECISION SERVER-SIDE
+=
+ALLOW
+```
+
+Ruta visible, botón, rol nominal, dispositivo, PIN, query parameter, sede seleccionada o sesión autenticada no sustituyen estas condiciones.
+
+---
+
+#### 11. Oracle universal de deny
+
+La certificación debe demostrar denegación segura y cero efecto ante, como mínimo:
+
+- sesión ausente o expirada;
+- permiso o componente de permiso ausente;
+- permiso de lectura usado como mutación;
+- scope incompatible;
+- sede incorrecta;
+- área incorrecta cuando aplique;
+- recurso incompatible;
+- estado incompatible;
+- versión stale;
+- actor no resoluble o ambiguo;
+- turno/check-in obligatorio ausente;
+- dispositivo no permitido o revocado;
+- firma o PIN inválidos;
+- llamada directa;
+- payload manipulado;
+- filtro cliente-side ampliatorio;
+- replay incompatible;
+- contexto revocado o supersedido;
+- broad permission legacy usado como fallback.
+
+---
+
+#### 12. Acceso directo y bypass de interfaz
+
+Toda superficie protegida debe conservar la misma decisión al invocarse sin recorrer la navegación normal.
+
+Se prueban, según aplique:
+
+- URL directa;
+- Server Action directa;
+- RPC;
+- DML directo expuesto;
+- envío manual de formulario;
+- request reproducido;
+- manipulación de `site_id`, IDs, cookies o estado cliente;
+- intento de usar un cliente privilegiado sin haber satisfecho el guard propietario.
+
+Ocultar o deshabilitar un control no cuenta como enforcement.
+
+---
+
+#### 13. Territorio por sede y recurso
+
+La matriz debe probar como mínimo:
+
+- actor en sede correcta + recurso de esa sede;
+- actor en sede correcta + recurso de otra sede;
+- `site_id` enviado por cliente distinto del efectivo;
+- query/form con `site_id` manipulado;
+- cambio de turno o check-in entre evaluación y efecto;
+- dispositivo con límites más estrechos que el actor;
+- recurso persistido en sede distinta del parámetro del cliente;
+- supervisor con cobertura parcial;
+- actor administrativo dentro y fuera de scope.
+
+Regla:
+
+```text
+REQUESTED_SITE
+!=
+EFFECTIVE_SITE
+```
+
+El parámetro cliente solo puede seleccionar o reducir dentro de autoridad ya existente.
+
+---
+
+#### 14. Cajero ordinario
+
+La certificación de `cajero_satelite` debe demostrar, cuando las capacidades hayan sido materializadas:
+
+- turno válido sin check-in permite únicamente la entrada definida por el contrato y niega las acciones internas que exigen `T+C`;
+- turno + check-in válidos conceden únicamente las nueve concesiones totales aprobadas para el carril ordinario;
+- ausencia de turno no se compensa con rol base legacy;
+- `site_id` manipulado no amplía sede;
+- no puede cancelar pedido;
+- no puede ejecutar refund;
+- no puede reabrir caja;
+- no puede `delivery.override`;
+- no puede mapear, importar o publicar ventas externas;
+- `orders.update` no concede salón, preparación, despacho, chat administrativo, facturación ni otras capacidades reservadas;
+- identificación de cliente conserva proyección mínima;
+- retry de cobro, acumulación y redención no duplica efecto.
+
+La certificación no usa `pulso.pos.main` como representación final del conjunto anterior.
+
+---
+
+#### 15. Supervisor y `gerencia_operativa`
+
+Los carriles deben probarse por separado.
+
+Casos mínimos:
+
+- rol base `supervisor` sin carril operativo no obtiene entrada operativa por inferencia;
+- `gerencia_operativa` con contexto válido obtiene únicamente las capacidades de su matriz;
+- contexto operativo incompleto no concede capacidades internas `T+C`;
+- puede leer pedidos cuando corresponda, sin crear o actualizar por la lectura;
+- puede leer caja, sin abrir o cerrar por inferencia;
+- puede leer pagos, sin cobrar o ejecutar refund por inferencia;
+- puede leer salón y ejecutar únicamente las acciones atómicas aprobadas;
+- puede leer conversaciones, billing, delivery e importaciones sin adquirir writes no concedidos;
+- no ejecuta loyalty por simple supervisión;
+- `delivery.override` exige el componente base compatible cuando el contrato sea `BASE_AND_OPERATIONAL`;
+- lectura de otra sede falla cerrado.
+
+No se mezclan fragmentos de carriles incompletos para fabricar un allow.
+
+---
+
+#### 16. Cancelación, void, refund, cierre y reapertura
+
+Las cinco acciones sensibles permanecen distintas.
+
+La matriz debe demostrar:
+
+```text
+CANCEL != VOID != REFUND != CLOSE != REOPEN
+```
+
+Como mínimo:
+
+- cancelación exige pedido cancelable, motivo, actor y estado actual;
+- pedido pagado no se cancela como si el efecto económico no existiera;
+- void conserva historia y correlaciones;
+- refund opera sobre la transacción original y controla monto acumulado;
+- timeout de proveedor produce resultado desconocido y conciliación antes de retry;
+- cajero solo puede cerrar su propia sesión ordinaria cuando el contrato lo autorice;
+- cierre calcula valores desde datos autoritativos y no acepta una diferencia final fabricada por cliente;
+- cierre forzado permanece deny mientras no exista capacidad propietaria;
+- reopen exige doble condición cuando corresponda y conserva el cierre anterior;
+- dos solicitudes concurrentes no producen dos efectos incompatibles.
+
+---
+
+#### 17. Pedidos, líneas, estados y fulfillment
+
+La certificación debe probar que:
+
+- lectura no concede modificación;
+- creación, actualización, cancelación y transiciones usan capacidades distintas cuando el contrato las distingue;
+- estado de origen se lee en servidor;
+- transición incompatible falla cerrado;
+- payload no puede escribir columnas reservadas de pago, inventario, loyalty, anulación, despacho o precio;
+- pedido, preparación, fulfillment, pago, fiscal, inventario y loyalty mantienen estados independientes;
+- una etapa no concede automáticamente la siguiente;
+- `orders-board-legacy` no se usa como bypass de una decisión canónica;
+- eventos y efectos quedan correlacionados con el pedido correcto.
+
+---
+
+#### 18. Caja y pagos
+
+Cuando la unidad incluya caja o pago, debe demostrar:
+
+- sesión de caja pertenece a la sede/terminal/actor compatibles;
+- apertura no concede cierre;
+- cobro no concede refund;
+- pagos parciales o combinados conservan identidad y suma correcta;
+- monto, moneda, proveedor, referencia, estado y actor son verificables;
+- timeout no se interpreta como fallo concluyente;
+- retry consulta/reconcilia antes de producir un segundo efecto;
+- esperado, contado y diferencia son auditables;
+- cierre no edita destructivamente movimientos previos;
+- ningún rol o dispositivo convierte una sesión Supabase en autoridad financiera.
+
+---
+
+#### 19. Scanner e identificación
+
+Las rutas `/` y `/scanner` se prueban como identidades distintas mientras la clasificación propietaria no disponga otra relación.
+
+La identificación debe cubrir:
+
+- acceso directo a ambas rutas;
+- identificador válido;
+- identificador inválido;
+- formato no autorizado;
+- cliente inexistente;
+- permiso ausente;
+- sede manipulada;
+- proyección mínima;
+- ausencia de fuga por estado de denegación;
+- uso de cliente privilegiado únicamente después de la autorización correspondiente;
+- ausencia de exposición de `service_role` al navegador;
+- cámara no declarada operativa mientras no exista montaje y certificación física.
+
+Compartir `ScannerPage` no autoriza retirar una ruta.
+
+---
+
+#### 20. Acumulación de puntos
+
+La acumulación debe probar:
+
+- permiso exacto materializado;
+- cliente y venta elegibles;
+- sede válida;
+- referencia empresarial estable;
+- misma referencia + misma intención = un solo efecto;
+- misma referencia + payload incompatible = conflicto;
+- mismo hecho con referencia distinta detectado o gobernado por el contrato propietario;
+- dos llamadas concurrentes no duplican ledger/saldo;
+- timeout o respuesta perdida se reconcilian;
+- actor efectivo queda correlacionado;
+- dispositivo compartido no presta autoridad;
+- PULSO solicita y PASS conserva ownership del ledger;
+- bypass directo de ledger/saldo no sustituye el comando gobernado.
+
+---
+
+#### 21. Redención de puntos
+
+La redención debe cubrir al menos:
+
+- redención `pending` válida;
+- redención ya validada;
+- redención cancelada;
+- redención inexistente;
+- redención de otro cliente;
+- redención de otra sede cuando el contrato territorial aplique;
+- actor sin autoridad;
+- dispositivo compartido con PIN/firma inválidos;
+- dos validaciones concurrentes;
+- retry después de respuesta incierta;
+- orden/venta incompatible;
+- cero doble efecto;
+- correlación del actor y target;
+- PASS conserva ownership de la redención.
+
+La consulta preliminar de una redención no puede convertirse en bypass de la autorización del efecto.
+
+---
+
+#### 22. Salón, mesas, sesiones y llamados
+
+La certificación de salón debe incluir:
+
+- aislamiento por sede para zonas, mesas, sesiones y llamados;
+- creación manual de llamado;
+- reconocimiento;
+- asignación separada;
+- resolución;
+- cancelación cuando esté materializada;
+- apertura y cierre de sesión cuando estén materializados;
+- actor correcto para cada transición;
+- estado de origen vigente;
+- dos actores concurrentes sobre el mismo llamado;
+- transición stale;
+- mesa inactiva o bloqueada;
+- mesa con trabajo abierto ante un cambio administrativo incompatible;
+- fallback de refresco;
+- compatibilidad con zonas y mesas del contrato `OPS-POS-001`.
+
+`created_by`, `assigned_to` y actor ejecutor no se consideran sinónimos.
+
+---
+
+#### 23. Importación de ventas
+
+La matriz de importaciones debe probar, según aplicabilidad:
+
+- archivo válido;
+- archivo adversarial o inválido;
+- archivo repetido;
+- hash e identidad de origen;
+- fallo después de crear batch y antes de completar filas;
+- mapping incompleto;
+- línea sin mapping en cuarentena;
+- más de 2000 ítems o mappings cuando la implementación declare ese volumen;
+- warnings;
+- consumo pendiente;
+- publicación separada de importación, incluida `pulso_post_daily_sales_import` cuando sea la RPC materializada de la unidad;
+- doble publicación del mismo batch;
+- publicación concurrente de batches distintos sobre el mismo stock;
+- stock insuficiente;
+- modos de consumo;
+- aislamiento entre sedes;
+- dispositivo compartido;
+- recuperación y conciliación.
+
+Un lote importado no produce autoridad de inventario por su sola existencia.
+
+---
+
+#### 24. Configuración y administración
+
+La certificación debe demostrar:
+
+- operador ordinario puede leer únicamente la configuración necesaria para operar;
+- operador ordinario no modifica zonas, mesas, mappings, reglas o settings administrativos;
+- supervisor con vista de importaciones no puede mapear, importar o publicar por inferencia;
+- actor administrativo autorizado modifica únicamente targets dentro de su scope;
+- `site_id` manipulado no amplía autoridad;
+- DML directo no bypassa el contrato;
+- mesa con trabajo abierto bloquea cambios incompatibles;
+- mapping o regla stale produce conflicto controlado;
+- cambio de actor invalida autoridad sensible previa;
+- deny produce cero cambios;
+- auditoría reconstruye actor, target, cambio y resultado.
+
+Una modificación administrativa no se registra fingiendo que fue una venta, llamado o pedido.
+
+---
+
+#### 25. Actor efectivo y atribución durable
+
+La evidencia debe distinguir:
+
+```text
+PRINCIPAL TECNICO
+!=
+ACTOR HUMANO EFECTIVO
+!=
+CREADOR
+!=
+ASIGNADO
+!=
+APROBADOR
+!=
+CLIENTE
+!=
+PROCESO AUTOMATICO
+```
+
+Se prueban, cuando apliquen:
+
+- sesión personal;
+- terminal compartida;
+- actor A seguido de actor B;
+- cambio de turno;
+- cambio de sede;
+- acción diferida;
+- reintento;
+- integración automática sin actor humano;
+- corrección posterior de atribución.
+
+El reintento conserva la atribución del efecto original y una corrección de auditoría nunca reescribe silenciosamente la historia.
+
+---
+
+#### 26. Dispositivo compartido
+
+La prueba debe demostrar que el dispositivo únicamente restringe.
+
+No puede:
+
+- prestar permisos al actor;
+- convertirse en actor humano;
+- ampliar sede o área;
+- convertir una vista en capacidad de mutación;
+- reutilizar firma expirada;
+- reutilizar actor/turno del trabajador anterior;
+- mantener autoridad después de revocación;
+- usar `navigation_role` como autoridad humana suficiente;
+- tratar app permitida como permiso de acción.
+
+Cuando una acción exige firma humana, firma, actor, turno, dispositivo, recurso y efecto deben quedar correlacionados.
+
+---
+
+#### 27. PIN y secretos efímeros
+
+Los secretos usados para identificar o reautenticar actor deben:
+
+- permanecer fuera de URLs;
+- no persistirse en auditoría funcional;
+- no conservarse en metadata del efecto;
+- limpiarse del estado cliente después del intento;
+- no reutilizarse para una acción posterior;
+- respetar límites de intentos y bloqueo cuando el contrato los exija;
+- fallar cerrado ante PIN inválido o actor ambiguo.
+
+Una firma válida identifica al actor; no concede permiso por sí sola.
+
+---
+
+#### 28. Frescura y write barrier
+
+Después de cualquier cambio material de:
+
+- sesión;
+- actor;
+- turno;
+- check-in;
+- rol;
+- asignación;
+- sede;
+- área;
+- dispositivo;
+- permiso;
+- estado o versión del recurso;
+
+la siguiente acción sensible debe resolver nuevamente contexto y autorización.
+
+Una decisión tomada antes del cambio no autoriza silenciosamente un efecto posterior.
+
+---
+
+#### 29. Idempotencia
+
+Toda acción con riesgo de repetición debe demostrar:
+
+```text
+MISMA INTENCION
++
+MISMA IDENTIDAD IDEMPOTENTE
+=
+UN SOLO EFECTO EMPRESARIAL
+```
+
+Aplica, según la unidad, a:
+
+- creación y actualización sensible de pedido;
+- cobro;
+- cancelación/void/refund;
+- apertura/cierre/reopen;
+- acumulación;
+- redención;
+- importación y publicación;
+- movimientos derivados hacia otros dominios.
+
+La referencia no puede regenerarse arbitrariamente en cada retry del mismo hecho.
+
+---
+
+#### 30. Concurrencia
+
+La matriz debe cubrir operaciones incompatibles sobre el mismo recurso cuando la superficie las admita.
+
+Casos mínimos aplicables:
+
+- dos cancelaciones;
+- dos refunds;
+- dos cierres/reopen incompatibles;
+- dos redenciones;
+- dos acumulaciones equivalentes;
+- dos actores tomando/resolviendo el mismo llamado;
+- dos publicaciones sobre el mismo batch;
+- dos batches afectando el mismo stock;
+- actualización contra estado o versión supersedidos.
+
+El sistema debe serializar, rechazar por estado/revisión o resolver mediante mecanismo transaccional equivalente.
+
+---
+
+#### 31. Timeout y resultado desconocido
+
+Timeout, pérdida de conectividad o respuesta ambigua después de una mutación producen resultado desconocido.
+
+Se fija:
+
+```text
+RESULT_UNKNOWN
+-> RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+No se resuelve la incertidumbre creando un segundo pago, refund, acumulación, redención, publicación, cierre o transición equivalente.
+
+---
+
+#### 32. Realtime, territorialidad y cleanup
+
+Cuando una superficie use Realtime, la certificación debe diferenciar:
+
+```text
+CODIGO DE SUSCRIPCION PRESENTE
+!=
+PUBLICACION REMOTA DISPONIBLE
+!=
+AISLAMIENTO TERRITORIAL DEMOSTRADO
+```
+
+Se prueba:
+
+- publicación necesaria presente en el ambiente certificado;
+- evento de la sede autorizada;
+- evento de otra sede;
+- filtro o refetch que no expone recurso ajeno;
+- reconexión;
+- cleanup de canal;
+- ausencia de listeners duplicados;
+- fallback de refresco cuando Realtime no esté disponible;
+- resultado coherente con RLS y lectura server-side aplicables.
+
+Un callback que luego refiltra datos no autoriza recibir datos prohibidos.
+
+---
+
+#### 33. Legacy, paridad y retiro
+
+La certificación debe cubrir el legacy PULSO que participe en la unidad, incluido `orders-board-legacy` cuando aplique.
+
+Antes de retiro se demuestra:
+
+- paridad funcional protegida;
+- cero direct imports/runtime consumers al completar el cutover;
+- cero aliases, barrels, wrappers o reexports que oculten el legacy;
+- cero fallback desde un deny canónico;
+- cero doble side effect durante shadow;
+- fixtures equivalentes;
+- evidencia atribuible al mismo commit y package;
+- rollback seguro mientras siga permitido.
+
+La igualdad con un bug legacy no es paridad contractual.
+
+---
+
+#### 34. Delivery, chat, billing y terceros
+
+Cuando la unidad incluya estas superficies se prueba:
+
+- asignación de delivery separada de tránsito, entrega y override;
+- tercero externo con token mínimo, temporal y revocable cuando aplique;
+- PIN de entrega no sustituye estado ni autoridad;
+- chat leído no concede escritura o archivo;
+- múltiples callers de chat no producen persistencia divergente;
+- billing visible no concede emisión, corrección o autoridad fiscal;
+- dirección, teléfono e instrucciones se minimizan;
+- retry/webhook no duplica entrega, notificación, devolución o compensación;
+- cada efecto conserva correlación con el pedido.
+
+---
+
+#### 35. Fronteras PULSO ↔ PASS ↔ NEXO ↔ NUMERA
+
+La certificación preserva fuentes de verdad diferenciadas:
+
+```text
+PULSO = pedido, venta, caja y experiencia operativa comercial
+PASS = identidad comercial, beneficios, redencion y ledger de fidelizacion
+NEXO = inventario y movimientos fisicos
+NUMERA = hechos economicos, conciliacion y finanzas
+```
+
+Se prueba, cuando exista integración:
+
+- PULSO no escribe ledger PASS por atajo no gobernado;
+- PULSO no fabrica stock NEXO desde el cliente;
+- una venta/anulación/devolución produce el efecto NEXO exactamente una vez;
+- hecho económico NUMERA conserva correlación sin convertir PULSO en ledger financiero;
+- línea externa sin mapping no produce stock, costo o loyalty;
+- compensaciones conservan vínculo con el hecho original;
+- eventos sin efecto y efectos sin evento son detectables;
+- ninguna frontera adquiere ownership por usar el mismo Supabase.
+
+---
+
+#### 36. Packages compartidos y paridad
+
+Cuando la unidad haya migrado consumidores bajo `PULSO-AUTH-015`, la certificación debe comprobar:
+
+- tipos e identificadores compartidos desde `@vento/contracts` sin strings paralelos autorizantes;
+- contexto y autorización mediante la frontera aplicable de `@vento/os-context`;
+- acceso técnico de `@vento/supabase` separado de autoridad empresarial;
+- `@vento/ui-web` limitado a presentación;
+- perfiles PULSO correspondientes ejecutados;
+- relaciones de compatibilidad y actualización correspondientes a la misma versión;
+- paridad cuando el legacy era semánticamente válido;
+- corrección intencional documentada cuando el legacy era incorrecto;
+- cero doble side effect durante comparación;
+- deny canónico nunca convertido a allow por fallback.
+
+---
+
+#### 37. Rollback
+
+Un rollback de una unidad solo puede volver a una combinación previamente segura y compatible.
+
+Nunca puede:
+
+- restaurar `pulso.pos.main` como autoridad final broad;
+- restaurar role override o `navigation_role` como autoridad humana suficiente;
+- restaurar `site_id` cliente como territorio;
+- convertir dispositivo en actor;
+- restaurar bypass mediante cliente privilegiado;
+- perder actor, turno, auditoría o correlaciones;
+- reactivar un consumidor legacy conocido como inseguro;
+- reescribir ventas, pagos, ledger, inventario o hechos confirmados.
+
+Si no existe combinación segura anterior, la unidad bloquea la operación y corrige hacia adelante.
+
+---
+
+#### 38. Auditoría mínima de la certificación
+
+Cada caso mutador o deny material debe poder reconstruir, según aplique:
+
+- principal técnico;
+- actor efectivo;
+- dispositivo;
+- rol/carril;
+- turno y check-in;
+- sede y área;
+- permiso/capacidad;
+- recurso;
+- estado y versión;
+- decisión y razones;
+- correlación/idempotencia;
+- timestamp;
+- resultado observado;
+- evidencia de presencia o ausencia de efectos;
+- referencias a dominios externos cuando existan.
+
+La telemetría no registra PIN, JWT, `service_role`, tokens ni datos personales innecesarios.
+
+---
+
+#### 39. Matriz mínima por familia
+
+| Familia | Allow válido | Deny capacidad | Deny territorio | Deny estado/recurso | Acceso directo | Replay/concurrencia | Stale/context | Device/UI bypass | Legacy bypass |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| acceso y navegación | obligatorio | obligatorio | obligatorio | según ruta | obligatorio | no aplica salvo efecto | obligatorio | obligatorio | obligatorio |
+| cajero ordinario | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| supervisor / gerencia operativa | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| pedidos y fulfillment | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| caja y pagos | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| scanner / identificación | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según operación | obligatorio | obligatorio | obligatorio |
+| acumulación | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| redención | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| salón | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| importaciones | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| configuración administrativa | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| integración entre dominios | cuando exista integración | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| packages compartidos | para superficies migradas | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+
+La matriz es un mínimo contractual, no un máximo de casos.
+
+---
+
+#### 40. Criterio de PASS integral
+
+Una unidad puede declarar `PASS` únicamente cuando:
+
+1. todos los casos aplicables fueron ejecutados;
+2. no existe ningún `FAIL`;
+3. no existe ningún `BLOCKED` sin resolver;
+4. cada `NOT_APPLICABLE` tiene justificación verificable;
+5. los allow se producen solo mediante autoridad compatible;
+6. los deny no dejan efectos parciales;
+7. acceso directo no elude autorización;
+8. cajero, supervisor, administración y actores compartidos conservan sus fronteras;
+9. sede y recurso no se amplían por parámetros, filtros o dispositivo;
+10. lectura no se convierte en mutación;
+11. replay y concurrencia no duplican efectos;
+12. contexto stale no autoriza efectos nuevos;
+13. shared device no presta autoridad;
+14. PIN y secretos no persisten en evidencia funcional;
+15. PULSO, PASS, NEXO y NUMERA conservan ownership diferenciado;
+16. Realtime no rompe territorialidad;
+17. broad authority legacy no es fallback final;
+18. packages migrados conservan paridad y compatibilidad;
+19. rollback no restaura bypasses prohibidos;
+20. la evidencia pertenece a la misma versión de la unidad.
+
+---
+
+#### 41. Criterio de FAIL
+
+La certificación termina `FAIL` ante cualquier evidencia de:
+
+- allow sin capacidad exacta compatible;
+- `pulso.pos.main` actuando como wildcard final;
+- role override, `navigation_role` o dispositivo prestando autoridad;
+- `site_id` cliente ampliando territorio;
+- lectura usada como mutación;
+- cancel, void, refund, close o reopen fusionados indebidamente;
+- doble pago, acumulación, redención o publicación;
+- lookup o cliente privilegiado ejecutando efecto sin autorización propietaria;
+- PIN o secreto persistido;
+- actor humano ausente donde es obligatorio;
+- actor anterior reutilizado después de cambio;
+- DML directo saltando una acción protegida;
+- estado stale sobrescrito silenciosamente;
+- evento Realtime exponiendo un recurso no autorizado;
+- línea importada sin mapping produciendo efecto;
+- escritura cruzada no gobernada sobre PASS, NEXO o NUMERA;
+- fallback legacy convirtiendo un deny canónico en allow;
+- rollback que reactive una autoridad más amplia.
+
+---
+
+#### 42. Criterio de bloqueo
+
+La certificación permanece `BLOCKED` cuando falta una precondición necesaria para interpretar la prueba, incluyendo:
+
+- protección aplicable no materializada;
+- package o gate no resuelto;
+- capacidad atómica requerida todavía ausente;
+- catálogo/grants incompatibles;
+- backend o migraciones incompatibles;
+- ambiente no confiable;
+- fixture no controlable;
+- publicación Realtime requerida no disponible;
+- evidencia insuficiente;
+- cambio concurrente no reconciliado;
+- dependencia transversal propietaria pendiente.
+
+Un bloqueo no se resuelve relajando el oracle ni sustituyendo capacidad por broad permission.
+
+---
+
+#### 43. Evidencia mínima de una ejecución física
+
+Una ejecución posterior debe conservar, como mínimo:
+
+- identidad `PULSO-AUTH-016::<implementation_unit_id>`;
+- package propietario;
+- repositorio y commit consumidor;
+- manifest y lockfile;
+- versiones de packages compartidos aplicables;
+- backend/migraciones aplicables;
+- ambiente;
+- actor o fixture de actor;
+- turno/check-in cuando correspondan;
+- dispositivo cuando aplique;
+- sede/área;
+- recurso o fixture;
+- capacidad/scope esperados;
+- acción ejecutada;
+- resultado esperado;
+- resultado observado;
+- evidencia de auditoría;
+- evidencia de efectos o ausencia de efectos;
+- integraciones externas aplicables;
+- resultado final de la unidad.
+
+---
+
+#### 44. Relación con `DELIV-PKG-016` y CI010
+
+La ejecución física reutiliza los perfiles, fixtures, oracles y gates definidos por la planificación E5 y por `SHELL-CI-010::GLOBAL`.
+
+CI010 puede aportar evidencia de:
+
+- inventario técnico;
+- las doce superficies;
+- cuatro packages;
+- cuatro perfiles;
+- identidad de rutas;
+- oracles sintéticos positivos y negativos;
+- identidad de suite;
+- invalidación de evidencia stale.
+
+Pero `PULSO-AUTH-016` no crea un framework paralelo ni permite que CI010 sustituya oracles empresariales, backend real, concurrencia, actor, territorio, integración o operación E2E no cubiertos por la baseline.
+
+---
+
+#### 45. Reejecución y regresión
+
+Después de corregir una violación se deben reejecutar:
+
+- el caso corregido;
+- sus deny paths;
+- fronteras afectadas;
+- replay/concurrencia relacionados;
+- stale/context cuando aplique;
+- actor/device/PIN relacionados;
+- integraciones afectadas;
+- legacy bypass relacionado;
+- matriz suficiente para volver a declarar PASS de la unidad.
+
+Un PASS posterior no borra la evidencia histórica del FAIL previo.
+
+---
+
+#### 46. Relación con `PULSO-UX-002`
+
+`PULSO-AUTH-016` cierra documentalmente el mini-bloque de autorización PULSO.
+
+`PULSO-UX-002 — Diseñar inicio para cajero` recibe una frontera explícita:
+
+- la UX puede diseñar el inicio del cajero sobre permisos, contexto, actores y estados ya definidos;
+- la UX no puede convertir visibilidad, navegación, botón, rol, dispositivo, PIN o sede seleccionada en autorización;
+- la UX no redefine PermissionKeys, carriles, territory, actor, shared device, packages ni ownership entre dominios;
+- la UX debe representar deny, bloqueo, contexto faltante y necesidad de identificación sin fabricar autoridad;
+- cerrar este marcador no implica que las instancias físicas de autorización estén certificadas.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: la certificación integral de PULSO ya está prevista por obligaciones vigentes de ciclo comercial, caja/pagos, autorización exacta, contexto territorial, actor/dispositivo, loyalty, importaciones, integración, packages, rollback, evidencia y E2E. Esta tarea consolida los oracles y la futura ejecución por unidad sin introducir una obligación empresarial independiente nueva.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones, secuencia ni propietario:
+
+- `TREQ-PULSO-001` a `TREQ-PULSO-007` para POS E2E, legacy, seguridad del prototipo, mutaciones nombradas, ciclo comercial, pagos/caja y delivery;
+- `TREQ-PULSO-008` a `TREQ-PULSO-018` para inventario de rutas, identidad, SSO, deny route, acceso directo, territorio, órdenes, importaciones y salón;
+- `TREQ-PULSO-024`, `TREQ-PULSO-026` y `TREQ-PULSO-027` para no confundir infraestructura con autorización, suficiencia de permisos y fronteras entre aplicaciones;
+- `TREQ-AUTH-001`, `TREQ-AUTH-003`, `TREQ-AUTH-004`, `TREQ-AUTH-008`, `TREQ-AUTH-011`, `TREQ-AUTH-013`, `TREQ-AUTH-014`, `TREQ-AUTH-015` y `TREQ-AUTH-065` para autorización, dispositivo, equivalencia de decisión, carriles, intersección actor-device, bypass, frescura, evidencia y autoridad administrativa;
+- `TREQ-SHELL-002`, `TREQ-SHELL-006`, `TREQ-SHELL-007`, `TREQ-SHELL-008`, `TREQ-SHELL-038`, `TREQ-SHELL-039`, `TREQ-SHELL-064` y `TREQ-SHELL-065` para responsabilidades compartidas, compatibilidad, rollback, trazabilidad, deprecación y legacy de `@vento/os-context`;
+- `TREQ-PASS-008`, `TREQ-PASS-022` a `TREQ-PASS-032` para contratos server-side de loyalty, scanner, identificación, acumulación, redención, actor, PIN, cámara y feedback;
+- `TREQ-INTEGRATION-006`, `TREQ-INTEGRATION-009`, `TREQ-INTEGRATION-011` y `TREQ-INTEGRATION-014` para fuente única, mappings, inventario exactly-once y convergencia de venta/POS.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 49. Estado AS-IS observado al definir 016
+
+La evidencia remota disponible no permite declarar un PASS físico integral PULSO.
+
+Se observan todavía, entre otros:
+
+- `vento-pulso` no declara dependencias `@vento/*` en su manifest actual;
+- `pulso.pos.main` continúa protegiendo superficies y acciones heterogéneas;
+- el guard conserva caminos legacy de role override;
+- la sesión shared-device observada conserva precedencia de valores preferidos y evaluación por `navigation_role`;
+- identificación de cliente puede usar un cliente administrativo server-side después de un guard broad;
+- validación de redención consulta el recurso antes del guard del efecto;
+- acumulación y redención asocian la firma shared-device al target después del efecto y un fallo de attachment se registra sin revertir automáticamente el efecto;
+- la firma shared-device observada conserva el defecto documentado de `p_actor_employee_id = null` en comprobaciones posteriores al actor resuelto;
+- las suscripciones de salón no filtran por sede en el descriptor y las relaciones de salón verificadas no están publicadas actualmente en `supabase_realtime`;
+- el snapshot remoto de desarrollo consultado contiene cero registros en las superficies controladas de importaciones y loyalty usadas para validar evidencia operativa;
+- CI010 aporta 42 pruebas contractuales y doce superficies, pero no demuestra la semántica integral física.
+
+Por tanto:
+
+```text
+CERTIFICATION CONTRACT DEFINED
+PHYSICAL INTEGRAL PASS NOT YET DEMONSTRATED
+```
+
+---
+
+#### 50. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `pulso.pos.main` continúa broad | bloquea certificar autoridad atómica final | materialización aplicable de `PULSO-AUTH-015` | consumidores usan capacidades exactas y cero fallback broad final |
+| `vento-pulso` conserva cero dependencias `@vento/*` | bloquea certificar adopción de packages | `PULSO-AUTH-015::<implementation_unit_id>` | package/version elegibles, consumidor migrado, perfiles, paridad y rollback PASS |
+| role override y `navigation_role` participan en paths AS-IS | pueden divergir de autoridad canónica | `PULSO-AUTH-015` + fundación AUTH | evaluador compartido aplicable sustituye autoridad legacy sin ampliación |
+| identificación puede usar cliente administrativo después de guard broad | requiere demostrar frontera server-side y proyección mínima | `PULSO-AUTH-006`, `PULSO-AUTH-015` y contratos `AUTH-SRV` aplicables | capacidad exacta, territorio y proyección mínima probados sin exposición privilegiada |
+| lookup de redención precede el guard del efecto | orden de autorización no es final | `PULSO-AUTH-010::<implementation_unit_id>` | autorización y validación quedan ordenadas conforme al contrato y probadas |
+| firma de loyalty/redención se adjunta después del efecto | puede quedar efecto sin vínculo durable si attachment falla | `PULSO-AUTH-009/010/013::<implementation_unit_id>` | efecto y atribución quedan atómicos o reconciliables antes de certificar éxito |
+| firma shared-device conserva gap de actor nulo documentado | bloquea PASS de firma humana mientras no exista camino conforme | `PULSO-AUTH-012/013::<implementation_unit_id>` | actor resuelto se propaga end-to-end y los oracles actor/device pasan |
+| salón declara Realtime sin publicación remota observada para sus tablas | bloquea certificar Realtime de salón en ese snapshot | package propietario + `PULSO-AUTH-016::<implementation_unit_id>` | publicación/configuración materializada y evento E2E territorial PASS |
+| superficies remotas consultadas de importación y loyalty tienen cero datos | no existe evidencia operativa E2E en ese snapshot | `PULSO-AUTH-016::<implementation_unit_id>` | fixtures controlados permiten ejecutar allow/deny, retry, concurrencia y recuperación |
+| CI010 no sustituye pruebas empresariales integrales | no bloquea este contrato; bloquea usar baseline como PASS final | `PULSO-AUTH-016::<implementation_unit_id>` | matriz integral ejecutada con evidencia de la misma unidad |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 51. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El marcador documental define el contrato de certificación; build, typecheck, lint y suites físicas pertenecen a la instancia y al checkout autorizados. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global, TREQ y lifecycle quedan pendientes del checkout local después de incorporar el artefacto. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, archivo propietario PULSO, continuidad, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, registro 04A relevante, `vento-pulso/main`, CI010, doce superficies, cuatro packages/perfiles, auth/context, scanner, loyalty, importaciones, salón y metadatos Supabase de solo lectura aplicables. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, pagos, caja, pedidos, llamadas de salón, loyalty, imports, concurrencia, rollback ni pruebas adversariales sobre operación real. |
+| FÍSICA | NOT_EXECUTED | No se creó ni ejecutó ninguna instancia `PULSO-AUTH-016::<implementation_unit_id>` y no se produjo una certificación integral física. |
+
+---
+
+#### 52. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] se conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [ ] el marcador no declara pruebas físicas ejecutadas;
+- [ ] PASS, FAIL, BLOCKED, NOT_EXECUTED, NOT_APPLICABLE y STALE quedan diferenciados;
+- [ ] toda evidencia PASS pertenece a la misma identidad de unidad y versiones compatibles;
+- [ ] CI010 se trata como baseline técnica, no como PASS integral automático;
+- [ ] se cubren las doce superficies baseline o se justifica toda no aplicabilidad;
+- [ ] se prueban allow y deny universales;
+- [ ] se prueba acceso directo sin bypass de interfaz;
+- [ ] se prueba aislamiento por sede y recurso;
+- [ ] cajero obtiene únicamente su contrato aprobado;
+- [ ] supervisor y `gerencia_operativa` conservan carriles distintos;
+- [ ] cancel, void, refund, close y reopen permanecen separados;
+- [ ] pedidos y líneas revalidan estado y columnas en servidor;
+- [ ] pago y caja conservan idempotencia, conciliación y actor;
+- [ ] `/` y `/scanner` conservan identidades distintas mientras no exista decisión propietaria posterior;
+- [ ] identificación conserva formato permitido, proyección mínima y autorización;
+- [ ] acumulación es idempotente y no duplica ledger/saldo;
+- [ ] redención pendiente se consume exactamente una vez;
+- [ ] redención validada/cancelada/ajena falla cerrado;
+- [ ] salón mantiene zonas, mesas, sesiones y llamados territorialmente aislados;
+- [ ] actor de llamado, asignado y creador no se confunden;
+- [ ] Realtime territorial, cleanup y fallback se prueban cuando la unidad los materialice;
+- [ ] importación conserva archivo/hash/mapping/cuarentena/batch/publicación separados;
+- [ ] doble publicación y concurrencia de stock no duplican efectos;
+- [ ] configuración administrativa permanece fuera de operación ordinaria;
+- [ ] DML directo no bypassa PermissionKeys ni scope;
+- [ ] principal, actor, dispositivo, turno y permiso permanecen separados;
+- [ ] PIN y secretos son efímeros;
+- [ ] cambio de contexto invalida decisiones stale;
+- [ ] replay no duplica efectos;
+- [ ] resultado desconocido exige reconciliación;
+- [ ] `orders-board-legacy` no sobrevive oculto después de un cutover que autorice su retiro;
+- [ ] PULSO, PASS, NEXO y NUMERA conservan ownership diferenciado;
+- [ ] packages compartidos conservan paridad, compatibilidad y rollback;
+- [ ] rollback no restaura broad authority, role override o territorio cliente;
+- [ ] auditoría conserva evidencia sin secretos innecesarios;
+- [ ] todos los hallazgos AS-IS tienen propietario y condición de salida;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador;
+- [ ] `PULSO-UX-002` recibe una frontera explícita sin desarrollar su contenido.
+
+---
+
+#### 53. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-pulso`;
+- modifica físicamente `vento-shell`;
+- crea o publica packages;
+- cambia versiones, tags o registry;
+- añade dependencias a `vento-pulso`;
+- modifica lockfiles;
+- crea permisos, roles, grants o scopes;
+- materializa capacidades atómicas;
+- crea Server Actions, API, RPC o Edge Functions;
+- crea tablas, columnas, vistas, triggers, RLS o migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- crea fixtures físicos;
+- ejecuta ventas, cobros, caja o pedidos reales;
+- ejecuta acumulaciones o redenciones reales;
+- importa o publica ventas reales;
+- modifica inventario real;
+- crea o modifica configuración real de salón;
+- activa cámara;
+- cambia publicación Realtime;
+- ejecuta cutover de packages;
+- retira legacy físicamente;
+- autoriza una instancia física;
+- declara PASS físico integral sin evidencia;
+- modifica el Registro 04A;
+- desarrolla `PULSO-UX-002`.
+
+---
+
+#### 54. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-016 — Ejecutar pruebas integrales`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-002 — Diseñar inicio para cajero`

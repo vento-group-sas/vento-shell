@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1369** |
+| Aprobadas | **1370** |
 | En propuesta | **0** |
-| No iniciadas | **227** |
+| No iniciadas | **226** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.78% (1369/1596)** |
+| Porcentaje de completamiento | **85.84% (1370/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **227** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1270** |
+| ⏸ NO_EVALUADA | **226** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1271** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-015` — Migrar a paquetes de vento-shell | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-016` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-002` — Diseñar inicio para cajero | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-016` — Ejecutar pruebas integrales | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-002` — Diseñar inicio para cajero | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-UX-003` — Diseñar inicio para servicio de salón | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1130,7 +1130,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-013` | Registrar trabajador que ejecuta la operación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-014` | Mantener configuración administrativa separada | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-016` | Ejecutar pruebas integrales | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-016` | Ejecutar pruebas integrales | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-001` | Inventariar procesos de venta, caja y salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-002` | Diseñar inicio para cajero | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-003` | Diseñar inicio para servicio de salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
