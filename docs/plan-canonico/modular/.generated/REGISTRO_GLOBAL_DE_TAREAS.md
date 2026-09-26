@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1352** |
+| Aprobadas | **1353** |
 | En propuesta | **0** |
-| No iniciadas | **244** |
+| No iniciadas | **243** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.71% (1352/1596)** |
+| Porcentaje de completamiento | **84.77% (1353/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **244** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1253** |
+| ⏸ NO_EVALUADA | **243** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1254** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-UX-016` — Validar el prototipo con compras y recepción | ✅ APROBADA |
-| Tarea actual | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón | ⬜ NO INICIADA |
-| Siguiente reservada | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón | ✅ APROBADA |
+| Tarea actual | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-001` — Inventariar vistas POS | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1131,7 +1131,7 @@
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-014` | Mantener configuración administrativa separada | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-016` | Ejecutar pruebas integrales | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-001` | Inventariar procesos de venta, caja y salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-001` | Inventariar procesos de venta, caja y salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-002` | Diseñar inicio para cajero | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-003` | Diseñar inicio para servicio de salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-004` | Diseñar inicio para mostrador | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
