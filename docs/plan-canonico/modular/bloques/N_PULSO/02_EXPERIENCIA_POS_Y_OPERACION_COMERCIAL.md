@@ -6936,7 +6936,1276 @@ La supervisión aporta comprensión y coordinación. No absorbe ejecución.
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-007 — Simplificar creación de venta`
-### [ ] PULSO-UX-007 — Simplificar creación de venta
+### ✅ PULSO-UX-007 — Simplificar creación de venta
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-006 — Diseñar inicio para supervisor
+**Tarea siguiente:** PULSO-UX-008 — Simplificar cobro y medios de pago
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0081 — Creación de venta o pedido` para reducir la creación ordinaria de una venta PULSO a contexto pre-resuelto, selección mínima de oferta y una única creación autoritativa, atómica e idempotente mediante `pulso.sales.orders.create`, separando borrador de interfaz, pedido persistido, cobro, descuentos, cancelación, modificación posterior, fidelización y efectos interaplicación; sin inventar permisos no publicados, sin crear pedidos vacíos y sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, pantallas, contratos generados, permisos, matrices, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, packages, dispositivos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Simplificar la creación ordinaria de una venta o pedido PULSO para que el actor autorizado pueda pasar de intención de compra a compromiso comercial persistido con la menor carga operativa compatible con contexto, oferta, autorización, trazabilidad e integridad.
+
+La experiencia debe resolver:
+
+```text
+CONTEXTO YA RESUELTO
++
+OFERTA VENDIBLE VIGENTE
++
+SELECCION MINIMA DEL CLIENTE
++
+UNA CONFIRMACION DE CREACION
+=
+VENTA / PEDIDO AUTORITATIVO
+```
+
+sin convertir esa creación en cobro, cancelación, descuento, actualización genérica, loyalty, inventario o cierre de caja.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-006
+
+`PULSO-UX-006` entrega:
+
+```text
+VSCREEN-0080 CONSERVA IDENTIDAD COMPARTIDA
+SUPERVISOR NO CREA VENTAS POR SU ROL
+CREAR VENTA REQUIERE pulso.sales.orders.create
+GERENCIA_OPERATIVA NO RECIBE orders.create POR MATRIZ
+SUPERVISOR BASE NO RECIBE PULSO POR MATRIZ
+HOME PUEDE MOSTRAR INTENCION SOLO SI EXISTE AUTORIDAD DE DESTINO
+NAVEGACION != PERMISO
+PRIORIDAD != AUTORIDAD
+```
+
+Por tanto, esta tarea diseña la creación únicamente para actores que posean realmente `pulso.sales.orders.create` en su contexto efectivo.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- la experiencia se define una sola vez;
+- no crea instancia física propia;
+- no materializa `VSCREEN-0081`;
+- no publica rutas ni componentes;
+- no crea ni modifica PermissionKeys;
+- no modifica datasets de autorización;
+- no ejecuta ventas reales;
+- no modifica Supabase;
+- no autoriza implementación física.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+La decisión consume como mínimo:
+
+- `PULSO-UX-001..006`;
+- `PULSO-AUTH-006..016`;
+- `AUTH-CAT-022..024`;
+- dataset `operational-role-grants@1.0.0`;
+- `VSCREEN-0080`, `VSCREEN-0081`, `VSCREEN-0083` y `VSCREEN-0084`;
+- `VPROC-0038`, `VPROC-0039`, `VPROC-0040`, `VPROC-0041`, `VPROC-0043` y sus bindings aprobados;
+- estados canónicos de `VPROC-0039`;
+- matriz E2 de prototipos, estaciones y gramática de interacción;
+- Registro 04A vigente de PULSO y cobertura UX heredada;
+- runtime actual de `vento-pulso` como evidencia AS-IS, no como autoridad del diseño objetivo.
+
+---
+
+#### 5. Identidad canónica de la pantalla
+
+La identidad existente es:
+
+```text
+VSCREEN-0081 — Creación de venta o pedido
+```
+
+Su declaración canónica es construir una venta o pedido con:
+
+- productos;
+- cantidades;
+- modificadores;
+- canal;
+- responsable.
+
+Esta tarea no crea otra pantalla para “venta rápida”, “pedido rápido” o “nueva venta”.
+
+---
+
+#### 6. Binding principal de proceso
+
+`VSCREEN-0081` conserva:
+
+```text
+PROCESO PRINCIPAL: VPROC-0039
+PASO: VPROC-0039::STEP-CREATE_SALE_OR_ORDER
+FUNCION: INITIATE
+FASE: INITIAL
+```
+
+La creación ordinaria de mostrador o para llevar es el caso base de esta tarea.
+
+---
+
+#### 7. Bindings secundarios
+
+`VSCREEN-0081` también aparece relacionado con:
+
+- `VPROC-0038` — servicio en mesa;
+- `VPROC-0040` — pedidos de canales externos;
+- `VPROC-0041` — catering/B2B.
+
+La reutilización de la pantalla no fusiona los procesos.
+
+Regla:
+
+```text
+MISMA SUPERFICIE
+!=
+MISMO CONTRATO DE INICIO
+```
+
+Esta tarea define la creación ordinaria PULSO y permite reutilizar primitives de selección, pero no sustituye los contratos de mesa, canal externo o B2B.
+
+---
+
+#### 8. PermissionKey exacta
+
+La creación consume:
+
+```text
+pulso.sales.orders.create
+```
+
+`AUTH-CAT-022/023` define esa capacidad como:
+
+- `OPERATIONAL_ONLY`;
+- creación de una venta u orden inicial;
+- limitada a sede, canal y reglas comerciales autorizadas;
+- separada de cobro, descuento, cancelación, devolución, reembolso y cierre de caja.
+
+---
+
+#### 9. Actores con grant publicado
+
+En `operational-role-grants@1.0.0`, `pulso.sales.orders.create` tiene exactamente dos grants:
+
+```text
+cajero_satelite
+operador_integral_satelite
+```
+
+Ambos son:
+
+```text
+authorization_mode = OPERATIONAL_ONLY
+grant_type = DIRECT_OPERATIONAL
+```
+
+No existe grant publicado de `orders.create` para:
+
+- `servicio_salon`;
+- `mostrador_satelite`;
+- `gerencia_operativa`.
+
+---
+
+#### 10. Regla de autorización
+
+La UI no decide autoridad por el nombre visible del puesto.
+
+La entrada a creación requiere como mínimo:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++
+ROL OPERATIVO CON orders.create
++
+TURNO PUBLICADO Y VIGENTE
++
+CHECK-IN ACTIVO CUANDO APLIQUE
++
+SEDE / AREA / PUNTO COMPATIBLES
++
+CONTEXTO DE DISPOSITIVO VALIDO
++
+AUSENCIA DE DENEGACION SUPERIOR
+=
+CREACION POSIBLE
+```
+
+La navegación desde `VSCREEN-0080` no reemplaza ninguna de estas condiciones.
+
+---
+
+#### 11. `pulso.access` no basta
+
+Se conserva:
+
+```text
+pulso.access
+!=
+pulso.sales.orders.create
+```
+
+Entrar a PULSO no permite originar ventas.
+
+La existencia de un botón, enlace o ruta tampoco concede la capacidad.
+
+---
+
+#### 12. `pulso.pos.main` no participa del diseño objetivo
+
+`pulso.pos.main` continúa como permiso broad legacy en descomposición.
+
+Queda prohibido:
+
+```text
+pos.main
+→ asumir orders.create
+```
+
+La implementación futura deberá consumir `pulso.sales.orders.create` de forma exacta.
+
+---
+
+#### 13. Contexto heredado desde Inicio POS
+
+`VSCREEN-0080` debe entregar a `VSCREEN-0081`, cuando ya esté resuelto:
+
+- actor efectivo;
+- sede efectiva;
+- área o punto aplicable;
+- rol operativo efectivo;
+- contexto de dispositivo;
+- canal o modalidad cuando la intención de origen ya lo determina;
+- retorno seguro.
+
+La pantalla de creación no vuelve a preguntar datos ya resueltos salvo que exista una elección empresarial real.
+
+---
+
+#### 14. Sede no se selecciona libremente dentro de la venta
+
+El usuario no recibe un selector general de sedes dentro de `VSCREEN-0081`.
+
+`site_id` es contexto autorizado y nunca una herramienta para ampliar territorio.
+
+Si la sede efectiva no puede resolverse de forma segura:
+
+```text
+NO CREAR VENTA
+```
+
+---
+
+#### 15. Área, punto y caja
+
+El punto o área aplicable se deriva del contexto operativo y de la configuración física vigente.
+
+La creación no permite inventar una estación o caja por nombre libre.
+
+Cuando la política de la función requiera sesión de caja compatible y no exista una válida, el flujo debe volver al owner correspondiente de apertura; `VSCREEN-0081` no abre caja implícitamente.
+
+---
+
+#### 16. Canal y modalidad
+
+La experiencia evita preguntar canal o modalidad cuando el origen ya los determina de forma inequívoca.
+
+Si existen varias opciones autorizadas, muestra únicamente las aplicables al contexto actual.
+
+Regla:
+
+```text
+CONTEXTO FIJA OPCION
+→ NO PREGUNTAR OTRA VEZ
+
+CONTEXTO PERMITE VARIAS
+→ ELEGIR ENTRE OPCIONES AUTORIZADAS
+```
+
+Canal o modalidad no conceden permisos adicionales.
+
+---
+
+#### 17. No se crea pedido al abrir la pantalla
+
+Abrir `VSCREEN-0081` no produce por sí mismo:
+
+- pedido;
+- venta;
+- línea;
+- reserva;
+- efecto de inventario;
+- efecto productivo;
+- pago;
+- loyalty;
+- hecho económico.
+
+Regla:
+
+```text
+OPEN SCREEN
+!=
+CREATE ORDER
+```
+
+Esto evita pedidos vacíos y abandono convertido en deuda empresarial.
+
+---
+
+#### 18. Borrador de interfaz
+
+Antes de la creación autoritativa puede existir un borrador de interfaz con:
+
+- selección de productos;
+- cantidades;
+- modificadores;
+- contexto de canal/modalidad;
+- cliente opcional cuando ya esté autorizado y disponible;
+- observaciones permitidas por el contrato del pedido.
+
+Ese borrador:
+
+```text
+NO ES VPROC STATE
+NO ES PEDIDO
+NO ES VENTA
+NO TIENE EFECTOS EXTERNOS
+```
+
+---
+
+#### 19. Borrador no autoritativo
+
+Mientras la creación no haya sido confirmada por el sistema autoritativo:
+
+- puede descartarse sin cancelar una venta inexistente;
+- no genera una identidad empresarial definitiva;
+- no puede activar preparación;
+- no puede cobrar;
+- no puede emitir eventos de venta confirmada;
+- no puede afectar inventario o loyalty.
+
+---
+
+#### 20. Oferta vendible como fuente
+
+La selección consume únicamente una oferta comercial publicada y aplicable a:
+
+- sede;
+- canal/modalidad;
+- vigencia;
+- disponibilidad contractual aplicable.
+
+`VSCREEN-0081` no modifica:
+
+- producto maestro;
+- receta;
+- precio maestro;
+- catálogo físico;
+- reglas de oferta.
+
+---
+
+#### 21. Producto y snapshot comercial
+
+La creación debe conservar el snapshot necesario para reconstruir qué se vendió y bajo qué condiciones.
+
+Como mínimo, la operación deberá poder preservar conceptualmente:
+
+- producto/oferta seleccionada;
+- cantidad;
+- modificadores elegidos;
+- precio y componentes comerciales vigentes;
+- impuestos aplicables;
+- canal/modalidad;
+- sede;
+- actor responsable;
+- versión o referencia suficiente de la oferta.
+
+Los nombres físicos de columnas pertenecen a la materialización posterior.
+
+---
+
+#### 22. Precio no editable libremente
+
+La experiencia no presenta el precio calculado como un campo de texto libre.
+
+```text
+PRECIO PUBLICADO / CALCULADO
+!=
+PRECIO ESCRITO POR EL OPERADOR
+```
+
+Un descuento o excepción de precio requiere su contrato sensible propio y no se disfraza como edición del pedido inicial.
+
+---
+
+#### 23. Descuento fuera de la creación ordinaria
+
+`pulso.sales.discounts.apply` es una capacidad sensible `BASE_AND_OPERATIONAL`.
+
+Por tanto, `VSCREEN-0081` no incluye un mecanismo ordinario de:
+
+- porcentaje libre;
+- valor libre;
+- precio negociado manual;
+- código genérico de descuento sin autoridad.
+
+Cuando exista un descuento válido, debe llegar desde regla aplicable o flujo autorizado separado.
+
+---
+
+#### 24. Cantidad
+
+La cantidad forma parte de la selección de la línea.
+
+La UX debe permitir ajustar únicamente cantidades válidas para la oferta y la unidad vendible.
+
+No se aceptan cantidades inválidas para luego “corregir” el pedido mediante una mutación genérica.
+
+---
+
+#### 25. Modificadores
+
+Los modificadores se presentan únicamente cuando el producto seleccionado los requiere o permite.
+
+La creación debe distinguir:
+
+- modificador obligatorio;
+- modificador opcional;
+- opción incompatible;
+- selección incompleta.
+
+Una selección obligatoria incompleta bloquea la confirmación de esa línea.
+
+---
+
+#### 26. Observaciones
+
+Una observación libre puede aportar contexto permitido del pedido, pero no sustituye estructuras empresariales.
+
+Nunca se codifica en texto libre:
+
+- descuento;
+- autorización;
+- sustitución material;
+- estado de pago;
+- ajuste de inventario;
+- identidad de actor;
+- cancelación;
+- excepción sensible.
+
+---
+
+#### 27. Cliente opcional
+
+`TREQ-PULSO-005` establece que el cliente puede ser opcional.
+
+Por tanto, la creación ordinaria no exige identificar un cliente cuando el canal y la política permiten venta anónima.
+
+Regla:
+
+```text
+CLIENTE OPCIONAL
+!=
+LOYALTY OBLIGATORIO
+```
+
+---
+
+#### 28. Identificación de cliente como handoff
+
+Cuando el flujo permita o requiera identificar cliente, la experiencia puede invocar la superficie propietaria correspondiente.
+
+La creación no debe:
+
+- cargar el ledger PASS completo;
+- obligar a redención;
+- acumular puntos automáticamente por abrir la venta;
+- crear una identidad de cliente paralela en PULSO.
+
+`PULSO-UX-011/012/018` conservan los efectos posteriores de fidelización.
+
+---
+
+#### 29. Responsable derivado del actor efectivo
+
+El “responsable” de la creación no es un selector libre.
+
+Debe derivarse del actor humano efectivo y su contexto autorizado.
+
+En dispositivo compartido:
+
+```text
+PRINCIPAL TECNICO
+!=
+ACTOR HUMANO
+```
+
+`PULSO-AUTH-012/013` y `PULSO-UX-014` conservan la materialización de esa atribución.
+
+---
+
+#### 30. Composición visual mínima
+
+La experiencia objetivo se compone de tres zonas lógicas:
+
+1. contexto de la venta;
+2. selección de oferta y configuración de línea;
+3. resumen de la venta en preparación con acción principal.
+
+No se convierte en un formulario administrativo largo ni en un menú de rutas.
+
+---
+
+#### 31. Contexto visible, no editable por defecto
+
+El encabezado puede mostrar de forma compacta:
+
+- sede/punto;
+- canal/modalidad;
+- actor;
+- estado de contexto necesario.
+
+Los valores derivados no se presentan como campos editables cuando el actor no tiene una decisión legítima sobre ellos.
+
+---
+
+#### 32. Selección orientada a oferta
+
+La acción primaria del cuerpo es seleccionar lo que el cliente quiere comprar.
+
+La futura materialización puede usar búsqueda, categorías o superficies equivalentes, pero deberá preservar:
+
+```text
+OFERTA VIGENTE
+→ PRODUCTO
+→ CANTIDAD
+→ MODIFICADORES SI APLICAN
+→ RESUMEN
+```
+
+La especificación táctil detallada permanece en `PULSO-UX-015`.
+
+---
+
+#### 33. Resumen de venta
+
+El resumen debe permitir verificar antes de crear:
+
+- líneas seleccionadas;
+- cantidades;
+- modificadores;
+- subtotal y total comercial calculado conforme al contrato disponible;
+- contexto relevante;
+- cliente cuando exista.
+
+El resumen no presenta pago confirmado ni entrega completada.
+
+---
+
+#### 34. Una acción principal de creación
+
+Cuando el borrador sea válido, la acción principal es conceptualmente:
+
+```text
+CREAR VENTA
+```
+
+La acción representa exactamente `pulso.sales.orders.create`.
+
+No representa:
+
+- cobrar;
+- confirmar pago;
+- cerrar caja;
+- cancelar;
+- devolver;
+- aplicar descuento sensible;
+- entregar.
+
+---
+
+#### 35. Condición mínima para confirmar
+
+No puede confirmarse una creación sin al menos una intención comercial materializable.
+
+Para `VPROC-0039`, el estado inicial `COUNTER_SALE_OPENED` exige como mínimo:
+
+- sede;
+- canal;
+- cliente opcional;
+- al menos una intención de compra o artículo inicial.
+
+La mera apertura de `VSCREEN-0081` no satisface esa condición.
+
+---
+
+#### 36. Persistencia atómica inicial
+
+La creación autoritativa debe producir un resultado empresarial todo-o-nada para el pedido inicial.
+
+No debe dejar como estado exitoso:
+
+```text
+PEDIDO CREADO
++
+LINEAS FALLIDAS
+```
+
+ni:
+
+```text
+LINEAS CREADAS
++
+PEDIDO AUSENTE
+```
+
+La implementación física definirá el mecanismo transaccional exacto.
+
+---
+
+#### 37. Estado canónico inicial
+
+La creación pertenece a `VPROC-0039` y debe establecer una instancia coherente con:
+
+```text
+VPROC-0039.COUNTER_SALE_OPENED
+```
+
+La selección de artículos puede alimentar la transición posterior a:
+
+```text
+VPROC-0039.ITEMS_SELECTED
+```
+
+pero la UI no puede saltar estados ni declarar una transición que la máquina de estados no haya confirmado.
+
+---
+
+#### 38. Estados posteriores no se crean por implicación
+
+Crear la venta no implica alcanzar:
+
+- `PREPARATION_IN_PROGRESS`;
+- `READY_FOR_HANDOFF`;
+- `PAYMENT_PENDING`;
+- `PAYMENT_CONFIRMED`;
+- `HANDOFF_PENDING`;
+- `SALE_RECONCILIATION_PENDING`;
+- `COUNTER_SALE_CLOSED`.
+
+Cada estado requiere su evento, condición y autoridad propios.
+
+---
+
+#### 39. Creación no equivale a modificación posterior
+
+El catálogo publicado contiene `pulso.sales.orders.create`, pero el dataset 1.0.0 no publica una concesión `pulso.sales.orders.update` equivalente para estos actores.
+
+Por tanto, esta tarea no resuelve la creación simplificando después mediante una edición genérica del pedido.
+
+La operación inicial debe contener los datos mínimos necesarios para nacer coherente.
+
+---
+
+#### 40. Corrección antes de confirmar
+
+Mientras la venta continúe como borrador de interfaz sin efecto, el usuario puede corregir selección, cantidad o modificadores sin necesitar una mutación empresarial posterior.
+
+Regla:
+
+```text
+CORREGIR BORRADOR LOCAL
+!=
+MUTAR PEDIDO PERSISTIDO
+```
+
+Esto reduce deuda de actualización después de crear.
+
+---
+
+#### 41. Corrección después de confirmar
+
+Una vez existe pedido autoritativo, cualquier modificación debe pasar por el contrato propietario de pedido activo, estado, columnas y permiso exacto.
+
+`VSCREEN-0081` no reutiliza `orders.create` para editar un recurso existente.
+
+---
+
+#### 42. Cancelar borrador
+
+Salir o descartar antes de la creación autoritativa:
+
+- elimina únicamente el borrador de interfaz;
+- no ejecuta `orders.cancel`;
+- no crea trazabilidad falsa de una venta inexistente.
+
+---
+
+#### 43. Cancelar venta creada
+
+Después de una creación exitosa:
+
+```text
+DESCARTAR UI
+!=
+CANCELAR VENTA
+```
+
+La cancelación pertenece a `PULSO-UX-009` y a la autoridad sensible correspondiente.
+
+---
+
+#### 44. Cobro queda separado
+
+La creación no solicita medio de pago ni confirma recaudo como parte de `orders.create`.
+
+Al terminar:
+
+```text
+VENTA CREADA
+→ SIGUIENTE ACCION SEGUN ESTADO
+```
+
+Si el siguiente paso autorizado es cobrar, el handoff se dirige a:
+
+```text
+VSCREEN-0084 — Cobro y medios de pago
+```
+
+`PULSO-UX-008` conserva su diseño detallado.
+
+---
+
+#### 45. Preparación queda separada
+
+Si la venta contiene artículos que requieren preparación, la creación no marca automáticamente preparación iniciada o terminada.
+
+La señal hacia FOGO o la cola correspondiente pertenece a los contratos propietarios posteriores.
+
+---
+
+#### 46. Inventario queda separado
+
+La creación no descuenta, reserva ni ajusta inventario por una escritura lateral no gobernada.
+
+`PULSO-UX-016` conserva la conexión entre venta y NEXO.
+
+---
+
+#### 47. NUMERA queda separado
+
+Crear una venta no crea por sí solo un hecho económico conciliado ni un asiento.
+
+`PULSO-UX-017` conserva la integración con NUMERA.
+
+---
+
+#### 48. PASS queda separado
+
+Crear una venta no acredita, redime ni altera ledger PASS por implicación.
+
+`PULSO-UX-018` conserva la integración con PASS.
+
+---
+
+#### 49. Idempotencia de la creación
+
+Una misma intención de creación reintentada por doble toque, timeout, navegación o reenvío no puede producir dos ventas.
+
+La materialización debe conservar una identidad estable de intento/correlación suficiente para:
+
+- detectar repetición;
+- devolver el resultado original cuando ya exista;
+- distinguir reutilización conflictiva;
+- impedir doble pedido.
+
+Esta tarea no fija el nombre físico de esa identidad.
+
+---
+
+#### 50. Acción pendiente
+
+Mientras la confirmación autoritativa está en curso:
+
+- la acción principal no debe producir envíos paralelos;
+- la UI muestra estado pendiente;
+- volver a tocar no crea otra intención independiente;
+- el resultado visual espera confirmación real.
+
+---
+
+#### 51. Resultado desconocido
+
+Ante timeout o pérdida de conectividad después de enviar la creación:
+
+```text
+UNKNOWN RESULT
+!=
+FAILED
+```
+
+La experiencia debe reconciliar antes de volver a crear.
+
+Nunca:
+
+```text
+TIMEOUT
+→ CREAR OTRA VENTA AUTOMATICAMENTE
+```
+
+---
+
+#### 52. Operación degradada
+
+`VPROC-0039` admite continuidad controlada, pero esta tarea no inventa un protocolo offline nuevo.
+
+Un borrador local puede existir sin efecto empresarial. Una venta solo puede presentarse como creada si:
+
+- el sistema autoritativo la confirmó; o
+- una modalidad offline gobernada y explícitamente soportada por contratos posteriores demuestra su admisión.
+
+---
+
+#### 53. Validación server-side obligatoria
+
+La futura acción de creación deberá revalidar, como mínimo:
+
+- `pulso.sales.orders.create`;
+- actor efectivo;
+- rol operativo;
+- turno/check-in;
+- sede/área/punto;
+- canal/modalidad;
+- oferta vigente;
+- líneas y cantidades;
+- modificadores;
+- reglas comerciales aplicables;
+- idempotencia/correlación;
+- denegaciones.
+
+El payload del cliente no es autoridad.
+
+---
+
+#### 54. Cálculo y datos derivados
+
+Los totales, reglas comerciales y campos derivados se calculan o verifican desde fuentes autoritativas.
+
+El cliente puede mostrar una proyección, pero no decide unilateralmente:
+
+- total final;
+- impuesto;
+- precio maestro;
+- descuento sensible;
+- disponibilidad final;
+- identidad del actor.
+
+---
+
+#### 55. Errores de negocio distinguibles
+
+La experiencia debe distinguir al menos conceptualmente:
+
+- falta de autorización;
+- contexto operativo inválido;
+- oferta no vigente;
+- artículo no disponible;
+- modificadores incompletos o inválidos;
+- precio/oferta cambiada;
+- conflicto de reintento;
+- fallo técnico;
+- resultado desconocido.
+
+No todos se presentan como “no se pudo crear”.
+
+---
+
+#### 56. Recuperación frente a cambio de oferta
+
+Si la oferta cambió antes de confirmar:
+
+- no se conserva silenciosamente un precio viejo;
+- no se sustituye el producto sin informar;
+- se revalida el borrador;
+- se destaca la diferencia material;
+- el usuario confirma únicamente sobre condiciones vigentes.
+
+---
+
+#### 57. Privacidad
+
+`VSCREEN-0081` carga solo datos necesarios para crear la venta actual.
+
+No carga por defecto:
+
+- historial completo del cliente;
+- ledger PASS;
+- ventas de otras sedes;
+- datos laborales ajenos;
+- logs técnicos;
+- datos NUMERA;
+- configuración administrativa.
+
+---
+
+#### 58. Accesibilidad
+
+La futura materialización debe conservar:
+
+- acción principal identificable;
+- foco y navegación comprensibles;
+- estado de validación por línea;
+- errores asociados al campo o producto correspondiente;
+- resumen legible antes de confirmar;
+- estados pendiente, éxito y fallo claramente diferenciados.
+
+La especificación táctil detallada permanece en `PULSO-UX-015`.
+
+---
+
+#### 59. Flujo objetivo
+
+El flujo ordinario queda:
+
+```text
+VSCREEN-0080
+→ resolver contexto y autoridad
+→ VSCREEN-0081
+→ seleccionar oferta
+→ configurar cantidad/modificadores necesarios
+→ revisar resumen
+→ CREAR VENTA
+→ confirmacion autoritativa
+→ recurso creado + siguiente accion permitida
+```
+
+Sin pasos administrativos obligatorios que ya puedan resolverse por contexto.
+
+---
+
+#### 60. Handoff a pedido activo
+
+Después de crear, el sistema debe conservar la identidad del recurso creado y dirigir la continuidad al owner de la siguiente acción válida.
+
+Puede existir navegación hacia una superficie de pedido activo o hacia cobro cuando corresponda, pero:
+
+```text
+CREAR
+!=
+EDITAR
+!=
+COBRAR
+```
+
+La navegación no concede ninguna capacidad adicional.
+
+---
+
+#### 61. AS-IS de vento-pulso
+
+El baseline actual de `vento-pulso` conserva seis páginas físicas:
+
+```text
+/
+/no-access
+/orders
+/sales-imports
+/salon
+/scanner
+```
+
+La raíz y `/scanner` montan `ScannerPage`, orientado actualmente a identificación/loyalty, y `/orders` es un tablero operativo.
+
+No se observa una página dedicada a `VSCREEN-0081` ni un consumidor de `pulso.sales.orders.create` en el runtime actual inspeccionado.
+
+Por tanto:
+
+```text
+VSCREEN-0081 CANONICO
+!=
+VSCREEN-0081 MATERIALIZADO
+```
+
+---
+
+#### 62. Brechas AS-IS y salida
+
+| Brecha observada | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe superficie física de creación canónica | creación no materializada | paquete PULSO / `PULSO-UX-021` | `VSCREEN-0081` materializada con contrato aprobado |
+| runtime usa `pulso.pos.main` en rutas PULSO | creación podría depender de permiso broad | `PULSO-AUTH-015/016` | consumer usa PermissionKey exacta y pruebas allow/deny |
+| no se observa consumer de `pulso.sales.orders.create` | grant publicado sin consumidor de creación | paquete PULSO + autorización | acción server-side consume el permiso exacto |
+| flujo de pedidos actual se concentra en `/orders` | tablero puede confundirse con creación | `PULSO-UX-020/021` | creación y operación de pedidos quedan separadas |
+| update genérico no está publicado como capacidad ordinaria vigente | creación podría depender de edición posterior sin autoridad | evolución de catálogo + arquitectura PULSO | create inicial nace coherente y toda mutación posterior usa contrato exacto |
+| efectos inventario/NUMERA/PASS todavía no pertenecen a esta tarea | creación podría producir efectos laterales incompletos | `PULSO-UX-016/017/018` | integraciones propietarias implementadas y certificadas |
+
+No queda brecha de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 63. Resultado funcional de GAP-PULSO-007
+
+La familia histórica “crear y actualizar pedidos” queda parcialmente descompuesta por esta tarea:
+
+```text
+CREAR VENTA INICIAL
+→ CONTRATO FUNCIONAL CERRADO EN PULSO-UX-007
+
+MODIFICAR PEDIDO PERSISTIDO
+→ NO SE ABSORBE EN orders.create
+→ REQUIERE CONTRATO / PERMISO / ESTADO PROPIO
+```
+
+Así se evita usar una mutación genérica para corregir la falta de diseño de la creación inicial.
+
+---
+
+#### 64. Matriz de decisiones de simplificación
+
+| Decisión | Resultado |
+| --- | --- |
+| sede | pre-resuelta; no selector libre |
+| actor responsable | derivado del actor efectivo |
+| canal/modalidad | heredado cuando sea inequívoco; elegir solo si existen opciones autorizadas |
+| cliente | opcional salvo contrato específico |
+| producto | desde oferta publicada vigente |
+| cantidad | editable dentro de reglas de oferta |
+| modificadores | solo cuando aplican |
+| precio | calculado/verificado; no libre |
+| descuento sensible | fuera de creación ordinaria |
+| pago | fuera; handoff a `PULSO-UX-008` |
+| cancelación | fuera; `PULSO-UX-009` |
+| caja | contexto/handoff; no efecto implícito |
+| loyalty | fuera de creación; integración posterior |
+| inventario | efecto posterior gobernado |
+| persistencia | una creación autoritativa e idempotente |
+| pedido vacío | prohibido por apertura de pantalla |
+| doble toque/reintento | misma intención, no doble venta |
+
+---
+
+#### 65. Handoff inmediato a PULSO-UX-008
+
+`PULSO-UX-008 — Simplificar cobro y medios de pago` recibe:
+
+```text
+VENTA CREADA != PAGO CONFIRMADO
+VSCREEN-0081 TERMINA CON RECURSO AUTORITATIVO
+COBRO USA pulso.payments.transactions.collect
+CREACION NO CAPTURA MEDIO DE PAGO COMO EFECTO
+TOTAL MOSTRADO DEBE REVALIDARSE EN COBRO
+UNKNOWN CREATE RESULT SE RESUELVE ANTES DE COBRAR
+ACTOR / SEDE / CAJA / RECURSO DEBEN CORRELACIONARSE
+```
+
+La 008 no deberá reinterpretar `orders.create` como autoridad de cobro.
+
+---
+
+#### 66. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-007 |
+| --- | --- |
+| `PULSO-UX-008` | venta creada y cobro permanecen efectos separados |
+| `PULSO-UX-009` | descartar borrador no equivale a cancelar venta persistida |
+| `PULSO-UX-010` | creación no abre/cierra caja implícitamente |
+| `PULSO-UX-011` | acumulación de puntos ocurre después de una venta elegible y no al abrir creación |
+| `PULSO-UX-012` | redención no se mezcla con creación ordinaria |
+| `PULSO-UX-013` | efectos sensibles requieren confirmación proporcional y autoridad propia |
+| `PULSO-UX-014` | actor efectivo de creación debe sobrevivir terminal compartida |
+| `PULSO-UX-015` | selección de oferta se adapta a interacción táctil sin cambiar contrato |
+| `PULSO-UX-016` | venta creada emite/solicita efectos de inventario mediante contrato gobernado |
+| `PULSO-UX-017` | venta creada se correlaciona con hecho económico sin duplicarlo |
+| `PULSO-UX-018` | cliente/loyalty se integran sin ledger paralelo PULSO |
+| `PULSO-UX-020` | prototipo histórico no redefine el contrato de creación por existir |
+| `PULSO-UX-021` | arquitectura objetivo materializa create atómico, permisos exactos y separación de efectos |
+
+---
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya cubre creación y mutación gobernada de pedidos, separación de venta/pago/caja, snapshot comercial, autorización exacta, territorio, idempotencia, recuperación y experiencia contextual. La cobertura existente ya identifica expresamente esta tarea dentro del ciclo comercial.
+
+---
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-004` para exigir acción nombrada, permiso, sede, estado y columnas permitidas en mutaciones de pedido;
+- `TREQ-PULSO-005` para conservar canal, sede, modalidad, cliente opcional, snapshot de oferta/precio, impuestos, descuentos, actores y estados separados;
+- `TREQ-PULSO-006` para mantener venta, cobro, pago, caja, documento fiscal, descuento, anulación y cierre como hechos distintos;
+- `TREQ-PULSO-014` para acceso PULSO fail-closed;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio;
+- `TREQ-PULSO-024` para impedir que una ruta o componente demuestre autorización o completitud;
+- `TREQ-PULSO-026` para impedir elevar `pulso.pos.main` a permiso exacto suficiente;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance;
+- `TREQ-AUTH-013` para revalidación server-side frente a payload o URL manipulados;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, territorio, permiso, recurso y decisión;
+- `TREQ-UX-001` para hacer identificables tarea, acción y estado;
+- `TREQ-UX-003` para adecuar densidad y acciones al actor efectivo;
+- `TREQ-UX-006` para recuperación segura;
+- `TREQ-UX-008` y `TREQ-UX-009` para navegación y consumo de contexto coherentes.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron `main` vigente de `vento-shell`, continuidad, topología `DEFINE_ONCE`, `PULSO-UX-005`, `PULSO-UX-006` aprobada como base anticipada, `VSCREEN-0081`, binding `VPROC-0039::STEP-CREATE_SALE_OR_ORDER`, estados de `VPROC-0039`, `AUTH-CAT-022/023`, dataset 1.0.0, Registro 04A PULSO aplicable y runtime actual de `vento-pulso`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon ventas, pedidos, líneas, pagos, cajas, descuentos, inventario, puntos ni efectos económicos reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-007` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 70. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0081` se conserva como identidad canónica única de creación de venta o pedido;
+- [ ] `VPROC-0039::STEP-CREATE_SALE_OR_ORDER` permanece como binding principal;
+- [ ] `pulso.sales.orders.create` queda como PermissionKey exacta de creación;
+- [ ] se registra que solo `cajero_satelite` y `operador_integral_satelite` reciben el grant publicado en dataset 1.0.0;
+- [ ] `servicio_salon`, `mostrador_satelite` y `gerencia_operativa` no reciben creación por inferencia;
+- [ ] `pulso.access` no concede creación;
+- [ ] `pulso.pos.main` no se usa como fallback;
+- [ ] contexto ya resuelto no se vuelve a pedir sin necesidad;
+- [ ] sede no puede seleccionarse libremente para ampliar territorio;
+- [ ] actor responsable se deriva del actor efectivo;
+- [ ] canal/modalidad se hereda cuando es inequívoco;
+- [ ] cliente permanece opcional cuando el contrato lo permite;
+- [ ] abrir la pantalla no crea pedido;
+- [ ] el borrador de interfaz no es un estado `VPROC-*`;
+- [ ] descartar borrador no cancela una venta;
+- [ ] la venta no se confirma sin una intención materializable;
+- [ ] producto proviene de oferta publicada vigente;
+- [ ] cantidad y modificadores se validan antes de crear;
+- [ ] precio no es texto libre;
+- [ ] descuento sensible queda fuera de la creación ordinaria;
+- [ ] la persistencia inicial es atómica desde la perspectiva empresarial;
+- [ ] creación no depende de una edición genérica posterior;
+- [ ] `COUNTER_SALE_OPENED` se conserva como estado inicial canónico;
+- [ ] estados posteriores no se marcan por implicación;
+- [ ] cobro permanece fuera de `orders.create`;
+- [ ] caja permanece separada;
+- [ ] preparación permanece separada;
+- [ ] inventario permanece separado;
+- [ ] NUMERA permanece separado;
+- [ ] PASS permanece separado;
+- [ ] doble toque/reintento no crea ventas duplicadas;
+- [ ] timeout queda como resultado desconocido hasta reconciliación;
+- [ ] operación degradada no fabrica una confirmación autoritativa;
+- [ ] server-side revalida autoridad, contexto, oferta y payload;
+- [ ] errores de negocio y fallo técnico permanecen distinguibles;
+- [ ] cambio material de oferta obliga revalidación;
+- [ ] la UI minimiza datos de cliente y otras sedes;
+- [ ] el runtime actual se registra como no materializado para `VSCREEN-0081`;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] `GAP-PULSO-007` queda separado entre creación inicial y modificación posterior;
+- [ ] `PULSO-UX-008` recibe handoff suficiente para diseñar cobro sin mezclarlo con creación;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0081`;
+- crea una ruta física nueva;
+- modifica `/`, `/orders`, `/scanner`, `/salon` o cualquier página;
+- crea componentes, Server Actions, RPC o Edge Functions;
+- crea o cambia PermissionKeys;
+- modifica grants, matrices o datasets;
+- crea `orders.update`;
+- usa `pulso.pos.main` como sustituto de `orders.create`;
+- procesa ventas reales;
+- procesa pagos;
+- abre o cierra cajas;
+- aplica descuentos;
+- cancela pedidos;
+- registra devoluciones o refunds;
+- inicia preparación;
+- descuenta inventario;
+- registra hechos económicos;
+- acredita o redime loyalty;
+- cambia catálogo, producto, receta u oferta comercial;
+- define la arquitectura física final del POS;
+- modifica Supabase, RLS, tablas, datos, Realtime o migraciones;
+- modifica packages compartidos;
+- modifica el Registro 04A;
+- crea instancia física;
+- desarrolla `PULSO-UX-008`.
+
+---
+
+#### 72. Decisión final de experiencia
+
+La creación simplificada queda resumida así:
+
+```text
+CONTEXTO AUTORIZADO YA RESUELTO
+→ ABRIR VSCREEN-0081 SIN CREAR PEDIDO
+→ SELECCIONAR OFERTA + CANTIDAD + MODIFICADORES NECESARIOS
+→ REVISAR RESUMEN
+→ CREAR VENTA UNA SOLA VEZ
+→ CONFIRMACION AUTORITATIVA E IDEMPOTENTE
+→ RECURSO CREADO
+→ SIGUIENTE ACCION PROPIETARIA
+```
+
+La simplificación elimina pasos redundantes; no elimina controles empresariales.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-006 — Diseñar inicio para supervisor`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-007 — Simplificar creación de venta`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-008 — Simplificar cobro y medios de pago`
 ### [ ] PULSO-UX-008 — Simplificar cobro y medios de pago
 ### [ ] PULSO-UX-009 — Separar anulación, devolución y reembolso
 ### [ ] PULSO-UX-010 — Diseñar apertura y cierre de caja
