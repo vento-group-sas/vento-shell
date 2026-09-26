@@ -15871,6 +15871,929 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-014 — Mantener configuración administrativa separada`
-### [ ] PULSO-AUTH-014 — Mantener configuración administrativa separada
+### ✅ PULSO-AUTH-014 — Mantener configuración administrativa separada
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
+**Tarea siguiente:** PULSO-AUTH-015 — Migrar a paquetes de vento-shell
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — separación obligatoria entre operación ordinaria de PULSO y configuración/importación administrativa, preservando identidad, territorio, auditoría y autoridad por acción sin reutilizar `pulso.pos.main` como permiso suficiente
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `PULSO-AUTH-014::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera canónica que impide que una persona autorizada para operar PULSO durante una jornada adquiera por inferencia capacidad para modificar su configuración administrativa, física o de integración.
+
+La regla objetivo es:
+
+```text
+OPERAR PULSO
+!=
+CONFIGURAR PULSO
+!=
+ADMINISTRAR INTEGRACIONES
+```
+
+La visibilidad de una zona, mesa, mapping, lote o regla no concede autoridad para modificarla.
+
+La configuración administrativa se protege por acción, territorio, actor, recurso, estado y controles propios; no hereda la autoridad del carril operativo ni utiliza un turno activo como sustituto de un permiso administrativo.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-013
+
+`PULSO-AUTH-013` entrega como invariantes:
+
+- principal técnico y trabajador efectivo son identidades distintas;
+- creador, asignado, aprobador y ejecutor no se fusionan;
+- registrar al actor no concede permiso;
+- toda mutación sensible que requiera responsabilidad humana debe conservar al trabajador efectivo de forma auditable;
+- importaciones y publicación de inventario no pueden quedar atribuidas únicamente al principal técnico cuando la acción exige actor humano;
+- configuración/importación administrativa permanece expresamente reservada a `PULSO-AUTH-014`.
+
+`014` consume esa atribución humana como evidencia, pero define una frontera de autoridad distinta: un actor correctamente identificado puede seguir estando denegado para administrar configuración.
+
+---
+
+#### 3. Handoffs previos consumidos
+
+Esta tarea recibe además:
+
+- de `PULSO-AUTH-003`, zonas y mesas como configuración física, políticas RLS amplias y ausencia de mutaciones de configuración dentro de `/salon`;
+- de `PULSO-AUTH-006..008`, la obligación de separar acciones por capacidad y no inferir privilegios administrativos desde jerarquía, supervisión o acceso general;
+- de `PULSO-AUTH-011`, la separación entre carril operacional de turno y carril administrativo por sede;
+- de `PULSO-AUTH-012`, la prohibición de convertir dispositivo compartido en autoridad administrativa;
+- de `OPS-POS-001`, identidad estable de zonas/mesas, numeración visible separada de identidad, inactivación no destructiva y cambios de layout gobernados;
+- del inventario de rutas, `/sales-imports` como superficie administrativa/de integración y `/salon` como superficie operativa.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = PULSO-AUTH-014::<implementation_unit_id>
+```
+
+El marcador global define la política reusable.
+
+No modifica `vento-pulso`, no crea PermissionKeys físicas, no cambia RLS, no crea RPC y no modifica Supabase.
+
+---
+
+#### 5. Gate físico posterior
+
+Una materialización futura requiere:
+
+```text
+implementation_unit_id valido
++
+package_id propietario aplicable
++
+E5-GATE-008::<package_id> = PASS
++
+autorizacion fisica explicita
+```
+
+La existencia de una política RLS, un grant, una vista actualizable, un botón o una ruta no constituye autorización para materializar el cambio desde este marcador global.
+
+---
+
+#### 6. Principio de separación de carriles
+
+PULSO conserva dos carriles de autoridad conceptualmente distintos:
+
+```text
+CARRIL OPERACIONAL
+→ vender, atender, cobrar, operar salón, ejecutar loyalty y acciones ordinarias del turno
+
+CARRIL ADMINISTRATIVO / CONFIGURACIÓN
+→ definir o cambiar estructura, mappings, reglas, parámetros e integraciones
+```
+
+Una misma persona puede poseer capacidades en ambos carriles, pero cada decisión se evalúa de forma independiente.
+
+No existe herencia automática entre ellos.
+
+---
+
+#### 7. Operación ordinaria no es configuración
+
+Son ejemplos de operación ordinaria, según el contrato propietario de cada acción:
+
+- consultar y atender mesas;
+- crear o actualizar pedidos cuando exista permiso exacto;
+- operar caja y pagos cuando exista permiso exacto;
+- identificar clientes;
+- acumular o redimir loyalty;
+- reconocer o resolver llamados;
+- ejecutar delivery o despacho permitido;
+- consultar estados operativos.
+
+Ninguna de esas capacidades autoriza por sí sola:
+
+- crear una zona;
+- renombrar una zona;
+- reordenar una zona;
+- crear una mesa;
+- mover una mesa;
+- renumerar una mesa;
+- cambiar forma, capacidad o layout;
+- inactivar/reactivar una mesa;
+- cambiar mappings de integración;
+- cambiar reglas de consumo;
+- publicar configuraciones administrativas.
+
+---
+
+#### 8. Configuración física gobernada por OPS-POS-001
+
+`OPS-POS-001` fija el contrato de identidad para configuración física.
+
+Se conserva:
+
+```text
+MARCA
+!=
+SEDE
+!=
+AREA OPERATIVA
+!=
+ZONA FISICA
+!=
+PUNTO DE SERVICIO
+!=
+ESTACION
+!=
+MESA
+!=
+DISPOSITIVO
+!=
+AREA DE AUTORIZACION
+```
+
+La configuración administrativa debe operar sobre esas identidades sin colapsarlas.
+
+---
+
+#### 9. Identidad estable de zona y mesa
+
+Una mutación administrativa no recrea identidades para representar un cambio visual.
+
+Se conserva:
+
+```text
+TABLE_ID ESTABLE
+!=
+TABLE_NUMBER VISIBLE
+```
+
+Mover una mesa entre zonas, renumerarla, cambiar su forma o modificar su posición no crea automáticamente una nueva mesa.
+
+La historia permanece vinculada a la identidad técnica estable.
+
+---
+
+#### 10. Inactivación antes que borrado destructivo
+
+La baja administrativa de una zona o mesa debe preservar historia.
+
+Una inactivación no elimina:
+
+- sesiones anteriores;
+- pedidos;
+- cuentas;
+- llamados;
+- eventos;
+- evidencia de actor;
+- correlaciones de auditoría.
+
+El borrado físico no se usa como mecanismo ordinario de administración de salón.
+
+---
+
+#### 11. Trabajo abierto bloquea cambios incompatibles
+
+Una configuración no puede ocultar o invalidar silenciosamente trabajo activo.
+
+Antes de mover, renumerar o inactivar una mesa se debe revalidar, según aplicabilidad:
+
+- sesión abierta;
+- pedido activo;
+- cuenta pendiente;
+- llamado activo;
+- asignación vigente;
+- operación diferida no conciliada.
+
+Si el cambio no es compatible con el estado actual, falla cerrado o exige un procedimiento empresarial explícito propietario.
+
+---
+
+#### 12. `/salon` es superficie operativa
+
+La superficie `/salon` consume actualmente:
+
+```text
+public.pos_zones
+public.pos_tables
+public.pos_sessions
+public.pos_table_service_calls
+```
+
+El código observado lee zonas y mesas para construir el mapa operativo.
+
+No se observaron en `/salon` acciones de crear, mover, renumerar, reordenar, redimensionar, activar o inactivar zonas/mesas.
+
+Esa ausencia se conserva como frontera correcta: la vista operativa puede consumir configuración sin administrar configuración.
+
+---
+
+#### 13. Leer configuración desde operación
+
+El operador puede necesitar consultar información configurada para ejecutar su trabajo.
+
+Por tanto:
+
+```text
+READ CONFIGURATION FOR OPERATION
+!=
+MUTATE CONFIGURATION
+```
+
+La lectura operativa debe exponer únicamente la proyección necesaria para trabajar y conservar el territorio efectivo.
+
+La capacidad de lectura no se reutiliza como permiso de escritura.
+
+---
+
+#### 14. Estado AS-IS de zonas y mesas
+
+En el Supabase remoto verificado:
+
+- `pos.pos_zones` tiene RLS habilitado;
+- `pos.pos_tables` tiene RLS habilitado;
+- `public.pos_zones` es una vista de compatibilidad con `security_invoker = true`;
+- `public.pos_tables` es una vista de compatibilidad con `security_invoker = true`;
+- ambas tablas propietarias conservan una política `ALL` para `authenticated` basada en `has_permission('pulso.pos.main', site_id)`;
+- el rol `authenticated` conserva grants técnicos amplios sobre tablas y vistas.
+
+Ese AS-IS es una defensa parcial y una brecha de granularidad; no es el contrato objetivo.
+
+---
+
+#### 15. `pulso.pos.main` no autoriza configuración
+
+Regla canónica:
+
+```text
+has_permission('pulso.pos.main', site_id) = true
+```
+
+no demuestra autoridad para:
+
+- crear zona;
+- editar zona;
+- inactivar zona;
+- crear mesa;
+- mover mesa;
+- renumerar mesa;
+- editar layout;
+- cambiar capacidad;
+- inactivar/reactivar mesa;
+- modificar mappings;
+- modificar reglas de consumo;
+- publicar una importación administrativa.
+
+`pulso.pos.main` permanece clasificado como broad authority observada, no como permiso final suficiente.
+
+---
+
+#### 16. Grants técnicos no son permisos empresariales
+
+Los grants SQL de `authenticated` permiten acceso técnico sujeto a RLS y demás controles.
+
+Se conserva:
+
+```text
+GRANT SQL
+!=
+PERMISSIONKEY
+!=
+AUTORIZACION EMPRESARIAL
+```
+
+Una unidad física no puede justificar una mutación administrativa únicamente porque PostgreSQL admita el verbo DML.
+
+---
+
+#### 17. RLS como defensa en profundidad
+
+La futura separación administrativa debe llegar hasta la frontera de datos.
+
+La UI y los guards no son suficientes por sí solos.
+
+Toda materialización deberá asegurar que una llamada directa a la API de datos, vista, RPC o función no recupere la amplitud de `pulso.pos.main` para ejecutar configuración prohibida.
+
+RLS/grants/RPC y servidor deben producir una decisión compatible con el contrato administrativo exacto.
+
+---
+
+#### 18. Mutaciones administrativas server-side
+
+Las mutaciones de configuración no se confían a un `update/insert/delete` libre emitido desde navegador solo porque exista RLS.
+
+La frontera objetivo utiliza una operación nombrada y revalidada server-side que pueda demostrar:
+
+- actor;
+- capacidad administrativa exacta;
+- sede objetivo;
+- recurso objetivo;
+- estado actual;
+- precondiciones;
+- cambio solicitado;
+- resultado.
+
+La forma física exacta pertenece a la unidad propietaria y a `PULSO-AUTH-015`.
+
+---
+
+#### 19. Territorio administrativo
+
+Una acción administrativa dirigida a una sede debe resolver explícitamente la sede objetivo.
+
+Se conserva:
+
+```text
+site_id solicitado
+!=
+autoridad
+```
+
+El servidor verifica que la capacidad administrativa cubra el `site_id` y el recurso real.
+
+El carril administrativo no obtiene sede desde el turno operativo por inferencia.
+
+---
+
+#### 20. Turno y administración
+
+Un turno vigente puede ser obligatorio para acciones operativas.
+
+No se usa como sustituto de autoridad administrativa.
+
+Por defecto:
+
+```text
+ACTIVE SHIFT
+!=
+ADMIN CONFIG PERMISSION
+```
+
+Si una capacidad administrativa concreta requiere contexto laboral adicional, esa exigencia debe estar declarada por su contrato; no se hereda del carril operativo ni se elimina por conveniencia.
+
+---
+
+#### 21. Autoridad global y administración
+
+Una capacidad administrativa explícitamente global puede operar fuera del turno local si su contrato lo permite.
+
+Eso no convierte una PermissionKey operacional en autoridad global.
+
+Se conserva:
+
+```text
+GLOBAL ADMIN AUTHORITY EXPLICITA
+!=
+GLOBAL OPERATIONAL CONTEXT
+```
+
+Cada acción sigue resolviendo target, scope y recurso.
+
+---
+
+#### 22. Supervisor no equivale a configurador
+
+Las matrices PULSO previas permiten al supervisor observar recursos como:
+
+- `pulso.sales.table_sessions.view`;
+- `pulso.sales.import_batches.view`;
+- `pulso.sales.import_mappings.view`.
+
+Esas capacidades de lectura no conceden mapping, importación, publicación ni configuración.
+
+La jerarquía, el rol base o el rol operativo no sustituyen una capacidad administrativa exacta.
+
+---
+
+#### 23. `/sales-imports` es superficie administrativa/de integración
+
+El inventario de rutas clasifica `/sales-imports` como superficie administrativa y de integración.
+
+El código observado concentra allí:
+
+- carga de archivo;
+- creación de lote;
+- mapping de identificadores externos;
+- consulta de catálogo;
+- publicación de lote;
+- efectos posteriores de inventario.
+
+Esa superficie no se trata como operación ordinaria de caja únicamente porque viva dentro de PULSO.
+
+---
+
+#### 24. Estado AS-IS de `/sales-imports`
+
+El consumidor observado protege `/sales-imports` y sus Server Actions con `permissionCode: ["pos.main"]`.
+
+El Supabase remoto conserva además políticas basadas en `has_permission('pulso.pos.main', site_id)` para:
+
+- `pulso_external_sales_item_mappings`;
+- `pulso_daily_sales_import_batches`;
+- `pulso_sales_consumption_rules`.
+
+La autoridad observada es más amplia que la clasificación canónica de esas acciones.
+
+---
+
+#### 25. Mapping es configuración administrativa
+
+Modificar un mapping entre identidad externa y catálogo interno cambia la interpretación futura de datos importados.
+
+Por tanto:
+
+```text
+VIEW MAPPING
+!=
+CREATE MAPPING
+!=
+UPDATE MAPPING
+!=
+DEACTIVATE MAPPING
+```
+
+El mapping requiere autoridad administrativa propia, territorio compatible, actor auditable y validación del target.
+
+No se hereda desde la capacidad de importar o vender.
+
+---
+
+#### 26. Reglas de consumo son configuración administrativa
+
+Una regla de consumo puede determinar qué producto, ubicación, receta o cantidad se descuenta por una venta importada.
+
+Modificarla puede producir efectos de inventario posteriores.
+
+Por tanto se protege como configuración, no como acción ordinaria de caja.
+
+La lectura operativa o administrativa no concede mutación.
+
+---
+
+#### 27. Importación de ventas
+
+La carga de un archivo de ventas externas es una acción administrativa/de integración con identidad de lote, archivo, fecha, sede y actor.
+
+No se confunde con registrar una venta POS ordinaria.
+
+Debe validar al menos:
+
+- sede autorizada;
+- formato y contenido;
+- identidad/replay del archivo;
+- mapping vigente;
+- actor;
+- estado del lote;
+- resultado de validación.
+
+El contrato de parser y atomicidad permanece en sus propietarios específicos.
+
+---
+
+#### 28. Publicación de importación
+
+`pulso_post_daily_sales_import` produce efectos de inventario y cambia el lote a `posted`.
+
+Por tanto:
+
+```text
+VIEW BATCH
+!=
+IMPORT FILE
+!=
+VALIDATE BATCH
+!=
+POST BATCH
+```
+
+Publicar es una acción sensible propia; requiere autoridad exacta y no reutiliza `pulso.pos.main` como suficiencia contractual.
+
+El efecto debe mantener idempotencia/reconciliación y atribución conforme a sus contratos propietarios.
+
+---
+
+#### 29. Configuración y ejecución posterior
+
+Cambiar configuración no ejecuta retroactivamente operaciones anteriores.
+
+Una modificación de:
+
+- zona;
+- mesa;
+- mapping;
+- regla de consumo;
+- parámetro administrativo;
+
+aplica a operaciones nuevas conforme a su vigencia y no reescribe silenciosamente hechos históricos.
+
+---
+
+#### 30. Versionado y vigencia
+
+Cuando una configuración materialmente sensible requiera reproducibilidad histórica, la unidad propietaria deberá conservar suficiente evidencia de:
+
+- valor anterior;
+- valor nuevo;
+- instante efectivo;
+- actor;
+- target;
+- motivo cuando aplique.
+
+Esta tarea no impone una tabla global de versiones; fija la obligación de no perder semántica histórica.
+
+---
+
+#### 31. Auditoría administrativa
+
+Toda mutación administrativa debe permitir reconstruir, según aplicabilidad:
+
+- actor humano efectivo;
+- principal técnico;
+- sede;
+- recurso;
+- acción;
+- estado anterior relevante;
+- estado nuevo;
+- razón/aprobación cuando aplique;
+- correlación;
+- timestamp autoritativo;
+- resultado o ausencia de efecto.
+
+La atribución consume el contrato de `PULSO-AUTH-013`.
+
+---
+
+#### 32. Aprobación y segregación
+
+Una acción de configuración de alto impacto puede requerir aprobación adicional conforme a su contrato propietario.
+
+Cuando exista aprobador:
+
+```text
+EJECUTOR
+!=
+APROBADOR
+```
+
+La presencia de aprobación no transforma una capability de lectura en escritura ni reemplaza la autorización del ejecutor.
+
+---
+
+#### 33. No autorizar por visibilidad UI
+
+Mostrar un botón oculto, una pestaña de configuración o una ruta separada no constituye el control de seguridad.
+
+La UI puede reducir exposición accidental, pero la decisión final se repite en servidor y en las fronteras de datos necesarias.
+
+El cliente nunca envía una afirmación autoritativa como `isAdmin = true` para conceder la operación.
+
+---
+
+#### 34. Separación de superficie
+
+La separación administrativa puede materializarse mediante:
+
+- ruta distinta;
+- módulo distinto;
+- panel protegido;
+- Server Action diferenciada;
+- RPC/servicio propietario;
+- combinación de esas opciones.
+
+No se exige una URL concreta desde este contrato.
+
+Lo obligatorio es que la autorización, mutación y auditoría no compartan una autoridad broad con la operación ordinaria.
+
+---
+
+#### 35. Dispositivo compartido y administración
+
+Una terminal compartida configurada para operación ordinaria no adquiere por ello capacidad administrativa.
+
+El techo del dispositivo continúa restringiendo.
+
+Si una acción administrativa se autoriza desde un dispositivo compartido, debe existir un contrato explícito que permita esa app/capacidad y un actor humano válido; de lo contrario falla cerrado.
+
+---
+
+#### 36. Cambio de actor
+
+Una sesión administrativa sensible no reutiliza indefinidamente la identidad del actor anterior.
+
+Cambio A→B obliga a invalidar cualquier estado de autorización/confirmación que sea actor-bound.
+
+La firma o contexto del actor A no se reutiliza para aplicar una configuración solicitada por B.
+
+---
+
+#### 37. Denegación
+
+Una denegación administrativa produce cero cambio de configuración.
+
+No se permite:
+
+- aplicar primero y auditar después;
+- aplicar parcialmente sin contrato explícito;
+- degradar a `pulso.pos.main` ante falta de PermissionKey;
+- saltar al DML directo;
+- utilizar service-role desde cliente;
+- convertir un error de autorización en warning.
+
+---
+
+#### 38. Concurrencia y estado stale
+
+La mutación administrativa revalida el estado actual inmediatamente antes del efecto.
+
+Un formulario abierto con datos antiguos no puede sobrescribir silenciosamente un cambio posterior incompatible.
+
+La unidad propietaria deberá detectar conflicto por el mecanismo físico que corresponda y devolver un resultado determinista.
+
+---
+
+#### 39. Compatibilidad con Realtime
+
+Realtime puede refrescar una proyección operativa después de un cambio de configuración.
+
+No autoriza el cambio.
+
+Una suscripción activa tampoco conserva autoridad administrativa stale si cambian actor, permiso, sede, recurso o política.
+
+---
+
+#### 40. Configuración no es evento operacional
+
+Una modificación administrativa no se registra fingiendo que fue una venta, llamado, sesión o pedido.
+
+Se conserva el tipo empresarial real de la acción para que auditoría y recuperación distingan:
+
+```text
+CONFIG CHANGE
+vs
+OPERATIONAL EVENT
+```
+
+---
+
+#### 41. Frontera con PULSO-AUTH-015
+
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell` recibe de esta tarea:
+
+- clasificación operación vs administración;
+- `pulso.pos.main` declarado insuficiente para configuración/importación;
+- necesidad de guards y PermissionKeys exactas por acción;
+- necesidad de endurecer RLS/grants/RPC donde broad authority permita mutación;
+- necesidad de migrar consumidores sin romper lectura operativa;
+- obligación de mantener actor, territorio, recurso y auditoría;
+- rollback y compatibilidad para cualquier cambio físico.
+
+`014` define la frontera; `015` materializa/adopta contratos compartidos cuando su unidad física sea autorizada.
+
+---
+
+#### 42. Frontera con PULSO-AUTH-016
+
+`PULSO-AUTH-016` recibe casos mínimos de certificación:
+
+- operador ordinario puede leer la configuración necesaria y no puede modificarla;
+- supervisor con vistas de importación no puede mapear/importar/publicar por inferencia;
+- actor administrativo autorizado solo modifica targets dentro de scope;
+- `site_id` manipulado no amplía territorio;
+- DML directo no bypassa el contrato;
+- mesa con trabajo abierto bloquea cambios incompatibles;
+- mapping/regla stale produce conflicto controlado;
+- cambio de actor invalida autoridad sensible previa;
+- deny produce cero efectos;
+- auditoría reconstruye actor, target, cambio y resultado.
+
+---
+
+#### 43. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: separación de autoridad base/operativa/administrativa, permisos por acción, no bypass por cliente o DML, territorio, configuración de salón, broad permission insuficiente, trazabilidad, importación y consistencia entre capas ya poseen cobertura vigente. Esta tarea especializa esas obligaciones sobre la frontera administrativa PULSO sin introducir una obligación verificable nueva.
+
+---
+
+#### 44. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-AUTH-004` para decisiones equivalentes entre evaluadores;
+- `TREQ-AUTH-008` para separación entre autoridad base, operacional y contexto requerido;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, cliente, API o RPC;
+- `TREQ-AUTH-014` para invalidar decisiones stale cuando cambia contexto;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones;
+- `TREQ-AUTH-065` para no deducir permisos administrativos desde permisos operativos o jerarquía;
+- `TREQ-PULSO-004` para mutaciones como acciones nombradas y autorizadas;
+- `TREQ-PULSO-006` para segregación y auditoría de acciones sensibles de caja/operación;
+- `TREQ-PULSO-014` para proteger rutas de negocio y su contexto;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio;
+- `TREQ-PULSO-016` para revalidar permiso, sede, recurso y estado en cada acción;
+- `TREQ-PULSO-018` para separar operación de salón, estados y actores;
+- `TREQ-PULSO-024` para no confundir infraestructura existente con proceso/autorización completos;
+- `TREQ-PULSO-026` para no adoptar `pulso.pos.main` como suficiencia contractual;
+- `TREQ-PULSO-027` para preservar fronteras entre PULSO y contratos externos/administrativos;
+- `TREQ-INTEGRATION-003` para identidad, trazabilidad y retry de efectos de integración;
+- `TREQ-INTEGRATION-112`, `TREQ-INTEGRATION-113`, `TREQ-INTEGRATION-120` y `TREQ-INTEGRATION-128` para correlación, autorización y revalidación entre capas.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 45. Matriz de decisión administrativa
+
+| Familia | Lectura operativa | Mutación operativa | Mutación administrativa | Regla |
+| --- | --- | --- | --- | --- |
+| zonas | permitida cuando la operación lo requiere | no aplica como operación ordinaria | capacidad administrativa propia | lectura no concede edición |
+| mesas | permitida para salón | estados de servicio pertenecen a sus acciones propias | mover/renumerar/layout/activar-inactivar son administración | identidad estable, historia preservada |
+| sesiones | lectura/operación según permiso exacto | abrir/asignar/cerrar son acciones operativas propias | parámetros estructurales no se cambian desde sesión | sesión ≠ mesa ≠ configuración |
+| llamados | operación según lifecycle autorizado | reconocer/asignar/resolver/cancelar separados | no es configuración física | actor y estado propios |
+| import batches | lectura administrativa explícita | no es operación POS ordinaria | importar/validar/publicar separados | `view` no concede `post` |
+| mappings | lectura administrativa explícita | no aplica | alta/cambio/inactivación administrativa | mapping modifica interpretación futura |
+| reglas de consumo | lectura administrativa explícita | no aplica | mutación administrativa | puede afectar inventario posterior |
+
+---
+
+#### 46. Hallazgos y propietarios de salida
+
+| Hallazgo AS-IS | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `pos.pos_zones` usa policy `ALL` con `pulso.pos.main` | operador broad puede alcanzar DML de configuración | `PULSO-AUTH-014::<implementation_unit_id>` + `PULSO-AUTH-015` | escritura de zona exige autoridad administrativa exacta |
+| `pos.pos_tables` usa policy `ALL` con `pulso.pos.main` | lectura de salón y administración quedan acopladas | `PULSO-AUTH-014::<implementation_unit_id>` + `PULSO-AUTH-015` | lectura operativa y mutación administrativa quedan separadas |
+| grants de `authenticated` son amplios | RLS débil podría exponer DML | unidad DB propietaria + `PULSO-AUTH-015` | grants/RLS/RPC producen la misma decisión fail-closed |
+| `/sales-imports` usa `pos.main` | configuración/integración hereda broad authority | `PULSO-AUTH-014::<implementation_unit_id>` + `PULSO-AUTH-015` | actions administrativas consumen permisos propios |
+| mappings usan RLS basada en `pos.main` | mapping editable por permiso operativo broad | unidad DB propietaria + `PULSO-AUTH-015` | lectura y mutación separadas por acción |
+| import batches usan RLS basada en `pos.main` | view/import/post pueden confundirse | `PULSO-AUTH-014::<implementation_unit_id>` | lifecycle de lote protegido por acciones distintas |
+| reglas de consumo usan RLS basada en `pos.main` | configuración con efecto de inventario queda demasiado amplia | unidad DB/consumo propietaria + `PULSO-AUTH-015` | mutación de regla exige autoridad administrativa exacta |
+| `/salon` no expone configuración de zona/mesa | separación UI parcial favorable | `PULSO-AUTH-014` + diseño UX posterior | no se reintroducen mutadores operativos broad |
+| actor administrativo debe quedar auditado | cambios sin responsabilidad humana | `PULSO-AUTH-013` + unidad propietaria | actor, target, cambio y resultado quedan correlacionados |
+
+No queda hallazgo administrativo detectado sin propietario y condición de salida.
+
+---
+
+#### 47. Supabase y ownership
+
+Toda modificación futura de tablas, vistas, funciones, RPC, triggers, grants, RLS, Auth, Edge Functions, Realtime, configuración o datos de Supabase requerida por este contrato pertenece a `vento-group-sas/vento-shell`.
+
+Debe crearse, versionarse, documentarse y ejecutarse desde ese repositorio.
+
+Esta tarea no crea migraciones ni modifica Supabase remoto.
+
+---
+
+#### 48. Compatibilidad y rollback
+
+La materialización futura debe preservar durante transición:
+
+- lectura operativa de zonas/mesas;
+- identidad estable de recursos;
+- historial;
+- consumidores existentes hasta su migración gobernada;
+- reversibilidad del cambio de permisos/RLS cuando aplique;
+- ausencia de ventana donde broad authority quede más abierta que antes.
+
+Un rollout que separe permisos no puede romper operación por retirar simultáneamente la única lectura válida sin reemplazo compatible.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue insertado todavía en el checkout del usuario ni sometido allí a formateador, quality, delivery, topología y batería global. |
+| REMOTA | PASS | Se verificaron continuidad y owner de `vento-shell`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `OPS-POS-001`, inventarios PULSO, `vento-pulso` vigente y Supabase remoto read-only para vistas, RLS, grants, mappings, lotes y reglas de consumo. |
+| OPERATIVA | NOT_EXECUTED | No se modificaron zonas, mesas, mappings, lotes, reglas ni datos reales; no se ejecutaron escenarios E2E administrativos. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `PULSO-AUTH-014::<implementation_unit_id>`. |
+
+---
+
+#### 50. Criterios de aceptación
+
+- [ ] Operar PULSO no concede configurar PULSO.
+- [ ] Leer configuración no concede mutarla.
+- [ ] `/salon` conserva zonas/mesas como proyección operativa sin heredar administración.
+- [ ] Zonas y mesas conservan identidad estable conforme a `OPS-POS-001`.
+- [ ] Renumerar/mover/inactivar no borra historia.
+- [ ] Trabajo abierto bloquea cambios incompatibles.
+- [ ] `pulso.pos.main` no se acepta como permiso final suficiente para configuración.
+- [ ] Grants SQL no se confunden con permiso empresarial.
+- [ ] RLS/servidor producen decisiones compatibles.
+- [ ] Mutaciones administrativas no dependen de DML libre de navegador.
+- [ ] `site_id` solicitado no amplía territorio administrativo.
+- [ ] Turno operativo no sustituye permiso administrativo.
+- [ ] Supervisor no obtiene configuración por jerarquía.
+- [ ] `pulso.sales.import_batches.view` permanece lectura.
+- [ ] `pulso.sales.import_mappings.view` permanece lectura.
+- [ ] `/sales-imports` queda clasificada como superficie administrativa/de integración.
+- [ ] Mapping, importación, validación y publicación permanecen acciones distintas.
+- [ ] Reglas de consumo se tratan como configuración administrativa.
+- [ ] Publicación de importación no hereda autoridad de `pos.main`.
+- [ ] Cambio de configuración no reescribe hechos históricos.
+- [ ] Actor y aprobador permanecen separados cuando ambos existen.
+- [ ] UI no se usa como única frontera de seguridad.
+- [ ] Dispositivo compartido operativo no adquiere administración por inferencia.
+- [ ] Cambio de actor invalida estado sensible previo cuando aplique.
+- [ ] Deny produce cero cambios de configuración.
+- [ ] Estado stale no sobrescribe silenciosamente configuración posterior.
+- [ ] Auditoría reconstruye actor, sede, target, cambio y resultado.
+- [ ] `PULSO-AUTH-015` conserva materialización/migración de permisos y contratos compartidos.
+- [ ] `PULSO-AUTH-016` conserva certificación E2E.
+- [ ] La topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 51. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- crea rutas administrativas nuevas;
+- modifica `/salon`;
+- modifica `/sales-imports`;
+- crea PermissionKeys físicas;
+- renombra PermissionKeys vigentes;
+- cambia `pulso.pos.main` físicamente;
+- modifica `pos.pos_zones`;
+- modifica `pos.pos_tables`;
+- modifica `public.pos_zones`;
+- modifica `public.pos_tables`;
+- modifica `pulso_external_sales_item_mappings`;
+- modifica `pulso_daily_sales_import_batches`;
+- modifica `pulso_sales_consumption_rules`;
+- modifica `pulso_post_daily_sales_import`;
+- cambia grants;
+- cambia RLS;
+- crea RPC;
+- crea Server Actions;
+- cambia turno o check-in;
+- cambia dispositivos;
+- cambia actor sessions;
+- crea zonas o mesas;
+- mueve o renumera mesas reales;
+- modifica mappings reales;
+- importa ventas reales;
+- publica lotes reales;
+- modifica inventario;
+- ejecuta backfills;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- modifica el Registro 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-014 — Mantener configuración administrativa separada`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell`
 ### [ ] PULSO-AUTH-015 — Migrar a paquetes de vento-shell
 ### [ ] PULSO-AUTH-016 — Ejecutar pruebas integrales

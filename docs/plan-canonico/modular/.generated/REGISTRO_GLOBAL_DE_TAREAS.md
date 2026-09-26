@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1367** |
+| Aprobadas | **1368** |
 | En propuesta | **0** |
-| No iniciadas | **229** |
+| No iniciadas | **228** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.65% (1367/1596)** |
+| Porcentaje de completamiento | **85.71% (1368/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **229** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1268** |
+| ⏸ NO_EVALUADA | **228** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1269** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-013` — Registrar trabajador que ejecuta la operación | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-014` — Mantener configuración administrativa separada | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-015` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-014` — Mantener configuración administrativa separada | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-015` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-016` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1128,7 +1128,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-011` | Limitar operación a sede del turno | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-012` | Integrar dispositivos POS compartidos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-013` | Registrar trabajador que ejecuta la operación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-014` | Mantener configuración administrativa separada | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-014` | Mantener configuración administrativa separada | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-016` | Ejecutar pruebas integrales | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-001` | Inventariar procesos de venta, caja y salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
