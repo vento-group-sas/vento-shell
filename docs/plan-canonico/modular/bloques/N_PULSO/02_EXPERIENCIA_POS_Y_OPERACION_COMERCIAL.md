@@ -12566,7 +12566,1327 @@ El diseño no revive identidades históricas no publicadas ni convierte revisió
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-011 — Integrar acumulación de puntos`
-### [ ] PULSO-UX-011 — Integrar acumulación de puntos
+### ✅ PULSO-UX-011 — Integrar acumulación de puntos
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-010 — Diseñar apertura y cierre de caja
+**Tarea siguiente:** PULSO-UX-012 — Integrar redención de puntos
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0085 — Identificación de cliente y acumulación` como superficie operativa PULSO sobre `VPROC-0045::STEP-IDENTIFY_CUSTOMER_AND_ACCRUE`, separando identificación de cliente, elegibilidad comercial, intención de acumulación, autorización, cálculo PASS, movimiento de ledger, resultado durable y conciliación; reconciliando el contrato objetivo de `PULSO-AUTH-009` y `PASS-INT-001` con el catálogo y dataset de autorización vigentes, que actualmente no publican `pulso.loyalty.*`; preservando ownership de PASS, idempotencia empresarial, actor real, territorio, minimización de datos, resultado desconocido y fronteras con venta, caja, refund y redención; sin usar `pulso.pos.main` como sustituto de autoridad ni materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas runtime, PermissionKeys, catálogos, datasets, roles, grants, RLS, RPC, Server Actions, tablas, ledger, saldo, datos, Supabase, migraciones, packages, reglas de puntos, dispositivos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual PULSO identifica a un cliente dentro de una operación comercial y solicita una acumulación de puntos gobernada por PASS, sin convertir identificación, visibilidad del saldo, monto digitado, acceso general al POS o una respuesta local en evidencia suficiente de que los puntos fueron otorgados.
+
+La experiencia debe dejar cerrado que:
+
+- identificar al cliente y acumular puntos son hechos distintos;
+- PULSO origina la intención operacional, pero PASS conserva ledger, saldo y regla de fidelización;
+- la acumulación solo puede relacionarse con un hecho comercial elegible y estable;
+- la cantidad definitiva de puntos procede de una regla PASS vigente y verificable;
+- el navegador puede mostrar una estimación, pero nunca fabricar el resultado;
+- un retry del mismo hecho conserva la misma identidad idempotente;
+- un resultado desconocido no se transforma en fallo ni éxito por inferencia;
+- caja, efectivo, refund, cancelación y redención mantienen contratos separados;
+- la interfaz solo declara éxito con un resultado durable del servidor;
+- la ausencia actual de una PermissionKey `pulso.loyalty.*` en el catálogo activo bloquea la ejecución, no autoriza un fallback a `pulso.pos.main`.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-010
+
+`PULSO-UX-010` entrega a esta tarea:
+
+```text
+CAJA ABIERTA NO IMPLICA CLIENTE IDENTIFICADO
+VENTA/PAGO CONFIRMADOS PUEDEN SER HECHOS ELEGIBLES PARA LOYALTY
+CIERRE DE CAJA NO EDITA EL LEDGER PASS
+ACUMULACION DE PUNTOS DEBE SER IDEMPOTENTE Y CORRELACIONABLE CON LA VENTA
+PENDIENTE DE LOYALTY NO SE CONVIERTE EN AJUSTE DE EFECTIVO
+```
+
+Por tanto, esta tarea consume caja únicamente como contexto operacional cuando corresponda.
+
+No convierte el fondo, el efectivo esperado, el conteo, la diferencia ni el cierre en fuentes del saldo de puntos.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `PULSO-UX-011` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el diseño se define una sola vez;
+- no existe instancia física propia;
+- no se otorgan puntos reales;
+- no se modifica PULSO ni PASS;
+- no se modifica Supabase;
+- no se crea ni publica una PermissionKey;
+- no se cambia el dataset de grants;
+- no se crea RPC, Server Action, tabla, índice o constraint;
+- no se cambia la regla de acumulación;
+- no se ejecuta una venta ni una prueba E2E.
+
+---
+
+#### 4. Identidad canónica de la superficie
+
+La superficie propietaria de esta tarea es:
+
+| Dimensión | Valor |
+| --- | --- |
+| Pantalla | `VSCREEN-0085` |
+| Nombre | Identificación de cliente y acumulación |
+| Aplicación de superficie | `pulso` |
+| Proceso principal | `VPROC-0045` |
+| Paso | `VPROC-0045::STEP-IDENTIFY_CUSTOMER_AND_ACCRUE` |
+| Interacción | `EXECUTE` |
+| Fase | `IN_PROGRESS` |
+| Relación de proceso | `SUPERVISION_SURFACE` |
+| Procesos relacionados | `VPROC-0038`, `VPROC-0039` |
+
+Su propósito canónico es identificar al cliente con datos mínimos y registrar acumulación vinculada a una venta válida.
+
+---
+
+#### 5. Ownership del proceso
+
+`VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` pertenece a PASS.
+
+La frontera queda:
+
+```text
+PULSO
+→ superficie operacional de venta e intención de acumulación
+
+PASS
+→ propietario del resultado principal de VPROC-0045,
+  de la semántica de fidelización,
+  del ledger y de la proyección de saldo
+```
+
+Que `VSCREEN-0085` viva en PULSO no transfiere el ownership del proceso a PULSO.
+
+---
+
+#### 6. Frontera con VSCREEN-0086
+
+`VSCREEN-0086 — Redención de puntos o beneficios` permanece separada y reservada a `PULSO-UX-012`.
+
+Regla:
+
+```text
+IDENTIFICAR / ACUMULAR
+!=
+REDIMIR / CONSUMIR BENEFICIO
+```
+
+Esta tarea no diseña tickets, QR de redención, consumo, gasto de puntos ni estados de canje.
+
+---
+
+#### 7. Contrato PASS consumido
+
+La tarea consume `PASS-INT-001 — Definir integración PULSO → PASS para acumulación` sin redefinirlo.
+
+La frontera contractual es:
+
+| Capa | Responsabilidad |
+| --- | --- |
+| PULSO | capturar intención operacional y contexto permitido de venta/cliente |
+| contrato servidor | revalidar sesión, aplicación, territorio, autoridad, actor, dispositivo, cliente, hecho elegible, monto, moneda e identidad idempotente |
+| PASS | aplicar regla vigente, registrar ledger, mantener proyección coherente de saldo y emitir resultado durable |
+| PULSO UI | mostrar únicamente resultado confirmado y estado seguro ante incertidumbre |
+| PASS cliente | reflejar después saldo y movimiento desde la fuente de verdad |
+
+---
+
+#### 8. Contrato de autorización objetivo aprobado
+
+`PULSO-AUTH-009 — Proteger acumulación de puntos` definió como identidad objetivo:
+
+```text
+pulso.loyalty.points.accumulate
+```
+
+con semántica:
+
+```text
+aplicación = pulso
+módulo = loyalty
+recurso = points
+acción = accumulate
+modalidad objetivo = OPERATIONAL_ONLY
+actor ordinario objetivo = cajero_satelite
+```
+
+También fijó que `gerencia_operativa` no recibe acumulación por el solo hecho de supervisar.
+
+---
+
+#### 9. Reconciliación con el catálogo de autorización vigente
+
+El catálogo materializado vigente `permissions.json@1.0.0` contiene 140 PermissionKey activas y no contiene:
+
+```text
+pulso.loyalty.customers.identify
+pulso.loyalty.points.accumulate
+pulso.loyalty.points.redeem
+```
+
+Por tanto, la identidad de `PULSO-AUTH-009` se conserva como contrato objetivo aprobado, pero su materialización no se presenta como una PermissionKey activa actualmente publicada.
+
+---
+
+#### 10. Reconciliación con operational-role-grants vigente
+
+`operational-role-grants@1.0.0` tampoco contiene grants `pulso.loyalty.*`.
+
+Para `cajero_satelite` el dataset vigente sí publica capacidades PULSO como acceso, venta, cobro y caja, pero no acumulación de puntos. Tampoco existe un grant activo de acumulación para `operador_integral_satelite` ni para `gerencia_operativa`; cualquier ampliación futura exige una concesión canónica explícita y no se infiere desde el nombre del rol.
+
+Regla vigente:
+
+```text
+CONTRATO OBJETIVO DE ACUMULACION EXISTE
++
+PERMISSIONKEY ACTIVA AUSENTE
++
+GRANT OPERATIVO ACTIVO AUSENTE
+=
+ACUMULACION NO EJECUTABLE
+```
+
+La experiencia debe fallar cerrada hasta que una reconciliación canónica posterior publique autoridad ejecutable compatible.
+
+---
+
+#### 11. Prohibición de fallback a pulso.pos.main
+
+El runtime actual utiliza `pulso.pos.main` en la ruta y acciones relacionadas con scanner/loyalty.
+
+Esta tarea no adopta ese permiso broad como autoridad suficiente.
+
+Regla:
+
+```text
+pulso.pos.main
+!=
+autoridad canónica de acumulación
+```
+
+Mientras falte una PermissionKey activa exacta, PULSO puede mostrar estado informativo o indisponibilidad, pero no ejecutar acumulación por inferencia.
+
+---
+
+#### 12. Entrada válida a la experiencia
+
+La acumulación debe presentarse desde un contexto comercial resoluble.
+
+Una entrada válida puede contener:
+
+- venta, pedido o transacción origen identificable;
+- sede efectiva;
+- actor operativo efectivo;
+- cliente aún no identificado o ya identificado;
+- estado comercial suficiente para evaluar elegibilidad;
+- posibilidad de consultar a PASS sin asumir resultado.
+
+Abrir `/scanner` por sí solo no crea una venta elegible ni autoridad de acumulación.
+
+---
+
+#### 13. Identificación y acumulación son dos decisiones
+
+La secuencia conceptual es:
+
+```text
+IDENTIFICAR CLIENTE
+→ VALIDAR RELACION CON EL CONTEXTO COMERCIAL
+→ EVALUAR ELEGIBILIDAD
+→ EVALUAR AUTORIDAD
+→ SOLICITAR ACUMULACION
+→ RECIBIR RESULTADO PASS
+→ PRESENTAR RESULTADO
+```
+
+Identificar correctamente al cliente no autoriza automáticamente el siguiente paso.
+
+---
+
+#### 14. Cliente no identificado
+
+Sin cliente resoluble:
+
+- no se solicita acumulación;
+- no se inventa una cuenta;
+- no se usa el trabajador como cliente;
+- no se crea una identidad temporal de fidelización;
+- no se fija saldo local;
+- no se omite la condición para acelerar la venta.
+
+La venta puede continuar según su propio contrato si el cliente es opcional, pero la acumulación queda no disponible.
+
+---
+
+#### 15. Identidad de cliente server-side
+
+El cliente utilizado para acumulación debe resolverse server-side contra una identidad apta para fidelización.
+
+La UI puede transportar un identificador o credencial de entrada, pero no decide por sí sola:
+
+- que el cliente exista;
+- que sea elegible;
+- que corresponda al hecho comercial;
+- que el saldo visible esté vigente;
+- que la operación pueda acumular.
+
+---
+
+#### 16. Identidad de trabajador y cliente separadas
+
+La experiencia debe mantener siempre dos sujetos diferentes cuando correspondan:
+
+```text
+ACTOR HUMANO OPERATIVO
+!=
+CLIENTE DE FIDELIZACION
+```
+
+El PIN, la firma o la sesión laboral nunca sustituyen la identidad del cliente.
+
+La credencial del cliente nunca concede autoridad laboral al operador.
+
+---
+
+#### 17. Minimización de la proyección de cliente
+
+PULSO muestra únicamente los datos necesarios para identificar al cliente y completar la operación.
+
+No se requiere por esta tarea exponer de forma permanente:
+
+- correo completo;
+- teléfono completo;
+- historial completo de ledger;
+- preferencias;
+- consentimientos;
+- datos de otras marcas o sedes;
+- información técnica de cuenta.
+
+Un nombre o etiqueta reconocible, identificador seguro y proyecciones PASS necesarias para el flujo pueden mostrarse cuando la fuente autorizada las entregue.
+
+---
+
+#### 18. Saldo visible
+
+El saldo de puntos, cuando se muestre, es una proyección PASS confirmada.
+
+Reglas:
+
+```text
+SALDO VISIBLE
+!=
+LEDGER
+
+SALDO VISIBLE
+!=
+AUTORIZACION PARA ACUMULAR
+```
+
+Una lectura fallida de saldo no se transforma en cero.
+
+La UI no reconstruye el saldo sumando movimientos locales.
+
+---
+
+#### 19. Hecho comercial origen
+
+Toda acumulación debe correlacionarse con una compra, venta o transacción empresarial estable y elegible.
+
+El contexto debe permitir resolver al menos:
+
+- identidad durable del hecho origen;
+- cliente asociado cuando aplique;
+- sede efectiva;
+- monto elegible autoritativo;
+- moneda;
+- estado empresarial relevante;
+- regla PASS aplicable;
+- versión de regla;
+- identidad de correlación e idempotencia.
+
+---
+
+#### 20. Venta no confirmada o no elegible
+
+Una venta inexistente, no confirmada según su contrato, cancelada, anulada, compensada de forma incompatible o no elegible no produce una acumulación definitiva.
+
+La interfaz debe explicar el estado sin ofrecer un botón para forzar puntos.
+
+---
+
+#### 21. Relación con pago
+
+Pago y acumulación siguen siendo hechos separados.
+
+La regla exacta que determina si una venta pagada, parcialmente pagada o confirmada es elegible pertenece al contrato comercial y a la regla PASS aplicable.
+
+Esta tarea no inventa la condición universal:
+
+```text
+PAGO CONFIRMADO
+=
+PUNTOS AUTOMATICOS
+```
+
+---
+
+#### 22. Relación con caja
+
+La acumulación no modifica:
+
+- fondo inicial;
+- movimiento de efectivo;
+- efectivo esperado;
+- conteo;
+- diferencia;
+- cierre de caja.
+
+Un `UNKNOWN_OUTCOME` de loyalty no se convierte en ajuste de efectivo para cuadrar caja.
+
+---
+
+#### 23. Fuente autoritativa del monto
+
+El monto elegible debe provenir del hecho comercial autoritativo o de una derivación server-side gobernada.
+
+El operador no define la verdad empresarial escribiendo un monto libre.
+
+Si la UI permite visualizar o capturar un valor durante una transición legacy, el servidor debe reconciliarlo con la fuente propietaria antes de cualquier efecto.
+
+---
+
+#### 24. Moneda
+
+La moneda debe ser explícita o inequívocamente derivable del contrato comercial.
+
+La acumulación no asume que todo número recibido representa COP por simple convención de interfaz.
+
+Una incompatibilidad de moneda produce rechazo o imposibilidad de calcular, no conversión silenciosa.
+
+---
+
+#### 25. Regla PASS y versión
+
+Tasa, multiplicador, redondeo, promociones, vigencia y elegibilidad pertenecen a PASS o al contrato propietario que PASS consume.
+
+La acumulación confirmada debe poder relacionarse con la regla y versión realmente aplicadas.
+
+PULSO no mantiene una segunda regla maestra.
+
+---
+
+#### 26. Estimación visible de puntos
+
+La interfaz puede mostrar una previsualización únicamente cuando pueda etiquetarla de forma inequívoca como estimación.
+
+Regla:
+
+```text
+ESTIMACION LOCAL O PREVIA
+!=
+PUNTOS CONFIRMADOS
+```
+
+La respuesta server-side puede confirmar, recalcular o rechazar esa estimación.
+
+---
+
+#### 27. Fórmula AS-IS no canónica
+
+El runtime actual calcula:
+
+```text
+floor(amountCop / 1000)
+```
+
+Esta fórmula describe el AS-IS.
+
+No se adopta como regla universal ni se utiliza para afirmar cuántos puntos otorgará PASS.
+
+---
+
+#### 28. Comando de acumulación como intención
+
+La acción visible de confirmar acumulación significa:
+
+```text
+SOLICITAR AL SERVIDOR EVALUAR Y APLICAR EL EFECTO
+```
+
+No significa:
+
+```text
+INCREMENTAR SALDO LOCAL
+```
+
+El control debe quedar bloqueado contra doble envío mientras una misma intención está en curso.
+
+---
+
+#### 29. Autoridad antes del comando
+
+Cuando el catálogo vuelva a publicar una autoridad exacta, la experiencia deberá requerir que el servidor resuelva:
+
+- principal técnico;
+- actor humano efectivo;
+- estado laboral válido;
+- turno y check-in cuando apliquen;
+- rol operativo efectivo;
+- sede y área efectivas;
+- PermissionKey exacta activa;
+- dispositivo cuando aplique;
+- cliente;
+- hecho comercial;
+- estado y regla;
+- denegaciones prevalentes.
+
+Mientras esa autoridad exacta no exista en el catálogo vigente, el comando permanece no ejecutable.
+
+---
+
+#### 30. Denegación de autoridad
+
+Una denegación no se presenta como fallo técnico.
+
+La interfaz debe comunicar que la acción no está disponible para el contexto actual sin revelar detalles de seguridad innecesarios.
+
+No se ofrece retry repetitivo para una denegación estable.
+
+---
+
+#### 31. Territorialidad
+
+`site_id` visible o enviado por navegador no amplía autoridad.
+
+La sede debe reconciliarse contra:
+
+- contexto operativo;
+- hecho comercial;
+- actor;
+- dispositivo cuando aplique;
+- contrato PASS.
+
+Una divergencia territorial bloquea el efecto.
+
+---
+
+#### 32. Dispositivo compartido
+
+Cuando la estación sea compartida, la experiencia consume el contrato transversal de actor real.
+
+La firma o PIN:
+
+- identifica al humano cuando corresponde;
+- no concede permiso;
+- no amplía sede;
+- no valida la venta;
+- no sustituye idempotencia;
+- no se convierte en identidad del cliente.
+
+`PULSO-UX-014` conserva el diseño específico de visualización del actor real en dispositivos compartidos.
+
+---
+
+#### 33. Idempotencia empresarial
+
+Cada intención de acumulación debe tener una identidad estable derivada del hecho empresarial o emitida/validada por servidor antes del primer efecto.
+
+Regla:
+
+```text
+MISMO HECHO EMPRESARIAL
+→ MISMA IDENTIDAD IDEMPOTENTE
+```
+
+Reabrir la pantalla, perder red o volver a pulsar no crea una nueva intención empresarial.
+
+---
+
+#### 34. Referencia aleatoria no válida como identidad final
+
+No es suficiente construir la identidad usando únicamente:
+
+```text
+Date.now
+Math.random
+IDs truncados
+estado temporal del componente
+```
+
+Una referencia nueva en cada intento destruye la capacidad de reconocer replay del mismo hecho.
+
+---
+
+#### 35. Replay equivalente
+
+Si el servidor ya aplicó el mismo hecho con la misma identidad y huella:
+
+```text
+MISMA IDENTIDAD
++
+MISMA HUELLA
+=
+ALREADY_APPLIED / RESULTADO DURABLE PREVIO
+```
+
+La UI no lo presenta como error que invite a generar una nueva referencia.
+
+---
+
+#### 36. Conflicto de idempotencia
+
+Si la misma identidad representa contenido empresarial incompatible:
+
+```text
+MISMA IDENTIDAD
++
+HUELLA DISTINTA
+=
+CONFLICTO
+```
+
+La experiencia no sobrescribe el hecho anterior ni aplica un segundo movimiento.
+
+---
+
+#### 37. Resultado desconocido
+
+Timeout, desconexión o pérdida de respuesta después de enviar el comando pueden producir:
+
+```text
+UNKNOWN_OUTCOME
+```
+
+En ese estado:
+
+- no se asume fallo;
+- no se asume éxito;
+- no se genera otra identidad;
+- no se incrementa saldo localmente;
+- no se invita a repetir como operación nueva;
+- se consulta o reconcilia el resultado durable.
+
+---
+
+#### 38. Estado pendiente de conciliación
+
+Cuando el resultado todavía no puede determinarse con seguridad, la interfaz debe conservar un estado explícito de conciliación pendiente.
+
+Ese estado no bloquea ni altera caja por inferencia, pero evita que el operador crea que la acumulación está confirmada o que debe repetirla.
+
+---
+
+#### 39. Ledger como evidencia durable
+
+El movimiento de ledger PASS es la evidencia durable del cambio de puntos.
+
+PULSO no crea una copia competidora del ledger.
+
+El saldo por sí solo no sustituye el movimiento ni su origen.
+
+---
+
+#### 40. Coherencia entre ledger y saldo
+
+Un resultado confirmado debe permitir que:
+
+```text
+HECHO ORIGEN
+↔
+MOVIMIENTO PASS
+↔
+PROYECCION DE SALDO
+```
+
+sean reconciliables.
+
+Si la relación no puede demostrarse, la experiencia no corrige el saldo manualmente ni inventa un movimiento.
+
+---
+
+#### 41. Resultado semántico mínimo
+
+La experiencia debe poder distinguir, como mínimo:
+
+| Clase semántica | Presentación operacional |
+| --- | --- |
+| `APPLIED` | puntos confirmados exactamente una vez |
+| `ALREADY_APPLIED` | el mismo efecto ya estaba aplicado; se muestra el resultado durable |
+| `AUTH_DENIED` | la autoridad o contexto no permiten la acción |
+| `BUSINESS_REJECTED` | cliente, venta, monto, moneda, regla o elegibilidad no satisfacen el contrato |
+| `IDEMPOTENCY_CONFLICT` | la identidad fue reutilizada con contenido incompatible |
+| `UNKNOWN_OUTCOME` | el resultado debe reconciliarse antes de repetir |
+| `TECHNICAL_FAILURE_NO_EFFECT_PROVEN` | fallo técnico sin efecto confirmado |
+
+Los nombres físicos pueden variar; las semánticas no deben colapsarse en un único mensaje genérico.
+
+---
+
+#### 42. Estado de procesamiento
+
+Mientras el comando está en curso:
+
+- el botón principal no permite doble envío;
+- el contexto de cliente y venta no cambia silenciosamente;
+- cambiar de cliente o abandonar el flujo exige resolver o conservar de forma segura la intención en curso;
+- un spinner no equivale a confirmación;
+- el estado sigue siendo legible sin depender solo de color.
+
+---
+
+#### 43. Presentación de éxito
+
+`APPLIED` permite mostrar únicamente información confirmada por servidor, por ejemplo:
+
+- puntos otorgados;
+- saldo resultante cuando PASS lo provea;
+- referencia o recibo seguro cuando exista;
+- venta o hecho de origen identificable para el operador.
+
+El éxito no se muestra antes de la confirmación durable.
+
+---
+
+#### 44. Presentación de ALREADY_APPLIED
+
+`ALREADY_APPLIED` es un resultado seguro y no un incentivo para repetir.
+
+La interfaz comunica que el hecho ya fue procesado y recupera el mismo resultado durable cuando esté disponible.
+
+No genera una segunda notificación que aparente dos acumulaciones diferentes.
+
+---
+
+#### 45. Presentación de rechazo empresarial
+
+Un rechazo por elegibilidad debe explicar la condición operacional necesaria sin permitir al operador editar la fuente empresarial para fabricar elegibilidad.
+
+Ejemplos de categorías comprensibles:
+
+- venta no elegible;
+- cliente incompatible;
+- regla no aplicable;
+- monto o moneda inconsistentes;
+- estado comercial no habilitado.
+
+---
+
+#### 46. Presentación de conflicto
+
+Un conflicto de idempotencia requiere detener la repetición automática y preservar la referencia del hecho para soporte o conciliación.
+
+No se ofrece “intentar con otra referencia” como mecanismo de escape.
+
+---
+
+#### 47. Presentación de fallo técnico
+
+Un fallo técnico sin efecto demostrado debe distinguirse de `UNKNOWN_OUTCOME`.
+
+Solo puede ofrecer retry cuando el contrato de recuperación determine que no existe efecto previo o que el mismo retry reutilizará de forma segura la identidad original.
+
+---
+
+#### 48. Relación con cancelación, devolución y refund
+
+Una acumulación previamente confirmada no se edita destructivamente porque una venta sea después cancelada, devuelta o reembolsada.
+
+Cualquier compensación de puntos posterior debe ser un hecho PASS separado, autorizado, correlacionado e idempotente.
+
+`PULSO-UX-009` conserva las semánticas comerciales de cancelación, devolución y refund.
+
+---
+
+#### 49. Relación con redención
+
+Acumular puntos no crea ni consume una redención.
+
+Regla:
+
+```text
+MOVIMIENTO DE ACUMULACION
+!=
+INTENCION DE REDENCION
+!=
+CONSUMO DE REDENCION
+```
+
+`PULSO-UX-012` recibe el diseño de redención sin reutilizar este comando.
+
+---
+
+#### 50. Relación con consentimientos
+
+`VPROC-0045` también contiene una rama de actualización de consentimiento.
+
+Esta tarea no diseña ni modifica consentimientos.
+
+La existencia del estado `CONSENT_UPDATE_PENDING` en el proceso global no convierte la acumulación en mecanismo para aceptar finalidades, comunicaciones o términos.
+
+---
+
+#### 51. Modelo de estados de VPROC-0045
+
+El proceso propietario de PASS conserva exactamente estas identidades de estado:
+
+```text
+LOYALTY_INTERACTION_OPENED
+IDENTITY_VALIDATING
+ELIGIBILITY_CHECKING
+ACTION_AUTHORIZATION_PENDING
+MOVEMENT_PENDING
+MOVEMENT_RECORDED
+CONSENT_UPDATE_PENDING
+RECONCILIATION_PENDING
+LOYALTY_INTERACTION_RECONCILED
+```
+
+La UX de acumulación consume únicamente la semántica compatible con su camino; no inventa estados nuevos.
+
+---
+
+#### 52. Apertura de interacción
+
+`LOYALTY_INTERACTION_OPENED` exige cliente identificado o intento válido de identificación y una acción pretendida.
+
+Su invariante de nacimiento impide modificar saldo, consentimiento, beneficio o movimiento antes de validar identidad y regla.
+
+---
+
+#### 53. Validación de identidad
+
+`IDENTITY_VALIDATING` representa la comprobación de cliente, credencial, cuenta y contexto.
+
+La UI no debe saltar de un código leído directamente a “puntos otorgados”.
+
+---
+
+#### 54. Verificación de elegibilidad
+
+`ELIGIBILITY_CHECKING` representa la evaluación de regla, sede, beneficio, saldo, vigencia y restricciones según el proceso general.
+
+Para acumulación se usa para demostrar que cliente y hecho comercial satisfacen la regla aplicable.
+
+---
+
+#### 55. Autorización de acción pendiente
+
+`ACTION_AUTHORIZATION_PENDING` representa la decisión protegida antes del efecto sensible.
+
+En el estado vigente del catálogo, la ausencia de una PermissionKey activa exacta debe resolver esta etapa de acumulación como no autorizable, no como autorización por permiso broad.
+
+---
+
+#### 56. Movimiento pendiente
+
+`MOVEMENT_PENDING` representa una acción válida lista para afectar el ledger idempotente.
+
+La interfaz todavía no presenta puntos confirmados en este estado.
+
+---
+
+#### 57. Movimiento registrado
+
+`MOVEMENT_RECORDED` significa que PASS registró el movimiento y espera reflejo/conciliación con la venta.
+
+No autoriza a PULSO a editar el ledger.
+
+---
+
+#### 58. Conciliación pendiente
+
+`RECONCILIATION_PENDING` permite representar diferencias o tiempos de propagación entre interacción, venta, movimiento, saldo y beneficio entregado.
+
+La UX mantiene el estado visible hasta disponer de resultado reconciliable.
+
+---
+
+#### 59. Interacción reconciliada
+
+`LOYALTY_INTERACTION_RECONCILED` es final normal del proceso.
+
+Su resultado significa que la interacción quedó aplicada una sola vez y reconciliada; no convierte a PULSO en propietario del saldo ni cierra la relación con el cliente.
+
+---
+
+#### 60. Eventos empresariales reutilizados
+
+`VPROC-0045` publica seis eventos canónicos:
+
+| Evento | Clase |
+| --- | --- |
+| `VPROC-0045.EVT-001` — loyalty-interaction-opened | `PROCESS_STARTED` |
+| `VPROC-0045.EVT-002` — identity-validating | `VALIDATION_FACT` |
+| `VPROC-0045.EVT-003` — action-authorization-pending | `DECISION_FACT` |
+| `VPROC-0045.EVT-004` — consent-update-pending | `HANDOFF_FACT` |
+| `VPROC-0045.EVT-005` — reconciliation-pending | `RECONCILIATION_FACT` |
+| `VPROC-0045.EVT-006` — loyalty-interaction-reconciled | `PROCESS_COMPLETED` |
+
+Esta tarea no inventa un evento adicional específico de `MOVEMENT_RECORDED`.
+
+---
+
+#### 61. Sensibilidad
+
+Los seis eventos de `VPROC-0045` tienen sensibilidad `RESTRICTED_PERSONAL`.
+
+La UX no expone en logs, toasts o auditoría visible más datos personales que los necesarios para operar y diagnosticar el flujo.
+
+---
+
+#### 62. Acciones funcionales de VSCREEN-0085
+
+El contrato generado registra exactamente:
+
+```text
+VSCREEN-0085::PRIMARY
+VSCREEN-0085::SECONDARY:01
+VSCREEN-0085::SECONDARY:02
+VSCREEN-0085::SECONDARY:03
+VSCREEN-0085::SECONDARY:04
+```
+
+Como el contrato generado no publica etiquetas funcionales para esas secundarias, esta tarea no inventa nombres canónicos para ellas.
+
+---
+
+#### 63. Composición visible objetivo
+
+La superficie debe permitir comprender, sin mezclar responsabilidades:
+
+1. contexto de venta o hecho comercial;
+2. identidad de cliente;
+3. estado de elegibilidad;
+4. autoridad/disponibilidad de acumulación;
+5. estimación cuando exista y esté claramente marcada;
+6. acción de solicitar acumulación cuando sea ejecutable;
+7. estado de procesamiento;
+8. resultado confirmado o estado de conciliación;
+9. referencia segura al resultado para soporte.
+
+---
+
+#### 64. Acción principal cuando la autoridad está ausente
+
+Mientras el catálogo activo no publique una autoridad exacta compatible, la acción de acumulación debe permanecer no ejecutable.
+
+La superficie puede:
+
+- presentar identificación únicamente cuando su propia autoridad vigente lo permita; la ausencia de una PermissionKey atómica de identificación no se compensa con una concesión inventada;
+- mostrar que acumulación no está habilitada;
+- conservar el contexto para una futura materialización;
+- impedir que un broad permission active el botón por accidente.
+
+No debe fingir que la capacidad está disponible.
+
+---
+
+#### 65. Current runtime AS-IS de QRScanner
+
+El runtime vigente de `vento-pulso` concentra identificación y acumulación en `QRScanner`.
+
+En modo `identification`:
+
+- identifica un cliente;
+- muestra nombre, correo y puntos;
+- pide un monto manual de compra;
+- calcula `floor(amount/1000)`;
+- genera una referencia aleatoria;
+- llama `awardLoyaltyPointsAction`;
+- actualiza el saldo local visible con la respuesta.
+
+Esto es evidencia AS-IS y no el diseño canónico final.
+
+---
+
+#### 66. Current runtime AS-IS de awardLoyaltyPointsAction
+
+La Server Action vigente usa:
+
+```text
+APP_ID = pulso
+POS_PERMISSION = pos.main
+```
+
+Además solicita firma de actor en dispositivo compartido y llama al adaptador de acumulación.
+
+La asociación de la firma al `transaction_id` ocurre después del award y un fallo de asociación se registra sin demostrar compensación.
+
+Estas condiciones constituyen adopción parcial, no cumplimiento del contrato objetivo.
+
+---
+
+#### 67. Current runtime AS-IS del adaptador
+
+`loyalty-award.api.ts` invoca:
+
+```text
+award_loyalty_points_external
+```
+
+con:
+
+```text
+user_id
+site_id
+amount_cop
+external_ref
+description
+metadata
+```
+
+El input tipado vigente no exige una identidad canónica de venta/pedido/transacción origen.
+
+Por tanto, el runtime actual no demuestra por sí solo correlación suficiente con el hecho comercial.
+
+---
+
+#### 68. Current runtime AS-IS de identificación
+
+`identifyClientAction` utiliza actualmente `pulso.pos.main` y consulta una proyección de:
+
+```text
+id
+full_name
+email
+loyalty_points
+```
+
+La existencia de esa consulta no convierte esos cuatro campos en el mínimo obligatorio de la experiencia objetivo ni demuestra autoridad atómica para acumular.
+
+---
+
+#### 69. Brechas runtime y propietarios
+
+| Brecha | Impacto | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| PermissionKey objetivo de loyalty ausente del catálogo activo | la acción no puede considerarse autorizada por clave atómica vigente | catálogo/autorización canónica posterior + `PULSO-AUTH-015` cuando corresponda | PermissionKey compatible publicada y evaluable sin contradicción con datasets vigentes |
+| grants `pulso.loyalty.*` ausentes de `operational-role-grants@1.0.0` | ningún rol operativo recibe hoy autoridad ejecutable de acumulación por ese dataset | AUTH-CAT / matriz propietaria posterior | grant explícito vigente, scope y condiciones publicados |
+| `pulso.pos.main` protege identificación/award AS-IS | broad authority puede ocultar intención exacta | `PULSO-AUTH-009` / `PULSO-AUTH-015` en su materialización física gobernada | mutación y lectura sensible usan autoridad exacta o frontera equivalente aprobada |
+| monto se digita manualmente | puede divergir del hecho comercial | integración PULSO-PASS / consumer físico | monto elegible se resuelve o reconcilia server-side contra origen |
+| referencia usa timestamp y aleatoriedad | retry puede crear identidad nueva | integración/materialización propietaria | misma venta reutiliza identidad estable antes del primer efecto |
+| input no exige origin business ID | acumulación puede quedar sin compra trazable | integración/materialización propietaria | comando requiere hecho origen estable y validado |
+| fórmula local `floor(amount/1000)` | puede divergir de regla PASS | PASS propietario de regla | preview y resultado consumen regla/version gobernada |
+| firma se adjunta después del efecto | puede existir efecto sin vínculo durable completo | `PULSO-AUTH-012`, `PULSO-AUTH-013` y unidad propietaria | actor/dispositivo/resultado quedan correlacionados o reconciliables antes de certificar éxito |
+| proyección actual incluye email | puede superar necesidad operacional | UX/privacidad + integración | proyección mínima aprobada por finalidad |
+
+No queda una brecha narrativa sin owner y condición de salida.
+
+---
+
+#### 70. Frontera con PULSO-UX-013
+
+`PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles` conserva el patrón general de confirmación de acciones sensibles.
+
+Esta tarea solo exige evitar doble envío y distinguir intención de resultado.
+
+No diseña el sistema transversal de confirmaciones.
+
+---
+
+#### 71. Frontera con PULSO-UX-014
+
+`PULSO-UX-014 — Mostrar siempre el actor real en dispositivos compartidos` conserva la presentación y persistencia transversal del actor efectivo.
+
+Esta tarea consume esa identidad cuando exista; no diseña PIN, reautenticación ni dispositivo.
+
+---
+
+#### 72. Frontera con PULSO-UX-015
+
+`PULSO-UX-015 — Optimizar flujos para tablet y touch` conserva la optimización transversal de estación y tacto.
+
+Esta tarea exige controles comprensibles, estados legibles y prevención de doble envío sin absorber ese diseño global.
+
+---
+
+#### 73. Accesibilidad y comprensión
+
+La experiencia debe:
+
+- identificar el estado por texto y no solo por color;
+- anunciar procesamiento, éxito, rechazo y conciliación pendiente de forma comprensible;
+- mantener foco y contexto cuando aparece un error;
+- evitar que mensajes transitorios sean la única evidencia del resultado;
+- permitir reconocer claramente qué cliente y qué venta están asociados a la intención actual;
+- no mostrar datos personales innecesarios en mensajes de error.
+
+---
+
+#### 74. Privacidad en dispositivo compartido
+
+Al finalizar, cancelar o cambiar de cliente, la superficie limpia las proyecciones personales que ya no sean necesarias para la operación actual.
+
+No deja nombre, correo, saldo o referencias personales visibles para el siguiente operador o cliente por simple persistencia de estado UI.
+
+---
+
+#### 75. Realtime y refresco
+
+Una actualización realtime o un nuevo fetch puede refrescar saldo o estado, pero no concede autoridad ni crea el movimiento.
+
+Si dos fuentes visibles divergen, la UI no elige silenciosamente la cifra más conveniente: conserva la fuente autoritativa y expone conciliación cuando corresponda.
+
+---
+
+#### 76. Offline y degradación
+
+Sin servidor autoritativo disponible no existe acumulación definitiva local.
+
+La interfaz puede conservar contexto suficiente para informar al operador, pero no puede:
+
+- incrementar saldo;
+- crear ledger;
+- marcar éxito;
+- regenerar identidad y reenviar como nuevo hecho;
+- transformar una cola futura en autoridad local.
+
+Esta tarea no crea una arquitectura offline ni outbox.
+
+---
+
+#### 77. Auditoría mínima visible para soporte
+
+La experiencia debe permitir correlacionar el caso sin exponer secretos mediante referencias a:
+
+- cliente;
+- hecho comercial;
+- sede;
+- actor cuando aplique;
+- identidad idempotente o recibo seguro;
+- estado semántico;
+- resultado PASS;
+- momento de operación.
+
+PIN, token, secreto de sesión y datos personales no necesarios quedan fuera.
+
+---
+
+#### 78. Matriz de decisiones UX
+
+| Condición | Acción visible | Resultado permitido |
+| --- | --- | --- |
+| cliente no identificado | identificar | sin acumulación todavía |
+| cliente identificado, hecho comercial ausente | informar falta de contexto elegible | cero efecto |
+| hecho comercial no elegible | informar rechazo empresarial | cero efecto |
+| autoridad exacta no publicada | mostrar acumulación no habilitada | cero efecto |
+| autoridad denegada | informar indisponibilidad autorizativa | cero efecto |
+| autoridad válida + elegibilidad válida | solicitar acumulación | espera resultado server-side |
+| `APPLIED` | mostrar puntos/resultados confirmados | un efecto |
+| `ALREADY_APPLIED` | mostrar resultado previo | cero segundo efecto |
+| `IDEMPOTENCY_CONFLICT` | detener y conservar referencia | cero segundo efecto |
+| `UNKNOWN_OUTCOME` | mostrar conciliación pendiente | no repetir como nueva intención |
+| fallo técnico sin efecto probado | mostrar fallo recuperable según contrato | retry solo seguro y con misma identidad |
+
+---
+
+#### 79. Handoff inmediato a PULSO-UX-012
+
+`PULSO-UX-012 — Integrar redención de puntos` recibe:
+
+```text
+IDENTIFICACION DE CLIENTE != REDENCION
+ACUMULACION CONFIRMADA != INTENCION DE REDENCION
+SALDO VISIBLE NO AUTORIZA GASTO DE PUNTOS
+PASS CONSERVA LEDGER, SALDO, REGLA Y SEMANTICA DE FIDELIZACION
+PULSO NO REUTILIZA EL COMANDO DE ACUMULACION PARA REDIMIR
+RESULTADO DESCONOCIDO DE ACUMULACION NO SE RESUELVE MEDIANTE CANJE
+LA AUTORIDAD DE REDENCION DEBE RECONCILIARSE CONTRA EL CATALOGO VIGENTE DE FORMA INDEPENDIENTE
+```
+
+Esta tarea no desarrolla el detalle de `VSCREEN-0086`.
+
+---
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la experiencia de acumulación ya cuenta con cobertura verificable vigente para servidor autorizado, hecho comercial elegible, ledger/saldo, regla y versión, idempotencia, referencia estable, dispositivo/actor, resultado confirmado, territorialidad y resultado desconocido. Esta tarea organiza esas obligaciones en `VSCREEN-0085` y explicita el bloqueo de autoridad vigente sin introducir una obligación material nueva.
+
+---
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente de:
+
+- `TREQ-PULSO-001` para demostrar loyalty dentro del POS E2E antes de declarar la operación completa;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso protegido y territorio no ampliable por `site_id`;
+- `TREQ-PULSO-026` para impedir atribuir permiso exacto cuando el código o contrato activo no lo demuestran;
+- `TREQ-PASS-008` para contratos server-side autorizados, atómicos e idempotentes y prohibición de escritura directa de ledger/saldo;
+- `TREQ-PASS-010` para ledger reconciliable, saldo como proyección, evento origen, regla/version y retries sin duplicación;
+- `TREQ-PASS-025` para comando de acumulación autorizado, territorial, atómico e idempotente con cliente, compra elegible, monto, moneda, actor, dispositivo y referencia externa;
+- `TREQ-PASS-026` para prohibir referencias basadas únicamente en timestamp, aleatoriedad, IDs truncados o estado de UI;
+- `TREQ-PASS-029` para actor real en dispositivo compartido y correlación con resultado;
+- `TREQ-PASS-032` para que procesamiento, éxito y error correspondan al resultado confirmado de servidor y distingan duplicado, conflicto, denegación y ya aplicado;
+- cobertura AUTH vigente para autorización canónica, equivalencia entre capas, territorio y actor efectivo;
+- cobertura INTEGRATION vigente para idempotencia, replay, conflicto y recuperación de `UNKNOWN_OUTCOME`.
+
+Esta enumeración es trazabilidad heredada y no actualiza el Registro 04A.
+
+---
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado en el checkout del usuario ni sometido allí a formateador, quality, delivery, validadores proporcionales y batería global. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, fuentes de protocolo/continuidad/topología, owner PULSO, `VSCREEN-0085`, binding `VPROC-0045`, ownership PASS, estados/eventos, `PASS-INT-001`, `PULSO-AUTH-009`, Registro 04A aplicable, catálogo `permissions.json@1.0.0`, `operational-role-grants@1.0.0` y runtime `vento-pulso/main@715b5683db05caa010d725679b5ada4705a6da6e`; se constató que el catálogo/dataset activos no publican `pulso.loyalty.*`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, identificación real, acumulaciones, retries, timeouts, dispositivos compartidos, conciliaciones ni pruebas E2E. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-011` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 83. Criterios de aceptación
+
+- [ ] La superficie queda anclada exactamente a `VSCREEN-0085`.
+- [ ] El binding queda anclado a `VPROC-0045::STEP-IDENTIFY_CUSTOMER_AND_ACCRUE`.
+- [ ] PASS permanece owner de `VPROC-0045`, ledger, saldo y regla de fidelización.
+- [ ] Identificación de cliente y acumulación son decisiones distintas.
+- [ ] `VSCREEN-0086` y redención permanecen reservadas a `PULSO-UX-012`.
+- [ ] Se consume `PASS-INT-001` sin redefinir su contrato.
+- [ ] `pulso.loyalty.points.accumulate` se documenta como identidad objetivo aprobada de `PULSO-AUTH-009`, no como PermissionKey activa vigente.
+- [ ] Se documenta que `permissions.json@1.0.0` no contiene `pulso.loyalty.*`.
+- [ ] Se documenta que `operational-role-grants@1.0.0` no contiene grants `pulso.loyalty.*`.
+- [ ] La acumulación queda fail-closed mientras no exista autoridad exacta activa compatible.
+- [ ] `pulso.pos.main` no sustituye la autoridad exacta.
+- [ ] El cliente se resuelve server-side y se mantiene separado del trabajador.
+- [ ] La proyección de cliente se minimiza por finalidad.
+- [ ] El saldo visible se trata como proyección PASS y no como ledger ni autorización.
+- [ ] Toda acumulación se relaciona con un hecho comercial estable y elegible.
+- [ ] Monto y moneda se resuelven desde fuente autoritativa.
+- [ ] Pago y acumulación permanecen hechos separados.
+- [ ] Caja y acumulación permanecen hechos separados.
+- [ ] Regla, multiplicador, redondeo, promoción y vigencia permanecen bajo contrato PASS.
+- [ ] Una previsualización de puntos se marca como estimación.
+- [ ] `floor(amount/1000)` AS-IS no se convierte en regla canónica.
+- [ ] El comando visible representa una solicitud al servidor, no un incremento local de saldo.
+- [ ] El estado de autoridad vigente se evalúa antes de habilitar la acción.
+- [ ] `site_id` del navegador no amplía territorio.
+- [ ] Firma/PIN de dispositivo compartido identifica actor pero no concede permiso.
+- [ ] La identidad idempotente existe antes del primer efecto.
+- [ ] `Date.now`, `Math.random` e IDs truncados no bastan como identidad final.
+- [ ] Replay equivalente recupera el resultado sin segundo efecto.
+- [ ] Reutilización incompatible produce conflicto.
+- [ ] `UNKNOWN_OUTCOME` se reconcilia antes de repetir.
+- [ ] El ledger PASS es evidencia durable y el saldo una proyección reconciliable.
+- [ ] La UI distingue `APPLIED`, `ALREADY_APPLIED`, denegación, rechazo empresarial, conflicto, resultado desconocido y fallo técnico.
+- [ ] Un spinner, toast o saldo local no se usan como evidencia de éxito.
+- [ ] Refund/cancelación/devolución no editan destructivamente la acumulación original.
+- [ ] No se crea ni consume redención desde esta tarea.
+- [ ] Consentimientos permanecen fuera del alcance de acumulación.
+- [ ] Se reutilizan únicamente los estados y eventos canónicos existentes de `VPROC-0045`.
+- [ ] No se inventan etiquetas para las cuatro acciones secundarias de `VSCREEN-0085`.
+- [ ] Las brechas AS-IS de runtime tienen owner y condición de salida.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica el Registro 04A.
+- [ ] No se ejecuta ningún cambio físico.
+
+---
+
+#### 84. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- modifica `vento-pass`;
+- publica PermissionKeys;
+- modifica `permissions.json`;
+- modifica `operational-role-grants`;
+- concede grants a `cajero_satelite`, `operador_integral_satelite` o `gerencia_operativa`;
+- convierte `pulso.pos.main` en permiso canónico de loyalty;
+- modifica `identifyClientAction`;
+- modifica `awardLoyaltyPointsAction`;
+- modifica `loyalty-award.api.ts`;
+- modifica `QRScanner`;
+- cambia la fórmula de puntos;
+- define tasa, redondeo, multiplicador o promoción;
+- crea un hecho comercial;
+- cambia ventas o pagos;
+- cambia caja;
+- inserta ledger;
+- cambia saldo;
+- crea o valida una redención;
+- modifica consentimientos;
+- crea RPC, RLS, ACL, índices o tablas;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- crea arquitectura offline/outbox;
+- modifica el Registro 04A;
+- crea una instancia física;
+- ejecuta pruebas operativas;
+- desarrolla `PULSO-UX-012`.
+
+---
+
+#### 85. Decisión final de experiencia
+
+La experiencia objetivo queda resumida así:
+
+```text
+VENTA / HECHO COMERCIAL RESOLUBLE
++
+CLIENTE IDENTIFICADO
++
+ELEGIBILIDAD PASS
++
+AUTORIDAD ACTIVA EXACTA
++
+IDENTIDAD IDEMPOTENTE ESTABLE
++
+COMANDO SERVER-SIDE
++
+RESULTADO DURABLE PASS
+=
+ACUMULACION PRESENTABLE COMO CONFIRMADA
+```
+
+En el estado canónico vigente, la ausencia de `pulso.loyalty.*` en el catálogo y grants activos hace que el término `AUTORIDAD ACTIVA EXACTA` no se satisfaga todavía.
+
+Por tanto, el diseño queda completo, pero la ejecución de acumulación permanece bloqueada de forma fail-closed hasta reconciliación canónica posterior.
+
+---
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-010 — Diseñar apertura y cierre de caja`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-011 — Integrar acumulación de puntos`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-012 — Integrar redención de puntos`
 ### [ ] PULSO-UX-012 — Integrar redención de puntos
 ### [ ] PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
 ### [ ] PULSO-UX-014 — Identificar actor real en terminal compartida

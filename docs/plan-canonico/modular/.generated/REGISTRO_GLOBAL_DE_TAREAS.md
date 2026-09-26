@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1379** |
+| Aprobadas | **1380** |
 | En propuesta | **0** |
-| No iniciadas | **217** |
+| No iniciadas | **216** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **86.40% (1379/1596)** |
+| Porcentaje de completamiento | **86.47% (1380/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **217** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1280** |
+| ⏸ NO_EVALUADA | **216** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1281** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-UX-010` — Diseñar apertura y cierre de caja | ✅ APROBADA |
-| Tarea actual | `PULSO-UX-011` — Integrar acumulación de puntos | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-012` — Integrar redención de puntos | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-UX-011` — Integrar acumulación de puntos | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-012` — Integrar redención de puntos | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-UX-013` — Diseñar confirmaciones para acciones sensibles | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1141,7 +1141,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-008` | Simplificar cobro y medios de pago | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-009` | Separar anulación, devolución y reembolso | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-010` | Diseñar apertura y cierre de caja | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-011` | Integrar acumulación de puntos | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-011` | Integrar acumulación de puntos | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-012` | Integrar redención de puntos | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-013` | Diseñar confirmaciones para acciones sensibles | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-014` | Identificar actor real en terminal compartida | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
