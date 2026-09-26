@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1382** |
+| Aprobadas | **1383** |
 | En propuesta | **0** |
-| No iniciadas | **214** |
+| No iniciadas | **213** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **86.59% (1382/1596)** |
+| Porcentaje de completamiento | **86.65% (1383/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **214** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1283** |
+| ⏸ NO_EVALUADA | **213** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1284** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-UX-013` — Diseñar confirmaciones para acciones sensibles | ✅ APROBADA |
-| Tarea actual | `PULSO-UX-014` — Identificar actor real en terminal compartida | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-015` — Diseñar experiencia táctil para POS | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-UX-014` — Identificar actor real en terminal compartida | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-015` — Diseñar experiencia táctil para POS | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-UX-016` — Conectar venta con inventario | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1144,7 +1144,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-011` | Integrar acumulación de puntos | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-012` | Integrar redención de puntos | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-013` | Diseñar confirmaciones para acciones sensibles | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-014` | Identificar actor real en terminal compartida | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-014` | Identificar actor real en terminal compartida | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-015` | Diseñar experiencia táctil para POS | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-016` | Conectar venta con inventario | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-017` | Conectar venta con NUMERA | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |

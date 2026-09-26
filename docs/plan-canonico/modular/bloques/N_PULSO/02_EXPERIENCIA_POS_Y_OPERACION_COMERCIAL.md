@@ -16833,7 +16833,1470 @@ AUTORIDAD
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-014 — Identificar actor real en terminal compartida`
-### [ ] PULSO-UX-014 — Identificar actor real en terminal compartida
+### ✅ PULSO-UX-014 — Identificar actor real en terminal compartida
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
+**Tarea siguiente:** PULSO-UX-015 — Diseñar experiencia táctil para POS
+**Tipo de tarea:** diseño documental integral de la experiencia PULSO para resolver, mostrar, cambiar, invalidar y preservar al trabajador humano efectivo en terminales compartidas, consumiendo los contratos `AUTH-DEV-007..013` y `PULSO-AUTH-012/013`, separando principal técnico, dispositivo, actor, sesión, firma, contexto y autoridad; bloqueando acciones empresariales cuando el actor sea irresoluble, invalidando estado actor-bound al cambiar de trabajador y preservando autoría histórica, secretos efímeros, idempotencia y recuperación sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, componentes, sesiones reales, PermissionKeys, grants, RLS, RPC, tablas, datos, Supabase, migraciones, packages, dispositivos, PIN, secretos, credenciales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la experiencia canónica con la que PULSO identifica y mantiene visible al trabajador humano que realmente ejecuta una acción cuando la aplicación opera sobre una terminal compartida.
+
+La regla raíz es:
+
+```text
+PRINCIPAL TECNICO AUTENTICADO
++
+DEVICE ELEGIBLE
++
+ACTOR HUMANO RESUELTO
++
+CONTEXTO LABORAL VIGENTE
++
+AUTORIDAD EXACTA
+=
+ACCION EMPRESARIAL ATRIBUIBLE
+```
+
+Nunca:
+
+```text
+DEVICE
+=
+TRABAJADOR
+```
+
+ni:
+
+```text
+PIN CORRECTO
+=
+PERMISO
+```
+
+ni:
+
+```text
+ULTIMO ACTOR
+=
+ACTOR ACTUAL
+```
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-013
+
+`PULSO-UX-013` entrega:
+
+```text
+TODA CONFIRMACION SENSIBLE DEBE MOSTRAR EL ACTOR EFECTIVO RESUELTO
+ACTOR MOSTRADO != PRINCIPAL TECNICO
+CAMBIO DE TRABAJADOR INVALIDA CONFIRMACIONES ACTOR-BOUND NO EJECUTADAS
+PIN / FIRMA NO FORMAN PARTE DEL RESUMEN PERSISTENTE
+STEP-UP Y FIRMA NO SE REUTILIZAN ENTRE ACTORES POR CONVENIENCIA
+RESULTADO Y RECEIPT DEBEN CONSERVAR ATRIBUCION AL ACTOR REAL
+```
+
+Esta tarea convierte esas invariantes en experiencia transversal de identificación, continuidad, cambio y recuperación del actor.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el patrón UX se define una sola vez;
+- no crea una instancia física propia;
+- no inicia ni cierra sesiones reales;
+- no cambia tablas de dispositivo;
+- no modifica funciones de firma;
+- no crea permisos;
+- no modifica Supabase;
+- no autoriza implementación física.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+La decisión consume sin reabrir:
+
+- `AUTH-DEV-007 — Exigir firma o PIN del trabajador`;
+- `AUTH-DEV-008 — Combinar límite del dispositivo y trabajador`;
+- `AUTH-DEV-009 — Evitar heredar permisos administrativos`;
+- `AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría`;
+- `AUTH-DEV-011 — Permitir revocar un dispositivo`;
+- `AUTH-DEV-012 — Manejar sesión expirada`;
+- `AUTH-DEV-013 — Manejar cambio de trabajador`;
+- `PULSO-AUTH-011 — Limitar operación a sede del turno`;
+- `PULSO-AUTH-012 — Integrar dispositivos POS compartidos`;
+- `PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`;
+- `PULSO-UX-007..013` como handoffs de venta, pago, caja, excepciones, loyalty y confirmación;
+- catálogos y datasets de autorización vigentes;
+- runtime actual de `vento-pulso` como evidencia AS-IS, no como autoridad del diseño objetivo.
+
+---
+
+#### 5. Identidades que deben permanecer separadas
+
+PULSO deberá mantener como identidades distintas:
+
+```text
+technical_principal
+shared_device_id
+device_code
+actor_employee_id
+actor_shift_id
+actor_session_id
+signature_id
+customer_id
+resource_id
+```
+
+También permanecen separados:
+
+- creador;
+- asignado;
+- aprobador;
+- ejecutor;
+- actor de reconciliación;
+- principal de sistema.
+
+Ninguna coincidencia de UUID o contexto permite fusionar semánticas.
+
+---
+
+#### 6. Principal técnico
+
+El principal técnico demuestra únicamente que la solicitud procede de la identidad autenticada asociada al dispositivo.
+
+No demuestra:
+
+- qué trabajador está presente;
+- qué turno posee;
+- qué check-in mantiene;
+- qué PermissionKey posee;
+- qué sede laboral le corresponde;
+- qué acción puede ejecutar.
+
+La interfaz nunca presenta el usuario técnico como nombre del trabajador responsable.
+
+---
+
+#### 7. Dispositivo compartido
+
+El dispositivo es contexto técnico y un límite adicional de autoridad.
+
+Puede restringir:
+
+- aplicación disponible;
+- sede compatible;
+- área compatible;
+- paquete máximo de capacidades;
+- modalidad de uso;
+- estado de lifecycle.
+
+No concede autoridad humana.
+
+---
+
+#### 8. Actor humano efectivo
+
+El actor efectivo es el trabajador humano resuelto por una fuente confiable del servidor para la acción y contexto aplicables.
+
+La experiencia puede mostrar una proyección humana mínima del actor, pero esa proyección nunca es la fuente de autoridad.
+
+Regla:
+
+```text
+ACTOR MOSTRADO
+← PROYECCION DEL ACTOR RESUELTO
+
+ACTOR RESUELTO
+← SERVIDOR
+```
+
+---
+
+#### 9. Actor irresoluble
+
+Si una acción empresarial requiere actor humano y el servidor no puede resolver uno único, vigente y compatible:
+
+```text
+ACTOR REQUIRED
++
+ACTOR UNRESOLVED / AMBIGUOUS / STALE
+→ CERO NUEVO EFECTO EMPRESARIAL
+```
+
+La interfaz cambia a estado de identificación o recuperación; no completa al actor con heurísticas.
+
+---
+
+#### 10. Fuentes prohibidas para inferir actor
+
+Nunca se infiere al trabajador desde:
+
+- `auth.uid()` del principal técnico;
+- `navigation_role`;
+- `device_id`;
+- sede del dispositivo;
+- área del dispositivo;
+- último PIN exitoso;
+- último trabajador visible;
+- último actor de una operación;
+- `assigned_to`;
+- `created_by` de otro hecho;
+- cliente identificado;
+- cookie o localStorage no autoritativos;
+- query string;
+- un campo `employee_id` libre enviado por cliente.
+
+---
+
+#### 11. Sesión personal y terminal compartida
+
+La UX distingue explícitamente:
+
+```text
+SESION PERSONAL
+→ principal humano correlacionable conforme al contrato propietario
+
+TERMINAL COMPARTIDA
+→ principal tecnico del device
+→ actor humano separado
+```
+
+No se solicita PIN de terminal compartida en una sesión personal por costumbre.
+
+Tampoco se presume actor humano en sesión personal si la identidad laboral no puede resolverse conforme al contrato vigente.
+
+---
+
+#### 12. Estado visible del actor
+
+Una terminal compartida deberá exponer un estado humano inequívoco, como mínimo conceptualmente:
+
+```text
+NO_ACTOR
+IDENTIFYING
+CONTEXT_RESOLVING
+ACTOR_ACTIVE
+SWITCHING_ACTOR
+RECOVERY_REQUIRED
+DEVICE_BLOCKED
+```
+
+Estos son estados de experiencia y no crean por sí solos estados de dominio o autorización.
+
+---
+
+#### 13. `NO_ACTOR`
+
+Cuando no exista trabajador efectivo:
+
+- el dispositivo puede continuar técnicamente autenticado;
+- la aplicación puede mostrar el gate de identificación permitido;
+- las acciones empresariales que requieren humano permanecen bloqueadas;
+- no se muestra al último trabajador como si siguiera activo;
+- no se conserva un CTA material habilitado por estado cliente anterior.
+
+---
+
+#### 14. `IDENTIFYING`
+
+Durante identificación:
+
+- la interfaz captura únicamente la evidencia humana necesaria;
+- el secreto se trata como efímero;
+- no se expone una lista libre de trabajadores como atajo de autoridad;
+- no se compromete un efecto empresarial simultáneo salvo que el contrato exacto lo permita de forma atómica y segura;
+- un fallo no revela información sensible sobre otras identidades.
+
+---
+
+#### 15. `CONTEXT_RESOLVING`
+
+Identificar al humano no basta.
+
+Después de resolver identidad debe revalidarse, según aplique:
+
+- vínculo laboral;
+- turno;
+- check-in;
+- rol operativo;
+- PermissionKey exacta;
+- sede;
+- área;
+- device;
+- recurso;
+- estado;
+- controles adicionales.
+
+La UI no muestra `Listo` hasta que el contexto necesario esté resuelto.
+
+---
+
+#### 16. `ACTOR_ACTIVE`
+
+Cuando el actor efectivo está vigente, la superficie puede mostrar de forma compacta:
+
+- nombre o alias permitido;
+- rol o función operativa relevante;
+- sede/área cuando ayuden a evitar errores;
+- indicador de terminal compartida;
+- acción `Cambiar trabajador` cuando proceda.
+
+No muestra PIN, token, firma, secreto de reautenticación ni datos laborales innecesarios.
+
+---
+
+#### 17. Presentación mínima del actor
+
+En acciones sensibles, la identidad visible debe permitir responder:
+
+```text
+¿QUIEN VA A EJECUTAR ESTA ACCION?
+```
+
+sin confundirla con:
+
+```text
+¿QUIEN INICIO SESION TECNICA?
+¿QUIEN CREO EL RECURSO?
+¿QUIEN ESTA ASIGNADO?
+¿QUIEN ES EL CLIENTE?
+```
+
+La UI usa etiquetas humanas claras, por ejemplo `Operador actual` o `Trabajador activo`, no `Usuario` cuando esa palabra sea ambigua.
+
+---
+
+#### 18. Actor en la confirmación sensible
+
+Antes de un commit definido por `PULSO-UX-013`, la confirmación muestra el actor efectivo vigente cuando la operación sea actor-bound.
+
+```text
+RESUMEN CONFIRMADO PARA ACTOR A
++
+CAMBIO A B ANTES DEL EFECTO
+→ RESUMEN INVALIDO
+→ REVISAR DE NUEVO COMO B
+```
+
+Una confirmación visual anterior no sobrevive al cambio de actor.
+
+---
+
+#### 19. Firma o PIN
+
+El PIN o mecanismo ligero:
+
+- puede identificar al humano;
+- puede producir una firma opaca de acción;
+- puede iniciar el flujo de una sesión de actor cuando el contrato lo permita.
+
+No equivale a:
+
+- PermissionKey;
+- turno;
+- check-in;
+- sede;
+- rol;
+- `ALLOW`;
+- reautenticación fuerte.
+
+---
+
+#### 20. Secreto efímero
+
+El secreto crudo:
+
+- no forma parte de `AccessContext`;
+- no forma parte de receipts;
+- no forma parte de auditoría funcional;
+- no se registra en logs o métricas;
+- no se reutiliza como secreto del siguiente trabajador;
+- se limpia cuando deja de ser necesario;
+- no reaparece al volver atrás o cambiar de modo.
+
+---
+
+#### 21. Firma de acción y sesión de actor
+
+PULSO distingue:
+
+```text
+SIGNATURE_ID
+→ evidencia opaca para una operación o presencia concreta
+
+ACTOR_SESSION_ID
+→ vínculo temporal del humano con el device cuando exista materialización conforme
+```
+
+Una firma individual no crea una sesión universal.
+
+Una sesión activa tampoco elimina una firma individual cuando el contrato de la acción la exige.
+
+---
+
+#### 22. Reautenticación fuerte
+
+`STRONG_REAUTH_REQUIRED` permanece independiente.
+
+```text
+PIN LIGERO
+!=
+STRONG REAUTH
+```
+
+Un cambio A→B invalida cualquier evidencia fuerte actor-bound de A para acciones futuras de B.
+
+B debe satisfacer su propio step-up cuando corresponda.
+
+---
+
+#### 23. Intersección de autoridad
+
+La autoridad efectiva de una acción desde shared device conserva:
+
+```text
+AUTORIDAD DEL TRABAJADOR
+∩
+TECHO DEL DISPOSITIVO
+∩
+APLICACION PERMITIDA
+∩
+TERRITORIO COMPATIBLE
+∩
+RECURSO Y ESTADO VALIDOS
+∩
+CONTROLES ADICIONALES
+```
+
+El dispositivo solo restringe; no suma privilegios.
+
+---
+
+#### 24. `navigation_role` no es actor
+
+`navigation_role` puede apoyar navegación o compatibilidad técnica transitoria.
+
+No puede:
+
+- identificar al trabajador;
+- resolver PermissionKeys del humano como sustituto final;
+- completar turno o check-in;
+- transferir autoridad administrativa;
+- seleccionar el actor visible;
+- mantener autoridad después de un cambio de trabajador.
+
+---
+
+#### 25. `pulso.access` no identifica actor
+
+Acceder a la aplicación no demuestra quién ejecutará una acción empresarial.
+
+En shared device:
+
+```text
+DEVICE PUEDE PRESENTAR PULSO
+!=
+TRABAJADOR IDENTIFICADO
+!=
+CAPACIDAD INTERNA AUTORIZADA
+```
+
+---
+
+#### 26. Sede y área
+
+La sede y área del dispositivo son límites adicionales.
+
+La sede y contexto del actor proceden de las fuentes laborales autorizadas.
+
+Un selector o `preferredSiteId` puede expresar intención, pero no reescribe la autoridad del actor ni la identidad del dispositivo.
+
+---
+
+#### 27. Cambio explícito de trabajador
+
+El cambio A→B es una transición deliberada de seguridad:
+
+```text
+ACTOR A ACTIVE
+→ SOLICITAR CAMBIO
+→ BLOQUEAR NUEVOS COMMITS ACTOR-BOUND
+→ CLASIFICAR PENDIENTES
+→ CERRAR / INVALIDAR A
+→ LIMPIAR ESTADO SENSIBLE DE A
+→ NO_ACTOR
+→ IDENTIFICAR B
+→ RESOLVER CONTEXTO B
+→ ACTOR B ACTIVE
+```
+
+No existe cambio silencioso por introducir otro PIN en un campo incidental.
+
+---
+
+#### 28. Acción `Cambiar trabajador`
+
+La acción de cambio debe ser identificable y separada del logout técnico del device.
+
+Debe explicar que:
+
+- se cerrará la autoridad humana actual;
+- el dispositivo seguirá siendo el mismo si continúa elegible;
+- estados personales o sensibles se limpiarán;
+- efectos ya confirmados conservarán autoría;
+- trabajo pendiente puede requerir reconciliación.
+
+---
+
+#### 29. Frontera de seguridad durante el cambio
+
+Desde que comienza el cambio hasta que B queda resuelto:
+
+- no se ejecutan nuevos commits sensibles con A;
+- no se ejecutan commits sensibles con B antes de resolverlo;
+- no se reabre una acción con caché de A;
+- no se reutiliza una firma de A;
+- no se reutiliza step-up de A;
+- no se presenta una pantalla que mezcle identidad A con contexto B.
+
+---
+
+#### 30. Limpieza transversal
+
+El cambio de trabajador exige limpieza coordinada de estado actor-bound en las aplicaciones que comparten el dispositivo.
+
+Debe abarcar cuando aplique:
+
+- estado React o equivalente;
+- selecciones personales;
+- filtros actor-bound;
+- borradores sensibles no transferibles;
+- PIN capturado;
+- firmas temporales;
+- step-up;
+- datos personales cacheados;
+- confirmaciones no ejecutadas;
+- navegación que exponga recursos exclusivos del actor anterior.
+
+---
+
+#### 31. Estado de estación no personal
+
+No todo se borra al cambiar de actor.
+
+Puede conservarse únicamente aquello que pertenezca de forma inequívoca a la estación o proceso y cuyo contrato permita continuidad, por ejemplo:
+
+- identidad del device;
+- configuración física no personal;
+- estado empresarial ya confirmado;
+- cola operativa pública dentro del contexto autorizado.
+
+Conservar estado de estación nunca conserva autoridad de A.
+
+---
+
+#### 32. Borradores y trabajo no confirmado
+
+Un borrador personal de A no pasa automáticamente a B.
+
+Las salidas válidas son, según contrato:
+
+- descartar;
+- conservar como borrador neutral permitido;
+- transferir mediante handoff explícito;
+- bloquear hasta resolver responsable;
+- reconciliar si ya existe un comando enviado.
+
+El cliente no decide silenciosamente que B “continúa donde quedó A”.
+
+---
+
+#### 33. Handoff de trabajo
+
+Cambiar actor y transferir responsabilidad son operaciones distintas.
+
+Un handoff legítimo puede transferir un `work_item` o responsabilidad empresarial cuando el proceso lo permita.
+
+Nunca transfiere:
+
+- actor session;
+- PermissionKeys;
+- rol;
+- cobertura;
+- firma;
+- step-up;
+- decisión de autorización.
+
+---
+
+#### 34. Operación pendiente
+
+Si A envió un comando y el resultado aún no se conoce:
+
+```text
+CAMBIO A B
+!=
+PERMISO PARA REENVIAR
+```
+
+Se conserva:
+
+- actor original;
+- contexto original;
+- idempotency key;
+- receipt o referencia;
+- estado `UNKNOWN_OUTCOME` o equivalente.
+
+B puede reconciliar conforme al contrato, pero no sustituye retrospectivamente a A.
+
+---
+
+#### 35. Efectos confirmados
+
+Un efecto confirmado antes del cambio conserva para siempre su actor histórico.
+
+B puede ejecutar una acción posterior únicamente:
+
+- desde el estado empresarial vigente;
+- con su propia autoridad;
+- con su propio contexto;
+- con nueva firma o step-up cuando corresponda.
+
+---
+
+#### 36. Resultado desconocido
+
+Ante resultado desconocido:
+
+- no se cambia el actor histórico por quien reabre la pantalla;
+- primero se consulta o reconcilia la intención original;
+- si el efecto existió, se recupera su actor original;
+- si no existió, una nueva intención usa al actor vigente y una identidad de operación conforme.
+
+---
+
+#### 37. Sesión expirada
+
+Cuando la sesión humana expira:
+
+- el device puede seguir técnicamente autenticado;
+- el actor deja de ser efectivo para nuevas acciones que lo requieren;
+- la UI pasa a `NO_ACTOR` o recuperación segura;
+- confirmaciones no ejecutadas y estado sensible actor-bound dejan de ser utilizables;
+- no existe gracia implícita por tener la pantalla abierta.
+
+---
+
+#### 38. Dispositivo revocado o no elegible
+
+Si el device deja de ser elegible:
+
+- ninguna actor session lo rescata;
+- ningún PIN lo reactiva;
+- ninguna PermissionKey humana se ejecuta a través de esa identidad;
+- la interfaz bloquea operación empresarial;
+- se preserva evidencia necesaria para soporte y auditoría.
+
+La autoridad humana puede seguir existiendo por otros canales autorizados; no a través del device revocado.
+
+---
+
+#### 39. Cambio material del dispositivo
+
+Cambios de:
+
+- sede;
+- área/política;
+- paquete de capacidades;
+- aplicaciones;
+- principal técnico;
+- lifecycle;
+- reglas de firma;
+
+invalidan cualquier contexto dependiente que ya no pueda demostrarse vigente.
+
+La UI no conserva un actor activo sobre un snapshot incompatible.
+
+---
+
+#### 40. Offline
+
+Una operación capturada offline no conserva automáticamente autoridad hasta reconexión.
+
+Antes del efecto debe revalidar, según contrato:
+
+- actor;
+- device;
+- contexto;
+- permiso;
+- recurso;
+- estado;
+- idempotencia.
+
+La interfaz distingue `capturado` de `confirmado`.
+
+---
+
+#### 41. Retry
+
+Un retry técnico de la misma intención conserva la atribución original.
+
+No se reescribe el actor porque otra persona pulse `Reintentar`.
+
+Si se necesita una nueva intención empresarial, se resuelve nuevamente actor y autoridad.
+
+---
+
+#### 42. Receipt
+
+El receipt o confirmación autoritativa deberá permitir correlacionar, de forma segura:
+
+- acción;
+- recurso;
+- resultado;
+- actor efectivo;
+- principal técnico cuando aplique;
+- device cuando aplique;
+- contexto relevante;
+- referencia/idempotencia.
+
+No contiene PIN ni secretos.
+
+---
+
+#### 43. Auditoría mínima
+
+La reconstrucción de una acción sensible desde terminal compartida debe poder distinguir:
+
+```text
+QUIEN AUTENTICO TECNICAMENTE EL DEVICE
+QUE DEVICE SE USO
+QUE TRABAJADOR EJECUTO
+QUE CONTEXTO LABORAL TENIA
+QUE PERMISO / DECISION APLICO
+QUE RECURSO CAMBIO
+QUE RESULTADO SE CONFIRMO
+```
+
+Sin convertir la auditoría en fuente de autoridad para una nueva acción.
+
+---
+
+#### 44. Privacidad del actor
+
+La UX muestra solo datos necesarios para evitar atribución equivocada.
+
+No requiere exponer por defecto:
+
+- correo;
+- documento;
+- teléfono;
+- identificadores técnicos completos;
+- historial laboral;
+- permisos completos;
+- turnos de otros trabajadores.
+
+Nombre/alias y función contextual pueden bastar cuando el contrato lo permita.
+
+---
+
+#### 45. Cliente y actor permanecen separados
+
+En scanner y loyalty:
+
+```text
+CLIENTE IDENTIFICADO
+!=
+TRABAJADOR ACTIVO
+```
+
+Escanear un QR de cliente no cambia al trabajador.
+
+Introducir un PIN laboral no cambia al cliente.
+
+Cambiar modo de loyalty debe limpiar estado incompatible sin fusionar identidades.
+
+---
+
+#### 46. Venta
+
+En creación de venta desde terminal compartida:
+
+- el responsable efectivo deriva del actor humano resuelto;
+- el device permanece como contexto técnico;
+- el cliente sigue siendo opcional cuando el contrato lo permite;
+- la venta no se atribuye al principal técnico;
+- cambiar actor antes de crear invalida cualquier confirmación actor-bound todavía no ejecutada.
+
+---
+
+#### 47. Cobro
+
+Antes de comprometer un cobro actor-bound, la experiencia debe mostrar al actor efectivo junto al recurso, importe y medio cuando sea material para evitar error.
+
+El pago confirmado conserva al actor original aunque otra persona continúe la atención después.
+
+---
+
+#### 48. Apertura de caja
+
+La apertura es personal cuando el contrato de caja así lo exige.
+
+En terminal compartida:
+
+- se resuelve actor antes de abrir;
+- la sesión de caja no adopta la identidad del device;
+- cambiar de trabajador no transfiere automáticamente la caja de A a B;
+- la continuidad se resuelve por el contrato de caja, no por la UI.
+
+---
+
+#### 49. Conteo y cierre de caja
+
+Conteo, diferencia y cierre conservan al actor que ejecuta cada paso exigible.
+
+Una persona distinta puede participar solo si el contrato lo permite y queda atribuida por separado.
+
+La firma del trabajador anterior no puede cerrar la caja del actor actual.
+
+---
+
+#### 50. Cancelación, devolución, reverse y refund
+
+Las acciones excepcionales o sensibles:
+
+- muestran actor efectivo;
+- no heredan autoridad administrativa del principal técnico;
+- consumen su PermissionKey exacta;
+- respetan `BASE_AND_OPERATIONAL` cuando aplique;
+- exigen reautenticación propia cuando corresponda;
+- conservan actor histórico por efecto.
+
+---
+
+#### 51. Descuento
+
+Un descuento sensible desde shared device no se autoriza por:
+
+- ser cajero;
+- estar en PULSO;
+- usar un device de caja;
+- introducir un PIN válido.
+
+La UX solo permite llegar al commit cuando la autoridad compuesta ya fue resuelta.
+
+---
+
+#### 52. Override de entrega
+
+Una confirmación excepcional de entrega conserva:
+
+- actor humano ejecutor;
+- motivo/evidencia;
+- device/principal separados;
+- recurso y estado;
+- permiso exacto;
+- step-up cuando aplique.
+
+La UI no convierte `Confirmar excepcionalmente` en evidencia de autoridad.
+
+---
+
+#### 53. Acumulación de puntos
+
+En shared device, la acumulación debe correlacionar el efecto con el trabajador efectivo cuando el contrato finalmente sea ejecutable.
+
+Esta tarea no crea `pulso.loyalty.points.accumulate` ni altera el estado fail-closed documentado por `PULSO-UX-011`.
+
+El actor real sigue siendo obligatorio como identidad separada cuando exista una futura autoridad válida.
+
+---
+
+#### 54. Redención
+
+La redención distingue:
+
+```text
+CLIENTE / DUEÑO DEL BENEFICIO
+!=
+TRABAJADOR QUE VALIDA O CONSUME
+```
+
+La persona que opera el POS debe quedar atribuida de forma durable cuando corresponda.
+
+Esta tarea no crea `pulso.loyalty.points.redeem` ni habilita redención actualmente no autorizada.
+
+---
+
+#### 55. Salón
+
+En salón deben permanecer separados:
+
+- creador del llamado;
+- trabajador asignado;
+- actor que reconoce;
+- actor que resuelve;
+- actor que cancela;
+- device de origen.
+
+`Tomar` no puede sugerir atribución que los datos no persisten.
+
+La experiencia final debe usar semántica coherente con el hecho realmente registrado.
+
+---
+
+#### 56. Importaciones
+
+Una importación iniciada por humano desde shared device distingue:
+
+- actor iniciador;
+- principal técnico;
+- batch;
+- publicación posterior;
+- actor o sistema que produce efectos posteriores.
+
+`auth.uid()` técnico no se presenta como trabajador real.
+
+---
+
+#### 57. Publicación con efectos de inventario
+
+Cuando una publicación humana genere movimientos posteriores, el consumidor debe conservar actor humano o actor de sistema según el contrato real.
+
+No se usa el principal técnico como comodín para llenar campos humanos.
+
+La integración física sigue reservada a tareas propietarias posteriores.
+
+---
+
+#### 58. Estado AS-IS de `resolveOperationalSession`
+
+El runtime vigente de `vento-pulso` clasifica sesiones como `employee` o `shared_device`.
+
+En shared device observa actualmente:
+
+- `navigationRole` derivado de `sharedDevice.navigation_role`;
+- `role` igual a ese `navigationRole`;
+- `siteId` y `areaId` que aceptan valores preferidos antes del valor registral del device;
+- `allowedAppCodes`;
+- `sharedDeviceId`;
+- ausencia de `actor_session_id` en el shape observado.
+
+Por tanto, el helper actual no demuestra todavía resolución persistente del actor humano conforme al contrato objetivo.
+
+---
+
+#### 59. Brecha AS-IS de autorización shared device
+
+`checkOperationalSessionPermission` usa actualmente, para shared device:
+
+- aplicación permitida;
+- `navigationRole`;
+- `siteId`;
+- `areaId`;
+- `has_operational_role_permission`.
+
+Eso no demuestra por sí solo:
+
+```text
+ACTOR HUMANO EFECTIVO
++
+PERMISSIONKEY DEL MISMO ACTOR
++
+TECHO CANONICO DEL DEVICE
+```
+
+La arquitectura objetivo de autorización permanece en `PULSO-AUTH-012/015/016` y contratos transversales.
+
+---
+
+#### 60. Estado AS-IS de firma por acción
+
+`shared-device-signature.ts` implementa una firma por acción:
+
+- solo se exige cuando `session.isSharedDevice`;
+- recibe PIN crudo de cliente;
+- llama `sign_shared_device_action`;
+- envía `p_actor_employee_id = null`;
+- recibe `signature_id`, `actor_employee_id` y `actor_shift_id`;
+- permite adjuntar después el target mediante `attach_shared_device_action_signature_target`.
+
+Esto demuestra identificación parcial por acción; no una actor session persistente y transversal.
+
+---
+
+#### 61. Estado AS-IS del scanner
+
+`QRScanner` conserva actualmente:
+
+- `sharedActorPin` en estado React;
+- input de PIN solo cuando la sesión es shared device;
+- uso del PIN para acumulación y redención;
+- limpieza observada del PIN en algunos caminos del flujo.
+
+La cobertura canónica exige limpieza completa tras éxito, error, cambio de cliente, cambio de modo o expiración; la implementación integral permanece pendiente de certificación.
+
+---
+
+#### 62. Estado AS-IS de loyalty
+
+Acumulación y redención llaman `requireSharedDeviceActorSignature`.
+
+La evidencia actual muestra actor humano parcial, pero también:
+
+- uso de `pulso.pos.main` como permiso observado en consumidores;
+- attachment de firma posterior al efecto en caminos actuales;
+- ausencia de actor session persistente en el consumidor;
+- gaps de autoridad atómica documentados por 011/012 y PULSO-AUTH.
+
+Esta tarea no eleva esos caminos AS-IS a contrato objetivo.
+
+---
+
+#### 63. Estado AS-IS de actor session
+
+Las fuentes canónicas contemplan `shared_operational_device_actor_sessions`.
+
+Sin embargo, los consumidores PULSO inspeccionados no muestran consumo de `actor_session_id` ni lectura directa de esa estructura para mantener actor transversal.
+
+Por tanto:
+
+```text
+FIRMA POR ACCION EXISTENTE
+!=
+CICLO A -> CIERRE -> B MATERIALIZADO
+```
+
+---
+
+#### 64. Matriz de brechas y propietarios
+
+| Brecha observada | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| shared session usa `navigationRole` para permisos internos | device/rol de navegación puede sustituir actor real | `PULSO-AUTH-012/015/016` + fundación AUTH | autorización consume actor efectivo + clave exacta + techo device |
+| `preferredSiteId/AreaId` preceden al límite registral del device | input puede ampliar territorio | `PULSO-AUTH-012` | valores solicitados solo refinan dentro de límites server-side |
+| no se consume `actor_session_id` en PULSO observado | cambio A→B no está demostrado transversalmente | `AUTH-DEV-013` + `PULSO-AUTH-012/013` + implementación PULSO | lifecycle de actor materializado, limpio y probado |
+| firma por acción usa `p_actor_employee_id = null` | camino puede quedar incoherente en validaciones posteriores | fundación AUTH + `PULSO-AUTH-012/013` | actor resuelto se propaga end-to-end |
+| loyalty adjunta firma después del efecto | efecto puede existir sin atribución durable demostrada | unidades loyalty + `PULSO-AUTH-013` | efecto y actor quedan atómicos o reconciliables antes de éxito final |
+| PIN vive en estado cliente | secreto puede sobrevivir caminos incompletos | experiencia PULSO + `AUTH-DEV-014` | limpieza, rate limit y no persistencia certificados |
+| salón no persiste todos los actores de transición | actor ejecutor puede quedar ausente | superficie salón + `PULSO-AUTH-013` | transiciones server-side correlacionan actor exacto |
+| importaciones usan identidad técnica en campos observados | principal puede presentarse como humano | `PULSO-AUTH-013/014/015` | iniciador humano/sistema/principal quedan separados |
+
+No queda hallazgo sin propietario y condición de salida.
+
+---
+
+#### 65. Mensajes de bloqueo
+
+Cuando falta actor, la UI usa lenguaje humano y accionable.
+
+Ejemplo conceptual:
+
+```text
+Identifica al trabajador que va a continuar.
+Esta terminal es compartida y las acciones deben quedar asociadas a una persona.
+```
+
+No se muestra como mensaje principal:
+
+```text
+actor_session_id null
+PGRST...
+shared_device_no_permission
+```
+
+---
+
+#### 66. Denegación frente a falta de actor
+
+Se distinguen:
+
+```text
+IDENTIFICATION_REQUIRED
+→ falta actor humano válido
+
+DENIED
+→ actor resuelto pero la acción no está permitida
+```
+
+La UX no sugiere que introducir otro PIN sea un mecanismo para evadir una denegación estable.
+
+---
+
+#### 67. Actor stale
+
+Si la interfaz conserva visualmente un actor cuyo contexto ya cambió o expiró:
+
+- se invalida la proyección;
+- se bloquean commits actor-bound;
+- se solicita resolución fresca;
+- no se conserva un badge engañoso de `activo`.
+
+---
+
+#### 68. Cambio de actor durante modal o confirmación
+
+Un modal abierto no congela autoridad.
+
+Si cambia el actor antes del efecto:
+
+- se invalida el resumen actor-bound;
+- se cierra o reinicia la confirmación;
+- se vuelve a resolver contexto;
+- el nuevo actor revisa el efecto antes de comprometerlo.
+
+---
+
+#### 69. Cambio de actor durante lectura prolongada
+
+Una vista abierta durante largo tiempo debe tolerar que el actor deje de ser vigente.
+
+Antes de una acción material:
+
+- refresca autoridad;
+- refresca actor;
+- refresca recurso/versión cuando corresponda.
+
+La lectura visible no demuestra capacidad de mutar.
+
+---
+
+#### 70. Multiaplicación
+
+El dispositivo puede exponer más de una aplicación, pero el actor activo es una dimensión transversal del terminal cuando exista una actor session compartida conforme.
+
+Cambiar de app:
+
+- no cambia al trabajador;
+- no crea una nueva identidad;
+- no reanima autoridad expirada;
+- no evita la limpieza A→B;
+- no permite a una app conservar secretos de A cuando otra ya cambió a B.
+
+---
+
+#### 71. Navegación
+
+La navegación puede conservar contexto técnico del device, pero no transporta autoridad humana mediante URL.
+
+Un deep link puede llevar referencias opacas; la superficie destino vuelve a resolver actor, contexto y PermissionKey antes de actuar.
+
+---
+
+#### 72. Accesibilidad
+
+La identidad del actor debe ser perceptible sin depender solo de:
+
+- color;
+- avatar;
+- posición;
+- icono.
+
+`Cambiar trabajador` debe ser accesible por teclado y táctilmente, con foco y mensajes de estado comprensibles.
+
+Los errores de identificación se anuncian sin revelar secretos.
+
+---
+
+#### 73. Frontera con PULSO-UX-015
+
+`PULSO-UX-015 — Diseñar experiencia táctil para POS` conserva:
+
+- target sizes;
+- spacing;
+- teclado táctil;
+- ubicación física de actor chip;
+- patrones de tablet/kiosco;
+- gestos;
+- densidad;
+- prevención física de doble toque.
+
+014 define qué debe representar el actor y cuándo debe invalidarse, no la geometría final de la interfaz.
+
+---
+
+#### 74. Frontera con PULSO-UX-016 a PULSO-UX-018
+
+Las integraciones posteriores deben recibir actor real como contexto cuando el contrato del efecto lo requiera.
+
+Eso no convierte al actor en owner de:
+
+- inventario;
+- NUMERA;
+- PASS;
+- hechos externos.
+
+Cada integración conserva su propia fuente de verdad y correlaciona la atribución sin duplicarla.
+
+---
+
+#### 75. Frontera con PULSO-UX-019
+
+`PULSO-UX-019` deberá validar operativamente, entre otros escenarios:
+
+- shared device sin actor;
+- actor A válido;
+- expiración de A;
+- cambio A→B;
+- limpieza de estado;
+- acción sensible con actor visible;
+- resultado pendiente durante cambio;
+- retry sin cambio de autor;
+- device revocado;
+- PIN inválido y rate limiting;
+- loyalty y caja actor-bound cuando sus contratos sean ejecutables.
+
+014 no ejecuta esas pruebas.
+
+---
+
+#### 76. Frontera con PULSO-UX-020 y PULSO-UX-021
+
+`PULSO-UX-020` clasifica el prototipo histórico y sus piezas reutilizables/adaptables/descartables.
+
+`PULSO-UX-021` materializa la arquitectura objetivo del POS.
+
+Esta tarea les entrega:
+
+```text
+PRINCIPAL TECNICO != ACTOR
+DEVICE RESTRINGE
+ACTOR SE RESUELVE SERVER-SIDE
+CAMBIO A B LIMPIA ESTADO
+AUTORIA HISTORICA NO SE REESCRIBE
+```
+
+---
+
+#### 77. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: separación entre principal, dispositivo y trabajador; sesión de actor; cambio A→B; expiración; limpieza; invalidación de contexto; atribución durable; shared-device fail-closed; PIN efímero; autorización territorial y acciones PULSO ya poseen cobertura canónica. La tarea especializa esa cobertura en la experiencia PULSO sin introducir una obligación verificable nueva.
+
+---
+
+#### 78. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-AUTH-003` para lifecycle auditable del dispositivo, incluido cambio de actor;
+- `TREQ-AUTH-011` para intersección entre límites del device y permisos del trabajador real;
+- `TREQ-AUTH-014` para invalidar contexto, caché y autoridad derivada ante cambio o expiración;
+- `TREQ-AUTH-015` para evidencia correlacionable de principal, actor, contexto, dispositivo, recurso, decisión y resultado;
+- `TREQ-AUTH-054` para limpieza transversal entre aplicaciones al cambiar actor;
+- `TREQ-AUTH-145`, `TREQ-AUTH-267`, `TREQ-AUTH-269`, `TREQ-AUTH-271`, `TREQ-AUTH-273`, `TREQ-AUTH-277`, `TREQ-AUTH-278` y `TREQ-AUTH-331` para frescura, resolución fail-closed, actor session, recuperación y estados interactivos de identificación;
+- `TREQ-PULSO-004`, `TREQ-PULSO-005`, `TREQ-PULSO-006`, `TREQ-PULSO-014`, `TREQ-PULSO-015`, `TREQ-PULSO-016`, `TREQ-PULSO-018`, `TREQ-PULSO-024` y `TREQ-PULSO-026` para mutaciones nombradas, contexto, actores, rutas, territorio y permisos exactos;
+- `TREQ-PASS-025`, `TREQ-PASS-029`, `TREQ-PASS-030` y `TREQ-PASS-032` para actor, device, PIN efímero y resultado confirmado en loyalty.
+
+La enumeración es trazabilidad reutilizada; no modifica ningún requisito.
+
+---
+
+#### 79. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron `main` vigente de `vento-shell`, continuidad PULSO, topología `DEFINE_ONCE`, `AUTH-DEV-007..013`, `PULSO-AUTH-012/013`, Registro 04A aplicable, catálogo/datasets de autorización y runtime vigente de `vento-pulso` para sesión operacional, guard, firma shared-device y scanner. |
+| OPERATIVA | NOT_EXECUTED | No se identificaron trabajadores reales, no se cambiaron actor sessions y no se ejecutaron ventas, pagos, caja, salón, loyalty ni importaciones reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-014` no crea instancia física propia ni autoriza cambios en aplicaciones, datos, Supabase o dispositivos. |
+
+---
+
+#### 80. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] principal técnico, device y actor humano permanecen separados;
+- [ ] `auth.uid()` técnico no se presenta como trabajador;
+- [ ] `navigation_role` no se usa como identidad humana;
+- [ ] una terminal compartida sin actor bloquea nuevos efectos que exigen humano;
+- [ ] la UI distingue `NO_ACTOR`, identificación, resolución de contexto y actor activo;
+- [ ] la identidad visible procede del actor server-side resuelto;
+- [ ] la UI no infiere actor desde último trabajador, sede, área o cliente;
+- [ ] PIN/firma se tratan como evidencia ligera y no como permiso;
+- [ ] secretos crudos no aparecen en receipt, auditoría ni contexto;
+- [ ] firma de acción y actor session permanecen separadas;
+- [ ] PIN ligero no satisface reautenticación fuerte;
+- [ ] autoridad efectiva conserva intersección trabajador/device/contexto/recurso;
+- [ ] sede del device restringe y nunca sustituye sede laboral del actor;
+- [ ] `Cambiar trabajador` es una transición explícita;
+- [ ] durante A→B no existen commits sensibles atribuibles ambiguamente;
+- [ ] estado actor-bound de A se limpia o aísla antes de activar B;
+- [ ] estado de estación permitido puede sobrevivir sin conservar autoridad de A;
+- [ ] handoff de trabajo no transfiere permisos ni firma;
+- [ ] operación pendiente conserva actor e idempotencia originales;
+- [ ] efecto confirmado conserva autor histórico;
+- [ ] resultado desconocido se reconcilia antes de nueva intención;
+- [ ] sesión expirada elimina autoridad humana efectiva;
+- [ ] device revocado prevalece sobre sesión humana todavía vigente;
+- [ ] cambios materiales invalidan contexto stale;
+- [ ] offline y retry reautorizan conforme al contrato;
+- [ ] receipts correlacionan actor real sin secretos;
+- [ ] cliente y trabajador permanecen separados;
+- [ ] venta, cobro, caja y excepciones conservan actor efectivo;
+- [ ] loyalty no se habilita por resolver actor;
+- [ ] salón distingue creador, asignado y ejecutor;
+- [ ] importaciones distinguen actor humano, principal técnico y sistema;
+- [ ] runtime AS-IS se registra como parcial y no como contrato objetivo;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] 015 recibe el contrato semántico sin absorberse;
+- [ ] no se crean ni modifican TREQ;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 81. Límites
+
+Esta tarea no:
+
+- implementa actor sessions;
+- crea o modifica `shared_operational_device_actor_sessions`;
+- modifica `resolveOperationalSession`;
+- modifica `guard.ts`;
+- modifica `shared-device-signature.ts`;
+- modifica `sign_shared_device_action`;
+- modifica `attach_shared_device_action_signature_target`;
+- crea PIN ni cambia política de PIN;
+- fija hashing, longitud, rate limit o lockout;
+- crea MFA, passkeys o biometría;
+- modifica PermissionKeys;
+- modifica grants;
+- cambia roles base u operativos;
+- cambia turno o check-in;
+- cambia sede o área del device;
+- revoca dispositivos;
+- cambia lifecycle físico;
+- crea columnas de actor;
+- crea tablas de auditoría;
+- reescribe autoría histórica;
+- habilita loyalty;
+- procesa ventas, pagos, caja o inventario;
+- implementa UX táctil final;
+- modifica Supabase, RLS, RPC, migraciones o datos;
+- modifica packages compartidos;
+- modifica Registro 04A;
+- crea instancia física;
+- desarrolla `PULSO-UX-015`.
+
+---
+
+#### 82. Decisión final de experiencia
+
+La experiencia objetivo queda resumida así:
+
+```text
+DEVICE TECNICO AUTENTICADO
+→ ¿DEVICE ELEGIBLE?
+→ SI
+→ ¿ACTOR HUMANO VIGENTE?
+→ NO: IDENTIFICAR / RESOLVER CONTEXTO
+→ SI: MOSTRAR ACTOR REAL
+→ REVALIDAR AUTORIDAD DE LA ACCION
+→ CONFIRMAR EFECTO CUANDO CORRESPONDA
+→ EJECUTAR
+→ RECEIPT ATRIBUIDO AL ACTOR REAL
+```
+
+Y el cambio:
+
+```text
+ACTOR A
+→ CAMBIAR TRABAJADOR
+→ BLOQUEAR COMMITS
+→ RECONCILIAR PENDIENTES
+→ CERRAR A
+→ LIMPIAR ESTADO SENSIBLE
+→ NO_ACTOR
+→ IDENTIFICAR B
+→ RESOLVER B
+→ ACTOR B
+```
+
+---
+
+#### 83. Handoff inmediato a PULSO-UX-015
+
+`PULSO-UX-015 — Diseñar experiencia táctil para POS` recibe:
+
+```text
+ACTOR REAL DEBE SER PERCEPTIBLE EN TERMINAL COMPARTIDA
+CAMBIAR TRABAJADOR ES UNA ACCION EXPLICITA Y SEGURA
+NO_ACTOR DEBE BLOQUEAR COMMITS SIN CREAR FRICCION INNECESARIA
+PIN / FIRMA SON SECRETOS EFIMEROS
+A->B EXIGE LIMPIEZA VISUAL Y DE ESTADO
+DOBLE TAP NO PUEDE EJECUTAR DURANTE SWITCHING_ACTOR
+TECLADO / TARGET / DENSIDAD NO PUEDEN OCULTAR QUIEN ACTUA
+```
+
+015 define la composición táctil sin alterar identidad, autorización ni lifecycle.
+
+---
+
+#### 84. Handoff a PULSO-UX-016 a PULSO-UX-018
+
+Las integraciones posteriores reciben como invariant:
+
+```text
+TODO EFECTO HUMANO QUE REQUIERA ATRIBUCION
+→ ACTOR EFECTIVO RESUELTO ANTES DEL EFECTO
+→ ACTOR Y PRINCIPAL TECNICO SEPARADOS
+→ RESULTADO CORRELACIONABLE
+```
+
+No reciben PIN, secretos ni autoridad por transporte.
+
+---
+
+#### 85. Handoff a PULSO-UX-019 a PULSO-UX-021
+
+- `PULSO-UX-019` valida E2E cambio de actor, limpieza, resiliencia y atribución;
+- `PULSO-UX-020` audita el prototipo y clasifica helpers actuales;
+- `PULSO-UX-021` materializa arquitectura objetivo coherente con shared device, actor sessions, PermissionKeys exactas y consumidores endurecidos.
+
+Esta tarea no anticipa sus cambios físicos.
+
+---
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-014 — Identificar actor real en terminal compartida`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-015 — Diseñar experiencia táctil para POS`
 ### [ ] PULSO-UX-015 — Diseñar experiencia táctil para POS
 ### [ ] PULSO-UX-016 — Conectar venta con inventario
 ### [ ] PULSO-UX-017 — Conectar venta con NUMERA
