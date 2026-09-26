@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1354** |
+| Aprobadas | **1355** |
 | En propuesta | **0** |
-| No iniciadas | **242** |
+| No iniciadas | **241** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.84% (1354/1596)** |
+| Porcentaje de completamiento | **84.90% (1355/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **242** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1255** |
+| ⏸ NO_EVALUADA | **241** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1256** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-001` — Inventariar vistas POS | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-002` — Inventariar órdenes | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-001` — Inventariar vistas POS | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-002` — Inventariar órdenes | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-003` — Inventariar salón | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1115,7 +1115,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-014` | Conectar recepción con entrada de inventario | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-015` | Conectar compra con evento financiero | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-016` | Validar el prototipo con compras y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-001` | Inventariar vistas POS | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-001` | Inventariar vistas POS | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-002` | Inventariar órdenes | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-003` | Inventariar salón | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-004` | Inventariar escáner | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
