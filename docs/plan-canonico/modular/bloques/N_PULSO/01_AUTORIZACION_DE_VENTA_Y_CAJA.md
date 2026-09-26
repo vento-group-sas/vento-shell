@@ -12685,7 +12685,1129 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-011 — Limitar operación a sede del turno`
-### [ ] PULSO-AUTH-011 — Limitar operación a sede del turno
+### ✅ PULSO-AUTH-011 — Limitar operación a sede del turno
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-010 — Proteger redenciones
+**Tarea siguiente:** PULSO-AUTH-012 — Integrar dispositivos POS compartidos
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición vinculante del territorio operativo de PULSO para que toda capacidad de carril operativo derive la sede efectiva desde el turno publicado y vigente, exija check-in cuando el prerrequisito sea `T+C`, resuelva en servidor la sede real del recurso o efecto, trate cualquier `site_id` solicitado como intención no confiable y produzca la misma decisión territorial en UI, Server Actions, RPC, RLS y procesos diferidos
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `PULSO-AUTH-011::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Fijar la frontera territorial obligatoria de PULSO para impedir que una sede seleccionada, primaria, asignada, enviada por URL/formulario, perteneciente al dispositivo o aceptada por un helper legado se convierta en autoridad operacional cuando no coincide con la sede del turno vigente del actor y con la sede real del recurso.
+
+La regla raíz queda:
+
+```text
+SEDE OPERATIVA EFECTIVA
+=
+employee_shifts.site_id DEL TURNO VIGENTE
+```
+
+Y para una acción operativa territorial:
+
+```text
+ACTOR EFECTIVO
++
+TURNO PUBLICADO Y VIGENTE
++
+CHECK-IN ACTIVO CUANDO EL PRERREQUISITO ES T+C
++
+ROL OPERATIVO EFECTIVO
++
+PERMISO EXACTO
++
+SEDE DEL TURNO
++
+SEDE REAL DEL RECURSO / EFECTO
++
+RESTRICCIONES DE DISPOSITIVO CUANDO APLIQUEN
++
+CONTEXTO FRESCO
+=
+OPERACION TERRITORIALMENTE AUTORIZABLE
+```
+
+La coincidencia de un `site_id` de cliente con una sede asignada no satisface esta ecuación por sí sola.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-010
+
+`PULSO-AUTH-010` entrega como invariantes acumuladas:
+
+- la redención requiere sede efectiva y recurso/ticket compatible;
+- un `site_id`, `orderId`, QR o payload presentado por cliente no concede autoridad;
+- la PermissionKey exacta y el territorio deben revalidarse antes del efecto;
+- una firma de actor o dispositivo no amplía territorio;
+- la materialización física de actor, dispositivo y permisos atómicos permanece separada;
+- las decisiones stale deben revalidarse antes de mutar.
+
+Esta tarea generaliza esa frontera territorial a toda operación PULSO sin reabrir el contrato de redención.
+
+---
+
+#### 3. Handoffs de PULSO-AUTH-006..009
+
+Las tareas anteriores fijaron además:
+
+- `cajero_satelite` opera con capacidades internas `T+C` salvo la entrada `pulso.access`, que usa `T`;
+- `gerencia_operativa` no hereda autoridad de cajero y sus capacidades siguen su modalidad propia;
+- cancelación, void, refund, cierre y reapertura deben validar recurso, contexto y territorio;
+- acumulación de puntos exige sede, actor y hecho comercial correlacionados;
+- `pulso.pos.main` es autoridad broad transitoria y no diseño final;
+- `pulso.access` solo permite entrada a PULSO y no concede recursos internos.
+
+`PULSO-AUTH-011` no reasigna permisos. Define dónde pueden operar cuando su modalidad es operacional.
+
+---
+
+#### 4. Contratos territoriales consumidos
+
+Se consumen sin reinterpretación las decisiones canónicas de autorización que separan:
+
+```text
+SEDE ASIGNADA
+SEDE PRIMARIA
+SEDE SELECCIONADA
+SEDE ADMINISTRATIVA ACTIVA
+SEDE OPERATIVA ACTIVA
+SEDE DEL RECURSO
+```
+
+Sus equivalencias quedan prohibidas.
+
+En particular:
+
+```text
+SEDE OPERATIVA ACTIVA
+→ turno vigente
+
+SEDE DEL RECURSO
+→ territorio real a autorizar
+
+SEDE SELECCIONADA
+→ preferencia de interfaz
+```
+
+---
+
+#### 5. Naturaleza y topología
+
+La topología vigente de `PULSO-AUTH-011` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = PULSO-AUTH-011::<implementation_unit_id>
+```
+
+El marcador global define el contrato reutilizable.
+
+No crea por sí mismo una instancia física, no modifica consumidores y no altera Supabase.
+
+---
+
+#### 6. Gate físico posterior
+
+Una materialización futura solo es admisible cuando exista:
+
+```text
+implementation_unit_id válido
++
+package_id propietario aplicable
++
+E5-GATE-008::<package_id> = PASS
++
+autorización física explícita
+```
+
+La existencia de código AS-IS, un package compilado o un helper parcialmente compatible no autoriza materialización anticipada.
+
+---
+
+#### 7. Distinción entre carril administrativo y operativo
+
+La regla de sede del turno aplica al **carril operativo**.
+
+No debe deformarse como:
+
+```text
+TODO PERMISO PULSO
+→ EXIGE TURNO
+```
+
+Cuando una capacidad esté canónicamente clasificada como administrativa y con prerrequisito `N`, utilizará el modelo territorial administrativo aprobado y no tomará prestada la sede de un turno.
+
+Por tanto:
+
+```text
+CAPACIDAD OPERATIVA
+→ sede del turno
+
+CAPACIDAD ADMINISTRATIVA GENUINA
+→ alcance administrativo canónico
+```
+
+Una capacidad broad legacy no puede autodeclararse administrativa para evitar el turno.
+
+---
+
+#### 8. Sede asignada no es sede operativa
+
+`public.employee_sites` demuestra vínculo laboral y elegibilidad territorial administrativa.
+
+No demuestra que el trabajador esté operando ahora en esa sede.
+
+Se mantiene:
+
+```text
+employee_sites activa
+!=
+active operational site
+```
+
+Un trabajador con tres sedes asignadas y un turno vigente en una sola sede conserva como territorio operacional ordinario únicamente la sede del turno.
+
+---
+
+#### 9. Sede primaria no autoriza operación
+
+`employee_sites.is_primary = true` sirve como referencia laboral o fallback visual.
+
+No puede convertirse en fallback de autorización operacional cuando falta turno o cuando el turno pertenece a otra sede.
+
+```text
+primary_site
+!=
+operational_site
+```
+
+---
+
+#### 10. `employees.site_id` permanece legado
+
+El campo legado `employees.site_id` no puede usarse para completar una decisión PULSO cuando el contexto operativo real no está resuelto.
+
+Queda prohibido:
+
+```text
+SIN TURNO RESUELTO
+→ usar employees.site_id
+→ permitir operación
+```
+
+La ausencia de contexto operativo produce denegación del carril operativo, no fallback a la sede histórica.
+
+---
+
+#### 11. Sede seleccionada no autoriza operación
+
+La sede seleccionada en Shell o preferencias de usuario es navegación.
+
+Se conserva:
+
+```text
+selected_site_id
+!=
+authorized_operational_site_id
+```
+
+Cambiar el selector no cambia el turno, no crea check-in y no amplía permisos.
+
+---
+
+#### 12. `site_id` solicitado es intención
+
+Todo `site_id` recibido mediante:
+
+- query string;
+- URL;
+- formulario;
+- Server Action;
+- API;
+- RPC;
+- componente cliente;
+- metadata;
+- estado local;
+
+se trata como intención o localizador.
+
+No se trata como autoridad.
+
+Si el valor solicitado no coincide con el territorio que corresponde al contrato, la operación no se ejecuta bajo ese valor.
+
+---
+
+#### 13. Sede operativa del turno
+
+Para un actor empleado ordinario, la sede operativa efectiva procede del único turno elegible y vigente:
+
+```text
+employee_shifts.site_id
+```
+
+El turno debe ser, como mínimo:
+
+- del actor efectivo;
+- perteneciente a una revisión publicada válida;
+- laboral;
+- no cancelado ni retirado;
+- temporalmente vigente;
+- con sede activa y compatible;
+- con rol operativo válido;
+- no ambiguo frente a otro turno simultáneamente elegible.
+
+Sin turno inequívoco no existe sede operacional autorizable.
+
+---
+
+#### 14. Turno publicado no basta para `T+C`
+
+Un turno publicado y vigente habilita el prerrequisito `T`, pero no satisface por sí solo `T+C`.
+
+Para acciones internas operativas PULSO con `T+C` se requiere además check-in activo y confirmado.
+
+```text
+T
+=
+turno vigente
+
+T+C
+=
+turno vigente
++
+check-in activo
+```
+
+---
+
+#### 15. Check-in activa; no redefine la sede
+
+El check-in confirma y activa el contexto del turno.
+
+No sustituye `employee_shifts.site_id` por el punto físico usado para marcar.
+
+Se conserva:
+
+```text
+operational_site_id
+=
+shift.site_id
+
+geofence_site_id / checkin_site_id
+=
+punto físico de marcación
+```
+
+Un patio, geocerca, kiosco o punto técnico de check-in no se convierte en sede empresarial de la operación.
+
+---
+
+#### 16. Check-in sin turno no crea territorio
+
+Un evento histórico o incidental con:
+
+```text
+shift_id = null
+```
+
+puede conservar valor de asistencia o conciliación, pero no activa PULSO operacional.
+
+De igual manera, una intención offline aún no confirmada no crea sede efectiva.
+
+---
+
+#### 17. Ambigüedad de turno falla cerrado
+
+Si existen varios turnos simultáneamente elegibles y no puede resolverse exactamente uno:
+
+```text
+AMBIGUOUS_OPERATIONAL_SHIFT
+→ DENY
+```
+
+No se selecciona:
+
+- el primero;
+- el más reciente;
+- la sede primaria;
+- la sede seleccionada;
+- el turno del dispositivo;
+- la sede enviada por cliente.
+
+---
+
+#### 18. Rol operativo pertenece al mismo turno
+
+El `operational_role` efectivo debe proceder del mismo turno que determina la sede.
+
+Queda prohibida una composición híbrida como:
+
+```text
+site_id de turno A
++
+operational_role de turno B
+```
+
+La sede, área y rol operativo forman un contexto laboral correlacionado y versionado.
+
+---
+
+#### 19. Recurso define el territorio de la acción
+
+La sede del actor limita dónde puede operar, pero la sede real del recurso determina dónde está el objeto o efecto que se intenta leer o mutar.
+
+La autorización requiere compatibilidad entre ambos conceptos.
+
+```text
+actor shift site
+∩
+resource site
+∩
+permission scope
+=
+territorial eligibility
+```
+
+La interfaz no puede fabricar la sede del recurso.
+
+---
+
+#### 20. Recurso existente
+
+Para un recurso existente, el servidor debe resolver la sede desde la fila o relación canónica antes del efecto.
+
+El patrón objetivo es:
+
+```text
+resource_id solicitado
+→ cargar recurso
+→ resolver resource.site_id o territory resolver
+→ comparar contra contexto efectivo
+→ evaluar permiso exacto
+→ efecto
+```
+
+No:
+
+```text
+resource_id + site_id solicitados
+→ asumir que pertenecen juntos
+```
+
+---
+
+#### 21. Recurso nuevo
+
+Cuando la acción crea un recurso nuevo y el contrato exige sede operacional:
+
+1. el cliente puede expresar la sede deseada;
+2. el servidor resuelve la sede operativa efectiva;
+3. la sede propuesta debe ser compatible con esa sede y con el contrato del recurso;
+4. la persistencia utiliza la sede validada;
+5. una sede propuesta distinta no se acepta por pertenecer a `employee_sites`.
+
+El payload no decide el territorio final.
+
+---
+
+#### 22. Recursos sin sede explícita
+
+`site_id = null` nunca significa automáticamente:
+
+```text
+ALL_SITES
+```
+
+Un recurso solo puede ser genuinamente no territorial cuando su contrato canónico lo declara de forma explícita.
+
+Si la capacidad exige sede y esta no puede resolverse:
+
+```text
+RESOURCE_SITE_UNRESOLVED
+→ DENY
+```
+
+---
+
+#### 23. Operaciones single-site
+
+Una operación PULSO ordinaria `SINGLE_SITE` es territorialmente autorizable únicamente cuando la sede del recurso coincide con la sede operacional efectiva o satisface una regla canónica más restrictiva.
+
+Para el carril operativo ordinario:
+
+```text
+resource.site_id = active_shift.site_id
+```
+
+es la regla esperada de menor privilegio.
+
+---
+
+#### 24. Operaciones multisede
+
+Cuando una capacidad realmente afecte más de una sede, la tarea consume el contrato de `AUTH-SRV-012`.
+
+Todos los lados requeridos deben resolverse y autorizarse antes del primer efecto.
+
+Una sede del turno válida no se presta como autoridad sobre otro lado.
+
+```text
+SITE A ALLOW
++
+SITE B DENY
+→
+DENY ALL
+```
+
+---
+
+#### 25. Transferencia territorial
+
+Si un recurso existente cambia de sede:
+
+```text
+current_site = A
+proposed_site = B
+```
+
+el servidor debe conservar ambas identidades durante la decisión.
+
+No puede sobrescribir primero `site_id = B` y luego comprobar solo el destino.
+
+Una transferencia requiere el contrato propietario de ambos lados y no se obtiene por un permiso PULSO single-site ordinario.
+
+---
+
+#### 26. Lecturas operativas también están limitadas
+
+La frontera territorial no aplica únicamente a mutaciones.
+
+Listados, tableros, Realtime, scanner, salón, caja y demás vistas operativas deben consultar datos exclusivamente dentro del territorio operacional autorizado para la capacidad.
+
+Una fila visible de otra sede puede revelar información sensible aunque no exista botón de escritura.
+
+---
+
+#### 27. Realtime debe seguir el contexto vigente
+
+Toda suscripción Realtime operacional debe quedar limitada a la sede efectiva y a las demás dimensiones del contrato.
+
+Si cambia o expira el turno/check-in:
+
+- la suscripción anterior deja de ser autoridad;
+- se cancela o invalida su consumo;
+- el contexto se vuelve a resolver antes de continuar;
+- no se conservan filas de otra sede como base de una nueva acción.
+
+---
+
+#### 28. Scanner PULSO
+
+Identificación, acumulación y redención comparten superficie, pero no comparten autoridad broad final.
+
+Territorialmente:
+
+- la identificación de cliente puede resolver una identidad global mínima para la finalidad operativa;
+- acumulación usa la sede efectiva del hecho comercial y del turno;
+- redención usa la sede efectiva del turno y la elegibilidad territorial del ticket/recompensa;
+- un `siteId` del componente no puede elevar el actor a otra sede.
+
+Las PermissionKeys exactas permanecen las definidas por `PULSO-AUTH-006`, `PULSO-AUTH-009` y `PULSO-AUTH-010`.
+
+---
+
+#### 29. Pedidos
+
+Para pedidos y acciones asociadas:
+
+```text
+orders.site_id
+```
+
+es una evidencia territorial primaria del recurso.
+
+Una Server Action que reciba `order_id` y `site_id` debe releer el pedido y comprobar su sitio real contra el contexto efectivo.
+
+Que la query use simultáneamente `id` y `site_id` evita una clase de mismatch, pero no demuestra que el actor tenga un turno activo en esa sede.
+
+---
+
+#### 30. Salón
+
+Zonas, mesas, sesiones y llamados conservan sus `site_id` o relaciones territoriales propietarias.
+
+La página filtrada por `site_id` no sustituye la autorización.
+
+Un trabajador con sede asignada adicional no puede cambiar la URL para consultar u operar el salón de esa sede fuera de su contexto laboral activo.
+
+---
+
+#### 31. Caja y pagos
+
+Sesiones de caja, movimientos y pagos deben vincularse a la sede operacional y al recurso real correspondiente.
+
+La apertura, cobro, cierre, refund o reapertura no pueden autorizarse porque:
+
+- el terminal está ubicado allí;
+- el actor tiene esa sede asignada;
+- el cliente envió esa sede;
+- la sesión técnica está autenticada;
+- `pulso.pos.main` retorna true bajo un helper de cobertura administrativa.
+
+Cada capacidad conserva además sus reglas de `PULSO-AUTH-006` y `PULSO-AUTH-008`.
+
+---
+
+#### 32. Loyalty y PASS
+
+PULSO no toma ownership de PASS.
+
+Para acumulación o redención, la sede operativa PULSO es una condición del comando, mientras PASS conserva la autoridad sobre ledger, saldo, ticket, recompensa y reglas.
+
+La misma operación debe impedir:
+
+```text
+turno en sede A
++
+site_id cliente = sede B
++
+PASS acepta B
+```
+
+si el actor no tiene contexto operativo válido en B.
+
+---
+
+#### 33. Entrega y domicilio
+
+Pedidos, sesiones de entrega y overrides conservan la sede propietaria del pedido.
+
+Un flujo de delivery no crea autoridad cross-site por:
+
+- enlace del domiciliario;
+- partner de despacho;
+- referencia externa;
+- PIN del cliente;
+- override visible;
+- permiso evaluado con un `p_site_id` no correlacionado con el turno.
+
+Las excepciones mantienen su PermissionKey exacta y su territorio real.
+
+---
+
+#### 34. Importaciones y configuración
+
+Las superficies de importación observadas usan actualmente una sede activa para lotes, mappings y publicación.
+
+Sin embargo, su clasificación administrativa definitiva pertenece a `PULSO-AUTH-014`.
+
+Hasta que esa separación esté materializada:
+
+```text
+pulso.pos.main broad
++
+site_id elegido
+!=
+autoridad administrativa cross-site
+```
+
+Una futura capacidad administrativa legítima podrá usar el modelo administrativo `N`, sin heredar por ello autoridad operacional sobre pedidos, caja o loyalty.
+
+---
+
+#### 35. Dispositivo compartido como límite
+
+El sitio de un dispositivo compartido puede **reducir** el territorio disponible.
+
+Nunca puede ampliarlo.
+
+La regla futura queda:
+
+```text
+EFFECTIVE_OPERATIONAL_SITE
+⊆
+SHIFT_SITE
+∩
+DEVICE_SITE_LIMIT WHEN APPLICABLE
+```
+
+Si dispositivo y turno del actor son incompatibles, la acción falla cerrada.
+
+La integración completa de dispositivos pertenece a `PULSO-AUTH-012`.
+
+---
+
+#### 36. Actor humano en dispositivo compartido
+
+La sesión técnica de un POS no define por sí sola el turno humano.
+
+Cuando exista actor firmado:
+
+- el turno se resuelve para ese actor;
+- la sede del actor se compara con la del dispositivo;
+- la firma no copia los privilegios del principal técnico;
+- el cambio de actor obliga a recalcular contexto.
+
+La persistencia completa del actor pertenece a `PULSO-AUTH-013`.
+
+---
+
+#### 37. Área permanece una dimensión separada
+
+Esta tarea no absorbe la política completa de áreas.
+
+Se conserva:
+
+```text
+same site
+!=
+same area authority
+```
+
+Cuando una PermissionKey o recurso exige área, el área efectiva debe resolverse conforme al mismo turno y contrato aplicable.
+
+`area_id = null` no se interpreta como todas las áreas cuando la dimensión es obligatoria.
+
+---
+
+#### 38. Permiso global no crea sede operacional
+
+Un permiso `GLOBAL` exacto puede tener sentido en su carril administrativo.
+
+Pero una capacidad operacional que exige turno/check-in no se vuelve cross-site porque el rol base sea propietario, gerente general o tenga un scope global heredado.
+
+Se mantiene:
+
+```text
+GLOBAL PERMISSION
+!=
+GLOBAL OPERATIONAL CONTEXT
+```
+
+El carril operacional conserva su sede efectiva.
+
+---
+
+#### 39. Estado AS-IS de `resolveOperationalSession`
+
+El consumidor PULSO observado resuelve actualmente la sesión de empleado así:
+
+1. acepta `preferredSiteId` cuando se suministra;
+2. si no existe, consulta `employee_sites` activas priorizando primaria;
+3. si tampoco resuelve, cae a `employees.site_id`;
+4. no consulta `employee_shifts` para derivar la sede;
+5. no consulta check-in activo para activar `T+C`;
+6. acepta `preferredAreaId` como área de sesión.
+
+Por tanto:
+
+```text
+CURRENT operationalSession.siteId
+!=
+CANONICAL active shift site guarantee
+```
+
+La futura materialización debe eliminar esta divergencia para el carril operacional.
+
+---
+
+#### 40. Estado AS-IS de `requireAppAccess`
+
+`requireAppAccess` transmite actualmente `siteId` y `areaId` solicitados a `resolveOperationalSession` y posteriormente evalúa `has_permission` con los valores resultantes.
+
+Esto constituye defensa parcial de permiso, pero no prueba:
+
+- turno vigente;
+- check-in activo;
+- `operational_role` del turno;
+- correlación entre sitio solicitado y sitio laboral efectivo;
+- sitio real del recurso en todos los flujos.
+
+La futura unidad debe convertir el contexto operacional en dato derivado, no preferido por cliente.
+
+---
+
+#### 41. Estado AS-IS de `has_permission`
+
+El helper remoto observado:
+
+- resuelve el actor por `auth.uid()`;
+- utiliza el rol base;
+- acepta `p_site_id` / `p_area_id`;
+- evalúa `employee_permissions` y `role_permissions`;
+- usa `permission_scope_matches`;
+- no consulta turno;
+- no consulta check-in;
+- no consume `operational_role`;
+- no aplica por sí mismo `requires_active_work_context` del catálogo.
+
+Por tanto:
+
+```text
+has_permission(..., requested_site)
+=
+EVIDENCIA DE SCOPE LEGACY
+
+has_permission(..., requested_site)
+!=
+CONTRATO COMPLETO T / T+C
+```
+
+---
+
+#### 42. Estado AS-IS de `current_employee_site_id`
+
+La función remota observada retorna la sede seleccionada del empleado.
+
+Eso es incompatible como fuente final de sede operacional.
+
+```text
+current_employee_selected_site_id()
+!=
+active_shift.site_id
+```
+
+Una ausencia de `p_site_id` no puede resolverse operacionalmente tomando selección de interfaz como autoridad.
+
+---
+
+#### 43. Estado AS-IS de `can_access_site`
+
+`can_access_site` acepta actualmente, entre otros:
+
+- propietario;
+- gerente global;
+- relación activa en `employee_sites`;
+- `employees.site_id` legado.
+
+Esto representa cobertura administrativa/legacy útil para ciertos contratos, pero no satisface la restricción PULSO operacional.
+
+```text
+can_access_site(B)
++
+active_shift.site_id = A
+!=
+ALLOW PULSO OPERATION IN B
+```
+
+---
+
+#### 44. Estado AS-IS de `permission_scope_matches`
+
+El scope `site` observado depende de `can_access_site` y del contexto recibido.
+
+Por ello, una coincidencia positiva de scope puede demostrar que la sede pertenece a cobertura autorizable general, pero no que sea la sede del turno.
+
+La materialización de `011` debe insertar la frontera operacional antes del efecto y mantenerla compatible con RLS/RPC.
+
+---
+
+#### 45. Estado AS-IS de rutas PULSO
+
+Las rutas `/`, `/scanner` y `/salon` observadas aceptan `searchParams.site_id`, lo entregan al guard y conservan ese valor como sitio de la superficie.
+
+`/orders` y sus Server Actions también transportan `site_id` desde URL/formulario y lo utilizan para queries y RPC.
+
+Estas piezas demuestran propagación territorial, no autoridad territorial completa.
+
+La regla objetivo es:
+
+```text
+requested site
+→ validate against canonical operational context
+→ resolved site
+→ query/effect
+```
+
+---
+
+#### 46. Estado AS-IS de RPC operativas
+
+RPC observadas como `update_order_operational_state`, `award_loyalty_points_external`, `create_order_delivery_courier_link` y `override_order_delivery_confirmation` reciben `p_site_id` y lo utilizan al evaluar permisos o resolver recursos.
+
+Varias además correlacionan el recurso con ese sitio, lo cual es defensa positiva.
+
+Sin embargo, mientras `has_permission` no demuestre el turno/check-in operacional, sigue existiendo esta brecha:
+
+```text
+resource really belongs to site B
++
+actor has legacy/assigned access to site B
++
+actor is actively working in site A
+→ current helper can be insufficiently restrictive
+```
+
+---
+
+#### 47. RLS debe producir la misma decisión
+
+Una Server Action correctamente restringida no compensa una RLS más amplia.
+
+Las policies observadas de `orders` utilizan `can_access_site(site_id)` para empleados, por lo que la capa de datos no demuestra todavía por sí sola la sede de turno.
+
+El estado objetivo exige compatibilidad:
+
+```text
+APP / SERVER ACTION
+=
+RPC
+=
+RLS
+```
+
+para la misma acción, actor, turno, recurso y territorio.
+
+Ninguna capa puede conceder una operación que otra niega por sede operacional.
+
+---
+
+#### 48. Invalidación y frescura
+
+Una decisión territorial deja de ser utilizable si antes del efecto cambia cualquiera de:
+
+- turno;
+- revisión publicada;
+- check-in;
+- sede del turno;
+- área del turno cuando aplique;
+- rol operativo;
+- empleado activo;
+- asignación relevante;
+- dispositivo;
+- actor humano;
+- sede del recurso;
+- versión/estado del recurso;
+- PermissionKey o scope.
+
+La acción debe reautorizarse o fallar.
+
+Checkout o expiración revocan `T+C` sin esperar que la UI cambie de pantalla.
+
+---
+
+#### 49. Operaciones diferidas, offline y retries
+
+Una intención creada mientras el actor tenía contexto válido no conserva indefinidamente esa autoridad.
+
+Al ejecutar o sincronizar se resuelve de nuevo:
+
+```text
+actor actual
+turno actual
+check-in actual
+rol actual
+sitio actual
+recurso actual
+permiso actual
+```
+
+La identidad idempotente evita duplicar el efecto, pero no convierte una autorización histórica en permiso vigente.
+
+---
+
+#### 50. Auditoría territorial mínima
+
+Toda operación protegida debe permitir reconstruir, según aplique:
+
+- principal técnico;
+- actor efectivo;
+- `shift_id`;
+- evidencia de check-in cuando sea requerida;
+- `operational_role`;
+- `operational_site_id`;
+- `operational_area_id` cuando aplique;
+- `requested_site_id` cuando existió;
+- `resource_id`;
+- `resource_site_id` o lados territoriales resueltos;
+- PermissionKey evaluada;
+- restricciones de dispositivo;
+- versión/estado relevante;
+- resultado territorial;
+- razón de denegación o conflicto;
+- timestamp autoritativo;
+- correlación/idempotency key cuando aplique.
+
+No se necesita registrar secretos para demostrar territorio.
+
+---
+
+#### 51. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `resolveOperationalSession` prioriza `preferredSiteId` y usa `employee_sites` / `employees.site_id` como fallback del empleado. | Puede convertir navegación o cobertura administrativa en contexto operacional. | `PULSO-AUTH-011::<implementation_unit_id>` | la sesión operacional deriva el sitio desde turno válido y no desde preferencia de cliente |
+| `has_permission` no consume turno, check-in, `operational_role` ni `requires_active_work_context`. | Un scope positivo no demuestra `T` o `T+C`. | fundación AUTH + `PULSO-AUTH-011::<implementation_unit_id>` | la decisión operativa combina permiso exacto con contexto laboral canónico y fail-closed |
+| `current_employee_site_id()` retorna sede seleccionada. | Fallback territorial incompatible con operación de turno. | fundación AUTH + unidad propietaria consumida por `PULSO-AUTH-011` | el carril operativo deja de usar selección como autoridad |
+| `can_access_site` acepta assigned/legacy/global coverage. | Útil para cobertura administrativa, insuficiente para operación. | fundación AUTH + `PULSO-AUTH-011` | operación PULSO exige además active shift site y check-in cuando corresponda |
+| Rutas y Server Actions transportan `site_id` desde URL/form. | Manipulación de cliente puede elegir otra sede si el guard no la confronta con turno. | `PULSO-AUTH-011::<implementation_unit_id>` | request site solo localiza/refina y nunca amplía el sitio resuelto |
+| RPC PULSO correlacionan recursos con `p_site_id` pero usan `has_permission` legacy. | Defensa parcial sin contexto operacional completo. | unidades PULSO/DB propietarias + `PULSO-AUTH-011` | RPC validan sitio de turno + recurso + permiso exacto antes de efecto |
+| RLS de pedidos usa `can_access_site`. | Puede permitir lectura/escritura territorial más amplia que el turno. | unidad DB propietaria + `PULSO-AUTH-011` / `PULSO-AUTH-016` | RLS produce decisión compatible con contexto operativo canónico |
+| Existen turnos históricos sin `operational_role` o área materializada. | No autoriza fallback permisivo; requiere migración/reconciliación gobernada. | paquete/DB propietario y `PULSO-AUTH-015/016` | contexto requerido es resoluble o la operación falla cerrado |
+| Sitio de dispositivo puede ser distinto al turno del humano. | Riesgo de tomar el dispositivo como autoridad del actor. | `PULSO-AUTH-012` y `PULSO-AUTH-013` | dispositivo restringe y actor aporta turno efectivo sin herencia de privilegios |
+| Importaciones siguen detrás de broad authority. | Puede confundir operación con administración por sede. | `PULSO-AUTH-014/015` | permisos administrativos propios y modelo territorial separado |
+
+No queda un hallazgo territorial detectado sin propietario y condición de salida.
+
+---
+
+#### 52. Frontera con tareas posteriores
+
+| Tarea | Frontera preservada |
+| --- | --- |
+| `PULSO-AUTH-012` | integra dispositivos POS compartidos; el sitio del dispositivo funciona como límite adicional y nunca amplía la sede del actor |
+| `PULSO-AUTH-013` | registra el trabajador humano efectivo y enlaza su turno/contexto con cada mutación sensible |
+| `PULSO-AUTH-014` | separa configuración/importación administrativa del carril operacional de turno |
+| `PULSO-AUTH-015` | materializa PermissionKeys atómicas, retira `pulso.pos.main` como autoridad final y migra helpers/consumidores al contexto correcto |
+| `PULSO-AUTH-016` | certifica allow/deny territorial, URL manipulada, assigned-site distinta, stale context, resource mismatch, RLS/RPC y shared device |
+
+`PULSO-AUTH-011` no absorbe esas responsabilidades.
+
+---
+
+#### 53. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: turno/check-in, resolución de sede/área efectiva, no ampliación por `site_id`, compatibilidad de recurso, invalidación de contexto, no bypass por URL/RPC/RLS y consistencia entre capas ya poseen cobertura verificable vigente. Esta tarea especializa esa cobertura sobre el contrato PULSO sin introducir una obligación material nueva.
+
+---
+
+#### 54. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-AUTH-004` para decisión equivalente entre evaluadores;
+- `TREQ-AUTH-008` para separación base/operativa y exigencia de turno, check-in, rol, sede y área en capacidades operativas;
+- `TREQ-AUTH-009` para resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC;
+- `TREQ-AUTH-014` para invalidar contexto stale después de checkout, expiración o cambio laboral;
+- `TREQ-AUTH-015` para evidencia correlacionable de contexto y decisión;
+- `TREQ-PULSO-014` para rutas de negocio protegidas y contexto territorial resuelto;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio y exigir resolución contra contexto autorizado;
+- `TREQ-PULSO-016` para revalidar sede, permiso, recurso y estado en cada acción;
+- `TREQ-PULSO-026` para no aceptar `pulso.pos.main` broad como suficiencia contractual;
+- `TREQ-PASS-022` para sede efectiva y PermissionKeys exactas en `/scanner`;
+- `TREQ-PASS-025` para acumulación territorial y atribuible;
+- `TREQ-PASS-027` para redención en sede correcta;
+- `TREQ-PASS-029` para intersección actor/dispositivo/sede en terminal compartida;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-112`, `TREQ-INTEGRATION-113`, `TREQ-INTEGRATION-120` y `TREQ-INTEGRATION-128` para identidad estable, autorización vigente y revalidación al reintentar/sincronizar.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 55. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue insertado en un checkout del usuario ni sometido allí a formateador, quality, delivery, topología y batería global. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, contratos AUTH de sede/turno/check-in/scope, `vento-pulso/main`, guards y resolutor de sesión, rutas y Server Actions PULSO, helpers/RPC/RLS y estado read-only de turnos, roles operativos, permisos y asistencia en Supabase dev. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron cambios de sede, URL adversarial, check-in/out, operación cross-site, shared device, Realtime ni pruebas E2E reales. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `PULSO-AUTH-011::<implementation_unit_id>` ni ejecuta cambios POST_E5. |
+
+---
+
+#### 56. Criterios de aceptación
+
+- [ ] La sede operacional de empleado se deriva del turno vigente y no de `selected_site_id`, primaria, `employee_sites` o `employees.site_id`.
+- [ ] `site_id` solicitado se trata como intención no confiable.
+- [ ] `T` exige turno vigente y no habilita mutaciones operativas internas.
+- [ ] `T+C` exige turno vigente más check-in activo.
+- [ ] Check-in activa el turno, pero el punto de geocerca no reemplaza la sede del turno.
+- [ ] `shift_id = null` no crea contexto PULSO operativo.
+- [ ] Ambigüedad entre turnos elegibles deniega.
+- [ ] Rol operativo, sede y área proceden del mismo contexto laboral.
+- [ ] Un recurso existente relee su sede real antes del efecto.
+- [ ] Una creación valida la sede propuesta contra la sede efectiva antes de persistir.
+- [ ] `null` territorial no significa wildcard.
+- [ ] Una operación single-site ordinaria no actúa sobre otra sede asignada.
+- [ ] Operaciones multisede consumen el contrato de `AUTH-SRV-012` y no prestan autoridad entre lados.
+- [ ] Lecturas, listados y Realtime respetan el mismo límite territorial.
+- [ ] Scanner no permite que `siteId` de componente amplíe identificación, acumulación o redención.
+- [ ] Pedidos verifican resource site además del contexto del actor.
+- [ ] Salón no admite navegación cross-site por URL.
+- [ ] Caja/pagos no usan ubicación del terminal o assigned-site como autoridad sustitutiva.
+- [ ] Loyalty conserva ownership PASS y sede operacional PULSO como precondición.
+- [ ] Delivery y override conservan sede del pedido y PermissionKey exacta.
+- [ ] Importaciones permanecen separadas hasta su clasificación administrativa de `014`.
+- [ ] El dispositivo compartido solo reduce territorio; no lo amplía.
+- [ ] Área permanece dimensión separada y `null` no es wildcard cuando es obligatoria.
+- [ ] Scope global no crea contexto operacional global.
+- [ ] `resolveOperationalSession` AS-IS queda clasificado como brecha frente al contrato de turno.
+- [ ] `has_permission` AS-IS no se presenta como implementación completa de `T/T+C`.
+- [ ] `current_employee_site_id()` seleccionado no se usa como autoridad operacional final.
+- [ ] `can_access_site` se conserva como cobertura legacy/administrativa, no como prueba de turno.
+- [ ] Server Actions/RPC/RLS producen una decisión territorial compatible.
+- [ ] Checkout, expiración o cambio de turno invalida la decisión previa.
+- [ ] Offline/diferidos reautorizan contexto al ejecutar.
+- [ ] Todo hallazgo tiene propietario y condición de salida.
+- [ ] La topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 57. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- cambia `resolveOperationalSession`;
+- cambia `requireAppAccess`;
+- cambia `has_permission`;
+- cambia `permission_scope_matches`;
+- cambia `can_access_site`;
+- cambia `current_employee_site_id`;
+- cambia RLS;
+- cambia RPC;
+- cambia Server Actions;
+- modifica `employee_shifts`;
+- modifica `attendance_logs`;
+- corrige turnos históricos;
+- crea sesiones de asistencia nuevas;
+- define completamente el área activa;
+- implementa shared devices;
+- implementa actor humano;
+- reclasifica importaciones como administrativas;
+- crea PermissionKeys nuevas;
+- retira físicamente `pulso.pos.main`;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- modifica el Registro 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5.
+
+---
+
+#### 58. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-010 — Proteger redenciones`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-011 — Limitar operación a sede del turno`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-012 — Integrar dispositivos POS compartidos`
 ### [ ] PULSO-AUTH-012 — Integrar dispositivos POS compartidos
 ### [ ] PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
 ### [ ] PULSO-AUTH-014 — Mantener configuración administrativa separada
