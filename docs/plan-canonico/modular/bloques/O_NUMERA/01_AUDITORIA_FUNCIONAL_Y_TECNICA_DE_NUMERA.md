@@ -5398,7 +5398,635 @@ CAP-12.13
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional`
-### [ ] NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
+### ✅ NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes
+**Tarea siguiente:** NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
+**Tipo de tarea:** auditoría documental AS-IS de datos simulados, valores hardcoded, marcadores de deuda explícita y lógica provisional o incompleta en NUMERA, con clasificación y propietario de salida sin corregir código ni absorber las auditorías de conciliación, duplicidad, cálculos, cierres, seguridad o pruebas posteriores; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, Supabase, datos, migraciones, tablas, vistas, RPC, permisos, rutas, componentes, cálculos, integraciones, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Cerrar un inventario verificable de cuatro clases de deuda o provisionalidad del NUMERA actual:
+
+```text
+DATOS_SIMULADOS_O_DEMOSTRACION
+HARDCODES_FUNCIONALES
+MARCADORES_TODO_FIXME_HACK
+LOGICA_PROVISIONAL_O_INCOMPLETA
+```
+
+La tarea distingue hallazgo real de constante legítima, placeholder visual, fallback de configuración o comportamiento reservado a otra auditoría.
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-004
+
+La tarea anterior clasificó el universo financiero `CAP-12.01..CAP-12.15` con el resultado:
+
+```text
+CANONICAL_FINANCIAL_MODULES = 15
+COMPLETE_MODULES = 0
+PARTIAL_MODULES = 2
+PROTOTYPE_MODULES = 3
+ABSENT_MODULES = 10
+```
+
+Esta tarea no modifica esa clasificación. Solo explica qué datos, literales o mecanismos provisionales existen dentro del estado AS-IS que sustenta esas categorías.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente permanece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+No se crea instancia física, no se corrige código, no se eliminan datos demo y no se modifica Supabase.
+
+---
+
+#### 4. Fuentes verificadas
+
+La auditoría consume:
+
+- `NUMERA-AUD-001` a `NUMERA-AUD-003` publicados;
+- `NUMERA-AUD-004` aprobado por el usuario como base inmediata;
+- archivo propietario `O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`;
+- `CAP-SCOPE-012`;
+- `CODE-AUD-019`;
+- contratos vigentes de autorización, simulación e integración;
+- `04A_13_NUMERA.md` sin modificar;
+- `vento-numera/main` en commit `c4d50282e30e46d0abb3d871f9604cf913ebbabd`;
+- código de páginas, componentes, helpers de autorización, scripts de calidad y navegación;
+- estado remoto de solo lectura de Supabase `vento-os-dev` (`clzdpinthhtknkmefsxx`).
+
+---
+
+#### 5. Taxonomía de hallazgos
+
+| Clase | Definición de esta tarea |
+| --- | --- |
+| `DATA_DEMO` | fila o identidad persistida explícitamente como demo, review o demostración y no como operación ordinaria |
+| `HARDCODE_FUNCIONAL` | valor funcional fijado en código que participa en persistencia, identidad, moneda, fuente o decisión y que no proviene de una configuración o contrato dinámico |
+| `TODO_MARKER` | marcador explícito `TODO`, `FIXME`, `HACK` o equivalente localizado en código ejecutable o scripts de la aplicación |
+| `LOGICA_PROVISIONAL` | mecanismo temporal, simplificado, textual, incompleto o legacy que produce una aproximación y posee un contrato posterior que exige sustitución, endurecimiento o finalización |
+| `NO_HALLAZGO` | constante, copy, placeholder, fallback o dato que no cumple las reglas anteriores con la evidencia disponible |
+
+---
+
+#### 6. Resultado cuantitativo
+
+El corte confirmado queda:
+
+```text
+DATA_DEMO_IDENTITIES = 1
+HARDCODE_FUNCTIONAL_FINDINGS = 3
+TODO_FIXME_HACK_MARKERS = 0
+PROVISIONAL_LOGIC_FINDINGS = 5
+TOTAL_CONFIRMED_FINDINGS = 9
+```
+
+Los conteos agrupan hallazgos funcionales; múltiples ocurrencias del mismo literal o patrón no se cuentan como hallazgos independientes si comparten causa y propietario.
+
+---
+
+#### 7. Matriz maestra de hallazgos
+
+| ID | Clase | Superficie | Evidencia | Riesgo / límite | Propietario de salida |
+| --- | --- | --- | --- | --- | --- |
+| `H-NUMERA-005-001` | `DATA_DEMO` | `public.cost_centers` | fila activa `ADM-APP-REVIEW` / `App Review (Demo)` | una identidad demo existe dentro del maestro compartido y puede contaminar lecturas si un consumidor no la excluye | `CODE-AUD-020`, gobierno de datos y paquete propietario de APP-REVIEW |
+| `H-NUMERA-005-002` | `LOGICA_PROVISIONAL` | `/cost-centers` | `isDemoRow()` excluye por texto que contiene `app review` o `demo` | aislamiento dependiente de nombre/código, no de clasificación canónica | autoridad/simulación compartida y migración propietaria |
+| `H-NUMERA-005-003` | `LOGICA_PROVISIONAL` | AppShell | exclusión adicional de `app review (demo)` por nombre normalizado | misma identidad demo requiere lógica local duplicada para no aparecer | fundación compartida / catálogo canónico de aplicaciones y contexto |
+| `H-NUMERA-005-004` | `HARDCODE_FUNCIONAL` | `createExpense` | `currency: "COP"` | moneda de la escritura manual queda fijada en código | `NUMERA-DOM-*`, `NUMERA-AUD-009` y diseño financiero posterior |
+| `H-NUMERA-005-005` | `HARDCODE_FUNCIONAL` | `createExpense` | `source_app: "numera"` | origen se fija como literal para captura manual y no se deriva de contrato de evento | `NUMERA-AUD-007` + integración propietaria |
+| `H-NUMERA-005-006` | `HARDCODE_FUNCIONAL` | formatters financieros | `Intl.NumberFormat(... currency: "COP")` en panel, centros, gastos, equilibrio y rentabilidad | presentación monetaria supone COP aun cuando el modelo objetivo exige dimensión de moneda | dominio/UX NUMERA posterior |
+| `H-NUMERA-005-007` | `LOGICA_PROVISIONAL` | `upsertBudget` | la action lee `formData.get("notes")`, pero la UI actual no expone un control `name="notes"` | rama de persistencia existente sin entrada alcanzable desde la pantalla observada | `NUMERA-AUD-009` + UX de presupuestos |
+| `H-NUMERA-005-008` | `LOGICA_PROVISIONAL` | rentabilidad / equilibrio / panel | superficies dependen de `expected_revenue`, gasto y agregados fundacionales simplificados | la representación está declarada como inicial y no equivale todavía a ingreso realizado ni costo completo | `NUMERA-AUD-008` |
+| `H-NUMERA-005-009` | `LOGICA_PROVISIONAL` | role override local | cookie `numera_role_override`, allowlist local de roles privilegiados y lista local de roles simulables | el contrato transversal exige separar simulación de autoridad efectiva y retirar role override legacy | tareas SHELL/AUTH/SIM propietarias, sin corrección dentro de esta auditoría |
+
+---
+
+#### 8. Dato demo confirmado
+
+Supabase contiene una fila activa:
+
+```text
+code = ADM-APP-REVIEW
+name = App Review (Demo)
+type = admin
+is_active = true
+monthly_budget = 0
+current_month_spend = 0
+```
+
+La fila se clasifica como `DATA_DEMO` porque su identidad declara explícitamente `Demo` y los contratos canónicos existentes tratan `APP-REVIEW` como dominio aislado de prueba/review.
+
+---
+
+#### 9. Aislamiento actual de APP-REVIEW en centros de costo
+
+`src/app/cost-centers/page.tsx` contiene:
+
+```text
+isDemoRow(row)
+→ concatena nombre + código
+→ lower-case
+→ excluye si contiene "app review" o "demo"
+```
+
+Esta regla se clasifica como `LOGICA_PROVISIONAL` porque depende de contenido textual mutable para decidir aislamiento.
+
+---
+
+#### 10. Aislamiento duplicado en AppShell
+
+`src/components/vento/standard/vento-shell.tsx` excluye por nombre normalizado:
+
+```text
+name !== "app review (demo)"
+```
+
+La presencia de dos filtros nominales distintos demuestra que el aislamiento no está expresado mediante una identidad o atributo canónico único dentro de NUMERA.
+
+---
+
+#### 11. Moneda persistida hardcoded
+
+`createExpense` persiste:
+
+```text
+currency: "COP"
+```
+
+La tarea no concluye que COP sea incorrecto para la operación actual. El hallazgo es que la dimensión de moneda de la escritura está fijada en código y no proviene del registro, entidad legal, configuración financiera o contrato de origen.
+
+---
+
+#### 12. Moneda de presentación hardcoded
+
+Los formatters de `/`, `/cost-centers`, `/expenses`, `/break-even` y `/profitability` usan COP explícito.
+
+Se conserva como un único hallazgo porque comparte causa:
+
+```text
+DISPLAY_CURRENCY_SOURCE = CODE_LITERAL
+```
+
+La decisión sobre multidivisa, moneda base o conversión queda fuera de esta tarea.
+
+---
+
+#### 13. Origen hardcoded de gasto manual
+
+La action actual persiste:
+
+```text
+source_app: "numera"
+```
+
+Esto describe correctamente al productor manual observado, pero continúa siendo un literal funcional. La futura recepción de hechos económicos externos no puede reutilizarlo como sustituto de un contrato de origen, correlación e idempotencia.
+
+---
+
+#### 14. Campo `notes` no alcanzable desde la UI observada
+
+`upsertBudget` lee y persiste potencialmente `notes`, pero el formulario visible inspeccionado no contiene un campo `name="notes"`.
+
+Resultado:
+
+```text
+SERVER_ACTION_SUPPORTS_NOTES = YES
+CURRENT_FORM_EXPOSES_NOTES = NO
+```
+
+Se clasifica como lógica incompleta, no como bug probado de negocio.
+
+---
+
+#### 15. Rentabilidad declarada como lectura inicial
+
+La pantalla `/profitability` se describe a sí misma como:
+
+```text
+Lectura inicial de ingreso esperado, gasto real y variacion por centro de costo.
+```
+
+El valor `expected_revenue` se presenta junto con gasto y presupuesto. La auditoría anterior y `CAP-SCOPE-012` ya establecen que esto no equivale a rentabilidad real completa.
+
+Por tanto se clasifica como `LOGICA_PROVISIONAL` y se transfiere íntegramente a `NUMERA-AUD-008` para auditar fórmula, fuentes y semántica.
+
+---
+
+#### 16. Punto de equilibrio como cálculo provisional
+
+`/break-even` consume `fixed_expenses`, `variable_expenses`, `target_gross_margin_pct` y `break_even_revenue` desde la vista mensual.
+
+Esta tarea solo registra que el cálculo pertenece a la fundación inicial y depende de entradas todavía parciales. No valida ni invalida su fórmula.
+
+Propietario exclusivo de la revisión matemática:
+
+```text
+NUMERA-AUD-008
+```
+
+---
+
+#### 17. Panel principal como proyección provisional
+
+El panel `/` resume:
+
+- gasto operativo;
+- presupuesto;
+- ingreso esperado;
+- punto de equilibrio.
+
+Su condición provisional deriva de que consolida el modelo económico inicial, no de un error visual. La validez de fuente y conciliación de cada reporte pertenece a `NUMERA-AUD-006`; los cálculos pertenecen a `NUMERA-AUD-008`.
+
+---
+
+#### 18. Role override local
+
+El repositorio mantiene:
+
+```text
+ROLE_OVERRIDE_COOKIE = "numera_role_override"
+PRIVILEGED_ROLE_OVERRIDES = { propietario, gerente_general }
+ROLE_OPTIONS = lista local de roles
+```
+
+Y el helper puede evaluar permisos bajo el rol override cuando el rol efectivo pertenece a la allowlist privilegiada.
+
+Se clasifica como `LOGICA_PROVISIONAL` porque el contrato transversal vigente exige reemplazar el role override por simulación separada de la autoridad efectiva.
+
+---
+
+#### 19. El role override no se corrige aquí
+
+Esta auditoría no decide permisos, no cambia cookies, no altera simulación y no implementa una frontera nueva.
+
+El hallazgo se transfiere a las tareas propietarias de:
+
+- fundación compartida;
+- autorización;
+- simulación;
+- migración de consumidores.
+
+NUMERA-AUD-005 solo conserva la evidencia AS-IS.
+
+---
+
+#### 20. Barrido de marcadores TODO / FIXME / HACK
+
+En los archivos de aplicación y scripts inspeccionados no se localizaron marcadores ejecutables:
+
+```text
+TODO = 0
+FIXME = 0
+HACK = 0
+```
+
+Esto no demuestra ausencia histórica en commits anteriores ni en artefactos no versionados. Describe exclusivamente el snapshot inspeccionado.
+
+---
+
+#### 21. Términos que no se elevan automáticamente a hallazgo
+
+No se clasifican por sí solos como deuda:
+
+- `placeholder` de inputs;
+- fallback visual de iconos;
+- fallback de variables de entorno;
+- mensajes de error;
+- textos de ayuda;
+- constantes de nombres de permisos;
+- valores de `sort_order` remotos;
+- labels de categorías de gasto;
+- constantes de unidades no consumidas por la lógica financiera inspeccionada.
+
+La tarea exige efecto funcional verificable antes de registrar un hardcode.
+
+---
+
+#### 22. Fallback de login y host
+
+El helper SSO posee fallback a:
+
+```text
+https://os.ventogroup.co/login
+numera.ventogroup.co
+https
+```
+
+No se registra como hallazgo de esta tarea porque funciona como fallback de configuración de entorno y no existe evidencia canónica suficiente para declararlo provisional o incorrecto.
+
+---
+
+#### 23. Categorías de gasto remotas
+
+Supabase contiene siete categorías activas:
+
+```text
+rent
+payroll
+utilities
+maintenance
+marketing
+supplies
+other
+```
+
+La tarea no las clasifica como simuladas ni hardcoded: son datos persistidos en `numera_expense_categories` y no literales de la UI financiera inspeccionada.
+
+---
+
+#### 24. Periodo remoto observado
+
+El snapshot contiene:
+
+```text
+label = 2026-06
+status = open
+period_month = 2026-06-01
+```
+
+La tarea no declara este registro simulado ni inválido. La semántica de periodos, cierre y reapertura pertenece a `NUMERA-AUD-009`.
+
+---
+
+#### 25. Selección del periodo más reciente
+
+Las superficies actuales ordenan `numera_periods` por `period_month` descendente y seleccionan el más reciente en distintos flujos.
+
+Esta tarea registra el patrón como dependencia de la lógica actual, pero no lo clasifica como hallazgo definitivo porque la auditoría de estados, cierres y periodo efectivo pertenece a `NUMERA-AUD-009`.
+
+---
+
+#### 26. `expected_revenue` no es dato simulado por definición
+
+`expected_revenue` es una entrada persistible del presupuesto actual.
+
+No se clasifica como dato simulado únicamente por ser esperado. Su uso para reportes y cálculos sí queda bajo:
+
+```text
+NUMERA-AUD-006
+NUMERA-AUD-008
+```
+
+---
+
+#### 27. Ceros derivados no son datos demo
+
+La vista mensual produce seis filas aunque existan:
+
+```text
+numera_expenses = 0
+numera_cost_center_budgets = 0
+```
+
+Los ceros derivados por `CROSS JOIN` y agregados no se clasifican como datos simulados. Son resultados matemáticos del snapshot vacío.
+
+---
+
+#### 28. Relaciones económicas adyacentes no son fixtures
+
+Las relaciones económicas remotas identificadas por `NUMERA-AUD-003` fuera del consumo actual no se etiquetan como mock, fixture o demo por su sola desconexión.
+
+Su autoridad y conciliación pertenecen a tareas posteriores.
+
+---
+
+#### 29. Separación con NUMERA-AUD-006
+
+`NUMERA-AUD-006` conserva exclusivamente la decisión sobre:
+
+- reportes sin conciliación;
+- fuente de verdad aprobada;
+- agregados que presentan información sin reconciliación;
+- autoridad de cada métrica.
+
+Esta tarea no declara ningún reporte verdadero o falso.
+
+---
+
+#### 30. Separación con NUMERA-AUD-007
+
+`NUMERA-AUD-007` conserva:
+
+- coexistencia de captura manual y fuentes operativas;
+- riesgo de duplicar un hecho recibido desde otro dominio;
+- reconciliación entre registro manual y productor canónico.
+
+`source_app = numera` se entrega como evidencia, no como decisión de duplicidad.
+
+---
+
+#### 31. Separación con NUMERA-AUD-008
+
+`NUMERA-AUD-008` conserva la revisión matemática de:
+
+- costos;
+- margen;
+- rentabilidad;
+- presupuesto y variación cuando intervienen en esos cálculos;
+- punto de equilibrio.
+
+Esta tarea solo etiqueta la implementación actual como provisional cuando el propio alcance canónico exige completar sus entradas o semántica.
+
+---
+
+#### 32. Separación con NUMERA-AUD-009
+
+`NUMERA-AUD-009` conserva:
+
+- gastos;
+- centros de costo;
+- periodos;
+- cierres;
+- aprobaciones;
+- vigencia y reglas de modificación.
+
+Los hallazgos de moneda y `notes` se transfieren como evidencia, no como resolución de ese dominio.
+
+---
+
+#### 33. Separación con NUMERA-AUD-010
+
+`NUMERA-AUD-010` conserva:
+
+- exportaciones;
+- información sensible;
+- trazabilidad;
+- exposición de datos.
+
+Esta tarea no amplía esa auditoría por la existencia de `source_app`, cookies o contexto de autorización.
+
+---
+
+#### 34. Matriz de destino de hallazgos
+
+| Hallazgo | Bloquea esta auditoría | Destino | Condición de salida |
+| --- | --- | --- | --- |
+| `H-NUMERA-005-001` | no | gobierno de datos / APP-REVIEW | demo aislado por atributo/identidad canónica o retirado mediante package propietario |
+| `H-NUMERA-005-002` | no | contexto/autorización compartida | NUMERA deja de inferir aislamiento por substring de nombre/código |
+| `H-NUMERA-005-003` | no | AppShell compartido | catálogo/contexto determina visibilidad sin filtro nominal local |
+| `H-NUMERA-005-004` | no | dominio financiero / AUD-009 | moneda de persistencia proviene de dimensión o contrato aprobado |
+| `H-NUMERA-005-005` | no | AUD-007 / integración | lineage de origen proviene del contrato del productor y correlación |
+| `H-NUMERA-005-006` | no | dominio/UX financiero | moneda mostrada proviene del contexto financiero aprobado |
+| `H-NUMERA-005-007` | no | AUD-009 / UX | campo `notes` se expone deliberadamente o se elimina del contrato de action |
+| `H-NUMERA-005-008` | no | AUD-008 | cálculo y semántica se validan con entradas canónicas y evidencia de prueba |
+| `H-NUMERA-005-009` | no | SHELL/AUTH/SIM | simulación separada reemplaza autoridad local por role override |
+
+No se crea una tarea nueva para ninguno de los hallazgos.
+
+---
+
+#### 35. Resultado de cobertura
+
+La auditoría cubre las cuatro clases solicitadas:
+
+```text
+DATOS_SIMULADOS = CONFIRMADOS
+HARDCODES = CONFIRMADOS
+TODO_FIXME_HACK = NO_LOCALIZADOS_EN_SNAPSHOT
+LOGICA_PROVISIONAL = CONFIRMADA
+```
+
+Y cada hallazgo confirmado posee superficie, evidencia, límite y propietario de salida.
+
+---
+
+#### 36. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea clasifica deuda y provisionalidad ya existente. No introduce comportamiento, autorización, fórmula, contrato de integración, transición de estado ni mutación nueva.
+
+---
+
+#### 37. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-NUMERA-001` para integración económica y prohibición de doble registro;
+- `TREQ-NUMERA-002` para identidad y trazabilidad del hecho económico;
+- `TREQ-NUMERA-004` para costos, presupuestos, equilibrio y rentabilidad reproducibles;
+- `TREQ-NUMERA-018` para origen explícito en creación de gastos;
+- `TREQ-NUMERA-019` y `TREQ-NUMERA-020` para equilibrio y rentabilidad;
+- `TREQ-SHELL-086` para autoridad local, role override y bypasses;
+- requisitos vigentes de simulación y aislamiento de APP-REVIEW aplicables.
+
+Esta sección es trazabilidad heredada y no modifica 04A.
+
+---
+
+#### 38. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea no ejecuta build del producto; el build integral continúa reservado a `NUMERA-AUD-011`. |
+| LOCAL | NOT_EXECUTED | La incorporación y validación estructural contra el checkout del usuario se ejecutarán mediante la batería documental al publicar la tarea. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, `vento-numera/main`, código de superficies y helpers, y datos remotos de solo lectura para APP-REVIEW, periodos y categorías. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron gastos, presupuestos, simulación, role override, cálculos ni flujos financieros. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados. |
+
+---
+
+#### 39. Validaciones documentales de coherencia
+
+Se comprueba que:
+
+1. `NUMERA-AUD-004` permanece como predecesora inmediata;
+2. `NUMERA-AUD-006` permanece como sucesora inmediata;
+3. no se altera la distribución `0 completo / 2 parcial / 3 prototipo / 10 ausente`;
+4. los cálculos no se auditan antes de `NUMERA-AUD-008`;
+5. los cierres no se auditan antes de `NUMERA-AUD-009`;
+6. la conciliación no se audita antes de `NUMERA-AUD-006`;
+7. la duplicidad manual no se resuelve antes de `NUMERA-AUD-007`;
+8. el role override se reporta como deuda transversal y no se corrige localmente;
+9. 04A permanece sin cambios.
+
+---
+
+#### 40. Criterios de aceptación
+
+`NUMERA-AUD-005` queda aceptable cuando:
+
+- las cuatro clases solicitadas tienen resultado explícito;
+- todo dato demo confirmado tiene identidad exacta;
+- los hardcodes distinguen persistencia, origen y presentación;
+- los marcadores TODO/FIXME/HACK tienen conteo explícito;
+- la lógica provisional tiene superficie y causa verificable;
+- no se confunden placeholders o fallbacks legítimos con deuda funcional;
+- cada hallazgo posee propietario y condición de salida;
+- no se corrige código ni datos;
+- no se adelantan decisiones de `NUMERA-AUD-006..010`;
+- no se crean ni modifican requisitos de prueba;
+- `NUMERA-AUD-006` permanece como única continuidad inmediata.
+
+---
+
+#### 41. Límites
+
+Esta tarea no demuestra:
+
+- que APP-REVIEW sea el único dato demo histórico del proyecto completo;
+- que un literal sea necesariamente incorrecto para producción;
+- que COP deba sustituirse por otra moneda;
+- que un role override haya sido explotado o usado de forma indebida;
+- que la fórmula de equilibrio o rentabilidad sea correcta o incorrecta;
+- que un reporte esté conciliado;
+- que un registro manual duplique un evento de otro dominio;
+- que un periodo abierto deba estar cerrado;
+- que la ausencia de `TODO` implique ausencia de deuda técnica.
+
+La auditoría clasifica evidencia observada, no reemplaza las tareas propietarias posteriores.
+
+---
+
+#### 42. Decisiones congeladas
+
+Quedan congeladas para continuidad:
+
+1. `ADM-APP-REVIEW / App Review (Demo)` es dato demo persistido y activo en el snapshot observado;
+2. el aislamiento actual de ese dato usa filtros nominales locales y se considera provisional;
+3. la captura manual fija `currency = COP` y `source_app = numera`;
+4. la presentación monetaria actual fija COP en las principales superficies financieras;
+5. `upsertBudget` soporta `notes` sin control visible equivalente en el formulario observado;
+6. rentabilidad y equilibrio se mantienen como lógica provisional hasta `NUMERA-AUD-008`;
+7. el role override local es deuda legacy transversal, no autoridad canónica futura;
+8. no se localizaron `TODO`, `FIXME` o `HACK` en los archivos de aplicación y scripts inspeccionados;
+9. no se modifica 04A;
+10. la siguiente auditoría debe analizar reportes y fuente de verdad, no reabrir esta taxonomía.
+
+---
+
+#### 43. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada`
 ### [ ] NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
 ### [ ] NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
 ### [ ] NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
