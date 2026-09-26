@@ -18297,7 +18297,1493 @@ Esta tarea no anticipa sus cambios físicos.
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-015 — Diseñar experiencia táctil para POS`
-### [ ] PULSO-UX-015 — Diseñar experiencia táctil para POS
+### ✅ PULSO-UX-015 — Diseñar experiencia táctil para POS
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-014 — Identificar actor real en terminal compartida
+**Tarea siguiente:** PULSO-UX-016 — Conectar venta con inventario
+**Tipo de tarea:** diseño documental integral de la experiencia táctil PULSO para estaciones POS compartidas y operativas, especializando los contratos `UX-STATION-*`, `NFR-REQ-007` y `PULSO-UX-005..014` en geometría de interacción, targets, spacing, densidad, orientación, teclado táctil, foco, escaneo, feedback, prevención de doble toque y composición responsive; preservando actor real visible, una única acción primaria, idempotencia, autorización, contexto, accesibilidad, privacidad y semántica empresarial sin convertir gesto, layout, dispositivo o interacción en autoridad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, pantallas runtime, componentes, PermissionKeys, grants, sesiones, RLS, RPC, tablas, datos, Supabase, migraciones, packages, dispositivos, periféricos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe sentirse y comportarse PULSO cuando la operación principal ocurre mediante tacto en una estación POS compartida, una tablet operativa o un punto fijo de caja, sin cambiar el significado empresarial de las acciones ya aprobado por las tareas anteriores.
+
+La regla raíz es:
+
+```text
+CONTRATO EMPRESARIAL VIGENTE
++
+ACTOR / CONTEXTO / ESTACION RESUELTOS
++
+COMPOSICION TACTIL ADECUADA
+=
+MISMA INTENCION EMPRESARIAL CON MENOR FRICCION Y MENOR ERROR
+```
+
+Nunca:
+
+```text
+GESTO
+=
+PERMISO
+```
+
+ni:
+
+```text
+BOTON GRANDE
+=
+AUTORIZACION
+```
+
+ni:
+
+```text
+DOBLE TAP
+=
+SEGUNDO EFECTO
+```
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-014
+
+`PULSO-UX-014` entrega:
+
+```text
+ACTOR REAL DEBE SER PERCEPTIBLE EN TERMINAL COMPARTIDA
+CAMBIAR TRABAJADOR ES UNA ACCION EXPLICITA Y SEGURA
+NO_ACTOR DEBE BLOQUEAR COMMITS SIN CREAR FRICCION INNECESARIA
+PIN / FIRMA SON SECRETOS EFIMEROS
+A->B EXIGE LIMPIEZA VISUAL Y DE ESTADO
+DOBLE TAP NO PUEDE EJECUTAR DURANTE SWITCHING_ACTOR
+TECLADO / TARGET / DENSIDAD NO PUEDEN OCULTAR QUIEN ACTUA
+```
+
+015 define la composición táctil que materializa visualmente esas invariantes sin redefinir identidad, autorización ni lifecycle.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el contrato táctil se define una sola vez;
+- no crea una instancia física propia;
+- no implementa páginas ni componentes;
+- no modifica el runtime PULSO;
+- no configura tablets, POS ni kioscos;
+- no cambia permisos ni contexto;
+- no ejecuta ventas, pagos, caja, loyalty ni salón;
+- no modifica Supabase;
+- no autoriza despliegue.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+La tarea consume, sin sustituirlas:
+
+- `PULSO-UX-005..014` y sus handoffs táctiles;
+- `PULSO-AUTH-006..016` para autoridad y dispositivo compartido;
+- `UX-STATION-002` para modalidades por paso;
+- `UX-STATION-003` para perfiles y overlays de estación;
+- `UX-STATION-005` para superficie contextual;
+- `UX-STATION-009` para la matriz final proceso → paso → estación → interacción → periférico;
+- `UX-STATION-010` para gramática de lectura mínima;
+- `UX-STATION-011` para bandeja y siguiente acción;
+- `UX-STATION-012` para componentes, slots y composición dinámica;
+- `NFR-REQ-007` para accesibilidad y ergonomía;
+- `AUTH-DEV-007..013` para identificación, cambio y lifecycle de actor;
+- Registro 04A aplicable a PULSO y AUTH;
+- `packages/ui-web` vigente como evidencia de primitives compartidos, no como autoridad de negocio;
+- runtime vigente de `vento-pulso` como evidencia AS-IS, no como contrato objetivo.
+
+---
+
+#### 5. Alcance táctil exacto
+
+Esta tarea gobierna exclusivamente la presentación e interacción humana táctil de PULSO en superficies operativas.
+
+Incluye:
+
+- tamaño efectivo de targets;
+- separación entre targets;
+- densidad;
+- reflow responsive;
+- orientación;
+- teclado virtual y entrada numérica;
+- scroll y foco;
+- feedback de toque;
+- doble toque y estado in-flight;
+- escaneo y captura híbrida;
+- actor/contexto persistentes;
+- layouts para estación compartida;
+- overlays de guantes, humedad, ruido, postura y alcance;
+- comportamiento accesible equivalente.
+
+No incluye decisiones empresariales nuevas.
+
+---
+
+#### 6. Perfiles de estación PULSO consumidos
+
+PULSO consume principalmente:
+
+```text
+STP-01-SHARED-OPERATIVE-TOUCH
+STP-02-SHARED-POS-CASH
+```
+
+además de la resolución final:
+
+```text
+SERVICE_CHECKOUT
+```
+
+cuando el paso corresponda a servicio, mostrador, caja o entrega.
+
+La tarea no crea un perfil denominado simplemente `tablet`, `POS` o `kiosco`.
+
+---
+
+#### 7. Modalidad primaria
+
+La modalidad táctil principal es:
+
+```text
+IM1_TOUCH_VISUAL
+```
+
+pero puede combinarse de forma gobernada con:
+
+- escáner fijo;
+- escáner manual;
+- cámara;
+- datáfono;
+- impresora;
+- teclado físico;
+- lector de pantalla;
+- automatización contextual.
+
+La combinación no duplica captura ni efecto.
+
+---
+
+#### 8. Regla de equivalencia semántica
+
+Una variante táctil puede cambiar:
+
+- geometría;
+- agrupación;
+- orden visual dentro de un contrato compatible;
+- densidad;
+- orientación;
+- modalidad de entrada;
+- posición de acciones secundarias;
+- tamaño del target.
+
+No puede cambiar:
+
+- PermissionKey;
+- actor;
+- contexto;
+- recurso;
+- transición;
+- idempotency key;
+- sensibilidad;
+- necesidad de confirmación;
+- resultado empresarial.
+
+---
+
+#### 9. Piso táctil operativo PULSO
+
+Para nuevas materializaciones PULSO, todo control recurrente y accionable cuya geometría sea controlada por la aplicación debe proporcionar un área táctil efectiva de al menos:
+
+```text
+48 x 48 CSS px
+```
+
+El glifo, texto o icono visible puede ser menor; el área interactiva no.
+
+Este valor es el piso operativo preferido de PULSO y se alinea con las superficies táctiles compartidas ya materializadas en `packages/ui-web`.
+
+---
+
+#### 10. Controles por encima del piso
+
+`48 x 48 CSS px` no es un objetivo máximo.
+
+Cuando apliquen overlays como:
+
+```text
+ERGO-GLOVED
+ENV-WET-GREASY
+INPUT-GLOVED
+INPUT-ONE-HAND
+POSTURE-STANDING
+```
+
+la futura materialización debe aumentar tamaño efectivo y/o separación, reducir densidad y evitar precisión fina.
+
+No se fija en esta tarea una dimensión mayor universal porque depende del perfil y del prototipo físico aplicable.
+
+---
+
+#### 11. Separación entre targets
+
+Los targets táctiles adyacentes deben mantener separación suficiente para que una pulsación imprecisa no active otra acción.
+
+Regla base para acciones ordinarias próximas:
+
+```text
+SEPARACION PREFERIDA >= 0.75rem
+```
+
+Cuando exista guante, humedad, movimiento o proximidad entre acción primaria y acción sensible/destructiva, la composición debe aumentar esa separación o separar los grupos estructuralmente.
+
+---
+
+#### 12. `touch-action` y activación ordinaria
+
+La activación ordinaria deberá ser compatible con interacción de toque directa y sin retrasos artificiales.
+
+La futura materialización puede usar:
+
+```text
+touch-action: manipulation
+```
+
+en controles apropiados, siempre que no anule zoom, accesibilidad ni gestos del navegador requeridos por la plataforma.
+
+El contrato no depende de esta propiedad CSS como control de idempotencia.
+
+---
+
+#### 13. Hover no es requisito
+
+Ninguna acción necesaria puede depender exclusivamente de:
+
+- hover;
+- cursor;
+- tooltip al pasar mouse;
+- menú revelado únicamente por hover;
+- precisión de puntero.
+
+Hover puede enriquecer escritorio, pero no descubrir una capacidad imprescindible.
+
+---
+
+#### 14. Gestos visibles y equivalentes
+
+Swipe, drag, long-press o gestos equivalentes pueden acelerar una operación cuando el perfil lo permita.
+
+Nunca serán el único camino para:
+
+- confirmar;
+- cancelar;
+- cambiar trabajador;
+- abrir una excepción;
+- pagar;
+- cerrar caja;
+- devolver;
+- reembolsar;
+- ejecutar una acción sensible.
+
+Debe existir control visible y accesible equivalente.
+
+---
+
+#### 15. Long-press
+
+Long-press no se usa como ocultamiento de permisos ni como “modo experto” para acciones críticas.
+
+Si se utiliza como shortcut, su resultado debe ser idéntico al de una acción visible y conservar la misma autorización y confirmación.
+
+---
+
+#### 16. Una sola acción primaria
+
+Cada estado de superficie mantiene como máximo una acción primaria.
+
+La acción primaria procede del contrato de `UX-STATION-011/012`, no del tamaño ni posición del botón.
+
+Regla:
+
+```text
+UNA PANTALLA
++
+UN ESTADO EMPRESARIAL
+→
+MAXIMO UNA PRIMARY_NEXT
+```
+
+---
+
+#### 17. Jerarquía de acciones
+
+La geometría táctil distingue:
+
+1. acción primaria;
+2. acciones secundarias ordinarias;
+3. navegación/consulta;
+4. acciones sensibles o destructivas;
+5. recuperación/bloqueo.
+
+No presenta dos CTA de igual peso cuando solo uno corresponde a la siguiente acción segura.
+
+---
+
+#### 18. Acción primaria y rail de acciones
+
+La acción primaria vive en un rail semántico separado del contenido de captura.
+
+En pantalla estrecha el rail se ubica después del resumen o contenido necesario para decidir.
+
+En pantalla amplia puede ocupar una columna o zona lateral dedicada.
+
+No se define como overlay fijo que tape contenido, teclado virtual, error o contexto.
+
+---
+
+#### 19. Acciones destructivas
+
+Cancelar, anular, devolver, reembolsar, cerrar con diferencia u otra acción sensible no se coloca pegada a la acción primaria frecuente sin separación visual y táctil suficiente.
+
+La proximidad física no reemplaza `PULSO-UX-013`.
+
+---
+
+#### 20. Contexto persistente
+
+La superficie táctica conserva una banda de contexto al inicio del contenido operativo con, según aplique:
+
+- actor efectivo;
+- sede;
+- área o zona;
+- estación;
+- caja/sesión;
+- conectividad;
+- modo relevante.
+
+Persistente significa semánticamente disponible durante la acción; no exige `position: fixed`.
+
+---
+
+#### 21. Ubicación del actor real
+
+En terminal compartida, el actor efectivo se muestra dentro del contexto persistente antes del área principal de trabajo.
+
+No se oculta exclusivamente en:
+
+- menú de perfil;
+- drawer;
+- tooltip;
+- footer fuera de viewport;
+- modal previo ya cerrado.
+
+Cuando la superficie permite mutaciones, el actor debe poder verificarse antes de la acción primaria.
+
+---
+
+#### 22. Control `Cambiar trabajador`
+
+En terminal compartida, `Cambiar trabajador` permanece accesible junto al contexto de actor o mediante una acción secundaria inmediata de ese mismo bloque.
+
+No compite con la acción primaria empresarial, pero tampoco exige navegar a configuración administrativa.
+
+---
+
+#### 23. Estado `NO_ACTOR`
+
+Cuando no existe actor humano válido:
+
+- la superficie puede mostrar contexto técnico mínimo y trabajo no sensible permitido;
+- las mutaciones que exigen humano quedan bloqueadas;
+- identificar trabajador se convierte en la siguiente acción de recuperación;
+- no se muestran controles empresariales activos que aparenten estar listos.
+
+La geometría no disimula la falta de actor.
+
+---
+
+#### 24. Cambio A→B
+
+Durante `SWITCHING_ACTOR`:
+
+- se bloquean nuevos commits actor-bound;
+- se retira visualmente el estado personal de A;
+- se limpia o aísla el estado sensible de A;
+- no se permite doble tap sobre acciones que estaban disponibles para A;
+- B no recibe una acción primaria hasta resolver su contexto.
+
+---
+
+#### 25. Reflow semántico
+
+El layout responde al espacio disponible mediante reflow semántico y no mediante detección de marca o modelo de dispositivo.
+
+Las mismas entidades mantienen significado aunque cambien de columna, fila o grupo.
+
+---
+
+#### 26. Orientación vertical
+
+En orientación estrecha o vertical se prioriza:
+
+```text
+CONTEXTO
+→ TRABAJO / CAPTURA
+→ RESUMEN
+→ ACCION PRIMARIA
+→ SECUNDARIAS
+```
+
+El usuario no debe realizar scroll horizontal para acceder a la acción primaria o al resumen esencial.
+
+---
+
+#### 27. Orientación horizontal
+
+En orientación amplia u horizontal se permite separar:
+
+```text
+TRABAJO / SELECCION
+|
+RESUMEN + ACCION PRIMARIA
+```
+
+sin duplicar acciones ni crear dos fuentes de estado.
+
+---
+
+#### 28. Rotación durante una intención
+
+Un cambio de orientación no crea:
+
+- nueva intención;
+- nueva idempotency key;
+- nuevo actor;
+- nuevo recurso;
+- segundo submit.
+
+La interfaz conserva o reconstruye el borrador permitido con la misma identidad lógica.
+
+---
+
+#### 29. Densidad operativa base
+
+PULSO usa densidad baja o media para operación recurrente.
+
+Prioriza:
+
+- lectura rápida;
+- una acción primaria;
+- estado visible;
+- targets amplios;
+- pocas decisiones simultáneas;
+- progresividad.
+
+No copia densidad de backoffice a una estación de caja o servicio.
+
+---
+
+#### 30. Densidad adaptable
+
+La densidad puede variar por:
+
+- perfil de estación;
+- frecuencia;
+- riesgo;
+- cantidad de work items;
+- tamaño disponible;
+- overlay ergonómico;
+- accesibilidad.
+
+No varía por rol para revelar acciones no autorizadas.
+
+---
+
+#### 31. Divulgación progresiva
+
+Los datos necesarios para decidir y ejecutar la acción actual aparecen primero.
+
+Detalles secundarios, historial y evidencia adicional se expanden bajo demanda cuando no son necesarios para el toque ordinario.
+
+No se oculta información crítica detrás de expansión.
+
+---
+
+#### 32. Scroll
+
+La superficie táctil:
+
+- evita scroll horizontal estructural;
+- conserva `min-width: 0` en zonas refluibles;
+- permite wrapping de texto y datos largos;
+- mantiene contexto suficiente al recorrer listas;
+- no captura el scroll vertical con gestos de control ambiguos.
+
+---
+
+#### 33. Foco y teclado físico
+
+Todo control táctil relevante conserva equivalente operable por teclado cuando aplique.
+
+El foco debe ser:
+
+- visible;
+- secuencial;
+- predecible;
+- alcanzable después de reflow;
+- no atrapado en componentes táctiles.
+
+---
+
+#### 34. Teclado virtual y visibilidad
+
+Al abrir teclado virtual:
+
+- el campo enfocado permanece visible;
+- el error asociado permanece alcanzable;
+- el rail de acción no tapa el control;
+- el viewport puede desplazar el contenido sin perder contexto;
+- cerrar teclado no confirma automáticamente.
+
+La futura materialización debe conservar margen de scroll suficiente alrededor del control enfocado.
+
+---
+
+#### 35. Lectores de pantalla
+
+Iconos y controles táctiles requieren nombre accesible.
+
+El estado no depende solo de:
+
+- color;
+- forma;
+- posición;
+- animación;
+- sonido.
+
+Los cambios relevantes de error, confirmación y actor deben exponerse semánticamente.
+
+---
+
+#### 36. Entrada numérica de montos
+
+Cobro, apertura, conteo y cierre pueden utilizar teclado numérico táctil cuando reduzca error.
+
+El teclado:
+
+- no altera precisión monetaria;
+- no redondea silenciosamente;
+- distingue valor digitado de valor confirmado;
+- evita submit por pulsación accidental;
+- ofrece borrar/corregir con target suficiente;
+- conserva formato local solo como presentación, no como autoridad del monto.
+
+---
+
+#### 37. Cantidades
+
+Las cantidades frecuentes pueden usar controles `− / +` táctiles cuando el dominio lo permita.
+
+Debe existir alternativa de entrada directa cuando:
+
+- el rango sea amplio;
+- el incremento repetido sea ineficiente;
+- la cantidad provenga de escaneo o medición;
+- accesibilidad lo requiera.
+
+El stepper no inventa unidad ni factor de conversión.
+
+---
+
+#### 38. Texto libre mínimo
+
+En estación táctil se minimiza escritura extensa.
+
+Se prefieren:
+
+- opciones estructuradas;
+- motivos catalogados;
+- búsqueda breve;
+- selección de oferta;
+- escaneo;
+- captura contextual.
+
+Texto libre queda para contexto adicional cuando el contrato lo permita.
+
+---
+
+#### 39. PIN y firma
+
+La entrada de PIN/firma del trabajador:
+
+- usa control dedicado y enmascarado cuando corresponda;
+- no usa autocomplete de secreto;
+- no persiste el secreto;
+- se limpia tras éxito, error, cambio de modo, cambio de actor o expiración;
+- no se mezcla visualmente con código de cliente o redención;
+- no altera permiso ni contexto por sí sola.
+
+---
+
+#### 40. Escáner y cámara
+
+Cuando escáner o cámara sean candidatos aprobados:
+
+```text
+LECTURA
+→ RESOLVER OBJETO
+→ MOSTRAR OBJETO
+→ VALIDAR ESTADO
+→ ACCION SI CORRESPONDE
+```
+
+Una lectura repetida no genera un segundo efecto empresarial.
+
+La captura manual equivalente permanece disponible cuando el contrato lo exija.
+
+---
+
+#### 41. Lecturas repetidas
+
+Para escaneo de alta frecuencia debe existir una ventana lógica o deduplicación suficiente para distinguir:
+
+- misma lectura repetida accidentalmente;
+- dos unidades realmente distintas;
+- una nueva intención explícita.
+
+La UI no resuelve esta frontera únicamente deshabilitando un botón.
+
+---
+
+#### 42. Feedback inmediato del toque
+
+Todo toque accionable produce feedback perceptible inmediato de interfaz:
+
+- pressed/focus;
+- in-flight;
+- resultado confirmado;
+- error o recuperación.
+
+El feedback de interfaz no se etiqueta como éxito empresarial antes del receipt autoritativo.
+
+---
+
+#### 43. Haptics y sonido
+
+Haptic o sonido pueden complementar una confirmación si el dispositivo lo soporta.
+
+Nunca son la única evidencia de:
+
+- éxito;
+- error;
+- llamada;
+- pago;
+- escaneo;
+- cambio de actor.
+
+Bajo `ENV-NOISY`, la señal visual/textual permanece obligatoria.
+
+---
+
+#### 44. Estado in-flight
+
+Después de aceptar una intención empresarial:
+
+- la acción primaria entra en estado in-flight;
+- no emite una segunda intención por taps repetidos;
+- muestra progreso sin prometer resultado;
+- conserva la identidad estable de la intención;
+- mantiene disponible cancelación solo cuando el contrato del comando realmente la permita.
+
+---
+
+#### 45. Doble toque
+
+La prevención táctil de doble toque tiene dos capas:
+
+```text
+UI
+→ SUPRIME REACTIVACION MIENTRAS LA INTENCION ESTA IN-FLIGHT
+
+SERVIDOR / CONTRATO
+→ IDEMPOTENCIA Y RECONCILIACION EVITAN DOBLE EFECTO
+```
+
+Ninguna capa sustituye a la otra.
+
+---
+
+#### 46. Resultado desconocido
+
+Cuando existe `UNKNOWN_OUTCOME`:
+
+- no se reactiva ciegamente la misma CTA con una nueva identidad;
+- la UI presenta estado de conciliación/recuperación;
+- conserva referencia de intención;
+- evita que doble toque o navegación produzcan otro efecto;
+- ofrece acción segura de verificar/reintentar solo según contrato propietario.
+
+---
+
+#### 47. Errores de negocio
+
+Los errores de negocio se presentan cerca del objeto o acción afectada y conservan una recuperación comprensible.
+
+No todos se agrupan en un toast genérico.
+
+Ejemplos de familias:
+
+- contexto inválido;
+- recurso cambió;
+- permiso ausente;
+- stock/oferta no disponible;
+- monto inválido;
+- conflicto;
+- actor requerido;
+- resultado ya aplicado.
+
+---
+
+#### 48. Fallo técnico
+
+Un fallo técnico se distingue de una denegación o un conflicto empresarial.
+
+La superficie no induce taps repetidos agresivos cuando el backend está indisponible.
+
+Si `retry` es seguro, se presenta explícitamente como recuperación y conserva idempotencia.
+
+---
+
+#### 49. Estados vacíos
+
+PULSO distingue al menos:
+
+```text
+SIN TRABAJO CONFIRMADO
+CONSULTA FALLIDA
+SIN AUTORIDAD
+CONTEXTO REQUERIDO
+OFFLINE / SNAPSHOT
+```
+
+Una lista vacía por error no se presenta como “todo listo”.
+
+---
+
+#### 50. Conectividad y sincronización
+
+La UI táctil diferencia:
+
+- online confirmado;
+- degradado;
+- borrador local;
+- pendiente de sincronizar;
+- conflicto;
+- resultado desconocido;
+- confirmado por servidor.
+
+El color no es la única señal.
+
+---
+
+#### 51. Privacidad en estación compartida
+
+La superficie minimiza información visible en un punto compartido.
+
+Al cambiar actor se limpian o aíslan:
+
+- búsqueda personal;
+- filtros personales;
+- PIN;
+- cliente sensible no necesario;
+- borradores actor-bound;
+- selección temporal;
+- portapapeles o archivos controlados por la aplicación cuando corresponda.
+
+---
+
+#### 52. Overlay `ENV-WET-GREASY`
+
+En humedad, grasa o salpicaduras:
+
+- se reduce dependencia de precisión fina;
+- se incrementa separación;
+- se evita texto pequeño como control;
+- se priorizan acciones frecuentes grandes;
+- se evita requerir múltiples taps pequeños consecutivos;
+- la limpieza física no debe provocar efectos empresariales por toques accidentales.
+
+---
+
+#### 53. Overlay `INPUT-GLOVED`
+
+Con guantes:
+
+- 48 px es piso, no objetivo suficiente universal;
+- se aumenta tamaño/separación según validación física;
+- se reduce densidad;
+- se evitan toggles pequeños;
+- la captura numérica usa teclas amplias;
+- se ofrece alternativa a teclado fino.
+
+---
+
+#### 54. Overlay `INPUT-ONE-HAND`
+
+Cuando una mano está ocupada:
+
+- la acción ordinaria frecuente permanece dentro de alcance razonable;
+- no se exige gesto bimanual;
+- los controles críticos no se colocan en zonas de activación accidental;
+- capturas largas se sustituyen por modalidades apropiadas cuando exista contrato.
+
+---
+
+#### 55. Postura y alcance
+
+`POSTURE-STANDING`, `POSTURE-SEATED` y `REACH-ARM` pueden cambiar composición y tamaño.
+
+La futura implementación no usa una tabla densa de escritorio en un POS de pie únicamente porque el viewport sea grande.
+
+---
+
+#### 56. VSCREEN-0080 — inicio PULSO
+
+La experiencia táctil de inicio prioriza:
+
+- contexto vigente;
+- actor real;
+- pendientes relevantes;
+- acciones que el actor realmente puede iniciar;
+- siguiente acción principal.
+
+Evita convertir el inicio en un menú de iconos pequeños o un dashboard administrativo denso.
+
+---
+
+#### 57. VSCREEN-0081 — creación de venta o pedido
+
+La creación táctil conserva tres zonas semánticas:
+
+1. contexto de la venta;
+2. selección/configuración de oferta;
+3. resumen + acción `CREAR VENTA`.
+
+La selección usa targets amplios, categorías/búsqueda breve y controles de cantidad/modificador comprensibles.
+
+El resumen y la acción no se pierden por orientación o teclado virtual.
+
+---
+
+#### 58. Creación y producto frecuente
+
+Los productos u opciones frecuentes pueden usar cards o botones táctiles grandes.
+
+La frecuencia no autoriza ocultar:
+
+- nombre inequívoco;
+- variante relevante;
+- precio mostrado;
+- disponibilidad/estado cuando sea material.
+
+No se exige memorizar códigos para operar rápido.
+
+---
+
+#### 59. VSCREEN-0084 — cobro
+
+El cobro táctil prioriza:
+
+- total/importe;
+- medio o composición de medios;
+- monto capturado;
+- estado de cada medio;
+- cambio cuando aplique;
+- acción primaria única.
+
+Los medios frecuentes usan targets amplios; la selección del medio no equivale a pago confirmado.
+
+---
+
+#### 60. Pagos parciales y combinados
+
+Cuando el contrato habilite pagos parciales o combinados:
+
+- cada medio mantiene monto y estado propios;
+- el siguiente monto no se confirma por un tap sobre una card previa;
+- la suma visible se actualiza sin declarar cobro completo antes del resultado;
+- la acción final permanece separada de `agregar medio`.
+
+---
+
+#### 61. Acciones de PULSO-UX-009
+
+Cancelación, devolución, reverse y refund usan geometría que reduce activación accidental:
+
+- CTA sensible separada;
+- impacto visible;
+- motivo estructurado cuando aplique;
+- confirmación proporcional;
+- in-flight seguro;
+- resultado durable antes de mostrar cierre.
+
+015 no fusiona esas semánticas.
+
+---
+
+#### 62. Apertura de caja
+
+La apertura táctil prioriza:
+
+- caja/sesión;
+- actor;
+- fondo inicial;
+- moneda/unidad;
+- acción principal de apertura.
+
+La captura numérica debe ser cómoda sin sacrificar precisión ni permitir que un toque de navegación abra la caja.
+
+---
+
+#### 63. Conteo y cierre de caja
+
+Conteo/cierre muestran separadamente:
+
+```text
+ESPERADO
+CONTADO
+DIFERENCIA
+```
+
+No se codifican solo por color.
+
+La confirmación final queda físicamente separada de edición numérica y de acciones de revisión.
+
+---
+
+#### 64. Acumulación de puntos
+
+La acumulación en touch conserva separación entre:
+
+- cliente;
+- compra/hecho elegible;
+- actor;
+- PIN/firma si aplica;
+- resultado PASS.
+
+Cambiar de modo o cliente limpia datos actor/customer-bound que no deban sobrevivir.
+
+---
+
+#### 65. Redención
+
+La redención mantiene:
+
+- código/ticket;
+- cliente/beneficio;
+- puntos/condición relevante;
+- actor efectivo;
+- confirmación de consumo cuando corresponda.
+
+La caja de PIN del trabajador no se confunde con el código de redención.
+
+---
+
+#### 66. Salón
+
+La superficie de salón adapta mapa, mesas, sesiones y llamados a touch mediante:
+
+- targets de mesa/llamado suficientemente grandes;
+- estado textual además de color;
+- cola legible;
+- una siguiente acción por estado;
+- actualización estable que no mueva el target bajo el dedo sin necesidad;
+- ausencia de hover obligatorio.
+
+---
+
+#### 67. Pedidos
+
+La operación de pedidos favorece cards/work items y acciones de siguiente paso sobre tablas densas.
+
+Abrir detalle no concede capacidad adicional.
+
+Los botones de transición deben cumplir el piso táctil aunque la card ya sea accionable.
+
+---
+
+#### 68. Entrega y handoff
+
+En entrega se priorizan:
+
+- destinatario/recurso correcto;
+- estado;
+- evidencia o PIN cuando aplique;
+- acción de entrega;
+- excepción separada.
+
+Un tap sobre dirección, mapa o llamada no marca el pedido como entregado.
+
+---
+
+#### 69. Supervisor
+
+La superficie de supervisor puede mostrar mayor densidad informativa que la operación ordinaria, pero mantiene:
+
+- targets táctiles adecuados;
+- triage por excepción;
+- acciones sensibles separadas;
+- actor/contexto visibles;
+- una acción primaria por work item.
+
+Más responsabilidad no justifica targets pequeños.
+
+---
+
+#### 70. Importaciones y backoffice
+
+`/sales-imports` es una superficie administrativa/densa observada en el runtime actual.
+
+Esta tarea no la transforma en un POS táctil ordinario ni redefine su clasificación administrativa.
+
+Solo le aplican las obligaciones transversales de accesibilidad y seguridad que ya correspondan; su rediseño especializado pertenece a sus owners administrativos y arquitectónicos.
+
+---
+
+#### 71. Modales y diálogos
+
+Cuando un diálogo sea legítimo:
+
+- debe tener título/propósito explícitos;
+- foco inicial y retorno de foco coherentes;
+- targets táctiles suficientes;
+- acción primaria inequívoca;
+- cancelación separada;
+- contenido visible sin depender de hover;
+- no debe anidar confirmaciones repetitivas.
+
+Tap fuera del modal no se trata como confirmación de una acción sensible.
+
+---
+
+#### 72. Menús y drawers
+
+Menús y drawers se reservan para navegación o acciones secundarias.
+
+No esconden:
+
+- actor real;
+- acción primaria;
+- estado de pago;
+- diferencia de caja;
+- conflicto;
+- resultado desconocido;
+- condición de bloqueo.
+
+---
+
+#### 73. Tablas y cards
+
+En operación táctil:
+
+- cards y listas pueden reemplazar tablas cuando mejoren lectura/alcance;
+- una tabla puede mantenerse si sus filas y acciones siguen siendo operables por touch, teclado y lector;
+- columnas críticas no se pierden por responsive;
+- detalles secundarios pueden pasar a expansión o detalle.
+
+No se elimina información empresarial para “hacerla móvil”.
+
+---
+
+#### 74. Búsqueda y filtros
+
+Búsqueda/filtros frecuentes:
+
+- admiten toque y teclado;
+- evitan chip diminuto como único mecanismo;
+- muestran estado del filtro;
+- permiten volver al alcance recomendado;
+- no se usan como permiso o contexto autoritativo.
+
+---
+
+#### 75. Estabilidad visual
+
+Actualizaciones de Realtime, polling o conciliación no deben mover de forma sorpresiva el target que el usuario está activando.
+
+Cuando un cambio material invalide una acción:
+
+- se cancela o bloquea la intención;
+- se informa el cambio;
+- se revalida;
+- no se redirige el tap a otro elemento.
+
+---
+
+#### 76. Scroll y listas largas
+
+Listas largas deben preservar rendimiento y localización del trabajo.
+
+Virtualización futura, si aplica, no puede:
+
+- perder foco;
+- cambiar identidad de items;
+- reutilizar visualmente una acción sobre otro recurso durante el tap;
+- ocultar estado de selección;
+- romper accesibilidad.
+
+---
+
+#### 77. Ayuda contextual
+
+La ayuda para una acción frecuente es breve y local.
+
+No obliga a salir a documentación extensa para comprender:
+
+- qué hacer;
+- por qué está bloqueado;
+- qué dato falta;
+- qué se confirmó.
+
+---
+
+#### 78. AS-IS — primitives compartidos
+
+El runtime vigente de `vento-pulso` ya contiene primitives con alturas táctiles amplias en `src/components/vento/standard/ui.tsx`:
+
+```text
+sm = h-12
+md = h-14
+lg = h-16
+```
+
+Esto demuestra capacidad técnica para targets de 48 px o mayores, pero no certifica que todos los consumidores PULSO la utilicen.
+
+---
+
+#### 79. AS-IS — scanner
+
+`ScannerPage` ya usa composición responsive y la superficie de QR permite identificación, acumulación/redención y PIN condicional para shared device.
+
+Se observan, sin embargo, controles de modo con `h-10` y controles de cámara con `h-9`.
+
+Por tanto:
+
+```text
+RESPONSIVE EXISTENTE
+!=
+CONTRATO TACTIL PULSO COMPLETO
+```
+
+---
+
+#### 80. AS-IS — pedidos
+
+La superficie de pedidos usa grids responsive, cards y modales, pero varias acciones observadas usan `h-10`.
+
+La existencia de cards responsive no demuestra por sí sola cumplimiento del piso táctil, separación sensible o prevención integral de doble toque.
+
+---
+
+#### 81. AS-IS — salón
+
+Salón ya contiene composición responsive y acciones principales observadas con `h-12`.
+
+Aun así, la conformidad completa exige revisar targets de mesas, llamados, estabilidad bajo actualizaciones, estados no dependientes de color y comportamiento de cada transición.
+
+---
+
+#### 82. AS-IS — brechas y salida
+
+| Brecha observada | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| tamaños de targets inconsistentes entre primitives y consumidores | toques erróneos y fricción por superficie | `PULSO-UX-021` + paquete UI aplicable | consumidores materializan el contrato 015 y validación táctil pasa |
+| algunos controles observados usan 40 px o 36 px de alto | debajo del piso operativo preferido PULSO | `PULSO-UX-021` | áreas efectivas alcanzan el contrato o existe justificación accesible equivalente |
+| no se observa política PULSO uniforme de `touch-action` | activación y gesto pueden variar entre controles | `PULSO-UX-021` | primitive/patrón compartido normaliza interacción sin romper zoom/accesibilidad |
+| scanner mezcla varios modos en una misma superficie | riesgo de confundir cliente, actor y redención | `PULSO-UX-014/015/018` + arquitectura objetivo | modos conservan identidad, limpieza y targets claros |
+| pedidos conserva acciones pequeñas dentro de cards/modales | target de card no compensa acción interna pequeña | `PULSO-UX-021` | acciones internas cumplen target/spacing y semántica |
+| touch actual no demuestra protección transversal de doble tap | posible segunda intención fuera de componentes aislados | `PULSO-UX-013/015/021` | in-flight + idempotencia + pruebas E2E cubren todas las mutaciones |
+| validación física todavía no está ejecutada para este contrato PULSO | geometría documental puede fallar en estación real | `PULSO-UX-019` | escenarios touch se prueban en perfiles/ambientes aplicables |
+
+No queda brecha sin propietario y condición de salida.
+
+---
+
+#### 83. Frontera con PULSO-UX-016
+
+`PULSO-UX-016 — Conectar venta con inventario` recibe una UX donde:
+
+```text
+CAPTURAR / TOCAR / ESCANEAR
+!=
+AJUSTAR INVENTARIO
+```
+
+015 no introduce efectos de stock por interacción visual.
+
+La integración 016 podrá usar los patrones táctiles aprobados para mostrar resultado, pendiente, conflicto o compensación sin cambiar ownership de NEXO.
+
+---
+
+#### 84. Frontera con PULSO-UX-017 y PULSO-UX-018
+
+`PULSO-UX-017` conserva NUMERA y hechos económicos.
+
+`PULSO-UX-018` conserva integración cliente/loyalty con PASS.
+
+La composición táctil puede presentar esos resultados, pero no crea ledgers, saldos, asientos ni fuentes paralelas.
+
+---
+
+#### 85. Frontera con PULSO-UX-019
+
+`PULSO-UX-019` deberá validar operativamente, como mínimo:
+
+- target de 48 px en acciones recurrentes;
+- separación táctil bajo uso normal;
+- overlay con guantes/humedad cuando aplique;
+- orientación vertical y horizontal;
+- teclado virtual;
+- teclado físico y foco;
+- lector de pantalla;
+- actor visible y cambio A→B;
+- doble tap durante in-flight;
+- scanner repetido;
+- monto/cantidad;
+- confirmación sensible;
+- actualización Realtime durante un toque;
+- offline/resultado desconocido;
+- tablet/estación compartida representativa.
+
+015 no ejecuta esas pruebas.
+
+---
+
+#### 86. Frontera con PULSO-UX-020 y PULSO-UX-021
+
+`PULSO-UX-020` clasificará qué elementos del prototipo histórico son reutilizables, adaptables o descartables frente a este contrato.
+
+`PULSO-UX-021` materializará la arquitectura objetivo y deberá consumir:
+
+```text
+48PX PREFERRED TOUCH FLOOR
+ACTOR VISIBLE
+ONE PRIMARY ACTION
+SEMANTIC REFLOW
+NO HOVER-ONLY
+NO HIDDEN CRITICAL GESTURE
+IN-FLIGHT DOUBLE-TAP PROTECTION
+ACCESSIBLE KEYBOARD / SCREEN READER PATH
+STATION OVERLAYS
+```
+
+sin convertir primitives de UI en autoridad empresarial.
+
+---
+
+#### 87. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: ergonomía y accesibilidad táctil, perfiles de estación, composición semántica, acción primaria, prevención de duplicados, actor real, contexto, autorización y flujos PULSO ya poseen cobertura canónica vigente. Esta tarea especializa esa cobertura en la geometría y comportamiento táctil PULSO sin crear una obligación verificable nueva.
+
+---
+
+#### 88. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-UX-003` para adecuar densidad e interacción al actor y contexto efectivos;
+- `TREQ-UX-006` para recuperación segura e interrupciones;
+- `TREQ-UX-008` y `TREQ-UX-009` para navegación y contexto coherentes;
+- `TREQ-AUTH-011`, `TREQ-AUTH-014`, `TREQ-AUTH-015`, `TREQ-AUTH-277`, `TREQ-AUTH-278` y `TREQ-AUTH-331` para dispositivo compartido, actor, invalidación, evidencia y estados interactivos;
+- `TREQ-PULSO-004`, `TREQ-PULSO-005`, `TREQ-PULSO-006`, `TREQ-PULSO-014`, `TREQ-PULSO-015`, `TREQ-PULSO-016`, `TREQ-PULSO-018`, `TREQ-PULSO-024` y `TREQ-PULSO-026` para acciones nombradas, ciclo comercial, pagos/caja, rutas, territorio y autorización;
+- la cobertura derivada de `UX-STATION-002..012` y `NFR-REQ-007` para modalidad, estación, ergonomía, accesibilidad, bandeja y composición.
+
+La enumeración es trazabilidad reutilizada; no modifica requisitos existentes.
+
+---
+
+#### 89. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron `main` vigente de `vento-shell`, continuidad PULSO, topología `DEFINE_ONCE`, contratos `UX-STATION-002/003/005/009/010/011/012`, `NFR-REQ-007`, Registro 04A PULSO aplicable, primitives `packages/ui-web` relevantes y runtime vigente de `vento-pulso` en scanner, pedidos, salón y primitives estándar. `PULSO-UX-014` se consume desde el artefacto completo aprobado por el usuario mientras su publicación remota permanece pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, cobros, cierres, escaneos, redenciones, cambios de actor ni pruebas táctiles sobre dispositivos físicos. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-015` no crea instancia física propia ni autoriza cambios en aplicaciones, datos, Supabase, tablets, POS o periféricos. |
+
+---
+
+#### 90. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] el contrato táctil no cambia semántica empresarial ni autoridad;
+- [ ] `STP-01`, `STP-02` y `SERVICE_CHECKOUT` quedan consumidos sin inventar perfiles;
+- [ ] `IM1_TOUCH_VISUAL` queda como modalidad primaria donde corresponda;
+- [ ] controles recurrentes nuevos usan piso operativo preferido de 48×48 CSS px;
+- [ ] gloved/wet/hands-busy pueden exigir targets mayores y menor densidad;
+- [ ] targets adyacentes conservan separación suficiente;
+- [ ] ninguna acción necesaria depende solo de hover;
+- [ ] gestos ocultos no son camino único de acciones críticas;
+- [ ] existe como máximo una acción primaria por estado;
+- [ ] acciones sensibles/destructivas están separadas físicamente de acciones frecuentes;
+- [ ] actor efectivo se muestra en contexto persistente antes de mutaciones;
+- [ ] `Cambiar trabajador` es táctil y accesible sin entrar a administración;
+- [ ] `NO_ACTOR` bloquea commits que exigen humano;
+- [ ] A→B bloquea taps actor-bound y limpia estado sensible;
+- [ ] reflow no depende de marca/modelo del dispositivo;
+- [ ] portrait y landscape conservan la misma intención y recurso;
+- [ ] la rotación no crea nueva idempotency key;
+- [ ] densidad operativa evita patrones de backoffice en POS ordinario;
+- [ ] teclado físico y foco siguen siendo operables;
+- [ ] teclado virtual no tapa campo, error ni siguiente acción;
+- [ ] screen reader recibe nombres/estados semánticos;
+- [ ] montos y cantidades son corregibles sin submit accidental;
+- [ ] PIN/firma permanece secreto efímero y separado de cliente/redención;
+- [ ] escaneo muestra objeto resuelto antes de efecto sensible;
+- [ ] lectura repetida no duplica efecto;
+- [ ] feedback de toque no finge resultado empresarial;
+- [ ] sonido/haptic nunca son única señal;
+- [ ] estado in-flight suprime una segunda intención por doble tap;
+- [ ] idempotencia server-side continúa siendo obligatoria;
+- [ ] `UNKNOWN_OUTCOME` entra a recuperación y no a nueva intención ciega;
+- [ ] error técnico se distingue de deny/conflicto;
+- [ ] estados vacíos no ocultan fallos;
+- [ ] offline/sync/conflicto/confirmación son perceptibles;
+- [ ] cambio de actor limpia estado personal visible;
+- [ ] overlays de humedad, guantes, ruido, una mano y postura están considerados;
+- [ ] creación, cobro y caja reciben composición touch específica sin cambiar sus contratos;
+- [ ] loyalty separa cliente, actor y PIN;
+- [ ] salón evita hover y mantiene targets estables ante actualizaciones;
+- [ ] pedidos evita depender de botones internos pequeños;
+- [ ] importaciones administrativas no se reclasifican como POS táctil ordinario;
+- [ ] modales conservan foco, targets y cancelación clara;
+- [ ] no se oculta actor/estado crítico en drawer o menú;
+- [ ] no hay scroll horizontal estructural para acción principal;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] 016 recibe handoff suficiente sin absorberse;
+- [ ] 019 conserva validación física/operativa;
+- [ ] 020/021 conservan clasificación/materialización;
+- [ ] no se crean ni modifican TREQ;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 91. Límites
+
+Esta tarea no:
+
+- implementa CSS o componentes;
+- modifica `packages/ui-web`;
+- modifica `vento-pulso`;
+- crea una design system paralela;
+- cambia rutas;
+- crea pantallas nuevas;
+- cambia PermissionKeys;
+- cambia grants;
+- cambia actor sessions;
+- cambia PIN, hashing, rate limit o MFA;
+- cambia reglas de autorización;
+- cambia estados de proceso;
+- crea idempotency keys nuevas por dominio;
+- crea ledger de pagos, caja, PASS, inventario o NUMERA;
+- configura tablets o kioscos;
+- compra hardware;
+- configura escáneres, cámaras, datáfonos o impresoras;
+- ejecuta pruebas físicas;
+- modifica Supabase, RLS, RPC, tablas, datos o migraciones;
+- modifica Registro 04A;
+- crea instancia física;
+- desarrolla `PULSO-UX-016`.
+
+---
+
+#### 92. Decisión final de experiencia
+
+La experiencia táctil PULSO queda resumida así:
+
+```text
+ACTOR + CONTEXTO VISIBLES
+→ TRABAJO ACTUAL
+→ CAPTURA / SELECCION TACTIL
+→ RESUMEN SUFICIENTE
+→ UNA ACCION PRIMARIA
+→ IN-FLIGHT SIN DOBLE TAP
+→ RESULTADO AUTORITATIVO
+→ FEEDBACK / SIGUIENTE ACCION
+```
+
+con esta invariancia:
+
+```text
+CAMBIA EL LAYOUT
+NO CAMBIA LA AUTORIDAD
+
+CAMBIA LA ORIENTACION
+NO CAMBIA LA INTENCION
+
+CAMBIA EL DISPOSITIVO
+NO CAMBIA EL SIGNIFICADO DEL EFECTO
+```
+
+---
+
+#### 93. Handoff inmediato a PULSO-UX-016
+
+`PULSO-UX-016 — Conectar venta con inventario` recibe:
+
+```text
+TOQUE / ESCANEO / SELECCION NO SON MOVIMIENTO DE INVENTARIO
+VENTA CONFIRMADA ENTREGA UN HECHO EMPRESARIAL IDENTIFICABLE
+UI PUEDE MOSTRAR PENDIENTE / CONFIRMADO / CONFLICTO SIN CREAR LEDGER NEXO
+DOBLE TAP NO DUPLICA SOLICITUD DE EFECTO
+RESULTADO DESCONOCIDO SE RECONCILIA ANTES DE NUEVA INTENCION
+ACTOR / SEDE / RECURSO PERMANECEN CORRELACIONABLES
+```
+
+015 no descuenta, reserva, repone ni ajusta stock.
+
+---
+
+#### 94. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-014 — Identificar actor real en terminal compartida`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-015 — Diseñar experiencia táctil para POS`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-016 — Conectar venta con inventario`
 ### [ ] PULSO-UX-016 — Conectar venta con inventario
 ### [ ] PULSO-UX-017 — Conectar venta con NUMERA
 ### [ ] PULSO-UX-018 — Conectar venta con PASS
