@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1392** |
+| Tareas aprobadas | **1393** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **204** |
+| Tareas no iniciadas | **203** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **87.22% (1392/1596)** |
+| Porcentaje de completamiento | **87.28% (1393/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados** |
-| Tarea actual | **NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente** |
+| Última tarea aprobada | **NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente** |
+| Tarea actual | **NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes** |
+| Siguiente tarea | **NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 2 de 74 aprobadas; NUMERA-AUD-003 pendiente** |
+| Progreso del bloque | **BLOQUE O: 3 de 74 aprobadas; NUMERA-AUD-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUD-003** |
+| Carril documental | **ACTIVO — NUMERA-AUD-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUD-002` — Inventariar Server Actions, API, RPC, consultas y jobs utilizados |
-| Tarea actual | `NUMERA-AUD-003` — Inventariar tablas, vistas, eventos y sistemas fuente — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUD-004` — Identificar módulos completos, parciales, prototipos y ausentes |
+| Última aprobada | `NUMERA-AUD-003` — Inventariar tablas, vistas, eventos y sistemas fuente |
+| Tarea actual | `NUMERA-AUD-004` — Identificar módulos completos, parciales, prototipos y ausentes — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUD-005` — Detectar datos simulados, hardcodes, TODO y lógica provisional |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 2 DE 74 APROBADAS — ACTUAL NUMERA-AUD-003** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 3 DE 74 APROBADAS — ACTUAL NUMERA-AUD-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados
-        ↓
-TAREA ACTUAL
 NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 2 de 74 tareas aprobadas
+BLOQUE O — 3 de 74 tareas aprobadas
 ```
