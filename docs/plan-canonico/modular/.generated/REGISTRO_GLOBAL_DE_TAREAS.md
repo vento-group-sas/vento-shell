@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1372** |
+| Aprobadas | **1373** |
 | En propuesta | **0** |
-| No iniciadas | **224** |
+| No iniciadas | **223** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.96% (1372/1596)** |
+| Porcentaje de completamiento | **86.03% (1373/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **224** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1273** |
+| ⏸ NO_EVALUADA | **223** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1274** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-UX-003` — Diseñar inicio para servicio de salón | ✅ APROBADA |
-| Tarea actual | `PULSO-UX-004` — Diseñar inicio para mostrador | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-005` — Diseñar inicio para operador integral | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-UX-004` — Diseñar inicio para mostrador | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-005` — Diseñar inicio para operador integral | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-UX-006` — Diseñar inicio para supervisor | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1134,7 +1134,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-001` | Inventariar procesos de venta, caja y salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-002` | Diseñar inicio para cajero | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-003` | Diseñar inicio para servicio de salón | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-004` | Diseñar inicio para mostrador | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-004` | Diseñar inicio para mostrador | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-005` | Diseñar inicio para operador integral | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-006` | Diseñar inicio para supervisor | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-007` | Simplificar creación de venta | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |

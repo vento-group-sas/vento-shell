@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1372** |
+| Tareas aprobadas | **1373** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **224** |
+| Tareas no iniciadas | **223** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.96% (1372/1596)** |
+| Porcentaje de completamiento | **86.03% (1373/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-UX-003 — Diseñar inicio para servicio de salón** |
-| Tarea actual | **PULSO-UX-004 — Diseñar inicio para mostrador** |
+| Última tarea aprobada | **PULSO-UX-004 — Diseñar inicio para mostrador** |
+| Tarea actual | **PULSO-UX-005 — Diseñar inicio para operador integral** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-UX-005 — Diseñar inicio para operador integral** |
+| Siguiente tarea | **PULSO-UX-006 — Diseñar inicio para supervisor** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 20 de 38 aprobadas; PULSO-UX-004 pendiente** |
+| Progreso del bloque | **BLOQUE N: 21 de 38 aprobadas; PULSO-UX-005 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-UX-004** |
+| Carril documental | **ACTIVO — PULSO-UX-005** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-UX-003` — Diseñar inicio para servicio de salón |
-| Tarea actual | `PULSO-UX-004` — Diseñar inicio para mostrador — **NO INICIADA** |
-| Siguiente tarea | `PULSO-UX-005` — Diseñar inicio para operador integral |
+| Última aprobada | `PULSO-UX-004` — Diseñar inicio para mostrador |
+| Tarea actual | `PULSO-UX-005` — Diseñar inicio para operador integral — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-006` — Diseñar inicio para supervisor |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 20 DE 38 APROBADAS — ACTUAL PULSO-UX-004** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 21 DE 38 APROBADAS — ACTUAL PULSO-UX-005** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-UX-003 — Diseñar inicio para servicio de salón
-        ↓
-TAREA ACTUAL
 PULSO-UX-004 — Diseñar inicio para mostrador
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-UX-005 — Diseñar inicio para operador integral
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-006 — Diseñar inicio para supervisor
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 20 de 38 tareas aprobadas
+BLOQUE N — 21 de 38 tareas aprobadas
 ```
