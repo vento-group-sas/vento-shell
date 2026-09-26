@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1386** |
+| Aprobadas | **1387** |
 | En propuesta | **0** |
-| No iniciadas | **210** |
+| No iniciadas | **209** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **86.84% (1386/1596)** |
+| Porcentaje de completamiento | **86.90% (1387/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **210** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1287** |
+| ⏸ NO_EVALUADA | **209** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1288** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-UX-017` — Conectar venta con NUMERA | ✅ APROBADA |
-| Tarea actual | `PULSO-UX-018` — Conectar venta con PASS | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-019` — Validar el prototipo con caja, salón, barra, cocina y mostrador | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-UX-018` — Conectar venta con PASS | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-019` — Validar el prototipo con caja, salón, barra, cocina y mostrador | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-UX-020` — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1148,7 +1148,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-015` | Diseñar experiencia táctil para POS | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-016` | Conectar venta con inventario | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-017` | Conectar venta con NUMERA | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-018` | Conectar venta con PASS | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-018` | Conectar venta con PASS | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-019` | Validar el prototipo con caja, salón, barra, cocina y mostrador | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-020` | Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-021` | Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |

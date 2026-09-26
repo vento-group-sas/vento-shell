@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1386** |
+| Tareas aprobadas | **1387** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **210** |
+| Tareas no iniciadas | **209** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **86.84% (1386/1596)** |
+| Porcentaje de completamiento | **86.90% (1387/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-UX-017 — Conectar venta con NUMERA** |
-| Tarea actual | **PULSO-UX-018 — Conectar venta con PASS** |
+| Última tarea aprobada | **PULSO-UX-018 — Conectar venta con PASS** |
+| Tarea actual | **PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador** |
+| Siguiente tarea | **PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 34 de 38 aprobadas; PULSO-UX-018 pendiente** |
+| Progreso del bloque | **BLOQUE N: 35 de 38 aprobadas; PULSO-UX-019 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-UX-018** |
+| Carril documental | **ACTIVO — PULSO-UX-019** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-UX-017` — Conectar venta con NUMERA |
-| Tarea actual | `PULSO-UX-018` — Conectar venta con PASS — **NO INICIADA** |
-| Siguiente tarea | `PULSO-UX-019` — Validar el prototipo con caja, salón, barra, cocina y mostrador |
+| Última aprobada | `PULSO-UX-018` — Conectar venta con PASS |
+| Tarea actual | `PULSO-UX-019` — Validar el prototipo con caja, salón, barra, cocina y mostrador — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-020` — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 34 DE 38 APROBADAS — ACTUAL PULSO-UX-018** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 35 DE 38 APROBADAS — ACTUAL PULSO-UX-019** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-UX-017 — Conectar venta con NUMERA
-        ↓
-TAREA ACTUAL
 PULSO-UX-018 — Conectar venta con PASS
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 34 de 38 tareas aprobadas
+BLOQUE N — 35 de 38 tareas aprobadas
 ```
