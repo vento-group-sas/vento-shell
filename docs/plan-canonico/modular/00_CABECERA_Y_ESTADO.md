@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1368** |
+| Tareas aprobadas | **1369** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **228** |
+| Tareas no iniciadas | **227** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.71% (1368/1596)** |
+| Porcentaje de completamiento | **85.78% (1369/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-AUTH-014 — Mantener configuración administrativa separada** |
-| Tarea actual | **PULSO-AUTH-015 — Migrar a paquetes de vento-shell** |
+| Última tarea aprobada | **PULSO-AUTH-015 — Migrar a paquetes de vento-shell** |
+| Tarea actual | **PULSO-AUTH-016 — Ejecutar pruebas integrales** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-AUTH-016 — Ejecutar pruebas integrales** |
+| Siguiente tarea | **PULSO-UX-002 — Diseñar inicio para cajero** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 16 de 38 aprobadas; PULSO-AUTH-015 pendiente** |
+| Progreso del bloque | **BLOQUE N: 17 de 38 aprobadas; PULSO-AUTH-016 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-AUTH-015** |
+| Carril documental | **ACTIVO — PULSO-AUTH-016** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-AUTH-014` — Mantener configuración administrativa separada |
-| Tarea actual | `PULSO-AUTH-015` — Migrar a paquetes de vento-shell — **NO INICIADA** |
-| Siguiente tarea | `PULSO-AUTH-016` — Ejecutar pruebas integrales |
+| Última aprobada | `PULSO-AUTH-015` — Migrar a paquetes de vento-shell |
+| Tarea actual | `PULSO-AUTH-016` — Ejecutar pruebas integrales — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-002` — Diseñar inicio para cajero |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 16 DE 38 APROBADAS — ACTUAL PULSO-AUTH-015** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 17 DE 38 APROBADAS — ACTUAL PULSO-AUTH-016** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-AUTH-014 — Mantener configuración administrativa separada
-        ↓
-TAREA ACTUAL
 PULSO-AUTH-015 — Migrar a paquetes de vento-shell
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-AUTH-016 — Ejecutar pruebas integrales
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-002 — Diseñar inicio para cajero
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 16 de 38 tareas aprobadas
+BLOQUE N — 17 de 38 tareas aprobadas
 ```
