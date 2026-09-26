@@ -1189,7 +1189,1389 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-002 — Inventariar órdenes`
-### [ ] PULSO-AUTH-002 — Inventariar órdenes
+### ✅ PULSO-AUTH-002 — Inventariar órdenes
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-001 — Inventariar vistas POS
+**Tarea siguiente:** PULSO-AUTH-003 — Inventariar salón
+**Tipo de tarea:** inventario documental cerrado de la superficie AS-IS de órdenes expuesta por `PULSO-ROUTE-003` (`/orders`), reconciliando recursos leídos, estados independientes, filtros, acciones operativas, despacho, regalos, facturación, conversación, historial, Realtime, callers de servidor y navegador, dependencia legacy, permisos observados, contexto territorial y handoffs de autorización, sin definir permisos finales ni modificar código, datos o Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, tablas, vistas, funciones, RPC, RLS, Realtime, Edge Functions, migraciones, permisos, rutas, componentes, datos, contratos generados, `vento-shell` ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma exhaustiva, estable y verificable la superficie actual de órdenes de PULSO para que las tareas posteriores de autorización trabajen sobre un universo técnico único y no reconstruyan el tablero desde botones visibles, nombres de componentes o inferencias sobre el proceso comercial.
+
+La tarea debe dejar resuelto:
+
+- qué identidad de ruta contiene el tablero de órdenes;
+- qué archivos componen materialmente la experiencia runtime;
+- qué recursos se leen;
+- qué estados se muestran y cuáles deben permanecer independientes;
+- qué filtros modifican la vista sin crear otras rutas;
+- qué acciones mutan estado operativo;
+- qué acciones gestionan despacho;
+- qué acciones gestionan regalos;
+- qué superficies gestionan conversación y archivo;
+- qué evidencia de facturación se presenta;
+- qué actualizaciones llegan por Realtime;
+- qué operaciones se invocan desde Server Actions y cuáles directamente desde el navegador;
+- qué permisos se observan sin convertirlos en diseño final;
+- qué deuda legacy sigue activa;
+- qué responsabilidades se transfieren a autorización y materialización posterior.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-001
+
+`PULSO-AUTH-001` entrega una identidad estable:
+
+```text
+PULSO-ROUTE-003
+→ /orders
+→ PEDIDOS_OPERACION
+→ vista agregada
+→ apertura != autoridad de acciones
+```
+
+También entrega como restricciones:
+
+```text
+VIEW_ACCESS != ACTION_AUTHORITY
+pos.main observado != permiso final suficiente
+site_id observado != autoridad territorial por sí mismo
+```
+
+Esta tarea profundiza únicamente la superficie de órdenes y no reabre el inventario de las otras cinco rutas PULSO.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el inventario se define una sola vez;
+- no crea instancia física propia;
+- no modifica el consumidor;
+- no crea o retira acciones;
+- no crea permisos;
+- no modifica RPC;
+- no modifica RLS;
+- no modifica Realtime;
+- no modifica Edge Functions;
+- no cambia estados runtime;
+- no retira `orders-board-legacy`;
+- no modifica `active-sequence.json` manualmente;
+- la protección física posterior permanece en `PULSO-AUTH-009..016`, contratos transversales y paquetes propietarios.
+
+---
+
+#### 4. Fuentes verificadas
+
+El inventario se reconcilia contra:
+
+- `PULSO-AUTH-001` aprobado como base inmediata;
+- `PULSO-UX-001` aprobado;
+- registro 04A vigente del dominio PULSO;
+- inventario transversal de superficies de servidor;
+- `task-work-topology.json`;
+- continuidad y secuencia documental vigentes;
+- árbol actual de `vento-pulso`;
+- `src/app/orders/page.tsx`;
+- `src/app/orders/orders-board-live.tsx`;
+- `src/app/orders/orders-board.tsx`;
+- `src/app/orders/orders-board-legacy.tsx`;
+- `src/app/orders/orders-live-bridge.tsx`;
+- `src/app/orders/order-chat-live.tsx`;
+- `src/app/orders/orders-chat-inbox.tsx`;
+- `src/app/orders/delivery-dispatch-bridge.tsx`;
+- `src/app/orders/delivery-override-bridge.tsx`;
+- `scripts/quality/pulso-consumer-baseline-gate.mjs`.
+
+La existencia de una superficie técnica se registra como evidencia AS-IS y no como aprobación de su diseño definitivo.
+
+---
+
+#### 5. Frontera raíz
+
+Este inventario conserva obligatoriamente:
+
+```text
+RUTA /orders
+!=
+TABLERO VISUAL
+!=
+RECURSO DE DATOS
+!=
+ESTADO DE PEDIDO
+!=
+ESTADO DE PAGO
+!=
+ESTADO DE DESPACHO
+!=
+ESTADO DE CONVERSACIÓN
+!=
+ESTADO DE FACTURACIÓN
+!=
+CHECKLIST DE REGALO
+!=
+ACCIÓN OPERATIVA
+!=
+PERMISO FINAL
+!=
+PROCESO COMERCIAL COMPLETO
+```
+
+Una relación entre dos elementos no fusiona sus identidades ni sus autoridades.
+
+---
+
+#### 6. Snapshot técnico verificado
+
+Repositorio consumidor inspeccionado:
+
+```text
+repository = vento-group-sas/vento-pulso
+branch = main
+HEAD = 715b5683db05caa010d725679b5ada4705a6da6e
+framework = Next.js App Router
+route = /orders
+route_id = PULSO-ROUTE-003
+```
+
+La página fuente conserva el blob aprobado previamente para `/orders`:
+
+```text
+src/app/orders/page.tsx
+blob = abcaefaec16a42e4ece18575addb93e25b1a1228
+```
+
+La tarea documenta este snapshot; un commit posterior no invalida automáticamente todo el inventario, pero obliga a revisar las conclusiones cuyas fuentes materiales cambien.
+
+---
+
+#### 7. Identidad canónica de la superficie
+
+La identidad base es:
+
+```text
+PULSO-ROUTE-003
++
+/orders
++
+src/app/orders/page.tsx
++
+PEDIDOS_OPERACION
+```
+
+Los componentes, bridges, Server Actions, RPC y suscripciones que sirven a la ruta no crean nuevas identidades `PULSO-ROUTE`.
+
+---
+
+#### 8. Cadena runtime observada del tablero
+
+La cadena principal de representación contiene:
+
+```text
+src/app/orders/page.tsx
+→ OrdersBoardLive
+→ OrdersBoard
+→ BaseOrdersBoard
+→ orders-board-legacy.tsx
+```
+
+Concretamente:
+
+- `page.tsx` prepara datos, filtros y acciones;
+- `orders-board-live.tsx` añade sincronización y mutaciones optimistas;
+- `orders-board.tsx` decora la experiencia con lógica de regalos;
+- `orders-board.tsx` importa `OrdersBoard` desde `orders-board-legacy.tsx` como `BaseOrdersBoard`;
+- la implementación legacy permanece, por tanto, en la cadena runtime actual.
+
+Esta tarea no autoriza retirar ninguna capa.
+
+---
+
+#### 9. Cardinalidad técnica del universo de órdenes
+
+El inventario principal contiene:
+
+```text
+PAGE_ROUTE = 1
+PRIMARY_PAGE = 1
+BOARD_LAYERS = 3
+DELIVERY_BRIDGES = 2
+CHAT_SURFACES = 2
+LIVE_ORDER_BRIDGES = 1
+BASELINE_SURFACES = 2
+```
+
+Las dos superficies contractuales del baseline asociadas directamente son:
+
+```text
+PULSO-SURFACE-006 = pedidos, líneas, estado, pago y fulfillment
+PULSO-SURFACE-007 = despacho, chat, facturación e historial
+```
+
+La cardinalidad describe el snapshot técnico y no inventa pantallas adicionales.
+
+---
+
+#### 10. Parámetros y filtros observados
+
+La ruta consume parámetros de consulta para contexto o filtrado, entre ellos:
+
+```text
+site_id
+view
+fulfillment
+message
+error
+```
+
+Los filtros funcionales observados incluyen:
+
+```text
+view:
+- active
+- delivered
+- cancelled
+- all
+
+fulfillment:
+- all
+- delivery
+- pickup
+- on_premise
+```
+
+Regla:
+
+```text
+QUERY FILTER
+!=
+NEW ROUTE
+!=
+NEW SCREEN IDENTITY
+!=
+AUTHORITY
+```
+
+---
+
+#### 11. Estados de pedido observados
+
+El tablero reconoce actualmente:
+
+```text
+pending
+confirmed
+preparing
+ready_for_dispatch
+in_transit
+on_the_way
+delivered
+cancelled
+```
+
+La existencia simultánea de `in_transit` y `on_the_way` se conserva como evidencia AS-IS.
+
+Esta tarea no los fusiona, renombra ni declara equivalentes en el contrato de datos.
+
+---
+
+#### 12. Estados de pago observados
+
+La superficie presenta estados de pago como dimensión independiente del estado de pedido:
+
+```text
+paid
+pending
+pending_payment
+unpaid
+failed
+cancelled
+refunded
+not_required
+```
+
+Regla obligatoria:
+
+```text
+ORDER_STATUS
+!=
+PAYMENT_STATUS
+```
+
+La presencia de `payment_status` en el tablero no demuestra materialización completa de cobro, conciliación, caja o documento fiscal.
+
+---
+
+#### 13. Modalidades de fulfillment observadas
+
+El tablero distingue como mínimo:
+
+```text
+delivery
+pickup
+on_premise
+```
+
+La modalidad condiciona presentación, pago y acciones operativas, pero no crea otra identidad de pedido.
+
+Regla:
+
+```text
+FULFILLMENT_TYPE
+!=
+ORDER_IDENTITY
+```
+
+---
+
+#### 14. Estados de despacho observados
+
+La superficie maneja una dimensión de despacho separada, con etiquetas para estados como:
+
+```text
+not_required
+pending
+assigned
+ready_for_dispatch
+in_transit
+delivered
+cancelled
+```
+
+Regla:
+
+```text
+ORDER_STATUS
+!=
+DISPATCH_STATUS
+```
+
+Una transición de pedido puede correlacionarse con despacho sin convertir ambas máquinas de estado en una sola.
+
+---
+
+#### 15. Fuentes o canales observados
+
+El código presenta etiquetas para fuentes como:
+
+```text
+vento_pass
+pulso
+pos
+web
+```
+
+La etiqueta de origen:
+
+- no cambia el propietario del pedido interno;
+- no demuestra por sí sola deduplicación de un canal externo;
+- no materializa automáticamente `VSCREEN-0087 — Bandeja de pedidos de canales externos`;
+- no convierte un pedido importado, web o PASS en una ruta distinta.
+
+---
+
+#### 16. Matriz de recursos leídos
+
+| Recurso observado | Uso AS-IS en `/orders` | Naturaleza |
+| --- | --- | --- |
+| `orders` | identidad, sede, estado, pago, fulfillment, despacho, cliente/guest, totales y contexto operativo | núcleo de pedido |
+| `order_items` | líneas del pedido, cantidades, precios y referencias de producto | línea comercial |
+| `products` | enriquecimiento de líneas | maestro consumido |
+| `order_item_options` | opciones/configuración de líneas | detalle de línea |
+| `order_billing_requests` | solicitud y resultado visible de facturación | fiscal/documental |
+| `order_status_events` | historial de operaciones y transiciones | auditoría operativa |
+| `employees` | resolución visual de actores de eventos | identidad laboral consumida |
+| `order_conversations` | conversación asociada al pedido | comunicación |
+| `order_messages` | mensajes asociados a conversación/pedido | comunicación |
+
+La lectura conjunta no transfiere ownership entre dominios.
+
+---
+
+#### 17. Lectura principal de pedidos
+
+La página consulta pedidos limitados a la sede resuelta y aplica orden temporal y filtros de vista.
+
+La evidencia observada conserva:
+
+```text
+ORDER
++
+SITE
++
+STATUS
++
+PAYMENT
++
+FULFILLMENT
++
+DISPATCH
+```
+
+El query de la página es una proyección operativa de lectura; no define por sí solo el contrato final de autorización de cada columna.
+
+---
+
+#### 18. Líneas, productos y opciones
+
+La superficie reconstruye detalle comercial desde líneas y enriquecimientos relacionados.
+
+Se conserva la separación:
+
+```text
+ORDER
+!=
+ORDER_ITEM
+!=
+PRODUCT MASTER
+!=
+ITEM OPTION
+```
+
+Esta tarea no autoriza mutaciones de línea, producto, precio, descuento o inventario por la mera capacidad de mostrarlos.
+
+---
+
+#### 19. Facturación observada
+
+`/orders` presenta evidencia de `order_billing_requests`, incluyendo información como:
+
+- identidad fiscal solicitada;
+- correo de facturación;
+- estado de solicitud;
+- proveedor;
+- referencia externa;
+- número de factura;
+- CUFE cuando existe;
+- referencias de PDF/XML cuando existen;
+- error cuando existe;
+- timestamps del ciclo observado.
+
+En el snapshot revisado, esta presencia se inventaría como lectura y visualización de evidencia.
+
+No se declara desde esta tarea una autoridad de emisión, anulación o regeneración fiscal.
+
+---
+
+#### 20. Historial de eventos
+
+El tablero consume `order_status_events` para exponer historial de operaciones y transiciones.
+
+La evidencia incluye campos relacionados con:
+
+```text
+operation
+from_status
+to_status
+from_dispatch_status
+to_dispatch_status
+dispatch_partner
+dispatch_reference
+actor
+metadata
+created_at
+```
+
+La existencia de actor o metadata en un evento no certifica por sí sola que todas las operaciones actuales ya tengan atribución de actor efectivo completa.
+
+---
+
+#### 21. Conversaciones y mensajes
+
+La superficie vincula:
+
+```text
+ORDER
+→ ORDER_CONVERSATION
+→ ORDER_MESSAGES
+```
+
+La identidad de conversación permanece separada de la identidad de pedido.
+
+Los mensajes conservan, entre otros:
+
+- `conversation_id`;
+- `order_id`;
+- `site_id`;
+- autor;
+- tipo de autor;
+- cuerpo;
+- timestamp.
+
+La conversación es una capacidad relacionada con el pedido, no un estado del pedido.
+
+---
+
+#### 22. Contadores y vistas operativas
+
+El tablero calcula o presenta conteos derivados del conjunto visible, incluyendo pedidos activos y pedidos listos para despacho.
+
+Los conteos son proyecciones de la vista actual.
+
+Regla:
+
+```text
+UI_COUNTER
+!=
+AUTHORITATIVE_BUSINESS_STATE
+```
+
+Un contador no sustituye la lectura del recurso ni una decisión de autorización.
+
+---
+
+#### 23. Server Action de operación de pedido
+
+`page.tsx` expone una acción de servidor para cambios operativos de pedido.
+
+Antes de invocar la RPC observada, la acción valida datos de entrada y ejecuta `requireAppAccess` con:
+
+```text
+appId = pulso
+permissionCode = pos.main
+requireAppAccessPermission = true
+siteId = sede solicitada/resuelta
+```
+
+La mutación se delega a:
+
+```text
+public.update_order_operational_state
+```
+
+La presencia de este guard es evidencia AS-IS y no aprobación de `pos.main` como permiso final de todas las operaciones.
+
+---
+
+#### 24. Operaciones de transición observadas
+
+El conjunto de operaciones explícitas del tablero incluye:
+
+| Operación | Intención observada |
+| --- | --- |
+| `mark_preparing` | llevar el pedido hacia preparación |
+| `mark_ready` | marcarlo listo para la siguiente etapa |
+| `mark_in_transit` | iniciar tránsito de una entrega |
+| `mark_delivered` | registrar entrega/cierre operativo visible |
+| `mark_cancelled` | cancelar el pedido |
+| `assign_dispatch` | asignar o actualizar referencia de despacho |
+
+Estas operaciones son identidades de acción y no simples nombres de botones.
+
+La tarea no define todavía qué rol final puede ejecutar cada una.
+
+---
+
+#### 25. Regla de pago observada para delivery
+
+El código bloquea la progresión operativa de un pedido `delivery` no cancelado cuando `payment_status` no es `paid`, conservando cancelación como salida visible.
+
+La regla AS-IS observada es aproximadamente:
+
+```text
+fulfillment = delivery
+AND order_status != cancelled
+AND payment_status != paid
+→ progression_blocked
+```
+
+Esta tarea documenta la regla del consumidor.
+
+No la eleva a contrato final de pagos ni certifica que todos los callers posibles estén sujetos al mismo control.
+
+---
+
+#### 26. Restricción observada para tránsito
+
+La acción `mark_in_transit` se trata como operación propia de `delivery` en la acción de servidor revisada.
+
+Regla AS-IS:
+
+```text
+mark_in_transit
+→ requiere order.fulfillment_type = delivery
+```
+
+No se extrapola esta regla a otros callers sin evidencia.
+
+---
+
+#### 27. Asignación de despacho
+
+La asignación de despacho utiliza la misma familia RPC de operación de pedido con:
+
+```text
+operation = assign_dispatch
+p_dispatch_partner
+p_dispatch_reference
+```
+
+La interfaz exige al menos partner o referencia para intentar la operación.
+
+Se conservan separadas:
+
+```text
+ASSIGN_DISPATCH
+!=
+MARK_IN_TRANSIT
+!=
+MARK_DELIVERED
+```
+
+---
+
+#### 28. Mutación directa desde `orders-board-live`
+
+Además de las Server Actions, `orders-board-live.tsx` invoca desde el cliente Supabase:
+
+```text
+public.update_order_operational_state
+```
+
+para operaciones optimistas y asignación de despacho.
+
+Esto demuestra que la superficie posee más de un caller técnico hacia la misma familia de mutación.
+
+Por tanto:
+
+```text
+SERVER_ACTION_GUARD
+!=
+PROOF_THAT_EVERY_CALLER_USES_SERVER_ACTION
+```
+
+La autorización efectiva de la RPC debe ser verificada en su contrato propietario; esta tarea no la presume.
+
+---
+
+#### 29. Checklist operativo de regalos
+
+`orders-board.tsx` reconoce tres operaciones de regalo:
+
+```text
+mark_card_prepared
+mark_card_included
+mark_price_free_packaging_confirmed
+```
+
+Las invoca mediante:
+
+```text
+public.update_order_gift_operational_state
+```
+
+El snapshot de regalo puede contener comprador, destinatario, políticas de contacto, mensaje de tarjeta, estado de tarjeta y confirmación de empaque sin precios.
+
+Estas operaciones forman parte del tratamiento operativo del pedido y no transfieren a PULSO el ownership del ledger de fidelización PASS.
+
+---
+
+#### 30. Realtime de pedidos en `orders-board-live`
+
+`orders-board-live.tsx` abre un canal por sede:
+
+```text
+pulso-orders-local:<site_id>
+```
+
+Suscripciones observadas:
+
+- `UPDATE` sobre `orders` filtrado por `site_id`;
+- `INSERT` sobre `orders` filtrado por `site_id`;
+- `INSERT` sobre `order_status_events` sin filtro de `site_id` declarado en la suscripción del cliente.
+
+El handler de eventos solo incorpora un evento a entradas cuyo `order_id` ya está presente en el tablero visible.
+
+La tarea registra ambas condiciones sin declarar seguridad E2E de Realtime.
+
+---
+
+#### 31. Sincronización de órdenes visibles
+
+El cliente puede resincronizar los pedidos actualmente visibles leyendo campos como:
+
+```text
+id
+status
+payment_status
+fulfillment_type
+dispatch_status
+dispatch_partner
+dispatch_reference
+```
+
+La resincronización corrige o confirma estado visual después de actividad optimista, visibilidad de página o recuperación de conectividad.
+
+Esto no sustituye idempotencia ni control de concurrencia en la autoridad de datos.
+
+---
+
+#### 32. Bridge de alertas live
+
+`orders-live-bridge.tsx` escucha cambios de `orders` por sede.
+
+Evidencia observada:
+
+- `INSERT` de pedido → alerta operativa y refresh programado;
+- `UPDATE` de pedido → detección de transición hacia `payment_status = paid` para delivery y alerta correspondiente;
+- estado de conexión Realtime visible para la UI.
+
+Una alerta no muta por sí sola el pedido ni confirma el resultado de pago.
+
+---
+
+#### 33. Chat embebido del pedido
+
+`order-chat-live.tsx` gestiona el chat asociado al pedido seleccionado.
+
+Evidencia observada:
+
+- marca lectura mediante `mark_order_conversation_read`;
+- lee mensajes de la conversación;
+- escucha `INSERT` de `order_messages` por `conversation_id`;
+- envía a través de una acción recibida desde el servidor;
+- considera cerrado el envío operativo cuando el pedido está `delivered` o `cancelled`;
+- después de un envío exitoso intenta notificar mediante la Edge Function `order-message-notify`.
+
+La notificación es un efecto posterior al mensaje y no su autoridad de persistencia.
+
+---
+
+#### 34. Inbox de conversaciones
+
+`orders-chat-inbox.tsx` añade una superficie agregada de conversación por sede.
+
+Evidencia observada:
+
+- conversaciones activas;
+- conversaciones archivadas;
+- conteo de no leídos;
+- lectura de pedidos relacionados;
+- carga de mensajes;
+- marcado como leído;
+- archivado/restauración;
+- archivado masivo de conversaciones finalizadas elegibles;
+- inserción de mensajes;
+- Realtime de mensajes, conversaciones y pedidos.
+
+Esta superficie no crea otra ruta de página.
+
+---
+
+#### 35. Mutaciones de chat observadas
+
+Las identidades técnicas observadas incluyen:
+
+```text
+public.mark_order_conversation_read
+public.get_staff_order_chat_unread_counts
+public.set_order_conversation_archived
+public.archive_finished_order_conversations
+INSERT public.order_messages
+supabase.functions.invoke("order-message-notify")
+```
+
+El inbox contiene un camino de inserción de mensajes desde cliente Supabase, mientras el chat embebido usa una acción de servidor para persistir el mensaje.
+
+La coexistencia de callers se registra para reconciliación posterior; no se declara automáticamente incorrecta ni equivalente.
+
+---
+
+#### 36. Archivo de conversaciones
+
+El inbox separa:
+
+```text
+ACTIVE_CONVERSATION
+!=
+ARCHIVED_CONVERSATION
+```
+
+La interfaz observa como condición para archivo ordinario que el pedido esté finalizado y no existan mensajes pendientes de lectura.
+
+También existe una operación de archivo masivo de conversaciones finalizadas.
+
+La política efectiva debe permanecer en la autoridad de servidor/RPC y no depender únicamente del botón visible.
+
+---
+
+#### 37. Edge Function de notificación de mensajes
+
+La superficie invoca:
+
+```text
+order-message-notify
+```
+
+como efecto de notificación posterior al mensaje.
+
+Regla:
+
+```text
+MESSAGE_PERSISTED
+!=
+NOTIFICATION_DELIVERED
+```
+
+Un fallo de push no debe reinterpretarse como inexistencia del mensaje ya persistido.
+
+La implementación y configuración de la Edge Function pertenecen a `vento-shell` y a sus contratos de infraestructura.
+
+---
+
+#### 38. Bridge de enlace para domiciliario
+
+Después de una asignación de despacho, `delivery-dispatch-bridge.tsx` verifica el pedido por `order_id` y `site_id` y puede solicitar:
+
+```text
+public.create_order_delivery_courier_link
+```
+
+Luego prepara un enlace para el portal del domiciliario y una salida hacia WhatsApp.
+
+Se conserva:
+
+```text
+ASSIGN_DISPATCH
+!=
+CREATE_COURIER_LINK
+!=
+SEND_WHATSAPP
+```
+
+La generación del enlace no se interpreta como entrega completada.
+
+---
+
+#### 39. Override de confirmación de entrega
+
+`delivery-override-bridge.tsx` observa una capacidad excepcional para pedidos `delivery` en estados `in_transit` u `on_the_way`.
+
+Antes de presentar la opción manual consulta:
+
+```text
+public.has_permission
+permission = pulso.delivery.override
+site_id = sede del pedido
+```
+
+La confirmación excepcional invoca:
+
+```text
+public.override_order_delivery_confirmation
+```
+
+con motivo, comentario y metadata de origen.
+
+La UI exige un comentario mínimo antes de invocar la RPC.
+
+El permiso observado es evidencia AS-IS de esta acción específica; no se generaliza al resto de operaciones del tablero.
+
+---
+
+#### 40. Permisos observados en la superficie
+
+Se observan al menos dos referencias de autorización distintas:
+
+```text
+pos.main
+→ guard de acceso a /orders y Server Actions revisadas
+
+pulso.delivery.override
+→ capacidad excepcional de confirmación manual de entrega
+```
+
+Por tanto:
+
+```text
+ONE_VIEW
+!=
+ONE_PERMISSION
+```
+
+Y también:
+
+```text
+OBSERVED_PERMISSION
+!=
+FINAL_PERMISSION_MODEL
+```
+
+La definición final de permisos permanece en `PULSO-AUTH-006..008` y contratos transversales de autorización.
+
+---
+
+#### 41. Contexto territorial
+
+`site_id` participa en lecturas, acciones, RPC, canales Realtime y bridges.
+
+La frontera obligatoria es:
+
+```text
+site_id solicitado
+→ debe reconciliarse con sesión/contexto autorizado
+→ no puede ampliar territorio por manipulación de URL o payload
+```
+
+La tarea conserva la evidencia de uso territorial, pero no certifica todos los paths de enforcement.
+
+La materialización del límite por sede continúa en `PULSO-AUTH-011`.
+
+---
+
+#### 42. Regla de autorización por recurso y estado
+
+Toda acción sensible de órdenes debe permanecer conceptualmente separada por:
+
+```text
+PRINCIPAL
++
+ACTOR EFECTIVO
++
+PERMISO EXACTO
++
+SITE
++
+ORDER_ID
++
+RESOURCE
++
+CURRENT_STATE
++
+REQUESTED_OPERATION
++
+ALLOWED_COLUMNS
+```
+
+Esta tarea inventaría el universo que deberá protegerse.
+
+No define todavía la matriz final actor → permiso → operación.
+
+---
+
+#### 43. Acceso a la vista y autoridad de mutación
+
+Regla heredada y confirmada:
+
+```text
+OPEN /orders
+!=
+MARK_PREPARING
+!=
+MARK_READY
+!=
+MARK_IN_TRANSIT
+!=
+MARK_DELIVERED
+!=
+MARK_CANCELLED
+!=
+ASSIGN_DISPATCH
+!=
+UPDATE_GIFT_CHECKLIST
+!=
+SEND_MESSAGE
+!=
+ARCHIVE_CHAT
+!=
+DELIVERY_OVERRIDE
+```
+
+La ruta agrupa capacidades heterogéneas.
+
+Por tanto, un guard de página no puede ser tratado como evidencia suficiente de autorización granular de todas ellas.
+
+---
+
+#### 44. Dependencia runtime de `orders-board-legacy`
+
+La dependencia legacy no es solo histórica.
+
+En el snapshot actual:
+
+```text
+orders-board.tsx
+imports
+OrdersBoard as BaseOrdersBoard
+from ./orders-board-legacy
+```
+
+Y `orders-board-live.tsx` consume el `OrdersBoard` decorado.
+
+Resultado:
+
+```text
+LEGACY_RUNTIME_DEPENDENCY = ACTIVE
+```
+
+Esta tarea no declara paridad, retiro ni reemplazo completados.
+
+---
+
+#### 45. Deuda de paridad y retiro
+
+La cobertura vigente exige que la migración futura conserve paridad de:
+
+- pedidos;
+- filtros;
+- transiciones;
+- despacho;
+- conversación;
+- historial;
+- facturación;
+- regalos;
+- eventos;
+- actualización en tiempo real.
+
+La presencia de componentes nuevos junto al legacy no demuestra que esa paridad ya esté cerrada.
+
+El retiro del import runtime permanece fuera de esta tarea.
+
+---
+
+#### 46. `PULSO-SURFACE-006`
+
+El baseline define esta superficie como:
+
+```text
+PULSO-SURFACE-006
+= pedidos, líneas, estado, pago y fulfillment
+```
+
+Su familia de validación requiere evidencia equivalente a:
+
+```text
+order_id
+site_valid
+lines_valid
+payment_rule_valid
+fulfillment_valid
+transition_supported
+resource_scope_valid
+no_duplicate_effect
+```
+
+Esta tarea inventaría los elementos que participan en ese contrato; no ejecuta la certificación física del consumidor.
+
+---
+
+#### 47. `PULSO-SURFACE-007`
+
+El baseline define:
+
+```text
+PULSO-SURFACE-007
+= despacho, chat, facturación e historial
+```
+
+Su familia de validación requiere evidencia equivalente a:
+
+```text
+order_id
+dispatch_scope_valid
+conversation_bound
+message_valid
+events_attributable
+billing_reference_bound
+resource_scope_valid
+```
+
+La superficie agrupa recursos relacionados sin convertirlos en un único permiso.
+
+---
+
+#### 48. Relación con pantallas canónicas PULSO
+
+`/orders` aporta evidencia parcial a varias pantallas canónicas, sin equivalencia uno a uno:
+
+| Pantalla canónica | Relación AS-IS observada |
+| --- | --- |
+| `VSCREEN-0081 — Creación de venta o pedido` | relación parcial con pedido, no creación integral demostrada por esta ruta |
+| `VSCREEN-0083 — Detalle y modificación de pedido` | relación directa parcial mediante detalle y operaciones |
+| `VSCREEN-0084 — Cobro y medios de pago` | estado/regla de pago visible; cobro integral no demostrado |
+| `VSCREEN-0088 — Seguimiento de preparación y entrega` | relación directa parcial mediante estados, despacho y Realtime |
+| `VSCREEN-0091 — Anulación, devolución y reembolso` | cancelación visible; devolución/reembolso integral no demostrado |
+| `VSCREEN-0151 — Coordinación de entrega mediante tercero` | bridges de despacho, enlace y confirmación; coordinación completa no demostrada |
+
+La ruta no absorbe por inferencia las responsabilidades completas de esas pantallas.
+
+---
+
+#### 49. Relación con procesos canónicos
+
+La superficie se relaciona principalmente con procesos PULSO ya inventariados, entre ellos:
+
+- `VPROC-0038` — servicio en mesa;
+- `VPROC-0039` — mostrador o para llevar;
+- `VPROC-0040` — normalización de pedidos externos;
+- `VPROC-0042` — modificación/cancelación/devolución;
+- `VPROC-0043` — cobro y confirmación de pago;
+- `VPROC-0050` — entrega mediante tercero.
+
+La presencia técnica de una acción en `/orders` no demuestra que todo el proceso canónico esté materializado en esa ruta.
+
+---
+
+#### 50. Frontera de ownership PULSO
+
+PULSO conserva en esta superficie:
+
+- identidad y seguimiento comercial del pedido;
+- líneas y contexto comercial mostrado;
+- operación de estados del pedido;
+- relación con fulfillment;
+- coordinación visible de despacho;
+- conversación en contexto del pedido;
+- relación visible con facturación;
+- historial operativo;
+- checklist operativo de regalo.
+
+La propiedad se limita al contrato comercial que le corresponde.
+
+---
+
+#### 51. Fronteras con PASS, NEXO, FOGO y NUMERA
+
+Se mantienen las fronteras:
+
+```text
+PASS
+→ identidad/loyalty y superficies cliente compartidas
+
+NEXO
+→ inventario y movimientos físicos
+
+FOGO
+→ receta, preparación/lote y producción propietaria
+
+NUMERA
+→ reconocimiento económico y conciliación contable
+
+PULSO
+→ pedido, venta, operación comercial y coordinación de entrega al cliente
+```
+
+Un pedido puede consumir o producir efectos para otros dominios sin transferirles ni adquirir su ownership.
+
+---
+
+#### 52. Estados independientes obligatorios
+
+El inventario confirma múltiples máquinas o dimensiones de estado:
+
+```text
+ORDER_STATUS
+PAYMENT_STATUS
+DISPATCH_STATUS
+CONVERSATION_STATUS
+BILLING_REQUEST_STATUS
+GIFT_CHECKLIST_STATUS
+```
+
+Deben permanecer separadas salvo contrato explícito posterior.
+
+Nunca:
+
+```text
+ORDER_DELIVERED
+=
+PAYMENT_PAID
+=
+INVOICE_ISSUED
+=
+CHAT_ARCHIVED
+=
+GIFT_CHECKLIST_COMPLETE
+```
+
+---
+
+#### 53. Callers de navegador y servidor
+
+La superficie actual contiene una mezcla de callers:
+
+```text
+SERVER COMPONENT / SERVER ACTION
+CLIENT SUPABASE RPC
+CLIENT TABLE INSERT
+CLIENT REALTIME
+CLIENT EDGE FUNCTION INVOCATION
+```
+
+Esta diversidad es parte material del inventario de autorización.
+
+Una validación aplicada en un caller no demuestra automáticamente que todos los demás callers estén cubiertos por la misma validación.
+
+---
+
+#### 54. Hallazgos y propietarios de salida
+
+| Hallazgo | Efecto | Propietario de salida |
+| --- | --- | --- |
+| `pos.main` protege acceso general pero la vista contiene acciones heterogéneas | requiere permisos atómicos | `PULSO-AUTH-006..008` |
+| existe `pulso.delivery.override` como permiso específico observado | confirma necesidad de granularidad | `PULSO-AUTH-006..008` + autorización transversal |
+| `site_id` aparece en múltiples callers | exige límite territorial consistente | `PULSO-AUTH-011` |
+| existen callers directos desde navegador hacia RPC/tablas | el guard de página no basta como prueba | `PULSO-AUTH-014`, `PULSO-AUTH-016` y contratos de servidor |
+| `orders-board-legacy` sigue en runtime | retiro requiere paridad demostrada | `PULSO-AUTH-015`, `PULSO-AUTH-016` y paquete propietario |
+| chat posee dos caminos de persistencia observados | exige reconciliar autorización/auditoría | `PULSO-AUTH-014`, `PULSO-AUTH-016` |
+| `order_status_events` Realtime no declara filtro `site_id` en el subscription descriptor | requiere demostrar aislamiento efectivo por políticas/recursos | `PULSO-AUTH-011`, `PULSO-AUTH-016` |
+| delivery usa link temporal/portal y override | requiere seguridad específica de tercero y excepción | `PULSO-AUTH-006..008`, `PULSO-AUTH-016` y contratos de integración |
+| facturación se presenta pero no se observa emisión integral en esta ruta | no confundir lectura con autoridad fiscal | contratos PULSO/NUMERA/fiscal propietarios |
+| estados de pedido, pago y despacho son distintos | impedir fusiones de estado | `PULSO-AUTH-016` y paquetes propietarios |
+
+No queda hallazgo material de este inventario sin propietario o condición de salida.
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Esta tarea no crea, modifica, difiere ni vuelve obsoleto ningún requisito de prueba.
+
+La conducta verificable necesaria para el inventario de órdenes ya está cubierta por requisitos vigentes del dominio PULSO y contratos transversales.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-PULSO-002` — paridad y retiro controlado de `orders-board-legacy`;
+- `TREQ-PULSO-004` — mutaciones mediante acciones nombradas y autorizadas;
+- `TREQ-PULSO-005` — separación del ciclo comercial, líneas, estados y efectos;
+- `TREQ-PULSO-006` — separación de venta, pago, caja y factura;
+- `TREQ-PULSO-007` — entrega, tercero, PIN, override, privacidad e idempotencia;
+- `TREQ-PULSO-014` — guard y acceso directo a rutas de negocio;
+- `TREQ-PULSO-015` — `site_id` no amplía territorio;
+- `TREQ-PULSO-016` — abrir `/orders` no autoriza sus mutaciones;
+- `TREQ-PULSO-019` — query parameters no crean rutas ni autoridad;
+- `TREQ-PULSO-020` — componentes, bridges y Server Actions no cuentan como rutas;
+- `TREQ-PULSO-021` — evidencia anclada a repositorio, commit y fuente;
+- `TREQ-PULSO-024` — infraestructura existente no demuestra proceso o autorización completa;
+- `TREQ-PULSO-026` — permiso observado separado de suficiencia contractual;
+- `TREQ-PULSO-027` — fronteras entre aplicaciones preservadas.
+
+La mención en esta sección es trazabilidad y no una actualización del Registro 04A.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de `vento-pulso`; la tarea no modifica el consumidor |
+| LOCAL | NOT_EXECUTED | no se modificó checkout local del repositorio canónico durante la redacción |
+| REMOTA | PASS | se verificaron `vento-shell` y `vento-pulso`, continuidad, topología, 04A, owner file, árbol actual de órdenes, página, boards, bridges, chat, baseline, blobs y contratos documentales aplicables |
+| OPERATIVA | NOT_EXECUTED | no se operaron pedidos reales, pagos, despachos, chats, regalos, facturación ni entregas |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; sin materialización física propia |
+
+La evidencia REMOTA valida el inventario documental contra el snapshot inspeccionado; no certifica autorización E2E, RLS, RPC, Realtime, Edge Functions ni operación real.
+
+---
+
+#### 58. Criterios de aceptación
+
+- [ ] Se conserva `PULSO-ROUTE-003` como identidad única de `/orders`.
+- [ ] Se identifica `src/app/orders/page.tsx` como página propietaria runtime de la ruta.
+- [ ] Se inventaría la cadena `page → live board → decorated board → legacy board`.
+- [ ] Se registra que `orders-board-legacy` sigue activo en runtime.
+- [ ] Se separan pedido, línea, producto y opciones.
+- [ ] Se separan estado de pedido, pago, despacho, conversación, facturación y regalo.
+- [ ] Se registran los ocho estados de pedido observados.
+- [ ] Se registran las modalidades `delivery`, `pickup` y `on_premise`.
+- [ ] Se registran filtros `active`, `delivered`, `cancelled` y `all`.
+- [ ] Se registran `mark_preparing`, `mark_ready`, `mark_in_transit`, `mark_delivered`, `mark_cancelled` y `assign_dispatch`.
+- [ ] Se registra `update_order_operational_state` como RPC de operación observada.
+- [ ] Se registra que existen callers de Server Action y callers directos desde cliente.
+- [ ] Se registran las tres operaciones de checklist de regalo.
+- [ ] Se registra `update_order_gift_operational_state`.
+- [ ] Se inventarían lectura y gestión de conversaciones/mensajes.
+- [ ] Se registran marcado de lectura, conteos, archivo y archivo masivo de chat.
+- [ ] Se registra la invocación de `order-message-notify` como efecto de notificación.
+- [ ] Se inventaría `create_order_delivery_courier_link` separadamente de asignación y entrega.
+- [ ] Se inventaría `pulso.delivery.override` únicamente como permiso específico observado.
+- [ ] Se inventaría `override_order_delivery_confirmation` como capacidad excepcional.
+- [ ] Se registra la regla AS-IS que bloquea progresión de delivery sin pago confirmado.
+- [ ] Se registra la restricción AS-IS de tránsito para delivery.
+- [ ] Se inventarían `PULSO-SURFACE-006` y `PULSO-SURFACE-007` sin fusionarlas.
+- [ ] Se registra el subscription de eventos sin filtro `site_id` declarado y su handler limitado a pedidos visibles.
+- [ ] Se distingue `pos.main` observado de suficiencia contractual.
+- [ ] Se conserva `site_id` como contexto, no como autoridad.
+- [ ] Se conservan fronteras con PASS, NEXO, FOGO y NUMERA.
+- [ ] Se relaciona `/orders` con pantallas canónicas solo de forma parcial y explícita.
+- [ ] Todo hallazgo queda asignado a un propietario de salida.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- define permisos finales de cajero;
+- define permisos finales de supervisor;
+- define permisos de cierre o anulación;
+- crea claves de permiso;
+- cambia `pos.main`;
+- cambia `pulso.delivery.override`;
+- modifica guards;
+- modifica RPC;
+- modifica funciones SQL;
+- modifica RLS;
+- modifica Realtime;
+- modifica Edge Functions;
+- modifica tablas o datos;
+- crea migraciones;
+- cambia estados de pedido;
+- cambia estados de pago;
+- cambia estados de despacho;
+- modifica reglas de fulfillment;
+- retira `orders-board-legacy`;
+- declara paridad del reemplazo;
+- rediseña `/orders`;
+- crea rutas nuevas;
+- implementa caja;
+- implementa cobro integral;
+- emite facturas;
+- implementa devolución o reembolso integral;
+- rediseña delivery;
+- rediseña chat;
+- modifica PASS, NEXO, FOGO o NUMERA;
+- modifica el Registro 04A;
+- ejecuta implementación física.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-001 — Inventariar vistas POS`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-002 — Inventariar órdenes`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-003 — Inventariar salón`
 ### [ ] PULSO-AUTH-003 — Inventariar salón
 ### [ ] PULSO-AUTH-004 — Inventariar escáner
 ### [ ] PULSO-AUTH-005 — Inventariar importaciones
