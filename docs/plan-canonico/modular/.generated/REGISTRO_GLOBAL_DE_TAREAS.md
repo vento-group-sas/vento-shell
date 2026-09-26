@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1365** |
+| Aprobadas | **1366** |
 | En propuesta | **0** |
-| No iniciadas | **231** |
+| No iniciadas | **230** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.53% (1365/1596)** |
+| Porcentaje de completamiento | **85.59% (1366/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **231** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1266** |
+| ⏸ NO_EVALUADA | **230** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1267** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-011` — Limitar operación a sede del turno | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-012` — Integrar dispositivos POS compartidos | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-013` — Registrar trabajador que ejecuta la operación | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-012` — Integrar dispositivos POS compartidos | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-013` — Registrar trabajador que ejecuta la operación | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-014` — Mantener configuración administrativa separada | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1126,7 +1126,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-009` | Proteger acumulación de puntos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-010` | Proteger redenciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-011` | Limitar operación a sede del turno | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-012` | Integrar dispositivos POS compartidos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-012` | Integrar dispositivos POS compartidos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-013` | Registrar trabajador que ejecuta la operación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-014` | Mantener configuración administrativa separada | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |

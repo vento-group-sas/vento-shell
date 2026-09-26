@@ -13808,7 +13808,1178 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-012 — Integrar dispositivos POS compartidos`
-### [ ] PULSO-AUTH-012 — Integrar dispositivos POS compartidos
+### ✅ PULSO-AUTH-012 — Integrar dispositivos POS compartidos
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-011 — Limitar operación a sede del turno
+**Tarea siguiente:** PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización PULSO del contrato canónico de dispositivo compartido para intersectar principal técnico, dispositivo elegible, aplicaciones permitidas, actor humano, contexto laboral, territorio, techo de permisos, recurso y controles adicionales sin convertir `navigation_role`, la sesión técnica, el terminal, el PIN ni la aplicación visible en autoridad empresarial
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `PULSO-AUTH-012::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo PULSO consume el contrato canónico de dispositivo compartido en sus superficies operativas y comerciales sin tratar la identidad técnica del terminal como trabajador, sin heredar privilegios administrativos, sin autorizar por `navigation_role`, sin convertir una aplicación permitida en permiso, sin permitir que `site_id` o `area_id` solicitados amplíen el límite físico del dispositivo y sin sustituir la sede del turno fijada por `PULSO-AUTH-011`.
+
+La decisión protegida desde un POS compartido se resuelve como una intersección restrictiva:
+
+```text
+DISPOSITIVO CANONICO Y ELEGIBLE
++
+PULSO DENTRO DEL CONJUNTO EFECTIVO DE APLICACIONES
++
+ACTOR HUMANO EFECTIVO CUANDO LA ACCION LO EXIJA
++
+CONTEXTO T / T+C DEL ACTOR SEGUN LA CAPACIDAD
++
+PERMISSIONKEY EXACTA DEL ACTOR
++
+TECHO EFECTIVO DEL DISPOSITIVO
++
+SEDE Y AREA LIMITES DEL DISPOSITIVO
++
+SEDE Y AREA EFECTIVAS DEL ACTOR
++
+TERRITORIO Y ESTADO DEL RECURSO
++
+CONTROLES ADICIONALES APLICABLES
++
+CONTEXTO FRESCO
++
+AUSENCIA DE DENEGACIONES
+=
+OPERACION PULSO AUTORIZABLE
+```
+
+El dispositivo puede reducir autoridad. Nunca puede crearla.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-011
+
+`PULSO-AUTH-011` entrega como invariantes acumuladas:
+
+- la sede operativa efectiva del empleado procede del turno vigente;
+- `T+C` exige además check-in activo;
+- `requested_site_id` es intención y no autoridad;
+- sede seleccionada, primaria, asignada o legacy no sustituyen la sede del turno;
+- la sede real del recurso se resuelve server-side;
+- un permiso global no crea contexto operacional global;
+- el sitio de un dispositivo compartido puede reducir territorio, nunca ampliarlo;
+- incompatibilidad entre turno humano y sitio del dispositivo falla cerrado;
+- el cambio de actor obliga a recalcular contexto;
+- la firma del actor no copia privilegios del principal técnico.
+
+Esta tarea integra esas reglas con el contrato completo de dispositivo compartido. No reabre el modelo territorial de `011`.
+
+---
+
+#### 3. Handoffs funcionales previos de PULSO
+
+Los inventarios y tareas anteriores entregan además:
+
+- `/` y `/scanner` distinguen sesiones compartidas mediante `operationalSession.isSharedDevice`;
+- el scanner muestra PIN únicamente cuando la sesión se clasifica como compartida;
+- acumulación y redención invocan actualmente firma de actor antes del efecto sensible;
+- `PULSO-AUTH-009` conserva acumulación de puntos como comando autorizado, territorial, idempotente y atribuible;
+- `PULSO-AUTH-010` conserva redención como comando atómico, de uso único, territorial y atribuible;
+- `/salon` expone `device_id` en llamados, pero dispositivo, mesa y actor son identidades distintas;
+- `/salon` no contiene una superficie propietaria de administración de dispositivos;
+- importaciones y otras mutaciones observadas no demuestran todavía firma humana equivalente en sesión compartida.
+
+La existencia parcial de helpers shared-device no equivale a integración completa.
+
+---
+
+#### 4. Contratos transversales consumidos
+
+PULSO consume sin redefinir:
+
+| Fuente | Regla preservada |
+| --- | --- |
+| `AUTH-DEV-001..002` | inventario e identidades de dispositivo, endpoint, activo, estación y principal técnico permanecen separadas |
+| `AUTH-DEV-003` | la sede fija del dispositivo es un límite explícito y nunca autoridad del actor |
+| `AUTH-DEV-004` | el área fija o permitida es un límite subordinado a la sede y nunca wildcard |
+| `AUTH-DEV-005` | aplicaciones permitidas definen superficie máxima y no conceden `<app>.access` |
+| `AUTH-DEV-006` | el paquete máximo de permisos es un techo restrictivo; nunca concede autoridad al actor |
+| `AUTH-DEV-007` | firma o PIN identifica al humano mediante validación server-side sin convertirse en permiso |
+| `AUTH-DEV-008` | autoridad efectiva = autoridad humana intersectada con techo y restricciones del dispositivo |
+| `AUTH-DEV-009` | principal técnico, administrador previo, actor anterior y `navigation_role` no transfieren privilegios |
+| `AUTH-DEV-010` | dispositivo, principal, actor, contexto, decisión y resultado permanecen correlacionables y separados |
+| `AUTH-DEV-011..013` | revocación, expiración y cambio de trabajador invalidan autoridad de forma fail-closed |
+| `AUTH-DEV-015` | la certificación física de terminales PULSO permanece separada de este contrato de integración |
+| `PULSO-AUTH-011` | territorio operacional del actor procede del turno y se confronta con el recurso y límites adicionales |
+
+PULSO no crea una variante local del modelo de dispositivo compartido.
+
+---
+
+#### 5. Naturaleza y topología
+
+La topología vigente de `PULSO-AUTH-012` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = PULSO-AUTH-012::<implementation_unit_id>
+```
+
+El marcador global define el contrato reutilizable.
+
+No crea por sí mismo una instancia física, no modifica `vento-pulso` y no altera Supabase.
+
+---
+
+#### 6. Gate físico posterior
+
+Una materialización futura solo es admisible cuando exista:
+
+```text
+implementation_unit_id válido
++
+package_id propietario aplicable
++
+E5-GATE-008::<package_id> = PASS
++
+autorización física explícita
+```
+
+La existencia de un helper shared-device, una fila de dispositivo, una terminal observada o una integración parcial no autoriza materialización anticipada.
+
+---
+
+#### 7. Identidades que nunca se fusionan
+
+La integración conserva como identidades distintas:
+
+```text
+AUTH TECHNICAL PRINCIPAL
+DEVICE_ID
+DEVICE_CODE
+ENDPOINT_ID
+ASSET_ID
+STATION_INSTANCE_ID
+ACTOR_SESSION_ID
+SIGNATURE_ID
+EMPLOYEE_ID
+SHIFT_ID
+CHECKIN_ID
+CUSTOMER_ID
+RESOURCE_ID
+```
+
+Ninguna coincidencia de UUID, código, sesión, sede, área, terminal, navegador, IP, serial o fingerprint permite inferir otra identidad.
+
+En particular:
+
+```text
+AUTH USER DEL DEVICE != EMPLOYEE ACTOR
+DEVICE_ID != EMPLOYEE_ID
+DEVICE_ID != CUSTOMER_ID
+NAVIGATION_ROLE != ROLE EFECTIVO
+SIGNATURE_ID != PERMISO
+```
+
+---
+
+#### 8. Principal técnico del POS compartido
+
+El principal técnico demuestra que la solicitud procede de una identidad técnica vinculada al dispositivo conforme al contrato vigente.
+
+No demuestra:
+
+- qué trabajador ejecuta la acción;
+- qué rol posee ese trabajador;
+- qué turno tiene;
+- si tiene check-in activo;
+- qué sede o área operativa le corresponde;
+- qué PermissionKey posee;
+- qué cliente atiende;
+- qué recurso puede leer o mutar;
+- que una operación comercial deba permitirse.
+
+PULSO no copiará el principal técnico a campos de actor humano por conveniencia.
+
+---
+
+#### 9. Elegibilidad del dispositivo
+
+Antes de utilizar cualquier límite del POS compartido, PULSO debe consumir un estado canónico y vigente de elegibilidad.
+
+Un dispositivo revocado, retirado, suspendido, conflictivo, no desplegado o no resoluble no puede producir nuevos efectos empresariales cuando su lifecycle lo clasifique como no elegible.
+
+Una indisponibilidad técnica no se reinterpreta como dispositivo válido por ausencia de evidencia contraria.
+
+---
+
+#### 10. Aplicación PULSO permitida
+
+Para una sesión compartida, PULSO debe pertenecer al conjunto efectivo de aplicaciones del dispositivo.
+
+```text
+PULSO EN DEVICE APPS
+→ SUPERFICIE PULSO ELEGIBLE
+```
+
+pero:
+
+```text
+PULSO EN DEVICE APPS
+!=
+pulso.access DEL ACTOR
+```
+
+La presencia de PULSO en launcher, plantilla o binding no concede una capacidad comercial.
+
+---
+
+#### 11. Techo máximo de permisos
+
+El techo efectivo del dispositivo se consume como un conjunto cerrado, exacto y versionado conforme a `AUTH-DEV-006`.
+
+Para una `PermissionKey` PULSO:
+
+```text
+ACTOR TIENE LA CLAVE
+AND
+DEVICE CONSERVA LA CLAVE EN SU TECHO EFECTIVO
+→ CONTINUA EVALUACION
+```
+
+Cualquier otro resultado produce `DENY` o indisponibilidad conforme al contrato propietario.
+
+Quedan prohibidos:
+
+- wildcards locales;
+- inferencia por prefijo;
+- inferencia por nombre de rol;
+- inferencia por ruta;
+- inferencia por aplicación visible;
+- ampliación de una instancia sobre su plantilla;
+- fallback a un paquete más permisivo.
+
+---
+
+#### 12. Techo canónico no equivale a `pulso.pos.main`
+
+Los paquetes canónicos de dispositivo compartido observados incluyen capacidades PULSO exactas y restringidas, entre ellas `pulso.access` y, donde corresponde, `pulso.delivery.deliveries.override` como `STRONG`.
+
+Eso no convierte el permiso legacy:
+
+```text
+pulso.pos.main
+```
+
+en representación del techo canónico.
+
+Se conserva:
+
+```text
+DEVICE PACKAGE
+!=
+NAVIGATION ROLE
+!=
+pulso.pos.main
+```
+
+La futura materialización no puede usar `pulso.pos.main` para rellenar claves que el paquete del dispositivo no contiene.
+
+---
+
+#### 13. Actor humano efectivo
+
+Cuando una acción PULSO exige trabajador humano, el actor debe proceder del mecanismo canónico de identificación y contexto del dispositivo.
+
+PULSO no puede resolverlo desde:
+
+- último trabajador usado;
+- lista o selector visual de empleados;
+- `navigation_role`;
+- usuario Auth técnico;
+- sede o área del dispositivo;
+- último PIN exitoso almacenado;
+- turno de otra persona;
+- actor de una decisión cacheada;
+- cliente actualmente visible.
+
+Si el actor no puede resolverse con evidencia suficiente, la acción empresarial permanece bloqueada.
+
+---
+
+#### 14. Firma o PIN del trabajador
+
+Una prueba humana ligera se valida server-side y puede producir una referencia opaca de firma o identificación.
+
+El secreto crudo no forma parte de contexto, logs, auditoría, receipts, metadata empresarial ni payload persistente.
+
+Una firma válida significa, como máximo, que el humano fue identificado para el uso contractual aplicable.
+
+No significa:
+
+```text
+PIN VALIDADO = PERMISO
+PIN VALIDADO = CHECKIN
+PIN VALIDADO = TURNO
+PIN VALIDADO = STRONG REAUTH
+PIN VALIDADO = SEDE
+PIN VALIDADO = ALLOW
+```
+
+---
+
+#### 15. Firma por acción y actor session
+
+La firma por acción y una `actor_session_id` son conceptos distintos.
+
+Una firma por acción puede atribuir una operación exacta al humano validado.
+
+No demuestra por sí sola:
+
+- lifecycle persistente de actor;
+- cambio de trabajador A→B;
+- expiración transversal;
+- cierre de sesión humana;
+- limpieza de estado entre superficies;
+- continuidad de autoridad entre acciones.
+
+PULSO no declarará integrada una sesión humana completa solo porque `sign_shared_device_action` retorne una firma.
+
+---
+
+#### 16. Acciones `STRONG`
+
+Una clave clasificada como `STRONG` conserva reautenticación fuerte personal conforme al contrato transversal.
+
+Un PIN ligero de shared device no degrada esa exigencia.
+
+```text
+ACTOR PIN
+!=
+STRONG REAUTH
+```
+
+Si la acción requiere `STRONG` y la evidencia fuerte no está disponible, la acción falla cerrado aunque el dispositivo y el actor sean válidos.
+
+---
+
+#### 17. Autoridad propia del actor
+
+El trabajador aporta únicamente la autoridad que el servidor resuelva para ese mismo actor y para la capacidad exacta.
+
+Para una capacidad operativa `T`:
+
+```text
+TURNO VIGENTE DEL ACTOR
++
+PERMISSIONKEY EXACTA
+```
+
+Para una capacidad operativa `T+C`:
+
+```text
+TURNO VIGENTE DEL ACTOR
++
+CHECK-IN ACTIVO
++
+PERMISSIONKEY EXACTA
+```
+
+El dispositivo añade restricciones. No completa autoridad laboral ausente.
+
+---
+
+#### 18. Intersección territorial con PULSO-AUTH-011
+
+Para operación territorial desde POS compartido se conserva:
+
+```text
+SEDE OPERATIVA DEL ACTOR
+∩
+LIMITE DE SEDE DEL DEVICE
+∩
+SEDE REAL DEL RECURSO
+=
+TERRITORIO ELEGIBLE
+```
+
+La sede del actor continúa procediendo de `PULSO-AUTH-011`.
+
+La sede del dispositivo nunca sustituye al turno.
+
+---
+
+#### 19. Sede fija del dispositivo
+
+La sede fija se consume según el `effect_mode` aprobado por el contrato del dispositivo.
+
+No se transforma en sede del trabajador ni en sede del recurso.
+
+Cuando la política exige coincidencia exacta:
+
+```text
+shift.site_id = device.site_id = resource.site_id
+```
+
+es una consecuencia de la intersección, no una inferencia desde el dispositivo.
+
+---
+
+#### 20. Área del dispositivo
+
+La política de área permanece subordinada a la sede fija y se consume según su modo exacto.
+
+No se admite:
+
+```text
+area_id = null → ALL_AREAS
+```
+
+ni:
+
+```text
+DEVICE SITE → TODAS LAS AREAS DE ESA SEDE
+```
+
+Cuando la capacidad exige área, actor, dispositivo y recurso deben satisfacer simultáneamente el contrato aplicable.
+
+---
+
+#### 21. `site_id` y `area_id` solicitados
+
+`preferredSiteId`, `preferredAreaId`, query params, body, formulario, cookies o estado visual son intención.
+
+No pueden reemplazar los límites server-side del dispositivo.
+
+Queda prohibido:
+
+```text
+preferredSiteId ?? device.site_id
+→ AUTORIDAD
+```
+
+así como:
+
+```text
+preferredAreaId ?? device.area_id
+→ AUTORIDAD
+```
+
+Un valor solicitado puede localizar o refinar dentro de límites ya resueltos. Nunca ampliarlos.
+
+---
+
+#### 22. Territorio y estado del recurso
+
+El recurso protegido conserva su propia sede, área, extremos, cliente, pedido, sesión, ticket o alcance según el dominio.
+
+El dispositivo no reescribe el recurso.
+
+Un permiso correcto sobre un recurso territorialmente incompatible permanece denegado.
+
+La compatibilidad del dispositivo se evalúa además del recurso, no en lugar de él.
+
+---
+
+#### 23. `device_id` en salón no concede autoridad
+
+Los llamados de salón pueden conservar un `device_id` como identidad de origen o referencia del terminal.
+
+Eso no demuestra por sí solo que ese identificador sea la identidad canónica de `shared_operational_devices` ni que posea autoridad empresarial.
+
+Se conserva:
+
+```text
+DEVICE DE LLAMADO
+!=
+ACTOR
+!=
+MESA
+!=
+SESION DE MESA
+```
+
+Cualquier correlación entre identidades técnicas distintas debe ser explícita y server-side.
+
+---
+
+#### 24. Gestión del dispositivo permanece fuera de `/salon`
+
+La operación de salón no se convierte en superficie de administración del dispositivo.
+
+PULSO puede consumir contexto de device para autorizar y auditar.
+
+No adquiere por ello ownership de:
+
+- enrolamiento;
+- plantilla;
+- endpoint;
+- credencial técnica;
+- app binding;
+- package máximo;
+- revocación administrativa;
+- inventario físico del terminal.
+
+---
+
+#### 25. Cambio de trabajador
+
+El cambio A→B debe producir una frontera real de autoridad:
+
+```text
+A DEJA DE SER ELEGIBLE
+→ AUTORIDAD Y ESTADO SENSIBLE DE A INVALIDOS
+→ SIN ACTOR EFECTIVO
+→ B SE IDENTIFICA INDEPENDIENTEMENTE
+→ CONTEXTO DE B SE RESUELVE DE NUEVO
+→ B QUEDA COMO ACTOR EFECTIVO
+```
+
+B no hereda de A:
+
+- rol;
+- permisos;
+- turno;
+- check-in;
+- territorio;
+- firmas;
+- STRONG;
+- cliente privado no necesario;
+- borradores personales;
+- decisiones cacheadas.
+
+---
+
+#### 26. Expiración y revocación
+
+Cuando expira la evidencia humana, el dispositivo técnico puede continuar autenticado, pero el humano deja de ser elegible para nuevas acciones que lo requieran.
+
+Cuando el dispositivo es revocado o deja de ser elegible, una actor session todavía vigente no conserva autoridad empresarial sobre ese terminal.
+
+```text
+DEVICE INVALIDO
+OR
+ACTOR INVALIDO
+→ REEVALUAR / DENY
+```
+
+---
+
+#### 27. Cambios materiales del dispositivo
+
+Invalidan el contexto afectado, entre otros:
+
+- cambio de sede;
+- cambio de política de área;
+- cambio de aplicaciones;
+- reducción del paquete máximo;
+- cambio de plantilla o versión;
+- cambio de principal técnico;
+- suspensión o revocación;
+- cambio de actor;
+- expiración de actor;
+- modificación de requisitos de firma.
+
+Un snapshot, caché o decisión anterior no conserva autoridad después del cambio.
+
+---
+
+#### 28. Offline, stale y reintentos
+
+Una intención capturada offline o retenida para reintento se reautoriza antes de producir el efecto.
+
+Un `ALLOW` previo no se reutiliza después de cambios de:
+
+- actor;
+- turno o check-in;
+- dispositivo;
+- territorio;
+- aplicación;
+- techo;
+- permiso;
+- recurso;
+- estado empresarial material.
+
+La identidad idempotente evita duplicar efectos, pero no conserva una autorización histórica.
+
+---
+
+#### 29. Acceso a aplicación y capacidades internas
+
+PULSO separa:
+
+```text
+DEVICE PUEDE PRESENTAR PULSO
+```
+
+```text
+ACTOR PUEDE ACCEDER A PULSO
+```
+
+```text
+ACTOR PUEDE EJECUTAR LA CAPACIDAD X
+```
+
+Son decisiones distintas.
+
+`pulso.access` no concede cobro, caja, pedidos, loyalty, delivery, configuración o importación.
+
+---
+
+#### 30. `navigation_role` no es autoridad
+
+`navigation_role` puede servir para presentación o navegación únicamente donde el contrato lo permita.
+
+No puede:
+
+- resolver PermissionKeys;
+- actuar como rol base;
+- actuar como `operational_role`;
+- seleccionar un `ALLOW`;
+- completar un actor ausente;
+- ampliar sede o área;
+- sustituir el techo versionado del dispositivo.
+
+Una implementación que consulte permisos exclusivamente usando `navigation_role` permanece incompleta frente a este contrato.
+
+---
+
+#### 31. Scanner PULSO
+
+En `/scanner`, identificación, acumulación y redención comparten superficie, pero no autoridad.
+
+Para una sesión compartida:
+
+- identificar cliente no convierte cliente en actor;
+- el PIN del trabajador no se reutiliza como código de cliente;
+- acumulación conserva su PermissionKey y comando de `PULSO-AUTH-009`;
+- redención conserva su PermissionKey y comando de `PULSO-AUTH-010`;
+- cambiar modo limpia secretos y estado incompatible;
+- la firma humana se correlaciona con la acción exacta y con el efecto confirmado;
+- el device restringe app, territorio y techo sin sustituir actor ni PASS.
+
+---
+
+#### 32. Acumulación de puntos
+
+En dispositivo compartido, acumulación debe conservar conjuntamente:
+
+```text
+DEVICE ELEGIBLE
++
+ACTOR HUMANO ELEGIBLE
++
+CONTEXTO LABORAL VIGENTE
++
+PERMISO pulso.loyalty.points.accumulate
++
+TECHO DEL DEVICE
++
+SEDE EFECTIVA
++
+HECHO COMERCIAL
++
+CLIENTE
++
+REFERENCIA IDEMPOTENTE
+```
+
+La firma observada es una pieza de atribución; no sustituye la autorización completa.
+
+---
+
+#### 33. Redención
+
+En dispositivo compartido, redención debe conservar conjuntamente:
+
+```text
+DEVICE ELEGIBLE
++
+ACTOR HUMANO ELEGIBLE
++
+CONTEXTO LABORAL VIGENTE
++
+PERMISO pulso.loyalty.points.redeem
++
+TECHO DEL DEVICE
++
+SEDE EFECTIVA
++
+TICKET / RECOMPENSA / CLIENTE
++
+ESTADO CONSUMIBLE
++
+USO UNICO
+```
+
+La posesión del código, la firma del actor o la presencia de PULSO en el device no reemplazan ese conjunto.
+
+---
+
+#### 34. Importaciones y otras mutaciones sensibles
+
+Las superficies de importación observadas no demuestran actualmente una firma humana equivalente a scanner.
+
+La regla de integración es general:
+
+```text
+ACCION QUE CANONICAMENTE EXIGE ACTOR HUMANO
++
+SESION SHARED DEVICE
+→ ACTOR HUMANO RESUELTO Y AUTORIZADO ANTES DEL EFECTO
+```
+
+Esta tarea no reclasifica importaciones como operativas o administrativas; esa separación permanece en `PULSO-AUTH-014`.
+
+---
+
+#### 35. Pedidos, caja, pagos y delivery
+
+El uso de POS compartido no altera los contratos propietarios de:
+
+- pedidos;
+- caja;
+- pago;
+- cierre;
+- refund;
+- delivery;
+- override;
+- anulaciones y reaperturas.
+
+Cada acción conserva permiso exacto, recurso, territorio, estado y controles adicionales.
+
+Una terminal compartida nunca equivale a una cuenta compartida con autoridad agregada.
+
+---
+
+#### 36. Mutaciones protegidas
+
+Toda mutación PULSO desde shared device que exija actor revalida server-side, inmediatamente antes del efecto:
+
+```text
+principal técnico
++ device elegible
++ app permitida
++ actor humano
++ evidencia humana aplicable
++ PermissionKey exacta
++ modalidad T / T+C / N aplicable
++ rol efectivo
++ turno/check-in cuando aplique
++ sede/área efectivas
++ techo del device
++ territorio del device
++ recurso
++ estado
++ controles adicionales
++ denegaciones
+```
+
+La omisión de un insumo obligatorio no se repara desde la UI.
+
+---
+
+#### 37. Lecturas, listados y Realtime
+
+Las lecturas protegidas deben filtrar antes de serializar datos al cliente.
+
+El dispositivo puede reducir el universo visible cuando su política lo exija. Nunca puede ampliarlo.
+
+Realtime no conserva una decisión stale de actor o dispositivo.
+
+Si cambia actor, turno, device, app, techo o territorio, la suscripción previa deja de ser autoridad para nuevas acciones.
+
+---
+
+#### 38. Auditoría mínima
+
+Toda acción protegida originada desde POS compartido debe permitir reconstruir, según aplicabilidad:
+
+- principal técnico;
+- `device_id`;
+- actor humano efectivo;
+- `actor_session_id` cuando aplique;
+- `signature_id` cuando aplique;
+- aplicación;
+- PermissionKey exacta;
+- modalidad y roles efectivos;
+- `shift_id` y check-in cuando corresponda;
+- sede y área efectivas;
+- sede y área límite del dispositivo;
+- recurso;
+- cliente cuando sea material al efecto;
+- decisión y razones;
+- correlación e idempotencia;
+- resultado real o ausencia de efecto;
+- timestamp autoritativo.
+
+No se almacenan secretos humanos ni credenciales técnicas completas.
+
+---
+
+#### 39. Denegación y estados interactivos
+
+Una restricción concluyente de device, actor, permiso, territorio, recurso o estado produce cero efectos empresariales.
+
+Los estados de:
+
+- requerir identificación humana;
+- requerir STRONG;
+- conflicto;
+- expiración;
+- device no elegible;
+- permiso ausente;
+- territorio incompatible;
+- fallo técnico;
+
+no se colapsan en un `ALLOW` ni en un error genérico que dispare reintento automático.
+
+---
+
+#### 40. Seguridad e higiene del PIN
+
+El PIN del trabajador es secreto efímero.
+
+Debe limpiarse después de éxito, error terminal, cambio de actor, cambio de modo, cambio de cliente cuando el estado sea incompatible, expiración o abandono de la operación según el contrato de la superficie.
+
+No se persiste, loguea, reutiliza ni incorpora a metadata funcional.
+
+Las protecciones de intentos, bloqueo y respuesta uniforme permanecen en el contrato transversal y en la cobertura PASS correspondiente.
+
+---
+
+#### 41. Estado AS-IS de `resolveOperationalSession`
+
+El consumidor PULSO observado ya distingue `employee` y `shared_device`.
+
+Para shared device:
+
+1. consulta `shared_operational_devices` por `auth_user_id` activo;
+2. carga `shared_operational_device_apps` activas;
+3. expone identidad, código, label y `navigation_role`;
+4. conserva `allowedAppCodes`;
+5. construye actualmente `siteId` como `preferredSiteId ?? sharedDevice.site_id`;
+6. construye actualmente `areaId` como `preferredAreaId ?? sharedDevice.area_id`.
+
+Los puntos 5 y 6 permiten que valores solicitados precedan al límite registral del dispositivo y no satisfacen el contrato objetivo.
+
+---
+
+#### 42. Estado AS-IS de `requireAppAccess` y permiso shared-device
+
+El guard observado:
+
+- comprueba que PULSO aparezca en `allowedAppCodes`;
+- trata esa comprobación como suficiente para la entrada shared-device a la aplicación;
+- para capacidades internas llama `checkOperationalSessionPermission`;
+- ese helper usa `navigationRole` y `has_operational_role_permission`;
+- transmite `session.siteId` y `session.areaId` a esa evaluación.
+
+Por tanto, la implementación actual demuestra una base parcial, pero no la intersección completa:
+
+```text
+ACTOR HUMANO
+∩
+PERMISSIONKEY DEL ACTOR
+∩
+TECHO CANONICO DEL DEVICE
+∩
+CONTEXTO T / T+C
+```
+
+---
+
+#### 43. Estado AS-IS de la firma en PULSO
+
+`requireSharedDeviceActorSignature`:
+
+- no exige firma para una sesión personal;
+- exige PIN cuando la sesión es shared device;
+- llama `sign_shared_device_action`;
+- envía `p_actor_employee_id = null`;
+- espera `signature_id`, `actor_employee_id` y `actor_shift_id`;
+- permite adjuntar después el target mediante `attach_shared_device_action_signature_target`.
+
+Actualmente esta integración se observa de forma explícita en acumulación y redención de loyalty.
+
+---
+
+#### 44. Brecha remota de actor resuelto y parámetro nulo
+
+La función remota `sign_shared_device_action` observada puede resolver internamente `v_actor` desde el PIN cuando `p_actor_employee_id` es nulo.
+
+Después de resolverlo, la función utiliza nuevamente el parámetro original `p_actor_employee_id` para consultar:
+
+```text
+current_actor_shift_for_shared_device_v1(...)
+shared_device_actor_is_allowed_v1(...)
+```
+
+En el camino consumido por PULSO, ese parámetro permanece nulo.
+
+La evidencia estática indica por ello un camino fail-closed posterior a la resolución del PIN, no una firma ejecutable conforme.
+
+La materialización futura debe correlacionar el actor ya resuelto sin introducir un fallback permisivo.
+
+---
+
+#### 45. Brecha heredada del contexto laboral shared-device
+
+`current_actor_shift_for_shared_device_v1` observado deriva contexto desde el último `attendance_logs` y puede utilizar valores embebidos en `device_info` o campos legacy del empleado.
+
+Eso no sustituye el contrato aprobado por `PULSO-AUTH-011`, donde la sede operacional procede del turno vigente canónico y `T+C` exige check-in activo correlacionado.
+
+La integración de `012` debe consumir el contexto laboral canónico de `011`, no crear una segunda definición para shared devices.
+
+---
+
+#### 46. Firma, target y vigencia
+
+Una firma shared-device conserva acción, actor, dispositivo, tiempo y target cuando corresponda.
+
+Si una firma se crea antes de conocer el identificador final del recurso, el attachment posterior debe preservar la misma identidad y no permitir reasignarla a otro target incompatible.
+
+Una firma expirada no autoriza nuevas acciones.
+
+El TTL limita evidencia de firma; no prolonga turno, check-in, permiso, device o recurso más allá de su vigencia real.
+
+---
+
+#### 47. Cobertura parcial de mutaciones AS-IS
+
+La presencia de firma en acumulación y redención no demuestra cobertura integral de PULSO.
+
+Se observan superficies donde el principal técnico puede participar en mutaciones sin una evidencia equivalente de actor humano shared-device, incluyendo importaciones y otros flujos cuyo contrato final todavía debe converger.
+
+La regla de salida no es “firmar todo”, sino:
+
+```text
+CADA ACCION QUE EXIGE ACTOR HUMANO
+→ IDENTIFICAR ACTOR
+→ AUTORIZAR ACTOR
+→ INTERSECTAR DEVICE
+→ CORRELACIONAR EFECTO
+```
+
+según la clasificación exacta de la capacidad.
+
+---
+
+#### 48. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `preferredSiteId` y `preferredAreaId` preceden al sitio/área del device en la sesión shared-device. | Un valor solicitado puede ampliar el límite registral. | `PULSO-AUTH-012::<implementation_unit_id>` | request site/area solo refina dentro del límite canónico y nunca lo reemplaza |
+| El acceso shared-device a PULSO se satisface por `allowedAppCodes`. | App permitida puede confundirse con autoridad humana de acceso. | `PULSO-AUTH-012::<implementation_unit_id>` | aplicación permitida y autorización del actor quedan separadas |
+| Capacidades internas shared-device usan `navigationRole` con `has_operational_role_permission`. | Rol de navegación puede actuar como autoridad empresarial. | fundación AUTH + `PULSO-AUTH-012::<implementation_unit_id>` | decisión usa actor efectivo + PermissionKey + techo del device |
+| El techo canónico de `AUTH-DEV-006` no equivale a `pulso.pos.main`. | Permiso broad puede saltarse límites del paquete del device. | `PULSO-AUTH-012/015` | claves exactas se intersectan con paquete versionado y `pulso.pos.main` deja de ser suficiencia final |
+| PULSO envía `p_actor_employee_id = null` y la RPC reutiliza ese parámetro después de resolver `v_actor`. | Firma por PIN queda estáticamente fail-closed en las comprobaciones posteriores. | fundación AUTH + `PULSO-AUTH-012/013` | actor resuelto se correlaciona de extremo a extremo y la firma es ejecutable sin bypass |
+| El helper remoto de turno shared-device usa asistencia/contexto legacy. | Puede divergir de la sede de turno canónica de `011`. | fundación AUTH + `PULSO-AUTH-011/012` | shared device consume el mismo resolver laboral canónico que PULSO ordinario |
+| Firma explícita se observa principalmente en acumulación y redención. | Otras acciones que exigen humano pueden quedar atribuidas solo al principal técnico. | `PULSO-AUTH-012/013` + unidad propietaria | toda acción que exija actor lo identifica, autoriza y correlaciona antes del efecto |
+| El PIN cliente no demuestra limpieza en todos los caminos. | Secreto efímero puede permanecer en estado local más tiempo del necesario. | `PULSO-AUTH-012/013` + experiencia propietaria | limpieza, límites de intento y no persistencia quedan demostrados |
+| `device_id` de salón existe como referencia de origen. | Puede confundirse con identidad autoritativa de shared device. | `PULSO-AUTH-012` + superficie salón | identidades se correlacionan explícitamente o permanecen separadas; nunca se infiere autoridad |
+| Certificación física PULSO está definida en `AUTH-DEV-015`. | Una integración estática puede declararse completa sin hardware real. | `AUTH-DEV-015` y `PULSO-AUTH-016` | unidad física ejecuta escenarios y conserva evidencia reproducible |
+
+No queda un hallazgo shared-device detectado sin propietario y condición de salida.
+
+---
+
+#### 49. Frontera con PULSO-AUTH-013..016
+
+| Tarea | Frontera preservada |
+| --- | --- |
+| `PULSO-AUTH-013` | registra de forma sistemática al trabajador que ejecuta la operación y su atribución sobre efectos sensibles; `012` exige actor para autorización pero no absorbe toda persistencia/auditoría de ejecutor |
+| `PULSO-AUTH-014` | mantiene configuración e importaciones administrativas separadas del carril operativo; `012` no reclasifica capacidades |
+| `PULSO-AUTH-015` | materializa adopción de paquetes compartidos, PermissionKeys finales y retiro de helpers/broad authority donde corresponda |
+| `PULSO-AUTH-016` | ejecuta pruebas integrales de allow/deny, cambio A→B, device revocado, PIN, territorio, RLS/RPC, hardware y regresión |
+| `AUTH-DEV-015` | certifica físicamente terminales PULSO por `implementation_unit_id`; no es sustituida por este contrato de integración |
+
+`PULSO-AUTH-012` no absorbe esas responsabilidades.
+
+---
+
+#### 50. Supabase y ownership
+
+Toda modificación futura de tablas, RPC, RLS, grants, funciones, triggers, Auth, Edge Functions, configuración o datos de Supabase requerida por este contrato pertenece a `vento-group-sas/vento-shell` y debe crearse, versionarse, documentarse y ejecutarse desde ese repositorio.
+
+Esta tarea no crea migraciones ni modifica Supabase.
+
+El código consumidor de PULSO se modifica únicamente dentro de una instancia física autorizada y sin redefinir contratos de datos desde el repositorio consumidor.
+
+---
+
+#### 51. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: identidad y lifecycle del dispositivo, intersección actor-device, territorio, autorización por acción, frescura, auditoría, STRONG, firma de trabajador, secreto efímero, scanner, loyalty y paridad entre capas ya poseen cobertura vigente. Esta tarea especializa esa cobertura sobre PULSO sin introducir una obligación verificable nueva fuera del registro actual.
+
+---
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-AUTH-003` para lifecycle auditable de creación, activación, uso, cambio de actor, expiración, suspensión, revocación, rotación y retiro del dispositivo;
+- `TREQ-AUTH-011` para intersección entre límites del dispositivo y permisos del trabajador identificado sin transferencia de privilegios del principal técnico;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC y revalidar en servidor actor, permiso, territorio, contexto, recurso y columnas permitidas;
+- `TREQ-AUTH-014` para invalidar contexto, caché y autoridad derivada después de cambios de turno, actor, dispositivo, rol o territorio;
+- `TREQ-AUTH-015` para evidencia correlacionable de principal, actor, turno, check-in, territorio, dispositivo, permiso, recurso, decisión y resultado;
+- `TREQ-AUTH-019`, `TREQ-AUTH-020`, `TREQ-AUTH-021`, `TREQ-AUTH-022`, `TREQ-AUTH-023`, `TREQ-AUTH-024`, `TREQ-AUTH-025`, `TREQ-AUTH-026`, `TREQ-AUTH-027`, `TREQ-AUTH-028` y `TREQ-AUTH-029` para identidad estable y separada de device, endpoint, activo, estación, principal técnico, plantilla y observación, incluida la cobertura cerrada del inventario físico;
+- `TREQ-AUTH-034` para traslado de sede del dispositivo con versionado e invalidación;
+- `TREQ-AUTH-044` para cambio de área del dispositivo con versionado e invalidación;
+- `TREQ-AUTH-054` y `TREQ-AUTH-055` para cambio de aplicación, limpieza de estado e invalidación cuando cambia actor o conjunto de apps;
+- `TREQ-AUTH-063` para mantener `STANDARD`, `STRONG` y `NOT_ALLOWED` sin degradar reautenticación fuerte a PIN ligero;
+- `TREQ-AUTH-065` para cambio de paquete o reducción de instancia con versionado, invalidación y rollback;
+- `TREQ-AUTH-145` y `TREQ-AUTH-267` para invalidación antes de nuevos efectos cuando cambia identidad, turno, rol, sitio, área, actor, dispositivo o frontera temporal;
+- `TREQ-AUTH-269` para fail-closed del principal `SHARED_DEVICE` ante una restricción concluyente, con cero efectos empresariales;
+- `TREQ-AUTH-271` para resolución única y determinista del estado, plantilla, versión, aplicaciones y configuración restrictiva del dispositivo;
+- `TREQ-AUTH-273` para actor session vigente, política de actor, intersección territorial/recurso y soporte fuerte cuando corresponda;
+- `TREQ-AUTH-277` para bloqueo seguro, recuperación controlada e invalidación sin filtrar credenciales o configuración sensible;
+- `TREQ-AUTH-278` para reconciliar `navigation_role`, allow implícito de app, overrides territoriales, fallbacks legacy, actor sessions y paquetes versionados;
+- `TREQ-AUTH-331` para separar `ACTOR_IDENTIFICATION_REQUIRED` y `STRONG_REAUTHENTICATION_REQUIRED` de un `DENY` definitivo;
+- `TREQ-PULSO-006` para caja, pagos, anulaciones, reversos y cierre como acciones nombradas y auditables;
+- `TREQ-PULSO-014` para acceso PULSO y contexto protegido;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio e incluir restricción de dispositivo;
+- `TREQ-PULSO-016` para revalidar acciones de pedidos en servidor;
+- `TREQ-PULSO-018` para salón territorial y segregado por actor/estado;
+- `TREQ-PULSO-026` para no presentar `pulso.pos.main` como suficiencia contractual;
+- `TREQ-PASS-022` para PermissionKeys exactas en scanner;
+- `TREQ-PASS-025` para acumulación atribuible y territorial;
+- `TREQ-PASS-027` para redención válida y de uso único;
+- `TREQ-PASS-029` para firma del trabajador real en dispositivo compartido sin herencia de privilegios;
+- `TREQ-PASS-030` para PIN/firma como secreto efímero con controles de abuso y limpieza;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-112`, `TREQ-INTEGRATION-113`, `TREQ-INTEGRATION-120` y `TREQ-INTEGRATION-128` para identidad estable, autorización vigente y revalidación ante retry/sincronización.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue insertado en un checkout del usuario ni sometido allí a formateador, quality, delivery, topología y batería global. |
+| REMOTA | PASS | Se verificaron continuidad y owner de `vento-shell`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, contratos `AUTH-DEV`, cobertura modular 04A, consumidor `vento-pulso` vigente y estado read-only del proyecto Supabase de desarrollo para las funciones shared-device relevantes. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron login de dispositivo, firma real, cambio de trabajador, operación POS, scanner, caja, loyalty, salón, importación ni pruebas E2E. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `PULSO-AUTH-012::<implementation_unit_id>` ni certifica una terminal física. |
+
+---
+
+#### 54. Criterios de aceptación
+
+- [ ] Principal técnico y actor humano permanecen separados.
+- [ ] `device_id`, endpoint, activo, estación, empleado y cliente no se fusionan.
+- [ ] PULSO permitido en el dispositivo no concede `pulso.access` del actor.
+- [ ] `navigation_role` no concede autoridad empresarial.
+- [ ] Toda capacidad interna conserva su PermissionKey exacta.
+- [ ] Autoridad humana y techo del dispositivo se intersectan sin suma.
+- [ ] El device solo restringe y nunca concede.
+- [ ] `pulso.pos.main` no sustituye el techo canónico del dispositivo.
+- [ ] Firma/PIN no se convierte en permiso, turno, check-in, sede o STRONG.
+- [ ] Firma por acción y actor session conservan semánticas distintas.
+- [ ] Ausencia de actor humano no se rellena con principal técnico.
+- [ ] Cambio A→B invalida autoridad y estado sensible del actor anterior.
+- [ ] No existe herencia administrativa entre trabajadores.
+- [ ] La sede operativa del actor permanece gobernada por `PULSO-AUTH-011`.
+- [ ] Sede y área del device conservan su política propia y nunca amplían territorio.
+- [ ] `preferredSiteId`, `preferredAreaId`, URL o formulario no pueden reemplazar límites del device.
+- [ ] Recurso y territorio del recurso permanecen independientes.
+- [ ] Revocación, expiración y cambios materiales invalidan contexto afectado.
+- [ ] Offline y reintentos reautorizan antes del efecto.
+- [ ] Lecturas, mutaciones y Realtime respetan límites equivalentes.
+- [ ] Scanner separa cliente, actor, firma y device.
+- [ ] Acumulación conserva actor, permiso, territorio, device, hecho y referencia idempotente.
+- [ ] Redención conserva actor, permiso, territorio, device, ticket y uso único.
+- [ ] Acciones STRONG no degradan a PIN ligero.
+- [ ] Importaciones u otras mutaciones que exijan actor no quedan atribuidas solo al principal técnico.
+- [ ] `device_id` de salón no se convierte por inferencia en autoridad shared-device.
+- [ ] Deny produce cero efectos empresariales.
+- [ ] Auditoría puede reconstruir principal, device, actor, contexto, permiso, recurso y resultado.
+- [ ] Secretos humanos no se incorporan a contexto ni auditoría funcional.
+- [ ] El AS-IS de `resolveOperationalSession` queda clasificado como integración parcial por precedencia de `preferredSiteId`/`preferredAreaId`.
+- [ ] El AS-IS de `requireAppAccess` queda clasificado como parcial por separar insuficientemente app permitida y autoridad humana.
+- [ ] El AS-IS de `checkOperationalSessionPermission` no presenta `navigationRole` como autoridad final conforme.
+- [ ] La brecha `p_actor_employee_id = null` queda registrada como fail-closed y con propietario de corrección.
+- [ ] El contexto laboral shared-device converge con `PULSO-AUTH-011`.
+- [ ] `PULSO-AUTH-013` conserva la atribución sistemática del trabajador ejecutor.
+- [ ] `PULSO-AUTH-014` conserva la separación administrativa.
+- [ ] `PULSO-AUTH-015` conserva la adopción física de paquetes y retiro de broad authority.
+- [ ] `PULSO-AUTH-016` conserva pruebas integrales.
+- [ ] `AUTH-DEV-015` conserva certificación física de terminales PULSO.
+- [ ] La topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 55. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- modifica `resolveOperationalSession`;
+- modifica `requireAppAccess`;
+- modifica `checkOperationalSessionPermission`;
+- modifica `requireSharedDeviceActorSignature`;
+- modifica `sign_shared_device_action`;
+- modifica `attach_shared_device_action_signature_target`;
+- modifica `current_actor_shift_for_shared_device_v1`;
+- modifica `shared_device_actor_is_allowed_v1`;
+- crea actor sessions;
+- corrige el parámetro nulo de firma;
+- cambia PIN reales;
+- cambia límites de intentos;
+- cambia dispositivos;
+- enrola endpoints;
+- cambia plantillas;
+- cambia aplicaciones permitidas;
+- cambia paquetes máximos;
+- cambia sede o área de dispositivos;
+- revoca dispositivos;
+- cambia permisos del trabajador;
+- modifica turno o check-in;
+- cambia `pulso.pos.main` físicamente;
+- cambia RLS;
+- cambia RPC;
+- cambia Server Actions;
+- cambia scanner;
+- cambia salón;
+- cambia loyalty;
+- cambia caja, pagos o pedidos;
+- reclasifica importaciones;
+- ejecuta pruebas físicas de `AUTH-DEV-015`;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- modifica el Registro 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5.
+
+---
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-011 — Limitar operación a sede del turno`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-012 — Integrar dispositivos POS compartidos`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`
 ### [ ] PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
 ### [ ] PULSO-AUTH-014 — Mantener configuración administrativa separada
 ### [ ] PULSO-AUTH-015 — Migrar a paquetes de vento-shell
