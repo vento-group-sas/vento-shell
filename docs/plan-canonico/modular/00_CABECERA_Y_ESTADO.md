@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1378** |
+| Tareas aprobadas | **1379** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **218** |
+| Tareas no iniciadas | **217** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **86.34% (1378/1596)** |
+| Porcentaje de completamiento | **86.40% (1379/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-UX-009 — Separar anulación, devolución y reembolso** |
-| Tarea actual | **PULSO-UX-010 — Diseñar apertura y cierre de caja** |
+| Última tarea aprobada | **PULSO-UX-010 — Diseñar apertura y cierre de caja** |
+| Tarea actual | **PULSO-UX-011 — Integrar acumulación de puntos** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-UX-011 — Integrar acumulación de puntos** |
+| Siguiente tarea | **PULSO-UX-012 — Integrar redención de puntos** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 26 de 38 aprobadas; PULSO-UX-010 pendiente** |
+| Progreso del bloque | **BLOQUE N: 27 de 38 aprobadas; PULSO-UX-011 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-UX-010** |
+| Carril documental | **ACTIVO — PULSO-UX-011** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-UX-009` — Separar anulación, devolución y reembolso |
-| Tarea actual | `PULSO-UX-010` — Diseñar apertura y cierre de caja — **NO INICIADA** |
-| Siguiente tarea | `PULSO-UX-011` — Integrar acumulación de puntos |
+| Última aprobada | `PULSO-UX-010` — Diseñar apertura y cierre de caja |
+| Tarea actual | `PULSO-UX-011` — Integrar acumulación de puntos — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-012` — Integrar redención de puntos |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 26 DE 38 APROBADAS — ACTUAL PULSO-UX-010** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 27 DE 38 APROBADAS — ACTUAL PULSO-UX-011** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-UX-009 — Separar anulación, devolución y reembolso
-        ↓
-TAREA ACTUAL
 PULSO-UX-010 — Diseñar apertura y cierre de caja
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-UX-011 — Integrar acumulación de puntos
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-012 — Integrar redención de puntos
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 26 de 38 tareas aprobadas
+BLOQUE N — 27 de 38 tareas aprobadas
 ```

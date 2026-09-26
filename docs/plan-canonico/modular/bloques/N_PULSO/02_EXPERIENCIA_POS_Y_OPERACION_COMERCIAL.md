@@ -11169,7 +11169,1403 @@ La simplicidad consiste en hacer evidente qué se está corrigiendo y qué efect
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-010 — Diseñar apertura y cierre de caja`
-### [ ] PULSO-UX-010 — Diseñar apertura y cierre de caja
+### ✅ PULSO-UX-010 — Diseñar apertura y cierre de caja
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-009 — Separar anulación, devolución y reembolso
+**Tarea siguiente:** PULSO-UX-011 — Integrar acumulación de puntos
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0089 — Apertura de caja` y `VSCREEN-0090 — Cierre de caja` sobre `VPROC-0044`, separando apertura de sesión, fondo, movimientos, efectivo esperado, conteo, diferencia, conciliación y cierre; reconciliando la autoridad vigente de `pulso.cash.sessions.start` y `pulso.cash.sessions.close` con los datasets posteriores de `AUTH-CAT-023`; preservando sesión personal, idempotencia, actor real, sede, punto de caja, historia y fronteras con pagos, NUMERA y supervisión; sin inventar una PermissionKey de reapertura ni materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas runtime, PermissionKeys, datasets, roles, grants, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, packages, pagos, documentos fiscales, NUMERA, dispositivos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica de apertura y cierre de caja de PULSO como un lifecycle financiero-operativo explícito, separado de venta, pago, documento fiscal, inventario, fidelización y contabilidad.
+
+La tarea debe dejar cerrado que:
+
+- abrir caja crea una sesión operativa atribuible;
+- la sesión pertenece a un actor humano y un contexto de caja compatibles;
+- el fondo inicial es un hecho de la sesión y no una venta;
+- los movimientos de caja se registran sin editar ventas o pagos;
+- el efectivo esperado se deriva de hechos confirmados;
+- el efectivo contado es una observación independiente;
+- la diferencia se calcula y conserva como hecho;
+- el cierre no fuerza coincidencia mediante edición destructiva;
+- los resultados desconocidos permanecen visibles y conciliables;
+- NUMERA consume hechos confirmados sin convertirse en propietario de la sesión;
+- el cierre ordinario de la propia sesión no se confunde con reapertura, cierre forzado o aprobación excepcional.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-009
+
+`PULSO-UX-009` entrega a esta tarea:
+
+```text
+REFUND / REVERSE PUEDEN AFECTAR CONCILIACION DE CAJA
+PERO NO ABREN NI CIERRAN SESION POR IMPLICACION
+MOVIMIENTO DE CAJA != PAYMENT ORIGINAL
+CIERRE DE CAJA DEBE CONSUMIR EFECTOS CONFIRMADOS Y PENDIENTES
+RESULTADO DESCONOCIDO NO PUEDE OCULTARSE EN EL ARQUEO
+REAPERTURA/CORRECCION DE CAJA CONSERVA CONTRATO PROPIO
+```
+
+Por tanto, esta tarea consume refund y reverse únicamente como hechos conciliables del cierre.
+
+No vuelve a definir su autorización ni sus semánticas.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `PULSO-UX-010` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el diseño se define una sola vez;
+- no existe instancia física propia;
+- no se crea una sesión real;
+- no se abre ni cierra una caja real;
+- no se crean tablas o RPC;
+- no se modifican permisos;
+- no se ejecuta conciliación real;
+- no se altera `vento-pulso`;
+- no se altera Supabase;
+- no se emiten hechos contables.
+
+---
+
+#### 4. Fuentes de autoridad reconciliadas
+
+El diseño consume, sin renombrar ni sustituir:
+
+- `VSCREEN-0089 — Apertura de caja`;
+- `VSCREEN-0090 — Cierre de caja`;
+- `VSCREEN-0093 — Revisión de ventas, caja y terminales` como superficie separada de revisión;
+- `VPROC-0044 — Cerrar caja y conciliar ventas, pagos, efectivo, diferencias y responsables`;
+- `VPROC-0044::STEP-OPEN_CASH_SESSION — Abrir caja`;
+- `VPROC-0044::STEP-CLOSE_CASH_SESSION — Cerrar y conciliar caja`;
+- `VPROC-0044::STEP-REVIEW_SALES_AND_TERMINALS — Revisar ventas, caja y terminales`;
+- el catálogo vigente de permisos PULSO;
+- `operational-role-grants@1.0.0`;
+- la reconciliación posterior de `AUTH-CAT-022`, `AUTH-CAT-023` y `AUTH-CAT-024`;
+- el proceso económico `VPROC-0051` como consumidor relacionado de NUMERA;
+- `TREQ-PULSO-006` como cobertura ya vigente del ciclo de caja;
+- los hallazgos `H-CAP-SCOPE-009-018` y `H-CAP-SCOPE-009-023`;
+- el runtime vigente de `vento-pulso` únicamente como evidencia AS-IS.
+
+---
+
+#### 5. Identidades canónicas de pantalla
+
+La tarea gobierna exactamente dos superficies:
+
+| Pantalla | Nombre | Propósito |
+| --- | --- | --- |
+| `VSCREEN-0089` | Apertura de caja | abrir una caja o jornada con responsable, fondo, terminal, sede y controles requeridos |
+| `VSCREEN-0090` | Cierre de caja | conciliar ventas, medios, soportes y diferencias antes de cerrar la jornada de caja |
+
+Estas superficies no se fusionan en un único formulario reversible.
+
+---
+
+#### 6. Binding principal de proceso
+
+Los bindings canónicos son:
+
+```text
+VSCREEN-0089
+→ VPROC-0044
+→ VPROC-0044::STEP-OPEN_CASH_SESSION
+→ INITIATE / INITIAL
+
+VSCREEN-0090
+→ VPROC-0044
+→ VPROC-0044::STEP-CLOSE_CASH_SESSION
+→ CLOSE / TERMINAL
+```
+
+La apertura inicia responsabilidad de caja.
+
+El cierre finaliza una jornada únicamente cuando la conciliación aplicable quedó demostrada.
+
+---
+
+#### 7. Superficie de revisión separada
+
+`VSCREEN-0093 — Revisión de ventas, caja y terminales` permanece separada:
+
+```text
+VSCREEN-0093
+→ VPROC-0044::STEP-REVIEW_SALES_AND_TERMINALS
+→ REVIEW / CROSS_CUTTING
+```
+
+Revisar:
+
+- no abre caja;
+- no cierra caja;
+- no cambia el actor propietario;
+- no aprueba automáticamente diferencias;
+- no modifica ventas o pagos.
+
+---
+
+#### 8. PermissionKeys activas aplicables
+
+La experiencia ordinaria de esta tarea consume exactamente estas PermissionKeys activas:
+
+```text
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+```
+
+No se crea una tercera identidad para arqueo, diferencia o reapertura desde esta tarea.
+
+---
+
+#### 9. Reconciliación de autoridad histórica
+
+Documentación anterior dejó momentos distintos del diseño de autorización.
+
+La autoridad vigente se resuelve con la reconciliación posterior:
+
+```text
+PULSO-AUTH HISTORICO
++
+AUTH-CAT-022 / AUTH-CAT-023 / AUTH-CAT-024
++
+DATASET OPERACIONAL VIGENTE
+=
+AUTORIDAD ACTUAL
+```
+
+Por tanto, queda superada para este diseño cualquier cláusula histórica que afirme que `cajero_satelite` no posee `pulso.cash.sessions.close`.
+
+El dataset vigente sí publica cierre ordinario como `OPERATIONAL_ONLY` para la propia sesión compatible.
+
+---
+
+#### 10. Autoridad de apertura
+
+`pulso.cash.sessions.start` es:
+
+```text
+OPERATIONAL_ONLY
+DIRECT_OPERATIONAL
+```
+
+Se publica para:
+
+- `cajero_satelite`;
+- `operador_integral_satelite`.
+
+No necesita un componente base adicional.
+
+---
+
+#### 11. Autoridad de cierre
+
+`pulso.cash.sessions.close` es:
+
+```text
+OPERATIONAL_ONLY
+DIRECT_OPERATIONAL
+```
+
+Se publica para:
+
+- `cajero_satelite`;
+- `operador_integral_satelite`.
+
+La autoridad se limita a una sesión compatible con el contexto efectivo del actor.
+
+---
+
+#### 12. Matriz de autoridad ordinaria
+
+| Actor operativo | `cash.sessions.start` | `cash.sessions.close` | Resultado |
+| --- | --- | --- | --- |
+| `cajero_satelite` | ALLOW | ALLOW | puede abrir y cursar cierre ordinario de su propia sesión compatible |
+| `operador_integral_satelite` | ALLOW | ALLOW | puede abrir y cursar cierre ordinario cuando la función de caja esté activa |
+| `gerencia_operativa` | NO GRANT DIRECTO | NO GRANT DIRECTO | revisión o coordinación no equivale a operar una caja propia |
+| otros roles operativos | NO INFERIR | NO INFERIR | fail-closed salvo concesión canónica explícita |
+
+---
+
+#### 13. Sesión personal
+
+La sesión de caja es personal.
+
+La condición canónica exige:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++
+TURNO PUBLICADO Y VIGENTE
++
+CHECK-IN ACTIVO
++
+ROL OPERATIVO COMPATIBLE
++
+SEDE COMPATIBLE
++
+AREA O PUNTO DE CAJA COMPATIBLE
++
+RECURSO VIGENTE
++
+TRANSICION IDEMPOTENTE
++
+AUDITORIA
+```
+
+No puede reutilizarse la identidad de otro actor.
+
+---
+
+#### 14. Operador y supervisor no son intercambiables
+
+La revisión de caja puede involucrar supervisión, pero:
+
+```text
+OPERAR CAJA
+!=
+REVISAR CAJA
+!=
+APROBAR UNA DIFERENCIA
+```
+
+`gerencia_operativa` no obtiene `cash.start` o `cash.close` por jerarquía.
+
+La ausencia del cajero no convierte automáticamente al supervisor en propietario de su sesión.
+
+---
+
+#### 15. Apertura y cierre son acciones distintas
+
+```text
+START
+!=
+CLOSE
+```
+
+Abrir una sesión no concede por implicación cerrar cualquier sesión.
+
+Cerrar una sesión no concede crear otra, reabrir una cerrada o alterar la apertura anterior.
+
+---
+
+#### 16. Propósito de VSCREEN-0089
+
+`VSCREEN-0089` debe permitir confirmar que el actor está entrando a una sesión de caja válida antes de operar ventas y efectivo.
+
+La pantalla muestra únicamente información necesaria para:
+
+- actor efectivo;
+- sede;
+- punto o terminal;
+- turno;
+- fondo inicial cuando aplique;
+- advertencias incompatibles;
+- resultado de la apertura.
+
+---
+
+#### 17. Condiciones mínimas de apertura
+
+La apertura debe fallar cerrado si no puede demostrarse:
+
+- actor humano efectivo;
+- turno vigente;
+- check-in activo;
+- rol con `pulso.cash.sessions.start`;
+- sede compatible;
+- área o punto de caja compatible;
+- terminal o recurso de caja válido cuando aplique;
+- inexistencia de una sesión incompatible ya abierta;
+- identidad idempotente de la operación;
+- auditoría del resultado.
+
+---
+
+#### 18. Fondo inicial
+
+El fondo inicial pertenece a la sesión de caja.
+
+No es:
+
+- venta;
+- pago;
+- ingreso comercial;
+- hecho fiscal;
+- hecho NUMERA reconocido por sí solo.
+
+Debe conservarse como parte reconstruible de la apertura y del cálculo posterior de efectivo esperado.
+
+---
+
+#### 19. Apertura no implícita
+
+Crear la primera venta, cobrar el primer pedido o entrar a PULSO no abre una caja de forma implícita.
+
+```text
+PULSO ACCESS
+!=
+CASH SESSION START
+```
+
+La sesión debe existir por una acción nombrada y autorizada.
+
+---
+
+#### 20. Sesiones incompatibles
+
+La experiencia debe impedir que una segunda apertura silenciosa o un cambio de contexto cree dos sesiones incompatibles para el mismo actor, punto o periodo operativo.
+
+Si ya existe una sesión aplicable:
+
+- se recupera su contexto;
+- o se presenta el conflicto;
+- pero no se crea otra por retry o doble toque.
+
+---
+
+#### 21. Idempotencia de apertura
+
+Reintentar la misma intención de apertura debe converger al mismo resultado empresarial.
+
+Una respuesta perdida no autoriza crear una nueva sesión sin consultar la identidad vigente.
+
+La UI no genera autoridad a partir de un estado local optimista.
+
+---
+
+#### 22. Movimientos de caja
+
+Durante una sesión, PULSO conserva el historial de movimientos que explican el efectivo y otros valores bajo responsabilidad de caja.
+
+La experiencia diferencia, según exista autoridad propietaria:
+
+- fondo inicial;
+- cobros confirmados;
+- cambio entregado cuando aplique;
+- refund o reverse confirmados que afecten caja;
+- ingresos o retiros explícitos autorizados;
+- gastos o salidas autorizadas;
+- ajustes derivados de una corrección propietaria.
+
+Ninguno se representa editando el total de la sesión.
+
+---
+
+#### 23. No se inventan PermissionKeys para movimientos
+
+El catálogo activo consultado publica `cash.sessions.start` y `cash.sessions.close`, pero no una familia adicional de PermissionKeys de movimiento de caja desde esta tarea.
+
+Por tanto:
+
+- el diseño puede mostrar y conciliar movimientos existentes;
+- no inventa permisos ejecutables para retiros, gastos o ajustes;
+- cualquier mutación futura de esas familias debe consumir una identidad canónica publicada por su propietario antes de habilitarse.
+
+---
+
+#### 24. Efectivo esperado
+
+El efectivo esperado se calcula desde hechos autorizados y confirmados.
+
+Conceptualmente:
+
+```text
+FONDO DE APERTURA
++
+ENTRADAS CONFIRMADAS DE EFECTIVO
+-
+SALIDAS CONFIRMADAS DE EFECTIVO
+=
+EFECTIVO ESPERADO
+```
+
+La UI no permite editar manualmente ese resultado para hacerlo coincidir con el conteo.
+
+---
+
+#### 25. Efectivo contado
+
+El efectivo contado es una observación del actor durante el cierre.
+
+Debe permanecer separado de:
+
+- efectivo esperado;
+- ventas totales;
+- pagos electrónicos;
+- soportes fiscales;
+- liquidación de proveedor;
+- saldo económico de NUMERA.
+
+---
+
+#### 26. Diferencia
+
+La diferencia se deriva de valores autoritativos:
+
+```text
+DIFERENCIA = EFECTIVO CONTADO - EFECTIVO ESPERADO
+```
+
+No se captura como valor libre destinado a reemplazar uno de los componentes.
+
+---
+
+#### 27. Diferencia es un hecho
+
+Una diferencia distinta de cero:
+
+- se conserva;
+- exige tratamiento visible;
+- mantiene responsable y evidencia;
+- no desaparece al cerrar una ventana;
+- no se convierte automáticamente en ajuste.
+
+La historia debe permitir reconstruir cómo se obtuvo.
+
+---
+
+#### 28. Diferencia no crea compensación automática
+
+Una diferencia no produce por inferencia:
+
+- movimiento compensatorio;
+- asiento contable;
+- ingreso extraordinario;
+- salida de efectivo;
+- descuento laboral;
+- corrección de venta;
+- corrección de pago.
+
+Cada efecto posterior conserva su propietario y autoridad.
+
+---
+
+#### 29. Propósito de VSCREEN-0090
+
+`VSCREEN-0090` guía el cierre de la sesión propia mediante una secuencia verificable:
+
+```text
+REVISAR SESION
+→ CONTAR
+→ COMPARAR
+→ REVISAR PENDIENTES
+→ TRATAR DIFERENCIA
+→ CONCILIAR
+→ CERRAR
+```
+
+No presenta un único botón de «cuadrar» que oculte pasos o resultados.
+
+---
+
+#### 30. Condiciones mínimas de cierre
+
+`pulso.cash.sessions.close` debe validar, como mínimo:
+
+- sesión existente;
+- sesión abierta o equivalente vigente;
+- sede compatible;
+- actor efectivo propietario;
+- turno y contexto válidos;
+- movimientos asociados;
+- pagos pendientes de conciliación;
+- efectivo esperado calculado por servidor;
+- efectivo contado capturado;
+- diferencia calculada por servidor;
+- idempotencia;
+- timestamp autoritativo;
+- auditoría.
+
+---
+
+#### 31. Resultado desconocido de pago
+
+Una operación de pago con resultado desconocido no puede convertirse en cero ni en «fallida» para forzar el cierre.
+
+Debe permanecer visible como pendiente de conciliación.
+
+El cierre solo puede avanzar conforme al contrato de excepción aplicable.
+
+---
+
+#### 32. Refund y reverse
+
+Los efectos confirmados de `refund` o `reverse` pueden modificar la conciliación de la caja.
+
+No modifican el pago original.
+
+El cierre consume:
+
+- hecho original;
+- efecto compensatorio confirmado;
+- estado pendiente cuando exista incertidumbre;
+- correlación entre ambos.
+
+---
+
+#### 33. Propinas y otros componentes
+
+El cierre debe poder explicar los componentes que afecten la jornada, incluidos cuando apliquen:
+
+- ventas;
+- pagos;
+- efectivo;
+- cambio;
+- propinas;
+- documentos;
+- refunds;
+- reversos;
+- pendientes.
+
+La tarea no inventa una fuente histórica para propinas ni modifica su contrato propietario.
+
+---
+
+#### 34. Documento fiscal
+
+Documento fiscal y caja permanecen separados.
+
+```text
+CASH CLOSE
+!=
+FISCAL CLOSE
+```
+
+PULSO conserva referencias y estados necesarios para la conciliación, pero no finge emisión o anulación fiscal.
+
+---
+
+#### 35. Frontera con NUMERA
+
+PULSO conserva:
+
+- apertura;
+- movimientos;
+- arqueo;
+- diferencias;
+- cierre.
+
+NUMERA consume hechos económicos confirmados.
+
+```text
+PULSO CIERRA SESION OPERATIVA
+→ EMITE/EXPONE HECHOS CONFIRMADOS
+→ NUMERA REGISTRA Y CONCILIA SEGUN SU CONTRATO
+```
+
+NUMERA no reescribe la sesión para hacerla cuadrar.
+
+---
+
+#### 36. Máquina de estados VPROC-0044
+
+La máquina publicada de `VPROC-0044` contiene exactamente ocho estados:
+
+| Orden | Estado | Tipo |
+| ---: | --- | --- |
+| 0 | `CASH_CLOSE_OPENED` | `INITIAL` |
+| 1 | `COUNTING` | `INTERMEDIATE` |
+| 2 | `SALES_RECONCILIATION_IN_PROGRESS` | `INTERMEDIATE` |
+| 3 | `DIFFERENCE_UNDER_REVIEW` | `INTERMEDIATE` |
+| 4 | `SUPERVISOR_APPROVAL_PENDING` | `INTERMEDIATE` |
+| 5 | `DEPOSIT_PREPARING` | `INTERMEDIATE` |
+| 6 | `FINANCIAL_RECONCILIATION_PENDING` | `INTERMEDIATE` |
+| 7 | `CASH_SESSION_CLOSED` | `FINAL_NORMAL` |
+
+---
+
+#### 37. `CASH_CLOSE_OPENED`
+
+El estado inicial del workflow de cierre exige una sesión, turno o periodo de caja finalizable con responsable y fecha de corte.
+
+Abrir el caso de cierre:
+
+- no confirma valores;
+- no confirma diferencias;
+- no confirma depósito;
+- no confirma conciliación.
+
+---
+
+#### 38. `COUNTING`
+
+`COUNTING` representa el conteo de efectivo y otros valores bajo responsabilidad del cierre.
+
+El conteo es una observación.
+
+No altera movimientos previos.
+
+---
+
+#### 39. `SALES_RECONCILIATION_IN_PROGRESS`
+
+En este estado se comparan:
+
+- ventas;
+- pagos;
+- devoluciones;
+- anulaciones;
+- documentos.
+
+No se reescribe ninguno de esos hechos para obtener coincidencia.
+
+---
+
+#### 40. `DIFFERENCE_UNDER_REVIEW`
+
+Este estado existe cuando hay una diferencia documentada pendiente de explicación y decisión.
+
+La UI debe mostrar:
+
+- esperado;
+- contado;
+- diferencia;
+- hechos relevantes;
+- razón o evidencia cuando corresponda.
+
+---
+
+#### 41. `SUPERVISOR_APPROVAL_PENDING`
+
+El estado conserva la necesidad de validación autorizada cuando el cierre o sus diferencias lo requieran.
+
+Esta tarea no inventa una PermissionKey de aprobación.
+
+La presencia del estado tampoco concede al supervisor autoridad por nombre de rol.
+
+---
+
+#### 42. `DEPOSIT_PREPARING`
+
+Este estado representa valores aceptados en preparación para custodia o depósito.
+
+No significa que el depósito bancario o traslado de custodia ya ocurrió.
+
+La evidencia posterior debe conservarse en su contrato propietario.
+
+---
+
+#### 43. `FINANCIAL_RECONCILIATION_PENDING`
+
+Este estado conserva la espera por correlación con:
+
+- banco cuando corresponda;
+- caja general;
+- registros económicos;
+- otros resultados financieros aplicables.
+
+No permite declarar la sesión económicamente conciliada por ausencia de respuesta.
+
+---
+
+#### 44. `CASH_SESSION_CLOSED`
+
+El cierre final normal exige que ventas, pagos, efectivo, movimientos, conteos, diferencias y entrega de custodia aplicables estén conciliados y aprobados.
+
+El estado final:
+
+- conserva evidencia;
+- impide alterar ventas o pagos para forzar coincidencia;
+- no sustituye el registro contable;
+- no autoriza una reapertura implícita.
+
+---
+
+#### 45. Eventos canónicos de VPROC-0044
+
+`VPROC-0044` publica exactamente seis eventos:
+
+| Evento | Tipo |
+| --- | --- |
+| `VPROC-0044.EVT-001` / `cash-close-opened` | `PROCESS_STARTED` |
+| `VPROC-0044.EVT-002` / `counting` | `EXECUTION_FACT` |
+| `VPROC-0044.EVT-003` / `difference-under-review` | `ANALYSIS_FACT` |
+| `VPROC-0044.EVT-004` / `supervisor-approval-pending` | `DECISION_FACT` |
+| `VPROC-0044.EVT-005` / `financial-reconciliation-pending` | `RECONCILIATION_FACT` |
+| `VPROC-0044.EVT-006` / `cash-session-closed` | `PROCESS_COMPLETED` |
+
+---
+
+#### 46. Sensibilidad de eventos
+
+Los seis eventos de `VPROC-0044` son:
+
+```text
+RESTRICTED_FINANCIAL
+```
+
+Por tanto, la experiencia no expone detalle financiero innecesario a actores, dispositivos o logs que no lo requieran.
+
+---
+
+#### 47. Apertura operativa y estados de cierre
+
+Existe una distinción contractual importante:
+
+- `VSCREEN-0089` y `STEP-OPEN_CASH_SESSION` modelan la apertura operativa de la sesión;
+- la máquina de estados generada de `VPROC-0044` publicada actualmente comienza en `CASH_CLOSE_OPENED` y describe el lifecycle del cierre.
+
+Esta tarea no inventa un `CASH_SESSION_OPEN` dentro de esa máquina.
+
+La sesión abierta es precondición material del workflow de cierre.
+
+---
+
+#### 48. Aprobación no se deduce de `cash.close`
+
+El permiso `pulso.cash.sessions.close` permite cursar el cierre ordinario de la propia sesión.
+
+No convierte al mismo actor en aprobador de una diferencia sensible cuando el proceso exige revisión separada.
+
+La segregación se mantiene aunque la UI reúna información en la misma superficie.
+
+---
+
+#### 49. Reapertura no es PermissionKey activa
+
+Documentación histórica propuso `pulso.cash.sessions.reopen`, pero el catálogo activo consultado para esta tarea no publica esa PermissionKey.
+
+Por tanto:
+
+```text
+REOPEN ACTIVO = NO DEMOSTRADO
+```
+
+La UI de 010 no expone una acción ejecutable de reapertura.
+
+---
+
+#### 50. Corrección posterior al cierre
+
+Una corrección posterior al cierre, cuando exista contrato canónico futuro, debe preservar:
+
+- cierre original;
+- valores originales;
+- diferencia original;
+- actor original;
+- nueva acción;
+- nuevo actor;
+- motivo;
+- versión;
+- correlación.
+
+No se implementa como edición de la sesión cerrada.
+
+---
+
+#### 51. Cierre forzado
+
+El cierre forzado por abandono, indisponibilidad o contingencia no se trata como alias de `cash.sessions.close`.
+
+Mientras no exista autoridad canónica específica:
+
+```text
+DEFAULT_DENY
+```
+
+No se habilita desde esta tarea.
+
+---
+
+#### 52. Cierre de la propia sesión
+
+El cierre ordinario se limita a la sesión compatible del actor.
+
+No habilita:
+
+- cerrar la caja de otro trabajador;
+- tomar ownership de una sesión ajena;
+- cambiar actor para superar una restricción;
+- cerrar una sesión de otra sede;
+- cerrar una sesión de otro punto sin autoridad.
+
+---
+
+#### 53. Sede, punto y terminal
+
+La experiencia siempre muestra y revalida el contexto efectivo de caja.
+
+Un `site_id`, terminal elegida, QR, parámetro UI o selección de usuario puede seleccionar dentro de autoridad ya existente, pero nunca ampliarla.
+
+---
+
+#### 54. Terminal compartida
+
+En terminal compartida:
+
+```text
+DEVICE IDENTITY
+!=
+HUMAN ACTOR
+```
+
+`PULSO-UX-014` conserva el diseño completo de identificación del actor real.
+
+010 exige que apertura y cierre queden atribuidos al trabajador efectivo.
+
+---
+
+#### 55. Operación degradada
+
+Ante pérdida de red o autoridad externa no disponible, la experiencia puede conservar captura local pendiente únicamente cuando un contrato propietario lo permita.
+
+No debe:
+
+- fingir cierre confirmado;
+- crear totales autoritativos desde cache no confiable;
+- descartar pendientes;
+- convertir timeout en cero diferencia.
+
+El cierre definitivo requiere reconciliación demostrable.
+
+---
+
+#### 56. Realtime
+
+Realtime puede actualizar:
+
+- ventas;
+- pagos;
+- movimientos;
+- pendientes;
+- estado de sesión.
+
+Realtime no concede autoridad y no confirma por sí solo un cierre.
+
+---
+
+#### 57. Concurrencia
+
+Si dos clientes intentan cerrar la misma sesión:
+
+- la transición se revalida contra estado actual;
+- el mismo intento idempotente converge;
+- un intento incompatible recibe conflicto;
+- no se crean dos cierres finales.
+
+---
+
+#### 58. Frescura y control de versión
+
+Antes del efecto final, el servidor revalida:
+
+- sesión;
+- actor;
+- sede;
+- estado;
+- movimientos;
+- pagos;
+- conteo;
+- diferencia;
+- pendientes;
+- autoridad.
+
+Una pantalla abierta con datos antiguos no autoriza cerrar sobre un snapshot stale incompatible.
+
+---
+
+#### 59. Validación server-side obligatoria
+
+La UI nunca es autoridad final.
+
+El servidor debe decidir:
+
+```text
+ACTOR
++
+PERMISSIONKEY
++
+TURNO
++
+CHECK-IN
++
+TERRITORIO
++
+SESION
++
+ESTADO
++
+FRESCURA
++
+IDEMPOTENCIA
+=
+RESULTADO
+```
+
+Ocultar un botón solo reduce exposición accidental.
+
+---
+
+#### 60. Resultados de error distinguibles
+
+La experiencia distingue al menos:
+
+- sin permiso;
+- actor inválido;
+- turno inválido;
+- check-in inválido;
+- sede o punto incompatibles;
+- sesión inexistente;
+- sesión ya cerrada;
+- sesión incompatible ya abierta;
+- estado stale;
+- diferencia pendiente;
+- conciliación pendiente;
+- resultado técnico desconocido;
+- conflicto idempotente.
+
+No colapsa todos como «No se pudo cerrar».
+
+---
+
+#### 61. Accesibilidad
+
+Apertura y cierre deben:
+
+- permitir operación táctil y teclado;
+- mantener foco visible;
+- no depender únicamente de color para diferencia o bloqueo;
+- presentar montos con etiquetas explícitas;
+- exigir confirmación comprensible para cierre final;
+- anunciar errores y pendientes de forma accesible.
+
+---
+
+#### 62. Composición mínima de apertura
+
+`VSCREEN-0089` debe priorizar:
+
+1. contexto actual;
+2. actor;
+3. sede/punto;
+4. fondo inicial aplicable;
+5. incompatibilidades;
+6. acción «Abrir caja»;
+7. resultado visible.
+
+No muestra controles de cierre o conciliación avanzada en la misma decisión inicial.
+
+---
+
+#### 63. Composición mínima de cierre
+
+`VSCREEN-0090` debe priorizar:
+
+1. identidad de la sesión;
+2. actor y contexto;
+3. resumen de hechos;
+4. efectivo esperado;
+5. captura de conteo;
+6. diferencia;
+7. pendientes;
+8. tratamiento requerido;
+9. confirmación final;
+10. soporte/resultados posteriores.
+
+---
+
+#### 64. Diferencia con divulgación progresiva
+
+Cuando no exista diferencia ni pendiente bloqueante, el cierre debe ser corto.
+
+Cuando exista diferencia o incertidumbre, la interfaz amplía únicamente la evidencia relevante.
+
+```text
+CASO NORMAL = SIMPLE
+CASO EXCEPCIONAL = EXPLICADO Y GOBERNADO
+```
+
+---
+
+#### 65. Handoff a PULSO-UX-013
+
+`PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles` recibe:
+
+- cierre final como acción irreversible dentro del flujo ordinario;
+- diferencia como condición que aumenta sensibilidad;
+- obligación de mostrar actor, sesión, montos y efecto;
+- prohibición de confirmar con mensajes ambiguos.
+
+---
+
+#### 66. Handoff a PULSO-UX-014
+
+`PULSO-UX-014 — Identificar actor real en terminal compartida` recibe:
+
+- apertura actor-bound;
+- conteo actor-bound;
+- cierre actor-bound;
+- prohibición de reutilizar la firma o identidad del trabajador anterior.
+
+---
+
+#### 67. Handoff a PULSO-UX-015
+
+`PULSO-UX-015 — Diseñar experiencia táctil para POS` recibe:
+
+- acciones de apertura y cierre resistentes a doble toque;
+- captura de montos cómoda sin perder precisión;
+- separación visual entre esperado, contado y diferencia;
+- confirmación final proporcional.
+
+---
+
+#### 68. Inventario
+
+Caja no es inventario.
+
+Un cierre no:
+
+- ajusta stock;
+- confirma consumos;
+- revierte inventario;
+- corrige faltantes físicos.
+
+Las diferencias de inventario conservan sus procesos propietarios.
+
+---
+
+#### 69. Fidelización
+
+Caja no es ledger de fidelización.
+
+Acumulaciones, redenciones, reversos o compensaciones PASS pueden formar parte de la conciliación comercial, pero la sesión no modifica puntos directamente.
+
+`PULSO-UX-011` y `PULSO-UX-012` conservan ese diseño.
+
+---
+
+#### 70. Revisión de caja y terminales
+
+`VSCREEN-0093` consume resultados de caja para supervisión.
+
+Debe poder observar:
+
+- sesiones;
+- estados;
+- diferencias;
+- bloqueos;
+- terminales;
+- pendientes.
+
+Pero la vista de revisión no hereda `cash.sessions.start` o `cash.sessions.close` por mera visibilidad.
+
+---
+
+#### 71. AS-IS de vento-pulso
+
+La inspección del runtime vigente de `vento-pulso` no mostró:
+
+- uso de `pulso.cash.sessions.start`;
+- uso de `pulso.cash.sessions.close`;
+- una superficie runtime identificable como `VSCREEN-0089`;
+- una superficie runtime identificable como `VSCREEN-0090`;
+- un modelo de `cash_session` materializado en el repositorio de aplicación consultado.
+
+Existe documentación histórica que declara pendiente el cierre formal de caja, pagos y sesiones POS.
+
+---
+
+#### 72. Brechas AS-IS y propietarios de salida
+
+| Hallazgo | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| no existe superficie runtime canónica de apertura | ventas podrían operar sin sesión demostrada | package físico PULSO propietario | `VSCREEN-0089` consume contrato de sesión y PermissionKey vigente |
+| no existe superficie runtime canónica de cierre | jornada sin arqueo y conciliación | package físico PULSO propietario | `VSCREEN-0090` materializa lifecycle de cierre |
+| runtime no consume `cash.sessions.start/close` | UI y autorización pueden divergir | `PULSO-AUTH-015` + package físico | consumidores migrados a PermissionKeys activas |
+| no hay PermissionKey activa de reapertura | una UI podría habilitar excepción ficticia | `PULSO-AUTH-008` / catálogo de autorización | solo habilitar si una identidad canónica posterior queda publicada |
+| aprobación de diferencia no tiene una nueva PermissionKey definida aquí | aprobación podría confundirse con visibilidad supervisora | `PULSO-AUTH-008` + certificación PULSO | autoridad explícita y prueba fail-closed antes de efecto físico |
+| caja y NUMERA no están E2E reconciliados | doble verdad financiera | `PULSO-UX-017` + `INT-POS-020` | hechos confirmados llegan a NUMERA sin reescribir sesión |
+
+No se crea una tarea nueva para ninguno de estos hallazgos.
+
+---
+
+#### 73. Cierre de H-CAP-SCOPE-009-018 a nivel de diseño
+
+El hallazgo exige ciclo integral de:
+
+```text
+APERTURA
+FONDO
+INGRESOS
+RETIROS
+GASTOS
+ARQUEO
+CIERRE
+```
+
+Esta tarea cierra la semántica UX y de proceso:
+
+- apertura y fondo pertenecen a sesión;
+- movimientos se conservan como hechos;
+- retiros/gastos no se habilitan sin autoridad canónica;
+- arqueo separa esperado y contado;
+- diferencia es hecho, no corrección;
+- cierre consume conciliación.
+
+La ejecución E2E permanece en su package físico y pruebas propietarias.
+
+---
+
+#### 74. Cierre de H-CAP-SCOPE-009-023 a nivel de diseño
+
+El cierre diario debe reconciliar:
+
+- ventas;
+- pagos;
+- caja;
+- propinas aplicables;
+- documentos;
+- refunds/reversos;
+- pendientes.
+
+La tarea define que ningún componente se elimina o reescribe para lograr coincidencia.
+
+`INT-POS-020` conserva la conciliación diaria de integración y `PULSO-UX-017` la conexión económica con NUMERA.
+
+---
+
+#### 75. Resultado funcional
+
+Al finalizar este diseño, PULSO puede representar de forma canónica:
+
+```text
+SIN SESION
+→ ABRIR CAJA
+→ SESION PERSONAL ACTIVA
+→ MOVIMIENTOS TRAZABLES
+→ INICIAR CIERRE
+→ CONTAR
+→ CONCILIAR
+→ TRATAR DIFERENCIA/PENDIENTES
+→ CERRAR
+→ EMITIR RESULTADO TRAZABLE
+```
+
+Sin fusionar caja con venta, pago o contabilidad.
+
+---
+
+#### 76. Matriz de decisiones de simplificación
+
+| Pregunta | Decisión |
+| --- | --- |
+| ¿apertura y cierre son la misma acción? | no |
+| ¿cajero puede iniciar caja propia? | sí, con `cash.sessions.start` vigente |
+| ¿cajero puede cursar cierre ordinario propio? | sí, con `cash.sessions.close` vigente |
+| ¿operador integral puede hacerlo? | sí, cuando su función de caja esté activa |
+| ¿gerencia_operativa puede hacerlo por jerarquía? | no |
+| ¿crear venta abre caja? | no |
+| ¿cobrar abre caja? | no |
+| ¿close permite reabrir? | no |
+| ¿existe PermissionKey activa `reopen` demostrada? | no |
+| ¿diferencia puede editar esperado? | no |
+| ¿diferencia crea ajuste automático? | no |
+| ¿refund/reverse borran pago original? | no |
+| ¿NUMERA es owner de la sesión? | no |
+| ¿VSCREEN-0093 abre/cierra? | no |
+| ¿la UI decide autoridad? | no |
+
+---
+
+#### 77. Handoff inmediato a PULSO-UX-011
+
+`PULSO-UX-011 — Integrar acumulación de puntos` recibe:
+
+```text
+CAJA ABIERTA NO IMPLICA CLIENTE IDENTIFICADO
+VENTA/PAGO CONFIRMADOS PUEDEN SER HECHOS ELEGIBLES PARA LOYALTY
+CIERRE DE CAJA NO EDITA EL LEDGER PASS
+ACUMULACION DE PUNTOS DEBE SER IDEMPOTENTE Y CORRELACIONABLE CON LA VENTA
+PENDIENTE DE LOYALTY NO SE CONVIERTE EN AJUSTE DE EFECTIVO
+```
+
+010 no diseña acumulación de puntos.
+
+---
+
+#### 78. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: apertura, cierre, fondo, movimientos, efectivo esperado, conteo, diferencia, aprobación, conciliación, autorización, idempotencia y cierre diario ya poseen cobertura vigente; esta tarea especializa la experiencia y reconciliación contractual sin introducir una obligación verificable nueva.
+
+---
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-PULSO-001` para el ciclo E2E de apertura a cierre;
+- `TREQ-PULSO-003` para no adoptar piezas históricas sin validación;
+- `TREQ-PULSO-006` para venta, pago, movimientos, fondo, conteo, diferencia, reapertura y cierre auditables;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso y territorio;
+- `TREQ-AUTH-001`, `TREQ-AUTH-004`, `TREQ-AUTH-013` y `TREQ-AUTH-015` para decisión, bypass y trazabilidad;
+- `TREQ-NUMERA-001` para frontera económica posterior;
+- `TREQ-INTEGRATION-006` para integración y conciliación;
+- `TREQ-UX-006` para experiencia de estados, feedback y recuperación.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue incorporado todavía en el checkout del usuario ni sometido allí al ciclo documental completo. |
+| REMOTA | PASS | Se verificaron remoto vigente de `vento-shell`, continuidad, topología `DEFINE_ONCE`, catálogo de pantallas y pasos, `VPROC-0044`, sus ocho estados y seis eventos, datasets de autorización vigentes, Registro 04A aplicable, relaciones con NUMERA y runtime vigente de `vento-pulso`. |
+| OPERATIVA | NOT_EXECUTED | No se abrió, contó, concilió, cerró, reabrió ni corrigió una caja real. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; esta tarea no crea una instancia física propia. |
+
+---
+
+#### 81. Criterios de aceptación
+
+- [ ] `VSCREEN-0089` conserva identidad de Apertura de caja.
+- [ ] `VSCREEN-0090` conserva identidad de Cierre de caja.
+- [ ] Ambos consumen `VPROC-0044` sin fusionarse.
+- [ ] Apertura usa `VPROC-0044::STEP-OPEN_CASH_SESSION`.
+- [ ] Cierre usa `VPROC-0044::STEP-CLOSE_CASH_SESSION`.
+- [ ] `VSCREEN-0093` permanece revisión separada.
+- [ ] Se consumen únicamente `pulso.cash.sessions.start` y `pulso.cash.sessions.close` como PermissionKeys activas de sesión aplicables.
+- [ ] Ambas PermissionKeys se reconocen `OPERATIONAL_ONLY`.
+- [ ] `cajero_satelite` puede operar apertura y cierre ordinarios de su sesión compatible.
+- [ ] `operador_integral_satelite` puede operar apertura y cierre cuando su función de caja esté activa.
+- [ ] `gerencia_operativa` no recibe start/close por jerarquía.
+- [ ] La cláusula histórica de no-close del cajero queda reconciliada contra `AUTH-CAT-023` y el dataset vigente.
+- [ ] La sesión es personal y actor-bound.
+- [ ] Acceso PULSO no abre caja implícitamente.
+- [ ] Crear venta no abre caja implícitamente.
+- [ ] Cobrar no abre caja implícitamente.
+- [ ] El fondo inicial permanece separado de venta y pago.
+- [ ] Los movimientos preservan hechos originales.
+- [ ] No se inventan PermissionKeys para retiros, gastos o ajustes.
+- [ ] Efectivo esperado se deriva de hechos confirmados.
+- [ ] Efectivo contado permanece observación independiente.
+- [ ] Diferencia se calcula y no se edita para cuadrar.
+- [ ] Diferencia no crea compensación automática.
+- [ ] Resultado desconocido no se oculta durante cierre.
+- [ ] Refund/reverse se concilian sin borrar pago original.
+- [ ] Documento fiscal permanece separado.
+- [ ] NUMERA consume hechos y no reescribe caja.
+- [ ] Se conservan exactamente ocho estados de `VPROC-0044`.
+- [ ] Se conservan exactamente seis eventos `VPROC-0044.EVT-001..006`.
+- [ ] Todos los eventos conservan sensibilidad `RESTRICTED_FINANCIAL`.
+- [ ] No se inventa un estado `CASH_SESSION_OPEN` en la máquina generada.
+- [ ] `SUPERVISOR_APPROVAL_PENDING` no concede autoridad por nombre de rol.
+- [ ] No se expone una PermissionKey de reapertura no publicada.
+- [ ] Cierre forzado permanece fail-closed sin autoridad específica.
+- [ ] Concurrencia no produce dos cierres.
+- [ ] Estado stale obliga revalidación.
+- [ ] Realtime no concede autoridad.
+- [ ] Terminal compartida conserva actor humano real.
+- [ ] H-CAP-SCOPE-009-018 queda resuelto documentalmente.
+- [ ] H-CAP-SCOPE-009-023 queda resuelto documentalmente.
+- [ ] 010 entrega a 011 una sesión/cierre que no modifica ledger PASS.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 82. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- crea `VSCREEN-0089` o `VSCREEN-0090` físicamente;
+- crea componentes React;
+- crea rutas runtime;
+- crea tablas de caja;
+- crea RPC de caja;
+- crea Server Actions;
+- crea migraciones;
+- modifica Supabase;
+- modifica RLS;
+- modifica grants;
+- modifica datasets de autorización;
+- crea PermissionKeys;
+- publica `pulso.cash.sessions.reopen`;
+- habilita cierre forzado;
+- crea permisos para retiros, gastos o ajustes;
+- abre una caja;
+- cierra una caja;
+- corrige una diferencia real;
+- registra un depósito;
+- modifica ventas;
+- modifica pagos;
+- ejecuta refunds;
+- ejecuta reversos;
+- emite documentos fiscales;
+- modifica inventario;
+- modifica ledger PASS;
+- registra hechos NUMERA;
+- modifica dispositivos;
+- modifica turnos o check-in;
+- modifica el Registro 04A;
+- crea instancia física;
+- ejecuta E5.
+
+---
+
+#### 83. Decisión final de experiencia
+
+La experiencia canónica de caja queda definida como una sesión personal y trazable con dos acciones ordinarias activas:
+
+```text
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+```
+
+La apertura crea contexto de responsabilidad y fondo.
+
+El cierre consume hechos, conteo, diferencia, aprobación y conciliación sin editar destructivamente la historia.
+
+```text
+VENTA != PAGO != MOVIMIENTO DE CAJA != DOCUMENTO FISCAL != HECHO NUMERA
+```
+
+El diseño no revive identidades históricas no publicadas ni convierte revisión supervisora en ejecución.
+
+---
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-009 — Separar anulación, devolución y reembolso`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-010 — Diseñar apertura y cierre de caja`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-011 — Integrar acumulación de puntos`
 ### [ ] PULSO-UX-011 — Integrar acumulación de puntos
 ### [ ] PULSO-UX-012 — Integrar redención de puntos
 ### [ ] PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
