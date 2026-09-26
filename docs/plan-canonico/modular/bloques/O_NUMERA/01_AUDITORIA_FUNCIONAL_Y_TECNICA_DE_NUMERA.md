@@ -8245,7 +8245,929 @@ Quedan fuera de alcance:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones`
-### [ ] NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
+### ✅ NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
+**Tarea siguiente:** NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
+**Tipo de tarea:** auditoría documental AS-IS de gobierno operativo y financiero de gastos, centros de costo, presupuestos, periodos, cierre, reapertura, aprobación y segregación de capacidades en NUMERA, contrastando UI, Server Actions, tablas, constraints, RLS, triggers, permisos y estado remoto, sin corregir código ni absorber exportaciones, sensibilidad, trazabilidad detallada o ejecución de pruebas reservadas a tareas posteriores; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, Supabase, datos, periodos, gastos, presupuestos, centros de costo, permisos, RLS, triggers, aprobaciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Determinar qué gobierno existe realmente sobre la captura de gastos, el uso del catálogo de centros de costo, la edición de metas económicas, los estados de periodo y las decisiones de cierre o aprobación.
+
+La auditoría separa:
+
+```text
+CAPTURA_AUTORIZADA
+APROBACION_SEPARADA
+CIERRE_GOBERNADO
+REAPERTURA_GOBERNADA
+MUTACION_DIRECTA
+CATALOGO_COMPARTIDO
+SEGREGACION_DE_CAPACIDADES
+```
+
+No se asume que la existencia de un campo `status`, una policy RLS o un permiso `manage` equivalga a un workflow financiero completo.
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-008
+
+La predecesora dejó congelado que:
+
+- `actual_expenses` agrega únicamente filas de `numera_expenses`;
+- `numera_cost_center_budgets` es la fuente editable de presupuesto, ingreso esperado y margen objetivo;
+- la pantalla de rentabilidad no implementa rentabilidad material;
+- el punto de equilibrio actual depende de un margen objetivo manual;
+- existen cero filas actuales de gastos y presupuestos;
+- la auditoría de workflow de gastos, centros, cierre y aprobación quedó reservada expresamente a esta tarea.
+
+Esta tarea consume ese handoff sin reabrir las fórmulas financieras ya auditadas.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `NUMERA-AUD-001..012` conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+No existe instancia física propia y ninguna conclusión de esta tarea autoriza mutaciones.
+
+---
+
+#### 4. Fuentes verificadas
+
+Se contrastaron:
+
+- tareas `NUMERA-AUD-001` a `NUMERA-AUD-007` publicadas;
+- `NUMERA-AUD-008` aprobado por el usuario como base inmediata;
+- `CAP-SCOPE-012` y sus reglas de gastos, presupuestos, periodos, cierre, reapertura y segregación;
+- `04A_13_NUMERA.md` sin modificación;
+- `vento-numera/main` en commit `c4d50282e30e46d0abb3d871f9604cf913ebbabd`;
+- `src/app/expenses/page.tsx`;
+- `src/app/cost-centers/page.tsx`;
+- `src/lib/auth/permissions.ts`;
+- `public.numera_expenses`;
+- `public.numera_cost_center_budgets`;
+- `public.numera_periods`;
+- `public.cost_centers`;
+- constraints, RLS, triggers, permisos y datos remotos de solo lectura del proyecto Supabase `clzdpinthhtknkmefsxx`.
+
+---
+
+#### 5. Regla canónica de gobierno preservada
+
+El canon exige que:
+
+- gasto sin soporte o aprobación tenga workflow y evidencia;
+- presupuesto aprobado, forecast y escenario sean objetos distintos y versionados;
+- el cierre bloquee las acciones definidas;
+- una reapertura exija autoridad y motivo;
+- registrar, aprobar, conciliar, cerrar, reabrir y exportar sean capacidades separadas;
+- un periodo cerrado pueda tratar eventos tardíos mediante regla explícita de ajuste o reapertura.
+
+La auditoría compara el AS-IS contra esas reglas sin materializar el diseño futuro.
+
+---
+
+#### 6. Definiciones de esta auditoría
+
+| Estado | Definición |
+| --- | --- |
+| `DIRECT_WRITE` | la capacidad autorizada persiste directamente el objeto sin etapa de aprobación separada |
+| `MANAGE_CONFLATION` | una sola capacidad `manage` cubre más de una decisión empresarial que el canon exige separar |
+| `STATUS_NOT_ENFORCED` | existe estado persistido, pero la escritura auditada no demuestra que lo use como guard |
+| `NO_APPROVAL_WORKFLOW` | no existen estado, transición, actor o decisión material de aprobación para el objeto auditado |
+| `NO_CLOSE_WORKFLOW` | existen estados de periodo, pero no acción, checklist, transición, autoridad y evidencia integral de cierre |
+| `SHARED_CATALOG_CONSUMER` | NUMERA consume una dimensión compartida sin administrar físicamente su catálogo desde las superficies auditadas |
+| `DESTRUCTIVE_UPSERT_MODEL` | la misma identidad de negocio se actualiza en sitio sin conservar versión empresarial aprobada separada |
+
+---
+
+#### 7. Universo auditado
+
+Se auditan cuatro objetos de gobierno:
+
+```text
+GOVERNANCE_OBJECTS = 4
+```
+
+1. gastos;
+2. centros de costo;
+3. presupuestos/metas por centro;
+4. periodos y su cierre.
+
+Las dos únicas mutaciones de negocio visibles continúan siendo:
+
+```text
+WRITE_FLOWS = 2
+createExpense
+upsertBudget
+```
+
+---
+
+#### 8. Resultado ejecutivo
+
+El corte queda:
+
+```text
+GOVERNANCE_OBJECTS = 4
+WRITE_FLOWS = 2
+NUMERA_PERMISSION_CODES = 8
+DEDICATED_APPROVAL_PERMISSIONS = 0
+DEDICATED_PERIOD_CLOSE_PERMISSIONS = 0
+DEDICATED_PERIOD_REOPEN_PERMISSIONS = 0
+PERIOD_STATUS_VALUES = 3
+PERIOD_WORKFLOW_HANDLERS = 0
+PERIOD_DOMAIN_TRIGGERS = 0
+CLOSED_OR_LOCKED_PERIOD_WRITE_GUARD = NO
+EXPENSE_APPROVAL_WORKFLOW = NO
+BUDGET_APPROVAL_WORKFLOW = NO
+BUDGET_VERSIONING = NO
+COST_CENTER_MUTATION_ACTIONS_IN_AUDITED_NUMERA_UI = 0
+RLS_ENABLED_ON_AUDITED_TABLES = 4/4
+```
+
+La presencia de RLS demuestra control de acceso básico, no segregación financiera completa.
+
+---
+
+#### 9. Snapshot remoto actual
+
+El estado observado es:
+
+```text
+NUMERA_PERIOD_ROWS = 1
+OPEN_PERIOD_ROWS = 1
+CLOSED_PERIOD_ROWS = 0
+LOCKED_PERIOD_ROWS = 0
+NUMERA_EXPENSE_ROWS = 0
+NUMERA_BUDGET_ROWS = 0
+COST_CENTER_ROWS = 6
+ACTIVE_COST_CENTER_ROWS = 6
+```
+
+El único periodo observado continúa siendo `2026-06` y permanece `open`.
+
+---
+
+#### 10. Catálogo de permisos NUMERA observado
+
+El catálogo activo contiene ocho códigos:
+
+```text
+access
+break_even.view
+cost_centers.manage
+cost_centers.view
+expenses.manage
+expenses.view
+profitability.view
+reports.view
+```
+
+No existen códigos activos observados equivalentes a:
+
+```text
+expenses.approve
+budgets.approve
+periods.close
+periods.reopen
+periods.lock
+periods.approve
+```
+
+La ausencia se registra como estado AS-IS y no como propuesta de nombres definitivos.
+
+---
+
+#### 11. Flujo actual de creación de gasto
+
+`createExpense` exige `numera.expenses.manage` y recibe:
+
+```text
+period_id
+category_id
+cost_center_id
+expense_date
+description
+amount
+```
+
+Luego inserta directamente en `numera_expenses` y fija en servidor:
+
+```text
+currency = COP
+source_app = numera
+```
+
+No existe etapa intermedia de borrador o propuesta en la acción observada.
+
+---
+
+#### 12. Validaciones actuales del gasto
+
+La Server Action valida:
+
+- existencia de periodo;
+- categoría;
+- centro;
+- fecha;
+- descripción;
+- monto numérico no negativo;
+- autorización `expenses.manage` en servidor.
+
+Estas validaciones son reales y se conservan como controles positivos del AS-IS.
+
+---
+
+#### 13. Selección de periodo para el gasto
+
+La página carga `numera_periods` ordenado por `period_month` descendente y usa:
+
+```text
+currentPeriod = periods[0]
+```
+
+La selección no lee `status`.
+
+Por tanto:
+
+```text
+LATEST_PERIOD_BY_DATE
+!=
+LATEST_OPEN_PERIOD
+```
+
+---
+
+#### 14. Estado de periodo no usado por createExpense
+
+`createExpense` recibe el `period_id` oculto y no consulta `numera_periods.status` antes del insert.
+
+Las constraints de `numera_expenses` tampoco validan el estado del periodo referenciado.
+
+Clasificación:
+
+```text
+EXPENSE_PERIOD_GUARD = STATUS_NOT_ENFORCED
+```
+
+---
+
+#### 15. RLS de gastos
+
+`numera_expenses` tiene RLS habilitado.
+
+La policy de administración usa:
+
+```text
+numera.expenses.manage
+```
+
+con operación `ALL`.
+
+Esto significa que la misma capacidad de gestión autoriza, desde la política, las mutaciones CRUD permitidas por el rol autenticado; la UI auditada expone creación, pero la segregación de registrar, aprobar, corregir o retirar no está materializada por policies distintas.
+
+---
+
+#### 16. Workflow de aprobación de gastos
+
+La tabla `numera_expenses` no contiene campos específicos observados para:
+
+```text
+approval_status
+approved_by
+approved_at
+rejected_by
+rejected_at
+support_document_id
+reversal_of
+correction_reason
+```
+
+La acción crea directamente una fila económica efectiva.
+
+Clasificación:
+
+```text
+EXPENSE_APPROVAL_WORKFLOW = NO_APPROVAL_WORKFLOW
+```
+
+---
+
+#### 17. Soporte y evidencia del gasto
+
+La estructura conserva `source_app`, `source_table`, `source_id` y `metadata`, pero el formulario actual no exige soporte documental ni evidencia de aprobación.
+
+`source_table` y `source_id` no forman parte del payload creado por `createExpense`.
+
+El análisis de duplicidad y origen ya quedó cerrado por `NUMERA-AUD-007`; aquí se registra únicamente su efecto sobre el gobierno de aprobación.
+
+---
+
+#### 18. Actor de creación en el modelo de gasto
+
+`numera_expenses.created_by` existe y es nullable.
+
+La Server Action observada no lo asigna explícitamente y no existe trigger de dominio que lo complete; el único trigger observado en la tabla actualiza `updated_at`.
+
+Esta tarea no ejecuta la auditoría integral de trazabilidad de actor, reservada a `NUMERA-AUD-010`; solo congela que la aprobación actual no dispone de un actor aprobado materializado por este flujo.
+
+---
+
+#### 19. Consumo actual del catálogo de centros de costo
+
+NUMERA lee `cost_centers` para:
+
+- presentar opciones en gastos;
+- agrupar centros en el modelo económico;
+- vincular presupuestos;
+- producir proyecciones económicas.
+
+Las superficies auditadas no crean ni modifican filas de `cost_centers`.
+
+Clasificación:
+
+```text
+NUMERA_COST_CENTER_ROLE = SHARED_CATALOG_CONSUMER
+```
+
+---
+
+#### 20. Gobierno físico actual de cost_centers
+
+La policy RLS de administración observada sobre `cost_centers` usa:
+
+```text
+nexo.cost_centers.manage
+OR is_owner()
+OR is_global_manager()
+```
+
+No usa `numera.cost_centers.manage` para modificar el catálogo físico compartido.
+
+Esto describe el AS-IS. La propiedad objetivo definitiva del catálogo continúa reservada a `NUMERA-DOM-006` y no se decide por inferencia desde una policy histórica.
+
+---
+
+#### 21. Centros de costo observados
+
+Existen seis centros activos:
+
+```text
+ADM-APP-REVIEW
+ADM-VENTO-GROUP
+CP-CENTRO-PROD
+SAT-MOLKA-PRINCIPAL
+SAT-SAUDO
+SAT-VENTO-CAFE
+```
+
+Uno corresponde a `App Review (Demo)` y permanece activo.
+
+---
+
+#### 22. Elegibilidad de centro demo en gastos
+
+La pantalla `/expenses` carga centros mediante:
+
+```text
+cost_centers
+where is_active != false
+```
+
+No aplica el filtro textual utilizado por `/cost-centers` para `app review` o `demo`.
+
+Por tanto, el centro demo activo puede aparecer como opción de gasto manual.
+
+Clasificación:
+
+```text
+DEMO_COST_CENTER_SELECTABLE_IN_EXPENSE_FORM = YES
+```
+
+---
+
+#### 23. Flujo actual de presupuesto y metas
+
+`upsertBudget` exige `numera.cost_centers.manage` y persiste por:
+
+```text
+period_id
+cost_center_id
+```
+
+los campos:
+
+```text
+budget_amount
+expected_revenue
+target_gross_margin_pct
+notes
+```
+
+La identidad tiene constraint `UNIQUE(period_id,cost_center_id)`.
+
+---
+
+#### 24. Semántica del upsert
+
+La acción usa:
+
+```text
+UPSERT
+ON CONFLICT period_id,cost_center_id
+```
+
+Una nueva edición de la misma combinación modifica la fila vigente en sitio.
+
+No existe en el modelo observado una versión empresarial separada para preservar presupuesto aprobado, revisión, forecast y escenario como objetos distintos.
+
+Clasificación:
+
+```text
+BUDGET_WRITE_MODEL = DESTRUCTIVE_UPSERT_MODEL
+```
+
+`updated_at` conserva cuándo cambió la fila, pero no sustituye versionado financiero.
+
+---
+
+#### 25. Workflow de aprobación de presupuesto
+
+`numera_cost_center_budgets` no contiene campos específicos observados para:
+
+```text
+version
+status
+approved_by
+approved_at
+published_by
+published_at
+forecast_version
+scenario_id
+supersedes_id
+```
+
+Existe `created_by`, pero es nullable y la acción auditada no lo asigna explícitamente.
+
+Clasificación:
+
+```text
+BUDGET_APPROVAL_WORKFLOW = NO_APPROVAL_WORKFLOW
+BUDGET_VERSIONING = NO
+```
+
+---
+
+#### 26. RLS de presupuestos
+
+`numera_cost_center_budgets` tiene RLS habilitado.
+
+La policy de administración usa:
+
+```text
+numera.cost_centers.manage
+```
+
+con operación `ALL`.
+
+La misma capacidad cubre desde la policy las mutaciones permitidas sobre el presupuesto; no existe una policy separada de aprobar o publicar.
+
+---
+
+#### 27. Modelo actual de periodos
+
+`numera_periods` contiene:
+
+```text
+period_month
+label
+status
+created_at
+updated_at
+```
+
+El constraint permite exactamente:
+
+```text
+open
+closed
+locked
+```
+
+La estructura distingue estados, pero no define por sí sola sus transiciones empresariales.
+
+---
+
+#### 28. Ausencia de workflow de cierre
+
+En el snapshot remoto no se observan funciones de dominio para cerrar, bloquear o reabrir periodos.
+
+Las únicas funciones relacionadas localizadas son:
+
+```text
+numera_current_period_summary
+set_numera_updated_at
+```
+
+El único trigger observado sobre `numera_periods` actualiza `updated_at`.
+
+Resultado:
+
+```text
+PERIOD_WORKFLOW_HANDLERS = 0
+PERIOD_DOMAIN_TRIGGERS = 0
+```
+
+---
+
+#### 29. RLS de periodos
+
+La policy de administración de `numera_periods` permite `ALL` cuando el actor posee cualquiera de:
+
+```text
+numera.expenses.manage
+numera.cost_centers.manage
+```
+
+No existe una capacidad dedicada de cierre o reapertura en la policy observada.
+
+Clasificación:
+
+```text
+PERIOD_PERMISSION_MODEL = MANAGE_CONFLATION
+```
+
+---
+
+#### 30. Segregación de cierre y reapertura
+
+El canon exige separar cierre y reapertura de registro y administración ordinaria.
+
+El AS-IS no contiene permisos activos observados equivalentes a cierre o reapertura, ni funciones específicas que materialicen una transición gobernada.
+
+Resultado:
+
+```text
+DEDICATED_PERIOD_CLOSE_PERMISSIONS = 0
+DEDICATED_PERIOD_REOPEN_PERMISSIONS = 0
+```
+
+---
+
+#### 31. Último periodo no equivale a periodo abierto
+
+`/expenses` y `/cost-centers` eligen el periodo más reciente por fecha.
+
+Ninguna de las dos consultas selecciona únicamente `status = open`.
+
+La etiqueta visible `Periodo activo` de `/cost-centers` se deriva del registro más reciente, no de una regla de estado verificada.
+
+---
+
+#### 32. Riesgo de escritura sobre closed o locked
+
+Como:
+
+1. la UI usa el último periodo sin leer `status`;
+2. las Server Actions no revalidan `status`;
+3. las constraints de gasto y presupuesto no bloquean por estado;
+4. no existe trigger de dominio de cierre;
+5. las policies `manage` autorizan la mutación;
+
+el snapshot no demuestra protección contra escritura en un periodo `closed` o `locked` si ese periodo fuera el seleccionado.
+
+Clasificación:
+
+```text
+CLOSED_OR_LOCKED_PERIOD_WRITE_GUARD = NO
+```
+
+No se ejecutó una mutación destructiva para demostrar el fallo porque esta tarea es de solo lectura.
+
+---
+
+#### 33. Metadata de cierre y reapertura
+
+`numera_periods` no contiene campos específicos observados para:
+
+```text
+closed_at
+closed_by
+close_reason
+locked_at
+locked_by
+reopened_at
+reopened_by
+reopen_reason
+approval_id
+checklist_id
+```
+
+`updated_at` no permite reconstruir por sí solo una decisión de cierre o reapertura.
+
+---
+
+#### 34. Ausencia de checklist y conciliación de cierre
+
+No se observa entidad, RPC, acción o campo que materialice un checklist de cierre con diferencias pendientes, aprobación y evidencia.
+
+La existencia del valor `closed` no demuestra:
+
+```text
+RECONCILIACION_COMPLETA
+APROBACION_DE_CIERRE
+BLOQUEO_DE_ACCIONES
+PAQUETE_DE_EVIDENCIA
+```
+
+---
+
+#### 35. Segregación general de capacidades
+
+El catálogo activo conserva principalmente el patrón:
+
+```text
+view
+manage
+```
+
+para gastos y centros de costo.
+
+No existe separación material observada entre:
+
+```text
+registrar
+aprobar
+corregir
+anular
+cerrar
+reabrir
+```
+
+La lectura sí está separada de la gestión, lo cual constituye un control positivo parcial.
+
+---
+
+#### 36. Alcance de las policies ALL
+
+Las policies `numera_expenses_manage`, `numera_budgets_manage` y `numera_periods_manage` utilizan `ALL`.
+
+Esto amplía el alcance técnico de cada permiso de administración más allá de la acción específica visible en UI.
+
+La auditoría no afirma que exista una pantalla actual para cada operación; congela que la capa de datos no separa las decisiones empresariales mediante policies distintas.
+
+---
+
+#### 37. RLS habilitado
+
+Se verificó:
+
+```text
+cost_centers = RLS ENABLED
+numera_cost_center_budgets = RLS ENABLED
+numera_expenses = RLS ENABLED
+numera_periods = RLS ENABLED
+```
+
+Por tanto:
+
+```text
+RLS_ENABLED_ON_AUDITED_TABLES = 4/4
+```
+
+RLS habilitado es una base de seguridad, pero no convierte `manage` en segregación de funciones.
+
+---
+
+#### 38. Triggers observados
+
+Los triggers presentes en los cuatro objetos auditados son únicamente de mantenimiento de `updated_at`:
+
+```text
+trg_cost_centers_updated_at
+trg_numera_budgets_updated_at
+trg_numera_expenses_updated_at
+trg_numera_periods_updated_at
+```
+
+No se observan triggers de aprobación, cierre, reapertura o bloqueo económico.
+
+---
+
+#### 39. Estado de adopción
+
+El corte remoto contiene:
+
+```text
+EXPENSE_ROWS = 0
+BUDGET_ROWS = 0
+CLOSED_PERIOD_ROWS = 0
+LOCKED_PERIOD_ROWS = 0
+```
+
+Por tanto, la auditoría no declara una aprobación incorrecta o una escritura en periodo cerrado ya materializada.
+
+Los hallazgos de workflow son estructurales y de capacidad, no una acusación de datos históricos corruptos.
+
+---
+
+#### 40. Interpretación de cero filas
+
+Se conserva:
+
+```text
+ZERO_ROWS
+!=
+WORKFLOW_SEGURO
+```
+
+La ausencia de gastos, presupuestos cerrados o periodos cerrados actuales impide validar comportamiento empírico sobre esos estados, pero no elimina las brechas verificadas en código, schema, RLS y permisos.
+
+---
+
+#### 41. Matriz de gobierno auditado
+
+| ID | Objeto | Escritura actual | Aprobación separada | Guard de periodo | Clasificación |
+| --- | --- | --- | --- | --- | --- |
+| `GOV-NUMERA-001` | gasto | insert directo | no | no | `DIRECT_WRITE / NO_APPROVAL_WORKFLOW` |
+| `GOV-NUMERA-002` | presupuesto/meta | upsert directo | no | no | `DESTRUCTIVE_UPSERT_MODEL / NO_APPROVAL_WORKFLOW` |
+| `GOV-NUMERA-003` | centro de costo | sin mutación en UI NUMERA auditada | no aplica en esta UI | no aplica | `SHARED_CATALOG_CONSUMER` |
+| `GOV-NUMERA-004` | periodo | mutación permitida por policy `ALL`, sin handler de UI observado | no | no | `MANAGE_CONFLATION / NO_CLOSE_WORKFLOW` |
+
+---
+
+#### 42. Hallazgo H-NUMERA-009-001 — Gasto efectivo sin aprobación separada
+
+`createExpense` inserta directamente la fila económica y el modelo no contiene workflow material de aprobación.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-DOM-005`, `NUMERA-AUTH-003`, `NUMERA-UX-009`.
+**Condición de salida:** definir y materializar estados, soporte, autoridad y transición de registro a aprobación o tratamiento equivalente conforme al contrato aprobado.
+
+---
+
+#### 43. Hallazgo H-NUMERA-009-002 — Estado de periodo no gobierna las escrituras
+
+Gastos y presupuestos no revalidan `numera_periods.status` y no existe guard de base que bloquee `closed` o `locked`.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-DOM-011`, `NUMERA-DOM-014`, `NUMERA-UX-011`, `NUMERA-UX-023`.
+**Condición de salida:** definir acciones permitidas por estado y hacer que UI, servidor y base fallen cerrado para mutaciones no autorizadas.
+
+---
+
+#### 44. Hallazgo H-NUMERA-009-003 — Cierre y reapertura usan autoridad genérica
+
+La policy de periodos concede `ALL` mediante `expenses.manage` o `cost_centers.manage`; no existen capacidades dedicadas de cierre o reapertura.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-AUTH-003` a `NUMERA-AUTH-009`, `NUMERA-DOM-011`.
+**Condición de salida:** separar registrar, administrar, cerrar, reabrir y aprobar mediante capacidades y transiciones explícitas con alcance mínimo.
+
+---
+
+#### 45. Hallazgo H-NUMERA-009-004 — Presupuesto sobrescribible sin versión ni aprobación
+
+`upsertBudget` modifica en sitio la combinación única periodo-centro y no conserva presupuesto aprobado, revisión, forecast o escenario como objetos separados.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-006`, `NUMERA-DOM-011`, `NUMERA-UX-010`, `NUMERA-UX-023`.
+**Condición de salida:** modelar identidad, versión, estado, vigencia, aprobación y publicación sin sobreescritura destructiva del presupuesto aprobado.
+
+---
+
+#### 46. Hallazgo H-NUMERA-009-005 — Gobierno del catálogo de centros de costo no resuelto en NUMERA
+
+NUMERA consume `cost_centers`, pero no lo administra desde las superficies auditadas; la policy física de administración observada usa capacidad NEXO o autoridad global. Además, el centro demo activo puede ser elegible en `/expenses`.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-006`, `OPS-CST-001`, gobierno transversal de APP-REVIEW.
+**Condición de salida:** definir propietario canónico, lifecycle, elegibilidad y fronteras de consumo del catálogo sin crear un catálogo paralelo y excluyendo datos demo de operación real.
+
+---
+
+#### 47. Hallazgo H-NUMERA-009-006 — Segregación financiera reducida a view/manage
+
+El catálogo activo de NUMERA no materializa capacidades independientes de registrar, aprobar, cerrar o reabrir para los objetos auditados.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-AUTH-003` a `NUMERA-AUTH-009`, `NUMERA-AUTH-014`.
+**Condición de salida:** publicar y aplicar una matriz de capacidades separadas coherente entre UI, Server Actions, RLS y procesos financieros.
+
+---
+
+#### 48. Hallazgo H-NUMERA-009-007 — Policies ALL exceden la operación visible
+
+Las policies de administración de gastos, presupuestos y periodos usan `ALL`, aunque la UI visible solo expone una fracción de esas mutaciones.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-AUTH-003` a `NUMERA-AUTH-009`, `NUMERA-DOM-005`, `NUMERA-DOM-011`.
+**Condición de salida:** alinear privilegio técnico mínimo, actions y workflow para que cada decisión empresarial tenga la capacidad exacta necesaria.
+
+---
+
+#### 49. Hallazgo H-NUMERA-009-008 — Periodo más reciente presentado como activo sin verificar estado
+
+`/cost-centers` muestra `Periodo activo` a partir del periodo más reciente y `/expenses` usa la misma selección conceptual, sin consultar `status`.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-UX-011`, `NUMERA-UX-023`, `NUMERA-DOM-011`.
+**Condición de salida:** resolver semántica de periodo operativo vigente y mostrar/usar únicamente estados compatibles con la acción solicitada.
+
+---
+
+#### 50. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+Los hallazgos quedan cubiertos por requisitos canónicos vigentes; esta tarea no redefine reglas protegidas.
+
+---
+
+#### 51. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro:
+
+- `TREQ-NUMERA-001` para conciliación, historia, separación de permisos y cierre reproducible;
+- `TREQ-NUMERA-002` para identidad del hecho, estado, evidencia, correcciones, cierres y reaperturas;
+- `TREQ-NUMERA-003` para separación de registrar, aprobar, pagar, conciliar, cerrar y reabrir;
+- `TREQ-NUMERA-004` para presupuesto aprobado, revisión, forecast, escenario, aprobación y vigencia;
+- `TREQ-NUMERA-017` y `TREQ-NUMERA-018` para separación de lectura/registro y validación de la acción de gasto.
+
+Esta enumeración es trazabilidad reutilizada y no una modificación de 04A.
+
+---
+
+#### 52. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la ejecución de build pertenece al checkout del usuario y a `NUMERA-AUD-011` como auditoría específica posterior |
+| LOCAL | NOT_EXECUTED | no se ejecutó checkout local del repositorio del usuario desde esta tarea documental |
+| REMOTA | PASS | se verificaron código remoto, schema, constraints, RLS, triggers, permisos y datos agregados mediante acceso de solo lectura |
+| OPERATIVA | NOT_EXECUTED | no se crearon gastos, presupuestos ni transiciones de periodo para probar estados destructivamente |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 53. Criterios de aceptación y límites
+
+Se considera completa esta auditoría cuando:
+
+1. los dos flujos de escritura quedan descritos con su autoridad real;
+2. se determina si gastos y presupuestos tienen aprobación separada;
+3. se verifica cómo se selecciona el periodo y si su estado gobierna la escritura;
+4. se inventarían los estados de periodo y la presencia o ausencia de workflow de cierre/reapertura;
+5. se identifica la relación actual de NUMERA con el catálogo de centros de costo;
+6. se diferencia RLS habilitado de segregación financiera completa;
+7. se verifica la existencia o ausencia de capacidades dedicadas de aprobación, cierre y reapertura;
+8. cada hallazgo tiene propietario y condición de salida;
+9. no se realizan mutaciones para fabricar evidencia;
+10. no se modifica 04A.
+
+Quedan fuera de alcance:
+
+- exportaciones, sensibilidad, minimización y trazabilidad integral de actor/acceso, reservadas a `NUMERA-AUD-010`;
+- ejecución de build, lint, tipos y pruebas, reservada a `NUMERA-AUD-011`;
+- matriz integral capacidad financiera × implementación, reservada a `NUMERA-AUD-012`;
+- diseño objetivo detallado de gastos, centros, periodos y autorización, propietario de `NUMERA-DOM-*`, `NUMERA-AUTH-*` y `NUMERA-UX-*`.
+
+---
+
+#### 54. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad`
 ### [ ] NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
 ### [ ] NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
 ### [ ] NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual
