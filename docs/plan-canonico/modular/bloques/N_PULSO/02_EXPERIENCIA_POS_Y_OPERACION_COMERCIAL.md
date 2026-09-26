@@ -3413,7 +3413,1213 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-004 — Diseñar inicio para mostrador`
-### [ ] PULSO-UX-004 — Diseñar inicio para mostrador
+### ✅ PULSO-UX-004 — Diseñar inicio para mostrador
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-003 — Diseñar inicio para servicio de salón
+**Tarea siguiente:** PULSO-UX-005 — Diseñar inicio para operador integral
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0080 — Inicio POS` para el actor operativo `mostrador_satelite`, especializando la entrada por trabajo de entrega y continuidad de `VPROC-0039`, utilizando `VSCREEN-0088 — Seguimiento de preparación y entrega` como workspace operativo principal y `VSCREEN-0087 — Bandeja de pedidos de canales externos` como superficie secundaria de admisión cuando corresponda, con separación estricta entre preparación, handoff, cobro, despacho, cancelación, salón, caja y configuración, y bloqueo fail-closed de toda acción interna sin PermissionKey atómica y grant explícito; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia inicial de PULSO para una persona cuyo rol operativo efectivo sea `mostrador_satelite`, de modo que al entrar identifique primero qué pedido o entrega requiere intervención en su punto de mostrador y pueda continuar únicamente las acciones compatibles con su autoridad efectiva.
+
+La experiencia debe permitir:
+
+- reconocer actor, sede, área de Mostrador, punto o estación y dispositivo vigentes;
+- distinguir trabajo de mostrador frente a caja, salón, barra, cocina y logística;
+- priorizar pedidos listos o próximos a handoff sobre navegación genérica;
+- separar preparación, disponibilidad, pago, handoff, despacho y cierre;
+- distinguir `pickup`, `on_premise` y `delivery` sin convertirlos en permisos;
+- conducir pedidos externos a su superficie propietaria sin apropiarse de la integración;
+- mostrar estados de pago sin convertirlos en permiso de cobro;
+- impedir que una terminal física integrada Caja / Mostrador fusione roles o permisos;
+- conservar al trabajador real como actor de cada transición;
+- tratar Realtime y optimismo de UI como aceleradores, nunca como autoridad;
+- fallar cerrado cuando no exista PermissionKey atómica materializada para una acción de mostrador.
+
+La tarea especializa la pantalla canónica existente:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+sin crear una identidad de pantalla paralela.
+
+---
+
+#### 2. Entrada recibida de PULSO-UX-003
+
+`PULSO-UX-003` entrega la siguiente frontera:
+
+```text
+VSCREEN-0080 SIGUE SIENDO IDENTIDAD COMPARTIDA DE INICIO POS
+SERVICIO_SALON PRIORIZA VPROC-0038 / MESAS / LLAMADOS
+VSCREEN-0082 ES WORKSPACE PRINCIPAL DE SALÓN
+MOSTRADOR NO HEREDA MAPA DE MESAS COMO HOME
+CAJA / MOSTRADOR PUEDEN COMPARTIR PUNTO FÍSICO SIN COMPARTIR PERMISOS
+ZONA / PUNTO / ESTACIÓN != AUTORIDAD
+HANDOFF DE CUENTA != AUTORIDAD DE COBRO
+PERMISOS INTERNOS FALTANTES DEBEN FALLAR CERRADOS
+```
+
+Por tanto, `PULSO-UX-004` no replica el inicio del cajero ni el mapa de salón.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `PULSO-UX-001..021` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `PULSO-UX-004` se define una sola vez;
+2. no existe una instancia física propia;
+3. no se modifica `vento-pulso`;
+4. no se crean rutas, componentes, Server Actions, RPC, tablas o migraciones;
+5. no se materializan permisos nuevos;
+6. no se cambian pedidos ni estados reales;
+7. las brechas AS-IS se asignan a owners existentes;
+8. la implementación futura deberá consumir este contrato sin ampliar autoridad.
+
+---
+
+#### 4. Fuentes y contratos consumidos
+
+El diseño conserva como entradas:
+
+- `PULSO-UX-001 — Inventariar procesos de venta, caja y salón`;
+- `PULSO-UX-002 — Diseñar inicio para cajero`;
+- `PULSO-UX-003 — Diseñar inicio para servicio de salón`;
+- `OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede`;
+- `AUTH-RBAC-012 — Crear matriz de mostrador_satelite`;
+- `PULSO-AUTH-011 — Limitar operación a sede del turno`;
+- `PULSO-AUTH-012 — Integrar dispositivos POS compartidos`;
+- `PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`;
+- `PULSO-AUTH-014 — Mantener configuración administrativa separada`;
+- `PULSO-AUTH-015 — Migrar a paquetes de vento-shell`;
+- `PULSO-AUTH-016 — Ejecutar pruebas integrales`;
+- `VSCREEN-0080` como identidad canónica de Inicio POS;
+- `VSCREEN-0081` como creación de venta o pedido;
+- `VSCREEN-0083` como detalle y modificación de pedido;
+- `VSCREEN-0084` como cobro y medios de pago;
+- `VSCREEN-0087` como bandeja de pedidos de canales externos;
+- `VSCREEN-0088` como seguimiento de preparación y entrega;
+- `VPROC-0039` como proceso principal de venta de mostrador o para llevar;
+- `VPROC-0040` como proceso secundario de normalización de pedidos externos;
+- el runtime vigente de `/orders` como evidencia AS-IS y no como autoridad de diseño.
+
+---
+
+#### 5. Actor contractual
+
+El actor principal es:
+
+```text
+operational_role = mostrador_satelite
+```
+
+Su autoridad operativa requiere, según la acción:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ EMPLEADO ACTIVO
++ TURNO PUBLICADO Y VIGENTE
++ ROL OPERATIVO EFECTIVO mostrador_satelite
++ SEDE AUTORIZADA
++ ÁREA ACTIVA DE MOSTRADOR
++ TIPO DE ÁREA CANÓNICO RESUELTO
++ CHECK-IN CUANDO CORRESPONDE
++ DISPOSITIVO COMPATIBLE CUANDO APLICA
++ PERMISO OPERATIVO EXPLÍCITO
++ RECURSO / CANAL / ESTADO COMPATIBLES
+= ACCIÓN AUTORIZABLE
+```
+
+El nombre visible del área o del punto físico no concede autoridad.
+
+---
+
+#### 6. Frontera de autorización vigente
+
+La matriz vigente de `mostrador_satelite` contiene once concesiones operativas totales.
+
+Dentro de PULSO existe actualmente una sola concesión:
+
+```text
+pulso.access
+```
+
+con alcance `CTX-COUNTER-PULSO`.
+
+Ese permiso permite exclusivamente:
+
+```text
+ENTRAR A PULSO
++ MOSTRAR CONTEXTO DE MOSTRADOR
+```
+
+No autoriza por sí solo:
+
+- consultar colas de entrega;
+- reclamar pedidos;
+- alistar o empacar;
+- cambiar estados;
+- confirmar entrega;
+- asignar despacho;
+- enviar mensajes al cliente;
+- cobrar;
+- operar caja;
+- cancelar;
+- devolver o reembolsar;
+- acumular o redimir puntos;
+- cerrar servicios.
+
+---
+
+#### 7. Regla fail-closed
+
+La tarea define el trabajo objetivo, pero no fabrica permisos.
+
+```text
+INTENCIÓN UX DEFINIDA
++ PERMISSIONKEY ATÓMICA AUSENTE
+=
+ACCIÓN NO MATERIALIZABLE TODAVÍA
+```
+
+Nunca:
+
+```text
+pulso.access
+→ cola / alistamiento / entrega / despacho / cobro / cancelación
+```
+
+Tampoco:
+
+```text
+pulso.pos.main AS-IS
+→ permiso canónico suficiente
+```
+
+---
+
+#### 8. Identidad del inicio
+
+El inicio continúa siendo:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+No se crea una pantalla canónica nueva denominada “Inicio de mostrador”.
+
+La misma identidad se especializa por:
+
+- actor;
+- punto o estación;
+- contexto efectivo;
+- trabajo pendiente;
+- permisos exactos;
+- estado del recurso.
+
+---
+
+#### 9. Proceso principal y proceso secundario
+
+El proceso principal es:
+
+```text
+VPROC-0039 — Gestionar venta de mostrador o para llevar con entrega y cobro correlacionados
+```
+
+El proceso secundario relacionado es:
+
+```text
+VPROC-0040 — Normalizar pedidos de canales externos y transferirlos al proceso interno con reconciliación
+```
+
+La relación es:
+
+```text
+MOSTRADOR
+→ PRIORIZA VPROC-0039
+→ CONSUME VPROC-0040 CUANDO EL PEDIDO EXTERNO YA REQUIERE ACCIÓN DE SU PUNTO
+```
+
+No convierte al mostrador en owner de toda integración externa.
+
+---
+
+#### 10. Workspace principal
+
+La superficie principal de continuidad de mostrador es:
+
+```text
+VSCREEN-0088 — Seguimiento de preparación y entrega
+```
+
+Su función para esta experiencia es proyectar el compromiso comercial desde preparación hasta handoff sin apropiarse de producción, pago o logística.
+
+Regla:
+
+```text
+SEGUIMIENTO / HANDOFF
+!=
+PRODUCCIÓN
+!=
+COBRO
+!=
+DESPACHO LOGÍSTICO
+```
+
+---
+
+#### 11. Superficie secundaria de pedidos externos
+
+La superficie secundaria es:
+
+```text
+VSCREEN-0087 — Bandeja de pedidos de canales externos
+```
+
+Su proceso propietario es `VPROC-0040`.
+
+Solo aparece como trabajo accionable para mostrador cuando exista:
+
+- recurso dentro de la sede efectiva;
+- etapa compatible;
+- permiso exacto;
+- responsabilidad real del punto de mostrador.
+
+La simple llegada de un pedido externo no concede autoridad para aceptarlo, cancelarlo, reasignarlo o conciliarlo.
+
+---
+
+#### 12. Estados canónicos de VPROC-0039
+
+La experiencia reconoce exactamente:
+
+1. `COUNTER_SALE_OPENED` — venta de mostrador abierta;
+2. `ITEMS_SELECTED` — artículos seleccionados;
+3. `PREPARATION_IN_PROGRESS` — preparación en curso;
+4. `READY_FOR_HANDOFF` — listo para entrega;
+5. `PAYMENT_PENDING` — pago pendiente;
+6. `PAYMENT_CONFIRMED` — pago confirmado;
+7. `HANDOFF_PENDING` — entrega pendiente;
+8. `SALE_RECONCILIATION_PENDING` — conciliación de venta pendiente;
+9. `COUNTER_SALE_CLOSED` — venta de mostrador cerrada.
+
+La UI no colapsa esos estados en un único “pedido activo”.
+
+---
+
+#### 13. Estados canónicos de VPROC-0040
+
+La experiencia reconoce exactamente:
+
+1. `EXTERNAL_ORDER_RECEIVED`;
+2. `VALIDATION_IN_PROGRESS`;
+3. `MAPPED_TO_INTERNAL_ORDER`;
+4. `ACCEPTANCE_PENDING`;
+5. `ACCEPTED`;
+6. `IN_FULFILLMENT`;
+7. `CHANNEL_RECONCILIATION_PENDING`;
+8. `EXTERNAL_ORDER_RECONCILED`.
+
+El home de mostrador no confunde “recibido por canal” con “aceptado internamente”.
+
+---
+
+#### 14. Pregunta operativa del inicio
+
+La experiencia se organiza alrededor de:
+
+```text
+¿QUÉ PEDIDO DEBO ATENDER O ENTREGAR AHORA EN ESTE MOSTRADOR?
+```
+
+No alrededor de:
+
+```text
+¿QUÉ RUTA QUIERO ABRIR?
+```
+
+ni de:
+
+```text
+¿QUÉ ESTADO PUEDO FORZAR?
+```
+
+---
+
+#### 15. Composición lógica del inicio
+
+La composición mínima es:
+
+| Zona | Contenido | Resultado esperado | Límite |
+| --- | --- | --- | --- |
+| contexto | actor, sede, área, punto, turno y dispositivo | saber dónde y como se opera | no concede permiso |
+| acción prioritaria | siguiente entrega/handoff autorizado | llevar al recurso exacto | no muta desde el resumen |
+| cola de trabajo | pedidos accionables por prioridad | ordenar atención | no muestra universo global |
+| canales | pickup, en sitio, domicilio o externo cuando aplique | entender modalidad | canal no concede autoridad |
+| avisos | pago pendiente, stale, conflicto, deny, offline | bloquear o recuperar | no degradar error a vacío |
+| accesos secundarios | nueva venta, pedido externo, cobro o detalle | handoff a owner | solo con permiso exacto |
+
+---
+
+#### 16. Contexto visible mínimo
+
+El home debe poder representar de forma compacta:
+
+- trabajador efectivo;
+- sede efectiva;
+- área de Mostrador;
+- punto físico integrado cuando exista;
+- dispositivo compartido cuando corresponda;
+- turno vigente;
+- check-in cuando la acción lo exija;
+- estado de conectividad/frescura cuando afecte el trabajo;
+- volumen de trabajo accionable, no volumen total de la empresa.
+
+---
+
+#### 17. Punto físico integrado no equivale a rol integrado
+
+`OPS-POS-001` conserva puntos físicos integrados en sedes donde Caja / Mostrador, y en algunos casos Barra, comparten ubicación.
+
+La regla es:
+
+```text
+PUNTO FÍSICO INTEGRADO
+!=
+ROL OPERATIVO INTEGRADO
+```
+
+```text
+MISMO DISPOSITIVO O MUEBLE
+!=
+MISMOS PERMISOS
+```
+
+Por tanto, `mostrador_satelite` no hereda permisos de `cajero_satelite`, `barista_satelite` ni `operador_integral_satelite`.
+
+---
+
+#### 18. Prioridad de trabajo
+
+Cuando existan permisos atómicos materializados, el home debe resolver la acción dominante por prioridad operacional:
+
+```text
+1. CONTEXTO BLOQUEANTE
+2. HANDOFF LISTO Y ESPERANDO RECEPTOR
+3. PEDIDO CON INCIDENCIA QUE BLOQUEA ENTREGA
+4. PEDIDO EN PREPARACIÓN QUE REQUIERE INTERVENCIÓN DE MOSTRADOR
+5. PEDIDO EXTERNO EN ETAPA ACCIONABLE PARA EL PUNTO
+6. NUEVA VENTA / PEDIDO SI EL ROL RECIBE AUTORIDAD PARA CREAR
+7. SIN TRABAJO ACCIONABLE
+```
+
+La prioridad no concede permisos; solo ordena trabajo que ya es autorizable.
+
+---
+
+#### 19. Contexto laboral inválido
+
+Sin turno o contexto válido:
+
+- no se habilitan acciones internas;
+- no se interpreta la cola vacía como ausencia de pedidos;
+- no se usa la última sede conocida como autoridad;
+- se explica el bloqueo y el owner de recuperación.
+
+Nunca:
+
+```text
+SIN CONTEXTO
+→ CONSERVAR ÚLTIMO MOSTRADOR
+→ OPERAR
+```
+
+---
+
+#### 20. Check-in
+
+`pulso.access` puede permitir mostrar entrada y bloqueo con turno válido.
+
+Las acciones internas que el contrato futuro clasifique como `T+C` deberán exigir check-in activo.
+
+Por tanto:
+
+```text
+HOME VISIBLE
+!=
+MUTACIÓN HABILITADA
+```
+
+---
+
+#### 21. Cola de trabajo
+
+La cola del home no es un listado administrativo de todas las ventas.
+
+Cada recurso visible debe estar justificado por:
+
+- sede efectiva;
+- relación con el punto de mostrador;
+- canal/modalidad;
+- etapa compatible;
+- autoridad de lectura aplicable;
+- necesidad operacional real.
+
+La lista prioriza acción y aging, no solo orden cronológico de creación.
+
+---
+
+#### 22. Pedido listo para handoff
+
+`READY_FOR_HANDOFF` significa que el pedido está completo y espera entrega al cliente o transportador.
+
+No significa:
+
+```text
+LISTO
+=
+ENTREGADO
+```
+
+La experiencia debe exigir una transición explícita y evidencia suficiente antes de presentar la entrega como completada.
+
+---
+
+#### 23. Entrega pendiente
+
+`HANDOFF_PENDING` representa un pedido pagado o autorizado que espera aceptación del receptor.
+
+El home puede priorizarlo, pero la transición posterior debe conservar:
+
+- pedido exacto;
+- actor ejecutor;
+- receptor o clase de receptor cuando corresponda;
+- timestamp;
+- sede/punto;
+- estado previo;
+- resultado;
+- evidencia requerida por el flujo propietario.
+
+---
+
+#### 24. Modalidad pickup
+
+Para `pickup` se conserva:
+
+```text
+LISTO PARA RECOGER
+!=
+ENTREGADO
+```
+
+El mostrador puede priorizar la entrega física únicamente si existe permiso exacto para la transición.
+
+Si el pedido tiene pago pendiente al recoger:
+
+```text
+PAGO AL RECOGER
+→ HANDOFF A COBRO
+```
+
+No:
+
+```text
+PAGO AL RECOGER
+→ MOSTRADOR COBRA POR INFERENCIA
+```
+
+---
+
+#### 25. Modalidad on_premise
+
+`on_premise` describe modalidad comercial, no rol.
+
+Puede representar consumo en sede sin implicar automáticamente servicio de mesa.
+
+Si el recurso pertenece a una mesa/sesión de salón, el home debe conducir al owner correspondiente y no duplicar `VSCREEN-0082`.
+
+---
+
+#### 26. Modalidad delivery
+
+Para `delivery` el mostrador puede participar en el handoff hacia despacho, pero no hereda autoridad logística.
+
+Se conserva:
+
+```text
+PEDIDO LISTO PARA DESPACHO
+!=
+DOMICILIARIO ASIGNADO
+!=
+EN TRÁNSITO
+!=
+ENTREGADO
+```
+
+Cada transición requiere owner, permiso, actor y evidencia propios.
+
+---
+
+#### 27. Pago pendiente
+
+El home puede mostrar un bloqueo de pago cuando ese hecho sea necesario para decidir la entrega.
+
+No puede transformar la lectura de `payment_status` en autoridad de cobro.
+
+```text
+PAYMENT_PENDING
+→ MOSTRAR BLOQUEO / DERIVAR A VSCREEN-0084 SI ESTÁ AUTORIZADO
+```
+
+No:
+
+```text
+PAYMENT_PENDING
+→ COBRAR DESDE TARJETA DE MOSTRADOR
+```
+
+---
+
+#### 28. Pago confirmado
+
+`PAYMENT_CONFIRMED` habilita continuar el proceso únicamente cuando también se cumplan entrega, recurso y autoridad.
+
+No significa que la venta esté cerrada ni conciliada.
+
+---
+
+#### 29. Nueva venta o pedido
+
+`VSCREEN-0081 — Creación de venta o pedido` puede aparecer como acceso secundario si una matriz futura concede a `mostrador_satelite` el permiso exacto de creación.
+
+Mientras ese grant no exista:
+
+```text
+NUEVA VENTA PARA MOSTRADOR
+=
+NO MATERIALIZABLE
+```
+
+La cercanía física a caja no altera esta regla.
+
+---
+
+#### 30. Detalle y modificación de pedido
+
+`VSCREEN-0083` puede recibir un pedido concreto cuando el actor necesite consultar o modificar campos autorizados.
+
+La navegación no fabrica `orders.update` ni otro permiso equivalente.
+
+La modificación debe respetar:
+
+- estado actual;
+- columnas permitidas;
+- versión/concurrencia;
+- actor;
+- sede;
+- canal;
+- efectos ya emitidos.
+
+---
+
+#### 31. Seguimiento de preparación
+
+El mostrador necesita saber si un pedido está:
+
+- confirmado;
+- en preparación;
+- listo;
+- bloqueado;
+- pendiente de pago;
+- pendiente de handoff.
+
+Eso no lo convierte en owner de la preparación productiva.
+
+```text
+VER PREPARACIÓN
+!=
+PRODUCIR
+```
+
+---
+
+#### 32. Bandeja de pedidos externos
+
+`VSCREEN-0087` puede aportar recursos de `VPROC-0040` cuando el canal externo ya tenga una etapa relevante para mostrador.
+
+No se admite:
+
+```text
+PEDIDO EXTERNO RECIBIDO
+→ MOSTRADOR LO ACEPTA AUTOMÁTICAMENTE
+```
+
+ni:
+
+```text
+PEDIDO EXTERNO
+→ IGNORAR VALIDACIÓN / DUPLICIDAD / PRECIO / PAGO
+```
+
+---
+
+#### 33. Canales no son zonas
+
+Se conserva la decisión de `OPS-POS-001`:
+
+```text
+RAPPI
+MANYCHAT
+DOMICILIO
+WEB
+OTRO CANAL
+!=
+ZONA FÍSICA
+```
+
+El home puede agrupar trabajo por canal o modalidad sin crear zonas de mostrador ficticias.
+
+---
+
+#### 34. Cobro
+
+El cobro pertenece a:
+
+```text
+VSCREEN-0084 — Cobro y medios de pago
+```
+
+`mostrador_satelite` no recibe autoridad de cobro por esta tarea.
+
+Cuando un pedido requiere pago:
+
+- se muestra el estado mínimo necesario;
+- se deriva al actor/superficie autorizados;
+- se conserva el pedido exacto;
+- se retorna al flujo de entrega tras confirmación válida.
+
+---
+
+#### 35. Cancelación
+
+Cancelar un pedido no es una acción ordinaria del home de mostrador.
+
+El runtime AS-IS ofrece `mark_cancelled` dentro del tablero `/orders`, pero esa existencia técnica no constituye grant para `mostrador_satelite`.
+
+La cancelación debe consumir permiso y flujo sensibles propios.
+
+---
+
+#### 36. Asignación de despacho
+
+Asignar aliado o referencia de domicilio es una decisión separada del handoff físico de mostrador.
+
+La existencia AS-IS de `assignDispatchOrderAction` no concede capacidad al rol.
+
+Regla:
+
+```text
+PREPARAR / ENTREGAR A TRANSPORTADOR
+!=
+ASIGNAR DESPACHO
+```
+
+---
+
+#### 37. Cambio a “En camino”
+
+El runtime AS-IS permite `mark_in_transit` para `delivery` mediante el permiso broad `pos.main`.
+
+El contrato objetivo exige permiso atómico y actor apropiado.
+
+Mostrador no debe marcar “En camino” por inferencia desde que el pedido salió de su vista.
+
+---
+
+#### 38. Confirmación “Entregado”
+
+`mark_delivered` representa un efecto material.
+
+La futura UX debe distinguir al menos:
+
+- entrega a cliente en mostrador;
+- handoff a transportador;
+- entrega final de domicilio;
+- entrega de servicio en sitio.
+
+No deben colapsarse en un mismo botón si los hechos y responsables son distintos.
+
+---
+
+#### 39. Delivery override
+
+`pulso.delivery.deliveries.override` no está concedido a `mostrador_satelite`.
+
+El home ordinario no lo presenta como acción habilitada.
+
+Cualquier excepción debe conservar autoridad base explícita, contexto, reautenticación, motivo y auditoría reforzada.
+
+---
+
+#### 40. Chat con cliente
+
+El runtime `/orders` puede mostrar conversación y enviar mensajes mediante `sendOrderMessageLiveAction`.
+
+El contrato objetivo exige tratar mensajería como capacidad propia.
+
+```text
+VER PEDIDO
+!=
+PODER CONTACTAR AL CLIENTE
+```
+
+La tarea no inventa un PermissionKey ni grant para chat.
+
+---
+
+#### 41. Datos de cliente
+
+La tarjeta de mostrador solo debe proyectar datos personales necesarios para el handoff o la coordinación autorizada.
+
+No carga por defecto:
+
+- perfil completo;
+- historial general;
+- ledger PASS;
+- documentos;
+- direcciones ajenas al pedido;
+- conversaciones no relacionadas;
+- datos de otra sede.
+
+---
+
+#### 42. Realtime
+
+Realtime puede acelerar la aparición de pedidos o cambios de estado.
+
+No concede autoridad y no sustituye una revalidación server-side.
+
+```text
+EVENTO REALTIME
+!=
+AUTORIZACIÓN
+```
+
+Las subscripciones deben permanecer acotadas por territorio y recurso cuando el contrato técnico lo permita.
+
+---
+
+#### 43. Optimismo de UI
+
+El runtime AS-IS de `/orders` aplica cambios optimistas antes de confirmar RPC en algunas operaciones.
+
+El contrato objetivo exige:
+
+- identificar estado provisional;
+- revertir ante fallo;
+- no mostrar éxito definitivo antes de confirmación;
+- no permitir doble efecto concurrente;
+- revalidar estado actual del recurso.
+
+Un parche optimista nunca se vuelve evidencia de autorización.
+
+---
+
+#### 44. Concurrencia
+
+Si otro actor cambia el pedido mientras el mostrador lo observa:
+
+- se detecta drift de estado;
+- se actualiza el recurso;
+- se bloquea una transición incompatible;
+- se informa el nuevo estado;
+- no se reintenta a ciegas.
+
+La autoridad y la validez se evalúan contra el estado vigente, no contra la tarjeta obsoleta.
+
+---
+
+#### 45. Parámetros de ruta
+
+El runtime `/orders` consume:
+
+- `site_id`;
+- `view`;
+- `fulfillment`;
+- `message`;
+- `error`.
+
+Se conserva:
+
+```text
+QUERY PARAMETER
+!=
+PERMISO
+!=
+ESTADO DE NEGOCIO AUTORITATIVO
+```
+
+`site_id` no amplía territorio y los filtros no crean pantallas nuevas.
+
+---
+
+#### 46. Acceso directo por URL
+
+Abrir `/orders` no concede autoridad para las acciones internas.
+
+`TREQ-PULSO-016` exige separar visibilidad de ruta de cada mutación.
+
+Por tanto, toda acción posterior debe revalidar:
+
+- actor;
+- permiso exacto;
+- sede;
+- recurso;
+- estado;
+- columnas/efecto permitido;
+- dispositivo cuando aplique.
+
+---
+
+#### 47. Dispositivo compartido
+
+En un dispositivo compartido:
+
+```text
+TECHNICAL PRINCIPAL
+!=
+DEVICE
+!=
+HUMAN ACTOR
+```
+
+El home puede conservar contexto físico del mostrador, pero debe identificar al trabajador real antes de una acción actor-bound.
+
+---
+
+#### 48. Cambio de trabajador
+
+Un cambio de actor A → B obliga a recalcular:
+
+- permisos;
+- trabajo visible si depende del actor;
+- confirmaciones;
+- firmas;
+- responsabilidades;
+- contexto laboral.
+
+No se hereda el estado actor-bound del usuario anterior.
+
+---
+
+#### 49. Vacío, deny, stale y fallo
+
+La experiencia distingue:
+
+```text
+SIN PEDIDOS ACCIONABLES
+!=
+SIN PERMISO
+!=
+SIN CONTEXTO
+!=
+DATOS DESACTUALIZADOS
+!=
+CONFLICTO
+!=
+FALLO TÉCNICO
+!=
+RESULTADO DESCONOCIDO
+```
+
+Un fallo de consulta no puede mostrarse como “Sin pedidos”.
+
+---
+
+#### 50. Recuperación segura
+
+Ante pérdida de red, sesión, actor o dependencia:
+
+- conservar referencia del pedido cuando sea seguro;
+- no duplicar transición;
+- revalidar al reconectar;
+- distinguir solicitud no enviada, enviada y resultado desconocido;
+- refrescar antes de reintentar una acción que pudo tener efecto.
+
+---
+
+#### 51. Estado AS-IS de `/orders`
+
+El runtime vigente observado incluye:
+
+- guard `requireAppAccess` con `permissionCode: ["pos.main"]`;
+- consulta de `orders` filtrada por `site_id` resuelto;
+- filtros `active`, `delivered`, `cancelled`, `all`;
+- filtros `delivery`, `pickup`, `on_premise`;
+- estados `pending`, `confirmed`, `preparing`, `ready_for_dispatch`, `in_transit`, `on_the_way`, `delivered`, `cancelled`;
+- lectura de items, opciones, eventos de estado, facturación y conversaciones;
+- acciones `mark_preparing`, `mark_ready`, `mark_in_transit`, `mark_delivered`, `mark_cancelled`;
+- asignación de despacho;
+- mensajería de staff;
+- Realtime por pedidos;
+- actualizaciones optimistas en el board live;
+- bridge de WhatsApp para domicilio;
+- RPC `update_order_operational_state`.
+
+Este inventario describe el AS-IS y no convierte sus capacidades en permisos del rol.
+
+---
+
+#### 52. Brechas AS-IS y propietarios
+
+| Brecha observada | Riesgo | Propietario canónico | Condición de salida |
+| --- | --- | --- | --- |
+| `/orders` usa `pulso.pos.main` para lectura y acciones diversas | autoridad broad sobre intenciones distintas | materialización de `PULSO-AUTH-015` + owners de autorización | PermissionKeys atómicas consumidas por lectura y por cada acción |
+| matriz de `mostrador_satelite` solo concede `pulso.access` dentro de PULSO | home objetivo no puede materializar acciones internas todavía | roadmap funcional PULSO + matriz/versionado de autorización | permisos atómicos creados, clasificados, asignados y probados |
+| `mark_preparing`, `mark_ready`, `mark_in_transit`, `mark_delivered`, `mark_cancelled` comparten guard broad | transiciones con efectos diferentes pueden compartir autoridad | owners de autorización y `PULSO-UX-021` | cada transición usa permiso exacto y estado compatible |
+| board live llama RPC desde cliente para operaciones optimistas | UI puede aparentar éxito antes de confirmación y depender de permiso broad | paquete propietario PULSO / `PULSO-UX-021` | acción gobernada, rollback visual y autorización demostrada |
+| asignación de despacho usa misma entrada broad | mostrador puede asumir autoridad logística | owners de delivery/authorization | permiso y rol apropiados separados de handoff |
+| chat de staff se habilita desde `/orders` con `pos.main` | visibilidad de pedido puede implicar comunicación | owner de mensajería + autorización | permiso de mensajería y alcance de conversación materializados |
+| `site_id` participa en navegación y acciones | parámetro puede confundirse con territorio | `PULSO-AUTH-011` | sede efectiva canónica y parámetro solo reductivo |
+| Realtime de eventos de estado no filtra explícitamente `order_status_events` por sede en el bridge local | señal de otro recurso podría alcanzar el cliente si RLS/shape no lo limita | paquete PULSO + políticas de datos | subscripción y RLS demuestran aislamiento territorial |
+| bridge de WhatsApp expone coordinación de domicilio | salida externa puede mezclar mostrador y despacho | owner de delivery/comunicación | política, permiso y evidencia explícitos |
+| estados AS-IS no son una copia exacta de los estados canónicos `VPROC-*` | UI puede usar nombres técnicos como contrato de negocio | `PULSO-UX-020` / `PULSO-UX-021` | mapeo explícito, versionado y sin pérdida semántica |
+
+No queda una brecha detectada de esta tarea sin owner y condición de salida.
+
+---
+
+#### 53. Matriz de disponibilidad objetivo
+
+| Intención de trabajo | Superficie | Estado contractual para `mostrador_satelite` | Regla |
+| --- | --- | --- | --- |
+| entrar a PULSO | `VSCREEN-0080` | AUTORIZABLE HOY por `pulso.access` | solo entrada/contexto |
+| ver cola de pedidos de mostrador | `VSCREEN-0088` | BLOQUEADO PARA MATERIALIZACIÓN ATÓMICA | requiere permiso exacto de lectura |
+| ver pedido listo para entrega | `VSCREEN-0088` | BLOQUEADO PARA MATERIALIZACIÓN ATÓMICA | lectura no se deduce de access |
+| marcar preparando | `VSCREEN-0088` | BLOQUEADO | requiere permiso exacto y owner compatible |
+| marcar listo | `VSCREEN-0088` | BLOQUEADO | requiere transición atómica |
+| confirmar handoff a cliente | `VSCREEN-0088` | BLOQUEADO | requiere permiso y evidencia |
+| asignar despacho | flujo delivery | BLOQUEADO | no inferir desde mostrador |
+| marcar en tránsito | flujo delivery | BLOQUEADO | corresponde a autoridad propia |
+| confirmar entrega final de domicilio | flujo delivery | BLOQUEADO | no confundir con handoff del punto |
+| consultar pedidos externos | `VSCREEN-0087` | BLOQUEADO PARA MATERIALIZACIÓN ATÓMICA | requiere permiso exacto |
+| aceptar pedido externo | `VSCREEN-0087` | BLOQUEADO | requiere permiso y validación VPROC-0040 |
+| iniciar nueva venta | `VSCREEN-0081` | BLOQUEADO PARA ESTE ROL MIENTRAS NO EXISTA GRANT | no heredar permiso de cajero |
+| modificar pedido | `VSCREEN-0083` | BLOQUEADO PARA ESTE ROL MIENTRAS NO EXISTA GRANT | validar estado/columnas |
+| solicitar cobro | handoff | DISPONIBLE COMO INTENCIÓN | no equivale a cobrar |
+| cobrar | `VSCREEN-0084` | NO CONCEDIDO AL ROL POR ESTA TAREA | requiere autoridad propia |
+| cancelar pedido | `VSCREEN-0091` o flujo propietario | NO CONCEDIDO | acción sensible separada |
+| administrar configuración | superficie administrativa | FUERA DE ALCANCE | carril separado |
+
+---
+
+#### 54. Handoff inmediato a PULSO-UX-005
+
+`PULSO-UX-005 — Diseñar inicio para operador integral` recibe:
+
+```text
+VSCREEN-0080 SIGUE SIENDO IDENTIDAD COMPARTIDA DE INICIO POS
+CAJERO, SALÓN Y MOSTRADOR TIENEN PRIORIZACIONES DISTINTAS
+PUNTO FÍSICO INTEGRADO != WILDCARD OPERATIVO
+MOSTRADOR PRIORIZA VPROC-0039 / HANDOFF / ENTREGA
+VSCREEN-0088 ES WORKSPACE PRINCIPAL DE MOSTRADOR
+VSCREEN-0087 ES SECUNDARIO PARA PEDIDOS EXTERNOS CUANDO APLIQUE
+MODALIDAD / CANAL / ESTACIÓN != AUTORIDAD
+PAGO PENDIENTE != AUTORIDAD DE COBRO
+DELIVERY HANDOFF != AUTORIDAD LOGÍSTICA
+PERMISOS FALTANTES DEBEN FALLAR CERRADOS
+```
+
+La 005 deberá componer capacidades múltiples sin sumar automáticamente todos los permisos de caja, salón, mostrador, barra o cocina.
+
+---
+
+#### 55. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-004 |
+| --- | --- |
+| `PULSO-UX-005` | operador integral compone capacidades sin wildcard ni unión automática de roles |
+| `PULSO-UX-006` | supervisor observa carga y excepciones sin apropiarse de ejecución ordinaria |
+| `PULSO-UX-007` | nueva venta recibe canal/modalidad y contexto sin inventar permiso de creación |
+| `PULSO-UX-008` | pago al recoger o en sede conduce a cobro como handoff separado |
+| `PULSO-UX-009` | cancelación/devolución/refund no se tratan como cambio ordinario de estado |
+| `PULSO-UX-010` | caja permanece independiente de entrega de mostrador |
+| `PULSO-UX-013` | handoffs y efectos sensibles reciben confirmación proporcional |
+| `PULSO-UX-014` | terminal integrada conserva trabajador real por acción |
+| `PULSO-UX-015` | cola y handoff se adaptan a interacción táctil por estación |
+| `PULSO-UX-020` | estados/rutas legacy se clasifican sin elevarlos a canon por existencia |
+| `PULSO-UX-021` | arquitectura objetivo separa permisos broad, server actions, Realtime y deuda legacy |
+
+---
+
+#### 56. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: separación de pedido, pago, handoff y entrega, seguridad de `/orders`, territorio, permisos atómicos, actor efectivo, concurrencia, Realtime, rutas y recuperación ya cuentan con obligaciones verificables vigentes. Esta tarea especializa la composición UX de `mostrador_satelite` sin introducir una obligación observable nueva en el registro.
+
+---
+
+#### 57. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-005` para separar pedido, preparación, cumplimiento, pago y entrega;
+- `TREQ-PULSO-006` para acciones comerciales nombradas, autorizadas y auditables;
+- `TREQ-PULSO-014` para exigir sesión, acceso y contexto territorial en rutas PULSO;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio;
+- `TREQ-PULSO-016` para separar apertura de `/orders` de transiciones, cancelación, despacho, chat, facturación y mutaciones;
+- `TREQ-PULSO-019` para mantener query parameters dentro del contrato de la ruta y fuera de la autoridad;
+- `TREQ-PULSO-020` para no contar componentes, bridges o Server Actions como rutas;
+- `TREQ-PULSO-021` para ligar evidencia al snapshot inspeccionado;
+- `TREQ-PULSO-023` para detectar drift de rutas, guards y handlers;
+- `TREQ-PULSO-024` para impedir que existencia técnica se interprete como autorización o completitud;
+- `TREQ-PULSO-026` para impedir elevar `pulso.pos.main` a permiso exacto suficiente;
+- `TREQ-AUTH-001` para autorización basada en permiso, contexto y alcance;
+- `TREQ-AUTH-011` para separar dispositivo y trabajador;
+- `TREQ-AUTH-013` para revalidación server-side frente a URL, formulario, API o RPC manipulados;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, territorio, permiso, recurso y decisión;
+- `TREQ-UX-001` para hacer identificables tarea actual, acción principal y estado;
+- `TREQ-UX-003` para adecuar densidad y acciones al actor efectivo;
+- `TREQ-UX-006` para recuperación segura;
+- `TREQ-UX-008` y `TREQ-UX-009` para navegación por acción/superficie y consumo correcto de contexto.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron continuidad, topología `DEFINE_ONCE`, owner PULSO, `AUTH-RBAC-012`, dataset de once grants de `mostrador_satelite`, `VSCREEN-0080/0081/0083/0084/0087/0088`, estados de `VPROC-0039` y `VPROC-0040`, Registro 04A aplicable y runtime vigente de `/orders`, incluidas acciones, filtros, Realtime, optimismo, despacho y chat. |
+| OPERATIVA | NOT_EXECUTED | No se atendieron, entregaron, despacharon, cobraron, cancelaron ni conciliaron pedidos reales y no se realizaron pruebas con personal de mostrador. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-004` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 59. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0080` se conserva como identidad canónica compartida de Inicio POS;
+- [ ] no se crea un home canónico paralelo de mostrador;
+- [ ] `mostrador_satelite` queda como actor principal;
+- [ ] `VPROC-0039` queda como proceso principal;
+- [ ] `VPROC-0040` queda como proceso secundario para pedidos externos;
+- [ ] `VSCREEN-0088` queda como workspace principal de seguimiento/handoff;
+- [ ] `VSCREEN-0087` queda como superficie secundaria de pedidos externos;
+- [ ] se conservan los nueve estados canónicos de `VPROC-0039`;
+- [ ] se conservan los ocho estados canónicos de `VPROC-0040`;
+- [ ] punto físico integrado no se convierte en wildcard operativo;
+- [ ] mostrador no hereda caja, salón, barra, cocina o logística;
+- [ ] contexto y trabajo se resuelven antes de presentar acciones;
+- [ ] `pulso.access` se limita a entrada/contexto;
+- [ ] no se inventan permisos atómicos de cola, alistamiento, estados, entrega, despacho, chat o cobro;
+- [ ] la cola muestra trabajo accionable y no universo administrativo;
+- [ ] `READY_FOR_HANDOFF` no equivale a entregado;
+- [ ] `HANDOFF_PENDING` conserva receptor y evidencia cuando corresponda;
+- [ ] pickup separa listo, pago al recoger y entrega;
+- [ ] on_premise no se confunde automáticamente con salón;
+- [ ] delivery separa handoff, asignación, tránsito y entrega final;
+- [ ] pago pendiente produce handoff a cobro y no autoridad implícita;
+- [ ] pago confirmado no cierra la venta automáticamente;
+- [ ] nueva venta permanece bloqueada para el rol mientras no exista grant exacto;
+- [ ] modificación de pedido exige permiso, estado y columnas válidas;
+- [ ] seguimiento de preparación no transfiere ownership productivo;
+- [ ] pedido externo recibido no equivale a aceptado;
+- [ ] canales no se convierten en zonas;
+- [ ] cancelación queda fuera de la acción ordinaria del mostrador;
+- [ ] asignación de despacho se separa del handoff;
+- [ ] `En camino` no se deduce de que el pedido salió del mostrador;
+- [ ] entrega al cliente, transportador y entrega final de domicilio permanecen hechos distinguibles;
+- [ ] delivery override permanece fuera del rol;
+- [ ] chat con cliente no se deduce de visibilidad del pedido;
+- [ ] datos personales se minimizan al handoff;
+- [ ] Realtime no concede autoridad;
+- [ ] optimismo de UI no se presenta como confirmación definitiva;
+- [ ] concurrencia fuerza refresh/revalidación y no reintento ciego;
+- [ ] query parameters no conceden autoridad;
+- [ ] URL directa de `/orders` no concede mutaciones;
+- [ ] dispositivo y trabajador real permanecen separados;
+- [ ] cambio de trabajador invalida estado actor-bound;
+- [ ] vacío, deny, stale, conflicto, fallo y unknown permanecen distintos;
+- [ ] cada brecha AS-IS tiene owner y condición de salida;
+- [ ] `PULSO-UX-005` recibe handoff suficiente para componer operador integral sin wildcard;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 60. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0080`, `VSCREEN-0087` ni `VSCREEN-0088`;
+- modifica `/orders`;
+- crea rutas nuevas;
+- crea componentes, Server Actions o bridges;
+- crea permisos o grants;
+- modifica `AUTH-RBAC-012`;
+- concede acciones internas por `pulso.access`;
+- crea, modifica o cancela pedidos reales;
+- cambia estados reales de preparación o entrega;
+- asigna despachos;
+- marca pedidos en tránsito;
+- confirma entregas reales;
+- envía mensajes reales;
+- procesa cobros;
+- abre o cierra caja;
+- configura zonas, puntos o estaciones;
+- modifica Supabase, RLS, RPC, grants, tablas, datos, Realtime o migraciones;
+- modifica packages compartidos;
+- retira `pulso.pos.main` del runtime;
+- corrige el board live o sus operaciones optimistas;
+- diseña en detalle operador integral o supervisor;
+- sustituye `PULSO-UX-005..021`;
+- modifica el Registro 04A;
+- crea una instancia física propia;
+- desarrolla `PULSO-UX-005`.
+
+---
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-003 — Diseñar inicio para servicio de salón`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-004 — Diseñar inicio para mostrador`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-005 — Diseñar inicio para operador integral`
 ### [ ] PULSO-UX-005 — Diseñar inicio para operador integral
 ### [ ] PULSO-UX-006 — Diseñar inicio para supervisor
 ### [ ] PULSO-UX-007 — Simplificar creación de venta
