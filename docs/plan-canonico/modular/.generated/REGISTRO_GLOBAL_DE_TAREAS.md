@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1360** |
+| Aprobadas | **1361** |
 | En propuesta | **0** |
-| No iniciadas | **236** |
+| No iniciadas | **235** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **85.21% (1360/1596)** |
+| Porcentaje de completamiento | **85.28% (1361/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **236** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1261** |
+| ⏸ NO_EVALUADA | **235** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1262** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-006` — Definir permisos de cajero | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-007` — Definir permisos de supervisor | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-008` — Definir permisos de cierre y anulación | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-007` — Definir permisos de supervisor | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-008` — Definir permisos de cierre y anulación | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-009` — Proteger acumulación de puntos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1121,7 +1121,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-004` | Inventariar escáner | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-005` | Inventariar importaciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-006` | Definir permisos de cajero | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-007` | Definir permisos de supervisor | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-007` | Definir permisos de supervisor | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-008` | Definir permisos de cierre y anulación | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-009` | Proteger acumulación de puntos | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-010` | Proteger redenciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
