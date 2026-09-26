@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1357** |
+| Tareas aprobadas | **1358** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **239** |
+| Tareas no iniciadas | **238** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.03% (1357/1596)** |
+| Porcentaje de completamiento | **85.09% (1358/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-AUTH-003 — Inventariar salón** |
-| Tarea actual | **PULSO-AUTH-004 — Inventariar escáner** |
+| Última tarea aprobada | **PULSO-AUTH-004 — Inventariar escáner** |
+| Tarea actual | **PULSO-AUTH-005 — Inventariar importaciones** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-AUTH-005 — Inventariar importaciones** |
+| Siguiente tarea | **PULSO-AUTH-006 — Definir permisos de cajero** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 5 de 38 aprobadas; PULSO-AUTH-004 pendiente** |
+| Progreso del bloque | **BLOQUE N: 6 de 38 aprobadas; PULSO-AUTH-005 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-AUTH-004** |
+| Carril documental | **ACTIVO — PULSO-AUTH-005** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-AUTH-003` — Inventariar salón |
-| Tarea actual | `PULSO-AUTH-004` — Inventariar escáner — **NO INICIADA** |
-| Siguiente tarea | `PULSO-AUTH-005` — Inventariar importaciones |
+| Última aprobada | `PULSO-AUTH-004` — Inventariar escáner |
+| Tarea actual | `PULSO-AUTH-005` — Inventariar importaciones — **NO INICIADA** |
+| Siguiente tarea | `PULSO-AUTH-006` — Definir permisos de cajero |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 5 DE 38 APROBADAS — ACTUAL PULSO-AUTH-004** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 6 DE 38 APROBADAS — ACTUAL PULSO-AUTH-005** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-AUTH-003 — Inventariar salón
-        ↓
-TAREA ACTUAL
 PULSO-AUTH-004 — Inventariar escáner
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-AUTH-005 — Inventariar importaciones
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-AUTH-006 — Definir permisos de cajero
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 5 de 38 tareas aprobadas
+BLOQUE N — 6 de 38 tareas aprobadas
 ```

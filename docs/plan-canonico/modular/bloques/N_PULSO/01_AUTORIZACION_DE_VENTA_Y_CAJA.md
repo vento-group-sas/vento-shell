@@ -4141,7 +4141,1317 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-004 — Inventariar escáner`
-### [ ] PULSO-AUTH-004 — Inventariar escáner
+### ✅ PULSO-AUTH-004 — Inventariar escáner
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-003 — Inventariar salón
+**Tarea siguiente:** PULSO-AUTH-005 — Inventariar importaciones
+**Tipo de tarea:** inventario documental cerrado de la superficie AS-IS de escáner e identificación expuesta por `PULSO-ROUTE-001` (`/`) y `PULSO-ROUTE-006` (`/scanner`), reconciliando identidad de cliente, redención, acumulación de puntos, proyección visible, acciones de servidor, territorialidad, dispositivo compartido, atribución de actor, idempotencia, ownership de PASS y código dormante, sin fusionar las dos rutas, definir permisos finales ni modificar código, datos o Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, `vento-pass`, rutas, componentes, Server Actions, RPC, tablas, RLS, funciones, migraciones, Supabase, permisos, datos, contratos generados, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma exhaustiva, estable y verificable la superficie actual de escáner de PULSO para que las tareas posteriores de autorización y fidelización trabajen sobre un universo técnico único, sin convertir un componente existente, un permiso general, una proyección de cliente o una función de PASS en autoridad implícita.
+
+La tarea debe dejar resuelto:
+
+- qué rutas exponen la experiencia;
+- qué componente principal comparten;
+- qué capacidades runtime están realmente montadas;
+- qué código relacionado existe pero está dormante;
+- qué formatos de identificación se aceptan;
+- qué datos de cliente se proyectan;
+- qué acciones identifican, redimen y otorgan puntos;
+- qué guard y permiso se observan en cada frontera;
+- qué controles territoriales e idempotentes existen;
+- cómo se comporta la firma de actor en dispositivo compartido;
+- qué ownership permanece en PASS;
+- qué gaps se transfieren a las tareas propietarias posteriores.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-003
+
+`PULSO-AUTH-003` entrega la continuidad documental después de cerrar `PULSO-ROUTE-005`.
+
+El handoff exacto es:
+
+```text
+PULSO-AUTH-003
+→ inventario cerrado de PULSO-ROUTE-005
+→ PULSO-AUTH-004
+→ inventario de PULSO-ROUTE-001 y PULSO-ROUTE-006
+```
+
+No se heredan zonas, mesas, sesiones ni llamados como recursos del escáner.
+
+---
+
+#### 3. Handoff específico recibido de PULSO-AUTH-001
+
+`PULSO-AUTH-001` entrega exactamente:
+
+```text
+PULSO-ROUTE-001
++
+PULSO-ROUTE-006
+→ POS_SCANNER
+→ mismo ScannerPage
+→ dos identidades de ruta
+```
+
+La tarea debe inventariar capacidades sin fusionar rutas y sin transferir ownership de fidelización desde PASS hacia PULSO.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el inventario se define una sola vez;
+- no existe instancia física propia;
+- no se cambia código;
+- no se cambia Supabase;
+- no se ejecutan acumulaciones ni redenciones;
+- no se crea un permiso;
+- no se habilita cámara;
+- no se fusionan rutas;
+- no se implementan tareas posteriores.
+
+---
+
+#### 5. Snapshot técnico verificado
+
+Repositorio consumidor inspeccionado:
+
+```text
+repository = vento-group-sas/vento-pulso
+branch = main
+HEAD = 715b5683db05caa010d725679b5ada4705a6da6e
+framework = Next.js App Router
+```
+
+El inventario se ancla a ese snapshot y a los blobs fuente explicitados en esta tarea.
+
+---
+
+#### 6. Cardinalidad de rutas del escáner
+
+La superficie usa exactamente dos identidades de página:
+
+| ID | Patrón | Archivo fuente | Componente principal |
+| --- | --- | --- | --- |
+| `PULSO-ROUTE-001` | `/` | `src/app/page.tsx` | `ScannerPage` |
+| `PULSO-ROUTE-006` | `/scanner` | `src/app/scanner/page.tsx` | `ScannerPage` |
+
+Conteo:
+
+```text
+SCANNER_PAGE_ROUTES = 2
+UNIQUE_ROUTE_PATTERNS = 2
+UNIQUE_PAGE_FILES = 2
+SHARED_MAIN_COMPONENT = 1
+```
+
+---
+
+#### 7. Dos rutas no equivalen a una sola identidad
+
+La relación observada es:
+
+```text
+PULSO-ROUTE-001
++
+PULSO-ROUTE-006
+→ mismo ScannerPage
+→ identidades URL distintas
+```
+
+Compartir componente no autoriza:
+
+- retirar `/`;
+- retirar `/scanner`;
+- declarar alias;
+- crear redirect;
+- fusionar métricas;
+- asumir que una es canónica y la otra legacy.
+
+La clasificación de duplicidad o consolidación permanece fuera de esta tarea.
+
+---
+
+#### 8. Guard de ambas rutas
+
+Las dos páginas ejecutan `requireAppAccess` con:
+
+```text
+appId = pulso
+permissionCode = pos.main
+requireAppAccessPermission = true
+site_id = parámetro de consulta cuando existe
+```
+
+También transmiten al componente si la sesión operacional corresponde a dispositivo compartido.
+
+La entrada protegida a la vista no demuestra autoridad final para cada acción interna.
+
+---
+
+#### 9. Contexto territorial de entrada
+
+Cada ruta resuelve `site_id` mediante el guard y construye su propio `returnTo`.
+
+La frontera obligatoria permanece:
+
+```text
+site_id solicitado
+!=
+autoridad territorial
+```
+
+El contexto efectivo debe permanecer subordinado a sesión, asignación operativa, sede permitida y controles server-side.
+
+---
+
+#### 10. Baseline técnico PULSO
+
+El baseline vigente separa:
+
+```text
+PULSO-SURFACE-004
+= escáner e identificación de cliente
+
+PULSO-SURFACE-005
+= loyalty, redención y acreditación
+```
+
+La existencia de ambas superficies relacionadas no fusiona responsabilidades empresariales.
+
+---
+
+#### 11. Archivos runtime principales
+
+La cadena runtime observada utiliza:
+
+```text
+src/app/page.tsx
+src/app/scanner/page.tsx
+src/modules/pos/components/scanner-page.tsx
+src/modules/pos/components/qr-scanner.tsx
+src/modules/pos/actions/identify-client.action.ts
+src/modules/pos/actions/validate-redemption.action.ts
+src/modules/pos/actions/award-loyalty.action.ts
+src/modules/pos/api/redemption.api.ts
+src/modules/pos/api/loyalty-award.api.ts
+src/lib/auth/shared-device-signature.ts
+```
+
+Cada elemento conserva su identidad técnica.
+
+---
+
+#### 12. Dos modos runtime
+
+`QRScanner` expone exactamente dos modos:
+
+```text
+identification
+redemption
+```
+
+Son modos de una misma superficie, no rutas adicionales.
+
+---
+
+#### 13. Entrada operativa actual
+
+La interfaz runtime permite:
+
+- pegar un código;
+- recibir texto desde un lector USB que actúe como entrada de teclado;
+- procesar con botón;
+- procesar con `Enter`.
+
+La UI actual no monta un flujo de cámara.
+
+---
+
+#### 14. `CameraQRScanner` existe pero está dormante
+
+Existe:
+
+```text
+src/modules/pos/components/camera-qr-scanner.tsx
+blob = 005cc7cd3aa78f2c79e9cf3deb027ce36862fe7d
+```
+
+Sin embargo, la búsqueda de consumidores del símbolo `CameraQRScanner` solo localiza su propio archivo.
+
+Por tanto:
+
+```text
+CAMERA_COMPONENT_SOURCE = PRESENT
+CAMERA_COMPONENT_RUNTIME = NOT_MOUNTED
+```
+
+No se declara cámara disponible en la superficie actual.
+
+---
+
+#### 15. `decodeQRCode` existe pero no participa en el flujo montado
+
+Existe:
+
+```text
+src/modules/pos/api/qr-scanner.api.ts
+blob = 46eb95e776efdea8056fce2f003581843f19b919
+```
+
+El helper `decodeQRCode` no tiene consumidores localizados fuera de su propio archivo.
+
+Por tanto:
+
+```text
+QR_DECODE_HELPER_SOURCE = PRESENT
+QR_DECODE_HELPER_RUNTIME = NOT_OBSERVED
+```
+
+La existencia de ese helper no agrega otra capacidad runtime.
+
+---
+
+#### 16. Formatos de identificación aceptados por la acción activa
+
+`identifyClientAction` acepta actualmente:
+
+```text
+VENTO:<uuid>
+UUID
+JSON con user_id
+JSON con id
+```
+
+Todos los candidatos se reducen a un UUID válido antes de consultar cliente.
+
+La UI visible comunica `VENTO:<uuid> o UUID`, pero la acción de servidor acepta además JSON.
+
+---
+
+#### 17. Acción de identificación
+
+La frontera activa es:
+
+```text
+QRScanner
+→ identifyClientAction(rawCode, siteId)
+```
+
+La acción:
+
+1. normaliza el identificador;
+2. exige usuario autenticado;
+3. evalúa `has_permission("pulso.pos.main", siteId, null)`;
+4. consulta el usuario identificado;
+5. devuelve una proyección limitada.
+
+No muta puntos ni redenciones.
+
+---
+
+#### 18. Consulta de cliente y cliente administrativo
+
+Después del control explícito `pulso.pos.main`, `identifyClientAction` utiliza un cliente administrativo cuando están disponibles las variables de servidor requeridas.
+
+La consulta se limita a:
+
+```text
+id
+full_name
+email
+loyalty_points
+```
+
+El uso de cliente administrativo no convierte esos campos en propiedad de PULSO ni elimina la necesidad de autorización previa.
+
+---
+
+#### 19. Proyección de cliente
+
+La proyección runtime es:
+
+```text
+user_id
+full_name
+email
+loyalty_points
+```
+
+`ScannerPage` y `QRScanner` pueden mostrar:
+
+- nombre;
+- correo;
+- saldo de puntos.
+
+Esta proyección es evidencia AS-IS, no aprobación automática de minimización final.
+
+---
+
+#### 20. Identificación no equivale a fidelización
+
+La frontera es:
+
+```text
+IDENTIFICAR CLIENTE
+!=
+OTORGAR PUNTOS
+!=
+VALIDAR REDENCIÓN
+```
+
+Una identificación exitosa solo establece el cliente seleccionado para la operación local.
+
+---
+
+#### 21. Flujo de acumulación observado
+
+El flujo activo es:
+
+```text
+cliente identificado
+→ monto COP
+→ estimación local de puntos
+→ referencia externa generada
+→ awardLoyaltyPointsAction
+→ award_loyalty_points_external
+→ grant_loyalty_points
+```
+
+La UI calcula:
+
+```text
+estimatedPoints = floor(amountCop / 1000)
+```
+
+La estimación visible no es el resultado autoritativo.
+
+---
+
+#### 22. Referencia externa generada por la UI
+
+La referencia actual se construye con:
+
+```text
+siteId truncado
++
+userId truncado
++
+Date.now()
++
+Math.random()
+```
+
+y produce un valor con prefijo `pulso-`.
+
+Por tanto:
+
+```text
+CURRENT_EXTERNAL_REF = UI_GENERATED
+CURRENT_EXTERNAL_REF = NOT_STABLE_FOR_RETRY_OF_SAME_BUSINESS_FACT
+```
+
+La tarea registra el hecho; no lo corrige.
+
+---
+
+#### 23. Idempotencia remota observada
+
+`award_loyalty_points_external` inserta en `public.loyalty_external_sales`.
+
+El snapshot remoto conserva un índice único sobre:
+
+```text
+site_id
++
+lower(btrim(external_ref))
+```
+
+Una repetición con la misma referencia puede converger en `duplicate`.
+
+Sin embargo, una nueva referencia generada por timestamp y aleatoriedad no representa por sí sola el mismo hecho empresarial.
+
+---
+
+#### 24. Autorización de acumulación
+
+`awardLoyaltyPointsAction` vuelve a ejecutar `requireAppAccess` con:
+
+```text
+appId = pulso
+siteId = input.siteId
+permissionCode = pos.main
+```
+
+La RPC remota `award_loyalty_points_external` vuelve a exigir:
+
+```text
+is_active_staff()
+has_permission('pulso.pos.main', p_site_id, null)
+```
+
+Esto demuestra controles AS-IS duplicados en aplicación y base de datos, pero no prueba que `pos.main` sea la granularidad final correcta.
+
+---
+
+#### 25. Atomicidad de ledger y saldo
+
+La función remota termina invocando `pass.grant_loyalty_points`.
+
+Ese contrato:
+
+- bloquea la fila de usuario;
+- inserta `pass.loyalty_transactions`;
+- actualiza `public.users.loyalty_points`;
+- devuelve transacción y nuevo saldo.
+
+La operación ocurre dentro de una función PostgreSQL, por lo que ledger y proyección se ejecutan dentro de la misma transacción de base de datos.
+
+---
+
+#### 26. Ownership de acumulación
+
+Aunque PULSO origina la intención operacional:
+
+```text
+PULSO
+→ solicita acumulación
+
+PASS
+→ conserva semántica de fidelización
+→ ledger
+→ saldo proyectado
+```
+
+La existencia de botones y Server Actions en PULSO no transfiere ownership del ledger.
+
+---
+
+#### 27. Flujo de redención observado
+
+El flujo activo es:
+
+```text
+QRScanner
+→ processRedemptionAction
+→ validateRedemption
+→ requireAppAccess
+→ firma de actor cuando aplica
+→ markRedemptionAsUsed
+→ attachSharedDeviceActionSignatureTarget cuando aplica
+```
+
+La UI actual invoca `processRedemptionAction` sin `orderId`.
+
+---
+
+#### 28. Orden de validación en redención
+
+`processRedemptionAction` ejecuta primero:
+
+```text
+validateRedemption(qrCode)
+```
+
+y después:
+
+```text
+requireAppAccess(...)
+```
+
+Por tanto, el lookup preliminar de redención ocurre antes del guard PULSO de la acción.
+
+Este orden es evidencia AS-IS y debe revisarse en la materialización propietaria; no se redefine desde el inventario.
+
+---
+
+#### 29. Validación preliminar de redención
+
+`validateRedemption` consulta:
+
+```text
+pass.loyalty_redemptions
+```
+
+por `qr_code` y valida explícitamente:
+
+```text
+status = pending
+```
+
+Distingue al menos:
+
+- no encontrado;
+- ya validado;
+- cancelado;
+- no disponible;
+- pendiente.
+
+---
+
+#### 30. Vigencia temporal de redención
+
+El esquema remoto inspeccionado de `pass.loyalty_redemptions` contiene:
+
+```text
+id
+user_id
+order_id
+reward_id
+points_spent
+qr_code
+status
+metadata
+created_at
+validated_at
+site_id
+```
+
+No se observó una columna dedicada de expiración en esa relación.
+
+El código actual de `validateRedemption` tampoco ejecuta una comprobación temporal explícita de expiración.
+
+La tarea registra el estado; no redefine el contrato de vigencia.
+
+---
+
+#### 31. Asociación a pedido
+
+`markRedemptionAsUsed` acepta `orderId` opcional y persiste:
+
+```text
+order_id = orderId || null
+```
+
+La superficie `QRScanner` actual llama la redención con `orderId = undefined`.
+
+Por tanto:
+
+```text
+CURRENT_SCANNER_REDEMPTION_ORDER_LINK = OPTIONAL / NOT_SUPPLIED_BY_THIS_UI
+```
+
+---
+
+#### 32. Transición de redención
+
+La mutación ejecuta:
+
+```text
+status = validated
+validated_at = now
+```
+
+con predicados:
+
+```text
+id = redemptionId
+status = pending
+```
+
+y exige que una fila sea devuelta.
+
+Esto aporta una barrera AS-IS contra validar dos veces la misma fila mediante la misma transición de estado.
+
+---
+
+#### 33. RLS territorial específica de redención
+
+El snapshot remoto contiene políticas específicas de cajero para selección y validación que relacionan:
+
+- trabajador activo;
+- roles permitidos;
+- recompensa;
+- sede de la recompensa;
+- sede base o asignación activa mediante `employee_sites`.
+
+Esas políticas son evidencia territorial relevante.
+
+---
+
+#### 34. RLS general de staff coexistente
+
+El mismo snapshot contiene además políticas permisivas:
+
+```text
+staff_select_all_redemptions
+→ is_active_staff()
+
+staff_validate_redemptions
+→ is_active_staff() AND status = pending
+```
+
+y `is_active_staff()` resuelve actualmente a `is_employee()`.
+
+Por coexistir como políticas `PERMISSIVE`, constituyen una vía adicional a las políticas territoriales específicas.
+
+Por tanto no puede concluirse que la RLS actual de redención esté limitada exclusivamente por sede.
+
+---
+
+#### 35. `pos.main` no es permiso final suficiente
+
+Se observa `pulso.pos.main` en:
+
+- entrada a `/`;
+- entrada a `/scanner`;
+- identificación;
+- acumulación;
+- procesamiento de redención después de la validación preliminar.
+
+La tarea conserva:
+
+```text
+PERMISO OBSERVADO
+!=
+PERMISO FINAL APROBADO POR ACCIÓN
+```
+
+---
+
+#### 36. Dispositivo compartido en las rutas
+
+Las dos rutas transmiten:
+
+```text
+requiresSharedDeviceActorSignature
+= operationalSession.isSharedDevice
+```
+
+El campo PIN solo aparece cuando esa condición es verdadera.
+
+---
+
+#### 37. Acciones que solicitan firma de actor
+
+Se observan dos action codes específicos:
+
+```text
+pos.loyalty.award_points
+pos.loyalty.validate_redemption
+```
+
+Ambas operaciones llaman `requireSharedDeviceActorSignature` antes del efecto sensible cuando la sesión es compartida.
+
+---
+
+#### 38. Contrato de firma desde el consumidor
+
+El helper de PULSO llama:
+
+```text
+sign_shared_device_action
+```
+
+con:
+
+```text
+p_actor_employee_id = null
+p_actor_pin = PIN ingresado
+p_app_code = pulso
+p_action_code = acción específica
+```
+
+La intención es resolver al actor humano desde el PIN.
+
+---
+
+#### 39. Estado remoto de resolución de actor
+
+La función remota `sign_shared_device_action` puede resolver internamente `v_actor` desde el PIN cuando `p_actor_employee_id` es nulo.
+
+Sin embargo, después de resolverlo, el snapshot remoto utiliza nuevamente el parámetro original `p_actor_employee_id` al invocar:
+
+```text
+current_actor_shift_for_shared_device_v1(...)
+shared_device_actor_is_allowed_v1(...)
+```
+
+en vez de utilizar explícitamente `v_actor.id`.
+
+Como el consumidor envía `p_actor_employee_id = null`, la evidencia estática indica una ruta fail-closed en esas comprobaciones posteriores.
+
+La tarea no corrige la función.
+
+---
+
+#### 40. Target de firma
+
+Para acumulación, la firma se crea inicialmente sin target definitivo y, después de éxito, intenta adjuntarse al `transaction_id` de loyalty.
+
+Para redención, la firma se crea apuntando desde el inicio a:
+
+```text
+pass.loyalty_redemptions
++
+redemption.id
+```
+
+La atribución de actor debe permanecer correlacionada con el efecto confirmado.
+
+---
+
+#### 41. Estado del PIN en cliente
+
+`sharedActorPin` vive en estado React del componente.
+
+Se limpia después de una acumulación exitosa.
+
+No se observó limpieza explícita del PIN en `handleModeChange`, ni después de una redención exitosa, ni en todos los caminos de error.
+
+La tarea registra el gap de higiene de estado sin modificar la UI.
+
+---
+
+#### 42. Limpieza de estado al cambiar modo
+
+`handleModeChange` limpia:
+
+```text
+qrInput
+amountCop
+message
+error
+```
+
+y limpia el cliente cuando se cambia hacia un modo distinto de `identification`.
+
+No limpia explícitamente `sharedActorPin`.
+
+---
+
+#### 43. Feedback runtime
+
+La superficie distingue visualmente:
+
+- procesamiento;
+- éxito;
+- error;
+- duplicado en acumulación.
+
+Los mensajes se derivan de resultados de las acciones.
+
+El inventario no certifica todavía que todos los estados de conflicto, denegación, replay o resultado desconocido estén diferenciados.
+
+---
+
+#### 44. Matriz de capacidades runtime
+
+| Capacidad | Runtime observado | Frontera principal |
+| --- | --- | --- |
+| abrir `/` | sí | `requireAppAccess` |
+| abrir `/scanner` | sí | `requireAppAccess` |
+| identificar cliente | sí | `identifyClientAction` |
+| mostrar nombre/correo/puntos | sí | proyección local |
+| estimar puntos | sí | cálculo de UI |
+| otorgar puntos | sí | Server Action + RPC |
+| validar redención | sí | Server Action + RLS |
+| firmar actor compartido | código presente; defecto AS-IS observado | helper + RPC |
+| cámara QR | no montada | código dormante |
+| `decodeQRCode` auxiliar | no consumido | código dormante |
+
+---
+
+#### 45. Matriz de autoridad observada
+
+| Acción | Guard de aplicación | Control remoto observado | Estado contractual |
+| --- | --- | --- | --- |
+| abrir rutas | `pulso` + `pos.main` + sede | sesión/contexto | observado, no final |
+| identificar cliente | auth + `pulso.pos.main` por sede | consulta posterior | observado, no final |
+| otorgar puntos | `requireAppAccess` + `pos.main` | `is_active_staff` + `has_permission` + idempotencia por referencia | observado, no final |
+| validar redención | `requireAppAccess` después del lookup | RLS + estado `pending` | observado, no final |
+| firma compartida | condición de dispositivo compartido | RPC de firma | implementación AS-IS con hallazgo |
+| mostrar proyección | resultado de identificación | no es mutación | proyección pendiente de minimización final |
+
+---
+
+#### 46. Frontera PULSO ↔ PASS
+
+Se conserva:
+
+```text
+PULSO
+→ experiencia operativa
+→ identificación y originación de intención
+
+PASS
+→ identidad comercial/fidelización
+→ recompensas
+→ redenciones
+→ ledger de puntos
+→ reglas de fidelización
+```
+
+PULSO no adquiere ownership de PASS por consumir sus contratos.
+
+---
+
+#### 47. Frontera de dispositivo
+
+Se mantienen separadas:
+
+```text
+PRINCIPAL TÉCNICO
+ACTOR HUMANO
+DISPOSITIVO COMPARTIDO
+SEDE
+TURNO
+PERMISO
+CLIENTE
+EFECTO DE LOYALTY
+```
+
+El PIN no sustituye ninguna de esas identidades.
+
+---
+
+#### 48. Frontera de identidad del cliente
+
+La superficie opera con `user_id`, pero no autoriza inferir:
+
+- que toda persona cliente tenga cuenta autenticada;
+- que correo identifique inequívocamente a la persona;
+- que saldo visible sea ledger;
+- que una cuenta cliente sea actor laboral.
+
+Esas identidades permanecen separadas.
+
+---
+
+#### 49. Frontera de saldo
+
+La UI muestra `loyalty_points`.
+
+Se conserva:
+
+```text
+SALDO PROYECTADO
+!=
+LEDGER
+```
+
+El ledger permanece en PASS y debe ser la fuente reconciliable del efecto.
+
+---
+
+#### 50. Frontera de cámara
+
+La existencia del archivo de cámara no autoriza:
+
+- solicitar permiso de cámara;
+- declarar soporte físico;
+- inventariar una tercera ruta;
+- eliminar fallback manual;
+- declarar lector de cámara certificado.
+
+Toda activación futura requiere su propia materialización y prueba.
+
+---
+
+#### 51. Frontera de rutas
+
+`/` y `/scanner` deben conservarse como identidades distintas mientras la propietaria transversal de clasificación no apruebe otra relación.
+
+Esta tarea no decide:
+
+```text
+DUPLICATE
+ALIAS
+REDIRECT
+PRIMARY
+LEGACY
+```
+
+---
+
+#### 52. Matriz de hallazgos y propietarios de salida
+
+| Hallazgo AS-IS | Efecto | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `/` y `/scanner` comparten `ScannerPage` | relación no clasificada | `AUTH-UI-026..029` | decisión explícita de clasificación/transición |
+| `pos.main` protege acciones distintas | granularidad final no demostrada | `PULSO-AUTH-006..010` | permisos exactos por acción |
+| la acción de identificación acepta JSON además del formato visible Vento ID/UUID | superficie AS-IS más amplia que el formato canónico esperado | `PULSO-AUTH-015/016` + contratos `AUTH-SRV` | formato de identidad server-side reconciliado y probado |
+| identificación usa cliente administrativo después del guard | bypass de RLS deliberado en lectura puntual | `PULSO-AUTH-015` + contratos `AUTH-SRV` | contrato compartido endurecido y probado |
+| referencia externa usa timestamp/aleatoriedad | retry puede generar identidad distinta | `PULSO-AUTH-009` + `PASS-INT-001/005` | idempotencia empresarial estable |
+| lookup de redención precede `requireAppAccess` | orden de autorización no ideal | `PULSO-AUTH-010` + contratos `AUTH-SRV` | autorización y validación ordenadas server-side |
+| la relación de redención no expone expiración dedicada y el código no la valida | vigencia temporal no demostrada | `PULSO-AUTH-010` + owner PASS | contrato de vigencia y rechazo de expirados materializado |
+| políticas `staff_*` amplían RLS de redención | sede no es la única vía RLS | `PULSO-AUTH-010` + owner PASS/Supabase | RLS y contrato de redención reconciliados |
+| firma compartida usa después `p_actor_employee_id` nulo | firma aparece fail-closed | `PULSO-AUTH-012/013` | actor efectivo y firma ejecutables y probados |
+| PIN no se limpia en todos los caminos | secreto efímero puede persistir en estado cliente | `PULSO-AUTH-012/013` | limpieza y manejo seguro demostrados |
+| `CameraQRScanner` no está montado | código dormante | `AUTH-UI-026..029` + experiencia propietaria | montaje explícito + permisos + pruebas |
+| `decodeQRCode` no tiene consumidor | helper dormante | `PULSO-AUTH-015` | reutilización gobernada o retiro explícito |
+
+No queda hallazgo material sin propietario y condición de salida.
+
+---
+
+#### 53. Handoff a PULSO-AUTH-005
+
+`PULSO-AUTH-005 — Inventariar importaciones` recibe la continuidad documental después de cerrar este inventario.
+
+La frontera es:
+
+```text
+PULSO-AUTH-004
+→ inventario cerrado de PULSO-ROUTE-001 y PULSO-ROUTE-006
+→ PULSO-AUTH-005
+→ inventario de PULSO-ROUTE-004
+```
+
+No transfiere capacidades de scanner como capacidades de importación.
+
+---
+
+#### 54. Handoff a PULSO-AUTH-006..008
+
+Las tareas de permisos reciben:
+
+- `pos.main` como permiso observado de entrada;
+- identificación, acumulación y redención como acciones diferentes;
+- necesidad de separar visibilidad, lectura y mutación;
+- necesidad de preservar roles y excepciones sin inferir autoridad desde UI.
+
+Esta tarea no crea claves de permiso.
+
+---
+
+#### 55. Handoff a PULSO-AUTH-009
+
+`PULSO-AUTH-009 — Proteger acumulación de puntos` recibe:
+
+- cálculo local de puntos como estimación;
+- `awardLoyaltyPointsAction`;
+- `award_loyalty_points_external`;
+- ledger PASS;
+- índice único por sede + referencia;
+- referencia actual generada con timestamp/aleatoriedad;
+- firma de actor compartido;
+- vínculo de transacción posterior al efecto.
+
+La condición de salida es acumulación autorizada, territorial, atómica, idempotente y atribuible.
+
+---
+
+#### 56. Handoff a PULSO-AUTH-010
+
+`PULSO-AUTH-010 — Proteger redenciones` recibe:
+
+- lookup de código;
+- estado `pending`;
+- transición a `validated`;
+- `orderId` opcional y no enviado por la UI actual;
+- guard PULSO posterior a la validación preliminar;
+- políticas RLS territoriales específicas;
+- políticas permisivas generales de staff coexistentes;
+- firma de actor compartido.
+
+La condición de salida es una redención fail-closed, territorial, atómica, idempotente y atribuible.
+
+---
+
+#### 57. Handoff a PULSO-AUTH-011
+
+`PULSO-AUTH-011 — Limitar operación a sede del turno` recibe:
+
+- `site_id` de ruta;
+- `siteId` de identificación;
+- `siteId` de acumulación;
+- políticas de redención relacionadas con recompensa y sede;
+- necesidad de impedir que parámetros o payload cliente amplíen territorio.
+
+---
+
+#### 58. Handoff a PULSO-AUTH-012
+
+`PULSO-AUTH-012 — Integrar dispositivos POS compartidos` recibe:
+
+- `operationalSession.isSharedDevice`;
+- visibilidad condicional del PIN;
+- helper de firma;
+- RPC `sign_shared_device_action`;
+- defecto AS-IS entre actor resuelto y parámetro nulo usado posteriormente;
+- attachment posterior del target.
+
+---
+
+#### 59. Handoff a PULSO-AUTH-013
+
+`PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación` recibe:
+
+- `auth.uid()` como principal técnico;
+- actor humano resuelto por PIN en dispositivo compartido;
+- `awarded_by` del flujo de acumulación;
+- metadata de actor/firma;
+- necesidad de atribuir redención y acumulación al trabajador efectivo;
+- defecto AS-IS de resolución posterior del actor.
+
+---
+
+#### 60. Handoff a PULSO-AUTH-015
+
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell` recibe cualquier materialización futura necesaria para:
+
+- permisos atómicos;
+- wrappers compartidos;
+- endurecimiento de RPC;
+- RLS;
+- idempotencia;
+- firma de actor;
+- retiro o adopción de helpers dormantes.
+
+Toda modificación VENTO de Supabase deberá permanecer versionada y gobernada desde `vento-shell`.
+
+---
+
+#### 61. Handoff a PULSO-AUTH-016
+
+`PULSO-AUTH-016 — Ejecutar pruebas integrales` recibe como casos mínimos:
+
+- acceso directo a `/` y `/scanner`;
+- aislamiento territorial por `site_id`;
+- identificación válida e inválida;
+- proyección mínima;
+- retry de acumulación;
+- duplicado con misma referencia;
+- mismo hecho con referencia distinta;
+- redención pendiente;
+- redención ya validada;
+- redención cancelada;
+- redención de otra sede;
+- concurrencia de redención;
+- dispositivo compartido;
+- PIN inválido;
+- actor sin turno permitido;
+- limpieza de PIN;
+- ausencia de cámara runtime;
+- preservación de dos identidades de ruta.
+
+---
+
+#### 62. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Esta tarea no crea, modifica, difiere ni vuelve obsoleto ningún requisito de prueba.
+
+La cobertura vigente ya protege identidad de rutas, autorización del scanner, proyección de cliente, idempotencia de acumulación, redención, firma de actor, secreto efímero, código de cámara dormante y fronteras PULSO/PASS.
+
+---
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+Cobertura relevante, reutilizada sin modificación:
+
+- `TREQ-PULSO-003` — una pieza del prototipo no se adopta por su sola existencia;
+- `TREQ-PULSO-008` — universo cerrado de rutas PULSO;
+- `TREQ-PULSO-009` — identidad estable de ruta, patrón y archivo;
+- `TREQ-PULSO-011` — `/` y `/scanner` permanecen distintas hasta decisión explícita;
+- `TREQ-PULSO-014` — acceso protegido a las rutas de negocio;
+- `TREQ-PULSO-015` — `site_id` no amplía territorio;
+- `TREQ-PULSO-020` — componentes, acciones y helpers no son rutas;
+- `TREQ-PULSO-021` — evidencia ligada al snapshot;
+- `TREQ-PULSO-024` — infraestructura existente no demuestra autorización completa;
+- `TREQ-PULSO-026` — permiso observado separado de suficiencia contractual;
+- `TREQ-PULSO-027` — fronteras con PASS y otros dominios;
+- `TREQ-PASS-008` — fidelización mediante contratos server-side autorizados, atómicos e idempotentes;
+- `TREQ-PASS-022` — `/scanner` exige permisos exactos por acción;
+- `TREQ-PASS-023` — identificación canónica y fail-closed;
+- `TREQ-PASS-024` — proyección mínima de cliente;
+- `TREQ-PASS-025` — acumulación autorizada, territorial, atómica e idempotente;
+- `TREQ-PASS-026` — referencia estable no basada únicamente en tiempo/azar/UI;
+- `TREQ-PASS-027` — redención territorial, atómica e idempotente;
+- `TREQ-PASS-028` — identificación y redención como modos de una sola ruta;
+- `TREQ-PASS-029` — firma de trabajador real en dispositivo compartido;
+- `TREQ-PASS-030` — PIN efímero y protegido;
+- `TREQ-PASS-031` — cámara dormante hasta montaje y certificación;
+- `TREQ-PASS-032` — feedback ligado a resultado confirmado.
+
+La enumeración es trazabilidad; no actualiza el Registro 04A.
+
+---
+
+#### 64. Huella fuente verificada
+
+| Archivo | Git blob |
+| --- | --- |
+| `src/app/page.tsx` | `40431b2e8d160c9f1af81e870e0e41b401b87018` |
+| `src/app/scanner/page.tsx` | `ace214820e9aaa93a4524731202924719d743ee6` |
+| `src/modules/pos/components/scanner-page.tsx` | `539e0aa6bcfdcc2cd7e806f9ce25e61e9e5b9a96` |
+| `src/modules/pos/components/qr-scanner.tsx` | `345b624ed26ccd7257f700c2faaa430223b5ff55` |
+| `src/modules/pos/components/camera-qr-scanner.tsx` | `005cc7cd3aa78f2c79e9cf3deb027ce36862fe7d` |
+| `src/modules/pos/actions/identify-client.action.ts` | `2ee9d3c8957cc78a802ac332a242d51ecfe2a158` |
+| `src/modules/pos/actions/validate-redemption.action.ts` | `510f29d98747ff063876f3c5a14cd183f7faac9c` |
+| `src/modules/pos/actions/award-loyalty.action.ts` | `77a968387359868fb71209c434fdf83146916b2a` |
+| `src/modules/pos/api/qr-scanner.api.ts` | `46eb95e776efdea8056fce2f003581843f19b919` |
+| `src/modules/pos/api/redemption.api.ts` | `d4ea3e444b680b14ec39afe4a803e9fa3141c07c` |
+| `src/modules/pos/api/loyalty-award.api.ts` | `3e69797c355fa637135fefd0d0366825f019b82d` |
+| `src/lib/auth/shared-device-signature.ts` | `89610936608eaa667a79c7739f72e968397d211c` |
+| `scripts/quality/pulso-consumer-baseline-gate.mjs` | `b50fc12744bc1eb913aee3756a383df81475938b` |
+
+---
+
+#### 65. Drift que invalida conclusiones afectadas
+
+Obliga a revisar este inventario cualquier cambio material en:
+
+- `/` o `/scanner`;
+- `ScannerPage`;
+- `QRScanner`;
+- montaje de cámara;
+- consumidores de `decodeQRCode`;
+- formatos de identificación;
+- proyección de cliente;
+- `pos.main`;
+- `site_id`;
+- Server Actions de identificación, puntos o redención;
+- RPC de fidelización;
+- RLS de `users` o `loyalty_redemptions`;
+- esquema de redenciones;
+- referencia externa;
+- ledger;
+- firma de dispositivo compartido;
+- lógica de actor efectivo;
+- ownership PULSO/PASS.
+
+Un commit distinto no invalida automáticamente el inventario si esas fuentes permanecen materialmente iguales.
+
+---
+
+#### 66. Estado de materialización inventariado
+
+La clasificación final es:
+
+```text
+ROOT_SCANNER_ROUTE = MATERIALIZED
+SCANNER_ROUTE = MATERIALIZED
+SHARED_SCANNER_COMPONENT = MATERIALIZED
+IDENTIFICATION = MATERIALIZED_AS_IS
+CLIENT_PROJECTION = MATERIALIZED_AS_IS
+LOYALTY_AWARD = MATERIALIZED_AS_IS
+REDEMPTION = MATERIALIZED_AS_IS
+EXACT_ACTION_PERMISSIONS = NOT_FINAL
+BUSINESS_IDEMPOTENCY_KEY = NOT_FINAL
+SHARED_DEVICE_SIGNATURE = CODE_PRESENT_WITH_AS_IS_BLOCKER
+CAMERA_RUNTIME = NOT_MOUNTED
+QR_DECODE_HELPER_RUNTIME = NOT_OBSERVED
+PASS_OWNERSHIP = PRESERVED
+PHYSICAL_IMPLEMENTATION_AUTHORIZED_BY_THIS_TASK = NO
+```
+
+---
+
+#### 67. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de `vento-pulso`; tarea documental sin cambios físicos |
+| LOCAL | NOT_EXECUTED | no se modificó checkout local del repositorio canónico |
+| REMOTA | PASS | se verificaron `vento-shell`, `vento-pulso` y el Supabase remoto vigente: continuidad, topología, 04A, rutas, componentes, acciones, blobs, RLS, RPC, índices e identidad de dispositivo compartido aplicables |
+| OPERATIVA | NOT_EXECUTED | no se identificó un cliente real, no se otorgaron puntos, no se validó una redención y no se probó hardware |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; sin materialización física propia |
+
+La evidencia REMOTA valida el inventario documental del snapshot; no certifica el flujo E2E.
+
+---
+
+#### 68. Criterios de aceptación
+
+- [ ] Se inventarían exactamente dos identidades de ruta para el escáner.
+- [ ] `/` y `/scanner` permanecen distintas.
+- [ ] Ambas rutas conservan `ScannerPage` como componente principal.
+- [ ] Se registra `pos.main` únicamente como permiso observado.
+- [ ] Se registran exactamente dos modos runtime: identificación y redención.
+- [ ] Se inventaría la identificación por Vento ID/UUID y la aceptación adicional de JSON por la acción actual.
+- [ ] Se inventaría la proyección `user_id/full_name/email/loyalty_points`.
+- [ ] Se distingue identificación de acumulación y redención.
+- [ ] Se documenta el cálculo local de puntos como estimación.
+- [ ] Se documenta la referencia externa generada con timestamp y aleatoriedad.
+- [ ] Se documenta el índice único remoto por sede + referencia.
+- [ ] Se documenta el contrato server-side de acumulación.
+- [ ] Se conserva ownership de ledger en PASS.
+- [ ] Se documenta el orden actual lookup de redención → guard PULSO.
+- [ ] Se documenta la transición `pending` → `validated`.
+- [ ] Se documenta que la UI actual no suministra `orderId`.
+- [ ] Se documenta que no existe columna dedicada de expiración en la redención inspeccionada.
+- [ ] Se documentan las políticas RLS específicas y las políticas permisivas generales de staff.
+- [ ] Se documenta la firma condicional por dispositivo compartido.
+- [ ] Se documenta el uso de `p_actor_employee_id = null` desde el consumidor.
+- [ ] Se documenta el uso posterior de ese parámetro en la función remota y su efecto fail-closed observado.
+- [ ] Se documenta la limpieza incompleta de `sharedActorPin`.
+- [ ] `CameraQRScanner` queda dormante y no se cuenta como capacidad runtime.
+- [ ] `decodeQRCode` queda como helper sin consumidor observado.
+- [ ] Todo hallazgo material queda asignado a propietario y condición de salida.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 69. Límites
+
+Esta tarea no:
+
+- fusiona `/` y `/scanner`;
+- crea redirects;
+- activa cámara;
+- modifica `ScannerPage`;
+- modifica `QRScanner`;
+- modifica Server Actions;
+- cambia `pos.main`;
+- crea permisos nuevos;
+- cambia la proyección de cliente;
+- modifica RLS;
+- modifica RPC;
+- modifica funciones `SECURITY DEFINER`;
+- corrige la firma de dispositivo compartido;
+- cambia PIN;
+- cambia reglas de puntos;
+- cambia ledger;
+- cambia saldo;
+- cambia idempotencia;
+- cambia redenciones;
+- agrega expiración;
+- vincula redenciones a pedidos;
+- modifica PASS;
+- modifica Supabase remoto;
+- crea migraciones;
+- ejecuta acumulaciones o canjes;
+- modifica el Registro 04A;
+- implementa tareas posteriores.
+
+---
+
+#### 70. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-003 — Inventariar salón`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-004 — Inventariar escáner`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-005 — Inventariar importaciones`
 ### [ ] PULSO-AUTH-005 — Inventariar importaciones
 ### [ ] PULSO-AUTH-006 — Definir permisos de cajero
 ### [ ] PULSO-AUTH-007 — Definir permisos de supervisor
