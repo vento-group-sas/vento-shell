@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1352** |
+| Tareas aprobadas | **1353** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **244** |
+| Tareas no iniciadas | **243** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **84.71% (1352/1596)** |
+| Porcentaje de completamiento | **84.77% (1353/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-UX-016 — Validar el prototipo con compras y recepción** |
-| Tarea actual | **PULSO-UX-001 — Inventariar procesos de venta, caja y salón** |
+| Última tarea aprobada | **PULSO-UX-001 — Inventariar procesos de venta, caja y salón** |
+| Tarea actual | **OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede** |
+| Siguiente tarea | **PULSO-AUTH-001 — Inventariar vistas POS** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 0 de 38 aprobadas; PULSO-UX-001 pendiente** |
+| Progreso del bloque | **BLOQUE N: 1 de 38 aprobadas; OPS-POS-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-UX-001** |
+| Carril documental | **ACTIVO — OPS-POS-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-UX-016` — Validar el prototipo con compras y recepción |
-| Tarea actual | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón — **NO INICIADA** |
-| Siguiente tarea | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede |
+| Última aprobada | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón |
+| Tarea actual | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede — **NO INICIADA** |
+| Siguiente tarea | `PULSO-AUTH-001` — Inventariar vistas POS |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 0 DE 38 APROBADAS — ACTUAL PULSO-UX-001** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 1 DE 38 APROBADAS — ACTUAL OPS-POS-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-UX-016 — Validar el prototipo con compras y recepción
-        ↓
-TAREA ACTUAL
 PULSO-UX-001 — Inventariar procesos de venta, caja y salón
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-AUTH-001 — Inventariar vistas POS
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 0 de 38 tareas aprobadas
+BLOQUE N — 1 de 38 tareas aprobadas
 ```

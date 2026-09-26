@@ -5,16 +5,11 @@
   "sequence_id": "PHASE-07-PULSO",
   "block_code": "BLOQUE N",
   "block_title": "PULSO",
-  "previous_task_id": "ORIGO-UX-016",
+  "previous_task_id": "PULSO-UX-001",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "NUMERA-AUD-001",
   "handoff_sequence_id": "PHASE-08-NUMERA",
   "segments": [
-    {
-      "prefix": "PULSO-UX",
-      "from": 1,
-      "to": 1
-    },
     {
       "prefix": "OPS-POS",
       "from": 1,
@@ -33,12 +28,12 @@
   ],
   "block_progress": {
     "total_tasks": 38,
-    "approved_tasks": 0,
-    "pending_tasks": 38
+    "approved_tasks": 1,
+    "pending_tasks": 37
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 244,
+    "pending_tasks": 243,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 26
