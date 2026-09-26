@@ -14980,7 +14980,897 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`
-### [ ] PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
+### ✅ PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-012 — Integrar dispositivos POS compartidos
+**Tarea siguiente:** PULSO-AUTH-014 — Mantener configuración administrativa separada
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — atribución humana durable de las mutaciones sensibles de PULSO, separando principal técnico, actor ejecutor, creador, asignado, aprobador, dispositivo, turno, contexto y resultado sin convertir el registro de actor en autoridad
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `PULSO-AUTH-013::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de atribución humana de PULSO para que toda acción sensible que requiera responsabilidad de una persona conserve de forma durable, consultable y correlacionable quién la ejecutó realmente, sin confundir al trabajador con el principal técnico autenticado, el dispositivo compartido, el creador original del recurso, el trabajador asignado, el supervisor que aprueba, el cliente afectado ni el usuario que ejecuta una integración técnica.
+
+La regla objetivo es:
+
+```text
+ACCION SENSIBLE PULSO
++
+ACTOR HUMANO EFECTIVO RESUELTO Y AUTORIZADO
++
+CONTEXTO LABORAL VIGENTE
++
+DISPOSITIVO / PRINCIPAL TECNICO CUANDO APLIQUE
++
+RECURSO Y RESULTADO
++
+CORRELACION DURABLE
+=
+ATRIBUCION AUDITABLE
+```
+
+Registrar al actor no concede permiso. La autorización debe existir antes del efecto y la atribución debe conservar quién ejecutó el efecto que finalmente ocurrió.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-012
+
+`PULSO-AUTH-012` entrega como invariantes:
+
+- principal técnico y trabajador efectivo son identidades distintas;
+- la firma/PIN identifica al humano pero no concede permiso;
+- el dispositivo solo restringe y nunca amplía autoridad;
+- la sede del actor permanece gobernada por `PULSO-AUTH-011`;
+- una firma shared-device debe correlacionar actor, dispositivo, acción y target;
+- la RPC observada `sign_shared_device_action` resuelve `v_actor`, pero el camino consumido por PULSO conserva una brecha al reutilizar `p_actor_employee_id = null` en verificaciones posteriores;
+- acumulación y redención ya transportan metadata de actor/firma de forma parcial;
+- otras mutaciones sensibles no demuestran atribución humana equivalente.
+
+`013` consume esa identidad humana cuando exista y define su persistencia sistemática. No reabre el contrato de autorización ni el techo del dispositivo.
+
+---
+
+#### 3. Handoffs funcionales previos
+
+Los inventarios y tareas PULSO previos entregan además:
+
+- `/salon` puede crear llamados manuales sin `created_by` obligatorio;
+- la acción visual `Tomar` cambia estado a `acknowledged` pero no persiste `assigned_to`;
+- resolución del llamado puede ejecutarse mediante mutación directa del navegador sin un campo dedicado de actor ejecutor;
+- `auth.uid()` aparece como identidad técnica en varias mutaciones;
+- acumulación de loyalty persiste `awarded_by = auth.uid()` en el camino remoto observado;
+- publicación de ventas importadas persiste `inventory_movements.created_by = auth.uid()` y `inventoryPostedBy = auth.uid()` en metadata;
+- el batch de importación persiste `imported_by = user.id`;
+- scanner shared-device puede resolver `actor_employee_id` y `actor_shift_id` mediante firma;
+- salón conserva `created_by`, `assigned_to` y `device_id` como conceptos distintos.
+
+El hecho de que exista un campo `*_by` no demuestra que represente al trabajador ejecutor correcto.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente de `PULSO-AUTH-013` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = PULSO-AUTH-013::<implementation_unit_id>
+```
+
+El marcador global define el contrato reusable de atribución.
+
+No crea una instancia física, no modifica `vento-pulso` y no modifica Supabase.
+
+---
+
+#### 5. Gate físico posterior
+
+Una materialización futura solo es admisible cuando exista:
+
+```text
+implementation_unit_id valido
++
+package_id propietario aplicable
++
+E5-GATE-008::<package_id> = PASS
++
+autorizacion fisica explicita
+```
+
+La existencia de columnas actuales como `created_by`, `assigned_to`, `awarded_by` o `imported_by` no autoriza una migración ni permite reinterpretarlas automáticamente.
+
+---
+
+#### 6. Identidades obligatoriamente separadas
+
+PULSO conserva como identidades distintas:
+
+```text
+AUTH TECHNICAL PRINCIPAL
+EMPLOYEE ACTOR
+SHARED DEVICE
+ACTOR SIGNATURE
+SHIFT
+CHECKIN
+SITE
+AREA
+RESOURCE
+CUSTOMER
+CREATOR
+ASSIGNEE
+APPROVER
+EXECUTOR
+INTEGRATION / SYSTEM ACTOR
+```
+
+Quedan prohibidas equivalencias implícitas como:
+
+```text
+auth.uid() = trabajador ejecutor
+created_by = ejecutor actual
+assigned_to = quien ejecuto la ultima transicion
+device_id = actor
+signature_id = permiso
+customer_id = actor laboral
+```
+
+---
+
+#### 7. Actor ejecutor
+
+`actor_executor_employee_id` es el concepto canónico de esta tarea: el empleado efectivo que realiza una acción empresarial que requiere responsabilidad humana.
+
+El nombre físico final de columnas, eventos, metadata o contratos se decide en la unidad propietaria; esta tarea fija la semántica, no impone una columna global nueva.
+
+El actor ejecutor debe:
+
+- resolver a una identidad laboral canónica;
+- estar vigente para el contexto requerido por la acción;
+- ser el mismo actor que fue autorizado para producir el efecto;
+- permanecer correlacionable con el resultado durable;
+- no derivarse retrospectivamente desde un rol, dispositivo o usuario técnico.
+
+---
+
+#### 8. Creador, asignado y ejecutor
+
+Se conserva:
+
+```text
+CREADOR
+!=
+ASIGNADO
+!=
+EJECUTOR
+```
+
+Un recurso puede haber sido creado por A, asignado a B y resuelto por C.
+
+PULSO no sobrescribe historia para hacer coincidir esos conceptos.
+
+Cuando la semántica empresarial requiera asignación, el cambio de asignado se registra como hecho propio. Cuando requiera ejecución, el ejecutor se registra en el hecho o efecto correspondiente.
+
+---
+
+#### 9. Aprobador y ejecutor
+
+Una operación con aprobación adicional conserva al menos:
+
+```text
+ACTOR EJECUTOR
++
+ACTOR APROBADOR / SUPERVISOR
+```
+
+si ambos existen.
+
+La aprobación no reemplaza al trabajador que ejecutó la acción y el ejecutor no suplanta al aprobador.
+
+La reautenticación fuerte o autorización de supervisor permanece gobernada por sus contratos propietarios.
+
+---
+
+#### 10. Principal técnico
+
+El principal técnico identifica la sesión o identidad técnica que realizó la llamada.
+
+Puede ser útil para auditoría y correlación, pero no prueba automáticamente quién realizó la acción humana.
+
+Por tanto:
+
+```text
+session_user_id / auth.uid()
+```
+
+se conserva como principal técnico cuando corresponda y nunca se renombra semánticamente como empleado ejecutor sin resolución explícita.
+
+---
+
+#### 11. Dispositivo compartido
+
+En una terminal compartida la atribución mínima separa:
+
+```text
+principal tecnico
+shared_device_id
+actor_employee_id
+actor_shift_id
+signature_id
+accion
+target
+resultado
+```
+
+`PULSO-AUTH-012` gobierna la elegibilidad y restricciones del dispositivo.
+
+`PULSO-AUTH-013` gobierna que el trabajador efectivo de esa acción quede durablemente asociado al efecto empresarial cuando la acción lo requiera.
+
+---
+
+#### 12. Sesión personal
+
+En una sesión personal no se exige artificialmente una firma de dispositivo compartido.
+
+Sin embargo, el actor humano tampoco se presume por comodidad si el principal autenticado no está correlacionado canónicamente con un empleado elegible para la operación.
+
+La unidad propietaria debe consumir el resolver laboral canónico aplicable y fallar cerrado si la acción exige actor humano y este no puede resolverse de manera inequívoca.
+
+---
+
+#### 13. Fuente del actor
+
+El actor ejecutor se obtiene únicamente de una fuente confiable del servidor, según el tipo de sesión:
+
+- actor laboral resuelto desde sesión personal canónica;
+- actor firmado/resuelto en shared device;
+- actor explicitamente seleccionado solo cuando el servidor valida identidad, elegibilidad y autorización;
+- actor de sistema únicamente en procesos realmente automáticos, sin falsear una acción humana.
+
+No se acepta como autoridad un `employee_id` libre enviado por formulario, query string, localStorage, metadata cliente o payload sin revalidación.
+
+---
+
+#### 14. Contexto laboral
+
+Cuando la capacidad requiera contexto `T` o `T+C`, el actor persistido debe corresponder al mismo contexto laboral utilizado para autorizar la acción.
+
+La evidencia mínima correlacionable incluye, según aplique:
+
+```text
+employee_id
+shift_id
+checkin_id
+site_id
+area_id
+```
+
+No se persiste una sede elegida por cliente como si fuera la sede del actor.
+
+---
+
+#### 15. Momento de resolución
+
+El actor se resuelve y autoriza antes del efecto sensible.
+
+No es conforme:
+
+```text
+MUTAR
+->
+INTENTAR DESCUBRIR QUIEN FUE
+```
+
+La secuencia objetivo es:
+
+```text
+RESOLVER ACTOR
+->
+RESOLVER CONTEXTO
+->
+AUTORIZAR
+->
+EJECUTAR
+->
+PERSISTIR / CORRELACIONAR RESULTADO
+```
+
+---
+
+#### 16. Atomicidad y correlación
+
+Cuando actor y efecto formen parte de la misma unidad transaccional, la persistencia debe ser atómica.
+
+Cuando la arquitectura obligue a adjuntar la atribución después del efecto, el contrato debe demostrar una estrategia durable y reconciliable que no declare éxito definitivo dejando el efecto huérfano de actor.
+
+Un `console.error` posterior al efecto no satisface por sí solo la atribución durable.
+
+---
+
+#### 17. Target estable
+
+La atribución debe referenciar un target empresarial inequívoco cuando exista:
+
+```text
+target_table / aggregate_type
+target_id
+action_code
+correlation_id / idempotency_key cuando aplique
+```
+
+Una firma o evento sin target puede existir durante una preparación legítima, pero antes de certificar el efecto debe quedar unido al resultado correcto o reconciliado conforme al contrato propietario.
+
+---
+
+#### 18. Acción nombrada
+
+La atribución se registra por acción concreta.
+
+No se acepta una etiqueta genérica como `pos.main` para sustituir acciones distintas de:
+
+- crear;
+- reconocer;
+- asignar;
+- resolver;
+- cancelar;
+- cobrar;
+- acumular;
+- redimir;
+- importar;
+- publicar;
+- corregir;
+- cerrar;
+- reabrir;
+- aprobar.
+
+El catálogo exacto pertenece a las PermissionKeys y contratos de cada capacidad.
+
+---
+
+#### 19. Estado AS-IS de salón
+
+La superficie observada `src/modules/salon/components/salon-page.tsx` ejecuta mutaciones directas del navegador sobre `pos_table_service_calls`.
+
+Actualmente:
+
+- `createManualCall` no envía `created_by`;
+- `updateCallStatus(..., "acknowledged")` escribe estado y `acknowledged_at`;
+- `updateCallStatus(..., "resolved")` escribe estado y `resolved_at`;
+- ninguna de esas actualizaciones persiste un actor ejecutor dedicado;
+- `Tomar` no actualiza `assigned_to`.
+
+Por tanto, la UI puede producir un cambio visible sin atribución humana durable suficiente.
+
+---
+
+#### 20. Contrato de llamado manual
+
+La creación manual de un llamado debe distinguir:
+
+```text
+created_by = creador humano del llamado, cuando exista
+assigned_to = responsable asignado, si existe
+executor = actor que ejecuta cada transición posterior
+```
+
+Si el llamado se genera automáticamente desde otro origen, `created_by` humano puede no aplicar, pero la fuente automática debe quedar explícita y no falsearse con un empleado.
+
+---
+
+#### 21. Contrato de `Tomar`
+
+La etiqueta `Tomar` no puede permanecer semánticamente ambigua.
+
+La materialización futura deberá optar por una semántica consistente con el proceso aprobado:
+
+```text
+ACKNOWLEDGE ONLY
+```
+
+o
+
+```text
+ASSIGN TO SELF + ACKNOWLEDGE
+```
+
+Si asigna, debe persistir `assigned_to` con el actor efectivo y conservar el hecho de asignación.
+
+Si solo reconoce, la UI no debe implicar una asignación inexistente.
+
+La decisión visual final pertenece a la superficie propietaria; esta tarea exige que datos y semántica coincidan.
+
+---
+
+#### 22. Resolución y cancelación de llamados
+
+Resolver o cancelar un llamado sensible debe conservar el actor que ejecuta la transición.
+
+No se deriva el ejecutor desde:
+
+- quien creó el llamado;
+- quien esté asignado actualmente;
+- el principal técnico;
+- el dispositivo;
+- el último actor que interactuó con la mesa.
+
+Cada transición conserva su actor propio cuando la responsabilidad humana sea exigible.
+
+---
+
+#### 23. Estado AS-IS de acumulación loyalty
+
+El flujo observado de acumulación shared-device:
+
+1. solicita firma mediante `requireSharedDeviceActorSignature`;
+2. recibe `signatureId`, `actorEmployeeId` y `actorShiftId`;
+3. envía esos valores en metadata hacia `awardExternalLoyaltyPoints`;
+4. la función remota observada persiste `awarded_by = auth.uid()` en `loyalty_external_sales`;
+5. intenta adjuntar después la firma al `transaction_id`.
+
+Por tanto, existe evidencia parcial del actor humano, pero el campo `awarded_by` observado representa al principal técnico, no necesariamente al trabajador efectivo.
+
+---
+
+#### 24. Contrato de acumulación loyalty
+
+La acumulación debe conservar de forma durable y correlacionable:
+
+```text
+customer
+purchase / external_ref
+site
+actor_employee_id
+actor_shift_id cuando aplique
+shared_device_id cuando aplique
+signature_id cuando aplique
+technical_principal
+loyalty_transaction_id
+resultado
+```
+
+No se exige que todos los datos residan en una sola tabla, pero la reconstrucción debe ser determinista.
+
+---
+
+#### 25. Estado AS-IS de redención
+
+El flujo observado de redención shared-device:
+
+- resuelve primero la redención;
+- obtiene firma de actor para `pos.loyalty.validate_redemption`;
+- ejecuta `markRedemptionAsUsed`;
+- adjunta después la firma al target de redención;
+- registra un error de attachment sin convertirlo necesariamente en fallo del efecto ya ejecutado.
+
+La atribución humana es parcial mientras un resultado exitoso pueda quedar sin vínculo durable demostrado con el actor efectivo.
+
+---
+
+#### 26. Contrato de redención
+
+La redención debe preservar:
+
+```text
+redemption_id
+customer
+benefit / reward
+actor_employee_id
+actor_shift_id cuando aplique
+shared_device_id cuando aplique
+signature_id cuando aplique
+technical_principal
+site / resource context
+order_id cuando aplique
+consumption result
+```
+
+El actor que consume el beneficio no se deriva del cliente propietario de la redención.
+
+---
+
+#### 27. Estado AS-IS de importaciones
+
+El consumidor observado conserva tres familias con atribución parcial:
+
+```text
+saveMakosMapping
+importDailySales
+postDailySalesImport
+```
+
+En `importDailySales`, el batch guarda `imported_by = user.id`.
+
+En `pulso_post_daily_sales_import`, los movimientos de inventario usan `created_by = auth.uid()` y el batch agrega `inventoryPostedBy = auth.uid()` en metadata.
+
+Eso registra identidad técnica autenticada, pero no demuestra al empleado ejecutor cuando el flujo corre desde dispositivo compartido.
+
+---
+
+#### 28. Frontera con PULSO-AUTH-014
+
+`PULSO-AUTH-013` no reclasifica una acción como operacional o administrativa.
+
+`PULSO-AUTH-014` conserva la responsabilidad de separar configuración/importación administrativa del carril operativo ordinario.
+
+Cuando una acción administrativa requiera actor humano, `013` aporta únicamente la semántica de atribución; no concede acceso ni cambia su clasificación.
+
+---
+
+#### 29. Procesos automáticos
+
+Un proceso verdaderamente automático puede carecer de ejecutor humano inmediato.
+
+En ese caso debe conservar:
+
+```text
+SYSTEM / SERVICE PRINCIPAL
+TRIGGER ORIGIN
+REQUESTING HUMAN cuando exista
+SCHEDULE / EVENT cuando aplique
+RESULT
+```
+
+No se inventa un empleado ficticio para llenar una columna.
+
+Si una persona dispara manualmente una automatización sensible, el iniciador humano y el ejecutor técnico permanecen separados.
+
+---
+
+#### 30. Reintentos e idempotencia
+
+Un reintento no debe cambiar silenciosamente el actor histórico de un efecto ya comprometido.
+
+Para una misma identidad idempotente:
+
+- replay equivalente recupera el resultado y su atribución original;
+- payload o actor incompatible produce conflicto según el contrato propietario;
+- retry técnico no reescribe el actor con quien ejecuta la recuperación;
+- reconciliación conserva actor original y actor de reconciliación como hechos distintos cuando ambos sean relevantes.
+
+---
+
+#### 31. Cambio de actor
+
+En shared device, un cambio A→B invalida cualquier estado sensible que pueda provocar que una nueva acción de B quede atribuida a A.
+
+No se reutilizan automáticamente:
+
+- firma;
+- actor session;
+- metadata de actor;
+- selección local;
+- aprobación;
+- contexto laboral;
+- idempotency context.
+
+Cada nueva acción usa el actor efectivo vigente conforme a `PULSO-AUTH-012`.
+
+---
+
+#### 32. Offline y diferidos
+
+Una operación diferida conserva quién originó la intención y quién ejecutó materialmente el efecto si son distintos.
+
+Al reconectar no se sustituye al actor original por el principal técnico que sincroniza.
+
+Cuando la política exija autorización fresca antes del efecto, el actor/contexto deben revalidarse y la auditoría conserva ambas fases sin fusionarlas.
+
+---
+
+#### 33. Auditoría mínima reconstruible
+
+Para una acción sensible PULSO debe poder reconstruirse, según aplique:
+
+```text
+correlation_id
+action_code
+technical_principal
+actor_employee_id
+actor_shift_id
+checkin_id
+site_id
+area_id
+shared_device_id
+signature_id
+resource_type
+resource_id
+permission decision reference
+before/after or transition
+result
+occurred_at
+```
+
+No se registran secretos como PIN, token, cookie o credenciales.
+
+---
+
+#### 34. Privacidad y minimización
+
+La trazabilidad conserva identificadores necesarios para responsabilidad y reconstrucción.
+
+No exige copiar nombre, correo, PIN o datos personales redundantes a cada tabla de dominio cuando un identificador canónico estable es suficiente.
+
+La presentación humana del actor se resuelve al consultar fuentes autorizadas.
+
+---
+
+#### 35. Inmutabilidad histórica
+
+Una corrección posterior de actor no sobrescribe silenciosamente el hecho original.
+
+Si se detecta una atribución incorrecta, la corrección debe ser auditable y conservar:
+
+- valor original;
+- valor corregido;
+- actor que corrige;
+- motivo;
+- instante;
+- referencia a autorización cuando corresponda.
+
+La estrategia física pertenece a la unidad propietaria.
+
+---
+
+#### 36. Fallo de atribución
+
+Cuando una acción exige actor humano y no puede resolverse inequívocamente:
+
+```text
+ACTOR REQUIRED
++
+ACTOR UNRESOLVED / AMBIGUOUS / STALE
+=
+NO NEW BUSINESS EFFECT
+```
+
+No se completa el actor con `auth.uid()`, `device_id`, último empleado conocido, `assigned_to` o actor anterior.
+
+---
+
+#### 37. Resultado desconocido
+
+Ante timeout o resultado desconocido, la recuperación consulta el hecho durable antes de repetir.
+
+Si el efecto existe, recupera también su actor original.
+
+Si el efecto no existe, una nueva ejecución debe volver a resolver y autorizar actor conforme a la política aplicable.
+
+---
+
+#### 38. Matriz de atribución por familia
+
+| Familia | Actor humano esperado | Principal técnico separado | Evidencia durable objetivo |
+| --- | --- | --- | --- |
+| salón: crear llamado manual | creador efectivo | sí | creador + recurso + acción + tiempo |
+| salón: reconocer | ejecutor efectivo | sí | actor de transición + llamado + resultado |
+| salón: asignar | actor que asigna + nuevo asignado | sí | evento de asignación y estado resultante |
+| salón: resolver/cancelar | ejecutor efectivo | sí | actor de transición + llamado + resultado |
+| loyalty: acumular | trabajador efectivo | sí | actor + firma/device si aplica + transacción |
+| loyalty: redimir | trabajador efectivo | sí | actor + firma/device si aplica + redención consumida |
+| importación: cargar | operador que inicia, cuando sea humana | sí | actor/iniciador + batch |
+| importación: publicar | actor autorizado cuando sea humana | sí | actor + batch + movimientos/resultados |
+| proceso automático | no forzado | sí | servicio + trigger + iniciador humano si existe |
+
+La matriz define semántica; no autoriza columnas ni migraciones desde este marcador global.
+
+---
+
+#### 39. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `createManualCall` no persiste `created_by`. | llamado manual puede quedar sin creador humano auditable | `PULSO-AUTH-013::<implementation_unit_id>` + superficie salón | creación manual correlaciona actor efectivo de forma server-side |
+| `Tomar` no persiste `assigned_to`. | UI puede sugerir asignación inexistente | `PULSO-AUTH-013` + diseño de salón | semántica ACK-only o assign+ACK queda explícita y consistente |
+| reconocer/resolver se ejecuta desde navegador con patch directo. | transición sensible puede quedar sin actor ejecutor durable | unidad de salón + `PULSO-AUTH-013::<implementation_unit_id>` | transición server-side correlaciona actor autorizado y resultado |
+| `awarded_by = auth.uid()` en acumulación remota. | principal técnico puede ocupar un campo interpretado como humano | unidad loyalty + `PULSO-AUTH-013::<implementation_unit_id>` | principal técnico y empleado efectivo quedan separados y reconstruibles |
+| attachment de firma de acumulación ocurre después del efecto. | efecto puede sobrevivir sin vínculo durable al actor | `PULSO-AUTH-009/012/013` + unidad propietaria | éxito certificado solo con atribución durable o reconciliable |
+| redención adjunta firma después del consumo. | redención consumida puede quedar sin correlación humana demostrada | `PULSO-AUTH-010/012/013` + unidad propietaria | consumo y actor quedan unidos durablemente o mediante reconciliación gobernada |
+| `imported_by = user.id`. | lote conserva usuario técnico, no necesariamente empleado ejecutor | `PULSO-AUTH-013/014` | iniciador humano y principal técnico se distinguen según clasificación de la acción |
+| `inventory_movements.created_by = auth.uid()` y `inventoryPostedBy = auth.uid()`. | publicación manual desde shared device puede atribuirse al principal del terminal | `PULSO-AUTH-013/014/015` + unidad propietaria | publicación conserva actor humano autorizado o actor de sistema explícito |
+| firma shared-device puede resolver `v_actor`, pero ruta observada reutiliza `p_actor_employee_id = null`. | actor firmado no llega de forma conforme a todas las comprobaciones posteriores | fundación AUTH + `PULSO-AUTH-012/013` | actor resuelto se propaga end-to-end sin bypass ni pérdida de identidad |
+| campos `created_by`, `assigned_to`, `awarded_by`, `imported_by` tienen semánticas distintas. | homologarlos por nombre produciría auditoría falsa | `PULSO-AUTH-013` | cada campo/evento conserva definición única y mapeo explícito |
+
+No queda un hallazgo de atribución detectado sin propietario y condición de salida.
+
+---
+
+#### 40. Frontera con PULSO-AUTH-014..016
+
+| Tarea | Frontera preservada |
+| --- | --- |
+| `PULSO-AUTH-014` | clasifica y separa configuración/importación administrativa; `013` no convierte atribución en permiso administrativo |
+| `PULSO-AUTH-015` | materializa paquetes compartidos, PermissionKeys, helpers, contratos de datos y hardening donde corresponda |
+| `PULSO-AUTH-016` | certifica E2E que actor, autorización, recurso, concurrencia, retry, shared device y resultado permanecen coherentes |
+| `PULSO-AUTH-012` | conserva elegibilidad, restricciones y firma del dispositivo; `013` consume al actor resultante sin redefinir el device |
+
+`013` no absorbe esas responsabilidades.
+
+---
+
+#### 41. Supabase y ownership
+
+Toda modificación futura de tablas, columnas, RPC, RLS, grants, funciones, triggers, Auth, Edge Functions, datos o configuración de Supabase requerida por este contrato pertenece a `vento-group-sas/vento-shell` y debe crearse, versionarse, documentarse y ejecutarse desde ese repositorio.
+
+Esta tarea no crea migraciones ni modifica Supabase remoto.
+
+---
+
+#### 42. Compatibilidad y migración
+
+La materialización futura no reinterpretará silenciosamente datos históricos.
+
+En particular:
+
+- `auth.uid()` histórico no se convertirá retroactivamente en empleado sin evidencia;
+- `created_by` no se copiará a ejecutor para eventos posteriores;
+- `assigned_to` no se asumirá como ejecutor;
+- metadata existente se conserva con su significado original;
+- nuevas estructuras pueden convivir temporalmente con campos legacy mediante adaptadores explícitos;
+- cualquier backfill requiere evidencia suficiente y rollback propio.
+
+---
+
+#### 43. Contrato de consumidores
+
+Los consumidores PULSO deberán recibir una identidad de actor ya resuelta por la capa apropiada o una señal explícita de que no aplica actor humano.
+
+No deberán inventar identidad desde:
+
+- UI local;
+- dispositivo visible;
+- rol;
+- permiso;
+- site seleccionado;
+- cliente;
+- target;
+- actor anterior.
+
+El contrato compartido final puede residir en paquetes de `vento-shell` conforme a `PULSO-AUTH-015`.
+
+---
+
+#### 44. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+Justificación: la identidad del actor, la separación principal/dispositivo/trabajador, la correlación de actor-contexto-recurso-resultado, la invalidación por cambio de actor, la firma en shared device, la atribución de loyalty, la trazabilidad de acciones PULSO y la identidad estable de integraciones ya poseen cobertura vigente. Esta tarea especializa esa cobertura sobre persistencia y reconstrucción del trabajador ejecutor sin crear una obligación verificable nueva.
+
+---
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A principalmente:
+
+- `TREQ-AUTH-011` para separación e intersección entre dispositivo, principal y trabajador identificado;
+- `TREQ-AUTH-013` para impedir bypass por UI, API o RPC y exigir revalidación server-side;
+- `TREQ-AUTH-014` para invalidar contexto y decisiones stale ante cambio de actor o contexto;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones;
+- `TREQ-AUTH-145` y `TREQ-AUTH-267` para invalidación frente a cambios de identidad, actor, turno, sitio, área o dispositivo;
+- `TREQ-AUTH-269`, `TREQ-AUTH-271` y `TREQ-AUTH-273` para shared device fail-closed, resolución determinista y actor session/política de actor;
+- `TREQ-AUTH-278` para reconciliar actor sessions, fallbacks legacy y contratos de dispositivo;
+- `TREQ-PULSO-006` para acciones de caja, pagos, anulaciones, reversos y cierre como acciones nombradas y auditables;
+- `TREQ-PULSO-014`, `TREQ-PULSO-015`, `TREQ-PULSO-016` y `TREQ-PULSO-018` para acceso/contexto PULSO, territorio, pedidos y salón segregado por actor/estado;
+- `TREQ-PULSO-026` para retirar `pulso.pos.main` como suficiencia contractual;
+- `TREQ-PASS-025` para acumulación con actor, dispositivo y referencia estable;
+- `TREQ-PASS-027` para redención válida y de uso único;
+- `TREQ-PASS-029` para firma del trabajador real en dispositivo compartido sin herencia de privilegios;
+- `TREQ-PASS-030` para PIN/firma como secreto efímero;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-112`, `TREQ-INTEGRATION-113`, `TREQ-INTEGRATION-120` y `TREQ-INTEGRATION-128` para identidad estable, trazabilidad, retry y revalidación de efectos entre capas.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 46. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue insertado en un checkout del usuario ni sometido allí a formateador, quality, delivery, topología y batería global. |
+| REMOTA | PASS | Se verificaron continuidad y owner de `vento-shell`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, handoffs PULSO, consumidor `vento-pulso` vigente y estado read-only de las funciones/tablas remotas relevantes para firma, loyalty e importación. |
+| OPERATIVA | NOT_EXECUTED | No se crearon llamados, acumulaciones, redenciones, importaciones ni movimientos reales; no se ejecutaron pruebas E2E de actor. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `PULSO-AUTH-013::<implementation_unit_id>`. |
+
+---
+
+#### 47. Criterios de aceptación
+
+- [ ] Principal técnico y trabajador ejecutor permanecen separados.
+- [ ] Dispositivo, firma, actor, turno, check-in, cliente y recurso permanecen separados.
+- [ ] Registrar actor no concede autoridad.
+- [ ] El actor persistido es el mismo actor autorizado para el efecto.
+- [ ] Un `employee_id` cliente no se acepta sin resolución/revalidación server-side.
+- [ ] Creador, asignado, aprobador y ejecutor no se fusionan.
+- [ ] `auth.uid()` no se interpreta automáticamente como empleado ejecutor.
+- [ ] Salón manual conserva creador humano cuando aplique.
+- [ ] `Tomar` queda semánticamente consistente con ACK-only o assign+ACK.
+- [ ] Reconocimiento, asignación, resolución y cancelación conservan actor cuando corresponda.
+- [ ] Acumulación correlaciona trabajador efectivo con transacción y principal técnico.
+- [ ] Redención correlaciona trabajador efectivo con consumo y principal técnico.
+- [ ] Un attachment posterior no permite certificar éxito dejando actor huérfano sin reconciliación.
+- [ ] Importación conserva iniciador humano cuando la acción lo requiera.
+- [ ] Publicación de inventario distingue actor humano de principal técnico o proceso automático.
+- [ ] Procesos automáticos no inventan empleados ficticios.
+- [ ] Reintentos conservan atribución original del efecto.
+- [ ] Cambio A→B invalida estado sensible del actor anterior.
+- [ ] Offline/diferidos distinguen originador y ejecutor cuando sean diferentes.
+- [ ] Auditoría puede reconstruir acción, actor, principal, contexto, recurso y resultado.
+- [ ] PIN, token y secretos no se persisten en auditoría funcional.
+- [ ] Correcciones de atribución son auditables y no destructivas.
+- [ ] Actor irresoluble o ambiguo produce cero nuevo efecto cuando la acción exige humano.
+- [ ] Datos legacy no se reinterpretan sin evidencia.
+- [ ] `PULSO-AUTH-014` conserva separación administrativa.
+- [ ] `PULSO-AUTH-015` conserva materialización de contratos compartidos y permisos.
+- [ ] `PULSO-AUTH-016` conserva certificación E2E.
+- [ ] La topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 48. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- modifica `src/modules/salon/components/salon-page.tsx`;
+- modifica `award-loyalty.action.ts`;
+- modifica `validate-redemption.action.ts`;
+- modifica `shared-device-signature.ts`;
+- modifica `sign_shared_device_action`;
+- modifica `attach_shared_device_action_signature_target`;
+- modifica `pulso_post_daily_sales_import`;
+- modifica `award_loyalty_points_external`;
+- crea columnas de actor;
+- crea tablas de auditoría;
+- crea eventos;
+- cambia RLS;
+- cambia RPC;
+- cambia Server Actions;
+- cambia PermissionKeys;
+- cambia `pulso.pos.main` físicamente;
+- cambia turno o check-in;
+- cambia dispositivos;
+- cambia PIN;
+- cambia loyalty;
+- cambia salón;
+- cambia importaciones;
+- reclasifica acciones administrativas;
+- ejecuta backfills;
+- reinterpreta datos históricos;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- modifica el Registro 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5.
+
+---
+
+#### 49. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-012 — Integrar dispositivos POS compartidos`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-014 — Mantener configuración administrativa separada`
 ### [ ] PULSO-AUTH-014 — Mantener configuración administrativa separada
 ### [ ] PULSO-AUTH-015 — Migrar a paquetes de vento-shell
 ### [ ] PULSO-AUTH-016 — Ejecutar pruebas integrales
