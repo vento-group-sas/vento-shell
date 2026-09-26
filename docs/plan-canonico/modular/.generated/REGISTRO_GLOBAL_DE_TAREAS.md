@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1376** |
+| Aprobadas | **1377** |
 | En propuesta | **0** |
-| No iniciadas | **220** |
+| No iniciadas | **219** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **86.22% (1376/1596)** |
+| Porcentaje de completamiento | **86.28% (1377/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **220** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1277** |
+| ⏸ NO_EVALUADA | **219** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1278** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-UX-007` — Simplificar creación de venta | ✅ APROBADA |
-| Tarea actual | `PULSO-UX-008` — Simplificar cobro y medios de pago | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-UX-009` — Separar anulación, devolución y reembolso | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-UX-008` — Simplificar cobro y medios de pago | ✅ APROBADA |
+| Tarea actual | `PULSO-UX-009` — Separar anulación, devolución y reembolso | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-UX-010` — Diseñar apertura y cierre de caja | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1138,7 +1138,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-005` | Diseñar inicio para operador integral | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-006` | Diseñar inicio para supervisor | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-007` | Simplificar creación de venta | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-008` | Simplificar cobro y medios de pago | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-008` | Simplificar cobro y medios de pago | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-009` | Separar anulación, devolución y reembolso | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-010` | Diseñar apertura y cierre de caja | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-011` | Integrar acumulación de puntos | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |

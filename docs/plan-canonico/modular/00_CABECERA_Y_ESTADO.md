@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1376** |
+| Tareas aprobadas | **1377** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **220** |
+| Tareas no iniciadas | **219** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **86.22% (1376/1596)** |
+| Porcentaje de completamiento | **86.28% (1377/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-UX-007 — Simplificar creación de venta** |
-| Tarea actual | **PULSO-UX-008 — Simplificar cobro y medios de pago** |
+| Última tarea aprobada | **PULSO-UX-008 — Simplificar cobro y medios de pago** |
+| Tarea actual | **PULSO-UX-009 — Separar anulación, devolución y reembolso** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-UX-009 — Separar anulación, devolución y reembolso** |
+| Siguiente tarea | **PULSO-UX-010 — Diseñar apertura y cierre de caja** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 24 de 38 aprobadas; PULSO-UX-008 pendiente** |
+| Progreso del bloque | **BLOQUE N: 25 de 38 aprobadas; PULSO-UX-009 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-UX-008** |
+| Carril documental | **ACTIVO — PULSO-UX-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-UX-007` — Simplificar creación de venta |
-| Tarea actual | `PULSO-UX-008` — Simplificar cobro y medios de pago — **NO INICIADA** |
-| Siguiente tarea | `PULSO-UX-009` — Separar anulación, devolución y reembolso |
+| Última aprobada | `PULSO-UX-008` — Simplificar cobro y medios de pago |
+| Tarea actual | `PULSO-UX-009` — Separar anulación, devolución y reembolso — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-010` — Diseñar apertura y cierre de caja |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 24 DE 38 APROBADAS — ACTUAL PULSO-UX-008** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 25 DE 38 APROBADAS — ACTUAL PULSO-UX-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-UX-007 — Simplificar creación de venta
-        ↓
-TAREA ACTUAL
 PULSO-UX-008 — Simplificar cobro y medios de pago
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-UX-009 — Separar anulación, devolución y reembolso
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-010 — Diseñar apertura y cierre de caja
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 24 de 38 tareas aprobadas
+BLOQUE N — 25 de 38 tareas aprobadas
 ```
