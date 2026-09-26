@@ -4620,7 +4620,1174 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-005 — Diseñar inicio para operador integral`
-### [ ] PULSO-UX-005 — Diseñar inicio para operador integral
+### ✅ PULSO-UX-005 — Diseñar inicio para operador integral
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-004 — Diseñar inicio para mostrador
+**Tarea siguiente:** PULSO-UX-006 — Diseñar inicio para supervisor
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0080 — Inicio POS` para el actor operativo `operador_integral_satelite`, componiendo únicamente capacidades PULSO explícitamente concedidas por el catálogo y matrices vigentes, con separación entre capacidades ordinarias `OPERATIONAL_ONLY`, componentes sensibles `BASE_AND_OPERATIONAL`, trabajo aún bloqueado por permisos atómicos faltantes y funciones de otras aplicaciones; sin convertir el rol integral en superusuario, sin unir automáticamente matrices de caja, salón, mostrador, barra o cocina y sin materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia inicial de PULSO para una persona cuyo rol operativo efectivo sea `operador_integral_satelite`, de forma que una sede pequeña expresamente habilitada para operación integrada pueda concentrar trabajo ordinario sin convertir esa integración operativa en autoridad total.
+
+La experiencia debe permitir:
+
+- reconocer que el actor está trabajando bajo una función integral válida y no bajo una suma automática de roles;
+- resolver turno, check-in, sede, área o punto aplicable y dispositivo compartido cuando corresponda;
+- abrir y cerrar una sesión de caja propia cuando la capacidad esté disponible;
+- iniciar una venta ordinaria;
+- conducir un cobro ordinario sobre un recurso compatible;
+- presentar acciones sensibles solo cuando exista autorización efectiva de ambos carriles;
+- distinguir trabajo PULSO disponible de trabajo todavía bloqueado por catálogo o autorización incompleta;
+- conservar separadas venta, pago, caja, cancelación, devolución, reembolso, descuento, preparación, salón, entrega, fidelización y abastecimiento;
+- impedir que la interfaz use `pulso.pos.main`, el nombre del rol o un dispositivo como wildcard;
+- mantener las funciones NEXO del operador integral fuera del workspace PULSO salvo como handoff explícito a su aplicación propietaria.
+
+La tarea especializa la identidad canónica existente:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+sin crear un home paralelo.
+
+---
+
+#### 2. Entrada recibida de PULSO-UX-004
+
+`PULSO-UX-004` entrega la siguiente frontera:
+
+```text
+VSCREEN-0080 SIGUE SIENDO IDENTIDAD COMPARTIDA DE INICIO POS
+CAJERO, SALÓN Y MOSTRADOR TIENEN PRIORIZACIONES DISTINTAS
+PUNTO FÍSICO INTEGRADO != WILDCARD OPERATIVO
+MOSTRADOR PRIORIZA VPROC-0039 / HANDOFF / ENTREGA
+VSCREEN-0088 ES WORKSPACE PRINCIPAL DE MOSTRADOR
+VSCREEN-0087 ES SECUNDARIO PARA PEDIDOS EXTERNOS CUANDO APLIQUE
+MODALIDAD / CANAL / ESTACIÓN != AUTORIDAD
+PAGO PENDIENTE != AUTORIDAD DE COBRO
+DELIVERY HANDOFF != AUTORIDAD LOGÍSTICA
+PERMISOS FALTANTES DEBEN FALLAR CERRADOS
+```
+
+La decisión adicional de esta tarea es que `operador_integral_satelite` puede reunir varias responsabilidades ordinarias solo cuando cada capacidad haya sido concedida explícitamente para ese rol y su contexto.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `PULSO-UX-001..021` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `PULSO-UX-005` se define una sola vez;
+2. no existe instancia física propia;
+3. no se modifica `vento-pulso`;
+4. no se crean rutas, componentes, Server Actions, RPC, tablas o migraciones;
+5. no se cambian permisos, grants o datasets;
+6. no se ejecutan ventas, pagos, caja, devoluciones o cierres reales;
+7. las brechas AS-IS se asignan a owners existentes;
+8. la implementación futura debe consumir el catálogo y las matrices vigentes sin ampliar autoridad.
+
+---
+
+#### 4. Fuentes y contratos consumidos
+
+El diseño consume como entradas:
+
+- `PULSO-UX-001 — Inventariar procesos de venta, caja y salón`;
+- `PULSO-UX-002 — Diseñar inicio para cajero`;
+- `PULSO-UX-003 — Diseñar inicio para servicio de salón`;
+- `PULSO-UX-004 — Diseñar inicio para mostrador`;
+- `OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede`;
+- `AUTH-RBAC-013 — Crear matriz de operador_integral_satelite` como base histórica del rol;
+- `AUTH-CAT-022 — Descomponer permisos legacy maduros y definir nuevas claves atómicas`;
+- `AUTH-CAT-023 — Actualizar matrices, excepciones, denegaciones y paquetes de dispositivo afectados por el diff contractual`;
+- `AUTH-CAT-024 — Validar, publicar y congelar la versión canónica que alimentará los datasets`;
+- el dataset canónico vigente `operational-role-grants@1.0.0`;
+- `PULSO-AUTH-011` a `PULSO-AUTH-016` para territorio, dispositivo, actor, separación administrativa, packages y certificación;
+- `VSCREEN-0080` como Inicio POS;
+- `VSCREEN-0081`, `VSCREEN-0084`, `VSCREEN-0089` y `VSCREEN-0090` como superficies propietarias de capacidades PULSO actualmente concedidas al rol;
+- `VPROC-0039` como proceso principal de venta directa;
+- `VPROC-0043` como proceso propietario del cobro;
+- `VPROC-0044` como proceso propietario de caja y cierre;
+- el runtime vigente de `vento-pulso` como evidencia AS-IS, no como autoridad contractual.
+
+---
+
+#### 5. Reconciliación contractual posterior a AUTH-RBAC-013
+
+La matriz inicial `AUTH-RBAC-013` evaluó 112 permisos y dejó al operador integral con doce concesiones operativas, de las cuales solo `pulso.access` pertenecía a PULSO.
+
+Posteriormente, `AUTH-CAT-022` creó nueve PermissionKeys atómicas PULSO y `AUTH-CAT-023` revisó explícitamente sus matrices. `AUTH-CAT-024` congeló ese diff en la versión contractual `1.0.0`, y los datasets vigentes incorporan las decisiones resultantes.
+
+Por tanto, para esta tarea rige la reconciliación posterior:
+
+```text
+AUTH-RBAC-013 INICIAL
++
+AUTH-CAT-022 / 023 / 024
++
+DATASET VIGENTE 1.0.0
+=
+AUTORIDAD DOCUMENTAL ACTUAL
+```
+
+No se usa la fotografía inicial de doce grants para negar capacidades que fueron concedidas expresamente después.
+
+---
+
+#### 6. Actor contractual
+
+El actor principal es:
+
+```text
+operational_role = operador_integral_satelite
+```
+
+Su autoridad requiere, según la acción:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ EMPLEADO ACTIVO
++ TURNO PUBLICADO Y VIGENTE
++ ROL OPERATIVO EFECTIVO operador_integral_satelite
++ SEDE HABILITADA COMO FORMATO INTEGRADO
++ ÁREA EXACTA CUANDO LA CONFIGURACIÓN LA EXIJA
++ CHECK-IN CUANDO CORRESPONDE
++ PUNTO / CAJA / RECURSO COMPATIBLES
++ PERMISO EXACTO
++ CARRIL BASE CUANDO LA MODALIDAD LO EXIJA
++ DENEGACIONES Y FILTROS APLICABLES
+= ACCIÓN AUTORIZABLE
+```
+
+El término “integral” describe organización del trabajo, no autoridad universal.
+
+---
+
+#### 7. Inventario vigente de grants del rol
+
+El dataset canónico vigente contiene:
+
+```text
+21 grants para operador_integral_satelite
+```
+
+Distribución:
+
+```text
+11 NEXO
+10 PULSO
+```
+
+Los once grants NEXO corresponden a entrada, referencias de abastecimiento, solicitudes/remisiones propias y recepción ordinaria de remisiones destinadas a la sede integrada.
+
+Los diez grants PULSO se detallan en esta tarea porque gobiernan la composición del inicio POS.
+
+---
+
+#### 8. Grants PULSO vigentes
+
+Los diez grants PULSO del rol son:
+
+```text
+pulso.access
+pulso.sales.orders.create
+pulso.payments.transactions.collect
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+pulso.payments.transactions.reverse
+pulso.sales.orders.cancel
+pulso.sales.returns.create
+pulso.payments.transactions.refund
+pulso.sales.discounts.apply
+```
+
+No se incorpora `pulso.delivery.deliveries.override` al rol operativo integral.
+
+---
+
+#### 9. Capacidades ordinarias directas
+
+Cinco grants pueden formar autoridad operativa directa cuando se cumplen sus condiciones:
+
+| PermissionKey | Modalidad | Uso en el inicio |
+| --- | --- | --- |
+| `pulso.access` | `OPERATIONAL_ONLY` | entrar a PULSO y mostrar contexto integrado |
+| `pulso.sales.orders.create` | `OPERATIONAL_ONLY` | iniciar venta ordinaria |
+| `pulso.payments.transactions.collect` | `OPERATIONAL_ONLY` | cobrar mediante una sesión y recurso válidos |
+| `pulso.cash.sessions.start` | `OPERATIONAL_ONLY` | abrir sesión de caja propia |
+| `pulso.cash.sessions.close` | `OPERATIONAL_ONLY` | iniciar/cursar cierre de caja propia conforme al contrato |
+
+Estas capacidades siguen exigiendo turno, check-in, sede, contexto y recurso compatibles.
+
+---
+
+#### 10. Componentes operativos sensibles
+
+Cinco grants son únicamente componentes operativos de permisos `BASE_AND_OPERATIONAL`:
+
+| PermissionKey | Componente del rol | Condición adicional obligatoria |
+| --- | --- | --- |
+| `pulso.payments.transactions.reverse` | operacional | componente base del mismo actor y recurso |
+| `pulso.sales.orders.cancel` | operacional | componente base del mismo actor y recurso |
+| `pulso.sales.returns.create` | operacional | componente base del mismo actor y recurso |
+| `pulso.payments.transactions.refund` | operacional | componente base del mismo actor y recurso |
+| `pulso.sales.discounts.apply` | operacional | componente base del mismo actor y recurso |
+
+El rol operativo integral por sí solo no autoriza ninguna de estas cinco acciones.
+
+---
+
+#### 11. Regla de doble carril
+
+Para una acción sensible:
+
+```text
+COMPONENTE OPERATIVO operador_integral_satelite
++
+COMPONENTE BASE DEL MISMO ACTOR
++
+MISMO PERMISO
++
+MISMO RECURSO
++
+MISMA SOLICITUD
++
+TURNO + CHECK-IN + TERRITORIO
++
+REAUTENTICACIÓN FUERTE
++
+MOTIVO + EVIDENCIA + VERSIONADO
+=
+DECISIÓN POSIBLE
+```
+
+Nunca:
+
+```text
+operador_integral_satelite
+→ refund automático
+```
+
+ni:
+
+```text
+actor base A + actor operativo B
+→ BASE_AND_OPERATIONAL válido
+```
+
+---
+
+#### 12. Identidad canónica del inicio
+
+La identidad continúa siendo:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+No se crea:
+
+- `VSCREEN` exclusivo para operador integral;
+- dashboard paralelo;
+- home por sede;
+- home por dispositivo;
+- home por mezcla de roles.
+
+La misma pantalla se especializa por actor, contexto, permisos efectivos y trabajo real.
+
+---
+
+#### 13. Proceso principal
+
+El proceso principal del inicio permanece:
+
+```text
+VPROC-0039 — Gestionar venta de mostrador o para llevar con entrega y cobro correlacionados
+```
+
+La condición integral amplía las capacidades que pueden aparecer dentro del mismo workspace, pero no cambia el owner principal de `VSCREEN-0080`.
+
+---
+
+#### 14. Procesos relacionados
+
+El inicio puede relacionarse con:
+
+```text
+VPROC-0043 — cobro y confirmación de pago
+VPROC-0044 — cierre y conciliación de caja
+```
+
+`VPROC-0038` — servicio en mesa — y `VPROC-0040` — pedidos externos — siguen siendo procesos relacionados, pero la existencia del rol integral no crea por sí sola PermissionKeys de lectura, actualización, mesas, preparación, entrega o admisión externa que aún no estén concedidas.
+
+---
+
+#### 15. Pregunta operativa del inicio
+
+El home responde:
+
+```text
+¿QUÉ PUEDO HACER AHORA, CON AUTORIDAD EFECTIVA, EN ESTE PUNTO INTEGRADO?
+```
+
+No responde:
+
+```text
+¿QUÉ HARÍA NORMALMENTE UNA PERSONA QUE HACE DE TODO?
+```
+
+La diferencia impide convertir expectativas operativas en permisos inexistentes.
+
+---
+
+#### 16. Condición nominal de entrada
+
+La entrada al home requiere:
+
+```text
+pulso.access
++ TURNO VIGENTE
++ ROL operador_integral_satelite
++ SEDE INTEGRADA HABILITADA
++ ÁREA EXACTA CUANDO CORRESPONDA
+= ENTRADA AL CONTEXTO PULSO
+```
+
+Entrar no implica que exista check-in ni que estén habilitadas las acciones internas.
+
+---
+
+#### 17. Check-in
+
+Las operaciones PULSO concedidas al rol requieren `T+C`.
+
+Por tanto:
+
+```text
+HOME VISIBLE
++
+SIN CHECK-IN
+=
+CONTEXTO VISIBLE, MUTACIONES BLOQUEADAS
+```
+
+El inicio debe explicar el requisito faltante sin degradar el estado a “sin trabajo”.
+
+---
+
+#### 18. Sede integrada
+
+La operación integral solo aplica en una sede habilitada para ese formato.
+
+La selección de sede del cliente no basta.
+
+```text
+site_id DE QUERY
+!=
+SEDE AUTORIZADA
+```
+
+La sede efectiva se deriva del contexto canónico y el parámetro solo puede ser compatible con ese territorio, nunca ampliarlo.
+
+---
+
+#### 19. Área y punto
+
+La configuración de la sede decide si el rol integral exige:
+
+- un área exacta; o
+- el contexto general permitido para ese formato.
+
+Cuando exista área concreta, `area_id = null` no puede utilizarse como bypass.
+
+El punto físico puede integrar Caja / Mostrador / Barra, pero esa integración no crea permisos adicionales.
+
+---
+
+#### 20. Composición lógica del home
+
+El inicio se compone de estas zonas lógicas:
+
+| Zona | Contenido | Regla |
+| --- | --- | --- |
+| contexto | actor, sede integrada, área/punto, turno, check-in, dispositivo | contexto no concede autoridad |
+| acción primaria | siguiente acción ordinaria autorizada | una acción dominante por estado |
+| caja | estado de sesión propia | nunca reutilizar sesión de otro actor |
+| venta | entrada a nueva venta o recurso cobrable autorizado | no inventar lectura de pedidos |
+| acciones sensibles | cancelación, reversión, devolución, refund, descuento | visibles solo con autorización efectiva doble |
+| bloqueos | permiso faltante, stale, recurso incompatible, deny, fallo | cada causa se distingue |
+| handoffs | NEXO u otros owners | cambiar de app no amplía permiso |
+
+---
+
+#### 21. Prioridad de acción ordinaria
+
+La prioridad base es:
+
+```text
+1. CONTEXTO BLOQUEANTE
+2. CHECK-IN REQUERIDO
+3. SESIÓN DE CAJA REQUERIDA Y AUSENTE
+4. RECURSO CON COBRO ORDINARIO ACCIONABLE
+5. NUEVA VENTA
+6. CIERRE DE CAJA CUANDO EL CICLO LO EXIJA
+7. SIN ACCIÓN ORDINARIA DISPONIBLE
+```
+
+La prioridad solo considera capacidades que hayan pasado autorización efectiva.
+
+---
+
+#### 22. Apertura de caja
+
+Cuando no existe una sesión propia válida y el contexto permite operar caja:
+
+```text
+pulso.cash.sessions.start
+→ VSCREEN-0089 — Apertura de caja
+```
+
+La apertura debe conservar actor, sede, área/punto y reglas de concurrencia.
+
+No se permite reutilizar una sesión ajena por estar en el mismo dispositivo.
+
+---
+
+#### 23. Nueva venta
+
+Con sesión y contexto compatibles:
+
+```text
+pulso.sales.orders.create
+→ VSCREEN-0081 — Creación de venta o pedido
+```
+
+Crear una venta no concede:
+
+- consulta general de pedidos;
+- actualización general;
+- descuento;
+- cancelación;
+- pago;
+- devolución;
+- fidelización.
+
+Cada capacidad conserva su contrato separado.
+
+---
+
+#### 24. Cobro ordinario
+
+Cuando existe un recurso cobrable obtenido por un flujo autorizado:
+
+```text
+pulso.payments.transactions.collect
+→ VSCREEN-0084 — Cobro y medios de pago
+```
+
+El home no debe fabricar un listado de recursos solo porque el actor puede cobrar.
+
+```text
+PERMISO DE COBRO
+!=
+PERMISO DE CONSULTA GLOBAL DE PEDIDOS
+```
+
+---
+
+#### 25. Cierre de caja
+
+El operador integral recibe `pulso.cash.sessions.close` como capacidad operacional ordinaria.
+
+Su destino es:
+
+```text
+VSCREEN-0090 — Cierre de caja
+```
+
+El cierre de la sesión propia no concede:
+
+- aprobación de diferencias;
+- corrección de movimientos;
+- cierre de sesiones ajenas;
+- conciliación financiera NUMERA;
+- edición destructiva de ventas o pagos.
+
+---
+
+#### 26. Reversión de pago
+
+`pulso.payments.transactions.reverse` es `BASE_AND_OPERATIONAL`.
+
+El home solo puede presentar la acción como ejecutable cuando la decisión efectiva confirme ambos componentes.
+
+```text
+REVERSE
+!=
+REFUND
+```
+
+Una transacción que ya exige reembolso no puede resolverse mediante reversión por conveniencia de interfaz.
+
+---
+
+#### 27. Cancelación de venta
+
+`pulso.sales.orders.cancel` también es `BASE_AND_OPERATIONAL`.
+
+La cancelación:
+
+- exige estado cancelable;
+- conserva motivo y evidencia;
+- no revierte pagos automáticamente;
+- no crea devolución;
+- no corrige inventario o producción por implicación.
+
+El home no la presenta como “cambiar estado”.
+
+---
+
+#### 28. Devolución
+
+`pulso.sales.returns.create` es un componente operacional sensible.
+
+```text
+CANCELAR
+!=
+DEVOLVER
+!=
+REEMBOLSAR
+```
+
+La devolución se vincula a líneas y cantidades elegibles y no ejecuta el refund por implicación.
+
+---
+
+#### 29. Reembolso
+
+`pulso.payments.transactions.refund` requiere ambos carriles y un pago/monto elegibles.
+
+El home debe impedir:
+
+- refund sin componente base;
+- refund por monto superior al disponible;
+- refund sin vínculo con devolución o resolución cuando el contrato lo exige;
+- refund repetido por timeout incierto.
+
+---
+
+#### 30. Descuento
+
+`pulso.sales.discounts.apply` también exige doble carril.
+
+La acción debe preservar:
+
+- regla aplicable;
+- límite;
+- actor;
+- motivo;
+- cálculo antes/después;
+- versión del recurso.
+
+No permite modificar precios maestros ni políticas comerciales.
+
+---
+
+#### 31. Capacidades PULSO que siguen faltando para una operación integral completa
+
+El catálogo vigente todavía no concede al rol, entre otras, PermissionKeys atómicas para:
+
+- consulta general de pedidos;
+- actualización ordinaria de pedidos existentes;
+- cola y detalle de preparación;
+- gestión de mesas y sesiones de salón;
+- alistamiento y empaque;
+- entrega ordinaria;
+- admisión completa de pedidos externos;
+- loyalty laboral de identificación, acumulación o redención;
+- incidencias de producto;
+- supervisión comercial integral.
+
+Estas ausencias no se sustituyen con `pulso.access`, `pulso.pos.main` ni con el nombre del rol.
+
+---
+
+#### 32. Regla para trabajo aún no autorizado
+
+Cuando la UX conoce conceptualmente una función pero no existe PermissionKey/grant suficiente:
+
+```text
+FUNCIÓN OPERATIVA ESPERADA
++
+CONTRATO DE AUTORIZACIÓN INCOMPLETO
+=
+NO PRESENTAR COMO EJECUTABLE
+```
+
+Puede existir información explicativa o un bloqueo gobernado, pero nunca un CTA que dependa de un wildcard legacy.
+
+---
+
+#### 33. Relación con servicio de salón
+
+El operador integral puede ser un actor potencial de `VPROC-0038`, pero el catálogo actual no materializa permisos atómicos suficientes de mesa, sesión y servicio para deducir su autoridad completa.
+
+Por tanto:
+
+```text
+ROL INTEGRAL
+!=
+HOME DE SALÓN HABILITADO AUTOMÁTICAMENTE
+```
+
+`VSCREEN-0082` solo se integra como trabajo real cuando las capacidades propietarias estén materializadas y autorizadas.
+
+---
+
+#### 34. Relación con mostrador
+
+El operador integral puede ejecutar trabajo de venta directa, pero no hereda las brechas del `mostrador_satelite` como permisos.
+
+`VSCREEN-0088` puede convertirse en una superficie relevante cuando exista autoridad de lectura/transición suficiente.
+
+Hasta entonces:
+
+```text
+OPERADOR INTEGRAL
++
+VSCREEN-0088 EXISTENTE
+!=
+AUTORIZACIÓN PARA CAMBIAR ESTADOS
+```
+
+---
+
+#### 35. Relación con pedidos externos
+
+`VSCREEN-0087` sigue perteneciendo a `VPROC-0040`.
+
+El rol integral no recibe por la sola existencia de su función permisos de:
+
+- consulta global de pedidos externos;
+- aceptación;
+- rechazo;
+- conciliación;
+- cambio de canal.
+
+Esas capacidades permanecen sujetas al catálogo y owner correspondientes.
+
+---
+
+#### 36. Relación con NEXO
+
+El operador integral sí posee capacidades NEXO para abastecimiento ordinario de la sede integrada.
+
+El inicio PULSO no debe incrustar esas operaciones como si fueran capacidades POS.
+
+El handoff permitido es:
+
+```text
+PULSO
+→ INDICA NECESIDAD DE ABASTECIMIENTO CUANDO CORRESPONDA
+→ NEXO COMO OWNER
+→ NEXO REVALIDA SU PROPIA AUTORIDAD
+```
+
+No se comparten permisos entre aplicaciones.
+
+---
+
+#### 37. NEXO no convierte al rol en bodeguero
+
+Aunque el rol pueda solicitar y recibir remisiones destinadas a la sede integrada, no recibe por ello:
+
+- inventario general;
+- preparación en origen;
+- despacho;
+- cancelación de remisiones;
+- movimientos generales;
+- ubicaciones y LPN;
+- conteos y ajustes generales;
+- logística central.
+
+El home PULSO no debe sugerir lo contrario.
+
+---
+
+#### 38. Dispositivo compartido
+
+Se conserva:
+
+```text
+TECHNICAL PRINCIPAL
+!=
+DEVICE
+!=
+HUMAN ACTOR
+```
+
+Una terminal integrada puede habilitar varias aplicaciones o capacidades como superficie técnica, pero nunca concede el rol o sus permisos.
+
+Cada acción conserva al trabajador real y debe invalidar actor-bound state al cambiar de persona.
+
+---
+
+#### 39. Cambio de actor
+
+Un cambio A → B obliga a recalcular:
+
+- rol operativo efectivo;
+- sede y área aplicables;
+- grants directos;
+- componentes duales;
+- sesión de caja personal;
+- recursos visibles;
+- reautenticación sensible;
+- acciones disponibles.
+
+La sesión de caja de A no se transfiere a B por continuidad del dispositivo.
+
+---
+
+#### 40. Rol integral no es unión de matrices
+
+La composición se rige por:
+
+```text
+CAPACIDADES EXPLÍCITAS DEL MISMO ROL
+```
+
+no por:
+
+```text
+cajero_satelite
++ servicio_salon
++ mostrador_satelite
++ barista_satelite
++ cocinero_satelite
+```
+
+El rol integral posee sus propios grants y condiciones.
+
+---
+
+#### 41. Rol integral no es superusuario
+
+La UX no debe ofrecer una navegación administrativa global por el nombre `integral`.
+
+Quedan fuera por defecto:
+
+- seguridad y permisos;
+- gestión de empleados;
+- configuración de sedes;
+- catálogos maestros;
+- finanzas NUMERA;
+- compras ORIGO;
+- inventario general NEXO;
+- producción central FOGO;
+- override de entrega;
+- cualquier permiso futuro no evaluado.
+
+---
+
+#### 42. `pulso.pos.main` permanece bloqueado
+
+El runtime actual todavía usa `pulso.pos.main` en varias superficies.
+
+El contrato canónico establece:
+
+```text
+catalog_status = deprecated
+assignment_status = blocked
+resolution = DECOMPOSE_REQUIRED
+```
+
+El home objetivo no puede utilizarlo como fallback para rellenar capacidades faltantes.
+
+---
+
+#### 43. Contraste con el runtime actual
+
+En el snapshot vigente de `vento-pulso`:
+
+- `/` continúa montando `ScannerPage`;
+- `/orders` continúa protegido por `pos.main`;
+- las nuevas claves `orders.create`, `collect`, `cash.start`, `cash.close`, `cancel`, `return`, `refund`, `reverse` y `discount.apply` no aparecen como permisos consumidos por el código PULSO revisado;
+- `/orders` contiene server actions y RPC operativas que usan el guard broad;
+- Realtime y optimismo de UI aceleran el board, pero no implementan el nuevo modelo de autorización.
+
+Por tanto:
+
+```text
+CATÁLOGO / MATRIZ CANÓNICOS
+!=
+CONSUMO RUNTIME MATERIALIZADO
+```
+
+---
+
+#### 44. Realtime
+
+Realtime puede refrescar trabajo autorizado, pero no concede lectura ni mutación.
+
+```text
+EVENTO RECIBIDO
+!=
+PERMISO DE VER RECURSO
+!=
+PERMISO DE ACTUAR
+```
+
+El cliente debe descartar o no materializar información para la que el actor no tenga una proyección autorizada.
+
+---
+
+#### 45. Optimismo de UI
+
+Una actualización optimista sirve para latencia percibida, no para autoridad.
+
+Toda mutación debe terminar en decisión server-side y reconciliar el resultado real.
+
+Ante rechazo:
+
+- revertir proyección optimista;
+- conservar el error;
+- no presentar el estado local como hecho definitivo.
+
+---
+
+#### 46. Resultado desconocido
+
+En pagos y otras acciones sensibles:
+
+```text
+TIMEOUT / RESPUESTA INCIERTA
+!=
+FALLO CONFIRMADO
+```
+
+El home no ofrece repetir automáticamente la acción hasta consultar receipt, estado o mecanismo de reconciliación propietario.
+
+---
+
+#### 47. Estados de experiencia
+
+El inicio distingue al menos:
+
+| Estado UX | Significado |
+| --- | --- |
+| `CONTEXTO_REQUERIDO` | falta turno, sede integrada, área o actor válido |
+| `CHECKIN_REQUERIDO` | el home es visible, pero las mutaciones internas están bloqueadas |
+| `CAJA_REQUIERE_APERTURA` | no existe sesión propia utilizable |
+| `LISTO_PARA_VENTA` | nueva venta ordinaria disponible |
+| `COBRO_ACCIONABLE` | existe un recurso cobrable obtenido por flujo autorizado |
+| `CIERRE_ACCIONABLE` | la sesión propia puede entrar a cierre |
+| `DOBLE_CARRIL_REQUERIDO` | existe componente operacional sensible, pero falta autoridad base u otra condición |
+| `CAPACIDAD_NO_MATERIALIZADA` | la función esperada carece todavía de PermissionKey/grant consumible |
+| `SIN_PERMISO` | deny efectivo para la capacidad solicitada |
+| `DATOS_DESACTUALIZADOS` | la frescura no permite decidir o mutar |
+| `RESULTADO_DESCONOCIDO` | efecto sensible aún no conciliado |
+| `FALLO_TECNICO` | dependencia necesaria falló |
+
+Estos rótulos son contrato UX, no estados persistidos nuevos.
+
+---
+
+#### 48. No confundir vacío, deny y capacidad inexistente
+
+La experiencia conserva:
+
+```text
+SIN TRABAJO
+!=
+SIN PERMISO
+!=
+CAPACIDAD NO MATERIALIZADA
+!=
+SIN CONTEXTO
+!=
+STALE
+!=
+FALLO TÉCNICO
+!=
+RESULTADO DESCONOCIDO
+```
+
+Un permiso faltante no puede presentarse como “no hay pedidos”.
+
+---
+
+#### 49. Jerarquía visual
+
+El home integral prioriza:
+
+1. bloqueo crítico de contexto;
+2. siguiente acción ordinaria autorizada;
+3. estado de caja propia;
+4. trabajo relacionado obtenido por proyección autorizada;
+5. acciones sensibles realmente habilitadas por doble carril;
+6. handoffs a otras aplicaciones;
+7. información secundaria.
+
+El mayor número de responsabilidades no justifica mayor densidad visual indiscriminada.
+
+---
+
+#### 50. Acciones sensibles no se vuelven accesos rápidos permanentes
+
+Aunque el actor tenga un componente operacional para cancelación, devolución, refund, reversión o descuento, esas acciones no aparecen como botones permanentes del home.
+
+Se muestran únicamente dentro del recurso y estado compatibles cuando la autorización efectiva ya incluye ambos carriles.
+
+---
+
+#### 51. Privacidad y minimización
+
+El home integral no carga por defecto:
+
+- todas las ventas de todas las sedes;
+- ledger completo PASS;
+- clientes completos;
+- inventario general;
+- costos y márgenes;
+- documentos de personal;
+- configuración de autorización;
+- auditoría global;
+- datos de proveedores;
+- producción central.
+
+La proyección se limita al trabajo y territorio actuales.
+
+---
+
+#### 52. Recuperación segura
+
+Ante pérdida de red, sesión, dispositivo o contexto:
+
+- conservar identificadores de trabajo cuando sea seguro;
+- no repetir mutaciones por defecto;
+- revalidar actor, turno, check-in, sede y sesión de caja;
+- consultar estado real antes de repetir pagos o acciones sensibles;
+- invalidar reautenticación fuerte del actor anterior;
+- distinguir intención local de efecto confirmado.
+
+---
+
+#### 53. Operación degradada
+
+`VPROC-0039` admite degradación controlada según los contratos transversales vigentes.
+
+El rol integral no convierte offline en licencia para ejecutar cualquier función.
+
+Solo se permiten operaciones expresamente soportadas por el modo degradado y deben reconciliarse por su owner.
+
+---
+
+#### 54. Matriz de decisión del home
+
+| Situación | Acción dominante | Resultado |
+| --- | --- | --- |
+| turno o sede integrada inválidos | resolver contexto | no mutar |
+| check-in ausente | completar requisito laboral | no mutar |
+| caja requerida y no abierta | `VSCREEN-0089` | abrir sesión propia si autorizado |
+| contexto válido y venta nueva | `VSCREEN-0081` | crear venta |
+| recurso cobrable autorizado | `VSCREEN-0084` | cobrar |
+| fin de ciclo y sesión propia cerrable | `VSCREEN-0090` | entrar a cierre |
+| acción sensible sin componente base | explicar doble carril requerido | no ejecutar |
+| función esperada sin permiso atómico | informar capacidad no materializada | no usar legacy |
+| necesidad de abastecimiento | handoff a NEXO | NEXO revalida autoridad |
+| fallo o stale | recuperar/revalidar | no presentar vacío falso |
+
+---
+
+#### 55. Brechas AS-IS y propietarios
+
+| Brecha observada | Riesgo | Propietario canónico | Condición de salida |
+| --- | --- | --- | --- |
+| `/` continúa siendo `ScannerPage` | Inicio POS integral no materializado | materialización UX del package propietario | `VSCREEN-0080` real consume actor, contexto y capacidades efectivas |
+| PULSO runtime no consume las nuevas PermissionKeys | catálogo vigente no se aplica en acciones | materialización `PULSO-AUTH-015` / packages consumidores | guards y acciones usan claves atómicas sin `pos.main` |
+| `/orders` usa `pos.main` para lectura y mutaciones | wildcard legacy puede gobernar efectos distintos | owners de autorización y `PULSO-UX-021` | cada acción exige permiso exacto server-side |
+| faltan permisos maduros de lectura/update, salón, preparación, entrega y loyalty | rol integral podría aparentar más capacidad que la realmente autorizada | roadmap PULSO/AUTH y tareas UX propietarias | nuevas claves solo tras diseño y revisión contractual |
+| operaciones optimistas llaman RPC desde cliente | UI puede parecer exitosa antes de decisión final | package propietario de `/orders` | server enforcement + rollback visual + receipt |
+| Realtime proyecta eventos por sede | eventos pueden confundirse con permiso | owner de proyección autorizada | filtrado/lectura protegidos por recurso y actor |
+| capacidades NEXO existen en el mismo rol | home PULSO podría absorber otra aplicación | NEXO como owner | handoff explícito con revalidación propia |
+
+No queda un hallazgo de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 56. Handoff inmediato a PULSO-UX-006
+
+`PULSO-UX-006 — Diseñar inicio para supervisor` recibe:
+
+```text
+VSCREEN-0080 SIGUE SIENDO IDENTIDAD COMPARTIDA DE INICIO POS
+OPERADOR INTEGRAL NO ES SUPERUSUARIO
+OPERADOR INTEGRAL NO ES UNIÓN AUTOMÁTICA DE ROLES
+CAPACIDADES ORDINARIAS DIRECTAS != COMPONENTES SENSIBLES DE DOBLE CARRIL
+SUPERVISOR NO RECIBE POR MATRIZ LOS NUEVOS COMPONENTES BASE PULSO DE AUTH-CAT-023
+SUPERVISIÓN != EJECUCIÓN ORDINARIA DE CAJA
+VISIBILIDAD DE EXCEPCIONES != PERMISO DE MUTAR
+REALTIME != AUTORIDAD
+PULSO.POS.MAIN NO PUEDE SER FALLBACK
+```
+
+La 006 deberá diseñar una experiencia de supervisión basada en carga, excepciones, bloqueos y decisiones gobernadas, sin convertir `supervisor` en operador integral ni en autoridad sensible por defecto.
+
+---
+
+#### 57. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-005 |
+| --- | --- |
+| `PULSO-UX-006` | supervisor observa y decide dentro de permisos propios, sin heredar ejecución integral |
+| `PULSO-UX-007` | nueva venta consume `orders.create` y separa creación de consulta/update |
+| `PULSO-UX-008` | cobro consume `transactions.collect` y separa reverse/refund |
+| `PULSO-UX-009` | cancelación, devolución, reverse y refund conservan doble carril y semánticas distintas |
+| `PULSO-UX-010` | apertura y cierre usan sesiones personales y no aprueban diferencias automáticamente |
+| `PULSO-UX-011` | loyalty no se deduce del rol integral mientras falten grants/contratos vigentes |
+| `PULSO-UX-012` | redención conserva autorización propia y no nace de `pulso.access` |
+| `PULSO-UX-013` | acciones sensibles confirman efecto, motivo, actor, recurso y doble carril |
+| `PULSO-UX-014` | terminal compartida invalida sesión y reauth actor-bound al cambiar trabajador |
+| `PULSO-UX-015` | interacción táctil adapta la composición integral sin crear permisos |
+| `PULSO-UX-020` | runtime legacy se clasifica sin elevar `pos.main` a canon |
+| `PULSO-UX-021` | arquitectura objetivo elimina dependencia broad y consume grants atómicos |
+
+---
+
+#### 58. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: las obligaciones de separación entre capacidades, autorización exacta, territorio, actor, caja, pagos, acciones sensibles, rutas y recovery ya están cubiertas por requisitos vigentes de PULSO, AUTH y UX. Esta tarea especializa `VSCREEN-0080` para `operador_integral_satelite` y reconcilia la experiencia con el catálogo/matrices vigentes sin introducir una nueva obligación verificable en 04A.
+
+---
+
+#### 59. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-005` para separar pedido, preparación, mesa, cuenta, venta, cumplimiento, pago e inventario;
+- `TREQ-PULSO-006` para separar venta, cobro, pago, caja, cancelación, devolución, refund y cierre mediante acciones nombradas y auditables;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso protegido y territorio no ampliable por query;
+- `TREQ-PULSO-016` para impedir que abrir `/orders` autorice mutaciones;
+- `TREQ-PULSO-019` para tratar filtros/query como navegación y no como autoridad;
+- `TREQ-PULSO-024` para impedir que existencia de ruta/guard implique autorización completa;
+- `TREQ-PULSO-026` para impedir que `pulso.pos.main` se trate como permiso exacto suficiente;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-011` para intersección entre dispositivo y trabajador identificado;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC;
+- `TREQ-AUTH-015` para evidencia correlacionable de principal, actor, contexto, permiso, recurso y decisión.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron owner PULSO, marcador 005, sucesora 006, topología `DEFINE_ONCE`, catálogo 1.0.0, reconciliación AUTH-CAT-022/023/024, dataset vigente de `operador_integral_satelite`, bindings de `VSCREEN-0080`, procesos `VPROC-0039/0043/0044`, 04A aplicable y runtime vigente de `vento-pulso`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, cobros, apertura/cierre de caja, cancelaciones, devoluciones, refunds, descuentos ni pruebas con operadores reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-005` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 61. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0080` se conserva como única identidad de Inicio POS;
+- [ ] `operador_integral_satelite` se trata como rol propio y no como unión de matrices;
+- [ ] se reconoce la reconciliación posterior de AUTH-CAT-022/023/024 sobre AUTH-RBAC-013;
+- [ ] el dataset vigente se toma con 21 grants: 11 NEXO y 10 PULSO;
+- [ ] los cinco grants PULSO ordinarios directos quedan separados de los cinco componentes sensibles;
+- [ ] las acciones sensibles requieren ambos carriles para el mismo actor/recurso/solicitud;
+- [ ] el home no utiliza `pulso.pos.main` como fallback;
+- [ ] la entrada exige sede habilitada como formato integrado;
+- [ ] check-in faltante bloquea mutaciones sin ocultar el contexto;
+- [ ] apertura de caja usa `VSCREEN-0089` y sesión personal;
+- [ ] nueva venta usa `VSCREEN-0081` mediante `orders.create`;
+- [ ] cobro usa `VSCREEN-0084` mediante `transactions.collect`;
+- [ ] cierre usa `VSCREEN-0090` mediante `cash.sessions.close`;
+- [ ] reverse, cancel, return, refund y discount no se vuelven acciones ordinarias por el rol;
+- [ ] no se inventan permisos de lectura/update, salón, preparación, entrega, pedidos externos o loyalty;
+- [ ] NEXO se conserva como owner de abastecimiento y recepción;
+- [ ] dispositivo compartido no transfiere sesión de caja ni reauth entre actores;
+- [ ] Realtime y optimismo de UI no se tratan como autoridad;
+- [ ] resultado desconocido permanece distinto de fallo confirmado;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] `PULSO-UX-006` recibe un handoff suficiente para diseñar supervisor sin heredar ejecución integral;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 62. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0080`;
+- modifica `/`, `/orders` ni otra ruta;
+- crea componentes, Server Actions o RPC;
+- modifica el catálogo de permisos;
+- modifica matrices o datasets;
+- concede componentes base de acciones sensibles;
+- crea permisos de lectura/update de pedidos;
+- crea permisos de salón, preparación, entrega, pedidos externos o loyalty;
+- procesa ventas o pagos reales;
+- abre o cierra caja real;
+- cancela ventas reales;
+- registra devoluciones o refunds reales;
+- aplica descuentos reales;
+- aprueba diferencias de caja;
+- modifica NEXO, ORIGO, FOGO, PASS o NUMERA;
+- modifica Supabase, RLS, grants, tablas, datos, Realtime o migraciones;
+- modifica packages compartidos;
+- retira físicamente `pulso.pos.main`;
+- corrige el runtime `/orders`;
+- diseña en detalle el inicio del supervisor;
+- sustituye `PULSO-UX-006..021`;
+- modifica el Registro 04A;
+- crea instancia física propia;
+- desarrolla `PULSO-UX-006`.
+
+---
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-004 — Diseñar inicio para mostrador`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-005 — Diseñar inicio para operador integral`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-006 — Diseñar inicio para supervisor`
 ### [ ] PULSO-UX-006 — Diseñar inicio para supervisor
 ### [ ] PULSO-UX-007 — Simplificar creación de venta
 ### [ ] PULSO-UX-008 — Simplificar cobro y medios de pago
