@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1353** |
+| Aprobadas | **1354** |
 | En propuesta | **0** |
-| No iniciadas | **243** |
+| No iniciadas | **242** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.77% (1353/1596)** |
+| Porcentaje de completamiento | **84.84% (1354/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **243** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1254** |
+| ⏸ NO_EVALUADA | **242** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1255** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-UX-001` — Inventariar procesos de venta, caja y salón | ✅ APROBADA |
-| Tarea actual | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-001` — Inventariar vistas POS | ⬜ NO INICIADA |
+| Última aprobada | `OPS-POS-001` — Definir zonas físicas, mesas y puntos de servicio del POS por sede | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-001` — Inventariar vistas POS | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-002` — Inventariar órdenes | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1152,7 +1152,7 @@
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-019` | Validar el prototipo con caja, salón, barra, cocina y mostrador | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-020` | Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-UX-021` | Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-POS-001` | Definir zonas físicas, mesas y puntos de servicio del POS por sede | — | — | `bloques/N_PULSO/01_TAREA_DERIVADA_OPS_AUD_001.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-POS-001` | Definir zonas físicas, mesas y puntos de servicio del POS por sede | — | — | `bloques/N_PULSO/01_TAREA_DERIVADA_OPS_AUD_001.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-001` | Inventariar rutas, pantallas, componentes y formularios actuales | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-002` | Inventariar Server Actions, API, RPC, consultas y jobs utilizados | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-003` | Inventariar tablas, vistas, eventos y sistemas fuente | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
