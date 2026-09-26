@@ -15263,7 +15263,1576 @@ Por tanto, el diseño queda completo, pero la ejecución de redención permanece
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles`
-### [ ] PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
+### ✅ PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-012 — Integrar redención de puntos
+**Tarea siguiente:** PULSO-UX-014 — Identificar actor real en terminal compartida
+**Tipo de tarea:** diseño documental integral del patrón transversal de confirmación de acciones sensibles en PULSO, separando intención, revisión de impacto, autorización, step-up, aprobación, ejecución, receipt y resultado durable; clasificando creación, cobro, caja, cancelación, devolución, reverso, reembolso, descuento, override de entrega y fidelización según efecto y riesgo; reconciliando `UX-BASE-009`, autorización PULSO vigente, handoffs de `PULSO-UX-007..012` y runtime actual; preservando idempotencia, doble toque, resultado desconocido, actor efectivo, territorio, razón/evidencia, accesibilidad y fronteras con terminal compartida, touch e integraciones posteriores; sin crear PermissionKeys, componentes, modales runtime ni materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, componentes, rutas, pantallas runtime, PermissionKeys, matrices, datasets, roles, grants, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, packages, dispositivos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar un contrato de experiencia único para que PULSO pida confirmación únicamente cuando una acción material lo requiera y, cuando lo haga, la persona pueda comprender exactamente **qué recurso**, **qué efecto**, **qué alcance** y **qué consecuencia** está a punto de comprometer.
+
+La confirmación debe reducir ejecución accidental sin convertirse en una segunda capa falsa de seguridad.
+
+Regla raíz:
+
+```text
+CONFIRMAR
+!=
+AUTORIZAR
+!=
+REAUTENTICAR
+!=
+APROBAR
+!=
+EJECUTAR
+!=
+CONFIRMAR RESULTADO
+```
+
+Una confirmación correcta prepara una intención ya válida para ejecución. La autoridad final, el estado vigente y el efecto pertenecen a sus contratos propietarios.
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-012
+
+`PULSO-UX-012` entrega:
+
+```text
+REDENCION PUEDE REQUERIR CONFIRMACION EXPLICITA SEGUN SU EFECTO
+CONFIRMAR != AUTORIZAR
+CONFIRMAR != REAUTENTICAR
+CONFIRMAR != CONSUMIR
+EL RESUMEN PREVIO DEBE MOSTRAR RECURSO / EFECTO / CONSECUENCIA
+DOBLE CLICK / DOBLE TAP NO PUEDE DUPLICAR MUTACION
+RESULTADO DESCONOCIDO BLOQUEA NUEVA CONFIRMACION CIEGA
+UNA DENEGACION NO SE RESUELVE CON OTRA CONFIRMACION
+```
+
+Esta tarea generaliza esas invariantes al resto de acciones sensibles de PULSO sin absorber la redención ni reabrir su contrato.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `PULSO-UX-013` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el patrón se define una sola vez;
+- no existe instancia física propia;
+- no se crea un componente universal de confirmación;
+- no se modifica ninguna ruta PULSO;
+- no se crean PermissionKeys;
+- no se ejecutan pagos, cancelaciones, descuentos, redenciones, cierres ni overrides;
+- no se modifica Supabase;
+- no se autoriza implementación física.
+
+---
+
+#### 4. Definición canónica de confirmación sensible
+
+Una confirmación sensible es una **revisión final de una intención material ya construida**, presentada inmediatamente antes de solicitar su ejecución autoritativa.
+
+Debe permitir responder:
+
+```text
+¿QUE VOY A HACER?
+¿SOBRE QUE RECURSO?
+¿CUAL ES EL EFECTO MATERIAL?
+¿QUE CAMBIARA?
+¿QUE NO CAMBIARA?
+¿QUE CONSECUENCIAS QUEDAN?
+¿CON QUE ACTOR Y CONTEXTO SE EJECUTARA?
+¿PUEDO CANCELAR ANTES DEL EFECTO?
+```
+
+No es un popup obligatorio para toda mutación y no reemplaza los controles empresariales de la acción.
+
+---
+
+#### 5. Separaciones obligatorias
+
+Se congela:
+
+```text
+CONFIRMACION UX
+!= DECISION DE AUTORIZACION
+
+CONFIRMACION UX
+!= COMPONENTE BASE DE UN PERMISO
+
+CONFIRMACION UX
+!= STEP-UP
+
+CONFIRMACION UX
+!= SEGREGACION DE FUNCIONES
+
+CONFIRMACION UX
+!= REASON CODE
+
+CONFIRMACION UX
+!= RECEIPT
+
+CONFIRMACION UX
+!= RESULTADO EMPRESARIAL
+```
+
+Que una persona pulse `Confirmar` nunca convierte una acción denegada en permitida ni una acción pendiente en aplicada.
+
+---
+
+#### 6. Fuentes de autoridad reconciliadas
+
+Esta tarea consume sin modificar:
+
+- `PULSO-UX-007..012`;
+- `PULSO-AUTH-006..016`;
+- `AUTH-CAT-022..024` y datasets `1.0.0` vigentes;
+- `UX-BASE-006..010`;
+- `UX-STATION-*` y contratos de interacción por estación;
+- `PROC-CAT-013`, `PROC-CAT-014`, `PROC-CAT-017` y `PROC-CAT-018`;
+- procesos y pantallas PULSO aplicables;
+- contratos de idempotencia, concurrencia, recuperación y resultado desconocido;
+- Registro 04A vigente;
+- runtime actual de `vento-pulso` como evidencia AS-IS, no como autoridad de diseño.
+
+---
+
+#### 7. Alcance funcional
+
+El patrón cubre acciones PULSO que puedan afectar al menos uno de estos dominios:
+
+- compromiso comercial;
+- dinero;
+- caja;
+- estado de pedido;
+- inventario o devolución física;
+- fidelización;
+- beneficio;
+- entrega excepcional;
+- autorización temporal;
+- efectos que propaguen cambios a otra aplicación;
+- hechos difíciles de revertir o que deban compensarse.
+
+No convierte toda navegación, búsqueda, lectura o cambio visual en acción sensible.
+
+---
+
+#### 8. Ordinario, sensible y excepcional permanecen distintos
+
+```text
+ACCION ORDINARIA DE BAJO RIESGO
+→ puede ejecutarse sin modal adicional cuando la intención ya es inequívoca
+
+ACCION MATERIAL ORDINARIA
+→ exige commit explícito proporcional
+
+ACCION SENSIBLE
+→ exige revisión del efecto antes del envío
+
+ACCION EXCEPCIONAL
+→ ruta separada + razón/evidencia + autoridad propia + confirmación proporcional
+```
+
+`UX-BASE-009` prevalece: una excepción no se convierte en acción ordinaria por agregarle un modal.
+
+---
+
+#### 9. Factores de sensibilidad
+
+La sensibilidad aumenta cuando existe uno o más de estos factores:
+
+- efecto monetario;
+- cambio irreversible o terminal;
+- necesidad de compensación si se revierte;
+- impacto sobre cliente o tercero;
+- modificación de caja;
+- descuento o excepción de precio;
+- cancelación, devolución, reverso o reembolso;
+- uso de autoridad `BASE_AND_OPERATIONAL`;
+- step-up o reautenticación fuerte;
+- razón o evidencia obligatorias;
+- diferencia de caja;
+- operación sobre un recurso ya confirmado;
+- propagación interaplicación;
+- estado incierto o riesgo de doble ejecución.
+
+La frecuencia de uso no reduce por sí sola la sensibilidad.
+
+---
+
+#### 10. Perfiles de confirmación
+
+Se define la siguiente taxonomía de experiencia, exclusivamente para composición UX:
+
+| Perfil | Uso | Comportamiento |
+| --- | --- | --- |
+| `NO_EXTRA_CONFIRMATION` | acción de bajo riesgo con intención inequívoca y reversible | una sola acción explícita puede enviar la intención |
+| `EXPLICIT_COMMIT` | mutación ordinaria material | CTA inequívoco + resumen mínimo antes del efecto |
+| `SENSITIVE_REVIEW` | dinero, cierre, consumo o consecuencia relevante | revisión explícita de recurso, efecto, actor y consecuencia |
+| `EXCEPTIONAL_STEP_UP` | cancelación, devolución, reverso, refund, descuento, override u otra excepción con controles reforzados | ruta excepcional, razón/evidencia, step-up cuando aplique y confirmación final |
+
+Estos nombres no crean estados de dominio ni PermissionKeys.
+
+---
+
+#### 11. `NO_EXTRA_CONFIRMATION`
+
+No se añade una confirmación adicional cuando:
+
+- la acción es de bajo riesgo;
+- el efecto es inmediato y fácilmente reversible dentro del mismo contrato;
+- la intención ya fue expresada de forma inequívoca;
+- no existe razón/evidencia obligatoria;
+- no existe step-up;
+- no existe riesgo razonable de toque accidental material.
+
+Evitar confirmaciones innecesarias forma parte del diseño seguro: saturar de modales degrada atención y vuelve mecánica la aceptación.
+
+---
+
+#### 12. `EXPLICIT_COMMIT`
+
+Una mutación ordinaria material usa una acción explícita que indique el efecto real.
+
+Ejemplos conceptuales:
+
+```text
+Crear venta
+Abrir caja con fondo $X
+Confirmar preparación
+```
+
+No usa `Aceptar`, `Continuar` o `Sí` cuando el verbo empresarial puede expresarse.
+
+---
+
+#### 13. `SENSITIVE_REVIEW`
+
+Antes de ejecutar una acción sensible ordinaria se presenta una revisión que incluya como mínimo, según aplique:
+
+- recurso;
+- importe, cantidad o alcance;
+- estado actual;
+- estado/efecto esperado;
+- actor efectivo;
+- sede, caja o sesión relevante;
+- irreversibilidad o compensación requerida;
+- relaciones que permanecerán intactas;
+- advertencia específica cuando exista riesgo adicional.
+
+La revisión no ejecuta por abrirse.
+
+---
+
+#### 14. `EXCEPTIONAL_STEP_UP`
+
+Una acción excepcional debe preservar la ruta separada definida por `UX-BASE-009`.
+
+La secuencia conceptual es:
+
+```text
+SOLICITAR / PREPARAR EXCEPCION
+→ RESOLVER REASON CODE Y EVIDENCIA
+→ EVALUAR AUTORIDAD
+→ STEP-UP / REAUTENTICACION CUANDO APLIQUE
+→ MOSTRAR EFECTO EXACTO
+→ CONFIRMAR
+→ EJECUTAR UNA VEZ
+→ RECEIPT / RESULTADO
+```
+
+El step-up no se sustituye por el botón de confirmación.
+
+---
+
+#### 15. Recurso visible antes de confirmar
+
+Toda confirmación material identifica el recurso afectado con una referencia humana y una identidad estable suficiente para evitar actuar sobre el elemento equivocado.
+
+Ejemplos:
+
+- pedido y referencia;
+- pago/transacción;
+- sesión de caja;
+- redención;
+- entrega;
+- devolución;
+- descuento asociado a venta.
+
+Un modal que solo diga `¿Está seguro?` es insuficiente.
+
+---
+
+#### 16. Efecto visible antes de confirmar
+
+La confirmación declara qué ocurrirá si el servidor acepta la acción.
+
+Debe distinguir:
+
+```text
+CAMBIA
+NO CAMBIA
+PUEDE REQUERIR EFECTO POSTERIOR
+```
+
+Ejemplo:
+
+```text
+Reembolsar este pago crea una transacción financiera vinculada.
+No elimina la venta original ni restaura inventario o puntos por inferencia.
+```
+
+---
+
+#### 17. Verbos empresariales concretos
+
+Los CTAs sensibles utilizan el verbo real:
+
+- `Cobrar`;
+- `Cerrar caja`;
+- `Cancelar pedido`;
+- `Crear devolución`;
+- `Revertir pago`;
+- `Reembolsar`;
+- `Aplicar descuento`;
+- `Confirmar entrega excepcional`;
+- `Consumir redención`, cuando exista autoridad ejecutable.
+
+No se oculta una operación sensible bajo `Guardar`, `Procesar` o `Aceptar`.
+
+---
+
+#### 18. Botones genéricos prohibidos para efectos sensibles
+
+Para una confirmación sensible no son suficientes:
+
+```text
+Sí
+Aceptar
+OK
+Continuar
+Confirmar
+```
+
+sin el verbo o efecto asociado.
+
+La acción secundaria de salida debe ser inequívoca, por ejemplo `Volver sin ejecutar` o `Cancelar`, según el contexto.
+
+---
+
+#### 19. Actor y contexto visibles
+
+La revisión muestra una proyección mínima del contexto con el que se intentará ejecutar:
+
+- trabajador efectivo cuando ya esté resuelto;
+- sede;
+- punto/caja cuando aplique;
+- sesión o turno relevante;
+- recurso objetivo.
+
+La proyección es informativa y debe revalidarse al ejecutar.
+
+---
+
+#### 20. Frontera con terminal compartida
+
+`PULSO-UX-014` conserva la identificación transversal del actor real.
+
+Esta tarea exige únicamente:
+
+```text
+CONFIRMACION SENSIBLE
+→ MUESTRA ACTOR EFECTIVO RESUELTO
+→ NO HEREDA ACTOR DE OTRA PERSONA
+→ NO GUARDA PIN/FIRMA EN EL RESUMEN
+```
+
+No diseña PIN, firma, cambio de trabajador ni lifecycle del dispositivo.
+
+---
+
+#### 21. Frontera con step-up y reautenticación
+
+Cuando la política exija reautenticación fuerte:
+
+```text
+STEP-UP VALIDO
+!=
+CONFIRMACION DEL EFECTO
+```
+
+El step-up demuestra una condición de identidad/autorización reforzada; la confirmación demuestra intención consciente sobre un efecto concreto.
+
+Si el riesgo cambia materialmente después del step-up, la política propietaria decide si debe repetirse. Esta tarea no inventa ventanas de vigencia.
+
+---
+
+#### 22. Frontera con aprobación y segregación
+
+Una confirmación nunca reemplaza:
+
+- componente base de un permiso `BASE_AND_OPERATIONAL`;
+- aprobador requerido;
+- segregación solicitante/aprobador/ejecutor;
+- autoridad de otra aplicación;
+- evidencia obligatoria.
+
+Regla:
+
+```text
+CONFIRMADO POR EL OPERADOR
+!=
+APROBADO POR LA AUTORIDAD
+```
+
+---
+
+#### 23. Razón y evidencia
+
+Cuando el contrato de la acción exige motivo o evidencia, deben resolverse **antes** del commit final.
+
+La confirmación resume:
+
+- reason code humano;
+- detalle complementario cuando sea necesario;
+- evidencia adjunta o referencia;
+- alcance aprobado.
+
+No utiliza un texto libre como sustituto de clasificación o autoridad.
+
+---
+
+#### 24. Versión y estado vigentes
+
+La confirmación no congela el recurso indefinidamente.
+
+Al ejecutar, servidor revalida:
+
+- versión;
+- estado;
+- permiso;
+- actor;
+- territorio;
+- dependencias;
+- límites de la operación.
+
+Si el recurso cambió materialmente después de abrir la revisión:
+
+```text
+STALE / CONFLICT
+→ DETENER
+→ REFRESCAR
+→ MOSTRAR DIFERENCIA
+→ RECONFIRMAR SOLO LA NUEVA INTENCION
+```
+
+---
+
+#### 25. Intención congelada durante el envío
+
+Una vez enviado el commit:
+
+- no se permite editar silenciosamente los parámetros de esa misma intención;
+- el botón no crea una segunda solicitud equivalente;
+- un cambio material genera una nueva intención después de conocer el resultado anterior;
+- el resumen visible puede permanecer como referencia mientras se procesa.
+
+---
+
+#### 26. Doble clic y doble toque
+
+Toda acción material debe resistir doble interacción.
+
+Regla UX:
+
+```text
+PRIMER COMMIT
+→ INTENCION EN VUELO
+→ CONTROLES DE EFECTO BLOQUEADOS
+→ MISMA IDENTIDAD IDEMPOTENTE
+```
+
+Deshabilitar el botón ayuda a la experiencia, pero **no sustituye** idempotencia en servidor.
+
+---
+
+#### 27. Estado `in-flight`
+
+Durante ejecución se muestra:
+
+- acción enviada;
+- recurso;
+- que el resultado aún no está confirmado;
+- posibilidad o no de abandonar la vista sin perder seguimiento;
+- referencia cuando ya exista.
+
+No se muestra `Éxito` solo porque el request salió del navegador.
+
+---
+
+#### 28. Cancelar antes del efecto
+
+Cuando el efecto todavía no ha sido enviado, la persona puede abandonar la confirmación sin mutación.
+
+Después del envío:
+
+```text
+CERRAR MODAL
+!=
+CANCELAR EFECTO
+```
+
+Si el contrato permite cancelación posterior, esa cancelación es otra acción nombrada con autoridad propia.
+
+---
+
+#### 29. Resultado desconocido
+
+Ante timeout o pérdida de respuesta:
+
+```text
+NO HAY RESPUESTA
+!=
+NO OCURRIO
+```
+
+La UX debe:
+
+- bloquear una nueva confirmación ciega;
+- conservar la identidad del intento;
+- consultar/reconciliar cuando el contrato lo permita;
+- mostrar `resultado por confirmar` o equivalente humano;
+- evitar pedir a la persona que “intente de nuevo” sin resolver el intento anterior.
+
+---
+
+#### 30. Idempotencia
+
+La confirmación reutiliza la identidad idempotente de la intención empresarial.
+
+```text
+MISMA INTENCION + RETRY EQUIVALENTE
+→ MISMA IDENTIDAD
+→ MISMO RESULTADO DURABLE
+```
+
+Una confirmación repetida no debe fabricar una nueva clave solo porque la persona volvió a abrir el diálogo.
+
+---
+
+#### 31. Duplicado y `ALREADY_APPLIED`
+
+Cuando el servidor demuestra que el mismo efecto ya fue aplicado:
+
+- se presenta el resultado previo;
+- no se vuelve a ejecutar;
+- la interfaz no lo presenta como fallo genérico;
+- se ofrece el siguiente paso seguro.
+
+`Ya aplicado` y `aplicado ahora` pueden compartir receipt empresarial sin duplicar efecto.
+
+---
+
+#### 32. Denegación, bloqueo y fallo técnico
+
+La UX distingue:
+
+| Clase | Comportamiento |
+| --- | --- |
+| `DENIED` | no ofrece reconfirmar para “probar de nuevo”; explica el límite seguro |
+| `BLOCKED` | explica condición de desbloqueo y preserva intención cuando proceda |
+| `CONFLICT` | obliga a refrescar/comparar antes de otra confirmación |
+| `TECHNICAL_FAILURE` | informa estado conocido y política segura de recuperación |
+| `UNKNOWN_OUTCOME` | reconcilia antes de permitir nueva ejecución |
+
+No todo resultado distinto de éxito habilita retry.
+
+---
+
+#### 33. Accesibilidad
+
+Una confirmación sensible debe:
+
+- tener título descriptivo;
+- anunciarse como diálogo cuando corresponda;
+- mantener orden de foco lógico;
+- permitir volver mediante teclado;
+- no depender solo de color;
+- exponer el verbo y consecuencia en texto;
+- anunciar errores y cambios de estado;
+- no esconder información material fuera del alcance del lector de pantalla.
+
+---
+
+#### 34. Frontera con experiencia táctil
+
+`PULSO-UX-015` conserva tamaños, densidad, targets y composición táctil definitiva.
+
+Esta tarea exige únicamente:
+
+- separación física suficiente entre acción material y salida;
+- ausencia de gesto accidental como único commit;
+- bloqueo de toques repetidos en `in-flight`;
+- CTA explícito y legible.
+
+---
+
+#### 35. Teclado, lector y Enter
+
+Una acción sensible no debe ejecutarse accidentalmente por el mismo `Enter` que terminó de capturar un código o campo.
+
+Cuando el dispositivo use lector/teclado:
+
+```text
+CAPTURAR INPUT
+!=
+CONFIRMAR EFECTO SENSIBLE
+```
+
+La interacción puede optimizarse posteriormente, pero el commit material conserva intención inequívoca.
+
+---
+
+#### 36. Expiración de sesión o contexto
+
+Si durante la revisión expiran sesión, turno, check-in, step-up o contexto:
+
+- la confirmación deja de ser ejecutable;
+- se conserva la información segura necesaria para reconstruir la intención;
+- se revalida después de recuperar contexto;
+- nunca se envía con autoridad obsoleta.
+
+---
+
+#### 37. Offline
+
+Una acción sensible que requiere servidor no se confirma como aplicada offline.
+
+Puede existir una experiencia de espera o cola futura únicamente cuando su contrato propietario la autorice.
+
+Esta tarea no crea outbox ni cola.
+
+---
+
+#### 38. Handoff entre superficies
+
+Si la acción sensible se ejecuta en otra pantalla o aplicación:
+
+- el origen transporta referencia e intención, no autoridad;
+- el destino vuelve a resolver actor, contexto y permiso;
+- el resumen de confirmación pertenece a la superficie que finalmente compromete el efecto;
+- el retorno transporta resultado/receipt, no un supuesto de éxito.
+
+---
+
+#### 39. Creación de venta
+
+`pulso.sales.orders.create` es una acción operativa ordinaria.
+
+Perfil objetivo:
+
+```text
+EXPLICIT_COMMIT
+```
+
+La confirmación final debe resumir únicamente lo material de la creación: oferta/líneas, cantidad, total o valor aplicable, modalidad y contexto ya resuelto.
+
+No añade step-up por defecto ni mezcla cobro, loyalty o inventario.
+
+---
+
+#### 40. Cobro
+
+`pulso.payments.transactions.collect` compromete dinero y recibe desde `PULSO-UX-008`:
+
+- recurso;
+- importe;
+- moneda;
+- medio;
+- actor.
+
+Perfil objetivo:
+
+```text
+SENSITIVE_REVIEW
+```
+
+La persona confirma el cobro concreto, no una etiqueta genérica `Procesar pago`.
+
+Un timeout conserva el payment attempt como resultado desconocido hasta conciliación.
+
+---
+
+#### 41. Apertura y cierre de caja
+
+`pulso.cash.sessions.start` y `pulso.cash.sessions.close` son acciones ordinarias con efecto durable.
+
+Apertura:
+
+```text
+EXPLICIT_COMMIT
+→ sede / punto / actor / fondo
+```
+
+Cierre:
+
+```text
+SENSITIVE_REVIEW
+→ sesión / actor / esperado / contado / diferencia / consecuencias
+```
+
+Una diferencia material puede activar controles adicionales propietarios, pero esta tarea no inventa umbrales.
+
+---
+
+#### 42. Cancelación de pedido
+
+`pulso.sales.orders.cancel` es `BASE_AND_OPERATIONAL` en el contrato vigente.
+
+Perfil:
+
+```text
+EXCEPTIONAL_STEP_UP
+```
+
+Debe mostrar:
+
+- pedido;
+- estado vigente;
+- trabajo futuro que se detendrá;
+- efectos ya ocurridos que permanecerán;
+- razón/evidencia;
+- efectos posteriores que requieren compensación.
+
+`Cancelar` no significa borrar el pedido.
+
+---
+
+#### 43. Devolución
+
+`pulso.sales.returns.create` es `BASE_AND_OPERATIONAL`.
+
+Perfil:
+
+```text
+EXCEPTIONAL_STEP_UP
+```
+
+La revisión distingue:
+
+- recurso devuelto;
+- cantidad;
+- condición;
+- efecto físico;
+- efecto económico separado;
+- inventario todavía no asumido como restock;
+- loyalty todavía no compensado por inferencia.
+
+---
+
+#### 44. Reverso de pago
+
+`pulso.payments.transactions.reverse` es `BASE_AND_OPERATIONAL`.
+
+Perfil:
+
+```text
+EXCEPTIONAL_STEP_UP
+```
+
+Debe identificar transacción, importe, proveedor/referencia, estado actual, motivo y consecuencia.
+
+Reversar crea un efecto vinculado; no edita el pago original.
+
+---
+
+#### 45. Reembolso
+
+`pulso.payments.transactions.refund` es `BASE_AND_OPERATIONAL`.
+
+Perfil:
+
+```text
+EXCEPTIONAL_STEP_UP
+```
+
+La revisión debe mostrar importe exacto, transacción origen, alcance parcial/total cuando el contrato lo permita y efectos no incluidos.
+
+No implica automáticamente devolución física, cancelación, restitución de puntos o corrección fiscal.
+
+---
+
+#### 46. Descuento
+
+`pulso.sales.discounts.apply` es `BASE_AND_OPERATIONAL`.
+
+Perfil:
+
+```text
+EXCEPTIONAL_STEP_UP
+```
+
+Debe mostrar:
+
+- venta/líneas afectadas;
+- regla o razón;
+- valor antes/después;
+- importe o porcentaje efectivo;
+- alcance;
+- actor;
+- aprobación/step-up requeridos por el contrato.
+
+La confirmación no habilita un valor libre fuera de política.
+
+---
+
+#### 47. Override de entrega
+
+`pulso.delivery.deliveries.override` es `BASE_AND_OPERATIONAL`.
+
+Perfil:
+
+```text
+EXCEPTIONAL_STEP_UP
+```
+
+El patrón actual de `delivery-override-bridge.tsx` ya contiene un modal dedicado, motivo, comentario, salida y CTA `Confirmar excepcionalmente` con estado `busy`.
+
+Se clasifica como **defensa parcial útil**, no como patrón suficiente por sí solo: la experiencia objetivo debe mantener recurso, efecto, autoridad, actor, evidencia, idempotencia y resultado durable correlacionados.
+
+---
+
+#### 48. Acumulación de puntos
+
+`PULSO-UX-011` conserva la acumulación.
+
+Esta tarea solo define que una acumulación manual o explícita no puede usar `Confirmar puntos` como prueba de autoridad o elegibilidad.
+
+Mientras el catálogo activo no publique una PermissionKey de loyalty ejecutable, ninguna confirmación desbloquea la acción.
+
+Cuando exista autoridad futura, el perfil dependerá del contrato final de acumulación y del grado de automatización asociado a la venta; esta tarea no inventa esa materialización.
+
+---
+
+#### 49. Redención
+
+`PULSO-UX-012` conserva la redención.
+
+Si una redención llega a ser ejecutable bajo autoridad vigente:
+
+```text
+SENSITIVE_REVIEW
+```
+
+como mínimo, o `EXCEPTIONAL_STEP_UP` cuando la política/beneficio exija controles reforzados.
+
+La revisión nunca sustituye elegibilidad PASS ni `pulso.loyalty.points.redeem` cuando esa autoridad sea publicada canónicamente.
+
+---
+
+#### 50. Inventario, NUMERA y efectos posteriores
+
+Una confirmación PULSO muestra únicamente los efectos realmente pertenecientes a la acción actual.
+
+No puede afirmar:
+
+- inventario ajustado si solo se creó una devolución;
+- hecho NUMERA registrado si solo se confirmó una venta;
+- puntos restituidos si solo se ejecutó un refund;
+- documento fiscal corregido si la acción no produjo ese efecto.
+
+`PULSO-UX-016..018` conservan esas integraciones.
+
+---
+
+#### 51. PermissionKeys PULSO activas observadas
+
+El catálogo activo `permissions.json@1.0.0` contiene 11 claves PULSO:
+
+| PermissionKey | Uso de confirmación en esta tarea |
+| --- | --- |
+| `pulso.access` | no es commit empresarial |
+| `pulso.delivery.deliveries.override` | `EXCEPTIONAL_STEP_UP` |
+| `pulso.sales.orders.create` | `EXPLICIT_COMMIT` |
+| `pulso.payments.transactions.collect` | `SENSITIVE_REVIEW` |
+| `pulso.payments.transactions.reverse` | `EXCEPTIONAL_STEP_UP` |
+| `pulso.cash.sessions.start` | `EXPLICIT_COMMIT` |
+| `pulso.cash.sessions.close` | `SENSITIVE_REVIEW` |
+| `pulso.sales.orders.cancel` | `EXCEPTIONAL_STEP_UP` |
+| `pulso.sales.returns.create` | `EXCEPTIONAL_STEP_UP` |
+| `pulso.payments.transactions.refund` | `EXCEPTIONAL_STEP_UP` |
+| `pulso.sales.discounts.apply` | `EXCEPTIONAL_STEP_UP` |
+
+La clasificación UX no altera el `authorization_mode` ni los grants.
+
+---
+
+#### 52. Acciones `BASE_AND_OPERATIONAL`
+
+El dataset vigente confirma como acciones reforzadas, según rol/contexto aplicable:
+
+- `pulso.delivery.deliveries.override`;
+- `pulso.payments.transactions.reverse`;
+- `pulso.payments.transactions.refund`;
+- `pulso.sales.orders.cancel`;
+- `pulso.sales.returns.create`;
+- `pulso.sales.discounts.apply`.
+
+Los grants publicados exigen componentes base y operativo del mismo actor/recurso/solicitud y, según el contrato, reautenticación fuerte, motivo, evidencia, control de versión y auditoría.
+
+La confirmación se suma a esos controles; no los reemplaza.
+
+---
+
+#### 53. Acciones operativas ordinarias
+
+El dataset vigente publica para actores aplicables acciones `OPERATIONAL_ONLY` como:
+
+- `pulso.sales.orders.create`;
+- `pulso.payments.transactions.collect`;
+- `pulso.cash.sessions.start`;
+- `pulso.cash.sessions.close`.
+
+Que sean ordinarias no significa que todas tengan el mismo patrón de confirmación: cobro y cierre presentan mayor materialidad que crear un borrador o abrir contexto.
+
+---
+
+#### 54. Loyalty ausente del catálogo activo
+
+El catálogo activo observado conserva:
+
+```text
+pulso.loyalty.* ACTIVAS = 0
+```
+
+El dataset `operational-role-grants@1.0.0` conserva:
+
+```text
+GRANTS pulso.loyalty.* = 0
+```
+
+Por tanto:
+
+```text
+CONFIRMACION VISIBLE
+!=
+AUTORIDAD DE LOYALTY
+```
+
+Esta tarea mantiene acumulación y redención fail-closed hasta reconciliación canónica posterior.
+
+---
+
+#### 55. Estado AS-IS general de `vento-pulso`
+
+El runtime actual no expone un patrón transversal único de confirmación sensible.
+
+Se observaron patrones heterogéneos:
+
+- botones de operación directa/optimista en el tablero de pedidos;
+- modal dedicado para override excepcional de entrega;
+- `Confirmar puntos` dentro del scanner;
+- redención que procesa el código dentro del mismo contenedor;
+- controles `busy` o sets de operación en vuelo para parte de las acciones.
+
+La existencia de esos patrones no los eleva a arquitectura objetivo.
+
+---
+
+#### 56. Cancelación AS-IS en pedidos
+
+`orders-board-live.tsx` expone `mark_cancelled` como botón `Cancelar` y lo conduce por `runOptimisticOperation`.
+
+Se observa protección parcial contra doble operación mediante `operationInFlightRef`, pero no se observó en ese flujo una revisión material previa equivalente al contrato de esta tarea.
+
+Brecha:
+
+```text
+BOTON CANCELAR
+→ NO DEBE EQUIVALER A CANCELACION EXCEPCIONAL COMPLETA
+```
+
+El owner de materialización deberá reconciliar acción, permiso exacto, razón/evidencia, step-up, efecto y receipt.
+
+---
+
+#### 57. Override de entrega AS-IS
+
+`delivery-override-bridge.tsx` contiene:
+
+- diálogo dedicado;
+- selección de motivo;
+- comentario;
+- botón `Cancelar`;
+- CTA de peligro `Confirmar excepcionalmente`;
+- estado `busy`.
+
+Es el patrón AS-IS más cercano a una confirmación excepcional consciente, pero no prueba por sí solo la conformidad completa de autorización, idempotencia, resultado ni auditoría.
+
+---
+
+#### 58. Loyalty AS-IS
+
+`QRScanner` contiene `Confirmar puntos`, calcula puntos estimados y procesa redención desde el modo correspondiente.
+
+Brechas relevantes para esta tarea:
+
+- texto de confirmación no concede autoridad;
+- el resultado visible debe depender del servidor;
+- el mismo Enter que captura un código no debe producir un commit sensible accidental;
+- el cambio de modo debe limpiar estado incompatible;
+- confirmación de acumulación y consumo de redención no deben compartir semántica por convivir en el mismo componente.
+
+---
+
+#### 59. Matriz de brechas y propietarios
+
+| Brecha | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| cancelación operativa AS-IS puede dispararse sin revisión material transversal | cancelación accidental o insuficientemente explicada | materialización PULSO + `PULSO-UX-009/013` | cancelación usa ruta excepcional, autoridad, razón/evidencia y confirmación proporcional |
+| patrón de override existe aislado | UX de excepciones divergente entre acciones | `PULSO-UX-013` + owners físicos aplicables | acciones excepcionales comparten semánticas obligatorias sin forzar un componente universal |
+| scanner usa confirmaciones locales de loyalty | UI puede parecer autoridad | `PULSO-UX-011/012` + autorización PULSO/PASS | catálogo/grants exactos y resultado server-side gobiernan el efecto |
+| doble toque se bloquea parcialmente en algunas superficies | duplicado posible fuera del componente | contratos de idempotencia + `PULSO-UX-013/015` | servidor y UX comparten identidad estable e in-flight seguro |
+| actor mostrado/capturado no es transversal | acción sensible puede atribuirse a actor incorrecto en terminal compartida | `PULSO-UX-014` | actor efectivo resuelto y visible antes de confirmar |
+| confirmación podría usarse como sustituto de step-up | bypass de control reforzado | AUTH + `PULSO-UX-013` | step-up y confirmación permanecen gates distintos |
+| resultado desconocido puede invitar a repetir | doble efecto | integración/idempotencia + owner de acción | reconciliación precede a nuevo commit |
+
+No queda brecha narrativa sin propietario y condición de salida.
+
+---
+
+#### 60. Anatomía visual mínima
+
+Una confirmación sensible contiene, según aplique:
+
+1. título con verbo empresarial;
+2. recurso;
+3. estado actual;
+4. efecto principal;
+5. importe/cantidad/alcance;
+6. consecuencias y elementos no incluidos;
+7. actor/contexto;
+8. razón/evidencia cuando corresponda;
+9. warning material;
+10. CTA con verbo específico;
+11. salida segura;
+12. estado de procesamiento después del envío.
+
+No todos los casos necesitan doce bloques visibles simultáneamente; la información puede compactarse sin ocultar lo material.
+
+---
+
+#### 61. Gramática de microcopia
+
+Patrón:
+
+```text
+[TITULO]
+Verbo + recurso
+
+[RESUMEN]
+Efecto principal + alcance
+
+[CONSECUENCIA]
+Qué permanece / qué requerirá otro efecto
+
+[ACCION]
+Verbo concreto
+```
+
+Ejemplo conceptual:
+
+```text
+Reembolsar $25.000 de la venta 1842
+
+Se creará un reembolso vinculado al pago seleccionado.
+La venta original permanecerá en el historial.
+Inventario y puntos no se restaurarán automáticamente.
+
+[Reembolsar $25.000] [Volver]
+```
+
+---
+
+#### 62. Estados de presentación después del commit
+
+La UX debe representar, según contrato propietario:
+
+```text
+SUBMITTING
+APPLIED
+ALREADY_APPLIED
+DENIED
+BLOCKED
+CONFLICT
+FAILED
+UNKNOWN_OUTCOME
+RECONCILIATION_REQUIRED
+```
+
+Los nombres físicos de estados de interfaz pertenecen a materialización; la semántica anterior es obligatoria.
+
+---
+
+#### 63. Receipt y referencia
+
+Cuando exista receipt empresarial, la confirmación posterior debe mostrarlo o hacerlo accesible.
+
+El receipt puede contener una referencia segura para:
+
+- soporte;
+- conciliación;
+- auditoría;
+- reanudación.
+
+No contiene secretos, PIN ni payloads sensibles completos.
+
+---
+
+#### 64. Después de éxito
+
+Después de un resultado `APPLIED`:
+
+- el CTA de efecto no sigue activo como si nada hubiera ocurrido;
+- la superficie muestra el nuevo estado autoritativo;
+- ofrece la siguiente acción válida;
+- evita duplicar la misma intención;
+- no declara efectos secundarios que no estén confirmados.
+
+---
+
+#### 65. Después de denegación o bloqueo
+
+Una denegación no abre un bucle:
+
+```text
+DENIED
+→ EXPLICAR LIMITE
+→ NO RECONFIRMAR
+```
+
+Un bloqueo puede permitir recuperar condiciones, pero la intención debe revalidarse antes de un nuevo commit.
+
+---
+
+#### 66. Conflicto y datos stale
+
+Si cambian monto, pedido, pago, sesión, diferencia, recompensa, estado o versión entre revisión y commit:
+
+- no se aplica silenciosamente al nuevo estado;
+- no se conserva la vieja confirmación;
+- se muestra la diferencia relevante;
+- la persona confirma únicamente la intención actualizada.
+
+---
+
+#### 67. Efectos parciales
+
+Cuando una operación compuesta produzca parcialidad:
+
+- se muestra qué quedó confirmado;
+- qué no ocurrió;
+- qué requiere conciliación;
+- qué no debe repetirse;
+- quién conserva la responsabilidad.
+
+No se presenta un único `Éxito` si solo una parte quedó aplicada.
+
+---
+
+#### 68. Compensaciones
+
+Si una acción posterior debe contrarrestar un efecto confirmado:
+
+```text
+COMPENSAR
+→ NUEVA ACCION
+→ NUEVA AUTORIDAD
+→ NUEVA CONFIRMACION CUANDO CORRESPONDA
+→ REFERENCIA AL HECHO ORIGINAL
+```
+
+Nunca se reabre el diálogo original para editar retrospectivamente el hecho.
+
+---
+
+#### 69. Auditoría
+
+La confirmación no necesita registrar cada render del modal como hecho empresarial.
+
+La ejecución sí debe poder correlacionar, según su contrato:
+
+- intención;
+- actor;
+- contexto;
+- recurso;
+- permiso;
+- razón/evidencia;
+- step-up/aprobación cuando aplique;
+- identidad idempotente;
+- resultado;
+- receipt.
+
+---
+
+#### 70. Minimización de datos
+
+El diálogo presenta solo lo necesario para decidir.
+
+No expone por conveniencia:
+
+- historial completo del cliente;
+- datos de otras sedes;
+- detalles de permisos internos;
+- stack traces;
+- tokens;
+- reglas antifraude;
+- PIN o secretos;
+- payload técnico completo.
+
+---
+
+#### 71. Seguridad y manipulación
+
+La UI nunca confía como autoridad en:
+
+- label visible;
+- valor escondido;
+- query parameter;
+- estado React;
+- botón habilitado;
+- confirmación previa;
+- rol mostrado en pantalla.
+
+El servidor revalida todo el contrato de la acción.
+
+---
+
+#### 72. Métricas y guardrails
+
+La materialización puede medir:
+
+- cancelaciones antes de commit;
+- doble interacción bloqueada;
+- conflictos/stale;
+- `UNKNOWN_OUTCOME`;
+- tiempo de revisión;
+- errores por clase;
+- necesidad de soporte.
+
+Guardrails:
+
+- menos confirmaciones no siempre significa mejor UX;
+- más confirmaciones no significa más seguridad;
+- una alta tasa de cancelación puede revelar microcopia confusa o acción mal ubicada;
+- las métricas no se usan para ocultar controles necesarios.
+
+---
+
+#### 73. Relación con la ruta excepcional
+
+`UX-BASE-009` mantiene las excepciones fuera del flujo ordinario.
+
+`PULSO-UX-013` especializa esa regla para PULSO:
+
+```text
+EXCEPCION
+→ NO SE ARREGLA CON MODAL GENERICO
+→ REQUIERE RUTA / CONTROLES / AUTORIDAD PROPIOS
+→ CONFIRMACION ES SOLO EL COMMIT FINAL
+```
+
+---
+
+#### 74. Relación con PULSO-UX-009 y PULSO-UX-010
+
+`PULSO-UX-009` entrega efecto, alcance, monto/cantidad y actor para cancelación, devolución, reverso y refund.
+
+`PULSO-UX-010` entrega cierre final, sesión, montos, diferencia y actor.
+
+Esta tarea convierte esas entradas en gramática de confirmación sin redefinir sus procesos.
+
+---
+
+#### 75. Handoff inmediato a PULSO-UX-014
+
+`PULSO-UX-014 — Identificar actor real en terminal compartida` recibe:
+
+```text
+TODA CONFIRMACION SENSIBLE DEBE MOSTRAR EL ACTOR EFECTIVO RESUELTO
+ACTOR MOSTRADO != PRINCIPAL TECNICO
+CAMBIO DE TRABAJADOR INVALIDA CONFIRMACIONES ACTOR-BOUND NO EJECUTADAS
+PIN / FIRMA NO FORMAN PARTE DEL RESUMEN PERSISTENTE
+STEP-UP Y FIRMA NO SE REUTILIZAN ENTRE ACTORES POR CONVENIENCIA
+RESULTADO Y RECEIPT DEBEN CONSERVAR ATRIBUCION AL ACTOR REAL
+```
+
+La 014 diseña resolución, cambio y presentación transversal del actor en terminal compartida.
+
+---
+
+#### 76. Frontera con PULSO-UX-015
+
+`PULSO-UX-015 — Diseñar experiencia táctil para POS` conserva:
+
+- tamaños de target;
+- spacing;
+- teclado táctil;
+- densidad;
+- gestos;
+- operación en tablet/estación;
+- prevención física de doble toque.
+
+Esta tarea solo fija la semántica del commit y la necesidad de resistencia a repetición.
+
+---
+
+#### 77. Frontera con PULSO-UX-016 a PULSO-UX-018
+
+Las integraciones posteriores reciben una regla clara:
+
+```text
+CONFIRMAR ACCION PULSO
+!=
+CONFIRMAR EFECTOS DE INVENTARIO
+!=
+CONFIRMAR HECHO NUMERA
+!=
+CONFIRMAR EFECTO PASS
+```
+
+Cada aplicación propietaria devuelve su resultado autoritativo y sus compensaciones conservan acciones separadas.
+
+---
+
+#### 78. Frontera con PULSO-UX-019
+
+`PULSO-UX-019` deberá validar con actores reales al menos:
+
+- comprensión del efecto antes del commit;
+- diferenciación de cancelar/revertir/refund/devolver;
+- cierre de caja con y sin diferencia;
+- cobro simple y recuperación incierta;
+- doble toque;
+- timeout;
+- denegación;
+- step-up;
+- terminal compartida;
+- acciones excepcionales.
+
+Esta tarea no ejecuta esas pruebas.
+
+---
+
+#### 79. Frontera con PULSO-UX-020 y PULSO-UX-021
+
+El prototipo histórico se audita después contra este contrato.
+
+No se conservará una confirmación por su sola existencia si:
+
+- usa semántica genérica;
+- mezcla autorización con intención;
+- oculta consecuencias;
+- no es idempotente;
+- permite doble ejecución;
+- confunde resultado local con resultado empresarial.
+
+`PULSO-UX-021` materializará la arquitectura objetivo sin tratar los modales actuales como contrato heredado.
+
+---
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya cubre acciones nombradas, autorización por contexto, separación de excepciones, revisión de impacto, step-up, idempotencia, concurrencia, resultado desconocido, actor efectivo, territorio, recuperación y resultado confirmado. Esta tarea especializa esas obligaciones para la gramática de confirmación PULSO sin introducir una conducta material nueva ni modificar el Registro 04A.
+
+---
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-004` para mutaciones nombradas con permiso, sede, estado y columnas permitidas;
+- `TREQ-PULSO-005` para conservar revisión, snapshot, estados comerciales y acciones posteriores separadas;
+- `TREQ-PULSO-006` para venta, pago, caja, descuento, anulación, devolución, reembolso, reapertura y cierre como acciones nombradas, autorizadas y auditables;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso protegido y territorio no ampliable desde la interfaz;
+- `TREQ-PULSO-026` para impedir que `pulso.pos.main` o una superficie visible se trate como permiso exacto suficiente;
+- `TREQ-PASS-032` para que éxito/error de loyalty correspondan al resultado confirmado de servidor;
+- `TREQ-UX-160` a `TREQ-UX-181`, derivados de `UX-BASE-009`, para separación, autoridad, efecto, evidencia, excepción, conciliación y retorno de acciones extraordinarias;
+- `TREQ-UX-182` a `TREQ-UX-203`, derivados de `UX-BASE-010`, para divulgación progresiva, revalidación, efectos materiales y acciones masivas;
+- cobertura AUTH vigente para actor, permiso, territorio, step-up, segregación y no bypass;
+- cobertura INTEGRATION vigente para idempotencia, concurrencia, replay, conflicto y `UNKNOWN_OUTCOME`.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio, batería global y cierre de rama quedan pendientes de incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron `main` vigente de `vento-shell`, `active-sequence`, topología `DEFINE_ONCE`, contratos `UX-BASE-009/010`, catálogo/datasets de autorización PULSO, handoffs aprobados de `PULSO-UX-008..011`, la base completa aprobada `PULSO-UX-012` aún pendiente de publicación y runtime vigente de `vento-pulso`, incluidos `orders-board-live.tsx`, `delivery-override-bridge.tsx` y `QRScanner`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, cobros, cierres, cancelaciones, devoluciones, reversos, refunds, descuentos, overrides ni loyalty real. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-013` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 83. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] confirmación, autorización, step-up, aprobación, ejecución y resultado permanecen separados;
+- [ ] se evita un modal obligatorio para toda mutación;
+- [ ] se definen los cuatro perfiles UX de confirmación sin convertirlos en estados de dominio;
+- [ ] toda confirmación material identifica recurso y efecto;
+- [ ] acciones sensibles muestran consecuencia y elementos que no cambian;
+- [ ] CTAs usan verbos empresariales concretos;
+- [ ] `Sí`, `OK` o `Aceptar` no constituyen por sí solos un CTA sensible suficiente;
+- [ ] actor y contexto visibles no se tratan como autoridad congelada;
+- [ ] `PULSO-UX-014` conserva la resolución de actor real en terminal compartida;
+- [ ] step-up y confirmación permanecen gates distintos;
+- [ ] segregación y componentes `BASE_AND_OPERATIONAL` no se sustituyen por confirmación;
+- [ ] razón/evidencia se resuelven antes del commit cuando son obligatorias;
+- [ ] stale/conflict obliga a refrescar y revisar nuevamente;
+- [ ] doble clic/doble toque no duplica efecto;
+- [ ] bloqueo UI no sustituye idempotencia server-side;
+- [ ] estado `in-flight` no se presenta como éxito;
+- [ ] cerrar un diálogo después del envío no cancela el efecto;
+- [ ] `UNKNOWN_OUTCOME` bloquea una nueva confirmación ciega;
+- [ ] retry equivalente conserva identidad idempotente;
+- [ ] `ALREADY_APPLIED` recupera el resultado previo sin segundo efecto;
+- [ ] deny, block, conflict, technical failure y unknown outcome tienen recuperación distinta;
+- [ ] teclado/lector no convierten captura de input en commit sensible accidental;
+- [ ] expiración de sesión/contexto invalida el commit hasta revalidación;
+- [ ] offline no confirma efectos server-side;
+- [ ] creación de venta usa `EXPLICIT_COMMIT`;
+- [ ] cobro usa `SENSITIVE_REVIEW`;
+- [ ] apertura usa `EXPLICIT_COMMIT` y cierre `SENSITIVE_REVIEW`;
+- [ ] cancelación, devolución, reverso, refund, descuento y override usan `EXCEPTIONAL_STEP_UP`;
+- [ ] loyalty no se desbloquea mediante confirmación mientras falte autoridad activa exacta;
+- [ ] las 11 PermissionKeys PULSO activas se reconcilian sin modificar catálogo ni grants;
+- [ ] acciones `BASE_AND_OPERATIONAL` conservan sus controles reforzados;
+- [ ] se documentan patrones AS-IS actuales sin elevarlos a arquitectura objetivo;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] anatomía y microcopia de confirmación distinguen recurso, efecto y consecuencia;
+- [ ] resultados parciales no se presentan como éxito total;
+- [ ] compensaciones son acciones nuevas vinculadas;
+- [ ] auditoría conserva correlación sin registrar secretos;
+- [ ] datos mostrados se minimizan;
+- [ ] `PULSO-UX-014` recibe handoff suficiente;
+- [ ] `PULSO-UX-015..021` conservan sus fronteras;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se modifica el Registro 04A;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 84. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- crea componente `ConfirmDialog` ni equivalente;
+- modifica `orders-board-live.tsx`;
+- modifica `delivery-override-bridge.tsx`;
+- modifica `QRScanner`;
+- crea rutas o pantallas nuevas;
+- crea o cambia PermissionKeys;
+- modifica roles, grants o datasets;
+- ejecuta ventas o pagos;
+- abre o cierra caja;
+- cancela pedidos;
+- crea devoluciones;
+- ejecuta reversos o refunds;
+- aplica descuentos;
+- ejecuta overrides de entrega;
+- acumula o redime puntos;
+- define la implementación de actor real en dispositivo compartido;
+- define targets táctiles definitivos;
+- materializa inventario, NUMERA o PASS;
+- crea step-up, PIN, MFA o firma nuevos;
+- crea reason codes físicos;
+- crea tablas, RPC, RLS, Edge Functions o migraciones;
+- modifica Supabase;
+- modifica datos;
+- modifica el Registro 04A;
+- crea instancia física;
+- ejecuta pruebas operativas;
+- desarrolla `PULSO-UX-014`.
+
+---
+
+#### 85. Decisión final de experiencia
+
+El patrón objetivo queda:
+
+```text
+INTENCION CONCRETA
++
+RECURSO Y ESTADO VIGENTES
++
+AUTORIDAD RESUELTA POR SU CONTRATO
++
+CONTROLES REFORZADOS CUANDO APLIQUEN
++
+RESUMEN DE EFECTO / ALCANCE / CONSECUENCIA
++
+ACTOR EFECTIVO VISIBLE
++
+COMMIT EXPLICITO
++
+IDENTIDAD IDEMPOTENTE
++
+RESULTADO SERVER-SIDE
+=
+ACCION SENSIBLE CONFIRMADA DE FORMA SEGURA
+```
+
+Nunca:
+
+```text
+MODAL + BOTON CONFIRMAR
+=
+AUTORIDAD
+```
+
+---
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-012 — Integrar redención de puntos`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-013 — Diseñar confirmaciones para acciones sensibles`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-014 — Identificar actor real en terminal compartida`
 ### [ ] PULSO-UX-014 — Identificar actor real en terminal compartida
 ### [ ] PULSO-UX-015 — Diseñar experiencia táctil para POS
 ### [ ] PULSO-UX-016 — Conectar venta con inventario
