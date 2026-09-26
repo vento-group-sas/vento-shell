@@ -10657,7 +10657,992 @@ Las tareas posteriores reciben:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-009 — Proteger acumulación de puntos`
-### [ ] PULSO-AUTH-009 — Proteger acumulación de puntos
+### ✅ PULSO-AUTH-009 — Proteger acumulación de puntos
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-008 — Definir permisos de cierre y anulación
+**Tarea siguiente:** PULSO-AUTH-010 — Proteger redenciones
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — protección server-side de la acumulación de puntos solicitada desde PULSO hacia PASS mediante permiso atómico `pulso.loyalty.points.accumulate`, hecho comercial elegible, actor y territorio efectivos, referencia empresarial estable, cálculo gobernado por regla/version PASS, atomicidad, idempotencia, recuperación de resultado y cierre de bypass directos al ledger o saldo
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; toda materialización futura ocurre únicamente mediante `PULSO-AUTH-009::<implementation_unit_id>` después de que el paquete propietario aplicable satisfaga `E5-GATE-008::<package_id> = PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera completa de autorización, integridad e idempotencia para otorgar puntos desde PULSO sin permitir que una pantalla visible, `pulso.pos.main`, un monto capturado por navegador, una referencia aleatoria, una sesión técnica o una RPC invocable directamente puedan fabricar o duplicar fidelización.
+
+La regla raíz queda:
+
+```text
+VENTA / TRANSACCION ELEGIBLE Y ESTABLE
++
+CLIENTE IDENTIFICADO
++
+ACTOR Y CONTEXTO OPERATIVO VALIDOS
++
+SEDE EFECTIVA
++
+PERMISO pulso.loyalty.points.accumulate
++
+REGLA PASS VIGENTE Y VERSIONADA
++
+IDENTIDAD IDEMPOTENTE DEL HECHO EMPRESARIAL
++
+COMANDO SERVIDOR AUTORITATIVO
+=
+ACUMULACION AUTORIZABLE
+```
+
+Ningún elemento aislado sustituye el conjunto completo.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-008
+
+`PULSO-AUTH-008` entrega a esta tarea cuatro restricciones transversales:
+
+- cancelación, void y refund permanecen separados de loyalty;
+- una acción PULSO no revierte ni compensa puntos por inferencia;
+- cualquier efecto de fidelización debe correlacionarse con el hecho comercial original;
+- actor, sede, recurso e idempotencia forman parte obligatoria de la decisión.
+
+Regla heredada:
+
+```text
+REFUND / VOID / CANCEL
+!=
+AUTOMATIC LOYALTY EFFECT
+```
+
+---
+
+#### 3. Handoffs acumulados de PULSO-AUTH-006 y PULSO-AUTH-007
+
+`PULSO-AUTH-006` ya definió:
+
+```text
+pulso.loyalty.points.accumulate
+```
+
+como capacidad ordinaria de `cajero_satelite`, con modalidad:
+
+```text
+OPERATIONAL_ONLY / T+C
+```
+
+y alcance máximo de venta confirmada y elegible, cliente identificado, sede efectiva y referencia idempotente.
+
+`PULSO-AUTH-007` confirmó que `gerencia_operativa` no recibe `pulso.loyalty.points.accumulate` por supervisión.
+
+Por tanto:
+
+```text
+CAJERO_SATELITE + CONTEXTO VALIDO + PERMISO EXACTO
+→ actor ordinario autorizable
+
+GERENCIA_OPERATIVA
+→ NO GRANT DE ACUMULACION POR INFERENCIA
+```
+
+---
+
+#### 4. Contrato PASS consumido
+
+Esta tarea consume `PASS-INT-001 — Definir integración PULSO → PASS para acumulación` sin redefinir ownership.
+
+La frontera permanece:
+
+```text
+PULSO
+→ captura intención operativa y solicita el efecto
+
+PASS
+→ valida regla de fidelización y conserva ledger/saldo
+```
+
+PULSO no es propietario del saldo ni del ledger de fidelización.
+
+---
+
+#### 5. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador define una sola vez el contrato global.
+
+Cada materialización futura utiliza:
+
+```text
+PULSO-AUTH-009::<implementation_unit_id>
+```
+
+No existe una identidad de unidad física autorizada por este documento.
+
+---
+
+#### 6. Gate físico posterior
+
+Una unidad física de `PULSO-AUTH-009` solo puede comenzar cuando concurran:
+
+```text
+PAQUETE PROPIETARIO APLICABLE
++
+E5-GATE-008::<package_id> = PASS
++
+IMPLEMENTATION_UNIT_ID CANONICO
++
+AUTORIZACION FISICA EXPLICITA
+```
+
+La aprobación del marcador global no satisface ninguna de esas condiciones por sí sola.
+
+---
+
+#### 7. Superficie protegida
+
+La capacidad empresarial protegida es:
+
+| Dimensión | Contrato |
+| --- | --- |
+| Aplicación | `pulso` |
+| Módulo | `loyalty` |
+| Recurso | `points` |
+| Acción | `accumulate` |
+| PermissionKey | `pulso.loyalty.points.accumulate` |
+| Modalidad | `OPERATIONAL_ONLY` |
+| Prerrequisito | `T+C` |
+| Actor ordinario | `cajero_satelite` |
+| Owner de ledger/saldo | PASS |
+| Owner de experiencia de venta | PULSO |
+
+La existencia de scanner, formulario o acción técnica no cambia esta identidad.
+
+---
+
+#### 8. Autoridad efectiva
+
+La decisión autorizante debe resolverse con la intersección de:
+
+```text
+PRINCIPAL TECNICO
+ACTOR HUMANO EFECTIVO
+EMPLEADO ACTIVO
+TURNO PUBLICADO Y VIGENTE
+CHECK-IN ACTIVO
+ROL OPERATIVO EFECTIVO cajero_satelite
+SEDE EFECTIVA
+AREA COMPATIBLE
+PERMISO pulso.loyalty.points.accumulate
+DISPOSITIVO CUANDO APLIQUE
+CLIENTE
+HECHO COMERCIAL
+ESTADO DEL HECHO
+DENEGACIONES PREVALENTES
+```
+
+La ausencia o contradicción de un dato requerido produce denegación cerrada.
+
+---
+
+#### 9. Lo que no concede autoridad
+
+No son autoridad suficiente:
+
+```text
+pulso.access
+pulso.pos.main
+pantalla /scanner visible
+cliente identificado
+monto escrito en UI
+PIN de trabajador
+sesion tecnica del dispositivo
+rol base cajero
+gerencia_operativa
+site_id enviado por navegador
+saldo actual visible
+formula local de puntos
+```
+
+Cada uno puede aportar contexto, nunca sustituir el permiso exacto y el hecho empresarial.
+
+---
+
+#### 10. Hecho empresarial origen obligatorio
+
+Toda acumulación debe derivar de una compra, venta o transacción comercial identificable y elegible.
+
+El servidor debe poder resolver, como mínimo:
+
+- identidad estable del hecho origen;
+- cliente asociado;
+- sede efectiva;
+- monto elegible autoritativo;
+- moneda;
+- estado empresarial que habilita acumulación;
+- regla PASS aplicable;
+- versión de la regla;
+- actor y dispositivo cuando correspondan;
+- identidad de correlación e idempotencia.
+
+Un monto aislado no constituye un hecho comercial.
+
+---
+
+#### 11. Venta no confirmada o incompatible
+
+No puede producir acumulación definitiva una venta:
+
+- inexistente;
+- no confirmada según el contrato propietario;
+- cancelada;
+- anulada;
+- ya compensada de forma incompatible;
+- de otra sede;
+- atribuida a otro cliente;
+- no elegible por regla vigente.
+
+La UI no puede convertir por sí misma ninguno de esos estados en una acumulación válida.
+
+---
+
+#### 12. Identidad del cliente
+
+El cliente debe resolverse server-side contra una identidad vigente y apta para fidelización.
+
+La identificación previa en scanner es una entrada de contexto, no prueba suficiente del efecto.
+
+Reglas:
+
+```text
+CLIENTE IDENTIFICADO
+!=
+CLIENTE ELEGIBLE PARA CUALQUIER ACUMULACION
+```
+
+El servidor debe volver a comprobar la relación entre cliente, venta y efecto antes de persistir puntos.
+
+---
+
+#### 13. PermissionKey exacta
+
+La mutación final debe evaluar:
+
+```text
+pulso.loyalty.points.accumulate
+```
+
+`pulso.pos.main` queda únicamente como evidencia AS-IS durante la transición.
+
+Regla objetivo:
+
+```text
+pulso.pos.main
+!=
+pulso.loyalty.points.accumulate
+```
+
+No existe expansión automática del permiso broad hacia esta capacidad.
+
+---
+
+#### 14. Revalidación en el punto de efecto
+
+La autorización debe comprobarse inmediatamente antes de la mutación autoritativa.
+
+No basta con:
+
+```text
+CHECK AL CARGAR PAGINA
+CHECK EN COMPONENTE CLIENTE
+CHECK DE BOTON
+CHECK DE IDENTIFICACION DE CLIENTE
+FIRMA DE ACTOR
+=
+AUTORIZACION FINAL
+```
+
+Toda Server Action, RPC o función capaz de producir el efecto debe impedir llamada directa que salte permiso, territorio, actor, origen, estado, regla o idempotencia.
+
+---
+
+#### 15. Estado AS-IS de la Server Action
+
+En `vento-pulso`, `src/modules/pos/actions/award-loyalty.action.ts` conserva actualmente:
+
+```text
+APP_ID = pulso
+POS_PERMISSION = pos.main
+```
+
+La acción:
+
+- usa `requireAppAccess`;
+- solicita firma de actor en dispositivo compartido cuando corresponde;
+- invoca el adaptador de acumulación;
+- intenta asociar después la firma con la transacción loyalty creada.
+
+Es adopción parcial útil, no cumplimiento del contrato objetivo.
+
+---
+
+#### 16. Estado AS-IS del adaptador
+
+`src/modules/pos/api/loyalty-award.api.ts` invoca:
+
+```text
+public.award_loyalty_points_external
+```
+
+con:
+
+```text
+user_id
+site_id
+amount_cop
+external_ref
+description
+metadata
+```
+
+No transporta de forma tipada una identidad canónica obligatoria de venta, pedido o transacción origen.
+
+Por tanto, la llamada observada no demuestra correlación empresarial suficiente.
+
+---
+
+#### 17. Estado AS-IS de la interfaz
+
+`src/modules/pos/components/qr-scanner.tsx` calcula una estimación local mediante:
+
+```text
+floor(amount / 1000)
+```
+
+y genera la referencia externa combinando:
+
+```text
+site truncado
+user truncado
+Date.now()
+Math.random()
+```
+
+La interfaz también toma `amountCop` desde captura manual.
+
+Estas decisiones describen el AS-IS y no constituyen el contrato objetivo.
+
+---
+
+#### 18. Referencia aleatoria no es idempotencia empresarial
+
+Queda prohibido tratar como identidad idempotente final una referencia que dependa únicamente de:
+
+```text
+Date.now
+Math.random
+identificadores truncados
+estado temporal de UI
+nuevo valor generado en cada intento
+```
+
+Un retry del mismo hecho debe conservar la misma identidad estable.
+
+---
+
+#### 19. Identidad idempotente estable
+
+La identidad debe derivarse del hecho empresarial o ser emitida y validada por servidor antes del primer efecto.
+
+Contrato:
+
+```text
+MISMO HECHO EMPRESARIAL
+→ MISMA IDENTIDAD IDEMPOTENTE
+```
+
+La caída del navegador, timeout, reinicio del dispositivo o retry no generan una identidad nueva para el mismo hecho.
+
+---
+
+#### 20. Replay equivalente
+
+Para una identidad ya confirmada:
+
+```text
+MISMA CLAVE
++
+MISMA HUELLA EMPRESARIAL
+=
+RESULTADO ORIGINAL O NO-OP IDEMPOTENTE
+```
+
+No se crea otra venta externa, otro movimiento de ledger ni otro incremento de saldo.
+
+La respuesta debe permitir recuperar el resultado durable ya aplicado.
+
+---
+
+#### 21. Conflicto por payload incompatible
+
+Para una identidad reutilizada con contenido empresarial materialmente distinto:
+
+```text
+MISMA CLAVE
++
+HUELLA EMPRESARIAL DISTINTA
+=
+CONFLICTO DETERMINISTA
+```
+
+El segundo contenido no aplica efectos parciales ni crea una nueva acumulación.
+
+---
+
+#### 22. Índice de referencia observado
+
+Supabase dev conserva un índice único sobre:
+
+```text
+(site_id, lower(btrim(external_ref)))
+```
+
+en `public.loyalty_external_sales`.
+
+Ese índice aporta deduplicación estructural de la misma referencia en una sede, pero no resuelve por sí solo:
+
+- referencia regenerada por retry;
+- recuperación del resultado original;
+- conflicto por misma clave y payload distinto;
+- identidad estable del hecho comercial.
+
+Por tanto se conserva como defensa parcial, no como contrato completo.
+
+---
+
+#### 23. Resultado desconocido
+
+Una pérdida de respuesta después de iniciar la mutación produce:
+
+```text
+UNKNOWN_OUTCOME
+```
+
+No autoriza a asumir fallo.
+
+Antes de cualquier repetición debe consultarse o reconciliarse el resultado usando la misma identidad empresarial.
+
+Mientras no se conozca el resultado:
+
+```text
+NO NUEVA CLAVE
+NO SEGUNDO EFECTO
+NO SALDO FABRICADO EN UI
+NO MENSAJE DE EXITO SIN CONFIRMACION
+```
+
+---
+
+#### 24. Cálculo de puntos
+
+La tasa, regla, multiplicador, redondeo, promoción, vigencia y elegibilidad pertenecen al contrato de fidelización PASS.
+
+La fórmula AS-IS:
+
+```text
+floor(amount_cop / 1000)
+```
+
+no se adopta aquí como regla canónica universal.
+
+La materialización debe resolver y conservar la regla/version realmente aplicable al hecho origen.
+
+---
+
+#### 25. Monto y moneda
+
+El navegador puede capturar o mostrar un monto, pero el servidor debe reconciliarlo contra el hecho comercial autoritativo.
+
+Reglas:
+
+- el monto no se confía por venir del formulario;
+- la moneda debe ser explícita o derivable de un contrato inequívoco;
+- el monto elegible puede diferir del total bruto según regla PASS;
+- una divergencia material produce rechazo o conflicto, no acumulación silenciosa.
+
+---
+
+#### 26. Ledger y saldo pertenecen a PASS
+
+La acumulación confirmada exige coherencia entre:
+
+```text
+HECHO ORIGEN
+MOVIMIENTO DE LEDGER PASS
+PROYECCION / SALDO COHERENTE
+```
+
+El saldo no es la única evidencia del movimiento.
+
+PULSO no inserta directamente el ledger ni fija el saldo como fuente de verdad.
+
+---
+
+#### 27. Atomicidad del comando gobernado
+
+El comando autoritativo debe garantizar que una confirmación exitosa no deje combinaciones como:
+
+```text
+venta externa sin movimiento de ledger definitivo
+movimiento de ledger sin correlacion al origen
+saldo actualizado sin movimiento durable
+resultado de exito sin transaccion recuperable
+```
+
+La implementación puede usar una transacción SQL única o una garantía equivalente aprobada, siempre que preserve la misma invariante observable.
+
+---
+
+#### 28. Atomicidad parcial observada en el RPC actual
+
+`public.award_loyalty_points_external` actualmente concentra en una función SQL:
+
+- inserción de `loyalty_external_sales`;
+- cálculo de puntos;
+- llamada a `grant_loyalty_points`;
+- vínculo con `loyalty_transaction_id`;
+- retorno de nuevo saldo y transacción.
+
+`pass.grant_loyalty_points` bloquea la fila del usuario con `FOR UPDATE` antes de insertar ledger y actualizar saldo.
+
+Esto es evidencia estructural favorable para atomicidad, pero no certifica por sí solo idempotencia empresarial, autorización exacta ni rollback E2E ante todas las fallas.
+
+---
+
+#### 29. Bypass directo por helpers de grant
+
+Supabase dev conserva `EXECUTE` para `authenticated` sobre:
+
+```text
+public.grant_loyalty_points
+pass.grant_loyalty_points
+```
+
+El helper PASS observado exige `is_active_staff()` pero no exige por sí mismo:
+
+- `pulso.loyalty.points.accumulate`;
+- sede efectiva;
+- hecho comercial origen;
+- identidad idempotente estable.
+
+Una materialización de `PULSO-AUTH-009` no queda completa mientras exista una ruta invocable equivalente que permita otorgar puntos saltando el contrato exacto.
+
+---
+
+#### 30. Bypass directo de ledger o saldo
+
+El estado DB observado conserva:
+
+- `INSERT` de `authenticated` sobre columnas de `pass.loyalty_transactions`;
+- política de self-insert del ledger por `auth.uid() = user_id`;
+- `UPDATE` de `authenticated` sobre `public.users.loyalty_points`;
+- política `users_update_self` limitada por fila, no por columna.
+
+Estas reglas no demuestran el contrato objetivo que prohíbe a un cliente fijar saldo o insertar un movimiento de acumulación por fuera del comando gobernado.
+
+La unidad física propietaria debe cerrar o encapsular esos caminos según la arquitectura canónica vigente y demostrar que no existe bypass alcanzable con autoridad menor.
+
+---
+
+#### 31. Seguridad de `SECURITY DEFINER`
+
+Las funciones de acumulación observadas usan `SECURITY DEFINER`.
+
+Por tanto, el cuerpo de la función y sus ACL forman parte de la frontera de autorización.
+
+Regla:
+
+```text
+SECURITY DEFINER
+!=
+AUTORIZACION IMPLICITA
+```
+
+Una función privilegiada debe validar su contrato exacto o permanecer inaccesible a consumidores que no lo hayan satisfecho.
+
+---
+
+#### 32. RLS actual de ventas loyalty externas
+
+`public.loyalty_external_sales` conserva RLS que exige `is_active_staff()` y `pulso.pos.main` para inserción/lectura staff.
+
+Esto es coherente con el AS-IS legacy, pero no demuestra adopción de:
+
+```text
+pulso.loyalty.points.accumulate
+```
+
+La materialización deberá alinear la frontera de datos con el permiso atómico o con una capa autoritativa equivalente que no permita bypass.
+
+---
+
+#### 33. Dispositivo compartido
+
+Cuando la operación se ejecuta desde un dispositivo compartido, la firma del trabajador real es obligatoria conforme al contrato transversal aplicable.
+
+La firma:
+
+- identifica al actor humano;
+- no concede `pulso.loyalty.points.accumulate`;
+- no sustituye turno/check-in;
+- no amplía sede;
+- no valida por sí sola la venta;
+- no sustituye idempotencia.
+
+---
+
+#### 34. Asociación tardía de la firma observada
+
+El AS-IS actual intenta vincular la firma del dispositivo con la transacción loyalty **después** de que el award devuelve éxito.
+
+Si esa asociación falla, el código observado registra el error pero no demuestra compensación del efecto ya aplicado.
+
+Por tanto, el contrato objetivo exige que la evidencia actor → resultado final sea durable, recuperable y no pueda quedar opcionalmente desprendida del efecto.
+
+La integración transversal de dispositivo/actor continúa en `PULSO-AUTH-012` y `PULSO-AUTH-013`.
+
+---
+
+#### 35. Territorio
+
+`site_id` es un localizador que debe resolverse contra la sede operativa efectiva.
+
+Regla:
+
+```text
+site_id DEL CLIENTE
+!=
+AUTORIDAD TERRITORIAL
+```
+
+La acumulación debe fallar si venta, actor, cliente operativo y sede efectiva no forman una combinación autorizada.
+
+`PULSO-AUTH-011` conserva la materialización transversal del límite territorial.
+
+---
+
+#### 36. Actor humano
+
+El resultado debe distinguir y correlacionar:
+
+```text
+PRINCIPAL TECNICO
+ACTOR HUMANO EFECTIVO
+DISPOSITIVO
+SEDE
+PERMISO
+HECHO ORIGEN
+TRANSACCION LOYALTY
+```
+
+`auth.uid()` por sí solo no demuestra el actor humano en una terminal compartida.
+
+`PULSO-AUTH-013` conserva la materialización transversal de atribución laboral.
+
+---
+
+#### 37. Compensaciones posteriores
+
+Esta tarea protege acumulación positiva originada por un hecho elegible.
+
+No autoriza automáticamente:
+
+- reversión de puntos por refund;
+- restitución por void;
+- ajuste manual;
+- compensación;
+- corrección de saldo;
+- expiración;
+- redención.
+
+Cada efecto debe conservar su propia semántica, permiso y correlación.
+
+---
+
+#### 38. Offline y degradación
+
+PULSO no confirma puntos localmente cuando el servidor autoritativo no está disponible.
+
+Si una arquitectura futura usa cola/outbox, debe preservar:
+
+- misma identidad idempotente;
+- hecho origen;
+- actor;
+- sede;
+- permiso revalidado al ejecutar;
+- política de expiración y reconciliación.
+
+Esta tarea no selecciona ni crea esa arquitectura.
+
+---
+
+#### 39. Clases semánticas mínimas de resultado
+
+La implementación debe distinguir al menos:
+
+| Clase | Semántica |
+| --- | --- |
+| `APPLIED` | efecto confirmado exactamente una vez |
+| `ALREADY_APPLIED` | mismo hecho ya aplicado; retorna resultado durable sin repetir |
+| `DENIED` | autoridad, actor, sede o contexto insuficientes; cero efecto |
+| `BUSINESS_REJECTED` | cliente, venta, monto, moneda, regla o elegibilidad inválidos; cero efecto |
+| `IDEMPOTENCY_CONFLICT` | misma identidad con contenido incompatible; cero segundo efecto |
+| `UNKNOWN_OUTCOME` | resultado aún no demostrable; exige reconciliación |
+| `TECHNICAL_FAILURE_NO_EFFECT_PROVEN` | fallo técnico sin éxito confirmado |
+
+Los nombres físicos pueden variar; las semánticas no pueden colapsarse en un único error genérico si eso induce un retry inseguro.
+
+---
+
+#### 40. Auditoría mínima
+
+Una acumulación debe poder reconstruir, sin secretos:
+
+- principal técnico;
+- actor humano;
+- turno/check-in cuando apliquen;
+- dispositivo;
+- sede;
+- PermissionKey evaluada;
+- cliente;
+- hecho comercial origen;
+- monto y moneda;
+- regla/version PASS;
+- identidad idempotente;
+- huella empresarial relevante;
+- decisión de autorización;
+- resultado semántico;
+- transacción de ledger;
+- saldo/proyección resultante;
+- correlación temporal y técnica.
+
+No se registran PIN en claro, tokens de sesión ni datos personales innecesarios.
+
+---
+
+#### 41. Invariantes de autorización e integridad
+
+| Escenario | Resultado obligatorio |
+| --- | --- |
+| `pulso.access` sin permiso de acumulación | `DENY` |
+| `pulso.pos.main` legacy sin permiso atómico objetivo | no demuestra conformidad final |
+| `gerencia_operativa` por supervisión | `DENY` |
+| cajero sin turno/check-in vigente | `DENY` |
+| sede enviada distinta a sede efectiva | `DENY` |
+| cliente sin hecho elegible correlacionado | `DENY` |
+| monto UI distinto al monto autoritativo | rechazo o conflicto |
+| venta cancelada/anulada/no elegible | `DENY` |
+| retry equivalente con misma identidad | mismo resultado, sin segundo efecto |
+| misma identidad con huella incompatible | conflicto, cero segundo efecto |
+| timeout después de enviar | reconciliar antes de repetir |
+| firma compartida válida pero actor sin permiso | `DENY` |
+| acceso directo a helper de grant con autoridad menor | debe quedar bloqueado o exigir contrato equivalente |
+| acceso directo a ledger/saldo con autoridad menor | debe quedar bloqueado |
+| éxito sin correlación durable actor/origen/ledger | resultado no certificable como conformidad |
+
+---
+
+#### 42. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| Server Action y RPC usan `pulso.pos.main` en vez de `pulso.loyalty.points.accumulate`. | bloquea autorización atómica final | `PULSO-AUTH-009::<implementation_unit_id>` + `PULSO-AUTH-015` | la mutación y su frontera DB evalúan la PermissionKey exacta sin broad-authority equivalente |
+| La UI genera `external_ref` con `Date.now`, `Math.random` e IDs truncados. | retry del mismo hecho puede obtener otra identidad y duplicar puntos | `PULSO-AUTH-009::<implementation_unit_id>` | identidad estable del hecho, persistida/reutilizada desde antes del primer efecto |
+| El input tipado de award no exige `order_id` ni otra identidad empresarial origen. | monto/ref no demuestran una compra elegible | `PULSO-AUTH-009::<implementation_unit_id>` | comando correlaciona de forma obligatoria el efecto con un hecho comercial estable y autoritativo |
+| UI y RPC reproducen `floor(amount/1000)` como lógica local/legacy. | puede divergir de reglas PASS versionadas | `PULSO-AUTH-009::<implementation_unit_id>` + integración PASS propietaria | cálculo autoritativo usa regla/version PASS y la evidencia conserva esa versión |
+| El índice único solo deduplica la misma referencia dentro de sede. | no cubre referencia regenerada, recuperación ni conflicto semántico | `PULSO-AUTH-009::<implementation_unit_id>` | replay equivalente recupera resultado; payload distinto genera conflicto determinista |
+| `public.grant_loyalty_points` y `pass.grant_loyalty_points` mantienen EXECUTE para `authenticated` y no exigen el contrato completo de PULSO. | existe una frontera DB con autoridad más débil que la mutación objetivo | unidad física propietaria + contratos AUTH/DB aplicables | helpers quedan internos/restringidos o revalidan permiso, territorio, origen e idempotencia equivalentes |
+| `pass.loyalty_transactions` permite self-insert y `public.users.loyalty_points` conserva UPDATE autenticado por fila. | la política observada no demuestra que ledger/saldo solo muten mediante comando gobernado | unidad física propietaria + contratos AUTH/DB/PASS aplicables | pruebas demuestran cero bypass de ledger/saldo para clientes y staff sin autoridad específica |
+| La firma compartida se asocia al `transaction_id` después del award y un fallo de asociación solo se registra. | puede existir efecto sin vínculo durable al actor efectivo | `PULSO-AUTH-009::<implementation_unit_id>` + `PULSO-AUTH-012` + `PULSO-AUTH-013` | actor/dispositivo/resultado quedan correlacionados de forma durable o reconciliable antes de certificar éxito |
+| Supabase dev no contiene filas en `loyalty_external_sales` ni `pass.loyalty_transactions`. | no existe evidencia operativa E2E sobre casos reales | `PULSO-AUTH-016` | pruebas controladas demuestran allow/deny, retry, concurrencia, actor y reconciliación |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 43. Frontera con tareas posteriores
+
+| Tarea | Responsabilidad reservada |
+| --- | --- |
+| `PULSO-AUTH-010` | proteger redenciones sin reutilizar autoridad de acumulación |
+| `PULSO-AUTH-011` | hacer vinculante el límite territorial del turno y recurso |
+| `PULSO-AUTH-012` | integrar terminal compartida sin transferir privilegios |
+| `PULSO-AUTH-013` | registrar al trabajador efectivo como actor durable |
+| `PULSO-AUTH-014` | mantener configuración y administración separadas de operación |
+| `PULSO-AUTH-015` | materializar PermissionKeys, migrar consumers y retirar broad authority |
+| `PULSO-AUTH-016` | certificar allow/deny, idempotencia, concurrencia, recuperación e integración |
+
+La autoridad de acumular no se reutiliza como autoridad de ninguna de esas acciones.
+
+---
+
+#### 44. Materialización física posterior
+
+La futura unidad `PULSO-AUTH-009::<implementation_unit_id>` deberá materializar únicamente el alcance que su `implementation_unit_id`, package lineage y autorización física declaren.
+
+Puede requerir, según la unidad propietaria aprobada:
+
+- migración de permisos;
+- Server Action o adaptador;
+- RPC/función SQL;
+- ACL/grants;
+- RLS;
+- esquema o constraint de idempotencia;
+- contratos/tipos compartidos;
+- pruebas de integración y seguridad;
+- migración de consumidores.
+
+Cualquier cambio Supabase de VENTO deberá crearse, versionarse, documentarse y ejecutarse desde `vento-shell`.
+
+Este marcador global no ejecuta esos cambios.
+
+---
+
+#### 45. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: autorización exacta, contexto operativo, territorio, ledger/saldo, acumulación server-side, compra elegible, regla versionada, actor, dispositivo, idempotencia, concurrencia, resultado desconocido, recuperación y prohibición de bypass ya poseen cobertura verificable vigente. Esta tarea especializa esa cobertura en el contrato físico de acumulación PULSO → PASS sin crear una obligación material nueva.
+
+---
+
+#### 46. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente de:
+
+- `TREQ-PASS-008` para servidor autorizado, atomicidad, idempotencia y prohibición de escritura directa del ledger/saldo por cliente;
+- `TREQ-PASS-010` para ledger inmutable/reconciliable, reglas/versiones y reintentos sin duplicación;
+- `TREQ-PASS-025` para cliente, compra elegible, monto, moneda, regla vigente, actor, dispositivo, referencia estable y coherencia ledger/saldo;
+- `TREQ-PASS-026` para prohibir referencias basadas únicamente en `Date.now`, `Math.random`, IDs truncados o estado de UI;
+- `TREQ-PASS-029` para firma del trabajador real en dispositivo compartido;
+- `TREQ-PASS-030` para secreto efímero y controles del PIN;
+- `TREQ-PASS-032` para que la interfaz refleje solo resultados confirmados y distinga duplicado, conflicto, denegación y ya aplicado;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso protegido y territorio no ampliable por `site_id`;
+- `TREQ-PULSO-026` para separar permiso observado de suficiencia contractual;
+- `TREQ-AUTH-001`, `TREQ-AUTH-004`, `TREQ-AUTH-006`, `TREQ-AUTH-008`, `TREQ-AUTH-009`, `TREQ-AUTH-011` y `TREQ-AUTH-013` para autorización canónica, equivalencia de evaluadores, protección del saldo, contexto operativo, territorio, actor compartido y no bypass de mutaciones;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-111`, `TREQ-INTEGRATION-112`, `TREQ-INTEGRATION-113`, `TREQ-INTEGRATION-120`, `TREQ-INTEGRATION-121` y `TREQ-INTEGRATION-142` para identidad estable, replay, conflicto, concurrencia y recuperación de resultado desconocido.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 47. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar el artefacto; no se ejecutó build de producto. |
+| LOCAL | NOT_EXECUTED | El marcador no fue insertado en un checkout del usuario ni sometido allí a formateador, quality, delivery, topología y batería global. |
+| REMOTA | PASS | Se verificaron `vento-shell` canónico, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, contratos PULSO/PASS, `vento-pulso/main@715b5683db05caa010d725679b5ada4705a6da6e`, blobs de award/scanner y estado read-only de RPC, grants, RLS, índices, ledger y saldo en Supabase dev. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, acumulaciones, retries, timeouts, concurrencia, dispositivos compartidos ni reconciliaciones reales; las tablas observadas de acumulación estaban sin filas de evidencia operativa. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `PULSO-AUTH-009::<implementation_unit_id>` ni ejecuta cambios POST_E5. |
+
+---
+
+#### 48. Criterios de aceptación
+
+- [ ] La PermissionKey protegida es exactamente `pulso.loyalty.points.accumulate`.
+- [ ] `cajero_satelite` permanece actor ordinario autorizable únicamente con `T+C` y territorio compatible.
+- [ ] `gerencia_operativa` no recibe acumulación por supervisión.
+- [ ] `pulso.pos.main` no se acepta como autoridad final.
+- [ ] El hecho origen es una venta/compra/transacción estable y elegible.
+- [ ] El cliente se revalida contra el hecho origen.
+- [ ] Monto y moneda se resuelven desde fuente autoritativa, no solo desde UI.
+- [ ] La regla de puntos y su versión pertenecen a PASS y quedan correlacionadas al resultado.
+- [ ] La fórmula AS-IS `floor(amount/1000)` no se convierte por inferencia en regla universal.
+- [ ] La identidad idempotente existe antes del primer efecto y sobrevive retries/reinicio/pérdida de red.
+- [ ] `Date.now`, `Math.random` e IDs truncados no bastan como identidad empresarial.
+- [ ] Mismo key + misma huella devuelve resultado original/no-op sin duplicar.
+- [ ] Mismo key + huella incompatible produce conflicto sin segundo efecto.
+- [ ] Un timeout o respuesta perdida se reconcilia antes de repetir.
+- [ ] El índice único observado se conserva como defensa parcial, no como única idempotencia.
+- [ ] Ledger, saldo y hecho origen permanecen coherentes o la operación no se certifica como aplicada.
+- [ ] PASS conserva ownership del ledger y saldo.
+- [ ] La Server Action, RPC y capa DB no permiten bypass con autoridad menor.
+- [ ] Los helpers `grant_loyalty_points` no quedan como camino equivalente con validación más débil.
+- [ ] El cliente no puede crear ledger ni fijar `loyalty_points` por una ruta de autoridad inferior.
+- [ ] `SECURITY DEFINER` conserva checks explícitos o una frontera de ejecución restringida.
+- [ ] RLS/ACL se alinean con el permiso atómico o con una frontera autoritativa equivalente.
+- [ ] La firma de dispositivo identifica al humano pero no concede autoridad.
+- [ ] La correlación actor/dispositivo/resultado es durable o reconciliable.
+- [ ] `site_id` del navegador no amplía territorio.
+- [ ] Refund, void, cancel y ajustes no generan efectos loyalty automáticos.
+- [ ] No existe confirmación local definitiva de puntos cuando el servidor no confirma.
+- [ ] Las clases de resultado distinguen aplicado, ya aplicado, denegado, rechazo empresarial, conflicto y resultado desconocido.
+- [ ] Todo hallazgo tiene propietario y condición de salida.
+- [ ] La topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde este marcador global.
+
+---
+
+#### 49. Límites
+
+Esta tarea no:
+
+- modifica `vento-pulso`;
+- cambia la UI del scanner;
+- cambia `awardLoyaltyPointsAction`;
+- cambia `award_loyalty_points_external`;
+- cambia `grant_loyalty_points`;
+- crea o revoca grants;
+- cambia RLS;
+- modifica `public.users`;
+- modifica `pass.loyalty_transactions`;
+- cambia reglas comerciales de puntos;
+- crea una nueva tasa de acumulación;
+- crea una cola/outbox;
+- ejecuta una venta;
+- otorga puntos reales;
+- corrige saldos;
+- revierte puntos;
+- protege redenciones;
+- implementa territorio de turno;
+- implementa dispositivo compartido;
+- implementa actor humano;
+- migra físicamente `pulso.pos.main`;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica datos;
+- modifica el Registro 04A;
+- crea o autoriza una instancia física;
+- ejecuta E5.
+
+---
+
+#### 50. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-008 — Definir permisos de cierre y anulación`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-009 — Proteger acumulación de puntos`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-010 — Proteger redenciones`
 ### [ ] PULSO-AUTH-010 — Proteger redenciones
 ### [ ] PULSO-AUTH-011 — Limitar operación a sede del turno
 ### [ ] PULSO-AUTH-012 — Integrar dispositivos POS compartidos
