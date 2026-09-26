@@ -6860,7 +6860,1324 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-006 — Definir permisos de cajero`
-### [ ] PULSO-AUTH-006 — Definir permisos de cajero
+### ✅ PULSO-AUTH-006 — Definir permisos de cajero
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-005 — Inventariar importaciones
+**Tarea siguiente:** PULSO-AUTH-007 — Definir permisos de supervisor
+**Tipo de tarea:** definición documental del contrato de autorización ordinaria del rol operativo `cajero_satelite`, cerrando la descomposición de `pulso.pos.main` necesaria para caja sobre capacidades atómicas de pedidos, cobro, apertura de caja e identificación/fidelización, con denegación por defecto, alcance territorial operativo, prerrequisitos de turno/check-in y separación explícita de cancelación, reembolso, cierre, override, importaciones y demás capacidades reservadas; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, catálogo runtime de permisos, matrices runtime, roles, RLS, RPC, funciones, Server Actions, páginas, datos, Supabase, migraciones, packages, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada qué capacidades PULSO puede ejercer ordinariamente un actor cuyo rol operativo efectivo sea `cajero_satelite`, sin reutilizar `pulso.pos.main` como autoridad total y sin convertir el nombre del rol, la entrada a la aplicación, el dispositivo o la sede seleccionada en permisos implícitos.
+
+La tarea resuelve:
+
+- qué permiso mantiene la entrada a PULSO;
+- qué capacidades atómicas sustituyen la parte ordinaria de caja hoy absorbida por `pulso.pos.main`;
+- cuáles de esas capacidades recibe `cajero_satelite`;
+- cuáles permanecen expresamente fuera del rol;
+- qué modalidad, prerrequisito y alcance mínimo exige cada concesión ordinaria;
+- qué límites de recurso y estado acompañan a cada permiso;
+- cómo se preservan ownership y fronteras con PASS, NEXO, NUMERA y otros actores PULSO;
+- cómo se trata la convivencia temporal con permisos legacy sin ampliar autoridad;
+- qué tareas reciben las capacidades sensibles o excepcionales restantes.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-005
+
+`PULSO-AUTH-005` entrega a esta tarea las siguientes restricciones:
+
+```text
+VISIBILIDAD DE /sales-imports
+!=
+AUTORIDAD PARA MAPEAR
+!=
+AUTORIDAD PARA IMPORTAR
+!=
+AUTORIDAD PARA PUBLICAR
+```
+
+También entrega:
+
+- `pos.main` como permiso observado AS-IS, no como diseño final;
+- publicación de importaciones como efecto de mayor impacto que lectura o staging;
+- necesidad de separar autoridad operativa ordinaria de autoridad administrativa;
+- prohibición de inferir permisos de cajero desde la existencia de la página.
+
+Por tanto, ninguna capacidad de importación se incorpora al contrato ordinario de `cajero_satelite`.
+
+---
+
+#### 3. Handoffs acumulados de PULSO-AUTH-002..004
+
+Los inventarios aprobados anteriores establecen:
+
+- pedidos, líneas, estados, pago, fulfillment, despacho, chat, facturación e historial son responsabilidades distintas;
+- `/salon` separa lectura, sesiones y llamados de servicio;
+- scanner, identificación, acumulación y redención son acciones diferentes;
+- `pulso.delivery.deliveries.override` ya demuestra que una excepción requiere permiso específico;
+- abrir una página no autoriza sus mutaciones;
+- ninguna operación de loyalty transfiere ownership del ledger desde PASS a PULSO.
+
+Esta tarea consume esos handoffs sin fusionar sus acciones bajo un permiso genérico.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el contrato se define una sola vez;
+- no existe instancia física propia;
+- no se siembran permisos;
+- no se modifican matrices;
+- no se retira `pulso.pos.main` en runtime;
+- no se altera el rol legacy `cajero`;
+- no se altera `cajero_satelite` en Supabase;
+- no se implementan guards, RPC o RLS;
+- no se ejecutan ventas, cobros, puntos ni aperturas de caja.
+
+---
+
+#### 5. Actor contractual
+
+El actor ordinario de esta tarea es:
+
+```text
+operational_role = cajero_satelite
+```
+
+Su autoridad requiere, según la capacidad:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ EMPLEADO ACTIVO
++ TURNO PUBLICADO Y VIGENTE
++ ROL OPERATIVO EFECTIVO cajero_satelite
++ SEDE AUTORIZADA
++ ÁREA OPERATIVA COMPATIBLE DE TIPO cashier
++ CHECK-IN CUANDO CORRESPONDE
++ PERMISO ATÓMICO EXPLÍCITO
++ RECURSO Y ESTADO COMPATIBLES
++ AUSENCIA DE DENEGACIÓN SUPERIOR
+= DECISIÓN DE AUTORIZACIÓN
+```
+
+---
+
+#### 6. Lo que no concede autoridad
+
+Queda prohibido interpretar cualquiera de estas condiciones como autorización suficiente:
+
+```text
+employees.role = cajero
+pulso.access
+pulso.pos.main legacy
+nombre del rol
+sede seleccionada
+site_id enviado por cliente
+dispositivo de caja
+PIN de dispositivo
+pantalla visible
+botón visible
+página accesible
+rol simulado
+```
+
+Cada una puede aportar contexto o compatibilidad, pero no sustituye la decisión completa.
+
+---
+
+#### 7. Relación con AUTH-RBAC-008
+
+`AUTH-RBAC-008 — Crear matriz de cajero_satelite` dejó explícitamente pendiente el detalle interno de PULSO:
+
+```text
+TURNO DE CAJA VÁLIDO
+→ pulso.access
+→ FUNCIONES POS ATÓMICAS PENDIENTES DE CATÁLOGO
+```
+
+Esta tarea cierra esa deuda únicamente para las capacidades ordinarias de cajero y para las identidades mínimas necesarias que separan las capacidades sensibles reservadas.
+
+No reabre las once concesiones ya aprobadas de la matriz transversal ni modifica sus decisiones NEXO.
+
+El perfil de entrada PULSO heredado se conserva como:
+
+```text
+CTX-CASHIER-POS
+```
+
+y continúa significando únicamente entrada operativa a la superficie POS durante un turno válido; no sustituye los scopes de recurso definidos en esta tarea.
+
+---
+
+#### 8. Regla raíz de `pulso.access`
+
+Se conserva:
+
+```text
+pulso.access
+```
+
+con significado exclusivo:
+
+```text
+ENTRAR A PULSO
+```
+
+No significa:
+
+- consultar cualquier pedido;
+- crear o modificar pedidos;
+- cobrar;
+- abrir o cerrar caja;
+- cancelar;
+- reembolsar;
+- identificar clientes;
+- acumular o redimir puntos;
+- importar ventas;
+- administrar salón;
+- despachar;
+- aplicar overrides.
+
+---
+
+#### 9. Tratamiento definitivo de `pulso.pos.main`
+
+El permiso actual:
+
+```text
+pulso.pos.main
+```
+
+se clasifica para este frente como:
+
+```text
+LEGACY_BROAD_PERMISSION
+DECOMPOSE_REQUIRED
+NO_DIRECT_CANONICAL_ALIAS
+NO_AUTOMATIC_GRANT_EXPANSION
+```
+
+Regla obligatoria:
+
+```text
+pulso.pos.main
+!=
+SUMA AUTOMÁTICA DE PERMISOS ATÓMICOS
+```
+
+La existencia de una concesión histórica de `pulso.pos.main` al rol base `cajero`, al rol operativo `cajero_satelite` o a cualquier otro actor no concede automáticamente ninguno de los permisos nuevos definidos aquí.
+
+---
+
+#### 10. Convención de códigos aplicada
+
+Los permisos funcionales definidos por esta tarea cumplen:
+
+```text
+app.module.resource.action
+```
+
+No se crean permisos derivados de patrones URL, pantallas, componentes, nombres de rol, scopes o estados.
+
+Los módulos PULSO utilizados son:
+
+```text
+sales
+payments
+cash
+loyalty
+```
+
+---
+
+#### 11. Acción nueva `identify`
+
+La acción `identify` se incorpora al vocabulario PULSO mediante esta decisión explícita. Su registro contractual queda definido así:
+
+| Campo | Decisión |
+| --- | --- |
+| Acción | `identify` |
+| Definición | resolver una identidad de cliente a partir de un identificador presentado y devolver únicamente la proyección mínima autorizada para la operación actual |
+| Diferencia frente a `view` | `view` consulta un recurso ya conocido o una colección autorizada; `identify` resuelve qué cliente corresponde al identificador presentado sin habilitar navegación general de clientes |
+| Tipo de operación | lectura dirigida / resolución de identidad comercial |
+| Riesgo | exposición o asociación incorrecta de identidad, datos personales o saldo proyectado |
+| Modifica estado empresarial | NO |
+| Ejemplo válido | escanear o ingresar un identificador admitido durante una venta para vincular al cliente antes de loyalty |
+
+No equivale a:
+
+- listar clientes;
+- consultar perfiles arbitrarios;
+- administrar clientes;
+- editar identidad;
+- consultar el ledger completo de PASS.
+
+Su código canónico es:
+
+```text
+pulso.loyalty.customers.identify
+```
+
+---
+
+#### 12. Universo atómico derivado de `pulso.pos.main`
+
+La descomposición necesaria para el contrato ordinario de caja queda cerrada en once capacidades:
+
+```text
+pulso.sales.orders.view
+pulso.sales.orders.create
+pulso.sales.orders.update
+pulso.sales.orders.cancel
+pulso.payments.transactions.collect
+pulso.payments.transactions.refund
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+pulso.loyalty.customers.identify
+pulso.loyalty.points.accumulate
+pulso.loyalty.points.redeem
+```
+
+Las diez familias estructurales ya anticipadas por el catálogo de autorización se conservan y se agrega exclusivamente `pulso.loyalty.customers.identify` porque el inventario real de scanner demostró una acción independiente de identificación.
+
+---
+
+#### 13. Permiso existente fuera de la descomposición
+
+Se conserva como capacidad independiente ya normalizada:
+
+```text
+pulso.delivery.deliveries.override
+```
+
+No forma parte de `pulso.pos.main` ni del conjunto ordinario de cajero.
+
+Su modalidad canónica ya aprobada permanece:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+---
+
+#### 14. Cardinalidad del contrato PULSO evaluado para cajero
+
+La tarea evalúa trece identidades de permiso PULSO:
+
+```text
+1 acceso de aplicación
+11 capacidades atómicas derivadas del frente POS
+1 excepción de entrega ya existente
+```
+
+Resultado:
+
+```text
+PULSO_PERMISSIONS_EVALUATED = 13
+CASHIER_GRANTED = 9
+CASHIER_NOT_GRANTED = 4
+DUPLICATES = 0
+UNRESOLVED_DECISIONS = 0
+```
+
+---
+
+#### 15. Matriz canónica de cajero
+
+| Permiso | Capacidad | Decisión `cajero_satelite` | Modalidad / prerrequisito | Alcance máximo de esta matriz |
+| --- | --- | --- | --- | --- |
+| `pulso.access` | entrar a PULSO | ASIGNAR | `OPERATIONAL_ONLY` / `T` | entrada de aplicación dentro del turno; no concede recursos internos |
+| `pulso.sales.orders.view` | consultar pedidos necesarios para operar caja | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | pedidos de la sede operativa efectiva y proyección mínima compatible |
+| `pulso.sales.orders.create` | crear pedido/venta ordinaria | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | sede operativa efectiva, canal/modalidad admitidos y oferta vigente |
+| `pulso.sales.orders.update` | modificar campos ordinarios permitidos del pedido | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | pedido de la sede efectiva, estado editable y columnas permitidas |
+| `pulso.sales.orders.cancel` | cancelar pedido | NO ASIGNAR | reservada a `PULSO-AUTH-008` | ninguna concesión desde esta tarea |
+| `pulso.payments.transactions.collect` | registrar/cobrar un pago ordinario | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | transacción exacta de un pedido cobrable de la sede y terminal efectivas |
+| `pulso.payments.transactions.refund` | reembolsar un pago | NO ASIGNAR | reservada a `PULSO-AUTH-008` | ninguna concesión desde esta tarea |
+| `pulso.cash.sessions.start` | iniciar sesión de caja | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | terminal/punto de caja compatible en sede y área operativas efectivas |
+| `pulso.cash.sessions.close` | cerrar sesión de caja | NO ASIGNAR | reservada a `PULSO-AUTH-008` | ninguna concesión desde esta tarea |
+| `pulso.loyalty.customers.identify` | identificar cliente para la operación actual | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | una identidad presentada dentro del flujo activo y proyección mínima |
+| `pulso.loyalty.points.accumulate` | solicitar acumulación por venta elegible | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | venta confirmada, cliente identificado, sede y referencia idempotente |
+| `pulso.loyalty.points.redeem` | validar/aplicar redención elegible | ASIGNAR | `OPERATIONAL_ONLY` / `T+C` | redención vigente del cliente, venta/sede compatibles y efecto único |
+| `pulso.delivery.deliveries.override` | confirmar entrega excepcionalmente | NO ASIGNAR | `BASE_AND_OPERATIONAL` / `N + T+C` | ninguna concesión ordinaria de cajero |
+
+---
+
+#### 16. Regla de entrada antes del check-in
+
+Únicamente `pulso.access` puede utilizar el prerrequisito operativo:
+
+```text
+T
+```
+
+Esto permite abrir PULSO durante un turno vigente y mostrar el requisito de marcación o contexto faltante.
+
+Ninguna capacidad interna mutadora o de estado vivo definida aquí funciona solo con `T`.
+
+---
+
+#### 17. Regla de operación ordinaria
+
+Todas las capacidades internas asignadas al cajero requieren:
+
+```text
+T+C
+```
+
+Es decir:
+
+```text
+turno vigente
++
+check-in activo
++
+rol cajero_satelite
++
+sede y área coincidentes
+```
+
+El cierre del check-in revoca inmediatamente esas capacidades, aunque el turno continúe vigente.
+
+---
+
+#### 18. Alcance territorial del cajero
+
+Ninguna capacidad interna del cajero obtiene alcance global operativo.
+
+La regla común es:
+
+```text
+EFFECTIVE_SCOPE
+=
+INTERSECCIÓN(
+  turno,
+  check-in,
+  rol operativo,
+  sede,
+  área cashier,
+  dispositivo cuando aplique,
+  recurso real,
+  concesión,
+  denegaciones
+)
+```
+
+Un `site_id` de URL, formulario o payload solo puede reducir o seleccionar dentro de autoridad ya existente; nunca ampliarla.
+
+---
+
+#### 19. `pulso.sales.orders.view`
+
+Autoriza consulta operativa de pedidos necesarios para caja dentro de la sede efectiva.
+
+Debe limitar:
+
+- sede;
+- proyección de cliente;
+- datos de entrega;
+- datos de pago;
+- conversación y facturación a lo estrictamente necesario para la función ordinaria.
+
+No autoriza por sí mismo:
+
+- chat;
+- archivo de conversaciones;
+- despacho;
+- billing mutations;
+- transición de estado;
+- cancelación;
+- refund;
+- override.
+
+---
+
+#### 20. `pulso.sales.orders.create`
+
+Autoriza originar una venta o pedido ordinario desde PULSO cuando:
+
+- la oferta esté vigente para sede/canal/modalidad;
+- la sede derive del contexto efectivo;
+- el cliente pueda ser opcional cuando el proceso lo permita;
+- líneas, cantidades, precio y snapshot sean válidos;
+- exista identidad idempotente de la operación;
+- no se invoque una capacidad reservada.
+
+Crear un pedido no autoriza cobrarlo ni cancelarlo.
+
+---
+
+#### 21. `pulso.sales.orders.update`
+
+Autoriza únicamente modificaciones ordinarias permitidas por el estado del recurso y el contrato de columnas.
+
+Puede cubrir, cuando el proceso lo permita:
+
+- cantidades o notas todavía editables;
+- datos ordinarios de la orden antes de efectos incompatibles;
+- correcciones no sensibles que no constituyan otra acción empresarial.
+
+No incluye:
+
+```text
+cancel
+refund
+close
+assign_dispatch
+mark_preparing
+mark_ready
+mark_in_transit
+mark_delivered
+delivery override
+chat send/archive
+billing mutation
+manual price override
+administrative import
+```
+
+Cada capacidad excluida requiere su permiso y propietario correspondiente.
+
+---
+
+#### 22. `pulso.sales.orders.cancel`
+
+La identidad canónica se conserva porque cancelación es una acción empresarial distinta.
+
+Esta tarea decide:
+
+```text
+cajero_satelite = NO ASIGNAR
+```
+
+Su autoridad, modalidad definitiva, confirmación y segregación pertenecen a:
+
+```text
+PULSO-AUTH-008 — Definir permisos de cierre y anulación
+```
+
+No se permite emular cancelación mediante `orders.update`.
+
+---
+
+#### 23. `pulso.payments.transactions.collect`
+
+Autoriza cobrar o registrar un pago ordinario sobre una obligación válida del pedido actual.
+
+Debe validar, como mínimo:
+
+- pedido y total cobrable;
+- sede y terminal;
+- actor efectivo;
+- medio de pago soportado;
+- monto y moneda;
+- estado previo;
+- referencia o idempotency key;
+- respuesta desconocida antes de cualquier retry.
+
+No autoriza:
+
+- editar una transacción confirmada;
+- refund;
+- corregir pagos históricos;
+- alterar conciliación del proveedor;
+- cerrar caja.
+
+---
+
+#### 24. `pulso.payments.transactions.refund`
+
+La devolución de dinero es una capacidad separada de cobro.
+
+Esta tarea decide:
+
+```text
+cajero_satelite = NO ASIGNAR
+```
+
+La autoridad final pertenece a `PULSO-AUTH-008` y debe conservar motivo, actor, pago original, monto, estado, compensaciones y evidencia.
+
+---
+
+#### 25. `pulso.cash.sessions.start`
+
+Autoriza iniciar una sesión de caja ordinaria sobre un punto/terminal compatible con la sede y área efectivas.
+
+Debe fallar cerrado si existe, entre otros:
+
+- terminal no autorizada;
+- sede distinta;
+- sesión incompatible ya abierta;
+- actor sin check-in;
+- rol operativo distinto;
+- condición de apertura no cumplida.
+
+Abrir caja no autoriza cerrarla, reabrirla ni corregirla.
+
+---
+
+#### 26. `pulso.cash.sessions.close`
+
+El cierre de caja permanece separado de la apertura.
+
+Esta tarea decide:
+
+```text
+cajero_satelite = NO ASIGNAR
+```
+
+El cierre, arqueo, diferencias, aprobación, reapertura y correcciones pertenecen a `PULSO-AUTH-008`.
+
+No se permite derivar `close` desde `start` ni desde la propiedad de la sesión.
+
+---
+
+#### 27. `pulso.loyalty.customers.identify`
+
+Autoriza resolver la identidad comercial de un cliente presentado en el flujo actual y recibir una proyección mínima.
+
+Debe conservar:
+
+```text
+PULSO = experiencia operativa
+PASS = identidad comercial y fidelización
+```
+
+No autoriza:
+
+- listar clientes;
+- buscar arbitrariamente por datos personales no necesarios;
+- editar cliente;
+- consultar ledger completo;
+- modificar puntos.
+
+---
+
+#### 28. `pulso.loyalty.points.accumulate`
+
+Autoriza solicitar la acumulación de puntos de una venta elegible.
+
+El permiso no cambia ownership:
+
+```text
+PULSO solicita
+PASS decide y registra ledger
+```
+
+La operación debe permanecer:
+
+- server-side;
+- territorial;
+- atribuible;
+- atómica o reconciliable;
+- idempotente por referencia empresarial estable.
+
+La materialización de esas garantías pertenece a `PULSO-AUTH-009`.
+
+---
+
+#### 29. `pulso.loyalty.points.redeem`
+
+Autoriza validar y aplicar una redención elegible dentro del flujo de caja.
+
+Debe comprobar:
+
+- cliente;
+- recompensa/redención;
+- estado vigente;
+- sede;
+- pedido cuando corresponda;
+- actor efectivo;
+- idempotencia;
+- ausencia de efecto previo incompatible.
+
+La materialización fail-closed pertenece a `PULSO-AUTH-010`.
+
+---
+
+#### 30. Override de entrega
+
+Se conserva:
+
+```text
+pulso.delivery.deliveries.override
+```
+
+como capacidad excepcional distinta de las operaciones de caja.
+
+`cajero_satelite` no la recibe.
+
+La mera participación del cajero en una venta o entrega no crea autoridad de override.
+
+---
+
+#### 31. Importaciones de ventas
+
+El cajero ordinario no recibe autoridad para:
+
+- abrir una superficie administrativa por inferencia;
+- guardar mappings externos;
+- cargar/importar XLSX;
+- publicar lotes;
+- producir efectos de inventario desde importaciones.
+
+`PULSO-AUTH-005` demostró que esas operaciones son separadas y de mayor alcance.
+
+La definición de sus permisos administrativos o de supervisión continúa fuera de esta tarea.
+
+---
+
+#### 32. Salón
+
+`cajero_satelite` no recibe por esta tarea permisos para:
+
+- abrir/cerrar sesiones de mesa;
+- asignar mesa o responsable;
+- reconocer/resolver/cancelar llamados;
+- administrar zonas o mesas.
+
+Un pedido asociado a mesa puede ser visible para cobro cuando el recurso y proceso lo permitan, pero esa visibilidad no convierte al cajero en operador de salón.
+
+---
+
+#### 33. Preparación, fulfillment y despacho
+
+Esta matriz no asigna autoridad para:
+
+- `mark_preparing`;
+- `mark_ready`;
+- `assign_dispatch`;
+- `mark_in_transit`;
+- `mark_delivered`;
+- generar autoridad de courier;
+- ejecutar override de entrega.
+
+Esas acciones representan preparación, logística o excepción y no se absorben dentro de `orders.update`.
+
+---
+
+#### 34. Chat, archivo y facturación
+
+La mera concesión de `orders.view` o `orders.update` no autoriza:
+
+- enviar mensajes al cliente;
+- archivar/restaurar conversaciones;
+- ejecutar archivo masivo;
+- crear o alterar solicitudes de facturación;
+- consultar información fuera de la proyección necesaria.
+
+Sus permisos exactos permanecen fuera del conjunto ordinario definido aquí y deberán ser resueltos por la tarea propietaria que los asigne.
+
+---
+
+#### 35. Regalos y checklist operativa
+
+Las operaciones observadas sobre regalo o empaque no se incorporan implícitamente a `orders.update`.
+
+Las acciones:
+
+```text
+mark_card_prepared
+mark_card_included
+mark_price_free_packaging_confirmed
+```
+
+permanecen fuera de la matriz ordinaria del cajero hasta que su rol propietario y permiso exacto queden definidos.
+
+---
+
+#### 36. Descuentos y cambio manual de precio
+
+`cajero_satelite` no recibe por inferencia autoridad para:
+
+- descuento manual no preautorizado;
+- override de precio;
+- cortesía;
+- compensación;
+- edición retroactiva de importes.
+
+La oferta, promoción o beneficio ya autorizado por contrato puede aplicarse dentro de la creación/cobro ordinarios sin convertirse en un permiso de override.
+
+Las excepciones pertenecen a supervisor o a la tarea sensible correspondiente.
+
+---
+
+#### 37. Regla de denegación por defecto
+
+Para cualquier capacidad PULSO no incluida como `ASIGNAR` en la matriz de esta tarea:
+
+```text
+RESULTADO PARA cajero_satelite = DENY
+```
+
+No se crean filas `deny` redundantes por cada ausencia de grant.
+
+Una denegación explícita individual, de rol, dispositivo o recurso puede restringir todavía más una concesión positiva.
+
+---
+
+#### 38. Legacy base role `cajero`
+
+La existencia del rol base legacy:
+
+```text
+roles.code = cajero
+```
+
+y de asignaciones históricas como `pos.main` no puede autorizar operación ordinaria después de la descomposición.
+
+Regla:
+
+```text
+LEGACY BASE ROLE
+!=
+ACTIVE CASHIER OPERATIONAL LANE
+```
+
+La operación requiere `cajero_satelite` como rol operativo efectivo o la futura matriz equivalente aprobada.
+
+---
+
+#### 39. Runtime remoto observado
+
+El entorno remoto de desarrollo inspeccionado conserva actualmente para `cajero_satelite` permisos runtime entre los que aparecen:
+
+```text
+pulso.access
+pulso.pos.main
+```
+
+También conserva asignaciones legacy de `pos.main` para el rol base `cajero`.
+
+Este estado es evidencia AS-IS, no el estado objetivo de esta tarea.
+
+No se modifica desde aquí.
+
+---
+
+#### 40. Delta objetivo frente al runtime
+
+La reconciliación futura deberá producir, como mínimo:
+
+```text
+pulso.pos.main
+→ deja de ser autoridad final
+
+cajero_satelite
+→ conserva pulso.access
+→ recibe únicamente permisos atómicos ASIGNAR aprobados
+→ no recibe cancel/refund/close/delivery.override
+→ no recibe importaciones por inferencia
+
+legacy cajero
+→ no conserva autoridad operativa por asignaciones amplias históricas
+```
+
+No se ejecuta esa reconciliación en esta tarea.
+
+---
+
+#### 41. Coherencia entre capas
+
+Cada permiso atómico materializado deberá conservar la misma identidad en:
+
+```text
+navegación
+UI/guard
+Server Action
+servicio de dominio
+RPC
+RLS cuando corresponda
+auditoría
+simulación
+dispositivo compartido
+```
+
+No se permiten strings alternos por capa ni un fallback silencioso a `pulso.pos.main`.
+
+---
+
+#### 42. Actor real y terminal compartida
+
+Una terminal compartida no modifica la matriz de permisos.
+
+La decisión deberá conservar separadas:
+
+```text
+principal técnico
+actor humano
+rol operativo
+turno
+check-in
+sede
+área
+dispositivo
+permiso
+recurso
+```
+
+Cuando una acción requiera firma humana, la firma debe demostrar al actor sin ampliar sus permisos.
+
+La materialización pertenece a `PULSO-AUTH-012` y `PULSO-AUTH-013`.
+
+---
+
+#### 43. Simulación
+
+Una simulación puede mostrar si `cajero_satelite` tendría una capacidad, pero no puede:
+
+- crear el turno real;
+- crear check-in;
+- firmar como trabajador;
+- ejecutar venta;
+- cobrar;
+- abrir caja;
+- acumular o redimir puntos;
+- alterar asignaciones.
+
+La decisión simulada nunca se transforma en autoridad real.
+
+---
+
+#### 44. Frontera PULSO ↔ PASS
+
+Se conserva:
+
+```text
+PULSO
+→ identifica dentro de la operación
+→ solicita acumulación/redención
+
+PASS
+→ conserva identidad comercial
+→ conserva ledger
+→ conserva reglas y estado de fidelización
+```
+
+Los permisos `pulso.loyalty.*` protegen la capacidad laboral de PULSO para solicitar la operación, no transfieren ownership del dominio PASS.
+
+---
+
+#### 45. Frontera PULSO ↔ NEXO
+
+Crear o cobrar una venta no concede al cajero permisos generales de inventario.
+
+Los efectos físicos derivados deben ejecutarse mediante el contrato propietario y exactamente una vez.
+
+La matriz NEXO de `cajero_satelite` permanece gobernada por `AUTH-RBAC-008`; esta tarea no la amplía.
+
+---
+
+#### 46. Frontera PULSO ↔ NUMERA
+
+Cobrar o abrir caja en PULSO no concede al cajero autoridad de NUMERA.
+
+```text
+HECHO OPERATIVO PULSO
+!=
+AUTORIDAD FINANCIERA NUMERA
+```
+
+NUMERA consume hechos aprobados mediante sus propios contratos y permisos.
+
+---
+
+#### 47. Frontera con proveedor fiscal y pagos
+
+El permiso de cobro no concede:
+
+- acceso a secretos del proveedor;
+- administración de credenciales;
+- conciliación bancaria;
+- numeración fiscal;
+- emisión arbitraria fuera del contrato aprobado.
+
+PULSO conserva referencias y estado; proveedores y dominios propietarios conservan sus responsabilidades.
+
+---
+
+#### 48. Idempotencia y resultado desconocido
+
+Toda mutación asignada al cajero deberá distinguir:
+
+```text
+SOLICITUD NUEVA
+RETRY
+REPLAY
+CONFLICTO
+RESULTADO DESCONOCIDO
+```
+
+Regla:
+
+```text
+RESULTADO DESCONOCIDO
+→ CONSULTAR / RECONCILIAR
+→ NO REPETIR CIEGAMENTE
+```
+
+El permiso autoriza una intención empresarial; no autoriza duplicar su efecto.
+
+---
+
+#### 49. Auditoría mínima
+
+Toda acción mutadora autorizada al cajero deberá registrar o poder reconstruir:
+
+- actor efectivo;
+- principal técnico;
+- permiso evaluado;
+- rol operativo;
+- turno y check-in;
+- sede y área;
+- terminal/dispositivo cuando aplique;
+- recurso;
+- estado previo;
+- acción solicitada;
+- estado o resultado confirmado;
+- referencia idempotente;
+- error, retry o reconciliación;
+- timestamp.
+
+---
+
+#### 50. Matriz de capabilities AS-IS → permiso objetivo
+
+| Evidencia inventariada | Permiso objetivo o decisión |
+| --- | --- |
+| abrir PULSO | `pulso.access` |
+| leer pedidos | `pulso.sales.orders.view` |
+| originar pedido/venta ordinaria | `pulso.sales.orders.create` |
+| editar campos ordinarios permitidos | `pulso.sales.orders.update` |
+| cancelar pedido | `pulso.sales.orders.cancel` — NO ASIGNAR al cajero |
+| cobrar pago ordinario | `pulso.payments.transactions.collect` |
+| refund | `pulso.payments.transactions.refund` — NO ASIGNAR al cajero |
+| abrir sesión de caja | `pulso.cash.sessions.start` |
+| cerrar sesión de caja | `pulso.cash.sessions.close` — NO ASIGNAR al cajero |
+| identificar cliente | `pulso.loyalty.customers.identify` |
+| acumular puntos | `pulso.loyalty.points.accumulate` |
+| redimir puntos | `pulso.loyalty.points.redeem` |
+| override de entrega | `pulso.delivery.deliveries.override` — NO ASIGNAR |
+| mapear/importar/publicar ventas externas | fuera del contrato de cajero |
+| operar salón | fuera del contrato de cajero |
+| preparación/despacho/entrega | fuera del contrato de cajero |
+| chat/archivo/facturación administrativa | fuera del contrato de cajero |
+
+---
+
+#### 51. Propietarios de capacidades no asignadas
+
+| Capacidad | Propietario documental siguiente | Condición de salida |
+| --- | --- | --- |
+| supervisor y excepciones operativas adicionales | `PULSO-AUTH-007` | matriz explícita de supervisor sin herencia implícita |
+| cancelación de pedido | `PULSO-AUTH-008` | permiso, estado, motivo, confirmación y auditoría definidos |
+| refund | `PULSO-AUTH-008` | autoridad y compensación vinculadas al pago original |
+| cierre/reapertura/corrección de caja | `PULSO-AUTH-008` | cierre segregado, arqueo y aprobación definidos |
+| acumulación robusta | `PULSO-AUTH-009` | server-side, territorial, atómica/idempotente y atribuible |
+| redención robusta | `PULSO-AUTH-010` | fail-closed, territorial, atómica/idempotente y atribuible |
+| límite territorial | `PULSO-AUTH-011` | parámetros cliente incapaces de ampliar sede/área |
+| terminal compartida | `PULSO-AUTH-012` | dispositivo integrado sin ampliar autoridad |
+| actor ejecutor | `PULSO-AUTH-013` | trabajador real registrado en mutaciones sensibles |
+| configuración administrativa | `PULSO-AUTH-014` | configuración separada de operación ordinaria |
+| migración del modelo | `PULSO-AUTH-015` | permisos atómicos consumidos por runtime y `pos.main` retirado como autoridad final |
+| prueba integral | `PULSO-AUTH-016` | allow/deny, scopes, estado, concurrencia e integración certificados |
+
+No queda capacidad sensible detectada sin propietario de continuidad.
+
+---
+
+#### 52. Hallazgos y propietarios de salida
+
+| Hallazgo | Efecto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `pulso.pos.main` continúa en runtime | autoridad demasiado amplia durante transición | `PULSO-AUTH-015` | consumidores migrados a permisos atómicos y cero fallback final |
+| `cajero_satelite` conserva `pulso.pos.main` en desarrollo | matriz runtime no coincide todavía con contrato objetivo | `PULSO-AUTH-015` + materialización RBAC | concesiones atómicas explícitas y retiro controlado del broad grant |
+| rol base `cajero` conserva asignaciones legacy | posible bypass permanente si se evalúa carril incorrecto | fundación AUTH + `PULSO-AUTH-015/016` | carril operativo obligatorio y tests de deny sin turno |
+| `/sales-imports` usa `pos.main` | cajero broad podría alcanzar administración AS-IS | `PULSO-AUTH-007/014/015` | permisos propios de importación y acceso fail-closed para cajero |
+| `/orders` concentra acciones heterogéneas | `orders.view/update` no puede absorber todo | `PULSO-AUTH-007/008/015` | acciones sensibles con permisos propios y guards server-side |
+| scanner separa identify/accumulate/redeem | tres decisiones de autoridad distintas | `PULSO-AUTH-009/010/015` | consumidores usan claves exactas y pruebas específicas |
+| cash sessions no están materializadas como ciclo completo | permiso `start` es contrato objetivo, no evidencia de implementación | `PULSO-UX-010` + E5 propietario | apertura/cierre implementados y certificados |
+| override de entrega ya es granular | confirma patrón de excepción específica | contrato AUTH + `PULSO-AUTH-016` | no asignado al cajero y probado fail-closed |
+
+---
+
+#### 53. Estado del catálogo y del runtime
+
+Esta tarea distingue tres capas:
+
+```text
+CATÁLOGO DOCUMENTAL OBJETIVO
+→ definido aquí para cajero
+
+RUNTIME DE DESARROLLO ACTUAL
+→ conserva broad grants legacy
+
+MATERIALIZACIÓN FUTURA
+→ PULSO-AUTH-015 + owners AUTH/E5
+```
+
+No se declara que los once permisos nuevos existan todavía físicamente en `app_permissions`.
+
+---
+
+#### 54. Regla de migración segura
+
+La migración de `pulso.pos.main` deberá ser explícita por asignación.
+
+Queda prohibido:
+
+```text
+actor tiene pulso.pos.main
+→ conceder automáticamente los 11 permisos nuevos
+```
+
+Cada rol, excepción o consumidor debe compararse contra su intención real.
+
+Para `cajero_satelite`, la única lista autorizada por esta tarea es la columna `ASIGNAR` de la matriz canónica.
+
+---
+
+#### 55. Regla de compatibilidad temporal
+
+Mientras `pulso.pos.main` continúe físicamente activo por compatibilidad:
+
+- no se considerará prueba de diseño correcto;
+- no se usará para ampliar el contrato del cajero;
+- no se creará un alias 1→N;
+- cualquier compatibilidad deberá ser transitoria, observable y retirada por la tarea propietaria;
+- los nuevos consumidores no deberán depender de él cuando exista la capacidad atómica aprobada.
+
+---
+
+#### 56. Pruebas mínimas que hereda la materialización
+
+La implementación posterior deberá demostrar al menos:
+
+- cajero con turno pero sin check-in: puede `pulso.access`, no puede las ocho capacidades internas asignadas;
+- cajero con turno y check-in válidos: solo obtiene las nueve concesiones totales aprobadas contando `pulso.access`;
+- cajero sin turno: no opera PULSO por rol legacy;
+- cajero con `site_id` manipulado: no amplía sede;
+- cajero no puede cancelar;
+- cajero no puede refund;
+- cajero no puede cerrar caja;
+- cajero no puede `delivery.override`;
+- cajero no puede mapear/importar/publicar ventas externas;
+- cajero no obtiene salón, preparación, despacho, chat administrativo o facturación por `orders.update`;
+- cliente identificado no expone información fuera de la proyección mínima;
+- retry de cobro, acumulación y redención no duplica efecto;
+- UI, Server Action, RPC/RLS y simulación producen decisiones compatibles.
+
+---
+
+#### 57. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Esta tarea no crea, modifica, difiere ni vuelve obsoleto ningún requisito de prueba.
+
+Las obligaciones verificables de autorización atómica, contexto operativo, territorio, acciones server-side, pedidos, caja, pagos, importaciones y PULSO ya se encuentran cubiertas por requisitos vigentes.
+
+---
+
+#### 58. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-AUTH-001` — toda capacidad protegida se resuelve por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-002` — todo permiso consumido debe existir en catálogo y respetar convención;
+- `TREQ-AUTH-004` — todos los evaluadores deben producir decisiones equivalentes;
+- `TREQ-AUTH-008` — capacidades operativas exigen contexto laboral operativo válido;
+- `TREQ-AUTH-013` — toda mutación valida permiso exacto, actor, territorio, estado y columnas server-side;
+- `TREQ-PULSO-005` — ciclo comercial con identidades y estados separados;
+- `TREQ-PULSO-006` — venta, pago, caja, descuento, cancelación, refund y cierre usan acciones nombradas, autorizadas y auditables;
+- `TREQ-PULSO-014` — acceso directo a superficies PULSO falla cerrado;
+- `TREQ-PULSO-015` — `site_id` no amplía territorio;
+- `TREQ-PULSO-016` — abrir `/orders` no concede mutaciones;
+- `TREQ-PULSO-017` — abrir `/sales-imports` no concede mapear/importar/publicar;
+- `TREQ-PULSO-018` — salón separa lectura y acciones por actor/estado;
+- `TREQ-PULSO-024` — infraestructura existente no prueba autorización completa;
+- `TREQ-PULSO-026` — permiso observado se mantiene separado de suficiencia contractual.
+
+La enumeración es trazabilidad y no actualiza el Registro 04A.
+
+---
+
+#### 59. Fuentes canónicas principales consumidas
+
+La decisión se apoya en:
+
+- inventarios aprobados `PULSO-AUTH-002..005`;
+- `AUTH-CAT-002/003` para convención y descomposición de `pulso.pos.main`;
+- `AUTH-CAT-006..012` para modalidad, clasificación, alcance y prerrequisitos;
+- `AUTH-RBAC-008` para la matriz vigente de `cajero_satelite`;
+- `CAP-SCOPE-009` para separación de pedido, venta, pago, caja y acciones sensibles;
+- `PULSO-UX-001` para universo funcional y pantallas canónicas;
+- Registro 04A vigente para AUTH y PULSO;
+- runtime remoto de desarrollo únicamente como evidencia AS-IS.
+
+---
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de `vento-pulso`; no existen cambios físicos de consumidor |
+| LOCAL | NOT_EXECUTED | no se modificó checkout local del repositorio canónico |
+| REMOTA | PASS | se verificaron fuentes canónicas en `vento-shell`, contratos de catálogo/RBAC, inventarios PULSO, 04A, código PULSO relevante y estado read-only de permisos en Supabase dev |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron ventas, cobros, aperturas, puntos, cancelaciones, refunds ni acciones reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; sin materialización física propia |
+
+La evidencia REMOTA valida coherencia documental y estado AS-IS; no certifica que el runtime ya consuma la matriz objetivo.
+
+---
+
+#### 61. Criterios de aceptación
+
+- [ ] `pulso.access` permanece separado de cualquier capacidad interna.
+- [ ] `pulso.pos.main` queda declarado `DECOMPOSE_REQUIRED` sin alias directo.
+- [ ] Se definen exactamente once capacidades atómicas derivadas del frente POS.
+- [ ] `pulso.loyalty.customers.identify` queda separado de acumulación y redención.
+- [ ] Se evalúan exactamente trece permisos PULSO para `cajero_satelite` contando acceso y override existente.
+- [ ] Exactamente nueve permisos quedan `ASIGNAR` al cajero contando `pulso.access`.
+- [ ] Exactamente cuatro permisos quedan `NO ASIGNAR`.
+- [ ] `pulso.access` usa `T`.
+- [ ] Toda capacidad interna asignada usa `T+C`.
+- [ ] No existe alcance operativo global.
+- [ ] `orders.update` no absorbe cancelación, preparación, despacho, entrega, chat, facturación ni override.
+- [ ] `payments.collect` no absorbe refund ni corrección histórica.
+- [ ] `cash.sessions.start` no absorbe close/reopen.
+- [ ] cancelación, refund y cierre quedan reservados a `PULSO-AUTH-008`.
+- [ ] `pulso.delivery.deliveries.override` permanece fuera del rol.
+- [ ] importaciones permanecen fuera del contrato ordinario de cajero.
+- [ ] salón permanece fuera del contrato ordinario de cajero.
+- [ ] preparación, fulfillment y despacho no se conceden por inferencia.
+- [ ] chat, archivo y facturación administrativa no se conceden por inferencia.
+- [ ] legacy `cajero` no autoriza el carril operativo.
+- [ ] la asignación runtime actual de `pulso.pos.main` no se trata como estado objetivo.
+- [ ] no se crean ni modifican requisitos de prueba.
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 62. Límites
+
+Esta tarea no:
+
+- modifica el catálogo runtime de permisos;
+- inserta los once permisos en Supabase;
+- modifica `operational_role_permissions`;
+- retira `pulso.pos.main`;
+- elimina asignaciones del rol base `cajero`;
+- cambia RLS;
+- cambia RPC;
+- modifica Server Actions;
+- cambia guards;
+- modifica navegación;
+- implementa caja;
+- implementa pagos;
+- implementa apertura o cierre de caja;
+- implementa cancelaciones;
+- implementa refunds;
+- modifica órdenes;
+- modifica scanner;
+- modifica loyalty;
+- modifica PASS;
+- modifica NEXO;
+- modifica NUMERA;
+- define permisos de supervisor;
+- define la autoridad final de cierre/anulación;
+- define permisos administrativos de importación;
+- define permisos de salón;
+- define permisos de preparación, despacho o chat;
+- crea migraciones;
+- modifica Supabase remoto;
+- modifica el Registro 04A;
+- crea instancia física;
+- ejecuta E5.
+
+---
+
+#### 63. Handoff a PULSO-AUTH-007
+
+`PULSO-AUTH-007 — Definir permisos de supervisor` recibe:
+
+- el conjunto ordinario de cajero ya cerrado;
+- la prohibición de heredar supervisor como “cajero + todo” por inferencia;
+- importaciones sin autoridad de cajero;
+- despacho/chat/facturación y otras capacidades observadas aún sin grant ordinario;
+- necesidad de definir únicamente elevaciones explícitas de supervisor;
+- continuidad de denegación por defecto.
+
+El supervisor deberá declarar sus permisos de forma independiente y no mediante wildcard o `pos.main`.
+
+---
+
+#### 64. Handoff a PULSO-AUTH-008
+
+`PULSO-AUTH-008 — Definir permisos de cierre y anulación` recibe explícitamente:
+
+```text
+pulso.sales.orders.cancel
+pulso.payments.transactions.refund
+pulso.cash.sessions.close
+```
+
+junto con:
+
+- separación semántica entre cancelación, anulación, devolución, refund y cierre;
+- necesidad de confirmación/motivo cuando corresponda;
+- autoridad para arqueo, diferencias, reapertura o corrección todavía no definida;
+- prohibición de derivar esas capacidades desde `orders.update`, `collect` o `start`.
+
+---
+
+#### 65. Handoff a PULSO-AUTH-009..016
+
+Las tareas posteriores reciben:
+
+```text
+009 → materializar acumulación protegida
+010 → materializar redención protegida
+011 → hacer vinculante el límite territorial del turno
+012 → integrar terminal compartida sin ampliar autoridad
+013 → registrar al trabajador efectivo
+014 → mantener configuración administrativa separada
+015 → migrar consumidores/runtime a permisos atómicos y retirar broad authority
+016 → certificar allow/deny, scope, actor, estado, concurrencia e integración
+```
+
+Ninguna de estas materializaciones se ejecuta aquí.
+
+---
+
+#### 66. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-005 — Inventariar importaciones`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-006 — Definir permisos de cajero`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-007 — Definir permisos de supervisor`
 ### [ ] PULSO-AUTH-007 — Definir permisos de supervisor
 ### [ ] PULSO-AUTH-008 — Definir permisos de cierre y anulación
 ### [ ] PULSO-AUTH-009 — Proteger acumulación de puntos
