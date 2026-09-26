@@ -2572,7 +2572,1575 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-AUTH-003 — Inventariar salón`
-### [ ] PULSO-AUTH-003 — Inventariar salón
+### ✅ PULSO-AUTH-003 — Inventariar salón
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-002 — Inventariar órdenes
+**Tarea siguiente:** PULSO-AUTH-004 — Inventariar escáner
+**Tipo de tarea:** inventario documental cerrado de la superficie AS-IS de salón expuesta por `PULSO-ROUTE-005` (`/salon`), reconciliando zonas, mesas, sesiones, llamados, estados derivados, lecturas y mutaciones directas, compatibilidad pública sobre el esquema `pos`, RLS, permisos observados, atribución de actor, Realtime, fronteras con la configuración física de `OPS-POS-001` y handoffs de autorización, sin definir permisos finales ni modificar código, datos o Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pulso`, zonas, mesas, sesiones, llamados, vistas, tablas, políticas RLS, grants, Realtime, funciones, RPC, migraciones, Supabase, permisos, rutas, componentes, datos, contratos generados, `vento-shell` ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma exhaustiva, estable y verificable la superficie actual de salón de PULSO para que las tareas posteriores de autorización trabajen sobre un universo técnico único y no reconstruyan la operación desde colores de mesa, botones visibles o nombres de tablas.
+
+La tarea debe dejar resuelto:
+
+- qué identidad de ruta contiene el salón;
+- qué archivos componen materialmente la experiencia runtime;
+- qué recursos se leen;
+- cómo se relacionan zona, mesa, sesión y llamado;
+- qué estados son persistidos y cuáles son derivados de UI;
+- qué acciones mutan datos desde navegador;
+- qué acciones de salón no están presentes en la superficie actual;
+- qué alcance territorial se observa;
+- qué autoridad RLS protege cada recurso;
+- qué compatibilidad pública existe sobre el esquema propietario `pos`;
+- qué atribución de actor se conserva o queda incompleta;
+- qué contrato Realtime declara el código y qué configuración remota lo respalda actualmente;
+- qué decisiones físicas de `OPS-POS-001` deben permanecer separadas de la autorización;
+- qué responsabilidades pasan a permisos, contexto, dispositivos, actor efectivo, configuración, migración y pruebas posteriores.
+
+---
+
+#### 2. Handoff recibido de PULSO-AUTH-002
+
+`PULSO-AUTH-002` conserva la regla transversal recibida desde `PULSO-AUTH-001`:
+
+```text
+VIEW_ACCESS
+!=
+ACTION_AUTHORITY
+```
+
+La continuidad cambia de recurso sin cambiar esa regla:
+
+```text
+PULSO-AUTH-002
+→ inventario cerrado de /orders
+→ continuidad documental
+→ PULSO-AUTH-003
+→ inventario cerrado de /salon
+```
+
+Esta tarea no reabre decisiones del tablero de órdenes.
+
+---
+
+#### 3. Handoff específico recibido de PULSO-AUTH-001
+
+`PULSO-AUTH-001` entrega exactamente:
+
+```text
+PULSO-ROUTE-005
+→ /salon
+→ SALON
+→ site_id
+→ zonas / mesas / sesiones / llamados
+→ contrato físico de OPS-POS-001
+```
+
+Y exige separar lectura y acciones por actor, estado y recurso.
+
+---
+
+#### 4. Handoff físico recibido de OPS-POS-001
+
+`OPS-POS-001` define la semántica física que la vista de salón consume sin convertirla en permiso.
+
+Se conserva obligatoriamente:
+
+```text
+MARCA
+!=
+SEDE
+!=
+ÁREA OPERATIVA
+!=
+ZONA FÍSICA
+!=
+PUNTO DE SERVICIO
+!=
+ESTACIÓN
+!=
+MESA
+!=
+DISPOSITIVO
+!=
+ÁREA DE AUTORIZACIÓN
+```
+
+También se conserva:
+
+```text
+TABLE_ID ESTABLE
+!=
+TABLE_NUMBER VISIBLE
+```
+
+Una zona o mesa física no concede autoridad por su ubicación.
+
+---
+
+#### 5. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el inventario se define una sola vez;
+- no crea instancia física propia;
+- no modifica el consumidor;
+- no crea zonas ni mesas;
+- no abre ni cierra sesiones;
+- no crea ni resuelve llamados;
+- no modifica RLS;
+- no modifica grants;
+- no agrega relaciones a Realtime;
+- no crea permisos;
+- no crea Server Actions ni RPC;
+- no modifica `active-sequence.json` manualmente;
+- la materialización posterior permanece en las tareas y paquetes propietarios.
+
+---
+
+#### 6. Fuentes verificadas
+
+El inventario se reconcilia contra:
+
+- `PULSO-AUTH-001` aprobado en la fuente canónica;
+- `PULSO-AUTH-002` aprobado por el usuario como base inmediata;
+- `OPS-POS-001` aprobado;
+- `PULSO-UX-001` aprobado;
+- registro 04A vigente del dominio PULSO;
+- `task-work-topology.json`;
+- continuidad y secuencia documental vigentes;
+- árbol actual de `vento-pulso`;
+- `src/app/salon/page.tsx`;
+- `src/modules/salon/components/salon-page.tsx`;
+- `src/modules/salon/lib/status.ts`;
+- `src/modules/salon/types.ts`;
+- `src/lib/auth/guard.ts`;
+- `src/lib/auth/permissions.ts`;
+- `scripts/quality/pulso-consumer-baseline-gate.mjs`;
+- catálogo remoto de Supabase para las relaciones propietarias y sus vistas públicas;
+- políticas RLS, grants y publicación Realtime remotas aplicables al universo inspeccionado.
+
+La evidencia remota se utiliza para describir el AS-IS y no autoriza mutaciones.
+
+---
+
+#### 7. Frontera raíz
+
+Este inventario conserva obligatoriamente:
+
+```text
+RUTA /salon
+!=
+ZONA
+!=
+MESA
+!=
+SESIÓN DE MESA
+!=
+LLAMADO DE SERVICIO
+!=
+ESTADO VISUAL DE MESA
+!=
+ASIGNACIÓN DE RESPONSABLE
+!=
+PEDIDO
+!=
+CUENTA
+!=
+PERMISO FINAL
+!=
+PROCESO DE SERVICIO COMPLETO
+```
+
+Una relación entre dos identidades no fusiona sus lifecycles ni sus autoridades.
+
+---
+
+#### 8. Snapshot técnico verificado
+
+Repositorio consumidor inspeccionado:
+
+```text
+repository = vento-group-sas/vento-pulso
+branch = main
+HEAD = 715b5683db05caa010d725679b5ada4705a6da6e
+route = /salon
+route_id = PULSO-ROUTE-005
+```
+
+Huella de fuentes principales:
+
+| Fuente | Git blob verificado |
+| --- | --- |
+| `src/app/salon/page.tsx` | `4e47a7b4a7e569d05013c0c351ca7fc7d51e6d99` |
+| `src/modules/salon/components/salon-page.tsx` | `6f7c5fa80895359152002053e49f36cf405ba066` |
+| `src/modules/salon/lib/status.ts` | `95b06cba76bf4b573c914868d5b24c8d13852d5d` |
+| `src/modules/salon/types.ts` | `3a1ecc52bf760cc1c6162f210db0d84e5444a70d` |
+| `scripts/quality/pulso-consumer-baseline-gate.mjs` | `b50fc12744bc1eb913aee3756a383df81475938b` |
+
+Un cambio posterior de commit obliga a revisar las conclusiones cuyas fuentes materiales hayan cambiado.
+
+---
+
+#### 9. Identidad canónica de la superficie
+
+La identidad base es:
+
+```text
+PULSO-ROUTE-005
++
+/salon
++
+src/app/salon/page.tsx
++
+SALON
+```
+
+Los módulos auxiliares no crean rutas adicionales.
+
+---
+
+#### 10. Superficie contractual del baseline
+
+El baseline vigente identifica:
+
+```text
+PULSO-SURFACE-008
+= salón, mesas, sesiones, llamados y Realtime
+```
+
+Sus fuentes obligatorias son exactamente:
+
+```text
+src/app/salon/page.tsx
+src/modules/salon/components/salon-page.tsx
+src/modules/salon/lib/status.ts
+src/modules/salon/types.ts
+```
+
+La evaluación técnica de esa superficie exige evidencia de:
+
+```text
+site_id
+zones_scoped
+tables_scoped
+sessions_scoped
+calls_scoped
+realtime_scoped
+cleanup_registered
+transition_valid
+```
+
+La presencia del baseline no demuestra por sí sola que cada condición esté operativa en el entorno remoto.
+
+---
+
+#### 11. Relación con VSCREEN-0082 y VPROC-0038
+
+La intención canónica directamente relacionada es:
+
+```text
+VSCREEN-0082 = Mapa de salón y mesas
+VPROC-0038 = servicio en mesa
+```
+
+La ruta `/salon` constituye evidencia AS-IS directa, pero permanece clasificada como materialización parcial.
+
+Por tanto:
+
+```text
+/salon EXISTE
+!=
+VSCREEN-0082 COMPLETA
+!=
+VPROC-0038 COMPLETO
+```
+
+---
+
+#### 12. Guard observado de la ruta
+
+La página ejecuta `requireAppAccess` con:
+
+```text
+appId = pulso
+permissionCode = pos.main
+requireAppAccessPermission = true
+site_id = parámetro solicitado cuando existe
+```
+
+El helper normaliza el permiso local a:
+
+```text
+pulso.pos.main
+```
+
+La ruta exige acceso a la aplicación y permiso observado antes de cargar el snapshot inicial.
+
+---
+
+#### 13. `site_id` solicitado y sede resuelta
+
+La página construye su contexto con:
+
+```text
+siteId = site_id solicitado
+         o sede resuelta por el guard
+         o cadena vacía si ninguna existe
+```
+
+Todas las lecturas iniciales agregan una condición por `site_id`.
+
+Regla contractual:
+
+```text
+QUERY PARAMETER site_id
+!=
+AUTORIDAD TERRITORIAL
+```
+
+La autoridad territorial final permanece subordinada al guard, RLS y contratos de contexto.
+
+---
+
+#### 14. Cardinalidad principal del universo inventariado
+
+El universo directo de `/salon` contiene:
+
+```text
+PAGE_ROUTE = 1
+PRIMARY_COMPONENT = 1
+RESOURCE_FAMILIES = 4
+DIRECT_READ_FAMILIES = 4
+DIRECT_WRITE_FAMILIES = 1
+PERSISTED_CALL_STATUSES = 4
+MANUAL_REQUEST_TYPES_EXPOSED = 4
+UI_TABLE_STATUSES = 6
+POSTGRES_CHANGE_SUBSCRIPTIONS_DECLARED = 2
+```
+
+Las cuatro familias principales son:
+
+```text
+ZONES
+TABLES
+SESSIONS
+SERVICE_CALLS
+```
+
+---
+
+#### 15. Matriz de recursos directos
+
+| Recurso lógico | API pública consumida | Relación propietaria remota | Lectura en `/salon` | Escritura en `/salon` |
+| --- | --- | --- | --- | --- |
+| zonas | `public.pos_zones` | `pos.pos_zones` | sí | no observada |
+| mesas | `public.pos_tables` | `pos.pos_tables` | sí | no observada |
+| sesiones | `public.pos_sessions` | `pos.pos_sessions` | sí | no observada |
+| llamados | `public.pos_table_service_calls` | `pos.pos_table_service_calls` | sí | sí |
+
+La API pública no cambia el ownership de las tablas `pos.*`.
+
+---
+
+#### 16. Compatibilidad pública y seguridad de vistas
+
+Las cuatro identidades consumidas desde `public` existen remotamente como vistas de compatibilidad.
+
+Las cuatro están configuradas con:
+
+```text
+security_invoker = true
+```
+
+Y son:
+
+```text
+UPDATABLE = YES
+INSERTABLE = YES
+```
+
+Por tanto, el uso de `.from("pos_table_service_calls")` desde el cliente puede alcanzar la tabla propietaria mediante la vista pública y continúa sujeto al contexto del invocador y al RLS subyacente.
+
+---
+
+#### 17. RLS en relaciones propietarias
+
+Las cuatro tablas propietarias `pos.*` tienen RLS habilitado.
+
+La existencia de RLS se registra como defensa existente.
+
+No equivale a demostrar granularidad suficiente para cada acción de salón.
+
+---
+
+#### 18. Política observada de zonas
+
+`pos.pos_zones` conserva una política `ALL` para `authenticated` cuya condición observada es:
+
+```text
+has_permission('pulso.pos.main', site_id)
+```
+
+La misma condición se aplica como `USING` y `WITH CHECK`.
+
+Consecuencia AS-IS:
+
+```text
+PERMISO GENERAL OBSERVADO
+→ puede cubrir lectura y escritura de zona bajo RLS
+```
+
+La ruta actual solo lee zonas; la amplitud de la política no se adopta como diseño final.
+
+---
+
+#### 19. Política observada de mesas
+
+`pos.pos_tables` conserva una política `ALL` para `authenticated` con:
+
+```text
+has_permission('pulso.pos.main', site_id)
+```
+
+La ruta actual solo lee mesas.
+
+La administración de configuración física no debe derivarse del permiso general de uso del POS.
+
+---
+
+#### 20. Políticas observadas de sesiones
+
+`pos.pos_sessions` conserva:
+
+```text
+SELECT
+→ has_permission('pulso.pos.main', site_id)
+
+ALL para escritura
+→ has_permission('pulso.pos.main', site_id)
+```
+
+La ruta `/salon` solo consulta sesiones abiertas.
+
+No se observan en esta superficie acciones de apertura, reasignación o cierre de sesión.
+
+---
+
+#### 21. Políticas observadas de llamados
+
+`pos.pos_table_service_calls` usa una regla diferente.
+
+Lectura:
+
+```text
+is_employee()
+AND
+can_access_site(site_id)
+```
+
+Inserción:
+
+```text
+is_employee()
+AND
+can_access_site(site_id)
+AND
+(created_by IS NULL OR created_by = auth.uid())
+```
+
+Actualización:
+
+```text
+is_employee()
+AND
+can_access_site(site_id)
+```
+
+Estas políticas no exigen el permiso `pulso.pos.main` observado por la ruta.
+
+---
+
+#### 22. Frontera de autorización expuesta por las políticas
+
+El snapshot conserva dos niveles distintos:
+
+```text
+ENTRADA A /salon
+→ pulso.pos.main
+
+MUTACIÓN RLS DE LLAMADOS
+→ empleado + acceso a sede
+```
+
+Por tanto:
+
+```text
+ROUTE_GUARD
+!=
+MUTATION_AUTHORITY
+```
+
+La diferencia debe permanecer explícita hasta que las tareas de permisos materialicen una política atómica por acción.
+
+---
+
+#### 23. Grants observados
+
+El rol `authenticated` conserva privilegios de tabla amplios sobre las relaciones propietarias y vistas públicas inspeccionadas, incluyendo capacidades de lectura y mutación según relación.
+
+La autorización efectiva queda, por tanto, fuertemente condicionada por RLS y por la semántica de la acción consumidora.
+
+Un grant técnico no se considera permiso empresarial.
+
+---
+
+#### 24. Lectura de zonas
+
+La superficie lee zonas con:
+
+```text
+site_id = sede actual
+is_active = true
+```
+
+Y las ordena por:
+
+```text
+display_order
+name
+```
+
+Las zonas inactivas no aparecen en el snapshot operativo ordinario.
+
+---
+
+#### 25. Lectura de mesas
+
+La superficie lee mesas por `site_id` y conserva:
+
+- `zone_id`;
+- nombre;
+- número visible;
+- forma;
+- capacidad;
+- posición X/Y;
+- rotación;
+- ancho y alto;
+- estado activo.
+
+No filtra `is_active` en la consulta de mesas.
+
+Las mesas inactivas pueden, por tanto, permanecer visibles en el snapshot y se derivan como `blocked` en UI.
+
+---
+
+#### 26. Lectura de sesiones
+
+La superficie lee únicamente sesiones:
+
+```text
+site_id = sede actual
+status = open
+```
+
+Conserva:
+
+- `table_id`;
+- `server_id`;
+- `pax`;
+- `opened_at`;
+- `closed_at`;
+- notas.
+
+La consulta no recupera sesiones cerradas para el mapa operativo.
+
+---
+
+#### 27. Lectura de llamados
+
+La superficie lee únicamente llamados:
+
+```text
+site_id = sede actual
+status IN (pending, acknowledged)
+```
+
+Conserva además:
+
+- zona;
+- mesa;
+- sesión opcional;
+- dispositivo opcional;
+- fuente;
+- tipo de solicitud;
+- prioridad;
+- notas;
+- creador;
+- asignado;
+- marcas temporales de reconocimiento, resolución y cancelación.
+
+Los llamados `resolved` o `cancelled` no forman parte del snapshot activo ordinario.
+
+---
+
+#### 28. Relación zona → mesa
+
+La vista construye un índice por `zone_id` y agrega a cada mesa:
+
+```text
+zoneName
+zoneColor
+```
+
+La zona se utiliza como agrupación física visual.
+
+No se convierte en área de autorización.
+
+---
+
+#### 29. Relación mesa → sesión activa
+
+Para cada mesa, la UI elige como `activeSession` la sesión abierta más reciente según `opened_at` entre las recibidas.
+
+Regla observada:
+
+```text
+MÚLTIPLES SESIONES ABIERTAS RECIBIDAS PARA UNA MESA
+→ UI conserva la más reciente
+```
+
+Esto es una decisión de proyección de UI y no una garantía de unicidad en base de datos.
+
+---
+
+#### 30. Relación mesa → llamado activo
+
+Para cada mesa, la UI elige como `activeCall` el llamado activo más reciente según `created_at`.
+
+La bandeja lateral, en cambio, conserva todos los llamados activos recibidos.
+
+Por tanto:
+
+```text
+ESTADO VISUAL DE UNA MESA
+→ puede representar solo el llamado activo más reciente
+
+BANDEJA DE ALERTAS
+→ puede representar varios llamados activos
+```
+
+---
+
+#### 31. Estados persistidos de llamados
+
+El contrato remoto admite exactamente:
+
+```text
+pending
+acknowledged
+resolved
+cancelled
+```
+
+La superficie ordinaria consulta solo los dos primeros.
+
+El inventario no fusiona estado persistido con etiqueta visual.
+
+---
+
+#### 32. Tipos persistidos de solicitud
+
+El contrato remoto admite:
+
+```text
+attention
+bill
+order
+cancel
+urgent
+```
+
+La UI tiene etiqueta para los cinco tipos, pero la creación manual actual expone solo:
+
+```text
+attention
+bill
+order
+urgent
+```
+
+No se observa creación manual de `cancel` desde esta superficie.
+
+---
+
+#### 33. Fuentes persistidas de llamado
+
+El contrato remoto admite:
+
+```text
+button
+qr
+manual
+system
+```
+
+La acción manual de `/salon` utiliza:
+
+```text
+source_type = manual
+```
+
+La existencia de `device_id` y de otras fuentes no implica que esta vista las administre.
+
+---
+
+#### 34. Prioridades persistidas
+
+El contrato admite:
+
+```text
+normal
+high
+critical
+```
+
+La creación manual asigna:
+
+```text
+urgent → critical
+bill   → high
+attention → normal
+order     → normal
+```
+
+La bandeja ordena primero por prioridad y después por antigüedad ascendente.
+
+---
+
+#### 35. Estados visuales derivados de mesa
+
+La UI deriva exactamente seis estados:
+
+```text
+attention_requested
+bill_requested
+ordering
+occupied
+available
+blocked
+```
+
+No son un enum persistido de mesa.
+
+Se calculan a partir de `is_active`, sesión abierta y llamado activo.
+
+---
+
+#### 36. Precedencia del estado visual
+
+La derivación aplica esta precedencia:
+
+```text
+mesa inactiva
+→ blocked
+
+llamado activo bill
+→ bill_requested
+
+llamado activo order
+→ ordering
+
+otro llamado activo
+→ attention_requested
+
+sesión abierta sin llamado activo
+→ occupied
+
+ninguna condición anterior
+→ available
+```
+
+Un llamado activo domina visualmente sobre el estado `occupied` de una sesión abierta.
+
+---
+
+#### 37. Acción observada — crear llamado manual
+
+La UI permite crear un llamado manual para la mesa seleccionada.
+
+El insert conserva:
+
+```text
+site_id
+zone_id
+table_id
+session_id opcional
+source_type = manual
+request_type
+status = pending
+priority
+```
+
+No se observa escritura explícita de:
+
+```text
+created_by
+assigned_to
+```
+
+---
+
+#### 38. Atribución del creador en llamado manual
+
+La política de inserción permite:
+
+```text
+created_by = auth.uid()
+O
+created_by IS NULL
+```
+
+Como la UI no envía `created_by`, el snapshot no demuestra atribución obligatoria del actor creador para el llamado manual.
+
+La identidad técnica de sesión no sustituye esa atribución humana.
+
+---
+
+#### 39. Acción observada — reconocer llamado
+
+La acción visible `Tomar` actualiza:
+
+```text
+status = acknowledged
+acknowledged_at = timestamp actual
+```
+
+La mutación se realiza desde navegador sobre la vista pública actualizable.
+
+No se observa una Server Action ni RPC nombrada para esta transición en el consumidor inspeccionado.
+
+---
+
+#### 40. `Tomar` no equivale a asignar responsable
+
+La acción `Tomar` no modifica:
+
+```text
+assigned_to
+```
+
+Por tanto:
+
+```text
+ETIQUETA UI = Tomar
+!=
+ASIGNACIÓN PERSISTIDA DE RESPONSABLE
+```
+
+El inventario mantiene separadas atención y asignación.
+
+---
+
+#### 41. Acción observada — resolver llamado
+
+La acción `Resolver` actualiza:
+
+```text
+status = resolved
+resolved_at = timestamp actual
+```
+
+El botón se muestra tanto para llamados `pending` como `acknowledged`.
+
+Por tanto, la UI permite una resolución directa de `pending` a `resolved` sin exigir previamente `acknowledged`.
+
+---
+
+#### 42. Predicados observados de actualización
+
+La actualización de un llamado utiliza como predicado de consulta:
+
+```text
+id = call.id
+```
+
+No añade en la misma mutación:
+
+```text
+site_id = sede actual
+estado de origen esperado
+assigned_to = actor esperado
+```
+
+RLS conserva el límite de acceso a sede observado, pero no constituye por sí sola una precondición explícita de transición de estado.
+
+---
+
+#### 43. Acciones no observadas en `/salon`
+
+No se observan controles runtime en esta superficie para:
+
+- abrir una sesión de mesa;
+- cerrar una sesión de mesa;
+- cambiar `server_id`;
+- asignar explícitamente un llamado mediante `assigned_to`;
+- cancelar un llamado mediante `status = cancelled`;
+- crear, editar, mover, renumerar o inactivar zonas;
+- crear, editar, mover, renumerar o inactivar mesas;
+- unir o dividir mesas;
+- trasladar una cuenta entre mesas;
+- vincular o desvincular un pedido a una sesión desde el mapa.
+
+La existencia de columnas o relaciones para estas capacidades no las convierte en acciones de la vista actual.
+
+---
+
+#### 44. Sesión de mesa y pedido permanecen separados
+
+El esquema remoto confirma que `pos.pos_sessions` puede relacionarse con pedidos mediante identidades externas a la vista de salón, incluyendo `orders.session_id` y `pos.pos_session_orders`.
+
+Esta tarea conserva:
+
+```text
+MESA
+!=
+SESIÓN
+!=
+PEDIDO
+!=
+CUENTA
+```
+
+La ruta `/salon` no implementa por sí sola el lifecycle comercial completo de servicio en mesa.
+
+---
+
+#### 45. Dispositivo de llamado como identidad referenciada
+
+`pos.pos_table_service_calls.device_id` referencia una identidad de dispositivo de llamado asociada a mesa.
+
+La ruta actual no consulta ni administra directamente el catálogo de esos dispositivos.
+
+Por tanto:
+
+```text
+DEVICE_ID PRESENTE EN LLAMADO
+!=
+GESTIÓN DE DISPOSITIVO EN /salon
+```
+
+La integración con dispositivos permanece en su tarea propietaria.
+
+---
+
+#### 46. Realtime declarado en código
+
+El cliente declara un canal:
+
+```text
+salon-live-${siteId}
+```
+
+Y dos suscripciones `postgres_changes`:
+
+```text
+schema = public
+table = pos_table_service_calls
+event = *
+
+schema = public
+table = pos_sessions
+event = *
+```
+
+Ante un evento intenta recargar el snapshot completo de la sede.
+
+---
+
+#### 47. Alcance de las suscripciones declaradas
+
+Los descriptores de suscripción no incluyen un filtro Realtime por `site_id`.
+
+La recarga posterior sí vuelve a consultar los cuatro recursos filtrados por la sede actual.
+
+Por tanto:
+
+```text
+REFRESH SNAPSHOT
+→ scoped por site_id
+
+TRIGGER DE REFRESH DECLARADO
+→ sin filtro site_id en el descriptor
+```
+
+La existencia del nombre de canal con `siteId` no convierte por sí sola el stream de cambios en un filtro de filas.
+
+---
+
+#### 48. Cleanup de Realtime
+
+La superficie registra cleanup explícito mediante:
+
+```text
+supabase.removeChannel(channel)
+```
+
+Esto satisface la existencia técnica de una ruta de limpieza del canal.
+
+No demuestra que la suscripción haya recibido eventos correctamente.
+
+---
+
+#### 49. Configuración remota de Postgres Changes
+
+La configuración remota inspeccionada contiene la publicación:
+
+```text
+supabase_realtime
+puballtables = false
+```
+
+No se observaron como miembros de esa publicación las identidades de salón consultadas:
+
+```text
+pos_zones
+pos_tables
+pos_sessions
+pos_table_service_calls
+```
+
+Además, el código escucha las vistas del esquema `public`, mientras las relaciones propietarias son tablas del esquema `pos`.
+
+---
+
+#### 50. Estado AS-IS de Realtime
+
+Con la configuración remota verificada:
+
+```text
+REALTIME_CODE_PATH = PRESENT
+REALTIME_CLEANUP = PRESENT
+POSTGRES_CHANGES_PUBLICATION_MEMBERSHIP = ABSENT
+REALTIME_OPERATIONAL_DELIVERY = NOT_DEMONSTRATED
+```
+
+Por tanto, la existencia de `.subscribe()` no se documenta como Realtime operativo certificado.
+
+Esta tarea no modifica la publicación.
+
+---
+
+#### 51. Sonido y alerta local
+
+La UI puede emitir un tono cuando, después de una recarga disparada por Realtime, aumenta el conteo de llamados activos y el sonido está habilitado.
+
+El sonido es feedback local.
+
+No constituye acuse, asignación ni evento empresarial autoritativo.
+
+---
+
+#### 52. Refresco manual
+
+La superficie incluye una acción `Actualizar` que vuelve a consultar el snapshot por sede.
+
+Ese mecanismo puede recuperar estado visible aun cuando Realtime no entregue eventos, pero:
+
+```text
+REFRESCO MANUAL
+!=
+REALTIME OPERATIVO
+```
+
+No se infiere SLA de frescura desde la existencia del botón.
+
+---
+
+#### 53. Matriz de acciones y autoridad observada
+
+| Acción o capacidad | Recurso | Caller observado | Estado AS-IS | Autoridad final |
+| --- | --- | --- | --- | --- |
+| leer zonas | zona | Server Component + browser refresh | protegida por sede/permiso observado | pendiente de diseño atómico |
+| leer mesas | mesa | Server Component + browser refresh | protegida por sede/permiso observado | pendiente de diseño atómico |
+| leer sesiones abiertas | sesión | Server Component + browser refresh | protegida por sede/permiso observado | pendiente de diseño atómico |
+| leer llamados activos | llamado | Server Component + browser refresh | RLS empleado + acceso a sede | pendiente de diseño atómico |
+| crear llamado manual | llamado | browser | insert directo por vista pública | pendiente de diseño atómico y actor |
+| reconocer llamado | llamado | browser | update directo por id | pendiente de transición y actor |
+| resolver llamado | llamado | browser | update directo por id | pendiente de transición y actor |
+| asignar responsable | llamado | no observada | `assigned_to` existe, sin acción actual | pendiente |
+| cancelar llamado | llamado | no observada | estado existe, sin acción actual | pendiente |
+| abrir/cerrar sesión | sesión | no observada | estructura existe, sin acción actual | pendiente |
+| administrar zona/mesa | configuración | no observada en `/salon` | estructuras existentes | debe permanecer administrativa |
+
+---
+
+#### 54. Matriz de estados y significado
+
+| Identidad | Estado / señal | Naturaleza | Persistencia |
+| --- | --- | --- | --- |
+| mesa | `is_active` | configuración física | persistida |
+| sesión | `open` | lifecycle de sesión | persistida |
+| llamado | `pending` | pendiente de atención | persistida |
+| llamado | `acknowledged` | reconocido | persistida |
+| llamado | `resolved` | resuelto | persistida |
+| llamado | `cancelled` | cancelado | persistida |
+| mesa UI | `available` | proyección | derivada |
+| mesa UI | `occupied` | proyección | derivada |
+| mesa UI | `attention_requested` | proyección | derivada |
+| mesa UI | `bill_requested` | proyección | derivada |
+| mesa UI | `ordering` | proyección | derivada |
+| mesa UI | `blocked` | proyección | derivada |
+
+Un estado derivado no debe escribirse como si fuera el estado canónico persistido de la mesa.
+
+---
+
+#### 55. Matriz de hallazgos y propietarios de salida
+
+| Hallazgo | Efecto | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `pos.main` protege ruta y varias relaciones con granularidad amplia | lectura y configuración pueden compartir autoridad excesiva | `PULSO-AUTH-006..008`, `PULSO-AUTH-014` | permisos finales separados por acción y configuración |
+| llamados usan RLS `empleado + acceso a sede` | mutación puede ser más amplia que el guard de `/salon` | `PULSO-AUTH-006..008`, contratos de servidor | mutación sensible revalidada con permiso exacto |
+| llamado manual no atribuye obligatoriamente `created_by` | actor humano no queda garantizado | `PULSO-AUTH-013` | actor efectivo persistido y auditable |
+| `Tomar` no modifica `assigned_to` | reconocimiento y asignación están fusionados visualmente pero no en datos | `PULSO-AUTH-013`, diseño posterior de salón | semántica de asignación explícita o etiqueta corregida |
+| update de llamado usa `id` sin estado de origen | transición concurrente o stale no queda protegida por predicado explícito | contratos de acciones de servidor + `PULSO-AUTH-016` | transición server-side valida recurso, sede y estado actual |
+| resolución puede ocurrir desde `pending` | lifecycle no exige acuse previo | diseño posterior de autorización/salón | matriz de transiciones aprobada y aplicada |
+| cancelación existe en datos sin acción de UI | lifecycle incompleto en la superficie | diseño posterior de salón | acción o decisión explícita sobre cancelación |
+| apertura/cierre de sesión no existe en `/salon` | mapa no cubre lifecycle completo de mesa | diseño posterior PULSO-UX / paquete propietario | lifecycle de sesión materializado y probado |
+| configuración de zona/mesa no aparece en `/salon` | separación administrativa todavía depende de otras superficies | `PULSO-AUTH-014` | configuración administrativa separada |
+| suscripciones Realtime no tienen filtro de sede | eventos declarados pueden disparar recargas innecesarias si se habilitan | `PULSO-AUTH-011`, `PULSO-AUTH-016` | stream territorial probado o contrato alternativo |
+| relaciones de salón no están en `supabase_realtime` | código Realtime no queda respaldado por publicación remota actual | package propietario / `PULSO-AUTH-016` | configuración publicada y evidencia de evento E2E |
+| `device_id` existe sin gestión en la vista | dispositivo no equivale a actor ni permiso | `PULSO-AUTH-012` | contrato de dispositivo compartido integrado |
+
+No queda hallazgo material del inventario sin propietario o condición de salida.
+
+---
+
+#### 56. Frontera de configuración administrativa
+
+`OPS-POS-001` define que mover, renumerar, inactivar o reconfigurar una mesa es una operación gobernada de configuración.
+
+La superficie `/salon` actual no ofrece esas mutaciones.
+
+La política RLS amplia observada sobre zonas y mesas no debe interpretarse como decisión de exponer esa configuración al operador ordinario.
+
+---
+
+#### 57. Frontera de sesión operativa
+
+Una sesión abierta puede contener `server_id`, `pax`, apertura y cierre.
+
+La vista únicamente la proyecta.
+
+Por tanto:
+
+```text
+VER SESIÓN ABIERTA
+!=
+ABRIR SESIÓN
+!=
+REASIGNAR MESERO
+!=
+CERRAR SESIÓN
+```
+
+Cada operación posterior requiere autoridad y transición propias.
+
+---
+
+#### 58. Frontera de asignación de llamado
+
+El modelo distingue:
+
+```text
+created_by
+assigned_to
+acknowledged_at
+resolved_at
+```
+
+Esas identidades no deben colapsarse.
+
+Un usuario que reconoce un llamado no queda demostrado como `assigned_to` por la implementación actual.
+
+---
+
+#### 59. Frontera de cancelación
+
+Se distinguen dos conceptos:
+
+```text
+request_type = cancel
+
+status = cancelled
+```
+
+El primero describe una solicitud de servicio; el segundo describe el lifecycle del llamado.
+
+No son equivalentes.
+
+---
+
+#### 60. Frontera de mesa inactiva
+
+Una mesa inactiva se proyecta como `blocked`.
+
+`OPS-POS-001` exige además que la inactivación no borre historia ni oculte trabajo abierto.
+
+La vista de salón no materializa la administración que garantice esas precondiciones.
+
+---
+
+#### 61. Frontera territorial
+
+Las lecturas explícitas están filtradas por `site_id`.
+
+Las políticas propietarias también evalúan sede mediante `has_permission` o `can_access_site` según recurso.
+
+Sin embargo, la autoridad final debe seguir distinguiendo:
+
+```text
+site_id solicitado
+site_id resuelto
+sede laboral / operativa
+actor efectivo
+dispositivo
+permiso exacto
+```
+
+La materialización definitiva pertenece a `PULSO-AUTH-011`.
+
+---
+
+#### 62. Frontera de dispositivo compartido
+
+El llamado puede registrar `device_id`, pero la vista no demuestra por sí sola:
+
+- actor humano detrás del dispositivo;
+- sesión de actor compartido;
+- firma de acción;
+- vigencia del dispositivo;
+- revocación;
+- estación autorizada.
+
+La integración corresponde a `PULSO-AUTH-012` y `PULSO-AUTH-013`.
+
+---
+
+#### 63. Frontera de proceso comercial
+
+El mapa de salón no sustituye el proceso completo de servicio en mesa.
+
+Continúan separadas:
+
+```text
+MESA
+SESIÓN
+PEDIDO
+PREPARACIÓN
+ENTREGA
+CUENTA
+PAGO
+CIERRE
+```
+
+`VPROC-0038` solo se considera completo cuando esas identidades y handoffs estén materializados y probados según sus propietarias.
+
+---
+
+#### 64. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Esta tarea no crea, modifica, difiere ni vuelve obsoleto ningún requisito de prueba.
+
+La cobertura vigente ya protege aislamiento territorial, segregación de acciones, lifecycle de salón, autorización de vistas y consistencia entre infraestructura y proceso.
+
+---
+
+#### 65. Cobertura de prueba vigente reutilizada
+
+Cobertura relevante, reutilizada sin modificación:
+
+- `TREQ-PULSO-005` — separación de pedido, preparación, cumplimiento, mesa, cuenta y venta;
+- `TREQ-PULSO-014` — acceso protegido a las rutas de negocio PULSO;
+- `TREQ-PULSO-015` — `site_id` no puede ampliar el territorio del actor;
+- `TREQ-PULSO-018` — `/salon` debe limitar zonas, mesas, sesiones y llamados a la sede autorizada y separar lectura, apertura, asignación, atención, resolución, cancelación y cierre según actor y estado;
+- `TREQ-PULSO-019` — parámetros de consulta no crean pantallas ni autoridad adicional;
+- `TREQ-PULSO-020` — componentes y helpers no son rutas;
+- `TREQ-PULSO-021` — la evidencia debe quedar ligada al snapshot inspeccionado;
+- `TREQ-PULSO-024` — infraestructura existente no demuestra autorización completa ni proceso completo;
+- `TREQ-PULSO-026` — un permiso observado no se adopta por inferencia como permiso final suficiente.
+
+La enumeración es trazabilidad; no actualiza el Registro 04A.
+
+---
+
+#### 66. Handoff a PULSO-AUTH-004
+
+`PULSO-AUTH-004 — Inventariar escáner` recibe la continuidad documental después de cerrar este inventario.
+
+No hereda recursos de salón como si fueran recursos del scanner.
+
+La frontera queda:
+
+```text
+PULSO-AUTH-003
+→ inventario cerrado de PULSO-ROUTE-005
+→ PULSO-AUTH-004
+→ inventario de PULSO-ROUTE-001 y PULSO-ROUTE-006
+```
+
+---
+
+#### 67. Handoff a PULSO-AUTH-006..008
+
+Las tareas de permisos reciben como insumos:
+
+- `pulso.pos.main` es el permiso general observado de entrada y de varias relaciones `pos`;
+- los llamados tienen una política RLS distinta basada en empleado + acceso a sede;
+- reconocer, resolver, asignar y cancelar deben permanecer acciones distintas;
+- administración de zona/mesa no debe heredarse del permiso general sin decisión explícita.
+
+Esta tarea no crea claves de permiso.
+
+---
+
+#### 68. Handoff a PULSO-AUTH-011
+
+`PULSO-AUTH-011 — Limitar operación a sede del turno` recibe:
+
+```text
+lecturas explícitamente filtradas por site_id
++
+RLS territorial existente
++
+suscripciones Realtime sin filtro de site_id
+```
+
+Debe demostrar territorialidad efectiva en lectura, mutación y actualización live.
+
+---
+
+#### 69. Handoff a PULSO-AUTH-012
+
+`PULSO-AUTH-012 — Integrar dispositivos POS compartidos` recibe:
+
+- existencia de `device_id` en llamados;
+- separación dispositivo ≠ mesa ≠ actor;
+- ausencia de gestión de dispositivo en `/salon`.
+
+No se asigna autoridad al dispositivo por su presencia en el evento.
+
+---
+
+#### 70. Handoff a PULSO-AUTH-013
+
+`PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación` recibe:
+
+- `created_by` opcional en el llamado manual actual;
+- `assigned_to` no actualizado por `Tomar`;
+- mutaciones directas desde navegador;
+- necesidad de distinguir creador, asignado y actor ejecutor.
+
+La condición de salida es atribución humana auditable de cada acción sensible.
+
+---
+
+#### 71. Handoff a PULSO-AUTH-014
+
+`PULSO-AUTH-014 — Mantener configuración administrativa separada` recibe:
+
+- zonas y mesas como configuración física;
+- políticas actuales `ALL` bajo `pulso.pos.main`;
+- ausencia de acciones de configuración en `/salon`;
+- contrato de `OPS-POS-001` que prohíbe confundir uso operativo con administración física.
+
+---
+
+#### 72. Handoff a PULSO-AUTH-015
+
+`PULSO-AUTH-015 — Migrar a paquetes de vento-shell` recibe cualquier materialización futura necesaria para mover o endurecer contratos compartidos sin alterar el inventario AS-IS aprobado.
+
+Toda modificación VENTO de Supabase deberá quedar versionada y gobernada desde `vento-shell`.
+
+---
+
+#### 73. Handoff a PULSO-AUTH-016
+
+`PULSO-AUTH-016 — Ejecutar pruebas integrales` recibe como casos mínimos:
+
+- aislamiento de sede en los cuatro recursos;
+- creación manual de llamado;
+- reconocimiento;
+- resolución;
+- asignación separada;
+- cancelación;
+- apertura y cierre de sesión cuando sean materializados;
+- atribución de actor;
+- concurrencia y estado stale;
+- configuración administrativa separada;
+- Realtime territorial;
+- cleanup de canal;
+- fallback de refresco;
+- compatibilidad con zonas y mesas definidas por `OPS-POS-001`.
+
+---
+
+#### 74. Drift que invalida conclusiones afectadas
+
+Obliga a revisar este inventario cualquier cambio material en:
+
+- archivo de página de `/salon`;
+- módulo principal de salón;
+- tipos o derivación de estados;
+- nombres o esquema de las cuatro relaciones;
+- definición de las vistas públicas;
+- `security_invoker`;
+- updatability de vistas;
+- RLS;
+- grants;
+- guard o permiso observado;
+- modelo `site_id`;
+- mutaciones de llamados;
+- lifecycle de sesiones;
+- Realtime;
+- publicación de Postgres Changes;
+- relación con dispositivos;
+- contratos de `OPS-POS-001`.
+
+Un cambio ajeno a estas fuentes no invalida automáticamente todo el inventario.
+
+---
+
+#### 75. Estado de materialización inventariado
+
+La clasificación final de la superficie es:
+
+```text
+ROUTE = MATERIALIZED
+READ_MODEL = MATERIALIZED_AS_IS
+CALL_MUTATIONS = PARTIAL_AS_IS
+SESSION_LIFECYCLE = PARTIAL / READ_ONLY_IN_THIS_SURFACE
+TABLE_CONFIGURATION = NOT_EXPOSED_IN_THIS_SURFACE
+ACTOR_ATTRIBUTION = INCOMPLETE
+ACTION_AUTHORIZATION = NOT_FINAL
+REALTIME_CODE_PATH = PRESENT
+REALTIME_REMOTE_PUBLICATION_SUPPORT = ABSENT_IN_VERIFIED_SNAPSHOT
+CANONICAL_SCREEN_COVERAGE = PARTIAL
+PHYSICAL_IMPLEMENTATION_AUTHORIZED_BY_THIS_TASK = NO
+```
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de `vento-pulso`; tarea documental sin cambios físicos |
+| LOCAL | NOT_EXECUTED | no se modificó checkout local del repositorio canónico |
+| REMOTA | PASS | se verificaron `vento-shell`, `vento-pulso` y el Supabase remoto vigente: fuentes, blobs, topología, 04A, vistas públicas, tablas `pos`, RLS, grants y membresía de publicación Realtime aplicable |
+| OPERATIVA | NOT_EXECUTED | no se abrió una sesión real ni se creó, reconoció o resolvió un llamado real |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; sin materialización física propia |
+
+La evidencia REMOTA valida el inventario documental del snapshot, no certifica el proceso E2E.
+
+---
+
+#### 77. Criterios de aceptación
+
+- [ ] `PULSO-ROUTE-005` queda identificado de forma única como `/salon`.
+- [ ] Se inventarían exactamente las cuatro familias directas: zonas, mesas, sesiones y llamados.
+- [ ] Se distinguen vistas públicas de tablas propietarias `pos.*`.
+- [ ] Se registra `security_invoker = true` en las cuatro vistas de compatibilidad.
+- [ ] Se registra que las cuatro vistas son actualizables e insertables en el snapshot remoto.
+- [ ] Se registran las políticas RLS observadas sin tratarlas como diseño final.
+- [ ] Se distingue el guard `pulso.pos.main` de la política de llamados basada en empleado + acceso a sede.
+- [ ] Se inventarían exactamente los cuatro estados persistidos de llamado.
+- [ ] Se inventarían los cinco tipos persistidos de solicitud.
+- [ ] Se inventarían los cuatro tipos persistidos de fuente.
+- [ ] Se inventarían las tres prioridades persistidas.
+- [ ] Se inventarían exactamente los seis estados derivados de mesa.
+- [ ] Se documenta la precedencia de estado visual.
+- [ ] Se documenta creación manual de llamado.
+- [ ] Se documenta reconocimiento de llamado.
+- [ ] Se documenta resolución de llamado.
+- [ ] Se documenta que `Tomar` no persiste `assigned_to`.
+- [ ] Se documenta que `created_by` puede quedar nulo en la creación manual actual.
+- [ ] Se documenta que resolución puede ejecutarse desde `pending`.
+- [ ] Se documentan las acciones de sesión, asignación, cancelación y configuración no presentes en `/salon`.
+- [ ] Se conserva mesa ≠ sesión ≠ pedido ≠ cuenta.
+- [ ] Se conserva dispositivo ≠ actor.
+- [ ] Se documentan las dos suscripciones Realtime declaradas y su cleanup.
+- [ ] Se documenta ausencia de filtro de sede en los descriptores Realtime.
+- [ ] Se documenta ausencia de membresía de las relaciones de salón en `supabase_realtime` para el snapshot remoto inspeccionado.
+- [ ] Todo hallazgo material tiene propietario y condición de salida.
+- [ ] No se crean ni modifican TREQ.
+- [ ] No se ejecutan cambios físicos.
+
+---
+
+#### 78. Límites
+
+Esta tarea no:
+
+- crea o modifica zonas;
+- crea o modifica mesas;
+- abre o cierra sesiones;
+- crea datos de operación;
+- modifica llamados reales;
+- define el permiso final de cajero;
+- define el permiso final de supervisor;
+- define permisos de cierre o anulación;
+- cambia RLS;
+- cambia grants;
+- cambia vistas públicas;
+- cambia el esquema `pos`;
+- habilita Realtime;
+- modifica publicaciones PostgreSQL;
+- crea Server Actions o RPC;
+- diseña el ciclo completo de servicio en mesa;
+- materializa asignación de mesero;
+- materializa cancelación de llamado;
+- materializa unión, división o traslado de mesas;
+- implementa dispositivos compartidos;
+- implementa actor efectivo;
+- modifica Supabase remoto;
+- ejecuta migraciones;
+- implementa `PULSO-AUTH-004` ni tareas posteriores;
+- modifica el Registro 04A.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-002 — Inventariar órdenes`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-AUTH-003 — Inventariar salón`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-AUTH-004 — Inventariar escáner`
 ### [ ] PULSO-AUTH-004 — Inventariar escáner
 ### [ ] PULSO-AUTH-005 — Inventariar importaciones
 ### [ ] PULSO-AUTH-006 — Definir permisos de cajero

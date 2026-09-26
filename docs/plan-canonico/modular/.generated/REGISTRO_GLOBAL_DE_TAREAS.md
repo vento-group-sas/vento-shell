@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1356** |
+| Aprobadas | **1357** |
 | En propuesta | **0** |
-| No iniciadas | **240** |
+| No iniciadas | **239** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **84.96% (1356/1596)** |
+| Porcentaje de completamiento | **85.03% (1357/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **240** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1257** |
+| ⏸ NO_EVALUADA | **239** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1258** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PULSO-AUTH-002` — Inventariar órdenes | ✅ APROBADA |
-| Tarea actual | `PULSO-AUTH-003` — Inventariar salón | ⬜ NO INICIADA |
-| Siguiente reservada | `PULSO-AUTH-004` — Inventariar escáner | ⬜ NO INICIADA |
+| Última aprobada | `PULSO-AUTH-003` — Inventariar salón | ✅ APROBADA |
+| Tarea actual | `PULSO-AUTH-004` — Inventariar escáner | ⬜ NO INICIADA |
+| Siguiente reservada | `PULSO-AUTH-005` — Inventariar importaciones | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1117,7 +1117,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-UX-016` | Validar el prototipo con compras y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-001` | Inventariar vistas POS | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-002` | Inventariar órdenes | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-003` | Inventariar salón | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-AUTH-003` | Inventariar salón | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-004` | Inventariar escáner | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-005` | Inventariar importaciones | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PULSO-AUTH-006` | Definir permisos de cajero | — | — | `bloques/N_PULSO/01_AUTORIZACION_DE_VENTA_Y_CAJA.md` |
