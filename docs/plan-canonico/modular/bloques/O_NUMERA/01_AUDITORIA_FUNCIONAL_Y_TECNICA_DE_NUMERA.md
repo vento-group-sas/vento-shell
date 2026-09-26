@@ -7491,7 +7491,760 @@ Quedan congeladas para continuidad:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio`
-### [ ] NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
+### ✅ NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
+**Tarea siguiente:** NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
+**Tipo de tarea:** auditoría documental AS-IS de fórmulas, agregados, entradas y significado económico usados actualmente por NUMERA para gastos, costos, margen, variación presupuestal, rentabilidad y punto de equilibrio, distinguiendo corrección aritmética, suficiencia semántica, fuente, reproducibilidad y ausencia de cálculo, sin corregir código ni absorber la auditoría posterior de gastos, centros de costo, cierres y aprobaciones; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, Supabase, datos, fórmulas, vistas, RPC, categorías, presupuestos, gastos, costos, precios internos, integraciones, permisos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Determinar qué calcula realmente NUMERA en el snapshot vigente, qué entradas utiliza, si la aritmética implementada corresponde con el significado financiero que muestra la interfaz y qué capacidades económicas siguen sin fórmula o sin fuente trazable suficiente.
+
+La auditoría separa:
+
+```text
+ARITMETICA_CORRECTA
+ARITMETICA_CONDICIONADA_POR_SUPUESTO
+AGREGACION_NO_EQUIVALENTE_A_CONSOLIDACION
+INPUT_MANUAL_NO_CALCULADO
+CALCULO_AUSENTE
+FUENTE_ECONOMICA_INCOMPLETA
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-007
+
+La predecesora dejó congelado que:
+
+- `numera_expenses` permite captura económica manual;
+- el corte remoto contenía cero filas en `numera_expenses`;
+- la captura actual no correlaciona por `source_table` y `source_id` desde la Server Action;
+- existen hechos operativos y económicos en otros dominios que NUMERA todavía no consume;
+- `expected_revenue` es planificación y no una venta realizada;
+- la auditoría de fórmulas, margen, rentabilidad y equilibrio quedó reservada expresamente a esta tarea.
+
+Esta tarea consume ese handoff sin reabrir la clasificación de duplicidad manual.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `NUMERA-AUD-001..012` conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+No se genera una instancia física ni se autoriza modificar las fórmulas observadas.
+
+---
+
+#### 4. Fuentes verificadas
+
+Se contrastaron:
+
+- tareas `NUMERA-AUD-001` a `NUMERA-AUD-006` publicadas;
+- `NUMERA-AUD-007` aprobado por el usuario como base inmediata;
+- `CAP-SCOPE-012` y su modelo financiero objetivo;
+- `04A_13_NUMERA.md` sin modificación;
+- `vento-numera/main` en commit `c4d50282e30e46d0abb3d871f9604cf913ebbabd`;
+- `/`, `/cost-centers`, `/expenses`, `/break-even` y `/profitability`;
+- `public.numera_cost_center_monthly_summary`;
+- `public.numera_current_period_summary()`;
+- constraints de `numera_cost_center_budgets`, `numera_expense_categories` y `numera_expenses`;
+- estructuras de costo existentes en inventario, compras, precios internos y producción;
+- snapshot remoto Supabase de solo lectura del proyecto `clzdpinthhtknkmefsxx`.
+
+---
+
+#### 5. Regla canónica económica preservada
+
+El canon vigente exige que todo costo, distribución, presupuesto, forecast, punto de equilibrio y rentabilidad declare método, entradas, versión, vigencia, entidad, centro, periodo y fuente.
+
+También exige separar costo estándar, promedio, último, real, landed e interno y establece que la rentabilidad debe usar ingreso realizado y costo trazable, no únicamente ingreso esperado y gasto agregado.
+
+---
+
+#### 6. Definiciones de esta auditoría
+
+| Estado | Definición |
+| --- | --- |
+| `ARITHMETICALLY_COHERENT` | la operación implementada produce el resultado matemático declarado a partir de sus entradas |
+| `SEMANTICALLY_PARTIAL` | la operación es aritméticamente válida pero sus entradas no cubren todo el significado empresarial presentado |
+| `CONDITIONALLY_COHERENT` | el resultado solo es económicamente válido si se cumple un supuesto no demostrado por el cálculo |
+| `NON_EQUIVALENT_AGGREGATION` | la suma de métricas individuales no equivale necesariamente a una métrica consolidada |
+| `INPUT_NOT_CALCULATION` | el valor es una meta o supuesto ingresado manualmente, no un resultado calculado |
+| `CALCULATION_ABSENT` | la superficie nombra una capacidad económica sin implementar su fórmula material |
+| `SOURCE_NOT_CONSUMED` | existe una fuente técnica relevante pero el consumidor NUMERA vigente no la utiliza |
+
+---
+
+#### 7. Universo auditado
+
+Se materializan nueve objetos económicos:
+
+```text
+CALCULATION_OBJECTS_AUDITED = 9
+```
+
+1. `actual_expenses`;
+2. `fixed_expenses`;
+3. `variable_expenses`;
+4. `one_time_expenses`;
+5. `budget_variance`;
+6. `target_gross_margin_pct`;
+7. `break_even_revenue` por centro;
+8. suma de `break_even_revenue` mostrada como equilibrio total;
+9. superficie denominada `Rentabilidad`.
+
+---
+
+#### 8. Resultado ejecutivo
+
+El corte queda:
+
+```text
+CALCULATION_OBJECTS_AUDITED = 9
+DIRECT_FORMULAS_PRESENT = 6
+AGGREGATE_FORMULAS_PRESENT = 1
+INPUT_ONLY_OBJECTS = 1
+MISSING_MATERIAL_CALCULATIONS = 1
+ARITHMETICALLY_COHERENT_DIRECT_FORMULAS = 5
+CONDITIONALLY_COHERENT_DIRECT_FORMULAS = 1
+NON_EQUIVALENT_AGGREGATIONS = 1
+COST_ENGINE_IMPLEMENTED_IN_VENTO_NUMERA = NO
+ACTUAL_MARGIN_CALCULATION_IMPLEMENTED = NO
+PROFITABILITY_CALCULATION_IMPLEMENTED = NO
+```
+
+Las cinco fórmulas directas aritméticamente coherentes son los agregados de gastos por clase y la variación presupuestal. El punto de equilibrio es la fórmula directa condicionada.
+
+---
+
+#### 9. Lineage técnico principal
+
+La cadena material es:
+
+```text
+numera_expenses
++ numera_expense_categories
++ numera_cost_center_budgets
++ numera_periods
++ cost_centers
+-> numera_cost_center_monthly_summary
+-> numera_current_period_summary()
+-> UI
+```
+
+Las páginas no recalculan el modelo económico principal; leen la vista o el RPC y formatean los resultados.
+
+---
+
+#### 10. Fórmula de gasto actual
+
+La vista calcula:
+
+```text
+actual_expenses = SUM(numera_expenses.amount)
+```
+
+por periodo y centro de costo, con una regla adicional para gastos asociados únicamente a sede.
+
+Clasificación:
+
+```text
+actual_expenses = ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL
+```
+
+La suma representa las filas capturadas en `numera_expenses`, no el costo económico completo de la operación.
+
+---
+
+#### 11. Fórmula de gasto fijo
+
+La vista calcula:
+
+```text
+fixed_expenses = SUM(amount WHERE expense_kind = fixed)
+```
+
+La aritmética es coherente con la clasificación persistida.
+
+No demuestra que toda partida clasificada como fija conserve método, vigencia o tratamiento por centro y periodo más allá de la categoría asignada.
+
+---
+
+#### 12. Fórmula de gasto variable
+
+La vista calcula:
+
+```text
+variable_expenses = SUM(amount WHERE expense_kind = variable)
+```
+
+La aritmética es coherente con la clasificación persistida.
+
+Este valor no participa directamente en la fórmula vigente de `break_even_revenue`.
+
+---
+
+#### 13. Fórmula de gasto de una sola vez
+
+La vista calcula:
+
+```text
+one_time_expenses = SUM(amount WHERE expense_kind = one_time)
+```
+
+La aritmética es coherente con la clasificación persistida y el valor se conserva separado del gasto fijo y variable.
+
+---
+
+#### 14. Clasificación de gastos observada
+
+Las categorías activas observadas se distribuyen así:
+
+```text
+fixed:
+- Arriendo
+- Nomina
+- Servicios publicos
+
+variable:
+- Mantenimiento
+- Mercadeo
+- Insumos no inventariables
+
+one_time:
+- Otros gastos
+```
+
+La clase económica deriva de la categoría, no de una política versionada por centro, producto, comportamiento del gasto o rango de actividad.
+
+---
+
+#### 15. Fórmula de variación presupuestal
+
+La vista calcula:
+
+```text
+budget_variance = budget_amount - actual_expenses
+```
+
+Clasificación:
+
+```text
+budget_variance = ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL
+```
+
+La fórmula es consistente con la UI: un valor negativo se trata como sobrepresupuesto. Su base de gasto conserva las limitaciones de `actual_expenses`.
+
+---
+
+#### 16. Semántica del signo de variación
+
+En `/cost-centers`:
+
+```text
+variance < 0 -> sobre presupuesto
+variance >= 0 -> no sobre presupuesto
+```
+
+Esto coincide con `budget - gasto`.
+
+No se detecta inversión de signo entre la vista y la interpretación visual.
+
+---
+
+#### 17. Naturaleza del margen vigente
+
+`target_gross_margin_pct` es una entrada editable de planificación.
+
+La UI permite ingresar el objetivo y `upsertBudget` lo persiste; no existe fórmula que derive margen bruto real a partir de ingresos realizados y costo trazable.
+
+Clasificación:
+
+```text
+target_gross_margin_pct = INPUT_NOT_CALCULATION
+ACTUAL_GROSS_MARGIN = CALCULATION_ABSENT
+```
+
+---
+
+#### 18. Restricciones del margen objetivo
+
+La persistencia exige:
+
+```text
+target_gross_margin_pct IS NULL
+OR
+0 < target_gross_margin_pct <= 100
+```
+
+La UI aplica igualmente un rango de `0..100`, aunque una entrada vacía se transforma en `0` por el parser y la base rechaza el cero si intentara persistirse como margen no nulo.
+
+El dominio válido material de la base queda `NULL` o `(0,100]`.
+
+---
+
+#### 19. Fórmula vigente de punto de equilibrio
+
+La vista implementa:
+
+```text
+if target_gross_margin_pct is null or <= 0:
+    break_even_revenue = null
+else:
+    break_even_revenue = round(
+        fixed_expenses / (target_gross_margin_pct / 100),
+        2
+    )
+```
+
+Clasificación:
+
+```text
+break_even_revenue = CONDITIONALLY_COHERENT
+```
+
+---
+
+#### 20. Condición económica necesaria para la fórmula
+
+La fórmula anterior coincide con la forma clásica:
+
+```text
+fixed_cost / contribution_margin_ratio
+```
+
+solo si `target_gross_margin_pct` puede actuar válidamente como ratio de margen de contribución aplicable al conjunto de costos variables que corresponda.
+
+El snapshot no demuestra esa equivalencia.
+
+---
+
+#### 21. Margen bruto objetivo no equivale automáticamente a margen de contribución
+
+El campo se denomina explícitamente:
+
+```text
+target_gross_margin_pct
+```
+
+No existe una definición material en la fórmula que incorpore o reconcilie todos los costos variables necesarios para transformar ese objetivo bruto en un ratio de contribución.
+
+Por tanto:
+
+```text
+TARGET_GROSS_MARGIN_PCT == CONTRIBUTION_MARGIN_RATIO
+```
+
+no puede asumirse como verdad demostrada.
+
+---
+
+#### 22. Gasto variable excluido de la fórmula de equilibrio
+
+Aunque la vista calcula `variable_expenses`, `break_even_revenue` usa únicamente:
+
+```text
+fixed_expenses
+target_gross_margin_pct
+```
+
+`variable_expenses` no entra explícitamente en el cálculo.
+
+Esto solo sería económicamente suficiente si el margen usado como divisor ya incorporara de manera trazable el comportamiento variable correspondiente.
+
+---
+
+#### 23. Tratamiento de margen ausente
+
+Cuando el margen objetivo es `NULL`, la vista devuelve:
+
+```text
+break_even_revenue = NULL
+```
+
+La pantalla `/break-even` lo muestra como `Sin calculo`.
+
+Ese tratamiento conserva correctamente la diferencia entre ausencia de fórmula aplicable y cero de equilibrio en esa superficie.
+
+---
+
+#### 24. Agregación de equilibrio en `/cost-centers`
+
+La pantalla calcula:
+
+```text
+totalBreakEven = SUM(row.break_even_revenue)
+```
+
+sobre centros visibles.
+
+Clasificación:
+
+```text
+TOTAL_BREAK_EVEN = NON_EQUIVALENT_AGGREGATION
+```
+
+La suma de umbrales independientes puede ser útil como suma operativa, pero no equivale necesariamente al punto de equilibrio consolidado cuando existen márgenes distintos, transferencias internas o costos compartidos.
+
+---
+
+#### 25. Agregación de equilibrio en el RPC raíz
+
+`numera_current_period_summary()` también aplica:
+
+```text
+SUM(break_even_revenue)
+```
+
+sobre los centros del periodo calendario corriente.
+
+El RPC conserva la misma naturaleza de agregación y no calcula un margen consolidado ponderado.
+
+---
+
+#### 26. Superficie denominada Rentabilidad
+
+`/profitability` presenta:
+
+```text
+expected_revenue
+actual_expenses
+budget_amount
+budget_variance
+```
+
+No calcula una métrica denominada beneficio, utilidad, margen realizado, ROI, rentabilidad sobre ventas, rentabilidad por producto ni rentabilidad por capital.
+
+Clasificación:
+
+```text
+PROFITABILITY_CALCULATION_IMPLEMENTED = NO
+```
+
+---
+
+#### 27. Ingreso esperado no es ingreso realizado
+
+La superficie usa `expected_revenue`, que proviene del presupuesto editable.
+
+No consume ventas realizadas de PULSO ni otra fuente consolidada de ingresos reconocidos.
+
+Por tanto:
+
+```text
+EXPECTED_REVENUE != REALIZED_REVENUE
+```
+
+---
+
+#### 28. Ausencia de margen realizado
+
+No existe en el snapshot de `vento-numera` una fórmula que produzca:
+
+```text
+realized_revenue - traceable_cost
+```
+
+ni su razón porcentual correspondiente.
+
+La etiqueta de rentabilidad sigue siendo una lectura inicial y no un cálculo de rentabilidad cerrado.
+
+---
+
+#### 29. Ausencia de motor de costos en NUMERA
+
+`vento-numera` no consume directamente estructuras como:
+
+```text
+inventory_cost_policies
+product_cost_events
+procurement_supplier_product_costs
+production_batches
+internal_price_list_items
+```
+
+Por tanto no existe un motor NUMERA que seleccione y aplique costo estándar, promedio, último, real, landed o interno para las métricas auditadas.
+
+---
+
+#### 30. Fuentes de costo existentes fuera del consumidor NUMERA
+
+El corte remoto demuestra estructuras económicas disponibles:
+
+```text
+INVENTORY_COST_POLICIES = 5
+PRODUCT_COST_EVENTS = 4
+PROCUREMENT_SUPPLIER_PRODUCT_COSTS = 6
+INVENTORY_ENTRY_ITEMS = 6
+INVENTORY_ENTRY_ITEMS_WITH_STOCK_UNIT_COST = 6
+INVENTORY_MOVEMENTS = 803
+INVENTORY_MOVEMENTS_WITH_STOCK_UNIT_COST = 4
+INTERNAL_PRICE_LISTS = 3
+INTERNAL_PRICE_LIST_ITEMS = 1
+PRODUCTION_BATCHES = 0
+```
+
+Su existencia no significa que NUMERA ya las use.
+
+---
+
+#### 31. Métodos observados en fuentes externas
+
+El snapshot de esas estructuras contiene, entre otros:
+
+```text
+inventory_cost_basis = net
+product_cost_event_basis = net
+product_cost_event_source = entry / entry_reversal
+internal_pricing_method = manual
+```
+
+No se encontró consumidor de estos contratos dentro del repositorio `vento-numera` auditado.
+
+---
+
+#### 32. Separación de tipos de costo objetivo
+
+El canon requiere mantener separados:
+
+```text
+standard
+average
+last
+real
+landed
+internal
+```
+
+La vista mensual de NUMERA no conserva un selector o identidad de método de costo para sus métricas actuales.
+
+`actual_expenses` no sustituye esa taxonomía.
+
+---
+
+#### 33. Precio interno y margen
+
+Existen listas de precio interno y un ítem observado con `pricing_method = manual`, pero las superficies auditadas no consumen esa capa para calcular margen o rentabilidad.
+
+Las transferencias internas permanecen como insumo futuro y no pueden convertirse por inferencia en ingreso realizado o costo legal.
+
+---
+
+#### 34. Estado actual de datos NUMERA para las fórmulas
+
+El corte remoto confirma:
+
+```text
+NUMERA_PERIODS = 1
+NUMERA_BUDGET_ROWS = 0
+NUMERA_EXPENSE_ROWS = 0
+```
+
+El único periodo observado continúa siendo `2026-06`.
+
+---
+
+#### 35. Límite de validación numérica empírica
+
+Con cero presupuestos y cero gastos actuales, no existe una muestra financiera real de NUMERA que permita validar mediante resultados persistidos el comportamiento de variación, margen o equilibrio sobre datos de negocio.
+
+La auditoría sí puede validar:
+
+- definición SQL;
+- inputs;
+- constraints;
+- lineage;
+- consistencia aritmética;
+- suficiencia semántica frente al canon.
+
+No puede declarar exactitud financiera de resultados empresariales inexistentes.
+
+---
+
+#### 36. Reproducibilidad y versionado
+
+Las fórmulas actuales viven en una vista y un RPC verificables, pero el resultado económico no conserva por fila una identidad explícita de:
+
+```text
+calculation_method
+calculation_version
+input_snapshot
+source_set
+published_scenario
+```
+
+La reproducibilidad técnica del SQL no equivale todavía a la trazabilidad económica exigida por el contrato objetivo.
+
+---
+
+#### 37. Matriz de cálculos auditados
+
+| ID | Objeto | Implementación | Clasificación | Decisión |
+| --- | --- | --- | --- | --- |
+| `CALC-NUMERA-001` | gasto actual | suma de `numera_expenses.amount` | `ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL` | conservar como agregado parcial, no como costo completo |
+| `CALC-NUMERA-002` | gasto fijo | suma por `expense_kind=fixed` | `ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL` | conservar, pendiente gobierno de clasificación |
+| `CALC-NUMERA-003` | gasto variable | suma por `expense_kind=variable` | `ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL` | conservar, no asumir incorporado al equilibrio |
+| `CALC-NUMERA-004` | gasto one-time | suma por `expense_kind=one_time` | `ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL` | conservar separado |
+| `CALC-NUMERA-005` | variación presupuesto | presupuesto - gasto actual | `ARITHMETICALLY_COHERENT / SEMANTICALLY_PARTIAL` | fórmula consistente; fuente de gasto incompleta |
+| `CALC-NUMERA-006` | margen objetivo | input manual | `INPUT_NOT_CALCULATION` | no presentarlo como margen realizado |
+| `CALC-NUMERA-007` | equilibrio por centro | gasto fijo / margen objetivo | `CONDITIONALLY_COHERENT` | requiere definición de margen de contribución y fuentes |
+| `CALC-NUMERA-008` | equilibrio total | suma de equilibrios por centro | `NON_EQUIVALENT_AGGREGATION` | no tratar como equilibrio consolidado sin método aprobado |
+| `CALC-NUMERA-009` | rentabilidad | no existe fórmula material | `CALCULATION_ABSENT` | construir sobre ingreso realizado y costo trazable |
+
+---
+
+#### 38. Hallazgo H-NUMERA-008-001 — Gasto actual parcial
+
+`actual_expenses` suma exclusivamente la captura en `numera_expenses`.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-004`, `NUMERA-DOM-005`, integraciones económicas aplicables.
+**Condición de salida:** que la métrica use hechos económicos reconocidos y conciliados suficientes para el alcance que presenta.
+
+---
+
+#### 39. Hallazgo H-NUMERA-008-002 — Margen objetivo usado como proxy
+
+El punto de equilibrio divide por `target_gross_margin_pct`, no por un margen de contribución calculado y trazable.
+
+**Severidad:** crítica para interpretación financiera.
+**Propietario:** `NUMERA-DOM-007`, `NUMERA-UX-022`.
+**Condición de salida:** definir el método de margen aplicable, sus componentes, vigencia y fuentes, y utilizarlo explícitamente en el cálculo.
+
+---
+
+#### 40. Hallazgo H-NUMERA-008-003 — Gasto variable no entra explícitamente al equilibrio
+
+`variable_expenses` se calcula y muestra, pero no participa directamente en `break_even_revenue`.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-007`, `NUMERA-UX-022`.
+**Condición de salida:** demostrar que el ratio usado incorpora correctamente todos los componentes variables aplicables o ajustar la fórmula aprobada.
+
+---
+
+#### 41. Hallazgo H-NUMERA-008-004 — Equilibrio total no es consolidación demostrada
+
+La suma de equilibrios por centro no equivale necesariamente a un punto de equilibrio consolidado.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-007`, `NUMERA-DOM-008`, `NUMERA-UX-022`.
+**Condición de salida:** definir explícitamente si la métrica es suma de umbrales independientes o equilibrio consolidado y aplicar el método correspondiente.
+
+---
+
+#### 42. Hallazgo H-NUMERA-008-005 — Rentabilidad sin cálculo de rentabilidad
+
+La pantalla denominada `Rentabilidad` no calcula utilidad ni margen realizado.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-008`, `NUMERA-UX-022`.
+**Condición de salida:** calcular rentabilidad desde ingreso realizado, costo trazable y dimensiones aprobadas, diferenciando escenarios de resultados reales.
+
+---
+
+#### 43. Hallazgo H-NUMERA-008-006 — Motor de costos ausente
+
+Las estructuras de costo existentes fuera de NUMERA no son consumidas por `vento-numera` y el snapshot no implementa selección de costo estándar, promedio, último, real, landed o interno.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-DOM-004`, `NUMERA-DOM-007`, `OPS-CST-001`.
+**Condición de salida:** integrar fuentes aprobadas y conservar método, versión, vigencia, entradas y reconciliación por costo calculado.
+
+---
+
+#### 44. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+Los hallazgos quedan cubiertos por requisitos canónicos vigentes; esta tarea no redefine reglas protegidas.
+
+---
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro:
+
+- `TREQ-NUMERA-001` para reconciliación de indicadores, costos, gastos y reportes con hechos fuente;
+- `TREQ-NUMERA-004` para método, entradas, versión, vigencia, fuente, separación de costos, punto de equilibrio y rentabilidad;
+- `TREQ-NUMERA-019` para no presentar ausencia de margen o cálculo como valor económico confirmado;
+- `TREQ-NUMERA-020` para mantener separados ingreso esperado, gasto real, presupuesto y variación;
+- requisitos de integración y costos ya vinculados por el plan canónico.
+
+Esta enumeración es trazabilidad reutilizada y no una modificación de 04A.
+
+---
+
+#### 46. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la ejecución de build pertenece al checkout del usuario y a `NUMERA-AUD-011` como auditoría específica posterior |
+| LOCAL | NOT_EXECUTED | no se ejecutó checkout local del repositorio del usuario desde esta tarea documental |
+| REMOTA | PASS | se verificaron código remoto, definiciones SQL, constraints y datos agregados mediante acceso de solo lectura |
+| OPERATIVA | NOT_EXECUTED | no se realizaron operaciones económicas ni fixtures mutantes |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 47. Criterios de aceptación y límites
+
+Se considera completa esta auditoría cuando:
+
+1. cada cálculo visible queda vinculado a su fórmula o se declara ausente;
+2. las entradas y fuentes inmediatas quedan identificadas;
+3. se diferencia corrección aritmética de suficiencia económica;
+4. el margen objetivo no se presenta como margen realizado;
+5. el punto de equilibrio documenta el supuesto que condiciona su validez;
+6. la suma de equilibrios no se presenta como consolidación demostrada;
+7. la rentabilidad actual se clasifica según lo que realmente calcula;
+8. las estructuras de costo externas no se presentan como consumidas por NUMERA sin evidencia;
+9. cada hallazgo tiene propietario y condición de salida;
+10. no se modifican fórmulas, datos, 04A ni código.
+
+Quedan fuera de alcance:
+
+- workflow de gastos, centros de costo, cierre, aprobación y reapertura, reservado a `NUMERA-AUD-009`;
+- exportaciones, sensibilidad y trazabilidad de acceso, reservadas a `NUMERA-AUD-010`;
+- ejecución de build, lint, tipos y pruebas del repositorio, reservada a `NUMERA-AUD-011`;
+- matriz integral capacidad financiera × implementación, reservada a `NUMERA-AUD-012`;
+- definición futura de metodologías de costo y transferencias, propietaria de `NUMERA-DOM-007` y `OPS-CST-001`.
+
+---
+
+#### 48. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-008 — Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones`
 ### [ ] NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
 ### [ ] NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
 ### [ ] NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
