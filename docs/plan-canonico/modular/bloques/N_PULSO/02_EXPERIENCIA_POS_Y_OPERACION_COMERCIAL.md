@@ -1210,7 +1210,1061 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede`
-### [ ] PULSO-UX-002 — Diseñar inicio para cajero
+### ✅ PULSO-UX-002 — Diseñar inicio para cajero
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-AUTH-016 — Ejecutar pruebas integrales
+**Tarea siguiente:** PULSO-UX-003 — Diseñar inicio para servicio de salón
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0080 — Inicio POS` para el actor operativo `cajero_satelite`, orientando la entrada por contexto efectivo, estado de caja y trabajo comercial accionable sobre `VPROC-0039`, con acceso condicionado a creación y actualización ordinaria de pedido, cobro, identificación de cliente y loyalty, exclusión explícita de cancelación, refund, cierre, override, configuración e importaciones, sin crear una pantalla canónica nueva ni materializar rutas o componentes; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia inicial de PULSO para una persona cuyo rol operativo efectivo sea `cajero_satelite`, de forma que al entrar encuentre primero el contexto que determina si puede operar y, después, el siguiente trabajo comercial válido que puede ejecutar.
+
+La experiencia debe permitir:
+
+- comprender en qué sede, punto o estación está operando;
+- distinguir turno vigente, check-in y sesión de caja;
+- abrir caja cuando corresponda y exista autoridad;
+- iniciar una venta ordinaria;
+- continuar pedidos que requieran acción de caja;
+- cobrar mediante el flujo propietario;
+- identificar al cliente cuando la operación lo necesita;
+- ejecutar acumulación o redención de loyalty dentro de sus límites;
+- reconocer bloqueos, denegaciones, datos desactualizados o fallos técnicos sin confundirlos con ausencia de trabajo;
+- mantener fuera de la experiencia ordinaria las acciones sensibles que el contrato de cajero no concede.
+
+La tarea especializa la pantalla canónica existente:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+sin crear una nueva identidad de pantalla.
+
+---
+
+#### 2. Entrada recibida de PULSO-AUTH-016
+
+`PULSO-AUTH-016` cierra el minibloque de autorización con un contrato integral que exige demostrar, por unidad física posterior, autorización, actor, territorio, dispositivo, caja, pedidos, payments, loyalty, administración, packages, rollback e integraciones.
+
+Para esta tarea UX se conserva como regla de entrada:
+
+```text
+EXPERIENCIA VISIBLE
+!=
+AUTORIDAD EFECTIVA
+```
+
+La experiencia puede presentar únicamente acciones cuya ejecución posterior pueda revalidarse contra los contratos PULSO-AUTH aplicables.
+
+`PULSO-UX-002` no reabre ni redefine los permisos aprobados en el minibloque AUTH.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `PULSO-UX-001..021` establece para esta tarea:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `PULSO-UX-002` se define una sola vez;
+2. no existe una instancia física propia;
+3. no se modifica `vento-pulso`;
+4. no se crea ni cambia una ruta;
+5. no se materializa `VSCREEN-0080`;
+6. no se modifican permisos, RLS, RPC, tablas o migraciones;
+7. las brechas AS-IS se asignan a tareas propietarias posteriores;
+8. la materialización futura debe consumir este contrato sin convertirlo en bypass de autorización.
+
+---
+
+#### 4. Fuentes y contratos consumidos
+
+El diseño conserva como entradas:
+
+- `PULSO-UX-001 — Inventariar procesos de venta, caja y salón`;
+- `OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede`;
+- `PULSO-AUTH-006 — Definir permisos de cajero`;
+- `PULSO-AUTH-007 — Definir permisos de supervisor`;
+- `PULSO-AUTH-008 — Definir permisos de cierre y anulación`;
+- `PULSO-AUTH-009 — Proteger acumulación de puntos`;
+- `PULSO-AUTH-010 — Proteger redenciones`;
+- `PULSO-AUTH-011 — Limitar operación a sede del turno`;
+- `PULSO-AUTH-012 — Integrar dispositivos POS compartidos`;
+- `PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`;
+- `PULSO-AUTH-014 — Mantener configuración administrativa separada`;
+- `PULSO-AUTH-015 — Migrar a paquetes de vento-shell`;
+- `VSCREEN-0080` como identidad canónica de Inicio POS;
+- `VPROC-0039` como proceso principal de venta de mostrador o para llevar;
+- las pantallas PULSO `VSCREEN-0081` a `VSCREEN-0093` y `VSCREEN-0147` a `VSCREEN-0152` como superficies canónicas relacionadas;
+- el runtime vigente de `vento-pulso` como evidencia AS-IS, no como autoridad de diseño.
+
+---
+
+#### 5. Actor contractual
+
+El actor principal es:
+
+```text
+operational_role = cajero_satelite
+```
+
+La experiencia no se activa correctamente por el nombre del rol aislado. La entrada operativa requiere resolver, según corresponda:
+
+```text
+ACTOR HUMANO
++ EMPLEADO ACTIVO
++ TURNO VIGENTE
++ ROL OPERATIVO EFECTIVO
++ SEDE AUTORIZADA
++ ÁREA cashier COMPATIBLE
++ CHECK-IN PARA OPERACIÓN INTERNA
++ DISPOSITIVO / ESTACIÓN CUANDO APLICA
++ PERMISOS EXACTOS
+= CONTEXTO OPERATIVO UTILIZABLE
+```
+
+---
+
+#### 6. Identidad canónica del inicio
+
+La pantalla ya existe en el catálogo:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+Su propósito canónico es presentar acciones y pendientes de venta, salón, mostrador o caja compatibles con la estación y el actor.
+
+Para `cajero_satelite`, esta tarea especializa esa identidad sin crear:
+
+- `VSCREEN` adicional;
+- dashboard paralelo;
+- home técnico alternativo;
+- ruta canónica nueva;
+- pantalla exclusiva por sede o dispositivo.
+
+---
+
+#### 7. Proceso principal
+
+El binding principal vigente de `VSCREEN-0080` es:
+
+```text
+VPROC-0039 — Gestionar venta de mostrador o para llevar con entrega y cobro correlacionados
+```
+
+Por tanto, el inicio del cajero prioriza trabajo de venta y caja.
+
+La existencia de accesos secundarios hacia salón, pedidos externos, cliente o loyalty no cambia el proceso principal del inicio.
+
+---
+
+#### 8. Contraste con el AS-IS de la ruta raíz
+
+El runtime observado de `vento-pulso` usa actualmente:
+
+```text
+/
+→ ScannerPage
+
+/scanner
+→ ScannerPage
+```
+
+Ambas rutas pasan por el permiso broad legacy `pulso.pos.main`.
+
+Esto demuestra una entrada funcional de scanner, pero no materializa el contrato de `VSCREEN-0080`.
+
+Regla:
+
+```text
+SCANNER ACTUAL
+!=
+INICIO POS DEL CAJERO
+```
+
+La identificación del cliente debe convertirse en una acción disponible dentro del inicio cuando corresponda, no en la definición completa del home.
+
+---
+
+#### 9. Pregunta operativa del inicio
+
+La experiencia se organiza alrededor de:
+
+```text
+¿QUÉ DEBO HACER AHORA EN ESTA CAJA Y ESTA SEDE?
+```
+
+No alrededor de:
+
+```text
+¿QUÉ RUTA TÉCNICA QUIERO ABRIR?
+```
+
+ni de:
+
+```text
+¿QUÉ MÓDULO ADMINISTRATIVO QUIERO CONSULTAR?
+```
+
+El inicio debe reducir navegación y carga cognitiva sin ocultar el estado que determina si una acción es válida.
+
+---
+
+#### 10. Contexto visible mínimo
+
+El inicio debe poder representar de forma compacta, cuando exista información válida:
+
+- trabajador efectivo;
+- sede efectiva;
+- área operativa efectiva;
+- punto o estación de servicio aplicable;
+- dispositivo compartido cuando corresponda;
+- turno vigente;
+- check-in activo o requerido;
+- sesión de caja abierta o necesidad de apertura;
+- estado de conectividad o frescura cuando afecte una acción.
+
+La pantalla no necesita exponer identificadores técnicos salvo para diagnóstico autorizado.
+
+---
+
+#### 11. Contexto visible no es autoridad
+
+La presencia en pantalla de una sede, caja, estación, rol o dispositivo no concede permisos.
+
+Se conserva:
+
+```text
+CONTEXTO MOSTRADO
+!=
+AUTORIDAD
+```
+
+```text
+ESTACIÓN DE CAJA
+!=
+PERMISO DE COBRO
+```
+
+```text
+DISPOSITIVO COMPARTIDO
+!=
+ACTOR HUMANO
+```
+
+Toda mutación sigue revalidándose en su owner server-side.
+
+---
+
+#### 12. Condición nominal de entrada
+
+La experiencia de cajero se considera operativamente utilizable cuando puede resolver:
+
+```text
+PULSO ACCESS
++ TURNO VIGENTE
++ SEDE / ÁREA EFECTIVAS
++ ACTOR O DISPOSITIVO VÁLIDOS
+= ENTRADA AL INICIO
+```
+
+Las acciones internas requieren además los prerrequisitos específicos de `PULSO-AUTH-006`, incluido check-in para las capacidades ordinarias protegidas.
+
+Entrar al inicio no significa poder vender, cobrar o usar loyalty automáticamente.
+
+---
+
+#### 13. Composición lógica del inicio
+
+La pantalla se compone, como mínimo, de estas zonas lógicas:
+
+| Zona | Contenido | Acción principal posible | Límite |
+| --- | --- | --- | --- |
+| contexto | actor, sede, punto/estación, turno y caja | corregir contexto cuando esté bloqueado | no concede permiso |
+| acción primaria | siguiente acción de mayor prioridad permitida | abrir caja, nueva venta, continuar o cobrar | solo una acción dominante por estado |
+| trabajo activo | pedidos/ventas que requieren intervención de caja | continuar recurso exacto | no muestra universo administrativo |
+| accesos rápidos | cliente, loyalty y superficies operativas autorizadas | abrir acción puntual | no crea permisos implícitos |
+| avisos | bloqueo, stale, unknown result, conectividad o dependencia | recuperar/revalidar | error no se presenta como vacío |
+
+---
+
+#### 14. Regla de prioridad de la acción principal
+
+La acción primaria se resuelve por estado, no por preferencia fija del usuario ni por el orden visual de un menú.
+
+Prioridad contractual:
+
+```text
+1. CONTEXTO BLOQUEANTE
+2. CAJA REQUERIDA NO ABIERTA
+3. OPERACIÓN ACTIVA QUE EXIGE CONTINUIDAD
+4. COBRO PENDIENTE ACCIONABLE
+5. NUEVA VENTA
+6. ESTADO SIN TRABAJO URGENTE
+```
+
+Una acción solo entra en la prioridad si el actor tiene la capacidad necesaria y el recurso/estado es compatible.
+
+---
+
+#### 15. Turno ausente o inválido
+
+Si no existe turno operativo válido para el cajero:
+
+- no se habilitan mutaciones PULSO;
+- no se presenta una lista vacía como si no hubiera ventas;
+- se comunica que falta contexto laboral válido;
+- la experiencia conserva la navegación segura para salir o resolver por el owner correspondiente.
+
+Nunca:
+
+```text
+SIN TURNO
+→ USAR ÚLTIMA SEDE
+→ CONTINUAR
+```
+
+---
+
+#### 16. Check-in requerido
+
+`pulso.access` puede permitir la entrada durante un turno vigente para mostrar el requisito de marcación.
+
+Las capacidades ordinarias internas del cajero requieren `T+C` conforme a `PULSO-AUTH-006`.
+
+Por tanto, si falta check-in:
+
+```text
+INICIO VISIBLE
++
+OPERACIÓN BLOQUEADA
+```
+
+La experiencia no simula check-in ni convierte el acceso a la app en permiso para operar.
+
+---
+
+#### 17. Caja no abierta
+
+Cuando el contexto es válido y no existe sesión de caja utilizable, la acción dominante puede ser:
+
+```text
+ABRIR CAJA
+→ VSCREEN-0089
+```
+
+solo si el actor posee `pulso.cash.sessions.start` y la terminal/punto de caja es compatible.
+
+No se ofrece como acción ordinaria:
+
+```text
+CERRAR CAJA
+→ VSCREEN-0090
+```
+
+porque `cajero_satelite` no recibe `pulso.cash.sessions.close` por `PULSO-AUTH-006`.
+
+---
+
+#### 18. Caja abierta y sin operación bloqueante
+
+Con contexto y sesión de caja válidos, la acción dominante ordinaria es:
+
+```text
+NUEVA VENTA
+→ VSCREEN-0081
+```
+
+La creación consume `pulso.sales.orders.create` y permanece separada de:
+
+- cobro;
+- cancelación;
+- refund;
+- cierre de caja;
+- configuración;
+- importación.
+
+---
+
+#### 19. Venta o pedido activo
+
+Cuando existe un recurso accionable que requiere continuidad del cajero, el inicio debe priorizar el recurso real sobre crear trabajo nuevo cuando la operación así lo exija.
+
+Puede conducir a:
+
+```text
+VSCREEN-0083 — Detalle y modificación de pedido
+```
+
+o a la superficie propietaria que represente la siguiente transición válida.
+
+La tarjeta o fila de trabajo conserva identidad de recurso y estado; no permite mutar desde el resumen sin la revalidación correspondiente.
+
+---
+
+#### 20. Cobro pendiente
+
+Cuando un pedido válido está listo para una acción de pago que corresponde al cajero:
+
+```text
+COBRAR
+→ VSCREEN-0084
+```
+
+La experiencia debe distinguir:
+
+```text
+PEDIDO LISTO PARA COBRO
+!=
+PAGO CONFIRMADO
+```
+
+El CTA solo representa intención de entrar al flujo de cobro. No registra un pago desde el home.
+
+---
+
+#### 21. Resultado desconocido en pagos
+
+Ante timeout, desconexión o respuesta incierta del proveedor de pago:
+
+```text
+UNKNOWN RESULT
+!=
+FAILED
+```
+
+El inicio no ofrece cobrar otra vez como acción automática hasta resolver o reconciliar el resultado aplicable.
+
+El estado debe priorizar recuperación/consulta por encima de una segunda mutación potencialmente duplicada.
+
+---
+
+#### 22. Identificación de cliente
+
+La identificación es una acción secundaria disponible cuando el flujo actual puede asociar cliente y existe:
+
+```text
+pulso.loyalty.customers.identify
+```
+
+Su destino canónico es:
+
+```text
+VSCREEN-0085 — Identificación de cliente y acumulación
+```
+
+La experiencia no presenta un buscador general de clientes ni expone el ledger PASS completo.
+
+---
+
+#### 23. Acumulación de puntos
+
+La acumulación puede aparecer únicamente dentro de una venta elegible y con cliente/contexto válidos.
+
+Se conserva:
+
+```text
+PULSO SOLICITA
+PASS DECIDE Y REGISTRA LEDGER
+```
+
+El inicio no muestra “sumar puntos” como acción autónoma desvinculada de una venta o referencia empresarial válida.
+
+---
+
+#### 24. Redención de puntos o beneficios
+
+La redención se dirige a:
+
+```text
+VSCREEN-0086 — Redención de puntos o beneficios
+```
+
+Debe respetar permiso, cliente, vigencia, venta cuando corresponda, actor efectivo y protección contra doble efecto.
+
+La visibilidad del saldo o de una recompensa no constituye autorización para redimir.
+
+---
+
+#### 25. Pedidos de canales externos
+
+`VSCREEN-0087 — Bandeja de pedidos de canales externos` puede aparecer como acceso secundario cuando exista trabajo accionable para el cajero dentro de su sede/punto y permisos efectivos.
+
+El inicio no convierte todos los canales externos en ventas propias del cajero ni mezcla ingestión administrativa con operación de caja.
+
+---
+
+#### 26. Seguimiento de preparación y entrega
+
+`VSCREEN-0088 — Seguimiento de preparación y entrega` puede aportar continuidad al recurso que el cajero necesita atender.
+
+La experiencia muestra únicamente la proyección necesaria para decidir el siguiente paso de caja.
+
+No transfiere ownership productivo de FOGO, inventario de NEXO ni coordinación logística propietaria.
+
+---
+
+#### 27. Relación con el salón
+
+`VSCREEN-0082 — Mapa de salón y mesas` pertenece al proceso de servicio en mesa y será especializado por `PULSO-UX-003` para servicio de salón.
+
+En el inicio del cajero puede aparecer como acceso secundario únicamente si:
+
+- el actor posee la autoridad necesaria;
+- el contexto de la sede/punto lo hace relevante;
+- existe trabajo que requiere intervención de caja sobre salón.
+
+Regla:
+
+```text
+CAJERO PUEDE PARTICIPAR EN VPROC-0038
+!=
+HOME DE CAJERO = HOME DE SERVICIO DE SALÓN
+```
+
+---
+
+#### 28. Configuración física consumida
+
+El inicio consume `OPS-POS-001` para contextualizar únicamente lo necesario:
+
+- `site_id` válido;
+- punto comercial aplicable;
+- estación de caja cuando exista;
+- relación con zonas o mesas cuando el trabajo lo requiere.
+
+No inventa cantidad de mesas, UUID, layout ni puntos físicos no confirmados.
+
+No usa zona o estación como permiso.
+
+---
+
+#### 29. Caja y mostrador integrados
+
+Cuando una sede tiene un punto físico integrado de caja/mostrador, el inicio puede reflejar una única identidad operativa visible y ofrecer acciones compatibles con las capacidades efectivas del cajero.
+
+No duplica el mismo punto físico en dos homes independientes por nombre funcional.
+
+Esto no absorbe `PULSO-UX-004 — Diseñar inicio para mostrador`, que definirá la composición específica de esa función.
+
+---
+
+#### 30. Dispositivo compartido
+
+En terminal compartida se conserva:
+
+```text
+TECHNICAL PRINCIPAL
+!=
+DEVICE
+!=
+HUMAN ACTOR
+```
+
+El inicio puede mostrar que la terminal es compartida y solicitar identificación del trabajador cuando el contrato lo exige.
+
+No conserva indefinidamente el actor anterior ni utiliza el principal técnico como sustituto del cajero ejecutor.
+
+---
+
+#### 31. Cambio de actor
+
+Un cambio de trabajador A → B obliga a recalcular la experiencia con el actor B.
+
+Debe invalidarse cualquier proyección actor-bound que ya no sea válida, incluidos:
+
+- acciones disponibles;
+- trabajo filtrado por capacidad;
+- confirmaciones sensibles;
+- firma del actor anterior;
+- contexto que dependa del turno o check-in.
+
+El cambio de actor no cambia por sí mismo la identidad de la estación o del dispositivo.
+
+---
+
+#### 32. Matriz de acciones ordinarias del cajero
+
+El inicio consume exactamente la decisión de `PULSO-AUTH-006`:
+
+| Capacidad | Inicio del cajero | Tratamiento UX |
+| --- | --- | --- |
+| `pulso.access` | permitida con contexto aplicable | entrada; nunca wildcard |
+| `pulso.sales.orders.view` | permitida | trabajo y pedidos mínimos autorizados |
+| `pulso.sales.orders.create` | permitida | habilita Nueva venta cuando el estado lo permite |
+| `pulso.sales.orders.update` | permitida | habilita continuidad ordinaria sobre recurso compatible |
+| `pulso.payments.transactions.collect` | permitida | habilita entrada a Cobro |
+| `pulso.cash.sessions.start` | permitida | habilita Apertura de caja cuando aplica |
+| `pulso.loyalty.customers.identify` | permitida | identificación dirigida de cliente |
+| `pulso.loyalty.points.accumulate` | permitida | dentro de venta elegible |
+| `pulso.loyalty.points.redeem` | permitida | dentro de flujo elegible |
+| `pulso.sales.orders.cancel` | no concedida | no aparece como acción ordinaria habilitada |
+| `pulso.payments.transactions.refund` | no concedida | no aparece como acción ordinaria habilitada |
+| `pulso.cash.sessions.close` | no concedida | no aparece como acción ordinaria habilitada |
+| `pulso.delivery.deliveries.override` | no concedida | no aparece como acción ordinaria habilitada |
+
+---
+
+#### 33. Acciones sensibles excluidas
+
+El home ordinario del cajero no habilita por inferencia:
+
+- cancelar pedido;
+- refund de pago;
+- cerrar caja;
+- reabrir o corregir cierre;
+- override de entrega;
+- override de precio;
+- publicación administrativa;
+- configuración de zonas/mesas;
+- importación de ventas;
+- edición de permisos o dispositivo.
+
+Cuando una operación necesita autoridad superior, la experiencia debe conducir a un flujo gobernado o informar el bloqueo; no reutiliza un botón ordinario con más efecto.
+
+---
+
+#### 34. Administración e importaciones fuera del inicio
+
+`/sales-imports` y cualquier configuración administrativa quedan fuera de la composición ordinaria del cajero.
+
+Se conserva:
+
+```text
+OPERAR PULSO
+!=
+CONFIGURAR PULSO
+!=
+ADMINISTRAR INTEGRACIONES
+```
+
+La visibilidad accidental de una ruta no la convierte en acceso rápido del home.
+
+---
+
+#### 35. Jerarquía de información
+
+El inicio evita un dashboard denso de métricas que no ayudan al trabajo inmediato.
+
+Orden visual recomendado por contrato:
+
+1. bloqueo o contexto crítico;
+2. acción primaria;
+3. trabajo activo accionable;
+4. accesos rápidos permitidos;
+5. información secundaria mínima.
+
+Métricas históricas, auditoría extensa y configuración no desplazan la acción actual del cajero.
+
+---
+
+#### 36. Trabajo activo y límites de listado
+
+La lista de trabajo del home debe priorizar recursos realmente accionables para el actor y el contexto actuales.
+
+No equivale a una vista administrativa de todas las ventas de la sede.
+
+Cada entrada debe permitir reconocer al menos:
+
+- recurso/pedido;
+- estado útil para la decisión;
+- importe o señal comercial cuando corresponda;
+- canal/modalidad cuando sea relevante;
+- siguiente acción permitida;
+- bloqueo si existe.
+
+Los datos personales se minimizan.
+
+---
+
+#### 37. Estados de experiencia
+
+El inicio distingue al menos:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `CONTEXTO_REQUERIDO` | turno, sede, área, actor o check-in insuficientes | bloquear mutaciones y explicar qué falta |
+| `CAJA_REQUIERE_APERTURA` | contexto válido sin sesión de caja utilizable | ofrecer apertura solo si está autorizada |
+| `TRABAJO_ACCIONABLE` | existe una operación que requiere continuidad | priorizar recurso y siguiente acción |
+| `LISTO_PARA_VENDER` | caja/contexto válidos sin prioridad superior | ofrecer Nueva venta |
+| `SIN_TRABAJO` | contexto válido y ninguna operación pendiente | estado vacío real con acción válida disponible |
+| `SIN_PERMISO` | capacidad requerida denegada | no revelar datos protegidos |
+| `DATOS_DESACTUALIZADOS` | frescura insuficiente | revalidar antes de mutar |
+| `RESULTADO_DESCONOCIDO` | efecto sensible no conciliado | bloquear reintento ciego |
+| `FALLO_TECNICO` | una fuente necesaria falló | conservar estado y recuperación segura |
+
+Estos rótulos son contrato UX y no crean estados persistidos nuevos.
+
+---
+
+#### 38. Vacío, deny, stale y error
+
+La experiencia conserva:
+
+```text
+SIN TRABAJO
+!=
+SIN PERMISO
+!=
+SIN CONTEXTO
+!=
+STALE
+!=
+FALLO TÉCNICO
+!=
+RESULTADO DESCONOCIDO
+```
+
+Un error de consulta no puede mostrarse como “no hay pedidos”.
+
+Una denegación no puede presentarse como botón deshabilitado sin explicación cuando el actor necesita saber por qué no puede continuar.
+
+---
+
+#### 39. Recuperación segura
+
+Cuando el inicio pierde sesión, red, dispositivo, actor o una dependencia requerida:
+
+- conserva la referencia del trabajo en curso cuando sea seguro;
+- evita duplicar mutaciones;
+- revalida contexto antes de reanudar;
+- distingue operación no enviada, enviada y resultado desconocido;
+- no inventa éxito por optimismo de UI.
+
+La recuperación detallada de cada flujo pertenece a sus superficies propietarias posteriores.
+
+---
+
+#### 40. Operación degradada
+
+`VPROC-0039` es una operación crítica que admite degradación controlada según los contratos transversales vigentes.
+
+El inicio no convierte “offline” en autorización general para vender sin controles.
+
+Debe mostrar únicamente las acciones expresamente soportadas por el modo degradado aplicable y reservar la reconciliación al owner correspondiente.
+
+---
+
+#### 41. Privacidad y minimización
+
+El home del cajero no carga por defecto:
+
+- ledger completo de loyalty;
+- perfil completo del cliente;
+- historial global de ventas;
+- datos de otras sedes;
+- información de empleados ajenos;
+- configuración administrativa;
+- logs técnicos;
+- información financiera NUMERA;
+- datos de proveedores o producción no requeridos.
+
+La proyección responde a la acción actual y al territorio efectivo.
+
+---
+
+#### 42. Accesibilidad y operación táctil
+
+El diseño exige que la futura materialización permita identificar claramente:
+
+- acción dominante;
+- estado y bloqueo;
+- foco de teclado cuando aplique;
+- etiquetas comprensibles;
+- confirmación de acciones sensibles cuando estén permitidas;
+- targets adecuados a operación táctil.
+
+`PULSO-UX-015 — Diseñar comportamiento táctil por estación` conserva la especificación detallada de interacción táctil y no es absorbida por esta tarea.
+
+---
+
+#### 43. Navegación
+
+El inicio no es un menú de rutas.
+
+La navegación se deriva de trabajo y capacidad:
+
+```text
+INICIO
+→ ACCIÓN / RECURSO
+→ SUPERFICIE PROPIETARIA
+→ RETORNO AL CONTEXTO DE TRABAJO
+```
+
+Los query parameters no conceden autoridad y no crean nuevas pantallas canónicas.
+
+---
+
+#### 44. Relación con VSCREEN-0081
+
+`VSCREEN-0081 — Creación de venta o pedido` recibe desde el inicio:
+
+- contexto efectivo ya resuelto;
+- intención explícita de nueva venta;
+- punto/canal permitido cuando aplique;
+- actor efectivo;
+- retorno seguro al home o al recurso creado.
+
+No recibe un permiso fabricado por la navegación.
+
+El diseño detallado de creación queda en `PULSO-UX-007`.
+
+---
+
+#### 45. Relación con VSCREEN-0084
+
+`VSCREEN-0084 — Cobro y medios de pago` recibe:
+
+- pedido exacto;
+- estado cobrable;
+- importe y moneda vigentes;
+- actor, sede y caja efectivos;
+- idempotencia/receipt según el contrato propietario.
+
+El home no implementa el payment flow.
+
+`PULSO-UX-008` conserva la simplificación detallada del cobro.
+
+---
+
+#### 46. Relación con VSCREEN-0089 y VSCREEN-0090
+
+`VSCREEN-0089 — Apertura de caja` puede ser acción primaria del cajero.
+
+`VSCREEN-0090 — Cierre de caja` no forma parte de la autoridad ordinaria de `cajero_satelite` aprobada en `PULSO-AUTH-006`.
+
+El diseño de cierre y reapertura pertenece a `PULSO-UX-010` y a la autorización sensible aplicable.
+
+---
+
+#### 47. Relación con VSCREEN-0091
+
+`VSCREEN-0091 — Anulación, devolución y reembolso` no se ofrece como acción ordinaria habilitada del cajero.
+
+Si una venta necesita corrección sensible, el home puede mostrar el estado y el camino de escalamiento permitido, pero no ejecutar la acción con `orders.update` ni con una autoridad broad.
+
+`PULSO-UX-009` conserva el diseño detallado de separación de esas operaciones.
+
+---
+
+#### 48. Relación con supervisor
+
+El supervisor puede consumir señales de `VSCREEN-0080` como superficie secundaria de supervisión, pero esta tarea no diseña su inicio.
+
+Se conserva:
+
+```text
+HOME CAJERO
+!=
+HOME SUPERVISOR
+```
+
+`PULSO-UX-006 — Diseñar inicio para supervisor` es el owner de la composición supervisora.
+
+---
+
+#### 49. Brechas AS-IS y propietarios
+
+| Brecha observada | Riesgo | Propietario canónico | Condición de salida |
+| --- | --- | --- | --- |
+| `/` monta `ScannerPage` en vez de un workspace integral de `VSCREEN-0080` | scanner se confunde con inicio POS | materialización UX que consuma `PULSO-UX-002` | inicio materializado con contexto, acción primaria y trabajo accionable |
+| `/` y `/scanner` usan `pulso.pos.main` | autoridad broad gobierna superficies distintas | materialización de `PULSO-AUTH-015` y owners de autorización | permisos atómicos consumidos sin wildcard broad |
+| `preferredSiteId` puede prevalecer en el resolver AS-IS | query puede parecer territorio autoritativo | materialización de `PULSO-AUTH-011` / package de contexto | sede efectiva resuelta por contexto canónico y parámetro solo reductivo |
+| shared device usa `navigation_role` en decisiones AS-IS | dispositivo puede confundirse con actor | materialización de `PULSO-AUTH-012..013` | principal, dispositivo y trabajador separados en autorización y auditoría |
+| caja completa no está materializada por la sola presencia de `payment_status` | home podría asumir caja abierta/cerrada sin contrato | `PULSO-UX-010` + owners físicos aplicables | sesión de caja propietaria y estados demostrados |
+| scanner concentra identificación y loyalty | home puede quedar diseñado alrededor del cliente en vez de la venta | `PULSO-UX-002`, `PULSO-UX-011`, `PULSO-UX-012` | identificación/acumulación/redención aparecen como acciones contextuales separadas |
+| `orders-board-legacy` conserva consumo runtime | trabajo activo puede depender de contrato legacy | `PULSO-UX-020` / `PULSO-UX-021` y paquete propietario | paridad demostrada y retiro gobernado del legado |
+
+No queda una brecha de esta tarea sin propietario y condición de salida.
+
+---
+
+#### 50. Handoff inmediato a PULSO-UX-003
+
+`PULSO-UX-003 — Diseñar inicio para servicio de salón` recibe:
+
+```text
+VSCREEN-0080 ES IDENTIDAD COMPARTIDA DE INICIO POS
+CAJERO PRIORIZA VPROC-0039 / CAJA / VENTA
+SERVICIO DE SALÓN PRIORIZARÁ VPROC-0038 / MESAS / ATENCIÓN
+VSCREEN-0082 ES SUPERFICIE PRINCIPAL DE SALÓN
+ZONA FÍSICA != PERMISO
+MESA != SESIÓN != PEDIDO != CUENTA
+ACTOR / SEDE / ÁREA / DISPOSITIVO DEBEN RESOLVERSE ANTES DE ACCIONES
+HOME DE CAJERO PUEDE ENLAZAR SALÓN SOLO COMO ACCIÓN SECUNDARIA AUTORIZADA
+HOME DE SALÓN NO HEREDA CAPACIDADES DE CAJA POR PROXIMIDAD FÍSICA
+```
+
+La 003 deberá especializar el mismo principio actor+tarea para `servicio_salon` sin duplicar el home del cajero.
+
+---
+
+#### 51. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-002 |
+| --- | --- |
+| `PULSO-UX-003` | separar servicio de salón de venta/caja ordinaria |
+| `PULSO-UX-004` | especializar mostrador sin duplicar el punto físico integrado |
+| `PULSO-UX-005` | componer capacidades múltiples sin crear wildcard operativo |
+| `PULSO-UX-006` | diseñar supervisión como experiencia distinta del home de cajero |
+| `PULSO-UX-007` | convertir Nueva venta en flujo mínimo y gobernado |
+| `PULSO-UX-008` | simplificar cobro sin colapsar pedido, payment y resultado |
+| `PULSO-UX-009` | separar anulación, devolución y refund fuera de actualización ordinaria |
+| `PULSO-UX-010` | diseñar cierre/reapertura de caja separado de apertura ordinaria |
+| `PULSO-UX-011` | integrar identificación y acumulación dentro del flujo correcto |
+| `PULSO-UX-012` | integrar redención sin convertir saldo en autorización |
+| `PULSO-UX-013` | confirmar acciones sensibles con contexto y efecto explícitos |
+| `PULSO-UX-014` | asegurar actor real en terminales compartidas |
+| `PULSO-UX-015` | definir comportamiento táctil por estación |
+| `PULSO-UX-020` | clasificar prototipo histórico sin elevarlo por existencia |
+| `PULSO-UX-021` | cerrar arquitectura objetivo y retirar dependencias legacy cuando proceda |
+
+---
+
+#### 52. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la obligación de orientar la experiencia por actor, tarea, estado, autorización, contexto, recuperación y ciclo comercial PULSO ya cuenta con requisitos vigentes. Esta tarea especializa `VSCREEN-0080` para el cajero sin introducir una conducta verificable nueva ni modificar el Registro 04A.
+
+---
+
+#### 53. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-001` para el ciclo E2E de caja, venta, pago, inventario y loyalty;
+- `TREQ-PULSO-005` para separar pedido, línea, preparación, mesa, cuenta y venta y conservar estados independientes;
+- `TREQ-PULSO-006` para acciones nombradas, autorizadas y auditables de pago y caja;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` para acceso protegido y territorio que no puede ampliarse desde `site_id`;
+- `TREQ-PULSO-026` para impedir que `pulso.pos.main` se trate como permiso exacto suficiente;
+- `TREQ-AUTH-001` para autorización basada en permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-011` para intersección entre dispositivo compartido y trabajador identificado;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, contexto, recurso y decisión;
+- `TREQ-UX-001` para hacer identificables tarea actual, acción principal y estado;
+- `TREQ-UX-003` para adecuar información, acciones y densidad al actor y autorización;
+- `TREQ-UX-006` para recuperación segura ante pérdida de sesión, red, dispositivo o proveedor;
+- `TREQ-UX-008` y `TREQ-UX-009` para organizar por acción/superficie y consumir contexto operativo real sin fabricar autoridad.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 54. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron el owner PULSO, continuidad, topología `DEFINE_ONCE`, `VSCREEN-0080`, `VPROC-0039`, `OPS-POS-001`, permisos de `cajero_satelite`, Registro 04A aplicable y runtime vigente de `vento-pulso`, incluido que `/` y `/scanner` montan `ScannerPage`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, apertura de caja, cobros, identificación, loyalty ni pruebas con cajeros reales. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-002` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 55. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0080` se conserva como única identidad canónica de Inicio POS;
+- [ ] no se inventa una pantalla nueva para el cajero;
+- [ ] `VPROC-0039` queda como proceso principal del inicio de cajero;
+- [ ] el `/` AS-IS basado en scanner se reconoce como parcial y no equivalente;
+- [ ] el home se organiza por siguiente trabajo y no por rutas técnicas;
+- [ ] actor, sede, área, estación, turno, check-in, dispositivo y caja pueden representarse sin convertirse en autoridad;
+- [ ] turno inválido bloquea operación sin simular ausencia de trabajo;
+- [ ] falta de check-in bloquea capacidades internas aunque la app sea visible;
+- [ ] apertura de caja puede ser acción primaria únicamente con permiso y contexto válidos;
+- [ ] cierre de caja no se concede al cajero ordinario;
+- [ ] Nueva venta usa `VSCREEN-0081` cuando la caja/contexto son válidos;
+- [ ] trabajo activo puede priorizarse sobre crear un recurso nuevo;
+- [ ] cobro conduce a `VSCREEN-0084` sin registrar pago desde el home;
+- [ ] resultado desconocido bloquea reintentos ciegos;
+- [ ] identificación y acumulación se integran mediante `VSCREEN-0085` sin apropiarse del ledger PASS;
+- [ ] redención se separa mediante `VSCREEN-0086`;
+- [ ] canales externos y seguimiento aparecen solo cuando son accionables y autorizados;
+- [ ] salón permanece secundario para el home del cajero y se entrega a `PULSO-UX-003`;
+- [ ] la configuración física de `OPS-POS-001` se consume sin inventar datos;
+- [ ] dispositivo compartido y trabajador permanecen identidades distintas;
+- [ ] cambio de actor invalida proyecciones actor-bound;
+- [ ] las nueve capacidades ordinarias concedidas al cajero y las cuatro no concedidas quedan reflejadas sin wildcard;
+- [ ] configuración e importaciones quedan fuera del home ordinario;
+- [ ] el inicio evita densidad administrativa y prioriza acción, trabajo y recuperación;
+- [ ] vacío, deny, stale, fallo técnico y resultado desconocido permanecen distintos;
+- [ ] la recuperación no duplica mutaciones;
+- [ ] la proyección de datos queda minimizada al trabajo actual;
+- [ ] accesibilidad y operación táctil quedan compatibles con su owner posterior;
+- [ ] cada brecha AS-IS tiene propietario y condición de salida;
+- [ ] `PULSO-UX-003` recibe un handoff suficiente para diseñar salón sin duplicar caja;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 56. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0080`;
+- modifica `/`;
+- elimina `/scanner`;
+- crea una ruta nueva;
+- crea componentes o Server Actions;
+- abre o cierra una caja real;
+- crea una venta real;
+- procesa un pago real;
+- identifica o modifica un cliente real;
+- acumula o redime puntos reales;
+- cancela pedidos;
+- ejecuta refunds;
+- concede overrides;
+- configura zonas, mesas, puntos o estaciones;
+- administra importaciones;
+- modifica permisos o roles;
+- modifica Supabase, RLS, RPC, grants, tablas, datos o migraciones;
+- modifica packages compartidos;
+- retira código legacy;
+- diseña en detalle el home de servicio de salón;
+- diseña en detalle mostrador, operador integral o supervisor;
+- sustituye `PULSO-UX-007..021`;
+- modifica el Registro 04A;
+- crea una instancia física propia;
+- desarrolla `PULSO-UX-003`.
+
+---
+
+#### 57. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-AUTH-016 — Ejecutar pruebas integrales`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-002 — Diseñar inicio para cajero`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-003 — Diseñar inicio para servicio de salón`
 ### [ ] PULSO-UX-003 — Diseñar inicio para servicio de salón
 ### [ ] PULSO-UX-004 — Diseñar inicio para mostrador
 ### [ ] PULSO-UX-005 — Diseñar inicio para operador integral
