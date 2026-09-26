@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1369** |
+| Tareas aprobadas | **1370** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **227** |
+| Tareas no iniciadas | **226** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.78% (1369/1596)** |
+| Porcentaje de completamiento | **85.84% (1370/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-AUTH-015 — Migrar a paquetes de vento-shell** |
-| Tarea actual | **PULSO-AUTH-016 — Ejecutar pruebas integrales** |
+| Última tarea aprobada | **PULSO-AUTH-016 — Ejecutar pruebas integrales** |
+| Tarea actual | **PULSO-UX-002 — Diseñar inicio para cajero** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-UX-002 — Diseñar inicio para cajero** |
+| Siguiente tarea | **PULSO-UX-003 — Diseñar inicio para servicio de salón** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 17 de 38 aprobadas; PULSO-AUTH-016 pendiente** |
+| Progreso del bloque | **BLOQUE N: 18 de 38 aprobadas; PULSO-UX-002 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-AUTH-016** |
+| Carril documental | **ACTIVO — PULSO-UX-002** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-AUTH-015` — Migrar a paquetes de vento-shell |
-| Tarea actual | `PULSO-AUTH-016` — Ejecutar pruebas integrales — **NO INICIADA** |
-| Siguiente tarea | `PULSO-UX-002` — Diseñar inicio para cajero |
+| Última aprobada | `PULSO-AUTH-016` — Ejecutar pruebas integrales |
+| Tarea actual | `PULSO-UX-002` — Diseñar inicio para cajero — **NO INICIADA** |
+| Siguiente tarea | `PULSO-UX-003` — Diseñar inicio para servicio de salón |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 17 DE 38 APROBADAS — ACTUAL PULSO-AUTH-016** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 18 DE 38 APROBADAS — ACTUAL PULSO-UX-002** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-AUTH-015 — Migrar a paquetes de vento-shell
-        ↓
-TAREA ACTUAL
 PULSO-AUTH-016 — Ejecutar pruebas integrales
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-UX-002 — Diseñar inicio para cajero
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-UX-003 — Diseñar inicio para servicio de salón
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 17 de 38 tareas aprobadas
+BLOQUE N — 18 de 38 tareas aprobadas
 ```
