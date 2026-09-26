@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1390** |
+| Tareas aprobadas | **1391** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **206** |
+| Tareas no iniciadas | **205** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **87.09% (1390/1596)** |
+| Porcentaje de completamiento | **87.16% (1391/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico** |
-| Tarea actual | **NUMERA-AUD-001 — Inventariar rutas, pantallas, componentes y formularios actuales** |
+| Última tarea aprobada | **NUMERA-AUD-001 — Inventariar rutas, pantallas, componentes y formularios actuales** |
+| Tarea actual | **NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados** |
+| Siguiente tarea | **NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 0 de 74 aprobadas; NUMERA-AUD-001 pendiente** |
+| Progreso del bloque | **BLOQUE O: 1 de 74 aprobadas; NUMERA-AUD-002 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUD-001** |
+| Carril documental | **ACTIVO — NUMERA-AUD-002** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-UX-021` — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico |
-| Tarea actual | `NUMERA-AUD-001` — Inventariar rutas, pantallas, componentes y formularios actuales — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUD-002` — Inventariar Server Actions, API, RPC, consultas y jobs utilizados |
+| Última aprobada | `NUMERA-AUD-001` — Inventariar rutas, pantallas, componentes y formularios actuales |
+| Tarea actual | `NUMERA-AUD-002` — Inventariar Server Actions, API, RPC, consultas y jobs utilizados — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUD-003` — Inventariar tablas, vistas, eventos y sistemas fuente |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 0 DE 74 APROBADAS — ACTUAL NUMERA-AUD-001** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 1 DE 74 APROBADAS — ACTUAL NUMERA-AUD-002** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-UX-021 — Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico
-        ↓
-TAREA ACTUAL
 NUMERA-AUD-001 — Inventariar rutas, pantallas, componentes y formularios actuales
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 0 de 74 tareas aprobadas
+BLOQUE O — 1 de 74 tareas aprobadas
 ```
