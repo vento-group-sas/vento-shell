@@ -2265,7 +2265,1154 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-003 — Diseñar inicio para servicio de salón`
-### [ ] PULSO-UX-003 — Diseñar inicio para servicio de salón
+### ✅ PULSO-UX-003 — Diseñar inicio para servicio de salón
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-002 — Diseñar inicio para cajero
+**Tarea siguiente:** PULSO-UX-004 — Diseñar inicio para mostrador
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0080 — Inicio POS` para el actor operativo `servicio_salon`, especializando la entrada por trabajo de `VPROC-0038` y utilizando `VSCREEN-0082 — Mapa de salón y mesas` como superficie principal de operación, con priorización de llamados, mesas y sesiones, handoffs explícitos hacia pedido y cobro, separación estricta frente a caja, mostrador, configuración y supervisión, y bloqueo fail-closed de toda mutación que no disponga de permiso atómico canónico; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia inicial de PULSO para una persona cuyo rol operativo efectivo sea `servicio_salon`, de forma que al entrar pueda reconocer el contexto de servicio, identificar qué mesa o llamado requiere atención y continuar únicamente el trabajo de salón compatible con su autoridad efectiva.
+
+La experiencia debe permitir:
+
+- comprender sede, área de servicio, actor y dispositivo vigentes;
+- priorizar llamados activos y mesas que requieren atención;
+- distinguir mesa, sesión, pedido, cuenta y pago;
+- reconocer el estado real del servicio de mesa;
+- continuar un pedido existente o conducir el handoff hacia la superficie propietaria correspondiente;
+- distinguir una solicitud de cuenta de la autoridad para cobrar;
+- conservar actor ejecutor, creador, asignado y responsable como identidades separadas;
+- tratar Realtime como acelerador de actualización y no como fuente autónoma de autoridad;
+- bloquear operaciones internas cuando no exista un permiso atómico materializado para `servicio_salon`;
+- mantener fuera del home ordinario la administración física, caja, supervisión y excepciones sensibles.
+
+La tarea especializa la pantalla canónica existente:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+sin crear una nueva identidad de pantalla.
+
+---
+
+#### 2. Entrada recibida de PULSO-UX-002
+
+`PULSO-UX-002` entrega una frontera explícita:
+
+```text
+VSCREEN-0080 ES IDENTIDAD COMPARTIDA DE INICIO POS
+CAJERO PRIORIZA VPROC-0039 / CAJA / VENTA
+SERVICIO DE SALÓN PRIORIZA VPROC-0038 / MESAS / ATENCIÓN
+VSCREEN-0082 ES SUPERFICIE PRINCIPAL DE SALÓN
+ZONA FÍSICA != PERMISO
+MESA != SESIÓN != PEDIDO != CUENTA
+ACTOR / SEDE / ÁREA / DISPOSITIVO DEBEN RESOLVERSE ANTES DE ACCIONES
+HOME DE CAJERO PUEDE ENLAZAR SALÓN SOLO COMO ACCIÓN SECUNDARIA AUTORIZADA
+HOME DE SALÓN NO HEREDA CAPACIDADES DE CAJA POR PROXIMIDAD FÍSICA
+```
+
+Por tanto, esta tarea no replica el home del cajero y no convierte el mapa de salón en una pantalla de caja.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `PULSO-UX-001..021` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `PULSO-UX-003` se define una sola vez;
+2. no existe una instancia física propia;
+3. no se modifica `vento-pulso`;
+4. no se crean rutas, componentes, permisos, tablas, RPC o migraciones;
+5. no se mutan zonas, mesas, sesiones ni llamados;
+6. las brechas AS-IS quedan asignadas a su propietario canónico;
+7. la materialización posterior debe consumir este contrato sin ampliar autoridad.
+
+---
+
+#### 4. Fuentes y contratos consumidos
+
+El diseño conserva como entradas:
+
+- `PULSO-UX-001 — Inventariar procesos de venta, caja y salón`;
+- `PULSO-UX-002 — Diseñar inicio para cajero`;
+- `OPS-POS-001 — Definir zonas físicas, mesas y puntos de servicio del POS por sede`;
+- `AUTH-RBAC-011 — Crear matriz de servicio_salon`;
+- `PULSO-AUTH-011 — Limitar operación a sede del turno`;
+- `PULSO-AUTH-012 — Integrar dispositivos POS compartidos`;
+- `PULSO-AUTH-013 — Registrar trabajador que ejecuta la operación`;
+- `PULSO-AUTH-014 — Mantener configuración administrativa separada`;
+- `PULSO-AUTH-015 — Migrar a paquetes de vento-shell`;
+- `PULSO-AUTH-016 — Ejecutar pruebas integrales`;
+- `VSCREEN-0080` como identidad canónica de Inicio POS;
+- `VSCREEN-0082` como workspace propietario de mesa y servicio;
+- `VSCREEN-0083` como detalle y modificación de pedido activo;
+- `VSCREEN-0084` como superficie propietaria de cobro;
+- `VPROC-0038` como proceso principal de servicio en mesa;
+- el runtime vigente de `vento-pulso` como evidencia AS-IS, no como autoridad de diseño.
+
+---
+
+#### 5. Actor contractual
+
+El actor principal es:
+
+```text
+operational_role = servicio_salon
+```
+
+Su entrada operativa exige, como mínimo:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ EMPLEADO ACTIVO
++ TURNO PUBLICADO Y VIGENTE
++ ROL OPERATIVO EFECTIVO servicio_salon
++ SEDE AUTORIZADA
++ ÁREA OPERATIVA VÁLIDA DE TIPO service
++ DISPOSITIVO COMPATIBLE CUANDO APLIQUE
++ PERMISO EXACTO PARA LA ACCIÓN INTERNA
++ RECURSO Y ESTADO COMPATIBLES
+= ACCIÓN HABILITADA
+```
+
+El nombre del rol por sí solo no concede capacidad.
+
+---
+
+#### 6. Frontera de autorización vigente
+
+La matriz canónica vigente de `servicio_salon` contiene once concesiones operativas totales.
+
+Dentro de PULSO, la única concesión actual es:
+
+```text
+pulso.access
+```
+
+con alcance `CTX-SERVICE-PULSO`.
+
+Ese permiso significa exclusivamente:
+
+```text
+ENTRAR A PULSO
++ MOSTRAR CONTEXTO DE SERVICIO
+```
+
+No concede por sí solo:
+
+- consultar o gestionar mesas;
+- abrir o cerrar sesiones;
+- crear, tomar, asignar, resolver o cancelar llamados;
+- tomar o modificar pedidos;
+- confirmar entrega;
+- cobrar;
+- operar caja;
+- anular, devolver o reembolsar;
+- acumular o redimir puntos.
+
+---
+
+#### 7. Regla fail-closed de la experiencia
+
+La tarea define el trabajo objetivo, pero no inventa permisos faltantes.
+
+```text
+ACCIÓN UX DEFINIDA
++ PERMISO ATÓMICO AUSENTE
+=
+ACCIÓN NO MATERIALIZABLE TODAVÍA
+```
+
+Nunca:
+
+```text
+pulso.access
+→ permiso implícito para mesa / sesión / llamado / pedido / cobro
+```
+
+Si una materialización futura no puede resolver una PermissionKey exacta, la acción debe permanecer bloqueada o no disponible.
+
+---
+
+#### 8. Identidad de inicio
+
+El inicio continúa siendo:
+
+```text
+VSCREEN-0080 — Inicio POS
+```
+
+No se crea una pantalla independiente llamada “Inicio de salón”.
+
+`VSCREEN-0080` se especializa por actor, estación y trabajo pendiente.
+
+Para `servicio_salon`, su composición prioriza `VPROC-0038` y conduce a `VSCREEN-0082`.
+
+---
+
+#### 9. Proceso principal
+
+El proceso principal es:
+
+```text
+VPROC-0038 — Gestionar servicio en mesa de apertura a cierre con pedido, preparación, entrega, pago y conciliación
+```
+
+La responsabilidad del home consiste en identificar el siguiente trabajo de salón permitido dentro de ese proceso, no en ejecutar todo el lifecycle desde una sola pantalla.
+
+---
+
+#### 10. Estados canónicos de VPROC-0038
+
+La experiencia reconoce exactamente:
+
+```text
+TABLE_SERVICE_OPENED
+ORDERING
+PREPARATION_IN_PROGRESS
+PARTIALLY_SERVED
+SERVED
+PAYMENT_PENDING
+PAYMENT_CONFIRMED
+TABLE_CLOSE_PENDING
+TABLE_SERVICE_CLOSED
+```
+
+No se colapsan en un único estado de “ocupada”.
+
+---
+
+#### 11. Semántica de los estados
+
+| Estado | Significado para el inicio de salón | Próxima intención UX posible |
+| --- | --- | --- |
+| `TABLE_SERVICE_OPENED` | existe servicio de mesa sin cierre | iniciar/continuar atención permitida |
+| `ORDERING` | se capturan líneas y preferencias | continuar pedido autorizado |
+| `PREPARATION_IN_PROGRESS` | cocina/barra trabajan | seguimiento; no duplicar preparación |
+| `PARTIALLY_SERVED` | parte del pedido fue entregada | identificar pendientes y continuar servicio |
+| `SERVED` | pedido servido, sin implicar pago | esperar solicitud o handoff de cuenta |
+| `PAYMENT_PENDING` | consumo listo para cobro | conducir a caja/cobro autorizado |
+| `PAYMENT_CONFIRMED` | pago confirmado | preparar verificación final de mesa |
+| `TABLE_CLOSE_PENDING` | se verifican efectos antes de liberar mesa | completar controles propietarios |
+| `TABLE_SERVICE_CLOSED` | servicio cerrado | no ofrecer mutaciones sobre esa sesión |
+
+---
+
+#### 12. Superficie principal
+
+La superficie principal de trabajo es:
+
+```text
+VSCREEN-0082 — Mapa de salón y mesas
+VPROC-0038::STEP-MANAGE_TABLE_SERVICE
+```
+
+Su propósito es gestionar ocupación, mesa y servicio de apertura a cierre.
+
+El home no recrea esa superficie; la prioriza y le entrega contexto.
+
+---
+
+#### 13. Pregunta operativa del home
+
+La experiencia responde primero:
+
+```text
+¿QUÉ MESA O LLAMADO NECESITA MI ATENCIÓN AHORA?
+```
+
+No:
+
+```text
+¿QUÉ MÓDULO QUIERO ABRIR?
+```
+
+ni:
+
+```text
+¿QUÉ TABLA DE BASE DE DATOS QUIERO VER?
+```
+
+---
+
+#### 14. Orden de prioridad del trabajo
+
+Cuando exista autoridad materializada, la prioridad funcional recomendada es:
+
+1. bloqueo de contexto que impida operar;
+2. llamado crítico o urgente pendiente;
+3. llamado pendiente de atención;
+4. llamado reconocido que requiere resolución;
+5. mesa que solicita pedido;
+6. mesa que solicita cuenta;
+7. mesa con servicio activo que requiere continuidad;
+8. mesa disponible susceptible de iniciar servicio, si la acción exacta está autorizada;
+9. seguimiento no urgente.
+
+La prioridad de UX no sustituye prioridad empresarial persistida ni autorización.
+
+---
+
+#### 15. Contexto visible mínimo
+
+El inicio debe mostrar únicamente el contexto necesario para operar:
+
+- actor humano efectivo;
+- sede efectiva;
+- área `service` efectiva;
+- turno y check-in cuando apliquen;
+- dispositivo/estación cuando exista;
+- zona seleccionada únicamente como filtro físico;
+- estado de frescura de la proyección.
+
+No muestra configuración administrativa como parte del trabajo ordinario.
+
+---
+
+#### 16. Zona física
+
+La agrupación primaria de mesas procede de `OPS-POS-001`:
+
+```text
+SEDE
+→ ZONA
+→ MESAS
+```
+
+La zona sirve para localizar y ordenar visualmente.
+
+Regla obligatoria:
+
+```text
+ZONA FÍSICA
+!=
+ÁREA DE AUTORIZACIÓN
+```
+
+Cambiar de pestaña de zona no amplía territorio ni permiso.
+
+---
+
+#### 17. Mesa, sesión, pedido y cuenta
+
+La experiencia conserva:
+
+```text
+MESA
+!=
+SESIÓN DE MESA
+!=
+PEDIDO
+!=
+CUENTA
+!=
+PAGO
+```
+
+Una mesa libre no implica ausencia histórica de sesiones.
+
+Una sesión abierta no implica pedido pagado.
+
+Un pedido servido no implica cuenta cobrada.
+
+Un pago confirmado no implica mesa conciliada y cerrada.
+
+---
+
+#### 18. Estado visual de mesa
+
+El estado visual es una proyección derivada de hechos propietarios.
+
+Puede resumir, por ejemplo:
+
+```text
+available
+occupied
+ordering
+attention_requested
+bill_requested
+blocked
+```
+
+pero esos rótulos no sustituyen el lifecycle de `VPROC-0038`.
+
+La UI debe poder explicar qué hecho produjo el estado y qué acción sigue disponible.
+
+---
+
+#### 19. Llamados de servicio
+
+Un llamado se correlaciona con:
+
+- sede;
+- zona cuando aplique;
+- mesa;
+- sesión cuando exista;
+- dispositivo/origen cuando exista;
+- tipo de solicitud;
+- prioridad;
+- estado;
+- creador;
+- asignado;
+- actor ejecutor de cada transición.
+
+Un llamado no cambia por sí solo el estado empresarial completo de la mesa.
+
+---
+
+#### 20. Tipos de llamado observados
+
+El runtime actual reconoce al menos:
+
+```text
+attention
+bill
+order
+urgent
+cancel
+```
+
+La UX objetivo distingue su intención:
+
+- `attention`: atención general;
+- `bill`: solicitud de cuenta;
+- `order`: intención de ordenar o continuar pedido;
+- `urgent`: prioridad crítica de atención;
+- `cancel`: intención de cancelación que requiere semántica y autoridad propias.
+
+No todos los tipos son creables manualmente desde la UI AS-IS.
+
+---
+
+#### 21. Tomar un llamado
+
+La acción conceptual “Tomar” significa reconocer que un trabajador asume atención del llamado.
+
+Debe conservar separadas:
+
+```text
+created_by
+assigned_to
+actor_ejecutor_del_acknowledge
+```
+
+Nunca:
+
+```text
+acknowledged_at != assigned_to automático por inferencia
+```
+
+Si el sistema promete asignación al trabajador al tomarlo, esa asignación debe persistirse explícitamente por su acción propietaria.
+
+---
+
+#### 22. Resolver un llamado
+
+“Resolver” significa cerrar la necesidad específica del llamado, no necesariamente cerrar:
+
+- la sesión;
+- el pedido;
+- la cuenta;
+- el pago;
+- el servicio completo de mesa.
+
+La resolución exige estado previo compatible, actor efectivo y permiso exacto.
+
+---
+
+#### 23. Solicitud de cuenta
+
+Un llamado de tipo `bill` expresa:
+
+```text
+CLIENTE SOLICITA CUENTA
+```
+
+No expresa:
+
+```text
+SERVICIO_SALON PUEDE COBRAR
+```
+
+El home debe conducir al handoff apropiado hacia `VSCREEN-0084 — Cobro y medios de pago` cuando exista un actor con autoridad para cobrar.
+
+`servicio_salon` no hereda `pulso.payments.transactions.collect` por proximidad física.
+
+---
+
+#### 24. Solicitud de pedido
+
+Un llamado `order` puede priorizar la mesa para continuar el proceso de pedido.
+
+La creación o modificación del pedido debe ocurrir en la superficie propietaria y con permiso exacto.
+
+La UX puede conducir hacia:
+
+- `VSCREEN-0081` cuando corresponda originar una venta/pedido válido;
+- `VSCREEN-0083` cuando exista un pedido activo editable.
+
+La selección concreta depende del estado del recurso y de la autoridad materializada.
+
+---
+
+#### 25. Servicio activo
+
+Una mesa con sesión abierta puede requerir continuidad aunque no tenga un llamado pendiente.
+
+El home puede priorizarla por:
+
+- pedido en curso;
+- preparación pendiente;
+- entrega parcial;
+- servicio pendiente;
+- cuenta solicitada;
+- cierre pendiente.
+
+No inventa una alarma si la fuente propietaria no demuestra una condición accionable.
+
+---
+
+#### 26. Abrir servicio de mesa
+
+El inicio de una nueva sesión pertenece al lifecycle de `VPROC-0038`.
+
+La experiencia puede presentar la intención de iniciar servicio únicamente cuando:
+
+- la mesa esté activa;
+- no exista sesión incompatible;
+- el contexto sea válido;
+- exista un actor responsable;
+- el permiso atómico correspondiente haya sido materializado;
+- la acción sea server-side y auditable.
+
+En el canon vigente de `servicio_salon` ese permiso atómico no está concedido todavía.
+
+---
+
+#### 27. Cerrar servicio de mesa
+
+El cierre de mesa no es una consecuencia visual de haber cobrado.
+
+Requiere verificar, cuando aplique:
+
+- pedido;
+- entrega;
+- pago;
+- descuentos;
+- devoluciones;
+- diferencias;
+- llamados pendientes;
+- liberación de mesa.
+
+El rol `servicio_salon` no recibe autoridad de cierre por esta tarea.
+
+---
+
+#### 28. Handoff hacia pedido activo
+
+`VSCREEN-0083 — Detalle y modificación de pedido` pertenece también a `VPROC-0038`.
+
+La navegación debe conservar:
+
+```text
+site_id efectivo
++ table_id
++ session_id
++ order_id
++ actor
++ estado vigente
+```
+
+sin confiar en esos identificadores como autorización.
+
+---
+
+#### 29. Handoff hacia cobro
+
+`VSCREEN-0084` es propietaria del cobro.
+
+El servicio de salón puede entregar contexto suficiente:
+
+```text
+mesa
+sesión
+pedido/cuenta
+sede
+actor solicitante del handoff
+motivo = PAYMENT_PENDING / bill_requested
+```
+
+pero no registra el pago desde el home.
+
+---
+
+#### 30. Relación con identificación y loyalty
+
+`VSCREEN-0085` y `VSCREEN-0086` pueden participar en `VPROC-0038`, pero no forman parte automática del rol `servicio_salon`.
+
+La atención en mesa no concede:
+
+- acceso al ledger PASS;
+- acumulación;
+- redención;
+- edición de identidad del cliente.
+
+Toda integración se condiciona al permiso exacto y al flujo comercial válido.
+
+---
+
+#### 31. Relación con preparación y entrega
+
+`VSCREEN-0088` puede proyectar el estado necesario para saber si una mesa espera preparación o entrega.
+
+La experiencia de salón no absorbe:
+
+- producción FOGO;
+- stock NEXO;
+- despacho externo;
+- autoridad productiva de cocina o barra.
+
+El actor de salón recibe únicamente la proyección necesaria para coordinar servicio.
+
+---
+
+#### 32. Caja y salón
+
+La proximidad física entre salón y caja no fusiona roles.
+
+```text
+SERVICIO_SALON
+!=
+CAJERO_SATELITE
+```
+
+El home de salón no ofrece por defecto:
+
+- apertura de caja;
+- cierre de caja;
+- refund;
+- conciliación;
+- override de pago;
+- revisión administrativa de terminales.
+
+---
+
+#### 33. Mostrador y salón
+
+Una mesa o zona de salón no convierte al actor en `mostrador_satelite`.
+
+`PULSO-UX-004` recibe la especialización del punto de mostrador.
+
+El home de salón puede transferir un pedido o una necesidad únicamente mediante un handoff explícito y autorizado.
+
+---
+
+#### 34. Operador integral
+
+La existencia futura de un actor con varias capacidades no vuelve universal el home de `servicio_salon`.
+
+`PULSO-UX-005` será propietario de la composición integral.
+
+Esta tarea conserva una experiencia mínima y específica para salón.
+
+---
+
+#### 35. Supervisor
+
+El supervisor puede requerir una vista más amplia de carga, bloqueos y excepciones.
+
+`PULSO-UX-006` es propietario de esa composición.
+
+El home de `servicio_salon` no muestra métricas o controles de supervisión por defecto.
+
+---
+
+#### 36. Configuración administrativa
+
+La operación de salón no administra:
+
+- zonas;
+- nombres de zonas;
+- numeración de mesas;
+- capacidad;
+- layout;
+- posiciones;
+- estaciones;
+- reglas de configuración.
+
+`OPS-POS-001` define la configuración física consumida y `PULSO-AUTH-014` conserva la separación administrativa.
+
+---
+
+#### 37. Dispositivo compartido
+
+Cuando el home se use desde un dispositivo compartido:
+
+```text
+PRINCIPAL TÉCNICO
+!=
+DISPOSITIVO
+!=
+TRABAJADOR HUMANO
+```
+
+El dispositivo limita el alcance y el trabajador aporta la identidad humana efectiva.
+
+Un `navigation_role` de dispositivo no sustituye el permiso del trabajador.
+
+---
+
+#### 38. Cambio de trabajador
+
+El cambio de actor A→B obliga a invalidar proyecciones actor-bound y confirmaciones pendientes que dependan del actor anterior.
+
+Un llamado que A reconoció no se considera ejecutado por B únicamente porque B herede la misma terminal.
+
+---
+
+#### 39. Realtime
+
+Realtime puede acelerar:
+
+- aparición de llamados;
+- actualización de sesiones;
+- cambios visibles de estado.
+
+No puede conceder permiso ni aplicar una mutación automáticamente.
+
+Toda acción sigue exigiendo revalidación contra el contexto y el estado actual.
+
+---
+
+#### 40. Frescura y concurrencia
+
+Antes de ejecutar una transición sensible, la experiencia debe tratar como posible que el estado visible esté desactualizado.
+
+Ejemplos:
+
+- otro trabajador tomó el llamado;
+- el llamado fue resuelto;
+- la mesa cambió de sesión;
+- el pedido cambió;
+- se confirmó pago;
+- se cerró el servicio.
+
+Una respuesta de conflicto obliga a refrescar y mostrar el estado nuevo; no a repetir ciegamente la mutación.
+
+---
+
+#### 41. Estados UX diferenciados
+
+La experiencia distingue al menos:
+
+| Estado UX | Significado |
+| --- | --- |
+| `TRABAJO_DISPONIBLE` | existe mesa o llamado accionable dentro de autoridad |
+| `SIN_TRABAJO` | contexto válido sin trabajo visible |
+| `SIN_PERMISO` | el actor no posee la capacidad exacta |
+| `CONTEXTO_INVALIDO` | sede/área/turno/actor no pueden resolverse |
+| `DATOS_DESACTUALIZADOS` | la decisión visible requiere revalidación |
+| `FALLO_TECNICO` | la fuente requerida falló |
+| `CONFLICTO_CONCURRENTE` | otro actor o proceso cambió el recurso |
+| `HANDOFF_PENDIENTE` | el siguiente efecto pertenece a otra superficie/actor |
+
+No se introducen estos nombres como estados persistidos de `VPROC-0038`.
+
+---
+
+#### 42. No equivalencias de error y vacío
+
+La UX conserva:
+
+```text
+SIN LLAMADOS
+!=
+SIN MESAS
+!=
+SIN PERMISO
+!=
+SIN CONTEXTO
+!=
+STALE
+!=
+FALLO TÉCNICO
+```
+
+Un error de lectura no se presenta como “no hay mesas”.
+
+---
+
+#### 43. Minimización de datos
+
+El home de salón no necesita cargar por defecto:
+
+- historial completo del cliente;
+- ledger PASS;
+- información financiera;
+- datos de otras sedes;
+- todas las órdenes históricas;
+- configuración administrativa;
+- logs de autorización;
+- campos técnicos de dispositivos;
+- inventario completo NEXO.
+
+La proyección se limita a la atención actual.
+
+---
+
+#### 44. Accesibilidad y uso táctil
+
+La experiencia debe ser compatible con operación rápida en estación o tablet:
+
+- objetivos táctiles suficientes;
+- estado no dependiente solo de color;
+- prioridad visible con texto/icono;
+- navegación por teclado cuando aplique;
+- foco preservado tras actualización;
+- confirmaciones proporcionales al riesgo;
+- audio opcional como ayuda, nunca como único canal.
+
+El detalle final de interacción táctil pertenece a `PULSO-UX-015`.
+
+---
+
+#### 45. AS-IS de `/salon`
+
+El runtime actual de `/salon`:
+
+- exige acceso a PULSO y `pos.main` legacy;
+- recibe `site_id` desde query y lo entrega al resolver actual;
+- lee `pos_zones`, `pos_tables`, sesiones abiertas y llamados activos;
+- filtra las consultas iniciales por `site_id`;
+- deriva estados visuales de mesa;
+- mantiene una cola visible de llamados;
+- permite refresco manual;
+- escucha cambios Realtime de llamados y sesiones;
+- permite crear llamados manuales;
+- permite cambiar un llamado de `pending` a `acknowledged` o `resolved` desde el cliente.
+
+Ese runtime es evidencia parcial, no el contrato final.
+
+---
+
+#### 46. Brecha AS-IS de autorización broad
+
+`/salon` utiliza actualmente:
+
+```text
+permissionCode: ["pos.main"]
+```
+
+pero el canon actual clasifica `pulso.pos.main` como broad/legacy y prohíbe tratarlo como suficiencia para todas las acciones.
+
+La materialización objetivo debe migrar a capacidades atómicas sin convertir `pulso.access` en fallback permisivo.
+
+---
+
+#### 47. Brecha AS-IS de territorio cliente
+
+El resolver actual puede priorizar un `preferredSiteId` recibido desde la ruta.
+
+Por tanto, la UX objetivo conserva:
+
+```text
+site_id de URL
+<=
+autoridad ya resuelta
+```
+
+Nunca:
+
+```text
+site_id de URL
+=
+autoridad territorial
+```
+
+La corrección material pertenece a la frontera definida por `PULSO-AUTH-011` y sus unidades físicas propietarias.
+
+---
+
+#### 48. Brecha AS-IS de mutaciones directas
+
+El cliente actual ejecuta operaciones directas sobre `pos_table_service_calls` para:
+
+- crear un llamado manual;
+- reconocer un llamado;
+- resolver un llamado.
+
+La UX objetivo no acepta una mutación porque el botón sea visible o porque RLS permita técnicamente escribir.
+
+Cada transición deberá converger en una acción nombrada y autorizada en servidor con permiso exacto, recurso, estado y actor efectivo.
+
+---
+
+#### 49. Brecha AS-IS de atribución
+
+Al crear un llamado manual, la UI actual no envía explícitamente `created_by`.
+
+Al ejecutar “Tomar”, actualiza estado y `acknowledged_at`, pero no persiste `assigned_to` desde esa acción.
+
+Por tanto:
+
+```text
+CREADOR
+!=
+ASIGNADO
+!=
+ACTOR QUE RECONOCE
+!=
+ACTOR QUE RESUELVE
+```
+
+La atribución completa debe consumir la frontera aprobada en `PULSO-AUTH-013`.
+
+---
+
+#### 50. Brecha AS-IS de sesión de mesa
+
+El runtime observado lee sesiones abiertas, pero no materializa en esa superficie el lifecycle completo de apertura y cierre de `VPROC-0038`.
+
+La ausencia de controles AS-IS no autoriza a inferir que la sesión se abre o cierra automáticamente mediante llamados.
+
+El diseño conserva esas transiciones como capacidades separadas.
+
+---
+
+#### 51. Brecha AS-IS de Realtime
+
+Las suscripciones observadas escuchan cambios de las tablas de llamados y sesiones y luego vuelven a cargar un snapshot filtrado por sede.
+
+La suscripción misma no declara un filtro `site_id` en el canal observado.
+
+La materialización debe demostrar aislamiento territorial de Realtime conforme al contrato de autorización, aunque el refetch posterior ya reduzca la proyección.
+
+---
+
+#### 52. Brecha de permisos atómicos para servicio_salon
+
+El dataset canónico vigente de concesiones operativas asigna once grants a `servicio_salon`, pero solo uno pertenece a PULSO:
+
+```text
+pulso.access
+```
+
+No existe en esa matriz vigente una concesión atómica PULSO para leer o mutar mesa, sesión o llamado.
+
+Esta tarea no corrige la matriz desde UX.
+
+**Propietario canónico:** `AUTH-RBAC-011` para la matriz del rol, junto con la frontera PULSO-AUTH aplicable a la acción concreta.
+
+**Condición de salida:** antes de materializar una acción interna del home de salón, debe existir PermissionKey canónica exacta, decisión explícita para `servicio_salon`, scope/prerrequisito definidos y enforcement server-side sin broad fallback.
+
+---
+
+#### 53. Matriz de disponibilidad objetivo
+
+| Intención de trabajo | Superficie | Estado contractual para `servicio_salon` | Regla |
+| --- | --- | --- | --- |
+| entrar a PULSO | `VSCREEN-0080` | AUTORIZABLE HOY por `pulso.access` | solo entrada/contexto |
+| ver mapa/mesas | `VSCREEN-0082` | BLOQUEADO PARA MATERIALIZACIÓN ATÓMICA | requiere permiso exacto de lectura |
+| abrir servicio de mesa | `VSCREEN-0082` | BLOQUEADO | requiere permiso exacto de sesión/apertura |
+| crear llamado manual | `VSCREEN-0082` | BLOQUEADO | requiere permiso exacto y acción server-side |
+| tomar/asignar llamado | `VSCREEN-0082` | BLOQUEADO | reconocer y asignar son efectos explícitos |
+| resolver llamado | `VSCREEN-0082` | BLOQUEADO | requiere permiso exacto y estado vigente |
+| iniciar pedido | `VSCREEN-0081` | BLOQUEADO PARA ESTE ROL MIENTRAS NO EXISTA GRANT | no heredar permiso de cajero |
+| modificar pedido activo | `VSCREEN-0083` | BLOQUEADO PARA ESTE ROL MIENTRAS NO EXISTA GRANT | validar columnas/estado |
+| solicitar cobro | handoff | DISPONIBLE COMO INTENCIÓN | no equivale a cobrar |
+| cobrar | `VSCREEN-0084` | NO CONCEDIDO AL ROL POR ESTA TAREA | requiere autoridad propia |
+| cerrar mesa | `VSCREEN-0082` | BLOQUEADO | requiere permiso exacto y conciliación |
+| configurar zonas/mesas | superficie administrativa | FUERA DE ALCANCE | carril administrativo separado |
+
+---
+
+#### 54. Handoff inmediato a PULSO-UX-004
+
+`PULSO-UX-004 — Diseñar inicio para mostrador` recibe:
+
+```text
+VSCREEN-0080 SIGUE SIENDO IDENTIDAD COMPARTIDA DE INICIO POS
+SERVICIO_SALON PRIORIZA VPROC-0038 / MESAS / LLAMADOS
+VSCREEN-0082 ES WORKSPACE PRINCIPAL DE SALÓN
+MOSTRADOR NO DEBE HEREDAR MAPA DE MESAS COMO HOME
+CAJA / MOSTRADOR PUEDEN COMPARTIR PUNTO FÍSICO SIN COMPARTIR AUTOMÁTICAMENTE PERMISOS
+ZONA / PUNTO / ESTACIÓN != AUTORIDAD
+HANDOFF DE CUENTA != AUTORIDAD DE COBRO
+PERMISOS INTERNOS FALTANTES DEBEN FALLAR CERRADOS
+```
+
+La 004 deberá especializar el punto de mostrador sin duplicar salón ni caja.
+
+---
+
+#### 55. Handoff al resto de PULSO-UX
+
+| Tarea | Entrada exacta proveniente de PULSO-UX-003 |
+| --- | --- |
+| `PULSO-UX-004` | mostrador se separa de mesa/sesión y consume solo handoffs necesarios |
+| `PULSO-UX-005` | actor integral compone capacidades sin wildcard operativo |
+| `PULSO-UX-006` | supervisor recibe carga y excepciones sin convertirse en ejecutor implícito |
+| `PULSO-UX-007` | creación de venta/pedido recibe contexto de mesa cuando corresponda |
+| `PULSO-UX-008` | cobro recibe handoff de cuenta sin fusionarse con servicio |
+| `PULSO-UX-009` | cancelación/devolución/refund permanecen efectos separados |
+| `PULSO-UX-010` | caja conserva lifecycle separado del cierre de mesa |
+| `PULSO-UX-013` | acciones sensibles reciben confirmación proporcional al efecto |
+| `PULSO-UX-014` | terminal compartida conserva trabajador real en cada transición |
+| `PULSO-UX-015` | mapa y cola de llamados se adaptan a interacción táctil |
+| `PULSO-UX-020` | prototipo histórico se clasifica sin elevar mutaciones directas a contrato final |
+| `PULSO-UX-021` | arquitectura objetivo cierra broad permissions y deuda legacy aplicable |
+
+---
+
+#### 56. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: aislamiento territorial del salón, separación de mesa/sesión/pedido/cuenta, autorización de rutas y acciones, actor efectivo, protección contra broad permissions, estados y recuperación ya cuentan con obligaciones verificables vigentes. Esta tarea especializa la composición UX de `servicio_salon` sin introducir una obligación observable nueva en el registro.
+
+---
+
+#### 57. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-PULSO-005` para separar mesa, sesión, pedido, preparación, cumplimiento, pago y cierre;
+- `TREQ-PULSO-014` para exigir acceso protegido y fail-closed en rutas PULSO;
+- `TREQ-PULSO-015` para impedir que `site_id` amplíe territorio;
+- `TREQ-PULSO-018` para aislar zonas, mesas, sesiones y llamados y separar sus acciones por actor y estado;
+- `TREQ-PULSO-026` para impedir atribuir permisos no declarados o elevar `pulso.pos.main` a suficiencia;
+- `TREQ-AUTH-001` para resolver autoridad mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-011` para separar dispositivo y trabajador humano;
+- `TREQ-AUTH-013` para impedir bypass por URL, cliente, API o RPC y revalidar mutaciones;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de actor, contexto, recurso y decisión.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout después de incorporar el artefacto; esta tarea no materializa producto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de dominio y batería global quedan pendientes de la incorporación en el checkout local. |
+| REMOTA | PASS | Se verificaron las fuentes canónicas vigentes de continuidad, topología `DEFINE_ONCE`, owner PULSO, `AUTH-RBAC-011`, dataset de once grants de `servicio_salon`, `OPS-POS-001`, `VSCREEN-0080/0082/0083/0084`, estados de `VPROC-0038`, Registro 04A aplicable y runtime vigente de `/salon`, incluidos queries, estados derivados, llamados, mutaciones cliente y Realtime. |
+| OPERATIVA | NOT_EXECUTED | No se atendieron mesas, llamados, sesiones, pedidos, cuentas ni cobros reales y no se realizaron pruebas con personal de salón. |
+| FÍSICA | NOT_APPLICABLE | `PULSO-UX-003` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 59. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0080` se conserva como identidad canónica compartida de Inicio POS;
+- [ ] no se crea una pantalla paralela de home para salón;
+- [ ] `servicio_salon` queda como actor principal;
+- [ ] `VPROC-0038` queda como proceso principal;
+- [ ] `VSCREEN-0082` queda como workspace principal de salón;
+- [ ] se distinguen los nueve estados canónicos de `VPROC-0038`;
+- [ ] mesa, sesión, pedido, cuenta y pago permanecen identidades separadas;
+- [ ] el home se organiza por trabajo y prioridad, no por rutas técnicas;
+- [ ] zona física permanece separada del área de autorización;
+- [ ] contexto, actor, turno, sede, área y dispositivo se resuelven antes de acciones;
+- [ ] `pulso.access` se limita a entrada/contexto;
+- [ ] no se inventan permisos atómicos ausentes para `servicio_salon`;
+- [ ] lectura/mutación de mesa, sesión y llamados queda bloqueada para materialización mientras no exista permiso exacto;
+- [ ] “Tomar” no confunde reconocimiento, asignación y actor ejecutor;
+- [ ] “Resolver” no cierra automáticamente mesa, sesión, pedido o pago;
+- [ ] `bill` se trata como solicitud de cuenta y no como autoridad de cobro;
+- [ ] pedido nuevo y pedido activo conducen a superficies propietarias;
+- [ ] cobro conduce a `VSCREEN-0084` mediante handoff y no desde el home;
+- [ ] caja no se hereda por proximidad física;
+- [ ] mostrador, operador integral y supervisor conservan homes especializados posteriores;
+- [ ] configuración de zonas/mesas permanece administrativa;
+- [ ] dispositivo compartido y trabajador real permanecen separados;
+- [ ] cambio de trabajador invalida estado actor-bound;
+- [ ] Realtime no concede autoridad;
+- [ ] conflictos concurrentes obligan a refrescar y no a reintentar ciegamente;
+- [ ] vacío, deny, contexto inválido, stale, fallo y conflicto permanecen distintos;
+- [ ] la proyección de datos queda minimizada;
+- [ ] el AS-IS de `/salon` queda inventariado sin elevarlo a contrato final;
+- [ ] `pos.main` legacy queda identificado como broad e insuficiente;
+- [ ] `site_id` cliente no se convierte en territorio autoritativo;
+- [ ] las mutaciones directas del cliente quedan identificadas como brecha;
+- [ ] creador, asignado y actor ejecutor quedan separados;
+- [ ] Realtime territorial queda como obligación de materialización;
+- [ ] la brecha de permisos atómicos tiene propietario y condición de salida;
+- [ ] `PULSO-UX-004` recibe un handoff suficiente para diseñar mostrador sin duplicar salón;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 60. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0080` ni `VSCREEN-0082`;
+- modifica `/salon`;
+- crea una ruta nueva;
+- crea componentes o Server Actions;
+- crea permisos o grants;
+- modifica `AUTH-RBAC-011`;
+- concede acciones internas de salón por `pulso.access`;
+- abre o cierra sesiones reales;
+- crea, asigna, reconoce, resuelve o cancela llamados reales;
+- crea o modifica pedidos reales;
+- procesa cobros;
+- abre o cierra caja;
+- acumula o redime puntos;
+- configura zonas, mesas, layout, puntos o estaciones;
+- modifica Supabase, RLS, RPC, grants, tablas, datos, Realtime o migraciones;
+- modifica packages compartidos;
+- retira `pulso.pos.main` del runtime;
+- corrige `preferredSiteId` en código;
+- corrige mutaciones cliente en código;
+- materializa permisos atómicos faltantes;
+- diseña en detalle el home de mostrador;
+- diseña operador integral o supervisor;
+- sustituye `PULSO-UX-004..021`;
+- modifica el Registro 04A;
+- crea una instancia física propia;
+- desarrolla `PULSO-UX-004`.
+
+---
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-002 — Diseñar inicio para cajero`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-003 — Diseñar inicio para servicio de salón`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-004 — Diseñar inicio para mostrador`
 ### [ ] PULSO-UX-004 — Diseñar inicio para mostrador
 ### [ ] PULSO-UX-005 — Diseñar inicio para operador integral
 ### [ ] PULSO-UX-006 — Diseñar inicio para supervisor
