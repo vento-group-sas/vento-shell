@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1391** |
+| Aprobadas | **1392** |
 | En propuesta | **0** |
-| No iniciadas | **205** |
+| No iniciadas | **204** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **87.16% (1391/1596)** |
+| Porcentaje de completamiento | **87.22% (1392/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **205** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1292** |
+| ⏸ NO_EVALUADA | **204** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1293** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUD-001` — Inventariar rutas, pantallas, componentes y formularios actuales | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUD-002` — Inventariar Server Actions, API, RPC, consultas y jobs utilizados | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUD-003` — Inventariar tablas, vistas, eventos y sistemas fuente | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUD-002` — Inventariar Server Actions, API, RPC, consultas y jobs utilizados | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUD-003` — Inventariar tablas, vistas, eventos y sistemas fuente | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUD-004` — Identificar módulos completos, parciales, prototipos y ausentes | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1154,7 +1154,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PULSO-UX-021` | Diseñar la arquitectura funcional y técnica del POS integral objetivo sin heredar como contrato el prototipo histórico | — | — | `bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-POS-001` | Definir zonas físicas, mesas y puntos de servicio del POS por sede | — | — | `bloques/N_PULSO/01_TAREA_DERIVADA_OPS_AUD_001.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-001` | Inventariar rutas, pantallas, componentes y formularios actuales | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-002` | Inventariar Server Actions, API, RPC, consultas y jobs utilizados | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-002` | Inventariar Server Actions, API, RPC, consultas y jobs utilizados | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-003` | Inventariar tablas, vistas, eventos y sistemas fuente | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-004` | Identificar módulos completos, parciales, prototipos y ausentes | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-005` | Detectar datos simulados, hardcodes, TODO y lógica provisional | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
