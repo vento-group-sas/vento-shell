@@ -21238,7 +21238,1133 @@ La 017 conserva NUMERA como propietaria del hecho económico.
 
 **SIGUIENTE TAREA RESERVADA**
 `PULSO-UX-017 — Conectar venta con NUMERA`
-### [ ] PULSO-UX-017 — Conectar venta con NUMERA
+### ✅ PULSO-UX-017 — Conectar venta con NUMERA
+
+**Estado:** APROBADA
+**Tarea anterior:** PULSO-UX-016 — Conectar venta con inventario
+**Tarea siguiente:** PULSO-UX-018 — Conectar venta con PASS
+**Tipo de tarea:** diseño documental integral de la conexión operacional PULSO→NUMERA para una venta durable y su efecto económico correlacionado, consumiendo `INT-POS-017`, `INT-SALES-004`, `INT-APP-001..010` y la cobertura NUMERA vigente; separando venta, evento empresarial, inbox NUMERA, `SALE_ECONOMIC_FACT`, pago, caja, documento fiscal, cartera, costo, rentabilidad y contabilidad; preservando audiencia canónica, puerta de materialidad, idempotencia, actor, sede, moneda, centro de costo, tercero, impuestos, resultado desconocido, reversos y conciliación; sin crear nuevas definiciones de evento, asientos, libros, permisos, tablas, RPC, Server Actions, migraciones, Supabase ni materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE N — PULSO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/N_PULSO/02_EXPERIENCIA_POS_Y_OPERACION_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas runtime, PermissionKeys, datasets, roles, grants, RLS, RPC, Server Actions, tablas, datos, Supabase, migraciones, packages, eventos, outbox, inbox, hechos económicos, cartera, bancos, libros, asientos, impuestos, documentos fiscales, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo la experiencia PULSO conecta una venta durable con NUMERA sin convertir a PULSO en propietaria del dominio económico.
+
+La regla principal es:
+
+```text
+PULSO AFIRMA LA VENTA
+NUMERA AFIRMA EL HECHO ECONÓMICO
+```
+
+Y, por tanto:
+
+```text
+VENTA CONFIRMADA
+!=
+INGRESO NUMERA APLICADO
+```
+
+---
+
+#### 2. Handoff recibido de PULSO-UX-016
+
+`PULSO-UX-016` entrega:
+
+```text
+VENTA Y EVENTO PULSO TIENEN IDENTIDAD ESTABLE
+NEXO TIENE EFECTO FISICO INDEPENDIENTE
+CORRELACION ENTRE EFECTOS NO IMPLICA IDENTIDAD COMPARTIDA
+EXITO NEXO NO DEMUESTRA HECHO ECONOMICO
+FALLO NEXO NO BORRA VENTA
+RETRY NUMERA DEBE SER INDEPENDIENTE
+RESULTADO DESCONOCIDO SE RECUPERA ANTES DE REEJECUTAR
+```
+
+La 017 consume estas invariantes y las especializa para NUMERA.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Esta tarea se agota en el contrato documental. No crea una instancia física propia.
+
+---
+
+#### 4. Resultado sustantivo
+
+Queda definida la conexión PULSO→NUMERA mediante la secuencia conceptual:
+
+```text
+VENTA DURABLE PULSO
+→ EVENTO EMPRESARIAL PULSO
+→ AUDIENCIA CANÓNICA
+→ CONSUMER_INBOX NUMERA
+→ PUERTA DE MATERIALIDAD ECONÓMICA
+→ CONSUMER_EFFECT NUMERA
+→ SALE_ECONOMIC_FACT
+→ RESULTADO DURABLE NUMERA
+→ CONCILIACIÓN
+```
+
+PULSO puede presentar el estado de esta secuencia, pero no materializar el efecto NUMERA.
+
+---
+
+#### 5. Separaciones semánticas obligatorias
+
+Se preserva:
+
+```text
+VENTA
+!= PAGO
+!= MOVIMIENTO DE CAJA
+!= DOCUMENTO FISCAL
+!= CUENTA POR COBRAR
+!= DEPÓSITO
+!= MOVIMIENTO BANCARIO
+!= HECHO ECONÓMICO
+!= ASIENTO CONTABLE
+```
+
+Ninguna coincidencia visual o temporal fusiona estos objetos.
+
+---
+
+#### 6. Propiedad empresarial
+
+| Objeto | Propietaria | Regla |
+| --- | --- | --- |
+| venta y líneas | PULSO | conserva identidad, revisión y estado comercial |
+| evento empresarial | PULSO | describe un hecho durable ya confirmado |
+| audiencia de consumidoras | registro transversal | decide si NUMERA recibe la definición concreta |
+| inbox NUMERA | NUMERA | deduplica recepción por `event_id` |
+| puerta de materialidad | NUMERA | decide si corresponde efecto económico |
+| hecho económico | NUMERA | conserva identidad, dimensiones, monto, estado y evidencia |
+| pago y caja | PULSO / proveedor aplicable | permanecen separados |
+| inventario físico | NEXO | no se reconstruye desde NUMERA |
+| fidelización | PASS | permanece separada |
+| documento fiscal oficial | proveedor o sistema autorizado | NUMERA conserva referencia sin asumir emisión |
+| libros/asientos oficiales | autoridad o sistema autorizado según contrato vigente | `SALE_ECONOMIC_FACT` no los sustituye |
+
+---
+
+#### 7. Fuente económica durable
+
+NUMERA no trata el payload de PULSO como ledger económico propio.
+
+El payload habilita evaluación; solo un resultado durable NUMERA acredita el efecto.
+
+---
+
+#### 8. Audiencia canónica
+
+NUMERA no es consumidora universal de todos los eventos PULSO.
+
+La relación aplicable debe existir en el registro transversal vigente para la definición concreta.
+
+---
+
+#### 9. Ausencia de audiencia
+
+Si NUMERA no pertenece a la audiencia aplicable:
+
+```text
+CERO INBOX NUMERA FORZADO
+CERO ESCRITURA DIRECTA
+CERO SALE_ECONOMIC_FACT
+```
+
+PULSO no corrige la ausencia mediante una mutación cruzada.
+
+---
+
+#### 10. Inbox NUMERA
+
+La identidad de recepción es:
+
+```text
+consumer_application = numera
+consumer_inbox_key = numera + event_id
+```
+
+El inbox acredita recepción/dedupe; no acredita materialidad económica.
+
+---
+
+#### 11. Redelivery
+
+Una redelivery conserva `event_id`.
+
+No crea otro inbox lógico ni otro hecho económico.
+
+---
+
+#### 12. Identidad del efecto
+
+El efecto económico reutilizado es:
+
+```text
+effect_code = SALE_ECONOMIC_FACT
+```
+
+Su identidad transversal es:
+
+```text
+numera + event_id + SALE_ECONOMIC_FACT
+```
+
+---
+
+#### 13. Alcance idempotente
+
+El alcance aplicable es:
+
+```text
+CONSUMER_EFFECT
+```
+
+Retry, replay y redelivery conservan identidad y huella material.
+
+---
+
+#### 14. No equivalencia de identidades
+
+`event_id`, `sale_id`, `payment_id`, documento fiscal, asiento, cuenta por cobrar y hecho económico son identidades distintas.
+
+Ninguna sustituye las demás.
+
+---
+
+#### 15. Puerta de materialidad económica
+
+NUMERA crea o recupera `SALE_ECONOMIC_FACT` únicamente cuando el evento fuente demuestra una venta económicamente reconocible.
+
+La mera validez técnica del evento no basta.
+
+---
+
+#### 16. Condiciones mínimas de materialidad
+
+La evaluación debe poder resolver, según aplicabilidad:
+
+- venta durable;
+- revisión aplicable;
+- `event_id` estable;
+- relación consumidora vigente;
+- estado comercial suficiente;
+- entidad legal o referencia autoritativa;
+- sede;
+- centro de costo o referencia autoritativa;
+- tercero económico o disposición válida de consumidor final;
+- moneda;
+- fechas económicas aplicables;
+- monto y componentes monetarios;
+- tratamiento fiscal bajo autoridad externa;
+- evidencia y correlación.
+
+---
+
+#### 17. Hitos que no demuestran materialidad
+
+No bastan por sí solos:
+
+- apertura de mesa;
+- apertura de venta;
+- preparación;
+- entrega técnica;
+- selección de medio de pago;
+- intento de cobro;
+- conciliación todavía pendiente;
+- publicación del evento;
+- recepción en inbox.
+
+---
+
+#### 18. Hitos comercialmente cerrados
+
+Un cierre de servicio o venta puede superar la puerta económica solo cuando las dimensiones obligatorias estén completas o resolubles por fuente autoritativa.
+
+No existe autoaplicación por nombre de estado.
+
+---
+
+#### 19. Granularidad económica
+
+La unidad primaria del efecto es una venta canónica económicamente reconocible.
+
+```text
+UNA VENTA ECONÓMICA
+→ UN SALE_ECONOMIC_FACT POR event_id + effect_code
+→ CERO O MÁS COMPONENTES/LÍNEAS CORRELACIONADAS
+```
+
+---
+
+#### 20. Líneas comerciales
+
+Las líneas permiten reconstrucción, distribución, impuestos, análisis y conciliación.
+
+No se convierten automáticamente en hechos económicos independientes.
+
+---
+
+#### 21. Contrato mínimo PULSO→NUMERA
+
+La proyección de entrada debe permitir correlacionar, cuando aplique:
+
+- `event_id`;
+- definición y versión del evento;
+- productora PULSO;
+- `sale_id`;
+- revisión de venta;
+- estado comercial;
+- referencias de líneas;
+- `source_system`;
+- `site_id`;
+- momento del hecho comercial;
+- componentes monetarios demostrados;
+- moneda o referencia autoritativa versionada;
+- referencias fiscales disponibles;
+- `correlation_id`;
+- causalidad;
+- actor o principal causal cuando aplique;
+- evidencia protegida.
+
+---
+
+#### 22. Datos que PULSO no impone como autoridad NUMERA
+
+PULSO no fija como verdad NUMERA:
+
+- `recognized_at` definitivo cuando corresponda resolverlo a NUMERA;
+- entidad legal inventada;
+- centro de costo inventado;
+- tercero económico inventado;
+- moneda supuesta;
+- asiento contable;
+- cuenta por cobrar;
+- aplicación de pago;
+- depósito;
+- movimiento bancario;
+- estado de conciliación;
+- costo real;
+- margen realizado.
+
+---
+
+#### 23. Entidad legal
+
+Marca, sede, terminal o caja no determinan por sí solas entidad legal.
+
+Si la dimensión obligatoria no puede resolverse sin inferencia, el efecto no se presenta como `APPLIED`.
+
+---
+
+#### 24. Sede
+
+La sede conserva referencia canónica y contexto temporal.
+
+Sede no equivale a centro de costo ni entidad legal.
+
+---
+
+#### 25. Centro de costo
+
+El centro de costo debe provenir de una resolución NUMERA o referencia autoritativa vigente.
+
+La 017 no congela nombres físicos ni reglas que pertenecen a `NUMERA-DOM-002`.
+
+---
+
+#### 26. Tercero económico
+
+Una venta a consumidor final puede producir un hecho económico válido sin crear cliente artificial.
+
+```text
+CLIENTE PULSO
+!= TERCERO ECONÓMICO
+!= DEUDOR
+!= CUENTA PASS
+```
+
+---
+
+#### 27. Moneda
+
+La moneda es obligatoria para un importe aplicado.
+
+`es-CO`, formato visual o un hardcode de UI no constituyen autoridad económica.
+
+---
+
+#### 28. Componentes monetarios
+
+Se preservan separadamente, cuando existan:
+
+- subtotal;
+- descuentos;
+- impuestos;
+- propinas;
+- venta bruta;
+- venta neta;
+- devoluciones;
+- referencias de pago;
+- otros componentes explícitos del contrato vigente.
+
+---
+
+#### 29. Propina
+
+Propina no se clasifica automáticamente como ingreso de Vento.
+
+Su tratamiento conserva el contrato propietario aplicable.
+
+---
+
+#### 30. Impuestos
+
+Un impuesto observado en PULSO no equivale a impuesto oficialmente declarado.
+
+NUMERA conserva componentes y referencias sin asumir autoridad fiscal.
+
+---
+
+#### 31. Documento fiscal
+
+El documento fiscal permanece separado del hecho económico.
+
+La referencia fiscal puede formar parte de la evidencia, pero no sustituye `SALE_ECONOMIC_FACT`.
+
+---
+
+#### 32. Pago
+
+Pago exitoso no es sinónimo de ingreso NUMERA aplicado.
+
+Pago fallido tampoco borra una venta económicamente reconocible por inferencia.
+
+---
+
+#### 33. Caja
+
+Movimiento de caja y hecho económico son objetos separados.
+
+Cerrar caja no crea, edita ni elimina el hecho NUMERA.
+
+---
+
+#### 34. Cartera
+
+`SALE_ECONOMIC_FACT` no crea automáticamente una cuenta por cobrar.
+
+Cartera conserva contrato y lifecycle NUMERA propios.
+
+---
+
+#### 35. Bancos y tesorería
+
+Venta, recaudo, depósito, extracto y conciliación bancaria no se fusionan.
+
+La conexión PULSO→NUMERA no afirma depósito ni settlement.
+
+---
+
+#### 36. Contabilidad formal
+
+`SALE_ECONOMIC_FACT` puede servir como insumo futuro de contabilización.
+
+No es por sí mismo asiento, débito, crédito ni libro oficial.
+
+---
+
+#### 37. Costo
+
+NUMERA no fabrica costo desde precio de venta.
+
+Costo debe venir de sus fuentes y contratos propietarios.
+
+---
+
+#### 38. Rentabilidad
+
+Ingreso económicamente reconocido con costo pendiente produce rentabilidad incompleta, no margen confirmado ficticio.
+
+---
+
+#### 39. Relación con NEXO
+
+NEXO y NUMERA son consumidoras independientes.
+
+```text
+EXITO NEXO != EXITO NUMERA
+FALLO NEXO != FALLO NUMERA
+```
+
+---
+
+#### 40. Relación con PASS
+
+PASS no acredita el hecho económico y NUMERA no acredita fidelización.
+
+Cada dominio conserva su propia identidad de efecto.
+
+---
+
+#### 41. Producto pendiente
+
+Un producto sin mapping suficiente no autoriza a inventar producto, presentación, receta, costo ni clasificación dependiente del producto.
+
+---
+
+#### 42. Línea bloqueada
+
+Una línea bloqueada permanece visible en el expediente.
+
+No se elimina para hacer cuadrar importes o métricas.
+
+---
+
+#### 43. Materialidad sin producto
+
+Si el hecho económico global es demostrable sin usar el mapping pendiente, NUMERA puede decidir materialidad a nivel de venta conforme a su contrato.
+
+Esto no autoriza atribuciones económicas dependientes del producto no resuelto.
+
+---
+
+#### 44. Liberación posterior de mapping
+
+Liberar posteriormente una línea no vuelve a reconocer un ingreso ya aplicado.
+
+El enriquecimiento posterior conserva causalidad e identidad original.
+
+---
+
+#### 45. Huella lógica económica
+
+La huella material debe distinguir repetición de conflicto usando dimensiones económicas significativas, entre ellas según aplicabilidad:
+
+- venta y revisión;
+- evento y versión;
+- entidad;
+- sede;
+- centro de costo;
+- tercero;
+- moneda;
+- fechas;
+- documento/referencia fiscal;
+- importes;
+- impuestos;
+- componentes económicos;
+- estado pretendido.
+
+---
+
+#### 46. Metadatos excluidos de la huella
+
+No deben convertir un retry en otra operación:
+
+- `attempt_id`;
+- `delivery_id`;
+- worker;
+- contador de retry;
+- momento técnico de retry;
+- trace técnico por sí solo.
+
+---
+
+#### 47. Retry
+
+Un retry conserva:
+
+```text
+event_id
+SALE_ECONOMIC_FACT
+identidad del efecto
+huella material
+correlación
+```
+
+No crea otro ingreso.
+
+---
+
+#### 48. Respuesta perdida
+
+Ante timeout después de posible commit:
+
+```text
+CONSULTAR EFECTO / RESULTADO / RECEIPT O REFERENCIA DURABLE
+├── APLICADO → RECUPERAR RESULTADO
+├── AUSENCIA DEMOSTRADA → RETRY SEGURO
+└── INDETERMINADO → RECONCILIATION_REQUIRED
+```
+
+---
+
+#### 49. Resultado desconocido
+
+`UNKNOWN_OUTCOME` nunca se traduce visualmente a “falló” ni “aplicado” por conveniencia.
+
+PULSO puede mostrar estado de conciliación sin fabricar la respuesta.
+
+---
+
+#### 50. Resultados idempotentes
+
+La UX debe poder representar al menos las semánticas transversales aplicables:
+
+- `APPLIED`;
+- `DUPLICATE_RESULT_RETURNED`;
+- `CONFLICTING_REUSE`;
+- `STALE_VERSION`;
+- `OUT_OF_ORDER_DEFERRED`;
+- `RECONCILIATION_REQUIRED`.
+
+No crea una taxonomía NUMERA paralela.
+
+---
+
+#### 51. Duplicado recuperado
+
+`DUPLICATE_RESULT_RETURNED` significa que el efecto anterior se recuperó.
+
+No significa una segunda venta ni un segundo ingreso.
+
+---
+
+#### 52. Conflicto de reutilización
+
+La misma identidad con huella material incompatible produce conflicto, no overwrite.
+
+PULSO debe impedir un retry ciego.
+
+---
+
+#### 53. Versión stale
+
+Una revisión obsoleta no reescribe el hecho vigente.
+
+La acción se difiere, rechaza o concilia según contrato.
+
+---
+
+#### 54. Eventos fuera de orden
+
+Llegar tarde no autoriza retroceder estado económico ni reabrir silenciosamente un efecto confirmado.
+
+---
+
+#### 55. Replay
+
+Replay conserva `event_id` e identidad de efecto.
+
+No crea otra venta ni otro ingreso.
+
+---
+
+#### 56. Backfill
+
+Backfill conserva procedencia, ventana y fecha original.
+
+No fabrica ventas individuales ni aplica automáticamente efectos sensibles.
+
+---
+
+#### 57. Periodos
+
+Periodo operativo, económico, contable y fiscal no se asumen equivalentes.
+
+La 017 no resuelve por UI un periodo que NUMERA no pueda determinar autoritativamente.
+
+---
+
+#### 58. Correcciones
+
+Una corrección material no edita destructivamente el hecho económico original.
+
+Debe producir revisión, ajuste o compensación conforme al contrato NUMERA aplicable.
+
+---
+
+#### 59. Anulación
+
+Anular una venta no borra el hecho económico original ya confirmado.
+
+Puede requerir un efecto compensatorio causal.
+
+---
+
+#### 60. Devolución
+
+Devolución comercial, devolución física y compensación económica permanecen separadas.
+
+La aceptación de una devolución no modifica NUMERA por inferencia.
+
+---
+
+#### 61. Reembolso
+
+Reembolso no equivale automáticamente a reverso del hecho económico.
+
+Pago/proveedor y NUMERA conservan efectos propios correlacionados.
+
+---
+
+#### 62. Compensación
+
+Toda compensación económica conserva:
+
+- original confirmado;
+- identidad propia;
+- causalidad;
+- importe/alcance compensable;
+- actor/autoridad cuando aplique;
+- evidencia;
+- residual pendiente.
+
+---
+
+#### 63. Compensación cruzada prohibida
+
+```text
+NEXO NO CORRIGE NUMERA
+NUMERA NO CORRIGE PASS
+PASS NO CORRIGE PULSO
+PULSO NO CORRIGE NUMERA
+```
+
+Cada propietaria corrige su propio efecto.
+
+---
+
+#### 64. Resultado mixto
+
+Una venta puede estar confirmada mientras NUMERA sigue pendiente.
+
+La UI no debe colapsar todos los dominios en un único “éxito/fallo de venta”.
+
+---
+
+#### 65. Vector de estado
+
+La experiencia puede proyectar un vector mínimo:
+
+```text
+VENTA      → estado PULSO
+EVENTO     → estado de emisión
+NEXO       → estado propio
+NUMERA     → estado propio
+PASS       → estado propio
+```
+
+Sin usar uno como prueba del otro.
+
+---
+
+#### 66. Estado mínimo visible de NUMERA en PULSO
+
+Cuando sea útil y autorizado, PULSO puede mostrar:
+
+- no aplicable;
+- pendiente;
+- aplicado;
+- duplicado recuperado;
+- bloqueado;
+- conflicto;
+- conciliación requerida.
+
+La UI muestra proyección; NUMERA conserva la verdad.
+
+---
+
+#### 67. Cero éxito optimista
+
+PULSO no presenta “registrado en NUMERA” antes de un resultado durable NUMERA.
+
+Entrega, claim o inbox no son éxito económico.
+
+---
+
+#### 68. Doble toque
+
+La experiencia táctil heredada de 015 evita que un doble tap produzca dos intenciones económicas equivalentes.
+
+La idempotencia de servidor sigue siendo obligatoria.
+
+---
+
+#### 69. Actor y auditoría
+
+La correlación debe preservar, cuando aplique:
+
+- actor efectivo;
+- principal técnico;
+- sede;
+- venta;
+- evento;
+- efecto NUMERA;
+- resultado;
+- compensación;
+- timestamps relevantes.
+
+---
+
+#### 70. Autorización
+
+La visibilidad o capacidad PULSO no concede permisos NUMERA.
+
+Toda mutación propietaria NUMERA conserva sus controles de servidor y tareas propietarias.
+
+---
+
+#### 71. Privacidad y minimización
+
+PULSO no necesita exponer ledger, cuentas, bancos, documentos completos ni detalles financieros sensibles para informar el estado de integración.
+
+Se proyecta el mínimo necesario.
+
+---
+
+#### 72. Error técnico
+
+Un error de transporte se distingue de un rechazo económico y de un resultado desconocido.
+
+El texto de UI no fusiona esas clases.
+
+---
+
+#### 73. Conciliación permanente
+
+La integración debe poder detectar al menos:
+
+- venta aplicable sin inbox NUMERA;
+- inbox sin decisión;
+- efecto sin venta;
+- efecto duplicado;
+- venta reconocida dos veces;
+- moneda divergente;
+- sede divergente;
+- centro de costo divergente;
+- impuesto divergente;
+- documento divergente;
+- importe divergente;
+- resultado desconocido;
+- compensación faltante o duplicada.
+
+---
+
+#### 74. Igualdad agregada no prueba paridad individual
+
+Que totales diarios coincidan no demuestra que cada venta tenga su hecho económico correcto.
+
+No se prorratea una diferencia agregada entre ventas para aparentar conciliación.
+
+---
+
+#### 75. Fuente histórica externa
+
+Una venta histórica puede conservar procedencia externa sin cambiar la frontera consumidora NUMERA.
+
+PULSO continúa siendo la productora empresarial del evento interno aprobado cuando corresponda.
+
+---
+
+#### 76. Venta nativa PULSO
+
+Una venta nativa PULSO no depende de credenciales, archivo o polling del adaptador histórico para producir el handoff económico.
+
+---
+
+#### 77. Estado técnico observado de NUMERA
+
+El runtime remoto observado contiene superficies de:
+
+- centros de costo;
+- presupuestos;
+- ingreso esperado;
+- gastos;
+- punto de equilibrio;
+- rentabilidad;
+- resumen de periodo.
+
+Estas superficies no acreditan por sí solas `CONSUMER_INBOX`, `SALE_ECONOMIC_FACT`, recepción de evento PULSO, idempotencia del efecto ni conciliación venta-a-venta.
+
+---
+
+#### 78. `expected_revenue` no es ingreso realizado
+
+El campo o proyección técnica observada como `expected_revenue` no se adopta como sustituto de un hecho económico confirmado de venta.
+
+La UI objetivo debe distinguir esperado, realizado, presupuestado y simulado.
+
+---
+
+#### 79. Hardcode visual de COP
+
+Que vistas actuales formateen `COP` no autoriza a deducir moneda para `SALE_ECONOMIC_FACT`.
+
+La moneda aplicada exige evidencia autoritativa.
+
+---
+
+#### 80. Gastos existentes
+
+La capacidad observada de crear gastos NUMERA no materializa la recepción económica de ventas.
+
+Gasto y hecho económico de venta permanecen contratos distintos.
+
+---
+
+#### 81. Frontera con NUMERA-DOM-002
+
+`NUMERA-DOM-002 — Definir hechos económicos recibidos desde ventas` conserva el modelo de dominio detallado NUMERA.
+
+017 no decide nombres físicos, tablas, columnas, periodo ni algoritmo de resolución económica que esa tarea deba definir.
+
+---
+
+#### 82. Frontera con implementación física
+
+La materialización posterior deberá decidir, bajo su package/gate autorizado:
+
+- inbox físico;
+- effect store;
+- constraints;
+- RPC/functions/actions;
+- outbox/colas;
+- RLS;
+- tipos;
+- migraciones;
+- observabilidad;
+- pruebas E2E.
+
+Esta tarea no los implementa.
+
+---
+
+#### 83. Matriz de estados UX
+
+| Estado observado | Presentación PULSO | Efecto permitido |
+| --- | --- | --- |
+| no aplica a NUMERA | informativo | ninguno |
+| pendiente de entrega | pendiente | no repetir con nueva identidad |
+| recibido en inbox | procesando | no afirmar éxito |
+| materialidad bloqueada | bloqueo con causa | corregir fuente/esperar resolución |
+| aplicado | confirmado | mostrar referencia mínima |
+| duplicado recuperado | confirmado/reutilizado | no repetir |
+| conflicto | error empresarial | bloquear retry ciego |
+| resultado desconocido | conciliación | consultar antes de reejecutar |
+| compensación pendiente | seguimiento | no alterar original |
+
+---
+
+#### 84. Matriz de prohibiciones
+
+| Prohibido | Motivo |
+| --- | --- |
+| escribir tablas NUMERA desde PULSO | rompe ownership |
+| crear `SALE_ECONOMIC_FACT` en cliente | evade autoridad |
+| usar pago como ingreso | fusiona hechos |
+| usar cierre de caja como ingreso | fusiona hechos |
+| usar factura como hecho económico | confunde fiscalidad |
+| usar stock NEXO como prueba NUMERA | consumidoras independientes |
+| usar puntos PASS como prueba NUMERA | dominios independientes |
+| asumir COP por UI | moneda no demostrada |
+| inventar centro de costo | clasificación financiera falsa |
+| crear asiento desde 017 | fuera de alcance |
+| retry con nuevo `event_id` | duplica causalidad |
+| tratar timeout como fallo cierto | puede duplicar efecto |
+| borrar original al compensar | destruye historia |
+
+---
+
+#### 85. Pendientes con propietario
+
+| Pendiente | Propietario | Bloquea 017 | Condición de salida |
+| --- | --- | --- | --- |
+| modelo detallado de hecho recibido desde venta | `NUMERA-DOM-002` | no, porque el contrato transversal ya define la frontera | modelo NUMERA materializado documentalmente |
+| autorización financiera específica | tareas `NUMERA-AUTH-*` | no para esta definición; sí para runtime | permisos y enforcement aprobados |
+| persistencia física de inbox/effect | package E5 NUMERA / arquitectura asignada | no para documentación; sí para operación | implementación y pruebas autorizadas |
+| conciliación transversal de convivencia | `INT-SALES-008` | no | casos y resultados reconciliables |
+| retry permanente especializado de ventas | `INT-SALES-007` | no | cadena recupera resultados sin duplicación |
+| conexión venta con PASS | `PULSO-UX-018` | no | integración PASS definida |
+
+---
+
+#### 86. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** la conducta definida ya está cubierta por requisitos vigentes que exigen hechos económicos NUMERA identificables y reconciliables, dimensiones económicas explícitas, separación de cartera/pagos/caja, costo trazable, llegada idempotente de hechos desde dominios propietarios, convergencia de ventas PULSO, retry recuperable y efectos exactamente una vez. La tarea organiza la frontera UX PULSO→NUMERA sin introducir una obligación verificable material nueva.
+
+---
+
+#### 87. Cobertura de prueba vigente reutilizada
+
+Se conserva sin modificación, en especial:
+
+- `TREQ-NUMERA-001` para reconciliación de indicadores, costos, cierres, saldos y reportes contra hechos y documentos fuente sin doble registro;
+- `TREQ-NUMERA-002` para identidad estable, entidad, sede, centro, tercero, moneda, fechas, fuente, correlación, documento, monto, impuestos, estado, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003` para separar cartera, pago recibido, aplicación, bancos, caja consolidada y tesorería;
+- `TREQ-NUMERA-004` para ingreso realizado, costo trazable y rentabilidad sin mezclar datos esperados o simulados;
+- `TREQ-PULSO-001`, `TREQ-PULSO-005` y `TREQ-PULSO-006` para flujo E2E y separación entre venta, pago, caja, fiscalidad, inventario y demás efectos;
+- `TREQ-INTEGRATION-003` para identidad estable, huella, resultado recuperable, retry, conflicto y resultado desconocido;
+- `TREQ-INTEGRATION-014` para convergencia del POS externo y PULSO y efectos exactamente una vez;
+- `TREQ-INTEGRATION-017` para hechos económicos NUMERA versionados, correlacionados e idempotentes;
+- la cobertura transversal de `INT-APP-001..010` para productoras, consumidoras, envelope, idempotencia, retry, compensación y conciliación.
+
+Esta enumeración es trazabilidad reutilizada y no modifica el Registro 04A.
+
+---
+
+#### 88. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no se ejecutó build de producto para preparar este artefacto. |
+| LOCAL | NOT_EXECUTED | No se insertó el artefacto en un checkout local durante esta preparación anticipada. |
+| REMOTA | PASS | Se verificaron `vento-shell` remoto vigente, continuidad PULSO, topología `DEFINE_ONCE`, `INT-POS-017`, `INT-SALES-004`, Registro 04A relevante y runtime actual de `vento-numera`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon ventas, hechos económicos, pagos, asientos, cartera, compensaciones ni conciliaciones reales. |
+| FÍSICA | NOT_APPLICABLE | `NO_PHYSICAL_INSTANCE`; esta tarea no posee materialización física propia. |
+
+---
+
+#### 89. Decisiones congeladas
+
+1. PULSO afirma venta; NUMERA afirma hecho económico.
+2. `SALE_ECONOMIC_FACT` se reutiliza; no se crea otro evento normal.
+3. Inbox NUMERA = `numera + event_id`.
+4. Effect NUMERA = `numera + event_id + SALE_ECONOMIC_FACT`.
+5. Venta, pago, caja, fiscalidad, cartera, banco y asiento permanecen separados.
+6. NUMERA decide materialidad.
+7. PULSO no impone moneda, centro, tercero, periodo ni asiento.
+8. Retry conserva identidad.
+9. Unknown exige consulta/conciliación.
+10. Compensación preserva original.
+11. NEXO, NUMERA y PASS son consumidoras independientes.
+12. La UI solo proyecta estado mínimo y no crea verdad financiera.
+13. `expected_revenue` actual no equivale a ingreso realizado.
+14. El hardcode visual `COP` no es autoridad de moneda.
+15. `NUMERA-DOM-002` conserva el modelo detallado de hechos recibidos desde ventas.
+
+---
+
+#### 90. Criterios de aceptación
+
+- [ ] El título y continuidad son exactos.
+- [ ] La tarea permanece `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`.
+- [ ] PULSO conserva ownership de venta y evento.
+- [ ] NUMERA conserva ownership del hecho económico.
+- [ ] `SALE_ECONOMIC_FACT` se reutiliza sin crear definición paralela.
+- [ ] Inbox y consumer effect tienen identidades separadas y estables.
+- [ ] La entrega a NUMERA no equivale a efecto aplicado.
+- [ ] La puerta de materialidad es explícita.
+- [ ] Venta, pago, caja, fiscalidad, cartera, banco y asiento permanecen separados.
+- [ ] Moneda no se infiere desde UI.
+- [ ] Centro de costo no se inventa desde sede/terminal.
+- [ ] Consumidor final no obliga a crear cliente artificial.
+- [ ] Producto pendiente no se inventa ni se elimina del expediente.
+- [ ] Liberar mapping no duplica ingreso.
+- [ ] NEXO y PASS no prueban resultado NUMERA.
+- [ ] Retry conserva `event_id`, effect code y huella.
+- [ ] Timeout no se interpreta como ausencia del efecto.
+- [ ] Resultado desconocido bloquea retry ciego.
+- [ ] Replay/backfill no crean ingreso duplicado.
+- [ ] Compensaciones son no destructivas.
+- [ ] PULSO puede presentar estado mínimo sin exponer ledger sensible.
+- [ ] Runtime actual se clasifica como capacidad analítica parcial, no integración E2E demostrada.
+- [ ] No se crean/modifican `TREQ-*`.
+- [ ] `PULSO-UX-018` permanece como única siguiente tarea reservada.
+
+---
+
+#### 91. Límites
+
+Esta tarea no:
+
+- crea tablas;
+- crea RPC;
+- crea Server Actions;
+- modifica Supabase;
+- crea outbox/inbox físicos;
+- crea `SALE_ECONOMIC_FACT` real;
+- registra ingresos reales;
+- crea asientos;
+- crea cartera;
+- concilia bancos;
+- emite documentos fiscales;
+- calcula impuestos oficiales;
+- calcula costo real;
+- crea PermissionKeys;
+- modifica roles o grants;
+- despliega código;
+- implementa `NUMERA-DOM-002`;
+- desarrolla `PULSO-UX-018`.
+
+---
+
+#### 92. Resultado de la tarea
+
+`PULSO-UX-017` deja definida la experiencia y frontera de integración PULSO→NUMERA como proyección segura de un efecto económico propietario:
+
+```text
+VENTA PULSO DURABLE
+→ EVENTO PULSO APLICABLE
+→ INBOX NUMERA
+→ MATERIALIDAD NUMERA
+→ SALE_ECONOMIC_FACT
+→ RESULTADO DURABLE
+→ CONCILIACION
+```
+
+Sin convertir PULSO en ledger financiero, sin confundir pago con ingreso y sin afirmar que la implementación física actual ya satisface el contrato.
+
+---
+
+#### 93. Handoff inmediato a PULSO-UX-018
+
+`PULSO-UX-018 — Conectar venta con PASS` recibe:
+
+```text
+VENTA Y EVENTO PULSO CONSERVAN IDENTIDAD ESTABLE
+NEXO Y NUMERA TIENEN EFECTOS INDEPENDIENTES
+NINGUN EFECTO DOWNSTREAM PRUEBA OTRO DOMINIO
+RETRY CONSERVA IDENTIDAD POR CONSUMIDORA
+RESULTADO DESCONOCIDO SE RECONCILIA ANTES DE REEJECUTAR
+COMPENSACIONES CONSERVAN ORIGINAL Y CAUSALIDAD
+UI PUEDE MOSTRAR ESTADO SIN CREAR LEDGER AJENO
+```
+
+La 018 conserva PASS como propietaria de ledger, saldo, regla, acumulación y redención.
+
+---
+
+#### 94. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PULSO-UX-016 — Conectar venta con inventario`
+
+**TAREA ACTUAL APROBADA**
+`PULSO-UX-017 — Conectar venta con NUMERA`
+
+**SIGUIENTE TAREA RESERVADA**
+`PULSO-UX-018 — Conectar venta con PASS`
 ### [ ] PULSO-UX-018 — Conectar venta con PASS
 ### [ ] PULSO-UX-019 — Validar el prototipo con caja, salón, barra, cocina y mostrador
 ### [ ] PULSO-UX-020 — Auditar el prototipo POS histórico de vento-platform y clasificar cada pieza como reutilizable, adaptable o descartable
