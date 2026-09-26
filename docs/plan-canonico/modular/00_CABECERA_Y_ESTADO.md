@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1361** |
+| Tareas aprobadas | **1362** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **235** |
+| Tareas no iniciadas | **234** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **85.28% (1361/1596)** |
+| Porcentaje de completamiento | **85.34% (1362/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PULSO-AUTH-007 — Definir permisos de supervisor** |
-| Tarea actual | **PULSO-AUTH-008 — Definir permisos de cierre y anulación** |
+| Última tarea aprobada | **PULSO-AUTH-008 — Definir permisos de cierre y anulación** |
+| Tarea actual | **PULSO-AUTH-009 — Proteger acumulación de puntos** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PULSO-AUTH-009 — Proteger acumulación de puntos** |
+| Siguiente tarea | **PULSO-AUTH-010 — Proteger redenciones** |
 | Bloque actual | **BLOQUE N — PULSO** |
-| Progreso del bloque | **BLOQUE N: 9 de 38 aprobadas; PULSO-AUTH-008 pendiente** |
+| Progreso del bloque | **BLOQUE N: 10 de 38 aprobadas; PULSO-AUTH-009 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PULSO-AUTH-008** |
+| Carril documental | **ACTIVO — PULSO-AUTH-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PULSO-AUTH-007` — Definir permisos de supervisor |
-| Tarea actual | `PULSO-AUTH-008` — Definir permisos de cierre y anulación — **NO INICIADA** |
-| Siguiente tarea | `PULSO-AUTH-009` — Proteger acumulación de puntos |
+| Última aprobada | `PULSO-AUTH-008` — Definir permisos de cierre y anulación |
+| Tarea actual | `PULSO-AUTH-009` — Proteger acumulación de puntos — **NO INICIADA** |
+| Siguiente tarea | `PULSO-AUTH-010` — Proteger redenciones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE N: 9 DE 38 APROBADAS — ACTUAL PULSO-AUTH-008** |
+| CONTINUIDAD ACTIVA | **BLOQUE N: 10 DE 38 APROBADAS — ACTUAL PULSO-AUTH-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PULSO-AUTH-007 — Definir permisos de supervisor
-        ↓
-TAREA ACTUAL
 PULSO-AUTH-008 — Definir permisos de cierre y anulación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PULSO-AUTH-009 — Proteger acumulación de puntos
         ↓
+SIGUIENTE TAREA RESERVADA
+PULSO-AUTH-010 — Proteger redenciones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE N — 9 de 38 tareas aprobadas
+BLOQUE N — 10 de 38 tareas aprobadas
 ```
