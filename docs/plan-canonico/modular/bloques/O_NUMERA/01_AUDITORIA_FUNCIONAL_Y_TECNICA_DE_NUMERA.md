@@ -2593,7 +2593,1420 @@ LINEAGE
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente`
-### [ ] NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente
+### ✅ NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados
+**Tarea siguiente:** NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes
+**Tipo de tarea:** inventario técnico-documental cerrado del estado AS-IS de persistencia, vistas derivadas, relaciones transitivas consumidas por RPC, eventos técnicos y sistemas fuente observados de NUMERA, diferenciando origen, autoridad actual y contratos objetivo sin clasificar todavía completitud funcional; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, tablas, vistas, RPC, triggers, Realtime, RLS, grants, migraciones, datos, eventos, integraciones, jobs ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma reproducible las relaciones físicas y derivadas que NUMERA consume hoy, los recursos transitivos alcanzados por sus RPC, los eventos técnicos asociados y los sistemas que actúan como fuente actual o fuente canónica declarada.
+
+El resultado debe separar:
+
+- persistencia propia de NUMERA;
+- datos maestros compartidos;
+- contexto operativo y de autorización;
+- vistas y agregados derivados;
+- eventos de base de datos;
+- publicación o consumo Realtime;
+- sistemas fuente actualmente conectados;
+- sistemas fuente declarados por contratos canónicos pero todavía no consumidos físicamente;
+- relaciones económicas existentes fuera del consumo actual de `vento-numera`.
+
+Este inventario describe identidad, dependencia y procedencia. No decide todavía si un módulo está completo, parcial, en prototipo o ausente.
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-002
+
+La tarea anterior entrega como universo técnico mínimo:
+
+```text
+18 NOMBRES LITERALES EN .from(...)
+5 RPC LITERALES UNICOS
+2 SERVER ACTIONS
+5 MUTACIONES POSTGREST
+25 LECTURAS POSTGREST
+1 MUTACION CLIENTE DE PREFERENCIA
+1 FLUJO DE SINCRONIZACION DE NAVEGACION
+0 API ROUTES
+0 CRON NUMERA CONFIRMADO
+```
+
+Y reserva para esta tarea:
+
+```text
+TABLAS
+VISTAS
+EVENTOS
+SISTEMAS FUENTE
+AUTORIDAD
+RELACIONES
+LINEAGE
+```
+
+Por tanto, `NUMERA-AUD-003` no vuelve a contar superficies web, formularios, Server Actions o callsites salvo cuando son necesarios para demostrar procedencia y autoridad de datos.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `NUMERA-AUD-001..012` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+- el inventario se define una sola vez;
+- no crea instancia física propia;
+- no modifica código ni datos;
+- no ejecuta RPC de negocio;
+- no dispara triggers deliberadamente;
+- no publica relaciones en Realtime;
+- no cambia contratos de fuente;
+- no define todavía el modelo financiero objetivo.
+
+---
+
+#### 4. Fuentes verificadas
+
+La tarea se reconcilia contra:
+
+- `NUMERA-AUD-001` aprobado y publicado;
+- `NUMERA-AUD-002` aprobado por el usuario como base inmediata todavía pendiente de publicación al preparar esta sucesora;
+- archivo propietario de `NUMERA-AUD-*`;
+- `04A_13_NUMERA.md`;
+- `01_PROTOCOLO.md`;
+- `manifest.json`;
+- `continuity-route.json`;
+- `execution-route.json`;
+- `active-sequence.json`;
+- `task-work-topology.json`;
+- `task-format-policy.json`;
+- `task-development-policy.json`;
+- `package.json` de `vento-shell`;
+- snapshot actual de `vento-numera/main`;
+- consultas y RPC inventariados en `NUMERA-AUD-002`;
+- metadatos remotos de PostgreSQL/Supabase del proyecto VENTO observado;
+- definición remota de la vista `numera_cost_center_monthly_summary`;
+- definición remota de `numera_current_period_summary` y RPC de autorización, contexto y navegación consumidos;
+- foreign keys de las relaciones directas;
+- triggers habilitados sobre las relaciones directas;
+- publicación `supabase_realtime`;
+- contratos canónicos de integración y dominio que declaran fuentes operativas para NUMERA;
+- auditorías técnicas previas utilizadas únicamente como evidencia histórica contrastada nuevamente contra remoto.
+
+---
+
+#### 5. Snapshot actual de `vento-numera`
+
+El inventario de aplicación se fija en:
+
+```text
+repository = vento-group-sas/vento-numera
+commit = c4d50282e30e46d0abb3d871f9604cf913ebbabd
+```
+
+No se observó cambio del código de producto respecto del snapshot consumido por `NUMERA-AUD-001` y `NUMERA-AUD-002`.
+
+---
+
+#### 6. Proyecto Supabase observado
+
+La evidencia remota corresponde al proyecto VENTO actualmente accesible y saludable usado por las auditorías canónicas.
+
+Las consultas ejecutadas para esta tarea fueron de solo lectura de metadatos y agregados.
+
+No se ejecutó DDL, DML, RPC de negocio, Edge Function, job, trigger manual ni modificación de configuración.
+
+---
+
+#### 7. Contrato del inventario
+
+Se distinguen cuatro niveles:
+
+```text
+DIRECT_RELATION
+TRANSITIVE_RPC_RELATION
+DERIVED_RELATION
+DECLARED_SOURCE_SYSTEM
+```
+
+Definiciones:
+
+- `DIRECT_RELATION`: nombre literal usado por `.from(...)` en `vento-numera`;
+- `TRANSITIVE_RPC_RELATION`: relación leída o escrita dentro de una RPC consumida por NUMERA o por helpers inmediatos de autorización/contexto;
+- `DERIVED_RELATION`: vista o función que agrega datos y no constituye el hecho fuente original;
+- `DECLARED_SOURCE_SYSTEM`: aplicación o dominio reconocido canónicamente como emisor de hechos que NUMERA debe consumir, aunque el consumidor físico todavía no exista.
+
+---
+
+#### 8. Frontera de certeza
+
+La tarea diferencia expresamente:
+
+```text
+EXISTE RELACION
+!=
+ES FUENTE DE VERDAD
+```
+
+```text
+ES LEIDA POR NUMERA
+!=
+NUMERA ES SU PROPIETARIO FUNCIONAL
+```
+
+```text
+EXISTE TRIGGER
+!=
+EXISTE EVENTO EMPRESARIAL CONSUMIDO POR NUMERA
+```
+
+```text
+SISTEMA FUENTE DECLARADO
+!=
+INTEGRACION FISICA ACTUAL
+```
+
+Las decisiones de propiedad funcional futura que pertenecen a `NUMERA-DOM-*` no se anticipan.
+
+---
+
+#### 9. Universo directo heredado
+
+`NUMERA-AUD-002` identifica exactamente dieciocho relaciones literales consumidas mediante `.from(...)`:
+
+```text
+app_navigation_items
+app_screen_registry
+areas
+attendance_logs
+cost_centers
+employee_settings
+employee_shifts
+employee_sites
+employees
+numera_cost_center_budgets
+numera_cost_center_monthly_summary
+numera_expense_categories
+numera_expenses
+numera_periods
+role_permissions
+shared_operational_device_apps
+shared_operational_devices
+sites
+```
+
+Cardinalidad congelada:
+
+```text
+DIRECT_FROM_RELATIONS = 18
+```
+
+---
+
+#### 10. Tipo físico de las dieciocho relaciones directas
+
+El contraste remoto determina:
+
+```text
+DIRECT_TABLES = 17
+DIRECT_VIEWS = 1
+DIRECT_MATERIALIZED_VIEWS = 0
+DIRECT_FOREIGN_TABLES = 0
+DIRECT_SCHEMA_PUBLIC = 18
+```
+
+La única vista directa es:
+
+```text
+public.numera_cost_center_monthly_summary
+```
+
+Las otras diecisiete identidades son tablas físicas de `public`.
+
+---
+
+#### 11. Relaciones transitivas descubiertas dentro de RPC
+
+Al expandir las cinco RPC consumidas y sus helpers inmediatos se observan seis tablas compartidas adicionales que no aparecían como `.from(...)` literal del repositorio:
+
+```text
+apps
+app_permissions
+employee_permissions
+site_operational_roles
+operational_role_permissions
+employee_areas
+```
+
+Todas existen como tablas `public` con RLS habilitada.
+
+Estas relaciones pertenecen a navegación, permisos, asignación territorial y contexto operativo; no son hechos económicos NUMERA.
+
+---
+
+#### 12. Cardinalidad física expandida
+
+El universo físico único alcanzado por consumo directo más dependencia RPC queda:
+
+```text
+DIRECT_RELATIONS = 18
+TRANSITIVE_RPC_ADDITIONAL_RELATIONS = 6
+EXPANDED_UNIQUE_RELATIONS = 24
+EXPANDED_TABLES = 23
+EXPANDED_VIEWS = 1
+```
+
+No se cuentan funciones como relaciones físicas.
+
+---
+
+#### 13. Matriz de relaciones directas
+
+| Relación | Tipo | Clase de fuente observada | Uso desde NUMERA |
+| --- | --- | --- | --- |
+| `app_navigation_items` | TABLE | navegación compartida | lectura runtime y sincronización |
+| `app_screen_registry` | TABLE | registro compartido de superficies | sincronización |
+| `areas` | TABLE | maestro organizacional compartido | contexto territorial |
+| `attendance_logs` | TABLE | evento operativo de asistencia | contexto de jornada |
+| `cost_centers` | TABLE | maestro económico compartido | dimensión financiera |
+| `employee_settings` | TABLE | preferencia/contexto de trabajador | sede seleccionada |
+| `employee_shifts` | TABLE | programación laboral | contexto de jornada |
+| `employee_sites` | TABLE | asignación trabajador-sede | contexto territorial |
+| `employees` | TABLE | maestro de trabajador | identidad y rol |
+| `numera_cost_center_budgets` | TABLE | persistencia económica NUMERA | presupuesto/meta |
+| `numera_cost_center_monthly_summary` | VIEW | proyección derivada NUMERA | analítica agregada |
+| `numera_expense_categories` | TABLE | catálogo económico NUMERA | clasificación de gasto |
+| `numera_expenses` | TABLE | persistencia económica NUMERA | gasto/hecho capturado |
+| `numera_periods` | TABLE | periodo económico NUMERA | dimensión temporal |
+| `role_permissions` | TABLE | autorización compartida | simulación/permiso base |
+| `shared_operational_device_apps` | TABLE | contexto de dispositivo compartido | apps habilitadas |
+| `shared_operational_devices` | TABLE | contexto de dispositivo compartido | sesión operativa |
+| `sites` | TABLE | maestro organizacional compartido | sede |
+
+---
+
+#### 14. Núcleo económico físico observado
+
+Las relaciones que hoy forman el núcleo económico directamente consumido por las pantallas NUMERA son:
+
+```text
+public.cost_centers
+public.numera_periods
+public.numera_expense_categories
+public.numera_expenses
+public.numera_cost_center_budgets
+public.numera_cost_center_monthly_summary
+```
+
+Esto corresponde a cinco tablas base y una vista derivada.
+
+La función `numera_current_period_summary` añade una segunda capa derivada sobre la vista.
+
+---
+
+#### 15. Maestro económico compartido
+
+`public.cost_centers` es una tabla física compartida vinculada opcionalmente a `sites`.
+
+El comentario remoto la describe como centros de costo internos utilizados para asociar sedes, producción, satélites, logística o administración con responsabilidad económica.
+
+Esta tarea la clasifica como:
+
+```text
+SHARED_ECONOMIC_MASTER_CURRENT
+```
+
+No fija propiedad funcional definitiva porque `NUMERA-DOM-006` conserva la definición canónica de propiedad del catálogo de centros de costo.
+
+---
+
+#### 16. Contexto organizacional compartido
+
+Las relaciones:
+
+```text
+sites
+areas
+```
+
+son maestros organizacionales compartidos.
+
+NUMERA los usa como contexto y dimensión, no como ledger financiero propio.
+
+`areas.site_id` referencia `sites.id`.
+
+---
+
+#### 17. Contexto laboral y operativo compartido
+
+Las relaciones:
+
+```text
+employees
+employee_sites
+employee_settings
+employee_shifts
+attendance_logs
+employee_areas
+```
+
+aportan identidad, asignación territorial, preferencia de sede, turno activo y contexto de jornada.
+
+NUMERA consume este contexto para autorización y experiencia operativa; no convierte esos registros en hechos financieros.
+
+---
+
+#### 18. Autorización, navegación y dispositivo compartidos
+
+Las relaciones:
+
+```text
+apps
+app_permissions
+role_permissions
+employee_permissions
+site_operational_roles
+operational_role_permissions
+app_navigation_items
+app_screen_registry
+shared_operational_devices
+shared_operational_device_apps
+```
+
+pertenecen a plataforma, autorización, navegación o dispositivo compartido.
+
+Su presencia en el lineage técnico de NUMERA no les asigna propiedad económica.
+
+---
+
+#### 19. Vista `numera_cost_center_monthly_summary`
+
+La vista remota se deriva de exactamente estas cinco relaciones base:
+
+```text
+numera_periods
+cost_centers
+numera_cost_center_budgets
+numera_expenses
+numera_expense_categories
+```
+
+La vista:
+
+- cruza cada periodo con centros de costo activos;
+- incorpora presupuesto, ingreso esperado y margen objetivo;
+- agrega gastos reales;
+- separa gastos `fixed`, `variable` y `one_time`;
+- calcula variación presupuestal;
+- calcula punto de equilibrio cuando existe margen objetivo válido.
+
+Por tanto:
+
+```text
+numera_cost_center_monthly_summary = DERIVED_READ_MODEL
+```
+
+No es fuente primaria editable.
+
+---
+
+#### 20. RPC `numera_current_period_summary`
+
+La función:
+
+```text
+public.numera_current_period_summary()
+```
+
+lee:
+
+```text
+public.numera_periods
+public.numera_cost_center_monthly_summary
+```
+
+selecciona el periodo del mes actual y agrega centros, presupuesto, ingreso esperado, gastos y equilibrio.
+
+Se clasifica como:
+
+```text
+DERIVED_AGGREGATE_RPC
+```
+
+No crea un hecho económico nuevo.
+
+---
+
+#### 21. Tabla `numera_periods`
+
+`numera_periods` conserva:
+
+- identidad del periodo;
+- mes;
+- etiqueta;
+- estado;
+- timestamps.
+
+En el snapshot remoto existen:
+
+```text
+NUMERA_PERIOD_ROWS = 1
+NUMERA_PERIOD_OPEN_ROWS = 1
+```
+
+No se localizó en el repositorio actual de NUMERA una superficie de administración equivalente a un ledger de cierre completo; esa clasificación pertenece a tareas posteriores.
+
+---
+
+#### 22. Tabla `numera_expense_categories`
+
+El catálogo físico contiene siete filas:
+
+```text
+NUMERA_EXPENSE_CATEGORY_ROWS = 7
+FIXED = 3
+VARIABLE = 3
+ONE_TIME = 1
+```
+
+La categoría participa directamente en la clasificación de agregados de la vista mensual.
+
+---
+
+#### 23. Tabla `numera_expenses`
+
+La tabla conserva:
+
+- periodo;
+- centro de costo opcional;
+- sede opcional;
+- categoría;
+- fecha;
+- descripción;
+- importe;
+- moneda;
+- `source_app`;
+- `source_table`;
+- `source_id`;
+- `metadata`;
+- actor creador;
+- timestamps.
+
+En el snapshot remoto:
+
+```text
+NUMERA_EXPENSE_ROWS = 0
+```
+
+Por tanto no existe una población actual que permita demostrar un sistema externo efectivamente materializado mediante `source_app/source_table/source_id`.
+
+---
+
+#### 24. Tabla `numera_cost_center_budgets`
+
+La tabla relaciona:
+
+```text
+period_id -> numera_periods.id
+cost_center_id -> cost_centers.id
+```
+
+Y conserva:
+
+- presupuesto;
+- ingreso esperado;
+- margen bruto objetivo;
+- notas;
+- actor creador;
+- timestamps.
+
+En el snapshot remoto:
+
+```text
+NUMERA_BUDGET_ROWS = 0
+```
+
+---
+
+#### 25. Tabla `cost_centers`
+
+`cost_centers` conserva seis filas en el snapshot remoto:
+
+```text
+COST_CENTER_ROWS = 6
+```
+
+Su FK territorial es:
+
+```text
+cost_centers.site_id -> sites.id
+```
+
+La tabla participa como dimensión de presupuesto, gasto y analítica.
+
+La auditoría histórica verificó además una semilla idempotente desde sedes, pero esta tarea no convierte ese antecedente en propiedad funcional futura.
+
+---
+
+#### 26. Lineage de la vista mensual
+
+El lineage observable es:
+
+```text
+numera_periods
+        +
+cost_centers
+        +
+numera_cost_center_budgets
+        +
+numera_expenses
+        +
+numera_expense_categories
+        ↓
+numera_cost_center_monthly_summary
+        ↓
+numera_current_period_summary
+```
+
+Las dos últimas superficies son derivadas y no deben editarse como fuente.
+
+---
+
+#### 27. Snapshot cuantitativo de las dieciocho relaciones directas
+
+| Relación | Filas observadas |
+| --- | ---: |
+| `app_navigation_items` | 71 |
+| `app_screen_registry` | 81 |
+| `areas` | 22 |
+| `attendance_logs` | 6757 |
+| `cost_centers` | 6 |
+| `employee_settings` | 63 |
+| `employee_shifts` | 4308 |
+| `employee_sites` | 93 |
+| `employees` | 63 |
+| `numera_cost_center_budgets` | 0 |
+| `numera_cost_center_monthly_summary` | 6 |
+| `numera_expense_categories` | 7 |
+| `numera_expenses` | 0 |
+| `numera_periods` | 1 |
+| `role_permissions` | 613 |
+| `shared_operational_device_apps` | 4 |
+| `shared_operational_devices` | 2 |
+| `sites` | 7 |
+
+Los conteos son evidencia de corte, no requisitos de cardinalidad permanente.
+
+---
+
+#### 28. Estado de la fundación económica
+
+El estado remoto observado combina:
+
+```text
+6 centros de costo
+1 periodo abierto
+7 categorias de gasto
+0 gastos
+0 presupuestos
+6 filas derivadas de resumen
+```
+
+La existencia de filas derivadas con cero gastos y presupuestos es explicable por el `CROSS JOIN` de periodos y centros de costo de la vista.
+
+No demuestra actividad económica registrada.
+
+---
+
+#### 29. Campos de origen de gastos
+
+`numera_expenses` dispone de:
+
+```text
+source_app
+source_table
+source_id
+metadata
+```
+
+Estos campos habilitan lineage técnico potencial.
+
+Como la tabla contiene cero filas, no existe evidencia remota actual que permita enumerar valores efectivos de `source_app` o `source_table`.
+
+---
+
+#### 30. Productor actual de captura manual
+
+La Server Action `createExpense` observada en `NUMERA-AUD-002` escribe:
+
+```text
+currency = COP
+source_app = numera
+```
+
+Por tanto, para el flujo manual implementado:
+
+```text
+CURRENT_MANUAL_EXPENSE_PRODUCER = NUMERA
+```
+
+Esto no sustituye un evento económico canónico recibido desde otro dominio.
+
+---
+
+#### 31. Productor actual de presupuesto
+
+La Server Action `upsertBudget` escribe directamente `numera_cost_center_budgets`.
+
+Por tanto:
+
+```text
+CURRENT_BUDGET_PRODUCER = NUMERA
+```
+
+La tabla presupuestal es persistencia propia del flujo actual, mientras `cost_centers` sigue siendo dimensión compartida.
+
+---
+
+#### 32. Sistemas fuente actuales conectados
+
+Para las métricas visibles del repositorio actual, las fuentes físicas efectivamente conectadas son:
+
+1. persistencia económica propia `numera_*`;
+2. maestro compartido `cost_centers`;
+3. maestros organizacionales `sites` y `areas`;
+4. contexto laboral/operativo compartido;
+5. autorización, navegación y dispositivo compartidos.
+
+No se observa un consumidor de hechos económicos provenientes directamente de otro repositorio VENTO.
+
+---
+
+#### 33. Sistemas fuente canónicos declarados
+
+La continuidad canónica posterior declara explícitamente que NUMERA deberá consumir eventos de:
+
+```text
+PULSO
+ORIGO
+FOGO
+NEXO
+```
+
+Cardinalidad:
+
+```text
+DECLARED_OPERATIONAL_SOURCE_SYSTEMS = 4
+```
+
+Esta tarea conserva esa declaración sin presentarla como integración actual.
+
+---
+
+#### 34. PULSO como fuente declarada
+
+PULSO conserva los hechos comerciales de venta y debe emitir contratos o eventos correlacionados hacia consumidores financieros.
+
+Frontera heredada:
+
+```text
+PULSO CONSERVA HECHOS COMERCIALES
+NUMERA CONSERVA HECHOS ECONOMICOS Y CONCILIACION
+NUMERA NO RECONSTRUYE LA VENTA COMO SEGUNDA FUENTE
+```
+
+En el snapshot actual de `vento-numera` no existe consumidor físico identificado de eventos PULSO.
+
+---
+
+#### 35. ORIGO como fuente declarada
+
+Los contratos de integración vigentes reservan a ORIGO la recepción comercial/documental y a NUMERA el reconocimiento económico correlacionado.
+
+La recepción comercial no es propiedad de NUMERA.
+
+En el snapshot actual no se observa una superficie NUMERA que consuma de extremo a extremo el evento económico derivado de recepción.
+
+---
+
+#### 36. FOGO como fuente declarada
+
+Las tareas de dominio NUMERA reservan hechos económicos provenientes de producción.
+
+FOGO es fuente operativa declarada para producción; NUMERA no debe reescribir lotes o producción como si fueran hechos propios.
+
+No se observa un consumidor FOGO específico en el repositorio NUMERA actual.
+
+---
+
+#### 37. NEXO como fuente declarada
+
+NEXO conserva inventario, custodia y efectos físicos asociados a movimientos y variaciones.
+
+Los contratos vigentes separan:
+
+```text
+EFECTO FISICO NEXO
+!=
+HECHO ECONOMICO NUMERA
+```
+
+No se observa un consumidor NEXO específico en el repositorio NUMERA actual.
+
+---
+
+#### 38. Fuentes externas directas
+
+No se observan en `vento-numera`:
+
+- clientes HTTP de sistemas financieros externos;
+- webhooks propios;
+- API routes de ingestión;
+- Edge Functions invocadas;
+- suscripciones Realtime;
+- importadores Excel;
+- consumidores Makos, Shopify, Rappi o ManyChat.
+
+Por tanto:
+
+```text
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED = 0
+```
+
+Una fuente externa mediada por otra aplicación no se convierte en integración directa de NUMERA.
+
+---
+
+#### 39. Relaciones económicas remotas adyacentes no consumidas por NUMERA actual
+
+El proyecto remoto contiene además relaciones económicas relevantes que no forman parte de las dieciocho relaciones directas ni son consumidas por el código NUMERA actual:
+
+```text
+public.inventory_cost_policies
+public.product_cost_events
+public.internal_price_lists
+public.internal_price_list_items
+public.internal_pos_documents
+public.internal_pos_document_lines
+payments.transactions
+club.wallet_accounts
+club.wallet_ledger
+```
+
+Estas identidades se registran como:
+
+```text
+ADJACENT_ECONOMIC_SOURCES_NOT_CURRENTLY_CONSUMED
+```
+
+No se incorporan artificialmente al lineage actual de las pantallas NUMERA.
+
+---
+
+#### 40. Estado remoto de fuentes económicas adyacentes
+
+Conteos observados:
+
+```text
+inventory_cost_policies = 5
+product_cost_events = 4
+internal_price_lists = 3
+internal_price_list_items = 1
+internal_pos_documents = 0
+internal_pos_document_lines = 0
+payments.transactions = 7
+club.wallet_accounts = 0
+club.wallet_ledger = 0
+```
+
+Estos conteos demuestran existencia y población parcial de fuentes económicas adyacentes, no consumo por NUMERA.
+
+---
+
+#### 41. Taxonomía de eventos
+
+Se distinguen:
+
+```text
+DATABASE_TRIGGER_EVENT
+REALTIME_PUBLICATION_EVENT
+APPLICATION_EVENT_CONSUMPTION
+DOMAIN_ECONOMIC_EVENT
+```
+
+Un trigger de `updated_at` pertenece a `DATABASE_TRIGGER_EVENT` y no se eleva por inferencia a `DOMAIN_ECONOMIC_EVENT`.
+
+---
+
+#### 42. Triggers sobre las relaciones directas
+
+El contraste remoto identifica:
+
+```text
+ENABLED_TRIGGERS_ON_DIRECT_RELATIONS = 20
+DIRECT_RELATIONS_WITH_ENABLED_TRIGGERS = 12
+```
+
+Las familias observadas cubren:
+
+- actualización automática de timestamps;
+- validación y resolución de asistencia;
+- sincronización trabajador-sede;
+- validación de rol/sede;
+- límites de publicación de turnos;
+- validación de dispositivo compartido.
+
+---
+
+#### 43. Triggers propios de tablas `numera_*`
+
+Las cuatro tablas mutables NUMERA observadas tienen triggers de actualización temporal:
+
+```text
+numera_periods -> trg_numera_periods_updated_at
+numera_expense_categories -> trg_numera_expense_categories_updated_at
+numera_expenses -> trg_numera_expenses_updated_at
+numera_cost_center_budgets -> trg_numera_budgets_updated_at
+```
+
+Todos ejecutan `set_numera_updated_at` antes de `UPDATE`.
+
+No se observó en estas cuatro tablas un trigger que emita por sí mismo un evento empresarial de integración.
+
+---
+
+#### 44. Triggers de contexto compartido
+
+Entre los triggers no económicos usados indirectamente por NUMERA se observan familias para:
+
+- geocerca y secuencia de `attendance_logs`;
+- resolución de turno;
+- sincronización `employees` ↔ `employee_sites`;
+- restricción de asignación a sedes ocultas;
+- control de publicación de turnos;
+- consistencia sede-área de dispositivo compartido;
+- timestamps de navegación y maestros.
+
+Estos eventos mantienen contexto operativo, no reconocimiento financiero.
+
+---
+
+#### 45. Interpretación de triggers
+
+La evidencia permite afirmar:
+
+```text
+DATABASE_TRIGGER_COVERAGE_PRESENT = YES
+NUMERA_DOMAIN_EVENT_EMISSION_CONFIRMED_BY_LOCAL_TRIGGERS = NO
+```
+
+La primera afirmación describe automatización interna de base.
+
+La segunda evita confundir timestamps o validadores con contratos económicos interaplicación.
+
+---
+
+#### 46. Publicación Realtime
+
+Ninguna de las diecisiete tablas directas consumidas por NUMERA pertenece actualmente a la publicación `supabase_realtime`.
+
+```text
+DIRECT_TABLES_IN_SUPABASE_REALTIME = 0
+DIRECT_TABLES_TOTAL = 17
+```
+
+La vista derivada no se trata como tabla publicable para Postgres Changes.
+
+---
+
+#### 47. Consumo Realtime en `vento-numera`
+
+La búsqueda del snapshot actual no encuentra:
+
+```text
+postgres_changes
+.channel(...)
+```
+
+Resultado:
+
+```text
+NUMERA_REALTIME_SUBSCRIPTIONS_OBSERVED = 0
+```
+
+---
+
+#### 48. Otros canales de ingestión de eventos
+
+Combinando esta tarea con `NUMERA-AUD-002`:
+
+```text
+APP_ROUTER_API_ROUTES = 0
+DIRECT_EDGE_FUNCTION_INVOCATIONS = 0
+NUMERA_PG_CRON_JOBS = 0
+REALTIME_SUBSCRIPTIONS = 0
+```
+
+Por tanto no existe evidencia de un canal técnico alternativo que hoy materialice ingestión automática de eventos económicos en NUMERA.
+
+---
+
+#### 49. Cadena actual de gasto manual
+
+La cadena implementada observada es:
+
+```text
+USUARIO AUTORIZADO
+        ↓
+FORMULARIO /expenses
+        ↓
+createExpense
+        ↓
+public.numera_expenses
+        ↓
+public.numera_cost_center_monthly_summary
+        ↓
+PANTALLAS DE GASTO / EQUILIBRIO / RENTABILIDAD
+```
+
+Este flujo es captura propia de NUMERA.
+
+No equivale a recepción de un evento canónico externo.
+
+---
+
+#### 50. Cadena objetivo declarada de hechos económicos
+
+Los contratos canónicos posteriores preservan el patrón:
+
+```text
+DOMINIO OPERATIVO FUENTE
+        ↓
+EVENTO / CONTRATO CORRELACIONADO
+        ↓
+NUMERA RECIBE SIN REESCRIBIR EL HECHO OPERATIVO
+        ↓
+CLASIFICA / RECONOCE / CONCILIA
+        ↓
+EFECTO ECONOMICO TRAZABLE
+```
+
+Los emisores declarados comprenden PULSO, ORIGO, FOGO y NEXO.
+
+Esta tarea no materializa el patrón.
+
+---
+
+#### 51. Foreign keys del núcleo económico
+
+Las relaciones explícitas son:
+
+```text
+numera_cost_center_budgets.period_id -> numera_periods.id
+numera_cost_center_budgets.cost_center_id -> cost_centers.id
+numera_expenses.period_id -> numera_periods.id
+numera_expenses.category_id -> numera_expense_categories.id
+numera_expenses.cost_center_id -> cost_centers.id
+numera_expenses.site_id -> sites.id
+cost_centers.site_id -> sites.id
+```
+
+Esto demuestra dependencia estructural entre periodo, categoría, centro, sede y hechos capturados.
+
+---
+
+#### 52. Relaciones de autorización y contexto
+
+El lineage técnico de autorización incorpora adicionalmente:
+
+```text
+has_permission
+-> employees
+-> apps
+-> app_permissions
+-> employee_permissions
+-> role_permissions
+-> employee_settings / employee_sites / employee_areas / sites / areas mediante helpers de alcance
+```
+
+Y el carril operativo incorpora:
+
+```text
+has_operational_role_permission
+-> areas
+-> site_operational_roles
+-> operational_role_permissions
+```
+
+Estas relaciones explican autoridad de acceso, no autoridad económica del dato.
+
+---
+
+#### 53. Autoridad observada por clase
+
+Se adoptan las siguientes etiquetas descriptivas:
+
+| Clase | Relaciones principales | Autoridad observada |
+| --- | --- | --- |
+| `NUMERA_DIRECT_WRITE` | `numera_expenses`, `numera_cost_center_budgets` | NUMERA escribe mediante sus Server Actions actuales |
+| `NUMERA_CONFIG_OR_PERIOD` | `numera_periods`, `numera_expense_categories` | persistencia NUMERA; no se localizó mutador UI equivalente en snapshot |
+| `DERIVED_NUMERA_READ_MODEL` | `numera_cost_center_monthly_summary`, `numera_current_period_summary` | derivada; nunca fuente primaria |
+| `SHARED_ECONOMIC_MASTER` | `cost_centers` | dimensión compartida; propiedad futura reservada |
+| `SHARED_ORG_MASTER` | `sites`, `areas` | contexto organizacional compartido |
+| `SHARED_WORKFORCE_CONTEXT` | `employees`, `employee_sites`, `employee_settings`, `employee_shifts`, `attendance_logs`, `employee_areas` | contexto laboral y operativo |
+| `SHARED_AUTH_NAV_DEVICE` | relaciones de apps, permisos, navegación y dispositivo | autoridad de acceso/contexto |
+
+---
+
+#### 54. Agregados no editables como fuente
+
+Se congela la regla:
+
+```text
+numera_cost_center_monthly_summary
+numera_current_period_summary
+```
+
+son proyecciones derivadas.
+
+No deben transformarse en origen editable de:
+
+- gastos;
+- presupuesto;
+- periodo;
+- centro de costo;
+- clasificación económica.
+
+---
+
+#### 55. Fuente y autoridad en `numera_expenses`
+
+La tabla permite referenciar un origen externo mediante campos de lineage, pero hoy la única escritura de aplicación localizada fija `source_app = numera`.
+
+Como existen cero filas remotas:
+
+```text
+CURRENT_EXTERNAL_EXPENSE_SOURCE_ROWS = 0
+```
+
+La tarea no asigna semántica final a `source_app/source_table/source_id`; esa reconciliación pertenece a contratos de dominio e integración posteriores.
+
+---
+
+#### 56. Riesgo estructural de doble fuente
+
+Existe una tensión documental observable entre:
+
+```text
+CAPTURA MANUAL ACTUAL
+```
+
+y el contrato posterior de:
+
+```text
+HECHO ECONOMICO RECIBIDO DESDE FUENTE OPERATIVA CANONICA
+```
+
+Esta tarea solo registra la coexistencia potencial.
+
+La detección de registros manuales duplicados frente a otros dominios pertenece a `NUMERA-AUD-007`.
+
+---
+
+#### 57. Cadena de fuente actual resumida
+
+Para el código actualmente ejecutable:
+
+```text
+NUMERA MANUAL / CONFIG
+        +
+MAESTROS COMPARTIDOS
+        +
+CONTEXTO DE AUTORIZACION Y OPERACION
+        ↓
+TABLAS NUMERA
+        ↓
+VISTA MENSUAL
+        ↓
+RPC DE RESUMEN
+        ↓
+UI NUMERA
+```
+
+No existe un paso físico de ingestión desde PULSO, ORIGO, FOGO o NEXO en este snapshot.
+
+---
+
+#### 58. Cadena de fuente objetivo preservada
+
+Sin desarrollar tareas futuras, se conserva la frontera canónica:
+
+```text
+PULSO -> hechos comerciales
+ORIGO -> compras / recepción comercial
+FOGO -> producción
+NEXO -> inventario / efectos físicos
+        ↓
+EVENTOS O CONTRATOS CORRELACIONADOS
+        ↓
+NUMERA -> hechos económicos y conciliación
+```
+
+La forma exacta de los contratos se mantiene en sus owners canónicos y no se redefine aquí.
+
+---
+
+#### 59. Hallazgos nuevos o ampliados
+
+| Hallazgo | Bloquea este inventario | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| las 18 relaciones directas son 17 tablas y 1 vista, todas en `public` | no | `NUMERA-AUD-004` | usar inventario como base de clasificación funcional |
+| las RPC agregan 6 tablas compartidas al lineage técnico | no | `NUMERA-AUTH-*` aplicable | conservar dependencias de autorización/contexto sin tratarlas como hechos económicos |
+| `numera_expenses` y `numera_cost_center_budgets` tienen cero filas | no | `NUMERA-AUD-004`, `NUMERA-AUD-005`, `NUMERA-AUD-009` | clasificar cobertura, datos y flujo sin inventar actividad |
+| existen 20 triggers habilitados sobre 12 relaciones directas, pero los cuatro triggers `numera_*` observados solo mantienen `updated_at` | no | `NUMERA-AUD-004`, dominio/integración posterior | distinguir automatización DB de evento empresarial |
+| ninguna tabla directa NUMERA está en `supabase_realtime` y el código no declara suscripciones | no | `NUMERA-AUD-004` + integración posterior | decidir necesidad real sin publicar tablas por inferencia |
+| PULSO, ORIGO, FOGO y NEXO están declarados como fuentes operativas objetivo, pero no hay consumidor físico actual localizado | no | `NUMERA-AUD-004`, `NUMERA-DOM-*`, `NUMERA-UX-014`, integración propietaria | clasificar brecha y luego materializar contrato propietario |
+| existen nueve relaciones económicas adyacentes con datos parciales fuera del consumo actual NUMERA | no | `NUMERA-AUD-004`, `NUMERA-AUD-006` a `NUMERA-AUD-009` | decidir relevancia, conciliación y fuente de verdad sin conectarlas por inferencia |
+| la captura manual actual puede coexistir con fuentes canónicas futuras | no | `NUMERA-AUD-007` | detectar y evitar doble registro contra otros dominios |
+
+No se crea una tarea administrativa nueva.
+
+---
+
+#### 60. Trabajo reservado a NUMERA-AUD-004
+
+`NUMERA-AUD-004` consumirá este inventario para clasificar capacidades como:
+
+```text
+COMPLETA
+PARCIAL
+PROTOTIPO
+AUSENTE
+```
+
+Esta tarea no aplica esas etiquetas a módulos o capacidades.
+
+En particular, no convierte automáticamente en “ausencia”:
+
+- cero gastos;
+- cero presupuestos;
+- cero API routes;
+- cero cron NUMERA;
+- cero Realtime;
+- falta de consumidor de los cuatro sistemas fuente declarados.
+
+---
+
+#### 61. Trabajo reservado a NUMERA-AUD-005 a NUMERA-AUD-010
+
+Se conservan propietarios posteriores:
+
+- `NUMERA-AUD-005`: datos simulados, hardcodes, TODO y lógica provisional;
+- `NUMERA-AUD-006`: reportes sin conciliación o sin fuente de verdad aprobada;
+- `NUMERA-AUD-007`: registros manuales duplicados frente a otros dominios;
+- `NUMERA-AUD-008`: cálculos de costos, margen, rentabilidad y equilibrio;
+- `NUMERA-AUD-009`: gastos, centros de costo, cierres y aprobaciones;
+- `NUMERA-AUD-010`: exportaciones, información sensible y trazabilidad.
+
+La presente tarea entrega evidencia; no absorbe esas decisiones.
+
+---
+
+#### 62. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea inventaría y clasifica técnicamente relaciones, vistas, triggers y fuentes ya existentes. No introduce una regla funcional nueva, un contrato de evento nuevo, una autorización nueva, un algoritmo financiero nuevo ni una mutación de datos.
+
+---
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación con PULSO, ORIGO, FOGO y NEXO y prohibición de doble registro manual;
+- `TREQ-NUMERA-002` para identidad de hecho económico, fuente, correlación, documento, periodos y no edición de agregados como fuente;
+- `TREQ-NUMERA-004` para fuente, método y entradas de costos, presupuestos, equilibrio y rentabilidad;
+- `TREQ-NUMERA-018` para origen explícito en creación de gastos;
+- `TREQ-NUMERA-019` y `TREQ-NUMERA-020` para equilibrio y rentabilidad sin convertir valores derivados en hechos confirmados;
+- `TREQ-NUMERA-022` para reconciliación idempotente de registro y navegación;
+- `TREQ-NUMERA-024` para delta explícito frente a la línea base aprobada.
+
+Esta sección es trazabilidad de cobertura vigente, no una actualización del registro.
+
+---
+
+#### 64. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea no ejecuta build del producto; esa responsabilidad permanece en `NUMERA-AUD-011`. |
+| LOCAL | NOT_EXECUTED | La validación estructural contra el checkout del usuario queda pendiente hasta incorporar el artefacto en su rama documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, snapshot de `vento-numera`, tipos de relación, RLS descriptiva, view/function definitions, foreign keys, triggers, publicación Realtime, conteos agregados y fuentes económicas adyacentes mediante consultas de solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó un flujo financiero, evento económico, Server Action, RPC de negocio, trigger deliberado ni integración de aplicación. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-AUD-003` es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no autoriza materialización física. |
+
+---
+
+#### 65. Decisiones congeladas
+
+Quedan adoptadas para las tareas siguientes:
+
+1. el universo directo contiene 18 relaciones literales;
+2. esas relaciones son 17 tablas y una vista;
+3. todas las relaciones directas pertenecen al esquema `public`;
+4. los RPC consumidos incorporan seis tablas compartidas adicionales al lineage técnico;
+5. el universo expandido contiene 24 relaciones físicas únicas: 23 tablas y una vista;
+6. `numera_cost_center_monthly_summary` es una vista derivada de cinco relaciones base;
+7. `numera_current_period_summary` es un agregado derivado sobre periodo y vista mensual;
+8. las escrituras de negocio actuales recaen en `numera_expenses` y `numera_cost_center_budgets`;
+9. la captura manual observada fija `source_app = numera`;
+10. el snapshot remoto contiene cero gastos y cero presupuestos;
+11. `cost_centers` se conserva como maestro económico compartido sin resolver aquí su propiedad funcional futura;
+12. los maestros de sede, área, personal, autorización, navegación y dispositivo son contexto compartido, no hechos económicos NUMERA;
+13. existen 20 triggers habilitados sobre 12 relaciones directas;
+14. los cuatro triggers propios de tablas `numera_*` observados mantienen `updated_at` y no demuestran emisión de evento empresarial;
+15. ninguna tabla directa pertenece a `supabase_realtime`;
+16. `vento-numera` no declara suscripciones Realtime;
+17. no existe canal API, Edge, cron o Realtime observado que materialice ingestión automática de hechos económicos;
+18. PULSO, ORIGO, FOGO y NEXO se conservan como cuatro sistemas fuente operativos declarados por contratos posteriores;
+19. no existe consumidor físico actual localizado para esos cuatro emisores;
+20. nueve relaciones económicas adyacentes existen remotamente pero no se incorporan al lineage actual por inferencia;
+21. la coexistencia entre captura manual y fuentes operativas canónicas se entrega a `NUMERA-AUD-007` para control de duplicación;
+22. ninguna clasificación de completitud se adelanta antes de `NUMERA-AUD-004`.
+
+---
+
+#### 66. Criterios de aceptación
+
+`NUMERA-AUD-003` queda documentalmente completa cuando:
+
+- conserva exactamente el handoff de `NUMERA-AUD-002`;
+- distingue tablas de vistas;
+- identifica las 18 relaciones directas;
+- identifica las 6 relaciones transitivas adicionales descubiertas por RPC;
+- mantiene 24 relaciones físicas únicas en el universo expandido;
+- clasifica la vista y RPC financiera como derivadas;
+- reconstruye el lineage del resumen mensual;
+- documenta foreign keys principales del núcleo económico;
+- separa maestros compartidos de persistencia económica NUMERA;
+- registra conteos remotos sin convertirlos en cardinalidad contractual;
+- registra que gastos y presupuestos tienen cero filas en el corte;
+- documenta los campos de origen de gastos sin inventar valores inexistentes;
+- identifica NUMERA como productor del flujo manual actual;
+- identifica PULSO, ORIGO, FOGO y NEXO como fuentes canónicas declaradas, no como integraciones físicas actuales;
+- distingue triggers de base de eventos empresariales;
+- inventaría los 20 triggers habilitados y los cuatro triggers `numera_*` relevantes;
+- comprueba que las tablas directas no están en la publicación Realtime;
+- comprueba que el código actual no declara suscripciones Realtime;
+- conserva las fuentes económicas adyacentes fuera del lineage actual cuando no hay consumidor;
+- no clasifica módulos como completos, parciales, prototipos o ausentes;
+- no crea ni modifica requisitos;
+- no modifica 04A;
+- no ejecuta cambios físicos;
+- entrega un handoff cerrado a `NUMERA-AUD-004`.
+
+---
+
+#### 67. Límites
+
+Esta tarea no:
+
+- modifica tablas o vistas;
+- crea migraciones;
+- cambia RLS o grants;
+- publica relaciones en Realtime;
+- crea triggers;
+- modifica triggers;
+- crea outbox, inbox, cola o worker;
+- crea consumidores de PULSO, ORIGO, FOGO o NEXO;
+- conecta fuentes económicas adyacentes;
+- registra gastos o presupuestos;
+- ejecuta cierres;
+- cambia centros de costo;
+- redefine propiedad del catálogo de centros de costo;
+- redefine contratos de eventos ya aprobados;
+- convierte triggers de `updated_at` en eventos de dominio;
+- declara contabilidad formal;
+- valida completitud funcional;
+- detecta todavía datos simulados o hardcodes;
+- decide fuente de verdad de reportes;
+- resuelve duplicación manual;
+- audita fórmulas financieras;
+- audita sensibilidad/exportación;
+- ejecuta build, lint, tipos o pruebas de producto;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NUMERA-AUD-004`.
+
+---
+
+#### 68. Handoff inmediato a NUMERA-AUD-004
+
+La siguiente tarea recibe como base cerrada:
+
+```text
+DIRECT_FROM_RELATIONS = 18
+DIRECT_TABLES = 17
+DIRECT_VIEWS = 1
+TRANSITIVE_RPC_ADDITIONAL_RELATIONS = 6
+EXPANDED_UNIQUE_RELATIONS = 24
+EXPANDED_TABLES = 23
+EXPANDED_VIEWS = 1
+NUMERA_EXPENSE_ROWS = 0
+NUMERA_BUDGET_ROWS = 0
+ENABLED_TRIGGERS_ON_DIRECT_RELATIONS = 20
+DIRECT_RELATIONS_WITH_ENABLED_TRIGGERS = 12
+DIRECT_TABLES_IN_SUPABASE_REALTIME = 0
+NUMERA_REALTIME_SUBSCRIPTIONS_OBSERVED = 0
+DECLARED_OPERATIONAL_SOURCE_SYSTEMS = 4
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED = 0
+```
+
+Y deberá decidir, sin alterar estas identidades:
+
+```text
+MODULO COMPLETO
+MODULO PARCIAL
+PROTOTIPO
+AUSENTE
+```
+
+---
+
+#### 69. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-002 — Inventariar Server Actions, API, RPC, consultas y jobs utilizados`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes`
 ### [ ] NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes
 ### [ ] NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
 ### [ ] NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
