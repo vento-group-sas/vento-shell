@@ -4007,7 +4007,1397 @@ AUSENTE
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes`
-### [ ] NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes
+### ✅ NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente
+**Tarea siguiente:** NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
+**Tipo de tarea:** clasificación técnico-funcional cerrada del estado AS-IS de los módulos financieros de NUMERA contra el alcance canónico `CAP-12.01..CAP-12.15`, distinguiendo implementación completa, parcial, prototipo y ausencia sin adelantar auditorías de datos simulados, conciliación, duplicación, cálculos, cierres, seguridad o pruebas reservadas a tareas posteriores; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, rutas, componentes, Server Actions, tablas, vistas, RPC, triggers, Realtime, RLS, grants, migraciones, datos, eventos, integraciones, jobs, despliegues ni configuración financiera
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Clasificar el estado funcional actual de NUMERA con una regla única y verificable que permita distinguir:
+
+```text
+COMPLETO
+PARCIAL
+PROTOTIPO
+AUSENTE
+```
+
+La clasificación se aplica al universo financiero canónico aprobado para NUMERA y no a la mera existencia de archivos, tablas, permisos o pantallas.
+
+El resultado debe permitir responder, sin inferencia:
+
+- qué capacidades financieras tienen hoy un flujo real utilizable aunque incompleto;
+- cuáles poseen únicamente una aproximación técnica o analítica;
+- cuáles no tienen implementación suficiente dentro de NUMERA;
+- si existe algún módulo financiero que ya satisfaga integralmente el alcance objetivo vigente;
+- qué superficies actuales materializan cada clasificación;
+- qué tarea posterior es propietaria de cada brecha sin crear nuevos IDs.
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-003
+
+`NUMERA-AUD-003` entrega como base cerrada:
+
+```text
+DIRECT_FROM_RELATIONS = 18
+DIRECT_TABLES = 17
+DIRECT_VIEWS = 1
+TRANSITIVE_RPC_ADDITIONAL_RELATIONS = 6
+EXPANDED_UNIQUE_RELATIONS = 24
+EXPANDED_TABLES = 23
+EXPANDED_VIEWS = 1
+NUMERA_EXPENSE_ROWS = 0
+NUMERA_BUDGET_ROWS = 0
+ENABLED_TRIGGERS_ON_DIRECT_RELATIONS = 20
+DIRECT_RELATIONS_WITH_ENABLED_TRIGGERS = 12
+DIRECT_TABLES_IN_SUPABASE_REALTIME = 0
+NUMERA_REALTIME_SUBSCRIPTIONS_OBSERVED = 0
+DECLARED_OPERATIONAL_SOURCE_SYSTEMS = 4
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED = 0
+```
+
+Y reserva para esta tarea exclusivamente la decisión:
+
+```text
+MODULO COMPLETO
+MODULO PARCIAL
+PROTOTIPO
+AUSENTE
+```
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `NUMERA-AUD-001..012` permanece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la clasificación se define documentalmente una sola vez;
+- no crea una instancia física;
+- no implementa los módulos ausentes;
+- no rellena tablas vacías;
+- no ejecuta movimientos económicos;
+- no publica eventos;
+- no modifica el alcance financiero aprobado;
+- no altera `active-sequence.json` manualmente.
+
+---
+
+#### 4. Fuentes verificadas
+
+La clasificación se reconcilia contra:
+
+- `NUMERA-AUD-001` publicado;
+- `NUMERA-AUD-002` publicado;
+- `NUMERA-AUD-003` aprobado por el usuario como base inmediata;
+- `CAP-SCOPE-012 — Evaluar costos, gastos, presupuestos, tesorería, contabilidad e impuestos`;
+- `CODE-AUD-019 — Vincular cada capacidad con su implementación actual verificable`;
+- `04A_13_NUMERA.md`;
+- archivo propietario de `NUMERA-AUD-*`;
+- `01_PROTOCOLO.md`;
+- `manifest.json`;
+- `continuity-route.json`;
+- `execution-route.json`;
+- `active-sequence.json`;
+- `task-work-topology.json`;
+- `task-format-policy.json`;
+- `task-development-policy.json`;
+- `package.json` de `vento-shell`;
+- snapshot actual de `vento-numera/main`;
+- siete archivos `page.tsx`;
+- acciones `createExpense` y `upsertBudget`;
+- vista `numera_cost_center_monthly_summary`;
+- RPC `numera_current_period_summary`;
+- metadatos remotos de solo lectura del proyecto Supabase observado;
+- inventario de fuentes y dependencias producido por `NUMERA-AUD-003`.
+
+---
+
+#### 5. Snapshot de aplicación clasificado
+
+La clasificación se fija contra:
+
+```text
+repository = vento-group-sas/vento-numera
+commit = c4d50282e30e46d0abb3d871f9604cf913ebbabd
+```
+
+Las siete páginas físicas observadas siguen siendo:
+
+```text
+/
+ /cost-centers
+ /expenses
+ /break-even
+ /profitability
+ /login
+ /no-access
+```
+
+`/login` y `/no-access` son superficies de acceso/control y no crean por sí solas un módulo financiero.
+
+---
+
+#### 6. Universo canónico de módulos
+
+Para evitar inventar una taxonomía paralela, la clasificación usa exactamente las quince subcapacidades financieras aprobadas de `CAP-12`:
+
+```text
+CAP-12.01 Registrar hechos económicos
+CAP-12.02 Gestionar caja
+CAP-12.03 Gestionar bancos y pagos
+CAP-12.04 Gestionar cuentas por cobrar
+CAP-12.05 Gestionar cuentas por pagar
+CAP-12.06 Facturar y controlar documentos
+CAP-12.07 Conciliar ventas, pagos y entregas
+CAP-12.08 Conciliar compras y recepciones
+CAP-12.09 Calcular costos
+CAP-12.10 Distribuir costos compartidos
+CAP-12.11 Gestionar presupuestos
+CAP-12.12 Gestionar tesorería
+CAP-12.13 Gestionar impuestos y obligaciones
+CAP-12.14 Cerrar períodos y emitir reportes
+CAP-12.15 Analizar rentabilidad
+```
+
+Cardinalidad:
+
+```text
+CANONICAL_FINANCIAL_MODULES = 15
+```
+
+---
+
+#### 7. Regla de clasificación
+
+Las etiquetas significan:
+
+| Estado | Regla |
+| --- | --- |
+| `COMPLETO` | el resultado objetivo vigente tiene flujo de extremo a extremo, superficies o contratos suficientes, persistencia o evidencia correspondiente, fuentes requeridas y ausencia de una brecha material conocida que impida satisfacer el módulo |
+| `PARCIAL` | existe un flujo real utilizable que produce o modifica el resultado del módulo, pero faltan etapas, dimensiones, fuentes, gobierno, aprobación, conciliación o cobertura material del alcance objetivo |
+| `PROTOTIPO` | existe una representación técnica, estructura, cálculo o pantalla que aproxima el resultado, pero no materializa todavía un flujo objetivo utilizable de extremo a extremo o utiliza simplificaciones incompatibles con la definición final |
+| `AUSENTE` | NUMERA no posee hoy una implementación suficiente del resultado; datos o procesos existentes en otra aplicación, proveedor, tabla no consumida o fuente adyacente no convierten el módulo en presente |
+
+---
+
+#### 8. Regla de suficiencia de evidencia
+
+No basta con localizar:
+
+- una tabla;
+- una vista;
+- un permiso;
+- una ruta;
+- una tarjeta de dashboard;
+- una RPC;
+- un trigger;
+- una fuente en otro dominio;
+- una relación económica adyacente;
+- un estado de periodo;
+- una pantalla de solo lectura.
+
+La clasificación exige demostrar qué resultado del módulo produce el conjunto actual.
+
+---
+
+#### 9. Regla de frontera empresarial
+
+La tarea clasifica:
+
+```text
+IMPLEMENTACION ACTUAL DENTRO DE NUMERA
+```
+
+No clasifica:
+
+```text
+EXISTENCIA DEL PROCESO EN TODO VENTO GROUP
+```
+
+Por tanto:
+
+```text
+MODULO NUMERA AUSENTE
+```
+
+puede coexistir con:
+
+```text
+FUENTE OPERATIVA EXISTENTE EN PULSO / ORIGO / FOGO / NEXO / PASS / TERCERO
+```
+
+sin contradicción.
+
+---
+
+#### 10. Resultado cuantitativo general
+
+La matriz de las quince capacidades queda:
+
+| Clasificación | Módulos |
+| --- | ---: |
+| `COMPLETO` | **0** |
+| `PARCIAL` | **2** |
+| `PROTOTIPO` | **3** |
+| `AUSENTE` | **10** |
+| **TOTAL** | **15** |
+
+Invariantes:
+
+```text
+COMPLETE_MODULES = 0
+PARTIAL_MODULES = 2
+PROTOTYPE_MODULES = 3
+ABSENT_MODULES = 10
+CANONICAL_FINANCIAL_MODULES = 15
+```
+
+---
+
+#### 11. Matriz completa CAP-12 × estado actual
+
+| Capacidad | Resultado objetivo | Evidencia NUMERA actual | Estado |
+| --- | --- | --- | --- |
+| `CAP-12.01` | Registrar hechos económicos | captura manual de gastos en `numera_expenses`; periodos, categorías y lineage opcional; sin ingestión de hechos externos | `PARCIAL` |
+| `CAP-12.02` | Gestionar caja | no existe módulo NUMERA que consuma y concilie sesiones o movimientos de caja de PULSO | `AUSENTE` |
+| `CAP-12.03` | Gestionar bancos y pagos | no existen cuentas bancarias, extractos, matching, transferencias ni conciliación bancaria en NUMERA | `AUSENTE` |
+| `CAP-12.04` | Gestionar cuentas por cobrar | no existe cartera, deudor, cuota, vencimiento, recaudo, aplicación, aging ni cobro en NUMERA | `AUSENTE` |
+| `CAP-12.05` | Gestionar cuentas por pagar | no existe obligación, vencimiento, aprobación, programación, pago o disputa de proveedor en NUMERA | `AUSENTE` |
+| `CAP-12.06` | Facturar y controlar documentos | no existe módulo NUMERA de referencia, estado y conciliación documental/fiscal | `AUSENTE` |
+| `CAP-12.07` | Conciliar ventas, pagos y entregas | no existe consumidor físico PULSO/PASS/pagos ni expediente de diferencias | `AUSENTE` |
+| `CAP-12.08` | Conciliar compras y recepciones | no existe consumidor físico ORIGO/NEXO ni expediente de conciliación | `AUSENTE` |
+| `CAP-12.09` | Calcular costos | existe aproximación mediante gastos fijos/variables, margen objetivo y equilibrio; no existe motor de costo estándar/real/landed ni fuentes operativas | `PROTOTIPO` |
+| `CAP-12.10` | Distribuir costos compartidos | no existen pools, drivers, versiones, destinos, aprobación ni reversión | `AUSENTE` |
+| `CAP-12.11` | Gestionar presupuestos | `upsertBudget` persiste presupuesto, ingreso esperado y margen objetivo por periodo/centro; faltan versiones, aprobación, forecast y escenarios | `PARCIAL` |
+| `CAP-12.12` | Gestionar tesorería | no existe posición, liquidez, compromisos, programación ni autorización de tesorería | `AUSENTE` |
+| `CAP-12.13` | Gestionar impuestos y obligaciones | no existe calendario, componentes, soportes, estados ni integración fiscal dentro de NUMERA | `AUSENTE` |
+| `CAP-12.14` | Cerrar períodos y emitir reportes | existen periodos con estados y proyecciones de lectura; no existe workflow de cierre, checklist, aprobación, bloqueo gobernado ni reapertura | `PROTOTIPO` |
+| `CAP-12.15` | Analizar rentabilidad | existe `/profitability` con ingreso esperado, gasto, presupuesto y variación; no usa ingreso realizado ni costo completo trazable | `PROTOTIPO` |
+
+---
+
+#### 12. Módulos clasificados como COMPLETO
+
+Resultado:
+
+```text
+COMPLETE_MODULES = 0
+```
+
+No se identifica ningún módulo financiero que satisfaga integralmente el alcance objetivo vigente.
+
+Esto no significa que NUMERA no tenga funcionalidad real. Significa que cada módulo actualmente representado conserva una brecha material ya documentada frente a su definición aprobada.
+
+---
+
+#### 13. Módulos clasificados como PARCIAL
+
+Se clasifican exactamente:
+
+```text
+CAP-12.01 Registrar hechos económicos
+CAP-12.11 Gestionar presupuestos
+```
+
+Ambos poseen escritura real desde Server Actions actuales y persistencia propia.
+
+La parcialidad se debe a que el alcance canónico es mayor que la captura implementada.
+
+---
+
+#### 14. Módulos clasificados como PROTOTIPO
+
+Se clasifican exactamente:
+
+```text
+CAP-12.09 Calcular costos
+CAP-12.14 Cerrar períodos y emitir reportes
+CAP-12.15 Analizar rentabilidad
+```
+
+En los tres casos existe estructura o representación visible, pero falta una parte esencial del resultado objetivo.
+
+---
+
+#### 15. Módulos clasificados como AUSENTE
+
+Se clasifican exactamente:
+
+```text
+CAP-12.02 Gestionar caja
+CAP-12.03 Gestionar bancos y pagos
+CAP-12.04 Gestionar cuentas por cobrar
+CAP-12.05 Gestionar cuentas por pagar
+CAP-12.06 Facturar y controlar documentos
+CAP-12.07 Conciliar ventas, pagos y entregas
+CAP-12.08 Conciliar compras y recepciones
+CAP-12.10 Distribuir costos compartidos
+CAP-12.12 Gestionar tesorería
+CAP-12.13 Gestionar impuestos y obligaciones
+```
+
+La existencia de fuentes externas o estructuras en otros dominios no cambia esta clasificación dentro de NUMERA.
+
+---
+
+#### 16. CAP-12.01 — Registrar hechos económicos
+
+Estado:
+
+```text
+PARCIAL
+```
+
+Evidencia implementada:
+
+```text
+/expenses
+-> createExpense
+-> numera_expenses
+```
+
+La acción valida campos básicos, persiste monto, fecha, categoría, centro, moneda y `source_app = numera`.
+
+Brechas materiales:
+
+- solo captura gasto manual;
+- no recibe hechos económicos canónicos desde PULSO, ORIGO, FOGO o NEXO;
+- no demuestra idempotencia de ingestión;
+- no materializa identidad económica completa;
+- no demuestra corrección compensatoria;
+- los campos de lineage externo no tienen filas observadas.
+
+---
+
+#### 17. CAP-12.02 — Gestionar caja
+
+Estado:
+
+```text
+AUSENTE
+```
+
+PULSO conserva la operación de caja como fuente objetivo, pero NUMERA no consume actualmente:
+
+- sesiones;
+- efectivo esperado;
+- conteos;
+- diferencias;
+- depósitos;
+- cierres;
+- aprobaciones.
+
+No existe ruta, Server Action, RPC o consumidor de caja en `vento-numera`.
+
+---
+
+#### 18. CAP-12.03 — Gestionar bancos y pagos
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No se localizan en NUMERA:
+
+- maestro de cuentas bancarias;
+- titulares;
+- extractos;
+- movimientos bancarios;
+- matching;
+- conciliación;
+- transferencias;
+- beneficiarios;
+- pagos programados.
+
+`payments.transactions` existe como fuente adyacente pero no es consumida por el repositorio actual.
+
+---
+
+#### 19. CAP-12.04 — Gestionar cuentas por cobrar
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No existe en NUMERA una implementación de:
+
+- deudor;
+- cuenta por cobrar;
+- cuota;
+- vencimiento;
+- saldo;
+- recaudo;
+- aplicación;
+- anticipo;
+- saldo a favor;
+- aging;
+- acuerdo;
+- promesa;
+- disputa;
+- cobranza;
+- castigo.
+
+La capacidad es obligatoria en el alcance aprobado, pero no está materializada en el snapshot actual.
+
+---
+
+#### 20. CAP-12.05 — Gestionar cuentas por pagar
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No existe módulo NUMERA para:
+
+- obligación;
+- documento asociado;
+- aceptación;
+- vencimiento;
+- aprobación;
+- programación;
+- pago;
+- retención;
+- disputa;
+- cierre.
+
+Las compras y recepciones existentes en ORIGO no equivalen al subdominio financiero de obligaciones.
+
+---
+
+#### 21. CAP-12.06 — Facturar y controlar documentos
+
+Estado:
+
+```text
+AUSENTE
+```
+
+El alcance objetivo permite proveedor fiscal o sistema externo, pero NUMERA debe conservar referencia, estado, tercero, moneda, impuestos y conciliación.
+
+No se observa actualmente esa superficie de control dentro de `vento-numera`.
+
+---
+
+#### 22. CAP-12.07 — Conciliar ventas, pagos y entregas
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No existe un consumidor físico que una:
+
+```text
+VENTA
+PAGO
+CAJA
+DOCUMENTO
+ENTREGA
+DEVOLUCION
+REEMBOLSO
+DEPOSITO
+```
+
+ni un expediente de diferencia con responsable, estado y evidencia.
+
+---
+
+#### 23. CAP-12.08 — Conciliar compras y recepciones
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No existe un flujo NUMERA que concilie:
+
+```text
+SOLICITUD
+ORDEN
+RECEPCION
+DOCUMENTO
+DIFERENCIA
+OBLIGACION
+DEVOLUCION
+PAGO
+```
+
+La ausencia de consumidor ORIGO/NEXO observada en `NUMERA-AUD-003` confirma la clasificación.
+
+---
+
+#### 24. CAP-12.09 — Calcular costos
+
+Estado:
+
+```text
+PROTOTIPO
+```
+
+La evidencia actual incluye:
+
+- gasto fijo;
+- gasto variable;
+- margen objetivo;
+- punto de equilibrio;
+- relaciones económicas adyacentes como `inventory_cost_policies` y `product_cost_events`.
+
+Sin embargo, NUMERA no consume esas fuentes adyacentes y no implementa un contrato de:
+
+- costo de adquisición;
+- landed;
+- estándar;
+- real;
+- promedio;
+- último;
+- productivo;
+- logístico;
+- merma;
+- vigencia y versión de método.
+
+La pantalla de equilibrio constituye una aproximación analítica, no un motor de costos completo.
+
+---
+
+#### 25. CAP-12.10 — Distribuir costos compartidos
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No se localizan:
+
+- pools;
+- drivers;
+- bases de asignación;
+- centros origen;
+- destinos;
+- reglas versionadas;
+- aprobación;
+- reversión;
+- explicación reproducible de distribución.
+
+---
+
+#### 26. CAP-12.11 — Gestionar presupuestos
+
+Estado:
+
+```text
+PARCIAL
+```
+
+La ruta `/cost-centers` y `upsertBudget` permiten persistir por periodo y centro:
+
+```text
+budget_amount
+expected_revenue
+target_gross_margin_pct
+notes
+```
+
+Brechas materiales del contrato objetivo:
+
+- no existe versionado;
+- no existe aprobación;
+- no existe forecast separado;
+- no existen escenarios;
+- no existe workflow de modificación;
+- no existe publicación diferenciada;
+- no se observaron filas actuales en `numera_cost_center_budgets`.
+
+La ausencia de filas no convierte el módulo en ausente porque el flujo de escritura existe.
+
+---
+
+#### 27. CAP-12.12 — Gestionar tesorería
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No existe módulo para:
+
+- posición consolidada;
+- flujo de caja;
+- compromisos;
+- vencimientos;
+- liquidez;
+- programación;
+- autorización;
+- alertas de tesorería.
+
+---
+
+#### 28. CAP-12.13 — Gestionar impuestos y obligaciones
+
+Estado:
+
+```text
+AUSENTE
+```
+
+No se observa dentro de NUMERA:
+
+- calendario;
+- componentes tributarios;
+- estimaciones;
+- soportes;
+- estados;
+- referencias oficiales;
+- integración con proveedor fiscal o contabilidad para esta capacidad.
+
+La fiscalidad oficial permanece una frontera externa hasta decisión posterior.
+
+---
+
+#### 29. CAP-12.14 — Cerrar períodos y emitir reportes
+
+Estado:
+
+```text
+PROTOTIPO
+```
+
+Existe:
+
+```text
+numera_periods.status
+open / closed / locked
+```
+
+y existen proyecciones de lectura para panel, centros, equilibrio y rentabilidad.
+
+No existe:
+
+- acción de cierre;
+- checklist;
+- conciliación previa;
+- aprobación;
+- bloqueo gobernado;
+- tratamiento de evento tardío;
+- reapertura;
+- ajuste;
+- paquete de evidencia;
+- exportación oficial.
+
+La estructura de estados y reportes es base técnica, no workflow integral de cierre.
+
+---
+
+#### 30. CAP-12.15 — Analizar rentabilidad
+
+Estado:
+
+```text
+PROTOTIPO
+```
+
+La ruta `/profitability` se presenta explícitamente como lectura inicial y usa:
+
+```text
+expected_revenue
+actual_expenses
+budget_amount
+budget_variance
+```
+
+No usa:
+
+- ingreso realizado;
+- costo completo trazable;
+- entidad legal;
+- marca;
+- canal;
+- producto;
+- pedido;
+- cliente;
+- metodología y vigencia de costo.
+
+Por tanto no cumple el contrato de rentabilidad aprobado.
+
+---
+
+#### 31. Clasificación de la raíz `/`
+
+La página raíz consume `numera_current_period_summary` y presenta:
+
+- gasto operativo;
+- presupuesto;
+- ingreso esperado;
+- punto de equilibrio;
+- accesos a cuatro módulos.
+
+Se clasifica como:
+
+```text
+SUPERFICIE RESUMEN = PROTOTIPO
+```
+
+No crea una décimo sexta capacidad financiera y no se confunde con el visor económico objetivo de `NUMERA-UX-028`.
+
+---
+
+#### 32. Clasificación de `/cost-centers`
+
+La ruta combina:
+
+- dimensión compartida de centro de costo;
+- presupuesto;
+- ingreso esperado;
+- margen objetivo;
+- gasto agregado;
+- variación;
+- equilibrio.
+
+La ruta materializa principalmente:
+
+```text
+CAP-12.11 = PARCIAL
+```
+
+y expone proyecciones prototipo relacionadas con `CAP-12.09` y `CAP-12.15`.
+
+No convierte `cost_centers` en propiedad financiera exclusiva de NUMERA.
+
+---
+
+#### 33. Clasificación de `/expenses`
+
+La ruta materializa:
+
+```text
+CAP-12.01 = PARCIAL
+```
+
+porque permite registrar un tipo concreto de hecho económico manual y leer gastos recientes.
+
+No materializa por sí sola ledger económico general, conciliación, soporte completo, aprobación, corrección o ingestión de fuentes.
+
+---
+
+#### 34. Clasificación de `/break-even`
+
+La ruta se clasifica como:
+
+```text
+CAP-12.09 = PROTOTIPO
+```
+
+porque calcula una proyección a partir de:
+
+```text
+fixed_expenses
+variable_expenses
+target_gross_margin_pct
+```
+
+sin un motor canónico de costos ni fuentes de ventas/costos realizadas.
+
+---
+
+#### 35. Clasificación de `/profitability`
+
+La ruta se clasifica como:
+
+```text
+CAP-12.15 = PROTOTIPO
+```
+
+porque compara ingreso esperado, gasto, presupuesto y variación, pero no calcula rentabilidad real conforme al contrato aprobado.
+
+---
+
+#### 36. Superficies `/login` y `/no-access`
+
+Estas dos páginas son superficies públicas controladas de autenticación y denegación.
+
+Se clasifican como:
+
+```text
+SOPORTE TRANSVERSAL
+FUERA DE LA MATRIZ CAP-12
+```
+
+No deben contarse como módulos financieros completos para inflar la cobertura de NUMERA.
+
+---
+
+#### 37. Navegación y chrome compartido
+
+`VentoShell`, navegación, perfil, contexto de sede/área y dispositivo compartido son infraestructura transversal consumida por NUMERA.
+
+Se conserva la regla:
+
+```text
+INFRAESTRUCTURA DE ACCESO
+!=
+MODULO FINANCIERO
+```
+
+Su auditoría propietaria permanece en tareas de autorización, SHELL y navegación.
+
+---
+
+#### 38. Periodos como estructura técnica
+
+`numera_periods` existe y contiene un periodo abierto.
+
+Esto prueba:
+
+```text
+STRUCTURE_PRESENT = YES
+```
+
+pero no:
+
+```text
+PERIOD_CLOSE_MODULE_COMPLETE = YES
+```
+
+La tabla es evidencia de prototipo para `CAP-12.14`.
+
+---
+
+#### 39. Categorías de gasto como estructura técnica
+
+`numera_expense_categories` contiene siete categorías observadas.
+
+La categoría habilita la captura manual actual, pero no constituye un módulo financiero independiente dentro de la matriz CAP-12.
+
+Forma parte de la evidencia parcial de `CAP-12.01`.
+
+---
+
+#### 40. Snapshot remoto de adopción
+
+El contraste de solo lectura observado durante esta clasificación confirma:
+
+```text
+cost_centers = 6
+numera_periods = 1
+numera_expense_categories = 7
+numera_expenses = 0
+numera_cost_center_budgets = 0
+numera_cost_center_monthly_summary = 6
+period_status_open = 1
+```
+
+Los conteos se usan únicamente como evidencia de adopción y estructura.
+
+---
+
+#### 41. Interpretación de tablas con cero filas
+
+Se congela:
+
+```text
+ZERO_ROWS
+!=
+AUSENTE
+```
+
+y:
+
+```text
+ZERO_ROWS
+!=
+MODULO COMPLETO
+```
+
+`numera_expenses` y `numera_cost_center_budgets` conservan flujos de escritura reales, por lo que sus capacidades se clasifican como parciales y no ausentes.
+
+La falta de uso observado sí impide usar datos remotos como prueba de adopción operativa.
+
+---
+
+#### 42. Interpretación de fuentes adyacentes
+
+Las relaciones:
+
+```text
+inventory_cost_policies
+product_cost_events
+internal_price_lists
+internal_price_list_items
+internal_pos_documents
+internal_pos_document_lines
+payments.transactions
+club.wallet_accounts
+club.wallet_ledger
+```
+
+no elevan por sí solas ningún módulo NUMERA de `AUSENTE` a `PARCIAL`.
+
+Para modificar la clasificación deberá existir un consumidor o contrato NUMERA materializado y verificable.
+
+---
+
+#### 43. Interpretación de los cuatro sistemas fuente declarados
+
+PULSO, ORIGO, FOGO y NEXO son fuentes canónicas objetivo para hechos operativos.
+
+Como `NUMERA-AUD-003` confirmó:
+
+```text
+DECLARED_OPERATIONAL_SOURCE_SYSTEMS = 4
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED = 0
+```
+
+la declaración de fuente no equivale a integración física actual.
+
+---
+
+#### 44. Eventos e integración
+
+El snapshot actual conserva:
+
+```text
+APP_ROUTER_API_ROUTES = 0
+DIRECT_EDGE_FUNCTION_INVOCATIONS = 0
+NUMERA_PG_CRON_JOBS = 0
+NUMERA_REALTIME_SUBSCRIPTIONS_OBSERVED = 0
+```
+
+Esto sustenta la ausencia actual de los módulos de conciliación y recepción automática de hechos.
+
+No implica que NUMERA deba usar necesariamente API, cron o Realtime en el diseño final.
+
+---
+
+#### 45. Triggers `numera_*`
+
+Los triggers observados en las cuatro tablas mutables `numera_*` mantienen `updated_at`.
+
+Se congela:
+
+```text
+TIMESTAMP_TRIGGER
+!=
+DOMAIN_EVENT_IMPLEMENTATION
+```
+
+Por tanto no elevan `CAP-12.01`, `CAP-12.07` ni `CAP-12.08` a una clasificación superior.
+
+---
+
+#### 46. Diferencia entre PARCIAL y PROTOTIPO
+
+La frontera adoptada es:
+
+```text
+PARCIAL
+= existe una acción funcional que produce o modifica el resultado empresarial,
+  aunque el ciclo objetivo esté incompleto
+
+PROTOTIPO
+= existe estructura o visualización aproximada,
+  pero falta el flujo funcional esencial del resultado objetivo
+```
+
+Aplicación:
+
+- gastos y presupuestos tienen Server Actions reales → `PARCIAL`;
+- costos, cierre/reportes y rentabilidad tienen estructuras/proyecciones insuficientes → `PROTOTIPO`.
+
+---
+
+#### 47. Diferencia entre PROTOTIPO y AUSENTE
+
+Una capacidad no pasa a `PROTOTIPO` por tener únicamente datos disponibles en otro dominio.
+
+Debe existir una representación NUMERA identificable relacionada con la capacidad.
+
+Por eso:
+
+- punto de equilibrio permite `CAP-12.09 = PROTOTIPO`;
+- `payments.transactions` sin consumidor no permite `CAP-12.03 = PROTOTIPO`;
+- datos de caja en PULSO sin consumidor NUMERA no permiten `CAP-12.02 = PROTOTIPO`.
+
+---
+
+#### 48. Por qué no existen módulos completos
+
+Las dos capacidades con escritura real tienen brechas estructurales:
+
+```text
+CAP-12.01
+-> captura manual != ledger económico integral
+
+CAP-12.11
+-> presupuesto simple != presupuesto versionado + forecast + escenarios + aprobación
+```
+
+Las tres superficies analíticas no satisfacen sus contratos objetivo.
+
+Los diez módulos restantes carecen de implementación NUMERA suficiente.
+
+Resultado:
+
+```text
+COMPLETE_MODULES = 0
+```
+
+---
+
+#### 49. Relación con NUMERA-AUD-005
+
+`NUMERA-AUD-005` deberá auditar dentro de módulos `PARCIAL` y `PROTOTIPO`:
+
+- hardcodes;
+- datos simulados;
+- TODO;
+- lógica provisional;
+- defaults;
+- filtros demo;
+- supuestos incrustados;
+- valores fijos.
+
+La clasificación actual no decide todavía si esas piezas deben conservarse, corregirse o retirarse.
+
+---
+
+#### 50. Relación con NUMERA-AUD-006
+
+`NUMERA-AUD-006` conserva la auditoría de:
+
+- reportes;
+- indicadores;
+- agregados;
+- conciliación;
+- fuente de verdad.
+
+Que `/break-even`, `/profitability` o `/` sean `PROTOTIPO` no sustituye esa auditoría.
+
+---
+
+#### 51. Relación con NUMERA-AUD-007
+
+`NUMERA-AUD-007` conserva la detección de registros manuales duplicados frente a otros dominios.
+
+En particular:
+
+```text
+createExpense
+source_app = numera
+```
+
+se registra como evidencia de captura manual, no como duplicación confirmada.
+
+---
+
+#### 52. Relación con NUMERA-AUD-008
+
+`NUMERA-AUD-008` conserva la auditoría matemática y de fuentes de:
+
+- costos;
+- margen;
+- rentabilidad;
+- punto de equilibrio.
+
+La etiqueta `PROTOTIPO` de `CAP-12.09` y `CAP-12.15` no valida ni invalida todavía sus fórmulas.
+
+---
+
+#### 53. Relación con NUMERA-AUD-009
+
+`NUMERA-AUD-009` conserva la auditoría de:
+
+- gastos;
+- centros de costo;
+- cierres;
+- aprobaciones.
+
+La clasificación `PARCIAL` o `PROTOTIPO` no constituye aprobación del workflow vigente.
+
+---
+
+#### 54. Relación con NUMERA-AUD-010
+
+`NUMERA-AUD-010` conserva:
+
+- exportaciones;
+- información sensible;
+- trazabilidad.
+
+La ausencia actual de exportación financiera observada no se resuelve en esta tarea.
+
+---
+
+#### 55. Relación con NUMERA-AUD-011
+
+`NUMERA-AUD-011` conserva la ejecución de:
+
+- build;
+- lint;
+- tipos;
+- pruebas existentes.
+
+La clasificación funcional no declara PASS de calidad de código.
+
+---
+
+#### 56. Relación con NUMERA-AUD-012
+
+`NUMERA-AUD-012` conservará la matriz final:
+
+```text
+CAPACIDAD FINANCIERA
+×
+IMPLEMENTACION ACTUAL
+```
+
+`NUMERA-AUD-004` entrega una clasificación intermedia verificable, pero no sustituye la matriz final después de las auditorías 005–011.
+
+---
+
+#### 57. Hallazgos nuevos o ampliados
+
+| Hallazgo | Bloquea esta clasificación | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| ninguna de las 15 capacidades financieras alcanza `COMPLETO` | no | `NUMERA-AUD-012` + dominios/UX propietarios | matriz final confirma cobertura después de 005–011 y diseño posterior |
+| `CAP-12.01` es parcial por captura manual sin ingestión canónica | no | `NUMERA-AUD-007`, `NUMERA-DOM-002..005`, integración propietaria | fuente, identidad, idempotencia y no duplicación reconciliadas |
+| `CAP-12.11` es parcial pese a cero presupuestos observados porque existe flujo real de escritura | no | `NUMERA-AUD-005`, `NUMERA-AUD-009`, `NUMERA-DOM-006`, `NUMERA-DOM-011` | versiones, aprobación, forecast y escenarios definidos |
+| equilibrio y rentabilidad son prototipos, no módulos completos de costos/rentabilidad | no | `NUMERA-AUD-008`, `NUMERA-DOM-007`, `NUMERA-DOM-008`, `NUMERA-UX-022` | fórmulas, fuentes y dimensiones trazables aprobadas |
+| estructura de periodos no materializa cierre integral | no | `NUMERA-AUD-009`, `NUMERA-DOM-011`, `NUMERA-UX-011`, `NUMERA-UX-023` | cierre, bloqueo, evento tardío, reapertura y evidencia definidos |
+| diez capacidades objetivo no tienen módulo NUMERA suficiente | no | tareas `NUMERA-DOM-*`, `NUMERA-AUTH-*`, `NUMERA-UX-*` propietarias | cada capacidad recibe diseño e implementación posterior sin inventar cobertura actual |
+| acceso, navegación y contexto compartidos no deben contarse como módulos financieros completos | no | tareas de autorización/SHELL/navegación | conservar frontera transversal |
+| fuentes económicas adyacentes no consumidas no elevan la cobertura de NUMERA | no | `NUMERA-AUD-006..009` + integración propietaria | consumidor y contrato trazable existentes |
+
+---
+
+#### 58. Destino de los diez módulos ausentes
+
+| Capacidad | Propietarios canónicos principales |
+| --- | --- |
+| `CAP-12.02` | `NUMERA-DOM-009`, `NUMERA-UX-017`, `NUMERA-UX-021` |
+| `CAP-12.03` | `NUMERA-DOM-009`, `NUMERA-AUTH-002`, `NUMERA-AUTH-008`, `NUMERA-AUTH-014`, integraciones externas aplicables |
+| `CAP-12.04` | `NUMERA-DOM-016`, `NUMERA-UX-026`, autorización aplicable |
+| `CAP-12.05` | `NUMERA-DOM-010`, `NUMERA-UX-020`, `NUMERA-AUTH-005` |
+| `CAP-12.06` | `NUMERA-DOM-013`, `NUMERA-UX-027`, integración fiscal aplicable |
+| `CAP-12.07` | `NUMERA-DOM-002`, `NUMERA-UX-017`, integraciones POS/ventas aplicables |
+| `CAP-12.08` | `NUMERA-DOM-003`, `NUMERA-UX-018`, integración ORIGO/NEXO aplicable |
+| `CAP-12.10` | `OPS-CST-001`, `NUMERA-DOM-007`, `NUMERA-UX-022` |
+| `CAP-12.12` | `NUMERA-DOM-009`, `NUMERA-DOM-010`, `NUMERA-UX-020`, `NUMERA-UX-021` |
+| `CAP-12.13` | `NUMERA-DOM-013`, `NUMERA-UX-027`, integración fiscal/contable aplicable |
+
+No se crean tareas nuevas.
+
+---
+
+#### 59. Resultado material de la clasificación
+
+La aplicación actual se resume como:
+
+```text
+CAPTURA MANUAL DE GASTO
+        = PARCIAL
+
+PRESUPUESTO SIMPLE POR CENTRO/PERIODO
+        = PARCIAL
+
+EQUILIBRIO / COSTO APROXIMADO
+        = PROTOTIPO
+
+PERIODOS + REPORTES SIN CIERRE
+        = PROTOTIPO
+
+RENTABILIDAD CON INGRESO ESPERADO
+        = PROTOTIPO
+
+RESTANTES DIEZ CAPACIDADES CAP-12
+        = AUSENTES EN NUMERA
+```
+
+---
+
+#### 60. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea clasifica evidencia AS-IS contra capacidades y requisitos ya aprobados. No introduce comportamiento ejecutable, regla de negocio, transición, cálculo, autorización, contrato de integración o expectativa de prueba nueva.
+
+---
+
+#### 61. Cobertura de prueba vigente reutilizada
+
+Se reutilizan sin modificar:
+
+- `TREQ-NUMERA-001` a `TREQ-NUMERA-004` para hechos económicos, cartera/obligaciones, costos, presupuestos y rentabilidad objetivo;
+- `TREQ-NUMERA-005` a `TREQ-NUMERA-024` para inventario de rutas, acceso, Server Actions, navegación y drift;
+- requisitos de integración, autorización y Supabase ya vinculados por el Registro 04A vigente.
+
+Esta sección es trazabilidad y no constituye actualización del registro.
+
+---
+
+#### 62. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la ejecución de build está reservada a `NUMERA-AUD-011` |
+| LOCAL | `NOT_EXECUTED` | no se ejecutó el checkout local del usuario durante esta clasificación documental |
+| REMOTA | `PASS` | repositorio `vento-numera/main`, fuentes canónicas GitHub y consultas Supabase de solo lectura contrastadas |
+| OPERATIVA | `NOT_EXECUTED` | no se registraron gastos, presupuestos, cierres, pagos, conciliaciones ni movimientos reales |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 63. Decisiones congeladas
+
+1. El universo de clasificación contiene exactamente 15 capacidades `CAP-12.01..CAP-12.15`.
+2. Las superficies de acceso no crean módulos financieros adicionales.
+3. Una tabla, permiso, vista o RPC aislados no prueban módulo completo.
+4. Una fuente en otra aplicación no prueba módulo NUMERA presente.
+5. `COMPLETE_MODULES = 0`.
+6. `PARTIAL_MODULES = 2`.
+7. `PROTOTYPE_MODULES = 3`.
+8. `ABSENT_MODULES = 10`.
+9. `CAP-12.01` y `CAP-12.11` son parciales.
+10. `CAP-12.09`, `CAP-12.14` y `CAP-12.15` son prototipos.
+11. Las diez capacidades restantes son ausentes dentro de NUMERA.
+12. `/` es una superficie resumen prototipo y no una capacidad nueva.
+13. `/cost-centers` materializa principalmente presupuesto parcial.
+14. `/expenses` materializa registro económico parcial.
+15. `/break-even` es aproximación prototipo de costos/equilibrio.
+16. `/profitability` es aproximación prototipo de rentabilidad.
+17. cero filas no equivale a ausencia.
+18. estructura sin flujo no equivale a parcialidad.
+19. triggers de timestamp no equivalen a eventos económicos.
+20. esta tarea no adelanta auditorías 005–012.
+21. no se crean requisitos de prueba ni tareas.
+22. no se modifica Supabase ni código.
+
+---
+
+#### 64. Criterios de aceptación
+
+`NUMERA-AUD-004` queda documentalmente completa cuando:
+
+- las quince capacidades `CAP-12` aparecen exactamente una vez en la matriz;
+- la suma de completos, parciales, prototipos y ausentes es exactamente quince;
+- ninguna capacidad se clasifica completa por una tabla, pantalla o permiso aislado;
+- los dos módulos parciales conservan flujo de escritura verificable;
+- los tres prototipos conservan evidencia técnica concreta;
+- los diez ausentes se limitan a ausencia dentro de NUMERA, sin negar fuentes existentes en otros dominios;
+- `/login` y `/no-access` permanecen fuera de la matriz financiera;
+- las fuentes adyacentes no consumidas no inflan cobertura;
+- la clasificación no valida fórmulas reservadas a `NUMERA-AUD-008`;
+- la clasificación no valida cierres/aprobaciones reservados a `NUMERA-AUD-009`;
+- ningún hallazgo queda sin propietario y condición de salida;
+- no se crean ni modifican requisitos de prueba;
+- no se realizan cambios físicos;
+- `NUMERA-AUD-005` permanece como única continuidad inmediata.
+
+---
+
+#### 65. Límites
+
+Esta tarea no:
+
+- decide si un hardcode es aceptable;
+- inventaría todos los TODO;
+- determina si existen datos simulados;
+- valida fórmulas financieras;
+- valida conciliación;
+- confirma duplicación manual;
+- audita aprobación o segregación;
+- valida datos sensibles;
+- ejecuta builds o pruebas;
+- determina adopción cotidiana;
+- declara un módulo listo para producción;
+- selecciona proveedor contable, fiscal o bancario;
+- define la implementación TO-BE;
+- implementa capacidades ausentes;
+- rellena tablas vacías;
+- publica fuentes o eventos;
+- desarrolla `NUMERA-AUD-005`.
+
+---
+
+#### 66. Handoff inmediato a NUMERA-AUD-005
+
+La siguiente tarea recibe como base cerrada:
+
+```text
+CANONICAL_FINANCIAL_MODULES = 15
+COMPLETE_MODULES = 0
+PARTIAL_MODULES = 2
+PROTOTYPE_MODULES = 3
+ABSENT_MODULES = 10
+
+PARTIAL:
+CAP-12.01
+CAP-12.11
+
+PROTOTYPE:
+CAP-12.09
+CAP-12.14
+CAP-12.15
+
+ABSENT:
+CAP-12.02
+CAP-12.03
+CAP-12.04
+CAP-12.05
+CAP-12.06
+CAP-12.07
+CAP-12.08
+CAP-12.10
+CAP-12.12
+CAP-12.13
+```
+
+`NUMERA-AUD-005` deberá auditar datos simulados, hardcodes, TODO y lógica provisional dentro de las superficies actuales sin reabrir esta clasificación salvo evidencia material nueva.
+
+---
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-003 — Inventariar tablas, vistas, eventos y sistemas fuente`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-004 — Identificar módulos completos, parciales, prototipos y ausentes`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional`
 ### [ ] NUMERA-AUD-005 — Detectar datos simulados, hardcodes, TODO y lógica provisional
 ### [ ] NUMERA-AUD-006 — Detectar reportes sin conciliación o sin fuente de verdad aprobada
 ### [ ] NUMERA-AUD-007 — Detectar registros manuales duplicados frente a otros dominios
