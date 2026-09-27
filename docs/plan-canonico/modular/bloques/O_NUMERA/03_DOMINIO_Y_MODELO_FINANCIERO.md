@@ -10541,7 +10541,1062 @@ EXTERNAL_ACCOUNTING_AND_FISCAL_AUTHORITY = NUMERA_DOM_013
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo`
-### [ ] NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
+### ✅ NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
+**Tarea siguiente:** NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
+**Tipo de tarea:** definición documental de la frontera de autoridad entre NUMERA y sistemas, proveedores, presentadores o autoridades externas de naturaleza contable o fiscal, incluyendo identidad de entidad legal, documentos fiscales, obligaciones de cumplimiento, resultados externos, correlación, evidencia, estados inciertos, correcciones, intercompañía y entradas hacia contabilidad formal, sin seleccionar proveedor ni materializar integración; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea proveedor contable o fiscal, integración, credencial, endpoint, webhook, archivo regulatorio, documento fiscal real, obligación tributaria real, asiento, libro, plan de cuentas, tabla, RPC, RLS, Storage, Supabase, código de producto, despliegue ni mutación de datos
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir con precisión qué puede representar, preparar, correlacionar, revisar y conservar NUMERA frente a contabilidad y fiscalidad externas, y qué decisiones o resultados continúan perteneciendo a un sistema, proveedor, presentador, profesional competente o autoridad externa autorizada.
+
+La tarea impide que una cifra económica, un documento recibido, una exportación, un estado local, una respuesta técnica o una operación entre unidades de Vento sea elevada por inferencia a:
+
+- documento fiscal oficialmente emitido;
+- declaración tributaria presentada;
+- obligación tributaria legalmente determinada;
+- asiento contable oficial;
+- libro contable;
+- cierre contable o fiscal;
+- aceptación por autoridad;
+- tratamiento intercompañía definitivo.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+```
+
+El `execution_gate` transversal permanece temporalmente `UNREVIEWED`; ese valor no concede ejecución física y no sustituye la regla del modo `DEFINE_ONCE`, que no crea instancia física propia.
+
+Por tanto, esta tarea:
+
+- define una frontera contractual reutilizable;
+- no selecciona tecnología ni proveedor;
+- no crea una integración;
+- no autoriza una llamada externa;
+- no modifica datos;
+- no crea contabilidad interna formal;
+- no presenta documentos ante una autoridad.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-012
+
+Se recibe sin reinterpretación:
+
+```text
+NUMERA_OFFICIAL_REPORT_SCOPE = INTERNAL_MANAGEMENT_ANALYTICS
+NUMERA_OFFICIAL_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+LIVE_VIEW_PUBLISHED_SNAPSHOT_OFFICIAL_REPORT_EXPORT_SIMULATION = DISTINCT
+OFFICIAL_METRIC_REQUIRES_CANONICAL_VERSION = YES
+LOCAL_METRIC_FORMULA_OVERRIDE = FORBIDDEN
+REPORT_REQUIRES_PERIOD_AND_CUTOFF = YES
+CLOSED_PERIOD_REPORT_REQUIRES_CLOSE_VERSION = YES
+REPORT_OFFICIALITY_REQUIRES_QUALITY_LINEAGE_AND_AUTHORITY = YES
+REPORT_VERSION_IMMUTABLE_AFTER_PUBLICATION = YES
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+EXPORT_INHERITS_REPORT_ID_VERSION_SCOPE_AND_CUTOFF = YES
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_REQUIRES_INDEPENDENT_AUTHORIZATION = YES
+EXPORT_IS_ECONOMIC_SOURCE = NO
+EXPORT_FORMAT_DEFINES_OFFICIALITY = NO
+EXTERNAL_ACCOUNTING_AND_FISCAL_AUTHORITY = NUMERA_DOM_013
+```
+
+La 013 define esa autoridad externa sin convertir los reportes o exportaciones de la 012 en libros, declaraciones o documentos fiscales oficiales.
+
+---
+
+#### 4. Estado AS-IS que condiciona la decisión
+
+La evidencia vigente conserva estas condiciones:
+
+```text
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED_IN_NUMERA = 0
+CURRENT_ACCOUNTING_PROVIDER_BINDING_ACCREDITED = NO
+CURRENT_FISCAL_PROVIDER_BINDING_ACCREDITED = NO
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = AUSENTE
+CAP_12_13_TAX_AND_COMPLIANCE = AUSENTE
+```
+
+No existe base canónica suficiente para declarar por nombre un proveedor contable, fiscal, emisor, presentador o autoridad técnica integrada actualmente con NUMERA.
+
+Por tanto:
+
+- no se inventa un proveedor;
+- no se inventan endpoints;
+- no se inventan credenciales;
+- no se declara una integración activa;
+- la selección futura deberá acreditar binding, propiedad, finalidad y autoridad mediante los contratos de integración vigentes.
+
+---
+
+#### 5. Principio de autoridad
+
+Se conserva obligatoriamente:
+
+```text
+INTERNAL_ECONOMIC_TRUTH
+!= EXTERNAL_ACCOUNTING_AUTHORITY
+!= EXTERNAL_FISCAL_AUTHORITY
+!= TAX_FILING_ACCEPTANCE
+!= STATUTORY_BOOK
+```
+
+NUMERA puede ser fuente de verdad económica y analítica para Vento OS dentro de su alcance aprobado sin convertirse por ello en autoridad legal universal de contabilidad o fiscalidad.
+
+---
+
+#### 6. Capas que permanecen separadas
+
+| Capa | Propiedad o autoridad | Regla |
+| --- | --- | --- |
+| hecho operativo | aplicación propietaria del proceso | NUMERA no lo recrea ni corrige por escritura cruzada |
+| hecho económico | NUMERA | conserva correlación, dimensión, importe, evidencia y estado económico |
+| reporte oficial NUMERA | NUMERA | oficial solo para gestión/analítica interna bajo NUMERA-DOM-012 |
+| documento fiscal oficial | sistema, proveedor o emisor autorizado aplicable | NUMERA conserva referencia, estado y evidencia; no adquiere emisión oficial por almacenar una copia |
+| obligación fiscal oficial | autoridad, sistema o responsable autorizado aplicable | NUMERA puede preparar y seguir información, pero no determina autoridad legal por inferencia |
+| presentación o filing | presentador/sistema autorizado y autoridad receptora aplicables | una solicitud local no equivale a presentación aceptada |
+| hecho contable formal | arquitectura contable aplicable | diseño interno extensible reservado a NUMERA-DOM-017 |
+| libro o estado estatutario | sistema/proceso contable formal autorizado | un reporte NUMERA no lo sustituye |
+
+---
+
+#### 7. NUMERA como sistema económico interno
+
+NUMERA gobierna dentro de su alcance:
+
+- hechos económicos correlacionados;
+- obligaciones y derechos financieros definidos por sus tareas propietarias;
+- costos y rentabilidad;
+- caja, bancos y tesorería dentro del alcance aprobado;
+- periodos económicos;
+- reportes de gestión;
+- evidencia y diferencias económicas;
+- preparación de información para sistemas externos.
+
+NUMERA no adquiere autoridad externa porque el dato sea completo, conciliado, cerrado o publicado internamente.
+
+---
+
+#### 8. Autoridad contable externa
+
+Mientras no exista una arquitectura contable interna aprobada y materializada que cambie expresamente esta frontera, el sistema contable externo autorizado conserva la autoridad sobre los artefactos contables formales que le correspondan.
+
+Se mantiene:
+
+```text
+NUMERA_ECONOMIC_FACT
+-> CANDIDATE_OR_INPUT_FOR_ACCOUNTING
+!= OFFICIAL_ACCOUNTING_ENTRY
+```
+
+Una salida de NUMERA puede alimentar, explicar o reconciliar un asiento, pero no se convierte en asiento por exportación, nombre de archivo, aprobación gerencial o cierre económico.
+
+---
+
+#### 9. Autoridad fiscal externa
+
+La emisión, presentación, aceptación, rechazo, anulación o estado oficial de un documento o actuación fiscal pertenece a la autoridad o al sistema autorizado aplicable.
+
+Se mantiene:
+
+```text
+NUMERA_FISCAL_REFERENCE
+!= OFFICIAL_FISCAL_ISSUANCE_AUTHORITY
+
+LOCAL_SUBMISSION_REQUEST
+!= EXTERNAL_ACCEPTANCE
+```
+
+NUMERA puede iniciar o preparar un flujo futuro autorizado, pero el resultado oficial debe provenir de evidencia externa correlacionada.
+
+---
+
+#### 10. No selección de proveedor en esta tarea
+
+Esta tarea define la frontera, no el proveedor.
+
+Queda prohibido derivar una decisión de proveedor desde:
+
+- una marca conocida del mercado;
+- una herramienta usada históricamente sin evidencia vigente;
+- una captura de pantalla;
+- una hoja de cálculo;
+- una exportación;
+- un nombre de variable antiguo;
+- un POS externo cuyo proveedor todavía no esté acreditado;
+- una suposición sobre la autoridad fiscal competente.
+
+La incorporación de un proveedor concreto exige inventario y binding verificables conforme a los contratos `INT-EXT-*` y al trabajo de integración propietario.
+
+---
+
+#### 11. Identidad de entidad legal antes de cualquier efecto externo
+
+Marca, sede, canal, centro de costo y entidad legal permanecen distintos.
+
+Se conserva:
+
+```text
+BRAND != LEGAL_ENTITY
+SITE != LEGAL_ENTITY
+COST_CENTER != TAXPAYER_OR_ISSUER
+```
+
+Antes de emitir, presentar, contabilizar o tratar fiscalmente un hecho deberá estar resuelta la entidad legal o titular aplicable mediante una identidad canónica autorizada.
+
+Nunca se infiere el emisor o sujeto fiscal únicamente desde la sede que originó el evento o desde la marca visible al cliente.
+
+---
+
+#### 12. Identidad del documento fiscal
+
+Un documento fiscal referenciado por NUMERA deberá conservar una identidad suficiente para distinguirlo de:
+
+- venta;
+- pedido;
+- pago;
+- obligación;
+- soporte comercial;
+- hecho económico;
+- asiento;
+- archivo descargado.
+
+La identidad externa deberá permanecer correlacionable con el sistema o emisor autorizado que produjo su estado oficial.
+
+---
+
+#### 13. Documento fiscal y hecho económico permanecen distintos
+
+Se conserva:
+
+```text
+VENTA
+!= PAGO
+!= CAJA
+!= DOCUMENTO_FISCAL
+!= HECHO_ECONOMICO
+!= ASIENTO
+```
+
+El documento puede explicar o soportar un hecho económico, pero:
+
+- su existencia no prueba pago;
+- su ausencia no autoriza inventar un valor cero;
+- un pago no crea por sí solo documento fiscal;
+- una venta no prueba emisión fiscal exitosa;
+- un documento fiscal no sustituye la venta ni la obligación.
+
+---
+
+#### 14. Superficie de facturas y documentos fiscales
+
+`VSCREEN-0154 — Facturas y documentos fiscales` permanece como superficie NUMERA para gestionar referencia, estado, notas, relación económica y evidencia autorizada.
+
+Su binding canónico conserva:
+
+```text
+PROCESS = VPROC-0051
+STEP = VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT
+```
+
+La propiedad de la superficie no convierte a NUMERA en emisor fiscal oficial.
+
+---
+
+#### 15. Emisión y recepción
+
+La superficie futura podrá distinguir, según el contrato materializado:
+
+- documento emitido mediante sistema autorizado;
+- documento recibido desde contraparte o proveedor autorizado;
+- documento pendiente de confirmación externa;
+- documento rechazado o no aceptado;
+- corrección o nota relacionada;
+- referencia histórica migrada con cobertura conocida.
+
+La tarea no fija un enum runtime ni declara que esas capacidades ya existan físicamente.
+
+---
+
+#### 16. Evidencia mínima de resultado fiscal externo
+
+Para tratar un resultado como confirmado externamente deberá existir evidencia correlacionable suficiente para identificar, según aplique:
+
+- sistema o autoridad de origen;
+- entidad legal aplicable;
+- solicitud o evento interno relacionado;
+- identidad externa del documento o actuación;
+- instante de solicitud;
+- instante de respuesta o consulta;
+- resultado recibido;
+- estado externo observado;
+- versión o referencia de la respuesta;
+- actor o principal que inició la acción cuando corresponda;
+- evidencia de autorización;
+- relación con corrección, anulación o versión previa cuando exista.
+
+La evidencia no copiará secretos ni credenciales.
+
+---
+
+#### 17. Resultado técnico no equivale a resultado fiscal
+
+Una respuesta HTTP exitosa, recepción de webhook, escritura local, generación de archivo o mensaje de UI no demuestra por sí sola que la actuación tenga estado fiscal oficial aceptado.
+
+Se conserva:
+
+```text
+TECHNICAL_SUCCESS != BUSINESS_ACCEPTANCE != AUTHORITY_ACCEPTANCE
+```
+
+El cierre depende del resultado autoritativo aplicable, no del transporte aislado.
+
+---
+
+#### 18. Timeout y resultado desconocido
+
+Timeout, desconexión, error de transporte o respuesta incompleta no prueban fracaso ni éxito.
+
+Ante resultado incierto:
+
+1. se conserva la solicitud original;
+2. no se genera automáticamente una segunda actuación empresarial;
+3. se consulta o reconcilia el estado mediante la superficie autoritativa disponible;
+4. se evita duplicar emisión, presentación, anulación o ajuste;
+5. si la incertidumbre persiste, se entrega como diferencia gobernada a `NUMERA-DOM-014`.
+
+---
+
+#### 19. Idempotencia externa
+
+Toda integración futura deberá distinguir al menos:
+
+```text
+BUSINESS_INTENT
+REQUEST_ATTEMPT
+EXTERNAL_OPERATION_OR_DOCUMENT
+EXTERNAL_RESPONSE_OR_RECEIPT
+RECONCILIATION_RESULT
+```
+
+Un reintento técnico no crea una nueva obligación, documento, asiento, declaración o corrección salvo que el contrato empresarial autorice explícitamente una nueva operación.
+
+---
+
+#### 20. Correcciones, anulaciones y notas
+
+Una corrección externa no se modela borrando el original en NUMERA.
+
+Se conserva:
+
+- referencia al original;
+- causa;
+- autoridad o sistema que confirmó el cambio;
+- artefacto correctivo cuando exista;
+- efecto económico relacionado;
+- versión o estado previo;
+- nuevo estado observado;
+- reconciliación resultante.
+
+La semántica fiscal concreta del tipo de nota o corrección depende del sistema y tratamiento autorizado; esta tarea no la inventa.
+
+---
+
+#### 21. Historia no destructiva
+
+Queda prohibido:
+
+- reemplazar silenciosamente el identificador externo histórico;
+- editar una respuesta oficial pasada para que coincida con el estado actual;
+- borrar un rechazo después de una aprobación posterior;
+- reescribir una exportación histórica;
+- cambiar el periodo original sin una corrección versionada.
+
+La historia de NUMERA y la historia externa deben poder compararse sin perder versiones.
+
+---
+
+#### 22. Impuestos y obligaciones de cumplimiento
+
+`VSCREEN-0157 — Impuestos y obligaciones de cumplimiento` permanece como superficie NUMERA para gestionar calendario, bases, componentes, soportes, revisión, vencimiento, pago y evidencia dentro del alcance autorizado.
+
+Su binding canónico conserva:
+
+```text
+PROCESS = VPROC-0052
+STEP = VPROC-0052::STEP-MANAGE_TAX_OBLIGATION
+```
+
+La superficie no sustituye al emisor, presentador, profesional competente ni autoridad autorizada.
+
+---
+
+#### 23. Cálculo interno y obligación legal
+
+NUMERA puede preparar cálculos, bases, componentes, provisiones o estimaciones para control interno cuando exista contrato aprobado.
+
+Se conserva:
+
+```text
+INTERNAL_TAX_CALCULATION_OR_ESTIMATE
+!= LEGALLY_DETERMINED_TAX_OBLIGATION
+```
+
+Una cifra interna no adquiere carácter legal por aparecer en un dashboard, cierre, exportación o aprobación administrativa.
+
+---
+
+#### 24. Presentación y aceptación
+
+Una obligación solo podrá declararse presentada, aceptada, rechazada o recibida por autoridad cuando exista evidencia autoritativa que soporte ese estado.
+
+Se conserva:
+
+```text
+FILE_GENERATED = PRESENTED ? NO
+REQUEST_SENT = ACCEPTED ? NO
+LOCAL_STATUS = AUTHORITY_STATUS ? NO
+```
+
+NUMERA puede conservar una proyección local del proceso, pero deberá distinguirla del estado externo confirmado.
+
+---
+
+#### 25. Periodo económico, contable y fiscal
+
+Se mantiene la separación heredada:
+
+```text
+OPERATIONAL_PERIOD
+!= ECONOMIC_PERIOD
+!= ACCOUNTING_PERIOD
+!= FISCAL_PERIOD
+```
+
+Por tanto:
+
+- cerrar NUMERA no cierra el periodo contable externo;
+- cerrar NUMERA no presenta ni cierra una obligación fiscal;
+- un cierre contable externo no modifica silenciosamente el periodo económico;
+- una presentación fiscal no vuelve inmutable por sí sola el resto de objetos NUMERA;
+- las correlaciones entre periodos deben ser explícitas.
+
+---
+
+#### 26. Cierre NUMERA frente a cierre externo
+
+Un periodo `closed` de NUMERA demuestra únicamente el cierre económico definido en `NUMERA-DOM-011`.
+
+Se conserva:
+
+```text
+NUMERA_PERIOD_CLOSED
+!= ACCOUNTING_CLOSE_COMPLETED
+!= TAX_PERIOD_FILED_OR_ACCEPTED
+```
+
+Si un proceso externo requiere información de un periodo cerrado, consume una versión identificada; no adquiere derecho a reescribirla silenciosamente.
+
+---
+
+#### 27. Reapertura y efectos externos
+
+Reabrir un periodo económico no revoca, corrige ni reabre automáticamente un documento, libro o filing externo.
+
+Cuando la reapertura afecte información ya enviada o confirmada externamente:
+
+1. NUMERA conserva la versión previa;
+2. identifica el cambio material;
+3. determina que existe una posible diferencia externa;
+4. no inventa la corrección legal necesaria;
+5. remite la resolución a conciliación y al flujo externo autorizado aplicable;
+6. cualquier restatement interno permanece versionado.
+
+---
+
+#### 28. Reportes y exportaciones como insumo externo
+
+Los artefactos de `NUMERA-DOM-012` pueden actuar como:
+
+- insumo de preparación;
+- evidencia de gestión;
+- soporte de revisión;
+- archivo de intercambio autorizado;
+- base de reconciliación;
+- paquete para un sistema externo.
+
+Pero se mantiene:
+
+```text
+NUMERA_REPORT_OR_EXPORT
+!= ACCOUNTING_BOOK
+!= TAX_RETURN
+!= OFFICIAL_FISCAL_DOCUMENT
+```
+
+El formato CSV, XLSX, PDF, JSON o cualquier otro no cambia esa frontera.
+
+---
+
+#### 29. Exportación hacia sistema contable
+
+Una integración futura podrá exportar hechos, conciliaciones o asientos candidatos conforme a `TREQ-INTEGRATION-017`.
+
+La salida deberá conservar:
+
+- identidad del hecho económico;
+- entidad legal;
+- periodo y corte;
+- moneda e importes aplicables;
+- documento y soporte relacionados;
+- correlación;
+- versión;
+- estado de calidad;
+- identificador de solicitud de intercambio;
+- evidencia de respuesta externa cuando exista.
+
+El mapeo a cuentas, comprobantes y asientos formales se reserva a `NUMERA-DOM-017`.
+
+---
+
+#### 30. Entrada desde sistema contable o fiscal
+
+Una respuesta externa podrá actualizar una proyección de estado o abrir una diferencia en NUMERA, pero no deberá:
+
+- modificar el hecho operativo propietario;
+- eliminar el hecho económico original;
+- convertir un error externo en valor interno válido;
+- cerrar una diferencia sin reconciliación;
+- otorgar permisos adicionales;
+- crear por inferencia una obligación diferente.
+
+La respuesta externa es evidencia correlacionada, no una licencia para escritura cruzada.
+
+---
+
+#### 31. Integración bidireccional sin doble fuente
+
+Se adopta el patrón:
+
+```text
+VENTO_SOURCE_FACT
+-> NUMERA_ECONOMIC_REPRESENTATION
+-> AUTHORIZED_EXTERNAL_INPUT
+-> EXTERNAL_AUTHORITATIVE_RESULT
+-> NUMERA_REFERENCE_OR_RECONCILIATION
+```
+
+El retorno externo nunca crea una segunda versión competidora del hecho operativo.
+
+---
+
+#### 32. Fuente oficial y fuente económica
+
+Un mismo caso puede tener varias autoridades por dimensión sin fusionarlas:
+
+- la aplicación propietaria conserva el hecho operativo;
+- NUMERA conserva el efecto económico;
+- el sistema fiscal autorizado conserva el estado oficial del documento o actuación fiscal aplicable;
+- el sistema contable formal conserva los artefactos contables que le correspondan;
+- el sistema bancario o proveedor de pago conserva su resultado externo dentro de su dominio.
+
+Conciliar autoridades no significa convertirlas en una sola fuente editable.
+
+---
+
+#### 33. Operaciones entre entidades legales distintas
+
+Cuando origen y destino pertenezcan a entidades legales distintas, NUMERA no clasificará por inferencia la operación como:
+
+- simple traslado interno;
+- venta intercompañía;
+- gasto;
+- ingreso legal;
+- préstamo;
+- aporte;
+- cuenta por cobrar;
+- cuenta por pagar;
+- operación fiscal específica.
+
+La operación deberá conservar ambas identidades, evidencia física/económica y estado pendiente del tratamiento aprobado que corresponda.
+
+---
+
+#### 34. Intercompañía
+
+Se conserva:
+
+```text
+SAME_BUSINESS_GROUP
+!= SAME_LEGAL_ENTITY
+```
+
+Una operación entre entidades distintas no se neutraliza solo por pertenecer al mismo grupo empresarial.
+
+Esta tarea no fija:
+
+- facturación intercompañía;
+- precios de transferencia fiscales;
+- impuestos aplicables;
+- asiento contable;
+- eliminación de consolidación;
+- tratamiento jurídico.
+
+Esas decisiones exigen autoridad empresarial/profesional aplicable y, para la arquitectura contable formal, `NUMERA-DOM-017`.
+
+---
+
+#### 35. Venta externa y B2B
+
+Una transferencia productiva o logística interna no se vuelve venta externa por tener valorización económica.
+
+Una venta externa requiere el caso comercial propietario y evidencia suficiente de contraparte, compromiso, entrega, precio, pago/documento según aplique y tratamiento fiscal autorizado.
+
+`OPS-B2B-001` conserva el proceso comercial aplicable; NUMERA consume el efecto económico y la referencia fiscal sin sustituir la operación comercial.
+
+---
+
+#### 36. POS externo vigente
+
+El inventario de integraciones reconoce un POS externo vigente con proveedor todavía no acreditado en las fuentes actuales.
+
+Por tanto:
+
+- su existencia no permite nombrar proveedor en esta tarea;
+- su documento fiscal histórico o temporal requiere identidad y origen verificables;
+- su transición debe preservar correlación e idempotencia;
+- no se declara que NUMERA sea emisor durante la transición;
+- cualquier integración concreta permanece bajo el contrato `INT-POS-*` y las tareas de integración correspondientes.
+
+---
+
+#### 37. Credenciales y principal técnico
+
+La eventual integración contable o fiscal deberá usar principal técnico, credenciales, autenticación y alcance conforme a `INT-EXT-*`.
+
+Esta tarea no crea ni distribuye:
+
+- API keys;
+- secretos;
+- certificados;
+- tokens;
+- credenciales de usuario compartidas;
+- archivos de configuración;
+- variables de entorno.
+
+La autoridad empresarial tampoco se deriva de poseer una credencial técnica.
+
+---
+
+#### 38. Autorización de acciones externas
+
+Poder consultar una factura, reporte, obligación o resultado no implica poder:
+
+- emitir;
+- anular;
+- corregir;
+- presentar;
+- firmar;
+- pagar;
+- enviar a contabilidad;
+- reenviar una operación incierta.
+
+La futura acción protegida deberá revalidar server-side el permiso exacto, actor efectivo, recurso, entidad legal, alcance y estado vigente conforme al contrato transversal de autorización.
+
+---
+
+#### 39. Segregación entre preparación y presentación
+
+Se conserva:
+
+```text
+PREPARE != REVIEW != APPROVE != SUBMIT != ACCEPT
+```
+
+La misma persona o capacidad no obtiene automáticamente todas las etapas por tener acceso a NUMERA.
+
+La segregación material de capacidades pertenece a `NUMERA-AUTH-*`; esta tarea fija únicamente que la frontera externa no puede colapsarlas.
+
+---
+
+#### 40. Auditoría y evidencia
+
+Toda acción externa protegida o resultado sensible deberá ser reconstruible mediante evidencia correlacionable suficiente, sin registrar secretos.
+
+Deberá poder determinarse, según aplique:
+
+- quién inició;
+- en nombre de qué actor y entidad;
+- qué permiso se resolvió;
+- qué recurso se alcanzó;
+- qué versión se envió;
+- qué sistema externo recibió o respondió;
+- qué identificador de correlación se utilizó;
+- qué resultado se observó;
+- cuándo ocurrió;
+- si hubo reintento, rechazo, timeout o reconciliación;
+- qué versión posterior sustituyó o corrigió la anterior.
+
+---
+
+#### 41. Datos sensibles y minimización
+
+Una integración contable o fiscal puede procesar información financiera, tributaria, bancaria, personal o comercial sensible.
+
+Por tanto:
+
+- se envía únicamente el conjunto necesario;
+- logs y URLs no exponen secretos ni payloads completos por defecto;
+- errores de UI no reflejan indiscriminadamente detalles internos;
+- una exportación no amplía el alcance autorizado;
+- la retención de evidencia respeta el contrato propietario de información y cumplimiento.
+
+---
+
+#### 42. Documentos recibidos y adjuntos
+
+Un PDF, XML, imagen, correo, archivo plano u otro adjunto recibido no se considera por sí mismo estado oficial confirmado.
+
+Se deberá distinguir:
+
+```text
+FILE_RECEIVED
+DOCUMENT_IDENTITY_RESOLVED
+EXTERNAL_STATUS_VERIFIED
+ECONOMIC_EFFECT_RECONCILED
+```
+
+La tarea no fija formato regulatorio, esquema XML, firma ni mecanismo de validación de un proveedor no acreditado.
+
+---
+
+#### 43. Duplicados y reenvíos
+
+Antes de crear una nueva actuación externa deberá poder comprobarse si existe:
+
+- una solicitud previa correlacionada;
+- un documento ya emitido;
+- una presentación ya recibida;
+- una respuesta pendiente de consulta;
+- una corrección o anulación en curso;
+- un resultado externo confirmado.
+
+No se duplica una actuación porque la UI no haya recibido respuesta en el primer intento.
+
+---
+
+#### 44. Diferencias que no resuelve esta tarea
+
+La 013 identifica como diferencias gobernables, entre otras:
+
+- origen económico sin documento externo esperado;
+- documento externo sin hecho económico correlacionado;
+- entidad legal divergente;
+- contraparte divergente;
+- importe divergente;
+- moneda divergente;
+- impuesto o retención divergente;
+- fecha o periodo divergente;
+- duplicado externo;
+- duplicado interno;
+- estado externo rechazado;
+- resultado externo desconocido;
+- corrección externa no reflejada internamente;
+- cambio interno posterior a una actuación externa;
+- asiento externo rechazado o no conciliado.
+
+El mecanismo de resolución, tolerancias, owners y cierre de esas diferencias pertenece a `NUMERA-DOM-014`.
+
+---
+
+#### 45. AS-IS no se convierte en autoridad por transición
+
+La ausencia actual de módulo fiscal/contable no autoriza a:
+
+- usar hojas manuales como autoridad definitiva;
+- tratar un correo como libro contable;
+- convertir un archivo exportado en declaración;
+- declarar un proveedor por memoria organizacional;
+- asignar estados oficiales sin recibo o evidencia;
+- usar `source_app/source_table/source_id` vacío o futuro como prueba de integración existente.
+
+La transición deberá declarar procedencia y cobertura reales.
+
+---
+
+#### 46. Migración histórica
+
+Información histórica proveniente de sistemas, archivos o procesos anteriores deberá conservar, cuando se incorpore:
+
+- procedencia;
+- entidad legal conocida;
+- periodo/corte;
+- identidad externa disponible;
+- estado conocido;
+- cobertura;
+- limitaciones;
+- evidencia;
+- condición de reconciliación.
+
+Un histórico incompleto no se eleva a estado oficial contemporáneo por importarlo a NUMERA.
+
+---
+
+#### 47. Contabilidad formal reservada a NUMERA-DOM-017
+
+La 013 no diseña:
+
+- plan de cuentas;
+- cuentas contables;
+- comprobantes;
+- asientos;
+- débitos/créditos;
+- libros;
+- reglas de posteo;
+- periodos contables formales;
+- reversión contable;
+- consolidación contable.
+
+`NUMERA-DOM-017` deberá consumir esta frontera para construir una arquitectura extensible sin quitar autoridad a hechos operativos ni confundir candidatos con asientos oficiales.
+
+---
+
+#### 48. Condiciones para una futura integración contable/fiscal
+
+Antes de materializar una integración deberán estar definidos y acreditados, según aplique:
+
+1. sistema/proveedor exacto;
+2. finalidad;
+3. entidad o entidades legales cubiertas;
+4. autoridad que conserva cada resultado;
+5. dirección de intercambio;
+6. contrato y versión;
+7. identidad/correlación;
+8. autenticación y principal técnico;
+9. scopes/permisos;
+10. idempotencia;
+11. semántica de éxito, rechazo e incertidumbre;
+12. reconciliación;
+13. errores y retry;
+14. auditoría;
+15. datos sensibles y minimización;
+16. ambiente y pruebas;
+17. rollback o retiro;
+18. owner funcional y técnico.
+
+La ausencia de cualquiera de estos elementos no se completa por inferencia.
+
+---
+
+#### 49. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| no existe binding contable externo acreditado en NUMERA | no | `NUMERA-UX-027` + `INT-EXT-*`/integración aplicable | proveedor, propósito, principal, contrato y evidencia quedan identificados antes de materializar |
+| no existe binding fiscal externo acreditado en NUMERA | no | `NUMERA-UX-027` + integración fiscal aplicable | emisor/presentador autorizado y resultado externo quedan correlacionables |
+| `CAP-12.06` no está materializada | no | `NUMERA-UX-027`, `VSCREEN-0154`, implementación posterior | documentos fiscales se gestionan sin confundir emisión oficial con estado local |
+| `CAP-12.13` no está materializada | no | `NUMERA-UX-027`, `VSCREEN-0157`, implementación posterior | calendario, obligación, soportes y evidencia separan preparación de presentación/aceptación |
+| diferencias entre NUMERA y resultado externo no tienen resolución detallada | no | `NUMERA-DOM-014` | clases, tolerancias, owner, decisión y cierre de diferencias quedan definidos |
+| contabilidad formal interna todavía no está definida | no | `NUMERA-DOM-017` | plan de cuentas, comprobantes/asientos y arquitectura formal consumen esta frontera |
+| tratamiento legal/fiscal de intercompañía no se decide por inferencia | no | gobierno empresarial/profesional aplicable + `NUMERA-DOM-017` | entidad, sustancia, documento y tratamiento autorizado quedan aprobados |
+
+---
+
+#### 50. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La cobertura vigente ya protege frontera de fuente, autoridad externa, correlación, idempotencia, periodos diferenciados, autorización server-side, evidencia y conciliación sin sobreescritura.
+
+---
+
+#### 51. Cobertura de prueba vigente reutilizada
+
+Esta sección documenta trazabilidad existente y no constituye actualización del Registro 04A.
+
+Cobertura principal reutilizada:
+
+- `TREQ-NUMERA-001` — reconciliación de reportes, costos, gastos, cierres y saldos con hechos/documentos fuente, historia y permisos segregados;
+- `TREQ-NUMERA-002` — identidad económica, entidad legal, documento, impuestos, evidencia, periodos económico/contable/fiscal distintos y preparación para mapeo contable sin escritura directa de libros;
+- `TREQ-INTEGRATION-006` — fuente empresarial única, propagación contractual y resolución trazable de fuentes competidoras o diferencias;
+- `TREQ-INTEGRATION-017` — intercambio de hechos, conciliaciones y asientos candidatos con facturación/sistema contable, conservación de payload/identificadores/estado/respuesta y autoridad oficial externa mientras no exista contabilidad interna aprobada;
+- `TREQ-INTEGRATION-168` — un timeout o resultado incierto no inicia por sí solo reversión o corrección;
+- `TREQ-AUTH-013` — revalidación server-side de acciones protegidas;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones sensibles.
+
+No se entrega actualización 04A porque la tarea especializa una frontera ya cubierta sin cambiar el contenido ni el estado de esos requisitos.
+
+---
+
+#### 52. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del checkout del usuario durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó todavía `NUMERA-DOM-013` dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `vento-shell/main`, SHA de `main`, protocolo, contrato de entrega, continuidad activa, topología, políticas de formato/desarrollo, archivo propietario, Registro 04A NUMERA/INTEGRATION/AUTH, inventario de integraciones externas, auditoría NUMERA, catálogo de pantallas/procesos y el handoff completo aprobado de `NUMERA-DOM-012`; no se observó binding contable o fiscal externo acreditado en NUMERA |
+| OPERATIVA | NOT_EXECUTED | no se emitió, presentó, recibió, anuló, corrigió, contabilizó, pagó ni concilió ningún documento u obligación real |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE`; no crea instancia física propia y el `execution_gate` transversal `UNREVIEWED` no concede materialización |
+
+---
+
+#### 53. Criterios de aceptación
+
+`NUMERA-DOM-013` queda aceptable cuando:
+
+1. hecho operativo, hecho económico, documento fiscal, obligación fiscal, asiento y libro permanecen distintos;
+2. NUMERA conserva autoridad económica interna sin declararse autoridad contable/fiscal universal;
+3. no se selecciona ni inventa proveedor externo sin binding acreditado;
+4. marca, sede, centro de costo y entidad legal permanecen distintos;
+5. un documento fiscal conserva identidad y correlación propias;
+6. venta, pago, caja, documento fiscal, hecho económico y asiento no se fusionan;
+7. `VSCREEN-0154` conserva propiedad de gestión sin convertir a NUMERA en emisor oficial;
+8. todo resultado fiscal externo oficial exige evidencia autoritativa correlacionada;
+9. éxito técnico no equivale a aceptación de negocio ni de autoridad;
+10. timeout o resultado incierto no dispara repetición empresarial ciega;
+11. los reintentos son idempotentes respecto de la intención empresarial;
+12. corrección/anulación conserva original e historia;
+13. `VSCREEN-0157` conserva gestión de obligaciones sin sustituir al presentador o autoridad;
+14. cálculo/estimación interna no equivale a obligación legal determinada;
+15. generar archivo o enviar request no equivale a presentación aceptada;
+16. periodos operativo, económico, contable y fiscal permanecen separados;
+17. cierre NUMERA no equivale a cierre contable o fiscal;
+18. reapertura económica no modifica automáticamente actuaciones externas;
+19. reportes/exportaciones NUMERA pueden ser insumos pero no libros o filings por sí mismos;
+20. una exportación hacia contabilidad conserva identidad, entidad, periodo, moneda, soporte, correlación y versión;
+21. una respuesta externa no reescribe el hecho operativo ni borra historia económica;
+22. el intercambio bidireccional no crea una segunda fuente operativa;
+23. las autoridades por dimensión permanecen distinguibles;
+24. operaciones entre entidades legales distintas no reciben tratamiento intercompañía por inferencia;
+25. pertenecer al mismo grupo no implica misma entidad legal;
+26. una transferencia interna no se vuelve venta externa por valorización;
+27. el POS externo no autoriza inventar proveedor ni autoridad fiscal;
+28. credencial técnica no equivale a autoridad empresarial;
+29. lectura no implica emisión, presentación, anulación o envío contable;
+30. preparar, revisar, aprobar, presentar y aceptar permanecen etapas separadas;
+31. toda acción externa sensible deja evidencia correlacionable sin secretos;
+32. información sensible se minimiza;
+33. adjunto recibido no equivale a estado oficial confirmado;
+34. reenvío no duplica una actuación incierta;
+35. las diferencias quedan identificadas para `NUMERA-DOM-014` sin resolverlas anticipadamente;
+36. históricos incompletos conservan procedencia y limitaciones;
+37. plan de cuentas, comprobantes, asientos y libros permanecen reservados a `NUMERA-DOM-017`;
+38. una futura integración exige proveedor, autoridad, contrato, identidad, autenticación, idempotencia, reconciliación y evidencia explícitos;
+39. no se crean ni modifican requisitos de prueba;
+40. no se realizan cambios físicos;
+41. `NUMERA-DOM-014` recibe clases de diferencia concretas entre NUMERA y fuentes externas.
+
+---
+
+#### 54. Límites
+
+Esta tarea no:
+
+- selecciona proveedor contable;
+- selecciona proveedor fiscal;
+- declara por nombre una autoridad no acreditada en las fuentes vigentes;
+- crea integración externa;
+- crea principal técnico o credencial;
+- crea endpoint, webhook, polling, archivo de intercambio o adaptador;
+- define formato regulatorio específico;
+- define firma, certificado o esquema XML;
+- emite documentos fiscales;
+- presenta declaraciones;
+- determina impuestos legalmente;
+- presta asesoría tributaria o contable profesional;
+- ejecuta facturación intercompañía;
+- fija precios de transferencia fiscales;
+- define plan de cuentas;
+- define comprobantes ni asientos;
+- crea libros contables;
+- modifica periodos económicos;
+- modifica reportes de `NUMERA-DOM-012`;
+- resuelve conciliaciones detalladas reservadas a `NUMERA-DOM-014`;
+- desarrolla arquitectura contable formal reservada a `NUMERA-DOM-017`;
+- crea capacidades runtime de `NUMERA-AUTH-*`;
+- implementa `VSCREEN-0154`, `VSCREEN-0157` o `NUMERA-UX-027`;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-DOM-014`.
+
+---
+
+#### 55. Handoff a NUMERA-DOM-014
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_INTERNAL_ECONOMIC_AUTHORITY = YES
+NUMERA_IS_EXTERNAL_ACCOUNTING_AUTHORITY_BY_DEFAULT = NO
+NUMERA_IS_EXTERNAL_FISCAL_AUTHORITY_BY_DEFAULT = NO
+ACCOUNTING_PROVIDER_BINDING_ACCREDITED_CURRENTLY = NO
+FISCAL_PROVIDER_BINDING_ACCREDITED_CURRENTLY = NO
+BRAND_SITE_COST_CENTER_AND_LEGAL_ENTITY = DISTINCT
+SALE_PAYMENT_CASH_FISCAL_DOCUMENT_ECONOMIC_FACT_ACCOUNTING_ENTRY = DISTINCT
+FISCAL_DOCUMENT_OFFICIALITY_REQUIRES_EXTERNAL_AUTHORITATIVE_EVIDENCE = YES
+TECHNICAL_SUCCESS_IMPLIES_AUTHORITY_ACCEPTANCE = NO
+TIMEOUT_IMPLIES_EXTERNAL_FAILURE = NO
+UNCERTAIN_EXTERNAL_RESULT_REQUIRES_RECONCILIATION = YES
+EXTERNAL_RETRY_MUST_BE_IDEMPOTENT = YES
+EXTERNAL_CORRECTION_PRESERVES_HISTORY = YES
+INTERNAL_TAX_ESTIMATE_IS_LEGAL_TAX_OBLIGATION = NO
+FILE_GENERATED_IS_TAX_FILING = NO
+REQUEST_SENT_IS_AUTHORITY_ACCEPTANCE = NO
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+NUMERA_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+NUMERA_REPORT_OR_EXPORT_CAN_FEED_EXTERNAL_SYSTEM = YES
+NUMERA_REPORT_OR_EXPORT_IS_STATUTORY_ARTEFACT_BY_DEFAULT = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_MUST_NOT_REWRITE_SOURCE_FACT = YES
+SAME_BUSINESS_GROUP_IMPLIES_SAME_LEGAL_ENTITY = NO
+INTERCOMPANY_TREATMENT_BY_INFERENCE = FORBIDDEN
+ACCOUNTING_FORMAL_MODEL_OWNER = NUMERA_DOM_017
+DIFFERENCE_RESOLUTION_OWNER = NUMERA_DOM_014
+```
+
+`NUMERA-DOM-014` deberá definir cómo se clasifican, priorizan, investigan, aprueban, corrigen y cierran diferencias entre hechos operativos, representaciones económicas, documentos, pagos, bancos, obligaciones y resultados externos, incluyendo importes, monedas, entidades, periodos, duplicados, faltantes, rechazos y estados inciertos, sin sobrescribir la historia ni invadir la autoridad de origen.
+
+---
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias`
 ### [ ] NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
 ### [ ] NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
 ### [ ] NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
