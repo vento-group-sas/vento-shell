@@ -3680,7 +3680,772 @@ Esta tarea no demuestra ni autoriza:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo`
-### [ ] NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
+### ✅ NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación
+**Tarea siguiente:** NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
+**Tipo de tarea:** definición documental del catálogo canónico compartido de centros de costo, su propiedad funcional dentro de NUMERA, identidad estable, alcance, relaciones organizacionales, jerarquía analítica, vigencia, elegibilidad, lifecycle, transición desde el AS-IS y fronteras de consumo por otras aplicaciones, sin crear un catálogo paralelo ni modificar físicamente datos, permisos o Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea, renombra, activa, desactiva, fusiona, retira ni elimina centros de costo, no modifica NUMERA, NEXO, ORIGO, FOGO, PULSO, VISO, Supabase, permisos, RLS, tablas, presupuestos, gastos, hechos económicos, integraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una sola fuente canónica de centros de costo para VENTO OS, establecer quién gobierna funcionalmente ese catálogo, qué representa una identidad de centro de costo, cómo se relaciona sin confundirse con empresa, marca, sede, área, instalación, canal o aplicación y qué reglas de vigencia, elegibilidad, jerarquía, historia y consumo deben cumplirse antes de usar un centro en gastos, presupuestos, costos, transferencias internas, cierres o análisis.
+
+La tarea resuelve la brecha dejada por `OPS-CST-001` y `NUMERA-AUD-009`:
+
+- existe un catálogo físico compartido `cost_centers`;
+- NUMERA lo consume actualmente, pero no gobierna físicamente sus filas desde las superficies auditadas;
+- la policy AS-IS observada usa una capacidad NEXO o autoridad global para administrar el recurso;
+- existe un centro demo activo que puede alcanzar superficies financieras;
+- Producción y Distribución comparten instalación física, pero requieren responsabilidades económicas distinguibles;
+- el catálogo objetivo no puede duplicarse por aplicación ni deducirse de la estructura física.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica de `NUMERA-DOM-006` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- esta tarea define el contrato de dominio una sola vez;
+- no crea una instancia física propia;
+- no modifica `cost_centers` ni sus relaciones actuales;
+- no crea migraciones, funciones, triggers o policies;
+- no publica códigos nuevos;
+- no crea permisos ni fija sus nombres atómicos;
+- no implementa todavía presupuestos, costos, cierres ni rentabilidad;
+- no convierte la configuración histórica de NEXO en propiedad objetivo por inferencia.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-005
+
+`NUMERA-DOM-005` deja congelado que:
+
+- un gasto solo puede referenciar un centro de costo válido para su causa, periodo y contexto;
+- una fila activa no basta para probar elegibilidad;
+- la captura manual no puede crear un catálogo paralelo ni inventar centros;
+- centro de costo, sede, entidad legal y fuente del gasto permanecen dimensiones distintas;
+- una ambigüedad de centro no se resuelve mediante fallback silencioso;
+- el catálogo y su gobierno se reservan expresamente a esta tarea.
+
+La presente tarea desarrolla esa reserva sin reabrir el contrato de gastos.
+
+---
+
+#### 4. Handoff recibido de OPS-CST-001
+
+Se conservan como invariantes:
+
+```text
+PHYSICAL_INSTALLATION_COUNT_DOES_NOT_DEFINE_COST_CENTER_COUNT
+PRODUCTION_AND_DISTRIBUTION_ECONOMIC_RESPONSIBILITIES = DISTINGUISHABLE
+COST_CENTER_CATALOG = SINGLE_SHARED_CANONICAL_CATALOG
+INTERNAL_PRODUCT_TRANSFER_IS_SALE_BY_DEFAULT = NO
+INTERNAL_PRODUCT_TRANSFER_IS_LEGAL_REVENUE_OR_EXPENSE_BY_DEFAULT = NO
+INVENTORY_MOVEMENT_OWNER = NEXO
+PRODUCTIVE_FACT_OWNER = FOGO
+ECONOMIC_VALUATION_OWNER = NUMERA
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+```
+
+Además:
+
+- no se crea un catálogo NUMERA paralelo;
+- no se duplica un centro por aplicación;
+- marca, sede, entidad legal y centro de costo no son sinónimos;
+- una fila demo no es destino de operación real;
+- un centro no se crea únicamente para resolver una fórmula o un reporte;
+- la identidad, código, lifecycle, jerarquía, vigencia, elegibilidad y ownership definitivos del catálogo corresponden a esta tarea.
+
+---
+
+#### 5. Decisión de propiedad funcional
+
+El catálogo canónico compartido de centros de costo queda bajo **propiedad funcional y gobierno económico de NUMERA**.
+
+Esta decisión significa:
+
+- NUMERA define qué constituye un centro de costo válido como dimensión económica;
+- NUMERA gobierna las reglas de identidad, alta, vigencia, retiro, elegibilidad, jerarquía y uso económico;
+- NUMERA valida el uso del centro dentro de hechos económicos, gastos, presupuestos, costos, distribuciones, cierres y análisis;
+- otras aplicaciones pueden consumir la identidad canónica y proponer contexto, pero no crean una segunda fuente de verdad;
+- una capacidad histórica de NEXO sobre `cost_centers` no transfiere el ownership objetivo del catálogo a NEXO;
+- la persistencia técnica compartida continúa perteneciendo a la infraestructura común gobernada desde `vento-shell`, no a una tabla privada de `vento-numera`.
+
+La propiedad funcional no concede por sí sola permiso de mutación a ningún actor.
+
+---
+
+#### 6. Separación entre owner funcional, persistencia y consumidores
+
+Se distinguen tres responsabilidades:
+
+| Capa | Responsabilidad |
+| --- | --- |
+| gobierno funcional | NUMERA define significado económico, lifecycle, elegibilidad y reglas de uso |
+| persistencia compartida | `vento-shell` y la infraestructura de datos materializan el catálogo canónico cuando el paquete correspondiente lo autorice |
+| consumo | NEXO, ORIGO, FOGO, PULSO, VISO, NUMERA y otros dominios referencian centros autorizados según su proceso y alcance |
+
+Ningún consumidor adquiere propiedad del catálogo por consultar una fila o incluir `cost_center_id` en su propio objeto.
+
+---
+
+#### 7. Definición canónica de centro de costo
+
+Un centro de costo es una identidad económica estable utilizada para atribuir, agrupar, presupuestar, distribuir y analizar efectos económicos bajo una responsabilidad empresarial identificable.
+
+No es automáticamente:
+
+- una empresa;
+- una marca;
+- una sede;
+- una instalación;
+- un área;
+- una zona;
+- una estación;
+- un canal;
+- una aplicación;
+- un almacén;
+- una cuenta contable;
+- un emisor fiscal.
+
+Puede relacionarse con esas dimensiones cuando exista una relación explícita y vigente, pero no las sustituye.
+
+---
+
+#### 8. Regla de catálogo único
+
+VENTO OS conserva un solo catálogo canónico compartido de centros de costo.
+
+Queda prohibido:
+
+- crear `cost_centers` paralelos por aplicación;
+- copiar identidades para que cada módulo administre su propia versión;
+- usar texto libre como sustituto de una identidad canónica;
+- duplicar un centro para representar la misma responsabilidad económica;
+- crear aliases funcionales que se comporten como centros independientes;
+- resolver una incompatibilidad de integración creando una segunda fuente;
+- usar dashboards, presupuestos o reportes como fuente editable del catálogo.
+
+Los consumidores deberán referenciar la identidad canónica.
+
+---
+
+#### 9. Identidad estable
+
+Cada centro deberá conservar una identidad estable que sobreviva a cambios de nombre visible, relaciones organizacionales y lifecycle.
+
+Reglas:
+
+1. la identidad canónica no se deduce del nombre;
+2. el código empresarial visible no sustituye la identidad estable;
+3. un código históricamente usado no se reasignará silenciosamente a otra responsabilidad económica;
+4. un cambio de nombre no crea un centro nuevo por sí solo;
+5. una fusión, división o sustitución no reescribe hechos históricos;
+6. las referencias económicas conservan el identificador del centro vigente al momento reconocido;
+7. la implementación física futura deberá conservar historia suficiente para reconstruir la identidad usada.
+
+Esta tarea no cambia las columnas físicas existentes.
+
+---
+
+#### 10. Gobierno del código empresarial
+
+El código de centro de costo es una referencia empresarial gobernada y no una cadena libre.
+
+El diseño objetivo deberá garantizar que:
+
+- sea único dentro del ámbito canónico definido;
+- no se reutilice para una responsabilidad distinta después de haber sido referenciado;
+- un cambio de código conserve trazabilidad hacia la identidad estable;
+- los consumidores no construyan lógica empresarial a partir de prefijos no contractuales;
+- ningún código nuevo se invente desde una aplicación consumidora;
+- el alta de una nueva identidad publique su código mediante la autoridad del catálogo.
+
+No se asigna en esta tarea un código nuevo al Centro de Distribución porque ninguna fuente canónica vigente declara uno.
+
+---
+
+#### 11. Relaciones con empresa, marca, sede y área
+
+Toda relación entre un centro y otras dimensiones deberá ser explícita.
+
+Se conserva:
+
+```text
+ENTIDAD_LEGAL != MARCA != SEDE != AREA != CENTRO_DE_COSTO
+```
+
+Reglas:
+
+- compartir sede no obliga a compartir centro;
+- compartir centro no convierte dos sedes en una sola sede;
+- una marca no crea automáticamente un centro;
+- una entidad legal no se deduce del código o nombre del centro;
+- un centro podrá tener alcance organizacional, de negocio, sede o área cuando el contrato aplicable lo declare;
+- una relación territorial deberá conservar vigencia;
+- si la entidad legal, sede o relación organizacional requerida es ambigua, no se inferirá la dimensión financiera.
+
+---
+
+#### 12. Cardinalidad frente a la instalación física
+
+La cantidad de instalaciones físicas no define la cantidad de centros de costo.
+
+Por tanto:
+
+- una instalación puede alojar varias responsabilidades económicas;
+- una responsabilidad económica puede consumir hechos de más de un espacio físico cuando la relación esté autorizada;
+- no se crea una sede adicional solo para justificar un centro;
+- no se elimina una responsabilidad económica porque comparta inmueble con otra;
+- el análisis económico debe poder distinguir responsabilidades sin deformar el modelo territorial.
+
+---
+
+#### 13. Producción y Distribución
+
+Producción y Distribución quedan definidas como **responsabilidades económicas distintas** aunque funcionen dentro de la misma instalación física.
+
+Decisiones:
+
+- `CP-CENTRO-PROD` permanece como la identidad observada asociada a Producción; esta tarea no la renombra;
+- Distribución deberá disponer de una identidad canónica de centro de costo propia antes de recibir atribución directa, presupuesto o análisis independiente como responsabilidad económica;
+- el código definitivo de esa identidad no se inventa en esta tarea;
+- la creación física posterior deberá seguir el lifecycle y la autorización del catálogo;
+- compartir instalación no autoriza cargar costos logísticos a Producción por defecto;
+- Producción y Distribución podrán agregarse conjuntamente en análisis superiores sin perder sus identidades de base.
+
+---
+
+#### 14. Tratamiento de identidades observadas
+
+El snapshot auditado conserva estas identidades activas:
+
+| Código observado | Tratamiento canónico definido |
+| --- | --- |
+| `ADM-APP-REVIEW` | identidad demo; conservar para trazabilidad de prueba, excluir de operación y finanzas reales |
+| `ADM-VENTO-GROUP` | identidad existente; conservar sin inferir por su nombre entidad legal, sede o alcance definitivo |
+| `CP-CENTRO-PROD` | identidad productiva existente; conservar como referencia de Producción |
+| `SAT-MOLKA-PRINCIPAL` | identidad satélite existente; conservar, con relación explícita a las dimensiones organizacionales aplicables |
+| `SAT-SAUDO` | identidad satélite existente; conservar, con relación explícita a las dimensiones organizacionales aplicables |
+| `SAT-VENTO-CAFE` | identidad satélite existente; conservar, con relación explícita a las dimensiones organizacionales aplicables |
+
+La tabla documenta tratamiento de continuidad; no crea ni modifica filas.
+
+---
+
+#### 15. Datos demo y de prueba
+
+Un centro de prueba, demo, APP-REVIEW o equivalente nunca será elegible para un hecho económico real por el solo hecho de tener estado activo.
+
+Reglas:
+
+- se preserva su identidad mientras sea necesaria para prueba o historia;
+- se excluye de selectores de operación real;
+- se excluye de presupuestos y costos reales;
+- no recibe gastos reales;
+- no participa en cierres financieros ordinarios;
+- no se agrega a indicadores reales;
+- su clasificación de prueba debe poder verificarse sin depender únicamente del texto visible;
+- una transición desde demo hacia uso real requiere una identidad y decisión empresarial gobernadas, no un simple cambio de etiqueta.
+
+---
+
+#### 16. Lifecycle semántico
+
+El catálogo deberá soportar, como mínimo, las decisiones empresariales de:
+
+1. propuesta de una nueva identidad;
+2. revisión de duplicidad y alcance;
+3. aprobación para alta;
+4. vigencia para nuevos usos;
+5. suspensión o inactivación de nuevas asignaciones;
+6. retiro definitivo para nuevas operaciones;
+7. consulta histórica posterior al retiro.
+
+Los nombres físicos de estados, tablas o permisos se definirán en la materialización correspondiente.
+
+Una identidad retirada continúa resolviendo hechos históricos.
+
+---
+
+#### 17. Vigencia
+
+La elegibilidad de un centro deberá evaluarse con vigencia temporal.
+
+Un consumidor no podrá asumir:
+
+```text
+FILA_EXISTE
+=
+CENTRO_ELEGIBLE_AHORA
+```
+
+La evaluación deberá considerar, según aplique:
+
+- inicio de vigencia;
+- fin de vigencia;
+- estado empresarial;
+- clasificación real o demo;
+- ámbito organizacional autorizado;
+- relación vigente con sede, área o responsabilidad;
+- restricciones del proceso consumidor.
+
+Un hecho histórico conserva la dimensión válida en su fecha reconocida aunque el centro deje de admitir nuevas operaciones después.
+
+---
+
+#### 18. Elegibilidad para nuevas operaciones
+
+Antes de asignar un centro a un nuevo hecho económico, gasto, presupuesto o cálculo deberá verificarse:
+
+1. identidad canónica resoluble;
+2. vigencia compatible con la fecha relevante;
+3. clasificación productiva, administrativa o económica aplicable;
+4. ausencia de condición demo o de prueba;
+5. ámbito organizacional compatible;
+6. relación válida con el contexto del hecho;
+7. autorización del actor para el recurso y la acción;
+8. ausencia de una sustitución o retiro que bloquee nuevos usos.
+
+Un centro inválido no se sustituirá automáticamente por otro centro "parecido".
+
+---
+
+#### 19. Alta de una nueva identidad
+
+La creación de un centro nuevo solo estará justificada cuando exista una responsabilidad económica estable que no pueda representarse correctamente mediante una identidad vigente.
+
+La solicitud deberá explicar, como mínimo:
+
+- responsabilidad económica;
+- propósito;
+- ámbito organizacional;
+- relación con empresa, sede o área cuando aplique;
+- necesidad de atribución, presupuesto, costo o análisis;
+- fecha de vigencia pretendida;
+- evidencia de que no duplica un centro existente;
+- responsable empresarial;
+- consumidores conocidos.
+
+Una necesidad temporal de reporte no basta para crear un centro.
+
+---
+
+#### 20. Detección de duplicados y solapamientos
+
+Antes de aprobar una nueva identidad deberá comprobarse si ya existe un centro que represente la misma responsabilidad.
+
+Se deberá detectar, como mínimo:
+
+- código repetido;
+- misma responsabilidad con nombre distinto;
+- centro nuevo que solo replica una sede;
+- centro creado por una aplicación para evitar consumir el catálogo;
+- centro que solapa completamente otro sin propósito económico diferenciable;
+- identidad de prueba reutilizada como real.
+
+La coincidencia de nombre no es prueba suficiente de duplicidad y la diferencia de nombre no prueba que sean centros distintos.
+
+---
+
+#### 21. Jerarquía y agrupación
+
+La jerarquía de centros se utilizará para análisis y consolidación, no para alterar la identidad de los hechos de base.
+
+Reglas:
+
+- toda relación de agregación deberá ser explícita;
+- la jerarquía no podrá contener ciclos;
+- cambiar una agrupación no reescribirá hechos históricos;
+- una agrupación analítica no crea automáticamente un nuevo centro imputable;
+- si se requieren varias perspectivas analíticas, no se duplicarán centros para simular jerarquías distintas;
+- los reportes deberán declarar la versión o vigencia de la estructura usada cuando el resultado dependa de ella;
+- el nivel superior no absorbe la responsabilidad de los centros hijos.
+
+La materialización física exacta de jerarquías queda para el paquete de datos aplicable.
+
+---
+
+#### 22. Contrato de consumo por aplicaciones
+
+Los dominios consumidores deberán usar el centro como referencia canónica.
+
+| Consumidor | Uso permitido |
+| --- | --- |
+| NUMERA | hechos económicos, gastos, presupuestos, costos, distribuciones, cierres y análisis |
+| NEXO | atribución y contexto económico de activos, movimientos, variaciones o logística cuando aplique |
+| ORIGO | contexto económico de solicitudes, compras, recepciones, obligaciones o servicios cuando aplique |
+| FOGO | contexto económico correlacionado de producción, consumo, merma y resultados cuando aplique |
+| PULSO | dimensión económica de venta, caja u operación comercial cuando el contrato lo requiera |
+| VISO y dominios organizacionales | referencia para estructuras, responsables o procesos administrativos cuando corresponda |
+
+Consumir una referencia no autoriza modificar el catálogo.
+
+---
+
+#### 23. Fuente de verdad y cachés
+
+`cost_centers` y su contrato canónico constituyen la fuente compartida de identidad económica del centro de costo.
+
+Se prohíbe que un consumidor:
+
+- mantenga una lista autoritativa congelada;
+- convierta una copia local en catálogo propietario;
+- acepte un código desconocido sin resolver la identidad;
+- actualice únicamente su caché y trate ese cambio como publicación canónica;
+- interprete la ausencia temporal de sincronización como permiso para crear otra identidad.
+
+Los cachés o proyecciones deberán poder reconciliarse con la versión canónica vigente.
+
+---
+
+#### 24. Reglas para hechos históricos
+
+Los hechos ya reconocidos no se reatribuyen por un simple cambio de catálogo.
+
+Por tanto:
+
+- retirar un centro no borra sus referencias históricas;
+- renombrar un centro no altera el significado histórico de la identidad;
+- cambiar una relación organizacional no migra automáticamente hechos pasados;
+- una corrección de centro sobre un hecho económico reconocido deberá quedar como reclasificación o ajuste auditable;
+- la fuente operativa original permanece intacta;
+- una reestructuración futura conserva equivalencias y vigencias suficientes para reconciliar periodos anteriores.
+
+---
+
+#### 25. Ambigüedad, ausencia o centro inválido
+
+Cuando el contexto no permita resolver un centro válido:
+
+```text
+AMBIGUO_O_INVALIDO
+-> NO_INFERIR
+-> MANTENER_PENDIENTE
+-> RESOLVER_MEDIANTE_AUTORIDAD_DEL_CATALOGO
+```
+
+No se permitirá:
+
+- usar `ADM-VENTO-GROUP` como fallback universal;
+- usar el centro de la sede por coincidencia de nombre;
+- usar el centro del usuario por defecto;
+- usar el último centro seleccionado como verdad;
+- usar cero o `null` y presentar después el agregado como clasificado;
+- inventar una identidad durante una integración.
+
+El tratamiento operativo exacto de diferencias se implementará posteriormente.
+
+---
+
+#### 26. Frontera de autorización
+
+Esta tarea define ownership funcional, no códigos concretos de permisos de mutación.
+
+Queda establecido:
+
+- consultar un centro y administrar el catálogo son capacidades diferentes;
+- administrar presupuesto por centro y administrar la identidad del centro son capacidades diferentes;
+- la familia histórica `*.cost_centers.manage` no se adopta como diseño atómico definitivo por el solo hecho de existir;
+- la autorización objetivo deberá separar altas, cambios de vigencia, cambios estructurales, consulta y demás decisiones sensibles según `NUMERA-AUTH-*`;
+- toda mutación futura deberá revalidar autoridad en servidor y respetar alcance del recurso.
+
+No se crean permisos en esta tarea.
+
+---
+
+#### 27. Frontera con presupuestos y metas
+
+El catálogo de centros de costo y el presupuesto por centro son objetos distintos.
+
+Se conserva:
+
+```text
+CENTRO_DE_COSTO
+!= PRESUPUESTO
+!= FORECAST
+!= ESCENARIO
+```
+
+Reglas:
+
+- un presupuesto referencia una identidad canónica;
+- desactivar un centro no elimina ni migra presupuestos históricos;
+- un centro válido no implica que exista presupuesto;
+- cambiar una meta no modifica el catálogo;
+- la versión, aprobación, publicación y reapertura de presupuestos quedan en las tareas propietarias de planificación y cierre;
+- `numera.cost_centers.manage` observado en el AS-IS de `upsertBudget` no prueba que presupuesto y catálogo compartan ownership o lifecycle.
+
+---
+
+#### 28. Frontera con costos y distribución
+
+`NUMERA-DOM-007` recibirá centros canónicos ya definidos como dimensiones económicas.
+
+Esta tarea no decide:
+
+- costo estándar;
+- costo real;
+- costo promedio;
+- landed cost;
+- merma valorizada;
+- fórmula de distribución;
+- driver;
+- pool;
+- variación;
+- precio interno.
+
+Sí fija que cualquier cálculo posterior deberá referenciar centros canónicos y no crear dimensiones ad hoc para cuadrar resultados.
+
+---
+
+#### 29. Integración y propagación de cambios
+
+Un cambio aprobado del catálogo deberá poder propagarse a consumidores sin doble escritura.
+
+La materialización posterior deberá permitir distinguir:
+
+- alta;
+- cambio descriptivo;
+- cambio de relación organizacional;
+- cambio de vigencia;
+- suspensión para nuevos usos;
+- retiro;
+- sustitución o equivalencia histórica cuando aplique.
+
+Los consumidores deberán reconciliar el cambio mediante identidad y versión o vigencia suficientes, sin alterar hechos operativos existentes.
+
+---
+
+#### 30. Transición desde el AS-IS
+
+La transición objetivo preservará continuidad antes que limpieza destructiva.
+
+Se define:
+
+1. mantener las identidades actualmente referenciadas mientras se clasifica su uso;
+2. conservar `CP-CENTRO-PROD` y los centros satélite observados sin renombrado masivo por esta tarea;
+3. conservar `ADM-VENTO-GROUP` hasta reconciliar explícitamente su alcance;
+4. conservar `ADM-APP-REVIEW` como identidad de prueba, pero excluirla de operación económica real;
+5. incorporar una identidad distinta para la responsabilidad de Distribución mediante el lifecycle del catálogo, sin inventar su código en esta definición;
+6. migrar posteriormente la autoridad física histórica basada en NEXO o capacidades genéricas hacia el modelo de ownership NUMERA definido aquí;
+7. conservar compatibilidad de consumidores durante la transición;
+8. no romper claves foráneas ni hechos históricos;
+9. no usar la transición para reatribuir gastos, movimientos o presupuestos ya cerrados.
+
+---
+
+#### 31. Excepciones obligatorias
+
+El diseño posterior deberá resolver explícitamente:
+
+1. centro solicitado con mismo propósito que uno vigente;
+2. centro con nombre diferente pero responsabilidad equivalente;
+3. centro vigente sin relación organizacional suficiente;
+4. relación con sede que cambia durante el periodo;
+5. centro retirado referenciado por un evento tardío;
+6. hecho con fecha histórica que llega después del retiro;
+7. centro demo seleccionado por una integración o formulario;
+8. centro de Producción usado indebidamente para costo de Distribución;
+9. consumidor con caché desactualizada;
+10. reorganización de empresa o sede;
+11. fusión o división de responsabilidades económicas;
+12. cambio de código visible;
+13. cambio de jerarquía o agrupación;
+14. presupuesto vigente asociado a un centro que deja de aceptar nuevas operaciones;
+15. integración que recibe un código pero no una identidad resoluble;
+16. ambigüedad entre entidad legal y centro;
+17. corrección de atribución después del reconocimiento económico.
+
+Ninguna excepción se resuelve mediante borrado de historia o creación automática de un centro alterno.
+
+---
+
+#### 32. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| la policy AS-IS usa autoridad NEXO/global sobre `cost_centers` | no | `NUMERA-AUTH-*` y paquete de datos/autorización aplicable | mutación física y permisos alineados con ownership NUMERA sin romper consumidores |
+| el centro demo puede alcanzar superficies financieras | no | `NUMERA-UX-*` y materialización de catálogo | selectores reales excluyen identidades demo mediante clasificación verificable |
+| Distribución no posee código canónico observado | no | materialización posterior de este contrato | identidad económica creada mediante lifecycle gobernado y código publicado sin invención |
+| la jerarquía histórica no está formalizada | no | paquete de datos NUMERA | relación de agregación acíclica, vigente y auditable disponible |
+| presupuestos actuales usan una acción asociada a `cost_centers.manage` | no | `NUMERA-DOM-011`, `NUMERA-AUTH-*` | presupuesto y administración de catálogo quedan separados por contrato y autorización |
+| consumidores pueden depender de reglas AS-IS | no | integraciones y paquetes consumidores | todos consumen la identidad compartida sin catálogo competidor |
+
+---
+
+#### 33. Decisiones congeladas
+
+Quedan congeladas para continuidad:
+
+1. existe un único catálogo canónico compartido de centros de costo;
+2. el owner funcional objetivo del catálogo es NUMERA;
+3. la persistencia compartida no se traslada a una tabla privada de `vento-numera`;
+4. NEXO, ORIGO, FOGO, PULSO, VISO y otros dominios son consumidores cuando corresponda;
+5. la policy AS-IS de NEXO/global no define ownership objetivo;
+6. entidad legal, marca, sede, área, instalación, canal y centro de costo permanecen identidades distintas;
+7. la identidad del centro es estable y no depende del nombre visible;
+8. los códigos no se reutilizan silenciosamente para otra responsabilidad;
+9. la cantidad de centros no se deriva de la cantidad de instalaciones;
+10. Producción y Distribución son responsabilidades económicas distintas;
+11. `CP-CENTRO-PROD` se conserva como identidad observada de Producción;
+12. Distribución requiere identidad propia, pero esta tarea no inventa su código;
+13. `ADM-APP-REVIEW` es demo y no es elegible para operación económica real;
+14. `ADM-VENTO-GROUP`, `SAT-MOLKA-PRINCIPAL`, `SAT-SAUDO` y `SAT-VENTO-CAFE` se preservan sin inferir por nombre dimensiones no demostradas;
+15. una fila existente o activa no prueba elegibilidad;
+16. lifecycle y vigencia gobiernan nuevos usos sin borrar historia;
+17. las agrupaciones no reescriben hechos de base;
+18. presupuesto y catálogo son objetos distintos;
+19. costos y drivers quedan para `NUMERA-DOM-007`;
+20. los permisos atómicos quedan para `NUMERA-AUTH-*`;
+21. no se crean ni modifican requisitos de prueba;
+22. no se realizan cambios físicos.
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+La definición queda cubierta, sin modificar el registro, por:
+
+- `TREQ-NUMERA-001` para reconciliación financiera con hechos, fuentes y dimensiones económicas sin doble registro;
+- `TREQ-NUMERA-002` para identidad estable, entidad, sede, centro, fuente, correlación, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-004` para costos, distribuciones, presupuestos y rentabilidad con centro, versión, vigencia, entradas y fuente;
+- `TREQ-NUMERA-015` para consulta de centros de costo separada de administración;
+- `TREQ-NUMERA-016` para revalidación server-side de la mutación financiera actualmente asociada a la superficie de centros;
+- `TREQ-INTEGRATION-006` para una sola fuente de verdad empresarial sin doble digitación o fuentes competidoras;
+- `TREQ-AUTH-013` para autorización server-side de mutaciones sensibles.
+
+La enumeración de cobertura es trazabilidad heredada y no una actualización de 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no corresponde ejecutar build de producto durante la preparación documental |
+| LOCAL | NOT_EXECUTED | la incorporación y los validadores del checkout quedan para la batería documental del usuario |
+| REMOTA | PASS | se contrastaron owner, secuencia, auditoría NUMERA, `OPS-CST-001`, catálogo de autorización, contratos de proceso y fuentes de integración vigentes |
+| OPERATIVA | NOT_EXECUTED | no se crearon, editaron, retiraron ni reasignaron centros ni hechos económicos |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no autoriza materialización física propia |
+
+---
+
+#### 37. Criterios de aceptación
+
+`NUMERA-DOM-006` queda aceptable cuando:
+
+1. existe una decisión inequívoca de ownership funcional;
+2. se conserva un solo catálogo compartido;
+3. ownership funcional, persistencia y consumo están separados;
+4. centro de costo no se confunde con empresa, marca, sede, área, instalación, canal o aplicación;
+5. identidad estable y código visible tienen reglas distintas;
+6. vigencia y elegibilidad controlan nuevas operaciones;
+7. un centro retirado sigue resolviendo historia;
+8. datos demo quedan excluidos de operación real;
+9. las seis identidades observadas tienen tratamiento explícito;
+10. Producción y Distribución pueden analizarse por responsabilidades distintas sin crear una sede ficticia;
+11. no se inventa un código de Distribución;
+12. la jerarquía no altera hechos ni permite ciclos;
+13. consumidores usan referencias canónicas sin adquirir ownership;
+14. cambios del catálogo pueden propagarse sin doble escritura;
+15. un centro ambiguo no se sustituye por fallback silencioso;
+16. presupuesto y catálogo permanecen objetos diferentes;
+17. la sucesora recibe centros canónicos como dimensiones para el modelo de costos;
+18. no se crean ni modifican TREQ;
+19. no se realizan cambios físicos;
+20. `NUMERA-DOM-007` queda como única continuidad inmediata.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- crea o modifica filas de `cost_centers`;
+- asigna un código nuevo a Distribución;
+- cambia nombres o códigos existentes;
+- crea relaciones físicas de jerarquía;
+- modifica RLS;
+- migra permisos;
+- cambia `nexo.cost_centers.manage`, `numera.cost_centers.manage` ni permisos canónicos;
+- crea pantallas;
+- modifica selectores;
+- cambia presupuestos o metas;
+- define su versionado o aprobación;
+- calcula costos;
+- define drivers o pools;
+- reatribute hechos históricos;
+- cambia sedes, áreas, marcas o entidades legales;
+- crea una sede de Distribución;
+- modifica Supabase;
+- modifica 04A;
+- desarrolla `NUMERA-DOM-007`.
+
+---
+
+#### 39. Handoff a NUMERA-DOM-007
+
+`NUMERA-DOM-007` recibe estas invariantes:
+
+```text
+COST_CENTER_CATALOG = SINGLE_SHARED_CANONICAL_CATALOG
+COST_CENTER_FUNCTIONAL_OWNER = NUMERA
+COST_CENTER_PRIVATE_APP_CATALOG = FORBIDDEN
+COST_CENTER_IDENTITY = STABLE
+COST_CENTER_CODE_SILENT_REUSE = FORBIDDEN
+LEGAL_ENTITY_BRAND_SITE_AREA_CHANNEL_COST_CENTER = DISTINCT_DIMENSIONS
+PHYSICAL_INSTALLATION_COUNT_DOES_NOT_DEFINE_COST_CENTER_COUNT
+PRODUCTION_AND_DISTRIBUTION_ECONOMIC_RESPONSIBILITIES = DISTINCT
+PRODUCTION_OBSERVED_CENTER = CP-CENTRO-PROD
+DISTRIBUTION_REQUIRES_CANONICAL_COST_CENTER_IDENTITY = YES
+DISTRIBUTION_CODE_DEFINED_BY_THIS_TASK = NO
+DEMO_CENTER_ELIGIBLE_FOR_REAL_ECONOMICS = NO
+ACTIVE_ROW_ALONE_PROVES_ELIGIBILITY = NO
+HISTORICAL_FACT_REATTRIBUTION_BY_CATALOG_EDIT = FORBIDDEN
+BUDGET_AND_COST_CENTER_CATALOG = DISTINCT_OBJECTS
+```
+
+La sucesora podrá definir costo estándar, costo real y variaciones usando centros canónicos como dimensiones, sin reabrir ownership.
+
+---
+
+#### 40. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones`
 ### [ ] NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
 ### [ ] NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
 ### [ ] NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
