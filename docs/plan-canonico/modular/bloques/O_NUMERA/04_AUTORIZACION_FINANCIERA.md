@@ -12333,7 +12333,1399 @@ NUMERA_AUTH_011_OWNER = OPERATIONAL_CONTEXT_REQUIREMENTS
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional`
-### [ ] NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
+### ✅ NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-010 — Evitar dependencia de turno para administración
+**Tarea siguiente:** NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición cerrada de cuándo NUMERA debe conservar y validar contexto operacional de un hecho fuente sin convertir ese contexto en permiso ni en carril de autorización del actor financiero; las 56 capacidades financieras permanecen gobernadas por autoridad base y el contexto fuente solo se exige cuando el contrato propietario de la captura operacional lo requiera, con intersección restrictiva de alcance, trazabilidad y fail-closed, sin materializar todavía ninguna unidad física
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `NUMERA-AUTH-011::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **cuándo una operación financiera de NUMERA debe conservar contexto operacional del hecho fuente** y cómo debe utilizarlo sin convertir turno, check-in, rol operativo, sede activa, área activa o dispositivo en una nueva autoridad financiera.
+
+La regla raíz queda:
+
+```text
+PERMISO NUMERA EXACTO
++
+AUTORIDAD BASE VÁLIDA
++
+RECURSO / ESTADO / VERSIÓN COMPATIBLES
++
+SCOPE BASE VÁLIDO
++
+CONTEXTO DEL HECHO FUENTE CUANDO SU CONTRATO LO EXIGE
++
+INTERSECCIÓN RESTRICTIVA CUANDO APLIQUE
++
+AUDITORÍA Y FRESCURA
++
+SIN DENEGACIÓN EFECTIVA
+=
+EFECTO FINANCIERO EVALUABLE
+```
+
+Nunca:
+
+```text
+CONTEXTO OPERACIONAL DEL HECHO FUENTE
+=
+PERMISO NUMERA
+```
+
+ni:
+
+```text
+TURNO ACTUAL DEL ADMINISTRADOR NUMERA
+=
+CONTEXTO OPERACIONAL DEL HECHO FUENTE
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUTH-010
+
+La tarea consume sin reinterpretación el contrato de independencia administrativa aprobado por la predecesora:
+
+```text
+NUMERA_ADMIN_TURN_CONTRACT = NUMERA-ADMIN-TURN-INDEPENDENCE-CONTRACT-001
+NUMERA_ADMIN_TURN_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_ADMIN_TURN_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_ADMIN_TURN_INSTANCE_PATTERN = NUMERA-AUTH-010::<implementation_unit_id>
+NUMERA_ADMIN_TURN_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_ADMIN_TURN_GOVERNED_FINANCIAL_PERMISSIONS = 56
+READ_ADMIN_TURN_DECISION_COUNT = 22
+REGISTER_WRITE_ADMIN_TURN_DECISION_COUNT = 18
+APPROVAL_ADMIN_TURN_DECISION_COUNT = 12
+PERIOD_STATE_ADMIN_TURN_DECISION_COUNT = 3
+EXPORT_ADMIN_TURN_DECISION_COUNT = 1
+ADMIN_BASE_LANE_AVAILABLE_COUNT = 56
+ADMIN_SHIFT_REQUIRED_COUNT = 0
+ADMIN_CHECKIN_REQUIRED_COUNT = 0
+ADMIN_OPERATIONAL_ROLE_REQUIRED_COUNT = 0
+ADMIN_ACTIVE_SHIFT_SITE_REQUIRED_COUNT = 0
+ADMIN_ACTIVE_SHIFT_AREA_REQUIRED_COUNT = 0
+ADMIN_TURN_MATRIX_MISSING_COUNT = 0
+ADMIN_TURN_MATRIX_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_ADMIN_TASK = 0
+NUMERA_APP_ENTRY_PERMISSION = numera.access
+NUMERA_APP_ENTRY_AUTHORIZATION_REQUIREMENT = BASE_ONLY
+NUMERA_APP_ENTRY_SHIFT_REQUIRED = NO
+NUMERA_APP_ENTRY_CHECKIN_REQUIRED = NO
+NUMERA_APP_ENTRY_INCLUDED_IN_FINANCIAL_56 = NO
+ADMINISTRATIVE_AUTHORIZATION_LANE = BASE
+NO_ACTIVE_SHIFT_IS_ADMIN_DENY_REASON = NO
+NO_ACTIVE_CHECKIN_IS_ADMIN_DENY_REASON = NO
+ACTIVE_SHIFT_EXPANDS_ADMIN_PERMISSION = NO
+ACTIVE_SHIFT_EXPANDS_ADMIN_SCOPE = NO
+ACTIVE_CHECKIN_IS_ADMIN_PERMISSION = NO
+OPERATIONAL_ROLE_IS_ADMIN_PERMISSION = NO
+ADMIN_SCOPE_SOURCE = CANONICAL_BASE_ASSIGNMENTS_AND_RESOURCE_RELATIONS
+ACTIVE_SHIFT_IS_ADMIN_SCOPE_SOURCE = NO
+SELECTED_SITE_IS_ADMIN_AUTHORITY = NO
+EMPLOYEE_PRIMARY_SITE_IS_ADMIN_AUTHORITY = NO
+ADMIN_TURN_INDEPENDENCE_IS_REAUTH_BYPASS = NO
+ADMIN_TURN_INDEPENDENCE_IS_DENY_BYPASS = NO
+MISSING_EXACT_ADMIN_PERMISSION = DENY
+STALE_ADMIN_AUTHORIZATION = DENY_AND_REEVALUATE
+SERVER_SIDE_ADMIN_REVALIDATION_REQUIRED = YES
+SIMULATED_SHIFT_CAN_SATISFY_ADMIN_BASE_AUTHORITY = NO
+AUDIT_RECORDING_DOES_NOT_CREATE_TURN_DEPENDENCY = YES
+ADMIN_DECISION_AUDITABLE = YES
+INVALID_OPERATIONAL_CONTEXT_IS_ADMIN_DENY_BY_DEFAULT = NO
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_ADMIN_CONTEXT_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_011_OWNER = OPERATIONAL_CONTEXT_REQUIREMENTS
+```
+
+La 011 especializa únicamente el contexto del **hecho o captura fuente**. No revoca la independencia administrativa aprobada por la 010.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define el contrato global de contexto operacional de NUMERA;
+2. la aprobación documental no modifica código, catálogo, grants, RLS, RPC, Server Actions, paquetes, datos ni Supabase;
+3. cada materialización futura utiliza `NUMERA-AUTH-011::<implementation_unit_id>`;
+4. la instancia solo puede existir después del `E5-GATE-008::<package_id>` aplicable y autorización física explícita;
+5. este marcador no selecciona paquete, unidad física, superficie concreta de implementación ni ambiente;
+6. cualquier modificación de Supabase perteneciente a VENTO se materializa desde `vento-shell`.
+
+---
+
+#### 4. Fuentes de preparación verificadas
+
+La definición se reconcilia contra:
+
+- protocolo, contrato de entrega, manifest, continuidad, ejecución y topología vigentes;
+- políticas de formato y desarrollo de tareas;
+- `NUMERA-AUTH-003..010`;
+- dominio y auditoría canónica de NUMERA;
+- catálogo transversal de modalidad, prerrequisitos y alcance;
+- contratos transversales de principal, actor, contexto, recurso, decisión, dispositivo y auditoría;
+- procesos `VPROC-0051..0054` y superficies NUMERA asociadas;
+- contratos de integración de hechos provenientes de PULSO, ORIGO, NEXO y FOGO;
+- Registro 04A aplicable;
+- validadores documentales vigentes.
+
+La predecesora completa aprobada por el usuario se consume aunque todavía esté pendiente de publicación en el remoto durante esta preparación anticipada.
+
+---
+
+#### 5. Identidad contractual
+
+Se define:
+
+```text
+NUMERA-OPERATIONAL-CAPTURE-CONTEXT-CONTRACT-001
+```
+
+El contrato especializa la relación entre **autoridad financiera NUMERA** y **provenance operacional del hecho fuente**. No crea un segundo motor de autorización.
+
+---
+
+#### 6. Distinción obligatoria entre autoridad y contexto fuente
+
+```text
+NUMERA_ADMINISTRATIVE_AUTHORITY
+!=
+SOURCE_OPERATIONAL_CONTEXT
+```
+
+La primera responde quién puede realizar la acción financiera sobre el recurso. El segundo responde qué operación real originó, territorializó o explicó el hecho que NUMERA recibe o reconoce.
+
+Por tanto:
+
+```text
+VALID_SOURCE_CONTEXT_WITHOUT_NUMERA_PERMISSION = DENY
+VALID_NUMERA_PERMISSION_WITHOUT_REQUIRED_SOURCE_CONTEXT = BLOCK_EFFECT
+SOURCE_CONTEXT_NOT_REQUIRED_BY_OWNER_CONTRACT = DO_NOT_INVENT_ONE
+```
+
+---
+
+#### 7. Universo exacto gobernado
+
+La tarea conserva el universo financiero de 56 identidades aprobado por las tareas precedentes:
+
+```text
+READ = 22
+REGISTER_WRITE = 18
+APPROVAL_REJECT = 12
+PERIOD_STATE = 3
+EXPORT = 1
+TOTAL = 56
+```
+
+No se crea ninguna identidad nueva de permiso.
+
+---
+
+#### 8. Cardinalidad cerrada
+
+```text
+TOTAL_CONTEXT_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_CONTEXT_DECISION_COUNT = 22
+REGISTER_WRITE_CONTEXT_DECISION_COUNT = 18
+APPROVAL_CONTEXT_DECISION_COUNT = 12
+PERIOD_STATE_CONTEXT_DECISION_COUNT = 3
+EXPORT_CONTEXT_DECISION_COUNT = 1
+NUMERA_ACTOR_LIVE_OPERATIONAL_CONTEXT_REQUIRED_COUNT = 0
+DIRECT_SOURCE_OPERATIONAL_CONTEXT_INGRESS_PERMISSION_COUNT = 1
+OPERATIONAL_CONTEXT_MATRIX_MISSING_COUNT = 0
+OPERATIONAL_CONTEXT_MATRIX_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_CONTEXT_TASK = 0
+```
+
+---
+
+#### 9. Entrada a la aplicación NUMERA
+
+`numera.access` permanece:
+
+```text
+authorization_requirement = BASE_ONLY
+live_operational_context_required = NO
+```
+
+Entrar a NUMERA no exige turno o check-in y tampoco concede autoridad para leer, registrar, aprobar, cerrar o exportar información financiera.
+
+---
+
+#### 10. La clasificación híbrida de la aplicación no convierte permisos en híbridos
+
+La existencia de una aplicación que consume información proveniente de operaciones reales no permite inferir:
+
+```text
+NUMERA APP HYBRID
+→ EVERY NUMERA PERMISSION IS OPERATIONAL
+```
+
+Cada identidad conserva la modalidad aprobada por su contrato. Esta tarea no transforma ninguna de las 56 en `OPERATIONAL_ONLY`, `BASE_OR_OPERATIONAL` o `BASE_AND_OPERATIONAL`.
+
+---
+
+#### 11. Fuente autoritativa del requisito de contexto operacional
+
+La necesidad de contexto operacional procede exclusivamente del **contrato propietario del hecho fuente** o del contrato especializado de una capacidad futura.
+
+No procede de:
+
+- la pantalla desde la que se observa el dato;
+- un filtro elegido por el usuario;
+- la sede primaria del trabajador;
+- el último turno conocido;
+- el check-in actual del administrador;
+- el dispositivo usado para consultar NUMERA;
+- el nombre del rol;
+- la existencia de un campo `site_id`;
+- la clasificación genérica de la aplicación.
+
+---
+
+#### 12. Clases de origen consumidas por el contrato
+
+La resolución distingue, sin crear nuevas identidades de dominio:
+
+| Situación de origen | Contexto operacional | Regla |
+| --- | --- | --- |
+| evento operacional emitido por aplicación propietaria | requerido cuando el contrato fuente lo declare | conservar snapshot/referencias de origen y validar compatibilidad |
+| captura financiera manual legítima | no se exige contexto operacional vivo | exige soporte, causa, actor, alcance y no duplicidad |
+| integración o documento externo | según contrato de la fuente externa | no fabricar turno, check-in ni actor operativo |
+| corrección, compensación o reclasificación | conserva vínculo con original y decisión actual | no reescribe ni sustituye el contexto histórico original |
+| procesamiento técnico sin estación humana | contexto humano puede ser no aplicable | conservar principal técnico, fuente, correlación e identidad del evento |
+
+---
+
+#### 13. Ingreso directo de hechos económicos operacionales
+
+La identidad que actúa como ingreso directo de hechos económicos gobernados provenientes de fuentes operacionales es:
+
+```text
+numera.finance.economic_facts.register
+```
+
+Regla:
+
+```text
+SOURCE OWNER CONTRACT REQUIRES OPERATIONAL CONTEXT
++
+ECONOMIC FACT REGISTRATION
+→ SOURCE CONTEXT MUST BE REFERENCEABLE AND VALIDATED
+```
+
+La acción continúa exigiendo su autoridad NUMERA exacta; el contexto fuente no la sustituye.
+
+---
+
+#### 14. Frontera de propiedad de VPROC-0051
+
+NUMERA gobierna el hecho económico derivado, no recrea el hecho operativo fuente.
+
+Se conserva:
+
+```text
+SOURCE_OPERATIONAL_FACT != NUMERA_ECONOMIC_FACT
+SOURCE_OWNER_RETAINS_SOURCE_OWNERSHIP = YES
+NUMERA_RETAINS_ECONOMIC_FACT_OWNERSHIP = YES
+```
+
+El ingreso económico debe enlazar origen, correlación, evidencia y dimensiones suficientes para reconciliar ambos lados sin duplicación.
+
+---
+
+#### 15. Hechos provenientes de PULSO
+
+Cuando un hecho económico provenga de venta, pago, caja, devolución, servicio u otra operación propietaria de PULSO:
+
+- PULSO conserva la verdad operativa y comercial que le corresponda;
+- NUMERA consume el evento o evidencia correlacionada;
+- el actor operativo de PULSO no se convierte en actor financiero de NUMERA;
+- un turno actual de NUMERA no sustituye el contexto histórico de PULSO;
+- la ingestión no autoriza reescribir pedido, pago, caja, entrega ni cliente fuente.
+
+---
+
+#### 16. Hechos provenientes de ORIGO
+
+Cuando el origen sea compra, recepción, devolución, documento o relación propietaria de ORIGO:
+
+- ORIGO conserva la orden, recepción y aceptación comercial/física;
+- NUMERA conserva obligación, costo o efecto financiero derivado según el dominio aplicable;
+- el contexto de recepción debe conservarse por referencia cuando sea material para el hecho;
+- la autoridad financiera no permite modificar la recepción;
+- una captura manual competidora del mismo origen queda prohibida.
+
+---
+
+#### 17. Hechos provenientes de NEXO
+
+Cuando el origen sea movimiento, stock, traslado, ajuste, merma logística, ubicación o evento de inventario:
+
+- NEXO conserva la verdad física del inventario;
+- NUMERA no modifica cantidades físicas por conveniencia financiera;
+- sede, área, lote, ubicación y correlación se preservan cuando sean dimensiones del hecho fuente;
+- el contexto operacional se usa como provenance y límite, no como permiso de escritura NUMERA.
+
+---
+
+#### 18. Hechos provenientes de FOGO
+
+Cuando el origen sea producción, consumo, rendimiento, merma, lote, receta o cierre productivo:
+
+- FOGO conserva el hecho productivo;
+- NUMERA conserva el efecto económico derivado;
+- actor, momento, orden productiva, lote, sede y área productiva se referencian cuando existan en el contrato fuente;
+- el cierre productivo no sustituye automáticamente reconocimiento económico, periodo o autorización financiera.
+
+---
+
+#### 19. Actor fuente y actor NUMERA permanecen separados
+
+La trazabilidad mínima conserva dos planos distintos:
+
+```text
+SOURCE_ACTOR
+!=
+NUMERA_EFFECTIVE_ACTOR
+```
+
+Ejemplos:
+
+- un bodeguero puede originar un movimiento NEXO;
+- un receptor puede originar una recepción ORIGO;
+- un cajero puede originar un hecho PULSO;
+- un sistema técnico puede entregar el evento a NUMERA;
+- un contador o administrador puede revisar o reconocer el efecto financiero.
+
+Ninguno hereda automáticamente la autoridad del otro.
+
+---
+
+#### 20. Principal técnico y procesamiento no humano
+
+Una integración o job puede ser el principal técnico que transporte el evento.
+
+Debe preservarse:
+
+```text
+TECHNICAL_PRINCIPAL
++
+SOURCE_EVENT_IDENTITY
++
+SOURCE_OWNER
++
+CORRELATION
++
+NUMERA_AUTHORIZATION_REFERENCE_WHEN_APPLICABLE
+```
+
+No se inventa un actor humano ni un check-in si el origen técnico no los requiere.
+
+---
+
+#### 21. Contexto válido en el instante del hecho fuente
+
+Para un hecho histórico, la pregunta correcta es:
+
+```text
+¿ERA VÁLIDO EL CONTEXTO DEL HECHO EN SU INSTANTE DE OCURRENCIA?
+```
+
+No:
+
+```text
+¿SIGUE ABIERTO AHORA EL MISMO TURNO CUANDO NUMERA LO PROCESA?
+```
+
+Por tanto:
+
+```text
+SOURCE_CONTEXT_VALID_AT_SOURCE_OCCURRENCE = REQUIRED_WHEN_APPLICABLE
+CURRENT_SOURCE_SHIFT_STILL_OPEN_AT_NUMERA_INGEST = NOT_REQUIRED
+```
+
+La evidencia histórica debe ser versionable/reproducible sin revivir artificialmente la jornada pasada.
+
+---
+
+#### 22. Evidencia mínima referenciable del contexto fuente
+
+Cuando el contrato fuente exija contexto operacional, NUMERA deberá poder conservar o referenciar, según aplique:
+
+- aplicación y dominio fuente;
+- proceso y evento fuente;
+- identidad estable del evento o recurso;
+- principal técnico cuando exista;
+- actor fuente cuando exista;
+- referencia de turno cuando sea material;
+- referencia de check-in cuando sea material;
+- rol operacional cuando sea material;
+- sede y área efectivas cuando sean dimensiones del hecho;
+- instante de ocurrencia;
+- versión o fingerprint del contexto;
+- correlación y causación;
+- evidencia o documento fuente;
+- resultado de validación del contexto.
+
+Los nombres físicos se definen durante la materialización; esta tarea congela la semántica mínima.
+
+---
+
+#### 23. Minimización de evidencia contextual
+
+El contexto operacional no autoriza copiar indiscriminadamente información laboral o técnica dentro del objeto financiero.
+
+Queda prohibido persistir como evidencia ordinaria:
+
+- JWT;
+- service-role;
+- PIN;
+- OTP;
+- secreto de dispositivo;
+- credenciales crudas;
+- payload de contexto completo cuando bastan referencias o fingerprints;
+- datos personales no necesarios para la finalidad financiera.
+
+---
+
+#### 24. Sede seleccionada no es contexto autoritativo
+
+```text
+selected_site_id
+query.site_id
+form.site_id
+preferredSiteId
+```
+
+pueden localizar o reducir una solicitud, pero no demuestran por sí solos el territorio operativo real del hecho fuente.
+
+El servidor debe resolver o validar las referencias contra contratos y recursos autoritativos.
+
+---
+
+#### 25. Turno y check-in actuales del actor NUMERA no sustituyen el origen
+
+```text
+CURRENT_NUMERA_SHIFT
+!=
+SOURCE_OPERATIONAL_CONTEXT
+
+CURRENT_NUMERA_CHECKIN
+!=
+SOURCE_OPERATIONAL_CONTEXT
+```
+
+Un administrador puede estar sin turno, en otro turno o en otra sede y aun así revisar un hecho financiero dentro de su autoridad base. Lo que no puede hacer es fabricar o alterar el contexto del hecho fuente.
+
+---
+
+#### 26. Semántica de CTX
+
+`CTX` representa un límite territorial operacional efectivo cuando una capacidad o recurso lo admite.
+
+En NUMERA:
+
+```text
+CTX
+→ RESTRICCIÓN / INTERSECCIÓN
+→ NEVER AUTHORITY BY ITSELF
+```
+
+La 011 no convierte `CTX` en permiso ni en nuevo carril.
+
+---
+
+#### 27. Intersección obligatoria con scope base
+
+Cuando el contexto fuente participa en la decisión territorial:
+
+```text
+CTX_EFFECTIVE_SCOPE <= BASE_RESOURCE_SCOPE
+```
+
+Y, de forma equivalente:
+
+```text
+EFFECTIVE_SCOPE
+=
+BASE_RESOURCE_SCOPE
+INTERSECT
+SOURCE_OPERATIONAL_SCOPE
+```
+
+cuando ambos sean exigibles y comparables.
+
+Nunca:
+
+```text
+SOURCE_OPERATIONAL_SCOPE
+→ EXPANDS BASE_RESOURCE_SCOPE
+```
+
+---
+
+#### 28. Dimensiones financieras permanecen distintas
+
+El contexto operacional no colapsa:
+
+- entidad legal;
+- marca o unidad;
+- sede;
+- área;
+- centro de costo;
+- periodo;
+- recurso;
+- tercero;
+- moneda;
+- documento.
+
+Una sede operativa no determina por sí sola la entidad legal, el centro de costo ni el periodo económico.
+
+---
+
+#### 29. Captura manual de gastos
+
+`numera.finance.expenses.create` permanece administrativa.
+
+Para una captura manual legítima:
+
+```text
+LIVE_OPERATIONAL_CONTEXT_REQUIRED = NO
+```
+
+Debe conservar, según aplique:
+
+- causa empresarial;
+- actor financiero;
+- soporte;
+- entidad y dimensiones;
+- fecha y periodo;
+- importe y moneda;
+- origen declarado;
+- evidencia de por qué la captura manual es legítima.
+
+---
+
+#### 30. Captura manual competidora queda prohibida
+
+Si ya existe un evento operacional canónico que representa la misma causa empresarial:
+
+```text
+MANUAL_DUPLICATE_OF_SOURCE_EVENT = FORBIDDEN
+```
+
+La solución no es exigir al administrador que abra un turno. La solución es consumir/correlacionar el hecho fuente y evitar duplicación.
+
+---
+
+#### 31. Actualización y cancelación de gastos
+
+`expenses.update` y `expenses.cancel` no requieren contexto operacional vivo del actor NUMERA.
+
+Sí deben preservar:
+
+- origen previamente vinculado;
+- contexto fuente histórico cuando exista;
+- estado actual;
+- versión;
+- actor de la decisión;
+- causa y evidencia de la modificación/cancelación.
+
+Una actualización financiera no reescribe el contexto operacional histórico del origen.
+
+---
+
+#### 32. Cuentas por pagar y por cobrar
+
+`payables.*` y `receivables.*` continúan bajo autoridad financiera base.
+
+El hecho de que una obligación derive de compra, servicio, venta, recaudo u operación real puede exigir provenance y correlación con la fuente, pero no convierte al administrador financiero en receptor, cajero, vendedor o bodeguero.
+
+Las operaciones sensibles especializadas permanecen reservadas a `NUMERA-AUTH-014`.
+
+---
+
+#### 33. Documentos fiscales y obligaciones tributarias
+
+`fiscal_documents.*` y `tax_obligations.*` no adquieren turno o check-in por inferencia.
+
+Cuando un documento se origina en una operación real, NUMERA conserva su vínculo con la fuente y el contexto pertinente, sin confundirlo con autoridad fiscal externa ni con el actor operativo que originó la transacción.
+
+---
+
+#### 34. Distribuciones y asignaciones de costo
+
+`cost_allocations.*` consume hechos, pools, drivers, bases, orígenes, destinos y versiones.
+
+Si una entrada proviene de una operación contextualizada, la asignación conserva esa provenance. El contexto no autoriza un destino fuera del scope base ni convierte una transferencia interna en ingreso o gasto legal.
+
+---
+
+#### 35. Lecturas financieras
+
+Las 22 capacidades de lectura no requieren contexto operacional vivo del actor NUMERA.
+
+Cuando una fila o agregado contiene recursos derivados de operaciones:
+
+- conserva provenance;
+- aplica scope autorizado;
+- no revela miembros excluidos;
+- el drill-down reautoriza el recurso destino;
+- no exige al lector recrear el turno histórico del actor fuente.
+
+---
+
+#### 36. Aprobaciones y rechazos
+
+Las 12 decisiones de aprobación/rechazo permanecen administrativas.
+
+El aprobador debe evaluar el recurso y su evidencia, incluida provenance operacional cuando sea material, pero:
+
+```text
+SOURCE_ACTOR_SHIFT_ACTIVE_NOW = NOT_REQUIRED
+APPROVER_LIVE_OPERATIONAL_CONTEXT = NOT_REQUIRED
+```
+
+La aprobación conserva actor, permiso, scope, versión, estado, segregación, motivo cuando corresponda y auditoría propia.
+
+---
+
+#### 37. Lock, cierre y reapertura de periodos
+
+Las tres capacidades de periodo permanecen administrativas.
+
+Un periodo económico no se convierte en turno operativo. Los hechos incluidos pueden conservar contexto de origen, pero `periods.lock`, `periods.close` y `periods.reopen` no requieren un turno operacional del actor financiero.
+
+---
+
+#### 38. Exportación financiera
+
+`numera.analytics.financial_reports.export` permanece administrativa/analítica.
+
+La exportación puede contener resultados derivados de operaciones, pero la decisión de exportar no requiere reactivar el contexto operacional histórico de cada hecho fuente.
+
+Sí conserva:
+
+- lectura autorizada;
+- scope;
+- versión/corte;
+- finalidad;
+- campos/población;
+- sensibilidad;
+- auditoría.
+
+---
+
+#### 39. Agregados y drill-down
+
+La provenance operacional no puede utilizarse para introducir valores ocultos en agregados visibles.
+
+Reglas:
+
+```text
+AGGREGATE_MEMBER_SET <= AUTHORIZED_MEMBER_SET
+DRILLDOWN_REAUTHORIZES_DESTINATION_RESOURCE = YES
+```
+
+El contexto del hecho fuente permanece evidencia de lineage, no bypass de lectura.
+
+---
+
+#### 40. Contexto no desclasifica información
+
+Un hecho con contexto operacional válido no pierde su clasificación financiera, comercial, personal, bancaria, fiscal o de secreto empresarial.
+
+```text
+VALID_CONTEXT
+!=
+FIELD_DECLASSIFICATION
+```
+
+Los field masks y protecciones de sensibilidad permanecen acumulativos.
+
+---
+
+#### 41. Contexto no bypassa estado ni segregación
+
+```text
+VALID_SOURCE_CONTEXT
+!=
+VALID_RESOURCE_STATE
+
+VALID_SOURCE_CONTEXT
+!=
+SEGREGATION_SATISFIED
+```
+
+Una captura real no autoriza aprobarla, pagarla, conciliarla, cerrarla, reabrirla o exportarla por implicación.
+
+---
+
+#### 42. Ausencia de contexto requerido
+
+Cuando el contrato propietario del hecho fuente exige contexto y ese contexto no puede demostrarse:
+
+```text
+DO NOT FABRICATE CONTEXT
+DO NOT FALL BACK TO SELECTED SITE
+DO NOT FALL BACK TO EMPLOYEE PRIMARY SITE
+DO NOT FALL BACK TO CURRENT NUMERA SHIFT
+DO NOT MATERIALIZE THE EFFECT AS VALID
+```
+
+El efecto queda bloqueado o pendiente de resolución conforme al lifecycle propietario; esta tarea no inventa un nuevo estado de dominio.
+
+---
+
+#### 43. Contexto histórico obsoleto o incompatible
+
+Si la evidencia fuente es inconsistente, revocada, ambigua o no reproducible para el instante que pretende demostrar:
+
+```text
+REEVALUATE SOURCE EVIDENCE
+OR
+BLOCK SAFELY
+```
+
+No se sustituye por el contexto actual del usuario que revisa el hecho.
+
+---
+
+#### 44. Fallo técnico y denegación permanecen distintos
+
+```text
+AUTHORIZATION_DENY
+!=
+SOURCE_CONTEXT_INVALID
+!=
+TECHNICAL_CONTEXT_RESOLUTION_FAILURE
+```
+
+Un timeout, indisponibilidad o fallo del resolver no se presenta como una denegación empresarial válida ni como contexto ausente confirmado.
+
+---
+
+#### 45. Idempotencia, correlación y causación
+
+Un mismo evento fuente no debe producir múltiples hechos económicos efectivos por reintento.
+
+La evidencia deberá permitir reconstruir:
+
+- identidad del evento;
+- idempotency key o referencia equivalente;
+- correlation id;
+- causation id cuando aplique;
+- fuente;
+- efecto económico resultante;
+- intentos y resultado técnico sin duplicación.
+
+---
+
+#### 46. Correcciones, compensaciones y reclasificaciones
+
+Una corrección financiera conserva el original y su contexto fuente.
+
+```text
+CORRECTION
+→ NEW AUDITABLE ACTION
+→ REFERENCES ORIGINAL
+→ DOES NOT REWRITE SOURCE CONTEXT
+```
+
+Si existe un nuevo hecho operacional compensatorio, ese nuevo hecho conserva su propio contexto y correlación.
+
+---
+
+#### 47. Reversos y restatements
+
+Reversar o restatar una decisión económica no elimina la evidencia del hecho fuente ni la autoridad histórica utilizada.
+
+La nueva decisión conserva su actor financiero, motivo, versión y relación causal con el original.
+
+---
+
+#### 48. Provenance de recurso
+
+Todo recurso financiero que dependa materialmente de una operación debe poder navegar o correlacionarse hacia la fuente suficiente para explicar:
+
+- qué ocurrió;
+- dónde ocurrió;
+- cuándo ocurrió;
+- quién o qué sistema lo originó;
+- bajo qué contexto se produjo cuando aplique;
+- qué evidencia lo soporta;
+- qué efecto financiero derivó.
+
+Esto no concede lectura sobre detalles de la fuente que el actor no esté autorizado a conocer.
+
+---
+
+#### 49. Integración con la auditoría financiera
+
+`NUMERA-AUTH-009` permanece propietaria de la evidencia financiera.
+
+La 011 añade que, cuando exista contexto fuente aplicable, la auditoría deberá poder correlacionar:
+
+```text
+AUTHORIZATION DECISION
++
+NUMERA EFFECTIVE ACTOR
++
+SOURCE EVENT / SOURCE ACTOR WHEN APPLICABLE
++
+SOURCE CONTEXT REFERENCE
++
+RESOURCE / SCOPE
++
+EXECUTION RESULT
+```
+
+La evidencia no se convierte en autoridad.
+
+---
+
+#### 50. Resolución server-side
+
+Toda condición contextual utilizada para permitir, limitar o bloquear una mutación se valida del lado autoritativo.
+
+Un formulario o cliente puede aportar localizadores, pero no puede afirmar de forma vinculante:
+
+- turno válido;
+- check-in válido;
+- sede efectiva;
+- área efectiva;
+- actor fuente;
+- propiedad del evento;
+- compatibilidad territorial.
+
+---
+
+#### 51. Equivalencia entre canales
+
+El contrato debe producir una decisión equivalente cuando el mismo efecto se alcance por:
+
+- UI/RSC;
+- Server Action;
+- API o Route Handler;
+- RPC/PostgREST;
+- RLS/Data API cuando aplique;
+- job o consumidor asíncrono;
+- integración entre aplicaciones.
+
+Una protección de pantalla no sustituye la validación del efecto.
+
+---
+
+#### 52. Frescura y caché
+
+Una caché que participe en la decisión debe incorporar suficiente identidad para no reutilizar contexto entre hechos incompatibles.
+
+Como mínimo, según aplique:
+
+```text
+source_event_identity
+source_context_fingerprint
+source_contract_version
+numera_permission
+numera_authorization_version
+resource_fingerprint
+```
+
+Una caché no puede convertir una evidencia histórica distinta en contexto equivalente por coincidencia de sede o actor.
+
+---
+
+#### 53. TOCTOU
+
+Entre validación contextual y efecto, un cambio material del recurso, autorización o evidencia fuente exige revalidación o bloqueo seguro.
+
+No se ejecuta un efecto contra una versión distinta de la validada cuando ese cambio altera la decisión.
+
+---
+
+#### 54. Simulación
+
+La simulación puede evaluar cómo se resolvería un contexto, pero:
+
+```text
+SIMULATED_CONTEXT
+!=
+REAL_SOURCE_CONTEXT
+```
+
+No crea eventos fuente, turnos, check-ins, hechos económicos, permisos ni efectos reales.
+
+---
+
+#### 55. Dispositivos compartidos
+
+El dispositivo puede añadir restricciones y evidencia sobre la acción actual.
+
+No puede:
+
+- convertirse en actor fuente;
+- sustituir el contexto histórico del evento;
+- ampliar scope financiero;
+- convertir `numera.access` en permiso financiero;
+- fabricar turno o check-in;
+- degradar reautenticación fuerte.
+
+---
+
+#### 56. Errores y minimización de información
+
+Los errores públicos no revelan:
+
+- recursos excluidos;
+- actor fuente protegido;
+- turno o check-in de terceros;
+- detalles sensibles del evento;
+- razones internas innecesarias;
+- secretos o fingerprints completos cuando no correspondan.
+
+El diagnóstico autorizado conserva suficiente correlación para investigación.
+
+---
+
+#### 57. Contrato global frente a materialización
+
+Este marcador define **qué debe ocurrir**. `NUMERA-AUTH-012` será propietaria de materializar en packages/unidades aplicables:
+
+- contratos compartidos;
+- consumidor NUMERA;
+- resolución/referencias de contexto;
+- guards y enforcement;
+- integración con scopes;
+- auditoría;
+- aliases/fallbacks que deban retirarse;
+- compatibilidad y rollback.
+
+La 011 no decide archivos físicos ni migraciones concretas.
+
+---
+
+#### 58. Matriz completa por permiso
+
+| Permiso exacto | Familia | Autoridad NUMERA | Contexto operacional vivo del actor NUMERA | Tratamiento del contexto fuente |
+| --- | --- | --- | --- | --- |
+| `numera.finance.cost_centers.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.expenses.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.analytics.break_even.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.analytics.profitability.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.analytics.financial_reports.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.economic_facts.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payables.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.receivables.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.treasury_movements.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.reconciliations.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.costs.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.periods.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.labor_payment_packages.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.fiscal_documents.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payment_plans.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.budgets.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.forecasts.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.scenarios.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.price_versions.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.tax_obligations.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_allocations.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.analytics.financial_indicators.view` | `READ` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_centers.create` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_centers.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_centers.activate` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_centers.deactivate` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.expenses.create` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.expenses.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.expenses.cancel` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.economic_facts.register` | `REGISTER_WRITE` | `BASE` | `NO` | `REQUIRED_WHEN_SOURCE_OWNER_CONTRACT_REQUIRES`; provenance + validación; nunca autoridad |
+| `numera.finance.payables.register` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payables.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.receivables.register` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.receivables.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.fiscal_documents.register` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.fiscal_documents.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.tax_obligations.register` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.tax_obligations.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_allocations.register` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_allocations.update` | `REGISTER_WRITE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.expenses.approve` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.expenses.reject` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payables.approve` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payables.reject` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payment_plans.approve` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.payment_plans.reject` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.fiscal_documents.approve` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.fiscal_documents.reject` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.tax_obligations.approve` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.tax_obligations.reject` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_allocations.approve` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.cost_allocations.reject` | `APPROVAL_REJECT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.periods.lock` | `PERIOD_STATE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.periods.close` | `PERIOD_STATE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.finance.periods.reopen` | `PERIOD_STATE` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+| `numera.analytics.financial_reports.export` | `EXPORT` | `BASE` | `NO` | `NO_LIVE_CONTEXT_PREREQUISITE`; preservar provenance contextual ya vinculada cuando aplique |
+
+
+La matriz contiene exactamente 56 filas únicas y no modifica sus identidades.
+
+---
+
+#### 59. Conteos de la matriz
+
+```text
+EXPECTED_PERMISSION_ROWS = 56
+OBSERVED_PERMISSION_ROWS = 56
+UNIQUE_PERMISSION_ROWS = 56
+MISSING_PERMISSION_ROWS = 0
+DUPLICATE_PERMISSION_ROWS = 0
+LIVE_OPERATIONAL_CONTEXT_REQUIRED_FOR_NUMERA_ACTOR = 0
+DIRECT_SOURCE_OPERATIONAL_CONTEXT_INGRESS = 1
+```
+
+---
+
+#### 60. Decisión por origen
+
+| Origen del hecho | Permiso NUMERA aplicable | Contexto que debe conservarse | Autoridad positiva |
+| --- | --- | --- | --- |
+| evento operacional canónico | `economic_facts.register` cuando NUMERA materialice el efecto | snapshot/referencias exigidas por owner fuente | permiso NUMERA + scope + recurso; contexto no concede |
+| captura manual financiera legítima | `expenses.create` u otra capacidad exacta | soporte/causa; contexto operacional vivo no requerido | carril base |
+| documento o integración externa | capacidad exacta según recurso | evidencia/identidad de proveedor o fuente | carril base o principal técnico autorizado según materialización |
+| corrección/compensación | capacidad exacta del lifecycle | original + relación causal + evidencia nueva | autoridad exacta de la acción correctiva |
+| lectura/decisión/exportación | capacidad exacta correspondiente | provenance ya asociada, si existe | carril base |
+
+---
+
+#### 61. Bindings principales de superficie y proceso
+
+| Superficie/proceso | Acción | Regla contextual |
+| --- | --- | --- |
+| `VSCREEN-0095` / `VPROC-0051::STEP-TRIAGE_ECONOMIC_FACTS` | revisar/registrar hechos económicos | conserva contexto del evento fuente; revisión administrativa no exige turno vivo |
+| `VSCREEN-0096` / `VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE` | captura manual legítima de gasto | no exige contexto operacional vivo; exige soporte/origen y no duplicidad |
+| `VSCREEN-0097` / `VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION` | aprobar/rechazar | consume evidencia del recurso; aprobador permanece administrativo |
+| `VSCREEN-0098` / obligaciones | registrar/actualizar obligación | conserva fuente comercial/operacional cuando exista; sin turno NUMERA por inferencia |
+| `VSCREEN-0154` / documento fiscal | registrar/actualizar documento | provenance de la operación cuando corresponda; no crea autoridad fiscal externa |
+| `VSCREEN-0155` / tesorería | planificar/ejecutar etapas especializadas | acciones especializadas permanecen bajo owners posteriores; esta tarea no crea carril operativo |
+| `VSCREEN-0158` / costos | registrar/actualizar distribución | contexto de entradas puede conservarse; no amplía destinos autorizados |
+
+---
+
+#### 62. Captura automática y captura humana permanecen distintas
+
+```text
+AUTOMATED_SOURCE_EVENT_INGESTION
+!=
+MANUAL_ADMINISTRATIVE_CAPTURE
+```
+
+La ingestión automática conserva el contexto del evento cuando su contrato lo exige. La captura humana administrativa conserva actor financiero, soporte y causa, pero no requiere por ello turno/check-in.
+
+---
+
+#### 63. Ejemplos de scope efectivo
+
+Ejemplo de evento operacional de una sede:
+
+```text
+BASE_RESOURCE_SCOPE = sedes A + B
+SOURCE_OPERATIONAL_SCOPE = sede B / área cocina
+EFFECTIVE_SCOPE = sede B / área cocina
+```
+
+Ejemplo inválido:
+
+```text
+BASE_RESOURCE_SCOPE = sede A
+SOURCE_OPERATIONAL_SCOPE = sede B
+→ DENY / BLOCK
+```
+
+El contexto no eleva sede A a sede B.
+
+---
+
+#### 64. Ejemplos de auditoría correlacionable
+
+Caso integrado:
+
+```text
+source_event_id
+source_app
+source_process
+source_actor_reference when applicable
+source_context_reference
+occurred_at
+correlation_id
+numera_permission_key
+numera_effective_actor / technical principal
+resource_reference
+scope_result
+authorization_decision_reference
+execution_result_reference
+```
+
+Caso manual:
+
+```text
+manual_capture_reference
+numera_effective_actor
+support_reference
+business_reason
+resource_reference
+scope_result
+authorization_decision_reference
+execution_result_reference
+```
+
+No se exige llenar campos no aplicables con valores inventados.
+
+---
+
+#### 65. Fronteras con tareas posteriores
+
+| Materia | Propietario |
+| --- | --- |
+| materialización de permisos, contracts, consumers y contexto | `NUMERA-AUTH-012` |
+| pruebas integrales de autoridad + contexto | `NUMERA-AUTH-013` |
+| cartera, acuerdos, castigos, bancos y datos financieros sensibles | `NUMERA-AUTH-014` |
+| crear/compartir/aprobar/publicar escenarios, precios y presupuestos | `NUMERA-AUTH-015` |
+
+Una tarea posterior que defina una capacidad realmente operacional deberá declarar modalidad y prerrequisitos de forma explícita; no podrá citar esta tarea como permiso implícito para inventar un carril operativo.
+
+---
+
+#### 66. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| consumidor físico aún no demuestra propagación completa de contexto fuente para todo ingreso económico | no | `NUMERA-AUTH-012` + unidad aplicable | materialización conserva referencias/fingerprints y aplica fail-closed donde el owner fuente lo exige |
+| no existe enforcement integral demostrado de `CTX` en todas las unidades NUMERA | no | `NUMERA-AUTH-012` | consumidor intersecta contexto con scope base sin ampliarlo |
+| pruebas adversariales de contexto aún no ejecutadas | no | `NUMERA-AUTH-013` | suite demuestra ausencia/frescura/incompatibilidad, cross-scope, duplicidad y separación actor fuente/actor NUMERA |
+| operaciones especializadas sensibles pueden requerir contratos adicionales | no | `NUMERA-AUTH-014` y `NUMERA-AUTH-015` | cada capacidad especializada declara su modalidad sin reinterpretar este contrato |
+
+No queda un hallazgo de contexto detectado sin propietario y condición de salida.
+
+---
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la tarea especializa para NUMERA reglas ya protegidas de separación entre administración y operación, autoridad server-side, scope, provenance, idempotencia, correlación y trazabilidad económica. No introduce una obligación verificable nueva que requiera ampliar el Registro 04A.
+
+---
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza:
+
+- `TREQ-NUMERA-001` para reconciliación con hechos y documentos fuente, separación de permisos y trazabilidad hasta empresa, sede, centro de costo, actor y origen;
+- `TREQ-NUMERA-002` para identidad estable, entidad, sede, centro, fechas, fuente, correlación, documento, estado y evidencia;
+- `TREQ-NUMERA-003` para separación de capacidades financieras sensibles;
+- `TREQ-NUMERA-004` para método, entradas, versiones, fuente y lineage de costos/analítica;
+- `TREQ-AUTH-008` y `TREQ-AUTH-014` para administración sin turno/check-in y operación con contexto cuando el contrato lo exige;
+- `TREQ-AUTH-009` para resolución determinista de sede/área;
+- `TREQ-AUTH-013` para enforcement server-side con actor, territorio, contexto requerido, recurso, estado y columnas;
+- `TREQ-AUTH-015` para evidencia correlacionable;
+- requisitos de integración vigentes que exigen correlación e idempotencia de hechos entre aplicaciones.
+
+Esta enumeración es trazabilidad reutilizada y no una actualización del registro.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental y validadores globales quedan para la incorporación en el checkout actualizado. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores contra el checkout local del usuario durante esta preparación anticipada. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, continuidad vigente, topología, archivo propietario, tareas NUMERA precedentes publicadas, dominio NUMERA, catálogo de modalidad/prerrequisitos/scope, procesos financieros, Registro 04A y precedentes de integración de contexto; la 010 se consume desde su artefacto completo aprobado pendiente de publicación. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutaron eventos PULSO/ORIGO/NEXO/FOGO, captura financiera real, turnos, check-ins, RPC, RLS ni datos productivos. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global solo especifica el contrato; la materialización futura ocurre por `NUMERA-AUTH-011::<implementation_unit_id>` bajo `POST_E5_PACKAGE`. |
+
+---
+
+#### 70. Criterios de aceptación
+
+- [x] Se conserva exactamente el universo financiero de 56 permisos.
+- [x] La matriz contiene 56 filas únicas, cero faltantes y cero duplicados.
+- [x] Ninguna de las 56 capacidades adquiere contexto operacional vivo del actor NUMERA como requisito.
+- [x] `numera.access` permanece `BASE_ONLY` y sin turno/check-in.
+- [x] `economic_facts.register` queda identificado como ingreso directo de hechos operacionales correlacionados cuando el owner fuente lo exige.
+- [x] El contexto fuente no se convierte en permiso ni en carril.
+- [x] Actor fuente y actor/principal NUMERA permanecen separados.
+- [x] La validez histórica se evalúa en el instante del hecho fuente; no exige mantener vivo el turno al momento de ingestión.
+- [x] `CTX` solo restringe/intersecta y nunca amplía scope base.
+- [x] selected site, primary site, turno actual y check-in actual no fabrican contexto fuente.
+- [x] captura manual legítima de gasto no exige turno operacional.
+- [x] captura manual competidora de un evento fuente canónico queda prohibida.
+- [x] lectura, aprobación, periodos y exportación no exigen contexto operacional vivo.
+- [x] estado, segregación, reautenticación, dispositivo, sensibilidad y auditoría permanecen independientes.
+- [x] ausencia de contexto requerido falla cerrado sin inventar estado de dominio.
+- [x] fallo técnico, contexto inválido y deny de autorización permanecen distintos.
+- [x] idempotencia, correlación y causación quedan preservadas.
+- [x] correcciones no reescriben contexto histórico.
+- [x] simulación no crea contexto real.
+- [x] `NUMERA-AUTH-012` conserva materialización.
+- [x] `NUMERA-AUTH-013` conserva pruebas integrales.
+- [x] `NUMERA-AUTH-014` y `015` conservan especializaciones posteriores.
+- [x] no se crean/modifican TREQ.
+- [x] no se modifica Registro 04A.
+- [x] no se autoriza cambio físico ni Supabase.
+
+---
+
+#### 71. Casos adversariales reservados para NUMERA-AUTH-013
+
+La prueba integral posterior deberá cubrir, como mínimo:
+
+1. permiso base válido + actor NUMERA sin turno → administración no se bloquea;
+2. evento fuente que exige contexto + contexto ausente → efecto bloqueado;
+3. evento fuente válido de sede B + scope NUMERA solo sede A → deny/bloqueo;
+4. selected site B sin evidencia fuente → no crea contexto;
+5. turno actual del administrador B con evento fuente A → no sustituye provenance;
+6. evento histórico válido cuyo turno ya terminó → ingestion/revisión puede continuar si la evidencia histórica sigue válida;
+7. evento técnico no humano → no inventa actor operativo;
+8. replay del mismo source event → no duplica hecho económico;
+9. captura manual competidora de evento integrado → bloqueada;
+10. aprobación sobre hecho operacional → aprobador no hereda identidad del actor fuente;
+11. contexto válido + permiso ausente → deny;
+12. permiso válido + contexto requerido inválido → bloqueo seguro;
+13. contexto válido no revela campos sensibles fuera de field mask;
+14. contexto simulado no produce efecto;
+15. cambio material entre validación y efecto → revalidación o bloqueo.
+
+La presente tarea no ejecuta esos casos.
+
+---
+
+#### 72. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica `vento-numera`;
+- modifica `vento-shell` físicamente;
+- crea permisos;
+- cambia modalidades de permisos existentes;
+- crea grants;
+- asigna permisos a roles o personas;
+- crea turnos o check-ins;
+- convierte NUMERA en aplicación operativa de primera línea;
+- permite rol operativo directo en `VPROC-0051..0054`;
+- modifica hechos fuente de PULSO, ORIGO, NEXO o FOGO;
+- crea DTO físico nuevo de contexto;
+- modifica tablas, vistas, triggers, funciones, RPC o RLS;
+- ejecuta Supabase;
+- crea migraciones;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza instancia física;
+- define permisos sensibles de cartera/bancos;
+- define acciones de escenarios/precios/presupuestos;
+- ejecuta pruebas integrales;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-AUTH-012`.
+
+---
+
+#### 73. Handoff a NUMERA-AUTH-012
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_OPERATIONAL_CONTEXT_CONTRACT = NUMERA-OPERATIONAL-CAPTURE-CONTEXT-CONTRACT-001
+NUMERA_OPERATIONAL_CONTEXT_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_OPERATIONAL_CONTEXT_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_OPERATIONAL_CONTEXT_INSTANCE_PATTERN = NUMERA-AUTH-011::<implementation_unit_id>
+NUMERA_OPERATIONAL_CONTEXT_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_CONTEXT_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_CONTEXT_DECISION_COUNT = 22
+REGISTER_WRITE_CONTEXT_DECISION_COUNT = 18
+APPROVAL_CONTEXT_DECISION_COUNT = 12
+PERIOD_STATE_CONTEXT_DECISION_COUNT = 3
+EXPORT_CONTEXT_DECISION_COUNT = 1
+NUMERA_ACTOR_LIVE_OPERATIONAL_CONTEXT_REQUIRED_COUNT = 0
+DIRECT_SOURCE_OPERATIONAL_CONTEXT_INGRESS_PERMISSION_COUNT = 1
+DIRECT_SOURCE_OPERATIONAL_CONTEXT_INGRESS_PERMISSION = numera.finance.economic_facts.register
+DIRECT_SOURCE_OPERATIONAL_CONTEXT_RULE = SOURCE_OWNER_CONTRACT
+SOURCE_OPERATIONAL_CONTEXT_IS_NUMERA_PERMISSION = NO
+SOURCE_OPERATIONAL_CONTEXT_IS_NUMERA_ACTOR_AUTHORITY = NO
+SOURCE_ACTOR_AND_NUMERA_ACTOR_MUST_REMAIN_DISTINCT = YES
+SOURCE_CONTEXT_VALID_AT_SOURCE_OCCURRENCE_NOT_CURRENT_NUMERA_SHIFT = YES
+CURRENT_NUMERA_SHIFT_CAN_REPLACE_SOURCE_CONTEXT = NO
+CURRENT_NUMERA_CHECKIN_CAN_REPLACE_SOURCE_CONTEXT = NO
+SELECTED_SITE_IS_OPERATIONAL_CONTEXT_AUTHORITY = NO
+EMPLOYEE_PRIMARY_SITE_IS_OPERATIONAL_CONTEXT_AUTHORITY = NO
+CTX_EFFECTIVE_SCOPE_MUST_NOT_EXCEED_BASE_RESOURCE_SCOPE = YES
+CTX_CAN_EXPAND_BASE_RESOURCE_SCOPE = NO
+MISSING_SOURCE_CONTEXT_WHEN_OWNER_CONTRACT_REQUIRES_IT = BLOCK_EFFECT_NO_FABRICATION
+STALE_OR_INCOMPATIBLE_SOURCE_CONTEXT = REEVALUATE_OR_BLOCK
+MANUAL_EXPENSE_CAPTURE_REQUIRES_LIVE_OPERATIONAL_CONTEXT = NO
+MANUAL_COMPETITOR_FOR_OPERATIONAL_SOURCE_EVENT = FORBIDDEN
+READ_REQUIRES_LIVE_OPERATIONAL_CONTEXT = NO
+APPROVAL_REQUIRES_LIVE_OPERATIONAL_CONTEXT = NO
+PERIOD_STATE_REQUIRES_LIVE_OPERATIONAL_CONTEXT = NO
+EXPORT_REQUIRES_LIVE_OPERATIONAL_CONTEXT = NO
+SERVER_SIDE_SOURCE_CONTEXT_VALIDATION_REQUIRED_WHEN_APPLICABLE = YES
+SOURCE_CONTEXT_EVIDENCE_MINIMIZED = YES
+SECRET_OR_RAW_CREDENTIAL_IN_CONTEXT_EVIDENCE = FORBIDDEN
+CONTEXT_DECISION_AUDITABLE = YES
+OPERATIONAL_CONTEXT_MATRIX_MISSING_COUNT = 0
+OPERATIONAL_CONTEXT_MATRIX_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_CONTEXT_TASK = 0
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_CONTEXT_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_012_OWNER = PERMISSION_PACKAGE_MATERIALIZATION
+```
+
+`NUMERA-AUTH-012` deberá materializar este contrato junto con permisos, scope y auditoría aprobados en las unidades físicas correspondientes, conservando separación entre actor NUMERA y actor fuente, intersección restrictiva de `CTX`, fail-closed y ausencia de fallbacks legacy.
+
+---
+
+#### 74. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-010 — Evitar dependencia de turno para administración`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-012 — Migrar a paquetes de vento-shell`
 ### [ ] NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
 ### [ ] NUMERA-AUTH-013 — Ejecutar pruebas integrales
 ### [ ] NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles
