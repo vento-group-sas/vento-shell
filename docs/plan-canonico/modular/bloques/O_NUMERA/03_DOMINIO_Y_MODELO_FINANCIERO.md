@@ -11597,7 +11597,1773 @@ DIFFERENCE_RESOLUTION_OWNER = NUMERA_DOM_014
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias`
-### [ ] NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
+### ✅ NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
+**Tarea siguiente:** NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
+**Tipo de tarea:** definición documental del contrato transversal de conciliación y tratamiento de diferencias de NUMERA entre hechos operativos, representaciones económicas, documentos, obligaciones, pagos, caja, bancos, inventario, producción, periodos, reportes y resultados externos, incluyendo clasificación, matching, tolerancias, investigación, resolución, corrección, excepciones, aprobación, verificación, cierre y reapertura sin sobrescribir historia ni invadir la autoridad de origen; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea motor de conciliación, tablas, estados físicos, permisos, reglas monetarias runtime, tolerancias numéricas, jobs, colas, RPC, RLS, integraciones, movimientos financieros, correcciones operativas, documentos, asientos, cierres, reportes, Supabase, código de producto, despliegues ni mutaciones de datos
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NUMERA detecta, representa, clasifica, investiga, resuelve, verifica y cierra diferencias entre fuentes que deberían guardar una relación económica, financiera u operativa explicable, sin usar la conciliación como mecanismo para alterar hechos propietarios y forzar un resultado esperado.
+
+La tarea establece un contrato transversal para responder de forma reproducible:
+
+- qué se esperaba;
+- qué se observó;
+- qué fuentes se compararon;
+- qué identidad permite relacionarlas;
+- qué diferencia existe;
+- si la diferencia es real, aparente, temporal, autorizada o incierta;
+- quién tiene autoridad para corregir cada lado;
+- qué acción de resolución corresponde;
+- qué evidencia prueba el resultado;
+- qué efectos posteriores deben recalcularse o reexpresarse;
+- cuándo el caso puede cerrarse;
+- cuándo debe reabrirse sin borrar su cierre anterior.
+
+El resultado no es un algoritmo de matching ni un workflow físico. Es el contrato de dominio que las superficies, integraciones y persistencia posteriores deberán materializar.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-DOM-014` se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+execution_gate_observed = UNREVIEWED
+```
+
+Por tanto:
+
+- el contrato se define una sola vez;
+- no crea instancia física propia;
+- `UNREVIEWED` no concede autorización temporal ni materialización;
+- no abre una implementación NUMERA;
+- no modifica el carril físico;
+- no crea una instancia por paquete;
+- no ejecuta reconciliaciones reales;
+- no modifica datos ni Supabase.
+
+La materialización posterior deberá respetar los paquetes, gates, autorización y propietarios técnicos que correspondan.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-013
+
+Se recibe sin reinterpretación:
+
+```text
+NUMERA_INTERNAL_ECONOMIC_AUTHORITY = YES
+NUMERA_IS_EXTERNAL_ACCOUNTING_AUTHORITY_BY_DEFAULT = NO
+NUMERA_IS_EXTERNAL_FISCAL_AUTHORITY_BY_DEFAULT = NO
+ACCOUNTING_PROVIDER_BINDING_ACCREDITED_CURRENTLY = NO
+FISCAL_PROVIDER_BINDING_ACCREDITED_CURRENTLY = NO
+BRAND_SITE_COST_CENTER_AND_LEGAL_ENTITY = DISTINCT
+SALE_PAYMENT_CASH_FISCAL_DOCUMENT_ECONOMIC_FACT_ACCOUNTING_ENTRY = DISTINCT
+FISCAL_DOCUMENT_OFFICIALITY_REQUIRES_EXTERNAL_AUTHORITATIVE_EVIDENCE = YES
+TECHNICAL_SUCCESS_IMPLIES_AUTHORITY_ACCEPTANCE = NO
+TIMEOUT_IMPLIES_EXTERNAL_FAILURE = NO
+UNCERTAIN_EXTERNAL_RESULT_REQUIRES_RECONCILIATION = YES
+EXTERNAL_RETRY_MUST_BE_IDEMPOTENT = YES
+EXTERNAL_CORRECTION_PRESERVES_HISTORY = YES
+INTERNAL_TAX_ESTIMATE_IS_LEGAL_TAX_OBLIGATION = NO
+FILE_GENERATED_IS_TAX_FILING = NO
+REQUEST_SENT_IS_AUTHORITY_ACCEPTANCE = NO
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+NUMERA_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+NUMERA_REPORT_OR_EXPORT_CAN_FEED_EXTERNAL_SYSTEM = YES
+NUMERA_REPORT_OR_EXPORT_IS_STATUTORY_ARTEFACT_BY_DEFAULT = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_MUST_NOT_REWRITE_SOURCE_FACT = YES
+SAME_BUSINESS_GROUP_IMPLIES_SAME_LEGAL_ENTITY = NO
+INTERCOMPANY_TREATMENT_BY_INFERENCE = FORBIDDEN
+ACCOUNTING_FORMAL_MODEL_OWNER = NUMERA_DOM_017
+DIFFERENCE_RESOLUTION_OWNER = NUMERA_DOM_014
+```
+
+La 014 desarrolla exclusivamente el último contrato: resolución de diferencias y conciliación. No altera la frontera de autoridad externa definida por la 013.
+
+---
+
+#### 4. Definición de conciliación
+
+Conciliar es demostrar la relación explicable entre dos o más representaciones, resultados o evidencias que pertenecen a fuentes identificadas.
+
+Se conserva:
+
+```text
+CONCILIAR != COPIAR_UN_VALOR
+CONCILIAR != SOBRESCRIBIR_LA_FUENTE
+CONCILIAR != ELEGIR_EL_VALOR_QUE_CUADRA
+CONCILIAR != CREAR_UN_HECHO_FALTANTE
+CONCILIAR != APROBAR_UNA_CORRECCION
+CONCILIAR != CERRAR_UNA_DISPUTA
+```
+
+La conciliación enlaza evidencia y explica diferencias. Cuando una fuente esté incorrecta, la corrección ocurre bajo la autoridad de su propietario y la conciliación consume después el resultado corregido o compensatorio.
+
+---
+
+#### 5. Definición de diferencia de conciliación
+
+Existe una diferencia de conciliación cuando una relación esperada y gobernada entre fuentes, objetos o resultados no puede demostrarse completamente con la evidencia vigente.
+
+Una diferencia deberá expresar:
+
+```text
+EXPECTATIVA_GOBERNADA
+vs
+OBSERVACION_AUTORITATIVA
+=
+DELTA_EXPLICABLE_O_PENDIENTE
+```
+
+La mera desigualdad matemática no crea por sí sola una diferencia de conciliación. Debe existir una relación contractual que justifique la comparación.
+
+---
+
+#### 6. Diferencia de conciliación no equivale a variación empresarial
+
+Se separan obligatoriamente:
+
+```text
+DIFERENCIA_DE_CONCILIACION != VARIACION_DE_NEGOCIO
+DIFERENCIA_DE_CONCILIACION != VARIACION_DE_COSTO
+DIFERENCIA_DE_CONCILIACION != DESVIACION_PRESUPUESTAL
+DIFERENCIA_DE_CONCILIACION != MARGEN
+DIFERENCIA_DE_CONCILIACION != CAMBIO_DE_ESCENARIO
+```
+
+Ejemplos:
+
+- vender por debajo del presupuesto puede ser una variación legítima, no una inconsistencia de datos;
+- costo real distinto del estándar puede ser una variación económica válida;
+- un movimiento bancario por importe distinto al pago que supuestamente ejecuta sí puede constituir diferencia de conciliación;
+- una cantidad NEXO distinta de la cantidad FOGO correlacionada puede constituir diferencia hasta que la causa sea explicada.
+
+Una variación puede requerir análisis, pero no se fuerza a cero para declarar conciliación.
+
+---
+
+#### 7. Diferencia no equivale a disputa
+
+Se conserva:
+
+```text
+DIFERENCIA_DE_CONCILIACION != DISPUTA
+```
+
+Una disputa expresa desacuerdo empresarial sobre una obligación, cobro, recepción, calidad, precio, cantidad, devolución u otra decisión.
+
+La disputa puede producir o mantener una diferencia abierta, pero:
+
+- una disputa no se resuelve únicamente porque los importes coincidan;
+- una diferencia técnica no crea por sí sola una disputa con la contraparte;
+- la decisión sobre la disputa conserva su propio owner y autoridad;
+- la conciliación verifica los efectos resultantes sin absorber la decisión empresarial.
+
+---
+
+#### 8. Diferencia no equivale a corrección, reversión o ajuste
+
+Se distinguen:
+
+```text
+DIFERENCIA = CONDICION_OBSERVADA
+CORRECCION = ACCION_AUTORIZADA_SOBRE_UN_REGISTRO_O_FUENTE
+REVERSO = EFECTO_INVERSO_CORRELACIONADO
+AJUSTE = EFECTO_ECONOMICO_EXPLICITO
+RECLASIFICACION = CAMBIO_DE_TRATAMIENTO_SIN_BORRAR_ORIGEN
+```
+
+Detectar una diferencia no autoriza automáticamente ninguna de esas acciones.
+
+---
+
+#### 9. Diferencia no equivale a incidente técnico
+
+Un timeout, error de red, indisponibilidad o fallo de parser puede impedir conocer un resultado, pero no demuestra que el resultado empresarial sea incorrecto.
+
+Se conserva:
+
+```text
+TECHNICAL_FAILURE != BUSINESS_DIFFERENCE_CONFIRMED
+TIMEOUT != EXTERNAL_FAILURE_CONFIRMED
+UNKNOWN_RESULT != REJECTED_RESULT
+```
+
+Cuando el resultado empresarial permanezca desconocido, el caso se clasifica como incertidumbre pendiente de conciliación y se consulta la fuente autoritativa antes de repetir o compensar.
+
+---
+
+#### 10. Unidad lógica de conciliación
+
+La materialización posterior deberá poder representar una unidad lógica de conciliación con identidad estable.
+
+Como mínimo deberá conservar:
+
+- identidad del caso;
+- regla o relación que justifica la comparación;
+- fuentes comparadas;
+- objetos o referencias de cada lado;
+- snapshot o versión observada por lado cuando corresponda;
+- expectativa;
+- observación;
+- delta;
+- clase o clases de diferencia;
+- alcance organizacional;
+- entidad legal cuando aplique;
+- moneda y unidad cuando apliquen;
+- fechas y periodos relevantes;
+- fecha de detección;
+- responsable de investigación;
+- propietario de cada acción requerida;
+- autoridad de aprobación cuando corresponda;
+- evidencia;
+- decisión de resolución;
+- acciones ejecutadas;
+- verificación posterior;
+- estado de cierre;
+- referencias de reapertura o versión cuando existan.
+
+Esta tarea no fija tabla, nombre físico de campos ni mecanismo de persistencia.
+
+---
+
+#### 11. Regla de identidad estable del caso
+
+El mismo conflicto lógico no debe abrir múltiples expedientes independientes por replay, refresco, recarga o nueva ejecución del detector.
+
+La identidad deberá poder distinguir:
+
+- misma diferencia reobservada;
+- nueva versión de la misma diferencia;
+- diferencia materialmente nueva;
+- reapertura de una diferencia cerrada;
+- segundo conflicto distinto sobre los mismos objetos.
+
+Se prohíbe resolver duplicidad creando otra diferencia duplicada.
+
+---
+
+#### 12. Fuentes comparables
+
+Una conciliación solo compara fuentes cuando existe una relación contractual o de proceso que justifica la expectativa.
+
+Ejemplos de relaciones válidas ya aprobadas:
+
+- venta ↔ pago;
+- venta/pago ↔ cierre de caja;
+- cierre de caja ↔ depósito;
+- depósito/liquidación ↔ movimiento bancario;
+- compra/orden ↔ recepción;
+- recepción ↔ movimiento físico;
+- compra/recepción/documento ↔ obligación;
+- obligación ↔ instrucción/pago;
+- pago ↔ movimiento bancario;
+- producción ↔ consumo/movimiento;
+- producto terminado ↔ ingreso físico;
+- transferencia interna ↔ salida/entrada correlacionadas;
+- hecho económico ↔ fuente operativa;
+- resultado NUMERA ↔ resultado externo cuando exista binding autorizado;
+- periodo/cierre ↔ eventos tardíos y reportes versionados.
+
+No se crea relación por similitud de nombre, descripción o importe aislado.
+
+---
+
+#### 13. Fuente autoritativa por dimensión
+
+Una conciliación no necesita que una sola fuente sea autoridad de todas las dimensiones.
+
+Puede existir autoridad distinta para:
+
+- identidad operativa;
+- cantidad física;
+- estado productivo;
+- compra y recepción comercial;
+- venta y caja;
+- hecho económico;
+- obligación o derecho financiero;
+- movimiento bancario;
+- documento o resultado fiscal externo;
+- asiento o resultado contable externo;
+- periodo económico;
+- reporte NUMERA.
+
+El caso deberá indicar qué fuente decide cada dimensión comparada.
+
+---
+
+#### 14. Propiedad de corrección
+
+Se congela:
+
+```text
+OWNER_DE_LA_FUENTE = OWNER_DE_LA_CORRECCION_DE_LA_FUENTE
+NUMERA_NO_REESCRIBE_FUENTES_AJENAS = SI
+```
+
+Por tanto:
+
+- PULSO corrige hechos comerciales bajo sus contratos;
+- ORIGO corrige compra/recepción comercial bajo sus contratos;
+- NEXO corrige movimientos, ubicación, condición o existencia física bajo sus contratos;
+- FOGO corrige hechos productivos bajo sus contratos;
+- bancos y proveedores externos conservan sus resultados externos;
+- NUMERA corrige su representación económica mediante mecanismos no destructivos;
+- una autoridad o sistema externo conserva la corrección oficial que le corresponda conforme a la 013.
+
+NUMERA puede solicitar, correlacionar, bloquear efectos propios, ajustar su representación y verificar; no puede editar el hecho ajeno para cerrar su expediente.
+
+---
+
+#### 15. Clases obligatorias de diferencia
+
+El modelo objetivo deberá poder distinguir, como mínimo, estas familias:
+
+1. identidad o correlación;
+2. ausencia de origen;
+3. ausencia de efecto esperado;
+4. efecto sin origen conocido;
+5. duplicidad o replay;
+6. cardinalidad inesperada;
+7. cantidad o unidad;
+8. importe;
+9. componentes monetarios;
+10. moneda;
+11. tipo de cambio o conversión;
+12. fecha o corte;
+13. periodo;
+14. entidad legal;
+15. sede, centro, canal u otra dimensión;
+16. contraparte;
+17. documento o soporte;
+18. estado incompatible;
+19. pago o aplicación;
+20. recepción o entrega;
+21. inventario o producción;
+22. comisión, retención o recargo;
+23. reverso, devolución o contracargo;
+24. resultado externo rechazado;
+25. resultado externo incierto;
+26. evento tardío;
+27. fuente incompleta;
+28. corrección no propagada;
+29. conflicto entre versiones;
+30. autoridad o evidencia insuficiente.
+
+Un caso puede pertenecer a varias familias simultáneamente.
+
+---
+
+#### 16. Diferencias de identidad y correlación
+
+Se abre investigación cuando:
+
+- falta la referencia común esperada;
+- dos objetos reclaman la misma identidad;
+- una referencia apunta a objetos incompatibles;
+- el origen es ambiguo;
+- existe un efecto sin evento fuente;
+- existe evento fuente sin efecto esperado;
+- un backfill o replay no puede distinguirse del original;
+- una correlación fue reutilizada con contenido materialmente diferente.
+
+No se resuelve asignando una referencia inventada.
+
+---
+
+#### 17. Duplicados
+
+Un duplicado probable deberá permanecer en revisión hasta demostrar:
+
+- identidad común suficiente;
+- mismo efecto empresarial;
+- mismo alcance;
+- ausencia de una segunda causa legítima;
+- decisión de cuál registro o efecto queda vigente;
+- tratamiento del duplicado sin borrar evidencia.
+
+Se conserva:
+
+```text
+SIMILITUD != DUPLICADO_CONFIRMADO
+DUPLICADO_CONFIRMADO != BORRADO_DE_HISTORIA
+```
+
+Cuando el duplicado ya produjo efecto económico, la corrección será compensatoria o de reversión conforme al contrato propietario.
+
+---
+
+#### 18. Faltantes
+
+Se distinguen al menos:
+
+- origen sin efecto;
+- efecto sin origen;
+- documento esperado no recibido;
+- movimiento físico esperado no observado;
+- movimiento bancario esperado no observado;
+- pago esperado no observado;
+- aplicación esperada no observada;
+- resultado externo esperado todavía no conocido;
+- fuente incompleta por corte o latencia.
+
+Un faltante no se completa copiando el valor de otra capa.
+
+---
+
+#### 19. Importes y componentes monetarios
+
+Cuando la relación sea monetaria deberán compararse, según aplique:
+
+- importe base;
+- subtotal;
+- descuentos;
+- impuestos;
+- recargos;
+- propinas o servicio;
+- comisiones;
+- retenciones;
+- flete;
+- devoluciones;
+- reversos;
+- total;
+- saldo;
+- importe aplicado;
+- importe pendiente.
+
+Una diferencia de total puede ser el efecto correcto de componentes legítimos. La investigación deberá explicar el neto antes de tratarlo como error.
+
+---
+
+#### 20. Moneda
+
+La conciliación monetaria conserva moneda explícita por lado.
+
+Se prohíbe:
+
+- comparar importes de monedas distintas como si fueran equivalentes;
+- ocultar diferencia cambiaria dentro del importe principal;
+- inferir moneda desde sede o cuenta sin evidencia;
+- usar conversión sin fuente, fecha y regla aplicable.
+
+Una diferencia de moneda no puede cerrarse mediante tolerancia monetaria diseñada para importes de la misma moneda.
+
+---
+
+#### 21. Cantidad y unidad
+
+Para producción, inventario, recepción, entrega o movimientos físicos se conservarán cantidad y unidad canónica aplicables.
+
+Cuando exista conversión de unidad deberá poder demostrarse:
+
+- unidad origen;
+- unidad destino;
+- factor o regla vigente;
+- versión;
+- momento de aplicación;
+- redondeo cuando exista;
+- residual resultante.
+
+Una diferencia de unidad no se convierte automáticamente en diferencia monetaria.
+
+---
+
+#### 22. Fechas, valor y corte
+
+Una conciliación temporal deberá distinguir las fechas que correspondan, entre ellas:
+
+- ocurrencia;
+- emisión;
+- recepción;
+- aceptación;
+- reconocimiento económico;
+- vencimiento;
+- pago o recaudo;
+- fecha valor bancaria;
+- conciliación;
+- corrección;
+- cierre;
+- recepción externa de resultado.
+
+Una fecha diferente puede ser válida si la relación contractual admite desfase.
+
+La comparación deberá declarar el corte o watermark utilizado para evitar declarar faltante un dato que aún no era exigible o no había llegado legítimamente.
+
+---
+
+#### 23. Periodos
+
+Se conserva:
+
+```text
+PERIODO_OPERATIVO
+!= PERIODO_ECONOMICO
+!= PERIODO_CONTABLE
+!= PERIODO_FISCAL
+```
+
+Una diferencia de periodo deberá explicar qué periodo corresponde a cada capa y por qué.
+
+La conciliación no mueve silenciosamente un hecho a otro periodo para hacer coincidir un reporte.
+
+Los eventos tardíos consumen el contrato de `NUMERA-DOM-011` y pueden requerir ajuste, reapertura o clasificación sin efecto.
+
+---
+
+#### 24. Entidad legal y dimensiones organizacionales
+
+Se conserva:
+
+```text
+LEGAL_ENTITY != BRAND
+LEGAL_ENTITY != SITE
+SITE != COST_CENTER
+BRAND != COST_CENTER
+```
+
+Una diferencia de entidad legal no puede cerrarse copiando marca, sede o centro de costo.
+
+Cuando la entidad aplicable no pueda demostrarse, el caso permanece pendiente y cualquier tratamiento intercompañía sigue sujeto a la frontera de `NUMERA-DOM-013` y a la arquitectura/profesional competente que corresponda.
+
+---
+
+#### 25. Estados incompatibles
+
+Una conciliación puede detectar estados incompatibles aun cuando importes y referencias coincidan.
+
+Ejemplos:
+
+- venta anulada con pago presentado como definitivo;
+- recepción rechazada con obligación presentada como liquidable;
+- pago registrado con banco todavía pendiente;
+- obligación liquidada con saldo residual inexplicado;
+- producto terminado liberado sin ingreso físico esperado;
+- periodo cerrado con mutación económica ordinaria posterior;
+- documento externo rechazado presentado localmente como aceptado;
+- resultado externo incierto tratado localmente como exitoso.
+
+El estado más conveniente no prevalece por inferencia.
+
+---
+
+#### 26. Resultado externo incierto
+
+Se conserva el contrato de la 013:
+
+```text
+TIMEOUT != FAILURE
+REQUEST_SENT != ACCEPTED
+TECHNICAL_2XX != AUTHORITY_ACCEPTED
+UNKNOWN_RESULT_REQUIRES_RECONCILIATION = YES
+```
+
+Ante incertidumbre:
+
+1. se conserva la intención original;
+2. se conserva cada intento técnico;
+3. se consulta recibo, estado o superficie autoritativa cuando exista;
+4. no se reenvía una segunda intención empresarial por respuesta perdida;
+5. no se genera reverso por agotamiento de retry;
+6. se mantiene el caso abierto hasta resolver el resultado o aplicar una decisión de contingencia expresamente autorizada.
+
+---
+
+#### 27. Matching sugerido no equivale a conciliación aprobada
+
+Se conserva el contrato de `NUMERA-DOM-009`:
+
+```text
+SUGERIR_MATCH != APROBAR_MATCH
+APROBAR_MATCH != MODIFICAR_FUENTE
+```
+
+El matching puede asistir utilizando referencias, importes, fechas, contraparte, cuenta, moneda, lote, depósito, proveedor u otros atributos válidos.
+
+La sugerencia deberá incluir evidencia suficiente para explicar por qué los objetos son candidatos.
+
+---
+
+#### 28. Cardinalidades de conciliación
+
+El modelo deberá soportar:
+
+- uno a uno;
+- uno a muchos;
+- muchos a uno;
+- conciliación parcial;
+- neteo explicado;
+- saldo residual;
+- objeto todavía sin contraparte identificada.
+
+La igualdad de importes no determina cardinalidad.
+
+Cuando una conciliación combine agrupaciones sucesivas, cada contribución deberá conservar lineage suficiente y deberá poder descomponerse en las cardinalidades aprobadas; no se admite una bolsa opaca de cuadre.
+
+---
+
+#### 29. Conciliación parcial
+
+Una conciliación parcial conserva explícitamente:
+
+- parte conciliada;
+- parte pendiente;
+- motivo del residual;
+- referencias aplicadas;
+- regla de distribución o aplicación;
+- evidencia;
+- siguientes acciones.
+
+Se conserva:
+
+```text
+PARTIAL_MATCH != FULL_RECONCILIATION
+SALDO_RESIDUAL != CERO_POR_INFERENCIA
+```
+
+---
+
+#### 30. Tolerancias
+
+No existe tolerancia universal implícita.
+
+Toda tolerancia deberá declarar, cuando aplique:
+
+- finalidad;
+- tipo de diferencia elegible;
+- moneda o unidad;
+- magnitud o regla;
+- dimensión o proceso;
+- entidad o alcance;
+- versión;
+- vigencia;
+- autoridad;
+- motivo;
+- tratamiento del residual;
+- evidencia de aplicación.
+
+Esta tarea no fija valores numéricos de tolerancia.
+
+---
+
+#### 31. Límites de la tolerancia
+
+Una tolerancia no podrá usarse para cerrar:
+
+- identidad ambigua;
+- entidad legal incompatible;
+- moneda distinta sin conversión válida;
+- documento duplicado confirmado;
+- fuente no autorizada;
+- resultado externo incierto;
+- obligación o pago sin autoridad;
+- estado incompatible crítico;
+- diferencia que excede el alcance de la política;
+- fraude, integridad o seguridad sospechada;
+- faltante material cuya causa siga desconocida.
+
+Estar dentro de un valor numérico no demuestra por sí solo que la diferencia sea aceptable.
+
+---
+
+#### 32. Materialidad y bloqueo
+
+La tarea no inventa una materialidad monetaria universal.
+
+Cada caso deberá poder indicar qué decisiones bloquea mientras permanezca abierto, por ejemplo:
+
+- reconocimiento económico;
+- aprobación;
+- pago;
+- aplicación de recaudo;
+- liquidación de obligación;
+- conciliación bancaria;
+- cierre de periodo;
+- publicación oficial NUMERA;
+- exportación sensible;
+- restatement;
+- integración externa posterior.
+
+Una diferencia puede ser no bloqueante únicamente cuando exista política o decisión autorizada que lo justifique.
+
+---
+
+#### 33. Excepción aceptada no equivale a diferencia resuelta por corrección
+
+Una diferencia puede permanecer como excepción aceptada cuando:
+
+- la causa es conocida;
+- no existe acción adicional razonable o requerida en ese corte;
+- la política permite continuar;
+- la autoridad competente acepta el residual;
+- el impacto queda declarado;
+- la evidencia se conserva;
+- el caso puede reabrirse ante nueva información.
+
+Se conserva:
+
+```text
+EXCEPCION_ACEPTADA != DATO_CORREGIDO
+EXCEPCION_ACEPTADA != DIFERENCIA_INEXISTENTE
+```
+
+---
+
+#### 34. Detección
+
+La detección podrá provenir de:
+
+- comparación automática;
+- regla de proceso;
+- validación humana;
+- resultado externo;
+- cierre o checklist;
+- reporte de fuente;
+- integración;
+- evento tardío;
+- auditoría;
+- control de calidad de datos.
+
+Detectar abre o actualiza el expediente; no ejecuta una corrección ni cierre.
+
+---
+
+#### 35. Investigación
+
+La investigación deberá:
+
+1. congelar o referenciar la evidencia relevante del momento de detección;
+2. consultar el estado vigente de las fuentes sin reescribirlo;
+3. validar identidad y correlación;
+4. confirmar owner y autoridad por dimensión;
+5. distinguir error, latencia, parcialidad, duplicidad, variación legítima, disputa o incertidumbre;
+6. identificar causa cuando la evidencia lo permita;
+7. declarar lo que sigue desconocido;
+8. proponer una resolución sin ejecutarla cuando requiera aprobación separada.
+
+Una hipótesis no se presenta como causa confirmada.
+
+---
+
+#### 36. Clasificación de causa
+
+La causa podrá quedar clasificada, según evidencia, como:
+
+- dato de origen incorrecto;
+- efecto faltante;
+- duplicado;
+- correlación incorrecta;
+- evento fuera de orden;
+- latencia normal;
+- corte temporal;
+- conversión o redondeo gobernado;
+- parcialidad legítima;
+- comisión/retención/recargo legítimo;
+- devolución/reverso/contracargo;
+- disputa empresarial;
+- error de mapping;
+- error de integración;
+- estado externo incierto;
+- corrección aún no propagada;
+- política o regla desactualizada;
+- dato histórico incompleto;
+- diferencia legítima aceptable;
+- causa todavía indeterminada.
+
+La clasificación no sustituye la evidencia.
+
+---
+
+#### 37. Decisión de resolución
+
+La decisión de resolución deberá separar:
+
+```text
+INVESTIGAR
+-> PROPONER
+-> APROBAR_CUANDO_APLIQUE
+-> EJECUTAR_EN_EL_OWNER_CORRECTO
+-> RECONCILIAR_DE_NUEVO
+-> VERIFICAR
+-> CERRAR
+```
+
+No toda diferencia requiere todos los pasos, pero nunca se fusionan aprobación, ejecución y verificación por comodidad cuando el riesgo exige segregación.
+
+---
+
+#### 38. Tipos de resolución permitidos
+
+Según la causa, una resolución podrá consistir en:
+
+1. confirmar match existente;
+2. corregir una correlación sin alterar los hechos;
+3. aprobar conciliación parcial y conservar residual;
+4. solicitar corrección a la fuente propietaria;
+5. registrar corrección, reclasificación, ajuste o reverso económico en NUMERA;
+6. revertir un match incorrecto y crear uno nuevo;
+7. reconocer comisión, retención, cargo o componente legítimo mediante su contrato;
+8. aplicar un pago o recaudo a la obligación/derecho correcto;
+9. resolver un duplicado sin borrar historia;
+10. confirmar un resultado externo previamente incierto;
+11. aceptar una excepción dentro de política;
+12. enrutar evento tardío a ajuste, reapertura o sin efecto;
+13. producir restatement cuando el cambio material afecte cierre/reporte;
+14. mantener el caso abierto por evidencia insuficiente.
+
+No se crea la categoría genérica “ajuste manual” como salida sin causa, owner y evidencia.
+
+---
+
+#### 39. Corrección en la fuente propietaria
+
+Cuando la resolución requiera corregir un hecho ajeno a NUMERA:
+
+- NUMERA registra o conserva el caso;
+- solicita o referencia la acción al propietario;
+- espera una versión, compensación o resultado autorizado;
+- no modifica directamente la fuente;
+- vuelve a conciliar cuando llega el resultado;
+- conserva el antes y el después.
+
+El expediente de diferencia no sustituye el workflow del dominio propietario.
+
+---
+
+#### 40. Corrección económica en NUMERA
+
+Cuando la fuente operativa sea correcta pero la representación económica de NUMERA sea incorrecta, NUMERA podrá corregir su propio efecto mediante el mecanismo autorizado correspondiente.
+
+Se conserva:
+
+```text
+CORRECCION_ECONOMICA_POSTERIOR = COMPENSATORIA_O_VERSIONADA
+SILENT_OVERWRITE = FORBIDDEN
+```
+
+La acción deberá conservar original, motivo, actor, autoridad, importe o dimensión afectados, evidencia, periodo y relación con la diferencia.
+
+---
+
+#### 41. Reversión de matching
+
+Un match incorrecto no se elimina de la historia.
+
+La reversión conserva:
+
+- match original;
+- objetos involucrados;
+- actor;
+- autoridad;
+- motivo;
+- evidencia;
+- fecha;
+- residual resultante;
+- nuevo match cuando exista.
+
+La reversión del match no revierte automáticamente pagos, ventas, obligaciones o movimientos fuente.
+
+---
+
+#### 42. Correcciones externas
+
+Cuando un proveedor, banco, sistema contable/fiscal o autoridad externa produzca una corrección:
+
+- se conserva el resultado anterior;
+- se conserva la nueva respuesta o documento;
+- se correlacionan ambas versiones;
+- NUMERA evalúa el efecto económico propio;
+- no se reescribe el hecho operativo;
+- se reabre o crea diferencia cuando cambie el resultado previamente conciliado.
+
+La autoridad externa permanece conforme a `NUMERA-DOM-013`.
+
+---
+
+#### 43. Venta, pago, caja, depósito y banco
+
+Para cadenas comerciales y financieras se conserva la trazabilidad:
+
+```text
+VENTA/PAGO_PULSO
+-> CIERRE_DE_CAJA
+-> EFECTIVO_O_LIQUIDACION
+-> DEPOSITO_O_ABONO
+-> MATCH
+-> CONCILIACION
+```
+
+Diferencias típicas incluyen:
+
+- venta sin pago esperado;
+- pago sin venta correlacionable;
+- cierre con diferencia de efectivo;
+- depósito distinto del efectivo entregado;
+- liquidación digital neta no explicada;
+- abono bancario sin referencia interna;
+- referencia interna sin abono bancario;
+- comisión o retención no identificada;
+- reverso o contracargo posterior.
+
+Ninguna etapa inventa las anteriores o posteriores.
+
+---
+
+#### 44. Compra, recepción, documento, obligación y pago
+
+La conciliación de abastecimiento y cuentas por pagar deberá poder detectar:
+
+- obligación sin orden cuando sea exigible;
+- documento sin recepción cuando sea exigible;
+- recepción sin documento todavía esperado;
+- precio diferente;
+- cantidad diferente;
+- moneda diferente;
+- impuesto o recargo diferente;
+- vencimiento incompatible;
+- proveedor incompatible;
+- documento duplicado;
+- pago previo no aplicado;
+- nota o devolución no aplicada;
+- obligación duplicada;
+- pago superior al alcance autorizado;
+- resultado bancario no reconciliado.
+
+La diferencia permanece visible hasta resolución sustentada.
+
+---
+
+#### 45. Producción e inventario
+
+La conciliación entre FOGO, NEXO y NUMERA deberá poder tratar:
+
+- consumo FOGO sin movimiento NEXO correlacionado;
+- movimiento NEXO sin ejecución productiva válida;
+- salida productiva sin calidad resuelta;
+- terminado liberado sin ingreso físico;
+- cantidad física distinta de la productiva;
+- merma sin causa o disposición suficiente;
+- transferencia con recepción destino pendiente;
+- ajuste económico sin movimiento compensatorio;
+- conversión de unidad incompatible;
+- valor duplicado entre salida y entrada de una transferencia interna.
+
+La diferencia no se resuelve copiando cantidades o saldos entre dominios.
+
+---
+
+#### 46. Obligaciones y pagos
+
+Para cuentas por pagar se conserva:
+
+```text
+PAYABLE_REGISTERED
+...
+PAYMENT_RECORDED
+-> BANK_RECONCILIATION_PENDING
+-> PAYABLE_SETTLED
+```
+
+Se conserva:
+
+```text
+PAGO_REGISTRADO != OBLIGACION_LIQUIDADA
+SALDO_CERO_SIN_EXPLICACION != LIQUIDACION
+```
+
+La conciliación deberá explicar obligaciones, aprobaciones, instrucciones, pagos, retenciones, devoluciones, reversos, movimientos bancarios y saldo remanente.
+
+---
+
+#### 47. Cartera y cuentas por cobrar
+
+`VPROC-0053` ya distingue `DIFFERENCE_UNDER_REVIEW` y `RECONCILIATION_PENDING`.
+
+La 014 define el contrato transversal de diferencia, pero no desarrolla:
+
+- cuotas;
+- aging;
+- promesas;
+- acuerdos;
+- cobranza;
+- castigo;
+- exposición de crédito.
+
+Ese detalle continúa en `NUMERA-DOM-016`.
+
+La conciliación sí deberá conservar venta origen, derecho de cobro, pago recibido, aplicación, residual y diferencias sin modificar la venta.
+
+---
+
+#### 48. Costos y variaciones
+
+La 014 no convierte toda variación de costo en error de conciliación.
+
+Se conserva:
+
+```text
+STANDARD_VS_ACTUAL_VARIANCE = BUSINESS_VARIANCE
+SOURCE_OR_QUANTITY_MISMATCH = POSSIBLE_RECONCILIATION_DIFFERENCE
+```
+
+Una variación podrá abrir diferencia únicamente cuando revele una incoherencia entre fuentes, identidad, cantidades, reglas, periodos o efectos esperados.
+
+El método de costo permanece en `NUMERA-DOM-007`.
+
+---
+
+#### 49. Periodos, cierre y eventos tardíos
+
+Una diferencia detectada contra un periodo `locked` o `closed` no autoriza escritura ordinaria.
+
+Debe aplicarse `NUMERA-DOM-011`:
+
+- ajuste en periodo abierto cuando la política lo permita;
+- reapertura controlada cuando sea necesaria;
+- clasificación como duplicado, inválido o sin efecto cuando la evidencia lo demuestre.
+
+Una diferencia material que cambie un cierre deberá preservar versión anterior y nueva versión.
+
+---
+
+#### 50. Reportes y restatement
+
+Cuando una diferencia resuelta cambie un resultado ya publicado bajo `NUMERA-DOM-012`:
+
+1. no se edita la versión publicada en sitio;
+2. se evalúa si el cambio exige restatement;
+3. la nueva versión identifica la causa y el caso de diferencia;
+4. la versión anterior permanece histórica;
+5. exportaciones anteriores no se reescriben retroactivamente;
+6. consumidores pueden determinar qué versión utilizaron.
+
+Una diferencia no material o aceptada conforme a política puede no exigir restatement, pero esa decisión debe quedar sustentada.
+
+---
+
+#### 51. Frontera contable y fiscal externa
+
+La 014 consume la autoridad definida en `NUMERA-DOM-013`.
+
+Por tanto:
+
+- un asiento externo rechazado abre diferencia o excepción, no autoriza marcarlo aceptado localmente;
+- un documento fiscal sin resultado autoritativo permanece incierto;
+- una respuesta externa puede conciliar un resultado sin reescribir el origen;
+- un archivo exportado no prueba presentación;
+- un request enviado no prueba aceptación;
+- una corrección externa conserva versiones;
+- la ausencia actual de binding acreditado impide inventar flujos específicos de proveedor.
+
+---
+
+#### 52. Intercompañía
+
+Una diferencia entre unidades, sedes o entidades del grupo no se resuelve clasificando por conveniencia todo movimiento como interno.
+
+Si existen entidades legales distintas:
+
+- se conservan ambas identidades;
+- se conserva el movimiento o hecho fuente;
+- se evita duplicar ingreso/gasto por inferencia;
+- el tratamiento legal, fiscal o contable requiere autoridad competente;
+- la conciliación registra el pendiente y los efectos autorizados;
+- `NUMERA-DOM-017` consume el resultado para la arquitectura formal que corresponda.
+
+---
+
+#### 53. Autorización y segregación
+
+La materialización deberá permitir separar, según riesgo y contrato:
+
+- detectar;
+- consultar;
+- investigar;
+- proponer match;
+- aprobar match;
+- proponer resolución;
+- aprobar resolución;
+- ejecutar corrección económica;
+- solicitar corrección a fuente;
+- aceptar excepción;
+- reabrir;
+- verificar;
+- cerrar;
+- exportar evidencia.
+
+Esta tarea no fija nombres definitivos de permisos.
+
+Toda mutación protegida revalida autoridad en servidor y estado/versiones actuales antes de ejecutar.
+
+---
+
+#### 54. Conflicto de interés y autoaprobación
+
+Cuando una diferencia produzca efecto material o sensible, el actor que:
+
+- originó el ajuste;
+- creó el hecho manual;
+- propuso el match;
+- solicitó la corrección;
+
+no adquiere por ese solo hecho autoridad para aprobar la resolución.
+
+Las reglas exactas de segregación se materializan en `NUMERA-AUTH-*` aplicables y el sistema transversal de autorización.
+
+---
+
+#### 55. Evidencia de resolución
+
+Todo caso cerrado deberá conservar evidencia suficiente para reconstruir:
+
+- por qué se abrió;
+- qué se comparó;
+- qué versiones se observaron;
+- qué diferencia existía;
+- qué investigación se realizó;
+- qué causa se confirmó o quedó desconocida;
+- qué decisión se tomó;
+- quién la tomó y con qué autoridad;
+- qué acciones se ejecutaron;
+- qué resultados devolvieron las fuentes;
+- qué residual quedó;
+- qué verificación final se ejecutó;
+- qué reportes, cierres u objetos posteriores se afectaron;
+- por qué se cerró o aceptó una excepción.
+
+No se incluyen secretos, tokens, claves o credenciales en la evidencia empresarial.
+
+---
+
+#### 56. Verificación posterior a la resolución
+
+Ejecutar una acción no cierra automáticamente la diferencia.
+
+Después de la resolución deberá repetirse la comparación sobre las fuentes vigentes o snapshots autorizados.
+
+Se conserva:
+
+```text
+RESOLUTION_ACTION_EXECUTED != DIFFERENCE_RESOLVED
+DIFFERENCE_RESOLVED != CASE_CLOSED_UNTIL_VERIFIED
+```
+
+Si la acción genera una nueva diferencia, el expediente debe conservarla o abrir un caso relacionado sin esconder el resultado.
+
+---
+
+#### 57. Criterios de cierre de una diferencia
+
+Un caso solo podrá cerrarse cuando, según aplique:
+
+1. la identidad y alcance estén demostrados;
+2. la causa esté explicada o expresamente clasificada como indeterminada aceptada;
+3. las acciones requeridas hayan sido ejecutadas por sus owners;
+4. la autoridad necesaria haya aprobado la resolución;
+5. la reconciliación posterior confirme el resultado;
+6. el residual sea cero, legítimo, parcialmente conciliado o aceptado por política explícita;
+7. no exista resultado externo material todavía incierto;
+8. no exista corrección fuente pendiente que sea requisito de cierre;
+9. el efecto en periodo/cierre haya sido tratado;
+10. el efecto en reportes/restatement haya sido tratado;
+11. la evidencia sea suficiente;
+12. el cierre sea idempotente y versionado cuando corresponda.
+
+Cerrar no elimina el expediente.
+
+---
+
+#### 58. Caso no resoluble todavía
+
+La falta de evidencia suficiente no debe forzar una resolución ficticia.
+
+El caso puede permanecer abierto cuando:
+
+- falta respuesta de una fuente;
+- el resultado externo continúa incierto;
+- la identidad sigue ambigua;
+- la autoridad requerida no ha decidido;
+- la corrección fuente no ha concluido;
+- existe disputa activa;
+- se espera un evento legítimamente posterior;
+- el periodo requiere una decisión de reapertura;
+- existe dependencia externa no disponible.
+
+El pendiente conserva owner y siguiente condición de salida.
+
+---
+
+#### 59. Reapertura de diferencias
+
+Una diferencia cerrada deberá poder reabrirse cuando aparezca:
+
+- nueva evidencia material;
+- evento tardío;
+- reverso o contracargo posterior;
+- corrección de la fuente;
+- nuevo resultado externo;
+- detección de cierre incorrecto;
+- cambio de autoridad aplicable;
+- hallazgo de duplicidad;
+- inconsistencia en un restatement posterior.
+
+Se congela:
+
+```text
+REOPEN_DIFFERENCE != DELETE_PREVIOUS_CLOSE
+```
+
+La reapertura conserva cierre anterior, motivo, actor, evidencia y nueva versión o ciclo de revisión.
+
+---
+
+#### 60. Concurrencia
+
+La resolución deberá fallar cerrado cuando la fuente cambie materialmente entre investigación y ejecución.
+
+La materialización deberá detectar, según aplique:
+
+- versión obsoleta;
+- match ya modificado;
+- obligación ya liquidada;
+- pago ya aplicado;
+- periodo ya cerrado o reabierto;
+- corrección externa recibida;
+- caso ya resuelto por otro actor.
+
+Una decisión calculada sobre estado obsoleto no se aplica silenciosamente.
+
+---
+
+#### 61. Idempotencia
+
+Deberán ser idempotentes, según su naturaleza:
+
+- creación/actualización del caso desde la misma evidencia;
+- propuesta de matching;
+- aprobación de matching;
+- solicitud de corrección;
+- aplicación de una corrección económica con clave estable;
+- consulta de resultado externo;
+- cierre;
+- reapertura bajo una identidad de decisión única.
+
+Replay no produce doble ajuste, doble pago, doble match, doble restatement ni doble cierre.
+
+---
+
+#### 62. Reintentos
+
+Los reintentos técnicos obedecen los contratos de integración y no cambian la intención empresarial.
+
+Se conserva:
+
+```text
+RETRY_TECHNICAL != NEW_BUSINESS_ACTION
+```
+
+Ante resultado desconocido:
+
+- reintentar transmisión solo bajo política segura;
+- consultar estado cuando exista;
+- evitar doble efecto;
+- conservar cada intento;
+- no compensar por agotamiento de retry sin efecto confirmado.
+
+---
+
+#### 63. Watermarks, frescura y fuentes incompletas
+
+Una comparación debe declarar hasta qué punto considera completa cada fuente.
+
+Cuando una fuente pueda llegar con latencia, se conservará:
+
+- instante de corte;
+- último evento/versión considerada;
+- cobertura conocida;
+- fuentes faltantes;
+- calidad;
+- condición de completitud.
+
+Un dato todavía no recibido dentro de una ventana legítima no se presenta automáticamente como pérdida o fraude.
+
+Esta tarea no fija ventanas temporales universales.
+
+---
+
+#### 64. Históricos y backfill
+
+Los backfills o migraciones históricas deberán distinguir:
+
+- hecho observado originalmente;
+- dato reconstruido;
+- fuente histórica;
+- nivel de confianza;
+- campos desconocidos;
+- correlaciones derivadas;
+- decisiones posteriores de conciliación.
+
+Un backfill no convierte una inferencia en evidencia original.
+
+Los casos históricos incompletos pueden quedar conciliados con limitaciones declaradas o como excepción aceptada según política y autoridad.
+
+---
+
+#### 65. AS-IS y transición
+
+El AS-IS observado de NUMERA no materializa un motor transversal completo de conciliación para las capacidades objetivo `CAP-12.07`, `CAP-12.08`, bancos, documentos fiscales y obligaciones.
+
+La transición posterior deberá:
+
+1. preservar hechos y referencias existentes;
+2. no fabricar expedientes históricos que nunca existieron como si hubieran sido conciliados en tiempo real;
+3. distinguir backfill de operación nativa;
+4. no marcar datos como reconciliados por ausencia de conflicto visible;
+5. introducir identities y evidencia de caso sin reescribir fuentes;
+6. migrar progresivamente consumidores hacia el contrato aprobado;
+7. conservar diferencias abiertas hasta resolución real.
+
+---
+
+#### 66. Relación con `VPROC-0051`
+
+`VPROC-0051.RECONCILIATION_PENDING` sigue siendo el estado de proceso donde se comparan registro, soporte, contraparte y origen antes de llegar a `ECONOMIC_EVENT_RECONCILED`.
+
+La 014 define qué significa resolver la diferencia durante esa conciliación.
+
+No añade estados al proceso ni reemplaza su lifecycle.
+
+---
+
+#### 67. Relación con `VPROC-0052`
+
+`VPROC-0052.BANK_RECONCILIATION_PENDING` conserva la correlación entre obligación, aprobación, instrucción, resultado de pago, banco, comisión, retención, rechazo, reverso y saldo.
+
+La 014 define:
+
+- clasificación del delta;
+- resolución;
+- excepción;
+- verificación;
+- cierre de diferencia.
+
+No redefine `PAYABLE_SETTLED` ni el lifecycle de cuentas por pagar.
+
+---
+
+#### 68. Relación con `VPROC-0053`
+
+`VPROC-0053` conserva `DIFFERENCE_UNDER_REVIEW` y `RECONCILIATION_PENDING`.
+
+La 014 fija el contrato transversal que esos estados deberán usar para investigar y resolver diferencias de cartera, sin desarrollar todavía cobranza, aging, exposición o castigo.
+
+---
+
+#### 69. Relación con `VPROC-0054`
+
+`VPROC-0054.CLOSE_RECONCILIATION_PENDING` no equivale a periodo cerrado.
+
+La 014 define qué debe ocurrir con diferencias abiertas o excepciones durante la conciliación previa al cierre del ciclo de costos/rentabilidad.
+
+La decisión de periodo `open|locked|closed`, reapertura y restatement permanece en `NUMERA-DOM-011`.
+
+---
+
+#### 70. Matriz de propietarios de resolución
+
+| Diferencia | Autoridad del dato fuente | Rol de NUMERA | Acción de salida principal |
+| --- | --- | --- | --- |
+| venta o caja comercial incorrecta | PULSO | conservar diferencia y efecto económico pendiente/ajustable | corrección o compensación en PULSO + reconciliación posterior |
+| compra o recepción comercial incorrecta | ORIGO | conservar diferencia en hecho/obligación | corrección bajo ORIGO + nueva conciliación |
+| movimiento, ubicación, cantidad o custodia física incorrecta | NEXO | bloquear/ajustar efecto económico propio según corresponda | ajuste físico autorizado en NEXO + reconciliación |
+| consumo, salida, merma, calidad o resultado productivo incorrecto | FOGO | conservar diferencia de costo/efecto | corrección productiva autorizada + reconciliación |
+| hecho económico NUMERA incorrecto | NUMERA | propietario de la corrección económica | ajuste, reclasificación, reversión o versión no destructiva |
+| obligación por pagar NUMERA incorrecta | NUMERA | propietario financiero | corrección/decisión según `NUMERA-DOM-010` |
+| cartera o aplicación de recaudo NUMERA incorrecta | NUMERA | propietario financiero | tratamiento según `NUMERA-DOM-016` y proceso aplicable |
+| línea de extracto o resultado bancario | banco/fuente financiera | correlacionar sin editar fuente | match, investigación o acción externa autorizada |
+| resultado de proveedor de pago | proveedor + proceso comercial aplicable | conciliar efecto financiero | consulta, matching, reverso/contracargo correlacionado cuando aplique |
+| documento o resultado fiscal externo | autoridad/proveedor autorizado | correlacionar referencia y efecto | tratamiento conforme a `NUMERA-DOM-013` |
+| asiento o resultado contable externo | sistema/autoridad contable aplicable | conciliar candidato/resultado | tratamiento conforme a `NUMERA-DOM-013` y `NUMERA-DOM-017` |
+| periodo/cierre económico | NUMERA | gobernar ajuste/reapertura | `NUMERA-DOM-011` |
+| reporte oficial NUMERA afectado | NUMERA | versionar/restatar | `NUMERA-DOM-012` |
+| tratamiento intercompañía no resuelto | autoridad empresarial/profesional aplicable | conservar pendiente y efectos económicos permitidos | definición autorizada antes de cierre definitivo |
+
+---
+
+#### 71. Matriz de resultado de conciliación
+
+| Resultado | Significado | Puede cerrar el caso | Condición principal |
+| --- | --- | --- | --- |
+| match completo | fuentes coherentes bajo la relación aplicable | sí | identidad, importes/valores, estado y evidencia suficientes |
+| match parcial | una parte está explicada y existe residual | no por defecto | residual conserva owner y tratamiento |
+| duplicado confirmado | dos registros/efectos representan la misma causa | después de tratamiento | duplicado queda neutralizado/corregido sin borrar historia |
+| faltante legítimamente pendiente | falta una contraparte todavía no exigible o en tránsito | no | mantener abierto hasta condición de salida |
+| diferencia explicada | delta corresponde a componente legítimo | sí | componente reconocido y trazable |
+| dentro de tolerancia aprobada | residual elegible bajo política vigente | sí, cuando aplique | identidad/autoridad válidas y evidencia de política |
+| excepción aceptada | diferencia conocida se acepta sin corrección adicional | sí | autoridad, impacto, motivo y evidencia explícitos |
+| fuente debe corregirse | dato propietario incorrecto | no | esperar resultado/corrección y reconciliar de nuevo |
+| resultado externo incierto | no se conoce éxito o fracaso empresarial | no | consultar autoridad o recibir resultado determinante |
+| conflicto no resuelto | fuentes incompatibles sin evidencia suficiente | no | investigación o decisión pendiente |
+| ajuste/reapertura requerida | la corrección afecta representación protegida | no hasta completar | aplicar contrato de periodo/restatement y volver a verificar |
+
+---
+
+#### 72. Qué no puede usarse para cerrar una diferencia
+
+No constituyen cierre suficiente por sí solos:
+
+- botón presionado;
+- comentario libre;
+- coincidencia aproximada sin política;
+- saldo llevado manualmente a cero;
+- edición directa del registro fuente;
+- eliminación de fila;
+- omisión del residual;
+- cambio de periodo sin tratamiento;
+- recepción de HTTP 2xx;
+- timeout agotado;
+- archivo generado;
+- request enviado;
+- captura de pantalla sin autoridad verificable;
+- coincidencia de nombre;
+- coincidencia de importe aislada;
+- permiso genérico `manage`;
+- rol nominal sin autoridad efectiva.
+
+---
+
+#### 73. Diferencias bloqueantes de integridad
+
+Una diferencia deberá permanecer bloqueante para el efecto afectado cuando exista, entre otros:
+
+- identidad fuente no resoluble;
+- doble efecto probable;
+- moneda no resoluble;
+- entidad legal incompatible;
+- autorización insuficiente;
+- estado externo incierto material;
+- conflicto de versión;
+- fuente propietaria incorrecta sin corregir;
+- residual material fuera de tolerancia;
+- error que cambia cierre o reporte sin tratamiento;
+- sospecha de fraude o integridad que requiera investigación;
+- asiento/documento externo rechazado presentado como aceptado.
+
+La condición bloqueante se aplica al efecto relacionado; no convierte todo NUMERA en indisponible por defecto.
+
+---
+
+#### 74. Diferencias no bloqueantes aprobadas
+
+Una diferencia puede quedar no bloqueante cuando:
+
+- la causa está identificada;
+- el residual es legítimo o permitido por política;
+- no compromete identidad, autoridad, moneda o entidad legal;
+- el efecto pendiente está acotado;
+- existe owner;
+- existe fecha/condición de seguimiento si aplica;
+- la autoridad competente aprueba continuar;
+- el cierre/reporting declara la excepción cuando sea material para su interpretación.
+
+No bloqueante no significa invisible ni descartada.
+
+---
+
+#### 75. Auditoría y métricas operativas
+
+La materialización deberá poder medir, sin convertir estas métricas en verdad financiera autónoma:
+
+- casos abiertos;
+- casos por clase;
+- casos por owner;
+- antigüedad;
+- diferencias recurrentes;
+- matches sugeridos/aprobados/revertidos;
+- conciliaciones parciales;
+- excepciones aceptadas;
+- reaperturas;
+- tiempo hasta resolución;
+- residual monetario por moneda sin agregación inválida;
+- casos que bloquean cierre o publicación;
+- resultados externos inciertos;
+- causas más frecuentes.
+
+Los reportes oficiales y su gobierno continúan en `NUMERA-DOM-012` y `VPROC-0061` cuando corresponda.
+
+---
+
+#### 76. Seguridad y minimización
+
+La conciliación puede consumir información sensible, pero deberá respetar mínimo privilegio y minimización.
+
+Se prohíbe usar el expediente para copiar indiscriminadamente:
+
+- credenciales;
+- secretos;
+- tokens;
+- payloads completos cuando bastan referencias o campos mínimos;
+- datos personales innecesarios;
+- documentos completos sin necesidad de negocio.
+
+La evidencia conserva referencias seguras y acceso gobernado.
+
+---
+
+#### 77. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| no existe motor transversal materializado de conciliación NUMERA | no | `NUMERA-UX-*`, integraciones y paquete físico aplicable | casos, matching, owners, evidencia y cierre consumen este contrato sin doble escritura |
+| `CAP-12.07` y `CAP-12.08` permanecen ausentes físicamente | no | `NUMERA-UX-017`, `NUMERA-UX-018`, integración aplicable | ventas/pagos/entregas y compras/recepciones producen expedientes reconciliables |
+| matching bancario objetivo aún no está materializado | no | `NUMERA-UX-021`, integración bancaria/financiera aplicable | extractos, candidatos, aprobación, reversión y residual quedan trazables |
+| cartera completa todavía está pendiente | no | `NUMERA-DOM-016` | diferencias de recaudo/aplicación consumen este contrato dentro del modelo de cartera |
+| contabilidad formal interna todavía no está definida | no | `NUMERA-DOM-017` | asientos/comprobantes consumen resultados conciliados sin reescribir fuentes |
+| escenarios todavía no poseen motor objetivo | no | `NUMERA-DOM-018` | simulaciones y variaciones permanecen separadas de diferencias reales de conciliación |
+| materialidad y tolerancias numéricas no tienen valor universal aprobado | no | política empresarial/financiera aplicable + implementación propietaria | cada regla materializada declara versión, vigencia, alcance y autoridad |
+| binding contable/fiscal externo no está acreditado actualmente | no | `NUMERA-UX-027` + integración aplicable | proveedor/autoridad exactos se materializan antes de ejecutar conciliación externa específica |
+
+---
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La cobertura vigente ya exige reconciliación con fuentes propietarias, identidad y trazabilidad, matching gobernado, diferencias con origen/responsable/resolución/evidencia, idempotencia, tratamiento de faltantes y duplicados, eventos tardíos, autoridad server-side y preservación de historia.
+
+---
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Esta sección documenta trazabilidad existente y no constituye actualización del Registro 04A.
+
+Cobertura principal reutilizada:
+
+- `TREQ-NUMERA-001` — reconciliación con hechos y documentos fuente, no duplicación manual, historia, permisos y trazabilidad;
+- `TREQ-NUMERA-002` — identidad estable, entidad legal, dimensiones, moneda, fechas, fuente, correlación, documento, importe, estado, evidencia y correcciones compensatorias;
+- `TREQ-NUMERA-003` — cartera, obligaciones, bancos, matching sugerido/aprobado/reversible, pagos parciales, disputas y capacidades financieras segregadas;
+- `TREQ-NUMERA-004` — métodos, versiones, fuentes y separación entre costo/variación/escenario y realidad;
+- `TREQ-INTEGRATION-003` — idempotencia, resultado recuperable, timeout desconocido, reintentos, concurrencia y reconciliación;
+- `TREQ-INTEGRATION-006` — fuentes competidoras y diferencias conservan origen, responsable, resolución y evidencia sin sobrescribir historia;
+- `TREQ-INTEGRATION-010` — conciliación de compra, recepción, inventario y hecho económico sin duplicar efectos;
+- `TREQ-INTEGRATION-011` — eventos sin efecto, efectos sin evento, diferencias de cantidad y estados incompatibles en inventario;
+- `TREQ-INTEGRATION-017` — origen sin efecto, efecto sin origen, monto/moneda divergente, pago sin aplicación, documento sin obligación, saldo sin soporte, rechazo externo, eventos tardíos y autoridad externa;
+- `TREQ-INTEGRATION-168` — timeout o resultado incierto no inicia reversión o corrección sin efecto empresarial confirmado;
+- `TREQ-AUTH-013` — cada mutación revalida servidor, estado, autoridad y columnas permitidas;
+- `TREQ-AUTH-015` — toda decisión protegida conserva evidencia correlacionable y no omite denegaciones, reintentos o rollback.
+
+No se entrega actualización 04A porque el contrato de la 014 especializa requisitos ya vigentes sin cambiar su contenido, estado, relación o cobertura.
+
+---
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del checkout del usuario durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó todavía `NUMERA-DOM-014` dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `vento-shell/main`, SHA de `main`, protocolo, contrato de entrega, secuencia activa, topología, políticas de formato/desarrollo, archivo propietario, tareas NUMERA publicadas, Registro 04A NUMERA/INTEGRATION/AUTH, contratos `VPROC-0051..0054`, reglas de matching bancario, diferencias de compras/obligaciones, eventos tardíos y el handoff completo aprobado de `NUMERA-DOM-013` |
+| OPERATIVA | NOT_EXECUTED | no se abrió, investigó, corrigió, concilió, aprobó, cerró ni reabrió ninguna diferencia real |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE`; no crea instancia física propia y el `execution_gate` transversal `UNREVIEWED` no autoriza materialización |
+
+---
+
+#### 81. Criterios de aceptación
+
+`NUMERA-DOM-014` queda aceptable cuando:
+
+1. conciliación se define como demostración de relación y no como reescritura de fuentes;
+2. diferencia de conciliación se distingue de variación empresarial;
+3. diferencia se distingue de disputa;
+4. diferencia se distingue de corrección, reverso, ajuste y reclasificación;
+5. fallo técnico se distingue de diferencia empresarial confirmada;
+6. cada caso conserva identidad estable;
+7. replay de detección no duplica expedientes;
+8. solo se comparan fuentes con relación contractual justificable;
+9. la autoridad puede variar por dimensión;
+10. la corrección de una fuente permanece con su propietario;
+11. NUMERA no reescribe PULSO, ORIGO, NEXO o FOGO para cuadrar resultados;
+12. las familias mínimas de diferencia quedan definidas;
+13. identidad/correlación ambigua no se rellena por inferencia;
+14. similitud no equivale a duplicado confirmado;
+15. faltantes no se completan copiando otra capa;
+16. componentes monetarios explican el neto antes de declarar error;
+17. moneda permanece explícita;
+18. monedas distintas no se comparan sin conversión gobernada;
+19. cantidad y unidad permanecen trazables;
+20. fechas y corte distinguen latencia de faltante real;
+21. periodos operativo, económico, contable y fiscal permanecen distintos;
+22. entidad legal no se infiere desde marca, sede o centro;
+23. estados incompatibles pueden abrir diferencia aunque el importe coincida;
+24. resultado externo incierto no se fuerza a éxito o fracaso;
+25. matching sugerido no equivale a match aprobado;
+26. uno-a-uno, uno-a-muchos, muchos-a-uno y parcialidad quedan soportados conceptualmente;
+27. las agrupaciones sucesivas requieren composición trazable y descomposición en cardinalidades aprobadas;
+28. conciliación parcial conserva residual;
+29. no existe tolerancia universal implícita;
+30. toda tolerancia declara alcance, versión, vigencia y autoridad;
+31. tolerancia no corrige identidad, entidad, moneda o autoridad inválidas;
+32. materialidad universal no se inventa;
+33. cada caso declara qué efecto bloquea;
+34. excepción aceptada no equivale a dato corregido;
+35. detectar no ejecuta corrección;
+36. investigación preserva evidencia y distingue hipótesis de causa confirmada;
+37. causa y resolución permanecen diferenciadas;
+38. propuesta, aprobación, ejecución, verificación y cierre no se fusionan indebidamente;
+39. no existe “ajuste manual” genérico sin causa y evidencia;
+40. correcciones fuente ocurren en el owner correcto;
+41. correcciones NUMERA son compensatorias o versionadas;
+42. revertir match no revierte automáticamente los hechos relacionados;
+43. corrección externa conserva versiones y puede reabrir diferencias;
+44. ventas, caja, depósitos y bancos se concilian sin fusionar identidades;
+45. compra, recepción, documento, obligación y pago permanecen separados;
+46. producción e inventario no se cuadran copiando cantidades;
+47. pago registrado no equivale a obligación liquidada;
+48. cartera consume el contrato sin adelantar `NUMERA-DOM-016`;
+49. variaciones de costos no se convierten automáticamente en errores;
+50. diferencia sobre periodo protegido consume `NUMERA-DOM-011`;
+51. cambio material en reporte consume restatement de `NUMERA-DOM-012`;
+52. autoridad contable/fiscal externa permanece según `NUMERA-DOM-013`;
+53. intercompañía no se resuelve por inferencia;
+54. capacidades sensibles pueden segregarse por función;
+55. proponer no concede autoaprobación;
+56. evidencia de cierre reconstruye detección, decisión, acciones y verificación;
+57. ejecutar acción no equivale a diferencia resuelta;
+58. la resolución se vuelve a verificar contra fuentes vigentes;
+59. el cierre exige residual explicado o aceptado bajo política;
+60. falta de evidencia puede mantener el caso abierto;
+61. reapertura conserva cierre previo;
+62. cambio concurrente material invalida una decisión sobre estado obsoleto;
+63. creación, resolución, cierre y reapertura son idempotentes según su naturaleza;
+64. retry técnico no crea nueva intención empresarial;
+65. watermarks/frescura evitan falsos faltantes;
+66. backfill no convierte inferencia en evidencia original;
+67. transición AS-IS no fabrica conciliaciones históricas;
+68. `VPROC-0051..0054` conservan sus lifecycles y consumen este contrato;
+69. propietarios de resolución están definidos por dimensión;
+70. resultados de conciliación quedan tipificados conceptualmente;
+71. botón, comentario, saldo cero o HTTP 2xx no cierran un caso por sí solos;
+72. diferencias bloqueantes se aplican al efecto relacionado;
+73. diferencias no bloqueantes aprobadas permanecen visibles y auditables;
+74. métricas operativas no se convierten en fuente financiera;
+75. datos sensibles y secretos se minimizan;
+76. hallazgos diferidos conservan propietario y condición de salida;
+77. no se crean ni modifican requisitos de prueba;
+78. no se realizan cambios físicos;
+79. `NUMERA-DOM-015` recibe un alcance objetivo con conciliación transversal ya congelada.
+
+---
+
+#### 82. Límites
+
+Esta tarea no:
+
+- implementa motor de conciliación;
+- crea tablas, vistas, funciones, RPC, RLS, triggers, migraciones o Storage;
+- modifica Supabase;
+- crea enums o nombres físicos de estados;
+- crea permisos runtime ni fija códigos definitivos de capacidad;
+- fija umbrales monetarios universales;
+- fija tolerancias numéricas universales;
+- define metodología definitiva de FX;
+- ejecuta matching real;
+- aprueba conciliaciones reales;
+- corrige ventas, compras, inventario, producción o caja reales;
+- ejecuta pagos, transferencias, recaudos o aplicaciones;
+- modifica extractos o resultados externos;
+- presenta documentos fiscales o contables;
+- resuelve tratamiento fiscal/intercompañía profesional;
+- reabre periodos reales;
+- genera restatements reales;
+- modifica reportes de `NUMERA-DOM-012`;
+- altera la autoridad definida en `NUMERA-DOM-013`;
+- desarrolla cartera completa reservada a `NUMERA-DOM-016`;
+- desarrolla plan de cuentas, comprobantes o asientos reservados a `NUMERA-DOM-017`;
+- desarrolla escenarios reservados a `NUMERA-DOM-018`;
+- modifica Registro 04A;
+- desarrolla `NUMERA-DOM-015`.
+
+---
+
+#### 83. Handoff a NUMERA-DOM-015
+
+La siguiente tarea recibe:
+
+```text
+RECONCILIATION_LINKS_EVIDENCE_AND_DOES_NOT_REWRITE_SOURCE = YES
+RECONCILIATION_DIFFERENCE_IS_BUSINESS_VARIANCE = NO
+RECONCILIATION_DIFFERENCE_IS_DISPUTE = NO
+DIFFERENCE_CORRECTION_REVERSAL_ADJUSTMENT = DISTINCT
+TECHNICAL_FAILURE_IMPLIES_BUSINESS_DIFFERENCE = NO
+RECONCILIATION_CASE_REQUIRES_STABLE_IDENTITY = YES
+REPLAY_MUST_NOT_DUPLICATE_RECONCILIATION_CASE = YES
+SOURCE_AUTHORITY_MAY_DIFFER_BY_DIMENSION = YES
+SOURCE_CORRECTION_OWNER = SOURCE_DOMAIN_OWNER
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+FULL_PARTIAL_DUPLICATE_MISSING_AMBIGUOUS = DISTINCT
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_RECONCILIATION_REQUIRES_RESIDUAL = YES
+UNIVERSAL_TOLERANCE = NO
+TOLERANCE_REQUIRES_VERSION_SCOPE_VIGENCY_AUTHORITY = YES
+TOLERANCE_CANNOT_FIX_IDENTITY_ENTITY_CURRENCY_OR_AUTHORITY = YES
+UNIVERSAL_MATERIALITY_THRESHOLD = NO
+BLOCKING_EFFECT_MUST_BE_EXPLICIT = YES
+ACCEPTED_EXCEPTION_REQUIRES_AUTHORITY_AND_EVIDENCE = YES
+DETECTION_DOES_NOT_EXECUTE_CORRECTION = YES
+RESOLUTION_DECISION_EXECUTION_VERIFICATION_CLOSURE = DISTINCT
+GENERIC_MANUAL_ADJUSTMENT_WITHOUT_CAUSE = FORBIDDEN
+NUMERA_ECONOMIC_CORRECTION_PRESERVES_HISTORY = YES
+MATCH_REVERSAL_PRESERVES_PRIOR_MATCH = YES
+UNCERTAIN_EXTERNAL_RESULT_REMAINS_OPEN_UNTIL_RECONCILED = YES
+LATE_EVENT_USES_PERIOD_ADJUST_OR_REOPEN_POLICY = YES
+MATERIAL_REPORT_CHANGE_MAY_REQUIRE_VERSIONED_RESTATEMENT = YES
+INTERCOMPANY_TREATMENT_BY_INFERENCE = FORBIDDEN
+RESOLUTION_ACTION_EXECUTED_IS_CASE_CLOSED = NO
+CLOSED_DIFFERENCE_CAN_REOPEN_WITH_HISTORY = YES
+RECONCILIATION_ACTIONS_MUST_BE_IDEMPOTENT = YES
+WATERMARK_AND_FRESHNESS_MUST_BE_DECLARED = YES
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+VPROC_0051_0052_0053_0054_LIFECYCLES_REMAIN_AUTHORITATIVE = YES
+TREQ_CHANGES = 0
+```
+
+`NUMERA-DOM-015` deberá usar estas invariantes, junto con `NUMERA-DOM-001..014`, para aprobar el alcance objetivo final del dominio y declarar qué capacidades son obligatorias, cuáles quedan diferidas y qué dependencias deben existir antes de completar la implementación, sin reabrir las decisiones de dominio ya congeladas.
+
+---
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas`
 ### [ ] NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
 ### [ ] NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
 ### [ ] NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes

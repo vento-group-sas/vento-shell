@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1416** |
+| Tareas aprobadas | **1417** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **180** |
+| Tareas no iniciadas | **179** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **88.72% (1416/1596)** |
+| Porcentaje de completamiento | **88.78% (1417/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo** |
-| Tarea actual | **NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias** |
+| Última tarea aprobada | **NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias** |
+| Tarea actual | **NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas** |
+| Siguiente tarea | **NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 26 de 74 aprobadas; NUMERA-DOM-014 pendiente** |
+| Progreso del bloque | **BLOQUE O: 27 de 74 aprobadas; NUMERA-DOM-015 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-DOM-014** |
+| Carril documental | **ACTIVO — NUMERA-DOM-015** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-DOM-013` — Definir fronteras frente al sistema contable o fiscal externo |
-| Tarea actual | `NUMERA-DOM-014` — Definir conciliación y tratamiento de diferencias — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-DOM-015` — Aprobar alcance objetivo y capacidades diferidas |
+| Última aprobada | `NUMERA-DOM-014` — Definir conciliación y tratamiento de diferencias |
+| Tarea actual | `NUMERA-DOM-015` — Aprobar alcance objetivo y capacidades diferidas — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-DOM-016` — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 26 DE 74 APROBADAS — ACTUAL NUMERA-DOM-014** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 27 DE 74 APROBADAS — ACTUAL NUMERA-DOM-015** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
-        ↓
-TAREA ACTUAL
 NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 26 de 74 tareas aprobadas
+BLOQUE O — 27 de 74 tareas aprobadas
 ```
