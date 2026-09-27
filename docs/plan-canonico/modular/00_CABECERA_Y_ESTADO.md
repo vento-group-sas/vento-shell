@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1427** |
+| Tareas aprobadas | **1428** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **169** |
+| Tareas no iniciadas | **168** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **89.41% (1427/1596)** |
+| Porcentaje de completamiento | **89.47% (1428/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUTH-006 — Definir permisos de cierre** |
-| Tarea actual | **NUMERA-AUTH-007 — Definir permisos de exportación** |
+| Última tarea aprobada | **NUMERA-AUTH-007 — Definir permisos de exportación** |
+| Tarea actual | **NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo** |
+| Siguiente tarea | **NUMERA-AUTH-009 — Registrar auditoría financiera** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 37 de 74 aprobadas; NUMERA-AUTH-007 pendiente** |
+| Progreso del bloque | **BLOQUE O: 38 de 74 aprobadas; NUMERA-AUTH-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUTH-007** |
+| Carril documental | **ACTIVO — NUMERA-AUTH-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUTH-006` — Definir permisos de cierre |
-| Tarea actual | `NUMERA-AUTH-007` — Definir permisos de exportación — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUTH-008` — Limitar por empresa, sede o centro de costo |
+| Última aprobada | `NUMERA-AUTH-007` — Definir permisos de exportación |
+| Tarea actual | `NUMERA-AUTH-008` — Limitar por empresa, sede o centro de costo — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUTH-009` — Registrar auditoría financiera |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 37 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-007** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 38 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUTH-006 — Definir permisos de cierre
-        ↓
-TAREA ACTUAL
 NUMERA-AUTH-007 — Definir permisos de exportación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUTH-009 — Registrar auditoría financiera
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 37 de 74 tareas aprobadas
+BLOQUE O — 38 de 74 tareas aprobadas
 ```
