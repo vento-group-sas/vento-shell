@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1432** |
+| Tareas aprobadas | **1433** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **164** |
+| Tareas no iniciadas | **163** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **89.72% (1432/1596)** |
+| Porcentaje de completamiento | **89.79% (1433/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional** |
-| Tarea actual | **NUMERA-AUTH-012 — Migrar a paquetes de vento-shell** |
+| Última tarea aprobada | **NUMERA-AUTH-012 — Migrar a paquetes de vento-shell** |
+| Tarea actual | **NUMERA-AUTH-013 — Ejecutar pruebas integrales** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUTH-013 — Ejecutar pruebas integrales** |
+| Siguiente tarea | **NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 42 de 74 aprobadas; NUMERA-AUTH-012 pendiente** |
+| Progreso del bloque | **BLOQUE O: 43 de 74 aprobadas; NUMERA-AUTH-013 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUTH-012** |
+| Carril documental | **ACTIVO — NUMERA-AUTH-013** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUTH-011` — Exigir contexto operativo donde exista captura operacional |
-| Tarea actual | `NUMERA-AUTH-012` — Migrar a paquetes de vento-shell — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUTH-013` — Ejecutar pruebas integrales |
+| Última aprobada | `NUMERA-AUTH-012` — Migrar a paquetes de vento-shell |
+| Tarea actual | `NUMERA-AUTH-013` — Ejecutar pruebas integrales — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUTH-014` — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 42 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-012** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 43 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-013** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
-        ↓
-TAREA ACTUAL
 NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUTH-013 — Ejecutar pruebas integrales
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 42 de 74 tareas aprobadas
+BLOQUE O — 43 de 74 tareas aprobadas
 ```

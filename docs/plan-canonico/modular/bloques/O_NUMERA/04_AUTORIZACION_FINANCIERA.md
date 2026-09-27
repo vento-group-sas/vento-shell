@@ -13726,7 +13726,1166 @@ NUMERA_AUTH_012_OWNER = PERMISSION_PACKAGE_MATERIALIZATION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-012 — Migrar a paquetes de vento-shell`
-### [ ] NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
+### ✅ NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
+**Tarea siguiente:** NUMERA-AUTH-013 — Ejecutar pruebas integrales
+**Tipo de tarea:** documental; contrato canónico de adopción gobernada de paquetes compartidos de `vento-shell` por NUMERA, con reconciliación de 57 capacidades objetivo, paridad contractual, compatibilidad, coexistencia temporal, rollback, retiro legacy y materialización posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno durante este marcador global; no modifica packages, catálogo físico de permisos, grants, imports, dependencias, lockfiles, consumidores, Supabase, migraciones, RLS, RPC, datos, configuración, releases, registry ni despliegues; toda materialización futura requiere `NUMERA-AUTH-012::<implementation_unit_id>`, package propietario aplicable, `E5-GATE-008::<package_id> = PASS` y autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NUMERA deberá adoptar de forma gobernada las familias compartidas canónicas de `vento-shell` sin convertir la migración en una copia indiscriminada de código, sin degradar los contratos aprobados por `NUMERA-AUTH-001..011` y sin confundir:
+
+- package materializado con release consumible;
+- dependencia instalada con adopción certificada;
+- contrato estático con enforcement runtime;
+- cliente Supabase compartido con autoridad financiera;
+- UI compartida con autorización;
+- paridad con reproducción de un bug legacy;
+- adapter temporal con segunda fuente de verdad;
+- contexto operacional fuente con autoridad del actor NUMERA;
+- rol de navegación con rol efectivo;
+- migración de consumidor con retiro inmediato del legacy.
+
+La regla raíz queda:
+
+```text
+CONTRATO NUMERA APROBADO
++
+SHARED RESPONSIBILITY
++
+PACKAGE CANÓNICO ELEGIBLE
++
+VERSIÓN EXACTA
++
+COMPATIBILIDAD NUMERA
++
+PARIDAD CONTRACTUAL
++
+CUTOVER FAIL-CLOSED
++
+ROLLBACK REPRODUCIBLE
+=
+ADOPCIÓN NUMERA DE PACKAGE COMPARTIDO
+```
+
+Y simultáneamente:
+
+```text
+PACKAGE PRESENTE
+!=
+PACKAGE ADOPTADO
+```
+
+```text
+CÓDIGO LOCAL EXISTENTE
+!=
+RESPONSABILIDAD QUE DEBA MOVERSE A UN PACKAGE
+```
+
+```text
+PARIDAD
+!=
+REPRODUCIR UN BUG LEGACY
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUTH-008..011
+
+La migración consume contratos ya cerrados y no puede reinterpretarlos.
+
+De `NUMERA-AUTH-008` conserva:
+
+```text
+PERMISO EXACTO
++
+RECURSO
++
+BASE_RESOURCE_SCOPE
++
+DENEGACIONES
+=
+LÍMITE MÁXIMO AUTORIZABLE
+```
+
+De `NUMERA-AUTH-009` conserva auditoría correlacionable de decisión, comando, resultado, evento, error, compensación, reconciliación y evidencia de auditoría sin duplicar payload financiero sensible.
+
+De `NUMERA-AUTH-010` conserva:
+
+```text
+ADMINISTRATIVE_AUTHORIZATION_LANE = BASE
+ADMIN_SHIFT_REQUIRED_COUNT = 0
+ADMIN_CHECKIN_REQUIRED_COUNT = 0
+```
+
+De `NUMERA-AUTH-011` conserva:
+
+```text
+NUMERA_ACTOR_LIVE_OPERATIONAL_CONTEXT_REQUIRED_COUNT = 0
+DIRECT_SOURCE_OPERATIONAL_CONTEXT_INGRESS_PERMISSION = numera.finance.economic_facts.register
+SOURCE_OPERATIONAL_CONTEXT_IS_NUMERA_PERMISSION = NO
+CTX_EFFECTIVE_SCOPE_MUST_NOT_EXCEED_BASE_RESOURCE_SCOPE = YES
+```
+
+Migrar packages no puede convertir contexto fuente en permiso, turno NUMERA en requisito administrativo, auditoría en autoridad ni un scope en wildcard.
+
+---
+
+#### 3. Topología y cardinalidad física
+
+La topología vigente para `NUMERA-AUTH-009..013` establece:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto, este marcador define el contrato global una sola vez y no realiza implementación física.
+
+Identidad física futura:
+
+```text
+NUMERA-AUTH-012::<implementation_unit_id>
+```
+
+Una unidad solo puede materializarse cuando:
+
+```text
+PACKAGE PROPIETARIO APLICABLE IDENTIFICADO
++
+E5-GATE-008::<package_id> = PASS
++
+DEPENDENCIAS TÉCNICAS DISPONIBLES
++
+AUTORIZACIÓN FÍSICA EXPLÍCITA
+=
+UNIDAD ELEGIBLE
+```
+
+Este marcador no selecciona `package_id`, no inventa `implementation_unit_id` y no autoriza ejecución física.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla al estado verificable:
+
+```text
+vento-shell/main
+3ddba0ccf1a111302de5e279c8d8cf86fdbbc925
+
+owner blob
+5bba391b75b2df1722211bb866cd387e58430ea9
+
+vento-numera/main
+c4d50282e30e46d0abb3d871f9604cf913ebbabd
+
+NUMERA-AUTH-011 artefacto aprobado
+2783d717db1fe8e84264c86cfbc23c225083cc4df1cc2fb76ef43b4c407a5cf8
+```
+
+Se contrastaron como mínimo:
+
+- protocolo, contrato de entrega, manifest, continuidad, ejecución, topología y políticas de tarea;
+- `NUMERA-AUTH-004..011` y el marcador actual `NUMERA-AUTH-012`;
+- catálogo canónico de permisos, modalidad, scopes, prerrequisitos y contratos de recurso;
+- datasets físicos actuales de `@vento/contracts/authorization`;
+- las cuatro relaciones package–NUMERA de compatibilidad y actualización;
+- lifecycle `SHELL-MIG-001..008`;
+- `SHELL-CI-012::GLOBAL`, actualmente `VERIFIED`;
+- `package.json` y baseline actual de `vento-numera`;
+- helpers locales de autorización, contexto, role override y Supabase;
+- superficies de panel, centros de costo, gastos, punto de equilibrio, rentabilidad y navegación;
+- estado de los cuatro packages compartidos.
+
+---
+
+#### 5. Envelope canónico de packages para NUMERA
+
+La adopción se limita a las cuatro familias compartidas canónicas:
+
+| Package | Responsabilidad aplicable a NUMERA | Relación |
+| --- | --- | --- |
+| `@vento/contracts` | contratos estáticos, catálogos, schemas, tipos e identidades compartidas | consumidor |
+| `@vento/os-context` | contexto efectivo y evaluación runtime compartida dentro de su frontera aprobada | consumidor |
+| `@vento/supabase` | acceso técnico compartido a Supabase | consumidor |
+| `@vento/ui-web` | presentación web compartida neutral al dominio | consumidor |
+
+No se crea una quinta familia para particularidades financieras de NUMERA.
+
+Hechos económicos, gastos, presupuestos, periodos, obligaciones, cartera, tesorería, costos, fiscalidad y reglas de reconocimiento permanecen en NUMERA o en su owner canónico correspondiente.
+
+---
+
+#### 6. Estado físico observado de los packages
+
+| Package | Estado observado |
+| --- | --- |
+| `@vento/contracts` | workspace privado `1.0.0-alpha.1`; autorización materializada internamente, sin equivaler a release estable adoptada |
+| `@vento/os-context` | workspace privado `0.1.0` con export sobre `./src/index.ts`; permanece transitorio |
+| `@vento/supabase` | raíz privada de autoría sin versión pública consumible |
+| `@vento/ui-web` | raíz privada de autoría sin versión pública consumible |
+
+Consecuencia:
+
+```text
+WORKSPACE MATERIALIZADO
+!=
+RELEASE ELEGIBLE PARA ADOPCIÓN NUMERA
+```
+
+La futura unidad deberá consumir una identidad realmente elegible conforme al lifecycle propietario y no rutas internas, paths locales, metadata privada o imports ad hoc.
+
+---
+
+#### 7. Estado físico observado de `vento-numera`
+
+El `package.json` vigente de `vento-numera` declara:
+
+```text
+@vento/* dependencies = 0
+```
+
+Sí conserva el baseline `SHELL-CI-012::GLOBAL`, actualmente `VERIFIED`, que reconoce:
+
+```text
+PACKAGE RELATIONS = 4
+PROFILES = 4
+SURFACES = 12
+PAGES = 7
+STATIC_PAGES = 7
+DYNAMIC_PAGES = 0
+PROTECTED_PAGES = 5
+PUBLIC_CONTROLLED = 2
+ROUTE_HANDLERS = 0
+NAVIGATION_CANDIDATES = 4
+CONTRACTUAL_TESTS = 42
+```
+
+Resultado:
+
+```text
+BASELINE NUMERA DISPONIBLE
++
+0 DEPENDENCIAS @vento/* DECLARADAS
+=
+CONSUMIDOR PREPARADO PARA MIGRACIÓN GOBERNADA,
+NO MIGRADO
+```
+
+La presencia del baseline no demuestra imports migrados, release adoptada, paridad de superficie, retiro legacy ni despliegue.
+
+---
+
+#### 8. Relaciones package–NUMERA canónicas
+
+| Package | Compatibilidad | Actualización | Perfil NUMERA |
+| --- | --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-007` | `PKG-PR-REL-007` | `NUMERA-PROFILE-CONTRACTS` |
+| `@vento/os-context` | `PKG-COMP-MX-014` | `PKG-PR-REL-014` | `NUMERA-PROFILE-OS-CONTEXT` |
+| `@vento/supabase` | `PKG-COMP-MX-021` | `PKG-PR-REL-021` | `NUMERA-PROFILE-SUPABASE` |
+| `@vento/ui-web` | `PKG-COMP-MX-028` | `PKG-PR-REL-028` | `NUMERA-PROFILE-UI-WEB` |
+
+No se crean relaciones alternativas, aliases o perfiles locales para evitar un gate existente.
+
+---
+
+#### 9. Universo objetivo cerrado de capacidades
+
+La migración reconcilia exactamente:
+
+```text
+APP_ENTRY_PERMISSION_COUNT = 1
+FINANCIAL_PERMISSION_DEFINITION_COUNT = 56
+TOTAL_TARGET_CAPABILITY_COUNT = 57
+```
+
+El universo exacto es:
+
+| # | Capacidad objetivo | Familia | Estado en `@vento/contracts/authorization` | Regla de adopción |
+| ---: | --- | --- | --- | --- |
+| 1 | `numera.access` | `APP_ENTRY` | `MATERIALIZED_ACTIVE` | consumible solo desde release elegible y relación compatible; no desde rutas internas |
+| 2 | `numera.finance.cost_centers.view` | `READ` | `MATERIALIZED_ACTIVE` | consumible solo desde release elegible y relación compatible; no desde rutas internas |
+| 3 | `numera.finance.expenses.view` | `READ` | `MATERIALIZED_ACTIVE` | consumible solo desde release elegible y relación compatible; no desde rutas internas |
+| 4 | `numera.analytics.break_even.view` | `READ` | `MATERIALIZED_ACTIVE` | consumible solo desde release elegible y relación compatible; no desde rutas internas |
+| 5 | `numera.analytics.profitability.view` | `READ` | `MATERIALIZED_ACTIVE` | consumible solo desde release elegible y relación compatible; no desde rutas internas |
+| 6 | `numera.analytics.financial_reports.view` | `READ` | `MATERIALIZED_ACTIVE` | consumible solo desde release elegible y relación compatible; no desde rutas internas |
+| 7 | `numera.finance.economic_facts.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 8 | `numera.finance.payables.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 9 | `numera.finance.receivables.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 10 | `numera.finance.treasury_movements.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 11 | `numera.finance.reconciliations.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 12 | `numera.finance.costs.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 13 | `numera.finance.periods.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 14 | `numera.finance.labor_payment_packages.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 15 | `numera.finance.fiscal_documents.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 16 | `numera.finance.payment_plans.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 17 | `numera.finance.budgets.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 18 | `numera.finance.forecasts.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 19 | `numera.finance.scenarios.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 20 | `numera.finance.price_versions.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 21 | `numera.finance.tax_obligations.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 22 | `numera.finance.cost_allocations.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 23 | `numera.analytics.financial_indicators.view` | `READ` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 24 | `numera.finance.cost_centers.create` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 25 | `numera.finance.cost_centers.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 26 | `numera.finance.cost_centers.activate` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 27 | `numera.finance.cost_centers.deactivate` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 28 | `numera.finance.expenses.create` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 29 | `numera.finance.expenses.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 30 | `numera.finance.expenses.cancel` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 31 | `numera.finance.economic_facts.register` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 32 | `numera.finance.payables.register` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 33 | `numera.finance.payables.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 34 | `numera.finance.receivables.register` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 35 | `numera.finance.receivables.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 36 | `numera.finance.fiscal_documents.register` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 37 | `numera.finance.fiscal_documents.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 38 | `numera.finance.tax_obligations.register` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 39 | `numera.finance.tax_obligations.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 40 | `numera.finance.cost_allocations.register` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 41 | `numera.finance.cost_allocations.update` | `REGISTER_WRITE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 42 | `numera.finance.expenses.approve` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 43 | `numera.finance.expenses.reject` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 44 | `numera.finance.payables.approve` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 45 | `numera.finance.payables.reject` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 46 | `numera.finance.payment_plans.approve` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 47 | `numera.finance.payment_plans.reject` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 48 | `numera.finance.fiscal_documents.approve` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 49 | `numera.finance.fiscal_documents.reject` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 50 | `numera.finance.tax_obligations.approve` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 51 | `numera.finance.tax_obligations.reject` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 52 | `numera.finance.cost_allocations.approve` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 53 | `numera.finance.cost_allocations.reject` | `APPROVAL_REJECT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 54 | `numera.finance.periods.lock` | `PERIOD_STATE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 55 | `numera.finance.periods.close` | `PERIOD_STATE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 56 | `numera.finance.periods.reopen` | `PERIOD_STATE` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+| 57 | `numera.analytics.financial_reports.export` | `EXPORT` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | bloquea únicamente la unidad que la necesite; prohibida reimplementación local para adelantar el package |
+
+La matriz contiene 57 capacidades únicas: una entrada de aplicación y 56 capacidades financieras ya definidas por el minibloque.
+
+---
+
+#### 10. Delta del catálogo compartido materializado
+
+El catálogo físico actual de `@vento/contracts/authorization` materializa exactamente seis identidades NUMERA activas:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Reconciliación:
+
+```text
+TOTAL_TARGET_CAPABILITY_COUNT = 57
+MATERIALIZED_SHARED_PERMISSION_IDENTITIES = 6
+MATERIALIZED_FINANCIAL_PERMISSION_IDENTITIES = 5
+PENDING_TARGET_PERMISSION_IDENTITIES = 51
+PACKAGE_PERMISSION_MISSING_COUNT = 51
+PACKAGE_PERMISSION_DUPLICATE_COUNT = 0
+```
+
+Regla:
+
+```text
+IDENTIDAD DEFINIDA DOCUMENTALMENTE
+!=
+IDENTIDAD MATERIALIZADA EN PACKAGE
+```
+
+`vento-numera` no puede recrear localmente las 51 identidades faltantes para adelantar la migración.
+
+---
+
+#### 11. Las seis identidades materializadas no equivalen a adopción
+
+Las seis identidades actuales pertenecen al dataset interno del package, pero el package continúa privado y no representa una release estable consumida por NUMERA.
+
+Por tanto:
+
+```text
+IDENTIDAD MATERIALIZADA
++
+PACKAGE PRIVADO
++
+CONSUMIDOR SIN DEPENDENCIA
+=
+NO ADOPTADO
+```
+
+Una unidad podrá consumir una de estas identidades únicamente cuando el package, versión, relación de compatibilidad y relación de actualización sean elegibles.
+
+---
+
+#### 12. Drift de namespace legacy en lecturas NUMERA
+
+El runtime actual usa cuatro claves históricas en navegación y guards:
+
+```text
+numera.cost_centers.view
+numera.expenses.view
+numera.break_even.view
+numera.profitability.view
+```
+
+El contrato canónico las normaliza hacia:
+
+```text
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+```
+
+Clasificación:
+
+```text
+AS_IS_NUMERA_LEGACY_READ_NAMESPACE_DRIFT
+```
+
+La futura unidad deberá demostrar paridad y migrar cada consumidor a la identidad canónica exacta; queda prohibido publicar esos cuatro aliases históricos como nuevas identidades activas para evitar el cambio.
+
+---
+
+#### 13. Aliases `*.manage` y mutaciones legacy
+
+El runtime observado conserva al menos:
+
+```text
+numera.cost_centers.manage
+numera.expenses.manage
+```
+
+`numera.expenses.manage` protege actualmente `createExpense`, mientras el contrato objetivo aprobado separa:
+
+```text
+createExpense
+→ numera.finance.expenses.create
+```
+
+La acción `upsertBudget` protegida por `numera.cost_centers.manage` no puede migrarse a `numera.finance.cost_centers.update` por conveniencia: su semántica de presupuesto permanece reservada a `NUMERA-AUTH-015`.
+
+Por tanto:
+
+```text
+LEGACY MANAGE
+!=
+PERMISO ATÓMICO CANÓNICO AUTOMÁTICO
+```
+
+Cada mutación debe esperar su identidad target materializada y su owner contractual.
+
+---
+
+#### 14. Regla de adopción por responsabilidad
+
+```text
+CONTRATO ESTÁTICO COMPARTIDO
+→ @vento/contracts
+
+CONTEXTO / AUTORIZACIÓN RUNTIME COMPARTIDA
+→ @vento/os-context
+
+ACCESO TÉCNICO SUPABASE COMPARTIDO
+→ @vento/supabase
+
+PRESENTACIÓN WEB COMPARTIDA
+→ @vento/ui-web
+
+LÓGICA EMPRESARIAL FINANCIERA NUMERA
+→ PERMANECE EN NUMERA
+```
+
+Un archivo legacy puede mezclar responsabilidades y deberá descomponerse mediante adapters o refactor controlado en la unidad propietaria.
+
+---
+
+#### 15. Frontera de `@vento/contracts`
+
+Puede proveer a NUMERA, cuando exista superficie publicada y compatible:
+
+- `PermissionKey`;
+- modalidades y prerrequisitos aprobados;
+- scopes y resource contracts;
+- roles base y operativos compartidos;
+- reason codes;
+- response contracts;
+- schemas y tipos serializables;
+- contratos estáticos expresamente publicados.
+
+No puede absorber:
+
+- queries financieras;
+- reglas de reconocimiento económico;
+- lógica de gastos, periodos, cartera, tesorería o costos;
+- acceso Supabase runtime;
+- cookies o sesión;
+- mutaciones empresariales;
+- políticas de aprobación o cierre propias del dominio.
+
+---
+
+#### 16. Frontera de `@vento/os-context`
+
+La adopción deberá preservar:
+
+```text
+PRINCIPAL AUTENTICADO
+!=
+ACTOR EFECTIVO
+!=
+ROL BASE
+!=
+ROL OPERATIVO
+!=
+NAVIGATION_ROLE
+```
+
+Y:
+
+```text
+SITE HINT DEL CLIENTE
+!=
+SEDE EFECTIVA
+```
+
+Para NUMERA, además:
+
+```text
+ACTOR NUMERA
+!=
+ACTOR DEL HECHO OPERACIONAL FUENTE
+```
+
+`@vento/os-context` no puede imponer turno/check-in a las 57 capacidades target por ser NUMERA una aplicación laboral, ni convertir el contexto fuente de un evento en autoridad del actor financiero.
+
+---
+
+#### 17. Frontera de `@vento/supabase`
+
+`@vento/supabase` puede sustituir acceso técnico compartido cuando exista una superficie consumible y autorizada.
+
+Puede incluir, según release aprobada:
+
+- cliente browser;
+- cliente server;
+- tipos generados;
+- wrappers técnicos de RPC;
+- normalización técnica de errores;
+- configuración resuelta mediante adapters propietarios.
+
+No puede mover al package:
+
+- autorización empresarial NUMERA;
+- reconocimiento económico;
+- selección de periodo o centro de costo;
+- lifecycle de gastos, obligaciones o cierres;
+- scope financiero;
+- auditoría de negocio por conveniencia;
+- `service_role` como sustituto de actor o permiso.
+
+Toda modificación VENTO de schema, RLS, RPC, grants, funciones, triggers o configuración Supabase continúa versionándose desde `vento-shell` bajo su tarea física propietaria.
+
+---
+
+#### 18. Frontera de `@vento/ui-web`
+
+`@vento/ui-web` conserva responsabilidad presentacional.
+
+Puede recibir view models, estados y decisiones ya resueltas, pero nunca:
+
+```text
+VISIBLE = AUTHORIZED
+DISABLED = SERVER DENY
+HIDDEN = PERMISSION CHECK
+```
+
+La adopción exige compatibilidad SSR/client, hidratación, formularios, tablas, accesibilidad, loading/error/deny states y semántica financiera visible sin trasladar autorización o cálculo económico al componente compartido.
+
+---
+
+#### 19. Inventario mínimo de consumidores NUMERA
+
+La baseline vigente conserva exactamente doce superficies:
+
+| ID | Superficie | Relevancia de migración |
+| --- | --- | --- |
+| `NUMERA-SURFACE-001` | identidad, sesión, SSO y denegación | autorización y contracts compartidos |
+| `NUMERA-SURFACE-002` | contexto operativo, sede, área, actor y dispositivo | contexto y separación de autoridad |
+| `NUMERA-SURFACE-003` | inventario de páginas y rutas | cobertura del consumidor |
+| `NUMERA-SURFACE-004` | navegación declarativa y prebuild no mutante | permisos de navegación y seguridad de build |
+| `NUMERA-SURFACE-005` | panel raíz y semántica económica | lectura financiera y agregados |
+| `NUMERA-SURFACE-006` | centros de costo y presupuesto | lectura canónica y mutación reservada |
+| `NUMERA-SURFACE-007` | gastos | lectura, creación y lifecycle |
+| `NUMERA-SURFACE-008` | punto de equilibrio | analítica financiera |
+| `NUMERA-SURFACE-009` | rentabilidad | analítica financiera |
+| `NUMERA-SURFACE-010` | trazabilidad económica y conciliación | provenance, auditoría y correlación |
+| `NUMERA-SURFACE-011` | Supabase, RLS, RPC y Server Actions | frontera técnica y enforcement |
+| `NUMERA-SURFACE-012` | UI, SSR, interacción, accesibilidad y errores | presentación compartida |
+
+Una adopción no queda completa si rompe una superficie indirectamente dependiente del contrato migrado.
+
+---
+
+#### 20. Contratos fuente mínimos del baseline NUMERA
+
+La futura unidad deberá reconciliar como mínimo las diez fuentes ya reconocidas por el baseline:
+
+```text
+NUMERA-SOURCE-001 → middleware
+NUMERA-SOURCE-002 → auth/guard
+NUMERA-SOURCE-003 → login
+NUMERA-SOURCE-004 → no-access
+NUMERA-SOURCE-005 → panel raíz
+NUMERA-SOURCE-006 → centros de costo
+NUMERA-SOURCE-007 → gastos
+NUMERA-SOURCE-008 → punto de equilibrio
+NUMERA-SOURCE-009 → rentabilidad
+NUMERA-SOURCE-010 → sync-navigation
+```
+
+Estar inventariada no implica que una fuente deba eliminarse; obliga a reconciliar su responsabilidad antes del cutover.
+
+---
+
+#### 21. Relación con `SHELL-MIG-001..008`
+
+`NUMERA-AUTH-012` consume y no redefine:
+
+- `SHELL-MIG-001` para inventario ejecutable de consumidores;
+- `SHELL-MIG-002` para lotes reversibles por repositorio;
+- `SHELL-MIG-003` para compatibilidad temporal y bloqueo de nuevos legacy;
+- `SHELL-MIG-004..006` cuando una unidad toque scaffold, UI, accesibilidad, tema o movimiento;
+- `SHELL-MIG-007` para contrato de paridad ejecutable por package;
+- `SHELL-MIG-008` para retiro legacy con uso residual cero o migración certificada.
+
+Las invariantes financieras NUMERA especializan esos mecanismos sin reemplazarlos.
+
+---
+
+#### 22. Regla de paridad
+
+Cada delta se clasifica como:
+
+```text
+IGUAL
+CORRECCIÓN_INTENCIONAL
+BRECHA_DE_DATOS
+BUG_LEGACY
+BUG_CANÓNICO
+CONTRATO_PENDIENTE
+```
+
+Solo `IGUAL` y `CORRECCIÓN_INTENCIONAL` sustentada pueden participar en cutover.
+
+Ejemplos de corrección intencional cuando el target esté materializado:
+
+```text
+numera.expenses.view
+→ numera.finance.expenses.view
+```
+
+```text
+numera.expenses.manage para createExpense
+→ numera.finance.expenses.create
+```
+
+No se replica una brecha de seguridad o un alias amplio en el package para fabricar paridad.
+
+---
+
+#### 23. Paridad de allow y deny
+
+La unidad debe comparar resultados positivos y negativos con escenarios adversariales para:
+
+- permiso ausente;
+- clave legacy no reconocida como autoridad final;
+- rol manipulado;
+- sede o área manipuladas;
+- actor ausente o distinto;
+- recurso fuera de scope;
+- estado incompatible;
+- reautenticación requerida;
+- periodo bloqueado o cerrado;
+- fuente operacional sin contexto obligatorio;
+- contexto fuente fuera del `BASE_RESOURCE_SCOPE`;
+- sesión stale;
+- intento de usar simulación como autoridad real;
+- intento de usar `service_role` como autoridad humana.
+
+Un PASS de lectura no certifica mutaciones.
+
+---
+
+#### 24. Contexto operacional fuente durante la migración
+
+La migración de `numera.finance.economic_facts.register` deberá conservar el contrato de `NUMERA-AUTH-011`:
+
+```text
+SOURCE_OPERATIONAL_CONTEXT
+→ PROVENANCE / RESTRICCIÓN
+→ NO AUTORIDAD NUMERA
+```
+
+Cuando el owner del hecho fuente exige contexto:
+
+```text
+MISSING / STALE / INCOMPATIBLE SOURCE CONTEXT
+→ REEVALUATE OR BLOCK
+→ NO FABRICATE
+```
+
+Una migración a `@vento/os-context` no puede sustituirlo por el turno actual del contador, por `selected_site_id`, por `employees.site_id` ni por un contexto genérico de aplicación.
+
+---
+
+#### 25. Auditoría durante la migración
+
+La adopción debe conservar las referencias de `NUMERA-AUTH-009` y no perder:
+
+- decision ID y fingerprint;
+- principal y actor;
+- permiso y operación;
+- recurso y scope;
+- razones;
+- correlación;
+- links a comando, resultado, evento, error, compensación, reconciliación o audit entry cuando correspondan;
+- separación entre `DENY` y `TECHNICAL_FAILURE`.
+
+Shadow, coexistencia, cutover y rollback también deben quedar atribuibles sin copiar payload financiero sensible completo.
+
+---
+
+#### 26. Scope durante la migración
+
+Toda unidad conserva:
+
+```text
+EFFECTIVE_SCOPE <= BASE_RESOURCE_SCOPE
+```
+
+`CTX`, `OWN`, hints de sede/área, navegación, dispositivo o adapter nunca pueden ampliar el scope aprobado.
+
+Las lecturas agregadas continúan autorizando todos los miembros incluidos y las mutaciones multi-recurso continúan requiriendo autorización sobre todos los extremos obligatorios.
+
+---
+
+#### 27. Independencia administrativa durante la migración
+
+La migración no puede introducir artificialmente:
+
+```text
+turno requerido
+check-in requerido
+rol operativo requerido
+active_shift_site como scope source
+active_shift_area como scope source
+```
+
+para una capacidad NUMERA target actualmente resuelta por carril base.
+
+Un fallo del carril operacional local legacy no puede convertirse en razón para negar una decisión administrativa válida si el contrato target no usa ese carril.
+
+---
+
+#### 28. Capacidades todavía no materializadas
+
+Las 51 identidades target ausentes del package bloquean únicamente las unidades que dependan de ellas.
+
+```text
+MISSING TARGET CONTRACT FOR SURFACE X
+→ BLOCK SURFACE X
+→ NO LOCAL REIMPLEMENTATION
+→ NO GLOBAL FALSE BLOCK IF AN INDEPENDENT UNIT IS PROVABLY SAFE
+```
+
+La governed frontier conserva la selección física; esta tarea no elige manualmente package ni unidad.
+
+---
+
+#### 29. Adapters y aliases legacy
+
+Durante coexistencia puede existir un adapter temporal únicamente si es explícito, versionado, uno-a-uno y fail-closed.
+
+Quedan prohibidos adapters que:
+
+- conviertan `*.manage` en CRUD completo;
+- conviertan una lectura legacy en una mutación;
+- inventen permisos todavía ausentes;
+- permitan `DENY` canónico → `ALLOW` legacy;
+- amplíen scope;
+- usen nombre local de rol como autorización final;
+- transformen navegación o app access en permiso financiero;
+- reutilicen un alias para una acción reservada a `NUMERA-AUTH-014` o `NUMERA-AUTH-015`.
+
+---
+
+#### 30. Compatibilidad temporal y dualidad
+
+Una transición puede comparar legacy y target en shadow únicamente si:
+
+1. un solo evaluador determina el efecto real;
+2. el segundo resultado no ejecuta side effects;
+3. divergencias quedan registradas;
+4. el adapter no añade autoridad;
+5. existe condición de retiro;
+6. un `DENY` canónico nunca cae a `ALLOW` legacy.
+
+Para escrituras financieras queda prohibida la doble ejecución durante pruebas de paridad.
+
+---
+
+#### 31. Frontera de datos y Supabase
+
+Adoptar packages no autoriza cambios de base de datos por inferencia.
+
+Si una unidad requiere modificar:
+
+- catálogo físico de permisos;
+- grants base;
+- RPC de autorización;
+- RLS;
+- contratos de contexto persistidos;
+- schemas o tipos generados;
+- funciones o triggers;
+
+la modificación pertenece a `vento-shell`, debe quedar versionada bajo la tarea física propietaria y respetar el package E5 aplicable.
+
+`sync-navigation.mjs` observado conserva capacidad de usar `service_role` cuando el secreto existe; la migración deberá mantener el build no mutante y separar tooling administrativo de autorización humana.
+
+---
+
+#### 32. Versionado, manifest y lockfile
+
+Antes de modificar dependencias de `vento-numera` debe existir para cada package adoptado:
+
+- release elegible;
+- versión SemVer exacta;
+- source commit exacto;
+- artefacto atribuible;
+- integridad verificable;
+- manifest coherente;
+- compatibilidad NUMERA vigente;
+- evidencia requerida por el lifecycle.
+
+El `package.json` y lockfile del consumidor forman una unidad:
+
+```text
+VERSIÓN DECLARADA
+=
+VERSIÓN RESUELTA
+=
+RELEASE ELEGIBLE PROBADA
+```
+
+No son atajos válidos `workspace:*`, `file:`, path local, `latest`, `*`, rango flotante no gobernado, branch ref o commit sin release cuando el lifecycle exige release.
+
+---
+
+#### 33. Perfiles de compatibilidad NUMERA
+
+| Perfil | Cobertura mínima ya declarada por baseline |
+| --- | --- |
+| `NUMERA-PROFILE-CONTRACTS` | tipos, shapes, serialización, semántica de identificadores, null/zero, dinero/moneda/periodo y ausencia de cast global permisivo |
+| `NUMERA-PROFILE-OS-CONTEXT` | sesión, SSO, site/area/actor context, app access, allow, deny, role override, shared device y ausencia de elevación cliente |
+| `NUMERA-PROFILE-SUPABASE` | cliente browser/server, permission RPC, summary RPC, RLS deny, Server Actions, schema aislado, ausencia de `service_role` y build no mutante |
+| `NUMERA-PROFILE-UI-WEB` | server/client render, hidratación, formularios, tablas, teclado/foco, accesibilidad, loading/error/deny y semántica financiera |
+
+El baseline contempla 42 casos contractuales, pero su PASS no sustituye gates de release, compatibilidad, consumer update, E5 ni autorización física.
+
+---
+
+#### 34. Gate de materialización por unidad
+
+Una unidad `NUMERA-AUTH-012::<implementation_unit_id>` solo es elegible cuando demuestra, como mínimo:
+
+1. `package_id` propietario identificado por el sistema gobernado;
+2. `E5-GATE-008::<package_id> = PASS`;
+3. autorización física explícita;
+4. package compartido elegible y versión exacta;
+5. relación `PKG-COMP-MX-*` aplicable con evidencia vigente;
+6. relación `PKG-PR-REL-*` aplicable elegible;
+7. superficie NUMERA exacta inventariada;
+8. contrato target materializado para esa superficie;
+9. manifest y lockfile coherentes;
+10. paridad o corrección intencional demostrada;
+11. allow y deny fail-closed;
+12. cero doble side effect;
+13. rollback seguro probado;
+14. cero secretos o credenciales privilegiadas expuestas;
+15. cero autoridad cliente añadida;
+16. cero bypass por aliases `*.manage`, roles locales o claves legacy;
+17. scope, auditoría e idempotencia preservados;
+18. contexto operacional fuente preservado cuando aplique;
+19. evidencia suficiente para `NUMERA-AUTH-013`.
+
+---
+
+#### 35. Rollback
+
+Cada unidad debe demostrar rollback independiente antes del cutover.
+
+El rollback puede restaurar una versión técnica anterior solo cuando siga siendo segura y compatible con el contrato vigente.
+
+Queda prohibido que rollback:
+
+- reactive `numera.expenses.manage` o `numera.cost_centers.manage` como autoridad amplia;
+- restaure aliases de lectura como contrato final;
+- convierta role override en permiso final;
+- restaure dependencia artificial de turno/check-in;
+- pierda auditoría o contexto fuente ya capturado;
+- revierta hechos económicos confirmados para restaurar código;
+- borre evidencia de migración;
+- exija actualizar o bajar simultáneamente todos los consumidores VENTO.
+
+Si no existe estado anterior seguro, la unidad no está lista para cutover.
+
+---
+
+#### 36. Retiro de legacy
+
+Migrar una superficie no autoriza eliminar inmediatamente su implementación anterior.
+
+El retiro se gobierna por `SHELL-MIG-008` y exige uso residual cero o migración certificada.
+
+Antes del retiro se conservan, según aplique:
+
+- inventario de imports y referencias;
+- rutas y Server Actions alcanzables;
+- scripts y CI;
+- adapters;
+- aliases legacy;
+- RPC legacy;
+- referencias dinámicas de navegación;
+- evidencia de consumidores;
+- rollback validado.
+
+Un grep aislado no demuestra uso residual cero.
+
+---
+
+#### 37. Hallazgos AS-IS, owner y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `vento-numera` tiene baseline 4/4 packages y 12 superficies, pero 0 dependencias `@vento/*`. | preparación sin adopción | `NUMERA-AUTH-012::<implementation_unit_id>` + `SHELL-MIG-001..008` | release elegible, consumidor migrado, compatibilidad, paridad y rollback acreditados |
+| las cuatro raíces compartidas observadas continúan privadas o transitorias | bloquea tratarlas como releases estables | owners `SHELL-PKG-*`, `SHELL-CON-*`, `SHELL-AUTH-*`, `SHELL-DB-*`, `SHELL-UI-*` aplicables | release/publicación gobernada y relación NUMERA compatible |
+| `@vento/contracts/authorization` materializa 6/57 capacidades target | 51 capacidades no pueden adoptarse todavía desde el package | owner físico del catálogo + unidad NUMERA correspondiente | cada identidad requerida se materializa por lifecycle propietario antes de consumo |
+| cuatro lecturas runtime usan namespace legacy | consumidor diverge del catálogo objetivo | unidad NUMERA correspondiente | guards y navegación usan claves canónicas exactas sin alias ampliatorio |
+| `numera.expenses.manage` protege creación de gasto | mutación agregada y no atómica | unidad de gastos + owner de permiso exacto | `numera.finance.expenses.create` materializado y usado en punto de efecto |
+| `numera.cost_centers.manage` protege `upsertBudget` | riesgo de mapear presupuesto a permiso incorrecto | `NUMERA-AUTH-015` + unidad consumidora futura | acción de presupuesto recibe permiso especializado antes de migrar; no fallback a cost center update |
+| `resolveOperationalSession` acepta preferred site/area y shared-device usa `navigationRole` | riesgo de contexto/rol efectivo derivados de datos no autoritativos | owner `@vento/os-context` + unidad NUMERA | contexto efectivo server-side; navegación no se convierte en autoridad |
+| role override local consulta `role_permissions` y cookies | riesgo de autoridad local divergente | unidad NUMERA + contracts/context owners | evaluación target preserva simulación/override solo dentro del contrato aprobado y nunca como bypass |
+| `sync-navigation.mjs` usa claves legacy y puede usar `service_role` cuando existe | navegación y build pueden divergir del contrato y producir mutación administrativa | unidad NUMERA de navegación + owner de tooling | navegación canónica, build no mutante, secreto fuera de certificación y mutación administrativa separada |
+| baseline conserva identidad histórica `devVentoGroup/vento-numera` | posible divergencia de identidad frente al remoto canónico `vento-group-sas/vento-numera` | owner de baseline + unidad NUMERA | una sola identidad de consumidor resuelta y evidencia reconciliada sin duplicar relaciones |
+
+No queda un hallazgo narrativo sin owner ni condición de salida.
+
+---
+
+#### 38. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** adopción de packages, compatibilidad, paridad, rollback, retiro legacy, autorización, scope, auditoría, seguridad de Supabase y consistencia financiera ya cuentan con requisitos vigentes. Esta tarea especializa cómo deben aplicarse a NUMERA sin crear una obligación verificable nueva fuera de esa cobertura.
+
+---
+
+#### 39. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutilizan:
+
+- `TREQ-AUTH-001` para autoridad basada en contratos y no listas locales;
+- `TREQ-AUTH-002` para identidades de permiso válidas;
+- `TREQ-AUTH-008` para separar administración y operación;
+- `TREQ-AUTH-009` para contexto territorial determinista;
+- `TREQ-AUTH-013` para enforcement server-side;
+- `TREQ-AUTH-014` para invalidación de autoridad stale;
+- `TREQ-AUTH-015` para evidencia correlacionable;
+- `TREQ-SHELL-002` para responsabilidades compartidas provenientes de implementación compartida, generada o local clasificada;
+- `TREQ-SHELL-006` para pruebas propias y compatibilidad antes de adopción;
+- `TREQ-SHELL-007` para rollback independiente;
+- `TREQ-SHELL-008` para evidencia reproducible de requisitos afectados;
+- `TREQ-SHELL-043` y `TREQ-SHELL-044` para contratos compartidos de contexto y namespaces cerrados;
+- `TREQ-SHELL-064` para mantener `@vento/os-context@0.1.0` como transitorio hasta release elegible;
+- `TREQ-SHELL-065` para aislar compatibilidad legacy sin autoridad adicional;
+- `TREQ-NUMERA-001` para reconciliación de hechos/documentos, separación de permisos y trazabilidad;
+- `TREQ-NUMERA-002` para identidad, dimensiones, actor, origen, correlación y evidencia del hecho económico;
+- `TREQ-NUMERA-003` para separación de capacidades financieras sensibles;
+- `TREQ-NUMERA-004` para costo, versión, transferencias, distribución y rentabilidad reproducibles.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 40. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | Build, typecheck, lint y suites del consumidor corresponden a unidades físicas y al checkout posterior a la incorporación documental. |
+| LOCAL | `NOT_EXECUTED` | Formato, quality, delivery, topología, batería global y lifecycle documental permanecen pendientes del checkout local. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-numera/main`, owner NUMERA, packages compartidos, manifests, catálogo físico de 6 identidades NUMERA, relaciones `PKG-COMP-MX-007/014/021/028`, `PKG-PR-REL-007/014/021/028`, baseline `SHELL-CI-012::GLOBAL` verificado, 12 superficies, 10 source contracts y runtime actual de autorización/contexto/Supabase/navegación. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó migración de consumidor, shadow, cutover, rollback, efecto financiero ni navegación mutante. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global especifica el contrato; las materializaciones futuras ocurren por `NUMERA-AUTH-012::<implementation_unit_id>` bajo `POST_E5_PACKAGE`. |
+
+---
+
+#### 41. Criterios de aceptación
+
+- [x] Se conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] El envelope queda limitado a cuatro packages compartidos.
+- [x] Se conservan exactamente cuatro relaciones `PKG-COMP-MX-007/014/021/028`.
+- [x] Se conservan exactamente cuatro relaciones `PKG-PR-REL-007/014/021/028`.
+- [x] Se conservan los cuatro perfiles NUMERA del baseline.
+- [x] Se conserva el inventario de 12 superficies y 10 source contracts.
+- [x] Se conserva la baseline de 42 casos contractuales como evidencia de preparación, no de adopción.
+- [x] Se reconcilian exactamente 57 capacidades target: 1 app access + 56 financieras.
+- [x] Se registran exactamente 6 identidades materializadas y 51 pendientes.
+- [x] No se inventan permisos locales para las 51 faltantes.
+- [x] Se registran cuatro claves legacy de lectura y sus destinos canónicos.
+- [x] `numera.expenses.manage` no sobrevive como autoridad amplia para `createExpense`.
+- [x] `upsertBudget` no se mapea a cost center update y permanece bajo `NUMERA-AUTH-015`.
+- [x] Se preservan scope, auditoría, independencia administrativa y contexto fuente.
+- [x] Se exige paridad de allow y deny.
+- [x] Se permite corrección intencional de bugs legacy sin imitarlos.
+- [x] Se evita doble side effect durante coexistencia.
+- [x] Se exige release/version/manifest/lockfile atribuibles.
+- [x] Se exige rollback seguro antes de cutover.
+- [x] Se bloquea retiro legacy hasta uso residual cero o migración certificada.
+- [x] `service_role` queda fuera de la autoridad humana.
+- [x] Cambios Supabase permanecen en `vento-shell` y su owner físico.
+- [x] No se selecciona package ni implementation unit manualmente.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se ejecuta cambio físico desde este marcador.
+- [x] `NUMERA-AUTH-013` queda reservada para pruebas integrales.
+
+---
+
+#### 42. Límites
+
+Esta tarea no:
+
+- implementa packages;
+- publica releases, tags o registry;
+- cambia exports públicos;
+- modifica `vento-numera`;
+- añade dependencias `@vento/*`;
+- modifica lockfiles;
+- migra imports;
+- ejecuta cutover;
+- retira helpers o aliases legacy;
+- materializa las 51 identidades target ausentes;
+- modifica grants base u operativos;
+- modifica datasets de autorización;
+- cambia `has_permission`, RPC o evaluadores;
+- convierte role override en autoridad adicional;
+- crea o modifica RLS;
+- crea o modifica tablas, vistas, funciones, triggers o migraciones;
+- ejecuta cambios Supabase;
+- modifica datos;
+- cambia contratos de `NUMERA-AUTH-008..011`;
+- define permisos especializados de `NUMERA-AUTH-014` o `NUMERA-AUTH-015`;
+- ejecuta pruebas integrales de `NUMERA-AUTH-013`;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 43. Handoff a NUMERA-AUTH-013
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_PACKAGE_MIGRATION_CONTRACT = NUMERA-PACKAGE-MIGRATION-CONTRACT-001
+NUMERA_PACKAGE_MIGRATION_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_PACKAGE_MIGRATION_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_PACKAGE_MIGRATION_INSTANCE_PATTERN = NUMERA-AUTH-012::<implementation_unit_id>
+NUMERA_PACKAGE_MIGRATION_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+NUMERA_SHARED_PACKAGE_FAMILY_COUNT = 4
+NUMERA_COMPATIBILITY_RELATION_COUNT = 4
+NUMERA_UPDATE_RELATION_COUNT = 4
+NUMERA_BASELINE_SURFACE_COUNT = 12
+NUMERA_BASELINE_SOURCE_CONTRACT_COUNT = 10
+NUMERA_BASELINE_CONTRACTUAL_TEST_COUNT = 42
+NUMERA_TARGET_APP_ENTRY_PERMISSION_COUNT = 1
+NUMERA_TARGET_FINANCIAL_PERMISSION_COUNT = 56
+NUMERA_TARGET_CAPABILITY_COUNT = 57
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_FINANCIAL_PERMISSION_MATERIALIZED_COUNT = 5
+NUMERA_SHARED_PERMISSION_PENDING_COUNT = 51
+NUMERA_SHARED_PERMISSION_MISSING_COUNT = 51
+NUMERA_SHARED_PERMISSION_DUPLICATE_COUNT = 0
+NUMERA_LEGACY_READ_NAMESPACE_COUNT = 4
+NUMERA_LEGACY_MANAGE_ALIAS_COUNT = 2
+NUMERA_DECLARED_VENTO_PACKAGE_DEPENDENCY_COUNT_AS_IS = 0
+NUMERA_PACKAGE_ADOPTION_STATE_AS_IS = NOT_ADOPTED
+NUMERA_BASELINE_INSTANCE = SHELL-CI-012::GLOBAL
+NUMERA_BASELINE_INSTANCE_STATUS = VERIFIED
+NUMERA_COMPATIBILITY_RELATIONS = PKG-COMP-MX-007,PKG-COMP-MX-014,PKG-COMP-MX-021,PKG-COMP-MX-028
+NUMERA_UPDATE_RELATIONS = PKG-PR-REL-007,PKG-PR-REL-014,PKG-PR-REL-021,PKG-PR-REL-028
+NUMERA_CONTRACTS_PROFILE = NUMERA-PROFILE-CONTRACTS
+NUMERA_OS_CONTEXT_PROFILE = NUMERA-PROFILE-OS-CONTEXT
+NUMERA_SUPABASE_PROFILE = NUMERA-PROFILE-SUPABASE
+NUMERA_UI_WEB_PROFILE = NUMERA-PROFILE-UI-WEB
+LEGACY_READ_NAMESPACE_IS_CANONICAL = NO
+LEGACY_MANAGE_ALIAS_IS_CANONICAL = NO
+LOCAL_PERMISSION_REIMPLEMENTATION_TO_SKIP_PACKAGE = FORBIDDEN
+CANONICAL_DENY_FALLBACK_TO_LEGACY_ALLOW = FORBIDDEN
+DUAL_SIDE_EFFECT_DURING_PARITY = FORBIDDEN
+PACKAGE_INSTALLED_EQUALS_PACKAGE_ADOPTED = NO
+WORKSPACE_MATERIALIZED_EQUALS_ELIGIBLE_RELEASE = NO
+SERVICE_ROLE_IS_HUMAN_AUTHORITY = NO
+SOURCE_OPERATIONAL_CONTEXT_IS_NUMERA_AUTHORITY = NO
+CTX_CAN_EXPAND_BASE_RESOURCE_SCOPE = NO
+ADMIN_TURN_DEPENDENCY_CAN_BE_REINTRODUCED_BY_MIGRATION = NO
+PARITY_REQUIRES_ALLOW_AND_DENY = YES
+ROLLBACK_REQUIRED_BEFORE_CUTOVER = YES
+LEGACY_RETIREMENT_REQUIRES_ZERO_RESIDUAL_OR_CERTIFIED_MIGRATION = YES
+SUPABASE_MUTATIONS_OWNED_BY_VENTO_SHELL = YES
+INTEGRAL_PACKAGE_MIGRATION_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_013_OWNER = INTEGRAL_AUTHORIZATION_AND_PACKAGE_TESTS
+```
+
+`NUMERA-AUTH-013` deberá certificar integralmente que las unidades materializadas preservan permisos exactos, scope, auditoría, contexto fuente, independencia administrativa, packages, relaciones, paridad, rollback y deny paths sin fallbacks legacy.
+
+---
+
+#### 44. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-012 — Migrar a paquetes de vento-shell`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-013 — Ejecutar pruebas integrales`
 ### [ ] NUMERA-AUTH-013 — Ejecutar pruebas integrales
 ### [ ] NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles
 ### [ ] NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos
