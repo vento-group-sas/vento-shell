@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1408** |
+| Aprobadas | **1409** |
 | En propuesta | **0** |
-| No iniciadas | **188** |
+| No iniciadas | **187** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **88.22% (1408/1596)** |
+| Porcentaje de completamiento | **88.28% (1409/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **188** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1309** |
+| ⏸ NO_EVALUADA | **187** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1310** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-DOM-005` — Definir gastos, soportes, aprobación, corrección y anulación | ✅ APROBADA |
-| Tarea actual | `NUMERA-DOM-006` — Definir centros de costo y propiedad de su catálogo | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-DOM-007` — Definir costos, costo estándar, costo real y variaciones | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-DOM-006` — Definir centros de costo y propiedad de su catálogo | ✅ APROBADA |
+| Tarea actual | `NUMERA-DOM-007` — Definir costos, costo estándar, costo real y variaciones | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-008` — Definir rentabilidad por empresa, sede, canal, producto y periodo | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1170,7 +1170,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-003` | Definir hechos económicos recibidos desde compras y recepción | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-004` | Definir hechos económicos recibidos desde producción e inventario | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-005` | Definir gastos, soportes, aprobación, corrección y anulación | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-006` | Definir centros de costo y propiedad de su catálogo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-006` | Definir centros de costo y propiedad de su catálogo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-007` | Definir costos, costo estándar, costo real y variaciones | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-008` | Definir rentabilidad por empresa, sede, canal, producto y periodo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-009` | Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
