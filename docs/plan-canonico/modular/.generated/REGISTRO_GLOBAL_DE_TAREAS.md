@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1415** |
+| Aprobadas | **1416** |
 | En propuesta | **0** |
-| No iniciadas | **181** |
+| No iniciadas | **180** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **88.66% (1415/1596)** |
+| Porcentaje de completamiento | **88.72% (1416/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **181** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1316** |
+| ⏸ NO_EVALUADA | **180** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1317** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-DOM-012` — Definir reportes, indicadores y exportaciones oficiales | ✅ APROBADA |
-| Tarea actual | `NUMERA-DOM-013` — Definir fronteras frente al sistema contable o fiscal externo | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-DOM-014` — Definir conciliación y tratamiento de diferencias | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-DOM-013` — Definir fronteras frente al sistema contable o fiscal externo | ✅ APROBADA |
+| Tarea actual | `NUMERA-DOM-014` — Definir conciliación y tratamiento de diferencias | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-015` — Aprobar alcance objetivo y capacidades diferidas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1177,7 +1177,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-010` | Definir cuentas por pagar y obligaciones si pertenecen a NUMERA | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-011` | Definir cierres, periodos y reapertura controlada | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-012` | Definir reportes, indicadores y exportaciones oficiales | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-013` | Definir fronteras frente al sistema contable o fiscal externo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-013` | Definir fronteras frente al sistema contable o fiscal externo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-014` | Definir conciliación y tratamiento de diferencias | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-015` | Aprobar alcance objetivo y capacidades diferidas | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-016` | Definir cartera, cuentas por cobrar, cobranza y exposición de crédito | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
