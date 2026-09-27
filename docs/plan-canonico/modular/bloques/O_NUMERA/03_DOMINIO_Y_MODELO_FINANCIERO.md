@@ -8503,7 +8503,1029 @@ PERIOD_CLOSE_AND_REOPEN_OWNER = NUMERA_DOM_011
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada`
-### [ ] NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
+### ✅ NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
+**Tarea siguiente:** NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
+**Tipo de tarea:** definición documental del contrato de periodos económicos, bloqueo, cierre, tratamiento de eventos tardíos, corrección, reapertura y nuevo cierre de NUMERA, preservando versiones, evidencia, segregación, idempotencia y fronteras frente a operación, presupuesto, conciliación, contabilidad formal y fiscalidad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica periodos reales, hechos económicos, gastos, presupuestos, obligaciones, pagos, conciliaciones, reportes, tablas, constraints, RPC, RLS, permisos, Supabase, aplicaciones, integraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo de periodos económicos de NUMERA para que el estado de un periodo gobierne efectivamente las mutaciones financieras, el cierre tenga evidencia reproducible, los eventos tardíos no reescriban historia y toda reapertura sea explícita, autorizada, acotada y trazable.
+
+La tarea resuelve las brechas observadas en el AS-IS:
+
+```text
+PERIOD_STATUS_VALUES = 3
+PERIOD_WORKFLOW_HANDLERS = 0
+PERIOD_DOMAIN_TRIGGERS = 0
+CLOSED_OR_LOCKED_PERIOD_WRITE_GUARD = NO
+DEDICATED_PERIOD_CLOSE_PERMISSIONS = 0
+DEDICATED_PERIOD_REOPEN_PERMISSIONS = 0
+```
+
+La existencia de `open`, `closed` y `locked` deja de ser un campo descriptivo y pasa a tener semántica empresarial obligatoria dentro del contrato objetivo.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-DOM-011` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define un contrato documental reutilizable;
+- no crea instancia física propia;
+- no cambia estados de periodos reales;
+- no cierra ni reabre periodos;
+- no ejecuta conciliaciones;
+- no publica reportes;
+- no modifica permisos;
+- no crea tablas, funciones, triggers, RPC, policies ni migraciones;
+- no convierte este cierre económico en cierre contable o fiscal oficial.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-010
+
+La predecesora deja congelado:
+
+```text
+PAYABLE_OWNER = NUMERA
+PAYABLE_REGISTERED_IS_APPROVED = NO
+DOCUMENT_VALIDATED_IS_PAYMENT_APPROVED = NO
+APPROVED_FOR_SCHEDULING_IS_PAYMENT = NO
+SCHEDULED_FOR_PAYMENT_IS_BANK_EXECUTION = NO
+PAYMENT_IN_PROGRESS_IS_CONFIRMED_PAYMENT = NO
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+PARTIAL_PAYMENT_CAN_LEAVE_OPEN_BALANCE = YES
+PAYABLE_SETTLED_REQUIRES_EXPLAINED_FINAL_BALANCE = YES
+PAYABLE_HISTORY_SILENT_OVERWRITE = FORBIDDEN
+LATE_PAYABLE_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
+BANK_RECONCILIATION_INFRASTRUCTURE = NUMERA_DOM_009
+PERIOD_CLOSE_AND_REOPEN_OWNER = NUMERA_DOM_011
+```
+
+La 011 aplica esas reglas a toda la frontera económica, no solo a obligaciones.
+
+---
+
+#### 4. Propiedad funcional y superficies canónicas
+
+El cierre económico pertenece a NUMERA dentro de:
+
+```text
+VPROC-0054 — Gestionar costos, distribución, presupuesto, cierre y rentabilidad con reglas versionadas
+OWNER = NUMERA
+```
+
+La superficie canónica asociada es:
+
+```text
+VSCREEN-0105 — Cierre, reapertura y corrección de periodo
+VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD
+```
+
+La existencia de esa superficie no concede autoridad por sí sola. Cerrar o reabrir requiere decisión protegida, evidencia y segregación.
+
+---
+
+#### 5. Periodo económico frente a otros periodos
+
+Se preserva obligatoriamente:
+
+```text
+PERIODO_OPERATIVO
+!= PERIODO_ECONOMICO
+!= PERIODO_CONTABLE_OFICIAL
+!= PERIODO_FISCAL
+```
+
+`NUMERA-DOM-011` define el periodo económico gobernado por NUMERA.
+
+No declara que:
+
+- cerrar NUMERA cierre una caja PULSO;
+- cerrar NUMERA cierre recepción ORIGO;
+- cerrar NUMERA cierre inventario NEXO;
+- cerrar NUMERA cierre producción FOGO;
+- cerrar NUMERA produzca cierre contable oficial;
+- cerrar NUMERA produzca cierre tributario oficial.
+
+Las fronteras contable y fiscal permanecen en `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 6. Identidad del periodo
+
+Un periodo deberá conservar identidad estable y un alcance explícito.
+
+La selección no podrá basarse únicamente en "el registro más reciente".
+
+La resolución deberá poder distinguir, cuando aplique:
+
+- periodo económico;
+- entidad legal;
+- vigencia temporal;
+- moneda de referencia cuando corresponda al resultado;
+- versión del cierre;
+- estado;
+- alcance organizacional cubierto;
+- fuentes incluidas;
+- excepciones aprobadas.
+
+El AS-IS utiliza `period_month`; esta tarea no convierte el mes físico actual en definición universal para periodos operativos, contables o fiscales.
+
+---
+
+#### 7. Estados admitidos
+
+El contrato objetivo reutiliza sin renombrar los tres valores existentes:
+
+```text
+open
+locked
+closed
+```
+
+No se crean nuevos valores de `numera_periods.status` en esta tarea.
+
+La semántica empresarial de cada estado queda definida a continuación.
+
+---
+
+#### 8. Semántica de open
+
+`open` significa que el periodo económico admite operaciones ordinarias autorizadas conforme a los contratos propietarios de cada objeto.
+
+`open` no significa:
+
+- autorización universal de escritura;
+- bypass de aprobación;
+- bypass de conciliación;
+- bypass de idempotencia;
+- permiso de alterar hechos de dominios fuente;
+- permiso de editar agregados como fuente.
+
+Toda mutación sigue requiriendo su autorización, evidencia, estado y reglas propias.
+
+---
+
+#### 9. Semántica de locked
+
+`locked` significa congelamiento económico controlado para revisión, conciliación o preparación de cierre.
+
+Mientras el periodo esté `locked`:
+
+- las mutaciones económicas ordinarias quedan bloqueadas;
+- no se registran gastos ordinarios contra el periodo;
+- no se sobrescriben presupuestos publicados;
+- no se alteran costos publicados;
+- no se reclasifican hechos por una escritura genérica;
+- no se aplican ajustes ordinarios por Server Action o acceso directo;
+- sí pueden ejecutarse acciones propias del control de cierre, lectura, auditoría y conciliación cuando tengan autoridad explícita.
+
+Si una corrección material exige modificar la verdad económica, el lock debe liberarse de forma gobernada o utilizarse el mecanismo de reapertura/corrección aplicable; no se escribe por excepción silenciosa.
+
+---
+
+#### 10. Semántica de closed
+
+`closed` significa que el periodo económico completó su reconciliación de cierre y conserva una versión aprobada para análisis y reporte.
+
+Mientras el periodo esté `closed`:
+
+- las mutaciones económicas ordinarias quedan bloqueadas;
+- el historial permanece consultable;
+- los reportes pueden consumir la versión cerrada;
+- un evento tardío puede recibirse y clasificarse, pero no reescribe el cierre;
+- una corrección material exige ajuste gobernado o reapertura;
+- el cierre previo nunca se elimina.
+
+`closed` no equivale automáticamente a cierre contable ni fiscal oficial.
+
+---
+
+#### 11. Transiciones permitidas
+
+El flujo objetivo ordinario es:
+
+```text
+open
+-> locked
+-> closed
+```
+
+Transiciones excepcionales gobernadas:
+
+```text
+locked -> open
+closed -> open
+```
+
+Reglas:
+
+1. `open -> locked` inicia congelamiento y revisión de cierre;
+2. `locked -> closed` exige gates de cierre satisfechos;
+3. `locked -> open` exige motivo, autoridad y evidencia de abandono o corrección previa al cierre;
+4. `closed -> open` constituye reapertura y nunca una edición genérica del estado;
+5. ninguna transición destruye el historial de estados o decisiones previas;
+6. una reapertura deberá terminar en un nuevo cierre o en una decisión explícita de continuidad controlada.
+
+---
+
+#### 12. Selección del periodo activo
+
+Se congela:
+
+```text
+LATEST_PERIOD_BY_DATE != CURRENT_OPEN_PERIOD
+```
+
+Toda operación deberá resolver el periodo aplicable mediante estado, vigencia y alcance, no por orden descendente de fecha solamente.
+
+Si existen varios periodos abiertos legítimos por alcance distinto, la aplicación debe resolver explícitamente cuál corresponde. La ambigüedad falla cerrada.
+
+---
+
+#### 13. Frontera con VPROC-0054
+
+`VPROC-0054` conserva:
+
+```text
+COSTING_CYCLE_OPENED
+-> INPUTS_COLLECTING
+-> CALCULATION_IN_PROGRESS
+-> VARIANCE_ANALYSIS
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> PUBLISHED
+-> CLOSE_RECONCILIATION_PENDING
+-> COSTING_CYCLE_CLOSED
+```
+
+El estado del proceso y el estado del periodo son objetos relacionados pero no intercambiables.
+
+Se conserva:
+
+```text
+VPROC_0054_PUBLISHED != PERIOD_CLOSED
+CLOSE_RECONCILIATION_PENDING != PERIOD_CLOSED
+COSTING_CYCLE_CLOSED != CONTABILIDAD_OFICIAL_CERRADA
+```
+
+---
+
+#### 14. Entrada a locked
+
+Antes de bloquear un periodo deberá existir, como mínimo:
+
+- periodo y alcance identificados;
+- actor y autoridad efectivos;
+- versión de reglas aplicables;
+- fuentes esperadas identificadas;
+- snapshot o watermark de ingestión disponible;
+- estado de conciliaciones relevantes;
+- inventario de diferencias o excepciones abiertas;
+- versión económica candidata a cierre;
+- evidencia de que el lock no se está usando para ocultar una inconsistencia.
+
+La implementación posterior definirá la forma física de estos elementos.
+
+---
+
+#### 15. Checklist de cierre
+
+El cierre deberá evaluar de forma reproducible, cuando aplique:
+
+1. completitud de fuentes esperadas;
+2. duplicados detectados y resueltos;
+3. hechos sin origen o efectos sin hecho;
+4. ventas y recaudos pendientes de conciliación material;
+5. compras, recepciones y obligaciones pendientes de conciliación material;
+6. movimientos bancarios y diferencias relevantes;
+7. inventario, producción y variaciones del periodo;
+8. costos y distribuciones versionados;
+9. resultados publicados de `VPROC-0054`;
+10. excepciones conocidas;
+11. eventos tardíos ya recibidos;
+12. ajustes o correcciones pendientes;
+13. autoridad de cierre;
+14. evidencia final.
+
+Un objeto legítimamente abierto, como una obligación aún no vencida, no bloquea por existir; debe quedar representado con saldo y estado explicables.
+
+---
+
+#### 16. Excepciones al cierre
+
+No se exige que todo objeto empresarial termine en saldo cero para cerrar un periodo.
+
+Sí se exige que cada excepción material esté:
+
+- identificada;
+- clasificada;
+- cuantificada cuando aplique;
+- vinculada a fuente y propietario;
+- resuelta o aceptada explícitamente como no bloqueante;
+- incluida en la evidencia de cierre.
+
+Una excepción desconocida o sin propietario no puede convertirse silenciosamente en cierre válido.
+
+---
+
+#### 17. CLOSE_RECONCILIATION_PENDING
+
+`VPROC-0054.CLOSE_RECONCILIATION_PENDING` representa la etapa en la que se verifican ajustes posteriores y consistencia con operación y resultados financieros.
+
+Durante esta etapa:
+
+- el periodo permanece protegido contra mutación ordinaria;
+- las diferencias se investigan sin reescribir fuentes;
+- las correcciones necesarias se enrutan por acciones gobernadas;
+- la decisión de cierre conserva evidencia de las excepciones aceptadas;
+- no se declara `closed` por el solo hecho de haber calculado costos o rentabilidad.
+
+---
+
+#### 18. COSTING_CYCLE_CLOSED
+
+`VPROC-0054.COSTING_CYCLE_CLOSED` exige que fuentes, asignaciones, cálculos, variaciones, cierre y revisión estén conciliados y que la versión resultante haya sido aprobada para análisis.
+
+Se preserva su límite:
+
+```text
+COSTING_CYCLE_CLOSED
+!= CONVERTIR_ESTIMACIONES_EN_HECHOS
+!= REESCRIBIR_COSTOS_HISTORICOS
+```
+
+El periodo económico podrá quedar `closed` únicamente cuando la evidencia de cierre confirme el alcance aplicable.
+
+---
+
+#### 19. Matriz de acciones por estado
+
+| Acción | open | locked | closed |
+| --- | --- | --- | --- |
+| lectura y auditoría | permitida según autorización | permitida según autorización | permitida según autorización |
+| mutación económica ordinaria | permitida según contrato propietario | bloqueada | bloqueada |
+| cálculo preliminar | permitido | permitido si pertenece al cierre | solo lectura/versiones históricas |
+| conciliación de cierre | no necesaria salvo preparación | permitida | solo revisión vinculada |
+| publicación de resultado candidato | permitida según workflow | condicionada al cierre | no sobrescribe versión cerrada |
+| ajuste ordinario | permitido según autorización | bloqueado | bloqueado |
+| liberar lock | no aplica | decisión gobernada | no aplica |
+| cerrar periodo | no directo | decisión gobernada | no aplica |
+| reabrir periodo | no aplica | no aplica | decisión gobernada |
+| exportar evidencia | permitida según autorización | permitida según autorización | permitida según autorización |
+
+Esta matriz no sustituye los permisos específicos de cada objeto.
+
+---
+
+#### 20. Guard obligatorio de estado
+
+El objetivo exige que el estado del periodo sea revalidado en servidor y en la capa de persistencia aplicable antes de toda mutación económica gobernada.
+
+Se prohíbe depender únicamente de:
+
+- valor oculto enviado por cliente;
+- selección visual del periodo;
+- UI deshabilitada;
+- permiso genérico `manage`;
+- fecha más reciente;
+- cache de estado no revalidado.
+
+Una llamada directa, RPC, Server Action o API manipulada no podrá escribir sobre `locked` o `closed` cuando la acción no esté expresamente autorizada por el contrato de cierre/reapertura.
+
+---
+
+#### 21. Mutaciones que deben respetar el periodo
+
+La materialización posterior deberá aplicar el guard, según corresponda, a hechos y proyecciones financieras como:
+
+- gastos;
+- hechos económicos;
+- obligaciones y aplicaciones;
+- recaudos y aplicaciones;
+- costos y distribuciones;
+- presupuestos publicados y revisiones;
+- ajustes;
+- conciliaciones con efecto económico;
+- resultados de rentabilidad publicados;
+- otras mutaciones NUMERA que declaren periodo económico.
+
+No se ordena que dominios fuente ajenos dejen de operar porque NUMERA cierre su periodo económico.
+
+---
+
+#### 22. Fuente operativa después del cierre
+
+PULSO, ORIGO, NEXO y FOGO conservan sus procesos propietarios y pueden producir hechos legítimos después del corte de NUMERA.
+
+NUMERA no bloquea retroactivamente la operación fuente.
+
+Cuando un evento llega después de cerrar el periodo al que pertenece su ocurrencia, se trata como evento tardío y se aplica la política definida en esta tarea.
+
+---
+
+#### 23. Evento tardío
+
+Un evento tardío deberá conservar, cuando aplique:
+
+```text
+OCCURRED_AT
+SOURCE_PERIOD_REFERENCE
+RECEIVED_AT
+VALIDATED_AT
+RECOGNITION_DECISION_AT
+TARGET_ECONOMIC_PERIOD
+ORIGINAL_CORRELATION
+```
+
+Se conserva:
+
+```text
+EVENTO_TARDIO != EVENTO_INVALIDO
+EVENTO_TARDIO != PERMISO_PARA_REESCRIBIR_CIERRE
+```
+
+El evento se recibe una sola vez y queda pendiente de decisión si afecta un periodo protegido.
+
+---
+
+#### 24. Enrutamiento de eventos tardíos
+
+Ante un evento tardío material, la decisión autorizada deberá escoger explícitamente entre:
+
+1. reconocer o ajustar en un periodo económico abierto, preservando la fecha real de ocurrencia y la referencia al periodo afectado;
+2. reabrir controladamente el periodo cerrado para corregirlo;
+3. clasificar el evento como duplicado, inválido o sin efecto económico cuando la evidencia lo demuestre.
+
+Esta tarea no impone una única alternativa contable universal.
+
+La elección debe conservar motivo, actor, autoridad, impacto y evidencia.
+
+---
+
+#### 25. Corrección sin reapertura
+
+No toda diferencia exige reapertura.
+
+Puede utilizarse un ajuste en periodo abierto cuando:
+
+- la política aplicable lo permita;
+- no se requiera reexpresar la versión cerrada;
+- la trazabilidad conserve el periodo afectado;
+- el original no sea sobrescrito;
+- reportes y conciliaciones puedan explicar el efecto.
+
+La decisión de usar ajuste en lugar de reapertura debe ser explícita y auditable.
+
+---
+
+#### 26. Cuándo una reapertura es necesaria
+
+La reapertura es necesaria cuando la corrección autorizada deba modificar la representación económica del periodo cerrado de forma material y no pueda quedar correctamente expresada mediante ajuste posterior.
+
+Casos potenciales incluyen:
+
+- hecho material omitido;
+- duplicado material reconocido;
+- distribución material incorrecta;
+- costo o ingreso material asignado al periodo equivocado;
+- conciliación material que cambia el resultado publicado;
+- reverso o corrección que exige reexpresión del periodo;
+- hallazgo de integridad que invalida la versión cerrada.
+
+La materialidad y política exactas no se inventan en esta tarea.
+
+---
+
+#### 27. Solicitud de reapertura
+
+Una solicitud de reapertura deberá identificar como mínimo:
+
+- periodo y alcance;
+- versión de cierre afectada;
+- motivo;
+- hallazgo o evento origen;
+- impacto esperado;
+- objetos afectados;
+- actor solicitante;
+- evidencia;
+- riesgo de no corregir;
+- alternativa de ajuste posterior evaluada;
+- autoridad requerida.
+
+La mera existencia de un permiso genérico de administración no satisface este contrato.
+
+---
+
+#### 28. Aprobación de reapertura
+
+Cerrar y reabrir son decisiones empresariales distintas y deben estar segregadas de la escritura ordinaria.
+
+La aprobación de reapertura deberá conservar:
+
+- principal;
+- actor efectivo;
+- autoridad;
+- periodo;
+- alcance;
+- motivo;
+- decisión;
+- timestamp;
+- versión contractual;
+- evidencia revisada.
+
+La tarea no crea nombres definitivos de permisos. Su materialización pertenece a `NUMERA-AUTH-*`.
+
+---
+
+#### 29. Ejecución acotada de la reapertura
+
+Una reapertura no convierte el periodo en una zona de escritura irrestricta.
+
+Debe conservar:
+
+- alcance aprobado;
+- objetos o familias afectadas;
+- correcciones autorizadas;
+- ventana o condición de finalización;
+- actores habilitados;
+- evidencia de cada cambio;
+- relación con la versión cerrada anterior.
+
+Cualquier cambio ajeno al alcance aprobado requiere su propia decisión.
+
+---
+
+#### 30. Reapertura no borra cierre
+
+Se congela:
+
+```text
+REOPEN != DELETE_PREVIOUS_CLOSE
+REOPEN != OVERWRITE_HISTORY
+```
+
+La reapertura crea una revisión vinculada del periodo y conserva:
+
+- cierre previo;
+- snapshot previo;
+- resultados previamente publicados;
+- motivo de reapertura;
+- cambios posteriores;
+- nueva versión resultante.
+
+Los reportes históricos deben poder indicar qué versión utilizaron.
+
+---
+
+#### 31. Nuevo cierre después de reapertura
+
+Una reapertura que modifica la representación económica debe concluir mediante un nuevo ciclo de revisión y cierre.
+
+El nuevo cierre deberá:
+
+- volver a bloquear mutaciones ordinarias;
+- reconciliar las correcciones;
+- regenerar la evidencia aplicable;
+- producir una nueva versión de cierre;
+- conservar la versión anterior como histórica;
+- declarar qué reportes o resultados quedan sustituidos prospectivamente.
+
+No se sobrescribe el cierre original.
+
+---
+
+#### 32. Restatement versionado
+
+Los cierres podrán producir reexpresiones versionadas, nunca sobrescrituras silenciosas.
+
+Como mínimo deberá poder determinarse:
+
+```text
+PERIOD_ID
+CLOSE_VERSION
+SUPERSEDES_CLOSE_VERSION
+CLOSED_AT
+CLOSED_BY
+REOPEN_REFERENCE
+RESTATEMENT_REASON
+EVIDENCE_REFERENCE
+```
+
+La implementación física posterior decidirá estructura y persistencia exactas.
+
+---
+
+#### 33. Fechas y corte
+
+Para cada hecho se conservan separadamente las fechas que correspondan, entre ellas:
+
+- ocurrencia;
+- recepción;
+- reconocimiento económico;
+- documento;
+- vencimiento;
+- pago o recaudo;
+- valor bancario;
+- conciliación;
+- corrección;
+- cierre;
+- reapertura.
+
+El cierre no reescribe estas fechas para hacerlas coincidir con el periodo seleccionado.
+
+---
+
+#### 34. Obligaciones y pagos que cruzan periodos
+
+Una obligación puede originarse en un periodo y pagarse en otro.
+
+Se conserva:
+
+```text
+PERIODO_DE_ORIGEN
+!= PERIODO_DE_VENCIMIENTO
+!= PERIODO_DE_PAGO
+!= PERIODO_DE_CONCILIACION
+```
+
+Cerrar el periodo de origen no obliga a liquidar la obligación ni impide que un pago posterior se registre en su periodo legítimo.
+
+---
+
+#### 35. Recaudos y cartera que cruzan periodos
+
+Una cuenta por cobrar puede permanecer abierta después del cierre del periodo en que se originó.
+
+El cierre exige saldo y estado explicables, no recaudo forzado.
+
+El diseño detallado de cartera, cobranza y exposición continúa en `NUMERA-DOM-016`.
+
+---
+
+#### 36. Bancos y conciliación que cruzan periodos
+
+Un movimiento bancario o extracto puede llegar después del corte económico.
+
+La 009 conserva el matching y la conciliación bancaria como objetos reversibles y trazables.
+
+La 011 determina que la llegada tardía no autoriza modificar un periodo cerrado por actualización directa; deberá seguir la política de evento tardío y ajuste/reapertura.
+
+---
+
+#### 37. Presupuesto, forecast y escenarios
+
+El cierre económico no convierte automáticamente presupuesto, forecast o escenario en datos reales.
+
+Se conserva:
+
+```text
+REAL != BUDGET
+REAL != FORECAST
+REAL != SCENARIO
+```
+
+Una versión presupuestal puede quedar cerrada o sustituida bajo su propio workflow, pero no se sobrescribe por cerrar el periodo económico.
+
+El motor de escenarios detallado pertenece a `NUMERA-DOM-018`.
+
+---
+
+#### 38. Costos, rentabilidad y cierre
+
+Los resultados de costo y rentabilidad usados en cierre deberán conservar:
+
+- método;
+- entradas;
+- versión;
+- vigencia;
+- entidad;
+- centro;
+- periodo;
+- fuente;
+- distribuciones y drivers aplicables;
+- diferencias y conciliación.
+
+Cerrar un periodo congela una versión aprobada para análisis; no impide conservar simulaciones futuras separadas.
+
+---
+
+#### 39. Snapshot y evidencia de cierre
+
+Cada cierre deberá producir evidencia suficiente para reconstruir la decisión.
+
+La evidencia deberá poder identificar, cuando aplique:
+
+- periodo y alcance;
+- versión cerrada;
+- actor y autoridad;
+- timestamps;
+- fuentes y watermarks;
+- versiones de reglas;
+- resultados publicados;
+- conciliaciones relevantes;
+- excepciones aceptadas;
+- diferencias pendientes no bloqueantes;
+- reportes o artefactos producidos;
+- hash o referencia equivalente de evidencia cuando la materialización lo defina.
+
+`updated_at` por sí solo no constituye evidencia de cierre.
+
+---
+
+#### 40. Concurrencia e idempotencia
+
+Cerrar, bloquear y reabrir deberán ser operaciones idempotentes y fail-closed frente a concurrencia.
+
+Se prohíbe:
+
+- cerrar dos veces generando dos efectos equivalentes por replay;
+- reabrir dos veces por respuesta perdida;
+- escribir entre la última validación de cierre y el cambio de estado sin control de concurrencia;
+- aplicar un evento tardío dos veces;
+- producir dos restatements para la misma decisión;
+- cambiar estado usando una versión obsoleta del periodo.
+
+La implementación deberá usar identidad y control de versión o mecanismo equivalente.
+
+---
+
+#### 41. Segregación de funciones
+
+El modelo exige capacidades distintas para:
+
+```text
+REGISTRAR
+APROBAR
+CONCILIAR
+BLOQUEAR
+CERRAR
+REABRIR
+CORREGIR
+EXPORTAR
+```
+
+Una capacidad genérica `manage` no satisface por sí sola la segregación objetivo.
+
+El rol `contador`, `gerente` o cualquier otro rol no crea aprobación automática por presencia; la autoridad efectiva debe resolverse mediante el sistema canónico de autorización.
+
+---
+
+#### 42. Seguridad y auditoría
+
+Toda decisión de cierre, liberación de lock o reapertura deberá validar en servidor:
+
+- principal;
+- actor efectivo;
+- permiso exacto aplicable;
+- alcance organizacional;
+- estado actual del periodo;
+- versión esperada;
+- motivo cuando corresponda;
+- columnas o acciones permitidas.
+
+La evidencia debe conservarse también ante denegación, conflicto de versión, replay y rollback.
+
+---
+
+#### 43. Transición desde el AS-IS
+
+El estado actual observado conserva:
+
+```text
+numera_periods.status = open / closed / locked
+PERIOD_WORKFLOW_HANDLERS = 0
+PERIOD_DOMAIN_TRIGGERS = 0
+CLOSED_OR_LOCKED_PERIOD_WRITE_GUARD = NO
+```
+
+La materialización posterior deberá:
+
+1. preservar identidades de periodos existentes;
+2. no inventar cierres históricos que nunca ocurrieron;
+3. no inferir `closed` desde ausencia de actividad;
+4. no inferir `open` por ser el registro más reciente;
+5. incorporar gates de estado en UI, servidor y persistencia;
+6. separar autoridad de cierre y reapertura;
+7. introducir evidencia de transición sin degradar historia.
+
+---
+
+#### 44. Excepciones obligatorias
+
+La implementación posterior deberá tratar explícitamente:
+
+1. periodo abierto sin actividad;
+2. varios periodos abiertos por alcances distintos;
+3. intento de escritura en `locked`;
+4. intento de escritura en `closed`;
+5. lock mientras existe mutación concurrente;
+6. fallo durante cierre;
+7. cierre con excepción no bloqueante aprobada;
+8. excepción bloqueante detectada al final;
+9. evento tardío antes de publicar reportes;
+10. evento tardío después de publicar reportes;
+11. reapertura solicitada y denegada;
+12. reapertura aprobada parcialmente;
+13. reapertura concurrente;
+14. ajuste en periodo abierto sin reapertura;
+15. restatement posterior;
+16. obligación abierta al cierre;
+17. pago o recaudo posterior al cierre;
+18. movimiento bancario tardío;
+19. diferencia de costo detectada después del cierre;
+20. rollback técnico durante transición de estado.
+
+Ningún caso se resuelve por edición directa del estado o eliminación de historia.
+
+---
+
+#### 45. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| el AS-IS no aplica guard de periodo en mutaciones | no | `NUMERA-UX-011`, `NUMERA-UX-023`, implementación E5 aplicable | UI, servidor y datos fallan cerrado ante escritura no autorizada en `locked/closed` |
+| cierre y reapertura usan autoridad genérica | no | `NUMERA-AUTH-*` aplicables | capacidades de cierre y reapertura quedan separadas y auditables |
+| no existe evidencia material de cierre/reapertura | no | `NUMERA-UX-011`, `NUMERA-UX-023`, implementación aplicable | snapshot, actor, motivo, versión y evidencia quedan persistidos |
+| eventos tardíos requieren tratamiento de diferencias | no | `NUMERA-DOM-014` | diferencias y conciliaciones tienen resolución trazable sin sobrescritura |
+| cierre económico no constituye cierre contable/fiscal | no | `NUMERA-DOM-013`, `NUMERA-DOM-017` | autoridad externa e integración oficial quedan definidas |
+| reportes deben declarar versión y estado del periodo | no | `NUMERA-DOM-012` | cada reporte oficial identifica periodo, versión, fuente y estado de cierre |
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que cierres y reaperturas conserven historia, que periodos económicos no se confundan con periodos contables o fiscales, que mutaciones protegidas validen estado y autorización en servidor, que acciones protegidas conserven evidencia y que eventos tardíos o periodos cerrados no produzcan efectos duplicados ni sobrescrituras silenciosas.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para cierres reconciliados, correcciones/reaperturas con historia y permisos separados;
+- `TREQ-NUMERA-002` para identidad, fechas, estado, correcciones compensatorias y separación de periodos operativo, económico, contable y fiscal;
+- `TREQ-NUMERA-004` para método, versión, vigencia, periodo y fuente de costos, presupuesto y rentabilidad;
+- `TREQ-AUTH-013` para impedir que UI, API o RPC manipulada eludan estado y autorización;
+- `TREQ-AUTH-015` para evidencia correlacionable de toda decisión y acción protegida;
+- `TREQ-INTEGRATION-017` para eventos tardíos, reintentos y periodos cerrados sin duplicar efectos financieros.
+
+Esta sección es trazabilidad de cobertura existente y no constituye una actualización del registro.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó esta tarea dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `main`, continuidad, topología `DEFINE_ONCE`, archivo propietario, políticas documentales, Registro 04A, `NUMERA-AUD-009`, estados actuales `open/closed/locked`, `VPROC-0054`, `VSCREEN-0105`, superficie `STEP-CLOSE_OR_REOPEN_PERIOD`, requisitos vigentes y el handoff completo aprobado de `NUMERA-DOM-010` |
+| OPERATIVA | NOT_EXECUTED | no se bloquearon, cerraron, reabrieron, corrigieron ni conciliaron periodos reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no autoriza materialización física propia |
+
+---
+
+#### 49. Criterios de aceptación
+
+`NUMERA-DOM-011` queda aceptable cuando:
+
+1. se distingue periodo económico de periodo operativo, contable y fiscal;
+2. la identidad del periodo no depende solo del registro más reciente;
+3. se reutilizan `open`, `locked` y `closed` sin inventar estados;
+4. `open` permite únicamente mutaciones autorizadas por sus contratos propietarios;
+5. `locked` bloquea mutación económica ordinaria durante revisión/cierre;
+6. `closed` bloquea mutación ordinaria y conserva historia consultable;
+7. el flujo ordinario queda `open -> locked -> closed`;
+8. `locked -> open` exige decisión gobernada;
+9. `closed -> open` constituye reapertura controlada;
+10. ninguna transición borra historia;
+11. la selección del periodo valida estado, vigencia y alcance;
+12. estado de periodo y estado de `VPROC-0054` permanecen distintos;
+13. entrada a lock exige alcance, fuentes, reglas, conciliaciones y evidencia identificables;
+14. el checklist de cierre es reproducible;
+15. objetos legítimamente abiertos no bloquean por existir si su saldo y estado son explicables;
+16. excepciones materiales deben quedar resueltas o aceptadas explícitamente como no bloqueantes;
+17. `CLOSE_RECONCILIATION_PENDING` no equivale a cierre;
+18. `COSTING_CYCLE_CLOSED` no convierte estimaciones en hechos ni cierra contabilidad oficial;
+19. las acciones permitidas por `open/locked/closed` quedan definidas;
+20. el estado se revalida en servidor y persistencia antes de mutar;
+21. UI deshabilitada o permiso genérico no sustituyen el guard;
+22. dominios fuente pueden seguir operando después del cierre NUMERA;
+23. eventos tardíos conservan fechas y correlación original;
+24. eventos tardíos no reescriben directamente un periodo cerrado;
+25. ajuste en periodo abierto y reapertura son decisiones distintas;
+26. reapertura material exige motivo, alcance, impacto, evidencia y autoridad;
+27. reapertura no concede escritura irrestricta;
+28. cierre previo no se borra al reabrir;
+29. toda reexpresión queda versionada;
+30. una reapertura con cambios materiales concluye mediante nuevo cierre;
+31. hechos que cruzan periodos conservan fechas y estados separados;
+32. obligaciones abiertas pueden atravesar cierres sin liquidación forzada;
+33. movimientos bancarios tardíos siguen política de evento tardío;
+34. presupuesto, forecast y escenario no se convierten en real por cierre;
+35. costos y rentabilidad preservan método, versión, fuente y periodo;
+36. cada cierre conserva snapshot y evidencia reconstruible;
+37. cierre y reapertura son idempotentes y resistentes a concurrencia;
+38. registrar, aprobar, conciliar, bloquear, cerrar, reabrir, corregir y exportar permanecen segregados;
+39. el AS-IS se transiciona sin inventar cierres históricos;
+40. no se crean ni modifican requisitos de prueba;
+41. no se realizan cambios físicos;
+42. `NUMERA-DOM-012` recibe periodos y cierres versionados para reportes oficiales.
+
+---
+
+#### 50. Límites
+
+Esta tarea no:
+
+- modifica `numera_periods` ni datos reales;
+- crea columnas o estados físicos;
+- crea permisos o roles;
+- fija nombres definitivos de capacidades de cierre/reapertura;
+- define materialidad monetaria universal;
+- define calendario fiscal;
+- define asientos contables;
+- define cierre fiscal o contable oficial;
+- ejecuta conciliaciones reales;
+- ejecuta cierres o reaperturas;
+- crea reportes oficiales;
+- define el detalle de conciliación de diferencias reservado a `NUMERA-DOM-014`;
+- define cartera completa reservada a `NUMERA-DOM-016`;
+- define escenarios completos reservados a `NUMERA-DOM-018`;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-DOM-012`.
+
+---
+
+#### 51. Handoff a NUMERA-DOM-012
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_PERIOD_TYPE = ECONOMIC
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_ORDINARY_FLOW = open->locked->closed
+LATEST_PERIOD_BY_DATE_IS_CURRENT_OPEN_PERIOD = NO
+LOCKED_ALLOWS_ORDINARY_ECONOMIC_MUTATION = NO
+CLOSED_ALLOWS_ORDINARY_ECONOMIC_MUTATION = NO
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+VPROC_0054_PUBLISHED_IS_PERIOD_CLOSED = NO
+CLOSE_RECONCILIATION_PENDING_IS_PERIOD_CLOSED = NO
+LATE_EVENT_SILENT_CLOSED_PERIOD_REWRITE = FORBIDDEN
+LATE_EVENT_REQUIRES_EXPLICIT_ROUTING = YES
+REOPEN_REQUIRES_REASON_SCOPE_EVIDENCE_AUTHORITY = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+CLOSE_AND_REOPEN_IDEMPOTENT = YES
+PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+REPORTS_MUST_IDENTIFY_PERIOD_AND_CLOSE_VERSION = YES
+```
+
+`NUMERA-DOM-012` deberá definir qué reportes, indicadores y exportaciones son oficiales dentro de NUMERA, qué versión de periodo consumen, cómo declaran fuente y vigencia y cómo se comportan ante una reapertura o restatement.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales`
 ### [ ] NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
 ### [ ] NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
 ### [ ] NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
