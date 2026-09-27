@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1432** |
+| Aprobadas | **1433** |
 | En propuesta | **0** |
-| No iniciadas | **164** |
+| No iniciadas | **163** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **89.72% (1432/1596)** |
+| Porcentaje de completamiento | **89.79% (1433/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **164** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1333** |
+| ⏸ NO_EVALUADA | **163** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1334** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUTH-011` — Exigir contexto operativo donde exista captura operacional | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUTH-012` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUTH-013` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUTH-012` — Migrar a paquetes de vento-shell | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUTH-013` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUTH-014` — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1194,7 +1194,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-009` | Registrar auditoría financiera | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-010` | Evitar dependencia de turno para administración | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-011` | Exigir contexto operativo donde exista captura operacional | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-012` | Migrar a paquetes de vento-shell | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-012` | Migrar a paquetes de vento-shell | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-013` | Ejecutar pruebas integrales | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-014` | Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-015` | Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
