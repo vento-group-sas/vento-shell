@@ -13364,7 +13364,959 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas`
-### [ ] NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
+### ✅ NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
+**Tarea siguiente:** NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
+**Tipo de tarea:** aprobación documental del alcance objetivo consolidado de NUMERA y clasificación explícita de capacidades obligatorias, fronteras externas, definiciones posteriores y decisiones realmente diferidas o condicionales, consumiendo `NUMERA-DOM-001..014` sin reabrir sus contratos ni autorizar implementación física; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea módulos, tablas, vistas, funciones, RPC, RLS, migraciones, integraciones, proveedores, permisos, datos, asientos, documentos fiscales, escenarios, cartera real, políticas de crédito, configuraciones de Supabase, despliegues ni instancias físicas
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Aprobar el alcance objetivo consolidado de NUMERA después de consumir las decisiones de dominio `NUMERA-DOM-001..014`, dejando inequívocamente separado:
+
+- qué capacidades forman parte obligatoria del dominio objetivo;
+- qué capacidades requieren integración o autoridad externa sin dejar de pertenecer al alcance funcional de NUMERA;
+- qué contratos detallados continúan en tareas posteriores ya reservadas;
+- qué decisiones permanecen realmente diferidas o condicionadas;
+- qué dependencias deben resolverse antes de materializar o certificar cada capacidad;
+- qué asuntos no pueden convertirse en exclusiones silenciosas del alcance.
+
+La tarea funciona como gate documental de alcance. No declara implementación completa y no sustituye las tareas detalladas posteriores.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-DOM-015` se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+execution_gate_observed = UNREVIEWED
+```
+
+Por tanto:
+
+- el alcance se aprueba una sola vez como contrato canónico;
+- no existe instancia física propia;
+- `UNREVIEWED` no concede autorización temporal;
+- no ejecuta implementación NUMERA;
+- no cambia la prioridad del carril físico;
+- no modifica datos ni Supabase;
+- no materializa las capacidades que clasifica.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-014
+
+Se recibe sin reinterpretación:
+
+```text
+RECONCILIATION_LINKS_EVIDENCE_AND_DOES_NOT_REWRITE_SOURCE = YES
+RECONCILIATION_DIFFERENCE_IS_BUSINESS_VARIANCE = NO
+RECONCILIATION_DIFFERENCE_IS_DISPUTE = NO
+DIFFERENCE_CORRECTION_REVERSAL_ADJUSTMENT = DISTINCT
+TECHNICAL_FAILURE_IMPLIES_BUSINESS_DIFFERENCE = NO
+RECONCILIATION_CASE_REQUIRES_STABLE_IDENTITY = YES
+REPLAY_MUST_NOT_DUPLICATE_RECONCILIATION_CASE = YES
+SOURCE_AUTHORITY_MAY_DIFFER_BY_DIMENSION = YES
+SOURCE_CORRECTION_OWNER = SOURCE_DOMAIN_OWNER
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+FULL_PARTIAL_DUPLICATE_MISSING_AMBIGUOUS = DISTINCT
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_RECONCILIATION_REQUIRES_RESIDUAL = YES
+UNIVERSAL_TOLERANCE = NO
+TOLERANCE_REQUIRES_VERSION_SCOPE_VIGENCY_AUTHORITY = YES
+TOLERANCE_CANNOT_FIX_IDENTITY_ENTITY_CURRENCY_OR_AUTHORITY = YES
+UNIVERSAL_MATERIALITY_THRESHOLD = NO
+BLOCKING_EFFECT_MUST_BE_EXPLICIT = YES
+ACCEPTED_EXCEPTION_REQUIRES_AUTHORITY_AND_EVIDENCE = YES
+DETECTION_DOES_NOT_EXECUTE_CORRECTION = YES
+RESOLUTION_DECISION_EXECUTION_VERIFICATION_CLOSURE = DISTINCT
+GENERIC_MANUAL_ADJUSTMENT_WITHOUT_CAUSE = FORBIDDEN
+NUMERA_ECONOMIC_CORRECTION_PRESERVES_HISTORY = YES
+MATCH_REVERSAL_PRESERVES_PRIOR_MATCH = YES
+UNCERTAIN_EXTERNAL_RESULT_REMAINS_OPEN_UNTIL_RECONCILED = YES
+LATE_EVENT_USES_PERIOD_ADJUST_OR_REOPEN_POLICY = YES
+MATERIAL_REPORT_CHANGE_MAY_REQUIRE_VERSIONED_RESTATEMENT = YES
+INTERCOMPANY_TREATMENT_BY_INFERENCE = FORBIDDEN
+RESOLUTION_ACTION_EXECUTED_IS_CASE_CLOSED = NO
+CLOSED_DIFFERENCE_CAN_REOPEN_WITH_HISTORY = YES
+RECONCILIATION_ACTIONS_MUST_BE_IDEMPOTENT = YES
+WATERMARK_AND_FRESHNESS_MUST_BE_DECLARED = YES
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+VPROC_0051_0052_0053_0054_LIFECYCLES_REMAIN_AUTHORITATIVE = YES
+TREQ_CHANGES = 0
+```
+
+La aprobación de alcance conserva todas estas invariantes.
+
+---
+
+#### 4. Base canónica de la aprobación
+
+La aprobación consume conjuntamente:
+
+- `CAP-SCOPE-012` y su universo `CAP-12.01..CAP-12.15`;
+- `NUMERA-AUD-001..012` y su clasificación AS-IS;
+- `OPS-CST-001` para costos y transferencias internas;
+- `NUMERA-DOM-001..014` para alcance, hechos, costos, rentabilidad, bancos, obligaciones, periodos, reportes, frontera externa y conciliación;
+- `VPROC-0051..0054` como procesos financieros propietarios;
+- contratos transversales de autorización, integración, idempotencia, auditoría, datos y continuidad ya aprobados.
+
+Ninguna de estas fuentes convierte automáticamente una capacidad documental en implementación física.
+
+---
+
+#### 5. Regla de interpretación del alcance objetivo
+
+Se congela:
+
+```text
+TARGET_SCOPE != AS_IS_IMPLEMENTATION
+TARGET_SCOPE != PHYSICAL_COMPLETION
+TARGET_SCOPE != RUNTIME_ENABLEMENT
+TARGET_SCOPE != EXTERNAL_AUTHORITY
+```
+
+Una capacidad puede estar ausente, parcial o en prototipo y continuar siendo obligatoria en el objetivo.
+
+---
+
+#### 6. Regla de interpretación de capacidad diferida
+
+Se congela:
+
+```text
+DEFERRED_DECISION != REMOVED_FROM_SCOPE
+DEFERRED_DETAIL != OPTIONAL_CAPABILITY
+DEFERRED_ACTIVATION != UNOWNED_BACKLOG
+```
+
+Toda decisión diferida deberá conservar propietario, condición de salida y efecto que permanece bloqueado.
+
+---
+
+#### 7. Resultado de aprobación del alcance
+
+El alcance objetivo de NUMERA queda aprobado con las quince capacidades `CAP-12.01..CAP-12.15` cubiertas exactamente una vez.
+
+```text
+CAPABILITIES_EXPECTED = 15
+CAPABILITIES_APPROVED_IN_TARGET_SCOPE = 15
+CAPABILITIES_REMOVED = 0
+CAPABILITIES_WITH_EXTERNAL_FISCAL_OR_ACCOUNTING_AUTHORITY = 2
+CAPABILITIES_WITH_EXTERNAL_EXECUTION_OR_AUTHORITY_DEPENDENCY = 4
+DOWNSTREAM_DOMAIN_TASKS_RESERVED = 3
+```
+
+Las dos capacidades cuya autoridad fiscal o contable oficial permanece externamente delimitada son `CAP-12.06` y `CAP-12.13`. `CAP-12.03` y `CAP-12.12` conservan además ejecución financiera externa cuando corresponda, sin ceder a terceros la propiedad del control económico interno de NUMERA.
+
+Las tareas posteriores `NUMERA-DOM-016`, `NUMERA-DOM-017` y `NUMERA-DOM-018` desarrollan detalle reservado sin invalidar esta aprobación.
+
+---
+
+#### 8. Matriz final CAP-12
+
+| Capacidad | Decisión de alcance | Modalidad objetivo | Detalle o frontera principal |
+| --- | --- | --- | --- |
+| `CAP-12.01` Registrar hechos económicos | OBLIGATORIA | NUMERA | hecho económico correlacionado, tipado, trazable y no destructivo |
+| `CAP-12.02` Gestionar caja | OBLIGATORIA_CON_FRONTERA | PULSO + NUMERA | PULSO opera caja; NUMERA consume, consolida y concilia |
+| `CAP-12.03` Gestionar bancos y pagos | OBLIGATORIA | NUMERA + ejecución externa | cuentas, movimientos, programación, control y conciliación; banco ejecuta bajo su autoridad |
+| `CAP-12.04` Gestionar cuentas por cobrar | OBLIGATORIA | NUMERA | cartera, recaudo, aplicación, saldo, diferencia y exposición; detalle en `NUMERA-DOM-016` |
+| `CAP-12.05` Gestionar cuentas por pagar | OBLIGATORIA | NUMERA | obligación, aprobación financiera, pago, disputa y conciliación |
+| `CAP-12.06` Facturar y controlar documentos | OBLIGATORIA_CON_AUTORIDAD_EXTERNA | integración | emisión fiscal oficial externa; NUMERA conserva referencia, estado y conciliación |
+| `CAP-12.07` Conciliar ventas, pagos y entregas | OBLIGATORIA | NUMERA | conciliación sin duplicar hechos PULSO/NEXO/proveedores |
+| `CAP-12.08` Conciliar compras y recepciones | OBLIGATORIA | NUMERA | conciliación de ORIGO/NEXO/documentos/obligaciones/pagos |
+| `CAP-12.09` Calcular costos | OBLIGATORIA | NUMERA | métodos, entradas, versiones y fuentes trazables |
+| `CAP-12.10` Distribuir costos compartidos | OBLIGATORIA | NUMERA | pools, drivers, destinos, aprobación y reversión |
+| `CAP-12.11` Gestionar presupuestos | OBLIGATORIA | NUMERA | presupuesto, revisión, forecast y escenario versionados; detalle de escenarios en `NUMERA-DOM-018` |
+| `CAP-12.12` Gestionar tesorería | OBLIGATORIA | NUMERA + ejecución externa | liquidez, compromisos, vencimientos y programación sin sustituir banco |
+| `CAP-12.13` Gestionar impuestos y obligaciones | OBLIGATORIA_CON_AUTORIDAD_EXTERNA | control + integración | NUMERA controla bases, soportes, calendario y estado; determinación/presentación oficial externa |
+| `CAP-12.14` Cerrar períodos y emitir reportes | OBLIGATORIA | NUMERA | cierre económico, conciliación, bloqueo, reapertura, reportes y evidencia |
+| `CAP-12.15` Analizar rentabilidad | OBLIGATORIA | NUMERA | ingreso realizado, costos trazables, dimensiones y periodo; simulación separada |
+
+---
+
+#### 9. Cobertura total sin exclusiones silenciosas
+
+Queda prohibido interpretar una decisión de integración externa como exclusión del dominio.
+
+Ejemplos:
+
+- NUMERA no emite necesariamente la factura oficial, pero debe conservar su referencia y conciliación;
+- NUMERA no ejecuta necesariamente una transferencia bancaria, pero debe gobernar programación, estado y conciliación;
+- NUMERA no presenta necesariamente una obligación tributaria, pero debe poder conservar base, soporte, vencimiento, estado y evidencia autorizada.
+
+---
+
+#### 10. CAP-12.01 a CAP-12.03 — Hechos, caja y bancos
+
+Estas capacidades quedan obligatorias para la arquitectura objetivo.
+
+La implementación deberá conservar:
+
+- autoridad del hecho operativo en su dominio fuente;
+- registro económico en NUMERA;
+- caja operativa en PULSO;
+- movimientos y saldos bancarios externos inmutables desde NUMERA;
+- programación, matching y conciliación gobernados;
+- idempotencia y evidencia.
+
+---
+
+#### 11. CAP-12.04 y CAP-12.05 — Derechos y obligaciones
+
+Cuentas por cobrar y cuentas por pagar quedan dentro del alcance obligatorio de NUMERA.
+
+Se congela:
+
+```text
+ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_PAYABLE = REQUIRED
+PAYMENT_RECEIVED != PAYMENT_APPLIED
+PAYMENT_RECORDED != OBLIGATION_SETTLED
+```
+
+El detalle de cartera continúa en `NUMERA-DOM-016`; la obligación por pagar ya fue delimitada por `NUMERA-DOM-010`.
+
+---
+
+#### 12. CAP-12.06 y CAP-12.13 — Fiscalidad y documentos
+
+Estas capacidades no se eliminan; se aprueban con autoridad oficial externa.
+
+```text
+NUMERA_CONTROLS_REFERENCE_STATUS_EVIDENCE = YES
+NUMERA_IS_FISCAL_ISSUER_BY_DEFAULT = NO
+NUMERA_IS_TAX_FILING_AUTHORITY_BY_DEFAULT = NO
+```
+
+La integración deberá poder cambiar de proveedor sin cambiar la propiedad del hecho económico interno.
+
+---
+
+#### 13. CAP-12.07 y CAP-12.08 — Conciliación operativa-financiera
+
+Ambas capacidades son obligatorias y consumen `NUMERA-DOM-014`.
+
+Ninguna implementación podrá declararse completa si ventas/pagos/entregas o compras/recepciones/obligaciones solo coinciden por agregados sin identidad, evidencia y expediente de diferencia.
+
+---
+
+#### 14. CAP-12.09 y CAP-12.10 — Costos y distribución
+
+Costeo y distribución compartida son capacidades obligatorias.
+
+Se conserva:
+
+- métodos diferenciados;
+- versiones y vigencias;
+- atribución directa antes de distribución;
+- pools y drivers explícitos;
+- aprobación y reversión;
+- separación entre costo gerencial y efecto legal/fiscal.
+
+Los valores, drivers o políticas empresariales concretas no se inventan en esta tarea.
+
+---
+
+#### 15. CAP-12.11 — Presupuesto, forecast y escenario
+
+Presupuesto y forecast son parte del alcance obligatorio.
+
+El motor detallado de escenarios continúa en `NUMERA-DOM-018`, pero su existencia objetivo no queda opcional.
+
+```text
+REAL != BUDGET != FORECAST != SCENARIO != PROPOSED != PUBLISHED
+```
+
+---
+
+#### 16. CAP-12.12 — Tesorería
+
+Tesorería queda aprobada como capacidad obligatoria de NUMERA.
+
+Incluye posición, liquidez, compromisos, vencimientos, programación y proyección, sin convertir una proyección en saldo observado ni sustituir autoridad bancaria externa.
+
+---
+
+#### 17. CAP-12.14 y CAP-12.15 — Cierre, reporte y rentabilidad
+
+Cierre económico, reportes y rentabilidad permanecen obligatorios.
+
+Se conserva:
+
+- cierre económico distinto de cierre contable/fiscal;
+- reportes versionados y reproducibles;
+- reapertura y restatement sin sobrescritura;
+- rentabilidad desde ingreso realizado y costo trazable;
+- escenarios separados de resultados reales.
+
+---
+
+#### 18. Estado de NUMERA-DOM-016 dentro del alcance aprobado
+
+`NUMERA-DOM-016` no representa una capacidad opcional añadida después de esta aprobación.
+
+La cartera ya está aprobada como obligatoria mediante `CAP-12.04`.
+
+La tarea 016 deberá definir el detalle de:
+
+- deudor;
+- cuenta por cobrar;
+- cuotas y vencimientos;
+- saldos;
+- pagos recibidos y aplicación;
+- anticipos y saldos a favor;
+- acuerdos y promesas;
+- disputas;
+- aging;
+- exposición de crédito;
+- cobranza;
+- castigo autorizado.
+
+---
+
+#### 19. Estado de NUMERA-DOM-017 dentro del alcance aprobado
+
+`NUMERA-DOM-017` tiene dos responsabilidades distintas:
+
+1. **obligatoria ahora:** definir una arquitectura extensible que permita mapear hechos económicos hacia contabilidad formal sin reescribir los dominios operativos;
+2. **condicional:** cualquier activación de NUMERA como sistema contable formal interno requerirá decisión posterior explícita y no nace de esta aprobación.
+
+Se congela:
+
+```text
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+```
+
+---
+
+#### 20. Estado de NUMERA-DOM-018 dentro del alcance aprobado
+
+`NUMERA-DOM-018` desarrolla una capacidad objetivo ya obligatoria para análisis, presupuesto y decisión.
+
+La tarea deberá definir motor de escenarios, versiones de precios, costos, supuestos y publicación sin permitir que simulaciones modifiquen hechos reales.
+
+```text
+SCENARIO_ENGINE_TARGET = REQUIRED
+SCENARIO_DETAIL = RESERVED_TO_NUMERA_DOM_018
+```
+
+---
+
+#### 21. Contabilidad formal interna
+
+La decisión de operar contabilidad formal completa dentro de NUMERA permanece diferida y condicionada.
+
+No se aprueba por inferencia:
+
+- libro mayor oficial;
+- plan de cuentas activo como autoridad legal;
+- comprobantes oficiales internos;
+- partida doble operativa completa;
+- estados financieros estatutarios;
+- libros legales;
+- cierre contable oficial.
+
+La arquitectura que permita evolucionar hacia esas capacidades sí es obligatoria.
+
+---
+
+#### 22. Selección de proveedor contable o fiscal
+
+No se selecciona proveedor en esta tarea.
+
+La decisión permanece diferida a `INT-EXT-001..INT-EXT-020` hasta que exista contrato de integración verificable con:
+
+- proveedor y autoridad identificados;
+- autenticación y credenciales gobernadas;
+- identidad externa;
+- idempotencia;
+- estados y respuestas;
+- reconciliación;
+- errores y resultado incierto;
+- evidencia;
+- contingencia y sustitución.
+
+---
+
+#### 23. Proveedor bancario o agregador
+
+La capacidad bancaria es obligatoria, pero la elección de proveedor, agregador, formato o canal de extractos permanece diferida a `NUMERA-DOM-009` y `INT-EXT-001..INT-EXT-020`.
+
+La ausencia de proveedor seleccionado no autoriza una cuenta bancaria editable manualmente para simular integración.
+
+---
+
+#### 24. Política de crédito y castigos
+
+La cartera es obligatoria; los parámetros de política no se inventan aquí.
+
+Quedan reservados a `NUMERA-DOM-016`, autorización aplicable y decisión empresarial competente:
+
+- límites de crédito;
+- criterios de exposición;
+- promesas y acuerdos;
+- condiciones de bloqueo;
+- castigo o condonación;
+- materialidad y escalamiento.
+
+---
+
+#### 25. Reglas de autorización financiera
+
+El alcance aprobado exige segregación de capacidades, pero no crea códigos runtime de permisos.
+
+Registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar, exportar y publicar deberán poder autorizarse separadamente según `NUMERA-AUTH-*`.
+
+---
+
+#### 26. Drivers y políticas específicas de costo
+
+La capacidad de distribuir costos compartidos es obligatoria.
+
+Los drivers, porcentajes, bases o metodologías particulares deberán derivarse del caso empresarial aprobado y conservar versión, vigencia, autoridad y reversión.
+
+No existe un driver universal implícito.
+
+---
+
+#### 27. Calendario y responsabilidad tributaria
+
+NUMERA debe poder representar calendario, vencimiento, soporte y estado cuando exista fuente autorizada.
+
+La determinación profesional de obligaciones, responsables, presentación y criterios tributarios permanece fuera de esta tarea y requiere autoridad competente; la frontera documental continúa en `NUMERA-DOM-013`.
+
+---
+
+#### 28. Métricas y metas financieras
+
+La capacidad de medir y reportar es obligatoria.
+
+Las metas empresariales concretas, umbrales de desempeño o decisiones de gestión no se inventan en el contrato de dominio. Su definición empresarial continúa bajo `CAP-SCOPE-017` y los procesos propietarios que ese contrato determine.
+
+---
+
+#### 29. Contingencia y recuperación
+
+La necesidad de continuidad, recuperación y reconciliación posterior permanece obligatoria de forma transversal.
+
+Los procedimientos concretos de contingencia y recuperación continúan bajo `CAP-SCOPE-018` y los contratos transversales de continuidad e integración; no se duplican como un submodelo financiero independiente.
+
+---
+
+#### 30. Matriz consolidada de decisiones diferidas
+
+| Decisión diferida o condicionada | Estado | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| activar contabilidad formal interna | DIFERIDA_CONDICIONAL | `NUMERA-DOM-017` + Dirección/Contabilidad | decisión explícita de internalización y contrato aprobado |
+| plan de cuentas y reglas de contabilización activas | DIFERIDA_CONDICIONAL | `NUMERA-DOM-017` | arquitectura definida y aprobación de contabilidad interna |
+| proveedor contable o fiscal | DIFERIDA | `INT-EXT-001..INT-EXT-020` | proveedor, autoridad, contrato, credenciales y reconciliación aprobados |
+| proveedor bancario o agregador | DIFERIDA | `NUMERA-DOM-009` + `INT-EXT-001..INT-EXT-020` | fuente, contrato, credenciales, formato y contingencia aprobados |
+| política de crédito, límites y castigos | DETALLE_DIFERIDO | `NUMERA-DOM-016` + Dirección | reglas y autoridad aprobadas |
+| códigos concretos de autorización financiera | DETALLE_DIFERIDO | `NUMERA-AUTH-*` | capacidades, contexto y denegaciones aprobados |
+| drivers/valores concretos de costos compartidos | CONFIGURACION_DIFERIDA | `OPS-CST-001` + `NUMERA-DOM-007` | política empresarial versionada y aprobada |
+| selección de método por familia cuando admita alternativas | CONFIGURACION_DIFERIDA | `NUMERA-DOM-007` + responsable financiero | método, vigencia y fuente aprobados |
+| calendario y responsabilidad tributaria oficial | DIFERIDA_A_AUTORIDAD | Contabilidad/asesoría autorizada + `NUMERA-DOM-013` | criterio profesional y fuente oficial aprobados |
+| metas financieras empresariales | CONFIGURACION_DIFERIDA | `CAP-SCOPE-017` | indicador, periodo, objetivo y autoridad aprobados |
+| procedimiento concreto de contingencia | DETALLE_DIFERIDO | `CAP-SCOPE-018` | RTO/RPO, operación mínima, recovery y reconciliación aprobados |
+
+---
+
+#### 31. Lo diferido no bloquea esta aprobación de alcance
+
+La aprobación del alcance objetivo puede cerrarse porque cada decisión diferida anterior tiene propietario y condición de salida.
+
+No existe una contradicción que obligue a escoger ahora proveedor, umbral, política tributaria o activación contable interna para decidir qué capacidades pertenecen a NUMERA.
+
+---
+
+#### 32. Lo diferido sí bloquea la materialización correspondiente
+
+Una decisión diferida deberá bloquear únicamente el efecto que depende de ella.
+
+Ejemplos:
+
+- sin proveedor bancario no se declara integración bancaria productiva;
+- sin política de crédito no se automatiza una decisión de límite o castigo;
+- sin aprobación de contabilidad interna no se emiten libros oficiales desde NUMERA;
+- sin criterio tributario autorizado no se presenta una obligación fiscal como oficial.
+
+---
+
+#### 33. Dependencias de implementación
+
+La futura materialización deberá resolver, según capacidad:
+
+- contratos de integración;
+- identidad e idempotencia;
+- modelos de datos;
+- permisos y segregación;
+- RLS y validación server-side;
+- migración y backfill;
+- reconciliación;
+- observabilidad;
+- contingencia;
+- pruebas E2E;
+- evidencia para piloto y certificación.
+
+Esta tarea no presume que esas dependencias estén satisfechas.
+
+---
+
+#### 34. Dependencias de certificación final
+
+Una capacidad no podrá certificarse por existir pantalla, tabla o endpoint.
+
+La certificación deberá demostrar:
+
+- contrato aprobado;
+- fuente autoritativa;
+- flujo completo;
+- controles de autorización;
+- comportamiento ante errores y reintentos;
+- reconciliación;
+- evidencia operativa;
+- ausencia de duplicación;
+- rollback o recuperación aplicable;
+- aceptación del responsable empresarial cuando corresponda.
+
+---
+
+#### 35. Ninguna capacidad CAP-12 queda eliminada
+
+Se congela:
+
+```text
+CAP_12_REMOVED_COUNT = 0
+CAP_12_OPTIONAL_BY_DEFAULT_COUNT = 0
+```
+
+Una implementación por fases puede diferir temporalmente materialización, pero no puede redefinir silenciosamente el alcance objetivo aprobado.
+
+---
+
+#### 36. AS-IS no se promueve por aprobación documental
+
+La clasificación auditada permanece separada del objetivo.
+
+```text
+PARCIAL != COMPLETE
+PROTOTIPO != COMPLETE
+AUSENTE != OUT_OF_SCOPE
+```
+
+La 015 no cambia por sí sola ninguna clasificación física observada.
+
+---
+
+#### 37. Estrategia de transición
+
+La transición deberá reutilizar piezas válidas sin convertirlas en fuentes paralelas.
+
+Reglas:
+
+1. preservar identidades existentes cuando sean canónicas;
+2. no inventar historia para llenar huecos;
+3. incorporar fuentes mediante contratos versionados;
+4. migrar o cuarentenar datos con evidencia;
+5. retirar duplicidades solo después de reconciliación;
+6. mantener adaptadores externos desacoplados del modelo económico interno.
+
+---
+
+#### 38. Historia y migración
+
+Hojas, reportes, saldos o registros históricos incompletos no se convierten automáticamente en hechos económicos completos.
+
+La migración deberá distinguir:
+
+- dato fuente verificable;
+- dato derivado;
+- dato incompleto;
+- dato ambiguo;
+- saldo inicial aprobado;
+- backfill;
+- ajuste de apertura;
+- diferencia pendiente.
+
+---
+
+#### 39. Propiedad entre dominios
+
+La aprobación no cambia ownership:
+
+| Dominio/fuente | Conserva | NUMERA consume o gobierna |
+| --- | --- | --- |
+| PULSO | venta, pago y caja operativa | efecto económico, cartera, conciliación y análisis |
+| ORIGO | compra, proveedor, orden y recepción comercial | obligación, costo y conciliación |
+| NEXO | inventario, movimiento, activos y logística | valorización, costo, conciliación y transferencias económicas |
+| FOGO | producción, consumo, rendimiento y merma | costo, variación y conciliación |
+| PASS | identidad/relación cliente y fidelización | referencias autorizadas para análisis/cartera cuando corresponda |
+| bancos/proveedores de pago | resultado y movimiento externo | programación, matching, conciliación y evidencia |
+| sistema fiscal/contable externo | resultado oficial bajo su autoridad | referencia, estado, correlación y conciliación |
+
+---
+
+#### 40. Dependencias de autorización
+
+El alcance objetivo requiere como mínimo separación conceptual entre:
+
+```text
+READ
+REGISTER
+APPROVE
+PAY
+RECONCILE
+CLOSE
+REOPEN
+WRITE_OFF
+EXPORT
+PUBLISH
+```
+
+La presencia de un rol nominal no sustituye la resolución de autoridad efectiva.
+
+---
+
+#### 41. Dependencias de integración
+
+Toda integración financiera deberá conservar:
+
+- productora;
+- identidad estable;
+- versión;
+- correlación;
+- idempotencia;
+- payload o evidencia suficiente;
+- estado de aplicación;
+- resultado recuperable;
+- tratamiento de timeout/unknown;
+- reintentos gobernados;
+- reconciliación;
+- compensación solo ante efecto confirmado.
+
+---
+
+#### 42. Dependencias de datos
+
+La implementación deberá conservar dimensiones económicas explícitas y no inferidas:
+
+```text
+LEGAL_ENTITY
+BRAND_OR_UNIT
+SITE
+COST_CENTER
+CHANNEL
+COUNTERPARTY
+CURRENCY
+PERIOD
+SOURCE
+```
+
+Cuando una dimensión obligatoria sea ambigua, el caso permanece pendiente en lugar de inventar una relación.
+
+---
+
+#### 43. Dependencias de reportes y analítica
+
+Reportes, indicadores y visor económico deberán consumir fuentes gobernadas y versionadas.
+
+Una proyección no adquiere autoridad para:
+
+- corregir el hecho fuente;
+- crear un saldo faltante;
+- cerrar una diferencia;
+- emitir un documento oficial externo;
+- alterar datos reales desde un escenario.
+
+---
+
+#### 44. Dependencias de experiencia de usuario
+
+Las tareas `NUMERA-UX-*` deberán materializar el alcance sin reducirlo a una colección de pantallas aisladas.
+
+El diseño deberá distinguir, cuando aplique:
+
+- lectura ejecutiva;
+- operación financiera;
+- revisión y aprobación;
+- conciliación;
+- excepción;
+- cierre;
+- exportación;
+- simulación.
+
+---
+
+#### 45. Seguridad y privacidad
+
+La información financiera, bancaria, fiscal y de cartera deberá mantener clasificación, minimización, territorio, propósito y auditoría.
+
+La aprobación del alcance no concede acceso a ningún actor ni habilita exportación masiva.
+
+---
+
+#### 46. Resiliencia e idempotencia
+
+Ninguna capacidad podrá depender de que una llamada externa sea exactamente una vez por transporte.
+
+La implementación deberá converger correctamente ante:
+
+- replay;
+- timeout;
+- respuesta perdida;
+- evento tardío;
+- webhook duplicado;
+- parcialidad;
+- fallo posterior al efecto;
+- cierre de periodo;
+- recuperación de contingencia.
+
+---
+
+#### 47. Evidencia exigida para materialización futura
+
+Cada capacidad implementada deberá poder producir evidencia de:
+
+- identidad del flujo probado;
+- entradas y fuentes;
+- actor y autoridad;
+- estado inicial;
+- acción;
+- estado resultante;
+- correlaciones;
+- efectos laterales;
+- diferencias;
+- reversos o recuperación;
+- resultado final.
+
+---
+
+#### 48. Gate de activación de una capacidad
+
+Se conserva:
+
+```text
+DOCUMENTED = NO_IMPLIES_ENABLED
+IMPLEMENTED = NO_IMPLIES_CERTIFIED
+CERTIFIED = REQUIRES_EVIDENCE
+```
+
+La activación en producción deberá respetar los gates técnicos y empresariales posteriores.
+
+---
+
+#### 49. Reapertura de decisiones de alcance
+
+Una capacidad aprobada no se elimina por conveniencia de implementación.
+
+Cambiar el alcance objetivo exige una corrección canónica explícita que identifique:
+
+- decisión anterior;
+- motivo;
+- evidencia nueva;
+- impactos;
+- TREQ afectados cuando corresponda;
+- consumidores;
+- migración o compatibilidad;
+- nueva decisión aprobada.
+
+---
+
+#### 50. Hallazgos y propietarios de salida
+
+| Hallazgo pendiente | Bloquea aprobación de alcance | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| cartera necesita contrato detallado completo | no | `NUMERA-DOM-016` | cuenta, cuota, vencimiento, aplicación, aging, cobranza, exposición y castigo definidos |
+| arquitectura contable formal extensible necesita detalle | no | `NUMERA-DOM-017` | mapping, plan de cuentas/comprobantes extensibles y frontera de activación definidos |
+| motor de escenarios necesita contrato detallado | no | `NUMERA-DOM-018` | versiones, supuestos, comparación, aprobación y publicación definidos |
+| proveedor contable/fiscal no está seleccionado | no | integración externa aplicable | contrato y autoridad verificables aprobados |
+| proveedor bancario no está seleccionado | no | integración externa aplicable | fuente y contrato bancario aprobados |
+| política de crédito no está congelada | no | `NUMERA-DOM-016` + Dirección | límites, exposición, acuerdos y castigos aprobados |
+| permisos runtime financieros no están definidos por esta tarea | no | `NUMERA-AUTH-*` | capacidades y denegaciones aprobadas |
+| AS-IS conserva capacidades ausentes/parciales/prototipo | no | implementación E5 aplicable | flujos implementados y certificados con evidencia |
+
+---
+
+#### 51. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba. Su función es aprobar el alcance ya protegido por requisitos vigentes y asignar propietarios a decisiones que permanecen pendientes.
+
+---
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Esta sección documenta trazabilidad existente y no constituye actualización del Registro 04A.
+
+Cobertura principal reutilizada:
+
+- `TREQ-NUMERA-001` — resultados financieros reconciliados con fuentes, historia, permisos y trazabilidad;
+- `TREQ-NUMERA-002` — hechos económicos, dimensiones, periodos, correcciones no destructivas y extensibilidad contable;
+- `TREQ-NUMERA-003` — cartera obligatoria, cuentas por pagar, bancos, caja, tesorería, matching y segregación;
+- `TREQ-NUMERA-004` — costos, distribuciones, presupuestos, forecast, escenarios, rentabilidad y visor económico;
+- `TREQ-INTEGRATION-017` — integración financiera transversal, idempotencia, conciliación, periodos y autoridad externa;
+- `TREQ-AUTH-013` — validación server-side de toda mutación protegida;
+- `TREQ-AUTH-015` — evidencia correlacionable de toda decisión y acción protegida.
+
+No se entrega actualización 04A porque la 015 no altera el contenido, estado, relación ni cobertura de esos requisitos.
+
+---
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del checkout del usuario durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó todavía `NUMERA-DOM-015` dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `vento-shell/main`, protocolo, contrato de entrega, secuencia activa, topología, políticas de formato/desarrollo, archivo propietario, `CAP-SCOPE-012`, auditoría NUMERA, Registro 04A NUMERA/INTEGRATION/AUTH, matriz `CAP-12.01..15`, tareas publicadas `NUMERA-DOM-001..013` y el artefacto completo aprobado de `NUMERA-DOM-014` |
+| OPERATIVA | NOT_EXECUTED | no se activó, retiró, difirió físicamente, implementó ni certificó ninguna capacidad financiera real |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE`; no crea instancia física propia y `UNREVIEWED` no autoriza materialización |
+
+---
+
+#### 54. Criterios de aceptación
+
+`NUMERA-DOM-015` queda aceptable cuando:
+
+1. las quince capacidades `CAP-12.01..CAP-12.15` quedan clasificadas exactamente una vez;
+2. las quince permanecen dentro del alcance objetivo;
+3. ninguna capacidad ausente en AS-IS se interpreta como fuera de alcance;
+4. `CAP-12.02` conserva frontera PULSO/NUMERA;
+5. `CAP-12.03` conserva ejecución financiera externa cuando corresponda;
+6. `CAP-12.04` queda explícitamente obligatoria;
+7. `CAP-12.05` queda explícitamente obligatoria;
+8. `CAP-12.06` queda obligatoria con emisión oficial externa;
+9. `CAP-12.07` y `CAP-12.08` quedan obligatorias y consumen conciliación gobernada;
+10. `CAP-12.09` y `CAP-12.10` quedan obligatorias con métodos y drivers trazables;
+11. `CAP-12.11` queda obligatoria sin fusionar presupuesto, forecast y escenario;
+12. `CAP-12.12` queda obligatoria sin convertir proyección en saldo bancario;
+13. `CAP-12.13` queda obligatoria con determinación/presentación oficial externa por defecto;
+14. `CAP-12.14` queda obligatoria como cierre económico y reporte, no cierre legal universal;
+15. `CAP-12.15` queda obligatoria con ingreso realizado y costo trazable;
+16. lo diferido no equivale a eliminado u opcional;
+17. cada decisión realmente diferida conserva propietario y condición de salida;
+18. lo diferido bloquea solo su efecto dependiente;
+19. `NUMERA-DOM-016` desarrolla cartera obligatoria sin reabrir su pertenencia al dominio;
+20. `NUMERA-DOM-017` debe definir extensibilidad contable aunque activar contabilidad formal interna siga condicionado;
+21. `NUMERA-DOM-018` desarrolla escenarios obligatorios sin alterar hechos reales;
+22. proveedor contable/fiscal no se inventa;
+23. proveedor bancario no se inventa;
+24. política de crédito y castigos no se inventa;
+25. calendario tributario oficial no se inventa;
+26. códigos runtime de permisos no se inventan;
+27. ningún dashboard, tabla o endpoint prueba completitud funcional;
+28. la transición conserva fuentes propietarias y evita fuentes paralelas;
+29. históricos incompletos no se elevan a hechos completos sin evidencia;
+30. ownership PULSO/ORIGO/NEXO/FOGO/PASS/externos permanece intacto;
+31. autorización financiera permanece segregada;
+32. integraciones requieren identidad, idempotencia, estado y reconciliación;
+33. dimensiones económicas obligatorias no se infieren silenciosamente;
+34. reportes y simulaciones no se vuelven fuentes editables;
+35. datos sensibles conservan minimización y auditoría;
+36. resiliencia contempla replay, timeout, parcialidad y recuperación;
+37. activación, implementación y certificación permanecen estados distintos;
+38. modificar el alcance exige corrección canónica explícita;
+39. hallazgos pendientes tienen propietario y condición de salida;
+40. no se crean ni modifican requisitos de prueba;
+41. no se realizan cambios físicos;
+42. la continuidad reserva `NUMERA-DOM-016`.
+
+---
+
+#### 55. Límites
+
+Esta tarea no:
+
+- implementa ninguna capacidad `CAP-12`;
+- modifica la clasificación AS-IS observada;
+- selecciona proveedor fiscal, contable, bancario o de pagos;
+- activa contabilidad formal interna;
+- crea plan de cuentas físico;
+- crea comprobantes o asientos;
+- emite estados financieros estatutarios;
+- determina o presenta impuestos oficiales;
+- define tratamiento legal intercompañía;
+- fija precios de transferencia fiscales;
+- fija límites de crédito o castigos;
+- fija drivers o porcentajes concretos de distribución;
+- crea códigos runtime de autorización;
+- diseña pantallas;
+- crea tablas, vistas, funciones, RPC, RLS, triggers o migraciones;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla el detalle de cartera reservado a `NUMERA-DOM-016`;
+- desarrolla arquitectura contable detallada reservada a `NUMERA-DOM-017`;
+- desarrolla motor de escenarios reservado a `NUMERA-DOM-018`;
+- desarrolla `NUMERA-DOM-016`.
+
+---
+
+#### 56. Handoff a NUMERA-DOM-016
+
+La siguiente tarea recibe:
+
+```text
+CAP_12_TOTAL = 15
+CAP_12_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+CAP_12_OPTIONAL_BY_DEFAULT = 0
+CAP_12_04_ACCOUNTS_RECEIVABLE = REQUIRED
+CAP_12_05_ACCOUNTS_PAYABLE = REQUIRED
+CAP_12_03_BANKS_AND_PAYMENTS = REQUIRED
+CAP_12_12_TREASURY = REQUIRED
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED_WITH_EXTERNAL_AUTHORITY
+CAP_12_13_TAX_OBLIGATION_CONTROL = REQUIRED_WITH_EXTERNAL_AUTHORITY
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+NUMERA_DOM_016_DETAIL = REQUIRED
+NUMERA_DOM_017_ARCHITECTURE = REQUIRED
+NUMERA_DOM_018_SCENARIO_DETAIL = REQUIRED
+DEFERRED_DECISION_IS_REMOVED_SCOPE = NO
+DEFERRED_DETAIL_IS_OPTIONAL_CAPABILITY = NO
+AS_IS_ABSENT_IS_OUT_OF_SCOPE = NO
+IMPLEMENTED_IMPLIES_CERTIFIED = NO
+PROVIDER_SELECTION_BY_INFERENCE = FORBIDDEN
+CREDIT_POLICY_BY_INFERENCE = FORBIDDEN
+TAX_POLICY_BY_INFERENCE = FORBIDDEN
+SOURCE_DOMAIN_OWNERSHIP_PRESERVED = YES
+RECONCILIATION_CONTRACT_FROM_NUMERA_DOM_014 = REQUIRED
+TREQ_CHANGES = 0
+```
+
+`NUMERA-DOM-016` deberá desarrollar el contrato detallado de cartera, cuentas por cobrar, cobranza y exposición de crédito partiendo de que `CAP-12.04` ya es una capacidad obligatoria de NUMERA. No deberá volver a decidir si cartera pertenece al dominio, y deberá conservar pago recibido, aplicación, saldo, disputa, acuerdo, exposición, castigo y conciliación como conceptos separados.
+
+---
+
+#### 57. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito`
 ### [ ] NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
 ### [ ] NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
 ### [ ] NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación
