@@ -4872,7 +4872,1149 @@ NUMERA_AUTH_005_OWNER = APPROVAL_PERMISSION_DEFINITION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-005 — Definir permisos de aprobación`
-### [ ] NUMERA-AUTH-005 — Definir permisos de aprobación
+### ✅ NUMERA-AUTH-005 — Definir permisos de aprobación
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-004 — Definir permisos de registro
+**Tarea siguiente:** NUMERA-AUTH-006 — Definir permisos de cierre
+**Tipo de tarea:** definición documental del registro atómico de decisiones aprobatorias y de rechazo de NUMERA, separando autoridad positiva y negativa por recurso, segregación de funciones, evidencia, estado y concurrencia, sin absorber pago, conciliación, cierre, reapertura, castigo, exportación, autoridad fiscal externa ni acciones especializadas de escenarios, precios y presupuestos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica permisos runtime, catálogo de autorización, grants, roles, RLS, RPC, Server Actions, tablas, migraciones, procesos, estados, pantallas, Supabase, datos financieros ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir las capacidades exactas mediante las cuales NUMERA podrá aceptar o rechazar una decisión financiera que haya alcanzado un estado aprobable, preservando mínimo privilegio, segregación de funciones, trazabilidad y separación estricta frente a registro, pago, conciliación, cierre, reapertura, castigo, exportación y publicación especializada.
+
+La tarea convierte el slot documental `APPROVE` aprobado en `NUMERA-AUTH-001` en un contrato reutilizable por las superficies, servicios y controles posteriores sin convertir la bandeja de aprobaciones en un permiso omnibus.
+
+---
+
+#### 2. Naturaleza y topología
+
+La reconciliación propietaria de `NUMERA-AUTH-001..007` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, `NUMERA-AUTH-005`:
+
+- se define una sola vez;
+- no crea instancia física propia;
+- no ejecuta migraciones;
+- no modifica Supabase;
+- no concede permisos;
+- no modifica roles o matrices;
+- no crea estados nuevos de proceso;
+- no ejecuta decisiones financieras reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-004
+
+Se consume íntegramente:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_EXISTING_DECOMPOSITION_WRITE_PERMISSION_COUNT = 7
+NUMERA_NEW_DEFINED_WRITE_PERMISSION_COUNT = 11
+NUMERA_TOTAL_REGISTER_WRITE_PERMISSION_DEFINITION_COUNT = 18
+REGISTER_PERMISSION_ACTIONS = create|register|update|cancel|activate|deactivate
+NUMERA_ACCESS_IMPLIES_WRITE = NO
+VIEW_IMPLIES_WRITE = NO
+LEGACY_MANAGE_IS_TARGET_AUTHORITY = NO
+ECONOMIC_FACT_GENERIC_UPDATE_PERMISSION = FORBIDDEN
+SOURCE_FACT_REWRITE_BY_NUMERA = FORBIDDEN
+REGISTER_REQUIRES_IDEMPOTENCY_WHEN_RETRYABLE = YES
+UPDATE_REQUIRES_CURRENT_STATE_AND_ALLOWED_FIELDS = YES
+CANCEL_PRESERVES_HISTORY = YES
+MASS_ASSIGNMENT = FORBIDDEN
+REGISTER_IMPLIES_APPROVE = NO
+REGISTER_IMPLIES_PAY_EXECUTE = NO
+REGISTER_IMPLIES_RECONCILE = NO
+REGISTER_IMPLIES_CLOSE_REOPEN = NO
+REGISTER_IMPLIES_EXPORT = NO
+EXPENSE_APPROVAL_OWNER = NUMERA_AUTH_005
+CLOSE_REOPEN_OWNER = NUMERA_AUTH_006
+EXPORT_OWNER = NUMERA_AUTH_007
+REGISTER_SCOPE_OWNER = NUMERA_AUTH_008
+REGISTER_AUDIT_OWNER = NUMERA_AUTH_009
+REGISTER_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+RECEIVABLE_AND_TREASURY_SPECIALIZED_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_MUTATION_OWNER = NUMERA_AUTH_015
+MISSING_WRITE_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_005_OWNER = APPROVAL_PERMISSION_DEFINITION
+```
+
+La presente tarea no altera las capacidades de lectura ni de registro ya definidas.
+
+---
+
+#### 4. Principio rector de decisión
+
+Se congela:
+
+```text
+REGISTERED != APPROVED
+UPDATED != APPROVED
+VISIBLE != APPROVABLE
+APPROVABLE != APPROVED
+APPROVED != EXECUTED
+```
+
+La existencia técnica de un registro, formulario, botón, estado o fila visible no constituye una decisión aprobatoria.
+
+---
+
+#### 5. `approve`, `reject` y `resolve` permanecen distintos
+
+El catálogo transversal define acciones empresariales diferentes:
+
+```text
+approve != reject != resolve
+```
+
+- `approve` acepta una propuesta dentro de la autoridad aplicable;
+- `reject` emite una decisión negativa explícita y trazable;
+- `resolve` cierra una discrepancia, diferencia o incidencia y pertenece a contratos de conciliación o resolución, no a esta familia de aprobación.
+
+---
+
+#### 6. Registro canónico de decisiones aprobatorias
+
+Se define:
+
+```text
+NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+```
+
+Este registro contiene las capacidades aprobatorias y de rechazo que deberán materializarse posteriormente sin cambiar su semántica.
+
+---
+
+#### 7. Shape lógico de una fila
+
+Cada fila deberá preservar como mínimo:
+
+```text
+permission_key
+resource_type
+decision_action
+screen_binding
+process_step_binding
+required_resource_state
+resource_locator
+resource_version
+scope_contract
+sensitivity_reason
+authorization_requirement
+shared_device_requirement
+simulation_behavior
+segregation_rule
+audit_contract
+materialization_status
+materialization_owner
+```
+
+La tarea no define columnas físicas ni esquema de base de datos.
+
+---
+
+#### 8. Cardinalidad cerrada
+
+La definición queda cerrada en:
+
+```text
+EXISTING_DECOMPOSITION_APPROVAL_PERMISSIONS = 1
+NEW_CONTRACT_DEFINED_DECISION_PERMISSIONS = 11
+TOTAL_APPROVAL_DECISION_PERMISSION_DEFINITIONS = 12
+APPROVE_PERMISSION_COUNT = 6
+REJECT_PERMISSION_COUNT = 6
+```
+
+No se permite agregar una capacidad aprobatoria adicional por inferencia durante la materialización.
+
+---
+
+#### 9. Capacidad aprobatoria ya documentada
+
+Se preserva, sin declararla activa en runtime por efecto de esta tarea:
+
+```text
+numera.finance.expenses.approve
+```
+
+Su presencia en la descomposición transversal no concede autoridad hasta que el lifecycle de materialización correspondiente la publique y asigne de forma gobernada.
+
+---
+
+#### 10. Capacidades nuevas definidas contractualmente
+
+Se definen:
+
+```text
+numera.finance.expenses.reject
+numera.finance.payables.approve
+numera.finance.payables.reject
+numera.finance.payment_plans.approve
+numera.finance.payment_plans.reject
+numera.finance.fiscal_documents.approve
+numera.finance.fiscal_documents.reject
+numera.finance.tax_obligations.approve
+numera.finance.tax_obligations.reject
+numera.finance.cost_allocations.approve
+numera.finance.cost_allocations.reject
+```
+
+Quedan en estado documental `DEFINED / PENDING_MATERIALIZATION`.
+
+---
+
+#### 11. Convención de acciones
+
+Las claves aprobatorias utilizan exclusivamente:
+
+```text
+approve
+reject
+```
+
+No se crean códigos con:
+
+```text
+manage
+edit
+decide
+all
+full
+admin
+```
+
+como sustitutos ambiguos de una decisión empresarial concreta.
+
+---
+
+#### 12. Modalidad objetivo
+
+Las doce capacidades se definen con objetivo:
+
+```text
+authorization_requirement = BASE_ONLY
+```
+
+Son decisiones financieras administrativas. La futura necesidad de contexto operacional concreto solo podrá incorporarse mediante la tarea propietaria correspondiente y evidencia contractual explícita.
+
+---
+
+#### 13. Sensibilidad
+
+Todas las decisiones del registro conservan:
+
+```text
+sensitivity_reason = FINANCIAL_DATA
+```
+
+La capacidad de decidir no desclasifica el recurso ni los campos que la sustentan.
+
+---
+
+#### 14. Dispositivo compartido
+
+El objetivo de interacción se mantiene:
+
+```text
+shared_device_requirement = STRONG
+```
+
+Una aprobación o rechazo financiero real exige actor identificado y reautenticación fuerte vigente conforme al contrato transversal aplicable.
+
+---
+
+#### 15. Simulación
+
+La simulación objetivo es:
+
+```text
+simulation_behavior = DECISION
+```
+
+Puede mostrar el resultado hipotético de autorización y sus razones, pero no puede ejecutar una aprobación, rechazo, transición, publicación, pago ni escritura empresarial real.
+
+---
+
+#### 16. VSCREEN-0097 es superficie agregadora
+
+`VSCREEN-0097 — Bandeja de aprobaciones financieras` consume:
+
+```text
+VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION
+```
+
+La pantalla agrega decisiones pendientes, pero no se convierte en recurso autorizante independiente.
+
+---
+
+#### 17. Permiso omnibus de bandeja prohibido
+
+Queda prohibido crear como autoridad final:
+
+```text
+numera.finance.approvals.approve
+numera.finance.approvals.reject
+numera.finance.approvals.manage
+```
+
+La decisión siempre se autoriza contra el recurso financiero subyacente.
+
+---
+
+#### 18. Lectura de una fila de aprobación
+
+La visibilidad de una fila exige el permiso de lectura del recurso correspondiente definido por `NUMERA-AUTH-003`.
+
+Se conserva:
+
+```text
+APPROVE_PERMISSION_IMPLIES_VIEW = NO
+REJECT_PERMISSION_IMPLIES_VIEW = NO
+APPROVAL_QUEUE_ROW_REQUIRES_UNDERLYING_VIEW = YES
+```
+
+La autoridad decisoria no concede consulta general del recurso.
+
+---
+
+#### 19. Gasto — aprobación
+
+```text
+numera.finance.expenses.approve
+```
+
+autoriza aceptar un gasto que haya alcanzado un estado aprobable conforme al contrato de `NUMERA-DOM-005`.
+
+Debe evaluar al menos causa, importe, moneda, dimensiones, soporte, periodo y versión vigente.
+
+---
+
+#### 20. Gasto — rechazo
+
+```text
+numera.finance.expenses.reject
+```
+
+autoriza emitir una decisión negativa sobre la propuesta de gasto.
+
+El rechazo:
+
+- conserva el registro y su evidencia;
+- exige motivo;
+- no borra soporte;
+- no equivale a cancelar un gasto ya reconocido;
+- no permite convertir el mismo registro en aprobado sin una nueva decisión válida.
+
+---
+
+#### 21. Cuenta por pagar — aprobación
+
+```text
+numera.finance.payables.approve
+```
+
+autoriza la transición decisoria de una obligación validada hacia disponibilidad para programación, coherente con:
+
+```text
+VPROC-0052.UNDER_APPROVAL
+-> VPROC-0052.APPROVED_FOR_SCHEDULING
+```
+
+No autoriza programar ni ejecutar el pago por sí sola.
+
+---
+
+#### 22. Cuenta por pagar — rechazo
+
+```text
+numera.finance.payables.reject
+```
+
+autoriza devolver o rechazar una obligación sometida a decisión según el lifecycle aplicable, preservando causa, soporte, versión y evidencia.
+
+No elimina la obligación ni modifica el documento o recepción fuente.
+
+---
+
+#### 23. Plan de pago — aprobación
+
+```text
+numera.finance.payment_plans.approve
+```
+
+autoriza aceptar un plan o programación de pago preparado para decisión.
+
+Se conserva:
+
+```text
+PAYMENT_PLAN_APPROVED != PAYMENT_EXECUTED
+```
+
+La selección de cuenta bancaria, ejecución monetaria y datos bancarios especializados continúan bajo las capacidades propietarias posteriores.
+
+---
+
+#### 24. Plan de pago — rechazo
+
+```text
+numera.finance.payment_plans.reject
+```
+
+autoriza rechazar la programación propuesta sin cancelar por inferencia la obligación subyacente.
+
+El rechazo del plan puede exigir nueva propuesta, pero no produce pago, reversión bancaria ni conciliación.
+
+---
+
+#### 25. Documento fiscal — aprobación interna
+
+```text
+numera.finance.fiscal_documents.approve
+```
+
+autoriza únicamente la decisión interna de NUMERA sobre el tratamiento, aceptación económica o readiness de una referencia documental que esté dentro de su alcance.
+
+No concede autoridad para emitir, aceptar oficialmente, presentar ni validar jurídicamente un documento fiscal externo.
+
+---
+
+#### 26. Documento fiscal — rechazo interno
+
+```text
+numera.finance.fiscal_documents.reject
+```
+
+registra una decisión interna negativa sobre la referencia o tratamiento propuesto.
+
+No modifica el documento oficial en el sistema emisor ni declara inválido un documento ante autoridad externa.
+
+---
+
+#### 27. Obligación tributaria — aprobación interna
+
+```text
+numera.finance.tax_obligations.approve
+```
+
+autoriza aceptar internamente una obligación o propuesta de tratamiento para control financiero dentro del alcance aprobado.
+
+No equivale a determinación tributaria oficial, presentación, aceptación de autoridad ni pago.
+
+---
+
+#### 28. Obligación tributaria — rechazo interno
+
+```text
+numera.finance.tax_obligations.reject
+```
+
+autoriza devolver para corrección o rechazar una propuesta interna de obligación o tratamiento.
+
+No extingue una obligación legal demostrada por una autoridad externa ni altera evidencia oficial recibida.
+
+---
+
+#### 29. Distribución de costos — aprobación
+
+```text
+numera.finance.cost_allocations.approve
+```
+
+autoriza aceptar una distribución de costos que preserve pool, driver, base, origen, destinos, versión, vigencia y evidencia.
+
+No modifica hechos fuente ni cierra el periodo.
+
+---
+
+#### 30. Distribución de costos — rechazo
+
+```text
+numera.finance.cost_allocations.reject
+```
+
+autoriza rechazar la distribución propuesta sin borrar entradas, drivers o versiones previas.
+
+La decisión negativa no reescribe costos reales para forzar un resultado.
+
+---
+
+#### 31. Matriz canónica de las doce decisiones
+
+| Permission key | Recurso | Acción | Superficie principal | Estado contractual |
+| --- | --- | --- | --- | --- |
+| `numera.finance.expenses.approve` | `EXPENSE` | approve | `VSCREEN-0097` / `0096` | `EXISTING_DECOMPOSITION` |
+| `numera.finance.expenses.reject` | `EXPENSE` | reject | `VSCREEN-0097` / `0096` | `DEFINED` |
+| `numera.finance.payables.approve` | `PAYABLE` | approve | `VSCREEN-0097` / `0098` | `DEFINED` |
+| `numera.finance.payables.reject` | `PAYABLE` | reject | `VSCREEN-0097` / `0098` | `DEFINED` |
+| `numera.finance.payment_plans.approve` | `PAYMENT_PLAN` | approve | `VSCREEN-0097` / `0155` | `DEFINED` |
+| `numera.finance.payment_plans.reject` | `PAYMENT_PLAN` | reject | `VSCREEN-0097` / `0155` | `DEFINED` |
+| `numera.finance.fiscal_documents.approve` | `FISCAL_DOCUMENT_REFERENCE` | approve | `VSCREEN-0097` / `0154` | `DEFINED` |
+| `numera.finance.fiscal_documents.reject` | `FISCAL_DOCUMENT_REFERENCE` | reject | `VSCREEN-0097` / `0154` | `DEFINED` |
+| `numera.finance.tax_obligations.approve` | `TAX_OBLIGATION` | approve | `VSCREEN-0097` / `0157` | `DEFINED` |
+| `numera.finance.tax_obligations.reject` | `TAX_OBLIGATION` | reject | `VSCREEN-0097` / `0157` | `DEFINED` |
+| `numera.finance.cost_allocations.approve` | `COST_ALLOCATION` | approve | `VSCREEN-0097` / `0158` | `DEFINED` |
+| `numera.finance.cost_allocations.reject` | `COST_ALLOCATION` | reject | `VSCREEN-0097` / `0158` | `DEFINED` |
+
+No existen faltantes ni duplicados dentro del universo definido por esta tarea.
+
+---
+
+#### 32. Binding de pasos canónicos
+
+Las decisiones se vinculan a los pasos ya aprobados:
+
+| Familia | Paso principal |
+| --- | --- |
+| gasto / hecho económico | `VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE` + decisión agregada en `VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION` |
+| cuenta por pagar | `VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION` |
+| plan de pago | `VPROC-0052::STEP-PLAN_AND_EXECUTE_PAYMENTS` |
+| documento fiscal | `VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT` |
+| impuesto u obligación de cumplimiento | `VPROC-0052::STEP-MANAGE_TAX_OBLIGATION` |
+| distribución de costos | `VPROC-0054::STEP-ALLOCATE_COSTS` |
+
+La pantalla agregadora no cambia el ownership del proceso ni del recurso.
+
+---
+
+#### 33. Estado previo obligatorio
+
+Una decisión solo puede ejecutarse si el recurso se encuentra en un estado que su dominio declare aprobable o rechazable.
+
+Se conserva:
+
+```text
+PERMISSION_PRESENT + RESOURCE_NOT_APPROVABLE = DENY
+```
+
+El permiso nunca fuerza una transición inexistente.
+
+---
+
+#### 34. Versión y concurrencia
+
+Toda aprobación o rechazo deberá validar la versión observada durante la revisión.
+
+Si el recurso cambió materialmente entre revisión y decisión:
+
+```text
+STALE_REVIEW = DENY_AND_REVIEW_AGAIN
+```
+
+No se aprueba una versión distinta de la evaluada.
+
+---
+
+#### 35. Snapshot de decisión
+
+La evidencia decisoria deberá conservar como mínimo:
+
+- identidad del recurso;
+- versión;
+- estado previo;
+- actor y actor efectivo;
+- permiso exacto;
+- alcance evaluado;
+- importe y moneda cuando apliquen;
+- dimensiones relevantes;
+- soporte o referencias revisadas;
+- resultado `approve` o `reject`;
+- motivo cuando corresponda;
+- timestamp;
+- correlación de solicitud.
+
+---
+
+#### 36. Motivo de rechazo obligatorio
+
+Toda acción `.reject` requiere motivo explícito y auditable.
+
+Un código técnico de error no sustituye el motivo empresarial de la decisión.
+
+---
+
+#### 37. Motivo de aprobación
+
+La aprobación podrá exigir comentario o justificación cuando la política del recurso, umbral, excepción o contexto así lo determine.
+
+La ausencia de comentario opcional nunca elimina la evidencia mínima de autoridad, actor, versión, estado y alcance.
+
+---
+
+#### 38. Idempotencia de decisión
+
+Reintentar la misma decisión técnica con la misma identidad/correlación no puede producir decisiones duplicadas.
+
+```text
+SAME_RESOURCE + SAME_VERSION + SAME_DECISION + SAME_IDEMPOTENCY_KEY
+-> ONE_BUSINESS_DECISION
+```
+
+---
+
+#### 39. Decisiones incompatibles en reintentos
+
+Un reintento que intente cambiar silenciosamente:
+
+```text
+approve -> reject
+```
+
+o:
+
+```text
+reject -> approve
+```
+
+no se trata como repetición técnica. Requiere una nueva decisión válida sobre un estado y versión que la permitan.
+
+---
+
+#### 40. Segregación por defecto
+
+Registrar o modificar un recurso no concede automáticamente autoridad para aprobarlo.
+
+Se conserva:
+
+```text
+REGISTER_PERMISSION != APPROVE_PERMISSION
+UPDATE_PERMISSION != APPROVE_PERMISSION
+```
+
+La separación debe poder expresarse mediante permisos distintos aunque una organización pequeña asigne ambos a una misma persona bajo excepción gobernada.
+
+---
+
+#### 41. Acumulación excepcional de funciones
+
+Cuando una misma persona deba registrar y aprobar por tamaño u organización real, la excepción deberá ser:
+
+- explícita;
+- justificada;
+- limitada al alcance necesario;
+- visible en auditoría;
+- compatible con política empresarial;
+- revisable.
+
+La tarea no crea una excepción automática por rol, cargo, ownership ni ausencia de otro aprobador.
+
+---
+
+#### 42. Propiedad del recurso no concede aprobación
+
+Ser creador, registrador, responsable o propietario funcional del recurso no equivale a autoridad aprobatoria.
+
+```text
+OWNERSHIP != APPROVAL_AUTHORITY
+```
+
+---
+
+#### 43. Rol no es autorización final
+
+Los nombres `contador`, `gerente`, `owner`, `manager` o equivalentes no sustituyen la evaluación del permiso exacto y su alcance.
+
+Los grants concretos quedan fuera de esta tarea.
+
+---
+
+#### 44. Aprobación previa en sistema fuente
+
+Una decisión empresarial válida ya demostrada por el dominio propietario no debe duplicarse únicamente porque NUMERA consuma el hecho.
+
+NUMERA distinguirá:
+
+- decisión de origen ya válida;
+- validación económica propia;
+- aprobación financiera adicional exigida por política.
+
+---
+
+#### 45. Aprobación adicional solo por política explícita
+
+Si una política exige aprobación financiera adicional, deberá quedar identificada como una decisión distinta con actor, permiso, alcance y evidencia propios.
+
+La tarea no inventa dobles aprobaciones universales.
+
+---
+
+#### 46. Aprobación no equivale a reconocimiento económico
+
+Especialmente para gastos:
+
+```text
+CAPTURED != APPROVED != RECOGNIZED
+```
+
+Aprobar no escribe por sí sola un asiento, hecho económico definitivo ni pago.
+
+---
+
+#### 47. Aprobación no equivale a ejecución de pago
+
+Se congela:
+
+```text
+PAYABLE_APPROVED != PAYMENT_EXECUTED
+PAYMENT_PLAN_APPROVED != PAYMENT_EXECUTED
+```
+
+La ejecución monetaria requiere autoridad distinta y evidencia del proveedor financiero cuando corresponda.
+
+---
+
+#### 48. Aprobación no equivale a conciliación
+
+Se congela:
+
+```text
+APPROVE != RECONCILE
+REJECT != RECONCILE
+```
+
+El matching bancario, aplicación de pagos y resolución de diferencias permanecen bajo los contratos de conciliación y capacidades especializadas aplicables.
+
+---
+
+#### 49. Aprobación no equivale a cierre
+
+```text
+APPROVE != CLOSE
+APPROVE != REOPEN
+```
+
+La autoridad de cierre y reapertura pertenece a `NUMERA-AUTH-006`.
+
+---
+
+#### 50. Aprobación no equivale a exportación
+
+```text
+APPROVE != EXPORT
+REJECT != EXPORT
+```
+
+La autoridad de exportación pertenece a `NUMERA-AUTH-007`.
+
+---
+
+#### 51. Escenarios, precios y presupuestos quedan fuera
+
+Las acciones de aprobación de:
+
+- presupuesto;
+- escenario;
+- versión de precio;
+- publicación asociada;
+
+permanecen reservadas a `NUMERA-AUTH-015`.
+
+No se crean aquí `budgets.approve`, `scenarios.approve` ni `price_versions.approve`.
+
+---
+
+#### 52. Cartera, acuerdos, castigos y bancos especializados
+
+Las decisiones especializadas sobre:
+
+- acuerdos de cartera;
+- castigos;
+- datos bancarios sensibles;
+- autorizaciones bancarias específicas;
+- operaciones de cartera de alto impacto;
+
+permanecen bajo `NUMERA-AUTH-014`.
+
+---
+
+#### 53. Cierre y reapertura quedan fuera
+
+Las decisiones que habilitan cierre, reapertura o corrección gobernada de periodo no se convierten en permisos `.approve` genéricos.
+
+Su propietario es `NUMERA-AUTH-006`.
+
+---
+
+#### 54. Autoridad fiscal externa preservada
+
+La aprobación interna de un documento u obligación fiscal:
+
+```text
+INTERNAL_FINANCIAL_APPROVAL
+!= EXTERNAL_FISCAL_ACCEPTANCE
+!= TAX_FILING
+!= LEGAL_DETERMINATION
+```
+
+NUMERA no adquiere autoridad fiscal oficial por esta definición.
+
+---
+
+#### 55. Autoridad contable externa preservada
+
+Una decisión interna aprobada no equivale a asiento, comprobante o cierre contable oficial.
+
+La frontera contable permanece conforme a los contratos de `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 56. Interfaz nunca es autoridad
+
+La presencia de:
+
+- botón;
+- modal;
+- tarjeta;
+- fila de bandeja;
+- contador de pendientes;
+- acción rápida;
+
+no autoriza la decisión.
+
+Toda decisión se revalida en servidor contra permiso exacto, recurso, versión, estado y alcance.
+
+---
+
+#### 57. Contrato server-side mínimo
+
+Antes de aplicar una decisión deberá resolverse:
+
+```text
+principal
+actor_effective
+permission_key
+resource_type
+resource_id
+resource_version
+current_state
+requested_decision
+scope_result
+field_projection
+authorization_result
+```
+
+Cualquier resultado no autorizado o indeterminado produce denegación segura.
+
+---
+
+#### 58. Fallback a `manage` prohibido
+
+Queda prohibido:
+
+```text
+missing_exact_approval_permission -> numera.expenses.manage
+missing_exact_approval_permission -> numera.cost_centers.manage
+missing_exact_approval_permission -> any_manage
+```
+
+La ausencia del permiso exacto produce denegación.
+
+---
+
+#### 59. Wildcards prohibidos
+
+No se autoriza como contrato objetivo:
+
+```text
+numera.*
+numera.finance.*
+numera.finance.*.approve
+numera.finance.approve_all
+```
+
+Las decisiones son por capacidad y recurso.
+
+---
+
+#### 60. Operaciones masivas
+
+Una operación que decida múltiples recursos debe autorizar cada miembro individualmente.
+
+La política de atomicidad deberá ser explícita:
+
+```text
+ALL_OR_NOTHING
+```
+
+o un resultado parcial documentado y permitido por el contrato de la operación.
+
+No se infiere autorización masiva a partir de una sola fila válida.
+
+---
+
+#### 61. Scope posterior
+
+La forma exacta de limitar decisiones por empresa, sede o centro de costo pertenece a:
+
+```text
+NUMERA-AUTH-008
+```
+
+La 005 define identidad y semántica de permisos, no concede alcance global.
+
+---
+
+#### 62. Auditoría posterior
+
+La materialización detallada de auditoría financiera pertenece a:
+
+```text
+NUMERA-AUTH-009
+```
+
+La presente tarea fija qué evidencia mínima deberá poder conservarse.
+
+---
+
+#### 63. Independencia de turno
+
+Estas decisiones se definen inicialmente en el carril administrativo base.
+
+`NUMERA-AUTH-010` deberá impedir que la administración financiera dependa artificialmente de un turno cuando no corresponde.
+
+---
+
+#### 64. Contexto operacional cuando aplique
+
+Si una decisión futura requiere contexto operacional real por relación con una captura operacional, esa condición deberá definirse en:
+
+```text
+NUMERA-AUTH-011
+```
+
+No se impone contexto operacional universal por inferencia.
+
+---
+
+#### 65. Materialización
+
+La incorporación física de las claves, contratos, grants, guards, RLS, RPC y consumidores pertenece a:
+
+```text
+NUMERA-AUTH-012
+```
+
+y a los packages o instancias físicas canónicas que correspondan.
+
+Esta tarea no materializa el registro.
+
+---
+
+#### 66. Pruebas integrales
+
+La validación integral posterior de lectura, registro, aprobación, cierre, exportación, scope, auditoría y denegaciones pertenece a:
+
+```text
+NUMERA-AUTH-013
+```
+
+---
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar, cobertura ya registrada para:
+
+- `TREQ-NUMERA-001` — separación de lectura, registro, aprobación, cierre y exportación con trazabilidad financiera;
+- `TREQ-NUMERA-003` — separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar, incluyendo obligación, programación y pago;
+- `TREQ-NUMERA-004` — aprobación y reversión de distribuciones, presupuesto y escenarios separados de realidad;
+- `TREQ-AUTH-013` — validación server-side de permiso exacto, actor, territorio, recurso, estado y campos permitidos;
+- `TREQ-AUTH-015` — evidencia correlacionable de principal, actor efectivo, permiso, recurso, decisión, razones, versión y timestamp.
+
+Esta sección es trazabilidad de cobertura vigente y no constituye una actualización del Registro 04A.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | esta definición no ejecuta build de producto; no se modificó código de runtime |
+| LOCAL | NOT_EXECUTED | la incorporación, formateo y batería documental sobre el checkout del usuario permanecen pendientes hasta que `NUMERA-AUTH-004` cierre y habilite la sucesora |
+| REMOTA | PASS | se verificaron `main`, protocolo, contrato de entrega, continuidad, topología, archivo propietario, catálogo de acciones, clasificación y recursos, bindings NUMERA, estados `VPROC-0052/0054/0069`, contratos de dominio aplicables, Registro 04A y scripts documentales vigentes; la 004 se consume desde su archivo completo aprobado por el usuario |
+| OPERATIVA | NOT_EXECUTED | no se aprobaron ni rechazaron gastos, obligaciones, planes de pago, documentos fiscales, impuestos o distribuciones reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-AUTH-005` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia |
+
+---
+
+#### 70. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un registro `NUMERA-APPROVAL-PERMISSION-REGISTRY-001`;
+2. el registro contiene exactamente doce decisiones;
+3. existen seis `approve` y seis `reject`;
+4. `numera.finance.expenses.approve` se preserva como definición previa, no como grant activo por inferencia;
+5. las once claves nuevas no se presentan como activas en runtime;
+6. `approve`, `reject` y `resolve` permanecen distintos;
+7. no existe permiso omnibus de bandeja;
+8. cada fila de `VSCREEN-0097` se autoriza por el recurso subyacente;
+9. aprobar no concede lectura general;
+10. visualizar una fila exige el permiso de lectura correspondiente;
+11. gasto conserva `CAPTURED != APPROVED != RECOGNIZED`;
+12. rechazo de gasto conserva historia y motivo;
+13. aprobar cuenta por pagar no ejecuta pago;
+14. rechazar cuenta por pagar no borra origen;
+15. aprobar plan de pago no mueve fondos;
+16. rechazar plan de pago no cancela la obligación por inferencia;
+17. aprobación fiscal interna no equivale a autoridad fiscal externa;
+18. rechazo fiscal interno no altera documentos oficiales externos;
+19. aprobar obligación tributaria no determina oficialmente el impuesto;
+20. rechazar propuesta tributaria no extingue una obligación legal demostrada;
+21. aprobar distribución conserva driver, base, destinos y versión;
+22. rechazar distribución no reescribe costos reales;
+23. el recurso debe encontrarse en estado decidible;
+24. versión obsoleta produce denegación y nueva revisión;
+25. la decisión conserva snapshot y evidencia;
+26. rechazo exige motivo;
+27. reintentos son idempotentes;
+28. decisiones opuestas no se tratan como el mismo reintento;
+29. registrar/modificar y aprobar permanecen separados;
+30. ownership no concede aprobación;
+31. rol no equivale a autorización final;
+32. acumulación excepcional de funciones requiere justificación y auditoría;
+33. una aprobación válida de origen no se duplica por defecto;
+34. aprobación adicional requiere política explícita;
+35. aprobación no equivale a reconocimiento económico;
+36. aprobación no equivale a pago;
+37. aprobación no equivale a conciliación;
+38. aprobación no equivale a cierre o reapertura;
+39. aprobación no equivale a exportación;
+40. escenarios, precios y presupuestos permanecen en 015;
+41. cartera, castigos, acuerdos y bancos especializados permanecen en 014;
+42. cierre y reapertura permanecen en 006;
+43. autoridad fiscal externa se preserva;
+44. autoridad contable externa se preserva;
+45. la interfaz no autoriza decisiones;
+46. servidor revalida permiso, recurso, versión, estado y alcance;
+47. no existe fallback a `manage`;
+48. wildcards quedan prohibidos;
+49. operaciones masivas autorizan cada miembro;
+50. scope permanece en 008;
+51. auditoría detallada permanece en 009;
+52. independencia de turno permanece en 010;
+53. contexto operacional específico permanece en 011;
+54. materialización permanece en 012;
+55. pruebas integrales permanecen en 013;
+56. no se crean ni modifican requisitos de prueba;
+57. no se realizan cambios físicos;
+58. la continuidad reserva `NUMERA-AUTH-006`.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- publica las once claves nuevas en el catálogo runtime;
+- concede `numera.finance.expenses.approve` a ningún actor;
+- crea grants de roles;
+- define importes o umbrales universales de aprobación;
+- decide quién ocupa cada función empresarial;
+- ejecuta pagos;
+- concilia movimientos;
+- aplica castigos;
+- cierra o reabre periodos;
+- exporta información;
+- aprueba o publica escenarios, precios o presupuestos;
+- modifica documentos fiscales externos;
+- presenta impuestos;
+- crea estados nuevos de proceso;
+- modifica RLS, RPC, Server Actions o navegación;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-006`.
+
+---
+
+#### 72. Handoff a NUMERA-AUTH-006
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_APPROVAL_PERMISSION_REGISTRY = NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+EXISTING_DECOMPOSITION_APPROVAL_PERMISSIONS = 1
+NEW_CONTRACT_DEFINED_DECISION_PERMISSIONS = 11
+TOTAL_APPROVAL_DECISION_PERMISSION_DEFINITIONS = 12
+APPROVE_PERMISSION_COUNT = 6
+REJECT_PERMISSION_COUNT = 6
+APPROVAL_DECISION_ACTIONS = approve|reject
+APPROVE_REJECT_RESOLVE_ARE_DISTINCT = YES
+APPROVAL_QUEUE_OMNIBUS_PERMISSION = FORBIDDEN
+APPROVAL_QUEUE_ROW_REQUIRES_UNDERLYING_VIEW = YES
+APPROVE_PERMISSION_IMPLIES_VIEW = NO
+REGISTER_IMPLIES_APPROVE = NO
+UPDATE_IMPLIES_APPROVE = NO
+OWNERSHIP_IMPLIES_APPROVE = NO
+ROLE_NAME_IMPLIES_APPROVE = NO
+APPROVAL_REQUIRES_APPROVABLE_STATE = YES
+APPROVAL_REQUIRES_RESOURCE_VERSION = YES
+STALE_REVIEW_DECISION = DENY_AND_REVIEW_AGAIN
+REJECT_REASON_REQUIRED = YES
+APPROVAL_DECISION_IDEMPOTENT_WHEN_RETRYABLE = YES
+SAME_ACTOR_MULTI_FUNCTION_EXCEPTION_REQUIRES_EXPLICIT_JUSTIFICATION_AND_AUDIT = YES
+SOURCE_VALID_APPROVAL_IS_NOT_DUPLICATED_BY_DEFAULT = YES
+APPROVAL_IMPLIES_PAY_EXECUTE = NO
+APPROVAL_IMPLIES_RECONCILE = NO
+APPROVAL_IMPLIES_CLOSE_REOPEN = NO
+APPROVAL_IMPLIES_EXPORT = NO
+INTERNAL_FISCAL_APPROVAL_IS_EXTERNAL_AUTHORITY_ACCEPTANCE = NO
+SCENARIO_PRICE_BUDGET_APPROVAL_OWNER = NUMERA_AUTH_015
+RECEIVABLE_BANK_WRITE_OFF_SPECIALIZED_OWNER = NUMERA_AUTH_014
+APPROVAL_SCOPE_OWNER = NUMERA_AUTH_008
+APPROVAL_AUDIT_OWNER = NUMERA_AUTH_009
+APPROVAL_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+MISSING_APPROVAL_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_006_OWNER = CLOSE_REOPEN_PERMISSION_DEFINITION
+```
+
+`NUMERA-AUTH-006` deberá definir cierre y reapertura como autoridades independientes, sin reutilizar una aprobación genérica para modificar el estado temporal de un periodo.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-004 — Definir permisos de registro`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-005 — Definir permisos de aprobación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-006 — Definir permisos de cierre`
 ### [ ] NUMERA-AUTH-006 — Definir permisos de cierre
 ### [ ] NUMERA-AUTH-007 — Definir permisos de exportación
 ### [ ] NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
