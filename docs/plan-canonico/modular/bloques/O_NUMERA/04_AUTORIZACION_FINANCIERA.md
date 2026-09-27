@@ -10041,7 +10041,1177 @@ NUMERA_AUTH_009_OWNER = FINANCIAL_AUDIT_DEFINITION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-009 — Registrar auditoría financiera`
-### [ ] NUMERA-AUTH-009 — Registrar auditoría financiera
+### ✅ NUMERA-AUTH-009 — Registrar auditoría financiera
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
+**Tarea siguiente:** NUMERA-AUTH-010 — Evitar dependencia de turno para administración
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición de la auditoría financiera correlacionable de NUMERA para las 56 identidades de permiso gobernadas, separando decisión de autorización, efecto financiero, evidencia de dominio, error técnico, compensación y consulta de auditoría, con reutilización de la persistencia transversal existente y sin crear todavía ninguna instancia física
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `NUMERA-AUTH-009::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **qué evidencia debe conservar NUMERA** para reconstruir una consulta, una mutación, una decisión financiera, una transición de periodo o una exportación protegida, sin convertir la auditoría en una nueva fuente de autoridad, una copia paralela del dato financiero ni un repositorio indiscriminado de información sensible.
+
+La regla raíz queda:
+
+```text
+DECISIÓN DE AUTORIZACIÓN
++
+ACCIÓN O INTENTO FINANCIERO
++
+RECURSO / VERSIÓN / SCOPE
++
+ACTOR Y PRINCIPAL
++
+RESULTADO O EFECTO
++
+CORRELACIÓN / CAUSACIÓN
++
+EVIDENCIA MINIMIZADA
+=
+TRAZA FINANCIERA RECONSTRUIBLE
+```
+
+Nunca:
+
+```text
+LOG EXISTE
+OR
+AUTH LOG EXISTE
+OR
+TIMESTAMP EXISTE
+OR
+ACTOR INFERIDO DESPUÉS
+=
+AUDITORÍA FINANCIERA SUFICIENTE
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUTH-008
+
+La tarea consume sin reinterpretación el contrato de alcance aprobado por la predecesora:
+
+```text
+NUMERA_SCOPE_CONTRACT = NUMERA-FINANCIAL-SCOPE-CONTRACT-001
+NUMERA_SCOPE_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_SCOPE_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_SCOPE_INSTANCE_PATTERN = NUMERA-AUTH-008::<implementation_unit_id>
+NUMERA_SCOPE_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_SCOPE_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_SCOPE_DECISION_COUNT = 22
+REGISTER_WRITE_SCOPE_DECISION_COUNT = 18
+APPROVAL_SCOPE_DECISION_COUNT = 12
+PERIOD_STATE_SCOPE_DECISION_COUNT = 3
+EXPORT_SCOPE_DECISION_COUNT = 1
+SCOPE_DECISION_MISSING_COUNT = 0
+SCOPE_DECISION_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_SCOPE_TASK = 0
+VALID_SCOPE_WITHOUT_PERMISSION = DENY
+VALID_PERMISSION_WITHOUT_VALID_SCOPE = DENY
+AGGREGATE_MEMBER_SET_MUST_BE_AUTHORIZED = YES
+EXPORT_SCOPE_MUST_NOT_EXCEED_VIEW_SCOPE = YES
+STALE_SCOPE_DECISION = DENY_AND_REEVALUATE
+SERVER_SIDE_SCOPE_REVALIDATION_REQUIRED = YES
+SCOPE_AUDIT_OWNER = NUMERA_AUTH_009
+ADMIN_TURN_INDEPENDENCE_OWNER = NUMERA_AUTH_010
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_SCOPE_TEST_OWNER = NUMERA_AUTH_013
+TREQ_CHANGES = 0
+NUMERA_AUTH_009_OWNER = FINANCIAL_AUDIT_DEFINITION
+```
+
+Por tanto, esta tarea conserva el mismo universo de 56 identidades y registra evidencia sobre la decisión de scope ya resuelta; no crea un segundo modelo territorial.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global reutilizable de auditoría financiera;
+2. la aprobación documental del marcador no crea ninguna tabla, trigger, policy, función, RPC, Server Action ni consumidor;
+3. cada materialización futura utiliza `NUMERA-AUTH-009::<implementation_unit_id>`;
+4. una misma unidad puede ser consumida por varios paquetes mediante lineage cuando el lifecycle lo determine;
+5. toda unidad física exige el gate E5 aplicable en PASS y autorización física explícita;
+6. este marcador no selecciona `package_id`, `implementation_unit_id`, target path ni ambiente;
+7. cualquier modificación de Supabase perteneciente a VENTO se materializa desde `vento-shell`.
+
+---
+
+#### 4. Fuentes y snapshots de preparación
+
+La definición se reconcilia contra las fuentes canónicas vigentes y los snapshots observados:
+
+```text
+vento-shell/main = 29d687483c7192561fc7f5579e964e3fece027e9
+vento-numera/main = c4d50282e30e46d0abb3d871f9604cf913ebbabd
+REMOTE_DOCUMENTARY_PREVIOUS = NUMERA-AUTH-007
+APPROVED_UNPUBLISHED_PREDECESSOR = NUMERA-AUTH-008
+```
+
+El commit actual de `vento-numera/main` coincide con el snapshot ya auditado por `NUMERA-AUD-010..011`; por ello sus hallazgos AS-IS de trazabilidad siguen siendo aplicables mientras no exista evidencia posterior que los sustituya.
+
+---
+
+#### 5. Resultado contractual
+
+Se define:
+
+```text
+NUMERA-FINANCIAL-AUDIT-CONTRACT-001
+```
+
+El contrato especializa auditoría de NUMERA sin inventar una tabla física, un namespace de permisos nuevo ni un segundo motor de autorización.
+
+---
+
+#### 6. Auditoría no es autoridad
+
+```text
+AUDIT_EVIDENCE_IS_AUTHORITY = NO
+AUDIT_ROW_IS_PERMISSION_GRANT = NO
+AUDIT_ROW_IS_SCOPE_GRANT = NO
+AUDIT_HISTORY_CAN_AUTHORIZE_REPLAY = NO
+```
+
+La autorización se decide antes del efecto. La evidencia explica qué decisión se tomó y qué ocurrió después; jamás se reutiliza como bypass para conceder una acción nueva.
+
+---
+
+#### 7. Planos de evidencia separados
+
+| Plano | Contenido | Fuente objetivo |
+| --- | --- | --- |
+| autorización | decisión ALLOW/DENY, permiso, actor, principal, recurso, scope, razones y versión | fundación transversal de decisiones de autorización |
+| efecto financiero | comando, ejecución, cambio empresarial, resultado, versiones y evidencia mínima | materialización de dominio por unidad |
+| fallo técnico | indisponibilidad o fallo del evaluador/infraestructura sin decisión ALLOW/DENY | fundación transversal de fallos de evaluación |
+| corrección/compensación | evento posterior enlazado que corrige, revierte, reclasifica o compensa sin borrar historia | evidencia aditiva enlazada |
+| consulta de auditoría | lectura autorizada de evidencia existente | contratos transversales de auditoría/investigación; sin permiso NUMERA nuevo |
+
+---
+
+#### 8. Universo exacto gobernado
+
+La auditoría cubre exactamente el universo heredado de `NUMERA-AUTH-003..008`:
+
+```text
+READ = 22
+REGISTER_WRITE = 18
+APPROVAL_REJECT = 12
+PERIOD_STATE = 3
+EXPORT = 1
+TOTAL = 56
+```
+
+No se agrega ninguna identidad de permiso por efecto de auditarla.
+
+---
+
+#### 9. Cardinalidad cerrada
+
+```text
+TOTAL_AUDIT_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_AUDIT_DECISION_COUNT = 22
+REGISTER_WRITE_AUDIT_DECISION_COUNT = 18
+APPROVAL_AUDIT_DECISION_COUNT = 12
+PERIOD_STATE_AUDIT_DECISION_COUNT = 3
+EXPORT_AUDIT_DECISION_COUNT = 1
+AUDIT_COVERAGE_MISSING_COUNT = 0
+AUDIT_COVERAGE_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_AUDIT_TASK = 0
+```
+
+---
+
+#### 10. Vocabulario de perfiles de auditoría
+
+| Familia | Perfil contractual | Evidencia mínima |
+| --- | --- | --- |
+| lectura | READ | decisión de autorización + recurso/scope/version + resultado; sin copiar el payload leído |
+| registro/escritura | WRITE | decisión + comando + ejecución + efecto empresarial cuando se confirma |
+| aprobación/rechazo | DECISION | decisión + comando + ejecución + snapshot/version + razón cuando corresponda |
+| estado de periodo | PERIOD_STATE | decisión + transición + versión de periodo/cierre + razón/evidencia aplicable |
+| exportación | EXPORT | decisión + solicitud + instancia lógica + resultado/entrega + versión/scope/corte |
+
+---
+
+#### 11. Fundación transversal de decisiones reutilizada
+
+La infraestructura actual de `vento-shell` ya dispone de `audit.authorization_decisions`. La 009 la **reutiliza** como plano de decisión de autorización y no define un duplicado NUMERA.
+
+```text
+SHARED_AUTHORIZATION_DECISION_PERSISTENCE_REUSED = YES
+AUTHORIZATION_DECISION_STORE = audit.authorization_decisions
+NUMERA_DUPLICATE_AUTHORIZATION_DECISION_STORE = FORBIDDEN
+```
+
+La evidencia transversal ya puede conservar, entre otros, `decision_id`, versiones de contrato/esquema, fingerprint, tiempo, correlación, contexto, principal, actor, dispositivo, aplicación, permiso, operación, recurso, outcome, lanes, razones, fingerprints, catálogo/datasets, evaluador, sensibilidad, retención y contrato fuente.
+
+---
+
+#### 12. Fundación transversal de enlaces reutilizada
+
+La relación entre decisión y efecto consume `audit.authorization_decision_links` cuando la materialización física aplicable utilice esa fundación.
+
+```text
+SHARED_AUTHORIZATION_DECISION_LINKS_REUSED = YES
+SHARED_AUDIT_LINK_KIND_COUNT = 7
+COMMAND
+EXECUTION_RESULT
+BUSINESS_EVENT
+ERROR
+COMPENSATION
+RECONCILIATION
+AUDIT_ENTRY
+```
+
+La 009 no crea un octavo `link_kind`. Las necesidades financieras se expresan mediante estas clases y referencias de dominio.
+
+---
+
+#### 13. Fallos de evaluación permanecen separados
+
+La fundación transversal dispone de `audit.authorization_evaluation_failures` para intentos donde el evaluador no pudo producir una decisión válida.
+
+```text
+TECHNICAL_FAILURE_IS_AUTHORIZATION_DENY = NO
+AUTHORIZATION_DENY_IS_TECHNICAL_FAILURE = NO
+EVALUATION_FAILURE_STORE = audit.authorization_evaluation_failures
+```
+
+Un error técnico no se convierte en `DENY` ficticio ni en `ALLOW`; conserva su propio intento, etapa, causa privada minimizada, retries, duración, fingerprints y estado de efectos.
+
+---
+
+#### 14. Log de autenticación no sustituye auditoría financiera
+
+```text
+AUTH_AUDIT_LOG_IS_NUMERA_FINANCIAL_AUDIT_TRAIL = NO
+AUTHENTICATION_EVENT_IS_FINANCIAL_EFFECT = NO
+```
+
+Un log de login, token o sesión puede aportar contexto técnico, pero no demuestra quién registró o cambió un dato financiero, qué versión existía, qué versión quedó, por qué ocurrió ni qué recurso empresarial fue afectado.
+
+---
+
+#### 15. Estado AS-IS del consumidor NUMERA
+
+El snapshot actual de `vento-numera` conserva los hallazgos documentados por la auditoría precedente:
+
+```text
+PROJECT_HAS_OTHER_AUDIT_EVENT_TABLES = YES
+NUMERA_DOMAIN_AUDIT_TABLE_AS_IS = NO
+NUMERA_DOMAIN_AUDIT_TRIGGERS_AS_IS = 0
+UI_TRACEABILITY_SURFACES_AS_IS = 0
+```
+
+La existencia actual de la fundación transversal en `vento-shell` no demuestra que las acciones financieras NUMERA estén enlazando sus decisiones y efectos a dicha evidencia.
+
+---
+
+#### 16. Brecha exacta que cierra el contrato
+
+El contrato documental cierra la ambigüedad entre tres hechos distintos:
+
+1. VENTO ya tiene persistencia transversal para decisiones de autorización;
+2. NUMERA todavía no demuestra una auditoría de dominio que reconstruya sus efectos financieros;
+3. la futura materialización debe correlacionar ambos planos sin copiar indiscriminadamente datos sensibles ni convertir los logs en fuente económica.
+
+---
+
+#### 17. Envelope lógico mínimo de auditoría financiera
+
+Toda evidencia financiera materializada deberá poder representar semánticamente, cuando aplique:
+
+```text
+financial_audit_reference
+authorization_decision_id_or_failure_reference
+correlation_id
+causation_id
+principal_reference
+effective_actor_reference
+app_code
+permission_key
+business_action
+operation_kind
+request_source
+resource_type
+resource_reference
+resource_version
+scope_reference_or_fingerprint
+process_reference
+process_instance_reference
+source_app
+source_resource_reference
+source_correlation_reference
+before_reference_or_fingerprint
+after_reference_or_fingerprint
+changed_field_set_or_effect_summary
+reason_reference_when_required
+idempotency_key_reference
+authorization_outcome_or_execution_result
+reason_codes_or_error_class
+occurred_at
+evaluated_at_when_available
+effect_committed_at_when_applicable
+recorded_at
+sensitivity_class
+retention_class
+evidence_storage_mode
+evidence_reference_or_digest
+source_contract_sha256
+```
+
+Los nombres físicos pueden variar en la unidad propietaria si preservan inequívocamente estas identidades y relaciones y no contradicen contratos transversales existentes.
+
+---
+
+#### 18. Identidad, principal y actor efectivo
+
+La evidencia debe separar:
+
+```text
+technical_principal != effective_actor
+effective_actor != business_authorship_field
+device != actor
+role != actor
+simulated_subject != effective_actor
+```
+
+Nunca se reconstruye el autor de un cambio únicamente desde la sesión que estaba abierta, el rol de navegación, el dispositivo compartido o un campo de frontend.
+
+---
+
+#### 19. Correlación y causación
+
+Cada intento protegido debe conservar una correlación estable y, cuando exista una cadena causal, la referencia al evento o comando que lo originó.
+
+```text
+CORRELATION_REQUIRED = YES
+CAUSATION_REQUIRED_WHEN_APPLICABLE = YES
+CORRELATION_IS_AUTHORITY = NO
+```
+
+Retries del mismo intento no crean historias financieras independientes por ausencia de una clave estable.
+
+---
+
+#### 20. Recurso, versión y scope
+
+La auditoría debe conservar suficiente evidencia para reconstruir el recurso realmente evaluado y el scope realmente usado:
+
+```text
+RESOURCE_ID_OR_NORMALIZED_QUERY_REFERENCE
+RESOURCE_VERSION_WHEN_MATERIAL
+SCOPE_REFERENCE_OR_FINGERPRINT
+AUTHORIZED_DIMENSION_SET_REFERENCE_WHEN_MATERIAL
+```
+
+El registro no debe copiar por defecto todos los miembros de un agregado o territorio si un fingerprint o referencia protegida permite reconstruir la decisión de forma autorizada.
+
+---
+
+#### 21. Sensibilidad y minimización
+
+```text
+FINANCIAL_AUDIT_SENSITIVITY_REASON = FINANCIAL_DATA
+AUDIT_FULL_SENSITIVE_PAYLOAD_BY_DEFAULT = FORBIDDEN
+SECRET_OR_TOKEN_IN_AUDIT = FORBIDDEN
+FULL_EXPORTED_FILE_IN_AUDIT = FORBIDDEN
+```
+
+Valores bancarios, documentos, identificadores personales, payloads de exportación, JWT, service-role, secretos y contenido financiero completo solo pueden persistirse cuando otro contrato lo autorice de forma específica. La regla ordinaria es referencia protegida, digest contextualizado, diff permitido o metadata mínima.
+
+---
+
+#### 22. Modelo temporal
+
+La evidencia no reduce toda temporalidad a `created_at`. Debe distinguir cuando aplique:
+
+```text
+requested_at
+evaluated_at
+effect_committed_at
+effective_from
+effective_to
+recorded_at
+```
+
+La llegada tardía de la evidencia no cambia la fecha efectiva del hecho o la decisión que documenta.
+
+---
+
+#### 23. Integridad aditiva
+
+```text
+AUDIT_HISTORY_APPEND_ONLY_LOGIC = YES
+AUDIT_CORRECTION_OVERWRITES_HISTORY = NO
+AUDIT_DELETE_TO_HIDE_ERROR = FORBIDDEN
+```
+
+Una rectificación crea evidencia posterior enlazada; no reescribe el evento anterior. La implementación podrá reforzar físicamente esta propiedad mediante mecanismos aprobados en su unidad propietaria.
+
+---
+
+#### 24. Auditoría de lectura autorizada
+
+Cada uno de los 22 permisos `.view` consume el perfil `READ`. La evidencia conserva como mínimo decisión, actor, recurso o consulta normalizada, scope, versión/proyección relevante, razones y tiempo.
+
+Una lectura autorizada no exige crear un evento de mutación financiera. Su evidencia principal es la decisión de autorización y, cuando corresponda, un enlace mínimo de acceso sensible.
+
+---
+
+#### 25. Auditoría de lectura denegada
+
+Las denegaciones de lectura también son auditables y no pueden omitirse para reducir ruido.
+
+```text
+READ_DENY_AUDITABLE = YES
+DENIED_RESOURCE_METADATA_DISCLOSURE = FORBIDDEN
+```
+
+La evidencia privada puede registrar la referencia/fingerprint necesario para investigar; la respuesta al actor no revela títulos, importes, nombres o dimensiones fuera de alcance.
+
+---
+
+#### 26. Auditoría de creación y registro
+
+Una creación o registro financiero confirmado debe correlacionar: autorización, comando, recurso creado, versión inicial, actor, source lineage, idempotencia y resultado.
+
+```text
+CREATE_REGISTER_AUTH_DECISION_REQUIRED = YES
+CREATE_REGISTER_EXECUTION_RESULT_REQUIRED = YES
+COMMITTED_EFFECT_BUSINESS_EVENT_REQUIRED = YES
+```
+
+---
+
+#### 27. Auditoría de actualización
+
+Una actualización debe conservar la identidad y versión previa, la versión resultante, campos o efecto modificado, actor, permiso, scope y motivo cuando el dominio lo exija.
+
+Para información sensible se prefieren referencias/fingerprints de before/after sobre copias completas del recurso.
+
+---
+
+#### 28. Auditoría de cancelación, activación y desactivación
+
+`cancel`, `activate` y `deactivate` son efectos empresariales distintos y conservan acción exacta, estado/version antes y después, actor, razón cuando aplique y evidencia correlacionada.
+
+```text
+CANCEL_IS_DELETE = NO
+ACTIVATE_DEACTIVATE_ARE_AUDITED_TRANSITIONS = YES
+```
+
+---
+
+#### 29. Auditoría de aprobación
+
+Una aprobación conserva al menos recurso, versión revisada, actor decisor, permiso `.approve`, scope, estado previo, decisión, razones/política material, segregación aplicable, idempotencia, correlación y efecto resultante.
+
+La evidencia debe permitir demostrar qué versión exacta fue aprobada; una decisión sobre una versión stale no se presenta como aprobación válida.
+
+---
+
+#### 30. Auditoría de rechazo
+
+Toda clave `.reject` exige razón explícita y auditable, preservando recurso/version, actor, permiso, estado y correlación.
+
+```text
+REJECT_REASON_REQUIRED = YES
+REJECT_DELETES_PROPOSAL_EVIDENCE = NO
+```
+
+---
+
+#### 31. Auditoría de lock de periodo
+
+`numera.finance.periods.lock` debe conservar periodo, versión, estado origen/destino, actor, permiso, scope, gates observados, razón cuando aplique, idempotencia y resultado.
+
+---
+
+#### 32. Auditoría de cierre de periodo
+
+`numera.finance.periods.close` conserva además la versión de cierre, snapshot/evidencias de gates y la identidad de la decisión de cierre.
+
+```text
+CLOSE_VERSION_AUDITABLE = YES
+FAILED_CLOSE_GATE_AUDITABLE = YES
+CLOSE_REPLAY_DUPLICATES_CLOSE_VERSION = NO
+```
+
+---
+
+#### 33. Auditoría de reapertura y restatement
+
+`numera.finance.periods.reopen` conserva `close_version` afectada, motivo, alcance, impacto, actor, evidencia revisada y correlación. Un restatement material crea nueva versión y mantiene la anterior histórica.
+
+```text
+REOPEN_REASON_AUDITABLE = YES
+RESTATEMENT_AUDIT_IS_VERSIONED = YES
+PREVIOUS_CLOSE_EVIDENCE_PRESERVED = YES
+```
+
+---
+
+#### 34. Auditoría de exportación
+
+`numera.analytics.financial_reports.export` utiliza el perfil `EXPORT` y debe correlacionar, sin registrar el archivo completo:
+
+```text
+export_request_reference
+authorization_decision_reference
+logical_export_instance_reference
+report_id
+report_version
+close_version_when_applicable
+scope_reference_or_fingerprint
+cutoff
+field_projection_reference
+purpose
+recipient_or_destination_reference_when_applicable
+delivery_attempt_reference
+result
+correlation_id
+```
+
+---
+
+#### 35. Resultados de exportación diferenciados
+
+La evidencia debe distinguir semánticamente:
+
+```text
+AUTHORIZED_AND_DELIVERED
+AUTHORIZATION_DENIED
+RESOURCE_OR_VERSION_CONFLICT
+TECHNICAL_FAILURE
+RETRY_WITHOUT_NEW_LOGICAL_EXPORT
+```
+
+Estos nombres describen categorías lógicas; no crean un enum físico nuevo. Un fallo técnico no se oculta como denegación y un retry no crea una segunda exportación lógica por defecto.
+
+---
+
+#### 36. Distribuciones de costo y relaciones múltiples
+
+Las acciones sobre `cost_allocations` conservan referencia al pool, driver, base, origen, destinos, versión y alcance autorizados. La evidencia no puede reducir una distribución a un solo centro cuando el recurso afecta múltiples miembros.
+
+---
+
+#### 37. Acceso a la auditoría también es auditable
+
+```text
+AUDIT_ACCESS_IS_AUDITABLE = YES
+AUDIT_QUERY_IS_AUTHORITY = NO
+AUDIT_EXPORT_REQUIRES_ITS_OWN_AUTHORIZATION = YES
+```
+
+Consultar o exportar evidencia de auditoría puede revelar información más sensible que la operación ordinaria. El acceso se vuelve a autorizar y genera evidencia propia conforme a los contratos transversales aplicables.
+
+---
+
+#### 38. No se crea un permiso NUMERA de lectura de auditoría
+
+```text
+NUMERA_SPECIFIC_AUDIT_VIEW_PERMISSION_CREATED = NO
+MISSING_AUDIT_VIEW_PERMISSION_FALLBACK = FORBIDDEN
+```
+
+Esta tarea no inventa `numera.audit.view`, `numera.finance.audit.view`, `numera.audit.manage` ni equivalentes. La autoridad para investigación o lectura de auditoría permanece en los contratos transversales y consumidores propietarios que la materialicen.
+
+---
+
+#### 39. Lineage con aplicación fuente
+
+Cuando NUMERA registra o proyecta hechos derivados de PULSO, ORIGO, FOGO, NEXO u otra fuente, la evidencia conserva referencia al origen y correlación suficiente para reconciliar, sin duplicar el hecho operativo como una nueva fuente primaria.
+
+```text
+SOURCE_APP_REFERENCE_REQUIRED_WHEN_DERIVED = YES
+NUMERA_AUDIT_IS_SOURCE_OF_ECONOMIC_TRUTH = NO
+```
+
+---
+
+#### 40. Drill-down de trazabilidad
+
+Un drill-down autorizado desde reporte o indicador podrá navegar hacia fórmula, entradas, hechos, actor, fuente, documento, correlación y versiones mediante reautorización por recurso destino.
+
+```text
+TRACEABILITY_DRILLDOWN_REAUTHORIZES = YES
+TRACEABILITY_DRILLDOWN_BYPASSES_RESOURCE_PERMISSION = NO
+```
+
+---
+
+#### 41. Superficies de trazabilidad
+
+La futura UI puede mostrar actor, tiempo, fuente, historial o razón solo cuando el permiso y la proyección del recurso lo permitan. Esta tarea no crea pantallas ni obliga a exponer toda la evidencia privada en la interfaz ordinaria.
+
+---
+
+#### 42. Denegación, conflicto y fallo técnico
+
+Los resultados quedan semánticamente separados:
+
+```text
+AUTHORIZATION_DENY != STALE_OR_RESOURCE_CONFLICT
+AUTHORIZATION_DENY != TECHNICAL_FAILURE
+TECHNICAL_FAILURE != COMMITTED_EFFECT
+CONFLICT_REQUIRES_REEVALUATION = YES
+```
+
+La clasificación exacta del resultado debe permitir reconstruir si el servidor negó autoridad, detectó una versión incompatible o no pudo evaluar/ejecutar técnicamente.
+
+---
+
+#### 43. Idempotencia y retries
+
+El replay de la misma intención no debe fabricar un segundo efecto ni una historia falsa.
+
+```text
+IDEMPOTENCY_REFERENCE_AUDITABLE_WHEN_RETRYABLE = YES
+RETRY_REUSES_LOGICAL_OPERATION_IDENTITY_WHEN_APPLICABLE = YES
+RETRY_CAN_HAVE_DISTINCT_ATTEMPT_EVIDENCE = YES
+```
+
+---
+
+#### 44. Decisiones stale
+
+Una decisión de autorización o scope stale no se reutiliza para ejecutar o justificar una acción posterior.
+
+```text
+STALE_AUDIT_DECISION_IS_AUTHORITY = NO
+STALE_RESOURCE_VERSION_REQUIRES_REEVALUATION = YES
+```
+
+La auditoría conserva la decisión histórica y la nueva reevaluación como hechos diferentes.
+
+---
+
+#### 45. Rollback, corrección y compensación
+
+Rollback empresarial, corrección, reversión, reclasificación o compensación deben conservar la relación causal con el efecto previo y generar nueva evidencia aditiva.
+
+```text
+ROLLBACK_AUDITABLE = YES
+COMPENSATION_AUDITABLE = YES
+PREVIOUS_EVIDENCE_DELETED_ON_ROLLBACK = NO
+```
+
+---
+
+#### 46. Dispositivos compartidos
+
+La evidencia conserva principal, actor efectivo y dispositivo cuando participe un dispositivo compartido. La identidad del dispositivo nunca sustituye al actor humano requerido por la operación financiera.
+
+---
+
+#### 47. Simulación
+
+Una simulación conserva su plano de evidencia separado y `executable=false`. No puede registrar un efecto financiero real ni aparecer como autor de una mutación empresarial.
+
+```text
+SIMULATED_AUTHORITY_CAN_CREATE_REAL_FINANCIAL_AUDIT_EFFECT = NO
+SIMULATION_EVIDENCE_IS_REAL_EFFECT_EVIDENCE = NO
+```
+
+---
+
+#### 48. Frontera con independencia administrativa de turno
+
+`NUMERA-AUTH-010` decide qué acciones administrativas no dependen de turno/check-in. La 009 únicamente conserva la evidencia de turno/check-in cuando el evaluador la haya usado; no la convierte en requisito universal.
+
+```text
+ADMIN_TURN_INDEPENDENCE_OWNER = NUMERA_AUTH_010
+AUDIT_RECORDING_DOES_NOT_CREATE_TURN_DEPENDENCY = YES
+```
+
+---
+
+#### 49. Frontera con contexto operacional
+
+`NUMERA-AUTH-011` define contexto operacional cuando exista captura operativa. La 009 registra ese contexto si fue parte de la decisión, pero no inventa `shift_id`, `checkin_id`, sede o área cuando el contrato de la acción no los requiere.
+
+```text
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+AUDIT_MAY_RECORD_NOT_APPLICABLE_ONLY_WHEN_CONTRACT_SAYS_SO = YES
+```
+
+---
+
+#### 50. Evaluación server-side obligatoria
+
+La evidencia se origina en la frontera autoritativa que conoce la decisión y el resultado real, no desde una reconstrucción de UI.
+
+```text
+SERVER_SIDE_AUDIT_CORRELATION_REQUIRED = YES
+CLIENT_REPORTED_AUDIT_RESULT_IS_AUTHORITATIVE = NO
+```
+
+---
+
+#### 51. Durabilidad del efecto y de su auditoría
+
+Para mutaciones, decisiones empresariales, transiciones de periodo y exportaciones donde el contrato exige evidencia durable, queda prohibido confirmar éxito si el efecto queda materializado sin una correlación auditable durable o un estado reconciliable explícito.
+
+```text
+MUTATING_EFFECT_REQUIRES_DURABLE_AUDIT_CORRELATION = YES
+SILENT_AUDIT_DROP_AFTER_COMMITTED_EFFECT = FORBIDDEN
+```
+
+La materialización física puede resolver atomicidad mediante transacción, outbox u otro patrón aprobado, pero no mediante best-effort silencioso.
+
+---
+
+#### 52. Datos prohibidos en evidencia ordinaria
+
+Queda prohibido registrar por defecto:
+
+- secretos, tokens, JWT o service-role;
+- archivos exportados completos;
+- documentos bancarios completos cuando baste referencia protegida;
+- payloads financieros completos cuando baste fingerprint/diff;
+- información de otros territorios solo para explicar una denegación;
+- stack traces o mensajes de proveedor expuestos al usuario como evidencia de negocio.
+
+---
+
+#### 53. Retención, hold y finalidad
+
+La evidencia conserva clase de sensibilidad y retención conforme al contrato transversal. Una investigación, obligación o legal hold puede extender preservación sin convertir la auditoría en acceso irrestricto.
+
+```text
+AUDIT_RETENTION_IS_EXPLICIT = YES
+LEGAL_HOLD_MAY_PRESERVE_EVIDENCE = YES
+RETENTION_CLASS_IS_PERMISSION = NO
+```
+
+---
+
+#### 54. Fingerprints e integridad
+
+Los fingerprints/digests sirven para detectar alteración y enlazar versiones; no son permisos ni sustituyen el recurso fuente.
+
+```text
+AUDIT_FINGERPRINT_IS_AUTHORITY = NO
+AUDIT_DIGEST_SUPPORTS_INTEGRITY = YES
+```
+
+---
+
+#### 55. Auditoría no es fuente económica
+
+```text
+NUMERA_FINANCIAL_AUDIT_IS_ECONOMIC_SOURCE = NO
+AUDIT_REPLAY_REBUILDS_MISSING_BUSINESS_STATE_BY_DEFAULT = NO
+```
+
+La auditoría explica el lifecycle del dato y la decisión. El saldo, gasto, obligación, costo, periodo o reporte sigue perteneciendo a su modelo de dominio y fuente canónica.
+
+---
+
+#### 56. Lineage entre aplicaciones
+
+Cuando una acción NUMERA derive de eventos externos, la cadena debe permitir correlacionar fuente → hecho normalizado → decisión → efecto NUMERA → reporte/exportación sin hacer que una aplicación escriba directamente el dominio propietario de otra.
+
+---
+
+#### 57. Materialización posterior por unidad
+
+Cada instancia futura `NUMERA-AUTH-009::<implementation_unit_id>` deberá declarar como mínimo: repositorio, targets físicos reales, paquete consumidor, ambiente, cambios, rollback, validaciones, evidencia y lineage hacia este contrato global.
+
+El marcador global no predetermina cuántas unidades físicas serán necesarias.
+
+---
+
+#### 58. Prerequisitos de una unidad física
+
+Una materialización solo es admisible cuando:
+
+1. existe `implementation_unit_id` canónico;
+2. existe package propietario aplicable;
+3. `E5-GATE-008::<package_id>` está en PASS;
+4. la identidad física y sus targets han sido descubiertos;
+5. las dependencias técnicas están disponibles;
+6. existe autorización física explícita;
+7. el cambio no invade owners 010..015.
+
+---
+
+#### 59. No se inventan targets físicos
+
+Esta definición no declara nombres de tablas NUMERA nuevas, triggers, funciones, colas, rutas o archivos de producto. Esas identidades se resuelven únicamente en la unidad física contra código y esquema actuales.
+
+```text
+NUMERA_DOMAIN_AUDIT_TABLE_CREATED_BY_THIS_MARKER = NO
+NUMERA_DOMAIN_AUDIT_TRIGGER_CREATED_BY_THIS_MARKER = NO
+PHYSICAL_TARGETS_GUESSED_BY_THIS_MARKER = NO
+```
+
+---
+
+#### 60. Reconciliación del AS-IS con la fundación transversal
+
+| Evidencia observada | Conclusión |
+| --- | --- |
+| `audit.authorization_decisions` existe en `vento-shell` | hay fundación transversal de decisión; no prueba adopción NUMERA |
+| `audit.authorization_decision_links` existe | hay mecanismo transversal de correlación; no prueba writer NUMERA |
+| `audit.authorization_evaluation_failures` existe | fallos técnicos pueden separarse de DENY; no prueba cobertura NUMERA |
+| `vento-numera/main` conserva el snapshot auditado | los hallazgos AS-IS de trazabilidad siguen vigentes |
+| no existe auditoría de dominio NUMERA demostrada en el snapshot | la futura materialización debe enlazar efecto financiero con la decisión transversal |
+
+---
+
+#### 61. Hallazgos, owners y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| acciones NUMERA actuales no demuestran actor/lineage de dominio completo | no | NUMERA-AUTH-009 + unidades físicas | writers propietarios producen evidencia correlacionada sin reconstrucción post-hoc |
+| fundación transversal existe pero adopción NUMERA no está demostrada | no | NUMERA-AUTH-012 + package/unidad aplicable | consumidores usan decisión y links canónicos sin store paralelo |
+| no existe permiso NUMERA específico para consultar auditoría | no | gobierno transversal de auditoría/investigación | consumidor autorizado reutiliza capacidad canónica; no se inventa fallback |
+| UI de trazabilidad AS-IS no materializada | no | NUMERA-UX propietarios + package aplicable | superficie autorizada muestra solo evidencia mínima permitida |
+| independencia administrativa de turno todavía se define después | no | NUMERA-AUTH-010 | acciones administrativas quedan clasificadas sin que auditoría imponga turno |
+| contexto operacional se define después | no | NUMERA-AUTH-011 | capturas operativas registran contexto exacto cuando sea contractual |
+
+---
+
+#### 62. Fallback prohibido
+
+Si una capacidad, writer, recurso o vínculo de auditoría todavía no está materializado, queda prohibido sustituirlo por:
+
+```text
+numera.access
+numera.*
+legacy manage permission
+auth.audit_log_entries
+frontend timestamp
+selected site
+role name
+known resource id
+```
+
+La superficie afectada permanece pendiente de materialización o falla cerrada según su contrato; una evidencia parcial no se eleva a auditoría completa.
+
+---
+
+#### 63. Fuentes legacy y auxiliares
+
+Logs técnicos, timestamps, `metadata`, `source_app` aislado y eventos de otros dominios pueden aportar evidencia auxiliar, pero no son por sí solos el `NUMERA-FINANCIAL-AUDIT-CONTRACT-001`.
+
+---
+
+#### 64. Regla de cobertura por identidad
+
+Cada permiso canónico aparece exactamente una vez en las matrices siguientes y recibe un perfil de auditoría sin alterar su acción, recurso, scope o lifecycle.
+
+---
+
+#### 65. Matriz de auditoría — lectura
+
+| # | Permiso | Perfil | Regla de evidencia |
+| --- | --- | --- | --- |
+| 1 | `numera.finance.cost_centers.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 2 | `numera.finance.expenses.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 3 | `numera.analytics.break_even.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 4 | `numera.analytics.profitability.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 5 | `numera.analytics.financial_reports.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 6 | `numera.finance.economic_facts.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 7 | `numera.finance.payables.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 8 | `numera.finance.receivables.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 9 | `numera.finance.treasury_movements.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 10 | `numera.finance.reconciliations.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 11 | `numera.finance.costs.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 12 | `numera.finance.periods.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 13 | `numera.finance.labor_payment_packages.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 14 | `numera.finance.fiscal_documents.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 15 | `numera.finance.payment_plans.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 16 | `numera.finance.budgets.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 17 | `numera.finance.forecasts.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 18 | `numera.finance.scenarios.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 19 | `numera.finance.price_versions.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 20 | `numera.finance.tax_obligations.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 21 | `numera.finance.cost_allocations.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+| 22 | `numera.analytics.financial_indicators.view` | `READ` | decisión + actor + recurso/query + scope + razones + versión/proyección; payload financiero no duplicado |
+
+---
+
+#### 66. Matriz de auditoría — registro y escritura
+
+| # | Permiso | Perfil | Regla de evidencia |
+| --- | --- | --- | --- |
+| 1 | `numera.finance.cost_centers.create` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 2 | `numera.finance.cost_centers.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 3 | `numera.finance.cost_centers.activate` | `WRITE` | decisión + transición exacta + estado/version + actor + resultado |
+| 4 | `numera.finance.cost_centers.deactivate` | `WRITE` | decisión + transición exacta + estado/version + actor + resultado |
+| 5 | `numera.finance.expenses.create` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 6 | `numera.finance.expenses.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 7 | `numera.finance.expenses.cancel` | `WRITE` | decisión + comando + ejecución + cancelación; razón/estado/version e historia preservados |
+| 8 | `numera.finance.economic_facts.register` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 9 | `numera.finance.payables.register` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 10 | `numera.finance.payables.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 11 | `numera.finance.receivables.register` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 12 | `numera.finance.receivables.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 13 | `numera.finance.fiscal_documents.register` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 14 | `numera.finance.fiscal_documents.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 15 | `numera.finance.tax_obligations.register` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 16 | `numera.finance.tax_obligations.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 17 | `numera.finance.cost_allocations.register` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+| 18 | `numera.finance.cost_allocations.update` | `WRITE` | decisión + comando + ejecución + efecto empresarial; before/after minimizado cuando modifica |
+
+---
+
+#### 67. Matriz de auditoría — aprobación y rechazo
+
+| # | Permiso | Perfil | Regla de evidencia |
+| --- | --- | --- | --- |
+| 1 | `numera.finance.expenses.approve` | `DECISION` | aprobación sobre versión exacta + actor decisor + scope + razones/política + resultado |
+| 2 | `numera.finance.expenses.reject` | `DECISION` | rechazo sobre versión exacta + motivo obligatorio + actor decisor + scope + resultado |
+| 3 | `numera.finance.payables.approve` | `DECISION` | aprobación sobre versión exacta + actor decisor + scope + razones/política + resultado |
+| 4 | `numera.finance.payables.reject` | `DECISION` | rechazo sobre versión exacta + motivo obligatorio + actor decisor + scope + resultado |
+| 5 | `numera.finance.payment_plans.approve` | `DECISION` | aprobación sobre versión exacta + actor decisor + scope + razones/política + resultado |
+| 6 | `numera.finance.payment_plans.reject` | `DECISION` | rechazo sobre versión exacta + motivo obligatorio + actor decisor + scope + resultado |
+| 7 | `numera.finance.fiscal_documents.approve` | `DECISION` | aprobación sobre versión exacta + actor decisor + scope + razones/política + resultado |
+| 8 | `numera.finance.fiscal_documents.reject` | `DECISION` | rechazo sobre versión exacta + motivo obligatorio + actor decisor + scope + resultado |
+| 9 | `numera.finance.tax_obligations.approve` | `DECISION` | aprobación sobre versión exacta + actor decisor + scope + razones/política + resultado |
+| 10 | `numera.finance.tax_obligations.reject` | `DECISION` | rechazo sobre versión exacta + motivo obligatorio + actor decisor + scope + resultado |
+| 11 | `numera.finance.cost_allocations.approve` | `DECISION` | aprobación sobre versión exacta + actor decisor + scope + razones/política + resultado |
+| 12 | `numera.finance.cost_allocations.reject` | `DECISION` | rechazo sobre versión exacta + motivo obligatorio + actor decisor + scope + resultado |
+
+---
+
+#### 68. Matriz de auditoría — estado de periodo
+
+| # | Permiso | Perfil | Regla de evidencia |
+| --- | --- | --- | --- |
+| 1 | `numera.finance.periods.lock` | `PERIOD_STATE` | decisión + transición open/locked aplicable + versión + gates/razón + resultado |
+| 2 | `numera.finance.periods.close` | `PERIOD_STATE` | decisión + versión de periodo + close_version + gates/evidencia + resultado |
+| 3 | `numera.finance.periods.reopen` | `PERIOD_STATE` | decisión + close_version + motivo + alcance/impacto + evidencia + nueva versión cuando aplique |
+
+---
+
+#### 69. Matriz de auditoría — exportación
+
+| # | Permiso | Perfil | Regla de evidencia |
+| --- | --- | --- | --- |
+| 1 | `numera.analytics.financial_reports.export` | `EXPORT` | decisión + solicitud + export instance + report/version/scope/cutoff + propósito + delivery attempt + resultado; contenido no duplicado |
+
+---
+
+#### 70. Verificación de cobertura
+
+```text
+TOTAL_AUDIT_GOVERNED_PERMISSION_DEFINITIONS = 56
+AUDIT_MATRIX_ROW_COUNT = 56
+READ_AUDIT_MATRIX_ROWS = 22
+REGISTER_WRITE_AUDIT_MATRIX_ROWS = 18
+APPROVAL_AUDIT_MATRIX_ROWS = 12
+PERIOD_STATE_AUDIT_MATRIX_ROWS = 3
+EXPORT_AUDIT_MATRIX_ROWS = 1
+AUDIT_COVERAGE_MISSING_COUNT = 0
+AUDIT_COVERAGE_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_AUDIT_TASK = 0
+```
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la obligación de conservar trazabilidad financiera, evidencia correlacionable de autorización, decisiones y acciones protegidas, auditoría de acceso y salida de información, integridad aditiva, minimización, correlación y temporalidad ya está protegida por requisitos canónicos vigentes. Esta tarea especializa esas obligaciones sobre el universo NUMERA de 56 permisos sin introducir una regla verificable nueva fuera de dichos contratos.
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-NUMERA-001` para reconciliación, separación de capacidades y trazabilidad hasta empresa, sede, centro, actor y origen;
+- `TREQ-NUMERA-002` para identidad, fuente, correlación, estado, evidencia e historia no destructiva;
+- `TREQ-NUMERA-003` para separación de capacidades financieras sensibles;
+- `TREQ-NUMERA-004` para métodos, entradas, versiones, fuentes y drill-down de analítica;
+- `TREQ-AUTH-015` para evidencia correlacionable de toda decisión y acción protegida, incluidas denegaciones, retries y rollback;
+- `TREQ-SHELL-011` para autorización exacta y auditada de consulta, exportación, compartición y administración de información;
+- `TREQ-DATA-149` para operación, intento, correlación, causación, actor, autorización, fuente, versiones, idempotencia y resultado;
+- `TREQ-DATA-150` para evidencia aditiva e inmutable de versiones, decisiones, mutaciones, rectificaciones y compensaciones;
+- `TREQ-DATA-152` para minimizar valores sensibles en auditoría mediante referencias, hashes contextualizados o metadata mínima;
+- `TREQ-DATA-153` para separar tiempos observados, solicitados, evaluados, efectivos y registrados.
+
+Esta sección es solo trazabilidad de cobertura existente.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará en el checkout local después de incorporar el artefacto. |
+| LOCAL | `NOT_EXECUTED` | Formato, quality, delivery, topología, plan, TREQ y diff quedan pendientes del checkout local de la tarea. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main@29d687483c7192561fc7f5579e964e3fece027e9`, `active-sequence.previous_task_id = NUMERA-AUTH-007`, 007 publicada, marcadores 008/009 pendientes, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, contratos 003..007, fundación transversal `audit.authorization_decisions`/links/failures, 04A relevante y `vento-numera/main@c4d50282e30e46d0abb3d871f9604cf913ebbabd`; la predecesora 008 se consume desde el artefacto completo aprobado por el usuario y aún pendiente de publicación. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutaron acciones financieras, lecturas sensibles, aprobaciones, cierres, exportaciones, retries, compensaciones ni consultas de auditoría en ambiente desplegado. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global no crea ni autoriza ninguna instancia `NUMERA-AUTH-009::<implementation_unit_id>`. |
+
+---
+
+#### 74. Criterios de aceptación
+
+- [x] La topología queda `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] El marcador global no crea una instancia física.
+- [x] Se define `NUMERA-FINANCIAL-AUDIT-CONTRACT-001`.
+- [x] Se cubren exactamente 56 identidades, sin faltantes ni duplicados.
+- [x] Lectura, escritura, decisión, periodo y exportación conservan perfiles distintos.
+- [x] La auditoría no concede permiso, scope ni autoridad.
+- [x] La fundación `audit.authorization_decisions` se reutiliza y no se duplica.
+- [x] Los siete link kinds transversales se conservan sin inventar un octavo.
+- [x] Los fallos técnicos quedan separados de ALLOW/DENY.
+- [x] `auth.audit_log_entries` no se presenta como auditoría financiera de dominio.
+- [x] El AS-IS reconoce que NUMERA no demuestra tabla/triggers de auditoría de dominio en el snapshot vigente.
+- [x] El envelope lógico conserva actor, principal, recurso, versión, scope, correlación, resultado, evidencia y contrato fuente.
+- [x] Payloads sensibles, secretos y archivos exportados no se duplican por defecto.
+- [x] Correcciones y compensaciones son aditivas y enlazadas.
+- [x] Denegaciones y retries permanecen auditables.
+- [x] Aprobaciones/rechazos conservan la versión exacta revisada.
+- [x] Lock/close/reopen conservan versión, razón/evidencia y correlación.
+- [x] Exportación conserva request, export instance y delivery attempt separados cuando aplique.
+- [x] Acceder a auditoría requiere autorización propia y es auditable.
+- [x] No se crea un permiso NUMERA de lectura de auditoría.
+- [x] Auditoría no se convierte en fuente económica.
+- [x] La materialización física no adivina tablas, triggers, RPC o rutas.
+- [x] Los hallazgos diferidos tienen owner y condición de salida.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se realizan cambios físicos desde este marcador.
+
+---
+
+#### 75. Límites
+
+Esta tarea no:
+
+- modifica código de `vento-numera` o `vento-shell`;
+- crea tablas, triggers, policies, RLS, RPC, funciones, colas o migraciones;
+- modifica Supabase o datos;
+- crea un permiso de auditoría NUMERA;
+- concede permisos, roles o scope a actores;
+- crea pantallas o drill-downs de UI;
+- redefine la persistencia transversal de decisiones de autorización;
+- duplica `audit.authorization_decisions`;
+- convierte `auth.audit_log_entries` en auditoría financiera;
+- registra payloads reales de usuarios durante esta definición;
+- ejecuta exportaciones o cierres reales;
+- define independencia administrativa de turno;
+- define contexto operacional obligatorio;
+- materializa packages compartidos;
+- ejecuta pruebas integrales de runtime;
+- define permisos especializados de cartera/bancos/castigos;
+- define acciones de escenarios/precios/presupuestos;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza una instancia física;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-AUTH-010`.
+
+---
+
+#### 76. Handoff a NUMERA-AUTH-010
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_AUDIT_CONTRACT = NUMERA-FINANCIAL-AUDIT-CONTRACT-001
+NUMERA_AUDIT_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_AUDIT_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_AUDIT_INSTANCE_PATTERN = NUMERA-AUTH-009::<implementation_unit_id>
+NUMERA_AUDIT_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_AUDIT_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_AUDIT_DECISION_COUNT = 22
+REGISTER_WRITE_AUDIT_DECISION_COUNT = 18
+APPROVAL_AUDIT_DECISION_COUNT = 12
+PERIOD_STATE_AUDIT_DECISION_COUNT = 3
+EXPORT_AUDIT_DECISION_COUNT = 1
+AUDIT_COVERAGE_MISSING_COUNT = 0
+AUDIT_COVERAGE_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_AUDIT_TASK = 0
+AUDIT_EVIDENCE_IS_AUTHORITY = NO
+SHARED_AUTHORIZATION_DECISION_PERSISTENCE_REUSED = YES
+SHARED_AUTHORIZATION_DECISION_LINKS_REUSED = YES
+SHARED_AUDIT_LINK_KIND_COUNT = 7
+TECHNICAL_FAILURE_IS_AUTHORIZATION_DENY = NO
+AUTH_AUDIT_LOG_IS_NUMERA_FINANCIAL_AUDIT_TRAIL = NO
+NUMERA_DOMAIN_AUDIT_TABLE_AS_IS = NO
+NUMERA_DOMAIN_AUDIT_TRIGGERS_AS_IS = 0
+UI_TRACEABILITY_SURFACES_AS_IS = 0
+FINANCIAL_AUDIT_SENSITIVITY_REASON = FINANCIAL_DATA
+AUDIT_FULL_SENSITIVE_PAYLOAD_BY_DEFAULT = FORBIDDEN
+SECRET_OR_TOKEN_IN_AUDIT = FORBIDDEN
+AUDIT_HISTORY_APPEND_ONLY_LOGIC = YES
+CORRELATION_REQUIRED = YES
+CAUSATION_REQUIRED_WHEN_APPLICABLE = YES
+READ_DENY_AUDITABLE = YES
+REJECT_REASON_REQUIRED = YES
+CLOSE_VERSION_AUDITABLE = YES
+REOPEN_REASON_AUDITABLE = YES
+EXPORT_DECISION_AND_RESULT_AUDITABLE = YES
+AUDIT_ACCESS_IS_AUDITABLE = YES
+NUMERA_SPECIFIC_AUDIT_VIEW_PERMISSION_CREATED = NO
+TRACEABILITY_DRILLDOWN_REAUTHORIZES = YES
+IDEMPOTENCY_REFERENCE_AUDITABLE_WHEN_RETRYABLE = YES
+ROLLBACK_AUDITABLE = YES
+COMPENSATION_AUDITABLE = YES
+SERVER_SIDE_AUDIT_CORRELATION_REQUIRED = YES
+MUTATING_EFFECT_REQUIRES_DURABLE_AUDIT_CORRELATION = YES
+NUMERA_FINANCIAL_AUDIT_IS_ECONOMIC_SOURCE = NO
+MISSING_AUDIT_VIEW_PERMISSION_FALLBACK = FORBIDDEN
+MISSING_PERMISSION_FOR_AUDIT_MATERIALIZATION = WAIT_NO_FALLBACK
+ADMIN_TURN_INDEPENDENCE_OWNER = NUMERA_AUTH_010
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_AUDIT_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_010_OWNER = ADMINISTRATIVE_TURN_INDEPENDENCE
+```
+
+`NUMERA-AUTH-010` deberá clasificar qué acciones administrativas financieras deben resolverse fuera del turno/check-in sin eliminar identidad, permiso, scope, reautenticación o auditoría.
+
+---
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-009 — Registrar auditoría financiera`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-010 — Evitar dependencia de turno para administración`
 ### [ ] NUMERA-AUTH-010 — Evitar dependencia de turno para administración
 ### [ ] NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
 ### [ ] NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
