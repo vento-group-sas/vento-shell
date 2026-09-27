@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1399** |
+| Aprobadas | **1400** |
 | En propuesta | **0** |
-| No iniciadas | **197** |
+| No iniciadas | **196** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **87.66% (1399/1596)** |
+| Porcentaje de completamiento | **87.72% (1400/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **197** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1300** |
+| ⏸ NO_EVALUADA | **196** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1301** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUD-009` — Auditar gastos, centros de costo, cierres y aprobaciones | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUD-010` — Auditar exportaciones, información sensible y trazabilidad | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUD-011` — Ejecutar build, lint, tipos y pruebas existentes | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUD-010` — Auditar exportaciones, información sensible y trazabilidad | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUD-011` — Ejecutar build, lint, tipos y pruebas existentes | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUD-012` — Crear matriz capacidad financiera × implementación actual | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1162,7 +1162,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-007` | Detectar registros manuales duplicados frente a otros dominios | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-008` | Auditar cálculos de costos, margen, rentabilidad y punto de equilibrio | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-009` | Auditar gastos, centros de costo, cierres y aprobaciones | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-010` | Auditar exportaciones, información sensible y trazabilidad | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-010` | Auditar exportaciones, información sensible y trazabilidad | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-011` | Ejecutar build, lint, tipos y pruebas existentes | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-012` | Crear matriz capacidad financiera × implementación actual | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-001` | Definir alcance ejecutivo, analítico y contable de NUMERA | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
