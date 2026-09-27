@@ -17324,4 +17324,1184 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación`
-### [ ] NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación
+### ✅ NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
+**Tarea siguiente:** NUMERA-AUTH-001 — Vincular módulos y acciones con permisos y contratos aprobados
+**Tipo de tarea:** definición documental del motor de escenarios económicos de NUMERA, incluyendo identidad y versionado de escenarios, baselines, supuestos, precios, costos, volumen, merma, comisiones, descuentos, moneda, sensibilidad, comparación, propuesta, aprobación, publicación, vigencia, supersesión, auditoría y handoffs hacia presupuestos, precios operativos, costos, reportes y autorización, sin modificar hechos reales ni materializar código; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea motor runtime, precios activos, costos maestros, presupuestos reales, tablas, vistas, funciones, RPC, RLS, triggers, migraciones, Supabase, permisos runtime, pantallas, integraciones, hechos económicos, asientos, documentos fiscales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio del motor de escenarios de NUMERA para comparar realidad, presupuesto, forecast y alternativas simuladas sin mezclar esas categorías ni permitir que una exploración analítica altere hechos económicos, precios operativos, costos maestros, presupuestos aprobados o contabilidad.
+
+La tarea establece cómo se identifican, versionan, calculan, comparan, revisan, aprueban, publican, superan y auditan escenarios; qué entradas son referencias y cuáles son supuestos; qué significa publicar una decisión económica dentro de NUMERA; y qué handoff debe ocurrir antes de que una propuesta modifique un dominio propietario.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+```
+
+`NUMERA-DOM-018` cierra el mini-bloque documental `NUMERA-DOM-001..018` y no crea una instancia física propia.
+
+El `execution_gate` transversal observado permanece `UNREVIEWED`; ese valor no concede autorización física y no sustituye la reconciliación del mini-bloque, que declara `NO_PHYSICAL_INSTANCE` para `NUMERA-DOM`.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-017
+
+Se recibe sin reinterpretación:
+
+```text
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+EXTERNAL_AND_INTERNAL_ACCOUNTING_PATHS_SUPPORTED = YES
+ACCOUNTING_AUTHORITY_MUST_BE_EXPLICIT_BY_LEGAL_ENTITY_AND_PERIOD = YES
+DUAL_AUTHORITATIVE_LEDGER_FOR_SAME_ENTITY_PERIOD = FORBIDDEN
+ECONOMIC_FACT_IS_ACCOUNTING_CANDIDATE = NO
+ACCOUNTING_CANDIDATE_IS_POSTED_ENTRY = NO
+BALANCED_CANDIDATE_IS_POSTED_ENTRY = NO
+CHART_OF_ACCOUNTS_VERSIONED_BY_LEGAL_ENTITY = YES
+ACCOUNT_IDENTITY_IS_VISIBLE_CODE_ONLY = NO
+ACCOUNTING_THIRD_PARTY_IS_CUSTOMER_OR_DEBTOR_BY_DEFAULT = NO
+ACCOUNTING_RULES_REQUIRE_VERSION_AND_VIGENCY = YES
+ACCOUNTING_RULE_MAY_REWRITE_SOURCE_FACT = NO
+AMBIGUOUS_ACCOUNTING_RULE_AUTO_POST = FORBIDDEN
+POSTED_VOUCHER_REQUIRES_BALANCED_DEBITS_CREDITS = YES
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+TRANSACTION_ACCOUNTING_PRESENTATION_CURRENCIES = DISTINCT
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+APPROVED_OR_EXPORTED_IS_POSTED = NO
+POSTED_ENTRY_IMMUTABLE = YES
+REVERSAL_DELETES_ORIGINAL_ENTRY = NO
+ACCOUNTING_ADJUSTMENT_IS_SOURCE_CORRECTION = NO
+IDEMPOTENCY_REQUIRED_FOR_ACCOUNTING_CANDIDATE_AND_POSTING = YES
+TIMEOUT_OR_REQUEST_SENT_IS_EXTERNAL_POSTING = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_NOT_REWRITE_SOURCE = YES
+FISCAL_DOCUMENT_ACCOUNTING_VOUCHER_ACCOUNTING_ENTRY = DISTINCT
+SAME_BUSINESS_GROUP_IMPLIES_SAME_LEGAL_ENTITY = NO
+CONSOLIDATED_PROJECTION_IS_ENTITY_LEDGER = NO
+NUMERA_MANAGEMENT_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_ECONOMIC_CLOSE_IS_ACCOUNTING_CLOSE = NO
+POLICY_OR_RULE_VERSION_CHANGE_REWRITES_HISTORY = NO
+HISTORICAL_BALANCE_OR_REPORT_IS_COMPLETE_ACCOUNTING_ENTRY = NO
+CUTOVER_REQUIRES_EXPLICIT_AUTHORITY_BOUNDARY = YES
+BUDGET_FORECAST_SCENARIO_IS_ACCOUNTING_FACT = NO
+SIMULATED_RESULT_IS_POSTED_ACCOUNTING_ENTRY = NO
+SCENARIO_PUBLISHED_IS_ACCOUNTING_POSTED = NO
+TREQ_CHANGES = 0
+```
+
+La 018 desarrolla únicamente el contrato de escenarios y conserva íntegramente la frontera contable anterior.
+
+---
+
+#### 4. Entradas canónicas del motor
+
+El contrato consume como entradas, sin reemplazarlas:
+
+- hechos económicos y dimensiones aprobados en `NUMERA-DOM-002..005`;
+- presupuestos y metas definidos en `NUMERA-DOM-006`;
+- métodos y versiones de costos de `NUMERA-DOM-007`;
+- rentabilidad de `NUMERA-DOM-008`;
+- periodos y cierre económico de `NUMERA-DOM-011`;
+- reportes, indicadores y publicación de `NUMERA-DOM-012`;
+- frontera contable/fiscal de `NUMERA-DOM-013` y `NUMERA-DOM-017`;
+- conciliación de `NUMERA-DOM-014`;
+- alcance objetivo aprobado en `NUMERA-DOM-015`;
+- cartera y exposición de `NUMERA-DOM-016` cuando sean una entrada autorizada;
+- `VPROC-0069` como lifecycle canónico de presupuesto, supuestos, forecast y variaciones;
+- `VSCREEN-0156` como superficie canónica de presupuestos, escenarios y forecast;
+- la definición del visor económico reservada a `NUMERA-UX-028`.
+
+---
+
+#### 5. Estado AS-IS que no debe confundirse con el objetivo
+
+La evidencia vigente demuestra una implementación actual parcial de presupuesto y análisis, no un motor completo de escenarios.
+
+Se conserva como AS-IS:
+
+```text
+CAP_12_11_BUDGET = PARCIAL
+CURRENT_BUDGET_MUTATION = UPSERT_BY_PERIOD_AND_COST_CENTER
+CURRENT_DYNAMIC_SCENARIO_ENGINE = NOT_PROVEN
+CURRENT_SCENARIO_VERSIONING = NOT_PROVEN
+CURRENT_SCENARIO_PUBLICATION_WORKFLOW = NOT_PROVEN
+CURRENT_INTEGRAL_MARGIN_REAL_CALCULATION = NOT_PROVEN
+```
+
+La 018 define el contrato objetivo sin elevar el prototipo actual a implementación completa.
+
+---
+
+#### 6. Regla fundamental de capas
+
+Se adopta:
+
+```text
+REAL
+!= PRESUPUESTADO
+!= FORECAST
+!= ESCENARIO
+!= SIMULADO
+!= PROPUESTO
+!= PUBLICADO
+!= HECHO_CONTABLE
+```
+
+`ESCENARIO` es el objeto que contiene una hipótesis versionada. `SIMULADO`, `PROPUESTO` y `PUBLICADO` describen resultados o estados decisorios derivados de ese objeto; no son hechos reales por existir.
+
+---
+
+#### 7. Escenario como contenedor de decisión
+
+Un escenario representa una pregunta económica explícita bajo un contexto determinado.
+
+Cada escenario deberá responder:
+
+- qué se pretende evaluar;
+- contra qué baseline se compara;
+- qué supuestos cambian;
+- qué fuentes y versiones se mantienen;
+- qué periodo y dimensiones cubre;
+- qué resultados calcula;
+- quién lo creó y quién puede revisarlo;
+- si existe una propuesta o publicación derivada.
+
+Un escenario no es una copia editable del ledger económico.
+
+---
+
+#### 8. Identidad estable del escenario
+
+Se conserva:
+
+```text
+SCENARIO_ID = identidad estable del caso de análisis
+SCENARIO_VERSION = versión identificable de sus entradas, supuestos y resultados
+```
+
+Cambiar nombre visible, descripción o presentación no crea automáticamente una nueva identidad; cambiar materialmente el conjunto de supuestos, baseline, método o alcance sí deberá producir una versión identificable antes de aprobar o publicar.
+
+---
+
+#### 9. Ciclo conceptual del escenario
+
+El contrato distingue al menos:
+
+```text
+BORRADOR
+-> PROPUESTO
+-> EN_REVISION
+-> APROBADO
+-> PUBLICADO
+-> SUPERADO
+```
+
+Una versión podrá ser devuelta o rechazada sin eliminarse. El lifecycle conceptual del escenario no crea nuevos estados para `VPROC-0069`; se representa dentro de sus etapas canónicas de preparación, revisión, aprobación, vigencia y seguimiento.
+
+---
+
+#### 10. Inmutabilidad después de decisión material
+
+Una versión propuesta, aprobada o publicada no se modifica silenciosamente.
+
+Si cambia materialmente:
+
+1. se conserva la versión anterior;
+2. se crea una nueva versión;
+3. se declara la relación de derivación o supersesión;
+4. se recalculan resultados con entradas identificadas;
+5. se repite la revisión o aprobación aplicable.
+
+---
+
+#### 11. Baseline obligatorio
+
+Toda simulación deberá declarar un baseline reproducible.
+
+El baseline puede corresponder, según el caso, a:
+
+- realidad confirmada y conciliada;
+- presupuesto aprobado;
+- forecast vigente;
+- versión de precio autorizada como referencia;
+- versión de costo aplicable;
+- periodo comparable;
+- escenario publicado anterior.
+
+`BASELINE_DESCONOCIDO` no se sustituye por cero ni por la última cifra disponible sin declararlo.
+
+---
+
+#### 12. Snapshot de baseline
+
+Para reproducibilidad, la versión de escenario conserva las identidades y cortes de las entradas observadas al calcularse.
+
+Se adopta:
+
+```text
+SCENARIO_BASELINE_REFERENCE
+!= LIVE_MUTABLE_SOURCE
+```
+
+Una fuente real puede evolucionar después; el escenario histórico continúa explicando con qué versión o corte se calculó.
+
+---
+
+#### 13. Conjunto de supuestos
+
+Los supuestos forman un conjunto versionado separado de los hechos y del baseline.
+
+Cada supuesto deberá declarar, cuando aplique:
+
+- variable o concepto;
+- valor;
+- unidad;
+- moneda;
+- alcance;
+- periodo o vigencia;
+- fuente o racional;
+- autor;
+- fecha;
+- dependencia o restricción;
+- si reemplaza una referencia solo dentro del escenario o actúa como delta.
+
+---
+
+#### 14. Ausencia, cero y desconocido
+
+Se conserva:
+
+```text
+ABSENT != ZERO != UNKNOWN != NOT_APPLICABLE
+```
+
+Un supuesto ausente no adopta cero automáticamente. Un valor desconocido deberá permanecer visible como limitación del escenario o bloquear el cálculo que dependa materialmente de él.
+
+---
+
+#### 15. Supuestos de precio
+
+El motor podrá evaluar precios alternativos sin alterar el precio operativo.
+
+Se distinguen:
+
+```text
+PRECIO_REFERENCIA
+!= PRECIO_SIMULADO
+!= PRECIO_PROPUESTO
+!= PRECIO_PUBLICADO_EN_NUMERA
+!= PRECIO_OPERATIVO_ACTIVO
+```
+
+La versión del escenario conserva moneda, unidad, presentación, canal, entidad o marca y vigencia aplicables al supuesto de precio.
+
+---
+
+#### 16. Frontera del precio operativo
+
+NUMERA puede calcular y publicar una decisión o recomendación económica de precio dentro de su alcance analítico, pero no adquiere por ello propiedad sobre la oferta comercial operativa.
+
+Se congela:
+
+```text
+NUMERA_PUBLISHED_PRICE_DECISION
+!= OPERATIONAL_ACTIVE_PRICE
+```
+
+Cuando el precio operativo pertenezca a PULSO, catálogo u otro dominio propietario, la activación requiere un handoff explícito, autorización aplicable y aceptación del propietario; no existe escritura cruzada desde el escenario.
+
+---
+
+#### 17. Versiones de precio
+
+Una versión de precio utilizada o propuesta por el motor deberá identificar, según aplique:
+
+- producto o servicio;
+- presentación;
+- canal;
+- entidad/brand scope;
+- moneda;
+- importe;
+- impuestos o componentes si forman parte de la comparación autorizada;
+- vigencia propuesta;
+- fuente o scenario version;
+- decisión y aprobación asociadas.
+
+No se inventa una estructura fiscal del precio cuando esa autoridad pertenece a otro dominio o proveedor.
+
+---
+
+#### 18. Supuestos de costo
+
+El escenario puede consumir una versión de costo aprobada o introducir un costo hipotético explícitamente marcado para análisis.
+
+Se conserva:
+
+```text
+COSTO_CANONICO_REFERENCIADO
+!= COSTO_HIPOTETICO_DEL_ESCENARIO
+```
+
+El costo hipotético no reemplaza el método, inputs ni resultado aprobados en `NUMERA-DOM-007`.
+
+---
+
+#### 19. Frontera del costo maestro
+
+Publicar un escenario no modifica un costo maestro ni una regla de distribución.
+
+Una modificación real de costo deberá pasar por el contrato propietario correspondiente y conservar método, versión, inputs, vigencia, aprobación y reversión.
+
+---
+
+#### 20. Volumen como supuesto
+
+Volumen vendido, producido, comprado o proyectado debe declarar la naturaleza que representa.
+
+Un volumen hipotético no se vuelve:
+
+- pedido;
+- plan de producción;
+- compra;
+- reserva de inventario;
+- venta;
+- forecast firme de otro proceso.
+
+El motor solo calcula el efecto proyectado.
+
+---
+
+#### 21. Merma y rendimiento
+
+Los escenarios podrán variar merma o rendimiento para sensibilidad, pero la realidad productiva continúa perteneciendo a FOGO y a sus hechos propietarios.
+
+Una merma simulada no crea consumo ni ajuste físico.
+
+---
+
+#### 22. Comisión y cargos
+
+Comisiones, fees o cargos podrán modelarse cuando exista una definición o supuesto identificable.
+
+El motor deberá distinguir entre:
+
+- cargo real confirmado;
+- tarifa contractual vigente;
+- tarifa presupuestada;
+- supuesto simulado.
+
+No se mezclan por usar el mismo porcentaje visible.
+
+---
+
+#### 23. Descuentos
+
+Un descuento hipotético puede afectar precio neto, margen y volumen proyectado, pero no crea una promoción ni modifica una venta.
+
+Su aplicación comercial real permanece sujeta al dominio y autorización propietarios.
+
+---
+
+#### 24. Otros supuestos extensibles
+
+El motor podrá admitir variables adicionales siempre que:
+
+- exista identidad semántica;
+- se declare unidad y alcance;
+- no duplique una variable con otro nombre;
+- conserve fuente o racional;
+- no permita escribir directamente sobre el hecho real;
+- su fórmula y dependencia queden versionadas.
+
+La extensibilidad no autoriza campos arbitrarios sin contrato.
+
+---
+
+#### 25. Moneda y tipo de cambio
+
+Una comparación multi-moneda deberá conservar:
+
+- moneda de cada entrada;
+- moneda de cálculo o presentación;
+- fuente de FX;
+- timestamp o periodo de FX;
+- versión o regla aplicable;
+- redondeo.
+
+No se define una metodología FX universal en esta tarea.
+
+---
+
+#### 26. Unidades y conversiones
+
+Precio, costo, volumen y rendimiento no se comparan hasta resolver unidades compatibles.
+
+Toda conversión material deberá ser reproducible y conservar la regla aplicada. Una unidad faltante bloquea la equivalencia automática.
+
+---
+
+#### 27. Horizonte temporal
+
+Cada escenario declara horizonte y granularidad aplicables.
+
+Se distinguen:
+
+```text
+CUT_OFF_DATE
+SCENARIO_HORIZON
+ASSUMPTION_VIGENCY
+PUBLICATION_VIGENCY
+```
+
+Ninguno se infiere del otro.
+
+---
+
+#### 28. Dimensiones obligatorias
+
+Cuando sean materiales para el resultado, el escenario conserva explícitamente:
+
+- entidad legal;
+- marca/unidad;
+- sede;
+- centro de costo;
+- producto/familia/presentación;
+- canal;
+- cliente/segmento cuando esté autorizado;
+- periodo;
+- moneda.
+
+No se colapsan entidad, marca, sede o centro de costo.
+
+---
+
+#### 29. Alcance y agregación
+
+Un escenario puede operar sobre una dimensión agregada solo cuando el agregado tenga lineage suficiente.
+
+El agregado no se vuelve fuente editable y no autoriza inferir valores individuales ocultos o no autorizados.
+
+---
+
+#### 30. Motor determinista
+
+Con el mismo baseline, versiones de inputs, conjunto de supuestos, fórmulas, unidades, FX y contexto, el motor deberá producir el mismo resultado.
+
+Se adopta:
+
+```text
+SAME_INPUT_VERSION_SET
+-> SAME_RESULT
+```
+
+salvo una corrección explícitamente versionada del método.
+
+---
+
+#### 31. Versión de fórmula y método
+
+Todo cálculo material deberá poder indicar qué método y versión lo produjeron.
+
+No se permite una fórmula local distinta con el mismo nombre de indicador, costo, margen o punto de equilibrio.
+
+---
+
+#### 32. Resultados mínimos de escenario
+
+Según el caso, el motor podrá derivar:
+
+- precio y precio neto;
+- costo aplicable;
+- contribución;
+- margen absoluto y porcentual;
+- volumen requerido;
+- punto de equilibrio;
+- ingreso proyectado;
+- costo proyectado;
+- resultado o contribución proyectada;
+- variación contra baseline;
+- sensibilidad.
+
+La existencia de esta lista no obliga a calcular campos que carezcan de entradas válidas.
+
+---
+
+#### 33. Margen y contribución
+
+Toda métrica de margen deberá declarar sus componentes y denominador.
+
+No se permite usar `margen` como etiqueta única para fórmulas materialmente distintas.
+
+---
+
+#### 34. Punto de equilibrio
+
+El punto de equilibrio solo se calcula cuando sus inputs y método estén definidos.
+
+No se presenta como cifra real si depende de volumen, margen, precio o costo simulados.
+
+---
+
+#### 35. Rentabilidad
+
+La rentabilidad simulada consume las reglas de `NUMERA-DOM-008` y diferencia ingreso realizado de ingreso hipotético.
+
+Se conserva:
+
+```text
+SIMULATED_PROFITABILITY != REALIZED_PROFITABILITY
+```
+
+---
+
+#### 36. Sensibilidad
+
+El motor debe permitir identificar qué resultado cambia cuando varía un supuesto.
+
+Una sensibilidad conserva:
+
+- variable modificada;
+- valor base;
+- valor alternativo;
+- resultado afectado;
+- resto de entradas mantenidas;
+- versión del cálculo.
+
+No se presenta correlación visual como causalidad demostrada.
+
+---
+
+#### 37. Comparación de escenarios
+
+Dos versiones solo se comparan cuando el sistema puede explicar sus diferencias de contexto.
+
+La comparación identifica, como mínimo:
+
+- baseline;
+- supuestos distintos;
+- métodos o versiones distintos;
+- periodo/horizonte;
+- resultados y delta;
+- limitaciones de comparabilidad.
+
+---
+
+#### 38. Variación contra realidad
+
+La comparación con real utiliza hechos confirmados y conciliados cuando sean obligatorios para la métrica.
+
+Una variación no modifica ni corrige el real; abre análisis o decisión cuando corresponda.
+
+---
+
+#### 39. Presupuesto y escenario permanecen distintos
+
+Se congela:
+
+```text
+PRESUPUESTO_APROBADO != ESCENARIO
+```
+
+Un escenario puede tomar el presupuesto como baseline o proponer una revisión, pero modificar el escenario no modifica el presupuesto aprobado.
+
+---
+
+#### 40. Forecast y escenario permanecen distintos
+
+Se conserva:
+
+```text
+FORECAST != ESCENARIO
+```
+
+Un forecast representa una proyección gobernada del negocio dentro de `VPROC-0069`. Un escenario puede producir insumos para revisar el forecast, pero la revisión se incorpora mediante el lifecycle propietario.
+
+---
+
+#### 41. Integración con VPROC-0069
+
+El motor respeta el lifecycle canónico:
+
+```text
+BUDGET_DRAFT
+-> ASSUMPTIONS_COLLECTING
+-> CONSOLIDATING
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> APPROVED
+-> IN_FORCE
+-> CONSUMPTION_MONITORING
+-> FORECAST_REVISION_IN_PROGRESS
+-> VARIANCE_REVIEW
+-> BUDGET_CYCLE_CLOSED
+```
+
+No se crean estados de proceso paralelos.
+
+---
+
+#### 42. Escenario dentro de VPROC-0069
+
+Los escenarios pueden ser preparados y comparados durante recopilación, consolidación, revisión o revisión de forecast, pero:
+
+- una simulación no equivale a `APPROVED`;
+- una propuesta no equivale a `IN_FORCE`;
+- publicar un escenario no cierra el ciclo presupuestal;
+- cerrar el ciclo no convierte la última simulación en presupuesto.
+
+---
+
+#### 43. Autoridad de VPROC-0069
+
+Para la versión presupuestal, supuestos, vigencia y modificación material se conserva la autoridad canónica de `VPROC-0069` y su segregación.
+
+La publicación o modificación material no puede concentrar preparación, análisis y aprobación crítica en el mismo actor cuando el proceso exige separación.
+
+Los permisos atómicos se desarrollan posteriormente en `NUMERA-AUTH-*`.
+
+---
+
+#### 44. Significado de propuesta
+
+`PROPUESTO` significa que una versión identificada fue enviada a revisión o decisión.
+
+No significa:
+
+- aprobada;
+- vigente;
+- publicada;
+- aplicada a PULSO;
+- aplicada al presupuesto;
+- aplicada a costos;
+- contabilizada.
+
+---
+
+#### 45. Significado de publicación
+
+`PUBLICADO` representa una versión NUMERA que recibió la decisión necesaria para ser consumida como referencia aprobada dentro de su finalidad declarada.
+
+La publicación deberá indicar:
+
+- objeto publicado;
+- versión;
+- alcance;
+- vigencia;
+- aprobador o autoridad;
+- baseline;
+- supuestos;
+- resultados;
+- relaciones con versiones previas;
+- destinatarios o consumidores permitidos cuando aplique.
+
+---
+
+#### 46. Publicación no equivale a mutación operativa
+
+Se congela:
+
+```text
+SCENARIO_PUBLISHED
+!= SOURCE_FACT_MUTATED
+!= OPERATIONAL_PRICE_ACTIVATED
+!= MASTER_COST_CHANGED
+!= BUDGET_BASE_REWRITTEN
+!= ACCOUNTING_POSTED
+```
+
+Toda aplicación real necesita el contrato del dominio propietario.
+
+---
+
+#### 47. Vigencia de una publicación
+
+Una publicación puede tener fecha de inicio y fin de vigencia, pero la vigencia NUMERA no suplanta la vigencia operativa de un dominio propietario.
+
+Si una decisión requiere activación externa a NUMERA, el estado visible deberá distinguir `publicado` de `aplicado/activo en origen` hasta recibir evidencia correlacionada.
+
+---
+
+#### 48. Supersesión
+
+Una versión nueva puede superseder una publicación anterior sin borrar la anterior.
+
+La relación conserva:
+
+- versión reemplazada;
+- nueva versión;
+- motivo;
+- fecha efectiva;
+- decisión;
+- diferencias materiales.
+
+---
+
+#### 49. Retiro y archivo
+
+Retirar una versión de uso futuro no elimina su historia.
+
+Una versión publicada que deja de estar vigente permanece consultable según autorización y retención aplicables.
+
+---
+
+#### 50. Clonado y branching
+
+Clonar un escenario crea una nueva rama de análisis con lineage explícito.
+
+La copia no comparte una identidad mutable con el original ni permite que cambios posteriores se propaguen silenciosamente entre ambas ramas.
+
+---
+
+#### 51. Concurrencia
+
+Si dos actores modifican la misma versión de trabajo, el sistema objetivo deberá evitar la pérdida silenciosa de cambios.
+
+La política física de locking/optimistic concurrency se reserva a implementación; el contrato exige detectar conflicto y conservar autoría/versionado suficiente.
+
+---
+
+#### 52. Idempotencia
+
+Crear, proponer, aprobar o publicar una misma versión mediante reintento no debe producir duplicados materiales.
+
+Una clave de negocio o correlación deberá permitir distinguir repetición técnica de una nueva decisión real.
+
+---
+
+#### 53. Historial y auditoría
+
+Cada transición material conserva, según aplique:
+
+- actor efectivo;
+- autoridad;
+- timestamp;
+- versión origen y destino;
+- acción;
+- razón;
+- baseline;
+- cambios de supuestos;
+- resultado;
+- evidencia de aprobación/publicación.
+
+No se audita únicamente el último valor.
+
+---
+
+#### 54. Compartir no equivale a publicar
+
+Se conserva:
+
+```text
+SHARED != PROPOSED != APPROVED != PUBLISHED
+```
+
+Compartir una simulación concede únicamente el acceso autorizado a esa versión; no modifica su estado decisorio ni amplía su audiencia por inferencia.
+
+---
+
+#### 55. Lectura y edición permanecen separadas
+
+Poder ver o comparar un escenario no concede editarlo, proponerlo, aprobarlo, publicarlo ni aplicarlo.
+
+Los permisos detallados quedan en `NUMERA-AUTH-001` y `NUMERA-AUTH-015`.
+
+---
+
+#### 56. Crear, compartir, aprobar y publicar son acciones distintas
+
+La siguiente capa de autorización deberá poder distinguir, como mínimo, las acciones empresariales de:
+
+- consultar;
+- crear;
+- modificar borrador;
+- clonar;
+- comparar;
+- compartir;
+- proponer;
+- revisar;
+- aprobar;
+- publicar;
+- superseder o retirar;
+- exportar cuando corresponda.
+
+Esta lista define categorías de acción; no crea identificadores runtime de permiso.
+
+---
+
+#### 57. Segregación
+
+Una decisión material de precio, presupuesto o regla no se autoaprueba por haber sido creada o simulada por el mismo actor.
+
+La segregación exacta depende de autoridad, importe, impacto y contratos posteriores; toda excepción deberá quedar autorizada y auditada.
+
+---
+
+#### 58. Autorización server-side
+
+Las futuras mutaciones de escenario y publicación deberán validar autorización en servidor con actor efectivo, territorio, recurso, estado y campos permitidos.
+
+La interfaz nunca será autoridad suficiente.
+
+---
+
+#### 59. Simulación de autorización no concede efecto real
+
+Se conserva:
+
+```text
+SIMULATED_AUTHORIZATION
+!= REAL_PUBLICATION_AUTHORITY
+```
+
+Una sesión o preview de autorización no puede publicar, exportar ni aplicar una decisión financiera real.
+
+---
+
+#### 60. Exportación de escenarios
+
+Exportar una versión no la publica ni la convierte en fuente económica.
+
+Toda exportación deberá conservar identidad/versionado, alcance y autorización conforme a `NUMERA-DOM-012`.
+
+---
+
+#### 61. Calidad de entradas
+
+Un escenario deberá indicar si sus entradas obligatorias están:
+
+- reconciliadas;
+- incompletas;
+- desactualizadas;
+- degradadas;
+- simuladas;
+- desconocidas.
+
+La calidad insuficiente puede impedir proponer o publicar una versión material.
+
+---
+
+#### 62. Frescura
+
+La frescura de cada fuente material deberá ser visible o reconstruible.
+
+Un escenario no podrá presentarse como actualizado solo porque fue recalculado recientemente si sus fuentes son antiguas.
+
+---
+
+#### 63. Datos tardíos
+
+Cuando llegue un hecho real posterior al corte del baseline:
+
+- el escenario histórico no se reescribe;
+- puede marcarse que existe información posterior;
+- una nueva versión podrá recalcularse con el nuevo corte;
+- cualquier publicación previa conserva su contexto original.
+
+---
+
+#### 64. Incertidumbre
+
+Los supuestos inciertos pueden representarse con explicación o rango cuando el método lo soporte, pero no se inventa una distribución estadística por defecto.
+
+La incertidumbre no se oculta detrás de una cifra puntual sin disclosure.
+
+---
+
+#### 65. Confianza y limitaciones
+
+Si el sistema muestra una señal de confianza, deberá derivarse de reglas explícitas de calidad, cobertura y frescura; no será una opinión visual arbitraria.
+
+La tarea no define una escala numérica universal de confianza.
+
+---
+
+#### 66. Conciliación de resultados publicados
+
+Cuando una publicación de escenario se compare posteriormente con hechos reales, la diferencia se trata mediante el contrato de `NUMERA-DOM-014`.
+
+El real no se ajusta para cumplir la proyección y la proyección histórica no se reescribe para parecer acertada.
+
+---
+
+#### 67. Relación con reportes oficiales NUMERA
+
+Un escenario publicado puede alimentar reportes gerenciales de `NUMERA-DOM-012` si el reporte identifica inequívocamente la categoría y versión.
+
+Se conserva:
+
+```text
+PUBLISHED_SCENARIO_RESULT
+!= REAL_RESULT
+!= STATUTORY_FINANCIAL_STATEMENT
+```
+
+---
+
+#### 68. Relación con contabilidad
+
+Se hereda de `NUMERA-DOM-017`:
+
+```text
+BUDGET_FORECAST_SCENARIO_IS_ACCOUNTING_FACT = NO
+SIMULATED_RESULT_IS_POSTED_ACCOUNTING_ENTRY = NO
+SCENARIO_PUBLISHED_IS_ACCOUNTING_POSTED = NO
+```
+
+Ninguna regla del motor genera asientos ni candidatos contables por inferencia.
+
+---
+
+#### 69. Relación fiscal
+
+Precio, costo, margen o resultado simulado no determinan automáticamente bases fiscales, impuestos, facturas o declaraciones.
+
+La autoridad fiscal continúa conforme a `NUMERA-DOM-013`.
+
+---
+
+#### 70. VSCREEN-0156
+
+La superficie canónica `VSCREEN-0156 — Presupuestos, escenarios y forecast` consume `VPROC-0069` y gobierna versión, supuestos, aprobación, consumo y desviación.
+
+La 018 define el contrato de dominio que esa superficie deberá respetar; no diseña todavía su layout ni implementación.
+
+---
+
+#### 71. VSCREEN-0104 y análisis de costos/rentabilidad
+
+Las superficies de costos, rentabilidad y escenarios podrán consumir resultados del motor siempre que preserven método, baseline, versión, categoría y lineage.
+
+No deberán recalcular la misma métrica con una fórmula local divergente.
+
+---
+
+#### 72. Frontera con NUMERA-UX-028
+
+`NUMERA-UX-028` conserva el diseño del visor económico dinámico de una sola pantalla.
+
+La UI deberá representar sin ambigüedad:
+
+```text
+REAL
+PRESUPUESTADO
+FORECAST
+SIMULADO
+PROPUESTO
+PUBLICADO
+```
+
+La 018 no prescribe componentes visuales ni densidad concreta más allá de esa semántica.
+
+---
+
+#### 73. Interacción esperada del visor sin invadir UX
+
+El contrato de dominio exige que cambiar precio, costo, volumen, merma, comisión o descuento recalcule únicamente la versión simulada activa.
+
+La actualización inmediata del resultado no equivale a guardar, proponer, aprobar o publicar.
+
+---
+
+#### 74. Restablecer
+
+Restablecer una simulación devuelve la sesión de trabajo a su baseline o conjunto de supuestos de referencia, sin alterar fuentes ni borrar versiones históricas.
+
+---
+
+#### 75. Persistencia de borradores
+
+La implementación futura podrá persistir borradores, pero deberá distinguir guardado de borrador de decisión material.
+
+Un autosave no podrá cambiar el estado a propuesto, aprobado o publicado.
+
+---
+
+#### 76. Migración de presupuestos y escenarios históricos
+
+Datos históricos parciales podrán incorporarse únicamente con procedencia, alcance y calidad explícitos.
+
+Un presupuesto agregado histórico no se convierte en conjunto completo de supuestos ni en escenario reproducible si faltan inputs o versiones.
+
+---
+
+#### 77. Dependencia de proveedor o tecnología
+
+El contrato de escenarios es independiente de una librería, motor de cálculo, base de datos o proveedor concreto.
+
+Una implementación futura deberá conservar estas identidades y fronteras aunque cambie la tecnología.
+
+---
+
+#### 78. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| motor runtime de escenarios no materializado | no | implementación NUMERA / paquetes E5 aplicables | cálculo versionado, persistencia, concurrencia e idempotencia implementados y probados |
+| permisos detallados aún no vinculados | no | `NUMERA-AUTH-001` y `NUMERA-AUTH-015` | cada acción sensible queda asociada a permiso, territorio, contexto y auditoría |
+| visor económico objetivo no diseñado físicamente | no | `NUMERA-UX-028` | representación simple y comparativa consume este contrato sin mezclar categorías |
+| precio operativo pertenece a dominio comercial propietario | no | PULSO/catálogo + autorización aplicable | handoff explícito demuestra aceptación y activación del precio operativo |
+| costos maestros consumidos por escenarios tienen owner propio | no | `NUMERA-DOM-007`, `VPROC-0054` y consumidores | cambios reales siguen método/versionado/aprobación propietarios |
+| política concreta de aprobación por impacto o umbral no se infiere | no | `NUMERA-AUTH-015` + gobierno empresarial aplicable | permisos, umbrales y segregación quedan explícitos antes de publicación material |
+
+No se crea una tarea administrativa nueva.
+
+---
+
+#### 79. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos descartados: 0
+Requisitos obsoletos: 0
+```
+
+La tarea desarrolla semántica ya protegida por requisitos vigentes y no cambia su contenido ni estado.
+
+---
+
+#### 80. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-NUMERA-004` — métodos, entradas, versiones, vigencia, fuentes, presupuesto, forecast, escenarios, rentabilidad y separación inequívoca entre real/presupuestado/simulado/propuesto/publicado;
+- `TREQ-NUMERA-001` — trazabilidad de costos, márgenes, cierres y reportes hasta fuentes;
+- `TREQ-NUMERA-002` — dimensiones, periodos, correcciones no destructivas y separación de contabilidad;
+- `TREQ-AUTH-013` — autorización server-side de mutaciones protegidas;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones sensibles;
+- `TREQ-INTEGRATION-017` — integración versionada e idempotente sin doble fuente cuando resultados sean consumidos externamente.
+
+No corresponde actualizar el Registro 04A.
+
+---
+
+#### 81. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no se ejecutó build de producto durante su preparación. |
+| LOCAL | NOT_EXECUTED | No se ejecutó el checkout local del usuario ni se incorporó el bloque al archivo propietario durante la preparación. |
+| REMOTA | PASS | Se verificaron `main`, protocolo, contrato de entrega, manifest, continuidad, topología, archivo propietario, `VPROC-0069`, estados de proceso, `VSCREEN-0156`, roles/segregación, 04A NUMERA/AUTH/INTEGRATION y scripts documentales vigentes. |
+| OPERATIVA | NOT_EXECUTED | No se crearon escenarios reales, precios, costos, presupuestos, publicaciones ni decisiones operativas. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-DOM-018` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no materializa producto ni infraestructura. |
+
+---
+
+#### 82. Criterios de aceptación y cierre del mini-bloque
+
+La tarea queda aceptada cuando se demuestre documentalmente que:
+
+1. escenario y realidad permanecen separados;
+2. presupuesto, forecast, escenario, simulado, propuesto y publicado no se fusionan;
+3. cada escenario tiene identidad y versión;
+4. baseline y cutoff son reproducibles;
+5. supuestos están separados de fuentes reales;
+6. ausencia, cero y desconocido no se confunden;
+7. precio referencia, simulado, propuesto, publicación NUMERA y precio operativo activo permanecen distintos;
+8. publicación NUMERA no activa precio operativo por escritura cruzada;
+9. costo hipotético no reemplaza costo canónico;
+10. publicación no cambia costo maestro;
+11. volumen simulado no crea pedido, producción, compra o venta;
+12. merma/rendimiento simulados no modifican producción;
+13. comisiones y cargos conservan naturaleza real/contractual/presupuestada/simulada;
+14. descuentos simulados no crean promociones ni ventas;
+15. variables extensibles requieren semántica, unidad, fuente y versión;
+16. moneda/FX y unidades son reproducibles;
+17. horizonte, cutoff y vigencias permanecen distintos;
+18. entidad, marca, sede y centro no se colapsan;
+19. agregados no se vuelven fuentes editables;
+20. mismos inputs/versiones producen mismo resultado;
+21. fórmula y método son versionados;
+22. margen declara fórmula y denominador;
+23. punto de equilibrio declara naturaleza simulada cuando aplique;
+24. rentabilidad simulada no se presenta como realizada;
+25. sensibilidad conserva variable y baseline;
+26. comparaciones declaran diferencias de contexto;
+27. variación contra real no corrige el real;
+28. presupuesto aprobado no se modifica desde escenario;
+29. forecast no se modifica por inferencia;
+30. `VPROC-0069` conserva sus estados canónicos;
+31. simulación/propuesta/publicación no crean estados paralelos de proceso;
+32. autoridad y segregación de `VPROC-0069` se preservan;
+33. compartir no equivale a publicar;
+34. lectura no concede edición/aprobación/publicación;
+35. las acciones sensibles quedan preparadas para `NUMERA-AUTH-001/015` sin inventar IDs;
+36. simulación de autorización no concede autoridad real;
+37. exportación no publica ni crea fuente económica;
+38. calidad y frescura forman parte de la interpretación;
+39. datos tardíos no reescriben históricos;
+40. incertidumbre no se oculta;
+41. conciliación posterior no reescribe proyección ni real;
+42. escenario publicado no es estado financiero estatutario;
+43. escenario publicado no es asiento contable;
+44. escenario no determina fiscalidad por inferencia;
+45. `VSCREEN-0156` consume este contrato sin ser rediseñada aquí;
+46. `NUMERA-UX-028` recibe semántica suficiente para representar categorías sin mezclarlas;
+47. autosave/borrador no cambia estado decisorio;
+48. históricos incompletos no se certifican como escenarios reproducibles;
+49. hallazgos diferidos tienen owner y condición de salida;
+50. no se crean ni modifican requisitos de prueba;
+51. no se realizan cambios físicos;
+52. el mini-bloque `NUMERA-DOM-001..018` queda documentalmente cerrado y entrega sus acciones/objetos a autorización financiera.
+
+---
+
+#### 83. Límites y handoff a NUMERA-AUTH-001
+
+Esta tarea no:
+
+- implementa el motor runtime;
+- crea modelos físicos de datos;
+- crea tablas, vistas, RPC, RLS, triggers o migraciones;
+- modifica Supabase;
+- crea permisos runtime;
+- diseña la UI de `NUMERA-UX-028`;
+- activa precios operativos;
+- modifica catálogo comercial;
+- modifica costos maestros;
+- modifica presupuestos aprobados;
+- modifica forecast vigente por inferencia;
+- crea hechos económicos;
+- crea asientos o candidatos contables;
+- emite documentos fiscales;
+- determina impuestos;
+- fija umbrales de aprobación;
+- fija una política universal de FX;
+- selecciona librería o proveedor tecnológico;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-001`.
+
+El cierre del mini-bloque entrega a autorización financiera las categorías de objetos y acciones ya definidas en `NUMERA-DOM-001..018`. `NUMERA-AUTH-001` deberá vincular módulos y acciones con los permisos y contratos aprobados sin transferir propiedad funcional ni convertir una capacidad documental en acceso efectivo por defecto.
+
+---
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-001 — Vincular módulos y acciones con permisos y contratos aprobados`
