@@ -3060,7 +3060,626 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación`
-### [ ] NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación
+### ✅ NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario
+**Tarea siguiente:** NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
+**Tipo de tarea:** definición documental del contrato de gasto dentro de NUMERA, incluyendo origen, soporte, captura manual legítima, validación, aprobación, reconocimiento, prevención de duplicidad, corrección, anulación, actor, periodo, centro de costo, relación con obligaciones y pagos y fronteras frente a compras, inventario, producción, nómina, contabilidad formal y fiscalidad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica NUMERA, ORIGO, NEXO, FOGO, PULSO, ANIMA, Supabase, permisos, tablas, gastos, periodos, soportes, obligaciones, pagos, documentos, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cuándo un desembolso, consumo económico, servicio, obligación o soporte externo puede representarse como gasto en NUMERA, qué evidencia mínima debe acompañarlo, cuándo una captura manual es legítima, qué decisión separa registro de aprobación, cómo se reconoce el efecto económico y cómo se corrige o anula sin borrar historia ni duplicar hechos que ya pertenecen a otros dominios.
+
+La tarea desarrolla las brechas confirmadas por `NUMERA-AUD-007`, `NUMERA-AUD-009` y `NUMERA-AUD-010` y consume los contratos de `NUMERA-DOM-002` a `NUMERA-DOM-004` para que NUMERA:
+
+- no convierta un formulario manual en fuente universal de gastos;
+- no duplique ventas, compras, recepciones, inventario, producción, caja, nómina u obligaciones ya originadas en otra fuente;
+- diferencie captura, validación, aprobación, reconocimiento, conciliación, corrección y anulación;
+- exija origen y soporte suficientes para explicar el gasto;
+- conserve actor, fechas, moneda, importe, periodo, centro, documento y correlación cuando apliquen;
+- mantenga una vía manual gobernada para hechos cuyo origen legítimo no disponga todavía de integración;
+- preserve el original cuando una corrección o anulación ocurra después del reconocimiento.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica de `NUMERA-DOM-005` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- esta tarea define un contrato documental reutilizable;
+- no crea una instancia física propia;
+- no modifica `numera_expenses` ni su RLS actual;
+- no crea nuevos permisos ni decide sus códigos runtime;
+- no ejecuta gastos, aprobaciones, anulaciones, pagos ni cierres;
+- no modifica documentos ni archivos de soporte;
+- no define todavía la propiedad del catálogo de centros de costo;
+- no define el workflow integral de periodos, cuentas por pagar, caja, bancos, impuestos o contabilidad formal.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-004
+
+`NUMERA-DOM-004` deja congeladas estas reglas que también gobiernan gastos:
+
+```text
+FUENTE_OPERATIVA_CONSERVA_PROPIEDAD = SI
+HECHO_OPERATIVO != HECHO_ECONOMICO
+HECHO_FISICO != HECHO_ECONOMICO
+REINTENTO_NO_DUPLICA_EFECTO = SI
+CORRECCION_DESTRUCTIVA = PROHIBIDA
+REGISTRO_MANUAL_COMPETIDOR = PROHIBIDO
+TRANSFERENCIA_INTERNA != GASTO_LEGAL_AUTOMATICO
+```
+
+La presente tarea aplica esas reglas a la captura y gobierno de gastos sin reabrir los contratos de ventas, compras, producción o inventario.
+
+---
+
+#### 4. Estado AS-IS que debe superarse
+
+La auditoría vigente demuestra que el flujo actual de `/expenses`:
+
+- utiliza una única Server Action `createExpense`;
+- exige `numera.expenses.manage`;
+- recibe periodo, categoría, centro, fecha, descripción y monto;
+- inserta directamente en `numera_expenses`;
+- fija `currency = COP` y `source_app = numera` desde servidor;
+- no exige soporte documental;
+- no persiste `source_table` ni `source_id` desde la acción observada;
+- no materializa workflow de aprobación;
+- no persiste explícitamente `created_by` desde la acción observada;
+- no revalida el estado del periodo antes del insert;
+- usa una capacidad `manage` que no separa registrar, aprobar, corregir o retirar.
+
+Este comportamiento es evidencia AS-IS y no se adopta como contrato objetivo.
+
+---
+
+#### 5. Definición canónica de gasto
+
+Dentro de NUMERA, un gasto es un hecho económico que representa consumo, servicio, cargo, pérdida, obligación o aplicación de recursos atribuible a la operación y sustentado por una causa verificable.
+
+Un gasto no se define únicamente por:
+
+- una categoría;
+- una descripción;
+- un monto;
+- una salida de caja;
+- una factura aislada;
+- una compra;
+- un movimiento de inventario;
+- un consumo productivo;
+- una transferencia interna.
+
+La causa empresarial y su fuente deben poder explicarse y reconciliarse.
+
+---
+
+#### 6. Separación obligatoria de identidades
+
+Se conserva:
+
+```text
+GASTO
+!= COMPRA
+!= RECEPCION
+!= OBLIGACION_POR_PAGAR
+!= PAGO
+!= MOVIMIENTO_DE_CAJA
+!= MOVIMIENTO_DE_INVENTARIO
+!= CONSUMO_PRODUCTIVO
+!= MERMA
+!= TRANSFERENCIA_INTERNA
+!= DOCUMENTO_FISCAL
+!= ASIENTO_CONTABLE
+```
+
+Una identidad puede originar o correlacionarse con otra, pero ninguna sustituye automáticamente a las demás.
+
+---
+
+#### 7. Orígenes legítimos de un gasto
+
+NUMERA podrá representar un gasto cuando exista al menos una causa empresarial trazable dentro de una de estas familias:
+
+1. hecho recibido desde un dominio propietario y convertido en efecto económico mediante el contrato correspondiente;
+2. servicio o consumo no inventariable cuya aceptación y soporte sean suficientes sin crear una recepción física ficticia;
+3. documento o soporte externo legítimo cuyo sistema fuente todavía no disponga de integración;
+4. captura manual primaria para un hecho que no posea otra fuente empresarial propietaria;
+5. ajuste o reclasificación gobernada sobre un hecho económico existente;
+6. excepción manual explícitamente autorizada y auditable.
+
+La existencia de una categoría de gasto no constituye por sí sola un origen legítimo.
+
+---
+
+#### 8. Regla para captura manual legítima
+
+La captura manual se conserva como capacidad válida, pero queda subordinada a una comprobación de origen.
+
+Antes de reconocer un gasto manual deberá demostrarse al menos una de estas condiciones:
+
+- no existe otro dominio o sistema con el hecho propietario;
+- el soporte proviene de una fuente externa aún no integrada;
+- la captura representa una corrección, reclasificación o excepción gobernada;
+- existe una referencia explícita a la fuente y la identidad permite comprobar que no habrá doble reconocimiento.
+
+Si ya existe un evento canónico de la misma causa, el formulario manual no podrá crear una segunda copia económica independiente.
+
+---
+
+#### 9. Propiedad de origen y prevención de competencia
+
+Queda establecido:
+
+- una compra o recepción gobernada por ORIGO no se convierte en un gasto manual paralelo por coincidencia de proveedor, descripción o monto;
+- un movimiento o ajuste de inventario gobernado por NEXO no se replica como gasto independiente sin correlación;
+- un consumo, merma o resultado productivo gobernado por FOGO no se vuelve un segundo costo por digitación manual;
+- una venta, devolución, pago o caja gobernada por PULSO no se reinterpreta como gasto por simple movimiento monetario;
+- un hecho laboral proveniente de ANIMA o de un futuro paquete laboral autorizado no podrá coexistir silenciosamente con una captura manual de la misma causa.
+
+NUMERA conserva un único efecto económico por causa empresarial correlacionada.
+
+---
+
+#### 10. Contrato mínimo de origen
+
+Todo gasto deberá conservar un origen explícito suficiente para responder:
+
+- qué causa empresarial lo produjo;
+- qué sistema, documento, actor o soporte lo respalda;
+- si el origen es integrado, manual, externo o compensatorio;
+- qué identidad o correlación permite detectar replay o duplicidad;
+- qué dominio conserva el hecho propietario cuando exista;
+- qué evidencia justificó una excepción manual cuando no exista integración.
+
+Para eventos integrados deberán conservarse las referencias técnicas de origen aplicables. Para captura manual legítima deberá existir soporte o justificación equivalente que impida que `source_app = numera` se convierta en una fuente sin explicación.
+
+---
+
+#### 11. Soporte y evidencia
+
+Un gasto que requiera soporte no podrá considerarse completamente gobernado solo porque exista una fila económica.
+
+El soporte puede provenir, según la causa, de:
+
+- documento comercial o contractual;
+- evidencia de prestación o aceptación de servicio;
+- documento fiscal o referencia al documento oficial correspondiente;
+- evidencia bancaria o de pago cuando sea relevante para la conciliación;
+- documento operativo emitido por otro dominio;
+- archivo, registro o evidencia externa autorizada;
+- justificación formal de ajuste o excepción.
+
+Esta tarea exige la referencia y trazabilidad del soporte; la taxonomía documental, almacenamiento, retención y controles de información permanecen en sus dominios propietarios.
+
+---
+
+#### 12. Servicios y gastos no inventariables
+
+Los servicios y gastos no inventariables no deberán fabricar movimientos de inventario para demostrar que ocurrieron.
+
+Cuando una compra o contratación de servicio haya sido gestionada por ORIGO, NUMERA deberá consumir la aceptación y soporte comercial correspondiente sin inventar una recepción NEXO inexistente.
+
+Cuando no exista una compra ORIGO porque la causa sea legítimamente externa o manual, NUMERA deberá conservar soporte, actor, contraparte cuando aplique y justificación suficientes para explicar el reconocimiento.
+
+---
+
+#### 13. Categorías de gasto
+
+La categoría clasifica el gasto; no demuestra su origen, autorización ni documento.
+
+Por tanto:
+
+```text
+CATEGORIA
+!= FUENTE
+!= SOPORTE
+!= OWNER
+!= APROBACION
+```
+
+Categorías amplias, incluida cualquier categoría equivalente a “otros”, no podrán omitir origen, soporte o explicación de excepción.
+
+Las categorías existentes del AS-IS no se reinterpretan aquí como catálogo definitivo ni como permiso para registrar hechos de otros dominios.
+
+---
+
+#### 14. Registro, aprobación y reconocimiento
+
+La tarea separa obligatoriamente tres decisiones:
+
+1. **registro o captura:** existe una propuesta o candidato de gasto con datos y soporte inicial;
+2. **aprobación:** una autoridad competente acepta la causa, importe, dimensiones, soporte y tratamiento dentro de su alcance;
+3. **reconocimiento:** NUMERA incorpora el efecto económico mediante el lifecycle de hechos económicos y lo deja disponible para conciliación y análisis.
+
+Consecuencia:
+
+```text
+CAPTURADO != APROBADO != RECONOCIDO
+```
+
+Una fila creada por una acción técnica no podrá equivaler automáticamente a las tres decisiones.
+
+---
+
+#### 15. Regla de aprobación
+
+Todo gasto que por política requiera aprobación deberá demostrar antes del reconocimiento:
+
+- actor que decidió;
+- autoridad aplicable;
+- fecha y contexto de la decisión;
+- alcance aprobado;
+- importe y moneda aprobados;
+- centro y dimensiones aplicables;
+- soporte revisado;
+- resultado de la decisión;
+- motivo cuando exista rechazo, excepción o corrección.
+
+La matriz exacta de capacidades, segregación y permisos corresponde a `NUMERA-AUTH-003` a `NUMERA-AUTH-009`; esta tarea define la obligación de separar decisiones, no inventa códigos de permiso.
+
+---
+
+#### 16. Aprobación de eventos integrados
+
+La recepción de un evento desde otro dominio no obliga a duplicar una aprobación que ya haya ocurrido bajo una autoridad propietaria válida.
+
+NUMERA deberá distinguir:
+
+- aprobación o aceptación empresarial ya demostrada en la fuente;
+- validación económica propia de NUMERA;
+- aprobación financiera adicional exigida por política.
+
+Cuando una fuente ya entregue una decisión válida y la política no exija otra, NUMERA reutilizará esa evidencia en lugar de crear un segundo workflow equivalente.
+
+---
+
+#### 17. Integración con VPROC-0051
+
+Los gastos reconocidos utilizan `VPROC-0051` como lifecycle económico general.
+
+La semántica aplicable es:
+
+- `ECONOMIC_EVENT_RECEIVED`: NUMERA recibió el candidato o soporte correlacionable;
+- `VALIDATION_IN_PROGRESS`: se validan origen, soporte, entidad, fecha, valor, moneda, periodo, duplicidad y autoridad;
+- `CLASSIFICATION_PENDING` / `CLASSIFIED`: se define el tratamiento económico y las dimensiones aplicables;
+- `POSTING_PENDING`: el hecho validado espera el reconocimiento correspondiente;
+- `POSTED`: el efecto económico fue reconocido y conserva vínculo con su origen;
+- `RECONCILIATION_PENDING` / `ECONOMIC_EVENT_RECONCILED`: se comprueba coherencia con soporte, contraparte y proceso fuente.
+
+Esta tarea no crea estados adicionales de proceso ni modifica `VPROC-0051`.
+
+---
+
+#### 18. Prevención de duplicidad
+
+Antes de reconocer un gasto, NUMERA deberá verificar que la misma causa no haya sido reconocida ya mediante:
+
+- evento integrado;
+- documento fuente correlacionado;
+- compra o recepción;
+- consumo o movimiento de inventario;
+- producción o merma;
+- gasto manual anterior;
+- ajuste o reversión vinculados.
+
+La detección no se basará únicamente en coincidencia de descripción y monto. La identidad de fuente, correlación, documento, tercero, fecha, importe y contexto se utilizarán según disponibilidad y naturaleza del hecho.
+
+Un reintento con la misma identidad no podrá crear otro gasto.
+
+---
+
+#### 19. Actor y trazabilidad
+
+Todo registro o decisión de gasto deberá poder reconstruir como mínimo:
+
+- actor que capturó o produjo el hecho;
+- actor que aprobó cuando aplique;
+- actor que corrigió o anuló cuando aplique;
+- autoridad utilizada;
+- fecha y motivo de cada decisión;
+- valor original y efecto compensatorio cuando corresponda;
+- origen y soporte;
+- correlación con el hecho previo.
+
+El uso del actor para autorizar una acción sin persistirlo en la historia financiera no satisface esta obligación.
+
+---
+
+#### 20. Moneda e importe
+
+La moneda debe conservarse explícitamente en el hecho económico.
+
+Un valor predeterminado de interfaz puede existir, pero:
+
+```text
+DEFAULT_DE_UI
+!= MONEDA_CONFIRMADA_DEL_HECHO
+```
+
+NUMERA deberá validar y persistir la moneda aplicable y conservar los componentes de importe e impuestos cuando correspondan, sin inferir que todo gasto empresarial pertenece siempre a una sola moneda.
+
+---
+
+#### 21. Periodo económico
+
+El gasto deberá referenciar un periodo compatible con su fecha y reglas de reconocimiento.
+
+La selección del periodo más reciente por fecha no demuestra que sea un periodo abierto.
+
+Queda establecido:
+
+- un gasto ordinario nuevo no debe reconocerse silenciosamente contra un periodo cerrado o bloqueado;
+- un hecho tardío deberá usar la política de ajuste, periodo posterior o reapertura que corresponda;
+- la definición completa de periodos, cierre y reapertura permanece en `NUMERA-DOM-011` y `NUMERA-DOM-014`.
+
+Esta tarea no crea el workflow de cierre, pero prohíbe ignorar el estado del periodo al reconocer el gasto.
+
+---
+
+#### 22. Centro de costo
+
+Un gasto puede referenciar un centro de costo únicamente cuando esa dimensión sea válida para la causa y el periodo correspondiente.
+
+La existencia de una fila activa en el catálogo no demuestra por sí sola elegibilidad financiera para cualquier gasto.
+
+La propiedad, identidad, vigencia y gobierno del catálogo se definen en `NUMERA-DOM-006`. La presente tarea solo exige que el gasto conserve una referencia válida y no cree centros alternos dentro del flujo de captura.
+
+---
+
+#### 23. Corrección antes del reconocimiento
+
+Si el gasto todavía no ha sido reconocido, una corrección podrá actualizar o sustituir la propuesta únicamente conservando trazabilidad suficiente de la revisión cuando ya haya existido una decisión, soporte o envío a aprobación.
+
+Una corrección no podrá:
+
+- borrar evidencia de una aprobación o rechazo previo;
+- cambiar silenciosamente el origen;
+- reutilizar una identidad para otra causa;
+- convertir un gasto rechazado en reconocido sin una nueva decisión válida.
+
+---
+
+#### 24. Corrección después del reconocimiento
+
+Después de `POSTED`, el hecho original permanece inmutable como evidencia económica.
+
+Cualquier cambio material deberá representarse mediante acción vinculada, por ejemplo:
+
+```text
+HECHO_ORIGINAL
++
+EFECTO_COMPENSATORIO_O_REVERSION
++
+NUEVO_HECHO_CORREGIDO_CUANDO_APLIQUE
+```
+
+La corrección conservará motivo, actor, relación con el original, valores afectados y evidencia suficiente para reconstruir el antes y el después.
+
+---
+
+#### 25. Anulación
+
+La anulación tiene semántica distinta según el momento:
+
+- una propuesta todavía no reconocida puede quedar cancelada mediante decisión y motivo trazables;
+- un gasto reconocido no se elimina ni se convierte en inexistente;
+- la anulación de un hecho reconocido produce el efecto compensatorio necesario y conserva el original;
+- una anulación no elimina obligaciones, pagos, documentos o movimientos externos que requieran su propia reversa o conciliación.
+
+Por tanto:
+
+```text
+ANULACION != DELETE
+ANULACION != BORRADO_DE_HISTORIA
+```
+
+---
+
+#### 26. Relación con obligaciones y pagos
+
+Reconocer un gasto no significa que haya sido pagado.
+
+También:
+
+```text
+GASTO != OBLIGACION
+OBLIGACION != PAGO
+PAGO != CONCILIACION_BANCARIA
+```
+
+Cuando el gasto origine o esté asociado a una cuenta por pagar, deberá correlacionarse con el objeto financiero correspondiente en lugar de duplicarlo. El modelo completo de cuentas por pagar permanece en `NUMERA-DOM-010`.
+
+Caja, bancos y conciliaciones permanecen en `NUMERA-DOM-009`.
+
+---
+
+#### 27. Nómina y hechos laborales
+
+Una categoría de nómina o gasto laboral puede funcionar temporalmente como puente manual únicamente cuando no exista todavía un hecho laboral/económico integrado y autorizado que represente la misma causa.
+
+Cuando exista una fuente laboral propietaria aprobada:
+
+- el gasto deberá correlacionarse con esa fuente;
+- la captura manual competidora deberá bloquearse o convertirse en excepción gobernada;
+- una marcación de asistencia no se transforma por sí sola en gasto de nómina;
+- el cálculo laboral y sus reglas permanecen en sus dominios propietarios.
+
+---
+
+#### 28. Campos económicos mínimos
+
+Todo gasto objetivo deberá poder conservar, cuando aplique:
+
+- identidad estable;
+- entidad legal;
+- marca o unidad sin confundirla con entidad legal;
+- sede;
+- centro de costo;
+- categoría o clasificación;
+- tercero o contraparte;
+- moneda;
+- fecha de ocurrencia;
+- fecha de reconocimiento;
+- periodo;
+- importe y componentes aplicables;
+- impuestos cuando correspondan;
+- origen;
+- correlación con fuente;
+- documento o soporte;
+- actor de captura;
+- evidencia de aprobación cuando aplique;
+- estado económico;
+- motivo y relación de corrección o anulación cuando existan.
+
+Los nombres físicos de columnas y el modelo de almacenamiento se materializan posteriormente; esta tarea define la información empresarial que debe poder preservarse.
+
+---
+
+#### 29. Fronteras con tareas posteriores
+
+Esta tarea no absorbe:
+
+- propiedad y gobierno del catálogo de centros de costo, `NUMERA-DOM-006`;
+- metodología de costo y variaciones, `NUMERA-DOM-007`;
+- caja, bancos y conciliaciones, `NUMERA-DOM-009`;
+- cuentas por pagar, `NUMERA-DOM-010`;
+- periodos y gobierno temporal, `NUMERA-DOM-011` y `NUMERA-DOM-014`;
+- fronteras fiscales y documentos oficiales, `NUMERA-DOM-013`;
+- contabilidad formal y mapeo a asientos, `NUMERA-DOM-017`.
+
+La tarea tampoco define la experiencia final de `/expenses` ni el catálogo detallado de permisos; esos alcances permanecen en `NUMERA-UX-*` y `NUMERA-AUTH-*` correspondientes.
+
+---
+
+#### 30. Decisiones congeladas
+
+Quedan congeladas para continuidad:
+
+1. la captura manual permanece permitida, pero deja de ser una fuente universal sin origen;
+2. un hecho propietario de otro dominio no puede duplicarse como gasto manual independiente;
+3. categoría no sustituye origen, soporte, owner ni aprobación;
+4. `Otros gastos` o una categoría equivalente no constituye excepción a trazabilidad;
+5. un servicio no inventariable requiere aceptación y soporte sin inventario ficticio;
+6. registro, aprobación y reconocimiento son decisiones separadas;
+7. una aprobación previa válida en la fuente puede reutilizarse cuando la política no exija otra;
+8. actor y autoridad deben quedar trazables en decisiones financieras;
+9. la moneda debe persistirse explícitamente y no asumirse solo por default de interfaz;
+10. el estado del periodo no puede ignorarse al reconocer gasto;
+11. correcciones y anulaciones posteriores al reconocimiento son compensatorias y no destructivas;
+12. gasto, obligación y pago permanecen separados;
+13. una categoría de nómina manual es puente condicionado y no owner permanente del hecho laboral;
+14. la tarea no crea permisos, tablas, documentos, estados runtime ni requisitos de prueba nuevos.
+
+---
+
+#### 31. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+La razón es que el Registro 04A vigente ya protege reconciliación con fuentes, identidad del hecho económico, separación de decisiones financieras, lectura/registro de gastos, validación server-side, moneda, origen, correcciones no destructivas e idempotencia.
+
+---
+
+#### 32. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones ni secuencia:
+
+- `TREQ-NUMERA-001` para reconciliación de gastos con hechos y documentos fuente, no duplicación manual, historia, actor y origen;
+- `TREQ-NUMERA-002` para identidad estable, entidad, dimensiones, moneda, fechas, fuente, correlación, documento, monto, impuestos, estado, evidencia y correcciones compensatorias;
+- `TREQ-NUMERA-003` para separación de registrar, aprobar, pagar, conciliar, cerrar y reabrir dentro de las capacidades financieras;
+- `TREQ-NUMERA-017` para separar lectura de gastos de la capacidad de registro;
+- `TREQ-NUMERA-018` para revalidación server-side, campos económicos, moneda y origen explícitos al crear gastos;
+- `TREQ-INTEGRATION-006` para captura única en la fuente propietaria y prohibición de fuentes competidoras.
+
+Esta sección es trazabilidad de cobertura existente y no constituye una actualización del Registro 04A.
+
+---
+
+#### 33. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El trabajo es documental y no se ejecutaron build, lint, tipos ni pruebas de producto durante esta preparación. |
+| LOCAL | NOT_EXECUTED | La incorporación, formateo, quality, delivery, topología y batería global deberán ejecutarse en el checkout del usuario después del cierre de `NUMERA-DOM-004`. |
+| REMOTA | PASS | Se verificaron en `vento-shell/main` la continuidad vigente, topología `DEFINE_ONCE`, archivo propietario, auditorías `NUMERA-AUD-007`/`009`/`010`, `VPROC-0051`, Registro 04A NUMERA, permisos observados, contrato de entrega y validadores documentales vigentes; `NUMERA-DOM-004` se consume desde su versión completa aprobada por el usuario mientras termina su publicación. |
+| OPERATIVA | NOT_EXECUTED | No se creó, aprobó, corrigió, anuló, pagó ni concilió ningún gasto real. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-DOM-005` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea implementación física propia. |
+
+---
+
+#### 34. Criterios de aceptación
+
+`NUMERA-DOM-005` queda aceptable cuando:
+
+- define qué es y qué no es un gasto;
+- conserva una vía manual legítima sin permitir duplicidad frente a fuentes propietarias;
+- exige origen y soporte suficientes;
+- separa captura, aprobación y reconocimiento;
+- define la reutilización de aceptación upstream sin duplicar workflows;
+- integra el gasto con `VPROC-0051` sin crear estados nuevos;
+- exige actor y autoridad trazables;
+- trata moneda y periodo como datos gobernados;
+- reserva el catálogo de centros a `NUMERA-DOM-006`;
+- define corrección y anulación no destructivas;
+- mantiene separados gasto, obligación y pago;
+- asigna nómina manual como puente condicionado, no como owner definitivo;
+- conserva cobertura TREQ existente sin modificar 04A;
+- deja `NUMERA-DOM-006` como única continuidad inmediata.
+
+---
+
+#### 35. Límites
+
+Esta tarea no demuestra ni autoriza:
+
+- que todo gasto requiera exactamente el mismo nivel de aprobación;
+- un umbral monetario específico de aprobación;
+- nombres nuevos de permisos;
+- una tabla, columna, enum o máquina de estados runtime nueva;
+- que toda compra deba convertirse en gasto inmediato;
+- que todo pago constituya gasto;
+- que una factura sea suficiente por sí sola para reconocimiento;
+- que una marcación ANIMA sea nómina;
+- que una categoría determine la fuente propietaria;
+- que todo soporte sea fiscal;
+- que un periodo cerrado pueda reabrirse sin el workflow posterior correspondiente;
+- que un gasto aprobado esté pagado o conciliado;
+- cambios de código, datos, Supabase, permisos, RLS, documentos o integraciones.
+
+---
+
+#### 36. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo`
 ### [ ] NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
 ### [ ] NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
 ### [ ] NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
