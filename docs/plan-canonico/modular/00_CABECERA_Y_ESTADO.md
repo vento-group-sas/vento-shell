@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1431** |
+| Tareas aprobadas | **1432** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **165** |
+| Tareas no iniciadas | **164** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **89.66% (1431/1596)** |
+| Porcentaje de completamiento | **89.72% (1432/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUTH-010 — Evitar dependencia de turno para administración** |
-| Tarea actual | **NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional** |
+| Última tarea aprobada | **NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional** |
+| Tarea actual | **NUMERA-AUTH-012 — Migrar a paquetes de vento-shell** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUTH-012 — Migrar a paquetes de vento-shell** |
+| Siguiente tarea | **NUMERA-AUTH-013 — Ejecutar pruebas integrales** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 41 de 74 aprobadas; NUMERA-AUTH-011 pendiente** |
+| Progreso del bloque | **BLOQUE O: 42 de 74 aprobadas; NUMERA-AUTH-012 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUTH-011** |
+| Carril documental | **ACTIVO — NUMERA-AUTH-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUTH-010` — Evitar dependencia de turno para administración |
-| Tarea actual | `NUMERA-AUTH-011` — Exigir contexto operativo donde exista captura operacional — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUTH-012` — Migrar a paquetes de vento-shell |
+| Última aprobada | `NUMERA-AUTH-011` — Exigir contexto operativo donde exista captura operacional |
+| Tarea actual | `NUMERA-AUTH-012` — Migrar a paquetes de vento-shell — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUTH-013` — Ejecutar pruebas integrales |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 41 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-011** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 42 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-012** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUTH-010 — Evitar dependencia de turno para administración
-        ↓
-TAREA ACTUAL
 NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUTH-013 — Ejecutar pruebas integrales
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 41 de 74 tareas aprobadas
+BLOQUE O — 42 de 74 tareas aprobadas
 ```
