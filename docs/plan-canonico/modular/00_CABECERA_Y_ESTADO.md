@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1409** |
+| Tareas aprobadas | **1410** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **187** |
+| Tareas no iniciadas | **186** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **88.28% (1409/1596)** |
+| Porcentaje de completamiento | **88.35% (1410/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo** |
-| Tarea actual | **NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones** |
+| Última tarea aprobada | **NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones** |
+| Tarea actual | **NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo** |
+| Siguiente tarea | **NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 19 de 74 aprobadas; NUMERA-DOM-007 pendiente** |
+| Progreso del bloque | **BLOQUE O: 20 de 74 aprobadas; NUMERA-DOM-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-DOM-007** |
+| Carril documental | **ACTIVO — NUMERA-DOM-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-DOM-006` — Definir centros de costo y propiedad de su catálogo |
-| Tarea actual | `NUMERA-DOM-007` — Definir costos, costo estándar, costo real y variaciones — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-DOM-008` — Definir rentabilidad por empresa, sede, canal, producto y periodo |
+| Última aprobada | `NUMERA-DOM-007` — Definir costos, costo estándar, costo real y variaciones |
+| Tarea actual | `NUMERA-DOM-008` — Definir rentabilidad por empresa, sede, canal, producto y periodo — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-DOM-009` — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 19 DE 74 APROBADAS — ACTUAL NUMERA-DOM-007** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 20 DE 74 APROBADAS — ACTUAL NUMERA-DOM-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
-        ↓
-TAREA ACTUAL
 NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 19 de 74 tareas aprobadas
+BLOQUE O — 20 de 74 tareas aprobadas
 ```

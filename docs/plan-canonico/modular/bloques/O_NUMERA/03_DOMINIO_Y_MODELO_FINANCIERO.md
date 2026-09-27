@@ -4446,7 +4446,995 @@ La sucesora podrá definir costo estándar, costo real y variaciones usando cent
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones`
-### [ ] NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
+### ✅ NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
+**Tarea siguiente:** NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
+**Tipo de tarea:** definición documental del modelo económico de costos de NUMERA, sus métodos separados de adquisición, landed, estándar, promedio, último, real, productivo, logístico, merma e interno, sus componentes, fórmulas, vigencias, fuentes, reglas de publicación, conciliación, distribución y análisis de variaciones, preservando las fronteras con ORIGO, FOGO, NEXO, PULSO y el catálogo canónico de centros de costo, sin materializar un motor físico de costos ni modificar datos, contratos o Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica fórmulas ejecutables, costos persistidos, políticas de inventario, eventos de costo, precios internos, compras, recepciones, recetas, lotes, movimientos, centros de costo, presupuestos, permisos, RLS, Supabase, integraciones, reportes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato económico con el que NUMERA podrá calcular, comparar, publicar y reconciliar costos sin confundir referencias, hechos reales, precios internos, gastos, movimientos de inventario o resultados productivos.
+
+La tarea cierra las brechas demostradas por `NUMERA-AUD-008`, `OPS-CST-001` y `CAP-SCOPE-012`:
+
+- NUMERA no posee todavía un motor integral de costos;
+- existen fuentes técnicas de costo fuera de NUMERA que hoy no son consumidas por ese módulo;
+- costo estándar, promedio, último, real, landed e interno requieren identidad y vigencia separadas;
+- consumo, producción, merma, stock y costo no tienen todavía una conciliación económica cerrada;
+- las transferencias internas valorizadas no pueden convertirse por inferencia en ingreso fiscal o gasto legal;
+- los costos compartidos carecen todavía de un contrato material de pool, driver, versión, aprobación y reversión;
+- el punto de equilibrio vigente usa un margen objetivo como proxy sin demostrar que corresponda a un margen de contribución trazable.
+
+El resultado es un modelo documental completo para una futura materialización física y para el handoff hacia rentabilidad en `NUMERA-DOM-008`.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-DOM-007` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- esta tarea define el contrato una sola vez;
+- no crea una instancia física propia;
+- no modifica tablas, vistas, RPC, triggers o policies;
+- no recalcula datos históricos;
+- no cambia estructuras de costo ya existentes en otros dominios;
+- no selecciona ni publica una migración concreta;
+- no autoriza valores, porcentajes o drivers empresariales específicos;
+- no implementa todavía rentabilidad, punto de equilibrio consolidado ni escenarios.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-006
+
+La predecesora deja congelado:
+
+```text
+COST_CENTER_CATALOG = SINGLE_SHARED_CANONICAL_CATALOG
+COST_CENTER_FUNCTIONAL_OWNER = NUMERA
+COST_CENTER_PRIVATE_APP_CATALOG = FORBIDDEN
+COST_CENTER_IDENTITY = STABLE
+LEGAL_ENTITY_BRAND_SITE_AREA_CHANNEL_COST_CENTER = DISTINCT_DIMENSIONS
+PRODUCTION_AND_DISTRIBUTION_ECONOMIC_RESPONSIBILITIES = DISTINCT
+DEMO_CENTER_ELIGIBLE_FOR_REAL_ECONOMICS = NO
+ACTIVE_ROW_ALONE_PROVES_ELIGIBILITY = NO
+HISTORICAL_FACT_REATTRIBUTION_BY_CATALOG_EDIT = FORBIDDEN
+```
+
+Todo costo definido aquí deberá referenciar centros canónicos elegibles y conservar su identidad histórica. Esta tarea no reabre ownership, códigos ni lifecycle del catálogo.
+
+---
+
+#### 4. Handoff recibido de OPS-CST-001
+
+Se conservan las siguientes invariantes económicas:
+
+```text
+INVENTORY_MOVEMENT_OWNER = NEXO
+PRODUCTIVE_FACT_OWNER = FOGO
+ECONOMIC_VALUATION_OWNER = NUMERA
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+STANDARD_REFERENCE_AND_ACTUAL_COST_MUST_COEXIST = YES
+HISTORICAL_REVALUATION_BY_SILENT_OVERWRITE = FORBIDDEN
+INTERNAL_PRODUCT_TRANSFER_IS_SALE_BY_DEFAULT = NO
+INTERNAL_PRODUCT_TRANSFER_IS_LEGAL_REVENUE_OR_EXPENSE_BY_DEFAULT = NO
+```
+
+También se conserva la obligación de mantener separados costo de adquisición, costo productivo, merma, costo logístico, costo directo, costo compartido y valorización interna.
+
+---
+
+#### 5. Handoff recibido de NUMERA-AUD-008
+
+La auditoría AS-IS demuestra:
+
+```text
+COST_ENGINE_IMPLEMENTED_IN_VENTO_NUMERA = NO
+ACTUAL_MARGIN_CALCULATION_IMPLEMENTED = NO
+PROFITABILITY_CALCULATION_IMPLEMENTED = NO
+```
+
+Además:
+
+- `actual_expenses` representa únicamente filas capturadas en `numera_expenses` y no sustituye costo completo;
+- `target_gross_margin_pct` es una entrada de planificación, no margen realizado;
+- el punto de equilibrio actual es válido solo bajo un supuesto no demostrado;
+- la suma de puntos de equilibrio por centro no es una consolidación financiera demostrada;
+- existen fuentes externas como políticas de costo de inventario, eventos de costo, costos de proveedor, entradas de inventario y listas internas, pero NUMERA no las consume actualmente;
+- el snapshot observado utiliza `net` en algunas bases de costo y `manual` en un precio interno, sin que esas decisiones puedan elevarse automáticamente a regla universal objetivo.
+
+---
+
+#### 6. Proceso económico propietario
+
+El ciclo objetivo aplicable es `VPROC-0054 — Gestionar costos, distribución, presupuesto, cierre y rentabilidad con reglas versionadas`, propiedad funcional de NUMERA.
+
+Sus estados económicos gobiernan el uso de resultados:
+
+```text
+COSTING_CYCLE_OPENED
+-> INPUTS_COLLECTING
+-> CALCULATION_IN_PROGRESS
+-> VARIANCE_ANALYSIS
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> PUBLISHED
+-> CLOSE_RECONCILIATION_PENDING
+-> COSTING_CYCLE_CLOSED
+```
+
+Reglas:
+
+1. abrir el ciclo no crea costos definitivos;
+2. recopilar entradas no convierte una fuente en costo aprobado;
+3. calcular no autoriza publicación;
+4. las variaciones se explican antes de aprobación;
+5. solo una versión aprobada y `PUBLISHED` puede usarse como referencia decisoria publicada;
+6. el cierre exige fuentes, asignaciones, cálculos, variaciones y ajustes reconciliados;
+7. cerrar un ciclo no reescribe costos históricos ni convierte estimaciones en hechos.
+
+---
+
+#### 7. Propiedad de fuentes y resultado económico
+
+| Dominio | Fuente que conserva | NUMERA recibe | NUMERA no deberá hacer |
+| --- | --- | --- | --- |
+| ORIGO | compra, orden, proveedor, precio acordado, recepción comercial y documentos relacionados | bases de adquisición y componentes económicos autorizados | reescribir órdenes, recepciones o precios fuente |
+| NEXO | movimiento, stock, lote físico, entrada, ubicación, custodia, remisión, devolución y costos unitarios observados en su dominio | movimientos reconciliables, cantidades, lotes y referencias de costo físico aplicables | crear o corregir movimientos para cuadrar costo |
+| FOGO | receta/version, orden/lote, consumo, rendimiento, merma, reproceso, salida y disposición productiva | cantidades y resultados productivos aptos para valoración | alterar consumos, rendimiento o genealogía |
+| PULSO | venta, precio comercial, descuento, devolución y evidencia comercial | ingreso realizado y referencias comerciales cuando corresponda al análisis posterior | convertir precio de venta en costo |
+| NUMERA | método, selección de fuentes, composición, asignación, costo publicado, variación, conciliación y explicación económica | resultado económico reproducible | duplicar hechos físicos o comerciales de origen |
+
+La propiedad económica de NUMERA no transfiere ownership de los hechos fuente.
+
+---
+
+#### 8. Unidad mínima de una determinación de costo
+
+Toda determinación de costo deberá declarar, cuando aplique:
+
+- identificador estable del resultado o corrida;
+- método de costo;
+- versión del método o política;
+- estado del ciclo `VPROC-0054`;
+- entidad legal o ámbito económico aplicable;
+- centro de costo canónico;
+- periodo y fecha de corte;
+- moneda;
+- producto y presentación;
+- unidad de medida de valoración;
+- lote o fuente física cuando aplique;
+- cantidad valorizada;
+- fuentes consumidas;
+- componentes incluidos y excluidos;
+- driver o regla de distribución cuando exista;
+- importe total;
+- costo unitario cuando sea definible;
+- precisión y regla de redondeo;
+- versión publicada de referencia cuando corresponda;
+- evidencia de conciliación;
+- relación con costo anterior, corrección o reversión cuando aplique.
+
+Un valor sin método, fuente, versión, vigencia y alcance no se considerará costo canónico publicable.
+
+---
+
+#### 9. Taxonomía obligatoria de costos
+
+Los siguientes conceptos permanecen distintos:
+
+| Tipo | Definición objetivo | No equivale a |
+| --- | --- | --- |
+| adquisición | base económica reconocida de la compra o recepción de un material o bien | costo productivo completo |
+| landed | adquisición más componentes adicionales elegibles necesarios para llevar el recurso hasta la condición o punto definido por la política | precio de compra aislado |
+| estándar | referencia previa, versionada y publicada para planificación, control y comparación | costo real cerrado |
+| promedio | promedio ponderado de unidades y costos elegibles bajo un alcance y corte declarados | promedio simple de precios |
+| último | costo del último evento elegible reconocido bajo un alcance y corte declarados | costo promedio o estándar |
+| real | costo reconciliado a partir de cantidades y componentes efectivamente observados y elegibles | estimación o presupuesto |
+| productivo | costo atribuible al proceso de transformación y sus componentes autorizados | costo logístico |
+| logístico | costo atribuible a distribución, transporte, manipulación, custodia u operación logística autorizada | merma productiva |
+| merma | efecto económico visible de pérdida, descarte o desperdicio confirmado | consumo bueno oculto |
+| interno | valoración gerencial usada para transferencias o análisis internos | venta, ingreso fiscal, gasto legal o precio de transferencia fiscal automático |
+
+La existencia de uno de estos valores nunca autoriza usarlo como fallback silencioso de otro.
+
+---
+
+#### 10. Regla de selección de método
+
+Cada cálculo o consumidor deberá declarar explícitamente qué método necesita.
+
+Jerarquía obligatoria:
+
+```text
+METODO_DECLARADO
+-> FUENTES_ELEGIBLES_DEL_METODO
+-> VERSION_Y_VIGENCIA
+-> CALCULO
+-> REVISION
+-> APROBACION
+-> PUBLICACION
+```
+
+Queda prohibido:
+
+- usar último costo porque no existe estándar;
+- usar promedio porque falta real;
+- usar gasto agregado como costo productivo;
+- usar precio interno como costo sin política explícita;
+- usar cero cuando una fuente esté ausente;
+- cambiar de método durante una corrida sin crear una nueva versión o resultado trazable.
+
+Si falta una entrada material, el resultado permanece no publicable o pendiente de reconciliación según el ciclo aplicable.
+
+---
+
+#### 11. Costo de adquisición
+
+El costo de adquisición representa la base económica reconocida del recurso adquirido desde ORIGO y sus documentos o recepciones aplicables.
+
+Contrato conceptual:
+
+```text
+COSTO_ADQUISICION
+= BASE_COMERCIAL_RECONOCIDA
++/- AJUSTES_COMERCIALES_ELEGIBLES
+```
+
+Reglas:
+
+1. precio acordado, recepción y documento deberán correlacionarse cuando el proceso lo exija;
+2. una diferencia entre orden, recepción y documento no se absorbe silenciosamente en el costo;
+3. impuestos, descuentos, recargos u otros componentes solo entran cuando una política económica o fiscal aprobada declare su tratamiento;
+4. una devolución o nota posterior produce corrección correlacionada y no edición destructiva del origen;
+5. la base observada `net` en estructuras actuales es evidencia AS-IS y no una regla universal por sí sola.
+
+---
+
+#### 12. Costo landed
+
+El costo landed añade a la adquisición únicamente componentes adicionales elegibles y trazables definidos por una política publicada.
+
+Contrato conceptual:
+
+```text
+COSTO_LANDED_TOTAL
+= COSTO_ADQUISICION_TOTAL
++ COMPONENTES_LANDED_ELEGIBLES
+
+COSTO_LANDED_UNITARIO
+= COSTO_LANDED_TOTAL / CANTIDAD_ELEGIBLE
+```
+
+Reglas:
+
+- cada componente adicional conserva fuente, periodo, moneda y evidencia;
+- si el componente es directamente atribuible, se asigna directamente;
+- si es compartido, utiliza pool y driver versionados;
+- una cantidad cero o inválida no produce costo unitario cero: bloquea el cálculo unitario;
+- no se incorporan automáticamente impuestos, transporte, seguros, almacenamiento u otros conceptos solo por su nombre; su elegibilidad depende de política aprobada;
+- el cálculo no modifica el valor comercial ni la recepción de origen.
+
+---
+
+#### 13. Último costo
+
+El último costo es el costo unitario del evento elegible más reciente dentro del alcance y fecha de corte declarados.
+
+Reglas:
+
+1. la recencia se determina sobre un evento económico elegible y reconocido, no por la última fila técnicamente escrita;
+2. reintentos o duplicados no crean un nuevo último costo;
+3. una reversión invalida o compensa su evento referenciado conforme al contrato de origen;
+4. un evento posterior al corte no altera consultas históricas del corte anterior;
+5. el método debe declarar producto, presentación, unidad, sede o ámbito cuando sean relevantes;
+6. el último costo no se promedia ni se mezcla con estándar o real.
+
+---
+
+#### 14. Costo promedio
+
+El costo promedio objetivo será ponderado por cantidad elegible, no un promedio aritmético simple de precios.
+
+Para un alcance homogéneo:
+
+```text
+COSTO_PROMEDIO_UNITARIO
+= SUM(CANTIDAD_ELEGIBLE_i * COSTO_UNITARIO_ELEGIBLE_i)
+  / SUM(CANTIDAD_ELEGIBLE_i)
+```
+
+Reglas:
+
+- cantidades y costos deberán estar expresados en unidad y moneda compatibles;
+- entradas, devoluciones, reversos y ajustes conservan identidad y efecto correlacionado;
+- el universo de eventos incluido queda congelado por fecha de corte;
+- un denominador igual o menor que cero no produce un valor económico confirmado;
+- la implementación posterior deberá declarar si el promedio se recalcula por evento, periodo u otro corte autorizado; no se mezclan esas modalidades silenciosamente;
+- el promedio publicado conserva versión y conjunto de fuentes.
+
+---
+
+#### 15. Costo estándar
+
+El costo estándar es una referencia económica previa, versionada y publicada que sirve para planificación, control, valorización gerencial y comparación contra resultados posteriores.
+
+Una versión estándar podrá componerse de:
+
+```text
+MATERIALES_ESTANDAR
++ COMPONENTES_DIRECTOS_ESTANDAR_APROBADOS
++ ASIGNACIONES_ESTANDAR_APROBADAS
++ TRATAMIENTO_ESTANDAR_EXPLICITO_DE_MERMA_O_RENDIMIENTO
+= COSTO_ESTANDAR_TOTAL
+```
+
+Cuando exista una cantidad de salida estándar válida:
+
+```text
+COSTO_ESTANDAR_UNITARIO
+= COSTO_ESTANDAR_TOTAL / SALIDA_BUENA_ESTANDAR
+```
+
+Reglas:
+
+1. cantidades estándar provienen de recetas, versiones, políticas o bases aprobadas;
+2. el costo unitario estándar de cada entrada declara su propio método fuente;
+3. cada versión tiene vigencia y fecha de publicación;
+4. una nueva versión no revaloriza operaciones históricas por sobrescritura;
+5. el tratamiento de merma o rendimiento debe evitar doble conteo entre numerador y denominador;
+6. una referencia no publicada no se usa como estándar vigente;
+7. cambiar un supuesto produce una nueva versión, no una edición retroactiva silenciosa.
+
+---
+
+#### 16. Costo real
+
+El costo real se obtiene desde cantidades y componentes efectivamente observados, reconocidos y conciliados.
+
+Contrato conceptual para producción:
+
+```text
+COSTO_REAL_PROCESO
+= COSTO_DE_MATERIALES_REALMENTE_CONSUMIDOS
++ COMPONENTES_DIRECTOS_REALES_ELEGIBLES
++ ASIGNACIONES_REALES_APROBADAS
++ TRATAMIENTO_REAL_EXPLICITO_DE_MERMA_Y_REPROCESO
+```
+
+El costo unitario del producto bueno solo podrá publicarse cuando exista una salida buena conciliada y una política explícita para el tratamiento de pérdidas y reprocesos.
+
+Reglas:
+
+- consumo esperado no sustituye consumo real;
+- reserva o entrega de material no sustituyen consumo definitivo;
+- salida producida no sustituye disposición de calidad cuando esta sea necesaria;
+- costo real no se inventa si faltan componentes materiales;
+- una entrada tardía puede mantener el ciclo en conciliación o requerir ajuste posterior, nunca reescritura silenciosa;
+- costo real económico no equivale automáticamente a costo contable oficial mientras `NUMERA-DOM-013` y el sistema externo conserven esa frontera.
+
+---
+
+#### 17. Costo productivo
+
+El costo productivo mide la transformación y deberá conservar separados al menos:
+
+- materiales efectivamente consumidos;
+- componentes directos de transformación aprobados;
+- asignaciones productivas compartidas aprobadas;
+- rendimiento;
+- merma y desperdicio;
+- reproceso;
+- salida buena resultante;
+- variaciones contra referencia.
+
+FOGO conserva orden, lote, receta, consumo, rendimiento, merma y reproceso; NUMERA calcula su efecto económico sin escribir esos hechos por duplicado.
+
+Un lote no puede recibir costo productivo cerrado si su consumo, salida o disposición material permanece irreconciliable.
+
+---
+
+#### 18. Costo logístico
+
+El costo logístico permanece separado del costo de transformación.
+
+Podrá incluir componentes atribuibles a operaciones de distribución cuando sus fuentes y políticas estén aprobadas.
+
+Reglas:
+
+- un costo directamente asociado a ruta, movimiento, carga, entrega o destino se atribuye directamente cuando exista evidencia suficiente;
+- únicamente el componente verdaderamente compartido se distribuye mediante driver;
+- compartir instalación no autoriza cargar todo costo del lugar a Producción;
+- una diferencia física de entrega no se reclasifica como costo logístico definitivo antes de investigación;
+- el costo logístico podrá incorporarse a una valorización posterior solo si la política declara esa composición y evita doble conteo.
+
+---
+
+#### 19. Merma, desperdicio y reproceso
+
+La pérdida económica deberá permanecer visible.
+
+Contrato:
+
+```text
+CANTIDAD_ENTRANTE
+= SALIDA_BUENA
++ CONSUMO_NO_RECUPERABLE_JUSTIFICADO
++ MERMA_O_DESPERDICIO
++ REPROCESO_EN_CURSO
++ DEVOLUCION
++ DIFERENCIA_PENDIENTE
+```
+
+La ecuación exacta depende del proceso físico propietario, pero ninguna categoría podrá utilizarse para ocultar otra.
+
+Reglas:
+
+1. merma confirmada conserva motivo, cantidad, unidad, etapa, lote y evidencia;
+2. pérdida logística no se declara merma productiva sin evidencia;
+3. reproceso conserva genealogía y no se considera producción nueva sin origen;
+4. la política económica declara si una pérdida se absorbe, asigna, difiere o presenta separadamente para análisis gerencial;
+5. el tratamiento legal o contable final no se presume desde esta clasificación económica;
+6. una pérdida no desaparece aumentando silenciosamente el costo de salida buena sin una política trazable.
+
+---
+
+#### 20. Costo interno y transferencia interna
+
+El costo interno es una valorización gerencial asociada a una transferencia o análisis intragrupo.
+
+Queda separado de:
+
+```text
+PRECIO_INTERNO
+PRECIO_DE_VENTA
+INGRESO_LEGAL
+GASTO_LEGAL
+FACTURA
+CUENTA_POR_COBRAR
+CUENTA_POR_PAGAR
+```
+
+Reglas:
+
+- la política de transferencia deberá indicar qué método de costo sirve como base;
+- un precio interno manual no redefine el costo económico de origen;
+- una lista interna puede servir como referencia gerencial si está vigente y autorizada, pero no se convierte por inferencia en precio fiscal;
+- la misma transferencia física no crea un segundo movimiento de inventario en NUMERA;
+- una corrección de costo interno conserva la transferencia y versión originalmente utilizadas.
+
+---
+
+#### 21. Costos directos y costos compartidos
+
+La atribución directa tiene prioridad.
+
+```text
+SI EXISTE CAUSALIDAD DIRECTA VERIFICABLE
+-> ATRIBUCION DIRECTA
+
+SI EL COSTO BENEFICIA REALMENTE A MULTIPLES DESTINOS
+-> POOL + DRIVER VERSIONADO
+
+SI NO EXISTE BASE SUFICIENTE
+-> PENDIENTE DE ASIGNACION
+```
+
+Queda prohibido enviar un costo directo a un pool únicamente para facilitar el reparto.
+
+---
+
+#### 22. Contrato de pool y driver
+
+Todo costo compartido deberá conservar:
+
+- identidad del pool;
+- propósito;
+- periodo;
+- entidad;
+- moneda;
+- monto distribuible;
+- fuente o conjunto de fuentes;
+- destinos elegibles;
+- driver;
+- definición y unidad del driver;
+- fuente de la base;
+- versión;
+- vigencia;
+- justificación causal;
+- cálculo por destino;
+- redondeos y residual;
+- revisión;
+- aprobación;
+- publicación;
+- relación con reversión o versión sustituta.
+
+Contrato:
+
+```text
+ASIGNACION_DESTINO_i
+= MONTO_DISTRIBUIBLE * BASE_DESTINO_i / BASE_TOTAL_ELEGIBLE
+```
+
+La fórmula solo aplica cuando el driver sea proporcional y esa forma haya sido aprobada. Otros drivers deberán declarar su propia fórmula reproducible.
+
+La suma de asignaciones deberá reconciliar con el monto distribuible. Cualquier residual de redondeo permanecerá explícito y controlado.
+
+---
+
+#### 23. Moneda y unidad de medida
+
+No se combinarán costos incompatibles por unidad o moneda.
+
+Reglas:
+
+- toda cantidad conserva unidad de origen y unidad de valoración;
+- una conversión utiliza la relación canónica vigente o snapshot aplicable;
+- todo costo declara moneda;
+- si una conversión monetaria es necesaria, conservará fuente, tasa, fecha, versión y política aplicable;
+- no se mezclan importes de monedas distintas en una suma sin conversión explícita;
+- cambios futuros de unidad o tasa no reescriben resultados históricos;
+- pérdida de precisión por conversión deberá ser visible dentro de la regla de redondeo.
+
+Esta tarea no define una fuente concreta de tasa de cambio.
+
+---
+
+#### 24. Precisión y redondeo
+
+El cálculo económico deberá conservar precisión suficiente durante sus pasos internos y aplicar redondeo únicamente en puntos declarados por la política.
+
+Queda prohibido:
+
+- redondear cada componente anticipadamente sin necesidad contractual;
+- ocultar residuales de distribución;
+- usar diferencias de redondeo para cuadrar una conciliación material;
+- cambiar la regla de precisión sin nueva versión.
+
+La presentación visual puede usar una precisión distinta de la precisión de cálculo, siempre que no altere el valor canónico.
+
+---
+
+#### 25. Regla canónica de variación de costo
+
+Toda variación monetaria de costo comparará bases realmente comparables.
+
+Contrato general:
+
+```text
+VARIACION_DE_COSTO
+= COSTO_ACTUAL_COMPARABLE
+- COSTO_REFERENCIA_COMPARABLE
+```
+
+Convención de signo para costos:
+
+```text
+> 0  = DESFAVORABLE: costo actual superior a referencia
+= 0  = NEUTRA
+< 0  = FAVORABLE: costo actual inferior a referencia
+```
+
+La etiqueta favorable o desfavorable aplica al impacto de costo, no sustituye la explicación operacional del origen.
+
+Si periodo, cantidad, alcance, moneda, unidad, producto o método no son comparables, no se publicará una única variación sin normalizar o separar previamente esos efectos.
+
+---
+
+#### 26. Familias de variación
+
+El modelo deberá poder distinguir al menos:
+
+| Familia | Base explicativa |
+| --- | --- |
+| adquisición/precio | diferencia entre costo de adquisición reconocido y referencia comparable |
+| consumo | diferencia económica derivada de cantidad consumida frente a base comparable |
+| rendimiento | efecto económico de salida buena distinta a la esperada para entradas comparables |
+| merma/desperdicio | diferencia entre pérdida real y pérdida de referencia aprobada |
+| logística | diferencia entre costo logístico real y referencia comparable |
+| asignación compartida | diferencia explicada por monto de pool, base, driver o destinos frente a versión comparable |
+| transferencia interna | diferencia entre valoración interna aplicada y referencia aprobada, sin convertirla en venta |
+| costo total | diferencia residual entre costo actual total y costo de referencia total para el mismo alcance |
+
+Una misma diferencia no deberá contabilizarse simultáneamente en dos familias.
+
+---
+
+#### 27. Reconciliación de variaciones
+
+Las variaciones explicadas deberán reconciliar con la variación total del mismo alcance.
+
+```text
+VARIACION_TOTAL
+= SUM(VARIACIONES_EXPLICADAS)
++ RESIDUAL_NO_EXPLICADO
+```
+
+Reglas:
+
+- el residual no explicado permanece visible;
+- un residual material impide declarar el análisis completamente reconciliado;
+- redondeos se separan de diferencias empresariales;
+- no se compensan variaciones favorables y desfavorables para ocultar causas;
+- cada componente conserva fuente y propietario operacional;
+- NUMERA explica el efecto económico sin modificar la evidencia de origen.
+
+Esta tarea no fija umbrales monetarios de materialidad.
+
+---
+
+#### 28. Comparación estándar versus real
+
+La comparación estándar-real deberá usar el mismo producto, unidad, moneda, centro o alcance, periodo y cantidad comparable o declarar el ajuste de volumen necesario.
+
+Queda prohibido comparar:
+
+- costo estándar unitario con costo real total;
+- periodos diferentes sin declararlo;
+- versiones estándar distintas como si fueran una sola;
+- costos de unidades incompatibles;
+- una referencia de Producción con un costo consolidado que incluya logística sin separar componentes.
+
+La comparación conserva siempre:
+
+```text
+STANDARD_VERSION_USED
+ACTUAL_SOURCE_SET
+COMPARISON_SCOPE
+CUT_OFF
+VARIANCE_AMOUNT
+VARIANCE_EXPLANATION
+```
+
+---
+
+#### 29. Variaciones operacionales versus variaciones económicas
+
+FOGO, NEXO y ORIGO conservan las diferencias operacionales de sus dominios.
+
+NUMERA conserva su efecto monetario y relación analítica.
+
+Ejemplos:
+
+- cantidad recibida diferente a orden: ORIGO conserva la diferencia comercial; NUMERA mide efecto económico cuando sea reconocible;
+- consumo diferente a receta: FOGO conserva la desviación productiva; NUMERA valora su efecto;
+- stock diferente a conteo: NEXO conserva observación, investigación y ajuste; NUMERA no crea costo definitivo antes del movimiento autorizado;
+- entrega o retorno diferente: NEXO conserva la diferencia logística; NUMERA valora únicamente hechos reconciliados.
+
+No se crea una segunda fuente operacional dentro de NUMERA.
+
+---
+
+#### 30. Reversiones, correcciones y eventos tardíos
+
+Ningún costo publicado se corrige mediante sobrescritura silenciosa.
+
+Reglas:
+
+1. una corrección conserva el resultado original;
+2. la nueva información referencia el origen afectado;
+3. una reversión mantiene identidad de aquello que compensa;
+4. un evento tardío después de publicación activa revisión o conciliación conforme a `VPROC-0054`;
+5. si el periodo ya está cerrado, el tratamiento de ajuste, periodo de reconocimiento o reapertura corresponde además a `NUMERA-DOM-011` y `NUMERA-DOM-014`;
+6. una nueva versión estándar no cambia el estándar históricamente utilizado;
+7. no se recalcula historia únicamente porque cambió una política vigente.
+
+---
+
+#### 31. Idempotencia y duplicación
+
+Cada fuente económica utilizada deberá conservar una identidad estable suficiente para impedir doble efecto.
+
+Queda prohibido:
+
+- contar dos veces el mismo recibo por reintento;
+- valorizar dos veces el mismo movimiento;
+- considerar entrada y replay como dos fuentes de costo;
+- duplicar una merma por llegar desde FOGO y NEXO sin correlación;
+- convertir una reversión en un segundo costo positivo;
+- registrar manualmente un costo ya derivado de un hecho canónico sin una excepción explícita y reconciliable.
+
+La conciliación debe detectar fuente sin efecto y efecto sin fuente.
+
+---
+
+#### 32. Ausencia de datos y fallback
+
+La ausencia de costo no equivale a cero.
+
+Si una fuente obligatoria no está disponible:
+
+- el movimiento físico puede continuar cuando su dominio propietario lo permita;
+- el costo económico permanece pendiente, no confirmado o no publicable;
+- la interfaz futura deberá distinguir ausencia, pendiente, estimación y valor publicado;
+- no se sustituye automáticamente por último, promedio, estándar o precio interno;
+- no se inventa un valor para cerrar una distribución, margen o reporte.
+
+---
+
+#### 33. Frontera con precio, margen y punto de equilibrio
+
+Precio, costo y margen permanecen conceptos diferentes.
+
+```text
+PRECIO != COSTO
+MARGEN_OBJETIVO != MARGEN_REALIZADO
+MARGEN_BRUTO_OBJETIVO != MARGEN_DE_CONTRIBUCION_POR_DEFECTO
+```
+
+Para cualquier cálculo de punto de equilibrio:
+
+- la base de costos fijos y variables deberá provenir de una clasificación económica versionada y trazable;
+- un `target_gross_margin_pct` no podrá usarse como ratio de contribución sin demostrar su equivalencia para el alcance calculado;
+- el componente variable deberá estar incorporado explícitamente en el método o en el ratio utilizado;
+- ausencia de margen aplicable produce ausencia de cálculo, no cero;
+- la suma de umbrales por centro no se presentará como punto de equilibrio consolidado sin una fórmula de consolidación aprobada.
+
+La definición final de ingreso realizado, rentabilidad multidimensional y consolidación pertenece a `NUMERA-DOM-008`.
+
+---
+
+#### 34. Relación con presupuesto y escenarios
+
+Costo real, costo estándar, presupuesto, forecast y escenario son objetos diferentes.
+
+Reglas:
+
+- un presupuesto no se usa como costo real;
+- un estándar puede alimentar presupuesto, pero conserva su versión independiente;
+- cambiar un escenario no altera costos publicados;
+- una simulación puede usar copias referenciales de costos, nunca editar los hechos base;
+- `NUMERA-DOM-018` conservará el motor de escenarios, versiones de precios, costos y supuestos;
+- esta tarea define los contratos de costo que ese motor deberá consumir.
+
+---
+
+#### 35. Tratamiento de fuentes AS-IS existentes
+
+Las estructuras observadas como:
+
+```text
+inventory_cost_policies
+product_cost_events
+procurement_supplier_product_costs
+inventory_entry_items.stock_unit_cost
+inventory_movements.stock_unit_cost
+internal_price_lists
+internal_price_list_items
+```
+
+son fuentes o artefactos técnicos existentes, no el motor NUMERA objetivo por sí solos.
+
+Reglas de transición:
+
+- no se descartan por existir antes del contrato objetivo;
+- no se declaran canónicas para todos los métodos sin reconciliación;
+- sus identidades, bases y valores se consumen únicamente cuando un contrato aprobado los haga elegibles;
+- `net` y `manual` observados permanecen evidencia AS-IS, no valores universales objetivo;
+- una transición física futura deberá demostrar paridad, deduplicación y compatibilidad antes de retirar o reemplazar una fuente histórica.
+
+---
+
+#### 36. Matriz de método, propósito y publicación
+
+| Método / componente | Propósito principal | Fuente dominante | Publicación |
+| --- | --- | --- | --- |
+| adquisición | base reconocida de compra | ORIGO + recepción/documento aplicable | cuando la fuente económica esté validada |
+| landed | costo hasta condición/punto definido | adquisición + componentes elegibles | después de asignaciones y conciliación |
+| último | referencia del evento elegible más reciente | eventos de costo válidos | por corte y alcance declarados |
+| promedio | referencia ponderada por cantidad | eventos elegibles de inventario/costo | por corte, unidad y moneda compatibles |
+| estándar | planificación y control | política versionada + fuentes aprobadas | antes de uso como referencia vigente |
+| real | costo observado y reconciliado | hechos físicos + económicos reales | después de revisión y aprobación |
+| productivo | transformación | FOGO + fuentes económicas | cuando lote, consumo y salida sean conciliables |
+| logístico | distribución/custodia/entrega | NEXO + fuentes económicas | cuando operación y componentes sean conciliables |
+| merma | pérdida visible | FOGO/NEXO según etapa + valoración | cuando cantidad, motivo y fuente estén confirmados |
+| interno | valorización gerencial intragrupo | costo publicado + política interna | sin crear ingreso/gasto legal por defecto |
+
+---
+
+#### 37. Casos excepcionales obligatorios
+
+El diseño físico posterior deberá tratar explícitamente:
+
+1. compra recibida con costo aún no confirmado;
+2. devolución después de valorización;
+3. recepción parcial con costos distintos;
+4. cambio de presentación o unidad;
+5. costo en moneda diferente;
+6. consumo sin costo elegible publicado;
+7. producción cerrada físicamente con costo pendiente;
+8. lote con salida buena igual a cero;
+9. merma detectada después del cierre productivo;
+10. reproceso que consume producto previamente valorizado;
+11. movimiento interno con estándar vigente pero real pendiente;
+12. costo real publicado después de una transferencia interna;
+13. componente logístico directo y componente logístico compartido en la misma operación;
+14. pool con base total igual a cero;
+15. driver corregido después de publicación;
+16. residual de asignación no explicado;
+17. evento fuente duplicado o fuera de orden;
+18. reversión de un costo ya consumido por un reporte;
+19. cambio de estándar durante el mismo periodo;
+20. evento tardío después de cierre de periodo.
+
+Ningún caso se resolverá con valor cero inventado, edición destructiva o doble registro manual.
+
+---
+
+#### 38. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| motor de costos NUMERA aún no está materializado | no | paquete físico NUMERA aplicable | consumidores usan métodos, fuentes y versiones definidas aquí sin doble escritura |
+| fuentes AS-IS no están integradas al motor NUMERA | no | integración/DB física aplicable | contratos correlacionados e idempotentes entregan las fuentes elegibles |
+| punto de equilibrio vigente usa proxy no demostrado | no | `NUMERA-DOM-008`, UX y materialización aplicable | ingreso y costo compatibles producen método aprobado y trazable |
+| rentabilidad material continúa ausente | no | `NUMERA-DOM-008` | ingreso realizado y costos publicados se combinan por dimensiones aprobadas |
+| reglas de periodos cerrados y eventos tardíos requieren contrato específico | no | `NUMERA-DOM-011`, `NUMERA-DOM-014` | ajuste, reapertura, diferencia y conciliación quedan gobernados |
+| tratamiento contable/fiscal oficial no se decide por costo gerencial | no | `NUMERA-DOM-013`, `NUMERA-DOM-017` | frontera externa o arquitectura contable formal aprobada |
+| escenarios requieren aislamiento de hechos reales | no | `NUMERA-DOM-018` | simulaciones versionadas no alteran datos publicados |
+
+---
+
+#### 39. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba. El contrato vigente ya cubre métodos, fuentes, versiones, tipos de costo, conciliación, idempotencia, producción, inventario, logística, punto de equilibrio y rentabilidad.
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+---
+
+#### 40. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro Canónico:
+
+- `TREQ-NUMERA-001` para reconciliación de costos, indicadores y reportes con hechos fuente sin doble registro;
+- `TREQ-NUMERA-002` para identidad, dimensiones, moneda, fechas, fuente, correlación y correcciones no destructivas;
+- `TREQ-NUMERA-004` para método, entradas, versión, vigencia, separación de tipos de costo, distribución, punto de equilibrio y rentabilidad;
+- `TREQ-NUMERA-019` para no presentar ausencia de margen o cálculo como un valor económico confirmado;
+- `TREQ-NUMERA-020` para mantener separados ingreso esperado, gasto real, presupuesto y variación;
+- `TREQ-FOGO-004` para consumo, producción, rendimiento, merma, reproceso, genealogía y cierre productivo;
+- `TREQ-NEXO-011` para movimientos físicos, costos unitarios relacionados, idempotencia y ausencia de doble contabilización;
+- `TREQ-INTEGRATION-013` para la cadena producción-calidad-inventario-costo correlacionada e idempotente;
+- `TREQ-INTEGRATION-016` para logística y costo como eventos correlacionados sin doble efecto;
+- `TREQ-INTEGRATION-017` para llegada de hechos a NUMERA mediante contratos versionados, correlacionados e idempotentes.
+
+Esta enumeración es trazabilidad reutilizada y no actualiza 04A.
+
+---
+
+#### 41. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de repositorio para esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se modificó ni validó el checkout local del usuario durante la redacción del artefacto |
+| REMOTA | PASS | se verificaron `main`, continuidad, archivo propietario, 04A NUMERA, `OPS-CST-001`, `NUMERA-AUD-008`, `CAP-SCOPE-012`, `VPROC-0054`, eventos de proceso, ownership funcional y requisitos relacionados mediante lectura remota de solo lectura |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron compras, consumos, producción, movimientos, valorizaciones, distribuciones o cierres reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no autoriza materialización física |
+
+---
+
+#### 42. Criterios de aceptación
+
+`NUMERA-DOM-007` queda aceptable cuando:
+
+1. adquisición, landed, estándar, promedio, último, real, productivo, logístico, merma e interno tienen significados separados;
+2. ningún método actúa como fallback silencioso de otro;
+3. toda determinación de costo declara método, versión, vigencia, alcance y fuentes;
+4. adquisición y landed conservan componentes y elegibilidad explícitos;
+5. promedio es ponderado por cantidad y no promedio simple de precios;
+6. último costo proviene del último evento económico elegible bajo un corte declarado;
+7. costo estándar conserva versión publicada y no reescribe historia;
+8. costo real usa hechos observados y conciliados sin inventar faltantes;
+9. costo productivo y logístico permanecen separados;
+10. merma y reproceso permanecen visibles;
+11. costo interno no crea venta, ingreso o gasto legal por defecto;
+12. atribución directa precede distribución compartida;
+13. pools y drivers son versionados, explicables, aprobables y reversibles;
+14. moneda, unidad, precisión y redondeo están gobernados;
+15. la variación usa bases comparables y convención de signo explícita;
+16. las variaciones explicadas reconcilian con la variación total o dejan residual visible;
+17. diferencias operacionales siguen en sus dominios propietarios;
+18. correcciones y eventos tardíos no sobrescriben resultados publicados;
+19. ausencia de datos no produce costo cero ni fallback automático;
+20. margen objetivo no se trata como margen de contribución sin demostración;
+21. fuentes AS-IS quedan reconocidas sin elevarse automáticamente a motor objetivo;
+22. no se crean ni modifican requisitos de prueba;
+23. no se realizan cambios físicos;
+24. `NUMERA-DOM-008` recibe costos trazables y publicados para definir rentabilidad.
+
+---
+
+#### 43. Límites
+
+Esta tarea no:
+
+- implementa el motor de costos;
+- modifica `inventory_cost_policies`;
+- modifica `product_cost_events`;
+- modifica costos de proveedor;
+- cambia `stock_unit_cost`;
+- modifica listas o precios internos;
+- cambia compras, recepciones o documentos;
+- modifica recetas, lotes, consumos, rendimientos, mermas o reprocesos;
+- crea movimientos de inventario;
+- crea o modifica centros de costo;
+- fija porcentajes, valores estándar, tarifas, tasas o drivers empresariales concretos;
+- decide tratamiento tributario de componentes de costo;
+- implementa asientos contables;
+- define rentabilidad final por dimensión;
+- define ingresos realizados;
+- publica un punto de equilibrio consolidado;
+- define workflows de cierre o reapertura;
+- crea permisos;
+- modifica Supabase;
+- modifica 04A;
+- desarrolla `NUMERA-DOM-008`.
+
+---
+
+#### 44. Handoff a NUMERA-DOM-008
+
+La siguiente tarea recibe:
+
+```text
+COST_ENGINE_OWNER = NUMERA
+COST_SOURCE_FACT_OWNERS = PRESERVED
+COST_METHOD_FALLBACK_SILENT = FORBIDDEN
+ACQUISITION_LANDED_STANDARD_AVERAGE_LAST_REAL_PRODUCTIVE_LOGISTIC_WASTE_INTERNAL = DISTINCT
+AVERAGE_COST_METHOD = QUANTITY_WEIGHTED
+STANDARD_COST = VERSIONED_PUBLISHED_REFERENCE
+REAL_COST = RECONCILED_OBSERVED_COST
+MISSING_COST = NOT_ZERO
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+SHARED_ALLOCATION_REQUIRES_VERSIONED_DRIVER = YES
+INTERNAL_COST_IS_LEGAL_REVENUE_OR_EXPENSE_BY_DEFAULT = NO
+COST_VARIANCE = ACTUAL_COMPARABLE_MINUS_REFERENCE_COMPARABLE
+POSITIVE_COST_VARIANCE = UNFAVORABLE
+HISTORICAL_REVALUATION_BY_SILENT_OVERWRITE = FORBIDDEN
+TARGET_GROSS_MARGIN_IS_CONTRIBUTION_MARGIN_BY_DEFAULT = NO
+COST_RESULTS_REQUIRE_METHOD_VERSION_SCOPE_SOURCE_AND_CUTOFF = YES
+COST_CENTER_CATALOG = SINGLE_SHARED_CANONICAL_CATALOG
+```
+
+`NUMERA-DOM-008` deberá combinar ingreso realizado y costos trazables sobre dimensiones aprobadas, sin reabrir los métodos de costo definidos aquí.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo`
 ### [ ] NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
 ### [ ] NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
 ### [ ] NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
