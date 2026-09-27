@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1402** |
+| Aprobadas | **1403** |
 | En propuesta | **0** |
-| No iniciadas | **194** |
+| No iniciadas | **193** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **87.84% (1402/1596)** |
+| Porcentaje de completamiento | **87.91% (1403/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **194** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1303** |
+| ⏸ NO_EVALUADA | **193** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1304** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUD-012` — Crear matriz capacidad financiera × implementación actual | ✅ APROBADA |
-| Tarea actual | `OPS-CST-001` — Definir el caso de centro de costo y transferencias internas de Producción y Distribución | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-DOM-001` — Definir alcance ejecutivo, analítico y contable de NUMERA | ⬜ NO INICIADA |
+| Última aprobada | `OPS-CST-001` — Definir el caso de centro de costo y transferencias internas de Producción y Distribución | ✅ APROBADA |
+| Tarea actual | `NUMERA-DOM-001` — Definir alcance ejecutivo, analítico y contable de NUMERA | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-002` — Definir hechos económicos recibidos desde ventas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1226,7 +1226,7 @@
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-026` | Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-027` | Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-028` | Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-CST-001` | Definir el caso de centro de costo y transferencias internas de Producción y Distribución | — | — | `bloques/O_NUMERA/03_TAREA_DERIVADA_OPS_AUD_001.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-CST-001` | Definir el caso de centro de costo y transferencias internas de Producción y Distribución | — | — | `bloques/O_NUMERA/03_TAREA_DERIVADA_OPS_AUD_001.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DEV-001` | Inventariar dispositivos compartidos | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DEV-002` | Definir identidad del dispositivo | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DEV-003` | Asignar sede fija | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
