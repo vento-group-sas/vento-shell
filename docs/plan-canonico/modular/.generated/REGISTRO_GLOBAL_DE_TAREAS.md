@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1425** |
+| Aprobadas | **1426** |
 | En propuesta | **0** |
-| No iniciadas | **171** |
+| No iniciadas | **170** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **89.29% (1425/1596)** |
+| Porcentaje de completamiento | **89.35% (1426/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **171** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1326** |
+| ⏸ NO_EVALUADA | **170** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1327** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUTH-004` — Definir permisos de registro | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUTH-005` — Definir permisos de aprobación | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUTH-006` — Definir permisos de cierre | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUTH-005` — Definir permisos de aprobación | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUTH-006` — Definir permisos de cierre | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUTH-007` — Definir permisos de exportación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1187,7 +1187,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-002` | Clasificar información financiera sensible | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-003` | Definir permisos de lectura | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-004` | Definir permisos de registro | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-005` | Definir permisos de aprobación | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-005` | Definir permisos de aprobación | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-006` | Definir permisos de cierre | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-007` | Definir permisos de exportación | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-008` | Limitar por empresa, sede o centro de costo | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
