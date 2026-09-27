@@ -6015,7 +6015,1423 @@ NUMERA_AUTH_006_OWNER = CLOSE_REOPEN_PERMISSION_DEFINITION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-006 — Definir permisos de cierre`
-### [ ] NUMERA-AUTH-006 — Definir permisos de cierre
+### ✅ NUMERA-AUTH-006 — Definir permisos de cierre
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-005 — Definir permisos de aprobación
+**Tarea siguiente:** NUMERA-AUTH-007 — Definir permisos de exportación
+**Tipo de tarea:** definición documental del registro atómico de autoridad sobre el ciclo de estado de periodos económicos de NUMERA, separando bloqueo preparatorio, cierre y reapertura, preservando la autoridad exacta de las correcciones sobre sus recursos propietarios, la historia de cierres, el versionado, la concurrencia, la segregación de funciones y las fronteras frente a aprobación, conciliación, exportación, cierre contable/fiscal y materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni publica permisos runtime, no modifica roles, grants, RLS, RPC, Server Actions, tablas, estados físicos, migraciones, Supabase, datos financieros, periodos reales, reportes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir las capacidades exactas mediante las cuales NUMERA podrá gobernar el bloqueo preparatorio, el cierre y la reapertura de un periodo económico sin reutilizar permisos de lectura, registro, aprobación, conciliación o administración genérica como autoridad para cambiar el estado temporal del periodo.
+
+La tarea convierte el slot documental `CLOSE` y el slot `REOPEN` aprobados en `NUMERA-AUTH-001` en un contrato reutilizable por las superficies, servicios y controles posteriores, alineado con el modelo de periodos aprobado en `NUMERA-DOM-011`.
+
+---
+
+#### 2. Naturaleza y topología
+
+La reconciliación propietaria de `NUMERA-AUTH-001..007` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, `NUMERA-AUTH-006`:
+
+- se define una sola vez;
+- no crea instancia física propia;
+- no modifica `numera_periods`;
+- no cambia el estado de ningún periodo real;
+- no crea grants;
+- no modifica RLS, RPC, Server Actions, funciones, triggers o tablas;
+- no ejecuta cierre, reapertura, corrección ni restatement;
+- no modifica Supabase.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-005
+
+Se consume íntegramente:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_APPROVAL_PERMISSION_REGISTRY = NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+EXISTING_DECOMPOSITION_APPROVAL_PERMISSIONS = 1
+NEW_CONTRACT_DEFINED_DECISION_PERMISSIONS = 11
+TOTAL_APPROVAL_DECISION_PERMISSION_DEFINITIONS = 12
+APPROVE_PERMISSION_COUNT = 6
+REJECT_PERMISSION_COUNT = 6
+APPROVAL_DECISION_ACTIONS = approve|reject
+APPROVE_REJECT_RESOLVE_ARE_DISTINCT = YES
+APPROVAL_QUEUE_OMNIBUS_PERMISSION = FORBIDDEN
+APPROVAL_QUEUE_ROW_REQUIRES_UNDERLYING_VIEW = YES
+APPROVE_PERMISSION_IMPLIES_VIEW = NO
+REGISTER_IMPLIES_APPROVE = NO
+UPDATE_IMPLIES_APPROVE = NO
+OWNERSHIP_IMPLIES_APPROVE = NO
+ROLE_NAME_IMPLIES_APPROVE = NO
+APPROVAL_REQUIRES_APPROVABLE_STATE = YES
+APPROVAL_REQUIRES_RESOURCE_VERSION = YES
+STALE_REVIEW_DECISION = DENY_AND_REVIEW_AGAIN
+REJECT_REASON_REQUIRED = YES
+APPROVAL_DECISION_IDEMPOTENT_WHEN_RETRYABLE = YES
+SAME_ACTOR_MULTI_FUNCTION_EXCEPTION_REQUIRES_EXPLICIT_JUSTIFICATION_AND_AUDIT = YES
+SOURCE_VALID_APPROVAL_IS_NOT_DUPLICATED_BY_DEFAULT = YES
+APPROVAL_IMPLIES_PAY_EXECUTE = NO
+APPROVAL_IMPLIES_RECONCILE = NO
+APPROVAL_IMPLIES_CLOSE_REOPEN = NO
+APPROVAL_IMPLIES_EXPORT = NO
+INTERNAL_FISCAL_APPROVAL_IS_EXTERNAL_AUTHORITY_ACCEPTANCE = NO
+SCENARIO_PRICE_BUDGET_APPROVAL_OWNER = NUMERA_AUTH_015
+RECEIVABLE_BANK_WRITE_OFF_SPECIALIZED_OWNER = NUMERA_AUTH_014
+APPROVAL_SCOPE_OWNER = NUMERA_AUTH_008
+APPROVAL_AUDIT_OWNER = NUMERA_AUTH_009
+APPROVAL_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+MISSING_APPROVAL_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_006_OWNER = CLOSE_REOPEN_PERMISSION_DEFINITION
+```
+
+La presente tarea no altera las capacidades de lectura, registro o aprobación ya definidas.
+
+---
+
+#### 4. Contrato de dominio consumido
+
+`NUMERA-DOM-011` define el periodo económico gobernado por NUMERA y congela:
+
+```text
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_ORDINARY_FLOW = open->locked->closed
+LOCKED_ALLOWS_ORDINARY_ECONOMIC_MUTATION = NO
+CLOSED_ALLOWS_ORDINARY_ECONOMIC_MUTATION = NO
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+LATE_EVENT_SILENT_CLOSED_PERIOD_REWRITE = FORBIDDEN
+LATE_EVENT_REQUIRES_EXPLICIT_ROUTING = YES
+REOPEN_REQUIRES_REASON_SCOPE_EVIDENCE_AUTHORITY = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+CLOSE_AND_REOPEN_IDEMPOTENT = YES
+PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+```
+
+`NUMERA-AUTH-006` especializa exclusivamente la autoridad de las transiciones protegidas sin modificar ese lifecycle.
+
+---
+
+#### 5. Principio rector de autoridad temporal
+
+Se congela:
+
+```text
+PERIOD_VIEW
+!= PERIOD_LOCK_AUTHORITY
+!= PERIOD_CLOSE_AUTHORITY
+!= PERIOD_REOPEN_AUTHORITY
+!= RESOURCE_CORRECTION_AUTHORITY
+```
+
+La posibilidad técnica de mostrar un periodo, cambiar un selector, abrir `VSCREEN-0105` o conocer su estado no concede autoridad para modificarlo.
+
+---
+
+#### 6. Registro canónico de autoridad de estado de periodo
+
+Se define:
+
+```text
+NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001
+```
+
+Este registro contiene las capacidades exactas que deberán materializarse posteriormente para proteger el ciclo `open -> locked -> closed` y la reapertura gobernada.
+
+---
+
+#### 7. Shape lógico de una fila
+
+Cada fila deberá preservar como mínimo:
+
+```text
+permission_key
+resource_type
+authority_class
+allowed_from_state
+allowed_to_state
+screen_binding
+process_step_binding
+required_resource_version
+required_close_version
+scope_contract
+sensitivity_reason
+authorization_requirement
+shared_device_requirement
+simulation_behavior
+segregation_rule
+reason_requirement
+evidence_contract
+idempotency_contract
+materialization_status
+materialization_owner
+```
+
+La tarea no define columnas físicas ni esquema de base de datos.
+
+---
+
+#### 8. Cardinalidad cerrada
+
+La definición queda cerrada en:
+
+```text
+EXISTING_DECOMPOSITION_PERIOD_STATE_PERMISSIONS = 0
+NEW_CONTRACT_DEFINED_PERIOD_STATE_PERMISSIONS = 3
+TOTAL_PERIOD_STATE_PERMISSION_DEFINITIONS = 3
+LOCK_PERMISSION_COUNT = 1
+CLOSE_PERMISSION_COUNT = 1
+REOPEN_PERMISSION_COUNT = 1
+GENERIC_CORRECT_PERMISSION_COUNT = 0
+```
+
+No se permite agregar otra capacidad de estado de periodo por inferencia durante la materialización.
+
+---
+
+#### 9. Capacidades nuevas definidas contractualmente
+
+Se definen:
+
+```text
+numera.finance.periods.lock
+numera.finance.periods.close
+numera.finance.periods.reopen
+```
+
+Las tres quedan en estado documental:
+
+```text
+CONTRACT_DEFINED_PENDING_MATERIALIZATION
+```
+
+Su ausencia actual en runtime no autoriza sustituirlas por permisos legacy.
+
+---
+
+#### 10. Descomposición de slots de NUMERA-AUTH-001
+
+El binding de `VSCREEN-0105` se especializa así:
+
+```text
+READ
+-> numera.finance.periods.view
+
+CLOSE
+-> numera.finance.periods.lock
+-> numera.finance.periods.close
+
+REOPEN
+-> numera.finance.periods.reopen
+
+CORRECTION_APPLICABLE
+-> exact_resource_mutation_authority
+```
+
+El slot `CLOSE` abarca el ciclo gobernado de preparación y decisión final, pero `lock` y `close` permanecen capacidades atómicas distintas.
+
+---
+
+#### 11. `lock`, `close`, `reopen` y corrección permanecen distintos
+
+Se congela:
+
+```text
+LOCK != CLOSE != REOPEN != CORRECT
+```
+
+Además:
+
+```text
+CORRECT != GENERIC_PERIOD_PERMISSION
+```
+
+Una corrección cambia o compensa un recurso financiero concreto; por tanto, usa la autoridad exacta de ese recurso y no un permiso omnibus de periodo.
+
+---
+
+#### 12. Convención de acciones
+
+Las claves de esta tarea utilizan exclusivamente:
+
+```text
+lock
+close
+reopen
+```
+
+No se crean códigos objetivo con:
+
+```text
+manage
+edit
+correct
+change_status
+set_status
+admin
+all
+full
+```
+
+como sustitutos ambiguos de las decisiones empresariales protegidas.
+
+---
+
+#### 13. Recurso protegido
+
+Las tres capacidades protegen:
+
+```text
+resource_type = PERIOD
+```
+
+La autoridad aplica al periodo económico de NUMERA definido por `NUMERA-DOM-011`, no a turno, caja, ciclo de producción, recepción, periodo contable oficial ni periodo fiscal.
+
+---
+
+#### 14. Estados canónicos preservados
+
+Se reutilizan sin renombrar:
+
+```text
+open
+locked
+closed
+```
+
+Esta tarea no crea un cuarto estado y no redefine el significado aprobado de ninguno de los tres.
+
+---
+
+#### 15. Flujo ordinario preservado
+
+El flujo ordinario continúa siendo:
+
+```text
+open
+-> locked
+-> closed
+```
+
+No se autoriza un atajo:
+
+```text
+open -> closed
+```
+
+sin atravesar el control de cierre aprobado por el dominio.
+
+---
+
+#### 16. Lectura requerida para decidir
+
+Toda interacción de cierre o reapertura exige también lectura autorizada del periodo mediante:
+
+```text
+numera.finance.periods.view
+```
+
+Se conserva:
+
+```text
+LOCK_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_IMPLIES_VIEW = NO
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+```
+
+La autoridad de transición no concede consulta general del dominio financiero.
+
+---
+
+#### 17. VSCREEN-0105 es superficie, no autoridad
+
+`VSCREEN-0105 — Cierre, reapertura y corrección de periodo` consume:
+
+```text
+VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD
+```
+
+La pantalla puede exponer acciones distintas, pero no se convierte en un permiso concedible ni en una autoridad omnibus.
+
+---
+
+#### 18. Permiso de bloqueo preparatorio
+
+```text
+numera.finance.periods.lock
+```
+
+autoriza iniciar o gobernar el lock económico previo al cierre únicamente sobre un periodo elegible y dentro del alcance autorizado.
+
+Su transición principal es:
+
+```text
+open -> locked
+```
+
+El lock congela mutación económica ordinaria para revisión, conciliación y preparación de cierre; no equivale a cierre final.
+
+---
+
+#### 19. Liberación de lock
+
+`numera.finance.periods.lock` gobierna también la liberación explícita del lock previo al cierre cuando el dominio permite:
+
+```text
+locked -> open
+```
+
+La liberación:
+
+- exige motivo;
+- exige versión vigente;
+- exige alcance autorizado;
+- conserva el intento de cierre y su evidencia;
+- no borra diferencias detectadas;
+- no equivale a reapertura de un cierre ya consumado.
+
+No se crea una cuarta clave `unlock` porque el contrato propietario no reserva un slot de autorización independiente para ella y la transición permanece dentro del lifecycle del lock de cierre.
+
+---
+
+#### 20. Permiso de cierre final
+
+```text
+numera.finance.periods.close
+```
+
+autoriza la decisión final:
+
+```text
+locked -> closed
+```
+
+solo cuando los gates de cierre aplicables hayan sido evaluados y el periodo/version observados continúen vigentes.
+
+---
+
+#### 21. Cierre no es cálculo ni publicación
+
+Se preserva:
+
+```text
+VPROC_0054_PUBLISHED != PERIOD_CLOSED
+CLOSE_RECONCILIATION_PENDING != PERIOD_CLOSED
+COSTING_CYCLE_CLOSED != ACCOUNTING_CLOSE
+```
+
+Tener costos calculados, rentabilidad publicada o conciliación en curso no autoriza por sí solo `numera.finance.periods.close`.
+
+---
+
+#### 22. Permiso de reapertura
+
+```text
+numera.finance.periods.reopen
+```
+
+autoriza exclusivamente:
+
+```text
+closed -> open
+```
+
+cuando exista una necesidad material, motivo, alcance, evidencia, autoridad y versión de cierre compatibles con `NUMERA-DOM-011`.
+
+---
+
+#### 23. Reapertura no es liberación de lock
+
+Se conserva:
+
+```text
+locked -> open = RELEASE_LOCK
+closed -> open = REOPEN
+```
+
+La primera permanece bajo `numera.finance.periods.lock`; la segunda exige `numera.finance.periods.reopen`.
+
+Esto evita que una capacidad de preparación de cierre permita reabrir un periodo ya cerrado.
+
+---
+
+#### 24. Corrección no recibe permiso omnibus
+
+Queda prohibido definir como autoridad objetivo:
+
+```text
+numera.finance.periods.correct
+numera.finance.periods.manage
+numera.finance.periods.update
+```
+
+como vía genérica para modificar la realidad económica de un periodo protegido.
+
+---
+
+#### 25. Modelo de autorización de corrección
+
+Una corrección deberá resolver, como mínimo:
+
+```text
+exact_resource_mutation_authority
++
+period_state_authority_when_required
++
+valid_scope
++
+current_resource_version
++
+current_period_version
+```
+
+Ejemplos:
+
+- un ajuste económico autorizado conserva la autoridad del recurso ajustado;
+- una corrección sobre un periodo `closed` puede exigir `periods.reopen` antes de materializar efectos;
+- una corrección previa al cierre puede exigir liberar el lock de forma gobernada;
+- no existe un bypass por pertenecer a `VSCREEN-0105`.
+
+---
+
+#### 26. Corrección sin reapertura
+
+Cuando `NUMERA-DOM-011` permita reconocer el efecto en un periodo abierto sin reexpresar el cierre histórico:
+
+```text
+CORRECTION_WITHOUT_REOPEN
+-> exact_resource_mutation_authority
+-> no period reopen permission required
+```
+
+La referencia al periodo afectado y la historia original deben conservarse.
+
+---
+
+#### 27. Corrección que exige reapertura
+
+Cuando la corrección deba modificar materialmente la representación económica de un periodo cerrado:
+
+```text
+CORRECTION_REQUIRES_REOPEN = YES
+```
+
+El actor deberá satisfacer `numera.finance.periods.reopen` además de la autoridad exacta necesaria para la mutación posterior.
+
+Reabrir no concede automáticamente esa autoridad de mutación.
+
+---
+
+#### 28. Precondición de estado
+
+Cada capacidad exige que el estado observado permita la transición solicitada.
+
+```text
+PERMISSION_PRESENT + INVALID_FROM_STATE = DENY
+```
+
+En particular:
+
+```text
+lock:   open -> locked
+release_lock: locked -> open
+close:  locked -> closed
+reopen: closed -> open
+```
+
+Cualquier otra combinación falla cerrada salvo que un contrato canónico posterior la defina explícitamente.
+
+---
+
+#### 29. Versión del periodo obligatoria
+
+Toda transición deberá validar la versión del periodo observada durante la revisión.
+
+Si cambia materialmente entre revisión y decisión:
+
+```text
+STALE_PERIOD_VERSION = DENY_AND_REVIEW_AGAIN
+```
+
+No se cambia el estado de una versión distinta de la evaluada.
+
+---
+
+#### 30. Versión de cierre obligatoria al reabrir
+
+Una reapertura deberá identificar la versión cerrada exacta que pretende superseder o revisar.
+
+```text
+REOPEN_WITHOUT_CLOSE_VERSION = DENY
+```
+
+La versión previa continúa histórica aun cuando exista una nueva versión posterior.
+
+---
+
+#### 31. Checklist de cierre no se sustituye por permiso
+
+`numera.finance.periods.close` es condición necesaria de autoridad, pero no suficiente para cerrar.
+
+También deben satisfacerse los gates de dominio aplicables sobre:
+
+- fuentes esperadas;
+- duplicados;
+- conciliaciones materiales;
+- inventario, producción y variaciones;
+- costos y distribuciones;
+- eventos tardíos;
+- ajustes pendientes;
+- excepciones;
+- evidencia final.
+
+```text
+CLOSE_PERMISSION + FAILED_CLOSE_GATE = DENY
+```
+
+---
+
+#### 32. Excepciones de cierre
+
+Una excepción material solo puede formar parte de un cierre válido cuando se encuentre:
+
+- identificada;
+- clasificada;
+- cuantificada cuando aplique;
+- vinculada a owner y fuente;
+- resuelta o aceptada explícitamente como no bloqueante;
+- incluida en la evidencia de cierre.
+
+La autoridad de cierre no transforma una excepción desconocida en no bloqueante.
+
+---
+
+#### 33. Evidencia de lock
+
+La transición a `locked` deberá conservar, como mínimo:
+
+- periodo y alcance;
+- actor y actor efectivo;
+- permiso exacto;
+- versión del periodo;
+- estado anterior;
+- reglas aplicables;
+- fuentes o watermarks relevantes;
+- conciliaciones conocidas;
+- diferencias o excepciones abiertas;
+- timestamp;
+- correlación de solicitud.
+
+---
+
+#### 34. Evidencia de cierre
+
+La decisión `close` deberá conservar, como mínimo:
+
+- periodo y alcance;
+- versión cerrada;
+- actor y actor efectivo;
+- permiso exacto;
+- estado anterior;
+- versión esperada;
+- gates evaluados;
+- fuentes y watermarks;
+- conciliaciones relevantes;
+- excepciones aceptadas;
+- resultados publicados vinculados;
+- timestamp;
+- correlación de solicitud;
+- referencia de evidencia cuando la materialización la defina.
+
+---
+
+#### 35. Evidencia de reapertura
+
+La decisión `reopen` deberá conservar, como mínimo:
+
+- periodo;
+- versión de cierre afectada;
+- actor y actor efectivo;
+- permiso exacto;
+- alcance aprobado;
+- motivo;
+- impacto esperado;
+- objetos o familias afectadas;
+- evidencia revisada;
+- estado previo;
+- versión esperada;
+- timestamp;
+- correlación de solicitud.
+
+---
+
+#### 36. Motivo obligatorio
+
+Se congela:
+
+```text
+RELEASE_LOCK_REASON_REQUIRED = YES
+REOPEN_REASON_REQUIRED = YES
+```
+
+El cierre final conserva evidencia de gates y decisión; cuando exista una excepción aceptada o política que exija justificación, el motivo también deberá quedar registrado.
+
+Un código técnico de error no sustituye la razón empresarial.
+
+---
+
+#### 37. Reapertura acotada
+
+`numera.finance.periods.reopen` no concede una ventana de escritura irrestricta.
+
+La reapertura deberá conservar:
+
+- alcance aprobado;
+- familias de recursos afectadas;
+- correcciones autorizadas;
+- condición de finalización;
+- actores habilitados;
+- evidencia de cada cambio;
+- relación con la versión cerrada anterior.
+
+```text
+REOPEN_IS_UNBOUNDED_WRITE = NO
+```
+
+---
+
+#### 38. Reapertura no concede mutación de recursos
+
+Se conserva:
+
+```text
+REOPEN_PERMISSION_IMPLIES_RESOURCE_UPDATE = NO
+REOPEN_PERMISSION_IMPLIES_RESOURCE_REGISTER = NO
+REOPEN_PERMISSION_IMPLIES_APPROVE = NO
+REOPEN_PERMISSION_IMPLIES_RECONCILE = NO
+```
+
+Cada efecto financiero posterior se autoriza contra su propio recurso.
+
+---
+
+#### 39. Nuevo cierre después de reapertura
+
+Cuando una reapertura produzca cambios materiales:
+
+```text
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+```
+
+El nuevo cierre vuelve a exigir:
+
+- lock gobernado;
+- revalidación de gates;
+- evidencia actualizada;
+- versión vigente;
+- `numera.finance.periods.close`.
+
+No se reutiliza silenciosamente la decisión de cierre anterior.
+
+---
+
+#### 40. Restatement versionado
+
+Se conserva:
+
+```text
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+```
+
+Toda reexpresión deberá poder relacionar:
+
+```text
+PERIOD_ID
+CLOSE_VERSION
+SUPERSEDES_CLOSE_VERSION
+CLOSED_AT
+CLOSED_BY
+REOPEN_REFERENCE
+RESTATEMENT_REASON
+EVIDENCE_REFERENCE
+```
+
+La tarea no define estructura física para estos campos.
+
+---
+
+#### 41. Eventos tardíos
+
+Un evento tardío no adquiere autoridad para reabrir un periodo.
+
+```text
+LATE_EVENT != REOPEN_AUTHORITY
+```
+
+El evento se clasifica conforme a `NUMERA-DOM-011`; si la decisión resultante exige reapertura, se evalúa `numera.finance.periods.reopen` de forma independiente.
+
+---
+
+#### 42. Fuentes operativas continúan siendo propietarias
+
+Cerrar el periodo económico NUMERA no concede autoridad para cerrar o alterar:
+
+- caja o turno PULSO;
+- compra o recepción ORIGO;
+- inventario o logística NEXO;
+- producción FOGO;
+- otras fuentes operativas.
+
+Los eventos legítimos posteriores al corte siguen su contrato de integración y tratamiento tardío.
+
+---
+
+#### 43. Cierre económico no es cierre contable o fiscal
+
+Se congela:
+
+```text
+NUMERA_PERIOD_CLOSE
+!= ACCOUNTING_CLOSE
+!= TAX_CLOSE
+!= OFFICIAL_LEDGER_CLOSE
+```
+
+`numera.finance.periods.close` autoriza exclusivamente el cierre económico gobernado por NUMERA.
+
+Las fronteras contable y fiscal permanecen conforme a `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 44. Reapertura económica no es reapertura contable o fiscal
+
+```text
+NUMERA_PERIOD_REOPEN
+!= ACCOUNTING_REOPEN
+!= TAX_REOPEN
+```
+
+La capacidad definida aquí no modifica libros, declaraciones, documentos oficiales ni decisiones de autoridad externa.
+
+---
+
+#### 45. Sensibilidad
+
+Las tres capacidades conservan:
+
+```text
+sensitivity_reason = FINANCIAL_DATA
+```
+
+Además, `close` y `reopen` pueden implicar:
+
+```text
+EXCEPTIONAL_ACTION
+AUDIT_SECURITY
+```
+
+cuando afectan versiones publicadas, correcciones materiales, restatements o evidencia de cierre.
+
+---
+
+#### 46. Modalidad objetivo
+
+Las tres capacidades se definen con objetivo:
+
+```text
+authorization_requirement = BASE_ONLY
+```
+
+El cierre económico es una decisión administrativa financiera. La necesidad de contexto operacional concreto solo podrá agregarse mediante la tarea propietaria y evidencia contractual explícita.
+
+---
+
+#### 47. Dispositivo compartido
+
+El objetivo de interacción se mantiene:
+
+```text
+shared_device_requirement = STRONG
+```
+
+Una transición real de periodo exige actor identificado y las garantías de reautenticación fuerte que determine el contrato transversal aplicable.
+
+---
+
+#### 48. Simulación
+
+La simulación objetivo es:
+
+```text
+simulation_behavior = DECISION
+```
+
+Puede mostrar elegibilidad, gates, diferencias, impacto y razones hipotéticas, pero no puede ejecutar lock, cierre, reapertura, corrección, restatement ni escritura financiera real.
+
+---
+
+#### 49. Idempotencia de lock
+
+Reintentar la misma transición técnica con la misma identidad, versión y clave de idempotencia no puede crear locks duplicados ni nuevas decisiones equivalentes.
+
+```text
+SAME_PERIOD + SAME_VERSION + SAME_LOCK_DECISION + SAME_IDEMPOTENCY_KEY
+-> ONE_BUSINESS_TRANSITION
+```
+
+---
+
+#### 50. Idempotencia de cierre
+
+Se conserva:
+
+```text
+SAME_PERIOD + SAME_VERSION + SAME_CLOSE_DECISION + SAME_IDEMPOTENCY_KEY
+-> ONE_CLOSE_EFFECT
+```
+
+Un replay no produce dos versiones de cierre económicamente equivalentes.
+
+---
+
+#### 51. Idempotencia de reapertura
+
+Se conserva:
+
+```text
+SAME_PERIOD + SAME_CLOSE_VERSION + SAME_REOPEN_DECISION + SAME_IDEMPOTENCY_KEY
+-> ONE_REOPEN_EFFECT
+```
+
+Una respuesta perdida no autoriza una segunda reapertura.
+
+---
+
+#### 52. Decisiones opuestas no son retries
+
+Intentar cambiar silenciosamente:
+
+```text
+lock -> release_lock
+close -> reopen
+reopen -> close
+```
+
+no se trata como repetición técnica de la decisión anterior.
+
+Cada transición requiere estado actual válido, versión vigente y autoridad aplicable.
+
+---
+
+#### 53. Concurrencia
+
+Toda transición deberá fallar cerrada ante una versión obsoleta o una mutación concurrente incompatible.
+
+Se prohíbe:
+
+- cerrar sobre una versión revisada distinta;
+- escribir entre el último gate de cierre y el cambio de estado sin control de concurrencia;
+- reabrir dos veces por carreras;
+- cerrar mientras otra reapertura ya cambió la versión;
+- aplicar un evento tardío dos veces;
+- crear dos restatements para una única decisión.
+
+---
+
+#### 54. Segregación por defecto
+
+Se conserva:
+
+```text
+REGISTER_PERMISSION != LOCK_PERMISSION
+APPROVE_PERMISSION != LOCK_PERMISSION
+RECONCILE_PERMISSION != LOCK_PERMISSION
+LOCK_PERMISSION != CLOSE_PERMISSION
+CLOSE_PERMISSION != REOPEN_PERMISSION
+RESOURCE_CORRECTION_AUTHORITY != REOPEN_PERMISSION
+```
+
+Una concesión no eleva automáticamente a otra.
+
+---
+
+#### 55. Acumulación excepcional de funciones
+
+Cuando una organización pequeña requiera que una misma persona concentre dos o más capacidades del ciclo de cierre, la excepción deberá ser:
+
+- explícita;
+- justificada;
+- limitada al alcance necesario;
+- visible en auditoría;
+- compatible con política empresarial;
+- revisable.
+
+La tarea no crea acumulación automática por rol o cargo.
+
+---
+
+#### 56. Ownership no concede cierre
+
+Ser creador del periodo, responsable financiero, preparador del cierre, conciliador o dueño funcional no equivale a autoridad para bloquear, cerrar o reabrir.
+
+```text
+OWNERSHIP != PERIOD_STATE_AUTHORITY
+```
+
+---
+
+#### 57. Rol no es autorización final
+
+Los nombres `contador`, `gerente`, `owner`, `manager` o equivalentes no sustituyen la evaluación del permiso exacto, el alcance, el estado y la versión.
+
+Los grants concretos quedan fuera de esta tarea.
+
+---
+
+#### 58. La interfaz nunca es autoridad
+
+La presencia de:
+
+- botón de cerrar;
+- acción de bloquear;
+- modal de reapertura;
+- checklist;
+- tarjeta de diferencias;
+- estado visible;
+- acción rápida;
+
+no autoriza la transición.
+
+Toda mutación se revalida en servidor contra permiso exacto, periodo, versión, estado y alcance.
+
+---
+
+#### 59. Contrato server-side mínimo
+
+Antes de aplicar una transición deberá resolverse:
+
+```text
+principal
+actor_effective
+permission_key
+period_id
+current_period_state
+period_version
+close_version_when_applicable
+requested_transition
+scope_result
+reason_when_required
+close_gate_result_when_applicable
+authorization_result
+```
+
+Cualquier resultado no autorizado, ambiguo o indeterminado produce denegación segura.
+
+---
+
+#### 60. Fallback a `manage` prohibido
+
+Queda prohibido:
+
+```text
+missing_exact_period_permission -> numera.expenses.manage
+missing_exact_period_permission -> numera.cost_centers.manage
+missing_exact_period_permission -> numera.finance.periods.manage
+missing_exact_period_permission -> any_manage
+```
+
+La ausencia del permiso exacto produce denegación.
+
+---
+
+#### 61. Wildcards prohibidos
+
+No se autoriza como contrato objetivo:
+
+```text
+numera.*
+numera.finance.*
+numera.finance.periods.*
+numera.finance.close_all
+```
+
+Las decisiones se autorizan por capacidad y recurso.
+
+---
+
+#### 62. Operaciones masivas
+
+Si una operación futura intenta cerrar o reabrir múltiples periodos o alcances, deberá autorizar cada miembro individualmente y conservar su versión, gates y resultado.
+
+No se infiere autorización masiva a partir de una sola transición válida.
+
+---
+
+#### 63. Cierre no equivale a aprobación
+
+Se conserva:
+
+```text
+APPROVE != LOCK
+APPROVE != CLOSE
+APPROVE != REOPEN
+```
+
+La aprobación de un gasto, obligación, plan o distribución no autoriza cambiar el estado del periodo.
+
+---
+
+#### 64. Cierre no equivale a registro o actualización
+
+Se conserva:
+
+```text
+REGISTER != LOCK
+UPDATE != LOCK
+REGISTER != CLOSE
+UPDATE != CLOSE
+REGISTER != REOPEN
+UPDATE != REOPEN
+```
+
+La mutación ordinaria de un recurso no puede cambiar el periodo por inferencia.
+
+---
+
+#### 65. Cierre no equivale a conciliación
+
+```text
+RECONCILE != LOCK
+RECONCILE != CLOSE
+RECONCILE != REOPEN
+```
+
+La conciliación puede ser un gate o evidencia, pero su autoridad no sustituye la decisión temporal del periodo.
+
+---
+
+#### 66. Cierre no equivale a exportación
+
+Se congela:
+
+```text
+LOCK != EXPORT
+CLOSE != EXPORT
+REOPEN != EXPORT
+```
+
+La producción de copias financieras fuera de la superficie de consulta pertenece a `NUMERA-AUTH-007`.
+
+---
+
+#### 67. Scope posterior
+
+La forma exacta de limitar lock, cierre y reapertura por empresa, sede, centro de costo u otra dimensión pertenece a:
+
+```text
+NUMERA-AUTH-008
+```
+
+La 006 define identidad y semántica de permisos, no concede alcance global.
+
+---
+
+#### 68. Auditoría posterior
+
+La materialización detallada de auditoría financiera pertenece a:
+
+```text
+NUMERA-AUTH-009
+```
+
+La presente tarea fija la evidencia mínima que deberá poder conservarse para cada transición.
+
+---
+
+#### 69. Independencia de turno
+
+Estas capacidades se definen inicialmente en el carril administrativo base.
+
+`NUMERA-AUTH-010` deberá impedir que la administración financiera del periodo dependa artificialmente de un turno cuando no corresponde.
+
+---
+
+#### 70. Contexto operacional cuando aplique
+
+Si una transición futura requiere contexto operacional real por relación con una captura o hecho operacional, esa condición deberá definirse en:
+
+```text
+NUMERA-AUTH-011
+```
+
+No se impone contexto operacional universal por inferencia.
+
+---
+
+#### 71. Materialización
+
+La incorporación física de claves, guards de estado, grants, RLS, RPC, Server Actions y consumidores pertenece a:
+
+```text
+NUMERA-AUTH-012
+```
+
+y a los packages o instancias físicas canónicas que correspondan.
+
+Esta tarea no materializa el registro.
+
+---
+
+#### 72. Pruebas integrales
+
+La validación integral posterior de lectura, registro, aprobación, lock, cierre, reapertura, exportación, scope, auditoría y denegaciones pertenece a:
+
+```text
+NUMERA-AUTH-013
+```
+
+---
+
+#### 73. Fronteras con capacidades especializadas
+
+Se preserva:
+
+- cartera, acuerdos, castigos y bancos especializados en `NUMERA-AUTH-014`;
+- escenarios, versiones de precio y presupuestos en `NUMERA-AUTH-015`;
+- conciliación de diferencias según los contratos de dominio y autorización aplicables;
+- contabilidad formal y fiscalidad fuera de la autoridad creada por esta tarea.
+
+Ninguna de estas capacidades se deriva de `periods.close` o `periods.reopen`.
+
+---
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar, cobertura ya registrada para:
+
+- `TREQ-NUMERA-001` — cierres reconciliados, correcciones y reaperturas con historia, permisos separados y trazabilidad financiera;
+- `TREQ-NUMERA-002` — identidad, fechas, estado, correcciones compensatorias y separación de periodos operativo, económico, contable y fiscal;
+- `TREQ-NUMERA-003` — separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-AUTH-013` — revalidación server-side de permiso exacto, actor, territorio, recurso, estado y campos permitidos;
+- `TREQ-AUTH-015` — evidencia correlacionable de principal, actor efectivo, permiso, recurso, decisión, razones, versión y timestamp;
+- `TREQ-INTEGRATION-017` — tratamiento idempotente de eventos tardíos y periodos cerrados sin efectos financieros duplicados.
+
+Esta sección es trazabilidad de cobertura vigente y no constituye una actualización del Registro 04A.
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | esta definición no ejecuta build de producto; no se modificó código de runtime |
+| LOCAL | NOT_EXECUTED | la incorporación, formateo y batería documental sobre el checkout local del usuario permanecen pendientes; el remoto ya cerró `NUMERA-AUTH-005` y habilitó `NUMERA-AUTH-006` como tarea documental actual |
+| REMOTA | PASS | se verificaron `main` después del cierre de `NUMERA-AUTH-005`, continuidad `NUMERA-AUTH-006..015`, bloque remoto de la predecesora coincidente con la base aprobada, protocolo, contrato de entrega, topología, archivo propietario, convención transversal de acciones, `NUMERA-DOM-011`, `VPROC-0054`, `VSCREEN-0105`, estados `open/locked/closed`, auditoría AS-IS, Registro 04A y scripts documentales vigentes |
+| OPERATIVA | NOT_EXECUTED | no se bloquearon, cerraron, reabrieron ni corrigieron periodos reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-AUTH-006` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia |
+
+---
+
+#### 77. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un registro `NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001`;
+2. el registro contiene exactamente tres capacidades nuevas;
+3. las capacidades son `periods.lock`, `periods.close` y `periods.reopen` dentro del namespace canónico de NUMERA;
+4. no existe un permiso genérico `periods.correct`;
+5. `lock`, `close`, `reopen` y `correct` permanecen semánticamente distintos;
+6. `periods.view` continúa siendo requisito de lectura y no implica transición;
+7. `VSCREEN-0105` no se convierte en autoridad;
+8. el slot `CLOSE` queda descompuesto en lock preparatorio y cierre final;
+9. `open -> locked` exige `periods.lock`;
+10. `locked -> open` exige control explícito de lock, motivo y evidencia;
+11. `locked -> closed` exige `periods.close`;
+12. `closed -> open` exige `periods.reopen`;
+13. `open -> closed` directo no se autoriza;
+14. una transición incompatible con el estado actual produce denegación;
+15. toda transición valida la versión vigente del periodo;
+16. reapertura valida la versión de cierre afectada;
+17. permiso de cierre no sustituye gates de cierre;
+18. excepciones materiales no se vuelven no bloqueantes por tener permiso;
+19. lock conserva snapshot y evidencia mínima;
+20. cierre conserva snapshot y evidencia reconstruible;
+21. reapertura conserva motivo, alcance, impacto, versión y evidencia;
+22. liberar lock exige motivo;
+23. reapertura exige motivo;
+24. una reapertura no concede escritura irrestricta;
+25. una reapertura no concede permisos de mutación sobre recursos;
+26. corrección sin reapertura usa la autoridad exacta del recurso;
+27. corrección material de periodo cerrado puede exigir reapertura;
+28. una reapertura con cambios materiales exige nuevo cierre;
+29. cierre previo no se borra al reabrir;
+30. restatement queda versionado;
+31. evento tardío no equivale a autoridad de reapertura;
+32. fuentes operativas pueden continuar produciendo hechos legítimos después del corte NUMERA;
+33. cierre NUMERA no cierra PULSO, ORIGO, NEXO o FOGO;
+34. cierre NUMERA no equivale a cierre contable o fiscal;
+35. reapertura NUMERA no equivale a reapertura contable o fiscal;
+36. sensibilidad financiera se preserva;
+37. shared device conserva exigencia fuerte;
+38. simulación no ejecuta transiciones;
+39. lock es idempotente frente a retry;
+40. cierre es idempotente frente a retry;
+41. reapertura es idempotente frente a retry;
+42. decisiones opuestas no se tratan como retries;
+43. concurrencia y versión obsoleta fallan cerrado;
+44. registrar, aprobar, conciliar, bloquear, cerrar, reabrir y corregir permanecen segregados;
+45. ownership no concede autoridad temporal;
+46. rol no equivale a autorización final;
+47. UI no autoriza transiciones;
+48. servidor revalida permiso, periodo, estado, versión y alcance;
+49. no existe fallback a `manage`;
+50. wildcards quedan prohibidos;
+51. operaciones masivas autorizan cada miembro;
+52. aprobación no implica lock/cierre/reapertura;
+53. registro/actualización no implican lock/cierre/reapertura;
+54. conciliación no implica lock/cierre/reapertura;
+55. cierre/reapertura no implican exportación;
+56. scope permanece en 008;
+57. auditoría detallada permanece en 009;
+58. independencia de turno permanece en 010;
+59. contexto operacional específico permanece en 011;
+60. materialización permanece en 012;
+61. pruebas integrales permanecen en 013;
+62. capacidades especializadas 014/015 permanecen fuera;
+63. no se crean ni modifican requisitos de prueba;
+64. no se realizan cambios físicos;
+65. la continuidad reserva `NUMERA-AUTH-007`.
+
+---
+
+#### 78. Límites
+
+Esta tarea no:
+
+- publica las tres claves nuevas en el catálogo runtime;
+- concede ninguna de las tres capacidades a actores;
+- crea grants de roles;
+- define importes o umbrales universales de materialidad;
+- define quién ocupa cada función empresarial;
+- modifica el lifecycle `open/locked/closed`;
+- crea estados físicos nuevos;
+- cierra o reabre periodos reales;
+- corrige hechos financieros reales;
+- ejecuta conciliaciones;
+- publica restatements;
+- crea cierre contable o fiscal oficial;
+- modifica fuentes PULSO, ORIGO, NEXO o FOGO;
+- exporta información;
+- modifica RLS, RPC, Server Actions o navegación;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-007`.
+
+---
+
+#### 79. Handoff a NUMERA-AUTH-007
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_APPROVAL_PERMISSION_REGISTRY = NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+NUMERA_PERIOD_STATE_PERMISSION_REGISTRY = NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001
+EXISTING_DECOMPOSITION_PERIOD_STATE_PERMISSIONS = 0
+NEW_CONTRACT_DEFINED_PERIOD_STATE_PERMISSIONS = 3
+TOTAL_PERIOD_STATE_PERMISSION_DEFINITIONS = 3
+LOCK_PERMISSION_COUNT = 1
+CLOSE_PERMISSION_COUNT = 1
+REOPEN_PERMISSION_COUNT = 1
+GENERIC_CORRECT_PERMISSION_COUNT = 0
+PERIOD_STATE_PERMISSION_ACTIONS = lock|close|reopen
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_ORDINARY_FLOW = open->locked->closed
+OPEN_TO_CLOSED_DIRECT = FORBIDDEN
+LOCK_PERMISSION_KEY = numera.finance.periods.lock
+CLOSE_PERMISSION_KEY = numera.finance.periods.close
+REOPEN_PERMISSION_KEY = numera.finance.periods.reopen
+LOCK_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_IMPLIES_VIEW = NO
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+LOCKED_TO_OPEN_IS_REOPEN = NO
+CLOSED_TO_OPEN_IS_REOPEN = YES
+CORRECTION_USES_EXACT_RESOURCE_MUTATION_AUTHORITY = YES
+GENERIC_PERIOD_CORRECT_PERMISSION = FORBIDDEN
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+STALE_PERIOD_VERSION_DECISION = DENY_AND_REVIEW_AGAIN
+REOPEN_REQUIRES_CLOSE_VERSION = YES
+RELEASE_LOCK_REASON_REQUIRED = YES
+REOPEN_REASON_REQUIRED = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_IMPLIES_RESOURCE_MUTATION = NO
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+PERIOD_STATE_TRANSITIONS_IDEMPOTENT = YES
+PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+PERIOD_REOPEN_IS_ACCOUNTING_OR_FISCAL_REOPEN = NO
+PERIOD_STATE_SCOPE_OWNER = NUMERA_AUTH_008
+PERIOD_STATE_AUDIT_OWNER = NUMERA_AUTH_009
+PERIOD_STATE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+MISSING_PERIOD_STATE_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_007_OWNER = EXPORT_PERMISSION_DEFINITION
+```
+
+`NUMERA-AUTH-007` deberá definir autoridad de exportación separada de lectura y de las transiciones de periodo, preservando minimización, alcance, sensibilidad, evidencia y versión financiera sin convertir un cierre o reporte visible en permiso de extracción.
+
+---
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-005 — Definir permisos de aprobación`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-006 — Definir permisos de cierre`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-007 — Definir permisos de exportación`
 ### [ ] NUMERA-AUTH-007 — Definir permisos de exportación
 ### [ ] NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
 ### [ ] NUMERA-AUTH-009 — Registrar auditoría financiera
