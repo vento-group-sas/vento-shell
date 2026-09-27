@@ -7439,7 +7439,1070 @@ LATE_FINANCIAL_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA`
-### [ ] NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
+### ✅ NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
+**Tarea siguiente:** NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
+**Tipo de tarea:** definición documental del modelo objetivo de cuentas por pagar y obligaciones financieras de NUMERA, incluyendo origen, soporte, validación, vencimiento, aprobación, programación, ejecución externa, pagos parciales, anticipos, disputas, ajustes, saldo y liquidación, preservando las fronteras con ORIGO, caja/bancos, tesorería, gastos, impuestos, periodos y contabilidad formal; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica compras, recepciones, proveedores, obligaciones reales, facturas, pagos, cuentas bancarias, extractos, tablas, vistas, RPC, contratos, permisos, RLS, Supabase, integraciones financieras ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Resolver expresamente si las cuentas por pagar y obligaciones pertenecen a NUMERA y definir su contrato de dominio sin recrear la compra, recepción, gasto, documento externo, movimiento bancario o asiento contable que las sustenta.
+
+La decisión de alcance es:
+
+```text
+CUENTAS_POR_PAGAR = DENTRO_DE_NUMERA
+OBLIGACIONES_FINANCIERAS_POR_PAGAR = DENTRO_DE_NUMERA
+COMPRA_Y_RECEPCION_COMERCIAL = ORIGO
+MOVIMIENTO_FISICO = NEXO
+CUENTA_Y_CONCILIACION_BANCARIA = NUMERA_CON_EJECUCION_EXTERNA
+CONTABILIDAD_FORMAL_Y_TRATAMIENTO_FISCAL = FRONTERA_POSTERIOR
+```
+
+NUMERA deberá poder conocer qué se debe, a quién, por qué, bajo qué soporte, cuándo vence, qué parte está aprobada, qué parte está disputada, qué se programó, qué se pagó, qué fue conciliado y qué saldo permanece abierto.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-DOM-010` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define el modelo una sola vez;
+- no crea instancia física propia;
+- no emite pagos;
+- no registra obligaciones reales;
+- no importa facturas ni documentos reales;
+- no modifica proveedores;
+- no crea integración bancaria;
+- no define todavía cierre y reapertura de periodos;
+- no define todavía reportes oficiales;
+- no crea asientos ni libros contables.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-009
+
+La predecesora deja congelado:
+
+```text
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+BANK_ACCOUNT_MAPPING_BY_BRAND_INFERENCE = FORBIDDEN
+BANK_STATEMENT_LINES_ARE_MUTABLE_SOURCE = NO
+BANK_IMPORT_MUST_BE_IDEMPOTENT = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+MATCH_APPROVAL_IS_REVERSIBLE = YES
+SENT_PAYMENT_INSTRUCTION_IS_CONFIRMED_PAYMENT = NO
+PAYABLE_LIFECYCLE_OWNER = NUMERA_DOM_010
+BANK_RECONCILIATION_INFRASTRUCTURE = SHARED_WITH_PAYABLES_AND_RECEIVABLES
+LATE_FINANCIAL_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
+```
+
+La 010 consume ese contrato. Una obligación no se convierte en movimiento bancario por programación, y un movimiento bancario no crea una obligación por inferencia.
+
+---
+
+#### 4. Alcance canónico y proceso propietario
+
+La capacidad principal es `CAP-12.05 — Gestionar cuentas por pagar`, complementada por `CAP-12.03` y `CAP-12.12` para pago, bancos y tesorería.
+
+El proceso propietario es:
+
+```text
+VPROC-0052 — Gestionar obligación, aprobación y pago a proveedor con conciliación bancaria
+OWNER = NUMERA
+```
+
+Las superficies canónicas asociadas incluyen:
+
+- `VSCREEN-0097` — Bandeja de aprobaciones financieras;
+- `VSCREEN-0098` — Cuentas por pagar y obligaciones;
+- `VSCREEN-0155` — Tesorería y programación de pagos.
+
+Estas superficies consumen la misma obligación; no crean tres obligaciones paralelas.
+
+---
+
+#### 5. Frontera con ORIGO
+
+ORIGO conserva:
+
+- necesidad y caso de abastecimiento;
+- proveedor y condiciones comerciales;
+- selección y aprobación de compra;
+- orden y compromiso de compra;
+- llegada y recepción;
+- aceptación total, parcial o condicionada;
+- diferencias comerciales y documentales de recepción;
+- evidencia comercial y referencias de proveedor dentro de su autoridad.
+
+NUMERA conserva:
+
+- obligación financiera derivada;
+- vencimientos;
+- validación financiera del soporte;
+- decisión financiera de aprobación;
+- programación de pago;
+- instrucción y resultado de pago;
+- aplicación de pagos y ajustes a la obligación;
+- disputa financiera;
+- saldo abierto;
+- conciliación bancaria;
+- liquidación final.
+
+Se preserva:
+
+```text
+COMPROMISO_DE_COMPRA != OBLIGACION_POR_PAGAR
+RECEPCION_COMERCIAL != OBLIGACION_APROBADA
+FACTURA_RECIBIDA != OBLIGACION_VALIDADA
+OBLIGACION_VALIDADA != OBLIGACION_APROBADA
+```
+
+---
+
+#### 6. Frontera de identidades
+
+Se mantienen separadas, como mínimo:
+
+```text
+PROVEEDOR
+ORDEN_DE_COMPRA
+RECEPCION
+DOCUMENTO_DE_PROVEEDOR
+HECHO_ECONOMICO
+OBLIGACION_POR_PAGAR
+CUOTA_O_VENCIMIENTO
+APROBACION_FINANCIERA
+PROGRAMACION_DE_PAGO
+INSTRUCCION_DE_PAGO
+RESULTADO_DE_PAGO
+APLICACION_DE_PAGO
+AJUSTE
+DISPUTA
+MOVIMIENTO_BANCARIO
+CONCILIACION_BANCARIA
+ASIENTO_CONTABLE
+```
+
+La correlación entre objetos nunca autoriza fusionar sus identidades ni alterar al propietario de origen.
+
+---
+
+#### 7. Lifecycle canónico de VPROC-0052
+
+La tarea adopta sin renombrar el lifecycle vigente:
+
+```text
+PAYABLE_REGISTERED
+-> DOCUMENT_VALIDATING
+-> UNDER_APPROVAL
+-> APPROVED_FOR_SCHEDULING
+-> SCHEDULED_FOR_PAYMENT
+-> PAYMENT_IN_PROGRESS
+-> PAYMENT_RECORDED
+-> BANK_RECONCILIATION_PENDING
+-> PAYABLE_SETTLED
+```
+
+No se crean estados adicionales en esta definición.
+
+---
+
+#### 8. PAYABLE_REGISTERED
+
+`PAYABLE_REGISTERED` significa que existe una obligación candidata identificable con, como mínimo:
+
+- contraparte;
+- soporte;
+- concepto;
+- importe;
+- vencimiento;
+- origen verificable.
+
+Su invariante se conserva:
+
+```text
+REGISTRADA != APROBADA
+REGISTRADA != PROGRAMADA
+REGISTRADA != PAGADA
+REGISTRADA != CONCILIADA
+```
+
+Registrar una obligación tampoco valida automáticamente factura, recepción, impuesto, cuenta bancaria o elegibilidad de pago.
+
+---
+
+#### 9. DOCUMENT_VALIDATING
+
+La validación deberá poder reconciliar, cuando aplique:
+
+- proveedor canónico;
+- orden o compromiso;
+- recepción o aceptación;
+- documento de proveedor;
+- hecho económico relacionado;
+- entidad legal obligada;
+- moneda;
+- importe y componentes;
+- vencimiento;
+- condiciones de pago;
+- duplicidad;
+- devoluciones, notas y ajustes existentes;
+- anticipos ya asociados;
+- evidencia de servicios no inventariables.
+
+Una diferencia material permanece explícita y no se corrige alterando el origen.
+
+---
+
+#### 10. Expediente financiero de obligación
+
+Toda obligación deberá poder reconstruirse mediante un expediente correlacionado que preserve, según aplique:
+
+| Grupo | Información mínima |
+| --- | --- |
+| identidad | obligación estable, versión o relación correctiva |
+| contraparte | proveedor o tercero canónico |
+| organización | entidad legal, sede, centro de costo y dimensiones autorizadas |
+| origen | proceso, orden, recepción, gasto, servicio u otro hecho propietario |
+| soporte | factura, cuenta de cobro, contrato, nota u otra evidencia aplicable |
+| monetario | moneda, importe original y componentes identificables |
+| temporal | emisión, reconocimiento, vencimiento, aprobación, programación, pago y conciliación |
+| control | estado, actor, autoridad, duplicidad, disputa y evidencia |
+| liquidación | pagos aplicados, ajustes, retenciones, créditos, reversos y saldo explicable |
+
+La materialización física posterior decidirá tablas y campos exactos.
+
+---
+
+#### 11. Orígenes legítimos
+
+Una obligación podrá originarse únicamente desde un hecho o expediente con propietario identificable y evidencia suficiente.
+
+Ejemplos admitidos conceptualmente:
+
+1. compra y recepción ORIGO suficientemente correlacionadas;
+2. servicio o compra no inventariable con aceptación verificable;
+3. gasto reconocido que genere una deuda futura legítima;
+4. obligación externa recibida desde un sistema o autoridad integrada;
+5. corrección o ajuste explícitamente vinculado a una obligación existente.
+
+Un origen no integrado puede requerir captura controlada, pero no puede competir silenciosamente con una fuente canónica existente.
+
+---
+
+#### 12. Servicios y no inventariables
+
+Los servicios no exigen movimiento físico ficticio.
+
+La obligación podrá sustentarse en:
+
+- proveedor;
+- contrato, orden o acuerdo cuando aplique;
+- periodo o fecha de prestación;
+- aceptación del servicio;
+- soporte;
+- importe;
+- moneda;
+- vencimiento;
+- evidencia de conformidad;
+- diferencia o retención cuando corresponda.
+
+La falta de inventario no reduce las exigencias de aceptación, soporte y deduplicación.
+
+---
+
+#### 13. Documento no equivale a obligación aprobada
+
+Se conserva:
+
+```text
+FACTURA_O_CUENTA_DE_COBRO
+!= RECEPCION
+!= HECHO_ECONOMICO
+!= OBLIGACION_VALIDADA
+!= APROBACION_FINANCIERA
+!= PAGO
+```
+
+Un documento puede llegar antes, durante o después de la recepción aplicable. Su sola presencia no autoriza programación de pago.
+
+---
+
+#### 14. Duplicidad
+
+La deduplicación deberá considerar las referencias disponibles, entre ellas:
+
+- identidad del proveedor;
+- entidad legal;
+- tipo y número de documento;
+- moneda;
+- importe;
+- fecha;
+- orden;
+- recepción;
+- contrato;
+- hecho económico;
+- referencia externa;
+- relación correctiva.
+
+Un reenvío, reintento, nueva importación o captura manual de la misma causa no crea una segunda obligación.
+
+Una coincidencia probable queda en revisión; no se elimina una obligación por similitud superficial.
+
+---
+
+#### 15. UNDER_APPROVAL
+
+`UNDER_APPROVAL` separa validación de autoridad financiera.
+
+La decisión deberá evaluar el alcance aprobado que corresponda, incluyendo:
+
+- identidad y validez del soporte;
+- importe y moneda;
+- vencimiento;
+- entidad legal;
+- centro o dimensión aplicable;
+- presupuesto o disponibilidad cuando la política lo requiera;
+- excepciones;
+- disputa;
+- segregación entre preparador y aprobador;
+- autoridad derivada por monto, riesgo o contexto cuando exista una política vigente.
+
+La tarea no fija umbrales numéricos ni nombres definitivos de permisos.
+
+---
+
+#### 16. Aprobación financiera
+
+Una decisión de aprobación deberá conservar:
+
+- obligación;
+- alcance aprobado;
+- importe aprobado;
+- moneda;
+- actor;
+- autoridad efectiva;
+- instante;
+- evidencia revisada;
+- condiciones;
+- motivo cuando la decisión no sea aprobación plena;
+- relación con versiones o decisiones anteriores.
+
+Una aprobación comercial de ORIGO no sustituye la aprobación financiera requerida por NUMERA.
+
+---
+
+#### 17. APPROVED_FOR_SCHEDULING
+
+Este estado significa que la obligación puede participar en planificación de pagos.
+
+No significa:
+
+```text
+APPROVED_FOR_SCHEDULING != SCHEDULED_FOR_PAYMENT
+APPROVED_FOR_SCHEDULING != PAYMENT_IN_PROGRESS
+APPROVED_FOR_SCHEDULING != PAYMENT_RECORDED
+```
+
+La aprobación puede abarcar toda la obligación o un alcance explícitamente parcial sin alterar el importe original.
+
+---
+
+#### 18. Vencimientos y cuotas
+
+Obligación, cuota y vencimiento son objetos conceptualmente distintos.
+
+El modelo deberá soportar:
+
+- una obligación con un vencimiento;
+- múltiples vencimientos o cuotas;
+- fechas revisadas con evidencia;
+- descuentos por pronto pago cuando estén sustentados;
+- mora o cargos cuando correspondan a una fuente válida;
+- días de gracia o condiciones contractuales sin inferencia;
+- vencimientos disputados.
+
+Cambiar una fecha no borra la condición histórica utilizada previamente.
+
+---
+
+#### 19. SCHEDULED_FOR_PAYMENT
+
+La programación exige como mínimo que exista una decisión aprobada y una intención de ejecución con:
+
+- fecha prevista;
+- medio;
+- cuenta financiera elegible;
+- prioridad;
+- importe a ejecutar;
+- moneda;
+- referencia a obligación o cuotas;
+- autoridad aplicable;
+- condición de liquidez o tesorería cuando corresponda.
+
+Programar no reserva ni retira dinero por sí solo.
+
+---
+
+#### 20. Programación y tesorería
+
+La 010 consume la infraestructura definida por `NUMERA-DOM-009`.
+
+NUMERA podrá agrupar obligaciones aprobadas en planes o lotes de pago para análisis y ejecución, conservando:
+
+- identidad individual de cada obligación;
+- importe individual;
+- prioridad;
+- vencimiento;
+- cuenta origen;
+- moneda;
+- estado de cada instrucción;
+- resultado individual;
+- conciliación individual o explicable por grupo.
+
+Un lote de pago no fusiona las obligaciones contenidas.
+
+---
+
+#### 21. PAYMENT_IN_PROGRESS
+
+`PAYMENT_IN_PROGRESS` significa que una instrucción fue enviada o su ejecución comenzó y espera un resultado idempotente.
+
+Se conserva:
+
+```text
+INSTRUCCION_ENVIADA != PAGO_CONFIRMADO
+PAGO_EN_CURSO != OBLIGACION_LIQUIDADA
+```
+
+Reintentar la ejecución debe reutilizar identidad y clave idempotente; una respuesta perdida no autoriza enviar otra instrucción económicamente equivalente sin reconciliación.
+
+---
+
+#### 22. Ejecución externa
+
+El banco, proveedor de pago u otro tercero conserva la autoridad sobre la confirmación externa cuando corresponda.
+
+NUMERA deberá conservar:
+
+- solicitud o instrucción;
+- identificador interno;
+- identificador externo cuando exista;
+- cuenta origen;
+- beneficiario autorizado;
+- importe y moneda;
+- estado reportado;
+- instante;
+- respuesta o evidencia;
+- reintentos;
+- rechazo o reverso;
+- correlación con obligación.
+
+Una respuesta técnica exitosa no sustituye la confirmación económica requerida por el contrato del proveedor.
+
+---
+
+#### 23. PAYMENT_RECORDED
+
+`PAYMENT_RECORDED` confirma que el resultado del pago fue registrado dentro de NUMERA.
+
+No afirma todavía conciliación bancaria.
+
+El pago registrado deberá poder aplicarse a:
+
+- una obligación completa;
+- una cuota;
+- varias obligaciones cuando el soporte lo demuestre;
+- una parte de una obligación;
+- un anticipo relacionado;
+- un ajuste autorizado.
+
+La aplicación debe ser explícita y reversible mediante acción trazable, no mediante edición destructiva del importe original.
+
+---
+
+#### 24. Pagos parciales
+
+Los pagos parciales son válidos y no liquidan automáticamente la obligación.
+
+El modelo conserva:
+
+```text
+IMPORTE_ORIGINAL
+PAGOS_APLICADOS
+AJUSTES_AUTORIZADOS
+CREDITOS_APLICADOS
+RETENCIONES_APLICABLES
+SALDO_EXPLICABLE
+```
+
+El saldo no se convierte en un número editable de conveniencia; debe poder derivarse de componentes trazables.
+
+---
+
+#### 25. Anticipos
+
+Un anticipo permanece separado de recepción, obligación final y pago liquidatorio.
+
+Cuando se aplique a una obligación:
+
+- conserva su identidad original;
+- conserva fecha, moneda, importe y soporte;
+- registra el monto aplicado;
+- conserva saldo no aplicado cuando exista;
+- no se vuelve recepción ni costo por el solo hecho de aplicarse;
+- no puede aplicarse dos veces mediante replay.
+
+---
+
+#### 26. Créditos, notas y ajustes
+
+Una nota de crédito, descuento posterior, devolución, retención u otro ajuste no borra la obligación original.
+
+Se conserva:
+
+```text
+OBLIGACION_ORIGINAL
+-> AJUSTE_CORRELACIONADO
+-> NUEVO_SALDO_EXPLICABLE
+```
+
+Cada ajuste deberá conservar causa, soporte, actor, autoridad y relación con el origen.
+
+La tarea no determina tratamiento fiscal o contable de cada componente.
+
+---
+
+#### 27. Disputas
+
+Una disputa puede afectar toda o parte de una obligación.
+
+Debe conservar:
+
+- motivo;
+- alcance o importe disputado;
+- evidencia;
+- actor iniciador;
+- contraparte;
+- fecha;
+- estado de resolución;
+- decisión final;
+- efectos autorizados sobre programación, pago o ajuste.
+
+La parte disputada no se programa silenciosamente como si estuviera aprobada. Una parte no disputada puede continuar únicamente cuando esté identificada y autorizada por separado.
+
+---
+
+#### 28. Diferencias entre compra, recepción, soporte y obligación
+
+La conciliación deberá detectar, como mínimo:
+
+- obligación sin orden cuando la orden sea exigible;
+- documento sin recepción cuando la recepción sea exigible;
+- recepción sin documento cuando el soporte deba llegar después;
+- precio diferente;
+- cantidad diferente;
+- moneda diferente;
+- impuesto o recargo diferente;
+- vencimiento incompatible;
+- proveedor incompatible;
+- documento duplicado;
+- pago previo no aplicado;
+- nota o devolución no aplicada;
+- obligación duplicada;
+- pago superior al alcance autorizado.
+
+La diferencia permanece visible hasta resolución sustentada.
+
+---
+
+#### 29. BANK_RECONCILIATION_PENDING
+
+Después de registrar el pago, `BANK_RECONCILIATION_PENDING` exige correlacionar, cuando aplique:
+
+- obligación;
+- aprobación;
+- instrucción;
+- resultado de pago;
+- movimiento bancario;
+- línea de extracto;
+- comisión;
+- retención;
+- rechazo;
+- reverso;
+- saldo remanente.
+
+La infraestructura de cuentas, extractos, matching y reversión proviene de `NUMERA-DOM-009`.
+
+---
+
+#### 30. PAYABLE_SETTLED
+
+`PAYABLE_SETTLED` solo se alcanza cuando la obligación produce un saldo final explicado.
+
+El criterio canónico exige que obligación, aprobación, instrucciones, pagos, retenciones, devoluciones y conciliación bancaria sean coherentes.
+
+Se conserva:
+
+```text
+SALDO_CERO_SIN_EXPLICACION != LIQUIDACION
+PAGO_REGISTRADO != LIQUIDACION
+CONCILIACION_BANCARIA_PENDIENTE != LIQUIDACION
+```
+
+La liquidación no borra compra, recepción, documento, ajustes, disputas ni historial de pagos.
+
+---
+
+#### 31. Correcciones no destructivas
+
+Ninguna corrección material deberá reescribir silenciosamente:
+
+- proveedor;
+- documento;
+- importe original;
+- moneda;
+- vencimiento histórico;
+- aprobación;
+- pago;
+- aplicación;
+- conciliación.
+
+Las correcciones posteriores conservarán el original y una relación explícita de ajuste, reversión, sustitución o reclasificación según corresponda.
+
+---
+
+#### 32. Obligación rechazada, inválida o duplicada
+
+Una obligación que resulte inválida, duplicada o sin soporte suficiente no se elimina para ocultar su existencia si ya formó parte del expediente financiero.
+
+El sistema objetivo deberá conservar:
+
+- identidad detectada;
+- causa;
+- evidencia;
+- decisión autorizada;
+- relación con el registro correcto cuando exista;
+- prohibición de programación o pago mientras no sea elegible.
+
+Esta tarea no añade nombres de estado a `VPROC-0052`; la materialización deberá respetar el lifecycle y los mecanismos canónicos de corrección y excepción.
+
+---
+
+#### 33. Saldo y aging de cuentas por pagar
+
+NUMERA deberá poder derivar, por fecha de corte:
+
+- obligaciones abiertas;
+- obligaciones aprobadas no programadas;
+- obligaciones programadas no ejecutadas;
+- pagos en curso;
+- pagos registrados pendientes de conciliación;
+- saldos parciales;
+- vencidas;
+- próximas a vencer;
+- disputadas;
+- liquidadas.
+
+El aging es una proyección derivada de vencimientos y saldo; no se almacena como una verdad independiente editable.
+
+---
+
+#### 34. Posición de tesorería
+
+Las obligaciones abiertas y aprobadas alimentan la posición proyectada de tesorería sin convertirse en saldo bancario observado.
+
+Se preserva:
+
+```text
+OBLIGACION_ABIERTA != SALIDA_DE_CAJA_REALIZADA
+PAGO_PROGRAMADO != SALIDA_BANCARIA_CONFIRMADA
+COMPROMISO_FUTURO != SALDO_OBSERVADO
+```
+
+La 009 conserva saldos, movimientos y liquidez observada. La 010 aporta compromisos, vencimientos y pagos programados.
+
+---
+
+#### 35. Moneda
+
+La obligación conserva su moneda original.
+
+Cuando se requiera programar o pagar en otra moneda:
+
+- se conserva el importe original;
+- se declara moneda de ejecución;
+- se conserva fuente y fecha de conversión cuando aplique;
+- las diferencias cambiarias no se mezclan con diferencias comerciales;
+- no se inventa tasa ni tratamiento contable.
+
+---
+
+#### 36. Fechas
+
+Se conservan por separado cuando apliquen:
+
+```text
+FECHA_DE_COMPROMISO
+FECHA_DE_RECEPCION
+FECHA_DE_DOCUMENTO
+FECHA_DE_RECONOCIMIENTO
+FECHA_DE_VENCIMIENTO
+FECHA_DE_APROBACION
+FECHA_DE_PROGRAMACION
+FECHA_DE_INSTRUCCION
+FECHA_DE_PAGO_REPORTADO
+FECHA_DE_VALOR_BANCARIO
+FECHA_DE_CONCILIACION
+FECHA_DE_LIQUIDACION
+```
+
+Ninguna se deriva silenciosamente de otra.
+
+---
+
+#### 37. Periodos y eventos tardíos
+
+La obligación conserva fechas de origen, reconocimiento, vencimiento, pago y conciliación aunque atraviesen periodos distintos.
+
+Un evento tardío no autoriza reescritura silenciosa de un periodo cerrado.
+
+Las reglas de periodo, bloqueo, cierre, reapertura y ajuste pertenecen a `NUMERA-DOM-011` y tareas posteriores aplicables.
+
+---
+
+#### 38. Segregación de funciones
+
+El modelo exige separación conceptual entre:
+
+```text
+REGISTRAR
+VALIDAR
+APROBAR
+PROGRAMAR
+AUTORIZAR_EJECUCION
+EJECUTAR_O_CONFIRMAR_EXTERNAMENTE
+REGISTRAR_RESULTADO
+APLICAR
+CONCILIAR
+CORREGIR
+EXPORTAR
+```
+
+Una sola capacidad genérica no deberá implicar todas estas decisiones en el modelo objetivo.
+
+La definición exacta de permisos pertenece a `NUMERA-AUTH-*`.
+
+---
+
+#### 39. Seguridad y sensibilidad
+
+Cuentas por pagar contienen información financiera restringida.
+
+El modelo deberá aplicar mínimo privilegio a:
+
+- datos bancarios de proveedor;
+- documentos fiscales o contractuales;
+- importes;
+- condiciones de pago;
+- aprobaciones;
+- cuentas origen;
+- referencias de pago;
+- exportaciones;
+- historial de disputas y correcciones.
+
+La cuenta bancaria indicada por un proveedor no se considera autorizada para pago solo por existir en un documento o mensaje; deberá atravesar el gobierno de identidad y autoridad correspondiente.
+
+---
+
+#### 40. Idempotencia
+
+La cadena obligación–programación–pago–conciliación debe ser idempotente.
+
+Un replay no podrá:
+
+- crear una segunda obligación;
+- aprobar dos veces con efectos adicionales;
+- programar dos instrucciones económicamente equivalentes;
+- ejecutar un segundo pago por respuesta perdida;
+- aplicar dos veces el mismo resultado;
+- conciliar dos veces la misma salida bancaria;
+- liquidar una obligación con saldo inconsistente.
+
+Cada reintento conserva correlación con la identidad original.
+
+---
+
+#### 41. Relación con gastos
+
+Un gasto y una obligación son objetos distintos.
+
+```text
+GASTO != OBLIGACION
+GASTO_RECONOCIDO != OBLIGACION_APROBADA
+OBLIGACION_PAGADA != GASTO_RECONOCIDO_EN_LA_MISMA_FECHA
+```
+
+`NUMERA-DOM-005` conserva soporte, aprobación, corrección y anulación del gasto. La 010 gestiona la deuda y su liquidación cuando ese gasto u otro origen produzca una obligación legítima.
+
+---
+
+#### 42. Relación con impuestos y contabilidad formal
+
+La validación de `VPROC-0052` puede conservar componentes de impuestos o retenciones necesarios para explicar el pago y el saldo.
+
+Esta tarea no determina:
+
+- impuesto legal definitivo;
+- declaración tributaria;
+- asiento contable;
+- cuenta del plan contable;
+- periodo fiscal oficial;
+- presentación ante autoridad;
+- tratamiento intercompañía.
+
+Esas fronteras pertenecen principalmente a `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 43. Excepciones obligatorias
+
+La materialización posterior deberá tratar explícitamente:
+
+1. factura antes de recepción;
+2. recepción antes de factura;
+3. servicio sin inventario;
+4. recepción parcial;
+5. documento parcial;
+6. obligación con varias cuotas;
+7. anticipo previo;
+8. pago parcial;
+9. descuento por pronto pago;
+10. nota de crédito;
+11. devolución posterior;
+12. retención;
+13. disputa parcial;
+14. proveedor o cuenta de pago modificados;
+15. obligación duplicada;
+16. pago rechazado;
+17. respuesta de pago perdida;
+18. reverso bancario;
+19. comisión bancaria;
+20. obligación en moneda extranjera;
+21. pago en moneda distinta;
+22. evento tardío después de cierre;
+23. obligación aprobada que pierde elegibilidad antes del pago;
+24. pago superior al saldo;
+25. saldo pequeño no explicado.
+
+Ningún caso se resuelve mediante borrado, importe cero inventado o edición destructiva del origen.
+
+---
+
+#### 44. Matriz de propiedad
+
+| Objeto o decisión | Propietario principal | Regla |
+| --- | --- | --- |
+| proveedor y condición comercial | ORIGO | NUMERA consume referencia; no mantiene proveedor paralelo |
+| orden y compromiso de compra | ORIGO | sustenta obligación; no equivale a deuda aprobada |
+| recepción y aceptación comercial | ORIGO | aporta evidencia; no liquida obligación |
+| movimiento físico | NEXO | no se recrea desde NUMERA |
+| hecho económico | NUMERA / `VPROC-0051` | permanece distinto de obligación |
+| obligación por pagar | NUMERA / `VPROC-0052` | identidad financiera propia |
+| aprobación financiera | NUMERA | separada de aprobación comercial |
+| programación y posición de pago | NUMERA | no ejecuta por sí sola el banco |
+| ejecución externa | banco/proveedor autorizado cuando aplique | NUMERA conserva solicitud, respuesta y correlación |
+| movimiento y extracto bancario | fuente financiera externa + NUMERA como registro gobernado | fuente inmutable para conciliación |
+| conciliación bancaria | NUMERA | matching aprobado y reversible según 009 |
+| tratamiento fiscal/contable formal | sistema o autoridad aprobada | fuera del alcance de esta tarea |
+
+---
+
+#### 45. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| cuentas por pagar no están materializadas en NUMERA | no | `NUMERA-UX-020`, implementación E5 aplicable | obligación, vencimiento, aprobación, pago y saldo quedan materializados |
+| compra, recepción, documento, obligación y pago no forman todavía expediente material único | no | `NUMERA-UX-018`, `NUMERA-UX-020`, integraciones aplicables | referencias y diferencias convergen de forma idempotente y auditable |
+| tesorería consolidada no está implementada | no | `NUMERA-UX-020`, `NUMERA-UX-021` | obligaciones, saldos y pagos programados alimentan posición reproducible |
+| segregación de registrar, aprobar, pagar y conciliar no está materializada | no | `NUMERA-AUTH-003` a `NUMERA-AUTH-009`, `NUMERA-AUTH-014` | capacidades y autoridad quedan separadas en UI, servidor y datos |
+| cierre y tratamiento de eventos tardíos no están definidos físicamente | no | `NUMERA-DOM-011`, `NUMERA-DOM-014` | reglas de periodo, ajuste y conciliación quedan implementadas |
+| frontera fiscal y contable formal permanece externa | no | `NUMERA-DOM-013`, `NUMERA-DOM-017` | integración o autoridad oficial queda definida y conciliable |
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que NUMERA gestione cuentas por pagar, obligaciones, bancos y tesorería, preserve origen, vencimiento, aprobación, programación, pago y disputa, soporte parcialidad, mantenga extractos inmutables, concilie de forma reversible y separe capacidades. La tarea desarrolla esas obligaciones sin modificar su contrato de prueba.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación con hechos y documentos fuente, no duplicación e historia;
+- `TREQ-NUMERA-002` para identidad estable, entidad, dimensiones, contraparte, moneda, fechas, fuente, documento, importe, estado y corrección no destructiva;
+- `TREQ-NUMERA-003` para cuentas por pagar, obligaciones, bancos, tesorería, origen, aceptación, vencimiento, aprobación, programación, pago, disputa, conciliación y permisos separados;
+- `TREQ-ORIGO-003` para recepción empresarial idempotente y reconciliable sin duplicar costo o cantidades;
+- `TREQ-ORIGO-004` para compromiso de compra aprobado, versionado y segregado;
+- `TREQ-ORIGO-005` para identidad de proveedor y condiciones comerciales históricas y sensibles;
+- `TREQ-INTEGRATION-010` para correlación única ORIGO → recepción → NEXO → NUMERA y fuente financiera única de obligación;
+- `TREQ-INTEGRATION-017` para contratos financieros correlacionados e idempotentes, sin doble digitación, pagos duplicados o obligaciones divergentes.
+
+Esta sección es trazabilidad de cobertura existente y no constituye una actualización del registro.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó esta tarea dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `main`, continuidad, archivo propietario, políticas documentales, Registro 04A, `CAP-12.05`, `CAP-12.12`, `VPROC-0021`, `VPROC-0022`, `VPROC-0051`, `VPROC-0052`, `VSCREEN-0097`, `VSCREEN-0098`, `VSCREEN-0155`, hallazgos financieros aplicables y el handoff aprobado de `NUMERA-DOM-009` |
+| OPERATIVA | NOT_EXECUTED | no se registraron obligaciones, aprobaciones, programaciones, pagos, disputas, conciliaciones ni liquidaciones reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no autoriza materialización física propia |
+
+---
+
+#### 49. Criterios de aceptación
+
+`NUMERA-DOM-010` queda aceptable cuando:
+
+1. se decide expresamente que cuentas por pagar y obligaciones pertenecen a NUMERA;
+2. ORIGO conserva proveedor, compra, orden y recepción comercial;
+3. NEXO conserva movimiento físico;
+4. hecho económico y obligación permanecen distintos;
+5. documento recibido no equivale a obligación aprobada;
+6. se adopta sin renombrar el lifecycle vigente de `VPROC-0052`;
+7. `PAYABLE_REGISTERED` exige contraparte, soporte, concepto, importe, vencimiento y origen;
+8. validación reconcilia documento, recepción, proveedor, impuestos y duplicidad cuando aplique;
+9. aprobación comercial y aprobación financiera permanecen separadas;
+10. la decisión financiera conserva actor, autoridad, instante, evidencia y alcance;
+11. obligación, cuota y vencimiento permanecen distinguibles;
+12. programación no equivale a ejecución ni pago;
+13. lote de pagos no fusiona obligaciones;
+14. instrucción enviada no equivale a pago confirmado;
+15. resultado de pago conserva identidad e idempotencia;
+16. pago registrado no equivale a conciliación bancaria;
+17. se soportan pagos parciales sin liquidación prematura;
+18. anticipos permanecen separados y aplicables una sola vez;
+19. créditos, notas, devoluciones y retenciones producen ajustes trazables;
+20. disputas pueden ser parciales y bloquean únicamente el alcance afectado según decisión autorizada;
+21. diferencias entre orden, recepción, soporte y obligación permanecen visibles;
+22. conciliación utiliza la infraestructura bancaria aprobada en la 009;
+23. `PAYABLE_SETTLED` exige saldo final explicado;
+24. correcciones no sobrescriben historia;
+25. obligación inválida o duplicada conserva decisión y evidencia sin borrado destructivo;
+26. aging se deriva de vencimientos y saldos, no de una cifra editable independiente;
+27. obligaciones abiertas alimentan tesorería proyectada sin convertirse en saldo observado;
+28. moneda original y conversiones posteriores permanecen separadas;
+29. fechas financieras relevantes permanecen diferenciadas;
+30. evento tardío no reescribe silenciosamente un periodo cerrado;
+31. registrar, validar, aprobar, programar, ejecutar, aplicar, conciliar, corregir y exportar quedan segregados conceptualmente;
+32. datos financieros sensibles exigen mínimo privilegio;
+33. la cadena completa es idempotente;
+34. gasto y obligación permanecen objetos distintos;
+35. impuestos y contabilidad formal permanecen fuera del alcance de esta tarea;
+36. las excepciones materiales tienen tratamiento explícito;
+37. no se crean ni modifican requisitos de prueba;
+38. no se realizan cambios físicos;
+39. `NUMERA-DOM-011` recibe fechas, estados y eventos tardíos sin que la 010 defina cierre de periodo.
+
+---
+
+#### 50. Límites
+
+Esta tarea no:
+
+- modifica ORIGO, NEXO o NUMERA;
+- crea tablas, columnas, índices, RPC, funciones, triggers, RLS o migraciones;
+- modifica Supabase;
+- crea proveedores;
+- registra facturas u obligaciones reales;
+- define documentos fiscales oficiales;
+- fija umbrales de aprobación;
+- fija tolerancias monetarias universales;
+- ejecuta pagos;
+- crea cuentas bancarias;
+- almacena credenciales financieras;
+- implementa integración bancaria;
+- define cartera o cuentas por cobrar;
+- define cierre o reapertura de periodos;
+- define plan de cuentas o asientos formales;
+- decide tratamiento tributario;
+- crea permisos o roles;
+- modifica 04A;
+- desarrolla `NUMERA-DOM-011`.
+
+---
+
+#### 51. Handoff a NUMERA-DOM-011
+
+La siguiente tarea recibe:
+
+```text
+PAYABLE_OWNER = NUMERA
+PURCHASE_AND_COMMERCIAL_RECEIPT_OWNER = ORIGO
+PHYSICAL_MOVEMENT_OWNER = NEXO
+PAYABLE_REGISTERED_IS_APPROVED = NO
+DOCUMENT_VALIDATED_IS_PAYMENT_APPROVED = NO
+COMMERCIAL_APPROVAL_IS_FINANCIAL_APPROVAL = NO
+APPROVED_FOR_SCHEDULING_IS_PAYMENT = NO
+SCHEDULED_FOR_PAYMENT_IS_BANK_EXECUTION = NO
+PAYMENT_IN_PROGRESS_IS_CONFIRMED_PAYMENT = NO
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+PARTIAL_PAYMENT_CAN_LEAVE_OPEN_BALANCE = YES
+ADVANCE_IS_FINAL_RECEIPT_OR_SETTLEMENT = NO
+DISPUTE_CAN_BE_PARTIAL = YES
+PAYABLE_SETTLED_REQUIRES_EXPLAINED_FINAL_BALANCE = YES
+PAYABLE_HISTORY_SILENT_OVERWRITE = FORBIDDEN
+LATE_PAYABLE_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
+BANK_RECONCILIATION_INFRASTRUCTURE = NUMERA_DOM_009
+PERIOD_CLOSE_AND_REOPEN_OWNER = NUMERA_DOM_011
+```
+
+`NUMERA-DOM-011` deberá definir qué estados y acciones quedan permitidos por periodo, cómo se bloquean mutaciones ordinarias, cómo se tratan obligaciones y pagos tardíos y cómo se reapre un periodo de forma controlada, sin alterar la historia aprobada por esta tarea.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada`
 ### [ ] NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
 ### [ ] NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
 ### [ ] NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
