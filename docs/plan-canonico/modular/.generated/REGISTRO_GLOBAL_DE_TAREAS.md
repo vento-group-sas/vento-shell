@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1403** |
+| Aprobadas | **1404** |
 | En propuesta | **0** |
-| No iniciadas | **193** |
+| No iniciadas | **192** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **87.91% (1403/1596)** |
+| Porcentaje de completamiento | **87.97% (1404/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **193** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1304** |
+| ⏸ NO_EVALUADA | **192** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1305** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `OPS-CST-001` — Definir el caso de centro de costo y transferencias internas de Producción y Distribución | ✅ APROBADA |
-| Tarea actual | `NUMERA-DOM-001` — Definir alcance ejecutivo, analítico y contable de NUMERA | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-DOM-002` — Definir hechos económicos recibidos desde ventas | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-DOM-001` — Definir alcance ejecutivo, analítico y contable de NUMERA | ✅ APROBADA |
+| Tarea actual | `NUMERA-DOM-002` — Definir hechos económicos recibidos desde ventas | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-003` — Definir hechos económicos recibidos desde compras y recepción | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1165,7 +1165,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-010` | Auditar exportaciones, información sensible y trazabilidad | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-011` | Ejecutar build, lint, tipos y pruebas existentes | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-012` | Crear matriz capacidad financiera × implementación actual | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-001` | Definir alcance ejecutivo, analítico y contable de NUMERA | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-001` | Definir alcance ejecutivo, analítico y contable de NUMERA | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-002` | Definir hechos económicos recibidos desde ventas | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-003` | Definir hechos económicos recibidos desde compras y recepción | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-004` | Definir hechos económicos recibidos desde producción e inventario | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
