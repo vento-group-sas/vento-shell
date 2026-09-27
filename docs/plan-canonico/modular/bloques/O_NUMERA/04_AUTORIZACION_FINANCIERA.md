@@ -2534,7 +2534,1298 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-003 — Definir permisos de lectura`
-### [ ] NUMERA-AUTH-003 — Definir permisos de lectura
+### ✅ NUMERA-AUTH-003 — Definir permisos de lectura
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-002 — Clasificar información financiera sensible
+**Tarea siguiente:** NUMERA-AUTH-004 — Definir permisos de registro
+**Tipo de tarea:** definición documental del registro exacto de permisos de lectura de NUMERA, sus recursos y proyecciones autorizadas, preservando las cinco capacidades de lectura canónicas vigentes, definiendo las capacidades de lectura faltantes para el dominio financiero aprobado y separando lectura de registro, aprobación, cierre, reapertura, exportación y capacidades sensibles especializadas; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni publica permisos runtime, no migra aliases o grants, no modifica roles, RLS, RPC, Server Actions, navegación, tablas, migraciones, Supabase, paquetes compartidos, pantallas, procesos ni datos financieros
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir las capacidades exactas de **lectura** que NUMERA necesita para exponer su dominio financiero con mínimo privilegio, evitando que `numera.access`, una ruta, un panel agregado, una bandeja de aprobaciones o un permiso de mutación funcionen como autoridad implícita para consultar información financiera.
+
+La tarea congela un contrato de lectura reutilizable por interfaz, servidor, RLS, RPC, integraciones y futura materialización del catálogo, sin ejecutar esa materialización.
+
+---
+
+#### 2. Naturaleza y topología
+
+La reconciliación propietaria de `NUMERA-AUTH-001..007` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, `NUMERA-AUTH-003`:
+
+- define una sola vez el contrato de permisos de lectura;
+- no crea instancia física propia;
+- no publica claves nuevas en runtime;
+- no modifica el catálogo transversal vigente;
+- no modifica Supabase;
+- no concede acceso a ningún actor;
+- no ejecuta consultas sobre información financiera real.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-002
+
+La clasificación de sensibilidad entrega:
+
+```text
+NUMERA_AUTHORIZATION_BINDING_REGISTRY = NUMERA-AUTHORIZATION-BINDING-REGISTRY-001
+NUMERA_CANONICAL_SCREEN_COUNT = 20
+CURRENT_NUMERA_CANONICAL_PERMISSION_COUNT = 6
+CURRENT_NUMERA_SENSITIVE_PERMISSION_COUNT = 5
+CURRENT_NUMERA_NON_SENSITIVE_PERMISSION_COUNT = 1
+NUMERA_ACCESS_IS_SENSITIVE_PERMISSION = NO
+NUMERA_ACCESS_IMPLIES_FINANCIAL_READ = NO
+FINANCIAL_PERMISSION_SENSITIVITY_REASON = FINANCIAL_DATA
+EVENT_FINANCIAL_SENSITIVITY_CLASS = RESTRICTED_FINANCIAL
+EVENT_PERSONAL_SENSITIVITY_CLASS = RESTRICTED_PERSONAL
+EVENT_INTERNAL_OPERATIONAL_CLASS_CAN_CONTAIN_FINANCIAL_SCREEN_PROJECTIONS = YES
+EVENT_SENSITIVITY_IMPLIES_PERMISSION = NO
+DATA_SENSITIVITY_IMPLIES_ACTION_AUTHORITY = NO
+DEVICE_STRONG_IMPLIES_PERMISSION_IS_SENSITIVE = NO
+CURRENT_NUMERA_DEVICE_POLICY = STRONG_FOR_6_CURRENT_PERMISSIONS
+FINANCIAL_AGGREGATION_AUTO_DECLASSIFIES = NO
+FINANCIAL_VIEW_IMPLIES_EXPORT_PRINT_SHARE = NO
+FINANCIAL_DATA_IN_URL_LOG_ANALYTICS_BY_DEFAULT = FORBIDDEN
+FINANCIAL_SECRETS_AND_CREDENTIALS_IN_BUSINESS_PROJECTION = FORBIDDEN
+FIELD_MINIMIZATION_REQUIRED = YES
+COMPOUND_PERSONAL_FINANCIAL_SENSITIVITY_SUPPORTED = YES
+COMPOUND_COMMERCIAL_FINANCIAL_SENSITIVITY_SUPPORTED = YES
+COMPOUND_BUSINESS_SECRET_FINANCIAL_SENSITIVITY_SUPPORTED = YES
+NUMERA_AUTH_003_OWNER = READ_PERMISSION_DEFINITION
+TREQ_CHANGES = 0
+```
+
+La presente tarea consume estas decisiones sin cambiar la clasificación de sensibilidad aprobada.
+
+---
+
+#### 4. Resultado contractual
+
+Esta tarea define:
+
+```text
+NUMERA-READ-PERMISSION-REGISTRY-001
+```
+
+El registro establece para cada capacidad:
+
+```text
+permission_code
++ label
++ protected_resource
++ ordinary_read_projection
++ sensitivity_inheritance
++ read_only_semantics
++ composition_rules
++ drilldown_rules
++ specialized_sensitive_boundary
++ materialization_status
+```
+
+---
+
+#### 5. Fuente de nomenclatura
+
+La convención transversal vigente mantiene:
+
+```text
+<app>.access
+```
+
+Y:
+
+```text
+<app>.<module>.<resource>.<action>
+```
+
+Para esta tarea:
+
+```text
+app = numera
+action = view
+modules = finance | analytics
+```
+
+No se introduce un namespace paralelo de lectura.
+
+---
+
+#### 6. Semántica canónica de `view`
+
+`view` cubre la lectura ordinaria del recurso autorizado, incluyendo cuando aplique:
+
+- listado;
+- detalle ordinario;
+- búsqueda;
+- autocomplete;
+- filtros;
+- ordenamiento;
+- paginación;
+- resumen de estado;
+- proyección mínima de relaciones necesarias.
+
+No se crean permisos separados `list`, `detail`, `search` o `filter` para el mismo recurso.
+
+---
+
+#### 7. Lectura no equivale a salida de información
+
+Se conserva:
+
+```text
+VIEW
+!= EXPORT
+!= PRINT
+!= SHARE
+!= BULK_EXTRACT
+```
+
+La capacidad de lectura no autoriza por sí sola descargar, exportar, imprimir, compartir o producir una copia masiva del recurso.
+
+La especialización de exportación pertenece a `NUMERA-AUTH-007`.
+
+---
+
+#### 8. Lectura no equivale a mutación
+
+Se conserva:
+
+```text
+VIEW
+!= REGISTER
+!= UPDATE
+!= APPROVE
+!= PAY_EXECUTE
+!= RECONCILE
+!= CLOSE
+!= REOPEN
+!= WRITE_OFF
+```
+
+Una pantalla visible no habilita acciones mutantes por inferencia.
+
+---
+
+#### 9. `numera.access` queda fuera del conteo de permisos de lectura financiera
+
+`numera.access` continúa siendo exclusivamente acceso a la superficie general de NUMERA.
+
+```text
+numera.access
+!= numera.finance.*.view
+!= numera.analytics.*.view
+```
+
+El registro de esta tarea contabiliza permisos funcionales de lectura; `numera.access` se conserva como prerrequisito de aplicación, no como permiso de lectura financiera.
+
+---
+
+#### 10. Baseline canónico vigente
+
+Antes de esta definición existen cinco permisos canónicos de lectura financiera/analítica:
+
+```text
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Los cinco se preservan sin renombrar.
+
+---
+
+#### 11. Capacidades nuevas definidas por esta tarea
+
+Se definen contractualmente diecisiete capacidades de lectura faltantes:
+
+```text
+numera.finance.economic_facts.view
+numera.finance.payables.view
+numera.finance.receivables.view
+numera.finance.treasury_movements.view
+numera.finance.reconciliations.view
+numera.finance.costs.view
+numera.finance.periods.view
+numera.finance.labor_payment_packages.view
+numera.finance.fiscal_documents.view
+numera.finance.payment_plans.view
+numera.finance.budgets.view
+numera.finance.forecasts.view
+numera.finance.scenarios.view
+numera.finance.price_versions.view
+numera.finance.tax_obligations.view
+numera.finance.cost_allocations.view
+numera.analytics.financial_indicators.view
+```
+
+Estas claves quedan **definidas documentalmente**, no activas en runtime.
+
+---
+
+#### 12. Cardinalidad del registro de lectura
+
+```text
+EXISTING_CANONICAL_READ_PERMISSIONS = 5
+NEW_CONTRACT_DEFINED_READ_PERMISSIONS = 17
+TOTAL_READ_PERMISSION_DEFINITIONS = 22
+APP_ACCESS_PERMISSION_EXCLUDED_FROM_READ_COUNT = 1
+```
+
+No existen duplicados dentro del registro.
+
+---
+
+#### 13. Estado de lifecycle de las claves
+
+Cada clave usa uno de dos estados:
+
+```text
+CANONICAL_ACTIVE
+CONTRACT_DEFINED_PENDING_MATERIALIZATION
+```
+
+Los cinco permisos vigentes son `CANONICAL_ACTIVE`.
+
+Las diecisiete claves nuevas son `CONTRACT_DEFINED_PENDING_MATERIALIZATION` hasta que el lifecycle propietario publique catálogo, contratos compartidos, aliases o migraciones aplicables.
+
+---
+
+#### 14. Registro consolidado — capacidades vigentes
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.finance.cost_centers.view` | Consultar centros de costo | centro de costo y metadatos financieros autorizados | `CANONICAL_ACTIVE` |
+| `numera.finance.expenses.view` | Consultar gastos | gasto y soporte financiero permitido | `CANONICAL_ACTIVE` |
+| `numera.analytics.break_even.view` | Consultar punto de equilibrio | resultado reproducible de equilibrio | `CANONICAL_ACTIVE` |
+| `numera.analytics.profitability.view` | Consultar rentabilidad | resultado reproducible de rentabilidad | `CANONICAL_ACTIVE` |
+| `numera.analytics.financial_reports.view` | Consultar reportes financieros | reporte o snapshot financiero autorizado | `CANONICAL_ACTIVE` |
+
+---
+
+#### 15. Registro consolidado — hechos, obligaciones y cartera
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.finance.economic_facts.view` | Consultar hechos económicos | hecho económico, clasificación, origen y evidencia mínima | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.payables.view` | Consultar cuentas por pagar | obligación, documento, vencimiento, saldo y estado permitido | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.receivables.view` | Consultar cuentas por cobrar | cuenta, cuota, vencimiento, saldo, aging y estado permitido | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+---
+
+#### 16. Registro consolidado — tesorería y conciliación
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.finance.treasury_movements.view` | Consultar movimientos de tesorería | caja, banco, movimiento y estado de conciliación permitido | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.reconciliations.view` | Consultar conciliaciones financieras | conciliación, diferencias, matching, evidencia y resultado | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.payment_plans.view` | Consultar programación de pagos | propuesta, programación, prioridad, vencimiento y estado permitido | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+---
+
+#### 17. Registro consolidado — costos y periodos
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.finance.costs.view` | Consultar costos | costo vigente/versionado, componentes y lineage permitido | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.periods.view` | Consultar periodos financieros | periodo, estado, corte, versión y referencias de cierre | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.cost_allocations.view` | Consultar distribuciones de costo | regla aplicada, base, destino, versión y resultado de asignación | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+---
+
+#### 18. Registro consolidado — fiscal y laboral
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.finance.labor_payment_packages.view` | Consultar paquetes laborales de pago | paquete económico laboral minimizado y referencias autorizadas | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.fiscal_documents.view` | Consultar documentos fiscales | documento, estado, referencia externa y evidencia permitida | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.tax_obligations.view` | Consultar obligaciones tributarias | obligación, calendario, base, componente, estado y soporte permitido | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+---
+
+#### 19. Registro consolidado — planeación y escenarios
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.finance.budgets.view` | Consultar presupuestos | presupuesto, versión, periodo, dimensiones y estado | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.forecasts.view` | Consultar forecast | forecast, versión, horizonte, supuestos y estado | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.scenarios.view` | Consultar escenarios | escenario, versión, baseline, supuestos y resultado simulado | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.price_versions.view` | Consultar versiones de precio en NUMERA | versión propuesta/simulada/publicada y contexto de decisión | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+---
+
+#### 20. Registro consolidado — analítica
+
+| Permiso | Etiqueta | Recurso / proyección | Estado |
+| --- | --- | --- | --- |
+| `numera.analytics.financial_indicators.view` | Consultar indicadores financieros | indicador, fórmula/version, periodo, dimensiones y calidad | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+Los permisos analíticos existentes de equilibrio, rentabilidad y reportes permanecen separados de esta capacidad general de indicadores.
+
+---
+
+#### 21. Sensibilidad heredada de las nuevas capacidades
+
+Las diecisiete nuevas capacidades de lectura protegen información clasificada por `NUMERA-AUTH-002` como financiera sensible.
+
+Por tanto, su motivo documental de sensibilidad es:
+
+```text
+FINANCIAL_DATA
+```
+
+Esto no cambia el enum transversal ni publica `is_sensitive` físicamente en esta tarea.
+
+---
+
+#### 22. Semántica `is_read_only`
+
+Todas las veintidós capacidades funcionales de este registro son conceptualmente de solo lectura:
+
+```text
+is_read_only = true
+```
+
+La futura materialización no podrá usar una clave `*.view` como autorización para `INSERT`, `UPDATE`, `DELETE`, aprobación, pago, cierre, reapertura o exportación.
+
+---
+
+#### 23. Modalidad administrativa objetivo
+
+Las capacidades de lectura de NUMERA se definen para administración financiera y conservan la semántica vigente:
+
+```text
+authorization_requirement = BASE_ONLY
+is_operational = false
+```
+
+Una futura necesidad operacional deberá declararse de forma explícita y versionada; no se infiere por el hecho de que el dato provenga de una operación.
+
+---
+
+#### 24. Política de dispositivo compartido
+
+Las nuevas lecturas financieras no podrán degradarse respecto de las seis capacidades NUMERA actuales.
+
+Antes de publicación física deberán quedar reconciliadas con política equivalente a:
+
+```text
+SHARED_DEVICE_REQUIREMENT = STRONG
+```
+
+Una reautenticación fuerte no amplía alcance, permiso ni campos visibles.
+
+---
+
+#### 25. Simulación de autorización
+
+Una simulación de permiso de lectura financiera podrá mostrar decisión y razones, pero no datos financieros reales.
+
+Contrato objetivo:
+
+```text
+SIMULATION = DECISION_ONLY
+REAL_FINANCIAL_DATA_VISIBLE_UNDER_SIMULATED_AUTHORITY = NO
+```
+
+La clasificación física definitiva deberá reconciliarse en el catálogo transversal antes de activar las claves nuevas.
+
+---
+
+#### 26. Lectura exige recurso resoluble
+
+Toda evaluación de lectura debe identificar:
+
+```text
+permission_code
++ resource_type
++ resource_identity_or_normalized_query
++ principal
++ effective_actor
++ scope
++ permitted_projection
++ current_state_when_material
++ authorization_decision
+```
+
+Una consulta sin recurso o proyección resolubles falla cerrada.
+
+---
+
+#### 27. Alcance territorial queda especializado después
+
+Esta tarea identifica el recurso protegido, pero no sustituye `NUMERA-AUTH-008`.
+
+La definición final de:
+
+- entidad legal;
+- empresa;
+- marca o unidad;
+- sede;
+- área;
+- centro de costo;
+- conjunto de dimensiones;
+- alcance transversal;
+
+debe ser materializada por la tarea propietaria de scope.
+
+---
+
+#### 28. Regla de agregado financiero
+
+Un agregado no obtiene autoridad global por ser agregado.
+
+```text
+AGGREGATE_VIEW
+REQUIRES
+AUTHORIZED_INCLUDED_DIMENSIONS
+```
+
+Equilibrio, rentabilidad, reportes e indicadores deben limitar sus miembros a dimensiones autorizadas y evitar inferencias sobre territorios ocultos.
+
+---
+
+#### 29. Drill-down requiere permiso del recurso destino
+
+La autorización para ver un agregado no concede automáticamente lectura de sus hechos fuente.
+
+Ejemplo:
+
+```text
+numera.analytics.profitability.view
+!=
+numera.finance.expenses.view
+```
+
+Al abrir detalle de gastos, hechos, pagos u obligaciones, se reevalúa el permiso del recurso destino.
+
+---
+
+#### 30. Navegación a aplicación propietaria reautoriza
+
+NUMERA puede mostrar referencias a hechos de PULSO, ORIGO, FOGO, NEXO, ANIMA u otra aplicación.
+
+Seguir una referencia hacia la fuente original no hereda el permiso NUMERA.
+
+```text
+NUMERA_PROJECTION_PERMISSION
+!= SOURCE_APPLICATION_PERMISSION
+```
+
+La aplicación propietaria reautoriza su recurso con su contrato propio.
+
+---
+
+#### 31. Panel raíz sin permiso omnibus
+
+`VSCREEN-0094 — Inicio financiero y ejecutivo` no recibe un permiso genérico `dashboard.view` ni `financial_read_all`.
+
+Se conserva:
+
+```text
+numera.access = entrada a la aplicación
+```
+
+Y cada tarjeta, indicador o bloque del panel se resuelve con el permiso del recurso mostrado.
+
+Una tarjeta sin permiso suficiente no se muestra ni se incluye silenciosamente en conteos agregados.
+
+---
+
+#### 32. Bandeja de aprobaciones sin permiso omnibus de lectura
+
+`VSCREEN-0097 — Bandeja de aprobaciones financieras` tampoco crea un permiso amplio `approvals.view`.
+
+La visibilidad de cada fila exige la lectura del recurso subyacente.
+
+La capacidad de **aprobar** se define después en `NUMERA-AUTH-005` y no deriva de la lectura.
+
+---
+
+#### 33. Matriz de lectura — VSCREEN-0094 a VSCREEN-0100
+
+| Pantalla | Lectura requerida |
+| --- | --- |
+| `VSCREEN-0094` Inicio financiero y ejecutivo | `numera.access` + permiso específico de cada tarjeta/recurso; sin lectura omnibus |
+| `VSCREEN-0095` Bandeja de hechos económicos | `numera.finance.economic_facts.view` |
+| `VSCREEN-0096` Registro de gasto y soporte | `numera.finance.expenses.view` |
+| `VSCREEN-0097` Bandeja de aprobaciones financieras | permiso de lectura del recurso representado; sin `approvals.view` global |
+| `VSCREEN-0098` Cuentas por pagar y obligaciones | `numera.finance.payables.view` |
+| `VSCREEN-0099` Cuentas por cobrar y cartera | `numera.finance.receivables.view` con proyección sensible minimizada |
+| `VSCREEN-0100` Caja, bancos y movimientos financieros | `numera.finance.treasury_movements.view` con proyección sensible minimizada |
+
+---
+
+#### 34. Matriz de lectura — VSCREEN-0101 a VSCREEN-0106
+
+| Pantalla | Lectura requerida |
+| --- | --- |
+| `VSCREEN-0101` Conciliación de ventas y pagos | `numera.finance.reconciliations.view` |
+| `VSCREEN-0102` Conciliación de compras y recepciones | `numera.finance.reconciliations.view` |
+| `VSCREEN-0103` Conciliación de inventario, producción y variaciones | `numera.finance.reconciliations.view` |
+| `VSCREEN-0104` Costos, rentabilidad y escenarios | `numera.finance.costs.view` + permisos analíticos/escenario según panel consultado |
+| `VSCREEN-0105` Cierre, reapertura y corrección de periodo | `numera.finance.periods.view` para consulta; autoridad de cierre/reapertura permanece separada |
+| `VSCREEN-0106` Reportes y exportaciones financieras | `numera.analytics.financial_reports.view`; exportación requiere permiso distinto |
+
+---
+
+#### 35. Matriz de lectura — VSCREEN-0153 a VSCREEN-0159
+
+| Pantalla | Lectura requerida |
+| --- | --- |
+| `VSCREEN-0153` Paquete laboral para pagos y beneficios | `numera.finance.labor_payment_packages.view` |
+| `VSCREEN-0154` Facturas y documentos fiscales | `numera.finance.fiscal_documents.view` |
+| `VSCREEN-0155` Tesorería y programación de pagos | `numera.finance.payment_plans.view` y, cuando se abra detalle, permisos del recurso relacionado |
+| `VSCREEN-0156` Presupuestos, escenarios y forecast | `numera.finance.budgets.view`, `numera.finance.forecasts.view`, `numera.finance.scenarios.view` y `numera.finance.price_versions.view` según objeto |
+| `VSCREEN-0157` Impuestos y obligaciones de cumplimiento | `numera.finance.tax_obligations.view` |
+| `VSCREEN-0158` Distribución y asignación de costos | `numera.finance.cost_allocations.view` + `numera.finance.costs.view` cuando se muestre el costo relacionado |
+| `VSCREEN-0159` Indicadores, análisis y planes de mejora | `numera.analytics.financial_indicators.view`; drill-down reautoriza el recurso destino |
+
+---
+
+#### 36. Centros de costo como dimensión no conceden demás lecturas
+
+`numera.finance.cost_centers.view` permite conocer los centros de costo autorizados.
+
+No concede por sí solo:
+
+- presupuestos;
+- gastos;
+- costos;
+- rentabilidad;
+- cartera;
+- pagos;
+- conciliaciones;
+- indicadores.
+
+Un centro de costo puede actuar como filtro de scope sin convertirse en permiso para los datos que lo referencian.
+
+---
+
+#### 37. Gastos
+
+`numera.finance.expenses.view` se mantiene como autoridad de lectura del gasto y su proyección financiera permitida.
+
+No concede:
+
+```text
+CREATE
+UPDATE
+APPROVE
+CANCEL
+EXPORT
+```
+
+La futura lectura de soportes deberá respetar referencia, finalidad, Storage y sensibilidad del documento; el permiso de gasto no expone credenciales ni archivos fuera de su relación autorizada.
+
+---
+
+#### 38. Hechos económicos
+
+`numera.finance.economic_facts.view` protege la consulta del hecho económico normalizado y su evidencia mínima.
+
+La proyección puede incluir, según alcance:
+
+- identidad;
+- entidad legal;
+- unidad o marca;
+- sede/centro;
+- tercero minimizado;
+- moneda;
+- fechas;
+- fuente;
+- correlación;
+- documento referenciado;
+- monto/impuestos permitidos;
+- estado;
+- calidad y evidencia referenciada.
+
+No concede edición del hecho ni de su fuente.
+
+---
+
+#### 39. Cuentas por pagar
+
+`numera.finance.payables.view` permite leer obligaciones dentro del alcance concedido.
+
+La lectura ordinaria cubre:
+
+- identidad;
+- contraparte permitida;
+- documento origen;
+- fecha y vencimiento;
+- importe y moneda;
+- saldo;
+- estado;
+- programación relacionada cuando esté autorizada.
+
+No concede aprobación ni ejecución del pago.
+
+---
+
+#### 40. Cuentas por cobrar
+
+`numera.finance.receivables.view` permite leer cartera y aging dentro del alcance concedido.
+
+La proyección ordinaria no incluye automáticamente:
+
+- identificadores bancarios completos;
+- notas de cobranza irrestrictas;
+- evidencia de acuerdos no necesaria;
+- datos personales completos;
+- autoridad de castigo;
+- autoridad de modificar acuerdos.
+
+Las capacidades y campos especialmente sensibles se especializan en `NUMERA-AUTH-014`.
+
+---
+
+#### 41. Tesorería
+
+`numera.finance.treasury_movements.view` permite leer movimientos y estado de conciliación de caja/banco dentro del alcance permitido.
+
+No concede:
+
+- credenciales;
+- números completos protegidos cuando no sean necesarios;
+- secretos de proveedor bancario;
+- ejecución de pago;
+- reverso;
+- conciliación decisoria;
+- exportación.
+
+Los detalles sensibles adicionales pertenecen a `NUMERA-AUTH-014`.
+
+---
+
+#### 42. Conciliaciones
+
+`numera.finance.reconciliations.view` cubre una familia de recursos de conciliación con subtipo explícito:
+
+```text
+SALES_PAYMENTS
+PURCHASES_RECEIPTS
+INVENTORY_PRODUCTION_VARIANCES
+BANK_TREASURY
+OTHER_APPROVED_FINANCIAL_RECONCILIATION
+```
+
+El subtipo no crea un permiso separado mientras la semántica de lectura y sensibilidad sea equivalente.
+
+La decisión de conciliar permanece separada.
+
+---
+
+#### 43. Costos
+
+`numera.finance.costs.view` formaliza la capacidad conceptual ya prevista por la convención del catálogo para costos propiedad de NUMERA.
+
+Puede exponer costo vigente/versionado, componentes, fecha efectiva, dimensión y lineage autorizado.
+
+No concede modificar costo maestro ni reescribir la fuente propietaria.
+
+---
+
+#### 44. Periodos
+
+`numera.finance.periods.view` permite consultar periodo, estado y versión aplicables.
+
+Se conserva:
+
+```text
+PERIOD_VIEW
+!= CLOSE
+!= REOPEN
+!= CORRECT
+```
+
+La lectura no puede utilizarse para cambiar `open`, `closed`, `locked` u otro estado contractual.
+
+---
+
+#### 45. Paquete laboral de pago
+
+`numera.finance.labor_payment_packages.view` protege una proyección compuesta de sensibilidad financiera y personal.
+
+La lectura debe minimizar:
+
+- identificación personal;
+- conceptos laborales;
+- importes;
+- beneficios;
+- deducciones;
+- referencias de evidencia.
+
+No expone documentos laborales completos, datos médicos, disciplinarios o información ajena a la finalidad financiera aprobada.
+
+---
+
+#### 46. Documentos fiscales
+
+`numera.finance.fiscal_documents.view` permite consultar el documento fiscal interno y su estado autorizado.
+
+No concede:
+
+- presentar ante autoridad;
+- emitir por proveedor externo;
+- aceptar/rechazar en nombre de la autoridad;
+- modificar evidencia histórica;
+- leer secretos de integración.
+
+---
+
+#### 47. Programación de pagos
+
+`numera.finance.payment_plans.view` permite consultar propuestas y programaciones de pago.
+
+La programación conserva identidad propia respecto de:
+
+```text
+PAYABLE
+PAYMENT_EXECUTION
+BANK_MOVEMENT
+```
+
+Abrir los objetos relacionados exige sus respectivos permisos de lectura.
+
+---
+
+#### 48. Presupuestos
+
+`numera.finance.budgets.view` permite consultar presupuesto y versiones autorizadas.
+
+No concede:
+
+```text
+CREATE
+UPDATE
+APPROVE
+PUBLISH
+```
+
+`REAL`, `PRESUPUESTADO`, `FORECAST` y `ESCENARIO` permanecen distintos.
+
+---
+
+#### 49. Forecast
+
+`numera.finance.forecasts.view` permite consultar forecast versionado, horizonte y supuestos permitidos.
+
+No lo convierte en presupuesto aprobado, hecho real ni asiento contable.
+
+---
+
+#### 50. Escenarios
+
+`numera.finance.scenarios.view` permite consultar un escenario y su versión autorizada.
+
+No concede:
+
+- crear;
+- compartir;
+- aprobar;
+- publicar;
+- activar precio operativo;
+- modificar costo maestro;
+- postear contabilidad.
+
+Las acciones especializadas pertenecen a `NUMERA-AUTH-015`.
+
+---
+
+#### 51. Versiones de precio
+
+`numera.finance.price_versions.view` protege exclusivamente las versiones de precio modeladas dentro del dominio de decisión de NUMERA.
+
+No concede acceso general al catálogo operativo de PULSO ni autoridad sobre el precio activo.
+
+```text
+NUMERA_PRICE_VERSION_VIEW
+!= PULSO_OPERATIONAL_PRICE_AUTHORITY
+```
+
+---
+
+#### 52. Obligaciones tributarias
+
+`numera.finance.tax_obligations.view` permite consultar obligación, calendario, base, componentes, soporte y estado autorizados.
+
+No equivale a presentar declaración ni a obtener aceptación de autoridad fiscal.
+
+---
+
+#### 53. Distribución de costos
+
+`numera.finance.cost_allocations.view` permite consultar una asignación de costo, su versión, base y resultado.
+
+No concede cambiar la regla ni ejecutar una reasignación.
+
+Cuando se abra el costo relacionado, se reevalúa `numera.finance.costs.view`.
+
+---
+
+#### 54. Indicadores financieros
+
+`numera.analytics.financial_indicators.view` permite consultar indicadores distintos de las capacidades especializadas ya existentes.
+
+No reemplaza:
+
+```text
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Cuando el indicador corresponda exactamente a una de esas familias, se utiliza el permiso especializado.
+
+---
+
+#### 55. Punto de equilibrio
+
+`numera.analytics.break_even.view` permanece sin cambios.
+
+La ausencia de margen, de costo o de cálculo no se presenta como cero económico confirmado.
+
+La lectura requiere scope suficiente sobre los miembros incluidos en el cálculo.
+
+---
+
+#### 56. Rentabilidad
+
+`numera.analytics.profitability.view` permanece sin cambios.
+
+Ingreso esperado, gasto real, presupuesto y variación conservan identidades distintas.
+
+La lectura agregada no concede detalle transaccional sin el permiso del recurso fuente.
+
+---
+
+#### 57. Reportes financieros
+
+`numera.analytics.financial_reports.view` permanece sin cambios.
+
+El permiso cubre consulta de reportes/snapshots autorizados, no exportación.
+
+Una versión publicada permanece identificable por reporte, versión, periodo, corte y dimensiones.
+
+---
+
+#### 58. Búsqueda y autocomplete
+
+Buscar, filtrar o autocompletar un recurso protegido utiliza el mismo permiso `view` del recurso.
+
+La respuesta debe ser una proyección mínima.
+
+No se permite usar endpoints de búsqueda como bypass para obtener campos ocultos o enumerar recursos fuera de scope.
+
+---
+
+#### 59. Conteos y existencia
+
+Un actor sin lectura suficiente no debe inferir mediante conteos, badges, totales, estados vacíos o diferencias entre respuestas la existencia de recursos fuera de su alcance.
+
+Los conteos financieros deben calcularse sobre el conjunto ya autorizado.
+
+---
+
+#### 60. Campos sensibles y proyecciones especializadas
+
+Un permiso `view` autoriza una **proyección**, no necesariamente cada columna física del recurso.
+
+Los campos de mayor sensibilidad pueden requerir:
+
+- redacción;
+- máscara;
+- omisión;
+- referencia indirecta;
+- permiso especializado posterior.
+
+`NUMERA-AUTH-014` mantiene la propiedad de lectura sensible especializada de cartera, acuerdos, castigos, bancos y datos financieros de mayor exposición.
+
+---
+
+#### 61. `null`, ausencia y redacción
+
+La autorización debe distinguir:
+
+```text
+VALUE_NULL
+FIELD_ABSENT
+FIELD_REDACTED
+FIELD_NOT_APPLICABLE
+FIELD_UNKNOWN
+```
+
+La ausencia por autorización no se representa como cero, falso o dato real vacío.
+
+---
+
+#### 62. Cache y estado derivado
+
+Una caché de lectura debe preservar:
+
+```text
+principal
++ effective_actor
++ permission_code
++ scope
++ resource/query fingerprint
++ projection/version
++ authorization_version
+```
+
+La caché no puede reutilizar resultados entre actores o scopes incompatibles.
+
+---
+
+#### 63. URLs, logs y analytics
+
+La definición de permisos de lectura no autoriza colocar datos financieros sensibles en:
+
+- URL;
+- query string;
+- logs de aplicación;
+- analytics;
+- telemetría;
+- mensajes de error públicos.
+
+Se mantiene la minimización aprobada en `NUMERA-AUTH-002`.
+
+---
+
+#### 64. Lectura desde integraciones
+
+Un evento `RESTRICTED_FINANCIAL` no concede lectura por sí mismo.
+
+Una consumidora que materialice una proyección deberá reautorizar la consulta posterior conforme al permiso del recurso NUMERA.
+
+```text
+EVENT_DELIVERED
+!= USER_READ_AUTHORIZED
+```
+
+---
+
+#### 65. Autoridad externa
+
+La lectura interna de NUMERA no sustituye autoridad contable, fiscal o bancaria externa.
+
+Una referencia externa visible no habilita acceso directo al proveedor ni a sus credenciales.
+
+---
+
+#### 66. Compatibilidad con permisos legacy actuales
+
+Mientras exista runtime legacy:
+
+```text
+numera.cost_centers.view
+numera.expenses.view
+numera.break_even.view
+numera.profitability.view
+numera.reports.view
+```
+
+su reconciliación canónica permanece la aprobada en `NUMERA-AUTH-001`.
+
+Las claves nuevas de esta tarea no pueden usarse como aliases implícitos antes de materialización gobernada.
+
+---
+
+#### 67. Prohibición de fallback
+
+Si una clave de lectura definida aquí todavía no está publicada en runtime, queda prohibido sustituirla por:
+
+```text
+numera.access
+numera.cost_centers.manage
+numera.expenses.manage
+numera.*
+numera.finance.*
+numera.analytics.*
+```
+
+La funcionalidad afectada permanece bloqueada o no materializada hasta que exista la capacidad exacta.
+
+---
+
+#### 68. Dependencias de aplicación
+
+En la interfaz NUMERA, una lectura financiera requiere también una sesión válida y acceso a la aplicación.
+
+```text
+APP_ACCESS
++
+EXACT_READ_PERMISSION
++
+VALID_SCOPE
++
+VALID_RESOURCE_PROJECTION
++
+NO_EFFECTIVE_DENY
+=
+READ_ELIGIBLE
+```
+
+`numera.access` nunca reemplaza `EXACT_READ_PERMISSION`.
+
+---
+
+#### 69. Ownership de tareas posteriores
+
+| Materia | Propietario |
+| --- | --- |
+| registro/creación | `NUMERA-AUTH-004` |
+| aprobación | `NUMERA-AUTH-005` |
+| cierre y reapertura | `NUMERA-AUTH-006` |
+| exportación | `NUMERA-AUTH-007` |
+| empresa, sede y centro de costo | `NUMERA-AUTH-008` |
+| auditoría financiera | `NUMERA-AUTH-009` |
+| independencia administrativa de turno | `NUMERA-AUTH-010` |
+| contexto operacional | `NUMERA-AUTH-011` |
+| materialización en paquetes | `NUMERA-AUTH-012` |
+| pruebas integrales | `NUMERA-AUTH-013` |
+| cartera, acuerdos, castigos, bancos y datos sensibles especializados | `NUMERA-AUTH-014` |
+| crear, compartir, aprobar y publicar escenarios, precios y presupuestos | `NUMERA-AUTH-015` |
+
+---
+
+#### 70. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| cinco permisos runtime de lectura usan namespace legacy | no | `NUMERA-AUTH-012` + lifecycle transversal | aliases/grants/consumidores migrados al código canónico sin doble autoridad |
+| diecisiete claves nuevas aún no están en catálogo runtime | no | `NUMERA-AUTH-012` + packages aplicables | catálogo, contratos, consumidores y pruebas publican exactamente las claves aprobadas |
+| panel raíz actual depende materialmente de `numera.access` | no | `NUMERA-AUTH-003` + UX/implementación propietaria | cada tarjeta futura se protege con el permiso del recurso mostrado |
+| bandeja de aprobaciones no posee permiso de lectura propio | no | `NUMERA-AUTH-003` y `NUMERA-AUTH-005` | filas visibles por permiso del recurso; acción aprobatoria por permiso de aprobación |
+| cartera y tesorería requieren campos especialmente sensibles | no | `NUMERA-AUTH-014` | proyecciones sensibles especializadas definidas antes de exponer esos campos |
+| escenarios y precios requieren acciones distintas de lectura | no | `NUMERA-AUTH-015` | crear/compartir/aprobar/publicar quedan separados de `view` |
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+La definición reutiliza, sin modificar, cobertura ya registrada para:
+
+- `TREQ-NUMERA-001` — separación de lectura, registro, aprobación, cierre y exportación;
+- `TREQ-NUMERA-002` — identidad, dimensiones y trazabilidad de hechos económicos;
+- `TREQ-NUMERA-003` — cartera, obligaciones, bancos, tesorería y permisos separados;
+- `TREQ-NUMERA-014` — `numera.access` no concede lectura total del panel;
+- `TREQ-NUMERA-015` — lectura de centros de costo separada de administración;
+- `TREQ-NUMERA-017` — lectura de gastos separada de registro;
+- `TREQ-NUMERA-019` — autorización y semántica del punto de equilibrio;
+- `TREQ-NUMERA-020` — autorización y composición de rentabilidad;
+- `TREQ-NUMERA-023` — ruta/menú/registro no implican autorización;
+- `TREQ-AUTH-001` — capacidad protegida mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-013` — controles server-side no eludibles;
+- `TREQ-AUTH-015` — evidencia correlacionable de la decisión de autorización;
+- `TREQ-AUTH-063` y `TREQ-AUTH-074` — tratamiento fuerte de capacidades y recursos sensibles cuando corresponda.
+
+Esta sección es trazabilidad de cobertura, no actualización del registro.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no requiere build de producto durante su preparación. |
+| LOCAL | NOT_EXECUTED | La incorporación al checkout y sus validadores pertenecen al ciclo documental ejecutado por el usuario. |
+| REMOTA | PASS | Se revisaron `main`, protocolo, contrato de entrega, manifest, continuidad, topología, archivo propietario, convención de códigos, normalización NUMERA, clasificación de modalidad/sensibilidad, alcance, prerrequisitos, contrato de recurso, auditoría NUMERA, 04A y scripts de lifecycle aplicables. |
+| OPERATIVA | NOT_EXECUTED | No se consultó información financiera real ni se concedieron permisos. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-AUTH-003` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`. |
+
+---
+
+#### 74. Criterios de aceptación
+
+La tarea queda aceptada cuando se verifica que:
+
+1. existe exactamente un registro `NUMERA-READ-PERMISSION-REGISTRY-001`;
+2. `numera.access` queda fuera del conteo de lectura financiera;
+3. se preservan exactamente cinco permisos de lectura canónicos vigentes;
+4. se definen exactamente diecisiete nuevas capacidades de lectura;
+5. el total contractual de permisos de lectura es veintidós;
+6. no se renombra ningún permiso canónico vigente;
+7. todas las claves nuevas terminan en `.view`;
+8. las claves nuevas usan únicamente namespaces `numera.finance` o `numera.analytics`;
+9. no se crean permisos `list`, `detail`, `search` o `filter` redundantes;
+10. lectura no implica exportación, impresión, compartir ni extracción masiva;
+11. lectura no implica registro, edición, aprobación, pago, conciliación, cierre, reapertura ni castigo;
+12. los veintidós permisos se consideran de solo lectura;
+13. las nuevas capacidades heredan sensibilidad financiera del contrato aprobado;
+14. no se crea un nuevo enum de sensibilidad;
+15. las nuevas lecturas se definen como administrativas `BASE_ONLY`;
+16. no se introduce dependencia de turno por inferencia;
+17. la política fuerte de dispositivo no se degrada;
+18. simulación no expone datos financieros reales;
+19. el recurso/proyección forma parte de cada decisión de lectura;
+20. el alcance territorial detallado permanece en `NUMERA-AUTH-008`;
+21. agregados no conceden alcance global implícito;
+22. drill-down reautoriza el recurso destino;
+23. navegar a la aplicación fuente reautoriza en la aplicación propietaria;
+24. el panel raíz no recibe permiso omnibus;
+25. la bandeja de aprobaciones no recibe permiso omnibus de lectura;
+26. `VSCREEN-0095` usa `economic_facts.view`;
+27. `VSCREEN-0096` preserva `expenses.view`;
+28. `VSCREEN-0098` usa `payables.view`;
+29. `VSCREEN-0099` usa `receivables.view`;
+30. `VSCREEN-0100` usa `treasury_movements.view`;
+31. las tres superficies de conciliación usan `reconciliations.view`;
+32. costos usan `costs.view`;
+33. periodos usan `periods.view`;
+34. reportes preservan `financial_reports.view`;
+35. paquete laboral usa `labor_payment_packages.view`;
+36. documentos fiscales usan `fiscal_documents.view`;
+37. programación de pagos usa `payment_plans.view`;
+38. presupuestos usan `budgets.view`;
+39. forecast usa `forecasts.view`;
+40. escenarios usan `scenarios.view`;
+41. versiones de precio NUMERA usan `price_versions.view`;
+42. obligaciones tributarias usan `tax_obligations.view`;
+43. distribución de costos usa `cost_allocations.view`;
+44. indicadores usan `financial_indicators.view`;
+45. centros de costo no conceden lectura de recursos que solo los referencian;
+46. gastos no conceden mutación;
+47. hechos económicos no conceden edición de la fuente;
+48. payables no conceden aprobación/pago;
+49. receivables no exponen automáticamente campos reservados a `NUMERA-AUTH-014`;
+50. tesorería no expone credenciales ni autoridad de pago;
+51. reconciliación de lectura no concede decisión de conciliación;
+52. costos no conceden modificación del costo maestro;
+53. periodos de lectura no conceden cierre/reapertura;
+54. paquete laboral minimiza datos personales;
+55. documentos fiscales no conceden autoridad externa;
+56. programación de pagos conserva identidad separada de ejecución;
+57. presupuesto, forecast y escenario permanecen distintos;
+58. escenario de lectura no concede acciones de `NUMERA-AUTH-015`;
+59. versión de precio NUMERA no concede autoridad sobre precio operativo PULSO;
+60. obligación tributaria de lectura no equivale a filing;
+61. asignación de costos de lectura no ejecuta reasignación;
+62. indicador general no absorbe equilibrio, rentabilidad ni reportes especializados;
+63. búsquedas usan el permiso del recurso;
+64. conteos se calculan sobre recursos autorizados;
+65. permisos de lectura autorizan proyecciones, no todas las columnas físicas;
+66. `null`, ausencia y redacción permanecen distinguibles;
+67. caché no cruza actores/scopes;
+68. datos sensibles no se colocan por defecto en URL/log/analytics;
+69. evento recibido no equivale a lectura autorizada;
+70. permiso interno no sustituye autoridad externa;
+71. no existe fallback a `access`, `manage` o wildcard;
+72. no se crean ni modifican requisitos de prueba;
+73. no se realizan cambios físicos;
+74. `NUMERA-AUTH-004` recibe un registro estable para separar registro de lectura.
+
+---
+
+#### 75. Límites
+
+Esta tarea no:
+
+- publica las diecisiete claves nuevas en catálogo runtime;
+- migra los cinco aliases legacy de lectura;
+- modifica `numera.access`;
+- define permisos de registro;
+- define permisos de aprobación;
+- define permisos de cierre/reapertura;
+- define permisos de exportación;
+- define scope final por empresa/sede/centro;
+- materializa auditoría;
+- implementa contexto operacional;
+- modifica packages compartidos;
+- ejecuta pruebas integrales;
+- define permisos de mutación de cartera/bancos/castigos;
+- define acciones de crear/compartir/aprobar/publicar escenarios, precios o presupuestos;
+- concede permisos a roles o usuarios;
+- modifica RLS, RPC, Server Actions o navegación;
+- modifica Supabase;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-AUTH-004`.
+
+---
+
+#### 76. Handoff a NUMERA-AUTH-004
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_CURRENT_ACTIVE_READ_PERMISSION_COUNT = 5
+NUMERA_NEW_DEFINED_READ_PERMISSION_COUNT = 17
+NUMERA_TOTAL_READ_PERMISSION_DEFINITION_COUNT = 22
+NUMERA_ACCESS_EXCLUDED_FROM_FINANCIAL_READ_COUNT = YES
+NUMERA_ACCESS_IMPLIES_FINANCIAL_READ = NO
+READ_PERMISSION_ACTION_SUFFIX = view
+READ_LIST_DETAIL_SEARCH_FILTER = SAME_RESOURCE_PERMISSION
+READ_IMPLIES_EXPORT_PRINT_SHARE = NO
+READ_IMPLIES_REGISTER_UPDATE_APPROVE = NO
+READ_IMPLIES_CLOSE_REOPEN_WRITE_OFF = NO
+READ_PERMISSION_SENSITIVITY_REASON = FINANCIAL_DATA
+NEW_READ_PERMISSIONS_TARGET_AUTHORIZATION_REQUIREMENT = BASE_ONLY
+NEW_READ_PERMISSIONS_TARGET_SHARED_DEVICE_REQUIREMENT = STRONG
+NEW_READ_PERMISSIONS_SIMULATION_EXPOSES_REAL_DATA = NO
+ROOT_DASHBOARD_OMNIBUS_READ_PERMISSION = FORBIDDEN
+APPROVAL_QUEUE_OMNIBUS_READ_PERMISSION = FORBIDDEN
+AGGREGATE_VIEW_REQUIRES_AUTHORIZED_DIMENSIONS = YES
+DRILLDOWN_REQUIRES_DESTINATION_RESOURCE_PERMISSION = YES
+SOURCE_APP_NAVIGATION_REAUTHORIZES = YES
+RECEIVABLE_SENSITIVE_DETAIL_OWNER = NUMERA_AUTH_014
+TREASURY_SENSITIVE_DETAIL_OWNER = NUMERA_AUTH_014
+SCENARIO_MUTATION_PERMISSION_OWNER = NUMERA_AUTH_015
+READ_SCOPE_OWNER = NUMERA_AUTH_008
+READ_AUDIT_OWNER = NUMERA_AUTH_009
+READ_PERMISSION_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+MISSING_READ_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_004_OWNER = REGISTER_PERMISSION_DEFINITION
+```
+
+`NUMERA-AUTH-004` deberá definir capacidades de registro/creación sin reutilizar los permisos `.view` como autoridad de escritura y sin alterar el registro de lectura aquí aprobado.
+
+---
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-002 — Clasificar información financiera sensible`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-003 — Definir permisos de lectura`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-004 — Definir permisos de registro`
 ### [ ] NUMERA-AUTH-004 — Definir permisos de registro
 ### [ ] NUMERA-AUTH-005 — Definir permisos de aprobación
 ### [ ] NUMERA-AUTH-006 — Definir permisos de cierre

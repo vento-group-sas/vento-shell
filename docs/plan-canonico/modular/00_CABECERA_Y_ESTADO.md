@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1423** |
+| Tareas aprobadas | **1424** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **173** |
+| Tareas no iniciadas | **172** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **89.16% (1423/1596)** |
+| Porcentaje de completamiento | **89.22% (1424/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUTH-002 — Clasificar información financiera sensible** |
-| Tarea actual | **NUMERA-AUTH-003 — Definir permisos de lectura** |
+| Última tarea aprobada | **NUMERA-AUTH-003 — Definir permisos de lectura** |
+| Tarea actual | **NUMERA-AUTH-004 — Definir permisos de registro** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUTH-004 — Definir permisos de registro** |
+| Siguiente tarea | **NUMERA-AUTH-005 — Definir permisos de aprobación** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 33 de 74 aprobadas; NUMERA-AUTH-003 pendiente** |
+| Progreso del bloque | **BLOQUE O: 34 de 74 aprobadas; NUMERA-AUTH-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUTH-003** |
+| Carril documental | **ACTIVO — NUMERA-AUTH-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUTH-002` — Clasificar información financiera sensible |
-| Tarea actual | `NUMERA-AUTH-003` — Definir permisos de lectura — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUTH-004` — Definir permisos de registro |
+| Última aprobada | `NUMERA-AUTH-003` — Definir permisos de lectura |
+| Tarea actual | `NUMERA-AUTH-004` — Definir permisos de registro — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-AUTH-005` — Definir permisos de aprobación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 33 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-003** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 34 DE 74 APROBADAS — ACTUAL NUMERA-AUTH-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUTH-002 — Clasificar información financiera sensible
-        ↓
-TAREA ACTUAL
 NUMERA-AUTH-003 — Definir permisos de lectura
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUTH-004 — Definir permisos de registro
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-AUTH-005 — Definir permisos de aprobación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 33 de 74 tareas aprobadas
+BLOQUE O — 34 de 74 tareas aprobadas
 ```
