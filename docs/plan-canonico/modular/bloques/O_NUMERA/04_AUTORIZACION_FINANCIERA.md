@@ -7432,7 +7432,1405 @@ NUMERA_AUTH_007_OWNER = EXPORT_PERMISSION_DEFINITION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-007 — Definir permisos de exportación`
-### [ ] NUMERA-AUTH-007 — Definir permisos de exportación
+### ✅ NUMERA-AUTH-007 — Definir permisos de exportación
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-006 — Definir permisos de cierre
+**Tarea siguiente:** NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
+**Tipo de tarea:** definición documental del permiso exacto de exportación financiera de NUMERA y de sus límites frente a lectura, descarga, impresión, compartición, salida masiva, publicación, simulación y mecanismos técnicos de entrega, preservando finalidad, minimización, recurso, versión, alcance, sensibilidad, destinatario, evidencia e idempotencia sin materializar runtime; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea, migra, concede, revoca ni materializa permisos, roles, grants, RLS, RPC, Server Actions, rutas de descarga, archivos, Storage, tablas, migraciones, Supabase, reportes reales, exportaciones reales, colas, integraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la autoridad exacta para **exportar información financiera de NUMERA** sin reutilizar permisos de lectura, aprobación, cierre, registro o roles genéricos como autorización implícita para extraer datos fuera de la superficie de consulta.
+
+La tarea adopta la identidad de permiso ya reconocida por el catálogo transversal y la convierte en contrato financiero explícito:
+
+```text
+numera.analytics.financial_reports.export
+```
+
+La definición protege especialmente:
+
+- reportes y snapshots financieros;
+- filtros y dimensiones efectivas;
+- periodos y versiones de cierre;
+- campos sensibles;
+- población incluida;
+- finalidad;
+- destinatario y destino cuando apliquen;
+- evidencia del resultado;
+- historia de reportes restatados.
+
+---
+
+#### 2. Naturaleza y topología
+
+La reconciliación propietaria de `NUMERA-AUTH-001..007` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, `NUMERA-AUTH-007`:
+
+- define una sola vez el contrato reutilizable de exportación;
+- no crea instancia física propia;
+- no publica la clave en runtime;
+- no migra `numera.reports.view`;
+- no crea botones, rutas o handlers de exportación;
+- no genera CSV, XLSX, PDF, JSON ni otro archivo;
+- no modifica Supabase;
+- no concede el permiso a ningún rol;
+- no altera políticas transversales de información;
+- entrega el contrato que deberán consumir alcance, auditoría, materialización y pruebas posteriores.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-006
+
+La predecesora entrega sin reinterpretación:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_APPROVAL_PERMISSION_REGISTRY = NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+NUMERA_PERIOD_STATE_PERMISSION_REGISTRY = NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001
+EXISTING_DECOMPOSITION_PERIOD_STATE_PERMISSIONS = 0
+NEW_CONTRACT_DEFINED_PERIOD_STATE_PERMISSIONS = 3
+TOTAL_PERIOD_STATE_PERMISSION_DEFINITIONS = 3
+LOCK_PERMISSION_COUNT = 1
+CLOSE_PERMISSION_COUNT = 1
+REOPEN_PERMISSION_COUNT = 1
+GENERIC_CORRECT_PERMISSION_COUNT = 0
+PERIOD_STATE_PERMISSION_ACTIONS = lock|close|reopen
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_ORDINARY_FLOW = open->locked->closed
+OPEN_TO_CLOSED_DIRECT = FORBIDDEN
+LOCK_PERMISSION_KEY = numera.finance.periods.lock
+CLOSE_PERMISSION_KEY = numera.finance.periods.close
+REOPEN_PERMISSION_KEY = numera.finance.periods.reopen
+LOCK_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_IMPLIES_VIEW = NO
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+LOCKED_TO_OPEN_IS_REOPEN = NO
+CLOSED_TO_OPEN_IS_REOPEN = YES
+CORRECTION_USES_EXACT_RESOURCE_MUTATION_AUTHORITY = YES
+GENERIC_PERIOD_CORRECT_PERMISSION = FORBIDDEN
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+STALE_PERIOD_VERSION_DECISION = DENY_AND_REVIEW_AGAIN
+REOPEN_REQUIRES_CLOSE_VERSION = YES
+RELEASE_LOCK_REASON_REQUIRED = YES
+REOPEN_REASON_REQUIRED = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_IMPLIES_RESOURCE_MUTATION = NO
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+PERIOD_STATE_TRANSITIONS_IDEMPOTENT = YES
+PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+PERIOD_REOPEN_IS_ACCOUNTING_OR_FISCAL_REOPEN = NO
+PERIOD_STATE_SCOPE_OWNER = NUMERA_AUTH_008
+PERIOD_STATE_AUDIT_OWNER = NUMERA_AUTH_009
+PERIOD_STATE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+MISSING_PERIOD_STATE_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_007_OWNER = EXPORT_PERMISSION_DEFINITION
+```
+
+La 007 añade autoridad de exportación sin cambiar las decisiones de lectura, registro, aprobación o estado de periodo.
+
+---
+
+#### 4. Contrato de dominio consumido
+
+`NUMERA-DOM-012` deja aprobado:
+
+```text
+NUMERA_OFFICIAL_REPORT_SCOPE = INTERNAL_MANAGEMENT_ANALYTICS
+NUMERA_OFFICIAL_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+LIVE_VIEW_PUBLISHED_SNAPSHOT_OFFICIAL_REPORT_EXPORT_SIMULATION = DISTINCT
+OFFICIAL_METRIC_REQUIRES_CANONICAL_VERSION = YES
+LOCAL_METRIC_FORMULA_OVERRIDE = FORBIDDEN
+REPORT_REQUIRES_PERIOD_AND_CUTOFF = YES
+CLOSED_PERIOD_REPORT_REQUIRES_CLOSE_VERSION = YES
+REPORT_OFFICIALITY_REQUIRES_QUALITY_LINEAGE_AND_AUTHORITY = YES
+REPORT_VERSION_IMMUTABLE_AFTER_PUBLICATION = YES
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+EXPORT_INHERITS_REPORT_ID_VERSION_SCOPE_AND_CUTOFF = YES
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_REQUIRES_INDEPENDENT_AUTHORIZATION = YES
+EXPORT_IS_ECONOMIC_SOURCE = NO
+EXPORT_FORMAT_DEFINES_OFFICIALITY = NO
+EXTERNAL_ACCOUNTING_AND_FISCAL_AUTHORITY = NUMERA_DOM_013
+```
+
+La 007 especializa únicamente la autoridad de salida financiera; no redefine reportes, métricas, periodos ni oficialidad.
+
+---
+
+#### 5. Contrato transversal de salida consumido
+
+`INFO-AUTH-002` mantiene como invariante:
+
+```text
+CONSULTAR
+!= DESCARGA
+!= IMPRESION
+!= EXPORTACION
+!= COMPARTICION
+!= URL_FIRMADA
+```
+
+Toda salida debe resolver, según aplique:
+
+- acción exacta;
+- fuente y versión;
+- principal y actor efectivo;
+- finalidad;
+- clasificación;
+- campos y población;
+- destinatario;
+- destino y territorio;
+- estado y vigencia;
+- protección del canal;
+- revocación;
+- evidencia.
+
+`NUMERA-AUTH-007` consume este contrato y no crea una política transversal paralela.
+
+---
+
+#### 6. Registro canónico de permisos de exportación
+
+La tarea define:
+
+```text
+NUMERA-EXPORT-PERMISSION-REGISTRY-001
+```
+
+El registro contiene únicamente identidades de exportación financiera que estén sustentadas por un código canónico explícito y por una acción de negocio identificable.
+
+No convierte nombres de pantalla, formatos de archivo ni mecanismos técnicos en permisos.
+
+---
+
+#### 7. Shape lógico de una fila
+
+Cada entrada del registro deberá conservar conceptualmente:
+
+```text
+permission_code
++ action_class
++ resource_type
++ resource_identity_rule
++ required_read_permission
++ authorization_requirement
++ shared_device_requirement
++ sensitivity_reason
++ purpose_rule
++ field_projection_rule
++ population_rule
++ scope_rule
++ recipient_destination_rule
++ version_rule
++ evidence_rule
++ simulation_rule
++ materialization_status
++ owner_task
+```
+
+La materialización física posterior decidirá representación técnica sin cambiar estas decisiones.
+
+---
+
+#### 8. Cardinalidad cerrada
+
+El estado contractual queda:
+
+```text
+CURRENT_RUNTIME_EXPORT_PERMISSION_COUNT = 0
+CANONICAL_EXPORT_PERMISSION_IDENTITY_COUNT = 1
+CONTRACT_DEFINED_EXPORT_PERMISSION_COUNT = 1
+NEW_PERMISSION_CODE_INVENTED_COUNT = 0
+ACTIVE_RUNTIME_EXPORT_GRANT_CREATED_COUNT = 0
+```
+
+Existe una única identidad de exportación NUMERA sustentada por el catálogo vigente.
+
+---
+
+#### 9. Identidad exacta del permiso
+
+La capacidad de exportación es:
+
+```text
+numera.analytics.financial_reports.export
+```
+
+Se adopta porque el catálogo transversal ya la usa explícitamente para separar consulta de salida masiva.
+
+No se crea un alias paralelo como:
+
+```text
+numera.reports.export
+numera.finance.reports.export
+numera.analytics.export
+numera.export
+```
+
+---
+
+#### 10. Estado contractual de la identidad
+
+La fila queda clasificada como:
+
+```text
+CANONICAL_IDENTITY_ADOPTED_PENDING_MATERIALIZATION
+```
+
+Esto significa:
+
+- la identidad está aprobada como permiso objetivo;
+- todavía no existe concesión runtime demostrada;
+- todavía no existe consumidor de exportación materializado;
+- no debe simularse disponibilidad física;
+- su publicación corresponde a tareas posteriores de materialización.
+
+---
+
+#### 11. Semántica de `export`
+
+`EXPORT` significa producir una **salida derivada identificable** de información financiera fuera de la superficie interactiva ordinaria, con conjunto, versión, formato y decisión de autorización definidos.
+
+Puede representar, cuando exista implementación autorizada:
+
+- extracción tabular;
+- archivo estructurado;
+- representación documental;
+- respuesta masiva equivalente.
+
+El formato técnico no cambia la acción de negocio.
+
+---
+
+#### 12. Lectura y exportación permanecen separadas
+
+Se conserva:
+
+```text
+numera.analytics.financial_reports.view
+!=
+numera.analytics.financial_reports.export
+```
+
+Y:
+
+```text
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_PERMISSION_IMPLIES_VIEW = NO
+```
+
+La exportación requiere ambas autoridades cuando necesita consultar el recurso base para construir la salida.
+
+---
+
+#### 13. Exportación exige lectura del mismo recurso
+
+La elegibilidad ordinaria para exportar un reporte exige:
+
+```text
+numera.access
++
+numera.analytics.financial_reports.view
++
+numera.analytics.financial_reports.export
++
+VALID_RESOURCE
++
+VALID_SCOPE
++
+VALID_PURPOSE
++
+ALLOWED_PROJECTION
++
+NO_EFFECTIVE_DENY
+```
+
+El permiso `.export` no autoriza consultar un reporte que el actor no puede leer.
+
+---
+
+#### 14. Exportación no equivale a descarga de artefacto existente
+
+Se conserva:
+
+```text
+EXPORT != DOWNLOAD
+```
+
+`export` gobierna la creación de una salida derivada. Si en el futuro existe un artefacto persistido descargable, recuperar esa copia será una acción diferenciable conforme al contrato transversal.
+
+Esta tarea no inventa un código `*.download` porque no existe una identidad NUMERA canónica aprobada que lo sustente.
+
+Mientras no exista esa identidad y una superficie propietaria, una descarga separada falla cerrada y no reutiliza `.export` por inferencia.
+
+---
+
+#### 15. Exportación no equivale a impresión
+
+Se conserva:
+
+```text
+EXPORT != PRINT
+```
+
+Generar una exportación no autoriza enviarla a impresora, spooler, PDF printer u otro destino físico/lógico.
+
+Esta tarea no inventa `*.print` para NUMERA.
+
+---
+
+#### 16. Exportación no equivale a compartición
+
+Se conserva:
+
+```text
+EXPORT != SHARE_INTERNAL
+EXPORT != SHARE_EXTERNAL
+```
+
+La posesión de un archivo exportado no concede derecho empresarial a divulgarlo a otro receptor.
+
+La compartición deberá cumplir `INFO-AUTH-002` y disponer de autoridad exacta cuando exista una capacidad materializada. Esta tarea no inventa códigos `*.share_internal` o `*.share_external`.
+
+---
+
+#### 17. URL firmada no es permiso de exportación
+
+Se conserva:
+
+```text
+SIGNED_URL != EXPORT_PERMISSION
+SIGNED_URL != SHARE_PERMISSION
+```
+
+Una URL firmada puede ser un mecanismo técnico futuro para entregar un artefacto ya autorizado, pero:
+
+- no crea autoridad;
+- no amplía campos;
+- no amplía población;
+- no cambia destinatario;
+- no sobrevive automáticamente a una revocación empresarial;
+- no sustituye la decisión de salida subyacente.
+
+---
+
+#### 18. Extracción masiva no se infiere
+
+`BULK_EXTRACT` no se convierte en alias silencioso de `EXPORT`.
+
+Una operación materializada como `EXPORT` puede incluir cantidad o población elevada únicamente si el contrato de exportación autoriza explícitamente ese conjunto y cada miembro/dimensión supera la resolución de alcance.
+
+Si una futura capacidad empresarial se clasifica de forma distinta a `EXPORT`, deberá recibir identidad canónica propia antes de ejecutarse.
+
+---
+
+#### 19. Publicación y exportación permanecen separadas
+
+Se conserva:
+
+```text
+REPORT_PUBLISHED != REPORT_EXPORTED
+PUBLISH != EXPORT
+```
+
+`VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT` identifica la superficie de publicación, pero publicar una versión oficial NUMERA no concede por sí mismo extracción de sus datos.
+
+---
+
+#### 20. Recurso protegido
+
+El recurso canónico reutilizado es:
+
+```text
+FINANCIAL_REPORT
+```
+
+La exportación debe resolver:
+
+- reporte exacto o consulta normalizada;
+- versión;
+- filtros;
+- dimensiones;
+- miembros agregados;
+- periodo/corte;
+- campos efectivos.
+
+No existe autorización sobre “todos los reportes” solo por conocer el namespace del permiso.
+
+---
+
+#### 21. Identidad y versión del reporte
+
+Toda exportación debe apuntar a una identidad de reporte o consulta reproducible.
+
+Se conserva:
+
+```text
+REPORT_ID
++
+REPORT_VERSION
++
+AS_OF_OR_CUTOFF
++
+EFFECTIVE_FILTERS
++
+EFFECTIVE_DIMENSIONS
+```
+
+Una petición ambigua sobre “el último reporte” no es suficiente cuando existen varias versiones o cortes legítimos.
+
+---
+
+#### 22. Periodo económico y versión de cierre
+
+Cuando la exportación representa un periodo económico deberá conservar su estado y corte.
+
+Para una versión cerrada:
+
+```text
+PERIOD_ID
++
+CLOSE_VERSION
++
+REPORT_VERSION
+```
+
+son referencias distintas y necesarias cuando apliquen.
+
+La exportación no cambia el estado del periodo.
+
+---
+
+#### 23. Restatement e historia
+
+Cuando un reporte haya sido restatado:
+
+- la versión anterior permanece histórica;
+- una exportación antigua no muta retroactivamente;
+- una nueva exportación deberá señalar la nueva versión;
+- la relación de supersesión permanece trazable;
+- no se sirve una versión diferente a la solicitada por conveniencia silenciosa.
+
+Se preserva:
+
+```text
+OLD_EXPORT != MUTABLE_POINTER_TO_LATEST_REPORT
+```
+
+---
+
+#### 24. Formato no cambia autoridad
+
+CSV, XLSX, PDF, JSON u otra representación futura no cambia:
+
+- permiso requerido;
+- sensibilidad;
+- alcance;
+- finalidad;
+- versión;
+- lineage;
+- reglas de evidencia.
+
+Se conserva:
+
+```text
+FILE_FORMAT != AUTHORITY
+FILE_FORMAT != OFFICIALITY
+```
+
+---
+
+#### 25. Campos y columnas
+
+El permiso de exportación no concede automáticamente todos los campos del recurso.
+
+Antes de producir la salida deberá existir una proyección autorizada que determine:
+
+- columnas incluidas;
+- columnas excluidas;
+- redacción o enmascaramiento cuando aplique;
+- precisión autorizada;
+- identificadores permitidos;
+- referencias mínimas necesarias.
+
+Un campo oculto en UI no puede añadirse a exportación por estar disponible en backend.
+
+---
+
+#### 26. Población y filtros
+
+La población exportada forma parte de la decisión de autorización.
+
+Se conserva:
+
+```text
+AUTHORIZED_QUERY
+!=
+ARBITRARY_BULK_POPULATION
+```
+
+El servidor debe aplicar los filtros autorizados antes de construir la salida y no descargar un universo mayor para filtrarlo únicamente en cliente.
+
+---
+
+#### 27. Minimización
+
+Toda exportación financiera se construye desde la **mínima proyección necesaria** para su finalidad.
+
+La minimización ocurre antes de generar el artefacto o payload final.
+
+No se autoriza:
+
+- exportar columnas de conveniencia sin finalidad;
+- incluir documentos completos cuando basta referencia;
+- incluir cuentas bancarias completas cuando basta representación parcial;
+- incluir datos personales ajenos al propósito;
+- incluir secretos o credenciales.
+
+---
+
+#### 28. Sensibilidad
+
+La capacidad conserva:
+
+```text
+sensitivity_reason = FINANCIAL_DATA
+```
+
+Además, la proyección efectiva puede acumular motivos como:
+
+- `PERSONAL_DATA`;
+- `COMMERCIAL_CONFIDENTIALITY`;
+- `BUSINESS_SECRET`;
+- `AUDIT_SECURITY`;
+- otros motivos ya aprobados por el propietario transversal.
+
+La coexistencia de sensibilidad no crea un permiso nuevo; eleva las restricciones aplicables.
+
+---
+
+#### 29. Finalidad obligatoria
+
+Toda exportación debe estar asociada a una finalidad empresarial resoluble y vigente.
+
+Se prohíbe usar como finalidad suficiente:
+
+- “por si acaso”;
+- “para tener copia”;
+- conveniencia técnica;
+- soporte genérico sin caso;
+- rol del actor;
+- existencia del botón;
+- disponibilidad del formato.
+
+La materialización podrá usar un catálogo de finalidades aprobado por su propietario, pero esta tarea no inventa uno paralelo.
+
+---
+
+#### 30. Destinatario y destino
+
+Cuando una exportación tenga destinatario o destino distinto del solicitante inmediato, deberá resolverlos conforme al contrato transversal.
+
+La ausencia de destinatario solo podrá tratarse como `NO_APLICA` cuando el flujo propietario lo determine expresamente.
+
+No se infiere destinatario desde:
+
+- correo visible;
+- sede;
+- rol;
+- navegador;
+- carpeta;
+- canal técnico.
+
+---
+
+#### 31. Scope territorial y miembros agregados
+
+La exportación no amplía el territorio de lectura.
+
+Se conserva:
+
+```text
+EXPORT_SCOPE
+⊆
+AUTHORIZED_READ_SCOPE
+```
+
+Un reporte agregado solo podrá exportarse si todos los miembros, dimensiones y campos incluidos son compatibles con el alcance efectivo.
+
+La especificación exacta por empresa, sede y centro de costo pertenece a `NUMERA-AUTH-008`.
+
+---
+
+#### 32. VSCREEN-0106 es superficie, no autoridad
+
+`VSCREEN-0106 — Reportes y exportaciones financieras` utiliza:
+
+```text
+VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+```
+
+Su existencia no concede exportación.
+
+La acción de exportar desde esa superficie exige la clave exacta y la revalidación server-side correspondiente.
+
+---
+
+#### 33. Contrato server-side mínimo
+
+Antes de producir una exportación real deberán revalidarse en servidor, como mínimo:
+
+```text
+principal
++ effective_actor
++ numera.access
++ numera.analytics.financial_reports.view
++ numera.analytics.financial_reports.export
++ resource_identity
++ report_version
++ scope
++ purpose
++ field_projection
++ population
++ sensitivity
++ recipient_destination_when_applicable
++ authorization_state
++ no_effective_deny
+```
+
+Una decisión cliente no reemplaza esta evaluación.
+
+---
+
+#### 34. Estado y vigencia se revalidan
+
+La autorización usada para iniciar una exportación debe seguir vigente al momento autoritativo de la acción.
+
+Si cambia:
+
+- actor;
+- permiso;
+- alcance;
+- reporte;
+- versión;
+- finalidad;
+- clasificación;
+- recurso;
+- denegación efectiva;
+
+la decisión se vuelve a evaluar.
+
+---
+
+#### 35. Rol no es autorización final
+
+Ningún nombre de rol como:
+
+- owner;
+- gerente;
+- contador;
+- financiero;
+- administrador;
+
+sustituye `numera.analytics.financial_reports.export`.
+
+La asignación concreta de grants no pertenece a esta tarea.
+
+---
+
+#### 36. La interfaz nunca es autoridad final
+
+No constituyen autorización suficiente:
+
+- botón Exportar;
+- menú Descargar;
+- enlace conocido;
+- URL;
+- query parameter;
+- pantalla visible;
+- opción de formato;
+- archivo previamente recibido;
+- llamada API construida manualmente.
+
+El backend falla cerrado sin la decisión exacta.
+
+---
+
+#### 37. Estado AS-IS preservado
+
+La auditoría vigente observa:
+
+```text
+EXPORT_UI_ACTIONS = 0
+CSV_XLSX_EXPORT_IMPLEMENTATIONS = 0
+DOWNLOAD_ROUTES = 0
+PRINT_ACTIONS = 0
+RUNTIME_REPORT_PERMISSION_CONSUMERS = 0
+```
+
+Esta tarea no presenta esa ausencia como implementación ni modifica esos conteos físicos.
+
+---
+
+#### 38. `numera.reports.view` legacy no concede exportación
+
+El runtime observado conserva:
+
+```text
+numera.reports.view
+```
+
+sin consumidor actual localizado de reportes/exportación.
+
+Ese código:
+
+- no es el permiso de exportación;
+- no se convierte en `.export` por alias implícito;
+- no habilita `VSCREEN-0106` por sí solo;
+- no sustituye la identidad canónica `numera.analytics.financial_reports.view`;
+- no crea un consumidor inexistente.
+
+---
+
+#### 39. No se crea alias legacy de exportación
+
+Queda prohibido introducir por conveniencia:
+
+```text
+numera.reports.export
+```
+
+como puente temporal no gobernado.
+
+La única identidad contractual de exportación definida aquí es:
+
+```text
+numera.analytics.financial_reports.export
+```
+
+---
+
+#### 40. Fallback a `manage` prohibido
+
+Si la clave exacta no está materializada, queda prohibido sustituirla por:
+
+```text
+numera.access
+numera.cost_centers.manage
+numera.expenses.manage
+numera.analytics.financial_reports.view
+numera.*
+numera.analytics.*
+numera.finance.*
+```
+
+La funcionalidad de exportación permanece bloqueada.
+
+---
+
+#### 41. Modalidad objetivo
+
+La capacidad se define con:
+
+```text
+authorization_requirement = BASE_ONLY
+```
+
+La exportación financiera es una capacidad administrativa/analítica y no depende de turno operativo por defecto.
+
+`NUMERA-AUTH-011` podrá exigir contexto operacional únicamente para superficies que realmente lo necesiten, sin convertirlo en condición universal de esta capacidad.
+
+---
+
+#### 42. Dispositivo compartido
+
+El objetivo de interacción es:
+
+```text
+shared_device_requirement = STRONG
+```
+
+Una salida financiera sensible requiere actor humano atribuible y las garantías fuertes determinadas por el contrato transversal de dispositivo.
+
+La política no convierte un PIN ligero en reautenticación fuerte cuando el contrato requiera algo superior.
+
+---
+
+#### 43. Simulación
+
+Se conserva:
+
+```text
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_FINANCIAL_DATA = NO
+```
+
+Una simulación puede mostrar:
+
+- elegibilidad hipotética;
+- alcance hipotético;
+- razones de deny;
+- campos que serían elegibles;
+- impacto esperado;
+
+pero no puede generar ni entregar una exportación financiera real usando autoridad simulada.
+
+---
+
+#### 44. Solicitud de exportación
+
+Una solicitud lógica deberá poder conservar, cuando la implementación exista:
+
+```text
+REQUEST_ID
+REPORT_ID
+REPORT_VERSION
+REQUESTED_FORMAT
+REQUESTED_FIELDS
+REQUESTED_FILTERS
+REQUESTED_POPULATION
+PURPOSE
+REQUESTED_BY
+EFFECTIVE_ACTOR
+REQUESTED_AT
+```
+
+Estos elementos describen la solicitud; no sustituyen la decisión de autorización.
+
+---
+
+#### 45. Instancia de exportación
+
+La instancia producida deberá permanecer distinguible de la solicitud:
+
+```text
+REQUEST_ID
+!=
+EXPORT_INSTANCE
+```
+
+La instancia deberá vincularse al reporte/consulta exactos, versión, filtros y decisión que la originaron.
+
+---
+
+#### 46. Idempotencia
+
+Reintentar la misma solicitud técnica no debe crear silenciosamente múltiples artefactos empresariales cuando el contrato exige una única salida lógica.
+
+La implementación futura deberá distinguir:
+
+```text
+REQUEST_ID
+REPORT_VERSION
+EXPORT_INSTANCE
+DELIVERY_ATTEMPT
+```
+
+Un retry no autoriza ampliar población, campos o formato.
+
+---
+
+#### 47. Intento de entrega
+
+Un `DELIVERY_ATTEMPT` representa el intento técnico de entregar una exportación ya autorizada.
+
+No constituye:
+
+- nueva autorización;
+- nuevo destinatario;
+- nueva finalidad;
+- ampliación de scope;
+- nueva versión de reporte.
+
+Si la entrega cambia materialmente esas dimensiones, requiere una nueva decisión gobernada.
+
+---
+
+#### 48. Evidencia de exportación exitosa
+
+Una exportación protegida deberá dejar evidencia correlacionable suficiente para reconstruir:
+
+- request ID;
+- actor efectivo;
+- permiso exacto;
+- reporte/consulta;
+- versión;
+- periodo/corte;
+- filtros y alcance;
+- campos/población;
+- formato;
+- finalidad;
+- destinatario/destino cuando apliquen;
+- decisión de autorización;
+- instante;
+- resultado;
+- referencia del artefacto o resultado sin duplicar innecesariamente su contenido sensible.
+
+---
+
+#### 49. Denegación, error y conflicto
+
+La evidencia también debe distinguir:
+
+```text
+AUTHORIZATION_DENIED
+RESOURCE_OR_VERSION_CONFLICT
+VALIDATION_FAILED
+GENERATION_FAILED
+DELIVERY_FAILED
+```
+
+Un fallo técnico no se presenta como denegación de autorización y una denegación no se oculta como error genérico.
+
+---
+
+#### 50. Errores públicos y logs
+
+Los errores de exportación no deben exponer hacia URL, UI, logs no autorizados o analytics:
+
+- SQL;
+- rutas internas;
+- secretos;
+- payload financiero completo;
+- cuentas completas;
+- documentos completos;
+- campos excluidos;
+- nombres de recursos fuera de alcance.
+
+La evidencia técnica detallada permanece bajo su política autorizada.
+
+---
+
+#### 51. Exportaciones históricas
+
+Una exportación histórica conserva la identidad y restricciones de la versión de la que fue producida.
+
+Si luego aparece un restatement:
+
+- la copia anterior no se reescribe;
+- una nueva copia usa la nueva versión;
+- la UI futura puede advertir existencia de versión posterior;
+- no se invalida retrospectivamente la evidencia de qué se exportó y cuándo.
+
+---
+
+#### 52. Exportación no es fuente económica
+
+Se conserva:
+
+```text
+EXPORT_IS_ECONOMIC_SOURCE = NO
+```
+
+Importar posteriormente una exportación no autoriza utilizarla como verdad paralela frente a los hechos, documentos y sistemas propietarios originales.
+
+---
+
+#### 53. Exportación NUMERA no es filing fiscal
+
+Se conserva:
+
+```text
+NUMERA_EXPORT_IS_TAX_FILING = NO
+```
+
+Una salida de NUMERA puede servir como insumo o evidencia autorizada, pero no equivale a:
+
+- declaración tributaria presentada;
+- documento fiscal oficialmente emitido;
+- aceptación por autoridad;
+- libro contable;
+- asiento oficial.
+
+---
+
+#### 54. Exportación no equivale a aprobación
+
+```text
+EXPORT != APPROVE
+EXPORT != REJECT
+```
+
+El permiso de exportación no decide la validez económica del objeto contenido.
+
+---
+
+#### 55. Exportación no equivale a cierre o reapertura
+
+```text
+EXPORT != LOCK
+EXPORT != CLOSE
+EXPORT != REOPEN
+```
+
+Exportar un periodo no cambia su estado y disponer de autoridad de cierre/reapertura no concede exportación.
+
+---
+
+#### 56. Exportación no equivale a registro o actualización
+
+```text
+EXPORT != REGISTER
+EXPORT != UPDATE
+EXPORT != CANCEL
+```
+
+Una copia derivada no habilita mutación de hechos, gastos, obligaciones, documentos, periodos o configuraciones.
+
+---
+
+#### 57. Exportación no equivale a conciliación
+
+```text
+EXPORT != RECONCILE
+```
+
+La salida puede mostrar el estado de conciliación autorizado, pero no lo aprueba ni modifica.
+
+---
+
+#### 58. Exportación no equivale a escenario
+
+```text
+EXPORT != SCENARIO_CREATE
+EXPORT != SCENARIO_SHARE
+EXPORT != SCENARIO_APPROVE
+EXPORT != SCENARIO_PUBLISH
+```
+
+Las acciones sobre escenarios, precios y presupuestos permanecen en `NUMERA-AUTH-015`.
+
+---
+
+#### 59. Campos sensibles especializados
+
+La autorización de exportación general del reporte no elimina las restricciones adicionales sobre:
+
+- cartera sensible;
+- acuerdos;
+- castigos;
+- cuentas bancarias;
+- referencias de pago;
+- datos fiscales;
+- información personal;
+- secretos empresariales.
+
+Las decisiones especializadas de cartera y bancos continúan en `NUMERA-AUTH-014` y en los contratos transversales aplicables.
+
+---
+
+#### 60. Scope posterior
+
+`NUMERA-AUTH-008` deberá especializar cómo esta capacidad se limita por:
+
+- empresa;
+- sede;
+- centro de costo;
+- dimensiones territoriales autorizadas;
+- miembros de agregados.
+
+La 007 congela únicamente:
+
+```text
+EXPORT_SCOPE_MUST_NOT_EXCEED_AUTHORIZED_READ_SCOPE = YES
+```
+
+---
+
+#### 61. Auditoría posterior
+
+`NUMERA-AUTH-009` deberá especializar la evidencia y consulta de auditoría financiera de exportaciones sin convertir logs o historial en una nueva autoridad de extracción.
+
+La 007 exige desde ahora:
+
+```text
+EXPORT_DECISION_AND_RESULT_AUDITABLE = YES
+```
+
+---
+
+#### 62. Independencia administrativa de turno
+
+`NUMERA-AUTH-010` resolverá la independencia de turno de la administración financiera.
+
+La modalidad base aquí definida no adquiere por inferencia dependencia de jornada, check-in o turno.
+
+---
+
+#### 63. Contexto operacional cuando aplique
+
+`NUMERA-AUTH-011` podrá exigir contexto operacional para una superficie concreta cuando exista fundamento canónico.
+
+No puede ampliar la autoridad de exportación ni reemplazar el permiso exacto.
+
+---
+
+#### 64. Materialización
+
+`NUMERA-AUTH-012` será responsable de materializar el contrato aprobado en los paquetes/unidades que correspondan.
+
+La materialización deberá reconciliar, como mínimo:
+
+- catálogo de permisos;
+- contratos compartidos;
+- guards/Server Actions/API/RPC aplicables;
+- scope;
+- evidencia;
+- ausencia de fallback legacy;
+- simulación;
+- consumidores reales.
+
+Esta tarea no realiza esos cambios.
+
+---
+
+#### 65. Pruebas integrales
+
+`NUMERA-AUTH-013` deberá demostrar adversarialmente, entre otros casos:
+
+- lectura permitida + exportación denegada;
+- exportación permitida + lectura denegada;
+- campo no permitido;
+- miembro agregado no autorizado;
+- scope fuera de empresa/sede/centro;
+- versión stale;
+- finalidad inválida;
+- destinatario inválido cuando aplique;
+- simulación intentando exportar datos reales;
+- URL o archivo conocido intentando bypass;
+- retry sin duplicación;
+- revocación antes del efecto autoritativo.
+
+---
+
+#### 66. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `numera.reports.view` legacy no tiene consumidor de reportes/exportación localizado | no | `NUMERA-AUTH-012` + lifecycle transversal de autorización + UX aplicable | identidad canónica, consumidores y grants quedan reconciliados sin habilitar exportación implícita |
+| `numera.analytics.financial_reports.export` no está materializado en runtime | no | `NUMERA-AUTH-012` + package aplicable | catálogo, guard autoritativo, scope, evidencia y consumidor publican exactamente la clave aprobada |
+| no existen acciones de exportación UI, rutas de descarga o generación de archivo observadas | no | `NUMERA-UX-*` aplicable + implementación E5 | superficie real consume el permiso exacto y falla cerrada sin él |
+| scope por empresa/sede/centro aún requiere especialización | no | `NUMERA-AUTH-008` | exportación conserva únicamente miembros y dimensiones autorizados |
+| auditoría financiera especializada de exportación aún no está definida | no | `NUMERA-AUTH-009` | decisión, resultado, denegación y correlación quedan consultables bajo mínimo privilegio |
+| descarga, impresión y compartición son acciones distintas sin claves NUMERA aprobadas aquí | no | evolución canónica del propietario si una superficie futura las requiere | no se ejecutan por inferencia; cualquier nueva capacidad recibe código y contrato explícitos antes de materializarse |
+
+No queda ninguna autoridad de `EXPORT` detectada sin identidad o condición de salida.
+
+---
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+Justificación: la cobertura vigente ya exige separación entre lectura y exportación, resolución de autorización exacta para acciones de salida, minimización, finalidad, recurso, alcance, destinatario cuando aplique, evidencia, server-side enforcement y preservación de versiones. Esta tarea especializa el permiso NUMERA sin cambiar esos requisitos.
+
+---
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación de reportes, permisos separados y trazabilidad;
+- `TREQ-NUMERA-002` para identidad, periodo, fuente, correlación, evidencia e historia no destructiva;
+- `TREQ-NUMERA-003` para separación entre registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-NUMERA-004` para métodos, versiones, fuentes, periodo y drill-down de analítica financiera;
+- `TREQ-SHELL-011` para acción exacta, finalidad, clasificación, recurso, territorio, destinatario y salida protegida;
+- `TREQ-AUTH-013` para revalidación server-side de permiso, actor, alcance, estado y campos;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-DATA-004` para separación entre vista, snapshot, reporte, simulación, exportación y restatement versionado.
+
+Esta sección es trazabilidad de cobertura existente y no constituye una actualización del registro.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó esta tarea dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron en `main` protocolo, contrato de entrega, manifest, continuidad, topología, políticas documentales, archivo propietario, catálogo transversal de acciones, contrato de recurso `FINANCIAL_REPORT`, `INFO-AUTH-002`, `NUMERA-AUD-010`, `NUMERA-DOM-012`, `VSCREEN-0106`, `VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT` y Registro 04A aplicable; adicionalmente se contrastó el handoff completo aprobado de `NUMERA-AUTH-006` usado como base anticipada, cuya incorporación al remoto permanece como precondición del ciclo de la 007 |
+| OPERATIVA | NOT_EXECUTED | no se generaron, descargaron, imprimieron, compartieron ni entregaron exportaciones financieras reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no autoriza materialización física propia |
+
+---
+
+#### 70. Criterios de aceptación
+
+`NUMERA-AUTH-007` queda aceptable cuando:
+
+1. existe exactamente un registro documental de exportación NUMERA;
+2. la única identidad de permiso de exportación definida es `numera.analytics.financial_reports.export`;
+3. no se inventa `numera.reports.export` ni otro alias;
+4. el permiso protege el recurso `FINANCIAL_REPORT`;
+5. `view` y `export` permanecen separados;
+6. exportar exige lectura válida del recurso base cuando corresponda construir la salida;
+7. exportación y descarga de un artefacto existente permanecen diferenciables;
+8. exportación e impresión permanecen diferenciables;
+9. exportación y compartición permanecen diferenciables;
+10. URL firmada permanece mecanismo y no autoridad;
+11. no se inventan permisos NUMERA para acciones sin identidad canónica aprobada;
+12. una operación masiva no amplía población por inferencia;
+13. publicación de reporte no concede exportación;
+14. reporte y versión exactos forman parte de la decisión;
+15. periodo y versión de cierre se conservan cuando aplican;
+16. restatement no muta exportaciones históricas;
+17. formato de archivo no cambia autoridad ni sensibilidad;
+18. campos exportables se resuelven antes de producir la salida;
+19. población y filtros forman parte de la autorización;
+20. minimización ocurre antes de generar el resultado;
+21. `FINANCIAL_DATA` permanece como sensibilidad principal;
+22. finalidades genéricas o inferidas no autorizan salida;
+23. destinatario/destino se resuelven cuando aplican;
+24. scope de exportación nunca excede scope de lectura;
+25. agregados verifican miembros autorizados;
+26. `VSCREEN-0106` no se convierte en autoridad;
+27. servidor revalida principal, actor, lectura, exportación, recurso, versión, scope, finalidad, campos, población y denegaciones;
+28. rol no sustituye permiso exacto;
+29. UI, URL o archivo conocido no sustituyen permiso;
+30. el AS-IS sin exportación no se presenta como implementación;
+31. `numera.reports.view` legacy no concede exportación;
+32. fallback a `manage` y wildcards queda prohibido;
+33. modalidad objetivo queda `BASE_ONLY`;
+34. política de dispositivo queda `STRONG`;
+35. autoridad simulada no exporta datos reales;
+36. solicitud, instancia de exportación y entrega permanecen distinguibles;
+37. retries son idempotentes y no amplían datos;
+38. éxito, denegación, conflicto y fallo técnico quedan diferenciados;
+39. logs y errores no filtran información sensible;
+40. exportación no se convierte en fuente económica;
+41. exportación no constituye filing fiscal ni asiento contable;
+42. exportación no implica aprobación;
+43. exportación no implica lock/cierre/reapertura;
+44. exportación no implica registro/actualización;
+45. exportación no implica conciliación;
+46. exportación no implica autoridad de escenarios;
+47. campos sensibles especializados conservan sus contratos adicionales;
+48. `NUMERA-AUTH-008` recibe el contrato para especializar scope;
+49. no se crean ni modifican requisitos de prueba;
+50. no se realizan cambios físicos.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- crea permisos runtime;
+- concede permisos a roles;
+- modifica matrices de grants;
+- migra `numera.reports.view`;
+- crea aliases;
+- crea permisos `download`, `print`, `share_internal`, `share_external` o `bulk_extract`;
+- crea rutas o endpoints de exportación;
+- genera archivos;
+- crea Storage ni URLs firmadas;
+- implementa `VSCREEN-0106`;
+- define el diseño UX de exportación;
+- define scope detallado por empresa, sede o centro de costo;
+- define auditoría financiera completa;
+- define independencia administrativa de turno;
+- materializa catálogo compartido;
+- ejecuta pruebas E2E de producto;
+- cambia reglas de cartera/bancos especializados;
+- cambia escenarios, precios o presupuestos;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-008`.
+
+---
+
+#### 72. Handoff a NUMERA-AUTH-008
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_APPROVAL_PERMISSION_REGISTRY = NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+NUMERA_PERIOD_STATE_PERMISSION_REGISTRY = NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001
+NUMERA_EXPORT_PERMISSION_REGISTRY = NUMERA-EXPORT-PERMISSION-REGISTRY-001
+CURRENT_RUNTIME_EXPORT_PERMISSION_COUNT = 0
+CANONICAL_EXPORT_PERMISSION_IDENTITY_COUNT = 1
+CONTRACT_DEFINED_EXPORT_PERMISSION_COUNT = 1
+NEW_PERMISSION_CODE_INVENTED_COUNT = 0
+EXPORT_PERMISSION_KEY = numera.analytics.financial_reports.export
+EXPORT_RESOURCE_TYPE = FINANCIAL_REPORT
+EXPORT_ACTION_CLASS = EXPORT
+EXPORT_AUTHORIZATION_REQUIREMENT = BASE_ONLY
+EXPORT_SHARED_DEVICE_REQUIREMENT = STRONG
+EXPORT_SENSITIVITY_REASON = FINANCIAL_DATA
+EXPORT_REQUIRES_FINANCIAL_REPORT_VIEW = YES
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_PERMISSION_IMPLIES_VIEW = NO
+EXPORT_IMPLIES_DOWNLOAD = NO
+EXPORT_IMPLIES_PRINT = NO
+EXPORT_IMPLIES_SHARE = NO
+SIGNED_URL_IS_EXPORT_AUTHORITY = NO
+BULK_EXTRACT_ALIAS_TO_EXPORT = FORBIDDEN
+EXPORT_SCOPE_MUST_NOT_EXCEED_AUTHORIZED_READ_SCOPE = YES
+EXPORT_REQUIRES_PURPOSE = YES
+EXPORT_REQUIRES_FIELD_AND_POPULATION_RESOLUTION = YES
+EXPORT_RECIPIENT_DESTINATION_RESOLUTION_WHEN_APPLICABLE = YES
+EXPORT_SERVER_REVALIDATION_REQUIRED = YES
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_FINANCIAL_DATA = NO
+LEGACY_NUMERA_REPORTS_VIEW_IMPLIES_EXPORT = NO
+LEGACY_NUMERA_REPORTS_EXPORT_ALIAS = FORBIDDEN
+MISSING_EXPORT_PERMISSION_FALLBACK = FORBIDDEN
+EXPORT_IS_ECONOMIC_SOURCE = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+EXPORT_DECISION_AND_RESULT_AUDITABLE = YES
+EXPORT_SCOPE_OWNER = NUMERA_AUTH_008
+EXPORT_AUDIT_OWNER = NUMERA_AUTH_009
+EXPORT_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+EXPORT_TEST_OWNER = NUMERA_AUTH_013
+TREQ_CHANGES = 0
+NUMERA_AUTH_008_OWNER = FINANCIAL_RESOURCE_SCOPE_DEFINITION
+```
+
+`NUMERA-AUTH-008` deberá limitar la autoridad financiera por empresa, sede y centro de costo sin ampliar los registros de lectura, escritura, aprobación, periodo o exportación aquí aprobados y garantizando que agregados y salidas contengan únicamente miembros autorizados.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-006 — Definir permisos de cierre`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-007 — Definir permisos de exportación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo`
 ### [ ] NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
 ### [ ] NUMERA-AUTH-009 — Registrar auditoría financiera
 ### [ ] NUMERA-AUTH-010 — Evitar dependencia de turno para administración
