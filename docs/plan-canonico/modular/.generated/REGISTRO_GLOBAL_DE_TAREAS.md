@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1401** |
+| Aprobadas | **1402** |
 | En propuesta | **0** |
-| No iniciadas | **195** |
+| No iniciadas | **194** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **87.78% (1401/1596)** |
+| Porcentaje de completamiento | **87.84% (1402/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **195** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1302** |
+| ⏸ NO_EVALUADA | **194** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1303** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUD-011` — Ejecutar build, lint, tipos y pruebas existentes | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUD-012` — Crear matriz capacidad financiera × implementación actual | ⬜ NO INICIADA |
-| Siguiente reservada | `OPS-CST-001` — Definir el caso de centro de costo y transferencias internas de Producción y Distribución | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUD-012` — Crear matriz capacidad financiera × implementación actual | ✅ APROBADA |
+| Tarea actual | `OPS-CST-001` — Definir el caso de centro de costo y transferencias internas de Producción y Distribución | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-001` — Definir alcance ejecutivo, analítico y contable de NUMERA | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1164,7 +1164,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-009` | Auditar gastos, centros de costo, cierres y aprobaciones | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-010` | Auditar exportaciones, información sensible y trazabilidad | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-011` | Ejecutar build, lint, tipos y pruebas existentes | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUD-012` | Crear matriz capacidad financiera × implementación actual | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUD-012` | Crear matriz capacidad financiera × implementación actual | — | — | `bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-001` | Definir alcance ejecutivo, analítico y contable de NUMERA | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-002` | Definir hechos económicos recibidos desde ventas | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-003` | Definir hechos económicos recibidos desde compras y recepción | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
