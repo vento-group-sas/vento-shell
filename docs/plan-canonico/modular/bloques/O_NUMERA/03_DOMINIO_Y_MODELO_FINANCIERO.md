@@ -2248,7 +2248,818 @@ La siguiente tarea deberá aplicar estas reglas a producción e inventario, pres
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario`
-### [ ] NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario
+### ✅ NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción
+**Tarea siguiente:** NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación
+**Tipo de tarea:** definición documental del contrato económico de entrada desde producción e inventario hacia NUMERA, delimitando autoridad de FOGO y NEXO, hechos elegibles, consumo, salida, rendimiento, merma, reproceso, calidad, movimientos, ajustes, transferencias internas, correlación, idempotencia, conciliación y fronteras frente a costeo, gasto, venta, contabilidad formal y fiscalidad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica FOGO, NEXO, NUMERA, Supabase, contratos runtime, recetas, planes, lotes, inventario, movimientos, costos, gastos, transferencias, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué hechos provenientes de producción e inventario pueden ingresar a NUMERA como candidatos de efecto económico, qué fuentes deben conservarse, cuándo esos hechos pueden reconocerse, cómo se evita duplicar valor entre FOGO y NEXO y cómo deben tratarse consumo, producto terminado, rendimiento, merma, reproceso, calidad, movimientos, ajustes y transferencias internas sin reconstruir ni modificar la verdad operativa.
+
+La tarea desarrolla la frontera aprobada por `NUMERA-DOM-001` y consume los handoffs de `NUMERA-DOM-002` y `NUMERA-DOM-003` para que NUMERA:
+
+- consuma la verdad productiva sin convertirse en FOGO;
+- consuma la verdad física sin convertirse en NEXO;
+- diferencie plan, orden, consumo, salida, calidad, movimiento, hecho económico, costo calculado y asiento contable;
+- reconcilie FOGO y NEXO sin sumar dos veces el mismo efecto;
+- preserve genealogía de lote, cantidades, unidades, fuentes, ubicaciones y evidencia;
+- represente merma, reproceso, pérdida, ajuste y transferencia interna mediante efectos trazables y no mediante ediciones destructivas;
+- entregue entradas confiables al ciclo de costos sin definir todavía el método numérico de costeo.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica de `NUMERA-DOM-004` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- esta tarea define un contrato documental reutilizable;
+- no crea una instancia física propia;
+- no publica eventos;
+- no ejecuta movimientos ni cierres productivos;
+- no crea tablas, vistas, funciones, RPC, RLS, triggers ni migraciones;
+- no modifica cantidades, lotes, costos o saldos reales;
+- no cambia la propiedad entre FOGO, NEXO y NUMERA;
+- no define las fórmulas numéricas de costo, distribución o rentabilidad reservadas a tareas posteriores.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-003
+
+`NUMERA-DOM-003` entrega estas fronteras para toda entrada económica proveniente de hechos operativos:
+
+```text
+FUENTE_OPERATIVA_CONSERVA_PROPIEDAD = SI
+RECONOCIMIENTO_ECONOMICO_NO_FABRICA_HECHO_FISICO = SI
+HECHO_FISICO != HECHO_ECONOMICO
+DOCUMENTO_O_SOPORTE != HECHO_ORIGEN
+REINTENTO_NO_DUPLICA_EFECTO = SI
+CORRECCION_DESTRUCTIVA = PROHIBIDA
+DIFERENCIA_PERSISTE_HASTA_CONCILIACION = SI
+REGISTRO_MANUAL_COMPETIDOR = PROHIBIDO
+```
+
+Además, todo hecho económico conserva identidad, fuente, correlación, entidad, dimensiones autorizadas, fechas, moneda cuando aplique, importe o base de valoración cuando exista, evidencia, estado e historia suficiente para conciliación.
+
+La presente tarea aplica esas reglas a producción e inventario sin reutilizar semánticas de compra o venta que no correspondan.
+
+---
+
+#### 4. Dominios y procesos fuente
+
+La propiedad funcional se conserva así:
+
+| Proceso o dominio | Propietario | Verdad que conserva | Regla para NUMERA |
+| --- | --- | --- | --- |
+| `VPROC-0033` | FOGO | plan productivo, versión, demanda, capacidad, restricciones y publicación | aporta contexto y compromiso productivo; no demuestra producción realizada |
+| `VPROC-0034` | FOGO | ejecución, materiales, cantidades, salida, rendimiento, merma y desviaciones | aporta verdad productiva de ejecución; no produce por sí sola movimiento de inventario |
+| `VPROC-0035` | FOGO | inspección y disposición de calidad | determina liberación, retención, rechazo o reproceso; no crea por sí sola valor físico en inventario |
+| `VPROC-0036` | FOGO | empaque, etiqueta, presentación y salida empacada | aporta trazabilidad de terminado; no sustituye ingreso físico NEXO |
+| `VPROC-0037` | FOGO | cierre productivo, rendimiento, merma, reproceso y pendientes | aporta conciliación final del lote y sus resultados productivos |
+| `VPROC-0024` | NEXO | ingreso, ubicación y reubicación física | confirma entrada y ubicación mediante movimiento canónico |
+| `VPROC-0025` | NEXO | retiro, consumo o traslado de existencias | confirma el efecto físico de salida, consumo o traslado exactamente una vez |
+| `VPROC-0026` | NEXO | conteo, diferencia, investigación y ajuste autorizado | separa observación de ajuste económico/físico posterior |
+| `VPROC-0027` | NEXO | condición, cuarentena, pérdida, merma física y disposición | aporta efecto físico solo después de decisión y ejecución autorizadas |
+| `VPROC-0028` | NEXO | abastecimiento interno entre origen y destino | conserva cantidades y custodia sin convertir el flujo en compra o venta |
+| `VPROC-0051` | NUMERA | recepción, validación, clasificación, reconocimiento y conciliación del hecho económico | gobierna el hecho económico derivado |
+| `VPROC-0054` | NUMERA | ciclo de costos, distribución, presupuesto, cierre y rentabilidad | consume entradas reconciliadas; el método detallado se define en tareas posteriores |
+
+FOGO conserva la verdad productiva. NEXO conserva la verdad física. NUMERA conserva el efecto económico y las derivaciones financieras autorizadas.
+
+---
+
+#### 5. Separación de identidades
+
+Se conserva obligatoriamente:
+
+```text
+PLAN_PRODUCTIVO
+!= ORDEN_PRODUCTIVA
+!= RESERVA_DE_MATERIAL
+!= CONSUMO_PRODUCTIVO
+!= MOVIMIENTO_DE_INVENTARIO
+!= SALIDA_PRODUCTIVA
+!= DISPOSICION_DE_CALIDAD
+!= PRODUCTO_EMPACADO
+!= INGRESO_DE_PRODUCTO_TERMINADO
+!= CIERRE_PRODUCTIVO
+!= HECHO_ECONOMICO
+!= COSTO_CALCULADO
+!= TRANSFERENCIA_INTERNA
+!= GASTO
+!= VENTA
+!= ASIENTO_CONTABLE
+```
+
+Consecuencias:
+
+- un plan liberado no demuestra producción ejecutada;
+- una reserva no demuestra consumo;
+- una cantidad usada en FOGO no sustituye el movimiento NEXO;
+- un movimiento NEXO no sustituye el cierre productivo FOGO;
+- una salida reportada no prueba liberación de calidad;
+- una liberación de calidad no prueba ingreso físico;
+- un ingreso de producto terminado no constituye una venta;
+- un cierre productivo no define por sí solo el método de costo;
+- una transferencia interna no es automáticamente ingreso ni gasto legal.
+
+---
+
+#### 6. Planificación productiva y efecto económico
+
+`VPROC-0033.PRODUCTION_PLAN_RELEASED` confirma una versión aprobada y publicada del plan con restricciones, prioridades y pendientes visibles.
+
+Su límite canónico permanece:
+
+```text
+PLAN_LIBERADO
+!= PRODUCCION_REALIZADA
+!= CONSUMO_REAL
+!= PRODUCTO_TERMINADO
+!= COSTO_REALIZADO
+```
+
+NUMERA puede consumir el plan como referencia para presupuesto, forecast, capacidad o comparación cuando otras tareas lo autoricen, pero no reconocerá consumo, costo real, inventario terminado o merma a partir del plan por sí solo.
+
+Las cantidades planeadas se conservan como expectativa y nunca sustituyen cantidades reales reconciliadas.
+
+---
+
+#### 7. Ejecución productiva y consumo
+
+`VPROC-0034` conserva la ejecución productiva contra una orden y versión aprobadas.
+
+Durante `IN_PRODUCTION`, FOGO captura pasos, consumos, tiempos y desviaciones. Sin embargo:
+
+```text
+USO_CAPTURADO_EN_FOGO
+!= MOVIMIENTO_FISICO_NEXO
+```
+
+El efecto económico de consumo solo puede quedar reconocido de forma definitiva cuando la evidencia productiva y el efecto físico autoritativo sean correlacionables y no competidores.
+
+Para materiales inventariables, NUMERA debe poder vincular al menos:
+
+- orden y lote productivo;
+- receta y versión aplicadas;
+- material y unidad;
+- cantidad productiva observada;
+- reserva o referencia previa cuando exista;
+- movimiento NEXO que produjo el efecto físico;
+- fuente física, lote, LPN o ubicación cuando apliquen;
+- fecha de ocurrencia y fecha económica;
+- diferencia o excepción pendiente cuando exista.
+
+Una misma unidad consumida no podrá originar un costo por el registro FOGO y otro costo independiente por el movimiento NEXO.
+
+---
+
+#### 8. Regla de una sola identidad económica para consumo
+
+Cuando FOGO y NEXO describan dos perspectivas del mismo consumo:
+
+```text
+FOGO = VERDAD_PRODUCTIVA_DEL_USO
+NEXO = VERDAD_FISICA_DEL_MOVIMIENTO
+NUMERA = UN_SOLO_EFECTO_ECONOMICO_CORRELACIONADO
+```
+
+NUMERA no sumará ambos orígenes como dos consumos.
+
+La identidad económica deberá permitir demostrar:
+
+- qué ejecución productiva utilizó el material;
+- qué movimiento físico confirmó la salida o consumo;
+- qué cantidad y unidad quedaron reconciliadas;
+- qué diferencia permanece abierta;
+- qué valor o regla de valoración se aplicará cuando el método de costo correspondiente exista.
+
+---
+
+#### 9. Salida productiva y producto terminado
+
+`VPROC-0034.OUTPUT_REPORTED` registra salida, rendimiento y merma sin liberación de calidad.
+
+Por tanto:
+
+```text
+OUTPUT_REPORTED
+!= PRODUCTO_LIBERADO
+!= INVENTARIO_INGRESADO
+!= COSTO_TERMINADO_DEFINITIVO
+```
+
+`VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` confirma que la ejecución terminó operativamente y fue entregada a calidad. Tampoco crea por sí sola una existencia terminada disponible.
+
+NUMERA puede recibir un candidato o una referencia pendiente para conciliación, pero el reconocimiento de un efecto de producto terminado deberá respetar calidad, movimiento físico y cierre aplicables.
+
+---
+
+#### 10. Calidad y clasificación económica
+
+`VPROC-0035` mantiene separados:
+
+- inspección;
+- resultados;
+- revisión técnica;
+- decisión de disposición;
+- ejecución de la disposición;
+- verificación final.
+
+La decisión de liberar, retener, rechazar o reprocesar afecta la interpretación económica del resultado, pero no permite a NUMERA modificar el lote o inventario.
+
+Reglas:
+
+1. producto todavía en inspección no se clasifica como terminado disponible;
+2. producto retenido no se trata como disponible por cierre administrativo;
+3. rechazo no borra consumo o producción ya ocurridos;
+4. reproceso conserva genealogía y efectos previos;
+5. el efecto económico de una disposición se apoya en movimientos y evidencias ejecutadas, no solo en una intención de calidad.
+
+---
+
+#### 11. Empaque y almacenamiento
+
+`VPROC-0036.PACKAGED_OUTPUT_RECORDED` identifica salida empacada, pero todavía espera transferencia a almacenamiento.
+
+`VPROC-0036.STORAGE_TRANSFER_PENDING` demuestra precisamente que el producto aún requiere ubicación, custodia y movimiento de inventario.
+
+NUMERA conservará la separación entre:
+
+```text
+PRODUCTO_EMPACADO
+!= MOVIMIENTO_DE_ENTRADA
+!= EXISTENCIA_RECONCILIADA
+```
+
+Materiales de empaque consumidos mantienen su propio efecto físico y económico correlacionado; no se vuelven a consumir por el mero hecho de cerrar el ciclo de empaque.
+
+---
+
+#### 12. Ingreso físico de producto terminado
+
+El ingreso físico corresponde a NEXO mediante `VPROC-0024` u otro proceso propietario aplicable.
+
+El estado final `INBOUND_MOVEMENT_RECONCILED` confirma que recepción física, ubicación, movimiento canónico y proyecciones coinciden o tienen diferencias resueltas.
+
+Su límite se conserva:
+
+```text
+INGRESO_FISICO_RECONCILIADO
+!= CIERRE_PRODUCTIVO_FOGO
+!= METODO_DE_COSTO_NUMERA
+```
+
+Para un producto terminado, NUMERA deberá correlacionar el ingreso físico con lote, salida productiva, disposición de calidad y contexto productivo suficientes antes de tratarlo como entrada económica de inventario terminado.
+
+---
+
+#### 13. Cierre productivo
+
+`VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` exige que consumos, salida, merma, reproceso, rendimiento, movimientos y pendientes hayan sido conciliados antes del cierre.
+
+El cierre productivo funciona como evidencia fuerte para reconciliar la visión económica del lote, pero no reemplaza:
+
+- movimientos NEXO;
+- reglas de valoración;
+- distribuciones de costo;
+- cierre contable;
+- publicación financiera.
+
+NUMERA utilizará el cierre para verificar que el conjunto económico del lote explica, como mínimo, sus entradas, consumos, salidas, merma, reproceso y movimientos relacionados.
+
+---
+
+#### 14. Rendimiento y merma
+
+Rendimiento y merma deben conservar por separado:
+
+- cantidad esperada;
+- cantidad real;
+- unidad;
+- lote;
+- versión de receta;
+- motivo o clasificación cuando corresponda;
+- actor y momento;
+- movimiento físico asociado si produce efecto sobre inventario;
+- tratamiento económico posterior.
+
+La merma no se duplicará como:
+
+```text
+CONSUMO_TOTAL
++
+SEGUNDO_CONSUMO_POR_MERMA
+```
+
+si la cantidad ya forma parte del mismo movimiento físico.
+
+La clasificación de merma puede afectar análisis económico posterior, pero el método de valoración y su fórmula quedan reservados a `NUMERA-DOM-007`.
+
+---
+
+#### 15. Reproceso y aprovechamiento
+
+Un reproceso conserva genealogía con el lote o resultado que lo originó.
+
+Reglas económicas:
+
+1. no se elimina el costo o efecto original por iniciar reproceso;
+2. nuevos consumos producen efectos adicionales solo cuando existan hechos físicos nuevos;
+3. cantidades recuperadas o aprovechadas conservan referencia al origen;
+4. una reclasificación no duplica cantidades ni valor por cambiar de estado;
+5. el cierre debe explicar qué valor permanece en proceso, qué pasó a terminado, qué fue aprovechado y qué quedó como pérdida o pendiente.
+
+La distribución numérica entre esas categorías queda reservada al modelo de costo posterior.
+
+---
+
+#### 16. Conteos y ajustes de inventario
+
+`VPROC-0026` separa observación, diferencia, investigación, decisión y movimiento compensatorio.
+
+Por tanto:
+
+```text
+DIFERENCIA_DE_CONTEO
+!= AJUSTE_APROBADO
+!= EFECTO_ECONOMICO_RECONOCIDO
+```
+
+NUMERA no reconocerá ganancia, pérdida o ajuste económico por la sola existencia de una diferencia capturada.
+
+Un candidato económico de ajuste requiere, como mínimo cuando aplique:
+
+- conteo y corte identificables;
+- diferencia investigada;
+- decisión autorizada;
+- movimiento compensatorio correlacionado;
+- cantidad y unidad finales explicables;
+- causa y evidencia;
+- ausencia de otro efecto económico para la misma corrección.
+
+---
+
+#### 17. Condición, cuarentena, pérdida y disposición
+
+`VPROC-0027.CONDITION_EVENT_DETECTED` no libera, descarta ni ajusta automáticamente una existencia.
+
+Por tanto:
+
+- una alerta no es una pérdida económica definitiva;
+- una cuarentena no equivale a baja;
+- una recomendación no equivale a disposición ejecutada;
+- un producto vencido o no conforme requiere el tratamiento propietario aplicable;
+- una pérdida o disposición económica se reconoce únicamente desde hechos suficientemente autorizados y ejecutados.
+
+El cierre `CONDITION_CASE_RESOLVED` conserva lote, costo, condición y evidencia, y no elimina la historia.
+
+---
+
+#### 18. Abastecimiento y transferencias internas
+
+`VPROC-0028.REPLENISHMENT_RECONCILED` cierra un abastecimiento interno entre origen y destino y declara expresamente que el flujo no se convierte por ello en venta o compra.
+
+NUMERA deberá conservar:
+
+```text
+TRANSFERENCIA_INTERNA
+!= VENTA_EXTERNA
+!= COMPRA_EXTERNA
+!= INGRESO_LEGAL_AUTOMATICO
+!= GASTO_LEGAL_AUTOMATICO
+```
+
+La transferencia podrá producir una representación económica interna para gestión, responsabilidad, costeo o conciliación, siempre vinculada al movimiento físico y a las dimensiones de origen y destino.
+
+Una misma transferencia no genera costo nuevo por cada pierna documental del flujo. La base y método de valoración se definen en `NUMERA-DOM-007` y las reglas de centros en `NUMERA-DOM-006`.
+
+---
+
+#### 19. Traslados físicos sin cambio económico externo
+
+Un traslado de existencias entre ubicaciones puede cambiar:
+
+- sede;
+- LOC;
+- custodio;
+- centro o dimensión económica aplicable cuando exista una regla autorizada;
+- responsabilidad de gestión.
+
+No implica por sí solo:
+
+- compra;
+- venta;
+- ingreso externo;
+- gasto externo;
+- creación de una nueva cantidad física.
+
+NUMERA reconocerá únicamente el efecto económico que corresponda al contrato vigente, sin duplicar el valor por salida y entrada de la misma unidad dentro de la misma transferencia.
+
+---
+
+#### 20. Hechos elegibles para NUMERA
+
+Pueden originar o completar un candidato económico, según contexto y evidencia:
+
+| Familia | Evidencia operativa principal | Tratamiento económico objetivo |
+| --- | --- | --- |
+| consumo productivo | ejecución FOGO + movimiento NEXO reconciliado | consumo económico correlacionado una sola vez |
+| producto terminado | salida productiva + calidad + ingreso físico aplicables | entrada económica de terminado sin convertirla en venta |
+| merma o desperdicio | clasificación FOGO + efecto físico aplicable | pérdida, variación o componente de costo según regla posterior |
+| reproceso | genealogía FOGO + nuevos movimientos aplicables | efecto incremental o reclasificación correlacionada |
+| ajuste de inventario | decisión de ajuste + movimiento compensatorio NEXO | ajuste económico sin editar el saldo histórico |
+| pérdida o disposición | caso de condición + acción física autorizada | efecto económico de pérdida/disposición cuando corresponda |
+| transferencia interna | movimiento origen→destino conciliado | efecto interno de gestión/valoración sin venta o compra automática |
+| costo logístico o de mantenimiento asociado | proceso propietario y soporte aplicable | entrada separada; no se incrusta por inferencia en consumo productivo |
+
+La tabla no define fórmulas ni importes definitivos; define la elegibilidad y la identidad de las fuentes.
+
+---
+
+#### 21. Señales que no bastan para reconocimiento
+
+No constituyen por sí solas un hecho económico reconocido:
+
+- plan productivo;
+- necesidad de producir;
+- reserva de material;
+- cantidad teórica de receta;
+- inicio de producción;
+- salida reportada antes de calidad;
+- recomendación de disposición;
+- producto empacado antes de movimiento físico aplicable;
+- diferencia de conteo sin decisión;
+- cuarentena sin disposición;
+- solicitud de traslado;
+- movimiento pendiente de posting;
+- dashboard o agregado;
+- cálculo provisional no publicado.
+
+Pueden conservarse como evidencia, expectativa o candidato pendiente, pero no como realidad económica definitiva.
+
+---
+
+#### 22. Contrato de entrada a VPROC-0051
+
+Todo candidato proveniente de producción o inventario entra por `VPROC-0051.ECONOMIC_EVENT_RECEIVED` únicamente cuando exista un evento canónico o soporte correlacionable con origen, entidad, fecha y dimensión económica mínima.
+
+Recibir el candidato mantiene la invariante:
+
+```text
+RECIBIR
+!= RECONOCER
+!= CONTABILIZAR
+!= DISTRIBUIR
+!= CERRAR
+```
+
+`VALIDATION_IN_PROGRESS` deberá poder verificar, según aplique:
+
+- proceso y aplicación propietaria;
+- identificador de ejecución, lote o movimiento;
+- entidad legal;
+- sede y dimensiones autorizadas;
+- producto o material;
+- cantidad y unidad;
+- fecha operativa;
+- fecha económica;
+- fuente y correlación;
+- evidencia física/productiva;
+- moneda y valor cuando ya existan legítimamente;
+- duplicidad;
+- estado de diferencias o conciliación.
+
+---
+
+#### 23. Reconocimiento económico sin cálculo prematuro
+
+Esta tarea define **cuándo existe un hecho económico elegible**, no cuánto vale finalmente bajo cada método.
+
+Por tanto:
+
+- NUMERA puede registrar la identidad y relación del hecho aunque el cálculo de costo definitivo esté pendiente;
+- el estado económico podrá conservar una condición pendiente de valoración, clasificación o conciliación;
+- no se fabricará un costo numérico usando precio de lista, estándar, promedio, último o supuesto sin la regla correspondiente;
+- no se sobrescribirá un valor histórico cuando una regla posterior calcule una nueva versión;
+- el método, entradas, versión y vigencia del costo quedan gobernados por `NUMERA-DOM-007` y `VPROC-0054`.
+
+---
+
+#### 24. Relación con VPROC-0054
+
+`VPROC-0054.INPUTS_COLLECTING` reúne movimientos, compras, producción, ventas, inventario y reglas del periodo.
+
+`NUMERA-DOM-004` define las entradas productivas y físicas que pueden llegar a esa recopilación sin duplicación.
+
+No define todavía:
+
+- costo estándar;
+- promedio;
+- último costo;
+- costo real;
+- landed cost;
+- drivers de distribución;
+- pools;
+- fórmulas de margen;
+- punto de equilibrio;
+- reglas de publicación.
+
+Esas decisiones permanecen en `NUMERA-DOM-006` a `NUMERA-DOM-008`, con desarrollo principal del cálculo en `NUMERA-DOM-007`.
+
+---
+
+#### 25. Idempotencia y correlación
+
+Cada efecto económico debe derivarse de identidades estables y permitir replay sin doble reconocimiento.
+
+Como mínimo debe distinguir:
+
+```text
+source_application
+source_process
+source_instance
+source_event_or_operation
+line_or_component_when_applicable
+version_or_revision
+business_correlation
+```
+
+Reglas:
+
+1. misma identidad y misma huella recuperan el resultado previo;
+2. misma identidad con contenido incompatible produce conflicto;
+3. respuesta perdida no autoriza repetir el efecto a ciegas;
+4. eventos fuera de orden no adelantan reconocimiento;
+5. FOGO y NEXO pueden aportar evidencia al mismo efecto sin convertirse en dos hechos económicos;
+6. backfill o replay conservan el origen histórico;
+7. una corrección genera una acción vinculada, no una reescritura silenciosa.
+
+---
+
+#### 26. Cantidades, unidades y conversiones
+
+NUMERA no recalcula la verdad física por conveniencia financiera.
+
+Las cantidades económicas deberán poder reconciliarse con:
+
+- cantidad productiva;
+- cantidad física;
+- unidad canónica;
+- factor de conversión vigente cuando aplique;
+- lote o fuente física;
+- presentación;
+- diferencia explícita si FOGO y NEXO todavía no coinciden.
+
+Una conversión financiera no modifica el movimiento de inventario ni la captura productiva original.
+
+---
+
+#### 27. Dimensiones económicas
+
+El hecho económico deberá referenciar identidades canónicas cuando apliquen:
+
+- entidad legal;
+- marca o unidad;
+- sede;
+- centro de costo;
+- área productiva;
+- producto o presentación;
+- orden productiva;
+- lote;
+- ubicación origen y destino;
+- periodo;
+- moneda cuando exista importe;
+- contraparte únicamente cuando realmente corresponda.
+
+No se infiere entidad legal desde sede, sede desde centro de costo ni centro de costo desde instalación física.
+
+---
+
+#### 28. Fechas y periodos
+
+Se conservan separadas, cuando apliquen:
+
+```text
+FECHA_PLAN
+FECHA_EJECUCION
+FECHA_MOVIMIENTO_FISICO
+FECHA_CALIDAD
+FECHA_CIERRE_PRODUCTIVO
+FECHA_RECONOCIMIENTO_ECONOMICO
+FECHA_CONTABLE
+```
+
+La fecha de cierre productivo no reemplaza automáticamente la fecha real del consumo o movimiento físico.
+
+El periodo económico se determina por reglas posteriores sin alterar timestamps operativos históricos.
+
+---
+
+#### 29. Correcciones, reversos y compensaciones
+
+Una corrección posterior conserva el original.
+
+Casos típicos:
+
+- consumo registrado con cantidad equivocada;
+- movimiento físico compensatorio;
+- reclasificación de merma;
+- retorno de material;
+- ajuste por conteo;
+- disposición de calidad posterior;
+- reproceso;
+- reversión de transferencia interna.
+
+NUMERA deberá vincular el nuevo efecto al anterior y conservar antes, después, motivo, autoridad, fecha y evidencia.
+
+No se permite editar retrospectivamente la producción, el movimiento o el hecho económico para simular que el evento original nunca existió.
+
+---
+
+#### 30. Diferencias y pendientes
+
+Cuando FOGO, NEXO y NUMERA no concilien, el caso permanece explícitamente pendiente.
+
+Ejemplos:
+
+- FOGO declara consumo sin movimiento NEXO correlacionado;
+- NEXO registra movimiento sin ejecución productiva válida;
+- salida productiva sin calidad resuelta;
+- terminado liberado sin ingreso físico;
+- movimiento físico con cantidad distinta a la productiva;
+- merma sin causa o disposición suficiente;
+- transferencia con recepción destino pendiente;
+- ajuste económico sin movimiento compensatorio.
+
+Ninguna diferencia se resuelve inventando un valor, copiando el saldo del otro sistema o editando el hecho fuente.
+
+---
+
+#### 31. Responsabilidades reservadas a tareas posteriores
+
+| Decisión | Tarea propietaria |
+| --- | --- |
+| gastos, soportes y aprobación de gasto | `NUMERA-DOM-005` |
+| catálogo y gobierno de centros de costo | `NUMERA-DOM-006` |
+| métodos de costo, componentes, estándar, real, variaciones, transferencias y distribuciones | `NUMERA-DOM-007` |
+| rentabilidad por producto, sede, canal y periodo | `NUMERA-DOM-008` |
+| bancos, caja y tesorería | `NUMERA-DOM-009` |
+| cuentas por pagar | `NUMERA-DOM-010` |
+| presupuesto, forecast y escenarios | `NUMERA-DOM-011` y `NUMERA-DOM-018` |
+| periodos y cierre financiero | `NUMERA-DOM-012` |
+| documentos e integración fiscal | `NUMERA-DOM-013` |
+| conciliaciones transversales completas | `NUMERA-DOM-014` |
+| contabilidad formal y mapeo a asientos | `NUMERA-DOM-017` |
+
+Esta tarea no absorbe ninguna de esas decisiones.
+
+---
+
+#### 32. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+**Justificación:** la obligación verificable de conservar propiedad de FOGO y NEXO, correlacionar producción–calidad–inventario–costo, impedir doble movimiento o doble costo, preservar lote, cantidades, unidades, merma, genealogía, idempotencia, transferencias internas y trazabilidad económica ya está cubierta por requisitos canónicos vigentes. Esta tarea especializa esa cobertura para la ingestión económica en NUMERA sin introducir una obligación materialmente nueva.
+
+---
+
+#### 33. Cobertura de prueba vigente reutilizada
+
+Esta sección documenta cobertura existente y no constituye una actualización del Registro 04A.
+
+Cobertura principal reutilizada:
+
+- `TREQ-NUMERA-001` — reconciliación de costos, reportes y resultados con hechos y documentos fuente de FOGO y NEXO sin doble registro manual;
+- `TREQ-NUMERA-002` — identidad estable del hecho económico, dimensiones, fechas, fuente, correlación, evidencia y correcciones compensatorias no destructivas;
+- `TREQ-NUMERA-004` — separación de tipos de costo, método, entradas, versión, vigencia, transferencias internas, distribución y rentabilidad;
+- `TREQ-FOGO-001` — ciclo del lote con consumo, desperdicio, resultado, cierre y efectos de inventario auditables;
+- `TREQ-FOGO-002` — receta/versionado, cantidades, unidades, rendimiento, merma, sustituciones y desviaciones sin sobrescritura;
+- `TREQ-FOGO-004` — ejecución productiva, calidad, terminado, merma, genealogía y cierre conciliado;
+- `TREQ-NEXO-011` — movimientos y proyecciones de inventario atómicos/idempotentes, cantidades físicas y reservadas diferenciadas y ausencia de doble contabilización;
+- `TREQ-NEXO-012` — lote, origen, liberación, vencimiento, ubicación, condición, cuarentena y trazabilidad física;
+- `TREQ-INTEGRATION-013` — cadena demanda→plan→materiales→ejecución→calidad→inventario→costo correlacionada e idempotente;
+- `TREQ-INTEGRATION-016` y `TREQ-INTEGRATION-017` — continuidad logística y llegada gobernada de hechos operativos hacia NUMERA.
+
+No se entrega una actualización 04A porque ninguna regla protegida cambia de contenido ni de estado.
+
+---
+
+#### 34. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | esta tarea es documental y no ejecuta build de producto; la incorporación deberá validarse con el tooling documental vigente |
+| LOCAL | NOT_EXECUTED | reemplazo, formato, quality, delivery, topología, plan y TREQ deberán ejecutarse en el checkout del usuario cuando `NUMERA-DOM-003` haya cerrado y habilitado continuidad |
+| REMOTA | PASS | se verificaron `vento-shell/main`, `NUMERA-DOM-002` publicado, el marcador `NUMERA-DOM-004`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VPROC-0024..0028`, `VPROC-0033..0037`, `VPROC-0051`, `VPROC-0054`, contratos `INT-PROD-001..005`, cobertura 04A NUMERA/FOGO/NEXO/INTEGRATION y validadores documentales vigentes; `NUMERA-DOM-003` se consume desde su versión completa aprobada |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron producciones, consumos, movimientos, ajustes, disposiciones, transferencias, costeo ni conciliaciones reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-DOM-004` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea implementación física propia |
+
+---
+
+#### 35. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. FOGO permanece propietario de plan, ejecución, lote, rendimiento, merma, calidad, empaque y cierre productivo;
+2. NEXO permanece propietario de reservas, movimientos, existencia, ubicación, conteo, condición y transferencias físicas;
+3. NUMERA permanece propietario del hecho económico y de las derivaciones financieras autorizadas;
+4. plan, reserva, consumo, movimiento, salida, calidad, terminado, cierre, hecho económico y costo calculado permanecen identidades distintas;
+5. un plan liberado no se interpreta como producción realizada;
+6. una reserva no se interpreta como consumo;
+7. el uso capturado por FOGO no duplica el movimiento NEXO;
+8. un movimiento NEXO no reemplaza el cierre FOGO;
+9. `OUTPUT_REPORTED` no se interpreta como terminado liberado;
+10. calidad, empaque e ingreso físico permanecen estados independientes;
+11. el consumo produce un solo efecto económico correlacionado aunque FOGO y NEXO aporten evidencia;
+12. producto terminado requiere evidencia productiva, calidad y movimiento físico aplicables antes del reconocimiento definitivo;
+13. rendimiento y merma conservan esperado, real, unidad, lote y causa sin doble descuento;
+14. reproceso conserva genealogía y solo agrega efectos cuando existen hechos nuevos;
+15. una diferencia de conteo no se convierte en ajuste hasta existir decisión y movimiento compensatorio;
+16. cuarentena o alerta no se convierten automáticamente en pérdida económica;
+17. transferencias internas no se tratan como venta, compra, ingreso o gasto legal por defecto;
+18. salida y entrada de una transferencia no duplican el valor de la misma unidad;
+19. `VPROC-0051` valida origen, evidencia y duplicidad antes de reconocimiento;
+20. `VPROC-0054` consume entradas reconciliadas sin que esta tarea defina fórmulas de costo;
+21. cantidades y unidades económicas se reconcilian con las fuentes físicas y productivas;
+22. fechas operativas, físicas, productivas, económicas y contables permanecen separadas;
+23. correcciones y compensaciones preservan el hecho original;
+24. diferencias permanecen explícitas hasta conciliación;
+25. no se crean ni modifican requisitos de prueba;
+26. no se realizan cambios físicos;
+27. la continuidad reserva `NUMERA-DOM-005`.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- implementa eventos, consumidoras, colas, outbox, inbox o adaptadores;
+- crea tablas, columnas, índices, funciones, RPC, RLS, triggers o migraciones;
+- modifica Supabase;
+- modifica FOGO, NEXO o NUMERA;
+- ejecuta producción, movimientos, conteos, ajustes, disposiciones o transferencias;
+- define receta, planificación, calidad o inventario en lugar de sus dominios propietarios;
+- calcula costo estándar, promedio, último, real, landed, productivo o logístico;
+- define pools, drivers o distribuciones;
+- define centros de costo;
+- define flujo general de gastos;
+- define cuentas por pagar, bancos o tesorería;
+- define política tributaria o contable profesional;
+- crea ventas o compras a partir de movimientos internos;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-DOM-005`.
+
+---
+
+#### 37. Handoff a NUMERA-DOM-005
+
+`NUMERA-DOM-005` recibe estas fronteras cerradas:
+
+1. un gasto no puede sustituir un hecho económico ya originado por una fuente propietaria;
+2. producción e inventario ya tienen contrato de entrada económica propio;
+3. el mismo consumo no puede duplicarse como gasto manual;
+4. una merma, pérdida, mantenimiento o servicio solo se convierte en gasto cuando su naturaleza y soporte correspondan al flujo de gasto;
+5. ajustes y compensaciones preservan el hecho original;
+6. documento o soporte no equivale por sí solo a hecho económico;
+7. FOGO y NEXO conservan la verdad operativa que NUMERA consume;
+8. costos calculados y gastos son conceptos distintos;
+9. la trazabilidad hasta entidad, sede, centro, fuente, actor y evidencia permanece obligatoria;
+10. el Registro 04A no cambia por esta tarea.
+
+---
+
+#### 38. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación`
 ### [ ] NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación
 ### [ ] NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
 ### [ ] NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
