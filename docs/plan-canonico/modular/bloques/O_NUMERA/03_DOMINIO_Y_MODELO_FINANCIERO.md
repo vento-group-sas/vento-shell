@@ -15955,5 +15955,1373 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes`
-### [ ] NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
+### ✅ NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
+**Tarea siguiente:** NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación
+**Tipo de tarea:** definición documental de la arquitectura contable extensible de NUMERA, incluyendo autoridad contable por entidad y periodo, plan de cuentas versionado, terceros contables, reglas de contabilización, comprobantes, líneas débito/crédito, candidatos, posteo, periodos contables, reversión, auxiliares, balance de prueba, libros, consolidación e integración externa, sin activar contabilidad estatutaria interna ni materializar artefactos físicos; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea plan de cuentas real, cuentas contables, terceros contables físicos, comprobantes, asientos, libros, balances, estados financieros, tablas, vistas, funciones, RPC, triggers, RLS, migraciones, integraciones, credenciales, permisos runtime, configuraciones de Supabase, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una arquitectura contable extensible que permita a NUMERA convertir hechos económicos ya estabilizados en insumos contables trazables sin reescribir los dominios operativos y sin declarar contabilidad formal interna antes de una decisión empresarial explícita.
+
+La arquitectura deberá soportar dos destinos futuros:
+
+1. integración con un sistema contable externo que conserve autoridad formal;
+2. contabilidad formal dentro de NUMERA cuando exista activación aprobada.
+
+Ambos caminos reutilizan la misma verdad económica, correlación, evidencia y gobierno. Ninguno autoriza una segunda versión operativa de ventas, compras, inventario, producción, cartera, pagos o bancos.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-DOM-017` se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+execution_gate_observed = UNREVIEWED
+```
+
+Por tanto:
+
+- define un contrato documental reusable;
+- no crea instancia física propia;
+- `UNREVIEWED` no concede autorización temporal;
+- no activa contabilidad interna;
+- no modifica Supabase;
+- no crea integraciones externas;
+- no selecciona proveedor;
+- no ejecuta posteo real.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-016
+
+Se recibe sin reinterpretación:
+
+```text
+CAP_12_04_ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_RECEIVABLE_OWNER = NUMERA
+CUSTOMER_DEBTOR_PASS_ACCOUNT_ACCOUNTING_THIRD_PARTY = DISTINCT
+CREDITOR_LEGAL_ENTITY_REQUIRED = YES
+RECEIVABLE_REQUIRES_STABLE_IDENTITY = YES
+RECEIVABLE_DOCUMENT_INSTALLMENT_DUE_DATE_BALANCE = DISTINCT
+OPEN_BALANCE_MUST_BE_REPRODUCIBLE = YES
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+RECEIVABLE_OBJECT_STATUS_AND_PROCESS_STATE = DISTINCT
+VPROC_0053_LIFECYCLE_REMAINS_AUTHORITATIVE = YES
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+PAYMENT_APPLICATION_REQUIRES_EXPLICIT_REVERSIBLE_LINK = YES
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+UNAPPLIED_PAYMENT_MUST_REMAIN_VISIBLE = YES
+ADVANCE_OR_CREDIT_BALANCE_IS_NEGATIVE_RECEIVABLE = NO
+MULTI_CURRENCY_APPLICATION_REQUIRES_APPROVED_FX_CONTEXT = YES
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+PROMISE_TO_PAY_IS_PAYMENT = NO
+PROMISE_TO_PAY_IS_PAYMENT_AGREEMENT = NO
+PAYMENT_AGREEMENT_PRESERVES_PRIOR_SCHEDULE = YES
+OPEN_RECEIVABLE_BALANCE_IS_CREDIT_EXPOSURE = NO
+CREDIT_EXPOSURE_REQUIRES_POLICY_SCOPE_AND_CUTOFF = YES
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+CREDIT_LIMIT_REQUIRES_EXPLICIT_VERSIONED_DECISION = YES
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+FORGIVENESS_REQUIRES_EXPLICIT_AUTHORITY = YES
+PAYMENT_CONFIRMED_IS_BANK_RECONCILED = NO
+PAYMENT_CONFIRMED_IS_RECEIVABLE_SETTLED = NO
+SALE_DELIVERY_FISCAL_DOCUMENT_RECEIVABLE_PAYMENT = DISTINCT
+QUOTE_OR_CUSTOMER_ACCEPTANCE_IMPLIES_CREDIT_APPROVAL = NO
+IDEMPOTENCY_REQUIRED_FOR_RECEIVABLE_PAYMENT_APPLICATION = YES
+UNCERTAIN_EXTERNAL_RESULT_REMAINS_OPEN_UNTIL_RECONCILED = YES
+LATE_EVENT_USES_PERIOD_ADJUST_OR_REOPEN_POLICY = YES
+HISTORICAL_AGING_REQUIRES_AS_OF_CUTOFF = YES
+RECEIVABLE_SETTLED_IS_PERIOD_CLOSED = NO
+RECEIVABLE_IS_ACCOUNTING_ENTRY = NO
+PAYMENT_APPLICATION_IS_ACCOUNTING_POSTING = NO
+WRITE_OFF_IS_ACCOUNTING_ENTRY_BY_DEFAULT = NO
+ACCOUNTING_MAPPING_OWNER = NUMERA_DOM_017
+TREQ_CHANGES = 0
+```
+
+La arquitectura contable consume estos objetos; no redefine su semántica financiera.
+
+---
+
+#### 4. Fuentes canónicas consumidas
+
+El contrato consume, sin sustituirlos:
+
+- `CAP-SCOPE-012` y su decisión de extensibilidad contable;
+- `NUMERA-DOM-001` para verdad económica y separación de capas;
+- `NUMERA-DOM-002..010` para hechos económicos, caja, bancos, obligaciones y costos;
+- `NUMERA-DOM-011` para periodo económico, cierre y reapertura;
+- `NUMERA-DOM-012` para reportes oficiales internos;
+- `NUMERA-DOM-013` para autoridad contable/fiscal externa;
+- `NUMERA-DOM-014` para conciliación y tratamiento de diferencias;
+- `NUMERA-DOM-015` para alcance objetivo y activación contable diferida;
+- `NUMERA-DOM-016` para cartera y aplicaciones;
+- `TREQ-INTEGRATION-017` para candidatos, integración, idempotencia y respuesta externa;
+- `NUMERA-UX-027` como tarea posterior de experiencia de integración/extensión contable.
+
+---
+
+#### 5. Decisión arquitectónica central
+
+Se congela:
+
+```text
+ECONOMIC_FACT
+!= ACCOUNTING_CANDIDATE
+!= ACCOUNTING_VOUCHER
+!= POSTED_ACCOUNTING_ENTRY
+!= STATUTORY_BOOK
+!= FINANCIAL_STATEMENT
+```
+
+La existencia de una representación anterior no prueba automáticamente la existencia ni oficialidad de la siguiente.
+
+---
+
+#### 6. Extensibilidad obligatoria y activación diferida
+
+Se conserva simultáneamente:
+
+```text
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+```
+
+Esto significa:
+
+- la arquitectura debe estar preparada para contabilidad formal;
+- la contabilidad interna no se activa por esta tarea;
+- la decisión de activar exige autoridad empresarial/contable competente;
+- ausencia de activación no elimina el diseño extensible;
+- la integración externa puede operar como camino autoritativo mientras corresponda.
+
+---
+
+#### 7. Dos caminos de autoridad contable
+
+La arquitectura soportará:
+
+```text
+CAMINO_A = EXTERNAL_ACCOUNTING_AUTHORITY
+CAMINO_B = INTERNAL_ACCOUNTING_AUTHORITY_AFTER_EXPLICIT_ACTIVATION
+```
+
+Los caminos no crean dos libros oficiales competidores para la misma entidad y periodo.
+
+---
+
+#### 8. Autoridad contable explícita por entidad legal y periodo
+
+La autoridad contable deberá poder determinarse explícitamente para una entidad legal y un ámbito temporal aplicable.
+
+No se inferirá desde:
+
+- marca;
+- sede;
+- centro de costo;
+- nombre visible de empresa;
+- proveedor conocido;
+- existencia de un reporte;
+- existencia de una cuenta contable local;
+- disponibilidad técnica de una integración.
+
+---
+
+#### 9. Prohibición de doble autoridad
+
+Se congela:
+
+```text
+SAME_LEGAL_ENTITY_AND_PERIOD_WITH_TWO_AUTHORITATIVE_LEDGERS = FORBIDDEN
+```
+
+Una transición podrá coexistir técnicamente durante reconciliación o cutover, pero deberá conservar una única fuente autoritativa por resultado formal y una frontera temporal explícita.
+
+---
+
+#### 10. Camino A — integración contable externa
+
+Mientras un sistema contable externo conserve autoridad:
+
+```text
+NUMERA_ECONOMIC_FACT
+-> ACCOUNTING_CANDIDATE_OR_INPUT
+-> AUTHORIZED_EXTERNAL_EXCHANGE
+-> EXTERNAL_AUTHORITATIVE_RESULT
+-> NUMERA_REFERENCE_AND_RECONCILIATION
+```
+
+NUMERA conserva el hecho económico y la correlación; el sistema externo conserva los artefactos contables formales que le correspondan.
+
+---
+
+#### 11. Camino B — contabilidad interna futura
+
+Solo después de activación explícita podrá aplicarse:
+
+```text
+NUMERA_ECONOMIC_FACT
+-> VERSIONED_ACCOUNTING_RULE
+-> ACCOUNTING_CANDIDATE
+-> VOUCHER_VALIDATION
+-> AUTHORIZED_POSTING
+-> INTERNAL_FORMAL_LEDGER
+```
+
+La activación deberá definir autoridad, entidad, fecha/periodo efectivo, política contable aplicable, gobierno y criterios de transición.
+
+---
+
+#### 12. Candidato contable
+
+Un candidato contable es una propuesta derivada y trazable de tratamiento contable.
+
+Debe conservar, cuando aplique:
+
+- identidad del hecho o conjunto fuente;
+- entidad legal;
+- regla y versión utilizadas;
+- periodo económico relacionado;
+- periodo contable propuesto;
+- moneda y contexto de conversión;
+- cuentas propuestas;
+- dimensiones propuestas;
+- importes débito/crédito propuestos;
+- soportes y referencias;
+- calidad y excepciones;
+- correlación externa si existe.
+
+Un candidato no es un asiento oficial.
+
+---
+
+#### 13. Candidato balanceado no equivale a asiento oficial
+
+Se conserva:
+
+```text
+BALANCED_CANDIDATE != POSTED_ACCOUNTING_ENTRY
+```
+
+Cuadrar débitos y créditos prueba una condición aritmética, no autoridad, periodo válido, aprobación, política contable correcta ni posteo.
+
+---
+
+#### 14. Plan de cuentas versionado
+
+El plan de cuentas deberá ser versionable por entidad legal.
+
+Cada versión deberá poder declarar:
+
+- entidad legal;
+- identidad de versión;
+- vigencia;
+- autoridad de aprobación;
+- estado de uso;
+- cuentas incluidas;
+- relaciones jerárquicas cuando existan;
+- restricciones aplicables;
+- reemplazos o sucesiones sin pérdida histórica.
+
+Esta tarea no fija códigos concretos ni adopta un marco contable normativo específico.
+
+---
+
+#### 15. Identidad de cuenta frente a código visible
+
+La arquitectura deberá evitar que el código visible sea la única identidad histórica de una cuenta.
+
+Por tanto:
+
+- una cuenta conserva identidad estable;
+- el código pertenece a una versión/estructura aprobada;
+- renumerar no reescribe comprobantes históricos;
+- una cuenta retirada no desaparece de la historia;
+- reutilizar un código no fusiona identidades distintas.
+
+---
+
+#### 16. Atributos conceptuales de cuenta
+
+Una cuenta podrá requerir, según la política aprobada:
+
+- naturaleza y clasificación;
+- jerarquía;
+- vigencia;
+- moneda o tratamiento monetario;
+- tercero requerido o permitido;
+- centro de costo u otra dimensión requerida o permitida;
+- restricciones de posteo;
+- uso en reportes o auxiliares;
+- referencia normativa o política cuando aplique.
+
+La tarea no fija valores concretos.
+
+---
+
+#### 17. Tercero contable permanece separado
+
+Se conserva:
+
+```text
+CUSTOMER
+!= DEBTOR
+!= SUPPLIER
+!= PASS_ACCOUNT
+!= ACCOUNTING_THIRD_PARTY
+```
+
+El tercero contable podrá referenciar identidades empresariales existentes mediante vínculo explícito, sin fusionar sus dominios.
+
+---
+
+#### 18. Regla de contabilización versionada
+
+Toda automatización futura deberá depender de una regla de contabilización identificable y versionada.
+
+Una regla deberá poder declarar, cuando aplique:
+
+- fuentes o tipos de hecho admitidos;
+- condiciones;
+- entidad legal;
+- vigencia;
+- cuenta o estrategia de cuenta débito;
+- cuenta o estrategia de cuenta crédito;
+- dimensiones requeridas;
+- tratamiento de moneda;
+- tratamiento de impuestos solo cuando exista política competente;
+- criterios de materialización;
+- autoridad y estado de aprobación;
+- precedencia o conflicto con otras reglas;
+- evidencia y versión.
+
+---
+
+#### 19. Regla de contabilización no modifica la fuente
+
+Se congela:
+
+```text
+ACCOUNTING_RULE_APPLIED
+!= SOURCE_FACT_MUTATED
+```
+
+Si una regla produce un resultado incorrecto, se corrige la regla o el tratamiento contable correspondiente; no se reescribe venta, compra, recepción, inventario, producción, cartera o banco para hacer cuadrar la contabilidad.
+
+---
+
+#### 20. Resolución de reglas ambigua
+
+Cuando dos reglas vigentes produzcan tratamientos incompatibles para el mismo alcance:
+
+- el caso no se postea automáticamente;
+- se identifica la ambigüedad;
+- se conserva evidencia de las reglas candidatas;
+- se requiere resolución con autoridad competente;
+- no se elige silenciosamente la regla que produzca el resultado esperado.
+
+---
+
+#### 21. Comprobante contable
+
+Un comprobante agrupa una intención contable coherente y trazable.
+
+Deberá poder conservar, cuando aplique:
+
+- identidad estable;
+- entidad legal;
+- tipo o propósito;
+- fecha contable;
+- periodo contable;
+- origen;
+- referencias fuente;
+- regla o reglas aplicadas;
+- moneda o monedas;
+- líneas;
+- estado conceptual;
+- aprobaciones o validaciones requeridas;
+- correlación externa;
+- versión y evidencia.
+
+---
+
+#### 22. Línea contable
+
+Cada línea deberá poder conservar:
+
+- comprobante propietario;
+- cuenta;
+- lado débito o crédito;
+- importe;
+- moneda y contexto aplicable;
+- tercero cuando corresponda;
+- centro de costo y dimensiones cuando correspondan;
+- referencia al hecho o distribución origen;
+- descripción o concepto controlado;
+- evidencia suficiente para reconstrucción.
+
+---
+
+#### 23. Partida doble
+
+Un comprobante destinado a posteo formal deberá satisfacer partida doble dentro del contexto contable aplicable.
+
+Se conserva:
+
+```text
+SUM(DEBITS) = SUM(CREDITS)
+```
+
+La igualdad deberá evaluarse bajo moneda, precisión y política aprobadas.
+
+---
+
+#### 24. Prohibición de ajuste automático inexplicable
+
+Se congela:
+
+```text
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+```
+
+Una diferencia no podrá enviarse a una cuenta genérica solo para conseguir igualdad. Todo ajuste requiere causa, política, autoridad y trazabilidad.
+
+---
+
+#### 25. Moneda de origen y moneda contable
+
+La arquitectura deberá separar:
+
+- moneda de la transacción o hecho económico;
+- moneda de contabilización aplicable;
+- moneda de presentación cuando exista;
+- tasa o contexto FX aprobado;
+- fecha o criterio de conversión.
+
+No se define una metodología FX universal en esta tarea.
+
+---
+
+#### 26. Redondeo
+
+Las diferencias de redondeo no se tratarán como ajuste libre.
+
+Cualquier tratamiento futuro deberá declarar:
+
+- moneda;
+- precisión;
+- regla;
+- alcance;
+- vigencia;
+- cuenta o tratamiento autorizado cuando corresponda;
+- evidencia.
+
+---
+
+#### 27. Periodo contable formal
+
+Se conserva:
+
+```text
+OPERATIONAL_PERIOD
+!= ECONOMIC_PERIOD
+!= ACCOUNTING_PERIOD
+!= FISCAL_PERIOD
+```
+
+El periodo contable requiere identidad, entidad legal, vigencia y estado propios.
+
+---
+
+#### 28. Fecha de ocurrencia, reconocimiento y posteo
+
+La arquitectura deberá poder distinguir:
+
+- fecha del hecho operativo;
+- fecha de ocurrencia económica;
+- fecha de reconocimiento económico;
+- fecha contable;
+- fecha de posteo;
+- fecha fiscal cuando aplique.
+
+Una fecha no sustituye automáticamente a las demás.
+
+---
+
+#### 29. Posteo en periodo cerrado
+
+Un periodo contable cerrado no deberá admitir posteo ordinario silencioso.
+
+Un cambio posterior deberá usar la política aprobada aplicable, por ejemplo ajuste posterior, reapertura gobernada o tratamiento en periodo posterior, conservando historia.
+
+La tarea no fija una política normativa concreta.
+
+---
+
+#### 30. Estado conceptual de comprobante
+
+La arquitectura distinguirá como mínimo conceptualmente:
+
+```text
+CANDIDATE
+VALIDATED
+APPROVED_WHEN_REQUIRED
+POSTED
+REJECTED_OR_CANCELLED_BEFORE_POSTING
+REVERSED_OR_ADJUSTED_AFTER_POSTING
+```
+
+Estos nombres son semántica documental; no crean enums físicos ni un lifecycle de producto en esta tarea.
+
+---
+
+#### 31. Posteo como transición de autoridad
+
+Postear significa incorporar el comprobante a la fuente contable formal autoritativa aplicable.
+
+Por tanto:
+
+```text
+APPROVED != POSTED
+EXPORTED != POSTED
+HTTP_SUCCESS != POSTED
+EXTERNAL_ACCEPTANCE_EVIDENCE_MAY_PROVE_POSTING_WHEN_EXTERNAL_AUTHORITY_APPLIES
+```
+
+---
+
+#### 32. Inmutabilidad después del posteo
+
+Un comprobante o asiento posteado no se edita destructivamente.
+
+Correcciones posteriores deberán preservar:
+
+- original;
+- motivo;
+- actor/autoridad;
+- reversión o ajuste;
+- nuevo resultado;
+- correlación entre versiones o comprobantes;
+- efecto en periodos y reportes.
+
+---
+
+#### 33. Reversión contable
+
+La reversión contable se modelará como acción compensatoria trazable, no como eliminación del asiento original.
+
+Se conserva:
+
+```text
+REVERSAL != DELETE_ORIGINAL_ENTRY
+```
+
+La reversión deberá referenciar el comprobante/asiento original y su causa.
+
+---
+
+#### 34. Ajuste contable
+
+Un ajuste contable autorizado es distinto de:
+
+- corrección del hecho operativo;
+- corrección del hecho económico;
+- diferencia de conciliación;
+- reversión contable;
+- castigo de cartera;
+- condonación;
+- restatement de un reporte.
+
+Cada capa conserva su propietario y evidencia.
+
+---
+
+#### 35. Asientos originados por cartera
+
+Objetos de `NUMERA-DOM-016` podrán producir candidatos contables según política futura, pero se mantiene:
+
+```text
+RECEIVABLE != ACCOUNTING_ENTRY
+PAYMENT_APPLICATION != ACCOUNTING_POSTING
+WRITE_OFF != ACCOUNTING_ENTRY_BY_DEFAULT
+```
+
+La contabilización consume la identidad y semántica financiera ya definidas; no las reemplaza.
+
+---
+
+#### 36. Asientos originados por cuentas por pagar
+
+Obligación, documento, aprobación, pago, retención y conciliación definidos en `NUMERA-DOM-010` permanecen objetos financieros independientes.
+
+El candidato contable deberá referenciarlos sin convertir pago o documento en asiento por inferencia.
+
+---
+
+#### 37. Asientos originados por costos y producción
+
+Costos, variaciones, distribuciones, producción, consumo, merma e inventario conservan sus fuentes y métodos.
+
+Una regla contable podrá mapear su efecto cuando exista política aprobada, sin modificar:
+
+- movimiento físico;
+- lote;
+- consumo;
+- costo calculado;
+- driver;
+- variación fuente.
+
+---
+
+#### 38. Asientos de ajuste sin hecho operativo directo
+
+La arquitectura podrá admitir ajustes contables autorizados que no representen una nueva operación física, siempre que tengan:
+
+- propósito explícito;
+- entidad legal;
+- periodo;
+- política o fundamento aprobado;
+- soporte;
+- autoridad;
+- trazabilidad;
+- prohibición de utilizarse como mecanismo genérico para ocultar diferencias.
+
+---
+
+#### 39. Idempotencia contable
+
+El mismo hecho, misma versión de regla y misma intención de contabilización no deberán producir posteo duplicado.
+
+La idempotencia deberá cubrir, según camino:
+
+- candidato;
+- solicitud de exportación;
+- comprobante;
+- posteo;
+- respuesta externa;
+- retry;
+- reversión o corrección con identidad propia.
+
+---
+
+#### 40. Correlación extremo a extremo
+
+Debe poder reconstruirse:
+
+```text
+SOURCE_FACT
+-> ECONOMIC_FACT
+-> ACCOUNTING_RULE_VERSION
+-> ACCOUNTING_CANDIDATE
+-> VOUCHER
+-> POSTED_ENTRY_OR_EXTERNAL_RESULT
+-> RECONCILIATION
+-> REPORT_OR_BOOK_PROJECTION
+```
+
+Una discontinuidad material impide afirmar trazabilidad completa.
+
+---
+
+#### 41. Integración externa y correlación
+
+Cuando el camino sea externo deberán conservarse, además:
+
+- identificador de solicitud;
+- payload o representación enviada bajo gobierno aplicable;
+- versión del contrato;
+- identificador externo recibido;
+- estado externo;
+- rechazo o error;
+- incertidumbre;
+- retry;
+- respuesta correlacionada;
+- evidencia de aceptación/posteo cuando exista.
+
+---
+
+#### 42. Resultado externo incierto
+
+Se conserva:
+
+```text
+TIMEOUT != FAILURE
+REQUEST_SENT != EXTERNAL_POSTED_ENTRY
+```
+
+Un resultado incierto permanece pendiente de reconciliación antes de retry empresarial que pudiera duplicar el posteo.
+
+---
+
+#### 43. Respuesta externa no reescribe la fuente
+
+Una respuesta contable externa puede:
+
+- confirmar referencia o posteo;
+- rechazar;
+- devolver diferencias;
+- informar periodo, comprobante o estado;
+- abrir conciliación.
+
+No puede modificar silenciosamente el hecho operativo ni el hecho económico fuente.
+
+---
+
+#### 44. Conciliación contable
+
+La conciliación deberá poder comparar:
+
+- hechos económicos esperados;
+- candidatos generados;
+- comprobantes enviados o internos;
+- asientos/resultados autoritativos;
+- periodos;
+- importes y monedas;
+- cuentas y dimensiones;
+- estados de aceptación/rechazo;
+- reversos y ajustes.
+
+Las diferencias consumen `NUMERA-DOM-014`.
+
+---
+
+#### 45. Asiento externo rechazado
+
+Un asiento candidato rechazado externamente:
+
+- no desaparece;
+- no se considera posteado;
+- conserva la solicitud y respuesta;
+- abre o mantiene diferencia;
+- puede requerir corrección de mapeo, datos o política;
+- no autoriza editar la fuente para lograr aceptación.
+
+---
+
+#### 46. Autoridad fiscal permanece separada
+
+Activar o diseñar contabilidad interna no concede por sí solo:
+
+- emisión fiscal;
+- presentación tributaria;
+- aceptación por autoridad fiscal;
+- determinación tributaria oficial.
+
+La frontera de `NUMERA-DOM-013` permanece vigente.
+
+---
+
+#### 47. Documento fiscal y asiento permanecen distintos
+
+Se conserva:
+
+```text
+FISCAL_DOCUMENT != ACCOUNTING_VOUCHER != ACCOUNTING_ENTRY
+```
+
+Podrán correlacionarse, pero ninguno sustituye automáticamente al otro.
+
+---
+
+#### 48. Entidad legal como frontera primaria
+
+Todo artefacto contable formal deberá pertenecer a una entidad legal explícita.
+
+Se conserva:
+
+```text
+BRAND != SITE != COST_CENTER != LEGAL_ENTITY
+```
+
+Una marca o sede no se convierte en libro contable independiente por inferencia.
+
+---
+
+#### 49. Intercompañía
+
+Cuando un caso relacione entidades legales distintas:
+
+- se preservan ambas identidades;
+- se preserva el hecho económico de cada lado que corresponda;
+- no se inventa facturación intercompañía;
+- no se inventa impuesto;
+- no se inventa precio de transferencia;
+- no se elimina automáticamente en consolidación;
+- cualquier tratamiento contable requiere política y autoridad aprobadas.
+
+---
+
+#### 50. Consolidación contable
+
+La arquitectura deberá permitir una capa futura de consolidación sin mezclarla con los libros de cada entidad.
+
+Se conserva:
+
+```text
+ENTITY_LEDGER != CONSOLIDATED_PROJECTION
+```
+
+Las eliminaciones de consolidación, cuando existan, deberán ser explícitas, trazables, versionadas y gobernadas; pertenecer al mismo grupo no crea una eliminación automática.
+
+---
+
+#### 51. Auxiliares
+
+Un auxiliar contable será una proyección trazable del ledger por una dimensión aprobada, por ejemplo cuenta, tercero o centro.
+
+No será una segunda fuente editable ni podrá corregirse alterando el agregado.
+
+---
+
+#### 52. Balance de prueba
+
+El balance de prueba será una proyección de comprobantes/asientos posteados dentro de una entidad, periodo y versión de plan de cuentas determinados.
+
+Se conserva:
+
+```text
+TRIAL_BALANCE != SOURCE_LEDGER
+```
+
+Su consistencia no autoriza corregir líneas históricas en sitio.
+
+---
+
+#### 53. Libros contables
+
+Los libros formales, cuando estén activados bajo autoridad interna competente, deberán derivar del ledger posteado y conservar:
+
+- entidad;
+- periodo;
+- secuencia/identidad aplicable;
+- plan de cuentas/versiones;
+- comprobantes incluidos;
+- trazabilidad;
+- evidencia de cierre o publicación cuando corresponda.
+
+Esta tarea no declara ningún libro actualmente activo.
+
+---
+
+#### 54. Estados financieros
+
+La arquitectura podrá soportar estados financieros derivados de la contabilidad formal futura, pero se mantiene:
+
+```text
+NUMERA_MANAGEMENT_REPORT != STATUTORY_FINANCIAL_STATEMENT
+```
+
+La oficialidad estatutaria requiere activación, política, autoridad y controles que no se presumen por esta tarea.
+
+---
+
+#### 55. Reportes NUMERA frente a reportes contables
+
+Los reportes de `NUMERA-DOM-012` continúan siendo productos de gestión/analítica interna.
+
+Una futura contabilidad formal podrá alimentarlos o producir otras proyecciones, pero no se reetiquetarán históricamente como estados financieros legales por la aprobación de esta arquitectura.
+
+---
+
+#### 56. Cierre económico frente a cierre contable
+
+Se conserva:
+
+```text
+NUMERA_ECONOMIC_CLOSE != ACCOUNTING_CLOSE
+```
+
+Un cierre contable podrá consumir un periodo económico cerrado, pero deberá conservar su propio estado, checklist, diferencias, ajustes, autoridad y evidencia.
+
+---
+
+#### 57. Reapertura contable
+
+Reabrir un periodo contable deberá ser una acción gobernada independiente de reabrir un periodo económico.
+
+La reapertura no elimina:
+
+- cierre previo;
+- comprobantes previos;
+- razones;
+- actor/autoridad;
+- cambios posteriores;
+- necesidad de reconciliar reportes o resultados externos afectados.
+
+---
+
+#### 58. Políticas contables no se inventan
+
+Esta tarea no selecciona:
+
+- marco contable aplicable;
+- políticas de reconocimiento;
+- depreciación;
+- amortización;
+- provisiones;
+- deterioro;
+- tratamiento tributario;
+- materialidad;
+- métodos de conversión FX;
+- reglas de consolidación específicas.
+
+Cada una requiere decisión competente y versionada antes de materialización.
+
+---
+
+#### 59. Versionado de políticas y reglas
+
+Cuando exista una política contable aprobada, la arquitectura deberá poder relacionarla con:
+
+- entidad;
+- vigencia;
+- versión;
+- reglas derivadas;
+- cuentas afectadas;
+- evidencia de aprobación;
+- cambio/sucesión;
+- impacto en periodos y comparabilidad.
+
+---
+
+#### 60. Cambios de plan o regla no reescriben historia
+
+Una nueva versión de plan de cuentas o regla de contabilización aplica según su vigencia.
+
+Los asientos históricos conservarán:
+
+- plan/versiones originales;
+- cuentas usadas;
+- reglas usadas;
+- contexto vigente en el momento del posteo.
+
+---
+
+#### 61. Migración histórica
+
+La migración a una arquitectura contable futura no convierte por inferencia:
+
+- saldo agregado en asiento completo;
+- reporte en libro;
+- hoja manual en comprobante válido;
+- referencia externa en hecho económico original;
+- ausencia documental en evidencia suficiente.
+
+Los históricos incompletos requieren clasificación, procedencia, reconciliación y tratamiento explícito.
+
+---
+
+#### 62. Cutover de autoridad contable
+
+Un cambio desde autoridad externa hacia autoridad interna deberá declarar como mínimo:
+
+- entidad legal;
+- fecha o periodo efectivo;
+- último resultado autoritativo externo;
+- primer resultado autoritativo interno;
+- tratamiento de operaciones en tránsito;
+- reconciliación de saldos y comprobantes;
+- manejo de retries/respuestas tardías;
+- evidencia de aprobación;
+- rollback o contingencia aplicable.
+
+---
+
+#### 63. Prohibición de huecos y solapamientos de autoridad
+
+El cutover deberá detectar:
+
+- periodos sin autoridad definida;
+- periodos con doble autoridad;
+- candidatos no resueltos;
+- respuestas externas tardías;
+- diferencias de saldo;
+- secuencias incompletas.
+
+No se certificará transición con huecos o solapamientos materiales sin resolución explícita.
+
+---
+
+#### 64. Manualidad contable controlada
+
+La arquitectura podrá soportar entradas manuales autorizadas solo cuando correspondan a una necesidad contable legítima y trazable.
+
+Se prohíbe usar entrada manual para:
+
+- duplicar un hecho ya disponible;
+- ocultar una diferencia;
+- sustituir conciliación;
+- corregir silenciosamente un dominio fuente;
+- crear saldo sin soporte;
+- saltar autorización.
+
+---
+
+#### 65. Segregación de funciones
+
+La arquitectura deberá permitir separar, cuando aplique:
+
+- mantener plan de cuentas;
+- definir regla;
+- preparar candidato;
+- revisar;
+- aprobar excepción o ajuste;
+- postear;
+- cerrar periodo;
+- reabrir;
+- exportar;
+- administrar integración.
+
+La combinación permitida de funciones pertenece a contratos de autorización; esta tarea no crea permisos runtime.
+
+---
+
+#### 66. Auditoría
+
+Toda decisión contable sensible futura deberá poder conservar evidencia correlacionable de:
+
+- principal y actor efectivo;
+- acción;
+- entidad y territorio;
+- objeto;
+- regla/política/plan aplicable;
+- estado anterior y posterior;
+- razón;
+- aprobación;
+- timestamp;
+- correlación con fuentes e integraciones.
+
+---
+
+#### 67. Datos sensibles
+
+Plan, terceros, comprobantes, bancos, impuestos, saldos y estados financieros pueden contener información financiera sensible.
+
+La implementación futura deberá aplicar minimización, autorización por territorio, logging seguro y exportación independiente conforme a contratos de AUTH y DATA aplicables.
+
+---
+
+#### 68. Dependencia de proveedor evitada
+
+La arquitectura canónica no deberá depender del modelo interno de un proveedor específico.
+
+Los adaptadores externos traducirán entre:
+
+```text
+VENTO_CANONICAL_ACCOUNTING_MODEL
+<-> PROVIDER_SPECIFIC_CONTRACT
+```
+
+Cambiar proveedor no deberá obligar a redefinir hechos económicos fuente.
+
+---
+
+#### 69. Códigos y numeraciones externas
+
+Los códigos de cuenta, tipos de comprobante, secuencias o identificadores exigidos por un proveedor podrán conservarse como referencias del adaptador o configuración autorizada.
+
+No se convierten en identidad universal de VENTO por inferencia.
+
+---
+
+#### 70. Reconciliación con reportes y cierres
+
+Un cambio contable posterior que afecte cifras ya publicadas deberá evaluarse contra:
+
+- cierre económico de `NUMERA-DOM-011`;
+- versión de reporte de `NUMERA-DOM-012`;
+- diferencias de `NUMERA-DOM-014`;
+- hechos y saldos fuente.
+
+Cuando sea material podrá requerir ajuste o restatement versionado, nunca edición histórica silenciosa.
+
+---
+
+#### 71. Escenarios no son contabilidad
+
+Se congela para la siguiente tarea:
+
+```text
+BUDGET != FORECAST != SCENARIO != ACCOUNTING_FACT
+SIMULATED_RESULT != POSTED_ACCOUNTING_ENTRY
+```
+
+Un escenario puede proyectar impacto contable para análisis, pero no crea asientos ni modifica el ledger formal.
+
+---
+
+#### 72. Publicación de escenario no postea
+
+Incluso un escenario aprobado/publicado permanece una decisión de planificación o simulación hasta que un hecho real y una política contable aplicable produzcan el tratamiento correspondiente.
+
+Se conserva:
+
+```text
+SCENARIO_PUBLISHED != ACCOUNTING_POSTED
+```
+
+---
+
+#### 73. Condiciones mínimas para activar contabilidad interna
+
+Antes de activar el camino interno deberán existir, como mínimo y según aplique:
+
+1. decisión empresarial explícita;
+2. entidad o entidades cubiertas;
+3. política/marco contable competente;
+4. plan de cuentas aprobado y versionado;
+5. terceros y dimensiones gobernados;
+6. reglas de contabilización aprobadas;
+7. contrato de comprobantes y posteo materializado;
+8. periodos contables;
+9. segregación y autorización;
+10. auditoría;
+11. migración/cutover;
+12. conciliación con fuentes y, si existe, sistema externo anterior;
+13. pruebas integrales;
+14. controles de cierre/reapertura;
+15. rollback/contingencia;
+16. evidencia de aceptación.
+
+Esta tarea define la condición arquitectónica, no ejecuta esos pasos.
+
+---
+
+#### 74. Condiciones mínimas para integración externa
+
+Antes de materializar el camino externo permanecen exigibles las condiciones de `NUMERA-DOM-013`, incluyendo proveedor exacto, autoridad, contrato, identidad, autenticación, permisos, idempotencia, semántica de resultado, reconciliación, auditoría, ambiente, rollback y owners.
+
+---
+
+#### 75. Dependencias de implementación futura
+
+| Dependencia | Por qué existe | Propietario o salida |
+| --- | --- | --- |
+| experiencia contable/integración | presentar mapeos, comprobantes, estados y diferencias sin confundir autoridad | `NUMERA-UX-027` |
+| selección e integración externa | conectar sistema autorizado sin dependencia de proveedor | `INT-EXT-*`, `INT-APP-*`, `INT-DB-*` aplicables |
+| autorización | segregar mantenimiento, aprobación, posteo, cierre y exportación | bloque NUMERA-AUTH y fundaciones AUTH aplicables |
+| persistencia/ledger | materializar plan, reglas, comprobantes y lineage | paquetes E3/E5/implementación futura correspondientes |
+| datos históricos | migrar y reconciliar sin fabricar evidencia | DATA-NORM y cutover aplicables |
+| escenarios | mantener planificación separada del ledger | `NUMERA-DOM-018` |
+
+Ninguna dependencia se marca como implementada por esta definición.
+
+---
+
+#### 76. Hallazgos diferidos con propietario
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no hay activación de contabilidad interna | no | Dirección + Contabilidad + implementación futura | decisión explícita por entidad y periodo con autoridad y política |
+| no hay proveedor contable externo acreditado | no | integración externa aplicable | proveedor, contrato, principal, autoridad y evidencia identificados |
+| no existe plan de cuentas materializado | no | implementación posterior basada en este contrato | versión por entidad creada y validada |
+| no existen reglas de contabilización materializadas | no | implementación posterior basada en este contrato | reglas versionadas, probadas y aprobadas |
+| no existe ledger contable formal interno | no | implementación posterior condicionada a activación | posteo, auxiliares, cierre y auditoría certificados |
+| política contable concreta no está seleccionada aquí | no | autoridad empresarial/profesional competente | política/versiones aprobadas antes de uso |
+| consolidación formal no está materializada | no | implementación futura + gobierno contable | entidades, eliminaciones, reglas y cierre consolidados aprobados |
+| experiencia `NUMERA-UX-027` pendiente | no | `NUMERA-UX-027` | flujo de usuario respeta autoridad y estados definidos |
+
+---
+
+#### 77. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos descartados: 0
+Requisitos obsoletos: 0
+```
+
+La tarea desarrolla en detalle contratos ya cubiertos por requisitos vigentes; no cambia el Registro 04A.
+
+---
+
+#### 78. Cobertura de prueba vigente reutilizada
+
+Se reutiliza como trazabilidad, sin modificación del registro:
+
+- `TREQ-NUMERA-002` para identidad del hecho económico, entidad legal, periodos, correcciones, mapeo a asientos y prohibición de libros escritos por dominios operativos;
+- `TREQ-INTEGRATION-017` para candidatos, integración contable, idempotencia, respuestas externas y autoridad externa;
+- `TREQ-AUTH-013` para autorización server-side de mutaciones futuras;
+- `TREQ-AUTH-015` para evidencia correlacionable de acciones protegidas.
+
+---
+
+#### 79. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | definición documental `DEFINE_ONCE`; no crea código ni build físico |
+| LOCAL | NOT_EXECUTED | validadores del repositorio se ejecutan al incorporar el artefacto en la rama documental |
+| REMOTA | NOT_EXECUTED | publicación y checks de PR pertenecen al cierre documental posterior |
+| OPERATIVA | NOT_APPLICABLE | no ejecuta contabilidad, posteo, cierre ni integración real |
+| FÍSICA | NOT_APPLICABLE | no existe instancia física propia ni cambios de Supabase/datos |
+
+---
+
+#### 80. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se demuestre que:
+
+1. `DEFINE_ONCE` y ausencia de instancia física quedan explícitos;
+2. extensibilidad obligatoria y activación interna diferida permanecen separadas;
+3. se soportan camino externo e interno futuro sin doble autoridad;
+4. autoridad contable se determina por entidad legal y periodo, no por marca/sede;
+5. hecho económico, candidato, comprobante, asiento, libro y estado financiero permanecen distintos;
+6. candidato balanceado no se declara posteado;
+7. plan de cuentas es versionable por entidad legal;
+8. identidad de cuenta no depende solo del código visible;
+9. tercero contable permanece separado de cliente/deudor/proveedor/PASS;
+10. reglas de contabilización son versionadas y no reescriben fuentes;
+11. ambigüedad de reglas bloquea posteo automático;
+12. comprobante y línea conservan identidad, cuenta, importe, dimensiones y source lineage;
+13. partida doble es condición obligatoria de posteo formal;
+14. auto-balance inexplicable queda prohibido;
+15. moneda origen, contable y presentación permanecen separables;
+16. periodo contable permanece distinto del económico/fiscal/operativo;
+17. aprobación, exportación, éxito HTTP y posteo permanecen distintos;
+18. posteo es inmutable y correcciones preservan historia;
+19. reversión no elimina asiento original;
+20. ajustes contables permanecen separados de correcciones operativas/económicas;
+21. cartera y pagos conservan semántica de `NUMERA-DOM-016`;
+22. cuentas por pagar, costos, producción e inventario conservan propietarios fuente;
+23. ajustes manuales requieren propósito, política, soporte y autoridad;
+24. idempotencia evita duplicados de candidatos, envíos y posteo;
+25. correlación extremo a extremo es reconstruible;
+26. timeout o request enviado no se considera posteo externo;
+27. respuesta externa no reescribe fuente;
+28. asiento rechazado permanece trazable y conciliable;
+29. autoridad fiscal continúa separada;
+30. documento fiscal no se confunde con comprobante/asiento;
+31. entidad legal es frontera primaria;
+32. intercompañía no se resuelve por inferencia;
+33. consolidación permanece separada de libros por entidad;
+34. auxiliares, balance de prueba, libros y estados son proyecciones del ledger, no fuentes editables;
+35. reporte NUMERA no se reetiqueta como estado estatutario;
+36. cierre económico y cierre contable permanecen distintos;
+37. reapertura contable conserva historia;
+38. políticas normativas no se inventan;
+39. cambios de plan/regla no reescriben históricos;
+40. migración no convierte saldos agregados en asientos completos por inferencia;
+41. cutover define frontera de autoridad y evita huecos/solapamientos;
+42. manualidad no duplica hechos ni oculta diferencias;
+43. segregación y auditoría quedan previstas sin crear permisos físicos;
+44. modelo canónico permanece desacoplado del proveedor;
+45. escenarios y contabilidad permanecen separados;
+46. condiciones de activación interna e integración externa quedan explícitas;
+47. hallazgos diferidos tienen propietario y salida;
+48. no se crean ni modifican requisitos de prueba;
+49. no se realizan cambios físicos;
+50. `NUMERA-DOM-018` recibe una frontera explícita que impide convertir escenarios en asientos.
+
+---
+
+#### 81. Límites
+
+Esta tarea no:
+
+- activa contabilidad formal interna;
+- selecciona marco contable;
+- selecciona proveedor contable o fiscal;
+- define códigos reales del plan de cuentas;
+- crea cuentas reales;
+- crea terceros contables reales;
+- crea comprobantes o asientos reales;
+- postea movimientos;
+- abre/cierra/reabre periodos contables reales;
+- emite libros;
+- emite estados financieros estatutarios;
+- ejecuta consolidación;
+- define eliminaciones concretas;
+- define tratamiento legal/fiscal intercompañía;
+- define precios de transferencia;
+- define políticas tributarias;
+- define metodología FX universal;
+- crea permisos runtime;
+- diseña `NUMERA-UX-027`;
+- crea integraciones, endpoints, credenciales o webhooks;
+- crea tablas, vistas, funciones, RPC, triggers, RLS o migraciones;
+- modifica Supabase;
+- modifica Registro 04A;
+- cambia hechos, cartera, obligaciones, bancos o costos existentes;
+- desarrolla el motor de escenarios reservado a `NUMERA-DOM-018`.
+
+---
+
+#### 82. Handoff a NUMERA-DOM-018
+
+La siguiente tarea recibe:
+
+```text
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+EXTERNAL_AND_INTERNAL_ACCOUNTING_PATHS_SUPPORTED = YES
+ACCOUNTING_AUTHORITY_MUST_BE_EXPLICIT_BY_LEGAL_ENTITY_AND_PERIOD = YES
+DUAL_AUTHORITATIVE_LEDGER_FOR_SAME_ENTITY_PERIOD = FORBIDDEN
+ECONOMIC_FACT_IS_ACCOUNTING_CANDIDATE = NO
+ACCOUNTING_CANDIDATE_IS_POSTED_ENTRY = NO
+BALANCED_CANDIDATE_IS_POSTED_ENTRY = NO
+CHART_OF_ACCOUNTS_VERSIONED_BY_LEGAL_ENTITY = YES
+ACCOUNT_IDENTITY_IS_VISIBLE_CODE_ONLY = NO
+ACCOUNTING_THIRD_PARTY_IS_CUSTOMER_OR_DEBTOR_BY_DEFAULT = NO
+ACCOUNTING_RULES_REQUIRE_VERSION_AND_VIGENCY = YES
+ACCOUNTING_RULE_MAY_REWRITE_SOURCE_FACT = NO
+AMBIGUOUS_ACCOUNTING_RULE_AUTO_POST = FORBIDDEN
+POSTED_VOUCHER_REQUIRES_BALANCED_DEBITS_CREDITS = YES
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+TRANSACTION_ACCOUNTING_PRESENTATION_CURRENCIES = DISTINCT
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+APPROVED_OR_EXPORTED_IS_POSTED = NO
+POSTED_ENTRY_IMMUTABLE = YES
+REVERSAL_DELETES_ORIGINAL_ENTRY = NO
+ACCOUNTING_ADJUSTMENT_IS_SOURCE_CORRECTION = NO
+IDEMPOTENCY_REQUIRED_FOR_ACCOUNTING_CANDIDATE_AND_POSTING = YES
+TIMEOUT_OR_REQUEST_SENT_IS_EXTERNAL_POSTING = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_NOT_REWRITE_SOURCE = YES
+FISCAL_DOCUMENT_ACCOUNTING_VOUCHER_ACCOUNTING_ENTRY = DISTINCT
+SAME_BUSINESS_GROUP_IMPLIES_SAME_LEGAL_ENTITY = NO
+CONSOLIDATED_PROJECTION_IS_ENTITY_LEDGER = NO
+NUMERA_MANAGEMENT_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_ECONOMIC_CLOSE_IS_ACCOUNTING_CLOSE = NO
+POLICY_OR_RULE_VERSION_CHANGE_REWRITES_HISTORY = NO
+HISTORICAL_BALANCE_OR_REPORT_IS_COMPLETE_ACCOUNTING_ENTRY = NO
+CUTOVER_REQUIRES_EXPLICIT_AUTHORITY_BOUNDARY = YES
+BUDGET_FORECAST_SCENARIO_IS_ACCOUNTING_FACT = NO
+SIMULATED_RESULT_IS_POSTED_ACCOUNTING_ENTRY = NO
+SCENARIO_PUBLISHED_IS_ACCOUNTING_POSTED = NO
+TREQ_CHANGES = 0
+```
+
+`NUMERA-DOM-018` deberá definir el motor de escenarios, versiones de precios, costos, supuestos y publicación conservando la separación entre información real, presupuestada, simulada, propuesta, publicada y contable; ningún escenario podrá crear o modificar hechos reales ni asientos por inferencia.
+
+---
+
+#### 83. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación`
 ### [ ] NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación
