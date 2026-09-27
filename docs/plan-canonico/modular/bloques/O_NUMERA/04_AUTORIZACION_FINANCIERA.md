@@ -8831,7 +8831,1216 @@ NUMERA_AUTH_008_OWNER = FINANCIAL_RESOURCE_SCOPE_DEFINITION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo`
-### [ ] NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
+### ✅ NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-007 — Definir permisos de exportación
+**Tarea siguiente:** NUMERA-AUTH-009 — Registrar auditoría financiera
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) para definir y aplicar el alcance financiero efectivo de NUMERA por entidad legal/empresa, unidad o marca, sede, área, centro de costo y conjunto de dimensiones autorizadas, especializando los registros de lectura, registro, aprobación, estado de periodo y exportación ya aprobados sin crear permisos nuevos ni ampliar sus acciones; `POST_E5_PACKAGE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `NUMERA-AUTH-008::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita; ninguna instancia puede publicar permisos faltantes reservados a `NUMERA-AUTH-012`
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **sobre qué empresa, entidad legal, unidad o marca, sede, área, centro de costo y miembros dimensionales** puede aplicarse cada capacidad financiera de NUMERA, sin confundir permiso exacto, rol, sede seleccionada, sede principal, autoría del recurso, filtro de interfaz, agregado, periodo o identificador conocido con autoridad territorial o financiera.
+
+La regla raíz queda:
+
+```text
+PERMISO EXACTO
++
+RECURSO O CONSULTA NORMALIZADA RESUELTA
++
+SCOPE CONTRACTUAL DEL PERMISO
++
+DIMENSIONES REALES DEL RECURSO
++
+COBERTURA EFECTIVA DEL ACTOR
++
+ESTADO / VERSION / POLITICA CUANDO APLIQUE
++
+DENEGACIONES EFECTIVAS
+=
+DECISION FINANCIERA AUTORIZABLE
+```
+
+Nunca:
+
+```text
+selected_site
+OR employee.site_id
+OR cost_center CONOCIDO
+OR report_id CONOCIDO
+OR role_name
+OR numera.access
+=
+AUTORIZACION
+```
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = NUMERA-AUTH-008::<implementation_unit_id>
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global reutilizable de scope;
+2. el marcador documental no crea una instancia física;
+3. cada materialización futura usa `NUMERA-AUTH-008::<implementation_unit_id>`;
+4. una misma unidad puede ser consumida por varios `package_id` mediante lineage explícito;
+5. toda unidad física exige el `E5-GATE-008::<package_id>` aplicable en `PASS` y autorización física explícita;
+6. ninguna unidad puede inventar `package_id`, `implementation_unit_id`, targets, ambiente o permisos faltantes;
+7. cualquier modificación VENTO de Supabase pertenece a `vento-shell` y a la instancia física propietaria.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-007
+
+Se consume íntegramente:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_APPROVAL_PERMISSION_REGISTRY = NUMERA-APPROVAL-PERMISSION-REGISTRY-001
+NUMERA_PERIOD_STATE_PERMISSION_REGISTRY = NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001
+NUMERA_EXPORT_PERMISSION_REGISTRY = NUMERA-EXPORT-PERMISSION-REGISTRY-001
+CURRENT_RUNTIME_EXPORT_PERMISSION_COUNT = 0
+CANONICAL_EXPORT_PERMISSION_IDENTITY_COUNT = 1
+CONTRACT_DEFINED_EXPORT_PERMISSION_COUNT = 1
+NEW_PERMISSION_CODE_INVENTED_COUNT = 0
+EXPORT_PERMISSION_KEY = numera.analytics.financial_reports.export
+EXPORT_RESOURCE_TYPE = FINANCIAL_REPORT
+EXPORT_ACTION_CLASS = EXPORT
+EXPORT_AUTHORIZATION_REQUIREMENT = BASE_ONLY
+EXPORT_SHARED_DEVICE_REQUIREMENT = STRONG
+EXPORT_SENSITIVITY_REASON = FINANCIAL_DATA
+EXPORT_REQUIRES_FINANCIAL_REPORT_VIEW = YES
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_PERMISSION_IMPLIES_VIEW = NO
+EXPORT_IMPLIES_DOWNLOAD = NO
+EXPORT_IMPLIES_PRINT = NO
+EXPORT_IMPLIES_SHARE = NO
+SIGNED_URL_IS_EXPORT_AUTHORITY = NO
+BULK_EXTRACT_ALIAS_TO_EXPORT = FORBIDDEN
+EXPORT_SCOPE_MUST_NOT_EXCEED_AUTHORIZED_READ_SCOPE = YES
+EXPORT_REQUIRES_PURPOSE = YES
+EXPORT_REQUIRES_FIELD_AND_POPULATION_RESOLUTION = YES
+EXPORT_RECIPIENT_DESTINATION_RESOLUTION_WHEN_APPLICABLE = YES
+EXPORT_SERVER_REVALIDATION_REQUIRED = YES
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_FINANCIAL_DATA = NO
+LEGACY_NUMERA_REPORTS_VIEW_IMPLIES_EXPORT = NO
+LEGACY_NUMERA_REPORTS_EXPORT_ALIAS = FORBIDDEN
+MISSING_EXPORT_PERMISSION_FALLBACK = FORBIDDEN
+EXPORT_IS_ECONOMIC_SOURCE = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+EXPORT_DECISION_AND_RESULT_AUDITABLE = YES
+EXPORT_SCOPE_OWNER = NUMERA_AUTH_008
+EXPORT_AUDIT_OWNER = NUMERA_AUTH_009
+EXPORT_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+EXPORT_TEST_OWNER = NUMERA_AUTH_013
+TREQ_CHANGES = 0
+NUMERA_AUTH_008_OWNER = FINANCIAL_RESOURCE_SCOPE_DEFINITION
+```
+
+La presente tarea no altera las capacidades aprobadas por `NUMERA-AUTH-003..007`; define la frontera de alcance que todas ellas deben respetar.
+
+---
+
+#### 4. Contrato transversal de alcance consumido
+
+Se consume el vocabulario aprobado de alcance sin crear un sistema paralelo:
+
+```text
+NT
+ORG
+G
+AS
+SS
+AST
+TST
+AA
+SA
+AAT
+ATW
+CTX
+OWN
+```
+
+Se preservan además estas reglas:
+
+- `G(B)` existe únicamente por carril base;
+- global no significa wildcard ni acceso universal;
+- `AS` se resuelve desde asignaciones activas y no desde una sede primaria aislada;
+- `OWN` puede restringir, pero nunca ampliar territorio;
+- una lectura transversal devuelve solo la unión de miembros individualmente autorizados;
+- una mutación transversal exige autorización sobre todos los extremos obligatorios;
+- sedes y áreas inactivas no forman parte del alcance efectivo;
+- un scope no declarado queda denegado por defecto.
+
+---
+
+#### 5. Contrato canónico de scope NUMERA
+
+Se define:
+
+```text
+NUMERA-FINANCIAL-SCOPE-CONTRACT-001
+```
+
+Este contrato no es un permiso y no puede concederse a un actor. Es la política que limita dónde puede operar un permiso NUMERA ya válido.
+
+---
+
+#### 6. Shape lógico de una decisión de scope
+
+Toda evaluación deberá poder resolver, según aplique:
+
+```text
+permission_key
+resource_type
+resource_identity_or_normalized_query
+scope_profile
+effective_actor
+legal_entity_or_company_scope
+business_or_unit_scope
+site_scope
+area_scope
+cost_center_scope
+other_required_dimensions
+current_resource_dimensions
+proposed_resource_dimensions_when_mutating
+member_set_when_aggregated
+authorization_requirement
+context_scope_when_contractually_applicable
+resource_state_and_version
+explicit_denies
+authorization_version
+scope_decision
+```
+
+Esta tarea no define columnas físicas ni un esquema de base de datos.
+
+---
+
+#### 7. Universo exacto de capacidades gobernadas
+
+El contrato aplica a exactamente:
+
+```text
+READ_PERMISSION_DEFINITIONS = 22
+REGISTER_WRITE_PERMISSION_DEFINITIONS = 18
+APPROVAL_DECISION_PERMISSION_DEFINITIONS = 12
+PERIOD_STATE_PERMISSION_DEFINITIONS = 3
+EXPORT_PERMISSION_DEFINITIONS = 1
+TOTAL_SCOPE_GOVERNED_PERMISSION_DEFINITIONS = 56
+DUPLICATE_PERMISSION_KEYS = 0
+```
+
+`numera.access` queda fuera de este conteo porque permite entrar a la aplicación y no concede autoridad sobre datos financieros.
+
+---
+
+#### 8. Scope restringe; nunca concede
+
+Se congela:
+
+```text
+VALID_SCOPE_WITHOUT_PERMISSION = DENY
+VALID_PERMISSION_WITHOUT_VALID_SCOPE = DENY
+INVALID_SCOPE_CANNOT_BE_REPAIRED_BY_ROLE = YES
+APP_ACCESS_IMPLIES_SCOPE = NO
+```
+
+Un scope válido no crea una capacidad ausente y un permiso válido no puede operar fuera de su scope.
+
+---
+
+#### 9. Dimensiones empresariales permanecen distintas
+
+Se preserva:
+
+```text
+LEGAL_ENTITY
+!= BUSINESS_OR_UNIT
+!= BRAND
+!= SITE
+!= AREA
+!= COST_CENTER
+!= PERIOD
+!= RESOURCE_ID
+```
+
+La compatibilidad entre dimensiones debe provenir de identidades y relaciones canónicas vigentes, no de nombres, etiquetas o convenciones de interfaz.
+
+---
+
+#### 10. Entidad legal y empresa
+
+Cuando un recurso o decisión financiera sea materialmente atribuible a una entidad legal, esa identidad forma parte de la autorización.
+
+Una sede, marca o centro de costo no determina por inferencia la entidad legal.
+
+```text
+SITE != LEGAL_ENTITY
+BRAND != LEGAL_ENTITY
+COST_CENTER != LEGAL_ENTITY
+```
+
+`G(B)` sigue limitado al universo organizacional ordinario autorizado y no permite mezclar entidades legales que el recurso o la finalidad deban mantener separadas.
+
+---
+
+#### 11. Marca, negocio o unidad
+
+Una marca, negocio o unidad puede ser dimensión de un hecho, costo, presupuesto, indicador o reporte.
+
+No se interpreta como permiso ni como territorio autónomo si el contrato del recurso no la declara. Cuando existe, debe intersectarse con las demás dimensiones aplicables.
+
+---
+
+#### 12. Sede
+
+La sede es una dimensión territorial cuando el recurso la declara.
+
+Se prohíbe usar como autoridad final:
+
+```text
+selected_site
+query.site_id
+form.site_id
+prefill.site_id
+employees.site_id
+```
+
+Cuando aplique `AS`, la cobertura se resuelve desde las asignaciones activas canónicas del actor. Un selector de UI solo reduce o propone; nunca amplía el scope.
+
+---
+
+#### 13. Área
+
+`AA`, `SA`, `AAT` y `ATW` solo autorizan recursos cuya granularidad contractual admita área.
+
+Un scope de área no concede por sí mismo autoridad sobre un recurso de nivel sede ni sobre todos los centros de costo relacionados con esa sede.
+
+---
+
+#### 14. Centro de costo
+
+El centro de costo es una dimensión económica/organizacional autorizable y permanece distinto de sede y área.
+
+```text
+COST_CENTER != SITE
+COST_CENTER != AREA
+```
+
+Un centro de costo sin sede se autoriza mediante el recurso exacto o un ámbito organizacional explícito compatible. No se inventa una sede para poder evaluarlo.
+
+---
+
+#### 15. Relación sede-centro de costo
+
+Esta tarea no impone cardinalidad uno-a-uno entre sede y centro de costo.
+
+Toda relación efectiva debe provenir del modelo canónico vigente y validarse en la frontera autoritativa. Un helper que derive o sugiera un centro desde una sede produce una referencia a comprobar, no una concesión.
+
+---
+
+#### 16. Periodo no sustituye scope
+
+Un periodo económico limita tiempo y estado, pero no reemplaza las dimensiones empresariales.
+
+```text
+PERIOD_ID != ORGANIZATIONAL_SCOPE
+PERIOD_STATUS != AUTHORITY
+```
+
+Bloquear, cerrar o reabrir un periodo exige además el scope exacto del recurso `PERIOD` y de la unidad financiera que ese periodo representa.
+
+---
+
+#### 17. Recurso conocido no es autoridad
+
+Conocer un ID, una URL, un filtro, una referencia externa o un identificador de reporte no concede alcance.
+
+La frontera autoritativa debe resolver nuevamente el recurso y sus dimensiones antes de leer, mutar, decidir, cambiar estado o exportar.
+
+---
+
+#### 18. `G(B)` en NUMERA
+
+NUMERA puede admitir alcance global base explícito donde la fila contractual lo permita.
+
+`G(B)` significa:
+
+```text
+ORGANIZACION PRODUCTIVA ORDINARIA AUTORIZADA
+```
+
+No significa:
+
+```text
+WILDCARD
+TODAS LAS ORGANIZACIONES
+APP_REVIEW
+DEMO
+PRUEBAS
+RECURSOS AISLADOS
+TODAS LAS ACCIONES
+TODOS LOS CAMPOS
+```
+
+---
+
+#### 19. Recursos no territoriales
+
+Cuando un recurso sea organizacional y no tenga sede o área material, la evaluación usa su identidad exacta y, cuando el contrato lo admita, `ORG` o el ámbito organizacional explícito correspondiente.
+
+Queda prohibido inventar una sede o centro de costo para satisfacer artificialmente una evaluación territorial.
+
+---
+
+#### 20. `OWN` permanece subordinado
+
+`OWN` puede aplicar únicamente cuando el contrato del recurso lo reconozca expresamente.
+
+En el baseline NUMERA, la lectura de gastos puede admitir variante `OWN`; esa condición no se extiende por analogía a todas las capacidades.
+
+```text
+CREATED_BY_ACTOR != TERRITORIAL_BYPASS
+OWN != GLOBAL
+```
+
+---
+
+#### 21. Contexto operativo queda reservado
+
+`NUMERA-AUTH-008` no inventa dependencia de turno, check-in o contexto operacional.
+
+Si una capacidad futura utiliza `CTX`, su resolución corresponde a `NUMERA-AUTH-011` y deberá intersectarse con este contrato:
+
+```text
+CTX_EFFECTIVE_SCOPE <= BASE_RESOURCE_SCOPE
+```
+
+Nunca podrá ampliarlo.
+
+---
+
+#### 22. Independencia administrativa de turno queda reservada
+
+La determinación de qué capacidades administrativas no dependen de turno pertenece a `NUMERA-AUTH-010`.
+
+Esta tarea solo define territorio y dimensiones. No convierte un permiso `BASE_ONLY` en operativo ni un permiso operativo en permanente.
+
+---
+
+#### 23. Perfiles de scope reutilizables
+
+Se definen diez perfiles documentales:
+
+| Perfil | Regla principal |
+| --- | --- |
+| `COST_CENTER_SCOPE` | centro exacto o cobertura organizacional/territorial compatible; sin inferir sede para centros no territoriales |
+| `FINANCIAL_ROW_SCOPE` | recurso financiero exacto más entidad/unidad/sede/área/centro presentes; `OWN` solo cuando el permiso lo declare |
+| `ANALYTIC_MEMBER_SCOPE` | cada miembro del agregado debe pertenecer al conjunto autorizado; sin inferencia de miembros excluidos |
+| `TREASURY_SCOPE` | recurso de caja/banco/tesorería exacto más dimensiones empresariales aplicables; cuenta o caja conocida no concede acceso |
+| `PERIOD_SCOPE` | periodo exacto y dimensión empresarial que su identidad gobierna; sin subperiodos sintéticos |
+| `LABOR_FINANCIAL_SCOPE` | paquete económico laboral minimizado, limitado por empresa/sede/centro y sin ampliar datos personales |
+| `FISCAL_SCOPE` | entidad legal obligatoria cuando sea material; sede/centro son dimensiones adicionales, no autoridad fiscal |
+| `PLANNING_SCOPE` | presupuesto/forecast/escenario/precio por conjunto dimensional versionado y autorizado |
+| `COST_ALLOCATION_SCOPE` | pool/origen y todos los destinos afectados deben resolverse; mutación/decisión exige cobertura completa |
+| `REPORT_EXPORT_SCOPE` | exportación como subconjunto del reporte autorizado; nunca amplía filas, miembros, campos ni periodo |
+
+---
+
+#### 24. Tipos de alcance admitidos por los perfiles
+
+Los perfiles reutilizan exclusivamente el vocabulario transversal aprobado.
+
+Reglas:
+
+1. `G(B)` solo cuando el permiso y el perfil lo admitan;
+2. `AS`, `SS`, `AST`, `TST`, `AA`, `SA`, `AAT` y `ATW` solo cuando el recurso tenga esas dimensiones;
+3. `ORG` solo para recursos cuya frontera sea realmente organizacional;
+4. `OWN` solo cuando el permiso/recurso lo declare;
+5. `CTX` solo después de la especialización de contexto propietaria;
+6. un tipo no declarado para el recurso efectivo produce `DENY`.
+
+---
+
+#### 25. Registro completo — permisos de lectura
+
+Las veintidós capacidades de `NUMERA-READ-PERMISSION-REGISTRY-001` reciben decisión explícita de perfil:
+
+| Permiso exacto | Recurso | Perfil de scope |
+| --- | --- | --- |
+| `numera.finance.cost_centers.view` | `COST_CENTER` | `COST_CENTER_SCOPE` |
+| `numera.finance.expenses.view` | `EXPENSE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.analytics.break_even.view` | `BREAK_EVEN_RESULT` | `ANALYTIC_MEMBER_SCOPE` |
+| `numera.analytics.profitability.view` | `PROFITABILITY_RESULT` | `ANALYTIC_MEMBER_SCOPE` |
+| `numera.analytics.financial_reports.view` | `FINANCIAL_REPORT` | `ANALYTIC_MEMBER_SCOPE` |
+| `numera.finance.economic_facts.view` | `ECONOMIC_FACT` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payables.view` | `PAYABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.receivables.view` | `RECEIVABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.treasury_movements.view` | `TREASURY_MOVEMENT` | `TREASURY_SCOPE` |
+| `numera.finance.reconciliations.view` | `FINANCIAL_RECONCILIATION` | `TREASURY_SCOPE` |
+| `numera.finance.costs.view` | `COST_RESULT` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.periods.view` | `PERIOD` | `PERIOD_SCOPE` |
+| `numera.finance.labor_payment_packages.view` | `LABOR_PAYMENT_PACKAGE` | `LABOR_FINANCIAL_SCOPE` |
+| `numera.finance.fiscal_documents.view` | `FISCAL_DOCUMENT` | `FISCAL_SCOPE` |
+| `numera.finance.payment_plans.view` | `PAYMENT_PLAN` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.budgets.view` | `BUDGET` | `PLANNING_SCOPE` |
+| `numera.finance.forecasts.view` | `FORECAST` | `PLANNING_SCOPE` |
+| `numera.finance.scenarios.view` | `SCENARIO` | `PLANNING_SCOPE` |
+| `numera.finance.price_versions.view` | `PRICE_VERSION` | `PLANNING_SCOPE` |
+| `numera.finance.tax_obligations.view` | `TAX_OBLIGATION` | `FISCAL_SCOPE` |
+| `numera.finance.cost_allocations.view` | `COST_ALLOCATION` | `COST_ALLOCATION_SCOPE` |
+| `numera.analytics.financial_indicators.view` | `FINANCIAL_INDICATOR` | `ANALYTIC_MEMBER_SCOPE` |
+
+No se crea ninguna clave `.view` adicional.
+
+---
+
+#### 26. Registro completo — registro y escritura ordinaria
+
+Las dieciocho capacidades de `NUMERA-REGISTER-PERMISSION-REGISTRY-001` reciben decisión explícita de perfil:
+
+| Permiso exacto | Recurso | Perfil de scope |
+| --- | --- | --- |
+| `numera.finance.cost_centers.create` | `COST_CENTER` | `COST_CENTER_SCOPE` |
+| `numera.finance.cost_centers.update` | `COST_CENTER` | `COST_CENTER_SCOPE` |
+| `numera.finance.cost_centers.activate` | `COST_CENTER` | `COST_CENTER_SCOPE` |
+| `numera.finance.cost_centers.deactivate` | `COST_CENTER` | `COST_CENTER_SCOPE` |
+| `numera.finance.expenses.create` | `EXPENSE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.expenses.update` | `EXPENSE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.expenses.cancel` | `EXPENSE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.economic_facts.register` | `ECONOMIC_FACT` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payables.register` | `PAYABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payables.update` | `PAYABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.receivables.register` | `RECEIVABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.receivables.update` | `RECEIVABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.fiscal_documents.register` | `FISCAL_DOCUMENT` | `FISCAL_SCOPE` |
+| `numera.finance.fiscal_documents.update` | `FISCAL_DOCUMENT` | `FISCAL_SCOPE` |
+| `numera.finance.tax_obligations.register` | `TAX_OBLIGATION` | `FISCAL_SCOPE` |
+| `numera.finance.tax_obligations.update` | `TAX_OBLIGATION` | `FISCAL_SCOPE` |
+| `numera.finance.cost_allocations.register` | `COST_ALLOCATION` | `COST_ALLOCATION_SCOPE` |
+| `numera.finance.cost_allocations.update` | `COST_ALLOCATION` | `COST_ALLOCATION_SCOPE` |
+
+El scope restringe la escritura; no altera campos, estado, idempotencia ni lifecycle definidos por `NUMERA-AUTH-004`.
+
+---
+
+#### 27. Registro completo — aprobación y rechazo
+
+Las doce capacidades de `NUMERA-APPROVAL-PERMISSION-REGISTRY-001` reciben decisión explícita de perfil:
+
+| Permiso exacto | Recurso | Perfil de scope |
+| --- | --- | --- |
+| `numera.finance.expenses.approve` | `EXPENSE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.expenses.reject` | `EXPENSE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payables.approve` | `PAYABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payables.reject` | `PAYABLE` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payment_plans.approve` | `PAYMENT_PLAN` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.payment_plans.reject` | `PAYMENT_PLAN` | `FINANCIAL_ROW_SCOPE` |
+| `numera.finance.fiscal_documents.approve` | `FISCAL_DOCUMENT` | `FISCAL_SCOPE` |
+| `numera.finance.fiscal_documents.reject` | `FISCAL_DOCUMENT` | `FISCAL_SCOPE` |
+| `numera.finance.tax_obligations.approve` | `TAX_OBLIGATION` | `FISCAL_SCOPE` |
+| `numera.finance.tax_obligations.reject` | `TAX_OBLIGATION` | `FISCAL_SCOPE` |
+| `numera.finance.cost_allocations.approve` | `COST_ALLOCATION` | `COST_ALLOCATION_SCOPE` |
+| `numera.finance.cost_allocations.reject` | `COST_ALLOCATION` | `COST_ALLOCATION_SCOPE` |
+
+Una decisión aprobatoria exige scope sobre el recurso completo sometido a decisión; no existe aprobación parcial de una porción oculta del mismo objeto salvo contrato empresarial explícito distinto.
+
+---
+
+#### 28. Registro completo — estado de periodo
+
+Las tres capacidades de `NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001` reciben:
+
+| Permiso exacto | Recurso | Perfil de scope |
+| --- | --- | --- |
+| `numera.finance.periods.lock` | `PERIOD` | `PERIOD_SCOPE` |
+| `numera.finance.periods.close` | `PERIOD` | `PERIOD_SCOPE` |
+| `numera.finance.periods.reopen` | `PERIOD` | `PERIOD_SCOPE` |
+
+`lock`, `close` y `reopen` conservan su semántica y sus gates; esta tarea únicamente cierra el scope.
+
+---
+
+#### 29. Registro completo — exportación
+
+La capacidad de exportación recibe:
+
+| Permiso exacto | Recurso | Perfil de scope |
+| --- | --- | --- |
+| `numera.analytics.financial_reports.export` | `FINANCIAL_REPORT` | `REPORT_EXPORT_SCOPE` |
+
+La exportación exige un scope igual o más restrictivo que el `financial_reports.view` que habilita la consulta base.
+
+---
+
+#### 30. Balance del inventario
+
+El inventario materializado en esta tarea queda:
+
+```text
+EXPECTED_PERMISSION_IDENTITIES = 56
+MATERIALIZED_SCOPE_DECISIONS = 56
+MISSING_SCOPE_DECISIONS = 0
+DUPLICATE_SCOPE_DECISIONS = 0
+NEW_PERMISSION_IDENTITIES = 0
+```
+
+Ninguna capacidad queda con owner de scope indefinido.
+
+---
+
+#### 31. Lectura de recurso individual
+
+Una lectura de recurso individual requiere:
+
+```text
+EXACT_READ_PERMISSION
++
+RESOURCE RESOLVED SERVER_SIDE
++
+RESOURCE DIMENSIONS WITHIN EFFECTIVE_SCOPE
++
+ALLOWED PROJECTION
++
+NO EFFECTIVE DENY
+```
+
+Si una dimensión obligatoria del recurso queda fuera del scope, la lectura falla cerrada salvo que el contrato del recurso defina expresamente una proyección parcial segura.
+
+---
+
+#### 32. Lectura agregada
+
+Para equilibrio, rentabilidad, reportes e indicadores:
+
+```text
+AGGREGATE_MEMBER_SET
+SUBSET_OF
+AUTHORIZED_MEMBER_SET
+```
+
+La agregación no puede revelar por totales, diferencias, conteos, drill-down, ordenamiento o metadata la existencia o valor de miembros excluidos.
+
+---
+
+#### 33. Proyección parcial
+
+Una proyección parcial solo es válida cuando el recurso permite separar miembros sin falsear el significado empresarial.
+
+Queda prohibido fabricar una cifra consolidada sobre miembros no autorizados y ocultar únicamente el detalle.
+
+```text
+HIDDEN_MEMBER_VALUE_INCLUDED_IN_TOTAL = FORBIDDEN
+```
+
+---
+
+#### 34. Drill-down
+
+El drill-down desde un agregado no hereda autoridad hacia el recurso fuente.
+
+Cada destino reevalúa:
+
+```text
+permission_key
++
+resource
++
+scope
++
+projection
++
+state/version when material
+```
+
+---
+
+#### 35. Navegación a aplicaciones fuente
+
+Una referencia hacia PULSO, ORIGO, FOGO, NEXO, ANIMA u otra aplicación no transporta el permiso NUMERA.
+
+La aplicación propietaria vuelve a autorizar su recurso con su contrato propio.
+
+---
+
+#### 36. Creación y registro
+
+Una creación o registro debe validar las dimensiones propuestas antes de producir el recurso.
+
+Para un gasto, hecho, obligación, documento fiscal o asignación de costo:
+
+```text
+PROPOSED_DIMENSIONS
+SUBSET_OF
+ACTOR_AUTHORIZED_SCOPE_FOR_ACTION
+```
+
+La creación del recurso no amplía después el alcance del creador.
+
+---
+
+#### 37. Actualización
+
+Una actualización que conserve dimensiones exige autoridad sobre el recurso actual.
+
+Una actualización que cambie empresa, entidad legal, unidad, sede, área o centro de costo exige además autoridad sobre el estado propuesto:
+
+```text
+CURRENT_SCOPE_AUTHORIZED
++
+PROPOSED_SCOPE_AUTHORIZED
++
+EXACT_UPDATE_PERMISSION
++
+EDITABLE_STATE
+=
+SCOPE_MOVE_ELIGIBLE
+```
+
+No se puede editar un recurso autorizado para moverlo hacia un ámbito no autorizado.
+
+---
+
+#### 38. Cancelación, activación y desactivación
+
+Estas acciones conservan el permiso exacto definido por su owner y requieren scope sobre el recurso completo afectado.
+
+Autoría, visibilidad o pertenencia al mismo rol no sustituyen el alcance.
+
+---
+
+#### 39. Aprobación y rechazo
+
+Una aprobación o rechazo requiere:
+
+```text
+EXACT_DECISION_PERMISSION
++
+UNDERLYING_READ_ELIGIBILITY
++
+RESOURCE_SCOPE_COMPLETE
++
+APPROVABLE_STATE_AND_VERSION
++
+SEGREGATION_RULES
+```
+
+Una fila visible parcialmente no permite decidir sobre componentes o dimensiones ocultas del mismo objeto empresarial.
+
+---
+
+#### 40. Cost allocations
+
+Una distribución o asignación de costos puede relacionar pool/origen y múltiples destinos.
+
+Para mutación o aprobación:
+
+```text
+ALL_REQUIRED_SOURCE_MEMBERS_AUTHORIZED
+AND ALL_REQUIRED_DESTINATION_MEMBERS_AUTHORIZED
+```
+
+Si un destino obligatorio queda fuera del alcance, la operación completa falla cerrada.
+
+---
+
+#### 41. Periodos: lock
+
+`numera.finance.periods.lock` exige scope sobre el `PERIOD` completo que será bloqueado.
+
+Un actor con acceso a una sola sede no puede bloquear un periodo organizacional global salvo que el `PERIOD` esté canónicamente definido como recurso scoped a esa sede y el actor tenga autoridad sobre esa identidad exacta.
+
+---
+
+#### 42. Periodos: close
+
+`numera.finance.periods.close` exige el mismo principio de recurso completo y scope exacto.
+
+No existe cierre global por inferencia desde un subconjunto visible.
+
+---
+
+#### 43. Periodos: reopen
+
+`numera.finance.periods.reopen` no amplía el scope original del periodo ni concede autoridad de mutación sobre los recursos reabiertos.
+
+La reapertura revalida periodo, versión de cierre, scope y razón conforme a `NUMERA-AUTH-006`.
+
+---
+
+#### 44. Exportación
+
+Para `numera.analytics.financial_reports.export`:
+
+```text
+EXPORT_MEMBER_SET <= VIEW_MEMBER_SET
+EXPORT_FIELDS <= AUTHORIZED_REPORT_FIELDS
+EXPORT_SCOPE <= AUTHORIZED_REPORT_SCOPE
+```
+
+Cambiar formato, nombre de archivo, filtro o destinatario no permite ampliar el universo de datos.
+
+---
+
+#### 45. Empresa/sede/centro en exportación
+
+Toda exportación debe conservar como parte de su evidencia los filtros y dimensiones efectivamente usados.
+
+Si el reporte cruza empresas, sedes o centros, cada miembro debe estar dentro del scope vigente del actor y de la finalidad. Un reporte global autorizado no implica que futuras exportaciones puedan omitir la reevaluación.
+
+---
+
+#### 46. Datos fiscales
+
+En recursos fiscales, la entidad legal es una dimensión de autoridad cuando sea material.
+
+La sede o el centro de costo pueden explicar atribución interna, pero no determinan por sí solos emisor, contribuyente, presentador o autoridad fiscal externa.
+
+---
+
+#### 47. Paquete laboral financiero
+
+El scope financiero de un `LABOR_PAYMENT_PACKAGE` limita la población y dimensiones económicas visibles, pero no concede acceso adicional a datos personales o laborales.
+
+La proyección permanece minimizada y cualquier detalle ajeno al contrato financiero debe reautorizarse en su dominio propietario.
+
+---
+
+#### 48. Tesorería y bancos
+
+Una cuenta, caja, movimiento o conciliación puede tener una frontera organizacional distinta de una sede.
+
+Conocer número, alias o ID no concede autoridad. Si no existe dimensión territorial, se usa el recurso exacto y su ámbito organizacional aprobado; nunca se inventa una sede para autorizarlo.
+
+Los detalles especialmente sensibles continúan reservados a `NUMERA-AUTH-014`.
+
+---
+
+#### 49. Planeación y escenarios
+
+Presupuestos, forecast, escenarios y versiones de precio se limitan por el conjunto dimensional de su versión.
+
+Esta tarea gobierna su lectura y scope, pero no crea permisos para crear, compartir, aprobar o publicar esas entidades; esas acciones pertenecen a `NUMERA-AUTH-015`.
+
+---
+
+#### 50. Scope y sensibilidad son controles distintos
+
+Un recurso dentro de scope no deja de ser sensible.
+
+```text
+VALID_SCOPE != FIELD_AUTHORIZATION
+VALID_SCOPE != DECLASSIFICATION
+```
+
+La minimización de campos y los controles especiales de cartera, bancos, fiscal o laboral siguen aplicando.
+
+---
+
+#### 51. Scope y estado son controles distintos
+
+Un recurso territorialmente autorizado puede estar en un estado que bloquee la acción.
+
+```text
+VALID_SCOPE + INVALID_STATE = DENY
+```
+
+Esta tarea no altera lifecycles ni estados definidos por dominio.
+
+---
+
+#### 52. Scope y segregación son controles distintos
+
+Tener cobertura sobre el recurso no convierte al actor en aprobador, conciliador, ejecutor de pago, cerrador o reabridor.
+
+Cada acción conserva su permiso y reglas de segregación.
+
+---
+
+#### 53. Denegaciones efectivas tienen precedencia
+
+Una denegación individual, aislamiento de ambiente/recurso, revocación o restricción más específica prevalece sobre un scope permisivo.
+
+No existe fallback a un scope más amplio cuando una decisión específica deniega.
+
+---
+
+#### 54. Cambios de scope y decisiones stale
+
+Una decisión de autorización no puede reutilizarse después de cambios materiales en:
+
+- asignaciones de sede/área;
+- relación con centro de costo;
+- entidad o unidad del recurso;
+- permiso efectivo;
+- estado o versión del recurso;
+- reglas de scope;
+- denegaciones.
+
+Ante stale:
+
+```text
+DENY_AND_REEVALUATE
+```
+
+---
+
+#### 55. Cache
+
+Una caché de autorización o resultado financiero debe incluir suficiente identidad para impedir reutilización entre scopes incompatibles.
+
+Como mínimo, cuando aplique:
+
+```text
+principal/effective_actor
+permission_key
+authorization_version
+scope_fingerprint
+resource_or_query_fingerprint
+projection/version
+```
+
+Un resultado global no puede servirse a un actor local por compartir la misma URL o consulta lógica.
+
+---
+
+#### 56. Server-side obligatorio
+
+La decisión final de scope debe ocurrir en una frontera autoritativa capaz de resolver el recurso real.
+
+No basta con:
+
+- ocultar botones;
+- limitar selectores;
+- filtrar en cliente;
+- confiar en parámetros de URL;
+- confiar en un ID enviado por formulario;
+- confiar en una sede activa de UI;
+- usar el nombre del rol.
+
+RLS, RPC, Server Actions, APIs o servicios futuros deberán aplicar el contrato según la unidad propietaria materializada.
+
+---
+
+#### 57. Mass assignment y campos territoriales
+
+Los campos que alteran dimensión empresarial no pueden aceptarse indiscriminadamente desde payload cliente.
+
+Una futura materialización deberá usar allowlist y revalidación de las dimensiones actuales/propuestas antes de persistir.
+
+---
+
+#### 58. Simulación
+
+La simulación nunca amplía el scope real del actor.
+
+```text
+SIMULATED_SCOPE <= REAL_SCOPE_CEILING
+SIMULATED_PERMISSION != REAL_DATA_AUTHORITY
+```
+
+Las decisiones de preview pueden explicar allow/deny sin revelar datos financieros reales fuera del alcance real.
+
+---
+
+#### 59. Frontera de materialización por unidad
+
+Una futura instancia `NUMERA-AUTH-008::<implementation_unit_id>` solo puede materializar el componente de scope que pertenezca a esa unidad.
+
+Debe declarar al menos:
+
+```text
+implementation_unit_id
+owner_package_id
+consumer_package_ids
+permission_keys_consumed
+scope_profiles_consumed
+resource_targets
+baseline_commit_or_version
+validation_evidence
+rollback_evidence
+```
+
+La instancia no puede apropiarse de otra unidad ni duplicar la misma materialización bajo otro package.
+
+---
+
+#### 60. Dependencia frente a permisos todavía no publicados
+
+Si una unidad necesita una permission key que permanece `CONTRACT_DEFINED_PENDING_MATERIALIZATION`, la instancia de scope no puede publicar esa clave como atajo.
+
+```text
+MISSING_PERMISSION_IDENTITY
+-> WAIT_FOR_OWNER_MATERIALIZATION
+-> NO_FALLBACK
+```
+
+La publicación/migración de permisos y paquetes compartidos continúa bajo `NUMERA-AUTH-012` y sus instancias aplicables.
+
+---
+
+#### 61. Supabase
+
+Esta tarea global no modifica Supabase.
+
+Una materialización futura que requiera RLS, funciones, RPC, tablas de soporte, claims, policies o migraciones de VENTO deberá:
+
+- ejecutarse desde `vento-shell`;
+- pertenecer a la instancia física autorizada;
+- conservar compatibilidad y rollback;
+- demostrar que el enforcement coincide con `NUMERA-FINANCIAL-SCOPE-CONTRACT-001`.
+
+---
+
+#### 62. Integridad entre evaluadores
+
+UI, Server Actions, APIs, RPC y RLS no pueden producir scopes incompatibles para la misma identidad y versión de autorización.
+
+La capa inferior puede ser más restrictiva, pero nunca más permisiva que el contrato canónico aplicable.
+
+---
+
+#### 63. Errores seguros
+
+Una denegación de scope no debe revelar nombres, cifras, existencia detallada, saldos, miembros excluidos, centros ajenos, cuentas o metadata sensible que el actor no está autorizado a conocer.
+
+Fallo técnico y `DENY` permanecen distintos, pero ninguno se convierte en `ALLOW`.
+
+---
+
+#### 64. Auditoría queda reservada
+
+Esta tarea define qué decisión de scope debe poder explicarse, pero la estructura de auditoría financiera pertenece a `NUMERA-AUTH-009`.
+
+La siguiente tarea deberá poder registrar, como mínimo, actor, permiso, recurso, scope/dimensiones evaluadas, versión, decisión, razón y correlación sin duplicar contenido financiero innecesario.
+
+---
+
+#### 65. Estado AS-IS y brechas de materialización
+
+El estado actual conserva:
+
+- seis permisos NUMERA canónicos existentes en la matriz transversal contando `numera.access`;
+- cinco permisos actuales de lectura financiera/analítica con perfiles de alcance ya documentados;
+- permisos legacy runtime cuyo namespace/migración no se corrige en esta tarea;
+- múltiples permission keys nuevas definidas por `NUMERA-AUTH-003..007` aún pendientes de materialización;
+- ausencia de evidencia suficiente para declarar materializado de extremo a extremo `NUMERA-FINANCIAL-SCOPE-CONTRACT-001` en todos los consumidores.
+
+La ausencia de materialización no autoriza un fallback amplio.
+
+---
+
+#### 66. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| permission keys nuevas aún no publicadas físicamente | no | `NUMERA-AUTH-012` + unidad/package aplicables | catálogo, contratos y consumidores materializan la identidad exacta antes de usarla |
+| enforcement de scope integral no demostrado en todos los consumidores | no | `NUMERA-AUTH-008::<implementation_unit_id>` | cada unidad autorizada implementa el perfil correspondiente y supera pruebas adversariales |
+| auditoría de la decisión de scope todavía no materializada | no | `NUMERA-AUTH-009` | contrato y futura unidad registran decisión, razón y correlación suficientes |
+| independencia administrativa de turno todavía pendiente | no | `NUMERA-AUTH-010` | capacidades administrativas consumen el carril correcto sin dependencia operativa accidental |
+| contexto operativo todavía pendiente donde corresponda | no | `NUMERA-AUTH-011` | `CTX` se resuelve y se intersecta sin ampliar scope base |
+| pruebas integrales de runtime pendientes | no | `NUMERA-AUTH-013` | matriz adversarial demuestra allow/deny, cross-scope, stale y fallos cerrados |
+| datos especialmente sensibles de cartera/bancos requieren especialización | no | `NUMERA-AUTH-014` | proyección/campos especializados quedan protegidos sin ampliar el scope aprobado |
+| acciones mutantes de escenarios/precios/presupuestos no están definidas aquí | no | `NUMERA-AUTH-015` | permisos especializados consumen este scope cuando sean definidos |
+
+No queda una dimensión financiera detectada sin owner y condición de salida.
+
+---
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** las obligaciones de separar permisos, conservar empresa/sede/centro de costo y dimensiones económicas, revalidar territorio/recurso/estado en servidor, evitar ampliación por parámetros o roles, limitar exportación y conservar evidencia ya están protegidas por requisitos canónicos vigentes. Esta tarea especializa esas obligaciones sobre las cincuenta y seis capacidades NUMERA aprobadas sin introducir una obligación verificable nueva.
+
+---
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-NUMERA-001` para separación de permisos y trazabilidad hasta empresa, sede y centro de costo;
+- `TREQ-NUMERA-002` para entidad legal, marca/unidad, sede, centro de costo, identidad y evidencia del hecho económico;
+- `TREQ-NUMERA-003` para separación de capacidades financieras sensibles;
+- `TREQ-NUMERA-004` para dimensión, centro, periodo, versión y trazabilidad de costos, presupuesto y rentabilidad;
+- `TREQ-AUTH-013` para revalidación server-side de actor, permiso, territorio/contexto, recurso, estado y efecto;
+- `TREQ-AUTH-014` para impedir reutilización de decisiones obsoletas;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-SHELL-011` para identidad, finalidad, clasificación, recurso, relación, territorio, estado, destinatario y acción exacta en consulta y salida de información.
+
+Esta sección es solo trazabilidad de cobertura existente.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental queda reservada al checkout local después de incorporar el artefacto. |
+| LOCAL | `NOT_EXECUTED` | Formato, quality, delivery, topología, plan, TREQ y diff quedan pendientes del checkout local de la tarea. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main@1e6087be55db9c0d510ff25115cadb2de6f4f988`, `active-sequence.previous_task_id = NUMERA-AUTH-006`, el bloque 006 publicado, marcadores pendientes 007/008, owner NUMERA, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, contratos transversales de alcance/recurso, matrices NUMERA vigentes, Registro 04A relevante y owners 009..015; la predecesora 007 se consume desde el artefacto completo aprobado por el usuario y aún pendiente de publicación. |
+| OPERATIVA | `NOT_EXECUTED` | No se probaron actores, empresas, entidades legales, sedes, áreas, centros de costo, agregados, cierres, exportaciones, cross-scope, stale decisions ni ambientes desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global no crea ni autoriza ninguna instancia `NUMERA-AUTH-008::<implementation_unit_id>`. |
+
+---
+
+#### 70. Criterios de aceptación
+
+- [x] La topología queda `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] El marcador global no crea una instancia física.
+- [x] Se define `NUMERA-FINANCIAL-SCOPE-CONTRACT-001` como contrato, no permiso.
+- [x] Se gobiernan exactamente 56 permission keys existentes/definidas por 003..007.
+- [x] No se inventa ninguna permission key nueva.
+- [x] `numera.access` queda fuera del scope de datos financieros.
+- [x] entidad legal, empresa/unidad, marca, sede, área, centro de costo, periodo e ID permanecen distintos.
+- [x] `G(B)` no se interpreta como wildcard ni como bypass.
+- [x] `AS` no se sustituye por `employees.site_id` ni por sede seleccionada.
+- [x] un centro de costo no se infiere automáticamente desde una sede.
+- [x] centros sin sede se autorizan por identidad exacta o ámbito organizacional explícito.
+- [x] `OWN` no amplía territorio y solo aplica donde el contrato lo admite.
+- [x] lectura individual exige recurso y scope válidos.
+- [x] agregados incluyen solo miembros autorizados y no filtran valores ocultos por totales.
+- [x] drill-down reautoriza el recurso destino.
+- [x] creación valida dimensiones propuestas antes de persistir.
+- [x] cambio territorial exige autoridad sobre scope actual y propuesto.
+- [x] aprobación/rechazo exige scope completo del objeto decidible.
+- [x] asignaciones de costo exigen cobertura sobre origen y todos los destinos obligatorios.
+- [x] lock/close/reopen exigen el `PERIOD` completo gobernado por la identidad aplicable.
+- [x] exportación nunca supera el scope de lectura del reporte.
+- [x] scope no desclasifica campos ni sustituye estado, segregación o permiso exacto.
+- [x] decisiones stale se deniegan y reevalúan.
+- [x] caché no cruza scopes incompatibles.
+- [x] server-side es autoridad final.
+- [x] simulación no amplía el scope real.
+- [x] 009 conserva ownership de auditoría, 010 de independencia de turno, 011 de contexto, 012 de materialización de permisos/packages, 013 de pruebas, 014 de sensibilidad especializada y 015 de acciones de escenarios/precios/presupuestos.
+- [x] no se crean ni modifican requisitos de prueba.
+- [x] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- publica permisos runtime;
+- migra aliases o grants;
+- modifica matrices de roles;
+- crea empresa, entidad legal, marca, unidad, sede, área o centro de costo;
+- inventa columnas físicas para esas dimensiones;
+- modifica hechos económicos, gastos, obligaciones, cartera, bancos, costos, periodos o reportes;
+- crea RLS, RPC, policies, funciones, triggers, Server Actions o APIs;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- cambia estados de lifecycle;
+- define campos sensibles especializados de cartera/bancos;
+- crea acciones de escenarios, precios o presupuestos;
+- define auditoría financiera física;
+- impone dependencia de turno;
+- resuelve contexto operativo;
+- selecciona `package_id` o `implementation_unit_id`;
+- ejecuta E5;
+- autoriza una instancia física;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-AUTH-009`.
+
+---
+
+#### 72. Handoff a NUMERA-AUTH-009
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_SCOPE_CONTRACT = NUMERA-FINANCIAL-SCOPE-CONTRACT-001
+NUMERA_SCOPE_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_SCOPE_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_SCOPE_INSTANCE_PATTERN = NUMERA-AUTH-008::<implementation_unit_id>
+NUMERA_SCOPE_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_SCOPE_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_SCOPE_DECISION_COUNT = 22
+REGISTER_WRITE_SCOPE_DECISION_COUNT = 18
+APPROVAL_SCOPE_DECISION_COUNT = 12
+PERIOD_STATE_SCOPE_DECISION_COUNT = 3
+EXPORT_SCOPE_DECISION_COUNT = 1
+SCOPE_DECISION_MISSING_COUNT = 0
+SCOPE_DECISION_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_SCOPE_TASK = 0
+NUMERA_ACCESS_IMPLIES_FINANCIAL_SCOPE = NO
+VALID_SCOPE_WITHOUT_PERMISSION = DENY
+VALID_PERMISSION_WITHOUT_VALID_SCOPE = DENY
+LEGAL_ENTITY_COMPANY_UNIT_SITE_AREA_COST_CENTER_PERIOD_RESOURCE_ID = DISTINCT
+SELECTED_SITE_IS_AUTHORITY = NO
+EMPLOYEE_PRIMARY_SITE_IS_AUTHORITY = NO
+COST_CENTER_IS_SITE = NO
+GLOBAL_BASE_SCOPE_IS_WILDCARD = NO
+OWNERSHIP_IS_SCOPE_BYPASS = NO
+AGGREGATE_MEMBER_SET_MUST_BE_AUTHORIZED = YES
+HIDDEN_MEMBER_VALUE_IN_AGGREGATE = FORBIDDEN
+DRILLDOWN_REAUTHORIZES_DESTINATION_RESOURCE = YES
+SOURCE_APP_NAVIGATION_REAUTHORIZES = YES
+CREATE_REQUIRES_PROPOSED_DIMENSIONS_AUTHORIZED = YES
+SCOPE_MOVE_REQUIRES_CURRENT_AND_PROPOSED_SCOPE = YES
+APPROVAL_REQUIRES_COMPLETE_RESOURCE_SCOPE = YES
+COST_ALLOCATION_REQUIRES_ALL_REQUIRED_MEMBERS = YES
+PERIOD_TRANSITION_REQUIRES_COMPLETE_PERIOD_SCOPE = YES
+EXPORT_SCOPE_MUST_NOT_EXCEED_VIEW_SCOPE = YES
+SCOPE_DOES_NOT_DECLASSIFY_FIELDS = YES
+SCOPE_DOES_NOT_BYPASS_STATE_OR_SEGREGATION = YES
+STALE_SCOPE_DECISION = DENY_AND_REEVALUATE
+SERVER_SIDE_SCOPE_REVALIDATION_REQUIRED = YES
+SIMULATED_SCOPE_MUST_NOT_EXCEED_REAL_SCOPE = YES
+MISSING_PERMISSION_FOR_SCOPE_MATERIALIZATION = WAIT_NO_FALLBACK
+SCOPE_AUDIT_OWNER = NUMERA_AUTH_009
+ADMIN_TURN_INDEPENDENCE_OWNER = NUMERA_AUTH_010
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_SCOPE_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_009_OWNER = FINANCIAL_AUDIT_DEFINITION
+```
+
+`NUMERA-AUTH-009` deberá registrar auditoría financiera suficiente para reconstruir las decisiones de permiso, recurso y scope aquí definidas sin duplicar innecesariamente contenido financiero sensible.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-007 — Definir permisos de exportación`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-008 — Limitar por empresa, sede o centro de costo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-009 — Registrar auditoría financiera`
 ### [ ] NUMERA-AUTH-009 — Registrar auditoría financiera
 ### [ ] NUMERA-AUTH-010 — Evitar dependencia de turno para administración
 ### [ ] NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional

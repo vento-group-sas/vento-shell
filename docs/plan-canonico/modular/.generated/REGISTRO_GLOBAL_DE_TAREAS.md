@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1428** |
+| Aprobadas | **1429** |
 | En propuesta | **0** |
-| No iniciadas | **168** |
+| No iniciadas | **167** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **89.47% (1428/1596)** |
+| Porcentaje de completamiento | **89.54% (1429/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **168** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1329** |
+| ⏸ NO_EVALUADA | **167** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1330** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUTH-007` — Definir permisos de exportación | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUTH-008` — Limitar por empresa, sede o centro de costo | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUTH-009` — Registrar auditoría financiera | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUTH-008` — Limitar por empresa, sede o centro de costo | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUTH-009` — Registrar auditoría financiera | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUTH-010` — Evitar dependencia de turno para administración | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1190,7 +1190,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-005` | Definir permisos de aprobación | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-006` | Definir permisos de cierre | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-007` | Definir permisos de exportación | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-008` | Limitar por empresa, sede o centro de costo | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-008` | Limitar por empresa, sede o centro de costo | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-009` | Registrar auditoría financiera | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-010` | Evitar dependencia de turno para administración | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-011` | Exigir contexto operativo donde exista captura operacional | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
