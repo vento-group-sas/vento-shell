@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1418** |
+| Aprobadas | **1419** |
 | En propuesta | **0** |
-| No iniciadas | **178** |
+| No iniciadas | **177** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **88.85% (1418/1596)** |
+| Porcentaje de completamiento | **88.91% (1419/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **178** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1319** |
+| ⏸ NO_EVALUADA | **177** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1320** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-DOM-015` — Aprobar alcance objetivo y capacidades diferidas | ✅ APROBADA |
-| Tarea actual | `NUMERA-DOM-016` — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-DOM-017` — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-DOM-016` — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito | ✅ APROBADA |
+| Tarea actual | `NUMERA-DOM-017` — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-018` — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1180,7 +1180,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-013` | Definir fronteras frente al sistema contable o fiscal externo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-014` | Definir conciliación y tratamiento de diferencias | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-015` | Aprobar alcance objetivo y capacidades diferidas | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-016` | Definir cartera, cuentas por cobrar, cobranza y exposición de crédito | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-016` | Definir cartera, cuentas por cobrar, cobranza y exposición de crédito | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-017` | Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-018` | Definir motor de escenarios, versiones de precios, costos, supuestos y publicación | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-001` | Vincular módulos y acciones con permisos y contratos aprobados | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |

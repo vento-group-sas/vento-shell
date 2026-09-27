@@ -14317,6 +14317,1643 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito`
-### [ ] NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
+### ✅ NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
+**Tarea siguiente:** NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
+**Tipo de tarea:** definición documental del contrato detallado de cartera y cuentas por cobrar de NUMERA, incluyendo deudor, cuenta, cuotas, vencimientos, saldo, recaudos, aplicaciones, anticipos, disputas, acuerdos, promesas, aging, cobranza, exposición, límites, bloqueos, castigos, conciliación, historia e interoperabilidad contable futura, consumiendo `CAP-12.04`, `VPROC-0053` y `NUMERA-DOM-001..015` sin reabrir la decisión de alcance ni autorizar implementación física; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea cartera real, saldos, tablas, vistas, funciones, RPC, triggers, RLS, migraciones, integraciones, permisos runtime, políticas comerciales activas, límites numéricos, intereses, recargos, procesos de cobro reales, movimientos bancarios, asientos, documentos fiscales, configuraciones de Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato detallado de `CAP-12.04 — Gestionar cuentas por cobrar` dentro de NUMERA partiendo de una decisión ya cerrada: cartera es una capacidad obligatoria del dominio.
+
+La tarea debe permitir que NUMERA represente, siga, cobre, aplique, concilie y explique derechos de cobro sin:
+
+- convertir al cliente en saldo;
+- equiparar pago recibido con pago aplicado;
+- cerrar cartera por coincidencia de monto;
+- borrar historia al renegociar, disputar, reversar o castigar;
+- inferir límites, intereses, aging, bloqueos o políticas de crédito no aprobadas;
+- reescribir la venta, factura, entrega, banco u otro hecho fuente para cuadrar el saldo;
+- convertirse por inferencia en contabilidad formal.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-DOM-016` se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+execution_gate_observed = UNREVIEWED
+```
+
+Por tanto:
+
+- define un contrato documental reusable;
+- no crea instancia física propia;
+- `UNREVIEWED` no concede autorización temporal;
+- no materializa cartera ni datos;
+- no modifica Supabase;
+- no crea permisos;
+- no inicia cobros reales;
+- no asigna cuentas contables.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-015
+
+Se recibe sin reinterpretación:
+
+```text
+CAP_12_TOTAL = 15
+CAP_12_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+CAP_12_OPTIONAL_BY_DEFAULT = 0
+CAP_12_04_ACCOUNTS_RECEIVABLE = REQUIRED
+CAP_12_05_ACCOUNTS_PAYABLE = REQUIRED
+CAP_12_03_BANKS_AND_PAYMENTS = REQUIRED
+CAP_12_12_TREASURY = REQUIRED
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED_WITH_EXTERNAL_AUTHORITY
+CAP_12_13_TAX_OBLIGATION_CONTROL = REQUIRED_WITH_EXTERNAL_AUTHORITY
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+NUMERA_DOM_016_DETAIL = REQUIRED
+NUMERA_DOM_017_ARCHITECTURE = REQUIRED
+NUMERA_DOM_018_SCENARIO_DETAIL = REQUIRED
+DEFERRED_DECISION_IS_REMOVED_SCOPE = NO
+DEFERRED_DETAIL_IS_OPTIONAL_CAPABILITY = NO
+AS_IS_ABSENT_IS_OUT_OF_SCOPE = NO
+IMPLEMENTED_IMPLIES_CERTIFIED = NO
+PROVIDER_SELECTION_BY_INFERENCE = FORBIDDEN
+CREDIT_POLICY_BY_INFERENCE = FORBIDDEN
+TAX_POLICY_BY_INFERENCE = FORBIDDEN
+SOURCE_DOMAIN_OWNERSHIP_PRESERVED = YES
+RECONCILIATION_CONTRACT_FROM_NUMERA_DOM_014 = REQUIRED
+TREQ_CHANGES = 0
+```
+
+Esta tarea no vuelve a decidir si cartera pertenece a NUMERA.
+
+---
+
+#### 4. Fuentes canónicas consumidas
+
+El contrato consume, sin sustituirlos:
+
+- `CAP-SCOPE-012` y `CAP-12.04`;
+- `NUMERA-DOM-001` para frontera económica general;
+- `NUMERA-DOM-002` para hechos de ventas y pagos;
+- `NUMERA-DOM-009` para caja, bancos y conciliación financiera;
+- `NUMERA-DOM-011` para periodos, cierre y reapertura;
+- `NUMERA-DOM-012` para reportes oficiales internos;
+- `NUMERA-DOM-013` para frontera fiscal/contable externa;
+- `NUMERA-DOM-014` para conciliación y tratamiento de diferencias;
+- `NUMERA-DOM-015` para alcance final obligatorio;
+- `VPROC-0053` como lifecycle propietario de cartera;
+- `VSCREEN-0099` como superficie propietaria de cuentas por cobrar y cartera;
+- `NUMERA-UX-026` como tarea posterior de experiencia;
+- `NUMERA-AUTH-014` como tarea posterior de autorización sensible.
+
+---
+
+#### 5. Decisión de dominio no reabrible
+
+Se congela:
+
+```text
+ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_RECEIVABLE_OWNER = NUMERA
+CREDIT_POLICY_BY_INFERENCE = FORBIDDEN
+PAYMENT_RECEIVED != PAYMENT_APPLIED
+CLIENT != DEBTOR
+DEBTOR != PASS_ACCOUNT
+RECEIVABLE != INSTALLMENT
+RECEIVABLE != BALANCE
+```
+
+La ausencia AS-IS de cartera no la convierte en opcional.
+
+---
+
+#### 6. Propiedad y fronteras
+
+NUMERA es propietario de:
+
+- cuenta por cobrar;
+- cuotas o vencimientos;
+- saldo abierto;
+- aplicación financiera de recaudos;
+- anticipos y saldos a favor dentro de su alcance;
+- aging;
+- exposición de crédito;
+- expediente de cobranza;
+- acuerdos y promesas financieras autorizadas;
+- castigo o condonación como decisión económica gobernada cuando corresponda;
+- conciliación financiera de cartera.
+
+NUMERA no se vuelve propietario de:
+
+- venta o pedido de PULSO;
+- identidad cliente de PASS;
+- documento fiscal emitido por sistema autorizado;
+- movimiento bancario ejecutado por banco/proveedor;
+- entrega física o logística;
+- relación jurídica o tratamiento tributario no aprobado;
+- asiento contable formal reservado a `NUMERA-DOM-017`.
+
+---
+
+#### 7. Cliente, deudor, cuenta PASS y tercero permanecen separados
+
+Se preserva:
+
+```text
+CUSTOMER
+!= DEBTOR
+!= PASS_ACCOUNT
+!= ACCOUNTING_THIRD_PARTY
+```
+
+Un deudor podrá ser persona o empresa y no requerirá una cuenta PASS.
+
+Una cuenta PASS podrá relacionarse con un deudor únicamente mediante vínculo explícito y verificable; la coincidencia de nombre, correo, teléfono o documento no autoriza fusión automática.
+
+---
+
+#### 8. Entidad legal acreedora
+
+Toda cuenta por cobrar deberá identificar la entidad legal acreedora competente.
+
+No se inferirá la entidad legal desde:
+
+- marca visible;
+- sede;
+- centro de costo;
+- canal;
+- cuenta bancaria;
+- usuario que registró el caso.
+
+Un mismo deudor puede mantener saldos con entidades legales distintas sin que NUMERA los fusione como una sola obligación.
+
+---
+
+#### 9. Origen de la cuenta por cobrar
+
+Una cuenta por cobrar nace únicamente desde un origen económico válido y correlacionable.
+
+El contrato mínimo deberá conservar:
+
+- tipo de origen;
+- identificador de origen;
+- dominio propietario;
+- entidad legal acreedora;
+- deudor;
+- fecha de ocurrencia;
+- fecha de reconocimiento;
+- moneda;
+- monto reconocido;
+- términos de pago aplicables;
+- documentos y soportes relacionados;
+- evidencia de autorización cuando corresponda.
+
+Una venta no crea por sí sola cartera si quedó totalmente pagada bajo su contrato vigente.
+
+---
+
+#### 10. Identidad estable de la cuenta por cobrar
+
+Cada cuenta por cobrar deberá tener identidad estable e independiente de:
+
+- número de factura;
+- número de pedido;
+- nombre del cliente;
+- referencia bancaria;
+- número de cuota;
+- estado actual.
+
+La identidad no se recrea al cambiar vencimiento, acuerdo, estado, aplicación o estrategia de cobro.
+
+---
+
+#### 11. Cuenta, documento, cuota, vencimiento y saldo
+
+Se conserva obligatoriamente:
+
+```text
+RECEIVABLE
+!= DOCUMENT
+!= INSTALLMENT
+!= DUE_DATE
+!= OPEN_BALANCE
+```
+
+Una cuenta puede relacionarse con uno o más documentos y dividirse en una o más cuotas o vencimientos bajo términos aprobados.
+
+El saldo es un resultado derivado de componentes y movimientos válidos; no es el identificador del derecho de cobro.
+
+---
+
+#### 12. Contrato mínimo de una cuenta por cobrar
+
+Conceptualmente, una cuenta deberá poder conservar:
+
+- identidad estable;
+- entidad legal acreedora;
+- deudor;
+- origen y correlación;
+- moneda;
+- monto reconocido original;
+- componentes trazables;
+- fecha de reconocimiento;
+- términos de pago;
+- calendario de cuotas cuando aplique;
+- estado de objeto;
+- saldo abierto;
+- importe vencido;
+- importe en disputa;
+- aplicaciones activas;
+- anticipos o saldos a favor relacionados;
+- acuerdo vigente cuando exista;
+- exposición asociada;
+- evidencia y lineage;
+- versión o revisión cuando una condición cambie de forma autorizada.
+
+---
+
+#### 13. Componentes monetarios
+
+NUMERA no recalculará silenciosamente la venta fuente.
+
+El importe reconocido podrá conservar componentes recibidos o derivados de fuente autorizada, por ejemplo:
+
+- principal o base;
+- impuestos informados;
+- descuentos;
+- cargos autorizados;
+- notas o compensaciones posteriores;
+- ajustes aprobados.
+
+Cada componente debe conservar origen, razón y efecto sobre el saldo.
+
+---
+
+#### 14. Regla de saldo abierto
+
+El saldo abierto debe ser reproducible desde movimientos y aplicaciones vigentes.
+
+Conceptualmente:
+
+```text
+OPEN_BALANCE
+= RECOGNIZED_AMOUNT
++ AUTHORIZED_INCREASES
+- AUTHORIZED_REDUCTIONS
+- ACTIVE_APPLIED_AMOUNT
+```
+
+Ningún término puede aparecer como ajuste manual genérico sin causa.
+
+Saldo cero no prueba por sí solo pago, conciliación bancaria, cierre legal ni estado fiscal.
+
+---
+
+#### 15. Estados mínimos del objeto cuenta por cobrar
+
+Se preserva la taxonomía objetivo ya aprobada:
+
+```text
+draft
+open
+partial
+overdue
+disputed
+settled
+written_off
+cancelled
+```
+
+Estos estados describen al objeto financiero y no sustituyen los estados de proceso de `VPROC-0053`.
+
+---
+
+#### 16. Estado del objeto frente a estado del proceso
+
+Se conserva:
+
+```text
+RECEIVABLE_OBJECT_STATUS != VPROC_0053_PROCESS_STATE
+```
+
+Ejemplo: una cuenta puede estar `overdue` mientras el proceso `VPROC-0053` se encuentra en `COLLECTION_IN_PROGRESS`.
+
+No se colapsarán ambos conceptos en una sola columna o etiqueta semántica.
+
+---
+
+#### 17. Lifecycle propietario VPROC-0053
+
+El proceso canónico permanece:
+
+```text
+RECEIVABLE_REGISTERED
+-> VALIDATION_IN_PROGRESS
+-> COLLECTION_SCHEDULED
+-> COLLECTION_IN_PROGRESS
+-> PAYMENT_RECEIVED
+-> APPLICATION_PENDING
+-> DIFFERENCE_UNDER_REVIEW
+-> RECONCILIATION_PENDING
+-> RECEIVABLE_SETTLED
+```
+
+La tarea no inventa un lifecycle alterno.
+
+---
+
+#### 18. Registro y validación inicial
+
+`RECEIVABLE_REGISTERED` significa que existe contraparte, origen, monto, fecha y condición de cobro o recaudo suficientes para abrir el proceso.
+
+Antes de cobrar deberán poder validarse al menos:
+
+- origen;
+- contraparte;
+- entidad legal;
+- moneda;
+- monto;
+- vencimiento;
+- condición;
+- duplicidad;
+- reversos o correcciones fuente conocidos.
+
+Abrir la cuenta no demuestra validez final ni cobrabilidad.
+
+---
+
+#### 19. Cuotas y cronograma
+
+Cuando exista pago diferido, cada cuota deberá conservar al menos:
+
+- identidad;
+- secuencia o relación con la cuenta;
+- importe;
+- moneda;
+- fecha de exigibilidad o vencimiento;
+- saldo abierto de la cuota;
+- estado derivado;
+- términos o acuerdo que la originan.
+
+Cambiar un cronograma requiere versión o acuerdo trazable; no se sobrescribe el cronograma anterior sin historia.
+
+---
+
+#### 20. Vencimiento
+
+La fecha de vencimiento deberá proceder de términos aprobados o de un acuerdo válido.
+
+Se preserva:
+
+```text
+DUE_DATE != COLLECTION_DATE
+DUE_DATE != PROMISE_DATE
+DUE_DATE != PAYMENT_DATE
+```
+
+Una promesa posterior no modifica el vencimiento contractual por sí sola.
+
+---
+
+#### 21. Aging
+
+El aging se calcula contra una fecha de corte declarada y el vencimiento vigente aplicable.
+
+Debe poder distinguir:
+
+- no vencido;
+- vencido;
+- días exactos de mora o atraso según la política aplicable;
+- importe abierto asociado;
+- importe en disputa cuando corresponda.
+
+No se fijan en esta tarea buckets universales como 30/60/90 días.
+
+---
+
+#### 22. Buckets de aging versionados
+
+Si se usan buckets, deberán declarar:
+
+- identidad de política;
+- límites de cada bucket;
+- moneda o alcance cuando sea relevante;
+- vigencia;
+- propietario;
+- versión;
+- tratamiento de disputas, acuerdos y cuentas castigadas.
+
+Cambiar buckets no reescribe la edad real de la deuda ni resultados históricos ya publicados sin versionado.
+
+---
+
+#### 23. Pago recibido y aplicación permanecen separados
+
+Se congela:
+
+```text
+PAYMENT_RECEIVED != PAYMENT_APPLIED
+```
+
+Un recaudo confirmado puede existir sin que NUMERA sepa todavía qué cuenta, cuota o concepto debe liquidar.
+
+`VPROC-0053.PAYMENT_RECEIVED` es un handoff financiero, no el cierre de la cuenta.
+
+---
+
+#### 24. Estados mínimos de pago o recaudo
+
+Se preserva la taxonomía objetivo aprobada:
+
+```text
+initiated
+pending
+confirmed
+failed
+reversed
+unapplied
+partially_applied
+applied
+```
+
+El estado del recaudo no debe inferirse del estado de la cuenta por cobrar.
+
+---
+
+#### 25. Aplicación financiera
+
+Una aplicación deberá ser un vínculo explícito y reversible entre un recaudo válido y un destino financiero válido.
+
+Debe poder conservar:
+
+- recaudo origen;
+- cuenta por cobrar destino;
+- cuota o concepto cuando aplique;
+- importe aplicado;
+- moneda;
+- fecha efectiva;
+- actor o regla autorizada;
+- motivo o criterio;
+- estado;
+- reversión cuando ocurra;
+- evidencia.
+
+---
+
+#### 26. Cardinalidad de aplicaciones
+
+Se admite que:
+
+- un recaudo se aplique parcialmente a una cuenta;
+- un recaudo se distribuya en varias cuentas o cuotas;
+- una cuenta reciba múltiples recaudos.
+
+La relación compleja se materializa mediante líneas de aplicación trazables; no mediante una asignación many-to-many opaca.
+
+Cada línea conserva un origen y un destino identificables.
+
+---
+
+#### 27. Aplicación parcial
+
+Toda aplicación parcial deberá conservar residual.
+
+Se preserva:
+
+```text
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+```
+
+Una cuenta con residual distinto de cero no se marca `settled` por la existencia de un pago parcial.
+
+---
+
+#### 28. Recaudo no aplicado
+
+Un recaudo confirmado y todavía no asignado se conserva como no aplicado.
+
+No podrá:
+
+- cerrar automáticamente la cuenta más antigua;
+- asignarse solo por coincidencia de monto;
+- convertirse silenciosamente en ingreso;
+- desaparecer del saldo de tesorería por falta de referencia.
+
+---
+
+#### 29. Anticipos y saldos a favor
+
+Un pago recibido antes de que exista una cuenta por cobrar aplicable se trata como anticipo o saldo a favor según política aprobada.
+
+Se conserva:
+
+```text
+ADVANCE_OR_CREDIT_BALANCE != NEGATIVE_RECEIVABLE
+```
+
+Su aplicación posterior requiere vínculo explícito y no recrea el recaudo original.
+
+---
+
+#### 30. Sobrepago
+
+Si un recaudo excede el saldo aplicable:
+
+- la parte aplicable puede cerrar el saldo correspondiente;
+- el excedente queda no aplicado, como saldo a favor u otro tratamiento autorizado;
+- no se crea automáticamente ingreso adicional;
+- no se crea una cuenta negativa para ocultar el excedente.
+
+---
+
+#### 31. Moneda y aplicación cruzada
+
+Una cuenta conserva su moneda original.
+
+Un recaudo en moneda distinta no podrá aplicarse silenciosamente.
+
+Cuando exista conversión autorizada deberán conservarse al menos:
+
+- moneda de origen;
+- moneda de liquidación;
+- tasa;
+- fuente de tasa;
+- timestamp o fecha efectiva;
+- versión o política;
+- importe antes y después de conversión;
+- diferencia de conversión cuando aplique.
+
+Esta tarea no fija metodología universal de FX.
+
+---
+
+#### 32. Reversos, devoluciones y reembolsos
+
+Una devolución comercial, nota, reverso de pago o reembolso no elimina la cuenta original.
+
+Cada efecto debe conservar correlación y producir el ajuste autorizado sobre saldo, aplicación o recaudo sin sobrescribir historia.
+
+Una reversión de recaudo previamente aplicado debe reabrir el residual correspondiente cuando su contrato lo exija.
+
+---
+
+#### 33. Notas y compensaciones
+
+Una nota o compensación financiera debe indicar:
+
+- causa;
+- fuente;
+- importe;
+- moneda;
+- cuenta o cuota afectada;
+- autoridad;
+- evidencia;
+- efecto sobre saldo;
+- reversibilidad cuando aplique.
+
+No existe una nota genérica para cuadrar cartera.
+
+---
+
+#### 34. Disputa
+
+Se conserva:
+
+```text
+DISPUTE != PAYMENT
+DISPUTE != WRITE_OFF
+DISPUTE != FORGIVENESS
+DISPUTE != RECONCILIATION_DIFFERENCE
+```
+
+La disputa deberá poder identificar importe, motivo, origen, actor, evidencia, estado y resolución.
+
+El importe disputado permanece trazable dentro del saldo hasta que una resolución autorizada produzca el efecto correspondiente.
+
+---
+
+#### 35. Retención o bloqueo de cobro
+
+Una disputa, investigación o excepción puede exigir pausar acciones de cobro según política aprobada.
+
+Se preserva:
+
+```text
+COLLECTION_HOLD != RECEIVABLE_CANCELLED
+COLLECTION_HOLD != BALANCE_ZERO
+```
+
+El bloqueo de cobro no modifica por sí solo el derecho económico ni su aging.
+
+---
+
+#### 36. Estrategia de cobranza
+
+`VPROC-0053.COLLECTION_SCHEDULED` requiere estrategia, fecha, canal y responsable.
+
+La estrategia deberá poder declarar:
+
+- alcance de cartera;
+- prioridad;
+- canal permitido;
+- próximo contacto;
+- responsable;
+- condición de escalamiento;
+- promesa o acuerdo vigente;
+- restricciones de privacidad y contacto aplicables.
+
+Esta tarea no fija cadencia universal de cobranza.
+
+---
+
+#### 37. Evidencia de contacto
+
+Toda interacción material de cobranza deberá poder conservar:
+
+- fecha y hora;
+- canal;
+- actor interno;
+- contraparte contactada;
+- cuentas relacionadas;
+- resultado;
+- compromiso declarado;
+- siguiente acción;
+- evidencia permitida;
+- restricciones o preferencias de contacto conocidas.
+
+El chat, correo o llamada no sustituye el expediente canónico de cartera.
+
+---
+
+#### 38. Promesa de pago
+
+Una promesa es un compromiso declarado por la contraparte y no modifica por sí sola el contrato económico.
+
+Debe conservar:
+
+- fecha prometida;
+- importe prometido;
+- cuentas o cuotas cubiertas;
+- canal y evidencia;
+- actor que la registró;
+- resultado posterior.
+
+Se conserva:
+
+```text
+PROMISE_TO_PAY != PAYMENT
+PROMISE_TO_PAY != PAYMENT_AGREEMENT
+```
+
+---
+
+#### 39. Acuerdo de pago
+
+Un acuerdo puede modificar términos futuros únicamente con autoridad válida.
+
+Debe conservar:
+
+- versión;
+- fecha efectiva;
+- cuentas incluidas;
+- saldo base;
+- cronograma anterior;
+- nuevo cronograma;
+- condiciones;
+- aprobador cuando aplique;
+- evidencia;
+- motivo;
+- vigencia y estado.
+
+El acuerdo no borra vencimientos ni incumplimientos históricos.
+
+---
+
+#### 40. Cobranza ordinaria frente a concesión material
+
+El lifecycle vigente exige segregación condicional para decisiones materiales.
+
+Se conserva:
+
+```text
+ORDINARY_COLLECTION != MATERIAL_CREDIT_CONCESSION
+```
+
+Cobrar o aplicar ordinariamente no requiere una aprobación artificial adicional.
+
+Acuerdos, castigos, notas, crédito o aplicaciones excepcionales sí requieren la autoridad independiente definida por el contrato de autorización correspondiente.
+
+---
+
+#### 41. Exposición de crédito
+
+La exposición no se confunde con saldo abierto.
+
+Se preserva:
+
+```text
+OPEN_RECEIVABLE_BALANCE != CREDIT_EXPOSURE
+```
+
+Como mínimo, la exposición deberá incluir el saldo abierto reconocido y podrá incluir otros compromisos únicamente cuando una política versionada los declare expresamente.
+
+No se suman pedidos, cotizaciones, reservas, garantías u otros compromisos por inferencia.
+
+---
+
+#### 42. Identidad y alcance de exposición
+
+Toda exposición deberá declarar:
+
+- entidad legal acreedora;
+- deudor;
+- moneda o regla de conversión;
+- fecha de corte;
+- saldos incluidos;
+- compromisos adicionales incluidos por política;
+- exclusiones;
+- política y versión;
+- resultado.
+
+La exposición entre entidades legales no se consolida automáticamente.
+
+---
+
+#### 43. Límite de crédito
+
+Un límite de crédito deberá ser una decisión explícita y versionada cuando exista.
+
+Su identidad mínima incluye:
+
+- entidad legal acreedora;
+- deudor o grupo explícitamente aprobado;
+- moneda o regla de agregación;
+- importe;
+- vigencia;
+- propietario;
+- aprobador cuando aplique;
+- política y versión;
+- evidencia.
+
+Se conserva:
+
+```text
+NULL_CREDIT_LIMIT != UNLIMITED_CREDIT
+```
+
+La ausencia de límite aprobado significa política no definida o no aplicable, no autorización infinita.
+
+---
+
+#### 44. Crédito disponible
+
+Solo cuando existe un límite válido y una política de exposición compatible podrá derivarse:
+
+```text
+AVAILABLE_CREDIT = APPROVED_CREDIT_LIMIT - POLICY_DEFINED_CREDIT_EXPOSURE
+```
+
+El resultado debe declarar fecha de corte, moneda y política.
+
+No se agregan monedas heterogéneas sin conversión aprobada.
+
+---
+
+#### 45. Exceso de límite
+
+Exceder un límite produce una condición de riesgo o restricción según política.
+
+No implica por sí solo:
+
+- cancelar pedidos existentes;
+- anular ventas;
+- bloquear todos los canales;
+- castigar saldos;
+- modificar cartera.
+
+La acción concreta requiere política, autorización y propietario empresarial explícitos.
+
+---
+
+#### 46. Política de crédito versionada
+
+La política podrá gobernar, cuando sea aprobada:
+
+- elegibilidad;
+- límites;
+- exposición;
+- excepciones;
+- documentación requerida;
+- escalamiento;
+- acuerdos;
+- bloqueos;
+- castigos;
+- revisiones periódicas.
+
+Esta tarea define el contrato que debe soportarla, pero no inventa sus valores.
+
+---
+
+#### 47. Castigo
+
+El castigo requiere autoridad independiente y evidencia.
+
+Se preserva:
+
+```text
+WRITE_OFF != PAYMENT
+WRITE_OFF != FORGIVENESS
+WRITE_OFF != SOURCE_DELETION
+```
+
+Un castigo:
+
+- conserva la cuenta original;
+- conserva aging e historia previa;
+- registra causa, importe, autoridad y fecha;
+- produce el efecto económico autorizado;
+- no modifica la venta fuente;
+- no prueba por sí solo extinción jurídica de la obligación.
+
+---
+
+#### 48. Condonación o perdón
+
+Una condonación es una decisión distinta del castigo técnico o económico.
+
+Solo podrá producir reducción definitiva cuando exista autoridad empresarial y fundamento aplicable.
+
+Se conserva:
+
+```text
+FORGIVENESS != WRITE_OFF
+FORGIVENESS != COMMERCIAL_DISCOUNT_BY_INFERENCE
+```
+
+Esta tarea no define tratamiento legal o tributario profesional.
+
+---
+
+#### 49. Cancelación de cuenta por cobrar
+
+`cancelled` se reserva para una cuenta invalidada o extinguida por una causa autorizada distinta del pago ordinario.
+
+La cancelación deberá correlacionarse con:
+
+- reversión o cancelación de origen;
+- error probado;
+- decisión autorizada;
+- evidencia.
+
+No se usa `cancelled` como sinónimo de `settled`.
+
+---
+
+#### 50. Liquidación de la cuenta
+
+`VPROC-0053.RECEIVABLE_SETTLED` exige que recaudos, aplicaciones, diferencias, devoluciones y conciliación produzcan un saldo final explicado.
+
+Se preserva:
+
+```text
+RECEIVABLE_SETTLED != SOURCE_SALE_DELETED
+RECEIVABLE_SETTLED != CUSTOMER_RELATIONSHIP_CLOSED
+```
+
+El cierre del proceso no elimina acuerdos, documentos, evidencia ni historial de cobro.
+
+---
+
+#### 51. Conciliación de cartera
+
+La cartera consume el contrato de `NUMERA-DOM-014`.
+
+Debe poder conciliar al menos:
+
+- cuenta por cobrar;
+- pago o recaudo;
+- aplicación;
+- movimiento bancario o caja cuando corresponda;
+- documento relacionado;
+- saldo residual;
+- diferencias;
+- reversos;
+- estado externo relevante.
+
+La conciliación vincula evidencia y no reescribe fuentes.
+
+---
+
+#### 52. Pago observado frente a banco o caja
+
+Un pago registrado en PULSO, PASS, proveedor o canal no equivale automáticamente a movimiento bancario conciliado.
+
+Se conserva:
+
+```text
+PAYMENT_CONFIRMED != BANK_RECONCILED
+PAYMENT_CONFIRMED != RECEIVABLE_SETTLED
+```
+
+NUMERA debe poder conservar ambos estados y resolver sus diferencias.
+
+---
+
+#### 53. Venta, entrega y documento fiscal
+
+Para una cuenta originada comercialmente se mantienen separados:
+
+```text
+SALE
+!= DELIVERY
+!= FISCAL_DOCUMENT
+!= RECEIVABLE
+!= PAYMENT
+```
+
+Una venta a crédito puede originar cartera bajo términos válidos; un documento fiscal puede servir como evidencia; una entrega puede afectar reconocimiento según contrato propietario; ninguno de esos hechos sustituye a los demás.
+
+---
+
+#### 54. Ventas B2B y catering
+
+Las operaciones B2B o catering pueden generar cartera cuando exista condición de pago diferido válida.
+
+Se conserva:
+
+```text
+CUSTOMER_ACCEPTANCE != CREDIT_APPROVAL
+QUOTE_ACCEPTED != CREDIT_LIMIT_APPROVED
+```
+
+El compromiso comercial de `VPROC-0041` no autoriza por sí solo crédito, límite o excepción financiera.
+
+---
+
+#### 55. Venta pagada inmediatamente
+
+Una venta completamente pagada y conciliada bajo su flujo no requiere una cuenta por cobrar abierta artificial.
+
+NUMERA podrá conservar el hecho económico y su evidencia sin crear cartera residual cero solo para completar una pantalla.
+
+---
+
+#### 56. Recaudo previo a la cuenta
+
+Si el dinero llega antes de que exista el derecho de cobro aplicable, se conserva como recaudo no aplicado, anticipo o saldo a favor según contrato.
+
+No se fabricará una cuenta temporal para justificar el dinero recibido.
+
+---
+
+#### 57. Duplicidad e idempotencia
+
+El mismo origen económico no puede crear dos cuentas por cobrar por replay.
+
+La misma confirmación de pago no puede crear dos recaudos.
+
+La misma intención de aplicación no puede duplicar saldo aplicado.
+
+La identidad deberá soportar reintentos y eventos fuera de orden sin multiplicar efectos.
+
+---
+
+#### 58. Eventos fuera de orden
+
+La llegada fuera de orden de venta, documento, pago, devolución o conciliación no autoriza inferencias destructivas.
+
+El sistema deberá poder conservar estados incompletos o pendientes hasta recibir evidencia suficiente.
+
+Un pago puede existir antes que la referencia de cuenta y permanecer no aplicado.
+
+---
+
+#### 59. Resultado externo incierto
+
+Timeout, respuesta perdida o estado desconocido de banco/proveedor no se consideran éxito ni fracaso económico final por inferencia.
+
+Se conserva:
+
+```text
+UNCERTAIN_EXTERNAL_RESULT_REMAINS_OPEN_UNTIL_RECONCILED = YES
+```
+
+Los reintentos deben ser idempotentes.
+
+---
+
+#### 60. Eventos tardíos y periodos cerrados
+
+Una aplicación, reversión, nota, castigo o corrección posterior a un cierre consume `NUMERA-DOM-011`.
+
+No se modifica silenciosamente un periodo cerrado.
+
+El tratamiento deberá usar la política aprobada de:
+
+- periodo vigente;
+- ajuste;
+- reapertura;
+- nueva versión o restatement cuando corresponda.
+
+---
+
+#### 61. Aging histórico y fecha de corte
+
+Todo reporte histórico de aging o exposición deberá declarar fecha de corte y utilizar únicamente información conocida o válida para esa versión.
+
+Un pago posterior no debe hacer que un reporte histórico parezca haber estado cobrado antes de tiempo.
+
+---
+
+#### 62. Reportes de cartera
+
+Los reportes de cartera consumen `NUMERA-DOM-012`.
+
+Deberán poder distinguir, según alcance autorizado:
+
+- saldo total;
+- saldo corriente;
+- saldo vencido;
+- saldo en disputa;
+- recaudos no aplicados;
+- aging;
+- exposición;
+- acuerdos y promesas vigentes;
+- castigos;
+- conciliación pendiente.
+
+El reporte no se convierte en fuente editable.
+
+---
+
+#### 63. Datos sensibles y minimización
+
+Cartera y crédito son información financiera sensible.
+
+La lectura y exportación deberán minimizar:
+
+- identificadores personales;
+- documentos sensibles;
+- datos bancarios;
+- información de contacto;
+- notas de cobranza;
+- evidencia de acuerdos;
+- datos de exposición y límite.
+
+Una necesidad operativa de cobro no autoriza acceso indiscriminado a todo el expediente financiero.
+
+---
+
+#### 64. Roles del proceso
+
+`VPROC-0053` conserva como responsables principales:
+
+- `RESPONSABLE_FINANCIERO`;
+- `RESPONSABLE_COMERCIAL`;
+
+con apoyo de:
+
+- `RESPONSABLE_DE_CLIENTE_Y_SERVICIO`;
+- `RESPONSABLE_ANALITICO`.
+
+La autoridad de aprobación material podrá corresponder a `GERENCIA_GENERAL` o `RESPONSABLE_FINANCIERO` según umbral y objeto, conforme al contrato transversal de `VPROC-0053`.
+
+Esta tarea no convierte nombres de rol en permisos runtime.
+
+---
+
+#### 65. Segregación de funciones
+
+Se preserva:
+
+```text
+COLLECT != APPROVE_MATERIAL_CONCESSION
+REGISTER != WRITE_OFF_APPROVAL
+APPLY_ORDINARY_PAYMENT != APPROVE_EXCEPTIONAL_APPLICATION
+```
+
+La separación se activa especialmente para:
+
+- acuerdo material;
+- castigo;
+- condonación;
+- nota material;
+- crédito o límite;
+- aplicación excepcional.
+
+El flujo ordinario no agrega aprobaciones ficticias.
+
+---
+
+#### 66. Autorización propietaria posterior
+
+`NUMERA-AUTH-014` deberá definir permisos de:
+
+- cartera;
+- acuerdos;
+- castigos;
+- bancos;
+- datos financieros sensibles;
+- decisiones de crédito relacionadas.
+
+`NUMERA-DOM-016` define la semántica de dominio; no crea códigos runtime ni grants.
+
+---
+
+#### 67. Experiencia propietaria posterior
+
+`NUMERA-UX-026` deberá diseñar la experiencia de:
+
+- cartera;
+- vencimientos;
+- recaudos;
+- aplicación;
+- acuerdos;
+- gestión de cobro.
+
+La UI deberá consumir este contrato y no redefinir saldos, aging, exposición o estados localmente.
+
+---
+
+#### 68. Superficie VSCREEN-0099
+
+`VSCREEN-0099 — Cuentas por cobrar y cartera` permanece asociada a `VPROC-0053` y debe conservar cartera, recaudo, aplicación y saldo.
+
+La existencia de la pantalla no prueba implementación completa de `CAP-12.04`.
+
+---
+
+#### 69. Eventos de proceso existentes
+
+El contrato de eventos ya reconoce para `VPROC-0053`:
+
+```text
+receivable-registered
+validation-in-progress
+collection-scheduled
+payment-received
+reconciliation-pending
+receivable-settled
+```
+
+Esta tarea no agrega tipos físicos de evento ni modifica contratos generados.
+
+---
+
+#### 70. Backfill y migración histórica
+
+Un backfill de cartera deberá conservar procedencia y nivel de evidencia.
+
+Se prohíbe inferir como hechos completos:
+
+- saldos de una hoja sin documentos;
+- aging sin fecha de corte;
+- pagos sin referencia;
+- clientes agregados sin entidad legal;
+- cuentas cerradas solo porque un total histórico sea cero.
+
+Datos incompletos podrán quedar en cuarentena o con calidad explícita hasta reconciliación.
+
+---
+
+#### 71. Corrección de origen
+
+Si la diferencia pertenece a la venta, documento, banco u otra fuente externa a NUMERA, el propietario de esa fuente conserva la corrección.
+
+NUMERA puede corregir su representación económica mediante acciones trazables, pero no editar el hecho extranjero para cuadrar cartera.
+
+---
+
+#### 72. Reapertura de cartera
+
+Una cuenta previamente liquidada puede requerir reapertura lógica ante reverso, devolución, chargeback, corrección o evidencia nueva.
+
+La reapertura:
+
+- conserva el cierre previo;
+- registra causa;
+- conserva actor y timestamp;
+- reconstruye el residual válido;
+- vuelve a conciliación cuando corresponda.
+
+No se reemplaza el historial anterior.
+
+---
+
+#### 73. Crédito y riesgo no equivalen
+
+Se preserva:
+
+```text
+CREDIT_EXPOSURE != CREDIT_RISK_ASSESSMENT
+CREDIT_LIMIT != RISK_ACCEPTANCE
+```
+
+NUMERA puede calcular exposición y aplicar política aprobada, pero esta tarea no inventa scoring, apetito de riesgo ni metodología de rating.
+
+---
+
+#### 74. Intereses, mora y recargos
+
+No se crean intereses, penalidades o recargos por inferencia.
+
+Solo podrán incorporarse cuando exista:
+
+- base comercial o jurídica aprobada;
+- fórmula;
+- tasa;
+- vigencia;
+- moneda;
+- autoridad;
+- tratamiento de reversión;
+- evidencia.
+
+Esta tarea no fija tasas ni fórmulas.
+
+---
+
+#### 75. Consolidación multi-moneda
+
+Un total consolidado de cartera o exposición multi-moneda requiere política de conversión y fecha de corte.
+
+Sin esa política, los saldos deberán presentarse por moneda y no sumarse nominalmente.
+
+---
+
+#### 76. Cierre de cartera frente a cierre de periodo
+
+Liquidar una cuenta por cobrar no cierra un periodo económico.
+
+Cerrar un periodo no liquida cuentas abiertas.
+
+Se conserva:
+
+```text
+RECEIVABLE_SETTLED != PERIOD_CLOSED
+PERIOD_CLOSED != ALL_RECEIVABLES_SETTLED
+```
+
+Las cuentas abiertas pueden existir en periodos posteriores según su contrato.
+
+---
+
+#### 77. Frontera con NUMERA-DOM-014
+
+`NUMERA-DOM-014` sigue gobernando la conciliación transversal y el tratamiento de diferencias.
+
+Esta tarea especializa ese contrato para cartera sin cambiar:
+
+- identidad de casos;
+- tolerancias versionadas;
+- autoridad de origen;
+- aceptación de excepciones;
+- verificación antes del cierre;
+- reapertura con historia.
+
+---
+
+#### 78. Frontera con NUMERA-DOM-017
+
+La cartera debe ser mapeable posteriormente a contabilidad formal, pero no es un asiento.
+
+Se conserva:
+
+```text
+RECEIVABLE != ACCOUNTING_ENTRY
+PAYMENT_APPLICATION != ACCOUNTING_POSTING
+WRITE_OFF != ACCOUNTING_ENTRY_BY_DEFAULT
+```
+
+`NUMERA-DOM-017` podrá definir cuentas, comprobantes, reglas de contabilización y postings candidatos sin cambiar la identidad de cuenta, recaudo o aplicación aquí definida.
+
+---
+
+#### 79. Frontera con NUMERA-DOM-018
+
+Escenarios de crédito o cobranza futuros no modificarán cartera real.
+
+Se preserva:
+
+```text
+SIMULATED_RECEIVABLE != REAL_RECEIVABLE
+SIMULATED_COLLECTION != REAL_PAYMENT
+```
+
+El motor de escenarios posterior deberá consumir snapshots o supuestos sin escribir hechos reales.
+
+---
+
+#### 80. Dependencias de implementación futura
+
+La materialización física deberá resolver, según diseño aprobado:
+
+- modelo de deudor y vínculo con identidades existentes;
+- cuenta, cuota y aplicación;
+- eventos e idempotencia;
+- ingestión desde ventas y pagos;
+- integración bancaria;
+- acuerdos y cobranza;
+- reglas de aging;
+- política de crédito;
+- autorización y RLS;
+- datos sensibles;
+- migración y backfill;
+- reportes;
+- observabilidad;
+- pruebas E2E;
+- rollback y reconciliación.
+
+Esta tarea no declara resueltas esas dependencias.
+
+---
+
+#### 81. Condiciones mínimas de certificación futura
+
+`CAP-12.04` no podrá certificarse por existir una tabla o pantalla.
+
+La evidencia futura deberá demostrar al menos:
+
+- alta idempotente desde origen válido;
+- deudor y entidad legal correctos;
+- cuotas y vencimientos reproducibles;
+- aging con corte declarado;
+- pago recibido separado de aplicación;
+- aplicación parcial y reversible;
+- anticipos y sobrepagos sin pérdida;
+- disputa y acuerdo con historia;
+- exposición y límite bajo política versionada;
+- castigo con autoridad;
+- conciliación bancaria y comercial;
+- reapertura ante reverso;
+- segregación de funciones;
+- reportes sin duplicación;
+- evidencia auditada.
+
+---
+
+#### 82. Decisiones diferidas con propietario
+
+| Decisión o parámetro | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| límites numéricos de crédito | no | Dirección + responsable financiero + `NUMERA-AUTH-014` | política versionada, alcance, moneda, vigencia y autoridad aprobados |
+| buckets concretos de aging | no | responsable financiero | catálogo versionado con corte, límites, vigencia y tratamiento de excepciones |
+| cadencia y canales de cobranza | no | responsable financiero + comercial/cliente | estrategia aprobada con privacidad, alcance y escalamiento |
+| intereses, mora o recargos | no | Dirección + autoridad financiera/legal competente | fundamento, fórmula, tasa, vigencia, reversión y evidencia aprobados |
+| criterios automáticos de bloqueo comercial | no | Dirección + responsable financiero/comercial | política de crédito aprobada y contrato de integración con proceso comercial |
+| umbrales de aprobación para acuerdos o castigos | no | `NUMERA-AUTH-014` + Dirección | segregación, umbrales y autoridad aprobados |
+| scoring o rating de riesgo | no | Dirección + responsable financiero/riesgo | metodología, variables, propósito, gobernanza y validación aprobados |
+| tratamiento jurídico de cartera incobrable | no | autoridad legal/contable competente | criterio profesional aprobado y evidencia aplicable |
+
+Ninguna de estas decisiones puede resolverse por inferencia en implementación.
+
+---
+
+#### 83. Requisitos de prueba derivados
+
+Esta tarea **NO GENERA REQUISITOS DE PRUEBA NUEVOS NI MODIFICA REQUISITOS EXISTENTES**.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos descartados: 0
+Requisitos obsoletos: 0
+```
+
+La cobertura ya existe para cartera, obligaciones, caja, bancos, tesorería, pagos, aplicaciones, acuerdos, aging, exposición, cobranza, castigo, autorización, integración y conciliación.
+
+---
+
+#### 84. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar Registro 04A:
+
+- `TREQ-NUMERA-001` para trazabilidad financiera y ausencia de doble registro;
+- `TREQ-NUMERA-002` para identidad del hecho económico, periodos y correcciones no destructivas;
+- `TREQ-NUMERA-003` como cobertura principal de cartera, cuentas por cobrar, pagos, aplicaciones, aging, exposición, cobranza, castigo y segregación;
+- `TREQ-INTEGRATION-017` para eventos financieros, idempotencia, reintentos, periodos y conciliación;
+- `TREQ-AUTH-013` para validación server-side de acciones protegidas;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones.
+
+Esta enumeración es trazabilidad heredada y no constituye modificación del registro.
+
+---
+
+#### 85. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó esta tarea dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `main`, continuidad vigente, topología `DEFINE_ONCE`, archivo propietario, `CAP-SCOPE-012`, `CAP-12.04`, `VPROC-0053`, estados y eventos generados, `VSCREEN-0099`, actores de proceso, `NUMERA-UX-026`, `NUMERA-AUTH-014`, Registro 04A y el handoff aprobado de `NUMERA-DOM-015` |
+| OPERATIVA | NOT_EXECUTED | no se crearon cuentas, pagos, aplicaciones, aging, cobranza, límites, castigos ni conciliaciones reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / sin instancia física propia; la tarea no autoriza materialización física |
+
+---
+
+#### 86. Criterios de aceptación
+
+`NUMERA-DOM-016` queda aceptable cuando:
+
+1. `CAP-12.04` permanece obligatoria y no se reabre su pertenencia a NUMERA;
+2. cliente, deudor, cuenta PASS y tercero contable permanecen distintos;
+3. entidad legal acreedora es explícita;
+4. una cuenta nace desde origen económico correlacionable;
+5. cuenta, documento, cuota, vencimiento y saldo permanecen distintos;
+6. identidad de cuenta es estable;
+7. componentes monetarios tienen origen trazable;
+8. saldo abierto es reproducible;
+9. ajustes genéricos sin causa quedan prohibidos;
+10. taxonomía mínima del objeto cuenta se preserva;
+11. estado de objeto no se confunde con lifecycle de proceso;
+12. `VPROC-0053` permanece autoritativo;
+13. validación inicial comprueba origen, contraparte, importe, vencimiento y duplicidad;
+14. cuotas conservan identidad y cronograma;
+15. cambios de cronograma conservan historia;
+16. vencimiento no se confunde con promesa o pago;
+17. aging declara corte;
+18. buckets no se inventan universalmente;
+19. buckets configurados son versionados;
+20. pago recibido no implica aplicación;
+21. pago recibido no liquida por sí solo la cuenta;
+22. estados mínimos de recaudo se preservan;
+23. aplicación es explícita y reversible;
+24. aplicaciones complejas usan líneas trazables;
+25. aplicación parcial conserva residual;
+26. recaudo no aplicado permanece visible;
+27. anticipos no crean cuentas negativas;
+28. sobrepago conserva excedente sin convertirlo en ingreso;
+29. aplicación multi-moneda exige política de conversión;
+30. reversos y reembolsos conservan historia;
+31. notas y compensaciones tienen causa y autoridad;
+32. disputa permanece separada de pago, castigo y diferencia de conciliación;
+33. bloqueo de cobro no cancela cuenta;
+34. estrategia de cobranza declara responsable, fecha y canal;
+35. evidencia de contacto se conserva de forma minimizada;
+36. promesa no equivale a pago ni acuerdo;
+37. acuerdo conserva cronograma previo y nuevo;
+38. cobranza ordinaria no crea aprobaciones ficticias;
+39. concesiones materiales exigen autoridad;
+40. exposición no se confunde con saldo abierto;
+41. exposición declara alcance y política;
+42. límite de crédito es explícito y versionado;
+43. `null` no significa límite ilimitado;
+44. crédito disponible solo se deriva con límite y exposición compatibles;
+45. exceso de límite no ejecuta acciones comerciales por inferencia;
+46. política de crédito queda versionable;
+47. castigo conserva la cuenta y su historia;
+48. castigo no equivale a condonación;
+49. condonación requiere autoridad y fundamento;
+50. cancelación no equivale a liquidación;
+51. `RECEIVABLE_SETTLED` exige saldo final explicado;
+52. liquidación no elimina venta, cliente ni evidencia;
+53. cartera consume la conciliación de `NUMERA-DOM-014`;
+54. pago confirmado no equivale a conciliación bancaria;
+55. venta, entrega, documento fiscal, cartera y pago permanecen separados;
+56. B2B/catering no implica aprobación de crédito;
+57. venta pagada no genera cartera artificial;
+58. recaudo previo puede permanecer no aplicado;
+59. idempotencia evita duplicar cuenta, recaudo o aplicación;
+60. eventos fuera de orden no fuerzan inferencias destructivas;
+61. resultado externo incierto permanece abierto hasta conciliación;
+62. eventos tardíos respetan política de periodo;
+63. aging histórico no muta retroactivamente;
+64. reportes de cartera no se vuelven fuente editable;
+65. datos sensibles se minimizan;
+66. actores y segregación de `VPROC-0053` se preservan;
+67. `NUMERA-AUTH-014` conserva autorización posterior;
+68. `NUMERA-UX-026` conserva experiencia posterior;
+69. `VSCREEN-0099` permanece propietaria de la superficie de cartera;
+70. eventos físicos no se crean en esta tarea;
+71. backfill incompleto conserva calidad y procedencia;
+72. propietario de fuente corrige la fuente;
+73. reapertura conserva cierre previo;
+74. exposición no se confunde con evaluación de riesgo;
+75. intereses o recargos no se inventan;
+76. consolidación multi-moneda exige política de conversión;
+77. liquidación de cuenta no equivale a cierre de periodo;
+78. `NUMERA-DOM-014` sigue gobernando diferencias;
+79. cartera permanece mapeable a `NUMERA-DOM-017` sin convertirse en asiento;
+80. simulación posterior no modifica cartera real;
+81. decisiones diferidas tienen propietario y condición de salida;
+82. no se crean ni modifican requisitos de prueba;
+83. no se realizan cambios físicos;
+84. `NUMERA-DOM-017` recibe una cartera económicamente estable y mapeable a contabilidad formal.
+
+---
+
+#### 87. Límites
+
+Esta tarea no:
+
+- implementa cartera;
+- crea deudores, cuentas, cuotas, saldos, pagos o aplicaciones reales;
+- crea tablas, vistas, funciones, RPC, RLS, triggers, migraciones o Storage;
+- modifica Supabase;
+- crea estados físicos o enums runtime;
+- crea permisos ni grants;
+- fija límites monetarios de crédito;
+- fija buckets numéricos de aging;
+- fija intereses, tasas de mora o recargos;
+- fija scoring o rating de riesgo;
+- ejecuta cobranza;
+- envía mensajes, correos o llamadas;
+- crea acuerdos reales;
+- aprueba castigos o condonaciones;
+- modifica ventas, pedidos, documentos fiscales, entregas o movimientos bancarios;
+- ejecuta conversiones FX reales;
+- reabre periodos reales;
+- genera asientos, comprobantes o libros;
+- define plan de cuentas;
+- activa contabilidad formal interna;
+- modifica Registro 04A;
+- diseña `NUMERA-UX-026`;
+- desarrolla `NUMERA-AUTH-014`;
+- desarrolla `NUMERA-DOM-017`;
+- desarrolla `NUMERA-DOM-018`.
+
+---
+
+#### 88. Handoff a NUMERA-DOM-017
+
+La siguiente tarea recibe:
+
+```text
+CAP_12_04_ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_RECEIVABLE_OWNER = NUMERA
+CUSTOMER_DEBTOR_PASS_ACCOUNT_ACCOUNTING_THIRD_PARTY = DISTINCT
+CREDITOR_LEGAL_ENTITY_REQUIRED = YES
+RECEIVABLE_REQUIRES_STABLE_IDENTITY = YES
+RECEIVABLE_DOCUMENT_INSTALLMENT_DUE_DATE_BALANCE = DISTINCT
+OPEN_BALANCE_MUST_BE_REPRODUCIBLE = YES
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+RECEIVABLE_OBJECT_STATUS_AND_PROCESS_STATE = DISTINCT
+VPROC_0053_LIFECYCLE_REMAINS_AUTHORITATIVE = YES
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+PAYMENT_APPLICATION_REQUIRES_EXPLICIT_REVERSIBLE_LINK = YES
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+UNAPPLIED_PAYMENT_MUST_REMAIN_VISIBLE = YES
+ADVANCE_OR_CREDIT_BALANCE_IS_NEGATIVE_RECEIVABLE = NO
+MULTI_CURRENCY_APPLICATION_REQUIRES_APPROVED_FX_CONTEXT = YES
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+PROMISE_TO_PAY_IS_PAYMENT = NO
+PROMISE_TO_PAY_IS_PAYMENT_AGREEMENT = NO
+PAYMENT_AGREEMENT_PRESERVES_PRIOR_SCHEDULE = YES
+OPEN_RECEIVABLE_BALANCE_IS_CREDIT_EXPOSURE = NO
+CREDIT_EXPOSURE_REQUIRES_POLICY_SCOPE_AND_CUTOFF = YES
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+CREDIT_LIMIT_REQUIRES_EXPLICIT_VERSIONED_DECISION = YES
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+FORGIVENESS_REQUIRES_EXPLICIT_AUTHORITY = YES
+PAYMENT_CONFIRMED_IS_BANK_RECONCILED = NO
+PAYMENT_CONFIRMED_IS_RECEIVABLE_SETTLED = NO
+SALE_DELIVERY_FISCAL_DOCUMENT_RECEIVABLE_PAYMENT = DISTINCT
+QUOTE_OR_CUSTOMER_ACCEPTANCE_IMPLIES_CREDIT_APPROVAL = NO
+IDEMPOTENCY_REQUIRED_FOR_RECEIVABLE_PAYMENT_APPLICATION = YES
+UNCERTAIN_EXTERNAL_RESULT_REMAINS_OPEN_UNTIL_RECONCILED = YES
+LATE_EVENT_USES_PERIOD_ADJUST_OR_REOPEN_POLICY = YES
+HISTORICAL_AGING_REQUIRES_AS_OF_CUTOFF = YES
+RECEIVABLE_SETTLED_IS_PERIOD_CLOSED = NO
+RECEIVABLE_IS_ACCOUNTING_ENTRY = NO
+PAYMENT_APPLICATION_IS_ACCOUNTING_POSTING = NO
+WRITE_OFF_IS_ACCOUNTING_ENTRY_BY_DEFAULT = NO
+ACCOUNTING_MAPPING_OWNER = NUMERA_DOM_017
+TREQ_CHANGES = 0
+```
+
+`NUMERA-DOM-017` deberá definir cómo hechos económicos, cuentas por cobrar, pagos, aplicaciones, ajustes, castigos y demás objetos financieros ya estabilizados pueden mapearse a plan de cuentas, reglas de contabilización, comprobantes y asientos candidatos o formales sin reescribir los dominios operativos ni alterar la semántica de cartera aprobada en esta tarea.
+
+---
+
+#### 89. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes`
 ### [ ] NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
 ### [ ] NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación

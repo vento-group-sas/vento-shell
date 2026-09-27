@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1418** |
+| Tareas aprobadas | **1419** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **178** |
+| Tareas no iniciadas | **177** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **88.85% (1418/1596)** |
+| Porcentaje de completamiento | **88.91% (1419/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas** |
-| Tarea actual | **NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito** |
+| Última tarea aprobada | **NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito** |
+| Tarea actual | **NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes** |
+| Siguiente tarea | **NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 28 de 74 aprobadas; NUMERA-DOM-016 pendiente** |
+| Progreso del bloque | **BLOQUE O: 29 de 74 aprobadas; NUMERA-DOM-017 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-DOM-016** |
+| Carril documental | **ACTIVO — NUMERA-DOM-017** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-DOM-015` — Aprobar alcance objetivo y capacidades diferidas |
-| Tarea actual | `NUMERA-DOM-016` — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-DOM-017` — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes |
+| Última aprobada | `NUMERA-DOM-016` — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito |
+| Tarea actual | `NUMERA-DOM-017` — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-DOM-018` — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 28 DE 74 APROBADAS — ACTUAL NUMERA-DOM-016** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 29 DE 74 APROBADAS — ACTUAL NUMERA-DOM-017** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
-        ↓
-TAREA ACTUAL
 NUMERA-DOM-016 — Definir cartera, cuentas por cobrar, cobranza y exposición de crédito
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-DOM-017 — Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-DOM-018 — Definir motor de escenarios, versiones de precios, costos, supuestos y publicación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 28 de 74 tareas aprobadas
+BLOQUE O — 29 de 74 tareas aprobadas
 ```
