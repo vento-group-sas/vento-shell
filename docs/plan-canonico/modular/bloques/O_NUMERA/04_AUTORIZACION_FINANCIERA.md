@@ -11212,7 +11212,1127 @@ NUMERA_AUTH_010_OWNER = ADMINISTRATIVE_TURN_INDEPENDENCE
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-010 — Evitar dependencia de turno para administración`
-### [ ] NUMERA-AUTH-010 — Evitar dependencia de turno para administración
+### ✅ NUMERA-AUTH-010 — Evitar dependencia de turno para administración
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-009 — Registrar auditoría financiera
+**Tarea siguiente:** NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición de la independencia administrativa de turno para las 56 identidades financieras gobernadas de NUMERA y para la entrada administrativa `numera.access`, preservando permiso exacto, alcance, estado, segregación, reautenticación y auditoría sin convertir turno, check-in, rol operativo, sede activa o área activa en autoridad administrativa ni absorber el contexto operacional reservado a la tarea siguiente
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `NUMERA-AUTH-010::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable que una capacidad financiera **administrativa** de NUMERA no puede depender artificialmente de que el actor posea un turno vigente, un check-in activo, un rol operativo temporal, una sede operativa o un área operativa.
+
+La regla raíz queda:
+
+```text
+PERMISO BASE EXACTO
++
+ACTOR EFECTIVO VÁLIDO
++
+SCOPE ADMINISTRATIVO VÁLIDO
++
+RECURSO / ESTADO / VERSIÓN COMPATIBLES
++
+REAUTENTICACIÓN Y DISPOSITIVO CUANDO CORRESPONDA
++
+SIN DENEGACIÓN EFECTIVA
+=
+AUTORIDAD ADMINISTRATIVA EVALUABLE SIN TURNO
+```
+
+Nunca:
+
+```text
+TURNO AUSENTE
+OR
+CHECK-IN AUSENTE
+OR
+ROL OPERATIVO AUSENTE
+=
+DENEGACIÓN ADMINISTRATIVA POR SÍ SOLA
+```
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUTH-009
+
+La tarea consume sin reinterpretación el contrato de auditoría aprobado por la predecesora:
+
+```text
+NUMERA_AUDIT_CONTRACT = NUMERA-FINANCIAL-AUDIT-CONTRACT-001
+NUMERA_AUDIT_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_AUDIT_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_AUDIT_INSTANCE_PATTERN = NUMERA-AUTH-009::<implementation_unit_id>
+NUMERA_AUDIT_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_AUDIT_GOVERNED_PERMISSION_DEFINITIONS = 56
+READ_AUDIT_DECISION_COUNT = 22
+REGISTER_WRITE_AUDIT_DECISION_COUNT = 18
+APPROVAL_AUDIT_DECISION_COUNT = 12
+PERIOD_STATE_AUDIT_DECISION_COUNT = 3
+EXPORT_AUDIT_DECISION_COUNT = 1
+AUDIT_COVERAGE_MISSING_COUNT = 0
+AUDIT_COVERAGE_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_AUDIT_TASK = 0
+AUDIT_EVIDENCE_IS_AUTHORITY = NO
+SHARED_AUTHORIZATION_DECISION_PERSISTENCE_REUSED = YES
+SHARED_AUTHORIZATION_DECISION_LINKS_REUSED = YES
+SHARED_AUDIT_LINK_KIND_COUNT = 7
+TECHNICAL_FAILURE_IS_AUTHORIZATION_DENY = NO
+AUTH_AUDIT_LOG_IS_NUMERA_FINANCIAL_AUDIT_TRAIL = NO
+NUMERA_DOMAIN_AUDIT_TABLE_AS_IS = NO
+NUMERA_DOMAIN_AUDIT_TRIGGERS_AS_IS = 0
+UI_TRACEABILITY_SURFACES_AS_IS = 0
+FINANCIAL_AUDIT_SENSITIVITY_REASON = FINANCIAL_DATA
+AUDIT_FULL_SENSITIVE_PAYLOAD_BY_DEFAULT = FORBIDDEN
+SECRET_OR_TOKEN_IN_AUDIT = FORBIDDEN
+AUDIT_HISTORY_APPEND_ONLY_LOGIC = YES
+CORRELATION_REQUIRED = YES
+CAUSATION_REQUIRED_WHEN_APPLICABLE = YES
+READ_DENY_AUDITABLE = YES
+REJECT_REASON_REQUIRED = YES
+CLOSE_VERSION_AUDITABLE = YES
+REOPEN_REASON_AUDITABLE = YES
+EXPORT_DECISION_AND_RESULT_AUDITABLE = YES
+AUDIT_ACCESS_IS_AUDITABLE = YES
+NUMERA_SPECIFIC_AUDIT_VIEW_PERMISSION_CREATED = NO
+TRACEABILITY_DRILLDOWN_REAUTHORIZES = YES
+IDEMPOTENCY_REFERENCE_AUDITABLE_WHEN_RETRYABLE = YES
+ROLLBACK_AUDITABLE = YES
+COMPENSATION_AUDITABLE = YES
+SERVER_SIDE_AUDIT_CORRELATION_REQUIRED = YES
+MUTATING_EFFECT_REQUIRES_DURABLE_AUDIT_CORRELATION = YES
+NUMERA_FINANCIAL_AUDIT_IS_ECONOMIC_SOURCE = NO
+MISSING_AUDIT_VIEW_PERMISSION_FALLBACK = FORBIDDEN
+MISSING_PERMISSION_FOR_AUDIT_MATERIALIZATION = WAIT_NO_FALLBACK
+ADMIN_TURN_INDEPENDENCE_OWNER = NUMERA_AUTH_010
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_AUDIT_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_010_OWNER = ADMINISTRATIVE_TURN_INDEPENDENCE
+```
+
+La independencia administrativa no reduce la obligación de auditar las decisiones y efectos protegidos definida por la 009.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global de independencia administrativa;
+2. la aprobación documental no modifica código, catálogo, RLS, RPC, Server Actions, paquetes, datos ni Supabase;
+3. cada materialización futura utiliza `NUMERA-AUTH-010::<implementation_unit_id>`;
+4. la instancia solo puede existir después del `E5-GATE-008::<package_id>` aplicable y autorización física explícita;
+5. este marcador no selecciona `package_id`, `implementation_unit_id`, target path ni ambiente;
+6. cualquier modificación de Supabase perteneciente a VENTO se materializa desde `vento-shell`.
+
+---
+
+#### 4. Fuentes y snapshots de preparación
+
+La definición se reconcilia contra las fuentes canónicas vigentes y los snapshots observados:
+
+```text
+vento-shell/main = 60a145d1777827ac9f7ece1d60d17aba32801b9c
+REMOTE_DOCUMENTARY_PREVIOUS = NUMERA-AUTH-008
+APPROVED_UNPUBLISHED_PREDECESSOR = NUMERA-AUTH-009
+APPROVED_UNPUBLISHED_PREDECESSOR_SHA256 = fe2c85b7590ed296c9d4f967e17d96c92c267778699266fb9f69ebdb6d6d4337
+APPROVED_UNPUBLISHED_PREDECESSOR_HANDOFF_SHA256 = a7065a22644fbe8fd573d02886eab5cd93edfed68473df266fba89ee020083e4
+```
+
+También se consumen el modelo transversal de precedencia, el catálogo de prerrequisitos de turno/check-in, el alcance financiero aprobado, la auditoría NUMERA vigente, el Registro 04A y los validadores documentales actuales.
+
+---
+
+#### 5. Resultado contractual
+
+Se define:
+
+```text
+NUMERA-ADMIN-TURN-INDEPENDENCE-CONTRACT-001
+```
+
+El contrato especializa exclusivamente la evaluación administrativa de NUMERA. No crea un segundo motor de autorización ni sustituye las decisiones de modalidad del catálogo transversal.
+
+---
+
+#### 6. Distinción obligatoria entre autoridad administrativa y contexto operacional
+
+```text
+ADMINISTRATIVE_AUTHORITY
+!=
+OPERATIONAL_CONTEXT
+```
+
+La autoridad administrativa responde **quién puede realizar la acción financiera y sobre qué recursos**. El contexto operacional responde **si una captura concreta debe además estar vinculada a una operación real**.
+
+Por tanto:
+
+```text
+VALID_OPERATIONAL_CONTEXT_WITHOUT_ADMIN_PERMISSION = DENY
+VALID_ADMIN_PERMISSION_WITHOUT_REQUIRED_OPERATIONAL_CONTEXT = DENY_ONLY_WHEN_NUMERA_AUTH_011_DECLARED_IT
+NO_OPERATIONAL_CONTEXT_REQUIREMENT_DECLARED = DO_NOT_INVENT_ONE
+```
+
+---
+
+#### 7. Universo exacto gobernado
+
+La tarea conserva el mismo universo financiero aprobado por `NUMERA-AUTH-003..009`:
+
+```text
+READ = 22
+REGISTER_WRITE = 18
+APPROVAL_REJECT = 12
+PERIOD_STATE = 3
+EXPORT = 1
+TOTAL_FINANCIAL_PERMISSIONS = 56
+```
+
+`numera.access` se gobierna además como permiso de entrada administrativa de la aplicación, pero **no forma parte del conteo 56** porque no es una autoridad financiera específica.
+
+---
+
+#### 8. Cardinalidad cerrada
+
+```text
+TOTAL_ADMIN_TURN_GOVERNED_FINANCIAL_PERMISSIONS = 56
+READ_ADMIN_TURN_DECISION_COUNT = 22
+REGISTER_WRITE_ADMIN_TURN_DECISION_COUNT = 18
+APPROVAL_ADMIN_TURN_DECISION_COUNT = 12
+PERIOD_STATE_ADMIN_TURN_DECISION_COUNT = 3
+EXPORT_ADMIN_TURN_DECISION_COUNT = 1
+ADMIN_BASE_LANE_AVAILABLE_COUNT = 56
+ADMIN_SHIFT_REQUIRED_COUNT = 0
+ADMIN_CHECKIN_REQUIRED_COUNT = 0
+ADMIN_OPERATIONAL_ROLE_REQUIRED_COUNT = 0
+ADMIN_ACTIVE_SHIFT_SITE_REQUIRED_COUNT = 0
+ADMIN_ACTIVE_SHIFT_AREA_REQUIRED_COUNT = 0
+ADMIN_TURN_MATRIX_MISSING_COUNT = 0
+ADMIN_TURN_MATRIX_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_ADMIN_TASK = 0
+```
+
+---
+
+#### 9. Entrada administrativa a NUMERA
+
+El catálogo transversal vigente ya define:
+
+```text
+NUMERA_APP_ENTRY_PERMISSION = numera.access
+NUMERA_APP_ENTRY_AUTHORIZATION_REQUIREMENT = BASE_ONLY
+NUMERA_APP_ENTRY_SHIFT_REQUIRED = NO
+NUMERA_APP_ENTRY_CHECKIN_REQUIRED = NO
+NUMERA_APP_ENTRY_INCLUDED_IN_FINANCIAL_56 = NO
+```
+
+Entrar a NUMERA no concede lectura, registro, aprobación, cierre, exportación ni scope financiero adicional.
+
+---
+
+#### 10. Carril administrativo
+
+Para las capacidades financieras de este contrato:
+
+```text
+ADMINISTRATIVE_AUTHORIZATION_LANE = BASE
+ADMINISTRATIVE_SHIFT_REQUIRED = NO
+ADMINISTRATIVE_CHECKIN_REQUIRED = NO
+ADMINISTRATIVE_OPERATIONAL_ROLE_REQUIRED = NO
+ADMINISTRATIVE_ACTIVE_SITE_FROM_SHIFT_REQUIRED = NO
+ADMINISTRATIVE_ACTIVE_AREA_FROM_SHIFT_REQUIRED = NO
+```
+
+Esta declaración asegura independencia de turno. No significa que una acción carezca de permiso, scope, estado, segregación, reautenticación o auditoría.
+
+---
+
+#### 11. Baseline transversal ya aprobado
+
+El catálogo transversal vigente conserva seis permisos NUMERA materializados o canónicos de referencia como `BASE_ONLY` y con prerrequisito base `N`:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+La 010 extiende **la regla de independencia administrativa** al universo contractual de 56 permisos financieros definido posteriormente, sin publicar todavía esas identidades en runtime.
+
+---
+
+#### 12. Matriz completa de independencia administrativa
+
+| # | Permiso | Familia | Carril administrativo | Turno admin | Check-in admin | Contexto operacional |
+| ---: | --- | --- | --- | --- | --- | --- |
+| 1 | `numera.finance.cost_centers.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 2 | `numera.finance.expenses.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 3 | `numera.analytics.break_even.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 4 | `numera.analytics.profitability.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 5 | `numera.analytics.financial_reports.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 6 | `numera.finance.economic_facts.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 7 | `numera.finance.payables.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 8 | `numera.finance.receivables.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 9 | `numera.finance.treasury_movements.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 10 | `numera.finance.reconciliations.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 11 | `numera.finance.costs.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 12 | `numera.finance.periods.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 13 | `numera.finance.labor_payment_packages.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 14 | `numera.finance.fiscal_documents.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 15 | `numera.finance.payment_plans.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 16 | `numera.finance.budgets.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 17 | `numera.finance.forecasts.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 18 | `numera.finance.scenarios.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 19 | `numera.finance.price_versions.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 20 | `numera.finance.tax_obligations.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 21 | `numera.finance.cost_allocations.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 22 | `numera.analytics.financial_indicators.view` | `READ` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 23 | `numera.finance.cost_centers.create` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 24 | `numera.finance.cost_centers.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 25 | `numera.finance.cost_centers.activate` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 26 | `numera.finance.cost_centers.deactivate` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 27 | `numera.finance.expenses.create` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 28 | `numera.finance.expenses.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 29 | `numera.finance.expenses.cancel` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 30 | `numera.finance.economic_facts.register` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 31 | `numera.finance.payables.register` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 32 | `numera.finance.payables.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 33 | `numera.finance.receivables.register` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 34 | `numera.finance.receivables.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 35 | `numera.finance.fiscal_documents.register` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 36 | `numera.finance.fiscal_documents.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 37 | `numera.finance.tax_obligations.register` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 38 | `numera.finance.tax_obligations.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 39 | `numera.finance.cost_allocations.register` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 40 | `numera.finance.cost_allocations.update` | `WRITE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 41 | `numera.finance.expenses.approve` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 42 | `numera.finance.expenses.reject` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 43 | `numera.finance.payables.approve` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 44 | `numera.finance.payables.reject` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 45 | `numera.finance.payment_plans.approve` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 46 | `numera.finance.payment_plans.reject` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 47 | `numera.finance.fiscal_documents.approve` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 48 | `numera.finance.fiscal_documents.reject` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 49 | `numera.finance.tax_obligations.approve` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 50 | `numera.finance.tax_obligations.reject` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 51 | `numera.finance.cost_allocations.approve` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 52 | `numera.finance.cost_allocations.reject` | `DECISION` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 53 | `numera.finance.periods.lock` | `PERIOD_STATE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 54 | `numera.finance.periods.close` | `PERIOD_STATE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 55 | `numera.finance.periods.reopen` | `PERIOD_STATE` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+| 56 | `numera.analytics.financial_reports.export` | `EXPORT` | `BASE` | `NO` | `NO` | `NUMERA-AUTH-011` si una superficie concreta lo exige |
+
+---
+
+#### 13. Lectura administrativa
+
+Las 22 capacidades de lectura son evaluables desde autoridad base válida sin turno ni check-in.
+
+La ausencia de turno no puede transformar un recurso autorizado en recurso oculto ni viceversa; la visibilidad continúa limitada por `NUMERA-AUTH-008` y por la proyección sensible correspondiente.
+
+---
+
+#### 14. Registro y escritura administrativa
+
+Las 18 capacidades de creación, registro, actualización, cancelación, activación y desactivación conservan una vía administrativa base independiente de turno.
+
+Una captura que represente una operación física o temporal real podrá recibir **un prerrequisito adicional** de contexto por `NUMERA-AUTH-011`, pero ese contexto no sustituye el permiso base ni crea un grant operativo implícito.
+
+---
+
+#### 15. Aprobación y rechazo
+
+Las 12 capacidades aprobatorias/rechazo son decisiones financieras administrativas.
+
+```text
+APPROVAL_ADMIN_SHIFT_REQUIRED = NO
+APPROVAL_ADMIN_CHECKIN_REQUIRED = NO
+APPROVAL_REQUIRES_EXACT_PERMISSION = YES
+APPROVAL_REQUIRES_RESOURCE_VERSION = YES
+APPROVAL_REQUIRES_SEGREGATION = YES
+```
+
+La presencia o ausencia de turno no altera la separación entre registrar, aprobar, rechazar y ejecutar.
+
+---
+
+#### 16. Estado de periodos
+
+`lock`, `close` y `reopen` pertenecen al ciclo de periodo económico de NUMERA y no al turno laboral.
+
+```text
+PERIOD_STATE_ADMIN_SHIFT_REQUIRED = NO
+PERIOD_STATE_ADMIN_CHECKIN_REQUIRED = NO
+PERIOD_STATE_REQUIRES_CURRENT_STATE_AND_VERSION = YES
+REOPEN_REQUIRES_REASON_AND_EVIDENCE = YES
+```
+
+Un cierre económico no se vuelve cierre de caja, turno, periodo contable oficial ni periodo fiscal por compartir fecha o actor.
+
+---
+
+#### 17. Exportación financiera
+
+La exportación financiera permanece capacidad administrativa/analítica:
+
+```text
+EXPORT_ADMIN_SHIFT_REQUIRED = NO
+EXPORT_ADMIN_CHECKIN_REQUIRED = NO
+EXPORT_REQUIRES_VIEW_PERMISSION = YES
+EXPORT_REQUIRES_EXACT_EXPORT_PERMISSION = YES
+EXPORT_REQUIRES_AUTHORIZED_SCOPE_AND_FIELDS = YES
+```
+
+Turno y check-in no conceden ni revocan por sí solos autoridad de exportación.
+
+---
+
+#### 18. Ausencia de turno
+
+```text
+NO_ACTIVE_SHIFT + VALID_ADMIN_BASE_AUTHORITY = CONTINUE_ADMIN_EVALUATION
+NO_ACTIVE_SHIFT_IS_ADMIN_DENY_REASON = NO
+```
+
+La evaluación continúa hacia permiso, scope, recurso, estado, segregación, dispositivo, reautenticación y demás prerrequisitos aplicables.
+
+---
+
+#### 19. Ausencia de check-in
+
+```text
+NO_ACTIVE_CHECKIN + VALID_ADMIN_BASE_AUTHORITY = CONTINUE_ADMIN_EVALUATION
+NO_ACTIVE_CHECKIN_IS_ADMIN_DENY_REASON = NO
+```
+
+La ausencia de presencia física no se usa como proxy de autoridad administrativa.
+
+---
+
+#### 20. Presencia de turno
+
+Un turno vigente puede coexistir con una acción administrativa, pero:
+
+```text
+ACTIVE_SHIFT_EXPANDS_ADMIN_PERMISSION = NO
+ACTIVE_SHIFT_EXPANDS_ADMIN_SCOPE = NO
+ACTIVE_SHIFT_REPLACES_BASE_ASSIGNMENT = NO
+ACTIVE_SHIFT_ALONE_NARROWS_VALID_ADMIN_BASE_AUTHORITY = NO
+```
+
+Cualquier denegación explícita transversal continúa aplicando por su propia semántica, no por la mera existencia del turno.
+
+---
+
+#### 21. Presencia de check-in
+
+```text
+ACTIVE_CHECKIN_IS_ADMIN_PERMISSION = NO
+ACTIVE_CHECKIN_IS_ADMIN_SCOPE = NO
+ACTIVE_CHECKIN_IS_ADMIN_APPROVAL = NO
+ACTIVE_CHECKIN_IS_ADMIN_EXPORT_AUTHORITY = NO
+```
+
+Check-in es evidencia/contexto operativo, no una concesión financiera.
+
+---
+
+#### 22. Rol operativo temporal
+
+```text
+OPERATIONAL_ROLE_IS_ADMIN_PERMISSION = NO
+OPERATIONAL_ROLE_IS_ADMIN_SCOPE = NO
+OPERATIONAL_ROLE_CAN_SATISFY_MISSING_BASE_PERMISSION = NO
+```
+
+Un rol operativo vigente no eleva autoridad financiera administrativa.
+
+---
+
+#### 23. Fin o expiración de turno
+
+Finalizar el turno no revoca automáticamente una autoridad administrativa base que continúe válida.
+
+Sí obliga a recalcular cualquier contexto operacional que dependa de ese turno cuando `NUMERA-AUTH-011` lo haya declarado.
+
+---
+
+#### 24. Cierre de check-in
+
+Cerrar el check-in no invalida por sí solo una concesión base administrativa vigente.
+
+No obstante, una superficie con contexto operacional adicional deberá fallar cerrado cuando su requisito de presencia deje de cumplirse.
+
+---
+
+#### 25. Contexto operacional inválido
+
+```text
+INVALID_OPERATIONAL_CONTEXT_IS_ADMIN_DENY_BY_DEFAULT = NO
+```
+
+Solo bloquea una acción administrativa cuando el contrato de la superficie propietaria, desarrollado por `NUMERA-AUTH-011`, declare que esa acción además requiere contexto operacional válido.
+
+---
+
+#### 26. Fuente del scope administrativo
+
+El scope administrativo continúa gobernado por `NUMERA-FINANCIAL-SCOPE-CONTRACT-001`.
+
+```text
+ADMIN_SCOPE_SOURCE = CANONICAL_BASE_ASSIGNMENTS_AND_RESOURCE_RELATIONS
+ACTIVE_SHIFT_IS_ADMIN_SCOPE_SOURCE = NO
+ACTIVE_CHECKIN_IS_ADMIN_SCOPE_SOURCE = NO
+```
+
+---
+
+#### 27. Sede seleccionada
+
+La sede elegida en UI es contexto de navegación o filtro, no autoridad.
+
+```text
+SELECTED_SITE_IS_ADMIN_AUTHORITY = NO
+SELECTED_SITE_CAN_REPLACE_AUTHORIZED_SCOPE = NO
+```
+
+---
+
+#### 28. Sede primaria del trabajador
+
+```text
+EMPLOYEE_PRIMARY_SITE_IS_ADMIN_AUTHORITY = NO
+EMPLOYEE_PRIMARY_SITE_IS_ADMIN_SCOPE_FALLBACK = NO
+```
+
+La cobertura administrativa debe provenir de asignaciones y relaciones canónicas autorizadas, no de una suposición por sede principal.
+
+---
+
+#### 29. Empresa, sede, área y centro de costo permanecen distintos
+
+La independencia de turno no colapsa dimensiones:
+
+```text
+LEGAL_ENTITY != COMPANY_OR_UNIT != SITE != AREA != COST_CENTER != PERIOD != RESOURCE_ID
+```
+
+No se usa la sede activa de un turno para fabricar empresa, centro de costo, área o periodo autorizados.
+
+---
+
+#### 30. Dispositivo compartido
+
+Un dispositivo compartido administrativo no elimina la necesidad de actor humano atribuible.
+
+```text
+SHARED_DEVICE_IS_ADMIN_ACTOR = NO
+SHARED_DEVICE_IS_ADMIN_PERMISSION = NO
+SHARED_DEVICE_FIXED_SITE_IS_ADMIN_SCOPE = NO
+```
+
+La política de dispositivo y la sesión humana siguen aplicando independientemente del turno.
+
+---
+
+#### 31. Reautenticación fuerte
+
+La independencia de turno no degrada protección de sensibilidad:
+
+```text
+ADMIN_TURN_INDEPENDENCE_IS_REAUTH_BYPASS = NO
+STRONG_REAUTH_WHEN_REQUIRED = YES
+SHARED_DEVICE_STRONG_REQUIREMENT_PRESERVED = YES
+```
+
+---
+
+#### 32. Principal y actor efectivo
+
+Toda evaluación administrativa conserva:
+
+```text
+technical_principal
+!=
+effective_actor
+```
+
+El turno, check-in o dispositivo no sustituyen la resolución del actor efectivo.
+
+---
+
+#### 33. Roles y grants
+
+Un rol base, una matriz o una concesión son entradas de autorización; no equivalen por sí solas a decisión final.
+
+```text
+ROLE_NAME_IS_FINAL_AUTHORITY = NO
+BASE_GRANT_WITHOUT_SCOPE = DENY
+BASE_GRANT_WITHOUT_RESOURCE_ELIGIBILITY = DENY
+```
+
+---
+
+#### 34. Denegaciones explícitas
+
+```text
+ADMIN_TURN_INDEPENDENCE_IS_DENY_BYPASS = NO
+EXPLICIT_DENY_PRECEDENCE_PRESERVED = YES
+```
+
+La tarea elimina dependencias operativas artificiales; no neutraliza denegaciones canónicas, suspensión, inactividad, revocación o incompatibilidades reales.
+
+---
+
+#### 35. Estado y versión del recurso
+
+Turno independiente no significa estado independiente.
+
+Una acción continúa obligada a validar el estado actual, la versión esperada, concurrencia e idempotencia cuando correspondan.
+
+---
+
+#### 36. Revalidación en servidor
+
+```text
+SERVER_SIDE_ADMIN_REVALIDATION_REQUIRED = YES
+CLIENT_SIDE_ADMIN_ALLOW_IS_AUTHORITATIVE = NO
+```
+
+URL, UI, caché o navegación no sustituyen la evaluación server-side.
+
+---
+
+#### 37. UI y navegación
+
+Ocultar o mostrar una acción según turno puede ser experiencia, pero no puede convertirse en política de autoridad si el permiso administrativo no requiere turno.
+
+```text
+UI_SHIFT_VISIBILITY_IS_ADMIN_AUTHORITY = NO
+MENU_VISIBILITY_IS_ADMIN_PERMISSION = NO
+```
+
+---
+
+#### 38. Caché de autorización
+
+Una decisión administrativa cacheada debe incluir suficiente identidad de actor, permiso, scope, recurso/proyección y versión contractual.
+
+El inicio o fin de un turno no obliga por sí solo a invalidar una concesión `BASE` si ninguna dimensión consumida cambió; cualquier dato compartido con contexto operacional debe invalidarse según su propio contrato.
+
+---
+
+#### 39. Frescura y revocación
+
+```text
+STALE_ADMIN_AUTHORIZATION = DENY_AND_REEVALUATE
+ADMIN_REVOCATION_REQUIRES_REEVALUATION = YES
+```
+
+La independencia de turno no permite reutilizar autoridad expirada, revocada o emitida bajo otra cobertura.
+
+---
+
+#### 40. Simulación
+
+```text
+SIMULATED_SHIFT_CAN_SATISFY_ADMIN_BASE_AUTHORITY = NO
+SIMULATED_CHECKIN_CAN_SATISFY_ADMIN_BASE_AUTHORITY = NO
+SIMULATED_ADMIN_AUTHORITY_CAN_EXECUTE_REAL_FINANCIAL_EFFECT = NO
+```
+
+La simulación sigue separada de la autoridad real.
+
+---
+
+#### 41. Lectura sin turno
+
+Un actor con permiso de lectura exacto, scope válido y recurso autorizado puede consultar sin turno cuando los demás requisitos administrativos sean válidos.
+
+No se infiere acceso global por ausencia de contexto operativo.
+
+---
+
+#### 42. Escritura sin turno
+
+Una mutación administrativa puede ejecutarse sin turno cuando exista permiso exacto, actor, scope, estado, campos, versión, idempotencia y auditoría suficientes.
+
+La captura operacional adicional, si existe, pertenece a la 011.
+
+---
+
+#### 43. Aprobación sin turno
+
+Una decisión de aprobación o rechazo no exige presencia física por defecto.
+
+Segregación, reautenticación, estado del recurso, versión y razón de rechazo permanecen obligatorios donde correspondan.
+
+---
+
+#### 44. Transición de periodo sin turno
+
+Lock, cierre y reapertura pueden ejecutarse administrativamente fuera de un turno laboral.
+
+Los gates económicos y de reconciliación no se sustituyen con esta independencia.
+
+---
+
+#### 45. Exportación sin turno
+
+La exportación puede autorizarse administrativamente fuera de turno si lectura, exportación, scope, finalidad, campos, población, versión y protección del destino son válidos.
+
+---
+
+#### 46. Frontera con captura operacional
+
+Esta tarea no decide qué capturas representan operaciones físicas o temporales reales.
+
+Ejemplos potenciales como recepción de dinero, conciliación operativa, hechos provenientes de caja o captura en una sede no adquieren aquí un requisito de turno.
+
+---
+
+#### 47. Owner exclusivo del contexto operacional
+
+```text
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+```
+
+`NUMERA-AUTH-011` deberá definir, por superficie y acción, cuándo un contexto operacional es un prerrequisito adicional, qué elementos lo componen y cómo falla cerrado.
+
+---
+
+#### 48. No inflación de modalidad
+
+La clasificación híbrida de una **aplicación** no convierte automáticamente todos sus permisos en `BASE_OR_OPERATIONAL`.
+
+```text
+APP_IS_HYBRID -> PERMISSION_IS_HYBRID = FALSE
+```
+
+La modalidad o los prerrequisitos se resuelven por permiso y por acción propietaria.
+
+---
+
+#### 49. Permiso exacto sigue siendo obligatorio
+
+```text
+MISSING_EXACT_ADMIN_PERMISSION = DENY
+LEGACY_MANAGE_FALLBACK = FORBIDDEN
+ROLE_NAME_FALLBACK = FORBIDDEN
+ACTIVE_SHIFT_FALLBACK = FORBIDDEN
+```
+
+---
+
+#### 50. Integración con la auditoría de NUMERA-AUTH-009
+
+Toda decisión administrativa independiente de turno conserva auditoría correlacionable.
+
+```text
+AUDIT_RECORDING_DOES_NOT_CREATE_TURN_DEPENDENCY = YES
+ADMIN_DECISION_AUDITABLE = YES
+ADMIN_DENY_AUDITABLE = YES
+```
+
+La evidencia podrá registrar que no existía turno cuando sea material para diagnóstico, pero esa ausencia no se transforma en causa de denegación administrativa.
+
+---
+
+#### 51. Evidencia mínima de independencia administrativa
+
+Cuando la materialización necesite demostrar la decisión, deberá poder distinguir al menos:
+
+```text
+authorization_decision_reference
+principal_reference
+effective_actor_reference
+permission_key
+admin_lane = BASE
+resource_reference
+scope_reference_or_fingerprint
+resource_state_or_version
+active_shift_reference_if_present
+active_checkin_reference_if_present
+operational_context_required = true|false
+operational_context_owner = NUMERA-AUTH-011 when true
+reauth_state_when_required
+device_policy_result_when_required
+final_outcome
+reason_codes
+contract_version
+correlation_id
+occurred_at
+```
+
+---
+
+#### 52. Semántica de errores
+
+Los errores deben distinguir:
+
+```text
+MISSING_BASE_PERMISSION
+INVALID_ADMIN_SCOPE
+RESOURCE_OR_STATE_CONFLICT
+REAUTH_REQUIRED
+DEVICE_POLICY_BLOCK
+EXPLICIT_DENY
+OPERATIONAL_CONTEXT_REQUIRED_BY_011
+TECHNICAL_FAILURE
+```
+
+`NO_ACTIVE_SHIFT` o `NO_ACTIVE_CHECKIN` no son razones administrativas por defecto.
+
+---
+
+#### 53. URL directa y API manipulada
+
+Una llamada directa no puede eludir permiso, scope, estado o contexto adicional declarado.
+
+Tampoco puede inventar dependencia de turno únicamente porque una UI normal esperaba un turno.
+
+---
+
+#### 54. RLS, RPC y Server Actions
+
+La futura materialización deberá producir la misma semántica administrativa en todas las capas autoritativas.
+
+```text
+SDK_DECISION == SERVER_ACTION_DECISION == RPC_DECISION == RLS_DECISION
+```
+
+Las diferencias de implementación no pueden reintroducir un `active_shift_id IS NOT NULL` universal para NUMERA.
+
+---
+
+#### 55. Navegación desde aplicaciones fuente
+
+Llegar a NUMERA desde PULSO, ORIGO, NEXO u otra aplicación no transfiere el contexto operacional de origen como autoridad administrativa.
+
+Cada destino reevalúa permiso, actor, scope y recurso.
+
+---
+
+#### 56. Agregados y drill-down
+
+La independencia de turno no amplía miembros autorizados de un agregado.
+
+Un drill-down reautoriza el recurso destino y conserva la misma independencia administrativa solo si ese destino no requiere contexto adicional por contrato.
+
+---
+
+#### 57. Centros de costo
+
+Consultar o administrar centros de costo es configuración financiera administrativa.
+
+Turno y check-in no seleccionan centro de costo ni habilitan create/update/activate/deactivate.
+
+---
+
+#### 58. Gastos
+
+Consultar, crear, actualizar, cancelar, aprobar o rechazar gastos conserva autoridad administrativa base.
+
+Cuando una captura de gasto represente una operación presencial o temporal que deba vincularse a un contexto real, `NUMERA-AUTH-011` podrá exigir ese contexto adicional sin reemplazar los permisos exactos.
+
+---
+
+#### 59. Cuentas por pagar, cobrar y tesorería
+
+Las capacidades actualmente gobernadas de lectura/registro/aprobación permanecen administrativas respecto de turno.
+
+Las proyecciones y acciones especialmente sensibles de cartera, acuerdos, castigos y bancos siguen reservadas a `NUMERA-AUTH-014`.
+
+---
+
+#### 60. Fiscal, impuestos y distribuciones
+
+Documentos fiscales, obligaciones tributarias y distribuciones de costo no adquieren dependencia de turno por ser procesados desde una sede.
+
+Entidad legal, periodo, scope, evidencia, autoridad externa y segregación conservan sus contratos propios.
+
+---
+
+#### 61. Periodos económicos
+
+El periodo económico se gobierna por su lifecycle y versiones.
+
+El turno laboral de un actor no abre, bloquea, cierra ni reabre un periodo por sí mismo.
+
+---
+
+#### 62. Reportes y exportación
+
+Consultar reportes e indicadores y exportar reportes financieros permanece independiente del turno.
+
+La autorización de salida conserva finalidad, minimización, scope, versión y destino cuando aplique.
+
+---
+
+#### 63. Runtime legacy
+
+Los códigos legacy observados no pueden reintroducir dependencia de turno:
+
+```text
+numera.cost_centers.view
+numera.expenses.view
+numera.break_even.view
+numera.profitability.view
+numera.reports.view
+numera.cost_centers.manage
+numera.expenses.manage
+```
+
+La migración de aliases/grants y la eliminación del fallback legacy permanecen en `NUMERA-AUTH-012`.
+
+---
+
+#### 64. Materialización física
+
+`NUMERA-AUTH-012` será responsable de materializar permisos, catálogo, aliases, paquetes, guards y consumidores.
+
+La 010 no crea migraciones ni modifica Supabase durante este marcador global.
+
+---
+
+#### 65. Contrato mínimo de una instancia futura
+
+Cada futura materialización de `NUMERA-AUTH-010::<implementation_unit_id>` deberá declarar al menos:
+
+```text
+implementation_unit_id
+owner_package_id
+consumer_package_ids
+permission_keys_consumed
+administrative_surfaces_consumed
+operational_context_dependencies_if_any
+baseline_commit_or_version
+validation_evidence
+rollback_evidence
+```
+
+No se adivina una unidad física desde el marcador global.
+
+---
+
+#### 66. Plan de validación posterior
+
+La validación integral deberá demostrar, como mínimo:
+
+1. allow administrativo válido sin turno;
+2. allow administrativo válido sin check-in;
+3. deny por permiso faltante aunque exista turno;
+4. deny por scope faltante aunque exista turno;
+5. turno activo no amplía scope;
+6. rol operativo no sustituye permiso base;
+7. fin de turno no revoca una autoridad base vigente por esa causa sola;
+8. superficie con requisito explícito de 011 falla sin contexto;
+9. reautenticación y política de dispositivo siguen aplicando;
+10. UI, Server Actions, RPC y RLS convergen en decisión.
+
+---
+
+#### 67. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| solo seis permisos NUMERA están clasificados actualmente en el catálogo transversal de prerrequisitos | no | `NUMERA-AUTH-012` + lifecycle transversal | catálogo/paquetes materializan las identidades aprobadas preservando la independencia administrativa definida aquí |
+| contexto operacional por superficie todavía no está definido | no | `NUMERA-AUTH-011` | cada captura que realmente lo requiera declara prerrequisitos explícitos y fail-closed |
+| runtime legacy conserva permisos `manage` agrupados | no | `NUMERA-AUTH-012` | aliases, grants y consumidores dejan de usar `manage` como fallback amplio |
+| pruebas integrales de combinaciones turno/check-in todavía no se ejecutan | no | `NUMERA-AUTH-013` | matriz adversarial demuestra paridad entre capas y separación admin/operacional |
+| proyecciones sensibles de cartera/bancos requieren especialización | no | `NUMERA-AUTH-014` | campos/acciones sensibles quedan protegidos sin convertir turno en permiso |
+| acciones de escenarios, precios y presupuestos permanecen incompletas | no | `NUMERA-AUTH-015` | acciones especializadas quedan definidas y conservan la frontera administrativa/operacional aplicable |
+
+No queda hallazgo de independencia administrativa detectado sin owner y condición de salida.
+
+---
+
+#### 68. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa para NUMERA una obligación transversal ya vigente: las capacidades administrativas deben poder resolverse desde rol/cobertura base sin exigir turno o check-in cuando el contrato lo permita, mientras permiso, scope, estado, dispositivo, reautenticación, contexto adicional explícito y auditoría siguen protegidos. No introduce una conducta de prueba nueva ni modifica una existente.
+
+---
+
+#### 69. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el Registro 04A:
+
+- `TREQ-AUTH-008` para separar capacidades administrativas de turno/check-in y exigir contexto en capacidades operativas;
+- `TREQ-AUTH-009` para resolución determinista de cobertura territorial;
+- `TREQ-AUTH-013` para revalidación server-side frente a URL, API, RPC y manipulación;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-NUMERA-001` para separación de permisos y trazabilidad financiera;
+- `TREQ-NUMERA-002` para identidad, entidad, sede, centro, fuente, correlación y evidencia;
+- `TREQ-NUMERA-003` para separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-SHELL-011` para resolver identidad, actor, finalidad, clasificación, recurso, territorio, estado y acción exacta.
+
+Esta trazabilidad no actualiza el registro.
+
+---
+
+#### 70. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de producto; la tarea es una definición documental global y no modifica código |
+| LOCAL | NOT_EXECUTED | la incorporación, formateo, quality, delivery y batería documental permanecen pendientes hasta que `NUMERA-AUTH-009` cierre con `NEXT_TASK_ALLOWED: SI` |
+| REMOTA | PASS | se verificaron `vento-shell/main` en `60a145d1777827ac9f7ece1d60d17aba32801b9c`, `active-sequence.previous_task_id = NUMERA-AUTH-008`, segmento NUMERA 9..15, owner remoto con 008 aprobada y 009/010 pendientes, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, catálogo transversal de prerrequisitos NUMERA y contratos de precedencia; la predecesora 009 se consumió desde el artefacto completo aprobado por el usuario con SHA-256 declarado en esta tarea |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron sesiones reales, turnos, check-ins, decisiones financieras ni capturas operacionales |
+| FÍSICA | NOT_APPLICABLE | el marcador global no autoriza ninguna materialización; las futuras instancias quedan sujetas a E5 y autorización física explícita |
+
+---
+
+#### 71. Criterios de aceptación
+
+La tarea es aceptable únicamente si:
+
+1. preserva exactamente las 56 identidades financieras heredadas;
+2. conserva 22/18/12/3/1 sin faltantes ni duplicados;
+3. `numera.access` permanece fuera del conteo 56 y sin dependencia de turno/check-in;
+4. todas las 56 capacidades poseen carril administrativo base evaluable sin turno;
+5. `ADMIN_SHIFT_REQUIRED_COUNT = 0`;
+6. `ADMIN_CHECKIN_REQUIRED_COUNT = 0`;
+7. turno, check-in y rol operativo no crean permiso ni scope;
+8. permiso, scope, estado, versión, segregación, reautenticación y auditoría permanecen obligatorios;
+9. 011 conserva ownership exclusivo del contexto operacional por superficie;
+10. 012 conserva materialización física;
+11. 013 conserva pruebas integrales;
+12. no se crean permisos nuevos;
+13. no se modifican TREQ;
+14. formato, quality, delivery, topología, plan y TREQ pasan durante incorporación;
+15. el cierre documental termina con `NEXT_TASK_ALLOWED: SI`.
+
+---
+
+#### 72. Límites
+
+Esta tarea no:
+
+- modifica código de `vento-numera` o `vento-shell`;
+- crea o modifica tablas, RLS, RPC, funciones, triggers, migraciones o datos;
+- publica nuevas identidades de permiso;
+- asigna permisos a roles o personas;
+- cambia scope financiero;
+- crea auditoría física;
+- define qué captura concreta requiere turno/check-in;
+- convierte todas las acciones NUMERA en operativas;
+- convierte la aplicación híbrida en permisos híbridos por inferencia;
+- elimina reautenticación fuerte;
+- neutraliza denegaciones explícitas;
+- crea fallback a `manage`;
+- modifica periodos, gastos, reportes o exportaciones reales;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza implementación física;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-AUTH-011`.
+
+---
+
+#### 73. Handoff a NUMERA-AUTH-011
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_ADMIN_TURN_CONTRACT = NUMERA-ADMIN-TURN-INDEPENDENCE-CONTRACT-001
+NUMERA_ADMIN_TURN_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_ADMIN_TURN_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_ADMIN_TURN_INSTANCE_PATTERN = NUMERA-AUTH-010::<implementation_unit_id>
+NUMERA_ADMIN_TURN_GLOBAL_MARKER_PHYSICAL_CHANGES = 0
+TOTAL_ADMIN_TURN_GOVERNED_FINANCIAL_PERMISSIONS = 56
+READ_ADMIN_TURN_DECISION_COUNT = 22
+REGISTER_WRITE_ADMIN_TURN_DECISION_COUNT = 18
+APPROVAL_ADMIN_TURN_DECISION_COUNT = 12
+PERIOD_STATE_ADMIN_TURN_DECISION_COUNT = 3
+EXPORT_ADMIN_TURN_DECISION_COUNT = 1
+ADMIN_BASE_LANE_AVAILABLE_COUNT = 56
+ADMIN_SHIFT_REQUIRED_COUNT = 0
+ADMIN_CHECKIN_REQUIRED_COUNT = 0
+ADMIN_OPERATIONAL_ROLE_REQUIRED_COUNT = 0
+ADMIN_ACTIVE_SHIFT_SITE_REQUIRED_COUNT = 0
+ADMIN_ACTIVE_SHIFT_AREA_REQUIRED_COUNT = 0
+ADMIN_TURN_MATRIX_MISSING_COUNT = 0
+ADMIN_TURN_MATRIX_DUPLICATE_COUNT = 0
+NEW_PERMISSION_IDENTITIES_CREATED_BY_ADMIN_TASK = 0
+NUMERA_APP_ENTRY_PERMISSION = numera.access
+NUMERA_APP_ENTRY_AUTHORIZATION_REQUIREMENT = BASE_ONLY
+NUMERA_APP_ENTRY_SHIFT_REQUIRED = NO
+NUMERA_APP_ENTRY_CHECKIN_REQUIRED = NO
+NUMERA_APP_ENTRY_INCLUDED_IN_FINANCIAL_56 = NO
+ADMINISTRATIVE_AUTHORIZATION_LANE = BASE
+NO_ACTIVE_SHIFT_IS_ADMIN_DENY_REASON = NO
+NO_ACTIVE_CHECKIN_IS_ADMIN_DENY_REASON = NO
+ACTIVE_SHIFT_EXPANDS_ADMIN_PERMISSION = NO
+ACTIVE_SHIFT_EXPANDS_ADMIN_SCOPE = NO
+ACTIVE_CHECKIN_IS_ADMIN_PERMISSION = NO
+OPERATIONAL_ROLE_IS_ADMIN_PERMISSION = NO
+ADMIN_SCOPE_SOURCE = CANONICAL_BASE_ASSIGNMENTS_AND_RESOURCE_RELATIONS
+ACTIVE_SHIFT_IS_ADMIN_SCOPE_SOURCE = NO
+SELECTED_SITE_IS_ADMIN_AUTHORITY = NO
+EMPLOYEE_PRIMARY_SITE_IS_ADMIN_AUTHORITY = NO
+ADMIN_TURN_INDEPENDENCE_IS_REAUTH_BYPASS = NO
+ADMIN_TURN_INDEPENDENCE_IS_DENY_BYPASS = NO
+MISSING_EXACT_ADMIN_PERMISSION = DENY
+STALE_ADMIN_AUTHORIZATION = DENY_AND_REEVALUATE
+SERVER_SIDE_ADMIN_REVALIDATION_REQUIRED = YES
+SIMULATED_SHIFT_CAN_SATISFY_ADMIN_BASE_AUTHORITY = NO
+AUDIT_RECORDING_DOES_NOT_CREATE_TURN_DEPENDENCY = YES
+ADMIN_DECISION_AUDITABLE = YES
+INVALID_OPERATIONAL_CONTEXT_IS_ADMIN_DENY_BY_DEFAULT = NO
+OPERATIONAL_CONTEXT_OWNER = NUMERA_AUTH_011
+PERMISSION_PACKAGE_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+INTEGRAL_ADMIN_CONTEXT_TEST_OWNER = NUMERA_AUTH_013
+SENSITIVE_RECEIVABLE_BANK_PROJECTION_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+NUMERA_AUTH_011_OWNER = OPERATIONAL_CONTEXT_REQUIREMENTS
+```
+
+`NUMERA-AUTH-011` deberá identificar únicamente las superficies o acciones de captura que realmente requieran contexto operacional y definir sus prerrequisitos exactos, sin convertir el contexto en permiso ni degradar la independencia administrativa aprobada aquí.
+
+---
+
+#### 74. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-009 — Registrar auditoría financiera`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-010 — Evitar dependencia de turno para administración`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional`
 ### [ ] NUMERA-AUTH-011 — Exigir contexto operativo donde exista captura operacional
 ### [ ] NUMERA-AUTH-012 — Migrar a paquetes de vento-shell
 ### [ ] NUMERA-AUTH-013 — Ejecutar pruebas integrales
