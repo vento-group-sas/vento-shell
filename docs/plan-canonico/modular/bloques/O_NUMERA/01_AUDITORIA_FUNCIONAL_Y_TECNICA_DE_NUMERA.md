@@ -10141,5 +10141,534 @@ Quedan fuera de alcance:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes`
-### [ ] NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
+### ✅ NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
+**Tarea siguiente:** NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual
+**Tipo de tarea:** auditoría técnico-documental ejecutable del estado AS-IS de calidad del repositorio NUMERA, limitada a instalación reproducible, build gobernado no mutante, lint, typecheck y pruebas existentes sobre el commit auditado; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno sobre producto, Supabase, configuración, permisos, datos, dependencias versionadas, ramas de aplicación o despliegues; la validación utiliza un checkout temporal aislado del commit exacto
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Ejecutar y cerrar la auditoría técnica disponible del repositorio `vento-numera` mediante las superficies de calidad que ya existen en su `package.json`:
+
+- build gobernado no mutante;
+- lint;
+- comprobación TypeScript;
+- suite de pruebas existente.
+
+La tarea no corrige defectos de producto. Si cualquiera de las comprobaciones falla, el resultado de esta tarea no puede incorporarse como aprobado y el fallo debe conservarse para corrección posterior.
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-010
+
+La tarea anterior deja congelado el mismo snapshot de aplicación usado por las auditorías NUMERA recientes:
+
+```text
+repository = vento-group-sas/vento-numera
+branch = main
+commit = c4d50282e30e46d0abb3d871f9604cf913ebbabd
+```
+
+`NUMERA-AUD-010` no ejecutó build, lint, typecheck ni pruebas y reservó expresamente esas comprobaciones para esta tarea.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente para `NUMERA-AUD-001..012` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- no existe instancia física propia;
+- no se modifica código de `vento-numera`;
+- no se modifica Supabase;
+- no se publican packages;
+- no se despliega;
+- no se crea una nueva suite;
+- no se corrigen fallos detectados dentro de esta tarea.
+
+La única materialización permitida es evidencia local temporal y no versionada necesaria para ejecutar las comprobaciones existentes.
+
+---
+
+#### 4. Fuentes verificadas
+
+La tarea se reconcilia contra:
+
+- `NUMERA-AUD-010` aprobado y publicado como base inmediata;
+- `01_PROTOCOLO.md`;
+- `delivery-contract.json`;
+- `manifest.json`;
+- `continuity-route.json`;
+- `execution-route.json`;
+- `active-sequence.json`;
+- `task-work-topology.json`;
+- `task-format-policy.json`;
+- `task-development-policy.json`;
+- `04A_13_NUMERA.md`;
+- `package.json` de `vento-shell`;
+- `package.json` de `vento-numera`;
+- workflow `VENTO Required Gate` de `vento-numera`;
+- `scripts/sync-navigation.mjs`;
+- `scripts/quality/numera-consumer-baseline-gate.mjs`;
+- `scripts/quality/numera-consumer-baseline-gate.test.mjs`.
+
+---
+
+#### 5. Snapshot auditado
+
+La identidad de código que debe validar esta tarea es:
+
+```text
+NUMERA_REPOSITORY = vento-group-sas/vento-numera
+NUMERA_BRANCH = main
+NUMERA_COMMIT = c4d50282e30e46d0abb3d871f9604cf913ebbabd
+```
+
+La incorporación documental queda bloqueada si `origin/main` de NUMERA ya no apunta a esa identidad al ejecutar la batería.
+
+---
+
+#### 6. Inventario de scripts aplicables
+
+El manifest vigente declara, entre otros:
+
+| Superficie | Script observado | Uso en esta tarea |
+| --- | --- | --- |
+| build ordinario | `build` | no se usa por su lifecycle mutante potencial |
+| build gobernado | `build:ci012` | sí |
+| lint | `lint` | sí |
+| TypeScript | `typecheck` | sí |
+| pruebas públicas | `test` | sí |
+| pruebas contractuales | `test:ci012` | consumidas por `test` |
+| baseline CI012 | `ci012:baseline` | no sustituye las cuatro comprobaciones objetivo |
+| internacionalización | `audit:i18n` | fuera del alcance literal de esta tarea |
+
+---
+
+#### 7. Riesgo del build ordinario
+
+El manifest conserva un lifecycle `prebuild` asociado a sincronización de navegación y un script `build` asociado a compilación Next.js.
+
+`sync-navigation.mjs` puede usar credencial service-role y ejecutar escrituras de sincronización sobre:
+
+```text
+app_screen_registry
+app_navigation_items
+```
+
+Por tanto, el build ordinario por lifecycle no es la entrada adecuada para una auditoría documental no mutante cuando el entorno pudiera contener material privilegiado.
+
+---
+
+#### 8. Entrada de build autorizada para la auditoría
+
+El repositorio dispone de `build:ci012`, cuya cadena es:
+
+```text
+CI012 prebuild safety check
+-> next build directo
+```
+
+Esta entrada evita disparar el lifecycle `prebuild` del script `build` y exige ausencia de material service-role antes de compilar.
+
+Se congela:
+
+```text
+AUDIT_BUILD_ENTRYPOINT = build:ci012
+LEGACY_BUILD_ENTRYPOINT_USED = NO
+REMOTE_NAVIGATION_MUTATION_AUTHORIZED = NO
+```
+
+---
+
+#### 9. Aislamiento de ejecución
+
+La batería de incorporación debe validar el commit exacto en un checkout temporal detached, separado del checkout normal del desarrollador.
+
+Condiciones obligatorias:
+
+```text
+LOCKFILE_INSTALL_MODE = LOCKFILE_EXACT
+SERVICE_ROLE_PROCESS_ENV = ABSENT
+TRACKED_PRODUCT_CHANGES_AFTER_VALIDATION = 0
+REMOTE_SUPABASE_MUTATIONS = 0
+```
+
+La ejecución no puede reutilizar archivos `.env` no versionados del checkout normal como condición de éxito.
+
+---
+
+#### 10. Build
+
+La comprobación de build utiliza exclusivamente la entrada gobernada `build:ci012`.
+
+Condición de incorporación:
+
+```text
+BUILD_RESULT = PASS
+BUILD_EXIT_CODE = 0
+BUILD_REMOTE_MUTATION = NO
+```
+
+Si el precheck de seguridad bloquea el build, el resultado técnico es `FAIL` y no se declara cumplimiento de esta tarea.
+
+---
+
+#### 11. Lint
+
+La comprobación estática usa el script `lint` existente con política de cero warnings para la auditoría.
+
+Condición de incorporación:
+
+```text
+LINT_RESULT = PASS
+LINT_EXIT_CODE = 0
+```
+
+Un warning o error bloqueante impide cerrar esta tarea como aprobada.
+
+---
+
+#### 12. Typecheck
+
+La comprobación TypeScript usa el script `typecheck` vigente, configurado como verificación sin emisión y sin reutilizar estado incremental.
+
+Condición de incorporación:
+
+```text
+TYPECHECK_RESULT = PASS
+TYPECHECK_EXIT_CODE = 0
+```
+
+La tarea no modifica `tsconfig.json` ni degrada `strict`, `noEmit` o `skipLibCheck` para obtener un resultado verde.
+
+---
+
+#### 13. Suite de pruebas existente
+
+La fachada pública `test` delega en `test:ci012`, cuya implementación usa `node:test` sobre el baseline gate NUMERA.
+
+La suite contractual declara:
+
+```text
+CONTRACTUAL_TEST_COUNT = 42
+```
+
+La composición verificable es:
+
+```text
+12 escenarios positivos de superficies
+12 escenarios negativos de superficies
+4 perfiles positivos de packages
+4 perfiles negativos de packages
+10 regresiones globales
+TOTAL = 42
+```
+
+---
+
+#### 14. Resultado exigido de pruebas
+
+La incorporación del artefacto exige:
+
+```text
+TEST_RESULT = PASS
+TESTS_EXECUTED = 42
+TESTS_PASSED = 42
+TESTS_FAILED = 0
+TESTS_SKIPPED = 0
+```
+
+Cero tests, un conteo distinto, tests fallidos o tests omitidos bloquean la incorporación.
+
+---
+
+#### 15. Superficies cubiertas por la suite CI012
+
+La suite modela doce superficies contractuales:
+
+1. identidad, sesión, SSO y denegación;
+2. contexto operativo, sede, área, actor y dispositivo;
+3. inventario de páginas y rutas;
+4. navegación declarativa y prebuild no mutante;
+5. panel raíz y semántica económica;
+6. centros de costo y presupuesto;
+7. gastos;
+8. punto de equilibrio;
+9. rentabilidad;
+10. trazabilidad económica y conciliación;
+11. Supabase, RLS, RPC y Server Actions;
+12. UI, SSR, interacción, accesibilidad y errores.
+
+Este inventario describe cobertura contractual del harness; no demuestra por sí solo E2E operativo en navegador o contra datos reales.
+
+---
+
+#### 16. Perfiles de packages cubiertos
+
+CI012 conserva perfiles para:
+
+```text
+@vento/contracts
+@vento/os-context
+@vento/supabase
+@vento/ui-web
+```
+
+La suite positiva y negativa comprueba que la cobertura incompleta de un perfil no se normalice a PASS.
+
+---
+
+#### 17. Regresiones globales cubiertas
+
+Las diez regresiones explícitas incluyen, entre otras:
+
+- evidencia con campos contractuales completos;
+- bloqueo de cero tests;
+- bloqueo de evidencia de otro consumidor;
+- stale por cambio de commit;
+- stale por cambio de package set;
+- bloqueo de entorno productivo;
+- bloqueo de material con forma de secreto;
+- orden canónico del conjunto multi-package;
+- inventario exacto de rutas y navegación;
+- detección de material service-role sin exponer su valor.
+
+---
+
+#### 18. Workflow remoto actual
+
+El workflow `VENTO Required Gate` del repositorio consumidor instala dependencias bloqueadas y ejecuta la fachada pública `test`.
+
+No ejecuta en su job de pruebas actual las tres comprobaciones adicionales de esta tarea:
+
+```text
+build:ci012
+lint
+typecheck
+```
+
+Por tanto:
+
+```text
+REMOTE_REQUIRED_GATE_COVERS_NPM_TEST = YES
+REMOTE_REQUIRED_GATE_COVERS_BUILD = NO
+REMOTE_REQUIRED_GATE_COVERS_LINT = NO
+REMOTE_REQUIRED_GATE_COVERS_TYPECHECK = NO
+```
+
+La presente auditoría no modifica el workflow.
+
+---
+
+#### 19. Relación con SHELL-CI-012
+
+La gobernanza transversal identifica `SHELL-CI-012::GLOBAL` como habilitador específico de pruebas de consumidor NUMERA.
+
+El repositorio ya contiene:
+
+- `build:ci012`;
+- `typecheck`;
+- `test` y `test:ci012`;
+- el baseline gate;
+- la suite contractual.
+
+Esta tarea consume esas superficies; no las redefine ni las implementa de nuevo.
+
+---
+
+#### 20. Relación con SHELL-CI-016
+
+La fachada homogénea `test` pertenece a la gobernanza `SHELL-CI-016`.
+
+La ejecución de `test` en esta auditoría comprueba la fachada pública de NUMERA, pero no sustituye una certificación transversal de todos los repositorios VENTO.
+
+---
+
+#### 21. Resultado técnico consolidado requerido
+
+El artefacto solo puede incorporarse al propietario cuando la batería de esta entrega haya demostrado en el snapshot exacto:
+
+```text
+DEPENDENCY_INSTALL = PASS
+BUILD = PASS
+LINT = PASS
+TYPECHECK = PASS
+TEST = PASS
+TEST_COUNT = 42/42
+NUMERA_WORKTREE_AFTER_VALIDATION = CLEAN
+```
+
+La preparación del artefacto documental no se presenta como ejecución de esas comprobaciones.
+
+---
+
+#### 22. Alcance de la conclusión
+
+Un resultado verde de esta tarea permite afirmar únicamente:
+
+- el snapshot compila mediante el build gobernado;
+- el lint vigente no bloquea;
+- TypeScript no reporta errores bajo el contrato actual;
+- la suite existente pasa en su totalidad;
+- el proceso de auditoría no dejó cambios trackeados en NUMERA.
+
+No permite afirmar:
+
+- completitud funcional financiera;
+- exactitud contable;
+- ausencia de defectos runtime no cubiertos;
+- autorización correcta para todos los actores reales;
+- éxito de E2E en navegador;
+- readiness productivo integral.
+
+---
+
+#### 23. Hallazgos de gobernanza técnica
+
+| Hallazgo | Bloquea la ejecución | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| el script ordinario `build` conserva un `prebuild` potencialmente mutante cuando existe service-role | no, porque existe `build:ci012` | `SHELL-CI-012` | conservar una entrada CI no mutante y no usar el lifecycle ordinario para esta auditoría |
+| el Required Gate remoto actual ejecuta `test`, pero no `build:ci012`, `lint` ni `typecheck` | no para esta auditoría local; sí limita lo que puede inferirse del gate remoto | gobernanza CI vigente | una tarea propietaria futura deberá decidir si esas comprobaciones pasan a ser required checks remotos |
+| la suite CI012 es contractual/sintética y no sustituye E2E operativo | no | `NUMERA-AUD-012` y bloques de QA posteriores | reflejar la cobertura real al construir la matriz final y no elevarla a evidencia operativa |
+
+No se crea una tarea administrativa nueva.
+
+---
+
+#### 24. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: esta tarea ejecuta superficies de validación ya existentes sobre un snapshot ya inventariado. No introduce regla funcional, algoritmo financiero, autorización, integración, transición de datos ni contrato de calidad nuevo.
+
+---
+
+#### 25. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` a `TREQ-NUMERA-004` para integridad económica, conciliación, costos y analítica;
+- requisitos NUMERA de inventario, autorización, lectura y mutación ya registrados para las superficies cubiertas por CI012;
+- gobernanza transversal `SHELL-CI-012` para pruebas específicas del consumidor NUMERA;
+- gobernanza transversal `SHELL-CI-016` para la fachada pública `test`.
+
+Esta trazabilidad no actualiza el registro.
+
+---
+
+#### 26. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | PASS | La incorporación de esta tarea está condicionada a ejecución exitosa del build gobernado `build:ci012` sobre el commit exacto, con precheck CI012 y sin service-role disponible. |
+| LOCAL | PASS | La incorporación exige instalación reproducible, lint con cero warnings, typecheck sin errores y suite existente completa con 42/42 tests PASS en checkout temporal aislado y limpio al finalizar. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad 010→011→012, topología `DEFINE_ONCE`, `vento-numera/main` en `c4d50282e30e46d0abb3d871f9604cf913ebbabd`, manifest, scripts CI012 y workflow Required Gate vigentes. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó navegador, sesión real, flujo financiero E2E, conciliación operativa ni validación con datos de producción. |
+| FÍSICA | NOT_APPLICABLE | La tarea es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la validación temporal no crea implementación física ni cambia producto o infraestructura. |
+
+Los estados BUILD y LOCAL solo son válidos cuando la batería de incorporación los demuestra sobre el snapshot exacto; sin esa evidencia, esta versión no satisface los criterios de aceptación.
+
+---
+
+#### 27. Criterios de aceptación
+
+La tarea queda aceptable únicamente cuando se demuestre simultáneamente:
+
+1. commit NUMERA exacto `c4d50282e30e46d0abb3d871f9604cf913ebbabd`;
+2. instalación reproducible desde lockfile;
+3. service-role ausente durante la validación;
+4. build gobernado PASS;
+5. lint PASS con cero warnings;
+6. typecheck PASS;
+7. exactamente 42 tests ejecutados y aprobados;
+8. cero tests fallidos;
+9. cero tests omitidos;
+10. checkout temporal NUMERA limpio después de las comprobaciones;
+11. cero mutaciones remotas o cambios de producto;
+12. artefacto documental formateado y validado;
+13. comprobación de whitespace del diff Git PASS inmediatamente después del formato y nuevamente antes del cierre;
+14. validadores globales documentales PASS;
+15. cierre documental con `NEXT_TASK_ALLOWED: SI`.
+
+---
+
+#### 28. Límites
+
+Esta tarea no autoriza:
+
+- corregir errores detectados por build, lint, tipos o tests;
+- editar `vento-numera`;
+- cambiar dependencias o lockfile;
+- ejecutar el build ordinario con lifecycle `prebuild`;
+- exponer o usar service-role;
+- sincronizar navegación;
+- modificar Supabase;
+- cambiar workflows;
+- desplegar;
+- crear o modificar TREQ;
+- ejecutar E2E operativo;
+- declarar readiness productivo total;
+- adelantar la matriz final de `NUMERA-AUD-012`.
+
+---
+
+#### 29. Handoff a NUMERA-AUD-012
+
+La tarea siguiente recibirá una fotografía técnica con estas dimensiones cerradas:
+
+```text
+BUILD_STATUS
+LINT_STATUS
+TYPECHECK_STATUS
+TEST_STATUS
+TEST_EXECUTED_COUNT
+TEST_PASS_COUNT
+TEST_FAIL_COUNT
+TEST_SKIP_COUNT
+SAFE_BUILD_ENTRYPOINT
+CI_REMOTE_COVERAGE_BOUNDARY
+```
+
+`NUMERA-AUD-012` deberá combinar este handoff con `NUMERA-AUD-001..010` para construir la matriz capacidad financiera × implementación actual, sin reinterpretar una suite verde como completitud funcional.
+
+**ÚLTIMA TAREA APROBADA:** `NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad`
+
+**TAREA ACTUAL APROBADA:** `NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes`
+
+**SIGUIENTE TAREA RESERVADA:** `NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual`
+
+---
+
+#### 30. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual`
 ### [ ] NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual

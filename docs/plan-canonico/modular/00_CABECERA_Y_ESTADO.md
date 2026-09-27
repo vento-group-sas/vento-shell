@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1400** |
+| Tareas aprobadas | **1401** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **196** |
+| Tareas no iniciadas | **195** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **87.72% (1400/1596)** |
+| Porcentaje de completamiento | **87.78% (1401/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad** |
-| Tarea actual | **NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes** |
+| Última tarea aprobada | **NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes** |
+| Tarea actual | **NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual** |
+| Siguiente tarea | **OPS-CST-001 — Definir el caso de centro de costo y transferencias internas de Producción y Distribución** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 10 de 74 aprobadas; NUMERA-AUD-011 pendiente** |
+| Progreso del bloque | **BLOQUE O: 11 de 74 aprobadas; NUMERA-AUD-012 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-AUD-011** |
+| Carril documental | **ACTIVO — NUMERA-AUD-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-AUD-010` — Auditar exportaciones, información sensible y trazabilidad |
-| Tarea actual | `NUMERA-AUD-011` — Ejecutar build, lint, tipos y pruebas existentes — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-AUD-012` — Crear matriz capacidad financiera × implementación actual |
+| Última aprobada | `NUMERA-AUD-011` — Ejecutar build, lint, tipos y pruebas existentes |
+| Tarea actual | `NUMERA-AUD-012` — Crear matriz capacidad financiera × implementación actual — **NO INICIADA** |
+| Siguiente tarea | `OPS-CST-001` — Definir el caso de centro de costo y transferencias internas de Producción y Distribución |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 10 DE 74 APROBADAS — ACTUAL NUMERA-AUD-011** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 11 DE 74 APROBADAS — ACTUAL NUMERA-AUD-012** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
-        ↓
-TAREA ACTUAL
 NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual
         ↓
+SIGUIENTE TAREA RESERVADA
+OPS-CST-001 — Definir el caso de centro de costo y transferencias internas de Producción y Distribución
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 10 de 74 tareas aprobadas
+BLOQUE O — 11 de 74 tareas aprobadas
 ```
