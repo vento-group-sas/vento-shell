@@ -9526,7 +9526,1021 @@ REPORTS_MUST_IDENTIFY_PERIOD_AND_CLOSE_VERSION = YES
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales`
-### [ ] NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
+### ✅ NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
+**Tarea siguiente:** NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
+**Tipo de tarea:** definición documental del contrato de indicadores, snapshots, reportes financieros oficiales dentro de NUMERA y exportaciones autorizadas, con métricas versionadas, periodo y versión de cierre, filtros, dimensiones, calidad, frescura, lineage, drill-down, autorización independiente de exportación, restatement y frontera explícita frente a estados contables o fiscales externos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea reportes reales, exportaciones, archivos, permisos, métricas físicas, tablas, vistas, RPC, RLS, Storage, Supabase, cambios en aplicaciones, integraciones, estados contables, declaraciones fiscales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cuándo una cifra, indicador, snapshot, reporte o exportación de NUMERA puede tratarse como información financiera oficial dentro del dominio de gestión, qué identidad y versión debe conservar, qué fuentes y controles permiten reproducirla, qué diferencia una vista en vivo de un reporte publicado y cómo se preserva la historia cuando un periodo se reabre o se restata.
+
+La tarea cierra además las brechas observadas en el AS-IS:
+
+```text
+EXPORT_UI_ACTIONS = 0
+CSV_XLSX_EXPORT_IMPLEMENTATIONS = 0
+DOWNLOAD_ROUTES = 0
+PRINT_ACTIONS = 0
+RUNTIME_REPORT_PERMISSION_CONSUMERS = 0
+UI_TRACEABILITY_SURFACES = 0
+NUMERA_DOMAIN_AUDIT_TABLE = NO
+```
+
+La ausencia actual de exportación no se interpreta como gobierno de exportación completo.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-DOM-012` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define un contrato documental reutilizable;
+- no crea instancia física propia;
+- no implementa rutas de descarga;
+- no genera CSV, XLSX, PDF ni otro archivo;
+- no crea métricas ni tablas físicas;
+- no modifica permisos;
+- no publica reportes reales;
+- no crea declaraciones contables o fiscales;
+- no sustituye la capa semántica transversal de datos.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-011
+
+La predecesora deja congelado:
+
+```text
+NUMERA_PERIOD_TYPE = ECONOMIC
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_ORDINARY_FLOW = open->locked->closed
+LATEST_PERIOD_BY_DATE_IS_CURRENT_OPEN_PERIOD = NO
+LOCKED_ALLOWS_ORDINARY_ECONOMIC_MUTATION = NO
+CLOSED_ALLOWS_ORDINARY_ECONOMIC_MUTATION = NO
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+VPROC_0054_PUBLISHED_IS_PERIOD_CLOSED = NO
+CLOSE_RECONCILIATION_PENDING_IS_PERIOD_CLOSED = NO
+LATE_EVENT_SILENT_CLOSED_PERIOD_REWRITE = FORBIDDEN
+LATE_EVENT_REQUIRES_EXPLICIT_ROUTING = YES
+REOPEN_REQUIRES_REASON_SCOPE_EVIDENCE_AUTHORITY = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+CLOSE_AND_REOPEN_IDEMPOTENT = YES
+PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+REPORTS_MUST_IDENTIFY_PERIOD_AND_CLOSE_VERSION = YES
+```
+
+La 012 consume esa versión temporal sin reinterpretar un cierre económico como cierre legal externo.
+
+---
+
+#### 4. Propiedad funcional y superficies canónicas
+
+NUMERA conserva la propiedad funcional de los reportes financieros y de la analítica resultante.
+
+La superficie canónica es:
+
+```text
+VSCREEN-0106 — Reportes y exportaciones financieras
+OWNER = numera
+PROCESS = VPROC-0061
+STEP = VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+```
+
+La superficie prepara, revisa y exporta información financiera autorizada con filtros, versión y trazabilidad.
+
+`VSCREEN-0106` puede consumir resultados de `VPROC-0054`, pero no modifica hechos económicos, costos, cierres ni fuentes propietarias.
+
+---
+
+#### 5. Alcance de “oficial” dentro de NUMERA
+
+En esta tarea:
+
+```text
+OFICIAL_NUMERA
+= publicado y versionado para uso gerencial/analítico autorizado dentro de Vento OS
+```
+
+No significa automáticamente:
+
+```text
+ESTADO_CONTABLE_LEGAL
+DECLARACION_TRIBUTARIA
+FACTURA_FISCAL
+LIBRO_CONTABLE_OFICIAL
+ARCHIVO_PRESENTADO_ANTE_AUTORIDAD
+```
+
+La frontera contable y fiscal externa pertenece a `NUMERA-DOM-013`.
+
+---
+
+#### 6. Taxonomía obligatoria de artefactos
+
+Se mantiene:
+
+```text
+VISTA_EN_VIVO
+!= SNAPSHOT_PUBLICADO
+!= REPORTE_OFICIAL_NUMERA
+!= EXPORTACION
+!= SIMULACION
+!= FUENTE_ECONOMICA
+```
+
+Consecuencias:
+
+- una vista en vivo puede cambiar cuando cambian sus fuentes;
+- un snapshot publicado conserva el corte observado;
+- un reporte oficial NUMERA añade identidad, versión, contexto y decisión de publicación;
+- una exportación es una copia autorizada de un artefacto identificable;
+- una simulación no se presenta como realidad;
+- ningún agregado se vuelve fuente editable por haber sido reportado.
+
+---
+
+#### 7. Definición mínima de reporte oficial NUMERA
+
+Un reporte oficial dentro de NUMERA deberá ser reproducible a partir de:
+
+1. identidad estable del reporte;
+2. versión del reporte;
+3. propósito empresarial;
+4. periodo económico;
+5. estado del periodo al corte;
+6. versión de cierre cuando corresponda;
+7. fecha y hora de corte;
+8. versiones de indicadores utilizadas;
+9. dimensiones y filtros efectivos;
+10. unidad y moneda;
+11. zona horaria y calendario aplicables;
+12. fuentes y lineage;
+13. frescura, cobertura y estado de calidad;
+14. reglas de inclusión y exclusión;
+15. actor y autoridad de publicación;
+16. fecha de publicación;
+17. relación con versión anterior o restatement cuando exista.
+
+Una captura de pantalla o una consulta sin esta identidad no constituye reporte oficial.
+
+---
+
+#### 8. Indicador oficial
+
+Un indicador solo podrá considerarse oficial para un reporte cuando use una definición canónica versionada.
+
+La definición deberá poder resolver:
+
+- nombre empresarial;
+- propósito de decisión;
+- propietario;
+- fórmula;
+- numerador;
+- denominador cuando aplique;
+- granularidad;
+- dimensiones permitidas;
+- filtros;
+- inclusiones;
+- exclusiones;
+- unidad;
+- moneda cuando corresponda;
+- zona horaria;
+- calendario;
+- fuentes;
+- frescura;
+- calidad;
+- versión;
+- estado de certificación;
+- ruta de drill-down;
+- reglas de comparación.
+
+Una pantalla NUMERA no puede redefinir localmente la fórmula de una métrica canónica.
+
+---
+
+#### 9. Registro canónico de métricas
+
+La identidad y definición transversal de métricas pertenece al contrato de datos compartido.
+
+NUMERA:
+
+- consume la definición canónica aplicable;
+- declara la versión exacta usada;
+- aporta hechos económicos y contexto de dominio;
+- no crea una fórmula paralela con el mismo nombre;
+- no altera una métrica histórica para cambiar un reporte ya publicado;
+- puede proponer una nueva versión mediante el gobierno propietario correspondiente.
+
+---
+
+#### 10. Fuente, lineage y drill-down
+
+Todo indicador o reporte oficial deberá poder navegar, dentro del alcance autorizado, desde el agregado hacia las fuentes que lo explican.
+
+El lineage deberá conservar, según aplique:
+
+```text
+REPORTE
+-> VERSION_DE_METRICA
+-> RESULTADO / AGREGADO
+-> HECHO_ECONOMICO / COSTO / SALDO / PRESUPUESTO / OTRO_OBJETO_GOBERNADO
+-> FUENTE_PROPIETARIA
+-> DOCUMENTO / EVENTO / CORRELACION
+```
+
+El drill-down no concede acceso a territorios, documentos o datos sensibles que el actor no pueda consultar directamente.
+
+---
+
+#### 11. Calidad como condición de oficialidad
+
+Un reporte no podrá presentarse como certificado/oficial si una fuente obligatoria está:
+
+- vencida;
+- incompleta;
+- degradada;
+- sin reconciliar cuando la reconciliación sea requisito;
+- en cuarentena;
+- con cobertura material desconocida;
+- con duplicidad no resuelta;
+- con lineage obligatorio ausente.
+
+La degradación deberá ser visible. No se reemplaza dato faltante por cero.
+
+---
+
+#### 12. Cero, nulo, desconocido y pendiente
+
+Se preserva:
+
+```text
+0
+!= NULL
+!= NO_APLICA
+!= DESCONOCIDO
+!= NO_RECIBIDO
+!= PENDIENTE
+```
+
+Los reportes e indicadores deberán conservar esa semántica y no convertir ausencia de evidencia en un valor financiero válido.
+
+---
+
+#### 13. Periodo y versión de cierre
+
+Todo reporte oficial deberá declarar el periodo económico que representa.
+
+Cuando consuma un periodo cerrado deberá declarar además:
+
+- versión de cierre;
+- instante de cierre o corte aplicable;
+- versión de reglas utilizada;
+- restatement o reapertura relacionada cuando exista.
+
+Un reporte de un periodo abierto no podrá presentarse como resultado final de periodo cerrado.
+
+---
+
+#### 14. Reportes sobre periodo `open`
+
+Un periodo `open` puede alimentar análisis y snapshots autorizados.
+
+Si se publica un reporte durante `open`, deberá declarar explícitamente:
+
+```text
+PERIOD_STATUS_AT_CUTOFF = open
+FINAL_CLOSED_PERIOD_REPORT = NO
+```
+
+La publicación no bloquea el periodo ni convierte el contenido en cierre definitivo.
+
+---
+
+#### 15. Reportes sobre periodo `locked`
+
+Un periodo `locked` puede producir reportes de revisión o pre-cierre.
+
+Deben declarar:
+
+```text
+PERIOD_STATUS_AT_CUTOFF = locked
+FINAL_CLOSED_PERIOD_REPORT = NO
+```
+
+El bloqueo de mutaciones ordinarias mejora la estabilidad del corte, pero no equivale a cierre.
+
+---
+
+#### 16. Reportes sobre periodo `closed`
+
+Un reporte que pretenda representar el resultado final del cierre económico deberá referenciar una versión cerrada válida.
+
+Se conserva:
+
+```text
+FINAL_CLOSED_PERIOD_REPORT
+REQUIRES
+PERIOD_STATUS_AT_CUTOFF = closed
+AND CLOSE_VERSION = IDENTIFIED
+```
+
+Esto sigue sin convertir el reporte en estado contable o fiscal externo.
+
+---
+
+#### 17. Fecha de corte, frescura y vigencia
+
+Todo reporte o exportación oficial deberá declarar:
+
+- `as_of` o fecha de corte equivalente;
+- instante de generación/publicación;
+- frescura de cada fuente material;
+- vigencia de definiciones y reglas;
+- cobertura temporal;
+- retrasos conocidos.
+
+La fecha de generación no sustituye la fecha económica de los hechos incluidos.
+
+---
+
+#### 18. Dimensiones y filtros
+
+La identidad del reporte incluye los filtros y dimensiones efectivos.
+
+Como mínimo deberán conservarse cuando apliquen:
+
+- entidad legal;
+- marca o unidad;
+- sede;
+- área;
+- centro de costo;
+- canal;
+- producto o presentación;
+- contraparte;
+- periodo;
+- moneda;
+- otras dimensiones autorizadas por la métrica.
+
+Dos reportes con filtros materiales distintos no son la misma versión lógica del resultado.
+
+---
+
+#### 19. Alcance territorial y agregación
+
+Un reporte consolidado solo podrá incluir miembros del universo que estén autorizados para el actor y para la finalidad declarada.
+
+La agregación no puede revelar indirectamente:
+
+- sedes excluidas;
+- áreas excluidas;
+- negocios excluidos;
+- productos restringidos;
+- datos demo o APP-REVIEW fuera del alcance ordinario;
+- información sensible no autorizada.
+
+La autorización del agregado se resuelve sobre sus miembros, no solo sobre el nombre del reporte.
+
+---
+
+#### 20. Moneda, unidad, zona horaria y calendario
+
+Todo reporte deberá declarar las convenciones necesarias para interpretar sus cifras.
+
+Cuando exista conversión:
+
+- el valor original permanece trazable;
+- la tasa o regla usada queda identificada;
+- la fecha de conversión queda identificada;
+- moneda original y moneda de presentación permanecen distinguibles.
+
+No se inventa en esta tarea un proveedor de FX ni un calendario fiscal.
+
+---
+
+#### 21. Método y reproducibilidad
+
+El resultado oficial debe poder recalcularse a partir de la misma versión de:
+
+```text
+FUENTES
++ METRICAS
++ REGLAS
++ FILTROS
++ DIMENSIONES
++ PERIODO/CORTE
++ CONVERSIONES
+```
+
+La misma versión y el mismo contexto deberán producir el mismo resultado, salvo una corrección explícitamente versionada.
+
+---
+
+#### 22. Real, presupuesto, forecast y simulación
+
+Se conserva:
+
+```text
+REAL
+!= PRESUPUESTADO
+!= FORECAST
+!= ESCENARIO
+!= PROPUESTO
+!= SIMULADO
+```
+
+Un reporte puede comparar estas categorías, pero deberá etiquetarlas inequívocamente y nunca convertir una en otra por agregación o exportación.
+
+---
+
+#### 23. Costos y rentabilidad en reportes
+
+Los reportes de costos y rentabilidad consumirán únicamente resultados que preserven:
+
+- método;
+- versión;
+- fuente;
+- periodo;
+- costo aplicable;
+- ingreso realizado cuando corresponda;
+- dimensiones autorizadas;
+- reconciliación y calidad aplicables.
+
+El reporte no recalcula con fórmulas locales diferentes a las aprobadas en `NUMERA-DOM-007` y `NUMERA-DOM-008`.
+
+---
+
+#### 24. Caja, bancos, cartera y obligaciones en reportes
+
+Los reportes financieros podrán consumir objetos de `NUMERA-DOM-009`, `NUMERA-DOM-010` y posteriormente `NUMERA-DOM-016`, preservando su semántica.
+
+Por tanto:
+
+```text
+SALDO_BANCARIO
+!= CAJA
+!= DEPOSITO_EN_TRANSITO
+!= CUENTA_POR_COBRAR
+!= CUENTA_POR_PAGAR
+!= LIQUIDEZ_PROYECTADA
+```
+
+Un reporte no cierra ni concilia esos objetos por mostrarlos.
+
+---
+
+#### 25. Datos fiscales o contables externos
+
+Una referencia fiscal o contable externa puede aparecer en un reporte NUMERA únicamente como fuente, referencia o estado conciliado autorizado.
+
+La 012 no define:
+
+- emisor fiscal oficial;
+- libro contable;
+- plan de cuentas;
+- comprobante contable;
+- declaración tributaria;
+- archivo regulatorio;
+- autoridad de presentación externa.
+
+Esas fronteras continúan en `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 26. Identidad y versión del reporte
+
+Cada publicación oficial deberá conservar una identidad estable distinta de su versión.
+
+Se preserva:
+
+```text
+REPORT_ID = identidad del producto informativo
+REPORT_VERSION = edición inmutable publicada
+```
+
+Una nueva publicación materialmente distinta crea una nueva versión; no modifica silenciosamente la anterior.
+
+---
+
+#### 27. Publicación e inmutabilidad
+
+Después de publicar una versión oficial:
+
+- sus cifras no se editan en sitio;
+- sus filtros no se alteran;
+- sus versiones de métricas no cambian;
+- su periodo y corte no cambian;
+- su evidencia no se reemplaza silenciosamente;
+- cualquier corrección produce una nueva versión vinculada.
+
+La vista en vivo puede seguir evolucionando de forma independiente.
+
+---
+
+#### 28. Reapertura y restatement
+
+Cuando un periodo previamente reportado se reabra y el cambio afecte materialmente un resultado publicado:
+
+1. se conserva la versión oficial anterior;
+2. se identifica la causa de reapertura;
+3. se genera una nueva versión del resultado;
+4. se registra la relación con la versión sustituida;
+5. se declara la nueva versión de cierre aplicable;
+6. se conserva la diferencia entre ambas versiones;
+7. los consumidores pueden determinar cuál versión está vigente.
+
+No existe corrección destructiva de un reporte histórico.
+
+---
+
+#### 29. Exportación histórica después de restatement
+
+Una exportación ya generada no cambia retroactivamente cuando aparece una nueva versión del reporte.
+
+La nueva exportación deberá apuntar a la nueva versión.
+
+Se conserva:
+
+```text
+OLD_EXPORT_BYTES_OR_CONTENT = HISTORICAL_COPY
+NEW_REPORT_VERSION != SILENT_MUTATION_OF_OLD_EXPORT
+```
+
+Cuando corresponda, la consulta posterior deberá poder advertir que existe una versión posterior.
+
+---
+
+#### 30. Exportación como artefacto derivado
+
+Una exportación:
+
+- no es fuente económica;
+- no es una nueva métrica;
+- no es un nuevo cálculo por defecto;
+- no convierte un snapshot en cierre;
+- no concede autoridad adicional.
+
+Debe heredar de su reporte o consulta base:
+
+- identidad;
+- versión;
+- periodo;
+- corte;
+- filtros;
+- dimensiones;
+- moneda/unidad;
+- versiones de métricas;
+- calidad;
+- lineage.
+
+---
+
+#### 31. Lectura no implica exportación
+
+Se conserva obligatoriamente:
+
+```text
+VIEW_PERMISSION != EXPORT_PERMISSION
+```
+
+La capacidad canónica `numera.analytics.financial_reports.view` permite consulta dentro de su alcance, pero no concede exportación, aprobación ni modificación por implicación.
+
+La salida masiva requiere una decisión de autorización independiente gobernada por el bloque de autorización correspondiente.
+
+---
+
+#### 32. Identidad exacta del permiso de exportación
+
+El catálogo transversal usa `numera.analytics.financial_reports.export` como ejemplo explícito de separación entre consulta y salida masiva.
+
+Esta tarea no declara por sí sola que ese ejemplo ya sea una concesión activa ni crea el permiso en runtime.
+
+La materialización y reconciliación definitiva de capacidades pertenece a `NUMERA-AUTH-*` y al catálogo canónico de autorización.
+
+---
+
+#### 33. Finalidad, destinatario y minimización de exportación
+
+Toda exportación sensible deberá poder registrar y evaluar, cuando aplique:
+
+- finalidad;
+- actor efectivo;
+- alcance autorizado;
+- destinatario o destino;
+- clasificación de sensibilidad;
+- campos incluidos;
+- campos excluidos o minimizados;
+- periodo y corte;
+- versión exportada;
+- instante de generación;
+- evidencia de autorización.
+
+Exportar no autoriza ampliar el universo de datos respecto de la consulta aprobada.
+
+---
+
+#### 34. Información financiera sensible
+
+Los datos financieros, bancarios, de cartera y fiscales requieren clasificación y minimización independientes.
+
+Un mismo reporte puede contener componentes con sensibilidades distintas.
+
+La exportación deberá aplicar el control más restrictivo que corresponda a los datos efectivamente incluidos y no degradar protección por cambiar de formato.
+
+---
+
+#### 35. Autorización server-side
+
+Una ruta, action, API, RPC o mecanismo futuro de exportación deberá revalidar server-side:
+
+- principal;
+- actor efectivo;
+- permiso exacto;
+- recurso/reporte;
+- alcance territorial;
+- finalidad y contexto requeridos;
+- versión solicitada;
+- columnas/campos permitidos;
+- estado actual de la autorización.
+
+Ocultar un botón no constituye autorización suficiente.
+
+---
+
+#### 36. Simulación y exportación
+
+Una sesión simulada no podrá usar autoridad simulada para exportar información financiera real.
+
+Se conserva:
+
+```text
+SIMULATION_VIEW
+!= REAL_DATA_EXPORT_AUTHORITY
+```
+
+Una preview simulada podrá mostrar únicamente la proyección minimizada expresamente autorizada por su contrato y nunca convertir esa preview en copia masiva real.
+
+---
+
+#### 37. Formato de archivo no define oficialidad
+
+CSV, XLSX, PDF, JSON, impresión u otro formato son mecanismos de representación.
+
+Se preserva:
+
+```text
+FILE_FORMAT
+!= OFFICIALITY
+```
+
+Un PDF sin identidad/versionado no es oficial por ser PDF, y un reporte oficial no deja de serlo por no existir todavía un archivo descargable.
+
+---
+
+#### 38. Familias mínimas de reporte NUMERA
+
+El dominio deberá poder producir, conforme maduren sus fuentes, al menos estas familias de información sin fusionar sus semánticas:
+
+| Familia | Contenido objetivo | Fuentes/contratos principales | Límite |
+| --- | --- | --- | --- |
+| posición financiera y ejecutiva | resumen económico autorizado con corte y alcance | hechos económicos, caja, cartera, obligaciones, costos y cierres | no es estado financiero legal por defecto |
+| ingresos y hechos económicos | realizado, ajustes, fuentes y dimensiones | `NUMERA-DOM-002..005` | no reconstruye la operación propietaria |
+| gastos y centros de costo | gasto reconocido, presupuesto, variación y dimensiones | `NUMERA-DOM-005..006` | no sobrescribe presupuesto ni fuente |
+| costos y variaciones | costos versionados, drivers y diferencias | `NUMERA-DOM-007` | no mezcla métodos de costo |
+| rentabilidad | ingreso realizado, costo trazable y dimensiones | `NUMERA-DOM-008` | no usa ingreso esperado como realizado |
+| caja, bancos y tesorería | posición, movimientos, depósitos y conciliación | `NUMERA-DOM-009` | caja, banco y liquidez permanecen distintos |
+| obligaciones y pagos | cuentas por pagar, vencimientos, programación y saldo | `NUMERA-DOM-010` | pago registrado no implica conciliación |
+| cierre de periodo | versión cerrada, excepciones, restatements y evidencia | `NUMERA-DOM-011` | cierre NUMERA no es cierre fiscal/contable |
+| cartera y cobranza | exposición, aging, recaudos, aplicación y saldo | `NUMERA-DOM-016` cuando quede definido | no se anticipa su contrato detallado |
+
+La existencia de una familia no obliga a que todas sus métricas estén publicadas antes de que sus tareas propietarias estén aprobadas.
+
+---
+
+#### 39. Indicadores transversales y planes de mejora
+
+`VPROC-0061` gobierna medición, análisis, decisión de mejora y verificación de eficacia.
+
+Su ciclo preserva:
+
+```text
+MEASUREMENT_CYCLE_OPENED
+-> DATA_COLLECTING
+-> DATA_VALIDATING
+-> ANALYSIS_IN_PROGRESS
+-> FINDINGS_UNDER_REVIEW
+-> IMPROVEMENT_DECISION_PENDING
+-> IMPROVEMENT_IN_PROGRESS
+-> EFFECTIVENESS_CHECK_PENDING
+-> IMPROVEMENT_CYCLE_EVALUATED
+```
+
+Los reportes pueden publicar evidencia y análisis de este proceso, pero publicar un reporte no equivale a `IMPROVEMENT_CYCLE_EVALUATED`.
+
+---
+
+#### 40. Publicación de reporte frente al lifecycle de VPROC-0061
+
+`VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT` es una acción de superficie asociada al proceso, no un nuevo estado inventado por esta tarea.
+
+Se conserva:
+
+```text
+REPORT_PUBLISHED
+!= IMPROVEMENT_CYCLE_EVALUATED
+```
+
+La publicación informa; la evaluación final del ciclo exige completar la lógica propia de medición, decisión y eficacia.
+
+---
+
+#### 41. Condiciones mínimas de publicación oficial
+
+Antes de publicar como oficial dentro de NUMERA deberán estar resueltos, según aplique:
+
+1. propósito y audiencia;
+2. identidad/versionado;
+3. periodo y corte;
+4. versiones de métricas;
+5. calidad y cobertura;
+6. fuentes y lineage;
+7. filtros/dimensiones;
+8. unidad/moneda/zona horaria;
+9. clasificación de sensibilidad;
+10. autoridad de publicación;
+11. restatement previo conocido;
+12. evidencia suficiente para reproducción.
+
+Una condición material no resuelta bloquea la etiqueta de oficialidad, no se oculta con una nota genérica.
+
+---
+
+#### 42. Publicación no amplía autoridad de lectura
+
+Publicar un reporte no lo convierte en información visible para todos los usuarios.
+
+La consulta posterior sigue resolviendo:
+
+- permiso;
+- recurso;
+- territorio;
+- miembros del agregado;
+- sensibilidad;
+- finalidad;
+- contexto vigente.
+
+La posesión del identificador o URL no sustituye autorización.
+
+---
+
+#### 43. Evidencia de exportación
+
+Toda exportación protegida deberá dejar evidencia correlacionable suficiente para reconstruir:
+
+- quién la solicitó;
+- actor efectivo;
+- reporte y versión;
+- filtros y alcance;
+- formato generado;
+- finalidad/destino cuando aplique;
+- instante;
+- decisión de autorización;
+- resultado;
+- error o denegación cuando exista.
+
+La auditoría no se omite en reintentos ni fallos.
+
+---
+
+#### 44. Reintentos e idempotencia de exportación
+
+Un reintento técnico no deberá producir silenciosamente múltiples artefactos empresariales si el contrato de la solicitud exige una única salida lógica.
+
+La implementación futura deberá distinguir:
+
+```text
+REQUEST_ID
+REPORT_VERSION
+EXPORT_INSTANCE
+DELIVERY_ATTEMPT
+```
+
+Esta tarea no fija almacenamiento ni TTL de archivos.
+
+---
+
+#### 45. Errores y metadatos técnicos
+
+Los mensajes de error de generación, consulta o exportación no deberán reflejar indiscriminadamente detalles internos, SQL, rutas, secretos o metadata sensible hacia URL o UI.
+
+El error de usuario deberá ser seguro y la evidencia técnica completa permanecer en la capa autorizada de diagnóstico/auditoría.
+
+---
+
+#### 46. Histórico, backfill y migración
+
+Una hoja, reporte heredado, saldo parcial o exportación histórica no se convierte automáticamente en fuente completa por importarse al sistema.
+
+El material histórico deberá conservar:
+
+- procedencia;
+- fecha/corte conocido;
+- cobertura conocida;
+- limitaciones;
+- estado de reconciliación;
+- relación con datos canónicos posteriores.
+
+La historia no reconciliada no puede certificarse como reporte oficial contemporáneo.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La cobertura existente ya protege reconciliación financiera, identidad económica, métricas versionadas, calidad, lineage, snapshots, restatements, segregación de lectura/exportación y auditoría de acciones protegidas.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Esta sección documenta cobertura existente y no constituye una actualización del Registro 04A.
+
+Cobertura principal reutilizada:
+
+- `TREQ-NUMERA-001` — indicadores y reportes reconciliados con fuentes, historia, permisos separados y trazabilidad;
+- `TREQ-NUMERA-002` — identidad, dimensiones, periodos distintos, correcciones no destructivas y preparación para integración contable;
+- `TREQ-NUMERA-003` — separación de autorización para registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-NUMERA-004` — métodos, fuentes, versiones, periodo y drill-down para costos, presupuesto y rentabilidad;
+- `TREQ-DATA-002` — registro canónico versionado de métricas;
+- `TREQ-DATA-003` — calidad, frescura, late data, reconciliación y lineage;
+- `TREQ-DATA-004` — separación entre vista en vivo, snapshot, reporte oficial, simulación y exportación con restatement versionado;
+- `TREQ-AUTH-013` — autorización server-side de acciones protegidas;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones sensibles.
+
+No se entrega una actualización 04A porque ninguna regla protegida cambia de contenido ni de estado.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó esta tarea dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `main`, continuidad, topología `DEFINE_ONCE`, archivo propietario, políticas documentales, Registro 04A, `NUMERA-AUD-010`, `VPROC-0061`, `VSCREEN-0106`, `STEP-PUBLISH_FINANCIAL_REPORT`, catálogo canónico de reportes financieros, requisitos NUMERA/DATA/AUTH y el handoff completo aprobado de `NUMERA-DOM-011` |
+| OPERATIVA | NOT_EXECUTED | no se calcularon, publicaron, exportaron, descargaron, corrigieron ni restataron reportes o indicadores reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no autoriza materialización física propia |
+
+---
+
+#### 50. Criterios de aceptación
+
+`NUMERA-DOM-012` queda aceptable cuando:
+
+1. `OFICIAL_NUMERA` se distingue de estado contable/fiscal externo;
+2. vista en vivo, snapshot, reporte oficial, exportación y simulación permanecen distintos;
+3. todo reporte oficial conserva identidad y versión;
+4. todo reporte declara propósito, periodo, corte y contexto;
+5. los reportes de periodos cerrados identifican versión de cierre;
+6. reportes de `open` o `locked` no se presentan como cierre final;
+7. todo indicador oficial consume una definición canónica versionada;
+8. la UI no redefine localmente fórmulas canónicas;
+9. fuente y lineage permiten reproducir el resultado;
+10. drill-down respeta autorización y territorio;
+11. datos vencidos, degradados o sin reconciliar bloquean certificación cuando son materialmente obligatorios;
+12. cero, nulo, desconocido, no recibido y pendiente permanecen distintos;
+13. filtros y dimensiones forman parte de la identidad del resultado;
+14. agregados no revelan miembros no autorizados;
+15. moneda, unidad, zona horaria y calendario quedan declarados;
+16. la misma versión/contexto produce el mismo resultado;
+17. real, presupuesto, forecast, escenario y simulación permanecen separados;
+18. costos/rentabilidad consumen sus contratos propietarios;
+19. caja, banco, cartera y obligaciones no se fusionan por reportarlos;
+20. referencias contables/fiscales externas no convierten el reporte en artefacto legal;
+21. una versión publicada no se edita en sitio;
+22. reapertura material produce nueva versión/restatement;
+23. la versión previa permanece histórica;
+24. una exportación previa no muta retroactivamente;
+25. una exportación hereda identidad/versionado/contexto del artefacto base;
+26. exportación no se convierte en fuente económica;
+27. lectura no implica exportación;
+28. exportación requiere autorización independiente;
+29. finalidad, destinatario y minimización se gobiernan cuando apliquen;
+30. sensibilidad financiera no se degrada por cambiar de formato;
+31. autorización se revalida server-side;
+32. simulación no concede exportación real;
+33. formato de archivo no define oficialidad;
+34. las familias mínimas de reporte conservan fronteras de dominio;
+35. `VPROC-0061` conserva su lifecycle canónico;
+36. publicar reporte no equivale a completar el ciclo de mejora;
+37. oficialidad exige calidad, lineage y autoridad suficientes;
+38. publicación no amplía autorización de lectura;
+39. exportación deja evidencia correlacionable;
+40. reintentos distinguen solicitud, versión, instancia y entrega;
+41. errores técnicos sensibles no se reflejan indiscriminadamente;
+42. históricos no reconciliados no se certifican automáticamente;
+43. no se crean ni modifican requisitos de prueba;
+44. no se realizan cambios físicos;
+45. `NUMERA-DOM-013` recibe una frontera explícita entre reportes NUMERA y autoridad contable/fiscal externa.
+
+---
+
+#### 51. Límites
+
+Esta tarea no:
+
+- implementa reportes o dashboards;
+- crea rutas de exportación o descarga;
+- crea archivos CSV, XLSX, PDF o JSON;
+- fija una librería de generación de archivos;
+- crea permisos físicos ni modifica el catálogo runtime;
+- resuelve la migración de `numera.reports.view` al namespace canónico;
+- crea tablas de auditoría;
+- implementa lineage físico;
+- modifica `VPROC-0061` ni sus estados;
+- crea estados contables o fiscales;
+- define presentación tributaria;
+- define plan de cuentas o comprobantes;
+- define la conciliación detallada reservada a `NUMERA-DOM-014`;
+- define cartera completa reservada a `NUMERA-DOM-016`;
+- define escenarios completos reservados a `NUMERA-DOM-018`;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-DOM-013`.
+
+---
+
+#### 52. Handoff a NUMERA-DOM-013
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_OFFICIAL_REPORT_SCOPE = INTERNAL_MANAGEMENT_ANALYTICS
+NUMERA_OFFICIAL_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+LIVE_VIEW_PUBLISHED_SNAPSHOT_OFFICIAL_REPORT_EXPORT_SIMULATION = DISTINCT
+OFFICIAL_METRIC_REQUIRES_CANONICAL_VERSION = YES
+LOCAL_METRIC_FORMULA_OVERRIDE = FORBIDDEN
+REPORT_REQUIRES_PERIOD_AND_CUTOFF = YES
+CLOSED_PERIOD_REPORT_REQUIRES_CLOSE_VERSION = YES
+REPORT_OFFICIALITY_REQUIRES_QUALITY_LINEAGE_AND_AUTHORITY = YES
+REPORT_VERSION_IMMUTABLE_AFTER_PUBLICATION = YES
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+EXPORT_INHERITS_REPORT_ID_VERSION_SCOPE_AND_CUTOFF = YES
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_REQUIRES_INDEPENDENT_AUTHORIZATION = YES
+EXPORT_IS_ECONOMIC_SOURCE = NO
+EXPORT_FORMAT_DEFINES_OFFICIALITY = NO
+EXTERNAL_ACCOUNTING_AND_FISCAL_AUTHORITY = NUMERA_DOM_013
+```
+
+`NUMERA-DOM-013` deberá definir qué sistemas o proveedores externos conservan autoridad contable/fiscal, qué referencias recibe NUMERA, cómo se concilian sin duplicación y qué salidas de la 012 pueden servir únicamente como insumo, evidencia o exportación de gestión sin convertirse por sí mismas en libros, declaraciones o documentos fiscales oficiales.
+
+---
+
+#### 53. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo`
 ### [ ] NUMERA-DOM-013 — Definir fronteras frente al sistema contable o fiscal externo
 ### [ ] NUMERA-DOM-014 — Definir conciliación y tratamiento de diferencias
 ### [ ] NUMERA-DOM-015 — Aprobar alcance objetivo y capacidades diferidas
