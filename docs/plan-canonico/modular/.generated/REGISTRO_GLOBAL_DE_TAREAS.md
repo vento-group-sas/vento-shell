@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1410** |
+| Aprobadas | **1411** |
 | En propuesta | **0** |
-| No iniciadas | **186** |
+| No iniciadas | **185** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **88.35% (1410/1596)** |
+| Porcentaje de completamiento | **88.41% (1411/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **186** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1311** |
+| ⏸ NO_EVALUADA | **185** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1312** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-DOM-007` — Definir costos, costo estándar, costo real y variaciones | ✅ APROBADA |
-| Tarea actual | `NUMERA-DOM-008` — Definir rentabilidad por empresa, sede, canal, producto y periodo | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-DOM-009` — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-DOM-008` — Definir rentabilidad por empresa, sede, canal, producto y periodo | ✅ APROBADA |
+| Tarea actual | `NUMERA-DOM-009` — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-DOM-010` — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1172,7 +1172,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-005` | Definir gastos, soportes, aprobación, corrección y anulación | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-006` | Definir centros de costo y propiedad de su catálogo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-007` | Definir costos, costo estándar, costo real y variaciones | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-008` | Definir rentabilidad por empresa, sede, canal, producto y periodo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-008` | Definir rentabilidad por empresa, sede, canal, producto y periodo | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-009` | Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-010` | Definir cuentas por pagar y obligaciones si pertenecen a NUMERA | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-DOM-011` | Definir cierres, periodos y reapertura controlada | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |

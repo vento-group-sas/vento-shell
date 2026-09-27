@@ -5435,7 +5435,1005 @@ COST_CENTER_CATALOG = SINGLE_SHARED_CANONICAL_CATALOG
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo`
-### [ ] NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
+### ✅ NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones
+**Tarea siguiente:** NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
+**Tipo de tarea:** definición documental del modelo analítico de rentabilidad de NUMERA, sus dimensiones obligatorias de empresa, sede, canal, producto y periodo, sus fuentes de ingreso realizado y costo trazable, fórmulas de margen y resultado gerencial, reglas de consolidación, eliminación de doble conteo intragrupo, publicación, comparabilidad, completitud y conciliación, preservando fronteras con venta, costo, caja, bancos, fiscalidad, contabilidad formal, cierres y escenarios; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica ventas, costos, centros de costo, caja, bancos, periodos, presupuestos, escenarios, tablas, vistas, RPC, contratos, integraciones, permisos, RLS, Supabase, reportes runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato económico y dimensional con el que NUMERA podrá medir rentabilidad real sin confundir ingreso esperado con ingreso realizado, gasto agregado con costo trazable, transferencia interna con venta externa, caja con resultado económico o una suma de métricas locales con una consolidación válida.
+
+La tarea cierra específicamente estas brechas canónicas:
+
+- la superficie actual de rentabilidad utiliza `expected_revenue` y gasto, no ingreso realizado y costo completo trazable;
+- no existe cálculo material de utilidad o margen realizado;
+- la vista actual no demuestra consolidación por empresa, sede, canal, producto y periodo;
+- empresa, marca, sede, área, canal y centro de costo no pueden mezclarse como si fueran la misma dimensión;
+- las transferencias internas pueden producir doble conteo si se presentan como ingreso del origen y costo del destino dentro de una misma consolidación;
+- los resultados deben conservar fórmula, método, versión, vigencia, fuentes, corte y evidencia suficientes para ser reproducibles.
+
+El resultado es una definición documental de rentabilidad analítica y gerencial. No constituye contabilidad formal, cálculo fiscal, estado financiero oficial ni implementación física.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-DOM-008` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define el modelo una sola vez;
+- no crea una instancia física propia;
+- no modifica datos ni estructuras persistidas;
+- no recalcula periodos históricos;
+- no publica dashboards ni RPC;
+- no define todavía caja, bancos, conciliaciones bancarias, cierre, reapertura, fiscalidad o contabilidad formal;
+- no crea escenarios ni simulaciones;
+- no autoriza fórmulas alternativas locales por aplicación o reporte.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-007
+
+La predecesora deja congelado:
+
+```text
+COST_ENGINE_OWNER = NUMERA
+COST_SOURCE_FACT_OWNERS = PRESERVED
+COST_METHOD_FALLBACK_SILENT = FORBIDDEN
+ACQUISITION_LANDED_STANDARD_AVERAGE_LAST_REAL_PRODUCTIVE_LOGISTIC_WASTE_INTERNAL = DISTINCT
+AVERAGE_COST_METHOD = QUANTITY_WEIGHTED
+STANDARD_COST = VERSIONED_PUBLISHED_REFERENCE
+REAL_COST = RECONCILED_OBSERVED_COST
+MISSING_COST = NOT_ZERO
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+SHARED_ALLOCATION_REQUIRES_VERSIONED_DRIVER = YES
+INTERNAL_COST_IS_LEGAL_REVENUE_OR_EXPENSE_BY_DEFAULT = NO
+COST_VARIANCE = ACTUAL_COMPARABLE_MINUS_REFERENCE_COMPARABLE
+POSITIVE_COST_VARIANCE = UNFAVORABLE
+HISTORICAL_REVALUATION_BY_SILENT_OVERWRITE = FORBIDDEN
+TARGET_GROSS_MARGIN_IS_CONTRIBUTION_MARGIN_BY_DEFAULT = NO
+COST_RESULTS_REQUIRE_METHOD_VERSION_SCOPE_SOURCE_AND_CUTOFF = YES
+COST_CENTER_CATALOG = SINGLE_SHARED_CANONICAL_CATALOG
+```
+
+Esta tarea usa exclusivamente costos trazables bajo ese contrato y no redefine los métodos de costo.
+
+---
+
+#### 4. Handoff recibido de NUMERA-DOM-002
+
+Para ventas se conserva:
+
+```text
+INGRESO_ESPERADO != INGRESO_REALIZADO
+VENTA != PAGO
+VENTA != CAJA
+VENTA != ENTREGA
+VENTA != DOCUMENTO_FISCAL
+VENTA != HECHO_ECONOMICO
+HECHO_ECONOMICO != ASIENTO_CONTABLE
+```
+
+El ingreso utilizado para rentabilidad deberá provenir de hechos económicos reconocidos y conciliables, correlacionados con la fuente comercial propietaria. Cotizaciones, pedidos abiertos, preparación, pagos autorizados, cierres de caja, documentos pendientes o expectativas comerciales no sustituyen ingreso realizado.
+
+---
+
+#### 5. Handoff recibido de OPS-CST-001
+
+Se conserva la regla empresarial:
+
+```text
+INGRESO EXTERNO REALIZADO
+- COSTO TRAZABLE DEL PRODUCTO RECIBIDO
+- COSTOS DIRECTOS DE LA SEDE
+- COSTOS COMPARTIDOS APROBADOS
+= RESULTADO GERENCIAL RECONCILIABLE
+```
+
+También permanecen vigentes:
+
+- una transferencia interna no se suma como ingreso del grupo;
+- el mismo producto no genera ingreso nuevamente por el solo traslado interno;
+- Producción puede medirse por costo, rendimiento, merma, variación y eficiencia sin inventar una venta interna;
+- Distribución puede medirse por costo logístico, servicio, diferencia y eficiencia sin inventar margen comercial;
+- una vista consolidada elimina doble conteo intragrupo;
+- una operación entre entidades legales distintas no se clasifica automáticamente como simple transferencia interna si el tratamiento legal todavía no está definido.
+
+---
+
+#### 6. Proceso económico propietario
+
+La rentabilidad pertenece al ciclo `VPROC-0054 — Gestionar costos, distribución, presupuesto, cierre y rentabilidad con reglas versionadas`, propiedad funcional de NUMERA.
+
+Estados relevantes:
+
+```text
+COSTING_CYCLE_OPENED
+-> INPUTS_COLLECTING
+-> CALCULATION_IN_PROGRESS
+-> VARIANCE_ANALYSIS
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> PUBLISHED
+-> CLOSE_RECONCILIATION_PENDING
+-> COSTING_CYCLE_CLOSED
+```
+
+Reglas:
+
+1. recopilar ingresos y costos no equivale a rentabilidad publicada;
+2. un cálculo en curso no se usa como resultado oficial o decisorio sin identificar su estado;
+3. la revisión verifica fuentes, supuestos, asignaciones, dimensiones y excepciones;
+4. solo una versión aprobada y `PUBLISHED` puede presentarse como resultado publicado;
+5. `COSTING_CYCLE_CLOSED` exige conciliación del periodo sin convertir estimaciones en hechos ni reescribir historia.
+
+---
+
+#### 7. Definición de rentabilidad en esta tarea
+
+Para esta tarea, rentabilidad es un resultado analítico económico reproducible que compara ingreso externo realizado con costos trazables bajo un alcance dimensional y temporal explícito.
+
+No equivale automáticamente a:
+
+- saldo de caja;
+- saldo bancario;
+- flujo de efectivo;
+- utilidad contable neta;
+- utilidad fiscal;
+- EBITDA;
+- presupuesto;
+- forecast;
+- escenario;
+- margen objetivo;
+- precio interno;
+- valor de una transferencia interna;
+- suma de ingresos esperados.
+
+Las métricas contables o fiscales que requieran reglas adicionales deberán conservar su propio propietario posterior.
+
+---
+
+#### 8. Capas obligatorias del resultado
+
+El modelo deberá mantener separadas al menos estas capas:
+
+| Capa | Fórmula conceptual | Uso |
+| --- | --- | --- |
+| ingreso realizado analítico | efectos económicos de venta reconocidos y conciliables, netos de efectos comerciales compensatorios aplicables | base de ingresos reales |
+| costo trazable del producto | costo publicado aplicable a las unidades o líneas comercializadas bajo método y versión declarados | costo directo del producto |
+| margen bruto analítico | ingreso realizado analítico menos costo trazable del producto | análisis de producto, sede y canal antes de otros costos operativos |
+| costos directos atribuibles | costos económicos directamente causados por la dimensión analizada | resultado gerencial |
+| costos compartidos asignados | porción aprobada de pools compartidos mediante drivers versionados | resultado gerencial cuando corresponda |
+| resultado gerencial | ingreso realizado menos costo de producto, costos directos y costos compartidos aplicables | lectura económica no contable formal |
+| tasa de margen | resultado seleccionado dividido por ingreso realizado comparable, cuando el denominador sea válido | indicador porcentual explícitamente definido |
+
+No se utilizará la etiqueta genérica `rentabilidad` sin identificar qué capa o fórmula representa.
+
+---
+
+#### 9. Fórmulas canónicas mínimas
+
+Cuando las entradas sean completas y comparables:
+
+```text
+MARGEN_BRUTO_ANALITICO
+= INGRESO_REALIZADO_ANALITICO
+- COSTO_TRAZABLE_PRODUCTO
+```
+
+```text
+RESULTADO_GERENCIAL
+= INGRESO_REALIZADO_ANALITICO
+- COSTO_TRAZABLE_PRODUCTO
+- COSTOS_DIRECTOS_ATRIBUIBLES
+- COSTOS_COMPARTIDOS_ASIGNADOS
+```
+
+Para una tasa basada en el resultado gerencial:
+
+```text
+TASA_RESULTADO_GERENCIAL
+= RESULTADO_GERENCIAL / INGRESO_REALIZADO_ANALITICO
+```
+
+solo cuando:
+
+```text
+INGRESO_REALIZADO_ANALITICO != 0
+```
+
+Si el denominador es cero, ausente o no comparable, la tasa no se convierte en cero ni infinito; permanece no calculable bajo esa fórmula.
+
+---
+
+#### 10. Margen bruto, margen de contribución y resultado gerencial
+
+Los conceptos permanecen separados.
+
+`MARGEN_BRUTO_ANALITICO` usa ingreso realizado y costo trazable del producto bajo la definición publicada.
+
+`MARGEN_DE_CONTRIBUCION` solo podrá existir cuando se haya definido y trazado qué costos variables corresponden al análisis. No se obtiene automáticamente de `target_gross_margin_pct`.
+
+`RESULTADO_GERENCIAL` incorpora los costos directos y compartidos autorizados definidos por el alcance.
+
+Queda prohibido:
+
+- usar el margen objetivo como margen real;
+- usar margen bruto como margen de contribución sin demostrar la equivalencia;
+- presentar resultado gerencial como utilidad contable neta;
+- comparar porcentajes calculados sobre bases distintas como si fueran la misma métrica.
+
+---
+
+#### 11. Ingreso realizado utilizado por rentabilidad
+
+El numerador de ingreso deberá derivarse de hechos económicos reconocidos y conciliables provenientes de ventas externas.
+
+Debe conservar, cuando aplique:
+
+- identidad estable del hecho económico;
+- identidad de venta o compromiso fuente;
+- entidad o empresa aplicable;
+- sede;
+- canal;
+- producto o presentación;
+- cantidad;
+- moneda;
+- fecha de ocurrencia;
+- fecha económica o de reconocimiento;
+- periodo;
+- importe realizado;
+- descuentos, devoluciones, anulaciones o compensaciones correlacionadas;
+- referencias de pago, entrega y documento como evidencias separadas;
+- fuente y versión del snapshot comercial.
+
+Un total agregado sin lineage suficiente no reemplaza estas fuentes.
+
+---
+
+#### 12. Efectos correctivos sobre ingreso
+
+Cancelación, anulación, devolución, reembolso y compensación conservan sus semánticas separadas.
+
+Para rentabilidad:
+
+- un ingreso reconocido nunca se borra para corregir la historia;
+- un efecto inverso o compensatorio autorizado referencia el hecho original;
+- una devolución física no determina por sí sola el importe monetario a revertir;
+- un reembolso no prueba por sí solo anulación total de la venta;
+- las métricas del periodo conservan el criterio temporal aplicable y la trazabilidad de ajustes tardíos;
+- el resultado publicado conserva la versión que incorporó cada corrección.
+
+El tratamiento de cierres, periodos bloqueados y reaperturas pertenece a `NUMERA-DOM-011` y `NUMERA-DOM-014` según corresponda.
+
+---
+
+#### 13. Costo trazable utilizado por rentabilidad
+
+Todo costo utilizado deberá cumplir el contrato de `NUMERA-DOM-007`.
+
+Como mínimo deberá declarar:
+
+- método;
+- versión;
+- vigencia;
+- alcance;
+- producto/presentación o destino económico;
+- unidad;
+- cantidad valorizada;
+- moneda;
+- fuente;
+- fecha de corte;
+- estado de publicación;
+- evidencia de conciliación.
+
+No se aceptan como costo trazable de rentabilidad:
+
+- gasto agregado sin relación causal suficiente;
+- precio de venta;
+- precio interno sin política aplicable;
+- costo cero inventado;
+- último costo usado silenciosamente en lugar de otro método;
+- costo pendiente presentado como real;
+- movimiento físico sin valoración económica aplicable.
+
+---
+
+#### 14. Regla de completitud
+
+Una rentabilidad publicada requiere que sus entradas materiales estén completas para el alcance declarado.
+
+Como mínimo se deberá poder distinguir:
+
+```text
+COMPLETE
+INCOMPLETE_MISSING_REVENUE
+INCOMPLETE_MISSING_COST
+INCOMPLETE_PENDING_ALLOCATION
+INCOMPLETE_DIMENSION_CONFLICT
+INCOMPLETE_RECONCILIATION
+```
+
+Estas etiquetas expresan condiciones conceptuales del resultado y no crean por esta tarea nuevos estados de proceso persistidos.
+
+Reglas:
+
+1. falta de costo no equivale a costo cero;
+2. falta de ingreso no equivale a ingreso cero;
+3. una asignación compartida pendiente no se sustituye por un porcentaje inventado;
+4. un conflicto de entidad, sede, canal, producto o periodo no se resuelve por nombre visible;
+5. una vista parcial deberá identificarse como parcial y no publicarse como consolidación completa.
+
+---
+
+#### 15. Dimensión empresa
+
+La dimensión empresa deberá usar una identidad canónica organizacional aplicable y no inferirse desde marca, sede, canal o centro de costo.
+
+Reglas:
+
+- empresa o entidad, marca, sede, área, canal y centro de costo permanecen dimensiones distintas;
+- una marca visible no demuestra por sí sola la entidad económica propietaria del hecho;
+- un cambio de nombre comercial no reatribuye historia;
+- una consolidación de varias empresas deberá declarar explícitamente su alcance y reglas de eliminación;
+- una operación entre entidades distintas no se reclasifica como interna por pertenecer al mismo grupo empresarial si su tratamiento legal no está resuelto.
+
+La frontera contable y fiscal de operaciones intercompañía permanece reservada a `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 16. Dimensión sede
+
+La sede de rentabilidad deberá provenir de la identidad canónica vinculada al hecho comercial o económico aplicable.
+
+Reglas:
+
+- sede no equivale a empresa, marca, canal o centro de costo;
+- una venta se atribuye a la sede comercial que corresponde al hecho fuente, no a la sede que consulta el reporte;
+- costos centrales solo llegan a una sede mediante atribución directa o distribución aprobada;
+- compartir instalación física no obliga a mezclar responsabilidades económicas;
+- una sede sin ingreso externo puede mostrar costos y eficiencia, pero no se fuerza un margen comercial inexistente.
+
+---
+
+#### 17. Dimensión canal
+
+El canal deberá conservar la identidad normalizada del origen comercial.
+
+Podrán existir canales internos o externos definidos por los dominios comerciales, pero NUMERA no los crea ni renombra.
+
+Reglas:
+
+- una misma venta visible en canal externo, PULSO y una proyección analítica se cuenta una sola vez;
+- una comisión o costo del canal se trata como costo separado cuando exista hecho económico y atribución válida;
+- cambiar el mapeo futuro de un canal no reescribe ventas históricas;
+- un canal desconocido permanece sin clasificar antes que ser asignado por inferencia;
+- canal no sustituye modalidad, sede, cliente, marca o empresa.
+
+---
+
+#### 18. Dimensión producto
+
+La rentabilidad por producto requiere conservar la identidad canónica del producto o presentación vinculada a la línea comercial fuente.
+
+Reglas:
+
+- producto se deriva de las líneas reconocidas, no de una descripción libre agregada;
+- la cantidad comercial debe poder compararse con la unidad de valoración del costo mediante una conversión gobernada cuando corresponda;
+- cambios futuros de catálogo, nombre, receta o presentación no reescriben la línea histórica;
+- una venta sin detalle de producto puede contribuir a rentabilidad agregada solo en el nivel que su evidencia permita; no se reparte arbitrariamente entre productos;
+- un costo de producto sin venta correlacionable no se asigna a una línea comercial por aproximación silenciosa.
+
+---
+
+#### 19. Dimensión periodo
+
+Todo resultado deberá declarar periodo y fecha de corte.
+
+Reglas:
+
+- la rentabilidad no se calcula sobre "todos los periodos" sin dimensión temporal explícita;
+- ocurrencia, reconocimiento económico, cierre y eventual ajuste tardío permanecen conceptos distintos;
+- el periodo aplicable deberá derivarse de la regla económica vigente y conservarse en el resultado;
+- comparar periodos exige definiciones, moneda, métodos y dimensiones comparables;
+- un evento tardío no reescribe silenciosamente un resultado publicado;
+- el workflow completo de cierre, bloqueo y reapertura se reserva a `NUMERA-DOM-011`.
+
+---
+
+#### 20. Dimensiones auxiliares permitidas
+
+Además de empresa, sede, canal, producto y periodo, el lineage podrá conservar dimensiones ya canónicas como:
+
+- marca o unidad comercial;
+- centro de costo;
+- pedido o compromiso;
+- cliente o contraparte cuando la finalidad y autorización lo permitan;
+- lote, movimiento o fuente de costo para drill-down;
+- moneda y unidad;
+- versión de cálculo.
+
+Estas dimensiones auxiliares no reemplazan las cinco dimensiones obligatorias del título ni autorizan nuevas fuentes de verdad.
+
+---
+
+#### 21. Grano analítico y agregación
+
+La rentabilidad deberá construirse desde unidades de ingreso y costo con identidad y dimensiones suficientes antes de agregarse.
+
+Regla:
+
+```text
+HECHOS FUENTE IDENTIFICABLES
+-> NORMALIZACION DIMENSIONAL
+-> ATRIBUCION / ASIGNACION TRAZABLE
+-> CALCULO AL NIVEL SOPORTADO
+-> AGREGACION
+-> CONSOLIDACION
+-> PUBLICACION VERSIONADA
+```
+
+Queda prohibido calcular primero un agregado global y repartirlo después entre empresa, sede, canal o producto sin una regla causal aprobada.
+
+La suma de resultados de subconjuntos solo será una consolidación válida cuando las poblaciones sean disjuntas o exista una eliminación explícita de superposiciones.
+
+---
+
+#### 22. Atribución directa y costos compartidos
+
+Se conserva la jerarquía:
+
+```text
+ATRIBUCION_DIRECTA
+> DRIVER_OPERATIVO_MEDIBLE
+> DRIVER_GERENCIAL_APROBADO
+> PENDIENTE_DE_ASIGNACION
+```
+
+Para rentabilidad:
+
+- un costo directamente atribuible al producto, sede o canal no se envía a pool por conveniencia;
+- un costo realmente compartido conserva pool, base, driver, destinos, versión, aprobación y reversión;
+- la suma distribuida reconcilia con el monto distribuible, considerando redondeos explícitos;
+- una nueva versión de driver no reescribe resultados ya publicados;
+- la rentabilidad puede mostrar resultados antes y después de compartidos solo si cada capa está claramente identificada.
+
+---
+
+#### 23. Rentabilidad por empresa
+
+La vista por empresa deberá poder reconciliar:
+
+```text
+INGRESO_EXTERNO_REALIZADO_DE_LA_EMPRESA
+- COSTO_TRAZABLE_ATRIBUIDO_A_LA_EMPRESA
+- COSTOS_DIRECTOS_DE_LA_EMPRESA
+- COSTOS_COMPARTIDOS_ASIGNADOS_A_LA_EMPRESA
+= RESULTADO_GERENCIAL_EMPRESA
+```
+
+Reglas:
+
+- no se agregan como ingreso los valores internos que representen traslados dentro del alcance consolidado;
+- las operaciones entre entidades distintas con tratamiento legal pendiente quedan identificadas y no se fuerzan a ingreso o eliminación;
+- la suma de empresas no se presenta como grupo consolidado si no se ejecutaron las eliminaciones correspondientes;
+- cada empresa conserva moneda y criterios de conversión aplicables antes de una suma multimoneda.
+
+---
+
+#### 24. Rentabilidad por sede
+
+La vista por sede deberá reconciliar:
+
+```text
+INGRESO_REALIZADO_SEDE
+- COSTO_PRODUCTO_ATRIBUIDO_SEDE
+- COSTOS_DIRECTOS_SEDE
+- COSTOS_COMPARTIDOS_ASIGNADOS_SEDE
+= RESULTADO_GERENCIAL_SEDE
+```
+
+El costo de producto puede provenir de producción o abastecimiento central, pero la transferencia interna que lo transporta no se convierte en ingreso del grupo.
+
+Los costos de Producción y Distribución permanecen visibles en sus responsabilidades de origen y solo llegan a la sede mediante el mecanismo económico definido, sin duplicarse en la consolidación.
+
+---
+
+#### 25. Rentabilidad por canal
+
+La vista por canal deberá usar ventas externas realizadas y costos atribuibles al canal.
+
+Podrá incluir, cuando existan hechos económicos aprobados y trazables:
+
+- comisiones de canal;
+- costos directos de entrega o fulfillment atribuibles;
+- descuentos comerciales ya incorporados en el ingreso reconocido;
+- otros costos directos del canal definidos por su fuente propietaria.
+
+No podrá:
+
+- contar dos veces una venta importada y normalizada;
+- convertir un costo compartido en directo sin evidencia;
+- mezclar canal con sede;
+- usar pedidos abiertos como ingreso;
+- inferir rentabilidad del canal únicamente a partir del precio de venta.
+
+---
+
+#### 26. Rentabilidad por producto
+
+La vista por producto deberá reconciliar, al nivel soportado por la evidencia:
+
+```text
+INGRESO_REALIZADO_PRODUCTO
+- COSTO_TRAZABLE_PRODUCTO
+- COSTOS_DIRECTOS_PRODUCTO
+- COSTOS_COMPARTIDOS_PRODUCTO_APLICABLES
+= RESULTADO_GERENCIAL_PRODUCTO
+```
+
+Reglas:
+
+- el costo del producto usa método y versión declarados;
+- merma, reproceso y variaciones no se ocultan dentro de una cantidad buena;
+- descuentos y devoluciones se conservan en el lineage del ingreso;
+- una presentación no se mezcla con otra sin conversión y equivalencia aprobadas;
+- un producto sin base de costo completa queda incompleto antes que mostrar margen artificialmente alto.
+
+---
+
+#### 27. Rentabilidad por periodo
+
+La vista temporal deberá permitir como mínimo comparar resultados bajo la misma definición económica entre periodos.
+
+Cada resultado deberá conservar:
+
+- periodo;
+- fecha de corte;
+- versión de rentabilidad;
+- versión de costo utilizada;
+- población de ingresos incluida;
+- asignaciones compartidas incluidas;
+- moneda o moneda de reporte;
+- estado de completitud;
+- estado de publicación;
+- referencia de conciliación.
+
+Una comparación no es válida si cambia silenciosamente la fórmula, el método de costo o el universo de datos.
+
+---
+
+#### 28. Consolidación y eliminación intragrupo
+
+La consolidación deberá impedir que una transferencia interna infle simultáneamente ingreso y costo dentro del mismo alcance consolidado.
+
+Regla conceptual:
+
+```text
+RESULTADOS_LOCALES
++ AJUSTES_DE_CONSOLIDACION
+- DOBLE_CONTEO_INTERNO
+= RESULTADO_CONSOLIDADO
+```
+
+Cuando un valor interno exista para gestión:
+
+- puede permanecer visible en la vista local autorizada;
+- conserva origen, destino, método y versión;
+- no se suma como ingreso externo del alcance consolidado;
+- no multiplica el costo económico total por aparecer en más de una unidad;
+- cualquier eliminación conserva evidencia y no borra el hecho interno original.
+
+Una consolidación sin evidencia de eliminación se presenta como agregación, no como consolidado oficial.
+
+---
+
+#### 29. Frontera con operaciones entre entidades legales distintas
+
+Si origen y destino pertenecen a entidades legales distintas, NUMERA no decidirá en esta tarea que la operación sea simple traslado interno ni venta intercompañía.
+
+El resultado deberá:
+
+1. conservar ambas identidades;
+2. conservar la evidencia económica y física;
+3. evitar inventar ingreso externo o eliminación automática;
+4. quedar sujeto al tratamiento aprobado por gobierno empresarial y la frontera contable/fiscal;
+5. impedir que la misma operación aparezca simultáneamente como traslado neutral y venta legal.
+
+La decisión jurídica, fiscal y contable pertenece a `NUMERA-DOM-013` y `NUMERA-DOM-017` cuando corresponda.
+
+---
+
+#### 30. Moneda y comparabilidad
+
+No se sumarán importes de monedas distintas sin una política explícita de conversión.
+
+Toda consolidación multimoneda deberá conservar, cuando aplique:
+
+- moneda de origen;
+- moneda de reporte;
+- tipo o referencia de conversión;
+- fecha aplicable;
+- fuente;
+- versión de política;
+- precisión y redondeo.
+
+La tasa o política concreta no se fija en esta tarea.
+
+Ausencia de política de conversión produce resultado no comparable, no una suma nominal.
+
+---
+
+#### 31. Precio, costo y margen
+
+El precio comercial pertenece a la venta fuente; el costo pertenece al contrato económico de costos; el margen se deriva de ambos cuando sean comparables.
+
+Queda prohibido:
+
+- tratar precio interno como ingreso externo;
+- tratar precio de venta como costo;
+- calcular margen con ingreso esperado y presentarlo como realizado;
+- sustituir costo faltante con precio de compra, último costo o cero sin declarar el método;
+- mezclar margen objetivo y margen realizado;
+- comparar margen de dos productos con bases de costo distintas sin identificarlo.
+
+---
+
+#### 32. Presupuesto, forecast y escenarios
+
+Los resultados reales permanecen separados de:
+
+```text
+PRESUPUESTO
+REVISION_DE_PRESUPUESTO
+FORECAST
+ESCENARIO
+SUPUESTO
+OBJETIVO
+```
+
+Una vista comparativa puede mostrar real versus presupuesto o escenario, pero:
+
+- cambiar un supuesto no modifica hechos reales;
+- un escenario no se incorpora al resultado realizado;
+- `expected_revenue` permanece expectativa;
+- los escenarios versionados pertenecen a `NUMERA-DOM-018`;
+- la gobernanza detallada de presupuesto y periodo continúa en sus tareas propietarias.
+
+---
+
+#### 33. Publicación y versionado
+
+Cada resultado publicable deberá conservar:
+
+- identificador o versión de cálculo;
+- fórmula o definición de métrica;
+- periodo y corte;
+- dimensiones;
+- fuentes de ingreso;
+- fuentes y métodos de costo;
+- distribuciones compartidas incluidas;
+- reglas de consolidación;
+- moneda y precisión;
+- estado de completitud;
+- actor o autoridad de revisión/aprobación cuando corresponda;
+- momento de publicación;
+- relación con una versión anterior si existe corrección o restatement.
+
+Publicar una nueva versión no elimina la versión histórica utilizada para decisiones anteriores.
+
+---
+
+#### 34. Drill-down y reconciliación
+
+Toda cifra publicada deberá poder bajar, según autorización, desde el agregado hasta sus componentes trazables.
+
+La navegación conceptual es:
+
+```text
+RENTABILIDAD_PUBLICADA
+-> DIMENSION / PERIODO
+-> INGRESO_REALIZADO
+-> LINEAS O HECHOS FUENTE
+-> COSTO PUBLICADO
+-> COMPONENTES / METODO / VERSION
+-> COSTOS DIRECTOS
+-> POOLS Y DRIVERS
+-> AJUSTES / ELIMINACIONES
+-> EVIDENCIA DE CONCILIACION
+```
+
+Un dashboard o exportación no se convierte en fuente editable del resultado.
+
+---
+
+#### 35. Correcciones, restatements y eventos tardíos
+
+Una corrección posterior deberá preservar:
+
+- versión publicada original;
+- hecho o regla que cambió;
+- motivo;
+- actor o autoridad;
+- impacto por dimensión;
+- periodo afectado;
+- versión nueva;
+- diferencia entre ambas versiones.
+
+No se sobrescribirá silenciosamente una rentabilidad histórica publicada.
+
+La política completa de restatement y eventos tardíos se coordina con `NUMERA-DOM-011`, `NUMERA-DOM-014` y las tareas de datos propietarias.
+
+---
+
+#### 36. Cero, ausencia y no comparabilidad
+
+Se mantienen separados:
+
+```text
+ZERO
+MISSING
+NOT_APPLICABLE
+NOT_COMPARABLE
+PENDING
+```
+
+Ejemplos:
+
+- cero ingresos confirmados no es lo mismo que ingresos faltantes;
+- cero costo válido no es lo mismo que costo desconocido;
+- margen no aplicable a una unidad sin ingreso externo no es margen cero;
+- una moneda no convertible bajo la política vigente produce no comparabilidad;
+- una asignación pendiente no se fuerza a cero para cerrar el resultado.
+
+---
+
+#### 37. Casos excepcionales obligatorios
+
+El diseño posterior deberá tratar explícitamente:
+
+1. venta realizada sin costo trazable todavía disponible;
+2. costo disponible sin ingreso comercial correlacionable;
+3. devolución o anulación posterior a publicación;
+4. costo real cerrado después del periodo de venta;
+5. transferencia interna visible en dos unidades;
+6. producto sin detalle de línea en la fuente histórica;
+7. venta multimoneda;
+8. canal externo duplicado con PULSO;
+9. costo compartido con driver pendiente;
+10. driver corregido después de publicación;
+11. sede o centro desactivado con historia vigente;
+12. producto renombrado o sustituido;
+13. empresa o titular no resuelto;
+14. operación entre entidades legales distintas;
+15. periodo cerrado con evento tardío;
+16. ingreso cero con costos positivos;
+17. ingreso negativo por compensaciones mayores al ingreso del corte;
+18. costo faltante que impediría un margen confiable;
+19. comparación entre periodos con métodos de costo diferentes;
+20. consolidación que no dispone todavía de todas las eliminaciones internas.
+
+Ninguno se resuelve mediante borrado destructivo, costo cero inventado, reparto arbitrario o ingreso interno ficticio.
+
+---
+
+#### 38. Frontera con caja, bancos y liquidez
+
+La rentabilidad no prueba liquidez ni disponibilidad de efectivo.
+
+Se conserva:
+
+```text
+INGRESO_REALIZADO != COBRO
+COBRO != MOVIMIENTO_DE_CAJA
+MOVIMIENTO_DE_CAJA != MOVIMIENTO_BANCARIO
+RENTABILIDAD != LIQUIDEZ
+RENTABILIDAD != SALDO_BANCARIO
+```
+
+Una empresa, sede, canal o producto puede ser rentable y tener cobros pendientes; también puede tener caja positiva sin rentabilidad económica suficiente.
+
+`NUMERA-DOM-009` recibe esta separación para definir caja, bancos y conciliaciones sin usar rentabilidad como sustituto de posición financiera.
+
+---
+
+#### 39. Frontera con contabilidad y fiscalidad
+
+Este modelo es analítico y gerencial.
+
+No define:
+
+- plan de cuentas;
+- partida doble;
+- reconocimiento contable oficial;
+- impuesto de renta;
+- tratamiento de IVA u otros impuestos;
+- utilidad fiscal;
+- depreciación contable;
+- precios de transferencia fiscales;
+- facturación intercompañía;
+- estados financieros oficiales.
+
+Las futuras integraciones o capacidades contables deberán mapear los hechos económicos sin reescribir este lineage analítico.
+
+---
+
+#### 40. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| la superficie runtime actual no calcula rentabilidad realizada | no | `NUMERA-UX-022` y materialización posterior | UI consume ingreso realizado y costo trazable bajo esta definición |
+| la vista actual consulta periodos sin dimensión temporal suficiente | no | `NUMERA-UX-022`, `NUMERA-DOM-011` | filtro/corte y periodo económico quedan explícitos |
+| la tarjeta actual promete más dimensiones que las materializadas | no | `NUMERA-UX-022`, `NUMERA-UX-028` | empresa, sede, canal, producto y periodo son navegables y trazables |
+| el tratamiento legal de movimientos entre entidades distintas no está cerrado | no | `NUMERA-DOM-013`, `NUMERA-DOM-017` | clasificación contable/fiscal aprobada |
+| periodos cerrados pueden recibir hechos tardíos | no | `NUMERA-DOM-011`, `NUMERA-DOM-014` | reglas de cierre, ajuste y reapertura definidas |
+| escenarios y supuestos todavía no poseen motor objetivo | no | `NUMERA-DOM-018` | escenarios versionados separados de hechos reales |
+| caja y bancos no están definidos en este modelo | no | `NUMERA-DOM-009` | posición, movimientos y conciliaciones financieras definidos |
+| agregación analítica global requiere gobierno de dimensiones y métricas | no | tareas `DATA-DOM-*` propietarias | capa semántica, granularidad, calidad y restatement materializados |
+
+---
+
+#### 41. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+Justificación: el modelo de rentabilidad, sus dimensiones, fuentes, método, versionado, reconciliación, separación frente a expectativas, costos y transferencias internas ya está protegido por requisitos canónicos vigentes. La tarea concreta esas obligaciones sin introducir una obligación de prueba nueva.
+
+---
+
+#### 42. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación de indicadores, costos, gastos y reportes con hechos fuente y ausencia de doble registro;
+- `TREQ-NUMERA-002` para identidad, entidad, sede, centro, moneda, fechas, fuente, correlación, estado y correcciones no destructivas;
+- `TREQ-NUMERA-004` para método, entradas, versión, vigencia, entidad, centro, periodo, fuente, separación de tipos de costo, distribuciones, transferencias internas y rentabilidad trazable;
+- `TREQ-NUMERA-020` para mantener separados ingreso esperado, gasto real, presupuesto y variación en la superficie de rentabilidad;
+- `TREQ-PULSO-006` para conservar venta, pago, caja, documento fiscal, devoluciones y cierre como hechos distintos y auditables;
+- `TREQ-INTEGRATION-017` para hechos de venta, pago, inventario, producción, merma, logística y otros efectos recibidos por NUMERA mediante contratos versionados, correlacionados e idempotentes;
+- `TREQ-INTEGRATION-013` y `TREQ-INTEGRATION-016` para costo productivo/logístico correlacionado sin doble efecto.
+
+Esta enumeración es trazabilidad reutilizada y no actualiza 04A.
+
+---
+
+#### 43. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se modificó ni validó el checkout local del usuario durante la redacción del artefacto |
+| REMOTA | PASS | se verificaron `main`, continuidad, archivo propietario, políticas documentales, Registro 04A NUMERA, `NUMERA-DOM-002`, `NUMERA-DOM-006`, `OPS-CST-001`, `NUMERA-AUD-008`, `CAP-SCOPE-012`, `CAP-SCOPE-017`, `VPROC-0054`, requisitos relacionados y el handoff aprobado de `NUMERA-DOM-007` |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron ventas, costos, distribuciones, consolidaciones, cierres, caja, bancos ni conciliaciones reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no autoriza materialización física |
+
+---
+
+#### 44. Criterios de aceptación
+
+`NUMERA-DOM-008` queda aceptable cuando:
+
+1. ingreso esperado e ingreso realizado permanecen separados;
+2. rentabilidad usa ingreso externo realizado y costo trazable;
+3. margen bruto, margen de contribución y resultado gerencial no se confunden;
+4. el resultado gerencial no se presenta como utilidad contable neta;
+5. empresa, sede, canal, producto y periodo tienen reglas dimensionales explícitas;
+6. marca, área y centro de costo no sustituyen silenciosamente esas dimensiones;
+7. una venta se cuenta una sola vez aunque aparezca en canal externo, PULSO y proyecciones;
+8. costo faltante no se convierte en cero ni en fallback silencioso;
+9. ingreso faltante no se convierte en cero;
+10. la tasa de margen no se calcula con denominador cero o no comparable;
+11. costos directos preceden distribuciones compartidas;
+12. pools y drivers conservan versión, aprobación y reversión;
+13. rentabilidad por producto conserva líneas y costo trazable suficiente;
+14. rentabilidad por canal conserva identidad normalizada y costos atribuibles;
+15. rentabilidad por sede conserva ingreso externo y costos de sede sin doble costo central;
+16. rentabilidad por empresa conserva identidad organizacional y reglas de consolidación;
+17. cada resultado conserva periodo, corte, versión, moneda, fuentes y estado de completitud;
+18. transferencias internas no inflan ingreso consolidado;
+19. consolidaciones eliminan o identifican doble conteo intragrupo;
+20. operaciones entre entidades distintas no se clasifican legalmente por inferencia;
+21. comparaciones entre periodos conservan definiciones y métodos comparables;
+22. correcciones y eventos tardíos no sobrescriben historia publicada;
+23. presupuesto, forecast y escenarios permanecen separados de resultados reales;
+24. rentabilidad permanece separada de caja, bancos y liquidez;
+25. no se crean ni modifican requisitos de prueba;
+26. no se realizan cambios físicos;
+27. `NUMERA-DOM-009` recibe la separación entre resultado económico y posición de caja/bancos.
+
+---
+
+#### 45. Límites
+
+Esta tarea no:
+
+- implementa el motor de rentabilidad;
+- crea o modifica vistas, RPC o tablas;
+- cambia hechos de venta;
+- cambia métodos o valores de costo definidos por `NUMERA-DOM-007`;
+- crea centros de costo o dimensiones maestras;
+- define catálogo de canales o productos;
+- implementa conversiones de moneda;
+- fija tipos de cambio;
+- define impuestos o utilidad fiscal;
+- crea plan de cuentas o asientos;
+- define caja o bancos;
+- ejecuta conciliaciones bancarias;
+- define cierre y reapertura completa de periodos;
+- implementa escenarios;
+- crea permisos o roles;
+- modifica Supabase;
+- modifica 04A;
+- desarrolla `NUMERA-DOM-009`.
+
+---
+
+#### 46. Handoff a NUMERA-DOM-009
+
+La siguiente tarea recibe:
+
+```text
+PROFITABILITY_OWNER = NUMERA
+REALIZED_REVENUE_SOURCE = RECOGNIZED_RECONCILABLE_ECONOMIC_FACTS
+EXPECTED_REVENUE_IS_REALIZED_REVENUE = NO
+TRACEABLE_COST_REQUIRED = YES
+MISSING_REVENUE_IS_ZERO = NO
+MISSING_COST_IS_ZERO = NO
+GROSS_ANALYTIC_MARGIN = REALIZED_REVENUE_MINUS_TRACEABLE_PRODUCT_COST
+MANAGERIAL_RESULT = REALIZED_REVENUE_MINUS_TRACEABLE_PRODUCT_COST_MINUS_DIRECT_COSTS_MINUS_APPROVED_SHARED_COSTS
+TARGET_GROSS_MARGIN_IS_ACTUAL_MARGIN = NO
+TARGET_GROSS_MARGIN_IS_CONTRIBUTION_MARGIN_BY_DEFAULT = NO
+COMPANY_SITE_CHANNEL_PRODUCT_PERIOD = REQUIRED_PROFITABILITY_DIMENSIONS
+INTERNAL_TRANSFER_IS_CONSOLIDATED_EXTERNAL_REVENUE = NO
+CONSOLIDATION_REQUIRES_INTERNAL_DOUBLE_COUNT_ELIMINATION = YES
+PROFITABILITY_IS_LIQUIDITY = NO
+PROFITABILITY_IS_CASH_BALANCE = NO
+REALIZED_REVENUE_IS_CASH_RECEIPT = NO
+CASH_RECEIPT_IS_BANK_MOVEMENT = NO
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+```
+
+`NUMERA-DOM-009` deberá definir caja, bancos y conciliaciones bajo esta separación, sin usar rentabilidad como sustituto de efectivo, liquidez o saldo financiero.
+
+---
+
+#### 47. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-007 — Definir costos, costo estándar, costo real y variaciones`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado`
 ### [ ] NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
 ### [ ] NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
 ### [ ] NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
