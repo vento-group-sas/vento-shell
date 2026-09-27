@@ -6434,7 +6434,1011 @@ HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado`
-### [ ] NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
+### ✅ NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo
+**Tarea siguiente:** NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
+**Tipo de tarea:** definición documental del modelo objetivo de caja consolidada, cuentas financieras, bancos, movimientos de tesorería, extractos, saldos, depósitos, transferencias, conciliación y posición de liquidez de NUMERA, delimitando la frontera con la operación de caja de PULSO, pagos, obligaciones, cartera, cierres, periodos y ejecución bancaria externa; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica cajas, sesiones POS, ventas, pagos, obligaciones, cuentas por cobrar, cuentas bancarias reales, extractos, movimientos, saldos, integraciones bancarias, credenciales, tablas, vistas, RPC, contratos, permisos, RLS, Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué parte de caja, bancos, movimientos financieros, tesorería y conciliación pertenece al dominio económico de NUMERA y qué parte permanece en PULSO, bancos, proveedores de pago, terceros financieros u otros procesos propietarios.
+
+La tarea debe permitir que NUMERA:
+
+- conozca cierres y diferencias de caja sin operar la caja POS;
+- mantenga un catálogo gobernado de cuentas financieras y bancarias;
+- reciba extractos y movimientos externos sin convertirlos en registros editables de conveniencia;
+- distinga pago, recaudo, depósito, transferencia, comisión, devolución, reverso y movimiento bancario;
+- correlacione hechos financieros mediante matching sugerido, aprobado y reversible;
+- produzca una posición de tesorería por entidad, cuenta, moneda, fecha de corte y estado de conciliación;
+- proyecte liquidez sin confundir compromisos futuros con saldo observado;
+- conserve diferencias explícitas hasta su resolución;
+- evite doble registro entre PULSO, NUMERA, proveedor de pago y banco.
+
+El resultado es un contrato documental de dominio. No crea una integración bancaria ni ejecuta movimientos reales.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-DOM-009` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define el modelo una sola vez;
+- no crea instancia física propia;
+- no abre, cierra ni modifica cajas reales;
+- no inicia transferencias ni pagos bancarios;
+- no importa extractos reales;
+- no crea cuentas bancarias en terceros;
+- no modifica secretos ni credenciales;
+- no materializa conciliaciones;
+- no define todavía el lifecycle completo de cuentas por pagar de `NUMERA-DOM-010`;
+- no define todavía cierre y reapertura de periodos de `NUMERA-DOM-011`.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-008
+
+La predecesora deja congelado:
+
+```text
+PROFITABILITY_OWNER = NUMERA
+REALIZED_REVENUE_SOURCE = RECOGNIZED_RECONCILABLE_ECONOMIC_FACTS
+EXPECTED_REVENUE_IS_REALIZED_REVENUE = NO
+PROFITABILITY_IS_LIQUIDITY = NO
+PROFITABILITY_IS_CASH_BALANCE = NO
+REALIZED_REVENUE_IS_CASH_RECEIPT = NO
+CASH_RECEIPT_IS_BANK_MOVEMENT = NO
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+```
+
+Esta tarea conserva esa separación. La existencia de efectivo o saldo bancario no prueba rentabilidad y una venta realizada no prueba por sí sola recepción de dinero.
+
+---
+
+#### 4. Capacidades canónicas involucradas
+
+Esta definición concreta principalmente:
+
+| Capacidad | Propiedad objetivo | Decisión |
+| --- | --- | --- |
+| `CAP-12.02` Gestionar caja | frontera compartida PULSO + NUMERA | PULSO opera apertura, movimientos, conteo y cierre; NUMERA consume, consolida y concilia su efecto económico |
+| `CAP-12.03` Gestionar bancos y pagos | NUMERA con ejecución externa cuando corresponda | NUMERA gobierna cuentas, instrucciones, movimientos, extractos, matching y conciliación; banco/proveedor confirma ejecución externa |
+| `CAP-12.12` Gestionar tesorería | NUMERA con ejecución bancaria externa | NUMERA proyecta posición, liquidez, compromisos y pagos programados sin fabricar saldos ni confirmaciones |
+
+`CAP-12.04`, `CAP-12.05`, cartera, obligaciones y programación detallada de pagos conservan sus tareas propietarias posteriores.
+
+---
+
+#### 5. Frontera de propiedad de caja
+
+La operación física y transaccional de caja permanece en PULSO mediante `VPROC-0044 — Cerrar caja y conciliar ventas, pagos, efectivo, diferencias y responsables`.
+
+PULSO conserva:
+
+- sesión o jornada de caja;
+- fondo y responsable operativo;
+- movimientos operativos de efectivo;
+- conteo y arqueo;
+- conciliación de ventas y medios dentro de la jornada;
+- diferencia de caja;
+- aprobación de supervisión;
+- preparación de custodia o depósito;
+- cierre de la sesión.
+
+NUMERA no reabre, modifica ni reconstruye esas identidades. Recibe resultados y referencias para conciliación financiera.
+
+---
+
+#### 6. Estados de caja relevantes para NUMERA
+
+`VPROC-0044` conserva, entre otros:
+
+```text
+CASH_CLOSE_OPENED
+-> COUNTING
+-> SALES_RECONCILIATION_IN_PROGRESS
+-> DIFFERENCE_UNDER_REVIEW
+-> SUPERVISOR_APPROVAL_PENDING
+-> DEPOSIT_PREPARING
+-> FINANCIAL_RECONCILIATION_PENDING
+-> CASH_SESSION_CLOSED
+```
+
+Reglas:
+
+1. `CASH_CLOSE_OPENED` no prueba saldo final;
+2. `COUNTING` no crea un hecho bancario;
+3. `DEPOSIT_PREPARING` no significa depósito realizado;
+4. `FINANCIAL_RECONCILIATION_PENDING` declara precisamente que la correlación financiera falta;
+5. `CASH_SESSION_CLOSED` confirma el cierre operativo de PULSO, no el abono bancario posterior;
+6. NUMERA no altera ventas o pagos para cuadrar una diferencia de caja.
+
+---
+
+#### 7. Identidades que no se fusionan
+
+Se conserva obligatoriamente:
+
+```text
+VENTA
+!= PAGO
+!= MOVIMIENTO_DE_CAJA
+!= CIERRE_DE_CAJA
+!= CUSTODIA_DE_EFECTIVO
+!= DEPOSITO_PREPARADO
+!= DEPOSITO_CONFIRMADO
+!= CUENTA_FINANCIERA
+!= MOVIMIENTO_BANCARIO
+!= LINEA_DE_EXTRACTO
+!= TRANSFERENCIA
+!= OBLIGACION
+!= RECAUDO
+!= HECHO_ECONOMICO
+!= CONCILIACION
+```
+
+Una correlación entre estos objetos no cambia su identidad ni su propietario histórico.
+
+---
+
+#### 8. Catálogo de cuentas financieras
+
+NUMERA será propietario funcional del catálogo económico de cuentas financieras utilizadas para caja consolidada, bancos y tesorería.
+
+Cada cuenta deberá poder conservar como mínimo:
+
+- identidad estable interna;
+- entidad legal titular;
+- institución o proveedor financiero;
+- tipo de cuenta o instrumento;
+- moneda principal;
+- referencia externa gobernada;
+- identificador visible enmascarado cuando corresponda;
+- propósito operativo o financiero;
+- capacidad de recibir, pagar o ambas cuando aplique;
+- estado;
+- vigencia desde y hasta;
+- origen de alta;
+- actor y aprobación aplicables;
+- evidencia documental o contractual;
+- relación con reemplazos o cuentas sucesoras.
+
+Nombre de marca, sede o cuenta bancaria no se tratarán como sinónimos.
+
+---
+
+#### 9. Titularidad y cuentas receptoras no se infieren
+
+Las preguntas operativas existentes sobre qué cuenta recibe recursos por marca, sede o entidad permanecen sin inferencia.
+
+Por tanto:
+
+```text
+BRAND_NAME -> BANK_ACCOUNT
+```
+
+no es una relación deducible automáticamente.
+
+Toda asignación de cuenta receptora deberá conservar:
+
+- entidad legal;
+- alcance de negocio o sede cuando corresponda;
+- vigencia;
+- moneda;
+- propósito;
+- autoridad de aprobación;
+- evidencia de titularidad o mandato.
+
+Si esa evidencia falta, el mapeo permanece pendiente y no se elige una cuenta por nombre, costumbre o coincidencia textual.
+
+---
+
+#### 10. Datos sensibles de cuentas
+
+El modelo diferenciará identidad económica de información bancaria sensible.
+
+Reglas:
+
+1. interfaces ordinarias mostrarán referencias enmascaradas cuando sea suficiente;
+2. números completos, tokens, secretos, credenciales y llaves solo existirán donde sean técnicamente necesarios y protegidos;
+3. un secreto de integración no forma parte del catálogo económico visible;
+4. exportaciones y evidencias no expondrán información sensible innecesaria;
+5. cambiar credenciales no cambia la identidad histórica de la cuenta financiera;
+6. la revocación de una integración no elimina movimientos o conciliaciones históricas.
+
+Los permisos exactos se reservan a `NUMERA-AUTH-*`.
+
+---
+
+#### 11. Movimiento financiero canónico
+
+NUMERA deberá poder representar un movimiento financiero sin asumir que es una venta, gasto, obligación o asiento contable.
+
+El sobre mínimo deberá poder conservar:
+
+| Grupo | Información mínima |
+| --- | --- |
+| identidad | movimiento interno estable, cuenta, fuente, referencia externa, versión o secuencia |
+| organización | entidad legal, sede o unidad cuando exista asignación autorizada |
+| monetario | moneda, importe, signo o dirección explícita, comisiones separadas cuando existan |
+| temporal | fecha de ocurrencia, fecha de contabilización externa, fecha valor cuando exista, fecha de recepción |
+| contraparte | identidad o referencia externa disponible, sin inventar cliente/proveedor |
+| origen | banco, proveedor, PULSO, NUMERA u otra fuente autorizada |
+| correlación | pago, recaudo, depósito, obligación, venta, devolución, transferencia u otra referencia aplicable |
+| evidencia | extracto, comprobante, payload, archivo, hash o soporte aplicable |
+| control | estado de ingestión, duplicidad, matching, conciliación y excepción |
+
+---
+
+#### 12. Movimientos bancarios son hechos externos observados
+
+Una línea bancaria recibida desde banco o proveedor conserva su contenido original y no se edita para hacerla coincidir con NUMERA.
+
+Queda prohibido:
+
+- cambiar importe original;
+- cambiar fecha original;
+- cambiar referencia externa;
+- borrar una línea porque fue importada dos veces sin conservar evidencia de deduplicación;
+- convertir descripción libre en identidad de contraparte sin validación;
+- fusionar dos líneas bancarias originales en una sola línea fuente.
+
+La normalización y correlación se almacenan como capas adicionales.
+
+---
+
+#### 13. Extractos bancarios
+
+Todo extracto deberá conservar como mínimo:
+
+- cuenta financiera;
+- institución fuente;
+- moneda;
+- periodo o ventana del extracto;
+- fecha de emisión o recuperación;
+- identidad externa o huella del archivo/payload;
+- saldo inicial cuando sea provisto;
+- saldo final cuando sea provisto;
+- conjunto de líneas;
+- evidencia del origen;
+- estado de importación;
+- estado de conciliación;
+- versión o reemplazo cuando el proveedor reemita información.
+
+Un extracto importado no es un saldo contable interno ni un cierre financiero por sí solo.
+
+---
+
+#### 14. Idempotencia de importación bancaria
+
+La misma evidencia bancaria puede llegar por archivo, API, reintento o backfill sin multiplicar efectos.
+
+La deduplicación deberá poder usar, según disponibilidad:
+
+- cuenta;
+- identidad externa del movimiento;
+- identidad del extracto;
+- hash de archivo o payload;
+- secuencia del proveedor;
+- importe;
+- moneda;
+- fechas;
+- referencia bancaria.
+
+La coincidencia débil no autoriza eliminar un registro. Casos ambiguos quedan en revisión.
+
+---
+
+#### 15. Estados de conciliación financiera
+
+La conciliación conceptual deberá distinguir al menos:
+
+```text
+UNMATCHED
+MATCH_SUGGESTED
+MATCH_UNDER_REVIEW
+MATCH_APPROVED
+PARTIALLY_RECONCILED
+RECONCILED
+EXCEPTION_OPEN
+MATCH_REVERSED
+```
+
+Estos nombres describen estados de dominio objetivo y no implican nombres físicos de columnas o enums.
+
+Reglas:
+
+1. sugerir no equivale a aprobar;
+2. aprobar no modifica la línea fuente;
+3. conciliación parcial conserva saldo pendiente;
+4. una excepción no se oculta con un ajuste sin soporte;
+5. revertir un match conserva el match anterior y su motivo.
+
+---
+
+#### 16. Matching sugerido, aprobado y reversible
+
+El matching podrá proponer candidatos usando atributos como:
+
+- cuenta y entidad;
+- moneda;
+- importe;
+- signo o dirección;
+- fecha de operación y fecha valor;
+- referencia bancaria;
+- referencia de proveedor de pago;
+- identidad de transferencia;
+- identidad de pago o recaudo;
+- contraparte conocida;
+- lote, depósito o liquidación;
+- tolerancia aprobada cuando exista.
+
+Ningún algoritmo tendrá autoridad implícita para cerrar la conciliación cuando el contrato exija aprobación humana o regla certificada.
+
+---
+
+#### 17. Cardinalidades de matching
+
+El modelo soportará explícitamente:
+
+- uno a uno;
+- uno a muchos;
+- muchos a uno;
+- conciliación parcial;
+- neteo explicado por comisiones o retenciones conocidas;
+- movimientos sin contraparte interna todavía identificada.
+
+Ejemplos válidos:
+
+- varias ventas liquidadas en un único abono de proveedor;
+- un pago dividido en varios débitos;
+- depósito de una jornada con múltiples cajas;
+- abono bancario neto de comisión;
+- devolución que compensa parcialmente un recaudo previo.
+
+La cardinalidad no puede inferirse únicamente por igualdad de importes.
+
+---
+
+#### 18. Tolerancias y reglas de matching
+
+Toda tolerancia deberá declarar:
+
+- propósito;
+- moneda;
+- magnitud;
+- dimensión o proceso aplicable;
+- versión;
+- vigencia;
+- autoridad;
+- motivo;
+- tratamiento de diferencias.
+
+No existe una tolerancia universal implícita.
+
+Cuando la diferencia exceda la regla aprobada o no tenga explicación, permanece como excepción.
+
+---
+
+#### 19. Depósitos de efectivo
+
+Se distinguen:
+
+```text
+EFECTIVO_CONTADO
+-> EFECTIVO_BAJO_CUSTODIA
+-> DEPOSITO_PREPARADO
+-> DEPOSITO_ENTREGADO_O_ENVIADO
+-> ABONO_BANCARIO_OBSERVADO
+-> CONCILIACION_APROBADA
+```
+
+Reglas:
+
+1. `DEPOSIT_PREPARING` de PULSO no prueba abono bancario;
+2. una constancia de entrega no prueba liquidación final si el banco aún no la refleja;
+3. el abono observado no altera el cierre POS;
+4. diferencias entre efectivo entregado y abono quedan abiertas hasta explicación;
+5. depósitos agregados pueden correlacionar múltiples cierres sin fusionarlos.
+
+---
+
+#### 20. Pagos digitales y liquidaciones de proveedor
+
+Para pagos de venta se conserva `VPROC-0043` de PULSO.
+
+`PAYMENT_RECONCILED` confirma el pago dentro de su alcance comercial, pero NUMERA todavía puede requerir conciliar:
+
+- liquidación del proveedor;
+- comisión;
+- retención;
+- devolución;
+- contracargo;
+- fecha de abono;
+- abono bancario efectivo.
+
+Por tanto:
+
+```text
+PAYMENT_RECONCILED != BANK_SETTLEMENT_RECONCILED
+```
+
+---
+
+#### 21. Transferencias entre cuentas propias
+
+Una transferencia entre cuentas financieras propias se representa como un movimiento correlacionado entre origen y destino.
+
+Reglas:
+
+- no genera ingreso externo por defecto;
+- no genera gasto legal por defecto;
+- no duplica liquidez consolidada;
+- conserva salida, entrada, comisión y diferencia como componentes separados;
+- si una pata falta, la transferencia permanece pendiente;
+- el movimiento no se considera completado solo por una instrucción enviada.
+
+---
+
+#### 22. Operaciones entre entidades legales distintas
+
+Si origen y destino pertenecen a entidades legales distintas, NUMERA no clasificará automáticamente la operación como simple transferencia interna consolidable.
+
+El caso deberá conservar:
+
+- entidad origen;
+- entidad destino;
+- titularidad de cuentas;
+- propósito;
+- soporte;
+- tratamiento pendiente o definido;
+- referencia al proceso fiscal/contable aplicable.
+
+Facturación intercompañía, impuestos, precios de transferencia y asientos formales permanecen fuera del alcance de esta tarea.
+
+---
+
+#### 23. Comisiones, retenciones y cargos financieros
+
+Una comisión, retención o cargo observado no se absorbe silenciosamente dentro del importe principal.
+
+Debe poder representarse como componente o hecho económico correlacionado con:
+
+- movimiento fuente;
+- proveedor o banco;
+- moneda;
+- importe;
+- fecha;
+- concepto;
+- evidencia;
+- tratamiento económico;
+- estado de conciliación.
+
+La diferencia neta solo se considera explicada cuando sus componentes reconciliados suman al valor observado.
+
+---
+
+#### 24. Reversos, rechazos y contracargos
+
+Un movimiento rechazado, reversado o contracargado no borra el intento original.
+
+Se conserva:
+
+```text
+MOVIMIENTO_ORIGINAL
+-> RESULTADO_EXTERNO
+-> REVERSO_O_CONTRACARGO, SI APLICA
+-> EFECTO_ECONOMICO_CORRELACIONADO
+-> CONCILIACION
+```
+
+Cada acción mantiene identidad, motivo, actor o fuente, fecha e importe.
+
+---
+
+#### 25. Pagos a proveedores y frontera con NUMERA-DOM-010
+
+`VPROC-0052 — Gestionar obligación, aprobación y pago a proveedor con conciliación bancaria` pertenece a NUMERA y contiene:
+
+```text
+PAYABLE_REGISTERED
+-> DOCUMENT_VALIDATING
+-> UNDER_APPROVAL
+-> APPROVED_FOR_SCHEDULING
+-> SCHEDULED_FOR_PAYMENT
+-> PAYMENT_IN_PROGRESS
+-> PAYMENT_RECORDED
+-> BANK_RECONCILIATION_PENDING
+-> PAYABLE_SETTLED
+```
+
+Esta tarea define únicamente la infraestructura económica común de cuenta financiera, movimiento, extracto, conciliación y posición de tesorería.
+
+`NUMERA-DOM-010` conserva:
+
+- identidad de la obligación;
+- soporte y aceptación;
+- vencimiento;
+- disputa;
+- aprobación;
+- programación del pago;
+- saldo de obligación;
+- liquidación del payable.
+
+La 009 no absorbe ese lifecycle.
+
+---
+
+#### 26. Recaudos y frontera con cartera
+
+`VPROC-0053` conserva cartera, cobro, recaudo, aplicación y diferencia.
+
+NUMERA-DOM-009 define la capa común que permite observar y conciliar el movimiento financiero o bancario asociado, pero no decide:
+
+- a qué documento de cartera se aplica un recaudo;
+- acuerdos de pago;
+- aging;
+- promesas;
+- castigo;
+- disputa de cartera.
+
+Un abono bancario puede existir antes de que la aplicación a cartera quede resuelta.
+
+---
+
+#### 27. Posición de caja consolidada
+
+NUMERA podrá consolidar caja únicamente a partir de cierres y movimientos PULSO identificables y reconciliables.
+
+La posición deberá distinguir:
+
+- efectivo esperado según operación;
+- efectivo contado;
+- diferencia;
+- efectivo entregado a custodia;
+- depósito en tránsito;
+- depósito conciliado;
+- excepciones pendientes.
+
+No se generará una segunda sesión de caja NUMERA ni se copiarán movimientos PULSO como registros manuales competidores.
+
+---
+
+#### 28. Saldos financieros diferenciados
+
+Se mantendrán separados al menos:
+
+```text
+SALDO_REPORTADO_POR_BANCO
+SALDO_DISPONIBLE_REPORTADO_POR_BANCO
+SALDO_RECONCILIADO_EN_NUMERA
+EFECTIVO_BAJO_CUSTODIA
+DEPOSITOS_EN_TRANSITO
+MOVIMIENTOS_PENDIENTES_DE_CONCILIAR
+```
+
+No se asumirá igualdad entre ellos.
+
+Una diferencia puede deberse a corte, fecha valor, transacción pendiente, comisión, reverso, movimiento no identificado o dato faltante.
+
+---
+
+#### 29. Posición de tesorería
+
+La posición de tesorería deberá declarar como mínimo:
+
+- entidad legal;
+- cuenta o conjunto de cuentas;
+- moneda;
+- fecha y hora de corte;
+- fuente de cada saldo;
+- saldos observados;
+- efectivo confirmado aplicable;
+- depósitos en tránsito;
+- movimientos pendientes;
+- compromisos próximos consumidos desde sus procesos propietarios;
+- recaudos esperados consumidos desde sus procesos propietarios;
+- estado de conciliación;
+- cobertura y calidad de datos.
+
+La posición es una proyección económica y financiera gobernada, no una sustitución de los saldos fuente.
+
+---
+
+#### 30. Liquidez observada y liquidez proyectada
+
+Se separan:
+
+```text
+LIQUIDEZ_OBSERVADA
+!= LIQUIDEZ_PROYECTADA
+```
+
+`LIQUIDEZ_OBSERVADA` usa saldos y efectivo confirmados con fecha de corte explícita.
+
+`LIQUIDEZ_PROYECTADA` incorpora compromisos, pagos programados, cobros previstos y supuestos bajo horizonte y versión declarados.
+
+Una proyección nunca cambia saldos reales ni se publica como dinero disponible confirmado.
+
+---
+
+#### 31. Programación de tesorería
+
+La programación podrá ordenar o agrupar compromisos ya válidos para análisis de liquidez, pero no crea obligaciones.
+
+Toda programación deberá poder conservar:
+
+- origen del compromiso;
+- importe y moneda;
+- vencimiento;
+- prioridad aprobada;
+- cuenta propuesta;
+- fecha propuesta;
+- estado de autorización;
+- restricciones;
+- evidencia de la obligación fuente.
+
+La aprobación detallada y el lifecycle del payable pertenecen a `NUMERA-DOM-010`.
+
+---
+
+#### 32. Ejecución bancaria externa
+
+NUMERA podrá preparar una instrucción o registrar su envío, pero no declarará éxito por haber solicitado la operación.
+
+Se conserva:
+
+```text
+INSTRUCCION_PREPARADA
+!= INSTRUCCION_AUTORIZADA
+!= INSTRUCCION_ENVIADA
+!= MOVIMIENTO_CONFIRMADO_POR_PROVEEDOR
+!= LINEA_BANCARIA_OBSERVADA
+!= MOVIMIENTO_CONCILIADO
+```
+
+Timeout, respuesta desconocida o error de red no se interpretan automáticamente como pago fallido ni exitoso.
+
+---
+
+#### 33. Conciliación de venta, caja, depósito y banco
+
+Para efectivo de venta, la cadena de reconciliación objetivo es:
+
+```text
+VENTAS_Y_PAGOS_PULSO
+-> CIERRE_DE_CAJA_PULSO
+-> EFECTIVO_CONTADO_Y_DIFERENCIA
+-> CUSTODIA_O_DEPOSITO
+-> ABONO_BANCARIO_OBSERVADO
+-> MATCH
+-> APROBACION
+-> CONCILIACION_FINANCIERA
+```
+
+Cada etapa conserva su identidad. Una etapa faltante no se completa inventando el valor de otra.
+
+---
+
+#### 34. Conciliación de pagos digitales
+
+Para medios digitales:
+
+```text
+VENTA_PULSO
+-> PAGO_PULSO
+-> LIQUIDACION_DE_PROVEEDOR
+-> COMISIONES_RETENCIONES_REVERSOS
+-> ABONO_BANCARIO
+-> MATCH
+-> CONCILIACION
+```
+
+La conciliación debe explicar el neto sin convertir diferencias no identificadas en gasto o descuento genérico.
+
+---
+
+#### 35. Conciliación de pagos salientes
+
+Para pagos gestionados desde obligaciones:
+
+```text
+OBLIGACION_APROBADA
+-> PAGO_PROGRAMADO
+-> INSTRUCCION_AUTORIZADA
+-> RESULTADO_DEL_PROVEEDOR
+-> MOVIMIENTO_BANCARIO
+-> MATCH
+-> CONCILIACION
+-> SALDO_DE_OBLIGACION_EXPLICADO
+```
+
+La obligación y su saldo permanecen bajo `NUMERA-DOM-010`; la conciliación financiera consume sus referencias.
+
+---
+
+#### 36. Excepciones de conciliación
+
+Se deberán distinguir, sin mezclarlas:
+
+- movimiento bancario sin referencia interna;
+- referencia interna sin movimiento bancario;
+- importe diferente;
+- moneda diferente;
+- fecha diferente fuera de tolerancia;
+- duplicado probable;
+- pago parcial;
+- abono agrupado;
+- comisión o retención no identificada;
+- reverso o contracargo;
+- transferencia con una sola pata;
+- depósito menor o mayor al efectivo entregado;
+- cuenta receptora inesperada;
+- contraparte ambigua;
+- extracto incompleto;
+- periodo o fecha valor posterior al corte.
+
+Cada excepción conserva propietario y estado hasta resolución.
+
+---
+
+#### 37. Correcciones y reversión de matching
+
+Una corrección no modifica el extracto ni elimina el match anterior.
+
+Debe conservar:
+
+- relación de conciliación original;
+- actor o autoridad;
+- motivo;
+- fecha;
+- evidencia;
+- reversión;
+- nueva propuesta o decisión cuando corresponda.
+
+La historia de conciliación es auditable y reproducible.
+
+---
+
+#### 38. Eventos tardíos y corte temporal
+
+Un movimiento recibido después del cierre operativo o financiero no se mueve silenciosamente a otro periodo para cuadrar resultados.
+
+Debe conservar:
+
+- fecha de ocurrencia;
+- fecha valor;
+- fecha de recepción;
+- periodo originalmente afectado;
+- periodo de reconocimiento o ajuste cuando corresponda;
+- motivo del tratamiento tardío.
+
+Las reglas completas de cierre, bloqueo, reapertura y ajuste se reservan a `NUMERA-DOM-011` y `NUMERA-DOM-014`.
+
+---
+
+#### 39. Moneda y conversión
+
+Cuenta, movimiento, extracto, conciliación y posición conservan moneda explícita.
+
+Reglas:
+
+1. movimientos en monedas distintas no se suman sin conversión gobernada;
+2. tipo de cambio, fuente y fecha deberán declararse cuando exista conversión;
+3. una cuenta multicurrency no autoriza tratar todos sus movimientos como una sola moneda;
+4. diferencias cambiarias no se ocultan en el importe principal;
+5. esta tarea no fija proveedor ni metodología definitiva de FX.
+
+---
+
+#### 40. Segregación de funciones
+
+El modelo deberá permitir separar como mínimo:
+
+- consultar cuentas y saldos;
+- administrar catálogo de cuentas financieras;
+- ver datos bancarios sensibles;
+- preparar instrucción;
+- aprobar pago o transferencia;
+- ejecutar o enviar instrucción cuando el canal lo permita;
+- importar o sincronizar extractos;
+- proponer match;
+- aprobar conciliación;
+- revertir conciliación;
+- resolver excepción;
+- consultar posición de tesorería;
+- exportar información financiera.
+
+Los códigos concretos de permisos permanecen reservados a `NUMERA-AUTH-*`.
+
+---
+
+#### 41. Responsabilidades por dominio
+
+| Dominio / actor | Responsabilidad | No deberá hacer |
+| --- | --- | --- |
+| PULSO | venta, pago comercial, operación y cierre de caja | convertirse en maestro bancario o reescribir conciliación NUMERA |
+| NUMERA | cuentas financieras, conciliación, posición, tesorería, efectos económicos y referencias de pago | recrear sesiones POS o inventar confirmación bancaria |
+| banco/proveedor | ejecución externa, saldos y movimientos reportados | escribir directamente decisiones internas sin contrato de ingestión |
+| ORIGO | compra y recepción propietarias | marcar obligación o pago como conciliado por sí solo |
+| NEXO/FOGO | hechos físicos/logísticos/productivos | crear movimientos bancarios |
+| VISO | gobierno organizacional y autoridad aplicable | inferir titularidad bancaria por nombre de marca |
+
+---
+
+#### 42. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| PULSO posee caja operativa pero NUMERA no consume aún su cierre extremo a extremo | no | `NUMERA-UX-017`, `NUMERA-UX-021`, integración aplicable | cierres, diferencias, custodia y depósito llegan correlacionados a NUMERA |
+| no existe maestro canónico materializado de cuentas bancarias | no | `NUMERA-UX-021`, `NUMERA-AUTH-002`, `NUMERA-AUTH-014`, implementación E5 | catálogo, vigencia, titularidad, moneda y acceso quedan materializados |
+| no existe importación y conciliación material de extractos | no | `NUMERA-UX-021`, `INT-EXT-001` a `INT-EXT-020`, `INT-DB-008` | ingestión idempotente, matching, aprobación, reversión y excepciones quedan implementados |
+| cuentas receptoras por marca o entidad no están confirmadas | no | `GOV-13` a `GOV-19` y gobierno empresarial | mapeo explícito de titularidad y vigencia aprobado |
+| posición de tesorería consolidada no está implementada | no | `NUMERA-DOM-010`, `NUMERA-UX-020`, `NUMERA-UX-021` | compromisos, saldos, pagos y recaudos soportan posición reproducible |
+| lifecycle completo de obligación por pagar aún debe definirse | no | `NUMERA-DOM-010` | obligación, aprobación, vencimiento, disputa, pago y saldo quedan definidos |
+| cierre y evento tardío requieren contrato de periodo | no | `NUMERA-DOM-011`, `NUMERA-DOM-014` | reglas de bloqueo, reapertura y ajuste quedan aprobadas |
+
+---
+
+#### 43. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el contrato vigente ya protege caja, bancos, tesorería, extractos inmutables, matching aprobado y reversible, segregación, conciliación y trazabilidad. Esta tarea desarrolla esas obligaciones sin crear una obligación de prueba nueva ni modificar el Registro 04A.
+
+---
+
+#### 44. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación financiera con hechos fuente, historia y separación de permisos;
+- `TREQ-NUMERA-002` para identidad económica, entidad, moneda, fechas, fuente, correlación, estado, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003` para caja consolidada, bancos, tesorería, extractos y movimientos inmutables, matching sugerido/aprobado/reversible y permisos separados;
+- `TREQ-PULSO-006` para mantener venta, pago, caja, documento fiscal, reversos y cierre como hechos distintos;
+- `TREQ-INTEGRATION-014` para efectos exactamente una vez entre PULSO y consumidores;
+- `TREQ-INTEGRATION-017` para llegada gobernada, correlacionada e idempotente de hechos operativos a NUMERA.
+
+Esta sección es trazabilidad de cobertura existente y no constituye una modificación del registro.
+
+---
+
+#### 45. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del repositorio durante esta preparación documental anticipada |
+| LOCAL | NOT_EXECUTED | no se modificó ni validó el checkout local del usuario durante la redacción del artefacto |
+| REMOTA | PASS | se verificaron `main`, continuidad, archivo propietario, políticas documentales, Registro 04A NUMERA, `CAP-12.02`, `CAP-12.03`, `CAP-12.12`, hallazgos `H-CAP-SCOPE-012-013` a `024`, `VPROC-0043`, `VPROC-0044`, `VPROC-0052`, `VPROC-0053`, superficies financieras objetivo y el handoff aprobado de `NUMERA-DOM-008` |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron cierres, depósitos, transferencias, pagos, importaciones, matches, conciliaciones ni movimientos reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no autoriza materialización física |
+
+---
+
+#### 46. Criterios de aceptación
+
+`NUMERA-DOM-009` queda aceptable cuando:
+
+1. PULSO conserva la operación de caja y NUMERA no crea una caja paralela;
+2. cierre de caja, depósito preparado, abono bancario y conciliación son identidades distintas;
+3. existe un contrato para catálogo de cuentas financieras con titularidad, moneda, vigencia y evidencia;
+4. las cuentas receptoras no se infieren por marca o nombre;
+5. datos bancarios sensibles quedan separados de identidad económica;
+6. extractos y movimientos externos son inmutables como fuente;
+7. importaciones son idempotentes y conservan evidencia;
+8. matching sugerido, revisión, aprobación, conciliación y reversión son estados distintos;
+9. se soportan relaciones uno-a-uno, uno-a-muchos, muchos-a-uno y parciales;
+10. tolerancias son explícitas y versionadas;
+11. depósitos de efectivo conservan custodia y tránsito hasta abono conciliado;
+12. pagos digitales distinguen pago PULSO, liquidación de proveedor y abono bancario;
+13. transferencias propias no crean ingreso o gasto legal por defecto;
+14. operaciones entre entidades distintas no se clasifican legalmente por inferencia;
+15. comisiones, retenciones y cargos permanecen visibles;
+16. reversos y contracargos no borran el movimiento original;
+17. la 009 no absorbe el lifecycle de obligaciones de la 010;
+18. caja consolidada conserva diferencia, custodia, depósito en tránsito y conciliación;
+19. saldo bancario, saldo disponible, saldo conciliado y efectivo en custodia no se confunden;
+20. posición de tesorería declara entidad, cuenta, moneda, corte, fuentes y completitud;
+21. liquidez observada y proyectada permanecen separadas;
+22. una instrucción enviada no se considera movimiento confirmado;
+23. conciliación de ventas, caja, depósitos y banco conserva todas sus identidades;
+24. conciliación de pagos salientes conserva la obligación como fuente separada;
+25. excepciones permanecen abiertas hasta resolución sustentada;
+26. una reversión de match conserva historia;
+27. eventos tardíos conservan fechas y tratamiento temporal explícitos;
+28. conversiones de moneda requieren fuente y fecha;
+29. segregación de consulta, preparación, aprobación, ejecución, importación, conciliación y exportación queda exigida;
+30. no se crean ni modifican requisitos de prueba;
+31. no se realizan cambios físicos;
+32. `NUMERA-DOM-010` recibe una infraestructura financiera común sin perder la propiedad de obligaciones y payables.
+
+---
+
+#### 47. Límites
+
+Esta tarea no:
+
+- abre, opera, arquea o cierra cajas PULSO;
+- crea cuentas bancarias reales;
+- confirma cuentas receptoras aún pendientes de gobierno;
+- almacena secretos o credenciales;
+- importa extractos reales;
+- ejecuta transferencias o pagos;
+- fija tolerancias numéricas universales;
+- crea reglas de matching runtime;
+- implementa una integración bancaria;
+- define el lifecycle completo de cuentas por pagar;
+- define cartera y cuentas por cobrar;
+- decide tratamiento fiscal o contable intercompañía;
+- define cierre y reapertura de periodos;
+- crea permisos o roles;
+- modifica Supabase;
+- modifica 04A;
+- desarrolla `NUMERA-DOM-010`.
+
+---
+
+#### 48. Handoff a NUMERA-DOM-010
+
+La siguiente tarea recibe:
+
+```text
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+CASH_CLOSE_IS_BANK_DEPOSIT = NO
+DEPOSIT_PREPARED_IS_BANK_CREDIT = NO
+PAYMENT_RECONCILED_IN_PULSO_IS_BANK_SETTLEMENT_RECONCILED = NO
+BANK_ACCOUNT_MAPPING_BY_BRAND_INFERENCE = FORBIDDEN
+BANK_STATEMENT_LINES_ARE_MUTABLE_SOURCE = NO
+BANK_IMPORT_MUST_BE_IDEMPOTENT = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+MATCH_APPROVAL_IS_REVERSIBLE = YES
+ONE_TO_MANY_AND_MANY_TO_ONE_MATCHING = SUPPORTED
+OWN_ACCOUNT_TRANSFER_IS_EXTERNAL_REVENUE = NO
+BANK_BALANCE_IS_RECONCILED_BALANCE = NOT_NECESSARILY
+OBSERVED_LIQUIDITY_IS_PROJECTED_LIQUIDITY = NO
+SENT_PAYMENT_INSTRUCTION_IS_CONFIRMED_PAYMENT = NO
+PAYABLE_LIFECYCLE_OWNER = NUMERA_DOM_010
+BANK_RECONCILIATION_INFRASTRUCTURE = SHARED_WITH_PAYABLES_AND_RECEIVABLES
+LATE_FINANCIAL_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
+```
+
+`NUMERA-DOM-010` deberá definir obligación, vencimiento, aprobación, programación, pago, disputa y liquidación utilizando este contrato de cuentas, movimientos y conciliación, sin convertir una obligación en movimiento bancario ni un movimiento bancario en obligación por inferencia.
+
+---
+
+#### 49. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-008 — Definir rentabilidad por empresa, sede, canal, producto y periodo`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-009 — Definir caja, bancos y conciliaciones que pertenezcan al alcance aprobado`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA`
 ### [ ] NUMERA-DOM-010 — Definir cuentas por pagar y obligaciones si pertenecen a NUMERA
 ### [ ] NUMERA-DOM-011 — Definir cierres, periodos y reapertura controlada
 ### [ ] NUMERA-DOM-012 — Definir reportes, indicadores y exportaciones oficiales
