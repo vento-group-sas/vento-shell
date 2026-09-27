@@ -3826,7 +3826,1052 @@ NUMERA_AUTH_004_OWNER = REGISTER_PERMISSION_DEFINITION
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-004 — Definir permisos de registro`
-### [ ] NUMERA-AUTH-004 — Definir permisos de registro
+### ✅ NUMERA-AUTH-004 — Definir permisos de registro
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-003 — Definir permisos de lectura
+**Tarea siguiente:** NUMERA-AUTH-005 — Definir permisos de aprobación
+**Tipo de tarea:** definición documental del registro exacto de permisos de creación, registro y mutación ordinaria de NUMERA, separando alta de entidades, registro de operaciones empresariales, actualización de borradores o recursos mutables y cancelaciones ya documentadas, sin absorber aprobación, pago, conciliación, cierre, reapertura, castigo, exportación ni acciones especializadas de escenarios; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no publica permisos runtime, no migra aliases o grants, no modifica roles, RLS, RPC, Server Actions, navegación, tablas, migraciones, Supabase, paquetes compartidos, pantallas, procesos ni datos financieros
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir las capacidades exactas de **registro y escritura ordinaria** que NUMERA necesita para crear entidades financieras propias, registrar operaciones económicas permitidas y modificar únicamente recursos mutables dentro de su lifecycle, sin reutilizar permisos de lectura ni permisos amplios `*.manage` como autoridad de escritura.
+
+La tarea convierte el slot documental `REGISTER` aprobado en `NUMERA-AUTH-001` en un contrato reutilizable por interfaz, servidor, RLS, RPC y futura materialización del catálogo.
+
+---
+
+#### 2. Naturaleza y topología
+
+La reconciliación propietaria de `NUMERA-AUTH-001..007` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, `NUMERA-AUTH-004`:
+
+- define una sola vez el contrato de registro;
+- no crea instancia física propia;
+- no publica permisos nuevos en runtime;
+- no modifica Supabase;
+- no concede autoridad a actores;
+- no ejecuta escrituras financieras reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-003
+
+La tarea recibe:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_CURRENT_ACTIVE_READ_PERMISSION_COUNT = 5
+NUMERA_NEW_DEFINED_READ_PERMISSION_COUNT = 17
+NUMERA_TOTAL_READ_PERMISSION_DEFINITION_COUNT = 22
+NUMERA_ACCESS_IMPLIES_FINANCIAL_READ = NO
+READ_IMPLIES_REGISTER_UPDATE_APPROVE = NO
+READ_IMPLIES_CLOSE_REOPEN_WRITE_OFF = NO
+READ_PERMISSION_SENSITIVITY_REASON = FINANCIAL_DATA
+MISSING_READ_PERMISSION_FALLBACK = FORBIDDEN
+NUMERA_AUTH_004_OWNER = REGISTER_PERMISSION_DEFINITION
+TREQ_CHANGES = 0
+```
+
+La presente tarea no altera ninguna clave `.view` aprobada por la 003.
+
+---
+
+#### 4. Resultado contractual
+
+Esta tarea define:
+
+```text
+NUMERA-REGISTER-PERMISSION-REGISTRY-001
+```
+
+El registro establece para cada acción:
+
+```text
+permission_code
++ action_class
++ protected_resource
++ allowed_initial_state
++ allowed_mutable_state
++ allowed_fields_or_projection
++ source_authority_boundary
++ idempotency_requirement
++ history_preservation_rule
++ approval_boundary
++ specialized_owner
++ materialization_status
+```
+
+---
+
+#### 5. Vocabulario de acciones
+
+La convención transversal distingue:
+
+```text
+create   = crear una nueva entidad
+register = registrar una operación o transacción empresarial
+update   = modificar un recurso mutable dentro de campos permitidos
+cancel   = cancelar sin borrar historia cuando la acción ya está canónicamente documentada
+```
+
+`register` no significa insertar una fila técnica: representa completar el registro empresarial autorizado.
+
+---
+
+#### 6. Frontera universal de registro
+
+Se conserva:
+
+```text
+VIEW
+!= CREATE
+!= REGISTER
+!= UPDATE
+!= CANCEL
+!= APPROVE
+!= PAY_EXECUTE
+!= RECONCILE
+!= CLOSE
+!= REOPEN
+!= WRITE_OFF
+!= EXPORT
+```
+
+Ninguna de estas acciones se hereda automáticamente de otra.
+
+---
+
+#### 7. `numera.access` no concede escritura
+
+```text
+numera.access
+!= REGISTER_AUTHORITY
+```
+
+Entrar a NUMERA no autoriza crear o modificar ningún recurso financiero.
+
+---
+
+#### 8. Los permisos `.view` no conceden escritura
+
+Los veintidós permisos de lectura definidos por `NUMERA-AUTH-003` son exclusivamente de lectura.
+
+Queda prohibido usar un permiso `.view` como fallback de creación, registro, actualización o cancelación.
+
+---
+
+#### 9. Los permisos `*.manage` legacy no son autoridad objetivo
+
+Quedan expresamente rechazados como contrato final:
+
+```text
+numera.cost_centers.manage
+numera.expenses.manage
+```
+
+Su presencia AS-IS no autoriza agrupar lectura, creación, actualización, aprobación, cancelación u otras acciones.
+
+---
+
+#### 10. Dos categorías de alta
+
+Esta tarea conserva dos tipos de alta:
+
+```text
+ENTITY_CREATION
+BUSINESS_OPERATION_REGISTRATION
+```
+
+Ejemplos:
+
+- crear un centro de costo es `create`;
+- registrar un gasto u obligación es `create` o `register` según la semántica ya fijada para el recurso;
+- registrar un hecho económico de NUMERA usa `register`;
+- registrar una asignación de costo usa `register`.
+
+---
+
+#### 11. Baseline de descomposición ya documentado
+
+El catálogo transversal ya documenta estas capacidades no de lectura para NUMERA:
+
+```text
+numera.finance.cost_centers.create
+numera.finance.cost_centers.update
+numera.finance.cost_centers.activate
+numera.finance.cost_centers.deactivate
+numera.finance.expenses.create
+numera.finance.expenses.update
+numera.finance.expenses.approve
+numera.finance.expenses.cancel
+```
+
+`expenses.approve` queda fuera de esta tarea y pertenece a `NUMERA-AUTH-005`.
+
+---
+
+#### 12. Registro objetivo de permisos de esta tarea
+
+La 004 fija dieciocho capacidades de escritura ordinaria:
+
+```text
+EXISTING_DECOMPOSITION_WRITE_PERMISSIONS = 7
+NEW_CONTRACT_DEFINED_WRITE_PERMISSIONS = 11
+TOTAL_REGISTER_WRITE_PERMISSION_DEFINITIONS = 18
+```
+
+Las dieciocho quedan documentadas; su publicación runtime permanece diferida.
+
+---
+
+#### 13. Capacidades de configuración de centros de costo preservadas
+
+Se preservan exactamente:
+
+```text
+numera.finance.cost_centers.create
+numera.finance.cost_centers.update
+numera.finance.cost_centers.activate
+numera.finance.cost_centers.deactivate
+```
+
+Estas claves no crean un catálogo paralelo. Operan únicamente sobre el catálogo canónico compartido y bajo el ownership definido por el dominio.
+
+---
+
+#### 14. Capacidades ordinarias de gasto preservadas
+
+Se preservan:
+
+```text
+numera.finance.expenses.create
+numera.finance.expenses.update
+numera.finance.expenses.cancel
+```
+
+`numera.finance.expenses.approve` pertenece a la 005 y no se concede por ninguna de estas claves.
+
+---
+
+#### 15. Nuevas capacidades definidas por esta tarea
+
+Se definen contractualmente once capacidades faltantes:
+
+```text
+numera.finance.economic_facts.register
+numera.finance.payables.register
+numera.finance.payables.update
+numera.finance.receivables.register
+numera.finance.receivables.update
+numera.finance.fiscal_documents.register
+numera.finance.fiscal_documents.update
+numera.finance.tax_obligations.register
+numera.finance.tax_obligations.update
+numera.finance.cost_allocations.register
+numera.finance.cost_allocations.update
+```
+
+Todas quedan `CONTRACT_DEFINED_PENDING_MATERIALIZATION`.
+
+---
+
+#### 16. No existe `economic_facts.update` genérico
+
+Queda prohibido definir:
+
+```text
+numera.finance.economic_facts.update
+```
+
+como permiso genérico.
+
+Un hecho económico fuente no se reescribe para corregirlo. Corrección, reclasificación, reversión o ajuste deben conservar la historia y usar el lifecycle autorizado correspondiente.
+
+---
+
+#### 17. Registro de hechos económicos
+
+`numera.finance.economic_facts.register` autoriza únicamente el registro de hechos cuyo owner contractual sea NUMERA o de ajustes expresamente permitidos.
+
+No autoriza:
+
+- duplicar manualmente ventas de PULSO;
+- duplicar compras o recepciones de ORIGO;
+- duplicar movimientos de NEXO;
+- duplicar hechos productivos de FOGO;
+- editar el hecho operativo fuente;
+- postear contabilidad formal.
+
+---
+
+#### 18. Idempotencia de hechos económicos
+
+Todo registro de hecho económico debe resolver identidad o clave de idempotencia suficiente para impedir doble registro del mismo evento.
+
+```text
+SAME_SOURCE_EVENT + SAME_IDEMPOTENCY_KEY
+-> AT_MOST_ONE_EFFECTIVE_ECONOMIC_FACT
+```
+
+Un retry técnico no crea un segundo hecho.
+
+---
+
+#### 19. Registro de gastos
+
+`numera.finance.expenses.create` autoriza crear un gasto financiero conforme al contrato de gasto aprobado.
+
+Debe validar como mínimo:
+
+- periodo;
+- fecha;
+- categoría;
+- centro de costo;
+- moneda;
+- importe;
+- descripción;
+- origen;
+- soporte cuando corresponda;
+- entidad legal y dimensiones exigibles.
+
+---
+
+#### 20. Actualización de gastos
+
+`numera.finance.expenses.update` autoriza modificar únicamente campos permitidos mientras el estado sea mutable.
+
+No autoriza:
+
+- aprobar;
+- pagar;
+- cerrar periodo;
+- alterar evidencia histórica aprobada;
+- reemplazar silenciosamente el hecho original.
+
+---
+
+#### 21. Cancelación de gastos
+
+`numera.finance.expenses.cancel` conserva la acción ya documentada por el catálogo.
+
+Cancelar:
+
+```text
+!= DELETE
+!= APPROVE
+!= WRITE_OFF
+```
+
+Debe conservar motivo, actor, estado anterior, timestamp y evidencia suficiente.
+
+---
+
+#### 22. Creación y actualización de centros de costo
+
+`cost_centers.create` y `cost_centers.update` operan sobre identidad canónica compartida.
+
+No autorizan:
+
+- crear duplicados por aplicación;
+- convertir marca, sede o entidad legal en centro por inferencia;
+- crear un centro únicamente para cuadrar una fórmula;
+- modificar hechos económicos que referencian el centro.
+
+---
+
+#### 23. Activación y desactivación de centros de costo
+
+`cost_centers.activate` y `cost_centers.deactivate` son transiciones de configuración separadas de `create/update`.
+
+Una desactivación no borra historia ni elimina referencias existentes.
+
+---
+
+#### 24. Registro de cuentas por pagar
+
+`numera.finance.payables.register` autoriza registrar una obligación financiera solo cuando exista origen verificable.
+
+Debe conservar, según aplique:
+
+- contraparte;
+- documento;
+- aceptación;
+- importe;
+- moneda;
+- vencimiento;
+- impuestos/componentes;
+- fuente/correlación;
+- entidad legal;
+- soporte.
+
+---
+
+#### 25. Actualización de cuentas por pagar
+
+`numera.finance.payables.update` solo aplica mientras el objeto sea mutable y a campos permitidos.
+
+No autoriza aprobar, programar pago, ejecutar pago, conciliar ni resolver disputa por sí sola.
+
+---
+
+#### 26. Registro de cuentas por cobrar
+
+`numera.finance.receivables.register` crea una cuenta por cobrar o derecho financiero cuando el contrato de cartera lo permita.
+
+Debe distinguir:
+
+```text
+CUSTOMER
+!= DEBTOR
+!= PASS_ACCOUNT
+```
+
+Y:
+
+```text
+RECEIVABLE
+!= PAYMENT_RECEIVED
+!= PAYMENT_APPLICATION
+```
+
+---
+
+#### 27. Actualización de cuentas por cobrar
+
+`numera.finance.receivables.update` permite modificar únicamente atributos mutables de la cuenta o plan vigente.
+
+No autoriza:
+
+- aplicar pagos;
+- cerrar cartera por monto coincidente;
+- registrar acuerdos o castigos especializados sin los permisos de `NUMERA-AUTH-014`;
+- reescribir una cuenta ya liquidada.
+
+---
+
+#### 28. Registro de documentos fiscales
+
+`numera.finance.fiscal_documents.register` permite registrar en NUMERA la referencia y evidencia de un documento fiscal dentro de la frontera aprobada.
+
+No concede autoridad para emitir oficialmente el documento ante el proveedor o autoridad externa.
+
+---
+
+#### 29. Actualización de documentos fiscales
+
+`numera.finance.fiscal_documents.update` permite actualizar estado interno mutable, correlaciones o evidencia recibida.
+
+No autoriza falsificar aceptación, presentación o resultado oficial externo.
+
+---
+
+#### 30. Registro de obligaciones tributarias
+
+`numera.finance.tax_obligations.register` autoriza registrar una obligación o control tributario interno soportado por fuente autorizada.
+
+No equivale a determinar jurídicamente una obligación tributaria oficial por inferencia.
+
+---
+
+#### 31. Actualización de obligaciones tributarias
+
+`numera.finance.tax_obligations.update` permite actualizar atributos internos mutables y evidencia.
+
+No concede:
+
+- aprobación de obligación;
+- ejecución de pago;
+- presentación oficial;
+- aceptación por autoridad externa.
+
+---
+
+#### 32. Registro de asignaciones de costo
+
+`numera.finance.cost_allocations.register` autoriza registrar una asignación/distribución de costo gobernada por método, base, origen, destino y versión.
+
+No modifica el hecho físico fuente ni convierte una transferencia interna en ingreso/gasto legal.
+
+---
+
+#### 33. Actualización de asignaciones de costo
+
+`numera.finance.cost_allocations.update` solo aplica mientras la asignación sea mutable y no haya sido aprobada/publicada/cerrada según el lifecycle correspondiente.
+
+No autoriza reescribir una asignación histórica efectiva.
+
+---
+
+#### 34. Presupuestos y escenarios quedan fuera
+
+No se definen aquí permisos para:
+
+- crear presupuesto;
+- crear forecast;
+- crear escenario;
+- crear versión de precio;
+- compartir escenario;
+- aprobar escenario;
+- publicar escenario/precio/presupuesto.
+
+Estas decisiones pertenecen a `NUMERA-AUTH-015`.
+
+---
+
+#### 35. Tesorería y pagos quedan fuera
+
+No se define un permiso genérico de registro para ejecutar movimientos bancarios o pagos.
+
+```text
+REGISTER != PAY_EXECUTE
+```
+
+La autoridad especializada de bancos, pagos, acuerdos y datos sensibles pertenece a `NUMERA-AUTH-014` y a las tareas de aprobación aplicables.
+
+---
+
+#### 36. Conciliación queda fuera
+
+Registrar o actualizar un objeto no concede `RECONCILE`.
+
+Las decisiones de matching, diferencia, aceptación de conciliación y reversión de match son autoridades independientes.
+
+---
+
+#### 37. Aprobación queda fuera
+
+```text
+REGISTER != APPROVE
+UPDATE != APPROVE
+CANCEL != APPROVE
+```
+
+`NUMERA-AUTH-005` define la autoridad aprobatoria.
+
+---
+
+#### 38. Cierre y reapertura quedan fuera
+
+Registrar o actualizar periodos, gastos, obligaciones o asignaciones no concede cerrar o reabrir un periodo.
+
+La autoridad de cierre/reapertura pertenece a `NUMERA-AUTH-006`.
+
+---
+
+#### 39. Exportación queda fuera
+
+Ningún permiso definido en esta tarea concede exportación, impresión, sharing o extracción masiva.
+
+La autoridad de exportación pertenece a `NUMERA-AUTH-007`.
+
+---
+
+#### 40. `createExpense` AS-IS
+
+La Server Action auditada `createExpense` usa actualmente:
+
+```text
+numera.expenses.manage
+```
+
+El contrato objetivo es:
+
+```text
+createExpense
+-> numera.finance.expenses.create
+```
+
+No se materializa ese cambio en esta tarea.
+
+---
+
+#### 41. `upsertBudget` AS-IS
+
+`upsertBudget` usa actualmente `numera.cost_centers.manage`, pero no se reclasifica como edición de maestro de centro.
+
+Su autoridad objetivo de escenarios/presupuesto pertenece a `NUMERA-AUTH-015`.
+
+---
+
+#### 42. RLS `ALL` no define contrato objetivo
+
+Las policies AS-IS que usan `ALL` con permisos `*.manage` son evidencia de conflación, no autoridad para conservar CRUD completo.
+
+La implementación futura deberá reducir cada policy al permiso y operación exactos aprobados.
+
+---
+
+#### 43. Registro exige permiso exacto de recurso
+
+Una escritura ordinaria requiere:
+
+```text
+VALID_SESSION
++ APP_ACCESS
++ EXACT_WRITE_PERMISSION
++ VALID_SCOPE
++ VALID_RESOURCE_OR_DRAFT
++ ALLOWED_FIELDS
++ ALLOWED_CURRENT_STATE
++ NO_EFFECTIVE_DENY
+= WRITE_ELIGIBLE
+```
+
+La ausencia de permiso exacto produce deny.
+
+---
+
+#### 44. Validación server-side obligatoria
+
+Toda creación, registro, actualización o cancelación debe revalidarse en servidor.
+
+La visibilidad de un botón o formulario no es evidencia suficiente de autoridad.
+
+---
+
+#### 45. Mass assignment prohibido
+
+La escritura no puede persistir arbitrariamente todo el payload enviado por cliente.
+
+Cada acción debe declarar allowlist de campos permitidos para su estado y permiso exacto.
+
+---
+
+#### 46. Estado actual del recurso
+
+`update`, `cancel`, `activate` y `deactivate` requieren revalidar el estado actual del recurso inmediatamente antes de mutar.
+
+Una decisión calculada sobre estado obsoleto no habilita la escritura.
+
+---
+
+#### 47. Control de concurrencia
+
+Cuando el recurso sea versionable o mutable concurrentemente, la implementación deberá usar versión, ETag, timestamp o mecanismo equivalente para impedir sobrescritura silenciosa.
+
+---
+
+#### 48. Idempotencia de comandos
+
+Toda acción de registro con riesgo de retry deberá soportar una identidad idempotente apropiada.
+
+Queda prohibido convertir un timeout o reintento en duplicación de gasto, obligación, cuenta por cobrar, documento fiscal, obligación tributaria o asignación de costo.
+
+---
+
+#### 49. Preservación de historia
+
+```text
+UPDATE != HISTORY_REWRITE
+CANCEL != DELETE
+CORRECTION != SILENT_OVERWRITE
+```
+
+Cuando una modificación cambie significado económico material, debe conservar el estado anterior y la evidencia correspondiente.
+
+---
+
+#### 50. Autoridad de fuente
+
+NUMERA solo registra o modifica lo que le pertenece contractualmente.
+
+No puede usar estos permisos para editar directamente:
+
+- venta fuente de PULSO;
+- compra/recepción fuente de ORIGO;
+- movimiento físico de NEXO;
+- producción/merma fuente de FOGO;
+- identidad de cliente en PASS;
+- registro oficial de autoridad bancaria/fiscal/contable externa.
+
+---
+
+#### 51. Registro desde integración
+
+Una integración puede entregar hechos o datos, pero el evento recibido no es permiso del actor.
+
+La escritura derivada deberá respetar identidad del sistema, contrato de integración, idempotencia, ownership y autorización técnica/empresarial correspondiente.
+
+---
+
+#### 52. Campos sensibles
+
+Las escrituras heredan la clasificación de sensibilidad aprobada por `NUMERA-AUTH-002`.
+
+No se autoriza persistir secretos, credenciales bancarias, tokens, JWT, PIN u OTP dentro de objetos financieros ordinarios.
+
+---
+
+#### 53. Recursos compuestos
+
+Si un formulario registra información financiera junto con información personal, comercial o de secreto empresarial, deben satisfacerse todos los motivos de sensibilidad aplicables.
+
+Un permiso financiero no concede autoridad sobre un dominio adicional por inferencia.
+
+---
+
+#### 54. Alcance territorial queda separado
+
+La existencia de un permiso de registro no implica acceso global.
+
+Empresa, sede y centro de costo serán resueltos de forma detallada por `NUMERA-AUTH-008`.
+
+---
+
+#### 55. Auditoría queda separada pero obligatoria
+
+La materialización futura deberá registrar evidencia suficiente de creación, registro, actualización, cancelación, activate/deactivate y denegaciones.
+
+El detalle contractual pertenece a `NUMERA-AUTH-009`.
+
+---
+
+#### 56. Administración no depende de turno por defecto
+
+Estas capacidades no adquieren requisito de turno/check-in por inferencia.
+
+`NUMERA-AUTH-010` conserva la regla administrativa y `NUMERA-AUTH-011` añadirá contexto operacional únicamente donde exista captura realmente operacional.
+
+---
+
+#### 57. Política de dispositivo compartido
+
+Por tratar información y mutaciones financieras, la futura clasificación de estas capacidades no podrá degradar el nivel de seguridad requerido por el contrato transversal.
+
+Una sesión ligera no sustituye reautenticación fuerte cuando sea exigible.
+
+---
+
+#### 58. Simulación
+
+Simular que un actor posee un permiso de registro no concede capacidad real para escribir.
+
+```text
+SIMULATED_PERMISSION_RESULT != REAL_WRITE_AUTHORITY
+```
+
+La simulación debe permanecer sin efectos.
+
+---
+
+#### 59. Fallback prohibido
+
+Si una clave definida aquí todavía no está materializada, queda prohibido sustituirla por:
+
+```text
+numera.access
+numera.cost_centers.manage
+numera.expenses.manage
+numera.*
+numera.finance.*
+```
+
+La operación permanece bloqueada hasta disponer del permiso exacto.
+
+---
+
+#### 60. Registro de capacidades y estados
+
+| Capacidad | Acción | Estado contractual |
+| --- | --- | --- |
+| `numera.finance.cost_centers.create` | `create` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.cost_centers.update` | `update` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.cost_centers.activate` | `activate` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.cost_centers.deactivate` | `deactivate` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.expenses.create` | `create` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.expenses.update` | `update` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.expenses.cancel` | `cancel` | `CANONICAL_DECOMPOSITION_PRESERVED` |
+| `numera.finance.economic_facts.register` | `register` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.payables.register` | `register` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.payables.update` | `update` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.receivables.register` | `register` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.receivables.update` | `update` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.fiscal_documents.register` | `register` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.fiscal_documents.update` | `update` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.tax_obligations.register` | `register` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.tax_obligations.update` | `update` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.cost_allocations.register` | `register` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+| `numera.finance.cost_allocations.update` | `update` | `CONTRACT_DEFINED_PENDING_MATERIALIZATION` |
+
+---
+
+#### 61. Bindings principales de superficie
+
+| Pantalla | Escritura ordinaria protegida |
+| --- | --- |
+| `VSCREEN-0095` | `economic_facts.register`; correcciones genéricas no usan `update` |
+| `VSCREEN-0096` | `expenses.create`; `expenses.update`; `expenses.cancel` según lifecycle |
+| `VSCREEN-0098` | `payables.register`; `payables.update` |
+| `VSCREEN-0099` | `receivables.register`; `receivables.update`; acciones especializadas se reservan a 014 |
+| `VSCREEN-0154` | `fiscal_documents.register`; `fiscal_documents.update` |
+| `VSCREEN-0157` | `tax_obligations.register`; `tax_obligations.update` |
+| `VSCREEN-0158` | `cost_allocations.register`; `cost_allocations.update` |
+
+Las demás superficies no reciben un permiso de registro por el simple hecho de existir.
+
+---
+
+#### 62. No se crean permisos omnibus por pantalla
+
+Queda prohibido definir capacidades como:
+
+```text
+numera.finance.dashboard.write
+numera.finance.approvals.manage
+numera.finance.all.register
+```
+
+Cada acción se autoriza por recurso y semántica empresarial.
+
+---
+
+#### 63. Ownership de tareas posteriores
+
+| Materia | Propietario |
+| --- | --- |
+| aprobación | `NUMERA-AUTH-005` |
+| cierre y reapertura | `NUMERA-AUTH-006` |
+| exportación | `NUMERA-AUTH-007` |
+| empresa, sede y centro de costo | `NUMERA-AUTH-008` |
+| auditoría financiera | `NUMERA-AUTH-009` |
+| independencia administrativa de turno | `NUMERA-AUTH-010` |
+| contexto operacional | `NUMERA-AUTH-011` |
+| materialización en paquetes | `NUMERA-AUTH-012` |
+| pruebas integrales | `NUMERA-AUTH-013` |
+| cartera, acuerdos, castigos, bancos y datos sensibles especializados | `NUMERA-AUTH-014` |
+| escenarios, precios y presupuestos | `NUMERA-AUTH-015` |
+
+---
+
+#### 64. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `numera.expenses.manage` agrupa CRUD y aprobación | no | `NUMERA-AUTH-004`, `005`, `012` | create/update/cancel/approve quedan en permisos atómicos materializados y el legacy deja de conceder autoridad amplia |
+| `numera.cost_centers.manage` mezcla presupuesto y maestro | no | `NUMERA-AUTH-004`, `015`, `012` | configuración de centro y acciones presupuestales usan capacidades distintas |
+| once claves nuevas no existen en runtime | no | `NUMERA-AUTH-012` + packages aplicables | catálogo, grants, guards/RLS y consumidores materializan exactamente las claves aprobadas |
+| updates/cancelaciones dependen del estado del recurso | no | dominios propietarios + `NUMERA-AUTH-013` | tests adversariales demuestran allowlist de estados/campos y denegación fuera de lifecycle |
+| cartera y bancos tienen acciones más sensibles que registro | no | `NUMERA-AUTH-014` | acuerdos, castigos, aplicaciones, bancos y operaciones especializadas reciben permisos independientes |
+| escenarios/presupuestos no deben reutilizar `cost_centers.manage` | no | `NUMERA-AUTH-015` | acciones create/share/approve/publish quedan separadas y materializadas |
+
+No queda hallazgo de registro detectado sin propietario y condición de salida.
+
+---
+
+#### 65. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 66. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar, cobertura ya registrada para:
+
+- `TREQ-NUMERA-001` — separación de lectura, registro, aprobación, cierre y exportación;
+- `TREQ-NUMERA-002` — identidad e idempotencia de hechos económicos, dimensiones y correcciones no destructivas;
+- `TREQ-NUMERA-003` — separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-NUMERA-016` — mutación presupuestal AS-IS debe revalidarse en servidor y descomponerse del legacy;
+- `TREQ-NUMERA-018` — creación de gasto con validación económica y autoridad server-side;
+- `TREQ-NUMERA-023` — superficie de navegación, registro o menú no implican autorización;
+- `TREQ-AUTH-001` — capacidad protegida mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-013` — mutación server-side valida permiso exacto, actor, territorio, contexto, recurso, estado y columnas;
+- `TREQ-AUTH-015` — evidencia correlacionable de toda acción protegida.
+
+Esta sección es trazabilidad de cobertura y no modifica el Registro 04A.
+
+---
+
+#### 67. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental; no se ejecutó build de producto durante su preparación. |
+| LOCAL | NOT_EXECUTED | La incorporación al checkout y sus validadores quedan pendientes del ciclo documental del usuario. |
+| REMOTA | PASS | Se verificaron `main`, protocolo, contrato de entrega, manifest, continuidad, topología, archivo propietario, convención de acciones, descomposición NUMERA, sensibilidad, alcance, recurso, auditoría AS-IS, 04A y scripts de lifecycle aplicables. |
+| OPERATIVA | NOT_EXECUTED | No se registraron ni modificaron hechos, gastos, obligaciones, cartera, documentos fiscales, impuestos o asignaciones reales. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-AUTH-004` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`. |
+
+---
+
+#### 68. Criterios de aceptación
+
+La tarea queda aceptada cuando se verifica que:
+
+1. existe exactamente un registro `NUMERA-REGISTER-PERMISSION-REGISTRY-001`;
+2. se preservan siete permisos no aprobatorios ya documentados por la descomposición canónica;
+3. se definen exactamente once capacidades nuevas;
+4. el total contractual es dieciocho capacidades;
+5. `expenses.approve` queda fuera de la 004;
+6. `numera.access` no concede escritura;
+7. `.view` no concede escritura;
+8. `*.manage` no se acepta como contrato objetivo;
+9. create/register/update/cancel permanecen semánticamente distintos;
+10. no existe `economic_facts.update` genérico;
+11. los hechos fuente no se reescriben;
+12. `economic_facts.register` no duplica hechos de PULSO/ORIGO/NEXO/FOGO;
+13. registro de hechos es idempotente;
+14. `expenses.create` valida dimensiones financieras mínimas;
+15. `expenses.update` solo opera en estados/campos mutables;
+16. `expenses.cancel` no borra historia;
+17. cost center create/update usa el catálogo compartido;
+18. activar/desactivar centro no borra referencias históricas;
+19. `payables.register` exige origen verificable;
+20. `payables.update` no concede aprobación/pago;
+21. `receivables.register` distingue cliente/deudor/PASS;
+22. `receivables.update` no concede aplicación/castigo/acuerdo;
+23. `fiscal_documents.register` no concede emisión oficial externa;
+24. `fiscal_documents.update` no fabrica aceptación oficial;
+25. `tax_obligations.register` no determina obligación legal por inferencia;
+26. `tax_obligations.update` no concede filing/pago/aprobación;
+27. `cost_allocations.register` conserva método/base/origen/destino/versión;
+28. `cost_allocations.update` no reescribe historia efectiva;
+29. presupuestos/forecast/escenarios quedan en 015;
+30. pagos/bancos especializados quedan en 014;
+31. conciliación no se deriva de registro;
+32. aprobación queda en 005;
+33. cierre/reapertura quedan en 006;
+34. exportación queda en 007;
+35. `createExpense` se mapea a `numera.finance.expenses.create` como contrato objetivo;
+36. `upsertBudget` no se mapea a cost center update por el guard legacy;
+37. RLS `ALL` no define el contrato objetivo;
+38. toda escritura exige permiso exacto;
+39. toda escritura se revalida server-side;
+40. mass assignment queda prohibido;
+41. update/cancel revalidan estado actual;
+42. concurrencia no permite sobrescritura silenciosa;
+43. retries no duplican registros;
+44. update/cancel conservan historia;
+45. permisos NUMERA no modifican fuentes operativas ajenas;
+46. integración no convierte evento recibido en autorización humana;
+47. secretos/credenciales no se persisten en objetos ordinarios;
+48. sensibilidad compuesta se preserva;
+49. permiso de registro no implica alcance global;
+50. auditoría permanece obligatoria y separada;
+51. administración no adquiere turno por inferencia;
+52. dispositivo compartido no degrada seguridad;
+53. simulación no produce efectos;
+54. no existe fallback a `access`, `manage` o wildcard;
+55. la matriz contiene exactamente dieciocho filas únicas;
+56. `VSCREEN-0095` usa `economic_facts.register` para altas permitidas;
+57. `VSCREEN-0096` usa la familia de gasto exacta;
+58. `VSCREEN-0098` usa payables register/update;
+59. `VSCREEN-0099` usa receivables register/update y reserva especialización a 014;
+60. `VSCREEN-0154` usa fiscal documents register/update;
+61. `VSCREEN-0157` usa tax obligations register/update;
+62. `VSCREEN-0158` usa cost allocations register/update;
+63. ninguna otra pantalla recibe un permiso de registro por inferencia;
+64. no se crean permisos omnibus;
+65. no se crean ni modifican requisitos de prueba;
+66. no se realizan cambios físicos;
+67. `NUMERA-AUTH-005` recibe un registro estable para definir aprobación separada.
+
+---
+
+#### 69. Límites
+
+Esta tarea no:
+
+- publica permisos runtime;
+- migra aliases ni grants;
+- materializa las once claves nuevas;
+- modifica permisos de lectura;
+- define permisos de aprobación;
+- define pagos o conciliación;
+- define cierre/reapertura;
+- define exportación;
+- define scopes territoriales finales;
+- implementa auditoría física;
+- crea dependencia de turno;
+- implementa contexto operacional;
+- modifica packages compartidos;
+- ejecuta pruebas integrales de runtime;
+- define acuerdos/castigos/bancos especializados;
+- define acciones de escenarios/precios/presupuestos;
+- modifica RLS, RPC, Server Actions o navegación;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-005`.
+
+---
+
+#### 70. Handoff a NUMERA-AUTH-005
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_READ_PERMISSION_REGISTRY = NUMERA-READ-PERMISSION-REGISTRY-001
+NUMERA_REGISTER_PERMISSION_REGISTRY = NUMERA-REGISTER-PERMISSION-REGISTRY-001
+NUMERA_EXISTING_DECOMPOSITION_WRITE_PERMISSION_COUNT = 7
+NUMERA_NEW_DEFINED_WRITE_PERMISSION_COUNT = 11
+NUMERA_TOTAL_REGISTER_WRITE_PERMISSION_DEFINITION_COUNT = 18
+REGISTER_PERMISSION_ACTIONS = create|register|update|cancel|activate|deactivate
+NUMERA_ACCESS_IMPLIES_WRITE = NO
+VIEW_IMPLIES_WRITE = NO
+LEGACY_MANAGE_IS_TARGET_AUTHORITY = NO
+ECONOMIC_FACT_GENERIC_UPDATE_PERMISSION = FORBIDDEN
+SOURCE_FACT_REWRITE_BY_NUMERA = FORBIDDEN
+REGISTER_REQUIRES_IDEMPOTENCY_WHEN_RETRYABLE = YES
+UPDATE_REQUIRES_CURRENT_STATE_AND_ALLOWED_FIELDS = YES
+CANCEL_PRESERVES_HISTORY = YES
+MASS_ASSIGNMENT = FORBIDDEN
+REGISTER_IMPLIES_APPROVE = NO
+REGISTER_IMPLIES_PAY_EXECUTE = NO
+REGISTER_IMPLIES_RECONCILE = NO
+REGISTER_IMPLIES_CLOSE_REOPEN = NO
+REGISTER_IMPLIES_EXPORT = NO
+EXPENSE_APPROVAL_OWNER = NUMERA_AUTH_005
+CLOSE_REOPEN_OWNER = NUMERA_AUTH_006
+EXPORT_OWNER = NUMERA_AUTH_007
+REGISTER_SCOPE_OWNER = NUMERA_AUTH_008
+REGISTER_AUDIT_OWNER = NUMERA_AUTH_009
+REGISTER_MATERIALIZATION_OWNER = NUMERA_AUTH_012
+RECEIVABLE_AND_TREASURY_SPECIALIZED_OWNER = NUMERA_AUTH_014
+SCENARIO_PRICE_BUDGET_MUTATION_OWNER = NUMERA_AUTH_015
+MISSING_WRITE_PERMISSION_FALLBACK = FORBIDDEN
+TREQ_CHANGES = 0
+NUMERA_AUTH_005_OWNER = APPROVAL_PERMISSION_DEFINITION
+```
+
+`NUMERA-AUTH-005` deberá definir capacidades aprobatorias independientes sin reutilizar permisos de registro o actualización como autoridad de decisión.
+
+---
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-003 — Definir permisos de lectura`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-004 — Definir permisos de registro`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-005 — Definir permisos de aprobación`
 ### [ ] NUMERA-AUTH-005 — Definir permisos de aprobación
 ### [ ] NUMERA-AUTH-006 — Definir permisos de cierre
 ### [ ] NUMERA-AUTH-007 — Definir permisos de exportación
