@@ -1456,7 +1456,798 @@ La siguiente tarea deberá concretar estas reglas para compras y recepción sin 
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción`
-### [ ] NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción
+### ✅ NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-DOM-002 — Definir hechos económicos recibidos desde ventas
+**Tarea siguiente:** NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario
+**Tipo de tarea:** definición documental del contrato económico de entrada desde compras y recepción hacia NUMERA, delimitando autoridad de ORIGO y NEXO, condiciones de recepción y reconocimiento, obligación por pagar, correlación orden–recepción–soporte, parcialidad, diferencias, devoluciones, servicios, idempotencia, evidencia y fronteras frente a inventario, gasto, pago y contabilidad formal; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica ORIGO, NEXO, NUMERA, FOGO, Supabase, eventos runtime, contratos TypeScript, órdenes, recepciones reales, movimientos de inventario, obligaciones, pagos, documentos de proveedor, costos, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué hechos provenientes del ciclo de compra y recepción pueden ingresar a NUMERA como candidatos de efecto económico, qué evidencias deben conservar, cuándo pueden reconocerse, cómo se separan de la recepción física y de la obligación por pagar, y cómo deben tratarse parcialidades, diferencias, servicios, devoluciones y reintentos sin duplicar costo, inventario ni obligación.
+
+La tarea desarrolla la frontera de abastecimiento aprobada por `NUMERA-DOM-001` y consume el principio de ingestión definido por `NUMERA-DOM-002` para que NUMERA:
+
+- consuma la verdad de compra sin convertirse en ORIGO;
+- consuma la verdad física sin convertirse en NEXO;
+- diferencie orden, compromiso, recepción comercial, entrada física, documento de proveedor, hecho económico, obligación y pago;
+- conserve correlación estable desde la compra hasta el efecto económico;
+- reconozca únicamente efectos suficientemente sustentados y no agregados manuales competidores;
+- procese recepciones parciales y diferencias sin cerrar prematuramente órdenes u obligaciones;
+- represente devoluciones, notas, correcciones y compensaciones sin borrar el hecho original;
+- soporte posteriormente costos, cuentas por pagar y conciliación sin doble registro.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica de `NUMERA-DOM-003` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- esta tarea define un contrato documental reutilizable;
+- no crea una instancia física propia;
+- no publica eventos;
+- no implementa consumidores;
+- no crea tablas, vistas, funciones, RPC, RLS, triggers ni migraciones;
+- no ejecuta compras, recepciones, movimientos de inventario, obligaciones ni pagos;
+- no cambia la propiedad funcional entre ORIGO, NEXO y NUMERA;
+- no define todavía costos detallados, gastos generales, cuentas por pagar completas ni contabilidad formal.
+
+---
+
+#### 3. Handoff recibido de NUMERA-DOM-002
+
+`NUMERA-DOM-002` entrega estas reglas reutilizables para toda entrada económica interaplicación:
+
+```text
+FUENTE_OPERATIVA_CONSERVA_PROPIEDAD = SI
+NUMERA_CONSUME_EFECTO_ECONOMICO = SI
+RECIBIR != RECONOCER
+SOPORTE != HECHO_ORIGEN
+PAGO != HECHO_ORIGEN
+AGREGADO != FUENTE_EDITABLE
+CORRECCION_DESTRUCTIVA = PROHIBIDA
+REINTENTO_NO_DUPLICA_EFECTO = SI
+```
+
+Además, todo hecho económico deberá conservar identidad estable, entidad legal, dimensiones autorizadas, contraparte cuando aplique, moneda, fechas diferenciadas, fuente, correlación, documento o evidencia, importe, estado, versión y trazabilidad suficiente para conciliación.
+
+Estas reglas se aplican ahora al ciclo de abastecimiento sin reutilizar semánticas de venta que no correspondan.
+
+---
+
+#### 4. Dominios y procesos fuente
+
+La propiedad funcional se conserva así:
+
+| Proceso o dominio | Propietario | Verdad que conserva | Regla para NUMERA |
+| --- | --- | --- | --- |
+| `VPROC-0019` | ORIGO | necesidad de compra | puede aportar referencia y contexto; no crea obligación por sí sola |
+| `VPROC-0020` | ORIGO | evaluación y selección de proveedor | aporta decisión y condiciones; no constituye recepción ni obligación |
+| `VPROC-0021` | ORIGO | aprobación, emisión y formalización del compromiso de compra | aporta compromiso contractual; no demuestra entrega, recepción conforme, obligación reconocida ni pago |
+| `VPROC-0022` | ORIGO | llegada, verificación, aceptación comercial y resolución de diferencias | aporta la evidencia principal de recepción comercial aceptada |
+| `VPROC-0024` | NEXO | ingreso, ubicación y movimiento físico | confirma el efecto físico exactamente una vez; no sustituye aceptación comercial o económica |
+| `VPROC-0051` | NUMERA | recepción, validación, clasificación, reconocimiento y conciliación del hecho económico | gobierna el hecho económico derivado |
+| `VPROC-0052` | NUMERA | obligación, aprobación, programación, pago y conciliación bancaria | gobierna la cuenta por pagar cuando corresponda |
+
+ORIGO conserva compra y recepción comercial. NEXO conserva inventario y movimiento físico. NUMERA conserva hecho económico, obligación y conciliación financiera.
+
+---
+
+#### 5. Frontera de identidades
+
+Se conserva obligatoriamente:
+
+```text
+NECESIDAD_DE_COMPRA
+!= CASO_DE_ABASTECIMIENTO
+!= ORDEN_DE_COMPRA
+!= COMPROMISO_DE_COMPRA
+!= LLEGADA
+!= RECEPCION_COMERCIAL
+!= MOVIMIENTO_DE_INVENTARIO
+!= DOCUMENTO_DE_PROVEEDOR
+!= HECHO_ECONOMICO
+!= OBLIGACION_POR_PAGAR
+!= PAGO
+!= CONCILIACION_BANCARIA
+!= ASIENTO_CONTABLE
+```
+
+Consecuencias:
+
+- una orden aprobada no prueba recepción;
+- una recepción comercial no prueba ingreso físico si el bien debe ingresar a inventario;
+- un ingreso físico no crea por sí solo una obligación financiera;
+- una factura o documento no prueba por sí solo conformidad de bienes o servicios;
+- una obligación puede existir sin estar pagada;
+- un pago no borra la compra, recepción, documento ni obligación;
+- un hecho económico puede quedar reconocido sin convertirse todavía en asiento contable formal.
+
+---
+
+#### 6. Compromiso de compra frente a hecho económico
+
+`VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED` confirma que la compra autorizada fue emitida y reconocida por el proveedor con alcance, precio, condiciones, fechas y referencias estables.
+
+Su límite canónico se conserva:
+
+```text
+COMPROMISO_FORMALIZADO
+!= ENTREGA_CONFIRMADA
+!= RECEPCION_CONFORME
+!= OBLIGACION_RECONOCIDA
+!= PAGO
+```
+
+NUMERA puede consumir el compromiso para:
+
+- proyección de compromisos;
+- presupuesto o disponibilidad financiera cuando otra tarea lo autorice;
+- comparación posterior contra recepción, soporte y obligación;
+- trazabilidad de condiciones históricas.
+
+No puede convertirlo automáticamente en costo realizado, gasto realizado, inventario recibido u obligación definitiva.
+
+---
+
+#### 7. Semántica de recepción comercial
+
+`VPROC-0022` inicia en `RECEIPT_EXPECTED` y conserva etapas separadas para llegada, revisión física, revisión documental, diferencia, aceptación, ubicación y conciliación económica.
+
+Los estados relevantes significan:
+
+| Estado | Verdad mínima | Límite económico |
+| --- | --- | --- |
+| `RECEIPT_EXPECTED` | existe una entrega o soporte que justifica recibir | nada ha sido aceptado, ubicado, reconocido ni conciliado |
+| `ARRIVAL_REGISTERED` | se identificó llegada, proveedor, documento y momento | llegada no equivale a recepción aceptada |
+| `PHYSICAL_CHECK_IN_PROGRESS` | se revisan cantidades, presentación, lote, condición o temperatura | revisión no equivale a aceptación |
+| `DOCUMENT_CHECK_IN_PROGRESS` | se comparan orden, factura, remisión, certificados y condiciones | documento revisado no equivale a obligación aprobada |
+| `DIFFERENCE_UNDER_REVIEW` | existe discrepancia pendiente | no se fuerza coincidencia ni reconocimiento completo |
+| `ACCEPTANCE_PENDING` | la recepción fue verificada y espera decisión | no existe aceptación final todavía |
+| `PUTAWAY_PENDING` | los bienes aceptados esperan ingreso y ubicación física en NEXO | confirma aceptación comercial del alcance aplicable, no movimiento físico final |
+| `ECONOMIC_RECONCILIATION_PENDING` | se correlacionan recepción, factura, obligación y diferencias | el expediente económico sigue abierto |
+| `RECEIPT_RECONCILED` | compra, cantidad, condición, documentos, inventario y efecto económico fueron comparados | cierre comercial de recepción; no equivale a pago |
+
+---
+
+#### 8. Frontera con la recepción física de NEXO
+
+Cuando la compra produzca un efecto de inventario, NEXO conserva `VPROC-0024` como autoridad de ingreso y ubicación.
+
+`VPROC-0024.INBOUND_MOVEMENT_RECONCILED` demuestra que:
+
+- la recepción física ocurrió;
+- la ubicación y el movimiento canónico quedaron confirmados;
+- el efecto de existencia se aplicó una sola vez o sus diferencias fueron resueltas.
+
+No demuestra por sí solo:
+
+- que ORIGO haya aceptado comercialmente toda la compra;
+- que el documento del proveedor sea correcto;
+- que NUMERA haya reconocido la obligación;
+- que el costo definitivo esté calculado;
+- que el proveedor haya sido pagado.
+
+NUMERA utilizará la referencia física cuando aplique, pero nunca fabricará un movimiento de inventario para cuadrar un hecho económico.
+
+---
+
+#### 9. Regla de entrada a NUMERA
+
+NUMERA podrá recibir como candidato económico una afirmación canónica de ORIGO o un conjunto de soportes correlacionados que permita demostrar, como mínimo:
+
+1. sistema y proceso fuente;
+2. identidad estable de compra u orden;
+3. identidad estable de recepción, aceptación o documento aplicable;
+4. proveedor o contraparte;
+5. entidad legal;
+6. sede y dimensiones autorizadas;
+7. moneda;
+8. fecha del compromiso y fecha de recepción cuando correspondan;
+9. líneas, cantidades y unidades aplicables;
+10. importes y componentes conocidos;
+11. estado de aceptación comercial;
+12. referencia física NEXO cuando el bien produzca inventario;
+13. documento o soporte del proveedor cuando exista;
+14. evidencia de diferencias, devoluciones o aceptación condicionada;
+15. relación con el hecho original cuando sea corrección o compensación.
+
+Una entrada incompleta puede permanecer pendiente de validación, pero no elevarse silenciosamente a hecho económico definitivo.
+
+---
+
+#### 10. Sobre económico mínimo de abastecimiento
+
+El contrato lógico deberá poder representar, cuando aplique:
+
+| Grupo | Campos o referencias mínimas |
+| --- | --- |
+| identidad | fuente, proceso, orden/compromiso, recepción, evento o versión |
+| organización | entidad legal, sede, centro de costo u otras dimensiones autorizadas |
+| contraparte | proveedor canónico y referencias aplicables |
+| temporal | fecha de orden, ocurrencia/recepción, documento, reconocimiento económico y vencimiento cuando exista |
+| monetario | moneda, subtotal, descuentos, impuestos, flete/recargos identificados, total y efecto neto propuesto |
+| líneas | producto, presentación o servicio, unidad, cantidad ordenada, aceptada, rechazada y devuelta cuando aplique |
+| físico | referencia NEXO, lote, condición o ubicación solo cuando corresponda al hecho físico |
+| documental | factura, remisión, nota, certificado, contrato u otra evidencia sin convertirla en fuente única universal |
+| diferencias | tipo, cantidad o importe, motivo, estado, responsable y resolución |
+| control | estado de validación, clave lógica de deduplicación, conciliación y evidencia |
+
+La implementación física posterior definirá columnas y esquemas. Esta tarea no los inventa.
+
+---
+
+#### 11. Estados que no reconocen por sí solos costo, gasto u obligación
+
+No constituyen reconocimiento económico definitivo por sí solos:
+
+- `VPROC-0021.APPROVED`;
+- `VPROC-0021.ORDER_ISSUED`;
+- `VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED`;
+- `VPROC-0022.RECEIPT_EXPECTED`;
+- `VPROC-0022.ARRIVAL_REGISTERED`;
+- `VPROC-0022.PHYSICAL_CHECK_IN_PROGRESS`;
+- `VPROC-0022.DOCUMENT_CHECK_IN_PROGRESS`;
+- `VPROC-0022.ACCEPTANCE_PENDING`;
+- `VPROC-0024.INBOUND_MOVEMENT_REQUESTED`;
+- `VPROC-0024.IN_EXECUTION`;
+- una factura recibida sin validación;
+- una coincidencia manual de proveedor e importe;
+- una captura visual o archivo agregado.
+
+Pueden servir como evidencia o compromiso, pero el reconocimiento requiere validación dentro de NUMERA.
+
+---
+
+#### 12. Recepción aceptada como candidato económico
+
+Para bienes, `VPROC-0022.PUTAWAY_PENDING` demuestra que el alcance aceptado comercialmente puede continuar hacia ingreso físico en NEXO.
+
+Ese estado puede originar un candidato económico únicamente si:
+
+- la identidad de la orden y recepción es estable;
+- las líneas aceptadas están determinadas;
+- las cantidades rechazadas o pendientes permanecen separadas;
+- el proveedor y entidad son válidos;
+- existe soporte suficiente para el tratamiento económico propuesto;
+- no existe un candidato equivalente ya reconocido;
+- las diferencias materiales tienen destino explícito.
+
+El candidato todavía atraviesa `VPROC-0051`; aceptación comercial no equivale a `POSTED` en NUMERA.
+
+`VPROC-0022.RECEIPT_RECONCILED` constituye evidencia más fuerte de cierre de recepción, pero tampoco representa pago al proveedor.
+
+---
+
+#### 13. Reconocimiento dentro de VPROC-0051
+
+El flujo económico conserva:
+
+```text
+ECONOMIC_EVENT_RECEIVED
+→ VALIDATION_IN_PROGRESS
+→ CLASSIFICATION_PENDING
+→ CLASSIFIED
+→ POSTING_PENDING
+→ POSTED
+→ ALLOCATION_PENDING / RECONCILIATION_PENDING cuando aplique
+→ ECONOMIC_EVENT_RECONCILED
+```
+
+Reglas:
+
+1. `ECONOMIC_EVENT_RECEIVED` confirma recepción del candidato, no reconocimiento;
+2. la validación comprueba origen, soporte, entidad, fecha, valor, moneda y duplicidad;
+3. la clasificación determina tratamiento y dimensiones sin cambiar ORIGO o NEXO;
+4. `POSTED` representa reconocimiento dentro del dominio económico, conservando vínculo con la compra y recepción;
+5. una distribución posterior no modifica el hecho fuente;
+6. `ECONOMIC_EVENT_RECONCILED` exige correspondencia con soporte, contraparte y proceso de origen;
+7. el hecho reconciliado se reconoce una sola vez y no reconstruye la compra ni el movimiento físico.
+
+---
+
+#### 14. Obligación por pagar dentro de VPROC-0052
+
+La obligación por pagar es un objeto financiero independiente del hecho económico y de la recepción.
+
+`VPROC-0052.PAYABLE_REGISTERED` exige como mínimo:
+
+- contraparte;
+- soporte;
+- concepto;
+- importe;
+- vencimiento;
+- origen verificable.
+
+Después, `DOCUMENT_VALIDATING` verifica factura, recepción, proveedor, obligación, impuestos y duplicidad.
+
+Se preserva:
+
+```text
+HECHO_ECONOMICO != OBLIGACION
+OBLIGACION != APROBACION_DE_PAGO
+APROBACION_DE_PAGO != PROGRAMACION
+PROGRAMACION != PAGO
+PAGO != CONCILIACION_BANCARIA
+```
+
+La definición detallada de cuentas por pagar continúa en `NUMERA-DOM-010`. Esta tarea solo fija qué entradas desde compra y recepción pueden originar o sustentar la obligación.
+
+---
+
+#### 15. Conciliación orden–recepción–soporte
+
+La cadena económica deberá conservar referencias separadas a:
+
+```text
+ORDEN / COMPROMISO
+        ↕
+RECEPCION COMERCIAL
+        ↕
+MOVIMIENTO FISICO CUANDO APLIQUE
+        ↕
+DOCUMENTO / SOPORTE DE PROVEEDOR
+        ↕
+HECHO ECONOMICO
+        ↕
+OBLIGACION
+```
+
+La conciliación compara, no fusiona.
+
+Como mínimo debe permitir detectar:
+
+- orden sin recepción;
+- recepción sin orden cuando exista excepción autorizada;
+- factura o soporte sin recepción o aceptación aplicable;
+- recepción sin documento cuando el documento deba llegar después;
+- cantidades distintas;
+- precios o condiciones diferentes;
+- impuestos o recargos diferentes;
+- recepción física sin aceptación comercial;
+- aceptación comercial sin movimiento físico cuando el bien lo requiera;
+- obligación sin origen;
+- doble hecho económico para una misma recepción.
+
+No se inventan tolerancias automáticas en esta tarea.
+
+---
+
+#### 16. Recepciones parciales
+
+Una orden puede producir múltiples recepciones legítimas.
+
+Reglas:
+
+1. cada recepción conserva identidad propia;
+2. cada línea conserva cantidad ordenada, recibida acumulada, aceptada, rechazada, devuelta y pendiente cuando aplique;
+3. una recepción parcial no cierra automáticamente la orden;
+4. NUMERA reconoce únicamente el alcance económico sustentado por cada recepción o soporte aplicable;
+5. el acumulado económico no puede exceder silenciosamente el alcance autorizado sin diferencia o revisión;
+6. reintentar una recepción parcial no vuelve a sumar cantidades, costo ni obligación;
+7. las líneas pendientes conservan destino explícito;
+8. el pago parcial o anticipo no convierte la parte pendiente en recibida.
+
+---
+
+#### 17. Diferencias de recepción
+
+`VPROC-0022.DIFFERENCE_UNDER_REVIEW` conserva toda discrepancia antes de una decisión final.
+
+La diferencia puede involucrar:
+
+- faltante;
+- sobrante;
+- producto o presentación distinta;
+- cantidad o unidad inconsistente;
+- calidad o condición;
+- lote o vencimiento;
+- temperatura cuando aplique;
+- precio;
+- impuesto;
+- flete o cargo;
+- documento ausente o inconsistente;
+- servicio incompleto;
+- aceptación condicionada.
+
+NUMERA no ajustará importes para forzar coincidencia. El tratamiento económico deberá usar la resolución autorizada y conservar el valor original, la diferencia y su destino.
+
+---
+
+#### 18. Servicios y compras no inventariables
+
+Una compra de servicio no crea stock ni un movimiento físico ficticio.
+
+Para servicios, el candidato económico puede sustentarse mediante:
+
+- orden o acuerdo aplicable;
+- proveedor;
+- alcance;
+- aceptación del servicio;
+- periodo o fecha de prestación;
+- documento o soporte;
+- evidencia de conformidad;
+- importe y moneda;
+- diferencias o retenciones cuando correspondan.
+
+La ausencia de `VPROC-0024` es válida cuando el objeto comprado no genera inventario. No se sustituye con un movimiento artificial para satisfacer una conciliación genérica.
+
+---
+
+#### 19. Anticipos y pagos previos a la recepción
+
+Un anticipo o pago previo no implica que el bien o servicio haya sido recibido ni que el costo final deba reconocerse como si la recepción estuviera completa.
+
+Se conserva:
+
+```text
+ANTICIPO
+!= RECEPCION
+!= COSTO_REALIZADO
+!= OBLIGACION_LIQUIDADA
+```
+
+Cuando exista anticipo:
+
+- se relaciona con la compra o contrato correspondiente;
+- conserva importe, moneda, proveedor, fecha y soporte;
+- no incrementa inventario;
+- no completa recepción;
+- debe poder aplicarse posteriormente contra la obligación o tratamiento financiero aplicable;
+- cualquier saldo o devolución conserva identidad propia.
+
+El diseño completo de pagos y tesorería se reserva a tareas posteriores de NUMERA.
+
+---
+
+#### 20. Componentes monetarios de adquisición
+
+NUMERA deberá conservar separados, cuando existan y estén sustentados:
+
+- precio de línea;
+- descuentos;
+- impuestos;
+- flete;
+- seguros;
+- recargos;
+- retenciones;
+- anticipos aplicados;
+- notas o ajustes;
+- otros componentes identificados por soporte válido.
+
+Esta tarea no decide qué componente capitaliza, distribuye, se reconoce como gasto, integra landed cost o recibe otro tratamiento contable/fiscal.
+
+La metodología de costo y sus distribuciones pertenece principalmente a `NUMERA-DOM-007` y las fronteras contables/fiscales a `NUMERA-DOM-013` y `NUMERA-DOM-017`.
+
+---
+
+#### 21. Proveedor y contraparte
+
+ORIGO conserva la identidad operativa/comercial del proveedor dentro de su dominio.
+
+NUMERA consume una referencia canónica de contraparte suficiente para:
+
+- hecho económico;
+- obligación;
+- vencimiento;
+- pago;
+- conciliación;
+- reportes autorizados.
+
+No se crea un proveedor paralelo por descripción libre.
+
+Si la identidad de proveedor es ambigua, duplicada, inactiva o incompatible con el soporte, el caso permanece pendiente de resolución y no se reconoce por coincidencia nominal.
+
+---
+
+#### 22. Fechas y periodos
+
+Se conservan por separado cuando apliquen:
+
+```text
+FECHA_DE_NECESIDAD
+FECHA_DE_APROBACION
+FECHA_DE_ORDEN
+FECHA_DE_COMPROMISO
+FECHA_DE_LLEGADA
+FECHA_DE_RECEPCION
+FECHA_DE_ACEPTACION
+FECHA_DE_DOCUMENTO
+FECHA_DE_RECONOCIMIENTO_ECONOMICO
+FECHA_DE_VENCIMIENTO
+FECHA_DE_PAGO
+FECHA_DE_CONCILIACION
+```
+
+Ninguna se deriva silenciosamente de otra.
+
+El periodo operativo, económico, contable y fiscal no se asumen equivalentes. La política detallada de cierres y reapertura continúa en `NUMERA-DOM-011`.
+
+---
+
+#### 23. Moneda y valoración
+
+Toda entrada conserva la moneda de la transacción y los importes originales del compromiso y soporte aplicables.
+
+Si se requiere una equivalencia en otra moneda:
+
+- la conversión debe conservar fuente, fecha y versión del criterio utilizado;
+- el importe original no se sobrescribe;
+- una diferencia cambiaria no se mezcla con diferencia de cantidad o precio;
+- esta tarea no inventa proveedor de tasa, momento de conversión ni política contable.
+
+El tratamiento detallado queda para reglas financieras y contables posteriores.
+
+---
+
+#### 24. Devoluciones, notas y compensaciones
+
+Una devolución posterior a una recepción aceptada no elimina la recepción original.
+
+Debe conservarse:
+
+```text
+HECHO_ORIGINAL
+        ↓
+ACCION_CORRECTIVA_AUTORIZADA
+        ↓
+EFECTO_FISICO_INVERSO CUANDO APLIQUE
+        ↓
+NOTA / CREDITO / AJUSTE CUANDO APLIQUE
+        ↓
+EFECTO_ECONOMICO_COMPENSATORIO
+        ↓
+RECONCILIACION
+```
+
+Reglas:
+
+- NEXO conserva el retorno físico;
+- ORIGO conserva la decisión comercial de devolución/reclamación;
+- NUMERA conserva el efecto económico compensatorio;
+- un documento de crédito no borra la factura o recepción original;
+- una compensación siempre referencia el hecho original;
+- reintentos no duplican devolución, costo inverso ni ajuste de obligación.
+
+---
+
+#### 25. Idempotencia, duplicados y replay
+
+La clave económica lógica deberá impedir que una misma operación de abastecimiento produzca varias veces:
+
+- recepción económica;
+- costo;
+- gasto;
+- obligación;
+- ajuste;
+- devolución;
+- conciliación equivalente.
+
+La identidad deberá considerar las referencias canónicas disponibles, como fuente, proceso, evento, orden, recepción, línea, documento y versión según corresponda.
+
+Reglas:
+
+1. replay conserva la identidad histórica;
+2. respuesta perdida no autoriza crear otra recepción;
+3. reimpresión de documento no crea otro hecho;
+4. una recepción visible en ORIGO y NEXO no son dos recepciones económicas;
+5. una factura reenviada no crea otra obligación;
+6. un evento fuera de orden puede quedar pendiente, no aplicarse ciegamente;
+7. un duplicado demostrado conserva evidencia de detección y no genera efecto adicional.
+
+---
+
+#### 26. Prohibición de gasto manual competidor
+
+Una compra o recepción ya correlacionada desde ORIGO no debe duplicarse en NUMERA mediante un gasto manual creado solo por descripción, proveedor e importe.
+
+Antes de aceptar un registro manual económicamente equivalente, el sistema objetivo deberá poder verificar si existe:
+
+- orden relacionada;
+- recepción ORIGO;
+- entrada NEXO cuando aplique;
+- documento de proveedor;
+- hecho económico previo;
+- obligación previa.
+
+Si existe posible coincidencia, el registro queda pendiente de matching o excepción autorizada.
+
+El flujo general de gastos y soportes se define en `NUMERA-DOM-005`; esta tarea fija la incompatibilidad con una fuente ORIGO ya existente.
+
+---
+
+#### 27. Casos que permanecen pendientes o en diferencia
+
+No se reconocerán automáticamente como hechos definitivos los casos con:
+
+- proveedor no resoluble;
+- orden inexistente cuando debería existir;
+- recepción no aceptada;
+- cantidades incompatibles sin resolución;
+- servicio sin evidencia de aceptación;
+- documento duplicado;
+- documento sin origen correlacionable;
+- importe o moneda incompatibles;
+- impuesto o cargo material sin resolución;
+- recepción física duplicada o ambigua;
+- devolución pendiente de efecto físico o documental;
+- obligación potencialmente duplicada;
+- eventos fuera de orden que puedan cambiar el resultado;
+- conflicto entre ORIGO, NEXO y soporte económico.
+
+Cada pendiente conserva causa, propietario de resolución, evidencia y relación con el origen.
+
+---
+
+#### 28. Matriz de propiedad y escritura
+
+| Objeto o decisión | Propietario | Consumidores | Escritura cruzada prohibida |
+| --- | --- | --- | --- |
+| necesidad de compra | ORIGO | NUMERA/otros según contrato | sí |
+| evaluación/proveedor seleccionado | ORIGO | NUMERA cuando requiera referencia | sí |
+| orden y compromiso de compra | ORIGO | NEXO, NUMERA, FOGO cuando corresponda | sí |
+| recepción y aceptación comercial | ORIGO | NEXO, NUMERA | sí |
+| movimiento, ubicación y existencia | NEXO | ORIGO, NUMERA, FOGO | sí |
+| documento externo | autoridad/proveedor aplicable con referencia interna | ORIGO, NUMERA | sí |
+| hecho económico | NUMERA | VISO/reportes/consumidores autorizados | sí |
+| obligación por pagar | NUMERA | tesorería/reportes autorizados | sí |
+| pago y conciliación bancaria | NUMERA con proveedor financiero externo según la ejecución | ORIGO/gerencia según proyección | sí |
+
+Una consumidora puede solicitar, correlacionar o reaccionar; no modifica directamente el hecho propietario ajeno.
+
+---
+
+#### 29. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Esta tarea no crea, modifica, difiere, descarta ni vuelve obsoleto ningún requisito de prueba.
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La cobertura vigente ya protege identidad y trazabilidad económica, recepción idempotente, propiedad ORIGO/NEXO/NUMERA, obligaciones separadas, servicios sin stock ficticio y conciliación de compra–recepción–obligación.
+
+---
+
+#### 30. Cobertura de prueba vigente reutilizada
+
+Esta sección documenta cobertura existente y no constituye una actualización del Registro 04A.
+
+Cobertura principal reutilizada:
+
+- `TREQ-NUMERA-001` — reconciliación con hechos y documentos fuente, no duplicación manual, historia y trazabilidad;
+- `TREQ-NUMERA-002` — identidad estable, entidad, dimensiones, contraparte, moneda, fechas, fuente, correlación, documento, importe, impuesto, estado y correcciones no destructivas;
+- `TREQ-NUMERA-003` — separación de obligación, aprobación, pago, bancos, tesorería y conciliación;
+- `TREQ-ORIGO-001` — modalidad de recepción visible y auditable sin duplicar cantidades, costos u orden recibida;
+- `TREQ-ORIGO-003` — recepción empresarial atómica/idempotente, durable y reconciliable, sin volver a sumar inventario, costo o cantidades;
+- `TREQ-ORIGO-004` — separación de necesidad, selección, aprobación, orden y revisión con segregación y cambios no destructivos;
+- `TREQ-ORIGO-005` — identidad estable de proveedor, condiciones comerciales versionadas y evidencia histórica;
+- `TREQ-INTEGRATION-010` — correlación única ORIGO → recepción → NEXO → NUMERA, incluyendo parcialidad, servicios, devoluciones e idempotencia;
+- `TREQ-INTEGRATION-011` — efecto físico exactamente una vez hacia NEXO y conciliación de eventos sin efecto o efectos sin evento;
+- `TREQ-INTEGRATION-003` y `TREQ-INTEGRATION-006` — identidad/idempotencia transversal y fuente empresarial única sin doble digitación competidora.
+
+No se entrega una actualización 04A porque ninguna regla protegida cambia de contenido ni de estado.
+
+---
+
+#### 31. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | esta tarea es documental y no ejecuta build de producto; la incorporación deberá validarse con el tooling documental vigente |
+| LOCAL | NOT_EXECUTED | el reemplazo, formato, quality, delivery, topología, plan y TREQ deberán ejecutarse en el checkout del usuario cuando `NUMERA-DOM-002` haya cerrado y habilitado continuidad |
+| REMOTA | PASS | se verificaron `vento-shell/main`, `NUMERA-DOM-001` publicado, el marcador `NUMERA-DOM-003`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VPROC-0021`, `VPROC-0022`, `VPROC-0024`, `VPROC-0051`, `VPROC-0052`, contratos `INT-PROC-001..005`, Registro 04A y validadores documentales vigentes; `NUMERA-DOM-002` se consume desde su versión completa aprobada |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron compras, recepciones, entradas de inventario, obligaciones, pagos, devoluciones ni conciliaciones reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-DOM-003` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea implementación física propia |
+
+---
+
+#### 32. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. ORIGO permanece propietario de compra y recepción comercial;
+2. NEXO permanece propietario de ingreso, ubicación, custodia y existencia física;
+3. NUMERA permanece propietario del hecho económico y obligación financiera;
+4. necesidad, orden, recepción, inventario, documento, hecho, obligación y pago permanecen identidades distintas;
+5. `PURCHASE_COMMITMENT_FORMALIZED` no se interpreta como recepción u obligación definitiva;
+6. llegada o revisión documental no se interpretan como recepción aceptada;
+7. `PUTAWAY_PENDING` se usa solo como evidencia de bienes aceptados que esperan ingreso físico;
+8. `INBOUND_MOVEMENT_RECONCILED` confirma efecto físico, no aceptación comercial o económica ajena;
+9. todo candidato económico atraviesa validación de `VPROC-0051` antes de reconocimiento;
+10. la obligación usa `VPROC-0052` y conserva soporte, contraparte, concepto, importe, vencimiento y origen;
+11. orden, recepción, soporte, movimiento físico, hecho y obligación son conciliables entre sí;
+12. recepciones parciales no cierran automáticamente orden u obligación;
+13. servicios pueden reconocerse con aceptación/evidencia sin inventario ficticio;
+14. anticipos no se tratan como recepción o costo realizado;
+15. diferencias no se corrigen alterando cantidades o importes de origen;
+16. proveedor se referencia desde identidad canónica y no por descripción paralela;
+17. fechas de orden, recepción, documento, reconocimiento, vencimiento y pago permanecen separadas;
+18. moneda e importes originales no se sobrescriben por conversiones posteriores;
+19. devoluciones y notas generan efectos correlacionados sin borrar originales;
+20. replay, reintento, reimpresión o doble visibilidad ORIGO/NEXO no duplican efecto económico;
+21. un gasto manual no compite silenciosamente con una compra/recepción ORIGO ya correlacionada;
+22. casos ambiguos permanecen pendientes o en diferencia con propietario de salida;
+23. no se crean ni modifican requisitos de prueba;
+24. no se realizan cambios físicos;
+25. la continuidad reserva `NUMERA-DOM-004`.
+
+---
+
+#### 33. Límites
+
+Esta tarea no:
+
+- implementa eventos, consumidoras, colas, outbox, inbox o adaptadores;
+- crea tablas, columnas, índices, funciones, RPC, RLS, triggers o migraciones;
+- modifica Supabase;
+- modifica ORIGO, NEXO o NUMERA;
+- define umbrales de aprobación, tolerancias de matching o materialidad;
+- ejecuta compras, recepciones, movimientos de inventario, devoluciones, obligaciones o pagos;
+- define el maestro de proveedores completo;
+- define costos estándar, reales, landed cost o reglas de distribución;
+- define el flujo general de gastos;
+- define las cuentas por pagar completas;
+- define bancos o tesorería;
+- define política tributaria o contable profesional;
+- define plan de cuentas, comprobantes ni asientos formales;
+- fuerza una recepción física para servicios;
+- modifica el Registro 04A;
+- desarrolla `NUMERA-DOM-004`.
+
+---
+
+#### 34. Handoff a NUMERA-DOM-004
+
+`NUMERA-DOM-004` recibe estas fronteras cerradas:
+
+1. la fuente operativa conserva propiedad y NUMERA consume efectos económicos;
+2. reconocimiento económico nunca fabrica un hecho físico;
+3. ORIGO gobierna compra y recepción comercial;
+4. NEXO gobierna ingreso, ubicación, movimiento y existencia;
+5. una referencia física puede sustentar un hecho económico sin fusionarse con él;
+6. recepción, documento, costo, obligación y pago permanecen separados;
+7. toda entrada económica conserva identidad, fuente, correlación, moneda, fechas, importe, evidencia e idempotencia;
+8. correcciones, devoluciones y compensaciones preservan el original;
+9. un registro manual no debe competir con una fuente propietaria existente;
+10. las diferencias permanecen explícitas hasta conciliación.
+
+La siguiente tarea deberá aplicar estas reglas a producción e inventario, preservando a FOGO como propietario del hecho productivo y a NEXO como propietario del movimiento físico.
+
+---
+
+#### 35. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-DOM-002 — Definir hechos económicos recibidos desde ventas`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-DOM-003 — Definir hechos económicos recibidos desde compras y recepción`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario`
 ### [ ] NUMERA-DOM-004 — Definir hechos económicos recibidos desde producción e inventario
 ### [ ] NUMERA-DOM-005 — Definir gastos, soportes, aprobación, corrección y anulación
 ### [ ] NUMERA-DOM-006 — Definir centros de costo y propiedad de su catálogo
