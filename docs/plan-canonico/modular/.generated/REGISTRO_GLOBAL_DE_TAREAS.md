@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1422** |
+| Aprobadas | **1423** |
 | En propuesta | **0** |
-| No iniciadas | **174** |
+| No iniciadas | **173** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **89.10% (1422/1596)** |
+| Porcentaje de completamiento | **89.16% (1423/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **174** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1323** |
+| ⏸ NO_EVALUADA | **173** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1324** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-AUTH-001` — Vincular módulos y acciones con permisos y contratos aprobados | ✅ APROBADA |
-| Tarea actual | `NUMERA-AUTH-002` — Clasificar información financiera sensible | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-AUTH-003` — Definir permisos de lectura | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-AUTH-002` — Clasificar información financiera sensible | ✅ APROBADA |
+| Tarea actual | `NUMERA-AUTH-003` — Definir permisos de lectura | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-AUTH-004` — Definir permisos de registro | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1184,7 +1184,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-017` | Definir arquitectura extensible hacia contabilidad formal, plan de cuentas y comprobantes | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-DOM-018` | Definir motor de escenarios, versiones de precios, costos, supuestos y publicación | — | — | `bloques/O_NUMERA/03_DOMINIO_Y_MODELO_FINANCIERO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-001` | Vincular módulos y acciones con permisos y contratos aprobados | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-002` | Clasificar información financiera sensible | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-AUTH-002` | Clasificar información financiera sensible | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-003` | Definir permisos de lectura | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-004` | Definir permisos de registro | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-AUTH-005` | Definir permisos de aprobación | — | — | `bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md` |

@@ -1224,7 +1224,1316 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-002 — Clasificar información financiera sensible`
-### [ ] NUMERA-AUTH-002 — Clasificar información financiera sensible
+### ✅ NUMERA-AUTH-002 — Clasificar información financiera sensible
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-001 — Vincular módulos y acciones con permisos y contratos aprobados
+**Tarea siguiente:** NUMERA-AUTH-003 — Definir permisos de lectura
+**Tipo de tarea:** clasificación documental exhaustiva de sensibilidad para información, recursos, proyecciones y artefactos financieros de NUMERA, consumiendo el registro de bindings aprobado, los motivos canónicos de sensibilidad de autorización y el vocabulario cerrado de sensibilidad de eventos sin crear un tercer enum, sin inventar permisos ni materializar controles físicos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica permisos runtime, catálogo de autorización, roles, grants, RLS, RPC, Server Actions, pantallas, procesos, eventos, contratos TypeScript, Supabase, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Clasificar qué información de NUMERA debe tratarse como financiera sensible y qué reglas de minimización, proyección, exposición y transferencia se derivan de esa clasificación antes de definir permisos de lectura, registro, aprobación, cierre, exportación y capacidades financieras especializadas.
+
+La tarea consume el registro de bindings aprobado por `NUMERA-AUTH-001` y responde, para cada familia de información:
+
+- qué motivo canónico de sensibilidad aplica;
+- cuándo coexiste sensibilidad financiera con sensibilidad personal, comercial, de auditoría, inventario o secreto empresarial;
+- cómo se proyecta la información hacia pantallas, eventos, integraciones, exportaciones, logs y dispositivos;
+- qué información nunca debe convertirse en autoridad por estar visible;
+- qué fronteras debe consumir `NUMERA-AUTH-003` al definir permisos de lectura.
+
+---
+
+#### 2. Naturaleza y topología
+
+La reconciliación propietaria de `NUMERA-AUTH-001..007` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, `NUMERA-AUTH-002`:
+
+- se define una sola vez;
+- no crea instancia física propia;
+- no ejecuta migraciones;
+- no modifica Supabase;
+- no crea ni cambia permisos;
+- no cambia la clasificación `authorization_requirement`;
+- no cambia `is_sensitive` del catálogo transversal;
+- no modifica contratos de eventos;
+- no materializa máscaras, filtros ni RLS;
+- entrega un contrato documental consumible por las tareas posteriores.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-001
+
+La tarea anterior entrega:
+
+```text
+NUMERA_AUTHORIZATION_BINDING_REGISTRY = NUMERA-AUTHORIZATION-BINDING-REGISTRY-001
+NUMERA_CANONICAL_SCREEN_COUNT = 20
+NUMERA_CURRENT_CANONICAL_PERMISSION_COUNT = 6
+NUMERA_OBSERVED_RUNTIME_PERMISSION_COUNT = 8
+NUMERA_CURRENT_CANONICAL_PERMISSIONS_ARE_BASE_ONLY = YES
+APP_ACCESS_IMPLIES_FINANCIAL_DATA_READ = NO
+SCREEN_VISIBILITY_IMPLIES_ACTION_AUTHORITY = NO
+PROCESS_STEP_IMPLIES_PERMISSION = NO
+ROLE_NAME_IMPLIES_FINAL_AUTHORIZATION = NO
+LEGACY_COST_CENTERS_MANAGE = DECOMPOSE_REQUIRED
+LEGACY_EXPENSES_MANAGE = DECOMPOSE_REQUIRED
+ROOT_NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+REPORT_VIEW_IMPLIES_EXPORT = NO
+READ_REGISTER_APPROVE_PAY_RECONCILE_CLOSE_REOPEN_WRITE_OFF_EXPORT = DISTINCT
+SCENARIO_CREATE_SHARE_APPROVE_PUBLISH = DISTINCT
+MISSING_EXACT_PERMISSION_FALLBACK_TO_MANAGE = FORBIDDEN
+FINANCIAL_WILDCARD_GRANT = FORBIDDEN
+MUTATION_AUTHORIZATION_REVALIDATED_SERVER_SIDE = YES
+CLIENT_CALCULATION_IS_AUTHORITY = NO
+AUTHORIZATION_REQUIRES_RESOURCE_AND_CURRENT_STATE = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+SIMULATED_AUTHORIZATION_GRANTS_REAL_AUTHORITY = NO
+NUMERA_AUTH_002_OWNER = FINANCIAL_SENSITIVITY_CLASSIFICATION
+TREQ_CHANGES = 0
+```
+
+Esta tarea no altera ninguna de esas decisiones.
+
+---
+
+#### 4. Resultado contractual
+
+Queda definido el contrato documental de sensibilidad financiera de NUMERA con cuatro reglas nucleares:
+
+```text
+PERMISSION_SENSITIVITY
+!= DATA_SENSITIVITY
+!= EVENT_SENSITIVITY
+!= DEVICE_INTERACTION_CLASS
+```
+
+```text
+FINANCIAL_DATA_VISIBLE
+!= AUTHORITY_TO_MUTATE
+```
+
+```text
+AGGREGATED_DATA
+!= AUTOMATICALLY_DECLASSIFIED_DATA
+```
+
+```text
+VIEW
+!= EXPORT
+!= PRINT
+!= SHARE
+!= BULK_ACCESS
+```
+
+La clasificación se aplica por información y proyección efectiva, no por nombre de página, nombre de proceso o existencia de un permiso genérico.
+
+---
+
+#### 5. Fuentes canónicas reconciliadas
+
+La clasificación se reconcilia contra:
+
+- `NUMERA-AUTH-001` aprobado como base inmediata;
+- `AUTH-CAT-010` contenido en `03_MODALIDAD_Y_CLASIFICACIONES.md`;
+- `AUTH-CAT-011` y los contratos de alcance y recurso;
+- `05_PRERREQUISITOS_Y_CONTEXTO.md`;
+- `06_CONTRATO_DE_RECURSO.md`;
+- catálogo canónico `VSCREEN-*` y bindings `VPROC-*::STEP-*`;
+- contratos de eventos empresariales y su vocabulario de sensibilidad;
+- auditoría funcional y técnica de NUMERA;
+- `NUMERA-DOM-001..018` como modelo financiero aprobado;
+- fragmentos 04A de NUMERA y AUTH;
+- topología documental vigente;
+- políticas de formato y desarrollo de tareas.
+
+---
+
+#### 6. Vocabulario canónico de sensibilidad de permisos
+
+El catálogo transversal ya define motivos documentales de sensibilidad, entre ellos:
+
+```text
+PERSONAL_DATA
+WORKFORCE_CONTROL
+ACCESS_CONTROL
+AUTHORIZATION_SECURITY
+BUSINESS_SECRET
+FINANCIAL_DATA
+COMMERCIAL_CONFIDENTIALITY
+INVENTORY_INTEGRITY
+CUSTODY_CONFIRMATION
+EXCEPTIONAL_ACTION
+CONFIGURATION_INTEGRITY
+AUDIT_SECURITY
+```
+
+Para NUMERA, `FINANCIAL_DATA` es el motivo principal cuando la capacidad expone o modifica gastos, documentos, precios, costos, márgenes, saldos, pagos, obligaciones, presupuesto, cartera, tesorería, impuestos, contabilidad o resultados económicos equivalentes.
+
+Los motivos pueden coexistir. La coexistencia no crea permisos nuevos.
+
+---
+
+#### 7. Vocabulario canónico de sensibilidad de eventos
+
+Los eventos empresariales utilizan un vocabulario diferente y cerrado:
+
+```text
+INTERNAL_OPERATIONAL
+RESTRICTED_PERSONAL
+RESTRICTED_FINANCIAL
+RESTRICTED_TECHNICAL
+```
+
+`RESTRICTED_FINANCIAL` protege payloads de evento que contienen o referencian importes, cuentas, documentos o contrapartes financieras.
+
+Este vocabulario pertenece al contrato de eventos y no sustituye `is_sensitive` ni los motivos documentales del catálogo de permisos.
+
+---
+
+#### 8. Prohibición de un tercer enum paralelo
+
+`NUMERA-AUTH-002` no crea otra escala como `LOW/MEDIUM/HIGH`, `PUBLIC/CONFIDENTIAL/SECRET` o equivalente.
+
+La clasificación se expresa reutilizando:
+
+- motivos canónicos del catálogo de autorización para permisos y datos;
+- clases canónicas del contrato de eventos para payloads de eventos;
+- controles ya aprobados de alcance, recurso, dispositivo y reautenticación.
+
+Si en el futuro se necesita un nuevo vocabulario transversal de clasificación de datos, deberá definirse en su propietario canónico y no mediante inferencia local de NUMERA.
+
+---
+
+#### 9. Baseline de sensibilidad de los seis permisos canónicos actuales
+
+El catálogo transversal vigente conserva:
+
+| Permiso canónico | `is_sensitive` | Motivo |
+| --- | --- | --- |
+| `numera.access` | `false` | no aplica como sensibilidad financiera por sí solo |
+| `numera.finance.cost_centers.view` | `true` | `FINANCIAL_DATA` |
+| `numera.finance.expenses.view` | `true` | `FINANCIAL_DATA` |
+| `numera.analytics.break_even.view` | `true` | `FINANCIAL_DATA` |
+| `numera.analytics.profitability.view` | `true` | `FINANCIAL_DATA` |
+| `numera.analytics.financial_reports.view` | `true` | `FINANCIAL_DATA` |
+
+Resultado:
+
+```text
+SENSITIVE_CURRENT_NUMERA_PERMISSIONS = 5
+NON_SENSITIVE_CURRENT_NUMERA_PERMISSIONS = 1
+```
+
+Esta tarea no cambia esos valores.
+
+---
+
+#### 10. `numera.access` no desclasifica contenido financiero
+
+Que `numera.access` tenga `is_sensitive = false` significa únicamente que la capacidad de entrada general no se clasifica como sensibilidad financiera por sí misma.
+
+No significa:
+
+```text
+numera.access
+=
+permiso para métricas, gastos, saldos, presupuestos o reportes
+```
+
+La raíz de NUMERA deberá seguir separando acceso a la aplicación de autoridad sobre datos financieros concretos.
+
+---
+
+#### 11. Sensibilidad y política de dispositivo son dimensiones distintas
+
+El contrato de prerrequisitos vigente clasifica los seis permisos actuales de NUMERA con política `STRONG` para dispositivo compartido.
+
+Por tanto:
+
+```text
+is_sensitive = false
+```
+
+no implica automáticamente:
+
+```text
+shared_device_requirement = STANDARD
+```
+
+`numera.access` puede conservar una política de interacción reforzada por el riesgo de la aplicación sin convertirse por ello en un permiso de lectura financiera sensible.
+
+---
+
+#### 12. Sensibilidad de proceso y sensibilidad de pantalla son dimensiones distintas
+
+Los procesos propietarios tienen su propio contrato de eventos.
+
+Ejemplos canónicos:
+
+- `VPROC-0051`, `VPROC-0052`, `VPROC-0053`, `VPROC-0054` y `VPROC-0069` publican eventos `RESTRICTED_FINANCIAL`;
+- `VPROC-0010` publica eventos `RESTRICTED_PERSONAL`;
+- `VPROC-0061` publica eventos `INTERNAL_OPERATIONAL`.
+
+Esto no permite concluir que una pantalla NUMERA basada en `VPROC-0061` pueda mostrar importes, márgenes o reportes financieros como datos no sensibles.
+
+La proyección de pantalla se autoriza por sus campos efectivos y finalidad.
+
+---
+
+#### 13. Clasificación por campo y proyección efectiva
+
+Una misma pantalla puede contener simultáneamente:
+
+- metadatos estructurales no financieros;
+- identificadores empresariales;
+- datos financieros sensibles;
+- datos personales sensibles;
+- referencias comerciales confidenciales;
+- evidencia de auditoría;
+- información de secreto empresarial.
+
+La autorización no se resuelve aplicando una única etiqueta indiscriminada a toda la interfaz.
+
+Cada proyección debe conservar únicamente los campos necesarios para la finalidad autorizada.
+
+---
+
+#### 14. Regla de minimización
+
+Para toda proyección sensible:
+
+```text
+CAMPOS_ENTREGADOS
+=
+MINIMO_NECESARIO_PARA_FINALIDAD_AUTORIZADA
+```
+
+Queda prohibido usar como justificación:
+
+- que el registro ya fue cargado por el servidor;
+- que el actor puede ver otra pantalla relacionada;
+- que el dato existe en el mismo objeto JSON;
+- que una tabla lo necesita para ordenar internamente;
+- que el usuario tiene `numera.access`;
+- que el dato aparece en un evento o log interno.
+
+---
+
+#### 15. Metadatos estructurales de aplicación
+
+Código de aplicación, labels genéricos de navegación, títulos de sección, estado técnico de carga y metadatos equivalentes no se convierten automáticamente en `FINANCIAL_DATA`.
+
+Esta exclusión no autoriza exposición de:
+
+- valores monetarios;
+- saldos;
+- costos;
+- márgenes;
+- metas;
+- cuentas;
+- documentos;
+- contrapartes;
+- decisiones financieras.
+
+---
+
+#### 16. Hechos económicos
+
+Los hechos económicos y sus campos materiales se clasifican con motivo principal:
+
+```text
+FINANCIAL_DATA
+```
+
+Incluye, cuando existan:
+
+- monto;
+- moneda;
+- impuestos;
+- fecha de reconocimiento;
+- documento fuente;
+- tercero;
+- entidad legal;
+- centro de costo;
+- estado económico;
+- referencia de corrección;
+- conciliación;
+- evidencia financiera.
+
+La identidad técnica aislada de un hecho puede proyectarse sin todos esos campos cuando la finalidad lo permita.
+
+---
+
+#### 17. Gastos y soportes
+
+Gastos, categorías económicas, importes, moneda, centro de costo, soporte, contraparte y estado financiero se clasifican como `FINANCIAL_DATA`.
+
+Cuando el soporte o contraparte identifica una persona natural, puede coexistir `PERSONAL_DATA`.
+
+Cuando contiene condiciones de proveedor o tercero comercial, puede coexistir `COMMERCIAL_CONFIDENTIALITY`.
+
+---
+
+#### 18. Aprobaciones financieras
+
+El contenido económico sometido a aprobación conserva `FINANCIAL_DATA`.
+
+La evidencia de quién decidió, cuándo, con qué motivo y sobre qué versión puede además requerir `AUDIT_SECURITY`.
+
+Una aprobación extraordinaria, override o decisión fuera del flujo ordinario puede además requerir `EXCEPTIONAL_ACTION`.
+
+La clasificación adicional no cambia el permiso exacto requerido.
+
+---
+
+#### 19. Cuentas por pagar y obligaciones
+
+Se clasifica como `FINANCIAL_DATA`:
+
+- importe debido;
+- saldo;
+- vencimiento;
+- programación de pago;
+- estado de obligación;
+- documento asociado;
+- condiciones de liquidación;
+- referencias de pago.
+
+Datos contractuales o comerciales del proveedor pueden coexistir con `COMMERCIAL_CONFIDENTIALITY`.
+
+---
+
+#### 20. Cuentas por cobrar y cartera
+
+Se clasifica como `FINANCIAL_DATA`:
+
+- saldo;
+- vencimiento;
+- aging;
+- cupo o exposición;
+- pagos recibidos;
+- aplicaciones;
+- acuerdos;
+- promesas;
+- disputas;
+- castigos;
+- saldos a favor.
+
+Si el deudor es una persona natural o el registro contiene contacto identificable, coexiste `PERSONAL_DATA`.
+
+---
+
+#### 21. Caja, bancos y tesorería
+
+Saldos, movimientos, cuentas, lotes de pago, referencias bancarias, depósitos, conciliaciones, disponibilidad y liquidez se clasifican como `FINANCIAL_DATA`.
+
+Las credenciales bancarias, secretos, tokens, llaves, PIN, OTP o material de autenticación no son datos financieros de negocio proyectables: permanecen fuera de payloads, UI, exportaciones y logs.
+
+---
+
+#### 22. Conciliación de ventas y pagos
+
+Importes, liquidaciones, pagos, diferencias, depósitos, referencias de transacción y resolución de diferencia se clasifican como `FINANCIAL_DATA`.
+
+La evidencia de investigación y decisión puede coexistir con `AUDIT_SECURITY`.
+
+La conciliación no autoriza exponer datos comerciales o personales no necesarios del pedido o cliente.
+
+---
+
+#### 23. Conciliación de compras y recepciones
+
+Importes de orden, factura, obligación, pago, diferencia y conciliación se clasifican como `FINANCIAL_DATA`.
+
+Condiciones comerciales, precios de proveedor y datos contractuales pueden coexistir con `COMMERCIAL_CONFIDENTIALITY`.
+
+La evidencia de diferencias y resolución puede coexistir con `AUDIT_SECURITY`.
+
+---
+
+#### 24. Conciliación de inventario, producción y variaciones
+
+Cuando la proyección contiene impacto monetario, costo, pérdida, merma valorizada o variación económica, aplica `FINANCIAL_DATA`.
+
+Cuando también revela diferencias físicas, faltantes, sobrantes o control de existencia, puede coexistir `INVENTORY_INTEGRITY`.
+
+La vista financiera no recibe por defecto detalle físico adicional que no sea necesario para explicar la diferencia económica.
+
+---
+
+#### 25. Costos, rentabilidad y punto de equilibrio
+
+Costos, márgenes, contribución, rentabilidad, punto de equilibrio, drivers, pools, distribuciones, precios internos y resultados por producto, sede o canal se clasifican como `FINANCIAL_DATA`.
+
+Cuando fórmulas, métodos de costeo o estructuras internas revelan conocimiento reservado, puede coexistir `BUSINESS_SECRET`.
+
+---
+
+#### 26. Cierre, reapertura y corrección de periodo
+
+Saldos de cierre, diferencias pendientes, correcciones, reaperturas, versiones y restatements conservan `FINANCIAL_DATA`.
+
+Reabrir, corregir o sustituir una versión cerrada puede además requerir:
+
+```text
+EXCEPTIONAL_ACTION
++
+AUDIT_SECURITY
+```
+
+según la acción efectiva y el contrato posterior de permisos.
+
+---
+
+#### 27. Reportes, snapshots y exportaciones
+
+Un reporte o snapshot que contenga cifras financieras conserva `FINANCIAL_DATA` aunque sea derivado, agregado o publicado internamente.
+
+La publicación interna no lo vuelve público.
+
+La exportación no reduce sensibilidad:
+
+```text
+SENSITIVE_REPORT
+-> SENSITIVE_EXPORT
+```
+
+El formato PDF, CSV, XLSX, JSON, pantalla o impresión no modifica por sí mismo la clasificación.
+
+---
+
+#### 28. Paquete laboral para pagos y beneficios
+
+`VSCREEN-0153` consume un dominio especialmente compuesto.
+
+La información laboral identificable y los eventos `VPROC-0010` conservan `RESTRICTED_PERSONAL` en el contrato de eventos.
+
+Cuando la proyección NUMERA incorpora valores de pago, devengos, deducciones, aportes o liquidaciones, aplica además el motivo `FINANCIAL_DATA` sobre esos campos.
+
+Se conserva:
+
+```text
+PERSONAL_DATA
++
+FINANCIAL_DATA
+```
+
+sin convertir esa combinación en un nuevo enum.
+
+---
+
+#### 29. Facturas y documentos fiscales
+
+Importes, impuestos, estado de documento, referencias externas, notas económicas y relación con obligaciones se clasifican como `FINANCIAL_DATA`.
+
+Datos del emisor, receptor o contraparte pueden añadir `COMMERCIAL_CONFIDENTIALITY` y, cuando correspondan a persona natural, `PERSONAL_DATA`.
+
+El documento fiscal no autoriza exponer credenciales, secretos o payloads técnicos del proveedor externo.
+
+---
+
+#### 30. Presupuestos, escenarios y forecast
+
+Presupuestos, forecast, supuestos, precios propuestos, costos simulados, márgenes, volúmenes económicos y escenarios se clasifican como `FINANCIAL_DATA`.
+
+Cuando revelan estrategia de precios, estructura de costos o supuestos competitivos puede coexistir `BUSINESS_SECRET`.
+
+Se preserva:
+
+```text
+SIMULATED
+!= REAL
+```
+
+pero ambos pueden ser sensibles.
+
+---
+
+#### 31. Impuestos y obligaciones de cumplimiento
+
+Bases, importes, impuestos, vencimientos, soportes, estados, pagos y referencias de presentación se clasifican como `FINANCIAL_DATA`.
+
+Información de terceros o contratos puede añadir `COMMERCIAL_CONFIDENTIALITY`.
+
+La clasificación interna no convierte NUMERA en autoridad fiscal externa.
+
+---
+
+#### 32. Distribución y asignación de costos
+
+Pools, drivers, bases, destinos, importes, reglas y reversión se clasifican como `FINANCIAL_DATA`.
+
+Cuando la regla revela metodología interna de costeo o fórmula reservada puede coexistir `BUSINESS_SECRET`.
+
+La explicación necesaria para auditoría se proyecta sin entregar secretos adicionales no requeridos.
+
+---
+
+#### 33. Indicadores, análisis y planes de mejora
+
+`VPROC-0061` conserva eventos `INTERNAL_OPERATIONAL`.
+
+Sin embargo, cuando `VSCREEN-0094`, `VSCREEN-0106` o `VSCREEN-0159` muestran importes, márgenes, costos, rentabilidad, presupuestos o indicadores financieros, esos campos conservan `FINANCIAL_DATA`.
+
+Metadatos de mejora puramente operativos no se promueven automáticamente a sensibilidad financiera.
+
+Regla:
+
+```text
+EVENT_SENSITIVITY_INTERNAL_OPERATIONAL
+!=
+DECLASSIFICATION_OF_EMBEDDED_FINANCIAL_FIELDS
+```
+
+---
+
+#### 34. Centros de costo, metas y objetivos económicos
+
+Identidad, estado y jerarquía del centro se consumen según el contrato de recurso.
+
+Cuando la proyección incluye presupuesto, meta, ingreso esperado, gasto, variación, margen objetivo u otra cifra económica, aplica `FINANCIAL_DATA`.
+
+La sensibilidad no autoriza tratar la existencia del centro de costo como dato personal ni como permiso de mutación.
+
+---
+
+#### 35. Contrapartes y terceros
+
+Una referencia mínima de contraparte puede ser necesaria para explicar un hecho económico.
+
+La proyección deberá distinguir:
+
+- identidad mínima necesaria;
+- datos comerciales confidenciales;
+- datos personales;
+- datos bancarios;
+- documentos fiscales;
+- información no necesaria para la finalidad.
+
+La relación con una transacción financiera no autoriza exponer el expediente completo del tercero.
+
+---
+
+#### 36. Identificadores bancarios y medios de pago
+
+Números de cuenta completos, referencias de recaudo, identificadores de pago y datos equivalentes se tratan como `FINANCIAL_DATA` cuando son necesarios.
+
+Una proyección de selección o confirmación debe preferir representación mínima o enmascarada cuando el número completo no sea necesario.
+
+Nunca se proyectan secretos de autenticación.
+
+---
+
+#### 37. Documentos y evidencia
+
+La existencia de un soporte puede proyectarse mediante identidad, tipo, estado y referencia.
+
+El contenido completo solo se entrega cuando la finalidad y autorización lo exigen.
+
+Un documento puede contener simultáneamente:
+
+```text
+FINANCIAL_DATA
+PERSONAL_DATA
+COMMERCIAL_CONFIDENTIALITY
+AUDIT_SECURITY
+```
+
+La autorización sobre un campo o resumen no implica acceso automático al archivo completo.
+
+---
+
+#### 38. Importes, moneda e impuestos
+
+Importe, moneda, tipo de cambio, base, impuesto, retención, descuento, comisión y fee se clasifican como `FINANCIAL_DATA` cuando representan valor económico real, presupuestado, simulado o propuesto.
+
+La condición `0` no elimina sensibilidad.
+
+La ausencia del valor tampoco autoriza inferir que el dato sea público.
+
+---
+
+#### 39. Periodos, fechas y versiones
+
+Una fecha o identificador de periodo aislado no se clasifica automáticamente como financiero sensible.
+
+Cuando forma parte de un cierre, obligación, saldo, forecast, pago, conciliación o snapshot económico, participa de la proyección sensible correspondiente.
+
+La versión de un reporte o cierre no debe separarse de su alcance cuando ello permita inferir información financiera no autorizada.
+
+---
+
+#### 40. Correlación, source IDs y referencias externas
+
+Los identificadores de correlación no son autorización.
+
+Pueden exponerse como referencias cuando la finalidad lo requiera, pero no deben permitir:
+
+- enumerar recursos no autorizados;
+- recuperar documentos ajenos;
+- ampliar territorio;
+- saltar filtros de campo;
+- reconstruir saldos o relaciones sensibles por enumeración.
+
+---
+
+#### 41. Auditoría y trazabilidad
+
+Actor, actor efectivo, permiso, recurso, acción, resultado, motivo, request ID, versión y timestamp pueden requerir `AUDIT_SECURITY`.
+
+La auditoría debe conservar evidencia suficiente sin duplicar innecesariamente:
+
+- documentos completos;
+- datos personales completos;
+- cuentas bancarias completas;
+- payloads financieros detallados;
+- secretos.
+
+Cuando baste, se conserva identificador, referencia, hash o metadata normalizada.
+
+---
+
+#### 42. Secretos y credenciales quedan fuera de la proyección financiera
+
+Nunca forman parte de una proyección financiera autorizable como dato ordinario:
+
+- contraseñas;
+- tokens;
+- JWT;
+- refresh tokens;
+- API keys;
+- claves privadas;
+- secretos de webhook;
+- PIN;
+- OTP;
+- credenciales bancarias;
+- material de sesión bruto.
+
+La necesidad de procesar un pago o integración no convierte esos secretos en `FINANCIAL_DATA` visible.
+
+---
+
+#### 43. Composición con `PERSONAL_DATA`
+
+Cuando un dato financiero identifica o perfila económicamente a una persona natural:
+
+```text
+FINANCIAL_DATA
++
+PERSONAL_DATA
+```
+
+La proyección debe satisfacer ambos contratos.
+
+Ejemplos conceptuales:
+
+- salario o pago laboral individual;
+- deuda de cliente persona natural;
+- contacto asociado a obligación cuando no pueda separarse;
+- cuenta bancaria personal;
+- documento fiscal personal.
+
+---
+
+#### 44. Composición con `COMMERCIAL_CONFIDENTIALITY`
+
+Cuando el dato financiero revela condiciones de negociación, proveedor, contrato o precio no público:
+
+```text
+FINANCIAL_DATA
++
+COMMERCIAL_CONFIDENTIALITY
+```
+
+La proyección financiera no autoriza entregar condiciones comerciales completas si solo se requiere un importe agregado.
+
+---
+
+#### 45. Composición con `BUSINESS_SECRET`
+
+Cuando la información revela metodología, fórmula, estructura de costo o estrategia empresarial reservada:
+
+```text
+FINANCIAL_DATA
++
+BUSINESS_SECRET
+```
+
+Esto aplica especialmente a:
+
+- costeo detallado;
+- drivers internos;
+- fórmulas de rentabilidad;
+- supuestos de precio;
+- escenarios competitivos;
+- métodos reservados de distribución.
+
+---
+
+#### 46. Composición con `EXCEPTIONAL_ACTION`
+
+La sensibilidad del dato y la excepcionalidad de una acción son dimensiones distintas.
+
+Una reapertura, castigo, override, corrección excepcional o resolución fuera del flujo ordinario puede exigir:
+
+```text
+FINANCIAL_DATA
++
+EXCEPTIONAL_ACTION
+```
+
+sin implicar que toda lectura financiera sea una acción excepcional.
+
+---
+
+#### 47. Composición con `INVENTORY_INTEGRITY`
+
+Una variación monetaria vinculada a inventario puede conservar simultáneamente:
+
+```text
+FINANCIAL_DATA
++
+INVENTORY_INTEGRITY
+```
+
+La pantalla NUMERA recibe únicamente el detalle físico necesario para explicar el impacto económico y no obtiene autoridad sobre el ledger físico.
+
+---
+
+#### 48. Agregación no desclasifica automáticamente
+
+Suma, promedio, margen, ratio, tendencia, forecast, heatmap, KPI, dashboard o resultado consolidado puede seguir revelando información financiera sensible.
+
+Se conserva:
+
+```text
+SENSITIVE_INPUT
+-> AGGREGATE
+!= AUTOMATICALLY_NON_SENSITIVE
+```
+
+La autorización del agregado debe considerar miembros, dimensiones, tamaño de grupo, filtros y riesgo de inferencia.
+
+---
+
+#### 49. Cero, `null`, ausencia y desconocido
+
+No se confunden:
+
+```text
+0
+!= null
+!= missing
+!= unknown
+!= not_applicable
+```
+
+Ninguno de esos estados cambia por sí solo la sensibilidad del campo.
+
+Un valor oculto o no disponible no debe sustituirse por cero de manera que revele o falsee información económica.
+
+---
+
+#### 50. Redacción y minimización de campos
+
+Cuando la finalidad pueda cumplirse sin el dato completo, la proyección puede usar:
+
+- enmascaramiento;
+- agregado;
+- rango;
+- etiqueta de estado;
+- referencia;
+- conteo;
+- último fragmento identificador;
+- indicador booleano controlado.
+
+La transformación debe preservar semántica y no presentar el valor reducido como si fuera el original completo.
+
+---
+
+#### 51. Búsqueda, autocomplete y selectores
+
+Un selector financiero no debe filtrar información sensible por enumeración.
+
+La búsqueda debe devolver únicamente la identidad mínima necesaria del recurso que el actor ya puede usar en la acción correspondiente.
+
+No se usa autocomplete para revelar:
+
+- saldos;
+- importes;
+- deudas;
+- límites;
+- cuentas completas;
+- documentos;
+- contrapartes fuera de alcance.
+
+---
+
+#### 52. Caché
+
+Una respuesta financiera sensible en caché conserva las mismas restricciones que su origen.
+
+Queda prohibido reutilizar entre actores, sedes, empresas, centros de costo o alcances una caché cuya clave no represente correctamente la frontera de autorización.
+
+La revocación o cambio de autoridad deberá invalidar la exposición aplicable conforme al contrato transversal.
+
+---
+
+#### 53. Logs y observabilidad
+
+Los logs deben priorizar:
+
+- IDs;
+- códigos de estado;
+- fingerprints;
+- referencias;
+- conteos;
+- duración;
+- resultado técnico.
+
+No deben registrar por defecto:
+
+- payload financiero completo;
+- documento completo;
+- cuenta bancaria completa;
+- salario individual;
+- saldo de cartera individual;
+- secreto o credencial.
+
+---
+
+#### 54. URLs y query parameters
+
+Información financiera sensible no debe utilizarse como valor libre en URL cuando pueda evitarse.
+
+Filtros por IDs autorizados pueden formar parte de navegación, pero el servidor vuelve a validar alcance y recurso.
+
+Una URL no es autoridad ni prueba de acceso.
+
+---
+
+#### 55. Analytics y telemetría
+
+Telemetría de producto no debe recibir importes, saldos, cuentas, documentos, salarios, deuda individual ni payloads de reportes por conveniencia analítica.
+
+Cuando se requieran métricas de uso, se emplean eventos de interacción mínimos y separados del contenido financiero.
+
+---
+
+#### 56. Exportación, impresión y compartición
+
+Los permisos sensibles de solo lectura no conceden automáticamente:
+
+- exportación;
+- impresión;
+- descarga;
+- compartir;
+- copia masiva;
+- acceso entre sedes;
+- acceso a campos ocultos.
+
+Cada capacidad posterior deberá conservar el mismo alcance de datos o uno más restrictivo.
+
+---
+
+#### 57. Presentación visual y captura de pantalla
+
+La UI no puede tratar un dato como no sensible por haber sido renderizado.
+
+La aplicación deberá evitar exposición accidental en:
+
+- vistas de error;
+- previews no autorizados;
+- tooltips globales;
+- toasts;
+- placeholders con valores reales;
+- superficies compartidas;
+- estados de loading reciclados entre actores.
+
+La política técnica concreta de captura o prevención física queda fuera de esta tarea.
+
+---
+
+#### 58. Integraciones externas
+
+Una referencia hacia banco, proveedor fiscal, sistema contable o tercero no concede derecho a proyectar su payload completo.
+
+La integración debe usar la mínima información autorizada y conservar:
+
+```text
+TECHNICAL_SUCCESS
+!= BUSINESS_ACCEPTANCE
+!= AUTHORITY_ACCEPTANCE
+```
+
+La sensibilidad financiera se mantiene durante request, respuesta, conciliación y evidencia.
+
+---
+
+#### 59. Simulaciones y escenarios
+
+Los datos simulados pueden ser sensibles aunque no sean hechos reales.
+
+Un escenario puede revelar:
+
+- estrategia de precio;
+- estructura de costo;
+- margen esperado;
+- presupuesto;
+- forecast;
+- supuestos de crecimiento;
+- decisiones futuras.
+
+Por tanto:
+
+```text
+SIMULATED != NON_SENSITIVE
+```
+
+---
+
+#### 60. Dispositivo compartido
+
+La clasificación de datos no sustituye la política de dispositivo.
+
+Para los permisos actuales de NUMERA se conserva el tratamiento `STRONG` ya definido por el contrato transversal.
+
+Una proyección reducida no permite degradar automáticamente una exigencia fuerte del permiso efectivo.
+
+---
+
+#### 61. Simulación de autorización
+
+La simulación de una decisión de autorización no habilita lectura real de datos financieros.
+
+Cuando un preview de autorización pueda representar una capacidad sensible, deberá minimizar contenido y conservar la separación entre:
+
+```text
+DECISION_PREVIEW
+!= REAL_DATA_ACCESS
+```
+
+La simulación no entrega payload financiero real por el solo hecho de evaluar un permiso.
+
+---
+
+#### 62. Matriz canónica de sensibilidad — VSCREEN-0094 a VSCREEN-0100
+
+| Pantalla | Proceso / paso | Información financiera sensible | Motivos adicionales cuando apliquen |
+| --- | --- | --- | --- |
+| `VSCREEN-0094` Inicio financiero y ejecutivo | `VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION` | indicadores, alertas, saldos, cierres, presupuesto, resultados | `AUDIT_SECURITY` para evidencia de decisiones; el evento `VPROC-0061` sigue `INTERNAL_OPERATIONAL` |
+| `VSCREEN-0095` Bandeja de hechos económicos | `VPROC-0051::STEP-TRIAGE_ECONOMIC_FACTS` | monto, moneda, impuestos, origen, tercero, estado, conciliación | `COMMERCIAL_CONFIDENTIALITY` o `PERSONAL_DATA` según contraparte |
+| `VSCREEN-0096` Registro de gasto y soporte | `VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE` | gasto, importe, moneda, centro, soporte, contraparte | `COMMERCIAL_CONFIDENTIALITY`; `PERSONAL_DATA` cuando corresponda |
+| `VSCREEN-0097` Bandeja de aprobaciones financieras | `VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION` | importe, obligación, ajuste, pago, cierre, decisión | `AUDIT_SECURITY`; `EXCEPTIONAL_ACTION` cuando la decisión sea extraordinaria |
+| `VSCREEN-0098` Cuentas por pagar y obligaciones | `VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION` | saldo, vencimiento, obligación, pago, documento | `COMMERCIAL_CONFIDENTIALITY` |
+| `VSCREEN-0099` Cuentas por cobrar y cartera | `VPROC-0053::STEP-MANAGE_RECEIVABLE` | saldo, aging, recaudo, aplicación, exposición, acuerdo, castigo | `PERSONAL_DATA` o `COMMERCIAL_CONFIDENTIALITY` según deudor |
+| `VSCREEN-0100` Caja, bancos y movimientos financieros | `VPROC-0052::STEP-EXECUTE_TREASURY_MOVEMENT` | saldo, cuenta, movimiento, depósito, pago, conciliación, liquidez | minimización estricta de identificadores bancarios |
+
+Todas las filas anteriores tienen `FINANCIAL_DATA` como motivo financiero principal para los campos materiales indicados.
+
+---
+
+#### 63. Matriz canónica de sensibilidad — VSCREEN-0101 a VSCREEN-0106
+
+| Pantalla | Proceso / paso | Información financiera sensible | Motivos adicionales cuando apliquen |
+| --- | --- | --- | --- |
+| `VSCREEN-0101` Conciliación de ventas y pagos | `VPROC-0051::STEP-RECONCILE_SALES_AND_PAYMENTS` | venta económica, pago, liquidación, diferencia, depósito | `AUDIT_SECURITY` |
+| `VSCREEN-0102` Conciliación de compras y recepciones | `VPROC-0051::STEP-RECONCILE_PURCHASES_AND_RECEIPTS` | orden, factura, obligación, pago, diferencia | `COMMERCIAL_CONFIDENTIALITY`; `AUDIT_SECURITY` |
+| `VSCREEN-0103` Conciliación de inventario, producción y variaciones | `VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES` | costo, merma valorizada, pérdida, variación económica | `INVENTORY_INTEGRITY`; `AUDIT_SECURITY` |
+| `VSCREEN-0104` Costos, rentabilidad y escenarios | `VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY` | costo, precio, margen, rentabilidad, equilibrio, supuestos | `BUSINESS_SECRET` |
+| `VSCREEN-0105` Cierre, reapertura y corrección de periodo | `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD` | saldos, versión de cierre, diferencias, correcciones, restatement | `EXCEPTIONAL_ACTION`; `AUDIT_SECURITY` |
+| `VSCREEN-0106` Reportes y exportaciones financieras | `VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT` | métricas, saldos, costos, márgenes, cierres, snapshots, reportes | exportar/compartir requiere capacidad separada; el evento `VPROC-0061` sigue `INTERNAL_OPERATIONAL` |
+
+Todas las filas anteriores tienen `FINANCIAL_DATA` como motivo financiero principal para los campos materiales indicados.
+
+---
+
+#### 64. Matriz canónica de sensibilidad — VSCREEN-0153 a VSCREEN-0159
+
+| Pantalla | Proceso / paso | Información financiera sensible | Motivos adicionales cuando apliquen |
+| --- | --- | --- | --- |
+| `VSCREEN-0153` Paquete laboral para pagos y beneficios | `VPROC-0010::STEP-PREPARE_LABOR_PAYMENT_PACKAGE` | devengos, deducciones, aportes, liquidaciones, valores de pago | `PERSONAL_DATA`; eventos `RESTRICTED_PERSONAL` |
+| `VSCREEN-0154` Facturas y documentos fiscales | `VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT` | importes, impuestos, documento, estado, notas económicas | `COMMERCIAL_CONFIDENTIALITY`; `PERSONAL_DATA` cuando aplique |
+| `VSCREEN-0155` Tesorería y programación de pagos | `VPROC-0052::STEP-PLAN_AND_EXECUTE_PAYMENTS` | liquidez, vencimientos, lotes, pagos, cuentas, conciliación | minimización estricta de datos bancarios |
+| `VSCREEN-0156` Presupuestos, escenarios y forecast | `VPROC-0069::STEP-PLAN_BUDGET_AND_FORECAST` | presupuesto, forecast, supuestos, precios, costos, margen | `BUSINESS_SECRET`; eventos `RESTRICTED_FINANCIAL` |
+| `VSCREEN-0157` Impuestos y obligaciones de cumplimiento | `VPROC-0052::STEP-MANAGE_TAX_OBLIGATION` | bases, impuestos, vencimientos, soportes, pagos | `COMMERCIAL_CONFIDENTIALITY`; `PERSONAL_DATA` cuando aplique |
+| `VSCREEN-0158` Distribución y asignación de costos | `VPROC-0054::STEP-ALLOCATE_COSTS` | pools, drivers, base, destinos, importes, reversión | `BUSINESS_SECRET` cuando revele metodología interna |
+| `VSCREEN-0159` Indicadores, análisis y planes de mejora | `VPROC-0061::STEP-ANALYZE_AND_PLAN_IMPROVEMENT` | métricas financieras cuando existan | los metadatos puramente operativos pueden permanecer fuera de `FINANCIAL_DATA`; eventos `INTERNAL_OPERATIONAL` |
+
+La coexistencia de motivos se evalúa por los campos efectivos de cada proyección.
+
+---
+
+#### 65. Reconciliación con las superficies AS-IS actuales
+
+El runtime auditado conserva cinco rutas protegidas de negocio y dos superficies públicas controladas.
+
+La clasificación objetivo no afirma equivalencia uno a uno entre rutas actuales y `VSCREEN-*`.
+
+Sí fija estas restricciones:
+
+- `/` no puede usar `numera.access` como autoridad para todas sus métricas;
+- `/cost-centers` contiene información económica sensible cuando muestra metas, presupuesto, variación o margen;
+- `/expenses` contiene `FINANCIAL_DATA` y soportes que pueden incluir datos adicionales sensibles;
+- `/break-even` contiene `FINANCIAL_DATA`;
+- `/profitability` contiene `FINANCIAL_DATA`;
+- `/login` y `/no-access` no deben filtrar contenido financiero de la sesión o recurso bloqueado.
+
+---
+
+#### 66. Reconciliación con permisos runtime legacy
+
+Los códigos runtime observados no cambian la clasificación del dato.
+
+Los aliases o renames de lectura preservan la sensibilidad del permiso canónico de destino.
+
+Los dos permisos legacy `manage` continúan `DECOMPOSE_REQUIRED` y no se utilizan como etiqueta de sensibilidad ni como fallback de autorización.
+
+---
+
+#### 67. Lectura no implica mutación
+
+Un dato puede ser sensible aun cuando la acción sea de solo lectura.
+
+Se conserva:
+
+```text
+IS_READ_ONLY
+!= IS_SENSITIVE
+```
+
+`NUMERA-AUTH-003` deberá definir lectura exacta sin absorber registro, aprobación, cierre, reapertura, pago, castigo o exportación.
+
+---
+
+#### 68. Mutación no define por sí sola sensibilidad
+
+La existencia de una mutación no es la causa primaria de sensibilidad financiera.
+
+La sensibilidad depende del dato, efecto y contexto.
+
+Una futura capacidad de registro o aprobación deberá conservar la clasificación de los campos y añadir los controles de acción que correspondan sin redefinir el vocabulario de datos.
+
+---
+
+#### 69. Propietarios de especialización posterior
+
+| Decisión pendiente | Propietario |
+| --- | --- |
+| permisos exactos de lectura | `NUMERA-AUTH-003` |
+| permisos exactos de registro | `NUMERA-AUTH-004` |
+| permisos exactos de aprobación | `NUMERA-AUTH-005` |
+| cierre y reapertura | `NUMERA-AUTH-006` |
+| exportación | `NUMERA-AUTH-007` |
+| empresa, sede y centro de costo | `NUMERA-AUTH-008` |
+| auditoría financiera | `NUMERA-AUTH-009` |
+| independencia de turno para administración | `NUMERA-AUTH-010` |
+| contexto operativo donde exista captura operacional | `NUMERA-AUTH-011` |
+| empaquetado compartido | `NUMERA-AUTH-012` |
+| pruebas integrales | `NUMERA-AUTH-013` |
+| cartera, acuerdos, castigos, bancos y datos especializados | `NUMERA-AUTH-014` |
+| escenarios, precios y presupuestos | `NUMERA-AUTH-015` |
+
+---
+
+#### 70. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta tarea | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| raíz actual protegida solo por `numera.access` a nivel de página | no | `NUMERA-AUTH-003` y UX aplicable | lectura financiera exacta definida y validada server-side |
+| permisos `manage` legacy demasiado amplios | no | `NUMERA-AUTH-004..006`, `014`, `015` según capacidad | descomposición exacta sin fallback legacy |
+| `numera.reports.view` sin consumidor actual localizado | no | `NUMERA-AUTH-003`, `007` y UX aplicable | identidad canónica reconciliada y capacidades view/export separadas |
+| proyecciones `VPROC-0061` usan eventos `INTERNAL_OPERATIONAL` | no | contrato de eventos + consumidores | consumidor aplica minimización y autorización del contenido financiero sin reinterpretar el evento |
+| datos compuestos personales/comerciales/financieros | no | tareas de permisos y proyección | cada proyección satisface todos los motivos aplicables |
+
+No queda pendiente de esta tarea ninguna decisión de clasificación financiera detectada sin propietario.
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+La tarea clasifica y reutiliza cobertura existente; no modifica el Registro 04A.
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+La clasificación queda cubierta por requisitos existentes de NUMERA y autorización que ya protegen:
+
+- reconciliación, trazabilidad y separación de lectura, registro, aprobación, cierre y exportación;
+- identidad y atributos del hecho económico;
+- cartera, bancos, pagos, conciliación y castigos;
+- costos, presupuestos, escenarios y rentabilidad;
+- protección de rutas y lecturas NUMERA;
+- revalidación server-side de mutaciones;
+- auditoría del principal y actor efectivos;
+- reautenticación fuerte para escenarios sensibles;
+- minimización y protección de datos sensibles.
+
+Esta sección es trazabilidad de cobertura, no actualización del registro.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | tarea documental sin build de producto requerido |
+| LOCAL | NOT_EXECUTED | la incorporación y los validadores del checkout pertenecen al ciclo documental ejecutado por el usuario |
+| REMOTA | PASS | fuentes canónicas, catálogo de sensibilidad, recursos, eventos, archivo propietario y continuidad revisados en el remoto vigente |
+| OPERATIVA | NOT_EXECUTED | no se ejecutan operaciones financieras ni flujos runtime |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 74. Criterios de aceptación
+
+La tarea queda aceptada cuando se verifica que:
+
+1. existe exactamente una tarea `NUMERA-AUTH-002`;
+2. la topología es `DEFINE_ONCE` y sin instancia física propia;
+3. se consume íntegramente el handoff de `NUMERA-AUTH-001`;
+4. no se crean permisos nuevos;
+5. no se cambia `is_sensitive` de los seis permisos actuales;
+6. se preservan cinco permisos actuales sensibles y uno no sensible;
+7. `numera.access` no se convierte en permiso financiero;
+8. `FINANCIAL_DATA` se usa como motivo canónico de sensibilidad financiera;
+9. `RESTRICTED_FINANCIAL` se conserva exclusivamente como clase de sensibilidad de eventos/proyecciones de evento;
+10. no se crea un tercer enum local de sensibilidad;
+11. `STRONG` de dispositivo permanece independiente de `is_sensitive`;
+12. se clasifican las veinte pantallas canónicas NUMERA;
+13. se preservan sus bindings de proceso y paso;
+14. `VPROC-0010` conserva eventos `RESTRICTED_PERSONAL`;
+15. `VPROC-0051`, `0052`, `0053`, `0054` y `0069` conservan eventos financieros restringidos donde corresponda;
+16. `VPROC-0061` conserva eventos `INTERNAL_OPERATIONAL` sin desclasificar campos financieros de pantalla;
+17. gastos y soportes quedan clasificados;
+18. aprobaciones quedan clasificadas;
+19. obligaciones y pagos quedan clasificados;
+20. cartera queda clasificada;
+21. caja, bancos y tesorería quedan clasificados;
+22. conciliaciones quedan clasificadas;
+23. costos, rentabilidad y equilibrio quedan clasificados;
+24. cierre y reapertura quedan clasificados;
+25. reportes y exportaciones conservan sensibilidad;
+26. paquete laboral compone sensibilidad personal y financiera;
+27. documentos fiscales e impuestos quedan clasificados;
+28. presupuestos, escenarios y forecast quedan clasificados;
+29. asignación de costos queda clasificada;
+30. indicadores financieros permanecen sensibles aun dentro de procesos operacionales;
+31. datos bancarios se minimizan;
+32. secretos y credenciales quedan excluidos de proyecciones;
+33. agregación no desclasifica automáticamente;
+34. cero, `null`, ausencia y desconocido no alteran clasificación;
+35. lectura no concede exportación, impresión, compartir ni acceso masivo;
+36. logs, URLs, analytics y caché conservan restricciones;
+37. simulación no concede acceso a datos reales;
+38. la clasificación no transfiere propiedad de procesos;
+39. cada decisión posterior tiene propietario;
+40. no se crean ni modifican requisitos de prueba;
+41. no existen cambios físicos.
+
+---
+
+#### 75. Límites
+
+Esta tarea no:
+
+- crea permisos de lectura;
+- crea permisos de registro;
+- crea permisos de aprobación;
+- crea permisos de cierre o reapertura;
+- crea permisos de exportación;
+- crea permisos especializados de cartera, bancos o escenarios;
+- cambia `is_sensitive` transversal;
+- cambia `authorization_requirement`;
+- cambia política de dispositivo;
+- crea nuevos códigos de sensibilidad de eventos;
+- crea un enum de clasificación de datos global;
+- modifica contratos de eventos;
+- modifica procesos o pantallas;
+- materializa máscaras o redacción;
+- implementa RLS;
+- implementa filtros de columnas;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-003`.
+
+---
+
+#### 76. Handoff a NUMERA-AUTH-003
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_AUTHORIZATION_BINDING_REGISTRY = NUMERA-AUTHORIZATION-BINDING-REGISTRY-001
+NUMERA_CANONICAL_SCREEN_COUNT = 20
+CURRENT_NUMERA_CANONICAL_PERMISSION_COUNT = 6
+CURRENT_NUMERA_SENSITIVE_PERMISSION_COUNT = 5
+CURRENT_NUMERA_NON_SENSITIVE_PERMISSION_COUNT = 1
+NUMERA_ACCESS_IS_SENSITIVE_PERMISSION = NO
+NUMERA_ACCESS_IMPLIES_FINANCIAL_READ = NO
+FINANCIAL_PERMISSION_SENSITIVITY_REASON = FINANCIAL_DATA
+EVENT_FINANCIAL_SENSITIVITY_CLASS = RESTRICTED_FINANCIAL
+EVENT_PERSONAL_SENSITIVITY_CLASS = RESTRICTED_PERSONAL
+EVENT_INTERNAL_OPERATIONAL_CLASS_CAN_CONTAIN_FINANCIAL_SCREEN_PROJECTIONS = YES
+EVENT_SENSITIVITY_IMPLIES_PERMISSION = NO
+DATA_SENSITIVITY_IMPLIES_ACTION_AUTHORITY = NO
+DEVICE_STRONG_IMPLIES_PERMISSION_IS_SENSITIVE = NO
+CURRENT_NUMERA_DEVICE_POLICY = STRONG_FOR_6_CURRENT_PERMISSIONS
+FINANCIAL_AGGREGATION_AUTO_DECLASSIFIES = NO
+FINANCIAL_VIEW_IMPLIES_EXPORT_PRINT_SHARE = NO
+FINANCIAL_DATA_IN_URL_LOG_ANALYTICS_BY_DEFAULT = FORBIDDEN
+FINANCIAL_SECRETS_AND_CREDENTIALS_IN_BUSINESS_PROJECTION = FORBIDDEN
+FIELD_MINIMIZATION_REQUIRED = YES
+COMPOUND_PERSONAL_FINANCIAL_SENSITIVITY_SUPPORTED = YES
+COMPOUND_COMMERCIAL_FINANCIAL_SENSITIVITY_SUPPORTED = YES
+COMPOUND_BUSINESS_SECRET_FINANCIAL_SENSITIVITY_SUPPORTED = YES
+NUMERA_AUTH_003_OWNER = READ_PERMISSION_DEFINITION
+TREQ_CHANGES = 0
+```
+
+`NUMERA-AUTH-003` deberá definir los permisos exactos de lectura y sus proyecciones autorizadas usando esta clasificación sin absorber registro, aprobación, cierre, reapertura, exportación ni capacidades especializadas reservadas a tareas posteriores.
+
+---
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-001 — Vincular módulos y acciones con permisos y contratos aprobados`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-002 — Clasificar información financiera sensible`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-003 — Definir permisos de lectura`
 ### [ ] NUMERA-AUTH-003 — Definir permisos de lectura
 ### [ ] NUMERA-AUTH-004 — Definir permisos de registro
 ### [ ] NUMERA-AUTH-005 — Definir permisos de aprobación
