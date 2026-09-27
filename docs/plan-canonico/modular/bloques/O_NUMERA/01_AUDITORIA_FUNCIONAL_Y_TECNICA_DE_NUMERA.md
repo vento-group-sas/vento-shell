@@ -9168,6 +9168,978 @@ Quedan fuera de alcance:
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad`
-### [ ] NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
+### ✅ NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones
+**Tarea siguiente:** NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
+**Tipo de tarea:** auditoría técnico-documental cerrada del estado AS-IS de exportaciones, exposición de información financiera sensible y trazabilidad de actor, fuente y cambio en NUMERA, sin crear superficies de exportación, modificar permisos, mutar datos ni ejecutar la batería técnica reservada a la tarea siguiente; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/01_AUDITORIA_FUNCIONAL_Y_TECNICA_DE_NUMERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-numera`, rutas, componentes, permisos, Supabase, RLS, funciones, vistas, datos, Storage, exportaciones, salidas de archivo ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Auditar el estado actual verificable de NUMERA respecto de:
+
+- exportaciones, salidas de archivo, impresiones y otras salidas de información;
+- sensibilidad de los datos financieros expuestos por las superficies actuales;
+- separación entre permiso de lectura y permiso de exportación;
+- trazabilidad de actor efectivo, fuente, recurso, instante y cambio;
+- capacidad de reconstruir quién creó o modificó un hecho económico o una meta financiera;
+- existencia de auditoría de dominio independiente de logs técnicos o de autenticación.
+
+La tarea describe el estado AS-IS y asigna los faltantes a sus propietarios canónicos. No crea una nueva capacidad de exportación ni redefine el modelo transversal de gobierno de información.
+
+---
+
+#### 2. Handoff recibido de NUMERA-AUD-009
+
+La tarea anterior deja congelado:
+
+```text
+EXPENSE_APPROVAL_WORKFLOW = NO
+BUDGET_APPROVAL_WORKFLOW = NO
+BUDGET_VERSIONING = NO
+CLOSED_OR_LOCKED_PERIOD_WRITE_GUARD = NO
+NUMERA_PERMISSION_CODES = 8
+RLS_ENABLED_ON_AUDITED_TABLES = 4/4
+```
+
+También demuestra que los dos flujos de escritura vigentes son:
+
+```text
+createExpense
+upsertBudget
+```
+
+La presente tarea consume ese handoff únicamente para auditar qué evidencia de actor, origen y modificación queda asociada a dichas escrituras.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente para `NUMERA-AUD-001..012` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- no existe instancia física propia;
+- no se modifica código de producto;
+- no se modifica Supabase;
+- no se agrega exportación;
+- no se crean permisos;
+- no se corrige RLS;
+- no se fabrican eventos de auditoría;
+- no se ejecuta la batería técnica de `NUMERA-AUD-011`.
+
+---
+
+#### 4. Fuentes verificadas
+
+La auditoría se reconcilia contra:
+
+- `NUMERA-AUD-009` aprobado por el usuario como base inmediata;
+- `CAP-SCOPE-012` aprobado para el alcance económico-operativo de NUMERA;
+- `CAP-SCOPE-016` aprobado para privacidad, cumplimiento, exportación y auditoría;
+- catálogo canónico de autorización y contexto;
+- `04A_13_NUMERA.md`;
+- `task-work-topology.json`;
+- `continuity-route.json`;
+- `execution-route.json`;
+- `active-sequence.json`;
+- `task-format-policy.json`;
+- `task-development-policy.json`;
+- `package.json` de `vento-shell`;
+- `package.json` de `vento-numera`;
+- árbol Git completo actual de `vento-numera/main`;
+- siete páginas actuales de NUMERA;
+- guard y middleware actuales;
+- schema, RLS, vista y función de resumen NUMERA observados remotamente mediante consultas de solo lectura.
+
+---
+
+#### 5. Snapshot remoto observado
+
+Repositorio de aplicación:
+
+```text
+repository = vento-group-sas/vento-numera
+branch = main
+commit = c4d50282e30e46d0abb3d871f9604cf913ebbabd
+```
+
+Estado agregado remoto relevante:
+
+```text
+NUMERA_EXPENSE_ROWS = 0
+NUMERA_BUDGET_ROWS = 0
+NUMERA_PERIOD_ROWS = 1
+COST_CENTER_ROWS = 6
+```
+
+El snapshot no contiene gastos ni presupuestos materializados que permitan demostrar un incidente histórico de fuga o auditoría incorrecta.
+
+---
+
+#### 6. Definiciones usadas en esta auditoría
+
+Se congela:
+
+```text
+EXPORTACION
+= generación o entrega deliberada de una copia fuera de la proyección interactiva normal
+
+LECTURA
+!=
+EXPORTACION
+
+AUTH_LOG
+!=
+DOMAIN_AUDIT_TRAIL
+
+TIMESTAMP
+!=
+ACTOR_TRACEABILITY
+
+SOURCE_APP
+!=
+COMPLETE_LINEAGE
+```
+
+Una tabla con `created_at` o `updated_at` no demuestra por sí sola quién hizo el cambio ni por qué.
+
+---
+
+#### 7. Universo de superficies de salida auditadas
+
+Se revisó el árbol de código actual buscando superficies equivalentes a:
+
+```text
+export
+csv
+xlsx
+excel
+download
+Blob
+createObjectURL
+print
+```
+
+Resultado:
+
+```text
+EXPORT_UI_ACTIONS = 0
+CSV_XLSX_EXPORT_IMPLEMENTATIONS = 0
+DOWNLOAD_ROUTES = 0
+PRINT_ACTIONS = 0
+```
+
+No se localizaron rutas App Router de salida de archivo, APIs HTTP de exportación ni acciones de servidor dedicadas a generar archivos.
+
+---
+
+#### 8. Dependencias de exportación
+
+`package.json` de `vento-numera` no declara librerías específicas para CSV, XLSX, PDF o generación de archivos de reporte.
+
+Las dependencias de aplicación observadas son esencialmente:
+
+```text
+Next.js
+React
+Supabase SSR
+Supabase JS
+```
+
+Resultado:
+
+```text
+EXPORT_FILE_DEPENDENCIES = 0
+```
+
+La ausencia no impide una futura implementación nativa, pero confirma que hoy no existe una herramienta de exportación materializada en el snapshot auditado.
+
+---
+
+#### 9. Permiso runtime de reportes
+
+El catálogo remoto activo de NUMERA contiene ocho códigos locales de aplicación y uno de ellos es:
+
+```text
+reports.view
+```
+
+Normalizado por el helper actual:
+
+```text
+numera.reports.view
+```
+
+No se localizó un consumidor actual de `reports.view` dentro de las páginas, Server Actions o scripts runtime de `vento-numera` auditados.
+
+Resultado:
+
+```text
+RUNTIME_NUMERA_PERMISSION_CODES = 8
+RUNTIME_REPORT_PERMISSION = numera.reports.view
+RUNTIME_REPORT_PERMISSION_CONSUMERS = 0
+```
+
+---
+
+#### 10. Contrato canónico de reportes financieros
+
+El catálogo canónico vigente declara:
+
+```text
+numera.analytics.financial_reports.view
+```
+
+como capacidad `BASE_ONLY` y `STRONG`, asociada a información financiera o analítica reservada.
+
+También separa:
+
+```text
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+La auditoría no modifica el catálogo; solo registra la diferencia con los códigos runtime actuales.
+
+---
+
+#### 11. Divergencia entre catálogo runtime y contrato canónico
+
+El runtime observado usa nombres compactos como:
+
+```text
+numera.cost_centers.view
+numera.expenses.view
+numera.break_even.view
+numera.profitability.view
+numera.reports.view
+```
+
+mientras el catálogo canónico aprobado usa namespaces financieros y analíticos más específicos.
+
+Se registra:
+
+```text
+RUNTIME_PERMISSION_NAMESPACE
+!=
+CANONICAL_PERMISSION_NAMESPACE
+```
+
+La reconciliación definitiva pertenece al bloque de autorización y no se ejecuta en esta auditoría.
+
+---
+
+#### 12. Información financiera sensible identificada
+
+`CAP-SCOPE-016` clasifica los datos financieros como información que requiere controles más estrictos que los datos internos ordinarios.
+
+Las superficies NUMERA actuales exponen, según ruta:
+
+- gasto real y categorías;
+- descripciones de gastos;
+- presupuestos;
+- ingreso esperado;
+- margen bruto objetivo;
+- variación contra presupuesto;
+- gastos fijos, variables y únicos;
+- punto de equilibrio;
+- códigos, nombres y tipos de centro de costo.
+
+Resultado:
+
+```text
+SENSITIVE_FINANCIAL_SURFACES = 5
+```
+
+Corresponden a `/`, `/expenses`, `/cost-centers`, `/break-even` y `/profitability`.
+
+---
+
+#### 13. Ruta raíz `/`
+
+La raíz exige acceso a la aplicación mediante `requireAppAccess`, pero no pasa un `permissionCode` analítico específico.
+
+Presenta:
+
+```text
+actual_expenses
+budget_amount
+expected_revenue
+break_even_revenue
+cost_centers
+period_label
+```
+
+La protección material adicional depende de la función `numera_current_period_summary`, la vista subyacente y las policies RLS invocadas por el actor.
+
+Se congela:
+
+```text
+ROOT_PAGE_EXPLICIT_ANALYTIC_PERMISSION = NO
+DATABASE_LEVEL_PROTECTION = PRESENT
+```
+
+La auditoría no afirma exposición efectiva a un actor no autorizado sin una prueba E2E de identidad concreta.
+
+---
+
+#### 14. Ruta `/expenses`
+
+La lectura exige:
+
+```text
+numera.expenses.view
+```
+
+y la mutación exige:
+
+```text
+numera.expenses.manage
+```
+
+La tabla visible muestra:
+
+- fecha;
+- descripción;
+- categoría;
+- centro de costo;
+- monto.
+
+No muestra actor creador, fuente técnica, `source_id`, metadata ni timestamps de creación/modificación.
+
+---
+
+#### 15. Ruta `/cost-centers`
+
+La lectura exige:
+
+```text
+numera.cost_centers.view
+```
+
+y la mutación exige:
+
+```text
+numera.cost_centers.manage
+```
+
+La pantalla expone información estratégica de presupuesto, ingreso esperado, gasto real, variación, equilibrio y margen objetivo.
+
+No muestra autor, historial de cambios, versión, fuente ni aprobación de la meta económica.
+
+---
+
+#### 16. Ruta `/break-even`
+
+La lectura exige:
+
+```text
+numera.break_even.view
+```
+
+La pantalla muestra gasto fijo, gasto variable, margen objetivo y venta de equilibrio por centro.
+
+No existe acción de exportación ni navegación desde el valor calculado hacia la identidad del actor que configuró el margen o hacia la fuente completa de los gastos agregados.
+
+---
+
+#### 17. Ruta `/profitability`
+
+La lectura exige:
+
+```text
+numera.profitability.view
+```
+
+La pantalla muestra ingreso esperado, gasto real, presupuesto y variación.
+
+No existe exportación y tampoco un drill-down de trazabilidad desde esos agregados hacia actor, versión, fuente o evento económico individual.
+
+---
+
+#### 18. Minimización observable de lectura
+
+Las páginas actuales seleccionan subconjuntos explícitos de columnas y no usan `select('*')` en las superficies financieras auditadas.
+
+Esto se registra como una propiedad positiva:
+
+```text
+PAGE_LEVEL_EXPLICIT_COLUMN_SELECTION = YES
+```
+
+No equivale a una política completa de minimización por finalidad, territorio o destinatario.
+
+---
+
+#### 19. RLS de objetos financieros auditados
+
+Las tablas observadas mantienen RLS habilitado:
+
+```text
+cost_centers
+numera_periods
+numera_expenses
+numera_cost_center_budgets
+```
+
+Resultado:
+
+```text
+RLS_ENABLED_ON_AUDITED_TABLES = 4/4
+```
+
+RLS es una base de control de lectura y mutación; no sustituye clasificación de sensibilidad, autorización de exportación ni auditoría de copias externas.
+
+---
+
+#### 20. Vista mensual y seguridad del invocador
+
+La vista:
+
+```text
+public.numera_cost_center_monthly_summary
+```
+
+está configurada con:
+
+```text
+security_invoker = true
+```
+
+Resultado:
+
+```text
+SUMMARY_VIEW_SECURITY_INVOKER = YES
+```
+
+La vista no se clasifica como bypass de RLS en el snapshot observado.
+
+---
+
+#### 21. RPC de resumen y seguridad del invocador
+
+La función:
+
+```text
+public.numera_current_period_summary()
+```
+
+es `SECURITY INVOKER`:
+
+```text
+security_definer = false
+```
+
+La ejecución está concedida a `authenticated`, pero la función conserva las restricciones de las relaciones consultadas bajo el contexto del invocador.
+
+Resultado:
+
+```text
+CURRENT_SUMMARY_RPC_SECURITY_DEFINER = NO
+```
+
+---
+
+#### 22. Columnas de trazabilidad estructural
+
+`numera_expenses` contiene:
+
+```text
+source_app
+source_table
+source_id
+metadata
+created_by
+created_at
+updated_at
+```
+
+`numera_cost_center_budgets` contiene:
+
+```text
+created_by
+created_at
+updated_at
+```
+
+`numera_periods` y `cost_centers` conservan timestamps, pero no un actor de creación observado en su shape actual auditado.
+
+La estructura ofrece puntos parciales de trazabilidad, no una auditoría completa.
+
+---
+
+#### 23. `created_by` en gastos
+
+`numera_expenses.created_by`:
+
+```text
+nullable = YES
+default = NULL
+```
+
+`createExpense` obtiene una sesión autorizada, pero no persiste explícitamente el `user.id` devuelto por `requireAppAccess`.
+
+Resultado:
+
+```text
+EXPENSE_ACTION_PERSISTS_CREATED_BY = NO
+```
+
+No existe trigger observado que rellene el actor automáticamente.
+
+---
+
+#### 24. `created_by` en presupuestos
+
+`numera_cost_center_budgets.created_by`:
+
+```text
+nullable = YES
+default = NULL
+```
+
+`upsertBudget` tampoco persiste explícitamente actor.
+
+Resultado:
+
+```text
+BUDGET_ACTION_PERSISTS_CREATED_BY = NO
+```
+
+Además, al sobrescribir mediante `upsert` la misma identidad periodo-centro, `updated_at` puede cambiar sin conservar un historial de actor y versión.
+
+---
+
+#### 25. Identidad de fuente en gastos
+
+El modelo dispone de:
+
+```text
+source_app
+source_table
+source_id
+metadata
+```
+
+La acción manual actual escribe únicamente:
+
+```text
+source_app = numera
+```
+
+No persiste `source_table` ni `source_id` y deja `metadata` en su valor por defecto.
+
+Resultado:
+
+```text
+EXPENSE_SOURCE_FIELDS_AVAILABLE = 4
+EXPENSE_SOURCE_FIELDS_EXPLICITLY_POPULATED_BY_ACTION = 1
+```
+
+---
+
+#### 26. Trazabilidad de `createExpense`
+
+Cadena actual:
+
+```text
+actor autenticado
+-> requireAppAccess
+-> createExpense
+-> INSERT numera_expenses
+```
+
+La autorización usa al actor, pero la fila creada no conserva explícitamente esa identidad mediante `created_by` desde la acción observada.
+
+Por tanto:
+
+```text
+AUTHENTICATED_ACTOR_USED_FOR_AUTHORIZATION = YES
+ACTOR_PERSISTED_IN_DOMAIN_ROW = NO
+```
+
+---
+
+#### 27. Trazabilidad de `upsertBudget`
+
+Cadena actual:
+
+```text
+actor autenticado
+-> requireAppAccess
+-> upsertBudget
+-> UPSERT numera_cost_center_budgets
+```
+
+La acción tampoco persiste actor y no genera una fila histórica por revisión.
+
+Resultado:
+
+```text
+BUDGET_CHANGE_HISTORY = NO
+BUDGET_CHANGE_ACTOR_TRACE = NO
+```
+
+---
+
+#### 28. Trazabilidad de periodos y centros de costo
+
+En el snapshot auditado no existen Server Actions NUMERA para crear, cerrar, reabrir o bloquear periodos ni para mutar el catálogo `cost_centers`.
+
+La base conserva `created_at` y `updated_at`, pero la auditoría de estas operaciones no puede derivarse de las superficies NUMERA actuales.
+
+Se mantiene el límite:
+
+```text
+TIMESTAMPS
+!=
+DOMAIN_AUDIT_TRAIL
+```
+
+---
+
+#### 29. Triggers observados
+
+Los triggers localizados en los cuatro objetos auditados son exclusivamente de mantenimiento de `updated_at`.
+
+No se observaron triggers NUMERA que creen eventos de dominio con:
+
+- actor;
+- recurso;
+- acción;
+- motivo;
+- valor anterior;
+- valor nuevo;
+- correlación;
+- evidencia.
+
+Resultado:
+
+```text
+NUMERA_DOMAIN_AUDIT_TRIGGERS = 0
+```
+
+---
+
+#### 30. Tablas de auditoría disponibles en el proyecto
+
+El proyecto contiene infraestructuras de auditoría o eventos pertenecientes a otros dominios, por ejemplo:
+
+```text
+auth.audit_log_entries
+club.audit_events
+payments.webhook_events
+product_cost_events
+```
+
+No se localizó una tabla de auditoría de dominio NUMERA equivalente para los cambios de gasto, presupuesto o periodo.
+
+Se congela:
+
+```text
+PROJECT_HAS_OTHER_AUDIT_EVENT_TABLES = YES
+NUMERA_DOMAIN_AUDIT_TABLE = NO
+```
+
+---
+
+#### 31. Auditoría de autenticación no sustituye auditoría financiera
+
+`auth.audit_log_entries` pertenece al subsistema de autenticación.
+
+No se considera evidencia suficiente para reconstruir por sí sola:
+
+```text
+quien registro un gasto
+quien cambio un presupuesto
+que valor existia antes
+que valor quedo despues
+por que se hizo el cambio
+que fuente empresarial lo originó
+```
+
+Resultado:
+
+```text
+AUTH_AUDIT_LOG
+!=
+NUMERA_FINANCIAL_AUDIT_TRAIL
+```
+
+---
+
+#### 32. Trazabilidad visible en UI
+
+Ninguna de las superficies financieras actuales muestra de forma material:
+
+- creado por;
+- modificado por;
+- fecha de creación;
+- fecha de modificación;
+- fuente;
+- identificador de origen;
+- correlación;
+- historial;
+- evento de reversión;
+- motivo de cambio.
+
+Resultado:
+
+```text
+UI_TRACEABILITY_SURFACES = 0
+```
+
+---
+
+#### 33. Propagación de mensajes de error
+
+`createExpense` y `upsertBudget` redirigen el texto de `error.message` recibido de Supabase hacia el query parameter `error` y la UI lo presenta al usuario.
+
+Resultado:
+
+```text
+RAW_DATABASE_ERROR_REFLECTION_ACTIONS = 2
+```
+
+No se demostró que un mensaje sensible concreto haya sido expuesto, pero el patrón puede trasladar detalles técnicos a URL, historial del navegador, telemetría o captura de pantalla.
+
+---
+
+#### 34. Estado de adopción actual
+
+El corte remoto contiene:
+
+```text
+EXPENSE_ROWS = 0
+BUDGET_ROWS = 0
+EXPENSE_ROWS_WITH_CREATED_BY = 0
+BUDGET_ROWS_WITH_CREATED_BY = 0
+EXPENSE_ROWS_WITH_SOURCE_TABLE = 0
+EXPENSE_ROWS_WITH_SOURCE_ID = 0
+```
+
+La ausencia de filas impide declarar un registro histórico concreto sin actor o una exportación concreta ya ejecutada.
+
+---
+
+#### 35. Interpretación de cero filas
+
+Se conserva:
+
+```text
+ZERO_ROWS
+!=
+TRACEABILITY_COMPLETE
+```
+
+También:
+
+```text
+NO_EXPORT_IMPLEMENTED
+!=
+EXPORT_GOVERNANCE_IMPLEMENTED
+```
+
+La primera afirmación describe ausencia de capacidad; la segunda exige autorización, finalidad, destinatario, auditoría y gobierno antes de habilitarla.
+
+---
+
+#### 36. Matriz consolidada de exposición y trazabilidad
+
+| ID | Superficie / objeto | Sensibilidad | Exportación actual | Trazabilidad actual | Clasificación |
+| --- | --- | --- | --- | --- | --- |
+| `TRACE-NUMERA-001` | `/` resumen | financiera agregada | no | fuente agregada parcial, actor no visible | `READ_PROJECTION / TRACE_PARTIAL` |
+| `TRACE-NUMERA-002` | `/expenses` | financiera transaccional | no | source shape parcial, actor no persistido por acción | `DIRECT_WRITE / TRACE_INCOMPLETE` |
+| `TRACE-NUMERA-003` | `/cost-centers` | financiera estratégica | no | timestamps sin historial/actor de cambio | `UPSERT_MODEL / TRACE_INCOMPLETE` |
+| `TRACE-NUMERA-004` | `/break-even` | analítica financiera | no | fórmula agregada sin drill-down completo | `ANALYTIC_PROJECTION / TRACE_PARTIAL` |
+| `TRACE-NUMERA-005` | `/profitability` | analítica financiera | no | agregado sin actor, versión ni lineage completo | `ANALYTIC_PROJECTION / TRACE_PARTIAL` |
+| `TRACE-NUMERA-006` | permiso `numera.reports.view` | autorización | no consumidor | no aplica | `ORPHAN_RUNTIME_CAPABILITY` |
+
+---
+
+#### 37. Hallazgo H-NUMERA-010-001 — Permiso de reportes sin superficie consumidora
+
+Existe `numera.reports.view` en el catálogo runtime, pero no se localiza consumidor de reportes/exportación en `vento-numera` actual.
+
+**Severidad:** media.
+**Propietario:** `NUMERA-AUTH-007`, `NUMERA-UX-012`, reconciliación de catálogo de autorización.
+**Condición de salida:** alinear el permiso runtime con la capacidad canónica y con una superficie real o retirar la concesión obsoleta mediante el lifecycle correspondiente, sin habilitar exportación implícitamente.
+
+---
+
+#### 38. Hallazgo H-NUMERA-010-002 — Namespace runtime divergente del catálogo canónico
+
+El runtime usa `numera.reports.view`, mientras el catálogo aprobado declara `numera.analytics.financial_reports.view` y clasifica la capacidad como `BASE_ONLY` / `STRONG`.
+
+**Severidad:** alta.
+**Propietario:** bloque `NUMERA-AUTH-*`, catálogo transversal de autorización.
+**Condición de salida:** reconciliar códigos, aliases o migración de permisos con una única identidad canónica verificable entre catálogo, base, UI y tests.
+
+---
+
+#### 39. Hallazgo H-NUMERA-010-003 — Resumen raíz sin permiso analítico explícito en la capa de página
+
+La raíz muestra métricas financieras y solo declara `numera.access` en su guard de página. La protección adicional depende de RLS y del contexto invocador del RPC/vista.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-AUTH-*`, `NUMERA-UX-*` aplicables al panel raíz.
+**Condición de salida:** demostrar mediante política y prueba E2E que cada métrica se entrega únicamente a la capacidad financiera correspondiente, con fallo cerrado y sin confiar en una combinación accidental de policies.
+
+---
+
+#### 40. Hallazgo H-NUMERA-010-004 — Actor no persistido por las dos mutaciones actuales
+
+Las acciones `createExpense` y `upsertBudget` autentican al usuario, pero no escriben explícitamente `created_by` y no existe trigger observado que lo materialice.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-DOM-002`, `NUMERA-DOM-005`, `NUMERA-DOM-011`, `NUMERA-AUTH-*` aplicables.
+**Condición de salida:** cada hecho o cambio financiero deberá conservar actor efectivo y contexto de autoridad mediante un contrato inmutable o auditable, sin depender de reconstrucción posterior desde logs de sesión.
+
+---
+
+#### 41. Hallazgo H-NUMERA-010-005 — Lineage de gasto manual incompleto
+
+Aunque `numera_expenses` posee `source_app`, `source_table`, `source_id` y `metadata`, la acción manual actual solo fija `source_app = numera`.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-DOM-002`, `NUMERA-DOM-005`, integraciones económicas aplicables.
+**Condición de salida:** diferenciar captura manual legítima de evento integrado y conservar fuente, correlación, documento/evidencia e identidad estable suficientes para conciliación y no duplicación.
+
+---
+
+#### 42. Hallazgo H-NUMERA-010-006 — Sin auditoría de dominio para cambios financieros
+
+Los triggers observados solo actualizan timestamps y no existe tabla de auditoría NUMERA para registrar cambio, actor, motivo, antes/después y correlación.
+
+**Severidad:** crítica.
+**Propietario:** `NUMERA-DOM-002`, `NUMERA-DOM-011`, `INFO-DOM-013`, `INFO-INT-002`.
+**Condición de salida:** materializar auditoría financiera compatible con el modelo transversal de evidencia, preservando integridad e investigación sin confundirla con logs de autenticación.
+
+---
+
+#### 43. Hallazgo H-NUMERA-010-007 — Mensajes de error técnicos reflejados hacia URL/UI
+
+Dos Server Actions transmiten `error.message` de Supabase mediante query parameters visibles.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-UX-*` de las superficies afectadas, `INFO-AUTH-004`, seguridad transversal.
+**Condición de salida:** mapear errores técnicos a estados de negocio seguros para UI y conservar el detalle diagnóstico únicamente en una evidencia autorizada y auditada.
+
+---
+
+#### 44. Hallazgo H-NUMERA-010-008 — Sin drill-down de trazabilidad desde reportes actuales
+
+Las proyecciones actuales no permiten navegar desde un agregado financiero hasta actor, fuente, documento, correlación, versión o cambio que lo explica.
+
+**Severidad:** alta.
+**Propietario:** `NUMERA-DOM-002`, `NUMERA-DOM-008`, `NUMERA-UX-022`, `NUMERA-UX-028`.
+**Condición de salida:** cada indicador material deberá navegar hasta fórmula, entradas y fuentes suficientes, conservando autorizaciones mínimas por nivel de detalle.
+
+---
+
+#### 45. Hallazgo H-NUMERA-010-009 — Clasificación de sensibilidad no materializada dentro de NUMERA
+
+El contrato empresarial clasifica los datos financieros como sensibles, pero las filas y proyecciones NUMERA actuales no contienen una etiqueta de clasificación/finalidad ni un control de exportación independiente materializado.
+
+**Severidad:** alta.
+**Propietario:** `INFO-DOM-002`, `INFO-AUTH-001`, `INFO-AUTH-002`, `NUMERA-AUTH-*` aplicables.
+**Condición de salida:** aplicar el contrato transversal de clasificación y finalidad antes de habilitar exportación, impresión, salida de archivo o compartición de datos financieros.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+Los hallazgos están cubiertos por requisitos canónicos vigentes y por tareas de dominio, autorización y gobierno de información ya existentes.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro:
+
+- `TREQ-NUMERA-001` para conciliación, separación de permisos, trazabilidad a actor y origen y exportación financiera protegida;
+- `TREQ-NUMERA-002` para identidad estable, fuente, correlación, estado, evidencia e historia de correcciones;
+- `TREQ-NUMERA-003` para separación de capacidades financieras sensibles;
+- `TREQ-SHELL-011` para consulta, salida de archivo, impresión, exportación y compartición según identidad, finalidad, clasificación, recurso, destinatario y acción;
+- `TREQ-SUPABASE-013` para evidencia y auditoría transversal cuando corresponda.
+
+Esta enumeración es trazabilidad reutilizada y no una actualización de 04A.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | build, lint, tipos y pruebas quedan reservados a `NUMERA-AUD-011` |
+| LOCAL | NOT_EXECUTED | no se ejecutó el checkout local del usuario durante esta preparación documental |
+| REMOTA | PASS | se verificaron código remoto, catálogo de permisos, schema, RLS, vista, RPC, columnas de lineage, triggers y conteos mediante acceso de solo lectura |
+| OPERATIVA | NOT_EXECUTED | no se exportaron datos, no se crearon filas y no se simuló un acceso no autorizado |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 49. Criterios de aceptación y límites
+
+Se considera completa la auditoría cuando:
+
+1. se determina si existe exportación, salida de archivo o impresión materializada;
+2. se inventaría el permiso runtime relacionado con reportes y su consumo real;
+3. se contrasta el namespace runtime con el catálogo canónico vigente;
+4. se identifican las superficies que muestran información financiera sensible;
+5. se verifica la protección RLS y el modo invocador de vista/RPC sin inferir más de lo observado;
+6. se determina si las mutaciones conservan actor y lineage;
+7. se distingue timestamp de auditoría de dominio;
+8. se verifica la existencia o ausencia de drill-down de trazabilidad;
+9. se registran los riesgos de propagación de errores técnicos;
+10. cada hallazgo conserva propietario y condición de salida;
+11. no se habilita exportación ni se modifica 04A.
+
+Quedan fuera de alcance:
+
+- ejecutar build, lint, typecheck o tests, reservado a `NUMERA-AUD-011`;
+- construir la matriz final capacidad × implementación, reservada a `NUMERA-AUD-012`;
+- diseñar o implementar la exportación objetivo, propiedad de `NUMERA-UX-*`, `NUMERA-AUTH-*` e `INFO-*`;
+- modificar el modelo transversal de clasificación, retención, auditoría o evidencia.
+
+---
+
+#### 50. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUD-009 — Auditar gastos, centros de costo, cierres y aprobaciones`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUD-010 — Auditar exportaciones, información sensible y trazabilidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes`
 ### [ ] NUMERA-AUD-011 — Ejecutar build, lint, tipos y pruebas existentes
 ### [ ] NUMERA-AUD-012 — Crear matriz capacidad financiera × implementación actual
