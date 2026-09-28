@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1452** |
+| Tareas aprobadas | **1453** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **144** |
+| Tareas no iniciadas | **143** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **90.98% (1452/1596)** |
+| Porcentaje de completamiento | **91.04% (1453/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección** |
-| Tarea actual | **NUMERA-UX-017 — Diseñar conciliación de ventas y pagos** |
+| Última tarea aprobada | **NUMERA-UX-017 — Diseñar conciliación de ventas y pagos** |
+| Tarea actual | **NUMERA-UX-018 — Diseñar conciliación de compras y recepciones** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-UX-018 — Diseñar conciliación de compras y recepciones** |
+| Siguiente tarea | **NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 62 de 74 aprobadas; NUMERA-UX-017 pendiente** |
+| Progreso del bloque | **BLOQUE O: 63 de 74 aprobadas; NUMERA-UX-018 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-UX-017** |
+| Carril documental | **ACTIVO — NUMERA-UX-018** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-UX-016` — Validar el prototipo con contabilidad y dirección |
-| Tarea actual | `NUMERA-UX-017` — Diseñar conciliación de ventas y pagos — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-UX-018` — Diseñar conciliación de compras y recepciones |
+| Última aprobada | `NUMERA-UX-017` — Diseñar conciliación de ventas y pagos |
+| Tarea actual | `NUMERA-UX-018` — Diseñar conciliación de compras y recepciones — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-UX-019` — Diseñar conciliación de inventario, producción y variaciones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 62 DE 74 APROBADAS — ACTUAL NUMERA-UX-017** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 63 DE 74 APROBADAS — ACTUAL NUMERA-UX-018** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
-        ↓
-TAREA ACTUAL
 NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 62 de 74 tareas aprobadas
+BLOQUE O — 63 de 74 tareas aprobadas
 ```

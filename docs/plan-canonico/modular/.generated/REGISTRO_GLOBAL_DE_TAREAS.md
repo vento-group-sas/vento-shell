@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1452** |
+| Aprobadas | **1453** |
 | En propuesta | **0** |
-| No iniciadas | **144** |
+| No iniciadas | **143** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **90.98% (1452/1596)** |
+| Porcentaje de completamiento | **91.04% (1453/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **144** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1353** |
+| ⏸ NO_EVALUADA | **143** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1354** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-016` — Validar el prototipo con contabilidad y dirección | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-017` — Diseñar conciliación de ventas y pagos | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-018` — Diseñar conciliación de compras y recepciones | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-017` — Diseñar conciliación de ventas y pagos | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-018` — Diseñar conciliación de compras y recepciones | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-019` — Diseñar conciliación de inventario, producción y variaciones | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1214,7 +1214,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-014` | Consumir eventos de PULSO, ORIGO, FOGO y NEXO | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-015` | Evitar registro financiero duplicado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-016` | Validar el prototipo con contabilidad y dirección | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-017` | Diseñar conciliación de ventas y pagos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-017` | Diseñar conciliación de ventas y pagos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-018` | Diseñar conciliación de compras y recepciones | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-019` | Diseñar conciliación de inventario, producción y variaciones | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-020` | Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
