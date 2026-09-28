@@ -30723,7 +30723,1479 @@ UX-023 consume resultados versionados de UX-022 y el flujo de cierre de UX-011, 
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes`
-### [ ] NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
+### ✅ NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
+**Tarea siguiente:** NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
+**Tipo de tarea:** definición documental del tablero global de cobertura, procedencia, frescura y conciliación de fuentes de NUMERA como proyección de solo lectura dentro de `VSCREEN-0094`, integrando señales de hechos económicos, ventas/pagos, compras/recepciones, inventario/producción, bancos/tesorería, costos/rentabilidad, periodos/correcciones y reportes/restatements sin crear una fuente paralela, sin convertir ausencia en cero o completitud y sin absorber las superficies especializadas ni el visor económico dinámico; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica pantallas runtime, componentes React, permisos, roles, contratos runtime, procesos, estados, tablas, vistas, RPC, RLS, migraciones, Supabase, datos financieros, consumidores de eventos, motores de conciliación, reportes, cierres, reaperturas, restatements, exportaciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar un tablero global de confianza financiera para NUMERA que permita a una persona autorizada responder, antes de interpretar una cifra o declarar una conciliación completa:
+
+- qué fuentes debían participar;
+- cuáles llegaron y hasta qué corte;
+- cuáles siguen pendientes, stale, desconocidas o bloqueadas;
+- qué conciliaciones permanecen abiertas;
+- qué diferencias, residuales o excepciones siguen vigentes;
+- qué periodos, reaperturas, recierres o restatements afectan la lectura;
+- qué versión del resultado puede considerarse vigente;
+- a qué superficie especializada debe navegar para investigar o actuar.
+
+El tablero no crea verdad financiera. Resume evidencia gobernada sobre cobertura y conciliación y conserva drill-down hacia las fuentes y casos propietarios.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define un contrato UX reutilizable;
+- no crea instancia física propia;
+- no implementa `VSCREEN-0094`;
+- no crea una nueva `VSCREEN-*`;
+- no crea un motor de conciliación;
+- no consume eventos reales;
+- no corrige fuentes;
+- no cambia periodos reales;
+- no modifica Supabase;
+- no publica reportes ni resultados reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-023
+
+La tarea consume íntegramente:
+
+```text
+PRIMARY_CORRECTION_SCREEN_ID = VSCREEN-0105
+PERIOD_CLOSE_FLOW_CONTRACT = NUMERA-PERIOD-CLOSE-FLOW-001
+PERIOD_STATUS_VALUES = open|locked|closed
+SOURCE_DOMAIN_OWNER_IS_SOURCE_CORRECTION_OWNER = YES
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+CORRECTION_DELETES_ORIGINAL = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_PERMISSION_IMPLIES_RESOURCE_MUTATION = NO
+GENERIC_CORRECTION_PERMISSION = FORBIDDEN
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+MATCH_REVERSAL_PRESERVES_PRIOR_MATCH = YES
+REOPEN_DIFFERENCE_IS_REOPEN_PERIOD = NO
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+RESOLUTION_ACTION_EXECUTED_IS_CASE_CLOSED = NO
+COVERAGE_DASHBOARD_OWNER = NUMERA_UX_024
+VALIDATION_SCENARIO_COUNT = 26
+TREQ_CHANGES = 0
+```
+
+UX-024 consume estos estados como evidencia observable. No redefine la autorización de corrección, cierre, reapertura o restatement.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La definición consume sin redefinir:
+
+- `NUMERA-SOURCE-EVENT-CONSUMPTION-001`, para procedencia, catálogo de fuentes, frescura, watermarks y cobertura incompleta;
+- `NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001`, para jerarquía indicador antes de detalle;
+- `NUMERA-DOM-011`, para periodo económico, estados `open|locked|closed`, eventos tardíos y reapertura;
+- `NUMERA-DOM-012`, para versiones publicadas, reportes, exportaciones y restatements;
+- `NUMERA-DOM-014`, para conciliación, diferencias, residual, evidencia, tolerancia gobernada, reapertura de casos y no reescritura de fuentes;
+- `NUMERA-UX-017`, para conciliación de ventas y pagos;
+- `NUMERA-UX-018`, para conciliación de compras y recepciones;
+- `NUMERA-UX-019`, para conciliación de inventario, producción y variaciones;
+- `NUMERA-UX-021`, para bancos, tesorería y matching financiero;
+- `NUMERA-UX-022`, para completitud de fuentes en costos y rentabilidad;
+- `NUMERA-UX-023`, para correcciones, reaperturas, recierres y restatements;
+- `VPROC-0061` como proceso propietario de lectura y análisis financiero;
+- `VSCREEN-0094` como inicio financiero y ejecutivo de solo lectura.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA_SOURCE_COVERAGE_RECONCILIATION_DASHBOARD_CONTRACT = NUMERA-SOURCE-COVERAGE-RECONCILIATION-DASHBOARD-001
+```
+
+El contrato representa cobertura y conciliación como evidencia multidimensional y nunca como un único booleano derivado de que la pantalla esté vacía o no tenga errores visibles.
+
+---
+
+#### 6. Superficie y proceso propietarios
+
+El tablero se integra en:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0094
+PRIMARY_SCREEN_NAME = Inicio financiero y ejecutivo
+OWNER_PROCESS_ID = VPROC-0061
+OWNER_STEP_ID = VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+OWNER_STEP_KIND = MONITOR
+OWNER_STEP_STAGE = CROSS_CUTTING
+```
+
+No se crea una pantalla nueva. UX-024 especializa la lectura de confianza y cobertura dentro del inicio financiero ya canónico.
+
+---
+
+#### 7. Tablero de lectura, no estación de operación
+
+Se congela:
+
+```text
+COVERAGE_DASHBOARD_IS_COMMAND_SURFACE = NO
+INLINE_FINANCIAL_COMMANDS = 0
+```
+
+El tablero puede mostrar un problema, su owner y un destino de investigación, pero no ejecuta conciliaciones, correcciones, pagos, cierres, reaperturas ni publicaciones inline.
+
+---
+
+#### 8. Pregunta empresarial que debe resolver
+
+La lectura principal debe responder:
+
+```text
+CAN_I_TRUST_THIS_FINANCIAL_VIEW_FOR_THE_DECLARED_SCOPE_AND_CUTOFF?
+```
+
+La respuesta nunca se infiere de un único indicador. Debe poder explicarse mediante cobertura, frescura, conciliación, excepciones, versión y autorización.
+
+---
+
+#### 9. Universo de aplicaciones fuente heredado
+
+Del contrato de consumo se preserva exactamente:
+
+```text
+SOURCE_APPLICATIONS = PULSO|ORIGO|FOGO|NEXO
+SOURCE_APPLICATION_COUNT = 4
+```
+
+El tablero no agrega una quinta productora interna por conveniencia visual.
+
+---
+
+#### 10. Universo de procesos y eventos heredado
+
+Se conserva la cobertura contractual de UX-014:
+
+```text
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+DIRECT_PROCESS_RELATION_COUNT = 34
+DIRECT_EVENT_RELATION_COUNT = 192
+CONDITIONAL_PROCESS_RELATION_COUNT = 1
+CONDITIONAL_EVENT_RELATION_COUNT = 6
+CONDITIONAL_PROCESS = VPROC-0035
+```
+
+Estos conteos expresan el universo de consumo contractual, no un conteo de eventos efectivamente recibidos en runtime.
+
+---
+
+#### 11. Familias de cobertura del tablero
+
+El tablero organiza exactamente nueve familias lógicas:
+
+```text
+SOURCE_INGESTION
+ECONOMIC_FACT_RECOGNITION
+SALES_AND_PAYMENTS_RECONCILIATION
+PURCHASES_AND_RECEIPTS_RECONCILIATION
+INVENTORY_AND_PRODUCTION_RECONCILIATION
+BANK_AND_TREASURY_RECONCILIATION
+COST_AND_PROFITABILITY_COMPLETENESS
+PERIOD_CORRECTION_AND_RESTATEMENT
+REPORT_AND_VERSION_COVERAGE
+```
+
+```text
+COVERAGE_FAMILY_COUNT = 9
+```
+
+Las familias son una composición de lectura; no crean procesos o estados nuevos.
+
+---
+
+#### 12. Familia SOURCE_INGESTION
+
+Debe representar, por fuente y alcance autorizado:
+
+- fuente esperada;
+- última versión/evento o corte considerado;
+- watermark cuando exista;
+- recepción conocida;
+- fuente pendiente;
+- fuente stale;
+- frescura desconocida;
+- incompatibilidad contractual conocida;
+- retry o resultado técnico pendiente cuando sea material para la cobertura.
+
+Recepción técnica no equivale a reconocimiento económico.
+
+---
+
+#### 13. Familia ECONOMIC_FACT_RECOGNITION
+
+La cobertura económica debe distinguir:
+
+```text
+SOURCE_EVENT_RECEIVED
+!= ECONOMIC_FACT_RECOGNIZED
+!= ECONOMIC_FACT_RECONCILED
+```
+
+Un evento recibido que todavía no produjo un hecho económico elegible o permanece en conciliación no se presenta como cobertura económica completa.
+
+---
+
+#### 14. Familia SALES_AND_PAYMENTS_RECONCILIATION
+
+La lectura resume el estado de la conciliación diseñada para ventas, pagos, soportes, liquidaciones y depósitos sin recrear el detalle de `VSCREEN-0101`.
+
+Debe poder señalar:
+
+- casos abiertos;
+- parciales/residuales;
+- diferencias bloqueantes;
+- fuentes pendientes;
+- evidencia stale;
+- casos reconciliados bajo el corte observado.
+
+---
+
+#### 15. Familia PURCHASES_AND_RECEIPTS_RECONCILIATION
+
+Consume el contrato `NUMERA-PURCHASE-RECEIPT-RECONCILIATION-001` y mantiene separados:
+
+- orden;
+- recepción comercial ORIGO;
+- movimiento físico NEXO;
+- documento;
+- hecho económico;
+- obligación;
+- pago.
+
+La ausencia de diferencias visibles no demuestra que todas las fuentes hayan llegado.
+
+---
+
+#### 16. Familia INVENTORY_AND_PRODUCTION_RECONCILIATION
+
+Consume `NUMERA-INVENTORY-PRODUCTION-VARIANCE-RECONCILIATION-001` y representa por separado:
+
+- fuente productiva FOGO;
+- fuente física NEXO;
+- efecto económico NUMERA;
+- variación empresarial;
+- diferencia de conciliación;
+- fuente pendiente;
+- residual y owner de resolución.
+
+Una variación legítima no degrada automáticamente la cobertura si las fuentes reales están reconciliadas.
+
+---
+
+#### 17. Familia BANK_AND_TREASURY_RECONCILIATION
+
+La familia bancaria debe poder distinguir:
+
+- movimiento/extracto recibido;
+- referencia interna disponible;
+- matching sugerido;
+- matching aprobado;
+- residual;
+- movimiento sin referencia;
+- referencia sin movimiento;
+- resultado externo desconocido;
+- match revertido con historia conservada.
+
+El saldo bancario visible no es prueba de conciliación completa.
+
+---
+
+#### 18. Familia COST_AND_PROFITABILITY_COMPLETENESS
+
+La lectura de costos/rentabilidad consume, cuando sea material:
+
+- método y versión;
+- fuentes esperadas y recibidas;
+- watermarks;
+- asignaciones y drivers pendientes;
+- conciliaciones abiertas;
+- eventos tardíos;
+- componentes faltantes;
+- calidad/completitud conocida;
+- versión de resultado.
+
+```text
+MISSING_COST_IS_ZERO = NO
+MISSING_REVENUE_IS_ZERO = NO
+```
+
+---
+
+#### 19. Familia PERIOD_CORRECTION_AND_RESTATEMENT
+
+Debe representar sin fusionar:
+
+- periodo `open|locked|closed`;
+- corrección en periodo abierto;
+- lock liberado para corregir;
+- periodo reabierto;
+- recierre requerido;
+- nueva close_version;
+- diferencia reabierta;
+- evento tardío pendiente de decisión;
+- restatement requerido o publicado;
+- versión histórica supersedida pero preservada.
+
+---
+
+#### 20. Familia REPORT_AND_VERSION_COVERAGE
+
+La familia de reportes debe distinguir:
+
+```text
+LIVE_VIEW
+PUBLISHED_SNAPSHOT
+OFFICIAL_NUMERA_REPORT
+EXPORT
+SIMULATION
+```
+
+Cuando exista restatement, la versión anterior permanece histórica y la nueva versión se relaciona explícitamente con la sustituida.
+
+---
+
+#### 21. Unidad mínima de cobertura
+
+Toda unidad representada por el tablero debe poder resolver, cuando aplique:
+
+```text
+coverage_family
+scope
+period_reference
+source_identity_or_set
+expected_source_set
+received_source_set
+cutoff_or_watermark
+freshness
+coverage_state
+reconciliation_state
+open_case_count_or_presence
+residual_summary_when_authorized
+owner
+blocking_effect
+version
+close_version_when_applicable
+evidence_reference
+last_evaluated_at
+```
+
+No todos los campos se muestran por defecto, pero deben ser explicables mediante drill-down autorizado.
+
+---
+
+#### 22. Identidad estable de la evidencia
+
+Una tarjeta, indicador o fila del tablero no se identifica por posición visual ni por texto libre.
+
+Debe conservar una identidad estable de la proyección o consulta que permita correlacionar:
+
+- alcance;
+- periodo;
+- conjunto de fuentes;
+- versión/corte;
+- evidencia subyacente.
+
+---
+
+#### 23. Scope efectivo
+
+El tablero nunca amplía el alcance de lectura.
+
+Se conserva:
+
+```text
+FILTER_SELECTION_IS_AUTHORITY = NO
+SELECTED_SCOPE_IS_AUTHORIZED_SCOPE = NO
+AGGREGATE_MEMBER_SET_MUST_BE_AUTHORIZED = YES
+```
+
+Empresa, sede, centro de costo u otra dimensión seleccionada solo reduce o elige dentro de la autoridad efectiva.
+
+---
+
+#### 24. Semántica temporal
+
+El tablero usa el periodo económico NUMERA como contexto financiero principal cuando corresponda, pero preserva:
+
+```text
+OPERATIONAL_PERIOD
+!= ECONOMIC_PERIOD
+!= ACCOUNTING_PERIOD
+!= FISCAL_PERIOD
+```
+
+No elige el periodo vigente únicamente por ser el registro con fecha más reciente.
+
+---
+
+#### 25. Fuente esperada y fuente recibida
+
+Se conserva:
+
+```text
+EXPECTED_SOURCE != RECEIVED_SOURCE
+RECEIVED_SOURCE != RECONCILED_SOURCE
+```
+
+El tablero debe permitir distinguir un universo esperado de la evidencia realmente recibida y de la evidencia ya reconciliada.
+
+---
+
+#### 26. Watermark y corte
+
+Toda afirmación de cobertura debe declarar o poder reconstruir el corte observado.
+
+Cuando una fuente tenga latencia, el tablero debe indicar hasta qué versión, evento o instante se consideró completa la evidencia.
+
+```text
+NO_DECLARED_CUTOFF = NO_GLOBAL_COMPLETENESS_ASSERTION
+```
+
+---
+
+#### 27. Frescura
+
+La dimensión de frescura reutiliza:
+
+```text
+CURRENT
+STALE
+PENDING_UPDATE
+UNKNOWN_FRESHNESS
+```
+
+Estas etiquetas no son estados financieros ni estados de proceso. Expresan la calidad temporal de la evidencia observada.
+
+---
+
+#### 28. Estados de cobertura del tablero
+
+La proyección usa exactamente nueve estados UX:
+
+```text
+COMPLETE
+PARTIAL
+PENDING_SOURCE
+STALE
+UNKNOWN
+NOT_APPLICABLE
+NOT_AUTHORIZED
+REQUIRES_RECONCILIATION
+BLOCKED_CONFLICT
+```
+
+```text
+COVERAGE_STATE_COUNT = 9
+```
+
+No se agregan estados a `VPROC-*`, a casos de conciliación ni al periodo económico.
+
+---
+
+#### 29. Estado COMPLETE
+
+`COMPLETE` solo puede mostrarse cuando, para el alcance y corte declarados:
+
+- el conjunto obligatorio de fuentes está identificado;
+- las fuentes requeridas están recibidas o su no aplicabilidad está demostrada;
+- la frescura es compatible con el corte;
+- no existe una fuente obligatoria desconocida;
+- las diferencias bloqueantes del efecto están resueltas o tratadas conforme al contrato aplicable;
+- la evidencia permite reproducir la afirmación.
+
+```text
+COMPLETE_REQUIRES_EVIDENCE = YES
+```
+
+---
+
+#### 30. Estado PARTIAL
+
+`PARTIAL` significa que existe evidencia válida y utilizable, pero el universo requerido para la afirmación todavía no está completo.
+
+No se usa para esconder cuál fuente o condición falta.
+
+---
+
+#### 31. Estado PENDING_SOURCE
+
+`PENDING_SOURCE` se utiliza cuando existe una fuente esperada cuya llegada o actualización todavía es legítimamente pendiente.
+
+```text
+PENDING_SOURCE != CONFIRMED_MISSING_SOURCE
+PENDING_SOURCE != ZERO
+```
+
+---
+
+#### 32. Estado STALE
+
+`STALE` significa que existe evidencia previa, pero su frescura no satisface el corte requerido para presentarla como actual.
+
+```text
+STALE != CURRENT
+```
+
+La UI no mantiene un badge verde de completitud junto a evidencia stale sin explicar la incompatibilidad temporal.
+
+---
+
+#### 33. Estado UNKNOWN
+
+`UNKNOWN` significa que falta evidencia suficiente para clasificar cobertura con certeza.
+
+```text
+UNKNOWN != COMPLETE
+UNKNOWN != PASS
+UNKNOWN != ZERO
+```
+
+La ausencia de telemetría, watermark o evidencia de fuente no se convierte en éxito.
+
+---
+
+#### 34. Estado NOT_APPLICABLE
+
+`NOT_APPLICABLE` exige evidencia de que una fuente, conciliación o condición no aplica al alcance concreto.
+
+No es un fallback para una fuente no instrumentada o desconocida.
+
+---
+
+#### 35. Estado NOT_AUTHORIZED
+
+`NOT_AUTHORIZED` significa que la persona no puede consultar la evidencia necesaria.
+
+El tablero no traduce esta condición a:
+
+- cero;
+- sin diferencias;
+- fuente ausente;
+- cobertura completa.
+
+---
+
+#### 36. Estado REQUIRES_RECONCILIATION
+
+Se usa cuando las fuentes necesarias están presentes en grado suficiente para abrir o mantener una conciliación, pero el efecto todavía no puede considerarse reconciliado.
+
+No implica que la fuente sea incorrecta.
+
+---
+
+#### 37. Estado BLOCKED_CONFLICT
+
+`BLOCKED_CONFLICT` representa una incompatibilidad material que impide afirmar cobertura válida, por ejemplo:
+
+- identidad incompatible;
+- moneda incompatible sin tratamiento;
+- conflicto de versión;
+- dos fuentes autoritativas incompatibles;
+- resultado externo materialmente incierto;
+- conflicto de periodo o entidad legal.
+
+El owner y la condición de salida deben permanecer visibles para actores autorizados.
+
+---
+
+#### 38. Cero, ausencia y cobertura permanecen separados
+
+Se congela:
+
+```text
+ZERO
+!= MISSING
+!= UNKNOWN
+!= PENDING
+!= NOT_APPLICABLE
+!= NOT_AUTHORIZED
+!= COMPLETE
+```
+
+Una cifra `0` solo aparece cuando existe evidencia válida de cero para la métrica correspondiente.
+
+---
+
+#### 39. Estado vacío
+
+Una vista sin filas, alertas o casos visibles significa únicamente:
+
+```text
+NO_VISIBLE_ITEMS_IN_CURRENT_AUTHORIZED_VIEW
+```
+
+No demuestra:
+
+- cobertura global;
+- conciliación global;
+- ausencia de fuentes pendientes;
+- ausencia de diferencias fuera del scope;
+- ausencia de datos no autorizados;
+- cierre de periodo.
+
+---
+
+#### 40. Conteos por fuente
+
+Los conteos de fuente recibida, pendiente, stale o en conflicto deben usar identidades estables y un universo esperado declarable.
+
+```text
+COUNT_WITHOUT_DENOMINATOR_CONTEXT = INSUFFICIENT_FOR_COMPLETENESS
+```
+
+Cuando exista un denominador esperado, debe quedar asociado al mismo scope y corte.
+
+---
+
+#### 41. Cobertura de 4 fuentes no significa cobertura económica total
+
+Tener evidencia de PULSO, ORIGO, FOGO y NEXO no basta por sí solo para declarar una vista financiera completa.
+
+También pueden ser materiales:
+
+- efectos NUMERA propios;
+- conciliaciones;
+- bancos/proveedores externos;
+- asignaciones de costo;
+- periodos;
+- versiones publicadas;
+- decisiones o excepciones.
+
+---
+
+#### 42. Cobertura de 198 definiciones no significa 198 eventos por periodo
+
+El catálogo contractual de 198 definiciones establece qué puede ser consumido, no cuántos eventos deben existir en cada periodo.
+
+```text
+CATALOG_DEFINITION_COUNT != EXPECTED_EVENT_OCCURRENCE_COUNT
+```
+
+La ausencia de una definición que legítimamente no tuvo ocurrencia no es automáticamente una brecha.
+
+---
+
+#### 43. Fuente propietaria conserva autoridad
+
+El tablero debe indicar la fuente propietaria o el owner de la dimensión cuando sea necesario para resolver una diferencia.
+
+```text
+SOURCE_DOMAIN_OWNER_IS_SOURCE_CORRECTION_OWNER = YES
+```
+
+NUMERA no se convierte en propietario de PULSO, ORIGO, FOGO o NEXO por consolidar su cobertura.
+
+---
+
+#### 44. Conciliar no reescribe la fuente
+
+Se congela:
+
+```text
+RECONCILIATION_LINKS_EVIDENCE_AND_DOES_NOT_REWRITE_SOURCE = YES
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+```
+
+El tablero nunca ofrece "hacer cuadrar" una fuente modificándola desde el agregado.
+
+---
+
+#### 45. Caso de conciliación permanece distinto de cobertura
+
+Una fuente puede estar cubierta y aun tener un caso de conciliación abierto.
+
+Una conciliación puede estar resuelta para un caso mientras la cobertura global del periodo sigue parcial.
+
+```text
+SOURCE_COVERED != ALL_RECONCILIATION_CASES_CLOSED
+CASE_CLOSED != GLOBAL_COVERAGE_COMPLETE
+```
+
+---
+
+#### 46. Sin casos visibles no equivale a reconciliado
+
+Se congela:
+
+```text
+NO_VISIBLE_RECONCILIATION_CASES != RECONCILIATION_COMPLETE
+```
+
+Para afirmar completitud deben estar demostrados el universo, corte, fuente y reglas aplicables.
+
+---
+
+#### 47. Diferencias abiertas
+
+El tablero puede mostrar presencia y severidad/impacto autorizado de diferencias abiertas, pero no debe colapsar en un solo contador:
+
+- diferencias de identidad;
+- diferencias monetarias;
+- diferencias de cantidad;
+- diferencias de estado;
+- fuentes incompletas;
+- conflicto temporal;
+- resultado externo incierto;
+- diferencia aceptada como excepción.
+
+El detalle permanece en la superficie propietaria.
+
+---
+
+#### 48. Residual
+
+Cuando una conciliación parcial conserve residual, el tablero puede mostrar que existe residual y su dimensión autorizada.
+
+```text
+PARTIAL_RECONCILIATION_REQUIRES_RESIDUAL = YES
+RESIDUAL_HIDDEN_AS_ZERO = FORBIDDEN
+```
+
+---
+
+#### 49. Excepción aceptada
+
+Se conserva:
+
+```text
+ACCEPTED_EXCEPTION != SOURCE_CORRECTED
+ACCEPTED_EXCEPTION != NO_DIFFERENCE
+```
+
+Una excepción aceptada puede dejar una familia no bloqueante para cierto cierre, pero debe permanecer visible cuando sea material para interpretar el resultado.
+
+---
+
+#### 50. Resultado externo desconocido
+
+Se congela:
+
+```text
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+```
+
+El tablero muestra el estado incierto sin forzarlo a éxito, fracaso o cero.
+
+---
+
+#### 51. Eventos tardíos
+
+Un evento tardío debe ser visible como condición de cobertura temporal cuando pueda afectar el resultado observado.
+
+```text
+LATE_EVENT != REOPEN_AUTHORITY
+LATE_EVENT != SILENT_PERIOD_REWRITE
+```
+
+El tablero muestra el efecto pendiente y el owner de decisión, no reabre el periodo.
+
+---
+
+#### 52. Reapertura de periodo
+
+Cuando un periodo cerrado sea reabierto, el tablero debe dejar de presentar la versión cerrada anterior como única versión vigente sin contexto.
+
+Debe poder mostrar:
+
+- close_version afectada;
+- estado actual del periodo;
+- motivo/referencia de reapertura autorizada;
+- recierre requerido cuando aplique;
+- cobertura que debe reevaluarse.
+
+---
+
+#### 53. Reapertura de diferencia
+
+Se conserva:
+
+```text
+REOPEN_DIFFERENCE != REOPEN_PERIOD
+```
+
+Un caso de conciliación reabierto no modifica por sí mismo el estado del periodo.
+
+---
+
+#### 54. Restatement
+
+Cuando una corrección material cambie un resultado publicado:
+
+```text
+RESTATEMENT_IS_VERSIONED = YES
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+```
+
+El tablero debe poder señalar la versión vigente y la existencia de una versión supersedida sin borrar la historia.
+
+---
+
+#### 55. Versiones visibles
+
+La proyección debe diferenciar, cuando aplique:
+
+```text
+CURRENT_LIVE_VERSION
+CLOSED_PERIOD_VERSION
+PUBLISHED_REPORT_VERSION
+SUPERSEDED_HISTORICAL_VERSION
+RESTATEMENT_VERSION
+```
+
+No se mezclan cifras de versiones distintas en una misma afirmación de cobertura sin declararlo.
+
+---
+
+#### 56. Backfill e históricos
+
+Se conserva:
+
+```text
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+```
+
+La cobertura histórica reconstruida debe indicar procedencia, limitaciones y nivel de evidencia disponible. No se presenta como observación original si no lo fue.
+
+---
+
+#### 57. Autorización del tablero
+
+El tablero hereda las reglas de lectura financiera:
+
+```text
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+La presencia de una tarjeta o badge no concede acceso a la evidencia subyacente.
+
+---
+
+#### 58. Agregados sin filtración de información
+
+Si la persona no está autorizada para miembros subyacentes, el tablero no puede revelar su existencia mediante:
+
+- conteos;
+- importe residual;
+- severidad;
+- badge;
+- tooltip;
+- tendencia;
+- diferencia entre totales.
+
+Solo una autorización agregada independiente puede permitir una síntesis cuyo detalle no sea visible.
+
+---
+
+#### 59. Cobertura oculta por autorización
+
+Cuando parte del universo no sea visible por autorización, la UI debe evitar una afirmación falsa de completitud basada únicamente en el subconjunto mostrado.
+
+```text
+VISIBLE_SUBSET_COMPLETE != GLOBAL_SCOPE_COMPLETE
+```
+
+Si existe una aserción agregada autorizada de completitud global, debe quedar diferenciada del detalle no visible.
+
+---
+
+#### 60. Autorización y frescura son dimensiones distintas
+
+Se conserva:
+
+```text
+NOT_AUTHORIZED != UNKNOWN_FRESHNESS
+STALE != NOT_AUTHORIZED
+```
+
+La UX no usa una misma apariencia o mensaje para ocultar causas diferentes.
+
+---
+
+#### 61. Drill-down obligatorio hacia superficies propietarias
+
+Cuando exista autoridad y contexto suficiente, el tablero debe poder navegar hacia estas superficies canónicas:
+
+| Pantalla | Destino de investigación |
+| --- | --- |
+| `VSCREEN-0095` | hechos económicos y origen |
+| `VSCREEN-0100` | caja, bancos y movimientos financieros |
+| `VSCREEN-0101` | conciliación de ventas y pagos |
+| `VSCREEN-0102` | conciliación de compras y recepciones |
+| `VSCREEN-0103` | conciliación de inventario, producción y variaciones |
+| `VSCREEN-0104` | costos, rentabilidad y escenarios |
+| `VSCREEN-0105` | cierre, reapertura y corrección de periodo |
+| `VSCREEN-0106` | reportes y exportaciones financieras |
+
+```text
+MANDATORY_DRILLDOWN_SCREEN_COUNT = 8
+```
+
+Otros destinos canónicos pueden aparecer cuando la familia específica lo requiera, sin crear navegación ad hoc.
+
+---
+
+#### 62. Handoff de contexto no es handoff de autoridad
+
+Se conserva:
+
+```text
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+```
+
+El tablero puede transportar scope, periodo, fuente, caso, versión o filtro a la pantalla destino, pero esa pantalla revalida lectura o comando con autoridad vigente.
+
+---
+
+#### 63. Jerarquía indicador antes de detalle
+
+UX-024 consume `NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001`.
+
+En `VSCREEN-0094`:
+
+1. síntesis autorizada de confianza/cobertura;
+2. alertas o condiciones materiales;
+3. detalle o lista resumida de familias/casos;
+4. drill-down especializado.
+
+No se inventan KPI si no existe una medida gobernada.
+
+---
+
+#### 64. Integración con regiones del inicio financiero
+
+El tablero especializa principalmente dos regiones ya aprobadas para `VSCREEN-0094`:
+
+```text
+CYCLE_AND_RECONCILIATION_STATUS
+DATA_STATUS_AND_PROVENANCE
+```
+
+No reemplaza las demás regiones del home ni redefine las presentaciones por rol.
+
+---
+
+#### 65. No existe un ledger paralelo del dashboard
+
+Se congela:
+
+```text
+COVERAGE_DASHBOARD_IS_SOURCE_OF_TRUTH = NO
+DASHBOARD_AGGREGATE_IS_EDITABLE_SOURCE = NO
+```
+
+La implementación futura puede usar proyecciones optimizadas, pero cada indicador debe conservar lineage hacia contratos y fuentes gobernadas.
+
+---
+
+#### 66. Cero comandos financieros inline
+
+Desde el tablero no se ejecutan directamente:
+
+```text
+REGISTER
+APPROVE
+PAY
+RECONCILE
+CORRECT
+LOCK
+CLOSE
+REOPEN
+PUBLISH
+EXPORT
+WRITE_OFF
+```
+
+La acción principal es `MONITOR` y el paso siguiente es navegación autorizada al owner correspondiente.
+
+---
+
+#### 67. Cambio de evidencia invalida afirmaciones stale
+
+Si cambia materialmente:
+
+- fuente recibida;
+- watermark;
+- alcance;
+- periodo;
+- caso de conciliación;
+- residual;
+- estado de periodo;
+- versión cerrada;
+- restatement;
+- autorización;
+
+la afirmación previa de cobertura debe reevaluarse.
+
+```text
+STALE_COVERAGE_DECISION = REEVALUATE
+```
+
+---
+
+#### 68. Concurrencia
+
+La UI no aplica `last write wins` a la confianza financiera.
+
+Dos actualizaciones concurrentes de fuentes distintas pueden producir una vista temporal parcial; la pantalla debe mostrar el corte y estado real hasta que una nueva evaluación sea coherente.
+
+---
+
+#### 69. Evidencia mínima para una afirmación material
+
+Toda afirmación material de cobertura o conciliación debe poder reconstruir:
+
+- actor o contexto autorizado de lectura;
+- scope;
+- periodo;
+- fuentes esperadas;
+- fuentes recibidas;
+- watermark/corte;
+- reglas/versiones aplicables;
+- casos o diferencias relevantes;
+- estado de cobertura calculado;
+- timestamp de evaluación;
+- referencia de evidencia.
+
+---
+
+#### 70. Lineage y auditoría
+
+El drill-down debe permitir, según autoridad, reconstruir la cadena:
+
+```text
+DASHBOARD_ASSERTION
+-> COVERAGE_FAMILY
+-> SOURCE_SET_AND_CUTOFF
+-> RECONCILIATION_CASE_OR_RESULT
+-> DOMAIN_FACT_OR_EXTERNAL_REFERENCE
+-> AUTHORITATIVE_SOURCE
+```
+
+La auditoría no sustituye la fuente.
+
+---
+
+#### 71. Accesibilidad
+
+Estado y riesgo no dependerán únicamente de color.
+
+Cada estado de cobertura debe conservar:
+
+- etiqueta textual;
+- significado;
+- causa o condición de salida cuando sea material;
+- foco y navegación accesibles;
+- orden semántico coherente con la jerarquía visual.
+
+---
+
+#### 72. Responsive y densidad
+
+En pantallas reducidas se preserva el orden:
+
+```text
+SCOPE_AND_CUTOFF
+-> COVERAGE_SUMMARY
+-> BLOCKING_OR_UNKNOWN_CONDITIONS
+-> FAMILY_DETAIL
+-> DRILLDOWN
+```
+
+La densidad visual puede reducirse, pero no puede ocultar que la cobertura es parcial, stale o desconocida.
+
+---
+
+#### 73. Historia visible
+
+Cuando una afirmación cambie por:
+
+- llegada tardía;
+- corrección;
+- reapertura;
+- recierre;
+- restatement;
+- resolución de diferencia;
+- actualización de fuente;
+
+la versión anterior no se reescribe como si nunca hubiera existido cuando forma parte de la evidencia histórica relevante.
+
+---
+
+#### 74. Brechas AS-IS que esta definición corrige
+
+La tarea cierra documentalmente estas brechas de experiencia:
+
+1. el panel raíz no puede convertir ausencia de periodo actual en cero;
+2. las superficies no pueden usar semánticas temporales incompatibles sin declararlo;
+3. presupuesto, gasto o equilibrio visibles no prueban por sí solos conciliación integral con ventas, compras, inventario y producción;
+4. cero casos visibles no prueba cobertura total;
+5. la ausencia de watermark no puede presentarse como actualidad confirmada;
+6. un agregado no se convierte en fuente editable.
+
+La implementación física de estas reglas permanece pendiente.
+
+---
+
+#### 75. Escenarios mínimos de validación futura
+
+La implementación deberá demostrar al menos estos treinta escenarios:
+
+1. las cuatro aplicaciones fuente están actuales y las conciliaciones obligatorias están completas para el corte declarado;
+2. PULSO está pendiente y el tablero no declara cobertura global completa;
+3. ORIGO está stale y se distingue de fuente ausente;
+4. FOGO no aplica al alcance y `NOT_APPLICABLE` está sustentado;
+5. NEXO no tiene watermark y el estado queda `UNKNOWN`, no `COMPLETE`;
+6. una fuente recibida todavía no reconocida económicamente no cuenta como reconocimiento completo;
+7. ventas/pagos tienen residual y quedan `REQUIRES_RECONCILIATION`;
+8. compras/recepciones no tienen casos visibles pero falta una fuente esperada y no se declara completitud;
+9. inventario/producción tiene variación legítima reconciliada y no se marca conflicto de fuente;
+10. banco tiene movimiento sin referencia interna y la familia permanece abierta;
+11. referencia interna sin movimiento bancario permanece pendiente;
+12. resultado externo desconocido no se fuerza a éxito o fracaso;
+13. costo real tiene componente material faltante y no se muestra cero;
+14. rentabilidad carece de ingreso realizado suficiente y queda incompleta;
+15. una asignación de costo pendiente impide declarar completitud del resultado dependiente;
+16. periodo cerrado sin eventos tardíos mantiene su close_version identificable;
+17. evento tardío material aparece sin reabrir el periodo automáticamente;
+18. periodo reabierto invalida la afirmación previa de cobertura final hasta reevaluación;
+19. diferencia reabierta no se presenta como periodo reabierto;
+20. restatement crea nueva versión y conserva la versión histórica;
+21. exportación histórica no cambia cuando aparece una nueva versión del reporte;
+22. una excepción aceptada permanece visible y no se presenta como fuente corregida;
+23. un backfill histórico se identifica como reconstruido y no como evidencia original;
+24. persona sin permiso de detalle no recibe filtración mediante conteos protegidos;
+25. subconjunto visible completo no se presenta como cobertura global sin aserción agregada autorizada;
+26. cambio de watermark vuelve stale la evaluación anterior hasta recalcular;
+27. cambio de periodo no reutiliza silenciosamente cobertura del periodo anterior;
+28. una tarjeta del dashboard navega al owner correcto sin transferir autoridad de comando;
+29. vista vacía bajo filtros no declara cero diferencias globales;
+30. el tablero mantiene indicador antes de detalle y estados accesibles sin depender de color.
+
+---
+
+#### 76. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-024 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| consumidor físico NUMERA de todas las fuentes no está demostrado de extremo a extremo | no | paquetes físicos NUMERA/integración aplicables | ingestión y proyecciones exponen watermarks, procedencia y estados según contratos aprobados |
+| motor transversal de casos de conciliación no está materializado | no | paquetes físicos NUMERA aplicables | casos especializados comparten identidad, evidencia, residual, owner y estado consultables |
+| definición documental no fija backend de observabilidad/cobertura | no | arquitectura/materialización aplicable | implementación conserva el contrato UX sin crear fuente paralela |
+| umbrales universales de materialidad no están aprobados | no | gobierno empresarial/financiero competente | cada política materializada declara versión, alcance, vigencia y autoridad |
+| cobertura global puede depender de datos no visibles al actor | no | autorización + proyección agregada aplicable | síntesis global solo se muestra con autoridad agregada independiente o miembros autorizados |
+| alcance financiero completo aún requiere gate documental posterior | no | `NUMERA-UX-025` | alcance se aprueba usando evidencia y bloqueos explícitos sin tratar UNKNOWN como PASS |
+| visor económico dinámico final no pertenece a este tablero | no | `NUMERA-UX-028` | visor consume cobertura/confianza sin fusionarse con UX-024 |
+
+---
+
+#### 77. Decisiones congeladas
+
+```text
+NUMERA_SOURCE_COVERAGE_RECONCILIATION_DASHBOARD_CONTRACT = NUMERA-SOURCE-COVERAGE-RECONCILIATION-DASHBOARD-001
+PRIMARY_SCREEN_ID = VSCREEN-0094
+OWNER_PROCESS_ID = VPROC-0061
+OWNER_STEP_ID = VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+OWNER_STEP_KIND = MONITOR
+OWNER_STEP_STAGE = CROSS_CUTTING
+COVERAGE_DASHBOARD_IS_COMMAND_SURFACE = NO
+INLINE_FINANCIAL_COMMANDS = 0
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+COVERAGE_FAMILY_COUNT = 9
+COVERAGE_STATE_COUNT = 9
+MANDATORY_DRILLDOWN_SCREEN_COUNT = 8
+NO_CURRENT_SOURCE_EVENT_IS_ECONOMIC_ZERO = NO
+NO_VISIBLE_CASES_IS_RECONCILIATION_COMPLETE = NO
+VISIBLE_SUBSET_COMPLETE_IS_GLOBAL_SCOPE_COMPLETE = NO
+UNKNOWN_IS_COMPLETE = NO
+UNKNOWN_IS_PASS = NO
+STALE_IS_CURRENT = NO
+PENDING_SOURCE_IS_CONFIRMED_MISSING = NO
+EXPECTED_SOURCE_IS_RECEIVED_SOURCE = NO
+RECEIVED_SOURCE_IS_RECONCILED_SOURCE = NO
+SOURCE_COVERED_IS_ALL_CASES_CLOSED = NO
+CASE_CLOSED_IS_GLOBAL_COVERAGE_COMPLETE = NO
+ACCEPTED_EXCEPTION_IS_SOURCE_CORRECTED = NO
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+REOPEN_DIFFERENCE_IS_REOPEN_PERIOD = NO
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+RESTATEMENT_IS_VERSIONED = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+COVERAGE_DASHBOARD_IS_SOURCE_OF_TRUTH = NO
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+VALIDATION_SCENARIO_COUNT = 30
+UX_025_OWNER = FINANCIAL_SCOPE_APPROVAL_GATE
+UX_028_OWNER = DYNAMIC_ECONOMIC_VIEWER
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La conducta queda cubierta por obligaciones canónicas existentes de NUMERA, integración, datos y autorización. Crear nuevas filas duplicaría cobertura ya vigente.
+
+---
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — indicadores, costos, márgenes, gastos, cierres, saldos y reportes reconciliables con hechos y documentos fuente;
+- `TREQ-NUMERA-002` — identidad estable, fuente, correlación, fechas, periodos, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003` — obligaciones, bancos, caja/tesorería y capacidades financieras segregadas;
+- `TREQ-NUMERA-004` — método, fuentes, versiones, presupuesto, costos, rentabilidad y visor trazable;
+- `TREQ-INTEGRATION-003` — idempotencia, retry, resultado recuperable y conciliación;
+- `TREQ-INTEGRATION-006` — fuente propietaria única y ausencia de doble digitación competidora;
+- `TREQ-INTEGRATION-010` — cadena compra/recepción/inventario/NUMERA correlacionada;
+- `TREQ-INTEGRATION-011` — eventos y efectos físicos exactamente una vez con detección de huérfanos;
+- `TREQ-INTEGRATION-013` — demanda, producción, calidad, inventario y costo correlacionados;
+- `TREQ-INTEGRATION-014` — efectos de ventas/PULSO hacia consumidores sin doble efecto;
+- `TREQ-INTEGRATION-017` — hechos operativos hacia NUMERA versionados, correlacionados e idempotentes;
+- `TREQ-AUTH-013` — revalidación server-side de autoridad y estado;
+- `TREQ-AUTH-014` — decisiones stale se invalidan ante cambios materiales;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-DATA-003` — calidad, frescura, late data, reconciliación y lineage;
+- `TREQ-DATA-004` — separación entre vista en vivo, snapshot, reporte, simulación y exportación con restatement versionado.
+
+---
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto |
+| LOCAL | NOT_EXECUTED | reemplazo, formato, quality, delivery, validadores de pantallas/integración, batería global y cierre quedan para el checkout del usuario después del cierre válido de UX-023 |
+| REMOTA | PASS | se verificaron `vento-shell/main`, continuidad y marcador de UX-024, topología `DEFINE_ONCE`, catálogo/binding de `VSCREEN-0094`, `VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION`, contratos UX-003/008/014/018/019/021/022, dominio de periodos/reportes/conciliación, Registro 04A y validadores vigentes; UX-023 se consume desde su artefacto completo aprobado mientras su incorporación remota puede permanecer pendiente |
+| OPERATIVA | NOT_EXECUTED | no se evaluaron fuentes, watermarks, conciliaciones, periodos, diferencias, costos, reportes o restatements reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-024` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza materialización física propia |
+
+---
+
+#### 81. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-SOURCE-COVERAGE-RECONCILIATION-DASHBOARD-001`;
+2. el tablero se integra en `VSCREEN-0094` y no crea pantalla nueva;
+3. owner y step son `VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION`;
+4. la acción del tablero permanece `MONITOR`;
+5. existen cero comandos financieros inline;
+6. se preservan exactamente cuatro aplicaciones fuente heredadas;
+7. se preservan 35 procesos fuente y 198 definiciones de evento como universo contractual de UX-014;
+8. catálogo de eventos no se confunde con ocurrencias esperadas por periodo;
+9. existen exactamente nueve familias lógicas de cobertura;
+10. existen exactamente nueve estados UX de cobertura;
+11. los estados UX no crean estados de proceso o periodo;
+12. `COMPLETE` exige evidencia de universo, corte, frescura y conciliación aplicables;
+13. `PARTIAL` identifica qué falta;
+14. `PENDING_SOURCE` no equivale a fuente faltante confirmada;
+15. `STALE` no equivale a current;
+16. `UNKNOWN` no equivale a PASS o complete;
+17. `NOT_APPLICABLE` exige evidencia;
+18. `NOT_AUTHORIZED` no se presenta como cero o ausencia;
+19. `REQUIRES_RECONCILIATION` no acusa automáticamente error de fuente;
+20. `BLOCKED_CONFLICT` conserva owner y condición de salida;
+21. cero, missing, unknown, pending, N/A y no autorizado permanecen distintos;
+22. vista vacía no afirma completitud global;
+23. fuente esperada, recibida y reconciliada permanecen distintas;
+24. toda completitud material conserva watermark/corte;
+25. frescura conserva CURRENT/STALE/PENDING_UPDATE/UNKNOWN_FRESHNESS;
+26. cuatro fuentes presentes no prueban por sí solas cobertura económica total;
+27. fuente propietaria conserva autoridad de corrección;
+28. NUMERA no reescribe fuentes extranjeras desde el tablero;
+29. cobertura de fuente no equivale a todos los casos cerrados;
+30. caso cerrado no equivale a cobertura global completa;
+31. ausencia de casos visibles no equivale a conciliación completa;
+32. residual no se oculta como cero;
+33. excepción aceptada no se presenta como dato corregido;
+34. resultado externo desconocido permanece incierto hasta consulta/conciliación;
+35. evento tardío no reabre periodo automáticamente;
+36. reapertura de periodo invalida la lectura final anterior hasta reevaluación;
+37. reapertura de diferencia se distingue de reapertura de periodo;
+38. restatement crea nueva versión y preserva historia;
+39. backfill no se presenta como evidencia original;
+40. role name y `numera.access` no conceden métricas por inferencia;
+41. conteos y badges no filtran datos no autorizados;
+42. subconjunto visible completo no se declara globalmente completo;
+43. autorización y frescura permanecen dimensiones distintas;
+44. existen ocho destinos de drill-down mínimos explícitos;
+45. el handoff de contexto no transfiere autoridad;
+46. VSCREEN-0094 mantiene indicador antes de detalle;
+47. UX-024 especializa regiones de estado de ciclo/conciliación y procedencia sin reemplazar el home;
+48. dashboard no se convierte en ledger paralelo;
+49. cambios materiales invalidan evaluaciones stale;
+50. una afirmación material conserva evidencia reconstruible;
+51. lineage llega a la fuente autoritativa;
+52. estados son accesibles sin depender solo de color;
+53. responsive conserva primero scope/corte y luego confianza/bloqueos;
+54. historia relevante no se sobrescribe silenciosamente;
+55. se corrige la brecha AS-IS de cero inventado por ausencia de periodo;
+56. se corrige la falta de semántica temporal común mediante contexto explícito;
+57. dashboard actual no se considera prueba de conciliación integral por mostrar presupuesto/gasto/equilibrio;
+58. los treinta escenarios mínimos quedan definidos;
+59. todos los hallazgos tienen owner y condición de salida;
+60. no se crean ni modifican requisitos de prueba;
+61. no se realizan cambios físicos;
+62. UX-025 recibe evidencia de cobertura suficiente para decidir alcance sin convertir UNKNOWN en PASS.
+
+---
+
+#### 82. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0094`;
+- crea otra pantalla;
+- crea un nuevo proceso;
+- cambia `VPROC-0061`;
+- crea componentes React;
+- crea queries, tablas, vistas, materialized views, RPC o APIs;
+- crea motor de matching o conciliación;
+- consume eventos reales;
+- define tecnología de transporte;
+- crea observabilidad técnica;
+- corrige PULSO, ORIGO, FOGO o NEXO;
+- corrige hechos NUMERA reales;
+- resuelve diferencias reales;
+- acepta excepciones reales;
+- ejecuta pagos o tesorería;
+- calcula costos o rentabilidad;
+- reabre o cierra periodos;
+- genera restatements;
+- publica reportes;
+- exporta información;
+- fija tolerancias o materialidad universales;
+- crea permisos o amplía scope;
+- modifica Supabase;
+- crea migraciones;
+- actualiza Registro 04A;
+- aprueba el alcance financiero reservado a `NUMERA-UX-025`;
+- desarrolla el visor económico dinámico reservado a `NUMERA-UX-028`.
+
+---
+
+#### 83. Handoff a NUMERA-UX-025
+
+La siguiente tarea recibe:
+
+```text
+SOURCE_COVERAGE_RECONCILIATION_DASHBOARD_CONTRACT = NUMERA-SOURCE-COVERAGE-RECONCILIATION-DASHBOARD-001
+PRIMARY_SCREEN_ID = VSCREEN-0094
+OWNER_PROCESS_ID = VPROC-0061
+OWNER_STEP_ID = VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+COVERAGE_DASHBOARD_IS_COMMAND_SURFACE = NO
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+COVERAGE_FAMILY_COUNT = 9
+COVERAGE_STATE_COUNT = 9
+COMPLETE_REQUIRES_EVIDENCE = YES
+UNKNOWN_IS_PASS = NO
+NO_VISIBLE_CASES_IS_RECONCILIATION_COMPLETE = NO
+VISIBLE_SUBSET_COMPLETE_IS_GLOBAL_SCOPE_COMPLETE = NO
+EXPECTED_RECEIVED_RECONCILED_SOURCE = DISTINCT
+CUTOFF_OR_WATERMARK_REQUIRED_FOR_COMPLETENESS = YES
+SOURCE_DOMAIN_OWNER_IS_SOURCE_CORRECTION_OWNER = YES
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+ACCEPTED_EXCEPTION_IS_SOURCE_CORRECTED = NO
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+REOPEN_DIFFERENCE_IS_REOPEN_PERIOD = NO
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+RESTATEMENT_IS_VERSIONED = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+MANDATORY_DRILLDOWN_SCREEN_COUNT = 8
+VALIDATION_SCENARIO_COUNT = 30
+FINANCIAL_SCOPE_APPROVAL_OWNER = NUMERA_UX_025
+DYNAMIC_ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-025` deberá aprobar o mantener bloqueado el alcance financiero usando evidencia explícita de cobertura, fuentes, conciliaciones, limitaciones y owners; no podrá tratar `UNKNOWN`, ausencia de evidencia o un subconjunto visible como PASS global.
+
+---
+
+#### 84. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-023
+-> NUMERA-UX-024
+-> NUMERA-UX-025
+```
+
+UX-024 consume correcciones/reaperturas versionadas de UX-023, integra señales ya definidas por las conciliaciones y entrega a UX-025 una lectura gobernada de confianza y cobertura sin ejecutar el gate de aprobación por sí misma.
+
+---
+
+#### 85. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación`
 ### [ ] NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
 ### [ ] NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro
 ### [ ] NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
