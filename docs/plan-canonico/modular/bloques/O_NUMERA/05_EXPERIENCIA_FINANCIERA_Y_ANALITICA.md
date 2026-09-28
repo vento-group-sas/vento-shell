@@ -23877,7 +23877,1287 @@ UX-018 consume los principios de matching trazable de UX-017 y entrega a UX-019 
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones`
-### [ ] NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
+### ✅ NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
+**Tarea siguiente:** NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
+**Tipo de tarea:** definición documental de la experiencia de conciliación entre inventario, producción, efectos económicos y variaciones en NUMERA, preservando autoridad de FOGO y NEXO, identidad y genealogía de lotes, movimientos físicos, consumos, salidas, calidad, merma, reproceso, conteos, ajustes, condición, transferencias internas, diferencias de conciliación y variaciones empresariales sin duplicar hechos ni definir prematuramente métodos de costo; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica FOGO, NEXO, NUMERA, Supabase, contratos runtime, recetas, lotes, movimientos, saldos, costos, periodos, componentes, APIs, RPC, RLS, migraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia de conciliación de inventario, producción y variaciones de NUMERA para que una persona autorizada pueda demostrar cómo se relacionan los hechos productivos de FOGO, los movimientos físicos de NEXO y los efectos económicos de NUMERA sin sumar dos veces el mismo consumo, producción, merma, ajuste o transferencia.
+
+La superficie debe permitir distinguir con claridad:
+
+- hecho productivo;
+- hecho físico;
+- hecho económico;
+- diferencia de conciliación;
+- variación productiva o empresarial legítima;
+- costo o valoración posterior;
+- corrección del dominio propietario.
+
+La experiencia no fuerza resultados a cero ni convierte una desviación contra plan, receta, presupuesto o estándar en error de fuente por defecto.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define un contrato UX reutilizable;
+- no crea instancia física propia;
+- no implementa `VSCREEN-0103`;
+- no ejecuta movimientos, producción, conteos, ajustes, costeo ni cierres;
+- no modifica fuentes operativas;
+- no define fórmulas numéricas de costo;
+- no publica datos reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-018
+
+La tarea consume íntegramente:
+
+```text
+PURCHASE_RECEIPT_RECONCILIATION_CONTRACT = NUMERA-PURCHASE-RECEIPT-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0102
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_PURCHASES_AND_RECEIPTS
+ORIGO_SOURCE_AUTHORITY_PRESERVED = YES
+NEXO_PHYSICAL_AUTHORITY_PRESERVED = YES
+PURCHASE_RECEIPT_PHYSICAL_DOCUMENT_PAYABLE_ARE_DISTINCT = YES
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_PRESERVES_RESIDUAL = YES
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+SERVICE_REQUIRES_PHYSICAL_INBOUND_MOVEMENT = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SOURCE_INCOMPLETE_IS_ZERO_DIFFERENCE = NO
+ORIGO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+NEXO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+PAYABLE_DETAIL_OWNER = NUMERA_UX_020
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+DIFFERENCE_CLASS_COUNT = 20
+VALIDATION_SCENARIO_COUNT = 18
+INVENTORY_PRODUCTION_RECONCILIATION_OWNER = NUMERA_UX_019
+TREQ_CHANGES = 0
+```
+
+UX-019 conserva esas fronteras y no reinterpreta compra o recepción ORIGO como producción FOGO.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La definición consume, sin redefinirlos:
+
+- `NUMERA-DOM-004` para hechos económicos recibidos desde producción e inventario;
+- `NUMERA-DOM-007` únicamente como propietario posterior del método de costo;
+- `NUMERA-DOM-014` para conciliación y tratamiento de diferencias;
+- `NUMERA-UX-014` y `NUMERA-UX-015` para consumo de eventos e idempotencia económica;
+- `NUMERA-UX-018` para matching trazable y residual explícito;
+- procesos FOGO `VPROC-0034..0037`;
+- procesos NEXO `VPROC-0024..0028`;
+- `VPROC-0051` para hechos económicos;
+- `VPROC-0054` para ciclo de costos, variaciones y rentabilidad.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA_INVENTORY_PRODUCTION_VARIANCE_RECONCILIATION_CONTRACT = NUMERA-INVENTORY-PRODUCTION-VARIANCE-RECONCILIATION-001
+```
+
+El contrato exige una experiencia donde cada conclusión pueda reconstruirse desde fuentes propietarias, identidades estables, cantidades, unidades, lotes, estados, movimientos y evidencia.
+
+---
+
+#### 6. Superficie y proceso propietarios
+
+La superficie propietaria es:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0103
+PRIMARY_SCREEN_NAME = Conciliación de inventario, producción y variaciones
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES
+OWNER_STEP_KIND = RECONCILE
+OWNER_STEP_STAGE = DECISION
+```
+
+`VSCREEN-0103` relaciona movimientos físicos, consumos, producción, costos y variaciones sin duplicar los ledgers de origen.
+
+---
+
+#### 7. Fronteras con superficies relacionadas
+
+La experiencia conserva:
+
+```text
+VSCREEN-0103 != FOGO_EXECUTION_WORKSPACE
+VSCREEN-0103 != NEXO_INVENTORY_LEDGER
+VSCREEN-0103 != COST_CALCULATION_EDITOR
+VSCREEN-0103 != PERIOD_CLOSE_WORKSPACE
+```
+
+FOGO ejecuta y cierra producción. NEXO ejecuta y reconcilia movimientos físicos. NUMERA compara sus resultados económicos y variaciones.
+
+---
+
+#### 8. Identidades que permanecen distintas
+
+No se fusionan:
+
+```text
+PLAN_PRODUCTIVO
+ORDEN_PRODUCTIVA
+RESERVA_DE_MATERIAL
+CONSUMO_PRODUCTIVO
+MOVIMIENTO_DE_INVENTARIO
+SALIDA_PRODUCTIVA
+DISPOSICION_DE_CALIDAD
+PRODUCTO_EMPACADO
+INGRESO_DE_PRODUCTO_TERMINADO
+CIERRE_PRODUCTIVO
+CONTEO
+DIFERENCIA_DE_CONTEO
+AJUSTE_AUTORIZADO
+CASO_DE_CONDICION
+TRANSFERENCIA_INTERNA
+HECHO_ECONOMICO
+COSTO_CALCULADO
+VARIACION_EMPRESARIAL
+DIFERENCIA_DE_CONCILIACION
+```
+
+Una coincidencia visual o monetaria no elimina estas identidades.
+
+---
+
+#### 9. Autoridad de fuentes
+
+Se conserva:
+
+```text
+PRODUCTIVE_FACT_OWNER = FOGO
+PHYSICAL_MOVEMENT_OWNER = NEXO
+ECONOMIC_FACT_OWNER = NUMERA
+COST_METHOD_OWNER = NUMERA_DOM_007 / NUMERA_UX_022
+```
+
+NUMERA no corrige un lote FOGO ni un movimiento NEXO desde la conciliación.
+
+---
+
+#### 10. Procesos considerados
+
+La conciliación puede consumir evidencia de:
+
+- `VPROC-0034` — ejecución productiva;
+- `VPROC-0035` — calidad y disposición;
+- `VPROC-0036` — empaque, etiqueta y almacenamiento;
+- `VPROC-0037` — reproceso, rendimiento, merma y cierre;
+- `VPROC-0024` — ingreso y ubicación física;
+- `VPROC-0025` — retiro, consumo o traslado;
+- `VPROC-0026` — conteo y ajuste;
+- `VPROC-0027` — condición, cuarentena, pérdida y disposición;
+- `VPROC-0028` — abastecimiento interno;
+- `VPROC-0051` — hecho económico;
+- `VPROC-0054` — costo, variación y cierre económico.
+
+---
+
+#### 11. Estados fuente fuertes
+
+Son evidencia fuerte, según el caso y sin convertirlos en equivalentes entre sí:
+
+- `VPROC-0034.PRODUCTION_EXECUTION_COMPLETED`;
+- `VPROC-0035.QUALITY_DISPOSITION_VERIFIED`;
+- `VPROC-0036.PACKAGING_CYCLE_RECONCILED`;
+- `VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED`;
+- `VPROC-0024.INBOUND_MOVEMENT_RECONCILED`;
+- `VPROC-0025.STOCK_OPERATION_RECONCILED`;
+- `VPROC-0026.COUNT_RECONCILED`;
+- `VPROC-0027.CONDITION_CASE_RESOLVED`;
+- `VPROC-0028.REPLENISHMENT_RECONCILED`;
+- `VPROC-0051.ECONOMIC_EVENT_RECONCILED`.
+
+Ninguno por sí solo demuestra la totalidad de los demás dominios.
+
+---
+
+#### 12. Plan productivo no equivale a producción real
+
+Se conserva:
+
+```text
+PLAN_LIBERADO != PRODUCCION_REALIZADA
+PLAN_LIBERADO != CONSUMO_REAL
+PLAN_LIBERADO != PRODUCTO_TERMINADO
+```
+
+Diferencia contra plan puede ser variación legítima aun cuando FOGO y NEXO estén perfectamente reconciliados.
+
+---
+
+#### 13. Consumo FOGO no equivale a movimiento NEXO
+
+FOGO describe el uso productivo; NEXO describe el efecto físico.
+
+```text
+FOGO_CONSUMPTION_FACT != NEXO_STOCK_MOVEMENT
+```
+
+Cuando ambos describen el mismo consumo, NUMERA debe reconocer una sola realidad económica correlacionada.
+
+---
+
+#### 14. Salida productiva no equivale a inventario terminado
+
+`OUTPUT_REPORTED` no prueba:
+
+- liberación de calidad;
+- ingreso físico;
+- disponibilidad;
+- costo terminado definitivo.
+
+La experiencia conserva esos pasos separados.
+
+---
+
+#### 15. Calidad no equivale a efecto físico
+
+Una decisión de liberar, retener, rechazar o reprocesar orienta el tratamiento, pero el efecto sobre inventario requiere ejecución y evidencia física cuando corresponda.
+
+```text
+QUALITY_DECISION != INVENTORY_MOVEMENT
+```
+
+---
+
+#### 16. Cierre productivo no equivale a cierre económico
+
+`PRODUCTION_CLOSEOUT_APPROVED` es evidencia fuerte del cierre FOGO, pero no sustituye:
+
+- movimiento NEXO;
+- reconocimiento económico;
+- cálculo de costo;
+- cierre de periodo.
+
+---
+
+#### 17. Diferencia de conciliación frente a variación empresarial
+
+Se fija:
+
+```text
+RECONCILIATION_DIFFERENCE != BUSINESS_VARIANCE
+```
+
+Existe diferencia de conciliación cuando fuentes que deberían guardar una relación explicable no pueden reconciliarse con la evidencia vigente.
+
+Existe variación empresarial cuando la realidad reconciliada difiere de plan, receta teórica, estándar, presupuesto, forecast o periodo comparativo.
+
+La variación legítima no se fuerza a cero para cerrar conciliación.
+
+---
+
+#### 18. Unidad lógica de conciliación
+
+Cada caso debe conservar identidad estable y poder señalar:
+
+- lote o ejecución productiva;
+- movimiento o conjunto de movimientos físicos;
+- producto o material;
+- cantidad y unidad por fuente;
+- estado de calidad;
+- fecha y periodo;
+- hecho económico relacionado;
+- clasificación de diferencia o variación;
+- residual;
+- owner de salida;
+- evidencia y decisiones.
+
+---
+
+#### 19. Lados visibles del caso
+
+La superficie debe distinguir al menos:
+
+```text
+FOGO_PRODUCTIVE_SIDE
+NEXO_PHYSICAL_SIDE
+NUMERA_ECONOMIC_SIDE
+REFERENCE_PLAN_OR_STANDARD
+```
+
+El plan o estándar es referencia comparativa; no se presenta como hecho ejecutado.
+
+---
+
+#### 20. Dimensiones mínimas de matching
+
+Cuando apliquen:
+
+- source application;
+- process instance;
+- production order;
+- production batch/lot;
+- recipe/version;
+- product/material;
+- unit;
+- quantity;
+- NEXO movement identity;
+- source/destination location;
+- lot/LPN;
+- quality disposition;
+- occurrence date;
+- economic date;
+- legal entity/site/cost dimension;
+- economic event identity;
+- correlation/causality references.
+
+---
+
+#### 21. Evidencia fuerte
+
+Son señales fuertes según el caso:
+
+- identidad canónica de lote u orden;
+- referencia de movimiento NEXO;
+- `source_event_id` o correlación gobernada;
+- lote/LPN/ubicación trazables;
+- receta y versión aplicadas;
+- decisión de calidad verificada;
+- cierre productivo aprobado;
+- ajuste autorizado con movimiento compensatorio;
+- referencia explícita de reproceso;
+- referencia del hecho económico NUMERA.
+
+---
+
+#### 22. Señales débiles
+
+No prueban matching por sí solas:
+
+- mismo producto;
+- misma fecha;
+- misma cantidad total;
+- mismo valor monetario;
+- misma sede;
+- mismo usuario;
+- proximidad temporal;
+- misma descripción;
+- mismo centro de costo;
+- mismo periodo;
+- coincidencia visual en dashboard.
+
+Pueden sugerir investigación, nunca confirmar identidad por sí solas.
+
+---
+
+#### 23. Cardinalidades soportadas
+
+La UX debe soportar:
+
+```text
+ONE_LOT_TO_MANY_MATERIAL_MOVEMENTS
+MANY_MATERIAL_MOVEMENTS_TO_ONE_LOT
+ONE_LOT_TO_MANY_OUTPUT_MOVEMENTS
+MANY_OUTPUT_MOVEMENTS_TO_ONE_CLOSEOUT
+ONE_COUNT_TO_MANY_COMPENSATING_MOVEMENTS
+ONE_INTERNAL_TRANSFER_TO_ORIGIN_AND_DESTINATION_LEGS
+PARTIAL_RECONCILIATION
+```
+
+Todo agrupamiento conserva lineage descomponible.
+
+---
+
+#### 24. Consumo correlacionado una sola vez
+
+Cuando FOGO registra uso y NEXO confirma el retiro físico correspondiente:
+
+```text
+FOGO_USE + NEXO_MOVEMENT -> ONE_ECONOMIC_EFFECT
+```
+
+No se crea un costo por cada perspectiva del mismo consumo.
+
+---
+
+#### 25. Cantidad productiva frente a cantidad física
+
+Si las cantidades difieren:
+
+- no se elige silenciosamente una fuente;
+- se conserva unidad por lado;
+- se verifica conversión;
+- se identifica residual;
+- se determina owner de corrección;
+- el caso permanece abierto mientras la discrepancia afecte integridad.
+
+---
+
+#### 26. Unidad y conversión
+
+Una diferencia aparente puede provenir de unidad o factor de conversión.
+
+La UX debe mostrar:
+
+- unidad FOGO;
+- unidad NEXO;
+- factor o regla aplicable;
+- cantidad normalizada cuando exista una regla autorizada;
+- valor original de ambos lados.
+
+No se inventa conversión para cerrar un caso.
+
+---
+
+#### 27. Lote y genealogía
+
+El matching conserva genealogía entre:
+
+- materiales de entrada;
+- lote productivo;
+- salida;
+- reproceso;
+- producto terminado;
+- movimientos físicos.
+
+Cambio de estado o reetiquetado no crea por sí solo un hecho económico nuevo.
+
+---
+
+#### 28. Resultado productivo y producto terminado
+
+Para reconocer terminado como realidad reconciliada deben poder explicarse, según aplique:
+
+- salida FOGO;
+- calidad;
+- presentación/empaque;
+- ingreso físico NEXO;
+- cantidad final;
+- lote y ubicación;
+- hecho económico NUMERA.
+
+Una ausencia en cualquiera de los lados se mantiene visible.
+
+---
+
+#### 29. Rendimiento
+
+Rendimiento compara expectativa y realidad productiva.
+
+```text
+EXPECTED_YIELD != ACTUAL_YIELD
+```
+
+Una diferencia de rendimiento es variación productiva cuando las fuentes reales concuerdan; solo se vuelve diferencia de conciliación si las fuentes reales no pueden explicarse entre sí.
+
+---
+
+#### 30. Merma y desperdicio
+
+La experiencia debe impedir doble conteo:
+
+```text
+TOTAL_CONSUMPTION_ALREADY_INCLUDES_WASTE = YES
+-> DO_NOT_ADD_SECOND_CONSUMPTION_FOR_SAME_PHYSICAL_QUANTITY
+```
+
+La clasificación de merma puede alimentar análisis posterior sin duplicar el movimiento físico.
+
+---
+
+#### 31. Reproceso
+
+Reproceso conserva referencia al origen.
+
+Nuevos consumos solo crean efectos adicionales cuando existan nuevos hechos físicos. Reclasificar un lote no duplica cantidad ni costo por sí solo.
+
+---
+
+#### 32. Calidad, retención y rechazo
+
+La UX debe hacer visible cuando:
+
+- FOGO liberó y NEXO mantiene cuarentena;
+- FOGO retuvo pero inventario aparece disponible;
+- rechazo no tiene movimiento/disposición física correlacionada;
+- disposición física existe sin decisión productiva suficiente.
+
+No se corrige el dominio fuente desde NUMERA.
+
+---
+
+#### 33. Empaque y materiales de empaque
+
+Los materiales de empaque consumidos conservan sus movimientos propios.
+
+Cerrar empaque no vuelve a consumirlos. `PACKAGED_OUTPUT_RECORDED` tampoco equivale a existencia terminada reconciliada.
+
+---
+
+#### 34. Conteo de inventario
+
+Se conserva:
+
+```text
+COUNT_OBSERVATION != ADJUSTMENT_DECISION
+COUNT_DIFFERENCE != ECONOMIC_EFFECT
+```
+
+La UX muestra observación, investigación, decisión y movimiento compensatorio como elementos separados.
+
+---
+
+#### 35. Ajuste de inventario
+
+Un ajuste económico solo puede relacionarse con una corrección física cuando exista:
+
+- conteo o causa identificable;
+- investigación;
+- decisión autorizada;
+- movimiento compensatorio;
+- cantidad/unidad explicables;
+- referencia económica única.
+
+No se usa una cifra manual para “cuadrar”.
+
+---
+
+#### 36. Condición, cuarentena y pérdida
+
+Detectar una condición no equivale a pérdida definitiva.
+
+```text
+CONDITION_EVENT != DISPOSITION_EXECUTED
+QUARANTINE != WRITE_OFF
+```
+
+El efecto económico espera la decisión y ejecución autorizadas que correspondan.
+
+---
+
+#### 37. Transferencia interna
+
+Se conserva:
+
+```text
+INTERNAL_TRANSFER != EXTERNAL_PURCHASE
+INTERNAL_TRANSFER != EXTERNAL_SALE
+INTERNAL_TRANSFER != LEGAL_REVENUE
+INTERNAL_TRANSFER != LEGAL_EXPENSE
+```
+
+La salida y entrada de la misma unidad no crean dos cantidades ni dos costos por defecto.
+
+---
+
+#### 38. Diferencia entre origen y destino
+
+En una transferencia interna, la UX puede detectar:
+
+- cantidad despachada diferente de recibida;
+- lote distinto;
+- condición distinta;
+- custodia abierta;
+- recepción faltante;
+- ubicación no confirmada.
+
+El caso permanece físico hasta que el owner correspondiente resuelva la fuente.
+
+---
+
+#### 39. Fechas y periodos
+
+Se mantienen separadas, cuando apliquen:
+
+- fecha de producción;
+- fecha de consumo;
+- fecha de movimiento;
+- fecha de calidad;
+- fecha de disposición;
+- fecha de cierre productivo;
+- fecha económica;
+- fecha de conciliación;
+- periodo operativo;
+- periodo económico;
+- periodo contable/fiscal.
+
+Una diferencia temporal legítima no se fuerza a otra fecha.
+
+---
+
+#### 40. Costos como contexto, no como autoridad física
+
+La superficie puede mostrar costo o valoración disponibles para explicar impacto, pero:
+
+```text
+COST_VALUE != PHYSICAL_SOURCE_OF_TRUTH
+```
+
+La ausencia o divergencia de costo no autoriza editar cantidades físicas.
+
+---
+
+#### 41. Método de costo fuera de alcance
+
+UX-019 no decide:
+
+- estándar;
+- promedio;
+- último;
+- real;
+- landed;
+- productivo;
+- logístico;
+- interno.
+
+Ese ownership permanece en `NUMERA-DOM-007` y `NUMERA-UX-022`.
+
+---
+
+#### 42. Costos sin hecho físico
+
+Un costo que pretende representar consumo, terminado, merma o ajuste sin evidencia física o productiva suficiente abre un caso de integridad.
+
+No se considera reconciliado por existir un importe.
+
+---
+
+#### 43. Hecho físico sin efecto económico esperado
+
+Cuando existe un hecho físico válido pero falta el efecto económico esperado:
+
+- no se duplica el movimiento;
+- se marca el efecto económico pendiente;
+- se conserva owner y condición de salida;
+- se verifica idempotencia antes de cualquier recuperación.
+
+---
+
+#### 44. Duplicados y replay
+
+Replay, redelivery, backfill o reintento del mismo hecho no crean:
+
+- segundo consumo;
+- segunda entrada de terminado;
+- segunda merma;
+- segundo ajuste;
+- segundo costo;
+- segundo caso de conciliación equivalente.
+
+---
+
+#### 45. Resultado desconocido
+
+Se fija:
+
+```text
+UNKNOWN_RESULT != FAILED_RESULT
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+```
+
+No se repite ciegamente una acción para obtener “certeza”.
+
+---
+
+#### 46. Fuente incompleta y frescura
+
+Cada lado debe poder declarar:
+
+- última versión o evento considerado;
+- fecha/hora de corte;
+- fuentes pendientes;
+- cobertura conocida;
+- si el dataset puede estar incompleto.
+
+Fuente incompleta no equivale a cero diferencia.
+
+---
+
+#### 47. Matching sugerido
+
+Un match sugerido puede usar identidad, lote, movimiento, cantidad, unidad, fecha y correlación.
+
+```text
+SUGGESTED_MATCH != APPROVED_MATCH
+```
+
+La UI debe explicar por qué lo propone y qué evidencia falta.
+
+---
+
+#### 48. Estados UX del caso
+
+Sin crear estados nuevos de `VPROC-*`, la experiencia puede representar:
+
+```text
+OPEN
+MATCH_SUGGESTED
+PARTIALLY_RECONCILED
+DIFFERENCE_UNDER_REVIEW
+BUSINESS_VARIANCE_EXPLAINED
+WAITING_SOURCE
+RECONCILED
+BLOCKED_CONFLICT
+REOPENED
+```
+
+Son estados de experiencia del caso, no mutaciones de procesos fuente.
+
+---
+
+#### 49. Clasificación de diferencias
+
+La taxonomía mínima cerrada es:
+
+1. `IDENTITY_OR_CORRELATION`;
+2. `DUPLICATE_OR_REPLAY`;
+3. `MISSING_FOGO_FACT`;
+4. `MISSING_NEXO_MOVEMENT`;
+5. `CONSUMPTION_QUANTITY`;
+6. `OUTPUT_QUANTITY`;
+7. `UNIT_OR_CONVERSION`;
+8. `LOT_OR_GENEALOGY`;
+9. `LOCATION_OR_CUSTODY`;
+10. `QUALITY_STATE`;
+11. `CONDITION_OR_DISPOSITION`;
+12. `COUNT_OR_ADJUSTMENT`;
+13. `WASTE_OR_MERMA_CLASSIFICATION`;
+14. `REWORK_OR_RECOVERY`;
+15. `INTERNAL_TRANSFER`;
+16. `TIMING_OR_CUTOFF`;
+17. `PERIOD`;
+18. `SOURCE_INCOMPLETE_OR_FRESHNESS`;
+19. `ECONOMIC_EFFECT_MISSING_OR_DUPLICATED`;
+20. `COST_WITHOUT_TRACEABLE_ORIGIN`;
+21. `STATE_INCOMPATIBILITY`;
+22. `UNKNOWN_OR_CONFLICTING_RESULT`.
+
+No existe una clase genérica `OTHER` para ocultar causas materiales.
+
+---
+
+#### 50. Clasificación de variaciones empresariales
+
+Las variaciones analíticas se muestran separadas de la taxonomía anterior. Pueden incluir:
+
+- consumo real vs teórico;
+- rendimiento real vs esperado;
+- merma real vs objetivo;
+- costo real vs estándar;
+- resultado vs presupuesto;
+- cambio contra periodo previo.
+
+Una variación explicada no requiere “corrección” de la fuente real.
+
+---
+
+#### 51. Resultados de conciliación
+
+Los resultados posibles incluyen:
+
+- match completo;
+- match parcial con residual;
+- diferencia explicada;
+- variación empresarial explicada;
+- fuente debe corregirse;
+- efecto económico pendiente;
+- duplicado confirmado tratado sin borrar historia;
+- conflicto no resuelto;
+- espera de fuente;
+- reapertura requerida.
+
+---
+
+#### 52. Corrección en FOGO
+
+Cuando la verdad productiva sea incorrecta:
+
+```text
+FOGO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+```
+
+NUMERA conserva el caso y espera la corrección o acción compensatoria del owner productivo.
+
+---
+
+#### 53. Corrección en NEXO
+
+Cuando la verdad física sea incorrecta:
+
+```text
+NEXO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+```
+
+El ajuste físico conserva autorización, movimiento compensatorio e historia.
+
+---
+
+#### 54. Corrección económica en NUMERA
+
+Si FOGO y NEXO son correctos pero el efecto económico NUMERA es incorrecto, NUMERA corrige su propia representación mediante el contrato de correcciones aplicable, sin reescribir las fuentes.
+
+---
+
+#### 55. Periodos protegidos
+
+Un evento tardío o una diferencia detectada después de cierre no autoriza edición ordinaria.
+
+La salida corresponde a `NUMERA-UX-023` cuando sea necesario corregir, reabrir o versionar periodo.
+
+---
+
+#### 56. Costos y rentabilidad
+
+UX-019 entrega fuentes reconciliadas a la capa de costo.
+
+No define la fórmula de costo ni publica rentabilidad. Ese trabajo permanece en `NUMERA-UX-022` y superficies relacionadas.
+
+---
+
+#### 57. Presentación principal de VSCREEN-0103
+
+La pantalla debe priorizar:
+
+1. alcance y periodo;
+2. casos abiertos y bloqueantes;
+3. lotes/movimientos con diferencia;
+4. variaciones empresariales separadas;
+5. residual físico/económico;
+6. fuente propietaria de cada lado;
+7. owner de resolución;
+8. evidencia y frescura;
+9. siguiente acción permitida.
+
+---
+
+#### 58. Comparador de caso
+
+El comparador muestra por separado:
+
+| Dimensión | FOGO | NEXO | NUMERA | Referencia |
+| --- | --- | --- | --- | --- |
+| identidad | lote/orden | movimiento/lote/LPN | hecho económico | plan/estándar cuando aplique |
+| cantidad | uso/salida | movimiento físico | base reconocida | esperado |
+| unidad | productiva | física | económica | regla de conversión |
+| estado | ejecución/calidad/cierre | posting/condición/ajuste | reconocido/pendiente | N/A |
+| fecha | productiva | física | económica | corte |
+
+No fusiona los lados en una única cifra opaca.
+
+---
+
+#### 59. Explicación del match
+
+Todo match debe poder indicar:
+
+- identidades que lo sustentan;
+- relaciones de causalidad;
+- cantidad/unidad comparada;
+- conversiones utilizadas;
+- evidencia fuerte;
+- señales débiles;
+- residual;
+- fuentes pendientes;
+- decisión y actor cuando exista aprobación.
+
+---
+
+#### 60. Filtros y contexto
+
+Filtros por sede, periodo, producto, lote, proceso, estado o owner ayudan a navegar, pero:
+
+```text
+FILTER_SELECTION_IS_SOURCE_FACT = NO
+```
+
+El contexto visual nunca sustituye identidad ni autoridad.
+
+---
+
+#### 61. Autorización
+
+Ver un caso no autoriza:
+
+- corregir FOGO;
+- ajustar NEXO;
+- aprobar disposición;
+- modificar costo;
+- cerrar periodo;
+- aprobar una excepción material.
+
+Cada acción conserva el permiso y owner aplicables.
+
+---
+
+#### 62. Segregación
+
+Cuando exista impacto material o sensible, proponer match, aprobar match, ejecutar corrección física y aprobar corrección económica no se fusionan automáticamente en un solo actor.
+
+---
+
+#### 63. Concurrencia y decisiones stale
+
+Si una fuente cambia después de abrir el caso:
+
+- la decisión previa se marca stale;
+- se actualizan versiones/cortes;
+- se recalcula el residual;
+- se exige nueva revisión cuando el cambio sea material.
+
+No se cierra con un snapshot obsoleto.
+
+---
+
+#### 64. Reversión de matching
+
+Revertir un match:
+
+- conserva el match original;
+- conserva actor, motivo y evidencia;
+- no revierte automáticamente producción o movimientos físicos;
+- permite un nuevo match trazable.
+
+---
+
+#### 65. Evidencia y auditoría
+
+La evidencia debe permitir reconstruir:
+
+```text
+DETECCION
+-> FUENTES Y CORTES
+-> MATCH O DIFERENCIA
+-> CLASIFICACION
+-> DECISION
+-> ACCIONES EN OWNERS
+-> RECONCILIACION POSTERIOR
+-> CIERRE O REAPERTURA
+```
+
+---
+
+#### 66. Estado vacío
+
+Una vista sin casos bajo filtros significa solamente que no hay casos visibles en ese alcance.
+
+No demuestra:
+
+- completitud de todas las fuentes;
+- ausencia global de diferencias;
+- ausencia de variaciones;
+- cierre de todos los periodos.
+
+---
+
+#### 67. Históricos y backfill
+
+Datos históricos incompletos pueden conservar limitaciones explícitas.
+
+No se fabrican lotes, movimientos, matches o conciliaciones “como si” hubieran ocurrido en tiempo real cuando la evidencia histórica no existe.
+
+---
+
+#### 68. Observabilidad futura
+
+Una materialización posterior podrá medir, sin que UX-019 la implemente:
+
+- casos abiertos por clase;
+- tiempo de resolución;
+- residual por owner;
+- lotes sin movimiento;
+- movimientos sin lote;
+- ajustes por conteo;
+- pérdidas/disposiciones;
+- transferencias con diferencia;
+- efectos económicos faltantes;
+- variaciones productivas explicadas.
+
+---
+
+#### 69. Escenarios mínimos de validación futura
+
+La implementación deberá poder demostrar al menos estos 20 escenarios:
+
+1. consumo FOGO y movimiento NEXO correlacionados producen un solo efecto económico;
+2. FOGO reporta más consumo que NEXO y queda residual visible;
+3. NEXO registra consumo sin hecho FOGO correlacionable;
+4. consumo real difiere de receta teórica pero FOGO y NEXO coinciden: variación empresarial, no diferencia de conciliación;
+5. `OUTPUT_REPORTED` antes de calidad no se presenta como terminado disponible;
+6. calidad libera pero falta ingreso físico: caso pendiente;
+7. ingreso físico de terminado sin lote FOGO correlacionable: diferencia;
+8. merma incluida en consumo total no se suma como segundo consumo;
+9. reproceso conserva origen y nuevos consumos solo aparecen si hubo nuevos movimientos;
+10. conteo con diferencia sin ajuste aprobado no crea efecto económico;
+11. ajuste aprobado con movimiento compensatorio queda reconciliable;
+12. cuarentena sin disposición no se presenta como pérdida definitiva;
+13. disposición ejecutada conserva efecto físico/económico correlacionado;
+14. transferencia interna completa no crea compra, venta, ingreso o gasto legal por defecto;
+15. transferencia interna con faltante mantiene diferencia origen/destino;
+16. unidades distintas requieren conversión gobernada y conservan originales;
+17. replay del mismo evento o movimiento no duplica consumo, terminado ni costo;
+18. evento tardío sobre periodo protegido se enruta a tratamiento de periodo;
+19. costo o efecto económico sin hecho físico/productivo suficiente queda bloqueado;
+20. hecho físico válido sin efecto económico esperado queda pendiente sin repetir el movimiento.
+
+---
+
+#### 70. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-019 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| método numérico de costo no pertenece a UX-019 | no | `NUMERA-UX-022` / `NUMERA-DOM-007` | método, versión, fuentes y vigencia quedan definidos y materializados |
+| cuentas por pagar no pertenecen a inventario/producción | no | `NUMERA-UX-020` | obligación externa conserva origen, documento, aprobación y saldo |
+| bancos/tesorería no pertenecen a UX-019 | no | `NUMERA-UX-021` | movimientos financieros y matching bancario quedan materializados |
+| corrección de periodo puede requerirse por evento tardío | no | `NUMERA-UX-023` | reapertura/corrección versionada conserva historia |
+| motor físico de matching todavía no existe | no | paquetes físicos aplicables | materialización implementa este contrato sin escrituras cruzadas |
+
+---
+
+#### 71. Decisiones congeladas
+
+```text
+INVENTORY_PRODUCTION_VARIANCE_RECONCILIATION_CONTRACT = NUMERA-INVENTORY-PRODUCTION-VARIANCE-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0103
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES
+FOGO_PRODUCTIVE_AUTHORITY_PRESERVED = YES
+NEXO_PHYSICAL_AUTHORITY_PRESERVED = YES
+BUSINESS_VARIANCE_IS_RECONCILIATION_DIFFERENCE = NO
+FOGO_CONSUMPTION_AND_NEXO_MOVEMENT_CREATE_TWO_EFFECTS = NO
+OUTPUT_REPORTED_IS_FINISHED_INVENTORY = NO
+QUALITY_DECISION_IS_PHYSICAL_MOVEMENT = NO
+COUNT_DIFFERENCE_IS_ADJUSTMENT = NO
+QUARANTINE_IS_WRITE_OFF = NO
+INTERNAL_TRANSFER_IS_PURCHASE_OR_SALE = NO
+INTERNAL_TRANSFER_IS_LEGAL_REVENUE_OR_EXPENSE_BY_DEFAULT = NO
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_PRESERVES_RESIDUAL = YES
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+SOURCE_INCOMPLETE_IS_ZERO_DIFFERENCE = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+FOGO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+NEXO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+DIFFERENCE_CLASS_COUNT = 22
+VALIDATION_SCENARIO_COUNT = 20
+COST_METHOD_OWNER = NUMERA_UX_022
+PAYABLE_OWNER = NUMERA_UX_020
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La conducta queda cubierta por requisitos canónicos existentes de NUMERA, FOGO, NEXO e integración. Crear nuevas filas duplicaría obligaciones ya vigentes.
+
+---
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — conciliación de indicadores, costos y reportes con hechos fuente FOGO/NEXO sin duplicación manual;
+- `TREQ-NUMERA-002` — identidad, fuente, correlación, fechas, estado, evidencia e historia económica;
+- `TREQ-NUMERA-004` — método, entradas, versión, vigencia y fuente de costos/variaciones, con `NUMERA-UX-019` como cobertura explícita;
+- `TREQ-FOGO-004` — ejecución, materiales, rendimiento, merma, calidad, reproceso y cierre productivo conciliado;
+- `TREQ-NEXO-011` — fuente canónica de movimientos, idempotencia, proyecciones reconciliables y ajustes no destructivos;
+- `TREQ-NEXO-012` — lote, condición, cuarentena, pérdida, disposición y trazabilidad;
+- `TREQ-INTEGRATION-013` — cadena demanda–producción–calidad–inventario–costo correlacionada e idempotente;
+- `TREQ-INTEGRATION-017` — hechos de inventario, producción y merma hacia NUMERA sin doble efecto;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas.
+
+---
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto |
+| LOCAL | NOT_EXECUTED | reemplazo, formato, quality, delivery, topología, plan y TREQ quedan para el checkout del usuario tras cierre de UX-018 |
+| REMOTA | PASS | se verificaron `vento-shell/main`, secuencia activa, topología `DEFINE_ONCE`, `VSCREEN-0103`, `VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES`, procesos FOGO `VPROC-0034..0037`, procesos NEXO `VPROC-0024..0028`, `NUMERA-DOM-004`, Registro 04A y contratos de integración aplicables; UX-018 se consume desde su archivo completo aprobado mientras permanece pendiente de publicación |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron producciones, movimientos, conteos, ajustes, disposiciones, transferencias, costeo ni conciliaciones reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-019` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 75. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. `VSCREEN-0103` y `VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES` quedan como owners UX;
+2. FOGO conserva autoridad productiva;
+3. NEXO conserva autoridad física;
+4. NUMERA conserva autoridad económica;
+5. plan y realidad permanecen distintos;
+6. consumo FOGO y movimiento NEXO no se duplican como dos efectos;
+7. salida productiva no se presenta como terminado antes de calidad/movimiento aplicables;
+8. calidad no se confunde con movimiento físico;
+9. cierre productivo no se confunde con cierre económico;
+10. diferencia de conciliación se distingue de variación empresarial;
+11. matching conserva identidad, unidad, cantidad, lote y lineage;
+12. señales débiles no confirman match por sí solas;
+13. agrupamientos son descomponibles;
+14. diferencias de cantidad conservan residual;
+15. conversiones no sobrescriben unidades originales;
+16. genealogía de reproceso se conserva;
+17. merma no se duplica como segundo consumo cuando ya forma parte del movimiento;
+18. conteo no produce ajuste por sí solo;
+19. ajuste exige decisión y movimiento compensatorio;
+20. cuarentena no se presenta como baja;
+21. transferencias internas no se tratan como compra/venta o ingreso/gasto legal por defecto;
+22. fechas y periodos permanecen diferenciados;
+23. costo no se usa como fuente física;
+24. método de costo permanece fuera de UX-019;
+25. costo sin origen trazable abre diferencia;
+26. hecho físico sin efecto económico esperado queda pendiente;
+27. replay no duplica efectos;
+28. unknown exige consulta/conciliación;
+29. fuente incompleta no equivale a cero diferencia;
+30. matching sugerido no equivale a aprobado;
+31. no se crean estados nuevos de procesos fuente;
+32. la taxonomía contiene exactamente 22 clases de diferencia;
+33. las variaciones empresariales se muestran aparte;
+34. correcciones FOGO permanecen en FOGO;
+35. correcciones NEXO permanecen en NEXO;
+36. correcciones económicas NUMERA no sobrescriben fuentes;
+37. evento tardío respeta periodo protegido;
+38. UX-019 no define fórmula de costo;
+39. VSCREEN-0103 muestra claramente FOGO/NEXO/NUMERA/referencia;
+40. filtros no se convierten en autoridad;
+41. segregación sensible permanece explícita;
+42. decisiones stale exigen revisión;
+43. revertir match conserva historia;
+44. evidencia reconstruye detección a cierre;
+45. estado vacío no afirma completitud global;
+46. históricos incompletos no se fabrican como conciliados;
+47. los 20 escenarios mínimos quedan definidos;
+48. todos los hallazgos tienen owner y condición de salida;
+49. no se crean ni modifican requisitos de prueba;
+50. no se realizan cambios físicos;
+51. UX-020 recibe una frontera explícita para que cuentas por pagar no nazcan de movimientos internos sin obligación externa válida.
+
+---
+
+#### 76. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0103`;
+- crea motor de matching;
+- crea tablas, índices, APIs, RPC, Server Actions, RLS o migraciones;
+- modifica Supabase;
+- modifica FOGO;
+- modifica NEXO;
+- ejecuta producción;
+- ejecuta movimientos o conteos;
+- aprueba ajustes;
+- ejecuta disposiciones;
+- recalcula inventario;
+- define fórmulas de costo;
+- calcula landed cost;
+- publica rentabilidad;
+- crea cuentas por pagar;
+- ejecuta pagos;
+- concilia bancos;
+- corrige periodos;
+- define tolerancias universales;
+- define materialidad universal;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-020`.
+
+---
+
+#### 77. Handoff a NUMERA-UX-020
+
+La siguiente tarea recibe:
+
+```text
+INVENTORY_PRODUCTION_VARIANCE_RECONCILIATION_CONTRACT = NUMERA-INVENTORY-PRODUCTION-VARIANCE-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0103
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES
+FOGO_PRODUCTIVE_AUTHORITY_PRESERVED = YES
+NEXO_PHYSICAL_AUTHORITY_PRESERVED = YES
+BUSINESS_VARIANCE_IS_RECONCILIATION_DIFFERENCE = NO
+PHYSICAL_MOVEMENT_IS_PAYABLE = NO
+PRODUCTION_FACT_IS_PAYABLE = NO
+INTERNAL_TRANSFER_IS_EXTERNAL_PAYABLE = NO
+INTERNAL_TRANSFER_IS_LEGAL_EXPENSE_BY_DEFAULT = NO
+COST_METHOD_OWNER = NUMERA_UX_022
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+PAYABLE_OWNER = NUMERA_UX_020
+DIFFERENCE_CLASS_COUNT = 22
+VALIDATION_SCENARIO_COUNT = 20
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-020` deberá diseñar cuentas por pagar únicamente cuando exista una obligación externa válida y trazable, sin convertir consumos, movimientos internos, merma, producción o transferencias internas en obligaciones por pagar por inferencia.
+
+---
+
+#### 78. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-018
+-> NUMERA-UX-019
+-> NUMERA-UX-020
+```
+
+UX-019 consume la frontera compras/recepciones de UX-018 sin apropiarse de ORIGO y entrega a UX-020 una separación explícita entre movimiento/costo interno y obligación externa.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-018 — Diseñar conciliación de compras y recepciones`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado`
 ### [ ] NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
 ### [ ] NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
 ### [ ] NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
