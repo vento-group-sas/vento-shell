@@ -6108,7 +6108,1337 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-006 — Diseñar inicio para contador`
-### [ ] NUMERA-UX-006 — Diseñar inicio para contador
+### ✅ NUMERA-UX-006 — Diseñar inicio para contador
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-005 — Diseñar inicio para gerente de sede
+**Tarea siguiente:** NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
+**Tipo de tarea:** definición documental del inicio financiero de NUMERA para la presentación funcional `contador`, reutilizando `VSCREEN-0094` como superficie canónica de entrada y lectura, conservando su naturaleza `MONITOR` / `CROSS_CUTTING`, priorizando colas, excepciones y handoffs hacia el `FINANCIAL_COMMAND_PLANE` solo cuando exista autoridad financiera efectiva, con alcance `G-FIN` limitado a cada capacidad concedida, evidencia fuente `G-SRC` de solo consulta, segregación de funciones y cero comandos financieros inline; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica rutas, pantallas, componentes React, permisos, roles, grants, datasets RBAC, procesos, estados, tablas, vistas, RPC, RLS, migraciones, Supabase, datos financieros, facturas, conciliaciones, pagos, cierres, presupuestos, exportaciones, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el inicio de NUMERA para una persona cuyo rol base funcional sea `contador`, de forma que pueda reconocer el periodo y alcance financiero con el que trabaja, priorizar hechos, documentos, conciliaciones, obligaciones, cierres y excepciones que requieren atención, consultar evidencia fuente autorizada y navegar hacia la superficie financiera especializada correspondiente sin convertir el home en una estación de mutación, un aprobador universal ni un acceso administrativo global.
+
+El resultado debe servir como contrato de experiencia para la futura materialización de `VSCREEN-0094 — Inicio financiero y ejecutivo` bajo la presentación `contador` y como frontera explícita frente a propietario, gerente general, gerente de sede y auxiliar autorizada.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea produce un contrato UX documental;
+- no crea instancia física propia;
+- no modifica `vento-numera`;
+- no modifica `vento-shell` fuera de su bloque documental cuando sea incorporada;
+- no materializa permisos ni matrices RBAC;
+- no crea rutas ni pantallas nuevas;
+- no ejecuta side effects financieros;
+- no cambia datos de Supabase.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-005
+
+La predecesora aprobada entrega:
+
+```text
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+SITE_MANAGER_HOME_SCREEN_ID = VSCREEN-0094
+SITE_MANAGER_HOME_PRESENTATION_PROFILE = gerente
+SITE_MANAGER_HOME_PRESENTATION_LABEL = gerente de sede
+SITE_MANAGER_HOME_PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+SITE_MANAGER_HOME_INLINE_FINANCIAL_COMMANDS = 0
+SITE_MANAGER_HOME_REGION_COUNT = 7
+SITE_MANAGER_HOME_PROCESS_COUNT = 7
+SITE_MANAGER_HOME_TARGET_SCREEN_COUNT = 20
+SITE_MANAGER_HOME_HOME_SCREEN_COUNT = 1
+SITE_MANAGER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+SITE_MANAGER_HOME_SCREEN_MISSING_COUNT = 0
+SITE_MANAGER_HOME_SCREEN_DUPLICATE_COUNT = 0
+SITE_MANAGER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+SITE_MANAGER_HISTORICAL_NUMERA_LOCAL_READ_COUNT = 5
+SITE_MANAGER_HISTORICAL_NUMERA_GLOBAL_READ_COUNT = 0
+SITE_MANAGER_NEW_PERMISSION_AUTO_GRANT = NO
+SITE_MANAGER_GLOBAL_CONSOLIDATION = NO
+SELECTED_SITE_IS_AUTHORIZED_SITE = NO
+PRIMARY_SITE_IS_AUTHORIZED_SCOPE = NO
+UNION_OF_ASSIGNED_SITES_IS_GLOBAL = NO
+ORG_LOCAL_IS_ORGANIZATION_WIDE = NO
+SITE_MANAGEMENT_IS_ACCOUNTING_SPECIALIST_AUTHORITY = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+NUMERA_SITE_MANAGER_HOME_IS_VISO_EXECUTIVE_HOME = NO
+UX_006_OWNER = ACCOUNTANT_HOME
+TREQ_CHANGES = 0
+```
+
+La 006 consume este handoff sin heredar la territorialidad de `gerente`: el contador posee una matriz funcional financiera propia y el alcance de cada capacidad debe resolverse desde esa matriz.
+
+---
+
+#### 4. Contrato producido
+
+La tarea define:
+
+```text
+NUMERA-ACCOUNTANT-HOME-001
+```
+
+con la identidad funcional:
+
+```text
+SCREEN_ID = VSCREEN-0094
+SCREEN_NAME = Inicio financiero y ejecutivo
+PRESENTATION_PROFILE = contador
+HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+PRIMARY_WORK_ORIENTATION = FINANCIAL_COMMAND_PLANE
+INLINE_FINANCIAL_COMMANDS = 0
+COMMAND_EXECUTION_LOCATION = AUTHORIZED_TARGET_SCREEN_ONLY
+COMMAND_HANDOFF = EXPLICIT_TO_CANONICAL_TARGET_SCREEN
+AUTHORIZATION_SOURCE = EFFECTIVE_PERMISSION_SET
+ROLE_NAME_GRANTS_AUTHORITY = NO
+GLOBAL_FINANCIAL_SCOPE_IMPLIES_GLOBAL_ADMINISTRATION = NO
+```
+
+`PRIMARY_WORK_ORIENTATION = FINANCIAL_COMMAND_PLANE` significa que el home prioriza trabajo financiero pendiente y accesos hacia superficies especializadas. No convierte a `VSCREEN-0094` en superficie de comando.
+
+---
+
+#### 5. Identidad de la superficie
+
+El inicio del contador no crea una pantalla nueva.
+
+Se conserva:
+
+```text
+ACCOUNTANT_HOME_SCREEN_ID = VSCREEN-0094
+```
+
+`VSCREEN-0094` continúa vinculado a:
+
+```text
+VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+PRIMARY_ACTION = MONITOR
+STEP_PHASE = CROSS_CUTTING
+```
+
+La especialización ocurre por composición, prioridad, permisos y handoffs; no mediante una segunda identidad de pantalla.
+
+---
+
+#### 6. NUMERA no sustituye VISO ni convierte al contador en administrador global
+
+El inicio del contador pertenece a NUMERA y organiza trabajo económico, financiero, contable, de conciliación y análisis.
+
+Se congela:
+
+```text
+NUMERA_ACCOUNTANT_HOME
+!= VISO_EXECUTIVE_HOME
+!= VENTO_OS_GLOBAL_HOME
+```
+
+El contador puede tener alcance organizacional sobre una capacidad financiera concreta sin obtener por ello autoridad sobre personal, seguridad, configuración, inventario, producción, marketing, fidelización o gobierno empresarial.
+
+---
+
+#### 7. Significado de `contador` en esta tarea
+
+`contador` es un rol funcional financiero transversal.
+
+Se conserva:
+
+```text
+contador != administrador_global
+contador != gerente_general
+contador != gerente
+contador != aprobador_universal
+contador != service_role
+contador != operational_bypass
+contador != APP_REVIEW_ACCESS
+```
+
+La autorización final siempre depende de permiso explícito, alcance del permiso, recurso exacto, estado actual, controles de sensibilidad y denegaciones aplicables.
+
+---
+
+#### 8. Matriz RBAC histórica completa del rol
+
+La matriz canónica de `contador` evaluó un catálogo histórico de 112 permisos y resolvió:
+
+```text
+ACCOUNTANT_HISTORICAL_CATALOG_PERMISSION_COUNT = 112
+ACCOUNTANT_HISTORICAL_GRANTED_PERMISSION_COUNT = 45
+ACCOUNTANT_HISTORICAL_DENIED_PERMISSION_COUNT = 67
+ACCOUNTANT_HISTORICAL_BASE_AND_OPERATIONAL_COMPONENT_COUNT = 0
+```
+
+Las 45 concesiones combinan capacidades financieras específicas, consultas de evidencia fuente y referencias organizacionales necesarias.
+
+No representan acceso general a 45 funciones arbitrarias ni una autorización heredada hacia permisos creados después.
+
+---
+
+#### 9. Matriz RBAC histórica NUMERA
+
+Dentro del catálogo histórico, `contador` recibió exactamente seis claves NUMERA:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Resultado:
+
+```text
+ACCOUNTANT_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+ACCOUNTANT_HISTORICAL_NUMERA_G_FIN_READ_COUNT = 5
+ACCOUNTANT_HISTORICAL_NUMERA_COMMAND_PERMISSION_COUNT = 0
+```
+
+`numera.access` utiliza `NT-APP`; las cinco lecturas utilizan `G-FIN`.
+
+---
+
+#### 10. `G-FIN` no equivale a administración global
+
+`G-FIN` autoriza alcance organizacional ordinario únicamente para la capacidad financiera exacta concedida.
+
+Se congela:
+
+```text
+G_FIN != GLOBAL_ADMINISTRATION
+G_FIN != ALL_NUMERA_DATA
+G_FIN != ALL_NUMERA_ACTIONS
+G_FIN != APP_REVIEW
+G_FIN != SECRET_ACCESS
+```
+
+Una lectura global de rentabilidad no concede registrar gastos, aprobar pagos, cerrar periodos, exportar, publicar escenarios ni modificar la fuente que origina el dato.
+
+---
+
+#### 11. El contador no necesita asignación por sede para una lectura `G-FIN`
+
+Cuando una lectura vigente tenga alcance `G-FIN`, la sede seleccionada opera como filtro de consulta y no como fuente de autoridad ni como límite artificial de ese permiso.
+
+Se conserva:
+
+```text
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+SITE_ASSIGNMENT_REQUIRED_FOR_G_FIN = NO
+```
+
+Esto no permite que otra capacidad no financiera herede el mismo alcance.
+
+---
+
+#### 12. Evidencia fuente `G-SRC`
+
+La matriz funcional del contador también puede conceder lectura de evidencia producida por otros dominios mediante `G-SRC`.
+
+Se conserva:
+
+```text
+G_SRC = SOURCE_EVIDENCE_READ
+G_SRC != SOURCE_PROCESS_AUTHORITY
+G_SRC != SOURCE_MUTATION
+G_SRC != SOURCE_APPROVAL
+```
+
+El contador puede verificar la evidencia necesaria para conciliación, costeo o trazabilidad sin operar el proceso fuente.
+
+---
+
+#### 13. Referencias organizacionales `ORG-REF`
+
+Una referencia organizacional necesaria para interpretar un documento financiero puede consultarse mediante `ORG-REF` cuando exista la concesión correspondiente.
+
+Se conserva:
+
+```text
+ORG_REF = REFERENCE_READ
+ORG_REF != ORGANIZATION_ADMINISTRATION
+```
+
+La experiencia no transforma una referencia de empresa, negocio, sede, producto, proveedor u otra identidad en autoridad de mantenimiento sobre ese catálogo.
+
+---
+
+#### 14. Las capacidades NUMERA nuevas no se conceden automáticamente
+
+Después de la matriz histórica, NUMERA alcanzó:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT = 119
+```
+
+La matriz histórica no evaluó las capacidades creadas posteriormente.
+
+Se congela:
+
+```text
+ACCOUNTANT_NEW_PERMISSION_AUTO_GRANT = NO
+```
+
+Una capacidad nueva de lectura o comando requiere asignación canónica expresa antes de aparecer como autoridad efectiva del contador.
+
+---
+
+#### 15. Orientación primaria del inicio
+
+La tarea `NUMERA-UX-002` permite que el inicio del contador priorice el plano financiero de trabajo sin mezclar lectura y comando.
+
+Se define:
+
+```text
+HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+PRIMARY_WORK_ORIENTATION = FINANCIAL_COMMAND_PLANE
+```
+
+Por tanto, el home debe privilegiar información que ayude al contador a localizar trabajo autorizado, pero cualquier acción material se ejecuta únicamente en la superficie destino después de una nueva decisión de autorización.
+
+---
+
+#### 16. Invariante principal del home
+
+`VSCREEN-0094` permanece una superficie de lectura y navegación.
+
+```text
+ACCOUNTANT_HOME_INLINE_MUTATION = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_APPROVAL = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_PAYMENT = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_RECONCILIATION = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_CLOSE = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_REOPEN = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_WRITE_OFF = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_EXPORT = FORBIDDEN
+ACCOUNTANT_HOME_INLINE_PLANNING_MUTATION = FORBIDDEN
+```
+
+La prioridad de trabajo financiero no altera esta regla.
+
+---
+
+#### 17. Objetivo de decisión humana
+
+El inicio debe permitir al contador responder, dentro de su autoridad efectiva:
+
+- qué periodo, entidad, moneda y contexto financiero está observando;
+- qué hechos o documentos requieren clasificación, soporte o revisión;
+- qué conciliaciones presentan diferencias o pendientes;
+- qué obligaciones, cartera, cumplimiento o tesorería requieren revisión financiera;
+- qué ciclos de costo o cierre presentan excepciones;
+- qué reportes, variaciones o resultados necesitan análisis;
+- qué superficie especializada debe abrir para continuar una tarea autorizada;
+- si el dato disponible es vigente, trazable y suficiente para decidir el siguiente paso.
+
+El home no decide ni ejecuta la acción final.
+
+---
+
+#### 18. Arquitectura lógica del inicio
+
+`NUMERA-ACCOUNTANT-HOME-001` define siete regiones lógicas:
+
+```text
+ACCOUNTANT_HOME_REGION_01 = ACCOUNTING_CONTEXT_AND_PERIOD
+ACCOUNTANT_HOME_REGION_02 = FINANCIAL_WORK_QUEUE
+ACCOUNTANT_HOME_REGION_03 = ECONOMIC_FACT_AND_DOCUMENT_STATUS
+ACCOUNTANT_HOME_REGION_04 = RECONCILIATION_AND_EXCEPTION_STATUS
+ACCOUNTANT_HOME_REGION_05 = OBLIGATION_TREASURY_AND_COMPLIANCE_STATUS
+ACCOUNTANT_HOME_REGION_06 = COST_CLOSE_ANALYTICS_AND_PLANNING
+ACCOUNTANT_HOME_REGION_07 = DATA_PROVENANCE_AND_CONTROL
+ACCOUNTANT_HOME_REGION_COUNT = 7
+```
+
+Son regiones funcionales, no nombres obligatorios de componentes React ni decisiones de layout físico.
+
+---
+
+#### 19. Región 01 — Contexto contable y periodo
+
+`ACCOUNTING_CONTEXT_AND_PERIOD` debe poder declarar, cuando aplique:
+
+- organización o entidad económica;
+- periodo o fecha de corte;
+- moneda;
+- sede, negocio, centro de costo u otra dimensión usada como filtro;
+- versión o estado del periodo;
+- condición de frescura;
+- fuente o proyección consumida.
+
+Un filtro visual nunca amplía autoridad.
+
+---
+
+#### 20. Periodo visible no equivale a periodo modificable
+
+Se conserva:
+
+```text
+VISIBLE_PERIOD != EDITABLE_PERIOD
+VISIBLE_CLOSED_PERIOD != REOPEN_AUTHORITY
+```
+
+El contador puede necesitar consultar periodos cerrados para análisis, auditoría o conciliación sin recibir por ello permiso de reapertura o corrección.
+
+---
+
+#### 21. Región 02 — Cola financiera de trabajo
+
+`FINANCIAL_WORK_QUEUE` organiza señales y pendientes de tareas financieras potencialmente accionables.
+
+Puede incluir, únicamente cuando exista lectura suficiente:
+
+- hechos económicos pendientes de revisión;
+- documentos incompletos o con diferencias;
+- conciliaciones pendientes;
+- obligaciones próximas o vencidas;
+- cartera con diferencias;
+- estados de tesorería que requieren revisión;
+- cierres o correcciones pendientes;
+- estados presupuestales o analíticos que requieren revisión.
+
+Mostrar una fila no concede autoridad para ejecutar su acción.
+
+---
+
+#### 22. La cola no inventa work items
+
+Los elementos visibles en `FINANCIAL_WORK_QUEUE` deben derivarse de recursos o estados canónicos existentes.
+
+Se conserva:
+
+```text
+HOME_QUEUE_ITEM != NEW_FINANCIAL_ENTITY
+HOME_QUEUE_ITEM != NEW_PROCESS_STATE
+```
+
+La UX puede ordenar y agrupar trabajo; no crea un lifecycle paralelo.
+
+---
+
+#### 23. Región 03 — Hechos económicos y documentos
+
+`ECONOMIC_FACT_AND_DOCUMENT_STATUS` prioriza la observación de hechos, soportes y documentos relevantes para procesamiento financiero.
+
+Puede proyectar, cuando esté autorizado:
+
+- hechos económicos recibidos;
+- gastos y soportes;
+- facturas y documentos fiscales;
+- paquete laboral financiero;
+- documentos fuente de compras, ventas, inventario o producción necesarios para trazabilidad.
+
+No permite editar el proceso fuente desde el home.
+
+---
+
+#### 24. Evidencia fuente no es operación fuente
+
+Se congela:
+
+```text
+SOURCE_EVIDENCE_READ != SOURCE_OPERATION
+SOURCE_EVIDENCE_READ != SOURCE_CORRECTION
+SOURCE_EVIDENCE_READ != SOURCE_APPROVAL
+```
+
+Si el documento necesita una corrección en ORIGO, NEXO, FOGO, PULSO, ANIMA u otro owner, el handoff debe conservar la propiedad original del proceso.
+
+---
+
+#### 25. Minimización de evidencia fuente
+
+La finalidad contable no autoriza exponer campos no necesarios.
+
+La proyección de evidencia debe limitarse a información requerida para:
+
+- identificar la fuente;
+- correlacionar documento o movimiento;
+- verificar importes y cantidades relevantes;
+- comprobar fecha, periodo y contraparte;
+- entender estado suficiente para conciliación;
+- conservar trazabilidad.
+
+Información personal, técnica, comercial o secreta ajena a esa finalidad permanece protegida.
+
+---
+
+#### 26. Región 04 — Conciliación y excepciones
+
+`RECONCILIATION_AND_EXCEPTION_STATUS` presenta diferencias y estados de conciliación que requieren atención.
+
+Puede incluir proyecciones autorizadas de:
+
+- ventas frente a pagos;
+- compras frente a recepciones y obligaciones;
+- inventario y producción frente a variaciones financieras;
+- movimientos bancarios frente a instrucciones o documentos;
+- soportes faltantes;
+- resultados discrepantes;
+- conciliaciones revertidas o pendientes cuando exista lectura.
+
+---
+
+#### 27. Ver una diferencia no autoriza resolverla
+
+Se conserva:
+
+```text
+READ_DIFFERENCE != RESOLVE_RECONCILIATION
+READ_RECONCILIATION != REVERSE_RECONCILIATION
+```
+
+La resolución o reversión requiere permiso exacto, recurso actual y revalidación server-side en la superficie destino.
+
+---
+
+#### 28. Región 05 — Obligaciones, tesorería y cumplimiento
+
+`OBLIGATION_TREASURY_AND_COMPLIANCE_STATUS` puede proyectar estados autorizados de:
+
+- cuentas por pagar;
+- vencimientos;
+- programación de pagos;
+- liquidez;
+- cuentas o extractos bancarios con el nivel de sensibilidad permitido;
+- impuestos y otras obligaciones de cumplimiento;
+- cartera y recaudo cuando exista lectura efectiva.
+
+La región no emite instrucciones de pago ni confirma pagos externos.
+
+---
+
+#### 29. Pago, aprobación e instrucción permanecen separados
+
+Se congela:
+
+```text
+PAYABLE_READ != PAYMENT_APPROVAL
+PAYMENT_APPROVAL != TREASURY_INSTRUCTION_ISSUE
+TREASURY_INSTRUCTION_ISSUE != EXTERNAL_PAYMENT_CONFIRMED
+```
+
+La home no colapsa estas etapas en un único CTA privilegiado.
+
+---
+
+#### 30. Región 06 — Costo, cierre, analítica y planificación
+
+`COST_CLOSE_ANALYTICS_AND_PLANNING` puede presentar, según autoridad efectiva:
+
+- costos y variaciones;
+- rentabilidad;
+- punto de equilibrio;
+- distribución de costos;
+- estado de cierre;
+- reportes financieros;
+- presupuesto;
+- forecast;
+- escenarios;
+- indicadores y resultados de análisis.
+
+El home conserva lectura y handoff; no ejecuta cierre, distribución, publicación ni mutación de planificación.
+
+---
+
+#### 31. Estados económicos no se mezclan
+
+Se conserva:
+
+```text
+REAL != BUDGET
+REAL != FORECAST
+REAL != SCENARIO
+BUDGET != FORECAST
+FORECAST != SCENARIO
+PROPOSED != APPROVED
+APPROVED != PUBLISHED
+```
+
+La presentación del contador debe preservar el tipo y estado de cada cifra o versión.
+
+---
+
+#### 32. Región 07 — Procedencia y control del dato
+
+`DATA_PROVENANCE_AND_CONTROL` debe poder distinguir:
+
+```text
+VALUE_CONFIRMED
+VALUE_STALE
+VALUE_UNKNOWN
+VALUE_NOT_AVAILABLE
+VALUE_NOT_AUTHORIZED
+VALUE_NOT_APPLICABLE
+```
+
+Cuando corresponda, la proyección deberá conservar método, entradas, versión, vigencia, entidad, centro, periodo y fuente.
+
+---
+
+#### 33. Cero no equivale a dato ausente
+
+Se congela:
+
+```text
+ZERO != UNKNOWN
+ZERO != NOT_AVAILABLE
+ZERO != NOT_AUTHORIZED
+ZERO != NOT_APPLICABLE
+```
+
+La ausencia de datos, un deny o un error técnico no se presenta como cero confirmado.
+
+---
+
+#### 34. Frescura
+
+La pantalla no debe conservar una cifra anterior como si perteneciera al nuevo periodo, filtro o recurso después de un cambio de contexto.
+
+Se conserva:
+
+```text
+STALE_DATA_IS_CURRENT = NO
+CONTEXT_CHANGED_WITH_STALE_VISIBLE_VALUE = FORBIDDEN
+```
+
+---
+
+#### 35. Proceso VPROC-0010 — paquete laboral para pagos
+
+Para el contador, `VPROC-0010` se presenta como evidencia financiera y estado de reconciliación del paquete laboral autorizado.
+
+Handoff:
+
+```text
+VSCREEN-0153 — Paquete laboral para pagos y beneficios
+```
+
+El contador no decide novedades laborales ni adquiere acceso general a documentación de personal por finalidad contable.
+
+---
+
+#### 36. Proceso VPROC-0051 — hechos económicos y conciliación
+
+`VPROC-0051` es una familia primaria del inicio contable.
+
+El home puede priorizar, según permisos efectivos:
+
+- hechos recibidos;
+- gastos y soportes;
+- documentos fiscales;
+- conciliación de ventas y pagos;
+- conciliación de compras y recepciones.
+
+Handoffs:
+
+```text
+VSCREEN-0095
+VSCREEN-0096
+VSCREEN-0101
+VSCREEN-0102
+VSCREEN-0154
+```
+
+---
+
+#### 37. Proceso VPROC-0052 — obligaciones, pagos y tesorería
+
+`VPROC-0052` es una familia primaria del inicio contable.
+
+Handoffs:
+
+```text
+VSCREEN-0097
+VSCREEN-0098
+VSCREEN-0100
+VSCREEN-0155
+VSCREEN-0157
+```
+
+La presencia de una aprobación, obligación o pago pendiente no concede por sí misma autoridad de decisión o ejecución.
+
+---
+
+#### 38. Proceso VPROC-0053 — cartera
+
+El inicio puede proyectar estados autorizados de cartera y recaudo.
+
+Handoff:
+
+```text
+VSCREEN-0099
+```
+
+Lectura ordinaria, detalle sensible, acuerdo, aplicación, castigo y disputa permanecen capacidades distintas.
+
+---
+
+#### 39. Proceso VPROC-0054 — costos, rentabilidad, distribución y cierre
+
+`VPROC-0054` es una familia primaria del inicio contable.
+
+Handoffs:
+
+```text
+VSCREEN-0103
+VSCREEN-0104
+VSCREEN-0105
+VSCREEN-0158
+```
+
+El home puede priorizar diferencias, variaciones y estado del ciclo, pero toda conciliación, distribución, cierre, reapertura o corrección material se reautoriza en la superficie destino.
+
+---
+
+#### 40. Proceso VPROC-0061 — medición, análisis y mejora
+
+`VSCREEN-0094` pertenece a `VPROC-0061` y utiliza este proceso como eje transversal de lectura y priorización.
+
+Handoffs adicionales:
+
+```text
+VSCREEN-0106
+VSCREEN-0159
+```
+
+Reportar, exportar y ejecutar una acción de mejora permanecen separados de consultar el resultado.
+
+---
+
+#### 41. Proceso VPROC-0069 — presupuesto, escenarios y forecast
+
+El inicio puede proyectar planificación financiera cuando exista autoridad de lectura.
+
+Handoff:
+
+```text
+VSCREEN-0156
+```
+
+Las acciones `create`, `update`, `share`, `request`, `approve`, `reject`, `publish` y `unpublish` permanecen independientes y no se conceden por el nombre `contador`.
+
+---
+
+#### 42. Cobertura exacta de procesos
+
+La composición reconoce exactamente los siete procesos propietarios NUMERA:
+
+| Proceso | Relación con el inicio del contador | Handoff de detalle |
+| --- | --- | --- |
+| `VPROC-0010` | evidencia financiera de paquete laboral | `VSCREEN-0153` |
+| `VPROC-0051` | trabajo primario de hechos y conciliación | `VSCREEN-0095`, `0096`, `0101`, `0102`, `0154` |
+| `VPROC-0052` | trabajo primario de obligación y tesorería | `VSCREEN-0097`, `0098`, `0100`, `0155`, `0157` |
+| `VPROC-0053` | cartera y recaudo autorizados | `VSCREEN-0099` |
+| `VPROC-0054` | trabajo primario de costo y cierre | `VSCREEN-0103`, `0104`, `0105`, `0158` |
+| `VPROC-0061` | monitor, reporte y análisis | `VSCREEN-0094`, `0106`, `0159` |
+| `VPROC-0069` | planificación condicionada por permiso | `VSCREEN-0156` |
+
+Resultado:
+
+```text
+ACCOUNTANT_HOME_PROCESS_COUNT = 7
+ACCOUNTANT_HOME_PROCESS_MISSING_COUNT = 0
+ACCOUNTANT_HOME_PROCESS_DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 43. Cobertura exacta de las veinte pantallas NUMERA
+
+La presentación conserva el universo de veinte pantallas objetivo:
+
+| Pantalla | Relación con el inicio del contador | Comando inline |
+| --- | --- | --- |
+| `VSCREEN-0094` | `HOME_READ_AND_WORK_PRIORITY` | no |
+| `VSCREEN-0095` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0096` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0097` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0098` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0099` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0100` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0101` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0102` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0103` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0104` | `AUTHORIZED_ANALYTIC_HANDOFF` | no |
+| `VSCREEN-0105` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0106` | `AUTHORIZED_REPORTING_HANDOFF` | no |
+| `VSCREEN-0153` | `AUTHORIZED_EVIDENCE_HANDOFF` | no |
+| `VSCREEN-0154` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0155` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0156` | `AUTHORIZED_PLANNING_HANDOFF` | no |
+| `VSCREEN-0157` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0158` | `AUTHORIZED_FINANCIAL_WORK_HANDOFF` | no |
+| `VSCREEN-0159` | `AUTHORIZED_ANALYTIC_HANDOFF` | no |
+
+Resultado:
+
+```text
+ACCOUNTANT_HOME_TARGET_SCREEN_COUNT = 20
+ACCOUNTANT_HOME_HOME_SCREEN_COUNT = 1
+ACCOUNTANT_HOME_DRILLDOWN_SCREEN_COUNT = 19
+ACCOUNTANT_HOME_INLINE_COMMAND_SCREEN_COUNT = 0
+ACCOUNTANT_HOME_SCREEN_MISSING_COUNT = 0
+ACCOUNTANT_HOME_SCREEN_DUPLICATE_COUNT = 0
+```
+
+Estas relaciones son de experiencia y navegación potencial, no concesiones de permiso.
+
+---
+
+#### 44. Las veinte pantallas no deben mostrarse simultáneamente
+
+La matriz anterior conserva cobertura contractual.
+
+La experiencia final puede priorizar menos accesos directos según:
+
+- permiso efectivo;
+- trabajo pendiente;
+- periodo;
+- recurso;
+- sensibilidad;
+- relevancia funcional;
+- tareas UX posteriores.
+
+La ausencia visual de un acceso no altera el catálogo de pantallas.
+
+---
+
+#### 45. Handoff hacia el plano financiero de comando
+
+Cuando el contador deba continuar una tarea material:
+
+```text
+VSCREEN_0094_READ
+-> AUTHORIZED_HANDOFF
+-> COMMAND_CAPABLE_TARGET_SCREEN
+-> RESOURCE_RESOLUTION
+-> ACTION_SELECTION
+-> SERVER_REVALIDATION
+-> ALLOW_OR_DENY
+```
+
+El home puede priorizar el destino, pero no ejecuta la acción.
+
+---
+
+#### 46. Contexto transportado no es autoridad
+
+Un handoff puede transportar, cuando aplique:
+
+```text
+source_screen_id
+source_metric_or_alert
+resource_type
+resource_id_or_query_context
+entity_scope
+site_scope
+cost_center_scope
+period
+version
+intended_command
+```
+
+Se conserva:
+
+```text
+CONTEXT_HANDOFF != AUTHORITY_HANDOFF
+```
+
+---
+
+#### 47. Reautorización obligatoria
+
+Toda superficie destino capaz de producir side effects debe resolver nuevamente:
+
+- actor efectivo;
+- permiso exacto;
+- alcance;
+- recurso;
+- estado actual;
+- periodo;
+- sensibilidad;
+- segregación;
+- controles fuertes aplicables;
+- denegaciones vigentes.
+
+Se conserva:
+
+```text
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+```
+
+---
+
+#### 48. Navegación no es autorización
+
+Se congela:
+
+```text
+VISIBLE_LINK != COMMAND_PERMISSION
+VISIBLE_QUEUE_ITEM != ACTION_PERMISSION
+ROLE_NAME != AUTHORIZATION
+```
+
+La UI puede ocultar destinos que carezcan de lectura o relevancia, pero nunca puede conceder autoridad mostrando un CTA.
+
+---
+
+#### 49. Acceso parcial produce home parcial
+
+El contador no se trata como un paquete indivisible de autoridad.
+
+Si el conjunto efectivo solo permite algunas lecturas o acciones:
+
+- se componen únicamente regiones autorizadas;
+- se omiten o degradan señales no autorizadas sin filtrar conteos sensibles;
+- los handoffs se limitan a destinos permitidos;
+- el home permanece válido aunque no existan todas las capacidades objetivo.
+
+---
+
+#### 50. Conteos, importes y badges son datos protegidos
+
+Se conserva:
+
+```text
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+BADGE_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+```
+
+Un número de pendientes, un importe agregado o una severidad no puede revelar información de una familia sin autoridad de lectura suficiente.
+
+---
+
+#### 51. Agregados requieren miembros autorizados
+
+Una cifra consolidada no se considera inocua por ser agregada.
+
+Se conserva:
+
+```text
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+Cuando el permiso sea `G-FIN`, el alcance global proviene del permiso exacto. Cuando no lo sea, el agregado debe limitarse a los miembros individualmente autorizados.
+
+---
+
+#### 52. Información financiera sensible
+
+Importes, márgenes, rentabilidad, gastos, datos bancarios, cartera, crédito, conciliación y reportes pueden tener sensibilidades distintas.
+
+Se conserva:
+
+```text
+ORDINARY_READ != SENSITIVE_DETAIL_READ
+SENSITIVE_READ != EXPORT
+SENSITIVE_READ != MUTATION
+```
+
+El home utiliza el nivel mínimo suficiente y no degrada permisos especializados a una lectura general.
+
+---
+
+#### 53. Datos bancarios y tesorería
+
+La existencia de una cuenta, un movimiento o un estado de tesorería no autoriza exponer secretos, credenciales, PIN, OTP, tokens ni identificadores completos cuando una representación enmascarada sea suficiente.
+
+Se conserva:
+
+```text
+BUSINESS_FINANCIAL_PERMISSION != SECRET_ACCESS
+BANK_ACCOUNT_READ != PAYMENT_AUTHORITY
+```
+
+---
+
+#### 54. Exportación permanece independiente
+
+Se conserva:
+
+```text
+VIEW != EXPORT
+REPORT_VIEW != REPORT_EXPORT
+```
+
+Un acceso a `VSCREEN-0106` o una lectura de reportes no habilita exportación por inferencia.
+
+`NUMERA-UX-012` conserva la definición específica de la experiencia de exportación con permiso independiente.
+
+---
+
+#### 55. Segregación de funciones
+
+La presentación del contador no presume que una sola persona pueda preparar, decidir, ejecutar y verificar una misma operación.
+
+Se conserva:
+
+```text
+PREPARE != APPROVE
+APPROVE != EXECUTE
+EXECUTE != RECONCILE
+RECONCILE != REVERSE
+```
+
+Una excepción por tamaño de la organización requiere concesión y evidencia explícitas; no se deriva de la UX.
+
+---
+
+#### 56. Periodos cerrados conservan sus restricciones
+
+El rol `contador` no anula el lifecycle del periodo.
+
+Se conserva:
+
+```text
+ACCOUNTANT_ROLE != CLOSED_PERIOD_BYPASS
+```
+
+Registrar, corregir, cerrar y reabrir son acciones distintas y deben validar el estado actual.
+
+---
+
+#### 57. Autorización stale
+
+Una decisión previa deja de ser suficiente después de cambios materiales de permiso, recurso, estado, periodo o contexto.
+
+Se conserva:
+
+```text
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+```
+
+---
+
+#### 58. Estados de carga y error
+
+La UI debe distinguir:
+
+- carga;
+- dato confirmado;
+- dato stale;
+- dato no disponible;
+- dato no autorizado;
+- error técnico.
+
+Un error no se convierte en ausencia de trabajo ni en cero financiero.
+
+---
+
+#### 59. Observabilidad mínima futura
+
+La implementación deberá poder distinguir en telemetría, minimizando payload financiero sensible:
+
+- home de contador cargado;
+- región disponible o denegada;
+- cola cargada;
+- handoff iniciado;
+- superficie destino abierta;
+- comando permitido o denegado en destino;
+- error de fuente;
+- dato stale detectado.
+
+La telemetría no se materializa en esta tarea.
+
+---
+
+#### 60. Estado AS-IS y role override
+
+La auditoría AS-IS registró lógica provisional capaz de tratar `contador` como actor privilegiado para determinadas vistas o filtros.
+
+Ese comportamiento no se eleva a contrato objetivo.
+
+Se conserva:
+
+```text
+AS_IS_ROLE_OVERRIDE != TARGET_AUTHORIZATION_MODEL
+```
+
+La futura implementación debe utilizar permisos efectivos y contratos de recurso, no bypasses por nombre de rol.
+
+---
+
+#### 61. Relación con NUMERA-UX-007
+
+`NUMERA-UX-007` diseñará el inicio de `auxiliar_administrativa` como función de apoyo autorizada.
+
+No debe obtenerse copiando o reduciendo este home por inferencia.
+
+Se conserva:
+
+```text
+ACCOUNTANT_FUNCTION != AUXILIARY_FUNCTION
+```
+
+La siguiente tarea deberá resolver su propia matriz, alcance y prioridades.
+
+---
+
+#### 62. Relación con NUMERA-UX-008
+
+`NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas` conserva la decisión sobre jerarquía general indicador-versus-tabla.
+
+La 006 puede definir qué información es relevante para el contador, pero no congela todavía el orden visual final ni el catálogo definitivo de KPI.
+
+---
+
+#### 63. Relación con NUMERA-UX-009 a NUMERA-UX-012
+
+La 006 no absorbe los flujos especializados posteriores:
+
+```text
+NUMERA-UX-009 — registro de gasto
+NUMERA-UX-010 — aprobación
+NUMERA-UX-011 — cierre
+NUMERA-UX-012 — exportación con permiso independiente
+```
+
+El home únicamente define señales y handoffs hacia esas responsabilidades futuras.
+
+---
+
+#### 64. Relación con NUMERA-UX-028
+
+`NUMERA-UX-028` conserva el diseño del visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva.
+
+`NUMERA-ACCOUNTANT-HOME-001` no redefine ni adelanta ese visor.
+
+---
+
+#### 65. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- la tarea especializa una experiencia sobre pantallas, procesos y contratos de autorización ya definidos;
+- no crea conducta ejecutable nueva;
+- no crea procesos, pantallas, permisos, roles ni datos;
+- no modifica ningún requisito existente;
+- las pruebas ejecutables permanecen en los contratos y paquetes físicos que materialicen estas decisiones.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 66. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente asociada a:
+
+- `TREQ-NUMERA-001..024`;
+- `TREQ-PROC-001`;
+- `TREQ-PROC-009..017`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-015`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-017`.
+
+Esta lista es trazabilidad y no constituye una actualización del Registro 04A.
+
+---
+
+#### 67. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no produce build físico; la batería global se ejecutará después de su incorporación documental |
+| LOCAL | NOT_EXECUTED | el artefacto preparado todavía no se ha incorporado al checkout local canónico |
+| REMOTA | PASS | se verificaron `vento-shell/main@fc0e6c9cc9e01fc565bc1c31461b3918a457c3ad`, secuencia activa con `NUMERA-UX-004` como anterior, marcador canónico de `NUMERA-UX-006`, topología `DEFINE_ONCE`, políticas documentales, `AUTH-RBAC-006`, autorización NUMERA hasta `NUMERA-AUTH-015`, catálogo de veinte pantallas, Registro 04A aplicable y scripts documentales vigentes; la predecesora `NUMERA-UX-005` se consume desde su artefacto completo aprobado y permanece pendiente de cierre remoto bajo el modo documental adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea no registra gastos, resuelve conciliaciones, aprueba operaciones, ejecuta pagos, cierra periodos, exporta reportes ni modifica planificación real |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 68. Criterios de aceptación
+
+- [ ] se define exactamente un contrato `NUMERA-ACCOUNTANT-HOME-001`;
+- [ ] el home usa `VSCREEN-0094` y no crea un `VSCREEN-*` nuevo;
+- [ ] `VSCREEN-0094` permanece `MONITOR` / `CROSS_CUTTING`;
+- [ ] la presentación funcional es `contador`;
+- [ ] `contador` no se convierte en administrador global, gerente, aprobador universal, service role ni bypass operativo;
+- [ ] se preserva la matriz histórica de 112 permisos con 45 concesiones y 67 ausencias sin presentarla como catálogo NUMERA actual;
+- [ ] se preservan las seis claves NUMERA históricamente asignadas al contador;
+- [ ] exactamente cinco lecturas históricas NUMERA usan `G-FIN` y cero comandos NUMERA históricos se infieren;
+- [ ] `G-FIN` se limita a la capacidad financiera exacta y no equivale a administración global;
+- [ ] `G-SRC` permite evidencia fuente y no operación fuente;
+- [ ] `ORG-REF` permanece referencia de solo lectura;
+- [ ] toda capacidad NUMERA posterior a la matriz histórica requiere concesión canónica expresa;
+- [ ] se distingue el universo objetivo de 125 capacidades del estado de materialización compartida de 6 presentes y 119 pendientes;
+- [ ] `HOME_SURFACE_PLANE` permanece `EXECUTIVE_READ_PLANE`;
+- [ ] `PRIMARY_WORK_ORIENTATION` es `FINANCIAL_COMMAND_PLANE` sin mezclar ambos planos;
+- [ ] existen cero comandos financieros inline;
+- [ ] se definen siete regiones lógicas de trabajo contable;
+- [ ] se cubren exactamente siete procesos propietarios NUMERA;
+- [ ] se cubren exactamente veinte pantallas objetivo;
+- [ ] existe una pantalla home y diecinueve destinos potenciales de handoff;
+- [ ] la matriz de veinte pantallas no obliga a mostrar veinte accesos simultáneos;
+- [ ] ningún handoff transfiere autoridad;
+- [ ] los comandos se reautorizan server-side en la superficie destino;
+- [ ] acceso parcial produce composición parcial, no bypass;
+- [ ] conteos, importes y badges respetan autoridad de lectura;
+- [ ] agregados respetan el alcance exacto de su permiso;
+- [ ] evidencia fuente se minimiza a la finalidad financiera;
+- [ ] información sensible no se expone por inferencia;
+- [ ] lectura no implica exportación;
+- [ ] preparación, aprobación, ejecución, conciliación y reversión permanecen separadas;
+- [ ] el rol contador no omite restricciones de periodo cerrado;
+- [ ] cero, desconocido, no disponible, no autorizado y no aplicable permanecen diferenciados;
+- [ ] un dato stale no se presenta como actual;
+- [ ] real, presupuesto, forecast y escenario permanecen tipados;
+- [ ] el role override AS-IS no se trata como modelo objetivo;
+- [ ] `NUMERA-UX-007`, `NUMERA-UX-008`, `NUMERA-UX-009..012` y `NUMERA-UX-028` conservan su alcance posterior;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos.
+
+---
+
+#### 69. Límites
+
+Esta tarea no:
+
+- rediseña el inicio del propietario;
+- rediseña el inicio del gerente general;
+- rediseña el inicio del gerente de sede;
+- diseña el inicio de la auxiliar autorizada;
+- redefine la matriz RBAC de `contador`;
+- materializa las 45 concesiones históricas;
+- asigna capacidades NUMERA nuevas al contador;
+- crea una autorización global administrativa;
+- crea o modifica evidencia fuente;
+- modifica procesos propietarios externos;
+- ejecuta registro de gastos;
+- ejecuta aprobación;
+- ejecuta pagos;
+- ejecuta conciliaciones;
+- ejecuta cierres o reaperturas;
+- ejecuta exportaciones;
+- modifica presupuestos, escenarios o forecast;
+- define el catálogo final de indicadores;
+- decide el orden definitivo indicador-versus-tabla;
+- diseña el visor económico dinámico de `NUMERA-UX-028`;
+- crea pantallas;
+- crea rutas;
+- crea componentes React;
+- modifica navegación runtime;
+- crea permisos;
+- crea grants o denies;
+- crea procesos;
+- cambia estados de proceso;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-007`.
+
+---
+
+#### 70. Handoff a NUMERA-UX-007
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_ACCOUNTANT_HOME_CONTRACT = NUMERA-ACCOUNTANT-HOME-001
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+ACCOUNTANT_HOME_SCREEN_ID = VSCREEN-0094
+ACCOUNTANT_HOME_PRESENTATION_PROFILE = contador
+ACCOUNTANT_HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+ACCOUNTANT_HOME_PRIMARY_WORK_ORIENTATION = FINANCIAL_COMMAND_PLANE
+ACCOUNTANT_HOME_INLINE_FINANCIAL_COMMANDS = 0
+ACCOUNTANT_HOME_REGION_COUNT = 7
+ACCOUNTANT_HOME_PROCESS_COUNT = 7
+ACCOUNTANT_HOME_TARGET_SCREEN_COUNT = 20
+ACCOUNTANT_HOME_HOME_SCREEN_COUNT = 1
+ACCOUNTANT_HOME_DRILLDOWN_SCREEN_COUNT = 19
+ACCOUNTANT_HOME_SCREEN_MISSING_COUNT = 0
+ACCOUNTANT_HOME_SCREEN_DUPLICATE_COUNT = 0
+ACCOUNTANT_HISTORICAL_CATALOG_PERMISSION_COUNT = 112
+ACCOUNTANT_HISTORICAL_GRANTED_PERMISSION_COUNT = 45
+ACCOUNTANT_HISTORICAL_DENIED_PERMISSION_COUNT = 67
+ACCOUNTANT_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+ACCOUNTANT_HISTORICAL_NUMERA_G_FIN_READ_COUNT = 5
+ACCOUNTANT_HISTORICAL_NUMERA_COMMAND_PERMISSION_COUNT = 0
+ACCOUNTANT_NEW_PERMISSION_AUTO_GRANT = NO
+G_FIN_IS_GLOBAL_ADMINISTRATION = NO
+G_SRC_IS_SOURCE_OPERATION = NO
+ORG_REF_IS_ORGANIZATION_ADMINISTRATION = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+SITE_ASSIGNMENT_REQUIRED_FOR_G_FIN = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+AS_IS_ROLE_OVERRIDE_IS_TARGET_AUTHORIZATION_MODEL = NO
+UX_007_OWNER = AUTHORIZED_AUXILIARY_HOME
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-007` deberá diseñar la presentación de `auxiliar_administrativa` desde su propia matriz funcional y sus tareas autorizadas, sin convertirla en una copia reducida del contador ni heredar `G-FIN`, `G-SRC` o comandos por inferencia.
+
+---
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-005 — Diseñar inicio para gerente de sede`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-006 — Diseñar inicio para contador`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada`
 ### [ ] NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
 ### [ ] NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
 ### [ ] NUMERA-UX-009 — Diseñar flujo de registro de gasto
