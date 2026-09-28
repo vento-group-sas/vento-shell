@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1445** |
+| Tareas aprobadas | **1446** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **151** |
+| Tareas no iniciadas | **150** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **90.54% (1445/1596)** |
+| Porcentaje de completamiento | **90.60% (1446/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-UX-009 — Diseñar flujo de registro de gasto** |
-| Tarea actual | **NUMERA-UX-010 — Diseñar flujo de aprobación** |
+| Última tarea aprobada | **NUMERA-UX-010 — Diseñar flujo de aprobación** |
+| Tarea actual | **NUMERA-UX-011 — Diseñar flujo de cierre** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-UX-011 — Diseñar flujo de cierre** |
+| Siguiente tarea | **NUMERA-UX-012 — Diseñar exportación con permiso independiente** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 55 de 74 aprobadas; NUMERA-UX-010 pendiente** |
+| Progreso del bloque | **BLOQUE O: 56 de 74 aprobadas; NUMERA-UX-011 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-UX-010** |
+| Carril documental | **ACTIVO — NUMERA-UX-011** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-UX-009` — Diseñar flujo de registro de gasto |
-| Tarea actual | `NUMERA-UX-010` — Diseñar flujo de aprobación — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-UX-011` — Diseñar flujo de cierre |
+| Última aprobada | `NUMERA-UX-010` — Diseñar flujo de aprobación |
+| Tarea actual | `NUMERA-UX-011` — Diseñar flujo de cierre — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-UX-012` — Diseñar exportación con permiso independiente |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 55 DE 74 APROBADAS — ACTUAL NUMERA-UX-010** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 56 DE 74 APROBADAS — ACTUAL NUMERA-UX-011** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-UX-009 — Diseñar flujo de registro de gasto
-        ↓
-TAREA ACTUAL
 NUMERA-UX-010 — Diseñar flujo de aprobación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-UX-011 — Diseñar flujo de cierre
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-UX-012 — Diseñar exportación con permiso independiente
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 55 de 74 tareas aprobadas
+BLOQUE O — 56 de 74 tareas aprobadas
 ```
