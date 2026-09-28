@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1461** |
+| Aprobadas | **1462** |
 | En propuesta | **0** |
-| No iniciadas | **135** |
+| No iniciadas | **134** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **91.54% (1461/1596)** |
+| Porcentaje de completamiento | **91.60% (1462/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **135** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1362** |
+| ⏸ NO_EVALUADA | **134** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1363** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-025` — Aprobar alcance financiero antes de completar implementación | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-026` — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-027` — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-026` — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-027` — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-028` — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1223,7 +1223,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-023` | Diseñar correcciones y reaperturas sin borrar historial | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-024` | Diseñar tablero de cobertura y conciliación de fuentes | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-025` | Aprobar alcance financiero antes de completar implementación | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-026` | Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-026` | Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-027` | Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-028` | Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-CST-001` | Definir el caso de centro de costo y transferencias internas de Producción y Distribución | — | — | `bloques/O_NUMERA/03_TAREA_DERIVADA_OPS_AUD_001.md` |
