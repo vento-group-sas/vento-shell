@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1442** |
+| Aprobadas | **1443** |
 | En propuesta | **0** |
-| No iniciadas | **154** |
+| No iniciadas | **153** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **90.35% (1442/1596)** |
+| Porcentaje de completamiento | **90.41% (1443/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **154** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1343** |
+| ⏸ NO_EVALUADA | **153** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1344** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-006` — Diseñar inicio para contador | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-007` — Diseñar inicio para auxiliar autorizada | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-008` — Mostrar indicadores antes que tablas detalladas | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-007` — Diseñar inicio para auxiliar autorizada | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-008` — Mostrar indicadores antes que tablas detalladas | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-009` — Diseñar flujo de registro de gasto | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1204,7 +1204,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-004` | Diseñar inicio para gerente general | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-005` | Diseñar inicio para gerente de sede | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-006` | Diseñar inicio para contador | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-007` | Diseñar inicio para auxiliar autorizada | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-007` | Diseñar inicio para auxiliar autorizada | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-008` | Mostrar indicadores antes que tablas detalladas | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-009` | Diseñar flujo de registro de gasto | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-010` | Diseñar flujo de aprobación | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |

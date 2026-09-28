@@ -7439,7 +7439,1314 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada`
-### [ ] NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
+### ✅ NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-006 — Diseñar inicio para contador
+**Tarea siguiente:** NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
+**Tipo de tarea:** definición documental del inicio financiero de NUMERA para la presentación funcional `auxiliar_administrativa`, reutilizando `VSCREEN-0094` como superficie canónica de entrada y lectura, conservando su naturaleza `MONITOR` / `CROSS_CUTTING`, priorizando únicamente tareas de apoyo administrativo y financiero expresamente autorizadas, con `ORG-REF` para referencias organizacionales, `AS/AA` para gastos dentro de cobertura válida, exclusión por defecto de analítica financiera estratégica, cero comandos financieros inline y handoffs condicionados al permiso efectivo; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica rutas, pantallas, componentes React, permisos, roles, grants, datasets RBAC, procesos, estados, tablas, vistas, RPC, RLS, migraciones, Supabase, datos financieros, gastos, documentos, conciliaciones, pagos, cierres, presupuestos, exportaciones, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el inicio de NUMERA para una persona cuyo rol base funcional sea `auxiliar_administrativa`, de forma que pueda reconocer el alcance administrativo y territorial con el que trabaja, consultar centros de costo como referencia organizacional, revisar gastos vinculados con sedes o áreas autorizadas, identificar documentación o pendientes que requieren soporte administrativo y navegar hacia superficies especializadas únicamente cuando exista autoridad efectiva, sin convertir el home en una estación contable, un panel ejecutivo estratégico ni un acceso financiero amplio.
+
+El resultado debe servir como contrato de experiencia para la futura materialización de `VSCREEN-0094 — Inicio financiero y ejecutivo` bajo la presentación `auxiliar_administrativa`, identificada en esta secuencia UX como **auxiliar autorizada**, y como frontera explícita frente a propietario, gerente general, gerente de sede y contador.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea produce un contrato UX documental;
+- no crea instancia física propia;
+- no modifica `vento-numera`;
+- no materializa permisos ni matrices RBAC;
+- no crea rutas ni pantallas nuevas;
+- no ejecuta side effects financieros;
+- no cambia datos de Supabase.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-006
+
+La predecesora aprobada entrega:
+
+```text
+NUMERA_ACCOUNTANT_HOME_CONTRACT = NUMERA-ACCOUNTANT-HOME-001
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+ACCOUNTANT_HOME_SCREEN_ID = VSCREEN-0094
+ACCOUNTANT_HOME_PRESENTATION_PROFILE = contador
+ACCOUNTANT_HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+ACCOUNTANT_HOME_PRIMARY_WORK_ORIENTATION = FINANCIAL_COMMAND_PLANE
+ACCOUNTANT_HOME_INLINE_FINANCIAL_COMMANDS = 0
+ACCOUNTANT_HOME_REGION_COUNT = 7
+ACCOUNTANT_HOME_PROCESS_COUNT = 7
+ACCOUNTANT_HOME_TARGET_SCREEN_COUNT = 20
+ACCOUNTANT_HOME_HOME_SCREEN_COUNT = 1
+ACCOUNTANT_HOME_DRILLDOWN_SCREEN_COUNT = 19
+ACCOUNTANT_HOME_SCREEN_MISSING_COUNT = 0
+ACCOUNTANT_HOME_SCREEN_DUPLICATE_COUNT = 0
+ACCOUNTANT_HISTORICAL_CATALOG_PERMISSION_COUNT = 112
+ACCOUNTANT_HISTORICAL_GRANTED_PERMISSION_COUNT = 45
+ACCOUNTANT_HISTORICAL_DENIED_PERMISSION_COUNT = 67
+ACCOUNTANT_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+ACCOUNTANT_HISTORICAL_NUMERA_G_FIN_READ_COUNT = 5
+ACCOUNTANT_HISTORICAL_NUMERA_COMMAND_PERMISSION_COUNT = 0
+ACCOUNTANT_NEW_PERMISSION_AUTO_GRANT = NO
+G_FIN_IS_GLOBAL_ADMINISTRATION = NO
+G_SRC_IS_SOURCE_OPERATION = NO
+ORG_REF_IS_ORGANIZATION_ADMINISTRATION = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+SITE_ASSIGNMENT_REQUIRED_FOR_G_FIN = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+AS_IS_ROLE_OVERRIDE_IS_TARGET_AUTHORIZATION_MODEL = NO
+UX_007_OWNER = AUTHORIZED_AUXILIARY_HOME
+TREQ_CHANGES = 0
+```
+
+La 007 consume este handoff sin copiar la amplitud del contador. La auxiliar posee una matriz funcional propia y no hereda `G-FIN`, `G-SRC`, analítica estratégica ni comandos por semejanza de interfaz.
+
+---
+
+#### 4. Contrato producido
+
+La tarea define:
+
+```text
+NUMERA-AUTHORIZED-AUXILIARY-HOME-001
+```
+
+con la identidad funcional:
+
+```text
+SCREEN_ID = VSCREEN-0094
+SCREEN_NAME = Inicio financiero y ejecutivo
+PRESENTATION_PROFILE = auxiliar_administrativa
+PRESENTATION_LABEL = auxiliar autorizada
+HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+PRIMARY_WORK_ORIENTATION = AUTHORIZED_ADMINISTRATIVE_SUPPORT
+INLINE_FINANCIAL_COMMANDS = 0
+COMMAND_EXECUTION_LOCATION = AUTHORIZED_TARGET_SCREEN_ONLY
+COMMAND_HANDOFF = EXPLICIT_TO_CANONICAL_TARGET_SCREEN
+AUTHORIZATION_SOURCE = EFFECTIVE_PERMISSION_SET
+ROLE_NAME_GRANTS_AUTHORITY = NO
+```
+
+`AUTHORIZED_ADMINISTRATIVE_SUPPORT` es una orientación de experiencia, no un tercer plano de autorización. Los únicos planos contractuales continúan siendo `EXECUTIVE_READ_PLANE` y `FINANCIAL_COMMAND_PLANE`.
+
+---
+
+#### 5. Identidad de la superficie
+
+El inicio de la auxiliar autorizada no crea una pantalla nueva.
+
+Se conserva:
+
+```text
+AUTHORIZED_AUXILIARY_HOME_SCREEN_ID = VSCREEN-0094
+```
+
+`VSCREEN-0094` continúa vinculado a:
+
+```text
+VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+PRIMARY_ACTION = MONITOR
+STEP_PHASE = CROSS_CUTTING
+```
+
+La especialización ocurre por composición, prioridad, permisos, alcance y handoffs; no mediante una segunda identidad de pantalla.
+
+---
+
+#### 6. Correspondencia entre el título UX y el rol canónico
+
+La expresión **auxiliar autorizada** de esta tarea corresponde al rol canónico:
+
+```text
+auxiliar_administrativa
+```
+
+No se crea un rol nuevo llamado `auxiliar_autorizada`.
+
+Se congela:
+
+```text
+UX_LABEL = auxiliar autorizada
+CANONICAL_ROLE = auxiliar_administrativa
+NEW_ROLE_CREATED = NO
+```
+
+---
+
+#### 7. La auxiliar autorizada no es autoridad financiera amplia
+
+Se conserva:
+
+```text
+auxiliar_administrativa != administrador_global
+auxiliar_administrativa != gerente_general
+auxiliar_administrativa != gerente
+auxiliar_administrativa != contador
+auxiliar_administrativa != aprobador_financiero
+auxiliar_administrativa != service_role
+auxiliar_administrativa != operational_bypass
+auxiliar_administrativa != APP_REVIEW_ACCESS
+```
+
+La autorización final depende de permiso explícito, alcance funcional o territorial, recurso exacto, estado actual, sensibilidad y denegaciones aplicables.
+
+---
+
+#### 8. Matriz RBAC histórica completa del rol
+
+La matriz canónica de `auxiliar_administrativa` evaluó un catálogo histórico de 112 permisos y resolvió:
+
+```text
+AUTHORIZED_AUXILIARY_HISTORICAL_CATALOG_PERMISSION_COUNT = 112
+AUTHORIZED_AUXILIARY_HISTORICAL_GRANTED_PERMISSION_COUNT = 47
+AUTHORIZED_AUXILIARY_HISTORICAL_DENIED_PERMISSION_COUNT = 65
+AUTHORIZED_AUXILIARY_HISTORICAL_BASE_AND_OPERATIONAL_COMPONENT_COUNT = 0
+```
+
+Las 47 concesiones corresponden a funciones administrativas específicas, referencias organizacionales y coberturas territoriales concretas.
+
+No representan administración global ni herencia automática hacia permisos creados después.
+
+---
+
+#### 9. Matriz RBAC histórica NUMERA
+
+Dentro del catálogo histórico, NUMERA contiene seis claves evaluadas para `auxiliar_administrativa`.
+
+Asignadas:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+```
+
+No asignadas:
+
+```text
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Resultado:
+
+```text
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_EVALUATED_PERMISSION_COUNT = 6
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 3
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_DENIED_PERMISSION_COUNT = 3
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_READ_PERMISSION_COUNT = 2
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_STRATEGIC_ANALYTICS_PERMISSION_COUNT = 0
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_COMMAND_PERMISSION_COUNT = 0
+```
+
+---
+
+#### 10. `numera.access` solo habilita entrada
+
+`numera.access` conserva alcance `NT-APP`.
+
+Se congela:
+
+```text
+NUMERA_ACCESS != COST_CENTER_READ
+NUMERA_ACCESS != EXPENSE_READ
+NUMERA_ACCESS != STRATEGIC_ANALYTICS
+NUMERA_ACCESS != FINANCIAL_COMMAND
+```
+
+Entrar a NUMERA no habilita automáticamente métricas, filas, documentos ni acciones internas.
+
+---
+
+#### 11. Centros de costo como `ORG-REF`
+
+La lectura histórica:
+
+```text
+numera.finance.cost_centers.view
+```
+
+usa `ORG-REF`.
+
+Por tanto:
+
+```text
+ORG_REF = REFERENCE_READ
+ORG_REF != ORGANIZATION_ADMINISTRATION
+ORG_REF != COST_CENTER_MUTATION
+ORG_REF != GLOBAL_FINANCIAL_AUTHORITY
+```
+
+El centro de costo puede aparecer como referencia necesaria para clasificar o entender un gasto sin convertir a la auxiliar en administradora del catálogo financiero.
+
+---
+
+#### 12. Gastos bajo `AS/AA`
+
+La lectura histórica:
+
+```text
+numera.finance.expenses.view
+```
+
+se limita a recursos vinculados con sedes o áreas activamente asignadas o formalmente atendidas dentro del proceso administrativo autorizado.
+
+Se congela:
+
+```text
+EXPENSE_READ_SCOPE = AS_OR_AA
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+UNASSIGNED_SITE_EXPENSE_READ = DENY
+```
+
+La sede seleccionada es un filtro de interfaz y nunca amplía la cobertura autorizada.
+
+---
+
+#### 13. Analítica estratégica denegada por defecto
+
+La matriz histórica no asigna a `auxiliar_administrativa`:
+
+- punto de equilibrio;
+- rentabilidad;
+- reportes financieros consolidados.
+
+Se conserva:
+
+```text
+BREAK_EVEN_DEFAULT_ACCESS = DENY
+PROFITABILITY_DEFAULT_ACCESS = DENY
+FINANCIAL_REPORTS_DEFAULT_ACCESS = DENY
+```
+
+La experiencia no debe mostrar esos datos por el nombre del rol ni inferir que una lectura de gastos habilita analítica estratégica.
+
+---
+
+#### 14. Capacidades NUMERA nuevas no se conceden automáticamente
+
+Después de la matriz histórica, NUMERA alcanzó:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT = 119
+```
+
+La matriz histórica no evaluó las capacidades creadas posteriormente.
+
+Se congela:
+
+```text
+AUTHORIZED_AUXILIARY_NEW_PERMISSION_AUTO_GRANT = NO
+```
+
+Una nueva lectura o acción solo aparece como autoridad efectiva cuando exista concesión canónica expresa.
+
+---
+
+#### 15. Orientación primaria del inicio
+
+El home utiliza:
+
+```text
+HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+PRIMARY_WORK_ORIENTATION = AUTHORIZED_ADMINISTRATIVE_SUPPORT
+```
+
+La experiencia debe favorecer información administrativa útil para completar soporte, documentación y seguimiento financiero permitido, sin inventar un plano de comando propio.
+
+---
+
+#### 16. Invariante principal del home
+
+`VSCREEN-0094` permanece una superficie de lectura y navegación.
+
+```text
+AUTHORIZED_AUXILIARY_HOME_INLINE_MUTATION = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_APPROVAL = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_PAYMENT = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_RECONCILIATION = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_CLOSE = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_REOPEN = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_WRITE_OFF = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_EXPORT = FORBIDDEN
+AUTHORIZED_AUXILIARY_HOME_INLINE_PLANNING_MUTATION = FORBIDDEN
+```
+
+---
+
+#### 17. Objetivo de decisión humana
+
+El inicio debe permitir a la auxiliar, dentro de su autoridad efectiva:
+
+- identificar la sede, área, centro de costo, periodo y contexto que está consultando;
+- localizar gastos y soportes dentro de su cobertura;
+- verificar referencias organizacionales necesarias para clasificar documentación;
+- detectar documentos faltantes, inconsistencias o estados que requieren soporte administrativo;
+- reconocer cuándo un pendiente debe escalarse a contador, gerente u otro actor autorizado;
+- navegar a una superficie destino cuando exista lectura o tarea expresamente concedida;
+- distinguir dato disponible, denegado, no aplicable, desconocido o desactualizado.
+
+El home no decide ni ejecuta la acción financiera final.
+
+---
+
+#### 18. Arquitectura lógica del inicio
+
+`NUMERA-AUTHORIZED-AUXILIARY-HOME-001` define siete regiones lógicas:
+
+```text
+AUTHORIZED_AUXILIARY_HOME_REGION_01 = CONTEXT_AND_AUTHORIZED_SCOPE
+AUTHORIZED_AUXILIARY_HOME_REGION_02 = ADMINISTRATIVE_SUPPORT_QUEUE
+AUTHORIZED_AUXILIARY_HOME_REGION_03 = COST_CENTER_AND_EXPENSE_SUPPORT
+AUTHORIZED_AUXILIARY_HOME_REGION_04 = DOCUMENT_AND_EVIDENCE_STATUS
+AUTHORIZED_AUXILIARY_HOME_REGION_05 = EXCEPTION_AND_ESCALATION_STATUS
+AUTHORIZED_AUXILIARY_HOME_REGION_06 = AUTHORIZED_FINANCIAL_HANDOFFS
+AUTHORIZED_AUXILIARY_HOME_REGION_07 = DATA_STATUS_AND_PROVENANCE
+AUTHORIZED_AUXILIARY_HOME_REGION_COUNT = 7
+```
+
+Son regiones funcionales, no nombres obligatorios de componentes React ni decisiones de layout físico.
+
+---
+
+#### 19. Región 01 — Contexto y alcance autorizado
+
+`CONTEXT_AND_AUTHORIZED_SCOPE` debe poder declarar, cuando aplique:
+
+- sede o conjunto de sedes autorizadas;
+- área autorizada;
+- centro de costo usado como referencia;
+- periodo o fecha de corte;
+- entidad o unidad organizacional de referencia;
+- condición de frescura;
+- fuente o proyección consumida.
+
+El contexto visible no sustituye la resolución real del permiso.
+
+---
+
+#### 20. Alcance formal y filtros de interfaz
+
+Se conserva:
+
+```text
+SELECTED_SITE != AUTHORIZED_SITE
+PRIMARY_SITE != AUTHORIZED_SCOPE
+VISIBLE_COST_CENTER != MUTABLE_COST_CENTER
+```
+
+Las capacidades territoriales se resuelven desde asignaciones activas o responsabilidad formal documentada, nunca desde el filtro que la persona eligió en pantalla.
+
+---
+
+#### 21. Región 02 — Cola de apoyo administrativo
+
+`ADMINISTRATIVE_SUPPORT_QUEUE` organiza únicamente pendientes que la auxiliar puede comprender o atender dentro de su autoridad.
+
+Puede incluir, cuando exista evidencia y permiso suficiente:
+
+- gastos sin soporte completo;
+- gastos pendientes de clasificación administrativa;
+- documentos con metadatos incompletos;
+- referencias de centro de costo faltantes o inconsistentes;
+- pendientes que requieren entregar documentación a un actor financiero autorizado;
+- estados administrativos que requieren seguimiento sin aprobación.
+
+---
+
+#### 22. La cola no crea entidades ni estados nuevos
+
+Se congela:
+
+```text
+HOME_QUEUE_ITEM != NEW_FINANCIAL_ENTITY
+HOME_QUEUE_ITEM != NEW_PROCESS_STATE
+HOME_ESCALATION != APPROVAL_DECISION
+```
+
+La UX puede ordenar y agrupar trabajo existente; no crea un lifecycle paralelo ni una aprobación implícita.
+
+---
+
+#### 23. Región 03 — Centros de costo y gastos
+
+`COST_CENTER_AND_EXPENSE_SUPPORT` es la región financiera primaria del perfil histórico.
+
+Puede combinar:
+
+- referencia de centro de costo autorizada por `ORG-REF`;
+- gasto autorizado dentro de `AS/AA`;
+- periodo;
+- soporte documental;
+- estado suficiente para seguimiento administrativo.
+
+No incluye rentabilidad, punto de equilibrio ni reportes consolidados por inferencia.
+
+---
+
+#### 24. Ver un gasto no autoriza modificarlo
+
+Se conserva:
+
+```text
+EXPENSE_VIEW != EXPENSE_CREATE
+EXPENSE_VIEW != EXPENSE_UPDATE
+EXPENSE_VIEW != EXPENSE_APPROVE
+EXPENSE_VIEW != EXPENSE_REJECT
+EXPENSE_VIEW != EXPENSE_EXPORT
+```
+
+Una capacidad posterior explícita puede habilitar una acción en su superficie propietaria, pero nunca desde la lectura histórica por sí sola.
+
+---
+
+#### 25. Región 04 — Documentos y evidencia
+
+`DOCUMENT_AND_EVIDENCE_STATUS` puede mostrar información mínima necesaria para apoyar un expediente financiero autorizado.
+
+Puede incluir, según permiso efectivo:
+
+- identificador de documento;
+- contraparte o referencia permitida;
+- fecha;
+- periodo;
+- importe relevante;
+- centro de costo;
+- estado documental;
+- existencia de soporte;
+- procedencia del dato.
+
+---
+
+#### 26. Minimización de evidencia
+
+La finalidad administrativa no autoriza exposición irrestricta.
+
+Se conserva:
+
+```text
+SUPPORT_PURPOSE != FULL_SOURCE_ACCESS
+DOCUMENT_REFERENCE != SOURCE_PROCESS_AUTHORITY
+```
+
+Los campos personales, bancarios, técnicos, comerciales o secretos que no sean necesarios permanecen protegidos.
+
+---
+
+#### 27. Región 05 — Excepciones y escalamiento
+
+`EXCEPTION_AND_ESCALATION_STATUS` presenta problemas que la auxiliar puede identificar sin convertirla en decisora.
+
+Puede incluir:
+
+- soporte faltante;
+- clasificación incompleta;
+- documento duplicado o inconsistente;
+- gasto fuera de la cobertura visible esperada;
+- dato stale;
+- recurso no autorizado;
+- pendiente que requiere revisión de contador o gerente.
+
+---
+
+#### 28. Escalar no equivale a aprobar
+
+Se congela:
+
+```text
+ESCALATE != APPROVE
+ESCALATE != REJECT
+ESCALATE != RECONCILE
+ESCALATE != CLOSE
+ESCALATE != PAY
+```
+
+El escalamiento conserva el actor competente como propietario de la decisión posterior.
+
+---
+
+#### 29. Región 06 — Handoffs financieros autorizados
+
+`AUTHORIZED_FINANCIAL_HANDOFFS` reúne accesos hacia pantallas NUMERA únicamente cuando el conjunto efectivo de permisos permite esa lectura o tarea.
+
+La región puede priorizar destinos administrativos o financieros sin convertir la existencia del enlace en autoridad de comando.
+
+---
+
+#### 30. Región 07 — Estado y procedencia del dato
+
+`DATA_STATUS_AND_PROVENANCE` debe poder distinguir:
+
+```text
+VALUE_CONFIRMED
+VALUE_STALE
+VALUE_UNKNOWN
+VALUE_NOT_AVAILABLE
+VALUE_NOT_AUTHORIZED
+VALUE_NOT_APPLICABLE
+```
+
+Cuando corresponda, la proyección conserva periodo, entidad, sede, área, centro de costo, versión y fuente.
+
+---
+
+#### 31. Cero no equivale a ausencia
+
+Se congela:
+
+```text
+ZERO != UNKNOWN
+ZERO != NOT_AVAILABLE
+ZERO != NOT_AUTHORIZED
+ZERO != NOT_APPLICABLE
+```
+
+Un deny, un error o la falta de datos no se presenta como cero confirmado.
+
+---
+
+#### 32. Frescura
+
+La pantalla no conserva una cifra anterior como si perteneciera al nuevo periodo, sede, área o recurso después de cambiar el contexto.
+
+Se conserva:
+
+```text
+STALE_DATA_IS_CURRENT = NO
+CONTEXT_CHANGED_WITH_STALE_VISIBLE_VALUE = FORBIDDEN
+```
+
+---
+
+#### 33. Proceso VPROC-0010 — paquete laboral para pagos
+
+`VPROC-0010` forma parte del universo NUMERA, pero la auxiliar no recibe acceso financiero al paquete laboral por inferencia.
+
+Handoff potencial:
+
+```text
+VSCREEN-0153 — Paquete laboral para pagos y beneficios
+```
+
+Solo aparece cuando exista permiso efectivo específico y respetando minimización de datos laborales.
+
+---
+
+#### 34. Proceso VPROC-0051 — hechos económicos y conciliación
+
+`VPROC-0051` es la familia con mayor afinidad al apoyo administrativo de la auxiliar.
+
+Handoffs potenciales:
+
+```text
+VSCREEN-0095
+VSCREEN-0096
+VSCREEN-0101
+VSCREEN-0102
+VSCREEN-0154
+```
+
+Bajo la matriz histórica, la lectura de gastos es la autoridad NUMERA concreta de esta familia. Las demás superficies exigen permisos efectivos propios y no se heredan desde `expenses.view`.
+
+---
+
+#### 35. Proceso VPROC-0052 — obligaciones, pagos y tesorería
+
+Handoffs potenciales:
+
+```text
+VSCREEN-0097
+VSCREEN-0098
+VSCREEN-0100
+VSCREEN-0155
+VSCREEN-0157
+```
+
+La matriz histórica NUMERA de la auxiliar no concede aprobación, pago ni tesorería. Estas superficies permanecen ocultas o denegadas salvo concesión canónica posterior explícita.
+
+---
+
+#### 36. Proceso VPROC-0053 — cartera
+
+Handoff potencial:
+
+```text
+VSCREEN-0099
+```
+
+La auxiliar no recibe cartera por el nombre del rol. Lectura ordinaria, detalle sensible, acuerdo, aplicación, disputa y castigo requieren capacidades propias.
+
+---
+
+#### 37. Proceso VPROC-0054 — costos, rentabilidad, distribución y cierre
+
+Handoffs potenciales:
+
+```text
+VSCREEN-0103
+VSCREEN-0104
+VSCREEN-0105
+VSCREEN-0158
+```
+
+La lectura histórica de centro de costo como `ORG-REF` no concede costos analíticos, rentabilidad, distribución, cierre, reapertura ni corrección.
+
+---
+
+#### 38. Proceso VPROC-0061 — medición, análisis y mejora
+
+`VSCREEN-0094` pertenece a `VPROC-0061` y se conserva como home.
+
+Handoffs adicionales:
+
+```text
+VSCREEN-0106
+VSCREEN-0159
+```
+
+La matriz histórica deniega `financial_reports.view`; ningún reporte estratégico o plan de mejora aparece por inferencia.
+
+---
+
+#### 39. Proceso VPROC-0069 — presupuesto, escenarios y forecast
+
+Handoff potencial:
+
+```text
+VSCREEN-0156
+```
+
+La planificación financiera no forma parte de la autoridad histórica de la auxiliar. Solo una concesión posterior explícita puede habilitar lectura o acción concreta.
+
+---
+
+#### 40. Cobertura exacta de procesos
+
+La composición conserva los siete procesos propietarios NUMERA sin asumir visibilidad automática:
+
+| Proceso | Relación con el inicio de la auxiliar autorizada | Handoff de detalle |
+| --- | --- | --- |
+| `VPROC-0010` | evidencia laboral-financiera solo con permiso específico | `VSCREEN-0153` |
+| `VPROC-0051` | soporte primario de gastos y documentos; resto condicionado | `VSCREEN-0095`, `0096`, `0101`, `0102`, `0154` |
+| `VPROC-0052` | obligaciones y tesorería condicionadas por permiso | `VSCREEN-0097`, `0098`, `0100`, `0155`, `0157` |
+| `VPROC-0053` | cartera condicionada por permiso | `VSCREEN-0099` |
+| `VPROC-0054` | costo, conciliación y cierre condicionados por permiso | `VSCREEN-0103`, `0104`, `0105`, `0158` |
+| `VPROC-0061` | home y analítica condicionada; reportes históricos denegados | `VSCREEN-0094`, `0106`, `0159` |
+| `VPROC-0069` | planificación condicionada por permiso | `VSCREEN-0156` |
+
+Resultado:
+
+```text
+AUTHORIZED_AUXILIARY_HOME_PROCESS_COUNT = 7
+AUTHORIZED_AUXILIARY_HOME_PROCESS_MISSING_COUNT = 0
+AUTHORIZED_AUXILIARY_HOME_PROCESS_DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 41. Cobertura exacta de las veinte pantallas NUMERA
+
+La presentación conserva el universo canónico de veinte pantallas como destinos potenciales gobernados:
+
+| Pantalla | Relación con el inicio de la auxiliar autorizada | Comando inline |
+| --- | --- | --- |
+| `VSCREEN-0094` | `HOME_READ_AND_AUTHORIZED_SUPPORT` | no |
+| `VSCREEN-0095` | `CONDITIONAL_SUPPORT_HANDOFF` | no |
+| `VSCREEN-0096` | `EXPENSE_SUPPORT_HANDOFF` | no |
+| `VSCREEN-0097` | `CONDITIONAL_FINANCIAL_HANDOFF` | no |
+| `VSCREEN-0098` | `CONDITIONAL_FINANCIAL_HANDOFF` | no |
+| `VSCREEN-0099` | `CONDITIONAL_FINANCIAL_HANDOFF` | no |
+| `VSCREEN-0100` | `CONDITIONAL_SENSITIVE_HANDOFF` | no |
+| `VSCREEN-0101` | `CONDITIONAL_RECONCILIATION_HANDOFF` | no |
+| `VSCREEN-0102` | `CONDITIONAL_RECONCILIATION_HANDOFF` | no |
+| `VSCREEN-0103` | `CONDITIONAL_RECONCILIATION_HANDOFF` | no |
+| `VSCREEN-0104` | `STRATEGIC_ANALYTIC_DEFAULT_DENY` | no |
+| `VSCREEN-0105` | `CONDITIONAL_CLOSE_HANDOFF` | no |
+| `VSCREEN-0106` | `STRATEGIC_REPORTING_DEFAULT_DENY` | no |
+| `VSCREEN-0153` | `CONDITIONAL_SENSITIVE_EVIDENCE_HANDOFF` | no |
+| `VSCREEN-0154` | `CONDITIONAL_DOCUMENT_HANDOFF` | no |
+| `VSCREEN-0155` | `CONDITIONAL_TREASURY_HANDOFF` | no |
+| `VSCREEN-0156` | `CONDITIONAL_PLANNING_HANDOFF` | no |
+| `VSCREEN-0157` | `CONDITIONAL_COMPLIANCE_HANDOFF` | no |
+| `VSCREEN-0158` | `CONDITIONAL_COST_HANDOFF` | no |
+| `VSCREEN-0159` | `CONDITIONAL_ANALYTIC_HANDOFF` | no |
+
+Resultado:
+
+```text
+AUTHORIZED_AUXILIARY_HOME_TARGET_SCREEN_COUNT = 20
+AUTHORIZED_AUXILIARY_HOME_HOME_SCREEN_COUNT = 1
+AUTHORIZED_AUXILIARY_HOME_DRILLDOWN_SCREEN_COUNT = 19
+AUTHORIZED_AUXILIARY_HOME_INLINE_COMMAND_SCREEN_COUNT = 0
+AUTHORIZED_AUXILIARY_HOME_SCREEN_MISSING_COUNT = 0
+AUTHORIZED_AUXILIARY_HOME_SCREEN_DUPLICATE_COUNT = 0
+```
+
+La existencia contractual de una pantalla no equivale a visibilidad ni autoridad para este perfil.
+
+---
+
+#### 42. Composición histórica mínima
+
+Con la matriz histórica sin concesiones nuevas, la experiencia debe construirse alrededor de:
+
+```text
+APP_ENTRY = numera.access
+REFERENCE_READ = numera.finance.cost_centers.view
+EXPENSE_READ = numera.finance.expenses.view
+STRATEGIC_ANALYTICS_READ = NONE
+NUMERA_COMMAND_PERMISSION = NONE
+```
+
+La ausencia de otras claves no se compensa con el nombre del rol ni con accesos directos visuales.
+
+---
+
+#### 43. Las veinte pantallas no se muestran simultáneamente
+
+La matriz de cobertura anterior preserva el universo de diseño.
+
+La interfaz concreta solo muestra accesos compatibles con:
+
+- permiso efectivo;
+- alcance funcional o territorial;
+- recurso;
+- sensibilidad;
+- relevancia del pendiente;
+- periodo;
+- tareas UX posteriores.
+
+---
+
+#### 44. Handoff hacia `FINANCIAL_COMMAND_PLANE`
+
+Cuando una tarea autorizada requiera una acción material:
+
+```text
+VSCREEN_0094_READ
+-> AUTHORIZED_HANDOFF
+-> COMMAND_CAPABLE_TARGET_SCREEN
+-> RESOURCE_RESOLUTION
+-> ACTION_SELECTION
+-> SERVER_REVALIDATION
+-> ALLOW_OR_DENY
+```
+
+La auxiliar no recibe la acción porque haya podido visualizar el recurso en el home.
+
+---
+
+#### 45. Contexto transportado no es autoridad
+
+Un handoff puede transportar, cuando aplique:
+
+```text
+source_screen_id
+source_metric_or_alert
+resource_type
+resource_id_or_query_context
+entity_scope
+site_scope
+area_scope
+cost_center_scope
+period
+version
+intended_command
+```
+
+Se conserva:
+
+```text
+CONTEXT_HANDOFF != AUTHORITY_HANDOFF
+```
+
+---
+
+#### 46. Reautorización obligatoria
+
+Toda superficie destino capaz de producir side effects debe resolver nuevamente:
+
+- actor efectivo;
+- permiso exacto;
+- alcance;
+- recurso;
+- estado actual;
+- periodo;
+- sensibilidad;
+- segregación;
+- controles fuertes aplicables;
+- denegaciones vigentes.
+
+Se conserva:
+
+```text
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+```
+
+---
+
+#### 47. Navegación no es autorización
+
+Se congela:
+
+```text
+VISIBLE_LINK != COMMAND_PERMISSION
+VISIBLE_QUEUE_ITEM != ACTION_PERMISSION
+ROLE_NAME != AUTHORIZATION
+```
+
+La UI puede ocultar destinos no autorizados, pero nunca puede conceder autoridad mostrando un CTA.
+
+---
+
+#### 48. Acceso parcial produce home parcial
+
+El perfil no se trata como un paquete indivisible.
+
+Si el conjunto efectivo permite solo una parte de las lecturas:
+
+- se muestran únicamente regiones autorizadas;
+- los conteos excluyen recursos no autorizados;
+- los accesos denegados no se transforman en valores cero;
+- la navegación se reduce sin romper la identidad `VSCREEN-0094`.
+
+---
+
+#### 49. Denegación sin side effect
+
+Se conserva:
+
+```text
+DENY_SIDE_EFFECT_ALLOWED = NO
+```
+
+Un deny no crea borrador, no actualiza estado, no registra aprobación, no genera exportación y no ejecuta un efecto financiero parcial.
+
+---
+
+#### 50. Conteos, badges y agregados también están protegidos
+
+Un número de gastos, pendientes, diferencias o documentos puede revelar información sensible.
+
+Se conserva:
+
+```text
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+Un agregado no puede incluir miembros fuera de `AS/AA` cuando la capacidad subyacente sea territorial.
+
+---
+
+#### 51. Fuentes propietarias externas permanecen externas
+
+NUMERA puede proyectar información de otros dominios, pero no toma ownership de sus procesos.
+
+Se conserva:
+
+```text
+NUMERA_READS_SOURCE_FACT != NUMERA_OWNS_SOURCE_PROCESS
+```
+
+Si un documento o hecho debe corregirse en ANIMA, ORIGO, NEXO, FOGO, PULSO u otro owner, el handoff conserva esa propiedad.
+
+---
+
+#### 52. No duplicar datos ni procesos
+
+La separación de experiencia no crea un ledger auxiliar.
+
+```text
+AUTHORIZED_AUXILIARY_READ_MODEL
+= projection of canonical sources
+!= duplicated auxiliary ledger
+```
+
+Tampoco crea nuevos `VPROC-*` para representar una vista administrativa del mismo trabajo.
+
+---
+
+#### 53. Información financiera sensible
+
+La auxiliar puede requerir importes y documentos para soporte administrativo, pero eso no elimina sensibilidad.
+
+La experiencia debe preservar:
+
+- mínimo privilegio;
+- alcance exacto;
+- minimización de campos;
+- trazabilidad;
+- periodo;
+- finalidad;
+- restricciones de exportación independientes.
+
+---
+
+#### 54. Exportación permanece independiente
+
+Se conserva:
+
+```text
+VIEW != EXPORT
+```
+
+La capacidad de consultar un gasto o centro de costo no autoriza descargar, imprimir, compartir o exportar información financiera.
+
+---
+
+#### 55. Segregación de funciones
+
+La auxiliar no se convierte en aprobadora por apoyar la preparación de un expediente.
+
+Se conserva:
+
+```text
+PREPARE != APPROVE
+UPLOAD_SUPPORT != VALIDATE_FINANCIAL_DECISION
+ADMINISTRATIVE_FOLLOWUP != FINANCIAL_APPROVAL
+```
+
+---
+
+#### 56. Periodos cerrados conservan restricciones
+
+Consultar documentación histórica o gastos de un periodo cerrado no concede editar ni reabrir ese periodo.
+
+```text
+VISIBLE_CLOSED_PERIOD != REOPEN_AUTHORITY
+CLOSED_PERIOD_SUPPORT != POST_CLOSE_CORRECTION_AUTHORITY
+```
+
+---
+
+#### 57. Autorización stale
+
+Una decisión de autorización previa no se reutiliza después de un cambio material de permiso, alcance, recurso o estado.
+
+Se conserva:
+
+```text
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+```
+
+---
+
+#### 58. Estados de carga y error
+
+El diseño futuro debe diferenciar al menos:
+
+- cargando;
+- sin resultados autorizados;
+- dato no disponible;
+- acceso denegado;
+- fallo técnico;
+- dato stale.
+
+Un fallo técnico no se presenta como ausencia de gastos ni como saldo cero.
+
+---
+
+#### 59. Observabilidad mínima futura
+
+La implementación deberá poder distinguir en telemetría, sin registrar payload financiero sensible innecesario:
+
+- home cargado;
+- región disponible;
+- región denegada;
+- región con error técnico;
+- gasto o referencia abierta;
+- escalamiento iniciado;
+- handoff hacia pantalla destino;
+- comando denegado o permitido en la superficie destino.
+
+La telemetría no se materializa en esta tarea.
+
+---
+
+#### 60. Estado AS-IS y role override
+
+La existencia AS-IS de mecanismos de `role override` no se convierte en modelo objetivo de autorización.
+
+Se conserva:
+
+```text
+AS_IS_ROLE_OVERRIDE_IS_TARGET_AUTHORIZATION_MODEL = NO
+```
+
+La presentación puede simularse en herramientas separadas cuando el contrato transversal lo permita, pero la autoridad efectiva real no nace del override visual.
+
+---
+
+#### 61. Relación con NUMERA-UX-008
+
+`NUMERA-UX-008` definirá la regla transversal de mostrar indicadores antes que tablas detalladas.
+
+La 007 define **qué información puede aparecer para la auxiliar** y con qué alcance; no decide todavía el orden visual definitivo indicador-versus-tabla.
+
+---
+
+#### 62. Relación con NUMERA-UX-009 a NUMERA-UX-012
+
+Las tareas posteriores diseñarán flujos específicos de:
+
+- registro de gasto;
+- aprobación;
+- cierre;
+- exportación independiente.
+
+La 007 no concede esas acciones ni adelanta su diseño. En particular:
+
+```text
+EXPENSE_VIEW != EXPENSE_REGISTRATION_FLOW
+ADMINISTRATIVE_SUPPORT != APPROVAL_FLOW
+VISIBLE_PERIOD != CLOSE_FLOW
+VIEW != EXPORT_FLOW
+```
+
+---
+
+#### 63. Relación con NUMERA-UX-028
+
+`NUMERA-UX-028` conserva la propiedad del visor económico dinámico.
+
+La 007 no inventa un visor nuevo ni amplía analítica estratégica para la auxiliar.
+
+---
+
+#### 64. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- especializa una experiencia protegida por requisitos NUMERA, proceso, autorización e integración ya vigentes;
+- no crea conducta ejecutable nueva;
+- no crea proceso, pantalla, permiso ni dato nuevo;
+- no modifica ningún requisito existente;
+- la materialización y pruebas ejecutables permanecen en unidades y paquetes posteriores que consuman el contrato.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 65. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente asociada a:
+
+- `TREQ-NUMERA-001..024`;
+- `TREQ-PROC-001`;
+- `TREQ-PROC-009..017`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-015`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-017`.
+
+Esta lista es trazabilidad y no constituye una actualización del Registro 04A.
+
+---
+
+#### 66. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no produce build físico; la batería global se ejecutará después de su incorporación documental |
+| LOCAL | NOT_EXECUTED | el artefacto preparado todavía no se ha incorporado al checkout local canónico |
+| REMOTA | PASS | se consultaron `vento-shell/main`, el archivo propietario, topología, políticas, matriz `AUTH-RBAC-005`, autorización NUMERA publicada hasta `NUMERA-AUTH-015`, catálogo de veinte pantallas y estado remoto vigente de la secuencia documental |
+| OPERATIVA | NOT_APPLICABLE | la tarea no registra gastos, aprueba, paga, concilia, cierra, exporta ni modifica operaciones financieras reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 67. Criterios de aceptación
+
+- [ ] se define exactamente un contrato `NUMERA-AUTHORIZED-AUXILIARY-HOME-001`;
+- [ ] la presentación usa el rol canónico `auxiliar_administrativa` y conserva `auxiliar autorizada` solo como etiqueta UX de esta tarea;
+- [ ] el home usa `VSCREEN-0094` y no crea un `VSCREEN-*` nuevo;
+- [ ] `VSCREEN-0094` permanece `MONITOR` / `CROSS_CUTTING`;
+- [ ] `HOME_SURFACE_PLANE` permanece `EXECUTIVE_READ_PLANE`;
+- [ ] `AUTHORIZED_ADMINISTRATIVE_SUPPORT` se define como orientación y no como tercer plano de autorización;
+- [ ] existen cero comandos financieros inline;
+- [ ] la matriz histórica se reconcilia como 112 permisos, 47 concedidos y 65 no concedidos;
+- [ ] NUMERA histórico se reconcilia como 6 permisos evaluados, 3 asignados y 3 no asignados;
+- [ ] las dos lecturas NUMERA históricas son centros de costo y gastos;
+- [ ] centros de costo usa `ORG-REF` y no administración organizacional;
+- [ ] gastos se limita a `AS/AA` y no usa la sede seleccionada como autoridad;
+- [ ] punto de equilibrio, rentabilidad y reportes financieros permanecen denegados por defecto;
+- [ ] ninguna de las 119 capacidades objetivo pendientes se concede automáticamente;
+- [ ] se definen siete regiones lógicas;
+- [ ] se conservan exactamente siete procesos propietarios NUMERA;
+- [ ] se conservan exactamente veinte pantallas objetivo como universo contractual;
+- [ ] existe una pantalla home y diecinueve destinos potenciales de drill-down;
+- [ ] la existencia de una pantalla no equivale a visibilidad o autoridad;
+- [ ] acceso parcial produce composición parcial;
+- [ ] conteos y agregados respetan el alcance de sus miembros;
+- [ ] contexto transportado no transfiere autoridad;
+- [ ] cualquier comando se reautoriza server-side en la superficie destino;
+- [ ] `numera.access` no se interpreta como autoridad de métrica;
+- [ ] navegación no se interpreta como permiso de comando;
+- [ ] preparar o escalar no se interpreta como aprobar;
+- [ ] ver no se interpreta como exportar;
+- [ ] cero, desconocido, no disponible, no autorizado y no aplicable permanecen separados;
+- [ ] un valor stale no se presenta como actual;
+- [ ] la UX no duplica fuentes de verdad ni procesos;
+- [ ] el role override AS-IS no se convierte en modelo objetivo;
+- [ ] `NUMERA-UX-008`, `NUMERA-UX-009..012` y `NUMERA-UX-028` conservan su alcance posterior;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos.
+
+---
+
+#### 68. Límites
+
+Esta tarea no:
+
+- rediseña el inicio del propietario;
+- rediseña el inicio del gerente general;
+- rediseña el inicio del gerente de sede;
+- rediseña el inicio del contador;
+- redefine la matriz RBAC de `auxiliar_administrativa`;
+- materializa las 47 concesiones históricas;
+- asigna capacidades NUMERA nuevas a la auxiliar;
+- concede punto de equilibrio, rentabilidad o reportes financieros;
+- crea autorización financiera global;
+- crea o modifica evidencia fuente;
+- modifica procesos propietarios externos;
+- ejecuta registro de gastos;
+- ejecuta aprobación;
+- ejecuta pagos;
+- ejecuta conciliaciones;
+- ejecuta cierres o reaperturas;
+- ejecuta exportaciones;
+- modifica presupuestos, escenarios o forecast;
+- define el orden definitivo indicador-versus-tabla;
+- diseña el visor económico dinámico de `NUMERA-UX-028`;
+- crea pantallas;
+- crea rutas;
+- crea componentes React;
+- modifica navegación runtime;
+- crea permisos;
+- crea grants o denies;
+- crea procesos;
+- cambia estados de proceso;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-008`.
+
+---
+
+#### 69. Handoff a NUMERA-UX-008
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_AUTHORIZED_AUXILIARY_HOME_CONTRACT = NUMERA-AUTHORIZED-AUXILIARY-HOME-001
+NUMERA_ACCOUNTANT_HOME_CONTRACT = NUMERA-ACCOUNTANT-HOME-001
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+AUTHORIZED_AUXILIARY_HOME_SCREEN_ID = VSCREEN-0094
+AUTHORIZED_AUXILIARY_HOME_PRESENTATION_PROFILE = auxiliar_administrativa
+AUTHORIZED_AUXILIARY_HOME_PRESENTATION_LABEL = auxiliar autorizada
+AUTHORIZED_AUXILIARY_HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+AUTHORIZED_AUXILIARY_HOME_PRIMARY_WORK_ORIENTATION = AUTHORIZED_ADMINISTRATIVE_SUPPORT
+AUTHORIZED_AUXILIARY_HOME_INLINE_FINANCIAL_COMMANDS = 0
+AUTHORIZED_AUXILIARY_HOME_REGION_COUNT = 7
+AUTHORIZED_AUXILIARY_HOME_PROCESS_COUNT = 7
+AUTHORIZED_AUXILIARY_HOME_TARGET_SCREEN_COUNT = 20
+AUTHORIZED_AUXILIARY_HOME_HOME_SCREEN_COUNT = 1
+AUTHORIZED_AUXILIARY_HOME_DRILLDOWN_SCREEN_COUNT = 19
+AUTHORIZED_AUXILIARY_HOME_SCREEN_MISSING_COUNT = 0
+AUTHORIZED_AUXILIARY_HOME_SCREEN_DUPLICATE_COUNT = 0
+AUTHORIZED_AUXILIARY_HISTORICAL_CATALOG_PERMISSION_COUNT = 112
+AUTHORIZED_AUXILIARY_HISTORICAL_GRANTED_PERMISSION_COUNT = 47
+AUTHORIZED_AUXILIARY_HISTORICAL_DENIED_PERMISSION_COUNT = 65
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_EVALUATED_PERMISSION_COUNT = 6
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 3
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_DENIED_PERMISSION_COUNT = 3
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_READ_PERMISSION_COUNT = 2
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_STRATEGIC_ANALYTICS_PERMISSION_COUNT = 0
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_COMMAND_PERMISSION_COUNT = 0
+AUTHORIZED_AUXILIARY_NEW_PERMISSION_AUTO_GRANT = NO
+COST_CENTER_SCOPE = ORG_REF
+EXPENSE_SCOPE = AS_OR_AA
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+AS_IS_ROLE_OVERRIDE_IS_TARGET_AUTHORIZATION_MODEL = NO
+UX_008_OWNER = INDICATORS_BEFORE_DETAIL_TABLES
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-008` podrá definir la jerarquía indicador-antes-de-tabla sobre estas presentaciones sin ampliar permisos, alcances, datos o acciones de ninguno de los perfiles ya diseñados.
+
+---
+
+#### 70. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-006 — Diseñar inicio para contador`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas`
 ### [ ] NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
 ### [ ] NUMERA-UX-009 — Diseñar flujo de registro de gasto
 ### [ ] NUMERA-UX-010 — Diseñar flujo de aprobación
