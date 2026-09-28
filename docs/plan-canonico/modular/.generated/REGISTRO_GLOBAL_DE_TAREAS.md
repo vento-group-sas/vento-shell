@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1444** |
+| Aprobadas | **1445** |
 | En propuesta | **0** |
-| No iniciadas | **152** |
+| No iniciadas | **151** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **90.48% (1444/1596)** |
+| Porcentaje de completamiento | **90.54% (1445/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **152** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1345** |
+| ⏸ NO_EVALUADA | **151** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1346** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-008` — Mostrar indicadores antes que tablas detalladas | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-009` — Diseñar flujo de registro de gasto | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-010` — Diseñar flujo de aprobación | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-009` — Diseñar flujo de registro de gasto | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-010` — Diseñar flujo de aprobación | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-011` — Diseñar flujo de cierre | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1206,7 +1206,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-006` | Diseñar inicio para contador | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-007` | Diseñar inicio para auxiliar autorizada | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-008` | Mostrar indicadores antes que tablas detalladas | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-009` | Diseñar flujo de registro de gasto | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-009` | Diseñar flujo de registro de gasto | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-010` | Diseñar flujo de aprobación | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-011` | Diseñar flujo de cierre | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-012` | Diseñar exportación con permiso independiente | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |

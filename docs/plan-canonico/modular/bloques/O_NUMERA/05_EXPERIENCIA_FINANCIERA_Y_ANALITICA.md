@@ -9778,7 +9778,1726 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-009 — Diseñar flujo de registro de gasto`
-### [ ] NUMERA-UX-009 — Diseñar flujo de registro de gasto
+### ✅ NUMERA-UX-009 — Diseñar flujo de registro de gasto
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
+**Tarea siguiente:** NUMERA-UX-010 — Diseñar flujo de aprobación
+**Tipo de tarea:** definición documental del flujo de registro de gasto y soporte en `VSCREEN-0096`, vinculado a `VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE`, con captura guiada, validación, revisión previa, revalidación server-side, idempotencia, preservación de origen, resultado y receipt, usando permisos atómicos de gasto y sin absorber aprobación, pago, conciliación, cierre, exportación, materialización runtime ni cambios físicos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica superficies de navegación, componentes React, permisos runtime, grants, roles, Server Actions, RLS, RPC, tablas, vistas, migraciones, Supabase, datos financieros, procesos, estados de proceso, packages compartidos, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable la experiencia de **registro de un gasto y su soporte** en NUMERA, de manera que una persona con autoridad efectiva pueda capturar un gasto legítimo, asociarlo a su contexto económico, validar duplicidad y consistencia, revisar el impacto antes de comprometerlo y obtener un resultado auditable sin que la visibilidad de la pantalla, el nombre del rol, la lectura de gastos o un alias legacy se conviertan en autoridad de escritura.
+
+La tarea debe producir un contrato reutilizable por la futura materialización de `VSCREEN-0096 — Registro de gasto y soporte` sin modificar todavía código ni datos.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología vigente de `NUMERA-UX` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea:
+
+- define una sola vez el flujo UX de registro;
+- no crea instancia física propia;
+- no materializa permisos;
+- no modifica `vento-numera`;
+- no modifica Supabase;
+- no ejecuta un gasto real;
+- no altera continuidad física.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-008
+
+La tarea recibe:
+
+```text
+NUMERA_INDICATOR_DETAIL_HIERARCHY_CONTRACT = NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001
+NUMERA_AUTHORIZED_AUXILIARY_HOME_CONTRACT = NUMERA-AUTHORIZED-AUXILIARY-HOME-001
+NUMERA_ACCOUNTANT_HOME_CONTRACT = NUMERA-ACCOUNTANT-HOME-001
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+INDICATOR_BEFORE_DETAIL_TABLE = YES_WHEN_BOTH_EXIST_AND_COMPARABLE
+INDICATOR_ALWAYS_REQUIRED = NO
+SYNTHETIC_KPI_ALLOWED = NO
+SUMMARY_REPLACES_DETAIL = NO
+SUMMARY_AUTHORITY_IMPLIES_DETAIL_AUTHORITY = NO
+DETAIL_AUTHORITY_IMPLIES_SUMMARY_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+ZERO_IS_UNKNOWN = NO
+TARGET_SCREEN_COUNT = 20
+INDICATOR_FIRST_REQUIRED_COUNT = 1
+INDICATOR_FIRST_REQUIRED_WHEN_DETAIL_TABLE_PRESENT_COUNT = 2
+INDICATOR_FIRST_CONDITIONAL_COUNT = 17
+SCREEN_MISSING_COUNT = 0
+SCREEN_DUPLICATE_COUNT = 0
+PROCESS_COUNT = 7
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+UX_009_OWNER = EXPENSE_REGISTRATION_FLOW
+UX_028_OWNER = DYNAMIC_ECONOMIC_VIEWER
+TREQ_CHANGES = 0
+```
+
+La jerarquía indicador-detalle se conserva cuando `VSCREEN-0096` presente síntesis y detalle comparables, pero esa jerarquía no concede autoridad para registrar.
+
+---
+
+#### 4. Fuentes contractuales consumidas
+
+El diseño consume y no redefine:
+
+- `NUMERA-REGISTER-PERMISSION-REGISTRY-001`;
+- `NUMERA-READ-PERMISSION-REGISTRY-001`;
+- `NUMERA-APPROVAL-PERMISSION-REGISTRY-001`;
+- `NUMERA-FINANCIAL-AUDIT-CONTRACT-001`;
+- el contrato de scope de `NUMERA-AUTH-008`;
+- la independencia administrativa de turno definida por autorización NUMERA;
+- `VPROC-0051` y sus nueve estados canónicos;
+- `VSCREEN-0096` y su binding a `VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE`;
+- el prototipo administrativo `APF-09`;
+- la separación UX entre lectura y comando;
+- el contrato de recurso `EXPENSE` y `FINANCIAL_ROW_SCOPE`.
+
+---
+
+#### 5. Resultado contractual
+
+Esta tarea define:
+
+```text
+NUMERA-EXPENSE-REGISTRATION-FLOW-001
+```
+
+El contrato describe:
+
+```text
+ENTRY
+CONTEXT
+CAPTURE
+VALIDATE
+REVIEW
+COMMIT
+RESULT
+RECEIPT
+RECOVER
+```
+
+como fases UX y no como nuevos estados empresariales.
+
+---
+
+#### 6. Superficie propietaria
+
+El flujo se desarrolla en:
+
+```text
+SCREEN_ID = VSCREEN-0096
+SCREEN_NAME = Registro de gasto y soporte
+OWNER_PROCESS = VPROC-0051
+OWNER_STEP = VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE
+STEP_ACTION = CAPTURE
+STEP_LIFECYCLE_POSITION = IN_PROGRESS
+```
+
+No se crea una pantalla adicional para registrar gastos.
+
+---
+
+#### 7. Propósito de VSCREEN-0096
+
+La superficie debe permitir:
+
+```text
+CAPTURAR GASTO LEGITIMO
++ ASOCIAR CONTEXTO ECONOMICO
++ CONSERVAR ORIGEN Y SOPORTE
++ VALIDAR DUPLICIDAD
++ REVISAR ANTES DEL EFECTO
++ REGISTRAR DE FORMA IDEMPOTENTE
++ EMITIR RECEIPT
+```
+
+No debe fusionar aprobación, pago, conciliación o cierre en el mismo compromiso.
+
+---
+
+#### 8. Invariante principal
+
+Se conserva:
+
+```text
+VIEW != CREATE
+CREATE != UPDATE
+CREATE != CANCEL
+CREATE != APPROVE
+CREATE != PAY_EXECUTE
+CREATE != RECONCILE
+CREATE != CLOSE
+CREATE != EXPORT
+```
+
+Registrar un gasto es una intención empresarial exacta.
+
+---
+
+#### 9. Autoridad exacta de creación
+
+La autoridad objetivo de creación es:
+
+```text
+numera.finance.expenses.create
+```
+
+La materialización futura debe tratar esta identidad como permiso atómico de creación.
+
+---
+
+#### 10. Alias legacy prohibido como autoridad objetivo
+
+Queda prohibido usar como autoridad final:
+
+```text
+numera.expenses.manage
+```
+
+Se conserva:
+
+```text
+LEGACY_EXPENSES_MANAGE_IS_TARGET_AUTHORITY = NO
+```
+
+La existencia histórica del alias no autoriza a UX-009 a diseñar un flujo omnibus.
+
+---
+
+#### 11. Lectura no concede registro
+
+```text
+numera.finance.expenses.view
+!=
+numera.finance.expenses.create
+```
+
+Una persona puede tener lectura sin creación y creación sin que ello implique una lectura omnibus de todos los gastos existentes.
+
+---
+
+#### 12. Entrada a NUMERA no concede registro
+
+```text
+numera.access
+!=
+numera.finance.expenses.create
+```
+
+La capacidad de entrar a la aplicación solo habilita la superficie base, nunca la escritura del gasto.
+
+---
+
+#### 13. Nombre de rol no concede registro
+
+```text
+ROLE_NAME != EXPENSE_CREATE_AUTHORITY
+```
+
+Propietario, gerente general, gerente, contador o auxiliar no pueden registrar por el nombre del rol si el permiso efectivo, scope o recurso no lo permiten.
+
+---
+
+#### 14. Turno y check-in no conceden registro
+
+El registro financiero es administrativo por defecto.
+
+Se conserva:
+
+```text
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+ACTIVE_SHIFT_IMPLIES_EXPENSE_CREATE = NO
+```
+
+Un turno activo no amplía autoridad financiera.
+
+---
+
+#### 15. Scope de creación
+
+`numera.finance.expenses.create` utiliza:
+
+```text
+RESOURCE = EXPENSE
+SCOPE_PROFILE = FINANCIAL_ROW_SCOPE
+```
+
+Las dimensiones propuestas del gasto deben resolverse y autorizarse antes de producir el recurso.
+
+---
+
+#### 16. Scope propuesto no se deriva de filtros visuales
+
+Queda prohibido:
+
+```text
+SELECTED_SITE = AUTHORIZED_SITE
+PRIMARY_SITE = AUTHORIZED_SCOPE
+VISIBLE_COST_CENTER = WRITABLE_COST_CENTER
+KNOWN_EXPENSE_ID = AUTHORITY
+```
+
+Los filtros mejoran navegación; no conceden territorio.
+
+---
+
+#### 17. Dimensiones territoriales y financieras
+
+Cuando apliquen, el gasto puede contener:
+
+- entidad legal o empresa;
+- unidad o marca;
+- sede;
+- área;
+- centro de costo;
+- periodo;
+- tercero o contraparte;
+- documento;
+- actor;
+- fuente y correlación.
+
+La futura implementación deberá validar únicamente las dimensiones realmente aplicables al recurso.
+
+---
+
+#### 18. Entrada al flujo
+
+El flujo puede abrirse desde:
+
+- navegación autorizada hacia `VSCREEN-0096`;
+- un handoff autorizado desde una superficie de lectura o triage;
+- una continuidad de captura permitida por el lifecycle;
+- un enlace de contexto desde un objeto financiero relacionado.
+
+La procedencia de navegación no concede la mutación.
+
+---
+
+#### 19. Contexto transportable de un handoff
+
+Cuando exista handoff, puede transportar:
+
+```text
+source_screen_id
+source_metric_or_alert
+source_resource_type
+source_resource_id_or_query_context
+entity_scope
+site_scope
+cost_center_scope
+period
+source_app
+source_event_or_document
+correlation_id
+intended_command = CREATE_EXPENSE
+```
+
+Cada valor debe revalidarse antes del efecto.
+
+---
+
+#### 20. Handoff no es autoridad
+
+Se conserva:
+
+```text
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+```
+
+Un handoff puede prellenar o sugerir contexto autorizado; no puede forzar una empresa, sede, centro, periodo, contraparte o permiso que no sobreviva a la reevaluación server-side.
+
+---
+
+#### 21. Fase ENTRY
+
+`ENTRY` debe comunicar de forma concisa:
+
+- intención: registrar un gasto;
+- objeto que se creará;
+- contexto económico activo cuando exista;
+- permiso requerido;
+- que aprobación y pago son pasos separados;
+- que un hecho operativo ya existente no debe duplicarse manualmente.
+
+No debe presentar un formulario completo antes de conocer si la intención es elegible.
+
+---
+
+#### 22. Elegibilidad inicial
+
+Antes de habilitar captura efectiva deben poder resolverse:
+
+```text
+VALID_SESSION
+APP_ACCESS
+EXACT_CREATE_PERMISSION
+MINIMUM_SCOPE_CONTEXT
+NO_EFFECTIVE_DENY
+```
+
+Una denegación temprana debe mostrar una salida segura sin revelar datos financieros adicionales.
+
+---
+
+#### 23. Fase CONTEXT
+
+`CONTEXT` resuelve, según aplicabilidad:
+
+- entidad legal/empresa;
+- sede y área autorizables;
+- centro de costo;
+- periodo;
+- moneda o reglas de moneda;
+- categoría;
+- contraparte;
+- fuente y correlación.
+
+El contexto debe permanecer visible durante captura y revisión.
+
+---
+
+#### 24. Selección de centro de costo
+
+Listar centros de costo es una lectura separada de crear gastos.
+
+Se conserva:
+
+```text
+EXPENSE_CREATE
+!=
+COST_CENTER_CATALOG_OMNIBUS_READ
+```
+
+Si la UI enumera centros, la lista debe limitarse a referencias que el actor pueda consultar y usar dentro del scope aplicable.
+
+---
+
+#### 25. Selección de tercero o contraparte
+
+La referencia a una contraparte no concede lectura amplia del dominio propietario de terceros.
+
+La UI debe preferir:
+
+- identidad mínima necesaria;
+- referencias autorizadas;
+- búsqueda limitada por finalidad;
+- ausencia de campos no necesarios para registrar el gasto.
+
+---
+
+#### 26. Fase CAPTURE
+
+La captura debe recoger únicamente información necesaria para representar el gasto y su soporte.
+
+Los campos no se autorizan por estar presentes en el cliente.
+
+---
+
+#### 27. Datos mínimos del gasto
+
+El contrato de registro exige validar como mínimo:
+
+- periodo;
+- fecha;
+- categoría;
+- centro de costo;
+- moneda;
+- importe;
+- descripción;
+- origen;
+- soporte cuando corresponda;
+- entidad legal y dimensiones exigibles.
+
+La interfaz puede ordenar o agrupar estos datos sin reducir el contrato server-side.
+
+---
+
+#### 28. Contraparte
+
+La contraparte debe capturarse cuando el caso empresarial la requiera.
+
+Se conserva:
+
+```text
+COUNTERPARTY_REQUIRED_WHEN_BUSINESS_CASE_REQUIRES = YES
+MISSING_COUNTERPARTY_MAY_NOT_BE_SILENTLY_INVENTED = YES
+```
+
+No se crea una contraparte ficticia para completar el formulario.
+
+---
+
+#### 29. Moneda
+
+La moneda es una dimensión económica explícita.
+
+Se prohíbe diseñar:
+
+```text
+HIDDEN_DEFAULT_CURRENCY_AS_BUSINESS_TRUTH = YES
+```
+
+La futura materialización puede preseleccionar una moneda por contexto, pero debe conservar el valor persistido y la regla que lo justificó.
+
+---
+
+#### 30. Origen
+
+Todo gasto debe conservar origen explícito suficiente para distinguir:
+
+- captura manual legítima;
+- soporte recibido;
+- evento o documento externo correlacionado;
+- ajuste autorizado;
+- importación o reincorporación cuando aplique.
+
+Se conserva:
+
+```text
+ORIGIN_REQUIRED = YES
+SOURCE_APP_REQUIRED_WHEN_APPLICABLE = YES
+```
+
+---
+
+#### 31. Soporte
+
+El soporte puede ser obligatorio según categoría, importe, política, contraparte, riesgo o lifecycle.
+
+UX-009 no define reglas fiscales nuevas, pero debe permitir:
+
+```text
+SUPPORT_REQUIRED -> BLOCK_COMMIT_WHEN_MISSING
+SUPPORT_OPTIONAL -> DO_NOT_INVENT_EVIDENCE
+```
+
+---
+
+#### 32. Importe
+
+El importe debe validarse semánticamente y no solo por tipo de input.
+
+La interfaz no asume que:
+
+```text
+PARSEABLE_NUMBER = VALID_BUSINESS_AMOUNT
+```
+
+Las reglas de signo, cero, límites y moneda pertenecen al contrato financiero aplicable.
+
+---
+
+#### 33. Fecha y periodo
+
+Fecha del gasto y periodo económico no se consideran equivalentes por inferencia.
+
+La captura debe permitir que el backend valide:
+
+```text
+EXPENSE_DATE
+RECOGNITION_PERIOD
+PERIOD_STATUS
+```
+
+antes de producir el efecto.
+
+---
+
+#### 34. Periodo vigente no se infiere desde la UI
+
+La existencia de un periodo mostrado o seleccionado no prueba que siga abierto o sea válido al momento del commit.
+
+Se conserva:
+
+```text
+PERIOD_STATUS_SERVER_REVALIDATION_REQUIRED = YES
+```
+
+---
+
+#### 35. Hecho fuente versus gasto manual
+
+La UX debe distinguir:
+
+```text
+SOURCE_OPERATIONAL_FACT
+!=
+MANUAL_EXPENSE_CAPTURE
+```
+
+Si un hecho ya existe desde PULSO, ORIGO, NEXO, FOGO u otra fuente propietaria, la UI no debe ofrecer una segunda captura manual que lo duplique por conveniencia.
+
+---
+
+#### 36. No duplicar hechos operativos
+
+Se conserva:
+
+```text
+MANUAL_DUPLICATE_SOURCE_FACT = FORBIDDEN
+```
+
+Cuando un evento fuente ya esté correlacionado, el camino correcto es recuperar, clasificar, completar evidencia o conciliar el hecho existente según el proceso, no crear otro gasto equivalente.
+
+---
+
+#### 37. Identidad e idempotencia
+
+Todo commit con riesgo de retry debe usar una identidad suficiente para impedir doble creación.
+
+```text
+SAME_INTENT + SAME_IDEMPOTENCY_KEY
+-> AT_MOST_ONE_EFFECTIVE_EXPENSE
+```
+
+Doble clic, retry de red o timeout no deben generar dos gastos.
+
+---
+
+#### 38. Detección de duplicados
+
+La validación de duplicados debe considerar, cuando existan:
+
+- fuente;
+- correlación;
+- documento;
+- contraparte;
+- periodo/fecha;
+- importe y moneda;
+- centro de costo;
+- identidad idempotente.
+
+Una similitud no autoriza borrar o fusionar automáticamente.
+
+---
+
+#### 39. Resultado de la detección de duplicados
+
+La UX debe distinguir al menos:
+
+```text
+NO_DUPLICATE_EVIDENCE
+POSSIBLE_DUPLICATE_REVIEW_REQUIRED
+EXACT_CORRELATED_RESOURCE_EXISTS
+```
+
+`EXACT_CORRELATED_RESOURCE_EXISTS` debe conducir a recuperar o enlazar el recurso existente, no a crear otro.
+
+---
+
+#### 40. Fase VALIDATE
+
+La fase de validación reúne:
+
+- campos requeridos;
+- consistencia de dimensiones;
+- scope;
+- periodo/estado;
+- importe y moneda;
+- soporte requerido;
+- origen y correlación;
+- duplicidad;
+- referencias existentes;
+- restricciones del recurso.
+
+Los errores deben asociarse al campo o regla correspondiente.
+
+---
+
+#### 41. Validación cliente no sustituye servidor
+
+Se conserva:
+
+```text
+CLIENT_VALIDATION = USER_ASSISTANCE
+SERVER_VALIDATION = AUTHORITY
+```
+
+La validación de UI mejora corrección temprana, pero el servidor decide el efecto.
+
+---
+
+#### 42. Fase REVIEW
+
+Antes del commit, la persona debe poder revisar una síntesis de:
+
+- qué gasto se registrará;
+- empresa y dimensiones;
+- periodo y fecha;
+- categoría;
+- contraparte cuando aplique;
+- importe y moneda;
+- centro de costo;
+- origen;
+- soporte;
+- advertencias y duplicidad;
+- efecto inmediato y siguiente paso.
+
+`REVIEW` no es aprobación financiera.
+
+---
+
+#### 43. Jerarquía indicador-detalle dentro del flujo
+
+Si la revisión incluye una síntesis cuantitativa y una tabla detallada comparable, se aplica:
+
+```text
+INDICATOR_BEFORE_DETAIL_TABLE = YES
+```
+
+Solo cuando ambos existan y representen el mismo contexto autorizado.
+
+No se inventa un KPI para justificar la regla.
+
+---
+
+#### 44. Fase COMMIT
+
+`COMMIT` representa una única intención exacta:
+
+```text
+CREATE_EXPENSE
+```
+
+No debe mezclar en el mismo submit:
+
+- aprobar;
+- pagar;
+- conciliar;
+- cerrar;
+- exportar;
+- modificar presupuesto;
+- publicar escenario.
+
+---
+
+#### 45. Oracle de autorización del commit
+
+La futura ejecución debe satisfacer:
+
+```text
+VALID_SESSION
++ APP_ACCESS
++ numera.finance.expenses.create
++ VALID_SCOPE
++ VALID_PROPOSED_DIMENSIONS
++ VALID_PERIOD_AND_RESOURCE_STATE
++ VALID_PAYLOAD
++ NO_EFFECTIVE_DENY
++ SERVER_SIDE_REVALIDATION
+= CREATE_ELIGIBLE
+```
+
+Cualquier término ausente produce deny o bloqueo seguro.
+
+---
+
+#### 46. Revalidación server-side
+
+Inmediatamente antes del efecto deben revalidarse como mínimo:
+
+- permiso exacto;
+- actor;
+- scope;
+- dimensiones propuestas;
+- periodo y estado;
+- payload permitido;
+- duplicidad/idempotencia;
+- restricciones del recurso.
+
+Un botón habilitado no es evidencia de autorización.
+
+---
+
+#### 47. Mass assignment prohibido
+
+El payload cliente no puede persistirse de forma indiscriminada.
+
+Se conserva:
+
+```text
+MASS_ASSIGNMENT = FORBIDDEN
+```
+
+El servidor usa allowlist de campos y deriva internamente cualquier atributo cuya autoridad no pertenezca al cliente.
+
+---
+
+#### 48. Campos derivados por servidor
+
+Un campo puede derivarse server-side únicamente cuando exista una regla canónica clara.
+
+La UX no debe ocultar silenciosamente como verdad empresarial:
+
+- moneda;
+- origen;
+- empresa;
+- sede;
+- centro de costo;
+- periodo;
+- actor.
+
+Si el servidor deriva un valor material, el receipt debe permitir reconstruir qué valor se aplicó.
+
+---
+
+#### 49. Concurrencia
+
+Cuando la intención dependa de un recurso mutable o periodo versionado, el commit debe poder detectar cambio concurrente.
+
+```text
+STALE_CONTEXT_OR_VERSION
+-> DENY_AND_REEVALUATE
+```
+
+No se permite sobrescritura silenciosa.
+
+---
+
+#### 50. Resultado desconocido
+
+Un timeout o pérdida de respuesta después del commit no significa que el gasto no exista.
+
+La UX debe entrar a:
+
+```text
+RECOVER_UNKNOWN_RESULT
+```
+
+con la misma correlación/idempotency key antes de permitir reintento.
+
+---
+
+#### 51. Fase RESULT
+
+El resultado UX debe distinguir:
+
+```text
+CONFIRMED_CREATED
+VALIDATION_FAILED
+AUTHORIZATION_DENIED
+DUPLICATE_OR_CONFLICT
+TECHNICAL_FAILURE_NO_EFFECT
+RESULT_UNKNOWN_RECOVERY_REQUIRED
+```
+
+Estas etiquetas son outcomes UX, no nuevos estados empresariales del gasto.
+
+---
+
+#### 52. Cero side effect en deny
+
+Se conserva:
+
+```text
+DENY_SIDE_EFFECT_ALLOWED = NO
+```
+
+Un deny de permiso, scope, periodo, estado, referencia o payload no puede dejar un gasto parcial.
+
+---
+
+#### 53. Fase RECEIPT
+
+Un registro confirmado debe producir evidencia suficiente para continuar sin convertir el receipt en reporte financiero completo.
+
+Puede incluir, según autoridad:
+
+- identidad del gasto;
+- actor;
+- timestamp;
+- importe y moneda registrados;
+- periodo;
+- centro de costo;
+- origen;
+- correlación/idempotency reference;
+- estado/proceso aplicable;
+- soporte asociado;
+- siguiente acción permitida.
+
+---
+
+#### 54. Receipt no concede lectura amplia
+
+El receipt puede mostrar el resultado de la acción ejecutada sin inferir:
+
+```text
+CREATE_SUCCESS
+-> ALL_EXPENSES_VIEW
+```
+
+Listas, historial y drill-down continúan sujetos a permisos de lectura correspondientes.
+
+---
+
+#### 55. Fase RECOVER
+
+La recuperación debe permitir distinguir:
+
+- validación corregible;
+- permiso o scope denegado;
+- duplicado encontrado;
+- conflicto stale;
+- dependencia no disponible;
+- resultado técnico desconocido;
+- recurso creado que debe recuperarse por correlación.
+
+No se usa retry indiscriminado.
+
+---
+
+#### 56. Mapeo a estados VPROC-0051
+
+UX-009 no crea lifecycle de gasto nuevo.
+
+Consume los estados canónicos de `VPROC-0051`:
+
+```text
+ECONOMIC_EVENT_RECEIVED
+VALIDATION_IN_PROGRESS
+CLASSIFICATION_PENDING
+CLASSIFIED
+POSTING_PENDING
+POSTED
+ALLOCATION_PENDING
+RECONCILIATION_PENDING
+ECONOMIC_EVENT_RECONCILED
+```
+
+---
+
+#### 57. Mapeo UX a lifecycle existente
+
+El flujo puede proyectarse de forma no uno-a-uno:
+
+| Fase UX | Estado/proyección VPROC-0051 relacionada | Límite |
+| --- | --- | --- |
+| ENTRY / CONTEXT | `ECONOMIC_EVENT_RECEIVED` cuando ya existe un hecho correlacionado | recibir no reconoce ni registra definitivamente |
+| CAPTURE / VALIDATE | `VALIDATION_IN_PROGRESS` | valida origen, soporte, entidad, fecha, valor, moneda y duplicidad |
+| VALIDATE / REVIEW | `CLASSIFICATION_PENDING` / `CLASSIFIED` | clasificación propuesta, todavía sin registro definitivo |
+| COMMIT | `POSTING_PENDING` | espera reconocimiento idempotente; no equivale a aprobación |
+| RESULT / RECEIPT | `POSTED` cuando el reconocimiento aplicable fue confirmado | conserva vínculo con origen |
+| posterior | `ALLOCATION_PENDING` / `RECONCILIATION_PENDING` | fuera del cierre de UX-009 salvo handoff |
+| final de proceso | `ECONOMIC_EVENT_RECONCILED` | no se alcanza por registrar el gasto solamente |
+
+---
+
+#### 58. Registro de gasto no cierra VPROC-0051
+
+Se conserva:
+
+```text
+EXPENSE_CREATED
+!=
+ECONOMIC_EVENT_RECONCILED
+```
+
+La creación puede dejar trabajo posterior de clasificación, asignación, conciliación o evidencia según el caso.
+
+---
+
+#### 59. Actualización de gasto
+
+`numera.finance.expenses.update` pertenece a la misma familia de superficie, pero no es autoridad implícita del create.
+
+UX-009 establece:
+
+```text
+CREATE_SUCCESS != UPDATE_AUTHORITY
+```
+
+Editar posteriormente exige permiso `update`, estado mutable, campos permitidos y revalidación propia.
+
+---
+
+#### 60. Cancelación de gasto
+
+`numera.finance.expenses.cancel` permanece separada.
+
+```text
+CANCEL != DELETE
+CANCEL != APPROVE
+CANCEL != WRITE_OFF
+```
+
+UX-009 no convierte el botón o receipt de creación en una cancelación automática.
+
+---
+
+#### 61. Aprobación pertenece a NUMERA-UX-010
+
+Se conserva:
+
+```text
+EXPENSE_CREATE != EXPENSE_APPROVE
+EXPENSE_CREATE != EXPENSE_REJECT
+```
+
+La autoridad objetivo de aprobación/rechazo pertenece al contrato de `NUMERA-AUTH-005` y la experiencia detallada a `NUMERA-UX-010`.
+
+---
+
+#### 62. No autoaprobar al registrar
+
+Queda prohibido diseñar:
+
+```text
+CREATOR_HAS_APPROVAL_PERMISSION
+-> AUTO_APPROVE_ON_CREATE
+```
+
+Aunque una misma persona posea ambas capacidades, registrar y aprobar permanecen decisiones separadas y auditables.
+
+---
+
+#### 63. Pago pertenece a otro flujo
+
+Registrar el gasto no ejecuta pago ni movimiento bancario.
+
+```text
+EXPENSE_CREATE != PAYABLE_APPROVAL
+EXPENSE_CREATE != PAYMENT_PLAN
+EXPENSE_CREATE != PAY_EXECUTE
+```
+
+---
+
+#### 64. Conciliación pertenece a flujos posteriores
+
+Crear un gasto no resuelve automáticamente:
+
+- conciliación de ventas y pagos;
+- compras y recepciones;
+- inventario/producción/variaciones;
+- conciliación bancaria.
+
+La coincidencia de importe no es conciliación.
+
+---
+
+#### 65. Cierre pertenece a NUMERA-UX-011
+
+```text
+EXPENSE_CREATE != PERIOD_CLOSE
+```
+
+Registrar un gasto puede afectar precondiciones de cierre, pero no concede autoridad de cerrar o reabrir.
+
+---
+
+#### 66. Exportación pertenece a NUMERA-UX-012
+
+```text
+EXPENSE_CREATE != EXPORT
+```
+
+El receipt no debe convertirse en una exportación masiva por conveniencia.
+
+---
+
+#### 67. Relación con NUMERA-UX-013
+
+La selección y filtrado por empresa, sede y centro de costo será desarrollada por `NUMERA-UX-013`.
+
+UX-009 consume scope válido, pero no redefine el modelo de filtros ni convierte filtros en autorización.
+
+---
+
+#### 68. Relación con NUMERA-UX-014 y NUMERA-UX-015
+
+UX-009 conserva:
+
+```text
+SOURCE_EVENT_CORRELATION = REQUIRED_WHEN_APPLICABLE
+MANUAL_DUPLICATE_SOURCE_FACT = FORBIDDEN
+```
+
+La ingestión detallada de eventos y la prevención integral de duplicación entre aplicaciones pertenecen a `NUMERA-UX-014` y `NUMERA-UX-015`.
+
+---
+
+#### 69. Relación con NUMERA-UX-017 a NUMERA-UX-024
+
+El registro puede producir handoffs hacia conciliación, obligación, bancos, costos, corrección o cobertura de fuentes, pero no absorbe esas experiencias.
+
+Cada destino conserva proceso, permiso y lifecycle propios.
+
+---
+
+#### 70. Accesibilidad del flujo
+
+La futura materialización deberá:
+
+- asociar errores a controles concretos;
+- anunciar cambios de fase y resultado;
+- no depender solo de color para warning/error/success;
+- mantener foco después de errores;
+- conservar orden semántico coherente;
+- identificar campos requeridos de forma programática;
+- exponer motivo de bloqueo sin revelar datos no autorizados.
+
+---
+
+#### 71. Responsive y orden de lectura
+
+En viewport reducido se conserva el orden empresarial:
+
+```text
+CONTEXTO
+-> CAPTURA
+-> VALIDACION
+-> REVISION
+-> COMMIT
+-> RESULTADO
+```
+
+Reordenar visualmente no puede presentar el submit antes de advertencias o revisión obligatoria.
+
+---
+
+#### 72. Estados de carga y stale
+
+Un cambio de empresa, sede, centro, periodo, categoría o contraparte que invalide contexto debe marcar como stale cualquier derivación dependiente.
+
+Se conserva:
+
+```text
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+```
+
+---
+
+#### 73. Información sensible
+
+Importe, contraparte, soporte, documento, centro y origen pueden ser sensibles.
+
+La UX aplica minimización por fase y evita:
+
+- previews innecesarias;
+- errores con payload completo;
+- logs de formulario en cliente;
+- tooltips que revelen miembros fuera de scope.
+
+---
+
+#### 74. Auditoría mínima esperada
+
+La futura materialización debe conservar evidencia correlacionable de:
+
+- actor;
+- permiso evaluado;
+- recurso/intención;
+- dimensiones/scope evaluados;
+- correlación/idempotency identity;
+- decisión;
+- resultado;
+- error o compensación cuando aplique;
+- timestamp y versión relevantes.
+
+La auditoría no se convierte en autoridad.
+
+---
+
+#### 75. Observabilidad UX
+
+Sin registrar contenido financiero innecesario, debe poder distinguirse:
+
+```text
+FLOW_OPENED
+FLOW_CONTEXT_RESOLVED
+FLOW_VALIDATION_FAILED
+FLOW_DUPLICATE_DETECTED
+FLOW_REVIEW_REACHED
+FLOW_COMMIT_REQUESTED
+FLOW_COMMIT_CONFIRMED
+FLOW_AUTH_DENIED
+FLOW_CONFLICT
+FLOW_RESULT_UNKNOWN
+FLOW_RECOVERY_COMPLETED
+```
+
+Estos nombres son categorías de observabilidad, no eventos de dominio ni estados de proceso.
+
+---
+
+#### 76. Error de autorización versus error técnico
+
+La UX debe distinguir:
+
+```text
+AUTHORIZATION_DENIED
+!=
+TECHNICAL_FAILURE
+```
+
+Ambos fallan cerrados, pero su tratamiento y recuperación son diferentes.
+
+---
+
+#### 77. Dependencia faltante
+
+Si falta una capacidad exacta materializada, relación de scope, catálogo requerido o dependencia propietaria:
+
+```text
+MISSING_DEPENDENCY = BLOCKED
+MISSING_DEPENDENCY != LEGACY_FALLBACK
+```
+
+No se recupera usando `*.manage` ni role override.
+
+---
+
+#### 78. Materialización pendiente de permisos
+
+El contrato de autorización registra `numera.finance.expenses.create` como identidad objetivo, pero su materialización física pertenece al lifecycle de autorización/packages.
+
+UX-009 define la experiencia objetivo sin afirmar que el permiso ya esté publicado en runtime.
+
+---
+
+#### 79. AS-IS observado no gobierna el objetivo
+
+El runtime auditado actualmente usa un formulario más pequeño y `numera.expenses.manage`.
+
+Ese comportamiento se conserva como evidencia AS-IS, no como diseño objetivo.
+
+La tarea no modifica ese código.
+
+---
+
+#### 80. Reconciliación del AS-IS de createExpense
+
+El AS-IS observado recibe:
+
+```text
+period_id
+category_id
+cost_center_id
+expense_date
+description
+amount
+```
+
+y deriva server-side:
+
+```text
+currency = COP
+source_app = numera
+```
+
+UX-009 no adopta esos defaults como verdad contractual; exige moneda y origen explícitos conforme al contrato financiero vigente.
+
+---
+
+#### 81. Reconciliación de requisito legacy de mutación
+
+La cobertura histórica exige revalidación server-side de la creación de gasto.
+
+La identidad exacta objetivo queda reconciliada así:
+
+```text
+LEGACY = numera.expenses.manage
+TARGET = numera.finance.expenses.create
+```
+
+La obligación de validar en servidor se conserva; el alias amplio no se conserva como autoridad objetivo.
+
+---
+
+#### 82. Indicador versus tabla en VSCREEN-0096
+
+`VSCREEN-0096` está clasificada por UX-008 como condicional para la regla indicador-antes-detalle.
+
+Por tanto:
+
+- si existe síntesis comparable, aparece antes de la tabla detallada;
+- si no existe un indicador canónico, no se inventa;
+- el formulario sigue la secuencia del flujo y no se subordina artificialmente a una tabla;
+- la síntesis no concede `expenses.create`.
+
+---
+
+#### 83. Validación de duplicidad antes del commit
+
+La revisión debe presentar la duplicidad relevante antes del efecto cuando sea posible.
+
+Si una comprobación crítica solo puede resolverse server-side, el commit debe poder responder con conflicto recuperable y cero creación duplicada.
+
+---
+
+#### 84. Borrador UX no implica borrador persistido
+
+La persona puede capturar datos antes del commit.
+
+Se conserva:
+
+```text
+UI_DRAFT_STATE
+!=
+PERSISTED_EXPENSE_DRAFT_BY_INFERENCE
+```
+
+Persistir borradores requerirá soporte explícito del recurso, estado y permisos; UX-009 no lo inventa.
+
+---
+
+#### 85. Interrupción de captura
+
+Si la captura se abandona antes del commit y no existe persistencia explícita aprobada:
+
+```text
+NO_COMMIT = NO_EXPENSE_CREATED
+```
+
+La futura UI puede advertir pérdida de cambios locales sin crear datos financieros silenciosos.
+
+---
+
+#### 86. Edición después de creación
+
+Una navegación posterior a edición debe reautorizar:
+
+```text
+numera.finance.expenses.update
+```
+
+además de scope, recurso, versión, estado mutable y campos permitidos.
+
+No se reutiliza la decisión de `create`.
+
+---
+
+#### 87. Cancelación después de creación
+
+Una cancelación posterior debe reautorizar:
+
+```text
+numera.finance.expenses.cancel
+```
+
+con motivo, actor, estado anterior y evidencia suficiente.
+
+La cancelación preserva historia.
+
+---
+
+#### 88. Separación frente a la aprobación
+
+`NUMERA-UX-010` debe recibir un gasto existente y elegible, no un formulario de creación todavía mutable.
+
+Se conserva:
+
+```text
+REGISTRATION_FLOW_OUTPUT
+!=
+APPROVAL_DECISION
+```
+
+---
+
+#### 89. Handoff de registro a aprobación
+
+Cuando el gasto requiera aprobación y el actor pueda navegar al flujo correspondiente, el handoff puede transportar:
+
+```text
+expense_id
+expense_version
+current_process_state
+entity_scope
+site_scope
+cost_center_scope
+period
+amount
+currency
+counterparty_reference
+support_reference
+source_reference
+correlation_id
+registration_receipt_id
+intended_command = REVIEW_FOR_APPROVAL
+```
+
+El destino reautoriza todo lo necesario.
+
+---
+
+#### 90. Handoff no autoabre autoridad aprobatoria
+
+Se conserva:
+
+```text
+CREATE_RECEIPT
++ APPROVAL_HANDOFF
+!=
+APPROVAL_AUTHORITY
+```
+
+La navegación puede existir aunque el destino termine en deny seguro.
+
+---
+
+#### 91. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro de gastos ya está cubierto por requisitos financieros, de autorización, idempotencia, servidor, trazabilidad y separación de acciones vigentes;
+- la tarea especializa la experiencia sin crear proceso, pantalla, permiso, dato, transición o conducta empresarial nueva;
+- no modifica el texto, estado, secuencia, relación ni owner de requisitos existentes;
+- la materialización y las pruebas ejecutables permanecen en las unidades y packages propietarios.
+
+---
+
+#### 92. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-NUMERA-001` — reconciliación con fuente, separación lectura/registro/aprobación/cierre/exportación y trazabilidad;
+- `TREQ-NUMERA-002` — identidad estable, entidad, sede, centro, tercero, moneda, fechas, origen, correlación, monto, estado y evidencia;
+- `TREQ-NUMERA-003` — separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-NUMERA-017` — lectura de gastos separada del registro;
+- `TREQ-NUMERA-018` — creación de gasto con validación económica y revalidación server-side, reconciliada con el permiso atómico objetivo;
+- `TREQ-NUMERA-023` — navegación, menú o superficie no implican autorización;
+- `TREQ-AUTH-001` — capacidad protegida por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-013` — mutación server-side valida permiso exacto, actor, territorio/contexto, recurso, estado y columnas;
+- `TREQ-AUTH-014` — decisiones stale no se reutilizan;
+- `TREQ-AUTH-015` — evidencia correlacionable de acción protegida;
+- `TREQ-INTEGRATION-017` — integración financiera sin doble registro ni pérdida de trazabilidad.
+
+Esta sección es trazabilidad de cobertura existente y no modifica el Registro 04A.
+
+---
+
+#### 93. Matriz de fases y gates
+
+| Fase | Gate principal | Efecto permitido |
+| --- | --- | --- |
+| ENTRY | sesión + acceso + intención | ninguno |
+| CONTEXT | scope mínimo resoluble | ninguno |
+| CAPTURE | campos y referencias editables permitidas | ninguno |
+| VALIDATE | consistencia + duplicidad + elegibilidad | ninguno |
+| REVIEW | síntesis completa y warnings | ninguno |
+| COMMIT | permiso create + server revalidation + idempotencia | crear un gasto exactamente una vez |
+| RESULT | respuesta autoritativa o estado desconocido | presentar outcome |
+| RECEIPT | efecto confirmado | emitir evidencia y siguiente acción |
+| RECOVER | correlación + clasificación del fallo | recuperar, corregir o bloquear sin duplicar |
+
+---
+
+#### 94. Matriz de permisos del flujo
+
+| Acción UX | Permiso objetivo | Esta tarea la diseña como primaria |
+| --- | --- | --- |
+| abrir NUMERA | `numera.access` | no |
+| leer gasto existente | `numera.finance.expenses.view` | no, solo contexto cuando aplique |
+| crear gasto | `numera.finance.expenses.create` | sí |
+| actualizar gasto | `numera.finance.expenses.update` | no, frontera posterior de recurso mutable |
+| cancelar gasto | `numera.finance.expenses.cancel` | no, frontera posterior de lifecycle |
+| aprobar gasto | `numera.finance.expenses.approve` | no |
+| rechazar gasto | `numera.finance.expenses.reject` | no |
+| cerrar periodo | permiso de periodo correspondiente | no |
+| exportar | `numera.analytics.financial_reports.export` | no |
+
+---
+
+#### 95. Matriz de ownership
+
+| Materia | Owner canónico |
+| --- | --- |
+| captura de gasto | `NUMERA-UX-009` |
+| aprobación/rechazo | `NUMERA-UX-010` |
+| cierre/reapertura | `NUMERA-UX-011` |
+| exportación | `NUMERA-UX-012` |
+| filtros empresa/sede/centro | `NUMERA-UX-013` |
+| ingestión de eventos fuente | `NUMERA-UX-014` |
+| prevención integral de duplicado financiero | `NUMERA-UX-015` |
+| conciliación ventas/pagos | `NUMERA-UX-017` |
+| conciliación compras/recepciones | `NUMERA-UX-018` |
+| conciliación inventario/producción | `NUMERA-UX-019` |
+| cuentas por pagar | `NUMERA-UX-020` |
+| caja y bancos | `NUMERA-UX-021` |
+| costos/rentabilidad | `NUMERA-UX-022` |
+| corrección/reapertura histórica | `NUMERA-UX-023` |
+| cobertura/conciliación de fuentes | `NUMERA-UX-024` |
+
+---
+
+#### 96. Hallazgos y condiciones de salida
+
+| Hallazgo | Bloquea esta definición | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| runtime AS-IS todavía usa `numera.expenses.manage` | no | autorización NUMERA + package propietario | `expenses.create` materializado y consumidor migrado sin fallback legacy |
+| createExpense AS-IS deriva moneda/origen fijos | no | dominio/UX/materialización aplicable | moneda y origen se resuelven conforme al contrato objetivo y se prueban |
+| AS-IS no valida estado del periodo antes de insert | no | unidad propietaria de mutación + pruebas NUMERA | commit revalida periodo/estado en servidor |
+| no existe lifecycle específico de gasto documentado como objeto separado | no | dominio propietario aplicable | UX usa VPROC-0051 y no inventa estados de gasto |
+| persistencia de borrador no está definida | no | tarea futura solo si se decide necesaria | no se persiste borrador por inferencia |
+| aprobación es flujo separado | no | `NUMERA-UX-010` | aprobación consume gasto existente y reautoriza decisión |
+
+No queda hallazgo detectado sin owner ni condición de salida.
+
+---
+
+#### 97. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental; no se ejecutó build de producto durante su preparación. |
+| LOCAL | NOT_EXECUTED | La incorporación al checkout, normalización y batería documental quedan pendientes del ciclo manual del usuario. |
+| REMOTA | PASS | Se verificaron `main`, secuencia activa, owner, topología, autorización NUMERA, permisos de registro, scope, auditoría, `VPROC-0051`, `VSCREEN-0096`, prototipo APF-09, auditoría AS-IS, 04A y scripts aplicables. |
+| OPERATIVA | NOT_EXECUTED | No se creó, actualizó, canceló, aprobó, pagó, concilió ni cerró ningún gasto real. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-009` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`. |
+
+---
+
+#### 98. Criterios de aceptación
+
+La tarea queda aceptada cuando se verifica que:
+
+1. existe exactamente un contrato `NUMERA-EXPENSE-REGISTRATION-FLOW-001`;
+2. `VSCREEN-0096` permanece como superficie propietaria;
+3. `VPROC-0051` permanece como proceso propietario;
+4. `STEP-CAPTURE_EXPENSE_AND_EVIDENCE` permanece como binding;
+5. no se crea pantalla nueva;
+6. no se crea proceso nuevo;
+7. las fases UX no se presentan como estados empresariales nuevos;
+8. create usa `numera.finance.expenses.create`;
+9. `numera.expenses.manage` no se usa como autoridad objetivo;
+10. `expenses.view` no concede create;
+11. `numera.access` no concede create;
+12. rol no concede create;
+13. turno/check-in no conceden create;
+14. create usa `FINANCIAL_ROW_SCOPE`;
+15. selected site no concede scope;
+16. primary site no concede scope;
+17. filtros no conceden scope;
+18. handoff no concede autoridad;
+19. contexto del handoff se revalida;
+20. ENTRY comunica intención y fronteras;
+21. CONTEXT resuelve dimensiones aplicables;
+22. CAPTURE minimiza campos;
+23. periodo es obligatorio;
+24. fecha es obligatoria;
+25. categoría es obligatoria;
+26. centro de costo es obligatorio;
+27. moneda es explícita;
+28. importe se valida semánticamente;
+29. descripción se conserva;
+30. origen es explícito;
+31. soporte se exige cuando corresponda;
+32. contraparte se exige cuando el caso la requiera;
+33. no se inventa contraparte;
+34. fecha y periodo no se confunden;
+35. estado de periodo se revalida server-side;
+36. hecho operativo fuente no se duplica manualmente;
+37. idempotencia evita doble gasto por retry;
+38. duplicados exactos recuperan/enlazan el recurso existente;
+39. posibles duplicados requieren revisión;
+40. VALIDATE reúne campos, scope, estado, origen, soporte y duplicidad;
+41. validación cliente no sustituye servidor;
+42. REVIEW no equivale a aprobación;
+43. indicador antes de tabla se aplica solo cuando ambos existen y son comparables;
+44. no se inventa KPI;
+45. COMMIT representa solo `CREATE_EXPENSE`;
+46. commit no aprueba;
+47. commit no paga;
+48. commit no concilia;
+49. commit no cierra;
+50. commit no exporta;
+51. permiso exacto se revalida server-side;
+52. actor y scope se revalidan server-side;
+53. periodo y estado se revalidan server-side;
+54. mass assignment está prohibido;
+55. atributos derivados server-side tienen regla verificable;
+56. stale context produce deny y reevaluación;
+57. timeout no induce retry ciego;
+58. resultado desconocido entra a recuperación;
+59. outcomes UX no se presentan como estados del gasto;
+60. deny produce cero side effects;
+61. receipt conserva evidencia suficiente;
+62. receipt no concede lectura omnibus;
+63. recuperación diferencia deny, validación, conflicto y fallo técnico;
+64. UX-009 consume los nueve estados VPROC-0051 sin modificarlos;
+65. crear gasto no cierra `VPROC-0051`;
+66. update requiere permiso independiente;
+67. cancel requiere permiso independiente y conserva historia;
+68. aprobación queda en UX-010;
+69. no existe autoaprobación por acumulación de permisos;
+70. pago queda fuera;
+71. conciliación queda fuera;
+72. cierre queda en UX-011;
+73. exportación queda en UX-012;
+74. scope/filtros especializados quedan en UX-013;
+75. ingestión y duplicidad integral quedan en UX-014/015;
+76. accesibilidad no depende solo de color;
+77. responsive conserva orden empresarial;
+78. datos stale no se presentan como vigentes;
+79. información sensible se minimiza;
+80. auditoría conserva correlación sin convertirse en autoridad;
+81. observabilidad UX no crea eventos de dominio;
+82. deny y fallo técnico se distinguen;
+83. dependencia ausente bloquea sin fallback legacy;
+84. la tarea no afirma materialización runtime de permisos pendientes;
+85. el AS-IS se conserva como evidencia, no como objetivo;
+86. moneda y origen AS-IS no se congelan como defaults canónicos;
+87. cobertura legacy server-side se reconcilia con el permiso atómico objetivo;
+88. `VSCREEN-0096` consume la regla UX-008 sin desordenar el flujo;
+89. no se persiste borrador por inferencia;
+90. abandonar captura sin commit no crea gasto;
+91. handoff a aprobación transporta contexto y no autoridad;
+92. no se crean ni modifican requisitos de prueba;
+93. no se ejecutan cambios físicos;
+94. `NUMERA-UX-010` recibe un contrato estable de salida de registro.
+
+---
+
+#### 99. Límites
+
+Esta tarea no:
+
+- materializa `numera.finance.expenses.create`;
+- migra `numera.expenses.manage`;
+- modifica grants o matrices RBAC;
+- crea RLS, RPC, Server Actions o APIs;
+- modifica formulario runtime;
+- crea tabla o columna;
+- define un lifecycle nuevo de gasto;
+- persiste borradores por inferencia;
+- define reglas fiscales nuevas;
+- define aprobación;
+- define rechazo;
+- define pago;
+- define conciliación;
+- define cierre o reapertura;
+- define exportación;
+- define filtros completos de empresa/sede/centro;
+- define ingestión completa de eventos fuente;
+- define deduplicación integral multiaplicación;
+- define cuentas por pagar;
+- define caja o bancos;
+- define costos o rentabilidad;
+- define correcciones históricas;
+- define el visor económico de UX-028;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-010`.
+
+---
+
+#### 100. Handoff a NUMERA-UX-010
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_EXPENSE_REGISTRATION_FLOW_CONTRACT = NUMERA-EXPENSE-REGISTRATION-FLOW-001
+NUMERA_INDICATOR_DETAIL_HIERARCHY_CONTRACT = NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001
+EXPENSE_REGISTRATION_SCREEN_ID = VSCREEN-0096
+EXPENSE_REGISTRATION_PROCESS_ID = VPROC-0051
+EXPENSE_REGISTRATION_STEP_ID = VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE
+EXPENSE_CREATE_PERMISSION = numera.finance.expenses.create
+EXPENSE_VIEW_PERMISSION = numera.finance.expenses.view
+EXPENSE_UPDATE_PERMISSION = numera.finance.expenses.update
+EXPENSE_CANCEL_PERMISSION = numera.finance.expenses.cancel
+EXPENSE_APPROVE_PERMISSION = numera.finance.expenses.approve
+EXPENSE_REJECT_PERMISSION = numera.finance.expenses.reject
+LEGACY_EXPENSES_MANAGE_IS_TARGET_AUTHORITY = NO
+EXPENSE_SCOPE_PROFILE = FINANCIAL_ROW_SCOPE
+ROLE_NAME_IS_AUTHORIZATION = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+PERIOD_STATUS_SERVER_REVALIDATION_REQUIRED = YES
+MASS_ASSIGNMENT = FORBIDDEN
+MANUAL_DUPLICATE_SOURCE_FACT = FORBIDDEN
+CREATE_REQUIRES_IDEMPOTENCY_WHEN_RETRYABLE = YES
+DENY_SIDE_EFFECT_ALLOWED = NO
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+EXPENSE_CREATE_IMPLIES_UPDATE = NO
+EXPENSE_CREATE_IMPLIES_CANCEL = NO
+EXPENSE_CREATE_IMPLIES_APPROVE = NO
+EXPENSE_CREATE_IMPLIES_PAY_EXECUTE = NO
+EXPENSE_CREATE_IMPLIES_RECONCILE = NO
+EXPENSE_CREATE_IMPLIES_CLOSE = NO
+EXPENSE_CREATE_IMPLIES_EXPORT = NO
+EXPENSE_CREATED_IMPLIES_PROCESS_RECONCILED = NO
+UI_DRAFT_IMPLIES_PERSISTED_DRAFT = NO
+RESULT_UNKNOWN_REQUIRES_RECOVERY = YES
+APPROVAL_HANDOFF_REQUIRES_REAUTHORIZATION = YES
+UX_010_OWNER = FINANCIAL_APPROVAL_FLOW
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-010` deberá diseñar la decisión de aprobación/rechazo sobre recursos existentes y elegibles, sin reutilizar el permiso de creación como autoridad aprobatoria.
+
+---
+
+#### 101. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-008
+-> NUMERA-UX-009
+-> NUMERA-UX-010
+```
+
+La 009 consume la jerarquía visual de la 008 y entrega a la 010 un recurso registrado o un handoff elegible, sin absorber su decisión.
+
+---
+
+#### 102. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-009 — Diseñar flujo de registro de gasto`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-010 — Diseñar flujo de aprobación`
 ### [ ] NUMERA-UX-010 — Diseñar flujo de aprobación
 ### [ ] NUMERA-UX-011 — Diseñar flujo de cierre
 ### [ ] NUMERA-UX-012 — Diseñar exportación con permiso independiente
