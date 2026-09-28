@@ -11498,7 +11498,1576 @@ La 009 consume la jerarquía visual de la 008 y entrega a la 010 un recurso regi
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-010 — Diseñar flujo de aprobación`
-### [ ] NUMERA-UX-010 — Diseñar flujo de aprobación
+### ✅ NUMERA-UX-010 — Diseñar flujo de aprobación
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-009 — Diseñar flujo de registro de gasto
+**Tarea siguiente:** NUMERA-UX-011 — Diseñar flujo de cierre
+**Tipo de tarea:** definición documental del flujo de aprobación y rechazo financiero en `VSCREEN-0097`, como bandeja agregadora de decisiones sobre recursos financieros subyacentes, con revisión, elegibilidad, segregación, reautenticación fuerte cuando aplique, revalidación server-side, idempotencia, concurrencia, receipt y recuperación, sin convertir la bandeja en autoridad omnibus ni absorber pago, conciliación, cierre, reapertura, exportación, publicación de planificación, materialización runtime o cambios físicos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica superficies de navegación, componentes React, permisos runtime, grants, roles, Server Actions, RLS, RPC, tablas, vistas, migraciones, Supabase, datos financieros, procesos, estados de proceso, packages compartidos, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable la experiencia mediante la cual una persona autorizada puede revisar una decisión financiera pendiente, comprender el recurso y la versión exactos sometidos a decisión, confirmar que la decisión sigue siendo elegible, aprobar o rechazar con autoridad atómica y recibir evidencia suficiente del resultado sin que visibilidad, rol nominal, autoría, pertenencia a una bandeja o permisos de registro se conviertan en autoridad aprobatoria.
+
+La tarea materializa documentalmente el flujo UX de `VSCREEN-0097 — Bandeja de aprobaciones financieras` y conserva el ownership de cada recurso y proceso subyacente.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología vigente de `NUMERA-UX` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea:
+
+- define una sola vez el flujo UX de aprobación/rechazo;
+- no crea instancia física propia;
+- no publica permisos;
+- no modifica `vento-numera`;
+- no modifica Supabase;
+- no ejecuta decisiones financieras reales;
+- no altera estados de proceso durante esta definición.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-009
+
+La tarea recibe:
+
+```text
+NUMERA_EXPENSE_REGISTRATION_FLOW_CONTRACT = NUMERA-EXPENSE-REGISTRATION-FLOW-001
+NUMERA_INDICATOR_DETAIL_HIERARCHY_CONTRACT = NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001
+EXPENSE_REGISTRATION_SCREEN_ID = VSCREEN-0096
+EXPENSE_REGISTRATION_PROCESS_ID = VPROC-0051
+EXPENSE_REGISTRATION_STEP_ID = VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE
+EXPENSE_CREATE_PERMISSION = numera.finance.expenses.create
+EXPENSE_VIEW_PERMISSION = numera.finance.expenses.view
+EXPENSE_UPDATE_PERMISSION = numera.finance.expenses.update
+EXPENSE_CANCEL_PERMISSION = numera.finance.expenses.cancel
+EXPENSE_APPROVE_PERMISSION = numera.finance.expenses.approve
+EXPENSE_REJECT_PERMISSION = numera.finance.expenses.reject
+LEGACY_EXPENSES_MANAGE_IS_TARGET_AUTHORITY = NO
+EXPENSE_SCOPE_PROFILE = FINANCIAL_ROW_SCOPE
+ROLE_NAME_IS_AUTHORIZATION = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+PERIOD_STATUS_SERVER_REVALIDATION_REQUIRED = YES
+MASS_ASSIGNMENT = FORBIDDEN
+MANUAL_DUPLICATE_SOURCE_FACT = FORBIDDEN
+CREATE_REQUIRES_IDEMPOTENCY_WHEN_RETRYABLE = YES
+DENY_SIDE_EFFECT_ALLOWED = NO
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+EXPENSE_CREATE_IMPLIES_UPDATE = NO
+EXPENSE_CREATE_IMPLIES_CANCEL = NO
+EXPENSE_CREATE_IMPLIES_APPROVE = NO
+EXPENSE_CREATE_IMPLIES_PAY_EXECUTE = NO
+EXPENSE_CREATE_IMPLIES_RECONCILE = NO
+EXPENSE_CREATE_IMPLIES_CLOSE = NO
+EXPENSE_CREATE_IMPLIES_EXPORT = NO
+EXPENSE_CREATED_IMPLIES_PROCESS_RECONCILED = NO
+UI_DRAFT_IMPLIES_PERSISTED_DRAFT = NO
+RESULT_UNKNOWN_REQUIRES_RECOVERY = YES
+APPROVAL_HANDOFF_REQUIRES_REAUTHORIZATION = YES
+UX_010_OWNER = FINANCIAL_APPROVAL_FLOW
+TREQ_CHANGES = 0
+```
+
+La presente tarea consume ese handoff sin convertir la creación del gasto en aprobación ni asumir que todo recurso que aparece en la bandeja fue creado por `VSCREEN-0096`.
+
+---
+
+#### 4. Fuentes contractuales consumidas
+
+El diseño consume y no redefine:
+
+- `NUMERA-APPROVAL-PERMISSION-REGISTRY-001`;
+- `NUMERA-READ-PERMISSION-REGISTRY-001`;
+- `NUMERA-REGISTER-PERMISSION-REGISTRY-001`;
+- el contrato de scope de `NUMERA-AUTH-008`;
+- `NUMERA-FINANCIAL-AUDIT-CONTRACT-001`;
+- la independencia administrativa de turno definida por autorización NUMERA;
+- `NUMERA-DOM-005` para separación entre captura, aprobación y reconocimiento de gastos;
+- `VPROC-0051`, `VPROC-0052` y `VPROC-0054` según el recurso decidido;
+- `VSCREEN-0097` y `VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION`;
+- el prototipo administrativo `APF-09`;
+- la separación UX entre lectura y comando definida por `NUMERA-UX-002`;
+- el flujo de registro de gasto definido por `NUMERA-UX-009`.
+
+---
+
+#### 5. Resultado contractual
+
+Esta tarea define:
+
+```text
+NUMERA-FINANCIAL-APPROVAL-FLOW-001
+```
+
+El contrato describe las fases UX:
+
+```text
+ENTRY
+QUEUE
+RESOURCE_CONTEXT
+REVIEW
+ELIGIBILITY
+STRONG_REAUTH_WHEN_APPLICABLE
+DECISION
+COMMIT_DECISION
+RESULT
+RECEIPT
+RECOVER
+```
+
+Estas fases UX no son nuevos estados empresariales ni sustituyen el lifecycle del recurso subyacente.
+
+---
+
+#### 6. Superficie agregadora propietaria
+
+El flujo principal se presenta en:
+
+```text
+SCREEN_ID = VSCREEN-0097
+SCREEN_NAME = Bandeja de aprobaciones financieras
+OWNER_PROCESS = VPROC-0052
+OWNER_STEP = VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION
+STEP_ACTION = APPROVE
+STEP_LIFECYCLE_POSITION = DECISION
+```
+
+`VSCREEN-0097` agrega decisiones; no crea un recurso financiero `APPROVAL_QUEUE` con autoridad propia.
+
+---
+
+#### 7. La bandeja no es autoridad
+
+Se congela:
+
+```text
+QUEUE_VISIBILITY != APPROVAL_AUTHORITY
+ROW_VISIBILITY != APPROVAL_AUTHORITY
+APPROVAL_SCREEN_ACCESS != APPROVAL_AUTHORITY
+```
+
+Quedan prohibidos como autoridad objetivo:
+
+```text
+numera.finance.approvals.approve
+numera.finance.approvals.reject
+numera.finance.approvals.manage
+```
+
+Cada decisión se autoriza contra el recurso subyacente y su permiso exacto.
+
+---
+
+#### 8. Universo cerrado de decisiones de esta tarea
+
+UX-010 consume exactamente el universo base aprobado por `NUMERA-AUTH-005`:
+
+```text
+DECISION_FAMILIES = 6
+APPROVE_PERMISSIONS = 6
+REJECT_PERMISSIONS = 6
+TOTAL_DECISION_PERMISSIONS = 12
+```
+
+No se agrega una decimotercera identidad aprobatoria por inferencia.
+
+---
+
+#### 9. Matriz completa de decisiones
+
+| Familia | Lectura requerida | Aprobar | Rechazar | Superficie de detalle | Proceso / paso relacionado |
+| --- | --- | --- | --- | --- | --- |
+| `EXPENSE` | `numera.finance.expenses.view` | `numera.finance.expenses.approve` | `numera.finance.expenses.reject` | `VSCREEN-0096` | `VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE` + decisión agregada en `VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION` |
+| `PAYABLE` | `numera.finance.payables.view` | `numera.finance.payables.approve` | `numera.finance.payables.reject` | `VSCREEN-0098` | `VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION` |
+| `PAYMENT_PLAN` | `numera.finance.payment_plans.view` | `numera.finance.payment_plans.approve` | `numera.finance.payment_plans.reject` | `VSCREEN-0155` | `VPROC-0052::STEP-PLAN_AND_EXECUTE_PAYMENTS` |
+| `FISCAL_DOCUMENT_REFERENCE` | `numera.finance.fiscal_documents.view` | `numera.finance.fiscal_documents.approve` | `numera.finance.fiscal_documents.reject` | `VSCREEN-0154` | `VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT` |
+| `TAX_OBLIGATION` | `numera.finance.tax_obligations.view` | `numera.finance.tax_obligations.approve` | `numera.finance.tax_obligations.reject` | `VSCREEN-0157` | `VPROC-0052::STEP-MANAGE_TAX_OBLIGATION` |
+| `COST_ALLOCATION` | `numera.finance.cost_allocations.view` | `numera.finance.cost_allocations.approve` | `numera.finance.cost_allocations.reject` | `VSCREEN-0158` | `VPROC-0054::STEP-ALLOCATE_COSTS` |
+
+La matriz contiene seis filas únicas, doce decisiones exactas, cero faltantes y cero duplicados.
+
+---
+
+#### 10. Lectura y decisión permanecen separadas
+
+Se conserva:
+
+```text
+APPROVE_PERMISSION_IMPLIES_VIEW = NO
+REJECT_PERMISSION_IMPLIES_VIEW = NO
+APPROVAL_QUEUE_ROW_REQUIRES_UNDERLYING_VIEW = YES
+```
+
+Un actor puede poseer una autoridad decisoria sin recibir por ello consulta general de todos los recursos de la familia.
+
+---
+
+#### 11. Entrada al flujo
+
+`ENTRY` debe mostrar únicamente contexto suficiente para identificar:
+
+- tipo de recurso;
+- identidad estable o referencia autorizada;
+- decisión solicitada;
+- scope relevante;
+- estado de revisión;
+- urgencia o vencimiento cuando forme parte del recurso;
+- procedencia del handoff.
+
+La entrada no ejecuta decisiones ni asume que la fila continúa elegible.
+
+---
+
+#### 12. Construcción de la bandeja
+
+`QUEUE` reúne únicamente recursos cuya proyección autorizada pueda ser mostrada al actor.
+
+La bandeja no puede inferir visibilidad desde:
+
+- rol nominal;
+- cargo;
+- sede seleccionada;
+- autoría;
+- pertenencia a un proceso;
+- existencia del ID;
+- haber recibido un enlace directo.
+
+---
+
+#### 13. Conteos y badges de la bandeja
+
+Un número de pendientes puede revelar información financiera sensible.
+
+Se conserva:
+
+```text
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+BADGE_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+```
+
+Los totales de la bandeja se calculan sobre miembros individualmente visibles y no sobre filas ocultas.
+
+---
+
+#### 14. Estado vacío
+
+La UI deberá distinguir al menos:
+
+```text
+NO_VISIBLE_PENDING_DECISIONS
+NOT_AUTHORIZED_TO_VIEW_THIS_RESOURCE
+DEPENDENCY_NOT_AVAILABLE
+TECHNICAL_ERROR
+```
+
+No se mostrará `0 pendientes` cuando en realidad la consulta fue denegada o no pudo resolverse.
+
+---
+
+#### 15. Seleccionar una fila no concede autoridad
+
+Abrir una fila cambia la superficie de revisión, no la decisión de autorización.
+
+```text
+SELECT_ROW != AUTHORIZE_DECISION
+OPEN_DETAIL != AUTHORIZE_DECISION
+```
+
+La autorización final se reevalúa antes del efecto.
+
+---
+
+#### 16. Contexto del recurso
+
+`RESOURCE_CONTEXT` debe identificar sin ambigüedad:
+
+- recurso y tipo;
+- versión observada;
+- estado actual;
+- empresa/entidad y dimensiones autorizadas aplicables;
+- importe y moneda cuando existan;
+- periodo cuando aplique;
+- contraparte cuando aplique;
+- origen y correlación;
+- evidencia o soporte disponible;
+- actor o proceso que produjo la propuesta cuando sea visible y necesario.
+
+---
+
+#### 17. Revisar no es decidir
+
+Se congela:
+
+```text
+REVIEW != APPROVE
+REVIEW != REJECT
+```
+
+La pantalla puede permitir análisis detallado antes de decidir sin que la navegación o la permanencia en la vista produzcan un efecto empresarial.
+
+---
+
+#### 18. Semántica de aprobación y rechazo
+
+```text
+approve != reject != resolve
+```
+
+- `approve` acepta la propuesta exacta sometida a decisión;
+- `reject` emite una decisión negativa explícita y trazable;
+- `resolve` permanece reservado a conciliación o resolución de discrepancias.
+
+---
+
+#### 19. Revisión de gasto
+
+Para `EXPENSE`, la revisión debe poder presentar, según autorización:
+
+- causa;
+- importe;
+- moneda;
+- periodo;
+- centro y dimensiones;
+- origen;
+- soporte;
+- duplicidad o correlación relevante;
+- versión;
+- estado de la propuesta.
+
+No se asume que la creación del gasto ya constituye reconocimiento económico.
+
+---
+
+#### 20. Revisión de cuenta por pagar
+
+Para `PAYABLE`, la revisión debe permitir verificar, según el contrato del recurso:
+
+- contraparte;
+- documento y origen;
+- aceptación o soporte relacionado;
+- importe y moneda;
+- vencimiento;
+- componentes aplicables;
+- versión;
+- estado;
+- segregación exigible.
+
+Aprobar la obligación no programa ni ejecuta el pago.
+
+---
+
+#### 21. Revisión de plan de pago
+
+Para `PAYMENT_PLAN`, la revisión debe identificar:
+
+- versión del plan;
+- obligaciones incluidas;
+- importes;
+- fechas o prioridades aplicables;
+- alcance;
+- evidencia de preparación;
+- estado previo.
+
+La aprobación del plan no envía una instrucción monetaria.
+
+---
+
+#### 22. Revisión de documento fiscal
+
+Para `FISCAL_DOCUMENT_REFERENCE`, la revisión representa una decisión interna NUMERA sobre tratamiento o readiness.
+
+No debe presentarse como:
+
+```text
+EXTERNAL_FISCAL_ACCEPTANCE
+TAX_FILING
+LEGAL_DETERMINATION
+```
+
+La UI debe preservar explícitamente esa frontera.
+
+---
+
+#### 23. Revisión de obligación tributaria
+
+Para `TAX_OBLIGATION`, la decisión es interna y financiera.
+
+No puede comunicar que aprobar equivale a:
+
+- determinación legal oficial;
+- presentación;
+- aceptación por autoridad externa;
+- pago.
+
+---
+
+#### 24. Revisión de distribución de costos
+
+Para `COST_ALLOCATION`, la revisión debe poder identificar:
+
+- pool;
+- driver;
+- base;
+- origen;
+- destinos;
+- versión;
+- vigencia;
+- evidencia.
+
+La aprobación no modifica hechos fuente ni cierra el periodo.
+
+---
+
+#### 25. Gate de elegibilidad
+
+Antes de habilitar una decisión real, `ELIGIBILITY` debe comprobar:
+
+```text
+VALID_SESSION
++ EFFECTIVE_ACTOR
++ UNDERLYING_VIEW_AUTHORITY
++ EXACT_DECISION_PERMISSION
++ VALID_SCOPE
++ EXACT_RESOURCE
++ CURRENT_RESOURCE_VERSION
++ APPROVABLE_OR_REJECTABLE_STATE
++ SEGREGATION_SATISFIED_OR_GOVERNED_EXCEPTION
++ NO_EFFECTIVE_DENY
+= DECISION_ELIGIBLE
+```
+
+Cualquier componente ausente o indeterminado bloquea la decisión.
+
+---
+
+#### 26. Permiso exacto por intención
+
+El botón o acción seleccionada determina el permiso exacto solicitado:
+
+```text
+APPROVE -> <resource>.approve
+REJECT -> <resource>.reject
+```
+
+No existe fallback entre ambos permisos.
+
+---
+
+#### 27. Estado previo obligatorio
+
+Se conserva:
+
+```text
+PERMISSION_PRESENT + RESOURCE_NOT_APPROVABLE = DENY
+```
+
+La UI no debe habilitar una transición porque el actor tenga permiso si el recurso ya cambió a un estado incompatible.
+
+---
+
+#### 28. Versión exacta de revisión
+
+La decisión siempre se vincula a la versión revisada.
+
+```text
+REVIEWED_VERSION != CURRENT_VERSION
+-> DENY_AND_REVIEW_AGAIN
+```
+
+No se permite aprobar una versión materialmente distinta por actualización silenciosa.
+
+---
+
+#### 29. Scope efectivo
+
+La existencia del permiso no concede alcance global.
+
+Cada decisión consume el scope del recurso definido por autorización NUMERA y debe revalidar las dimensiones relevantes inmediatamente antes del efecto.
+
+```text
+VALID_PERMISSION + INVALID_SCOPE = DENY
+```
+
+---
+
+#### 30. Selected site y primary site
+
+Se preserva:
+
+```text
+SELECTED_SITE != AUTHORITY
+PRIMARY_SITE != AUTHORITY
+```
+
+Los selectores de interfaz pueden acotar contexto visual, pero nunca ampliar el conjunto autorizable.
+
+---
+
+#### 31. Rol nominal
+
+```text
+ROLE_NAME != APPROVAL_AUTHORITY
+```
+
+`contador`, `gerente`, `gerente_general`, `propietario` u otros nombres no sustituyen el permiso exacto, scope, estado y segregación.
+
+---
+
+#### 32. Autoría y ownership
+
+Ser creador, registrador, responsable o owner funcional no concede aprobación.
+
+```text
+OWNERSHIP != APPROVAL_AUTHORITY
+CREATED_BY_ACTOR != APPROVAL_AUTHORITY
+```
+
+---
+
+#### 33. Segregación por defecto
+
+Se conserva:
+
+```text
+REGISTER_PERMISSION != APPROVE_PERMISSION
+UPDATE_PERMISSION != APPROVE_PERMISSION
+```
+
+La UX debe exponer la causa de bloqueo cuando la política de segregación impida que el actor actual decida.
+
+---
+
+#### 34. Acumulación excepcional de funciones
+
+Una organización puede asignar registro y aprobación a la misma persona únicamente mediante excepción gobernada.
+
+La UX no crea esa excepción por:
+
+- tamaño de empresa;
+- ausencia de otro actor;
+- rol nominal;
+- ownership;
+- urgencia;
+- pertenencia al mismo equipo.
+
+La excepción, cuando exista, deberá llegar como política autorizada y auditable.
+
+---
+
+#### 35. Reautenticación fuerte
+
+Las decisiones financieras reales conservan:
+
+```text
+shared_device_requirement = STRONG
+```
+
+Cuando el contrato transversal exija reautenticación fuerte, la UI deberá resolverla antes del efecto y asociarla al actor efectivo y a la decisión exacta.
+
+Reautenticarse no concede el permiso faltante.
+
+---
+
+#### 36. Reautenticación no reutilizable indefinidamente
+
+Una reautenticación previamente válida no debe presentarse como suficiente cuando:
+
+- cambió el actor;
+- cambió el recurso;
+- cambió materialmente la versión;
+- expiró la evidencia de reautenticación;
+- cambió el contexto que exige nueva evaluación.
+
+---
+
+#### 37. Aprobación upstream válida
+
+Si el dominio propietario ya aportó una decisión empresarial válida y la política no exige una aprobación financiera adicional, NUMERA no debe crear una segunda aprobación equivalente solo por ingerir el hecho.
+
+```text
+VALID_UPSTREAM_APPROVAL + NO_ADDITIONAL_FINANCIAL_POLICY
+-> NO_DUPLICATE_APPROVAL
+```
+
+---
+
+#### 38. Aprobación financiera adicional
+
+Cuando exista una política explícita que exija una decisión NUMERA adicional, la UX debe identificarla como decisión distinta y preservar:
+
+- actor;
+- permiso;
+- scope;
+- recurso;
+- versión;
+- evidencia;
+- resultado.
+
+No se inventan dobles aprobaciones universales.
+
+---
+
+#### 39. El review no muta
+
+Ninguna interacción de `REVIEW` puede producir:
+
+- aprobación;
+- rechazo;
+- pago;
+- conciliación;
+- cierre;
+- exportación;
+- publicación.
+
+El primer side effect empresarial del flujo ocurre únicamente en `COMMIT_DECISION`.
+
+---
+
+#### 40. Acción aprobar
+
+`APPROVE` debe indicar inequívocamente:
+
+- recurso;
+- versión;
+- alcance;
+- importe o impacto aplicable;
+- consecuencia inmediata de la decisión;
+- lo que la decisión no ejecuta.
+
+La confirmación no debe usar textos ambiguos equivalentes a “continuar” cuando el efecto sea una aprobación financiera.
+
+---
+
+#### 41. Acción rechazar
+
+`REJECT` es una decisión empresarial explícita.
+
+Debe exigir:
+
+```text
+REJECTION_REASON_REQUIRED = YES
+```
+
+El motivo se conserva como evidencia y no se sustituye con un código técnico de error.
+
+---
+
+#### 42. Rechazo conserva el recurso
+
+Un rechazo:
+
+```text
+!= DELETE
+!= CANCEL
+!= SOURCE_REWRITE
+```
+
+El recurso, su soporte y la evidencia de la decisión permanecen disponibles conforme a sus permisos y lifecycle.
+
+---
+
+#### 43. Cambio posterior de decisión
+
+Un retry no puede convertir silenciosamente:
+
+```text
+approve -> reject
+reject -> approve
+```
+
+Un cambio de decisión requiere una nueva intención válida sobre un estado y versión que permitan otra decisión.
+
+---
+
+#### 44. Comentario de aprobación
+
+Un comentario de aprobación puede ser obligatorio por política, umbral, excepción o tipo de recurso.
+
+Cuando sea opcional, su ausencia no elimina la evidencia mínima de actor, permiso, recurso, versión, estado, scope, resultado y timestamp.
+
+---
+
+#### 45. Umbrales no inventados
+
+UX-010 no define valores monetarios universales de aprobación.
+
+```text
+MISSING_APPROVAL_THRESHOLD != AUTOMATIC_APPROVAL
+MISSING_APPROVAL_THRESHOLD != AUTOMATIC_DENY
+```
+
+La UI consume una política versionada cuando exista; no inventa umbrales desde el rol o el importe visible.
+
+---
+
+#### 46. Idempotencia de decisión
+
+La misma decisión técnica reintentada sobre el mismo recurso y versión debe producir una sola decisión empresarial efectiva.
+
+```text
+SAME_RESOURCE
++ SAME_VERSION
++ SAME_DECISION
++ SAME_IDEMPOTENCY_KEY
+-> ONE_BUSINESS_DECISION
+```
+
+---
+
+#### 47. Doble clic
+
+Un doble clic o retry de red no puede crear dos decisiones, dos transiciones ni dos receipts contradictorios.
+
+La UI deberá deshabilitar repetición local cuando sea posible, pero la garantía final permanece server-side.
+
+---
+
+#### 48. Revalidación server-side
+
+Inmediatamente antes del efecto, el servidor deberá resolver como mínimo:
+
+```text
+principal
+actor_effective
+permission_key
+resource_type
+resource_id
+resource_version
+current_state
+requested_decision
+scope_result
+field_projection
+authorization_result
+```
+
+El cliente no es la autoridad final.
+
+---
+
+#### 49. Deny sin side effect
+
+Se conserva:
+
+```text
+DENY_SIDE_EFFECT_ALLOWED = NO
+```
+
+Una denegación no puede dejar aprobación parcial, rechazo parcial, transición parcial, pago, publicación o modificación del recurso.
+
+---
+
+#### 50. Resultado desconocido
+
+Un timeout o pérdida de conexión después del envío no se presenta automáticamente como fallo empresarial.
+
+```text
+RESULT_UNKNOWN
+-> QUERY_OR_RECONCILE
+```
+
+La UI debe consultar/reconciliar el resultado antes de permitir un retry que pueda duplicar la decisión.
+
+---
+
+#### 51. Resultados UX
+
+La capa de experiencia distinguirá al menos:
+
+```text
+DECISION_CONFIRMED
+DECISION_DENIED
+DECISION_REJECTED_BY_VALIDATION
+DECISION_CONFLICT
+DECISION_RESULT_UNKNOWN
+DEPENDENCY_UNAVAILABLE
+TECHNICAL_FAILURE
+```
+
+Estos outcomes no son nuevos estados empresariales.
+
+---
+
+#### 52. Receipt
+
+Una decisión confirmada genera un receipt o proyección equivalente que permita reconstruir:
+
+- recurso;
+- versión;
+- decisión;
+- actor;
+- permiso;
+- scope;
+- estado previo;
+- timestamp;
+- correlación;
+- motivo cuando corresponda;
+- siguiente acción permitida, si existe.
+
+El receipt no concede autoridad adicional.
+
+---
+
+#### 53. Snapshot de decisión
+
+La evidencia decisoria debe conservar como mínimo:
+
+```text
+resource_identity
+resource_version
+previous_state
+effective_actor
+exact_permission
+scope_evaluated
+material_dimensions
+amount_and_currency_when_applicable
+reviewed_support_references
+approve_or_reject
+reason_when_required
+timestamp
+correlation_id
+```
+
+La auditoría conserva evidencia suficiente sin convertirse en una copia paralela del payload financiero completo.
+
+---
+
+#### 54. Aprobación no equivale a reconocimiento
+
+Especialmente para gastos:
+
+```text
+CAPTURED != APPROVED != RECOGNIZED
+```
+
+Aprobar no inserta por sí sola un asiento ni afirma que `VPROC-0051` quedó conciliado.
+
+---
+
+#### 55. Aprobación no equivale a pago
+
+```text
+PAYABLE_APPROVED != PAYMENT_EXECUTED
+PAYMENT_PLAN_APPROVED != PAYMENT_EXECUTED
+```
+
+UX-010 no contiene controles de ejecución monetaria.
+
+---
+
+#### 56. Aprobación no equivale a conciliación
+
+```text
+APPROVE != RECONCILE
+REJECT != RECONCILE
+```
+
+La bandeja no resuelve matching bancario ni diferencias por el hecho de emitir una decisión.
+
+---
+
+#### 57. Aprobación no equivale a cierre
+
+```text
+APPROVE != CLOSE
+APPROVE != REOPEN
+```
+
+`NUMERA-UX-011` conserva el flujo de cierre y reapertura.
+
+---
+
+#### 58. Aprobación no equivale a exportación
+
+```text
+APPROVE != EXPORT
+REJECT != EXPORT
+```
+
+`NUMERA-UX-012` conserva la experiencia de exportación con permiso independiente.
+
+---
+
+#### 59. Aprobación no equivale a publicación
+
+La aprobación de un recurso no concede publicar, compartir ni activar otra representación.
+
+Esto incluye planificación económica, donde:
+
+```text
+REQUEST != APPROVE
+APPROVE != PUBLISH
+PUBLISH != OPERATIONAL_ACTIVATION
+```
+
+---
+
+#### 60. Frontera con escenarios, presupuestos, forecast y precios
+
+`NUMERA-AUTH-015` define permisos especializados `.approve` y `.reject` para escenarios, presupuestos, forecast y versiones de precio sobre `VSCREEN-0156` y superficies relacionadas.
+
+UX-010 no agrega esas identidades al universo base de doce decisiones de `VSCREEN-0097` ni las convierte en filas de la bandeja por inferencia.
+
+El patrón UX de revisión, stale version, segregación y decisión puede ser reutilizado posteriormente por esas superficies sin transferir ownership.
+
+---
+
+#### 61. Frontera con cartera y bancos especializados
+
+Decisiones especializadas de acuerdos, castigos, límites, cuentas bancarias, instrucciones de pago y otras capacidades de alto impacto permanecen bajo `NUMERA-AUTH-014` y sus superficies propietarias.
+
+UX-010 no inventa botones aprobatorios genéricos para esas acciones.
+
+---
+
+#### 62. VPROC-0052 y la aprobación de obligaciones
+
+Para cuentas por pagar, el lifecycle canónico conserva:
+
+```text
+PAYABLE_REGISTERED
+-> DOCUMENT_VALIDATING
+-> UNDER_APPROVAL
+-> APPROVED_FOR_SCHEDULING
+-> SCHEDULED_FOR_PAYMENT
+-> PAYMENT_IN_PROGRESS
+-> PAYMENT_RECORDED
+-> BANK_RECONCILIATION_PENDING
+-> PAYABLE_SETTLED
+```
+
+La decisión aprobatoria asociada a la obligación opera sobre la frontera:
+
+```text
+UNDER_APPROVAL
+-> APPROVED_FOR_SCHEDULING
+```
+
+sin saltar directamente a programación, pago o conciliación.
+
+---
+
+#### 63. VPROC-0051 y aprobación de gastos
+
+Un gasto registrado puede requerir una decisión financiera, pero esa decisión no crea un estado adicional inventado en `VPROC-0051`.
+
+La UX conserva el contrato de dominio:
+
+```text
+CAPTURED != APPROVED != RECOGNIZED
+```
+
+El lifecycle económico continúa siendo el aprobado para `VPROC-0051`.
+
+---
+
+#### 64. VPROC-0054 y distribuciones de costo
+
+Una decisión sobre `COST_ALLOCATION` utiliza el recurso y versión de distribución correspondientes.
+
+Aprobar la distribución no:
+
+- reescribe el hecho fuente;
+- ejecuta una distribución distinta de la revisada;
+- cierra el periodo;
+- convierte una transferencia interna en gasto legal.
+
+---
+
+#### 65. Operaciones masivas
+
+UX-010 puede representar selección múltiple únicamente si el contrato de la futura operación lo permite.
+
+Toda fila seleccionada requiere:
+
+- lectura autorizada;
+- permiso decisorio exacto;
+- scope válido;
+- versión vigente;
+- estado elegible;
+- segregación satisfecha.
+
+---
+
+#### 66. Atomicidad de lote explícita
+
+Una acción masiva deberá declarar antes del efecto si su política es:
+
+```text
+ALL_OR_NOTHING
+```
+
+o si admite resultado parcial gobernado.
+
+La UI no inventa atomicidad silenciosa.
+
+---
+
+#### 67. Resultado parcial
+
+Cuando un lote permita resultado parcial, la UX debe identificar por recurso:
+
+- confirmado;
+- denegado;
+- stale;
+- conflicto;
+- desconocido;
+- no ejecutado.
+
+Un total agregado no sustituye el receipt por miembro.
+
+---
+
+#### 68. Orden de información
+
+La pantalla prioriza:
+
+1. qué decisión se solicita;
+2. sobre qué recurso y versión;
+3. impacto y evidencia relevante;
+4. bloqueos o segregación;
+5. acciones approve/reject;
+6. detalle adicional bajo demanda.
+
+El diseño no obliga a mostrar tablas extensas antes de entender la decisión.
+
+---
+
+#### 69. Relación con NUMERA-UX-008
+
+Cuando un indicador y un detalle tabular representen el mismo contexto autorizado, se conserva la jerarquía de UX-008.
+
+Sin embargo:
+
+```text
+INDICATOR_FIRST != DECISION_AUTHORITY
+```
+
+Una síntesis visual nunca sustituye la revisión del recurso exacto ni la versión decidida.
+
+---
+
+#### 70. Accesibilidad semántica
+
+La implementación futura deberá comunicar sin depender solo del color:
+
+- pendiente;
+- elegible;
+- bloqueado;
+- stale;
+- aprobado;
+- rechazado;
+- conflicto;
+- resultado desconocido;
+- no autorizado.
+
+Las acciones aprobar y rechazar deben conservar nombres accesibles inequívocos.
+
+---
+
+#### 71. Navegación por teclado y foco
+
+La futura materialización deberá preservar orden lógico de foco entre:
+
+- fila;
+- detalle;
+- evidencia;
+- alertas;
+- confirmación;
+- approve/reject;
+- receipt.
+
+Un modal de confirmación no debe devolver el foco a otra fila y provocar una decisión accidental.
+
+---
+
+#### 72. Responsive
+
+En pantallas estrechas, el orden empresarial debe conservar:
+
+```text
+RESOURCE
+-> REVIEW
+-> BLOCKERS
+-> DECISION
+```
+
+Los botones no pueden quedar separados del recurso de forma que el actor pueda confundir qué fila está decidiendo.
+
+---
+
+#### 73. Cambio de contexto
+
+Si cambia empresa, sede, centro, actor, scope o selector relevante mientras una revisión está abierta:
+
+```text
+CONTEXT_CHANGED
+-> INVALIDATE_REVIEW
+-> RELOAD_OR_REAUTHORIZE
+```
+
+No se conserva una cifra o autoridad del contexto anterior como vigente.
+
+---
+
+#### 74. Caché de autorización
+
+Se conserva:
+
+```text
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+```
+
+Una decisión previamente calculada no se reutiliza después de un cambio material de contexto, permiso, recurso, versión o estado.
+
+---
+
+#### 75. Error empresarial y error técnico
+
+La UX deberá distinguir:
+
+```text
+BUSINESS_DENY
+VALIDATION_BLOCK
+SEGREGATION_BLOCK
+STALE_RESOURCE
+TECHNICAL_FAILURE
+RESULT_UNKNOWN
+```
+
+No se mostrará un fallo técnico como rechazo empresarial ni un deny como “error del servidor” genérico cuando exista una razón segura que pueda comunicarse.
+
+---
+
+#### 76. Mensajes de deny
+
+Un deny puede explicar de forma minimizada la causa aplicable, por ejemplo:
+
+- permiso insuficiente;
+- fuera de alcance;
+- estado no elegible;
+- versión cambió;
+- segregación impide decidir;
+- recurso ya fue decidido.
+
+No debe filtrar datos financieros ocultos para explicar la denegación.
+
+---
+
+#### 77. Sin fallback legacy
+
+Queda prohibido autorizar decisiones mediante:
+
+```text
+numera.expenses.manage
+numera.cost_centers.manage
+numera.*
+numera.finance.*
+role_override
+```
+
+La ausencia de la capacidad exacta bloquea la acción.
+
+---
+
+#### 78. Capacidades pendientes de materialización
+
+UX-010 documenta el comportamiento objetivo aun cuando parte de las identidades de lectura o decisión continúen pendientes de materialización runtime.
+
+La UX no puede simular que una capacidad contractual ya está publicada.
+
+```text
+CONTRACT_DEFINED_PENDING_MATERIALIZATION != RUNTIME_ACTIVE
+```
+
+---
+
+#### 79. Simulación
+
+Una simulación de autorización puede explicar si el actor sería elegible, pero:
+
+```text
+SIMULATED_DECISION != REAL_DECISION
+```
+
+Nunca aprueba, rechaza, cambia estado ni crea receipt empresarial real.
+
+---
+
+#### 80. AS-IS no define el objetivo
+
+La auditoría actual de NUMERA no demuestra una bandeja completa de aprobaciones ni la materialización de las doce decisiones objetivo.
+
+Esa ausencia no autoriza a:
+
+- reutilizar `*.manage`;
+- omitir segregación;
+- autoaprobar recursos;
+- fusionar aprobación con registro;
+- tratar una fila técnica como decisión.
+
+---
+
+#### 81. Handoff desde UX-009
+
+Cuando el registro de gasto genere una propuesta elegible para decisión, el handoff transporta:
+
+- identidad del recurso;
+- versión;
+- contexto autorizado necesario;
+- evidencia/correlación;
+- tipo de decisión pendiente.
+
+No transporta una autoridad aprobatoria preconcedida.
+
+```text
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+```
+
+---
+
+#### 82. Handoff hacia detalle
+
+Desde `VSCREEN-0097` puede abrirse la superficie de detalle correspondiente para revisar el recurso.
+
+La navegación conserva:
+
+```text
+NAVIGATION != AUTHORIZATION
+```
+
+El detalle reevalúa su lectura; la decisión reevalúa además su permiso aprobatorio.
+
+---
+
+#### 83. Observabilidad mínima
+
+La futura materialización deberá poder distinguir, sin registrar payload financiero sensible innecesario:
+
+- queue loaded;
+- row hidden by authorization;
+- review opened;
+- eligibility denied;
+- stale review;
+- strong reauth requested/completed/failed;
+- approve requested/confirmed/unknown;
+- reject requested/confirmed/unknown;
+- batch partial result cuando aplique.
+
+Estos eventos UX no son eventos de dominio ni autoridad.
+
+---
+
+#### 84. Seguridad de datos en telemetría
+
+Logs, métricas y trazas no deben incluir por comodidad:
+
+- secretos;
+- credenciales bancarias;
+- JWT;
+- PIN/OTP;
+- payload financiero completo;
+- soportes documentales completos;
+- grant internals innecesarios.
+
+La correlación no se convierte en autoridad.
+
+---
+
+#### 85. Hallazgos y ownership
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| varias capacidades de lectura/decisión aún no están materializadas | no | `NUMERA-AUTH-012` + unidades/packages aplicables | identidades exactas quedan publicadas y consumidores migrados sin fallback legacy |
+| runtime no demuestra todavía la bandeja objetivo de doce decisiones | no | implementación NUMERA / package aplicable | `VSCREEN-0097` materializa el contrato y supera pruebas de allow/deny, scope, estado y segregación |
+| política monetaria universal de umbrales no está aprobada | no | gobierno empresarial competente | política versionada declara valores, moneda, vigencia, alcance y autoridad antes de aplicarse |
+| filtros completos por empresa/sede/centro se desarrollan después | no | `NUMERA-UX-013` | filtros consumen scope sin ampliar autoridad ni ocultar diferencias semánticas |
+| escenarios/presupuestos/forecast/precios usan aprobación especializada | no | `NUMERA-AUTH-015` + `VSCREEN-0156` / UX propietaria | sus superficies consumen permisos especializados sin convertirse por inferencia en filas base de `VSCREEN-0097` |
+| cartera y bancos incluyen decisiones de alto impacto adicionales | no | `NUMERA-AUTH-014` + UX propietaria | acciones especializadas conservan permisos y superficies exactas |
+
+No queda hallazgo detectado sin owner ni condición de salida.
+
+---
+
+#### 86. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 87. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar texto, estado, secuencia ni relaciones, cobertura ya registrada para:
+
+- `TREQ-NUMERA-001` — separación de lectura, registro, aprobación, cierre y exportación y trazabilidad financiera;
+- `TREQ-NUMERA-002` — identidad, versión, estado, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003` — separación entre registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-NUMERA-018` — autoridad server-side y validación económica del gasto;
+- `TREQ-NUMERA-023` — existencia de ruta/fila/menu no implica autorización;
+- `TREQ-AUTH-001` — permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-013` — revalidación server-side de actor, permiso, territorio/contexto, recurso, estado y efecto;
+- `TREQ-AUTH-014` — invalidación de contexto y decisiones stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-INTEGRATION-003` — idempotencia, retry y recuperación de resultado desconocido;
+- `TREQ-INTEGRATION-017` — preservación de fronteras entre hechos y aplicaciones propietarias.
+
+Esta sección es trazabilidad de cobertura existente y no modifica el Registro 04A.
+
+---
+
+#### 88. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental; no se ejecutó build de producto durante su preparación adelantada. |
+| LOCAL | NOT_EXECUTED | La incorporación, formateo, quality, delivery y batería del repositorio deberán ejecutarse en el checkout del usuario después de que `NUMERA-UX-009` cierre con `NEXT_TASK_ALLOWED: SI`. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, topología, políticas documentales, archivo propietario, `NUMERA-AUTH-005`, `NUMERA-AUTH-015`, `NUMERA-DOM-005`, bindings de pantallas/procesos, estados `VPROC-0052`, Registro 04A aplicable y scripts documentales vigentes; `NUMERA-UX-009` se consume desde su archivo completo aprobado por el usuario mientras termina su publicación. |
+| OPERATIVA | NOT_EXECUTED | No se aprobaron ni rechazaron gastos, obligaciones, planes de pago, documentos fiscales, impuestos, distribuciones ni otros recursos reales. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-010` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia. |
+
+---
+
+#### 89. Criterios de aceptación
+
+La tarea queda aceptable cuando se verifica que:
+
+1. existe exactamente un contrato `NUMERA-FINANCIAL-APPROVAL-FLOW-001`;
+2. la superficie agregadora es `VSCREEN-0097`;
+3. el paso agregador es `VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION`;
+4. la bandeja no constituye autoridad;
+5. el universo base contiene exactamente seis familias;
+6. existen exactamente seis permisos approve;
+7. existen exactamente seis permisos reject;
+8. existen exactamente doce decisiones base;
+9. la matriz de seis familias no tiene faltantes;
+10. la matriz no tiene duplicados;
+11. cada fila declara lectura, approve y reject exactos;
+12. cada fila conserva superficie de detalle y owner de proceso;
+13. approve y reject permanecen distintos de resolve;
+14. view no concede approve;
+15. approve no concede view;
+16. reject no concede view;
+17. una fila requiere lectura subyacente;
+18. counts/badges no filtran filas ocultas;
+19. estado vacío distingue cero visible de deny/error;
+20. seleccionar fila no concede autoridad;
+21. review no ejecuta decisión;
+22. expense review conserva causa, importe, moneda, dimensiones, soporte y versión aplicables;
+23. payable review conserva obligación, vencimiento, origen y segregación aplicables;
+24. payment plan review no implica ejecución monetaria;
+25. fiscal approval interna no se presenta como autoridad fiscal externa;
+26. tax approval interna no se presenta como determinación legal;
+27. cost allocation approval conserva pool/driver/base/origen/destinos/version;
+28. elegibilidad exige sesión y actor efectivos;
+29. elegibilidad exige lectura del recurso;
+30. elegibilidad exige permiso decisorio exacto;
+31. elegibilidad exige scope válido;
+32. elegibilidad exige recurso exacto;
+33. elegibilidad exige versión actual;
+34. elegibilidad exige estado aprobable/rechazable;
+35. elegibilidad exige segregación satisfecha o excepción gobernada;
+36. cualquier deny bloquea side effects;
+37. approve usa permiso approve, reject usa permiso reject;
+38. permiso no fuerza transición inexistente;
+39. stale review obliga nueva revisión;
+40. selected site no concede autoridad;
+41. primary site no concede autoridad;
+42. rol nominal no concede autoridad;
+43. ownership no concede autoridad;
+44. register/update no conceden approve;
+45. excepción de segregación no se crea por inferencia;
+46. strong reauth se consume cuando el contrato la exija;
+47. reauth no concede permiso ausente;
+48. aprobación upstream válida no se duplica sin política adicional;
+49. aprobación adicional requiere decisión distinta y trazable;
+50. review permanece sin mutación;
+51. approve comunica recurso/version/impacto exactos;
+52. reject exige motivo;
+53. rechazo no elimina ni cancela el recurso por inferencia;
+54. cambio approve↔reject no se trata como retry;
+55. comentario de aprobación sigue política aplicable;
+56. no se inventan umbrales;
+57. decisión reintentada es idempotente;
+58. doble clic no duplica la decisión;
+59. server-side revalida antes del efecto;
+60. deny deja cero side effects;
+61. resultado desconocido exige query/reconciliación;
+62. los outcomes UX no se presentan como estados de dominio;
+63. receipt conserva evidencia mínima;
+64. snapshot de decisión conserva recurso/version/actor/permiso/scope/resultado;
+65. approval no equivale a recognition;
+66. approval no equivale a payment;
+67. approval no equivale a reconciliation;
+68. approval no equivale a close/reopen;
+69. approval no equivale a export;
+70. approval no equivale a publish;
+71. planificación especializada permanece en AUTH-015/superficies propietarias;
+72. cartera/bancos especializados permanecen en AUTH-014/superficies propietarias;
+73. VPROC-0052 conserva sus nueve estados sin modificación;
+74. `UNDER_APPROVAL -> APPROVED_FOR_SCHEDULING` no salta a pago;
+75. gasto no recibe estados inventados en VPROC-0051;
+76. cost allocation approval no reescribe hechos fuente;
+77. lotes autorizan cada miembro;
+78. atomicidad de lote es explícita;
+79. resultados parciales se muestran por miembro;
+80. la síntesis visual no sustituye el recurso exacto;
+81. estados accesibles no dependen solo de color;
+82. responsive conserva recurso/review/bloqueos/decisión;
+83. cambio de contexto invalida review;
+84. decisiones stale se deniegan y reevalúan;
+85. business deny y technical failure permanecen distintos;
+86. mensajes de deny minimizan información sensible;
+87. no existe fallback `*.manage`, wildcard ni role override;
+88. capacidad contractual pendiente no se presenta como activa;
+89. simulación no produce decisión real;
+90. AS-IS no se adopta como autoridad objetivo;
+91. handoff desde UX-009 transporta contexto y no autoridad;
+92. navegación a detalle reautoriza;
+93. observabilidad no crea eventos de dominio;
+94. telemetría minimiza payload sensible;
+95. todo hallazgo diferido tiene owner y condición de salida;
+96. no se crean ni modifican requisitos de prueba;
+97. no se ejecutan cambios físicos;
+98. UX-011 recibe un contrato estable de separación entre aprobación y cierre.
+
+---
+
+#### 90. Límites
+
+Esta tarea no:
+
+- publica permisos runtime;
+- materializa las doce capacidades de aprobación/rechazo;
+- asigna grants a roles;
+- crea excepciones de segregación;
+- define umbrales monetarios universales;
+- crea RLS, RPC, Server Actions o APIs;
+- crea la bandeja React runtime;
+- modifica tablas o columnas;
+- modifica `VPROC-0051`, `VPROC-0052` o `VPROC-0054`;
+- inventa estados de aprobación;
+- ejecuta pagos;
+- ejecuta conciliaciones;
+- diseña el flujo de cierre/reapertura;
+- diseña la exportación;
+- define filtros completos de empresa/sede/centro;
+- convierte escenarios/presupuestos/forecast/precios en filas base de la bandeja;
+- redefine `NUMERA-AUTH-014` o `NUMERA-AUTH-015`;
+- publica escenarios o presupuestos;
+- activa precios operativos;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-011`.
+
+---
+
+#### 91. Handoff a NUMERA-UX-011
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_FINANCIAL_APPROVAL_FLOW_CONTRACT = NUMERA-FINANCIAL-APPROVAL-FLOW-001
+NUMERA_EXPENSE_REGISTRATION_FLOW_CONTRACT = NUMERA-EXPENSE-REGISTRATION-FLOW-001
+APPROVAL_QUEUE_SCREEN_ID = VSCREEN-0097
+APPROVAL_QUEUE_PROCESS_ID = VPROC-0052
+APPROVAL_QUEUE_STEP_ID = VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION
+APPROVAL_DECISION_FAMILY_COUNT = 6
+APPROVAL_PERMISSION_COUNT = 6
+REJECT_PERMISSION_COUNT = 6
+APPROVAL_DECISION_PERMISSION_COUNT = 12
+APPROVAL_QUEUE_OMNIBUS_PERMISSION = FORBIDDEN
+APPROVE_PERMISSION_IMPLIES_VIEW = NO
+REJECT_PERMISSION_IMPLIES_VIEW = NO
+APPROVAL_QUEUE_ROW_REQUIRES_UNDERLYING_VIEW = YES
+ROLE_NAME_IS_AUTHORIZATION = NO
+OWNERSHIP_IS_APPROVAL_AUTHORITY = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+REGISTER_PERMISSION_IMPLIES_APPROVE = NO
+UPDATE_PERMISSION_IMPLIES_APPROVE = NO
+APPROVE_IS_RECOGNIZE = NO
+APPROVE_IS_PAY_EXECUTE = NO
+APPROVE_IS_RECONCILE = NO
+APPROVE_IS_CLOSE = NO
+APPROVE_IS_REOPEN = NO
+APPROVE_IS_EXPORT = NO
+APPROVE_IS_PUBLISH = NO
+REJECTION_REASON_REQUIRED = YES
+STALE_REVIEW = DENY_AND_REVIEW_AGAIN
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STRONG_REAUTH_WHEN_APPLICABLE = YES
+DENY_SIDE_EFFECT_ALLOWED = NO
+DECISION_RETRY_REQUIRES_IDEMPOTENCY = YES
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+VPROC_0052_APPROVAL_ENTRY_STATE = UNDER_APPROVAL
+VPROC_0052_APPROVAL_SUCCESS_STATE = APPROVED_FOR_SCHEDULING
+VPROC_0052_APPROVAL_DOES_NOT_EXECUTE_PAYMENT = YES
+PLANNING_SPECIALIZED_APPROVAL_OWNER = NUMERA_AUTH_015
+RECEIVABLE_BANK_SPECIALIZED_DECISION_OWNER = NUMERA_AUTH_014
+UX_011_OWNER = PERIOD_CLOSE_FLOW
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-011` deberá diseñar el cierre y reapertura de periodo como autoridad distinta, sin reutilizar una aprobación previa como permiso de cierre.
+
+---
+
+#### 92. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-009
+-> NUMERA-UX-010
+-> NUMERA-UX-011
+```
+
+UX-010 consume el recurso/handoff elegible de UX-009 y entrega a UX-011 una separación explícita entre decisión aprobatoria y autoridad de cierre.
+
+---
+
+#### 93. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-009 — Diseñar flujo de registro de gasto`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-010 — Diseñar flujo de aprobación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-011 — Diseñar flujo de cierre`
 ### [ ] NUMERA-UX-011 — Diseñar flujo de cierre
 ### [ ] NUMERA-UX-012 — Diseñar exportación con permiso independiente
 ### [ ] NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
