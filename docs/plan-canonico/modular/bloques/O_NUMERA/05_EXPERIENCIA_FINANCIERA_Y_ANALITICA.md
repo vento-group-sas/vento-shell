@@ -21081,7 +21081,1383 @@ UX-016 consume los contratos y escenarios de UX-015, valida su coherencia contra
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-017 — Diseñar conciliación de ventas y pagos`
-### [ ] NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
+### ✅ NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
+**Tarea siguiente:** NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
+**Tipo de tarea:** definición documental del contrato UX de conciliación de ventas y pagos en NUMERA, con matching explicable, cardinalidades, diferencias, parcialidad, reversos, liquidaciones, cierre de caja, incertidumbre y handoffs hacia cartera, tesorería y corrección, sin reescribir PULSO ni ejecutar conciliaciones reales; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica componentes, rutas, tablas, vistas, índices, RPC, Server Actions, APIs, RLS, migraciones, Supabase, eventos, pagos, ventas, caja, cartera, movimientos bancarios, documentos fiscales, conciliaciones reales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable cómo NUMERA concilia ventas y pagos sin fusionar identidades, fabricar hechos faltantes, reescribir PULSO ni forzar diferencias a cero.
+
+La experiencia debe permitir explicar, para cada relación esperada:
+
+- qué venta o compromiso comercial se está conciliando;
+- qué pago, recaudo, cierre, liquidación o depósito sirve como evidencia;
+- qué fuente es autoridad de cada dimensión;
+- qué parte está conciliada y qué residual permanece abierto;
+- qué diferencia existe y quién debe resolverla;
+- cuándo una coincidencia es determinista, sugerida, parcial, conflictiva o todavía incierta;
+- qué acciones posteriores pertenecen a PULSO, cartera, tesorería, periodo o corrección.
+
+La regla principal es:
+
+```text
+CONCILIAR VENTAS Y PAGOS
+=
+DEMOSTRAR RELACIONES EXPLICABLES ENTRE HECHOS DISTINTOS
++
+CONSERVAR IDENTIDAD, FUENTE, CARDINALIDAD, RESIDUAL Y EVIDENCIA
+```
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-UX-017` es `DEFINE_ONCE` y no crea instancia física propia.
+
+La tarea:
+
+- diseña contrato UX, matrices, reglas de matching y handoffs;
+- no ejecuta una conciliación real;
+- no crea un motor de matching;
+- no modifica estados de PULSO o NUMERA;
+- no crea almacenamiento físico;
+- no define valores universales de tolerancia o materialidad;
+- no ejecuta pagos, devoluciones, depósitos, aplicaciones o cierres;
+- no sustituye conciliación bancaria, cartera ni cierre de periodo.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-016
+
+Se consume íntegramente:
+
+```text
+NUMERA_PROTOTYPE_VALIDATION_CONTRACT = NUMERA-PROTOTYPE-ACCOUNTING-DIRECTION-VALIDATION-001
+VALIDATION_RESULT = PASS_WITH_CARRYOVER
+HUMAN_SESSION_EXECUTION = NOT_EXECUTED
+HUMAN_VALIDATION_OWNER = UX_QA_028
+ACCOUNTING_PERSPECTIVE_VALIDATED_DOCUMENTALLY = YES
+DIRECTION_PERSPECTIVE_VALIDATED_DOCUMENTALLY = YES
+SOURCE_TRACEABILITY_REQUIRED = YES
+SILENT_HISTORY_REWRITE_FORBIDDEN = YES
+UNKNOWN_IS_SUCCESS = NO
+FILTER_IS_AUTHORITY = NO
+ROLE_NAME_IS_AUTHORITY = NO
+TECHNICAL_REDELIVERY_IS_BUSINESS_DUPLICATE = NO
+POSSIBLE_DUPLICATE_IS_CONFIRMED_DUPLICATE = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SALES_PAYMENT_RECONCILIATION_OWNER = NUMERA_UX_017
+TREQ_CHANGES = 0
+```
+
+UX-017 desarrolla exclusivamente `SALES_PAYMENT_RECONCILIATION_OWNER`.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+UX-017 especializa, sin redefinir:
+
+- `NUMERA-PROTOTYPE-ACCOUNTING-DIRECTION-VALIDATION-001`;
+- `NUMERA-SOURCE-EVENT-CONSUMPTION-001`;
+- `NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001`;
+- el contrato de hechos económicos recibidos desde ventas de `NUMERA-DOM-002`;
+- el contrato transversal de conciliación y diferencias de `NUMERA-DOM-014`;
+- el contrato de cartera, recaudo y aplicación de `NUMERA-DOM-016`;
+- `TREQ-PULSO-006` como cobertura vigente de venta, pago, caja, devolución y cierre;
+- los contratos de eventos `INT-APP-001` a `INT-APP-010`;
+- los procesos canónicos `VPROC-0038` a `VPROC-0044`, `VPROC-0051` y `VPROC-0053` cuando corresponda.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA-SALES-PAYMENT-RECONCILIATION-001
+```
+
+Su alcance es diseñar la conciliación explicable entre ventas y sus evidencias financieras relacionadas, conservando diferencias, cardinalidad y ownership.
+
+---
+
+#### 6. Superficie y proceso propietarios
+
+La superficie propietaria es:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0101
+PRIMARY_SCREEN_NAME = Conciliación de ventas y pagos
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_SALES_AND_PAYMENTS
+OWNER_ACTION_CLASS = RECONCILE
+OWNER_STEP_CLASS = DECISION
+```
+
+La superficie compara ventas, pagos, soportes, liquidaciones y depósitos y permite resolver diferencias sin reescribir ventas ni cajas.
+
+---
+
+#### 7. Fronteras con superficies relacionadas
+
+UX-017 no absorbe:
+
+```text
+VSCREEN-0099 = CUENTAS_POR_COBRAR_Y_CARTERA
+VSCREEN-0100 = CAJA_BANCOS_Y_MOVIMIENTOS_FINANCIEROS
+VSCREEN-0105 = CIERRE_REAPERTURA_Y_CORRECCION_DE_PERIODO
+VSCREEN-0106 = REPORTES_Y_EXPORTACIONES_FINANCIERAS
+```
+
+Por tanto:
+
+```text
+SALES_PAYMENT_RECONCILIATION != RECEIVABLE_MANAGEMENT
+SALES_PAYMENT_RECONCILIATION != BANK_RECONCILIATION
+SALES_PAYMENT_RECONCILIATION != PERIOD_CLOSE
+SALES_PAYMENT_RECONCILIATION != REPORT_EXPORT
+```
+
+---
+
+#### 8. Identidades que permanecen distintas
+
+Se conserva obligatoriamente:
+
+```text
+SALE
+!= PAYMENT
+!= CASH_MOVEMENT
+!= CASH_SESSION
+!= SETTLEMENT
+!= DEPOSIT
+!= FISCAL_DOCUMENT
+!= RECEIVABLE
+!= PAYMENT_APPLICATION
+!= REFUND
+!= CHARGEBACK
+!= ECONOMIC_FACT
+```
+
+Conciliar crea relaciones entre estas identidades; no las fusiona.
+
+---
+
+#### 9. Autoridad de fuentes
+
+PULSO conserva autoridad sobre los hechos comerciales y de pago de sus procesos.
+
+NUMERA conserva autoridad sobre:
+
+- representación económica propia;
+- expediente de conciliación;
+- diferencias económicas propias;
+- decisiones y vínculos de conciliación autorizados dentro de NUMERA.
+
+Un proveedor de pago, banco, canal externo o documento fiscal conserva la autoridad externa que corresponda a su resultado, sin convertirse en propietario de la venta interna.
+
+---
+
+#### 10. Procesos PULSO considerados
+
+La conciliación puede consumir evidencia correlacionada de:
+
+| Proceso | Papel en UX-017 |
+| --- | --- |
+| `VPROC-0038` | servicio en mesa; venta/cobro correlacionados y cierre del servicio |
+| `VPROC-0039` | venta de mostrador o para llevar; venta, pago, entrega y cierre |
+| `VPROC-0040` | canal externo normalizado; cobros, comisiones y reconciliación del canal |
+| `VPROC-0041` | catering/B2B; cobro o cartera vinculados al compromiso comercial |
+| `VPROC-0042` | modificación, anulación, devolución y efectos posteriores |
+| `VPROC-0043` | cobro, autorización, captura, soporte fiscal y conciliación del pago |
+| `VPROC-0044` | cierre de caja, conteo, diferencias, depósito y conciliación financiera pendiente |
+
+No todos los procesos deben aparecer en todos los casos.
+
+---
+
+#### 11. Estados fuente fuertes
+
+Como evidencia fuerte ya aprobada se reconocen, entre otros:
+
+```text
+VPROC-0038.TABLE_SERVICE_CLOSED
+VPROC-0039.COUNTER_SALE_CLOSED
+VPROC-0040.EXTERNAL_ORDER_RECONCILED
+VPROC-0041.COMMERCIAL_COMMITMENT_CLOSED
+VPROC-0042.COMMERCIAL_CHANGE_RECONCILED
+VPROC-0043.PAYMENT_RECONCILED
+VPROC-0044.CASH_SESSION_CLOSED
+```
+
+Estos estados conservan su significado propietario. Ninguno se transforma automáticamente en estado NUMERA distinto por aparecer en la conciliación.
+
+---
+
+#### 12. Pago confirmado no equivale a venta conciliada
+
+Se congela:
+
+```text
+PAYMENT_RECONCILED_IN_PULSO
+!= SALE_RECONCILED_IN_NUMERA
+```
+
+`VPROC-0043.PAYMENT_RECONCILED` confirma el pago dentro de PULSO, pero NUMERA todavía debe demostrar la relación correcta con la venta y el efecto económico correspondiente.
+
+---
+
+#### 13. Venta cerrada no equivale a pago bancario conciliado
+
+Se congela:
+
+```text
+SALE_CLOSED
+!= BANK_RECONCILED
+```
+
+Una venta puede estar cerrada comercialmente y mantener pendiente un resultado financiero posterior, una liquidación de proveedor, un depósito o una diferencia bancaria.
+
+La conciliación bancaria final pertenece a UX-021 y contratos financieros aplicables.
+
+---
+
+#### 14. Unidad lógica de conciliación
+
+Cada caso UX debe poder reconstruir una unidad lógica con:
+
+- identidad estable del caso;
+- ventas o compromisos involucrados;
+- pagos o evidencias financieras involucradas;
+- fuentes y owners;
+- moneda;
+- fechas relevantes;
+- entidad legal y scope aplicable;
+- cardinalidad;
+- parte conciliada;
+- residual;
+- diferencias;
+- estado de decisión UX;
+- evidencia;
+- historial de matching y reversión cuando exista.
+
+La tarea no define nombres de tabla o columnas.
+
+---
+
+#### 15. Cardinalidades soportadas
+
+La conciliación debe soportar conceptualmente:
+
+```text
+ONE_SALE_TO_ONE_PAYMENT
+ONE_SALE_TO_MANY_PAYMENTS
+MANY_SALES_TO_ONE_SETTLEMENT
+MANY_PAYMENTS_TO_ONE_SETTLEMENT
+PARTIAL_RECONCILIATION
+UNMATCHED_SALE
+UNMATCHED_PAYMENT
+```
+
+`MANY_SALES_TO_ONE_SETTLEMENT` no significa que una transacción de pago individual pagó varias ventas; significa que una liquidación o depósito agregado puede contener múltiples contribuciones trazables.
+
+---
+
+#### 16. Prohibición de bolsa opaca
+
+```text
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+```
+
+Cuando varias ventas o pagos se agrupen para una liquidación o depósito, cada contribución debe seguir siendo identificable.
+
+No se acepta un “cuadre total” que pierda el vínculo de cada elemento.
+
+---
+
+#### 17. Flujo UX principal
+
+```text
+SELECT_RECONCILIATION_SCOPE
+-> LOAD_AUTHORITATIVE_EVIDENCE
+-> CLASSIFY_CANDIDATES
+-> PROPOSE_OR_RECOVER_MATCHES
+-> REVIEW_CARDINALITY_AND_COMPONENTS
+-> CLASSIFY_DIFFERENCES
+-> AUTHORIZE_DECISION_IF_REQUIRED
+-> COMMIT_RECONCILIATION_DECISION
+-> VERIFY_CURRENT_SOURCES
+-> CLOSE_OR_KEEP_RESIDUAL_OPEN
+```
+
+El commit de una decisión no reescribe las fuentes.
+
+---
+
+#### 18. Scope de conciliación
+
+El scope visible puede incluir, cuando aplique:
+
+- entidad legal;
+- sede;
+- canal;
+- periodo o fecha de corte;
+- sesión de caja;
+- medio de pago;
+- moneda;
+- estado de conciliación;
+- owner de diferencia.
+
+Los filtros de UX-013 ayudan a consultar, pero no crean identidad ni autoridad.
+
+---
+
+#### 19. Matching determinista
+
+Un match puede resolverse automáticamente únicamente cuando existe evidencia fuerte y semánticamente compatible, por ejemplo:
+
+- referencia canónica exacta venta-pago emitida por el proceso propietario;
+- vínculo previamente aprobado e idempotente;
+- composición explícita de una liquidación con identidades fuente verificables.
+
+```text
+DETERMINISTIC_MATCH_REQUIRES_CANONICAL_EVIDENCE = YES
+```
+
+---
+
+#### 20. Matching sugerido
+
+Cuando la relación no sea determinista, la interfaz puede sugerir candidatos usando atributos permitidos.
+
+```text
+SUGGESTED_MATCH != APPROVED_MATCH
+SUGGESTED_MATCH != SOURCE_CORRECTION
+```
+
+La sugerencia debe explicar por qué aparece y qué evidencia falta.
+
+---
+
+#### 21. Señales débiles
+
+Por sí solas no aprueban un match:
+
+- mismo importe;
+- misma fecha;
+- misma sede;
+- misma contraparte;
+- mismo medio;
+- proximidad temporal;
+- mismo texto;
+- misma sesión de caja.
+
+Estas señales pueden priorizar revisión, no demostrar identidad.
+
+---
+
+#### 22. Estado UX de un caso
+
+La superficie puede representar, sin crear estados nuevos de proceso:
+
+```text
+UNMATCHED_SALE
+UNMATCHED_PAYMENT
+SUGGESTED_MATCH
+MATCH_READY_FOR_REVIEW
+PARTIALLY_RECONCILED
+FULLY_RECONCILED
+DIFFERENCE_UNDER_REVIEW
+SOURCE_CORRECTION_REQUIRED
+NUMERA_CORRECTION_REQUIRED
+UNKNOWN_RESULT
+REOPENED
+```
+
+Estas etiquetas son estados de presentación del expediente de conciliación, no estados nuevos de `VPROC-0051`.
+
+---
+
+#### 23. Venta y pago uno a uno
+
+Caso base:
+
+```text
+ONE_SALE
++ ONE_PAYMENT
++ CANONICAL_CORRELATION
++ COMPATIBLE_AMOUNT_AND_CURRENCY
+-> FULL_MATCH_CANDIDATE
+```
+
+El match solo cierra cuando la evidencia vigente sigue siendo válida.
+
+---
+
+#### 24. Pago dividido o medios combinados
+
+Una venta puede tener varios componentes de pago.
+
+```text
+ONE_SALE
+-> PAYMENT_PART_A
++ PAYMENT_PART_B
++ ...
+```
+
+Cada componente conserva:
+
+- medio;
+- moneda;
+- importe;
+- proveedor o referencia cuando exista;
+- estado;
+- actor o proceso fuente;
+- correlación.
+
+La venta no se duplica por tener varios medios.
+
+---
+
+#### 25. Pago parcial
+
+```text
+PAYMENT_AMOUNT < ELIGIBLE_SALE_AMOUNT
+-> PARTIAL_RECONCILIATION
+-> RESIDUAL_REMAINS_OPEN
+```
+
+El residual no se fuerza a cero.
+
+Si el residual representa cartera, el handoff pertenece a `VPROC-0053` y UX-026.
+
+---
+
+#### 26. Venta a crédito
+
+Una venta cerrada con saldo legítimamente pendiente no se clasifica como fallo de pago por ausencia de recaudo inmediato.
+
+```text
+VALID_CREDIT_TERMS
++ UNPAID_RESIDUAL
+-> RECEIVABLE_HANDOFF
+```
+
+La cartera resultante es un objeto separado.
+
+---
+
+#### 27. Pago sin venta correlacionable
+
+Un pago confirmado sin venta suficiente no se descarta ni se asigna por coincidencia de monto.
+
+Resultado permitido:
+
+```text
+UNMATCHED_PAYMENT
+OR
+RECEIVABLE_APPLICATION_PENDING
+OR
+SOURCE_INVESTIGATION_REQUIRED
+```
+
+según la evidencia y el owner aplicable.
+
+---
+
+#### 28. Venta sin pago observado
+
+Una venta económicamente válida sin pago observado puede significar:
+
+- crédito legítimo;
+- pago todavía pendiente;
+- evento tardío;
+- fuente incompleta;
+- fallo de correlación;
+- diferencia real.
+
+La interfaz no asume fraude, pérdida ni pago fallido sin evidencia.
+
+---
+
+#### 29. Liquidaciones de proveedor o canal
+
+Una liquidación puede agrupar ventas, pagos, comisiones, retenciones, ajustes o reversos.
+
+Se conserva:
+
+```text
+SALE_GROSS
+!= PROVIDER_SETTLEMENT_NET
+```
+
+Una diferencia entre ambos no se trata automáticamente como error.
+
+---
+
+#### 30. Comisiones y retenciones
+
+Comisiones de canal o proveedor no reducen silenciosamente el importe de la venta fuente.
+
+La conciliación debe mostrar por separado, cuando exista contrato y evidencia:
+
+- venta bruta;
+- cobro o captura;
+- comisión;
+- retención;
+- ajuste;
+- liquidación neta;
+- residual.
+
+La clasificación económica definitiva de cada componente sigue su contrato propietario.
+
+---
+
+#### 31. Depósitos
+
+Un depósito puede servir como evidencia agregada de custodia o transferencia de valor.
+
+```text
+DEPOSIT != PAYMENT
+DEPOSIT != SALE
+```
+
+UX-017 puede relacionar una referencia de depósito con el expediente comercial, pero no sustituye la conciliación bancaria de UX-021.
+
+---
+
+#### 32. Cierre de caja
+
+`VPROC-0044` aporta evidencia de:
+
+- ventas;
+- pagos;
+- efectivo;
+- devoluciones;
+- anulaciones;
+- documentos;
+- diferencias;
+- custodia o depósito.
+
+El cierre de caja no crea ventas faltantes ni modifica pagos para forzar coincidencia.
+
+---
+
+#### 33. Diferencia de efectivo
+
+Una diferencia de caja es una diferencia propia del cierre de caja.
+
+Puede correlacionarse con UX-017, pero:
+
+```text
+CASH_DIFFERENCE != SALE_AMOUNT_CORRECTION
+CASH_DIFFERENCE != PAYMENT_AMOUNT_CORRECTION
+```
+
+La corrección de PULSO permanece bajo PULSO.
+
+---
+
+#### 34. Documento fiscal
+
+El documento fiscal es evidencia correlacionada y permanece distinto de venta y pago.
+
+```text
+FISCAL_DOCUMENT_MATCH
+!= PAYMENT_MATCH
+!= SALE_MATCH
+```
+
+La integración fiscal detallada permanece en UX-027 y contratos aplicables.
+
+---
+
+#### 35. Devolución, anulación y reembolso
+
+`VPROC-0042` conserva la semántica comercial del cambio.
+
+UX-017 debe distinguir:
+
+```text
+CANCELLATION
+REVERSAL
+RETURN
+REFUND
+COMPENSATION
+```
+
+Un reembolso no borra el pago original y una devolución no prueba por sí sola el importe reembolsado.
+
+---
+
+#### 36. Reverso de pago
+
+Cuando un pago previamente conciliado se revierte:
+
+1. el match anterior conserva historia;
+2. el caso puede reabrirse;
+3. el reverso se correlaciona con el pago original;
+4. el residual resultante vuelve a evaluarse;
+5. no se elimina la venta ni el pago original.
+
+---
+
+#### 37. Contracargo
+
+Un contracargo posterior es un hecho financiero relacionado y no un borrado retroactivo.
+
+El caso debe conservar:
+
+- pago original;
+- referencia del contracargo;
+- estado de proveedor;
+- importe y moneda;
+- evidencia;
+- efecto residual;
+- owner de la siguiente acción.
+
+---
+
+#### 38. Resultado externo desconocido
+
+Cuando un proveedor de pago retorna timeout, respuesta perdida o resultado incierto:
+
+```text
+UNKNOWN_RESULT
+-> QUERY_AUTHORITATIVE_RESULT
+OR
+-> RECONCILIATION_REQUIRED
+```
+
+No se crea un segundo pago por retry ciego.
+
+---
+
+#### 39. Eventos tardíos y fuera de orden
+
+Venta, pago, devolución, cierre o liquidación pueden llegar fuera de orden.
+
+La superficie debe poder mantener:
+
+```text
+SOURCE_INCOMPLETE
+LATE_EVENT_EXPECTED
+RECONCILIATION_PENDING
+```
+
+sin inventar el evento faltante.
+
+---
+
+#### 40. Replay, backfill e idempotencia
+
+```text
+REPLAY != NEW_SALE
+BACKFILL != NEW_PAYMENT
+REDELIVERY != NEW_RECONCILIATION_EFFECT
+```
+
+La conciliación reutiliza la identidad histórica y el contrato de duplicidad aprobado en UX-015.
+
+---
+
+#### 41. Moneda
+
+Venta y pago conservan moneda explícita.
+
+Una diferencia de moneda no se cierra copiando un importe.
+
+Cuando exista conversión autorizada, el expediente debe conservar la evidencia y política aplicables; UX-017 no fija una metodología universal de FX.
+
+---
+
+#### 42. Fechas relevantes
+
+La UI debe distinguir, cuando correspondan:
+
+- ocurrencia de venta;
+- reconocimiento económico;
+- autorización de pago;
+- captura o confirmación;
+- liquidación;
+- depósito;
+- conciliación;
+- corte o periodo.
+
+```text
+SALE_DATE != PAYMENT_DATE != SETTLEMENT_DATE != DEPOSIT_DATE
+```
+
+---
+
+#### 43. Periodos
+
+Se conserva:
+
+```text
+OPERATING_PERIOD
+!= ECONOMIC_PERIOD
+!= ACCOUNTING_PERIOD
+!= FISCAL_PERIOD
+```
+
+UX-017 no mueve silenciosamente un hecho a otro periodo para cuadrar resultados.
+
+Eventos tardíos sobre periodos protegidos se derivan a UX-023 y contratos de periodo aplicables.
+
+---
+
+#### 44. Componentes monetarios
+
+Una comparación puede requerir componentes separados como:
+
+```text
+SALE_SUBTOTAL
+DISCOUNTS
+TAXES
+SERVICE_OR_TIP
+SALE_TOTAL
+PAYMENT_AMOUNT
+REFUND_AMOUNT
+CHANNEL_OR_PROCESSOR_FEE
+WITHHOLDING
+SETTLEMENT_AMOUNT
+DEPOSIT_AMOUNT
+RESIDUAL
+```
+
+La existencia de estas categorías no implica que todas apliquen a cada caso ni crea un modelo contable formal.
+
+---
+
+#### 45. Residual
+
+Todo match parcial conserva residual explícito.
+
+```text
+PARTIAL_MATCH != FULL_RECONCILIATION
+RESIDUAL_ZERO_BY_MANUAL_OVERRIDE = FORBIDDEN
+```
+
+El residual debe tener causa, owner y condición de salida.
+
+---
+
+#### 46. Tolerancias
+
+UX-017 no inventa una tolerancia monetaria universal.
+
+Toda tolerancia futura deberá declarar:
+
+- clase de diferencia elegible;
+- importe o regla;
+- moneda;
+- vigencia;
+- versión;
+- owner;
+- autoridad;
+- evidencia.
+
+Identidad, moneda, entidad legal o autoridad inválidas no se cierran por tolerancia.
+
+---
+
+#### 47. Clasificación de diferencias
+
+La UX debe poder distinguir al menos:
+
+```text
+IDENTITY_OR_CORRELATION_DIFFERENCE
+MISSING_SALE
+MISSING_PAYMENT
+AMOUNT_DIFFERENCE
+CURRENCY_DIFFERENCE
+COMPONENT_DIFFERENCE
+DUPLICATE_OR_REPLAY
+STATE_INCOMPATIBILITY
+PARTIAL_PAYMENT
+UNAPPLIED_PAYMENT
+REFUND_OR_REVERSAL_DIFFERENCE
+SETTLEMENT_DIFFERENCE
+CASH_CLOSE_DIFFERENCE
+LATE_EVENT
+SOURCE_INCOMPLETE
+UNKNOWN_EXTERNAL_RESULT
+```
+
+No se crea una categoría genérica “ajuste manual” como resolución.
+
+---
+
+#### 48. Resultados de conciliación
+
+El caso puede terminar o permanecer en:
+
+| Resultado | Significado |
+| --- | --- |
+| `FULL_MATCH` | relación demostrada, sin residual pendiente |
+| `PARTIAL_MATCH` | parte demostrada y residual explícito |
+| `EXPLAINED_DIFFERENCE` | delta legítimo con componentes y evidencia |
+| `ACCEPTED_EXCEPTION` | diferencia conocida aceptada por autoridad/política aplicable |
+| `SOURCE_CORRECTION_REQUIRED` | fuente propietaria debe corregirse antes de revalidar |
+| `NUMERA_CORRECTION_REQUIRED` | representación económica NUMERA requiere corrección propia |
+| `RECEIVABLE_HANDOFF_REQUIRED` | residual o aplicación pertenece a cartera |
+| `TREASURY_HANDOFF_REQUIRED` | diferencia requiere caja/banco/tesorería |
+| `PERIOD_TREATMENT_REQUIRED` | evento tardío o corrección afecta periodo protegido |
+| `UNRESOLVED` | evidencia insuficiente o fuente pendiente |
+
+---
+
+#### 49. Corrección en PULSO
+
+Cuando la venta, pago o caja fuente sea incorrecta:
+
+```text
+PULSO_OWNS_SOURCE_CORRECTION = YES
+NUMERA_DIRECT_SOURCE_REWRITE = FORBIDDEN
+```
+
+NUMERA conserva la diferencia y vuelve a conciliar cuando recibe el resultado corregido o compensatorio.
+
+---
+
+#### 50. Corrección económica en NUMERA
+
+Cuando la fuente PULSO sea correcta pero la representación económica NUMERA sea incorrecta, la corrección pertenece a NUMERA y debe ser no destructiva.
+
+El detalle UX de correcciones y reaperturas permanece en UX-023.
+
+---
+
+#### 51. Cartera y aplicación
+
+Cuando una venta genera derecho de cobro o existe un recaudo que requiere aplicación:
+
+```text
+RECEIVABLE_AND_APPLICATION_OWNER = VPROC-0053
+```
+
+UX-017 muestra el handoff y estado relacionado, pero no diseña:
+
+- aging;
+- cobranza;
+- acuerdos;
+- promesas;
+- castigos;
+- exposición;
+- aplicación detallada de cartera.
+
+Esos detalles permanecen en `NUMERA-DOM-016` y UX-026.
+
+---
+
+#### 52. Tesorería y banco
+
+La correlación final contra extractos, movimientos bancarios, cuentas y tesorería pertenece a UX-021.
+
+UX-017 puede mostrar:
+
+```text
+BANK_RECONCILIATION_PENDING
+TREASURY_HANDOFF_REQUIRED
+```
+
+como contexto, sin resolver el banco dentro de VSCREEN-0101.
+
+---
+
+#### 53. Presentación principal de VSCREEN-0101
+
+La superficie debe priorizar:
+
+1. alcance y fecha de corte;
+2. resumen de conciliado, parcial, sin match y diferencias;
+3. casos que requieren decisión;
+4. explicación del match propuesto o vigente;
+5. ventas y pagos relacionados;
+6. componentes monetarios relevantes;
+7. residual;
+8. evidencia y lineage;
+9. owner y siguiente acción;
+10. historial de resolución bajo demanda.
+
+---
+
+#### 54. Comparador de caso
+
+Para un caso seleccionado, la UX debe poder mostrar en columnas o grupos diferenciados:
+
+```text
+SALE_SIDE
+PAYMENT_SIDE
+RELATED_EVIDENCE
+RECONCILIATION_RESULT
+```
+
+La pantalla no presenta una sola fila fusionada que oculte la fuente de cada valor.
+
+---
+
+#### 55. Explicación del match
+
+Todo match sugerido o aprobado debe poder explicar:
+
+- identidad usada;
+- correlación usada;
+- cardinalidad;
+- importe y moneda por lado;
+- componentes considerados;
+- diferencias;
+- evidencia fuerte;
+- señales débiles;
+- residual;
+- decisión y actor cuando corresponda.
+
+---
+
+#### 56. Filtros y contexto
+
+Los filtros de empresa, sede y centro de costo de UX-013 pueden restringir la vista autorizada, pero:
+
+```text
+FILTER_VALUE_IS_MATCH_EVIDENCE = NO
+FILTER_VALUE_CAN_FILL_MISSING_SOURCE_DIMENSION = NO
+```
+
+Un match se decide sobre identidades y evidencia fuente.
+
+---
+
+#### 57. Autorización
+
+Ver una conciliación no concede autoridad para aprobarla, corregir fuentes, aplicar cartera o ejecutar tesorería.
+
+Las acciones sensibles requieren revalidación server-side de actor, permiso, scope, recurso y estado.
+
+UX-017 no crea un permiso omnibus `reconciliation.manage`.
+
+---
+
+#### 58. Segregación
+
+Cuando el riesgo lo exija, deben permanecer diferenciadas:
+
+```text
+PROPOSE_MATCH
+APPROVE_MATCH
+CORRECT_SOURCE
+CORRECT_NUMERA_EFFECT
+APPLY_RECEIVABLE
+EXECUTE_TREASURY_ACTION
+CLOSE_PERIOD
+```
+
+La interfaz no fusiona estas autoridades por comodidad.
+
+---
+
+#### 59. Concurrencia y stale decisions
+
+Antes de confirmar una decisión se revalidan las fuentes relevantes.
+
+Si venta, pago, liquidación, residual o estado cambió materialmente:
+
+```text
+STALE_RECONCILIATION_DECISION
+-> REVIEW_AGAIN
+```
+
+No se aplica una decisión basada en snapshot obsoleto.
+
+---
+
+#### 60. Reversión de matching
+
+Un match incorrecto no se borra.
+
+La reversión conserva:
+
+- match original;
+- motivo;
+- actor/autoridad;
+- evidencia;
+- timestamp;
+- nuevo estado;
+- nuevo match cuando exista.
+
+Revertir el match no revierte automáticamente venta, pago o caja.
+
+---
+
+#### 61. Evidencia y auditoría
+
+Cada decisión material debe permitir reconstruir:
+
+- caso;
+- fuentes;
+- versiones consideradas;
+- comparación;
+- sugerencia cuando existió;
+- decisión;
+- autoridad;
+- acciones derivadas;
+- verificación posterior;
+- residual y owner final.
+
+Auditoría no sustituye la fuente de verdad.
+
+---
+
+#### 62. Frescura y cobertura
+
+La superficie debe declarar cuando la comparación pueda estar incompleta por:
+
+- fuente todavía no recibida;
+- evento tardío esperado;
+- proveedor pendiente;
+- cierre de caja aún abierto;
+- liquidación todavía no disponible;
+- watermark o corte incompleto.
+
+```text
+SOURCE_NOT_COMPLETE != ZERO_DIFFERENCE
+```
+
+---
+
+#### 63. Estado vacío
+
+Cero diferencias visibles significa únicamente que no existen casos visibles dentro del alcance y evidencia cargados.
+
+No significa:
+
+- todas las ventas recibidas;
+- todos los pagos recibidos;
+- todas las fuentes completas;
+- conciliación bancaria terminada;
+- ausencia histórica de diferencias.
+
+---
+
+#### 64. Históricos y backfill
+
+Los datos históricos incompletos pueden quedar:
+
+- conciliados con limitaciones declaradas;
+- parcialmente conciliados;
+- como excepción aceptada;
+- pendientes por evidencia ausente.
+
+No se fabrican expedientes históricos como si hubieran sido conciliados en tiempo real.
+
+---
+
+#### 65. Observabilidad futura
+
+La materialización podrá medir, sin redefinir semántica:
+
+```text
+RECONCILIATION_CASE_COUNT
+FULL_MATCH_COUNT
+PARTIAL_MATCH_COUNT
+UNMATCHED_SALE_COUNT
+UNMATCHED_PAYMENT_COUNT
+SUGGESTED_MATCH_COUNT
+MATCH_REVERSAL_COUNT
+SOURCE_CORRECTION_REQUIRED_COUNT
+UNKNOWN_RESULT_COUNT
+RECEIVABLE_HANDOFF_COUNT
+TREASURY_HANDOFF_COUNT
+AVERAGE_OPEN_CASE_AGE
+```
+
+Estas métricas no son hechos financieros.
+
+---
+
+#### 66. Escenarios mínimos de validación futura
+
+La implementación y `UX-QA-028` deberán poder cubrir al menos:
+
+1. una venta con un pago exacto y correlación fuerte;
+2. una venta con dos medios de pago;
+3. una venta con pago parcial y residual;
+4. una venta a crédito con handoff a cartera;
+5. un pago confirmado sin venta correlacionable;
+6. una venta cerrada con pago todavía no observado por latencia;
+7. una liquidación de canal con comisión y neto distinto del bruto;
+8. cierre de caja con diferencia de efectivo;
+9. reembolso posterior sobre pago previamente conciliado;
+10. reverso o contracargo posterior;
+11. timeout de proveedor con resultado desconocido;
+12. evento tardío después del corte;
+13. redelivery/replay sin duplicar match ni efecto;
+14. match grupal descomponible de varias ventas hacia una liquidación;
+15. decisión stale por cambio de fuente antes de confirmar;
+16. match incorrecto revertido conservando historia.
+
+---
+
+#### 67. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-017 | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| no existe motor físico integral de conciliación ventas/pagos en NUMERA | no | implementación NUMERA / paquete físico aplicable | VSCREEN-0101 materializa casos, matching, evidencia, residual y resolución según este contrato |
+| aplicación de recaudo y cartera completa no pertenecen a UX-017 | no | `NUMERA-DOM-016` + `NUMERA-UX-026` | recaudo, aplicación, residual, aging y liquidación consumen el handoff sin redefinir la venta |
+| conciliación bancaria final no pertenece a UX-017 | no | `NUMERA-UX-021` + integración financiera aplicable | extractos, movimientos, matching bancario y reversión quedan trazables |
+| eventos tardíos sobre periodos protegidos requieren tratamiento especializado | no | `NUMERA-UX-023` + contrato de periodo | ajuste/reapertura conserva versión e historia y luego se revalida conciliación |
+| integración fiscal no pertenece a UX-017 | no | `NUMERA-UX-027` + integración fiscal aplicable | documento externo se correlaciona sin convertirse en venta o pago |
+| tolerancias y materialidad no tienen valor universal aprobado | no | política empresarial/financiera aplicable | cada regla materializada declara versión, vigencia, scope, autoridad y evidencia |
+| validación humana real de comprensión sigue pendiente | no | `UX-QA-028` | evidencia real sobre VSCREEN-0101 y escenarios aplicables |
+
+No queda hallazgo detectado sin owner y condición de salida.
+
+---
+
+#### 68. Decisiones congeladas
+
+```text
+SALES_PAYMENT_RECONCILIATION_CONTRACT = NUMERA-SALES-PAYMENT-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0101
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_SALES_AND_PAYMENTS
+PULSO_OWNS_SALE_SOURCE = YES
+PULSO_OWNS_PAYMENT_SOURCE = YES
+NUMERA_OWNS_RECONCILIATION_CASE = YES
+SALE_IS_PAYMENT = NO
+PAYMENT_IS_CASH_MOVEMENT = NO
+PAYMENT_RECONCILED_IS_SALE_RECONCILED = NO
+SALE_CLOSED_IS_BANK_RECONCILED = NO
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_IS_FULL_RECONCILIATION = NO
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+SOURCE_NOT_COMPLETE_IS_ZERO_DIFFERENCE = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+REPLAY_CREATES_NEW_RECONCILIATION_EFFECT = NO
+FILTER_VALUE_IS_MATCH_EVIDENCE = NO
+PULSO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+RECEIVABLE_AND_APPLICATION_OWNER = VPROC-0053
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+PURCHASE_RECEIPT_RECONCILIATION_OWNER = NUMERA_UX_018
+VALIDATION_SCENARIO_COUNT = 16
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+La tarea especializa una capacidad de conciliación ya exigida por requisitos vigentes. No crea comportamiento ejecutable nuevo, no modifica permisos, fuentes o integraciones y no altera el Registro 04A.
+
+---
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Esta sección registra trazabilidad existente y no constituye actualización del Registro 04A.
+
+- `TREQ-NUMERA-001` — reconciliación con PULSO/ORIGO/FOGO/NEXO, no duplicación manual, historia, permisos y trazabilidad;
+- `TREQ-NUMERA-002` — identidad estable, entidad, dimensiones, moneda, fechas, fuente, correlación, documento, importe, estado y evidencia;
+- `TREQ-NUMERA-003` — cartera, pagos recibidos, aplicaciones, bancos, matching sugerido/aprobado/reversible y permisos separados; nombra explícitamente `NUMERA-UX-017`;
+- `TREQ-PULSO-006` — venta, cobro, pago, caja, documento fiscal, devolución, reembolso y cierre como hechos diferenciados, autorizados y auditables;
+- `TREQ-INTEGRATION-003` — idempotencia, reintentos, timeout desconocido y resultado recuperable;
+- `TREQ-INTEGRATION-006` — fuente propietaria única y ausencia de doble digitación;
+- `TREQ-INTEGRATION-017` — llegada versionada e idempotente de venta, pago y caja a NUMERA y detección de pago sin aplicación o monto/moneda divergente;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones sensibles.
+
+---
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | UX-017 no ejecuta build de producto; la incorporación y batería documental quedan para el ciclo local. |
+| LOCAL | NOT_EXECUTED | No se modificó un checkout local durante la redacción; reemplazo, formato y validadores quedan para el ciclo documental. |
+| REMOTA | PASS | Se verificaron `origin/main`, continuidad hasta UX-015, topología `DEFINE_ONCE`, marcador UX-017, `NUMERA-DOM-002`, `NUMERA-DOM-014`, `NUMERA-DOM-016`, `VSCREEN-0101`, `VPROC-0038..0044`, `VPROC-0051`, `VPROC-0053`, contratos de eventos y Registro 04A aplicable; UX-016 se consume desde el artefacto completo aprobado por el usuario mientras su publicación puede seguir pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se conciliaron ventas, pagos, cajas, liquidaciones, depósitos, cartera, bancos, devoluciones ni diferencias reales. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-017` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza materialización física propia. |
+
+---
+
+#### 72. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-SALES-PAYMENT-RECONCILIATION-001`;
+2. `VSCREEN-0101` permanece superficie propietaria;
+3. `VPROC-0051::STEP-RECONCILE_SALES_AND_PAYMENTS` permanece step propietario;
+4. PULSO conserva autoridad sobre venta, pago y caja fuente;
+5. NUMERA conserva el expediente y decisión de conciliación propios;
+6. venta, pago, caja, sesión de caja, liquidación, depósito, documento, cartera, aplicación, refund y hecho económico permanecen distintos;
+7. pago conciliado en PULSO no equivale a venta conciliada en NUMERA;
+8. venta cerrada no equivale a conciliación bancaria;
+9. se soporta uno-a-uno, uno-a-muchos, agrupación trazable y parcialidad;
+10. todo match grupal conserva lineage descomponible;
+11. matching determinista exige evidencia canónica;
+12. matching sugerido no equivale a aprobado;
+13. similitud de importe/fecha/sede/contraparte no aprueba match;
+14. los estados UX no crean estados nuevos de `VPROC-0051`;
+15. una venta puede usar medios combinados sin duplicarse;
+16. pago parcial conserva residual;
+17. venta a crédito deriva a cartera sin declararse diferencia por ausencia de pago inmediato;
+18. pago sin venta no se asigna por monto;
+19. venta sin pago se clasifica según evidencia y no por inferencia;
+20. liquidación neta no sustituye venta bruta;
+21. comisiones y retenciones permanecen componentes explícitos;
+22. depósito no equivale a pago ni venta;
+23. cierre de caja no fabrica ventas;
+24. diferencia de efectivo no modifica venta o pago;
+25. documento fiscal permanece evidencia separada;
+26. devolución, anulación, reembolso y compensación permanecen distintos;
+27. reverso reabre residual sin borrar historia;
+28. contracargo conserva vínculo al pago original;
+29. resultado desconocido exige consulta o conciliación;
+30. evento tardío no fabrica el hecho faltante;
+31. replay/backfill/redelivery no crean un nuevo efecto de conciliación;
+32. moneda se conserva explícita;
+33. fechas de venta, pago, liquidación, depósito y conciliación permanecen distintas;
+34. periodos operativo/económico/contable/fiscal no se fusionan;
+35. componentes monetarios son explicables;
+36. residual cero por override manual está prohibido;
+37. no existe tolerancia universal implícita;
+38. las 16 clases mínimas de diferencia están representadas;
+39. no existe salida genérica de ajuste manual;
+40. corrección de PULSO permanece en PULSO;
+41. corrección económica NUMERA no sobrescribe historia;
+42. cartera/aplicación permanece con `VPROC-0053`/UX-026;
+43. banco/tesorería permanece con UX-021;
+44. VSCREEN-0101 muestra fuente, cardinalidad, diferencia, residual y owner;
+45. el comparador no fusiona ambos lados en una sola fuente opaca;
+46. todo match explica evidencia fuerte y señales débiles;
+47. filtros no son evidencia de matching;
+48. ver no concede autoridad de aprobación/corrección;
+49. segregación de acciones sensibles permanece explícita;
+50. decisión stale exige revisar nuevamente;
+51. revertir match conserva historia;
+52. evidencia permite reconstruir detección, decisión y verificación;
+53. fuente incompleta no se presenta como cero diferencia;
+54. estado vacío no afirma completitud global;
+55. históricos incompletos no se fabrican como conciliados en tiempo real;
+56. los 16 escenarios mínimos quedan definidos para validación futura;
+57. todos los hallazgos tienen owner y condición de salida;
+58. no se crean ni modifican requisitos de prueba;
+59. no se realizan cambios físicos;
+60. UX-018 recibe ownership explícito de conciliación compras/recepciones sin reabrir ventas/pagos.
+
+---
+
+#### 73. Límites
+
+Esta tarea no:
+
+- crea motor físico de conciliación;
+- crea tablas de matching;
+- crea índices;
+- crea RPC;
+- crea Server Actions;
+- crea APIs;
+- crea RLS;
+- modifica Supabase;
+- crea migraciones;
+- crea componentes React;
+- implementa `VSCREEN-0101`;
+- modifica `VPROC-0051`;
+- modifica PULSO;
+- corrige ventas;
+- corrige pagos;
+- ejecuta devoluciones;
+- ejecuta reembolsos;
+- ejecuta depósitos;
+- aplica cartera;
+- crea cuentas por cobrar;
+- diseña aging o cobranza;
+- concilia extractos bancarios;
+- ejecuta movimientos de tesorería;
+- cierra periodos;
+- reabre periodos;
+- define tolerancias monetarias universales;
+- define materialidad universal;
+- decide política de crédito;
+- decide contabilidad formal interna;
+- diseña conciliación de compras y recepciones;
+- desarrolla `NUMERA-UX-018`;
+- actualiza Registro 04A.
+
+---
+
+#### 74. Handoff a NUMERA-UX-018
+
+La siguiente tarea recibe:
+
+```text
+SALES_PAYMENT_RECONCILIATION_CONTRACT = NUMERA-SALES-PAYMENT-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0101
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_SALES_AND_PAYMENTS
+PULSO_SOURCE_AUTHORITY_PRESERVED = YES
+SALE_PAYMENT_CASH_SETTLEMENT_DEPOSIT_ARE_DISTINCT = YES
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_PRESERVES_RESIDUAL = YES
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SOURCE_INCOMPLETE_IS_ZERO_DIFFERENCE = NO
+PULSO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+RECEIVABLE_AND_APPLICATION_OWNER = VPROC-0053
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+VALIDATION_SCENARIO_COUNT = 16
+PURCHASE_RECEIPT_RECONCILIATION_OWNER = NUMERA_UX_018
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-018` deberá diseñar conciliación de compras y recepciones reutilizando el contrato transversal de diferencias sin mezclarlo con ventas, pagos o caja comercial.
+
+---
+
+#### 75. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-016
+-> NUMERA-UX-017
+-> NUMERA-UX-018
+```
+
+UX-017 consume los límites validados en UX-016 y entrega a UX-018 una frontera explícita para que compras/recepciones no absorban ventas/pagos.
+
+---
+
+#### 76. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-017 — Diseñar conciliación de ventas y pagos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-018 — Diseñar conciliación de compras y recepciones`
 ### [ ] NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
 ### [ ] NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
 ### [ ] NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
