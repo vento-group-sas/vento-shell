@@ -17512,7 +17512,1353 @@ UX-013 consume el contrato de exportación independiente de UX-012 y entrega a U
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO`
-### [ ] NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
+### ✅ NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
+**Tarea siguiente:** NUMERA-UX-015 — Evitar registro financiero duplicado
+**Tipo de tarea:** diseño documental del contrato de consumo de eventos empresariales desde PULSO, ORIGO, FOGO y NEXO hacia NUMERA, preservando catálogo canónico, productora única, relaciones directas y condicionales, perfiles mínimos de proyección, envelope, idempotencia, orden, retry, auditoría, estados pendientes, errores parciales, procedencia y fronteras contra escrituras cruzadas sin materializar transporte, listeners, tablas, jobs, permisos ni Supabase; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea consumidores runtime, outbox, inbox, tablas, vistas, triggers, RPC, Server Actions, APIs, workers, colas, jobs, webhooks, RLS, permisos, migraciones, datos, conexiones Realtime, Supabase, despliegues ni escrituras en PULSO, ORIGO, FOGO o NEXO
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NUMERA consume, interpreta y conserva hechos empresariales emitidos por PULSO, ORIGO, FOGO y NEXO sin reconstruir la fuente, duplicar el efecto económico, inferir dimensiones desde la UI ni convertir una proyección financiera en autoridad sobre el proceso operativo.
+
+El contrato debe asegurar que cada entrada económica conserve:
+
+- productora empresarial canónica;
+- definición de evento y versión;
+- identidad concreta de emisión;
+- correlación y causalidad;
+- orden y versión agregada cuando aplique;
+- finalidad de consumo NUMERA;
+- perfil mínimo de proyección;
+- procedencia y frescura;
+- estado de procesamiento, retry o conciliación cuando corresponda;
+- vínculo con el hecho económico o diferencia que NUMERA derive bajo sus propios contratos.
+
+La recepción de un evento nunca equivale por sí sola a reconocimiento económico.
+
+---
+
+#### 2. Naturaleza y topología
+
+La tarea se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define una sola vez el contrato de consumo NUMERA;
+- no crea instancia física propia;
+- no implementa transporte;
+- no decide tecnología de mensajería;
+- no modifica el catálogo `INT-APP-*`;
+- no modifica productoras ni consumidoras;
+- no materializa efectos económicos reales;
+- no modifica Supabase ni repositorios de producto.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-013
+
+Se consume íntegramente:
+
+```text
+NUMERA_FILTER_CONTRACT = NUMERA-COMPANY-SITE-COST-CENTER-FILTER-001
+NUMERA_SCOPE_CONTRACT = NUMERA-FINANCIAL-SCOPE-CONTRACT-001
+NUMERA_EXPORT_FLOW_CONTRACT = NUMERA-INDEPENDENT-EXPORT-FLOW-001
+PRIMARY_FILTER_SCREEN_ID = VSCREEN-0106
+FILTER_DIMENSIONS = COMPANY|SITE|COST_CENTER
+FILTER_DIMENSION_COUNT = 3
+FILTER_SELECTION_IS_AUTHORITY = NO
+SELECTED_SCOPE_IS_AUTHORIZED_SCOPE = NO
+FILTERED_VIEW_MUST_NOT_EXCEED_AUTHORIZED_SCOPE = YES
+COMPANY_SITE_COST_CENTER_ARE_DISTINCT = YES
+FILTER_VALUE_IDENTITY_SOURCE = CANONICAL_IDENTITIES
+COST_CENTER_IDENTITY_OWNER = NUMERA_DOM_006
+ALL_AUTHORIZED_MEANS_CURRENT_EFFECTIVE_AUTHORIZED_SET = YES
+ALL_AUTHORIZED_IS_WILDCARD = NO
+AGGREGATE_MEMBER_SET_MUST_BE_AUTHORIZED = YES
+FILTERS_ARE_EXPORT_IDENTITY_INPUT = YES
+FILTER_CHANGE_AFTER_EXPORT_REVIEW_REQUIRES_REVIEW_AGAIN = YES
+STALE_SCOPE_DECISION = DENY_AND_REEVALUATE
+SERVER_SIDE_SCOPE_REVALIDATION_REQUIRED = YES
+SOURCE_EVENT_DIMENSIONS_MUST_NOT_BE_RECREATED_FROM_UI_FILTERS = YES
+UI_FILTER_IS_SOURCE_FACT = NO
+UX_014_OWNER = SOURCE_EVENT_CONSUMPTION_PULSO_ORIGO_FOGO_NEXO
+TREQ_CHANGES = 0
+```
+
+La consecuencia obligatoria es:
+
+```text
+UI_FILTER != SOURCE_EVENT
+UI_FILTER != SOURCE_DIMENSION
+UI_FILTER != PRODUCER_AUTHORITY
+```
+
+---
+
+#### 4. Contratos transversales consumidos
+
+UX-014 consume sin redefinir:
+
+```text
+ENTERPRISE-EVENT-CATALOG-001@1.0.0
+ENTERPRISE-EVENT-PRODUCER-REGISTRY-001@1.0.0
+ENTERPRISE-EVENT-CONSUMER-REGISTRY-001@1.0.0
+ENTERPRISE-EVENT-IDEMPOTENCY-REGISTRY-001@1.0.0
+ENTERPRISE-EVENT-RETRY-POLICY-001@1.0.0
+ENTERPRISE-EVENT-COMPENSATION-POLICY-001@1.0.0
+ENTERPRISE-INTEGRATION-AUDIT-POLICY-001@1.0.0
+ENTERPRISE-SYNC-PENDING-STATE-MACHINE-001@1.0.0
+ENTERPRISE-PARTIAL-ERROR-HANDLING-POLICY-001@1.0.0
+ENTERPRISE-CROSS-APPLICATION-WRITE-POLICY-001@1.0.0
+```
+
+La fuente normativa de eventos permanece en `INT-APP-001..010`.
+
+---
+
+#### 5. Contrato definido por esta tarea
+
+Se define:
+
+```text
+NUMERA-SOURCE-EVENT-CONSUMPTION-001
+```
+
+Este contrato especializa exclusivamente el consumo por NUMERA de las relaciones ya aprobadas cuyo productor es:
+
+```text
+pulso
+origo
+fogo
+nexo
+```
+
+No agrega otra relación al registro transversal.
+
+---
+
+#### 6. Universo exacto cubierto
+
+El universo de UX-014 es el subconjunto del registro de consumidoras donde:
+
+```text
+producer_application IN {pulso, origo, fogo, nexo}
+AND numera IN {direct_consumers, conditional_consumers}
+```
+
+Resultado:
+
+```text
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+DIRECT_PROCESS_RELATION_COUNT = 34
+DIRECT_EVENT_RELATION_COUNT = 192
+CONDITIONAL_PROCESS_RELATION_COUNT = 1
+CONDITIONAL_EVENT_RELATION_COUNT = 6
+```
+
+NUMERA posee 324 relaciones de evento en el registro transversal completo; UX-014 no absorbe las relaciones cuyo productor pertenece a otras aplicaciones.
+
+---
+
+#### 7. Distribución exacta por fuente
+
+| Fuente | Procesos | Eventos | Procesos directos | Eventos directos | Procesos condicionales | Eventos condicionales |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `nexo` | 14 | 81 | 14 | 81 | 0 | 0 |
+| `fogo` | 6 | 33 | 5 | 27 | 1 | 6 |
+| `pulso` | 11 | 62 | 11 | 62 | 0 | 0 |
+| `origo` | 4 | 22 | 4 | 22 | 0 | 0 |
+| **TOTAL** | **35** | **198** | **34** | **192** | **1** | **6** |
+
+Las cifras son relaciones contractuales de catálogo; no prueban listeners, entregas ni consumo físico actual.
+
+---
+
+#### 8. Matriz exacta de procesos y eventos fuente
+
+| Fuente | Proceso | Definiciones cubiertas | Eventos | Relación NUMERA | Perfil de proyección |
+| --- | --- | --- | ---: | --- | --- |
+| `nexo` | `VPROC-0015` | `VPROC-0015.EVT-001..004` | 4 | `DIRECT` | `REFERENCE_PROJECTION` |
+| `nexo` | `VPROC-0024` | `VPROC-0024.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0025` | `VPROC-0025.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0026` | `VPROC-0026.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0027` | `VPROC-0027.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0028` | `VPROC-0028.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0029` | `VPROC-0029.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0030` | `VPROC-0030.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0031` | `VPROC-0031.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0032` | `VPROC-0032.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0048` | `VPROC-0048.EVT-001..005` | 5 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0049` | `VPROC-0049.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0055` | `VPROC-0055.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `nexo` | `VPROC-0067` | `VPROC-0067.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `fogo` | `VPROC-0016` | `VPROC-0016.EVT-001..005` | 5 | `DIRECT` | `VERSIONED_REFERENCE_PROJECTION` |
+| `fogo` | `VPROC-0033` | `VPROC-0033.EVT-001..004` | 4 | `DIRECT` | `EXECUTION_SIGNAL_PROJECTION` |
+| `fogo` | `VPROC-0034` | `VPROC-0034.EVT-001..006` | 6 | `DIRECT` | `EXECUTION_SIGNAL_PROJECTION` |
+| `fogo` | `VPROC-0035` | `VPROC-0035.EVT-001..006` | 6 | `CONDITIONAL` | `EXECUTION_SIGNAL_PROJECTION` |
+| `fogo` | `VPROC-0036` | `VPROC-0036.EVT-001..006` | 6 | `DIRECT` | `EXECUTION_SIGNAL_PROJECTION` |
+| `fogo` | `VPROC-0037` | `VPROC-0037.EVT-001..006` | 6 | `DIRECT` | `EXECUTION_SIGNAL_PROJECTION` |
+| `pulso` | `VPROC-0017` | `VPROC-0017.EVT-001..004` | 4 | `DIRECT` | `VERSIONED_REFERENCE_PROJECTION` |
+| `pulso` | `VPROC-0038` | `VPROC-0038.EVT-001..005` | 5 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0039` | `VPROC-0039.EVT-001..005` | 5 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0040` | `VPROC-0040.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0041` | `VPROC-0041.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0042` | `VPROC-0042.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0043` | `VPROC-0043.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0044` | `VPROC-0044.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0046` | `VPROC-0046.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0050` | `VPROC-0050.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `pulso` | `VPROC-0068` | `VPROC-0068.EVT-001..006` | 6 | `DIRECT` | `MARKETING_ANALYTICS_PROJECTION` |
+| `origo` | `VPROC-0019` | `VPROC-0019.EVT-001..005` | 5 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `origo` | `VPROC-0020` | `VPROC-0020.EVT-001..005` | 5 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `origo` | `VPROC-0021` | `VPROC-0021.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+| `origo` | `VPROC-0022` | `VPROC-0022.EVT-001..006` | 6 | `DIRECT` | `EFFECT_CONFIRMATION_PROJECTION` |
+
+La matriz conserva exactamente las relaciones aprobadas en `ENTERPRISE-EVENT-CONSUMER-REGISTRY-001` para las cuatro productoras de esta tarea.
+
+---
+
+#### 9. Única relación condicional
+
+La única relación condicional de este universo es:
+
+```text
+VPROC-0035 -> fogo -> numera
+EVENTS = VPROC-0035.EVT-001..006
+RELATION = CONDITIONAL
+```
+
+UX-014 no inventa la condición.
+
+La relación solo se activa cuando el `condition_ref` canónico vigente demuestra que la variante, canal, sede, tipo de recurso, efecto o decisión explícita involucra a NUMERA.
+
+Si la condición no puede demostrarse:
+
+```text
+CONDITIONAL_RELATION_UNRESOLVED
+-> DO_NOT_CONSUME_AS_ACTIVE_RELATION
+```
+
+---
+
+#### 10. Finalidad canónica de NUMERA
+
+La finalidad transversal aprobada permanece:
+
+```text
+consumer_application = numera
+consumer_purpose_code = FINANCIAL_RECONCILIATION_COST_ANALYSIS
+```
+
+Esto no autoriza:
+
+- ejecutar la operación fuente;
+- reconstruir el workflow operativo;
+- modificar el hecho operativo;
+- reconocer automáticamente ingreso, costo, obligación o saldo;
+- ampliar permisos de lectura o exportación.
+
+---
+
+#### 11. Productora empresarial única
+
+Se conserva:
+
+```text
+SOURCE_EVENT_OWNER = producer_application
+NUMERA_IS_CONSUMER = YES
+NUMERA_IS_REPUBLISHING_OWNER = NO
+```
+
+La aplicación productora confirma el hecho bajo su proceso propietario.
+
+NUMERA puede producir después eventos de sus propios procesos económicos, pero no reemite el evento fuente cambiando la productora.
+
+---
+
+#### 12. Envelope mínimo heredado
+
+Todo evento consumible conserva el contrato `EVENT-ENVELOPE-001`:
+
+```text
+event_id
+event_definition_id
+event_type
+event_version
+producer_application
+aggregate_version
+occurred_at
+recorded_at
+correlation_id
+causation_id
+idempotency_key
+source_command_id
+schema_version
+```
+
+Cuando el contrato de idempotencia u orden requiera `aggregate_id`, ese identificador se conserva conforme a `INT-APP-004`; UX-014 no altera el envelope aprobado.
+
+---
+
+#### 13. Precondiciones para aceptar una entrega
+
+Antes de proyectar una entrega como entrada NUMERA deberán comprobarse, según aplique:
+
+1. `event_definition_id` pertenece al catálogo canónico;
+2. la productora coincide con `ENTERPRISE-EVENT-PRODUCER-REGISTRY-001`;
+3. NUMERA aparece como consumidora directa o condicional vigente;
+4. la condición contractual se cumple cuando la relación es condicional;
+5. `event_version` y `schema_version` son compatibles;
+6. `event_id` es resoluble y no fue reutilizado con contenido conflictivo;
+7. orden y versión agregada no regresan silenciosamente;
+8. el perfil mínimo de proyección corresponde al proceso;
+9. la procedencia puede auditarse;
+10. la entrada no depende de filtros UI para completar identidad o autoridad.
+
+Una entrega que no satisface el contrato no se transforma por heurística en hecho económico.
+
+---
+
+#### 14. Filtros UX y evento fuente permanecen separados
+
+Se congela:
+
+```text
+SOURCE_EVENT_DIMENSIONS_MUST_NOT_BE_RECREATED_FROM_UI_FILTERS = YES
+UI_FILTER_IS_SOURCE_FACT = NO
+SELECTED_COMPANY_IS_SOURCE_COMPANY = NO
+SELECTED_SITE_IS_SOURCE_SITE = NO
+SELECTED_COST_CENTER_IS_SOURCE_COST_CENTER = NO
+```
+
+Un filtro puede seleccionar eventos o proyecciones ya ingeridos. No puede completar una dimensión que el evento o sus referencias autoritativas no contienen.
+
+---
+
+#### 15. Dimensión ausente o ambigua
+
+Cuando un evento requiera una dimensión económica que no puede resolverse de forma autoritativa:
+
+```text
+MISSING_OR_AMBIGUOUS_SOURCE_DIMENSION
+-> KEEP_PENDING_OR_DIFFERENCE
+-> RESOLVE_FROM_CANONICAL_SOURCE
+```
+
+Queda prohibido usar como fallback:
+
+- empresa seleccionada en UI;
+- sede primaria del usuario;
+- centro de costo del filtro vigente;
+- último contexto consultado;
+- un valor global por defecto.
+
+---
+
+#### 16. Recibir no equivale a reconocer
+
+La secuencia conceptual permanece:
+
+```text
+SOURCE_EVENT_CONFIRMED
+-> NUMERA_CONSUMER_INGESTION
+-> VALIDATE_SOURCE_AND_PROVENANCE
+-> CLASSIFY_ECONOMIC_RELEVANCE
+-> ECONOMIC_CANDIDATE_OR_NO_EFFECT
+-> NUMERA_DOMAIN_VALIDATION
+-> RECOGNIZE_OR_KEEP_PENDING
+-> RECONCILE_WHEN_APPLICABLE
+```
+
+Se congela:
+
+```text
+EVENT_RECEIVED != ECONOMIC_FACT_RECOGNIZED
+EVENT_ACKNOWLEDGED != ECONOMIC_FACT_POSTED
+```
+
+---
+
+#### 17. PULSO como fuente
+
+PULSO conserva propiedad de oferta, pedido, servicio, venta, pago asociado, caja, reclamo, reserva, entrega al cliente y hechos comerciales de sus procesos.
+
+El subconjunto de esta tarea cubre once procesos y 62 definiciones de evento.
+
+NUMERA consume referencias y efectos económicos conforme a `NUMERA-DOM-002`, manteniendo:
+
+```text
+SALE != PAYMENT
+SALE != CASH
+SALE != DELIVERY
+SALE != FISCAL_DOCUMENT
+SALE != ECONOMIC_FACT
+```
+
+PULSO no escribe el ledger económico de NUMERA y NUMERA no recrea la venta.
+
+---
+
+#### 18. ORIGO como fuente
+
+ORIGO conserva propiedad de necesidad, proveedor, condiciones, orden, aprobación, recepción comercial y diferencias de abastecimiento.
+
+El subconjunto de esta tarea cubre cuatro procesos y 22 definiciones de evento.
+
+NUMERA consume compra y recepción conforme a `NUMERA-DOM-003`, preservando:
+
+```text
+PURCHASE_ORDER != COMMERCIAL_RECEIPT
+COMMERCIAL_RECEIPT != INVENTORY_MOVEMENT
+COMMERCIAL_RECEIPT != ECONOMIC_FACT
+ECONOMIC_FACT != PAYABLE
+PAYABLE != PAYMENT
+```
+
+Una orden aprobada no se convierte en obligación reconocida únicamente por haber sido emitida.
+
+---
+
+#### 19. FOGO como fuente
+
+FOGO conserva propiedad de receta, planificación, ejecución productiva, calidad, empaque, genealogía, reproceso y cierre productivo.
+
+El subconjunto cubre seis procesos y 33 definiciones, de las cuales 27 son relaciones directas hacia NUMERA y seis pertenecen a la relación condicional `VPROC-0035`.
+
+NUMERA consume evidencia productiva conforme a `NUMERA-DOM-004` sin convertir:
+
+```text
+PLANNED_QUANTITY
+=
+ACTUAL_CONSUMPTION
+```
+
+ni:
+
+```text
+PRODUCTION_SIGNAL
+=
+FINAL_ECONOMIC_COST
+```
+
+---
+
+#### 20. NEXO como fuente
+
+NEXO conserva propiedad de custodia, movimientos físicos, existencias, ubicación, condición, logística, instalaciones y otras realidades operativas de su dominio.
+
+El subconjunto de esta tarea cubre catorce procesos y 81 definiciones de evento.
+
+NUMERA usa esas entradas como evidencia física, logística o de costo sin modificar cantidades, ubicaciones, estados de inventario o activos para hacer cuadrar una proyección económica.
+
+---
+
+#### 21. Dos fuentes pueden explicar un solo efecto económico
+
+FOGO y NEXO pueden aportar evidencia distinta sobre el mismo fenómeno económico.
+
+Ejemplo contractual:
+
+```text
+FOGO_EXECUTION
++ NEXO_PHYSICAL_MOVEMENT
+-> CORRELATED_ECONOMIC_CANDIDATE
+```
+
+No:
+
+```text
+FOGO_EVENT -> ECONOMIC_FACT_A
+NEXO_EVENT -> ECONOMIC_FACT_B
+```
+
+cuando ambos eventos representan evidencias complementarias del mismo efecto.
+
+La cardinalidad económica se resuelve por los contratos de dominio y correlación; no por el número de entregas técnicas.
+
+---
+
+#### 22. Perfil mínimo de proyección
+
+Cada relación consume únicamente el perfil aprobado en la matriz.
+
+Se conservan los perfiles usados por este universo:
+
+```text
+REFERENCE_PROJECTION
+VERSIONED_REFERENCE_PROJECTION
+EFFECT_CONFIRMATION_PROJECTION
+EXECUTION_SIGNAL_PROJECTION
+MARKETING_ANALYTICS_PROJECTION
+```
+
+Un perfil mínimo no autoriza copiar el payload completo ni campos no necesarios para la finalidad financiera.
+
+---
+
+#### 23. Proyección consumidora no es fuente de verdad
+
+Se congela:
+
+```text
+CONSUMER_PROJECTION != SOURCE_OF_TRUTH_STATE
+```
+
+NUMERA puede mantener una proyección propia con procedencia y frescura, pero no devolver esa proyección para sobrescribir PULSO, ORIGO, FOGO o NEXO.
+
+---
+
+#### 24. Identidad idempotente del consumo
+
+El consumo hereda:
+
+```text
+CONSUMER_INBOX_KEY = consumer_application + event_id
+```
+
+Para NUMERA:
+
+```text
+consumer_application = numera
+```
+
+Cuando el consumo produzca un efecto propio idempotente:
+
+```text
+CONSUMER_EFFECT_KEY = numera + event_id + effect_code
+```
+
+La misma entrega puede repetirse; el mismo efecto no.
+
+---
+
+#### 25. Garantía de transporte y efecto
+
+Se conserva:
+
+```text
+TRANSPORT_GUARANTEE = AT_LEAST_ONCE
+BUSINESS_EFFECT_GUARANTEE = AT_MOST_ONCE_PER_SCOPE_WITH_RESULT_REPLAY
+```
+
+Una redelivery conserva `event_id` y no genera otra operación económica por el solo hecho de llegar nuevamente.
+
+---
+
+#### 26. Reutilización conflictiva
+
+Si el mismo identificador idempotente aparece con contenido lógico materialmente distinto:
+
+```text
+CONFLICTING_REUSE
+-> DO_NOT_APPLY
+-> PRESERVE_EVIDENCE
+-> REQUIRE_RESOLUTION
+```
+
+Nunca se acepta el último payload por conveniencia.
+
+---
+
+#### 27. Orden y versiones
+
+Cuando aplique orden agregado:
+
+```text
+ORDER_KEY = aggregate_id + aggregate_version
+```
+
+Una versión inferior tardía:
+
+```text
+STALE_VERSION OR OUT_OF_ORDER_DEFERRED
+```
+
+No sobrescribe una proyección más reciente.
+
+---
+
+#### 28. Correlación y causalidad
+
+`correlation_id` y `causation_id` unen la cadena de hechos y efectos, pero no son claves idempotentes universales.
+
+NUMERA deberá conservar ambos cuando existan para reconstruir:
+
+```text
+SOURCE_EVENT
+-> NUMERA_INGESTION
+-> ECONOMIC_CANDIDATE
+-> ECONOMIC_EFFECT
+-> RECONCILIATION_OR_ADJUSTMENT
+```
+
+---
+
+#### 29. Replay
+
+Replay del mismo evento conserva:
+
+- `event_id`;
+- `occurred_at`;
+- productora histórica;
+- versión;
+- audiencia histórica;
+- correlación;
+- procedencia.
+
+Se congela:
+
+```text
+REPLAY_IS_NEW_SOURCE_EVENT = NO
+REPLAY_CHANGES_PRODUCER = NO
+```
+
+---
+
+#### 30. Backfill
+
+Un backfill no concede autoridad nueva ni convierte una proyección histórica en fuente primaria.
+
+Cada elemento deberá pasar por la misma deduplicación, compatibilidad, orden, procedencia y validación económica que una entrega ordinaria.
+
+---
+
+#### 31. Retry
+
+Todo retry conserva la misma operación lógica, clave idempotente, huella, `event_id`, audiencia y finalidad.
+
+Se prohíbe:
+
+```text
+RETRY_WITH_NEW_EVENT_ID_FOR_SAME_EVENT
+RETRY_WITH_NEW_IDEMPOTENCY_KEY_FOR_SAME_EFFECT
+```
+
+Un intento técnico nuevo no constituye otra operación empresarial.
+
+---
+
+#### 32. Resultado desconocido
+
+Cuando no pueda demostrarse si un efecto ocurrió:
+
+```text
+RESULT_UNKNOWN
+-> QUERY_AUTHORITATIVE_RESULT OR RECONCILE
+```
+
+No:
+
+```text
+RESULT_UNKNOWN -> RETRY_BLINDLY
+```
+
+NUMERA no genera un segundo hecho económico para resolver incertidumbre del primero.
+
+---
+
+#### 33. Estados pendientes de sincronización
+
+UX-014 reutiliza `ENTERPRISE-SYNC-PENDING-STATE-MACHINE-001` y no crea otra máquina.
+
+En particular:
+
+```text
+PENDING_CONFIRMATION != SUCCESS
+RESULT_UNKNOWN != FAILURE_FINAL
+RECONCILIATION_REQUIRED != FAILURE_FINAL
+```
+
+La UI o la proyección no debe presentar un acuse técnico como resultado empresarial definitivo.
+
+---
+
+#### 34. Error parcial
+
+Una entrega o efecto parcialmente aplicado conserva mapa de:
+
+- efectos confirmados;
+- efectos pendientes;
+- efectos desconocidos;
+- residuales;
+- responsable;
+- evidencia.
+
+`PARTIALLY_APPLIED` no se transforma en éxito completo ni en fracaso completo por simplificación de UX.
+
+---
+
+#### 35. Dead-letter y cuarentena
+
+Cuarentena y dead-letter son disposiciones operativas, no estados empresariales del hecho fuente ni del efecto económico.
+
+Se congela:
+
+```text
+DEAD_LETTER_CANDIDATE != ECONOMIC_REJECTION
+QUARANTINED != SOURCE_FACT_VOID
+```
+
+---
+
+#### 36. Compensación
+
+Retry agotado, timeout o fallo de una consumidora no son causas autónomas de compensación.
+
+Solo se compensa un efecto confirmado y elegible mediante el contrato propietario correspondiente.
+
+NUMERA no compensa editando la fuente operativa ajena.
+
+---
+
+#### 37. Auditoría transversal
+
+La cadena debe permitir reconstruir:
+
+- actor o principal técnico;
+- autoridad evaluada;
+- productora;
+- evento;
+- entrega;
+- consumidora;
+- efecto propio;
+- retry;
+- conciliación;
+- corrección o compensación;
+- resultado.
+
+La auditoría es append-only y no sustituye la fuente ni el evento.
+
+---
+
+#### 38. Escrituras cruzadas prohibidas
+
+UX-014 hereda:
+
+```text
+DIRECT_FOREIGN_TABLE_WRITE = FORBIDDEN
+DIRECT_FOREIGN_RPC_WITHOUT_CONTRACT = FORBIDDEN
+CONSUMER_PROJECTION_AS_SOURCE_WRITE = FORBIDDEN
+MANUAL_SQL_CROSS_DOMAIN_REPAIR = FORBIDDEN
+BATCH_OR_IMPORT_CROSS_DOMAIN_WRITE = FORBIDDEN
+COMPENSATION_BY_FOREIGN_EDIT = FORBIDDEN
+```
+
+NUMERA puede escribir su propia proyección, inbox, metadata técnica y estado económico autorizado; no la fuente operativa de otra aplicación.
+
+---
+
+#### 39. Corrección de la fuente
+
+Cuando una fuente operativa sea incorrecta:
+
+```text
+SOURCE_OWNER = SOURCE_CORRECTION_OWNER
+```
+
+Por tanto:
+
+- PULSO corrige hechos comerciales;
+- ORIGO corrige compra y recepción comercial;
+- FOGO corrige hechos productivos;
+- NEXO corrige hechos físicos, logísticos o de custodia;
+- NUMERA corrige su propia representación económica.
+
+---
+
+#### 40. Corrección económica propia
+
+Si la fuente es correcta y la representación económica de NUMERA es incorrecta, NUMERA puede producir una corrección, reclasificación, ajuste o reverso propio bajo el contrato aplicable.
+
+Nunca reescribe el evento fuente para simular que el error no ocurrió.
+
+---
+
+#### 41. Venta, pago y caja
+
+Un evento de PULSO puede aportar evidencia comercial, de pago o de caja, pero UX-014 conserva identidades separadas.
+
+Un `PAYMENT_RECONCILED` no crea una segunda venta y un cierre de caja no materializa ventas ausentes.
+
+---
+
+#### 42. Compra, recepción e inventario
+
+Una recepción ORIGO y un movimiento NEXO pueden pertenecer al mismo expediente económico sin ser el mismo hecho.
+
+Se conserva:
+
+```text
+ORIGO_COMMERCIAL_ACCEPTANCE != NEXO_PHYSICAL_EFFECT
+```
+
+NUMERA correlaciona ambos cuando el contrato lo exige.
+
+---
+
+#### 43. Producción, consumo e inventario
+
+Una señal FOGO y un movimiento NEXO pueden requerir conciliación antes de reconocimiento económico definitivo.
+
+La diferencia de cantidad no se corrige copiando una cantidad entre dominios.
+
+---
+
+#### 44. Canales externos de PULSO
+
+Un tercero externo no se registra como `producer_application` interno.
+
+La secuencia válida permanece:
+
+```text
+EXTERNAL_SOURCE
+-> PULSO_ADAPTER_AND_VALIDATION
+-> CANONICAL_PULSO_EVENT
+-> NUMERA_CONSUMPTION
+```
+
+NUMERA no recibe un webhook externo como si fuera un hecho interno ya validado.
+
+---
+
+#### 45. Versiones incompatibles
+
+Si el evento o schema recibido no puede interpretarse de forma segura:
+
+```text
+CONTRACT_OR_SCHEMA_INCOMPATIBLE
+-> DO_NOT_APPLY_ECONOMIC_EFFECT
+-> PRESERVE_EVIDENCE
+-> REQUIRE_COMPATIBILITY_OR_RESOLUTION
+```
+
+No se parsea parcialmente para fabricar un resultado aparente.
+
+---
+
+#### 46. Campos desconocidos
+
+Campos adicionales compatibles pueden conservarse conforme al contrato de evolución, pero NUMERA no les asigna semántica financiera nueva por inferencia.
+
+Campos obligatorios ausentes impiden elevar la entrega a la siguiente etapa contractual.
+
+---
+
+#### 47. Sensibilidad y minimización
+
+NUMERA consume el perfil mínimo requerido por `FINANCIAL_RECONCILIATION_COST_ANALYSIS`.
+
+La existencia de un payload más amplio no autoriza persistir o exponer todos sus campos.
+
+La clasificación y permisos vigentes continúan aplicando a la proyección consumida.
+
+---
+
+#### 48. Evento consumido no concede lectura humana
+
+Se congela:
+
+```text
+EVENT_CONSUMED_BY_NUMERA != USER_AUTHORIZED_TO_VIEW_EVENT_DATA
+```
+
+Toda lectura posterior sigue su permiso exacto, scope, sensibilidad, recurso, estado y denegaciones vigentes.
+
+---
+
+#### 49. Evento consumido no concede exportación
+
+Se conserva:
+
+```text
+EVENT_CONSUMED != EXPORT_AUTHORITY
+```
+
+La exportación sigue requiriendo el contrato de UX-012 y los filtros/scope de UX-013.
+
+---
+
+#### 50. Procedencia visible
+
+Las superficies NUMERA que presenten un efecto económico derivado deberán poder explicar, bajo divulgación progresiva y permisos vigentes:
+
+- aplicación fuente;
+- proceso fuente;
+- momento de ocurrencia;
+- referencia o correlación;
+- estado de conciliación relevante;
+- limitaciones o pendientes materiales.
+
+La UX no necesita mostrar IDs técnicos completos por defecto, pero la evidencia debe ser navegable para actores autorizados.
+
+---
+
+#### 51. Frescura
+
+Toda proyección consumidora deberá conservar suficiente evidencia para distinguir:
+
+```text
+CURRENT
+STALE
+PENDING_UPDATE
+UNKNOWN_FRESHNESS
+```
+
+Estas etiquetas de presentación no crean una nueva máquina empresarial; reflejan la evidencia vigente de versión, watermarks y sincronización.
+
+---
+
+#### 52. Watermarks y cobertura incompleta
+
+Cuando una fuente pueda llegar con latencia, NUMERA debe poder conocer qué versión o corte fue considerado.
+
+La ausencia temporal de eventos dentro de una ventana legítima no se presenta automáticamente como cero, pérdida o fraude.
+
+---
+
+#### 53. Ausencia de evento no equivale a cero
+
+Se corrige la brecha de experiencia identificada en auditoría:
+
+```text
+NO_CURRENT_SOURCE_EVENT != ECONOMIC_ZERO
+```
+
+Si falta evidencia del periodo o la fuente aún no está completa, la UI presenta ausencia, pendiente o cobertura incompleta según corresponda; nunca un cero económico inventado.
+
+---
+
+#### 54. Conteos de cobertura
+
+Esta tarea puede definir evidencia por fila o por consulta para saber qué fuentes contribuyeron al resultado.
+
+No diseña todavía el tablero global de cobertura y conciliación reservado a `NUMERA-UX-024`.
+
+---
+
+#### 55. Eventos tardíos
+
+Un evento tardío conserva su `occurred_at`, versión, origen y correlación.
+
+La llegada tardía no autoriza mover silenciosamente el hecho a otro periodo ni reabrir un periodo sin contrato.
+
+---
+
+#### 56. Eventos duplicados por distinta identidad técnica
+
+UX-014 resuelve duplicidad exacta por `event_id` e idempotencia heredada.
+
+La detección de dos eventos distintos que representan potencialmente el mismo hecho empresarial pertenece al siguiente contrato de duplicidad financiera.
+
+Se congela:
+
+```text
+EXACT_EVENT_REDELIVERY_OWNER = UX_014_VIA_INT_APP_004
+CROSS_EVENT_BUSINESS_DUPLICATE_OWNER = NUMERA_UX_015
+```
+
+---
+
+#### 57. No deduplicar por similitud
+
+Antes de UX-015 queda prohibido declarar duplicado solo por:
+
+- mismo importe;
+- misma fecha;
+- mismo texto;
+- mismo cliente o proveedor;
+- misma sede;
+- mismo centro de costo.
+
+La similitud puede abrir revisión, no borrar o fusionar hechos.
+
+---
+
+#### 58. Reproducibilidad
+
+Un resultado económico o analítico derivado deberá poder reconstruir qué conjunto de eventos, versiones y fuentes sustentó el cálculo o la clasificación material.
+
+La reproducción no exige copiar el payload completo cuando una referencia inmutable y autorizada sea suficiente.
+
+---
+
+#### 59. Observabilidad mínima
+
+La materialización futura deberá poder medir sin cambiar semántica:
+
+- entregas recibidas;
+- duplicados replayados;
+- conflictos;
+- eventos fuera de orden;
+- incompatibilidades de contrato;
+- pendientes de confirmación;
+- resultados desconocidos;
+- conciliaciones requeridas;
+- latencia de consumo;
+- frescura por fuente.
+
+Esta tarea no fija herramienta, dashboard ni backend de observabilidad.
+
+---
+
+#### 60. Estado físico actual
+
+La auditoría vigente identifica que PULSO, ORIGO, FOGO y NEXO son fuentes operativas objetivo, pero no demuestra un consumidor físico NUMERA completo para este contrato.
+
+Por tanto:
+
+```text
+CONTRACT_DEFINED = YES
+RUNTIME_CONSUMER_PROVEN = NO
+```
+
+La ausencia física no autoriza reducir el contrato documental ni afirmar implementación.
+
+---
+
+#### 61. Frontera con Realtime
+
+La ausencia actual de suscripciones directas NUMERA no obliga a usar Realtime ni a publicar tablas.
+
+La tecnología de transporte queda para arquitectura y materialización posteriores.
+
+---
+
+#### 62. Frontera con Supabase
+
+UX-014 no crea:
+
+- tablas de inbox/outbox;
+- constraints;
+- triggers;
+- funciones;
+- RLS;
+- Realtime;
+- Edge Functions;
+- cron;
+- colas.
+
+Cualquier materialización Supabase futura deberá ocurrir desde `vento-shell` bajo su tarea física propietaria.
+
+---
+
+#### 63. Frontera con UX-015
+
+UX-014 garantiza que una redelivery del mismo evento no genere otro efecto.
+
+UX-015 deberá diseñar la prevención de registro financiero duplicado cuando:
+
+- existan eventos distintos con correlación común;
+- una fuente manual compita con una fuente canónica;
+- dos dominios aporten evidencia del mismo efecto;
+- un replay, importación o corrección pueda parecer una nueva operación;
+- la identidad empresarial necesite comparación adicional.
+
+---
+
+#### 64. Frontera con conciliaciones posteriores
+
+UX-017, UX-018 y UX-019 diseñarán experiencias específicas de conciliación de ventas/pagos, compras/recepciones e inventario/producción.
+
+UX-014 solo garantiza que esas experiencias reciban eventos con procedencia, identidad, correlación y estado suficientemente preservados.
+
+---
+
+#### 65. Frontera con UX-024
+
+UX-024 es propietaria del tablero global de cobertura y conciliación de fuentes.
+
+UX-014 no diseña ese tablero, pero entrega las señales necesarias para que pueda distinguir:
+
+- fuente recibida;
+- fuente pendiente;
+- fuente stale;
+- diferencia abierta;
+- resultado desconocido;
+- evidencia correlacionada.
+
+---
+
+#### 66. Hallazgos diferidos
+
+| Hallazgo | Bloquea UX-014 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| consumidor físico NUMERA no demostrado de extremo a extremo | no bloquea definición documental; sí bloquea declarar implementación | paquete físico NUMERA e integración aplicable | listeners/proyecciones materializados con pruebas de contrato, idempotencia, orden, retry, auditoría y no escritura cruzada |
+| condición materializada de `VPROC-0035 -> numera` no demostrada aquí | no bloquea el contrato; la relación permanece condicional | materialización del consumer registry | `condition_ref` vigente resoluble y probado antes de activar consumo |
+| tecnología de transporte no decidida por esta tarea | no | arquitectura/materialización aplicable | transporte elegido sin cambiar productora, audiencia, envelope ni semántica |
+| duplicidad empresarial entre eventos distintos | no; se entrega explícitamente | `NUMERA-UX-015` | contrato de deduplicación financiera aprobado sin borrar historia |
+
+No se crea ninguna tarea adicional.
+
+---
+
+#### 67. Decisiones congeladas
+
+```text
+NUMERA_SOURCE_EVENT_CONSUMPTION_CONTRACT = NUMERA-SOURCE-EVENT-CONSUMPTION-001
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+DIRECT_PROCESS_RELATION_COUNT = 34
+DIRECT_EVENT_RELATION_COUNT = 192
+CONDITIONAL_PROCESS_RELATION_COUNT = 1
+CONDITIONAL_EVENT_RELATION_COUNT = 6
+CONDITIONAL_PROCESS = VPROC-0035
+NUMERA_CONSUMER_PURPOSE = FINANCIAL_RECONCILIATION_COST_ANALYSIS
+SOURCE_EVENT_OWNER = PRODUCER_APPLICATION
+EVENT_RECEIVED_IS_ECONOMIC_FACT_RECOGNIZED = NO
+UI_FILTER_IS_SOURCE_FACT = NO
+CONSUMER_PROJECTION_IS_SOURCE_OF_TRUTH = NO
+TRANSPORT_GUARANTEE = AT_LEAST_ONCE
+CONSUMER_INBOX_KEY = numera+event_id
+CROSS_APPLICATION_SOURCE_WRITE = FORBIDDEN
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+REPLAY_CREATES_NEW_SOURCE_EVENT = NO
+CROSS_EVENT_BUSINESS_DUPLICATE_OWNER = NUMERA_UX_015
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 68. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+**Justificación:** la obligación verificable de reconciliar NUMERA con PULSO, ORIGO, FOGO y NEXO, conservar identidad, fuente, correlación, idempotencia, retries, auditoría, no duplicación y fronteras de propiedad ya está protegida por requisitos canónicos vigentes. UX-014 especializa el consumo UX/contractual del subconjunto de 198 definiciones ya registrado por `INT-APP-001..010` sin crear una conducta transversal nueva.
+
+---
+
+#### 69. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar:
+
+- `TREQ-NUMERA-001` — reconciliación de indicadores, costos, gastos, cierres, saldos y reportes con hechos y documentos fuente de PULSO, ORIGO, FOGO y NEXO, sin doble registro manual;
+- `TREQ-NUMERA-002` — identidad estable, entidad, sede, centro, fuente, correlación, estado, evidencia y correcciones no destructivas; su ownership vigente incluye expresamente `NUMERA-UX-014`;
+- `TREQ-INTEGRATION-003` — identidad estable, idempotencia, retry, resultado recuperable, outbox/inbox o mecanismo equivalente, conciliación y recuperación;
+- `TREQ-INTEGRATION-004` — reconstrucción de causa, payload o referencia, principal, recurso, intento, resultado, error y efecto final sin duplicación;
+- `TREQ-INTEGRATION-006` — captura única en aplicación propietaria y propagación por contratos o eventos aprobados, sin fuente competidora ni doble digitación;
+- `TREQ-INTEGRATION-017` — continuidad gobernada de hechos operativos hacia NUMERA conforme a contratos correlacionados;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas cuando el consumo produzca efectos o accesos sujetos a autorización.
+
+Esta sección es trazabilidad de cobertura vigente y no actualiza el Registro 04A.
+
+---
+
+#### 70. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El trabajo es documental; no se ejecutaron build, lint, tipos ni pruebas de producto. |
+| LOCAL | NOT_EXECUTED | La incorporación, formateo, quality, delivery, validador `docs:int-app:check`, topología, batería global y cierre permanecen pendientes del checkout del usuario después de que `NUMERA-UX-013` entregue `NEXT_TASK_ALLOWED: SI`. |
+| REMOTA | PASS | Se verificaron el marcador de UX-014, continuidad NUMERA, topología `DEFINE_ONCE`, `INT-APP-001..010`, matrices de productoras/consumidoras, 35 procesos y 198 definiciones PULSO/ORIGO/FOGO/NEXO → NUMERA, contratos NUMERA-DOM-002/003/004/014, Registro 04A aplicable y scripts documentales vigentes; UX-013 se consume desde el archivo completo aprobado por el usuario mientras termina su incorporación. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron entregas, listeners, replays, retries, deduplicación, reconocimiento económico, conciliación ni pruebas en ambientes desplegados. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-014` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia. |
+
+---
+
+#### 71. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-SOURCE-EVENT-CONSUMPTION-001`;
+2. se consumen `INT-APP-001..010` sin redefinirlos;
+3. existen exactamente cuatro aplicaciones fuente: PULSO, ORIGO, FOGO y NEXO;
+4. existen exactamente 35 procesos fuente dentro del alcance;
+5. existen exactamente 198 definiciones de evento dentro del alcance;
+6. existen 34 relaciones de proceso directas y una condicional;
+7. existen 192 relaciones de evento directas y seis condicionales;
+8. la relación condicional única corresponde a `VPROC-0035`;
+9. no se inventa su `condition_ref`;
+10. NUMERA conserva finalidad `FINANCIAL_RECONCILIATION_COST_ANALYSIS`;
+11. la productora canónica permanece autoridad del evento fuente;
+12. NUMERA no reemite el evento cambiando productora;
+13. el envelope común conserva los campos de `EVENT-ENVELOPE-001`;
+14. un evento fuera de catálogo no se acepta por heurística;
+15. la productora se valida contra el registro aprobado;
+16. la relación NUMERA directa o condicional debe existir antes del consumo;
+17. versión de evento y schema deben ser compatibles;
+18. el mismo `event_id` no produce otro efecto por redelivery;
+19. reutilización conflictiva falla cerrada;
+20. `aggregate_version` no retrocede la proyección;
+21. evento tardío no sobrescribe una versión posterior;
+22. retry conserva identidad lógica;
+23. replay conserva `event_id` y productora histórica;
+24. backfill no concede audiencia nueva;
+25. `RESULT_UNKNOWN` exige consulta o conciliación antes de repetir;
+26. `PENDING_CONFIRMATION` no se presenta como éxito;
+27. error parcial conserva efectos confirmados, pendientes y desconocidos;
+28. dead-letter no se interpreta como rechazo económico;
+29. retry agotado no dispara compensación automática;
+30. auditoría no sustituye la fuente de verdad;
+31. NUMERA no escribe tablas o RPC ajenos sin contrato;
+32. la proyección NUMERA no se devuelve para sobrescribir la fuente;
+33. corrección de fuente pertenece al owner de la fuente;
+34. corrección económica NUMERA conserva el original;
+35. evento recibido no equivale a hecho económico reconocido;
+36. PULSO conserva venta, pago, caja y entrega como hechos distintos;
+37. ORIGO conserva compra y recepción comercial;
+38. NEXO conserva efecto físico;
+39. FOGO conserva ejecución productiva;
+40. varias fuentes pueden sustentar un solo efecto económico sin duplicarlo;
+41. la cardinalidad económica no se deduce del número de entregas;
+42. filtros UX no completan dimensiones fuente faltantes;
+43. empresa seleccionada no se convierte en empresa del evento;
+44. sede seleccionada no se convierte en sede del evento;
+45. centro seleccionado no se convierte en centro del evento;
+46. dimensión ausente permanece pendiente o en diferencia;
+47. canal externo pasa por la productora interna aprobada antes de NUMERA;
+48. payload más amplio no autoriza persistir todos sus campos;
+49. consumo backend no concede lectura humana;
+50. consumo no concede exportación;
+51. procedencia puede reconstruirse para actores autorizados;
+52. ausencia de evento no se presenta como cero;
+53. frescura y cobertura incompleta permanecen distinguibles;
+54. UX-014 no absorbe el tablero de UX-024;
+55. UX-014 no absorbe la deduplicación empresarial de UX-015;
+56. similitud de importe/fecha/texto no prueba duplicidad;
+57. observabilidad futura puede medir ingestión sin redefinir semántica;
+58. el consumidor físico actual no se declara implementado sin evidencia;
+59. no se fuerza Realtime ni otra tecnología de transporte;
+60. no se modifica Supabase;
+61. no se crean ni modifican requisitos de prueba;
+62. no se realizan cambios físicos;
+63. UX-015 recibe ownership explícito de duplicidad financiera entre eventos distintos.
+
+---
+
+#### 72. Límites
+
+Esta tarea no:
+
+- modifica `INT-APP-001..010`;
+- agrega eventos;
+- elimina eventos;
+- cambia productoras;
+- cambia consumidoras;
+- cambia relaciones directas a condicionales o viceversa;
+- inventa condiciones para `VPROC-0035`;
+- crea listeners;
+- crea bus o broker;
+- crea topics;
+- crea colas;
+- crea workers;
+- crea jobs;
+- crea webhooks;
+- crea outbox o inbox físicos;
+- crea tablas;
+- crea vistas;
+- crea triggers;
+- crea RPC;
+- crea Server Actions;
+- crea APIs;
+- crea RLS;
+- crea Realtime;
+- crea Edge Functions;
+- crea cron;
+- modifica Supabase;
+- crea migraciones;
+- cambia permisos;
+- asigna permisos a roles;
+- reconoce hechos económicos reales;
+- corrige hechos operativos;
+- ejecuta replay o backfill;
+- ejecuta retries;
+- compensa efectos;
+- diseña conciliaciones específicas de UX-017..019;
+- diseña el tablero de UX-024;
+- resuelve duplicidad empresarial de eventos distintos;
+- desarrolla `NUMERA-UX-015`;
+- actualiza Registro 04A.
+
+---
+
+#### 73. Handoff a NUMERA-UX-015
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_SOURCE_EVENT_CONSUMPTION_CONTRACT = NUMERA-SOURCE-EVENT-CONSUMPTION-001
+SOURCE_APPLICATIONS = PULSO|ORIGO|FOGO|NEXO
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+DIRECT_PROCESS_RELATION_COUNT = 34
+DIRECT_EVENT_RELATION_COUNT = 192
+CONDITIONAL_PROCESS_RELATION_COUNT = 1
+CONDITIONAL_EVENT_RELATION_COUNT = 6
+CONDITIONAL_PROCESS = VPROC-0035
+NUMERA_CONSUMER_PURPOSE = FINANCIAL_RECONCILIATION_COST_ANALYSIS
+SOURCE_EVENT_OWNER = PRODUCER_APPLICATION
+EVENT_RECEIVED_IS_ECONOMIC_FACT_RECOGNIZED = NO
+CONSUMER_PROJECTION_IS_SOURCE_OF_TRUTH = NO
+CONSUMER_INBOX_KEY = numera+event_id
+EXACT_EVENT_REDELIVERY_CREATES_NEW_EFFECT = NO
+CONFLICTING_REUSE = DENY_AND_RESOLVE
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+REPLAY_CREATES_NEW_SOURCE_EVENT = NO
+UI_FILTER_IS_SOURCE_FACT = NO
+SOURCE_DIMENSION_FALLBACK_FROM_UI = FORBIDDEN
+CROSS_APPLICATION_SOURCE_WRITE = FORBIDDEN
+CROSS_EVENT_BUSINESS_DUPLICATE_OWNER = NUMERA_UX_015
+UX_015_OWNER = FINANCIAL_DUPLICATE_PREVENTION
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-015` deberá evitar registro financiero duplicado sobre eventos, fuentes y capturas distintas sin confundir redelivery técnica con duplicidad empresarial ni eliminar historia válida.
+
+---
+
+#### 74. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-013
+-> NUMERA-UX-014
+-> NUMERA-UX-015
+```
+
+UX-014 consume los filtros de UX-013 únicamente como selección posterior sobre hechos ya ingeridos y entrega a UX-015 identidad, procedencia e idempotencia suficientes para tratar duplicidad financiera sin recrear la fuente.
+
+---
+
+#### 75. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-015 — Evitar registro financiero duplicado`
 ### [ ] NUMERA-UX-015 — Evitar registro financiero duplicado
 ### [ ] NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
 
