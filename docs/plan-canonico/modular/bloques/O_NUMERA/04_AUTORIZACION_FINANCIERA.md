@@ -17659,4 +17659,1466 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos`
-### [ ] NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos
+### ✅ NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles
+**Tarea siguiente:** NUMERA-UX-001 — Inventariar procesos financieros y analíticos
+**Tipo de tarea:** definición documental del contrato final de autorización financiera de NUMERA para crear, modificar, compartir, proponer, aprobar, rechazar, publicar y retirar escenarios, presupuestos, forecast y versiones de precio, preservando versionado, segregación, alcance de planificación, sensibilidad, auditoría, idempotencia y fronteras con realidad, precio operativo, costos maestros, exportación, contabilidad y fiscalidad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea permisos runtime, grants, roles, aliases, paquetes, tablas, RLS, RPC, Server Actions, migraciones, escenarios, presupuestos, forecast, versiones de precio, publicaciones, integraciones, Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir las autoridades exactas que completan el mini-bloque `NUMERA-AUTH-001..015` para el dominio de planificación económica y escenarios, evitando que lectura, edición genérica, aprobación, publicación o acceso a NUMERA se conviertan en una autoridad amplia sobre presupuestos, forecast, escenarios o versiones de precio.
+
+El contrato debe permitir que una implementación posterior responda de forma inequívoca:
+
+- quién puede crear una versión de trabajo;
+- quién puede modificar únicamente una versión todavía mutable;
+- quién puede compartir una versión con una audiencia elegible;
+- quién puede enviarla formalmente a revisión o aprobación;
+- quién puede aprobarla o rechazarla;
+- quién puede publicarla como referencia NUMERA;
+- quién puede retirar esa publicación sin borrar historia;
+- qué recurso, versión, scope, estado, campos y evidencia deben revalidarse en cada acción;
+- cómo se preservan las fronteras frente a hechos reales, precio operativo, costo maestro, presupuesto vigente, contabilidad y fiscalidad.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-AUTH-015` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define un contrato documental reutilizable;
+- no crea instancia física propia;
+- no materializa códigos en `app_permissions`;
+- no concede permisos a roles o personas;
+- no modifica packages compartidos;
+- no modifica `vento-numera`;
+- no modifica Supabase;
+- no crea ni cambia escenarios, presupuestos, forecast o precios reales;
+- no ejecuta publicación ni activación operativa alguna.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-014
+
+La predecesora entrega:
+
+```text
+NUMERA_SPECIALIZED_FINANCIAL_AUTHORIZATION_REGISTRY = NUMERA-SPECIALIZED-FINANCIAL-AUTHORIZATION-REGISTRY-001
+NUMERA_TARGET_CAPABILITY_COUNT_BEFORE_014 = 57
+NUMERA_SPECIALIZED_PERMISSION_COUNT_014 = 36
+NUMERA_TARGET_CAPABILITY_COUNT_AFTER_014 = 93
+NUMERA_014_PERMISSIONS_STATE = CONTRACT_DEFINED_PENDING_MATERIALIZATION
+NUMERA_SENSITIVE_DATA_WILDCARD_PERMISSION = FORBIDDEN
+RECEIVABLES_VIEW_IS_SENSITIVE_DETAIL_VIEW = NO
+SENSITIVE_VIEW_IMPLIES_EXPORT = NO
+COLLECTION_INTERACTION_IMPLIES_AGREEMENT = NO
+COLLECTION_HOLD_IS_RECEIVABLE_CANCEL = NO
+PROMISE_TO_PAY_IS_PAYMENT = NO
+PROMISE_TO_PAY_IS_PAYMENT_AGREEMENT = NO
+AGREEMENT_REGISTER_IS_AGREEMENT_APPROVE = NO
+RECEIVABLE_APPLICATION_REQUIRES_EXPLICIT_RESOURCE = YES
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+APPLICATION_REVERSE_PRESERVES_ORIGINAL = YES
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+WRITE_OFF_PERMISSION = numera.finance.receivables.write_off
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+WRITE_OFF_IS_SOURCE_DELETE = NO
+FORGIVENESS_REQUIRES_EXPLICIT_DECISION = YES
+CREDIT_EXPOSURE_IS_OPEN_BALANCE = NO
+CREDIT_LIMIT_REQUIRES_VERSIONED_PROPOSAL_AND_DECISION = YES
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+CREDIT_EXCEPTION_REQUIRES_EXPLICIT_DECISION = YES
+BANK_ACCOUNT_VIEW_IMPLIES_SENSITIVE_DETAILS = NO
+BANK_CREDENTIALS_ARE_FINANCIAL_BUSINESS_FIELDS = NO
+BANK_ACCOUNT_PROPOSE_APPROVE_ACTIVATE = DISTINCT
+BANK_STATEMENT_IMPORT_IS_IDEMPOTENT = YES
+PAYMENT_PLAN_APPROVED_IS_PAYMENT_INSTRUCTION_ISSUED = NO
+TREASURY_PAY_EXECUTE_PERMISSION = numera.finance.treasury_payment_instructions.issue
+SENT_PAYMENT_INSTRUCTION_IS_CONFIRMED_PAYMENT = NO
+RECONCILE_PERMISSION = numera.finance.reconciliations.resolve
+RECONCILIATION_REVERSE_PRESERVES_HISTORY = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_RESOURCE_VERSION = DENY_AND_REEVALUATE
+DENY_SIDE_EFFECT_ALLOWED = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SPECIALIZED_PERMISSION_CAN_REOPEN_CLOSED_PERIOD = NO
+NUMERA_AUTH_013_FUTURE_INSTANCE_MUST_TEST_014_WHEN_CONSUMED = YES
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+```
+
+La 015 no reutiliza ninguna capacidad de la 014 como autoridad implícita sobre planificación económica.
+
+---
+
+#### 4. Fuentes canónicas reconciliadas
+
+Esta definición consume y preserva:
+
+- `NUMERA-AUTH-001..014` aprobadas;
+- `NUMERA-DOM-018` como contrato propietario del motor de escenarios, versiones, supuestos y publicación;
+- `NUMERA-DOM-006` para presupuesto y centros de costo;
+- `NUMERA-DOM-007` para métodos y versiones de costo;
+- `NUMERA-DOM-008` para rentabilidad;
+- `NUMERA-DOM-012` para reportes e información exportable;
+- `NUMERA-DOM-014` para conciliación de resultados contra realidad;
+- `VPROC-0069` como lifecycle canónico de presupuesto, supuestos, forecast y variaciones;
+- `VSCREEN-0156` como superficie canónica de presupuestos, escenarios y forecast;
+- `VSCREEN-0104` como superficie de costos, rentabilidad y escenarios;
+- la convención canónica `<app>.<module>.<resource>.<action>`;
+- los contratos transversales vigentes de autorización, recurso, alcance, denegación, auditoría, idempotencia, concurrencia, sensibilidad y simulación.
+
+---
+
+#### 5. Invariantes heredadas que la 015 no puede relajar
+
+Se preserva:
+
+```text
+REAL != PRESUPUESTADO != FORECAST != ESCENARIO != SIMULADO != PROPUESTO != PUBLICADO
+SCENARIO_PUBLISHED != SOURCE_FACT_MUTATED
+SCENARIO_PUBLISHED != OPERATIONAL_PRICE_ACTIVATED
+SCENARIO_PUBLISHED != MASTER_COST_CHANGED
+SCENARIO_PUBLISHED != ACCOUNTING_POSTED
+PRESUPUESTO_APROBADO != ESCENARIO
+FORECAST != ESCENARIO
+VIEW != CREATE != UPDATE != APPROVE != PUBLISH != EXPORT
+SCENARIO_CREATE != SCENARIO_SHARE != SCENARIO_APPROVE != SCENARIO_PUBLISH
+MISSING_EXACT_PERMISSION_FALLBACK_TO_MANAGE = FORBIDDEN
+FINANCIAL_WILDCARD_GRANT = FORBIDDEN
+MUTATION_AUTHORIZATION_REVALIDATED_SERVER_SIDE = YES
+AUTHORIZATION_REQUIRES_RESOURCE_AND_CURRENT_STATE = YES
+SIMULATED_AUTHORIZATION_GRANTS_REAL_AUTHORITY = NO
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+DENY_SIDE_EFFECT_ALLOWED = NO
+```
+
+La planificación económica sigue siendo administrativa respecto de turno y check-in salvo que un proceso propietario posterior documente expresamente otra precondición.
+
+---
+
+#### 6. Resultado contractual
+
+Se define:
+
+```text
+NUMERA-PLANNING-AUTHORIZATION-REGISTRY-001
+```
+
+con treinta y dos permisos nuevos, atómicos y `CONTRACT_DEFINED_PENDING_MATERIALIZATION`.
+
+Resultado cuantitativo:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT_BEFORE_015 = 93
+NUMERA_PLANNING_PERMISSION_COUNT_015 = 32
+NUMERA_TARGET_CAPABILITY_COUNT_AFTER_015 = 125
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT_AFTER_015 = 119
+NUMERA_015_MISSING_PERMISSION_ROWS = 0
+NUMERA_015_DUPLICATE_PERMISSION_ROWS = 0
+NUMERA_AUTH_013_FUTURE_INSTANCE_MUST_TEST_015_WHEN_CONSUMED = YES
+```
+
+La 015 no cambia físicamente el estado de las 93 capacidades anteriores ni de las 32 nuevas.
+
+---
+
+#### 7. Recursos de planificación gobernados
+
+La matriz final de esta tarea opera sobre cuatro recursos financieros de NUMERA:
+
+```text
+SCENARIO
+BUDGET
+FORECAST
+PRICE_VERSION
+```
+
+Sus namespaces son:
+
+```text
+numera.finance.scenarios.*
+numera.finance.budgets.*
+numera.finance.forecasts.*
+numera.finance.price_versions.*
+```
+
+Ninguno de estos recursos equivale a una venta, precio operativo activo, costo maestro, hecho económico, asiento contable o documento fiscal.
+
+---
+
+#### 8. Acción empresarial `share`
+
+`NUMERA-AUTH-001` ya reservó el slot documental `SCENARIO_SHARE`. Esta tarea formaliza su semántica empresarial exacta para los cuatro recursos de planificación:
+
+```text
+ACTION = share
+BUSINESS_MEANING = habilitar acceso gobernado a una version exacta para una audiencia o destinatario elegible sin convertirla en propuesta, aprobacion, publicacion ni exportacion
+OPERATION_KIND = ACCESS_DISTRIBUTION_MUTATION
+SENSITIVE = YES
+MODIFIES_BUSINESS_DATA = NO
+MODIFIES_ACCESS_RELATIONSHIP = YES
+```
+
+Se diferencia de:
+
+```text
+share != view
+share != assign
+share != export
+share != approve
+share != publish
+share != grant_role
+```
+
+La futura materialización deberá registrar `share` en el catálogo compartido de acciones antes de activar permisos runtime que lo utilicen. Esta tarea no modifica físicamente ese catálogo.
+
+---
+
+#### 9. Acción `request` como propuesta formal
+
+El catálogo transversal ya reconoce `request` como acción empresarial. En este contrato representa enviar una versión exacta a revisión o decisión:
+
+```text
+REQUEST = PROPUESTA_FORMAL_PARA_REVISION_O_APROBACION
+```
+
+Se conserva:
+
+```text
+request != update
+request != share
+request != approve
+request != publish
+```
+
+Solicitar decisión congela la versión material sometida; cualquier cambio material posterior exige una nueva versión antes de una nueva solicitud.
+
+---
+
+#### 10. Registro consolidado de permisos de planificación
+
+| # | Permiso canónico | Recurso | Acción |
+| ---: | --- | --- | --- |
+| 1 | `numera.finance.scenarios.create` | escenario | crear una versión o rama de escenario |
+| 2 | `numera.finance.scenarios.update` | escenario | modificar una versión mutable |
+| 3 | `numera.finance.scenarios.share` | escenario | compartir versión exacta con audiencia elegible |
+| 4 | `numera.finance.scenarios.request` | escenario | enviar versión exacta a revisión/decisión |
+| 5 | `numera.finance.scenarios.approve` | escenario | aprobar versión exacta |
+| 6 | `numera.finance.scenarios.reject` | escenario | rechazar versión exacta |
+| 7 | `numera.finance.scenarios.publish` | escenario | publicar versión aprobada como referencia NUMERA |
+| 8 | `numera.finance.scenarios.unpublish` | escenario | retirar publicación futura sin borrar historia |
+| 9 | `numera.finance.budgets.create` | presupuesto | crear versión presupuestal de trabajo |
+| 10 | `numera.finance.budgets.update` | presupuesto | modificar versión presupuestal mutable |
+| 11 | `numera.finance.budgets.share` | presupuesto | compartir versión exacta con audiencia elegible |
+| 12 | `numera.finance.budgets.request` | presupuesto | enviar versión exacta a revisión/decisión |
+| 13 | `numera.finance.budgets.approve` | presupuesto | aprobar versión exacta |
+| 14 | `numera.finance.budgets.reject` | presupuesto | rechazar versión exacta |
+| 15 | `numera.finance.budgets.publish` | presupuesto | publicar versión aprobada dentro de NUMERA conforme a `VPROC-0069` |
+| 16 | `numera.finance.budgets.unpublish` | presupuesto | retirar publicación futura cuando el lifecycle lo permita |
+| 17 | `numera.finance.forecasts.create` | forecast | crear versión de forecast |
+| 18 | `numera.finance.forecasts.update` | forecast | modificar versión mutable de forecast |
+| 19 | `numera.finance.forecasts.share` | forecast | compartir versión exacta con audiencia elegible |
+| 20 | `numera.finance.forecasts.request` | forecast | enviar versión exacta a revisión/decisión |
+| 21 | `numera.finance.forecasts.approve` | forecast | aprobar versión exacta |
+| 22 | `numera.finance.forecasts.reject` | forecast | rechazar versión exacta |
+| 23 | `numera.finance.forecasts.publish` | forecast | publicar forecast aprobado como referencia vigente autorizada |
+| 24 | `numera.finance.forecasts.unpublish` | forecast | retirar publicación futura sin reescribir históricos |
+| 25 | `numera.finance.price_versions.create` | versión de precio | crear propuesta/version de precio NUMERA |
+| 26 | `numera.finance.price_versions.update` | versión de precio | modificar versión mutable |
+| 27 | `numera.finance.price_versions.share` | versión de precio | compartir versión exacta con audiencia elegible |
+| 28 | `numera.finance.price_versions.request` | versión de precio | enviar versión exacta a revisión/decisión |
+| 29 | `numera.finance.price_versions.approve` | versión de precio | aprobar decisión de precio NUMERA |
+| 30 | `numera.finance.price_versions.reject` | versión de precio | rechazar versión propuesta |
+| 31 | `numera.finance.price_versions.publish` | versión de precio | publicar decisión aprobada dentro de NUMERA |
+| 32 | `numera.finance.price_versions.unpublish` | versión de precio | retirar publicación NUMERA sin desactivar por inferencia el precio operativo |
+
+Todas las identidades nuevas permanecen pendientes de materialización física.
+
+---
+
+#### 11. Cardinalidad y unicidad
+
+La distribución queda:
+
+```text
+SCENARIO_PERMISSIONS = 8
+BUDGET_PERMISSIONS = 8
+FORECAST_PERMISSIONS = 8
+PRICE_VERSION_PERMISSIONS = 8
+TOTAL = 32
+```
+
+Cada permiso representa una sola capacidad verificable. No se crean combinaciones como:
+
+```text
+create_and_share
+request_and_approve
+approve_and_publish
+publish_and_activate
+```
+
+---
+
+#### 12. Permisos de lectura heredados
+
+La 015 reutiliza sin redefinir:
+
+```text
+numera.finance.scenarios.view
+numera.finance.budgets.view
+numera.finance.forecasts.view
+numera.finance.price_versions.view
+```
+
+Los cuatro permisos continúan en `PLANNING_SCOPE` y no conceden ninguna de las treinta y dos acciones mutantes de esta tarea.
+
+---
+
+#### 13. Separación universal de acciones
+
+Para cada recurso se conserva:
+
+```text
+VIEW
+!= CREATE
+!= UPDATE
+!= SHARE
+!= REQUEST
+!= APPROVE
+!= REJECT
+!= PUBLISH
+!= UNPUBLISH
+```
+
+Además:
+
+```text
+EXPORT != SHARE
+EXPORT != PUBLISH
+PUBLISH != OPERATIONAL_ACTIVATION
+```
+
+La existencia de una misma persona autorizada para más de una acción no fusiona los permisos.
+
+---
+
+#### 14. Mapeo de categorías del dominio a permisos
+
+El contrato de `NUMERA-DOM-018` se resuelve así:
+
+| Categoría de dominio | Autoridad resultante |
+| --- | --- |
+| consultar | permiso `.view` del recurso |
+| crear | `.create` |
+| modificar borrador | `.update` |
+| clonar | `.create` sobre nueva identidad con lineage al origen |
+| comparar | `.view` sobre cada versión o miembro requerido |
+| compartir | `.share` |
+| proponer | `.request` |
+| revisar | `.view`; revisar no es decidir |
+| aprobar | `.approve` |
+| rechazar | `.reject` |
+| publicar | `.publish` |
+| superseder | publicar sucesora con relación explícita; no sobrescribir anterior |
+| retirar | `.unpublish` |
+| exportar | contrato de exportación de `NUMERA-AUTH-007`, solo cuando el objeto sea una proyección exportable autorizada |
+
+No se crea un permiso específico de `clone`, `compare` o `review` porque sus efectos ya se resuelven mediante `create` o `view` sin perder separación de autoridad.
+
+---
+
+#### 15. Identidad y versión son parte del recurso protegido
+
+Toda mutación exige una identidad estable y, cuando exista versión previa, una versión esperada:
+
+```text
+RESOURCE_ID
++
+RESOURCE_VERSION
++
+RESOURCE_FINGERPRINT_WHEN_MATERIAL
+```
+
+Cambiar materialmente baseline, supuestos, método, alcance, horizonte o entradas después de una decisión material exige una versión sucesora; no se actualiza silenciosamente la versión decidida.
+
+---
+
+#### 16. Creación de escenarios
+
+`numera.finance.scenarios.create` permite crear:
+
+- una nueva identidad de escenario;
+- una nueva rama a partir de otro escenario;
+- una versión sucesora cuando el contrato exija nueva identidad/versionado.
+
+Crear no concede:
+
+- modificar hechos reales;
+- compartir;
+- solicitar aprobación;
+- aprobar;
+- publicar;
+- activar precio operativo.
+
+El clonado conserva `source_scenario_id`, `source_version` y lineage suficiente para distinguir copia de edición.
+
+---
+
+#### 17. Actualización de escenarios
+
+`numera.finance.scenarios.update` opera únicamente sobre una versión todavía mutable y sobre campos permitidos.
+
+No puede:
+
+- reescribir una versión aprobada o publicada;
+- cambiar silenciosamente el baseline de una versión solicitada;
+- modificar hechos reales;
+- convertir un escenario en presupuesto o forecast;
+- alterar una versión de precio operativa.
+
+Una modificación material sobre una versión ya sometida a decisión exige una versión sucesora y una nueva solicitud.
+
+---
+
+#### 18. Compartición de escenarios
+
+`numera.finance.scenarios.share` crea o modifica únicamente la relación de acceso gobernado a una versión exacta.
+
+Debe declarar, cuando aplique:
+
+- versión compartida;
+- audiencia o destinatario autorizado;
+- finalidad;
+- alcance;
+- vigencia de la relación;
+- actor que comparte;
+- evidencia y correlación.
+
+Compartir no cambia el estado decisorio del escenario.
+
+---
+
+#### 19. Solicitud de decisión sobre escenarios
+
+`numera.finance.scenarios.request` envía una versión materialmente estable a revisión o aprobación.
+
+Requiere como mínimo:
+
+- versión exacta;
+- baseline y cutoff identificables;
+- conjunto de supuestos versionado;
+- método/fórmula aplicable;
+- calidad y frescura suficientes para la finalidad;
+- scope válido;
+- actor solicitante;
+- idempotencia de la solicitud.
+
+Una solicitud no representa aprobación ni publicación.
+
+---
+
+#### 20. Aprobación y rechazo de escenarios
+
+La decisión utiliza:
+
+```text
+numera.finance.scenarios.approve
+numera.finance.scenarios.reject
+```
+
+Ambas acciones revalidan la versión sometida. Se conserva:
+
+```text
+APPROVE_STALE_VERSION = DENY_AND_REVIEW_AGAIN
+REJECT_DELETES_SCENARIO = NO
+```
+
+El rechazo conserva motivo y evidencia; la aprobación conserva la versión exacta decidida.
+
+---
+
+#### 21. Publicación de escenarios
+
+`numera.finance.scenarios.publish` permite convertir una versión previamente aprobada en referencia publicada dentro de NUMERA para su finalidad y audiencia declaradas.
+
+Debe preservar:
+
+- identidad y versión;
+- aprobación previa vigente;
+- scope;
+- vigencia;
+- baseline;
+- supuestos;
+- resultado;
+- relación con publicación previa;
+- destinatarios o consumidores permitidos cuando aplique.
+
+Se conserva:
+
+```text
+SCENARIO_PUBLISHED != REAL_RESULT
+SCENARIO_PUBLISHED != ACCOUNTING_POSTED
+SCENARIO_PUBLISHED != SOURCE_FACT_MUTATED
+```
+
+---
+
+#### 22. Retiro de publicación de escenarios
+
+`numera.finance.scenarios.unpublish` impide uso futuro como referencia publicada cuando el lifecycle lo permita.
+
+No:
+
+- elimina el escenario;
+- elimina la aprobación histórica;
+- reescribe reportes ya versionados;
+- borra auditoría;
+- revierte hechos reales.
+
+Una nueva publicación posterior requiere una versión y decisión elegibles según el estado vigente.
+
+---
+
+#### 23. Presupuestos: creación y actualización
+
+`numera.finance.budgets.create` y `numera.finance.budgets.update` gobiernan versiones presupuestales sin reutilizar:
+
+```text
+numera.cost_centers.manage
+numera.finance.cost_centers.update
+```
+
+La identidad del centro de costo es una dimensión del presupuesto, no la autoridad de mutación presupuestal.
+
+`create` se utiliza cuando nace una nueva versión/objeto elegible. `update` se utiliza únicamente sobre una versión mutable existente.
+
+---
+
+#### 24. Presupuestos: compartir y solicitar decisión
+
+La distribución y propuesta formal usan:
+
+```text
+numera.finance.budgets.share
+numera.finance.budgets.request
+```
+
+Compartir permite acceso gobernado a la versión. Solicitar decisión cambia el estado de revisión aplicable conforme a `VPROC-0069` sin aprobarla.
+
+Se conserva:
+
+```text
+BUDGET_SHARED != BUDGET_PENDING_APPROVAL
+BUDGET_REQUESTED != BUDGET_APPROVED
+```
+
+---
+
+#### 25. Presupuestos: aprobación y rechazo
+
+La decisión usa:
+
+```text
+numera.finance.budgets.approve
+numera.finance.budgets.reject
+```
+
+La aprobación opera sobre la versión exacta en estado aprobable y no debe inferirse desde autoría, rol nominal, visibilidad, `numera.access`, `cost_centers.update` ni el guard legacy `numera.cost_centers.manage`.
+
+El rechazo conserva motivo y no elimina la versión.
+
+---
+
+#### 26. Presupuestos: publicación y retiro
+
+La publicación usa:
+
+```text
+numera.finance.budgets.publish
+numera.finance.budgets.unpublish
+```
+
+`publish` solo puede actuar sobre una versión aprobada y cuando `VPROC-0069` permita el efecto correspondiente.
+
+Se conserva:
+
+```text
+BUDGET_PUBLISHED != SOURCE_FACT_MUTATED
+BUDGET_PUBLISHED != ACCOUNTING_POSTED
+BUDGET_PUBLISHED != SCENARIO_PUBLISHED
+```
+
+`unpublish` no equivale a borrar, cerrar el ciclo, reabrir un periodo ni alterar históricos.
+
+---
+
+#### 27. Forecast: creación y actualización
+
+`numera.finance.forecasts.create` y `numera.finance.forecasts.update` gobiernan versiones de forecast con horizonte, cutoff, supuestos, fuentes y método identificables.
+
+Se conserva:
+
+```text
+FORECAST != BUDGET
+FORECAST != SCENARIO
+FORECAST != REAL
+```
+
+Actualizar forecast no cambia el presupuesto aprobado ni los hechos reales.
+
+---
+
+#### 28. Forecast: compartir y solicitar decisión
+
+La distribución y propuesta formal usan:
+
+```text
+numera.finance.forecasts.share
+numera.finance.forecasts.request
+```
+
+Una versión compartida no se vuelve vigente por difusión y una versión solicitada no queda aprobada por haber sido generada automáticamente.
+
+---
+
+#### 29. Forecast: aprobación y rechazo
+
+La decisión usa:
+
+```text
+numera.finance.forecasts.approve
+numera.finance.forecasts.reject
+```
+
+Debe revalidar:
+
+- horizonte;
+- cutoff;
+- versión de fuentes;
+- supuestos;
+- método;
+- scope;
+- frescura;
+- estado aprobable;
+- actor y segregación aplicables.
+
+---
+
+#### 30. Forecast: publicación y retiro
+
+La publicación usa:
+
+```text
+numera.finance.forecasts.publish
+numera.finance.forecasts.unpublish
+```
+
+Publicar selecciona una versión autorizada como referencia vigente dentro de NUMERA; no cambia retrospectivamente forecasts anteriores ni convierte proyecciones en hechos.
+
+Retirar publicación conserva toda la historia y las comparaciones ya emitidas.
+
+---
+
+#### 31. Versiones de precio: creación y actualización
+
+`numera.finance.price_versions.create` y `numera.finance.price_versions.update` gobiernan decisiones y propuestas de precio dentro del motor NUMERA.
+
+La versión deberá conservar, cuando aplique:
+
+- objeto/producto o alcance económico;
+- presentación/unidad;
+- canal;
+- entidad o marca;
+- moneda;
+- vigencia propuesta;
+- baseline;
+- escenario fuente;
+- supuestos;
+- método;
+- versión.
+
+No modifica el precio operativo activo.
+
+---
+
+#### 32. Versiones de precio: compartir y solicitar decisión
+
+Se usan:
+
+```text
+numera.finance.price_versions.share
+numera.finance.price_versions.request
+```
+
+Compartir una propuesta de precio no la vuelve pública, vigente ni activa. Solicitar decisión no produce aprobación ni cambio de catálogo comercial.
+
+---
+
+#### 33. Versiones de precio: aprobación y rechazo
+
+La decisión usa:
+
+```text
+numera.finance.price_versions.approve
+numera.finance.price_versions.reject
+```
+
+Aprobar una versión significa aceptar la decisión económica NUMERA para la finalidad declarada. No concede por sí sola autoridad sobre PULSO, catálogo, POS, terceros ni canales externos.
+
+---
+
+#### 34. Versiones de precio: publicación y retiro
+
+Se usan:
+
+```text
+numera.finance.price_versions.publish
+numera.finance.price_versions.unpublish
+```
+
+Se preserva:
+
+```text
+NUMERA_PRICE_VERSION_PUBLISHED != OPERATIONAL_ACTIVE_PRICE
+NUMERA_PRICE_VERSION_UNPUBLISHED != OPERATIONAL_PRICE_DEACTIVATED
+```
+
+La activación o desactivación en el dominio comercial propietario exige un handoff explícito, autorización aplicable y evidencia correlacionada del owner operativo.
+
+---
+
+#### 35. Costos maestros quedan fuera de las acciones 015
+
+Un escenario puede usar un costo hipotético o una versión de costo como entrada, pero esta tarea no crea:
+
+```text
+numera.finance.costs.publish
+numera.finance.costs.activate
+numera.finance.costs.override
+```
+
+Modificar un costo real o método de costeo sigue el contrato propietario de costos y no hereda autoridad de un escenario publicado.
+
+---
+
+#### 36. Real, presupuesto, forecast, escenario y precio permanecen tipados
+
+La autorización debe transportar o resolver la categoría real del recurso. Se prohíbe autorizar por un label genérico como `planning_item` cuando ello permita mezclar permisos o efectos.
+
+Se conserva:
+
+```text
+BUDGET_ID != FORECAST_ID != SCENARIO_ID != PRICE_VERSION_ID
+```
+
+Un actor autorizado para un recurso no recibe los otros por similitud de pantalla.
+
+---
+
+#### 37. Estado canónico de `VPROC-0069`
+
+Las acciones presupuestales y de forecast consumen, sin crear un lifecycle paralelo:
+
+```text
+BUDGET_DRAFT
+-> ASSUMPTIONS_COLLECTING
+-> CONSOLIDATING
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> APPROVED
+-> IN_FORCE
+-> CONSUMPTION_MONITORING
+-> FORECAST_REVISION_IN_PROGRESS
+-> VARIANCE_REVIEW
+-> BUDGET_CYCLE_CLOSED
+```
+
+La autorización siempre evalúa el estado actual y la transición solicitada; el permiso por sí solo no vuelve válida una transición incompatible.
+
+---
+
+#### 38. Estado y permiso son condiciones acumulativas
+
+Para una acción mutante:
+
+```text
+ALLOW
+=
+PERMISSION_EXACTO
++
+RESOURCE_SCOPE
++
+CURRENT_STATE_ALLOWED
++
+EXPECTED_VERSION
++
+FIELD_ALLOWLIST
++
+BUSINESS_PRECONDITIONS
++
+NO_EFFECTIVE_DENY
+```
+
+El estado nunca sustituye permiso y el permiso nunca sustituye estado.
+
+---
+
+#### 39. Binding de VSCREEN-0156
+
+`VSCREEN-0156 — Presupuestos, escenarios y forecast` consume `VPROC-0069::STEP-PLAN_BUDGET_AND_FORECAST`.
+
+La superficie puede requerir, según el objeto y la acción:
+
+```text
+VIEW
+CREATE
+UPDATE
+SHARE
+REQUEST
+APPROVE
+REJECT
+PUBLISH
+UNPUBLISH
+```
+
+No existe un permiso genérico equivalente a “usar toda VSCREEN-0156”.
+
+---
+
+#### 40. VSCREEN-0104 conserva separación analítica
+
+`VSCREEN-0104 — Costos, rentabilidad y escenarios` puede consultar y comparar resultados autorizados, pero:
+
+- la consulta usa permisos `.view` aplicables;
+- una mutación de escenario usa los permisos 015 exactos;
+- un cambio real de costo sigue su owner;
+- la rentabilidad o equilibrio no se convierten en permiso de publicación.
+
+---
+
+#### 41. Migración objetivo de `upsertBudget`
+
+El runtime AS-IS utiliza `numera.cost_centers.manage` para `upsertBudget`. Ese guard no define la autoridad objetivo.
+
+La migración futura deberá decidir por existencia e intención:
+
+```text
+NUEVO_BUDGET_VERSION -> numera.finance.budgets.create
+VERSION_MUTABLE_EXISTENTE -> numera.finance.budgets.update
+```
+
+Queda prohibido mantener:
+
+```text
+numera.cost_centers.manage
+```
+
+como fallback amplio, o mapear la acción a `numera.finance.cost_centers.update` por conveniencia.
+
+Un upsert técnico no justifica un permiso empresarial `upsert`.
+
+---
+
+#### 42. Compartir exige destinatario elegible
+
+Toda acción `.share` debe validar:
+
+- actor que comparte;
+- recurso y versión;
+- audiencia o destinatario;
+- propósito;
+- scope de la versión;
+- vigencia cuando aplique;
+- sensibilidad;
+- restricciones del destinatario;
+- ausencia de deny efectivo.
+
+Una audiencia amplia no puede usarse para eludir grants o scopes individuales.
+
+---
+
+#### 43. Compartir no concede lectura faltante
+
+Se conserva:
+
+```text
+SHARE_RELATIONSHIP
+!= READ_PERMISSION
+```
+
+El destinatario deberá seguir satisfaciendo el permiso `.view` del recurso y su scope antes de recibir el contenido.
+
+El registro de compartición puede ser una condición adicional de acceso, pero nunca una capacidad que eleva privilegios por sí sola.
+
+---
+
+#### 44. Publicar no concede exportación
+
+Se conserva el contrato de `NUMERA-AUTH-007`:
+
+```text
+PUBLISH != EXPORT
+VIEW != EXPORT
+```
+
+`numera.analytics.financial_reports.export` continúa siendo la única identidad de exportación financiera aprobada por ese contrato y solo aplica cuando el objeto se proyecta como reporte/snapshot exportable autorizado.
+
+Una extracción directa de escenarios, presupuestos, forecast o price versions que no satisfaga ese contrato falla cerrada; la 015 no inventa permisos paralelos de exportación.
+
+---
+
+#### 45. `PLANNING_SCOPE` se conserva
+
+Las cuatro familias heredan la clasificación territorial/documental aprobada:
+
+```text
+BUDGET -> PLANNING_SCOPE
+FORECAST -> PLANNING_SCOPE
+SCENARIO -> PLANNING_SCOPE
+PRICE_VERSION -> PLANNING_SCOPE
+```
+
+El scope efectivo puede incluir, según el recurso:
+
+- entidad legal;
+- marca o unidad;
+- sede;
+- centro de costo;
+- producto/presentación;
+- canal;
+- periodo/horizonte;
+- moneda;
+- otras dimensiones explícitamente autorizadas.
+
+No se agrega una dimensión por inferencia desde la pantalla.
+
+---
+
+#### 46. Agregados y miembros
+
+Un escenario o presupuesto agregado solo puede aprobarse/publicarse cuando el actor posee autoridad suficiente sobre el conjunto afectado o el contrato de agregación aprobado resuelve sus miembros.
+
+Se conserva:
+
+```text
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+No se permite publicar un total corporativo usando permisos parciales de una sola sede.
+
+---
+
+#### 47. Sensibilidad de planificación
+
+Presupuestos, forecast, escenarios y versiones de precio conservan `FINANCIAL_DATA` y pueden coexistir con:
+
+```text
+BUSINESS_SECRET
+COMMERCIAL_CONFIDENTIALITY
+AUDIT_SECURITY
+```
+
+Una simulación sigue siendo sensible aunque no represente hechos reales.
+
+La compartición y publicación deben minimizar campos y audiencia conforme a finalidad autorizada.
+
+---
+
+#### 48. Revalidación server-side
+
+Toda mutación protegida debe revalidar en el punto de efecto:
+
+- actor efectivo;
+- permiso exacto;
+- recurso;
+- versión;
+- scope;
+- estado;
+- requested fields;
+- deny aplicable;
+- precondiciones de negocio;
+- segregación cuando corresponda.
+
+Ocultar botones o confiar en datos de cliente no satisface esta obligación.
+
+---
+
+#### 49. Campos mutables y mass assignment
+
+Los permisos `.update` no autorizan actualización arbitraria del objeto.
+
+Cada familia deberá mantener una allowlist de campos por estado. Como mínimo queda prohibido modificar mediante mass assignment:
+
+- identidad estable;
+- actor de aprobación;
+- evidencia histórica;
+- publicación anterior;
+- baseline ya decidido;
+- hechos reales;
+- hashes o referencias de auditoría;
+- atributos que pertenecen a otro dominio.
+
+---
+
+#### 50. Segregación de funciones
+
+Se conserva:
+
+```text
+CREATE_OR_UPDATE != APPROVE
+REQUEST != APPROVE
+APPROVE != PUBLISH
+```
+
+Cuando una decisión material requiera separación, el mismo actor no puede satisfacer preparación y decisión final solo porque posea ambos permisos.
+
+Las excepciones a segregación requieren política explícita, justificación y auditoría; nunca se infieren desde rol nominal.
+
+---
+
+#### 51. Umbrales e impacto
+
+La 015 no fija importes, porcentajes, variaciones o thresholds universales.
+
+Cuando la organización apruebe una política por impacto, la evaluación debe consumir:
+
+- tipo de recurso;
+- dimensión;
+- moneda;
+- magnitud/impacto;
+- vigencia;
+- versión de política;
+- autoridad requerida.
+
+Se conserva:
+
+```text
+MISSING_APPROVAL_THRESHOLD != AUTOMATIC_APPROVAL
+```
+
+Un umbral no se codifica en el nombre del permiso.
+
+---
+
+#### 52. Idempotencia
+
+Crear, compartir, solicitar, aprobar, rechazar, publicar o retirar la misma intención mediante retry no debe producir duplicados materiales.
+
+Cada operación retryable deberá disponer de identidad o correlación suficiente para distinguir:
+
+```text
+TECHNICAL_RETRY
+!= NEW_BUSINESS_INTENT
+```
+
+La repetición de `publish` sobre la misma versión no crea una segunda publicación lógica.
+
+---
+
+#### 53. Concurrencia y versión stale
+
+Toda decisión material usa versión esperada.
+
+Se conserva:
+
+```text
+STALE_RESOURCE_VERSION = DENY_AND_REEVALUATE
+LAST_WRITE_WINS_FOR_MATERIAL_PLANNING_DECISION = FORBIDDEN
+```
+
+Si cambia materialmente una versión entre revisión y decisión, la aprobación/rechazo/publicación anterior no se aplica sobre el contenido nuevo.
+
+---
+
+#### 54. Auditoría
+
+Cada acción material conserva, según aplique:
+
+- actor y actor efectivo;
+- permiso exacto;
+- recurso y versión;
+- scope;
+- acción;
+- estado anterior y resultante;
+- razón;
+- policy/version cuando aplique;
+- destinatario/audiencia en `share`;
+- baseline y referencias de supuestos cuando sean materiales;
+- correlación e idempotencia;
+- resultado;
+- timestamp.
+
+La auditoría no duplica el payload financiero completo por defecto.
+
+---
+
+#### 55. Simulación de autorización
+
+Se conserva:
+
+```text
+SIMULATED_AUTHORIZATION
+!= CREATE_AUTHORITY
+!= SHARE_AUTHORITY
+!= REQUEST_AUTHORITY
+!= APPROVE_AUTHORITY
+!= PUBLISH_AUTHORITY
+```
+
+Un preview de autorización nunca crea, comparte, aprueba, publica ni retira una versión real.
+
+---
+
+#### 56. Independencia administrativa de turno
+
+Las acciones 015 son administrativas y financieras de planificación.
+
+Se conserva:
+
+```text
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+```
+
+Un turno activo no concede estas autoridades y la ausencia de turno no deniega una autoridad base válida por sí sola.
+
+El contexto de fuente operacional que alimente un escenario se preserva como provenance, no como permiso NUMERA.
+
+---
+
+#### 57. Periodos protegidos y datos tardíos
+
+Ningún permiso de esta tarea autoriza reabrir un periodo cerrado ni reescribir un reporte histórico.
+
+Cuando llegue información real después del cutoff:
+
+- el escenario o forecast histórico conserva su baseline;
+- una nueva versión puede incorporar el nuevo corte;
+- una publicación anterior conserva su contexto original;
+- cualquier ajuste/reapertura consume los contratos propietarios de periodo.
+
+Se conserva:
+
+```text
+PLANNING_PERMISSION_CAN_REOPEN_CLOSED_PERIOD = NO
+```
+
+---
+
+#### 58. Handoff a dominios operativos
+
+Una publicación NUMERA puede originar una intención o recomendación hacia otro dominio, pero nunca una escritura cruzada implícita.
+
+Ejemplos:
+
+```text
+NUMERA_PRICE_VERSION_PUBLISHED
+-> HANDOFF_EXPLICITO
+-> AUTORIZACION_DEL_OWNER
+-> ACTIVACION_OPERATIVA_CONFIRMADA
+```
+
+La evidencia de aceptación externa debe permanecer correlacionada con la versión publicada.
+
+---
+
+#### 59. Materialización futura
+
+Las treinta y dos capacidades quedan:
+
+```text
+CONTRACT_DEFINED_PENDING_MATERIALIZATION
+```
+
+La futura materialización deberá resolver mediante el lifecycle compartido aplicable:
+
+- catálogo de acciones, incluyendo `share`;
+- catálogo compartido de permisos;
+- contratos/tipos;
+- grants y denegaciones;
+- resolución de recurso y `PLANNING_SCOPE`;
+- guards server-side;
+- RLS/RPC cuando corresponda;
+- consumers y navegación;
+- aliases legacy estrictamente temporales si fueran necesarios;
+- auditoría;
+- tests allow/deny;
+- rollback y compatibilidad.
+
+No se permite reimplementar localmente estas identidades en `vento-numera` para adelantar el package compartido.
+
+---
+
+#### 60. Certificación integral futura
+
+Las instancias futuras de `NUMERA-AUTH-013::<implementation_unit_id>` que consuman capacidades 015 deberán incluirlas en su universo real de prueba.
+
+Como mínimo deberán demostrar:
+
+- allow con permiso exacto;
+- deny por permiso ausente;
+- deny por scope incompatible;
+- deny por estado o versión stale;
+- segregación aplicable;
+- idempotencia y concurrencia;
+- minimización sensible;
+- auditoría;
+- cero side effects en deny;
+- rollback cuando exista cutover.
+
+La certificación histórica sobre 57 capacidades no se presenta como certificación anticipada de estas 32.
+
+---
+
+#### 61. Estado AS-IS y drift conocido
+
+El runtime observado continúa siendo parcial respecto del contrato objetivo.
+
+En particular:
+
+- `upsertBudget` usa un guard legacy `numera.cost_centers.manage`;
+- no existe motor completo de escenarios demostrado;
+- no existe workflow completo de versionado/publicación demostrado;
+- las nuevas capacidades 014 y 015 no están materializadas en el catálogo compartido;
+- las identidades `.view` de planificación ya fueron definidas documentalmente, pero permanecen pendientes de materialización compartida.
+
+Este drift no cambia el contrato objetivo ni autoriza aliases amplios permanentes.
+
+---
+
+#### 62. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| `share` aún no está materializado en el catálogo compartido de acciones | no | owner físico del catálogo compartido + lifecycle de materialización aplicable | acción `share` queda registrada con semántica compatible antes de activar cualquiera de las cuatro claves `.share` |
+| `upsertBudget` usa `numera.cost_centers.manage` | no | unidad consumidora NUMERA + materialización de permisos compartidos | creación/actualización presupuestal usa `budgets.create` o `budgets.update` exactos y el fallback amplio deja de autorizar |
+| motor runtime de escenarios/versiones no está materializado | no | implementación NUMERA / package E5 aplicable | recursos, versiones, estados, concurrencia e idempotencia consumen este contrato |
+| política numérica de aprobación por impacto no tiene valor universal aprobado | no | gobierno empresarial competente | política versionada declara umbrales, alcance, moneda, vigencia y autoridad antes de usar thresholds |
+| activación de precio operativo pertenece a otro dominio | no | owner comercial/operativo + autorización aplicable | handoff correlacionado demuestra aceptación y activación sin escritura cruzada desde NUMERA |
+| las 32 capacidades no formaron parte del universo original de 57 de la certificación 013 | no | `NUMERA-AUTH-013::<implementation_unit_id>` cuando se materialicen | cada unidad aplicable prueba allow/deny, scope, estado, segregación, retry, concurrencia y rollback |
+| diseño de experiencia financiera todavía no se ha desarrollado | no | `NUMERA-UX-001..028` | superficies y flujos consumen el catálogo final de autorización sin redefinirlo |
+
+No queda hallazgo de autorización de planificación detectado sin propietario y condición de salida.
+
+---
+
+#### 63. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: separación de categorías económicas, versionado, autorización server-side, segregación, evidencia, integración, idempotencia, publicación y no mutación de fuentes ya cuentan con obligaciones verificables vigentes. La 015 especializa permisos y fronteras dentro de esa cobertura sin crear una obligación de prueba nueva.
+
+---
+
+#### 64. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar Registro 04A:
+
+- `TREQ-NUMERA-004` para métodos, entradas, versiones, vigencia, presupuesto, forecast, escenarios, rentabilidad y separación entre real, presupuestado, simulado, propuesto y publicado;
+- `TREQ-NUMERA-001` para trazabilidad financiera, separación de permisos y ausencia de doble fuente;
+- `TREQ-NUMERA-002` para identidad, dimensiones, periodos y correcciones no destructivas;
+- `TREQ-AUTH-013` para revalidación server-side de toda mutación protegida;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y acciones sensibles;
+- `TREQ-INTEGRATION-017` para integración versionada, idempotente y reconciliable cuando una publicación sea consumida externamente.
+
+Esta sección es trazabilidad heredada y no constituye modificación del registro.
+
+---
+
+#### 65. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no se ejecutó build de producto durante su preparación. |
+| LOCAL | NOT_EXECUTED | No se incorporó todavía `NUMERA-AUTH-015` al checkout local del usuario ni se ejecutó la batería documental del repositorio. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, cierre publicado de `NUMERA-AUTH-014`, secuencia activa `NUMERA-AUTH-015 -> NUMERA-UX-001`, topología `DEFINE_ONCE`, archivo propietario, `NUMERA-DOM-018`, `VPROC-0069`, `VSCREEN-0156`, convención de permisos/acciones, permisos de lectura y exportación ya aprobados, Registro 04A NUMERA y scripts documentales vigentes. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, compartieron, solicitaron, aprobaron, rechazaron, publicaron ni retiraron escenarios, presupuestos, forecast o versiones de precio reales. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no autoriza materialización física propia. |
+
+---
+
+#### 66. Criterios de aceptación
+
+`NUMERA-AUTH-015` queda aceptable cuando:
+
+1. la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+2. recibe sin alterar el handoff de la 014;
+3. escenarios, presupuestos, forecast y price versions permanecen recursos distintos;
+4. los cuatro permisos `.view` existentes se reutilizan sin redefinición;
+5. se definen exactamente 32 permisos nuevos;
+6. cada familia contiene exactamente ocho acciones;
+7. `create`, `update`, `share`, `request`, `approve`, `reject`, `publish` y `unpublish` permanecen distintas;
+8. no se crea ningún `*.manage` nuevo;
+9. `share` queda definido como acceso gobernado y no como grant de rol;
+10. `share` no concede lectura faltante;
+11. `request` representa propuesta formal y no aprobación;
+12. clonar usa `create` con lineage en lugar de permiso redundante;
+13. comparar/revisar usan `view` y no una mutación artificial;
+14. `approve` y `reject` operan sobre versión exacta;
+15. una versión stale falla cerrada;
+16. cambio material posterior a solicitud/decisión exige nueva versión;
+17. publicación exige versión elegible y decisión previa aplicable;
+18. publicación no muta hechos reales;
+19. publicación no modifica costo maestro;
+20. publicación no contabiliza;
+21. publicación de price version no activa precio operativo;
+22. unpublish no desactiva por inferencia el precio operativo;
+23. unpublish conserva historia;
+24. presupuesto y escenario permanecen distintos;
+25. forecast y escenario permanecen distintos;
+26. real, presupuestado, forecast, escenario, simulado, propuesto y publicado permanecen distinguibles;
+27. `VPROC-0069` conserva sus estados canónicos;
+28. permiso y estado se evalúan acumulativamente;
+29. `VSCREEN-0156` no recibe un permiso genérico de pantalla;
+30. `VSCREEN-0104` no convierte analítica en autoridad mutante;
+31. `upsertBudget` no hereda `cost_centers.manage` como autoridad objetivo;
+32. `upsertBudget` futuro distingue `budgets.create` de `budgets.update` según intención y existencia;
+33. `PLANNING_SCOPE` se conserva para las cuatro familias;
+34. agregados requieren autoridad suficiente sobre miembros/dimensiones;
+35. sensibilidad `FINANCIAL_DATA` se conserva y puede componerse con secreto empresarial/confidencialidad comercial;
+36. toda mutación revalida server-side;
+37. mass assignment queda prohibido;
+38. la segregación no se satisface por rol nominal;
+39. no se inventa un threshold universal;
+40. una política de threshold faltante no produce aprobación automática;
+41. retries no duplican decisiones ni publicaciones;
+42. concurrencia no usa last-write-wins destructivo;
+43. auditoría conserva acción, actor, recurso, versión, scope y resultado;
+44. simulación de autorización no concede efecto real;
+45. turno/check-in no conceden ni bloquean por sí solos autoridad administrativa válida;
+46. los permisos 015 no reabren periodos cerrados;
+47. datos tardíos no reescriben publicaciones históricas;
+48. handoffs a dominios operativos son explícitos y correlacionados;
+49. exportación permanece separada y gobernada por la 007;
+50. una extracción no cubierta por el contrato de exportación falla cerrada;
+51. las 32 capacidades quedan pendientes de materialización física compartida;
+52. la certificación futura incorpora estas capacidades cuando sean consumidas;
+53. el universo objetivo final queda en 125 capacidades;
+54. el conteo materializado permanece en 6 durante esta definición documental;
+55. el conteo pendiente objetivo queda en 119;
+56. no se crean ni modifican requisitos de prueba;
+57. no se modifica Registro 04A;
+58. no se realizan cambios físicos;
+59. el mini-bloque `NUMERA-AUTH-001..015` queda documentalmente cerrado;
+60. `NUMERA-UX-001` recibe un catálogo de autorización financiera completo y sin autoridad implícita.
+
+---
+
+#### 67. Límites
+
+Esta tarea no:
+
+- materializa permisos runtime;
+- modifica `app_permissions`, grants, roles o denegaciones;
+- modifica packages compartidos;
+- modifica `vento-numera`;
+- modifica Supabase, RLS, RPC, funciones, triggers, Storage o datos;
+- crea escenarios, presupuestos, forecast o versiones de precio reales;
+- define layout o experiencia de `VSCREEN-0156`;
+- diseña `NUMERA-UX-001` ni tareas UX posteriores;
+- activa o desactiva precios operativos;
+- modifica costos maestros;
+- crea hechos económicos;
+- crea asientos, comprobantes o libros;
+- determina impuestos;
+- define un threshold monetario universal;
+- crea un permiso global de planificación;
+- crea `*.manage`;
+- crea permisos de exportación adicionales;
+- modifica Registro 04A;
+- ejecuta certificación física de `NUMERA-AUTH-013`;
+- desarrolla `NUMERA-UX-001`.
+
+---
+
+#### 68. Handoff a NUMERA-UX-001
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_PLANNING_AUTHORIZATION_REGISTRY = NUMERA-PLANNING-AUTHORIZATION-REGISTRY-001
+NUMERA_TARGET_CAPABILITY_COUNT_BEFORE_015 = 93
+NUMERA_PLANNING_PERMISSION_COUNT_015 = 32
+NUMERA_TARGET_CAPABILITY_COUNT_AFTER_015 = 125
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT_AFTER_015 = 119
+NUMERA_015_PERMISSION_STATE = CONTRACT_DEFINED_PENDING_MATERIALIZATION
+NUMERA_PLANNING_RESOURCE_COUNT = 4
+NUMERA_PLANNING_ACTIONS_PER_RESOURCE = 8
+SCENARIO_PERMISSION_COUNT = 8
+BUDGET_PERMISSION_COUNT = 8
+FORECAST_PERMISSION_COUNT = 8
+PRICE_VERSION_PERMISSION_COUNT = 8
+PLANNING_ACTION_SET = create|update|share|request|approve|reject|publish|unpublish
+PLANNING_READ_PERMISSION_SET = numera.finance.scenarios.view|numera.finance.budgets.view|numera.finance.forecasts.view|numera.finance.price_versions.view
+PLANNING_SCOPE = PLANNING_SCOPE
+SHARE_IS_VIEW = NO
+SHARE_IS_GRANT = NO
+SHARE_IS_EXPORT = NO
+REQUEST_IS_APPROVE = NO
+APPROVE_IS_PUBLISH = NO
+PUBLISH_IS_EXPORT = NO
+PUBLISH_IS_OPERATIONAL_ACTIVATION = NO
+PRICE_VERSION_PUBLISHED_IS_OPERATIONAL_ACTIVE_PRICE = NO
+UPSERT_BUDGET_LEGACY_MANAGE_TARGET_AUTHORITY = NO
+BUDGET_CREATE_AND_UPDATE_ARE_DISTINCT = YES
+STALE_PLANNING_VERSION = DENY_AND_REEVALUATE
+LAST_WRITE_WINS_FOR_MATERIAL_PLANNING_DECISION = FORBIDDEN
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+DENY_SIDE_EFFECT_ALLOWED = NO
+PLANNING_PERMISSION_CAN_REOPEN_CLOSED_PERIOD = NO
+NUMERA_AUTH_013_FUTURE_INSTANCE_MUST_TEST_015_WHEN_CONSUMED = YES
+NUMERA_AUTHORIZATION_MINIBLOCK_CLOSED = YES
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-001` deberá inventariar los procesos financieros y analíticos consumiendo este catálogo final de autorización junto con los contratos de dominio ya aprobados, sin volver a fusionar lectura, preparación, decisión, publicación, exportación o activación operativa.
+
+---
+
+#### 69. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-001 — Inventariar procesos financieros y analíticos`
