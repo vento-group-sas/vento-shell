@@ -4833,7 +4833,1281 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-005 — Diseñar inicio para gerente de sede`
-### [ ] NUMERA-UX-005 — Diseñar inicio para gerente de sede
+### ✅ NUMERA-UX-005 — Diseñar inicio para gerente de sede
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-004 — Diseñar inicio para gerente general
+**Tarea siguiente:** NUMERA-UX-006 — Diseñar inicio para contador
+**Tipo de tarea:** definición documental del inicio financiero de NUMERA para la presentación administrativa `gerente` descrita funcionalmente como gerente de sede, reutilizando `VSCREEN-0094` y la arquitectura común del `EXECUTIVE_READ_PLANE` donde resulte válida, limitando toda composición a sedes, áreas y recursos organizacionales locales expresamente autorizados, sin convertir la sede seleccionada o primaria en autoridad, sin producir consolidación organizacional global, sin conceder capacidades nuevas por inferencia y sin anticipar el diseño especializado del contador; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica rutas, pantallas, componentes React, permisos, roles, grants, asignaciones territoriales, procesos, estados, tablas, vistas, RPC, RLS, migraciones, Supabase, datos, reportes, conciliaciones, pagos, cierres, presupuestos, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el inicio financiero de NUMERA para una persona cuyo rol base administrativo sea `gerente`, responsable de una o varias sedes expresamente asignadas, de forma que pueda comprender la posición económica local autorizada, detectar desviaciones y asuntos que requieren atención, revisar ciclos financieros relacionados con su cobertura y navegar al detalle correspondiente sin obtener por la interfaz autoridad sobre sedes no asignadas ni consolidación organizacional global.
+
+El resultado debe servir como contrato de experiencia para la futura materialización de `VSCREEN-0094 — Inicio financiero y ejecutivo` bajo la presentación de gerente de sede y como frontera explícita frente a `gerente_general`, contador y auxiliar autorizada.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea produce un contrato UX documental;
+- no crea instancia física propia;
+- no modifica `vento-numera`;
+- no modifica `vento-shell` fuera de su bloque documental cuando sea incorporada;
+- no materializa permisos ni asignaciones territoriales;
+- no modifica matrices RBAC;
+- no crea una ruta nueva;
+- no ejecuta side effects financieros;
+- no cambia datos de Supabase.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-004
+
+La predecesora aprobada entrega:
+
+```text
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+GENERAL_MANAGER_HOME_SCREEN_ID = VSCREEN-0094
+GENERAL_MANAGER_HOME_PRESENTATION_PROFILE = gerente_general
+GENERAL_MANAGER_HOME_PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+GENERAL_MANAGER_HOME_INLINE_FINANCIAL_COMMANDS = 0
+GENERAL_MANAGER_HOME_REGION_COUNT = 7
+GENERAL_MANAGER_HOME_PROCESS_COUNT = 7
+GENERAL_MANAGER_HOME_TARGET_SCREEN_COUNT = 20
+GENERAL_MANAGER_HOME_HOME_SCREEN_COUNT = 1
+GENERAL_MANAGER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+GENERAL_MANAGER_HOME_SCREEN_MISSING_COUNT = 0
+GENERAL_MANAGER_HOME_SCREEN_DUPLICATE_COUNT = 0
+GENERAL_MANAGER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+GENERAL_MANAGER_HISTORICAL_NUMERA_GB_READ_COUNT = 5
+GENERAL_MANAGER_NEW_PERMISSION_AUTO_GRANT = NO
+GENERAL_MANAGER_INHERITS_OWNER_RESERVED_GOVERNANCE = NO
+GENERAL_MANAGER_ROLE_IS_SCOPE = NO
+GENERAL_MANAGER_EXECUTIVE_SCOPE_IS_SITE_MANAGER_SCOPE = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+NUMERA_GENERAL_MANAGER_HOME_IS_VISO_EXECUTIVE_HOME = NO
+UX_005_OWNER = SITE_MANAGER_HOME
+TREQ_CHANGES = 0
+```
+
+La 005 consume este handoff sin convertir el alcance ejecutivo de `gerente_general` en alcance territorial de `gerente`.
+
+---
+
+#### 4. Contrato producido
+
+La tarea define:
+
+```text
+NUMERA-SITE-MANAGER-HOME-001
+```
+
+con la identidad funcional:
+
+```text
+SCREEN_ID = VSCREEN-0094
+SCREEN_NAME = Inicio financiero y ejecutivo
+PRESENTATION_PROFILE = gerente
+PRESENTATION_LABEL = gerente de sede
+PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+TERRITORIAL_SCOPE_MODEL = EFFECTIVE_PERMISSION_INTERSECT_ACTIVE_ASSIGNMENTS_INTERSECT_RESOURCE_SCOPE
+INLINE_FINANCIAL_COMMANDS = 0
+COMMAND_HANDOFF = EXPLICIT_TO_CANONICAL_TARGET_SCREEN
+AUTHORIZATION_SOURCE = EFFECTIVE_PERMISSION_SET
+ROLE_NAME_GRANTS_AUTHORITY = NO
+GLOBAL_CONSOLIDATION_ALLOWED_BY_ROLE_NAME = NO
+```
+
+---
+
+#### 5. Identidad de la superficie
+
+El inicio del gerente de sede no crea una pantalla nueva.
+
+Se conserva:
+
+```text
+SITE_MANAGER_HOME_SCREEN_ID = VSCREEN-0094
+```
+
+`VSCREEN-0094` continúa vinculado a:
+
+```text
+VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+PRIMARY_ACTION = MONITOR
+STEP_PHASE = CROSS_CUTTING
+```
+
+La diferencia entre presentaciones se resuelve por permisos, alcance y composición autorizada; no mediante una identidad de pantalla paralela.
+
+---
+
+#### 6. NUMERA no sustituye el inicio ejecutivo transversal de VISO
+
+La presentación de gerente de sede dentro de NUMERA se limita a información económica, financiera, de conciliación, planificación y análisis relacionada con su cobertura administrativa autorizada.
+
+Se congela:
+
+```text
+NUMERA_SITE_MANAGER_HOME
+!= VISO_EXECUTIVE_HOME
+!= VENTO_OS_GLOBAL_HOME
+```
+
+VISO conserva la experiencia ejecutiva transversal correspondiente. NUMERA no absorbe personas, riesgos empresariales, tecnología, comercial u operación física por el solo hecho de que exista una consecuencia financiera local.
+
+---
+
+#### 7. Significado de `gerente` en esta tarea
+
+El título funcional es gerente de sede y el código de rol base canónico consumido es:
+
+```text
+gerente
+```
+
+`gerente` representa administración integral de una o varias sedes expresamente asignadas, no dirección ejecutiva global.
+
+Se conserva:
+
+```text
+gerente != gerente_general
+gerente != todas_las_sedes
+gerente != permiso_global
+gerente != service_role
+gerente != operational_bypass
+gerente != APP_REVIEW_ACCESS
+```
+
+---
+
+#### 8. Matriz RBAC histórica que sí puede darse por conocida
+
+La matriz canónica de `gerente` evaluó un catálogo histórico de 112 permisos y asignó explícitamente seis claves NUMERA:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Estas seis claves son evidencia histórica de asignación base para el rol.
+
+No autorizan por sí solas capacidades creadas después de esa matriz.
+
+---
+
+#### 9. Alcance histórico de las seis claves NUMERA
+
+La entrada a aplicación usa:
+
+```text
+numera.access -> NT-APP
+```
+
+Las cinco lecturas financieras históricas usan:
+
+```text
+AS/ORG-LOCAL
+```
+
+Resultado:
+
+```text
+SITE_MANAGER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+SITE_MANAGER_HISTORICAL_NUMERA_LOCAL_READ_COUNT = 5
+SITE_MANAGER_HISTORICAL_NUMERA_GLOBAL_READ_COUNT = 0
+```
+
+Las cinco lecturas se limitan a información de sedes asignadas o de unidades de negocio exactas vinculadas con ellas; nunca producen consolidado organizacional global.
+
+---
+
+#### 10. Las capacidades NUMERA posteriores no se conceden automáticamente
+
+Después de la matriz histórica, el contrato NUMERA alcanzó:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT = 119
+```
+
+La regla vigente para `gerente` exige:
+
+```text
+NEW_PERMISSION_AUTO_GRANTED_TO_SITE_MANAGER = NO
+```
+
+Toda capacidad NUMERA posterior a la matriz de 112 permisos permanece denegada para este rol mientras no exista una decisión canónica expresa que la conceda con alcance compatible.
+
+---
+
+#### 11. Invariante principal del inicio
+
+El home del gerente de sede es una composición de lectura territorial.
+
+```text
+SITE_MANAGER_HOME_DEFAULT = READ
+SITE_MANAGER_HOME_GLOBAL_CONSOLIDATION = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_MUTATION = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_APPROVAL = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_PAYMENT = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_RECONCILIATION = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_CLOSE = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_REOPEN = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_WRITE_OFF = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_EXPORT = FORBIDDEN
+SITE_MANAGER_HOME_INLINE_PLANNING_MUTATION = FORBIDDEN
+```
+
+Una navegación hacia una superficie capaz de operar no convierte `VSCREEN-0094` en superficie de comando.
+
+---
+
+#### 12. Objetivo de decisión humana
+
+La pantalla debe permitir responder, dentro de la cobertura local autorizada:
+
+- cuál es la posición económica de las sedes o unidades locales autorizadas;
+- qué sede autorizada concentra desviaciones o asuntos que requieren atención;
+- qué ciclos financieros locales están abiertos, pendientes, conciliados o cerrados;
+- dónde existen diferencias entre real, presupuesto, forecast o escenario cuando su lectura está autorizada;
+- qué obligación, cartera, costo, conciliación o indicador requiere un drill-down;
+- si la información observada está vigente, completa y trazable.
+
+La pantalla no puede responder con cifras de sedes no autorizadas ni convertir una ausencia de autorización en un agregado aparente de toda la organización.
+
+---
+
+#### 13. Arquitectura lógica del inicio
+
+`NUMERA-SITE-MANAGER-HOME-001` reutiliza siete regiones lógicas:
+
+```text
+SITE_MANAGER_HOME_REGION_01 = CONTEXT_AND_TERRITORIAL_SCOPE
+SITE_MANAGER_HOME_REGION_02 = LOCAL_FINANCIAL_POSITION
+SITE_MANAGER_HOME_REGION_03 = LOCAL_ATTENTION_AND_EXCEPTIONS
+SITE_MANAGER_HOME_REGION_04 = LOCAL_PLANNING_AND_VARIANCE
+SITE_MANAGER_HOME_REGION_05 = LOCAL_CYCLE_AND_RECONCILIATION_STATUS
+SITE_MANAGER_HOME_REGION_06 = AUTHORIZED_LOCAL_PROCESS_NAVIGATION
+SITE_MANAGER_HOME_REGION_07 = DATA_STATUS_AND_PROVENANCE
+SITE_MANAGER_HOME_REGION_COUNT = 7
+```
+
+Son regiones funcionales, no nombres obligatorios de componentes React ni decisiones de layout físico.
+
+---
+
+#### 14. Región 01 — Contexto y alcance territorial
+
+El inicio debe declarar el contexto con el que se interpretan las cifras.
+
+Cuando corresponda, la composición deberá poder identificar:
+
+- sede o conjunto de sedes activamente autorizadas;
+- área cuando el recurso sea realmente de nivel área;
+- unidad de negocio local relacionada cuando el recurso sea `ORG-LOCAL`;
+- periodo o fecha de corte;
+- moneda;
+- recurso o dimensión consultada;
+- estado de vigencia o frescura.
+
+La presentación del contexto no crea autoridad.
+
+---
+
+#### 15. La cobertura potencial nace de asignaciones activas
+
+La matriz canónica establece que `AS` se resuelve desde asignaciones activas de sede, incluida la fuente laboral canónica representada por `employee_sites`, y no desde preferencias de interfaz.
+
+Se congela:
+
+```text
+ACTIVE_SITE_ASSIGNMENT = POTENTIAL_TERRITORIAL_COVERAGE
+ACTIVE_SITE_ASSIGNMENT != PERMISSION
+```
+
+La autorización final requiere además permiso efectivo y recurso compatible.
+
+---
+
+#### 16. Sede seleccionada no es sede autorizada
+
+Se congela:
+
+```text
+SELECTED_SITE != AUTHORIZED_SITE
+```
+
+Un selector de sede solo puede elegir dentro de la cobertura autorizada. No puede ampliar `AS`, incorporar otra sede ni transformar un recurso no autorizado en recurso visible.
+
+---
+
+#### 17. Sede primaria no es alcance autorizado
+
+Se congela:
+
+```text
+PRIMARY_SITE != AUTHORIZED_SCOPE
+```
+
+La sede primaria puede servir como preferencia inicial de experiencia, pero no reemplaza las asignaciones activas ni autoriza una consulta financiera.
+
+---
+
+#### 18. Varias sedes asignadas no equivalen a alcance global
+
+Un gerente puede tener una o varias sedes activamente asignadas.
+
+Se conserva:
+
+```text
+UNION_OF_ASSIGNED_SITES != GLOBAL_SCOPE
+```
+
+Una vista multisede representa únicamente la unión de territorios individualmente autorizados. No incorpora sedes futuras, no asignadas, de prueba, APP-REVIEW ni otros dominios aislados.
+
+---
+
+#### 19. Recursos `ORG-LOCAL`
+
+Un recurso organizacional no territorial puede aparecer en el home solo cuando exista una relación verificable con las unidades de negocio servidas por las sedes autorizadas.
+
+Se congela:
+
+```text
+ORG_LOCAL_RELATION_REQUIRED = YES
+ORG_LOCAL != ORGANIZATION_WIDE
+```
+
+La relación con el negocio se resuelve desde el recurso y su contrato; no se inventa desde la sede seleccionada.
+
+---
+
+#### 20. Región 02 — Posición financiera local
+
+`LOCAL_FINANCIAL_POSITION` agrega únicamente proyecciones de lectura autorizadas dentro de `AS`, `AA` u `ORG-LOCAL` aplicable.
+
+Puede componer, cuando exista autoridad de lectura:
+
+- gastos y costos locales;
+- punto de equilibrio local;
+- rentabilidad o margen local;
+- obligaciones y liquidez relacionadas;
+- cartera relacionada;
+- presupuesto y forecast locales;
+- estados de cierre;
+- resultados analíticos locales.
+
+La pertenencia a una sede debe poder demostrarse por el contrato del recurso.
+
+---
+
+#### 21. El home no produce consolidación organizacional global
+
+Se congela:
+
+```text
+SITE_MANAGER_HOME_GLOBAL_TOTAL = FORBIDDEN
+```
+
+Una suma, promedio, ratio, tendencia o comparación debe calcularse únicamente sobre miembros individualmente autorizados.
+
+Si el usuario tiene dos sedes autorizadas, el agregado puede cubrir esas dos sedes. No puede incorporar una tercera sede no autorizada para completar un total corporativo.
+
+---
+
+#### 22. Región 03 — Atención y excepciones locales
+
+`LOCAL_ATTENTION_AND_EXCEPTIONS` presenta señales de lectura relacionadas con la cobertura autorizada.
+
+Puede incluir, cuando corresponda:
+
+- diferencias pendientes de conciliación local;
+- obligaciones o vencimientos relacionados;
+- cartera vencida o disputada relacionada;
+- ciclos de cierre pendientes;
+- desviaciones materiales locales;
+- alertas de presupuesto o forecast;
+- resultados analíticos que requieren revisión.
+
+Mostrar una señal no concede autoridad para resolverla.
+
+---
+
+#### 23. Conteos y badges también respetan territorio
+
+Un contador, importe acumulado, severidad o indicador de existencia puede revelar información de una sede no autorizada.
+
+Se conserva:
+
+```text
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+BADGE_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+COUNT_MEMBERS_REQUIRE_TERRITORIAL_AUTHORITY = YES
+```
+
+Los conteos no pueden incluir filas ocultas por falta de autoridad.
+
+---
+
+#### 24. Región 04 — Planificación y variación local
+
+`LOCAL_PLANNING_AND_VARIANCE` puede proyectar, según autorización:
+
+- presupuesto vigente local;
+- forecast vigente local;
+- desviación frente al real local;
+- existencia de escenarios relacionados;
+- estado de una versión de planificación;
+- estado de aprobación o publicación.
+
+La región no crea, modifica, comparte, solicita, aprueba, rechaza, publica ni retira escenarios, presupuestos, forecast o versiones de precio.
+
+---
+
+#### 25. Real, presupuesto, forecast y escenario permanecen separados
+
+Se conserva:
+
+```text
+REAL != BUDGET
+REAL != FORECAST
+REAL != SCENARIO
+BUDGET != FORECAST
+FORECAST != SCENARIO
+PROPOSED != APPROVED
+APPROVED != PUBLISHED
+```
+
+Una comparación local no transforma una proyección en hecho real ni amplía su territorio.
+
+---
+
+#### 26. Región 05 — Estado local de ciclos y conciliación
+
+`LOCAL_CYCLE_AND_RECONCILIATION_STATUS` permite conocer el estado agregado de procesos financieros relacionados con la cobertura del gerente, sin ejecutar transiciones.
+
+Puede proyectar estados autorizados de:
+
+- hechos económicos y conciliación;
+- cuentas por pagar y tesorería;
+- cartera;
+- costos y cierre;
+- presupuesto y forecast;
+- paquete laboral para pagos y beneficios;
+- medición y mejora.
+
+No crea un lifecycle alterno.
+
+---
+
+#### 27. Relaciones entre sedes no transfieren autoridad
+
+Un recurso puede relacionar varias sedes.
+
+Se conserva:
+
+```text
+RELATED_TO_AUTHORIZED_SITE != AUTHORIZED_OVER_ALL_ENDPOINTS
+```
+
+Una lectura puede mostrar el recurso cuando el contrato `AS-REL` u otro equivalente lo permita, pero una sede autorizada no concede autoridad general sobre la sede opuesta ni habilita mutaciones sobre ella.
+
+---
+
+#### 28. Región 06 — Navegación financiera local autorizada
+
+`AUTHORIZED_LOCAL_PROCESS_NAVIGATION` ofrece handoffs hacia superficies canónicas existentes.
+
+La navegación:
+
+- no crea un proceso nuevo;
+- no cambia `process_id`;
+- no crea una segunda fuente de verdad;
+- no concede permiso por mostrar un acceso;
+- no extiende el territorio;
+- no convierte `VSCREEN-0094` en propietaria de las operaciones destino.
+
+---
+
+#### 29. Región 07 — Estado y procedencia de datos
+
+`DATA_STATUS_AND_PROVENANCE` debe poder distinguir, según el dato:
+
+```text
+VALUE_CONFIRMED
+VALUE_STALE
+VALUE_UNKNOWN
+VALUE_NOT_AVAILABLE
+VALUE_NOT_AUTHORIZED
+VALUE_NOT_APPLICABLE
+VALUE_OUTSIDE_TERRITORIAL_SCOPE
+```
+
+Ninguno de estos estados se convierte silenciosamente en cero.
+
+---
+
+#### 30. Cero no equivale a ausencia, desconocimiento o falta de autoridad
+
+Se congela:
+
+```text
+ZERO != UNKNOWN
+ZERO != NOT_AVAILABLE
+ZERO != NOT_AUTHORIZED
+ZERO != NOT_APPLICABLE
+ZERO != OUTSIDE_TERRITORIAL_SCOPE
+```
+
+Una sede fuera del alcance no puede contribuir como cero a un agregado, ya que eso revelaría o deformaría información empresarial.
+
+---
+
+#### 31. Trazabilidad mínima de una cifra económica
+
+Cuando una cifra pertenezca a costo, distribución, presupuesto, forecast, equilibrio o rentabilidad, la experiencia debe conservar capacidad de navegar hacia su contexto de cálculo aprobado.
+
+Como mínimo, cuando aplique, se conserva:
+
+- método;
+- entradas;
+- versión;
+- vigencia;
+- entidad;
+- sede;
+- centro;
+- periodo;
+- fuente.
+
+La 005 no diseña todavía la divulgación visual final de estos detalles.
+
+---
+
+#### 32. Frescura
+
+La pantalla inicial no presentará una cifra stale como si fuera actual.
+
+Se conserva:
+
+```text
+STALE_DATA_IS_CURRENT = NO
+```
+
+Un cambio de sede o conjunto territorial invalida cualquier valor anterior que todavía no haya sido reconsultado para el nuevo contexto.
+
+---
+
+#### 33. Proceso VPROC-0010 — paquete laboral para pagos
+
+El inicio puede exponer únicamente una proyección financiera autorizada del paquete laboral relacionada con trabajadores o unidades dentro de la cobertura administrativa permitida.
+
+Handoff de detalle:
+
+```text
+VSCREEN-0153 — Paquete laboral para pagos y beneficios
+```
+
+La pantalla inicial no decide novedades laborales, no sustituye VISO o ANIMA y no ejecuta pagos.
+
+---
+
+#### 34. Proceso VPROC-0051 — hechos económicos y conciliación
+
+El inicio puede resumir, según lectura efectiva y territorio:
+
+- recepción o clasificación de hechos relacionados;
+- cobertura de conciliación local;
+- diferencias relevantes;
+- documentos fiscales asociados.
+
+Handoffs canónicos:
+
+```text
+VSCREEN-0095
+VSCREEN-0096
+VSCREEN-0101
+VSCREEN-0102
+VSCREEN-0154
+```
+
+---
+
+#### 35. Proceso VPROC-0052 — obligaciones, pagos y tesorería
+
+El inicio puede resumir estados autorizados de obligación, vencimiento, pago, liquidez, tesorería o cumplimiento vinculados con recursos locales autorizados.
+
+Handoffs canónicos:
+
+```text
+VSCREEN-0097
+VSCREEN-0098
+VSCREEN-0100
+VSCREEN-0155
+VSCREEN-0157
+```
+
+Ningún acceso desde el home ejecuta aprobación o pago.
+
+---
+
+#### 36. Proceso VPROC-0053 — cartera
+
+El inicio puede proyectar estado autorizado de cartera, aging, vencimiento, recaudo o diferencia vinculada con la cobertura local.
+
+Handoff canónico:
+
+```text
+VSCREEN-0099
+```
+
+No registra acuerdos, aplica pagos, castiga saldos ni resuelve disputas inline.
+
+---
+
+#### 37. Proceso VPROC-0054 — costos, rentabilidad, distribución y cierre
+
+El inicio puede proyectar resultados autorizados de costo, rentabilidad, variación, cierre y distribución correspondientes a sedes o unidades locales autorizadas.
+
+Handoffs canónicos:
+
+```text
+VSCREEN-0103
+VSCREEN-0104
+VSCREEN-0105
+VSCREEN-0158
+```
+
+No ejecuta conciliación, distribución, cierre o reapertura inline.
+
+---
+
+#### 38. Proceso VPROC-0061 — medición, análisis y mejora
+
+`VSCREEN-0094` pertenece a `VPROC-0061` y utiliza este proceso como eje de lectura financiera.
+
+Handoffs adicionales:
+
+```text
+VSCREEN-0106
+VSCREEN-0159
+```
+
+La pantalla inicial presenta resultados y señales locales; no convierte análisis en causalidad automática ni ejecuta la acción de mejora.
+
+---
+
+#### 39. Proceso VPROC-0069 — presupuesto, escenarios y forecast
+
+El inicio puede presentar proyecciones autorizadas del ciclo presupuestal relacionadas con su cobertura territorial.
+
+Handoff canónico:
+
+```text
+VSCREEN-0156
+```
+
+Toda mutación de planificación permanece fuera de `VSCREEN-0094`.
+
+---
+
+#### 40. Cobertura exacta de procesos en el inicio
+
+La composición reconoce exactamente los siete procesos propietarios de NUMERA:
+
+| Proceso | Familia visible desde el inicio local | Handoff de detalle |
+| --- | --- | --- |
+| `VPROC-0010` | paquete laboral financiero relacionado | `VSCREEN-0153` |
+| `VPROC-0051` | hechos económicos y conciliación local | `VSCREEN-0095`, `0096`, `0101`, `0102`, `0154` |
+| `VPROC-0052` | obligaciones, pagos y tesorería local | `VSCREEN-0097`, `0098`, `0100`, `0155`, `0157` |
+| `VPROC-0053` | cartera relacionada | `VSCREEN-0099` |
+| `VPROC-0054` | costos, rentabilidad, distribución y cierre local | `VSCREEN-0103`, `0104`, `0105`, `0158` |
+| `VPROC-0061` | medición, análisis y mejora local | `VSCREEN-0094`, `0106`, `0159` |
+| `VPROC-0069` | presupuesto, escenarios y forecast local | `VSCREEN-0156` |
+
+Resultado:
+
+```text
+SITE_MANAGER_HOME_PROCESS_COUNT = 7
+SITE_MANAGER_HOME_PROCESS_MISSING_COUNT = 0
+SITE_MANAGER_HOME_PROCESS_DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 41. Cobertura exacta de las veinte pantallas NUMERA
+
+El contrato conserva la identidad de las veinte pantallas objetivo sin declarar que todas sean visibles para todos los gerentes:
+
+| Pantalla | Relación con el home | Alcance exigido | Comando inline |
+| --- | --- | --- | --- |
+| `VSCREEN-0094` | `HOME` | permiso efectivo + territorio válido | no |
+| `VSCREEN-0095` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0096` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0097` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0098` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0099` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0100` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0101` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0102` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0103` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0104` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0105` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0106` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0153` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0154` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0155` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0156` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0157` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0158` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+| `VSCREEN-0159` | `AUTHORIZED_LOCAL_DRILLDOWN` | permiso efectivo + recurso compatible | no |
+
+Resultado:
+
+```text
+SITE_MANAGER_HOME_TARGET_SCREEN_COUNT = 20
+SITE_MANAGER_HOME_HOME_SCREEN_COUNT = 1
+SITE_MANAGER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+SITE_MANAGER_HOME_INLINE_COMMAND_SCREEN_COUNT = 0
+SITE_MANAGER_HOME_SCREEN_MISSING_COUNT = 0
+SITE_MANAGER_HOME_SCREEN_DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 42. Drill-down no es autorización
+
+Un enlace, tarjeta o CTA hacia una pantalla destino solo constituye navegación.
+
+Se conserva:
+
+```text
+DRILLDOWN_VISIBLE
+!= COMMAND_AUTHORIZED
+!= TERRITORY_EXPANDED
+```
+
+La pantalla destino debe resolver nuevamente permiso, territorio, recurso, estado y condiciones aplicables.
+
+---
+
+#### 43. Acceso parcial produce composición parcial
+
+El home no requiere que el gerente posea las 125 capacidades NUMERA.
+
+Se conserva:
+
+```text
+PARTIAL_EFFECTIVE_READ_SET = VALID_PARTIAL_HOME
+```
+
+Una región o tarjeta puede omitirse cuando no existe autoridad suficiente, sin degradar el resto del home a error ni sustituir datos no autorizados por cero.
+
+---
+
+#### 44. Las veinte pantallas no son veinte accesos obligatorios
+
+La cobertura contractual de veinte identidades garantiza que el home conoce el universo objetivo, no que deba mostrar simultáneamente diecinueve accesos.
+
+La visibilidad final de cada drill-down depende de:
+
+- permiso efectivo;
+- relación territorial del recurso;
+- relevancia contextual;
+- arquitectura de navegación aplicable;
+- tareas UX posteriores.
+
+---
+
+#### 45. `numera.access` no concede métricas financieras
+
+Se conserva:
+
+```text
+numera.access != metric authority
+numera.access != territorial financial read
+```
+
+Entrar a NUMERA no autoriza gastos, rentabilidad, cartera, bancos, escenarios ni cualquier otra cifra interna.
+
+---
+
+#### 46. Lectura y comando permanecen separados
+
+Toda proyección del home pertenece al plano de lectura.
+
+Se conserva:
+
+```text
+READ != MUTATE
+READ != APPROVE
+READ != PAY_EXECUTE
+READ != RECONCILE
+READ != CLOSE
+READ != REOPEN
+READ != WRITE_OFF
+READ != EXPORT
+READ != SCENARIO_CREATE
+READ != SCENARIO_SHARE
+READ != SCENARIO_APPROVE
+READ != SCENARIO_PUBLISH
+```
+
+El territorio válido para leer tampoco concede automáticamente autoridad para escribir sobre ese recurso.
+
+---
+
+#### 47. Flujo hacia operación
+
+Cuando una persona necesita ejecutar una acción desde un contexto descubierto en el home:
+
+```text
+VSCREEN_0094
+-> AUTHORIZED_LOCAL_DRILLDOWN
+-> COMMAND_CAPABLE_TARGET_SCREEN
+-> ACTION_SELECTION
+-> SERVER_REVALIDATION
+-> ALLOW_OR_DENY
+```
+
+La revalidación usa estado, permiso, territorio y recurso actuales.
+
+---
+
+#### 48. Persistencia de contexto durante navegación
+
+El handoff puede conservar filtros como sede, área, centro, periodo o recurso cuando el contrato destino los admita.
+
+Se conserva:
+
+```text
+CONTEXT_HANDOFF != AUTHORITY_HANDOFF
+```
+
+La pantalla destino no confía en el scope enviado por la UI como evidencia suficiente de autorización.
+
+---
+
+#### 49. Agregados requieren miembros autorizados
+
+Se conserva:
+
+```text
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+Una métrica agregada solo puede incorporar dimensiones o registros cuya lectura esté autorizada para el gerente.
+
+No se admite calcular primero el agregado global y filtrar después el detalle.
+
+---
+
+#### 50. Comparaciones multisede se limitan al conjunto autorizado
+
+Si el gerente posee varias sedes activas y la lectura correspondiente, el home puede comparar esas sedes entre sí.
+
+Se conserva:
+
+```text
+CROSS_SITE_COMPARISON_SET = INTERSECTION_OF_AUTHORIZED_SITES
+```
+
+No se muestran rankings, porcentajes o posiciones relativas calculados contra sedes no autorizadas cuando su inclusión revele información protegida.
+
+---
+
+#### 51. Datos bancarios y financieros sensibles conservan minimización
+
+Las lecturas históricas locales no conceden acceso automático a detalle financiero sensible definido posteriormente.
+
+Se conserva:
+
+```text
+ORDINARY_LOCAL_READ != SENSITIVE_FINANCIAL_DETAIL_READ
+BANK_ACCOUNT_VIEW != BANK_ACCOUNT_SENSITIVE_DETAILS_VIEW
+```
+
+Los seis permisos de lectura sensible definidos posteriormente permanecen independientes y deben concederse expresamente cuando corresponda.
+
+---
+
+#### 52. El role override AS-IS no es autoridad objetivo
+
+La auditoría AS-IS de NUMERA registró lógica provisional de role override para roles privilegiados.
+
+Ese mecanismo no redefine este contrato.
+
+Se conserva:
+
+```text
+ROLE_OVERRIDE_ASIS != TARGET_AUTHORIZATION_MODEL
+```
+
+El home futuro consume autorización efectiva y territorial; no un selector local de rol como bypass.
+
+---
+
+#### 53. El home local no duplica fuentes operativas
+
+NUMERA consume hechos y proyecciones de fuentes propietarias sin recrear sus ledgers.
+
+Se conserva:
+
+```text
+NUMERA_LOCAL_HOME_IS_DUPLICATE_LEDGER = NO
+```
+
+El filtro territorial no convierte a NUMERA en owner de ventas, inventario, producción, compras, talento o caja operativa.
+
+---
+
+#### 54. El gerente de sede no sustituye al contador
+
+La administración integral de sede no concede por inferencia responsabilidad contable especializada.
+
+Se conserva:
+
+```text
+SITE_MANAGEMENT != ACCOUNTING_SPECIALIST_AUTHORITY
+```
+
+Una lectura local aprobada no implica facultad para registrar, conciliar, cerrar, corregir, exportar o certificar información financiera si el permiso exacto no existe.
+
+---
+
+#### 55. El rol base no elimina requisitos operativos
+
+Cuando una acción pertenezca a un carril operativo o de doble condición, el rol `gerente` no la ejecuta por el solo hecho de administrar la sede.
+
+Se conserva:
+
+```text
+SITE_MANAGER_BASE_ROLE != OPERATIONAL_CONTEXT
+```
+
+Turno, check-in, rol operativo, territorio y recurso compatibles continúan siendo obligatorios donde el contrato de la acción lo exija.
+
+---
+
+#### 56. Accesibilidad semántica
+
+La implementación futura deberá poder expresar sin depender solo de color:
+
+- dato confirmado;
+- advertencia;
+- stale;
+- no disponible;
+- no autorizado;
+- fuera de alcance territorial;
+- real;
+- presupuestado;
+- forecast;
+- escenario;
+- propuesto;
+- aprobado;
+- publicado.
+
+La 005 no fija componentes visuales concretos.
+
+---
+
+#### 57. Estados de carga y cambio de contexto
+
+Al cambiar de sede, conjunto de sedes, periodo o recurso, la UI no debe mantener una cifra anterior como si correspondiera al nuevo contexto.
+
+Se conserva:
+
+```text
+CONTEXT_CHANGED_WITH_STALE_VISIBLE_VALUE = FORBIDDEN
+```
+
+La experiencia debe distinguir carga, dato stale, dato confirmado y contexto fuera de alcance.
+
+---
+
+#### 58. Seguridad frente a caché de autorización
+
+Una lectura previamente autorizada no se considera vigente después de un cambio material de permiso, asignación territorial, recurso o estado.
+
+Se conserva:
+
+```text
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+```
+
+La pérdida o expiración de una asignación de sede debe reflejarse en la siguiente evaluación aplicable.
+
+---
+
+#### 59. Observabilidad mínima del diseño futuro
+
+La implementación deberá poder distinguir en telemetría, sin registrar payload financiero sensible innecesario:
+
+- home cargado;
+- alcance territorial resuelto;
+- región disponible;
+- región denegada;
+- región fuera de territorio;
+- región con error técnico;
+- drill-down iniciado;
+- handoff hacia pantalla destino;
+- comando denegado o permitido en la superficie destino.
+
+La telemetría no se materializa en esta tarea.
+
+---
+
+#### 60. Relación con NUMERA-UX-006
+
+`NUMERA-UX-006` diseñará el inicio para `contador`.
+
+No puede obtenerse copiando esta home porque:
+
+```text
+SITE_MANAGEMENT != ACCOUNTING_RESPONSIBILITY
+```
+
+La 006 deberá resolver su propia matriz funcional, autoridad financiera especializada y alcance aplicable sin asumir que la territorialidad del gerente es la frontera correcta para el contador.
+
+---
+
+#### 61. Relación con NUMERA-UX-008 y NUMERA-UX-028
+
+La 005 define quién puede ver una composición financiera local y bajo qué territorio, pero no decide la presentación final indicador-versus-tabla ni el visor económico dinámico.
+
+Se conserva:
+
+```text
+ROLE_HOME_ARCHITECTURE != FINAL_KPI_PRESENTATION
+ROLE_HOME_ARCHITECTURE != FINAL_ECONOMIC_VIEWER_LAYOUT
+```
+
+---
+
+#### 62. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- especializa una experiencia ya protegida por requisitos financieros, autorización, territorio y navegación vigentes;
+- no crea nueva conducta ejecutable;
+- no crea proceso, pantalla, permiso, dato, asignación territorial ni transición nueva;
+- no modifica requisitos existentes;
+- la materialización y pruebas ejecutables permanecen en las unidades y paquetes posteriores que consuman este contrato.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente asociada a:
+
+- `TREQ-NUMERA-001..024`;
+- `TREQ-PROC-001`;
+- `TREQ-PROC-009..017`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-015`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-017`.
+
+Esta lista es trazabilidad y no constituye una actualización del Registro 04A.
+
+---
+
+#### 64. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no produce build físico; la batería global se ejecutará después de su incorporación documental |
+| LOCAL | NOT_EXECUTED | el artefacto preparado todavía no se ha incorporado al checkout local canónico |
+| REMOTA | PASS | se verificaron `vento-shell/main@97378673fa349222900b3cf9a127a4db45c7477a`, secuencia activa con `NUMERA-UX-003` como anterior, marcador canónico de `NUMERA-UX-005`, topología, políticas documentales, `AUTH-RBAC-003`, autorización NUMERA hasta `NUMERA-AUTH-015`, catálogo de veinte pantallas, Registro 04A aplicable y scripts documentales vigentes; la predecesora `NUMERA-UX-004` se consume desde su artefacto completo aprobado y permanece pendiente de cierre remoto bajo el modo documental adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea no ejecuta pagos, aprobaciones, conciliaciones, cierres, cartera, presupuestos ni otras operaciones financieras reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 65. Criterios de aceptación
+
+- [ ] se define exactamente un contrato `NUMERA-SITE-MANAGER-HOME-001`;
+- [ ] el home usa `VSCREEN-0094` y no crea un `VSCREEN-*` nuevo;
+- [ ] `VSCREEN-0094` permanece `MONITOR` / `CROSS_CUTTING`;
+- [ ] el código de rol consumido es `gerente` y el label funcional es gerente de sede;
+- [ ] `gerente` no se convierte en `gerente_general`, wildcard, permiso global, service role ni bypass operativo;
+- [ ] se preservan las seis claves NUMERA históricamente asignadas a `gerente` sin extrapolarlas;
+- [ ] exactamente cinco lecturas históricas NUMERA permanecen `AS/ORG-LOCAL` y cero lecturas históricas usan alcance global;
+- [ ] `numera.access` permanece `NT-APP` y no amplía territorio;
+- [ ] toda capacidad NUMERA posterior a la matriz histórica se deniega hasta concesión canónica expresa;
+- [ ] se distingue el universo objetivo de 125 capacidades del estado de materialización compartida de 6 presentes y 119 pendientes;
+- [ ] la cobertura potencial se deriva de asignaciones activas y no del selector de UI;
+- [ ] sede seleccionada no equivale a sede autorizada;
+- [ ] sede primaria no equivale a alcance autorizado;
+- [ ] una o varias sedes asignadas no equivalen a alcance global;
+- [ ] `ORG-LOCAL` requiere relación verificable con unidades atendidas por las sedes autorizadas;
+- [ ] no existe consolidación organizacional global por nombre de rol;
+- [ ] agregados y comparaciones incluyen únicamente miembros territorialmente autorizados;
+- [ ] conteos y badges no filtran información de sedes no autorizadas;
+- [ ] una relación entre sedes no transfiere autoridad al extremo no autorizado;
+- [ ] el plano por defecto es `EXECUTIVE_READ_PLANE`;
+- [ ] existen cero comandos financieros inline;
+- [ ] se definen siete regiones lógicas locales;
+- [ ] se cubren exactamente siete procesos propietarios NUMERA;
+- [ ] se cubren exactamente veinte pantallas objetivo;
+- [ ] existe una pantalla home y diecinueve destinos potenciales de drill-down;
+- [ ] la matriz de veinte pantallas no obliga a mostrar veinte accesos simultáneos;
+- [ ] ningún drill-down transfiere autoridad de comando ni territorio;
+- [ ] los comandos se reautorizan server-side en la superficie destino;
+- [ ] acceso parcial produce composición parcial, no bypass;
+- [ ] cero, desconocido, no disponible, no autorizado, no aplicable y fuera de territorio permanecen diferenciados;
+- [ ] un valor stale no se presenta como actual después de cambiar contexto;
+- [ ] real, presupuesto, forecast y escenario permanecen separados;
+- [ ] la información financiera sensible requiere permisos especializados independientes;
+- [ ] el role override AS-IS no se trata como modelo objetivo;
+- [ ] el gerente de sede no hereda autoridad contable especializada;
+- [ ] acciones operativas conservan requisitos de contexto cuando correspondan;
+- [ ] `NUMERA-UX-006`, `NUMERA-UX-008` y `NUMERA-UX-028` conservan su alcance posterior;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos.
+
+---
+
+#### 66. Límites
+
+Esta tarea no:
+
+- rediseña el inicio del propietario;
+- rediseña el inicio del gerente general;
+- diseña el inicio del contador;
+- diseña el inicio de la auxiliar autorizada;
+- redefine la matriz RBAC de `gerente`;
+- crea o modifica asignaciones `employee_sites`;
+- asigna capacidades NUMERA nuevas a `gerente`;
+- concede consolidación organizacional global;
+- convierte sede primaria o seleccionada en autorización;
+- define el catálogo final de indicadores;
+- decide fórmulas nuevas;
+- decide el orden definitivo indicador-versus-tabla;
+- diseña el visor económico dinámico de `NUMERA-UX-028`;
+- crea pantallas;
+- crea rutas;
+- crea componentes React;
+- modifica navegación runtime;
+- crea permisos;
+- crea grants o denies;
+- crea procesos;
+- cambia estados de proceso;
+- implementa pagos;
+- implementa conciliaciones;
+- implementa cierres;
+- implementa cartera;
+- implementa planificación;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-006`.
+
+---
+
+#### 67. Handoff a NUMERA-UX-006
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+SITE_MANAGER_HOME_SCREEN_ID = VSCREEN-0094
+SITE_MANAGER_HOME_PRESENTATION_PROFILE = gerente
+SITE_MANAGER_HOME_PRESENTATION_LABEL = gerente de sede
+SITE_MANAGER_HOME_PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+SITE_MANAGER_HOME_INLINE_FINANCIAL_COMMANDS = 0
+SITE_MANAGER_HOME_REGION_COUNT = 7
+SITE_MANAGER_HOME_PROCESS_COUNT = 7
+SITE_MANAGER_HOME_TARGET_SCREEN_COUNT = 20
+SITE_MANAGER_HOME_HOME_SCREEN_COUNT = 1
+SITE_MANAGER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+SITE_MANAGER_HOME_SCREEN_MISSING_COUNT = 0
+SITE_MANAGER_HOME_SCREEN_DUPLICATE_COUNT = 0
+SITE_MANAGER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+SITE_MANAGER_HISTORICAL_NUMERA_LOCAL_READ_COUNT = 5
+SITE_MANAGER_HISTORICAL_NUMERA_GLOBAL_READ_COUNT = 0
+SITE_MANAGER_NEW_PERMISSION_AUTO_GRANT = NO
+SITE_MANAGER_GLOBAL_CONSOLIDATION = NO
+SELECTED_SITE_IS_AUTHORIZED_SITE = NO
+PRIMARY_SITE_IS_AUTHORIZED_SCOPE = NO
+UNION_OF_ASSIGNED_SITES_IS_GLOBAL = NO
+ORG_LOCAL_IS_ORGANIZATION_WIDE = NO
+SITE_MANAGEMENT_IS_ACCOUNTING_SPECIALIST_AUTHORITY = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+NUMERA_SITE_MANAGER_HOME_IS_VISO_EXECUTIVE_HOME = NO
+UX_006_OWNER = ACCOUNTANT_HOME
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-006` deberá diseñar la presentación de contador desde su propia matriz funcional y autoridad financiera especializada, sin heredar por defecto la territorialidad, los permisos o la composición de `gerente`.
+
+---
+
+#### 68. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-004 — Diseñar inicio para gerente general`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-005 — Diseñar inicio para gerente de sede`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-006 — Diseñar inicio para contador`
 ### [ ] NUMERA-UX-006 — Diseñar inicio para contador
 ### [ ] NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
 ### [ ] NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
