@@ -14651,7 +14651,1491 @@ UX-011 consume la separación entre aprobación y cierre de UX-010 y entrega a U
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-012 — Diseñar exportación con permiso independiente`
-### [ ] NUMERA-UX-012 — Diseñar exportación con permiso independiente
+### ✅ NUMERA-UX-012 — Diseñar exportación con permiso independiente
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-011 — Diseñar flujo de cierre
+**Tarea siguiente:** NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
+**Tipo de tarea:** diseño documental del flujo de exportación financiera independiente de lectura, publicación, cierre, recuperación de artefacto, impresión y compartición, con autoridad exacta, minimización, versión, corte, filtros, población, formato, finalidad, destino, evidencia, idempotencia y recuperación; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea botones, endpoints, archivos, jobs, Storage, permisos runtime, grants, RLS, RPC, Server Actions, APIs, tablas, migraciones, Supabase, exportaciones reales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia de exportación financiera de NUMERA de forma que extraer información fuera de la superficie interactiva sea una acción protegida y explícita, nunca una consecuencia automática de poder ver un reporte, publicar una versión, cerrar un periodo o conocer una URL.
+
+La UX debe permitir configurar, revisar y ejecutar una solicitud de exportación reproducible sobre `VSCREEN-0106`, preservando la identidad exacta del reporte o consulta base, su versión, periodo y corte, filtros, dimensiones, población, proyección de campos, finalidad, formato y destino permitido.
+
+---
+
+#### 2. Naturaleza y topología
+
+La tarea se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- se define una sola vez;
+- no crea instancia física propia;
+- no materializa la exportación;
+- no publica permisos runtime;
+- no genera archivos;
+- no decide tecnología de generación o entrega;
+- no modifica Supabase;
+- no altera el lifecycle de reportes, periodos o procesos.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-011
+
+Se consume íntegramente:
+
+```text
+NUMERA_PERIOD_CLOSE_FLOW_CONTRACT = NUMERA-PERIOD-CLOSE-FLOW-001
+NUMERA_FINANCIAL_APPROVAL_FLOW_CONTRACT = NUMERA-FINANCIAL-APPROVAL-FLOW-001
+PERIOD_CLOSE_SCREEN_ID = VSCREEN-0105
+PERIOD_CLOSE_PROCESS_ID = VPROC-0054
+PERIOD_CLOSE_STEP_ID = VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_STATE_PERMISSION_COUNT = 3
+PERIOD_VIEW_PERMISSION = numera.finance.periods.view
+PERIOD_LOCK_PERMISSION = numera.finance.periods.lock
+PERIOD_CLOSE_PERMISSION = numera.finance.periods.close
+PERIOD_REOPEN_PERMISSION = numera.finance.periods.reopen
+OPEN_TO_CLOSED_DIRECT = FORBIDDEN
+LOCKED_TO_OPEN_IS_REOPEN = NO
+CLOSED_TO_OPEN_IS_REOPEN = YES
+LOCK_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_IMPLIES_VIEW = NO
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_REPLACES_GATES = NO
+UNKNOWN_REQUIRED_GATE_IS_PASS = NO
+RELEASE_LOCK_REASON_REQUIRED = YES
+REOPEN_REASON_REQUIRED = YES
+REOPEN_REQUIRES_CLOSE_VERSION = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_IMPLIES_RESOURCE_MUTATION = NO
+GENERIC_PERIOD_CORRECT_PERMISSION = FORBIDDEN
+CORRECTION_USES_EXACT_RESOURCE_MUTATION_AUTHORITY = YES
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+STALE_PERIOD_VERSION = DENY_AND_REVIEW_AGAIN
+PERIOD_STATE_TRANSITIONS_IDEMPOTENT = YES
+NUMERA_PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+NUMERA_PERIOD_CLOSE_CHANGES_SOURCE_DOMAIN_STATE = NO
+CLOSE_IMPLIES_EXPORT = NO
+REOPEN_IMPLIES_EXPORT = NO
+EXPORT_OWNER = NUMERA_UX_012
+TREQ_CHANGES = 0
+```
+
+UX-012 mantiene explícitamente `CLOSE_IMPLIES_EXPORT = NO` y `REOPEN_IMPLIES_EXPORT = NO`.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La tarea consume sin redefinir:
+
+- `NUMERA-AUTH-007` — permiso exacto de exportación;
+- `NUMERA-DOM-012` — reportes, versiones, cortes, exportaciones y restatement;
+- `VSCREEN-0106` — Reportes y exportaciones financieras;
+- `VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT` — acción propietaria de publicación/reporte asociada a la superficie;
+- `NUMERA-UX-008` — síntesis antes del detalle cuando ambos coexisten;
+- `NUMERA-UX-011` — separación entre cierre/reapertura y exportación.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA-INDEPENDENT-EXPORT-FLOW-001
+```
+
+Este contrato gobierna la experiencia de solicitud, revisión, autorización, generación, entrega y recuperación de una exportación financiera derivada.
+
+---
+
+#### 6. Superficie propietaria
+
+La superficie canónica es:
+
+```text
+SCREEN_ID = VSCREEN-0106
+SCREEN_NAME = Reportes y exportaciones financieras
+OWNER = numera
+PROCESS_ID = VPROC-0061
+STEP_ID = VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+```
+
+La pantalla es superficie de interacción; no constituye autoridad.
+
+---
+
+#### 7. Identidad exacta del permiso
+
+La única identidad de exportación consumida por esta UX es:
+
+```text
+numera.analytics.financial_reports.export
+```
+
+No se crean aliases UX ni permisos alternativos.
+
+---
+
+#### 8. Cardinalidad de autoridad
+
+Se congela:
+
+```text
+EXPORT_PERMISSION_IDENTITY_COUNT = 1
+EXPORT_RUNTIME_GRANT_CREATED_BY_UX_012 = 0
+NEW_EXPORT_PERMISSION_CODE_COUNT = 0
+```
+
+La UX consume una identidad contractual ya definida; no la materializa.
+
+---
+
+#### 9. Lectura y exportación permanecen separadas
+
+Se conserva:
+
+```text
+numera.analytics.financial_reports.view
+!=
+numera.analytics.financial_reports.export
+```
+
+Y:
+
+```text
+VIEW_PERMISSION_IMPLIES_EXPORT = NO
+EXPORT_PERMISSION_IMPLIES_VIEW = NO
+```
+
+Para construir una salida desde un reporte visible deben satisfacerse ambas autoridades cuando corresponda.
+
+---
+
+#### 10. Publicación y exportación permanecen separadas
+
+Se congela:
+
+```text
+REPORT_PUBLISHED != REPORT_EXPORTED
+PUBLISH != EXPORT
+```
+
+Una versión publicada no adquiere automáticamente una salida recuperable ni una autorización de extracción.
+
+---
+
+#### 11. Cierre y exportación permanecen separados
+
+Se mantiene:
+
+```text
+LOCK != EXPORT
+CLOSE != EXPORT
+REOPEN != EXPORT
+```
+
+Poder cerrar o reabrir un periodo no permite extraer su información.
+
+---
+
+#### 12. Flujo UX canónico
+
+La experiencia se diseña como:
+
+```text
+ENTRY
+-> REPORT_CONTEXT
+-> EXPORT_INTENT
+-> PURPOSE
+-> PROJECTION
+-> POPULATION_AND_SCOPE
+-> FORMAT
+-> DESTINATION_CONTEXT
+-> REVIEW
+-> AUTHORIZATION
+-> GENERATION
+-> DELIVERY
+-> RECEIPT
+-> RECOVERY
+```
+
+Estas son etapas UX, no estados nuevos de `VPROC-0061`.
+
+---
+
+#### 13. Entrada al flujo
+
+La entrada ordinaria parte de un reporte o consulta identificable dentro de `VSCREEN-0106`.
+
+Antes de mostrar la acción efectiva de exportación la UI debe poder resolver:
+
+```text
+REPORT_OR_QUERY_IDENTITY
+REPORT_VERSION
+READABLE_RESOURCE
+CURRENT_SCOPE
+CURRENT_FILTERS
+CURRENT_DIMENSIONS
+CURRENT_PERIOD_CONTEXT
+```
+
+Una pantalla visible sin recurso resoluble no habilita exportación.
+
+---
+
+#### 14. Contexto visible antes de configurar
+
+La cabecera de exportación debe presentar, cuando aplique:
+
+- nombre empresarial del reporte o consulta;
+- versión;
+- periodo económico;
+- estado del periodo al corte;
+- versión de cierre cuando corresponda;
+- fecha/hora de corte;
+- filtros activos;
+- dimensiones activas;
+- moneda/unidad relevantes;
+- estado de calidad o frescura material.
+
+La UI no debe ocultar la versión que será exportada.
+
+---
+
+#### 15. Reporte versus consulta reproducible
+
+La exportación podrá originarse únicamente desde:
+
+```text
+IDENTIFIED_REPORT
+OR
+REPRODUCIBLE_AUTHORIZED_QUERY
+```
+
+No se autoriza exportar un conjunto cuya identidad no pueda reconstruirse.
+
+---
+
+#### 16. Identidad y versión forman parte de la decisión
+
+Se congela:
+
+```text
+REPORT_ID + REPORT_VERSION
+```
+
+como parte de la solicitud cuando exista reporte publicado.
+
+Un cambio de versión material después de la revisión invalida la decisión previa.
+
+---
+
+#### 17. Periodo y corte
+
+Toda exportación que represente información temporal debe conservar:
+
+```text
+PERIOD_ID
+PERIOD_STATUS_AT_CUTOFF
+AS_OF
+```
+
+Cuando el periodo esté cerrado debe conservar además:
+
+```text
+CLOSE_VERSION
+```
+
+La exportación no cambia el estado del periodo.
+
+---
+
+#### 18. Restatement e historia
+
+Una exportación histórica no cambia cuando aparece un restatement.
+
+Se conserva:
+
+```text
+OLD_EXPORT != MUTABLE_POINTER_TO_LATEST_REPORT
+```
+
+Si existe una versión posterior, la UI podrá advertirlo sin alterar la exportación histórica ni sustituir silenciosamente la versión solicitada.
+
+---
+
+#### 19. Finalidad empresarial obligatoria
+
+La solicitud debe resolver una finalidad empresarial válida antes del efecto autoritativo.
+
+Se congela:
+
+```text
+PURPOSE_REQUIRED = YES
+```
+
+No son finalidad suficiente:
+
+- “por si acaso”;
+- “para tener copia”;
+- el nombre del rol;
+- la existencia del botón;
+- la disponibilidad del formato.
+
+UX-012 no inventa un catálogo paralelo de finalidades.
+
+---
+
+#### 20. Control de finalidad
+
+La UI debe consumir la forma de finalidad que el contrato propietario materialice posteriormente.
+
+Puede tratarse de selección gobernada, referencia de caso o motivo estructurado, pero:
+
+```text
+FREE_TEXT_ALONE != AUTHORIZATION
+```
+
+La forma concreta no se congela en esta tarea.
+
+---
+
+#### 21. Proyección de campos
+
+El flujo debe mostrar una proyección de campos o categorías autorizadas antes de generar la salida.
+
+Se conserva:
+
+```text
+EXPORT_PERMISSION != ALL_FIELDS
+```
+
+Solo pueden incluirse columnas permitidas para el recurso, finalidad, sensibilidad y alcance actuales.
+
+---
+
+#### 22. Campos ocultos en UI
+
+Se congela:
+
+```text
+BACKEND_FIELD_AVAILABLE != EXPORTABLE_FIELD
+```
+
+Un campo que exista técnicamente pero no esté autorizado no puede añadirse a la salida por conveniencia.
+
+---
+
+#### 23. Minimización
+
+La exportación se construye con la mínima proyección necesaria para la finalidad declarada.
+
+La UI debe permitir comprender qué se incluirá y, cuando el contrato permita elección, reducir la proyección.
+
+No debe inducir a seleccionar “todo” como opción predeterminada universal.
+
+---
+
+#### 24. Datos especialmente sensibles
+
+Cuando la proyección incluya componentes financieros, bancarios, fiscales, de cartera, personales o secretos empresariales, la UI debe reflejar la sensibilidad aplicable sin revelar datos no autorizados.
+
+La sensibilidad puede restringir la proyección aunque el reporte agregado sea visible.
+
+---
+
+#### 25. Población
+
+La población forma parte de la solicitud.
+
+Se conserva:
+
+```text
+AUTHORIZED_QUERY != ARBITRARY_BULK_POPULATION
+```
+
+La UX no ofrece una opción “todos” que amplíe silenciosamente el universo más allá del alcance autorizado.
+
+---
+
+#### 26. Filtros
+
+Los filtros efectivos forman parte de la identidad de la salida.
+
+La exportación debe preservar exactamente los filtros autorizados observados al revisar la solicitud.
+
+El diseño detallado de filtros por empresa, sede y centro de costo pertenece a `NUMERA-UX-013`.
+
+---
+
+#### 27. Dimensiones agregadas
+
+Un agregado solo puede exportarse cuando los miembros que lo componen son compatibles con el alcance efectivo.
+
+Se congela:
+
+```text
+EXPORT_SCOPE <= AUTHORIZED_READ_SCOPE
+```
+
+La agregación no constituye bypass de alcance.
+
+---
+
+#### 28. Frontera con UX-013
+
+UX-012 define que scope, filtros y población son parte de la decisión de exportación.
+
+`NUMERA-UX-013` definirá la interacción detallada de:
+
+- empresa;
+- sede;
+- centro de costo.
+
+UX-012 no anticipa ni inventa esos controles.
+
+---
+
+#### 29. Formato
+
+El formato es una propiedad de la solicitud, no una autoridad.
+
+Se conserva:
+
+```text
+FILE_FORMAT != AUTHORITY
+FILE_FORMAT != OFFICIALITY
+```
+
+---
+
+#### 30. Conjunto de formatos soportados
+
+La UX debe mostrar únicamente formatos materializados y declarados como soportados por el consumidor real.
+
+Se congela:
+
+```text
+SUPPORTED_EXPORT_FORMATS = RUNTIME_DECLARED_SET
+```
+
+CSV, XLSX, PDF o JSON son ejemplos contractuales posibles, no un conjunto obligatorio creado por UX-012.
+
+---
+
+#### 31. Cambio de formato
+
+Cambiar el formato no autoriza:
+
+- más columnas;
+- mayor población;
+- otro periodo;
+- otra versión;
+- otro destinatario;
+- otra finalidad.
+
+Si el cambio altera alguna dimensión material de la decisión debe revaluarse la solicitud.
+
+---
+
+#### 32. Exportación no equivale a recuperación posterior de un artefacto
+
+Se conserva:
+
+```text
+EXPORT != DOWNLOAD_EXISTING_ARTIFACT
+```
+
+La generación autorizada puede terminar en un intento técnico de entrega de la instancia recién producida.
+
+Una recuperación posterior de un artefacto persistido es una acción diferenciable y no adquiere autoridad por inferencia.
+
+---
+
+#### 33. Exportación no equivale a impresión
+
+Se congela:
+
+```text
+EXPORT != PRINT
+```
+
+UX-012 no ofrece impresión como alias de exportación ni inventa un permiso `*.print`.
+
+---
+
+#### 34. Exportación no equivale a compartición
+
+Se congela:
+
+```text
+EXPORT != SHARE_INTERNAL
+EXPORT != SHARE_EXTERNAL
+```
+
+La UI no convierte “exportar” en “enviar por correo”, “compartir enlace” o “entregar a tercero” sin autoridad propia.
+
+---
+
+#### 35. URL firmada
+
+Se conserva:
+
+```text
+SIGNED_URL != EXPORT_PERMISSION
+SIGNED_URL != SHARE_PERMISSION
+```
+
+Una URL futura podrá ser mecanismo de entrega, nunca fuente de autoridad.
+
+---
+
+#### 36. Destinatario y destino
+
+Cuando exista destinatario o destino separado del actor solicitante, ambos deben quedar resueltos conforme al contrato transversal antes de generar o entregar la salida.
+
+La UX no debe inferir destinatario desde:
+
+- rol;
+- correo visible;
+- sede;
+- contexto de navegación;
+- último destino usado.
+
+---
+
+#### 37. Entrega al actor solicitante
+
+Cuando una implementación futura defina que la salida se entrega únicamente al actor actual dentro del mismo flujo, la UI debe reflejar ese destino explícitamente.
+
+Esto no crea autorización para redistribuir posteriormente el archivo.
+
+---
+
+#### 38. Revisión previa
+
+Antes de confirmar la exportación debe existir una revisión compacta de:
+
+- reporte/consulta;
+- versión;
+- periodo/corte;
+- filtros;
+- dimensiones;
+- población;
+- campos;
+- formato;
+- finalidad;
+- destinatario/destino cuando aplique;
+- sensibilidad relevante.
+
+La revisión es informativa; no concede permiso.
+
+---
+
+#### 39. Contrato server-side mínimo
+
+Antes del efecto autoritativo deberán revalidarse en servidor, como mínimo:
+
+```text
+principal
++ effective_actor
++ numera.access
++ numera.analytics.financial_reports.view
++ numera.analytics.financial_reports.export
++ resource_identity
++ report_version
++ period_and_cutoff_when_applicable
++ scope
++ requested_filters
++ requested_dimensions
++ field_projection
++ population
++ purpose
++ format
++ sensitivity
++ recipient_destination_when_applicable
++ authorization_state
++ no_effective_deny
+```
+
+La UI no reemplaza esta evaluación.
+
+---
+
+#### 40. Botón visible no es autoridad
+
+Se congela:
+
+```text
+EXPORT_BUTTON_VISIBLE != EXPORT_AUTHORIZED
+```
+
+La aplicación puede ocultar o deshabilitar acciones por claridad UX, pero el servidor debe fallar cerrado ante cualquier llamada no autorizada.
+
+---
+
+#### 41. Rol y ownership no conceden exportación
+
+Se conserva:
+
+```text
+ROLE_NAME != EXPORT_AUTHORITY
+RESOURCE_OWNER != EXPORT_AUTHORITY
+REPORT_PUBLISHER != EXPORT_AUTHORITY
+```
+
+---
+
+#### 42. Fallback legacy prohibido
+
+Queda prohibido usar como sustituto:
+
+```text
+numera.reports.view
+numera.expenses.manage
+numera.cost_centers.manage
+numera.*
+numera.analytics.*
+numera.finance.*
+```
+
+La ausencia del permiso exacto produce denegación.
+
+---
+
+#### 43. Aliases de exportación prohibidos
+
+UX-012 no crea:
+
+```text
+numera.reports.export
+numera.finance.reports.export
+numera.analytics.export
+numera.export
+```
+
+La identidad sigue siendo únicamente:
+
+```text
+numera.analytics.financial_reports.export
+```
+
+---
+
+#### 44. Estado runtime actual
+
+Se preserva el AS-IS documentado:
+
+```text
+EXPORT_UI_ACTIONS = 0
+CSV_XLSX_EXPORT_IMPLEMENTATIONS = 0
+DOWNLOAD_ROUTES = 0
+PRINT_ACTIONS = 0
+RUNTIME_REPORT_PERMISSION_CONSUMERS = 0
+```
+
+UX-012 no convierte este diseño en disponibilidad física.
+
+---
+
+#### 45. Shared device y actor atribuible
+
+La exportación financiera sensible conserva exigencia fuerte de dispositivo compartido conforme al contrato transversal.
+
+La UI debe evitar ejecutar una exportación sensible cuando el actor efectivo no pueda atribuirse de forma suficiente.
+
+---
+
+#### 46. Reautenticación
+
+Si el contrato transversal determina reautenticación fuerte para la sensibilidad y contexto actuales, la UX debe solicitarla antes del efecto autoritativo.
+
+Se conserva:
+
+```text
+REAUTH_SUCCESS != EXPORT_PERMISSION_GRANT
+```
+
+Reautenticar confirma actor/contexto; no crea un permiso ausente.
+
+---
+
+#### 47. Simulación
+
+Se congela:
+
+```text
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_FINANCIAL_DATA = NO
+```
+
+Una simulación puede mostrar elegibilidad hipotética o estructura minimizada autorizada, pero no generar una copia real usando autoridad simulada.
+
+---
+
+#### 48. Solicitud de exportación
+
+La UX debe construir una solicitud lógica identificable que pueda preservar, cuando aplique:
+
+```text
+REQUEST_ID
+RESOURCE_ID
+REPORT_VERSION
+PERIOD_ID
+CLOSE_VERSION
+AS_OF
+REQUESTED_FORMAT
+REQUESTED_FIELDS
+REQUESTED_FILTERS
+REQUESTED_DIMENSIONS
+REQUESTED_POPULATION
+PURPOSE
+RECIPIENT_DESTINATION
+REQUESTED_BY
+EFFECTIVE_ACTOR
+REQUESTED_AT
+```
+
+La tarea no fija persistencia física para esta estructura.
+
+---
+
+#### 49. Request ID
+
+Se congela:
+
+```text
+REQUEST_ID_REQUIRED_FOR_RETRYABLE_EXPORT = YES
+```
+
+El identificador permite correlacionar decisión, generación, entrega y recuperación sin interpretar un retry como una nueva intención empresarial.
+
+---
+
+#### 50. Instancia de exportación
+
+La salida producida debe ser distinguible de la solicitud:
+
+```text
+EXPORT_INSTANCE != EXPORT_REQUEST
+```
+
+La instancia conserva la versión y configuración exactas que originaron su contenido.
+
+---
+
+#### 51. Intento de entrega
+
+Se distingue:
+
+```text
+DELIVERY_ATTEMPT != EXPORT_AUTHORIZATION
+```
+
+Un retry de entrega no puede ampliar campos, población, versión, formato, destino o finalidad.
+
+---
+
+#### 52. Idempotencia
+
+Para una solicitud lógica retryable se preserva:
+
+```text
+SAME_REQUEST_ID
++ SAME_REPORT_VERSION
++ SAME_EXPORT_DECISION
+-> ONE_LOGICAL_EXPORT
+```
+
+La tecnología podrá requerir más de un intento técnico de generación o entrega, pero no deberá crear silenciosamente múltiples efectos empresariales equivalentes.
+
+---
+
+#### 53. Resultado desconocido
+
+Ante timeout, pérdida de respuesta o incertidumbre técnica:
+
+```text
+RESULT_UNKNOWN != FAILED
+RESULT_UNKNOWN != SAFE_TO_RETRY_BLINDLY
+```
+
+La recuperación debe consultar el `REQUEST_ID`, la instancia conocida y la evidencia antes de decidir un nuevo intento.
+
+---
+
+#### 54. Cambio material durante generación
+
+Si antes del punto autoritativo cambia materialmente:
+
+- actor;
+- permiso;
+- scope;
+- reporte/version;
+- periodo/corte;
+- filtros;
+- población;
+- campos;
+- finalidad;
+- destino;
+- sensibilidad;
+
+la solicitud debe revaluarse.
+
+---
+
+#### 55. Versión stale
+
+Se congela:
+
+```text
+STALE_REPORT_VERSION = DENY_AND_REVIEW_AGAIN
+```
+
+La exportación no debe sustituir silenciosamente la versión revisada por la más reciente.
+
+---
+
+#### 56. Scope stale
+
+Se congela:
+
+```text
+STALE_SCOPE_DECISION = DENY_AND_REVIEW_AGAIN
+```
+
+Un cambio de alcance efectivo exige revisar nuevamente población y agregados.
+
+---
+
+#### 57. Proyección stale
+
+Si la clasificación o permisos de campos cambian entre revisión y generación:
+
+```text
+STALE_FIELD_PROJECTION = DENY_AND_REVIEW_AGAIN
+```
+
+No se genera una salida más amplia que la revisada.
+
+---
+
+#### 58. Calidad y oficialidad
+
+Exportar no convierte un reporte degradado en oficial.
+
+La UI debe preservar el estado de calidad, cobertura y frescura aplicable al recurso base.
+
+Se conserva:
+
+```text
+EXPORT_FORMAT != OFFICIALITY
+```
+
+---
+
+#### 59. Periodo open
+
+Una exportación de un reporte con periodo `open` debe conservar esa condición y no presentarse como resultado final de periodo cerrado.
+
+---
+
+#### 60. Periodo locked
+
+Una exportación de revisión o pre-cierre debe identificar `locked` cuando corresponda y no presentar el lock como cierre final.
+
+---
+
+#### 61. Periodo closed
+
+Cuando la salida represente un periodo cerrado debe conservar una `CLOSE_VERSION` identificable.
+
+La ausencia de esa versión bloquea cualquier representación que pretenda ser final del cierre.
+
+---
+
+#### 62. Exportación histórica
+
+Una instancia histórica conserva:
+
+- reporte/version;
+- periodo/corte;
+- filtros;
+- dimensiones;
+- proyección;
+- formato;
+- decisión;
+- resultado.
+
+No se reescribe cuando cambia la vista en vivo.
+
+---
+
+#### 63. Exportación no es fuente económica
+
+Se congela:
+
+```text
+EXPORT_IS_ECONOMIC_SOURCE = NO
+```
+
+Una copia exportada no compite con los hechos, documentos y sistemas propietarios originales.
+
+---
+
+#### 64. Exportación NUMERA no es filing fiscal
+
+Se conserva:
+
+```text
+NUMERA_EXPORT_IS_TAX_FILING = NO
+```
+
+Generar una salida no equivale a presentar una declaración, libro, reporte regulatorio o aceptación de autoridad externa.
+
+---
+
+#### 65. Exportación no es estado contable oficial externo
+
+La salida NUMERA permanece dentro de la frontera de gestión/analítica interna definida por el dominio.
+
+No se presenta como estado financiero estatutario por el solo hecho de ser PDF, XLSX u otro formato.
+
+---
+
+#### 66. Exportación no aprueba contenido
+
+Se congela:
+
+```text
+EXPORT != APPROVE
+EXPORT != REJECT
+```
+
+La acción de copiar información no decide su validez económica.
+
+---
+
+#### 67. Exportación no muta recursos
+
+Se conserva:
+
+```text
+EXPORT != REGISTER
+EXPORT != UPDATE
+EXPORT != CANCEL
+EXPORT != RECONCILE
+```
+
+La exportación es derivada y no habilita mutación.
+
+---
+
+#### 68. Exportación no gobierna escenarios
+
+Se mantiene:
+
+```text
+EXPORT != SCENARIO_CREATE
+EXPORT != SCENARIO_SHARE
+EXPORT != SCENARIO_APPROVE
+EXPORT != SCENARIO_PUBLISH
+```
+
+Las acciones especializadas permanecen bajo su contrato propietario.
+
+---
+
+#### 69. Estados UX de exportación
+
+Se definen únicamente como estados de presentación:
+
+```text
+CONFIGURING
+READY_FOR_REVIEW
+AUTHORIZING
+GENERATING
+DELIVERING
+COMPLETED
+DENIED
+STALE
+FAILED
+RESULT_UNKNOWN
+```
+
+No son estados empresariales de `VPROC-0061` ni de un periodo.
+
+---
+
+#### 70. Denegación
+
+`DENIED` comunica ausencia de autoridad o incompatibilidad gobernada sin revelar permisos, recursos o campos que el actor no puede conocer.
+
+La UI no debe sugerir que cambiar el formato o reintentar resuelve una denegación de autorización.
+
+---
+
+#### 71. Stale
+
+`STALE` exige volver a revisar el contexto actualizado.
+
+La UI debe conservar la configuración del usuario cuando sea seguro, pero no reutilizar automáticamente la decisión autoritativa vencida.
+
+---
+
+#### 72. Fallo técnico
+
+`FAILED` representa un fallo técnico conocido posterior o independiente de la autorización.
+
+Debe distinguirse de `DENIED`, `STALE` y `RESULT_UNKNOWN`.
+
+---
+
+#### 73. Errores públicos seguros
+
+Los mensajes visibles no deben exponer:
+
+- SQL;
+- endpoints internos;
+- secretos;
+- tokens;
+- payload financiero completo;
+- campos no autorizados;
+- enumeración de recursos invisibles.
+
+La evidencia técnica detallada permanece en la capa autorizada.
+
+---
+
+#### 74. Receipt
+
+Al completar una exportación, la UX debe poder presentar un receipt minimizado con:
+
+- request ID;
+- recurso/reporte;
+- versión;
+- corte;
+- formato;
+- alcance resumido;
+- finalidad resumida;
+- instante;
+- resultado.
+
+El receipt no necesita repetir los datos exportados.
+
+---
+
+#### 75. Evidencia de auditoría
+
+La decisión y resultado deben ser correlacionables con:
+
+- principal;
+- actor efectivo;
+- permiso exacto;
+- request ID;
+- reporte/consulta;
+- versión;
+- filtros/alcance;
+- campos/población;
+- formato;
+- finalidad;
+- destino cuando aplique;
+- decisión;
+- instante;
+- resultado.
+
+La especialización completa de auditoría permanece bajo `NUMERA-AUTH-009`.
+
+---
+
+#### 76. Recuperación
+
+El flujo de recuperación debe consultar primero:
+
+```text
+REQUEST_ID
+AUTHORIZATION_RESULT
+EXPORT_INSTANCE_IF_ANY
+DELIVERY_ATTEMPTS
+CURRENT_RESOURCE_VERSION
+```
+
+antes de ofrecer un nuevo intento.
+
+---
+
+#### 77. Persistencia no asumida
+
+UX-012 no exige que toda exportación quede almacenada persistentemente.
+
+Se congela:
+
+```text
+EXPORT_STORAGE_MODEL = IMPLEMENTATION_DETAIL
+```
+
+Cualquier persistencia futura deberá respetar retención, acceso y recuperación bajo sus propietarios canónicos.
+
+---
+
+#### 78. Procesamiento sin arquitectura forzada
+
+El flujo puede materializarse posteriormente con ejecución síncrona o asíncrona según volumen y tecnología.
+
+UX-012 no define jobs, colas ni workers.
+
+Cualquiera de las dos opciones debe preservar `REQUEST_ID`, idempotencia, autorización y resultado consultable.
+
+---
+
+#### 79. Accesibilidad
+
+La configuración y revisión deben:
+
+- exponer labels semánticos;
+- mantener orden de lectura lógico;
+- no depender solo de color para sensibilidad o estado;
+- asociar errores a su campo o etapa;
+- permitir identificar versión, filtros y finalidad con tecnología asistiva.
+
+---
+
+#### 80. Responsive
+
+En superficies estrechas se preserva este orden:
+
+```text
+RESOURCE_AND_VERSION
+-> SCOPE_AND_FILTERS
+-> FIELDS_AND_FORMAT
+-> PURPOSE_AND_DESTINATION
+-> WARNINGS
+-> REVIEW
+-> ACTION
+```
+
+La acción no debe aparecer antes de los datos que determinan su efecto.
+
+---
+
+#### 81. Indicadores antes que detalle
+
+Cuando `VSCREEN-0106` muestre indicadores y tabla de detalle del mismo contexto, se conserva la regla de `NUMERA-UX-008`.
+
+Esta jerarquía visual no amplía lo exportable ni sustituye la selección explícita de población y campos.
+
+---
+
+#### 82. Hallazgos diferidos
+
+| Hallazgo | Bloquea UX-012 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| permiso `numera.analytics.financial_reports.export` aún no materializado | no | `NUMERA-AUTH-012` + package físico aplicable | catálogo, guard y consumidor publican exactamente la identidad aprobada |
+| AS-IS no tiene acciones de exportación ni formatos materializados | no | implementación física E5/paquete aplicable | `VSCREEN-0106` materializa consumidor real y formatos soportados |
+| scope empresa/sede/centro requiere interacción detallada | no | `NUMERA-UX-013` | filtros y scope se diseñan sin ampliar autoridad |
+| recuperación posterior de artefacto persistido no tiene identidad NUMERA definida aquí | no | propietario canónico futuro si la capacidad se requiere | no se reutiliza `export` como bypass |
+| impresión y compartición permanecen acciones distintas | no | propietario transversal/canónico aplicable | no se ejecutan por inferencia |
+
+No queda un hallazgo diferido sin owner o condición de salida.
+
+---
+
+#### 83. Decisiones congeladas
+
+Se congela:
+
+```text
+NUMERA_EXPORT_FLOW_CONTRACT = NUMERA-INDEPENDENT-EXPORT-FLOW-001
+EXPORT_SCREEN_ID = VSCREEN-0106
+EXPORT_PROCESS_ID = VPROC-0061
+EXPORT_STEP_ID = VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+EXPORT_PERMISSION = numera.analytics.financial_reports.export
+EXPORT_PERMISSION_IDENTITY_COUNT = 1
+VIEW_PERMISSION = numera.analytics.financial_reports.view
+VIEW_IMPLIES_EXPORT = NO
+EXPORT_IMPLIES_VIEW = NO
+PUBLISH_IMPLIES_EXPORT = NO
+CLOSE_IMPLIES_EXPORT = NO
+REOPEN_IMPLIES_EXPORT = NO
+EXPORT_IS_DOWNLOAD_EXISTING_ARTIFACT = NO
+EXPORT_IS_PRINT = NO
+EXPORT_IS_SHARE = NO
+SIGNED_URL_IS_AUTHORITY = NO
+FILE_FORMAT_IS_AUTHORITY = NO
+FILE_FORMAT_IS_OFFICIALITY = NO
+PURPOSE_REQUIRED = YES
+EXPORT_SCOPE_MUST_NOT_EXCEED_AUTHORIZED_READ_SCOPE = YES
+EXPORT_PERMISSION_IMPLIES_ALL_FIELDS = NO
+REQUEST_ID_REQUIRED_FOR_RETRYABLE_EXPORT = YES
+STALE_REPORT_VERSION = DENY_AND_REVIEW_AGAIN
+STALE_SCOPE_DECISION = DENY_AND_REVIEW_AGAIN
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_DATA = NO
+EXPORT_IS_ECONOMIC_SOURCE = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+UX_013_OWNER = COMPANY_SITE_COST_CENTER_FILTERING
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 84. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 85. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar:
+
+- `TREQ-NUMERA-001` — reportes reconciliados, permisos separados y trazabilidad;
+- `TREQ-NUMERA-002` — identidad, periodo, fuente, evidencia e historia no destructiva;
+- `TREQ-NUMERA-003` — separación entre registrar, aprobar, pagar, conciliar, cerrar, reabrir y exportar;
+- `TREQ-NUMERA-004` — métodos, versiones, fuentes, periodo y drill-down analítico;
+- `TREQ-SHELL-011` — acción exacta, finalidad, clasificación, recurso, territorio, destinatario y salida protegida;
+- `TREQ-AUTH-013` — revalidación server-side de permiso, actor, alcance, estado y campos;
+- `TREQ-AUTH-014` — invalidación de decisiones stale ante cambios materiales;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-DATA-004` — separación entre vista, snapshot, reporte, simulación, exportación y restatement versionado.
+
+Esta sección es trazabilidad de cobertura vigente y no actualiza el Registro 04A.
+
+---
+
+#### 86. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El trabajo es documental; no se ejecutaron build, lint, tipos ni pruebas de producto. |
+| LOCAL | NOT_EXECUTED | La incorporación, formato, quality, delivery, validadores de dominio y batería global permanecen pendientes del checkout del usuario después del cierre de `NUMERA-UX-011`. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, topología `DEFINE_ONCE`, políticas documentales, archivo propietario, `NUMERA-AUTH-007`, `NUMERA-DOM-012`, `VSCREEN-0106`, `VPROC-0061`, estados canónicos, Registro 04A aplicable y scripts documentales vigentes; `NUMERA-UX-011` se consume desde su archivo completo aprobado por el usuario mientras termina su publicación. |
+| OPERATIVA | NOT_EXECUTED | No se generaron, recuperaron, imprimieron, compartieron ni entregaron exportaciones financieras reales. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-012` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia. |
+
+---
+
+#### 87. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-INDEPENDENT-EXPORT-FLOW-001`;
+2. la superficie es `VSCREEN-0106`;
+3. el proceso asociado es `VPROC-0061`;
+4. el step asociado es `VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT`;
+5. la pantalla no constituye autoridad;
+6. existe exactamente una identidad de permiso de exportación;
+7. esa identidad es `numera.analytics.financial_reports.export`;
+8. no se inventan aliases;
+9. view y export permanecen separados;
+10. export no implica view;
+11. publish no implica export;
+12. close/reopen no implican export;
+13. el flujo UX conserva las doce etapas definidas;
+14. la entrada exige recurso identificable;
+15. reporte/consulta es reproducible;
+16. report ID/version forman parte de la decisión cuando aplican;
+17. periodo/corte se preservan;
+18. close version se conserva cuando el periodo está cerrado;
+19. restatement no muta exportaciones históricas;
+20. finalidad es obligatoria;
+21. free text por sí solo no crea autorización;
+22. proyección de campos forma parte de la solicitud;
+23. permiso de exportación no concede todos los campos;
+24. campo backend oculto no se vuelve exportable;
+25. minimización ocurre antes del artefacto final;
+26. sensibilidad puede reducir la proyección;
+27. población forma parte de la solicitud;
+28. “todos” no amplía el universo por inferencia;
+29. filtros efectivos se preservan;
+30. agregado no amplía scope;
+31. UX-013 conserva ownership de empresa/sede/centro;
+32. formato no cambia autoridad;
+33. solo se muestran formatos soportados reales;
+34. cambiar formato no amplía datos;
+35. export y recuperación posterior permanecen diferenciados;
+36. export y print permanecen diferenciados;
+37. export y share permanecen diferenciados;
+38. signed URL no es autoridad;
+39. destinatario/destino no se infiere;
+40. revisión previa presenta las dimensiones materiales;
+41. server-side revalida actor y permisos exactos;
+42. botón visible no autoriza;
+43. rol/ownership/publicador no autorizan;
+44. fallback legacy está prohibido;
+45. aliases de exportación están prohibidos;
+46. el AS-IS físico no se presenta como implementación;
+47. shared-device guard se conserva;
+48. reautenticación no crea permiso;
+49. simulación no exporta datos reales;
+50. solicitud conserva request ID cuando es retryable;
+51. request e instancia permanecen distintos;
+52. intento de entrega no es nueva autorización;
+53. retry conserva una sola salida lógica;
+54. resultado desconocido no produce retry ciego;
+55. cambios materiales reevalúan autorización;
+56. versión stale produce review again;
+57. scope stale produce review again;
+58. field projection stale produce review again;
+59. exportar no crea oficialidad;
+60. periodos open/locked/closed se etiquetan correctamente;
+61. reporte closed final exige close version;
+62. instancia histórica no muta con vista viva;
+63. export no es fuente económica;
+64. export no es filing fiscal;
+65. formato no crea estado contable oficial;
+66. export no aprueba ni rechaza;
+67. export no registra, actualiza, cancela ni concilia;
+68. export no gobierna escenarios;
+69. estados UX no se confunden con `VPROC-0061`;
+70. deny, stale, failed y result unknown permanecen distintos;
+71. errores públicos minimizan información;
+72. receipt es minimizado y correlacionable;
+73. evidencia de auditoría es reconstruible;
+74. recuperación consulta estado antes de reintentar;
+75. persistencia no se asume;
+76. arquitectura sync/async no se fuerza;
+77. accesibilidad conserva contexto y errores;
+78. responsive preserva contexto antes de acción;
+79. jerarquía indicador/detalle no amplía exportación;
+80. todo hallazgo diferido tiene owner y salida;
+81. no se crean ni modifican requisitos de prueba;
+82. no se realizan cambios físicos;
+83. UX-013 recibe el ownership de filtros territoriales/económicos detallados.
+
+---
+
+#### 88. Límites
+
+Esta tarea no:
+
+- materializa el permiso `numera.analytics.financial_reports.export`;
+- concede grants;
+- crea mecanismos de recuperación de artefactos;
+- crea generadores CSV/XLSX/PDF/JSON;
+- obliga a soportar un formato concreto;
+- crea Storage;
+- fija TTL o retención de archivos;
+- crea jobs, colas o workers;
+- define recuperación posterior de artefactos persistidos;
+- define impresión;
+- define compartición interna o externa;
+- define catálogos de finalidad;
+- diseña los filtros detallados de UX-013;
+- cambia `VPROC-0061`;
+- publica reportes reales;
+- cierra o reabre periodos;
+- modifica hechos económicos;
+- altera fuentes propietarias;
+- crea estados contables o fiscales oficiales;
+- modifica RLS, RPC, Server Actions o APIs;
+- modifica Supabase;
+- crea migraciones;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-013`.
+
+---
+
+#### 89. Handoff a NUMERA-UX-013
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_EXPORT_FLOW_CONTRACT = NUMERA-INDEPENDENT-EXPORT-FLOW-001
+EXPORT_SCREEN_ID = VSCREEN-0106
+EXPORT_PROCESS_ID = VPROC-0061
+EXPORT_STEP_ID = VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+EXPORT_PERMISSION = numera.analytics.financial_reports.export
+VIEW_PERMISSION = numera.analytics.financial_reports.view
+EXPORT_PERMISSION_IDENTITY_COUNT = 1
+VIEW_IMPLIES_EXPORT = NO
+EXPORT_IMPLIES_VIEW = NO
+PUBLISH_IMPLIES_EXPORT = NO
+CLOSE_IMPLIES_EXPORT = NO
+REOPEN_IMPLIES_EXPORT = NO
+PURPOSE_REQUIRED = YES
+EXPORT_SCOPE_MUST_NOT_EXCEED_AUTHORIZED_READ_SCOPE = YES
+EXPORT_PERMISSION_IMPLIES_ALL_FIELDS = NO
+FIELD_PROJECTION_REQUIRED = YES
+POPULATION_IS_AUTHORIZATION_INPUT = YES
+FILTERS_ARE_EXPORT_IDENTITY_INPUT = YES
+DIMENSIONS_ARE_EXPORT_IDENTITY_INPUT = YES
+FILE_FORMAT_IS_AUTHORITY = NO
+SUPPORTED_EXPORT_FORMATS = RUNTIME_DECLARED_SET
+EXPORT_IS_DOWNLOAD_EXISTING_ARTIFACT = NO
+EXPORT_IS_PRINT = NO
+EXPORT_IS_SHARE = NO
+SIGNED_URL_IS_AUTHORITY = NO
+REQUEST_ID_REQUIRED_FOR_RETRYABLE_EXPORT = YES
+STALE_REPORT_VERSION = DENY_AND_REVIEW_AGAIN
+STALE_SCOPE_DECISION = DENY_AND_REVIEW_AGAIN
+STALE_FIELD_PROJECTION = DENY_AND_REVIEW_AGAIN
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_DATA = NO
+EXPORT_IS_ECONOMIC_SOURCE = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+UX_013_OWNER = COMPANY_SITE_COST_CENTER_FILTERING
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-013` deberá diseñar filtros por empresa, sede y centro de costo manteniendo `SELECTED_SCOPE != AUTHORIZED_SCOPE`, sin ampliar la población exportable ni la lectura efectiva por la mera selección de filtros.
+
+---
+
+#### 90. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-011
+-> NUMERA-UX-012
+-> NUMERA-UX-013
+```
+
+UX-012 consume la separación cierre/exportación de UX-011 y entrega a UX-013 un contrato explícito donde filtros y scope son entradas de autorización, no permisos por selección.
+
+---
+
+#### 91. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-011 — Diseñar flujo de cierre`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-012 — Diseñar exportación con permiso independiente`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo`
 ### [ ] NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
 ### [ ] NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
 ### [ ] NUMERA-UX-015 — Evitar registro financiero duplicado
