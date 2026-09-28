@@ -16060,5 +16060,1603 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles`
-### [ ] NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles
+### ✅ NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-AUTH-013 — Ejecutar pruebas integrales
+**Tarea siguiente:** NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos
+**Tipo de tarea:** definición documental del contrato especializado de autorización para cartera, cobranza, promesas, acuerdos, aplicaciones, disputas, castigos, condonaciones, crédito, cuentas bancarias, extractos, ejecución de tesorería, conciliación y proyecciones financieras de mayor sensibilidad de NUMERA, preservando mínimo privilegio, segregación, alcance por recurso, estado actual, evidencia, idempotencia y fronteras con permisos generales ya aprobados; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/04_AUTORIZACION_FINANCIERA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea permisos runtime, grants, roles, aliases, paquetes, tablas, RLS, RPC, Server Actions, migraciones, secretos, integraciones bancarias, datos financieros, cuentas, pagos, conciliaciones, aplicaciones, acuerdos, castigos, Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir las autoridades financieras especializadas que quedaron deliberadamente reservadas a `NUMERA-AUTH-014`, evitando que las capacidades generales de lectura, registro, actualización o aprobación absorban acciones de cartera, crédito, tesorería, bancos, conciliación o acceso a proyecciones de mayor sensibilidad.
+
+El resultado debe permitir que una implementación posterior responda de forma inequívoca:
+
+- qué permiso exacto protege cada acción especializada;
+- qué recurso y versión deben revalidarse;
+- qué datos pueden proyectarse y cuáles deben permanecer redactados o fuera de alcance;
+- qué decisiones exigen segregación o autoridad adicional;
+- qué operaciones son ordinarias y cuáles constituyen concesión material o acción excepcional;
+- cómo se evita que una autorización de lectura, registro, aprobación o acceso general se convierta en autoridad bancaria o de castigo;
+- cómo se preservan idempotencia, historia y evidencia ante retry, concurrencia o resultado externo incierto.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología de `NUMERA-AUTH-014` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define un contrato documental reutilizable;
+- no crea instancia física propia;
+- no materializa códigos en `app_permissions`;
+- no modifica grants ni modalidades;
+- no cambia consumers ni paquetes compartidos;
+- no cambia `vento-numera`;
+- no modifica Supabase;
+- no ejecuta pagos, recaudos, aplicaciones, conciliaciones, castigos ni cambios bancarios reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-AUTH-013
+
+La predecesora entrega:
+
+```text
+NUMERA_INTEGRAL_AUTH_CERTIFICATION_CONTRACT = NUMERA-INTEGRAL-AUTHORIZATION-CERTIFICATION-CONTRACT-001
+NUMERA_INTEGRAL_AUTH_TOPOLOGY = PER_IMPLEMENTATION_UNIT
+NUMERA_INTEGRAL_AUTH_EXECUTION_GATE = POST_E5_PACKAGE
+NUMERA_INTEGRAL_AUTH_INSTANCE_PATTERN = NUMERA-AUTH-013::<implementation_unit_id>
+NUMERA_CERTIFIED_DOCUMENTARY_SCOPE = NUMERA-AUTH-001..012
+NUMERA_BASELINE_INSTANCE = SHELL-CI-012::GLOBAL
+NUMERA_BASELINE_INSTANCE_STATUS = VERIFIED
+NUMERA_BASELINE_CONTRACTUAL_TEST_COUNT = 42
+NUMERA_BASELINE_SURFACE_COUNT = 12
+NUMERA_BASELINE_SOURCE_CONTRACT_COUNT = 10
+NUMERA_PACKAGE_PROFILE_COUNT = 4
+NUMERA_TARGET_CAPABILITY_COUNT_BEFORE_014 = 57
+NUMERA_APP_ENTRY_COUNT = 1
+NUMERA_READ_COUNT_BEFORE_014 = 22
+NUMERA_REGISTER_WRITE_COUNT_BEFORE_014 = 18
+NUMERA_APPROVAL_REJECT_COUNT_BEFORE_014 = 12
+NUMERA_PERIOD_STATE_COUNT = 3
+NUMERA_EXPORT_COUNT = 1
+NUMERA_MATRIX_MISSING_COUNT = 0
+NUMERA_MATRIX_DUPLICATE_COUNT = 0
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT_BEFORE_014 = 51
+INTEGRAL_ALLOW_REQUIRED = YES
+INTEGRAL_DENY_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+DENY_SIDE_EFFECT_ALLOWED = NO
+SCOPE_EXPANSION_BY_OPERATIONAL_CONTEXT_ALLOWED = NO
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+SOURCE_OPERATIONAL_CONTEXT_IS_NUMERA_AUTHORITY = NO
+PARITY_REQUIRES_ALLOW_AND_DENY = YES
+ROLLBACK_REQUIRED_WHEN_CUTOVER_APPLIES = YES
+STALE_EVIDENCE_CAN_PASS = NO
+BLOCKED_CAN_PASS = NO
+NOT_APPLICABLE_REQUIRES_JUSTIFICATION = YES
+NUMERA_AUTH_014_OWNER = RECEIVABLES_AGREEMENTS_WRITEOFFS_BANKS_AND_SENSITIVE_FINANCIAL_DATA
+NUMERA_AUTH_015_OWNER = SCENARIOS_PRICES_AND_BUDGETS
+TREQ_CHANGES = 0
+```
+
+`NUMERA-AUTH-013` no certifica por anticipado permisos que todavía no existían en su alcance documental. Las nuevas capacidades definidas por la 014 deberán incorporarse a las instancias físicas futuras de certificación que las consuman.
+
+---
+
+#### 4. Fuentes canónicas reconciliadas
+
+Esta definición consume y preserva:
+
+- `NUMERA-AUTH-001..013` aprobadas;
+- convención canónica `<app>.<module>.<resource>.<action>`;
+- separación documental `READ != REGISTER != APPROVE != PAY_EXECUTE != RECONCILE != WRITE_OFF != EXPORT`;
+- clasificación `FINANCIAL_DATA` y composiciones con `PERSONAL_DATA`, `COMMERCIAL_CONFIDENTIALITY`, `BUSINESS_SECRET`, `EXCEPTIONAL_ACTION` y `AUDIT_SECURITY`;
+- `NUMERA-DOM-009` para cuentas financieras, bancos, movimientos, extractos, tesorería, matching y conciliación;
+- `NUMERA-DOM-010` para obligaciones, programación y pago;
+- `NUMERA-DOM-011` para periodos protegidos, cierre, reapertura y eventos tardíos;
+- `NUMERA-DOM-014` para conciliación transversal y tratamiento de diferencias;
+- `NUMERA-DOM-016` para cartera, cobranza, aplicaciones, acuerdos, exposición, límites y castigos;
+- `VPROC-0052`, `VPROC-0053` y los pasos financieros relacionados;
+- `VSCREEN-0099`, `VSCREEN-0100`, `VSCREEN-0101..0103` y `VSCREEN-0155` como superficies relevantes;
+- contratos transversales vigentes de autorización, recurso, alcance, denegación, auditoría, idempotencia, concurrencia y contexto.
+
+---
+
+#### 5. Invariantes heredadas que la 014 no puede relajar
+
+Se preserva:
+
+```text
+APP_ACCESS_IMPLIES_FINANCIAL_DATA_READ = NO
+SCREEN_VISIBILITY_IMPLIES_ACTION_AUTHORITY = NO
+PROCESS_STEP_IMPLIES_PERMISSION = NO
+ROLE_NAME_IMPLIES_FINAL_AUTHORIZATION = NO
+MISSING_EXACT_PERMISSION_FALLBACK_TO_MANAGE = FORBIDDEN
+FINANCIAL_WILDCARD_GRANT = FORBIDDEN
+MUTATION_AUTHORIZATION_REVALIDATED_SERVER_SIDE = YES
+AUTHORIZATION_REQUIRES_RESOURCE_AND_CURRENT_STATE = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+SIMULATED_AUTHORIZATION_GRANTS_REAL_AUTHORITY = NO
+READ_IMPLIES_REGISTER_UPDATE_APPROVE = NO
+REGISTER_IMPLIES_APPROVE = NO
+APPROVAL_IMPLIES_PAY_EXECUTE = NO
+APPROVAL_IMPLIES_RECONCILE = NO
+READ_IMPLIES_CLOSE_REOPEN_WRITE_OFF = NO
+REPORT_VIEW_IMPLIES_EXPORT = NO
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+```
+
+La especialización aumenta precisión; nunca amplía autoridad por inferencia.
+
+---
+
+#### 6. Resultado contractual
+
+Se define:
+
+```text
+NUMERA-SPECIALIZED-FINANCIAL-AUTHORIZATION-REGISTRY-001
+```
+
+con treinta y seis permisos nuevos, atómicos y `CONTRACT_DEFINED_PENDING_MATERIALIZATION`.
+
+Resultado cuantitativo:
+
+```text
+NUMERA_SPECIALIZED_PERMISSION_COUNT_014 = 36
+NUMERA_TARGET_CAPABILITY_COUNT_BEFORE_014 = 57
+NUMERA_TARGET_CAPABILITY_COUNT_AFTER_014 = 93
+NUMERA_014_MISSING_PERMISSION_ROWS = 0
+NUMERA_014_DUPLICATE_PERMISSION_ROWS = 0
+NUMERA_AUTH_013_DOCUMENTARY_SCOPE_AUTOMATICALLY_EXPANDS = NO
+NUMERA_AUTH_013_FUTURE_INSTANCE_MUST_TEST_014_WHEN_CONSUMED = YES
+```
+
+La 014 no modifica el estado físico de las 57 capacidades anteriores.
+
+---
+
+#### 7. Convención y namespace
+
+Todos los códigos nuevos usan:
+
+```text
+numera.<module>.<resource>.<action>
+```
+
+La 014 prohíbe:
+
+- `*.manage`;
+- `*.admin` como autoridad genérica;
+- permisos por pantalla;
+- permisos por rol;
+- permisos por ruta;
+- permisos que mezclen dos acciones;
+- códigos con identificadores dinámicos;
+- un permiso global `numera.finance.sensitive_data.view` que pueda convertirse en wildcard financiero.
+
+La sensibilidad se gobierna por recurso, proyección, campos solicitados, finalidad, scope y estado; no mediante una llave universal de datos sensibles.
+
+---
+
+#### 8. Acción empresarial `write_off`
+
+El slot `WRITE_OFF` ya fue reservado por `NUMERA-AUTH-001` y exige un código exacto en esta tarea.
+
+Se formaliza para NUMERA:
+
+```text
+ACTION = write_off
+BUSINESS_MEANING = reconocer un castigo económico autorizado sobre cartera preservando identidad e historia
+OPERATION_KIND = MUTATION_DECISION
+SENSITIVE = YES
+MODIFIES_STATE_OR_ECONOMIC_EFFECT = YES
+```
+
+Se diferencia de:
+
+```text
+write_off != approve
+write_off != reject
+write_off != cancel
+write_off != reverse
+write_off != forgiveness
+write_off != accounting_posting
+write_off != source_delete
+```
+
+No es un bypass general y solo puede utilizarse sobre el recurso exacto previsto por este contrato.
+
+---
+
+#### 9. Registro consolidado de permisos especializados
+
+| # | Permiso canónico | Familia | Recurso / efecto principal |
+| ---: | --- | --- | --- |
+| 1 | `numera.finance.receivable_sensitive_details.view` | lectura sensible | detalle de cartera de mayor exposición que no pertenece a la proyección ordinaria |
+| 2 | `numera.finance.bank_accounts.view` | lectura bancaria | identidad económica y metadatos mínimos de cuentas financieras/bancarias |
+| 3 | `numera.finance.bank_account_sensitive_details.view` | lectura sensible | identificadores bancarios completos únicamente cuando la finalidad los requiera |
+| 4 | `numera.finance.bank_statements.view` | lectura bancaria | extracto y líneas autorizadas con minimización |
+| 5 | `numera.finance.credit_exposure.view` | lectura de crédito | exposición calculada con corte, política y alcance |
+| 6 | `numera.finance.credit_limits.view` | lectura de crédito | límites vigentes/versionados y evidencia mínima |
+| 7 | `numera.finance.collection_interactions.register` | registro de cobranza | interacción material y evidencia mínima de contacto |
+| 8 | `numera.finance.collection_holds.activate` | control de cobranza | activar retención o pausa de cobranza permitida |
+| 9 | `numera.finance.collection_holds.deactivate` | control de cobranza | levantar retención o pausa de cobranza permitida |
+| 10 | `numera.finance.receivable_promises.register` | registro de cartera | promesa de pago sin modificar términos contractuales |
+| 11 | `numera.finance.receivable_agreements.register` | registro de acuerdo | propuesta/versionado de acuerdo de pago |
+| 12 | `numera.finance.receivable_agreements.approve` | decisión material | aprobar versión exacta de acuerdo |
+| 13 | `numera.finance.receivable_agreements.reject` | decisión material | rechazar versión exacta de acuerdo |
+| 14 | `numera.finance.receivable_applications.register` | aplicación | vincular de forma explícita recaudo y destino financiero |
+| 15 | `numera.finance.receivable_applications.reverse` | reversión | revertir una aplicación preservando la anterior |
+| 16 | `numera.finance.receivable_disputes.register` | registro de disputa | abrir disputa financiera trazable |
+| 17 | `numera.finance.receivable_disputes.resolve` | resolución | resolver disputa sin ocultar el efecto financiero resultante |
+| 18 | `numera.finance.receivables.write_off` | castigo | ejecutar castigo autorizado sobre cuenta/version exacta |
+| 19 | `numera.finance.receivable_forgiveness.approve` | decisión material | aprobar condonación distinta de castigo |
+| 20 | `numera.finance.receivable_forgiveness.reject` | decisión material | rechazar condonación propuesta |
+| 21 | `numera.finance.credit_limits.create` | registro de crédito | proponer primera versión de límite |
+| 22 | `numera.finance.credit_limits.update` | registro de crédito | proponer revisión de límite existente |
+| 23 | `numera.finance.credit_limits.approve` | decisión de crédito | aprobar versión exacta de límite |
+| 24 | `numera.finance.credit_limits.reject` | decisión de crédito | rechazar versión exacta de límite |
+| 25 | `numera.finance.credit_exceptions.approve` | decisión excepcional | aprobar excepción de crédito material bajo política |
+| 26 | `numera.finance.credit_exceptions.reject` | decisión excepcional | rechazar excepción de crédito material |
+| 27 | `numera.finance.bank_accounts.create` | configuración bancaria | registrar propuesta de cuenta financiera/bancaria |
+| 28 | `numera.finance.bank_accounts.update` | configuración bancaria | proponer cambio permitido o nueva revisión |
+| 29 | `numera.finance.bank_accounts.approve` | decisión bancaria | aprobar identidad/version/mapeo de cuenta |
+| 30 | `numera.finance.bank_accounts.reject` | decisión bancaria | rechazar propuesta o revisión de cuenta |
+| 31 | `numera.finance.bank_accounts.activate` | estado bancario | habilitar versión aprobada para uso permitido |
+| 32 | `numera.finance.bank_accounts.deactivate` | estado bancario | retirar versión de uso nuevo sin borrar historia |
+| 33 | `numera.finance.bank_statements.import` | ingestión bancaria | importar extracto bajo idempotencia y fuente inmutable |
+| 34 | `numera.finance.treasury_payment_instructions.issue` | ejecución de tesorería | emitir instrucción de pago ya autorizada hacia canal financiero aplicable |
+| 35 | `numera.finance.reconciliations.resolve` | conciliación | decidir y registrar resultado de conciliación sobre recursos exactos |
+| 36 | `numera.finance.reconciliations.reverse` | reversión de conciliación | revertir decisión/match previo conservando historia |
+
+Todas las filas nuevas permanecen pendientes de materialización física.
+
+---
+
+#### 10. Familias y cardinalidad
+
+La distribución queda:
+
+```text
+SENSITIVE_READ = 6
+COLLECTION_AND_RECEIVABLE_CONTROL = 14
+CREDIT_DECISION = 6
+BANK_AND_TREASURY = 8
+RECONCILIATION = 2
+TOTAL = 36
+```
+
+Para efectos de esta distribución:
+
+- `COLLECTION_AND_RECEIVABLE_CONTROL` corresponde a filas 7..20;
+- `CREDIT_DECISION` corresponde a filas 21..26;
+- `BANK_AND_TREASURY` corresponde a filas 27..34;
+- `RECONCILIATION` corresponde a filas 35..36.
+
+---
+
+#### 11. Permisos heredados que no se renombran
+
+La 014 reutiliza, sin redefinir ni duplicar:
+
+```text
+numera.finance.receivables.view
+numera.finance.receivables.register
+numera.finance.receivables.update
+numera.finance.treasury_movements.view
+numera.finance.reconciliations.view
+numera.finance.payment_plans.view
+numera.finance.payment_plans.approve
+numera.finance.payment_plans.reject
+```
+
+Los permisos especializados complementan esas capacidades; no las reemplazan ni las vuelven aliases.
+
+---
+
+#### 12. `receivables.view` frente a detalle sensible
+
+`numera.finance.receivables.view` continúa cubriendo cartera y aging dentro del scope concedido con proyección ordinaria minimizada.
+
+`numera.finance.receivable_sensitive_details.view` se exige cuando la finalidad autorizada necesita información de mayor exposición, por ejemplo:
+
+- notas de cobranza no incluidas en la vista ordinaria;
+- evidencia de acuerdos;
+- información personal necesaria de la contraparte;
+- detalle de exposición o límite vinculado que no pueda resolverse mediante su recurso específico;
+- referencias sensibles necesarias para investigación.
+
+Se preserva:
+
+```text
+RECEIVABLES_VIEW != RECEIVABLE_SENSITIVE_DETAILS_VIEW
+```
+
+El permiso especializado tampoco concede mutación, castigo, acuerdo, exportación ni acceso a secretos.
+
+---
+
+#### 13. Proyección sensible no equivale a payload completo
+
+Aun con un permiso sensible válido:
+
+```text
+AUTHORIZED_FIELDS = MINIMUM_REQUIRED_FIELDS_FOR_AUTHORIZED_PURPOSE
+```
+
+El servidor debe evaluar:
+
+- recurso exacto;
+- versión o estado actual;
+- entidad legal;
+- dimensiones empresariales aplicables;
+- requested fields;
+- finalidad;
+- sensibilidad compuesta;
+- restricciones adicionales del documento o tercero relacionado.
+
+La respuesta no entrega automáticamente cada columna física disponible.
+
+---
+
+#### 14. Datos personales y comerciales dentro de cartera
+
+Cuando el deudor sea persona natural o exista contacto identificable:
+
+```text
+FINANCIAL_DATA + PERSONAL_DATA
+```
+
+pueden coexistir.
+
+Cuando existan términos, precios, documentos o condiciones reservadas:
+
+```text
+FINANCIAL_DATA + COMMERCIAL_CONFIDENTIALITY
+```
+
+pueden coexistir.
+
+El permiso financiero no elimina la obligación de cumplir simultáneamente las restricciones de la otra clasificación.
+
+---
+
+#### 15. Interacciones de cobranza
+
+`numera.finance.collection_interactions.register` permite registrar evidencia material de contacto dentro del expediente autorizado.
+
+Debe conservar únicamente lo necesario para:
+
+- fecha y canal;
+- actor;
+- contraparte contactada;
+- cuenta o cuentas relacionadas;
+- resultado;
+- compromiso declarado;
+- siguiente acción;
+- evidencia permitida.
+
+No autoriza:
+
+- crear un acuerdo;
+- prometer por la contraparte;
+- cambiar vencimientos;
+- alterar saldo;
+- aprobar concesiones;
+- registrar información personal irrelevante.
+
+---
+
+#### 16. Retenciones de cobranza
+
+`collection_holds.activate` y `collection_holds.deactivate` gobiernan la pausa de acciones de cobro cuando una disputa, investigación o excepción lo justifique.
+
+Se conserva:
+
+```text
+COLLECTION_HOLD != RECEIVABLE_CANCELLED
+COLLECTION_HOLD != BALANCE_ZERO
+COLLECTION_HOLD != WRITE_OFF
+```
+
+Activar o levantar el hold requiere recurso, razón, estado y evidencia aplicables y nunca modifica el derecho económico por sí solo.
+
+---
+
+#### 17. Promesa de pago
+
+`numera.finance.receivable_promises.register` registra un compromiso declarado por la contraparte.
+
+Se preserva:
+
+```text
+PROMISE_TO_PAY != PAYMENT
+PROMISE_TO_PAY != PAYMENT_AGREEMENT
+```
+
+El permiso no autoriza cambiar vencimientos contractuales, conceder crédito, alterar saldo ni marcar pago recibido.
+
+---
+
+#### 18. Acuerdos de pago
+
+`numera.finance.receivable_agreements.register` crea una propuesta o nueva versión de acuerdo.
+
+La propuesta deberá referenciar:
+
+- cuentas o cuotas cubiertas;
+- saldo base;
+- cronograma previo;
+- cronograma propuesto;
+- condiciones;
+- motivo;
+- vigencia;
+- evidencia;
+- versión del recurso.
+
+Registrar no activa el acuerdo.
+
+---
+
+#### 19. Aprobación y rechazo de acuerdos
+
+La decisión usa:
+
+```text
+numera.finance.receivable_agreements.approve
+numera.finance.receivable_agreements.reject
+```
+
+Se preserva:
+
+```text
+AGREEMENT_REGISTER != AGREEMENT_APPROVE
+AGREEMENT_APPROVE != RECEIVABLE_UPDATE
+```
+
+La aprobación exige versión exacta, autoridad vigente, scope, estado aprobable, evidencia y segregación cuando la política aplicable la requiera.
+
+Una modificación posterior material se representa como nueva versión y nueva decisión; no como overwrite silencioso de un acuerdo efectivo.
+
+---
+
+#### 20. Umbrales y materialidad de acuerdos
+
+La 014 no inventa un umbral monetario universal.
+
+Cuando una política empresarial aprobada diferencie acuerdo ordinario y concesión material, la autorización deberá consumir esa política y su versión.
+
+```text
+MISSING_MATERIALITY_POLICY != AUTOMATIC_APPROVAL
+```
+
+La ausencia de umbral no permite reducir una acción material a `receivables.update`.
+
+---
+
+#### 21. Aplicación ordinaria de recaudos
+
+`numera.finance.receivable_applications.register` protege la creación del vínculo explícito entre recaudo válido y destino financiero válido.
+
+La autorización debe revalidar como mínimo:
+
+- recaudo origen;
+- cuenta o cuota destino;
+- residual vigente;
+- importe a aplicar;
+- moneda y contexto FX cuando corresponda;
+- versión de los recursos;
+- estado del recaudo;
+- estado de la cuenta;
+- idempotency key o identidad equivalente de intención.
+
+Se preserva:
+
+```text
+PAYMENT_RECEIVED != PAYMENT_APPLIED
+APPLICATION_REGISTER != RECONCILIATION_RESOLVE
+```
+
+---
+
+#### 22. Aplicación excepcional
+
+Una aplicación ordinaria dentro de reglas aprobadas no requiere una aprobación artificial adicional.
+
+Cuando la aplicación contradiga la distribución ordinaria, exceda una política de crédito o constituya concesión material, deberá existir además una decisión explícita bajo la capacidad excepcional aplicable.
+
+```text
+ORDINARY_APPLICATION != EXCEPTIONAL_APPLICATION
+```
+
+La implementación no puede convertir toda aplicación en excepción ni toda excepción en aplicación ordinaria.
+
+---
+
+#### 23. Reversión de aplicación
+
+`numera.finance.receivable_applications.reverse` revierte una aplicación ya existente sin borrar el vínculo original.
+
+Debe conservar:
+
+- aplicación original;
+- actor;
+- razón;
+- importe revertido;
+- residual resultante;
+- evidencia;
+- correlación con devolución, reverso, error o decisión que la originó.
+
+```text
+APPLICATION_REVERSE != PAYMENT_REFUND
+APPLICATION_REVERSE != BANK_REVERSAL
+APPLICATION_REVERSE != SOURCE_DELETE
+```
+
+---
+
+#### 24. Disputas
+
+`numera.finance.receivable_disputes.register` abre una disputa identificable.
+
+`numera.finance.receivable_disputes.resolve` registra la resolución autorizada de la disputa.
+
+Se preserva:
+
+```text
+DISPUTE != PAYMENT
+DISPUTE != WRITE_OFF
+DISPUTE != FORGIVENESS
+DISPUTE != RECONCILIATION_DIFFERENCE
+```
+
+Resolver la disputa no altera el saldo mediante un campo libre. Si la resolución exige aplicación, nota, reversión, castigo o condonación, se utiliza además la capacidad propietaria de ese efecto.
+
+---
+
+#### 25. Castigo
+
+`numera.finance.receivables.write_off` materializa el slot `WRITE_OFF` como autoridad independiente.
+
+Antes del efecto debe revalidarse:
+
+- cuenta exacta;
+- versión;
+- entidad legal acreedora;
+- saldo elegible;
+- importe a castigar;
+- motivo;
+- evidencia;
+- política y autoridad;
+- periodo económico aplicable;
+- estado de disputa o conciliación relevante;
+- segregación exigida por la política vigente.
+
+Se conserva:
+
+```text
+WRITE_OFF != PAYMENT
+WRITE_OFF != FORGIVENESS
+WRITE_OFF != SOURCE_DELETION
+WRITE_OFF != ACCOUNTING_ENTRY_BY_DEFAULT
+```
+
+El castigo preserva la cuenta, aging e historia previa.
+
+---
+
+#### 26. Condonación
+
+La condonación se gobierna con:
+
+```text
+numera.finance.receivable_forgiveness.approve
+numera.finance.receivable_forgiveness.reject
+```
+
+La propuesta de condonación forma parte del expediente de cartera y no se considera efectiva hasta una decisión válida.
+
+```text
+FORGIVENESS != WRITE_OFF
+FORGIVENESS != COMMERCIAL_DISCOUNT_BY_INFERENCE
+```
+
+Esta autoridad no determina por sí sola efectos jurídicos, fiscales o contables externos.
+
+---
+
+#### 27. Exposición de crédito
+
+`numera.finance.credit_exposure.view` protege la exposición calculada bajo una política y fecha de corte explícitas.
+
+Se preserva:
+
+```text
+OPEN_RECEIVABLE_BALANCE != CREDIT_EXPOSURE
+```
+
+La lectura debe declarar:
+
+- entidad legal acreedora;
+- deudor;
+- moneda o regla de conversión;
+- fecha de corte;
+- saldos incluidos;
+- compromisos adicionales incluidos por política;
+- exclusiones;
+- política y versión.
+
+No autoriza modificar límite ni aceptar riesgo.
+
+---
+
+#### 28. Límites de crédito
+
+La lectura usa:
+
+```text
+numera.finance.credit_limits.view
+```
+
+La propuesta usa:
+
+```text
+numera.finance.credit_limits.create
+numera.finance.credit_limits.update
+```
+
+La decisión usa:
+
+```text
+numera.finance.credit_limits.approve
+numera.finance.credit_limits.reject
+```
+
+Se preserva:
+
+```text
+NULL_CREDIT_LIMIT != UNLIMITED_CREDIT
+CREDIT_LIMIT_PROPOSAL != CREDIT_LIMIT_APPROVED
+```
+
+Crear o actualizar una propuesta no habilita crédito hasta decisión válida.
+
+---
+
+#### 29. Excepciones de crédito
+
+Las concesiones que se aparten de la política aplicable usan:
+
+```text
+numera.finance.credit_exceptions.approve
+numera.finance.credit_exceptions.reject
+```
+
+La excepción debe identificar:
+
+- política y versión;
+- regla de la que se aparta;
+- alcance;
+- recurso;
+- impacto esperado;
+- vigencia;
+- motivo;
+- evidencia;
+- actor decisor.
+
+No se crea un permiso `override` financiero genérico.
+
+---
+
+#### 30. Decisión de crédito frente a operación comercial
+
+Se conserva:
+
+```text
+CUSTOMER_ACCEPTANCE != CREDIT_APPROVAL
+QUOTE_ACCEPTED != CREDIT_LIMIT_APPROVED
+COMMERCIAL_ROLE != CREDIT_AUTHORITY
+```
+
+PULSO, PASS o un proceso comercial pueden aportar evidencia o contexto, pero no conceden por sí mismos permisos de crédito NUMERA.
+
+---
+
+#### 31. Cuenta financiera y cuenta bancaria
+
+`numera.finance.bank_accounts.view` permite consultar identidad económica, titularidad, entidad legal, moneda, vigencia, estado, alias seguro y referencias mínimas de una cuenta financiera/bancaria dentro del scope concedido.
+
+No concede automáticamente:
+
+- número completo;
+- credenciales;
+- tokens;
+- llaves;
+- PIN;
+- OTP;
+- secreto de integración;
+- autorización de pago;
+- cambio de cuenta receptora.
+
+---
+
+#### 32. Detalle bancario de mayor sensibilidad
+
+`numera.finance.bank_account_sensitive_details.view` se exige cuando una finalidad autorizada necesita identificadores bancarios completos que no pueden satisfacerse con máscara o referencia mínima.
+
+La decisión debe considerar:
+
+- propósito;
+- recurso exacto;
+- requested fields;
+- actor;
+- scope;
+- dispositivo y controles transversales aplicables;
+- necesidad real del valor completo.
+
+Se preserva:
+
+```text
+BANK_SENSITIVE_DETAIL_PERMISSION
+!= BANK_CREDENTIAL_PERMISSION
+```
+
+Credenciales, tokens, llaves, PIN y OTP permanecen fuera del modelo de proyección financiera incluso con este permiso.
+
+---
+
+#### 33. Extractos bancarios
+
+`numera.finance.bank_statements.view` protege el acceso a extracto y líneas bancarias autorizadas.
+
+`numera.finance.bank_statements.import` protege una importación manual o administrativa cuando exista esa superficie.
+
+La importación:
+
+- exige fuente identificada;
+- es idempotente;
+- preserva contenido original;
+- no convierte líneas externas en registros editables;
+- no confirma conciliación;
+- no concede permiso sobre todas las cuentas del actor.
+
+La ingestión automática máquina-a-máquina se gobierna por identidad técnica y contrato de integración; no se simula mediante un usuario humano con este permiso.
+
+---
+
+#### 34. Gobierno del catálogo de cuentas bancarias
+
+La administración del catálogo usa:
+
+```text
+numera.finance.bank_accounts.create
+numera.finance.bank_accounts.update
+numera.finance.bank_accounts.approve
+numera.finance.bank_accounts.reject
+numera.finance.bank_accounts.activate
+numera.finance.bank_accounts.deactivate
+```
+
+Se separa:
+
+```text
+PROPOSE_BANK_ACCOUNT != APPROVE_BANK_ACCOUNT
+APPROVE_BANK_ACCOUNT != ACTIVATE_BANK_ACCOUNT
+BANK_ACCOUNT_ACTIVE != PAYMENT_AUTHORIZED
+```
+
+Una cuenta no se aprueba por coincidencia de marca, sede, proveedor, nombre o documento recibido.
+
+---
+
+#### 35. Mutabilidad e historia bancaria
+
+Una revisión de cuenta debe preservar identidad, versión e historia.
+
+Cambios que alteren de forma material titularidad, entidad legal, instrumento o identificador financiero no se aplican como overwrite silencioso de una versión ya utilizada.
+
+La implementación deberá poder crear revisión/sucesora cuando el contrato del recurso lo exija.
+
+Desactivar una cuenta impide nuevo uso bajo la política aplicable, pero no elimina movimientos, extractos, pagos o conciliaciones históricas.
+
+---
+
+#### 36. Preparación y aprobación de pagos frente a emisión
+
+Los permisos ya definidos de `payment_plans` gobiernan propuesta y decisión de programación.
+
+Se preserva:
+
+```text
+PAYMENT_PLAN_APPROVED != PAYMENT_EXECUTED
+PAYMENT_PLAN_APPROVE != TREASURY_PAYMENT_INSTRUCTION_ISSUE
+```
+
+La 014 no crea un segundo permiso de aprobación de `payment_plans`.
+
+---
+
+#### 37. Emisión de instrucción de tesorería
+
+`numera.finance.treasury_payment_instructions.issue` materializa el slot `PAY_EXECUTE` mediante un verbo empresarial que representa emitir una instrucción monetaria ya autorizada hacia el canal financiero aplicable.
+
+Antes de emitir debe revalidarse como mínimo:
+
+- obligación, plan o causa económica aplicable;
+- aprobación vigente requerida;
+- cuenta origen autorizada y activa;
+- contraparte/destino y versión aplicables;
+- importe y moneda;
+- límites y políticas;
+- idempotencia;
+- estado actual;
+- periodo y restricciones aplicables;
+- actor y segregación.
+
+No se usa `execute` como action del permiso porque describe una operación técnica ambigua; `issue` describe el efecto empresarial autorizado dentro de NUMERA.
+
+---
+
+#### 38. Instrucción emitida no equivale a pago confirmado
+
+Se conserva:
+
+```text
+SENT_PAYMENT_INSTRUCTION != CONFIRMED_PAYMENT
+HTTP_2XX != CONFIRMED_PAYMENT
+TIMEOUT != PAYMENT_FAILED
+TIMEOUT != PAYMENT_SUCCEEDED
+```
+
+La respuesta externa debe conservarse y reconciliarse.
+
+Un resultado desconocido bloquea un reintento económicamente equivalente hasta consultar receipt, idempotency key, proveedor o fuente autoritativa aplicable.
+
+---
+
+#### 39. Lectura de movimientos no concede emisión
+
+`numera.finance.treasury_movements.view` no concede:
+
+```text
+numera.finance.treasury_payment_instructions.issue
+```
+
+Tampoco `bank_accounts.view`, `payment_plans.view` ni `payment_plans.approve` conceden por sí solos emisión de instrucción.
+
+---
+
+#### 40. Conciliación decisoria
+
+`numera.finance.reconciliations.resolve` materializa el slot documental `RECONCILE`.
+
+El permiso permite decidir y registrar un resultado de conciliación sobre un caso exacto, no editar fuentes.
+
+La decisión debe revalidar:
+
+- caso de conciliación;
+- subtipo;
+- miembros y fuentes participantes;
+- versiones/watermarks aplicables;
+- residual;
+- tolerancia/política cuando exista;
+- autoridad;
+- estado actual;
+- evidencia.
+
+---
+
+#### 41. Subtipos de conciliación
+
+El permiso `reconciliations.resolve` puede operar sobre los subtipos ya aprobados únicamente cuando el resource scope concreto los autorice:
+
+```text
+SALES_PAYMENTS
+PURCHASES_RECEIPTS
+INVENTORY_PRODUCTION_VARIANCES
+BANK_TREASURY
+OTHER_APPROVED_FINANCIAL_RECONCILIATION
+```
+
+El permiso por sí solo no amplía acceso entre subtipos, entidades, sedes, centros, cuentas o miembros de un agregado.
+
+Si la infraestructura de scope no puede representar una restricción necesaria, la operación falla cerrada; no se emite un permiso paralelo por conveniencia.
+
+---
+
+#### 42. Reversión de conciliación
+
+`numera.finance.reconciliations.reverse` revierte una decisión o match previo conservando:
+
+- decisión original;
+- actor original;
+- nueva autoridad;
+- razón;
+- evidencia;
+- residual resultante;
+- correlación.
+
+Se preserva:
+
+```text
+RECONCILIATION_REVERSE != SOURCE_REVERSAL
+RECONCILIATION_REVERSE != PAYMENT_REFUND
+RECONCILIATION_REVERSE != BANK_MOVEMENT_DELETE
+```
+
+---
+
+#### 43. Matching sugerido no necesita autoridad decisoria
+
+Un algoritmo puede proponer candidatos sin poseer una identidad humana ni un permiso de negocio equivalente a aprobación.
+
+Se conserva:
+
+```text
+MATCH_SUGGESTION != MATCH_APPROVAL
+```
+
+La propuesta automatizada debe ser reproducible y no puede escribir el resultado final de conciliación cuando el contrato exige decisión autorizada.
+
+---
+
+#### 44. Datos financieros sensibles y exportación
+
+La 014 no crea un permiso general de exportación de cartera, bancos o detalle sensible.
+
+Se conserva:
+
+```text
+VIEW != EXPORT
+SENSITIVE_VIEW != SENSITIVE_EXPORT
+```
+
+`numera.analytics.financial_reports.export` continúa limitado a su recurso de reporte y proyección autorizada.
+
+Una futura necesidad de exportar otro recurso sensible deberá tener un propietario canónico explícito y permiso exacto; mientras no exista, la operación se deniega.
+
+---
+
+#### 45. Descarga, impresión y compartición
+
+Un permiso `view` no concede automáticamente:
+
+- descarga de documento completo;
+- impresión irrestricta;
+- compartir con tercero;
+- copia masiva;
+- exportación estructurada;
+- acceso offline persistente.
+
+La UI no puede convertir una capacidad de lectura en extracción mediante funciones de cliente.
+
+---
+
+#### 46. Documentos y evidencia sensible
+
+La referencia a un soporte, extracto, acuerdo o documento no concede lectura completa del archivo.
+
+Cuando el documento pertenezca a otro recurso protegido, deberá reautorizarse ese recurso y su proyección.
+
+La auditoría debe preferir referencias, fingerprints o metadata mínima frente a copias de payload financiero completo.
+
+---
+
+#### 47. Secretos financieros fuera del contrato de negocio
+
+Nunca se proyectan como datos financieros ordinarios:
+
+```text
+BANK_PASSWORD
+PIN
+OTP
+API_SECRET
+PRIVATE_KEY
+SERVICE_ROLE
+ACCESS_TOKEN
+REFRESH_TOKEN
+SIGNING_SECRET
+```
+
+No existe un permiso 014 capaz de convertir esos secretos en campos de UI, exportación o log.
+
+Su custodia pertenece a contratos técnicos y de secretos aplicables.
+
+---
+
+#### 48. Scope y recurso
+
+Cada evaluación 014 debe resolver el recurso real y las dimensiones aplicables antes de decidir.
+
+Se preserva:
+
+```text
+PERMISSION_PRESENT
++ RESOURCE_RESOLVED
++ SCOPE_VALID
++ CURRENT_STATE_VALID
++ REQUESTED_FIELDS_ALLOWED
++ POLICY_PRECONDITIONS_VALID
+= CANDIDATE_FOR_ALLOW
+```
+
+La mera posesión de la clave no concede acceso universal a todos los deudores, cuentas, entidades legales, bancos, conciliaciones o periodos.
+
+---
+
+#### 49. Scope bancario
+
+El scope bancario debe identificar, según aplique:
+
+- entidad legal;
+- cuenta financiera/bancaria exacta;
+- moneda;
+- vigencia;
+- recurso relacionado;
+- operación permitida.
+
+Conocer el identificador de una cuenta no concede autoridad sobre ella.
+
+Un mapeo de marca o sede no se infiere por nombre.
+
+---
+
+#### 50. Scope de cartera y crédito
+
+El scope de cartera y crédito debe distinguir:
+
+- entidad legal acreedora;
+- deudor;
+- cuenta por cobrar;
+- cuota o conjunto explícito cuando aplique;
+- moneda;
+- recurso de crédito o acuerdo;
+- versión.
+
+Una relación con PASS, cliente, pedido o cotización no amplía el scope financiero por sí sola.
+
+---
+
+#### 51. Estado y versión
+
+Las acciones mutantes o decisorias de la 014 requieren estado y versión actuales.
+
+Se prohíbe autorizar sobre una versión stale cuando el cambio concurrente sea material.
+
+```text
+STALE_RESOURCE_VERSION = DENY_AND_REEVALUATE
+```
+
+Un retry deberá volver a comprobar que la intención y el recurso continúan siendo equivalentes antes de reutilizar idempotencia.
+
+---
+
+#### 52. Segregación de funciones
+
+La 014 exige que el modelo pueda separar al menos:
+
+```text
+VIEW_SENSITIVE
+REGISTER_COLLECTION_EVIDENCE
+REGISTER_PROMISE
+REGISTER_AGREEMENT
+APPROVE_AGREEMENT
+REGISTER_APPLICATION
+REVERSE_APPLICATION
+RESOLVE_DISPUTE
+WRITE_OFF
+APPROVE_FORGIVENESS
+PROPOSE_CREDIT_LIMIT
+APPROVE_CREDIT_LIMIT
+APPROVE_CREDIT_EXCEPTION
+PROPOSE_BANK_ACCOUNT
+APPROVE_BANK_ACCOUNT
+ACTIVATE_BANK_ACCOUNT
+IMPORT_BANK_STATEMENT
+ISSUE_TREASURY_PAYMENT_INSTRUCTION
+RESOLVE_RECONCILIATION
+REVERSE_RECONCILIATION
+```
+
+La misma persona podrá acumular funciones únicamente cuando el contrato transversal y la política aplicable lo permitan de forma explícita y auditable.
+
+---
+
+#### 53. Roles no son permisos
+
+Ningún nombre como:
+
+```text
+GERENCIA_GENERAL
+RESPONSABLE_FINANCIERO
+RESPONSABLE_COMERCIAL
+CONTADOR
+TESORERIA
+ADMIN
+OWNER
+```
+
+concede automáticamente una capacidad 014.
+
+El rol puede participar en grants o políticas aprobadas, pero la decisión runtime debe terminar en permiso exacto, recurso, scope, estado y condiciones aplicables.
+
+---
+
+#### 54. Turno y check-in
+
+Las capacidades 014 son administrativas/financieras respecto del contexto operacional.
+
+Se preserva:
+
+```text
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+SOURCE_OPERATIONAL_CONTEXT_IS_NUMERA_AUTHORITY = NO
+```
+
+No tener turno activo no deniega por sí solo una autoridad financiera base válida.
+
+Tener turno o check-in tampoco concede un permiso 014 ausente.
+
+---
+
+#### 55. Reautenticación, dispositivo y controles fuertes
+
+La 014 no crea una nueva clase transversal de dispositivo ni una modalidad de autorización paralela.
+
+Cuando la política transversal aplicable exija reautenticación, interacción fuerte, confirmación adicional o restricción de dispositivo para una acción sensible, la implementación debe consumir ese contrato sin degradarlo.
+
+```text
+SENSITIVE_PERMISSION != DEVICE_POLICY
+SENSITIVE_PERMISSION_DOES_NOT_BYPASS_DEVICE_POLICY = YES
+```
+
+---
+
+#### 56. Idempotencia y replay
+
+Las acciones económicas de la 014 deben ser resistentes a retry y replay.
+
+Como mínimo:
+
+- una aplicación no se registra dos veces por reintento;
+- un castigo no se aplica dos veces;
+- una misma versión de acuerdo no produce dos decisiones efectivas;
+- una instrucción de tesorería no se reemite por timeout sin reconciliación;
+- una importación bancaria no duplica líneas;
+- una resolución de conciliación no crea dos cierres equivalentes;
+- una reversión no se duplica por respuesta perdida.
+
+La identidad técnica de idempotencia no sustituye autorización.
+
+---
+
+#### 57. Concurrencia
+
+La implementación deberá fallar cerrada cuando:
+
+- cambie el saldo entre revisión y efecto;
+- cambie la versión de acuerdo o límite;
+- cambie el estado de la cuenta bancaria;
+- aparezca una conciliación incompatible;
+- otro actor resuelva la disputa;
+- el periodo quede protegido;
+- una revocación de permiso sea material antes del commit.
+
+No se resuelve mediante `last write wins` destructivo.
+
+---
+
+#### 58. Auditoría
+
+Toda decisión protegida debe conservar evidencia correlacionable suficiente para reconstruir:
+
+- principal técnico;
+- actor efectivo;
+- permiso exacto;
+- recurso;
+- versión;
+- scope;
+- requested fields cuando sea material;
+- política/autoridad;
+- decisión;
+- razón cuando corresponda;
+- timestamps;
+- correlation/idempotency reference;
+- resultado técnico y empresarial.
+
+La auditoría no copia por defecto números bancarios completos, documentos completos, notas de cobranza irrestrictas ni secretos.
+
+---
+
+#### 59. Denegaciones
+
+Un `DENY` de la 014 no produce efecto empresarial.
+
+La respuesta al actor no debe filtrar:
+
+- existencia detallada de cuenta fuera de scope;
+- saldo;
+- límite;
+- número bancario;
+- notas de cobranza;
+- evidencia privada;
+- política interna no autorizada;
+- diagnóstico privilegiado.
+
+La evidencia privada de la denegación puede conservar referencias mínimas suficientes para investigación.
+
+---
+
+#### 60. Resultado externo incierto
+
+Para pagos, bancos o proveedores externos:
+
+```text
+RESULT_UNKNOWN != SUCCESS
+RESULT_UNKNOWN != FAILURE
+```
+
+La autorización de la intención original no habilita repetir ciegamente el efecto.
+
+La recuperación deberá consultar fuente autoritativa, receipt, idempotency key o conciliación antes de decidir un nuevo intento empresarial.
+
+---
+
+#### 61. Periodos protegidos y eventos tardíos
+
+Una aplicación, castigo, condonación, reversión, conciliación o corrección que afecte un periodo `locked` o `closed` consume `NUMERA-DOM-011`.
+
+Se preserva:
+
+```text
+SPECIALIZED_PERMISSION != PERIOD_REOPEN_AUTHORITY
+```
+
+El permiso 014 no permite reescribir un periodo cerrado. El tratamiento debe usar ajuste, reapertura o restatement gobernado cuando corresponda.
+
+---
+
+#### 62. Frontera con contabilidad y fiscalidad
+
+Se preserva:
+
+```text
+RECEIVABLE_WRITE_OFF != ACCOUNTING_ENTRY_BY_DEFAULT
+PAYMENT_APPLICATION != ACCOUNTING_POSTING
+BANK_RECONCILIATION != OFFICIAL_ACCOUNTING_CLOSE
+INTERNAL_FORGIVENESS_APPROVAL != LEGAL_OR_TAX_DETERMINATION
+```
+
+La 014 no crea autoridad profesional externa ni asientos contables.
+
+---
+
+#### 63. Frontera con NUMERA-AUTH-015
+
+La 014 no define acciones mutantes de:
+
+- escenarios;
+- versiones de precio;
+- forecast;
+- presupuestos;
+- publicación de supuestos.
+
+Se conserva:
+
+```text
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+```
+
+Un límite o excepción de crédito real tampoco se convierte en escenario por estar basado en una proyección.
+
+---
+
+#### 64. Materialización futura
+
+Las treinta y seis identidades nuevas quedan:
+
+```text
+CONTRACT_DEFINED_PENDING_MATERIALIZATION
+```
+
+La futura materialización deberá realizarse mediante el lifecycle compartido aplicable y no mediante permisos locales inventados en `vento-numera`.
+
+Deberá resolver de forma coherente:
+
+- catálogo compartido;
+- contratos/tipos;
+- grants y denegaciones;
+- resolución de recurso/scope;
+- consumers server-side;
+- RLS/RPC cuando corresponda;
+- aliases únicamente si existe legacy real;
+- pruebas;
+- rollback;
+- evidencia de adopción.
+
+Esta tarea no ordena reabrir ni modificar documentalmente `NUMERA-AUTH-012`.
+
+---
+
+#### 65. Certificación física futura
+
+Cuando una unidad de implementación materialice o consuma permisos de la 014, deberá incluirlos en la certificación física aplicable basada en:
+
+```text
+NUMERA-INTEGRAL-AUTHORIZATION-CERTIFICATION-CONTRACT-001
+```
+
+La evidencia deberá cubrir al menos:
+
+- allow válido;
+- deny por permiso ausente;
+- deny por scope;
+- deny por recurso/estado/version;
+- sensitive field minimization;
+- segregación cuando aplique;
+- bypass de UI;
+- server-side revalidation;
+- idempotencia/replay;
+- concurrencia;
+- auditoría;
+- rollback;
+- resultado externo incierto cuando aplique.
+
+---
+
+#### 66. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| las 36 capacidades 014 no están materializadas | no | implementación/package físico aplicable | catálogo, contracts, grants, enforcement y consumers adoptan exactamente las identidades aprobadas |
+| el consumer NUMERA aún no demuestra cartera/bancos objetivo completos | no | unidades NUMERA + paquetes E5 aplicables | superficies y server boundaries consumen permisos exactos sin `*.manage` |
+| no existe integración bancaria objetivo completa | no | integración bancaria/financiera aplicable | cuentas, extractos, emisión, resultados y conciliación quedan correlacionados e idempotentes |
+| límites y umbrales numéricos de crédito/acuerdos/castigos no tienen valor universal aprobado | no | Dirección + responsable financiero + política empresarial | valores versionados, vigencia, moneda, alcance y autoridad quedan aprobados |
+| credenciales bancarias requieren custodia técnica separada | no | contrato de secretos/integración propietario | secretos permanecen fuera de UI, logs, permisos financieros y payloads ordinarios |
+| las nuevas capacidades no formaron parte del universo documental de 57 de la 013 | no | `NUMERA-AUTH-013::<implementation_unit_id>` cuando se materialicen | la instancia física aplicable prueba allow/deny, scope, sensibilidad, retry, concurrencia y rollback de las nuevas capacidades |
+| acciones de escenarios/precios/presupuestos siguen pendientes | no | `NUMERA-AUTH-015` | permisos de create/share/approve/publish quedan definidos sin reutilizar capacidades 014 |
+
+---
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige cartera y bancos obligatorios, pagos parciales y aplicaciones, acuerdos, promesas, disputas, aging, exposición, cobranza, castigo autorizado, movimientos y extractos inmutables, matching sugerido/aprobado/reversible, permisos financieros separados, validación server-side, evidencia, idempotencia, tratamiento de resultado incierto y ausencia de sobrescritura silenciosa. La 014 especializa esas obligaciones en permisos exactos sin introducir una obligación verificable nueva.
+
+---
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación con fuentes, historia, separación de permisos y ausencia de doble registro;
+- `TREQ-NUMERA-002` para identidad, entidad legal, moneda, fechas, estado, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003` como cobertura principal de cartera, pagos, aplicaciones, acuerdos, promesas, disputas, aging, exposición, cobranza, castigos, bancos, tesorería, matching y segregación;
+- `TREQ-AUTH-013` para revalidación server-side de acción, recurso, estado, alcance y columnas permitidas;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones, denegaciones, retry y rollback;
+- `TREQ-INTEGRATION-003` para idempotencia, resultado desconocido, retry, concurrencia y reconciliación;
+- `TREQ-INTEGRATION-017` para pagos, aplicaciones, bancos, eventos tardíos y efectos financieros sin duplicación.
+
+Esta sección es trazabilidad de cobertura existente y no constituye una actualización del registro.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build del checkout del usuario durante esta preparación documental |
+| LOCAL | NOT_EXECUTED | no se incorporó ni validó todavía `NUMERA-AUTH-014` dentro del checkout local del usuario |
+| REMOTA | PASS | se verificaron `vento-shell/main@b3f45fbbea453e90bbddfc534265793fc82d6664`, secuencia activa con `NUMERA-AUTH-013` como anterior, topología `DEFINE_ONCE`, archivo propietario, `NUMERA-AUTH-001..013`, convención canónica de permisos, `NUMERA-DOM-009`, `010`, `011`, `014`, `016`, Registro 04A NUMERA y el manifiesto actual de `vento-numera` |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron lecturas sensibles, cobranza, acuerdos, aplicaciones, disputas, castigos, crédito, importaciones bancarias, pagos ni conciliaciones reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; la tarea no autoriza materialización física propia |
+
+---
+
+#### 70. Criterios de aceptación
+
+`NUMERA-AUTH-014` queda aceptable cuando:
+
+1. conserva las 57 capacidades previas sin renombrarlas;
+2. define exactamente 36 capacidades especializadas nuevas;
+3. el total documental después de la 014 queda en 93 capacidades antes de la 015;
+4. ninguna capacidad nueva usa `manage`;
+5. no existe un wildcard de datos financieros sensibles;
+6. lectura ordinaria de cartera permanece separada de detalle sensible;
+7. detalle sensible sigue aplicando minimización por campo/finalidad;
+8. sensibilidad financiera no elimina sensibilidad personal o comercial concurrente;
+9. registrar interacción de cobranza no crea acuerdo ni altera saldo;
+10. hold de cobranza no cancela cuenta ni elimina aging;
+11. promesa no equivale a pago ni acuerdo;
+12. acuerdo registrado no queda efectivo sin autoridad decisoria cuando corresponda;
+13. aprobar y rechazar acuerdo usan permisos distintos;
+14. revisiones materiales de acuerdo conservan versiones;
+15. no se inventa un umbral monetario universal;
+16. aplicación de recaudo usa un recurso/permiso específico;
+17. pago recibido no equivale a pago aplicado;
+18. aplicación excepcional permanece diferenciada de aplicación ordinaria;
+19. reversión de aplicación conserva la original;
+20. disputa registrada no equivale a castigo, pago ni diferencia de conciliación;
+21. resolver disputa no permite ajuste libre del saldo;
+22. `receivables.write_off` representa autoridad de castigo independiente;
+23. castigo no equivale a pago, condonación, borrado de fuente ni asiento contable;
+24. condonación usa decisión separada del castigo;
+25. exposición de crédito no equivale a saldo abierto;
+26. límite de crédito se propone y decide de forma versionada;
+27. `null` no equivale a crédito ilimitado;
+28. excepciones de crédito tienen autoridad y evidencia propias;
+29. aceptación comercial no equivale a aprobación de crédito;
+30. lectura de cuenta bancaria no entrega secretos;
+31. detalle bancario completo exige permiso especializado y necesidad real;
+32. credenciales/PIN/OTP/tokens permanecen fuera del contrato de negocio;
+33. extractos se leen e importan bajo permisos distintos;
+34. importación bancaria es idempotente y no edita la fuente;
+35. propuesta, aprobación y activación de cuenta bancaria permanecen separadas;
+36. una cuenta activa no autoriza pago;
+37. cambios bancarios materiales conservan historia/versionado;
+38. `payment_plans.approve` no equivale a emisión de instrucción;
+39. `treasury_payment_instructions.issue` materializa la autoridad de ejecución monetaria interna sin confundirla con confirmación externa;
+40. instrucción emitida no equivale a pago confirmado;
+41. timeout no se trata automáticamente como éxito o fracaso;
+42. lectura de tesorería no concede emisión;
+43. `reconciliations.resolve` materializa la decisión `RECONCILE` sin reescribir fuentes;
+44. subtipo de conciliación forma parte del recurso/scope efectivo;
+45. reversión de conciliación conserva la decisión previa;
+46. matching sugerido no equivale a matching aprobado;
+47. lectura sensible no implica exportación;
+48. no se crea exportación general de bancos/cartera;
+49. documentos completos requieren su propia autorización cuando corresponda;
+50. secreto técnico nunca se vuelve dato financiero proyectable;
+51. toda evaluación revalida permiso, recurso, scope, estado, versión y campos;
+52. scope bancario no se infiere por marca o nombre;
+53. scope de cartera distingue entidad, deudor, cuenta, cuota, moneda y versión;
+54. versiones stale fallan cerradas;
+55. funciones sensibles pueden segregarse;
+56. rol nominal no concede autoridad;
+57. turno/check-in no son prerrequisitos administrativos ni fuentes de autoridad;
+58. controles transversales fuertes no se degradan;
+59. retry y replay no duplican efectos;
+60. concurrencia no usa `last write wins` destructivo;
+61. auditoría conserva evidencia suficiente con minimización;
+62. denegación no produce side effect ni fuga sensible;
+63. resultado externo incierto permanece abierto hasta consulta/reconciliación;
+64. permiso especializado no reabre periodos protegidos;
+65. castigo, aplicación y conciliación no se convierten en asientos contables por defecto;
+66. la 014 no invade escenarios, precios o presupuestos de la 015;
+67. las 36 capacidades quedan pendientes de materialización física gobernada;
+68. las futuras unidades que las consuman deben pasar certificación integral aplicable;
+69. no se crean ni modifican requisitos de prueba;
+70. no se realizan cambios físicos;
+71. `NUMERA-AUTH-015` recibe una frontera financiera especializada cerrada y sin autoridades implícitas.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- crea permisos runtime;
+- modifica `app_permissions`;
+- asigna permisos a roles o personas;
+- crea grants/denies;
+- crea aliases legacy;
+- modifica packages compartidos;
+- modifica `vento-numera`;
+- modifica navegación o pantallas;
+- crea deudores, cuentas, acuerdos, promesas, disputas, límites o castigos reales;
+- crea cuentas bancarias reales;
+- almacena credenciales;
+- importa extractos reales;
+- ejecuta instrucciones bancarias;
+- confirma pagos;
+- resuelve conciliaciones reales;
+- fija umbrales monetarios universales;
+- fija límites de crédito concretos;
+- fija buckets de aging;
+- define scoring/rating de riesgo;
+- determina tratamiento jurídico de condonación o incobrabilidad;
+- crea asientos, comprobantes o plan de cuentas;
+- crea tablas, vistas, funciones, RPC, RLS, triggers, migraciones o Storage;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-AUTH-015`.
+
+---
+
+#### 72. Handoff a NUMERA-AUTH-015
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_SPECIALIZED_FINANCIAL_AUTHORIZATION_REGISTRY = NUMERA-SPECIALIZED-FINANCIAL-AUTHORIZATION-REGISTRY-001
+NUMERA_TARGET_CAPABILITY_COUNT_BEFORE_014 = 57
+NUMERA_SPECIALIZED_PERMISSION_COUNT_014 = 36
+NUMERA_TARGET_CAPABILITY_COUNT_AFTER_014 = 93
+NUMERA_014_PERMISSIONS_STATE = CONTRACT_DEFINED_PENDING_MATERIALIZATION
+NUMERA_SENSITIVE_DATA_WILDCARD_PERMISSION = FORBIDDEN
+RECEIVABLES_VIEW_IS_SENSITIVE_DETAIL_VIEW = NO
+SENSITIVE_VIEW_IMPLIES_EXPORT = NO
+COLLECTION_INTERACTION_IMPLIES_AGREEMENT = NO
+COLLECTION_HOLD_IS_RECEIVABLE_CANCEL = NO
+PROMISE_TO_PAY_IS_PAYMENT = NO
+PROMISE_TO_PAY_IS_PAYMENT_AGREEMENT = NO
+AGREEMENT_REGISTER_IS_AGREEMENT_APPROVE = NO
+RECEIVABLE_APPLICATION_REQUIRES_EXPLICIT_RESOURCE = YES
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+APPLICATION_REVERSE_PRESERVES_ORIGINAL = YES
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+WRITE_OFF_PERMISSION = numera.finance.receivables.write_off
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+WRITE_OFF_IS_SOURCE_DELETE = NO
+FORGIVENESS_REQUIRES_EXPLICIT_DECISION = YES
+CREDIT_EXPOSURE_IS_OPEN_BALANCE = NO
+CREDIT_LIMIT_REQUIRES_VERSIONED_PROPOSAL_AND_DECISION = YES
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+CREDIT_EXCEPTION_REQUIRES_EXPLICIT_DECISION = YES
+BANK_ACCOUNT_VIEW_IMPLIES_SENSITIVE_DETAILS = NO
+BANK_CREDENTIALS_ARE_FINANCIAL_BUSINESS_FIELDS = NO
+BANK_ACCOUNT_PROPOSE_APPROVE_ACTIVATE = DISTINCT
+BANK_STATEMENT_IMPORT_IS_IDEMPOTENT = YES
+PAYMENT_PLAN_APPROVED_IS_PAYMENT_INSTRUCTION_ISSUED = NO
+TREASURY_PAY_EXECUTE_PERMISSION = numera.finance.treasury_payment_instructions.issue
+SENT_PAYMENT_INSTRUCTION_IS_CONFIRMED_PAYMENT = NO
+RECONCILE_PERMISSION = numera.finance.reconciliations.resolve
+RECONCILIATION_REVERSE_PRESERVES_HISTORY = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+ADMIN_SHIFT_REQUIRED = NO
+ADMIN_CHECKIN_REQUIRED = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_RESOURCE_VERSION = DENY_AND_REEVALUATE
+DENY_SIDE_EFFECT_ALLOWED = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SPECIALIZED_PERMISSION_CAN_REOPEN_CLOSED_PERIOD = NO
+NUMERA_AUTH_013_FUTURE_INSTANCE_MUST_TEST_014_WHEN_CONSUMED = YES
+SCENARIO_PRICE_BUDGET_ACTION_OWNER = NUMERA_AUTH_015
+TREQ_CHANGES = 0
+```
+
+`NUMERA-AUTH-015` deberá definir exclusivamente las autoridades de crear, compartir, aprobar y publicar escenarios, precios, forecast y presupuestos, consumiendo la separación de datos sensibles, scopes, recurso, estado, auditoría y mínimo privilegio ya congelada sin reutilizar ninguna capacidad 014 como autoridad implícita.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-AUTH-013 — Ejecutar pruebas integrales`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-AUTH-014 — Definir permisos de cartera, acuerdos, castigos, bancos y datos financieros sensibles`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos`
 ### [ ] NUMERA-AUTH-015 — Definir permisos para crear, compartir, aprobar y publicar escenarios, precios y presupuestos
