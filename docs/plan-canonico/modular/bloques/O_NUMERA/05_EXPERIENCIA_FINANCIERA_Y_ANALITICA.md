@@ -34932,5 +34932,1410 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos`
-### [ ] NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
+### ✅ NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro
+**Tarea siguiente:** NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
+**Tipo de tarea:** definición documental de la experiencia de extensión o integración contable y fiscal de NUMERA, incluyendo autoridad por entidad legal y periodo, documentos fiscales, obligaciones tributarias, candidatos contables, intercambio externo, evidencia, incertidumbre, conciliación, corrección, activación contable interna diferida y fronteras frente a libros o estados estatutarios, consumiendo `NUMERA-DOM-013`, `NUMERA-DOM-017`, autorización financiera y superficies canónicas sin duplicar hechos operativos ni autorizar materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no activa contabilidad formal interna, no selecciona proveedor contable o fiscal, no crea plan de cuentas real, cuentas contables, comprobantes, asientos, libros, estados financieros, documentos fiscales oficiales, obligaciones tributarias oficiales, integraciones, endpoints, credenciales, tablas, vistas, funciones, RPC, triggers, RLS, migraciones, datos, configuraciones de Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia mediante la cual un actor autorizado pueda revisar y gobernar en NUMERA la relación entre verdad económica interna, documentación fiscal, obligaciones tributarias y una eventual contabilidad formal sin convertir la interfaz en una segunda fuente de ventas, compras, inventario, producción, cartera, pagos, bancos o documentos oficiales externos.
+
+La experiencia deberá permitir responder de forma inequívoca:
+
+- qué hecho económico origina la información;
+- qué entidad legal y periodo aplican;
+- si el resultado mostrado es interno, candidato, externo confirmado o pendiente de conciliación;
+- qué sistema o autoridad conserva la verdad formal;
+- qué evidencia acredita el último resultado confirmado;
+- qué acción está autorizada internamente;
+- qué efecto continúa pendiente fuera de NUMERA;
+- qué error exige corregir la fuente y cuál exige corregir el tratamiento contable o fiscal;
+- si existe incertidumbre que impida repetir una operación material;
+- si la contabilidad interna está activada o permanece diferida.
+
+---
+
+#### 2. Naturaleza y topología
+
+La tarea se resuelve como contrato documental:
+
+```text
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+PHYSICAL_INSTANCE = NONE
+```
+
+Por tanto:
+
+- no existe instancia física propia;
+- no habilita posteo contable;
+- no habilita emisión fiscal;
+- no presenta obligaciones ante autoridades;
+- no crea integración externa;
+- no selecciona proveedor;
+- no modifica Supabase;
+- no convierte estados de experiencia en enums runtime.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-026
+
+Se recibe sin reinterpretación:
+
+```text
+CAP_12_04_ACCOUNTS_RECEIVABLE = REQUIRED
+RECEIVABLES_SCREEN = VSCREEN-0099
+RECEIVABLES_PROCESS = VPROC-0053
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+PAYMENT_CONFIRMED_IS_BANK_RECONCILED = NO
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+RECEIVABLE_IS_ACCOUNTING_ENTRY = NO
+PAYMENT_APPLICATION_IS_ACCOUNTING_POSTING = NO
+WRITE_OFF_IS_ACCOUNTING_ENTRY_BY_DEFAULT = NO
+ACCOUNTING_MAPPING_OWNER = NUMERA_DOM_017
+ACCOUNTING_OR_FISCAL_EXPERIENCE_OWNER = NUMERA_UX_027
+TREQ_CHANGES = 0
+```
+
+La experiencia contable y fiscal consume cartera y recaudos como objetos financieros ya estabilizados; no los convierte en asientos por inferencia.
+
+---
+
+#### 4. Fuentes canónicas consumidas
+
+La definición consume:
+
+- `CAP-SCOPE-012` y la matriz `CAP-12.01..15`;
+- `NUMERA-DOM-001..017`, especialmente `NUMERA-DOM-013` y `NUMERA-DOM-017`;
+- `NUMERA-AUTH-001..015` en lo aplicable;
+- `VSCREEN-0095`, `VSCREEN-0097`, `VSCREEN-0101..0106`, `VSCREEN-0154` y `VSCREEN-0157`;
+- `VPROC-0051`, `VPROC-0052`, `VPROC-0053` y `VPROC-0054` como procesos económicos relacionados;
+- `VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT`;
+- `VPROC-0052::STEP-MANAGE_TAX_OBLIGATION`;
+- los contratos de integración, idempotencia, autorización y evidencia ya aprobados;
+- el Registro 04A vigente como cobertura, sin modificarlo.
+
+---
+
+#### 5. Resultado contractual
+
+Se define:
+
+```text
+NUMERA_ACCOUNTING_FISCAL_EXPERIENCE_CONTRACT = NUMERA-ACCOUNTING-FISCAL-EXPERIENCE-001
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED
+CAP_12_13_TAX_AND_COMPLIANCE = REQUIRED
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+EXTERNAL_AND_INTERNAL_ACCOUNTING_PATHS_SUPPORTED = YES
+CURRENT_ACCOUNTING_PROVIDER_BINDING_ACCREDITED = NO
+CURRENT_FISCAL_PROVIDER_BINDING_ACCREDITED = NO
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED_IN_NUMERA = 0
+NEW_CANONICAL_SCREEN_ID_COUNT = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 6. Decisión central de capas
+
+La experiencia deberá mostrar y conservar la separación:
+
+```text
+OPERATIONAL_FACT
+!= ECONOMIC_FACT
+!= ACCOUNTING_CANDIDATE
+!= ACCOUNTING_VOUCHER
+!= POSTED_ACCOUNTING_ENTRY
+!= STATUTORY_BOOK
+!= FINANCIAL_STATEMENT
+```
+
+Además:
+
+```text
+INTERNAL_FISCAL_REFERENCE
+!= OFFICIAL_FISCAL_DOCUMENT
+INTERNAL_TAX_CONTROL
+!= TAX_FILING
+INTERNAL_APPROVAL
+!= EXTERNAL_ACCEPTANCE
+```
+
+Ninguna etiqueta visual podrá borrar estas fronteras.
+
+---
+
+#### 7. Modos de autoridad contable
+
+La experiencia soporta dos caminos contractuales:
+
+```text
+CAMINO_A = EXTERNAL_ACCOUNTING_AUTHORITY
+CAMINO_B = INTERNAL_ACCOUNTING_AUTHORITY_AFTER_EXPLICIT_ACTIVATION
+```
+
+La interfaz deberá identificar cuál camino aplica para la entidad legal y periodo consultados.
+
+Si la autoridad no está acreditada o configurada, el sistema deberá mostrar condición no resuelta y bloquear afirmaciones de oficialidad.
+
+---
+
+#### 8. Autoridad por entidad legal y periodo
+
+Toda vista contable o fiscal material deberá declarar:
+
+- entidad legal;
+- ámbito temporal o periodo aplicable;
+- fuente de autoridad;
+- versión o vigencia cuando exista;
+- último estado confirmado;
+- evidencia asociada;
+- condición de sincronización o conciliación.
+
+No se inferirá autoridad desde marca, sede, centro de costo, nombre comercial, proveedor conocido ni existencia de un reporte.
+
+---
+
+#### 9. Superficies propietarias fiscales
+
+La tarea no crea pantallas nuevas.
+
+Las superficies canónicas principales son:
+
+| Superficie | Propiedad funcional | Paso dominante | Rol | Posición |
+| --- | --- | --- | --- | --- |
+| `VSCREEN-0154` Facturas y documentos fiscales | `numera` / `VPROC-0051` | `VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT` | `EXECUTE` | `IN_PROGRESS` |
+| `VSCREEN-0157` Impuestos y obligaciones de cumplimiento | `numera` / `VPROC-0052` | `VPROC-0052::STEP-MANAGE_TAX_OBLIGATION` | `EXECUTE` | `IN_PROGRESS` |
+
+---
+
+#### 10. VSCREEN-0154 — Facturas y documentos fiscales
+
+La superficie deberá permitir comprender, dentro del alcance autorizado:
+
+- tipo y propósito del documento;
+- entidad legal;
+- contraparte;
+- relación con hecho económico u obligación;
+- estado interno;
+- referencia externa cuando exista;
+- emisor o receptor autorizado cuando esté acreditado;
+- fecha relevante;
+- importe y moneda cuando proceda;
+- notas o correcciones relacionadas;
+- evidencia recibida;
+- última confirmación externa;
+- diferencia o conciliación pendiente.
+
+No convertirá una copia almacenada ni un registro interno en documento oficialmente emitido.
+
+---
+
+#### 11. VSCREEN-0157 — Impuestos y obligaciones de cumplimiento
+
+La superficie deberá permitir comprender, dentro del alcance autorizado:
+
+- obligación o control tributario;
+- entidad legal;
+- periodo;
+- calendario y vencimiento;
+- base y componentes cuando estén soportados;
+- soportes;
+- estado interno de preparación o revisión;
+- aprobación interna cuando exista;
+- referencia de presentación cuando exista;
+- aceptación o rechazo externo confirmado;
+- diferencia, corrección o seguimiento pendiente.
+
+La pantalla no sustituye al presentador autorizado ni a la autoridad fiscal.
+
+---
+
+#### 12. Superficies relacionadas
+
+La experiencia podrá enlazar información relacionada ya canónica sin duplicarla:
+
+- `VSCREEN-0095` para hechos económicos;
+- `VSCREEN-0097` para decisiones financieras internas;
+- `VSCREEN-0101..0103` para conciliaciones aplicables;
+- `VSCREEN-0105` para periodo económico y correcciones;
+- `VSCREEN-0106` para reportes y exportaciones financieras internas;
+- `VSCREEN-0099` para cartera;
+- `VSCREEN-0100` y `VSCREEN-0155` para tesorería cuando corresponda.
+
+El enlace no transfiere ownership.
+
+---
+
+#### 13. Ausencia deliberada de una pantalla contable formal nueva
+
+No existe en este contrato una nueva identidad `VSCREEN-*` para:
+
+- plan de cuentas;
+- comprobantes;
+- diario;
+- mayor;
+- auxiliares;
+- balance de prueba;
+- libros;
+- estados financieros estatutarios.
+
+La razón es contractual: `INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL`.
+
+Diseñar extensibilidad no equivale a activar contabilidad formal interna.
+
+---
+
+#### 14. Contexto persistente de autoridad
+
+Las superficies deberán hacer visible, cuando sea material:
+
+- entidad legal actual;
+- periodo o corte;
+- modo de autoridad aplicable;
+- fuente del último resultado confirmado;
+- estado de sincronización;
+- existencia de incertidumbre o conciliación pendiente.
+
+Un cambio de contexto deberá revalidar permisos y alcance antes de mostrar datos sensibles o habilitar acciones.
+
+---
+
+#### 15. Estados de experiencia frente a estados runtime
+
+La interfaz puede agrupar resultados para comprensión del usuario, pero esta tarea no crea enums de producto.
+
+Toda etiqueta visual deberá mapearse a evidencia real y distinguir al menos conceptualmente:
+
+- pendiente de preparación o revisión interna;
+- listo para una acción externa autorizada;
+- enviado o solicitado;
+- resultado externo aún no confirmado;
+- confirmado o aceptado externamente;
+- rechazado externamente;
+- conciliación o corrección requerida.
+
+La ausencia de respuesta nunca se mostrará como rechazo confirmado.
+
+---
+
+#### 16. Lista de documentos fiscales
+
+La lista de `VSCREEN-0154` deberá priorizar:
+
+- documento;
+- contraparte;
+- entidad legal;
+- fecha;
+- importe cuando proceda;
+- estado interno;
+- estado externo confirmado;
+- indicador de evidencia;
+- indicador de diferencia o conciliación.
+
+Los agregados de la lista son proyecciones y no se editan como fuente.
+
+---
+
+#### 17. Detalle de documento fiscal
+
+El detalle deberá separar secciones para:
+
+1. identidad y origen;
+2. entidad legal y contraparte;
+3. información económica correlacionada;
+4. referencia o representación fiscal;
+5. estado interno;
+6. resultado externo confirmado;
+7. notas, correcciones o documentos relacionados;
+8. evidencia y timeline;
+9. conciliación y diferencias.
+
+---
+
+#### 18. Documento recibido y documento emitido
+
+La experiencia deberá distinguir recepción y emisión.
+
+Un documento recibido:
+
+- puede requerir validación y correlación;
+- no prueba pago;
+- no prueba recepción física;
+- no crea obligación por inferencia si el contrato financiero exige validación adicional.
+
+Un documento que se pretende emitir:
+
+- no se considera oficialmente emitido por existir localmente;
+- requiere la autoridad o proveedor aplicable;
+- conserva resultado externo y evidencia.
+
+---
+
+#### 19. Referencia fiscal interna frente a oficialidad
+
+Se congela:
+
+```text
+LOCAL_FISCAL_RECORD_EXISTS = YES
+DOES_NOT_IMPLY_OFFICIAL_ISSUANCE = YES
+```
+
+La interfaz deberá usar lenguaje que distinga claramente:
+
+- referencia interna;
+- solicitud de emisión o registro;
+- resultado externo;
+- aceptación oficial cuando esté acreditada.
+
+---
+
+#### 20. Notas y correcciones fiscales
+
+Una nota, corrección o documento relacionado deberá:
+
+- conservar vínculo con el documento previo;
+- declarar causa;
+- conservar autoridad;
+- mantener historia;
+- evitar edición destructiva del documento confirmado;
+- mantener separados el efecto fiscal, económico y contable.
+
+---
+
+#### 21. Bandeja de obligaciones tributarias
+
+`VSCREEN-0157` deberá permitir filtrar por:
+
+- entidad legal;
+- periodo;
+- vencimiento;
+- categoría autorizada;
+- estado interno;
+- estado externo confirmado;
+- pendiente de evidencia;
+- diferencia o conciliación;
+- responsable autorizado cuando aplique.
+
+No se fijan categorías legales concretas en esta tarea.
+
+---
+
+#### 22. Detalle de obligación tributaria
+
+El detalle deberá separar:
+
+- identidad interna;
+- entidad legal;
+- periodo y vencimiento;
+- base y componentes soportados;
+- documentos y hechos de origen;
+- revisión interna;
+- decisión interna;
+- acción externa cuando corresponda;
+- resultado externo;
+- evidencia;
+- diferencias y correcciones.
+
+---
+
+#### 23. Calendario y vencimientos
+
+El calendario es una proyección de obligaciones y fechas autorizadas.
+
+Se conserva:
+
+```text
+CALENDAR_DUE_DATE != TAX_AUTHORITY_ACCEPTANCE
+```
+
+Una obligación vencida requiere tratamiento visible, pero el simple paso del tiempo no autoriza presentar, pagar, castigar ni modificar una fuente.
+
+---
+
+#### 24. Aprobación interna frente a presentación externa
+
+Se congela:
+
+```text
+INTERNAL_TAX_APPROVAL != TAX_FILING_SUBMITTED
+INTERNAL_FISCAL_APPROVAL != FISCAL_DOCUMENT_OFFICIALLY_ISSUED
+```
+
+La acción interna habilita únicamente el siguiente paso permitido por contrato y autoridad.
+
+---
+
+#### 25. Candidato contable en experiencia
+
+Cuando exista arquitectura contable habilitada para consulta, la experiencia podrá mostrar un candidato contable derivado de un hecho económico.
+
+Deberá declarar, cuando aplique:
+
+- hecho o conjunto fuente;
+- entidad legal;
+- regla y versión;
+- periodo económico;
+- periodo contable propuesto;
+- moneda y contexto FX;
+- cuentas propuestas;
+- dimensiones propuestas;
+- débitos y créditos propuestos;
+- soporte;
+- estado de validación;
+- resultado externo o interno cuando exista.
+
+Un candidato nunca se mostrará como asiento oficial antes del posteo autoritativo.
+
+---
+
+#### 26. Detalle de mapeo contable
+
+La experiencia de detalle podrá explicar:
+
+```text
+SOURCE_FACT
+-> ECONOMIC_FACT
+-> ACCOUNTING_RULE_VERSION
+-> ACCOUNTING_CANDIDATE
+-> EXTERNAL_OR_INTERNAL_ACCOUNTING_RESULT
+```
+
+La explicación deberá permitir rastrear hacia el origen sin permitir editar la fuente desde la proyección contable.
+
+---
+
+#### 27. Regla contable y versión
+
+Toda representación contable derivada deberá mostrar o permitir inspeccionar la regla aplicada y su versión.
+
+Cambiar una regla futura:
+
+- no modifica el hecho fuente;
+- no reescribe históricos posteados;
+- no cambia silenciosamente resultados ya confirmados;
+- puede producir una nueva propuesta o ajuste conforme a autoridad.
+
+---
+
+#### 28. Candidato balanceado
+
+Se conserva:
+
+```text
+BALANCED_CANDIDATE_IS_POSTED_ENTRY = NO
+```
+
+La interfaz deberá evitar copy que confunda cuadratura aritmética con posteo, aprobación o oficialidad.
+
+---
+
+#### 29. Auto-balanceo inexplicable
+
+Se congela:
+
+```text
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+```
+
+Una diferencia deberá mostrar causa, owner y tratamiento; no se ocultará mediante una línea genérica creada para cuadrar.
+
+---
+
+#### 30. Flujo de integración contable externa
+
+Cuando el camino externo esté acreditado, la experiencia deberá poder representar:
+
+```text
+ECONOMIC_FACT
+-> ACCOUNTING_CANDIDATE_OR_INPUT
+-> AUTHORIZED_EXTERNAL_EXCHANGE
+-> EXTERNAL_AUTHORITATIVE_RESULT
+-> NUMERA_REFERENCE_AND_RECONCILIATION
+```
+
+El proveedor concreto no se selecciona en esta tarea.
+
+---
+
+#### 31. Flujo fiscal externo
+
+Cuando una acción fiscal externa aplique, la experiencia deberá conservar:
+
+- intención autorizada;
+- entidad legal;
+- recurso exacto;
+- versión;
+- correlación de solicitud;
+- resultado externo;
+- referencia externa;
+- evidencia;
+- rechazo o incertidumbre;
+- reconciliación posterior.
+
+---
+
+#### 32. Resultado externo incierto
+
+Se conserva:
+
+```text
+TIMEOUT != FAILURE
+REQUEST_SENT != EXTERNAL_POSTED_ENTRY
+REQUEST_SENT != TAX_FILING_ACCEPTED
+```
+
+Ante resultado incierto, la experiencia deberá bloquear el retry empresarial peligroso y ofrecer consulta de estado o conciliación antes de repetir.
+
+---
+
+#### 33. Idempotencia
+
+Toda futura integración material deberá impedir duplicados mediante identidad estable e idempotencia en:
+
+- candidato;
+- solicitud externa;
+- documento fiscal;
+- obligación tributaria;
+- comprobante o posteo cuando aplique;
+- retry;
+- reversión o corrección con identidad propia.
+
+La UX deberá preservar el identificador de correlación sin exponer secretos.
+
+---
+
+#### 34. Reintento seguro
+
+Un reintento será seguro únicamente cuando:
+
+- el estado anterior sea conocido o reconciliado;
+- la operación soporte idempotencia;
+- la versión del recurso siga vigente;
+- la autoridad continúe válida;
+- el periodo y entidad no hayan cambiado;
+- no exista resultado externo confirmado incompatible.
+
+---
+
+#### 35. Rechazo externo
+
+Un rechazo externo deberá mostrar:
+
+- que el efecto no fue confirmado;
+- categoría de error segura para el usuario;
+- recurso y versión afectados;
+- próximo paso permitido;
+- evidencia disponible;
+- necesidad de corregir fuente, configuración o tratamiento según owner.
+
+La interfaz no inventará aceptación parcial.
+
+---
+
+#### 36. Conciliación contable o fiscal
+
+La conciliación deberá comparar sin sobrescribir:
+
+- fuente interna;
+- candidato o intención;
+- solicitud externa;
+- resultado externo;
+- referencia oficial cuando exista;
+- efecto económico esperado;
+- diferencia identificada;
+- decisión y evidencia de resolución.
+
+---
+
+#### 37. Corrección del dominio fuente
+
+Cuando la diferencia provenga del hecho operativo o económico fuente:
+
+- se identifica el owner original;
+- se evita editar la proyección contable o fiscal como sustituto;
+- se conserva la diferencia abierta;
+- se espera el hecho corregido o acción compensatoria autorizada;
+- se vuelve a derivar el tratamiento cuando corresponda.
+
+---
+
+#### 38. Corrección contable
+
+Cuando el hecho fuente sea correcto y el tratamiento contable sea incorrecto:
+
+- no se modifica la fuente;
+- se corrige regla, candidato o tratamiento;
+- un resultado posteado se corrige mediante reversión o ajuste trazable;
+- el original permanece histórico.
+
+---
+
+#### 39. Corrección fiscal
+
+Cuando el documento o resultado fiscal externo requiera corrección:
+
+- se conserva el documento/resultante previo;
+- se usa nota, corrección, sustitución o mecanismo autorizado según el contrato aplicable;
+- se preserva correlación;
+- NUMERA no simula aceptación de autoridad.
+
+La tarea no define figuras tributarias concretas.
+
+---
+
+#### 40. Periodos separados
+
+La experiencia debe preservar:
+
+```text
+OPERATIONAL_PERIOD
+!= ECONOMIC_PERIOD
+!= ACCOUNTING_PERIOD
+!= FISCAL_PERIOD
+```
+
+Toda fecha o periodo visible deberá indicar su naturaleza cuando exista riesgo de confusión.
+
+---
+
+#### 41. Cierre económico frente a cierre contable o fiscal
+
+Se congela:
+
+```text
+NUMERA_ECONOMIC_CLOSE_IS_ACCOUNTING_CLOSE = NO
+NUMERA_ECONOMIC_CLOSE_IS_FISCAL_CLOSE = NO
+```
+
+Cerrar un periodo económico no autoriza declarar cerrado un libro o periodo fiscal externo.
+
+---
+
+#### 42. Autoridad de cutover contable
+
+Una transición futura entre autoridad externa e interna deberá definir:
+
+- entidad legal;
+- periodo o fecha efectiva;
+- autoridad anterior;
+- autoridad nueva;
+- último resultado oficial anterior;
+- primer resultado oficial nuevo;
+- reconciliación de frontera;
+- ausencia de huecos y doble autoridad.
+
+---
+
+#### 43. Prohibición de doble ledger autoritativo
+
+Se conserva:
+
+```text
+DUAL_AUTHORITATIVE_LEDGER_FOR_SAME_ENTITY_PERIOD = FORBIDDEN
+```
+
+La experiencia puede comparar dos sistemas durante transición, pero deberá identificar uno solo como fuente formal autoritativa para cada resultado y periodo.
+
+---
+
+#### 44. Activación de contabilidad interna
+
+Mientras permanezca:
+
+```text
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+```
+
+la experiencia no deberá ofrecer como operativas acciones de:
+
+- crear plan de cuentas real;
+- postear asientos;
+- cerrar libros;
+- emitir balance de prueba oficial;
+- emitir estados estatutarios;
+- consolidar legalmente entidades.
+
+---
+
+#### 45. Plan de cuentas futuro
+
+La UX queda preparada conceptualmente para un plan de cuentas versionado por entidad, pero no crea códigos ni jerarquías reales.
+
+Cuando se active, deberá preservar:
+
+- identidad estable de cuenta;
+- versión;
+- vigencia;
+- estado;
+- autoridad;
+- restricciones;
+- historia de reemplazo.
+
+---
+
+#### 46. Comprobantes y líneas futuros
+
+Una futura experiencia de comprobante deberá diferenciar:
+
+- comprobante;
+- línea;
+- cuenta;
+- débito/crédito;
+- importe;
+- moneda;
+- tercero;
+- dimensiones;
+- hecho origen;
+- regla;
+- evidencia;
+- estado de posteo.
+
+Esta tarea no crea esa superficie ni sus datos.
+
+---
+
+#### 47. Posteo futuro
+
+Se congela:
+
+```text
+APPROVED_IS_POSTED = NO
+EXPORTED_IS_POSTED = NO
+HTTP_SUCCESS_IS_POSTED = NO
+```
+
+Solo evidencia autoritativa del ledger aplicable puede confirmar posteo.
+
+---
+
+#### 48. Reversión contable
+
+Se conserva:
+
+```text
+REVERSAL_DELETES_ORIGINAL_ENTRY = NO
+```
+
+Una reversión futura deberá mostrar el original, causa, actor, fecha, nuevo comprobante o efecto compensatorio y resultado posterior.
+
+---
+
+#### 49. Reporte NUMERA frente a estado estatutario
+
+Se congela:
+
+```text
+NUMERA_MANAGEMENT_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+```
+
+`VSCREEN-0106` podrá enlazar trazabilidad y evidencia, pero no deberá etiquetar reportes internos como libros, declaraciones o estados financieros estatutarios sin autoridad formal.
+
+---
+
+#### 50. Libros y balance de prueba futuros
+
+Auxiliares, diario, mayor, balance de prueba, libros y estados financieros serán proyecciones del ledger formal aplicable.
+
+No son fuentes editables de hechos operativos ni económicos.
+
+No se materializan en esta tarea.
+
+---
+
+#### 51. Documento fiscal frente a comprobante contable
+
+Se conserva:
+
+```text
+FISCAL_DOCUMENT_ACCOUNTING_VOUCHER_ACCOUNTING_ENTRY = DISTINCT
+```
+
+Un documento fiscal puede originar o soportar tratamiento contable, pero no se convierte automáticamente en comprobante o asiento.
+
+---
+
+#### 52. Obligación tributaria frente a cuenta por pagar
+
+La obligación tributaria y una obligación financiera de pago pueden relacionarse, pero no son el mismo objeto.
+
+La experiencia deberá evitar duplicar importes o estados entre `VSCREEN-0157`, `VSCREEN-0098` y tesorería.
+
+---
+
+#### 53. Entidades del mismo grupo
+
+Se conserva:
+
+```text
+SAME_BUSINESS_GROUP_IMPLIES_SAME_LEGAL_ENTITY = NO
+```
+
+La experiencia no consolidará legalmente hechos entre entidades por compartir marca, propietario o centro de costo.
+
+---
+
+#### 54. Intercompañía
+
+Una transferencia interna puede producir efectos económicos, contables o fiscales según política competente, pero la UX no inferirá:
+
+- venta legal;
+- ingreso;
+- gasto;
+- cuenta por cobrar;
+- cuenta por pagar;
+- impuesto;
+- asiento;
+- eliminación de consolidación.
+
+Cada resultado exige fuente, política y autoridad.
+
+---
+
+#### 55. Multimoneda y FX
+
+La experiencia deberá separar:
+
+- moneda del hecho;
+- moneda económica;
+- moneda contable cuando aplique;
+- moneda de presentación cuando exista;
+- contexto FX aprobado;
+- fecha o criterio de conversión.
+
+No se inventa una metodología universal de conversión.
+
+---
+
+#### 56. Permisos de documentos fiscales
+
+La experiencia consume, sin crear permisos nuevos:
+
+```text
+numera.finance.fiscal_documents.view
+numera.finance.fiscal_documents.register
+numera.finance.fiscal_documents.update
+numera.finance.fiscal_documents.approve
+numera.finance.fiscal_documents.reject
+```
+
+`approve` y `reject` son decisiones internas; no conceden autoridad oficial externa.
+
+---
+
+#### 57. Permisos de obligaciones tributarias
+
+La experiencia consume:
+
+```text
+numera.finance.tax_obligations.view
+numera.finance.tax_obligations.register
+numera.finance.tax_obligations.update
+numera.finance.tax_obligations.approve
+numera.finance.tax_obligations.reject
+```
+
+Ninguno equivale a presentar una declaración ni a recibir aceptación de autoridad fiscal.
+
+---
+
+#### 58. Permisos contables no inventados
+
+Esta tarea no crea permisos como:
+
+- `accounting.manage`;
+- `ledger.manage`;
+- `journal.manage`;
+- `books.manage`;
+- `tax.manage`;
+- cualquier equivalente genérico.
+
+Las futuras capacidades contables deberán definirse mediante su tarea propietaria antes de materialización.
+
+---
+
+#### 59. Bandeja de aprobaciones relacionada
+
+`VSCREEN-0097` puede presentar decisiones internas relacionadas con documentos u obligaciones cuando el contrato de autorización lo permita.
+
+La decisión deberá conservar:
+
+- recurso exacto;
+- versión;
+- actor;
+- alcance;
+- motivo cuando corresponda;
+- resultado;
+- evidencia.
+
+No deberá suplantar la confirmación externa.
+
+---
+
+#### 60. Sensibilidad y minimización
+
+La experiencia deberá minimizar:
+
+- identificadores fiscales completos cuando no sean necesarios;
+- referencias bancarias;
+- información personal de terceros;
+- payloads externos;
+- credenciales;
+- secretos;
+- trazas técnicas internas.
+
+La UI muestra información suficiente para decisión y soporte, no datos técnicos ilimitados.
+
+---
+
+#### 61. Estado vacío
+
+Un estado sin documentos, obligaciones o candidatos dentro del alcance autorizado deberá distinguirse de:
+
+- falta de permiso;
+- configuración ausente;
+- dependencia externa no configurada;
+- error técnico;
+- datos todavía no sincronizados;
+- filtros que excluyen resultados.
+
+`EMPTY` no significa `ZERO_LEGAL_OBLIGATION` por inferencia.
+
+---
+
+#### 62. Configuración externa ausente
+
+Cuando no exista proveedor o binding acreditado:
+
+- la experiencia puede mostrar que el canal externo no está disponible;
+- no inventará nombre de proveedor;
+- no ofrecerá una acción que aparenta envío real;
+- conservará el trabajo interno permitido;
+- indicará owner o dependencia definida para habilitación.
+
+---
+
+#### 63. Bloqueo por autorización o scope
+
+Ante autorización denegada o recurso fuera de scope:
+
+- no se enumeran recursos ocultos;
+- no se revelan permisos internos innecesarios;
+- no se permite override local;
+- se conserva sesión;
+- se ofrece retorno seguro o solicitud de acceso cuando esté prevista.
+
+---
+
+#### 64. Concurrencia y versión stale
+
+Toda acción material futura deberá revalidar:
+
+- versión del recurso;
+- entidad legal;
+- periodo;
+- autoridad;
+- permiso;
+- estado externo conocido.
+
+Una pestaña stale no deberá aprobar, enviar, corregir o repetir sobre una versión anterior silenciosamente.
+
+---
+
+#### 65. Resultado parcial
+
+Una operación externa con resultado parcial deberá conservar explícitamente:
+
+- unidades confirmadas;
+- unidades no confirmadas;
+- unidades rechazadas;
+- correlación;
+- evidencia;
+- próxima acción segura.
+
+No se mostrará `COMPLETADO` cuando una parte material siga incierta.
+
+---
+
+#### 66. Recuperación
+
+La experiencia de recuperación prioriza:
+
+1. consultar estado confirmado;
+2. comparar versión y contexto;
+3. corregir validación o configuración cuando corresponda;
+4. reconciliar resultado incierto;
+5. repetir solo cuando sea idempotente y seguro;
+6. escalar con referencia opaca cuando persista incertidumbre.
+
+---
+
+#### 67. Auditoría de acciones materiales
+
+Toda acción futura de registro, actualización, aprobación, rechazo, envío, posteo, reversión o conciliación deberá poder reconstruir:
+
+- actor;
+- recurso;
+- versión;
+- entidad legal;
+- periodo;
+- decisión de autorización;
+- comando o intención;
+- correlación externa;
+- resultado;
+- before/after minimizado cuando proceda;
+- evidencia.
+
+---
+
+#### 68. Métricas de experiencia
+
+La instrumentación futura deberá distinguir al menos:
+
+- documentos pendientes de revisión;
+- obligaciones próximas a vencer;
+- resultados externos inciertos;
+- rechazos externos;
+- diferencias de conciliación;
+- candidatos contables bloqueados por regla ambigua;
+- retries evitados por idempotencia;
+- recursos bloqueados por autoridad/configuración;
+- tiempo hasta resultado confirmado.
+
+Las métricas no se convierten en fuente contable o fiscal.
+
+---
+
+#### 69. Casos representativos de validación
+
+La experiencia deberá soportar como mínimo estos escenarios documentales:
+
+1. documento fiscal recibido correlacionado con hecho económico válido;
+2. documento recibido sin origen suficiente;
+3. documento duplicado por referencia externa;
+4. documento interno todavía no emitido oficialmente;
+5. solicitud externa con aceptación confirmada;
+6. solicitud externa rechazada;
+7. timeout con estado externo desconocido;
+8. retry bloqueado hasta consultar estado;
+9. nota o corrección vinculada al documento previo;
+10. obligación tributaria interna preparada pero no presentada;
+11. obligación internamente aprobada pero no aceptada externamente;
+12. vencimiento próximo con evidencia completa;
+13. vencimiento pasado sin resultado externo confirmado;
+14. base tributaria con fuente económica incompleta;
+15. diferencia entre fuente interna y resultado externo;
+16. corrección que pertenece al dominio fuente;
+17. corrección que pertenece al tratamiento fiscal;
+18. candidato contable generado con regla versionada;
+19. candidato balanceado todavía no posteado;
+20. reglas contables ambiguas que bloquean auto-posteo;
+21. integración contable externa con resultado confirmado;
+22. integración contable externa con resultado incierto;
+23. respuesta externa que no modifica el hecho fuente;
+24. intento de crear ajuste genérico para cuadrar bloqueado;
+25. periodo económico cerrado con periodo contable distinto;
+26. reporte NUMERA consultado sin etiquetarse como estado estatutario;
+27. documento fiscal relacionado con comprobante sin fusionarlos;
+28. obligación tributaria relacionada con pago sin fusionarlos;
+29. dos entidades del grupo conservadas separadas;
+30. transición contable con autoridad anterior y nueva explícitas;
+31. intento de doble ledger autoritativo bloqueado;
+32. contabilidad interna no activada y acciones formales no disponibles;
+33. actor sin permiso de documento fiscal;
+34. actor sin permiso de obligación tributaria;
+35. recurso fuera de scope sin enumeración sensible;
+36. versión stale antes de aprobación;
+37. resultado externo parcial;
+38. resultado externo tardío después de una consulta;
+39. corte multimoneda con contexto FX explícito;
+40. conciliación completa con lineage hasta fuente.
+
+---
+
+#### 70. Decisiones congeladas
+
+Se congela:
+
+```text
+NUMERA_ACCOUNTING_FISCAL_EXPERIENCE_CONTRACT = NUMERA-ACCOUNTING-FISCAL-EXPERIENCE-001
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED
+CAP_12_13_TAX_AND_COMPLIANCE = REQUIRED
+CURRENT_ACCOUNTING_PROVIDER_BINDING_ACCREDITED = NO
+CURRENT_FISCAL_PROVIDER_BINDING_ACCREDITED = NO
+DIRECT_EXTERNAL_SOURCE_SYSTEMS_OBSERVED_IN_NUMERA = 0
+FISCAL_DOCUMENT_SCREEN = VSCREEN-0154
+FISCAL_DOCUMENT_PROCESS = VPROC-0051
+FISCAL_DOCUMENT_STEP = VPROC-0051::STEP-MANAGE_FISCAL_DOCUMENT
+TAX_OBLIGATION_SCREEN = VSCREEN-0157
+TAX_OBLIGATION_PROCESS = VPROC-0052
+TAX_OBLIGATION_STEP = VPROC-0052::STEP-MANAGE_TAX_OBLIGATION
+NEW_CANONICAL_SCREEN_ID_COUNT = 0
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+EXTERNAL_AND_INTERNAL_ACCOUNTING_PATHS_SUPPORTED = YES
+ACCOUNTING_AUTHORITY_MUST_BE_EXPLICIT_BY_LEGAL_ENTITY_AND_PERIOD = YES
+DUAL_AUTHORITATIVE_LEDGER_FOR_SAME_ENTITY_PERIOD = FORBIDDEN
+ECONOMIC_FACT_IS_ACCOUNTING_CANDIDATE = NO
+ACCOUNTING_CANDIDATE_IS_POSTED_ENTRY = NO
+BALANCED_CANDIDATE_IS_POSTED_ENTRY = NO
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+OPERATIONAL_ECONOMIC_ACCOUNTING_FISCAL_PERIODS = DISTINCT
+APPROVED_OR_EXPORTED_IS_POSTED = NO
+POSTED_ENTRY_IMMUTABLE = YES
+REVERSAL_DELETES_ORIGINAL_ENTRY = NO
+ACCOUNTING_ADJUSTMENT_IS_SOURCE_CORRECTION = NO
+TIMEOUT_OR_REQUEST_SENT_IS_EXTERNAL_POSTING = NO
+REQUEST_SENT_IS_TAX_FILING_ACCEPTED = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_NOT_REWRITE_SOURCE = YES
+FISCAL_DOCUMENT_ACCOUNTING_VOUCHER_ACCOUNTING_ENTRY = DISTINCT
+SAME_BUSINESS_GROUP_IMPLIES_SAME_LEGAL_ENTITY = NO
+NUMERA_MANAGEMENT_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_ECONOMIC_CLOSE_IS_ACCOUNTING_CLOSE = NO
+NUMERA_ECONOMIC_CLOSE_IS_FISCAL_CLOSE = NO
+POLICY_OR_RULE_VERSION_CHANGE_REWRITES_HISTORY = NO
+CUTOVER_REQUIRES_EXPLICIT_AUTHORITY_BOUNDARY = YES
+RUNTIME_ACCOUNTING_PERMISSION_CREATED = 0
+VALIDATION_SCENARIO_COUNT = 40
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 71. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| contabilidad interna no está activada | no | Dirección + Contabilidad + implementación futura | decisión explícita por entidad y periodo con autoridad, política y fecha efectiva |
+| no existe proveedor contable externo acreditado | no | integración externa aplicable | proveedor, contrato, principal, autoridad y evidencia identificados |
+| no existe proveedor fiscal externo acreditado | no | integración fiscal aplicable | proveedor/autoridad, contrato, principal y alcance acreditados |
+| plan de cuentas material no existe | no | implementación contable posterior | versión por entidad creada, aprobada y validada |
+| reglas contables materiales no existen | no | implementación contable posterior | reglas versionadas, probadas y aprobadas |
+| ledger contable interno no existe | no | implementación condicionada a activación | posteo, auxiliares, cierre y auditoría certificados |
+| permisos contables formales no están definidos | no | tarea de autorización propietaria futura | catálogo de capacidades contables aprobado antes de materialización |
+| estados estatutarios internos no están habilitados | no | gobierno contable + implementación futura | autoridad, ledger y política formal certificados |
+| visor económico final permanece pendiente | no | `NUMERA-UX-028` | experiencia comparativa final aprobada sin confundir analítica con contabilidad formal |
+
+---
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos descartados: 0
+Requisitos obsoletos: 0
+```
+
+La tarea desarrolla contratos ya cubiertos por requisitos vigentes y no altera su criterio, estado, owner ni evidencia esperada.
+
+---
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+Se reutiliza como trazabilidad, sin modificación del registro:
+
+- `TREQ-NUMERA-002` para identidad de hechos, entidad legal, periodos, correcciones, extensibilidad contable y prohibición de libros escritos por dominios operativos;
+- `TREQ-INTEGRATION-017` para candidatos, integración contable/fiscal, idempotencia, resultados externos, autoridad y conciliación;
+- `TREQ-AUTH-013` para enforcement server-side de mutaciones futuras;
+- `TREQ-AUTH-015` para auditoría y evidencia correlacionable de acciones protegidas.
+
+---
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | contrato documental `DEFINE_ONCE`; no crea código, integración ni build de producto |
+| LOCAL | NOT_EXECUTED | formato, quality, delivery, topología, plan y TREQ se ejecutarán al incorporar el artefacto en el checkout documental autorizado |
+| REMOTA | PASS | se verificaron `main`, continuidad, marcador, topología, `NUMERA-DOM-013`, `NUMERA-DOM-017`, autorización financiera, Registro 04A, `VSCREEN-0154`, `VSCREEN-0157` y sus pasos canónicos; la base inmediata `NUMERA-UX-026` se consume desde el archivo completo aprobado por el usuario |
+| OPERATIVA | NOT_EXECUTED | no se emitieron documentos, presentaron obligaciones, generaron candidatos reales, enviaron integraciones, postearon asientos ni conciliaron resultados externos reales |
+| FÍSICA | NOT_APPLICABLE | `NO_PHYSICAL_INSTANCE`; no modifica código, datos, Supabase, proveedores, secretos ni despliegues |
+
+---
+
+#### 75. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+1. conserva `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+2. consume `NUMERA-DOM-013` y `NUMERA-DOM-017` sin reabrirlos;
+3. utiliza `VSCREEN-0154` como superficie fiscal documental;
+4. utiliza `VSCREEN-0157` como superficie de obligaciones tributarias;
+5. conserva sus procesos y pasos exactos;
+6. no crea nuevas identidades `VSCREEN-*`;
+7. verdad operativa y económica permanecen separadas de contabilidad formal;
+8. candidato, comprobante, asiento, libro y estado financiero permanecen distintos;
+9. documento fiscal interno y oficialidad externa permanecen distintos;
+10. control tributario interno y filing permanecen distintos;
+11. autoridad contable se declara por entidad legal y periodo;
+12. marca o sede no determinan autoridad contable;
+13. caminos externo e interno futuro pueden coexistir como diseño sin doble autoridad formal;
+14. contabilidad interna continúa diferida condicionalmente;
+15. acciones contables formales internas no se presentan como disponibles antes de activación;
+16. lista de documentos muestra estado interno y externo por separado;
+17. detalle fiscal conserva origen, evidencia y correlación;
+18. recepción y emisión permanecen distintas;
+19. almacenar documento no prueba emisión oficial;
+20. notas/correcciones preservan historia;
+21. lista tributaria conserva entidad, periodo y vencimiento;
+22. detalle tributario separa preparación, decisión interna y resultado externo;
+23. aprobación interna no equivale a filing;
+24. vencimiento no implica acción externa automática;
+25. candidato contable conserva fuente y regla/version;
+26. regla contable no reescribe la fuente;
+27. candidato balanceado no se presenta como posteado;
+28. auto-balanceo inexplicable queda prohibido;
+29. ajuste manual genérico para cuadrar queda prohibido;
+30. integración contable externa conserva correlación extremo a extremo;
+31. integración fiscal externa conserva resultado y evidencia;
+32. timeout no se trata como fallo confirmado;
+33. solicitud enviada no equivale a posteo;
+34. solicitud enviada no equivale a filing aceptado;
+35. retry material exige estado conocido o reconciliado;
+36. idempotencia evita duplicados;
+37. rechazo externo no inventa aceptación parcial;
+38. conciliación compara sin sobrescribir;
+39. error de fuente vuelve al owner de fuente;
+40. error contable corrige tratamiento, no operación;
+41. corrección fiscal conserva resultado anterior;
+42. periodos operativo, económico, contable y fiscal permanecen distintos;
+43. cierre económico no equivale a cierre contable;
+44. cierre económico no equivale a cierre fiscal;
+45. cutover exige frontera explícita de autoridad;
+46. doble ledger autoritativo para entidad/periodo queda prohibido;
+47. plan de cuentas futuro conserva identidad y versión;
+48. comprobantes futuros conservan lineage;
+49. aprobación/exportación/HTTP success no prueban posteo;
+50. reversión no elimina el original;
+51. reporte NUMERA no se etiqueta como estado estatutario;
+52. documento fiscal, comprobante y asiento permanecen distintos;
+53. obligación tributaria y cuenta por pagar permanecen distintas;
+54. entidades del grupo no se fusionan por inferencia;
+55. intercompañía no se resuelve por inferencia;
+56. monedas y contexto FX permanecen explícitos;
+57. se reutilizan exactamente los permisos fiscales existentes;
+58. se reutilizan exactamente los permisos tributarios existentes;
+59. no se crea ningún permiso contable genérico;
+60. `VSCREEN-0097` conserva decisión interna sin suplantar autoridad externa;
+61. sensibilidad y minimización se preservan;
+62. vacío, deny, falta de configuración, error técnico y falta de sincronización permanecen distintos;
+63. configuración externa ausente no inventa proveedor;
+64. versión stale bloquea acciones materiales;
+65. resultado parcial no se presenta como completo;
+66. recuperación prioriza status/reconciliación antes de retry;
+67. acciones materiales son auditables extremo a extremo;
+68. las 40 validaciones representativas quedan cubiertas;
+69. hallazgos diferidos tienen propietario y condición de salida;
+70. no se crean ni modifican requisitos de prueba;
+71. no se realizan cambios físicos;
+72. `NUMERA-UX-028` recibe una frontera clara entre analítica económica y oficialidad contable/fiscal.
+
+---
+
+#### 76. Límites
+
+Esta tarea no:
+
+- activa contabilidad formal interna;
+- selecciona proveedor contable;
+- selecciona proveedor fiscal;
+- selecciona autoridad técnica concreta;
+- crea plan de cuentas real;
+- crea cuentas contables;
+- crea terceros contables físicos;
+- crea comprobantes;
+- crea asientos;
+- postea movimientos;
+- crea diario, mayor, auxiliares o balance de prueba;
+- emite libros;
+- emite estados financieros estatutarios;
+- presenta declaraciones;
+- emite documentos fiscales oficiales;
+- crea obligaciones tributarias reales por inferencia;
+- define política tributaria;
+- define marco contable;
+- define tratamiento legal intercompañía;
+- define precios de transferencia;
+- define metodología FX universal;
+- crea permisos contables nuevos;
+- crea pantallas nuevas;
+- crea integraciones, endpoints, webhooks o credenciales;
+- modifica ventas, compras, inventario, producción, cartera, pagos o bancos;
+- crea tablas, vistas, funciones, RPC, triggers, RLS o migraciones;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-UX-028`.
+
+---
+
+#### 77. Handoff a NUMERA-UX-028
+
+La siguiente tarea recibe:
+
+```text
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED
+CAP_12_13_TAX_AND_COMPLIANCE = REQUIRED
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+EXTERNAL_AND_INTERNAL_ACCOUNTING_PATHS_SUPPORTED = YES
+CURRENT_ACCOUNTING_PROVIDER_BINDING_ACCREDITED = NO
+CURRENT_FISCAL_PROVIDER_BINDING_ACCREDITED = NO
+ACCOUNTING_AUTHORITY_MUST_BE_EXPLICIT_BY_LEGAL_ENTITY_AND_PERIOD = YES
+DUAL_AUTHORITATIVE_LEDGER_FOR_SAME_ENTITY_PERIOD = FORBIDDEN
+ECONOMIC_FACT_IS_ACCOUNTING_CANDIDATE = NO
+ACCOUNTING_CANDIDATE_IS_POSTED_ENTRY = NO
+BALANCED_CANDIDATE_IS_POSTED_ENTRY = NO
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+TIMEOUT_OR_REQUEST_SENT_IS_EXTERNAL_POSTING = NO
+REQUEST_SENT_IS_TAX_FILING_ACCEPTED = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_NOT_REWRITE_SOURCE = YES
+FISCAL_DOCUMENT_ACCOUNTING_VOUCHER_ACCOUNTING_ENTRY = DISTINCT
+NUMERA_MANAGEMENT_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_ECONOMIC_CLOSE_IS_ACCOUNTING_CLOSE = NO
+NUMERA_ECONOMIC_CLOSE_IS_FISCAL_CLOSE = NO
+FISCAL_DOCUMENT_SCREEN = VSCREEN-0154
+TAX_OBLIGATION_SCREEN = VSCREEN-0157
+NEW_CANONICAL_SCREEN_ID_COUNT = 0
+ECONOMIC_VIEWER_MUST_NOT_IMPLY_ACCOUNTING_OR_FISCAL_OFFICIALITY = YES
+ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-028` deberá diseñar el visor económico dinámico final sin presentar escenarios, costos, márgenes, reportes NUMERA o datos simulados como asientos, libros, filings, documentos fiscales oficiales o estados financieros estatutarios.
+
+---
+
+#### 78. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva`
 ### [ ] NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
