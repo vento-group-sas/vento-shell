@@ -20034,8 +20034,1053 @@ UX-015 consume identidad, procedencia e idempotencia de UX-014 y entrega a UX-01
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección`
-### [ ] NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
+### ✅ NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
 
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-015 — Evitar registro financiero duplicado
+**Tarea siguiente:** NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
+**Tipo de tarea:** validación documental del prototipo financiero NUMERA contra contratos, escenarios y perspectivas de Contabilidad y Dirección, con evidencia sustituta explícita, matrices de conformidad, carryovers y gate humano diferido; sin afirmar sesiones reales, sin implementar superficies ni ejecutar efectos financieros; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica componentes, rutas, permisos runtime, grants, RLS, RPC, Server Actions, tablas, vistas, migraciones, Supabase, datos financieros, eventos, conciliaciones, telemetría, sesiones de usuario, pilotos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Validar documentalmente que el prototipo financiero de NUMERA es coherente con los contratos aprobados y suficientemente explícito para continuar hacia las conciliaciones especializadas, usando las perspectivas funcionales de Contabilidad y Dirección sin fingir sesiones humanas que no se han ejecutado.
+
+La tarea debe demostrar que el prototipo:
+
+- conserva identidad, origen y trazabilidad;
+- evita doble reconocimiento;
+- separa registro, aprobación, conciliación, cierre y exportación;
+- mantiene autoridad y scope independientes de la presentación;
+- presenta diferencias, incertidumbre y recuperación sin inventar resultados;
+- permite a Contabilidad reconstruir el origen y resolver excepciones;
+- permite a Dirección comprender impacto, alcance y decisiones sin necesitar lenguaje técnico de implementación.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-UX-016` es `DEFINE_ONCE` y no crea instancia física propia.
+
+La tarea:
+
+- valida contratos y escenarios de forma documental;
+- no ejecuta una prueba con personas;
+- no certifica usabilidad real;
+- no materializa componentes;
+- no ejecuta hechos financieros;
+- no sustituye `UX-QA-028`;
+- no sustituye piloto E5;
+- no convierte evidencia documental en evidencia humana.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-015
+
+Se consume íntegramente:
+
+```text
+NUMERA_FINANCIAL_DUPLICATE_CONTRACT = NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001
+PRIMARY_DUPLICATE_SCREEN = VSCREEN-0095
+RELATED_MANUAL_CAPTURE_SCREEN = VSCREEN-0096
+OWNER_PROCESS = VPROC-0051
+DUPLICATE_CLASS_COUNT = 8
+TECHNICAL_REDELIVERY_IS_BUSINESS_DUPLICATE = NO
+EXACT_EVENT_REDELIVERY_CREATES_NEW_EFFECT = NO
+POSSIBLE_DUPLICATE_IS_CONFIRMED_DUPLICATE = NO
+SAME_AMOUNT_PROVES_DUPLICATE = NO
+SAME_DATE_PROVES_DUPLICATE = NO
+SAME_COUNTERPARTY_PROVES_DUPLICATE = NO
+FILTER_SELECTION_PROVES_DUPLICATE = NO
+CONFIRMED_DUPLICATE_CREATES_SECOND_EFFECT = NO
+CONFIRMED_DUPLICATE_DELETES_SOURCE_EVIDENCE = NO
+MANUAL_SHADOW_OF_EXISTING_SOURCE_FACT = FORBIDDEN
+RESULT_UNKNOWN_ALLOWS_BLIND_RETRY = NO
+CORRECTION_IS_DUPLICATE_BY_DEFAULT = NO
+VALIDATION_SCENARIO_COUNT = 12
+UX_016_OWNER = PROTOTYPE_VALIDATION_WITH_ACCOUNTING_AND_DIRECTION
+TREQ_CHANGES = 0
+```
+
+UX-016 desarrolla exclusivamente `PROTOTYPE_VALIDATION_WITH_ACCOUNTING_AND_DIRECTION`.
+
+---
+
+#### 4. Base canónica consumida
+
+La validación consume, sin redefinir:
+
+- `APF-09 — Gasto, conciliación y cierre`;
+- `NUMERA-EXPENSE-REGISTRATION-FLOW-001`;
+- `NUMERA-FINANCIAL-APPROVAL-FLOW-001`;
+- `NUMERA-PERIOD-CLOSE-FLOW-001`;
+- `NUMERA-INDEPENDENT-EXPORT-FLOW-001`;
+- `NUMERA-COMPANY-SITE-COST-CENTER-FILTER-001`;
+- `NUMERA-SOURCE-EVENT-CONSUMPTION-001`;
+- `NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001`;
+- perfiles `PROTO-NUMERA-001`, `PROTO-NUMERA-002` y `PROTO-NUMERA-003`;
+- principios de `AUTH-UI-056` y `AUTH-UI-058` para distinguir validación documental de evidencia humana;
+- decisiones de alcance de `CAP-SCOPE-012`.
+
+---
+
+#### 5. Contrato resultante
+
+Se define:
+
+```text
+NUMERA-PROTOTYPE-ACCOUNTING-DIRECTION-VALIDATION-001
+```
+
+El contrato registra qué puede declararse conforme documentalmente ahora, qué requiere evidencia humana posterior y qué responsabilidades continúan en tareas propietarias futuras.
+
+---
+
+#### 6. Decisión de evidencia
+
+La tarea adopta:
+
+```text
+VALIDATION_RESULT = PASS_WITH_CARRYOVER
+EVIDENCE_MODE = DOCUMENTARY_EVIDENCE_SUBSTITUTION
+HUMAN_SESSION_EXECUTION = NOT_EXECUTED
+DIRECT_HUMAN_PILOT_REQUIRED = YES
+PRODUCTION_CERTIFICATION = NO
+```
+
+La sustitución de evidencia permite cerrar la validación documental sin convertirla en piloto.
+
+---
+
+#### 7. Regla contra evidencia inventada
+
+```text
+DOCUMENTARY_REVIEW != HUMAN_SESSION
+STATIC_WALKTHROUGH != USER_TEST
+APPROVED_CONTRACT != OBSERVED_BEHAVIOR
+PASS_WITH_CARRYOVER != CERTIFIED_FOR_PRODUCTION
+```
+
+No se crean participantes, entrevistas, tiempos, tasas de éxito, comentarios, observaciones ni aprobaciones humanas ficticias.
+
+---
+
+#### 8. Gate documental
+
+El gate de UX-016 puede quedar en:
+
+```text
+DOCUMENTARY_GATE = PASS_WITH_CARRYOVER
+```
+
+solo cuando:
+
+```text
+CONTRACT_COHERENCE = CONFORME_DOCUMENTAL
+AND
+ACCOUNTING_PERSPECTIVE = CONFORME_DOCUMENTAL
+AND
+DIRECTION_PERSPECTIVE = CONFORME_DOCUMENTAL
+AND
+DUPLICATE_SCENARIOS = CONFORME_DOCUMENTAL
+AND
+RECOVERY_AND_UNCERTAINTY = CONFORME_DOCUMENTAL
+AND
+UNOWNED_FINDINGS = 0
+```
+
+---
+
+#### 9. Lo que el gate no autoriza
+
+`PASS_WITH_CARRYOVER` no significa:
+
+- implementación completa;
+- prueba con Contabilidad real;
+- prueba con Dirección real;
+- aceptación productiva;
+- cierre de `UX-QA-028`;
+- validación de performance;
+- certificación de accesibilidad ejecutada;
+- cobertura de datos reales;
+- autorización de conciliaciones futuras;
+- aprobación de contabilidad formal interna.
+
+---
+
+#### 10. Perspectiva Contabilidad
+
+La revisión documental desde Contabilidad exige que el prototipo permita:
+
+1. identificar el hecho y su fuente;
+2. reconstruir correlación y evidencia;
+3. distinguir hecho, documento, obligación, pago y aplicación;
+4. detectar duplicados sin borrar historia;
+5. separar posible duplicado de duplicado confirmado;
+6. conservar periodo, moneda, entidad y centro de costo cuando correspondan;
+7. distinguir diferencia, corrección, reverso y compensación;
+8. mantener trazabilidad hasta el origen;
+9. identificar qué owner debe corregir la fuente;
+10. evitar cierre ficticio cuando existan pendientes materiales;
+11. conservar evidencia de aprobación y decisiones sensibles;
+12. recuperar resultados inciertos antes de repetir una mutación.
+
+---
+
+#### 11. Perspectiva Dirección
+
+La revisión documental desde Dirección exige que el prototipo permita:
+
+1. comprender qué decisión está pendiente;
+2. conocer alcance, periodo y población afectados;
+3. distinguir dato real, pendiente, estimado, simulado o incompleto;
+4. ver impacto antes de aprobar una acción sensible;
+5. identificar bloqueos y responsables;
+6. navegar desde indicador o síntesis hasta evidencia autorizada;
+7. comprender diferencias sin depender de términos de infraestructura;
+8. comparar contexto sin confundir filtro con autoridad;
+9. reconocer cuándo la información no está completa;
+10. distinguir cierre económico de cierre contable o fiscal;
+11. separar aprobación, pago, conciliación, cierre y exportación;
+12. conservar decisiones futuras de política empresarial en sus owners exactos.
+
+---
+
+#### 12. Perspectiva compartida
+
+Contabilidad y Dirección comparten como invariantes:
+
+```text
+SOURCE_TRACEABILITY = REQUIRED
+SILENT_HISTORY_REWRITE = FORBIDDEN
+UNAUTHORIZED_SCOPE_EXPANSION = FORBIDDEN
+UNKNOWN_IS_SUCCESS = NO
+PARTIAL_IS_COMPLETE = NO
+FILTER_IS_AUTHORITY = NO
+ROLE_NAME_IS_AUTHORITY = NO
+DUPLICATE_SIMILARITY_IS_IDENTITY = NO
+```
+
+---
+
+#### 13. Prototipo APF-09
+
+El prototipo financiero representativo conserva:
+
+```text
+REGISTER_EXPENSE
+-> VALIDATE
+-> REVIEW
+-> APPROVE_WHEN_REQUIRED
+-> RECONCILE
+-> CLOSE_OR_KEEP_OPEN
+-> RECOVER_OR_CORRECT_WITH_HISTORY
+```
+
+APF-09 no convierte estas etapas en una sola acción.
+
+---
+
+#### 14. Superficies concretas ya diseñadas
+
+La validación considera como superficies concretas disponibles en los contratos aprobados:
+
+| Superficie | Propósito en esta validación |
+| --- | --- |
+| `VSCREEN-0095` | triage de hechos económicos, diferencias y duplicidad |
+| `VSCREEN-0096` | registro de gasto y soporte |
+| `VSCREEN-0097` | decisiones de aprobación financiera |
+| `VSCREEN-0105` | cierre, reapertura y corrección de periodo |
+| `VSCREEN-0106` | reportes, exportación y filtrado financiero |
+
+La tarea no crea una superficie nueva.
+
+---
+
+#### 15. Perfiles NUMERA reutilizados
+
+La validación documental reutiliza:
+
+```text
+PROTO-NUMERA-001 = OPERACION_FINANCIERA
+PROTO-NUMERA-002 = APROBACION_O_TESORERIA
+PROTO-NUMERA-003 = ANALISIS_O_AUDITORIA
+```
+
+Estos perfiles son modelos contractuales; no son evidencia de participantes reales.
+
+---
+
+#### 16. Dimensiones de validación
+
+Se validan exactamente estas diez dimensiones:
+
+```text
+V01_SOURCE_AND_LINEAGE
+V02_IDENTITY_AND_DUPLICATES
+V03_SCOPE_AND_CONTEXT
+V04_SEPARATION_OF_DUTIES
+V05_PERIOD_AND_VERSION
+V06_DIFFERENCES_AND_RECONCILIATION_READINESS
+V07_CLOSE_REOPEN_AND_CORRECTION
+V08_EXPORT_AND_MINIMIZATION
+V09_RECOVERY_AND_UNKNOWN_RESULT
+V10_BUSINESS_COMPREHENSION
+```
+
+---
+
+#### 17. Estados de evaluación
+
+Cada dimensión o escenario usa únicamente:
+
+```text
+CONFORME_DOCUMENTAL
+PENDIENTE_DE_EJECUCION_HUMANA
+NO_CONFORME_DOCUMENTAL
+NO_APLICA
+```
+
+`PENDIENTE_DE_EJECUCION_HUMANA` nunca se convierte en `CONFORME_DOCUMENTAL` por inferencia.
+
+---
+
+#### 18. Matriz de validación por dimensión
+
+| Dimensión | Contabilidad | Dirección | Resultado documental |
+| --- | --- | --- | --- |
+| `V01_SOURCE_AND_LINEAGE` | requerida | requerida para drill-down | `CONFORME_DOCUMENTAL` |
+| `V02_IDENTITY_AND_DUPLICATES` | crítica | visible como riesgo/estado | `CONFORME_DOCUMENTAL` |
+| `V03_SCOPE_AND_CONTEXT` | crítica | crítica | `CONFORME_DOCUMENTAL` |
+| `V04_SEPARATION_OF_DUTIES` | crítica | crítica | `CONFORME_DOCUMENTAL` |
+| `V05_PERIOD_AND_VERSION` | crítica | crítica | `CONFORME_DOCUMENTAL` |
+| `V06_DIFFERENCES_AND_RECONCILIATION_READINESS` | crítica | visible con owner/bloqueo | `CONFORME_DOCUMENTAL` |
+| `V07_CLOSE_REOPEN_AND_CORRECTION` | crítica | crítica por impacto | `CONFORME_DOCUMENTAL` |
+| `V08_EXPORT_AND_MINIMIZATION` | crítica | crítica para decisión/distribución | `CONFORME_DOCUMENTAL` |
+| `V09_RECOVERY_AND_UNKNOWN_RESULT` | crítica | comprensible sin falso éxito | `CONFORME_DOCUMENTAL` |
+| `V10_BUSINESS_COMPREHENSION` | pendiente de observación real | pendiente de observación real | `PENDIENTE_DE_EJECUCION_HUMANA` |
+
+---
+
+#### 19. Escenario 1 — mismo `event_id` dos veces
+
+Entrada:
+
+```text
+SAME_EVENT_ID
++ SAME_LOGICAL_EVENT
+```
+
+Resultado esperado:
+
+```text
+TECHNICAL_REDELIVERY
+-> RETURN_PRIOR_RESULT
+-> SECOND_ECONOMIC_EFFECT = NO
+```
+
+Contabilidad debe poder reconstruir que la segunda entrega no es un segundo hecho.
+
+Dirección no debe ver doble impacto agregado.
+
+---
+
+#### 20. Escenario 2 — eventos distintos, misma venta y mismo efecto
+
+Entrada:
+
+```text
+DIFFERENT_EVENT_IDS
++ SAME_CANONICAL_SALE_REALITY
++ SAME_ECONOMIC_EFFECT_CLASS
+```
+
+Resultado esperado:
+
+```text
+CONFIRMED_BUSINESS_DUPLICATE
+-> REUSE_EXISTING_ECONOMIC_EFFECT
+```
+
+La evidencia de ambas entradas permanece disponible.
+
+---
+
+#### 21. Escenario 3 — venta con pago separado
+
+Entrada:
+
+```text
+SALE
++ PAYMENT
++ SHARED_BUSINESS_CORRELATION
+```
+
+Resultado esperado:
+
+```text
+DISTINCT_RELATED_FACT
+SALE != PAYMENT
+```
+
+No se elimina el pago para hacer coincidir la cardinalidad.
+
+---
+
+#### 22. Escenario 4 — dos recepciones parciales legítimas
+
+Entrada:
+
+```text
+SAME_PURCHASE_ORDER
++ PARTIAL_RECEIPT_A
++ PARTIAL_RECEIPT_B
+```
+
+Resultado esperado:
+
+```text
+INDEPENDENT_RELATED_FACTS
+AUTO_DEDUPLICATION = NO
+```
+
+La conciliación detallada pertenece a `NUMERA-UX-018`.
+
+---
+
+#### 23. Escenario 5 — FOGO y NEXO sustentan un efecto
+
+Entrada:
+
+```text
+PRODUCTION_EXECUTION
++ PHYSICAL_MOVEMENT
++ SAME_ECONOMIC_CHAIN
+```
+
+Resultado esperado:
+
+```text
+MULTIPLE_EVIDENCE_SOURCES
+!=
+MULTIPLE_ECONOMIC_EFFECTS
+```
+
+La conciliación detallada pertenece a `NUMERA-UX-019`.
+
+---
+
+#### 24. Escenario 6 — sombra manual de hecho fuente
+
+Entrada:
+
+```text
+SOURCE_FACT_EXISTS
++ MANUAL_CAPTURE_ATTEMPT
++ SAME_ECONOMIC_EFFECT
+```
+
+Resultado esperado:
+
+```text
+DO_NOT_CREATE_MANUAL_SHADOW_FACT
+-> RECOVER_OR_LINK_EXISTING
+```
+
+---
+
+#### 25. Escenario 7 — captura manual primero, fuente después
+
+Entrada:
+
+```text
+MANUAL_EFFECT_EXISTS
++ LATER_SOURCE_EVENT
+```
+
+Resultado esperado:
+
+```text
+COMPARE_IDENTITY_AND_EVIDENCE
+-> ONE_ECONOMIC_EFFECT_IF_DUPLICATE_CONFIRMED
+-> PRESERVE_BOTH_REPRESENTATIONS
+```
+
+---
+
+#### 26. Escenario 8 — coincidencia superficial
+
+Entrada:
+
+```text
+SAME_AMOUNT
++ SAME_DATE
++ SAME_COUNTERPARTY
+```
+
+sin identidad fuerte.
+
+Resultado esperado:
+
+```text
+POSSIBLE_BUSINESS_DUPLICATE
+OR
+INDEPENDENT_ECONOMIC_FACT
+```
+
+Nunca `CONFIRMED_BUSINESS_DUPLICATE` por similitud sola.
+
+---
+
+#### 27. Escenario 9 — reverso o corrección
+
+Entrada:
+
+```text
+NEW_ENTRY
++ REFERENCE_TO_ORIGINAL
++ CORRECTION_OR_REVERSAL_SEMANTICS
+```
+
+Resultado esperado:
+
+```text
+CORRECTION_REVERSAL_OR_COMPENSATION
+!= DUPLICATE_BY_DEFAULT
+```
+
+---
+
+#### 28. Escenario 10 — evidencia insuficiente
+
+Entrada:
+
+```text
+WEAK_SIMILARITY
++ MISSING_CANONICAL_IDENTITY
+```
+
+Resultado esperado:
+
+```text
+INSUFFICIENT_EVIDENCE
+-> KEEP_PENDING
+```
+
+No se usa el resultado que haga cuadrar el reporte.
+
+---
+
+#### 29. Escenario 11 — reutilización conflictiva
+
+Entrada:
+
+```text
+SAME_IDEMPOTENT_IDENTITY
++ MATERIAL_DIFFERENCE
+```
+
+Resultado esperado:
+
+```text
+CONFLICTING_REUSE
+-> DENY_AND_RESOLVE
+```
+
+---
+
+#### 30. Escenario 12 — resultado desconocido tras commit
+
+Entrada:
+
+```text
+COMMIT_ATTEMPT
++ RESPONSE_LOST
+```
+
+Resultado esperado:
+
+```text
+RESULT_UNKNOWN
+-> QUERY_AUTHORITATIVE_RESULT
+OR
+-> RECONCILIATION_REQUIRED
+```
+
+No se ofrece segundo registro ciego.
+
+---
+
+#### 31. Resultado agregado de los 12 escenarios
+
+La revisión documental produce:
+
+```text
+VALIDATION_SCENARIO_COUNT = 12
+DOCUMENTARILY_COHERENT_SCENARIOS = 12
+DOCUMENTARY_SCENARIO_BLOCKERS = 0
+HUMAN_EXECUTED_SCENARIOS = 0
+```
+
+Esto valida coherencia contractual, no comportamiento humano real.
+
+---
+
+#### 32. Registro de gasto
+
+El prototipo es conforme cuando:
+
+- captura origen y contexto explícitos;
+- valida duplicidad antes del commit cuando sea posible;
+- revalida server-side;
+- usa idempotencia;
+- distingue resultado desconocido;
+- no autoaprueba;
+- no ejecuta pago;
+- no cierra periodo.
+
+---
+
+#### 33. Aprobación
+
+El prototipo es conforme cuando:
+
+- recibe un recurso ya existente;
+- separa revisión de decisión;
+- revalida autoridad y elegibilidad;
+- conserva segregación de funciones;
+- no convierte aprobación en pago;
+- no convierte aprobación en cierre;
+- produce receipt correlacionable.
+
+---
+
+#### 34. Cierre y reapertura
+
+El prototipo es conforme cuando:
+
+- expone gates y pendientes;
+- distingue `open`, `locked` y `closed`;
+- no permite atajo silencioso;
+- preserva versiones;
+- distingue reapertura de corrección;
+- conserva historial;
+- no presenta cierre económico como cierre contable o fiscal.
+
+---
+
+#### 35. Exportación
+
+El prototipo es conforme cuando:
+
+- lectura y exportación permanecen separadas;
+- finalidad, población, filtros y campos son explícitos;
+- se minimiza información;
+- un link o formato no concede autoridad;
+- cambio material invalida revisión previa;
+- exportar no modifica el hecho económico.
+
+---
+
+#### 36. Filtros
+
+El prototipo es conforme cuando:
+
+```text
+SELECTED_SCOPE != AUTHORIZED_SCOPE
+FILTERED_VIEW <= AUTHORIZED_SCOPE
+```
+
+y empresa, sede o centro de costo seleccionados no se convierten en identidad fuente ni evidencia de duplicidad.
+
+---
+
+#### 37. Eventos fuente
+
+El prototipo es conforme cuando:
+
+- PULSO, ORIGO, FOGO y NEXO conservan ownership;
+- NUMERA consume sin reescribir;
+- evento recibido no equivale a reconocimiento;
+- redelivery no duplica efecto;
+- dimensiones ausentes no se completan desde filtros;
+- error parcial y resultado desconocido permanecen explícitos.
+
+---
+
+#### 38. Recuperación
+
+Toda recuperación debe distinguir:
+
+```text
+DENIED
+FAILED
+PARTIAL
+STALE
+CONFLICT
+UNKNOWN_RESULT
+MISSING_EVIDENCE
+```
+
+Ninguno de esos estados se presenta como éxito por conveniencia visual.
+
+---
+
+#### 39. Comprensión empresarial
+
+El contrato documental exige lenguaje empresarial para:
+
+- fuente;
+- periodo;
+- diferencia;
+- duplicado;
+- pendiente;
+- impacto;
+- aprobación;
+- cierre;
+- reapertura;
+- exportación;
+- corrección.
+
+La comprensión real de ese lenguaje permanece pendiente de observación humana.
+
+---
+
+#### 40. Densidad y progresividad
+
+La revisión confirma el principio:
+
+```text
+PRIMARY_DECISION_FIRST
++ PROGRESSIVE_DISCLOSURE
++ TRACEABLE_DETAIL_ON_DEMAND
+```
+
+La medición real de densidad, tiempo de comparación y necesidad de asistencia pertenece a piloto/`UX-QA-028`.
+
+---
+
+#### 41. Datos de prueba
+
+La futura validación humana debe usar:
+
+- identidades ficticias o controladas;
+- empresas/sedes/centros de prueba;
+- periodos de prueba;
+- importes y documentos sintéticos;
+- estados simulados de integración;
+- escenarios de éxito, conflicto, deny, partial y unknown.
+
+No se requiere exponer datos productivos para validar comprensión.
+
+---
+
+#### 42. Evidencia humana diferida
+
+La evidencia humana efectiva permanece obligatoria antes de producción.
+
+Owners de cierre:
+
+```text
+UX-QA-020
+UX-QA-028
+E5_PILOT_APPLICABLE
+```
+
+`UX-QA-028` deberá probar NUMERA por alcance financiero con evidencia real y defectos observados.
+
+---
+
+#### 43. Perfiles humanos futuros
+
+La prueba posterior deberá cubrir, cuando corresponda:
+
+```text
+PART-NUMERA-001 = OPERACION_FINANCIERA
+PART-NUMERA-002 = APROBACION_O_TESORERIA
+PART-NUMERA-003 = ANALISIS_O_AUDITORIA
+```
+
+La selección de personas reales, cantidad de participantes y calendario no se inventan en UX-016.
+
+---
+
+#### 44. Dirección como perspectiva empresarial
+
+Dirección en UX-016 es una perspectiva de decisión empresarial y no un permiso runtime ni un `role_name`.
+
+```text
+DIRECTION_PERSPECTIVE != AUTHORITY
+DIRECTION_PERSPECTIVE != PARTICIPANT_EVIDENCE
+```
+
+---
+
+#### 45. Contabilidad como perspectiva profesional
+
+Contabilidad en UX-016 es una perspectiva funcional para evaluar fuente, clasificación, periodo, documento, diferencia, conciliación y evidencia.
+
+```text
+ACCOUNTING_PERSPECTIVE != AUTHORITY
+ACCOUNTING_PERSPECTIVE != FORMAL_ACCOUNTING_ACTIVATED
+```
+
+---
+
+#### 46. Contabilidad formal interna permanece diferida
+
+UX-016 no decide:
+
+- internalizar contabilidad formal;
+- plan de cuentas;
+- reglas activas de contabilización;
+- proveedor contable/fiscal;
+- libros oficiales.
+
+Esas decisiones conservan sus owners canónicos.
+
+---
+
+#### 47. Decisiones empresariales que no se fabrican
+
+UX-016 tampoco inventa:
+
+- política de crédito;
+- límites de castigo;
+- umbrales de materialidad;
+- tolerancias financieras concretas;
+- metas empresariales;
+- drivers concretos de costos;
+- calendario tributario oficial;
+- proveedor bancario;
+- proveedor fiscal.
+
+Cada una permanece con su owner aprobado y su condición de salida.
+
+---
+
+#### 48. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-016 | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| no existen sesiones humanas ejecutadas en esta tarea | no | `UX-QA-020` + `UX-QA-028` + piloto E5 | evidencia real por perfiles y escenarios aplicables |
+| comprensión, densidad, tiempo de comparación y asistencia no pueden medirse documentalmente | no | `UX-QA-028` | métricas y observaciones humanas reales |
+| conciliación ventas/pagos aún no está detallada | no | `NUMERA-UX-017` | contrato de conciliación aprobado |
+| conciliación compras/recepciones aún no está detallada | no | `NUMERA-UX-018` | contrato de conciliación aprobado |
+| conciliación inventario/producción aún no está detallada | no | `NUMERA-UX-019` | contrato de conciliación aprobado |
+| visor económico dinámico todavía no está diseñado | no | `NUMERA-UX-028` | contrato del visor aprobado y luego validado en `UX-QA-028` |
+| contabilidad formal interna permanece condicionada | no | `NUMERA-DOM-017` + Dirección/Contabilidad | decisión explícita y contrato aprobado |
+
+No queda hallazgo detectado sin owner y condición de salida.
+
+---
+
+#### 49. Decisiones congeladas
+
+```text
+NUMERA_PROTOTYPE_VALIDATION_CONTRACT = NUMERA-PROTOTYPE-ACCOUNTING-DIRECTION-VALIDATION-001
+VALIDATION_RESULT = PASS_WITH_CARRYOVER
+EVIDENCE_MODE = DOCUMENTARY_EVIDENCE_SUBSTITUTION
+HUMAN_SESSION_EXECUTION = NOT_EXECUTED
+HUMAN_VALIDATION_REQUIRED_BEFORE_PRODUCTION = YES
+HUMAN_VALIDATION_OWNER = UX_QA_028
+VALIDATION_SCENARIO_COUNT = 12
+DOCUMENTARILY_COHERENT_SCENARIOS = 12
+DOCUMENTARY_SCENARIO_BLOCKERS = 0
+ACCOUNTING_PERSPECTIVE_IS_AUTHORITY = NO
+DIRECTION_PERSPECTIVE_IS_AUTHORITY = NO
+PRODUCTION_CERTIFICATION = NO
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 50. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+La tarea valida documentalmente contratos y escenarios ya gobernados y registra carryovers de evidencia humana. No crea comportamiento ejecutable, permisos, superficies, datos, integraciones o efectos nuevos y no modifica el Registro 04A.
+
+---
+
+#### 51. Cobertura de prueba vigente reutilizada
+
+Esta sección registra cobertura existente y no actualiza el Registro 04A.
+
+- `TREQ-NUMERA-001` — reconciliación con fuentes, separación de acciones y trazabilidad;
+- `TREQ-NUMERA-002` — identidad del hecho económico, dimensiones, evidencia y correcciones no destructivas;
+- `TREQ-AUTH-013` — revalidación server-side de actor, permiso, scope, recurso y estado;
+- `TREQ-AUTH-014` — invalidación ante contexto o decisión stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones sensibles;
+- `TREQ-INTEGRATION-017` — llegada gobernada e idempotente de hechos a NUMERA;
+- cobertura de prototipo y validación humana futura ya prevista por `UX-ADMIN-005`, `AUTH-UI-056`, `AUTH-UI-058`, `UX-QA-020` y `UX-QA-028`.
+
+---
+
+#### 52. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | UX-016 no ejecuta build de producto; la incorporación y batería documental quedan para el ciclo local. |
+| LOCAL | NOT_EXECUTED | No se modificó un checkout local durante la redacción; reemplazo, formato y validadores quedan para el ciclo documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, topología `DEFINE_ONCE`, propietario, `APF-09`, decisiones de `CAP-SCOPE-012`, contratos UX NUMERA previos, metodología de validación documental/humana y Registro 04A aplicable; UX-015 se consume desde el artefacto completo aprobado por el usuario mientras su publicación puede seguir pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con Contabilidad o Dirección, entrevistas, tiempos, tareas reales, decisiones financieras ni pilotos. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-016` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no autoriza implementación física propia. |
+
+---
+
+#### 53. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-PROTOTYPE-ACCOUNTING-DIRECTION-VALIDATION-001`;
+2. el resultado documental es `PASS_WITH_CARRYOVER`;
+3. se declara `HUMAN_SESSION_EXECUTION = NOT_EXECUTED`;
+4. no se inventa evidencia humana;
+5. validación documental y piloto permanecen distintos;
+6. la perspectiva Contabilidad queda definida;
+7. la perspectiva Dirección queda definida;
+8. ninguna perspectiva concede autoridad runtime;
+9. APF-09 permanece como prototipo financiero representativo;
+10. se reutilizan los tres perfiles NUMERA sin convertirlos en participantes reales;
+11. existen exactamente diez dimensiones de validación;
+12. los estados de evaluación están cerrados;
+13. las dimensiones V01 a V09 quedan `CONFORME_DOCUMENTAL`;
+14. V10 queda `PENDIENTE_DE_EJECUCION_HUMANA`;
+15. se validan los 12 escenarios heredados de UX-015;
+16. mismo `event_id` no crea segundo efecto;
+17. venta y pago permanecen distintos;
+18. recepciones parciales legítimas no se deduplican;
+19. múltiples fuentes pueden sustentar un solo efecto;
+20. sombra manual de hecho fuente queda prohibida;
+21. captura manual previa no obliga a duplicar cuando llega la fuente;
+22. similitud superficial no confirma duplicidad;
+23. reverso/corrección no es duplicado por defecto;
+24. evidencia insuficiente permanece pendiente;
+25. reutilización conflictiva falla cerrada;
+26. resultado desconocido exige consulta o conciliación;
+27. registro de gasto conserva separación de aprobación/pago/cierre;
+28. aprobación no ejecuta pago ni cierre;
+29. cierre/reapertura conserva historia;
+30. exportación conserva autoridad independiente;
+31. filtros no son autoridad ni evidencia fuente;
+32. eventos fuente conservan ownership;
+33. recuperación distingue deny, fallo, parcial, stale, conflicto y unknown;
+34. comprensión humana real no se declara PASS;
+35. medición de densidad y tiempo se difiere a `UX-QA-028`;
+36. datos productivos no son necesarios para la validación humana futura;
+37. `UX-QA-028` permanece owner de la prueba NUMERA por alcance financiero;
+38. UX-016 no decide contabilidad formal interna;
+39. UX-016 no inventa políticas empresariales pendientes;
+40. todo hallazgo tiene owner y condición de salida;
+41. no se crean ni modifican requisitos de prueba;
+42. no se realizan cambios físicos;
+43. `NUMERA-UX-017` recibe principios validados para conciliación ventas/pagos.
+
+---
+
+#### 54. Límites
+
+Esta tarea no:
+
+- ejecuta sesiones humanas;
+- entrevista a Contabilidad;
+- entrevista a Dirección;
+- inventa comentarios o aprobaciones;
+- crea participantes;
+- mide tiempo de tarea;
+- mide tasa de éxito;
+- mide dificultad;
+- certifica usabilidad;
+- certifica producción;
+- implementa `VSCREEN-*`;
+- modifica `VPROC-*`;
+- crea permisos;
+- crea componentes;
+- crea rutas;
+- crea APIs;
+- crea RPC;
+- crea Server Actions;
+- crea tablas;
+- crea vistas;
+- crea RLS;
+- modifica Supabase;
+- crea migraciones;
+- ejecuta conciliaciones;
+- ejecuta cierres;
+- ejecuta reaperturas;
+- ejecuta exportaciones;
+- modifica hechos financieros;
+- decide contabilidad formal interna;
+- diseña conciliación detallada de ventas/pagos;
+- desarrolla `NUMERA-UX-017`;
+- actualiza Registro 04A.
+
+---
+
+#### 55. Handoff a NUMERA-UX-017
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_PROTOTYPE_VALIDATION_CONTRACT = NUMERA-PROTOTYPE-ACCOUNTING-DIRECTION-VALIDATION-001
+VALIDATION_RESULT = PASS_WITH_CARRYOVER
+HUMAN_SESSION_EXECUTION = NOT_EXECUTED
+HUMAN_VALIDATION_OWNER = UX_QA_028
+ACCOUNTING_PERSPECTIVE_VALIDATED_DOCUMENTALLY = YES
+DIRECTION_PERSPECTIVE_VALIDATED_DOCUMENTALLY = YES
+SOURCE_TRACEABILITY_REQUIRED = YES
+SILENT_HISTORY_REWRITE_FORBIDDEN = YES
+UNKNOWN_IS_SUCCESS = NO
+FILTER_IS_AUTHORITY = NO
+ROLE_NAME_IS_AUTHORITY = NO
+TECHNICAL_REDELIVERY_IS_BUSINESS_DUPLICATE = NO
+POSSIBLE_DUPLICATE_IS_CONFIRMED_DUPLICATE = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SALES_PAYMENT_RECONCILIATION_OWNER = NUMERA_UX_017
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-017` deberá diseñar conciliación de ventas y pagos preservando los límites validados, sin convertir la validación documental de UX-016 en evidencia de conciliación ejecutada.
+
+---
+
+#### 56. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-015
+-> NUMERA-UX-016
+-> NUMERA-UX-017
+```
+
+UX-016 consume los contratos y escenarios de UX-015, valida su coherencia contra perspectivas de Contabilidad y Dirección y entrega a UX-017 principios de conciliación ya delimitados.
+
+---
+
+#### 57. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-015 — Evitar registro financiero duplicado`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-017 — Diseñar conciliación de ventas y pagos`
 ### [ ] NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
 ### [ ] NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
 ### [ ] NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
