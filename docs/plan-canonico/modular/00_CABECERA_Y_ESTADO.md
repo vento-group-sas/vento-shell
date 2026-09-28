@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1455** |
+| Tareas aprobadas | **1456** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **141** |
+| Tareas no iniciadas | **140** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **91.17% (1455/1596)** |
+| Porcentaje de completamiento | **91.23% (1456/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones** |
-| Tarea actual | **NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado** |
+| Última tarea aprobada | **NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado** |
+| Tarea actual | **NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado** |
+| Siguiente tarea | **NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 65 de 74 aprobadas; NUMERA-UX-020 pendiente** |
+| Progreso del bloque | **BLOQUE O: 66 de 74 aprobadas; NUMERA-UX-021 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-UX-020** |
+| Carril documental | **ACTIVO — NUMERA-UX-021** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-UX-019` — Diseñar conciliación de inventario, producción y variaciones |
-| Tarea actual | `NUMERA-UX-020` — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-UX-021` — Diseñar caja y bancos cuando pertenezcan al alcance aprobado |
+| Última aprobada | `NUMERA-UX-020` — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado |
+| Tarea actual | `NUMERA-UX-021` — Diseñar caja y bancos cuando pertenezcan al alcance aprobado — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-UX-022` — Diseñar costos y rentabilidad con trazabilidad hasta el origen |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 65 DE 74 APROBADAS — ACTUAL NUMERA-UX-020** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 66 DE 74 APROBADAS — ACTUAL NUMERA-UX-021** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
-        ↓
-TAREA ACTUAL
 NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 65 de 74 tareas aprobadas
+BLOQUE O — 66 de 74 tareas aprobadas
 ```
