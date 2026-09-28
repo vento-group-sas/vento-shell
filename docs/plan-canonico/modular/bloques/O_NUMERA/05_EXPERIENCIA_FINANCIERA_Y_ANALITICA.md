@@ -27897,7 +27897,1403 @@ UX-021 consume obligaciones/programaciones de UX-020 sin recrearlas y entrega a 
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen`
-### [ ] NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
+### ✅ NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
+**Tarea siguiente:** NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
+**Tipo de tarea:** definición documental de la experiencia de costos, asignaciones, punto de equilibrio, márgenes y rentabilidad de NUMERA sobre `VSCREEN-0104`, preservando método, versión, vigencia, fuentes, lineage, dimensiones, completitud y separación entre hechos reales, referencias, presupuestos, forecast y escenarios; consume costos trazables y hechos económicos reconciliables sin convertir caja, banco, transferencia interna, expectativa o simulación en ingreso, costo, gasto o utilidad por inferencia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica NUMERA runtime, PULSO, ORIGO, FOGO, NEXO, Supabase, fórmulas ejecutables, costos persistidos, precios, presupuestos, escenarios, permisos, RLS, APIs, RPC, migraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia mediante la cual una persona autorizada puede comprender, comparar y profundizar costos y rentabilidad hasta su origen verificable, diferenciando método, versión, vigencia, fuente, dimensión, periodo, moneda, completitud y estado de publicación.
+
+La experiencia debe impedir que una cifra analítica adquiera autoridad por mera presencia en pantalla. Cada costo, margen, punto de equilibrio o resultado gerencial debe poder explicar de qué hechos proviene, qué método utiliza, qué componentes incluye, qué fuentes faltan y qué versión fue observada.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define un contrato UX reutilizable;
+- no crea instancia física propia;
+- no implementa `VSCREEN-0104`;
+- no materializa motores de costo o rentabilidad;
+- no escribe costos, ingresos, presupuestos ni escenarios reales;
+- no modifica fuentes operativas;
+- no modifica Supabase;
+- no ejecuta cierres, reaperturas, asignaciones o publicaciones reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-021
+
+La tarea consume íntegramente:
+
+```text
+CASH_BANK_TREASURY_EXPERIENCE_CONTRACT = NUMERA-CASH-BANK-TREASURY-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0100
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-EXECUTE_TREASURY_MOVEMENT
+TREASURY_SCREEN_ID = VSCREEN-0155
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+BANK_STATEMENT_LINE_IS_MUTABLE_SOURCE = NO
+BANK_IMPORT_MUST_BE_IDEMPOTENT = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+MATCH_APPROVAL_IS_REVERSIBLE = YES
+BANK_REPORTED_BALANCE_IS_RECONCILED_BALANCE = NOT_NECESSARILY
+OBSERVED_LIQUIDITY_IS_PROJECTED_LIQUIDITY = NO
+CASH_RECEIPT_IS_REALIZED_REVENUE = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+OWN_ACCOUNT_TRANSFER_IS_REVENUE_OR_COST = NO
+BANK_FEE_OR_WITHHOLDING_REQUIRES_TRACEABLE_ECONOMIC_TREATMENT = YES
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+EXCEPTION_CLASS_COUNT = 18
+VALIDATION_SCENARIO_COUNT = 24
+COST_AND_PROFITABILITY_OWNER = NUMERA_UX_022
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+TREQ_CHANGES = 0
+```
+
+UX-022 no deriva resultados económicos desde flujo de efectivo, saldo bancario o dirección del movimiento.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La definición consume sin redefinir:
+
+- `NUMERA-DOM-007`, para métodos, componentes, fuentes, variaciones, pools, drivers y publicación de costos;
+- `NUMERA-DOM-008`, para rentabilidad por empresa, sede, canal, producto y periodo;
+- `NUMERA-DOM-018`, para escenarios, versiones, supuestos y publicación;
+- `OPS-CST-001`, para fronteras entre hechos físicos, productivos y valoración económica;
+- `NUMERA-UX-019`, para fuentes reconciliadas de inventario, producción y variaciones;
+- `NUMERA-UX-021`, para separar rentabilidad de caja, bancos y liquidez;
+- `NUMERA-AUTH-015`, para acciones atómicas sobre escenarios, presupuestos, forecast y versiones de precio;
+- `VPROC-0054`, para costo, asignación, variación, publicación y análisis de rentabilidad;
+- `VSCREEN-0104`, como superficie principal de costos, rentabilidad y escenarios;
+- `VSCREEN-0158`, como superficie relacionada de distribución y asignación de costos;
+- `VSCREEN-0156`, como superficie relacionada de presupuestos, escenarios y forecast.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA_COST_PROFITABILITY_EXPERIENCE_CONTRACT = NUMERA-COST-PROFITABILITY-EXPERIENCE-001
+```
+
+El contrato exige trazabilidad desde cada resultado visible hasta fórmula, método, entradas, fuentes, versión, vigencia, dimensiones, periodo, moneda, estado de completitud y evidencia disponible.
+
+---
+
+#### 6. Superficie principal y proceso propietario
+
+La superficie principal es:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0104
+PRIMARY_SCREEN_NAME = Costos, rentabilidad y escenarios
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY
+OWNER_STEP_KIND = ANALYZE
+OWNER_STEP_STAGE = CROSS_CUTTING
+```
+
+`VSCREEN-0104` analiza; no se convierte en fuente propietaria de los hechos consumidos.
+
+---
+
+#### 7. Superficie relacionada de asignación de costos
+
+La distribución y asignación especializada permanece vinculada a:
+
+```text
+COST_ALLOCATION_SCREEN_ID = VSCREEN-0158
+COST_ALLOCATION_STEP_ID = VPROC-0054::STEP-ALLOCATE_COSTS
+```
+
+`VSCREEN-0104` puede explicar y profundizar asignaciones publicadas o en revisión, pero no fusiona análisis con autoridad de registro, aprobación o reversión de una asignación.
+
+---
+
+#### 8. Superficie relacionada de planificación
+
+Presupuestos, forecast y escenarios permanecen vinculados a:
+
+```text
+PLANNING_SCREEN_ID = VSCREEN-0156
+PLANNING_STEP_ID = VPROC-0069::STEP-PLAN_BUDGET_AND_FORECAST
+```
+
+`VSCREEN-0104` puede compararlos con resultados reales autorizados sin convertir una comparación en edición, aprobación o publicación de planificación.
+
+---
+
+#### 9. Ownership de fuentes
+
+Se conserva:
+
+```text
+ORIGO_OWNS_PROCUREMENT_SOURCE_FACTS = YES
+FOGO_OWNS_PRODUCTIVE_SOURCE_FACTS = YES
+NEXO_OWNS_PHYSICAL_INVENTORY_SOURCE_FACTS = YES
+PULSO_OWNS_COMMERCIAL_SOURCE_FACTS = YES
+NUMERA_OWNS_ECONOMIC_VALUATION_AND_ANALYTIC_RESULT = YES
+```
+
+NUMERA consume y valora; no reescribe la realidad fuente para hacer coincidir un resultado.
+
+---
+
+#### 10. Hecho económico y flujo de efectivo permanecen distintos
+
+Se congela:
+
+```text
+CASH_RECEIPT_IS_REALIZED_REVENUE = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+OWN_ACCOUNT_TRANSFER_IS_REVENUE_OR_COST = NO
+PROFITABILITY_IS_LIQUIDITY = NO
+PROFITABILITY_IS_CASH_BALANCE = NO
+```
+
+La trazabilidad económica debe resolver la naturaleza del hecho antes de clasificarlo en costo o resultado.
+
+---
+
+#### 11. Taxonomía obligatoria de costos
+
+La UX mantiene diferenciados al menos:
+
+```text
+ACQUISITION_COST
+LANDED_COST
+STANDARD_COST
+WEIGHTED_AVERAGE_COST
+LAST_ELIGIBLE_COST
+ACTUAL_COST
+PRODUCTIVE_COST
+LOGISTICS_COST
+WASTE_OR_SCRAP_COST
+INTERNAL_MANAGERIAL_COST
+```
+
+La ausencia de un tipo no habilita el uso silencioso de otro como sustituto.
+
+---
+
+#### 12. Identidad mínima de una determinación de costo
+
+Cada resultado de costo debe poder mostrar o resolver, según nivel de detalle autorizado:
+
+- método;
+- versión del método o política;
+- estado de publicación;
+- entidad o ámbito económico;
+- centro de costo cuando aplique;
+- periodo y corte;
+- moneda;
+- producto y presentación cuando aplique;
+- unidad de valoración;
+- cantidad valorizada;
+- fuentes consumidas;
+- componentes incluidos y excluidos;
+- asignaciones aplicadas;
+- importe total;
+- costo unitario cuando sea válido;
+- precisión y redondeo;
+- evidencia de conciliación;
+- relación con una versión anterior, corrección o reversión.
+
+---
+
+#### 13. Método explícito
+
+Se conserva la secuencia:
+
+```text
+DECLARED_METHOD
+-> ELIGIBLE_SOURCES
+-> VERSION_AND_VALIDITY
+-> CALCULATION
+-> REVIEW
+-> APPROVAL_WHEN_APPLICABLE
+-> PUBLICATION
+```
+
+Queda prohibido cambiar de método durante una comparación sin hacerlo visible como una diferencia material de definición.
+
+---
+
+#### 14. Costo de adquisición
+
+La UX puede presentar la base de adquisición únicamente cuando la evidencia económica de ORIGO y los documentos o recepciones aplicables sean correlacionables.
+
+Una diferencia entre orden, recepción, documento o ajuste permanece explicable; no se absorbe silenciosamente para producir una cifra conveniente.
+
+---
+
+#### 15. Costo landed
+
+Un resultado landed debe permitir distinguir:
+
+```text
+ACQUISITION_COMPONENT
++ ELIGIBLE_DIRECT_LANDED_COMPONENTS
++ APPROVED_SHARED_LANDED_ALLOCATIONS
+= LANDED_TOTAL
+```
+
+La elegibilidad de transporte, seguro, almacenamiento, impuestos u otros conceptos no se infiere por nombre; depende del contrato económico aplicable.
+
+---
+
+#### 16. Costo promedio
+
+El promedio objetivo se presenta como promedio ponderado por cantidad elegible, nunca como promedio aritmético de precios por conveniencia.
+
+Debe ser posible identificar el universo de eventos, fecha de corte, unidad y moneda comparables y el tratamiento de devoluciones, reversos y ajustes.
+
+---
+
+#### 17. Último costo
+
+El último costo corresponde al evento económico elegible más reciente bajo el alcance y corte declarados.
+
+```text
+LAST_TECHNICAL_ROW_IS_LAST_ELIGIBLE_COST = NOT_NECESSARILY
+```
+
+Retry, duplicado, reverso o evento posterior al corte no deben alterar silenciosamente una consulta histórica.
+
+---
+
+#### 18. Costo estándar
+
+El estándar es referencia previa, versionada y publicada.
+
+La UX debe distinguir:
+
+- versión;
+- vigencia;
+- componentes estándar;
+- cantidades estándar;
+- tratamiento de merma o rendimiento;
+- estado de publicación;
+- comparación contra real.
+
+Una nueva versión estándar no revaloriza historia por sobrescritura.
+
+---
+
+#### 19. Costo real
+
+El costo real utiliza cantidades y componentes efectivamente observados, reconocidos y reconciliados.
+
+```text
+EXPECTED_CONSUMPTION_IS_ACTUAL_CONSUMPTION = NO
+MATERIAL_DELIVERY_IS_FINAL_CONSUMPTION = NO
+PRODUCED_OUTPUT_IS_GOOD_OUTPUT_BY_DEFAULT = NO
+MISSING_MATERIAL_COMPONENT_IS_ZERO = NO
+```
+
+Si falta una entrada material, la UX declara incompletitud antes que inventar un resultado cerrado.
+
+---
+
+#### 20. Costo productivo, logístico, merma y reproceso
+
+La experiencia mantiene separados:
+
+- materiales consumidos;
+- transformación;
+- logística;
+- merma o desperdicio;
+- reproceso;
+- salida buena;
+- pérdidas pendientes de clasificación;
+- variaciones contra referencia.
+
+La presentación nunca oculta una pérdida aumentando silenciosamente el costo de salida buena sin política trazable.
+
+---
+
+#### 21. Valorización interna y transferencia
+
+Se conserva:
+
+```text
+INTERNAL_MANAGERIAL_VALUE_IS_EXTERNAL_REVENUE = NO
+INTERNAL_MANAGERIAL_VALUE_IS_LEGAL_EXPENSE = NO
+INTERNAL_TRANSFER_DOES_NOT_DOUBLE_CONSOLIDATED_RESULT = YES
+```
+
+El valor interno puede ser útil para gestión local sin convertirse en ingreso externo consolidado.
+
+---
+
+#### 22. Versión, vigencia y corte
+
+Costo y rentabilidad deben declarar la versión efectiva usada para responder una consulta.
+
+Una vista histórica conserva:
+
+```text
+AS_OF_TIME
+METHOD_VERSION
+COST_VERSION
+PROFITABILITY_VERSION
+SOURCE_WATERMARKS
+```
+
+El valor vigente hoy no sustituye silenciosamente el que fue válido en el corte consultado.
+
+---
+
+#### 23. Lineage hacia fuentes
+
+Todo agregado material debe permitir navegar, según autorización, hacia:
+
+```text
+ANALYTIC_RESULT
+-> METRIC_DEFINITION
+-> COST_OR_REVENUE_COMPONENT
+-> ECONOMIC_FACT
+-> OPERATIONAL_OR_EXTERNAL_SOURCE_REFERENCE
+-> EVIDENCE
+```
+
+El drill-down conserva identidades; no duplica los hechos en NUMERA.
+
+---
+
+#### 24. Completitud de fuentes
+
+La UX debe mostrar, cuando sea material:
+
+- fuentes esperadas;
+- fuentes recibidas;
+- watermark o corte;
+- eventos tardíos pendientes;
+- conciliaciones abiertas;
+- componentes faltantes;
+- calidad o completitud conocida.
+
+```text
+SOURCE_INCOMPLETE_IS_ZERO = NO
+SOURCE_INCOMPLETE_IS_COMPLETE_RESULT = NO
+```
+
+---
+
+#### 25. Atribución directa antes de distribución compartida
+
+Se conserva:
+
+```text
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+```
+
+Un costo demostrablemente atribuible a un destino no debe entrar primero a un pool compartido para luego redistribuirse arbitrariamente.
+
+---
+
+#### 26. Pool y driver
+
+Toda distribución compartida debe poder explicar:
+
+- pool;
+- versión;
+- importe y moneda;
+- fuente del pool;
+- driver;
+- base del driver;
+- universo de destinos;
+- exclusiones;
+- periodo;
+- vigencia;
+- resultado por destino;
+- residual;
+- autoridad de aprobación cuando aplique.
+
+---
+
+#### 27. Driver no inferido
+
+Se congela:
+
+```text
+DRIVER_BY_CONVENIENCE = FORBIDDEN
+DRIVER_BY_AVAILABLE_COLUMN_ONLY = FORBIDDEN
+UNVERSIONED_SHARED_ALLOCATION = FORBIDDEN
+```
+
+Un driver faltante deja la asignación pendiente; no autoriza usar una proporción improvisada.
+
+---
+
+#### 28. Asignación aprobada y reversión
+
+La experiencia distingue:
+
+```text
+ALLOCATION_DRAFT
+ALLOCATION_PROPOSED
+ALLOCATION_APPROVED
+ALLOCATION_PUBLISHED_OR_APPLIED
+ALLOCATION_REVERSED_OR_SUPERSEDED
+```
+
+Una reversión conserva la asignación anterior y su efecto; no borra el historial.
+
+---
+
+#### 29. Costo no es fuente física
+
+Se conserva:
+
+```text
+COST_VALUE_IS_PHYSICAL_QUANTITY_SOURCE = NO
+COST_VALUE_CAN_CORRECT_NEXO_MOVEMENT = NO
+COST_VALUE_CAN_CORRECT_FOGO_CONSUMPTION = NO
+```
+
+La discrepancia económica se resuelve mediante su owner correspondiente sin reescribir la fuente física o productiva.
+
+---
+
+#### 30. Handoff recibido de conciliación operativa
+
+`NUMERA-UX-019` entrega hechos y variaciones reconciliables, no una fórmula de costo.
+
+UX-022 consume:
+
+- cantidades reconciliadas;
+- identidades fuente;
+- unidades y conversiones aprobadas;
+- variaciones explicadas o abiertas;
+- fuentes pendientes;
+- evidencia de conciliación.
+
+Un caso físico abierto puede mantener bloqueado o incompleto el costo dependiente.
+
+---
+
+#### 31. Identidad mínima de rentabilidad
+
+Cada resultado de rentabilidad debe declarar al menos:
+
+- versión del resultado;
+- definición de métrica;
+- entidad o dimensión;
+- periodo y corte;
+- moneda;
+- ingreso realizado incluido;
+- método y versión de costo;
+- costos directos;
+- distribuciones compartidas;
+- ajustes o eliminaciones;
+- estado de completitud;
+- estado de publicación;
+- lineage suficiente para drill-down.
+
+---
+
+#### 32. Dimensiones obligatorias
+
+La UX debe poder analizar, cuando la evidencia lo soporte:
+
+```text
+COMPANY
+SITE
+CHANNEL
+PRODUCT
+PERIOD
+```
+
+Marca, área, centro de costo, cliente u otras dimensiones pueden aportar contexto, pero no sustituyen silenciosamente las dimensiones requeridas ni se agregan sin contrato de identidad.
+
+---
+
+#### 33. Ingreso realizado
+
+Se conserva:
+
+```text
+REALIZED_REVENUE_SOURCE = RECOGNIZED_RECONCILABLE_ECONOMIC_FACTS
+EXPECTED_REVENUE_IS_REALIZED_REVENUE = NO
+CASH_RECEIPT_IS_REALIZED_REVENUE = NO
+BANK_CREDIT_IS_REALIZED_REVENUE_BY_DEFAULT = NO
+```
+
+Una venta, devolución, descuento u otro componente conserva su lineage comercial antes de afectar el resultado.
+
+---
+
+#### 34. Ingreso esperado, presupuesto y resultado real
+
+La experiencia nunca presenta como equivalentes:
+
+```text
+EXPECTED_REVENUE
+BUDGETED_REVENUE
+FORECAST_REVENUE
+SCENARIO_REVENUE
+REALIZED_REVENUE
+```
+
+Cada uno debe conservar estado, versión y procedencia propios.
+
+---
+
+#### 35. Margen analítico bruto
+
+La relación conceptual se conserva:
+
+```text
+GROSS_ANALYTIC_MARGIN
+= REALIZED_REVENUE
+- TRACEABLE_PRODUCT_COST
+```
+
+La pantalla debe revelar método y versión del costo utilizado antes de comparar márgenes entre productos, sedes, canales o periodos.
+
+---
+
+#### 36. Resultado gerencial
+
+La relación conceptual se conserva:
+
+```text
+MANAGERIAL_RESULT
+= REALIZED_REVENUE
+- TRACEABLE_PRODUCT_COST
+- DIRECT_COSTS
+- APPROVED_SHARED_COSTS
+```
+
+Este resultado no se presenta como utilidad contable neta ni utilidad fiscal.
+
+---
+
+#### 37. Ausencia no equivale a cero
+
+Se congela:
+
+```text
+MISSING_REVENUE_IS_ZERO = NO
+MISSING_COST_IS_ZERO = NO
+MISSING_ALLOCATION_IS_ZERO = NO
+UNKNOWN_MARGIN_IS_ZERO_MARGIN = NO
+```
+
+La UX distingue ausencia, incompletitud, cero válido y no aplicable.
+
+---
+
+#### 38. Consolidación y doble conteo interno
+
+Se conserva:
+
+```text
+INTERNAL_TRANSFER_IS_CONSOLIDATED_EXTERNAL_REVENUE = NO
+CONSOLIDATION_REQUIRES_INTERNAL_DOUBLE_COUNT_ELIMINATION = YES
+```
+
+Una agregación sin eliminaciones demostrables se presenta como agregación, no como consolidado oficial.
+
+---
+
+#### 39. Operaciones entre entidades legales distintas
+
+Si origen y destino pertenecen a entidades legales distintas, la UX no decide por inferencia si existe venta intercompañía, traslado neutral o tratamiento fiscal particular.
+
+Debe conservar ambas identidades y el tratamiento pendiente o aprobado sin mostrar simultáneamente la operación como neutral y como ingreso externo.
+
+---
+
+#### 40. Moneda y comparabilidad
+
+No se suman monedas distintas sin política explícita de conversión.
+
+Toda comparación multimoneda debe poder conservar:
+
+- moneda de origen;
+- moneda de reporte;
+- fuente de conversión;
+- fecha aplicable;
+- versión de política;
+- precisión y redondeo.
+
+Ausencia de política produce `NOT_COMPARABLE`, no suma nominal.
+
+---
+
+#### 41. Precio, costo y margen
+
+Se conserva:
+
+```text
+PRICE != COST
+PRICE != REALIZED_REVENUE
+TARGET_MARGIN != ACTUAL_MARGIN
+TARGET_GROSS_MARGIN_IS_CONTRIBUTION_MARGIN_BY_DEFAULT = NO
+```
+
+Precio comercial, versión de precio NUMERA, costo y margen son conceptos distintos y trazables.
+
+---
+
+#### 42. Punto de equilibrio
+
+El punto de equilibrio solo puede presentarse como resultado económico confirmado cuando sus entradas, definición de margen o contribución, periodo, alcance y método sean válidos y trazables.
+
+Se congela:
+
+```text
+TARGET_GROSS_MARGIN_IS_BREAK_EVEN_DENOMINATOR_BY_DEFAULT = NO
+MISSING_CONTRIBUTION_MODEL_IS_VALID_BREAK_EVEN = NO
+INVALID_OR_ZERO_DENOMINATOR_IS_CONFIRMED_BREAK_EVEN = NO
+```
+
+La UX no convierte el proxy AS-IS observado en regla universal objetivo.
+
+---
+
+#### 43. Real, presupuesto, forecast, escenario y propuesta
+
+La experiencia conserva:
+
+```text
+REAL
+!= BUDGETED
+!= FORECAST
+!= SCENARIO
+!= SIMULATED
+!= PROPOSED
+!= PUBLISHED_REFERENCE
+```
+
+Cambiar un supuesto nunca altera el dato real ni la versión publicada de otro objeto.
+
+---
+
+#### 44. Escenario publicado no altera fuentes
+
+Se conserva:
+
+```text
+SCENARIO_PUBLISHED_IS_REAL_RESULT = NO
+SCENARIO_PUBLISHED_MUTATES_SOURCE_FACT = NO
+SCENARIO_PUBLISHED_ACTIVATES_OPERATIONAL_PRICE = NO
+SCENARIO_PUBLISHED_CHANGES_MASTER_COST = NO
+SCENARIO_PUBLISHED_IS_ACCOUNTING_POSTED = NO
+```
+
+`VSCREEN-0104` puede comparar; no ejecuta por inferencia efectos operativos o contables.
+
+---
+
+#### 45. Autoridad de planificación consumida
+
+Las acciones de planificación permanecen atómicas por recurso:
+
+```text
+CREATE
+UPDATE
+SHARE
+REQUEST
+APPROVE
+REJECT
+PUBLISH
+UNPUBLISH
+```
+
+Y se aplican separadamente a:
+
+```text
+SCENARIO
+BUDGET
+FORECAST
+PRICE_VERSION
+```
+
+`VIEW`, comparación o drill-down no conceden ninguna de esas acciones.
+
+---
+
+#### 46. Permisos de lectura relevantes
+
+La experiencia consume, según recurso y materialización disponible:
+
+```text
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.finance.costs.view
+numera.finance.cost_allocations.view
+numera.finance.budgets.view
+numera.finance.forecasts.view
+numera.finance.scenarios.view
+numera.finance.price_versions.view
+numera.analytics.financial_indicators.view
+```
+
+La existencia documental de un permiso pendiente no se presenta como capacidad runtime ya materializada.
+
+---
+
+#### 47. Alcance de agregados
+
+Rentabilidad y punto de equilibrio son resultados agregados sensibles.
+
+Se conserva:
+
+```text
+AGGREGATE_RESULT_REQUIRES_AUTHORIZED_MEMBERS = YES
+HIDDEN_MEMBER_MAY_NOT_LEAK_THROUGH_TOTAL = YES
+```
+
+El agregado no revela por diferencia miembros fuera del alcance del actor.
+
+---
+
+#### 48. Revalidación server-side
+
+Toda acción material debe revalidar, cuando aplique:
+
+- actor efectivo;
+- permiso exacto;
+- recurso;
+- versión;
+- scope;
+- estado;
+- periodo;
+- campos solicitados;
+- segregación;
+- política vigente.
+
+La UI nunca es autoridad final para una mutación financiera.
+
+---
+
+#### 49. Concurrencia y decisiones stale
+
+Si cambia materialmente método, versión, fuentes, asignación, periodo, scope o estado:
+
+```text
+STALE_COST_OR_PROFITABILITY_DECISION = DENY_AND_REEVALUATE
+```
+
+La comparación puede seguir mostrando la versión observada, pero no ejecutar una decisión material contra otra versión sin revisión.
+
+---
+
+#### 50. Publicación y versionado
+
+Un resultado publicado debe conservar:
+
+- versión;
+- fórmula o definición;
+- corte;
+- dimensiones;
+- fuentes;
+- método de costo;
+- asignaciones;
+- moneda;
+- completitud;
+- autoridad aplicable;
+- momento de publicación;
+- relación con versión anterior.
+
+Una publicación posterior no elimina la utilizada históricamente.
+
+---
+
+#### 51. Corrección y restatement
+
+Se congela:
+
+```text
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+```
+
+Una corrección posterior debe producir una relación trazable con la versión original y pertenece al contrato especializado de corrección/reapertura de UX-023 cuando afecte periodos protegidos o historia publicada.
+
+---
+
+#### 52. Evento tardío
+
+Un hecho recibido después del corte conserva sus fechas reales y el periodo originalmente relacionado.
+
+```text
+LATE_ECONOMIC_EVENT_SILENT_REWRITE = FORBIDDEN
+```
+
+UX-022 muestra impacto o incompletitud; no reabre ni reescribe periodos cerrados.
+
+---
+
+#### 53. Estado de completitud
+
+Cada resultado analítico puede declarar, según corresponda:
+
+```text
+COMPLETE
+PARTIAL
+PENDING_SOURCE
+PENDING_ALLOCATION
+PENDING_RECONCILIATION
+NOT_COMPARABLE
+NOT_APPLICABLE
+```
+
+Estas etiquetas no sustituyen los estados empresariales de las fuentes.
+
+---
+
+#### 54. Cero, ausencia, no aplicable y no comparable
+
+Se mantienen separados:
+
+```text
+ZERO
+MISSING
+NOT_APPLICABLE
+NOT_COMPARABLE
+PENDING
+```
+
+La UI no usa `0` para ocultar fuente faltante, denominador inválido, asignación pendiente o moneda no comparable.
+
+---
+
+#### 55. Presentación principal de VSCREEN-0104
+
+La pantalla debe priorizar:
+
+1. alcance y periodo;
+2. estado de completitud y corte;
+3. ingreso realizado;
+4. costo trazable y método;
+5. margen analítico;
+6. costos directos y compartidos;
+7. resultado gerencial;
+8. punto de equilibrio cuando sea válido;
+9. variaciones contra referencia;
+10. comparación autorizada con presupuesto, forecast o escenario;
+11. fuentes pendientes y excepciones;
+12. acceso al lineage y detalle.
+
+---
+
+#### 56. Indicador antes del detalle
+
+Cuando exista una síntesis comparable, la UX muestra primero el indicador y después permite profundizar.
+
+```text
+SUMMARY_INDICATOR_REPLACES_SOURCE_DETAIL = NO
+SUMMARY_INDICATOR_PROVES_COMPLETENESS = NO
+```
+
+La síntesis reduce carga visual sin ocultar trazabilidad.
+
+---
+
+#### 57. Comparador de costos
+
+Una comparación de costos debe identificar explícitamente las columnas o series comparadas, por ejemplo:
+
+```text
+STANDARD
+ACTUAL
+VARIANCE
+```
+
+O cualquier otra combinación autorizada de métodos, sin mezclar sus definiciones en una cifra única.
+
+---
+
+#### 58. Comparador de rentabilidad
+
+Una comparación entre dimensiones o periodos debe conservar para cada miembro:
+
+- ingreso realizado;
+- costo y versión;
+- costos directos;
+- costos compartidos;
+- ajustes/eliminaciones;
+- resultado;
+- moneda;
+- completitud;
+- corte.
+
+Una diferencia de método se señala como diferencia material de comparabilidad.
+
+---
+
+#### 59. Drill-down de indicador
+
+Cada indicador material debe permitir, según autorización, llegar a:
+
+```text
+FORMULA
+INPUTS
+METHOD_AND_VERSION
+DIMENSIONS
+SOURCE_FACTS
+ALLOCATION_DETAILS
+RECONCILIATION_EVIDENCE
+```
+
+La explicación extensa puede permanecer bajo demanda; la capacidad de demostrar el origen no puede desaparecer.
+
+---
+
+#### 60. Comparación con planificación
+
+Una comparación real versus presupuesto, forecast o escenario debe mostrar claramente qué serie es cada una.
+
+Cambiar filtros o seleccionar un escenario no modifica datos reales, planificación publicada ni fuentes.
+
+---
+
+#### 61. Estado AS-IS y objetivo
+
+La implementación actual observada de NUMERA no constituye un motor integral de costos o rentabilidad realizada.
+
+La UX objetivo no puede presentar como implementación existente:
+
+- costo completo trazable cuando no esté materializado;
+- margen realizado cuando la base solo use expectativa y gasto agregado;
+- dimensión temporal completa cuando la consulta no la conserve;
+- escenarios gobernados cuando su lifecycle no esté materializado.
+
+---
+
+#### 62. Lecturas materializadas y pendientes
+
+Se conserva la diferencia entre:
+
+```text
+MATERIALIZED_ACTIVE_PERMISSION
+CONTRACT_DEFINED_PENDING_MATERIALIZATION
+```
+
+Las capacidades de lectura existentes no autorizan inventar como disponibles las de costo, asignación, planificación o indicadores que aún dependan de materialización compartida.
+
+---
+
+#### 63. Estado vacío
+
+Una vista sin resultados bajo el filtro no demuestra:
+
+- ingresos cero;
+- costos cero;
+- inexistencia de ventas;
+- inexistencia de costos;
+- completitud de fuentes;
+- rentabilidad cero;
+- conciliación completa.
+
+La UI diferencia ausencia de datos, falta de autorización, dependencia pendiente y resultado económicamente cero.
+
+---
+
+#### 64. Datos sensibles y divulgación progresiva
+
+La vista minimiza información financiera sensible y expone detalle únicamente al nivel necesario y autorizado.
+
+El acceso al agregado no concede automáticamente acceso a documentos, terceros, miembros territoriales o evidencia sensible fuera del scope.
+
+---
+
+#### 65. Evidencia y auditoría
+
+La experiencia debe permitir reconstruir:
+
+```text
+SOURCE_FACTS
+-> NORMALIZATION_AND_RECONCILIATION
+-> COST_METHOD_AND_VERSION
+-> DIRECT_ATTRIBUTION
+-> SHARED_ALLOCATION
+-> COST_RESULT
+-> REALIZED_REVENUE_SET
+-> PROFITABILITY_CALCULATION
+-> REVIEW_OR_PUBLICATION
+-> CORRECTION_OR_SUPERSESSION_IF_ANY
+```
+
+Los logs y receipts no sustituyen los hechos fuente.
+
+---
+
+#### 66. Observabilidad futura
+
+Una materialización posterior podrá medir, sin que UX-022 la implemente:
+
+- resultados con fuente incompleta;
+- costos sin método o versión válida;
+- asignaciones pendientes;
+- drivers pendientes;
+- costos reales sin conciliación;
+- productos sin costo trazable;
+- resultados no comparables;
+- variaciones estándar versus real;
+- rentabilidad por dimensión;
+- cambios de método entre periodos;
+- restatements;
+- eventos tardíos pendientes.
+
+---
+
+#### 67. Taxonomía mínima de excepciones
+
+La experiencia debe distinguir como mínimo:
+
+1. `SOURCE_INCOMPLETE`;
+2. `SOURCE_IDENTITY_CONFLICT`;
+3. `COST_METHOD_MISSING`;
+4. `COST_METHOD_VERSION_MISSING`;
+5. `COST_SOURCE_NOT_ELIGIBLE`;
+6. `UNIT_NOT_COMPARABLE`;
+7. `CURRENCY_NOT_COMPARABLE`;
+8. `ACTUAL_COST_PENDING`;
+9. `STANDARD_COST_PENDING`;
+10. `ALLOCATION_POOL_INCOMPLETE`;
+11. `ALLOCATION_DRIVER_MISSING`;
+12. `ALLOCATION_RESIDUAL`;
+13. `UNRECONCILED_OPERATING_VARIANCE`;
+14. `REALIZED_REVENUE_INCOMPLETE`;
+15. `INTERNAL_DOUBLE_COUNT_RISK`;
+16. `LEGAL_ENTITY_TREATMENT_UNRESOLVED`;
+17. `BREAK_EVEN_INPUT_INVALID`;
+18. `PERIOD_OR_CUTOFF_MISMATCH`;
+19. `LATE_ECONOMIC_EVENT`;
+20. `STALE_ANALYTIC_VERSION`.
+
+No existe una clase genérica `OTHER` para ocultar una causa material.
+
+---
+
+#### 68. Escenarios mínimos de validación futura
+
+La implementación deberá demostrar al menos estos 26 escenarios:
+
+1. costo estándar y real del mismo producto permanecen separados y comparables;
+2. falta de costo real no usa estándar, último, promedio o cero como fallback silencioso;
+3. promedio se pondera por cantidad elegible;
+4. último costo ignora redelivery técnico que no crea un hecho económico nuevo;
+5. landed cost muestra adquisición y componentes adicionales por separado;
+6. cantidad inválida bloquea un costo unitario confirmado;
+7. costo productivo conserva consumo, merma, reproceso y salida buena diferenciados;
+8. costo logístico no absorbe merma productiva por inferencia;
+9. atribución directa precede distribución compartida;
+10. pool sin driver válido permanece pendiente;
+11. asignación compartida conserva versión, base, destinos y residual;
+12. reversión de asignación conserva historia;
+13. costo sin hecho fuente trazable queda incompleto;
+14. movimiento o consumo fuente incorrecto no se corrige desde NUMERA;
+15. ingreso esperado no se presenta como realizado;
+16. cobro o abono bancario no se presenta como ingreso realizado por sí solo;
+17. salida bancaria no se presenta como costo o gasto por sí sola;
+18. rentabilidad por producto usa costo trazable y lineage de ingreso;
+19. transferencia interna no duplica ingreso consolidado;
+20. operación entre entidades legales distintas permanece pendiente de tratamiento cuando no exista regla aprobada;
+21. comparación multimoneda sin política queda `NOT_COMPARABLE`;
+22. punto de equilibrio con entrada o denominador inválido no se presenta como confirmado;
+23. cambiar un escenario no altera datos reales;
+24. comparación entre periodos con método de costo distinto señala no comparabilidad o diferencia metodológica;
+25. evento tardío no sobrescribe silenciosamente una versión publicada;
+26. saldo bancario positivo no se presenta como rentabilidad positiva.
+
+---
+
+#### 69. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-022 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| motor integral de costos no está materializado en NUMERA | no | packages físicos NUMERA aplicables | cálculo y publicación consumen fuentes, métodos y versiones según `NUMERA-DOM-007` |
+| rentabilidad realizada integral no está materializada | no | packages físicos NUMERA aplicables | `VSCREEN-0104` consume ingreso realizado y costo trazable según `NUMERA-DOM-008` |
+| permisos de costo, asignación y planificación permanecen parcialmente pendientes de materialización | no | packages/autorización NUMERA aplicables | consumidor adopta permisos atómicos sin fallback legacy |
+| punto de equilibrio AS-IS usa una base que no demuestra margen de contribución universal | no | materialización de costo/rentabilidad | entradas y definición quedan trazables y validadas antes de publicar el resultado |
+| asignaciones compartidas requieren pools y drivers gobernados | no | `VSCREEN-0158` + materialización de costos | pool, driver, base, versión, aprobación y reversión quedan materializados |
+| escenarios y planificación tienen lifecycle especializado | no | `NUMERA-DOM-018`, `NUMERA-AUTH-015`, `VSCREEN-0156` | creación, share, request, approve, publish y unpublish quedan materializados separadamente |
+| eventos tardíos pueden afectar resultados publicados o periodos protegidos | no | `NUMERA-UX-023` | corrección/reapertura versionada conserva historia y recalcula únicamente bajo autoridad aplicable |
+| visor económico final de una sola pantalla tiene ownership posterior | no | `NUMERA-UX-028` | visor progresivo consume el contrato de UX-022 sin redefinir costo o rentabilidad |
+
+---
+
+#### 70. Decisiones congeladas
+
+```text
+COST_PROFITABILITY_EXPERIENCE_CONTRACT = NUMERA-COST-PROFITABILITY-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0104
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY
+COST_ALLOCATION_SCREEN_ID = VSCREEN-0158
+PLANNING_SCREEN_ID = VSCREEN-0156
+TRACEABLE_COST_REQUIRED = YES
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+COST_METHOD_SILENT_FALLBACK = FORBIDDEN
+MISSING_REVENUE_IS_ZERO = NO
+MISSING_COST_IS_ZERO = NO
+REALIZED_REVENUE_IS_CASH_RECEIPT = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+PROFITABILITY_IS_LIQUIDITY = NO
+INTERNAL_TRANSFER_IS_CONSOLIDATED_EXTERNAL_REVENUE = NO
+CONSOLIDATION_REQUIRES_INTERNAL_DOUBLE_COUNT_ELIMINATION = YES
+TARGET_GROSS_MARGIN_IS_ACTUAL_MARGIN = NO
+TARGET_GROSS_MARGIN_IS_CONTRIBUTION_MARGIN_BY_DEFAULT = NO
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+LATE_ECONOMIC_EVENT_SILENT_REWRITE = FORBIDDEN
+SCENARIO_PUBLISHED_MUTATES_SOURCE_FACT = NO
+EXCEPTION_CLASS_COUNT = 20
+VALIDATION_SCENARIO_COUNT = 26
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La tarea especializa una experiencia ya protegida por requisitos vigentes de integridad económica, costo, rentabilidad, autorización, integración y trazabilidad; no crea una obligación ejecutable nueva ni altera el Registro 04A.
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — indicadores, costos, márgenes, gastos y reportes reconciliables con hechos fuente sin doble registro;
+- `TREQ-NUMERA-002` — identidad, entidad, sede, centro, moneda, fechas, fuente, correlación, estado y correcciones no destructivas;
+- `TREQ-NUMERA-004` — método, entradas, versión, vigencia, tipos de costo, pools, drivers, transferencias internas, rentabilidad y visor económico trazable, con `NUMERA-UX-022` como cobertura explícita;
+- `TREQ-NUMERA-019` — punto de equilibrio autorizado sin presentar ausencia de cálculo como valor confirmado;
+- `TREQ-NUMERA-020` — rentabilidad autorizada conservando separados ingreso esperado, gasto real, presupuesto y variación;
+- `TREQ-PULSO-006` — venta, pago, caja, documento fiscal, devolución y cierre como hechos diferenciados y auditables;
+- `TREQ-INTEGRATION-013` — cadena producción, calidad, inventario y costo correlacionada e idempotente;
+- `TREQ-INTEGRATION-016` — costo logístico correlacionado sin doble efecto;
+- `TREQ-INTEGRATION-017` — hechos operativos hacia NUMERA correlacionados, versionados e idempotentes;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto |
+| LOCAL | NOT_EXECUTED | incorporación, formato, quality, delivery, topología, plan y TREQ quedan para el checkout del usuario después del cierre válido de UX-021 |
+| REMOTA | PASS | se verificaron `vento-shell/main`, continuidad, marcador propietario, topología `DEFINE_ONCE`, `NUMERA-DOM-007`, `NUMERA-DOM-008`, `NUMERA-AUTH-015`, `VSCREEN-0104`, `VSCREEN-0156`, `VSCREEN-0158`, `VPROC-0054`, Registro 04A y validadores documentales aplicables; UX-021 se consume desde su archivo completo aprobado mientras permanece pendiente de incorporación remota |
+| OPERATIVA | NOT_EXECUTED | no se calcularon, asignaron, aprobaron, publicaron o corrigieron costos, márgenes, rentabilidad, presupuestos, forecast o escenarios reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-022` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 74. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. `VSCREEN-0104` es la superficie principal de costos y rentabilidad;
+2. `VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY` es el paso owner;
+3. `VSCREEN-0158` permanece como superficie relacionada de asignación de costos;
+4. `VSCREEN-0156` permanece como superficie relacionada de planificación;
+5. ORIGO conserva hechos de compra/proveedor;
+6. FOGO conserva hechos productivos;
+7. NEXO conserva hechos físicos;
+8. PULSO conserva hechos comerciales;
+9. NUMERA conserva valoración y resultado analítico;
+10. costo no reescribe fuente física o productiva;
+11. adquisición, landed, estándar, promedio, último, real, productivo, logístico, merma e interno permanecen distintos;
+12. cada costo declara método, versión, vigencia y fuentes;
+13. no existe fallback silencioso entre métodos;
+14. promedio es ponderado por cantidad elegible;
+15. último costo usa último evento económico elegible, no última fila técnica;
+16. estándar conserva versión y publicación;
+17. real exige cantidades/componentes observados y reconciliados;
+18. falta de componente material no se convierte en cero;
+19. productivo y logístico permanecen separados;
+20. merma y reproceso permanecen visibles;
+21. valor interno no se presenta como ingreso externo ni gasto legal automático;
+22. cada consulta conserva corte y versiones;
+23. cada agregado material permite lineage a fuentes;
+24. fuente incompleta permanece visible;
+25. atribución directa precede distribución compartida;
+26. pool y driver conservan versión, base y destinos;
+27. driver no se infiere por conveniencia;
+28. reversión de asignación conserva historia;
+29. UX-019 entrega evidencia reconciliable sin imponer fórmula de costo;
+30. rentabilidad declara definición, dimensión, periodo, moneda y completitud;
+31. empresa, sede, canal, producto y periodo son dimensiones obligatorias cuando la evidencia las soporte;
+32. ingreso realizado proviene de hechos económicos reconocidos y reconciliables;
+33. ingreso esperado no se presenta como realizado;
+34. cobro no se presenta como ingreso realizado por sí solo;
+35. movimiento bancario no se clasifica por dirección como ingreso/costo;
+36. margen analítico usa costo trazable;
+37. resultado gerencial permanece distinto de utilidad contable/fiscal;
+38. ausencia no equivale a cero;
+39. transferencia interna no duplica ingreso consolidado;
+40. consolidación identifica o elimina doble conteo interno;
+41. operación entre entidades distintas no recibe tratamiento legal por inferencia;
+42. multimoneda exige política de conversión;
+43. precio, costo, margen objetivo y margen realizado permanecen separados;
+44. punto de equilibrio requiere entradas y definición válidas;
+45. real, presupuesto, forecast, escenario, simulado, propuesto y publicado permanecen diferenciados;
+46. escenario publicado no muta hechos reales;
+47. acciones de planificación mantienen permisos atómicos separados;
+48. lectura no concede create/update/share/request/approve/reject/publish/unpublish;
+49. permiso documental pendiente no se presenta como runtime materializado;
+50. agregados no filtran miembros no autorizados;
+51. acciones materiales revalidan server-side;
+52. decisión stale exige reevaluación;
+53. publicación conserva versión histórica;
+54. costos y rentabilidad publicados no se sobrescriben silenciosamente;
+55. evento tardío conserva fechas reales;
+56. UX-022 no reabre periodos;
+57. cero, missing, not applicable, not comparable y pending permanecen distintos;
+58. VSCREEN-0104 prioriza alcance, corte, ingreso, costo, margen, resultado, fuentes y lineage;
+59. indicador no reemplaza detalle fuente;
+60. comparación de costos conserva método de cada serie;
+61. comparación de rentabilidad conserva corte y completitud;
+62. cada indicador material puede bajar a fórmula, entradas y fuente;
+63. comparación con planificación no altera realidad;
+64. AS-IS incompleto no se presenta como objetivo ya implementado;
+65. estado vacío no afirma cero o completitud;
+66. datos sensibles permanecen minimizados;
+67. auditoría permite reconstruir el cálculo sin sustituir las fuentes;
+68. existen exactamente 20 clases mínimas de excepción;
+69. los 26 escenarios mínimos quedan definidos;
+70. todos los hallazgos tienen owner y condición de salida;
+71. no se crean ni modifican requisitos de prueba;
+72. no se realizan cambios físicos;
+73. UX-023 recibe fronteras explícitas para correcciones, restatements y eventos tardíos.
+
+---
+
+#### 75. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0104`, `VSCREEN-0158` o `VSCREEN-0156`;
+- crea un motor runtime de costos;
+- crea un motor runtime de rentabilidad;
+- fija valores empresariales de costos o drivers;
+- materializa pools o asignaciones;
+- corrige movimientos NEXO;
+- corrige hechos FOGO;
+- cambia ventas PULSO;
+- cambia compras ORIGO;
+- crea o modifica permisos runtime;
+- publica escenarios, presupuestos, forecast o versiones de precio;
+- activa precios operativos;
+- calcula contabilidad oficial;
+- define tratamiento fiscal;
+- abre, cierra o reabre periodos;
+- sobrescribe resultados históricos;
+- modifica Supabase;
+- crea migraciones;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-023`;
+- desarrolla el visor final de `NUMERA-UX-028`.
+
+---
+
+#### 76. Handoff a NUMERA-UX-023
+
+La siguiente tarea recibe:
+
+```text
+COST_PROFITABILITY_EXPERIENCE_CONTRACT = NUMERA-COST-PROFITABILITY-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0104
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY
+TRACEABLE_COST_REQUIRED = YES
+COST_METHOD_SILENT_FALLBACK = FORBIDDEN
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+MISSING_REVENUE_IS_ZERO = NO
+MISSING_COST_IS_ZERO = NO
+REALIZED_REVENUE_IS_CASH_RECEIPT = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+INTERNAL_TRANSFER_IS_CONSOLIDATED_EXTERNAL_REVENUE = NO
+CONSOLIDATION_REQUIRES_INTERNAL_DOUBLE_COUNT_ELIMINATION = YES
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+LATE_ECONOMIC_EVENT_SILENT_REWRITE = FORBIDDEN
+PUBLISHED_RESULT_CORRECTION_REQUIRES_VERSIONED_HISTORY = YES
+CLOSED_PERIOD_MUTATION_BY_ANALYSIS_UI = FORBIDDEN
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+EXCEPTION_CLASS_COUNT = 20
+VALIDATION_SCENARIO_COUNT = 26
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-023` deberá diseñar correcciones y reaperturas conservando la versión original, el motivo, el actor, el periodo, el delta y la versión sucesora, sin convertir un evento tardío o una nueva fuente en sobrescritura silenciosa de costos o rentabilidad publicados.
+
+---
+
+#### 77. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-021
+-> NUMERA-UX-022
+-> NUMERA-UX-023
+```
+
+UX-022 consume de UX-021 la separación entre flujo de efectivo y resultado económico y entrega a UX-023 resultados versionados que no pueden corregirse destruyendo historia.
+
+---
+
+#### 78. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial`
 ### [ ] NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
 ### [ ] NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
 ### [ ] NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
