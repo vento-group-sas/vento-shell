@@ -29294,7 +29294,1435 @@ UX-022 consume de UX-021 la separación entre flujo de efectivo y resultado econ
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial`
-### [ ] NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
+### ✅ NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
+**Tarea siguiente:** NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
+**Tipo de tarea:** definición documental de la experiencia especializada de correcciones, eventos tardíos, reaperturas, reexpresiones y recierre económico de NUMERA sobre `VSCREEN-0105`, consumiendo el flujo de cierre ya definido por `NUMERA-UX-011`, el contrato de periodos de `NUMERA-DOM-011`, la conciliación de diferencias de `NUMERA-DOM-014` y los resultados versionados de costos/rentabilidad de `NUMERA-UX-022`, sin borrar cierres, fuentes, reportes, matches ni versiones históricas y sin convertir la reapertura en autoridad genérica de escritura; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica NUMERA runtime, PULSO, ORIGO, FOGO, NEXO, Supabase, estados de periodos reales, hechos económicos, reportes publicados, costos, rentabilidad, permisos, RLS, APIs, RPC, migraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable la experiencia mediante la cual una persona autorizada puede detectar que una representación económica previa necesita corrección, decidir si el efecto se resuelve en un periodo abierto o exige reapertura, ejecutar el handoff hacia el owner exacto del recurso, volver a conciliar, producir una nueva versión cuando corresponda y preservar íntegramente la historia anterior.
+
+La experiencia debe impedir que “corregir” signifique editar silenciosamente una cifra, cambiar una fecha para hacerla cuadrar, borrar un cierre, reescribir una fuente ajena o reemplazar una versión publicada sin relación explícita con la anterior.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología vigente de `NUMERA-UX` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea:
+
+- define una sola vez la experiencia especializada de corrección y reapertura;
+- no crea una instancia física propia;
+- no modifica `vento-numera`;
+- no modifica Supabase;
+- no cambia estados de periodos reales;
+- no corrige hechos reales;
+- no ejecuta reaperturas reales;
+- no produce restatements reales;
+- no crea estados nuevos de `VPROC-0051..0054`;
+- no reemplaza el flujo de cierre definido por `NUMERA-UX-011`.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-022
+
+La tarea consume íntegramente:
+
+```text
+COST_PROFITABILITY_EXPERIENCE_CONTRACT = NUMERA-COST-PROFITABILITY-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0104
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY
+TRACEABLE_COST_REQUIRED = YES
+COST_METHOD_SILENT_FALLBACK = FORBIDDEN
+DIRECT_ATTRIBUTION_PRECEDES_SHARED_ALLOCATION = YES
+MISSING_REVENUE_IS_ZERO = NO
+MISSING_COST_IS_ZERO = NO
+REALIZED_REVENUE_IS_CASH_RECEIPT = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+INTERNAL_TRANSFER_IS_CONSOLIDATED_EXTERNAL_REVENUE = NO
+CONSOLIDATION_REQUIRES_INTERNAL_DOUBLE_COUNT_ELIMINATION = YES
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+LATE_ECONOMIC_EVENT_SILENT_REWRITE = FORBIDDEN
+PUBLISHED_RESULT_CORRECTION_REQUIRES_VERSIONED_HISTORY = YES
+CLOSED_PERIOD_MUTATION_BY_ANALYSIS_UI = FORBIDDEN
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+EXCEPTION_CLASS_COUNT = 20
+VALIDATION_SCENARIO_COUNT = 26
+TREQ_CHANGES = 0
+```
+
+UX-023 preserva esas fronteras y añade la experiencia de tratamiento posterior sin recalcular por inferencia ni convertir una cifra publicada en fuente editable.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La definición consume sin redefinir:
+
+- `NUMERA-PERIOD-CLOSE-FLOW-001` de `NUMERA-UX-011`;
+- `NUMERA-DOM-011` para periodo económico, `open|locked|closed`, evento tardío, reapertura y restatement;
+- `NUMERA-DOM-012` para versiones publicadas, reportes y restatements;
+- `NUMERA-DOM-014` para diferencia, resolución, reapertura de casos y owners de corrección;
+- `NUMERA-AUTH-006` para las autoridades exactas `numera.finance.periods.view`, `numera.finance.periods.lock`, `numera.finance.periods.close` y `numera.finance.periods.reopen`;
+- `NUMERA-AUTH-008` para scope;
+- `NUMERA-AUTH-009` para evidencia financiera;
+- `NUMERA-AUTH-013` para pruebas integrales posteriores;
+- `VPROC-0051` para conciliación de hechos económicos;
+- `VPROC-0054` para costos, distribución, cierre y rentabilidad;
+- `VSCREEN-0105` y `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD`;
+- los flujos de conciliación de `NUMERA-UX-017..019`;
+- caja y bancos de `NUMERA-UX-021`;
+- costos y rentabilidad de `NUMERA-UX-022`.
+
+---
+
+#### 5. Frontera con NUMERA-UX-011
+
+`NUMERA-UX-011` ya define el flujo de cierre y reapertura.
+
+UX-023 no vuelve a decidir:
+
+```text
+PERIOD_STATUS_VALUES = open|locked|closed
+ORDINARY_FLOW = open->locked->closed
+RELEASE_LOCK = locked->open
+REOPEN = closed->open
+```
+
+UX-023 especializa:
+
+- origen y clasificación de la corrección;
+- elección entre ajuste posterior y reapertura;
+- owner exacto de la mutación;
+- preservación de original y versiones;
+- revalidación posterior;
+- impacto sobre resultados/reportes publicados;
+- handoff hacia recierre;
+- estado de cobertura que deberá consumir UX-024.
+
+---
+
+#### 6. Superficie y proceso propietarios
+
+La experiencia especializada se presenta dentro de:
+
+```text
+SCREEN_ID = VSCREEN-0105
+SCREEN_NAME = Cierre, reapertura y corrección de periodo
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD
+RELATED_PROCESS_ID = VPROC-0051
+```
+
+No se crea una pantalla adicional para correcciones.
+
+La misma superficie puede mostrar contexto de corrección y reapertura, pero no concentra la autoridad de los recursos subyacentes.
+
+---
+
+#### 7. Principio no destructivo
+
+Se congela:
+
+```text
+CORRECTION != DELETE_ORIGINAL
+CORRECTION != OVERWRITE_HISTORY
+REOPEN != DELETE_PREVIOUS_CLOSE
+RESTATEMENT != MUTATE_PUBLISHED_VERSION_IN_PLACE
+```
+
+Toda corrección material conserva el original y añade una acción, relación o versión posterior trazable.
+
+---
+
+#### 8. Corrección y fuente de verdad
+
+Una corrección puede modificar únicamente el dato o representación cuyo owner posea autoridad para hacerlo.
+
+Se conserva:
+
+```text
+SOURCE_DOMAIN_OWNER = SOURCE_CORRECTION_OWNER
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+```
+
+NUMERA puede corregir su representación económica propia, pero no reescribe PULSO, ORIGO, NEXO o FOGO para cuadrar resultados.
+
+---
+
+#### 9. Taxonomía funcional de tratamiento
+
+La experiencia distingue al menos:
+
+- corrección de fuente propietaria;
+- ajuste económico NUMERA;
+- reverso correlacionado;
+- reclasificación;
+- corrección de matching o conciliación;
+- evento tardío;
+- duplicado confirmado;
+- resultado externo incierto;
+- reapertura de periodo;
+- restatement versionado;
+- reapertura de un caso de diferencia.
+
+Estas categorías describen tratamientos; no crean nuevos estados de dominio.
+
+---
+
+#### 10. Diferencia no es corrección
+
+Se conserva:
+
+```text
+RECONCILIATION_DIFFERENCE != CORRECTION
+DIFFERENCE_DETECTED != CORRECTION_EXECUTED
+```
+
+Detectar una diferencia abre investigación o decisión; no autoriza a modificar ninguna fuente.
+
+---
+
+#### 11. Corrección, reverso, ajuste y reclasificación permanecen distintos
+
+Se preserva la separación aprobada por `NUMERA-DOM-014`:
+
+```text
+CORRECTION
+!= REVERSAL
+!= ADJUSTMENT
+!= RECLASSIFICATION
+```
+
+La UI debe explicar qué tipo de efecto se propone y qué objeto anterior referencia.
+
+---
+
+#### 12. Ajuste manual genérico queda prohibido
+
+No se presenta una acción universal “ajustar” que permita cambiar cualquier cifra.
+
+Se congela:
+
+```text
+GENERIC_MANUAL_ADJUSTMENT_WITHOUT_CAUSE = FORBIDDEN
+```
+
+Toda acción exige causa, owner, recurso exacto, autoridad, periodo, versión y evidencia.
+
+---
+
+#### 13. Original y sucesor
+
+Cuando exista una corrección económica NUMERA, la experiencia debe poder reconstruir:
+
+```text
+ORIGINAL_RESOURCE_OR_RESULT
+-> CORRECTION_REASON
+-> CORRECTIVE_ACTION
+-> SUCCESSOR_OR_COMPENSATING_EFFECT
+-> VERIFICATION
+```
+
+El original permanece direccionable y auditable.
+
+---
+
+#### 14. Fechas no se reescriben
+
+Una corrección no cambia fechas históricas para acomodar el periodo.
+
+Se conservan por separado cuando apliquen:
+
+- ocurrencia;
+- recepción;
+- reconocimiento;
+- corrección;
+- cierre;
+- reapertura;
+- publicación;
+- recierre.
+
+El evento tardío conserva su fecha real de ocurrencia aunque se reconozca después.
+
+---
+
+#### 15. Periodo abierto
+
+En un periodo `open`, una corrección puede ejecutarse sin reapertura únicamente cuando:
+
+- la política aplicable lo permita;
+- el recurso exacto sea mutable mediante autoridad propia;
+- no se reescriba un cierre histórico;
+- el original permanezca trazable;
+- el efecto pueda reconciliarse después.
+
+`open` no concede autoridad universal de escritura.
+
+---
+
+#### 16. Periodo locked
+
+Una corrección material durante `locked` no se ejecuta como excepción silenciosa.
+
+La experiencia debe evaluar:
+
+```text
+release_lock
++ exact_resource_mutation_authority
++ correction
++ new_close_attempt
+```
+
+cuando esa secuencia sea necesaria.
+
+`locked -> open` continúa siendo liberación de lock y no reapertura.
+
+---
+
+#### 17. Periodo closed
+
+Una corrección contra `closed` debe evaluar primero si puede resolverse mediante ajuste posterior en un periodo abierto.
+
+Solo cuando el cambio material deba reexpresar la versión cerrada se entra a la rama de reapertura.
+
+---
+
+#### 18. Corrección sin reapertura
+
+Se reutiliza:
+
+```text
+CORRECTION_WITHOUT_REOPEN_ALLOWED_BY_POLICY
+```
+
+El resultado debe conservar:
+
+- referencia al periodo afectado;
+- razón de tratamiento posterior;
+- periodo de reconocimiento;
+- relación con el original;
+- impacto;
+- actor y autoridad;
+- evidencia;
+- estado de conciliación posterior.
+
+No se presenta como si el periodo histórico nunca hubiera cerrado.
+
+---
+
+#### 19. Cuándo se requiere reapertura
+
+La experiencia considera reapertura cuando una corrección material:
+
+- cambia un hecho económico reconocido en el cierre;
+- cambia costo o distribución material;
+- cambia ingreso realizado material;
+- cambia un resultado de conciliación material;
+- invalida un resultado publicado del periodo;
+- corrige duplicidad material reconocida;
+- corrige clasificación de periodo material;
+- exige reexpresión de una versión cerrada.
+
+La materialidad concreta no se inventa en esta tarea.
+
+---
+
+#### 20. Materialidad no tiene umbral universal
+
+Se conserva:
+
+```text
+UNIVERSAL_MATERIALITY_THRESHOLD = NO
+```
+
+La UI no utiliza un monto fijo global como decisión automática de reapertura.
+
+Toda política materializada deberá declarar versión, vigencia, alcance, owner y autoridad.
+
+---
+
+#### 21. Evento tardío no es inválido
+
+Se conserva:
+
+```text
+LATE_EVENT != INVALID_EVENT
+LATE_EVENT != REOPEN_AUTHORITY
+```
+
+La llegada después del cierre inicia clasificación; no concede permiso ni define por sí sola el tratamiento.
+
+---
+
+#### 22. Enrutamiento de evento tardío
+
+La experiencia presenta exactamente las salidas conceptuales ya aprobadas:
+
+1. reconocer o ajustar en un periodo económico abierto;
+2. reabrir controladamente el periodo cerrado;
+3. clasificar como duplicado, inválido o sin efecto económico cuando la evidencia lo demuestre.
+
+La elección conserva motivo, actor, autoridad, impacto y evidencia.
+
+---
+
+#### 23. Evento tardío duplicado
+
+Un evento tardío que resulte ser replay o duplicado confirmado no produce un segundo efecto económico.
+
+La UI debe mostrar la identidad/correlación que sustenta la decisión y preservar la evidencia recibida.
+
+---
+
+#### 24. Backfill histórico
+
+Se conserva:
+
+```text
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+```
+
+Un dato reconstruido o importado posteriormente debe declarar procedencia, cobertura, limitaciones y nivel de confianza.
+
+No se presenta como si hubiese existido originalmente en el cierre histórico.
+
+---
+
+#### 25. Reapertura: precondición
+
+Solo una versión `closed` entra a la rama ordinaria de reapertura.
+
+La experiencia debe identificar:
+
+```text
+period_id
+close_version
+current_period_version
+```
+
+sin depender de “último periodo” por fecha.
+
+---
+
+#### 26. Permiso exacto de reapertura
+
+La autoridad temporal consumida es:
+
+```text
+numera.finance.periods.reopen
+```
+
+y exige además lectura autorizada del periodo:
+
+```text
+numera.finance.periods.view
+```
+
+Se conserva:
+
+```text
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+```
+
+---
+
+#### 27. Motivo y evidencia de reapertura
+
+Toda solicitud debe presentar, cuando aplique:
+
+- hallazgo o evento origen;
+- versión cerrada afectada;
+- impacto esperado;
+- recursos afectados;
+- riesgo de no corregir;
+- alternativa de ajuste posterior evaluada;
+- alcance solicitado;
+- evidencia revisada.
+
+Un código técnico de error no sustituye la razón empresarial.
+
+---
+
+#### 28. Reapertura no concede mutación
+
+Se conserva:
+
+```text
+REOPEN_PERMISSION_IMPLIES_RESOURCE_UPDATE = NO
+REOPEN_PERMISSION_IMPLIES_RESOURCE_REGISTER = NO
+REOPEN_PERMISSION_IMPLIES_APPROVE = NO
+REOPEN_PERMISSION_IMPLIES_RECONCILE = NO
+```
+
+Después de reabrir, cada corrección sigue necesitando la autoridad exacta del recurso.
+
+---
+
+#### 29. Sin permiso omnibus de corrección
+
+Quedan prohibidos como autoridad objetivo:
+
+```text
+numera.finance.periods.correct
+numera.finance.periods.manage
+numera.finance.periods.update
+```
+
+No se crea un wildcard de corrección para simplificar la UX.
+
+---
+
+#### 30. Alcance de reapertura
+
+Se congela:
+
+```text
+REOPEN_IS_UNBOUNDED_WRITE = NO
+```
+
+La experiencia debe dejar visible:
+
+- alcance organizacional aprobado;
+- familias de recursos afectadas;
+- correcciones permitidas;
+- owner de cada corrección;
+- condición de finalización;
+- evidencia requerida;
+- necesidad prevista de nuevo cierre.
+
+---
+
+#### 31. Handoff hacia el owner de recurso
+
+La reapertura puede habilitar temporalmente el contexto, pero la mutación se ejecuta en el owner correcto.
+
+Ejemplos:
+
+| Materia | Owner de corrección |
+| --- | --- |
+| venta o caja comercial | PULSO |
+| compra o recepción comercial | ORIGO |
+| movimiento, ubicación, cantidad o custodia física | NEXO |
+| consumo, salida, merma, calidad o resultado productivo | FOGO |
+| hecho económico NUMERA | NUMERA |
+| obligación por pagar NUMERA | NUMERA |
+| cartera o aplicación de recaudo NUMERA | NUMERA |
+| línea bancaria | banco/fuente financiera; NUMERA solo concilia |
+| periodo/cierre económico | NUMERA mediante contrato de periodo |
+| reporte NUMERA afectado | NUMERA mediante versión/restatement |
+
+La pantalla no ofrece edición directa de fuentes ajenas.
+
+---
+
+#### 32. Corrección económica NUMERA
+
+Cuando NUMERA sea owner del dato incorrecto, la experiencia debe exigir una acción no destructiva:
+
+- ajuste;
+- reverso;
+- reclasificación;
+- nueva versión;
+- corrección correlacionada permitida por el recurso.
+
+La forma exacta depende del recurso; UX-023 no inventa un único comando universal.
+
+---
+
+#### 33. Corrección en fuente externa o dominio propietario
+
+Cuando la fuente propietaria sea PULSO, ORIGO, NEXO, FOGO, banco o proveedor externo:
+
+```text
+CORRECT_FOREIGN_SOURCE_FROM_NUMERA = FORBIDDEN
+```
+
+NUMERA mantiene el caso abierto o pendiente hasta recibir la corrección/resultado propietario y luego reconcilia nuevamente.
+
+---
+
+#### 34. Reapertura no edita agregados
+
+Un indicador, reporte, costo publicado o resultado de rentabilidad no se edita como fuente.
+
+La corrección debe bajar hasta el hecho, regla, asignación o versión propietaria que corresponda.
+
+---
+
+#### 35. Costos publicados
+
+UX-023 consume de UX-022:
+
+```text
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+```
+
+Si cambia materialmente un costo usado por un cierre, la experiencia conserva:
+
+- versión original;
+- método y fuentes originales;
+- motivo del cambio;
+- versión sucesora;
+- impacto;
+- periodo;
+- relación con el recierre/restatement cuando corresponda.
+
+---
+
+#### 36. Rentabilidad publicada
+
+Se conserva:
+
+```text
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+```
+
+Una nueva rentabilidad materialmente distinta produce una versión posterior, no edición en sitio de la versión usada por decisiones anteriores.
+
+---
+
+#### 37. Ingreso realizado corregido
+
+Una corrección de ingreso debe mantener la identidad del hecho comercial y su lineage.
+
+La experiencia no usa cobro, caja o banco como sustituto del ingreso corregido.
+
+---
+
+#### 38. Caja y bancos después del cierre
+
+UX-023 conserva las fronteras de UX-021:
+
+```text
+CASH_RECEIPT_IS_REALIZED_REVENUE = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+```
+
+Un movimiento bancario tardío se concilia y se enruta; no reescribe automáticamente costo, gasto, ingreso o cierre.
+
+---
+
+#### 39. Transferencias internas
+
+Una corrección sobre transferencia interna no puede convertirla por inferencia en ingreso externo o gasto legal.
+
+Se conserva:
+
+```text
+INTERNAL_TRANSFER_IS_CONSOLIDATED_EXTERNAL_REVENUE = NO
+```
+
+La corrección mantiene las dos patas, el alcance y la política de consolidación aplicable.
+
+---
+
+#### 40. Compras y recepciones
+
+Una diferencia tardía entre orden, recepción, documento u obligación se corrige en su owner correspondiente.
+
+NUMERA no crea una recepción ficticia ni cambia ORIGO para cerrar la diferencia.
+
+---
+
+#### 41. Inventario y producción
+
+Una diferencia posterior entre FOGO, NEXO y NUMERA debe preservar:
+
+- hecho productivo;
+- movimiento físico;
+- cantidad/unidad;
+- lote/genealogía;
+- versión económica;
+- residual y owner.
+
+La corrección económica no sustituye la corrección productiva o física.
+
+---
+
+#### 42. Payables que cruzan periodos
+
+Una obligación puede originarse en un periodo y pagarse en otro.
+
+Cerrar o reabrir el periodo de origen no obliga a alterar vencimiento, pago o conciliación legítimos de otro periodo.
+
+---
+
+#### 43. Receivables y recaudos
+
+Una cuenta por cobrar puede permanecer abierta después del cierre del periodo de origen.
+
+UX-023 no adelanta cartera completa reservada a `NUMERA-UX-026`; solo preserva que una corrección/reapertura no borra el saldo, las aplicaciones ni la historia ya registrada.
+
+---
+
+#### 44. Matching y reversión
+
+Se conserva:
+
+```text
+MATCH_REVERSAL_PRESERVES_PRIOR_MATCH = YES
+```
+
+Revertir un match incorrecto no revierte automáticamente venta, pago, banco, obligación o hecho económico.
+
+La nueva decisión conserva el match anterior y su motivo de reversión.
+
+---
+
+#### 45. Caso de diferencia cerrado que reabre
+
+Una diferencia previamente cerrada puede reabrirse por:
+
+- nueva evidencia material;
+- evento tardío;
+- reverso o contracargo;
+- corrección de fuente;
+- nuevo resultado externo;
+- cierre incorrecto detectado;
+- duplicidad posterior;
+- restatement relacionado.
+
+Se conserva:
+
+```text
+CLOSED_DIFFERENCE_CAN_REOPEN_WITH_HISTORY = YES
+```
+
+---
+
+#### 46. Reapertura de caso no es reapertura de periodo
+
+Se mantiene:
+
+```text
+REOPEN_DIFFERENCE != REOPEN_PERIOD
+```
+
+Un caso de conciliación puede reabrirse sin que el periodo necesariamente cambie a `open`.
+
+La decisión temporal se evalúa por separado.
+
+---
+
+#### 47. Resultado externo incierto
+
+Se conserva:
+
+```text
+UNKNOWN_EXTERNAL_RESULT != FAILED_RESULT
+```
+
+Un timeout o respuesta incierta no inicia corrección, reverso o reapertura sin confirmar primero el efecto empresarial.
+
+---
+
+#### 48. Resultado externo confirmado después
+
+Cuando el resultado externo se conoce posteriormente:
+
+- se correlaciona con la solicitud original;
+- se compara contra el estado NUMERA vigente;
+- se detecta duplicidad/replay;
+- se abre o reabre diferencia si cambia la conclusión;
+- se evalúa el periodo afectado;
+- se corrige únicamente mediante autoridad propietaria.
+
+---
+
+#### 49. Publicaciones y restatement
+
+Cuando una corrección material afecta un resultado publicado:
+
+```text
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+```
+
+La versión anterior conserva periodo, close_version, corte, fuentes, fórmulas y audiencia que tenía al publicarse.
+
+---
+
+#### 50. Exportaciones históricas
+
+Una exportación ya producida no cambia retroactivamente.
+
+Se conserva:
+
+```text
+NEW_REPORT_VERSION != SILENT_MUTATION_OF_OLD_EXPORT
+```
+
+La experiencia puede advertir que existe una versión posterior, pero no altera el contenido histórico ya emitido.
+
+---
+
+#### 51. Escenarios, forecast y presupuestos
+
+Una corrección de realidad no sobrescribe:
+
+```text
+BUDGET
+FORECAST
+SCENARIO
+SIMULATION
+```
+
+y una modificación de escenario no corrige hechos reales.
+
+Las comparaciones posteriores deben indicar qué versión real y qué versión de planificación se están comparando.
+
+---
+
+#### 52. Precio operativo y versiones de precio
+
+Una versión NUMERA de precio publicada no se activa ni desactiva operativamente por inferencia durante una corrección de periodo.
+
+El lifecycle especializado permanece bajo sus contratos propietarios.
+
+---
+
+#### 53. Corrección y permisos especializados
+
+La presencia de autoridad de reapertura no concede permisos especializados de:
+
+- escenarios;
+- presupuesto;
+- precio;
+- pago;
+- banco;
+- castigo;
+- exportación;
+- aprobación.
+
+Cada familia conserva su permission key exacta cuando esté materializada.
+
+---
+
+#### 54. Concurrencia
+
+La experiencia considera stale una revisión cuando cambia materialmente:
+
+- versión del periodo;
+- close_version;
+- fuente;
+- resultado de conciliación;
+- match;
+- costo publicado;
+- rentabilidad publicada;
+- scope;
+- actor/autoridad;
+- evidencia relevante.
+
+Una decisión stale exige nueva revisión.
+
+---
+
+#### 55. Idempotencia
+
+Las acciones gobernadas deberán ser idempotentes según su identidad.
+
+Se conserva:
+
+```text
+SAME_CORRECTION_INTENT + SAME_RESOURCE_VERSION + SAME_IDEMPOTENCY_KEY
+= ONE_CORRECTIVE_EFFECT
+```
+
+y:
+
+```text
+SAME_PERIOD + SAME_CLOSE_VERSION + SAME_REOPEN_DECISION + SAME_IDEMPOTENCY_KEY
+= ONE_REOPEN_EFFECT
+```
+
+Replay no crea doble ajuste, doble reapertura, doble restatement ni doble recierre.
+
+---
+
+#### 56. Decisiones opuestas no son retries
+
+Cambiar de:
+
+```text
+adjust_without_reopen
+a
+reopen_and_restate
+```
+
+o de:
+
+```text
+reopen
+a
+recerrar
+```
+
+no es reintento técnico de la misma intención.
+
+Cada decisión exige contexto, estado y evidencia vigentes.
+
+---
+
+#### 57. Revalidación server-side
+
+Antes de todo efecto real deberán revalidarse, cuando aplique:
+
+```text
+principal
+effective_actor
+exact_permission
+resource_identity
+resource_version
+period_id
+period_state
+period_version
+close_version
+scope
+reason
+evidence
+requested_effect
+```
+
+Cualquier componente obligatorio ausente, stale o no autorizado produce deny seguro.
+
+---
+
+#### 58. Deny sin side effects
+
+Se conserva:
+
+```text
+DENY_SIDE_EFFECT_ALLOWED = NO
+```
+
+Una denegación no modifica periodos, recursos, matches, costos, reportes ni evidencia previa.
+
+---
+
+#### 59. Evidencia mínima de una corrección
+
+La experiencia debe permitir reconstruir:
+
+- recurso original;
+- versión original;
+- fuente/owner;
+- periodo;
+- close_version cuando aplique;
+- motivo;
+- clasificación;
+- actor y autoridad;
+- evidencia;
+- efecto solicitado;
+- resultado;
+- recurso/versión sucesora o compensatoria;
+- verificación;
+- correlación temporal.
+
+---
+
+#### 60. Evidencia mínima de reapertura
+
+Además del contrato de UX-011, la reapertura especializada por corrección debe mostrar:
+
+- corrección que la motiva;
+- por qué un ajuste posterior no basta;
+- familias afectadas;
+- impacto esperado;
+- close_version afectada;
+- alcance autorizado;
+- owners de las acciones posteriores;
+- condición de recierre.
+
+---
+
+#### 61. Recierre después de cambio material
+
+Se conserva:
+
+```text
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+```
+
+Después de corregir, la experiencia vuelve al flujo propietario de UX-011 para:
+
+```text
+open
+-> locked
+-> closed
+```
+
+con gates, evidencia y versiones vigentes.
+
+---
+
+#### 62. Nueva versión de cierre
+
+El recierre produce una nueva versión vinculada.
+
+Se conserva:
+
+```text
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+```
+
+La relación debe permitir identificar qué close_version fue supersedida y por qué.
+
+---
+
+#### 63. Estado visual no crea estado de dominio
+
+La UX puede mostrar fases como revisión, corrección pendiente, espera de owner, recálculo o recierre, pero no las presenta como nuevos valores de `numera_periods.status`.
+
+Los estados empresariales del periodo siguen siendo únicamente:
+
+```text
+open
+locked
+closed
+```
+
+---
+
+#### 64. Cero, ausencia y pendiente
+
+Se mantienen separados:
+
+```text
+ZERO
+MISSING
+NOT_APPLICABLE
+NOT_COMPARABLE
+PENDING
+```
+
+Una corrección pendiente no se representa como valor cero ni como “sin impacto” antes de resolverla.
+
+---
+
+#### 65. Accesibilidad y claridad
+
+La experiencia debe:
+
+- identificar versión original y sucesora sin depender solo de color;
+- distinguir ajuste posterior de reapertura;
+- distinguir reapertura de caso y de periodo;
+- comunicar cuándo una cifra está supersedida;
+- conservar lectura lineal en responsive;
+- no esconder motivo, impacto o owner en interacción inaccesible;
+- hacer visible cuándo un resultado es histórico y cuándo está vigente.
+
+---
+
+#### 66. Minimización de datos sensibles
+
+Una corrección puede consumir evidencia sensible, pero la UI solo muestra lo necesario para decidir y verificar.
+
+No se copian indiscriminadamente:
+
+- credenciales;
+- secretos;
+- tokens;
+- payloads completos;
+- datos bancarios no necesarios;
+- documentos completos cuando basta una referencia autorizada.
+
+---
+
+#### 67. Recuperación ante fallo técnico
+
+La UX debe distinguir:
+
+```text
+BUSINESS_DENY
+VALIDATION_ERROR
+CONFLICT_OR_STALE
+DEPENDENCY_UNAVAILABLE
+TECHNICAL_FAILURE
+UNKNOWN_RESULT
+```
+
+Un fallo técnico no se traduce en “corrección rechazada” ni en “reapertura no necesaria”.
+
+---
+
+#### 68. Revisión posterior
+
+Después de una corrección ejecutada, el caso no se considera resuelto hasta verificar:
+
+- recurso/versión resultante;
+- fuente propietaria actual;
+- conciliación relevante;
+- impacto esperado;
+- residual;
+- periodo;
+- resultado publicado afectado;
+- necesidad de restatement/recierre.
+
+Se conserva:
+
+```text
+RESOLUTION_ACTION_EXECUTED_IS_CASE_CLOSED = NO
+```
+
+---
+
+#### 69. Handoff de cobertura hacia NUMERA-UX-024
+
+UX-023 entrega a UX-024 estados observables que el futuro tablero deberá poder distinguir sin reinterpretarlos:
+
+- fuente corregida y revalidada;
+- fuente todavía pendiente;
+- periodo reabierto;
+- recierre pendiente;
+- restatement publicado;
+- versión histórica supersedida;
+- diferencia reabierta;
+- excepción aceptada;
+- resultado externo incierto;
+- backfill con limitaciones;
+- cobertura incompleta.
+
+UX-023 no diseña el tablero ni sus métricas.
+
+---
+
+#### 70. Escenarios mínimos de validación futura
+
+La implementación y pruebas posteriores deberán cubrir al menos:
+
+1. corrección NUMERA en periodo abierto sin reapertura;
+2. corrección durante `locked` que obliga a liberar lock;
+3. corrección material de `closed` que exige reapertura;
+4. corrección no material resuelta en periodo posterior;
+5. evento tardío válido con ajuste posterior;
+6. evento tardío material con reapertura;
+7. evento tardío duplicado sin nuevo efecto;
+8. backfill histórico con cobertura parcial;
+9. corrección de venta que permanece en PULSO;
+10. corrección de compra/recepción que permanece en ORIGO;
+11. corrección física que permanece en NEXO;
+12. corrección productiva que permanece en FOGO;
+13. corrección económica NUMERA con acción compensatoria;
+14. match revertido sin revertir hechos;
+15. diferencia cerrada reabierta por nueva evidencia;
+16. reapertura de diferencia sin reapertura de periodo;
+17. resultado externo incierto confirmado después;
+18. costo publicado corregido con versión sucesora;
+19. rentabilidad histórica corregida sin overwrite;
+20. reporte restatado conservando versión previa;
+21. exportación histórica conservada tras nueva versión;
+22. decisión stale por cambio concurrente;
+23. retry idempotente de corrección;
+24. retry idempotente de reapertura;
+25. deny de reapertura con cero side effects;
+26. corrección seguida de recierre y nueva close_version.
+
+---
+
+#### 71. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-023 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| guard físico de periodos no está materializado integralmente | no | package físico NUMERA/E5 aplicable | UI, servidor y persistencia bloquean mutaciones incompatibles con `locked/closed` |
+| persistencia física de close_version/restatement no se define aquí | no | implementación NUMERA propietaria | versiones y relaciones de supersesión quedan materializadas sin borrar historia |
+| materialidad no tiene umbral universal aprobado | no | gobierno financiero competente | política versionada define criterio cuando corresponda |
+| permisos de periodo pueden permanecer pendientes de adopción runtime | no | materialización de autorización NUMERA | `periods.view/lock/close/reopen` existen y son consumidos sin fallback legacy |
+| cada corrección depende del recurso afectado | no | owner de recurso + autorización aplicable | mutación usa permiso exacto, estado y evidencia propios |
+| tablero de cobertura aún no está diseñado | no | `NUMERA-UX-024` | tablero representa cobertura, fuentes y estado de conciliación sin ocultar reaperturas/restatements |
+
+No queda hallazgo detectado sin owner y condición de salida.
+
+---
+
+#### 72. Decisiones congeladas
+
+1. `VSCREEN-0105` permanece como superficie propietaria de corrección/reapertura;
+2. `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD` permanece como paso owner;
+3. UX-023 consume y no redefine `NUMERA-PERIOD-CLOSE-FLOW-001`;
+4. los estados del periodo siguen siendo `open|locked|closed`;
+5. corrección no equivale a borrado ni overwrite;
+6. owner de fuente conserva autoridad sobre su corrección;
+7. NUMERA no reescribe fuentes ajenas;
+8. diferencia detectada no ejecuta corrección;
+9. correction/reversal/adjustment/reclassification permanecen distintos;
+10. no existe ajuste manual genérico sin causa;
+11. fechas históricas no se reescriben;
+12. periodo `open` no concede autoridad universal;
+13. corrección en `locked` puede exigir release lock;
+14. corrección material de `closed` puede exigir reapertura;
+15. no toda diferencia exige reapertura;
+16. no existe umbral universal de materialidad;
+17. evento tardío no es inválido ni autoridad;
+18. backfill no es evidencia original;
+19. reapertura exige periodo y close_version exactos;
+20. `periods.reopen` no implica `periods.view`;
+21. reapertura no concede mutación de recurso;
+22. no existe permiso omnibus de corrección;
+23. reapertura es acotada;
+24. cada owner ejecuta su corrección;
+25. agregados/resultados publicados no se editan como fuente;
+26. costo publicado no se sobrescribe;
+27. rentabilidad histórica no se sobrescribe;
+28. caja/banco no se convierten en ingreso/costo por corrección;
+29. transferencias internas no se reclasifican automáticamente;
+30. match reversal preserva match previo;
+31. reopen difference no equivale a reopen period;
+32. resultado externo incierto no dispara corrección;
+33. restatement crea nueva versión;
+34. exportación histórica no muta;
+35. planificación y realidad permanecen separadas;
+36. decisiones stale exigen nueva revisión;
+37. correcciones y reaperturas son idempotentes;
+38. deny produce cero side effects;
+39. recierre material reutiliza el flujo de UX-011;
+40. la versión de cierre anterior permanece histórica;
+41. estados visuales no crean estados de dominio;
+42. UX-024 recibe cobertura y estados derivados sin que UX-023 diseñe su tablero.
+
+---
+
+#### 73. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: las obligaciones de preservación de historia, correcciones compensatorias, cierres/reaperturas, eventos tardíos, segregación, idempotencia, conciliación, restatement y evidencia ya están cubiertas por requisitos canónicos vigentes. Esta tarea especializa la experiencia y sus handoffs sin introducir una nueva obligación ejecutable ni modificar texto, estado, secuencia, relación u owner del Registro 04A.
+
+---
+
+#### 74. Cobertura de prueba vigente reutilizada
+
+Esta sección registra trazabilidad existente y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — conciliación, historia, permisos separados, cierres reproducibles y trazabilidad;
+- `TREQ-NUMERA-002` — identidad, estado, evidencia, correcciones compensatorias, cierres y reaperturas conservando el original;
+- `TREQ-NUMERA-003` — separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir, castigar y exportar;
+- `TREQ-NUMERA-004` — método, versión, fuentes y separación de costos, variaciones, planificación y rentabilidad;
+- `TREQ-INTEGRATION-003` — idempotencia, retries, concurrencia y resultado recuperable;
+- `TREQ-INTEGRATION-006` — diferencias con origen, responsable, resolución y evidencia sin sobrescribir historia;
+- `TREQ-INTEGRATION-017` — eventos tardíos, origen/efecto, montos/monedas divergentes y tratamiento idempotente;
+- `TREQ-INTEGRATION-168` — resultado incierto no inicia reversión/corrección sin efecto empresarial confirmado;
+- `TREQ-AUTH-013` — revalidación server-side de actor, permiso, scope, recurso, estado y campos;
+- `TREQ-AUTH-014` — decisiones stale se invalidan ante cambios materiales;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones sensibles.
+
+---
+
+#### 75. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto durante su preparación |
+| LOCAL | NOT_EXECUTED | la incorporación, normalización y batería documental quedan pendientes del ciclo manual del usuario después del cierre de UX-022 |
+| REMOTA | PASS | se verificaron `main`, secuencia activa, topología `DEFINE_ONCE`, archivo propietario, `VSCREEN-0105`, `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD`, `NUMERA-UX-011`, `NUMERA-DOM-011`, `NUMERA-DOM-012`, `NUMERA-DOM-014`, `NUMERA-AUTH-006`, Registro 04A NUMERA y el handoff completo de la UX-022 aprobada |
+| OPERATIVA | NOT_EXECUTED | no se corrigió, revirtió, reclasificó, reabrió, recerró ni restató ningún hecho, periodo, reporte, costo o resultado real |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-023` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 76. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. `VSCREEN-0105` permanece como superficie principal;
+2. `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD` permanece como paso owner;
+3. UX-023 consume y no redefine el flujo de UX-011;
+4. `open|locked|closed` permanecen como únicos estados del periodo;
+5. corrección no borra original;
+6. reapertura no borra cierre anterior;
+7. restatement no edita versión publicada en sitio;
+8. owner de fuente conserva autoridad de corrección;
+9. NUMERA no reescribe PULSO, ORIGO, NEXO o FOGO;
+10. diferencia detectada no ejecuta corrección;
+11. correction/reversal/adjustment/reclassification permanecen distintos;
+12. ajuste manual genérico queda prohibido;
+13. original y sucesor quedan correlacionados;
+14. fechas históricas no se reescriben;
+15. periodo abierto no concede wildcard de escritura;
+16. corrección en locked no bypassa el lock;
+17. corrección material de closed evalúa reapertura;
+18. ajuste posterior puede evitar reapertura cuando la política lo permita;
+19. materialidad universal no se inventa;
+20. evento tardío no se presenta como inválido ni como autoridad;
+21. evento tardío tiene exactamente las salidas conceptuales aprobadas;
+22. replay/duplicado tardío no crea segundo efecto;
+23. backfill no se presenta como evidencia original;
+24. reapertura exige period_id, close_version y period_version;
+25. `periods.reopen` permanece separado de `periods.view`;
+26. reapertura exige motivo y evidencia;
+27. reapertura no concede mutación de recurso;
+28. no existe permiso omnibus de corrección;
+29. reapertura es acotada;
+30. cada corrección se entrega al owner correcto;
+31. corrección económica NUMERA es no destructiva;
+32. fuentes externas no se corrigen desde NUMERA;
+33. agregados/resultados no son fuentes editables;
+34. costos publicados conservan versión original;
+35. rentabilidad histórica conserva versión original;
+36. ingreso corregido mantiene lineage del hecho;
+37. caja/banco no se reinterpretan como ingreso/costo por dirección;
+38. transferencias internas no crean ingreso externo por corrección;
+39. compras/recepciones se corrigen en ORIGO cuando corresponda;
+40. inventario/producción se corrigen en NEXO/FOGO cuando corresponda;
+41. payables que cruzan periodos no se fuerzan a liquidación;
+42. cartera no se adelanta respecto de UX-026;
+43. match reversal conserva match previo;
+44. diferencia cerrada puede reabrirse con historia;
+45. reopen difference no equivale a reopen period;
+46. resultado externo incierto permanece pendiente hasta confirmación;
+47. resultado externo posterior se correlaciona sin duplicar efecto;
+48. restatement produce nueva versión de reporte;
+49. exportación histórica no cambia retroactivamente;
+50. realidad no sobrescribe planificación ni viceversa;
+51. precio operativo no se activa por inferencia;
+52. reapertura no concede permisos especializados;
+53. decisión stale exige nueva revisión;
+54. corrección y reapertura son idempotentes;
+55. decisiones opuestas no se tratan como retry;
+56. servidor revalida actor, permiso, recurso, periodo, versión y scope;
+57. deny produce cero side effects;
+58. evidencia reconstruye original, causa, efecto, sucesor y verificación;
+59. reapertura explica por qué un ajuste posterior no basta;
+60. cambio material exige recierre;
+61. recierre genera nueva close_version;
+62. estados visuales no crean estados de dominio;
+63. cero, missing, N/A, not comparable y pending permanecen distintos;
+64. accesibilidad no depende de color;
+65. datos sensibles se minimizan;
+66. deny, validación, stale, fallo técnico y resultado incierto se distinguen;
+67. acción ejecutada no equivale a caso cerrado;
+68. UX-024 recibe estados de cobertura sin que UX-023 diseñe su tablero;
+69. existen 26 escenarios mínimos de validación futura;
+70. todos los hallazgos tienen owner y condición de salida;
+71. no se crean ni modifican requisitos de prueba;
+72. no se realizan cambios físicos.
+
+---
+
+#### 77. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0105`;
+- crea otra pantalla de correcciones;
+- cambia los estados `open|locked|closed`;
+- crea permisos runtime;
+- crea un permiso genérico de corrección;
+- cambia grants, roles o scope;
+- corrige ventas PULSO;
+- corrige compras/recepciones ORIGO;
+- corrige inventario NEXO;
+- corrige producción FOGO;
+- modifica líneas bancarias;
+- ejecuta ajustes económicos reales;
+- reabre periodos reales;
+- cierra o recierra periodos reales;
+- genera restatements reales;
+- modifica reportes publicados;
+- sobrescribe costos o rentabilidad;
+- altera escenarios, presupuesto, forecast o precios;
+- fija umbral universal de materialidad;
+- define tratamiento contable/fiscal oficial;
+- modifica Supabase;
+- crea migraciones;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-024`.
+
+---
+
+#### 78. Handoff a NUMERA-UX-024
+
+La siguiente tarea recibe:
+
+```text
+PRIMARY_CORRECTION_SCREEN_ID = VSCREEN-0105
+PERIOD_CLOSE_FLOW_CONTRACT = NUMERA-PERIOD-CLOSE-FLOW-001
+PERIOD_STATUS_VALUES = open|locked|closed
+SOURCE_DOMAIN_OWNER_IS_SOURCE_CORRECTION_OWNER = YES
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+CORRECTION_DELETES_ORIGINAL = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_PERMISSION_IMPLIES_RESOURCE_MUTATION = NO
+GENERIC_CORRECTION_PERMISSION = FORBIDDEN
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+MATCH_REVERSAL_PRESERVES_PRIOR_MATCH = YES
+REOPEN_DIFFERENCE_IS_REOPEN_PERIOD = NO
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+PUBLISHED_COST_SILENT_OVERWRITE = FORBIDDEN
+HISTORICAL_PROFITABILITY_SILENT_OVERWRITE = FORBIDDEN
+RESTATEMENT_CREATES_NEW_REPORT_VERSION = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+RESOLUTION_ACTION_EXECUTED_IS_CASE_CLOSED = NO
+COVERAGE_DASHBOARD_OWNER = NUMERA_UX_024
+VALIDATION_SCENARIO_COUNT = 26
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-024` deberá representar cobertura, fuentes, conciliaciones, excepciones, reaperturas, restatements y pendientes sin presentar ausencia de evidencia como cero, PASS o completitud global.
+
+---
+
+#### 79. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-022
+-> NUMERA-UX-023
+-> NUMERA-UX-024
+```
+
+UX-023 consume resultados versionados de UX-022 y el flujo de cierre de UX-011, preserva historia durante correcciones/reaperturas y entrega a UX-024 estados de cobertura y conciliación que ya distinguen versión vigente, versión supersedida, fuente pendiente y recierre/restatement.
+
+---
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes`
 ### [ ] NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
 ### [ ] NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
 ### [ ] NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro

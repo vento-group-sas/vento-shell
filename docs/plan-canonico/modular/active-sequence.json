@@ -5,25 +5,25 @@
   "sequence_id": "PHASE-08-NUMERA",
   "block_code": "BLOQUE O",
   "block_title": "NUMERA",
-  "previous_task_id": "NUMERA-UX-022",
+  "previous_task_id": "NUMERA-UX-023",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "VISO-UX-001",
   "handoff_sequence_id": "PHASE-09-VISO-COMPLETE",
   "segments": [
     {
       "prefix": "NUMERA-UX",
-      "from": 23,
+      "from": 24,
       "to": 28
     }
   ],
   "block_progress": {
     "total_tasks": 74,
-    "approved_tasks": 68,
-    "pending_tasks": 6
+    "approved_tasks": 69,
+    "pending_tasks": 5
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 138,
+    "pending_tasks": 137,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 27

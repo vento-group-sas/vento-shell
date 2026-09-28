@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1458** |
+| Aprobadas | **1459** |
 | En propuesta | **0** |
-| No iniciadas | **138** |
+| No iniciadas | **137** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **91.35% (1458/1596)** |
+| Porcentaje de completamiento | **91.42% (1459/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **138** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1359** |
+| ⏸ NO_EVALUADA | **137** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1360** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-022` — Diseñar costos y rentabilidad con trazabilidad hasta el origen | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-023` — Diseñar correcciones y reaperturas sin borrar historial | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-024` — Diseñar tablero de cobertura y conciliación de fuentes | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-023` — Diseñar correcciones y reaperturas sin borrar historial | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-024` — Diseñar tablero de cobertura y conciliación de fuentes | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-025` — Aprobar alcance financiero antes de completar implementación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1220,7 +1220,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-020` | Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-021` | Diseñar caja y bancos cuando pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-022` | Diseñar costos y rentabilidad con trazabilidad hasta el origen | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-023` | Diseñar correcciones y reaperturas sin borrar historial | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-023` | Diseñar correcciones y reaperturas sin borrar historial | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-024` | Diseñar tablero de cobertura y conciliación de fuentes | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-025` | Aprobar alcance financiero antes de completar implementación | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-026` | Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
