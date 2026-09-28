@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1454** |
+| Aprobadas | **1455** |
 | En propuesta | **0** |
-| No iniciadas | **142** |
+| No iniciadas | **141** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **91.10% (1454/1596)** |
+| Porcentaje de completamiento | **91.17% (1455/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **142** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1355** |
+| ⏸ NO_EVALUADA | **141** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1356** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-018` — Diseñar conciliación de compras y recepciones | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-019` — Diseñar conciliación de inventario, producción y variaciones | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-020` — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-019` — Diseñar conciliación de inventario, producción y variaciones | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-020` — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-021` — Diseñar caja y bancos cuando pertenezcan al alcance aprobado | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1216,7 +1216,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-016` | Validar el prototipo con contabilidad y dirección | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-017` | Diseñar conciliación de ventas y pagos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-018` | Diseñar conciliación de compras y recepciones | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-019` | Diseñar conciliación de inventario, producción y variaciones | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-019` | Diseñar conciliación de inventario, producción y variaciones | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-020` | Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-021` | Diseñar caja y bancos cuando pertenezcan al alcance aprobado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-022` | Diseñar costos y rentabilidad con trazabilidad hasta el origen | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
