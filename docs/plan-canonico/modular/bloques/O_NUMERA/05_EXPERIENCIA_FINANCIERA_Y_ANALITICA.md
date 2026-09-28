@@ -36338,4 +36338,830 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva`
-### [ ] NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
+### ✅ NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
+**Tarea siguiente:** VISO-UX-001 — Reorganizar navegación por dominios administrativos
+**Tipo de tarea:** definición documental de la experiencia final del visor económico de NUMERA sobre `VSCREEN-0104`, con comparación coordinada de realidad, presupuesto, forecast, escenarios, precio, costo, margen, equilibrio y rentabilidad; simulación no mutante, divulgación progresiva, trazabilidad hasta fórmula/entradas/fuentes, autorización especializada y frontera explícita frente a oficialidad contable/fiscal; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no implementa UI, componentes, rutas, fórmulas runtime, permisos, acciones de negocio, precios, costos, presupuestos, escenarios, reportes, integraciones, Supabase, migraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia económica principal de NUMERA para que un actor autorizado pueda consultar, comparar y simular precio, costo, margen, variación, punto de equilibrio, presupuesto, forecast y escenarios principalmente desde una sola pantalla, manteniendo trazabilidad hasta fórmula, entradas y fuentes sin convertir el visor en una fuente de verdad paralela ni en una superficie contable o fiscal oficial.
+
+La experiencia debe responder sin navegación previa:
+
+1. cuánto cuesta realmente;
+2. a qué precio se vende o se propone vender;
+3. cuánto margen o contribución deja;
+4. qué cambia cuando se modifica un supuesto.
+
+#### 2. Naturaleza y topología
+
+La tarea se resuelve como contrato documental:
+
+```text
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+PHYSICAL_INSTANCE = NONE
+```
+
+No crea instancia física propia, no implementa componentes, no modifica `vento-numera`, no modifica Supabase y no convierte decisiones visuales en contratos runtime.
+
+#### 3. Handoff recibido de NUMERA-UX-027
+
+Se recibe sin reinterpretación:
+
+```text
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED
+CAP_12_13_TAX_AND_COMPLIANCE = REQUIRED
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+EXTERNAL_AND_INTERNAL_ACCOUNTING_PATHS_SUPPORTED = YES
+CURRENT_ACCOUNTING_PROVIDER_BINDING_ACCREDITED = NO
+CURRENT_FISCAL_PROVIDER_BINDING_ACCREDITED = NO
+ACCOUNTING_AUTHORITY_MUST_BE_EXPLICIT_BY_LEGAL_ENTITY_AND_PERIOD = YES
+DUAL_AUTHORITATIVE_LEDGER_FOR_SAME_ENTITY_PERIOD = FORBIDDEN
+ECONOMIC_FACT_IS_ACCOUNTING_CANDIDATE = NO
+ACCOUNTING_CANDIDATE_IS_POSTED_ENTRY = NO
+BALANCED_CANDIDATE_IS_POSTED_ENTRY = NO
+UNEXPLAINED_AUTO_BALANCING_ENTRY = FORBIDDEN
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+TIMEOUT_OR_REQUEST_SENT_IS_EXTERNAL_POSTING = NO
+REQUEST_SENT_IS_TAX_FILING_ACCEPTED = NO
+EXTERNAL_RESPONSE_MAY_RECONCILE_BUT_NOT_REWRITE_SOURCE = YES
+FISCAL_DOCUMENT_ACCOUNTING_VOUCHER_ACCOUNTING_ENTRY = DISTINCT
+NUMERA_MANAGEMENT_REPORT_IS_STATUTORY_FINANCIAL_STATEMENT = NO
+NUMERA_ECONOMIC_CLOSE_IS_ACCOUNTING_CLOSE = NO
+NUMERA_ECONOMIC_CLOSE_IS_FISCAL_CLOSE = NO
+FISCAL_DOCUMENT_SCREEN = VSCREEN-0154
+TAX_OBLIGATION_SCREEN = VSCREEN-0157
+NEW_CANONICAL_SCREEN_ID_COUNT = 0
+ECONOMIC_VIEWER_MUST_NOT_IMPLY_ACCOUNTING_OR_FISCAL_OFFICIALITY = YES
+ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+TREQ_CHANGES = 0
+```
+
+#### 4. Fuentes canónicas consumidas
+
+La definición consume, sin redefinirlas:
+
+- `CAP-SCOPE-012`, en especial la sección del visor económico de una sola pantalla;
+- `NUMERA-DOM-006..008`, `NUMERA-DOM-011..014`, `NUMERA-DOM-018`;
+- `NUMERA-AUTH-015` para escenarios, presupuestos, forecast y versiones de precio;
+- `NUMERA-UX-019`, `NUMERA-UX-022`, `NUMERA-UX-024`, `NUMERA-UX-027`;
+- `VSCREEN-0104`, `VSCREEN-0156`, `VSCREEN-0158`;
+- `VPROC-0054` y `VPROC-0069`;
+- el Registro 04A vigente como cobertura, sin modificarlo.
+
+#### 5. Resultado contractual
+
+Se define:
+
+```text
+NUMERA_ECONOMIC_VIEWER_EXPERIENCE_CONTRACT = NUMERA-ECONOMIC-VIEWER-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0104
+PRIMARY_PROCESS_ID = VPROC-0054
+PRIMARY_STEP_ID = VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY
+PRIMARY_STEP_ROLE = ANALYZE
+PRIMARY_STEP_POSITION = CROSS_CUTTING
+PLANNING_SCREEN_ID = VSCREEN-0156
+PLANNING_PROCESS_ID = VPROC-0069
+PLANNING_STEP_ID = VPROC-0069::STEP-PLAN_BUDGET_AND_FORECAST
+COST_ALLOCATION_SCREEN_ID = VSCREEN-0158
+COST_ALLOCATION_STEP_ID = VPROC-0054::STEP-ALLOCATE_COSTS
+NEW_CANONICAL_SCREEN_ID_COUNT = 0
+VISIBLE_ZONE_MAX = 6
+PRIMARY_MODE_COUNT = 5
+SEMANTIC_LAYER_COUNT = 7
+TREQ_CHANGES = 0
+```
+
+#### 6. Propiedad de VSCREEN-0104
+
+`VSCREEN-0104 — Costos, rentabilidad y escenarios` es la superficie principal del visor. Su propósito es analizar costos, márgenes, rentabilidad y escenarios por empresa, sede, canal, producto y periodo.
+
+No se crea una pantalla adicional para el visor y no se desplaza la propiedad funcional a VISO.
+
+#### 7. Relación con VSCREEN-0156
+
+`VSCREEN-0156 — Presupuestos, escenarios y forecast` conserva la creación, consolidación, revisión, aprobación, publicación y comparación de versiones presupuestales, escenarios y proyecciones.
+
+El visor puede consumir y enlazar esas versiones, pero no sustituye el workspace de planificación ni fusiona las acciones de aprobación/publicación con la consulta analítica.
+
+#### 8. Relación con VSCREEN-0158
+
+`VSCREEN-0158 — Distribución y asignación de costos` conserva reglas versionadas y ejecución de distribuciones de costos compartidos.
+
+El visor explica los resultados asignados y permite navegar a su origen, pero no edita drivers, pools, bases, destinos o reversión desde la vista analítica.
+
+#### 9. Preguntas iniciales obligatorias
+
+Sin navegación previa, la pantalla debe permitir responder:
+
+- ¿cuánto cuesta realmente?;
+- ¿a qué precio se vende o se propone vender?;
+- ¿cuánto margen o contribución deja?;
+- ¿qué cambia al modificar un supuesto?
+
+#### 10. Composición máxima de la pantalla
+
+La pantalla principal tendrá como máximo seis zonas visibles simultáneamente:
+
+1. barra compacta de contexto;
+2. resumen de cuatro a seis indicadores;
+3. área central de comparación;
+4. una visualización principal;
+5. simulador plegable;
+6. detalle bajo demanda.
+
+`VISIBLE_ZONE_MAX = 6`.
+
+#### 11. Barra compacta de contexto
+
+La barra compacta mantiene visibles, según alcance y disponibilidad:
+
+- entidad legal o ámbito empresarial autorizado;
+- sede;
+- canal;
+- producto o familia;
+- periodo;
+- escenario o baseline activo.
+
+Los filtros activos no desaparecen al desplazarse por el contenido principal.
+
+#### 12. Resumen de indicadores
+
+El resumen visible contiene entre cuatro y seis indicadores seleccionados por contexto, priorizando:
+
+- precio;
+- costo;
+- margen;
+- variación;
+- punto de equilibrio;
+- resultado proyectado.
+
+No se llenará la cabecera con tarjetas redundantes ni explicativas.
+
+#### 13. Área central de comparación
+
+La comparación principal usa tabla o matriz para contrastar, según contexto autorizado:
+
+- realidad;
+- presupuesto aprobado;
+- forecast vigente;
+- escenario seleccionado;
+- periodo anterior;
+- propuesta o publicación relevante.
+
+Cada columna o serie declara su naturaleza y corte.
+
+#### 14. Visualización principal única
+
+La pantalla presenta una sola visualización principal a la vez. Puede cambiar entre tendencia, composición o sensibilidad según la pregunta activa.
+
+Mostrar simultáneamente varias gráficas principales sin una necesidad explícita queda prohibido.
+
+#### 15. Simulador plegable
+
+El simulador aparece cerrado por defecto y se abre solo cuando el usuario decide modificar supuestos.
+
+Según el caso puede permitir variar precio, costo hipotético, volumen, merma, comisión, descuento, horizonte u otros supuestos admitidos por `NUMERA-DOM-018`.
+
+Modificar un control solo recalcula la versión simulada; no modifica datos reales ni maestros.
+
+#### 16. Detalle bajo demanda
+
+`Ver detalle` abre progresivamente:
+
+1. definición del indicador;
+2. fórmula o método aplicable;
+3. entradas identificadas;
+4. versión y corte;
+5. fuente y lineage;
+6. limitaciones o faltantes.
+
+La explicación extensa no ocupa espacio permanente en la vista cotidiana.
+
+#### 17. Capas semánticas que no se colapsan
+
+Se conserva la separación del dominio:
+
+```text
+REAL
+!= PRESUPUESTADO
+!= FORECAST
+!= ESCENARIO
+!= SIMULADO
+!= PROPUESTO
+!= PUBLICADO
+!= HECHO_CONTABLE
+```
+
+El visor nunca usa color o posición como único mecanismo para distinguirlas.
+
+#### 18. Cinco modos principales de presentación
+
+El selector principal de experiencia presenta exactamente cinco modos de negocio:
+
+```text
+REAL
+PRESUPUESTADO
+SIMULADO
+PROPUESTO
+PUBLICADO
+```
+
+`FORECAST` y `ESCENARIO` permanecen conceptos semánticos propios del dominio y pueden aparecer como fuente, versión o serie de comparación sin ser renombrados como presupuesto ni hecho real.
+
+#### 19. Modo REAL
+
+`REAL` muestra hechos confirmados y reconciliables para el alcance seleccionado. Si la evidencia está incompleta, stale, desconocida o pendiente de conciliación, esa limitación permanece visible.
+
+```text
+MISSING_REAL_IS_ZERO = NO
+UNKNOWN_REAL_IS_CONFIRMED = NO
+```
+
+#### 20. Modo PRESUPUESTADO
+
+`PRESUPUESTADO` muestra la versión presupuestal aprobada aplicable al periodo y alcance. Una revisión, draft o forecast no se presenta como presupuesto aprobado.
+
+#### 21. Modo SIMULADO
+
+`SIMULADO` trabaja sobre un baseline reproducible y supuestos versionables. Puede recalcular inmediatamente la proyección visual, pero nunca altera hechos reales, presupuesto aprobado, costo maestro, regla de asignación o precio operativo.
+
+#### 22. Modo PROPUESTO
+
+`PROPUESTO` representa una versión enviada a revisión o decisión. No equivale a aprobación, publicación, activación operativa, asiento contable, documento fiscal o filing.
+
+#### 23. Modo PUBLICADO
+
+`PUBLICADO` representa una referencia NUMERA aprobada y vigente conforme al contrato propietario.
+
+```text
+NUMERA_PUBLISHED_PRICE_DECISION != OPERATIONAL_ACTIVE_PRICE
+SCENARIO_PUBLISHED_MUTATES_SOURCE_FACT = NO
+SCENARIO_PUBLISHED_IS_ACCOUNTING_POSTED = NO
+```
+
+#### 24. Forecast visible sin colapso
+
+Cuando exista forecast autorizado, se muestra con su nombre, versión, corte y horizonte. No se fusiona visualmente con presupuesto, realidad o escenario publicado.
+
+#### 25. Escenario como objeto versionado
+
+Cada escenario mostrado identifica `SCENARIO_ID` y `SCENARIO_VERSION` o su equivalente visible de negocio. Cambios materiales de baseline, alcance, método o supuestos requieren una versión identificable antes de aprobación o publicación.
+
+#### 26. Baseline reproducible
+
+Toda simulación declara el baseline usado y su corte. El baseline puede ser realidad reconciliada, presupuesto aprobado, forecast vigente, precio autorizado, costo aplicable, periodo comparable o escenario publicado anterior.
+
+```text
+SCENARIO_BASELINE_REFERENCE != LIVE_MUTABLE_SOURCE
+```
+
+#### 27. Supuestos explícitos
+
+Cada supuesto material muestra, cuando aplique, valor, unidad, moneda, periodo, alcance, fuente o racional. Ausencia, cero, desconocido y no aplicable permanecen distintos.
+
+#### 28. Precio en el visor
+
+El visor distingue:
+
+```text
+PRECIO_REFERENCIA
+!= PRECIO_SIMULADO
+!= PRECIO_PROPUESTO
+!= PRECIO_PUBLICADO_EN_NUMERA
+!= PRECIO_OPERATIVO_ACTIVO
+```
+
+No activa precios de PULSO ni de otro dominio desde la simulación.
+
+#### 29. Costo en el visor
+
+El costo mostrado conserva método, inputs, versión, vigencia y fuente. Adquisición, landed, estándar, promedio, último, real, productivo, logístico, merma e interno permanecen diferenciados cuando apliquen.
+
+Un costo hipotético de escenario no reemplaza el costo canónico.
+
+#### 30. Margen y contribución
+
+El visor declara qué definición de margen utiliza y qué componentes contiene. Margen objetivo, margen realizado, contribución y resultado gerencial no se intercambian silenciosamente.
+
+#### 31. Punto de equilibrio
+
+El punto de equilibrio solo se muestra como confirmado cuando sus entradas y definición son válidas. Ausencia de cálculo o entradas materiales desconocidas no se presenta como cero.
+
+#### 32. Rentabilidad
+
+La rentabilidad usa ingreso realizado y costo trazable conforme al contrato aprobado. No se deriva por defecto de caja, saldo bancario, ingreso esperado o gasto agregado.
+
+#### 33. Variación
+
+Toda variación declara comparación, baseline, periodo y signo. Una variación favorable o desfavorable no se determina únicamente por color.
+
+#### 34. Coordinación entre filtros e indicadores
+
+Seleccionar producto, familia, centro o contexto compatible actualiza de forma coordinada indicadores, comparación, visualización y detalle. No se permiten paneles que queden en cortes diferentes sin señalización.
+
+#### 35. Comparación de escenarios
+
+Comparar dos escenarios debe requerir como máximo tres acciones desde la pantalla principal cuando el actor ya posee acceso a ambos.
+
+La comparación conserva identidades, versiones, baseline, diferencias de supuestos y resultados.
+
+#### 36. Restablecer
+
+`Restablecer` devuelve los controles del simulador a su baseline o estado inicial de la sesión sin recargar la aplicación y sin producir una mutación real.
+
+```text
+RESET_SIMULATION_HAS_BUSINESS_SIDE_EFFECT = NO
+```
+
+#### 37. Presets por rol
+
+El usuario puede guardar presets de filtros o disposición autorizada sin copiar datos económicos. Un preset conserva preferencias de vista, no una nueva verdad financiera.
+
+#### 38. Misma verdad, profundidad autorizada
+
+Propietario, gerente, contador y responsable de sede pueden consumir la misma verdad económica con profundidad y ámbito distintos según autorización.
+
+La ocultación por scope no autoriza a recalcular agregados con miembros invisibles para el actor.
+
+#### 39. Divulgación progresiva
+
+La densidad se resuelve por jerarquía, agrupación y detalle progresivo. La información esencial permanece visible; fórmula, inputs, lineage, auditoría y explicación técnica aparecen bajo demanda.
+
+#### 40. Texto de ayuda
+
+La pantalla principal no contiene párrafos instructivos permanentes ni tarjetas como `Qué editas`, `Qué calcula NUMERA` o `Cómo llenar esta pantalla`.
+
+Cada texto auxiliar visible se limita a una línea corta; la ayuda extensa vive en tooltip, panel de ayuda, onboarding descartable o documentación separada.
+
+#### 41. Lenguaje empresarial
+
+La interfaz usa términos de negocio como `Precio`, `Costo`, `Margen`, `Variación`, `Escenario`, `Presupuesto` y `Punto de equilibrio`.
+
+No expone nombres de tablas, RPC, contratos internos, payloads, ids técnicos o detalles de infraestructura como lenguaje cotidiano.
+
+#### 42. Accesibilidad y color
+
+El color no es el único medio para distinguir estado, modo, signo, riesgo o resultado. Etiquetas, iconografía accesible y texto complementan cualquier codificación cromática.
+
+#### 43. Frescura y corte
+
+Cada resultado material declara el corte o frescura necesaria para interpretarlo. Una cifra stale no se muestra como actual solo porque pueda renderizarse.
+
+#### 44. Completitud
+
+El visor distingue al menos completo, parcial, pendiente de fuente, stale, desconocido y no aplicable cuando esas condiciones afecten la interpretación.
+
+```text
+EMPTY_VIEW_IS_COMPLETE = NO
+VISIBLE_SUBSET_IS_GLOBAL_COMPLETE = NO
+```
+
+#### 45. Lineage por indicador
+
+Cada indicador material permite navegar hasta fórmula, entradas y fuentes sin obligar a abandonar el contexto analítico principal. El lineage no concede acceso a datos fuente fuera del scope autorizado.
+
+#### 46. Fórmulas canónicas
+
+El visor consume definiciones y fórmulas canónicas versionadas. Queda prohibida una fórmula local competidora implementada únicamente para la pantalla.
+
+```text
+LOCAL_COMPETING_FORMULA = FORBIDDEN
+```
+
+#### 47. No escritura cruzada
+
+El visor no corrige PULSO, ORIGO, FOGO, NEXO ni otras fuentes. Una diferencia remite al dominio propietario o al flujo de conciliación/corrección aplicable.
+
+#### 48. No mutación desde análisis
+
+Consultar, comparar, cambiar filtros, abrir detalle, alterar supuestos o restablecer no modifica hechos reales ni objetos maestros.
+
+Una acción material de share/request/approve/reject/publish/unpublish se separa explícitamente y se ejecuta en el contrato propietario.
+
+#### 49. Permisos de lectura
+
+El visor reutiliza los permisos de lectura existentes:
+
+```text
+numera.finance.scenarios.view
+numera.finance.budgets.view
+numera.finance.forecasts.view
+numera.finance.price_versions.view
+```
+
+Ver no concede crear, modificar, compartir, solicitar, aprobar, rechazar, publicar ni retirar.
+
+#### 50. Permisos mutantes de planificación
+
+`NUMERA-AUTH-015` conserva exactamente 32 autoridades mutantes, ocho por familia:
+
+```text
+numera.finance.scenarios.create
+numera.finance.scenarios.update
+numera.finance.scenarios.share
+numera.finance.scenarios.request
+numera.finance.scenarios.approve
+numera.finance.scenarios.reject
+numera.finance.scenarios.publish
+numera.finance.scenarios.unpublish
+
+numera.finance.budgets.create
+numera.finance.budgets.update
+numera.finance.budgets.share
+numera.finance.budgets.request
+numera.finance.budgets.approve
+numera.finance.budgets.reject
+numera.finance.budgets.publish
+numera.finance.budgets.unpublish
+
+numera.finance.forecasts.create
+numera.finance.forecasts.update
+numera.finance.forecasts.share
+numera.finance.forecasts.request
+numera.finance.forecasts.approve
+numera.finance.forecasts.reject
+numera.finance.forecasts.publish
+numera.finance.forecasts.unpublish
+
+numera.finance.price_versions.create
+numera.finance.price_versions.update
+numera.finance.price_versions.share
+numera.finance.price_versions.request
+numera.finance.price_versions.approve
+numera.finance.price_versions.reject
+numera.finance.price_versions.publish
+numera.finance.price_versions.unpublish
+```
+
+No se crea `manage`, `create_and_share`, `request_and_approve`, `approve_and_publish` ni `publish_and_activate`.
+
+#### 51. Publicar sigue siendo acción separada
+
+Publicar desde un flujo autorizado requiere versión exacta, estado elegible, recurso, scope, autorización y evidencia. Aprobar no implica publicar y publicar no implica activación operativa.
+
+#### 52. Segregación
+
+La experiencia no fusiona creación, revisión, aprobación y publicación. Cuando una misma persona posea varias autoridades, la UI continúa mostrando cada decisión como acción separada y auditable.
+
+#### 53. Resultado desconocido de acción material
+
+Ante timeout o resultado incierto de una acción material, el visor no invita a repetir ciegamente. Primero consulta estado, idempotencia o conciliación.
+
+```text
+UNKNOWN_RESULT_RETRY_WITHOUT_STATUS_CHECK = FORBIDDEN
+```
+
+#### 54. Idempotencia visual
+
+Repetir render, refresh, navegación, apertura de detalle o restablecimiento no crea nuevas versiones ni mutaciones. Las acciones materiales se apoyan en idempotencia del contrato propietario.
+
+#### 55. Concurrencia y versión stale
+
+Si la versión, baseline, permisos o recurso cambian durante una decisión material, la confirmación stale queda inválida y exige nueva revisión. Una vista stale puede seguir siendo consultable como histórica si se etiqueta correctamente.
+
+#### 56. Contabilidad y fiscalidad
+
+El visor económico no presenta costos, márgenes, presupuesto, escenario, reporte NUMERA o simulación como asiento, comprobante, libro, filing, documento fiscal oficial o estado financiero estatutario.
+
+```text
+ECONOMIC_VIEWER_MUST_NOT_IMPLY_ACCOUNTING_OR_FISCAL_OFFICIALITY = YES
+```
+
+#### 57. Periodos
+
+Periodo operativo, económico, contable y fiscal permanecen distintos. Cambiar el periodo del visor no ejecuta cierres ni reaperturas.
+
+#### 58. Entidades legales y consolidación
+
+Un grupo, marca o consolidado analítico no equivale a ledger de entidad legal. Las transferencias internas y operaciones intercompañía se tratan según contratos propietarios sin inventar tratamiento legal.
+
+#### 59. Moneda
+
+La comparación multimoneda declara moneda de transacción o presentación y política de conversión aplicable. No se suman valores incompatibles sin conversión explícita.
+
+#### 60. Estado vacío
+
+Una vista sin filas puede significar ausencia real, filtros sin coincidencia, falta de autorización, fuente pendiente, error o no aplicabilidad. La UI no colapsa esas causas en `0` o `sin movimientos` sin evidencia.
+
+#### 61. Error técnico
+
+Un fallo técnico permanece distinto de deny, ausencia, dato no aplicable o resultado económico cero. La interfaz conserva sesión y contexto cuando sea seguro y ofrece recuperación sin sugerir que el actor carece de permiso.
+
+#### 62. Navegación a planificación
+
+Cuando el usuario necesite crear o gobernar presupuesto, forecast o escenario, el visor ofrece handoff contextual a `VSCREEN-0156`, conservando filtros compatibles sin ejecutar automáticamente una mutación.
+
+#### 63. Navegación a asignación de costos
+
+Cuando un costo dependa de distribución compartida, `Ver detalle` puede dirigir a `VSCREEN-0158` con el contexto permitido. El visor no edita allí desde un modal local competidor.
+
+#### 64. Navegación a reportes
+
+Cuando se requiera publicación o exportación financiera oficial de NUMERA, el visor dirige al contrato propietario correspondiente. La captura visual de la pantalla no sustituye un reporte versionado.
+
+#### 65. Navegación a correcciones
+
+Diferencias históricas o eventos tardíos se remiten a `VSCREEN-0105` y al contrato de corrección/reapertura cuando corresponda. La pantalla de análisis no reescribe periodos cerrados.
+
+#### 66. Estado de simulación local
+
+Los cambios todavía no guardados pueden residir en estado de interacción local. Esa condición debe diferenciarse de un escenario persistido, compartido, propuesto o publicado.
+
+#### 67. Persistencia de borradores
+
+Guardar un borrador, cuando la implementación posterior lo permita, requiere autoridad de creación/actualización y una identidad/version de escenario. Cerrar el panel no debe publicar ni activar nada por inferencia.
+
+#### 68. Mobile y densidad
+
+La obligación de una sola pantalla describe una experiencia principal unificada, no una prohibición de scroll responsivo. En viewport reducido se conserva prioridad, contexto visible, modos inequívocos y divulgación progresiva sin convertir cada zona en una ruta distinta.
+
+#### 69. Performance percibida
+
+Cambios de filtros y supuestos deben mantener feedback de carga y evitar presentar resultados anteriores como si pertenecieran al nuevo contexto. Respuestas tardías no pueden sobrescribir un contexto más reciente.
+
+#### 70. Auditabilidad
+
+Las acciones materiales realizadas desde handoffs conservan actor, recurso, versión, scope, decisión y evidencia conforme a autorización. La analítica de uso de UI no sustituye la auditoría de negocio.
+
+#### 71. Privacidad y minimización
+
+El detalle progresivo respeta minimización y scope. Un usuario que puede ver un agregado no obtiene automáticamente acceso a terceros, documentos, bancos o evidencia sensible que componen el cálculo.
+
+#### 72. Exportación
+
+Exportar permanece una autoridad distinta de visualizar, compartir o publicar escenarios. El visor no añade un bypass de exportación mediante copiar dataset completo o endpoint alterno.
+
+#### 73. Pruebas de comprensión
+
+La implementación posterior deberá validar comprensión con usuarios no técnicos y medir, como mínimo, tiempo para comparación básica, errores de interpretación y necesidad de ayuda.
+
+#### 74. Criterio de simplicidad
+
+El visor falla su objetivo si necesita instrucciones largas para operarse, obliga a recorrer varias pantallas para comparar precio/costo/margen, mezcla real con supuestos, oculta filtros activos o expone conceptos técnicos internos.
+
+#### 75. Criterio de comparación
+
+La comparación básica entre precio, costo y margen debe resolverse dentro de la superficie principal. Navegar a otra superficie solo se requiere para gobernar el objeto propietario o profundizar evidencia especializada.
+
+#### 76. Criterio de visualización
+
+No se muestra más de una visualización principal simultánea salvo evidencia explícita de que una comparación concreta lo requiere. La tabla/matriz central no cuenta como una segunda gráfica principal.
+
+#### 77. Criterio de trazabilidad
+
+Todo indicador material debe permitir explicar origen, método, entradas, versión y fuente bajo demanda. Un número sin lineage suficiente se etiqueta como limitado o pendiente, no como verdad completa.
+
+#### 78. Criterio de no mutación
+
+Cambiar un supuesto, abrir detalle, cambiar modo o restablecer nunca modifica datos reales. Compartir, solicitar, aprobar, rechazar, publicar o retirar son acciones separadas fuera del gesto analítico ordinario.
+
+#### 79. Criterio de oficialidad
+
+Ningún modo, badge o encabezado utiliza lenguaje que haga pasar una proyección económica por oficialidad contable o fiscal cuando esa autoridad no está acreditada.
+
+#### 80. Escenarios de validación
+
+La validación futura deberá cubrir al menos estos 42 escenarios representativos:
+
+1. abrir VSCREEN-0104 con contexto válido;
+2. mostrar cuatro a seis KPIs;
+3. conservar máximo seis zonas visibles;
+4. distinguir los cinco modos principales;
+5. mostrar forecast sin renombrarlo como presupuesto;
+6. cambiar producto y actualizar todos los indicadores;
+7. cambiar periodo y mantener corte coherente;
+8. cambiar escenario y mantener versión visible;
+9. comparar real contra presupuesto;
+10. comparar real contra periodo anterior;
+11. comparar dos escenarios en máximo tres acciones;
+12. abrir simulador plegable;
+13. modificar precio simulado sin mutar precio real;
+14. modificar costo hipotético sin mutar costo canónico;
+15. modificar volumen;
+16. modificar merma;
+17. modificar comisión;
+18. modificar descuento;
+19. restablecer sin side effect;
+20. abrir detalle de fórmula;
+21. abrir inputs;
+22. abrir lineage;
+23. mostrar fuente incompleta como limitación;
+24. no convertir missing en cero;
+25. no convertir stale en actual;
+26. mostrar error técnico distinto de deny;
+27. mostrar no autorizado sin filtrar detalle sensible;
+28. handoff a VSCREEN-0156;
+29. handoff a VSCREEN-0158;
+30. handoff a corrección de periodo;
+31. evitar fórmula local competidora;
+32. impedir publicación desde permiso view;
+33. invalidar confirmación stale;
+34. manejar resultado material desconocido sin retry ciego;
+35. mantener presupuesto aprobado distinto de draft;
+36. mantener propuesta distinta de publicación;
+37. mantener publicación NUMERA distinta de precio operativo;
+38. no presentar simulación como asiento contable;
+39. no presentar reporte NUMERA como estado estatutario;
+40. preservar accesibilidad sin depender solo de color;
+41. mantener textos de ayuda cortos y progresivos;
+42. completar comparación básica por usuario no técnico sin asistencia obligatoria.
+
+```text
+VALIDATION_SCENARIO_COUNT = 42
+```
+
+#### 81. Hallazgos y propietarios de salida
+
+Los pendientes materiales conservan dueño:
+
+| Hallazgo | Propietario | Condición de salida |
+| --- | --- | --- |
+| motor de escenarios runtime no probado | package de implementación NUMERA / `NUMERA-DOM-018` | implementación y evidencia física posterior |
+| 32 permisos mutantes de planificación pendientes de materialización | implementación de autorización NUMERA / `NUMERA-AUTH-015` | catálogo/enforcement/evidencia materializados |
+| visor económico físico aún no implementado | package propietario de NUMERA | `VSCREEN-0104` implementada conforme a este contrato y E5 aplicable |
+| pruebas de comprensión pendientes | `UX-QA-028` / certificación aplicable | evidencia con usuarios no técnicos y métricas requeridas |
+| transición de navegación VISO | `VISO-UX-001` | reorganización VISO posterior sin absorber ownership NUMERA |
+
+Ningún hallazgo narrativo queda sin propietario o condición de salida.
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La tarea especializa una experiencia ya cubierta por requisitos vigentes de trazabilidad económica, costos, escenarios, autorización, integración y usabilidad; no modifica el Registro 04A.
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — indicadores y reportes reconciliables con hechos fuente;
+- `TREQ-NUMERA-002` — identidad, dimensiones, fuente, correlación y correcciones no destructivas;
+- `TREQ-NUMERA-004` — costos, distribución, presupuesto, forecast, equilibrio, rentabilidad y visor económico de una sola pantalla;
+- `TREQ-INTEGRATION-013` — producción, inventario y costo correlacionados;
+- `TREQ-INTEGRATION-016` — costo logístico correlacionado sin doble efecto;
+- `TREQ-INTEGRATION-017` — hechos operativos hacia NUMERA correlacionados, versionados e idempotentes;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `UX-QA-028` — validación transversal de experiencia cuando corresponda.
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no ejecuta build de producto en esta entrega. |
+| LOCAL | NOT_EXECUTED | La inserción, formateo y validadores se ejecutarán en el checkout mediante la batería entregada. |
+| REMOTA | PASS | Fuentes canónicas, título, marcador, ownership, topología y continuidad fueron contrastados contra `origin/main` durante la preparación. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutan pruebas con usuarios ni operación financiera real en esta tarea. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existe instancia física propia. |
+
+#### 85. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. `VSCREEN-0104` es la superficie propietaria;
+2. `VPROC-0054::STEP-ANALYZE_COST_AND_PROFITABILITY` es el paso principal;
+3. `VSCREEN-0156` conserva planificación;
+4. `VSCREEN-0158` conserva asignación de costos;
+5. no se crea pantalla nueva;
+6. la pantalla principal usa máximo seis zonas visibles;
+7. la cabecera usa entre cuatro y seis indicadores;
+8. existen cinco modos principales inequívocos;
+9. las siete capas semánticas del dominio permanecen distintas;
+10. forecast no se colapsa con presupuesto;
+11. escenario no se colapsa con simulado;
+12. publicado no se colapsa con real;
+13. publicado NUMERA no equivale a precio operativo;
+14. cambiar supuesto no altera datos reales;
+15. cambiar supuesto no altera costo maestro;
+16. cambiar supuesto no altera presupuesto aprobado;
+17. restablecer no produce side effect;
+18. cada indicador material permite detalle bajo demanda;
+19. cada indicador material permite fórmula o método;
+20. cada indicador material permite entradas;
+21. cada indicador material permite fuente o lineage;
+22. missing no se presenta como cero;
+23. unknown no se presenta como confirmado;
+24. stale no se presenta como actual;
+25. vacío no se presenta automáticamente como completitud;
+26. precio simulado permanece diferenciado;
+27. costo hipotético permanece diferenciado;
+28. margen declara definición;
+29. punto de equilibrio exige inputs válidos;
+30. rentabilidad usa ingreso realizado y costo trazable;
+31. variación declara baseline;
+32. filtros actualizan la pantalla coordinadamente;
+33. dos escenarios pueden compararse en máximo tres acciones;
+34. existe una sola visualización principal por defecto;
+35. el simulador es plegable;
+36. la ayuda extensa es progresiva;
+37. no existen párrafos instructivos permanentes;
+38. no existen tarjetas explicativas redundantes;
+39. el lenguaje visible es empresarial;
+40. no se exponen RPC, tablas o contratos internos como copy cotidiano;
+41. filtros y escenario activo permanecen visibles;
+42. color no es el único canal semántico;
+43. presets no duplican datos;
+44. misma verdad respeta profundidad autorizada;
+45. lineage no amplía autorización;
+46. no existe fórmula local competidora;
+47. el visor no corrige fuentes externas;
+48. análisis ordinario no muta objetos;
+49. view no concede acciones mutantes;
+50. existen 32 permisos mutantes especializados heredados;
+51. no se crea permiso `manage`;
+52. aprobar no implica publicar;
+53. publicar no implica activación operativa;
+54. resultado desconocido exige status/reconciliación antes de retry;
+55. versión stale invalida confirmaciones materiales;
+56. no se implica oficialidad contable;
+57. no se implica oficialidad fiscal;
+58. periodos operativo/económico/contable/fiscal siguen separados;
+59. consolidación analítica no se vuelve ledger legal;
+60. multimoneda exige contexto FX;
+61. error técnico permanece distinto de deny;
+62. handoff a planificación conserva contexto;
+63. handoff a asignación conserva contexto;
+64. handoff a corrección no reescribe desde el visor;
+65. borrador local se distingue de versión persistida;
+66. guardar borrador no publica;
+67. responsive mantiene una experiencia principal unificada;
+68. respuestas tardías no sobrescriben contexto nuevo;
+69. auditoría material no se sustituye por analytics de UI;
+70. detalle respeta minimización;
+71. exportar permanece separado de visualizar;
+72. se definen 42 escenarios de validación;
+73. hallazgos tienen propietario y condición de salida;
+74. no se crean ni modifican TREQ;
+75. no se realizan cambios físicos;
+76. `VISO-UX-001` recibe continuidad sin absorber el ownership de NUMERA.
+
+#### 86. Límites
+
+Esta tarea no:
+
+- implementa la UI;
+- crea componentes o rutas;
+- crea una nueva `VSCREEN-*`;
+- cambia `VSCREEN-0104`, `VSCREEN-0156` o `VSCREEN-0158` físicamente;
+- crea fórmulas runtime;
+- modifica costos reales;
+- modifica precios operativos;
+- modifica presupuestos reales;
+- publica escenarios;
+- concede permisos;
+- crea roles o grants;
+- exporta información;
+- modifica fuentes PULSO, ORIGO, FOGO o NEXO;
+- corrige periodos;
+- ejecuta cierre o reapertura;
+- activa contabilidad formal;
+- emite documentos fiscales;
+- presenta obligaciones tributarias;
+- crea tablas, vistas, funciones, RPC, triggers, RLS o migraciones;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `VISO-UX-001`.
+
+#### 87. Handoff a VISO-UX-001
+
+Al completar el mini-bloque NUMERA se entrega continuidad a:
+
+```text
+NEXT_TASK = VISO-UX-001
+NEXT_TITLE = Reorganizar navegación por dominios administrativos
+NEXT_SEQUENCE = PHASE-09-VISO-COMPLETE
+```
+
+El handoff no transfiere ownership de `VSCREEN-0104` a VISO. `VISO-UX-001` puede reorganizar navegación administrativa conforme a su propio contrato, pero no reubica, redefine ni sustituye el visor económico NUMERA por inferencia.
+
+#### 88. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-001 — Reorganizar navegación por dominios administrativos`

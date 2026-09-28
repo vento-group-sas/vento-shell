@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1463** |
+| Aprobadas | **1464** |
 | En propuesta | **0** |
-| No iniciadas | **133** |
+| No iniciadas | **132** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **91.67% (1463/1596)** |
+| Porcentaje de completamiento | **91.73% (1464/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **133** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1364** |
+| ⏸ NO_EVALUADA | **132** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1365** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-027` — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-028` — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-001` — Reorganizar navegación por dominios administrativos | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-028` — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | ✅ APROBADA |
+| Tarea actual | `VISO-UX-001` — Reorganizar navegación por dominios administrativos | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-002` — Crear sección Personal | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1225,7 +1225,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-025` | Aprobar alcance financiero antes de completar implementación | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-026` | Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-027` | Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-028` | Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-028` | Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-CST-001` | Definir el caso de centro de costo y transferencias internas de Producción y Distribución | — | — | `bloques/O_NUMERA/03_TAREA_DERIVADA_OPS_AUD_001.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DEV-001` | Inventariar dispositivos compartidos | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DEV-002` | Definir identidad del dispositivo | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |

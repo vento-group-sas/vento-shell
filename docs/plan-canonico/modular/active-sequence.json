@@ -2,31 +2,31 @@
   "schema_version": 1,
   "generated_from": "execution-route.json",
   "route_id": "NORMAL-CANONICAL-FLOW-001",
-  "sequence_id": "PHASE-08-NUMERA",
-  "block_code": "BLOQUE O",
-  "block_title": "NUMERA",
-  "previous_task_id": "NUMERA-UX-027",
+  "sequence_id": "PHASE-09-VISO-COMPLETE",
+  "block_code": "BLOQUE G3",
+  "block_title": "VISO completo",
+  "previous_task_id": "NUMERA-UX-028",
   "latest_treq_task_id": "NEXO-UX-025",
-  "handoff_task_id": "VISO-UX-001",
-  "handoff_sequence_id": "PHASE-09-VISO-COMPLETE",
+  "handoff_task_id": "PASS-QA-001",
+  "handoff_sequence_id": "PHASE-10-PASS",
   "segments": [
     {
-      "prefix": "NUMERA-UX",
-      "from": 28,
-      "to": 28
+      "prefix": "VISO-UX",
+      "from": 1,
+      "to": 20
     }
   ],
   "block_progress": {
-    "total_tasks": 74,
-    "approved_tasks": 73,
-    "pending_tasks": 1
+    "total_tasks": 20,
+    "approved_tasks": 0,
+    "pending_tasks": 20
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 133,
+    "pending_tasks": 132,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
-    "active_stage": 27
+    "active_stage": 28
   },
   "selected_route_id": "NORMAL-CANONICAL-FLOW-001",
   "resumed_after_priority_route_id": "PASS-LOYALTY-001",
