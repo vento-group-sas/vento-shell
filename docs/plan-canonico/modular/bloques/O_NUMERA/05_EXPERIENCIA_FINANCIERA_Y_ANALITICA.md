@@ -8747,7 +8747,1037 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas`
-### [ ] NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
+### ✅ NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
+**Tarea siguiente:** NUMERA-UX-009 — Diseñar flujo de registro de gasto
+**Tipo de tarea:** definición documental transversal de jerarquía de presentación para NUMERA que obliga a presentar indicadores autorizados antes que tablas detalladas cuando ambos coexisten sobre el mismo contexto financiero, preservando fuente, alcance, periodo, versión, autorización, frescura y semántica común; no inventa KPI, no fija fórmulas ni layout final, no crea permisos ni pantallas y no absorbe el visor económico dinámico de NUMERA-UX-028; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica rutas, pantallas, componentes React, fórmulas, indicadores físicos, tablas UI, permisos, roles, grants, datasets RBAC, procesos, estados, tablas de base de datos, vistas, RPC, RLS, migraciones, Supabase, datos financieros, exportaciones, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una regla transversal y verificable para NUMERA: cuando una experiencia autorizada contenga tanto una proyección resumida mediante indicadores como una tabla detallada del mismo contexto financiero, **los indicadores deberán aparecer antes que la tabla detallada** en el orden visual y semántico de lectura.
+
+El objetivo es permitir que la persona comprenda primero posición, magnitud, estado, variación o excepción y luego acceda al detalle que explica esa síntesis, sin sustituir el detalle, sin crear una segunda fuente de verdad y sin ampliar autoridad por conveniencia visual.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea produce un contrato UX documental transversal;
+- no crea instancia física propia;
+- no modifica `vento-numera`;
+- no materializa KPI ni tablas;
+- no modifica autorización;
+- no crea rutas ni pantallas nuevas;
+- no ejecuta side effects financieros;
+- no cambia datos de Supabase.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-007
+
+La predecesora aprobada entrega como base:
+
+```text
+NUMERA_AUTHORIZED_AUXILIARY_HOME_CONTRACT = NUMERA-AUTHORIZED-AUXILIARY-HOME-001
+NUMERA_ACCOUNTANT_HOME_CONTRACT = NUMERA-ACCOUNTANT-HOME-001
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+AUTHORIZED_AUXILIARY_HOME_SCREEN_ID = VSCREEN-0094
+AUTHORIZED_AUXILIARY_HOME_PRESENTATION_PROFILE = auxiliar_administrativa
+AUTHORIZED_AUXILIARY_HOME_SURFACE_PLANE = EXECUTIVE_READ_PLANE
+AUTHORIZED_AUXILIARY_HOME_INLINE_FINANCIAL_COMMANDS = 0
+AUTHORIZED_AUXILIARY_HOME_PROCESS_COUNT = 7
+AUTHORIZED_AUXILIARY_HOME_TARGET_SCREEN_COUNT = 20
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 3
+AUTHORIZED_AUXILIARY_HISTORICAL_NUMERA_DENIED_PERMISSION_COUNT = 3
+AUTHORIZED_AUXILIARY_NEW_PERMISSION_AUTO_GRANT = NO
+COST_CENTER_SCOPE = ORG_REF
+EXPENSE_SCOPE = AS_OR_AA
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+UX_008_OWNER = INDICATORS_BEFORE_DETAIL_TABLES
+TREQ_CHANGES = 0
+```
+
+La 008 consume además los contratos de home de propietario, gerente general, gerente de sede y contador ya aprobados por la secuencia, sin modificar sus matrices ni alcances.
+
+---
+
+#### 4. Contrato resultante
+
+Se define:
+
+```text
+NUMERA_INDICATOR_DETAIL_HIERARCHY_CONTRACT = NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001
+```
+
+Su regla principal es:
+
+```text
+AUTHORIZED_INDICATOR_SUMMARY
+        BEFORE
+AUTHORIZED_DETAIL_TABLE
+```
+
+cuando ambos elementos:
+
+- pertenecen al mismo contexto financiero;
+- están autorizados para la persona actual;
+- describen datos comparables o una relación explícitamente declarada;
+- forman parte de la misma experiencia o superficie.
+
+---
+
+#### 5. Qué se entiende por indicador
+
+Para este contrato, un **indicador** es una proyección resumida autorizada que comunica una magnitud, estado, variación, proporción, vencimiento, cobertura, conteo, alerta o señal financiera relevante.
+
+Puede materializarse posteriormente como tarjeta, cifra, badge, resumen, mini gráfico u otra representación aprobada, pero esta tarea no fija el componente visual concreto.
+
+```text
+INDICATOR = AUTHORIZED_SUMMARY_PROJECTION
+INDICATOR != NEW_SOURCE_OF_TRUTH
+INDICATOR != IMPLICIT_PERMISSION
+```
+
+---
+
+#### 6. Qué se entiende por tabla detallada
+
+Una **tabla detallada** es una representación tabular de registros, documentos, partidas, movimientos, obligaciones, hechos, filas analíticas u otras unidades de detalle que explican o soportan una vista financiera.
+
+```text
+DETAIL_TABLE = AUTHORIZED_DETAIL_PROJECTION
+DETAIL_TABLE != SOURCE_OWNERSHIP_TRANSFER
+DETAIL_TABLE != COMMAND_AUTHORIZATION
+```
+
+La tabla conserva su función de investigación, reconciliación, trazabilidad y revisión exacta.
+
+---
+
+#### 7. Invariante principal de jerarquía
+
+Se conserva:
+
+```text
+IF INDICATOR_AND_DETAIL_TABLE_COEXIST
+THEN INDICATOR_PRECEDES_DETAIL_TABLE = YES
+```
+
+La precedencia se aplica al contenido principal de la superficie, no a chrome global, navegación, breadcrumb, selector de contexto, título, filtros necesarios o controles de accesibilidad.
+
+---
+
+#### 8. "Antes" es una regla semántica, no solo geométrica
+
+La palabra **antes** significa, cuando aplique:
+
+- antes en el orden principal de lectura visual;
+- antes en el orden semántico del documento;
+- antes en el flujo de lectura de tecnologías asistivas;
+- antes en el apilamiento responsive cuando la pantalla se reduce;
+- antes que el usuario deba inspeccionar filas para conocer la síntesis básica.
+
+No significa que la tabla deba quedar oculta ni que requiera una interacción adicional para existir.
+
+---
+
+#### 9. La regla no obliga a inventar indicadores
+
+Se conserva:
+
+```text
+NO_APPROVED_INDICATOR = NO_SYNTHETIC_KPI
+```
+
+Si una pantalla no posee una proyección resumida aprobada, esta tarea no autoriza crear una métrica arbitraria solo para evitar que la tabla aparezca primero.
+
+Por tanto:
+
+```text
+INDICATOR_FIRST != INDICATOR_ALWAYS_REQUIRED
+```
+
+---
+
+#### 10. La regla no elimina tablas
+
+La jerarquía indicador-primero no convierte el detalle en opcional cuando el proceso, la revisión, la conciliación, la auditoría o la decisión necesita las filas subyacentes.
+
+```text
+SUMMARY != EVIDENCE_REPLACEMENT
+SUMMARY != DETAIL_REPLACEMENT
+```
+
+La tabla puede ser crítica aunque visualmente aparezca después.
+
+---
+
+#### 11. Reconciliación entre indicador y detalle
+
+Cuando indicador y tabla representen el mismo universo y grano comparable, deberán reconciliarse.
+
+Se conserva:
+
+```text
+INDICATOR_SOURCE_SET = DETAIL_SOURCE_SET
+INDICATOR_CONTEXT = DETAIL_CONTEXT
+INDICATOR_PERIOD = DETAIL_PERIOD
+```
+
+salvo que la experiencia declare explícitamente una diferencia válida de grano, periodo, universo o metodología.
+
+Una diferencia no explicada se considera inconsistencia y no una característica visual.
+
+---
+
+#### 12. Fuente de verdad común
+
+El indicador y la tabla deben proyectarse desde fuentes canónicas o derivados gobernados compatibles.
+
+```text
+INDICATOR_LEDGER != SEPARATE_LEDGER
+DETAIL_TABLE_LEDGER != SEPARATE_LEDGER
+```
+
+No se autoriza copiar datos a una segunda fuente solo para hacer más rápida o cómoda la experiencia de resumen.
+
+---
+
+#### 13. Contexto compartido
+
+Cuando sean comparables, indicador y tabla deberán conservar el mismo contexto efectivo, incluyendo según aplique:
+
+- empresa;
+- unidad de negocio;
+- sede;
+- área;
+- centro de costo;
+- contraparte;
+- periodo;
+- moneda;
+- estado;
+- versión;
+- escenario;
+- dimensión analítica.
+
+Esta tarea no diseña los controles de filtro de `NUMERA-UX-013`; únicamente exige coherencia de contexto.
+
+---
+
+#### 14. Autorización independiente por nivel de detalle
+
+Se conserva:
+
+```text
+SUMMARY_AUTHORITY != DETAIL_AUTHORITY_BY_INFERENCE
+DETAIL_AUTHORITY != SUMMARY_AUTHORITY_BY_INFERENCE
+```
+
+Una persona puede estar autorizada para una proyección agregada y no para el detalle sensible, o para ciertos registros sin una métrica agregada específica.
+
+La UI debe componer únicamente los niveles expresamente autorizados.
+
+---
+
+#### 15. Ningún conteo puede filtrar información no autorizada
+
+Un indicador de cantidad, importe total, severidad, existencia o vencimiento también es información protegida.
+
+Se conserva:
+
+```text
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+BADGE_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+No se mostrará un indicador derivado de filas que la persona no está autorizada a incorporar al agregado, salvo que exista una autorización agregada independiente que lo permita expresamente.
+
+---
+
+#### 16. Cero, desconocido y no disponible permanecen separados
+
+Se conserva:
+
+```text
+ZERO != UNKNOWN
+ZERO != NOT_AVAILABLE
+ZERO != NOT_AUTHORIZED
+ZERO != NOT_APPLICABLE
+```
+
+Un indicador no debe mostrar `0` porque la tabla no cargó, fue denegada o no tiene cobertura suficiente.
+
+---
+
+#### 17. Frescura y versión
+
+Indicador y detalle no deben aparentar simultaneidad cuando sus snapshots son incompatibles.
+
+La presentación futura deberá poder distinguir:
+
+- actual;
+- stale;
+- en actualización;
+- parcial;
+- no disponible;
+- error técnico.
+
+Cuando la tabla se refresque después que el indicador, o viceversa, la experiencia deberá evitar presentar ambos como reconciliados hasta confirmar compatibilidad.
+
+---
+
+#### 18. Unidad, moneda y escala
+
+Todo indicador numérico deberá conservar unidad y escala suficientes para no inducir lectura incorrecta.
+
+Cuando aplique:
+
+```text
+VALUE + CURRENCY + PERIOD + CONTEXT
+```
+
+son parte de la semántica mínima de la síntesis, no decoración.
+
+Una tabla en COP no puede reconciliarse visualmente con un indicador en otra moneda sin conversión explícita y gobernada.
+
+---
+
+#### 19. Periodo visible
+
+La persona debe poder determinar a qué periodo corresponde el indicador sin deducirlo de la tabla.
+
+```text
+INDICATOR_PERIOD_IS_EXPLICIT = YES
+```
+
+Cuando el periodo sea heredado de un contexto global inequívoco, la UI podrá evitar repetición visual, pero la semántica accesible deberá conservarlo.
+
+---
+
+#### 20. Metadatos mínimos del indicador
+
+Sin fijar layout concreto, una proyección material deberá permitir determinar al menos:
+
+- qué mide;
+- valor o estado;
+- unidad o moneda cuando aplique;
+- contexto relevante;
+- periodo;
+- estado de frescura;
+- comparación o tendencia solo cuando exista y esté autorizada;
+- acceso a detalle o fuente cuando corresponda y esté permitido.
+
+---
+
+#### 21. Tendencias y comparaciones no se inventan
+
+Se conserva:
+
+```text
+NO_BASELINE = NO_TREND
+NO_COMPARABLE_PERIOD = NO_FAKE_COMPARISON
+NO_AUTHORIZED_SCENARIO = NO_SCENARIO_COMPARISON
+```
+
+La ausencia de baseline no se reemplaza por una flecha decorativa ni por una variación calculada sobre periodos incompatibles.
+
+---
+
+#### 22. Alertas y excepciones pueden preceder al detalle
+
+Una alerta autorizada puede formar parte de la capa resumida cuando sintetiza una condición relevante del conjunto detallado.
+
+Sin embargo:
+
+```text
+ALERT_VISIBLE != RESOLUTION_AUTHORITY
+```
+
+La señal puede indicar qué requiere atención sin conceder capacidad para resolverlo.
+
+---
+
+#### 23. La tabla conserva el detalle exacto
+
+Cuando exista tabla, deberá continuar siendo el lugar natural para:
+
+- revisar filas;
+- comparar partidas;
+- inspeccionar evidencia;
+- identificar documentos;
+- revisar estado individual;
+- aplicar ordenamiento o filtros autorizados;
+- iniciar un handoff a una acción permitida.
+
+El indicador no sustituye esas funciones.
+
+---
+
+#### 24. Drill-down desde indicador
+
+Un indicador podrá enlazar o llevar a una vista de detalle cuando exista destino canónico compatible y autoridad efectiva.
+
+El handoff puede transportar:
+
+```text
+source_screen_id
+indicator_id_or_semantic_key
+resource_type
+resource_id_or_query_context
+entity_scope
+site_scope
+cost_center_scope
+period
+version
+intended_detail
+```
+
+pero:
+
+```text
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+```
+
+---
+
+#### 25. Navegar no concede operación
+
+Se conserva:
+
+```text
+INDICATOR_CLICK != COMMAND_AUTHORIZATION
+TABLE_ROW_OPEN != COMMAND_AUTHORIZATION
+```
+
+Todo comando financiero continúa requiriendo la capacidad exacta y revalidación server-side en la superficie destino.
+
+---
+
+#### 26. Separación de planos
+
+La jerarquía visual no reabre la decisión de `NUMERA-UX-002`:
+
+```text
+READ_PLANE != COMMAND_PLANE
+SEE != DO
+```
+
+Los indicadores pertenecen a lectura o señalización; una tabla puede contener lectura y, según su pantalla, accesos hacia comandos autorizados, pero el orden visual no fusiona ambos planos.
+
+---
+
+#### 27. Formularios y controles de trabajo no quedan subordinados por inferencia
+
+La regla es **indicadores antes que tablas detalladas**, no "indicadores antes que cualquier interacción".
+
+En una pantalla de captura o decisión:
+
+- el formulario necesario puede mantener su posición funcional;
+- controles obligatorios de contexto pueden preceder;
+- evidencia crítica puede mantenerse visible;
+- si además existe una tabla detallada y existen indicadores comparables, la síntesis deberá preceder específicamente a esa tabla.
+
+---
+
+#### 28. VSCREEN-0094 — Inicio financiero y ejecutivo
+
+`VSCREEN-0094` tiene propósito explícito de presentar indicadores, alertas, cierres y decisiones financieras relevantes.
+
+Por tanto:
+
+```text
+VSCREEN_0094_INDICATOR_FIRST = REQUIRED
+```
+
+Toda tabla detallada que eventualmente forme parte del home deberá aparecer después de la capa autorizada de síntesis correspondiente.
+
+---
+
+#### 29. VSCREEN-0104 y VSCREEN-0159
+
+Las superficies analíticas:
+
+- `VSCREEN-0104 — Costos, rentabilidad y escenarios`;
+- `VSCREEN-0159 — Indicadores, análisis y planes de mejora`;
+
+quedan sujetas a:
+
+```text
+IF DETAIL_TABLE_PRESENT
+THEN INDICATOR_FIRST = REQUIRED
+```
+
+sin congelar qué KPI existen ni cómo se visualizan.
+
+---
+
+#### 30. Matriz de las veinte pantallas NUMERA
+
+| Pantalla | Nombre | Decisión indicador-antes-de-tabla |
+| --- | --- | --- |
+| `VSCREEN-0094` | Inicio financiero y ejecutivo | `REQUIRED` |
+| `VSCREEN-0095` | Bandeja de hechos económicos | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0096` | Registro de gasto y soporte | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0097` | Bandeja de aprobaciones financieras | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0098` | Cuentas por pagar y obligaciones | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0099` | Cuentas por cobrar y cartera | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0100` | Caja, bancos y movimientos financieros | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0101` | Conciliación de ventas y pagos | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0102` | Conciliación de compras y recepciones | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0103` | Conciliación de inventario, producción y variaciones | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0104` | Costos, rentabilidad y escenarios | `REQUIRED_WHEN_DETAIL_TABLE_PRESENT` |
+| `VSCREEN-0105` | Cierre, reapertura y corrección de periodo | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0106` | Reportes y exportaciones financieras | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0153` | Paquete laboral para pagos y beneficios | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0154` | Facturas y documentos fiscales | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0155` | Tesorería y programación de pagos | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0156` | Presupuestos, escenarios y forecast | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0157` | Impuestos y obligaciones de cumplimiento | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0158` | Distribución y asignación de costos | `CONDITIONAL_WHEN_BOTH_EXIST` |
+| `VSCREEN-0159` | Indicadores, análisis y planes de mejora | `REQUIRED_WHEN_DETAIL_TABLE_PRESENT` |
+
+Reconciliación:
+
+```text
+TARGET_SCREEN_COUNT = 20
+REQUIRED_COUNT = 1
+REQUIRED_WHEN_DETAIL_TABLE_PRESENT_COUNT = 2
+CONDITIONAL_WHEN_BOTH_EXIST_COUNT = 17
+MISSING_COUNT = 0
+DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 31. Matriz de procesos propietarios
+
+| Proceso | Uso de la jerarquía |
+| --- | --- |
+| `VPROC-0010` | síntesis laboral-financiera antes del detalle cuando ambos existan |
+| `VPROC-0051` | resumen de hechos, gastos o conciliaciones antes de tablas comparables |
+| `VPROC-0052` | resumen de obligaciones, tesorería o cumplimiento antes de detalle comparable |
+| `VPROC-0053` | resumen de cartera antes de detalle comparable |
+| `VPROC-0054` | indicadores de costo, variación o cierre antes de detalle comparable |
+| `VPROC-0061` | jerarquía primaria para home, analítica y publicación |
+| `VPROC-0069` | indicadores de presupuesto, forecast o desviación antes de detalle comparable |
+
+```text
+PROCESS_COUNT = 7
+NEW_PROCESS_COUNT = 0
+```
+
+---
+
+#### 32. La jerarquía no uniforma los cinco perfiles
+
+El contrato transversal se aplica a:
+
+- propietario;
+- `gerente_general`;
+- `gerente`;
+- `contador`;
+- `auxiliar_administrativa`.
+
+Pero la capa de indicadores de cada perfil continúa limitada por su autoridad efectiva.
+
+```text
+SAME_LAYOUT_RULE != SAME_DATA_VISIBILITY
+```
+
+---
+
+#### 33. Propietario
+
+El propietario puede recibir la composición de lectura autorizada definida por `NUMERA-OWNER-HOME-001`.
+
+La jerarquía indicador-primero no convierte su presentación en wildcard ni incorpora capacidades nuevas.
+
+---
+
+#### 34. Gerente general
+
+`gerente_general` conserva `NUMERA-GENERAL-MANAGER-HOME-001` y su autoridad efectiva.
+
+Una proyección ejecutiva puede minimizar detalle sensible, pero no recibir datos reservados de propietario por similitud visual.
+
+---
+
+#### 35. Gerente de sede
+
+`gerente` conserva `NUMERA-SITE-MANAGER-HOME-001` y sus fronteras `AS/ORG-LOCAL`.
+
+Un indicador multisede solo puede agregar sedes individualmente autorizadas; no convierte cobertura local en consolidado global.
+
+---
+
+#### 36. Contador
+
+`contador` conserva `NUMERA-ACCOUNTANT-HOME-001`.
+
+Su experiencia puede priorizar indicadores de trabajo financiero, conciliación, obligaciones y cierre, pero la jerarquía no concede aprobaciones ni operaciones nuevas.
+
+---
+
+#### 37. Auxiliar autorizada
+
+`auxiliar_administrativa` conserva `NUMERA-AUTHORIZED-AUXILIARY-HOME-001`.
+
+Solo pueden formar parte de su capa resumida datos derivados de sus lecturas efectivas, principalmente centros de costo como `ORG-REF` y gastos en `AS/AA` conforme a la matriz vigente.
+
+No se mostrarán por esta tarea punto de equilibrio, rentabilidad o reportes financieros estratégicos que permanecen denegados.
+
+---
+
+#### 38. Composición parcial es válida
+
+Si un perfil solo posee autoridad para una parte de la información, la pantalla puede contener menos indicadores o menos detalle.
+
+```text
+PARTIAL_READ_SET = VALID_PARTIAL_COMPOSITION
+```
+
+La ausencia de una familia no se rellena con un cero ni con una cifra inferida desde otro permiso.
+
+---
+
+#### 39. Denegación de indicador y disponibilidad de tabla
+
+Si la tabla está autorizada pero no existe indicador aprobado o autorizado:
+
+```text
+DETAIL_TABLE_MAY_RENDER = YES
+SYNTHETIC_INDICATOR_REQUIRED = NO
+```
+
+La regla no bloquea trabajo legítimo por ausencia de una síntesis no definida.
+
+---
+
+#### 40. Indicador autorizado y detalle denegado
+
+Si existe autoridad agregada válida pero no para las filas subyacentes:
+
+```text
+INDICATOR_MAY_RENDER = YES
+DETAIL_TABLE_MUST_NOT_LEAK = YES
+```
+
+El indicador no incluirá enlaces, conteos secundarios, tooltips o payloads que reconstruyan el detalle denegado.
+
+---
+
+#### 41. Carga y error
+
+La experiencia futura deberá distinguir al menos:
+
+- indicador cargando;
+- tabla cargando;
+- indicador confirmado;
+- tabla confirmada;
+- dato parcial;
+- dato stale;
+- acceso denegado;
+- fallo técnico;
+- sin resultados autorizados.
+
+La tabla no debe mostrarse como vacía si en realidad falló la consulta, y el indicador no debe mostrarse como cero por el mismo motivo.
+
+---
+
+#### 42. Responsive
+
+La jerarquía deberá sobrevivir a breakpoints futuros.
+
+```text
+DESKTOP_INDICATOR_BEFORE_TABLE = YES
+MOBILE_INDICATOR_BEFORE_TABLE = YES
+```
+
+Una tabla que pase a scroll horizontal o vista compacta no puede saltar semánticamente por encima de la síntesis autorizada.
+
+Esta tarea no fija columnas, grids ni breakpoints concretos.
+
+---
+
+#### 43. Accesibilidad semántica
+
+La implementación futura deberá conservar:
+
+- encabezado comprensible para la región de indicadores;
+- nombres accesibles para cada indicador;
+- unidad y periodo interpretables;
+- estado no dependiente únicamente de color;
+- relación comprensible entre resumen y detalle;
+- tabla con encabezados y semántica tabular correcta.
+
+---
+
+#### 44. Orden de lectura asistiva
+
+Cuando indicador y tabla coexistan en el mismo contenido principal:
+
+```text
+ACCESSIBLE_READING_ORDER = INDICATOR_THEN_DETAIL_TABLE
+```
+
+No es suficiente mover visualmente tarjetas con CSS si el DOM o el árbol accesible presenta primero la tabla detallada.
+
+---
+
+#### 45. Orden de foco
+
+Los elementos interactivos de la capa resumida deberán respetar un orden de foco coherente antes de controles interactivos propios de la tabla, salvo controles globales de contexto o filtros que necesiten preceder a ambos.
+
+La tarea no define atajos ni keybindings concretos.
+
+---
+
+#### 46. Color no transmite estado por sí solo
+
+Una variación positiva, negativa, alerta, stale o estado de cierre no se comunicará solo mediante color.
+
+La representación futura deberá incluir texto, iconografía accesible, etiqueta semántica u otro canal equivalente.
+
+---
+
+#### 47. No se fija el catálogo final de KPI
+
+Esta tarea **sí fija la jerarquía indicador-versus-tabla**, pero **no fija**:
+
+- cantidad final de KPI;
+- orden entre KPI;
+- fórmula de cada KPI;
+- umbrales definitivos;
+- visualización final;
+- tamaño de tarjetas;
+- colores;
+- grid;
+- densidad exacta;
+- contenido del visor económico final.
+
+---
+
+#### 48. Relación con NUMERA-UX-028
+
+`NUMERA-UX-028` conserva la propiedad del visor económico dinámico de una sola pantalla, comparativo y con divulgación progresiva.
+
+Se conserva:
+
+```text
+UX_008 = HIERARCHY_RULE
+UX_028 = DYNAMIC_ECONOMIC_VIEWER_DESIGN
+```
+
+La 008 no absorbe el diseño del visor, pero la 028 deberá respetar la jerarquía cuando use indicadores y tablas detalladas comparables.
+
+---
+
+#### 49. Relación con NUMERA-UX-009 a NUMERA-UX-012
+
+Las siguientes tareas conservan propiedad de:
+
+```text
+NUMERA-UX-009 = EXPENSE_REGISTRATION_FLOW
+NUMERA-UX-010 = APPROVAL_FLOW
+NUMERA-UX-011 = CLOSE_FLOW
+NUMERA-UX-012 = EXPORT_FLOW
+```
+
+La jerarquía visual no concede ni diseña esas operaciones.
+
+---
+
+#### 50. Relación con NUMERA-UX-013
+
+`NUMERA-UX-013` diseñará filtros por empresa, sede y centro de costo.
+
+La 008 solo exige que indicador y tabla comparables compartan el contexto efectivo; no decide aún cómo se selecciona o representa ese contexto.
+
+---
+
+#### 51. Relación con NUMERA-UX-014 y NUMERA-UX-015
+
+La fuente y correlación de hechos externos continúa perteneciendo a las tareas de consumo de eventos y prevención de doble registro.
+
+```text
+INDICATOR_SUMMARY_OF_SOURCE_FACT != DUPLICATE_FINANCIAL_FACT
+```
+
+La 008 no crea ingestión ni persistencia adicional.
+
+---
+
+#### 52. Observabilidad mínima futura
+
+Sin registrar payload financiero sensible innecesario, una implementación debería poder distinguir:
+
+- indicador renderizado;
+- indicador denegado;
+- indicador stale;
+- tabla renderizada;
+- tabla denegada;
+- reconciliación indicador-detalle válida;
+- discrepancia detectada;
+- drill-down iniciado;
+- cambio de contexto;
+- error de carga por nivel.
+
+La telemetría no se materializa en esta tarea.
+
+---
+
+#### 53. No duplicar procesos ni pantallas
+
+Se conserva el universo aprobado:
+
+```text
+NUMERA_PROCESS_COUNT = 7
+NUMERA_TARGET_SCREEN_COUNT = 20
+NEW_VPROC_COUNT = 0
+NEW_VSCREEN_COUNT = 0
+```
+
+La jerarquía es una regla de experiencia transversal, no una razón para duplicar una pantalla en versión "resumen" y otra "detalle".
+
+---
+
+#### 54. No se amplía el catálogo de autorización
+
+El contrato de autorización NUMERA vigente conserva:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+NUMERA_APP_ENTRY_COUNT = 1
+NUMERA_READ_PERMISSION_COUNT = 28
+NUMERA_NON_READ_CAPABILITY_COUNT = 96
+```
+
+UX-008 no materializa ninguna de las capacidades pendientes ni asigna permisos nuevos por rol.
+
+---
+
+#### 55. Criterio verificable de implementación futura
+
+Una superficie futura satisface este contrato cuando, para cada contexto en que coexistan un indicador autorizado y una tabla detallada comparable:
+
+1. el indicador aparece primero en el orden visual principal;
+2. aparece primero en el orden semántico accesible;
+3. ambos comparten contexto, periodo y fuente compatibles;
+4. no hay filas no autorizadas contribuyendo silenciosamente al agregado salvo permiso agregado independiente;
+5. una discrepancia se hace detectable y no se oculta con presentación;
+6. la tabla conserva el detalle necesario;
+7. la jerarquía no concede comandos ni exportación.
+
+---
+
+#### 56. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- formaliza una regla UX prevista expresamente por la secuencia NUMERA;
+- reutiliza cobertura vigente de integridad económica, autorización, navegación, accesibilidad y trazabilidad;
+- no crea conducta financiera ejecutable;
+- no crea proceso, pantalla, permiso, dato, fórmula ni transición nueva;
+- no modifica ningún requisito existente;
+- la prueba de render, accesibilidad e integración corresponde a las materializaciones posteriores que consuman este contrato.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 57. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente asociada a:
+
+- `TREQ-NUMERA-001..024`;
+- `TREQ-PROC-001`;
+- `TREQ-PROC-009..017`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-015`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-017`.
+
+Esta lista es trazabilidad y no constituye una actualización del Registro 04A.
+
+---
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no produce build físico; la batería global se ejecutará después de su incorporación documental |
+| LOCAL | NOT_EXECUTED | el artefacto preparado todavía no se ha incorporado al checkout local canónico |
+| REMOTA | PASS | se consultaron `vento-shell/main`, el archivo propietario, topología, políticas, catálogo de veinte pantallas, separación lectura/comando, contratos de homes publicados, requisitos NUMERA vigentes y estado remoto de la secuencia |
+| OPERATIVA | NOT_APPLICABLE | la tarea no registra, aprueba, paga, concilia, cierra, exporta ni modifica hechos financieros |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 59. Criterios de aceptación
+
+- [ ] se define exactamente un contrato `NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001`;
+- [ ] la regla aplica solo cuando indicador y tabla coexisten sobre contexto compatible;
+- [ ] indicador autorizado precede la tabla detallada en orden visual principal;
+- [ ] indicador autorizado precede la tabla en orden semántico accesible;
+- [ ] la regla sobrevive a responsive;
+- [ ] no se obliga a inventar KPI donde no exista síntesis aprobada;
+- [ ] la tabla no se elimina ni se degrada como evidencia;
+- [ ] indicador y tabla comparables comparten fuente, contexto y periodo compatibles;
+- [ ] diferencias de grano o metodología se declaran explícitamente;
+- [ ] resumen y detalle no infieren autorización uno del otro;
+- [ ] conteos, badges y agregados respetan autorización;
+- [ ] cero, desconocido, no disponible, no autorizado y no aplicable permanecen separados;
+- [ ] stale no se presenta como actual;
+- [ ] unidad, moneda y periodo son interpretables;
+- [ ] tendencias no se inventan sin baseline comparable;
+- [ ] alertas no conceden capacidad de resolución;
+- [ ] drill-down transporta contexto pero no autoridad;
+- [ ] cualquier comando se reautoriza en la superficie destino;
+- [ ] formularios y controles globales no quedan reordenados por inferencia;
+- [ ] `VSCREEN-0094` queda en `REQUIRED`;
+- [ ] `VSCREEN-0104` y `VSCREEN-0159` quedan en `REQUIRED_WHEN_DETAIL_TABLE_PRESENT`;
+- [ ] las otras diecisiete pantallas quedan en `CONDITIONAL_WHEN_BOTH_EXIST`;
+- [ ] el universo reconcilia 20 pantallas sin faltantes ni duplicados;
+- [ ] se conservan exactamente siete procesos propietarios;
+- [ ] los cinco perfiles conservan sus alcances diferenciados;
+- [ ] la auxiliar no adquiere analítica estratégica denegada;
+- [ ] no se fija catálogo final, fórmula ni orden interno de KPI;
+- [ ] `NUMERA-UX-028` conserva el visor económico dinámico;
+- [ ] `NUMERA-UX-009..015` conservan sus flujos y contratos posteriores;
+- [ ] el catálogo de autorización permanece en 125 capacidades objetivo;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos.
+
+---
+
+#### 60. Límites
+
+Esta tarea no:
+
+- redefine los homes de propietario, gerente general, gerente de sede, contador o auxiliar;
+- crea un sexto perfil;
+- redefine matrices RBAC;
+- asigna capacidades NUMERA nuevas;
+- inventa KPI;
+- define fórmulas nuevas;
+- fija umbrales financieros;
+- fija el orden entre indicadores;
+- diseña visualizaciones finales;
+- fija colores, cards, grids o breakpoints;
+- diseña el visor económico dinámico de `NUMERA-UX-028`;
+- diseña filtros de `NUMERA-UX-013`;
+- diseña registro de gasto;
+- diseña aprobación;
+- diseña cierre;
+- diseña exportación;
+- consume eventos físicos;
+- crea doble registro financiero;
+- crea pantallas;
+- crea rutas;
+- crea componentes React;
+- modifica navegación runtime;
+- crea permisos;
+- crea grants o denies;
+- crea procesos;
+- cambia estados de proceso;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-009`.
+
+---
+
+#### 61. Handoff a NUMERA-UX-009
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_INDICATOR_DETAIL_HIERARCHY_CONTRACT = NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001
+NUMERA_AUTHORIZED_AUXILIARY_HOME_CONTRACT = NUMERA-AUTHORIZED-AUXILIARY-HOME-001
+NUMERA_ACCOUNTANT_HOME_CONTRACT = NUMERA-ACCOUNTANT-HOME-001
+NUMERA_SITE_MANAGER_HOME_CONTRACT = NUMERA-SITE-MANAGER-HOME-001
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+INDICATOR_BEFORE_DETAIL_TABLE = YES_WHEN_BOTH_EXIST_AND_COMPARABLE
+INDICATOR_ALWAYS_REQUIRED = NO
+SYNTHETIC_KPI_ALLOWED = NO
+SUMMARY_REPLACES_DETAIL = NO
+SUMMARY_AUTHORITY_IMPLIES_DETAIL_AUTHORITY = NO
+DETAIL_AUTHORITY_IMPLIES_SUMMARY_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+ZERO_IS_UNKNOWN = NO
+TARGET_SCREEN_COUNT = 20
+INDICATOR_FIRST_REQUIRED_COUNT = 1
+INDICATOR_FIRST_REQUIRED_WHEN_DETAIL_TABLE_PRESENT_COUNT = 2
+INDICATOR_FIRST_CONDITIONAL_COUNT = 17
+SCREEN_MISSING_COUNT = 0
+SCREEN_DUPLICATE_COUNT = 0
+PROCESS_COUNT = 7
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+UX_009_OWNER = EXPENSE_REGISTRATION_FLOW
+UX_028_OWNER = DYNAMIC_ECONOMIC_VIEWER
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-009` podrá diseñar el flujo de registro de gasto conservando esta jerarquía en cualquier superficie que combine una síntesis autorizada con una tabla detallada, sin convertir la síntesis en permiso para registrar.
+
+---
+
+#### 62. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-009 — Diseñar flujo de registro de gasto`
 ### [ ] NUMERA-UX-009 — Diseñar flujo de registro de gasto
 ### [ ] NUMERA-UX-010 — Diseñar flujo de aprobación
 ### [ ] NUMERA-UX-011 — Diseñar flujo de cierre
