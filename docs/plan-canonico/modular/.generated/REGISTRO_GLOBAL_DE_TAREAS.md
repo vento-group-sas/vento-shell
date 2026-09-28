@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1439** |
+| Aprobadas | **1440** |
 | En propuesta | **0** |
-| No iniciadas | **157** |
+| No iniciadas | **156** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **90.16% (1439/1596)** |
+| Porcentaje de completamiento | **90.23% (1440/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **157** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1340** |
+| ⏸ NO_EVALUADA | **156** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1341** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-003` — Diseñar inicio para propietario | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-004` — Diseñar inicio para gerente general | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-005` — Diseñar inicio para gerente de sede | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-004` — Diseñar inicio para gerente general | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-005` — Diseñar inicio para gerente de sede | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-006` — Diseñar inicio para contador | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1201,7 +1201,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-001` | Inventariar procesos financieros y analíticos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-002` | Separar lectura ejecutiva y operación contable | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-003` | Diseñar inicio para propietario | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-004` | Diseñar inicio para gerente general | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-004` | Diseñar inicio para gerente general | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-005` | Diseñar inicio para gerente de sede | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-006` | Diseñar inicio para contador | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-007` | Diseñar inicio para auxiliar autorizada | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
