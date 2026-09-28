@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1463** |
+| Tareas aprobadas | **1464** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **133** |
+| Tareas no iniciadas | **132** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **91.67% (1463/1596)** |
+| Porcentaje de completamiento | **91.73% (1464/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos** |
-| Tarea actual | **NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva** |
+| Última tarea aprobada | **NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva** |
+| Tarea actual | **VISO-UX-001 — Reorganizar navegación por dominios administrativos** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **VISO-UX-001 — Reorganizar navegación por dominios administrativos** |
-| Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 73 de 74 aprobadas; NUMERA-UX-028 pendiente** |
+| Siguiente tarea | **VISO-UX-002 — Crear sección Personal** |
+| Bloque actual | **BLOQUE G3 — VISO completo** |
+| Progreso del bloque | **BLOQUE G3: 0 de 20 aprobadas; VISO-UX-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-UX-028** |
+| Carril documental | **ACTIVO — VISO-UX-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-UX-027` — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos |
-| Tarea actual | `NUMERA-UX-028` — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva — **NO INICIADA** |
-| Siguiente tarea | `VISO-UX-001` — Reorganizar navegación por dominios administrativos |
+| Última aprobada | `NUMERA-UX-028` — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva |
+| Tarea actual | `VISO-UX-001` — Reorganizar navegación por dominios administrativos — **NO INICIADA** |
+| Siguiente tarea | `VISO-UX-002` — Crear sección Personal |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 73 DE 74 APROBADAS — ACTUAL NUMERA-UX-028** |
+| CONTINUIDAD ACTIVA | **BLOQUE G3: 0 DE 20 APROBADAS — ACTUAL VISO-UX-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
-        ↓
-TAREA ACTUAL
 NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 VISO-UX-001 — Reorganizar navegación por dominios administrativos
         ↓
+SIGUIENTE TAREA RESERVADA
+VISO-UX-002 — Crear sección Personal
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 73 de 74 tareas aprobadas
+BLOQUE G3 — 0 de 20 tareas aprobadas
 ```
