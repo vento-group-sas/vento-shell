@@ -16136,7 +16136,1382 @@ UX-012 consume la separación cierre/exportación de UX-011 y entrega a UX-013 u
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo`
-### [ ] NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
+### ✅ NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-012 — Diseñar exportación con permiso independiente
+**Tarea siguiente:** NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
+**Tipo de tarea:** diseño documental del contrato UX de filtrado financiero y analítico por empresa, sede y centro de costo, preservando identidades canónicas, relaciones organizacionales, alcance efectivo, miembros autorizados, agregados, estado aplicado, reproducibilidad, exportación, accesibilidad, estados stale y revalidación server-side sin convertir selección, contexto, URL o filtro en autoridad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea componentes, pantallas, rutas, endpoints, permisos, grants, RLS, tablas, RPC, Server Actions, APIs, catálogos, centros de costo, relaciones organizacionales, migraciones, Supabase, consultas runtime, exportaciones reales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar una experiencia única y verificable para filtrar información financiera y analítica de NUMERA por empresa, sede y centro de costo sin permitir que una selección visual amplíe el territorio, los miembros, los campos, la población o la autoridad efectiva del actor.
+
+El contrato debe permitir que un usuario autorizado reduzca y comprenda el universo consultado, conserve filtros reproducibles y use el mismo contexto en lectura, análisis y exportación cuando corresponda, manteniendo siempre:
+
+```text
+SELECTED_SCOPE != AUTHORIZED_SCOPE
+FILTERED_VIEW <= AUTHORIZED_SCOPE
+```
+
+La selección es una intención de consulta dentro de autoridad ya resuelta; nunca una fuente de autoridad.
+
+---
+
+#### 2. Naturaleza y topología
+
+La tarea se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- define una sola vez el contrato UX de filtrado;
+- no crea instancia física propia;
+- no materializa `NUMERA-AUTH-008`;
+- no publica permisos ni scope runtime;
+- no modifica catálogos organizacionales;
+- no modifica Supabase;
+- no crea una pantalla nueva;
+- no modifica procesos ni estados empresariales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-012
+
+Se consume íntegramente:
+
+```text
+NUMERA_EXPORT_FLOW_CONTRACT = NUMERA-INDEPENDENT-EXPORT-FLOW-001
+EXPORT_SCREEN_ID = VSCREEN-0106
+EXPORT_PROCESS_ID = VPROC-0061
+EXPORT_STEP_ID = VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+EXPORT_PERMISSION = numera.analytics.financial_reports.export
+VIEW_PERMISSION = numera.analytics.financial_reports.view
+EXPORT_PERMISSION_IDENTITY_COUNT = 1
+VIEW_IMPLIES_EXPORT = NO
+EXPORT_IMPLIES_VIEW = NO
+PUBLISH_IMPLIES_EXPORT = NO
+CLOSE_IMPLIES_EXPORT = NO
+REOPEN_IMPLIES_EXPORT = NO
+PURPOSE_REQUIRED = YES
+EXPORT_SCOPE_MUST_NOT_EXCEED_AUTHORIZED_READ_SCOPE = YES
+EXPORT_PERMISSION_IMPLIES_ALL_FIELDS = NO
+FIELD_PROJECTION_REQUIRED = YES
+POPULATION_IS_AUTHORIZATION_INPUT = YES
+FILTERS_ARE_EXPORT_IDENTITY_INPUT = YES
+DIMENSIONS_ARE_EXPORT_IDENTITY_INPUT = YES
+FILE_FORMAT_IS_AUTHORITY = NO
+SUPPORTED_EXPORT_FORMATS = RUNTIME_DECLARED_SET
+EXPORT_IS_DOWNLOAD_EXISTING_ARTIFACT = NO
+EXPORT_IS_PRINT = NO
+EXPORT_IS_SHARE = NO
+SIGNED_URL_IS_AUTHORITY = NO
+REQUEST_ID_REQUIRED_FOR_RETRYABLE_EXPORT = YES
+STALE_REPORT_VERSION = DENY_AND_REVIEW_AGAIN
+STALE_SCOPE_DECISION = DENY_AND_REVIEW_AGAIN
+STALE_FIELD_PROJECTION = DENY_AND_REVIEW_AGAIN
+SIMULATED_AUTHORITY_CAN_EXPORT_REAL_DATA = NO
+EXPORT_IS_ECONOMIC_SOURCE = NO
+NUMERA_EXPORT_IS_TAX_FILING = NO
+UX_013_OWNER = COMPANY_SITE_COST_CENTER_FILTERING
+TREQ_CHANGES = 0
+```
+
+UX-013 desarrolla exclusivamente el ownership `COMPANY_SITE_COST_CENTER_FILTERING`.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La tarea consume sin redefinir:
+
+- `NUMERA-FINANCIAL-SCOPE-CONTRACT-001` de `NUMERA-AUTH-008`;
+- `NUMERA-INDEPENDENT-EXPORT-FLOW-001` de `NUMERA-UX-012`;
+- el catálogo canónico compartido de centros de costo definido por `NUMERA-DOM-006`;
+- las dimensiones económicas y organizacionales de `NUMERA-DOM-001` a `NUMERA-DOM-008` que correspondan al recurso consultado;
+- `VSCREEN-0106` — Reportes y exportaciones financieras;
+- `VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT` cuando el filtro se consume en la superficie de reportes/exportación;
+- los contratos transversales de autorización, recurso, territorio, contexto, denegación, frescura y evidencia vigentes.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA-COMPANY-SITE-COST-CENTER-FILTER-001
+```
+
+Este contrato gobierna la interacción, representación, aplicación, limpieza, persistencia contextual y revalidación de filtros de empresa, sede y centro de costo en superficies NUMERA que consuman esas dimensiones.
+
+No crea un permiso, perfil de scope, catálogo ni relación organizacional nuevos.
+
+---
+
+#### 6. Superficie primaria
+
+La superficie primaria concreta heredada de UX-012 es:
+
+```text
+SCREEN_ID = VSCREEN-0106
+SCREEN_NAME = Reportes y exportaciones financieras
+OWNER = numera
+PROCESS_ID = VPROC-0061
+STEP_ID = VPROC-0061::STEP-PUBLISH_FINANCIAL_REPORT
+```
+
+El contrato de filtros puede ser reutilizado por otras superficies NUMERA que ya posean autoridad y dimensiones compatibles, pero UX-013 no crea ni reasigna `VSCREEN-*`, `VPROC-*` ni steps.
+
+---
+
+#### 7. Invariante principal
+
+Se congela:
+
+```text
+FILTER_SELECTION_IS_AUTHORITY = NO
+SELECTED_SCOPE != AUTHORIZED_SCOPE
+FILTERED_VIEW <= AUTHORIZED_SCOPE
+```
+
+Y específicamente:
+
+```text
+SELECTED_COMPANY != AUTHORIZED_COMPANY_SET
+SELECTED_SITE != AUTHORIZED_SITE_SET
+SELECTED_COST_CENTER != AUTHORIZED_COST_CENTER_SET
+```
+
+Elegir una identidad solo reduce o expresa una consulta dentro del conjunto permitido.
+
+---
+
+#### 8. Scope restringe y el filtro restringe nuevamente
+
+La relación válida es:
+
+```text
+EFFECTIVE_SCOPE
+INTERSECT REQUESTED_FILTERS
+= EFFECTIVE_FILTERED_SCOPE
+```
+
+Con la condición:
+
+```text
+EFFECTIVE_FILTERED_SCOPE <= EFFECTIVE_SCOPE
+```
+
+Si la intersección no es válida, el resultado es denegación, estado vacío gobernado o revisión de contexto según la causa; nunca ampliación automática.
+
+---
+
+#### 9. Dimensiones permanecen distintas
+
+Se preservan las separaciones canónicas:
+
+```text
+LEGAL_ENTITY != BRAND
+LEGAL_ENTITY != SITE
+SITE != COST_CENTER
+BRAND != COST_CENTER
+PHYSICAL_INSTALLATION != COST_CENTER
+```
+
+Además:
+
+```text
+COMPANY_FILTER != SITE_FILTER
+SITE_FILTER != COST_CENTER_FILTER
+COMPANY_FILTER != COST_CENTER_FILTER
+```
+
+La UI puede relacionar opciones únicamente desde relaciones canónicas explícitas; no colapsa identidades para simplificar la pantalla.
+
+---
+
+#### 10. Significado de «empresa» en la UI
+
+El label empresarial «empresa» representa únicamente la identidad canónica empresarial que el recurso o consulta declare para esa dimensión.
+
+UX-013 no decide que «empresa» sea siempre:
+
+- entidad legal;
+- marca;
+- unidad de negocio;
+- emisor fiscal;
+- titular de cuenta;
+- agrupación de sedes.
+
+Cuando el contrato del recurso distinga esas identidades, la UI conserva la distinción y no sustituye una por otra.
+
+---
+
+#### 11. Sede
+
+La sede es una dimensión territorial solo cuando el recurso y el contrato de scope la declaran.
+
+Se congela:
+
+```text
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORIZED_SCOPE = NO
+KNOWN_SITE_ID_IS_AUTHORITY = NO
+```
+
+La sede seleccionada debe pertenecer al conjunto efectivo autorizado y aplicable al recurso actual.
+
+---
+
+#### 12. Centro de costo
+
+El centro de costo se resuelve contra el catálogo canónico compartido gobernado funcionalmente por NUMERA.
+
+Se congela:
+
+```text
+COST_CENTER_FILTER_VALUE = CANONICAL_COST_CENTER_IDENTITY
+FREE_TEXT_COST_CENTER_IS_IDENTITY = NO
+COST_CENTER_IS_SITE = NO
+```
+
+El filtro no crea centros, aliases ni copias locales autoritativas.
+
+---
+
+#### 13. Centro de costo sin sede
+
+Un centro de costo puede ser válido sin una relación de sede material cuando el contrato canónico lo permita.
+
+Por tanto:
+
+```text
+COST_CENTER_WITHOUT_SITE != INVALID_BY_DEFAULT
+```
+
+Si el centro se autoriza por identidad exacta o ámbito organizacional explícito, la UI no inventa una sede para hacerlo seleccionable.
+
+---
+
+#### 14. Relación sede-centro
+
+UX-013 no impone una cardinalidad uno-a-uno.
+
+Se conserva:
+
+```text
+SITE_TO_COST_CENTER_CARDINALITY = CANONICAL_RELATIONSHIP
+```
+
+Una sede puede relacionarse con cero, uno o varios centros y un centro puede poseer relaciones distintas según el modelo vigente.
+
+Las opciones se derivan de relaciones canónicas vigentes, nunca de coincidencia nominal.
+
+---
+
+#### 15. Conjunto de filtros gobernados
+
+El contrato contiene exactamente tres familias de selección:
+
+```text
+FILTER_DIMENSION_COUNT = 3
+FILTER_1 = COMPANY
+FILTER_2 = SITE
+FILTER_3 = COST_CENTER
+```
+
+UX-013 no absorbe periodo, canal, producto, cliente, proveedor, moneda, estado, actor ni otras dimensiones como nuevos filtros propietarios.
+
+Esas dimensiones continúan bajo sus contratos correspondientes.
+
+---
+
+#### 16. Estado lógico del filtro
+
+Se distinguen:
+
+```text
+AVAILABLE_FILTER_OPTIONS
+DRAFT_FILTER_SELECTION
+APPLIED_FILTER_SELECTION
+EFFECTIVE_FILTERED_SCOPE
+```
+
+Y:
+
+```text
+DRAFT_FILTER_SELECTION != APPLIED_FILTER_SELECTION
+```
+
+La edición visual de una selección no cambia los datos mostrados hasta aplicar el estado conforme al patrón de la superficie consumidora.
+
+---
+
+#### 17. Shape lógico de selección
+
+El estado lógico deberá poder conservar, cuando aplique:
+
+```text
+company_ids
+site_ids
+cost_center_ids
+selection_mode
+scope_context_version
+resource_or_query_identity
+report_version_when_applicable
+as_of_when_applicable
+```
+
+La tarea no fija almacenamiento físico, serialización ni API.
+
+---
+
+#### 18. Identificadores, no labels, forman la identidad
+
+Se congela:
+
+```text
+VISIBLE_LABEL != CANONICAL_IDENTITY
+```
+
+Los nombres visibles pueden cambiar sin cambiar la identidad seleccionada.
+
+La selección reproducible se basa en identificadores canónicos y contexto/versionado aplicable, no en texto mostrado al usuario.
+
+---
+
+#### 19. Opciones visibles
+
+El selector solo puede presentar identidades que sean simultáneamente:
+
+```text
+KNOWN_CANONICAL_IDENTITY
+AND ELIGIBLE_FOR_RESOURCE
+AND WITHIN_EFFECTIVE_SCOPE
+AND SAFE_TO_DISCLOSE
+```
+
+Una identidad fuera de autoridad no aparece como opción bloqueada con nombre visible si eso revelaría metadata protegida.
+
+---
+
+#### 20. Opción «Todo lo autorizado»
+
+Cuando la superficie permita consultar múltiples miembros autorizados, la UI puede representar:
+
+```text
+ALL_AUTHORIZED
+```
+
+Su semántica es exclusivamente:
+
+```text
+ALL_AUTHORIZED = CURRENT_EFFECTIVE_AUTHORIZED_MEMBER_SET
+```
+
+Nunca:
+
+```text
+ALL_AUTHORIZED = ALL_ORGANIZATION
+ALL_AUTHORIZED = WILDCARD
+ALL_AUTHORIZED = BYPASS
+```
+
+El label visible deberá comunicar el límite autorizado y no inducir a pensar que cubre toda la organización.
+
+---
+
+#### 21. Estado inicial
+
+El filtro inicial se deriva de la intersección entre:
+
+- autoridad efectiva;
+- recurso o consulta actual;
+- contexto de navegación válido;
+- selección reproducible explícita cuando exista;
+- restricciones del periodo o versión aplicables.
+
+No se usa como fallback autoritativo:
+
+- última sede usada;
+- sede primaria;
+- centro anterior;
+- rol;
+- empresa inferida;
+- valor almacenado en cliente sin revalidación.
+
+---
+
+#### 22. Contexto de navegación
+
+Un handoff desde otra superficie puede transportar:
+
+```text
+company_context
+site_context
+cost_center_context
+```
+
+pero:
+
+```text
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+```
+
+Cada valor se revalida antes de convertirse en filtro aplicado.
+
+---
+
+#### 23. Dependencia entre selectores
+
+La UI puede reducir opciones descendentes cuando existe relación canónica verificable.
+
+Ejemplo lógico:
+
+```text
+COMPANY_SELECTION
+-> ELIGIBLE_SITE_OPTIONS
+-> ELIGIBLE_COST_CENTER_OPTIONS
+```
+
+pero esta dependencia es de elegibilidad y navegación, no una regla universal de jerarquía empresarial.
+
+---
+
+#### 24. Cambio de empresa
+
+Al cambiar empresa, la UI debe revisar las selecciones de sede y centro de costo.
+
+Una selección descendente que deja de ser compatible pasa a estado inválido o se elimina explícitamente del borrador antes de aplicar.
+
+Queda prohibido sustituirla silenciosamente por otra identidad «parecida».
+
+---
+
+#### 25. Cambio de sede
+
+Al cambiar sede:
+
+- se recalculan opciones compatibles de centro de costo;
+- un centro todavía válido por ámbito organizacional puede conservarse si el contrato lo permite;
+- un centro incompatible se retira del borrador o exige revisión;
+- seleccionar sede no crea autoridad sobre todos sus centros.
+
+Se conserva:
+
+```text
+SELECTED_SITE_CREATES_NEW_AUTHORITY = NO
+```
+
+---
+
+#### 26. Cambio de centro de costo
+
+Seleccionar un centro de costo:
+
+- restringe la consulta al miembro autorizado correspondiente;
+- no cambia empresa o sede por inferencia;
+- no crea relación territorial;
+- no concede acceso a recursos relacionados;
+- no habilita mutaciones sobre el catálogo.
+
+---
+
+#### 27. Selección múltiple
+
+Cuando el consumidor materialice selección múltiple, el resultado autorizado es la unión de miembros seleccionados que ya pertenecen al scope efectivo.
+
+```text
+SELECTED_MEMBER_UNION <= AUTHORIZED_MEMBER_SET
+```
+
+Si uno de los miembros deja de estar autorizado, no se conserva ocultamente dentro de la consulta.
+
+---
+
+#### 28. Agregados
+
+Todo agregado filtrado debe cumplir:
+
+```text
+AGGREGATE_MEMBER_SET <= AUTHORIZED_MEMBER_SET
+```
+
+La suma, promedio, margen, costo, rentabilidad, equilibrio u otro cálculo no puede incluir miembros ocultos y después presentar solo un label autorizado.
+
+---
+
+#### 29. Proyección parcial
+
+Una proyección parcial solo se ofrece cuando el recurso puede separar miembros sin falsear su significado empresarial.
+
+Si un resultado requiere miembros no autorizados para conservar validez semántica:
+
+```text
+PARTIAL_PROJECTION_UNSAFE
+-> NOT_AVAILABLE_OR_DENY
+```
+
+No se calcula una cifra engañosa para evitar mostrar la denegación.
+
+---
+
+#### 30. Conteos y badges
+
+Los conteos de opciones, resultados, sedes o centros se calculan únicamente sobre el universo visible autorizado.
+
+Se congela:
+
+```text
+UNAUTHORIZED_MEMBER_COUNT_DISCLOSURE = FORBIDDEN
+```
+
+La UI no revela que existen miembros ocultos mediante diferencias de conteo, placeholders o mensajes.
+
+---
+
+#### 31. Búsqueda dentro de selectores
+
+La búsqueda de empresa, sede o centro de costo opera solo sobre el conjunto autorizado y seguro de divulgar.
+
+Una búsqueda sin coincidencias no distingue entre:
+
+- inexistencia global;
+- existencia fuera de autoridad.
+
+El mensaje público permanece minimizado.
+
+---
+
+#### 32. Catálogo vigente e historia
+
+Un centro o dimensión actualmente inactiva puede seguir siendo necesaria para una consulta histórica si era válida para el periodo o snapshot consultado.
+
+Por tanto:
+
+```text
+CURRENTLY_INACTIVE != HISTORICALLY_INVALID
+```
+
+La UI puede mostrar una identidad histórica autorizada con estado visible de inactividad cuando sea necesaria para reproducir el resultado.
+
+---
+
+#### 33. Datos demo o de prueba
+
+Identidades demo, APP-REVIEW o equivalentes no participan en información financiera real por el solo hecho de existir o estar activas técnicamente.
+
+Se congela:
+
+```text
+DEMO_IDENTITY_ELIGIBLE_FOR_REAL_FINANCIAL_FILTER = NO
+```
+
+Las superficies de prueba conservan sus propios contextos sin mezclarse con resultados reales.
+
+---
+
+#### 34. Estado aplicado visible
+
+La superficie debe permitir reconocer sin ambigüedad qué filtros están aplicados.
+
+Como mínimo debe ser posible identificar:
+
+- empresa seleccionada o límite equivalente;
+- sede seleccionada o límite equivalente;
+- centro de costo seleccionado o límite equivalente;
+- si se está usando todo el conjunto autorizado;
+- si una selección está stale o requiere revisión.
+
+---
+
+#### 35. Resumen compacto
+
+Cuando el espacio sea limitado, la UI puede representar filtros aplicados mediante resumen o chips, siempre que la expansión permita recuperar las identidades efectivas sin ocultar el scope aplicado.
+
+Un resumen como «3 filtros» no sustituye permanentemente la posibilidad de inspeccionar cuáles son.
+
+---
+
+#### 36. Aplicar filtros
+
+La acción de aplicar verifica el borrador contra el contexto vigente antes de convertirlo en selección efectiva.
+
+Flujo lógico:
+
+```text
+EDIT_FILTERS
+-> REVIEW_LOCAL_VALIDITY
+-> SERVER_SIDE_SCOPE_REVALIDATION
+-> APPLY_OR_DENY
+-> REFRESH_RESULT
+```
+
+La UI no considera autoritativo un resultado puramente cliente.
+
+---
+
+#### 37. Restablecer filtros
+
+Restablecer filtros significa volver al baseline permitido de la superficie actual.
+
+No significa:
+
+```text
+RESET = GLOBAL_SCOPE
+RESET = REMOVE_AUTHORIZATION_LIMITS
+RESET = ALL_COMPANIES
+RESET = ALL_SITES
+RESET = ALL_COST_CENTERS
+```
+
+El baseline puede ser `ALL_AUTHORIZED` o un contexto más restringido definido por el recurso actual.
+
+---
+
+#### 38. Limpiar una dimensión
+
+Limpiar empresa, sede o centro de costo no debe ampliar la consulta más allá del baseline autorizado.
+
+Si una dimensión es obligatoria para resolver el recurso, limpiar produce selección incompleta y bloquea aplicar hasta resolverla.
+
+---
+
+#### 39. URL y query parameters
+
+Los parámetros de URL o query pueden representar intención reproducible de filtros, pero:
+
+```text
+URL_FILTER != AUTHORITY
+KNOWN_ID_IN_URL != AUTHORITY
+```
+
+Todo identificador recibido por URL se normaliza, resuelve y revalida server-side.
+
+---
+
+#### 40. Parámetro desconocido o inválido
+
+Ante un identificador inexistente, malformado, incompatible o no autorizado:
+
+```text
+INVALID_FILTER
+-> NO_FALLBACK_TO_BROADER_SCOPE
+```
+
+La UI presenta un estado seguro y permite revisar filtros autorizados sin revelar detalles del miembro rechazado.
+
+---
+
+#### 41. Persistencia de preferencia
+
+Una implementación futura puede recordar preferencias de filtros para comodidad.
+
+Se congela:
+
+```text
+SAVED_FILTER_PREFERENCE != AUTHORIZATION_CACHE
+```
+
+Una preferencia persistida siempre se revalida al volver a usarse.
+
+---
+
+#### 42. Cache de opciones
+
+Una cache de empresas, sedes o centros es solo optimización.
+
+Debe invalidarse o revalidarse cuando cambien materialmente:
+
+- permisos;
+- asignaciones;
+- relaciones organizacionales;
+- vigencia de centros;
+- recurso o consulta;
+- actor efectivo;
+- denegaciones.
+
+La cache nunca decide autoridad.
+
+---
+
+#### 43. Scope stale
+
+Se conserva:
+
+```text
+STALE_SCOPE_DECISION = DENY_AND_REEVALUATE
+```
+
+Si cambia autoridad o relación organizacional después de aplicar filtros, la UI no mantiene el resultado anterior como si siguiera autorizado.
+
+---
+
+#### 44. Selección stale
+
+Se define:
+
+```text
+STALE_FILTER_SELECTION != VALID_CURRENT_SELECTION
+```
+
+Ante stale:
+
+- se detiene cualquier nuevo efecto que dependa del filtro vencido;
+- se refrescan opciones autorizadas;
+- se conserva el borrador solo cuando hacerlo no revela información;
+- el usuario revisa el contexto actualizado antes de continuar.
+
+---
+
+#### 45. Cambio de actor efectivo
+
+Cuando cambie `effective_actor`, toda selección dependiente de autoridad debe revalidarse.
+
+Se congela:
+
+```text
+ACTOR_CHANGE_INVALIDATES_SCOPE_DECISION = YES
+```
+
+No se heredan filtros autorizados del actor anterior como autoridad del actor nuevo.
+
+---
+
+#### 46. Cambio de permiso
+
+Una concesión revocada o una denegación nueva invalida la selección dependiente aunque el recurso permanezca visible en cache.
+
+```text
+PERMISSION_CHANGE
+-> REEVALUATE_SCOPE
+-> REEVALUATE_FILTERS
+```
+
+---
+
+#### 47. Cambio de relaciones organizacionales
+
+Una modificación en relaciones empresa-sede-centro puede convertir una selección en stale.
+
+La UI debe revaluar el conjunto aplicado y no reinterpretar silenciosamente un mismo ID bajo una relación nueva para un resultado histórico ya fijado.
+
+---
+
+#### 48. Filtros y periodo
+
+UX-013 no diseña el selector de periodo, pero reconoce que la elegibilidad histórica de empresa, sede o centro puede depender del periodo o corte del recurso.
+
+Se conserva:
+
+```text
+FILTER_DIMENSIONS + PERIOD_CONTEXT = REPRODUCIBILITY_INPUT_WHEN_APPLICABLE
+```
+
+Periodo no sustituye scope y scope no sustituye periodo.
+
+---
+
+#### 49. Filtros y versión
+
+Cuando el recurso sea versionado, cambiar filtros no autoriza cambiar silenciosamente la versión.
+
+```text
+FILTER_CHANGE != VERSION_UPGRADE
+```
+
+La identidad de versión permanece explícita conforme al contrato propietario.
+
+---
+
+#### 50. Filtros y lectura financiera
+
+Para `numera.analytics.financial_reports.view`, la consulta filtrada debe resolver:
+
+```text
+EXACT_READ_PERMISSION
+RESOURCE_OR_QUERY_IDENTITY
+AUTHORIZED_MEMBER_SET
+REQUESTED_FILTERS
+NO_EFFECTIVE_DENY
+```
+
+Los filtros nunca sustituyen el permiso exacto de lectura.
+
+---
+
+#### 51. Filtros y centro de costo visible
+
+`numera.finance.cost_centers.view` autoriza consulta del recurso exacto conforme al `COST_CENTER_SCOPE` aplicable.
+
+La presencia de un centro en un filtro de otra superficie no concede automáticamente la capacidad de abrir, administrar o modificar su ficha.
+
+---
+
+#### 52. Filtros y exportación
+
+Se conserva el handoff de UX-012:
+
+```text
+FILTERS_ARE_EXPORT_IDENTITY_INPUT = YES
+EXPORT_SCOPE <= AUTHORIZED_REPORT_SCOPE
+```
+
+La exportación usa exactamente los filtros revisados y autorizados para la solicitud.
+
+---
+
+#### 53. Cambio de filtros después de revisar exportación
+
+Si cambia empresa, sede o centro después de la revisión de exportación:
+
+```text
+FILTER_CHANGE_AFTER_EXPORT_REVIEW
+-> INVALIDATE_EXPORT_REVIEW
+-> REVIEW_AGAIN
+```
+
+La autorización anterior no se reutiliza para una población diferente.
+
+---
+
+#### 54. Exportación global autorizada
+
+Un reporte global visible bajo autoridad vigente no elimina la reevaluación de exportación.
+
+Se conserva:
+
+```text
+GLOBAL_REPORT_VIEW != UNBOUNDED_EXPORT
+```
+
+Cada miembro de empresa, sede o centro incluido en la salida debe permanecer dentro del scope vigente y de la finalidad autorizada.
+
+---
+
+#### 55. Campos y filtros son controles distintos
+
+Se congela:
+
+```text
+VALID_FILTER_SCOPE != FIELD_AUTHORIZATION
+```
+
+Seleccionar una empresa, sede o centro válido no habilita columnas, métricas o detalles sensibles adicionales.
+
+La proyección de campos mantiene su autorización independiente.
+
+---
+
+#### 56. Estado y filtros son controles distintos
+
+Se congela:
+
+```text
+VALID_FILTER_SCOPE + INVALID_RESOURCE_STATE = DENY_OR_NOT_AVAILABLE
+```
+
+Un filtro válido no permite saltar restricciones de estado, cierre, conciliación, aprobación o lifecycle del recurso.
+
+---
+
+#### 57. Segregación y filtros son controles distintos
+
+Se congela:
+
+```text
+VALID_FILTER_SCOPE != SEGREGATION_BYPASS
+```
+
+Filtrar a un recurso visible no concede registrar, aprobar, cerrar, reabrir, exportar o ejecutar otra capacidad sin su autoridad exacta.
+
+---
+
+#### 58. Simulación
+
+Una simulación de scope o filtros puede ayudar a comprender qué se vería bajo un contexto hipotético, pero:
+
+```text
+SIMULATED_FILTER_SCOPE <= REAL_SCOPE_CEILING
+SIMULATED_SCOPE_IS_REAL_DATA_AUTHORITY = NO
+```
+
+No se usa un filtro simulado para consultar o exportar datos financieros reales fuera de la autoridad efectiva.
+
+---
+
+#### 59. Resultado cero
+
+Se distingue:
+
+```text
+ZERO_RESULTS != NO_AUTHORITY
+ZERO_RESULTS != FILTER_ERROR
+ZERO_RESULTS != DATA_UNAVAILABLE
+```
+
+La UI comunica la causa segura cuando pueda hacerlo sin revelar recursos fuera de alcance.
+
+---
+
+#### 60. Estado sin opciones autorizadas
+
+Cuando el actor no tenga opciones autorizadas para una dimensión obligatoria, la UI no ofrece una selección global de emergencia.
+
+El estado es gobernado y no se repara con:
+
+- rol genérico;
+- primera opción del catálogo;
+- sede primaria;
+- centro por defecto;
+- «todos» sin límite.
+
+---
+
+#### 61. Denegación segura
+
+Una denegación no debe exponer:
+
+- nombres de empresas fuera de alcance;
+- sedes ocultas;
+- centros ajenos;
+- conteos de miembros no autorizados;
+- valores financieros asociados;
+- relaciones internas no visibles.
+
+La UI explica que la selección no está disponible sin enumerar la razón sensible.
+
+---
+
+#### 62. Error técnico
+
+Se distingue:
+
+```text
+DENIED != TECHNICAL_FAILURE
+STALE != TECHNICAL_FAILURE
+INVALID_FILTER != TECHNICAL_FAILURE
+```
+
+Un fallo técnico no se convierte en `ALLOW` ni amplía el baseline para «seguir funcionando».
+
+---
+
+#### 63. Reintento
+
+Un reintento de carga reutiliza la intención de filtro solo después de revalidar el contexto actual.
+
+No se usa una respuesta cacheada como prueba de que la selección sigue autorizada.
+
+---
+
+#### 64. Reproducibilidad
+
+Un resultado que deba ser reproducible conserva, cuando aplique:
+
+```text
+RESOURCE_OR_QUERY_IDENTITY
+REPORT_VERSION
+AS_OF
+APPLIED_COMPANY_IDS
+APPLIED_SITE_IDS
+APPLIED_COST_CENTER_IDS
+AUTHORIZED_SCOPE_DECISION_REFERENCE_OR_VERSION
+```
+
+La tarea no obliga a persistir físicamente todos estos campos; define la información lógica necesaria para reconstruir el contexto.
+
+---
+
+#### 65. Evidencia de filtro aplicado
+
+La evidencia técnica autorizada debe poder correlacionar:
+
+- actor efectivo;
+- permiso exacto;
+- recurso o consulta;
+- filtros solicitados;
+- filtros efectivos;
+- decisión de scope;
+- versión/corte cuando aplique;
+- resultado.
+
+La especialización de auditoría permanece bajo sus propietarios canónicos.
+
+---
+
+#### 66. Interacción de escritorio
+
+En superficies con espacio suficiente, el patrón recomendado conserva el orden:
+
+```text
+EMPRESA
+-> SEDE
+-> CENTRO_DE_COSTO
+-> RESUMEN_DE_SELECCION
+-> APLICAR
+```
+
+La jerarquía visual no implica jerarquía autoritativa universal.
+
+---
+
+#### 67. Interacción en superficie estrecha
+
+En ancho reducido, los tres filtros pueden agruparse en panel, sheet o drawer siempre que:
+
+- el estado aplicado siga visible;
+- aplicar/cancelar sean distinguibles;
+- el orden empresa → sede → centro se preserve como ayuda cognitiva;
+- no se oculten selecciones inválidas o stale;
+- cerrar el panel sin aplicar no cambie la consulta.
+
+UX-013 no fija un componente tecnológico concreto.
+
+---
+
+#### 68. Accesibilidad
+
+Los filtros deben:
+
+- exponer labels semánticos completos;
+- asociar cada opción a su dimensión;
+- indicar selección y estado sin depender solo de color;
+- anunciar cambios de opciones dependientes;
+- asociar errores al filtro correspondiente;
+- permitir inspeccionar el resumen aplicado con teclado y tecnología asistiva;
+- conservar orden de foco predecible al invalidar opciones descendentes.
+
+---
+
+#### 69. Teclado y búsqueda
+
+Cuando exista búsqueda en selectores:
+
+- el foco no salta a opciones no autorizadas;
+- Enter no aplica una identidad solo por coincidencia de texto;
+- una opción debe quedar resuelta a identidad canónica antes de seleccionarse;
+- Escape o cancelar no alteran el estado aplicado.
+
+---
+
+#### 70. Mensajes de estado
+
+La experiencia debe diferenciar al menos:
+
+```text
+READY
+DRAFT_CHANGED
+APPLYING
+APPLIED
+EMPTY_AUTHORIZED_SET
+ZERO_RESULTS
+INVALID_SELECTION
+STALE_SELECTION
+DENIED
+FAILED
+```
+
+Son estados UX, no estados empresariales de `VPROC-0061` ni del catálogo organizacional.
+
+---
+
+#### 71. Rendimiento y listas extensas
+
+La implementación futura puede usar búsqueda, paginación o carga progresiva de opciones.
+
+Se conserva:
+
+```text
+PAGINATION_OR_SEARCH != AUTHORIZATION_BOUNDARY
+```
+
+Cada página o búsqueda de opciones mantiene el mismo scope y las mismas reglas de divulgación.
+
+---
+
+#### 72. Hallazgos diferidos
+
+| Hallazgo | Bloquea UX-013 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `NUMERA-FINANCIAL-SCOPE-CONTRACT-001` aún requiere materialización por unidad | no | `NUMERA-AUTH-008::<implementation_unit_id>` + package aplicable | enforcement físico coincide con perfiles y miembros autorizados aprobados |
+| permission keys NUMERA todavía pendientes de materialización | no | `NUMERA-AUTH-012` + package aplicable | catálogo y consumidores publican las identidades aprobadas sin fallback |
+| relaciones organizacionales y vigencia deben provenir de catálogos canónicos reales | no | dominios organizacionales + `NUMERA-DOM-006` | consumidores resuelven empresa/sede/centro desde identidades y relaciones vigentes |
+| componente runtime definitivo de filtros no existe por esta tarea | no | package físico de NUMERA aplicable | `VSCREEN-0106` y consumidores compatibles materializan interacción conforme al contrato aprobado |
+| eventos de origen deben conservar dimensiones para análisis posterior | no | `NUMERA-UX-014` + contratos de integración aplicables | eventos consumidos preservan identidad, origen y dimensiones sin duplicar hechos |
+
+No queda un hallazgo diferido sin owner o condición de salida.
+
+---
+
+#### 73. Decisiones congeladas
+
+Se congela:
+
+```text
+NUMERA_FILTER_CONTRACT = NUMERA-COMPANY-SITE-COST-CENTER-FILTER-001
+PRIMARY_FILTER_SCREEN_ID = VSCREEN-0106
+FILTER_DIMENSION_COUNT = 3
+FILTER_DIMENSIONS = COMPANY|SITE|COST_CENTER
+FILTER_SELECTION_IS_AUTHORITY = NO
+SELECTED_SCOPE_IS_AUTHORIZED_SCOPE = NO
+FILTERED_VIEW_MUST_NOT_EXCEED_AUTHORIZED_SCOPE = YES
+COMPANY_SITE_COST_CENTER_ARE_DISTINCT = YES
+COST_CENTER_IS_SITE = NO
+FILTER_VALUE_IDENTITY_SOURCE = CANONICAL_IDENTITIES
+FREE_TEXT_COST_CENTER_IS_IDENTITY = NO
+ALL_AUTHORIZED_IS_WILDCARD = NO
+ALL_AUTHORIZED_MEANS_CURRENT_EFFECTIVE_AUTHORIZED_SET = YES
+DRAFT_FILTERS_ARE_APPLIED_FILTERS = NO
+URL_FILTER_IS_AUTHORITY = NO
+SAVED_FILTER_PREFERENCE_IS_AUTHORIZATION_CACHE = NO
+CACHE_IS_AUTHORITY = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORIZED_SCOPE = NO
+KNOWN_RESOURCE_ID_IS_AUTHORITY = NO
+AGGREGATE_MEMBER_SET_MUST_BE_AUTHORIZED = YES
+UNAUTHORIZED_MEMBER_COUNT_DISCLOSURE = FORBIDDEN
+DEMO_IDENTITY_ELIGIBLE_FOR_REAL_FINANCIAL_FILTER = NO
+CURRENTLY_INACTIVE_IS_HISTORICALLY_INVALID = NO
+STALE_SCOPE_DECISION = DENY_AND_REEVALUATE
+ACTOR_CHANGE_INVALIDATES_SCOPE_DECISION = YES
+FILTERS_ARE_EXPORT_IDENTITY_INPUT = YES
+FILTER_CHANGE_AFTER_EXPORT_REVIEW_REQUIRES_REVIEW_AGAIN = YES
+VALID_FILTER_SCOPE_IS_FIELD_AUTHORIZATION = NO
+VALID_FILTER_SCOPE_IS_SEGREGATION_BYPASS = NO
+SIMULATED_SCOPE_IS_REAL_DATA_AUTHORITY = NO
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+**Justificación:** la obligación verificable de limitar lectura, análisis y exportación por empresa, sede, centro de costo, territorio, recurso y miembros autorizados ya está protegida por requisitos canónicos vigentes y por `NUMERA-FINANCIAL-SCOPE-CONTRACT-001`. UX-013 especializa únicamente la interacción del filtro, la representación de selección, la prevención de ampliación por parámetros y la recuperación ante stale sin crear una conducta ejecutable nueva.
+
+---
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar:
+
+- `TREQ-NUMERA-001` — permisos financieros separados y trazabilidad hasta empresa, sede, centro de costo, actor y origen;
+- `TREQ-NUMERA-002` — identidad estable con entidad legal, marca/unidad, sede, centro de costo, fuente, correlación y evidencia;
+- `TREQ-NUMERA-004` — dimensión, centro, periodo, versión, fuente y trazabilidad analítica; su ownership vigente incluye expresamente `NUMERA-UX-013`;
+- `TREQ-AUTH-013` — revalidación server-side de actor, permiso, territorio/contexto, recurso, estado y efecto;
+- `TREQ-AUTH-014` — invalidación y reautorización ante cambios de contexto, territorio o decisión vigente;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-SHELL-011` — identidad, actor efectivo, finalidad, clasificación, recurso, relación, territorio, estado, destinatario y acción exacta para consultas y exportaciones.
+
+Esta sección es trazabilidad de cobertura vigente y no actualiza el Registro 04A.
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El trabajo es documental; no se ejecutaron build, lint, tipos ni pruebas de producto. |
+| LOCAL | NOT_EXECUTED | La incorporación, formateo, quality, delivery, validadores de dominio y batería global permanecen pendientes del checkout del usuario después del cierre de `NUMERA-UX-012`. |
+| REMOTA | PASS | Se verificaron continuidad NUMERA, marcador propietario, topología `DEFINE_ONCE`, `NUMERA-AUTH-008`, `NUMERA-DOM-006`, contratos de alcance/recurso, `VSCREEN-0106`, Registro 04A aplicable y scripts documentales vigentes; `NUMERA-UX-012` se consume desde el archivo completo aprobado por el usuario mientras termina su publicación. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron filtros reales, consultas financieras, exportaciones, cambios de actor, invalidaciones stale ni pruebas de ambientes desplegados. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-013` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia. |
+
+---
+
+#### 77. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-COMPANY-SITE-COST-CENTER-FILTER-001`;
+2. se consume `NUMERA-FINANCIAL-SCOPE-CONTRACT-001` sin redefinirlo;
+3. `VSCREEN-0106` permanece como superficie primaria concreta heredada;
+4. no se crea una pantalla, proceso, step o permiso nuevo;
+5. existen exactamente tres familias de filtro: empresa, sede y centro de costo;
+6. empresa, entidad legal, marca, sede y centro de costo no se colapsan por inferencia;
+7. el centro de costo usa identidad canónica compartida;
+8. texto libre no crea identidad de centro;
+9. seleccionar empresa no crea autoridad sobre sedes o centros;
+10. seleccionar sede no crea autoridad sobre todos sus centros;
+11. seleccionar centro no crea empresa o sede por inferencia;
+12. centros sin sede pueden resolverse por identidad o ámbito explícito cuando el contrato lo permita;
+13. `SELECTED_SCOPE != AUTHORIZED_SCOPE` permanece obligatorio;
+14. el scope filtrado nunca excede el scope efectivo;
+15. opciones visibles se limitan al conjunto autorizado y seguro de divulgar;
+16. `ALL_AUTHORIZED` significa el conjunto efectivo autorizado actual y nunca wildcard;
+17. borrador y filtros aplicados permanecen separados;
+18. labels visibles no sustituyen identidades canónicas;
+19. dependencias entre selectores usan relaciones canónicas;
+20. una selección descendente incompatible no se sustituye silenciosamente;
+21. selección múltiple permanece dentro del conjunto autorizado;
+22. agregados contienen únicamente miembros autorizados;
+23. una proyección parcial insegura no se presenta como resultado completo;
+24. conteos no revelan miembros no autorizados;
+25. búsqueda de opciones no enumera identidades fuera de scope;
+26. identidades históricas pueden conservarse cuando sean válidas para el periodo consultado;
+27. identidades demo no entran en resultados financieros reales;
+28. el estado aplicado es inspeccionable;
+29. aplicar filtros revalida scope server-side;
+30. restablecer filtros no produce scope global;
+31. limpiar filtros no amplía autoridad;
+32. query params no son autoridad;
+33. un ID inválido no produce fallback a scope más amplio;
+34. preferencias persistidas no funcionan como cache de autorización;
+35. cache de opciones no decide autoridad;
+36. scope stale produce revaluación;
+37. selección stale no permanece autoritativa;
+38. cambio de actor invalida la decisión dependiente;
+39. cambio de permiso reevalúa scope y filtros;
+40. cambio de relación organizacional reevalúa la selección;
+41. periodo y scope permanecen controles distintos;
+42. cambiar filtros no cambia versión silenciosamente;
+43. permiso de lectura exacto sigue siendo obligatorio;
+44. visibilidad de centro no concede administración del catálogo;
+45. filtros forman parte de la identidad de exportación cuando aplica;
+46. cambiar filtros después de revisar exportación exige nueva revisión;
+47. reporte global visible no crea exportación sin límites;
+48. scope válido no concede campos adicionales;
+49. scope válido no evita restricciones de estado;
+50. scope válido no evita segregación de funciones;
+51. simulación no concede datos reales;
+52. cero resultados no se confunde con ausencia de autoridad;
+53. ausencia de opciones no se repara con un valor global de emergencia;
+54. denegaciones no revelan metadata sensible;
+55. fallo técnico no se convierte en allow;
+56. reintentos revalidan contexto;
+57. resultados reproducibles conservan identidades de filtros y contexto material;
+58. evidencia puede correlacionar filtros solicitados y efectivos;
+59. escritorio conserva orden empresa → sede → centro;
+60. responsive preserva estado aplicado y separación aplicar/cancelar;
+61. accesibilidad no depende solo de color y mantiene foco/labels;
+62. búsqueda por teclado resuelve identidad antes de seleccionar;
+63. estados UX no se confunden con estados empresariales;
+64. paginación/búsqueda no se convierten en frontera de autorización;
+65. todo hallazgo diferido tiene owner y condición de salida;
+66. no se crean ni modifican requisitos de prueba;
+67. no se realizan cambios físicos;
+68. `NUMERA-UX-014` recibe dimensiones filtradas como contexto, no como fuente de hechos ni autoridad.
+
+---
+
+#### 78. Límites
+
+Esta tarea no:
+
+- materializa `NUMERA-AUTH-008`;
+- cambia la topología de `NUMERA-AUTH-008`;
+- crea empresas, entidades legales, marcas, sedes, áreas o centros de costo;
+- modifica relaciones empresa-sede-centro;
+- define códigos nuevos de centro de costo;
+- crea catálogos paralelos;
+- asigna permisos a roles;
+- crea permission keys;
+- crea grants o denies;
+- define RLS;
+- crea RPC o Server Actions;
+- crea APIs;
+- crea tablas;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- crea componentes runtime;
+- fija una librería de selectores;
+- fija almacenamiento de preferencias;
+- fija tecnología de cache;
+- diseña filtros de periodo, canal, producto, cliente, proveedor o moneda;
+- redefine fórmulas financieras;
+- redefine `VSCREEN-0106`;
+- cambia `VPROC-0061`;
+- ejecuta exportaciones;
+- modifica el catálogo 04A;
+- consume todavía eventos de PULSO, ORIGO, FOGO o NEXO;
+- desarrolla `NUMERA-UX-014`.
+
+---
+
+#### 79. Handoff a NUMERA-UX-014
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_FILTER_CONTRACT = NUMERA-COMPANY-SITE-COST-CENTER-FILTER-001
+NUMERA_SCOPE_CONTRACT = NUMERA-FINANCIAL-SCOPE-CONTRACT-001
+NUMERA_EXPORT_FLOW_CONTRACT = NUMERA-INDEPENDENT-EXPORT-FLOW-001
+PRIMARY_FILTER_SCREEN_ID = VSCREEN-0106
+FILTER_DIMENSIONS = COMPANY|SITE|COST_CENTER
+FILTER_DIMENSION_COUNT = 3
+FILTER_SELECTION_IS_AUTHORITY = NO
+SELECTED_SCOPE_IS_AUTHORIZED_SCOPE = NO
+FILTERED_VIEW_MUST_NOT_EXCEED_AUTHORIZED_SCOPE = YES
+COMPANY_SITE_COST_CENTER_ARE_DISTINCT = YES
+FILTER_VALUE_IDENTITY_SOURCE = CANONICAL_IDENTITIES
+COST_CENTER_IDENTITY_OWNER = NUMERA_DOM_006
+ALL_AUTHORIZED_MEANS_CURRENT_EFFECTIVE_AUTHORIZED_SET = YES
+ALL_AUTHORIZED_IS_WILDCARD = NO
+AGGREGATE_MEMBER_SET_MUST_BE_AUTHORIZED = YES
+FILTERS_ARE_EXPORT_IDENTITY_INPUT = YES
+FILTER_CHANGE_AFTER_EXPORT_REVIEW_REQUIRES_REVIEW_AGAIN = YES
+STALE_SCOPE_DECISION = DENY_AND_REEVALUATE
+SERVER_SIDE_SCOPE_REVALIDATION_REQUIRED = YES
+SOURCE_EVENT_DIMENSIONS_MUST_NOT_BE_RECREATED_FROM_UI_FILTERS = YES
+UI_FILTER_IS_SOURCE_FACT = NO
+UX_014_OWNER = SOURCE_EVENT_CONSUMPTION_PULSO_ORIGO_FOGO_NEXO
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-014` deberá consumir eventos de PULSO, ORIGO, FOGO y NEXO preservando identidades y dimensiones del hecho fuente. Los filtros de UX-013 podrán seleccionar o analizar esos hechos después de su ingestión, pero nunca deberán usarse para inventar empresa, sede, centro de costo, origen o autoridad faltantes en un evento.
+
+---
+
+#### 80. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-012
+-> NUMERA-UX-013
+-> NUMERA-UX-014
+```
+
+UX-013 consume el contrato de exportación independiente de UX-012 y entrega a UX-014 un contexto de filtro explícitamente separado de autoridad y de hechos fuente.
+
+---
+
+#### 81. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-012 — Diseñar exportación con permiso independiente`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO`
 ### [ ] NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
 ### [ ] NUMERA-UX-015 — Evitar registro financiero duplicado
 ### [ ] NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección

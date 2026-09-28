@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1448** |
+| Tareas aprobadas | **1449** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **148** |
+| Tareas no iniciadas | **147** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **90.73% (1448/1596)** |
+| Porcentaje de completamiento | **90.79% (1449/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-UX-012 — Diseñar exportación con permiso independiente** |
-| Tarea actual | **NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo** |
+| Última tarea aprobada | **NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo** |
+| Tarea actual | **NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO** |
+| Siguiente tarea | **NUMERA-UX-015 — Evitar registro financiero duplicado** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 58 de 74 aprobadas; NUMERA-UX-013 pendiente** |
+| Progreso del bloque | **BLOQUE O: 59 de 74 aprobadas; NUMERA-UX-014 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-UX-013** |
+| Carril documental | **ACTIVO — NUMERA-UX-014** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-UX-012` — Diseñar exportación con permiso independiente |
-| Tarea actual | `NUMERA-UX-013` — Filtrar por empresa, sede y centro de costo — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-UX-014` — Consumir eventos de PULSO, ORIGO, FOGO y NEXO |
+| Última aprobada | `NUMERA-UX-013` — Filtrar por empresa, sede y centro de costo |
+| Tarea actual | `NUMERA-UX-014` — Consumir eventos de PULSO, ORIGO, FOGO y NEXO — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-UX-015` — Evitar registro financiero duplicado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 58 DE 74 APROBADAS — ACTUAL NUMERA-UX-013** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 59 DE 74 APROBADAS — ACTUAL NUMERA-UX-014** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-UX-012 — Diseñar exportación con permiso independiente
-        ↓
-TAREA ACTUAL
 NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-UX-015 — Evitar registro financiero duplicado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 58 de 74 tareas aprobadas
+BLOQUE O — 59 de 74 tareas aprobadas
 ```
