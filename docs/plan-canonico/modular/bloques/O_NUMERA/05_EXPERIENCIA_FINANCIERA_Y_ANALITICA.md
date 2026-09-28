@@ -26477,7 +26477,1426 @@ UX-020 consume la frontera de UX-019 y entrega a UX-021 obligaciones/programacio
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado`
-### [ ] NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
+### ✅ NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
+**Tarea siguiente:** NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
+**Tipo de tarea:** definición documental de la experiencia de caja consolidada, cuentas financieras, bancos, movimientos de tesorería, extractos, depósitos, liquidaciones, matching, conciliación y posición de liquidez de NUMERA, confirmando su pertenencia al alcance aprobado y preservando la operación de caja de PULSO, la obligación de UX-020, la autoridad externa del banco/proveedor, la inmutabilidad de fuentes y la separación entre saldo observado, saldo conciliado y proyección; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica PULSO, NUMERA, Supabase, cajas reales, sesiones POS, cuentas bancarias reales, extractos, movimientos, pagos, obligaciones, credenciales, secretos, contratos runtime, permisos, RLS, APIs, RPC, migraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia de caja y bancos de NUMERA para que una persona autorizada pueda conocer y conciliar cierres operativos de caja, efectivo bajo custodia, depósitos, cuentas financieras, extractos, movimientos bancarios, pagos salientes, recaudos, transferencias, comisiones, reversos, excepciones y posición de liquidez sin recrear las fuentes propietarias ni convertir proyecciones en saldos observados.
+
+La tarea adopta las decisiones de dominio ya aprobadas:
+
+```text
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+BANK_AND_PAYMENT_INFRASTRUCTURE_WITHIN_NUMERA_SCOPE = YES
+TREASURY_WITHIN_NUMERA_SCOPE = YES
+```
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define un contrato UX reutilizable;
+- no crea instancia física propia;
+- no implementa `VSCREEN-0100` ni `VSCREEN-0155`;
+- no abre ni cierra cajas reales;
+- no crea cuentas bancarias reales;
+- no importa extractos reales;
+- no emite transferencias ni pagos reales;
+- no modifica secretos ni credenciales;
+- no publica saldos ni conciliaciones reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-020
+
+La tarea consume íntegramente:
+
+```text
+PAYABLE_EXPERIENCE_CONTRACT = NUMERA-PAYABLE-OBLIGATION-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0098
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION
+PAYABLES_WITHIN_NUMERA_SCOPE = YES
+PAYABLE_REGISTERED_IS_APPROVED = NO
+PAYABLE_APPROVED_IS_SCHEDULED = NO
+SCHEDULED_IS_PAYMENT = NO
+PAYMENT_IN_PROGRESS_IS_CONFIRMED = NO
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+PARTIAL_PAYMENT_PRESERVES_RESIDUAL = YES
+DISPUTE_CAN_BE_PARTIAL = YES
+PAYABLE_SETTLED_REQUIRES_EXPLAINED_FINAL_BALANCE = YES
+PROVIDER_BANK_DATA_FROM_DOCUMENT_IS_AUTHORIZED = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+PAYMENT_EXECUTION_OWNER = NUMERA_UX_021
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+VALIDATION_SCENARIO_COUNT = 25
+TREQ_CHANGES = 0
+```
+
+UX-021 conserva la identidad de la obligación y no la recrea desde un movimiento bancario.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La definición consume sin redefinir:
+
+- `NUMERA-DOM-009`, para caja consolidada, cuentas financieras, bancos, extractos, movimientos, matching, conciliación y tesorería;
+- `NUMERA-DOM-010`, para obligación, aprobación, programación, pago y liquidación de payables;
+- `NUMERA-DOM-014`, para conciliación y tratamiento de diferencias;
+- `NUMERA-UX-017`, para conciliación de ventas y pagos;
+- `NUMERA-UX-020`, para cuentas por pagar y frontera de ejecución financiera;
+- `NUMERA-AUTH-014`, para permisos especializados de bancos, tesorería y conciliación;
+- `VPROC-0044`, para cierre operativo de caja PULSO;
+- `VPROC-0052`, para obligación, pago y movimiento de tesorería.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA_CASH_BANK_TREASURY_EXPERIENCE_CONTRACT = NUMERA-CASH-BANK-TREASURY-EXPERIENCE-001
+```
+
+El contrato exige que cada saldo, movimiento, depósito, transferencia, instrucción, línea de extracto, match, conciliación y proyección conserve fuente, identidad, moneda, fechas, autoridad, evidencia y estado propios.
+
+---
+
+#### 6. Superficie principal y proceso propietario
+
+La superficie principal es:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0100
+PRIMARY_SCREEN_NAME = Caja, bancos y movimientos financieros
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-EXECUTE_TREASURY_MOVEMENT
+OWNER_STEP_KIND = EXECUTE
+OWNER_STEP_STAGE = IN_PROGRESS
+```
+
+`VSCREEN-0100` gestiona la vista financiera de cuentas, movimientos y conciliación; no opera la caja POS.
+
+---
+
+#### 7. Superficie de tesorería relacionada
+
+La superficie relacionada es:
+
+```text
+TREASURY_SCREEN_ID = VSCREEN-0155
+TREASURY_SCREEN_NAME = Tesorería y programación de pagos
+TREASURY_STEP_ID = VPROC-0052::STEP-PLAN_AND_EXECUTE_PAYMENTS
+TREASURY_STEP_KIND = PLAN
+TREASURY_STEP_STAGE = IN_PROGRESS
+```
+
+Ambas superficies consumen las mismas cuentas y movimientos financieros gobernados, sin crear ledgers paralelos.
+
+---
+
+#### 8. Decisión de alcance
+
+Se congela:
+
+```text
+OPERATIONAL_CASH_OWNER = PULSO
+FINANCIAL_ACCOUNT_CATALOG_OWNER = NUMERA
+BANK_STATEMENT_AND_MOVEMENT_RECONCILIATION_OWNER = NUMERA
+TREASURY_POSITION_OWNER = NUMERA
+EXTERNAL_EXECUTION_CONFIRMATION_OWNER = BANK_OR_PAYMENT_PROVIDER
+```
+
+Caja operativa y caja consolidada no son el mismo objeto.
+
+---
+
+#### 9. Frontera con la caja operativa de PULSO
+
+PULSO conserva:
+
+- sesión o jornada de caja;
+- fondo inicial;
+- responsable operativo;
+- movimientos operativos de efectivo;
+- conteo y arqueo;
+- ventas y pagos de la jornada;
+- diferencia de caja;
+- aprobación de supervisión;
+- preparación de custodia o depósito;
+- cierre operativo.
+
+NUMERA consume referencias y resultados; no reabre ni edita esas identidades.
+
+---
+
+#### 10. Frontera con bancos y proveedores financieros
+
+El banco o proveedor financiero conserva la autoridad sobre:
+
+- saldo reportado;
+- disponibilidad reportada;
+- línea de extracto;
+- resultado externo de una instrucción;
+- referencia externa;
+- fecha valor cuando corresponda.
+
+NUMERA normaliza, correlaciona y concilia; no reescribe la fuente externa para cuadrar.
+
+---
+
+#### 11. Identidades que permanecen distintas
+
+No se fusionan:
+
+```text
+VENTA
+PAGO_COMERCIAL
+MOVIMIENTO_DE_CAJA
+CIERRE_DE_CAJA
+CUSTODIA_DE_EFECTIVO
+DEPOSITO_PREPARADO
+DEPOSITO_CONFIRMADO
+CUENTA_FINANCIERA
+MOVIMIENTO_BANCARIO
+LINEA_DE_EXTRACTO
+TRANSFERENCIA
+OBLIGACION
+PROGRAMACION_DE_PAGO
+INSTRUCCION_DE_PAGO
+RESULTADO_DE_PAGO
+RECAUDO
+HECHO_ECONOMICO
+MATCH
+CONCILIACION
+POSICION_DE_TESORERIA
+```
+
+---
+
+#### 12. Estados de caja relevantes
+
+La experiencia puede consumir evidencia de `VPROC-0044`:
+
+```text
+CASH_CLOSE_OPENED
+COUNTING
+SALES_RECONCILIATION_IN_PROGRESS
+DIFFERENCE_UNDER_REVIEW
+SUPERVISOR_APPROVAL_PENDING
+DEPOSIT_PREPARING
+FINANCIAL_RECONCILIATION_PENDING
+CASH_SESSION_CLOSED
+```
+
+Ninguno de estos estados crea una línea bancaria por sí solo.
+
+---
+
+#### 13. Cierre de caja no equivale a depósito bancario
+
+Se conserva:
+
+```text
+CASH_SESSION_CLOSED_IS_BANK_DEPOSIT = NO
+DEPOSIT_PREPARED_IS_BANK_CREDIT = NO
+CASH_DIFFERENCE_IS_BANK_DIFFERENCE = NO
+```
+
+El cierre operativo puede estar completo mientras el depósito continúa en tránsito o pendiente de conciliación.
+
+---
+
+#### 14. Catálogo de cuentas financieras
+
+La experiencia debe representar, como mínimo:
+
+- identidad interna estable;
+- entidad legal titular;
+- institución/proveedor;
+- tipo de cuenta o instrumento;
+- moneda principal;
+- referencia externa gobernada;
+- identificador enmascarado;
+- propósito;
+- capacidades permitidas;
+- estado;
+- vigencia;
+- origen de alta;
+- evidencia de titularidad;
+- relación con versiones o cuentas sucesoras.
+
+---
+
+#### 15. Mapeo de cuentas no inferido
+
+Se congela:
+
+```text
+BANK_ACCOUNT_MAPPING_BY_BRAND_INFERENCE = FORBIDDEN
+BANK_ACCOUNT_MAPPING_BY_SITE_NAME_INFERENCE = FORBIDDEN
+BANK_ACCOUNT_MAPPING_BY_FREE_TEXT_INFERENCE = FORBIDDEN
+```
+
+Entidad legal, vigencia, moneda, propósito y autoridad deben estar explícitamente demostrados.
+
+---
+
+#### 16. Datos bancarios sensibles
+
+La UI ordinaria usa referencias enmascaradas cuando sean suficientes.
+
+```text
+BANK_ACCOUNT_VISIBLE_REFERENCE != FULL_BANK_IDENTIFIER
+FULL_BANK_IDENTIFIER != BANK_CREDENTIAL
+```
+
+PIN, OTP, password, token, llave privada, secreto API y credencial de integración quedan fuera de la proyección financiera ordinaria.
+
+---
+
+#### 17. Movimiento financiero canónico
+
+Cada movimiento debe poder mostrar:
+
+- identidad estable;
+- cuenta;
+- fuente;
+- referencia externa;
+- entidad legal;
+- moneda;
+- importe y dirección;
+- fecha de ocurrencia;
+- fecha externa/posting;
+- fecha valor cuando exista;
+- contraparte disponible;
+- correlaciones internas;
+- evidencia;
+- estado de ingestión, matching y conciliación.
+
+---
+
+#### 18. Línea bancaria como hecho externo observado
+
+Se conserva:
+
+```text
+BANK_STATEMENT_LINE_IS_MUTABLE_SOURCE = NO
+```
+
+NUMERA no modifica importe, fecha, referencia o descripción fuente para hacerla coincidir con un hecho interno. La normalización y el matching se guardan en capas separadas.
+
+---
+
+#### 19. Extractos bancarios
+
+Todo extracto debe conservar, cuando aplique:
+
+- cuenta financiera;
+- institución;
+- moneda;
+- periodo o ventana;
+- fecha de emisión/recuperación;
+- identidad externa o fingerprint;
+- saldo inicial/final reportados;
+- líneas;
+- evidencia de origen;
+- estado de importación;
+- estado de conciliación;
+- versión/reemisión.
+
+Un extracto no es por sí solo cierre financiero interno.
+
+---
+
+#### 20. Importación bancaria idempotente
+
+Se congela:
+
+```text
+BANK_IMPORT_MUST_BE_IDEMPOTENT = YES
+```
+
+Archivo, API, retry o backfill de la misma evidencia no multiplican líneas ni efectos. Una coincidencia débil no autoriza eliminar registros fuente.
+
+---
+
+#### 21. Frescura y cobertura de fuente
+
+La UX debe mostrar:
+
+- última sincronización;
+- último extracto o watermark;
+- ventana cubierta;
+- fuentes pendientes;
+- importaciones en error;
+- reemisiones;
+- completitud conocida.
+
+Fuente incompleta no equivale a saldo cero ni conciliación completa.
+
+---
+
+#### 22. Estados de matching y conciliación
+
+La experiencia puede representar:
+
+```text
+UNMATCHED
+MATCH_SUGGESTED
+MATCH_UNDER_REVIEW
+MATCH_APPROVED
+PARTIALLY_RECONCILED
+RECONCILED
+EXCEPTION_OPEN
+MATCH_REVERSED
+```
+
+Son estados de experiencia/dominio de conciliación, no mutaciones de la línea bancaria fuente.
+
+---
+
+#### 23. Matching sugerido no equivale a aprobación
+
+Se congela:
+
+```text
+MATCH_SUGGESTION_IS_APPROVAL = NO
+MATCH_APPROVAL_IS_REVERSIBLE = YES
+```
+
+El algoritmo puede proponer; la autoridad de cierre depende del contrato aplicable.
+
+---
+
+#### 24. Cardinalidades soportadas
+
+La UX debe soportar:
+
+```text
+ONE_TO_ONE
+ONE_TO_MANY
+MANY_TO_ONE
+PARTIAL_MATCH
+NET_SETTLEMENT_WITH_EXPLAINED_COMPONENTS
+UNMATCHED_EXTERNAL_MOVEMENT
+```
+
+Agrupar no destruye la identidad de los miembros.
+
+---
+
+#### 25. Tolerancias
+
+Toda tolerancia utilizada para matching debe declarar:
+
+- propósito;
+- moneda;
+- magnitud;
+- proceso/dimensión;
+- versión;
+- vigencia;
+- autoridad;
+- tratamiento del residual.
+
+No existe una tolerancia universal implícita.
+
+---
+
+#### 26. Posición de caja consolidada
+
+NUMERA puede consolidar únicamente cierres PULSO identificables y reconciliables.
+
+Debe distinguir:
+
+```text
+EXPECTED_CASH
+COUNTED_CASH
+CASH_DIFFERENCE
+CASH_IN_CUSTODY
+DEPOSIT_IN_TRANSIT
+RECONCILED_DEPOSIT
+OPEN_EXCEPTION
+```
+
+No crea una segunda sesión de caja.
+
+---
+
+#### 27. Cadena de depósito de efectivo
+
+Se conserva:
+
+```text
+COUNTED_CASH
+-> CASH_IN_CUSTODY
+-> DEPOSIT_PREPARED
+-> DEPOSIT_DELIVERED_OR_SENT
+-> OBSERVED_BANK_CREDIT
+-> MATCH
+-> APPROVAL
+-> FINANCIAL_RECONCILIATION
+```
+
+Una etapa faltante no se completa copiando el valor de otra.
+
+---
+
+#### 28. Depósito en tránsito
+
+Un depósito preparado o entregado puede permanecer en tránsito hasta que exista abono observado y conciliación.
+
+```text
+DEPOSIT_IN_TRANSIT != BANK_BALANCE
+DEPOSIT_IN_TRANSIT != RECONCILED_DEPOSIT
+```
+
+Diferencias entre efectivo entregado y abono quedan abiertas.
+
+---
+
+#### 29. Pagos digitales y liquidaciones
+
+Para ventas digitales se conserva:
+
+```text
+PULSO_PAYMENT_RECONCILED
+!= PROVIDER_SETTLEMENT_RECONCILED
+!= BANK_SETTLEMENT_RECONCILED
+```
+
+NUMERA debe poder explicar comisión, retención, devolución, contracargo, fecha de abono y neto bancario.
+
+---
+
+#### 30. Pagos salientes desde obligaciones
+
+La cadena objetivo conserva:
+
+```text
+APPROVED_PAYABLE
+-> SCHEDULED_PAYMENT
+-> AUTHORIZED_INSTRUCTION
+-> PROVIDER_RESULT
+-> BANK_MOVEMENT
+-> MATCH
+-> RECONCILIATION
+-> EXPLAINED_PAYABLE_BALANCE
+```
+
+UX-021 consume la obligación de UX-020; no la reconstruye desde el débito bancario.
+
+---
+
+#### 31. Pago registrado no equivale a conciliación bancaria
+
+Se conserva:
+
+```text
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+BANK_RECONCILIATION_PENDING_IS_SETTLED = NO
+```
+
+Una instrucción o resultado interno puede existir antes de que el extracto confirme el movimiento.
+
+---
+
+#### 32. Transferencias entre cuentas propias
+
+Una transferencia propia conserva patas de origen y destino.
+
+```text
+OWN_ACCOUNT_TRANSFER_IS_EXTERNAL_REVENUE = NO
+OWN_ACCOUNT_TRANSFER_IS_EXTERNAL_EXPENSE = NO
+OWN_ACCOUNT_TRANSFER_DOES_NOT_DOUBLE_LIQUIDITY = YES
+```
+
+Comisiones o diferencias permanecen separadas.
+
+---
+
+#### 33. Transferencias entre entidades legales distintas
+
+Si origen y destino pertenecen a entidades legales distintas, la UX no clasifica automáticamente la operación como simple transferencia interna consolidable.
+
+Conserva entidades, titularidad, soporte, propósito y tratamiento pendiente/definido.
+
+---
+
+#### 34. Comisiones, retenciones y cargos
+
+Los componentes no se absorben silenciosamente en el principal.
+
+Deben conservar:
+
+- movimiento fuente;
+- proveedor/banco;
+- moneda;
+- importe;
+- fecha;
+- concepto;
+- evidencia;
+- tratamiento económico;
+- estado de conciliación.
+
+---
+
+#### 35. Reversos, rechazos y contracargos
+
+Se conserva:
+
+```text
+ORIGINAL_MOVEMENT
+-> EXTERNAL_RESULT
+-> REVERSAL_OR_CHARGEBACK_IF_APPLICABLE
+-> CORRELATED_ECONOMIC_EFFECT
+-> RECONCILIATION
+```
+
+El reverso no borra el intento original.
+
+---
+
+#### 36. Saldos financieros diferenciados
+
+La experiencia mantiene separados:
+
+```text
+BANK_REPORTED_BALANCE
+BANK_REPORTED_AVAILABLE_BALANCE
+NUMERA_RECONCILED_BALANCE
+CASH_IN_CUSTODY
+DEPOSITS_IN_TRANSIT
+UNRECONCILED_MOVEMENTS
+```
+
+No se asume igualdad entre ellos.
+
+---
+
+#### 37. Posición de tesorería
+
+La posición debe declarar al menos:
+
+- entidad legal;
+- cuenta o conjunto de cuentas;
+- moneda;
+- fecha/hora de corte;
+- fuente de cada saldo;
+- saldo observado;
+- efectivo confirmado;
+- depósitos en tránsito;
+- movimientos pendientes;
+- compromisos próximos;
+- recaudos esperados;
+- estado de conciliación;
+- cobertura/calidad de datos.
+
+---
+
+#### 38. Liquidez observada y proyectada
+
+Se congela:
+
+```text
+OBSERVED_LIQUIDITY_IS_PROJECTED_LIQUIDITY = NO
+PROJECTED_LIQUIDITY_IS_AVAILABLE_CASH = NO
+```
+
+La proyección usa horizonte, versión y supuestos explícitos y nunca modifica el saldo observado.
+
+---
+
+#### 39. Programación de tesorería
+
+La programación puede ordenar compromisos válidos para análisis de liquidez, conservando:
+
+- origen;
+- importe;
+- moneda;
+- vencimiento;
+- prioridad;
+- cuenta propuesta;
+- fecha propuesta;
+- autorización;
+- restricciones;
+- evidencia.
+
+Programar no crea una obligación nueva.
+
+---
+
+#### 40. Emisión de instrucción financiera
+
+Se conserva:
+
+```text
+PREPARED_INSTRUCTION
+!= AUTHORIZED_INSTRUCTION
+!= SENT_INSTRUCTION
+!= PROVIDER_CONFIRMED_MOVEMENT
+!= OBSERVED_BANK_LINE
+!= RECONCILED_MOVEMENT
+```
+
+Cada transición exige evidencia propia.
+
+---
+
+#### 41. Resultado externo desconocido
+
+Se congela:
+
+```text
+UNKNOWN_EXTERNAL_RESULT != SUCCESS
+UNKNOWN_EXTERNAL_RESULT != FAILURE
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+```
+
+Timeout o pérdida de respuesta bloquean retry económico ciego.
+
+---
+
+#### 42. Frontera con VSCREEN-0155
+
+`VSCREEN-0155` puede preparar, priorizar y ejecutar una instrucción ya autorizada conforme al proceso y permisos aplicables.
+
+`VSCREEN-0100` conserva la observación financiera, movimiento, extracto, matching y conciliación.
+
+Ninguna de las dos reemplaza `VSCREEN-0098` como owner de la obligación.
+
+---
+
+#### 43. Flujo de conciliación bancaria
+
+El flujo UX es:
+
+```text
+SOURCE_FACT_OR_INSTRUCTION
+-> EXTERNAL_MOVEMENT_OR_STATEMENT_LINE
+-> NORMALIZATION_WITHOUT_SOURCE_MUTATION
+-> CANDIDATE_MATCH
+-> REVIEW
+-> DECISION
+-> RECONCILED_OR_PARTIAL
+-> EXCEPTION_OR_RESIDUAL_IF_ANY
+```
+
+La decisión conserva lineage de todos los miembros.
+
+---
+
+#### 44. Taxonomía cerrada de excepciones
+
+La clasificación mínima es:
+
+1. `INTERNAL_REFERENCE_MISSING`;
+2. `BANK_MOVEMENT_MISSING`;
+3. `AMOUNT_MISMATCH`;
+4. `CURRENCY_MISMATCH`;
+5. `DATE_OR_VALUE_DATE_MISMATCH`;
+6. `PROBABLE_DUPLICATE`;
+7. `PARTIAL_MATCH`;
+8. `AGGREGATED_SETTLEMENT`;
+9. `UNIDENTIFIED_FEE_OR_WITHHOLDING`;
+10. `REVERSAL_OR_CHARGEBACK`;
+11. `TRANSFER_MISSING_LEG`;
+12. `CASH_DEPOSIT_AMOUNT_MISMATCH`;
+13. `UNEXPECTED_RECEIVING_ACCOUNT`;
+14. `AMBIGUOUS_COUNTERPARTY`;
+15. `INCOMPLETE_STATEMENT`;
+16. `CUTOFF_OR_LATE_VALUE_DATE`;
+17. `UNKNOWN_EXTERNAL_RESULT`;
+18. `ACCOUNT_OR_SOURCE_MAPPING_CONFLICT`;
+
+No existe una clase genérica `OTHER` para ocultar una causa material.
+
+---
+
+#### 45. Corrección y reversión de matching
+
+Revertir una conciliación:
+
+- conserva decisión original;
+- conserva actor y evidencia;
+- conserva miembros originales;
+- registra razón;
+- recalcula residual;
+- no modifica la línea bancaria fuente;
+- no revierte automáticamente el pago, la venta o la obligación fuente.
+
+---
+
+#### 46. Eventos tardíos y corte temporal
+
+Un movimiento recibido después del corte conserva:
+
+- fecha de ocurrencia;
+- fecha de posting;
+- fecha valor;
+- fecha de recepción;
+- periodo originalmente relacionado;
+- tratamiento posterior autorizado.
+
+```text
+LATE_FINANCIAL_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
+```
+
+---
+
+#### 47. Moneda y conversión
+
+Cuenta, movimiento, extracto, conciliación y posición conservan moneda explícita.
+
+Una conversión exige fuente, fecha y criterio identificables. Una cuenta multimoneda no autoriza sumar monedas sin conversión gobernada.
+
+---
+
+#### 48. Permisos especializados consumidos
+
+UX-021 consume las definiciones de `NUMERA-AUTH-014` sin presentarlas como materializadas.
+
+Las familias relevantes incluyen:
+
+```text
+BANK_ACCOUNT_READ_AND_GOVERNANCE
+BANK_STATEMENT_READ_AND_IMPORT
+TREASURY_PAYMENT_INSTRUCTION_ISSUE
+RECONCILIATION_RESOLVE_AND_REVERSE
+TREASURY_MOVEMENT_READ
+PAYMENT_PLAN_READ_AND_DECISION
+```
+
+---
+
+#### 49. Gobierno de cuentas financieras
+
+Las capacidades relevantes incluyen:
+
+```text
+numera.finance.bank_accounts.view
+numera.finance.bank_account_sensitive_details.view
+numera.finance.bank_accounts.create
+numera.finance.bank_accounts.update
+numera.finance.bank_accounts.approve
+numera.finance.bank_accounts.reject
+numera.finance.bank_accounts.activate
+numera.finance.bank_accounts.deactivate
+```
+
+Se conserva:
+
+```text
+PROPOSE_BANK_ACCOUNT != APPROVE_BANK_ACCOUNT
+APPROVE_BANK_ACCOUNT != ACTIVATE_BANK_ACCOUNT
+ACTIVE_BANK_ACCOUNT != PAYMENT_AUTHORIZED
+```
+
+---
+
+#### 50. Extractos y movimientos
+
+La experiencia consume:
+
+```text
+numera.finance.bank_statements.view
+numera.finance.bank_statements.import
+numera.finance.treasury_movements.view
+```
+
+Importar no concilia; visualizar no autoriza emitir instrucciones.
+
+---
+
+#### 51. Emisión de tesorería
+
+La autoridad especializada es:
+
+```text
+numera.finance.treasury_payment_instructions.issue
+```
+
+Antes de emitir deben revalidarse causa, aprobación, cuenta origen activa, destino, importe, moneda, límites/políticas, idempotencia, estado, periodo, actor y segregación.
+
+---
+
+#### 52. Resolución y reversión de conciliación
+
+La experiencia consume:
+
+```text
+numera.finance.reconciliations.resolve
+numera.finance.reconciliations.reverse
+```
+
+Resolver un caso no edita fuentes. Revertir conciliación no equivale a borrar movimiento bancario ni a ejecutar reembolso.
+
+---
+
+#### 53. Segregación funcional
+
+La UX debe poder separar:
+
+```text
+VIEW_ACCOUNT
+VIEW_SENSITIVE_BANK_DETAILS
+PROPOSE_ACCOUNT
+APPROVE_ACCOUNT
+ACTIVATE_ACCOUNT
+IMPORT_STATEMENT
+PREPARE_PAYMENT_PLAN
+APPROVE_PAYMENT_PLAN
+ISSUE_PAYMENT_INSTRUCTION
+PROPOSE_MATCH
+RESOLVE_RECONCILIATION
+REVERSE_RECONCILIATION
+RESOLVE_EXCEPTION
+EXPORT_FINANCIAL_DATA
+```
+
+Una sola capacidad genérica no implica todas las anteriores.
+
+---
+
+#### 54. Scope y revalidación server-side
+
+Toda acción sensible revalida:
+
+- actor efectivo;
+- permiso exacto;
+- recurso;
+- versión;
+- entidad legal;
+- cuenta exacta;
+- moneda;
+- estado;
+- campos solicitados;
+- política aplicable;
+- periodo y restricciones.
+
+La UI nunca es autoridad final.
+
+---
+
+#### 55. Concurrencia
+
+Si cambia materialmente cuenta, saldo, versión, estado, conciliación, periodo o autorización:
+
+```text
+STALE_FINANCIAL_DECISION = DENY_AND_REEVALUATE
+```
+
+No se usa `last write wins` para resolver efectos financieros concurrentes.
+
+---
+
+#### 56. Fuente incompleta
+
+Una fuente bancaria incompleta o una integración degradada debe permanecer visible.
+
+```text
+SOURCE_INCOMPLETE_IS_ZERO_BALANCE = NO
+SOURCE_INCOMPLETE_IS_RECONCILED = NO
+```
+
+---
+
+#### 57. Históricos y backfill
+
+Backfill puede incorporar evidencia histórica sin simular que el matching, aprobación o conciliación ocurrieron en tiempo real.
+
+No se inventan actores, fechas de decisión ni estados históricos sin evidencia.
+
+---
+
+#### 58. Estado vacío
+
+Una vista sin movimientos o excepciones bajo los filtros no demuestra:
+
+- saldo cero;
+- ausencia de cuentas;
+- completitud de extractos;
+- ausencia global de diferencias;
+- conciliación total.
+
+---
+
+#### 59. Estado actual de implementación
+
+El corte vigente de `vento-numera` clasifica como ausentes:
+
+```text
+CAP-12.02 = Gestionar caja
+CAP-12.03 = Gestionar bancos y pagos
+CAP-12.12 = Gestionar tesorería
+```
+
+UX-021 define el contrato objetivo; no declara materialización inexistente.
+
+---
+
+#### 60. Presentación principal de VSCREEN-0100
+
+La pantalla debe priorizar:
+
+1. entidad y cuenta;
+2. moneda;
+3. saldo reportado y corte;
+4. saldo conciliado;
+5. movimientos no conciliados;
+6. depósitos en tránsito;
+7. matches sugeridos/pendientes;
+8. excepciones;
+9. frescura/cobertura de fuente;
+10. siguiente acción permitida.
+
+---
+
+#### 61. Vista de cuentas
+
+La lista de cuentas distingue:
+
+- institución;
+- titular/entidad legal;
+- moneda;
+- propósito;
+- estado;
+- vigencia;
+- referencia enmascarada;
+- último corte conocido;
+- estado de sincronización;
+- saldo reportado;
+- saldo conciliado.
+
+---
+
+#### 62. Vista de movimientos
+
+Cada fila de movimiento debe permitir identificar:
+
+- fuente;
+- cuenta;
+- fecha y fecha valor;
+- importe/moneda;
+- dirección;
+- referencia externa;
+- contraparte disponible;
+- match/conciliación;
+- residual;
+- evidencia;
+- excepción si existe.
+
+---
+
+#### 63. Caso de conciliación
+
+El detalle del caso debe mostrar por separado:
+
+```text
+INTERNAL_SIDE
+EXTERNAL_BANK_SIDE
+MATCH_EVIDENCE
+TOLERANCE_OR_POLICY
+RESIDUAL
+DECISION
+HISTORY
+```
+
+No se colapsan fuentes en una cifra opaca.
+
+---
+
+#### 64. Panel de tesorería
+
+`VSCREEN-0155` debe distinguir:
+
+- liquidez observada;
+- liquidez proyectada;
+- obligaciones/programaciones consumidas;
+- cobros/recaudos esperados consumidos;
+- pagos listos para decisión;
+- instrucciones emitidas;
+- resultados desconocidos;
+- restricciones por cuenta/moneda/periodo.
+
+---
+
+#### 65. Acciones contextuales
+
+La UI solo ofrece acciones compatibles con recurso, permiso, versión, estado y scope actuales.
+
+Un botón visible, una fila seleccionada o una coincidencia de importe no autorizan una operación financiera.
+
+---
+
+#### 66. Estados UX derivados
+
+Sin crear estados `VPROC-*`, la UX puede presentar:
+
+```text
+SYNC_CURRENT
+SYNC_STALE
+DEPOSIT_IN_TRANSIT
+UNMATCHED
+MATCH_SUGGESTED
+PARTIALLY_RECONCILED
+EXCEPTION_OPEN
+RESULT_UNKNOWN
+RECONCILIATION_PENDING
+RECONCILED
+```
+
+Son etiquetas de experiencia, no fuentes autoritativas nuevas.
+
+---
+
+#### 67. Evidencia y auditoría
+
+La evidencia debe permitir reconstruir:
+
+```text
+SOURCE_INGESTION
+-> ORIGINAL_PAYLOAD_OR_STATEMENT
+-> NORMALIZATION
+-> MATCH_PROPOSAL
+-> REVIEW
+-> DECISION
+-> RECONCILIATION_OR_EXCEPTION
+-> REVERSAL_IF_ANY
+-> FINAL_RESIDUAL
+```
+
+Los logs no copian por defecto datos bancarios sensibles completos ni secretos.
+
+---
+
+#### 68. Observabilidad futura
+
+Una materialización posterior podrá medir, sin que UX-021 la implemente:
+
+- cuentas con sync stale;
+- líneas no conciliadas;
+- depósitos en tránsito;
+- excepciones por clase;
+- tiempo hasta conciliación;
+- reversión de matches;
+- resultados externos desconocidos;
+- movimientos sin referencia interna;
+- referencias internas sin movimiento externo;
+- diferencia entre saldo reportado y conciliado.
+
+---
+
+#### 69. Escenarios mínimos de validación futura
+
+La implementación deberá demostrar al menos estos 24 escenarios:
+
+1. caja PULSO cerrada sin depósito bancario observado permanece financieramente pendiente;
+2. depósito preparado no se presenta como abono bancario;
+3. varias cajas pueden correlacionarse con un único depósito sin fusionar sus cierres;
+4. depósito por importe diferente conserva residual y excepción;
+5. pago PULSO reconciliado no se presenta como settlement bancario conciliado;
+6. liquidación digital neta de comisión explica principal y comisión por separado;
+7. liquidación con retención/reverso conserva componentes y neto explicable;
+8. transferencia entre cuentas propias conserva dos patas y no crea ingreso/gasto externo;
+9. transferencia propia con una pata faltante permanece pendiente;
+10. transferencia entre entidades legales distintas no se clasifica automáticamente como interna consolidable;
+11. reimportar el mismo extracto no duplica líneas;
+12. coincidencia débil de una línea no elimina un posible duplicado por inferencia;
+13. movimiento bancario sin referencia interna queda `UNMATCHED`;
+14. referencia interna sin movimiento bancario queda como excepción pendiente;
+15. una línea bancaria puede reconciliar múltiples ventas/pagos con lineage descomponible;
+16. varias líneas bancarias pueden reconciliar un único pago cuando la evidencia lo demuestra;
+17. matching parcial conserva residual;
+18. match sugerido no queda aprobado por el algoritmo;
+19. reversión de match conserva decisión e historia anteriores;
+20. timeout de instrucción financiera exige consulta/reconciliación antes de retry;
+21. `PAYMENT_RECORDED` puede permanecer pendiente de conciliación bancaria;
+22. mapeo de cuenta por nombre de marca/sede se bloquea sin evidencia explícita;
+23. movimiento recibido después del corte conserva fechas y se enruta al tratamiento temporal aplicable;
+24. liquidez proyectada nunca se presenta como saldo bancario disponible observado.
+
+---
+
+#### 70. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-021 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| caja/bancos/tesorería no están materializados en NUMERA | no | paquetes físicos NUMERA/E5 aplicables | `VSCREEN-0100`, `VSCREEN-0155`, cuentas, movimientos y conciliación quedan implementados con este contrato |
+| cuentas receptoras por marca/entidad no están universalmente confirmadas | no | gobierno empresarial propietario | titularidad, vigencia, moneda y propósito quedan explícitamente aprobados |
+| integración bancaria completa no está materializada | no | integración financiera aplicable | ingestión, emisión, resultado y conciliación quedan correlacionados e idempotentes |
+| credenciales bancarias requieren custodia separada | no | contrato técnico de secretos | secretos permanecen fuera de UI, logs y payload financiero ordinario |
+| eventos tardíos pueden afectar periodos protegidos | no | `NUMERA-UX-023` | corrección/reapertura versionada conserva historia |
+| método de costo y rentabilidad no pertenece a UX-021 | no | `NUMERA-UX-022` | costo y rentabilidad usan hechos trazables sin inferirse desde flujo de caja |
+| aplicación completa de recaudos/cartera pertenece a su dominio | no | `NUMERA-UX-026` | cartera, aplicación, acuerdos y cobro quedan definidos sin convertir banco en ledger de cartera |
+
+---
+
+#### 71. Decisiones congeladas
+
+```text
+CASH_BANK_TREASURY_EXPERIENCE_CONTRACT = NUMERA-CASH-BANK-TREASURY-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0100
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-EXECUTE_TREASURY_MOVEMENT
+TREASURY_SCREEN_ID = VSCREEN-0155
+TREASURY_STEP_ID = VPROC-0052::STEP-PLAN_AND_EXECUTE_PAYMENTS
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+CASH_SESSION_CLOSED_IS_BANK_DEPOSIT = NO
+DEPOSIT_PREPARED_IS_BANK_CREDIT = NO
+BANK_ACCOUNT_MAPPING_BY_BRAND_INFERENCE = FORBIDDEN
+BANK_STATEMENT_LINE_IS_MUTABLE_SOURCE = NO
+BANK_IMPORT_MUST_BE_IDEMPOTENT = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+MATCH_APPROVAL_IS_REVERSIBLE = YES
+ONE_TO_MANY_AND_MANY_TO_ONE_MATCHING = SUPPORTED
+OWN_ACCOUNT_TRANSFER_IS_EXTERNAL_REVENUE = NO
+OWN_ACCOUNT_TRANSFER_IS_EXTERNAL_EXPENSE = NO
+BANK_REPORTED_BALANCE_IS_RECONCILED_BALANCE = NOT_NECESSARILY
+OBSERVED_LIQUIDITY_IS_PROJECTED_LIQUIDITY = NO
+SENT_PAYMENT_INSTRUCTION_IS_CONFIRMED_PAYMENT = NO
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+LATE_FINANCIAL_EVENT_SILENT_PERIOD_REWRITE = FORBIDDEN
+EXCEPTION_CLASS_COUNT = 18
+VALIDATION_SCENARIO_COUNT = 24
+COST_AND_PROFITABILITY_OWNER = NUMERA_UX_022
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+RECEIVABLE_DETAIL_OWNER = NUMERA_UX_026
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La conducta queda cubierta por obligaciones canónicas existentes de NUMERA, PULSO, integración y autorización. Crear nuevas filas duplicaría cobertura ya vigente.
+
+---
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — conciliación financiera con hechos fuente, historia y separación de permisos;
+- `TREQ-NUMERA-002` — identidad, entidad, moneda, fechas, fuente, correlación, estado, evidencia y correcciones no destructivas;
+- `TREQ-NUMERA-003` — caja consolidada, bancos, tesorería, extractos/movimientos inmutables y matching sugerido, aprobado y reversible, con UX-021 como cobertura explícita;
+- `TREQ-PULSO-006` — venta, pago, caja, cierre, reversos y movimientos como hechos distintos y auditables;
+- `TREQ-INTEGRATION-014` — efectos exactamente una vez entre venta/PULSO y consumidores;
+- `TREQ-INTEGRATION-017` — hechos operativos hacia NUMERA correlacionados e idempotentes sin doble digitación ni pago duplicado;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas.
+
+---
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto |
+| LOCAL | NOT_EXECUTED | reemplazo, formato, quality, delivery, topología, plan y TREQ quedan para el checkout del usuario tras cierre de UX-020 |
+| REMOTA | PASS | se verificaron `vento-shell/main`, secuencia activa, topología `DEFINE_ONCE`, `NUMERA-DOM-009`, `NUMERA-DOM-010`, `VSCREEN-0100`, `VSCREEN-0155`, `VPROC-0044`, `VPROC-0052`, `NUMERA-AUTH-014`, Registro 04A, estado AS-IS de caja/bancos/tesorería y scripts documentales vigentes; UX-020 se consume desde su archivo completo aprobado mientras permanece pendiente de publicación |
+| OPERATIVA | NOT_EXECUTED | no se operaron cajas, importaron extractos, emitieron instrucciones, movieron fondos, conciliaron bancos ni calcularon saldos reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-021` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 75. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. `VSCREEN-0100` es la superficie principal de caja/bancos/movimientos financieros;
+2. `VPROC-0052::STEP-EXECUTE_TREASURY_MOVEMENT` es el paso owner principal;
+3. `VSCREEN-0155` y `STEP-PLAN_AND_EXECUTE_PAYMENTS` quedan como superficie/paso relacionados de tesorería;
+4. PULSO conserva la operación de caja;
+5. NUMERA no crea una sesión POS paralela;
+6. cierre de caja no equivale a depósito bancario;
+7. depósito preparado no equivale a abono observado;
+8. banco/proveedor conserva autoridad sobre saldos/movimientos/resultados externos;
+9. identidades financieras y operativas permanecen separadas;
+10. catálogo de cuentas conserva titularidad, moneda, vigencia, propósito y evidencia;
+11. mapeo de cuenta no se infiere por marca/sede/texto libre;
+12. datos bancarios sensibles permanecen minimizados;
+13. credenciales no se proyectan como datos financieros;
+14. movimiento financiero conserva identidad, fuente, moneda, fechas y evidencia;
+15. línea bancaria fuente es inmutable;
+16. extractos conservan origen, periodo, fingerprint y líneas;
+17. importación bancaria es idempotente;
+18. fuente incompleta permanece visible;
+19. match sugerido no equivale a aprobado;
+20. match aprobado es reversible conservando historia;
+21. se soportan uno-a-uno, uno-a-muchos, muchos-a-uno y parciales;
+22. tolerancias son explícitas/versionadas;
+23. caja consolidada distingue esperado, contado, diferencia, custodia y tránsito;
+24. cadena de depósito conserva cada etapa;
+25. pagos digitales distinguen pago comercial, settlement y abono bancario;
+26. pagos salientes conservan obligación como fuente independiente;
+27. `PAYMENT_RECORDED` no equivale a conciliación bancaria;
+28. transferencias propias no crean ingreso/gasto externo ni duplican liquidez;
+29. transferencias entre entidades distintas no se clasifican por inferencia;
+30. comisiones/retenciones/cargos permanecen separados;
+31. reversos no borran movimientos originales;
+32. saldo reportado, disponible, conciliado, custodia y tránsito permanecen distintos;
+33. posición de tesorería declara corte, fuentes y calidad;
+34. liquidez observada y proyectada permanecen separadas;
+35. programación no crea obligaciones;
+36. instrucción preparada/autorizada/enviada/confirmada/observada/conciliada permanecen distintas;
+37. resultado externo desconocido exige consulta/conciliación;
+38. UX-021 no recrea `VSCREEN-0098` ni la obligación;
+39. flujo de conciliación conserva fuente y lineage;
+40. existen exactamente 18 clases mínimas de excepción;
+41. no existe clase genérica para ocultar causas materiales;
+42. reversión de match no revierte automáticamente hechos fuente;
+43. eventos tardíos conservan fechas reales;
+44. moneda y conversión permanecen explícitas;
+45. permisos especializados se consumen sin presentarlos como materializados;
+46. proponer/aprobar/activar cuenta bancaria permanecen distintos;
+47. importar extracto no concilia;
+48. visualizar movimiento no autoriza emitir instrucción;
+49. emisión de tesorería revalida causa, cuenta, destino, importe y autoridad;
+50. resolver conciliación no edita fuentes;
+51. segregación sensible permanece explícita;
+52. servidor revalida recurso, versión, scope y estado;
+53. decisión stale exige reevaluación;
+54. fuente incompleta no equivale a saldo cero;
+55. backfill no fabrica decisiones históricas;
+56. estado vacío no afirma conciliación global;
+57. AS-IS ausente no se presenta como implementación existente;
+58. `VSCREEN-0100` prioriza cuenta, saldo, movimientos, excepciones y frescura;
+59. caso de conciliación muestra lados y residual por separado;
+60. tesorería muestra observado y proyectado por separado;
+61. acciones contextuales no sustituyen autorización;
+62. auditoría conserva lineage sin exponer secretos;
+63. los 24 escenarios mínimos quedan definidos;
+64. todos los hallazgos tienen owner y condición de salida;
+65. no se crean ni modifican requisitos de prueba;
+66. no se realizan cambios físicos;
+67. UX-022 recibe una frontera explícita para no inferir costo/rentabilidad desde flujo de caja o saldo bancario.
+
+---
+
+#### 76. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0100` ni `VSCREEN-0155`;
+- crea cuentas bancarias reales;
+- confirma cuentas receptoras pendientes de gobierno;
+- almacena secretos o credenciales;
+- importa extractos reales;
+- ejecuta transferencias o pagos;
+- mueve fondos;
+- modifica PULSO;
+- recrea obligaciones UX-020;
+- crea motor runtime de matching;
+- fija tolerancias universales;
+- fija materialidad universal;
+- decide tratamiento fiscal o contable intercompañía;
+- define cartera/cobranza completa;
+- define método de costo;
+- calcula rentabilidad;
+- corrige periodos;
+- modifica Supabase;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-022`.
+
+---
+
+#### 77. Handoff a NUMERA-UX-022
+
+La siguiente tarea recibe:
+
+```text
+CASH_BANK_TREASURY_EXPERIENCE_CONTRACT = NUMERA-CASH-BANK-TREASURY-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0100
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-EXECUTE_TREASURY_MOVEMENT
+TREASURY_SCREEN_ID = VSCREEN-0155
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+BANK_STATEMENT_LINE_IS_MUTABLE_SOURCE = NO
+BANK_IMPORT_MUST_BE_IDEMPOTENT = YES
+MATCH_SUGGESTION_IS_APPROVAL = NO
+MATCH_APPROVAL_IS_REVERSIBLE = YES
+BANK_REPORTED_BALANCE_IS_RECONCILED_BALANCE = NOT_NECESSARILY
+OBSERVED_LIQUIDITY_IS_PROJECTED_LIQUIDITY = NO
+CASH_RECEIPT_IS_REALIZED_REVENUE = NO
+BANK_OUTFLOW_IS_COST_OR_EXPENSE_BY_DEFAULT = NO
+BANK_BALANCE_IS_PROFITABILITY = NO
+OWN_ACCOUNT_TRANSFER_IS_REVENUE_OR_COST = NO
+BANK_FEE_OR_WITHHOLDING_REQUIRES_TRACEABLE_ECONOMIC_TREATMENT = YES
+UNKNOWN_EXTERNAL_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+EXCEPTION_CLASS_COUNT = 18
+VALIDATION_SCENARIO_COUNT = 24
+COST_AND_PROFITABILITY_OWNER = NUMERA_UX_022
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-022` deberá diseñar costos y rentabilidad desde hechos económicos y operativos trazables, sin usar saldo bancario, entrada de caja o salida bancaria como sustituto automático de ingreso, costo, gasto o utilidad.
+
+---
+
+#### 78. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-020
+-> NUMERA-UX-021
+-> NUMERA-UX-022
+```
+
+UX-021 consume obligaciones/programaciones de UX-020 sin recrearlas y entrega a UX-022 movimientos conciliables sin convertir flujo de efectivo en costo o rentabilidad por inferencia.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen`
 ### [ ] NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
 ### [ ] NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
 ### [ ] NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
