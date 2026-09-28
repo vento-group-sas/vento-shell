@@ -22458,7 +22458,1425 @@ UX-017 consume los límites validados en UX-016 y entrega a UX-018 una frontera 
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-018 — Diseñar conciliación de compras y recepciones`
-### [ ] NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
+### ✅ NUMERA-UX-018 — Diseñar conciliación de compras y recepciones
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
+**Tarea siguiente:** NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
+**Tipo de tarea:** definición documental del contrato UX de conciliación de compras y recepciones en NUMERA, preservando orden, recepción comercial, ingreso físico, documento, hecho económico, obligación y pago como identidades separadas, con matching explicable, parcialidad, diferencias, devoluciones, servicios y handoffs hacia cuentas por pagar, tesorería, inventario y corrección; sin reescribir ORIGO o NEXO ni ejecutar conciliaciones reales; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica componentes, rutas, tablas, vistas, índices, RPC, Server Actions, APIs, RLS, migraciones, Supabase, órdenes, recepciones, movimientos de inventario, obligaciones, pagos, documentos de proveedor, conciliaciones reales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable cómo NUMERA concilia compras y recepciones sin fusionar identidades, fabricar recepciones o movimientos físicos, reescribir ORIGO/NEXO ni forzar diferencias a cero.
+
+La experiencia debe permitir explicar, para cada relación esperada:
+
+- qué orden o compromiso de compra se está evaluando;
+- qué recepción comercial fue observada y aceptada;
+- qué movimiento físico NEXO existe cuando el objeto comprado genera inventario;
+- qué documento o soporte del proveedor participa en la comparación;
+- qué hecho económico y obligación relacionados existen en NUMERA;
+- qué parte está conciliada y qué residual permanece abierto;
+- qué diferencia existe y quién debe resolverla;
+- qué acción posterior pertenece a ORIGO, NEXO, cuentas por pagar, tesorería o corrección de periodo.
+
+La regla principal es:
+
+```text
+CONCILIAR COMPRAS Y RECEPCIONES
+=
+DEMOSTRAR RELACIONES EXPLICABLES ENTRE ORDEN, RECEPCION, EVIDENCIA FISICA, DOCUMENTO Y EFECTO ECONOMICO
++
+CONSERVAR IDENTIDAD, FUENTE, CARDINALIDAD, RESIDUAL Y EVIDENCIA
+```
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-UX-018` es `DEFINE_ONCE` y no crea instancia física propia.
+
+La tarea:
+
+- diseña contrato UX, matrices, reglas de matching y handoffs;
+- no ejecuta una conciliación real;
+- no crea motor de matching;
+- no modifica estados de ORIGO, NEXO o NUMERA;
+- no crea almacenamiento físico;
+- no fija tolerancias universales de cantidad, precio, impuesto o materialidad;
+- no ejecuta recepciones, devoluciones, pagos, movimientos de inventario ni cierres;
+- no sustituye cuentas por pagar, tesorería, conciliación bancaria, costos o cierre de periodo.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-017
+
+Se consume íntegramente:
+
+```text
+SALES_PAYMENT_RECONCILIATION_CONTRACT = NUMERA-SALES-PAYMENT-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0101
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_SALES_AND_PAYMENTS
+PULSO_SOURCE_AUTHORITY_PRESERVED = YES
+SALE_PAYMENT_CASH_SETTLEMENT_DEPOSIT_ARE_DISTINCT = YES
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_PRESERVES_RESIDUAL = YES
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SOURCE_INCOMPLETE_IS_ZERO_DIFFERENCE = NO
+PULSO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+RECEIVABLE_AND_APPLICATION_OWNER = VPROC-0053
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+VALIDATION_SCENARIO_COUNT = 16
+PURCHASE_RECEIPT_RECONCILIATION_OWNER = NUMERA_UX_018
+TREQ_CHANGES = 0
+```
+
+UX-018 desarrolla exclusivamente `PURCHASE_RECEIPT_RECONCILIATION_OWNER` y reutiliza los principios transversales de matching explicable, residual, fuente autoritativa, resultado desconocido e historia no destructiva.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+UX-018 especializa, sin redefinir:
+
+- el contrato de hechos económicos recibidos desde compras y recepción de `NUMERA-DOM-003`;
+- el contrato transversal de conciliación y tratamiento de diferencias de `NUMERA-DOM-014`;
+- el contrato de obligaciones y pagos de `VPROC-0052` solo como contexto y handoff;
+- la autoridad comercial de ORIGO sobre `VPROC-0021` y `VPROC-0022`;
+- la autoridad física de NEXO sobre `VPROC-0024`;
+- los contratos de compra, recepción e inventario definidos por integración;
+- `NUMERA-SALES-PAYMENT-RECONCILIATION-001` únicamente para reglas transversales de matching, residual, stale y reversión de matching.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA-PURCHASE-RECEIPT-RECONCILIATION-001
+```
+
+Su alcance es diseñar la conciliación explicable entre compra, recepción, evidencia física, documento de proveedor y representaciones económicas relacionadas, conservando diferencias, cardinalidad y ownership.
+
+---
+
+#### 6. Superficie y proceso propietarios
+
+La superficie propietaria es:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0102
+PRIMARY_SCREEN_NAME = Conciliación de compras y recepciones
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_PURCHASES_AND_RECEIPTS
+OWNER_ACTION_CLASS = RECONCILE
+OWNER_STEP_CLASS = DECISION
+```
+
+La superficie compara órdenes, recepciones, facturas o soportes, pagos relacionados y obligaciones para resolver diferencias sin reescribir fuentes.
+
+---
+
+#### 7. Fronteras con superficies relacionadas
+
+UX-018 no absorbe:
+
+```text
+VSCREEN-0075 = DETALLE_Y_SEGUIMIENTO_DE_ORDEN_ORIGO
+VSCREEN-0077 = RECEPCION_TOTAL_O_PARCIAL_ORIGO
+VSCREEN-0078 = RESOLUCION_DE_DIFERENCIAS_ORIGO
+VSCREEN-0098 = CUENTAS_POR_PAGAR_Y_OBLIGACIONES
+VSCREEN-0100 = CAJA_BANCOS_Y_MOVIMIENTOS_FINANCIEROS
+VSCREEN-0103 = CONCILIACION_INVENTARIO_PRODUCCION_VARIACIONES
+VSCREEN-0105 = CIERRE_REAPERTURA_Y_CORRECCION_DE_PERIODO
+```
+
+Por tanto:
+
+```text
+PURCHASE_RECEIPT_RECONCILIATION != PURCHASE_ORDER_MANAGEMENT
+PURCHASE_RECEIPT_RECONCILIATION != PHYSICAL_INVENTORY_EXECUTION
+PURCHASE_RECEIPT_RECONCILIATION != PAYABLE_MANAGEMENT
+PURCHASE_RECEIPT_RECONCILIATION != BANK_RECONCILIATION
+PURCHASE_RECEIPT_RECONCILIATION != PERIOD_CLOSE
+```
+
+---
+
+#### 8. Identidades que permanecen distintas
+
+Se conserva obligatoriamente:
+
+```text
+PURCHASE_NEED
+!= PURCHASE_ORDER
+!= PURCHASE_COMMITMENT
+!= COMMERCIAL_RECEIPT
+!= PHYSICAL_INBOUND_MOVEMENT
+!= SUPPLIER_DOCUMENT
+!= ECONOMIC_FACT
+!= PAYABLE
+!= PAYMENT
+!= BANK_RECONCILIATION
+!= RETURN
+!= CREDIT_NOTE
+!= ACCOUNTING_ENTRY
+```
+
+Conciliar crea relaciones entre estas identidades; no las fusiona.
+
+---
+
+#### 9. Autoridad de fuentes
+
+La autoridad queda:
+
+```text
+ORIGO_OWNS_PURCHASE_AND_COMMERCIAL_RECEIPT = YES
+NEXO_OWNS_PHYSICAL_INBOUND_MOVEMENT = YES
+NUMERA_OWNS_ECONOMIC_FACT_AND_RECONCILIATION_CASE = YES
+NUMERA_VPROC_0052_OWNS_PAYABLE_LIFECYCLE = YES
+EXTERNAL_DOCUMENT_OWNER_REMAINS_EXTERNAL_WHEN_APPLICABLE = YES
+```
+
+NUMERA puede correlacionar y decidir sobre su expediente de conciliación, pero no modifica directamente una fuente ajena.
+
+---
+
+#### 10. Procesos considerados
+
+La conciliación puede consumir evidencia correlacionada de:
+
+| Proceso | Papel en UX-018 |
+| --- | --- |
+| `VPROC-0021` | aprobación, emisión y formalización de la compra |
+| `VPROC-0022` | llegada, verificación, aceptación comercial y conciliación de recepción |
+| `VPROC-0024` | ingreso, ubicación y movimiento físico cuando existe inventario |
+| `VPROC-0051` | reconocimiento y conciliación del hecho económico |
+| `VPROC-0052` | obligación, validación documental, pago y conciliación bancaria como contexto/handoff |
+
+No todos los procesos deben existir en cada caso; los servicios no inventariables pueden no requerir `VPROC-0024`.
+
+---
+
+#### 11. Estados fuente fuertes
+
+Como evidencia fuerte ya aprobada se reconocen, entre otros:
+
+```text
+VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED
+VPROC-0022.PUTAWAY_PENDING
+VPROC-0022.RECEIPT_RECONCILED
+VPROC-0024.INBOUND_MOVEMENT_RECONCILED
+VPROC-0051.POSTED
+VPROC-0051.ECONOMIC_EVENT_RECONCILED
+VPROC-0052.PAYABLE_REGISTERED
+VPROC-0052.PAYABLE_SETTLED
+```
+
+Cada estado conserva su límite propietario y no se transforma automáticamente en otro estado por aparecer en la conciliación.
+
+---
+
+#### 12. Orden formalizada no equivale a recepción
+
+Se congela:
+
+```text
+PURCHASE_COMMITMENT_FORMALIZED
+!= COMMERCIAL_RECEIPT_ACCEPTED
+!= PHYSICAL_INBOUND_CONFIRMED
+!= ECONOMIC_FACT_RECOGNIZED
+!= PAYABLE_REGISTERED
+```
+
+Una orden o compromiso puede servir como expectativa y referencia, pero no prueba que el bien o servicio haya sido recibido.
+
+---
+
+#### 13. Recepción conciliada no equivale a obligación liquidada
+
+Se congela:
+
+```text
+VPROC_0022_RECEIPT_RECONCILED
+!= VPROC_0052_PAYABLE_SETTLED
+```
+
+La recepción conciliada demuestra coherencia dentro del alcance de ORIGO; no prueba que la obligación esté pagada o conciliada con banco.
+
+---
+
+#### 14. Movimiento físico no equivale a aceptación comercial ni económica
+
+Se congela:
+
+```text
+VPROC_0024_INBOUND_MOVEMENT_RECONCILED
+!= ORIGO_COMMERCIAL_ACCEPTANCE
+!= NUMERA_ECONOMIC_RECOGNITION
+```
+
+NEXO puede confirmar el efecto físico exactamente una vez sin decidir precio, documento, obligación o tratamiento económico.
+
+---
+
+#### 15. Unidad lógica de conciliación
+
+Cada caso UX debe poder reconstruir una unidad lógica con:
+
+- identidad estable del caso;
+- orden o compromiso relacionado;
+- una o más recepciones comerciales relacionadas;
+- movimientos físicos relacionados cuando apliquen;
+- documentos o soportes del proveedor;
+- hecho económico relacionado;
+- obligación relacionada cuando exista;
+- moneda y componentes monetarios;
+- cantidades y unidades;
+- fechas y periodos relevantes;
+- diferencias;
+- residual;
+- evidencia;
+- owner y siguiente acción.
+
+---
+
+#### 16. Lados visibles del caso
+
+La superficie debe conservar como grupos diferenciados:
+
+```text
+PURCHASE_ORDER_SIDE
+COMMERCIAL_RECEIPT_SIDE
+PHYSICAL_EVIDENCE_SIDE
+SUPPLIER_DOCUMENT_SIDE
+NUMERA_ECONOMIC_SIDE
+RELATED_PAYABLE_CONTEXT
+RECONCILIATION_RESULT
+```
+
+No se construye una sola fila fusionada que oculte de qué fuente proviene cada valor.
+
+---
+
+#### 17. Dimensiones mínimas de matching
+
+La comparación podrá considerar, cuando apliquen:
+
+- orden o compromiso;
+- recepción;
+- línea o concepto;
+- proveedor canónico;
+- entidad legal;
+- sede y dimensiones autorizadas;
+- producto, presentación o servicio;
+- cantidad;
+- unidad y factor de conversión;
+- moneda;
+- precio;
+- impuestos y cargos;
+- documento externo;
+- referencia física NEXO;
+- hecho económico NUMERA;
+- obligación relacionada;
+- fechas y periodo;
+- correlación e identidad de eventos.
+
+Ninguna dimensión aislada autoriza el match por sí sola salvo que el contrato propietario la defina como identidad suficiente.
+
+---
+
+#### 18. Evidencia fuerte
+
+Ejemplos de evidencia fuerte:
+
+- identidad canónica de orden;
+- identidad canónica de recepción;
+- identidad de línea cuando exista;
+- identidad canónica de proveedor;
+- identidad estable de documento externo;
+- correlación explícita entre orden y recepción;
+- referencia de movimiento físico NEXO;
+- referencia de evento o versión;
+- referencia del hecho económico NUMERA;
+- referencia de obligación cuando ya existe.
+
+La evidencia fuerte puede demostrar una relación; no autoriza reescritura de la fuente.
+
+---
+
+#### 19. Señales débiles
+
+No prueban match por sí solas:
+
+```text
+SAME_AMOUNT
+SAME_DATE
+SAME_SUPPLIER_NAME
+SAME_SITE
+SAME_COST_CENTER
+SAME_FREE_TEXT
+TEMPORAL_PROXIMITY
+SAME_USER
+```
+
+Esas señales pueden sugerir investigación, pero no confirmar conciliación ni duplicidad.
+
+---
+
+#### 20. Cardinalidades soportadas
+
+La UX debe soportar relaciones explicables de:
+
+```text
+ONE_ORDER_TO_ONE_RECEIPT
+ONE_ORDER_TO_MANY_RECEIPTS
+ONE_RECEIPT_TO_MANY_LINES
+MANY_RECEIPTS_TO_ONE_DOCUMENT_WHEN_EVIDENCE_SUPPORTS_IT
+ONE_RECEIPT_TO_MULTIPLE_DOCUMENTS_WHEN_EVIDENCE_SUPPORTS_IT
+PARTIAL_RECONCILIATION
+```
+
+Toda agrupación exige lineage descomponible; no se admite una bolsa opaca de cuadre.
+
+---
+
+#### 21. Una orden con múltiples recepciones
+
+Una orden puede producir varias recepciones legítimas.
+
+La UX debe conservar:
+
+- cantidad ordenada;
+- cantidad acumulada recibida;
+- cantidad aceptada;
+- cantidad rechazada o devuelta;
+- cantidad pendiente;
+- identidad de cada recepción;
+- residual por línea y por orden.
+
+```text
+PARTIAL_RECEIPT != DUPLICATE_RECEIPT
+```
+
+---
+
+#### 22. Varias recepciones contra un documento
+
+Cuando un documento cubra varias recepciones, la relación debe ser explícita y descomponible.
+
+La pantalla debe poder mostrar:
+
+- recepciones incluidas;
+- líneas incluidas;
+- importes por contribución cuando exista evidencia;
+- residual no explicado;
+- documento fuente y versión.
+
+No se distribuye un total arbitrariamente solo para cerrar la diferencia.
+
+---
+
+#### 23. Varios documentos contra una recepción
+
+Cuando una recepción tenga varios soportes o documentos legítimos, cada uno conserva identidad y papel.
+
+Ejemplos posibles:
+
+- factura;
+- remisión;
+- nota crédito;
+- certificado;
+- soporte de servicio;
+- documento tributario aplicable.
+
+```text
+MULTIPLE_DOCUMENTS != MULTIPLE_RECEIPTS
+```
+
+---
+
+#### 24. Servicios sin movimiento de inventario
+
+Para compras de servicios:
+
+```text
+PHYSICAL_INBOUND_MOVEMENT_REQUIRED = NO
+WHEN PURCHASED_OBJECT_IS_NON_INVENTORIABLE_SERVICE
+```
+
+La conciliación debe apoyarse en orden/acuerdo, aceptación del servicio, evidencia, documento y efecto económico sin fabricar un movimiento NEXO.
+
+---
+
+#### 25. Recepción parcial
+
+Una recepción parcial conserva residual explícito.
+
+```text
+PARTIAL_RECEIPT
+-> ACCEPTED_SCOPE_EXPLICIT
+-> PENDING_SCOPE_EXPLICIT
+-> ORDER_NOT_AUTOMATICALLY_CLOSED
+```
+
+El hecho económico y la obligación solo pueden reconocer el alcance sustentado por evidencia válida.
+
+---
+
+#### 26. Sobreentrega y subentrega
+
+Una cantidad observada distinta de la orden abre una diferencia o consume una política autorizada; no se corrige editando el origen.
+
+UX-018 no inventa tolerancias de sobreentrega o subentrega.
+
+```text
+QUANTITY_DELTA_WITHOUT_POLICY != AUTO_ACCEPTED
+```
+
+---
+
+#### 27. Unidad y presentación
+
+Cantidad equivalente requiere semántica de unidad y presentación compatible.
+
+La UX debe distinguir:
+
+- unidad ordenada;
+- unidad recibida;
+- presentación;
+- factor de conversión autorizado cuando exista;
+- cantidad física NEXO;
+- cantidad económica comparada.
+
+Una diferencia de unidad no se oculta dentro del importe.
+
+---
+
+#### 28. Precio
+
+Precio ordenado, precio documentado y tratamiento económico pueden diferir legítimamente o requerir resolución.
+
+La UX debe mostrar, cuando aplique:
+
+```text
+ORDER_PRICE
+SUPPLIER_DOCUMENT_PRICE
+AUTHORIZED_ADJUSTMENT
+ECONOMIC_RECOGNIZED_PRICE
+PRICE_RESIDUAL
+```
+
+No se toma automáticamente el valor que haga cuadrar el total.
+
+---
+
+#### 29. Impuestos y cargos
+
+Impuestos, flete, seguros, recargos, descuentos, retenciones y otros componentes permanecen separados cuando existan.
+
+Una diferencia de total debe poder explicarse por componentes antes de clasificarse como error.
+
+UX-018 no decide tratamiento tributario o contable profesional.
+
+---
+
+#### 30. Moneda
+
+Cada lado conserva moneda original.
+
+```text
+ORDER_CURRENCY
+RECEIPT_ECONOMIC_CONTEXT_CURRENCY
+SUPPLIER_DOCUMENT_CURRENCY
+PAYABLE_CURRENCY
+```
+
+No se concilian monedas distintas mediante conversión implícita.
+
+Toda conversión futura deberá declarar fuente, fecha, regla, versión e importes antes/después.
+
+---
+
+#### 31. Proveedor y contraparte
+
+Proveedor canónico y contraparte económica deben ser correlacionables sin depender del nombre visible.
+
+```text
+SAME_SUPPLIER_NAME != SAME_SUPPLIER_IDENTITY
+```
+
+Si la identidad es ambigua, el caso permanece abierto.
+
+---
+
+#### 32. Documento del proveedor
+
+Un documento recibido es evidencia, no aceptación automática.
+
+```text
+SUPPLIER_DOCUMENT_RECEIVED
+!= COMMERCIAL_RECEIPT_ACCEPTED
+!= PAYABLE_VALIDATED
+!= PAYMENT_AUTHORIZED
+```
+
+La UX debe conservar identidad, origen, versión, fecha, importe, moneda y relación con orden/recepción.
+
+---
+
+#### 33. Evidencia física NEXO
+
+Cuando el objeto comprado genera inventario, la UX puede consumir evidencia de `VPROC-0024`.
+
+Debe distinguir:
+
+```text
+PHYSICAL_MOVEMENT_CONFIRMED
+PHYSICAL_MOVEMENT_PENDING
+PHYSICAL_MOVEMENT_DIFFERENT
+PHYSICAL_MOVEMENT_NOT_APPLICABLE
+```
+
+La ausencia de movimiento es válida para servicios; para bienes inventariables puede mantener el caso abierto según su estado real.
+
+---
+
+#### 34. Hecho económico NUMERA
+
+El hecho económico relacionado conserva identidad propia.
+
+```text
+ECONOMIC_EVENT_RECEIVED != POSTED
+POSTED != ECONOMIC_EVENT_RECONCILED
+```
+
+UX-018 no crea ni edita directamente el hecho económico para hacer coincidir la recepción.
+
+---
+
+#### 35. Obligación por pagar
+
+La obligación es contexto financiero separado.
+
+```text
+COMMERCIAL_RECEIPT != PAYABLE
+PAYABLE_REGISTERED != PAYABLE_SETTLED
+```
+
+UX-018 puede indicar que una obligación falta, existe, está duplicada o requiere handoff, pero el diseño completo de cuentas por pagar pertenece a UX-020.
+
+---
+
+#### 36. Pago como contexto relacionado
+
+Un pago o anticipo relacionado puede existir antes o después de la recepción.
+
+Se congela:
+
+```text
+PAYMENT_OR_ADVANCE_EXISTS
+!= RECEIPT_OCCURRED
+!= RECEIPT_ACCEPTED
+!= PAYABLE_SETTLED
+```
+
+UX-018 no usa el pago como prueba de recepción y no ejecuta tesorería.
+
+---
+
+#### 37. Fechas y periodos
+
+Se conservan separadas, cuando apliquen:
+
+```text
+ORDER_DATE
+COMMITMENT_DATE
+ARRIVAL_DATE
+RECEIPT_DATE
+ACCEPTANCE_DATE
+PHYSICAL_POSTING_DATE
+DOCUMENT_DATE
+ECONOMIC_RECOGNITION_DATE
+DUE_DATE
+PAYMENT_DATE
+RECONCILIATION_DATE
+```
+
+Una diferencia temporal puede ser legítima; no se mueve silenciosamente un hecho de periodo.
+
+---
+
+#### 38. Devoluciones y notas crédito
+
+Una devolución posterior no borra la recepción original.
+
+Debe poder representarse:
+
+```text
+ORIGINAL_RECEIPT
+-> RETURN_OR_CLAIM
+-> PHYSICAL_RETURN_WHEN_APPLICABLE
+-> CREDIT_NOTE_OR_OTHER_SUPPORT_WHEN_APPLICABLE
+-> ECONOMIC_COMPENSATION
+-> RECONCILIATION
+```
+
+Cada paso conserva su owner.
+
+---
+
+#### 39. Duplicados y replay
+
+La conciliación debe detectar y neutralizar sin borrar historia:
+
+- replay de recepción;
+- doble visibilidad ORIGO/NEXO del mismo hecho físico;
+- reenvío del mismo documento;
+- duplicidad de obligación;
+- repetición de evento económico;
+- repetición de decisión de matching.
+
+```text
+REPLAY_CREATES_NEW_RECONCILIATION_EFFECT = NO
+```
+
+---
+
+#### 40. Resultado desconocido
+
+Timeout, respuesta perdida o estado externo desconocido no se convierten en éxito o rechazo definitivo.
+
+```text
+UNKNOWN_RESULT
+-> QUERY_AUTHORITATIVE_SOURCE
+OR
+-> RECONCILIATION_REQUIRED
+```
+
+No se crea una segunda recepción, documento, obligación o pago por reintento ciego.
+
+---
+
+#### 41. Evento tardío y fuente incompleta
+
+La UX debe distinguir:
+
+```text
+LATE_EVENT
+SOURCE_STILL_LOADING
+SOURCE_WATERMARK_INCOMPLETE
+EXPECTED_DOCUMENT_NOT_YET_DUE
+REAL_MISSING_EVIDENCE
+```
+
+```text
+SOURCE_INCOMPLETE != ZERO_DIFFERENCE
+```
+
+La ausencia temporal no se presenta automáticamente como pérdida o error confirmado.
+
+---
+
+#### 42. Matching sugerido
+
+La UX puede proponer candidatos de match, pero:
+
+```text
+SUGGESTED_MATCH != APPROVED_MATCH
+APPROVED_MATCH != SOURCE_CORRECTION
+```
+
+La explicación del candidato debe exponer evidencia fuerte, señales débiles, cardinalidad, diferencias y residual.
+
+---
+
+#### 43. Estados UX del caso
+
+La interfaz puede usar estados de presentación, sin crear estados nuevos de proceso:
+
+```text
+READY_FOR_REVIEW
+MATCH_SUGGESTED
+PARTIAL_MATCH
+DIFFERENCE_UNDER_REVIEW
+SOURCE_ACTION_PENDING
+FINANCIAL_HANDOFF_PENDING
+RECONCILED
+REOPENED
+```
+
+Estos estados son de experiencia/caso y no sustituyen `VPROC-0022`, `VPROC-0024`, `VPROC-0051` o `VPROC-0052`.
+
+---
+
+#### 44. Clasificación de diferencias
+
+La UX debe poder distinguir exactamente estas veinte clases mínimas:
+
+```text
+IDENTITY_OR_CORRELATION_DIFFERENCE
+MISSING_ORDER
+MISSING_RECEIPT
+UNORDERED_RECEIPT_EXCEPTION
+QUANTITY_DIFFERENCE
+UNIT_OR_PRESENTATION_DIFFERENCE
+PRICE_DIFFERENCE
+CURRENCY_DIFFERENCE
+TAX_OR_CHARGE_DIFFERENCE
+SUPPLIER_DIFFERENCE
+DOCUMENT_MISSING_OR_MISMATCH
+DUPLICATE_DOCUMENT_OR_REPLAY
+PHYSICAL_MOVEMENT_DIFFERENCE
+STATE_INCOMPATIBILITY
+PARTIAL_RECEIPT
+RETURN_OR_CREDIT_NOTE_DIFFERENCE
+PAYABLE_OR_OBLIGATION_DIFFERENCE
+PAYMENT_CONTEXT_DIFFERENCE
+LATE_EVENT_OR_PERIOD_DIFFERENCE
+SOURCE_INCOMPLETE_OR_UNKNOWN_RESULT
+```
+
+No se crea una categoría genérica “ajuste manual”.
+
+---
+
+#### 45. Resultados de conciliación
+
+El caso puede terminar o permanecer en:
+
+| Resultado | Significado |
+| --- | --- |
+| `FULL_MATCH` | relación demostrada y sin residual pendiente |
+| `PARTIAL_MATCH` | parte demostrada y residual explícito |
+| `EXPLAINED_DIFFERENCE` | delta legítimo con evidencia suficiente |
+| `ACCEPTED_EXCEPTION` | diferencia conocida aceptada por autoridad/política aplicable |
+| `ORIGO_SOURCE_CORRECTION_REQUIRED` | orden/recepción/documento comercial requiere tratamiento ORIGO |
+| `NEXO_SOURCE_CORRECTION_REQUIRED` | evidencia física requiere tratamiento NEXO |
+| `NUMERA_CORRECTION_REQUIRED` | representación económica propia requiere corrección |
+| `PAYABLE_HANDOFF_REQUIRED` | obligación requiere flujo propietario UX-020/VPROC-0052 |
+| `TREASURY_HANDOFF_REQUIRED` | pago/banco requiere UX-021 |
+| `PERIOD_TREATMENT_REQUIRED` | evento tardío/corrección afecta periodo protegido |
+| `UNRESOLVED` | evidencia insuficiente o fuente pendiente |
+
+---
+
+#### 46. Corrección en ORIGO
+
+Cuando orden, recepción comercial, aceptación o diferencia ORIGO sea incorrecta:
+
+```text
+ORIGO_OWNS_SOURCE_CORRECTION = YES
+NUMERA_DIRECT_ORIGO_REWRITE = FORBIDDEN
+```
+
+NUMERA conserva el caso y vuelve a conciliar cuando recibe el resultado corregido o compensatorio.
+
+---
+
+#### 47. Corrección en NEXO
+
+Cuando cantidad, ubicación, lote, condición, custodia o movimiento físico sea incorrecto:
+
+```text
+NEXO_OWNS_PHYSICAL_SOURCE_CORRECTION = YES
+NUMERA_DIRECT_NEXO_REWRITE = FORBIDDEN
+```
+
+La conciliación no ajusta inventario para cuadrar un importe económico.
+
+---
+
+#### 48. Corrección económica en NUMERA
+
+Cuando ORIGO/NEXO sean correctos pero el hecho económico NUMERA sea incorrecto, la corrección pertenece a NUMERA y debe ser no destructiva.
+
+El detalle de correcciones y reaperturas permanece en UX-023.
+
+---
+
+#### 49. Cuentas por pagar
+
+El diseño completo de obligaciones pertenece a UX-020.
+
+UX-018 puede mostrar:
+
+```text
+PAYABLE_MISSING
+PAYABLE_DUPLICATE_RISK
+PAYABLE_DOCUMENT_VALIDATION_PENDING
+PAYABLE_HANDOFF_REQUIRED
+```
+
+sin diseñar aprobación, vencimiento, programación, pago o disputa detallados.
+
+---
+
+#### 50. Tesorería y banco
+
+La ejecución de pagos, movimientos financieros y conciliación bancaria pertenece a UX-021.
+
+UX-018 puede mostrar contexto como:
+
+```text
+PAYMENT_RECORDED
+BANK_RECONCILIATION_PENDING
+TREASURY_HANDOFF_REQUIRED
+```
+
+sin resolver banco dentro de VSCREEN-0102.
+
+---
+
+#### 51. Inventario, producción y variaciones
+
+La conciliación detallada entre inventario, producción, costos y variaciones pertenece a UX-019.
+
+UX-018 consume evidencia física suficiente para explicar compra/recepción, pero no diseña:
+
+- variaciones productivas;
+- consumo FOGO;
+- merma;
+- transferencia interna;
+- costing operativo;
+- diferencias de producción.
+
+---
+
+#### 52. Periodos protegidos
+
+Un evento tardío o corrección sobre periodo `locked` o `closed` no se escribe ordinariamente.
+
+```text
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+```
+
+UX-018 conserva la diferencia y el handoff hasta que el tratamiento de periodo permita revalidar.
+
+---
+
+#### 53. Presentación principal de VSCREEN-0102
+
+La superficie debe priorizar:
+
+1. alcance y fecha de corte;
+2. resumen de conciliado, parcial, sin match y diferencias;
+3. casos que requieren decisión;
+4. orden/compromiso relacionado;
+5. recepciones relacionadas;
+6. evidencia física cuando aplique;
+7. documentos y componentes monetarios;
+8. hecho económico y obligación relacionados;
+9. residual;
+10. owner y siguiente acción;
+11. historial bajo demanda.
+
+---
+
+#### 54. Comparador de caso
+
+Para un caso seleccionado, la UX debe mostrar lados diferenciados:
+
+```text
+ORDER_SIDE
+RECEIPT_SIDE
+PHYSICAL_SIDE
+DOCUMENT_SIDE
+NUMERA_SIDE
+RECONCILIATION_RESULT
+```
+
+La comparación no aplana fuentes distintas en un único valor “correcto”.
+
+---
+
+#### 55. Explicación del match
+
+Todo match sugerido o aprobado debe poder explicar:
+
+- identidades usadas;
+- correlación;
+- cardinalidad;
+- proveedor;
+- cantidades y unidades;
+- moneda e importes;
+- documentos;
+- evidencia física;
+- evidencia fuerte;
+- señales débiles;
+- diferencias;
+- residual;
+- decisión y actor cuando corresponda.
+
+---
+
+#### 56. Filtros y contexto
+
+Filtros de empresa, sede o centro de costo pueden restringir la vista autorizada, pero:
+
+```text
+FILTER_VALUE_IS_MATCH_EVIDENCE = NO
+FILTER_VALUE_CAN_FILL_MISSING_SOURCE_DIMENSION = NO
+```
+
+El match se decide sobre identidades y evidencia fuente.
+
+---
+
+#### 57. Autorización
+
+Ver una conciliación no concede autoridad para:
+
+- aceptar una recepción ORIGO;
+- corregir una orden;
+- ajustar inventario NEXO;
+- crear o modificar obligación;
+- ejecutar un pago;
+- aprobar una excepción material;
+- reabrir un periodo.
+
+Las acciones sensibles requieren revalidación server-side de actor, permiso, scope, recurso y estado.
+
+---
+
+#### 58. Segregación
+
+Cuando el riesgo lo exija, deben permanecer diferenciadas:
+
+```text
+PROPOSE_MATCH
+APPROVE_MATCH
+ACCEPT_RECEIPT
+CORRECT_ORIGO_SOURCE
+CORRECT_NEXO_SOURCE
+CORRECT_NUMERA_EFFECT
+APPROVE_PAYABLE
+EXECUTE_PAYMENT
+CLOSE_OR_REOPEN_PERIOD
+```
+
+La interfaz no fusiona esas autoridades.
+
+---
+
+#### 59. Concurrencia y decisiones stale
+
+Antes de confirmar una decisión se revalidan fuentes relevantes.
+
+Si orden, recepción, movimiento físico, documento, hecho económico, obligación o residual cambió materialmente:
+
+```text
+STALE_RECONCILIATION_DECISION
+-> REVIEW_AGAIN
+```
+
+No se confirma un match basado en snapshot obsoleto.
+
+---
+
+#### 60. Reversión de matching
+
+Un match incorrecto no se borra.
+
+La reversión conserva:
+
+- match original;
+- motivo;
+- actor/autoridad;
+- evidencia;
+- timestamp;
+- nuevo estado;
+- nuevo match cuando exista.
+
+Revertir un match no revierte automáticamente orden, recepción, movimiento físico, documento, obligación o pago.
+
+---
+
+#### 61. Evidencia y auditoría
+
+Cada decisión material debe permitir reconstruir:
+
+- caso;
+- fuentes y versiones;
+- comparación;
+- sugerencia cuando existió;
+- decisión;
+- autoridad;
+- acciones derivadas;
+- verificación posterior;
+- residual y owner final.
+
+Auditoría no sustituye la fuente de verdad.
+
+---
+
+#### 62. Frescura y cobertura
+
+La superficie debe declarar cuando la comparación pueda estar incompleta por:
+
+- recepción aún abierta;
+- documento todavía no recibido;
+- putaway NEXO pendiente;
+- evento económico aún no consumido;
+- obligación todavía no materializada;
+- evento tardío esperado;
+- watermark o corte incompleto.
+
+```text
+SOURCE_NOT_COMPLETE != ZERO_DIFFERENCE
+```
+
+---
+
+#### 63. Estado vacío
+
+Cero diferencias visibles significa únicamente que no existen casos visibles dentro del alcance y evidencia cargados.
+
+No significa:
+
+- todas las órdenes recibidas;
+- todas las recepciones completas;
+- todos los documentos recibidos;
+- todos los movimientos NEXO completos;
+- todas las obligaciones creadas;
+- ausencia histórica de diferencias.
+
+---
+
+#### 64. Históricos y backfill
+
+Los históricos incompletos pueden quedar:
+
+- conciliados con limitaciones declaradas;
+- parcialmente conciliados;
+- como excepción aceptada;
+- pendientes por evidencia ausente.
+
+No se fabrican expedientes históricos como si hubieran sido conciliados en tiempo real.
+
+---
+
+#### 65. Observabilidad futura
+
+La materialización podrá medir, sin redefinir semántica:
+
+```text
+RECONCILIATION_CASE_COUNT
+FULL_MATCH_COUNT
+PARTIAL_MATCH_COUNT
+UNMATCHED_ORDER_COUNT
+UNMATCHED_RECEIPT_COUNT
+DOCUMENT_DIFFERENCE_COUNT
+PHYSICAL_DIFFERENCE_COUNT
+PAYABLE_HANDOFF_COUNT
+SOURCE_CORRECTION_REQUIRED_COUNT
+UNKNOWN_RESULT_COUNT
+MATCH_REVERSAL_COUNT
+AVERAGE_OPEN_CASE_AGE
+```
+
+Estas métricas no son hechos financieros.
+
+---
+
+#### 66. Escenarios mínimos de validación futura
+
+La implementación y `UX-QA-028` deberán poder cubrir al menos:
+
+1. una orden con una recepción aceptada, movimiento físico y documento coherentes;
+2. una orden con dos recepciones parciales legítimas;
+3. una recepción parcial con residual pendiente por línea;
+4. bien aceptado en ORIGO con movimiento NEXO todavía pendiente;
+5. servicio aceptado sin movimiento NEXO porque no genera inventario;
+6. documento del proveedor recibido antes de la recepción;
+7. recepción aceptada antes de que llegue el documento esperado;
+8. cantidad o precio de documento diferente frente a orden/recepción;
+9. dos recepciones legítimas del mismo proveedor con mismo importe y fecha sin duplicidad;
+10. reenvío del mismo documento sin crear segunda obligación o efecto;
+11. replay de recepción ORIGO/NEXO sin duplicar cantidad, costo o match;
+12. devolución posterior con retorno físico y nota crédito correlacionados;
+13. cantidad física NEXO distinta de la aceptación ORIGO;
+14. recepción excepcional autorizada sin orden previa con regularización explícita;
+15. anticipo o pago previo que no se usa como prueba de recepción;
+16. resultado externo o documento con estado desconocido;
+17. evento tardío después del corte o periodo protegido;
+18. decisión stale porque una fuente cambió antes de confirmar el match.
+
+---
+
+#### 67. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-018 | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| no existe motor físico integral de conciliación compras/recepciones en NUMERA | no | implementación NUMERA / paquete físico aplicable | VSCREEN-0102 materializa casos, matching, evidencia, residual y resolución según este contrato |
+| cuentas por pagar detalladas no pertenecen a UX-018 | no | `NUMERA-UX-020` + `VPROC-0052` | obligación, vencimiento, aprobación y programación consumen el handoff sin redefinir recepción |
+| conciliación bancaria final no pertenece a UX-018 | no | `NUMERA-UX-021` + integración financiera aplicable | pago, extracto, comisión, rechazo y saldo quedan conciliables |
+| diferencias de inventario/producción no pertenecen a UX-018 | no | `NUMERA-UX-019` | movimiento, consumo, producción y variación consumen sus fuentes sin reescribir ORIGO |
+| eventos tardíos sobre periodos protegidos requieren tratamiento especializado | no | `NUMERA-UX-023` | ajuste/reapertura conserva versión e historia y luego se revalida conciliación |
+| tolerancias de cantidad/precio/materialidad no tienen valores universales aprobados | no | política empresarial/financiera aplicable | cada tolerancia materializada declara versión, vigencia, alcance, autoridad y evidencia |
+| validación humana real de comprensión sigue pendiente | no | `UX-QA-028` | evidencia real sobre VSCREEN-0102 y escenarios aplicables |
+
+No queda hallazgo detectado sin owner y condición de salida.
+
+---
+
+#### 68. Decisiones congeladas
+
+```text
+PURCHASE_RECEIPT_RECONCILIATION_CONTRACT = NUMERA-PURCHASE-RECEIPT-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0102
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_PURCHASES_AND_RECEIPTS
+ORIGO_OWNS_PURCHASE_AND_COMMERCIAL_RECEIPT = YES
+NEXO_OWNS_PHYSICAL_INBOUND_MOVEMENT = YES
+NUMERA_OWNS_ECONOMIC_FACT_AND_RECONCILIATION_CASE = YES
+PURCHASE_ORDER_IS_RECEIPT = NO
+COMMERCIAL_RECEIPT_IS_PHYSICAL_MOVEMENT = NO
+COMMERCIAL_RECEIPT_IS_PAYABLE = NO
+SUPPLIER_DOCUMENT_IS_RECEIPT = NO
+PAYMENT_IS_RECEIPT = NO
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_PRESERVES_RESIDUAL = YES
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+SERVICE_REQUIRES_PHYSICAL_INBOUND_MOVEMENT = NO
+SOURCE_NOT_COMPLETE_IS_ZERO_DIFFERENCE = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+REPLAY_CREATES_NEW_RECONCILIATION_EFFECT = NO
+ORIGO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+NEXO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+PAYABLE_DETAIL_OWNER = NUMERA_UX_020
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+INVENTORY_PRODUCTION_RECONCILIATION_OWNER = NUMERA_UX_019
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+DIFFERENCE_CLASS_COUNT = 20
+VALIDATION_SCENARIO_COUNT = 18
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+La tarea especializa una capacidad de conciliación ya exigida por requisitos vigentes. No crea comportamiento ejecutable nuevo, no modifica permisos, fuentes o integraciones y no altera el Registro 04A.
+
+---
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Esta sección registra trazabilidad existente y no constituye actualización del Registro 04A.
+
+- `TREQ-NUMERA-001` — reconciliación con ORIGO/NEXO y documentos fuente, no duplicación manual, historia, permisos y trazabilidad;
+- `TREQ-NUMERA-002` — identidad estable, entidad, dimensiones, contraparte, moneda, fechas, fuente, correlación, documento, importe, estado y evidencia;
+- `TREQ-NUMERA-003` — obligaciones, pagos, bancos y permisos separados; nombra explícitamente `NUMERA-UX-018`;
+- `TREQ-ORIGO-001` — recepción sin duplicar cantidades, costos, orden recibida o evento financiero;
+- `TREQ-ORIGO-003` — recepción atómica/idempotente, durable y reconciliable;
+- `TREQ-ORIGO-004` — separación entre necesidad, aprobación, orden, recepción y conciliación;
+- `TREQ-ORIGO-005` — identidad estable de proveedor y condiciones históricas;
+- `TREQ-NEXO-011` — ledger y proyecciones reconciliables, idempotencia y no doble contabilización;
+- `TREQ-INTEGRATION-003` — idempotencia, reintentos, resultado desconocido y recuperación;
+- `TREQ-INTEGRATION-006` — fuente propietaria única sin doble digitación competidora;
+- `TREQ-INTEGRATION-010` — correlación ORIGO → recepción → NEXO → NUMERA con parcialidad, servicios y devoluciones;
+- `TREQ-INTEGRATION-011` — efecto físico exactamente una vez y detección de eventos/efectos huérfanos;
+- `TREQ-INTEGRATION-017` — hechos de compra, recepción y pago llegan a NUMERA versionados, correlacionados e idempotentes;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones sensibles.
+
+---
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | UX-018 no ejecuta build de producto; la incorporación y batería documental quedan para el ciclo local. |
+| LOCAL | NOT_EXECUTED | No se modificó un checkout local durante la redacción; reemplazo, formato y validadores quedan para el ciclo documental. |
+| REMOTA | PASS | Se verificaron `origin/main`, continuidad hasta UX-016, topología `DEFINE_ONCE`, marcador UX-018, `NUMERA-DOM-003`, `NUMERA-DOM-014`, `VSCREEN-0102`, `VPROC-0021`, `VPROC-0022`, `VPROC-0024`, `VPROC-0051`, `VPROC-0052`, contratos de integración compra/recepción/inventario y Registro 04A aplicable; UX-017 se consume desde el artefacto completo aprobado por el usuario mientras su publicación puede seguir pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se conciliaron órdenes, recepciones, movimientos de inventario, documentos, obligaciones, pagos, devoluciones ni diferencias reales. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-018` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza materialización física propia. |
+
+---
+
+#### 72. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-PURCHASE-RECEIPT-RECONCILIATION-001`;
+2. `VSCREEN-0102` permanece superficie propietaria;
+3. `VPROC-0051::STEP-RECONCILE_PURCHASES_AND_RECEIPTS` permanece step propietario;
+4. ORIGO conserva compra y recepción comercial;
+5. NEXO conserva movimiento físico;
+6. NUMERA conserva hecho económico y expediente de conciliación;
+7. orden, recepción, movimiento físico, documento, hecho económico, obligación y pago permanecen distintos;
+8. orden formalizada no equivale a recepción;
+9. recepción conciliada no equivale a obligación liquidada;
+10. movimiento físico conciliado no equivale a aceptación comercial o económica;
+11. la unidad lógica del caso conserva fuentes, versiones, diferencias y residual;
+12. la UI mantiene lados de fuente diferenciados;
+13. se comparan únicamente dimensiones aplicables y trazables;
+14. señales débiles no confirman match;
+15. se soportan cardinalidades uno-a-uno, uno-a-muchos, agrupadas y parciales con lineage descomponible;
+16. una orden puede recibir varias recepciones legítimas;
+17. varias recepciones contra un documento conservan contribución explicable;
+18. varios documentos contra una recepción conservan identidades separadas;
+19. servicios no inventariables no fabrican movimiento NEXO;
+20. recepción parcial conserva residual;
+21. sobreentrega/subentrega no se aceptan sin política o decisión autorizada;
+22. unidad y presentación permanecen explícitas;
+23. precio no se corrige tomando el valor que cuadre;
+24. impuestos y cargos permanecen componentes explicables;
+25. moneda no se convierte implícitamente;
+26. proveedor se resuelve por identidad canónica;
+27. documento recibido no equivale a recepción u obligación validada;
+28. evidencia física distingue confirmado, pendiente, diferente y no aplicable;
+29. hecho económico mantiene lifecycle propio;
+30. obligación mantiene lifecycle propio;
+31. pago/anticipo no prueba recepción;
+32. fechas de orden, recepción, documento, reconocimiento, vencimiento y pago permanecen distintas;
+33. devolución/nota crédito no borran recepción original;
+34. replay y doble visibilidad ORIGO/NEXO no duplican efecto;
+35. resultado desconocido exige consulta o conciliación;
+36. fuente incompleta no se presenta como cero diferencia;
+37. matching sugerido no equivale a aprobado;
+38. estados UX no reemplazan estados de proceso;
+39. existen exactamente 20 clases mínimas de diferencia;
+40. no existe salida genérica de ajuste manual;
+41. corrección de ORIGO permanece en ORIGO;
+42. corrección de NEXO permanece en NEXO;
+43. corrección económica NUMERA no sobrescribe historia;
+44. cuentas por pagar permanecen con UX-020;
+45. banco/tesorería permanece con UX-021;
+46. inventario/producción detallado permanece con UX-019;
+47. periodo protegido permanece con UX-023;
+48. VSCREEN-0102 prioriza caso, fuentes, residual, evidencia y owner;
+49. todo match explica evidencia fuerte, señales débiles y cardinalidad;
+50. filtros no son evidencia de matching;
+51. ver no concede autoridad de aceptación/corrección/pago;
+52. segregación de acciones sensibles permanece explícita;
+53. decisión stale exige revisar nuevamente;
+54. revertir match conserva historia;
+55. evidencia permite reconstruir comparación, decisión y verificación;
+56. estado vacío no afirma completitud global;
+57. históricos incompletos no se fabrican como conciliados en tiempo real;
+58. los 18 escenarios mínimos quedan definidos para validación futura;
+59. todos los hallazgos tienen owner y condición de salida;
+60. no se crean ni modifican requisitos de prueba;
+61. no se realizan cambios físicos;
+62. UX-019 recibe una frontera explícita para inventario/producción sin reabrir compra/recepción.
+
+---
+
+#### 73. Límites
+
+Esta tarea no:
+
+- crea motor físico de conciliación;
+- crea tablas de matching;
+- crea índices;
+- crea RPC;
+- crea Server Actions;
+- crea APIs;
+- crea RLS;
+- modifica Supabase;
+- crea migraciones;
+- crea componentes React;
+- implementa `VSCREEN-0102`;
+- modifica `VPROC-0021`, `VPROC-0022`, `VPROC-0024`, `VPROC-0051` o `VPROC-0052`;
+- modifica ORIGO;
+- modifica NEXO;
+- acepta recepciones;
+- registra movimientos físicos;
+- crea obligaciones;
+- aprueba obligaciones;
+- ejecuta pagos;
+- concilia extractos bancarios;
+- define cuentas por pagar completas;
+- define tesorería completa;
+- define costos o landed cost;
+- define tolerancias universales;
+- define materialidad universal;
+- decide política contable/fiscal profesional;
+- corrige periodos;
+- diseña conciliación de inventario, producción y variaciones;
+- desarrolla `NUMERA-UX-019`;
+- actualiza Registro 04A.
+
+---
+
+#### 74. Handoff a NUMERA-UX-019
+
+La siguiente tarea recibe:
+
+```text
+PURCHASE_RECEIPT_RECONCILIATION_CONTRACT = NUMERA-PURCHASE-RECEIPT-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0102
+OWNER_PROCESS_ID = VPROC-0051
+OWNER_STEP_ID = VPROC-0051::STEP-RECONCILE_PURCHASES_AND_RECEIPTS
+ORIGO_SOURCE_AUTHORITY_PRESERVED = YES
+NEXO_PHYSICAL_AUTHORITY_PRESERVED = YES
+PURCHASE_RECEIPT_PHYSICAL_DOCUMENT_PAYABLE_ARE_DISTINCT = YES
+SUGGESTED_MATCH_IS_APPROVED_MATCH = NO
+PARTIAL_MATCH_PRESERVES_RESIDUAL = YES
+GROUPED_MATCH_REQUIRES_DECOMPOSABLE_LINEAGE = YES
+SERVICE_REQUIRES_PHYSICAL_INBOUND_MOVEMENT = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SOURCE_INCOMPLETE_IS_ZERO_DIFFERENCE = NO
+ORIGO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+NEXO_SOURCE_CORRECTION_FROM_NUMERA = FORBIDDEN
+PAYABLE_DETAIL_OWNER = NUMERA_UX_020
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+DIFFERENCE_CLASS_COUNT = 20
+VALIDATION_SCENARIO_COUNT = 18
+INVENTORY_PRODUCTION_RECONCILIATION_OWNER = NUMERA_UX_019
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-019` deberá diseñar conciliación de inventario, producción y variaciones usando la evidencia física como fuente propia, sin reinterpretar la compra o recepción ORIGO como hecho productivo.
+
+---
+
+#### 75. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-017
+-> NUMERA-UX-018
+-> NUMERA-UX-019
+```
+
+UX-018 consume los principios de matching trazable de UX-017 y entrega a UX-019 una frontera explícita para que inventario/producción no absorban compra, recepción, obligación o pago.
+
+---
+
+#### 76. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-017 — Diseñar conciliación de ventas y pagos`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-018 — Diseñar conciliación de compras y recepciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones`
 ### [ ] NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
 ### [ ] NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
 ### [ ] NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
