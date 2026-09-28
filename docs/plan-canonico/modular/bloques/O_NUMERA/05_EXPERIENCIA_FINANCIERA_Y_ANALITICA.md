@@ -25158,7 +25158,1325 @@ UX-019 consume la frontera compras/recepciones de UX-018 sin apropiarse de ORIGO
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado`
-### [ ] NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
+### ✅ NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones
+**Tarea siguiente:** NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
+**Tipo de tarea:** definición documental de la experiencia de cuentas por pagar y obligaciones de NUMERA, confirmando su pertenencia al alcance financiero aprobado y diseñando expediente, vencimientos, validación, aprobación, programación, parcialidad, anticipos, disputas, ajustes, pagos registrados, residual y liquidación explicable sin recrear compra, recepción, movimiento físico, tesorería, banco ni contabilidad formal; `DEFINE_ONCE` / sin instancia física propia
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica ORIGO, NEXO, NUMERA, Supabase, proveedores, documentos, obligaciones reales, pagos, cuentas bancarias, extractos, contratos runtime, permisos, RLS, APIs, RPC, migraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia de cuentas por pagar de NUMERA para que una persona autorizada pueda conocer y gestionar qué se debe, a quién, por qué, bajo qué soporte, cuándo vence, qué parte está validada, aprobada, disputada, programada, pagada, conciliada y qué saldo permanece abierto.
+
+La tarea adopta la decisión de dominio ya aprobada:
+
+```text
+CUENTAS_POR_PAGAR = DENTRO_DE_NUMERA
+OBLIGACIONES_FINANCIERAS_POR_PAGAR = DENTRO_DE_NUMERA
+```
+
+La experiencia no recrea la compra ORIGO, el movimiento físico NEXO, la ejecución bancaria ni la contabilidad formal.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define un contrato UX reutilizable;
+- no crea instancia física propia;
+- no implementa `VSCREEN-0098`;
+- no registra obligaciones reales;
+- no programa ni ejecuta pagos reales;
+- no modifica fuentes operativas;
+- no crea integración bancaria;
+- no publica datos financieros.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-019
+
+La tarea consume íntegramente:
+
+```text
+INVENTORY_PRODUCTION_VARIANCE_RECONCILIATION_CONTRACT = NUMERA-INVENTORY-PRODUCTION-VARIANCE-RECONCILIATION-001
+PRIMARY_SCREEN_ID = VSCREEN-0103
+OWNER_PROCESS_ID = VPROC-0054
+OWNER_STEP_ID = VPROC-0054::STEP-RECONCILE_OPERATING_VARIANCES
+FOGO_PRODUCTIVE_AUTHORITY_PRESERVED = YES
+NEXO_PHYSICAL_AUTHORITY_PRESERVED = YES
+BUSINESS_VARIANCE_IS_RECONCILIATION_DIFFERENCE = NO
+PHYSICAL_MOVEMENT_IS_PAYABLE = NO
+PRODUCTION_FACT_IS_PAYABLE = NO
+INTERNAL_TRANSFER_IS_EXTERNAL_PAYABLE = NO
+INTERNAL_TRANSFER_IS_LEGAL_EXPENSE_BY_DEFAULT = NO
+COST_METHOD_OWNER = NUMERA_UX_022
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+PAYABLE_OWNER = NUMERA_UX_020
+DIFFERENCE_CLASS_COUNT = 22
+VALIDATION_SCENARIO_COUNT = 20
+TREQ_CHANGES = 0
+```
+
+UX-020 conserva estas fronteras: ningún movimiento físico, hecho productivo, merma o transferencia interna se convierte en obligación externa por inferencia.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La definición consume sin redefinir:
+
+- `NUMERA-DOM-003`, para la frontera compra–recepción–documento–hecho económico–obligación;
+- `NUMERA-DOM-009`, para caja, bancos y conciliación financiera;
+- `NUMERA-DOM-010`, para el modelo de cuentas por pagar y obligaciones;
+- `NUMERA-DOM-014`, para conciliación y diferencias;
+- `NUMERA-UX-018`, para conciliación de compras y recepciones;
+- `NUMERA-UX-019`, para impedir que movimientos internos creen cuentas por pagar;
+- `NUMERA-AUTH-005`, para aprobación y rechazo financiero;
+- `VPROC-0052`, para lifecycle de obligación, aprobación y pago.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA_PAYABLE_OBLIGATION_EXPERIENCE_CONTRACT = NUMERA-PAYABLE-OBLIGATION-EXPERIENCE-001
+```
+
+El contrato exige que cada obligación sea explicable desde origen, contraparte, soporte, fechas, importe, moneda, aprobación, pagos, ajustes, disputas y saldo sin fusionar identidades empresariales distintas.
+
+---
+
+#### 6. Superficie y proceso propietarios
+
+La superficie principal es:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0098
+PRIMARY_SCREEN_NAME = Cuentas por pagar y obligaciones
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION
+OWNER_STEP_KIND = EXECUTE
+OWNER_STEP_STAGE = IN_PROGRESS
+```
+
+`VSCREEN-0098` gestiona la obligación; no sustituye las superficies de aprobación ni tesorería.
+
+---
+
+#### 7. Superficies relacionadas
+
+La experiencia se integra conceptualmente con:
+
+```text
+VSCREEN-0097 = Bandeja de aprobaciones financieras
+VSCREEN-0155 = Tesorería y programación de pagos
+VSCREEN-0100 = Caja, bancos y movimientos financieros
+VSCREEN-0102 = Conciliación de compras y recepciones
+```
+
+Estas superficies consumen referencias de una misma obligación; no crean obligaciones paralelas.
+
+---
+
+#### 8. Frontera con VSCREEN-0097
+
+`VSCREEN-0097` agrega decisiones pendientes, pero la autoridad se evalúa sobre el recurso `PAYABLE`.
+
+Se conserva:
+
+```text
+VISIBLE != APPROVABLE
+APPROVABLE != APPROVED
+APPROVED != EXECUTED
+```
+
+La bandeja no concede un permiso omnibus.
+
+---
+
+#### 9. Frontera con VSCREEN-0155 y UX-021
+
+UX-020 puede mostrar readiness, vencimiento, prioridad y estado de programación de una obligación.
+
+No diseña la ejecución detallada de tesorería ni el matching bancario final.
+
+```text
+PAYABLE_MANAGEMENT_OWNER = NUMERA_UX_020
+TREASURY_AND_BANK_EXECUTION_OWNER = NUMERA_UX_021
+```
+
+---
+
+#### 10. Identidades que permanecen distintas
+
+No se fusionan:
+
+```text
+PROVEEDOR
+ORDEN_DE_COMPRA
+RECEPCION
+DOCUMENTO_DE_PROVEEDOR
+HECHO_ECONOMICO
+OBLIGACION_POR_PAGAR
+CUOTA_O_VENCIMIENTO
+APROBACION_FINANCIERA
+PROGRAMACION_DE_PAGO
+INSTRUCCION_DE_PAGO
+RESULTADO_DE_PAGO
+APLICACION_DE_PAGO
+AJUSTE
+DISPUTA
+MOVIMIENTO_BANCARIO
+CONCILIACION_BANCARIA
+ASIENTO_CONTABLE
+```
+
+---
+
+#### 11. Lifecycle canónico de VPROC-0052
+
+La experiencia adopta sin renombrar:
+
+```text
+PAYABLE_REGISTERED
+-> DOCUMENT_VALIDATING
+-> UNDER_APPROVAL
+-> APPROVED_FOR_SCHEDULING
+-> SCHEDULED_FOR_PAYMENT
+-> PAYMENT_IN_PROGRESS
+-> PAYMENT_RECORDED
+-> BANK_RECONCILIATION_PENDING
+-> PAYABLE_SETTLED
+```
+
+No se crean estados `VPROC-*` nuevos.
+
+---
+
+#### 12. PAYABLE_REGISTERED
+
+`PAYABLE_REGISTERED` representa una obligación candidata identificable con al menos:
+
+- contraparte;
+- soporte;
+- concepto;
+- importe;
+- vencimiento;
+- origen verificable.
+
+Se conserva:
+
+```text
+REGISTERED_IS_APPROVED = NO
+REGISTERED_IS_SCHEDULED = NO
+REGISTERED_IS_PAID = NO
+REGISTERED_IS_RECONCILED = NO
+```
+
+---
+
+#### 13. Orígenes legítimos
+
+Una obligación puede nacer únicamente desde un origen identificable y sustentado, por ejemplo:
+
+1. compra y recepción ORIGO suficientemente correlacionadas;
+2. servicio o compra no inventariable con aceptación verificable;
+3. gasto reconocido que origine una deuda futura legítima;
+4. obligación externa recibida desde una autoridad o sistema integrado;
+5. corrección o ajuste relacionado explícitamente con una obligación existente.
+
+Un registro manual no puede competir silenciosamente con una fuente canónica existente.
+
+---
+
+#### 14. Movimientos internos no crean obligación
+
+Se congela:
+
+```text
+PHYSICAL_MOVEMENT_IS_PAYABLE = NO
+PRODUCTION_FACT_IS_PAYABLE = NO
+INTERNAL_TRANSFER_IS_EXTERNAL_PAYABLE = NO
+INTERNAL_TRANSFER_IS_LEGAL_EXPENSE_BY_DEFAULT = NO
+```
+
+Una obligación externa exige contraparte y causa financiera legítimas.
+
+---
+
+#### 15. Servicios y no inventariables
+
+Un servicio no requiere movimiento físico ficticio.
+
+La obligación puede sustentarse en:
+
+- proveedor;
+- contrato, orden o acuerdo cuando aplique;
+- periodo o fecha de prestación;
+- aceptación del servicio;
+- soporte;
+- importe;
+- moneda;
+- vencimiento;
+- evidencia de conformidad;
+- diferencias o retenciones aplicables.
+
+---
+
+#### 16. Documento no equivale a obligación
+
+Se conserva:
+
+```text
+FACTURA_O_CUENTA_DE_COBRO != RECEPCION
+FACTURA_O_CUENTA_DE_COBRO != HECHO_ECONOMICO
+FACTURA_O_CUENTA_DE_COBRO != OBLIGACION_VALIDADA
+FACTURA_O_CUENTA_DE_COBRO != APROBACION_FINANCIERA
+FACTURA_O_CUENTA_DE_COBRO != PAGO
+```
+
+La sola presencia del documento no habilita programación.
+
+---
+
+#### 17. DOCUMENT_VALIDATING
+
+La validación debe poder contrastar, según aplique:
+
+- proveedor canónico;
+- orden o compromiso;
+- recepción o aceptación;
+- documento;
+- hecho económico;
+- entidad legal;
+- moneda;
+- importe y componentes;
+- vencimiento;
+- condiciones de pago;
+- duplicidad;
+- devoluciones, notas y ajustes;
+- anticipos asociados;
+- evidencia de servicios.
+
+---
+
+#### 18. Expediente financiero de obligación
+
+Toda obligación debe presentar un expediente correlacionado con:
+
+| Grupo | Contenido mínimo |
+| --- | --- |
+| identidad | obligación estable y relaciones correctivas |
+| contraparte | proveedor o tercero canónico |
+| organización | entidad legal, sede y dimensiones autorizadas |
+| origen | proceso, orden, recepción, gasto, servicio u otro hecho propietario |
+| soporte | factura, cuenta de cobro, contrato, nota u otra evidencia |
+| monetario | moneda, importe original y componentes identificables |
+| temporal | emisión, reconocimiento, vencimiento, aprobación, programación, pago y conciliación |
+| control | estado, actor, autoridad, duplicidad, disputa y evidencia |
+| liquidación | pagos, aplicaciones, ajustes, retenciones, créditos, reversos y saldo |
+
+---
+
+#### 19. Proveedor y contraparte
+
+ORIGO conserva la identidad comercial del proveedor cuando provenga de abastecimiento.
+
+NUMERA consume una referencia canónica; no crea un proveedor paralelo por nombre libre.
+
+Proveedor ambiguo, duplicado o incompatible mantiene la obligación en revisión.
+
+---
+
+#### 20. Datos bancarios de proveedor
+
+Se congela:
+
+```text
+PROVIDER_BANK_DATA_FROM_DOCUMENT_IS_AUTHORIZED = NO
+PROVIDER_BANK_DATA_FROM_MESSAGE_IS_AUTHORIZED = NO
+```
+
+Una cuenta bancaria debe atravesar el gobierno de identidad, sensibilidad y autoridad aplicable antes de ser elegible para pago.
+
+---
+
+#### 21. Duplicidad de obligación
+
+La detección puede considerar:
+
+- proveedor;
+- entidad legal;
+- tipo y número de documento;
+- moneda;
+- importe;
+- fecha;
+- orden;
+- recepción;
+- contrato;
+- hecho económico;
+- referencia externa;
+- relación correctiva.
+
+Un reenvío, reimportación o captura repetida de la misma causa no crea una segunda obligación.
+
+---
+
+#### 22. Similaridad no confirma duplicado
+
+Mismo proveedor, importe o fecha no bastan para declarar duplicidad.
+
+Una coincidencia probable queda en revisión y conserva ambos registros/evidencias hasta una decisión sustentada.
+
+---
+
+#### 23. UNDER_APPROVAL
+
+`UNDER_APPROVAL` separa validación de autoridad financiera.
+
+La decisión puede considerar:
+
+- soporte y origen;
+- importe y moneda;
+- vencimiento;
+- entidad legal;
+- centro o dimensión aplicable;
+- presupuesto o disponibilidad cuando la política lo exija;
+- excepciones;
+- disputa;
+- segregación;
+- autoridad vigente.
+
+UX-020 no inventa umbrales monetarios universales.
+
+---
+
+#### 24. Permisos de aprobación consumidos
+
+La experiencia consume las claves definidas por `NUMERA-AUTH-005`:
+
+```text
+numera.finance.payables.approve
+numera.finance.payables.reject
+```
+
+Su definición documental no implica que estén materializadas o concedidas en runtime.
+
+---
+
+#### 25. Aprobación financiera no es aprobación comercial
+
+Se conserva:
+
+```text
+COMMERCIAL_APPROVAL_IS_FINANCIAL_APPROVAL = NO
+```
+
+Una aprobación válida en ORIGO puede satisfacer su decisión propietaria, pero no sustituye una aprobación financiera adicional cuando la política de NUMERA la exige.
+
+---
+
+#### 26. Snapshot de aprobación
+
+La decisión debe conservar al menos:
+
+- obligación;
+- versión observada;
+- estado previo;
+- alcance e importe aprobados;
+- moneda;
+- actor efectivo;
+- permiso exacto;
+- evidencia revisada;
+- instante;
+- decisión;
+- motivo cuando corresponda.
+
+---
+
+#### 27. Rechazo
+
+El rechazo:
+
+- exige motivo;
+- conserva obligación y soporte;
+- no modifica ORIGO/NEXO;
+- no borra el documento;
+- no equivale a cancelar una obligación ya liquidada;
+- requiere nueva decisión válida para un estado/versión posterior si el caso se corrige.
+
+---
+
+#### 28. Concurrencia y revisión stale
+
+Si la obligación cambia materialmente después de la revisión:
+
+```text
+STALE_REVIEW = DENY_AND_REVIEW_AGAIN
+```
+
+No se aprueba una versión distinta de la evaluada.
+
+---
+
+#### 29. APPROVED_FOR_SCHEDULING
+
+El estado significa elegibilidad para planificación.
+
+```text
+PAYABLE_APPROVED_IS_SCHEDULED = NO
+PAYABLE_APPROVED_IS_PAYMENT = NO
+```
+
+La aprobación puede ser total o parcial sin sobrescribir el importe original.
+
+---
+
+#### 30. Obligación, cuota y vencimiento
+
+Son objetos conceptualmente distintos.
+
+La experiencia debe soportar:
+
+- un vencimiento único;
+- múltiples cuotas/vencimientos;
+- fechas revisadas con evidencia;
+- descuentos por pronto pago sustentados;
+- cargos o mora desde fuente válida;
+- periodos de gracia contractuales;
+- vencimientos disputados.
+
+---
+
+#### 31. SCHEDULED_FOR_PAYMENT
+
+La programación requiere, como mínimo:
+
+- aprobación vigente;
+- fecha prevista;
+- medio previsto;
+- cuenta financiera elegible;
+- prioridad;
+- importe a ejecutar;
+- moneda;
+- referencia a obligación o cuota;
+- autoridad aplicable;
+- condición de liquidez/tesorería cuando corresponda.
+
+Programar no retira dinero.
+
+---
+
+#### 32. Planes y lotes de pago
+
+Las obligaciones pueden agruparse para planificación, preservando:
+
+- identidad individual;
+- importe individual;
+- vencimiento;
+- prioridad;
+- moneda;
+- estado;
+- resultado individual.
+
+Un lote no fusiona las obligaciones.
+
+---
+
+#### 33. Aprobación de plan de pago
+
+Cuando aplique, se consumen:
+
+```text
+numera.finance.payment_plans.approve
+numera.finance.payment_plans.reject
+```
+
+Se conserva:
+
+```text
+PAYMENT_PLAN_APPROVED != PAYMENT_EXECUTED
+```
+
+---
+
+#### 34. Frontera de tesorería
+
+UX-020 puede mostrar que una obligación está programada o lista para tesorería.
+
+La elección/ejecución monetaria, cuentas financieras, movimientos y conciliación bancaria detallada permanecen con UX-021.
+
+---
+
+#### 35. PAYMENT_IN_PROGRESS
+
+Significa que una instrucción fue enviada o su ejecución comenzó y espera resultado idempotente.
+
+```text
+SCHEDULED_IS_PAYMENT = NO
+PAYMENT_IN_PROGRESS_IS_CONFIRMED = NO
+```
+
+Una respuesta perdida no autoriza reintento ciego.
+
+---
+
+#### 36. Resultado desconocido
+
+Se conserva:
+
+```text
+UNKNOWN_RESULT != FAILED_RESULT
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+```
+
+Antes de repetir una instrucción se consulta o reconcilia el estado previo.
+
+---
+
+#### 37. Ejecución externa
+
+El banco o proveedor financiero conserva autoridad sobre la confirmación externa cuando corresponda.
+
+NUMERA conserva solicitud, identificadores, cuenta origen autorizada, beneficiario, importe, moneda, estado, respuesta, reintentos y correlación.
+
+Una respuesta técnica exitosa no equivale por sí sola a confirmación económica.
+
+---
+
+#### 38. PAYMENT_RECORDED
+
+`PAYMENT_RECORDED` confirma que NUMERA registró un resultado de pago.
+
+```text
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+```
+
+Todavía puede existir conciliación bancaria pendiente.
+
+---
+
+#### 39. Aplicación de pago
+
+Un pago registrado puede aplicarse a:
+
+- obligación completa;
+- cuota;
+- varias obligaciones si el soporte lo demuestra;
+- parte de una obligación;
+- anticipo relacionado;
+- ajuste autorizado.
+
+La aplicación es explícita, trazable y reversible mediante acción controlada.
+
+---
+
+#### 40. Pagos parciales
+
+Se congela:
+
+```text
+PARTIAL_PAYMENT_PRESERVES_RESIDUAL = YES
+```
+
+El residual no es una cifra editable de conveniencia; se deriva de componentes trazables.
+
+---
+
+#### 41. Anticipos
+
+El anticipo permanece separado de recepción, obligación final y pago liquidatorio.
+
+Al aplicarse:
+
+- conserva identidad original;
+- conserva fecha, importe, moneda y soporte;
+- registra importe aplicado;
+- conserva saldo no aplicado;
+- no se aplica dos veces por replay.
+
+---
+
+#### 42. Notas, créditos, descuentos y retenciones
+
+Una nota de crédito, descuento, devolución, retención u otro ajuste:
+
+- no borra la obligación original;
+- conserva causa y soporte;
+- conserva actor/autoridad cuando corresponda;
+- modifica el saldo mediante relación explícita;
+- no decide por sí sola tratamiento fiscal o contable oficial.
+
+---
+
+#### 43. Disputas
+
+Se congela:
+
+```text
+DISPUTE_CAN_BE_PARTIAL = YES
+```
+
+La experiencia distingue importe disputado y no disputado. La parte no disputada solo continúa si está identificada y autorizada por separado.
+
+---
+
+#### 44. Diferencias de expediente
+
+La UX debe hacer visibles, como mínimo:
+
+- obligación sin orden cuando sea exigible;
+- documento sin recepción cuando sea exigible;
+- recepción sin documento pendiente;
+- precio diferente;
+- cantidad diferente;
+- moneda diferente;
+- impuesto o recargo diferente;
+- vencimiento incompatible;
+- proveedor incompatible;
+- documento duplicado;
+- anticipo no aplicado;
+- nota/devolución no aplicada;
+- obligación duplicada;
+- pago superior al alcance autorizado.
+
+---
+
+#### 45. BANK_RECONCILIATION_PENDING
+
+Este estado señala que todavía deben correlacionarse, cuando aplique:
+
+- obligación;
+- aprobación;
+- instrucción;
+- resultado;
+- movimiento bancario;
+- línea de extracto;
+- comisión;
+- retención;
+- rechazo/reverso;
+- saldo remanente.
+
+El workspace bancario detallado pertenece a UX-021.
+
+---
+
+#### 46. PAYABLE_SETTLED
+
+Solo se alcanza cuando existe saldo final explicado.
+
+```text
+PAYABLE_SETTLED_REQUIRES_EXPLAINED_FINAL_BALANCE = YES
+ZERO_BALANCE_WITHOUT_EXPLANATION_IS_SETTLED = NO
+```
+
+Liquidar no borra compra, recepción, documento, ajustes, disputas ni pagos.
+
+---
+
+#### 47. Correcciones no destructivas
+
+No se sobrescriben silenciosamente:
+
+- proveedor;
+- soporte;
+- importe original;
+- moneda;
+- vencimiento histórico;
+- aprobación;
+- programación;
+- pago;
+- aplicación;
+- conciliación.
+
+Toda corrección conserva el original y relación explícita.
+
+---
+
+#### 48. Obligación inválida o duplicada
+
+Si una obligación resulta inválida, duplicada o sin soporte suficiente:
+
+- se conserva identidad y evidencia;
+- se registra la causa/decisión;
+- se bloquea programación/pago cuando no sea elegible;
+- se relaciona con el registro correcto cuando exista;
+- no se borra para ocultar el historial.
+
+---
+
+#### 49. Aging
+
+El aging se deriva de vencimientos y saldos.
+
+La UX debe distinguir al menos:
+
+```text
+OPEN
+APPROVED_UNSCHEDULED
+SCHEDULED_UNEXECUTED
+PAYMENT_IN_PROGRESS
+PAYMENT_RECORDED_PENDING_RECONCILIATION
+PARTIALLY_PAID
+OVERDUE
+UPCOMING
+DISPUTED
+SETTLED
+```
+
+No se almacena como verdad editable independiente.
+
+---
+
+#### 50. Tesorería proyectada frente a saldo observado
+
+Se conserva:
+
+```text
+OPEN_PAYABLE != OBSERVED_BANK_OUTFLOW
+SCHEDULED_PAYMENT != CONFIRMED_BANK_OUTFLOW
+FUTURE_COMMITMENT != OBSERVED_BALANCE
+```
+
+Las obligaciones alimentan proyección; UX-021 conserva saldo/movimiento financiero observado.
+
+---
+
+#### 51. Moneda
+
+La obligación conserva moneda original.
+
+Cuando ejecución use otra moneda:
+
+- se conserva moneda original;
+- se declara moneda de ejecución;
+- se conserva fuente/fecha de conversión cuando aplique;
+- diferencia cambiaria no se mezcla con diferencia comercial;
+- UX-020 no inventa tasa ni tratamiento contable.
+
+---
+
+#### 52. Fechas separadas
+
+Se conservan, cuando apliquen:
+
+```text
+FECHA_DE_COMPROMISO
+FECHA_DE_RECEPCION
+FECHA_DE_DOCUMENTO
+FECHA_DE_RECONOCIMIENTO
+FECHA_DE_VENCIMIENTO
+FECHA_DE_APROBACION
+FECHA_DE_PROGRAMACION
+FECHA_DE_INSTRUCCION
+FECHA_DE_PAGO_REPORTADO
+FECHA_DE_VALOR_BANCARIO
+FECHA_DE_CONCILIACION
+FECHA_DE_LIQUIDACION
+```
+
+Ninguna se deriva silenciosamente de otra.
+
+---
+
+#### 53. Periodos protegidos
+
+Un evento tardío no reescribe silenciosamente un periodo cerrado.
+
+Cuando requiera corrección temporal:
+
+```text
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+```
+
+---
+
+#### 54. Segregación funcional
+
+La UX mantiene distintos:
+
+```text
+REGISTER
+VALIDATE
+APPROVE
+SCHEDULE
+AUTHORIZE_EXECUTION
+EXECUTE_OR_CONFIRM_EXTERNALLY
+RECORD_RESULT
+APPLY
+RECONCILE
+CORRECT
+EXPORT
+```
+
+Una sola capacidad genérica no implica todas las anteriores.
+
+---
+
+#### 55. Seguridad y sensibilidad
+
+La superficie trata como información restringida:
+
+- datos bancarios de proveedor;
+- documentos fiscales/contractuales;
+- importes;
+- condiciones de pago;
+- aprobaciones;
+- cuentas origen;
+- referencias de pago;
+- disputas y correcciones.
+
+La presentación aplica mínimo privilegio y divulgación solo cuando sea necesaria.
+
+---
+
+#### 56. Idempotencia integral
+
+La cadena obligación–programación–pago–conciliación debe impedir que replay/reintento cree:
+
+- segunda obligación;
+- segundo efecto de aprobación;
+- segunda programación equivalente;
+- segundo pago por respuesta perdida;
+- doble aplicación;
+- doble conciliación;
+- liquidación inconsistente.
+
+---
+
+#### 57. Gasto no equivale a obligación
+
+Se conserva:
+
+```text
+EXPENSE_IS_PAYABLE = NO
+RECOGNIZED_EXPENSE_IS_APPROVED_PAYABLE = NO
+PAID_PAYABLE_IS_EXPENSE_RECOGNIZED_ON_SAME_DATE = NO
+```
+
+Un gasto puede originar una obligación legítima, pero no son el mismo objeto.
+
+---
+
+#### 58. Impuestos y contabilidad formal
+
+UX-020 puede mostrar componentes necesarios para explicar saldo y pago, pero no decide:
+
+- impuesto legal definitivo;
+- declaración tributaria;
+- asiento contable;
+- cuenta del plan contable;
+- tratamiento fiscal oficial.
+
+---
+
+#### 59. Presentación principal de VSCREEN-0098
+
+La pantalla debe priorizar:
+
+1. obligación y contraparte;
+2. estado lifecycle;
+3. importe original, aplicado y residual;
+4. vencimiento/aging;
+5. origen y soporte;
+6. aprobación/disputa;
+7. programación visible;
+8. último resultado de pago cuando exista;
+9. estado de conciliación;
+10. owner de siguiente acción.
+
+---
+
+#### 60. Bandeja de obligaciones
+
+La lista debe permitir distinguir por estado y riesgo sin reducir todo a “pendiente/pagado”.
+
+Filtros pueden incluir entidad, sede, proveedor, vencimiento, estado, disputa, moneda y owner, pero no constituyen autoridad.
+
+---
+
+#### 61. Detalle de obligación
+
+El detalle debe exponer progresivamente:
+
+- identity/origin;
+- soporte;
+- historial de estados;
+- cuotas/vencimientos;
+- aprobaciones;
+- planificaciones;
+- resultados de pago;
+- aplicaciones;
+- ajustes/créditos;
+- disputas;
+- conciliación;
+- evidencia/auditoría.
+
+---
+
+#### 62. Acciones contextuales
+
+La UI solo ofrece acciones válidas para el estado, permiso, versión y alcance actuales.
+
+Un botón visible no constituye autorización y el servidor debe revalidar la acción.
+
+---
+
+#### 63. Estados de experiencia complementarios
+
+Sin crear estados `VPROC-*`, la UX puede presentar etiquetas derivadas como:
+
+```text
+DUE_SOON
+OVERDUE
+PARTIALLY_PAID
+PARTIALLY_DISPUTED
+WAITING_SOURCE
+WAITING_APPROVAL
+WAITING_TREASURY
+PAYMENT_RESULT_UNKNOWN
+RECONCILIATION_PENDING
+```
+
+Son proyecciones de experiencia, no nuevas verdades empresariales.
+
+---
+
+#### 64. Fuente incompleta y frescura
+
+La superficie debe poder mostrar:
+
+- corte temporal;
+- fuentes pendientes;
+- última versión conocida;
+- estado de sincronización;
+- limitaciones del expediente.
+
+Fuente incompleta no equivale a saldo cero ni obligación liquidada.
+
+---
+
+#### 65. Decisión stale
+
+Cuando cambie documento, recepción, importe, proveedor, disputa o versión material:
+
+- aprobación previa puede quedar stale según política;
+- programación debe revalidarse;
+- la UI muestra el cambio;
+- no se ejecuta una decisión contra una versión distinta sin nueva validación.
+
+---
+
+#### 66. Históricos y backfill
+
+Datos históricos incompletos pueden conservar limitación explícita.
+
+No se inventan aprobaciones, programaciones, pagos o conciliaciones que no tengan evidencia histórica.
+
+---
+
+#### 67. Estado vacío
+
+Una vista sin obligaciones bajo los filtros solo significa que no hay filas visibles en ese alcance.
+
+No demuestra completitud de todas las fuentes, ausencia global de deuda ni cierre financiero total.
+
+---
+
+#### 68. Estado actual de implementación
+
+El corte vigente de `vento-numera` clasifica `CAP-12.05 — Gestionar cuentas por pagar` como `AUSENTE`.
+
+No existe actualmente un flujo integral materializado de obligación, vencimiento, aprobación, programación, pago y disputa dentro de NUMERA.
+
+UX-020 define el contrato objetivo; no declara implementación inexistente.
+
+---
+
+#### 69. Escenarios mínimos de validación futura
+
+La implementación deberá demostrar al menos estos 25 escenarios:
+
+1. factura llega antes de la recepción y la obligación no se aprueba por inferencia;
+2. recepción llega antes de la factura y el expediente conserva soporte pendiente;
+3. servicio sin inventario puede originar obligación con aceptación verificable;
+4. recepción parcial no crea obligación por el alcance no recibido sin evidencia;
+5. documento parcial conserva residual y relación con el origen;
+6. una obligación con varias cuotas conserva vencimientos independientes;
+7. anticipo previo conserva identidad y saldo no aplicado;
+8. pago parcial deja residual explicable;
+9. descuento por pronto pago solo aplica con soporte/regla vigente;
+10. nota de crédito ajusta saldo sin borrar obligación original;
+11. devolución posterior conserva origen y efecto correlacionado;
+12. retención queda visible como componente explicable;
+13. disputa parcial bloquea únicamente el alcance disputado cuando la política lo permita;
+14. cambio de proveedor o cuenta de pago exige revalidación y no reemplazo silencioso;
+15. obligación duplicada se detecta sin borrado destructivo;
+16. pago rechazado no liquida obligación;
+17. respuesta de pago perdida produce consulta/reconciliación antes de retry;
+18. reverso bancario reabre el residual aplicable sin borrar el pago previo;
+19. comisión bancaria se diferencia del importe de obligación;
+20. obligación en moneda extranjera conserva moneda original;
+21. pago en moneda distinta conserva conversión identificable sin sobrescribir origen;
+22. evento tardío después de cierre se enruta a tratamiento de periodo;
+23. obligación aprobada que pierde elegibilidad antes del pago exige nueva revisión;
+24. pago superior al saldo no se aplica silenciosamente;
+25. saldo pequeño no explicado impide `PAYABLE_SETTLED`.
+
+---
+
+#### 70. Hallazgos y carryovers
+
+| Hallazgo | Bloquea UX-020 | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| cuentas por pagar no están materializadas | no | paquetes físicos NUMERA/E5 aplicables | `VSCREEN-0098`, lifecycle y persistencia quedan implementados con este contrato |
+| expediente compra–recepción–documento–obligación todavía no es físico | no | UX-018/UX-020 + integraciones aplicables | lineage e idempotencia convergen de extremo a extremo |
+| tesorería/caja/bancos detallados permanecen fuera | no | `NUMERA-UX-021` | cuentas, movimientos, ejecución y matching bancario quedan definidos/materializados |
+| corrección de eventos tardíos puede requerir periodo | no | `NUMERA-UX-023` | corrección/reapertura versionada conserva historia |
+| tratamiento fiscal/contable formal sigue separado | no | `NUMERA-UX-027` y dominios propietarios | integración oficial conserva autoridad externa y no duplica hechos |
+
+---
+
+#### 71. Decisiones congeladas
+
+```text
+PAYABLE_EXPERIENCE_CONTRACT = NUMERA-PAYABLE-OBLIGATION-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0098
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION
+PAYABLES_WITHIN_NUMERA_SCOPE = YES
+PURCHASE_AND_COMMERCIAL_RECEIPT_OWNER = ORIGO
+PHYSICAL_MOVEMENT_OWNER = NEXO
+PAYABLE_REGISTERED_IS_APPROVED = NO
+PAYABLE_APPROVED_IS_SCHEDULED = NO
+SCHEDULED_IS_PAYMENT = NO
+PAYMENT_IN_PROGRESS_IS_CONFIRMED = NO
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+PARTIAL_PAYMENT_PRESERVES_RESIDUAL = YES
+DISPUTE_CAN_BE_PARTIAL = YES
+PAYABLE_SETTLED_REQUIRES_EXPLAINED_FINAL_BALANCE = YES
+PROVIDER_BANK_DATA_FROM_DOCUMENT_IS_AUTHORIZED = NO
+PROVIDER_BANK_DATA_FROM_MESSAGE_IS_AUTHORIZED = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+PAYMENT_EXECUTION_OWNER = NUMERA_UX_021
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+VALIDATION_SCENARIO_COUNT = 25
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La conducta queda cubierta por obligaciones canónicas existentes de NUMERA, ORIGO, integración y autorización. Crear nuevas filas duplicaría cobertura ya vigente.
+
+---
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — conciliación con hechos y documentos fuente, no duplicación e historia;
+- `TREQ-NUMERA-002` — identidad estable, entidad, contraparte, moneda, fechas, fuente, documento, importe, estado y corrección no destructiva;
+- `TREQ-NUMERA-003` — cuentas por pagar, obligaciones, vencimientos, aprobación, programación, pago, disputa, bancos, tesorería y permisos separados, con UX-020 como cobertura explícita;
+- `TREQ-ORIGO-004` — compromiso de compra aprobado, versionado y segregado;
+- `TREQ-ORIGO-005` — identidad de proveedor, condiciones comerciales y datos sensibles;
+- `TREQ-INTEGRATION-010` — correlación única ORIGO → recepción → NEXO → NUMERA y fuente financiera única de obligación;
+- `TREQ-INTEGRATION-017` — contratos financieros correlacionados e idempotentes sin obligación o pago duplicados;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas.
+
+---
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto |
+| LOCAL | NOT_EXECUTED | reemplazo, formato, quality, delivery, topología, plan y TREQ quedan para el checkout del usuario tras cierre de UX-019 |
+| REMOTA | PASS | se verificaron `vento-shell/main`, secuencia activa, topología `DEFINE_ONCE`, `NUMERA-DOM-010`, `VSCREEN-0097`, `VSCREEN-0098`, `VSCREEN-0155`, `VPROC-0052`, `NUMERA-AUTH-005`, Registro 04A, estado AS-IS de `CAP-12.05` y scripts documentales vigentes; UX-019 se consume desde su archivo completo aprobado mientras permanece pendiente de publicación |
+| OPERATIVA | NOT_EXECUTED | no se registraron obligaciones, aprobaciones, programaciones, pagos, disputas, conciliaciones ni liquidaciones reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-020` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 75. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. cuentas por pagar quedan explícitamente dentro del alcance NUMERA;
+2. `VSCREEN-0098` es la superficie principal;
+3. `VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION` es el paso owner de experiencia;
+4. ORIGO conserva compra, proveedor y recepción comercial;
+5. NEXO conserva movimiento físico;
+6. movimiento físico/productivo/interno no crea obligación externa por inferencia;
+7. documento, hecho económico, obligación, cuota, aprobación, programación, pago y conciliación permanecen distintos;
+8. `PAYABLE_REGISTERED` no equivale a aprobado;
+9. validación revisa origen, soporte, contraparte, importe, moneda, vencimiento y duplicidad;
+10. servicios no inventariables no requieren stock ficticio;
+11. datos bancarios provenientes de documento/mensaje no se consideran autorizados;
+12. duplicidad no se decide solo por importe/proveedor/fecha;
+13. aprobación financiera permanece distinta de aprobación comercial;
+14. permisos exactos de payable se consumen sin presentarlos como materializados;
+15. stale review exige revisar nuevamente;
+16. rechazo exige motivo y conserva historia;
+17. aprobado no equivale a programado;
+18. obligación, cuota y vencimiento permanecen distintos;
+19. programación no retira dinero;
+20. lote de pagos no fusiona obligaciones;
+21. aprobación del plan no ejecuta pago;
+22. tesorería detallada permanece con UX-021;
+23. `PAYMENT_IN_PROGRESS` no equivale a confirmado;
+24. resultado desconocido exige consulta/conciliación;
+25. `PAYMENT_RECORDED` no equivale a conciliación bancaria;
+26. aplicaciones son explícitas y trazables;
+27. pago parcial conserva residual;
+28. anticipo se aplica una sola vez;
+29. notas/créditos/retenciones no borran obligación original;
+30. disputa puede ser parcial;
+31. diferencias del expediente permanecen visibles hasta resolución;
+32. `PAYABLE_SETTLED` exige saldo final explicado;
+33. correcciones no sobrescriben historia;
+34. obligación inválida/duplicada no se elimina destructivamente;
+35. aging es derivado;
+36. tesorería proyectada no se confunde con saldo observado;
+37. moneda original se preserva;
+38. fechas relevantes permanecen separadas;
+39. evento tardío respeta periodo protegido;
+40. registrar, validar, aprobar, programar, ejecutar, aplicar y conciliar son capacidades distintas;
+41. información sensible conserva mínimo privilegio;
+42. cadena completa es idempotente;
+43. gasto y obligación permanecen distintos;
+44. fiscalidad/contabilidad formal quedan fuera;
+45. VSCREEN-0098 prioriza obligación, saldo, vencimiento, origen, aprobación y siguiente acción;
+46. filtros no son autoridad;
+47. UI no sustituye revalidación server-side;
+48. fuente incompleta no equivale a saldo cero;
+49. históricos incompletos no se fabrican como aprobados/pagados;
+50. el AS-IS ausente no se presenta como implementación existente;
+51. los 25 escenarios mínimos quedan definidos;
+52. todos los hallazgos tienen owner y condición de salida;
+53. no se crean ni modifican requisitos de prueba;
+54. no se realizan cambios físicos;
+55. UX-021 recibe frontera explícita de caja, bancos, ejecución y conciliación bancaria.
+
+---
+
+#### 76. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0098`;
+- crea motor físico de payables;
+- crea tablas, columnas, índices, RPC, Server Actions, APIs, RLS o migraciones;
+- modifica Supabase;
+- modifica ORIGO o NEXO;
+- registra obligaciones reales;
+- importa documentos reales;
+- cambia proveedores;
+- fija umbrales monetarios universales;
+- fija tolerancias universales;
+- autoriza datos bancarios de proveedor;
+- ejecuta pagos;
+- crea cuentas bancarias;
+- importa extractos;
+- concilia bancos;
+- define caja completa;
+- define tesorería completa;
+- define cuentas por cobrar;
+- define plan de cuentas/asientos;
+- define tratamiento tributario oficial;
+- corrige periodos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-021`.
+
+---
+
+#### 77. Handoff a NUMERA-UX-021
+
+La siguiente tarea recibe:
+
+```text
+PAYABLE_EXPERIENCE_CONTRACT = NUMERA-PAYABLE-OBLIGATION-EXPERIENCE-001
+PRIMARY_SCREEN_ID = VSCREEN-0098
+OWNER_PROCESS_ID = VPROC-0052
+OWNER_STEP_ID = VPROC-0052::STEP-MANAGE_PAYABLE_OBLIGATION
+PAYABLES_WITHIN_NUMERA_SCOPE = YES
+PAYABLE_REGISTERED_IS_APPROVED = NO
+PAYABLE_APPROVED_IS_SCHEDULED = NO
+SCHEDULED_IS_PAYMENT = NO
+PAYMENT_IN_PROGRESS_IS_CONFIRMED = NO
+PAYMENT_RECORDED_IS_BANK_RECONCILED = NO
+PARTIAL_PAYMENT_PRESERVES_RESIDUAL = YES
+DISPUTE_CAN_BE_PARTIAL = YES
+PAYABLE_SETTLED_REQUIRES_EXPLAINED_FINAL_BALANCE = YES
+PROVIDER_BANK_DATA_FROM_DOCUMENT_IS_AUTHORIZED = NO
+UNKNOWN_RESULT_REQUIRES_QUERY_OR_RECONCILIATION = YES
+PAYMENT_EXECUTION_OWNER = NUMERA_UX_021
+BANK_RECONCILIATION_OWNER = NUMERA_UX_021
+PERIOD_CORRECTION_OWNER = NUMERA_UX_023
+VALIDATION_SCENARIO_COUNT = 25
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-021` deberá diseñar caja y bancos preservando que obligación, programación, instrucción, resultado de pago, movimiento bancario y conciliación son identidades distintas, sin recrear la cuenta por pagar.
+
+---
+
+#### 78. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-019
+-> NUMERA-UX-020
+-> NUMERA-UX-021
+```
+
+UX-020 consume la frontera de UX-019 y entrega a UX-021 obligaciones/programaciones sin convertirlas en movimientos bancarios observados.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-019 — Diseñar conciliación de inventario, producción y variaciones`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-020 — Diseñar cuentas por pagar cuando pertenezcan al alcance aprobado`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado`
 ### [ ] NUMERA-UX-021 — Diseñar caja y bancos cuando pertenezcan al alcance aprobado
 ### [ ] NUMERA-UX-022 — Diseñar costos y rentabilidad con trazabilidad hasta el origen
 ### [ ] NUMERA-UX-023 — Diseñar correcciones y reaperturas sin borrar historial
