@@ -13068,7 +13068,1589 @@ UX-010 consume el recurso/handoff elegible de UX-009 y entrega a UX-011 una sepa
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-011 — Diseñar flujo de cierre`
-### [ ] NUMERA-UX-011 — Diseñar flujo de cierre
+### ✅ NUMERA-UX-011 — Diseñar flujo de cierre
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-010 — Diseñar flujo de aprobación
+**Tarea siguiente:** NUMERA-UX-012 — Diseñar exportación con permiso independiente
+**Tipo de tarea:** definición documental del flujo UX de bloqueo preparatorio, cierre, liberación de lock, reapertura y corrección gobernada de periodos económicos en `VSCREEN-0105`, consumiendo permisos atómicos de periodo, lifecycle `open|locked|closed`, gates reproducibles, segregación, reautenticación fuerte cuando aplique, revalidación server-side, idempotencia, concurrencia, restatement versionado, evidencia y recuperación, sin convertir la pantalla en autoridad omnibus ni absorber conciliación, exportación, cierre contable/fiscal, mutaciones de recursos o materialización runtime; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica superficies runtime, componentes React, permisos runtime, grants, roles, Server Actions, RLS, RPC, tablas, vistas, migraciones, Supabase, datos financieros, periodos reales, procesos, estados de proceso, packages compartidos, navegación ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable la experiencia mediante la cual una persona autorizada puede revisar un periodo económico, bloquearlo para preparación de cierre, resolver o aceptar explícitamente excepciones, cerrar una versión elegible, liberar un lock todavía no cerrado, reabrir una versión cerrada cuando corresponda y conducir correcciones posteriores sin borrar historia ni convertir la reapertura en escritura irrestricta.
+
+La tarea materializa documentalmente el flujo UX de `VSCREEN-0105 — Cierre, reapertura y corrección de periodo` y preserva la separación entre estado del periodo, lifecycle de costos, conciliaciones, recursos financieros subyacentes y cierres contables o fiscales externos.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología vigente de `NUMERA-UX` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea:
+
+- define una sola vez el flujo UX de cierre/reapertura;
+- no crea instancia física propia;
+- no publica permisos;
+- no modifica `vento-numera`;
+- no modifica Supabase;
+- no cambia el estado de periodos reales;
+- no ejecuta correcciones reales;
+- no altera `VPROC-0054` ni crea estados nuevos.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-010
+
+La tarea recibe:
+
+```text
+NUMERA_FINANCIAL_APPROVAL_FLOW_CONTRACT = NUMERA-FINANCIAL-APPROVAL-FLOW-001
+NUMERA_EXPENSE_REGISTRATION_FLOW_CONTRACT = NUMERA-EXPENSE-REGISTRATION-FLOW-001
+APPROVAL_QUEUE_SCREEN_ID = VSCREEN-0097
+APPROVAL_QUEUE_PROCESS_ID = VPROC-0052
+APPROVAL_QUEUE_STEP_ID = VPROC-0052::STEP-APPROVE_FINANCIAL_DECISION
+APPROVAL_DECISION_FAMILY_COUNT = 6
+APPROVAL_PERMISSION_COUNT = 6
+REJECT_PERMISSION_COUNT = 6
+APPROVAL_DECISION_PERMISSION_COUNT = 12
+APPROVAL_QUEUE_OMNIBUS_PERMISSION = FORBIDDEN
+APPROVE_PERMISSION_IMPLIES_VIEW = NO
+REJECT_PERMISSION_IMPLIES_VIEW = NO
+APPROVAL_QUEUE_ROW_REQUIRES_UNDERLYING_VIEW = YES
+ROLE_NAME_IS_AUTHORIZATION = NO
+OWNERSHIP_IS_APPROVAL_AUTHORITY = NO
+SELECTED_SITE_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+REGISTER_PERMISSION_IMPLIES_APPROVE = NO
+UPDATE_PERMISSION_IMPLIES_APPROVE = NO
+APPROVE_IS_RECOGNIZE = NO
+APPROVE_IS_PAY_EXECUTE = NO
+APPROVE_IS_RECONCILE = NO
+APPROVE_IS_CLOSE = NO
+APPROVE_IS_REOPEN = NO
+APPROVE_IS_EXPORT = NO
+APPROVE_IS_PUBLISH = NO
+REJECTION_REASON_REQUIRED = YES
+STALE_REVIEW = DENY_AND_REVIEW_AGAIN
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STRONG_REAUTH_WHEN_APPLICABLE = YES
+DENY_SIDE_EFFECT_ALLOWED = NO
+DECISION_RETRY_REQUIRES_IDEMPOTENCY = YES
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+VPROC_0052_APPROVAL_ENTRY_STATE = UNDER_APPROVAL
+VPROC_0052_APPROVAL_SUCCESS_STATE = APPROVED_FOR_SCHEDULING
+VPROC_0052_APPROVAL_DOES_NOT_EXECUTE_PAYMENT = YES
+PLANNING_SPECIALIZED_APPROVAL_OWNER = NUMERA_AUTH_015
+RECEIVABLE_BANK_SPECIALIZED_DECISION_OWNER = NUMERA_AUTH_014
+UX_011_OWNER = PERIOD_CLOSE_FLOW
+TREQ_CHANGES = 0
+```
+
+La presente tarea consume ese handoff y mantiene explícitamente que una aprobación previa no constituye autoridad para bloquear, cerrar ni reabrir un periodo.
+
+---
+
+#### 4. Fuentes contractuales consumidas
+
+El diseño consume y no redefine:
+
+- `NUMERA-PERIOD-STATE-PERMISSION-REGISTRY-001` de `NUMERA-AUTH-006`;
+- `NUMERA-DOM-011` como contrato del periodo económico, lock, cierre, reapertura, eventos tardíos y restatement;
+- `NUMERA-DOM-014` para diferencias, conciliación, verificación posterior y efecto sobre cierres;
+- `VPROC-0054` como proceso propietario de costos, distribución, cierre y rentabilidad;
+- `VPROC-0051` como proceso relacionado para hechos económicos y correcciones correlacionadas;
+- `VSCREEN-0105` y `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD`;
+- `NUMERA-AUTH-008` para scope;
+- `NUMERA-AUTH-009` para auditoría;
+- `NUMERA-AUTH-010` para independencia administrativa de turno;
+- `NUMERA-AUTH-011` para contexto operacional cuando corresponda;
+- `NUMERA-AUTH-012` para futura materialización;
+- `NUMERA-AUTH-013` para pruebas integrales;
+- `NUMERA-UX-002` para separación entre lectura y comando;
+- `NUMERA-UX-010` para separación entre aprobación y cierre.
+
+---
+
+#### 5. Resultado contractual
+
+Esta tarea define:
+
+```text
+NUMERA-PERIOD-CLOSE-FLOW-001
+```
+
+El contrato describe dos ramas UX gobernadas:
+
+```text
+ORDINARY_CLOSE_FLOW
+REOPEN_AND_RESTATEMENT_FLOW
+```
+
+Ninguna fase UX constituye por sí sola un estado de dominio nuevo.
+
+---
+
+#### 6. Superficie propietaria
+
+El flujo principal se presenta en:
+
+```text
+SCREEN_ID = VSCREEN-0105
+SCREEN_NAME = Cierre, reapertura y corrección de periodo
+OWNER_PROCESS = VPROC-0054
+OWNER_STEP = VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD
+STEP_ACTION = CLOSE
+STEP_LIFECYCLE_POSITION = TERMINAL
+RELATED_PROCESS = VPROC-0051
+```
+
+`VSCREEN-0105` es una superficie de trabajo; no es una autoridad concedible.
+
+---
+
+#### 7. Recurso protegido
+
+El recurso temporal gobernado es:
+
+```text
+RESOURCE_TYPE = PERIOD
+```
+
+El flujo opera sobre el periodo económico de NUMERA y no sobre:
+
+- turno de caja PULSO;
+- periodo contable oficial;
+- periodo fiscal oficial;
+- ciclo de producción FOGO;
+- recepción ORIGO;
+- ciclo logístico NEXO.
+
+---
+
+#### 8. Estados canónicos del periodo
+
+Se reutilizan exactamente:
+
+```text
+open
+locked
+closed
+```
+
+La UX no crea estados visuales que pretendan reemplazar esos tres estados empresariales.
+
+---
+
+#### 9. Permisos atómicos consumidos
+
+La UX consume exactamente:
+
+```text
+VIEW   = numera.finance.periods.view
+LOCK   = numera.finance.periods.lock
+CLOSE  = numera.finance.periods.close
+REOPEN = numera.finance.periods.reopen
+```
+
+No se define una quinta autoridad de estado.
+
+---
+
+#### 10. Cardinalidad cerrada de autoridad temporal
+
+Se preserva:
+
+```text
+PERIOD_STATE_PERMISSION_COUNT = 3
+LOCK_PERMISSION_COUNT = 1
+CLOSE_PERMISSION_COUNT = 1
+REOPEN_PERMISSION_COUNT = 1
+GENERIC_CORRECT_PERMISSION_COUNT = 0
+```
+
+`periods.view` es requisito de lectura y no forma parte del conteo de mutaciones de estado.
+
+---
+
+#### 11. Flujo ordinario de cierre
+
+La secuencia UX ordinaria queda:
+
+```text
+ENTRY
+-> PERIOD_CONTEXT
+-> CURRENT_STATE_AND_VERSION
+-> CLOSE_READINESS
+-> LOCK_REVIEW
+-> LOCK_COMMIT
+-> LOCKED_RECONCILIATION
+-> CLOSE_REVIEW
+-> CLOSE_COMMIT
+-> CLOSE_RECEIPT
+-> CLOSED_READ_VIEW
+```
+
+La secuencia no autoriza saltos de estado.
+
+---
+
+#### 12. Flujo de reapertura y restatement
+
+La rama de reapertura queda:
+
+```text
+CLOSED_PERIOD_CONTEXT
+-> CLOSE_VERSION_SELECTION
+-> REOPEN_REASON_AND_IMPACT
+-> REOPEN_ELIGIBILITY
+-> STRONG_REAUTH_WHEN_APPLICABLE
+-> REOPEN_COMMIT
+-> SCOPED_CORRECTION_WINDOW
+-> CORRECTION_EXECUTION_BY_RESOURCE_OWNER
+-> RECLOSE_REQUIRED_WHEN_MATERIAL_CHANGE
+-> NEW_CLOSE_VERSION
+```
+
+Una reapertura sin cambios materiales puede seguir la política aplicable, pero nunca elimina la versión cerrada previa.
+
+---
+
+#### 13. Matriz completa de transiciones
+
+| Estado origen | Acción UX | Permiso exacto | Estado destino | Motivo obligatorio | Regla |
+| --- | --- | --- | --- | --- | --- |
+| `open` | bloquear para cierre | `numera.finance.periods.lock` | `locked` | según política/evidencia de lock | transición ordinaria de preparación |
+| `locked` | liberar lock | `numera.finance.periods.lock` | `open` | sí | no equivale a reapertura |
+| `locked` | cerrar | `numera.finance.periods.close` | `closed` | cuando política/excepción lo exija | exige gates de cierre satisfechos |
+| `closed` | reabrir | `numera.finance.periods.reopen` | `open` | sí | exige versión de cierre exacta |
+
+La matriz contiene cuatro transiciones UX sobre tres permisos mutantes y cero transiciones adicionales.
+
+---
+
+#### 14. Atajo `open -> closed` prohibido
+
+Se congela:
+
+```text
+OPEN_TO_CLOSED_DIRECT = FORBIDDEN
+```
+
+El cierre final no se ofrece como sustituto del lock preparatorio.
+
+---
+
+#### 15. Lectura requerida
+
+Toda interacción que muestre o permita decidir sobre un periodo exige:
+
+```text
+numera.finance.periods.view
+```
+
+Se conserva:
+
+```text
+LOCK_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_IMPLIES_VIEW = NO
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+```
+
+La UI no muestra contexto sensible por el solo hecho de que exista autoridad mutante.
+
+---
+
+#### 16. Cabecera de contexto del periodo
+
+La superficie debe mostrar, según autoridad:
+
+- identidad estable del periodo;
+- alcance autorizado;
+- estado actual;
+- versión actual;
+- versión de cierre vigente cuando exista;
+- fechas relevantes de apertura, lock, cierre y reapertura;
+- resumen de fuentes esperadas;
+- resumen de gates;
+- diferencias/excepciones visibles autorizadas;
+- versión candidata o cerrada aplicable.
+
+La cabecera no concede autoridad ni amplía scope.
+
+---
+
+#### 17. Estado y versión se revalidan
+
+La selección visual no es fuente de verdad.
+
+Antes de cualquier transición:
+
+```text
+SERVER_REVALIDATES_PERIOD_STATE = YES
+SERVER_REVALIDATES_PERIOD_VERSION = YES
+```
+
+Una versión stale produce:
+
+```text
+DENY_AND_REVIEW_AGAIN
+```
+
+---
+
+#### 18. Close readiness
+
+Antes de ofrecer la confirmación de cierre, la UX debe representar de forma reproducible el resultado de los gates aplicables.
+
+Como mínimo, cuando correspondan:
+
+1. completitud de fuentes esperadas;
+2. duplicados;
+3. hechos sin origen o efectos sin hecho;
+4. ventas y recaudos pendientes de conciliación material;
+5. compras, recepciones y obligaciones pendientes de conciliación material;
+6. movimientos bancarios y diferencias relevantes;
+7. inventario, producción y variaciones;
+8. costos y distribuciones versionados;
+9. resultados de `VPROC-0054`;
+10. eventos tardíos;
+11. ajustes/correcciones pendientes;
+12. excepciones;
+13. autoridad de cierre;
+14. evidencia final.
+
+---
+
+#### 19. Gate no satisfecho bloquea el cierre
+
+Se conserva:
+
+```text
+CLOSE_PERMISSION + FAILED_CLOSE_GATE = DENY
+```
+
+Tener permiso exacto no vuelve verde un gate rojo o indeterminado.
+
+---
+
+#### 20. Gate `UNKNOWN` no equivale a PASS
+
+La UX debe distinguir:
+
+```text
+PASS
+FAIL
+UNKNOWN
+NOT_APPLICABLE
+```
+
+Un gate obligatorio `UNKNOWN` bloquea la decisión hasta producir evidencia suficiente.
+
+---
+
+#### 21. Excepciones de cierre
+
+Una excepción material solo puede aparecer como aceptada/no bloqueante cuando conserva:
+
+- identidad;
+- clasificación;
+- cuantificación cuando aplique;
+- owner;
+- fuente;
+- motivo;
+- autoridad que acepta la excepción cuando corresponda;
+- evidencia;
+- efecto esperado;
+- decisión explícita.
+
+La ausencia de owner o evidencia no se convierte en excepción aceptada por conveniencia visual.
+
+---
+
+#### 22. Objetos legítimamente abiertos
+
+La UX no exige saldo cero universal para permitir un cierre.
+
+Una obligación, cuenta por cobrar u otro objeto puede cruzar periodos cuando su estado y saldo sean explicables conforme al contrato propietario.
+
+```text
+OPEN_BUSINESS_OBJECT != AUTOMATIC_CLOSE_BLOCKER
+UNEXPLAINED_MATERIAL_EXCEPTION = CLOSE_BLOCKER
+```
+
+---
+
+#### 23. Lock preparatorio
+
+`numera.finance.periods.lock` permite:
+
+```text
+open -> locked
+```
+
+El resultado UX debe comunicar que:
+
+- la mutación económica ordinaria queda protegida;
+- comienza revisión/conciliación de cierre;
+- el periodo aún no está cerrado;
+- los owners de las diferencias permanecen identificables.
+
+---
+
+#### 24. Lock no equivale a cierre
+
+Se conserva:
+
+```text
+LOCKED != CLOSED
+LOCK != CLOSE
+```
+
+La UX no usa texto, color o receipt que haga parecer final un lock preparatorio.
+
+---
+
+#### 25. Liberación de lock
+
+La transición:
+
+```text
+locked -> open
+```
+
+usa `numera.finance.periods.lock`, exige motivo y conserva el intento de cierre.
+
+La UI debe mostrar que:
+
+```text
+RELEASE_LOCK != REOPEN
+```
+
+---
+
+#### 26. Razón de liberación de lock
+
+La liberación exige una razón empresarial explícita y auditable.
+
+La UX debe permitir identificar, al menos:
+
+- qué gate o condición motivó la liberación;
+- qué corrección debe ocurrir;
+- owner responsable;
+- impacto esperado;
+- siguiente condición de salida.
+
+---
+
+#### 27. Estado `locked` y correcciones
+
+Una corrección requerida durante `locked` no adquiere autoridad por pertenecer al flujo de cierre.
+
+Puede requerir:
+
+```text
+release_lock
++ exact_resource_mutation_authority
++ new_close_attempt
+```
+
+según la naturaleza de la corrección.
+
+---
+
+#### 28. Close review
+
+Antes de `locked -> closed`, la UX debe presentar una revisión final que incluya:
+
+- periodo y alcance;
+- versión actual;
+- gates y su estado;
+- fuentes/watermarks relevantes;
+- conciliaciones materiales;
+- excepciones aceptadas;
+- resultados vinculados;
+- actor efectivo;
+- permiso requerido;
+- impacto del cierre;
+- evidencia final disponible.
+
+---
+
+#### 29. Close commit
+
+La mutación final requiere:
+
+```text
+numera.finance.periods.close
++ period_id
++ current_state = locked
++ expected_period_version
++ valid_scope
++ close_gates = SATISFIED
++ authorization = ALLOW
+```
+
+Cualquier inconsistencia produce deny sin side effects.
+
+---
+
+#### 30. Cierre no equivale a aprobación
+
+Se conserva:
+
+```text
+APPROVE != LOCK
+APPROVE != CLOSE
+APPROVE != REOPEN
+```
+
+UX-010 no concede autoridad temporal a UX-011.
+
+---
+
+#### 31. Cierre no equivale a conciliación
+
+Se conserva:
+
+```text
+RECONCILE != LOCK
+RECONCILE != CLOSE
+RECONCILE != REOPEN
+```
+
+La conciliación puede ser gate o evidencia; su permiso no sustituye `periods.close`.
+
+---
+
+#### 32. Cierre no equivale a exportación
+
+Se conserva:
+
+```text
+LOCK != EXPORT
+CLOSE != EXPORT
+REOPEN != EXPORT
+```
+
+La extracción de información queda reservada a `NUMERA-UX-012` y al contrato de `NUMERA-AUTH-007`.
+
+---
+
+#### 33. Cierre no equivale a publicación
+
+Cerrar un periodo NUMERA no publica por sí solo:
+
+- reportes;
+- escenarios;
+- presupuestos;
+- forecast;
+- versiones de precio;
+- precios operativos.
+
+Cada publicación conserva su autoridad propietaria.
+
+---
+
+#### 34. Cierre económico no es cierre contable o fiscal
+
+Se congela:
+
+```text
+NUMERA_PERIOD_CLOSE
+!= ACCOUNTING_CLOSE
+!= TAX_CLOSE
+!= OFFICIAL_LEDGER_CLOSE
+```
+
+La UX debe nombrar el efecto como cierre económico NUMERA cuando exista riesgo de confusión.
+
+---
+
+#### 35. Cierre NUMERA no cierra dominios fuente
+
+El cierre no modifica estados propietarios de:
+
+- PULSO;
+- ORIGO;
+- NEXO;
+- FOGO.
+
+Los hechos legítimos posteriores se reciben mediante sus contratos de integración y se tratan como eventos tardíos cuando corresponda.
+
+---
+
+#### 36. Receipt de cierre
+
+Después de un resultado confirmado, el receipt de cierre debe permitir reconstruir:
+
+- periodo;
+- alcance;
+- versión cerrada;
+- estado anterior y nuevo;
+- actor y actor efectivo;
+- permiso exacto;
+- gates evaluados;
+- excepciones aceptadas;
+- timestamp;
+- correlación;
+- referencia de evidencia.
+
+No se presentan secretos, tokens ni credenciales.
+
+---
+
+#### 37. Resultado desconocido de cierre
+
+Si la respuesta técnica es incierta después del envío:
+
+```text
+RESULT_UNKNOWN != RETRY_BLINDLY
+```
+
+La UX debe consultar el estado/version actual y la evidencia correlacionada antes de decidir si corresponde mostrar éxito, fallo o reintento seguro.
+
+---
+
+#### 38. Idempotencia de cierre
+
+Se conserva:
+
+```text
+SAME_PERIOD
++ SAME_VERSION
++ SAME_CLOSE_DECISION
++ SAME_IDEMPOTENCY_KEY
+= ONE_CLOSE_EFFECT
+```
+
+Doble clic, refresh o retry no deben producir dos cierres equivalentes.
+
+---
+
+#### 39. Reapertura: condición de entrada
+
+Solo un periodo `closed` puede entrar a la rama de reapertura ordinaria.
+
+Se conserva:
+
+```text
+CLOSED_TO_OPEN_IS_REOPEN = YES
+LOCKED_TO_OPEN_IS_REOPEN = NO
+```
+
+---
+
+#### 40. Versión de cierre obligatoria
+
+La UX no permite confirmar reapertura sin identificar:
+
+```text
+period_id
+close_version
+current_period_version
+```
+
+Se conserva:
+
+```text
+REOPEN_WITHOUT_CLOSE_VERSION = DENY
+```
+
+---
+
+#### 41. Motivo de reapertura obligatorio
+
+Toda reapertura exige motivo empresarial explícito.
+
+Debe incluir, cuando aplique:
+
+- hallazgo/evento origen;
+- impacto esperado;
+- recursos afectados;
+- riesgo de no corregir;
+- alternativa de ajuste posterior evaluada;
+- alcance solicitado;
+- evidencia revisada.
+
+---
+
+#### 42. Evaluación ajuste posterior vs reapertura
+
+Antes de reabrir, la UX debe permitir demostrar que se evaluó si el efecto puede resolverse en un periodo abierto sin reexpresar el cierre histórico.
+
+```text
+CORRECTION_WITHOUT_REOPEN_ALLOWED_BY_POLICY
+-> no reopen required
+```
+
+La elección debe quedar trazable.
+
+---
+
+#### 43. Reapertura material
+
+Cuando la corrección deba cambiar materialmente la representación económica de la versión cerrada:
+
+```text
+CORRECTION_REQUIRES_REOPEN = YES
+```
+
+La UX exige `numera.finance.periods.reopen` y no sustituye la autoridad exacta de la corrección posterior.
+
+---
+
+#### 44. Reopen review
+
+La revisión previa debe mostrar:
+
+- periodo;
+- versión de cierre afectada;
+- versión vigente;
+- motivo;
+- alcance;
+- impacto esperado;
+- familias/objetos afectados;
+- evidencia;
+- actor efectivo;
+- permiso requerido;
+- condición de finalización;
+- necesidad prevista de nuevo cierre.
+
+---
+
+#### 45. Reapertura acotada
+
+Se conserva:
+
+```text
+REOPEN_IS_UNBOUNDED_WRITE = NO
+```
+
+El receipt de reapertura debe dejar visible qué alcance y familias quedaron habilitados para corrección gobernada.
+
+---
+
+#### 46. Reapertura no concede mutación de recursos
+
+Se conserva:
+
+```text
+REOPEN_PERMISSION_IMPLIES_RESOURCE_UPDATE = NO
+REOPEN_PERMISSION_IMPLIES_RESOURCE_REGISTER = NO
+REOPEN_PERMISSION_IMPLIES_APPROVE = NO
+REOPEN_PERMISSION_IMPLIES_RECONCILE = NO
+```
+
+Cada acción correctiva posterior usa la autoridad exacta de su recurso.
+
+---
+
+#### 47. Corrección no tiene permiso omnibus
+
+Quedan prohibidos como autoridad objetivo:
+
+```text
+numera.finance.periods.correct
+numera.finance.periods.manage
+numera.finance.periods.update
+```
+
+La UI de `VSCREEN-0105` no debe presentar un botón genérico que esconda múltiples autoridades distintas.
+
+---
+
+#### 48. Matriz de corrección
+
+| Situación | Autoridad de periodo | Autoridad de recurso | Resultado esperado |
+| --- | --- | --- | --- |
+| corrección en periodo abierto sin restatement | ninguna adicional de reapertura | exacta del recurso | ajuste trazable en periodo abierto |
+| corrección mientras periodo está `locked` | posible liberación de lock según contrato | exacta del recurso | volver a `open`, corregir y reiniciar cierre |
+| corrección material de periodo `closed` | `periods.reopen` | exacta del recurso | reapertura acotada + corrección + nuevo cierre |
+| evento tardío sin efecto material histórico | según política, puede no requerir reapertura | exacta del efecto permitido | reconocimiento/ajuste en periodo abierto |
+| evento tardío material que cambia cierre | `periods.reopen` | exacta del recurso | restatement versionado y recierre |
+
+No se deriva autoridad de recurso desde el estado del periodo.
+
+---
+
+#### 49. Eventos tardíos
+
+La llegada tardía de un evento no es autoridad.
+
+Se conserva:
+
+```text
+LATE_EVENT != REOPEN_AUTHORITY
+```
+
+La UX debe enrutar la decisión entre:
+
+1. ajuste en periodo abierto;
+2. reapertura controlada;
+3. clasificación como duplicado, inválido o sin efecto.
+
+---
+
+#### 50. Historial de cierre se preserva
+
+Se conserva:
+
+```text
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+```
+
+La reapertura crea continuidad versionada, no sobrescritura destructiva.
+
+---
+
+#### 51. Nuevo cierre después de cambios materiales
+
+Se conserva:
+
+```text
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+```
+
+El recierre vuelve a pasar por:
+
+```text
+open -> locked -> closed
+```
+
+con gates, versión y evidencia actualizados.
+
+---
+
+#### 52. Relación con `VPROC-0054`
+
+`VPROC-0054` conserva exactamente nueve estados:
+
+```text
+COSTING_CYCLE_OPENED
+INPUTS_COLLECTING
+CALCULATION_IN_PROGRESS
+VARIANCE_ANALYSIS
+UNDER_REVIEW
+PENDING_APPROVAL
+PUBLISHED
+CLOSE_RECONCILIATION_PENDING
+COSTING_CYCLE_CLOSED
+```
+
+La UX no convierte esos estados en los estados `open|locked|closed` del periodo.
+
+---
+
+#### 53. Separación entre lifecycle de proceso y estado de periodo
+
+Se congela:
+
+```text
+VPROC_0054_PUBLISHED != PERIOD_CLOSED
+CLOSE_RECONCILIATION_PENDING != PERIOD_CLOSED
+COSTING_CYCLE_CLOSED != OFFICIAL_ACCOUNTING_CLOSE
+```
+
+La superficie puede mostrar ambos contextos sin fusionarlos.
+
+---
+
+#### 54. `CLOSE_RECONCILIATION_PENDING`
+
+Cuando `VPROC-0054` se encuentre en conciliación de cierre, la UX debe hacer visible que:
+
+- el periodo sigue protegido;
+- diferencias siguen abiertas hasta resolución/aceptación;
+- correcciones siguen autoridad propietaria;
+- cerrar requiere evidencia y gates finales;
+- cálculo o publicación no equivalen a cierre.
+
+---
+
+#### 55. Diferencias y reconciliación
+
+La UX consume `NUMERA-DOM-014` para representar que:
+
+```text
+RESOLUTION_ACTION_EXECUTED != DIFFERENCE_RESOLVED
+DIFFERENCE_RESOLVED != CASE_CLOSED_UNTIL_VERIFIED
+```
+
+Una acción ejecutada sin verificación posterior no satisface por sí sola un gate de cierre.
+
+---
+
+#### 56. Diferencia en periodo protegido
+
+Una diferencia detectada contra `locked` o `closed` no habilita escritura ordinaria.
+
+La UX debe enrutar la resolución a:
+
+- ajuste gobernado en periodo abierto;
+- liberación de lock + corrección;
+- reapertura controlada;
+- espera por evidencia/owner;
+- clasificación como no efecto/duplicado cuando esté demostrado.
+
+---
+
+#### 57. Resultado externo incierto
+
+Un resultado externo todavía incierto no se presenta como gate satisfecho.
+
+Cuando la dependencia externa sea material para el cierre:
+
+```text
+EXTERNAL_RESULT_UNKNOWN = CLOSE_BLOCKED
+```
+
+salvo política explícita que permita aceptación de excepción con evidencia y autoridad.
+
+---
+
+#### 58. Segregación de funciones
+
+Se conserva:
+
+```text
+REGISTER_PERMISSION != LOCK_PERMISSION
+APPROVE_PERMISSION != LOCK_PERMISSION
+RECONCILE_PERMISSION != LOCK_PERMISSION
+LOCK_PERMISSION != CLOSE_PERMISSION
+CLOSE_PERMISSION != REOPEN_PERMISSION
+RESOURCE_CORRECTION_AUTHORITY != REOPEN_PERMISSION
+```
+
+Una organización pequeña puede acumular funciones solo mediante excepción gobernada; la UX no la infiere desde un rol.
+
+---
+
+#### 59. Rol y ownership no son autoridad
+
+Se conserva:
+
+```text
+ROLE_NAME != PERIOD_STATE_AUTHORITY
+OWNERSHIP != PERIOD_STATE_AUTHORITY
+```
+
+`contador`, `gerente`, `propietario`, owner funcional o preparador de cierre no sustituyen el permiso exacto.
+
+---
+
+#### 60. Scope
+
+Seleccionar empresa, sede, centro o periodo no crea alcance autorizado.
+
+Se conserva:
+
+```text
+SELECTED_SCOPE != AUTHORIZED_SCOPE
+```
+
+La forma exacta de scope consume `NUMERA-AUTH-008`.
+
+---
+
+#### 61. Reautenticación fuerte
+
+Las transiciones reales de periodo consumen el contrato fuerte aplicable en dispositivo compartido o contexto sensible.
+
+Se conserva:
+
+```text
+STRONG_REAUTH_DOES_NOT_GRANT_MISSING_PERMISSION = YES
+```
+
+Reautenticar confirma actor; no crea autoridad.
+
+---
+
+#### 62. Simulación
+
+La simulación puede mostrar:
+
+- elegibilidad;
+- gates;
+- diferencias;
+- impacto;
+- estado hipotético;
+- razones de deny.
+
+Pero:
+
+```text
+SIMULATION_EXECUTES_LOCK = NO
+SIMULATION_EXECUTES_CLOSE = NO
+SIMULATION_EXECUTES_REOPEN = NO
+SIMULATION_EXECUTES_CORRECTION = NO
+```
+
+---
+
+#### 63. Server-side mínimo
+
+Antes de una transición real deben resolverse, como mínimo:
+
+```text
+principal
+actor_effective
+permission_key
+period_id
+current_period_state
+period_version
+close_version_when_applicable
+requested_transition
+scope_result
+reason_when_required
+close_gate_result_when_applicable
+authorization_result
+```
+
+Cualquier resultado no autorizado, ambiguo o indeterminado produce deny seguro.
+
+---
+
+#### 64. Fallback a `manage` prohibido
+
+Queda prohibido:
+
+```text
+missing_exact_period_permission -> numera.finance.periods.manage
+missing_exact_period_permission -> numera.expenses.manage
+missing_exact_period_permission -> numera.cost_centers.manage
+missing_exact_period_permission -> any_manage
+```
+
+La ausencia de permiso exacto produce denegación.
+
+---
+
+#### 65. Wildcards prohibidos
+
+No se usa como autoridad objetivo:
+
+```text
+numera.*
+numera.finance.*
+numera.finance.periods.*
+numera.finance.close_all
+```
+
+---
+
+#### 66. Concurrencia
+
+La UX debe tratar como stale cualquier revisión invalidada por:
+
+- nueva mutación del periodo;
+- nueva evidencia material;
+- cambio de scope;
+- cambio de actor o autoridad;
+- cambio de estado;
+- reapertura concurrente;
+- evento tardío material incorporado;
+- cambio de gates.
+
+La decisión stale exige nueva revisión.
+
+---
+
+#### 67. Idempotencia de transiciones
+
+Se conserva:
+
+```text
+LOCK_RETRY_IS_IDEMPOTENT = YES
+CLOSE_RETRY_IS_IDEMPOTENT = YES
+REOPEN_RETRY_IS_IDEMPOTENT = YES
+```
+
+Las decisiones opuestas no son retries.
+
+---
+
+#### 68. Decisiones opuestas no se reutilizan
+
+Se conserva:
+
+```text
+lock -> release_lock = NEW_DECISION
+close -> reopen = NEW_DECISION
+reopen -> close = NEW_DECISION
+```
+
+Cada una exige estado y autoridad vigentes.
+
+---
+
+#### 69. Operaciones masivas
+
+Una futura acción sobre múltiples periodos o scopes debe autorizar cada miembro individualmente y conservar:
+
+- periodo;
+- versión;
+- gates;
+- permiso;
+- resultado.
+
+Una transición válida no autoriza el lote completo por inferencia.
+
+---
+
+#### 70. Estados UX de resultado
+
+Los estados de interfaz pueden distinguir:
+
+```text
+READY
+BLOCKED
+DENIED
+CONFIRMED
+UNKNOWN_RESULT
+STALE
+TECHNICAL_FAILURE
+```
+
+Estos labels UX no son estados empresariales del periodo.
+
+---
+
+#### 71. Denegación vs fallo técnico
+
+La UI debe separar:
+
+```text
+BUSINESS_DENY
+AUTHORIZATION_DENY
+STALE_REVIEW
+TECHNICAL_FAILURE
+UNKNOWN_RESULT
+```
+
+Un fallo técnico no se presenta como decisión empresarial.
+
+---
+
+#### 72. Información sensible en errores
+
+Una denegación no debe revelar:
+
+- scopes no autorizados;
+- identidad de otros actores;
+- detalles financieros fuera del alcance;
+- excepciones ocultas;
+- secretos o tokens.
+
+La UX comunica razón suficiente para recuperación sin ampliar exposición.
+
+---
+
+#### 73. Recuperación
+
+Ante resultado incierto o interrupción, la recuperación consulta:
+
+- estado actual del periodo;
+- versión actual;
+- última transición correlacionada;
+- receipt disponible;
+- gates vigentes cuando corresponda.
+
+La recuperación no repite ciegamente la mutación.
+
+---
+
+#### 74. Accesibilidad
+
+El estado de periodo, gates, excepciones y acciones disponibles no dependen únicamente de color.
+
+La jerarquía semántica debe permitir distinguir:
+
+- contexto del periodo;
+- estado actual;
+- bloqueadores;
+- evidencia;
+- acción propuesta;
+- resultado.
+
+---
+
+#### 75. Responsive
+
+En superficies estrechas se preserva el orden:
+
+```text
+PERIOD_CONTEXT
+CURRENT_STATE
+BLOCKING_GATES
+EXCEPTIONS
+DECISION_CONTEXT
+PRIMARY_ACTION
+RESULT
+```
+
+La compactación no oculta bloqueadores materiales antes de la confirmación.
+
+---
+
+#### 76. Indicadores antes de detalle
+
+Cuando exista síntesis de readiness y tabla detallada de gates/excepciones, se aplica `NUMERA-INDICATOR-BEFORE-DETAIL-TABLES-001`:
+
+```text
+SUMMARY_BEFORE_DETAIL = YES
+SUMMARY_REPLACES_DETAIL = NO
+```
+
+La síntesis no puede omitir un bloqueador que siga activo en el detalle.
+
+---
+
+#### 77. Estados vacíos
+
+La UX distingue:
+
+```text
+NO_BLOCKERS
+NO_VISIBLE_BLOCKERS
+NOT_AUTHORIZED_TO_VIEW_DETAILS
+DATA_NOT_AVAILABLE
+TECHNICAL_ERROR
+```
+
+`NO_VISIBLE_BLOCKERS` no se interpreta automáticamente como readiness de cierre.
+
+---
+
+#### 78. Auditoría y receipt
+
+Toda transición confirmada debe producir evidencia correlacionable suficiente para el contrato de auditoría NUMERA.
+
+El receipt es proyección de evidencia; no sustituye el registro autoritativo de auditoría.
+
+---
+
+#### 79. AS-IS no gobierna el objetivo
+
+La existencia actual de:
+
+- guard legacy;
+- formulario simplificado;
+- selección por último periodo;
+- ausencia de workflow runtime;
+- botón genérico;
+
+no redefine este contrato objetivo ni autoriza aliases amplios.
+
+---
+
+#### 80. Hallazgos diferidos
+
+| Hallazgo | Bloquea UX-011 | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| claves `periods.lock/close/reopen` aún pendientes de materialización | no | `NUMERA-AUTH-012` + package físico aplicable | catálogo/guards/grants consumen las identidades exactas |
+| política numérica de materialidad no está universalmente fijada | no | gobierno empresarial competente | política versionada define umbrales cuando corresponda |
+| persistencia física de close_version/restatement no se define aquí | no | owner físico de NUMERA / package aplicable | storage y contratos implementan versionado sin borrar historia |
+| ejecución de correcciones concretas depende del recurso afectado | no | owner del recurso y autorización correspondiente | cada corrección usa permiso exacto y evidencia propia |
+| exportación de evidencia no forma parte del cierre | no | `NUMERA-UX-012` / `NUMERA-AUTH-007` | flujo de exportación separado y autorizado |
+
+No queda hallazgo detectado sin owner y condición de salida.
+
+---
+
+#### 81. Decisiones congeladas
+
+1. `VSCREEN-0105` es la superficie propietaria del flujo, no autoridad;
+2. el periodo económico conserva `open|locked|closed`;
+3. el flujo ordinario es `open -> locked -> closed`;
+4. `open -> closed` directo queda prohibido;
+5. `locked -> open` es liberación de lock, no reapertura;
+6. `closed -> open` es reapertura;
+7. existen exactamente tres permisos mutantes de estado: lock, close y reopen;
+8. lectura usa `periods.view` y no se deriva de los permisos mutantes;
+9. cierre exige gates además del permiso;
+10. `UNKNOWN` en gate obligatorio no equivale a PASS;
+11. excepciones materiales requieren owner, evidencia y decisión explícita;
+12. objetos legítimamente abiertos no bloquean por su mera existencia;
+13. lock no equivale a cierre;
+14. liberar lock exige motivo;
+15. cierre final exige periodo `locked` y versión vigente;
+16. aprobación no concede cierre;
+17. conciliación no concede cierre;
+18. cierre/reapertura no conceden exportación;
+19. cierre económico no equivale a cierre contable/fiscal;
+20. cierre NUMERA no cierra PULSO, ORIGO, NEXO o FOGO;
+21. reapertura exige versión de cierre y motivo;
+22. reapertura es acotada y no concede escritura irrestricta;
+23. corrección usa autoridad exacta del recurso;
+24. no existe permiso genérico `periods.correct/manage/update`;
+25. evento tardío no es autoridad de reapertura;
+26. cierre previo nunca se borra;
+27. restatement es versionado;
+28. cambios materiales tras reapertura requieren nuevo cierre;
+29. estados de `VPROC-0054` no son estados del periodo;
+30. decisión stale exige nueva revisión;
+31. transiciones son idempotentes frente a retries;
+32. decisiones opuestas no son retries;
+33. UI, rol, ownership o scope seleccionado no conceden autoridad;
+34. server-side revalida actor, permiso, scope, estado, versión y gates;
+35. la siguiente tarea es exportación con permiso independiente.
+
+---
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar texto, estado, relaciones ni secuencia:
+
+- `TREQ-NUMERA-001` — cierres reconciliados, correcciones/reaperturas con historia y trazabilidad financiera;
+- `TREQ-NUMERA-002` — periodos, estado, evidencia, correcciones compensatorias y separación económico/contable/fiscal;
+- `TREQ-NUMERA-003` — separación de registrar, aprobar, pagar, conciliar, cerrar, reabrir y exportar;
+- `TREQ-AUTH-013` — revalidación server-side de actor, permiso, scope, recurso/periodo y estado;
+- `TREQ-AUTH-014` — invalidación de decisiones stale ante cambios materiales de contexto o recurso;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones sensibles;
+- `TREQ-INTEGRATION-017` — tratamiento versionado e idempotente de hechos operativos, incluidos eventos tardíos, sin doble efecto.
+
+Esta sección es únicamente trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El trabajo es documental; no se ejecutaron build, lint, tipos ni pruebas de producto. |
+| LOCAL | NOT_EXECUTED | La incorporación, formato, quality, delivery, validadores de dominio y batería global permanecen pendientes del checkout del usuario tras el cierre de `NUMERA-UX-010`. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, topología `DEFINE_ONCE`, políticas documentales, archivo propietario, `NUMERA-AUTH-006`, `NUMERA-DOM-011`, `NUMERA-DOM-014`, `VSCREEN-0105`, `VPROC-0054`, estados de proceso, Registro 04A aplicable y scripts documentales vigentes; `NUMERA-UX-010` se consume desde su archivo completo aprobado por el usuario mientras termina su publicación. |
+| OPERATIVA | NOT_EXECUTED | No se bloquearon, cerraron, reabrieron, corrigieron ni reexpresaron periodos reales. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-011` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia. |
+
+---
+
+#### 85. Criterios de aceptación
+
+La tarea queda aceptable cuando se verifica que:
+
+1. existe exactamente un contrato `NUMERA-PERIOD-CLOSE-FLOW-001`;
+2. la superficie es `VSCREEN-0105`;
+3. el paso propietario es `VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD`;
+4. la pantalla no constituye autoridad;
+5. los estados del periodo son exactamente `open|locked|closed`;
+6. existen exactamente tres permisos mutantes de estado;
+7. `periods.view` permanece separado;
+8. `open -> locked` usa `periods.lock`;
+9. `locked -> open` usa el contrato de lock y exige motivo;
+10. `locked -> closed` usa `periods.close`;
+11. `closed -> open` usa `periods.reopen`;
+12. `open -> closed` directo queda prohibido;
+13. lock no equivale a cierre;
+14. release lock no equivale a reopen;
+15. la cabecera muestra periodo, estado y versión autorizados;
+16. selección visual no es fuente de verdad;
+17. servidor revalida estado y versión;
+18. stale produce nueva revisión;
+19. close readiness presenta gates reproducibles;
+20. permiso + gate fallido produce deny;
+21. gate obligatorio UNKNOWN no equivale a PASS;
+22. excepción material conserva owner/evidencia/decisión;
+23. objeto legítimamente abierto no bloquea por mera existencia;
+24. lock comunica que el periodo aún no está cerrado;
+25. liberar lock conserva el intento de cierre;
+26. corrección durante lock no adquiere autoridad implícita;
+27. close review conserva gates, versión, fuentes y excepciones;
+28. close commit exige estado locked;
+29. approval no implica close/reopen;
+30. reconcile no implica close/reopen;
+31. close/reopen no implican export;
+32. close no implica publish;
+33. cierre económico no se presenta como cierre contable/fiscal;
+34. cierre NUMERA no altera dominios fuente;
+35. receipt de cierre es reconstruible;
+36. resultado desconocido no dispara retry ciego;
+37. close retry es idempotente;
+38. reapertura solo parte de closed;
+39. reapertura exige close_version;
+40. reapertura exige motivo;
+41. se evalúa ajuste posterior vs reapertura;
+42. reapertura material exige permiso exacto;
+43. reopen review muestra impacto y alcance;
+44. reapertura es acotada;
+45. reapertura no concede mutación de recursos;
+46. no existe permiso genérico correct/manage/update del periodo;
+47. matriz de corrección contiene las cinco situaciones gobernadas;
+48. evento tardío no concede autoridad;
+49. historial previo se preserva;
+50. restatement es versionado;
+51. cambio material exige recierre;
+52. VPROC-0054 conserva nueve estados;
+53. lifecycle de proceso y estado de periodo no se fusionan;
+54. CLOSE_RECONCILIATION_PENDING no equivale a closed;
+55. resolución ejecutada no equivale a diferencia verificada;
+56. diferencia en periodo protegido se enruta, no se fuerza;
+57. resultado externo incierto no se presenta como PASS;
+58. permisos de register/approve/reconcile/lock/close/reopen/correct permanecen segregados;
+59. role/ownership no conceden autoridad;
+60. selected scope no equivale a authorized scope;
+61. reauth no crea permiso ausente;
+62. simulación no ejecuta transiciones;
+63. server-side resuelve el contrato mínimo;
+64. fallback a manage está prohibido;
+65. wildcards están prohibidos;
+66. concurrencia invalida review stale;
+67. lock/close/reopen son idempotentes frente a retry;
+68. decisiones opuestas son nuevas decisiones;
+69. lotes autorizan cada miembro;
+70. labels UX no se confunden con estados empresariales;
+71. deny/stale/failure/unknown permanecen distintos;
+72. errores minimizan información sensible;
+73. recuperación consulta estado/version/evidencia antes de retry;
+74. accesibilidad no depende solo de color;
+75. responsive preserva bloqueadores antes de acción;
+76. síntesis de readiness no sustituye detalle;
+77. empty states no convierten ausencia visible en readiness;
+78. receipt es proyección, no autoridad;
+79. AS-IS no redefine el contrato objetivo;
+80. todo hallazgo diferido tiene owner y salida;
+81. no se crean ni modifican requisitos de prueba;
+82. no se ejecutan cambios físicos;
+83. UX-012 recibe separación explícita entre lectura/cierre y exportación.
+
+---
+
+#### 86. Límites
+
+Esta tarea no:
+
+- publica permisos runtime;
+- materializa `periods.lock`, `periods.close` o `periods.reopen`;
+- asigna grants a roles;
+- fija umbrales monetarios universales de materialidad;
+- crea estados adicionales de periodo;
+- modifica `VPROC-0054`;
+- ejecuta conciliaciones reales;
+- bloquea, cierra o reabre periodos reales;
+- corrige recursos financieros reales;
+- crea restatements físicos;
+- define storage/columnas de close_version;
+- cierra periodos contables o fiscales oficiales;
+- cambia estados de PULSO, ORIGO, NEXO o FOGO;
+- publica reportes, escenarios, presupuestos o precios;
+- diseña la exportación de UX-012;
+- define filtros completos de UX-013;
+- modifica RLS, RPC, Server Actions o APIs;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-012`.
+
+---
+
+#### 87. Handoff a NUMERA-UX-012
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_PERIOD_CLOSE_FLOW_CONTRACT = NUMERA-PERIOD-CLOSE-FLOW-001
+NUMERA_FINANCIAL_APPROVAL_FLOW_CONTRACT = NUMERA-FINANCIAL-APPROVAL-FLOW-001
+PERIOD_CLOSE_SCREEN_ID = VSCREEN-0105
+PERIOD_CLOSE_PROCESS_ID = VPROC-0054
+PERIOD_CLOSE_STEP_ID = VPROC-0054::STEP-CLOSE_OR_REOPEN_PERIOD
+PERIOD_STATUS_VALUES = open|locked|closed
+PERIOD_STATE_PERMISSION_COUNT = 3
+PERIOD_VIEW_PERMISSION = numera.finance.periods.view
+PERIOD_LOCK_PERMISSION = numera.finance.periods.lock
+PERIOD_CLOSE_PERMISSION = numera.finance.periods.close
+PERIOD_REOPEN_PERMISSION = numera.finance.periods.reopen
+OPEN_TO_CLOSED_DIRECT = FORBIDDEN
+LOCKED_TO_OPEN_IS_REOPEN = NO
+CLOSED_TO_OPEN_IS_REOPEN = YES
+LOCK_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_IMPLIES_VIEW = NO
+REOPEN_PERMISSION_IMPLIES_VIEW = NO
+CLOSE_PERMISSION_REPLACES_GATES = NO
+UNKNOWN_REQUIRED_GATE_IS_PASS = NO
+RELEASE_LOCK_REASON_REQUIRED = YES
+REOPEN_REASON_REQUIRED = YES
+REOPEN_REQUIRES_CLOSE_VERSION = YES
+REOPEN_IS_UNBOUNDED_WRITE = NO
+REOPEN_IMPLIES_RESOURCE_MUTATION = NO
+GENERIC_PERIOD_CORRECT_PERMISSION = FORBIDDEN
+CORRECTION_USES_EXACT_RESOURCE_MUTATION_AUTHORITY = YES
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+REOPEN_WITH_MATERIAL_CHANGE_REQUIRES_RECLOSE = YES
+PERIOD_STATE_SERVER_REVALIDATION_REQUIRED = YES
+STALE_PERIOD_VERSION = DENY_AND_REVIEW_AGAIN
+PERIOD_STATE_TRANSITIONS_IDEMPOTENT = YES
+NUMERA_PERIOD_CLOSE_IS_ACCOUNTING_OR_FISCAL_CLOSE = NO
+NUMERA_PERIOD_CLOSE_CHANGES_SOURCE_DOMAIN_STATE = NO
+CLOSE_IMPLIES_EXPORT = NO
+REOPEN_IMPLIES_EXPORT = NO
+EXPORT_OWNER = NUMERA_UX_012
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-012` deberá diseñar exportación con permiso independiente sin inferir autoridad de extracción desde lectura, cierre, reapertura, pantalla visible o receipt de evidencia.
+
+---
+
+#### 88. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-010
+-> NUMERA-UX-011
+-> NUMERA-UX-012
+```
+
+UX-011 consume la separación entre aprobación y cierre de UX-010 y entrega a UX-012 la separación explícita entre cierre/reapertura y exportación.
+
+---
+
+#### 89. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-010 — Diseñar flujo de aprobación`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-011 — Diseñar flujo de cierre`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-012 — Diseñar exportación con permiso independiente`
 ### [ ] NUMERA-UX-012 — Diseñar exportación con permiso independiente
 ### [ ] NUMERA-UX-013 — Filtrar por empresa, sede y centro de costo
 ### [ ] NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
