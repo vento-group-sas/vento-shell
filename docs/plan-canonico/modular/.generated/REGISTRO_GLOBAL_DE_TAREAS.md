@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1450** |
+| Aprobadas | **1451** |
 | En propuesta | **0** |
-| No iniciadas | **146** |
+| No iniciadas | **145** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **90.85% (1450/1596)** |
+| Porcentaje de completamiento | **90.91% (1451/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **146** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1351** |
+| ⏸ NO_EVALUADA | **145** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1352** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NUMERA-UX-014` — Consumir eventos de PULSO, ORIGO, FOGO y NEXO | ✅ APROBADA |
-| Tarea actual | `NUMERA-UX-015` — Evitar registro financiero duplicado | ⬜ NO INICIADA |
-| Siguiente reservada | `NUMERA-UX-016` — Validar el prototipo con contabilidad y dirección | ⬜ NO INICIADA |
+| Última aprobada | `NUMERA-UX-015` — Evitar registro financiero duplicado | ✅ APROBADA |
+| Tarea actual | `NUMERA-UX-016` — Validar el prototipo con contabilidad y dirección | ⬜ NO INICIADA |
+| Siguiente reservada | `NUMERA-UX-017` — Diseñar conciliación de ventas y pagos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1212,7 +1212,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-012` | Diseñar exportación con permiso independiente | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-013` | Filtrar por empresa, sede y centro de costo | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-014` | Consumir eventos de PULSO, ORIGO, FOGO y NEXO | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-015` | Evitar registro financiero duplicado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NUMERA-UX-015` | Evitar registro financiero duplicado | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-016` | Validar el prototipo con contabilidad y dirección | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-017` | Diseñar conciliación de ventas y pagos | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NUMERA-UX-018` | Diseñar conciliación de compras y recepciones | — | — | `bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md` |

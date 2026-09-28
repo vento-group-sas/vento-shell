@@ -18859,7 +18859,1181 @@ UX-014 consume los filtros de UX-013 únicamente como selección posterior sobre
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-015 — Evitar registro financiero duplicado`
-### [ ] NUMERA-UX-015 — Evitar registro financiero duplicado
+### ✅ NUMERA-UX-015 — Evitar registro financiero duplicado
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
+**Tarea siguiente:** NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
+**Tipo de tarea:** definición documental del contrato UX de prevención de duplicidad financiera en NUMERA sobre eventos distintos, fuentes distintas, capturas manuales y representaciones correlacionadas, separando redelivery técnica, posible duplicado, duplicado empresarial confirmado, conflicto, corrección/reverso/compensación y hecho independiente, con revisión recuperable y conservación de historia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea restricciones únicas, índices, tablas, vistas, triggers, RPC, Server Actions, APIs, RLS, colas, listeners, reglas runtime de matching, migraciones, cambios Supabase, datos financieros, correcciones, conciliaciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar de forma cerrada y verificable cómo NUMERA evita reconocer dos veces el mismo efecto financiero cuando una realidad empresarial puede llegar por eventos diferentes, aplicaciones diferentes, documentos relacionados, reintentos, replay, backfill o captura manual.
+
+La experiencia debe impedir doble registro sin confundir:
+
+- redelivery técnica con duplicidad empresarial;
+- dos hechos relacionados con un mismo hecho;
+- similitud con identidad;
+- corrección, reverso o compensación con duplicado;
+- pago, venta, recepción, movimiento físico, producción, documento, obligación o ajuste entre sí;
+- una posible coincidencia con un duplicado confirmado.
+
+La regla principal es:
+
+```text
+MISMA REALIDAD ECONOMICA DEMOSTRADA
++ MISMO EFECTO ECONOMICO OBJETIVO
+-> UN SOLO RECONOCIMIENTO ECONOMICO
+```
+
+sin borrar la evidencia de las entradas recibidas.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-UX-015` es `DEFINE_ONCE` y no crea instancia física propia.
+
+La tarea:
+
+- define experiencia, taxonomía, decisiones y handoffs;
+- no implementa almacenamiento de deduplicación;
+- no modifica la idempotencia transversal;
+- no ejecuta conciliaciones reales;
+- no modifica eventos fuente;
+- no elimina registros existentes;
+- no cambia ownership entre aplicaciones.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-014
+
+Se consume íntegramente:
+
+```text
+NUMERA_SOURCE_EVENT_CONSUMPTION_CONTRACT = NUMERA-SOURCE-EVENT-CONSUMPTION-001
+SOURCE_APPLICATIONS = PULSO|ORIGO|FOGO|NEXO
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+DIRECT_PROCESS_RELATION_COUNT = 34
+DIRECT_EVENT_RELATION_COUNT = 192
+CONDITIONAL_PROCESS_RELATION_COUNT = 1
+CONDITIONAL_EVENT_RELATION_COUNT = 6
+CONDITIONAL_PROCESS = VPROC-0035
+NUMERA_CONSUMER_PURPOSE = FINANCIAL_RECONCILIATION_COST_ANALYSIS
+SOURCE_EVENT_OWNER = PRODUCER_APPLICATION
+EVENT_RECEIVED_IS_ECONOMIC_FACT_RECOGNIZED = NO
+CONSUMER_PROJECTION_IS_SOURCE_OF_TRUTH = NO
+CONSUMER_INBOX_KEY = numera+event_id
+EXACT_EVENT_REDELIVERY_CREATES_NEW_EFFECT = NO
+CONFLICTING_REUSE = DENY_AND_RESOLVE
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+REPLAY_CREATES_NEW_SOURCE_EVENT = NO
+UI_FILTER_IS_SOURCE_FACT = NO
+SOURCE_DIMENSION_FALLBACK_FROM_UI = FORBIDDEN
+CROSS_APPLICATION_SOURCE_WRITE = FORBIDDEN
+CROSS_EVENT_BUSINESS_DUPLICATE_OWNER = NUMERA_UX_015
+UX_015_OWNER = FINANCIAL_DUPLICATE_PREVENTION
+TREQ_CHANGES = 0
+```
+
+UX-015 desarrolla exclusivamente `FINANCIAL_DUPLICATE_PREVENTION`.
+
+---
+
+#### 4. Contratos canónicos consumidos
+
+La tarea especializa, sin redefinir:
+
+- `NUMERA-SOURCE-EVENT-CONSUMPTION-001`;
+- `NUMERA-EXPENSE-REGISTRATION-FLOW-001`;
+- `ENTERPRISE-EVENT-CATALOG-001@1.0.0`;
+- `ENTERPRISE-EVENT-PRODUCER-REGISTRY-001@1.0.0`;
+- `ENTERPRISE-EVENT-CONSUMER-REGISTRY-001@1.0.0`;
+- `ENTERPRISE-EVENT-IDEMPOTENCY-REGISTRY-001@1.0.0`;
+- `ENTERPRISE-EVENT-RETRY-POLICY-001@1.0.0`;
+- `ENTERPRISE-INTEGRATION-AUDIT-POLICY-001@1.0.0`;
+- `ENTERPRISE-PARTIAL-ERROR-HANDLING-POLICY-001@1.0.0`;
+- `ENTERPRISE-CROSS-APPLICATION-WRITE-POLICY-001@1.0.0`;
+- contratos económicos de `NUMERA-DOM-002`, `NUMERA-DOM-003`, `NUMERA-DOM-004`, `NUMERA-DOM-005` y `NUMERA-DOM-014`.
+
+---
+
+#### 5. Contrato UX resultante
+
+Se define:
+
+```text
+NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001
+```
+
+Su alcance es impedir un segundo reconocimiento económico cuando exista evidencia suficiente de que dos representaciones corresponden al mismo efecto económico, sin destruir ninguna representación fuente.
+
+---
+
+#### 6. Superficies propietarias
+
+La prevención integral se presenta principalmente en:
+
+```text
+PRIMARY_SCREEN_ID = VSCREEN-0095
+PRIMARY_SCREEN_NAME = Bandeja de hechos económicos
+PRIMARY_PROCESS_ID = VPROC-0051
+PRIMARY_STEP_ID = VPROC-0051::STEP-TRIAGE_ECONOMIC_FACTS
+```
+
+La captura manual relacionada permanece en:
+
+```text
+RELATED_SCREEN_ID = VSCREEN-0096
+RELATED_SCREEN_NAME = Registro de gasto y soporte
+RELATED_STEP_ID = VPROC-0051::STEP-CAPTURE_EXPENSE_AND_EVIDENCE
+```
+
+No se crea una pantalla adicional para duplicados.
+
+---
+
+#### 7. Invariante principal
+
+```text
+DUPLICATE_PREVENTION != DATA_DELETION
+DUPLICATE_PREVENTION != SOURCE_REWRITE
+DUPLICATE_PREVENTION != LAST_WRITE_WINS
+DUPLICATE_PREVENTION != SILENT_MERGE
+```
+
+La prevención controla el reconocimiento económico y la representación NUMERA; no reescribe la fuente.
+
+---
+
+#### 8. Dos capas diferentes de duplicidad
+
+UX-015 separa obligatoriamente:
+
+```text
+TECHNICAL_REDELIVERY
+!=
+BUSINESS_DUPLICATE
+```
+
+`TECHNICAL_REDELIVERY` ya está gobernado por `event_id`, inbox e idempotencia transversal.
+
+`BUSINESS_DUPLICATE` puede existir aun cuando los eventos tengan identificadores distintos.
+
+---
+
+#### 9. Redelivery técnica
+
+Cuando llega exactamente el mismo `event_id` a NUMERA:
+
+```text
+consumer_application = numera
++ same event_id
+-> recover prior consumer result
+-> zero new economic effect
+```
+
+Esto no requiere una nueva decisión de duplicidad empresarial.
+
+---
+
+#### 10. Reutilización conflictiva
+
+Una misma identidad idempotente con contenido lógico incompatible conserva:
+
+```text
+CONFLICTING_REUSE
+-> DENY
+-> RECONCILIATION_OR_CONTROLLED_RESOLUTION
+```
+
+Nunca se interpreta como un duplicado compatible ni como autorización para elegir una de las versiones por conveniencia.
+
+---
+
+#### 11. Duplicidad empresarial entre identidades distintas
+
+Puede existir duplicidad empresarial cuando dos entradas con distinta identidad técnica representan demostrablemente:
+
+```text
+SAME_CANONICAL_SOURCE_REALITY
++ SAME_ECONOMIC_EFFECT_CLASS
++ SAME_EFFECT_SCOPE
+```
+
+La demostración debe apoyarse en identidades y correlaciones canónicas, no solo en semejanza de campos.
+
+---
+
+#### 12. Taxonomía cerrada de clasificación
+
+UX-015 utiliza exactamente estas clases de decisión:
+
+```text
+TECHNICAL_REDELIVERY
+CONFIRMED_BUSINESS_DUPLICATE
+POSSIBLE_BUSINESS_DUPLICATE
+DISTINCT_RELATED_FACT
+CORRECTION_REVERSAL_OR_COMPENSATION
+CONFLICTING_REUSE
+INDEPENDENT_ECONOMIC_FACT
+INSUFFICIENT_EVIDENCE
+```
+
+No se agrega una categoría genérica `OTHER` para cerrar casos ambiguos.
+
+---
+
+#### 13. `TECHNICAL_REDELIVERY`
+
+Se usa únicamente cuando la identidad idempotente demuestra que la misma operación o evento está siendo entregado nuevamente.
+
+Resultado:
+
+```text
+RETURN_PRIOR_RESULT
+NEW_ECONOMIC_RECOGNITION = NO
+```
+
+---
+
+#### 14. `CONFIRMED_BUSINESS_DUPLICATE`
+
+Se usa cuando dos representaciones diferentes quedan enlazadas por evidencia suficiente a la misma realidad fuente y al mismo efecto económico objetivo.
+
+Resultado:
+
+```text
+REUSE_EXISTING_ECONOMIC_EFFECT
+SECOND_RECOGNITION = NO
+SOURCE_EVIDENCE_PRESERVED = YES
+```
+
+---
+
+#### 15. `POSSIBLE_BUSINESS_DUPLICATE`
+
+Se usa cuando existen señales de coincidencia, pero no identidad suficiente para concluir duplicidad.
+
+Resultado:
+
+```text
+REVIEW_REQUIRED
+AUTO_DELETE = NO
+AUTO_MERGE = NO
+AUTO_POST_SECOND_EFFECT = NO
+```
+
+La entrada permanece visible y trazable hasta resolución.
+
+---
+
+#### 16. `DISTINCT_RELATED_FACT`
+
+Dos hechos pueden compartir una misma cadena empresarial y no ser duplicados.
+
+Ejemplos de relaciones legítimamente distintas:
+
+```text
+SALE != PAYMENT
+SALE != DELIVERY
+SALE != FISCAL_DOCUMENT
+PURCHASE_ORDER != RECEIPT
+COMMERCIAL_RECEIPT != INVENTORY_MOVEMENT
+PRODUCTION_EXECUTION != INVENTORY_MOVEMENT
+ECONOMIC_FACT != PAYABLE
+ECONOMIC_FACT != RECEIVABLE
+ECONOMIC_FACT != BANK_MOVEMENT
+```
+
+Compartir correlación no colapsa estas identidades.
+
+---
+
+#### 17. `CORRECTION_REVERSAL_OR_COMPENSATION`
+
+Una corrección, reverso, devolución, reembolso o compensación puede referenciar el hecho original y producir un efecto legítimo nuevo.
+
+Por tanto:
+
+```text
+REFERENCE_TO_ORIGINAL != DUPLICATE
+INVERSE_AMOUNT != PROOF_OF_DUPLICATE
+```
+
+El nuevo efecto conserva vínculo explícito con el original.
+
+---
+
+#### 18. `INDEPENDENT_ECONOMIC_FACT`
+
+Se utiliza cuando la evidencia demuestra que la entrada representa un efecto económico autónomo aunque coincidan parcialmente importe, fecha, contraparte, documento o descripción.
+
+La coincidencia superficial no reduce dos hechos a uno.
+
+---
+
+#### 19. `INSUFFICIENT_EVIDENCE`
+
+Cuando no existe evidencia suficiente para confirmar duplicidad ni independencia:
+
+```text
+INSUFFICIENT_EVIDENCE
+-> HOLD_FOR_REVIEW_OR_RECONCILIATION
+```
+
+No se inventa identidad ni se escoge el resultado que haga cuadrar un reporte.
+
+---
+
+#### 20. Evidencia fuerte de identidad
+
+Cuando exista, tiene prioridad la evidencia estable como:
+
+- aplicación propietaria;
+- proceso fuente;
+- identidad canónica del recurso fuente;
+- `event_id` y versión;
+- identidad externa autenticada cuando el contrato la conserve;
+- `source_table` + `source_id` legacy cuando sean válidos y estén gobernados;
+- documento fuente con identidad canónica;
+- correlación/causalidad verificable;
+- referencia al hecho económico NUMERA existente;
+- referencia explícita a original en corrección, reverso o compensación.
+
+---
+
+#### 21. Señales débiles no concluyentes
+
+Por sí solas no prueban duplicidad:
+
+- mismo importe;
+- misma fecha;
+- mismo día o periodo;
+- misma sede;
+- mismo centro de costo;
+- misma contraparte;
+- mismo texto o descripción;
+- mismo producto;
+- misma cantidad;
+- misma moneda;
+- proximidad temporal;
+- mismo usuario;
+- mismo soporte visual sin identidad verificable.
+
+Estas señales solo pueden elevar un caso a `POSSIBLE_BUSINESS_DUPLICATE`.
+
+---
+
+#### 22. Importe igual no es identidad
+
+```text
+SAME_AMOUNT != SAME_ECONOMIC_FACT
+```
+
+Dos ventas legítimas, dos compras, dos pagos, dos movimientos o dos gastos pueden tener exactamente el mismo valor.
+
+---
+
+#### 23. Fecha igual no es identidad
+
+```text
+SAME_DATE != SAME_ECONOMIC_FACT
+```
+
+El periodo o fecha de reconocimiento se utiliza como contexto, no como clave universal de deduplicación.
+
+---
+
+#### 24. Documento igual requiere semántica
+
+Una misma referencia documental puede respaldar varios efectos permitidos o puede haber sido reutilizada indebidamente.
+
+La UI debe revisar:
+
+- tipo de documento;
+- owner;
+- versión/estado;
+- recurso relacionado;
+- efecto económico objetivo.
+
+No se deduplica únicamente por texto del documento.
+
+---
+
+#### 25. Scope de comparación
+
+La comparación debe respetar como mínimo, cuando existan:
+
+```text
+SOURCE_OWNER
+SOURCE_PROCESS
+SOURCE_RESOURCE_IDENTITY
+ECONOMIC_EFFECT_CLASS
+LEGAL_ENTITY
+CURRENCY
+ORIGINAL_OR_PARENT_REFERENCE
+```
+
+Empresa, sede y centro de costo ayudan a detectar inconsistencias, pero no sustituyen la identidad fuente.
+
+---
+
+#### 26. Clase de efecto económico
+
+Una misma fuente puede originar efectos distintos.
+
+Por ello:
+
+```text
+SAME_SOURCE_RESOURCE
++ DIFFERENT_ECONOMIC_EFFECT_CLASS
+!= DUPLICATE_BY_DEFAULT
+```
+
+Venta reconocida, pago aplicado, devolución y ajuste conservan semánticas separadas.
+
+---
+
+#### 27. PULSO
+
+Para hechos provenientes de PULSO:
+
+- venta, pago, caja, entrega y documento fiscal permanecen distintos;
+- la misma venta visible en canal externo, PASS y PULSO no se registra varias veces;
+- PULSO normaliza el hecho comercial interno antes de que NUMERA lo consuma;
+- un cierre de caja no fabrica ventas faltantes;
+- un pago no crea otra venta;
+- una devolución o reembolso no borra el original.
+
+---
+
+#### 28. ORIGO
+
+Para hechos provenientes de ORIGO:
+
+- necesidad, orden, compromiso y recepción comercial permanecen distintos;
+- recibir una orden y recibir físicamente inventario no son el mismo hecho;
+- documento de proveedor y obligación por pagar no se colapsan por referencia compartida;
+- recepciones parciales legítimas no se deduplican entre sí por pertenecer a la misma orden.
+
+---
+
+#### 29. FOGO
+
+Para hechos provenientes de FOGO:
+
+- planificación, ejecución, consumo, calidad, merma, reproceso y cierre productivo permanecen diferenciados;
+- varias señales productivas correlacionadas pueden sustentar un mismo efecto económico sin convertirse en varios efectos;
+- reproceso o corrección no se clasifican como duplicado por compartir lote o receta.
+
+---
+
+#### 30. NEXO
+
+Para hechos provenientes de NEXO:
+
+- movimiento, saldo, ubicación, condición, recepción física, traslado y ajuste conservan identidades propias;
+- salida y entrada de una transferencia interna pueden ser dos movimientos físicos de una sola transferencia, no dos ventas ni dos compras;
+- una señal física no se convierte por sí sola en otro hecho económico si ya existe el efecto económico correlacionado.
+
+---
+
+#### 31. Varias fuentes para un mismo efecto económico
+
+FOGO, NEXO, ORIGO y PULSO pueden aportar evidencia complementaria al mismo efecto.
+
+```text
+MULTIPLE_EVIDENCE_SOURCES
+!= MULTIPLE_ECONOMIC_EFFECTS
+```
+
+La UI debe mostrar qué fuente prueba cada dimensión y cuál es la realidad económica reconocida una sola vez.
+
+---
+
+#### 32. Captura manual
+
+La captura manual de `VSCREEN-0096` se mantiene disponible únicamente para un gasto legítimo que no esté ya representado por un hecho fuente consumido.
+
+```text
+MANUAL_CAPTURE != BYPASS_SOURCE_IDENTITY
+```
+
+---
+
+#### 33. Hecho fuente existente frente a captura manual
+
+Cuando se demuestra que un hecho operacional ya existe:
+
+```text
+SOURCE_FACT_EXISTS
++ SAME_ECONOMIC_EFFECT
+-> DO_NOT_CREATE_MANUAL_SHADOW_FACT
+```
+
+La UX ofrece recuperar, enlazar, completar soporte o conducir a revisión/conciliación según corresponda.
+
+---
+
+#### 34. Captura manual primero y evento fuente después
+
+Si una captura manual legítima ya fue registrada y después aparece un evento fuente potencialmente equivalente:
+
+1. no se reconoce automáticamente un segundo efecto;
+2. se compara identidad y evidencia;
+3. si se confirma duplicidad, ambas representaciones quedan correlacionadas;
+4. el efecto económico reconocido permanece uno;
+5. el historial de la captura manual no se borra.
+
+---
+
+#### 35. Evento fuente primero y captura manual después
+
+Si el evento fuente ya produjo o referencia un efecto NUMERA:
+
+```text
+MANUAL_CREATE_ATTEMPT
+-> DUPLICATE_CHECK
+-> EXISTING_EFFECT_FOUND
+-> RECOVER_OR_LINK_EXISTING
+```
+
+No se crea otra fila equivalente por conveniencia operativa.
+
+---
+
+#### 36. Replay y backfill
+
+```text
+REPLAY != NEW_BUSINESS_REALITY
+BACKFILL != NEW_BUSINESS_REALITY
+```
+
+La ejecución de replay o backfill conserva identidad histórica y no justifica un segundo reconocimiento.
+
+---
+
+#### 37. Retries
+
+Un retry conserva la misma intención idempotente.
+
+```text
+RETRY_COUNT > 1
+DOES_NOT_IMPLY
+ECONOMIC_EFFECT_COUNT > 1
+```
+
+---
+
+#### 38. Resultado desconocido
+
+Cuando un commit previo pudo haber producido efecto, la UI no ofrece un segundo registro ciego.
+
+```text
+RESULT_UNKNOWN
+-> QUERY_AUTHORITATIVE_RESULT
+OR
+-> RECONCILIATION_REQUIRED
+```
+
+Solo después de demostrar no-efecto puede habilitarse un retry seguro con la misma identidad.
+
+---
+
+#### 39. Flujo UX principal
+
+```text
+CANDIDATE_RECEIVED_OR_CAPTURED
+-> IDENTITY_CHECK
+-> RELATIONSHIP_CHECK
+-> DUPLICATE_CLASSIFICATION
+-> REVIEW_IF_NEEDED
+-> DECISION
+-> RECOGNIZE_ONCE_OR_REUSE_EXISTING
+-> RECEIPT
+-> RECOVERY_OR_RECONCILIATION
+```
+
+---
+
+#### 40. Estado visible en VSCREEN-0095
+
+La bandeja puede representar, como estado UX de revisión:
+
+```text
+NO_DUPLICATE_EVIDENCE
+POSSIBLE_DUPLICATE
+CONFIRMED_DUPLICATE
+RELATED_DISTINCT_FACT
+CORRECTION_OR_REVERSAL
+CONFLICT
+NEEDS_MORE_EVIDENCE
+RESOLVED_TO_EXISTING_EFFECT
+```
+
+Estas etiquetas no crean estados nuevos de `VPROC-0051`.
+
+---
+
+#### 41. Presentación del candidato
+
+La fila o detalle debe permitir entender, con divulgación progresiva:
+
+- fuente y proceso;
+- identidad/referencia fuente disponible;
+- tipo de hecho;
+- efecto económico propuesto;
+- importe y moneda;
+- entidad y dimensiones relevantes;
+- fecha/periodo;
+- correlaciones;
+- recurso NUMERA posiblemente existente;
+- razón de la sospecha de duplicidad;
+- clase y fuerza de la evidencia.
+
+---
+
+#### 42. Razón de sospecha visible
+
+La UX no muestra únicamente “duplicado”.
+
+Debe poder explicar una o más causas verificables, por ejemplo:
+
+```text
+SAME_SOURCE_IDENTITY
+SAME_CORRELATION_AND_EFFECT_CLASS
+EXISTING_MANUAL_SHADOW_OF_SOURCE
+EXISTING_SOURCE_SHADOW_OF_MANUAL
+SAME_CANONICAL_DOCUMENT_AND_EFFECT
+TECHNICAL_REDELIVERY
+WEAK_SIMILARITY_ONLY
+```
+
+---
+
+#### 43. Duplicado confirmado no se elimina
+
+La resolución conserva:
+
+- entrada recibida;
+- identidad fuente;
+- evidencia usada;
+- decisión;
+- actor/autoridad cuando corresponda;
+- referencia al efecto económico existente;
+- momento de resolución;
+- trazabilidad de por qué no se reconoció otra vez.
+
+---
+
+#### 44. Posible duplicado no se marca como confirmado
+
+```text
+POSSIBLE_DUPLICATE != CONFIRMED_DUPLICATE
+```
+
+La interfaz debe mantener incertidumbre explícita hasta disponer de evidencia suficiente.
+
+---
+
+#### 45. Decisión automática permitida
+
+Solo puede resolverse automáticamente cuando el contrato técnico o empresarial ya demuestra identidad de forma determinista, por ejemplo:
+
+- redelivery del mismo `event_id`;
+- resultado idempotente previo recuperable;
+- vínculo canónico exacto ya existente entre la entrada y el efecto NUMERA.
+
+La similitud heurística no autoriza auto-resolución como duplicado empresarial.
+
+---
+
+#### 46. Revisión humana
+
+Cuando se requiera decisión humana, la UX debe presentar evidencia sin conceder autoridad por el solo acceso a la bandeja.
+
+La decisión debe ser server-side, auditable y compatible con el permiso exacto que el recurso y la resolución requieran.
+
+UX-015 no crea un permiso omnibus `duplicate.manage`.
+
+---
+
+#### 47. Denegación de autoridad
+
+Una persona sin autoridad para resolver no puede:
+
+- confirmar duplicidad;
+- forzar independencia;
+- cambiar el efecto económico;
+- ejecutar corrección;
+- borrar evidencia;
+- alterar la fuente.
+
+Puede ver únicamente la proyección autorizada.
+
+---
+
+#### 48. Concurrencia
+
+Dos actores o workers no pueden resolver el mismo candidato de forma incompatible.
+
+La materialización futura deberá revalidar versión/estado y fallar cerrado ante cambio concurrente.
+
+```text
+STALE_DUPLICATE_DECISION
+-> REVIEW_AGAIN
+```
+
+---
+
+#### 49. Resolución a efecto existente
+
+Cuando se confirma duplicidad:
+
+```text
+CANDIDATE
+-> LINK_TO_EXISTING_ECONOMIC_EFFECT
+-> SECOND_POST = NO
+```
+
+El vínculo no convierte el candidato en fuente de verdad ni altera el owner del original.
+
+---
+
+#### 50. Resolución como hecho independiente
+
+Cuando se demuestra independencia:
+
+```text
+CANDIDATE
+-> CONTINUE_NORMAL_VPROC_0051_FLOW
+```
+
+La decisión conserva la evidencia que descartó duplicidad.
+
+---
+
+#### 51. Resolución como corrección o reverso
+
+Cuando la entrada realmente representa una corrección, reverso o compensación:
+
+```text
+CANDIDATE
+-> LINK_TO_ORIGINAL
+-> APPLY_OWNER-SPECIFIC_CORRECTION_CONTRACT
+```
+
+UX-015 no ejecuta la corrección ni define su autorización especializada.
+
+---
+
+#### 52. Resolución con evidencia insuficiente
+
+```text
+CANDIDATE
+-> KEEP_PENDING
+-> REQUEST_OR_WAIT_FOR_EVIDENCE
+```
+
+No se convierte un caso incierto en cero ni en duplicado para limpiar una bandeja.
+
+---
+
+#### 53. Relación con `VPROC-0051`
+
+UX-015 no crea lifecycle nuevo.
+
+Utiliza el flujo económico aprobado donde:
+
+```text
+ECONOMIC_EVENT_RECEIVED
+-> VALIDATION_IN_PROGRESS
+-> CLASSIFIED
+-> POSTING_PENDING
+-> POSTED
+-> RECONCILIATION_PENDING / ALLOCATION_PENDING
+-> ECONOMIC_EVENT_RECONCILED
+```
+
+La verificación de duplicidad ocurre antes de reconocer un segundo efecto.
+
+---
+
+#### 54. Recepción no equivale a reconocimiento
+
+```text
+ECONOMIC_EVENT_RECEIVED
+!= POSTED
+```
+
+Un candidato puede permanecer recibido y bajo revisión sin afectar estados financieros definitivos.
+
+---
+
+#### 55. Duplicidad y cierre de periodo
+
+Un candidato materialmente no resuelto puede bloquear un gate de cierre cuando el contrato del periodo lo considere material.
+
+UX-015 no decide por sí sola materialidad ni cierra periodos.
+
+---
+
+#### 56. Duplicidad y conciliación
+
+La prevención de doble reconocimiento ocurre antes o durante clasificación.
+
+La conciliación posterior explica relaciones y diferencias entre hechos válidos.
+
+```text
+DUPLICATE_PREVENTION != FULL_RECONCILIATION
+```
+
+Los flujos específicos de ventas/pagos, compras/recepciones e inventario/producción permanecen en UX-017, UX-018 y UX-019.
+
+---
+
+#### 57. Duplicidad y correcciones históricas
+
+Una duplicidad descubierta después del reconocimiento no autoriza borrar el segundo registro.
+
+La salida requiere corrección, reverso, reclasificación o tratamiento versionado según el owner y estado del periodo.
+
+El historial se conserva.
+
+---
+
+#### 58. Duplicidad y filtros
+
+Empresa, sede y centro de costo pueden ayudar a comparar casos, pero:
+
+```text
+FILTER_SELECTION_IS_DUPLICATE_EVIDENCE = NO
+```
+
+La selección de UX-013 no completa identidades faltantes ni decide el duplicado.
+
+---
+
+#### 59. Duplicidad y exportación
+
+Una exportación puede reflejar el estado de resolución, pero:
+
+```text
+EXPORTED_ROW_COUNT != SOURCE_FACT_COUNT
+EXPORT != DUPLICATE_RESOLUTION
+```
+
+UX-015 no modifica el contrato de exportación de UX-012.
+
+---
+
+#### 60. Mensajes UX
+
+La UI debe distinguir explícitamente:
+
+```text
+Ya procesado: se recuperó el resultado existente.
+Posible duplicado: requiere revisión.
+Duplicado confirmado: no se registrará un segundo efecto.
+Hecho relacionado pero distinto: continúa por su flujo normal.
+Corrección o reverso: se tratará mediante el contrato correspondiente.
+Conflicto de identidad: no se puede continuar sin resolverlo.
+Falta evidencia: el caso permanece pendiente.
+```
+
+Los textos podrán adaptarse visualmente, pero no colapsar estas semánticas.
+
+---
+
+#### 61. Estado vacío
+
+Cero candidatos duplicados significa únicamente que no hay casos visibles dentro del alcance consultado.
+
+No demuestra que todas las fuentes estén completas ni que no exista duplicidad histórica no detectada.
+
+---
+
+#### 62. Accesibilidad y responsive
+
+La experiencia debe:
+
+- conservar label textual de la clasificación;
+- no depender exclusivamente de color;
+- permitir navegar entre candidato y efecto existente;
+- preservar foco al abrir y cerrar comparación;
+- mostrar la evidencia principal antes de acciones destructivas o sensibles;
+- conservar clasificación y decisión en superficies estrechas.
+
+---
+
+#### 63. Observabilidad esperada
+
+La futura materialización debe poder medir sin redefinir semántica:
+
+```text
+TECHNICAL_REDELIVERY_COUNT
+POSSIBLE_BUSINESS_DUPLICATE_COUNT
+CONFIRMED_BUSINESS_DUPLICATE_COUNT
+DUPLICATE_PREVENTED_EFFECT_COUNT
+CONFLICTING_REUSE_COUNT
+RESOLVED_TO_EXISTING_EFFECT_COUNT
+INDEPENDENT_AFTER_REVIEW_COUNT
+INSUFFICIENT_EVIDENCE_COUNT
+MANUAL_SHADOW_PREVENTED_COUNT
+```
+
+Los conteos de observabilidad no son hechos económicos.
+
+---
+
+#### 64. Hallazgos diferidos
+
+| Hallazgo | Bloquea UX-015 | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| `numera_expenses` auditada no posee restricción única física de identidad fuente | no | materialización física NUMERA / packages y contratos DB aplicables | persistencia futura materializa unicidad/idempotencia sin cambiar la semántica aprobada |
+| `createExpense` AS-IS puede crear un hecho manual sin `source_table` ni `source_id` | no | UX-009 + materialización NUMERA | runtime adopta origen/correlación objetivo y pruebas negativas de sombra manual |
+| matching cross-domain físico previo a escritura manual no está implementado | no | materialización NUMERA + integraciones aplicables | consumidor materializa comparación gobernada y pruebas de no doble reconocimiento |
+| una duplicidad descubierta después de `POSTED` puede exigir corrección económica | no | `NUMERA-UX-023` + owner del recurso | corrección versionada/compensatoria conserva el original y el periodo aplicable |
+| resolución específica entre ventas/pagos, compras/recepciones o producción/inventario requiere conciliación especializada | no | `NUMERA-UX-017`, `NUMERA-UX-018`, `NUMERA-UX-019` | cada flujo aplica su contrato de conciliación sin redefinir UX-015 |
+
+No queda hallazgo detectado sin owner y condición de salida.
+
+---
+
+#### 65. Decisiones congeladas
+
+```text
+FINANCIAL_DUPLICATE_CONTRACT = NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001
+PRIMARY_SCREEN_ID = VSCREEN-0095
+RELATED_MANUAL_CAPTURE_SCREEN_ID = VSCREEN-0096
+OWNER_PROCESS_ID = VPROC-0051
+TECHNICAL_REDELIVERY_IS_BUSINESS_DUPLICATE = NO
+EXACT_EVENT_REDELIVERY_CREATES_NEW_EFFECT = NO
+SAME_AMOUNT_PROVES_DUPLICATE = NO
+SAME_DATE_PROVES_DUPLICATE = NO
+SAME_COUNTERPARTY_PROVES_DUPLICATE = NO
+SAME_FILTER_CONTEXT_PROVES_DUPLICATE = NO
+POSSIBLE_DUPLICATE_AUTO_MERGES = NO
+CONFIRMED_DUPLICATE_CREATES_SECOND_EFFECT = NO
+CONFIRMED_DUPLICATE_DELETES_SOURCE_EVIDENCE = NO
+CORRECTION_IS_DUPLICATE_BY_DEFAULT = NO
+REVERSAL_IS_DUPLICATE_BY_DEFAULT = NO
+MULTIPLE_EVIDENCE_SOURCES_CREATE_MULTIPLE_EFFECTS = NO
+MANUAL_SHADOW_OF_EXISTING_SOURCE_FACT = FORBIDDEN
+RESULT_UNKNOWN_ALLOWS_BLIND_RETRY = NO
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 66. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+La obligación de no doble registrar, conservar identidad, fuente, correlación, idempotencia, evidencia y correcciones no destructivas ya está protegida por requisitos canónicos vigentes. UX-015 especializa la clasificación y la respuesta UX sin crear una obligación ejecutable nueva.
+
+---
+
+#### 67. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad de cobertura existente y no constituye una actualización del Registro 04A.
+
+- `TREQ-NUMERA-001` — conciliación con PULSO, ORIGO, FOGO y NEXO, prohibición de doble registro manual e historia trazable;
+- `TREQ-NUMERA-002` — identidad estable del hecho económico, fuente, correlación, documento, estado y correcciones no destructivas;
+- `TREQ-NUMERA-018` — creación de gasto con validación económica y revalidación server-side;
+- `TREQ-INTEGRATION-003` — identidad estable, idempotencia, resultado recuperable y ausencia de doble efecto;
+- `TREQ-INTEGRATION-004` — trazabilidad causal de cadenas asíncronas y reintentos sin efectos duplicados;
+- `TREQ-INTEGRATION-006` — captura única en la aplicación propietaria, sin doble digitación o fuente competidora;
+- `TREQ-INTEGRATION-017` — llegada gobernada de hechos operativos a NUMERA con continuidad e idempotencia;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas.
+
+---
+
+#### 68. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea no ejecuta build de producto; la incorporación y batería global quedan para el ciclo documental local. |
+| LOCAL | NOT_EXECUTED | No se modificó un checkout local de `vento-shell`; el reemplazo, formateo y validadores locales quedan pendientes del ciclo manual. |
+| REMOTA | PASS | Se verificaron en `main` el marcador objetivo, la secuencia vigente hasta UX-014, topología `DEFINE_ONCE`, contratos de NUMERA, `VPROC-0051`, `VSCREEN-0095`, `VSCREEN-0096`, idempotencia transversal, auditoría NUMERA, Registro 04A y scripts aplicables. UX-014 se consume desde el artefacto completo aprobado por el usuario mientras su cierre remoto permanece pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se registró, reconoció, anuló, revirtió, concilió ni deduplicó ningún hecho financiero real. |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-015` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza materialización física propia. |
+
+---
+
+#### 69. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001`;
+2. `VSCREEN-0095` permanece superficie principal de triage;
+3. `VSCREEN-0096` permanece superficie de captura manual relacionada;
+4. `VPROC-0051` permanece proceso propietario;
+5. la tarea separa redelivery técnica de duplicidad empresarial;
+6. el mismo `event_id` no produce un segundo efecto;
+7. `CONFLICTING_REUSE` no se trata como duplicado compatible;
+8. existen ocho clases cerradas de clasificación;
+9. `POSSIBLE_BUSINESS_DUPLICATE` no equivale a duplicado confirmado;
+10. similitud de importe no prueba identidad;
+11. similitud de fecha no prueba identidad;
+12. similitud de contraparte no prueba identidad;
+13. empresa/sede/centro seleccionados no prueban identidad;
+14. venta y pago permanecen distintos;
+15. compra y recepción permanecen distintas;
+16. recepción comercial y movimiento físico permanecen distintos;
+17. producción y movimiento físico permanecen distintos;
+18. documento y hecho económico permanecen distintos;
+19. corrección/reverso/compensación no se clasifican como duplicado por defecto;
+20. varias fuentes de evidencia no crean varios efectos económicos;
+21. un hecho fuente ya existente bloquea la creación de una sombra manual equivalente;
+22. una captura manual previa no obliga a duplicar el efecto cuando llegue la fuente;
+23. replay y backfill no crean realidad empresarial nueva;
+24. retry no aumenta la cardinalidad económica;
+25. `RESULT_UNKNOWN` exige consulta o conciliación antes de repetir;
+26. duplicado confirmado reutiliza el efecto existente;
+27. duplicado confirmado conserva evidencia fuente;
+28. posible duplicado permanece pendiente hasta evidencia suficiente;
+29. hecho independiente continúa por el flujo normal;
+30. corrección se deriva al contrato propietario correspondiente;
+31. decisión stale exige revisar otra vez;
+32. la UI explica la razón de sospecha;
+33. la UI distingue conflicto, duplicado, relacionado, corrección e independencia;
+34. cero candidatos no se presenta como completitud de fuentes;
+35. filtros no son evidencia de duplicidad;
+36. exportación no resuelve duplicidad;
+37. la tarea no absorbe conciliaciones UX-017..019;
+38. duplicidad descubierta después de reconocimiento no borra historia;
+39. todos los hallazgos diferidos tienen owner y condición de salida;
+40. no se crean ni modifican requisitos de prueba;
+41. no se realizan cambios físicos;
+42. UX-016 recibe un conjunto de escenarios verificables para validación con contabilidad y dirección.
+
+---
+
+#### 70. Escenarios mínimos para validación posterior
+
+UX-016 deberá poder probar al menos:
+
+1. mismo `event_id` entregado dos veces;
+2. dos eventos diferentes que apuntan a la misma venta y mismo efecto económico;
+3. misma venta con pago separado, que no debe deduplicarse como venta;
+4. misma orden con dos recepciones parciales legítimas;
+5. producción y movimiento NEXO correlacionados que sustentan un solo efecto económico;
+6. captura manual que intenta sombrear un hecho fuente existente;
+7. captura manual previa seguida por llegada del evento fuente equivalente;
+8. dos gastos legítimos con mismo importe, fecha y contraparte;
+9. reverso o corrección que comparte referencia con el original;
+10. caso con señales débiles pero evidencia insuficiente;
+11. `CONFLICTING_REUSE` de una identidad idempotente;
+12. resultado desconocido después de commit y recuperación sin segundo registro.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- crea una clave física de deduplicación;
+- define un índice único de base de datos;
+- crea restricciones de `numera_expenses`;
+- implementa matching runtime;
+- modifica `INT-APP-001..010`;
+- cambia `VPROC-0051`;
+- agrega estados empresariales;
+- crea permisos nuevos;
+- crea un permiso omnibus de resolución;
+- implementa `VSCREEN-0095` o `VSCREEN-0096`;
+- crea componentes React;
+- crea APIs, RPC o Server Actions;
+- crea tablas, vistas o triggers;
+- modifica RLS;
+- modifica Supabase;
+- crea migraciones;
+- ejecuta reintentos, replay o backfill;
+- ejecuta conciliaciones;
+- corrige fuentes PULSO, ORIGO, FOGO o NEXO;
+- borra hechos económicos;
+- diseña la conciliación detallada de UX-017, UX-018 o UX-019;
+- diseña correcciones/reaperturas de UX-023;
+- diseña tablero de cobertura de UX-024;
+- valida todavía el prototipo con contabilidad y dirección;
+- desarrolla `NUMERA-UX-016`;
+- actualiza Registro 04A.
+
+---
+
+#### 72. Handoff a NUMERA-UX-016
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_FINANCIAL_DUPLICATE_CONTRACT = NUMERA-FINANCIAL-DUPLICATE-PREVENTION-001
+PRIMARY_DUPLICATE_SCREEN = VSCREEN-0095
+RELATED_MANUAL_CAPTURE_SCREEN = VSCREEN-0096
+OWNER_PROCESS = VPROC-0051
+DUPLICATE_CLASS_COUNT = 8
+TECHNICAL_REDELIVERY_IS_BUSINESS_DUPLICATE = NO
+EXACT_EVENT_REDELIVERY_CREATES_NEW_EFFECT = NO
+POSSIBLE_DUPLICATE_IS_CONFIRMED_DUPLICATE = NO
+SAME_AMOUNT_PROVES_DUPLICATE = NO
+SAME_DATE_PROVES_DUPLICATE = NO
+SAME_COUNTERPARTY_PROVES_DUPLICATE = NO
+FILTER_SELECTION_PROVES_DUPLICATE = NO
+CONFIRMED_DUPLICATE_CREATES_SECOND_EFFECT = NO
+CONFIRMED_DUPLICATE_DELETES_SOURCE_EVIDENCE = NO
+MANUAL_SHADOW_OF_EXISTING_SOURCE_FACT = FORBIDDEN
+RESULT_UNKNOWN_ALLOWS_BLIND_RETRY = NO
+CORRECTION_IS_DUPLICATE_BY_DEFAULT = NO
+VALIDATION_SCENARIO_COUNT = 12
+UX_016_OWNER = PROTOTYPE_VALIDATION_WITH_ACCOUNTING_AND_DIRECTION
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-016` deberá validar el prototipo con contabilidad y dirección utilizando estos escenarios y registrar evidencia de comprensión, clasificación y decisión sin alterar todavía contratos físicos.
+
+---
+
+#### 73. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-014
+-> NUMERA-UX-015
+-> NUMERA-UX-016
+```
+
+UX-015 consume identidad, procedencia e idempotencia de UX-014 y entrega a UX-016 un contrato de prevención de duplicidad con escenarios verificables de validación.
+
+---
+
+#### 74. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-015 — Evitar registro financiero duplicado`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección`
 ### [ ] NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
 
 ### [ ] NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
