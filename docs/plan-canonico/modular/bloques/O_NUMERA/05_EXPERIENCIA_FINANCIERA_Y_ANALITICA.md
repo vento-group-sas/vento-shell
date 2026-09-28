@@ -32196,7 +32196,1300 @@ UX-024 consume correcciones/reaperturas versionadas de UX-023, integra señales 
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación`
-### [ ] NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
+### ✅ NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes
+**Tarea siguiente:** NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro
+**Tipo de tarea:** aprobación documental del alcance financiero y analítico objetivo de NUMERA antes de completar su implementación, consolidando las quince capacidades `CAP-12.01..CAP-12.15`, siete procesos propietarios, veinte superficies canónicas, catálogo final de autorización, fronteras con fuentes operativas y autoridades externas, evidencia de cobertura, pendientes y decisiones diferidas con owner; la aprobación confirma el alcance funcional objetivo pero no certifica runtime, no autoriza implementación física, no habilita operación financiera real y no absorbe las tareas posteriores `NUMERA-UX-026..028`; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica pantallas runtime, componentes, permisos físicos, roles, grants, procesos, estados, tablas, vistas, RPC, RLS, migraciones, Supabase, datos financieros, movimientos, conciliaciones reales, saldos, cartera, bancos, pagos, escenarios, contabilidad formal, fiscalidad, reportes, despliegues ni paquetes de implementación
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Aprobar el alcance financiero objetivo de NUMERA después de revisar los contratos de dominio, autorización y experiencia ya definidos, distinguiendo de forma explícita:
+
+- qué capacidades pertenecen obligatoriamente al objetivo funcional;
+- qué responsabilidades permanecen en aplicaciones operativas o autoridades externas;
+- qué superficies y procesos forman parte del producto objetivo;
+- qué permisos deben existir aunque todavía no estén materializados físicamente;
+- qué evidencia permite aprobar el alcance documental;
+- qué pendientes continúan abiertos sin invalidar la decisión de alcance;
+- qué condiciones sí bloquearían una aprobación de alcance;
+- qué tareas posteriores siguen siendo obligatorias antes de declarar la experiencia financiera completa.
+
+La aprobación de esta tarea significa que el **alcance objetivo está cerrado documentalmente**. No significa que la implementación esté completa, certificada, desplegada o autorizada físicamente.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define una decisión documental reutilizable;
+- no crea instancia física propia;
+- no autoriza paquetes ni implementación física;
+- no modifica `vento-numera`;
+- no modifica Supabase;
+- no ejecuta operación financiera;
+- no certifica runtime;
+- no reemplaza gates E5 ni certificaciones integrales posteriores.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-024
+
+La tarea consume íntegramente:
+
+```text
+SOURCE_COVERAGE_RECONCILIATION_DASHBOARD_CONTRACT = NUMERA-SOURCE-COVERAGE-RECONCILIATION-DASHBOARD-001
+PRIMARY_SCREEN_ID = VSCREEN-0094
+OWNER_PROCESS_ID = VPROC-0061
+OWNER_STEP_ID = VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+COVERAGE_DASHBOARD_IS_COMMAND_SURFACE = NO
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+COVERAGE_FAMILY_COUNT = 9
+COVERAGE_STATE_COUNT = 9
+COMPLETE_REQUIRES_EVIDENCE = YES
+UNKNOWN_IS_PASS = NO
+NO_VISIBLE_CASES_IS_RECONCILIATION_COMPLETE = NO
+VISIBLE_SUBSET_COMPLETE_IS_GLOBAL_SCOPE_COMPLETE = NO
+EXPECTED_RECEIVED_RECONCILED_SOURCE = DISTINCT
+CUTOFF_OR_WATERMARK_REQUIRED_FOR_COMPLETENESS = YES
+SOURCE_DOMAIN_OWNER_IS_SOURCE_CORRECTION_OWNER = YES
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+ACCEPTED_EXCEPTION_IS_SOURCE_CORRECTED = NO
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+REOPEN_DIFFERENCE_IS_REOPEN_PERIOD = NO
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+RESTATEMENT_IS_VERSIONED = YES
+OLD_REPORT_VERSION_REMAINS_HISTORICAL = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+MANDATORY_DRILLDOWN_SCREEN_COUNT = 8
+VALIDATION_SCENARIO_COUNT = 30
+FINANCIAL_SCOPE_APPROVAL_OWNER = NUMERA_UX_025
+DYNAMIC_ECONOMIC_VIEWER_OWNER = NUMERA_UX_028
+TREQ_CHANGES = 0
+```
+
+UX-025 usa esta evidencia para decidir alcance. No transforma `UNKNOWN`, ausencia de runtime o un subconjunto visible en PASS de implementación.
+
+---
+
+#### 4. Fuentes canónicas consumidas
+
+La aprobación consume sin redefinir:
+
+- `CAP-SCOPE-012`, como decisión empresarial de cobertura `CAP-12`;
+- `NUMERA-AUD-001..012`, como auditoría funcional y técnica;
+- `NUMERA-DOM-001..018`, incluyendo el gate de alcance `NUMERA-DOM-015`;
+- `NUMERA-AUTH-001..015`, incluyendo los permisos especializados y de planificación;
+- `NUMERA-UX-001..024`;
+- `OPS-CST-001` para costos internos y fronteras de valorización;
+- contratos de procesos `VPROC-*` aplicables;
+- catálogo y bindings `VSCREEN-*`;
+- Registro 04A vigente de NUMERA, integración, autorización y datos;
+- reglas transversales de identidad, fuente, idempotencia, autorización, evidencia, conciliación, periodos y no sobrescritura.
+
+---
+
+#### 5. Contrato de aprobación resultante
+
+Se define:
+
+```text
+NUMERA_FINANCIAL_SCOPE_APPROVAL_CONTRACT = NUMERA-FINANCIAL-SCOPE-APPROVAL-001
+```
+
+El contrato cierra el **qué debe existir** en NUMERA y sus fronteras, no el **cuándo queda materializado** cada componente.
+
+---
+
+#### 6. Regla fundamental de interpretación
+
+Se congela:
+
+```text
+FINANCIAL_SCOPE_APPROVED != PHYSICAL_IMPLEMENTATION_AUTHORIZED
+FINANCIAL_SCOPE_APPROVED != RUNTIME_COMPLETE
+FINANCIAL_SCOPE_APPROVED != PRODUCTION_CERTIFIED
+FINANCIAL_SCOPE_APPROVED != FINANCIAL_OPERATION_EXECUTED
+```
+
+Una capacidad puede estar ausente o parcial en AS-IS y seguir perteneciendo obligatoriamente al alcance objetivo.
+
+---
+
+#### 7. Resultado de la decisión
+
+El alcance financiero objetivo de NUMERA queda aprobado documentalmente.
+
+```text
+FINANCIAL_SCOPE_APPROVED = YES
+PHYSICAL_IMPLEMENTATION_AUTHORIZED_BY_UX_025 = NO
+RUNTIME_COMPLETION_CERTIFIED_BY_UX_025 = NO
+PRODUCTION_OPERATION_AUTHORIZED_BY_UX_025 = NO
+```
+
+La decisión se apoya en definición contractual suficiente, ownership explícito y carryovers con propietario. No se apoya en asumir que el runtime ya cumple el objetivo.
+
+---
+
+#### 8. Alcance CAP-12 aprobado
+
+Se preserva exactamente el universo:
+
+```text
+CAP_12_EXPECTED = 15
+CAP_12_APPROVED_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+CAP_12_OPTIONAL_BY_DEFAULT = 0
+```
+
+Todas las capacidades `CAP-12.01..CAP-12.15` permanecen dentro del objetivo.
+
+---
+
+#### 9. Matriz final CAP-12
+
+| Capacidad | Nombre | Tratamiento objetivo | Propiedad / frontera |
+| --- | --- | --- | --- |
+| `CAP-12.01` | Registrar hechos económicos | `REUSE_OR_REFACTOR` | NUMERA |
+| `CAP-12.02` | Gestionar caja | `REUSE_OR_REFACTOR` | PULSO opera; NUMERA consolida y concilia |
+| `CAP-12.03` | Gestionar bancos y pagos | `BUILD` | NUMERA gobierna; banco/proveedor ejecuta externamente cuando corresponda |
+| `CAP-12.04` | Gestionar cuentas por cobrar | `BUILD` | NUMERA; capacidad obligatoria |
+| `CAP-12.05` | Gestionar cuentas por pagar | `BUILD` | NUMERA |
+| `CAP-12.06` | Facturar y controlar documentos | `INTEGRATE_EXTERNAL` | PULSO/ORIGO/proveedor fiscal + NUMERA |
+| `CAP-12.07` | Conciliar ventas, pagos y entregas | `BUILD` | NUMERA |
+| `CAP-12.08` | Conciliar compras y recepciones | `BUILD` | NUMERA |
+| `CAP-12.09` | Calcular costos | `REUSE_OR_REFACTOR` | NUMERA consume fuentes ORIGO/NEXO/FOGO |
+| `CAP-12.10` | Distribuir costos compartidos | `BUILD` | NUMERA |
+| `CAP-12.11` | Gestionar presupuestos | `REUSE_OR_REFACTOR` | NUMERA |
+| `CAP-12.12` | Gestionar tesorería | `BUILD` | NUMERA con ejecución externa cuando aplique |
+| `CAP-12.13` | Gestionar impuestos y obligaciones | `INTEGRATE_EXTERNAL` | NUMERA controla; autoridad oficial externa |
+| `CAP-12.14` | Cerrar períodos y emitir reportes | `BUILD` | NUMERA |
+| `CAP-12.15` | Analizar rentabilidad | `REUSE_OR_REFACTOR` | NUMERA |
+
+---
+
+#### 10. Distribución de tratamiento
+
+La matriz reconcilia:
+
+```text
+REUSE_OR_REFACTOR_COUNT = 5
+BUILD_COUNT = 8
+INTEGRATE_EXTERNAL_COUNT = 2
+TOTAL = 15
+```
+
+No existe una capacidad sin tratamiento ni una capacidad contada dos veces.
+
+---
+
+#### 11. Siete procesos propietarios de NUMERA
+
+La experiencia aprobada se organiza sobre exactamente siete procesos propietarios:
+
+```text
+VPROC-0010
+VPROC-0051
+VPROC-0052
+VPROC-0053
+VPROC-0054
+VPROC-0061
+VPROC-0069
+```
+
+```text
+NUMERA_OWNER_PROCESS_COUNT = 7
+```
+
+Los procesos no se sustituyen por URLs, pantallas, tablas ni permisos.
+
+---
+
+#### 12. Función de VPROC-0010
+
+`VPROC-0010` conserva el paquete laboral financiero para pagos y beneficios.
+
+VISO/ANIMA conservan los hechos laborales propietarios; NUMERA prepara y concilia el resultado económico autorizado.
+
+---
+
+#### 13. Función de VPROC-0051
+
+`VPROC-0051` conserva hechos económicos y conciliaciones de fuentes.
+
+El alcance incluye recepción, clasificación, evidencia, ventas/pagos y compras/recepciones sin recrear la operación fuente.
+
+---
+
+#### 14. Función de VPROC-0052
+
+`VPROC-0052` conserva obligaciones, aprobación financiera, tesorería, bancos y cumplimiento de pagos.
+
+La emisión de una instrucción no equivale a resultado bancario confirmado.
+
+---
+
+#### 15. Función de VPROC-0053
+
+`VPROC-0053` conserva cartera, cobro, recaudo, aplicación, diferencia y liquidación de cuentas por cobrar.
+
+Cartera permanece obligatoria y no depende de que NUMERA se convierta en sistema contable formal.
+
+---
+
+#### 16. Función de VPROC-0054
+
+`VPROC-0054` conserva costos, variaciones, asignaciones, cierre económico y rentabilidad.
+
+Método, versión, fuente y periodo permanecen explícitos.
+
+---
+
+#### 17. Función de VPROC-0061
+
+`VPROC-0061` conserva medición, posición financiera, reportes, análisis, indicadores y mejora.
+
+`VSCREEN-0094` y el tablero de UX-024 son proyecciones de lectura y no una fuente financiera nueva.
+
+---
+
+#### 18. Función de VPROC-0069
+
+`VPROC-0069` conserva presupuesto, escenarios, forecast y control de variaciones.
+
+Real, presupuesto, forecast, escenario, propuesta y publicación permanecen distintos.
+
+---
+
+#### 19. Universo objetivo de pantallas
+
+El alcance aprobado reconoce exactamente veinte superficies canónicas NUMERA:
+
+| Pantalla | Nombre |
+| --- | --- |
+| `VSCREEN-0094` | Inicio financiero y ejecutivo |
+| `VSCREEN-0095` | Bandeja de hechos económicos |
+| `VSCREEN-0096` | Registro de gasto y soporte |
+| `VSCREEN-0097` | Bandeja de aprobaciones financieras |
+| `VSCREEN-0098` | Cuentas por pagar y obligaciones |
+| `VSCREEN-0099` | Cuentas por cobrar y cartera |
+| `VSCREEN-0100` | Caja, bancos y movimientos financieros |
+| `VSCREEN-0101` | Conciliación de ventas y pagos |
+| `VSCREEN-0102` | Conciliación de compras y recepciones |
+| `VSCREEN-0103` | Conciliación de inventario, producción y variaciones |
+| `VSCREEN-0104` | Costos, rentabilidad y escenarios |
+| `VSCREEN-0105` | Cierre, reapertura y corrección de periodo |
+| `VSCREEN-0106` | Reportes y exportaciones financieras |
+| `VSCREEN-0153` | Paquete laboral para pagos y beneficios |
+| `VSCREEN-0154` | Facturas y documentos fiscales |
+| `VSCREEN-0155` | Tesorería y programación de pagos |
+| `VSCREEN-0156` | Presupuestos, escenarios y forecast |
+| `VSCREEN-0157` | Impuestos y obligaciones de cumplimiento |
+| `VSCREEN-0158` | Distribución y asignación de costos |
+| `VSCREEN-0159` | Indicadores, análisis y planes de mejora |
+
+```text
+NUMERA_TARGET_SCREEN_COUNT = 20
+NUMERA_TARGET_SCREEN_REMOVED = 0
+```
+
+La existencia del ID objetivo no prueba materialización física de la pantalla.
+
+---
+
+#### 20. VSCREEN-0094 como inicio, no como sustituto de las demás superficies
+
+`VSCREEN-0094` conserva la lectura ejecutiva, posición, alertas, ciclo y cobertura.
+
+No absorbe:
+
+- captura de hechos;
+- pagos;
+- conciliaciones detalladas;
+- cierre/reapertura;
+- cartera;
+- tesorería;
+- edición de escenarios;
+- reportes/exportaciones;
+- operaciones fiscales.
+
+---
+
+#### 21. Autorización objetivo
+
+El catálogo final documental de autorización NUMERA conserva:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT_AT_AUTH_015 = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT_AT_AUTH_015 = 119
+```
+
+La aprobación de alcance exige las 125 capacidades objetivo como contrato, pero no interpreta las 119 pendientes de materialización como ya disponibles en runtime.
+
+---
+
+#### 22. Permisos especializados de cartera y bancos
+
+`NUMERA-AUTH-014` aporta 36 capacidades especializadas para:
+
+- cartera y cobranza;
+- promesas y acuerdos;
+- aplicaciones;
+- disputas;
+- castigos y condonaciones;
+- exposición y límites de crédito;
+- cuentas bancarias;
+- extractos;
+- tesorería;
+- conciliación;
+- datos financieros sensibles.
+
+Su estado documental no concede grants ni efectos físicos.
+
+---
+
+#### 23. Permisos de planificación
+
+`NUMERA-AUTH-015` aporta 32 capacidades atómicas sobre cuatro recursos:
+
+```text
+SCENARIOS
+BUDGETS
+FORECASTS
+PRICE_VERSIONS
+```
+
+con acciones:
+
+```text
+create|update|share|request|approve|reject|publish|unpublish
+```
+
+Publicar no equivale a activar operación real.
+
+---
+
+#### 24. Cartera es obligatoria
+
+Se congela:
+
+```text
+ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_RECEIVABLE_OWNER = NUMERA
+PAYMENT_RECEIVED != PAYMENT_APPLIED
+CLIENT != DEBTOR
+DEBTOR != PASS_ACCOUNT
+```
+
+La ausencia física de cartera no reduce el alcance.
+
+---
+
+#### 25. Cuentas por pagar son obligatorias
+
+Se conserva:
+
+```text
+ACCOUNTS_PAYABLE = REQUIRED
+PURCHASE_ORDER != RECEIPT
+RECEIPT != PAYABLE
+PAYABLE_APPROVED != PAYMENT
+PAYMENT_RECORDED != BANK_RECONCILED
+```
+
+La obligación externa nace de evidencia válida, no de un movimiento interno por inferencia.
+
+---
+
+#### 26. Caja, bancos y tesorería
+
+Se conserva la frontera:
+
+```text
+PULSO_OWNS_OPERATIONAL_CASH = YES
+NUMERA_OWNS_FINANCIAL_CONSOLIDATION_AND_RECONCILIATION = YES
+```
+
+Cuenta bancaria, movimiento, extracto, instrucción, pago y conciliación permanecen conceptos distintos.
+
+---
+
+#### 27. Conciliación de ventas y pagos
+
+NUMERA concilia venta, pago, caja, documento, entrega, devolución, reembolso, depósito y efecto económico sin apropiarse de la operación PULSO.
+
+Diferencia abierta no se fuerza a cero para cerrar una vista.
+
+---
+
+#### 28. Conciliación de compras y recepciones
+
+NUMERA compara orden, recepción, movimiento físico, documento, obligación, devolución y pago sin convertir ORIGO o NEXO en ledgers financieros paralelos.
+
+Los agrupamientos conservan lineage y residual.
+
+---
+
+#### 29. Inventario, producción y variaciones
+
+FOGO conserva hecho productivo; NEXO conserva movimiento físico; NUMERA conserva efecto económico y conciliación.
+
+```text
+BUSINESS_VARIANCE_IS_RECONCILIATION_DIFFERENCE = NO
+```
+
+Una variación legítima no se corrige alterando la fuente.
+
+---
+
+#### 30. Costos y rentabilidad
+
+El alcance exige costos con método, versión, vigencia, fuentes y lineage.
+
+Se mantienen separados:
+
+- adquisición;
+- landed;
+- estándar;
+- real;
+- promedio;
+- último;
+- productivo;
+- logístico;
+- merma;
+- interno.
+
+Rentabilidad no se deriva de saldo bancario ni de flujo de caja por defecto.
+
+---
+
+#### 31. Presupuesto, forecast y escenarios
+
+Se congela:
+
+```text
+REAL != BUDGET != FORECAST != SCENARIO != PROPOSED != PUBLISHED
+```
+
+Una simulación o publicación analítica no modifica hechos reales sin handoff y autorización del owner correspondiente.
+
+---
+
+#### 32. Periodos, cierre y reapertura
+
+El alcance conserva periodo económico, cierre, bloqueo, reapertura y corrección versionada.
+
+```text
+LATE_EVENT_IS_REOPEN_AUTHORITY = NO
+REOPEN_DELETES_PREVIOUS_CLOSE = NO
+RESTATEMENT_IS_VERSIONED = YES
+```
+
+---
+
+#### 33. Reportes y restatements
+
+Reporte, snapshot, exportación y restatement permanecen identificables por versión y corte.
+
+Una nueva versión no reescribe una exportación histórica ya emitida como si nunca hubiera existido.
+
+---
+
+#### 34. Fiscalidad y documentos oficiales
+
+`CAP-12.06` y `CAP-12.13` permanecen dentro del alcance funcional con autoridad oficial externa.
+
+NUMERA conserva:
+
+- referencia;
+- estado;
+- tercero;
+- componentes;
+- calendario;
+- soporte;
+- evidencia;
+- conciliación.
+
+La emisión, determinación o presentación oficial no se internaliza por inferencia.
+
+---
+
+#### 35. Contabilidad formal futura
+
+Se conserva:
+
+```text
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+```
+
+La arquitectura deberá poder integrar o incorporar plan de cuentas, comprobantes y libros en el futuro, pero esta tarea no activa contabilidad estatutaria dentro de NUMERA.
+
+---
+
+#### 36. Hechos operativos siguen en sus dominios
+
+El alcance financiero no transfiere ownership de:
+
+```text
+PULSO -> venta, pago operativo y caja
+ORIGO -> compra, proveedor, orden y recepción comercial
+NEXO -> inventario, movimiento físico, activos y logística
+FOGO -> producción, consumo, calidad, rendimiento y merma
+ANIMA/VISO -> hechos laborales propietarios
+PASS -> identidad/relación cliente y fidelización propietaria
+```
+
+NUMERA consume hechos y conserva su efecto económico sin reescribirlos.
+
+---
+
+#### 37. Fuentes y cobertura
+
+El contrato de UX-024 entrega un universo contractual de:
+
+```text
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+```
+
+Estos conteos son evidencia de cobertura contractual, no evidencia de ocurrencias runtime recibidas en un periodo concreto.
+
+---
+
+#### 38. Nueve familias de cobertura
+
+El gate consume exactamente:
+
+```text
+SOURCE_INGESTION
+ECONOMIC_FACT_RECOGNITION
+SALES_AND_PAYMENTS_RECONCILIATION
+PURCHASES_AND_RECEIPTS_RECONCILIATION
+INVENTORY_AND_PRODUCTION_RECONCILIATION
+BANK_AND_TREASURY_RECONCILIATION
+COST_AND_PROFITABILITY_COMPLETENESS
+PERIOD_CORRECTION_AND_RESTATEMENT
+REPORT_AND_VERSION_COVERAGE
+```
+
+Estas familias ayudan a explicar confianza; no son procesos nuevos.
+
+---
+
+#### 39. Semántica de evidencia para aprobar alcance
+
+El gate de alcance usa evidencia documental sobre:
+
+- identidad del universo objetivo;
+- ownership;
+- fronteras;
+- contratos;
+- tareas derivadas;
+- decisiones diferidas;
+- TREQ vigentes;
+- carryovers y owners.
+
+No exige que todos los estados runtime sean `COMPLETE` para aprobar **qué pertenece al producto objetivo**.
+
+---
+
+#### 40. `UNKNOWN` nunca se convierte en PASS runtime
+
+Se preserva:
+
+```text
+UNKNOWN_IS_PASS = NO
+UNKNOWN_IS_COMPLETE = NO
+```
+
+Si un estado runtime es desconocido, permanece desconocido. La aprobación documental de alcance no cambia esa evidencia.
+
+---
+
+#### 41. Ausencia de runtime no elimina alcance
+
+Se congela:
+
+```text
+AS_IS_ABSENT_IS_OUT_OF_SCOPE = NO
+AS_IS_PARTIAL_IS_OPTIONAL = NO
+IMPLEMENTED_IMPLIES_CERTIFIED = NO
+```
+
+La brecha física genera trabajo de implementación; no una reducción silenciosa del objetivo.
+
+---
+
+#### 42. Diferidos no equivalen a excluidos
+
+Se preserva:
+
+```text
+DEFERRED_DECISION_IS_REMOVED_SCOPE = NO
+DEFERRED_DETAIL_IS_OPTIONAL_CAPABILITY = NO
+```
+
+Cada diferido mantiene owner y condición de salida.
+
+---
+
+#### 43. Decisiones realmente diferidas
+
+Permanecen diferidas o condicionadas, sin bloquear esta aprobación de alcance:
+
+| Decisión | Estado | Propietario / salida |
+| --- | --- | --- |
+| activar contabilidad formal interna | condicionada | `NUMERA-DOM-017` + Dirección/Contabilidad |
+| proveedor contable/fiscal | diferida | integración externa aplicable |
+| proveedor bancario/agregador | diferida | `NUMERA-DOM-009` + integración externa |
+| política concreta de crédito/límites/castigos | detalle pendiente | `NUMERA-DOM-016` + Dirección |
+| drivers/valores de costos compartidos | configuración pendiente | `OPS-CST-001` + `NUMERA-DOM-007` |
+| método concreto por familia cuando admite alternativas | configuración pendiente | `NUMERA-DOM-007` + responsable financiero |
+| calendario/responsabilidad tributaria oficial | autoridad externa | Contabilidad/asesoría autorizada + `NUMERA-DOM-013` |
+| metas financieras empresariales | configuración pendiente | `CAP-SCOPE-017` |
+| contingencia concreta | detalle pendiente | `CAP-SCOPE-018` |
+
+---
+
+#### 44. Regla de bloqueo proporcional
+
+Un pendiente bloquea únicamente el efecto que depende de él.
+
+Ejemplos:
+
+- sin proveedor bancario no se declara integración bancaria productiva;
+- sin política de crédito no se automatiza un límite o castigo;
+- sin autoridad contable interna no se publican libros oficiales desde NUMERA;
+- sin criterio tributario autorizado no se presenta una obligación fiscal como oficial.
+
+El pendiente no elimina la capacidad del alcance objetivo.
+
+---
+
+#### 45. Condiciones que sí bloquearían aprobación de alcance
+
+El gate debe permanecer bloqueado si existe cualquiera de estas condiciones documentales:
+
+1. una capacidad `CAP-12` sin clasificación;
+2. ownership contradictorio no reconciliado;
+3. una capacidad eliminada sin corrección canónica explícita;
+4. una decisión diferida sin owner o condición de salida;
+5. una tarea posterior obligatoria sin identidad canónica;
+6. un contrato que convierta fuente operativa en copia editable NUMERA;
+7. un `UNKNOWN` presentado como evidencia positiva de implementación;
+8. TREQ afectados sin actualización canónica correspondiente;
+9. contradicción material entre dominio, autorización, UX y cobertura empresarial.
+
+Ninguna de estas condiciones se usa para fabricar aprobación por defecto.
+
+---
+
+#### 46. Condiciones que no bloquean la aprobación documental
+
+No bloquean el alcance cuando están explícitamente registrados:
+
+- ausencia física de una capacidad todavía no implementada;
+- permisos definidos pero pendientes de materialización;
+- proveedor externo aún no seleccionado;
+- datos históricos todavía no migrados;
+- runtime sin certificación integral;
+- backend concreto del tablero de cobertura aún no materializado;
+- reglas concretas de negocio todavía delegadas al owner competente;
+- paquetes E5 pendientes.
+
+Cada punto continúa bloqueando únicamente la declaración física o operativa que le corresponda.
+
+---
+
+#### 47. Hallazgos CAP-SCOPE-012
+
+`CAP-SCOPE-012` registra 35 hallazgos con propietario y momento de resolución.
+
+UX-025 no los marca todos como físicamente resueltos. Los usa para comprobar que:
+
+- no existe hallazgo narrativo sin owner;
+- el objetivo no omite cartera, bancos, tesorería, conciliación, costos, periodos, fiscalidad o contabilidad extensible;
+- los pendientes físicos permanecen trazables.
+
+---
+
+#### 48. Brecha AS-IS principal
+
+La implementación actual no constituye prueba de cumplimiento del alcance aprobado.
+
+En particular, una pantalla que muestre presupuesto, gasto o equilibrio no demuestra por sí sola:
+
+- ventas reconciliadas;
+- compras reconciliadas;
+- inventario/producción reconciliados;
+- cartera;
+- bancos;
+- tesorería;
+- costo real completo;
+- contabilidad formal;
+- fiscalidad oficial.
+
+---
+
+#### 49. Alcance documental frente a cierre de implementación
+
+Se congela:
+
+```text
+SCOPE_GATE_COMPLETE = YES
+IMPLEMENTATION_COMPLETION_GATE_COMPLETE = NO
+```
+
+El cierre de esta tarea permite continuar el diseño obligatorio restante. No permite declarar terminada la implementación NUMERA.
+
+---
+
+#### 50. Continuidad obligatoria posterior al gate
+
+Después de UX-025 permanecen exactamente tres tareas UX reservadas dentro del bloque:
+
+```text
+NUMERA-UX-026
+NUMERA-UX-027
+NUMERA-UX-028
+```
+
+```text
+POST_SCOPE_REQUIRED_UX_TASK_COUNT = 3
+```
+
+Estas tareas forman parte del alcance aprobado; no son opcionales añadidas después del gate.
+
+---
+
+#### 51. NUMERA-UX-026 dentro del alcance aprobado
+
+`NUMERA-UX-026` debe materializar documentalmente la experiencia de:
+
+- cartera;
+- vencimientos;
+- recaudos;
+- aplicación;
+- anticipos;
+- acuerdos;
+- promesas;
+- disputas;
+- aging;
+- exposición;
+- cobranza;
+- castigo autorizado;
+- conciliación de saldo.
+
+No vuelve a decidir si cartera pertenece a NUMERA.
+
+---
+
+#### 52. NUMERA-UX-027 dentro del alcance aprobado
+
+`NUMERA-UX-027` debe definir la experiencia y frontera de extensión o integración contable/fiscal sin duplicar hechos operativos.
+
+La tarea no podrá activar contabilidad interna por inferencia ni declarar oficial un reporte económico-operativo.
+
+---
+
+#### 53. NUMERA-UX-028 dentro del alcance aprobado
+
+`NUMERA-UX-028` debe diseñar el visor económico dinámico central de una sola pantalla, comparativo y con divulgación progresiva.
+
+El visor consume costos, rentabilidad, escenarios y confianza/cobertura sin convertirse en fuente editable ni reemplazar las superficies transaccionales especializadas.
+
+---
+
+#### 54. UX-024 y UX-028 permanecen separadas
+
+Se conserva:
+
+```text
+SOURCE_COVERAGE_DASHBOARD != DYNAMIC_ECONOMIC_VIEWER
+```
+
+UX-024 responde si la evidencia es confiable y completa para un scope/corte; UX-028 ayuda a interpretar y comparar la realidad económica y escenarios.
+
+---
+
+#### 55. Scope no es autorización
+
+Toda lectura o acción continúa exigiendo autorización efectiva.
+
+Se conserva:
+
+```text
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+```
+
+---
+
+#### 56. Alcance agregado y miembros autorizados
+
+Una lectura consolidada no puede revelar miembros no autorizados.
+
+```text
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+Una autoridad agregada independiente, si existe, debe estar explícitamente contratada; no se infiere de una pantalla ejecutiva.
+
+---
+
+#### 57. Datos sensibles
+
+El alcance aprobado incluye datos financieros sensibles, pero no secretos técnicos.
+
+Se mantiene fuera de cualquier proyección de negocio ordinaria:
+
+```text
+BANK_PASSWORD
+PIN
+OTP
+API_SECRET
+PRIVATE_KEY
+SERVICE_ROLE
+ACCESS_TOKEN
+REFRESH_TOKEN
+SIGNING_SECRET
+```
+
+---
+
+#### 58. Idempotencia y duplicidad
+
+El alcance exige que retry, replay, importación o redelivery no creen efectos financieros duplicados.
+
+Identidad técnica repetida y duplicidad empresarial entre hechos distintos permanecen problemas diferentes y se resuelven con sus contratos propietarios.
+
+---
+
+#### 59. Resultado externo incierto
+
+Se conserva:
+
+```text
+RESULT_UNKNOWN != SUCCESS
+RESULT_UNKNOWN != FAILURE_FINAL
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+```
+
+La aprobación de alcance no concede permiso para repetir ciegamente un pago o efecto externo.
+
+---
+
+#### 60. Periodos protegidos
+
+El alcance financiero incluye periodos protegidos, pero ningún permiso especializado o de planificación puede reabrirlos por inferencia.
+
+Reapertura exige su contrato, recurso, motivo, autoridad, versión y evidencia.
+
+---
+
+#### 61. Migración histórica
+
+Los históricos incompletos no se elevan a hechos completos por conveniencia.
+
+```text
+BACKFILL_IS_ORIGINAL_EVIDENCE = NO
+```
+
+Toda migración futura deberá distinguir fuente original, reconstrucción, versión, calidad, limitaciones y conciliación.
+
+---
+
+#### 62. Cambio futuro del alcance
+
+Una capacidad aprobada no se elimina por conveniencia técnica.
+
+Modificar el alcance requiere corrección canónica explícita que identifique:
+
+- decisión anterior;
+- motivo;
+- evidencia nueva;
+- impacto en procesos, pantallas, autorización, datos e integraciones;
+- TREQ afectados cuando corresponda;
+- compatibilidad y migración;
+- nueva decisión aprobada.
+
+---
+
+#### 63. Observabilidad futura
+
+La materialización deberá poder demostrar, sin redefinir semántica:
+
+- ingestión y frescura;
+- diferencias abiertas;
+- conciliaciones pendientes;
+- resultados externos desconocidos;
+- saldos y residual;
+- cierre/reapertura;
+- versión de reportes;
+- errores de autorización;
+- retries e idempotencia.
+
+Esta tarea no fija herramienta de observabilidad.
+
+---
+
+#### 64. Evidencia mínima futura por capacidad
+
+Cada capacidad materializada deberá poder producir evidencia de:
+
+- identidad del flujo;
+- fuentes;
+- actor y autoridad;
+- scope;
+- estado inicial;
+- acción;
+- resultado;
+- correlaciones;
+- efectos laterales;
+- diferencias;
+- reverso o recuperación;
+- estado final verificable.
+
+---
+
+#### 65. Gate de materialización futura
+
+Se conserva:
+
+```text
+DOCUMENTED != ENABLED
+IMPLEMENTED != CERTIFIED
+CERTIFIED_REQUIRES_EVIDENCE = YES
+```
+
+UX-025 no reemplaza E5, packages, piloto, hypercare ni certificación integral.
+
+---
+
+#### 66. Carryovers de implementación
+
+| Carryover | Bloquea alcance | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| consumidor físico NUMERA completo de fuentes aún no está demostrado | no | packages físicos NUMERA/integración | ingestión, idempotencia, watermarks y proyecciones demostrados |
+| 119 capacidades objetivo estaban pendientes de materialización al cierre de AUTH-015 | no | packages/autorización aplicables | catálogo compartido y consumidores adoptan permisos exactos |
+| cartera física completa no está materializada | no | packages NUMERA + `NUMERA-UX-026` como contrato UX | flujo de cartera implementado y probado |
+| integración contable/fiscal final no está decidida/materializada | no | `NUMERA-UX-027` + integración externa | frontera seleccionada y contratos implementados sin duplicidad |
+| visor económico final no está diseñado/materializado | no | `NUMERA-UX-028` | contrato UX aprobado e implementación posterior verificada |
+| proveedor bancario/agregador no está seleccionado | no | integración externa aplicable | proveedor, credenciales, estados, contingencia y reconciliación aprobados |
+| cobertura runtime global todavía requiere evidencia real | no | materialización + QA | fuentes y casos se prueban con corte, watermark y evidencia |
+| migración histórica permanece pendiente | no | transición de datos aplicable | históricos clasificados, reconciliados y limitaciones explícitas |
+
+---
+
+#### 67. Bloqueadores del gate de alcance observados
+
+Con las fuentes documentales consumidas no queda un bloqueador de **definición de alcance** sin owner o salida.
+
+```text
+UNOWNED_SCOPE_BLOCKER_COUNT = 0
+UNCLASSIFIED_CAPABILITY_COUNT = 0
+REMOVED_CAPABILITY_COUNT = 0
+```
+
+Esto no afirma cero bloqueadores físicos o de implementación.
+
+---
+
+#### 68. Decisiones congeladas
+
+```text
+NUMERA_FINANCIAL_SCOPE_APPROVAL_CONTRACT = NUMERA-FINANCIAL-SCOPE-APPROVAL-001
+FINANCIAL_SCOPE_APPROVED = YES
+PHYSICAL_IMPLEMENTATION_AUTHORIZED_BY_UX_025 = NO
+RUNTIME_COMPLETION_CERTIFIED_BY_UX_025 = NO
+PRODUCTION_OPERATION_AUTHORIZED_BY_UX_025 = NO
+SCOPE_GATE_COMPLETE = YES
+IMPLEMENTATION_COMPLETION_GATE_COMPLETE = NO
+CAP_12_EXPECTED = 15
+CAP_12_APPROVED_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+REUSE_OR_REFACTOR_COUNT = 5
+BUILD_COUNT = 8
+INTEGRATE_EXTERNAL_COUNT = 2
+NUMERA_OWNER_PROCESS_COUNT = 7
+NUMERA_TARGET_SCREEN_COUNT = 20
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+SOURCE_APPLICATION_COUNT = 4
+SOURCE_PROCESS_COUNT = 35
+SOURCE_EVENT_DEFINITION_COUNT = 198
+COVERAGE_FAMILY_COUNT = 9
+COVERAGE_STATE_COUNT = 9
+UNKNOWN_IS_PASS = NO
+AS_IS_ABSENT_IS_OUT_OF_SCOPE = NO
+DEFERRED_DECISION_IS_REMOVED_SCOPE = NO
+IMPLEMENTED_IMPLIES_CERTIFIED = NO
+ACCOUNTING_EXTENSIBILITY = REQUIRED
+INTERNAL_STATUTORY_ACCOUNTING_ACTIVATION = DEFERRED_CONDITIONAL
+ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_PAYABLE = REQUIRED
+CAP_12_03_BANKS_AND_PAYMENTS = REQUIRED
+CAP_12_12_TREASURY = REQUIRED
+CAP_12_06_FISCAL_DOCUMENT_CONTROL = REQUIRED_WITH_EXTERNAL_AUTHORITY
+CAP_12_13_TAX_OBLIGATION_CONTROL = REQUIRED_WITH_EXTERNAL_AUTHORITY
+POST_SCOPE_REQUIRED_UX_TASK_COUNT = 3
+POST_SCOPE_REQUIRED_UX_TASKS = NUMERA-UX-026|NUMERA-UX-027|NUMERA-UX-028
+UNOWNED_SCOPE_BLOCKER_COUNT = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+```text
+REQUISITOS_DIFERIDOS = 0
+REQUISITOS_DESCARTADOS = 0
+REQUISITOS_OBSOLETOS = 0
+```
+
+La aprobación consolida obligaciones verificables ya existentes y no introduce una conducta de prueba nueva.
+
+---
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+- `TREQ-NUMERA-001` — reconciliación de indicadores, costos, márgenes, gastos, cierres, saldos y reportes con hechos y documentos fuente;
+- `TREQ-NUMERA-002` — identidad, dimensiones, periodos, fuente, correlación, evidencia, correcciones y reaperturas no destructivas;
+- `TREQ-NUMERA-003` — cartera, cuentas por pagar, bancos, caja, tesorería, pagos, aplicaciones, acuerdos, castigos y segregación;
+- `TREQ-NUMERA-004` — costos, distribución, presupuesto, forecast, rentabilidad y visor económico con separación de realidad y escenarios;
+- `TREQ-INTEGRATION-003` — identidad, idempotencia, retry, resultado recuperable y conciliación;
+- `TREQ-INTEGRATION-006` — captura única en la aplicación propietaria sin doble digitación competidora;
+- `TREQ-INTEGRATION-010` — cadena compra/recepción/inventario/NUMERA correlacionada;
+- `TREQ-INTEGRATION-011` — eventos y efectos físicos exactamente una vez con detección de huérfanos;
+- `TREQ-INTEGRATION-013` — demanda, producción, calidad, inventario y costo correlacionados;
+- `TREQ-INTEGRATION-014` — efectos comerciales PULSO hacia consumidores sin doble efecto;
+- `TREQ-INTEGRATION-017` — hechos financieros desde aplicaciones operativas, bancos, pagos y proveedores externos con idempotencia y conciliación;
+- `TREQ-AUTH-013` — autorización efectiva y revalidación server-side;
+- `TREQ-AUTH-014` — decisiones stale se invalidan ante cambios materiales;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-DATA-003` — calidad, frescura, late data, reconciliación y lineage;
+- `TREQ-DATA-004` — separación de live view, snapshot, reporte, simulación y exportación con versionado/restatement.
+
+---
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea es documental; no se ejecutó build de producto |
+| LOCAL | NOT_EXECUTED | reemplazo, formato, quality, delivery, validadores de dominio, batería global y cierre quedan para el checkout del usuario después del cierre válido de UX-024 |
+| REMOTA | PASS | se verificaron `vento-shell/main`, protocolo, contrato de entrega, manifest, continuidad, topología, políticas, archivo propietario, `CAP-SCOPE-012`, `NUMERA-DOM-015..018`, `NUMERA-AUTH-014..015`, catálogo de procesos/pantallas, Registro 04A y scripts aplicables; UX-024 se consume desde su artefacto completo aprobado mientras su incorporación remota puede permanecer pendiente |
+| OPERATIVA | NOT_EXECUTED | no se registraron, conciliaron, aprobaron, pagaron, aplicaron, cerraron, reabrieron, publicaron o exportaron hechos financieros reales |
+| FÍSICA | NOT_APPLICABLE | `NUMERA-UX-025` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no autoriza implementación física propia |
+
+---
+
+#### 72. Criterios de aceptación
+
+La tarea queda aceptable cuando:
+
+1. existe exactamente un contrato `NUMERA-FINANCIAL-SCOPE-APPROVAL-001`;
+2. la aprobación de alcance se distingue de autorización física;
+3. runtime completo no se afirma por aprobar documentación;
+4. producción no queda autorizada por UX-025;
+5. las quince capacidades CAP-12 permanecen dentro del objetivo;
+6. ninguna CAP-12 queda opcional por defecto;
+7. cinco capacidades conservan tratamiento `REUSE_OR_REFACTOR`;
+8. ocho capacidades conservan tratamiento `BUILD`;
+9. dos capacidades conservan tratamiento `INTEGRATE_EXTERNAL`;
+10. la distribución suma exactamente quince;
+11. existen exactamente siete procesos propietarios NUMERA;
+12. ninguna pantalla sustituye identidad de proceso;
+13. existen exactamente veinte superficies objetivo NUMERA;
+14. ninguna superficie objetivo se elimina por ausencia AS-IS;
+15. VSCREEN-0094 sigue siendo inicio/monitor y no estación de operación;
+16. el catálogo objetivo final conserva 125 capacidades de autorización;
+17. las capacidades pendientes de materialización no se presentan como runtime disponible;
+18. cartera permanece obligatoria;
+19. pago recibido y pago aplicado permanecen distintos;
+20. cuentas por pagar permanecen obligatorias;
+21. orden, recepción, obligación y pago permanecen distintos;
+22. PULSO conserva caja operativa;
+23. NUMERA conserva consolidación y conciliación financiera;
+24. banco/proveedor externo no adquiere ownership interno de tesorería por ejecutar movimientos;
+25. venta/pago/depósito/ingreso permanecen distintos;
+26. compra/recepción/documento/obligación/pago permanecen distintos;
+27. FOGO conserva autoridad productiva;
+28. NEXO conserva autoridad física;
+29. NUMERA no reescribe fuentes para cuadrar conciliaciones;
+30. costo conserva método, versión, fuente y periodo;
+31. rentabilidad no se infiere desde saldo bancario;
+32. real, presupuesto, forecast, escenario, propuesto y publicado permanecen distintos;
+33. evento tardío no reabre periodo automáticamente;
+34. restatement permanece versionado;
+35. fiscalidad oficial conserva autoridad externa por defecto;
+36. extensibilidad contable es obligatoria;
+37. activación de contabilidad estatutaria interna permanece condicionada;
+38. ownership de PULSO/ORIGO/NEXO/FOGO/ANIMA/PASS permanece intacto;
+39. cuatro aplicaciones fuente de UX-014 permanecen como universo de ingestión interno especializado;
+40. 35 procesos y 198 definiciones de evento no se confunden con ocurrencias runtime;
+41. se preservan exactamente nueve familias de cobertura;
+42. `UNKNOWN` no se trata como PASS;
+43. ausencia física no elimina alcance;
+44. detalle diferido no vuelve opcional una capacidad;
+45. cada decisión diferida conserva owner y condición de salida;
+46. los pendientes bloquean solo el efecto dependiente;
+47. las condiciones documentales de bloqueo del gate están definidas;
+48. no existe capacidad sin clasificación;
+49. no existe capacidad removida;
+50. no existe bloqueador de alcance sin owner;
+51. hallazgos CAP-SCOPE-012 permanecen trazables sin declararlos todos físicamente resueltos;
+52. el AS-IS no se usa como prueba de objetivo cumplido;
+53. scope gate completo no equivale a implementation completion gate completo;
+54. permanecen exactamente tres tareas UX obligatorias posteriores;
+55. UX-026 desarrolla cartera sin reabrir su pertenencia a NUMERA;
+56. UX-027 desarrolla frontera contable/fiscal sin duplicar hechos;
+57. UX-028 desarrolla visor económico sin fusionarse con UX-024;
+58. permisos efectivos siguen separados del nombre de rol;
+59. agregados no filtran miembros no autorizados;
+60. secretos técnicos permanecen fuera del contrato financiero de negocio;
+61. replay y retry no duplican efectos;
+62. resultado externo desconocido exige consulta o conciliación;
+63. permisos especializados no reabren periodos por inferencia;
+64. backfill no se presenta como evidencia original;
+65. cambiar alcance exige corrección canónica explícita;
+66. evidencia futura por capacidad queda definida;
+67. documented, implemented y certified permanecen estados distintos;
+68. carryovers de implementación tienen owner y condición de salida;
+69. no se crean ni modifican requisitos de prueba;
+70. no se realizan cambios físicos;
+71. UX-026 recibe un handoff que parte de cartera obligatoria ya aprobada.
+
+---
+
+#### 73. Límites
+
+Esta tarea no:
+
+- implementa ninguna capacidad CAP-12;
+- crea pantallas;
+- modifica procesos;
+- crea permisos runtime;
+- asigna grants o roles;
+- modifica `vento-numera`;
+- modifica Supabase;
+- crea migraciones;
+- crea tablas, vistas, RPC, funciones, triggers o RLS;
+- selecciona proveedor bancario, fiscal, contable o de pagos;
+- activa contabilidad formal interna;
+- fija plan de cuentas físico;
+- crea comprobantes o asientos;
+- determina impuestos oficiales;
+- ejecuta pagos o recaudos;
+- crea saldos, cartera u obligaciones reales;
+- fija límites de crédito concretos;
+- fija buckets de aging;
+- fija umbrales universales de materialidad;
+- fija drivers concretos de costos compartidos;
+- reabre periodos;
+- publica reportes reales;
+- certifica runtime;
+- autoriza paquetes E5;
+- modifica Registro 04A;
+- desarrolla `NUMERA-UX-026`;
+- desarrolla `NUMERA-UX-027`;
+- desarrolla `NUMERA-UX-028`.
+
+---
+
+#### 74. Handoff a NUMERA-UX-026
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_FINANCIAL_SCOPE_APPROVAL_CONTRACT = NUMERA-FINANCIAL-SCOPE-APPROVAL-001
+FINANCIAL_SCOPE_APPROVED = YES
+PHYSICAL_IMPLEMENTATION_AUTHORIZED_BY_UX_025 = NO
+RUNTIME_COMPLETION_CERTIFIED_BY_UX_025 = NO
+CAP_12_EXPECTED = 15
+CAP_12_APPROVED_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+ACCOUNTS_RECEIVABLE = REQUIRED
+ACCOUNTS_RECEIVABLE_OWNER = NUMERA
+NUMERA_SPECIALIZED_FINANCIAL_AUTHORIZATION_REGISTRY = NUMERA-SPECIALIZED-FINANCIAL-AUTHORIZATION-REGISTRY-001
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+CUSTOMER_DEBTOR_PASS_ACCOUNT_ACCOUNTING_THIRD_PARTY = DISTINCT
+RECEIVABLE_DOCUMENT_INSTALLMENT_DUE_DATE_BALANCE = DISTINCT
+OPEN_BALANCE_MUST_BE_REPRODUCIBLE = YES
+PAYMENT_APPLICATION_REQUIRES_EXPLICIT_REVERSIBLE_LINK = YES
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+UNAPPLIED_PAYMENT_MUST_REMAIN_VISIBLE = YES
+CREDIT_POLICY_BY_INFERENCE = FORBIDDEN
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+APPLICATION_REVERSE_PRESERVES_ORIGINAL = YES
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SOURCE_DOMAIN_OWNERSHIP_PRESERVED = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+POST_SCOPE_REQUIRED_UX_TASK_COUNT = 3
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-026` deberá diseñar la experiencia completa de cartera partiendo de una decisión ya cerrada: cartera y cuentas por cobrar son obligatorias en NUMERA. No deberá convertir pago recibido en aplicación automática, cliente en deudor, cuenta PASS en cartera, saldo en identidad, ni castigo en pago o borrado de historia.
+
+---
+
+#### 75. Reconciliación de continuidad
+
+La cadena documental queda:
+
+```text
+NUMERA-UX-024
+-> NUMERA-UX-025
+-> NUMERA-UX-026
+```
+
+UX-025 consume el tablero de cobertura de UX-024 como evidencia de confianza sin fingir runtime completo y entrega a UX-026 un alcance financiero aprobado donde cartera ya es obligatoria y su detalle de experiencia sigue pendiente.
+
+---
+
+#### 76. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-024 — Diseñar tablero de cobertura y conciliación de fuentes`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro`
 ### [ ] NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro
 ### [ ] NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
 ### [ ] NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
