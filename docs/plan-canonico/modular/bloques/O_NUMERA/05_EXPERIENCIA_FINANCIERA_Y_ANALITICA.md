@@ -3574,7 +3574,1265 @@ TREQ_CHANGES = 0
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-004 — Diseñar inicio para gerente general`
-### [ ] NUMERA-UX-004 — Diseñar inicio para gerente general
+### ✅ NUMERA-UX-004 — Diseñar inicio para gerente general
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-003 — Diseñar inicio para propietario
+**Tarea siguiente:** NUMERA-UX-005 — Diseñar inicio para gerente de sede
+**Tipo de tarea:** definición documental del inicio financiero de NUMERA para la presentación `gerente_general`, reutilizando `VSCREEN-0094` y la arquitectura común del `EXECUTIVE_READ_PLANE` donde resulte válida, priorizando dirección ejecutiva financiera de alcance organizacional autorizado, excluyendo gobierno reservado de propietario, sin convertir el nombre del rol en permiso, sin conceder capacidades nuevas por inferencia y sin anticipar el diseño territorial del gerente de sede; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica rutas, pantallas, componentes React, permisos, roles, grants, procesos, estados, tablas, vistas, RPC, RLS, migraciones, Supabase, datos, reportes, conciliaciones, pagos, cierres, presupuestos, navegación runtime ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el inicio financiero de NUMERA para una persona cuya presentación administrativa sea `gerente_general`, de forma que pueda comprender la posición económica autorizada de la organización, detectar prioridades ejecutivas, revisar ciclos y desviaciones financieras y navegar hacia el detalle correspondiente sin que la pantalla inicial se convierta en una estación de operación contable, un sustituto de VISO ni un bypass de autorización.
+
+El resultado debe servir como contrato de experiencia para la futura materialización de `VSCREEN-0094 — Inicio financiero y ejecutivo` bajo la presentación `gerente_general` y como frontera explícita frente a propietario, gerente de sede, contador y auxiliar autorizada.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea produce un contrato UX documental;
+- no crea instancia física propia;
+- no modifica `vento-numera`;
+- no modifica `vento-shell` fuera de su bloque documental cuando sea incorporada;
+- no materializa permisos;
+- no modifica matrices RBAC;
+- no crea una ruta nueva;
+- no ejecuta side effects financieros;
+- no cambia datos de Supabase.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-003
+
+La predecesora aprobada entrega:
+
+```text
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+OWNER_HOME_SCREEN_ID = VSCREEN-0094
+OWNER_HOME_PRESENTATION_PROFILE = propietario
+OWNER_HOME_PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+OWNER_HOME_INLINE_FINANCIAL_COMMANDS = 0
+OWNER_HOME_REGION_COUNT = 7
+OWNER_HOME_PROCESS_COUNT = 7
+OWNER_HOME_TARGET_SCREEN_COUNT = 20
+OWNER_HOME_HOME_SCREEN_COUNT = 1
+OWNER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+OWNER_HOME_SCREEN_MISSING_COUNT = 0
+OWNER_HOME_SCREEN_DUPLICATE_COUNT = 0
+OWNER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+OWNER_NEW_PERMISSION_AUTO_GRANT = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+NUMERA_OWNER_HOME_IS_VISO_EXECUTIVE_HOME = NO
+UX_004_OWNER = GENERAL_MANAGER_HOME
+TREQ_CHANGES = 0
+```
+
+La 004 consume este handoff sin reabrir las decisiones de UX-003.
+
+---
+
+#### 4. Contrato producido
+
+La tarea define:
+
+```text
+NUMERA-GENERAL-MANAGER-HOME-001
+```
+
+con la identidad funcional:
+
+```text
+SCREEN_ID = VSCREEN-0094
+SCREEN_NAME = Inicio financiero y ejecutivo
+PRESENTATION_PROFILE = gerente_general
+PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+EXECUTIVE_SCOPE_MODEL = EFFECTIVE_PERMISSION_AND_RESOURCE_SCOPE
+INLINE_FINANCIAL_COMMANDS = 0
+COMMAND_HANDOFF = EXPLICIT_TO_CANONICAL_TARGET_SCREEN
+AUTHORIZATION_SOURCE = EFFECTIVE_PERMISSION_SET
+ROLE_NAME_GRANTS_AUTHORITY = NO
+OWNER_RESERVED_GOVERNANCE_INHERITED = NO
+```
+
+---
+
+#### 5. Identidad de la superficie
+
+El inicio de `gerente_general` no crea una pantalla nueva.
+
+Se conserva:
+
+```text
+GENERAL_MANAGER_HOME_SCREEN_ID = VSCREEN-0094
+```
+
+`VSCREEN-0094` continúa vinculado a:
+
+```text
+VPROC-0061::STEP-REVIEW_FINANCIAL_POSITION
+PRIMARY_ACTION = MONITOR
+STEP_PHASE = CROSS_CUTTING
+```
+
+Su propósito sigue siendo presentar indicadores, alertas, cierres y decisiones financieras relevantes para el alcance autorizado.
+
+---
+
+#### 6. NUMERA no sustituye el inicio ejecutivo transversal de VISO
+
+La presentación `gerente_general` dentro de NUMERA se limita a información económica, financiera, de conciliación, planificación y análisis gobernada por NUMERA.
+
+Se congela:
+
+```text
+NUMERA_GENERAL_MANAGER_HOME
+!= VISO_EXECUTIVE_HOME
+!= VENTO_OS_GLOBAL_HOME
+```
+
+VISO conserva la experiencia ejecutiva transversal. NUMERA no absorbe personas, riesgos empresariales, tecnología, contenido, comercial, operación física ni otros dominios por el solo hecho de que produzcan consecuencias financieras.
+
+---
+
+#### 7. Significado de `gerente_general` en esta tarea
+
+`gerente_general` representa dirección ejecutiva global en la matriz administrativa, pero el nombre del rol no es una fuente autónoma de autorización.
+
+Se conserva:
+
+```text
+gerente_general != *
+gerente_general != propietario
+gerente_general != service_role
+gerente_general != operational_bypass
+gerente_general != APP_REVIEW_ACCESS
+```
+
+Toda lectura o acción financiera efectiva requiere permiso explícito, alcance válido, recurso resuelto y ausencia de denegaciones aplicables.
+
+---
+
+#### 8. Matriz RBAC histórica que sí puede darse por conocida
+
+La matriz canónica de `gerente_general` evaluó un catálogo histórico de 112 permisos y asignó explícitamente seis claves NUMERA:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+Resultado histórico NUMERA:
+
+```text
+GENERAL_MANAGER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+GENERAL_MANAGER_HISTORICAL_NUMERA_APP_ENTRY_COUNT = 1
+GENERAL_MANAGER_HISTORICAL_NUMERA_GB_READ_COUNT = 5
+```
+
+Las cinco lecturas financieras históricas usan `G(B)` y excluyen APP-REVIEW, demo, pruebas, secretos y dominios aislados.
+
+---
+
+#### 9. Coincidencia histórica con propietario no implica herencia
+
+En el catálogo histórico de 112 permisos, propietario y gerente general coinciden cuantitativamente en las seis claves NUMERA anteriores.
+
+Se congela:
+
+```text
+CURRENT_HISTORICAL_NUMERA_SET_EQUAL = YES
+ROLE_SEMANTICS_EQUAL = NO
+AUTHORITY_INHERITANCE = NO
+OWNER_RESERVED_GOVERNANCE_INHERITED = NO
+```
+
+La coincidencia existe porque el catálogo histórico todavía no expresaba capacidades atómicas reservadas de propietario; no porque `gerente_general` herede al propietario.
+
+---
+
+#### 10. Gobierno reservado de propietario queda fuera
+
+`gerente_general` no obtiene por equivalencia, similitud visual o amplitud ejecutiva capacidades reservadas de gobierno propietario.
+
+Permanece fuera de este home cualquier autoridad para:
+
+- administrar propietarios;
+- conceder o retirar equivalencia de propietario;
+- modificar la arquitectura de autorización;
+- alterar recuperación de seguridad;
+- desactivar o debilitar auditoría;
+- modificar `service_role`;
+- entregar secretos o credenciales técnicas;
+- romper aislamiento de APP-REVIEW, demo o pruebas;
+- asumir identidad real de otro actor;
+- ejecutar acciones futuras clasificadas como reservadas de propietario.
+
+Se conserva:
+
+```text
+OWNER_RESERVED_GOVERNANCE != EXECUTIVE_MANAGEMENT
+```
+
+---
+
+#### 11. Capacidades NUMERA posteriores no se conceden automáticamente
+
+Después de la matriz RBAC histórica, el contrato objetivo NUMERA alcanzó:
+
+```text
+NUMERA_TARGET_CAPABILITY_COUNT = 125
+NUMERA_APP_ENTRY_COUNT = 1
+NUMERA_READ_PERMISSION_COUNT = 28
+NUMERA_NON_READ_CAPABILITY_COUNT = 96
+```
+
+El contrato de autorización publicado hasta `NUMERA-AUTH-015` además registra:
+
+```text
+NUMERA_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_SHARED_PERMISSION_PENDING_COUNT_AFTER_015 = 119
+```
+
+Estos conteos describen el estado del catálogo compartido y no constituyen una concesión de rol.
+
+Se congela:
+
+```text
+NEW_PERMISSION_AUTO_GRANTED_TO_GENERAL_MANAGER = NO
+```
+
+El inicio debe resolver permisos efectivos y no asumir que `gerente_general` posee las 28 lecturas ni las 96 capacidades no-lectura del contrato objetivo.
+
+---
+
+#### 12. Dirección ejecutiva global no crea scope por nombre de rol
+
+La matriz histórica concedió cinco lecturas NUMERA con `G(B)`, pero el home no puede convertir `gerente_general` en una regla universal de alcance.
+
+Se conserva:
+
+```text
+ROLE_NAME_IS_SCOPE = NO
+GLOBAL_EXECUTIVE_ROLE_IMPLIES_ALL_NUMERA_RESOURCES = NO
+HISTORICAL_GB_SCOPE_APPLIES_ONLY_TO_EXPLICIT_HISTORICAL_GRANTS = YES
+```
+
+Cada permiso nuevo o recurso especializado conserva su propio contrato de scope, sensibilidad, estado y revalidación.
+
+---
+
+#### 13. Invariante principal del inicio
+
+El inicio de `gerente_general` es una composición de lectura.
+
+```text
+GENERAL_MANAGER_HOME_DEFAULT = READ
+GENERAL_MANAGER_HOME_INLINE_MUTATION = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_APPROVAL = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_PAYMENT = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_RECONCILIATION = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_CLOSE = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_REOPEN = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_WRITE_OFF = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_EXPORT = FORBIDDEN
+GENERAL_MANAGER_HOME_INLINE_PLANNING_MUTATION = FORBIDDEN
+```
+
+Una navegación a una superficie capaz de comandar no convierte el inicio en superficie de comando.
+
+---
+
+#### 14. Objetivo de decisión humana
+
+Dentro del alcance efectivamente autorizado, la pantalla debe permitir al gerente general comprender:
+
+- la posición económica observable de la organización;
+- liquidez, obligaciones, cartera y tensiones financieras relevantes;
+- rentabilidad, costos y variaciones que requieran atención ejecutiva;
+- estado de ciclos financieros, conciliaciones y cierres;
+- diferencias entre real, presupuesto, forecast y escenario cuando su lectura esté autorizada;
+- prioridades que requieren análisis o decisión en una superficie especializada;
+- vigencia, procedencia y confiabilidad de la información usada para decidir.
+
+La pantalla informa y orienta; no ejecuta la decisión financiera desde el resumen.
+
+---
+
+#### 15. Arquitectura común reutilizada
+
+UX-004 reutiliza la espina lógica de siete regiones definida por UX-003 porque ambas presentaciones consumen el mismo `VSCREEN-0094` y el mismo `EXECUTIVE_READ_PLANE`.
+
+```text
+GENERAL_MANAGER_HOME_REGION_01 = CONTEXT_AND_SCOPE
+GENERAL_MANAGER_HOME_REGION_02 = FINANCIAL_POSITION
+GENERAL_MANAGER_HOME_REGION_03 = ATTENTION_AND_EXCEPTIONS
+GENERAL_MANAGER_HOME_REGION_04 = PLANNING_AND_VARIANCE
+GENERAL_MANAGER_HOME_REGION_05 = CYCLE_AND_RECONCILIATION_STATUS
+GENERAL_MANAGER_HOME_REGION_06 = AUTHORIZED_PROCESS_NAVIGATION
+GENERAL_MANAGER_HOME_REGION_07 = DATA_STATUS_AND_PROVENANCE
+GENERAL_MANAGER_HOME_REGION_COUNT = 7
+```
+
+Reutilizar estas regiones no copia autoridad de propietario. La diferencia se expresa en la presentación, prioridades y límites del perfil, siempre subordinados al conjunto efectivo de permisos.
+
+---
+
+#### 16. Similitud visual no debe fabricar diferencia de autoridad
+
+Si propietario y gerente general tienen exactamente el mismo permiso efectivo, scope, recurso y estado para una proyección financiera, la elegibilidad del dato puede coincidir.
+
+Se conserva:
+
+```text
+SAME_EFFECTIVE_AUTHORIZATION_MAY_PRODUCE_SAME_FINANCIAL_PROJECTION = YES
+VISUAL_DIFFERENCE_CREATES_AUTHORITY = NO
+VISUAL_SIMILARITY_PROVES_ROLE_EQUIVALENCE = NO
+```
+
+La UX no debe ocultar una lectura válida solo para forzar una diferencia cosmética entre roles ni mostrar una lectura no autorizada para hacer la vista más ejecutiva.
+
+---
+
+#### 17. Región 01 — Contexto y alcance ejecutivo
+
+`CONTEXT_AND_SCOPE` debe dejar visible el contexto con el que se interpretan cifras y prioridades.
+
+Cuando el dato lo requiera, la composición deberá poder declarar:
+
+- organización o entidad económica aplicable;
+- periodo o fecha de corte;
+- moneda;
+- sede, centro, unidad o dimensión cuando funcione como filtro;
+- alcance efectivo del recurso;
+- estado de vigencia o frescura;
+- si la vista corresponde a contexto real o preview autorizada.
+
+El contexto visible no reemplaza la resolución de scope.
+
+---
+
+#### 18. Scope histórico global y filtros locales
+
+Las cinco lecturas históricas NUMERA de `gerente_general` usan `G(B)`.
+
+Esto permite una expectativa ejecutiva de lectura organizacional únicamente cuando la concesión efectiva y el recurso concreto satisfacen ese contrato.
+
+Un filtro a sede, centro o unidad:
+
+```text
+FILTERED_VIEW <= AUTHORIZED_SCOPE
+```
+
+Nunca:
+
+```text
+SELECTED_SITE => NEW_AUTHORITY
+```
+
+---
+
+#### 19. Contexto seleccionado no es alcance autorizado
+
+Se conserva:
+
+```text
+SELECTED_SCOPE != AUTHORIZED_SCOPE
+```
+
+Cambiar empresa, sede, centro, periodo, unidad o cualquier filtro solo selecciona dentro de lo autorizado; no crea cobertura adicional ni convierte un permiso local en global.
+
+---
+
+#### 20. Región 02 — Posición financiera
+
+`FINANCIAL_POSITION` agrega únicamente proyecciones de lectura autorizadas y relevantes para dirección ejecutiva.
+
+Puede componer, sin fijar todavía fórmulas ni layout definitivos:
+
+- gastos y costos;
+- punto de equilibrio;
+- rentabilidad o margen;
+- obligaciones y liquidez;
+- cartera;
+- estados de cierre;
+- presupuesto y forecast;
+- resultados analíticos.
+
+Cada familia se renderiza solo cuando existe autoridad efectiva sobre sus datos.
+
+---
+
+#### 21. Región 03 — Atención y excepciones
+
+`ATTENTION_AND_EXCEPTIONS` presenta señales que requieren revisión ejecutiva.
+
+Puede incluir, cuando la lectura esté autorizada:
+
+- diferencias pendientes de conciliación;
+- obligaciones o vencimientos relevantes;
+- cartera vencida o disputada;
+- ciclos de cierre pendientes;
+- desviaciones materiales;
+- decisiones financieras pendientes;
+- alertas presupuestales o de forecast;
+- resultados analíticos que requieren revisión.
+
+Mostrar una prioridad no concede permiso para resolverla.
+
+---
+
+#### 22. Atención ejecutiva no equivale a autoridad de aprobación
+
+Se congela:
+
+```text
+EXECUTIVE_ATTENTION != APPROVAL_AUTHORITY
+EXECUTIVE_ATTENTION != PAYMENT_AUTHORITY
+EXECUTIVE_ATTENTION != RECONCILIATION_AUTHORITY
+EXECUTIVE_ATTENTION != CLOSE_AUTHORITY
+EXECUTIVE_ATTENTION != PLANNING_PUBLICATION_AUTHORITY
+```
+
+La existencia de una tarjeta, badge o alerta solo permite navegación cuando el drill-down también está autorizado.
+
+---
+
+#### 23. Liquidez, obligaciones y cartera
+
+La dirección ejecutiva puede necesitar una lectura consolidada de capital de trabajo y exposición financiera.
+
+La composición puede proyectar, según permiso efectivo:
+
+- obligaciones pendientes y vencidas;
+- programación o estado de pagos;
+- liquidez observable;
+- exposición de cartera;
+- aging;
+- recaudos o diferencias;
+- estado agregado de tesorería.
+
+El home no emite instrucciones de pago, no aplica recaudos, no aprueba acuerdos y no modifica cuentas bancarias.
+
+---
+
+#### 24. Información bancaria sensible no se eleva al home por ser ejecutivo
+
+Los datos bancarios completos, extractos o detalles especializados definidos por `NUMERA-AUTH-014` conservan permisos sensibles independientes.
+
+Se congela:
+
+```text
+GENERAL_MANAGER_HOME != BANK_SECRET_SURFACE
+GENERAL_MANAGER_ROLE != SENSITIVE_BANK_DETAIL_PERMISSION
+```
+
+Cuando una proyección pueda satisfacerse con datos minimizados, el home no necesita revelar identificadores bancarios completos.
+
+---
+
+#### 25. Región 04 — Planificación y variación
+
+`PLANNING_AND_VARIANCE` puede proyectar, según autorización:
+
+- presupuesto vigente;
+- forecast vigente;
+- desviación frente al real;
+- existencia de escenarios;
+- estado de una versión de planificación;
+- estado de solicitud, aprobación o publicación;
+- diferencias relevantes frente a objetivos financieros.
+
+La región no crea, modifica, comparte, solicita, aprueba, rechaza, publica ni retira escenarios, presupuestos, forecast o versiones de precio.
+
+---
+
+#### 26. Real, presupuesto, forecast y escenario permanecen separados
+
+Se conserva:
+
+```text
+REAL != BUDGET
+REAL != FORECAST
+REAL != SCENARIO
+BUDGET != FORECAST
+FORECAST != SCENARIO
+PROPOSED != APPROVED
+APPROVED != PUBLISHED
+```
+
+La comparación ejecutiva no transforma una proyección en hecho real ni una aprobación en publicación.
+
+---
+
+#### 27. Región 05 — Estado de ciclos y conciliación
+
+`CYCLE_AND_RECONCILIATION_STATUS` permite conocer el estado agregado de procesos financieros sin ejecutar transiciones.
+
+La composición puede proyectar estados autorizados de:
+
+- hechos económicos;
+- conciliación de ventas y pagos;
+- conciliación de compras y recepciones;
+- conciliación de inventario, producción y variaciones;
+- cuentas por pagar y tesorería;
+- cartera;
+- cierre y reapertura;
+- presupuesto y forecast;
+- paquete laboral para pagos y beneficios.
+
+No crea un lifecycle alterno ni salta estados propietarios.
+
+---
+
+#### 28. Región 06 — Navegación financiera autorizada
+
+`AUTHORIZED_PROCESS_NAVIGATION` ofrece handoffs hacia las superficies NUMERA existentes cuando el usuario puede ver el destino o iniciar su evaluación de acceso.
+
+La navegación:
+
+- no crea proceso nuevo;
+- no cambia `process_id`;
+- no crea una segunda fuente de verdad;
+- no concede permiso por mostrar un acceso;
+- no transfiere el scope del home;
+- no convierte `VSCREEN-0094` en propietaria de la operación destino.
+
+---
+
+#### 29. Región 07 — Estado y procedencia de datos
+
+`DATA_STATUS_AND_PROVENANCE` debe distinguir, según el dato:
+
+```text
+VALUE_CONFIRMED
+VALUE_STALE
+VALUE_UNKNOWN
+VALUE_NOT_AVAILABLE
+VALUE_NOT_AUTHORIZED
+VALUE_NOT_APPLICABLE
+```
+
+Ninguno de estos estados se convierte silenciosamente en cero.
+
+---
+
+#### 30. Cero no equivale a ausencia ni desconocimiento
+
+Se congela:
+
+```text
+ZERO != UNKNOWN
+ZERO != NOT_AVAILABLE
+ZERO != NOT_AUTHORIZED
+ZERO != NOT_APPLICABLE
+```
+
+Un cálculo ausente, un error de lectura o un permiso denegado no puede mostrarse como `0 COP`, `0 %`, cero pendientes o cualquier otro valor confirmado.
+
+---
+
+#### 31. Frescura
+
+El home no presentará una cifra stale como si fuera actual.
+
+Se conserva:
+
+```text
+STALE_DATA_IS_CURRENT = NO
+```
+
+Si la fuente o el corte no permiten demostrar actualidad, el valor debe expresar su condición o dejar de presentarse como cifra vigente.
+
+---
+
+#### 32. Conteos, badges y severidad son datos protegidos
+
+Un conteo de pendientes, importe acumulado, aging, severidad o existencia de una excepción puede revelar información financiera sensible.
+
+Se conserva:
+
+```text
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+BADGE_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+```
+
+La UI no filtrará información por cantidades, colores, labels o tooltips cuando el payload subyacente no esté autorizado.
+
+---
+
+#### 33. Agregados y consolidación ejecutiva
+
+La naturaleza ejecutiva del perfil no autoriza a agregar miembros que individualmente estén fuera del alcance.
+
+Se conserva:
+
+```text
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+Una cifra consolidada debe calcularse únicamente sobre entidades, recursos y dimensiones que el actor pueda leer conforme al contrato aplicable.
+
+---
+
+#### 34. Minimización de información sensible
+
+Cuando una decisión ejecutiva pueda satisfacerse con una proyección agregada o minimizada, el home no debe exponer detalle sensible adicional por conveniencia visual.
+
+Se conserva:
+
+```text
+EXECUTIVE_SUMMARY_MINIMIZES_SENSITIVE_DETAIL = YES
+```
+
+El drill-down sensible permanece sujeto a su permiso específico y a los controles fuertes aplicables.
+
+---
+
+#### 35. La 004 no define el catálogo final de indicadores
+
+La tarea diseña el perfil de `gerente_general`, pero no absorbe:
+
+- `NUMERA-UX-008 — Mostrar indicadores antes que tablas detalladas`;
+- `NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva`.
+
+Por tanto, no congela un número final de KPI, orden definitivo, fórmula, visualización ni layout físico.
+
+---
+
+#### 36. El AS-IS actual no define el home objetivo
+
+La raíz actual de `vento-numera` exige acceso a la aplicación, consulta `numera_current_period_summary`, muestra tres métricas y cuatro accesos de módulo.
+
+Ese estado se conserva únicamente como evidencia AS-IS.
+
+No autoriza a concluir que:
+
+- `numera.access` basta para leer todas las métricas;
+- ausencia de dato equivale a cero;
+- cuatro módulos son el catálogo objetivo del home;
+- el layout actual representa la presentación final de `gerente_general`;
+- el runtime actual ya materializó las 125 capacidades objetivo.
+
+UX-004 no modifica ese código.
+
+---
+
+#### 37. Role override provisional no es autorización objetivo
+
+La auditoría AS-IS registró un role override local privilegiado para `propietario` y `gerente_general`.
+
+Se conserva:
+
+```text
+ROLE_OVERRIDE_ASIS = PROVISIONAL
+ROLE_OVERRIDE_IS_TARGET_AUTHORIZATION = NO
+```
+
+La presentación `gerente_general` deberá resolverse desde autoridad efectiva real o simulación gobernada, nunca desde un bypass nominal oculto.
+
+---
+
+#### 38. Proceso VPROC-0010 — paquete laboral para pagos
+
+El home puede exponer únicamente una proyección autorizada del estado financiero del paquete laboral.
+
+Handoff de detalle:
+
+```text
+VSCREEN-0153 — Paquete laboral para pagos y beneficios
+```
+
+No decide novedades laborales, no sustituye ANIMA o VISO y no ejecuta pagos.
+
+---
+
+#### 39. Proceso VPROC-0051 — hechos económicos y conciliación
+
+El home puede resumir, según lectura efectiva:
+
+- recepción o clasificación de hechos;
+- cobertura de conciliación;
+- diferencias relevantes;
+- documentos fiscales asociados.
+
+Handoffs canónicos:
+
+```text
+VSCREEN-0095
+VSCREEN-0096
+VSCREEN-0101
+VSCREEN-0102
+VSCREEN-0154
+```
+
+---
+
+#### 40. Proceso VPROC-0052 — obligaciones, pagos y tesorería
+
+El home puede resumir estados autorizados de obligación, vencimiento, pago, liquidez, tesorería o cumplimiento.
+
+Handoffs canónicos:
+
+```text
+VSCREEN-0097
+VSCREEN-0098
+VSCREEN-0100
+VSCREEN-0155
+VSCREEN-0157
+```
+
+Ningún acceso desde el inicio ejecuta aprobación, instrucción de pago o movimiento de tesorería.
+
+---
+
+#### 41. Proceso VPROC-0053 — cartera
+
+El home puede proyectar estado autorizado de cartera, aging, vencimiento, recaudo o diferencia.
+
+Handoff canónico:
+
+```text
+VSCREEN-0099
+```
+
+No registra acuerdos, aplica pagos, aprueba crédito, castiga saldos ni resuelve disputas inline.
+
+---
+
+#### 42. Proceso VPROC-0054 — costos, rentabilidad, distribución y cierre
+
+El home puede proyectar resultados autorizados de costo, rentabilidad, variación, cierre y distribución.
+
+Handoffs canónicos:
+
+```text
+VSCREEN-0103
+VSCREEN-0104
+VSCREEN-0105
+VSCREEN-0158
+```
+
+No ejecuta conciliación, distribución, cierre o reapertura inline.
+
+---
+
+#### 43. Proceso VPROC-0061 — medición, análisis y mejora
+
+`VSCREEN-0094` pertenece a `VPROC-0061` y utiliza este proceso como eje de lectura ejecutiva.
+
+Handoffs adicionales:
+
+```text
+VSCREEN-0106
+VSCREEN-0159
+```
+
+El home presenta resultados, señales y trazabilidad; no convierte análisis en causalidad automática ni ejecuta el plan de mejora desde el resumen.
+
+---
+
+#### 44. Proceso VPROC-0069 — presupuesto, escenarios y forecast
+
+El home puede presentar proyecciones autorizadas del ciclo presupuestal y sus comparaciones.
+
+Handoff canónico:
+
+```text
+VSCREEN-0156
+```
+
+Toda mutación de planificación permanece fuera de `VSCREEN-0094`.
+
+---
+
+#### 45. Cobertura exacta de procesos
+
+La composición reconoce exactamente los siete procesos propietarios de NUMERA:
+
+| Proceso | Familia visible desde el home | Handoff de detalle |
+| --- | --- | --- |
+| `VPROC-0010` | paquete laboral financiero | `VSCREEN-0153` |
+| `VPROC-0051` | hechos económicos y conciliación | `VSCREEN-0095`, `0096`, `0101`, `0102`, `0154` |
+| `VPROC-0052` | obligaciones, pagos y tesorería | `VSCREEN-0097`, `0098`, `0100`, `0155`, `0157` |
+| `VPROC-0053` | cartera | `VSCREEN-0099` |
+| `VPROC-0054` | costos, rentabilidad, distribución y cierre | `VSCREEN-0103`, `0104`, `0105`, `0158` |
+| `VPROC-0061` | medición, análisis y mejora | `VSCREEN-0094`, `0106`, `0159` |
+| `VPROC-0069` | presupuesto, escenarios y forecast | `VSCREEN-0156` |
+
+Resultado:
+
+```text
+GENERAL_MANAGER_HOME_PROCESS_COUNT = 7
+GENERAL_MANAGER_HOME_PROCESS_MISSING_COUNT = 0
+GENERAL_MANAGER_HOME_PROCESS_DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 46. Cobertura exacta de las veinte pantallas NUMERA
+
+El home conserva la identidad de las veinte pantallas objetivo:
+
+| Pantalla | Relación con el home de gerente general | Comando inline |
+| --- | --- | --- |
+| `VSCREEN-0094` | `HOME` | no |
+| `VSCREEN-0095` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0096` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0097` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0098` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0099` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0100` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0101` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0102` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0103` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0104` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0105` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0106` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0153` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0154` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0155` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0156` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0157` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0158` | `AUTHORIZED_DRILLDOWN` | no |
+| `VSCREEN-0159` | `AUTHORIZED_DRILLDOWN` | no |
+
+Resultado:
+
+```text
+GENERAL_MANAGER_HOME_TARGET_SCREEN_COUNT = 20
+GENERAL_MANAGER_HOME_HOME_SCREEN_COUNT = 1
+GENERAL_MANAGER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+GENERAL_MANAGER_HOME_INLINE_COMMAND_SCREEN_COUNT = 0
+GENERAL_MANAGER_HOME_SCREEN_MISSING_COUNT = 0
+GENERAL_MANAGER_HOME_SCREEN_DUPLICATE_COUNT = 0
+```
+
+---
+
+#### 47. La cobertura de veinte pantallas no obliga a mostrar veinte accesos
+
+La matriz anterior conserva identidad y posibilidad de handoff; no ordena que todas las pantallas aparezcan simultáneamente en el home.
+
+La visibilidad de cada acceso depende de:
+
+- permiso efectivo;
+- scope aplicable;
+- relevancia contextual;
+- estado del recurso;
+- arquitectura de navegación aplicable;
+- tareas UX posteriores.
+
+---
+
+#### 48. Drill-down no es autorización
+
+Un enlace, tarjeta o CTA de navegación no prueba autoridad sobre la pantalla destino.
+
+Se conserva:
+
+```text
+NAVIGATION_VISIBILITY != COMMAND_AUTHORIZATION
+DRILLDOWN != SIDE_EFFECT
+```
+
+La pantalla destino revalida sus lecturas y comandos.
+
+---
+
+#### 49. Flujo hacia operación
+
+Cuando el gerente general necesita ejecutar una acción:
+
+```text
+VSCREEN_0094
+-> AUTHORIZED_DRILLDOWN
+-> COMMAND_CAPABLE_TARGET_SCREEN
+-> ACTION_SELECTION
+-> SERVER_REVALIDATION
+-> ALLOW_OR_DENY
+```
+
+La revalidación utiliza actor, permiso, scope, recurso, sensibilidad, estado y versión actuales.
+
+---
+
+#### 50. Persistencia de contexto durante navegación
+
+El handoff puede conservar filtros de lectura como organización, sede, centro, periodo o recurso cuando el destino los admite.
+
+Se conserva:
+
+```text
+CONTEXT_HANDOFF != AUTHORITY_HANDOFF
+```
+
+La superficie destino vuelve a resolver autorización.
+
+---
+
+#### 51. Frontera frente al propietario
+
+La presentación `gerente_general` puede compartir la arquitectura de lectura y, bajo permisos efectivos iguales, parte o toda la proyección financiera del propietario.
+
+No comparte por inferencia:
+
+- capacidades futuras reservadas de propietario;
+- administración de propietarios;
+- gobierno de la arquitectura de autorización;
+- recuperación de seguridad;
+- secretos o autoridad técnica privilegiada;
+- excepciones destructivas reservadas.
+
+Se conserva:
+
+```text
+GENERAL_MANAGER_HOME_IS_OWNER_HOME = NO
+GENERAL_MANAGER_HOME_INHERITS_OWNER_AUTHORITY = NO
+```
+
+---
+
+#### 52. Frontera frente al gerente de sede
+
+`NUMERA-UX-005` diseñará una presentación territorialmente limitada.
+
+UX-004 no convierte `G(B)` histórico de `gerente_general` en una regla reutilizable por `gerente`.
+
+La matriz histórica del gerente de sede usa `AS/ORG-LOCAL` para las cinco lecturas financieras NUMERA y prohíbe consolidado organizacional global por esa vía.
+
+Se conserva:
+
+```text
+GENERAL_MANAGER_EXECUTIVE_SCOPE != SITE_MANAGER_TERRITORIAL_SCOPE
+```
+
+---
+
+#### 53. Frontera frente a contador y auxiliar autorizada
+
+`NUMERA-UX-006` y `NUMERA-UX-007` diseñarán presentaciones funcionales financieras o administrativas específicas.
+
+UX-004 no presume que contador o auxiliar deban recibir:
+
+- la misma amplitud organizacional;
+- los mismos módulos;
+- los mismos drill-downs;
+- las mismas prioridades de lectura;
+- la misma capacidad de decisión.
+
+---
+
+#### 54. Presentación ejecutiva no agrega permisos operativos
+
+`gerente_general` puede tener responsabilidades ejecutivas amplias, pero no obtiene por este home los permisos `OPERATIONAL_ONLY` ni componentes operativos faltantes.
+
+Se conserva:
+
+```text
+EXECUTIVE_MANAGEMENT != OPERATIONAL_ROLE
+```
+
+Cuando una acción requiera rol operativo, turno, check-in u otro contexto especializado, esa exigencia permanece en la superficie propietaria.
+
+---
+
+#### 55. Accesibilidad semántica
+
+La implementación futura deberá expresar sin depender únicamente de color:
+
+- dato confirmado;
+- advertencia;
+- stale;
+- no disponible;
+- no autorizado;
+- real;
+- presupuestado;
+- forecast;
+- escenario;
+- propuesto;
+- aprobado;
+- publicado.
+
+UX-004 no fija componentes visuales concretos.
+
+---
+
+#### 56. Estados de carga y cambio de contexto
+
+La carga del home no debe mostrar una cifra del contexto anterior como si correspondiera al nuevo contexto.
+
+Se conserva:
+
+```text
+CONTEXT_CHANGED_WITH_STALE_VISIBLE_VALUE = FORBIDDEN
+```
+
+La UI debe distinguir carga, dato stale y dato confirmado.
+
+---
+
+#### 57. Seguridad frente a caché de autorización
+
+Una lectura previamente autorizada no se considera vigente después de un cambio material de contexto, permiso, recurso o estado que exija reevaluación.
+
+Se conserva:
+
+```text
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+```
+
+---
+
+#### 58. Observabilidad mínima del diseño futuro
+
+La implementación deberá poder distinguir en telemetría, sin registrar payload financiero sensible innecesario:
+
+- home cargado;
+- región disponible;
+- región denegada;
+- región con error técnico;
+- drill-down iniciado;
+- handoff hacia pantalla destino;
+- comando denegado o permitido en la superficie destino.
+
+La telemetría no se materializa en esta tarea.
+
+---
+
+#### 59. Relación con NUMERA-UX-005
+
+`NUMERA-UX-005` diseñará el inicio de `gerente` de sede.
+
+Recibe de esta tarea una separación explícita:
+
+```text
+GENERAL_MANAGER_EXECUTIVE_SCOPE != SITE_MANAGER_TERRITORIAL_SCOPE
+G(B) != AS/ORG-LOCAL
+```
+
+La 005 deberá conservar una composición financiera local sin inferir consolidación organizacional global.
+
+---
+
+#### 60. Relación con NUMERA-UX-008 y NUMERA-UX-028
+
+La 004 define quién puede ver qué tipo de composición ejecutiva y bajo qué límites, pero no decide todavía la presentación final indicador-versus-tabla ni el visor económico dinámico.
+
+Se conserva:
+
+```text
+ROLE_HOME_ARCHITECTURE != FINAL_KPI_PRESENTATION
+ROLE_HOME_ARCHITECTURE != FINAL_ECONOMIC_VIEWER_LAYOUT
+```
+
+---
+
+#### 61. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- especializa una experiencia ya protegida por requisitos financieros, autorización y navegación vigentes;
+- no crea nueva conducta ejecutable;
+- no crea proceso, pantalla, permiso, dato ni transición nueva;
+- no modifica requisitos existentes;
+- la materialización y pruebas ejecutables permanecen en las unidades y paquetes posteriores que consuman este contrato.
+
+```text
+REQUISITOS_CREADOS = 0
+REQUISITOS_MODIFICADOS = 0
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 62. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A la cobertura vigente asociada a:
+
+- `TREQ-NUMERA-001..024`;
+- `TREQ-PROC-001`;
+- `TREQ-PROC-009..017`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-015`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-017`.
+
+Esta lista es trazabilidad y no constituye una actualización del Registro 04A.
+
+---
+
+#### 63. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no produce build físico; la batería global se ejecutará después de su incorporación documental |
+| LOCAL | NOT_EXECUTED | el artefacto preparado todavía no se ha incorporado al checkout local canónico |
+| REMOTA | PASS | se verificaron `vento-shell/main@97378673fa349222900b3cf9a127a4db45c7477a`, secuencia activa con `NUMERA-UX-003` como anterior, archivo propietario, topología, políticas documentales, `AUTH-RBAC-002`, autorización NUMERA hasta `NUMERA-AUTH-015`, catálogo de veinte pantallas, Registro 04A aplicable y el estado AS-IS verificable de la raíz de `vento-numera` |
+| OPERATIVA | NOT_APPLICABLE | la tarea no ejecuta pagos, aprobaciones, conciliaciones, cierres, cartera, presupuestos ni otras operaciones financieras reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; no existen cambios físicos autorizados |
+
+---
+
+#### 64. Criterios de aceptación
+
+- [ ] se define exactamente un contrato `NUMERA-GENERAL-MANAGER-HOME-001`;
+- [ ] el home usa `VSCREEN-0094` y no crea un `VSCREEN-*` nuevo;
+- [ ] `VSCREEN-0094` permanece `MONITOR` / `CROSS_CUTTING`;
+- [ ] la presentación `gerente_general` no se convierte en wildcard, propietario, service role ni bypass;
+- [ ] se preservan las seis claves NUMERA históricamente asignadas a `gerente_general` sin extrapolarlas;
+- [ ] se reconocen cinco lecturas históricas `G(B)` sin convertir el nombre del rol en scope universal;
+- [ ] las capacidades NUMERA posteriores no se conceden automáticamente;
+- [ ] se distingue el universo objetivo de 125 capacidades del estado de materialización compartida de 6 presentes y 119 pendientes documentado por AUTH-015;
+- [ ] el inicio usa permisos efectivos y no el nombre del rol como fuente de autoridad;
+- [ ] no se hereda gobierno reservado de propietario;
+- [ ] el plano por defecto es `EXECUTIVE_READ_PLANE`;
+- [ ] existen cero comandos financieros inline;
+- [ ] se reutilizan siete regiones lógicas como arquitectura común sin copiar autoridad de propietario;
+- [ ] la presentación prioriza posición financiera, atención ejecutiva, ciclos, liquidez y variación dentro de lo autorizado;
+- [ ] se cubren exactamente siete procesos propietarios NUMERA;
+- [ ] se cubren exactamente veinte pantallas objetivo;
+- [ ] existe una pantalla home y diecinueve destinos de drill-down;
+- [ ] la matriz de veinte pantallas no obliga a mostrar veinte accesos simultáneos;
+- [ ] ningún drill-down transfiere autoridad de comando;
+- [ ] los comandos se reautorizan en la superficie destino;
+- [ ] `numera.access` no autoriza métricas;
+- [ ] conteos, badges y agregados respetan autorización;
+- [ ] cero, desconocido, no disponible, no autorizado y no aplicable permanecen diferenciados;
+- [ ] un valor stale no se presenta como actual;
+- [ ] real, presupuesto, forecast y escenario permanecen separados;
+- [ ] la información bancaria sensible conserva minimización y permiso especializado;
+- [ ] el role override AS-IS no se trata como autorización objetivo;
+- [ ] el home no duplica fuentes operativas;
+- [ ] `NUMERA-UX-005`, `NUMERA-UX-008` y `NUMERA-UX-028` conservan su alcance posterior;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos.
+
+---
+
+#### 65. Límites
+
+Esta tarea no:
+
+- diseña el inicio del propietario;
+- diseña el inicio del gerente de sede;
+- diseña el inicio del contador;
+- diseña el inicio de la auxiliar autorizada;
+- redefine la matriz RBAC de `gerente_general`;
+- asigna capacidades NUMERA nuevas a `gerente_general`;
+- asigna capacidades reservadas de propietario;
+- define el catálogo final de indicadores;
+- decide fórmulas nuevas;
+- decide el orden definitivo indicador-versus-tabla;
+- diseña el visor económico dinámico de `NUMERA-UX-028`;
+- crea pantallas;
+- crea rutas;
+- crea componentes React;
+- modifica navegación runtime;
+- crea permisos;
+- crea grants o denies;
+- crea procesos;
+- cambia estados de proceso;
+- implementa pagos;
+- implementa conciliaciones;
+- implementa cierres;
+- implementa cartera;
+- implementa planificación;
+- modifica `vento-numera`;
+- modifica packages compartidos;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos;
+- actualiza Registro 04A;
+- desarrolla `NUMERA-UX-005`.
+
+---
+
+#### 66. Handoff a NUMERA-UX-005
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_GENERAL_MANAGER_HOME_CONTRACT = NUMERA-GENERAL-MANAGER-HOME-001
+NUMERA_OWNER_HOME_CONTRACT = NUMERA-OWNER-HOME-001
+NUMERA_UX_SEPARATION_CONTRACT = NUMERA-EXECUTIVE-READ-ACCOUNTING-OPERATION-SEPARATION-001
+GENERAL_MANAGER_HOME_SCREEN_ID = VSCREEN-0094
+GENERAL_MANAGER_HOME_PRESENTATION_PROFILE = gerente_general
+GENERAL_MANAGER_HOME_PRIMARY_PLANE = EXECUTIVE_READ_PLANE
+GENERAL_MANAGER_HOME_INLINE_FINANCIAL_COMMANDS = 0
+GENERAL_MANAGER_HOME_REGION_COUNT = 7
+GENERAL_MANAGER_HOME_PROCESS_COUNT = 7
+GENERAL_MANAGER_HOME_TARGET_SCREEN_COUNT = 20
+GENERAL_MANAGER_HOME_HOME_SCREEN_COUNT = 1
+GENERAL_MANAGER_HOME_DRILLDOWN_SCREEN_COUNT = 19
+GENERAL_MANAGER_HOME_SCREEN_MISSING_COUNT = 0
+GENERAL_MANAGER_HOME_SCREEN_DUPLICATE_COUNT = 0
+GENERAL_MANAGER_HISTORICAL_NUMERA_ASSIGNED_PERMISSION_COUNT = 6
+GENERAL_MANAGER_HISTORICAL_NUMERA_GB_READ_COUNT = 5
+GENERAL_MANAGER_NEW_PERMISSION_AUTO_GRANT = NO
+GENERAL_MANAGER_INHERITS_OWNER_RESERVED_GOVERNANCE = NO
+GENERAL_MANAGER_ROLE_IS_SCOPE = NO
+GENERAL_MANAGER_EXECUTIVE_SCOPE_IS_SITE_MANAGER_SCOPE = NO
+ROLE_NAME_IS_AUTHORIZATION = NO
+NUMERA_ACCESS_IS_METRIC_AUTHORITY = NO
+COUNT_VISIBILITY_REQUIRES_READ_AUTHORITY = YES
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+READ_TO_COMMAND_REAUTHORIZATION_REQUIRED = YES
+SERVER_SIDE_REVALIDATION_REQUIRED = YES
+STALE_AUTHORIZATION_DECISION = DENY_AND_REEVALUATE
+ZERO_IS_UNKNOWN = NO
+NUMERA_GENERAL_MANAGER_HOME_IS_VISO_EXECUTIVE_HOME = NO
+UX_005_OWNER = SITE_MANAGER_HOME
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-005` deberá diseñar una presentación local con alcance territorial explícito, consumiendo `AS/ORG-LOCAL` y los permisos efectivos aplicables sin degradar la separación entre alcance ejecutivo global y autoridad de sede.
+
+---
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-003 — Diseñar inicio para propietario`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-004 — Diseñar inicio para gerente general`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-005 — Diseñar inicio para gerente de sede`
 ### [ ] NUMERA-UX-005 — Diseñar inicio para gerente de sede
 ### [ ] NUMERA-UX-006 — Diseñar inicio para contador
 ### [ ] NUMERA-UX-007 — Diseñar inicio para auxiliar autorizada
