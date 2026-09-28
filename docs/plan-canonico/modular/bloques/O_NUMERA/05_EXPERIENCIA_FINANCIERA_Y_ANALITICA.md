@@ -33490,6 +33490,1447 @@ UX-025 consume el tablero de cobertura de UX-024 como evidencia de confianza sin
 
 **SIGUIENTE TAREA RESERVADA**
 `NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro`
-### [ ] NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro
+### ✅ NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro
+
+**Estado:** APROBADA
+**Tarea anterior:** NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación
+**Tarea siguiente:** NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
+**Tipo de tarea:** definición documental de la experiencia integral de cartera y cuentas por cobrar de NUMERA sobre `VSCREEN-0099`, incluyendo saldo, cuotas, vencimientos, aging, recaudos, aplicaciones, anticipos, promesas, acuerdos, disputas, cobranza, exposición, límites, excepciones, castigos, condonaciones, conciliación, evidencia y recuperación, consumiendo `NUMERA-DOM-016`, `NUMERA-AUTH-014` y `VPROC-0053` sin reabrir el alcance aprobado ni autorizar materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE O — NUMERA
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/O_NUMERA/05_EXPERIENCIA_FINANCIERA_Y_ANALITICA.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea cartera real, saldos, deudores, recaudos, aplicaciones, acuerdos, promesas, límites, castigos, tablas, vistas, funciones, RPC, RLS, migraciones, permisos runtime, integraciones bancarias, mensajes reales de cobranza, datos, configuraciones de Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia integral mediante la cual un actor autorizado pueda comprender y gestionar cartera en NUMERA sin convertir una pantalla administrativa en fuente paralela de ventas, pagos, banco, identidad de cliente o documentos fiscales.
+
+La experiencia deberá permitir responder, para una cuenta por cobrar concreta:
+
+- quién debe;
+- a qué entidad legal;
+- por qué origen;
+- cuánto se reconoció;
+- cuánto está abierto;
+- qué venció y cuándo;
+- qué se recibió;
+- qué se aplicó y a qué;
+- qué permanece no aplicado;
+- qué está en disputa;
+- qué acuerdo o promesa existe;
+- qué gestión de cobro ocurrió;
+- qué exposición y límite aplican;
+- qué diferencia impide liquidar;
+- qué evidencia soporta cada decisión;
+- qué acciones siguen disponibles bajo autorización efectiva.
+
+---
+
+#### 2. Naturaleza y topología
+
+`NUMERA-UX-026` se resuelve como:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Por tanto:
+
+- define una experiencia documental reusable;
+- no crea instancia física propia;
+- no modifica `vento-numera`;
+- no materializa permisos;
+- no modifica Supabase;
+- no ejecuta cobranza;
+- no recibe ni aplica recaudos reales;
+- no altera saldos reales;
+- no autoriza castigos ni condonaciones reales.
+
+---
+
+#### 3. Handoff recibido de NUMERA-UX-025
+
+Se consume sin reinterpretación:
+
+```text
+FINANCIAL_SCOPE_APPROVED = YES
+CAP_12_EXPECTED = 15
+CAP_12_APPROVED_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+CAP_12_04_ACCOUNTS_RECEIVABLE = REQUIRED
+PHYSICAL_IMPLEMENTATION_AUTHORIZED_BY_UX_025 = NO
+RUNTIME_COMPLETION_CERTIFIED_BY_UX_025 = NO
+PRODUCTION_OPERATION_AUTHORIZED_BY_UX_025 = NO
+IMPLEMENTATION_COMPLETION_GATE_COMPLETE = NO
+POST_SCOPE_REQUIRED_UX_TASK_COUNT = 3
+NUMERA_UX_026_REQUIRED = YES
+NUMERA_UX_027_REQUIRED = YES
+NUMERA_UX_028_REQUIRED = YES
+UNOWNED_SCOPE_BLOCKER_COUNT = 0
+TREQ_CHANGES = 0
+```
+
+La tarea no vuelve a decidir si cartera pertenece a NUMERA.
+
+---
+
+#### 4. Fuentes canónicas consumidas
+
+La experiencia consume y preserva:
+
+- `CAP-SCOPE-012` y `CAP-12.04`;
+- `NUMERA-DOM-016` como contrato propietario de cartera, cobranza y exposición;
+- `NUMERA-DOM-014` para conciliación y tratamiento de diferencias;
+- `NUMERA-DOM-011` para periodos, ajustes y reapertura;
+- `NUMERA-DOM-009` para caja, bancos y movimiento financiero;
+- `NUMERA-AUTH-014` para autoridades financieras especializadas;
+- `VPROC-0053` como lifecycle propietario;
+- `VSCREEN-0099` como superficie propietaria;
+- `VSCREEN-0100` para caja, bancos y movimientos financieros;
+- `VSCREEN-0101` para conciliación de ventas y pagos;
+- `VSCREEN-0097` para decisiones financieras cuando corresponda una bandeja de aprobación;
+- `VSCREEN-0106` para reportes y exportaciones autorizadas;
+- contratos transversales de sensibilidad, recuperación, recurso, versión, idempotencia, evidencia y segregación.
+
+---
+
+#### 5. Resultado contractual
+
+Se define:
+
+```text
+NUMERA-RECEIVABLES-COLLECTION-EXPERIENCE-001
+```
+
+con una superficie propietaria y navegación contextual hacia superficies relacionadas, sin crear una pantalla canónica nueva.
+
+---
+
+#### 6. Superficie propietaria
+
+La experiencia principal permanece:
+
+```text
+SCREEN_ID = VSCREEN-0099
+SCREEN_NAME = Cuentas por cobrar y cartera
+APP = numera
+PRIMARY_PROCESS = VPROC-0053
+PRIMARY_PROCESS_STEP = VPROC-0053::STEP-MANAGE_RECEIVABLE
+PROCESS_STEP_LABEL = Gestionar cartera y recaudo
+PROCESS_STEP_ROLE = EXECUTE
+LIFECYCLE_POSITION = IN_PROGRESS
+```
+
+`VSCREEN-0099` conserva cartera, recaudo, aplicación y saldo; no absorbe tesorería, conciliación global ni emisión fiscal.
+
+---
+
+#### 7. Frontera de ownership
+
+NUMERA puede gestionar la cuenta por cobrar y su expediente financiero, pero no reescribe los objetos propietarios de otros dominios.
+
+Se congela:
+
+```text
+SALE_OWNER = PULSO
+CUSTOMER_IDENTITY_OWNER = PASS_OR_CANONICAL_IDENTITY_SOURCE
+BANK_MOVEMENT_OWNER = BANK_OR_FINANCIAL_SOURCE
+FISCAL_DOCUMENT_AUTHORITY = AUTHORIZED_FISCAL_PROVIDER_OR_SYSTEM
+RECEIVABLE_OWNER = NUMERA
+RECEIVABLE_RECONCILIATION_OWNER = NUMERA
+```
+
+La experiencia enlaza evidencia y estados; no corrige una venta modificando PULSO ni corrige un banco editando un extracto.
+
+---
+
+#### 8. Distinciones obligatorias
+
+La interfaz debe preservar:
+
+```text
+CUSTOMER != DEBTOR
+DEBTOR != PASS_ACCOUNT
+RECEIVABLE != DOCUMENT
+RECEIVABLE != INSTALLMENT
+INSTALLMENT != DUE_DATE
+RECEIVABLE != OPEN_BALANCE
+PAYMENT_RECEIVED != PAYMENT_APPLIED
+PAYMENT_APPLIED != BANK_RECONCILED
+PROMISE_TO_PAY != PAYMENT
+PROMISE_TO_PAY != PAYMENT_AGREEMENT
+DISPUTE != PAYMENT
+WRITE_OFF != PAYMENT
+WRITE_OFF != FORGIVENESS
+CREDIT_EXPOSURE != OPEN_BALANCE
+RECONCILIATION_DIFFERENCE != DISPUTE
+RECEIVABLE_SETTLED != PERIOD_CLOSED
+```
+
+Ninguna etiqueta, card o acción podrá volver equivalentes estos conceptos.
+
+---
+
+#### 9. Lifecycle propietario VPROC-0053
+
+La experiencia deberá representar sin alterar este ciclo:
+
+```text
+RECEIVABLE_REGISTERED
+-> VALIDATION_IN_PROGRESS
+-> COLLECTION_SCHEDULED
+-> COLLECTION_IN_PROGRESS
+-> PAYMENT_RECEIVED
+-> APPLICATION_PENDING
+-> DIFFERENCE_UNDER_REVIEW
+-> RECONCILIATION_PENDING
+-> RECEIVABLE_SETTLED
+```
+
+Los estados del proceso no se sustituyen por estados visuales inventados.
+
+---
+
+#### 10. Estados del objeto cuenta por cobrar
+
+La pantalla deberá poder presentar separadamente el estado financiero del objeto:
+
+```text
+draft
+open
+partial
+overdue
+disputed
+settled
+written_off
+cancelled
+```
+
+Se conserva:
+
+```text
+RECEIVABLE_OBJECT_STATUS != VPROC_0053_PROCESS_STATE
+```
+
+---
+
+#### 11. Estructura principal de VSCREEN-0099
+
+La superficie se organiza en cinco regiones lógicas:
+
+1. contexto y alcance;
+2. posición de cartera;
+3. bandeja de cuentas y vencimientos;
+4. detalle financiero y timeline;
+5. acciones gobernadas y excepciones.
+
+Estas regiones son composición de una sola superficie, no nuevas identidades `VSCREEN-*`.
+
+---
+
+#### 12. Contexto y alcance
+
+Antes de mostrar importes o acciones, la pantalla deberá resolver y hacer visible el alcance efectivo relevante:
+
+- entidad legal acreedora;
+- sede o unidad cuando aplique;
+- moneda o conjunto permitido;
+- fecha de corte;
+- deudor o segmento autorizado;
+- estado o fase consultada;
+- política de aging cuando exista;
+- permisos efectivos relevantes.
+
+La marca visible no sustituye la entidad legal.
+
+---
+
+#### 13. Posición de cartera
+
+La región de posición puede mostrar agregados autorizados como:
+
+- saldo abierto;
+- saldo vencido;
+- importe no vencido;
+- importe en disputa;
+- recaudo no aplicado;
+- cartera bajo acuerdo;
+- cuentas con promesa próxima;
+- exposición calculada cuando el actor tenga autoridad;
+- cuentas con diferencias de conciliación.
+
+Todo agregado es proyección y debe permitir navegar al conjunto fuente que lo explica.
+
+---
+
+#### 14. Agregados no editables
+
+Se congela:
+
+```text
+AGGREGATE_IS_SOURCE = NO
+AGGREGATE_DIRECT_EDIT = FORBIDDEN
+```
+
+Cambiar un total exige actuar sobre objetos autorizados y trazables, no escribir sobre la card o KPI.
+
+---
+
+#### 15. Bandeja principal de cuentas
+
+La bandeja deberá poder distinguir al menos:
+
+- identidad estable de la cuenta;
+- deudor;
+- entidad legal acreedora;
+- origen;
+- documento relacionado cuando exista;
+- moneda;
+- monto reconocido;
+- saldo abierto;
+- saldo vencido;
+- próximo vencimiento;
+- días de atraso calculados a la fecha de corte;
+- estado del objeto;
+- estado del proceso;
+- acuerdo o promesa vigente;
+- disputa o hold vigente;
+- última gestión material;
+- próxima acción prevista;
+- estado de conciliación.
+
+La densidad debe favorecer escaneo operativo sin ocultar la trazabilidad.
+
+---
+
+#### 16. Filtros operativos
+
+La experiencia deberá admitir filtros coherentes con el scope autorizado, entre ellos:
+
+- entidad legal;
+- deudor;
+- moneda;
+- estado de cuenta;
+- fase de proceso;
+- vencimiento;
+- aging calculado;
+- con/sin promesa;
+- con/sin acuerdo;
+- con/sin disputa;
+- con/sin recaudo no aplicado;
+- con/sin diferencia de conciliación;
+- responsable de gestión cuando aplique.
+
+Los filtros no amplían el universo autorizado.
+
+---
+
+#### 17. Detalle de cuenta
+
+El detalle debe permitir reconstruir la cuenta sin abandonar la superficie principal cuando sea razonable.
+
+Como mínimo mostrará:
+
+- identidad;
+- deudor;
+- entidad legal;
+- origen y correlación;
+- componentes monetarios;
+- calendario de cuotas;
+- vencimientos;
+- aplicaciones activas;
+- recaudos relacionados;
+- anticipos o saldos a favor relacionados;
+- acuerdos y versiones;
+- promesas;
+- disputas;
+- holds;
+- interacciones de cobranza;
+- exposición y límite cuando estén autorizados;
+- conciliaciones;
+- reversos;
+- evidencia y lineage.
+
+---
+
+#### 18. Identidad estable
+
+La experiencia nunca identifica una cuenta únicamente por:
+
+- factura;
+- pedido;
+- nombre del cliente;
+- referencia bancaria;
+- número de cuota;
+- saldo;
+- estado actual.
+
+Toda mutación debe operar sobre la identidad estable y versión esperada del recurso.
+
+---
+
+#### 19. Cuotas y vencimientos
+
+Cuando una cuenta tenga cuotas, cada cuota deberá verse como objeto subordinado identificable con:
+
+- secuencia o identidad;
+- importe;
+- moneda;
+- fecha de exigibilidad o vencimiento;
+- saldo abierto;
+- estado derivado;
+- acuerdo o versión que la originó.
+
+Modificar un cronograma autorizado crea historia/versionado; no sobrescribe el calendario anterior sin evidencia.
+
+---
+
+#### 20. Aging
+
+El aging se presenta contra una fecha de corte explícita.
+
+Se deberá mostrar:
+
+- fecha de corte;
+- vencimiento aplicable;
+- días exactos de atraso;
+- bucket cuando una política versionada lo defina;
+- importe abierto asociado;
+- tratamiento de disputa/acuerdo cuando la política lo contemple.
+
+No se inventan buckets universales 30/60/90.
+
+---
+
+#### 21. Política de aging
+
+Si existe agrupación por buckets, la UI deberá identificar o permitir consultar:
+
+- política;
+- versión;
+- vigencia;
+- límites;
+- scope;
+- tratamiento de cuentas disputadas, acordadas o castigadas.
+
+Cambiar la política no reescribe la antigüedad histórica.
+
+---
+
+#### 22. Recaudo recibido
+
+Un recaudo confirmado puede aparecer asociado a la cuenta o deudor sin considerarse aplicado.
+
+La experiencia deberá distinguir:
+
+```text
+RECEIVED
+UNAPPLIED
+PARTIALLY_APPLIED
+APPLIED
+REVERSED
+```
+
+según el contrato vigente del recaudo.
+
+---
+
+#### 23. Recaudo no aplicado
+
+Todo recaudo confirmado que todavía no tenga destino financiero válido permanecerá visible como no aplicado.
+
+La pantalla no podrá:
+
+- asignarlo automáticamente a la cuenta más antigua;
+- asignarlo solo por coincidencia de monto;
+- convertirlo en ingreso;
+- ocultarlo porque falte referencia;
+- usarlo para marcar una cuenta como liquidada.
+
+---
+
+#### 24. Aplicación de recaudo
+
+La aplicación se presenta como vínculo explícito entre recaudo y destino financiero.
+
+Cada línea deberá poder mostrar:
+
+- recaudo origen;
+- cuenta destino;
+- cuota o concepto cuando aplique;
+- importe;
+- moneda;
+- fecha efectiva;
+- actor o regla autorizada;
+- motivo;
+- estado;
+- reversión;
+- evidencia.
+
+---
+
+#### 25. Aplicación parcial
+
+Cuando un recaudo cubre parcialmente una cuenta o cuota, la UI deberá mostrar simultáneamente:
+
+- importe original;
+- importe aplicado;
+- residual;
+- saldo abierto posterior;
+- destinos adicionales si existen.
+
+Se congela:
+
+```text
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+```
+
+---
+
+#### 26. Aplicación múltiple
+
+La experiencia admite:
+
+- un recaudo aplicado a varias cuentas o cuotas;
+- una cuenta liquidada mediante varios recaudos;
+- aplicaciones parciales sucesivas.
+
+La relación se presenta por líneas identificables; no mediante una many-to-many opaca.
+
+---
+
+#### 27. Reversión de aplicación
+
+Revertir una aplicación debe:
+
+- exigir autoridad específica;
+- conservar la aplicación original;
+- registrar motivo;
+- recomponer residual y saldo según contrato;
+- preservar correlación con recaudo;
+- dejar evidencia de before/after relevante.
+
+La reversión nunca borra la línea original.
+
+---
+
+#### 28. Anticipos y saldos a favor
+
+Un recaudo sin cuenta aplicable podrá representarse como anticipo o saldo a favor según política aprobada.
+
+Se conserva:
+
+```text
+ADVANCE_OR_CREDIT_BALANCE != NEGATIVE_RECEIVABLE
+```
+
+La UI debe mantener visible origen, importe disponible, moneda y aplicaciones posteriores.
+
+---
+
+#### 29. Sobrepago
+
+Si el recaudo excede el saldo aplicable, la pantalla deberá separar:
+
+- importe aplicado;
+- excedente;
+- tratamiento autorizado del excedente;
+- saldo a favor o no aplicado resultante.
+
+Nunca crea una cuenta negativa para ocultar el excedente.
+
+---
+
+#### 30. Multimoneda
+
+Una aplicación entre monedas distintas requiere contexto FX aprobado.
+
+Cuando exista, el detalle deberá poder mostrar:
+
+- moneda del recaudo;
+- moneda de la cuenta;
+- tasa;
+- fuente;
+- fecha/timestamp efectivo;
+- importe antes y después de conversión;
+- diferencia de conversión cuando aplique.
+
+La UX no inventa una tasa por defecto.
+
+---
+
+#### 31. Promesa de pago
+
+Una promesa se registra como compromiso declarado y no modifica por sí sola saldo, vencimiento contractual ni acuerdo.
+
+Debe mostrar:
+
+- fecha prometida;
+- importe prometido;
+- cuentas/cuotas relacionadas;
+- canal;
+- evidencia;
+- actor que registró;
+- estado o resultado posterior.
+
+---
+
+#### 32. Acuerdo de pago
+
+Un acuerdo de pago se muestra como objeto versionado distinto de la promesa.
+
+El detalle debe permitir comparar:
+
+- saldo base;
+- cronograma anterior;
+- nuevo cronograma;
+- condiciones;
+- fecha efectiva;
+- versión;
+- estado de decisión;
+- aprobador cuando aplique;
+- evidencia;
+- motivo.
+
+El acuerdo no borra vencimientos ni mora histórica.
+
+---
+
+#### 33. Flujo de acuerdo
+
+La experiencia separará:
+
+```text
+REGISTRAR_PROPUESTA
+REVISAR
+APROBAR
+RECHAZAR
+APLICAR_VERSION_APROBADA
+```
+
+Registrar una propuesta no la vuelve efectiva.
+
+---
+
+#### 34. Gestión de cobranza
+
+La gestión de cobro deberá poder registrar interacciones materiales con:
+
+- fecha y hora;
+- canal;
+- actor interno;
+- contraparte;
+- cuentas relacionadas;
+- resultado;
+- compromiso declarado;
+- siguiente acción;
+- evidencia permitida;
+- restricciones de contacto conocidas.
+
+El chat, correo o llamada no sustituye el expediente canónico.
+
+---
+
+#### 35. Programación de cobranza
+
+`COLLECTION_SCHEDULED` exige que la UI pueda expresar:
+
+- estrategia;
+- fecha;
+- canal;
+- responsable;
+- prioridad;
+- condición de escalamiento;
+- promesa/acuerdo relacionado;
+- hold vigente;
+- restricciones aplicables.
+
+No se fija una cadencia universal.
+
+---
+
+#### 36. Hold de cobranza
+
+La pantalla deberá distinguir claramente una pausa o retención de cobro de la cancelación de la cuenta.
+
+```text
+COLLECTION_HOLD != RECEIVABLE_CANCELLED
+COLLECTION_HOLD != BALANCE_ZERO
+```
+
+Activar o desactivar el hold requiere autoridad específica y evidencia.
+
+---
+
+#### 37. Disputa
+
+Una disputa se presenta como expediente independiente con:
+
+- importe disputado;
+- motivo;
+- origen;
+- actor;
+- evidencia;
+- estado;
+- efecto temporal permitido;
+- resolución;
+- acción financiera resultante si existe.
+
+Resolver la disputa no habilita un ajuste libre del saldo.
+
+---
+
+#### 38. Diferencia de conciliación
+
+Una diferencia financiera de conciliación permanece distinta de una disputa comercial o financiera.
+
+La UX deberá indicar cuándo el caso requiere navegación contextual a `VSCREEN-0101` y conservar:
+
+- miembros comparados;
+- residual;
+- fuente;
+- estado;
+- decisión;
+- reversión;
+- evidencia.
+
+---
+
+#### 39. Exposición de crédito
+
+La exposición puede mostrarse solo cuando existe política y scope autorizados.
+
+Debe declarar:
+
+- entidad legal acreedora;
+- deudor;
+- fecha de corte;
+- moneda o regla de conversión;
+- saldos incluidos;
+- compromisos adicionales incluidos por política;
+- exclusiones;
+- versión de política.
+
+Se conserva:
+
+```text
+OPEN_RECEIVABLE_BALANCE != CREDIT_EXPOSURE
+```
+
+---
+
+#### 40. Límite de crédito
+
+La experiencia distingue:
+
+```text
+LIMIT_NOT_DEFINED
+LIMIT_PROPOSED
+LIMIT_APPROVED
+LIMIT_REJECTED
+LIMIT_EXPIRED_OR_SUPERSEDED
+```
+
+`null` no se presenta como crédito ilimitado.
+
+---
+
+#### 41. Revisión de límite
+
+Crear o modificar un límite genera propuesta/versionado y no cambia automáticamente la autoridad vigente.
+
+Aprobar y rechazar usan decisiones separadas sobre una versión exacta.
+
+---
+
+#### 42. Excepción de crédito
+
+Una excepción de crédito material debe presentarse como decisión explícita con:
+
+- recurso exacto;
+- causa;
+- alcance;
+- vigencia;
+- política aplicable;
+- actor solicitante;
+- decisor;
+- evidencia;
+- resultado.
+
+La excepción no cambia silenciosamente el límite base.
+
+---
+
+#### 43. Castigo
+
+El castigo se presenta como acción excepcional y sensible.
+
+La confirmación deberá explicar que:
+
+```text
+WRITE_OFF != PAYMENT
+WRITE_OFF != FORGIVENESS
+WRITE_OFF != SOURCE_DELETION
+```
+
+La UI deberá exigir cuenta/version exacta, importe, causa, autoridad y evidencia aplicables.
+
+---
+
+#### 44. Condonación
+
+Condonar o perdonar saldo es distinto de castigar.
+
+La experiencia deberá requerir decisión explícita y mostrar el efecto autorizado sin presentar la condonación como pago recibido.
+
+No define tratamiento jurídico o tributario profesional.
+
+---
+
+#### 45. Cancelación y liquidación
+
+La UI diferencia:
+
+```text
+cancelled != settled
+```
+
+`settled` exige saldo final explicado mediante recaudos, aplicaciones, diferencias, devoluciones y conciliación.
+
+`cancelled` exige una causa autorizada distinta del pago ordinario.
+
+---
+
+#### 46. Timeline financiero
+
+Cada cuenta deberá ofrecer una secuencia cronológica reconstruible de hechos relevantes, por ejemplo:
+
+- registro;
+- validación;
+- vencimientos;
+- gestiones de cobranza;
+- promesas;
+- acuerdos;
+- recaudos;
+- aplicaciones;
+- reversos;
+- disputas;
+- holds;
+- conciliaciones;
+- castigos/condonaciones;
+- liquidación.
+
+El timeline usa referencias a objetos reales; no sintetiza eventos inexistentes.
+
+---
+
+#### 47. Eventos de proceso
+
+La experiencia reconoce seis eventos canónicos de `VPROC-0053`:
+
+```text
+VPROC-0053.EVT-001 receivable-registered
+VPROC-0053.EVT-002 validation-in-progress
+VPROC-0053.EVT-003 collection-scheduled
+VPROC-0053.EVT-004 payment-received
+VPROC-0053.EVT-005 reconciliation-pending
+VPROC-0053.EVT-006 receivable-settled
+```
+
+Los estados intermedios adicionales siguen visibles aunque no cada estado requiera un evento público propio.
+
+---
+
+#### 48. Acciones base de cartera
+
+Las acciones ordinarias consumen los permisos existentes:
+
+```text
+numera.finance.receivables.view
+numera.finance.receivables.register
+numera.finance.receivables.update
+```
+
+La visibilidad de un botón nunca sustituye la revalidación server-side de permiso, recurso, scope, estado y versión.
+
+---
+
+#### 49. Permisos especializados de cobranza
+
+La experiencia consume, cuando corresponda:
+
+```text
+numera.finance.receivable_sensitive_details.view
+numera.finance.collection_interactions.register
+numera.finance.collection_holds.activate
+numera.finance.collection_holds.deactivate
+numera.finance.receivable_promises.register
+```
+
+Un permiso no implica los demás.
+
+---
+
+#### 50. Permisos especializados de acuerdos y aplicaciones
+
+Se consumen de forma atómica:
+
+```text
+numera.finance.receivable_agreements.register
+numera.finance.receivable_agreements.approve
+numera.finance.receivable_agreements.reject
+numera.finance.receivable_applications.register
+numera.finance.receivable_applications.reverse
+```
+
+La experiencia no crea un permiso `manage` genérico.
+
+---
+
+#### 51. Permisos especializados de disputa y salida excepcional
+
+Se consumen:
+
+```text
+numera.finance.receivable_disputes.register
+numera.finance.receivable_disputes.resolve
+numera.finance.receivables.write_off
+numera.finance.receivable_forgiveness.approve
+numera.finance.receivable_forgiveness.reject
+```
+
+Castigo, condonación, disputa y pago siguen semánticamente separados.
+
+---
+
+#### 52. Permisos especializados de crédito
+
+Cuando la UI muestre o decida exposición, límite o excepción, consumirá exactamente:
+
+```text
+numera.finance.credit_exposure.view
+numera.finance.credit_limits.view
+numera.finance.credit_limits.create
+numera.finance.credit_limits.update
+numera.finance.credit_limits.approve
+numera.finance.credit_limits.reject
+numera.finance.credit_exceptions.approve
+numera.finance.credit_exceptions.reject
+```
+
+---
+
+#### 53. Conciliación y navegación relacionada
+
+`VSCREEN-0099` muestra el estado de conciliación de la cuenta, pero la resolución transversal puede navegar a `VSCREEN-0101` y consumir:
+
+```text
+numera.finance.reconciliations.view
+numera.finance.reconciliations.resolve
+numera.finance.reconciliations.reverse
+```
+
+Resolver conciliación no edita la venta, banco, documento o recaudo fuente.
+
+---
+
+#### 54. Caja y bancos como contexto relacionado
+
+Cuando sea necesario explicar un recaudo, `VSCREEN-0099` podrá navegar al movimiento autorizado de `VSCREEN-0100`.
+
+Se conserva:
+
+```text
+PAYMENT_CONFIRMED != BANK_RECONCILED
+BANK_MOVEMENT != RECEIVABLE_APPLICATION
+```
+
+La superficie de cartera no se convierte en módulo bancario.
+
+---
+
+#### 55. Aprobaciones financieras relacionadas
+
+Cuando una acción material requiera decisión segregada, la experiencia podrá enviar el caso a la superficie de aprobación correspondiente sin autoaprobarlo.
+
+Se conserva:
+
+```text
+REGISTER != APPROVE
+PROPOSE != APPROVE
+APPROVE != EXECUTE
+```
+
+---
+
+#### 56. Sensibilidad y minimización
+
+La proyección ordinaria de `VSCREEN-0099` usa `numera.finance.receivables.view` y muestra únicamente datos necesarios para la tarea.
+
+Detalles de mayor exposición requieren `numera.finance.receivable_sensitive_details.view`.
+
+La UI debe evitar exposición innecesaria de:
+
+- documentos personales completos;
+- datos bancarios completos;
+- datos de contacto no requeridos;
+- notas sensibles fuera de propósito;
+- secretos o credenciales.
+
+---
+
+#### 57. Estados vacíos
+
+Se distinguen al menos:
+
+```text
+EMPTY_CLEAR_QUEUE
+EMPTY_NO_MATCH_FOR_FILTERS
+EMPTY_NO_AUTHORIZED_RESOURCES
+EMPTY_DATA_NOT_AVAILABLE
+```
+
+Una bandeja vacía no prueba saldo cero global, cartera inexistente ni conciliación completa.
+
+---
+
+#### 58. Bloqueo por autorización o scope
+
+Si el actor no tiene autoridad efectiva:
+
+- no se enumeran recursos fuera de scope;
+- no se filtra existencia mediante mensajes detallados;
+- se ofrece una ruta segura para cambiar alcance o solicitar acceso cuando corresponda;
+- no se degrada a una vista parcialmente sensible por conveniencia.
+
+---
+
+#### 59. Concurrencia y versión stale
+
+Toda acción material deberá revalidar la versión esperada.
+
+Ante versión stale:
+
+```text
+STALE_RESOURCE_VERSION = DENY_AND_REEVALUATE
+```
+
+La UI deberá ofrecer recarga/comparación antes de repetir una mutación.
+
+---
+
+#### 60. Resultado externo incierto
+
+Ante timeout o estado externo incierto relacionado con recaudo, banco o proveedor:
+
+```text
+RESULT_UNKNOWN != SUCCESS
+RESULT_UNKNOWN != FAILURE
+```
+
+La experiencia deberá priorizar `CHECK_STATUS` o conciliación antes de permitir un retry empresarial que pueda duplicar efecto.
+
+---
+
+#### 61. Idempotencia
+
+Registro, aplicación, reversión, importes y decisiones no podrán duplicarse por retry.
+
+La UI deberá conservar la correlación/idempotency key cuando el contrato técnico la exponga como referencia diagnóstica autorizada, sin convertirla en un campo editable de negocio.
+
+---
+
+#### 62. Error de validación
+
+Cuando una acción falle validación, la interfaz deberá:
+
+- conservar el borrador seguro;
+- identificar el campo o precondición inválida;
+- no cambiar el estado financiero confirmado;
+- permitir corregir y reenviar solo cuando corresponda.
+
+---
+
+#### 63. Error parcial
+
+Un resultado parcial no se presenta como éxito global.
+
+Ejemplos:
+
+- aplicación parcial con residual;
+- acuerdo registrado pero pendiente de aprobación;
+- recaudo confirmado pero conciliación pendiente;
+- castigo aprobado pero efecto contable externo no confirmado cuando aplique.
+
+Cada parte conserva estado propio.
+
+---
+
+#### 64. Recuperación
+
+La recuperación de `VSCREEN-0099` deberá privilegiar:
+
+```text
+CHECK_STATUS
+COMPARE_VERSIONS
+FIX_VALIDATION
+RETRY_SAFE_READ
+RECONCILE
+ESCALATE_TO_FINANCE_OWNER
+```
+
+La pantalla no podrá fabricar un saldo para salir de un error.
+
+---
+
+#### 65. Auditoría de acciones materiales
+
+Toda acción material deberá dejar evidencia suficiente de:
+
+- actor;
+- permiso evaluado;
+- recurso;
+- scope;
+- versión;
+- intención;
+- decisión;
+- comando;
+- resultado;
+- before/after minimizado cuando aplique;
+- motivo obligatorio cuando corresponda;
+- correlación y evidencia relacionada.
+
+---
+
+#### 66. Reporting y exportación
+
+Consultar cartera no concede exportación.
+
+Se conserva:
+
+```text
+VIEW != EXPORT
+```
+
+Las exportaciones financieras permanecen gobernadas por `VSCREEN-0106` y su permiso propietario. `VSCREEN-0099` no inventa una descarga masiva paralela.
+
+---
+
+#### 67. Métricas operativas de experiencia
+
+La implementación posterior deberá poder medir, sin exponer datos sensibles innecesarios:
+
+- tiempo para identificar cartera prioritaria;
+- tiempo para localizar origen y vencimiento;
+- tiempo para registrar una gestión;
+- tiempo para aplicar un recaudo válido;
+- tasa de recaudos no aplicados;
+- tasa de casos con diferencia;
+- tasa de acuerdos pendientes de decisión;
+- tasa de promesas vencidas;
+- errores por versión stale;
+- retries evitados por consulta de estado.
+
+Estas métricas no cambian el contrato financiero.
+
+---
+
+#### 68. Casos representativos de validación
+
+La experiencia se considera suficientemente especificada cuando soporta al menos los siguientes escenarios contractuales:
+
+1. cuenta abierta no vencida;
+2. cuenta vencida sin gestión;
+3. varias cuotas con vencimientos distintos;
+4. pago parcial correctamente aplicado;
+5. un recaudo distribuido entre varias cuotas;
+6. varios recaudos aplicados a una cuenta;
+7. recaudo confirmado y no aplicado;
+8. sobrepago con excedente visible;
+9. anticipo previo a la cuenta;
+10. reversión de aplicación;
+11. promesa de pago pendiente;
+12. promesa incumplida;
+13. propuesta de acuerdo pendiente;
+14. acuerdo aprobado versionado;
+15. acuerdo rechazado sin alterar cuenta;
+16. disputa abierta sobre importe parcial;
+17. hold de cobranza activo;
+18. hold levantado conservando historia;
+19. exposición calculada distinta del saldo;
+20. límite no definido sin tratarlo como ilimitado;
+21. propuesta de límite pendiente;
+22. excepción de crédito pendiente;
+23. castigo autorizado conservando la cuenta original;
+24. condonación diferenciada del castigo;
+25. cuenta cancelada por causa autorizada distinta del pago;
+26. recaudo confirmado pero banco no conciliado;
+27. diferencia de conciliación con navegación a `VSCREEN-0101`;
+28. resultado externo incierto que exige consulta de estado;
+29. versión stale antes de aplicar un recaudo;
+30. intento de acción sin permiso efectivo;
+31. intento de ver detalle sensible sin permiso específico;
+32. filtro sin resultados que no se interpreta como saldo cero;
+33. multimoneda con contexto FX aprobado;
+34. multimoneda sin contexto FX que bloquea aplicación;
+35. evento tardío en periodo protegido;
+36. cuenta liquidada sin borrar venta, cliente ni evidencia.
+
+```text
+VALIDATION_SCENARIO_COUNT = 36
+```
+
+---
+
+#### 69. Decisiones congeladas
+
+Queda congelado:
+
+```text
+NUMERA_RECEIVABLES_COLLECTION_EXPERIENCE = NUMERA-RECEIVABLES-COLLECTION-EXPERIENCE-001
+PRIMARY_SCREEN = VSCREEN-0099
+PRIMARY_PROCESS = VPROC-0053
+PRIMARY_STEP = VPROC-0053::STEP-MANAGE_RECEIVABLE
+PROCESS_STATE_COUNT = 9
+PROCESS_EVENT_COUNT = 6
+OBJECT_STATUS_COUNT = 8
+VALIDATION_SCENARIO_COUNT = 36
+RECEIVABLES_SCREEN_COUNT_CREATED = 0
+GENERIC_MANAGE_PERMISSION_CREATED = 0
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+PAYMENT_CONFIRMED_IS_BANK_RECONCILED = NO
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+UNAPPLIED_PAYMENT_MUST_REMAIN_VISIBLE = YES
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+PROMISE_TO_PAY_IS_PAYMENT = NO
+PROMISE_TO_PAY_IS_PAYMENT_AGREEMENT = NO
+PAYMENT_AGREEMENT_PRESERVES_PRIOR_SCHEDULE = YES
+COLLECTION_HOLD_IS_RECEIVABLE_CANCEL = NO
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+OPEN_RECEIVABLE_BALANCE_IS_CREDIT_EXPOSURE = NO
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+WRITE_OFF_IS_PAYMENT = NO
+WRITE_OFF_IS_FORGIVENESS = NO
+RECEIVABLE_SETTLED_IS_PERIOD_CLOSED = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+SOURCE_DOMAIN_OWNERSHIP_PRESERVED = YES
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 70. Hallazgos y propietarios de salida
+
+| Hallazgo pendiente | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| cartera todavía no está materializada en runtime | no | implementación E5 aplicable | `VSCREEN-0099`, contratos y backend se materializan y certifican con evidencia |
+| permisos 014 permanecen `CONTRACT_DEFINED_PENDING_MATERIALIZATION` | no | implementación de autorización aplicable | claves exactas quedan materializadas y probadas server-side |
+| integración bancaria real puede no estar disponible | no | integración financiera aplicable | recaudos/movimientos se correlacionan con fuente autorizada e idempotente |
+| políticas concretas de crédito pueden permanecer sin parámetros | no | Dirección + contrato de política aplicable | límites, scope y vigencia quedan aprobados |
+| buckets de aging pueden no estar configurados | no | política financiera aplicable | política/version/buckets quedan definidos |
+| canales concretos de cobranza pueden requerir reglas adicionales | no | owner operativo/privacidad aplicable | canal, finalidad, restricciones y evidencia quedan aprobados |
+| tratamiento contable/fiscal del castigo o condonación permanece externo/condicionado | no | `NUMERA-UX-027` + autoridad profesional aplicable | integración o decisión contable/fiscal verificable queda definida |
+
+No queda pendiente narrativo sin owner y condición de salida.
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+La tarea desarrolla experiencia y decisiones ya exigidas por cobertura vigente de cartera, pagos, aplicación, acuerdos, crédito, autorización, conciliación e idempotencia; no introduce una obligación verificable nueva.
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+La trazabilidad reutiliza, sin modificar el Registro 04A:
+
+- `TREQ-NUMERA-001` para reconciliación, trazabilidad y separación de permisos;
+- `TREQ-NUMERA-002` para identidad, periodo, corrección y lineage económico;
+- `TREQ-NUMERA-003` para cartera, cuotas, vencimientos, pagos, aplicaciones, acuerdos, promesas, disputas, aging, exposición, cobranza, castigos, bancos y segregación;
+- `TREQ-INTEGRATION-010` para compra/recepción/obligación cuando una referencia financiera dependa de integración;
+- `TREQ-INTEGRATION-014` para hechos y efectos financieros correlacionados;
+- `TREQ-INTEGRATION-017` para idempotencia y conciliación financiera entre aplicaciones y proveedores;
+- `TREQ-AUTH-013` y `TREQ-AUTH-015` para revalidación server-side, scope, sensibilidad y evidencia.
+
+Esta sección es cobertura heredada y no representa cambios al registro.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | esta tarea documental no ejecuta build de producto durante su preparación |
+| LOCAL | NOT_EXECUTED | el reemplazo y los validadores del checkout del usuario se ejecutarán durante la incorporación documental gobernada |
+| REMOTA | PASS | se verificaron `vento-shell/main`, protocolo, contrato de entrega, continuidad, topología, archivo propietario, `NUMERA-DOM-016`, `NUMERA-AUTH-014`, `VPROC-0053`, `VSCREEN-0099`, estados y eventos canónicos de cartera, contratos de pantalla y Registro 04A vigente |
+| OPERATIVA | NOT_EXECUTED | no se registraron cuentas, recaudos, aplicaciones, acuerdos, cobros, límites, castigos, conciliaciones ni efectos financieros reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la tarea no genera instancia física propia |
+
+---
+
+#### 74. Criterios de aceptación
+
+`NUMERA-UX-026` queda aceptable cuando:
+
+1. conserva `VSCREEN-0099` como única superficie propietaria de cartera;
+2. conserva `VPROC-0053` como proceso propietario;
+3. conserva `VPROC-0053::STEP-MANAGE_RECEIVABLE` como paso dominante;
+4. no crea una pantalla nueva para cuotas, aging, acuerdos o cobranza;
+5. representa los nueve estados del lifecycle sin renombrarlos;
+6. representa los ocho estados del objeto cuenta sin fusionarlos con el lifecycle;
+7. conserva los seis eventos canónicos de proceso;
+8. cliente, deudor y cuenta PASS permanecen distintos;
+9. cuenta, documento, cuota, vencimiento y saldo permanecen distintos;
+10. la entidad legal acreedora es explícita;
+11. la identidad estable no depende de factura, nombre, saldo o estado;
+12. el saldo abierto es reproducible y no editable como agregado;
+13. una bandeja vacía no equivale a saldo cero global;
+14. aging usa fecha de corte explícita;
+15. no se inventan buckets universales;
+16. pago recibido permanece distinto de pago aplicado;
+17. recaudo no aplicado permanece visible;
+18. una aplicación parcial conserva residual;
+19. aplicaciones múltiples usan líneas trazables;
+20. reversar una aplicación conserva la original;
+21. anticipos y saldos a favor no se representan como cuenta negativa;
+22. sobrepago conserva excedente explicado;
+23. multimoneda exige contexto FX aprobado;
+24. promesa no equivale a pago;
+25. promesa no equivale a acuerdo;
+26. acuerdo conserva versiones y cronograma anterior;
+27. registrar acuerdo no equivale a aprobarlo;
+28. la gestión de cobranza conserva evidencia de contacto;
+29. un hold no cancela cuenta ni elimina aging;
+30. disputa permanece distinta de diferencia de conciliación;
+31. resolver disputa no permite ajuste libre de saldo;
+32. exposición permanece distinta de saldo abierto;
+33. `null` no equivale a crédito ilimitado;
+34. límite de crédito usa propuesta y decisión versionadas;
+35. excepción de crédito no sobrescribe silenciosamente el límite;
+36. castigo permanece distinto de pago y condonación;
+37. condonación requiere decisión explícita;
+38. cancelación permanece distinta de liquidación;
+39. liquidación exige saldo final explicado;
+40. liquidar cuenta no borra venta, cliente, factura ni evidencia;
+41. `VSCREEN-0100` permanece propietario de contexto bancario/tesorería;
+42. `VSCREEN-0101` permanece propietario de resolución transversal de conciliación de ventas/pagos;
+43. `VSCREEN-0097` puede recibir decisiones segregadas sin que `VSCREEN-0099` autoapruebe;
+44. `VSCREEN-0106` conserva exportación financiera;
+45. `receivables.view`, `register` y `update` permanecen capacidades separadas;
+46. los permisos especializados de `NUMERA-AUTH-014` se consumen de forma atómica;
+47. no se crea un permiso `manage` nuevo;
+48. detalle sensible exige permiso especializado;
+49. secretos y credenciales nunca se proyectan como dato de negocio;
+50. toda mutación revalida permiso, recurso, scope, estado y versión server-side;
+51. versión stale falla cerrada y exige relectura;
+52. resultado externo incierto exige consulta o conciliación antes de retry empresarial;
+53. retries no duplican aplicaciones ni decisiones;
+54. errores parciales no se presentan como éxito global;
+55. la recuperación no fabrica saldo ni estado;
+56. auditoría conserva actor, permiso, recurso, versión, intención, decisión y resultado;
+57. view no concede exportación;
+58. no se crean ni modifican requisitos de prueba;
+59. no se realizan cambios físicos;
+60. los 36 escenarios representativos quedan cubiertos por el contrato;
+61. los hallazgos pendientes tienen owner y condición de salida;
+62. `NUMERA-UX-027` recibe una frontera financiera operativa cerrada sin convertir cartera en contabilidad formal.
+
+---
+
+#### 75. Límites
+
+Esta tarea no:
+
+- crea cartera real;
+- importa saldos;
+- crea deudores;
+- registra recaudos reales;
+- aplica pagos reales;
+- ejecuta cobranza real;
+- envía mensajes, correos o llamadas;
+- fija políticas comerciales de crédito;
+- fija límites numéricos;
+- fija buckets universales de aging;
+- fija intereses, penalidades o recargos;
+- determina efectos jurídicos de mora, castigo o condonación;
+- ejecuta castigos o condonaciones;
+- modifica ventas PULSO;
+- modifica clientes PASS;
+- edita extractos bancarios;
+- emite documentos fiscales;
+- crea asientos contables;
+- define el diseño de contabilidad formal reservado a `NUMERA-UX-027`;
+- crea permisos runtime;
+- crea rutas o componentes físicos;
+- crea tablas, vistas, funciones, RPC, RLS, triggers o migraciones;
+- modifica Supabase;
+- modifica Registro 04A;
+- desarrolla `NUMERA-UX-027`.
+
+---
+
+#### 76. Handoff a NUMERA-UX-027
+
+La siguiente tarea recibe:
+
+```text
+NUMERA_RECEIVABLES_COLLECTION_EXPERIENCE = NUMERA-RECEIVABLES-COLLECTION-EXPERIENCE-001
+PRIMARY_SCREEN = VSCREEN-0099
+PRIMARY_PROCESS = VPROC-0053
+PRIMARY_STEP = VPROC-0053::STEP-MANAGE_RECEIVABLE
+RECEIVABLES_OWNER = NUMERA
+RECEIVABLES_SCREEN_COUNT_CREATED = 0
+PAYMENT_RECEIVED_IS_PAYMENT_APPLIED = NO
+PAYMENT_CONFIRMED_IS_BANK_RECONCILED = NO
+RECEIVABLE_IS_ACCOUNTING_ENTRY = NO
+PAYMENT_APPLICATION_IS_ACCOUNTING_POSTING = NO
+WRITE_OFF_IS_ACCOUNTING_ENTRY_BY_DEFAULT = NO
+SOURCE_DOMAIN_OWNERSHIP_PRESERVED = YES
+RECEIVABLE_DOCUMENT_INSTALLMENT_DUE_DATE_BALANCE = DISTINCT
+CUSTOMER_DEBTOR_PASS_ACCOUNT_ACCOUNTING_THIRD_PARTY = DISTINCT
+UNAPPLIED_PAYMENT_MUST_REMAIN_VISIBLE = YES
+GENERIC_MANUAL_BALANCING_ADJUSTMENT = FORBIDDEN
+PARTIAL_APPLICATION_REQUIRES_REMAINING_BALANCE = YES
+PROMISE_TO_PAY_IS_PAYMENT = NO
+PROMISE_TO_PAY_IS_PAYMENT_AGREEMENT = NO
+PAYMENT_AGREEMENT_PRESERVES_PRIOR_SCHEDULE = YES
+DISPUTE_PAYMENT_WRITE_OFF_FORGIVENESS_RECONCILIATION_DIFFERENCE = DISTINCT
+OPEN_RECEIVABLE_BALANCE_IS_CREDIT_EXPOSURE = NO
+NULL_CREDIT_LIMIT_IS_UNLIMITED_CREDIT = NO
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+ACCOUNTING_MAPPING_OWNER = NUMERA_DOM_017
+ACCOUNTING_OR_FISCAL_EXPERIENCE_OWNER = NUMERA_UX_027
+TREQ_CHANGES = 0
+```
+
+`NUMERA-UX-027` deberá diseñar la extensión o integración contable y fiscal consumiendo cartera, recaudos, aplicaciones, castigos y conciliación como objetos financieros ya estabilizados, sin convertirlos en asientos por inferencia ni duplicar hechos operativos.
+
+---
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NUMERA-UX-025 — Aprobar alcance financiero antes de completar implementación`
+
+**TAREA ACTUAL APROBADA**
+`NUMERA-UX-026 — Diseñar cartera, vencimientos, recaudos, aplicación, acuerdos y gestión de cobro`
+
+**SIGUIENTE TAREA RESERVADA**
+`NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos`
 ### [ ] NUMERA-UX-027 — Diseñar extensión o integración contable y fiscal sin duplicar hechos operativos
 ### [ ] NUMERA-UX-028 — Diseñar visor económico dinámico de una sola pantalla, simple, comparativo y con divulgación progresiva
