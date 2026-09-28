@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1450** |
+| Tareas aprobadas | **1451** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **146** |
+| Tareas no iniciadas | **145** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **90.85% (1450/1596)** |
+| Porcentaje de completamiento | **90.91% (1451/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO** |
-| Tarea actual | **NUMERA-UX-015 — Evitar registro financiero duplicado** |
+| Última tarea aprobada | **NUMERA-UX-015 — Evitar registro financiero duplicado** |
+| Tarea actual | **NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección** |
+| Siguiente tarea | **NUMERA-UX-017 — Diseñar conciliación de ventas y pagos** |
 | Bloque actual | **BLOQUE O — NUMERA** |
-| Progreso del bloque | **BLOQUE O: 60 de 74 aprobadas; NUMERA-UX-015 pendiente** |
+| Progreso del bloque | **BLOQUE O: 61 de 74 aprobadas; NUMERA-UX-016 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NUMERA-UX-015** |
+| Carril documental | **ACTIVO — NUMERA-UX-016** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NUMERA-UX-014` — Consumir eventos de PULSO, ORIGO, FOGO y NEXO |
-| Tarea actual | `NUMERA-UX-015` — Evitar registro financiero duplicado — **NO INICIADA** |
-| Siguiente tarea | `NUMERA-UX-016` — Validar el prototipo con contabilidad y dirección |
+| Última aprobada | `NUMERA-UX-015` — Evitar registro financiero duplicado |
+| Tarea actual | `NUMERA-UX-016` — Validar el prototipo con contabilidad y dirección — **NO INICIADA** |
+| Siguiente tarea | `NUMERA-UX-017` — Diseñar conciliación de ventas y pagos |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE O: 60 DE 74 APROBADAS — ACTUAL NUMERA-UX-015** |
+| CONTINUIDAD ACTIVA | **BLOQUE O: 61 DE 74 APROBADAS — ACTUAL NUMERA-UX-016** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NUMERA-UX-014 — Consumir eventos de PULSO, ORIGO, FOGO y NEXO
-        ↓
-TAREA ACTUAL
 NUMERA-UX-015 — Evitar registro financiero duplicado
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NUMERA-UX-016 — Validar el prototipo con contabilidad y dirección
         ↓
+SIGUIENTE TAREA RESERVADA
+NUMERA-UX-017 — Diseñar conciliación de ventas y pagos
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE O — 60 de 74 tareas aprobadas
+BLOQUE O — 61 de 74 tareas aprobadas
 ```
