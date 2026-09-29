@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1478** |
+| Aprobadas | **1479** |
 | En propuesta | **0** |
-| No iniciadas | **118** |
+| No iniciadas | **117** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **92.61% (1478/1596)** |
+| Porcentaje de completamiento | **92.67% (1479/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **118** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1379** |
+| ⏸ NO_EVALUADA | **117** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1380** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-014` — Mostrar origen de permisos de forma comprensible | ✅ APROBADA |
-| Tarea actual | `VISO-UX-015` — Mostrar conflictos antes de guardar | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-016` — Permitir vista previa exacta de cada trabajador | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-015` — Mostrar conflictos antes de guardar | ✅ APROBADA |
+| Tarea actual | `VISO-UX-016` — Permitir vista previa exacta de cada trabajador | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-017` — Evitar duplicar configuración propia de otras aplicaciones | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -727,7 +727,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-012` | Definir inicio para contador | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-013` | Limitar información según alcance territorial | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-014` | Mostrar origen de permisos de forma comprensible | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-015` | Mostrar conflictos antes de guardar | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-015` | Mostrar conflictos antes de guardar | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-016` | Permitir vista previa exacta de cada trabajador | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-017` | Evitar duplicar configuración propia de otras aplicaciones | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-018` | Enlazar a la aplicación propietaria cuando corresponda | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
