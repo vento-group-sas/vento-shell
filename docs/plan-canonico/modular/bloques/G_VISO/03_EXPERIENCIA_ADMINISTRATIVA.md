@@ -31270,7 +31270,1573 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-015 — Mostrar conflictos antes de guardar`
-### [ ] VISO-UX-015 — Mostrar conflictos antes de guardar
+### ✅ VISO-UX-015 — Mostrar conflictos antes de guardar
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-014 — Mostrar origen de permisos de forma comprensible
+**Tarea siguiente:** VISO-UX-016 — Permitir vista previa exacta de cada trabajador
+**Tipo de tarea:** definición técnico-documental del patrón transversal de presentación prospectiva de conflictos antes de guardar o publicar en VISO; establece jerarquía visual, comparación entre estado vigente y propuesta, distinción entre bloqueo y revisión, evidencia, territorio, vigencia, alcance afectado, consecuencias, ownership de resolución, accesibilidad y revalidación server-side, consumiendo la semántica canónica de conflictos de autorización ya aprobada y la presentación requerida para conflictos de programación sin inventar reglas todavía reservadas a `VISO-SCH-006`, conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato transversal de presentación de conflictos pre-save definido para superficies administrativas de VISO; la implementación física actual permanece AS-IS y requiere materialización posterior por `implementation_unit_id` para consumir resultados canónicos de validación y conflicto, recalcularlos en servidor inmediatamente antes de mutar y presentar las diferencias sin convertir la UI en fuente de verdad
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, componentes, rutas, guards, permisos, matrices, contratos de autorización, reglas de programación, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo VISO debe **mostrar un conflicto antes de guardar o publicar** cuando una modificación administrativa produce, agrava o reactiva una incompatibilidad dentro del alcance afectado.
+
+La experiencia debe permitir responder, antes de una mutación autoritativa:
+
+```text
+¿QUÉ EXISTE AHORA?
+¿QUÉ CAMBIO SE PROPONE?
+¿CÓMO QUEDARÍA EL ESTADO PROYECTADO?
+¿QUÉ REGLA, LÍMITE O RELACIÓN SE INCUMPLIRÍA?
+¿QUÉ SUJETOS, PERMISOS, TERRITORIOS, FECHAS O RECURSOS QUEDAN AFECTADOS?
+¿EL HALLAZGO BLOQUEA O SOLO REQUIERE REVISIÓN?
+¿QUÉ CONSECUENCIA TENDRÍA CONTINUAR?
+¿QUIÉN ES PROPIETARIO DE LA CORRECCIÓN?
+```
+
+La regla raíz es:
+
+```text
+SNAPSHOT VIGENTE
++
+CAMBIO PROPUESTO
+→
+SNAPSHOT PROSPECTIVO
+→
+VALIDACIÓN CANÓNICA EN SERVIDOR
+→
+HALLAZGOS TIPADOS
+→
+PRESENTACIÓN COMPRENSIBLE
+→
+GUARDAR | BLOQUEAR | REVISAR
+```
+
+La UI no decide por sí misma si existe conflicto.
+
+#### 2. Handoff recibido de `VISO-UX-014`
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` entrega un patrón donde las fuentes de autorización ya pueden explicarse por permiso exacto sin recomputar autoridad.
+
+`VISO-UX-015` reutiliza esa explicación cuando un conflicto de autorización necesita mostrar qué grants, denies, carriles, scopes, restricciones o bloqueos participaron.
+
+La existencia de varias fuentes no se convierte automáticamente en conflicto.
+
+#### 3. Handoff recibido de `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` separa territorio autorizado, filtros de interfaz y territorio real del recurso.
+
+Esta tarea conserva esa separación al mostrar conflictos:
+
+- territorio del conflicto no se deriva del filtro visible;
+- sede seleccionada no concede autoridad para resolver;
+- área seleccionada no amplía el alcance;
+- un conflicto fuera del alcance autorizado no puede exponer detalle sensible;
+- comparar dos territorios exige autorización sobre la información presentada de ambos lados.
+
+#### 4. Handoff recibido de `VISO-AUTH-016`
+
+`VISO-AUTH-016 — Mostrar conflictos de configuración` es la fuente semántica vinculante para conflictos de autorización.
+
+La UX consume hallazgos que pueden conservar conceptualmente:
+
+```text
+conflict_reference
+snapshot_reference
+detected_at
+affected_subjects
+app_code
+permission_key
+lanes
+scopes
+source_references
+source_versions
+canonical_rule
+existing_reason_codes
+blocking_effect
+resolution_owner
+```
+
+La interfaz no crea un nuevo enum público de conflictos ni reinterpreta esas propiedades.
+
+#### 5. Frontera con `VISO-SCH-006`
+
+El owner del minibloque exige que `VISO-UX-015` pueda mostrar en programación:
+
+```text
+actual
+nuevas
+proyectado
+límite
+solapamientos
+territorio
+fechas movidas
+consecuencia
+```
+
+Sin embargo, `VISO-SCH-006 — Definir conflictos, integridad, concurrencia y recuperación` conserva la propiedad de la política detallada de solapamientos, disponibilidad, descansos, límites, territorio, concurrencia, idempotencia, rollback, estado parcial y corrección versionada.
+
+Por tanto, esta tarea define **la forma de presentación** de esos resultados cuando exista un resultado canónico aguas arriba, pero no inventa reglas de programación todavía no aprobadas.
+
+#### 6. Fuentes vinculantes
+
+Esta tarea consume, sin redefinir:
+
+- `VISO-AUTH-015` — procedencia de permisos;
+- `VISO-AUTH-016` — semántica de conflictos de configuración;
+- `VISO-UX-013` — presentación territorial;
+- `VISO-UX-014` — procedencia comprensible;
+- `TREQ-VISO-001` — efecto antes de guardar, conflicto, origen y territorio;
+- `TREQ-VISO-038` — recálculo server-side inmediatamente antes de guardar o publicar;
+- el owner `03_EXPERIENCIA_ADMINISTRATIVA.md`, que exige la presentación `actual / nuevas / proyectado / límite / solapamientos / territorio / fechas movidas / consecuencia`;
+- `VISO-SCH-006` únicamente como **owner reservado** de la semántica futura de conflictos de programación, no como contrato ya desarrollado.
+
+#### 7. Naturaleza, topología y gate
+
+```text
+TASK = VISO-UX-015
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_PATTERN = VISO-UX-015::<implementation_unit_id>
+DOCUMENTARY_MUTATION = NONE
+PHYSICAL_MUTATION = NONE
+```
+
+La tarea define un patrón de experiencia reutilizable. La materialización futura deberá consumir resultados server-side y no inferir conflicto desde componentes, colores, filas visibles o validaciones exclusivamente cliente.
+
+#### 8. Contrato transversal de presentación pre-save
+
+```text
+VISO_CONFLICT_PRESAVE_PRESENTATION_CONTRACT = VISO-CONFLICT-PRESAVE-PRESENTATION-001
+AUTH_CONFLICT_SEMANTICS_OWNER = VISO-AUTH-016
+SCHEDULE_CONFLICT_SEMANTICS_OWNER = VISO-SCH-006
+SERVER_REVALIDATION_BEFORE_MUTATION = REQUIRED
+CURRENT_STATE_VISIBLE = REQUIRED
+PROPOSED_CHANGE_VISIBLE = REQUIRED
+PROJECTED_STATE_VISIBLE = REQUIRED
+CONFLICT_SCOPE_VISIBLE = REQUIRED
+BLOCKING_VS_REVIEW_VISIBLE = REQUIRED
+RESOLUTION_OWNER_VISIBLE = REQUIRED
+COLOR_ONLY_SEMANTICS = FORBIDDEN
+UI_DECIDES_CONFLICT = NO
+UI_AUTO_REPAIRS_CONFLICT = NO
+TREQ_CHANGES = 0
+```
+
+#### 9. Unidad de interacción
+
+La unidad mínima de presentación es un **hallazgo prospectivo correlacionable con la mutación propuesta**.
+
+No se admite un aviso genérico como:
+
+```text
+Hay conflictos.
+```
+
+sin indicar qué cambia, qué regla resulta afectada, qué alcance participa y cuál es la consecuencia.
+
+#### 10. Planos obligatorios de comparación
+
+Toda experiencia pre-save debe separar visual y semánticamente:
+
+```text
+ESTADO ACTUAL
+CAMBIO PROPUESTO
+ESTADO PROYECTADO
+```
+
+La comparación no implica que el cliente calcule el estado proyectado; puede representarlo únicamente después de recibir una proyección válida del servidor o del evaluador canónico aplicable.
+
+#### 11. Estado actual
+
+`ESTADO ACTUAL` representa el snapshot vigente contra el cual se evalúa la propuesta.
+
+Debe poder mostrar, según el dominio:
+
+- asignación actual;
+- permiso o efecto actual;
+- scope actual;
+- territorio actual;
+- vigencia actual;
+- fechas u horarios actuales;
+- límite vigente;
+- versión o referencia del snapshot cuando sea necesaria para concurrencia.
+
+No se reconstruye a partir de valores stale del formulario.
+
+#### 12. Cambio propuesto
+
+`CAMBIO PROPUESTO` identifica exclusivamente lo que el usuario intenta modificar.
+
+La UX debe distinguir:
+
+- altas;
+- bajas;
+- cambios de valor;
+- cambios de territorio;
+- cambios de scope;
+- cambios de vigencia;
+- fechas movidas;
+- bloques añadidos o retirados;
+- fuentes propuestas dentro de una simulación.
+
+Un campo sin cambios no debe presentarse como novedad.
+
+#### 13. Estado proyectado
+
+`ESTADO PROYECTADO` representa el resultado que tendría el snapshot si la propuesta se aplicara y superara validación.
+
+No equivale a estado persistido.
+
+Debe llevar una marca permanente como:
+
+```text
+PROYECTADO — TODAVÍA NO GUARDADO
+```
+
+cuando la diferencia entre real y prospectivo sea material.
+
+#### 14. Clasificación administrativa visible
+
+La experiencia reconoce al menos las dos clasificaciones administrativas aprobadas por `VISO-AUTH-016`:
+
+```text
+BLOQUEANTE
+REVISIÓN
+```
+
+`BLOQUEANTE` impide continuar con la mutación afectada.
+
+`REVISIÓN` informa deuda, redundancia o historia que merece reconciliación sin convertirla automáticamente en bloqueo global.
+
+#### 15. Lo que no debe etiquetarse como conflicto
+
+La UX no presentará como conflicto, por el solo hecho de existir:
+
+- un deny válido;
+- default deny;
+- ausencia de grant;
+- dos grants compatibles;
+- dos denies compatibles;
+- varios scopes positivos válidos;
+- varias sedes asignadas;
+- perfil distinto del rol del turno válido;
+- deuda histórica fuera de vigencia;
+- fuente simulada que permanece simulada;
+- allow y deny en carriles diferentes cuando la modalidad los admite.
+
+#### 16. Deny válido
+
+Un deny válido se presenta mediante la explicación de procedencia de `VISO-UX-014`.
+
+No recibe un badge de conflicto a menos que el evaluador canónico produzca además un hallazgo de configuración incompatible.
+
+#### 17. Default deny
+
+Default deny se mantiene separado de conflicto.
+
+Mensaje admisible:
+
+```text
+No existe una concesión suficiente para esta operación.
+```
+
+Mensaje no admisible:
+
+```text
+Conflicto: el rol lo bloquea.
+```
+
+si no existe ese conflicto en la evaluación canónica.
+
+#### 18. Contradicción exacta
+
+Cuando el evaluador detecte una contradicción exacta como `permission_assignment_conflict`, la presentación debe mostrar al menos:
+
+- sujeto afectado;
+- permiso exacto;
+- carril o carriles;
+- scope;
+- periodo solapado cuando aplique;
+- fuentes en contradicción;
+- resultado bloqueante;
+- owner de resolución.
+
+La UI no decide cuál fuente debe ganar.
+
+#### 19. Vigencia temporal
+
+Dos reglas o asignaciones solo deben presentarse como simultáneamente conflictivas cuando el resultado canónico indique solapamiento de vigencia.
+
+Periodos no solapados pueden mostrarse como historia o revisión, no como contradicción simultánea.
+
+#### 20. Territorio
+
+El conflicto debe indicar territorio material cuando participe:
+
+```text
+sede
+área
+tipo de sede
+tipo de área
+relación entre territorios
+```
+
+La UX no corrige silenciosamente un área perteneciente a otra sede ni convierte `null` en wildcard.
+
+#### 21. Scope
+
+Scope y conflicto son dimensiones distintas.
+
+La presentación debe permitir entender:
+
+- qué scope existe;
+- qué dimensión falta o es incompatible;
+- qué regla canónica se incumple;
+- si el problema es bloqueante o de revisión.
+
+El scope más amplio no se presenta como fuente ganadora.
+
+#### 22. Carriles BASE y OPERATIONAL
+
+La UI mantiene separados los carriles `BASE` y `OPERATIONAL`.
+
+No mostrará automáticamente como conflicto:
+
+```text
+BASE_DENY + OPERATIONAL_ALLOW
+```
+
+o:
+
+```text
+BASE_ALLOW + OPERATIONAL_DENY
+```
+
+sin considerar la modalidad canónica del permiso.
+
+#### 23. Modalidad
+
+Cuando el hallazgo dependa de modalidad, la explicación debe conservar si la capacidad es:
+
+```text
+BASE_ONLY
+OPERATIONAL_ONLY
+BASE_OR_OPERATIONAL
+BASE_AND_OPERATIONAL
+```
+
+Una asignación en carril incompatible puede mostrarse como bloqueante cuando así lo determine el evaluador.
+
+#### 24. Identidad de rol
+
+Conflictos de identidad de rol pueden mostrar:
+
+- rol desconocido;
+- rol retirado;
+- rol deprecado;
+- rol inactivo;
+- oficio legacy usado donde se exige rol canónico;
+- versión de rol incompatible.
+
+La UI no convierte un oficio legacy en rol canónico para resolver el problema.
+
+#### 25. Rol por sede
+
+Cuando un rol operativo no sea válido para la sede aplicable, la UX debe mostrar la relación exacta que falla.
+
+No ofrece como corrección automática “usar el primer rol disponible”.
+
+#### 26. Rol por área
+
+Cuando un área exacta participe, la UX conserva:
+
+- identidad del área;
+- sede propietaria;
+- rol involucrado;
+- binding esperado;
+- causa de incompatibilidad.
+
+No mueve el rol a otra área para hacer válido el formulario.
+
+#### 27. AREA_BINDING_UNRESOLVED
+
+`AREA_BINDING_UNRESOLVED` nunca se presenta como cobertura completa de sede.
+
+Debe mostrarse como una condición no resoluble que requiere corrección propietaria cuando afecte una mutación.
+
+#### 28. Turno laboral sin rol
+
+Un turno laboral aplicable sin rol operativo debe conservar la causa canónica cuando el evaluador la produzca.
+
+La UX no propone automáticamente usar:
+
+- rol base;
+- perfil;
+- último rol;
+- único rol disponible;
+- rol de otra sede.
+
+#### 29. Descanso
+
+Un descanso con rol nulo no se presenta como conflicto por ese solo hecho.
+
+La experiencia debe evitar reutilizar mensajes del turno laboral cuando el tipo de bloque no exige rol.
+
+#### 30. Ambigüedad de turnos
+
+Cuando varios turnos efectivos impidan resolver el contexto de forma inequívoca, la UX presenta la ambigüedad sin escoger una fila como ganadora.
+
+La resolución pertenece al flujo propietario de programación o asignación.
+
+#### 31. Duplicado exacto
+
+Un duplicado exacto del mismo efecto puede clasificarse como redundancia o revisión.
+
+La UI no lo presenta automáticamente como contradicción bloqueante.
+
+#### 32. Duplicado incompatible
+
+Un duplicado incompatible puede mostrarse como conflicto cuando el motor canónico determine que dos filas pretenden representar la misma identidad lógica con efectos irreconciliables.
+
+#### 33. Solapamientos positivos
+
+Dos grants positivos con scopes solapados no son conflicto por sí solos.
+
+La visualización no usa “solapamiento” como sinónimo genérico de error.
+
+#### 34. Legacy histórico
+
+La experiencia distingue:
+
+```text
+LEGACY HISTÓRICO SIN EFECTO VIGENTE
+LEGACY REACTIVADO O PROPAGADO
+```
+
+El primero puede requerir revisión.
+
+El segundo debe volver a validarse y puede bloquear si participa en la nueva configuración.
+
+#### 35. No empeorar deuda existente
+
+Aunque una deuda ajena no bloquee toda administración, la UX debe mostrar bloqueo cuando la propuesta:
+
+- la copia;
+- la propaga;
+- amplía su cobertura;
+- prolonga su vigencia;
+- depende de ella;
+- la reactiva;
+- la publica como vigente.
+
+#### 36. Conflictos fuera del alcance afectado
+
+Un conflicto preexistente en otra sede, trabajador, permiso o configuración no tocada se presenta como contexto de revisión únicamente cuando el actor está autorizado a conocerlo.
+
+No produce un freeze universal.
+
+#### 37. Plano real y plano simulado
+
+Los conflictos detectados durante simulación permanecen simulados.
+
+La UI debe marcar permanentemente:
+
+```text
+CONFLICTO SIMULADO
+```
+
+cuando la fuente sea `PROPUESTA` o `SINTÉTICA`.
+
+Un conflicto simulado puede bloquear la propuesta simulada, pero no demuestra que la configuración real ya esté en conflicto.
+
+#### 38. Versiones incompatibles
+
+Si la clasificación depende de datasets o contratos de versiones incompatibles, la experiencia falla cerrado.
+
+No combina silenciosamente resultados de versiones distintas para fabricar un resumen coherente.
+
+#### 39. Snapshot prospectivo
+
+El análisis se hace sobre:
+
+```text
+SNAPSHOT VIGENTE + CAMBIO PROPUESTO
+```
+
+no únicamente sobre la fila editada.
+
+La UI debe poder mostrar que el conflicto aparece como consecuencia de la interacción con otras fuentes o relaciones.
+
+#### 40. Revalidación inmediatamente antes de mutar
+
+El análisis visible antes de guardar es una ayuda de decisión, no una autorización persistente.
+
+Inmediatamente antes de la mutación, el servidor debe volver a validar el snapshot y sus conflictos.
+
+Un análisis stale no autoriza el save.
+
+#### 41. Concurrencia
+
+Si el estado cambia entre la revisión y el guardado, la interfaz debe mostrar que la revisión quedó desactualizada y exigir nueva evaluación.
+
+No conserva un resultado verde o “sin conflictos” después de detectar un cambio concurrente.
+
+#### 42. No reparación automática
+
+La experiencia no corrige automáticamente:
+
+- rol;
+- área;
+- sede;
+- scope;
+- deny;
+- allow;
+- excepción;
+- versión;
+- legacy;
+- duplicado;
+- fecha;
+- turno.
+
+Puede orientar hacia el owner correspondiente, pero la mutación correctiva ocurre en el flujo propietario.
+
+#### 43. Owner de resolución
+
+Cada conflicto visible debe conservar `resolution_owner` o una referencia equivalente al propietario canónico de la corrección.
+
+La UI puede traducirlo a lenguaje humano como:
+
+```text
+Corregir en asignación de área
+Revisar matriz del rol base
+Abrir programación del trabajador
+```
+
+sin inventar una nueva autoridad.
+
+#### 44. Acciones permitidas desde el conflicto
+
+Una tarjeta de conflicto puede ofrecer, según autorización:
+
+- `Revisar detalle`;
+- `Volver al formulario`;
+- `Descartar cambio`;
+- `Abrir configuración propietaria`;
+- `Recalcular`;
+- `Comparar fuentes`.
+
+No ofrece `Forzar`, `Ignorar y guardar` o equivalentes para conflictos bloqueantes salvo que un contrato propietario futuro autorice explícitamente una excepción de negocio.
+
+#### 45. Jerarquía visual
+
+Orden recomendado para un conflicto bloqueante:
+
+```text
+1. BLOQUEO
+2. CONSECUENCIA
+3. QUÉ CAMBIÓ
+4. QUÉ REGLA SE INCUMPLE
+5. ALCANCE AFECTADO
+6. FUENTES / EVIDENCIA
+7. OWNER DE RESOLUCIÓN
+8. ACCIÓN SEGURA
+```
+
+La severidad no depende únicamente de color.
+
+#### 46. Resumen humano
+
+Ejemplo de resumen admisible:
+
+```text
+No se puede guardar este cambio.
+El rol operativo seleccionado no está habilitado para el área de la sede indicada.
+Revisa el rol o la asignación del área antes de continuar.
+```
+
+La frase humana no sustituye los códigos y referencias canónicas disponibles en detalle.
+
+#### 47. Detalle expandido
+
+El detalle expandido puede mostrar:
+
+- permiso o capacidad afectada;
+- sujetos;
+- carriles;
+- scopes;
+- territorio;
+- vigencia;
+- fuentes;
+- reason codes existentes;
+- regla canónica;
+- referencia de conflicto;
+- snapshot;
+- timestamp;
+- owner.
+
+Se aplica minimización según la autoridad del actor.
+
+#### 48. Estados de carga y fallo
+
+La superficie distingue:
+
+```text
+LOADING
+NO_CONFLICTS
+BLOCKING_CONFLICTS
+REVIEW_FINDINGS
+STALE
+NOT_AUTHORIZED
+NOT_AVAILABLE
+PARTIAL
+TECHNICAL_FAILURE
+```
+
+Estas etiquetas describen estados de experiencia; no crean estados públicos de autorización ni de negocio.
+
+#### 49. `NO_CONFLICTS`
+
+`NO_CONFLICTS` solo se muestra después de una evaluación válida del snapshot prospectivo.
+
+No se infiere porque una lista esté vacía antes de terminar la carga.
+
+#### 50. `PARTIAL`
+
+Si la proyección no pudo evaluar todas las dependencias, la UX declara incompletitud.
+
+No traduce `PARTIAL` como “sin conflictos”.
+
+#### 51. `TECHNICAL_FAILURE`
+
+Un error técnico no se presenta como conflicto de negocio ni como denegación.
+
+Debe bloquear la mutación cuando no pueda demostrarse una validación suficiente para guardar con seguridad.
+
+#### 52. Accesibilidad
+
+La información crítica debe ser comprensible sin color.
+
+Cada hallazgo debe disponer de:
+
+- etiqueta textual;
+- encabezado semántico;
+- consecuencia;
+- acción segura;
+- foco navegable;
+- orden consistente;
+- equivalentes accesibles para iconos;
+- lectura correcta por tecnologías de asistencia.
+
+#### 53. Color
+
+El color puede reforzar prioridad, pero nunca sustituye:
+
+```text
+BLOQUEANTE
+REVISIÓN
+SIN CONFLICTOS
+```
+
+La regla explícita del owner se conserva:
+
+```text
+EL COLOR NO SUSTITUYE SERVIDOR
+```
+
+#### 54. Responsive
+
+En pantallas estrechas se conserva como mínimo:
+
+- clasificación;
+- consecuencia;
+- diferencia actual/propuesta;
+- alcance;
+- owner;
+- acción.
+
+No se ocultan datos críticos únicamente en hover.
+
+#### 55. Agrupación
+
+Los hallazgos pueden agruparse por:
+
+- trabajador;
+- permiso;
+- sede;
+- área;
+- fecha;
+- bloque;
+- owner de resolución;
+- clasificación.
+
+La agrupación no fusiona conflictos distintos ni cambia su severidad.
+
+#### 56. Orden
+
+La UI puede ordenar primero `BLOQUEANTE` y luego `REVISIÓN`, manteniendo dentro de cada grupo un orden estable.
+
+No crea un ranking de riesgo que no exista en la fuente canónica.
+
+#### 57. Conteos
+
+Los conteos visibles salen del conjunto de hallazgos autorizados y evaluados.
+
+No cuentan filas físicas globales ni hallazgos fuera del alcance del actor.
+
+#### 58. Minimización
+
+Un conflicto puede requerir ocultar detalles sensibles sin ocultar la existencia del bloqueo.
+
+La experiencia puede mostrar:
+
+```text
+Fuente restringida
+```
+
+si el actor no puede ver el contenido, conservando la consecuencia y owner seguros.
+
+#### 59. Privacidad
+
+La lectura de conflictos no concede acceso general a expedientes, turnos, permisos o datos de terceros.
+
+Todo detalle se autoriza en servidor según actor, territorio, relación, finalidad y sensibilidad.
+
+#### 60. Deep links
+
+Un enlace directo a un conflicto o owner revalida:
+
+- sesión;
+- permiso;
+- territorio;
+- sujeto;
+- recurso;
+- vigencia del hallazgo.
+
+La referencia del conflicto no es un token de autorización.
+
+#### 61. Búsqueda
+
+Buscar hallazgos opera dentro del universo ya autorizado.
+
+No consulta un índice global para luego ocultar filas en cliente.
+
+#### 62. Filtros
+
+Los filtros solo reducen el conjunto autorizado.
+
+`Todos` significa todos los hallazgos autorizados del contexto activo, no todos los conflictos físicos del sistema.
+
+#### 63. Paginación
+
+La paginación ocurre después de aplicar autorización y alcance.
+
+No revela conteos de páginas que permitan inferir hallazgos fuera del alcance.
+
+#### 64. Exportación
+
+Ver un conflicto no concede exportación.
+
+Si una tarea futura incorpora exporte, deberá existir capacidad y minimización propias.
+
+#### 65. Cache
+
+La caché no mezcla:
+
+- actores;
+- territorios;
+- snapshots;
+- planos real y simulado;
+- versiones;
+- propuestas.
+
+Un conflicto calculado para un actor no se reutiliza como autoridad para otro.
+
+#### 66. Frescura
+
+Cambios en cualquiera de estas dimensiones pueden invalidar la presentación:
+
+- grants;
+- denies;
+- rol;
+- perfil;
+- turno;
+- sede;
+- área;
+- binding;
+- scope;
+- recurso;
+- versión;
+- propuesta.
+
+La UI debe mostrar `STALE` y recalcular antes de guardar.
+
+#### 67. Revisión versus bloqueo
+
+`REVISIÓN` no debe verse igual que `BLOQUEANTE`.
+
+Debe quedar claro si el usuario:
+
+- puede continuar porque el hallazgo no afecta la mutación actual;
+- debe corregir antes de continuar;
+- necesita abrir el owner para reconciliar deuda histórica.
+
+#### 68. Consecuencia
+
+Cada hallazgo debe responder “¿qué pasa si continúo?”.
+
+Ejemplos:
+
+```text
+La operación no puede guardarse.
+La propuesta usaría un scope inválido.
+La publicación no puede continuar hasta recalcular.
+La deuda histórica seguirá existiendo, pero este cambio no la modifica.
+```
+
+La consecuencia proviene del contrato aplicable, no de una inferencia visual.
+
+#### 69. Microcopy prohibida
+
+Evitar frases como:
+
+- `Algo salió mal` sin causa;
+- `Hay un conflicto` sin alcance;
+- `Forzar guardado`;
+- `Ignorar restricción`;
+- `El sistema cree que...`;
+- `El rol gana`;
+- `La sede gana`;
+- `El permiso más alto prevalece`;
+- `Todos` para referirse al universo físico global.
+
+#### 70. Microcopy de bloqueo
+
+Patrón:
+
+```text
+No se puede guardar todavía.
+<consecuencia humana>
+<alcance afectado>
+<acción segura>
+```
+
+Debe existir una ruta clara para revisar el detalle sin exigir conocer IDs técnicos.
+
+#### 71. Microcopy de revisión
+
+Patrón:
+
+```text
+Revisión recomendada.
+Este hallazgo no bloquea el cambio actual, pero conserva deuda o redundancia que debe reconciliarse en <owner>.
+```
+
+No se utiliza lenguaje de error bloqueante.
+
+#### 72. Microcopy de concurrencia
+
+Patrón:
+
+```text
+El estado cambió desde la última revisión.
+Vuelve a calcular antes de guardar.
+```
+
+No conserva el botón de guardar habilitado sobre un snapshot stale.
+
+#### 73. Programación — estructura mínima
+
+Cuando el dominio de programación produzca un resultado canónico de conflicto, la presentación debe poder separar:
+
+```text
+ACTUAL
+NUEVAS / CAMBIOS PROPUESTOS
+PROYECTADO
+LÍMITE APLICABLE
+SOLAPAMIENTOS DETECTADOS
+TERRITORIO
+FECHAS MOVIDAS
+CONSECUENCIA
+```
+
+Esta estructura no define cómo se calcula cada campo.
+
+#### 74. Programación — actual
+
+`ACTUAL` representa los bloques, turnos o descansos vigentes relevantes para comparar la propuesta.
+
+La UX no vuelve a consultar únicamente el calendario visible si el servidor entregó un snapshot más preciso.
+
+#### 75. Programación — nuevas
+
+`NUEVAS` representa las filas, bloques o cambios que la operación intenta introducir.
+
+Debe distinguir adición de modificación y eliminación cuando la consecuencia sea diferente.
+
+#### 76. Programación — proyectado
+
+`PROYECTADO` permite comprender cómo quedaría la programación si se aplicara la propuesta.
+
+No se presenta como publicada ni confirmada antes de la mutación.
+
+#### 77. Programación — límite
+
+El límite aplicable se muestra únicamente si proviene de un contrato o resultado canónico.
+
+La UX no inventa límites ni hace hardcode de valores cuya propiedad corresponda a `VISO-SCH-004` o contratos posteriores.
+
+#### 78. Programación — solapamientos
+
+Los solapamientos se visualizan a partir de la detección canónica.
+
+La UI no determina por color que dos bloques se solapan; necesita evidencia server-side o del evaluador propietario.
+
+#### 79. Programación — territorio
+
+La comparación conserva sede y área relevantes.
+
+Mover una fecha o bloque a otro territorio requiere mostrar ambos lados cuando el cambio territorial sea material y el actor pueda consultarlos.
+
+#### 80. Programación — fechas movidas
+
+Cuando una propuesta redistribuya fechas, la UX debe indicar explícitamente:
+
+```text
+FECHA ORIGINAL → FECHA PROPUESTA
+```
+
+No basta resaltar celdas sin explicar qué cambió.
+
+#### 81. Programación — consecuencia
+
+La consecuencia puede indicar que la propuesta:
+
+- no puede guardarse;
+- no puede publicarse;
+- debe volver a revisión;
+- requiere corregir un bloque;
+- quedó stale por concurrencia.
+
+La regla exacta pertenece al contrato propietario de programación.
+
+#### 82. Programación — borrador versus publicación
+
+Guardar borrador y publicar pueden tener condiciones distintas según contratos de programación.
+
+La UX no asume que un hallazgo permitido en borrador sea permitido en publicación ni viceversa.
+
+#### 83. Programación — servidor como autoridad
+
+El frontend puede anticipar información para usabilidad, pero el resultado vinculante se recalcula server-side inmediatamente antes de guardar o publicar.
+
+El color o una validación local no sustituyen ese gate.
+
+#### 84. Autorización — forma mínima
+
+Para configuración de permisos, el conflicto debe poder mostrar:
+
+```text
+PERMISO
+SUJETO
+FUENTES ACTUALES
+CAMBIO PROPUESTO
+FUENTES PROYECTADAS
+CARRIL
+SCOPE
+TERRITORIO
+VIGENCIA
+REGLA INCUMPLIDA
+CONSECUENCIA
+OWNER
+```
+
+#### 85. Autorización — múltiples fuentes
+
+La presencia de varias fuentes se muestra como evidencia, no como conflicto automático.
+
+La clasificación proviene de `VISO-AUTH-016`.
+
+#### 86. Autorización — grant + deny
+
+Cuando exista grant candidato y deny superior, la UX puede mostrar ambos mediante el patrón de origen de 014.
+
+Solo presenta conflicto si además existe un hallazgo canónico de configuración incompatible.
+
+#### 87. Autorización — scope inválido
+
+Un scope inválido o no resoluble puede bloquear.
+
+La UX muestra dimensión faltante o incompatible sin corregirla automáticamente.
+
+#### 88. Autorización — fuente simulada
+
+Una fuente propuesta o sintética nunca se muestra como persistida.
+
+El conflicto hipotético permanece dentro del plano simulado.
+
+#### 89. AS-IS de `/roles-permissions`
+
+La superficie actual `roles-permissions` administra filas de `role_permissions`, scopes y allow/deny por rol mediante `staff.permissions.manage`.
+
+Esa superficie no constituye un motor transversal de conflictos porque no cruza por sí sola matrices base y operativa, overrides, denies, modalidades, perfiles, turnos, bindings, legacy, versiones y simulación.
+
+La futura unidad física deberá consumir un análisis canónico antes de guardar en vez de tratar validaciones locales de formulario como clasificación suficiente.
+
+#### 90. AS-IS de programación mensual
+
+La implementación actual ya contiene validaciones locales/server actions para límite mensual y cruces de turnos o descansos.
+
+Esas comprobaciones son evidencia AS-IS, no autorización para declarar cerrada la semántica futura de `VISO-SCH-006`.
+
+La futura experiencia debe converger en un patrón de presentación común sin inventar reglas nuevas desde la UI.
+
+#### 91. No usar `createAdminClient()` como prueba de seguridad
+
+El uso técnico de un cliente administrativo en servidor no demuestra que el actor humano pueda leer, resolver o ignorar un conflicto.
+
+La autorización del actor y del recurso se evalúa por los guards y contratos aplicables.
+
+#### 92. Revalidación de acciones owner
+
+Cuando la experiencia enlace a otro owner para corregir, la aplicación propietaria debe volver a autorizar la acción.
+
+El origen del deep link no transfiere permisos.
+
+#### 93. Sin override genérico
+
+Esta tarea no crea un mecanismo universal de override.
+
+Si un dominio admite una excepción, deberá provenir de su contrato propietario y conservar autorización, motivo, evidencia, vigencia y auditoría.
+
+#### 94. Sin auto-selección
+
+La experiencia no elige automáticamente:
+
+- otra sede;
+- otra área;
+- otro rol;
+- otro turno;
+- otro scope;
+- otra fecha;
+- otra versión.
+
+Puede mostrar alternativas si el owner las provee como opciones válidas, pero seleccionar sigue siendo una acción explícita.
+
+#### 95. Sin ocultamiento por colapso
+
+Los detalles pueden colapsarse, pero un conflicto bloqueante no puede desaparecer de la vista por defecto dejando habilitado guardar.
+
+#### 96. Focus de validación
+
+Al bloquear un save, la experiencia mueve foco al resumen de conflictos y permite saltar al primer campo o sección relacionada sin perder el contexto general.
+
+#### 97. Formulario
+
+El formulario conserva los valores propuestos mientras el usuario revisa el conflicto, salvo que un contrato propietario exija descartarlos por seguridad.
+
+No borra automáticamente el trabajo del usuario por un hallazgo.
+
+#### 98. Cambios múltiples
+
+Cuando una operación incluya varios cambios, la UX debe poder distinguir:
+
+- cambios válidos;
+- cambios bloqueados;
+- hallazgos de revisión;
+- efectos cruzados.
+
+La atomicidad de persistencia pertenece al owner técnico, no a esta tarea.
+
+#### 99. Operaciones masivas
+
+En una operación masiva, cada fila afectada conserva correlación con sus hallazgos.
+
+Un resumen agregado no sustituye el detalle necesario para saber qué elementos bloquean.
+
+#### 100. Partial failure
+
+Si el contrato propietario permite estado parcial, la UX debe representarlo explícitamente.
+
+Si el contrato exige atomicidad, la UI no presenta éxito parcial inventado.
+
+#### 101. Idempotencia
+
+La interfaz no usa reintentos como mecanismo para saltarse un conflicto.
+
+Un reintento debe recibir la misma evaluación para el mismo snapshot y propuesta, salvo que cambie el estado canónico.
+
+#### 102. Rollback
+
+Cuando un owner soporte rollback, la UX puede enlazar o explicar esa capacidad únicamente si el contrato aplicable la expone.
+
+Esta tarea no define rollback de autorización ni de programación.
+
+#### 103. Auditoría
+
+La presentación conserva referencias suficientes para correlación posterior, pero no implementa el sistema de auditoría.
+
+`VISO-AUTH-018` conserva esa propiedad para seguridad; los dominios propietarios conservan la suya para otros cambios.
+
+#### 104. Telemetría
+
+La futura implementación puede medir:
+
+- conflictos detectados;
+- bloqueos;
+- revisiones;
+- recálculos stale;
+- navegación a owner;
+- abandono de cambios.
+
+La telemetría no puede incluir secretos ni datos sensibles innecesarios.
+
+#### 105. Métricas no autoritativas
+
+Un conteo de conflictos, tasa o tendencia es observabilidad de producto, no una decisión de autorización ni una justificación para relajar reglas.
+
+#### 106. Estados vacíos
+
+Estados vacíos diferenciados:
+
+```text
+SIN CAMBIOS PROPUESTOS
+CAMBIO SIN CONFLICTOS
+SIN AUTORIZACIÓN PARA VER DETALLE
+ANÁLISIS NO DISPONIBLE
+ANÁLISIS INCOMPLETO
+```
+
+No se agrupan bajo “sin conflictos”.
+
+#### 107. Error de validación de formulario versus conflicto
+
+Un campo requerido vacío puede ser un error de formulario sin ser un conflicto canónico.
+
+La UX separa:
+
+```text
+ERROR DE ENTRADA
+CONFLICTO DE CONFIGURACIÓN
+```
+
+cuando la fuente canónica los distingue.
+
+#### 108. Warning versus revisión
+
+Un warning local de usabilidad no se transforma en `REVISIÓN` canónica salvo que exista un hallazgo del evaluador propietario.
+
+#### 109. Reason codes
+
+Cuando existan reason codes canónicos, la UI puede traducirlos a microcopy, pero conserva el código autorizado para detalle y soporte.
+
+No crea reason codes nuevos para resolver ambigüedades de diseño.
+
+#### 110. Regla canónica
+
+`canonical_rule` o referencia equivalente puede mostrarse en detalle técnico autorizado.
+
+El usuario no necesita conocer el ID para entender la consecuencia, pero el sistema debe conservar trazabilidad.
+
+#### 111. Fuente de procedencia
+
+`source_references` se presenta siguiendo el patrón de `VISO-UX-014`.
+
+No se duplica una segunda interfaz de procedencia dentro de cada conflicto; se reutiliza el mismo componente conceptual de explicación.
+
+#### 112. Comparación antes/después
+
+Para cambios complejos se favorece una comparación explícita:
+
+```text
+ANTES | PROPUESTA | PROYECTADO
+```
+
+cuando esa estructura reduce ambigüedad.
+
+En móvil puede apilarse manteniendo el mismo orden semántico.
+
+#### 113. Campos sin cambio
+
+Los campos no modificados pueden ocultarse del resumen de diferencia, pero siguen disponibles en detalle si son necesarios para entender el conflicto.
+
+#### 114. Diferencias derivadas
+
+Una diferencia derivada por la propuesta debe marcarse como `PROYECTADA`, no como edición directa del usuario.
+
+#### 115. Consecuencia indirecta
+
+Si modificar una fuente afecta múltiples trabajadores o permisos, la UX muestra el impacto agregado autorizado y permite profundizar por filas sin afirmar que todos tienen el mismo conflicto.
+
+#### 116. Trabajadores afectados
+
+Los afectados se presentan dentro del alcance autorizado.
+
+Conteos de terceros fuera del alcance pueden generalizarse o restringirse según contrato de minimización.
+
+#### 117. Vista previa integral reservada a 016
+
+`VISO-UX-015` muestra únicamente el contexto necesario para entender y resolver hallazgos de la mutación actual.
+
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador` conserva la experiencia integral de acceso efectivo por trabajador.
+
+Esta tarea no absorbe ese preview completo.
+
+#### 118. Frontera con 017
+
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones` conserva la política UX para no replicar workspaces propietarios.
+
+015 puede indicar `resolution_owner`, pero no decide todavía qué configuración debe permanecer local o externa.
+
+#### 119. Frontera con 018
+
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda` conserva el patrón detallado de handoff y navegación al owner.
+
+015 solo exige que el hallazgo preserve owner y pueda ofrecer una acción segura cuando exista.
+
+#### 120. Frontera con 019
+
+`VISO-UX-019` conserva la divulgación progresiva avanzada de seguridad.
+
+015 define el mínimo necesario para comprender un conflicto, pero no la arquitectura completa de progressive disclosure del módulo.
+
+#### 121. Frontera con 020
+
+`VISO-UX-020` conserva pruebas con administradores reales.
+
+015 define los escenarios y criterios que deberán probarse, pero no ejecuta investigación ni test de usabilidad.
+
+#### 122. Casos mínimos — autorización
+
+La futura implementación deberá representar al menos:
+
+1. allow + deny exactos en misma asignación lógica y periodo → bloqueante;
+2. `BASE_ONLY` configurado desde fuente operativa → bloqueante;
+3. `OPERATIONAL_ONLY` configurado desde fuente base → bloqueante;
+4. modalidad ausente con concesión propuesta → bloqueante;
+5. deny con carril o sujeto incompatible → bloqueante;
+6. scope exacto sin dimensión requerida → bloqueante;
+7. área de otra sede → bloqueante;
+8. rol inválido para sede → bloqueante;
+9. rol inválido para área → bloqueante;
+10. turno laboral aplicable sin rol → bloqueante;
+11. varios turnos efectivos ambiguos → bloqueante;
+12. `AREA_BINDING_UNRESOLVED` usado como site-wide → bloqueante;
+13. rol legacy reactivado → bloqueante;
+14. fuente simulada persistida como real → bloqueante;
+15. versiones incompatibles → bloqueante.
+
+#### 123. Casos mínimos — no conflicto
+
+También deberá demostrar que no se muestran falsos conflictos para:
+
+1. dos allows compatibles;
+2. dos denies compatibles;
+3. deny en un carril + allow válido en otro bajo `BASE_OR_OPERATIONAL`;
+4. default deny;
+5. diferencia perfil–turno por sí sola;
+6. varias sedes asignadas;
+7. duplicado exacto del mismo efecto cuando solo es redundancia;
+8. deuda histórica fuera de vigencia;
+9. conflicto ajeno al alcance actual que solo requiere revisión.
+
+#### 124. Casos mínimos — programación
+
+Cuando el owner de programación provea semántica canónica, la UX deberá demostrar como mínimo:
+
+- visualización de bloque actual y nuevo;
+- proyección de horas o carga cuando el owner la provea;
+- límite aplicable cuando esté tipado;
+- solapamiento reportado server-side;
+- sede y área del conflicto;
+- fechas originales y movidas;
+- consecuencia sobre borrador o publicación;
+- revalidación inmediata antes del comando final;
+- stale por concurrencia;
+- no dependencia exclusiva del color.
+
+#### 125. Pruebas de accesibilidad esperadas
+
+Se verificará:
+
+- bloqueo anunciado por texto;
+- foco en resumen tras fallo;
+- navegación por teclado;
+- iconos con nombre accesible;
+- color no exclusivo;
+- expansión legible por lector de pantalla;
+- orden semántico consistente en responsive.
+
+#### 126. Pruebas de autorización esperadas
+
+Se verificará:
+
+- hallazgos fuera de alcance no se revelan;
+- deep link revalida;
+- filtros no amplían;
+- búsqueda no amplía;
+- conteos no filtran universo global;
+- owner link reautoriza;
+- detalle restringido se redacta sin ocultar bloqueo.
+
+#### 127. Pruebas de concurrencia esperadas
+
+Se verificará:
+
+- snapshot cambia después del análisis;
+- pantalla pasa a `STALE`;
+- save no usa resultado anterior;
+- revalidación produce nuevo resultado;
+- conflictos concurrentes no se pierden.
+
+#### 128. Pruebas de semántica esperadas
+
+Se verificará:
+
+- deny válido ≠ conflicto;
+- default deny ≠ conflicto;
+- múltiples fuentes compatibles ≠ conflicto;
+- redundancia ≠ contradicción automática;
+- legacy histórico ≠ conflicto activo automático;
+- simulated ≠ real;
+- review ≠ blocking;
+- input error ≠ conflict cuando aplique.
+
+#### 129. Pruebas AS-IS esperadas
+
+La futura unidad física deberá demostrar que:
+
+- `/roles-permissions` no depende únicamente de validación local y escritura directa de `role_permissions` para decidir que un cambio es seguro;
+- la programación no depende únicamente de mensajes aislados o color para explicar cruces y límites;
+- el gate server-side previo a mutar permanece autoritativo.
+
+#### 130. Carryovers
+
+| Hallazgo | Bloquea definición documental | Owner de cierre | Condición de salida |
+| --- | --- | --- | --- |
+| `/roles-permissions` no es motor transversal de conflictos | no | unidad física correspondiente de VISO | consumo de clasificación canónica antes de mutar |
+| semántica detallada de programación todavía reservada | no | `VISO-SCH-006` | contrato de conflictos, integridad, concurrencia y recuperación aprobado |
+| presentación actual de cruces/límites no usa todavía un patrón transversal certificado | no | unidad física de VISO | UI consume resultado owner y aplica este contrato |
+| vista previa integral por trabajador todavía no pertenece a esta tarea | no | `VISO-UX-016` | preview individual desarrollado sin duplicar 015 |
+| navegación completa al owner todavía está reservada | no | `VISO-UX-018` | handoff propietario materializado |
+
+#### 131. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La detección y presentación de conflictos antes de guardar ya está cubierta por requisitos vigentes. Esta tarea desarrolla la experiencia y trazabilidad de esa cobertura sin introducir una nueva regla empresarial, un nuevo estado público, una nueva modalidad de autorización o una nueva política de programación.
+
+#### 132. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, se reutiliza:
+
+- `TREQ-VISO-001` — efecto resultante antes de guardar, detección de conflictos, origen y territorio;
+- `TREQ-VISO-038` — recálculo server-side de conflictos inmediatamente antes de guardar o publicar;
+- requisitos de autorización y contexto ya relacionados por `TREQ-VISO-001`;
+- requisitos de programación vinculados a la secuencia `VISO-SCH-*` cuando su contrato aplicable quede aprobado.
+
+Estas referencias son trazabilidad heredada y no constituyen cambios al Registro 04A.
+
+#### 133. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó build del checkout propietario durante esta definición documental. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no fue insertado, normalizado ni validado dentro de la rama documental de `VISO-UX-015`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad, protocolo, contrato de entrega, manifest, topología, políticas, owner, `VISO-AUTH-016`, 04A VISO vigente, scripts aplicables y superficies AS-IS relevantes de `vento-viso`; `main` conserva `VISO-UX-013` como última tarea cerrada y `VISO-UX-014` como predecesora pendiente de incorporación. |
+| OPERATIVA | NOT_APPLICABLE | No se guardaron configuraciones, permisos, turnos, límites, scopes, sedes, áreas, roles, grants, denies ni cambios de programación reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, Supabase, migraciones, RLS, RPC, contratos compartidos, aplicaciones ni despliegues. |
+
+#### 134. Criterios de aceptación
+
+1. la tarea conserva `VISO-UX-014` como anterior y `VISO-UX-016` como siguiente;
+2. se mantiene `PER_IMPLEMENTATION_UNIT`;
+3. se mantiene `POST_E5_PACKAGE`;
+4. no se modifica código ni infraestructura;
+5. se consume `VISO-AUTH-016` sin redefinir conflicto;
+6. se conserva la frontera con `VISO-SCH-006`;
+7. la UX no decide conflicto en cliente;
+8. la UX no repara automáticamente;
+9. el servidor revalida antes de mutar;
+10. se separan estado actual, propuesta y proyectado;
+11. el proyectado no se presenta como persistido;
+12. `BLOQUEANTE` y `REVISIÓN` permanecen distintos;
+13. deny válido no se convierte en conflicto;
+14. default deny no se convierte en conflicto;
+15. ausencia de grant no se convierte en conflicto;
+16. múltiples grants compatibles no se convierten en conflicto;
+17. múltiples denies compatibles no se convierten en conflicto;
+18. varios scopes positivos válidos no se convierten en conflicto;
+19. varias sedes asignadas no se convierten en conflicto;
+20. deuda histórica inactiva no se convierte automáticamente en conflicto;
+21. fuentes simuladas permanecen simuladas;
+22. contradicción exacta conserva sujeto, permiso, carril, scope y vigencia;
+23. periodos no solapados no aparecen como conflicto simultáneo;
+24. modalidad y carril se conservan;
+25. BASE y OPERATIONAL no se fusionan;
+26. scope no define precedencia;
+27. null no crea wildcard;
+28. territorio no deriva de filtros UI;
+29. rol inválido por sede conserva causa;
+30. rol inválido por área conserva causa;
+31. AREA_BINDING_UNRESOLVED no se vuelve site-wide;
+32. turno laboral sin rol no recibe fallback;
+33. descanso con rol nulo no se marca por ese hecho;
+34. ambigüedad de turnos no se auto-resuelve;
+35. duplicado exacto se distingue de contradicción;
+36. duplicado incompatible puede bloquear según evaluación;
+37. legacy histórico y legacy reactivado se distinguen;
+38. la propuesta no puede propagar deuda existente;
+39. conflicto fuera del alcance afectado no bloquea universalmente;
+40. cada hallazgo conserva owner de resolución;
+41. el owner visible no concede autoridad;
+42. deep links revalidan;
+43. búsqueda no amplía alcance;
+44. filtros solo reducen;
+45. paginación ocurre después de autorización;
+46. conteos no filtran universo global;
+47. exportación no se infiere por visibilidad;
+48. cache no mezcla actores o snapshots;
+49. cambio concurrente produce stale;
+50. stale exige recalcular;
+51. fallo técnico no se presenta como conflicto de negocio;
+52. partial no se presenta como sin conflictos;
+53. loading no se presenta como sin conflictos;
+54. estado sin cambios se distingue de evaluación sin conflictos;
+55. color no es el único canal;
+56. iconografía no es el único canal;
+57. foco tras bloqueo llega al resumen;
+58. teclado permite revisar conflicto;
+59. responsive conserva consecuencia y acción;
+60. detalle restringido puede redactarse sin ocultar bloqueo;
+61. microcopy conserva consecuencia concreta;
+62. reason code puede traducirse sin perder trazabilidad;
+63. fuentes se presentan con el patrón de 014;
+64. múltiples fuentes no generan precedencia visual ficticia;
+65. programación puede mostrar actual;
+66. programación puede mostrar nuevas/propuesta;
+67. programación puede mostrar proyectado;
+68. programación puede mostrar límite tipado;
+69. programación puede mostrar solapamientos owner;
+70. programación puede mostrar territorio;
+71. programación puede mostrar fechas movidas;
+72. programación puede mostrar consecuencia;
+73. programación no inventa reglas de VISO-SCH-006;
+74. borrador y publicación no se asumen equivalentes;
+75. autorización muestra permiso y sujeto exactos;
+76. autorización muestra carriles y scopes relevantes;
+77. autorización muestra sources sin reclasificarlas localmente;
+78. source simulada nunca aparece como persistida;
+79. roles-permissions AS-IS no se declara motor transversal;
+80. validación local AS-IS no sustituye evaluación canónica;
+81. createAdminClient no sustituye autorización humana;
+82. no existe override genérico creado por esta tarea;
+83. no existe acción Ignorar y guardar para bloqueos;
+84. no se auto-selecciona sede, área, rol, scope o fecha;
+85. colapsar detalle no oculta bloqueo;
+86. formulario conserva propuesta al revisar salvo contrato contrario;
+87. operación masiva conserva correlación por fila;
+88. atomicidad no se inventa en UX;
+89. partial failure solo se muestra si owner lo admite;
+90. reintento no salta conflicto;
+91. rollback solo se muestra si owner lo define;
+92. auditoría permanece fuera de esta tarea;
+93. telemetría no contiene secretos innecesarios;
+94. métricas no son autoridad;
+95. error de entrada y conflicto se distinguen;
+96. warning local no se eleva a revisión canónica sin fuente;
+97. canonical_rule permanece trazable;
+98. antes/propuesta/proyectado puede apilarse sin perder orden;
+99. diferencias derivadas se marcan proyectadas;
+100. impacto agregado no homogeneiza a todos los sujetos;
+101. datos de trabajadores se minimizan;
+102. vista previa integral permanece reservada a 016;
+103. ownership cross-app permanece reservado a 017;
+104. handoff detallado permanece reservado a 018;
+105. progressive disclosure avanzado permanece reservado a 019;
+106. pruebas con administradores permanecen reservadas a 020;
+107. se definen casos mínimos de conflicto y no conflicto;
+108. se definen escenarios mínimos de programación sin fijar su política;
+109. se definen pruebas de accesibilidad;
+110. se definen pruebas de autorización;
+111. se definen pruebas de concurrencia;
+112. se definen pruebas de semántica;
+113. se identifican carryovers con owner;
+114. la sección de requisitos derivados contiene cero IDs TREQ afectados;
+115. la cobertura heredada queda fuera de la sección de cero cambios;
+116. no se entrega 04A porque no cambia requisitos;
+117. no se desarrolla `VISO-UX-016`;
+118. no se ejecuta ninguna implementación física;
+
+#### 135. Límites
+
+Esta tarea no:
+
+- modifica código de VISO;
+- modifica Supabase;
+- modifica `role_permissions`;
+- modifica `operational_role_permissions`;
+- modifica `employee_permissions`;
+- crea o elimina grants;
+- crea o elimina denies;
+- crea excepciones;
+- modifica roles;
+- modifica sedes;
+- modifica áreas;
+- modifica scopes;
+- modifica perfiles;
+- modifica turnos;
+- publica programación;
+- define límites mensuales;
+- define política de solapamientos;
+- define concurrencia de programación;
+- define rollback;
+- define idempotencia de programación;
+- sustituye `VISO-SCH-006`;
+- redefine la taxonomía de `VISO-AUTH-016`;
+- crea reason codes;
+- crea estados públicos de autorización;
+- crea contrato público de conflictos;
+- administra excepciones individuales;
+- implementa auditoría;
+- define quién administra seguridad;
+- crea exportes;
+- desarrolla la vista previa integral de trabajador;
+- desarrolla `VISO-UX-016`;
+- desarrolla `VISO-UX-017`;
+- desarrolla `VISO-UX-018`;
+- desarrolla `VISO-UX-019`;
+- ejecuta pruebas de `VISO-UX-020`;
+- crea RPC;
+- crea RLS;
+- crea migraciones;
+- ejecuta SQL de escritura;
+- selecciona package;
+- prepara package gate;
+- autoriza implementación física;
+- ejecuta implementación física.
+
+#### 136. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-015 — Mostrar conflictos antes de guardar`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador`
 ### [ ] VISO-UX-016 — Permitir vista previa exacta de cada trabajador
 ### [ ] VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
 ### [ ] VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
