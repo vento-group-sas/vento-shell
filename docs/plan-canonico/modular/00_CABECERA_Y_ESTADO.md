@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1485** |
+| Tareas aprobadas | **1486** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **111** |
+| Tareas no iniciadas | **110** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **93.05% (1485/1596)** |
+| Porcentaje de completamiento | **93.11% (1486/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-QA-001 — Probar flujo completo de acumulación** |
-| Tarea actual | **PASS-QA-002 — Probar flujo completo de redención** |
+| Última tarea aprobada | **PASS-QA-002 — Probar flujo completo de redención** |
+| Tarea actual | **AURA-AUD-001 — Confirmar repositorio propietario** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUD-001 — Confirmar repositorio propietario** |
-| Bloque actual | **BLOQUE V — PASS** |
-| Progreso del bloque | **BLOQUE V: 19 de 20 aprobadas; PASS-QA-002 pendiente** |
+| Siguiente tarea | **AURA-AUD-002 — Confirmar estado real del producto** |
+| Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
+| Progreso del bloque | **BLOQUE W: 0 de 37 aprobadas; AURA-AUD-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-QA-002** |
+| Carril documental | **ACTIVO — AURA-AUD-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-QA-001` — Probar flujo completo de acumulación |
-| Tarea actual | `PASS-QA-002` — Probar flujo completo de redención — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUD-001` — Confirmar repositorio propietario |
+| Última aprobada | `PASS-QA-002` — Probar flujo completo de redención |
+| Tarea actual | `AURA-AUD-001` — Confirmar repositorio propietario — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUD-002` — Confirmar estado real del producto |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE V: 19 DE 20 APROBADAS — ACTUAL PASS-QA-002** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 0 DE 37 APROBADAS — ACTUAL AURA-AUD-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-QA-001 — Probar flujo completo de acumulación
-        ↓
-TAREA ACTUAL
 PASS-QA-002 — Probar flujo completo de redención
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUD-001 — Confirmar repositorio propietario
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUD-002 — Confirmar estado real del producto
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE V — 19 de 20 tareas aprobadas
+BLOQUE W — 0 de 37 tareas aprobadas
 ```
