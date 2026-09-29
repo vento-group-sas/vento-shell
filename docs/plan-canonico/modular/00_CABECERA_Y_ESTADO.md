@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1494** |
+| Tareas aprobadas | **1495** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **102** |
+| Tareas no iniciadas | **101** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **93.61% (1494/1596)** |
+| Porcentaje de completamiento | **93.67% (1495/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-AUD-008 — Definir relación con PASS** |
-| Tarea actual | **AURA-AUD-009 — Definir relación con PULSO** |
+| Última tarea aprobada | **AURA-AUD-009 — Definir relación con PULSO** |
+| Tarea actual | **AURA-AUD-010 — Decidir continuidad, reemplazo o retiro** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUD-010 — Decidir continuidad, reemplazo o retiro** |
+| Siguiente tarea | **AURA-AUD-011 — Documentar decisión mediante ADR si corresponde** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 8 de 37 aprobadas; AURA-AUD-009 pendiente** |
+| Progreso del bloque | **BLOQUE W: 9 de 37 aprobadas; AURA-AUD-010 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-AUD-009** |
+| Carril documental | **ACTIVO — AURA-AUD-010** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-AUD-008` — Definir relación con PASS |
-| Tarea actual | `AURA-AUD-009` — Definir relación con PULSO — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUD-010` — Decidir continuidad, reemplazo o retiro |
+| Última aprobada | `AURA-AUD-009` — Definir relación con PULSO |
+| Tarea actual | `AURA-AUD-010` — Decidir continuidad, reemplazo o retiro — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUD-011` — Documentar decisión mediante ADR si corresponde |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 8 DE 37 APROBADAS — ACTUAL AURA-AUD-009** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 9 DE 37 APROBADAS — ACTUAL AURA-AUD-010** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-AUD-008 — Definir relación con PASS
-        ↓
-TAREA ACTUAL
 AURA-AUD-009 — Definir relación con PULSO
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 8 de 37 tareas aprobadas
+BLOQUE W — 9 de 37 tareas aprobadas
 ```

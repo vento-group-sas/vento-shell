@@ -3714,7 +3714,814 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-009 — Definir relación con PULSO`
-### [ ] AURA-AUD-009 — Definir relación con PULSO
+### ✅ AURA-AUD-009 — Definir relación con PULSO
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-008 — Definir relación con PASS
+**Tarea siguiente:** AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
+**Tipo de tarea:** definición técnico-documental de la relación AURA–PULSO; separa intención de marketing, publicación, oportunidad, oferta, pedido, venta, efecto comercial, validación transaccional, reclamo, reserva, entrega y experiencia del cliente sin transferir ownership ni materializar una integración runtime
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda fijada la frontera bidireccional AURA–PULSO, incluyendo ownership, consumo de procesos, validación comercial, handoff de oportunidades y proyecciones de resultado, sin activar AURA ni alterar PULSO
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica AURA, PULSO, PASS, VISO, NUMERA, NEXO, FOGO, Supabase, datos, RLS, permisos, rutas, campañas, pedidos, precios, ventas, integraciones, despliegues ni repositorios
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la relación arquitectónica y empresarial entre AURA y PULSO sin confundir intención de marketing con autoridad comercial, oportunidad con pedido, campaña con descuento, publicación con oferta transaccional ni atribución con resultado de venta.
+
+La regla raíz es:
+
+```text
+AURA
+!= PULSO
+
+CAMPAÑA
+!= REGLA TRANSACCIONAL
+
+OPORTUNIDAD
+!= COTIZACIÓN
+!= PEDIDO
+!= VENTA
+
+CORRELACIÓN DE CAMPAÑA
+!= AUTORIDAD PARA CAMBIAR PRECIO
+
+SEÑAL DE VENTA
+!= ATRIBUCIÓN DEMOSTRADA
+```
+
+La relación debe permitir solicitudes, referencias, eventos, proyecciones y análisis entre ambos dominios sin crear maestros competidores ni escritura cruzada implícita.
+
+---
+
+#### 2. Reconciliación topológica
+
+La tarea conserva:
+
+```text
+TASK = AURA-AUD-009
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+SEQUENCE = PHASE-12-AURA
+PREVIOUS = AURA-AUD-008
+NEXT = AURA-AUD-010
+```
+
+Consecuencias:
+
+- la tarea se agota en una definición canónica;
+- no genera instancia física propia;
+- no activa AURA;
+- no modifica PULSO;
+- no crea campañas, precios, descuentos, pedidos ni ventas;
+- no materializa integración runtime AURA–PULSO;
+- no decide continuidad, reemplazo o retiro de AURA;
+- entrega a `AURA-AUD-010` la última frontera de aplicación necesaria para adoptar esa decisión.
+
+---
+
+#### 3. Entradas aprobadas
+
+La relación consume:
+
+- `AURA-AUD-001` a `AURA-AUD-006`, con existencia, producto, usuarios, superficies, procesos, datos y permisos actuales;
+- `AURA-AUD-007`, con la relación AURA–VISO;
+- `AURA-AUD-008`, con la relación AURA–PASS;
+- `VPROC-0056` y `VPROC-0057`, propiedad funcional objetivo de AURA;
+- `VPROC-0017`, `VPROC-0038` a `VPROC-0044`, `VPROC-0046`, `VPROC-0047`, `VPROC-0050` y `VPROC-0068`, dentro del dominio comercial gobernado por PULSO según `PROC-CAT-005`;
+- el registro canónico de eventos y consumidoras entre aplicaciones;
+- `INT-MKT-003`, que define la validación comercial desde PULSO;
+- `OPS-B2B-001`, que fija la frontera AURA → PULSO para oportunidades B2B;
+- `PASS-INT-001..005`, cuando el efecto comercial consume identidad o fidelización;
+- la cobertura vigente AURA, PULSO e integración.
+
+Ninguna entrada autoriza implementación física desde esta tarea.
+
+---
+
+#### 4. Contrato de relación AURA–PULSO
+
+Se define:
+
+```text
+AURA_PULSO_RELATION_CONTRACT = AURA-PULSO-RELATION-001
+```
+
+La frontera permanente queda:
+
+```text
+AURA
+-> intención de marketing
+-> campaña y contenido
+-> oportunidad digital
+-> correlación y atribución
+
+PULSO
+-> oferta comercial aplicable
+-> pedido y venta
+-> cotización y compromiso B2B
+-> validación del efecto comercial
+-> precio y snapshot de venta
+-> pago, caja y resultado transaccional
+```
+
+Y se preserva:
+
+```text
+REFERENCIAR
+!= EJECUTAR
+
+CONSUMIR EVENTO
+!= ADQUIRIR OWNERSHIP
+
+SOLICITAR EFECTO
+!= ESCRIBIR EL MAESTRO AJENO
+```
+
+---
+
+#### 5. Ownership funcional de PULSO
+
+PULSO conserva ownership de los procesos comerciales aprobados por `PROC-CAT-005`, incluyendo:
+
+| Proceso | Propósito relevante para esta relación |
+| --- | --- |
+| `VPROC-0017` | asegurar que la oferta publicada corresponda con definiciones vigentes y disponibilidad comprometible |
+| `VPROC-0038` | servicio y venta en mesa |
+| `VPROC-0039` | venta de mostrador o para llevar |
+| `VPROC-0040` | incorporar pedidos de terceros sin duplicación ni pérdida de estados |
+| `VPROC-0041` | cumplir catering o venta B2B con viabilidad y condiciones comerciales |
+| `VPROC-0042` | modificar, sustituir, cancelar, anular o devolver compromisos comerciales de forma controlada |
+| `VPROC-0043` | confirmar y respaldar pagos comerciales |
+| `VPROC-0044` | conciliar jornada y caja |
+| `VPROC-0046` | reclamos, devoluciones y compensaciones |
+| `VPROC-0047` | reservas y eventos con capacidad y comunicación controladas |
+| `VPROC-0050` | conciliación de entrega realizada por terceros |
+| `VPROC-0068` | experiencia del cliente mediante mediciones interpretables |
+
+AURA no adquiere ninguno de esos procesos por consumir sus resultados o aportar una referencia de campaña u oportunidad.
+
+---
+
+#### 6. Ownership funcional de AURA
+
+AURA conserva como procesos propietarios objetivo:
+
+| Proceso | Estado | Propósito |
+| --- | --- | --- |
+| `VPROC-0056` | `DEFINED_DEFERRED` | contenido y promociones desde solicitud y aprobación hasta publicación y retiro |
+| `VPROC-0057` | `DEFINED_DEFERRED` | interacciones digitales con intención comercial hasta oportunidad, atención, descarte o conversión |
+
+PULSO no adquiere propiedad sobre:
+
+- campaña;
+- brief;
+- audiencia;
+- pieza;
+- calendario;
+- publicación;
+- oportunidad;
+- etapa de marketing;
+- atribución;
+- aprendizaje de campaña.
+
+El hecho de validar una venta o aplicar un efecto comercial no transforma PULSO en sistema de campañas.
+
+---
+
+#### 7. Matriz bidireccional canónica
+
+El registro de eventos entre aplicaciones materializa nueve relaciones AURA–PULSO relevantes.
+
+##### 7.1. Procesos AURA consumidos por PULSO
+
+| Proceso | Owner | PULSO | Modalidad | Perfil | Estado |
+| --- | --- | --- | --- | --- | --- |
+| `VPROC-0056` | `aura` | consumidora directa | `PROYECCION_EVENTO_Y_ANALISIS` | `MARKETING_ANALYTICS_PROJECTION` | `DEFINED_DEFERRED_PRODUCER` |
+| `VPROC-0057` | `aura` | consumidora directa | `PROYECCION_EVENTO_Y_ANALISIS` | `MARKETING_ANALYTICS_PROJECTION` | `DEFINED_DEFERRED_PRODUCER` |
+
+##### 7.2. Procesos PULSO consumidos por AURA
+
+| Proceso | Owner | AURA | Modalidad | Perfil | Estado |
+| --- | --- | --- | --- | --- | --- |
+| `VPROC-0017` | `pulso` | consumidora directa | `REFERENCIA_Y_EVENTO` | `VERSIONED_REFERENCE_PROJECTION` | `DEFINED` |
+| `VPROC-0040` | `pulso` | consumidora condicional | `SOLICITUD_EFECTO_Y_EVENTO` | `EFFECT_CONFIRMATION_PROJECTION` | `DEFINED_WITH_CONDITIONS` |
+| `VPROC-0041` | `pulso` | consumidora directa | `SOLICITUD_EFECTO_Y_EVENTO` | `EFFECT_CONFIRMATION_PROJECTION` | `DEFINED` |
+| `VPROC-0046` | `pulso` | consumidora directa | `SOLICITUD_EFECTO_Y_EVENTO` | `EFFECT_CONFIRMATION_PROJECTION` | `DEFINED` |
+| `VPROC-0047` | `pulso` | consumidora directa | `SOLICITUD_EFECTO_Y_EVENTO` | `EFFECT_CONFIRMATION_PROJECTION` | `DEFINED_WITH_CONDITIONS` |
+| `VPROC-0050` | `pulso` | consumidora condicional | `SOLICITUD_EFECTO_Y_EVENTO` | `EFFECT_CONFIRMATION_PROJECTION` | `DEFINED_WITH_CONDITIONS` |
+| `VPROC-0068` | `pulso` | consumidora directa | `PROYECCION_EVENTO_Y_ANALISIS` | `MARKETING_ANALYTICS_PROJECTION` | `DEFINED` |
+
+Balance:
+
+```text
+RELACIONES_CANONICAS_AURA_PULSO = 9
+AURA_OWNER_PULSO_CONSUMER = 2
+PULSO_OWNER_AURA_CONSUMER = 7
+RELACIONES_DIRECTAS = 7
+RELACIONES_CONDICIONALES = 2
+OWNERSHIP_COMPARTIDO = 0
+```
+
+---
+
+#### 8. Validación comercial desde PULSO
+
+`INT-MKT-003` fija la regla central:
+
+```text
+CAMPAÑA O INTENCIÓN AURA
+!= REGLA TRANSACCIONAL
+!= DESCUENTO O BENEFICIO APLICADO EN PULSO
+```
+
+PULSO es la autoridad para validar si una promoción, cupón, beneficio, recompensa o redención puede producir un efecto sobre un pedido o una venta concretos.
+
+La validación comercial debe considerar, según corresponda:
+
+- pedido, venta y líneas afectadas;
+- regla y versión;
+- sede;
+- canal;
+- modalidad;
+- actor efectivo;
+- permiso;
+- producto u oferta;
+- vigencia;
+- compatibilidad con otros efectos;
+- identidad o beneficio PASS cuando aplique;
+- guardas económicas o físicas cuando sean obligatorias;
+- estado transaccional actual;
+- idempotencia y resultado previo.
+
+AURA no puede saltarse esa validación mediante una campaña activa, un código, un CTA o una referencia de marketing.
+
+---
+
+#### 9. Campaña y efecto comercial
+
+Se permiten conceptualmente:
+
+```text
+VENTA PULSO
+-> SIN CAMPAÑA AURA
+```
+
+```text
+CAMPAÑA AURA
+-> REFERENCIA A REGLA COMERCIAL AUTORIZADA
+-> PULSO VALIDA
+-> PULSO APLICA O RECHAZA EFECTO
+```
+
+No se admite:
+
+```text
+CAMPAÑA AURA
+-> UPDATE DIRECTO DE PRECIO
+```
+
+ni:
+
+```text
+CAMPAÑA AURA
+-> DESCUENTO APLICADO SIN VALIDACIÓN PULSO
+```
+
+ni:
+
+```text
+PULSO
+-> CREACIÓN AUTOMÁTICA DE CAMPAÑA AURA
+```
+
+La campaña conserva intención y correlación. PULSO conserva el resultado comercial realmente aplicado.
+
+---
+
+#### 10. Precio, snapshot y venta histórica
+
+PULSO conserva la verdad operativa del pedido y la venta.
+
+Cuando exista un efecto relacionado con marketing, el snapshot comercial debe poder reconstruir el efecto aplicado sin depender de que la campaña o regla cambien posteriormente.
+
+Se conserva:
+
+```text
+PRECIO BASE
+-> OFERTA VIGENTE
+-> REGLA AUTORIZADA
+-> VALIDACIÓN
+-> EFECTO APLICADO
+-> SNAPSHOT DE VENTA
+```
+
+Cambiar después:
+
+- campaña;
+- pieza;
+- regla;
+- beneficio;
+- presupuesto;
+- audiencia;
+
+no reescribe una venta histórica.
+
+---
+
+#### 11. Oportunidad digital y handoff comercial
+
+`VPROC-0057` conserva en AURA:
+
+- interacción digital;
+- origen;
+- oportunidad;
+- etapa;
+- seguimiento;
+- atribución de marketing.
+
+Cuando una oportunidad requiera cotización, catering o venta B2B, la frontera aprobada es:
+
+```text
+AURA
+-> CALIFICA OPORTUNIDAD
+-> ENTREGA CONTEXTO NECESARIO
+
+PULSO
+-> CREA Y GOBIERNA CASO COMERCIAL
+-> COTIZACIÓN
+-> CONDICIONES
+-> PEDIDO
+-> COMPROMISO OPERATIVO
+-> CAMBIOS Y CIERRE COMERCIAL
+```
+
+Esta frontera está materializada en la relación directa de AURA como consumidora de `VPROC-0041` y en `OPS-B2B-001`.
+
+Por tanto:
+
+```text
+OPORTUNIDAD AURA
+!= COTIZACIÓN PULSO
+!= PEDIDO PULSO
+```
+
+---
+
+#### 12. Oferta publicada
+
+`VPROC-0017` pertenece a PULSO y AURA figura como consumidora directa mediante `REFERENCIA_Y_EVENTO / VERSIONED_REFERENCE_PROJECTION`.
+
+AURA puede utilizar una referencia vigente de oferta para:
+
+- evitar publicar promociones de productos u ofertas no comprometibles;
+- asociar contenido con una oferta autorizada;
+- retirar o ajustar comunicación cuando la referencia deje de ser válida.
+
+AURA no puede editar por esa vía:
+
+- precio;
+- producto;
+- disponibilidad;
+- vigencia comercial;
+- condiciones de venta.
+
+La proyección versionada no transfiere ownership.
+
+---
+
+#### 13. Pedidos de terceros
+
+`VPROC-0040` pertenece a PULSO y AURA es consumidora condicional.
+
+La relación solo aplica cuando un pedido externo tenga una necesidad legítima de correlación con marketing, canal o atribución.
+
+No se concluye que:
+
+```text
+TODO PEDIDO EXTERNO
+-> EVENTO DE MARKETING AURA
+```
+
+AURA no administra:
+
+- ingestión transaccional;
+- deduplicación del pedido;
+- estado comercial;
+- cobro;
+- conciliación del canal externo.
+
+La participación AURA permanece condicional y de mínimo contexto.
+
+---
+
+#### 14. Reclamos, devoluciones y compensaciones
+
+`VPROC-0046` pertenece a PULSO y AURA es consumidora directa de la proyección aplicable.
+
+AURA puede consumir señales para:
+
+- aprendizaje de comunicación;
+- reputación;
+- análisis de campañas;
+- detección de mensajes o expectativas problemáticas.
+
+Pero:
+
+```text
+RESPUESTA DE MARKETING
+!= CIERRE DE RECLAMO
+```
+
+AURA no puede:
+
+- aprobar devolución;
+- anular venta;
+- ordenar reembolso;
+- registrar compensación transaccional;
+- cerrar el caso PULSO.
+
+El resultado comercial sigue perteneciendo a PULSO y las autoridades económicas permanecen separadas.
+
+---
+
+#### 15. Reservas y eventos
+
+`VPROC-0047` pertenece a PULSO y AURA es consumidora directa; FOGO y NEXO permanecen consumidoras condicionales cuando capacidad o ejecución lo exijan.
+
+AURA puede contribuir o consumir:
+
+- origen de campaña;
+- comunicación;
+- mensaje;
+- seguimiento permitido;
+- correlación de oportunidad.
+
+PULSO conserva:
+
+- solicitud comercial;
+- compromiso;
+- condiciones;
+- reserva comercial;
+- cambios;
+- cancelación;
+- cierre frente al cliente.
+
+Una pieza promocional no demuestra capacidad disponible ni reserva capacidad.
+
+---
+
+#### 16. Entrega de terceros
+
+`VPROC-0050` pertenece a PULSO y AURA es consumidora condicional.
+
+La participación de AURA se limita a casos donde el resultado de entrega sea material para:
+
+- comunicación;
+- experiencia;
+- atribución;
+- análisis de una campaña u oportunidad.
+
+AURA no gobierna:
+
+- proveedor de entrega;
+- seguimiento operativo;
+- prueba de entrega;
+- cobro;
+- comisión;
+- conciliación;
+- novedad logística.
+
+Una entrega fallida no se convierte automáticamente en fallo de campaña.
+
+---
+
+#### 17. Experiencia del cliente
+
+`VPROC-0068` pertenece a PULSO y AURA es consumidora directa mediante `PROYECCION_EVENTO_Y_ANALISIS / MARKETING_ANALYTICS_PROJECTION`.
+
+Se conserva:
+
+```text
+MEDICIÓN DE EXPERIENCIA
+!= INCENTIVO
+!= RECLAMO
+!= COMPENSACIÓN
+!= ÉXITO DE CAMPAÑA
+```
+
+AURA puede consumir una proyección para análisis y aprendizaje de marketing.
+
+No puede alterar:
+
+- la medición original;
+- el resultado del pedido;
+- el reclamo;
+- la compensación;
+- la venta histórica.
+
+---
+
+#### 18. Ventas ordinarias no crean consumo AURA implícito
+
+El registro actual no declara a AURA consumidora directa de `VPROC-0038` ni `VPROC-0039` únicamente por tratarse de ventas.
+
+También mantiene fronteras específicas sobre otros procesos comerciales.
+
+Por tanto:
+
+```text
+VENTA OCURRIDA
+!= DATOS COMPLETOS DISPONIBLES A AURA
+```
+
+Una futura atribución de marketing deberá consumir únicamente proyecciones explícitamente autorizadas y necesarias.
+
+No se autoriza lectura transversal de las tablas de PULSO para construir analítica AURA por conveniencia.
+
+---
+
+#### 19. Atribución y causalidad
+
+AURA puede necesitar correlacionar campañas con resultados comerciales, pero se conserva:
+
+```text
+CORRELACIÓN
+!= CAUSALIDAD
+```
+
+Una referencia de campaña presente en una venta permite rastrear origen o asociación; no demuestra por sí sola:
+
+- venta incremental;
+- margen incremental;
+- causalidad;
+- retorno de inversión;
+- efectividad de la campaña.
+
+La atribución deberá conservar método, fuentes, frescura, restricciones y confianza, y consumir la autoridad económica cuando corresponda.
+
+---
+
+#### 20. PASS y NUMERA permanecen separados
+
+La relación AURA–PULSO no absorbe las fronteras definidas en `AURA-AUD-008`.
+
+Se conserva:
+
+```text
+PASS
+-> identidad
+-> consentimiento
+-> fidelización
+-> beneficio
+-> ledger
+-> redención
+
+PULSO
+-> pedido
+-> venta
+-> validación comercial
+-> efecto aplicado
+
+AURA
+-> campaña
+-> oportunidad
+-> correlación
+
+NUMERA
+-> costo
+-> margen
+-> presupuesto
+-> resultado económico
+```
+
+PULSO no puede asumir autoridad PASS o NUMERA para satisfacer una campaña AURA.
+
+---
+
+#### 21. Escritura cruzada prohibida
+
+La integración futura deberá preservar comandos propietarios, eventos, proyecciones, idempotencia y reconciliación.
+
+Queda prohibido como regla de arquitectura:
+
+```text
+AURA -> UPDATE DIRECTO DE PEDIDO PULSO
+AURA -> UPDATE DIRECTO DE PRECIO PULSO
+AURA -> UPDATE DIRECTO DE VENTA PULSO
+AURA -> INSERT DIRECTO DE PAGO O CAJA
+PULSO -> UPDATE DIRECTO DE CAMPAÑA AURA
+PULSO -> UPDATE DIRECTO DE OPORTUNIDAD AURA
+PULSO -> MARCAR PUBLICACIÓN AURA COMO COMPLETADA
+```
+
+La lectura analítica tampoco autoriza escritura.
+
+---
+
+#### 22. Estado runtime actual
+
+El repositorio actual `vento-pulso` conserva AURA únicamente como identidad diferida en el AppSwitcher:
+
+```text
+id = aura
+href = vacío
+status = soon
+```
+
+La inspección del runtime actual sí identifica superficies de fidelización/redención integradas con PASS, pero no demuestra una implementación de campaña AURA dentro de PULSO.
+
+En la búsqueda del código vigente no se observó una superficie AURA operativa ni una implementación de campaña, promoción o cupón gobernada por AURA.
+
+Por tanto:
+
+```text
+RELACION_CANONICA_AURA_PULSO = DEFINIDA
+INTEGRACION_RUNTIME_AURA_PULSO = NO_DEMOSTRADA
+AURA_EN_PULSO = DIFERIDA
+```
+
+Esta tarea no transforma el contrato documental en integración desplegada.
+
+---
+
+#### 23. AURA diferida no bloquea PULSO
+
+Mientras AURA permanezca diferida:
+
+- PULSO conserva su operación comercial;
+- PASS y PULSO pueden ejecutar sus contratos vigentes de fidelización;
+- una venta válida no requiere campaña AURA;
+- una promoción comercial existente no se reclasifica como campaña AURA;
+- PULSO no crea campañas ficticias para justificar descuentos;
+- PULSO no amplía su dominio para sustituir oportunidades o atribución AURA;
+- las relaciones con `VPROC-0056` y `VPROC-0057` permanecen diferidas respecto del productor AURA.
+
+---
+
+#### 24. Hallazgos diferidos con propietario
+
+| Hallazgo | Estado | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| productor runtime de `VPROC-0056/0057` no existe | no bloquea PULSO actual; bloquea declarar integración AURA operativa | `AURA-AUD-010..012` y roadmap AURA posterior | decisión de continuidad, ADR y desbloqueo formal |
+| PULSO consume AURA documentalmente pero no existe campaña runtime observada | no bloquea esta definición | `AURA-INT-002` | contrato implementado y evidencia de integración |
+| handoff oportunidad AURA → PULSO requiere identidad y correlación estable | no bloquea el proceso PULSO actual; bloquea automatizar B2B desde AURA | `AURA-INT-002` / `OPS-B2B-001` | identificadores, idempotencia, estados y reconciliación implementados |
+| atribución de campaña a venta no está materializada | no bloquea venta; bloquea métricas de impacto AURA | roadmap AURA + NUMERA | correlación autorizada, método de atribución y evidencia económica |
+| AURA es consumidora condicional de pedidos externos y entregas de terceros | no bloquea esos procesos | contratos de integración aplicables | condiciones explícitas de consumo y proyección mínima implementadas |
+
+No se inventan tareas nuevas para estos hallazgos.
+
+---
+
+#### 25. Handoff hacia AURA-AUD-010
+
+`AURA-AUD-010 — Decidir continuidad, reemplazo o retiro` recibe las tres relaciones de aplicación ya definidas:
+
+```text
+AURA <-> VISO
+AURA <-> PASS
+AURA <-> PULSO
+```
+
+Y recibe de esta tarea:
+
+1. AURA conserva ownership objetivo de `VPROC-0056` y `VPROC-0057`.
+2. PULSO es consumidora directa de ambos procesos AURA diferidos.
+3. AURA consume siete procesos propietarios de PULSO: cinco de forma directa y dos condicional.
+4. Existen nueve relaciones canónicas AURA–PULSO en total.
+5. PULSO conserva oferta, pedido, venta, cotización, efecto comercial y resultado transaccional.
+6. AURA conserva campaña, oportunidad y atribución.
+7. PULSO valida el efecto comercial; una campaña AURA no constituye autoridad de descuento.
+8. La oportunidad B2B se transfiere desde AURA hacia un caso comercial gobernado por PULSO.
+9. La integración runtime AURA–PULSO no está demostrada actualmente.
+10. La ausencia de AURA no bloquea las operaciones PULSO vigentes.
+
+`AURA-AUD-010` deberá usar estas fronteras para decidir continuidad sin reabrir ownership por conveniencia.
+
+---
+
+#### 26. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+La cobertura vigente ya protege ownership, pedidos, ventas, descuentos, fidelización, campañas, integraciones, idempotencia, autorización, correlación y ausencia de producto AURA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+---
+
+#### 27. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otros:
+
+- `TREQ-AURA-003`, para la frontera entre intención promocional, PASS, PULSO y NUMERA;
+- `TREQ-AURA-005`, para detectar drift sobre aplicaciones, integraciones y superficies AURA;
+- `TREQ-AURA-006`, para mantener AURA no disponible mientras continúe bloqueada;
+- `TREQ-AURA-007`, para impedir transferencias implícitas de ownership;
+- `TREQ-PULSO-004`, para mutaciones comerciales mediante acciones nombradas y autorizadas;
+- `TREQ-PULSO-005`, para separar pedido, revisión, líneas, preparación, cumplimiento, venta y fidelización;
+- `TREQ-PULSO-006`, para venta, cobro, descuento, anulación, devolución y cierre auditables;
+- `TREQ-PASS-008` y `TREQ-PASS-010`, para ledger, redención, identidad y consentimiento;
+- `TREQ-INTEGRATION-003`, para idempotencia y reconciliación;
+- `TREQ-INTEGRATION-006`, `TREQ-INTEGRATION-014`, `TREQ-INTEGRATION-015` y `TREQ-INTEGRATION-019`, para fronteras e integraciones empresariales aplicables.
+
+Esta sección documenta trazabilidad existente y no actualiza el Registro 04A.
+
+---
+
+#### 28. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La tarea se prepara antes de su incorporación al checkout; la batería documental real se ejecutará al abrir e incorporar `AURA-AUD-009`. |
+| LOCAL | `PASS` | El artefacto contiene una sola tarea, metadata completa, continuidad `008 -> 009 -> 010`, matriz de nueve relaciones, sección de cero requisitos sin identificadores de prueba y cero whitespace al final de línea. |
+| REMOTA | `PASS` | Se verificaron ownership de procesos, registro de eventos y consumidoras, `INT-MKT-003`, `OPS-B2B-001`, código actual de `vento-pulso` y la ausencia de una superficie AURA operativa en ese runtime. |
+| OPERATIVA | `NOT_APPLICABLE` | No se ejecutan ventas, campañas, descuentos, pedidos, reservas, reclamos, entregas ni mediciones; se define únicamente la frontera canónica entre aplicaciones. |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no se modifica código, dato, permiso, precio, pedido, campaña, integración, despliegue ni infraestructura. |
+
+---
+
+#### 29. Criterios de aceptación
+
+- [x] Se define una relación AURA–PULSO sin confundir marketing y transacción.
+- [x] AURA conserva ownership de `VPROC-0056` y `VPROC-0057`.
+- [x] PULSO permanece consumidora directa de ambos procesos AURA diferidos.
+- [x] Se inventarían exactamente siete procesos PULSO consumidos por AURA.
+- [x] Se distinguen cinco relaciones PULSO → AURA directas y dos condicionales.
+- [x] Se contabilizan exactamente nueve relaciones canónicas AURA–PULSO.
+- [x] Se mantienen cero procesos con ownership compartido.
+- [x] Se preserva PULSO como propietaria de oferta, pedido, venta y efecto comercial.
+- [x] Se preserva AURA como propietaria de campaña, oportunidad y atribución.
+- [x] Se preserva `VPROC-0017` como referencia versionada de oferta.
+- [x] Se mantiene `VPROC-0040` como consumo AURA condicional.
+- [x] Se fija la frontera AURA → PULSO para `VPROC-0041` B2B.
+- [x] Se limita el consumo AURA de `VPROC-0046` al aprendizaje y contexto permitido.
+- [x] Se limita el consumo AURA de `VPROC-0047` sin transferir capacidad o reserva.
+- [x] Se limita el consumo AURA de `VPROC-0050` a casos condicionales.
+- [x] Se utiliza `VPROC-0068` como proyección de experiencia sin convertirla en éxito de campaña.
+- [x] Se preserva la validación comercial definida por `INT-MKT-003`.
+- [x] Una campaña AURA no autoriza precio ni descuento por sí sola.
+- [x] PULSO no crea campaña u oportunidad AURA por inferencia.
+- [x] Se prohíbe escritura cruzada directa.
+- [x] Se confirma que el runtime PULSO actual no demuestra integración AURA operativa.
+- [x] Se confirma que PULSO puede seguir operando mientras AURA permanece diferida.
+- [x] Se entrega a `AURA-AUD-010` la frontera necesaria para decidir continuidad.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecutan cambios físicos.
+
+---
+
+#### 30. Límites
+
+Esta tarea no:
+
+- activa AURA;
+- modifica PULSO;
+- crea campañas;
+- crea oportunidades;
+- crea cotizaciones;
+- crea pedidos;
+- crea ventas;
+- modifica precios;
+- aplica descuentos;
+- crea cupones;
+- modifica beneficios PASS;
+- modifica ledger o redenciones;
+- modifica pagos o caja;
+- modifica reservas o reclamos;
+- crea endpoints, RPC, tablas, funciones, triggers, jobs, colas o webhooks;
+- modifica RLS;
+- modifica permisos;
+- implementa correlación de campaña;
+- implementa atribución;
+- implementa `AURA-INT-002`;
+- decide continuidad, reemplazo o retiro;
+- registra el ADR final;
+- crea ni modifica requisitos de prueba;
+- modifica el Registro 04A;
+- inicia una instancia física o package.
+
+---
+
+#### 31. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-008 — Definir relación con PASS`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-009 — Definir relación con PULSO`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-010 — Decidir continuidad, reemplazo o retiro`
 ### [ ] AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
 ### [ ] AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
 ### [ ] AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
