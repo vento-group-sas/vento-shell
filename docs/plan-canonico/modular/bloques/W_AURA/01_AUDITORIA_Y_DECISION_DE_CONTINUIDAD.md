@@ -998,7 +998,436 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-004 — Inventariar rutas y pantallas`
-### [ ] AURA-AUD-004 — Inventariar rutas y pantallas
+### ✅ AURA-AUD-004 — Inventariar rutas y pantallas
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-003 — Confirmar usuarios actuales
+**Tarea siguiente:** AURA-AUD-005 — Inventariar procesos de marketing
+**Tipo de tarea:** auditoría técnico-documental de rutas, pantallas y superficies relacionadas con AURA; separa superficies propias inexistentes, referencias runtime diferidas y capacidades actuales de contenido alojadas en VISO y consumidas por Vento-Group, sin transferir ownership ni materializar producto
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda fijado el inventario actual de rutas y superficies vinculadas al dominio funcional de AURA sin crear rutas, pantallas, navegación ni aplicación runtime
+**Cambios físicos autorizados:** ninguno; esta tarea no crea, mueve, renombra ni elimina rutas, pantallas, componentes, navegación, APIs, repositorios, datos, permisos, DNS, despliegues ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma completa y reproducible las rutas, pantallas y superficies que hoy pueden confundirse con AURA y separar cuatro capas que no son equivalentes:
+
+```text
+RUTA PROPIA DE AURA
+!= REFERENCIA O PLACEHOLDER DE AURA
+
+SUPERFICIE ADMINISTRATIVA RELACIONADA
+!= OWNERSHIP DE AURA
+
+CONSUMIDOR PUBLICO
+!= APLICACION ADMINISTRATIVA
+
+REGISTRO DE NAVEGACION
+!= EXISTENCIA FISICA DE TODAS LAS RUTAS
+```
+
+La conclusión vigente es:
+
+```text
+REPOSITORIOS_STANDALONE_AURA = 0
+RUTAS_PROPIAS_AURA = 0
+PANTALLAS_PROPIAS_AURA = 0
+NAVEGACION_RUNTIME_AURA = 0
+PANTALLAS_REGISTRADAS_RUNTIME_AURA = 0
+
+REFERENCIAS_RUNTIME_AURA = 7
+REFERENCIAS_TEMPLATE_NO_RUNTIME = 1
+
+RUTAS_ADMINISTRATIVAS_RELACIONADAS_EN_VISO = 7
+SUPERFICIES_INTERACTIVAS_SUBORDINADAS_EN_VISO = 9
+ROUTE_HANDLERS_RELACIONADOS_EN_VISO = 1
+
+RUTAS_PUBLICAS_CONSUMIDORAS_EN_VENTO_GROUP = 7
+RUTAS_PUBLICAS_QUE_RENDERIZAN_CONTENIDO = 6
+RUTAS_PUBLICAS_DE_REDIRECCION = 1
+```
+
+Este inventario no transfiere propiedad y no convierte ninguna superficie existente en AURA.
+
+---
+
+#### 2. Reconciliación topológica
+
+El mini-bloque `AURA-AUD-001..012` conserva:
+
+```text
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+```
+
+`AURA-AUD-004` produce un snapshot documental único del estado observado.
+
+No crea instancia física, no modifica código, no materializa navegación y no habilita el roadmap de AURA.
+
+La decisión sobre relación funcional y ownership con VISO permanece reservada a `AURA-AUD-007`; continuidad, reemplazo o retiro permanece reservada a `AURA-AUD-010`.
+
+---
+
+#### 3. Fuentes consumidas
+
+La auditoría consume:
+
+1. `AURA-AUD-001`, que confirmó ausencia de repositorio standalone AURA;
+2. `AURA-AUD-002`, que confirmó ausencia de producto AURA funcional;
+3. `AURA-AUD-003`, que confirmó cero usuarios efectivos de AURA;
+4. `AUTH-UI-010`, que materializó `AURA-CURRENT-EXISTENCE-REGISTER-001` y los inventarios actuales de superficies;
+5. el Registro 04A de AURA, especialmente la cobertura vigente del inventario y ownership de superficies;
+6. los repositorios runtime actuales de VISO, NEXO, FOGO, ORIGO, PULSO y SHELL;
+7. el repositorio público `Vento-Group`;
+8. el estado remoto de `apps`, `app_navigation_items` y `app_screen_registry`.
+
+---
+
+#### 4. Contrato de inventario
+
+Se fija:
+
+```text
+AURA_ROUTE_SURFACE_INVENTORY_CONTRACT = AURA-CURRENT-ROUTE-SURFACE-INVENTORY-001
+```
+
+Toda identidad inventariada conserva:
+
+- ID estable;
+- propietario actual;
+- patrón de ruta cuando aplica;
+- tipo estático, dinámico, redirección, componente o referencia;
+- archivo fuente;
+- estado observado;
+- relación con AURA;
+- frontera de ownership.
+
+Una ruta o pantalla solo se clasifica como propia de AURA cuando exista evidencia runtime de ownership AURA. Relación funcional, branding, URL reservada o intención futura no bastan.
+
+---
+
+#### 5. Estado propio de AURA
+
+`AURA-CURRENT-EXISTENCE-REGISTER-001` queda ratificado:
+
+| Elemento | Resultado actual | Interpretación |
+| --- | ---: | --- |
+| repositorio standalone AURA | 0 | no existe aplicación propietaria independiente |
+| rutas propias AURA | 0 | no existe App Router o equivalente AURA observado |
+| pantallas propias AURA | 0 | no existe superficie runtime propia |
+| filas `app_navigation_items` con `app_code = aura` | 0 | no existe navegación runtime AURA |
+| filas activas de navegación AURA | 0 | no existe menú habilitado |
+| filas `app_screen_registry` con `app_code = aura` | 0 | no existe pantalla registrada |
+| pantallas disponibles registradas AURA | 0 | no existe superficie habilitada |
+| fila `apps` con `code = aura` | 1 | existe identidad de aplicación, no producto funcional |
+
+La fila del catálogo `apps` no contradice la ausencia de rutas y pantallas: representa identidad canónica, no materialización.
+
+---
+
+#### 6. Referencias runtime y template de AURA
+
+Las referencias visibles se mantienen separadas de una implementación real:
+
+| ID | Repositorio | Archivo fuente | Representación | Estado |
+| --- | --- | --- | --- | --- |
+| `AURA-PLACEHOLDER-001` | `vento-nexo` | `src/components/vento/standard/vento-shell.tsx` | AppSwitcher tile | `soon` |
+| `AURA-PLACEHOLDER-002` | `vento-fogo` | `src/components/vento/standard/vento-shell.tsx` | AppSwitcher tile | `soon` |
+| `AURA-PLACEHOLDER-003` | `vento-origo` | `src/components/vento/standard/vento-shell.tsx` | AppSwitcher tile | `soon` |
+| `AURA-PLACEHOLDER-004` | `vento-pulso` | `src/components/vento/standard/vento-shell.tsx` | AppSwitcher tile | `soon` |
+| `AURA-PLACEHOLDER-005` | `vento-viso` | `src/components/vento/standard/vento-shell.tsx` | AppSwitcher tile | `soon` |
+| `AURA-PLACEHOLDER-006` | `vento-shell` | `src/app/login/page.tsx` | metadata de login AURA con host no disponible | referencia activa |
+| `AURA-PLACEHOLDER-007` | `vento-shell` | `src/app/login/page.tsx` | chip visible AURA en aplicaciones conectadas | referencia activa |
+| `AURA-TEMPLATE-001` | `vento-shell` | `templates/app-shell-standard/src/components/vento/standard/app-switcher.tsx` | entrada reutilizable de template | `soon`, no runtime |
+
+Las siete referencias runtime y la referencia de template no se contabilizan como rutas o pantallas propias.
+
+---
+
+#### 7. Rutas administrativas relacionadas en VISO
+
+Se ratifica `AURA-CURRENT-ADMIN-ROUTE-INVENTORY-001`:
+
+| ID | Patrón | Tipo | Archivo fuente | Superficie | Owner actual |
+| --- | --- | --- | --- | --- | --- |
+| `AURA-CURRENT-ADMIN-ROUTE-001` | `/website-cms` | `STATIC` | `src/app/website-cms/page.tsx` | panel CMS, filtros, tarjetas y bloques | VISO |
+| `AURA-CURRENT-ADMIN-ROUTE-002` | `/website-cms/venues` | `STATIC` | `src/app/website-cms/venues/page.tsx` | restaurantes, completitud e importación desde PASS | VISO |
+| `AURA-CURRENT-ADMIN-ROUTE-003` | `/website-cms/items/new` | `STATIC` | `src/app/website-cms/items/new/page.tsx` | alta de restaurante, empleo, servicio, evento o app | VISO |
+| `AURA-CURRENT-ADMIN-ROUTE-004` | `/website-cms/blocks/new` | `STATIC` | `src/app/website-cms/blocks/new/page.tsx` | alta de bloque editorial | VISO |
+| `AURA-CURRENT-ADMIN-ROUTE-005` | `/website-cms/items/[id]` | `DYNAMIC` | `src/app/website-cms/items/[id]/page.tsx` | edición y eliminación de tarjeta | VISO |
+| `AURA-CURRENT-ADMIN-ROUTE-006` | `/website-cms/blocks/[id]` | `DYNAMIC` | `src/app/website-cms/blocks/[id]/page.tsx` | edición de bloque editorial | VISO |
+| `AURA-CURRENT-ADMIN-ROUTE-007` | `/website-cms/venues/[slug]` | `DYNAMIC` | `src/app/website-cms/venues/[slug]/page.tsx` | editor y previsualización de restaurante | VISO |
+
+Distribución:
+
+```text
+TOTAL = 7
+STATIC = 4
+DYNAMIC = 3
+OWNER = VISO
+```
+
+Ninguna se renombra ni se contabiliza como ruta AURA.
+
+---
+
+#### 8. Superficies interactivas subordinadas en VISO
+
+Se ratifica `AURA-CURRENT-INTERNAL-SURFACE-INVENTORY-001`:
+
+| ID | Tipo | Archivo fuente | Comportamiento |
+| --- | --- | --- | --- |
+| `AURA-CURRENT-SURFACE-001` | `DASHBOARD` | `src/app/website-cms/page.tsx` | panel, filtros, accesos rápidos y listados |
+| `AURA-CURRENT-SURFACE-002` | `CREATE_FORM` | `src/app/website-cms/items/new/page.tsx` | creación de tarjetas de contenido |
+| `AURA-CURRENT-SURFACE-003` | `EDIT_FORM` | `src/app/website-cms/items/[id]/page.tsx` | edición, completitud y publicación de tarjetas |
+| `AURA-CURRENT-SURFACE-004` | `DELETE_CONTROL` | `src/app/website-cms/items/[id]/page.tsx` | eliminación física de tarjeta |
+| `AURA-CURRENT-SURFACE-005` | `CREATE_FORM` | `src/app/website-cms/blocks/new/page.tsx` | creación de bloque editorial |
+| `AURA-CURRENT-SURFACE-006` | `EDIT_FORM` | `src/app/website-cms/blocks/[id]/page.tsx` | edición y publicación de bloque |
+| `AURA-CURRENT-SURFACE-007` | `IMPORT_AND_LIST` | `src/app/website-cms/venues/page.tsx` | importación y listado de restaurantes |
+| `AURA-CURRENT-SURFACE-008` | `DETAIL_EDITOR_PREVIEW` | `src/app/website-cms/venues/[slug]/page.tsx` | tarjeta, hero, galería y vista pública |
+| `AURA-CURRENT-SURFACE-009` | `MEDIA_UPLOAD` | `src/components/viso/website-media-upload-field.tsx` | carga de imagen o video y captura de URL pública |
+
+Estas nueve unidades interactivas están contenidas dentro de las siete rutas administrativas y no incrementan el conteo de páginas.
+
+---
+
+#### 9. Frontera API relacionada
+
+La superficie de carga de media consume una frontera no visual:
+
+| ID | Patrón | Método | Archivo fuente | Owner |
+| --- | --- | --- | --- | --- |
+| `AURA-CURRENT-API-001` | `/api/viso/upload-website-media` | `POST` | `src/app/api/viso/upload-website-media/route.ts` | VISO |
+
+El route handler se registra como dependencia técnica, no como pantalla.
+
+---
+
+#### 10. Rutas públicas consumidoras en Vento-Group
+
+Se ratifica `AURA-CURRENT-PUBLIC-CONSUMER-INVENTORY-001`:
+
+| ID | Patrón | Tipo | Comportamiento | Archivo fuente | Consumo |
+| --- | --- | --- | --- | --- | --- |
+| `AURA-CURRENT-PUBLIC-001` | `/` | `STATIC` | `RENDER` | `src/app/page.tsx` | home blocks; items restaurant, job, service y app |
+| `AURA-CURRENT-PUBLIC-002` | `/restaurantes` | `STATIC` | `RENDER` | `src/app/restaurantes/page.tsx` | restaurant items y bloques de restaurantes |
+| `AURA-CURRENT-PUBLIC-003` | `/restaurantes/[slug]` | `DYNAMIC` | `RENDER` | `src/app/restaurantes/[slug]/page.tsx` | restaurant item y detail blocks |
+| `AURA-CURRENT-PUBLIC-004` | `/empleos` | `STATIC` | `RENDER` | `src/app/empleos/page.tsx` | job items |
+| `AURA-CURRENT-PUBLIC-005` | `/servicios` | `STATIC` | `RENDER` | `src/app/servicios/page.tsx` | service items y bloques de servicios |
+| `AURA-CURRENT-PUBLIC-006` | `/ecosistema` | `STATIC` | `RENDER` | `src/app/ecosistema/page.tsx` | app items |
+| `AURA-CURRENT-PUBLIC-007` | `/eventos` | `STATIC` | `REDIRECT_TO_/restaurantes` | `src/app/eventos/page.tsx` | no consume eventos |
+
+Distribución:
+
+```text
+TOTAL = 7
+STATIC = 6
+DYNAMIC = 1
+RENDER = 6
+REDIRECT = 1
+OWNER = Vento-Group
+```
+
+Estas rutas son consumidoras públicas de contenido; no son pantallas de AURA.
+
+---
+
+#### 11. Navegación registrada y divergencias observadas
+
+El snapshot remoto de navegación confirma:
+
+| Registro | Cantidad | Interpretación |
+| --- | ---: | --- |
+| navegación AURA | 0 | no existe menú AURA |
+| pantallas registradas AURA | 0 | no existe screen registry AURA |
+| navegación VISO bajo `/website-cms` | 2 | solo dos accesos están materializados en navegación |
+| screen registry VISO bajo `/website-cms` | 0 | la existencia física de las siete rutas no depende del registro de pantallas |
+
+Las dos entradas VISO observadas son:
+
+| Item | Ruta | Permiso registrado | Estado |
+| --- | --- | --- | --- |
+| `website_cms` | `/website-cms` | `viso.website_cms.read` | activo |
+| `website_venues` | `/website-cms/venues` | `viso.access` | activo |
+
+Este snapshot no redefine autorización. La revisión de datos y permisos corresponde a `AURA-AUD-006` y las decisiones de seguridad posteriores.
+
+Se conservan además dos divergencias ya detectadas:
+
+1. `/eventos` existe en el consumidor público pero redirige a `/restaurantes`; la categoría administrativa `event` no tiene superficie pública equivalente.
+2. el editor VISO escribe claves `gallery_1..3` con tipo `gallery_media`, mientras el consumidor público de restaurante busca `galeria_` y `galeria_media`.
+
+`AURA-AUD-004` registra estas divergencias como parte del inventario; no las corrige.
+
+---
+
+#### 12. Huella remota reproducible
+
+Snapshot de archivos verificados en `main`:
+
+| Identidad | Repositorio | Archivo | Blob SHA |
+| --- | --- | --- | --- |
+| `AURA-CURRENT-ADMIN-ROUTE-001` | `vento-group-sas/vento-viso` | `src/app/website-cms/page.tsx` | `f98e79114c59c1640d6f6451415ea12a3fbb36ca` |
+| `AURA-CURRENT-ADMIN-ROUTE-002` | `vento-group-sas/vento-viso` | `src/app/website-cms/venues/page.tsx` | `1586e6170fadef42f4d908240e16880ccc0c1058` |
+| `AURA-CURRENT-ADMIN-ROUTE-003` | `vento-group-sas/vento-viso` | `src/app/website-cms/items/new/page.tsx` | `8b2c4da4766aa96310ce35ec0d276f44afb8d766` |
+| `AURA-CURRENT-ADMIN-ROUTE-004` | `vento-group-sas/vento-viso` | `src/app/website-cms/blocks/new/page.tsx` | `1538090edae4d75f46d1f6dcc40681a45444bad5` |
+| `AURA-CURRENT-ADMIN-ROUTE-005` | `vento-group-sas/vento-viso` | `src/app/website-cms/items/[id]/page.tsx` | `34ba7046b6f42f366c3a13c00109d9d552800111` |
+| `AURA-CURRENT-ADMIN-ROUTE-006` | `vento-group-sas/vento-viso` | `src/app/website-cms/blocks/[id]/page.tsx` | `c415fc1723d4fb84da0f9939ea59c847fac307b7` |
+| `AURA-CURRENT-ADMIN-ROUTE-007` | `vento-group-sas/vento-viso` | `src/app/website-cms/venues/[slug]/page.tsx` | `707762d4cbf0e5beb2c66624de0563822e290176` |
+| `AURA-CURRENT-SURFACE-009` | `vento-group-sas/vento-viso` | `src/components/viso/website-media-upload-field.tsx` | `778ba094e474c5427319f4c0c36cdfd47339743c` |
+| `AURA-CURRENT-API-001` | `vento-group-sas/vento-viso` | `src/app/api/viso/upload-website-media/route.ts` | `e20962c8217820da1ff0ce3f7355cb68800add4b` |
+| `AURA-CURRENT-PUBLIC-001` | `carlosibarraariza/Vento-Group` | `src/app/page.tsx` | `533aa53e9adcffc5b20020758c627030a93344ac` |
+| `AURA-CURRENT-PUBLIC-002` | `carlosibarraariza/Vento-Group` | `src/app/restaurantes/page.tsx` | `09b14aabf7c5968f4165aec7587e8e15b1769c95` |
+| `AURA-CURRENT-PUBLIC-003` | `carlosibarraariza/Vento-Group` | `src/app/restaurantes/[slug]/page.tsx` | `cefd15e877e1b8acf9077d6e164ba5c3b99be5d3` |
+| `AURA-CURRENT-PUBLIC-004` | `carlosibarraariza/Vento-Group` | `src/app/empleos/page.tsx` | `40396a9baa9f831e7ce38afde86937c3a434d170` |
+| `AURA-CURRENT-PUBLIC-005` | `carlosibarraariza/Vento-Group` | `src/app/servicios/page.tsx` | `fa0992f3e4b419b40b622cf6d64ece7dde4398eb` |
+| `AURA-CURRENT-PUBLIC-006` | `carlosibarraariza/Vento-Group` | `src/app/ecosistema/page.tsx` | `a1e253dbe0d6ba62b7751217fc9baf6deff86582` |
+| `AURA-CURRENT-PUBLIC-007` | `carlosibarraariza/Vento-Group` | `src/app/eventos/page.tsx` | `5a2684f889afbdd813eaba1ba0a898ccb914557e` |
+| `AURA-PLACEHOLDER-001` | `vento-group-sas/vento-nexo` | `src/components/vento/standard/vento-shell.tsx` | `7af860236ae90b845e65dcbbc5aa1b7dcb752f8d` |
+| `AURA-PLACEHOLDER-002` | `vento-group-sas/vento-fogo` | `src/components/vento/standard/vento-shell.tsx` | `0b5b22aad48c9f46b5d42331c5eb3f74c169175a` |
+| `AURA-PLACEHOLDER-003` | `vento-group-sas/vento-origo` | `src/components/vento/standard/vento-shell.tsx` | `6efde9814c6b5db23674d9262d015a60043d0af9` |
+| `AURA-PLACEHOLDER-004` | `vento-group-sas/vento-pulso` | `src/components/vento/standard/vento-shell.tsx` | `87371e3b29332073ac0ccc8cf1edc02ddb53376d` |
+| `AURA-PLACEHOLDER-005` | `vento-group-sas/vento-viso` | `src/components/vento/standard/vento-shell.tsx` | `e5672888d53383898db30dc1e7004b361de4ffb8` |
+| `AURA-PLACEHOLDER-006/007` | `vento-group-sas/vento-shell` | `src/app/login/page.tsx` | `5c0633050f78b3f663f14abf117b60f4a8c15411` |
+| `AURA-TEMPLATE-001` | `vento-group-sas/vento-shell` | `templates/app-shell-standard/src/components/vento/standard/app-switcher.tsx` | `09b4663a282fa12e1d32a10e21f74b1f16cffdad` |
+
+Esta huella sirve como línea base de comparación para cambios posteriores; no congela `main` ni sustituye el lifecycle de cada repositorio.
+
+---
+
+#### 13. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+La cobertura de inventario, ownership, drift y divergencias de superficies ya existe en el registro canónico vigente. Esta tarea consume y confirma esa cobertura sin crear ni modificar filas.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+---
+
+#### 14. Cobertura de prueba vigente reutilizada
+
+La trazabilidad reutilizada incluye:
+
+- `TREQ-AURA-004`: cero repositorios, rutas y pantallas propias; separación de placeholders;
+- `TREQ-AURA-005`: delta explícito y reproducible ante cambios del inventario;
+- `TREQ-AURA-006`: referencias AURA permanecen no disponibles mientras continúe bloqueada;
+- `TREQ-AURA-007`: siete rutas VISO y siete rutas públicas conservan su ownership actual;
+- `TREQ-AURA-017`: compatibilidad entre editor de restaurante y consumidor público;
+- `TREQ-AURA-022`: divergencia de la categoría `event` frente a `/eventos`;
+- `TREQ-AURA-023`: contrato consistente de claves y tipos entre productor y consumidor.
+
+Esta sección documenta cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 15. Handoff
+
+`AURA-AUD-005` recibe un inventario cerrado de superficies:
+
+```text
+AURA_PROPIA
+- rutas = 0
+- pantallas = 0
+- navegacion = 0
+
+REFERENCIAS_AURA
+- runtime = 7
+- template = 1
+
+ADMINISTRACION_RELACIONADA
+- owner = VISO
+- rutas = 7
+- superficies_interactivas = 9
+- route_handlers = 1
+
+CONSUMO_PUBLICO
+- owner = Vento-Group
+- rutas = 7
+- render = 6
+- redirect = 1
+```
+
+La siguiente tarea inventariará procesos de marketing sobre estas superficies y fronteras sin modificar su ownership.
+
+---
+
+#### 16. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La redacción anticipada no ejecuta la batería del checkout; el build canónico se ejecutará al incorporar la tarea. |
+| LOCAL | PASS | El artefacto fue auditado estructuralmente: una tarea, metadata obligatoria completa, continuidad exacta, inventarios completos, cero placeholders y cero TREQ dentro de la sección de cero cambios. |
+| REMOTA | PASS | Se verificaron en `main` las siete rutas administrativas VISO, las siete rutas públicas de Vento-Group, el componente de media, el route handler, cinco AppSwitchers, login y template; además, consultas de solo lectura confirmaron cero navegación y cero pantallas registradas para `aura`. |
+| OPERATIVA | NOT_APPLICABLE | La tarea inventaría superficies y no prueba sesiones humanas, navegación productiva ni disponibilidad de un producto AURA. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se materializan rutas, pantallas, navegación, APIs ni despliegues. |
+
+---
+
+#### 17. Criterios de aceptación
+
+- [x] AURA conserva cero rutas propias y cero pantallas propias.
+- [x] Se distingue la identidad canónica de AURA de una aplicación runtime.
+- [x] Se inventarían siete referencias runtime y una referencia template sin contarlas como producto.
+- [x] Se inventarían exactamente siete rutas administrativas actuales en VISO.
+- [x] La distribución VISO queda en cuatro rutas estáticas y tres dinámicas.
+- [x] Se inventarían exactamente nueve superficies interactivas subordinadas.
+- [x] El upload de media se registra como componente y route handler, no como página adicional.
+- [x] Se inventarían exactamente siete rutas públicas consumidoras en Vento-Group.
+- [x] Se distinguen seis rutas públicas de render y una redirección.
+- [x] `/eventos` se registra como ruta real con redirección a `/restaurantes`.
+- [x] La divergencia `gallery_` frente a `galeria_` queda registrada sin corregirse.
+- [x] El snapshot de Supabase confirma cero navegación y cero pantallas registradas para `aura`.
+- [x] Las dos entradas de navegación VISO relacionadas se separan de la existencia física de las siete rutas.
+- [x] Cada ruta y referencia principal conserva owner, archivo fuente y huella remota.
+- [x] No se transfiere ownership desde VISO o Vento-Group.
+- [x] No se crean requisitos de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecutan cambios físicos.
+
+---
+
+#### 18. Límites
+
+Esta tarea no:
+
+- crea un repositorio AURA;
+- crea rutas o pantallas AURA;
+- registra pantallas o navegación AURA;
+- renombra rutas de VISO;
+- migra el CMS;
+- mueve contenido a otro repositorio;
+- corrige `/eventos`;
+- corrige las claves `gallery_` y `galeria_`;
+- modifica server actions o route handlers;
+- redefine permisos o protección de servidor;
+- inventaría procesos de marketing, reservados a `AURA-AUD-005`;
+- inventaría exhaustivamente datos y permisos, reservados a `AURA-AUD-006`;
+- decide la relación de ownership futura con VISO, reservada a `AURA-AUD-007`;
+- decide continuidad, reemplazo o retiro, reservado a `AURA-AUD-010`;
+- modifica Supabase;
+- crea ni modifica requisitos de prueba;
+- modifica el Registro 04A;
+- inicia una instancia física o package.
+
+---
+
+#### 19. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-003 — Confirmar usuarios actuales`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-004 — Inventariar rutas y pantallas`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-005 — Inventariar procesos de marketing`
 ### [ ] AURA-AUD-005 — Inventariar procesos de marketing
 ### [ ] AURA-AUD-006 — Identificar datos y permisos utilizados
 ### [ ] AURA-AUD-007 — Definir relación con VISO
