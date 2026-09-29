@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1487** |
+| Tareas aprobadas | **1488** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **109** |
+| Tareas no iniciadas | **108** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **93.17% (1487/1596)** |
+| Porcentaje de completamiento | **93.23% (1488/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-AUD-001 — Confirmar repositorio propietario** |
-| Tarea actual | **AURA-AUD-002 — Confirmar estado real del producto** |
+| Última tarea aprobada | **AURA-AUD-002 — Confirmar estado real del producto** |
+| Tarea actual | **AURA-AUD-003 — Confirmar usuarios actuales** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUD-003 — Confirmar usuarios actuales** |
+| Siguiente tarea | **AURA-AUD-004 — Inventariar rutas y pantallas** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 1 de 37 aprobadas; AURA-AUD-002 pendiente** |
+| Progreso del bloque | **BLOQUE W: 2 de 37 aprobadas; AURA-AUD-003 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-AUD-002** |
+| Carril documental | **ACTIVO — AURA-AUD-003** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-AUD-001` — Confirmar repositorio propietario |
-| Tarea actual | `AURA-AUD-002` — Confirmar estado real del producto — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUD-003` — Confirmar usuarios actuales |
+| Última aprobada | `AURA-AUD-002` — Confirmar estado real del producto |
+| Tarea actual | `AURA-AUD-003` — Confirmar usuarios actuales — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUD-004` — Inventariar rutas y pantallas |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 1 DE 37 APROBADAS — ACTUAL AURA-AUD-002** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 2 DE 37 APROBADAS — ACTUAL AURA-AUD-003** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-AUD-001 — Confirmar repositorio propietario
-        ↓
-TAREA ACTUAL
 AURA-AUD-002 — Confirmar estado real del producto
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUD-003 — Confirmar usuarios actuales
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUD-004 — Inventariar rutas y pantallas
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 1 de 37 tareas aprobadas
+BLOQUE W — 2 de 37 tareas aprobadas
 ```

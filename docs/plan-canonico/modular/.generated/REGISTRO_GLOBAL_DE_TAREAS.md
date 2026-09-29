@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1487** |
+| Aprobadas | **1488** |
 | En propuesta | **0** |
-| No iniciadas | **109** |
+| No iniciadas | **108** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.17% (1487/1596)** |
+| Porcentaje de completamiento | **93.23% (1488/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **109** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1388** |
+| ⏸ NO_EVALUADA | **108** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1389** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-AUD-001` — Confirmar repositorio propietario | ✅ APROBADA |
-| Tarea actual | `AURA-AUD-002` — Confirmar estado real del producto | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-AUD-003` — Confirmar usuarios actuales | ⬜ NO INICIADA |
+| Última aprobada | `AURA-AUD-002` — Confirmar estado real del producto | ✅ APROBADA |
+| Tarea actual | `AURA-AUD-003` — Confirmar usuarios actuales | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-AUD-004` — Inventariar rutas y pantallas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1436,7 +1436,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-QA-001` | Probar flujo completo de acumulación | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-QA-002` | Probar flujo completo de redención | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-001` | Confirmar repositorio propietario | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-002` | Confirmar estado real del producto | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-002` | Confirmar estado real del producto | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-003` | Confirmar usuarios actuales | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-004` | Inventariar rutas y pantallas | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-005` | Inventariar procesos de marketing | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
