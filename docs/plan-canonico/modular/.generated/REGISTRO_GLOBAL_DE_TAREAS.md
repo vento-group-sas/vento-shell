@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1473** |
+| Aprobadas | **1474** |
 | En propuesta | **0** |
-| No iniciadas | **123** |
+| No iniciadas | **122** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **92.29% (1473/1596)** |
+| Porcentaje de completamiento | **92.36% (1474/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **123** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1374** |
+| ⏸ NO_EVALUADA | **122** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1375** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-009` — Definir inicio para gerente general | ✅ APROBADA |
-| Tarea actual | `VISO-UX-010` — Definir inicio para gerente de sede | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-011` — Definir inicio para auxiliar administrativa | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-010` — Definir inicio para gerente de sede | ✅ APROBADA |
+| Tarea actual | `VISO-UX-011` — Definir inicio para auxiliar administrativa | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-012` — Definir inicio para contador | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -722,7 +722,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-007` | Crear sección Auditoría | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-008` | Definir inicio para propietario | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-009` | Definir inicio para gerente general | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-010` | Definir inicio para gerente de sede | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-010` | Definir inicio para gerente de sede | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-011` | Definir inicio para auxiliar administrativa | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-012` | Definir inicio para contador | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-013` | Limitar información según alcance territorial | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
