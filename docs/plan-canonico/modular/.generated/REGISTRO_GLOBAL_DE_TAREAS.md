@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1475** |
+| Aprobadas | **1476** |
 | En propuesta | **0** |
-| No iniciadas | **121** |
+| No iniciadas | **120** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **92.42% (1475/1596)** |
+| Porcentaje de completamiento | **92.48% (1476/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **121** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1376** |
+| ⏸ NO_EVALUADA | **120** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1377** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-011` — Definir inicio para auxiliar administrativa | ✅ APROBADA |
-| Tarea actual | `VISO-UX-012` — Definir inicio para contador | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-013` — Limitar información según alcance territorial | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-012` — Definir inicio para contador | ✅ APROBADA |
+| Tarea actual | `VISO-UX-013` — Limitar información según alcance territorial | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-014` — Mostrar origen de permisos de forma comprensible | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -724,7 +724,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-009` | Definir inicio para gerente general | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-010` | Definir inicio para gerente de sede | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-011` | Definir inicio para auxiliar administrativa | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-012` | Definir inicio para contador | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-012` | Definir inicio para contador | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-013` | Limitar información según alcance territorial | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-014` | Mostrar origen de permisos de forma comprensible | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-015` | Mostrar conflictos antes de guardar | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |

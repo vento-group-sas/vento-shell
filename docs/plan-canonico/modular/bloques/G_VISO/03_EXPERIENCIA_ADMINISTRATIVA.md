@@ -26177,7 +26177,1822 @@ La identidad exacta de cualquier unidad física futura se resolverá por el pack
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-012 — Definir inicio para contador`
-### [ ] VISO-UX-012 — Definir inicio para contador
+### ✅ VISO-UX-012 — Definir inicio para contador
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-011 — Definir inicio para auxiliar administrativa
+**Tarea siguiente:** VISO-UX-013 — Limitar información según alcance territorial
+**Tipo de tarea:** definición técnico-documental de la proyección `Inicio` de VISO para el rol base canónico `contador`; especializa la entrada compartida para priorizar consulta financiera, procesamiento documental contable, conciliación, análisis de costos y evidencias fuente autorizadas mediante `G-FIN`, `G-SRC`, `ORG-REF` y `NT-APP`, sin convertir globalidad financiera en administración organizacional general, sin conceder gestión laboral, seguridad, operación física, aprobación universal, cancelación sensible ni acceso irrestricto a dominios ajenos, sin duplicar mutaciones de aplicaciones propietarias y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la proyección `Inicio` para `contador` definido sobre la entrada especial `/`; la raíz física actual de `vento-viso` permanece AS-IS y requiere materialización posterior por `implementation_unit_id` para aplicar composición por autorización financiera efectiva, minimización, segregación de funciones, evidencia fuente, período, procedencia y handoffs seguros detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, la entrada `/`, componentes, navegación runtime, permisos, matrices, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar `Inicio` de VISO cuando la persona resuelta posee el rol base canónico `contador`, de modo que vea primero el trabajo financiero autorizado que necesita revisar, conciliar, documentar, analizar o procesar sin convertir la página en una consola administrativa general, una superficie de recursos humanos, un panel operativo ni un bypass de los owners financieros.
+
+La experiencia debe responder, en este orden:
+
+```text
+¿QUÉ INFORMACIÓN FINANCIERA REQUIERE ATENCIÓN?
+¿QUÉ DOCUMENTOS O EVIDENCIAS FUENTE DEBO REVISAR?
+¿QUÉ DIFERENCIAS REQUIEREN CONCILIACIÓN?
+¿QUÉ FACTURAS INTERNAS PUEDO CONSULTAR, GENERAR O EMITIR?
+¿QUÉ INDICADORES FINANCIEROS PUEDO ANALIZAR?
+¿QUÉ ACCIÓN PERTENECE A NUMERA, NEXO, ORIGO, FOGO U OTRO OWNER?
+```
+
+`Inicio` organiza trabajo y contexto. No convierte visibilidad en autoridad, lectura en mutación ni un rol financiero especializado en administración global.
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+Se conserva la entrada compartida de VISO sobre `/` como superficie especial de inicio. No se crea una ruta paralela para `contador`.
+
+La entrada debe seguir resolviendo primero identidad, sesión, acceso a VISO, contexto y autorización efectiva antes de construir contenido. La existencia de la ruta no concede datos ni acciones.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-002..007`
+
+Se conservan los contratos transversales de composición, navegación, ownership, estados, enlaces y separación entre información presentada y autoridad real.
+
+En particular:
+
+- una tarjeta no crea un permiso;
+- un enlace no concede acceso al destino;
+- una cifra no autoriza drill-down;
+- una mutación debe pertenecer a la aplicación propietaria;
+- el home no duplica una bandeja global de SHELL;
+- la proyección por rol no crea una segunda matriz de autorización.
+
+---
+
+#### 4. Handoff recibido de `VISO-UX-011`
+
+La tarea anterior fijó que un home especializado no es una reducción proporcional de otro rol. `contador` se deriva de su propia matriz `AUTH-RBAC-006`.
+
+Por tanto, la composición financiera:
+
+- no hereda `G-FUNC` de `auxiliar_administrativa`;
+- no hereda cobertura de personal;
+- no hereda programación ni vacantes;
+- no hereda acciones de invitación;
+- no hereda capacidades gerenciales;
+- sí puede mostrar capacidades `G-FIN` y evidencia `G-SRC` cuando la clave exacta esté concedida;
+- conserva la misma entrada y pantalla canónica sin convertir su nombre histórico en autoridad ejecutiva.
+
+---
+
+#### 5. Naturaleza, topología y gate
+
+`VISO-UX-012` es una definición documental reutilizable. No ejecuta materialización física.
+
+Contrato de materialización futura:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE = <task_id>::<implementation_unit_id>
+```
+
+La existencia de este contrato no autoriza ninguna instancia física. El package propietario, la unidad de implementación y el gate aplicable se resuelven posteriormente.
+
+---
+
+#### 6. Contrato de `Inicio` para contador
+
+```text
+VISO_ACCOUNTANT_HOME_CONTRACT = VISO-ACCOUNTANT-HOME-001
+HOME_PROFILE = contador
+PRIMARY_ENTRY_LABEL = Inicio
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-001
+PRIMARY_OBSERVED_ROUTE = /
+CANONICAL_SCREEN_TARGET = VSCREEN-0007
+CANONICAL_SCREEN_NAME = Inicio ejecutivo y gerencial
+PRIMARY_CANONICAL_PROCESS = VPROC-0001
+PRIMARY_CANONICAL_STEP = VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK
+SCREEN_MODALITY = OWNER_WORKSPACE
+PRIMARY_INTERACTION_ROLE = MONITOR
+PRIMARY_STEP_POSITION = CROSS_CUTTING
+HOME_IS_ADMIN_DOMAIN = NO
+HOME_PROFILE_IS_AUTHORIZATION = NO
+HOME_IS_GLOBAL_TASK_INBOX = NO
+HOME_IS_CROSS_OWNER_EDITOR = NO
+HOME_SCOPE_MODEL = G-FIN + G-SRC + ORG-REF + NT-APP
+HOME_GLOBAL_FINANCIAL_SCOPE_IS_GLOBAL_ADMIN = NO
+HOME_SOURCE_EVIDENCE_ALLOWS_SOURCE_MUTATION = NO
+HOME_CAN_APPROVE_BY_ROLE_NAME = NO
+HOME_CAN_CANCEL_INTERNAL_INVOICE = NO
+TREQ_CHANGES = 0
+```
+
+---
+
+#### 7. Identidad canónica de pantalla
+
+La pantalla sigue siendo `VSCREEN-0007 — Inicio ejecutivo y gerencial`.
+
+Ese nombre pertenece al catálogo de pantallas y no redefine al actor. Para `contador`, la misma pantalla se especializa como inicio financiero dentro de las capacidades expresamente concedidas.
+
+No se crea:
+
+- otra pantalla;
+- otro ID;
+- otra entrada;
+- otra matriz de autorización;
+- una variante denominada “Inicio contable” como superficie canónica separada.
+
+---
+
+#### 8. Proceso principal y límite de decisión
+
+El proceso principal continúa siendo `VPROC-0001`.
+
+La proyección de contador consume únicamente señales financieras o evidencias fuente que puedan integrarse al seguimiento sin otorgar autoridad sobre la decisión empresarial completa.
+
+Una señal visible puede terminar en:
+
+- consulta;
+- análisis;
+- conciliación;
+- preparación documental;
+- generación o emisión expresamente concedida;
+- handoff;
+- escalamiento.
+
+No termina automáticamente en aprobación, cierre de período, cancelación, reversión ni modificación del proceso fuente.
+
+---
+
+#### 9. Paso dominante
+
+El paso dominante permanece:
+
+`VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK — Revisar prioridades y decisiones ejecutivas`.
+
+Para `contador`, “revisar” se interpreta como observar y atender señales financieras autorizadas. No convierte al rol en dirección ni cambia la semántica de su matriz.
+
+---
+
+#### 10. Procesos relacionados
+
+Se conservan como relaciones de la pantalla `VPROC-0061` y `VPROC-0063`.
+
+Su aparición en el home debe estar condicionada por la existencia de una señal financiera o de riesgo relevante y por capacidad autorizada. No habilitan administración integral de mejora ni riesgos empresariales.
+
+---
+
+#### 11. Rol base `contador`
+
+`contador` es un rol funcional financiero especializado.
+
+Su ecuación canónica es:
+
+```text
+CONTADOR
++ PERMISO FINANCIERO EXPLÍCITO
++ ALCANCE GLOBAL ESPECÍFICO
++ RECURSO FINANCIERO O EVIDENCIA FUENTE VÁLIDA
+= ACCIÓN CONTABLE AUTORIZADA
+```
+
+No equivale a:
+
+```text
+administrador global
+gerente
+aprobador universal
+operador físico
+administrador de seguridad
+gestor general de personal
+acceso irrestricto a aplicaciones
+```
+
+---
+
+#### 12. Matriz canónica consumida
+
+La fuente de autorización de referencia es `AUTH-RBAC-006 — Crear matriz de contador`.
+
+Resultado cuantitativo:
+
+| Categoría | Cantidad |
+| --- | ---: |
+| permisos evaluados | 112 |
+| concesiones directas | 45 |
+| componentes base de doble condición | 0 |
+| capacidades no concedidas | 67 |
+
+Distribución por aplicación:
+
+| Aplicación | Evaluados | Concedidos | No concedidos |
+| --- | ---: | ---: | ---: |
+| SHELL | 1 | 1 | 0 |
+| ANIMA | 10 | 1 | 9 |
+| AURA | 1 | 0 | 1 |
+| FOGO | 6 | 3 | 3 |
+| NEXO | 63 | 27 | 36 |
+| NUMERA | 6 | 6 | 0 |
+| ORIGO | 5 | 4 | 1 |
+| VENTO PASS | 1 | 0 | 1 |
+| PULSO | 2 | 0 | 2 |
+| VISO | 17 | 3 | 14 |
+| **Total** | **112** | **45** | **67** |
+
+El home no puede aumentar estos conteos ni inferir permisos faltantes.
+
+---
+
+#### 13. Perfiles de alcance
+
+La composición reconoce únicamente los perfiles definidos por la matriz del contador:
+
+| Perfil | Uso en `Inicio` |
+| --- | --- |
+| `NT-APP` | entrada a una aplicación; no concede capacidades internas |
+| `G-FIN` | alcance organizacional ordinario para la capacidad financiera exacta concedida |
+| `G-SRC` | evidencia fuente de todas las sedes ordinarias para costeo, conciliación o trazabilidad financiera |
+| `ORG-REF` | referencia organizacional exacta de consulta |
+
+No se interpreta ninguno de estos perfiles como wildcard.
+
+---
+
+#### 14. Semántica de `G-FIN`
+
+`G-FIN` significa globalidad financiera específica.
+
+Reglas:
+
+1. solo existe para la clave concedida;
+2. no concede otra acción sobre el mismo recurso;
+3. no concede acceso a otros dominios;
+4. no convierte al contador en administrador global;
+5. debe respetar período, sensibilidad, segregación, recurso y auditoría;
+6. un agregado `G-FIN` puede cubrir organización ordinaria sin incluir APP-REVIEW, demo, pruebas ni recursos aislados.
+
+---
+
+#### 15. Semántica de `G-SRC`
+
+`G-SRC` habilita lectura de evidencia fuente necesaria para contabilidad.
+
+Ejemplos:
+
+- lotes;
+- órdenes de producción;
+- activos;
+- conteos;
+- movimientos;
+- existencias;
+- traslados;
+- remisiones;
+- órdenes de compra;
+- recepciones;
+- proveedores.
+
+La lectura de evidencia nunca autoriza modificar la fuente, ejecutar la operación, corregir inventario, aprobar variaciones o alterar estados operativos.
+
+---
+
+#### 16. Semántica de `ORG-REF`
+
+`ORG-REF` permite consultar referencias organizacionales necesarias para interpretar información financiera.
+
+Puede incluir empresas, unidades de negocio, productos, presentaciones, categorías o unidades de medida cuando la clave exacta esté concedida.
+
+No habilita creación, edición, eliminación ni gobierno del catálogo.
+
+---
+
+#### 17. Capacidades VISO concedidas al rol
+
+La matriz concede exactamente estas capacidades VISO:
+
+| Permiso | Uso permitido en `Inicio` |
+| --- | --- |
+| `viso.access` | entrada a VISO |
+| `viso.organization.businesses.view` | referencia organizacional de empresas y unidades |
+| `viso.finance.accounting.view` | consulta contable bajo `G-FIN` |
+
+No se agregan permisos por conveniencia visual.
+
+---
+
+#### 18. Capacidades VISO no concedidas
+
+No deben aparecer como capacidad usable del contador:
+
+- actualizaciones técnicas de aplicaciones;
+- trabajadores;
+- calendario del personal;
+- programación;
+- vacantes;
+- simulaciones de autorización;
+- auditoría de autorización;
+- categorías comerciales;
+- bloques de contenido;
+- menú;
+- Website CMS;
+- tarifas de entrega;
+- productos de fidelización;
+- clientes de fidelización.
+
+Una tarjeta AS-IS sobre cualquiera de esas áreas debe retirarse, ocultarse o convertirse en un handoff solo si existe otra capacidad explícita que lo justifique.
+
+---
+
+#### 19. Capacidades `BASE_AND_OPERATIONAL`
+
+`AUTH-RBAC-006` concede **0** componentes base de doble condición.
+
+Por tanto, `Inicio` no puede presentar como disponibles:
+
+- aprobar variaciones;
+- resolver variaciones;
+- confirmar excepciones operativas;
+- ejecutar operación sensible por tener rol contador.
+
+Si una futura responsabilidad adicional habilita una clave de doble condición, esa autorización se resolverá fuera de este contrato base.
+
+---
+
+#### 20. Permisos `OPERATIONAL_ONLY`
+
+Ningún permiso `OPERATIONAL_ONLY` se concede por la matriz base del contador.
+
+La lectura financiera de una evidencia operativa no sustituye turno, check-in, sede, área, rol operativo, dispositivo ni recurso compatibles cuando una operación física requiera ese contexto.
+
+---
+
+#### 21. Autoridad financiera no equivale a autoridad general
+
+El contador puede tener más cobertura organizacional que un gerente de sede sobre una capacidad financiera concreta.
+
+Eso no le da autoridad sobre:
+
+- personal;
+- horarios;
+- vacantes;
+- inventario operativo;
+- producción;
+- logística;
+- seguridad;
+- configuración;
+- contenido;
+- marketing;
+- clientes;
+- owners;
+- roles;
+- permisos.
+
+---
+
+#### 22. Estado AS-IS de la entrada raíz
+
+La raíz actual de `vento-viso`:
+
+- valida acceso a `viso`;
+- crea un cliente administrativo de servidor;
+- cuenta filas directamente;
+- presenta empleados;
+- usuarios de Pass;
+- negocios;
+- colecciones comerciales;
+- productos de fidelización;
+- vacantes;
+- enlaces de staff, Pass, negocios, menú, contenido y CMS.
+
+Ese estado físico existe, pero no constituye el contrato objetivo de `contador`.
+
+---
+
+#### 23. Contenido AS-IS observado
+
+La implementación observada usa conteos de tablas completas para construir un resumen genérico.
+
+Para `contador`, esa composición tiene dos problemas:
+
+1. incluye dominios no concedidos;
+2. no prioriza información financiera ni evidencia fuente autorizada.
+
+La materialización futura debe sustituir la composición genérica por datos autorizados según la matriz efectiva.
+
+---
+
+#### 24. Brecha principal del AS-IS
+
+La brecha principal es semántica y de autorización:
+
+```text
+HOME AS-IS = conteos generales + accesos históricos
+HOME OBJETIVO = trabajo financiero autorizado + evidencia fuente + handoffs seguros
+```
+
+No se corrige agregando más tarjetas. Se corrige resolviendo primero autorización, owner, finalidad financiera y procedencia.
+
+---
+
+#### 25. Arquitectura de información objetivo
+
+El home financiero se organiza en estas regiones:
+
+1. **Contexto financiero autorizado**
+2. **Trabajo financiero pendiente**
+3. **Conciliaciones y diferencias**
+4. **Indicadores financieros autorizados**
+5. **Evidencia fuente**
+6. **Handoffs a owners**
+7. **Alertas de período, frescura o segregación**
+
+Una región se omite si no tiene contenido autorizado.
+
+---
+
+#### 26. Región `Contexto financiero autorizado`
+
+Debe comunicar con claridad:
+
+- rol efectivo;
+- organización ordinaria cubierta por `G-FIN`;
+- finalidad financiera de la vista;
+- período de referencia cuando aplique;
+- moneda y unidad;
+- fuente de actualización;
+- restricciones relevantes.
+
+No debe sugerir que “toda la organización” significa autoridad administrativa global.
+
+---
+
+#### 27. Período y corte
+
+Toda señal sensible que dependa de tiempo debe exponer el período efectivo.
+
+El home distingue:
+
+- período actual;
+- período histórico;
+- período cerrado;
+- dato sin período aplicable.
+
+Un período cerrado no se vuelve editable porque el usuario pueda consultarlo.
+
+---
+
+#### 28. Región `Trabajo financiero pendiente`
+
+Puede agrupar trabajo cuya acción esté expresamente concedida o cuyo siguiente paso sea un handoff claro.
+
+Ejemplos admisibles:
+
+- factura interna lista para revisión;
+- factura interna generable;
+- factura interna emitible bajo precondiciones;
+- diferencia para conciliación;
+- gasto que requiere revisión en NUMERA;
+- reporte disponible para análisis;
+- evidencia fuente incompleta.
+
+No incluye aprobación universal, cierre de período o cancelación no concedida.
+
+---
+
+#### 29. Facturas internas
+
+El contador puede consultar facturas internas mediante `nexo.finance.internal_invoices.view`.
+
+La tarjeta o fila puede mostrar:
+
+- identificador;
+- contraparte;
+- período;
+- importe;
+- estado;
+- documento fuente;
+- fecha;
+- procedencia.
+
+No debe exponer información no necesaria para la finalidad contable.
+
+---
+
+#### 30. Generar facturas internas
+
+`nexo.finance.internal_invoices.generate` está concedido.
+
+La acción exige, como mínimo:
+
+- documento fuente válido;
+- período abierto;
+- numeración válida;
+- contraparte;
+- importes coherentes;
+- idempotencia;
+- actor identificado;
+- auditoría.
+
+Generar una factura no modifica movimientos físicos de inventario.
+
+---
+
+#### 31. Emitir facturas internas
+
+`nexo.finance.internal_invoices.issue` está concedido.
+
+La emisión debe diferenciarse de generación y de cualquier aprobación previa. La UI debe mostrar el estado exacto y bloquear emisión cuando falte una precondición.
+
+El home puede preparar el handoff a la superficie propietaria de emisión; no necesita duplicar el editor completo.
+
+---
+
+#### 32. Cancelación de facturas internas
+
+La cancelación permanece denegada por la matriz base.
+
+No debe existir CTA habilitado que sugiera:
+
+- cancelar;
+- anular;
+- revertir;
+- deshacer emisión.
+
+Si el catálogo futuro separa reversión y autorización, ese cambio requiere nueva definición canónica.
+
+---
+
+#### 33. Gastos
+
+`numera.finance.expenses.view` está concedido.
+
+El home puede mostrar señales agregadas de gastos y enlazar a NUMERA, pero la matriz actual no concede por sí sola una mutación atómica de gasto.
+
+La existencia de `ADM-TASK-074` no sustituye el permiso real.
+
+---
+
+#### 34. Centros de costo
+
+Los centros de costo pueden consultarse en NEXO y NUMERA mediante las claves concedidas.
+
+En `Inicio` se usan como:
+
+- dimensión de filtro;
+- referencia;
+- agrupación;
+- contexto de análisis.
+
+No se editan desde el home.
+
+---
+
+#### 35. Punto de equilibrio
+
+`numera.analytics.break_even.view` está concedido bajo `G-FIN`.
+
+Puede presentarse como indicador financiero autorizado con:
+
+- período;
+- moneda;
+- unidad;
+- fecha de cálculo;
+- fuente;
+- estado de frescura.
+
+No debe convertirse en recomendación automática ni en decisión empresarial.
+
+---
+
+#### 36. Rentabilidad
+
+`numera.analytics.profitability.view` está concedido.
+
+La visualización debe permitir navegar al owner y a la evidencia explicativa disponible sin exponer una capacidad de modificar fuentes.
+
+Rentabilidad es información sensible incluso en modo lectura.
+
+---
+
+#### 37. Reportes financieros
+
+`numera.analytics.financial_reports.view` está concedido.
+
+El home puede mostrar disponibilidad, estado, período y enlace al reporte. Exportar, publicar o integrar información oficial requiere una capacidad atómica específica y no se infiere del permiso de lectura.
+
+---
+
+#### 38. Reportes de margen
+
+`nexo.analytics.margin_reports.view` está concedido.
+
+La señal debe conservar procedencia y período. Un margen negativo o fuera de tolerancia puede priorizarse, pero el home no debe decidir causalidad por sí solo.
+
+---
+
+#### 39. Reportes internos
+
+`nexo.analytics.internal_reports.view` está concedido.
+
+Los reportes pueden actuar como evidencia de análisis, no como fuente automática de autoridad para corregir datos operativos.
+
+---
+
+#### 40. Variaciones internas
+
+`nexo.finance.internal_variances.view` está concedido.
+
+El contador puede consultar variaciones. No recibe por defecto `approve` ni `resolve`.
+
+La UI debe separar claramente:
+
+```text
+VER DIFERENCIA
+≠
+APROBAR DIFERENCIA
+≠
+RESOLVER DIFERENCIA
+```
+
+---
+
+#### 41. Precios internos
+
+`nexo.finance.internal_prices.view` está concedido bajo `G-FIN`.
+
+Los precios internos se tratan como información financiera sensible. La visualización debe evitar exposición innecesaria en pantallas compartidas y registrar consultas relevantes cuando corresponda.
+
+---
+
+#### 42. Evidencia fuente de FOGO
+
+La matriz concede:
+
+- acceso a FOGO;
+- consulta de lotes de producción;
+- consulta de órdenes de producción.
+
+El propósito es costeo, conciliación y trazabilidad. El contador no crea lotes, no ejecuta producción y no recibe recetario operativo por esta finalidad.
+
+---
+
+#### 43. Evidencia fuente de NEXO
+
+La matriz concede una selección amplia de lecturas NEXO para evidencia financiera.
+
+El home no replica todas esas tablas. Resume únicamente señales relevantes y entrega handoffs profundos cuando el análisis requiere detalle.
+
+---
+
+#### 44. Evidencia de inventario
+
+Pueden consultarse, cuando la clave exacta lo permite:
+
+- ajustes;
+- entradas;
+- movimientos;
+- stock;
+- lotes vinculados;
+- traslados;
+- retiros;
+- conteos;
+- conteos iniciales;
+- remisiones.
+
+Todas permanecen de solo lectura para el rol base.
+
+---
+
+#### 45. Evidencia de activos
+
+El contador puede consultar activos, grupos y conteos como evidencia patrimonial.
+
+No puede por rol base:
+
+- crear activos;
+- asignar ubicación;
+- asignar custodia;
+- valorar;
+- mover;
+- corregir físicamente.
+
+El home debe evitar verbos que sugieran esas acciones.
+
+---
+
+#### 46. Evidencia de ORIGO
+
+La matriz concede acceso a ORIGO y lectura de:
+
+- órdenes de compra;
+- recepciones;
+- proveedores.
+
+El uso es conciliación y soporte contable. La consulta no autoriza crear compras, recibir mercancía o modificar proveedores.
+
+---
+
+#### 47. Proveedores
+
+La información de proveedores puede contener datos sensibles.
+
+La superficie debe minimizar campos y no asumir acceso a:
+
+- cuentas bancarias;
+- credenciales;
+- contratos completos;
+- datos no necesarios para conciliación.
+
+Cualquier futura capacidad bancaria requiere contrato específico.
+
+---
+
+#### 48. Empresas y unidades de negocio
+
+`viso.organization.businesses.view` permite referencia organizacional.
+
+El contador puede usar empresa o unidad como dimensión financiera. No puede crear, modificar ni administrar esas entidades desde `Inicio`.
+
+---
+
+#### 49. Información contable de VISO
+
+`viso.finance.accounting.view` es la capacidad financiera nativa de VISO concedida.
+
+Debe actuar como resumen o punto de entrada, no como justificación para acceder a todo VISO.
+
+La información presentada debe ser compatible con `G-FIN`.
+
+---
+
+#### 50. NUMERA como owner financiero
+
+NUMERA conserva el dominio de hechos económicos, conciliación, costos, cartera, cierres y analítica financiera según sus contratos propios.
+
+`Inicio` de VISO:
+
+- prioriza;
+- resume;
+- enlaza;
+- contextualiza;
+- muestra estado.
+
+No duplica el workspace financiero experto de NUMERA.
+
+---
+
+#### 51. Handoff en lugar de editor duplicado
+
+Cuando una tarea requiera edición densa, conciliación experta, reporte, exportación o workflow financiero completo, el home debe entregar un handoff con contexto mínimo.
+
+El handoff conserva:
+
+- recurso;
+- período;
+- filtros autorizados;
+- retorno;
+- procedencia.
+
+La aplicación destino vuelve a autorizar.
+
+---
+
+#### 52. Conciliación
+
+La conciliación debe mostrar fuentes y diferencias sin “hacerlas coincidir” modificando silenciosamente una de ellas.
+
+Modelo mínimo:
+
+```text
+FUENTE A
+FUENTE B
+REGLA
+TOLERANCIA
+DIFERENCIA
+ESTADO
+OWNER DE CORRECCIÓN
+```
+
+La corrección ocurre en el owner correspondiente.
+
+---
+
+#### 53. Diferencias entre fuentes
+
+Una diferencia no implica automáticamente error.
+
+Estados admisibles incluyen:
+
+- por conciliar;
+- dentro de tolerancia;
+- fuera de tolerancia;
+- fuente pendiente;
+- dato stale;
+- conflicto;
+- resuelta;
+- no aplicable.
+
+La UI evita transformar una diferencia en una acusación o decisión automática.
+
+---
+
+#### 54. Períodos cerrados
+
+La matriz no concede una clave atómica de cierre, reapertura o modificación de período.
+
+`Inicio` puede mostrar que un período está cerrado, pero no debe habilitar cambiar ese estado.
+
+`ADM-TASK-079` describe una tarea administrativa futura; no reemplaza la autorización real disponible.
+
+---
+
+#### 55. Segregación de funciones
+
+La composición financiera debe asumir que preparar, generar, emitir, aprobar, cancelar, pagar, cerrar y auditar pueden requerir actores diferentes.
+
+Si una misma persona acumula funciones por excepción, la excepción debe ser explícita, justificada y auditable. Nunca se infiere por el rol `contador`.
+
+---
+
+#### 56. Aprobaciones
+
+El contador no es aprobador universal.
+
+No debe aparecer un CTA genérico `Aprobar`.
+
+Una aprobación solo puede existir si una clave canónica futura la concede y la superficie propietaria valida su contexto específico.
+
+---
+
+#### 57. Exportación
+
+Los permisos de lectura de reportes no implican exportación.
+
+Hasta que exista capacidad atómica aprobada, el home no ofrece exportación de:
+
+- reportes financieros;
+- libros;
+- márgenes;
+- rentabilidad;
+- gastos;
+- evidencias sensibles.
+
+La ausencia de exportación no limita la consulta autorizada.
+
+---
+
+#### 58. Información financiera sensible
+
+Se consideran sensibles, entre otros:
+
+- importes;
+- precios internos;
+- márgenes;
+- rentabilidad;
+- gastos;
+- variaciones;
+- reportes;
+- contrapartes;
+- documentos fuente.
+
+La implementación debe aplicar mínimo privilegio, auditoría proporcionada, retención y protección frente a exposición casual.
+
+---
+
+#### 59. Minimización
+
+Cada tarjeta y tabla muestra solo los campos necesarios para decidir el siguiente paso.
+
+No se cargan columnas sensibles “por si acaso”. El drill-down se autoriza nuevamente en la superficie destino.
+
+---
+
+#### 60. Personal
+
+La matriz no concede al contador vistas VISO de trabajadores, calendario, programación ni vacantes.
+
+La existencia de un costo laboral en un reporte no autoriza abrir datos de personal.
+
+Cuando un cálculo requiera información agregada laboral, debe consumirse por un contrato financiero o agregado autorizado, no por acceso general a RR. HH.
+
+---
+
+#### 61. Seguridad y autorización
+
+El contador no recibe:
+
+- simulaciones de autorización;
+- logs de autorización;
+- gestión de roles;
+- gestión de permisos;
+- denegaciones;
+- secretos;
+- credenciales.
+
+El home no debe incluir widgets de seguridad por defecto.
+
+---
+
+#### 62. PASS
+
+`pass.access` no está concedido al contador.
+
+No se muestran usuarios Pass, puntos, perfiles, recompensas o clientes por finalidad financiera genérica.
+
+Si una conciliación futura necesita hechos monetarios de ese dominio, debe existir un contrato financiero de evidencia específico.
+
+---
+
+#### 63. PULSO
+
+`pulso.access` no está concedido.
+
+El home no habilita caja, entrega ni override operativo.
+
+Los hechos de venta necesarios para finanzas deben llegar mediante contratos de datos o evidencias financieras autorizadas, no por acceso operativo a PULSO.
+
+---
+
+#### 64. AURA
+
+AURA no forma parte de la matriz base del contador.
+
+No aparece como acceso, CTA, indicador ni owner financiero salvo contrato futuro explícito.
+
+---
+
+#### 65. Contenido y CMS
+
+Categorías comerciales, bloques, menú y Website CMS no están concedidos.
+
+Se retiran de la proyección de contador aunque existan en el AS-IS de `/`.
+
+---
+
+#### 66. Operación física
+
+Ninguna lectura financiera concede:
+
+- entrada;
+- retiro;
+- traslado;
+- conteo;
+- recepción;
+- despacho;
+- producción;
+- entrega;
+- caja.
+
+`Inicio` debe usar verbos de lectura, análisis, conciliación o procesamiento financiero, no verbos operativos.
+
+---
+
+#### 67. Región `Indicadores financieros autorizados`
+
+Puede presentar, según disponibilidad y permiso:
+
+- punto de equilibrio;
+- rentabilidad;
+- margen;
+- reportes financieros;
+- reportes internos;
+- gastos;
+- variaciones;
+- importes de facturas.
+
+Cada indicador debe incluir contexto suficiente para evitar interpretaciones aisladas.
+
+---
+
+#### 68. No existe score financiero universal
+
+No se define un “score financiero” único de la organización.
+
+La reducción de múltiples métricas a un semáforo universal ocultaría período, fuente, materialidad y naturaleza de la señal.
+
+El home puede priorizar indicadores, no inventar una puntuación canónica.
+
+---
+
+#### 69. Estados vacíos
+
+Un estado vacío debe distinguir:
+
+- no hay elementos;
+- no hay elementos para el período;
+- no existe autorización;
+- la fuente no respondió;
+- el dato está pendiente;
+- el filtro excluye todos los elementos.
+
+Nunca se representa falta de autorización como cero financiero.
+
+---
+
+#### 70. Conteos y cero
+
+Un conteo `0` significa cero únicamente cuando la consulta autorizada se ejecutó con éxito y devolvió cero.
+
+No significa:
+
+- acceso denegado;
+- fuente caída;
+- consulta omitida;
+- filtro inválido;
+- dato stale.
+
+---
+
+#### 71. Frescura
+
+Las señales financieras deben declarar frescura cuando materialmente afecte interpretación.
+
+Campos visibles o accesibles:
+
+- actualizado en;
+- período;
+- corte;
+- fuente;
+- estado de sincronización.
+
+---
+
+#### 72. Dato stale
+
+Un dato stale puede seguir siendo visible si la finalidad lo permite, pero debe estar marcado y no puede sustentar una acción irreversible que requiera información vigente.
+
+---
+
+#### 73. Indisponibilidad y carga parcial
+
+Si una fuente falla, las demás regiones pueden seguir funcionando.
+
+La página debe identificar:
+
+- owner afectado;
+- región incompleta;
+- último dato válido cuando sea seguro;
+- acción bloqueada.
+
+No convierte un fallo parcial en “todo correcto”.
+
+---
+
+#### 74. Procedencia
+
+Toda señal cross-owner debe conservar procedencia.
+
+Como mínimo:
+
+```text
+OWNER
+RECURSO
+PERIODO
+ACTUALIZADO_EN
+```
+
+La procedencia puede mostrarse de forma compacta, pero no perderse.
+
+---
+
+#### 75. Priorización
+
+La prioridad puede considerar:
+
+- vencimiento;
+- período;
+- materialidad;
+- diferencia fuera de tolerancia;
+- documento bloqueado;
+- fuente faltante;
+- riesgo de cierre;
+- antigüedad.
+
+No se debe priorizar por simple orden de carga.
+
+---
+
+#### 76. Filtros
+
+Filtros admisibles:
+
+- período;
+- empresa o unidad autorizada;
+- centro de costo;
+- tipo de señal;
+- estado;
+- owner;
+- moneda cuando aplique.
+
+Un filtro nunca amplía autorización.
+
+---
+
+#### 77. Filtro `Todos`
+
+`Todos` significa todo el conjunto autorizado para la capacidad financiera concreta.
+
+No significa:
+
+- todos los datos de Vento OS;
+- todas las aplicaciones;
+- todos los recursos técnicos;
+- todos los entornos;
+- APP-REVIEW.
+
+---
+
+#### 78. Comparaciones
+
+Las comparaciones financieras deben mantener:
+
+- misma métrica;
+- unidad compatible;
+- moneda compatible;
+- período explícito;
+- fuente identificada.
+
+Una comparación inválida se bloquea o se marca, no se normaliza silenciosamente.
+
+---
+
+#### 79. Drill-down
+
+El drill-down:
+
+1. conserva contexto;
+2. identifica owner;
+3. reautoriza en destino;
+4. no transmite campos sensibles innecesarios;
+5. permite volver a `Inicio`.
+
+La capacidad de ver un agregado no garantiza capacidad de ver cada fila subyacente.
+
+---
+
+#### 80. Deep links
+
+Los deep links deben usar identificadores opacos o canónicos apropiados y evitar secretos, datos financieros sensibles o decisiones de autorización en query string.
+
+---
+
+#### 81. Acciones seguras del home
+
+Acciones admisibles cuando exista permiso exacto:
+
+- abrir detalle;
+- abrir owner;
+- consultar;
+- generar factura interna;
+- emitir factura interna;
+- marcar una preferencia visual local no sensible;
+- volver.
+
+No se habilitan acciones fuera de matriz.
+
+---
+
+#### 82. No edición inline sensible
+
+El home no se convierte en hoja de cálculo financiera editable.
+
+Ediciones densas, conciliaciones, emisión y cualquier acción sensible pertenecen al flujo propietario con controles completos.
+
+---
+
+#### 83. Reautenticación
+
+Una operación sensible puede exigir reautenticación aunque el usuario ya tenga sesión válida.
+
+La necesidad de reautenticación se resuelve por política de seguridad y acción concreta, no por el rol.
+
+---
+
+#### 84. Dispositivo compartido
+
+En dispositivo compartido se reduce exposición casual de importes, contrapartes y reportes sensibles.
+
+No se persisten detalles financieros en almacenamiento local sin contrato explícito.
+
+---
+
+#### 85. Cambio de autoridad durante la sesión
+
+Si cambia rol, permiso, denegación, alcance o estado del principal:
+
+- se invalida la proyección afectada;
+- se reevalúan consultas;
+- se ocultan acciones ya no autorizadas;
+- una mutación pendiente debe reautorizarse.
+
+No se conserva autoridad por caché.
+
+---
+
+#### 86. Caché
+
+El caché puede mejorar rendimiento pero no congelar autorización.
+
+Datos financieros sensibles deben respetar:
+
+- TTL;
+- invalidación;
+- separación por identidad;
+- separación por contexto;
+- no reutilización entre usuarios.
+
+---
+
+#### 87. Rendimiento
+
+El home no debe transferir datasets completos al cliente para calcular indicadores.
+
+Los agregados se producen server-side sobre el conjunto autorizado y devuelven únicamente lo necesario.
+
+---
+
+#### 88. Responsive
+
+En pantallas pequeñas:
+
+- prioridad financiera primero;
+- importes legibles;
+- etiquetas persistentes;
+- no depender del hover;
+- tablas densas pueden cambiar a listas;
+- las acciones sensibles no quedan accidentalmente adyacentes.
+
+---
+
+#### 89. Accesibilidad
+
+Debe conservar:
+
+- navegación por teclado;
+- foco visible;
+- nombres accesibles;
+- encabezados jerárquicos;
+- no depender solo de color;
+- mensajes de error comprensibles;
+- lectura de importes y unidades con contexto.
+
+---
+
+#### 90. Privacidad
+
+La proyección evita mostrar información financiera sensible en regiones no necesarias.
+
+No se incluyen datos de clientes o trabajadores solo porque puedan correlacionarse con un hecho económico.
+
+---
+
+#### 91. Seguridad de query string
+
+No se colocan en URL:
+
+- importes sensibles;
+- datos bancarios;
+- tokens;
+- decisiones de autorización;
+- payloads de factura;
+- secretos.
+
+Los filtros visibles deben ser seguros para historial y logs.
+
+---
+
+#### 92. Seguridad de almacenamiento local
+
+No se persisten en `localStorage` o equivalentes:
+
+- permisos efectivos;
+- importes sensibles como fuente de verdad;
+- estados de aprobación;
+- payloads financieros;
+- decisiones de segregación.
+
+Las preferencias visuales inocuas sí pueden persistirse.
+
+---
+
+#### 93. Datos cross-owner
+
+Cuando VISO resume información de NUMERA, NEXO, ORIGO o FOGO:
+
+- no cambia ownership;
+- no crea copia editable;
+- no inventa un estado nuevo;
+- conserva procedencia;
+- reautoriza en handoff.
+
+VISO es proyección, no duplicación de sistemas fuente.
+
+---
+
+#### 94. Cliente administrativo no equivale a permiso
+
+La existencia técnica de `createAdminClient()` en `vento-viso` no concede al usuario acceso humano.
+
+Toda consulta debe construirse después de resolver autorización efectiva y limitarse al conjunto permitido.
+
+No se acepta:
+
+```text
+service-role disponible
+→ consultar todo
+→ filtrar visualmente después
+```
+
+---
+
+#### 95. Agregados server-side
+
+Los indicadores se calculan sobre datos autorizados en servidor.
+
+Patrón:
+
+```text
+IDENTIDAD
++ PERMISO
++ SCOPE
++ RECURSO
++ PERIODO
+→ DATASET AUTORIZADO
+→ AGREGADO
+→ UI
+```
+
+Se prohíbe contar toda la tabla y ocultar después.
+
+---
+
+#### 96. Fallo de aplicación externa
+
+Si NUMERA, NEXO, ORIGO o FOGO no responde, VISO no suplanta al owner con datos inventados.
+
+Debe mostrar degradación segura y conservar las regiones independientes que sí puedan resolverse.
+
+---
+
+#### 97. Evolución del catálogo
+
+Un permiso nuevo se considera denegado hasta evaluación canónica.
+
+El home no incorpora automáticamente nuevas rutas o capacidades por descubrirlas en runtime.
+
+---
+
+#### 98. Hardcode de tarjetas
+
+No se hardcodea una matriz paralela de rol → tarjeta.
+
+La composición debe derivarse de:
+
+- contrato de experiencia;
+- autorización efectiva;
+- disponibilidad de señal;
+- ownership.
+
+El contrato de esta tarea define semántica, no una lista de bypasses.
+
+---
+
+#### 99. Mapeo obligatorio del AS-IS
+
+La materialización futura debe reconciliar cada elemento actual de `/`.
+
+Para cada tarjeta o acción:
+
+```text
+CONSERVAR
+RECONFIGURAR
+CONVERTIR_EN_HANDOFF
+OCULTAR
+RETIRAR
+```
+
+La decisión debe justificarse por capacidad y owner.
+
+---
+
+#### 100. Tarjeta `Trabajadores`
+
+No pertenece al rol contador por matriz base.
+
+Debe ocultarse o retirarse de esta proyección. Un costo laboral agregado no habilita la vista de trabajadores.
+
+---
+
+#### 101. Tarjeta `Usuarios Vento Pass`
+
+No pertenece al rol contador.
+
+Debe retirarse de la proyección base.
+
+---
+
+#### 102. Tarjeta `Negocios`
+
+Puede existir únicamente como referencia organizacional de consulta mediante `viso.organization.businesses.view`.
+
+El texto no puede sugerir administración o creación de negocios.
+
+---
+
+#### 103. Tarjeta `Menú comercial`
+
+No pertenece al rol contador.
+
+Se retira u oculta. La necesidad de interpretar un producto se satisface mediante referencias de catálogo concedidas, no por el CMS comercial.
+
+---
+
+#### 104. Tarjeta `Productos` de fidelización
+
+No pertenece al rol contador.
+
+Se retira de la proyección.
+
+---
+
+#### 105. Tarjeta `Vacantes`
+
+No pertenece al rol contador.
+
+Se retira de la proyección incluso si la tabla de talento está disponible técnicamente.
+
+---
+
+#### 106. Acción `Invitar trabajador`
+
+No está concedida al contador.
+
+No aparece.
+
+---
+
+#### 107. Acción `Crear negocio`
+
+No está concedida al contador.
+
+No aparece.
+
+---
+
+#### 108. Acción `Crear producto comercial`
+
+No está concedida al contador.
+
+No aparece.
+
+---
+
+#### 109. Website CMS y contenido
+
+No pertenecen al rol contador.
+
+Las acciones actuales de CMS se retiran de esta proyección.
+
+---
+
+#### 110. Hallazgos y owners
+
+| Hallazgo | Bloquea esta definición | Owner de cierre | Condición de salida |
+| --- | --- | --- | --- |
+| la raíz física actual cuenta tablas completas con cliente administrativo | no | unidad física de `VISO-UX-012` + `VISO-UX-017/018` | agregados financieros server-side autorizados |
+| el catálogo no separa varias acciones contables atómicas | no | `AUTH-RBAC-006` sucesoras + `NUMERA-AUTH-*` | permisos atómicos definidos y evaluados |
+| exportación financiera no tiene permiso atómico suficiente | no | NUMERA / autorización | capacidad explícita antes de habilitar exportación |
+| cierre y reapertura de período no tienen capacidad base concedida | no | NUMERA / autorización | workflow atómico y segregado |
+
+---
+
+#### 111. Frontera con `VISO-UX-013..020`
+
+Esta tarea define exclusivamente la variante de `Inicio` para `contador`.
+
+Se reservan:
+
+- `VISO-UX-013`: presentación y limitación territorial transversal;
+- `VISO-UX-014..016`: contratos posteriores de experiencia del minibloque;
+- `VISO-UX-017/018`: materialización y reconciliación del home según ownership;
+- `VISO-UX-019/020`: cierres posteriores definidos por el owner.
+
+No se absorbe trabajo de esas tareas.
+
+---
+
+#### 112. Casos representativos obligatorios para materialización
+
+La futura implementación debe probar como mínimo:
+
+1. contador con `G-FIN` completo de matriz base;
+2. contador sin una capacidad financiera concreta;
+3. contador con deny individual;
+4. contador con reporte sin filas;
+5. contador con fuente NEXO caída;
+6. contador con NUMERA stale;
+7. factura generable;
+8. factura no generable por período cerrado;
+9. factura emitible;
+10. intento de cancelación denegado;
+11. variación visible pero no aprobable;
+12. evidencia de inventario visible en solo lectura;
+13. intento de mutación operativa denegado;
+14. acceso directo a `/`;
+15. cambio de permiso durante sesión;
+16. principal técnico o inconsistente;
+17. múltiples monedas o períodos;
+18. carga parcial cross-owner.
+
+---
+
+#### 113. Pruebas de autorización esperadas
+
+La materialización futura debe demostrar:
+
+- cada región requiere capacidad real;
+- `G-FIN` no amplía a otros dominios;
+- `G-SRC` es solo lectura;
+- un deny prevalece;
+- acceso a VISO no concede información contable;
+- información contable no concede personal;
+- lectura no concede exportación;
+- lectura de variaciones no concede aprobar ni resolver;
+- generar y emitir no conceden cancelar.
+
+---
+
+#### 114. Pruebas financieras esperadas
+
+Se deben cubrir:
+
+- período abierto y cerrado;
+- moneda y unidad;
+- cero real;
+- sin autorización;
+- reporte vacío;
+- reporte stale;
+- diferencia dentro y fuera de tolerancia;
+- documento fuente ausente;
+- idempotencia de generación;
+- emisión duplicada;
+- segregación de funciones;
+- procedencia.
+
+---
+
+#### 115. Pruebas de ownership esperadas
+
+Debe demostrarse que:
+
+- VISO no edita NUMERA;
+- VISO no edita NEXO;
+- VISO no edita ORIGO;
+- VISO no edita FOGO;
+- deep links preservan contexto mínimo;
+- el destino reautoriza;
+- un fallo del owner no produce dato inventado.
+
+---
+
+#### 116. Pruebas de estado, error y accesibilidad
+
+La implementación deberá cubrir:
+
+- loading;
+- vacío;
+- stale;
+- parcial;
+- error;
+- forbidden;
+- no data;
+- alto volumen;
+- teclado;
+- lector de pantalla;
+- contraste;
+- foco;
+- reautenticación cuando aplique.
+
+---
+
+#### 117. Métricas de piloto
+
+La futura unidad física puede observar, sin redefinir autorización:
+
+- tiempo hasta identificar trabajo financiero;
+- handoffs exitosos;
+- errores de owner;
+- señales stale;
+- consultas bloqueadas por autorización;
+- intentos de acción no concedida;
+- tiempo de carga;
+- errores de agregación.
+
+Las métricas no deben registrar datos financieros sensibles innecesarios.
+
+---
+
+#### 118. Carryovers
+
+Carryovers explícitos:
+
+| Carryover | Owner | Bloquea esta tarea |
+| --- | --- | --- |
+| reconciliar AS-IS de `/` con composición por autorización | unidad física VISO | no |
+| separar permisos atómicos de cierre, exportación y conciliación avanzada | NUMERA / AUTH | no |
+| retirar accesos legacy no compatibles con `AUTH-RBAC-006` | AUTH-RBAC / BLOQUE R | no |
+| validar agregados server-side sin exposición cross-owner | unidad física VISO | no |
+
+---
+
+#### 119. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Requisitos creados: 0
+Requisitos modificados: 0
+
+La tarea especializa experiencia utilizando contratos y cobertura ya existentes. No cambia el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 120. Cobertura de prueba vigente reutilizada
+
+La materialización futura reutiliza la cobertura existente de:
+
+- autorización;
+- pantallas;
+- procesos;
+- navegación;
+- ownership;
+- topología;
+- aislamiento;
+- datos financieros;
+- auditoría;
+- accesibilidad.
+
+Estas referencias son trazabilidad heredada y no actualizan 04A.
+
+---
+
+#### 121. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-012`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en una rama documental de `VISO-UX-012`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad, topología, políticas documentales, owner del minibloque, `AUTH-RBAC-006`, bindings de `VSCREEN-0007`, scripts aplicables y el AS-IS vigente de `vento-viso/main`; la continuidad remota mantiene `VISO-UX-011` como tarea actual y `VISO-UX-012` como sucesora reservada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó experiencia runtime; esta tarea no autoriza implementación ni prueba operativa. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, datos, Supabase, infraestructura ni despliegues. |
+
+---
+
+#### 122. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-ACCOUNTANT-HOME-001`;
+2. la tarea conserva `VISO-UX-011` como anterior y `VISO-UX-013` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. la entrada primaria sigue siendo `/`;
+6. `VISO-ROUTE-001` permanece como identidad de la entrada observada;
+7. `VSCREEN-0007` permanece como pantalla canónica;
+8. `VPROC-0001` permanece como proceso principal;
+9. `VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK` permanece como paso dominante;
+10. el nombre de pantalla no convierte al contador en actor ejecutivo;
+11. `AUTH-RBAC-006` es la matriz base consumida;
+12. se preservan 112 permisos evaluados;
+13. se preservan 45 concesiones;
+14. se preservan 67 capacidades no concedidas;
+15. se preservan 0 componentes base de doble condición;
+16. `G-FIN` no se interpreta como administración global;
+17. `G-SRC` permanece de solo lectura;
+18. `ORG-REF` no concede edición de catálogos;
+19. `NT-APP` no concede capacidades internas;
+20. solo tres capacidades VISO están concedidas;
+21. trabajadores no aparecen por matriz base;
+22. programación no aparece por matriz base;
+23. vacantes no aparecen por matriz base;
+24. seguridad y autorización no aparecen por matriz base;
+25. PASS no aparece por matriz base;
+26. PULSO no aparece por matriz base;
+27. AURA no aparece por matriz base;
+28. CMS y contenido no aparecen por matriz base;
+29. la tarjeta de negocios se limita a referencia;
+30. la información contable se limita a `G-FIN`;
+31. NUMERA conserva ownership financiero;
+32. NEXO conserva ownership de evidencia logística e inventario;
+33. ORIGO conserva ownership de compras y recepciones;
+34. FOGO conserva ownership productivo;
+35. VISO no duplica editores propietarios;
+36. se permite consultar facturas internas;
+37. se permite generar facturas internas con precondiciones;
+38. se permite emitir facturas internas con precondiciones;
+39. cancelar facturas permanece denegado;
+40. consultar variaciones no permite aprobarlas;
+41. consultar variaciones no permite resolverlas;
+42. consultar evidencia de inventario no permite mutarla;
+43. consultar activos no permite crearlos ni moverlos;
+44. consultar lotes no permite producir;
+45. consultar recepciones no permite recibir mercancía;
+46. la evidencia fuente conserva procedencia;
+47. los agregados se calculan server-side;
+48. `createAdminClient()` no se usa como autorización humana;
+49. no se consulta todo para filtrar después en cliente;
+50. un cero real se distingue de denegación;
+51. stale se distingue de error;
+52. carga parcial se distingue de éxito completo;
+53. el período es explícito cuando aplica;
+54. moneda y unidad son explícitas cuando aplican;
+55. un período cerrado no se vuelve editable;
+56. la segregación de funciones permanece vigente;
+57. no existe aprobación universal;
+58. exportación no se infiere de lectura;
+59. los deep links reautorizan en destino;
+60. query string no transporta secretos ni payloads sensibles;
+61. almacenamiento local no conserva autoridad ni datos sensibles como fuente de verdad;
+62. cambio de autoridad invalida la proyección afectada;
+63. denegaciones prevalecen;
+64. un permiso futuro permanece denegado hasta evaluación;
+65. la UI no inventa un score financiero universal;
+66. priorización no equivale a decisión automática;
+67. las diferencias no se corrigen silenciosamente;
+68. los owners de carryover quedan explícitos;
+69. la tarea no modifica Supabase;
+70. la tarea no modifica código;
+71. la tarea no modifica datos;
+72. la tarea no ejecuta implementación física;
+73. la tarea no desarrolla `VISO-UX-013`;
+74. la sección de requisitos derivados contiene cero identificadores de requisitos;
+75. se declaran cero requisitos creados;
+76. se declaran cero requisitos modificados;
+77. la evidencia contiene exactamente BUILD, LOCAL, REMOTA, OPERATIVA y FÍSICA;
+78. la continuidad termina después de la siguiente tarea reservada;
+
+---
+
+#### 123. Límites
+
+Esta tarea no:
+
+- implementa `src/app/page.tsx`;
+- modifica la entrada `/`;
+- crea rutas;
+- crea pantallas;
+- cambia `VSCREEN-0007`;
+- cambia procesos;
+- cambia pasos;
+- cambia la matriz `AUTH-RBAC-006`;
+- crea permisos;
+- concede permisos;
+- crea roles;
+- crea denegaciones;
+- crea un editor financiero en VISO;
+- crea un workspace de NUMERA;
+- habilita exportación;
+- habilita cierre de períodos;
+- habilita reapertura de períodos;
+- habilita cancelación de facturas;
+- habilita aprobación universal;
+- ejecuta operación física;
+- modifica inventario;
+- modifica producción;
+- modifica compras;
+- modifica personal;
+- modifica seguridad;
+- crea tablas, vistas SQL, RPC, RLS, funciones o triggers;
+- crea migraciones;
+- modifica Supabase, Auth, Storage, Realtime o Edge Functions;
+- modifica datos reales;
+- cambia PASS, NUMERA, NEXO, FOGO, ORIGO, PULSO, ANIMA, TALENTO o AURA;
+- selecciona package;
+- prepara o aprueba package gate;
+- autoriza implementación física;
+- ejecuta implementación física;
+- desarrolla `VISO-UX-013`;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+La identidad exacta de cualquier unidad física futura se resolverá por el package y gate aplicables.
+
+---
+
+#### 124. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-011 — Definir inicio para auxiliar administrativa`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-012 — Definir inicio para contador`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-013 — Limitar información según alcance territorial`
 ### [ ] VISO-UX-013 — Limitar información según alcance territorial
 ### [ ] VISO-UX-014 — Mostrar origen de permisos de forma comprensible
 ### [ ] VISO-UX-015 — Mostrar conflictos antes de guardar
