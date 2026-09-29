@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1481** |
+| Aprobadas | **1482** |
 | En propuesta | **0** |
-| No iniciadas | **115** |
+| No iniciadas | **114** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **92.79% (1481/1596)** |
+| Porcentaje de completamiento | **92.86% (1482/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **115** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1382** |
+| ⏸ NO_EVALUADA | **114** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1383** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-017` — Evitar duplicar configuración propia de otras aplicaciones | ✅ APROBADA |
-| Tarea actual | `VISO-UX-018` — Enlazar a la aplicación propietaria cuando corresponda | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-019` — Aplicar divulgación progresiva a seguridad avanzada | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-018` — Enlazar a la aplicación propietaria cuando corresponda | ✅ APROBADA |
+| Tarea actual | `VISO-UX-019` — Aplicar divulgación progresiva a seguridad avanzada | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-020` — Ejecutar pruebas con administradores reales | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -730,7 +730,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-015` | Mostrar conflictos antes de guardar | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-016` | Permitir vista previa exacta de cada trabajador | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-017` | Evitar duplicar configuración propia de otras aplicaciones | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-018` | Enlazar a la aplicación propietaria cuando corresponda | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-018` | Enlazar a la aplicación propietaria cuando corresponda | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-019` | Aplicar divulgación progresiva a seguridad avanzada | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-020` | Ejecutar pruebas con administradores reales | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-AUD-001` | Buscar código duplicado entre repositorios | — | — | `bloques/H_FUNDACION_COMPARTIDA/01_AUDITORIA_DE_COMPONENTES_COMPARTIDOS.md` |
