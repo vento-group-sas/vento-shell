@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1495** |
+| Aprobadas | **1496** |
 | En propuesta | **0** |
-| No iniciadas | **101** |
+| No iniciadas | **100** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.67% (1495/1596)** |
+| Porcentaje de completamiento | **93.73% (1496/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **101** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1396** |
+| ⏸ NO_EVALUADA | **100** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1397** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-AUD-009` — Definir relación con PULSO | ✅ APROBADA |
-| Tarea actual | `AURA-AUD-010` — Decidir continuidad, reemplazo o retiro | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-AUD-011` — Documentar decisión mediante ADR si corresponde | ⬜ NO INICIADA |
+| Última aprobada | `AURA-AUD-010` — Decidir continuidad, reemplazo o retiro | ✅ APROBADA |
+| Tarea actual | `AURA-AUD-011` — Documentar decisión mediante ADR si corresponde | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-AUD-012` — Mantener roadmap de implementación bloqueado hasta decisión | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1444,7 +1444,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-007` | Definir relación con VISO | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-008` | Definir relación con PASS | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-009` | Definir relación con PULSO | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-010` | Decidir continuidad, reemplazo o retiro | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-010` | Decidir continuidad, reemplazo o retiro | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-011` | Documentar decisión mediante ADR si corresponde | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-012` | Mantener roadmap de implementación bloqueado hasta decisión | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-001` | Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
