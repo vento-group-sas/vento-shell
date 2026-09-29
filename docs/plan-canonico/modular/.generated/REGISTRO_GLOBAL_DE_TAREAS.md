@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1491** |
+| Aprobadas | **1492** |
 | En propuesta | **0** |
-| No iniciadas | **105** |
+| No iniciadas | **104** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.42% (1491/1596)** |
+| Porcentaje de completamiento | **93.48% (1492/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **105** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1392** |
+| ⏸ NO_EVALUADA | **104** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1393** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-AUD-005` — Inventariar procesos de marketing | ✅ APROBADA |
-| Tarea actual | `AURA-AUD-006` — Identificar datos y permisos utilizados | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-AUD-007` — Definir relación con VISO | ⬜ NO INICIADA |
+| Última aprobada | `AURA-AUD-006` — Identificar datos y permisos utilizados | ✅ APROBADA |
+| Tarea actual | `AURA-AUD-007` — Definir relación con VISO | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-AUD-008` — Definir relación con PASS | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1440,7 +1440,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-003` | Confirmar usuarios actuales | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-004` | Inventariar rutas y pantallas | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-005` | Inventariar procesos de marketing | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-006` | Identificar datos y permisos utilizados | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-006` | Identificar datos y permisos utilizados | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-007` | Definir relación con VISO | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-008` | Definir relación con PASS | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-009` | Definir relación con PULSO | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
