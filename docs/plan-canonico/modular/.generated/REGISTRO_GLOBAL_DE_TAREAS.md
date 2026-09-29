@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1470** |
+| Aprobadas | **1471** |
 | En propuesta | **0** |
-| No iniciadas | **126** |
+| No iniciadas | **125** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **92.11% (1470/1596)** |
+| Porcentaje de completamiento | **92.17% (1471/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **126** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1371** |
+| ⏸ NO_EVALUADA | **125** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1372** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-006` — Crear sección Operación | ✅ APROBADA |
-| Tarea actual | `VISO-UX-007` — Crear sección Auditoría | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-008` — Definir inicio para propietario | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-007` — Crear sección Auditoría | ✅ APROBADA |
+| Tarea actual | `VISO-UX-008` — Definir inicio para propietario | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-009` — Definir inicio para gerente general | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -719,7 +719,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-004` | Crear sección Acceso y seguridad | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-005` | Crear sección Organización | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-006` | Crear sección Operación | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-007` | Crear sección Auditoría | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-007` | Crear sección Auditoría | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-008` | Definir inicio para propietario | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-009` | Definir inicio para gerente general | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-010` | Definir inicio para gerente de sede | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
