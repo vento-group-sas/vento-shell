@@ -37515,7 +37515,2015 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada`
-### [ ] VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
+### ✅ VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
+**Tarea siguiente:** VISO-UX-020 — Ejecutar pruebas con administradores reales
+**Tipo de tarea:** definición técnico-documental del patrón transversal de divulgación progresiva aplicado a seguridad avanzada en VISO; establece qué información, controles, matrices, explicaciones, diagnósticos y superficies especializadas deben permanecer visibles, revelarse bajo demanda, exigir autorización adicional de lectura o permanecer no divulgables, sin ocultar obligaciones críticas, sin transformar el modo experto en autoridad, sin reconstruir autorización en la interfaz y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato transversal de divulgación progresiva para seguridad avanzada definido sobre las superficies administrativas de VISO; la materialización runtime permanece diferida por unidad de implementación y detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, componentes, navegación runtime, catálogos de autorización, PermissionKeys, grants, denies, scopes, perfiles, asignaciones, dispositivos, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, sesiones, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo VISO debe presentar seguridad administrativa avanzada sin convertir cada superficie en una matriz densa permanente ni esconder información crítica detrás de controles secundarios.
+
+La experiencia debe permitir que un administrador autorizado responda primero, con lenguaje empresarial:
+
+```text
+¿QUÉ ESTOY REVISANDO O CAMBIANDO?
+¿A QUIÉN O A QUÉ RECURSO AFECTA?
+¿QUÉ TERRITORIO Y CONTEXTO PARTICIPAN?
+¿QUÉ EFECTO TIENE AHORA?
+¿QUÉ EFECTO TENDRÍA LA PROPUESTA?
+¿EXISTE UN BLOQUEO, CONFLICTO O DENEGACIÓN RELEVANTE?
+¿QUIÉN DEBE APROBAR O RESOLVER?
+¿QUÉ RESULTADO SE OBTUVO?
+```
+
+y solo después revelar el detalle necesario para investigar, comparar, configurar o diagnosticar.
+
+La regla raíz queda:
+
+```text
+SEGURIDAD ADMINISTRATIVA
++
+JERARQUÍA DE INFORMACIÓN
++
+AUTORIZACIÓN Y RELEVANCIA
++
+DIVULGACIÓN PROGRESIVA
+=
+MENOS CARGA COGNITIVA
+SIN PERDER VERDAD, CONTROL NI TRAZABILIDAD
+```
+
+Y nunca:
+
+```text
+MODO EXPERTO
+=
+MÁS AUTORIDAD
+```
+
+ni:
+
+```text
+CONTENIDO COLAPSADO
+=
+CONTENIDO PROTEGIDO
+```
+
+---
+
+#### 2. Fuentes vinculantes
+
+Esta tarea consume, sin redefinir:
+
+- `UX-BASE-010 — Aplicar divulgación progresiva a opciones avanzadas`;
+- `VISO-UX-004 — Crear sección Acceso y seguridad`;
+- `VISO-UX-013 — Limitar información según alcance territorial`;
+- `VISO-UX-014 — Mostrar origen de permisos de forma comprensible`;
+- `VISO-UX-015 — Mostrar conflictos antes de guardar`;
+- `VISO-UX-016 — Permitir vista previa exacta de cada trabajador`;
+- `VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones`;
+- `VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda`;
+- `VISO-AUTH-013 — Crear vista previa trabajador × sede × área × turno`;
+- `VISO-AUTH-014 — Simular permisos efectivos`;
+- `VISO-AUTH-015 — Mostrar origen de cada permiso`;
+- `VISO-AUTH-016 — Mostrar conflictos de configuración`;
+- `VISO-AUTH-017 — Administrar excepciones individuales`;
+- `VISO-AUTH-018 — Auditar cambios de seguridad`;
+- `VISO-AUTH-019 — Restringir quién puede administrar seguridad`;
+- `VISO-AUTH-020 — Exportar matriz de acceso`;
+- `VISO-ACCESO-SEGURIDAD-SECTION-001`;
+- `VISO-TERRITORIAL-PRESENTATION-001`;
+- `VISO-PERMISSION-ORIGIN-PRESENTATION-001`;
+- `VISO-CONFLICT-PRESAVE-PRESENTATION-001`;
+- `VISO-WORKER-EXACT-PREVIEW-001`;
+- `VISO-OWNER-HANDOFF-001`;
+- los contratos canónicos de autorización, contexto, simulación, territorio, recurso, dispositivo y auditoría ya aprobados.
+
+Esta tarea decide presentación y jerarquía.
+
+No crea una segunda semántica de autorización.
+
+---
+
+#### 3. Contrato documental de esta tarea
+
+Se define:
+
+```text
+VISO_SECURITY_PROGRESSIVE_DISCLOSURE_CONTRACT = VISO-SECURITY-PROGRESSIVE-DISCLOSURE-001
+SOURCE_DOMAIN = Acceso y seguridad
+DEFAULT_PRESENTATION = GUIDED
+EXPERT_PRESENTATION = AUTHORIZED_ON_DEMAND
+EXPERT_MODE_ADDS_AUTHORITY = NO
+COLLAPSED_CONTENT_IS_SECURITY_BOUNDARY = NO
+HIDE_MATERIAL_EFFECT = FORBIDDEN
+HIDE_BLOCKING_CONFLICT = FORBIDDEN
+HIDE_ACTIVE_FILTER_EFFECT = FORBIDDEN
+HIDE_STALE_STATE = FORBIDDEN
+NOT_DISCLOSABLE_DATA_RENDERED = NO
+TREQ_CHANGES = 0
+```
+
+El contrato gobierna presentación.
+
+No introduce enums runtime obligatorios ni sustituye los contratos compartidos existentes.
+
+---
+
+#### 4. Topología y gate
+
+La tarea conserva:
+
+```text
+SEQUENCE_ID = PHASE-09-VISO-COMPLETE
+WORK_MODE = PER_IMPLEMENTATION_UNIT
+PHYSICAL_IDENTITY = VISO-UX-019::implementation_unit_id
+EXECUTION_GATE = POST_E5_PACKAGE
+DOCUMENTARY_PHYSICAL_CHANGES = 0
+```
+
+La aprobación documental:
+
+- no crea una instancia física;
+- no selecciona package;
+- no identifica archivos de producto como unidad física;
+- no modifica VISO;
+- no modifica Supabase;
+- no habilita un modo experto runtime;
+- no ejecuta pruebas con administradores reales.
+
+La materialización posterior deberá resolver su unidad de implementación y gate propietario antes de cualquier cambio físico.
+
+---
+
+#### 5. Frontera con `UX-BASE-010`
+
+`UX-BASE-010` ya define los niveles transversales de divulgación:
+
+| Nivel | Código | Semántica |
+| --- | --- | --- |
+| 0 | `ESSENTIAL_ALWAYS_VISIBLE` | necesario para comprender, decidir, actuar o evitar un error material |
+| 1 | `CONTEXTUAL_ON_DEMAND` | detalle útil para verificar o profundizar sin cambiar política |
+| 2 | `ADVANCED_AUTHORIZED` | parámetros o controles avanzados para actores autorizados |
+| 3 | `SPECIALIZED_WORKSPACE` | trabajo complejo que requiere una superficie especializada |
+| 4 | `TECHNICAL_DIAGNOSTIC_RESTRICTED` | diagnóstico técnico restringido |
+| X | `NOT_DISCLOSABLE` | contenido que no debe revelarse para ese actor, contexto o finalidad |
+
+`VISO-UX-019` no crea otra escala.
+
+Especializa esos niveles para `Acceso y seguridad`.
+
+---
+
+#### 6. Principio de revelado seguro
+
+Antes de revelar una capa de seguridad se resuelven:
+
+```text
+ACTOR EFECTIVO
++
+INTENCIÓN
++
+PERMISO DE LECTURA O ACCIÓN
++
+TERRITORIO
++
+RECURSO
++
+CONTEXTO
++
+VIGENCIA
++
+SENSIBILIDAD
++
+RELEVANCIA
+```
+
+La interfaz no usa como autorización:
+
+- que el usuario haya abierto antes la misma sección;
+- que un panel estuviera expandido;
+- que el rol parezca privilegiado;
+- que una matriz exista en el DOM;
+- que un filtro muestre una sede;
+- que la URL sea conocida;
+- que el dato esté en caché;
+- que el actor tenga acceso general a VISO.
+
+Revelar una capa no congela permiso ni contexto.
+
+---
+
+#### 7. Modo guiado como entrada predeterminada
+
+La experiencia de `Acceso y seguridad` entra en modo guiado.
+
+El modo guiado prioriza:
+
+1. intención;
+2. sujeto o recurso;
+3. acción;
+4. alcance;
+5. efecto;
+6. conflictos o bloqueos;
+7. aprobación cuando aplique;
+8. resultado.
+
+No debe obligar a interpretar de entrada:
+
+- una cuadrícula completa de permisos;
+- reason codes;
+- identificadores de contratos;
+- versiones internas;
+- múltiples tablas de fuentes;
+- trazas técnicas;
+- estructuras de payload;
+- nombres de tablas o RPC;
+- detalles de implementación.
+
+El modo guiado simplifica la lectura.
+
+No simplifica la política de seguridad.
+
+---
+
+#### 8. Modo experto
+
+El modo experto puede revelar, según autorización y relevancia:
+
+- matrices extensas;
+- PermissionKeys exactas;
+- modalidades;
+- scopes;
+- filtros territoriales;
+- filtros por aplicación;
+- filtros por rol;
+- filtros por permiso;
+- fuentes de allow y deny;
+- comparaciones antes/después;
+- versiones contractuales;
+- evidencia de simulación;
+- detalles de vigencia;
+- información de auditoría;
+- parámetros de exportación autorizados.
+
+Se conserva:
+
+```text
+GUIDED
+Y
+EXPERT
+=
+DOS PRESENTACIONES
+DE LA MISMA VERDAD AUTORITATIVA
+```
+
+El modo experto no:
+
+- concede permisos;
+- amplía territorio;
+- elimina denies;
+- habilita wildcard;
+- omite validaciones;
+- convierte un rol en bypass;
+- convierte una preferencia visual en política;
+- permite ver datos fuera de scope.
+
+---
+
+#### 9. El modo experto no se activa por nombre de rol
+
+No se habilita automáticamente porque el actor sea:
+
+- `propietario`;
+- `gerente_general`;
+- `gerente`;
+- supervisor;
+- administrador frecuente;
+- usuario histórico de una pantalla legacy.
+
+La elegibilidad del detalle depende de permisos, contexto y finalidad.
+
+El nombre del rol puede participar en autorización canónica.
+
+No sustituye la decisión.
+
+---
+
+#### 10. Preferencia de presentación
+
+Si una implementación futura permite recordar la preferencia guiado/experto:
+
+- la preferencia solo controla presentación;
+- no persiste autoridad;
+- no persiste territorio efectivo;
+- no persiste un recurso sensible como selección autoritativa;
+- no persiste datos revelados;
+- no se hereda entre actores en dispositivo compartido;
+- debe invalidarse cuando el contexto ya no sea compatible;
+- no evita revalidación al volver a abrir contenido protegido.
+
+La tarea no define todavía el almacenamiento físico de esa preferencia.
+
+---
+
+#### 11. Contenido esencial siempre visible
+
+Cuando aplique a la acción actual, deben permanecer visibles:
+
+- sujeto o recurso afectado;
+- acción propuesta;
+- estado vigente relevante;
+- efecto vigente relevante;
+- efecto propuesto relevante;
+- territorio aplicable;
+- vigencia material;
+- conflicto bloqueante;
+- deny material para comprender el resultado;
+- aprobación requerida;
+- cambio irreversible o difícilmente reversible;
+- cantidad de sujetos o filas afectadas en una acción masiva;
+- estado stale cuando invalide confianza;
+- resultado parcial;
+- resultado desconocido;
+- fallo que impida confirmar el resultado;
+- owner y destino cuando la acción continúe en otra aplicación.
+
+Nada de lo anterior se esconde únicamente para hacer la pantalla “más limpia”.
+
+---
+
+#### 12. Elementos de nivel contextual
+
+Pueden revelarse bajo demanda, según autorización:
+
+- explicación resumida de procedencia;
+- detalle de por qué una fila participa;
+- comparación ampliada entre actual y propuesto;
+- vigencia exacta;
+- metadatos de una excepción;
+- resumen de fuentes;
+- detalle territorial de una fila autorizada;
+- historial reciente relevante;
+- detalle de una revisión;
+- explicación del owner de resolución;
+- resumen de filtros activos.
+
+Estos elementos ayudan a comprender.
+
+No cambian política.
+
+---
+
+#### 13. Elementos avanzados autorizados
+
+Son candidatos a `ADVANCED_AUTHORIZED`:
+
+- matrices rol × permiso;
+- matrices rol × sede × área cuando correspondan;
+- scopes exactos;
+- modalidad del grant;
+- filtros avanzados;
+- columnas adicionales;
+- fuentes concretas de allow;
+- fuentes concretas de deny;
+- versiones contractuales;
+- reason codes autorizados;
+- detalles de simulación;
+- filtros de auditoría;
+- opciones de exportación permitidas;
+- comparaciones masivas;
+- detalle de configuración de dispositivos compartidos.
+
+Solo se revelan cuando:
+
+- el actor está autorizado;
+- el dato es relevante;
+- la finalidad es válida;
+- el contexto sigue vigente.
+
+---
+
+#### 14. Superficies especializadas
+
+Se utiliza `SPECIALIZED_WORKSPACE` cuando el trabajo deja de ser un detalle y se convierte en una tarea administrativa compleja.
+
+Son candidatos:
+
+- edición o revisión de matrices extensas;
+- comparación masiva de configuraciones;
+- revisión de conflictos en lote;
+- simulaciones complejas;
+- gobierno completo de dispositivos compartidos;
+- revisión de excepciones y solicitudes;
+- auditoría extensa;
+- exportación controlada;
+- investigación de cambios;
+- reconciliación de un conjunto amplio de filas.
+
+Una superficie especializada no implica necesariamente una ruta nueva.
+
+La resolución física de tabs, drawers, subviews o rutas corresponde a la materialización propietaria.
+
+---
+
+#### 15. Diagnóstico técnico restringido
+
+`TECHNICAL_DIAGNOSTIC_RESTRICTED` puede incluir, si existe contrato y permiso:
+
+- correlation ID;
+- timestamp;
+- versión contractual;
+- reason code;
+- estado de sincronización;
+- referencia segura de evaluación;
+- referencia segura de simulación;
+- dependencia afectada;
+- diagnóstico no sensible.
+
+No se expone en interfaz administrativa ordinaria:
+
+- stack trace;
+- SQL;
+- service role;
+- secretos;
+- tokens;
+- credenciales;
+- payload completo de autorización;
+- claves privadas;
+- detalles internos que faciliten evasión de controles;
+- datos personales no necesarios.
+
+---
+
+#### 16. Contenido no divulgable
+
+`NOT_DISCLOSABLE` no significa “acordeón cerrado”.
+
+Significa que el contenido no debe enviarse ni anunciarse para ese actor, contexto o finalidad.
+
+Incluye, según contrato:
+
+- sujetos fuera del territorio autorizado;
+- campos fuera del permiso de lectura;
+- secretos;
+- credenciales;
+- tokens;
+- payloads internos sensibles;
+- datos personales no requeridos;
+- diagnósticos restringidos;
+- otras sedes no autorizadas;
+- fuentes de seguridad cuya exposición esté restringida;
+- información de otro actor conservada en un dispositivo compartido.
+
+No se muestra contador, preview, badge ni existencia de detalle cuando eso revele información protegida.
+
+---
+
+#### 17. Colapsar no protege datos
+
+Se conserva:
+
+```text
+CSS HIDDEN
+!=
+NO ENVIADO
+```
+
+```text
+ACORDEÓN CERRADO
+!=
+AUTORIZACIÓN
+```
+
+```text
+PANEL NO VISIBLE
+!=
+DATO PROTEGIDO
+```
+
+El frontend no debe recibir anticipadamente contenido sensible solo porque se renderice cerrado.
+
+La consulta protegida debe ejecutarse con autorización y minimización.
+
+---
+
+#### 18. Resumen de acceso
+
+La entrada de `Acceso y seguridad` debe priorizar situación y riesgo.
+
+La capa principal puede mostrar, dentro del territorio autorizado:
+
+- solicitudes o aprobaciones pendientes;
+- configuraciones pendientes de revisión;
+- conflictos bloqueantes conocidos;
+- excepciones próximas a vencer;
+- revisiones periódicas pendientes;
+- dispositivos suspendidos o con atención requerida;
+- cambios recientes relevantes;
+- acceso a matrices, perfiles, simulación y auditoría.
+
+No se convierte en dashboard global si el actor no puede observar la población completa.
+
+---
+
+#### 19. Roles y matrices en modo guiado
+
+La vista guiada no presenta una cuadrícula completa como primera capa.
+
+Debe permitir escoger una intención clara, por ejemplo:
+
+- revisar un rol;
+- revisar un permiso;
+- revisar el acceso de una persona;
+- comparar configuración;
+- revisar un conflicto;
+- comprobar una excepción.
+
+La primera capa resume:
+
+- objeto revisado;
+- territorio;
+- estado;
+- cambios pendientes;
+- riesgos o conflictos relevantes.
+
+La matriz completa queda en nivel avanzado o especializado.
+
+---
+
+#### 20. Matrices en modo experto
+
+Las matrices extensas pueden incluir:
+
+- búsqueda;
+- filtro por aplicación;
+- filtro por rol;
+- filtro por permiso;
+- filtro por modalidad;
+- filtro por scope;
+- filtro territorial autorizado;
+- agrupación;
+- columnas configurables autorizadas;
+- comparación actual/propuesto;
+- resumen de filas modificadas;
+- resumen de conflictos.
+
+Un filtro avanzado activo debe permanecer resumido en la capa principal.
+
+Una matriz aparentemente vacía no puede ocultar que un filtro avanzado sigue activo.
+
+---
+
+#### 21. Datos contractuales esenciales dentro de matrices
+
+La cuadrícula no puede ocultar datos esenciales de una relación.
+
+Cuando una fila representa una concesión o restricción, debe poder comprenderse sin inferencia accidental:
+
+- quién o qué identidad participa;
+- PermissionKey o etiqueta humana vinculada de forma inequívoca;
+- modalidad;
+- scope;
+- territorio cuando aplique;
+- vigencia;
+- estado;
+- procedencia disponible;
+- efecto esperado;
+- conflicto aplicable.
+
+La presentación puede compactar.
+
+No puede borrar semántica.
+
+---
+
+#### 22. Configuración individual guiada
+
+El perfil de acceso de un trabajador debe favorecer interacción guiada.
+
+La experiencia separa:
+
+```text
+RELACIÓN LABORAL
+SEDE ASIGNADA
+ÁREA ASIGNADA
+PERFIL OPERATIVO
+ROL DE TURNO
+GRANT INDIVIDUAL
+DENY
+EXCEPCIÓN
+PERMISO EFECTIVO
+```
+
+No se resume todo como “Rol y permisos”.
+
+La relación laboral o una asignación territorial no se presenta como grant.
+
+---
+
+#### 23. Handoff de `VISO-UX-013`
+
+`VISO-UX-013` entrega una frontera inalterable:
+
+```text
+FILTRO
+!=
+AUTORIDAD
+```
+
+La divulgación progresiva:
+
+- no oculta el territorio efectivo cuando es material;
+- no permite que un filtro “Todas las sedes” sugiera autoridad global;
+- no revela sedes o áreas fuera de scope para completar una lista;
+- no interpreta multisede como global;
+- no confunde cobertura administrativa con permiso;
+- no usa la selección de interfaz como territorio autoritativo.
+
+El resumen territorial debe ser visible antes de una acción sensible.
+
+---
+
+#### 24. Filtros territoriales avanzados
+
+Un actor con múltiples sedes autorizadas puede usar filtros avanzados dentro de su universo permitido.
+
+Se exige:
+
+- resumen de filtros activos;
+- cantidad de sedes o áreas incluidas;
+- indicación clara de selección parcial;
+- cero filas fuera del universo autorizado;
+- revalidación del territorio real del recurso;
+- separación entre filtro y scope.
+
+El selector no amplía el conjunto de datos permitido.
+
+---
+
+#### 25. Handoff de `VISO-UX-014`
+
+`VISO-UX-014` entrega la explicación de procedencia sobre una decisión ya evaluada.
+
+019 la presenta por niveles:
+
+```text
+NIVEL ESENCIAL
+→ resultado y explicación humana breve
+
+NIVEL CONTEXTUAL
+→ categorías de fuentes y restricciones relevantes
+
+NIVEL AVANZADO
+→ fuentes exactas, carriles, scopes, versiones y evidencia autorizada
+```
+
+La UI no reevalúa permisos para construir la explicación.
+
+---
+
+#### 26. Procedencia en capa esencial
+
+La capa esencial debe poder decir, con lenguaje humano:
+
+- permitido;
+- denegado;
+- bloqueado por condición;
+- no aplicable;
+- no se pudo determinar con evidencia vigente.
+
+Cuando la procedencia sea material para comprender la decisión, presenta un resumen breve.
+
+No afirma “por su rol” si intervinieron fuentes adicionales.
+
+---
+
+#### 27. Procedencia avanzada
+
+El detalle avanzado puede incluir, si está autorizado:
+
+- permiso exacto;
+- carril;
+- resultado base;
+- resultado operativo;
+- grants coincidentes;
+- denies aplicables;
+- scopes;
+- territorio;
+- restricciones de dispositivo;
+- versiones;
+- referencias de decisión;
+- plano real o simulado.
+
+El detalle explica.
+
+No se convierte en segundo evaluador.
+
+---
+
+#### 28. Handoff de `VISO-UX-015`
+
+`VISO-UX-015` entrega conflictos tipados antes de guardar.
+
+019 fija que un conflicto bloqueante relevante nunca se oculta como detalle avanzado.
+
+La capa esencial muestra:
+
+- qué propuesta está bloqueada;
+- qué elemento resulta afectado;
+- severidad o naturaleza material;
+- consecuencia;
+- owner de resolución;
+- acción segura disponible.
+
+La capa avanzada puede explicar:
+
+- regla incompatible;
+- fuentes;
+- scope;
+- filas relacionadas;
+- versiones;
+- evidencia autorizada.
+
+---
+
+#### 29. Deny válido y conflicto permanecen separados
+
+Se conserva:
+
+```text
+DENY VÁLIDO
+!=
+CONFLICTO
+```
+
+La divulgación progresiva no usa colores, badges o plegado para fusionarlos.
+
+La capa esencial debe preservar la semántica correcta.
+
+---
+
+#### 30. Hallazgo de revisión no bloqueante
+
+Un hallazgo que requiere revisión pero no bloquea puede resumirse en la capa principal.
+
+Su detalle puede abrirse bajo demanda.
+
+Sin embargo, si el hallazgo cambia materialmente la decisión del administrador:
+
+```text
+SE CONVIERTE EN INFORMACIÓN ESENCIAL
+```
+
+La clasificación de presentación depende del efecto, no de la conveniencia visual.
+
+---
+
+#### 31. Handoff de `VISO-UX-016`
+
+`VISO-UX-016` entrega la vista previa exacta por trabajador.
+
+019 organiza su densidad.
+
+La capa esencial muestra:
+
+- trabajador;
+- territorio aplicable;
+- contexto de la fila o resumen;
+- estado vigente;
+- efecto de la propuesta;
+- bloqueos o conflictos relevantes;
+- diferenciación real/simulado;
+- frescura.
+
+Las filas, fuentes y explicaciones detalladas pueden revelarse según nivel y permiso.
+
+---
+
+#### 32. Preview no es exposición total
+
+“Vista previa exacta” no significa mostrar todos los datos disponibles.
+
+Se conserva:
+
+```text
+EXACTITUD
+!=
+EXPOSICIÓN IRRESTRICTA
+```
+
+La preview puede ser exacta usando:
+
+- agregados;
+- masking;
+- resúmenes;
+- filas autorizadas;
+- referencias opacas.
+
+Los datos no autorizados permanecen no divulgables.
+
+---
+
+#### 33. Comparación actual y propuesta
+
+Cuando exista una propuesta:
+
+```text
+ACTUAL
++
+PROPUESTO
++
+DIFERENCIA
++
+CONSECUENCIA
+```
+
+debe poder comprenderse antes de guardar.
+
+El detalle avanzado puede añadir:
+
+- fuentes;
+- versiones;
+- razón;
+- scope;
+- conflicto;
+- auditoría prospectiva.
+
+La diferencia material nunca se oculta únicamente porque su explicación completa sea avanzada.
+
+---
+
+#### 34. Handoff de `VISO-UX-017`
+
+`VISO-UX-017` prohíbe crear editores duplicados de otros owners.
+
+La divulgación progresiva no autoriza:
+
+- incrustar un formulario externo “solo porque está oculto”;
+- copiar reglas del owner a un panel avanzado;
+- crear una mutación paralela dentro de VISO;
+- duplicar un workspace como tab experto.
+
+Si el trabajo pertenece a otra aplicación, se conserva su owner.
+
+---
+
+#### 35. Handoff de `VISO-UX-018`
+
+`VISO-UX-018` entrega:
+
+- owner visible;
+- destino visible;
+- tipo de transición;
+- estado del handoff;
+- bloqueo;
+- retorno;
+- revalidación en destino;
+- separación entre contexto, permiso, claim, ownership y resultado.
+
+019 puede ocultar detalle técnico del handoff.
+
+No puede ocultar:
+
+- que la acción continúa en otra aplicación;
+- qué aplicación es propietaria cuando está resuelta;
+- que la autoridad se revalida;
+- un bloqueo que impida continuar;
+- un resultado desconocido o parcial;
+- el retorno necesario para confirmar el cambio.
+
+---
+
+#### 36. CTA cross-app
+
+La CTA debe identificar intención y destino.
+
+Ejemplos válidos ya definidos por el minibloque incluyen:
+
+- `Abrir en NEXO`;
+- `Continuar en ORIGO`;
+- `Revisar en NUMERA`;
+- `Abrir experiencia en ANIMA`.
+
+No se utiliza una etiqueta genérica `Más` para esconder el cambio de aplicación.
+
+El destino material sigue gobernado por 018.
+
+---
+
+#### 37. Excepciones no se esconden como opciones avanzadas
+
+`UX-BASE-009` prevalece.
+
+No se ocultan bajo un panel de “configuración avanzada” acciones como:
+
+- forzar;
+- anular;
+- revertir;
+- reabrir;
+- aprobar un override;
+- cambiar un estado directamente;
+- omitir evidencia;
+- saltar aprobación;
+- modificar retrospectivamente un hecho;
+- crear una excepción de seguridad.
+
+La entrada puede ser secundaria.
+
+Al abrirla, debe entrar en el flujo excepcional propietario con controles y autorización propios.
+
+---
+
+#### 38. Excepciones individuales
+
+Una excepción de seguridad debe mostrar en su capa esencial:
+
+- sujeto;
+- efecto solicitado;
+- territorio cuando aplique;
+- vigencia;
+- estado;
+- aprobación requerida;
+- conflicto material;
+- acción de revocación o suspensión cuando corresponda y esté autorizada.
+
+El detalle puede revelar permiso exacto, fuentes, auditoría y evidencia.
+
+Una excepción no se vuelve “segura” por estar detrás de un acordeón.
+
+---
+
+#### 39. Solicitudes y certificaciones de acceso
+
+La capa inicial de solicitudes y certificaciones prioriza:
+
+- solicitante o sujeto;
+- intención;
+- estado;
+- vigencia;
+- decisión pendiente;
+- aprobador cuando sea visible;
+- bloqueo;
+- vencimiento;
+- resultado.
+
+El historial completo, evidencia extendida y detalle contractual pueden revelarse bajo demanda según permiso.
+
+---
+
+#### 40. Operaciones masivas
+
+Antes de ejecutar una acción masiva deben permanecer visibles:
+
+- población objetivo;
+- cantidad exacta de elementos seleccionados;
+- territorio;
+- cambio exacto;
+- exclusiones;
+- conflictos;
+- filas bloqueadas;
+- autoridad requerida;
+- consecuencia esperada.
+
+La segmentación avanzada puede abrirse después.
+
+No existe un control oculto que cambie silenciosamente el universo afectado.
+
+---
+
+#### 41. Selección masiva y universo autorizado
+
+“Seleccionar todo” significa únicamente todo el universo autorizado y filtrado que la acción declare de forma explícita.
+
+La interfaz debe distinguir:
+
+```text
+TODOS LOS RESULTADOS AUTORIZADOS DEL FILTRO ACTUAL
+```
+
+de:
+
+```text
+TODOS LOS REGISTROS EXISTENTES
+```
+
+La segunda interpretación no se infiere.
+
+---
+
+#### 42. Dispositivos compartidos
+
+La capa esencial de gobierno de dispositivo muestra, cuando aplique:
+
+- identidad visible segura del dispositivo;
+- estado;
+- sede o contexto vinculado;
+- capacidad relevante;
+- restricción;
+- suspensión o revocación material;
+- atención requerida.
+
+El detalle avanzado puede mostrar configuración y evidencia autorizadas.
+
+Nunca revela:
+
+- credenciales;
+- secretos;
+- token completo;
+- identidad técnica sensible no necesaria.
+
+---
+
+#### 43. Cambio de actor en dispositivo compartido
+
+Al cambiar de actor:
+
+- se cierran capas personales sensibles;
+- se descartan detalles no persistibles;
+- se revalida autorización;
+- no se reutiliza el último trabajador consultado como contexto autoritativo;
+- no se conserva un panel experto con datos del actor anterior;
+- no se heredan filtros que expongan territorios incompatibles.
+
+La preferencia visual nunca prevalece sobre aislamiento entre actores.
+
+---
+
+#### 44. Auditoría
+
+La capa esencial de auditoría debe permitir comprender:
+
+- qué cambió;
+- quién actuó;
+- cuándo;
+- sobre qué sujeto o recurso;
+- resultado;
+- estado de evidencia.
+
+El detalle avanzado puede añadir:
+
+- filtros;
+- correlación;
+- versiones;
+- referencias;
+- diferencias;
+- metadata segura.
+
+El diagnóstico técnico restringido permanece separado.
+
+---
+
+#### 45. Exportación
+
+Una capacidad de exportación autorizada debe revelar antes de ejecutar:
+
+- conjunto exacto o criterio;
+- territorio;
+- columnas o categorías incluidas;
+- sensibilidad relevante;
+- formato;
+- finalidad o restricción cuando aplique;
+- efecto de filtros activos.
+
+La exportación no usa el modo experto como autorización.
+
+Un actor que puede ver una tabla no adquiere automáticamente permiso para exportarla.
+
+---
+
+#### 46. Ayuda contextual
+
+La ayuda sigue tres capas:
+
+```text
+EXPLICACIÓN BREVE
+→ EJEMPLO O DEFINICIÓN
+→ GUÍA COMPLETA
+```
+
+La primera capa utiliza lenguaje empresarial.
+
+La ayuda avanzada puede explicar:
+
+- scope;
+- procedencia;
+- diferencias entre grant y deny;
+- simulación;
+- conflicto;
+- vigencia;
+- aprobación.
+
+No debe sustituir una interfaz comprensible.
+
+---
+
+#### 47. Etiquetas de disclosure
+
+El control debe describir lo que revelará.
+
+Ejemplos válidos:
+
+- `Ver origen del permiso`;
+- `Comparar estado actual y propuesto`;
+- `Mostrar filtros de matriz`;
+- `Revisar fuentes de la decisión`;
+- `Ver detalle territorial`;
+- `Abrir auditoría del cambio`;
+- `Revisar configuración del dispositivo`.
+
+Etiquetas insuficientes como única señal:
+
+- `Más`;
+- `Avanzado`;
+- `Opciones`;
+- `Otros`;
+- un icono de tres puntos sin contexto.
+
+---
+
+#### 48. Profundidad máxima
+
+Dentro de una superficie ordinaria se permiten como regla de diseño hasta dos niveles de revelado.
+
+Si el usuario necesita un tercer nivel complejo:
+
+```text
+DETALLE
+→ DETALLE AVANZADO
+→ TRABAJO ESPECIALIZADO
+```
+
+El tercer nivel debe migrar conceptualmente a una superficie especializada.
+
+No se encadenan panel, acordeón, tab, modal y segundo modal como arquitectura principal.
+
+---
+
+#### 49. Regreso seguro desde superficie especializada
+
+Al volver se preserva, cuando sea seguro y permitido:
+
+- intención;
+- recurso;
+- versión;
+- filtros de presentación;
+- punto de trabajo;
+- selección no sensible;
+- estado de borrador según contrato.
+
+No se preserva como autoridad:
+
+- permiso;
+- territorio efectivo;
+- decisión antigua;
+- claim;
+- resultado no confirmado.
+
+La superficie origen debe refrescar la verdad propietaria cuando corresponda.
+
+---
+
+#### 50. Acciones y disclosure
+
+Expandir una región:
+
+- no ejecuta una mutación;
+- no confirma una acción;
+- no concede un permiso;
+- no acepta un handoff;
+- no publica;
+- no revoca;
+- no exporta.
+
+La mutación conserva su control explícito, autorización y validación de servidor.
+
+---
+
+#### 51. Estado editable
+
+Una sección con cambios sin guardar no se colapsa automáticamente si eso puede ocultar o perder:
+
+- campos modificados;
+- errores de validación;
+- evidencia requerida;
+- conflicto;
+- operación pendiente;
+- upload;
+- resultado parcial.
+
+El cierre de la capa debe preservar las reglas propietarias de guardar, descartar o continuar editando.
+
+---
+
+#### 52. Defaults avanzados
+
+Un valor avanzado puede permanecer colapsado únicamente si:
+
+- procede de política conocida;
+- es seguro para el caso ordinario;
+- no amplía autoridad;
+- no reutiliza datos de otro actor;
+- puede corregirse cuando corresponda;
+- su efecto material se resume antes de confirmar.
+
+Se conserva:
+
+```text
+VALOR COLAPSADO
+!=
+VALOR DESCONOCIDO PARA EL ADMINISTRADOR
+```
+
+Si el valor cambia acceso, territorio, privacidad, vigencia o terceros, su efecto debe ser visible antes de guardar.
+
+---
+
+#### 53. Revalidación al abrir detalle protegido
+
+Una capa protegida no confía en la autorización usada para cargar la pantalla inicial.
+
+Al abrirla, cuando corresponda, se revalida:
+
+- actor;
+- permiso de lectura;
+- permiso de acción;
+- territorio;
+- recurso;
+- vigencia;
+- dispositivo;
+- plano real o simulado;
+- estado del proceso.
+
+Si el contexto cambió:
+
+- refrescar;
+- cerrar;
+- degradar a solo lectura;
+- bloquear la acción;
+
+según el contrato propietario.
+
+---
+
+#### 54. Stale y frescura
+
+Una capa avanzada no puede ocultar que el dato está stale.
+
+Cuando la frescura sea material:
+
+- la capa esencial muestra que la información no es vigente;
+- el detalle puede explicar timestamp y fuente;
+- una acción sensible puede exigir refresh;
+- un snapshot histórico se etiqueta como histórico;
+- una simulación se distingue de una decisión real.
+
+No se usa una etiqueta visual de “actual” si no existe evidencia vigente.
+
+---
+
+#### 55. Loading y empty
+
+La experiencia distingue:
+
+```text
+LOADING
+EMPTY
+NO_AUTHORITY
+NO_TERRITORY
+NO_MATCHES
+CONFLICT
+STALE
+TECHNICAL_FAILURE
+PARTIAL_READ
+READY
+```
+
+No se presenta:
+
+- fallo técnico como lista vacía;
+- no autoridad como “sin resultados”;
+- no territorio como error de servidor;
+- conflicto como deny ordinario;
+- parcial como resultado completo.
+
+---
+
+#### 56. Fallo al revelar una capa
+
+Si la capa avanzada falla:
+
+- la capa esencial conserva su estado;
+- se explica que el detalle no pudo cargarse;
+- no se cambia la decisión de autorización;
+- no se presenta ausencia de detalle como ausencia de evidencia;
+- no se habilita una acción por no haber cargado el bloqueo;
+- se conserva una referencia segura para diagnóstico cuando exista.
+
+El fallo de detalle no puede ampliar capacidad.
+
+---
+
+#### 57. Accesibilidad
+
+Todo control de divulgación debe:
+
+- ser operable por teclado;
+- exponer nombre;
+- exponer estado expandido o colapsado;
+- relacionarse con la región revelada;
+- conservar orden lógico;
+- anunciar errores y cambios relevantes;
+- permitir volver sin perder la posición;
+- no depender solo de color;
+- no depender solo de hover;
+- no depender solo de iconos.
+
+La información crítica debe tener representación textual o semántica equivalente.
+
+---
+
+#### 58. Responsive
+
+En pantallas estrechas:
+
+- una matriz puede convertirse en cards o detalle;
+- filtros pueden plegarse;
+- información avanzada puede usar disclosure;
+- acciones críticas mantienen contexto;
+- simulación real o hipotética sigue visible;
+- actor y territorio efectivos siguen visibles cuando son materiales;
+- el responsive no elimina controles de seguridad;
+- el móvil no se convierte en una versión más permisiva.
+
+La densidad cambia.
+
+La autoridad no.
+
+---
+
+#### 59. Tablet y kiosco
+
+En dispositivos táctiles:
+
+- no se depende de hover;
+- los objetivos táctiles deben ser suficientes;
+- no se mantienen expansiones personales entre actores;
+- una capa avanzada no convierte un kiosco en backoffice irrestricto;
+- las opciones incompatibles con el dispositivo no se presentan;
+- el cierre de sesión limpia información temporal sensible.
+
+La materialización física detallada de dispositivo permanece en sus tareas propietarias.
+
+---
+
+#### 60. Búsqueda
+
+La búsqueda puede encontrar una capacidad avanzada únicamente si:
+
+- el actor puede descubrirla;
+- no revela información protegida;
+- el destino revalida contexto;
+- la superficie sigue siendo aplicable.
+
+Un resultado de búsqueda no concede autoridad.
+
+Un resultado oculto por falta de permiso no se anuncia como si estuviera simplemente plegado.
+
+---
+
+#### 61. Deep links
+
+Un deep link a una superficie avanzada debe revalidar:
+
+- sesión;
+- actor;
+- acceso a VISO;
+- permiso exacto;
+- territorio;
+- recurso;
+- contexto;
+- vigencia;
+- estado.
+
+Conocer la URL no habilita el contenido.
+
+La URL no transporta autoridad.
+
+---
+
+#### 62. Favoritos
+
+Un favorito puede conservar identidad semántica de una superficie.
+
+No conserva:
+
+- permiso;
+- actor;
+- territorio efectivo;
+- estado expandido sensible;
+- filtros que amplíen scope;
+- decisión antigua.
+
+Al abrirse, todo se resuelve otra vez.
+
+---
+
+#### 63. Navegación primaria
+
+La navegación primaria no compite con:
+
+- matrices extensas;
+- diagnósticos;
+- filtros avanzados;
+- detalles contractuales;
+- configuraciones excepcionales.
+
+Estas capacidades aparecen dentro de su dominio y bajo demanda.
+
+`Acceso y seguridad` sigue siendo un único dominio administrativo de primer nivel.
+
+---
+
+#### 64. `/roles-permissions`
+
+La ruta observada `/roles-permissions` sigue siendo la entrada física más cercana al catálogo y matrices.
+
+019 no declara su AS-IS como implementación final.
+
+La experiencia objetivo debe poder presentar:
+
+- capa guiada;
+- navegación interna comprensible;
+- detalle experto autorizado;
+- comparación;
+- conflictos;
+- procedencia;
+- acceso a superficies especializadas.
+
+La tarea no modifica la ruta.
+
+---
+
+#### 65. `/app-navigation`
+
+`/app-navigation` puede exponer configuración relacionada con descubribilidad.
+
+La divulgación progresiva no cambia la regla:
+
+```text
+VISIBILIDAD DE NAVEGACIÓN
+!=
+AUTORIZACIÓN
+```
+
+El detalle avanzado puede explicar el permiso declarado de una entrada.
+
+No puede convertir esa relación en grant.
+
+---
+
+#### 66. Superficies legacy
+
+Una superficie legacy no se conserva como segundo editor por ser “avanzada”.
+
+Si el owner ya está definido por 017 y el handoff por 018:
+
+- VISO muestra resumen o proyección autorizada;
+- VISO enlaza al owner cuando corresponde;
+- VISO no esconde una mutación duplicada detrás de una pestaña experta.
+
+Progressive disclosure no es estrategia de compatibilidad de ownership.
+
+---
+
+#### 67. Auditoría y minimización
+
+La auditoría avanzada puede ser densa.
+
+Aun así:
+
+- solo muestra población autorizada;
+- minimiza datos personales;
+- no expone secretos;
+- no usa exportación como bypass;
+- conserva actor, tiempo y resultado;
+- distingue resultado real de proyección o simulación;
+- no convierte correlación técnica en dato empresarial.
+
+---
+
+#### 68. Seguridad del detalle técnico
+
+El nivel técnico no debe explicar controles de forma que facilite su evasión.
+
+La interfaz puede mostrar una razón segura y accionable.
+
+El detalle interno de defensa, secreto o infraestructura permanece en observabilidad y soporte autorizado.
+
+La transparencia administrativa no equivale a publicar mecanismos sensibles.
+
+---
+
+#### 69. Métricas de uso
+
+La materialización futura puede medir, bajo sus contratos propietarios:
+
+- frecuencia de apertura por nivel;
+- tiempo hasta encontrar detalle;
+- retornos;
+- abandono;
+- uso de búsqueda;
+- errores posteriores al revelado;
+- opciones que deben subir de nivel;
+- campos críticos ocultados por error;
+- diferencias por dispositivo;
+- exposición accidental;
+- profundidad utilizada.
+
+Las métricas no autorizan esconder controles.
+
+La ausencia de uso no prueba irrelevancia.
+
+---
+
+#### 70. Preparación para `VISO-UX-020`
+
+019 entrega a 020 hipótesis y criterios de prueba, no resultados humanos.
+
+`VISO-UX-020` deberá poder verificar con administradores reales:
+
+- si encuentran información avanzada;
+- si distinguen modo guiado y experto;
+- si comprenden qué es autoridad y qué es presentación;
+- si identifican territorio;
+- si encuentran procedencia;
+- si detectan conflictos;
+- si comprenden actual frente a propuesto;
+- si reconocen owner y handoff;
+- si vuelven desde una superficie especializada;
+- si evitan errores por filtros ocultos;
+- si reconocen datos stale;
+- si la densidad es operable;
+- si disclosure y accesibilidad funcionan en dispositivos relevantes.
+
+019 no declara ninguna de esas pruebas ejecutada.
+
+---
+
+#### 71. Matriz de presentación por familia
+
+| Familia | Capa esencial | Bajo demanda | Avanzado o especializado |
+| --- | --- | --- | --- |
+| resumen de acceso | pendientes, bloqueos, riesgos y estado | detalle contextual | navegación a workspace especializado |
+| roles y matrices | identidad, estado y cambios relevantes | comparación y resumen | matriz completa, filtros, scopes y fuentes |
+| persona y asignaciones | sujeto, territorio, efecto y bloqueos | contexto y procedencia | filas detalladas y simulación |
+| simulación y conflictos | plano, resultado y conflicto material | explicación | evidencia, fuentes y comparación extensa |
+| excepciones y solicitudes | sujeto, efecto, vigencia, estado y aprobación | historia y detalle | flujo excepcional propietario |
+| dispositivos compartidos | estado, contexto, restricción y atención | metadata segura | configuración y evidencia autorizadas |
+| auditoría y exporte | qué cambió, quién, cuándo y resultado | filtros e historia | investigación, correlación y exporte autorizado |
+
+La tabla define jerarquía de presentación.
+
+No crea capacidades nuevas.
+
+---
+
+#### 72. Matriz de clasificación de ejemplos
+
+| Elemento | Nivel inicial | Regla |
+| --- | --- | --- |
+| territorio afectado por una mutación | `ESSENTIAL_ALWAYS_VISIBLE` | cambia comprensión del alcance |
+| conflicto bloqueante | `ESSENTIAL_ALWAYS_VISIBLE` | no se oculta |
+| estado stale | `ESSENTIAL_ALWAYS_VISIBLE` | afecta confianza |
+| resumen de procedencia | `CONTEXTUAL_ON_DEMAND` | se eleva si es necesario para decidir |
+| fuentes exactas de allow/deny | `ADVANCED_AUTHORIZED` | requiere relevancia y permiso |
+| matriz completa de roles y permisos | `SPECIALIZED_WORKSPACE` | complejidad alta y frecuente |
+| reason code seguro | `TECHNICAL_DIAGNOSTIC_RESTRICTED` | solo diagnóstico autorizado |
+| stack trace o secreto | `NOT_DISCLOSABLE` | no se revela en UX administrativa |
+| filtro territorial avanzado | `ADVANCED_AUTHORIZED` | no amplía scope |
+| owner y destino cross-app | `ESSENTIAL_ALWAYS_VISIBLE` cuando el handoff es material | evita ambigüedad |
+| PermissionKey exacta | `CONTEXTUAL_ON_DEMAND` o `ADVANCED_AUTHORIZED` | la etiqueta humana puede ser primaria |
+| resultado real o simulado | `ESSENTIAL_ALWAYS_VISIBLE` | no se confunden planos |
+| historial completo de auditoría | `SPECIALIZED_WORKSPACE` | no compite con la tarea ordinaria |
+
+La clasificación puede elevar un elemento a esencial cuando su efecto se vuelve material.
+
+Nunca lo degrada por conveniencia visual.
+
+---
+
+#### 73. Reglas de elevación dinámica
+
+Un contenido contextual o avanzado se eleva temporalmente a esencial cuando:
+
+- se vuelve obligatorio para guardar;
+- explica un bloqueo actual;
+- cambia la consecuencia de la acción;
+- revela una diferencia material;
+- determina aprobación;
+- indica stale;
+- indica resultado parcial;
+- indica resultado desconocido;
+- identifica el owner necesario;
+- muestra que el actor no puede continuar.
+
+La elevación es de presentación.
+
+No cambia el contrato de autorización.
+
+---
+
+#### 74. Reglas de degradación
+
+No se degrada a una capa secundaria:
+
+- un conflicto bloqueante activo;
+- un deny material para entender el resultado;
+- un cambio de territorio;
+- una vigencia que altera el efecto;
+- una diferencia material;
+- una aprobación requerida;
+- una advertencia de simulación;
+- un estado stale material;
+- una operación parcial;
+- un resultado desconocido;
+- un cambio de owner o aplicación propietaria.
+
+La interfaz no prioriza limpieza visual sobre decisión segura.
+
+---
+
+#### 75. Separación entre información y acción
+
+Puede existir información avanzada sin acción equivalente.
+
+Por ejemplo:
+
+- ver origen de permiso no concede capacidad de editarlo;
+- ver auditoría no concede exportar;
+- ver una excepción no concede aprobarla;
+- ver una matriz no concede mutarla;
+- ver un dispositivo no concede revocarlo;
+- ver un conflicto no concede resolverlo.
+
+Cada acción mantiene su permiso exacto y flujo propietario.
+
+---
+
+#### 76. Separación entre simulación y realidad
+
+Cuando una capa presenta simulación:
+
+- el indicador de simulación permanece visible;
+- no se presenta como estado vigente;
+- no se usa para mutar directamente;
+- no modifica sesión;
+- no modifica grants;
+- no modifica asignaciones;
+- no modifica turno;
+- no se conserva como autoridad al cerrar la capa.
+
+El detalle puede explicar hipótesis.
+
+La capa esencial conserva el plano.
+
+---
+
+#### 77. Separación entre histórico y vigente
+
+La interfaz debe distinguir:
+
+```text
+VIGENTE
+HISTÓRICO
+PROPUESTO
+SIMULADO
+```
+
+Una auditoría histórica no se presenta como configuración actual.
+
+Una propuesta no se presenta como concedida.
+
+Una simulación no se presenta como autorización real.
+
+---
+
+#### 78. Error de descubrimiento
+
+Si administradores autorizados no encuentran una función avanzada necesaria, el problema no se resuelve ampliando permisos.
+
+La solución pertenece a:
+
+- jerarquía;
+- etiqueta;
+- ubicación;
+- búsqueda;
+- ayuda;
+- superficie especializada;
+
+según el hallazgo.
+
+020 validará ese descubrimiento.
+
+---
+
+#### 79. Error de exposición
+
+Si una función o dato aparece para quien no corresponde:
+
+```text
+NO ES UN PROBLEMA DE DENSIDAD
+```
+
+Es un problema de autorización, minimización, filtrado o ownership.
+
+019 no normaliza fugas como “contenido avanzado visible por accidente”.
+
+---
+
+#### 80. Compatibilidad con accesibilidad
+
+La revelación de detalle no puede hacer que un lector de pantalla, teclado o dispositivo táctil pierda:
+
+- contexto;
+- foco;
+- estado;
+- relación con el control;
+- acción principal;
+- mensajes de error.
+
+La progresividad debe reducir complejidad también para tecnologías de asistencia.
+
+---
+
+#### 81. Consistencia entre superficies
+
+El mismo concepto conserva la misma jerarquía semántica en distintas superficies.
+
+Ejemplos:
+
+- un conflicto bloqueante no es esencial en una pantalla y “detalle experto” en otra;
+- simulación siempre se identifica;
+- territorio material siempre es comprensible;
+- filtros activos ocultos siempre se resumen;
+- owner cross-app siempre se identifica cuando la transición es material.
+
+La forma visual puede variar.
+
+La semántica no.
+
+---
+
+#### 82. Handoff contractual a implementación
+
+La materialización futura debe recibir de 019:
+
+```text
+NIVELES TRANSVERSALES DE UX-BASE-010
++
+MAPEO DE SEGURIDAD VISO
++
+REGLAS DE ELEVACIÓN
++
+REGLAS DE NO DIVULGACIÓN
++
+FRONTERAS DE AUTH
++
+FRONTERAS DE OWNERSHIP
++
+ACCESIBILIDAD
++
+FRESCURA
++
+PREPARACIÓN DE PRUEBAS
+```
+
+La implementation unit concreta resolverá componentes, rutas, consultas y estados físicos compatibles.
+
+019 no lo hace documentalmente.
+
+---
+
+#### 83. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya asigna a `VISO-UX-013` a `VISO-UX-020` la cobertura de coherencia administrativa de VISO y el principio transversal de divulgación progresiva ya fue definido por `UX-BASE-010`. Esta tarea especializa presentación y jerarquía sobre contratos existentes sin crear una nueva identidad empresarial, PermissionKey, scope, grant, deny, estado autorizativo, relación cross-app, transición física ni capacidad operativa.
+
+---
+
+#### 84. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, la tarea reutiliza cobertura vigente que protege:
+
+- coherencia entre administración de VISO y resultado consumido por aplicaciones operativas;
+- efecto visible antes de guardar;
+- detección de conflictos;
+- origen de permisos;
+- alcance territorial;
+- auditoría;
+- separación entre autorización y presentación;
+- minimización;
+- simulación separada de decisión real;
+- continuidad cross-app sin transporte de autoridad;
+- accesibilidad y operación administrativa segura.
+
+La fila `TREQ-VISO-001` ya incluye expresamente `VISO-UX-013` a `VISO-UX-020` dentro de sus tareas responsables.
+
+Esta trazabilidad no cambia estado, contenido, relaciones, paquete ni evidencia del registro.
+
+---
+
+#### 85. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto de `VISO-UX-019` no fue incorporado al archivo modular ni procesado por `docs:plan:build` en un checkout local. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron todavía formateo, quality, delivery, topología, TREQ ni `git diff --check` sobre una rama local de `VISO-UX-019`. |
+| REMOTA | PASS | Se verificaron en `vento-shell/main` el protocolo documental, contrato de entrega, manifest modular, continuidad, secuencia G3, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas de formato y desarrollo, archivo propietario, `VISO-UX-004`, `VISO-UX-013..018`, `UX-BASE-010`, `04A_08_VISO.md`, `package.json` y los validadores semántico, de entrega y formato; `active-sequence.json` reconoce `VISO-UX-018` como última tarea aprobada y `VISO-UX-019` como tarea documental actual. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define presentación documental; no ejecuta pruebas con administradores, no cambia procesos empresariales y no opera sobre usuarios reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron producto, rutas, componentes, contratos runtime, permisos, Supabase, datos, migraciones, despliegues ni configuración remota. |
+
+---
+
+#### 86. Criterios de aceptación
+
+- [ ] El título es exactamente `VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada`.
+- [ ] `VISO-UX-018` permanece como tarea anterior.
+- [ ] `VISO-UX-020 — Ejecutar pruebas con administradores reales` permanece como tarea siguiente.
+- [ ] La tarea es exclusivamente documental.
+- [ ] Se define `VISO_SECURITY_PROGRESSIVE_DISCLOSURE_CONTRACT = VISO-SECURITY-PROGRESSIVE-DISCLOSURE-001`.
+- [ ] Se reutilizan exactamente los niveles de divulgación definidos por `UX-BASE-010`.
+- [ ] No se crea una segunda escala de niveles.
+- [ ] El modo guiado es la entrada predeterminada.
+- [ ] El modo experto no añade autoridad.
+- [ ] El modo experto no se activa únicamente por nombre de rol.
+- [ ] Una preferencia visual no se interpreta como política.
+- [ ] Una preferencia visual no conserva permiso ni territorio efectivo.
+- [ ] Dispositivo compartido no conserva información personal revelada entre actores.
+- [ ] Contenido colapsado no se trata como contenido protegido.
+- [ ] Datos no divulgables no se cargan únicamente para ocultarlos visualmente.
+- [ ] La capa esencial conserva sujeto, acción, alcance y efecto materiales.
+- [ ] Un conflicto bloqueante nunca se oculta como detalle avanzado.
+- [ ] Un deny material nunca se oculta cuando es necesario para comprender el resultado.
+- [ ] Estado stale material permanece visible.
+- [ ] Resultado parcial permanece visible.
+- [ ] Resultado desconocido permanece visible.
+- [ ] Simulación permanece claramente diferenciada de decisión real.
+- [ ] Histórico permanece diferenciado de vigente.
+- [ ] Propuesta permanece diferenciada de estado concedido.
+- [ ] Territorio material permanece visible antes de una acción sensible.
+- [ ] Un filtro territorial no amplía autoridad.
+- [ ] “Todas las sedes” no equivale a autoridad global.
+- [ ] Filtros avanzados activos quedan resumidos en la capa principal.
+- [ ] Una tabla vacía no oculta filtros activos.
+- [ ] La matriz completa se trata como detalle avanzado o workspace especializado.
+- [ ] La matriz no elimina semántica contractual de sus filas.
+- [ ] Perfil de trabajador separa relación laboral, asignaciones, roles, grants, denies, excepciones y permiso efectivo.
+- [ ] Procedencia se presenta sobre decisión ya evaluada.
+- [ ] La UI no reconstruye autorización desde tablas locales.
+- [ ] El detalle de procedencia puede mostrar fuentes exactas solo cuando está autorizado.
+- [ ] Conflicto y deny válido permanecen separados.
+- [ ] Un hallazgo no bloqueante se eleva a esencial si cambia materialmente la decisión.
+- [ ] Preview exacta no equivale a exposición irrestricta.
+- [ ] Actual, propuesto, diferencia y consecuencia son comprensibles antes de guardar.
+- [ ] 017 sigue impidiendo editores duplicados.
+- [ ] Un panel experto no clona un workspace propietario.
+- [ ] 018 conserva owner y destino de handoff.
+- [ ] La CTA cross-app identifica destino cuando la transición es material.
+- [ ] El destino revalida autoridad.
+- [ ] Excepciones no se esconden como opciones avanzadas ordinarias.
+- [ ] Solicitudes y certificaciones conservan estado, vigencia y decisión pendiente.
+- [ ] Operaciones masivas muestran población, territorio, cambio, exclusiones, conflictos y resultado esperado.
+- [ ] “Seleccionar todo” no se interpreta como todo el universo empresarial.
+- [ ] Gobierno de dispositivo no expone secretos.
+- [ ] Cambio de actor limpia detalle sensible.
+- [ ] Auditoría distingue qué, quién, cuándo, sujeto y resultado.
+- [ ] Exportar exige autorización separada de ver.
+- [ ] Ayuda contextual no sustituye claridad de diseño.
+- [ ] Los controles de disclosure usan etiquetas descriptivas.
+- [ ] `Más`, `Avanzado`, `Opciones` u `Otros` no son etiquetas suficientes por sí solas.
+- [ ] La profundidad ordinaria se limita conceptualmente a dos niveles antes de mover trabajo complejo a superficie especializada.
+- [ ] Volver desde una superficie especializada no conserva autoridad antigua.
+- [ ] Expandir no ejecuta mutaciones.
+- [ ] Una capa editable no se colapsa perdiendo trabajo.
+- [ ] Defaults avanzados no amplían autoridad.
+- [ ] El efecto material de un default es visible antes de guardar.
+- [ ] Abrir contenido protegido revalida autorización cuando corresponde.
+- [ ] Loading, empty, no authority, no territory, no matches, conflict, stale, technical failure, partial read y ready no se confunden.
+- [ ] Un fallo de detalle no amplía capacidad.
+- [ ] La divulgación es operable por teclado y tecnología de asistencia.
+- [ ] Responsive no elimina controles ni autoridad.
+- [ ] Tablet y kiosco no heredan datos de otro actor.
+- [ ] Búsqueda, deep links y favoritos no transportan autoridad.
+- [ ] Navegación primaria no compite con matrices extensas y diagnósticos.
+- [ ] `/roles-permissions` no se certifica como implementación final por su existencia AS-IS.
+- [ ] `/app-navigation` no se convierte en fuente de autorización.
+- [ ] Una superficie legacy no se conserva como editor paralelo por llamarse avanzada.
+- [ ] Auditoría avanzada aplica minimización.
+- [ ] El diagnóstico técnico no expone mecanismos sensibles.
+- [ ] Las métricas no se usan para ocultar controles.
+- [ ] 020 recibe criterios de prueba, no resultados humanos inventados.
+- [ ] La misma semántica de disclosure se conserva entre superficies.
+- [ ] La materialización futura permanece `PER_IMPLEMENTATION_UNIT`.
+- [ ] El gate físico futuro permanece `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No existe cambio físico durante el cierre documental.
+
+---
+
+#### 87. Límites
+
+Esta tarea no:
+
+- implementa código de producto;
+- modifica `vento-viso`;
+- modifica rutas;
+- crea rutas;
+- modifica `/roles-permissions`;
+- modifica `/app-navigation`;
+- modifica navegación runtime;
+- modifica `app_navigation_items`;
+- modifica `app_screen_registry`;
+- crea componentes;
+- crea drawers, modales, tabs o rutas físicas;
+- crea un switch runtime de modo experto;
+- define almacenamiento físico de preferencias;
+- crea PermissionKeys;
+- renombra PermissionKeys;
+- retira PermissionKeys;
+- crea roles;
+- crea grants;
+- elimina grants;
+- crea denies;
+- elimina denies;
+- crea scopes;
+- amplía territorio;
+- modifica perfiles;
+- modifica asignaciones;
+- crea excepciones;
+- aprueba excepciones;
+- cambia segregación de funciones;
+- cambia precedencia;
+- cambia autorización efectiva;
+- reconstruye autorización desde UI;
+- modifica `AuthorizationDecision`;
+- modifica contratos de simulación;
+- crea estados de seguridad nuevos;
+- modifica ownership;
+- duplica workspaces propietarios;
+- crea handoffs nuevos;
+- modifica `ApplicationHandoffRelation`;
+- crea URLs o deep links;
+- modifica AppSwitcher;
+- modifica contratos de retorno;
+- crea exports físicos;
+- crea instrumentación física;
+- ejecuta métricas;
+- ejecuta pruebas con administradores reales;
+- declara usabilidad demostrada;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- crea RPC;
+- modifica Auth;
+- modifica Storage;
+- modifica datos;
+- modifica secretos;
+- modifica despliegues;
+- autoriza implementación física.
+
+---
+
+#### 88. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-020 — Ejecutar pruebas con administradores reales`
 ### [ ] VISO-UX-020 — Ejecutar pruebas con administradores reales
 
 ### Alcance del delta
