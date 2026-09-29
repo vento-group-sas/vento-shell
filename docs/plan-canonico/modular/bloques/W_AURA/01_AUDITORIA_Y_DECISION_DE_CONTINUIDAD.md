@@ -1428,7 +1428,670 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-005 — Inventariar procesos de marketing`
-### [ ] AURA-AUD-005 — Inventariar procesos de marketing
+### ✅ AURA-AUD-005 — Inventariar procesos de marketing
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-004 — Inventariar rutas y pantallas
+**Tarea siguiente:** AURA-AUD-006 — Identificar datos y permisos utilizados
+**Tipo de tarea:** auditoría técnico-documental del proceso actual de comunicación, contenido, promociones, campañas y oportunidades comerciales; reconcilia procesos canónicos, capacidades CAP-14, superficies transitorias y evidencias runtime sin convertirlas en implementación AURA ni transferir ownership
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda fijado el inventario actual de procesos y capacidades de marketing relacionados con AURA sin crear campañas, automatizaciones, integraciones, permisos, datos ni producto runtime
+**Cambios físicos autorizados:** ninguno; esta tarea no publica contenido, no contacta clientes, no activa promociones, no crea campañas, no modifica precios, no conecta canales y no altera repositorios, Supabase, permisos, datos, credenciales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar el estado real de los procesos de marketing que el modelo objetivo asigna a AURA y separarlo de las capacidades transitorias que hoy existen en VISO, Vento-Group, PASS, PULSO y canales externos.
+
+La regla raíz es:
+
+```text
+PROCESO CANÓNICO DEFINIDO
+!= PROCESO AURA IMPLEMENTADO
+
+CAPACIDAD PARCIAL EXISTENTE
+!= OWNERSHIP AURA
+
+CONTENIDO PUBLICADO
+!= CAMPAÑA
+
+COLECCIÓN TIPO CAMPAIGN
+!= CAMPAÑA AURA
+
+CONTACTO EXTERNO
+!= OPORTUNIDAD DIGITAL TRAZABLE
+```
+
+La tarea debe responder cuatro preguntas:
+
+1. qué procesos empresariales de marketing ya están definidos;
+2. qué capacidades del alcance `CAP-14` existen, son parciales, manuales o siguen sin implementación;
+3. qué superficies actuales participan realmente en esos procesos;
+4. qué faltantes deberán conservarse para la decisión de continuidad y las tareas posteriores.
+
+---
+
+#### 2. Reconciliación topológica
+
+La topología aplicable es:
+
+```text
+TASK = AURA-AUD-005
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+SEQUENCE = PHASE-12-AURA
+PREVIOUS = AURA-AUD-004
+NEXT = AURA-AUD-006
+```
+
+Consecuencias:
+
+- esta tarea se agota en una definición canónica verificable;
+- no produce una instancia física por package;
+- no habilita `AURA-DOM`, `AURA-AUTH`, `AURA-UX` ni `AURA-INT`;
+- no altera la puerta de `AURA-AUD-010`;
+- no crea un repositorio AURA;
+- no ejecuta campañas ni pruebas con usuarios;
+- no convierte procesos diferidos en procesos desplegados.
+
+---
+
+#### 3. Fuentes consumidas
+
+La auditoría consume sin reabrir:
+
+- `CAP-SCOPE-014`, que define el modelo objetivo de comunicación y promoción;
+- `BKL-FUNC-014`, que consolida el estado técnico actual de `CAP-14`;
+- `VPROC-0056`, para contenido y promociones;
+- `VPROC-0057`, para consultas y oportunidades digitales;
+- `PROC-CAT-005`, que asigna ownership funcional objetivo;
+- `INT-MKT-001`, que mantiene cerrada la puerta de campañas AURA hasta la decisión formal;
+- `AURA-AUD-001` a `AURA-AUD-004`, como evidencia previa de ausencia de producto, usuarios efectivos y superficies propias;
+- `WEB-FRM-011`, para la interfaz de newsletter todavía no resuelta;
+- `TREQ-AURA-001` a `TREQ-AURA-003`, para identidad, IA, campañas, oportunidades y fronteras empresariales;
+- la cobertura AURA de CMS, publicación, integración y continuidad ya registrada;
+- los repositorios runtime observados de VISO y Vento-Group;
+- el snapshot de solo lectura del entorno `vento-os-dev`.
+
+Ninguna fuente se modifica desde esta tarea.
+
+---
+
+#### 4. Contrato del inventario
+
+Se define:
+
+```text
+AURA_MARKETING_PROCESS_AUDIT_CONTRACT = AURA-CURRENT-MARKETING-PROCESS-001
+```
+
+El inventario usa cuatro estados de implementación:
+
+```text
+BASELINE_VERIFICADA_EN_USO
+PARCIAL
+MANUAL_O_EXTERNA
+SIN_IMPLEMENTACION
+```
+
+y dos estados adicionales de relación:
+
+```text
+DEFINIDO_DIFERIDO
+TRANSITORIO_NO_PROPIETARIO
+```
+
+`DEFINIDO_DIFERIDO` significa que el proceso, estados o eventos existen como contrato canónico, pero su propietaria objetivo no dispone todavía de producto runtime capaz de ejecutarlos.
+
+`TRANSITORIO_NO_PROPIETARIO` significa que una superficie actual participa en una parte del proceso sin adquirir ownership del proceso AURA.
+
+---
+
+#### 5. Universo funcional `CAP-14`
+
+El inventario canónico de comunicación y promoción contiene once subcapacidades:
+
+| Subcapacidad | Nombre | Estado actual consolidado | Lectura de esta auditoría |
+| --- | --- | --- | --- |
+| `CAP-14.01` | Definir identidad y mensajes | `PARCIAL` | existen contenido, marca y mensajes distribuidos; no existe memoria de marca AURA versionada y propietaria |
+| `CAP-14.02` | Planear comunicación y promociones | `MANUAL_O_EXTERNA` | no existe planificador AURA de objetivos, audiencia, calendario, presupuesto y dependencias |
+| `CAP-14.03` | Crear y aprobar contenido | `BASELINE_VERIFICADA_EN_USO` | VISO administra contenido web; la existencia del CRUD no demuestra el ciclo AURA completo de revisión y aprobación |
+| `CAP-14.04` | Publicar y administrar medios | `BASELINE_VERIFICADA_EN_USO` | existe publicación de contenido web; no existe orquestación multicanal AURA |
+| `CAP-14.05` | Gestionar campañas | `SIN_IMPLEMENTACION` | no existe sistema AURA de campaña, hipótesis, audiencia, piezas, guardas, resultados y cierre |
+| `CAP-14.06` | Gestionar promociones y cupones | `PARCIAL` | existen superficies comerciales relacionadas, pero la intención AURA y la ejecución PULSO/PASS no forman todavía un flujo canónico integrado |
+| `CAP-14.07` | Captar oportunidades de venta | `SIN_IMPLEMENTACION` | no existe bandeja AURA de leads u oportunidades con consentimiento, origen y seguimiento |
+| `CAP-14.08` | Gestionar ventas a empresas | `MANUAL_O_EXTERNA` | no existe pipeline B2B AURA implementado |
+| `CAP-14.09` | Gestionar catering y eventos comerciales | `MANUAL_O_EXTERNA` | no existe workflow AURA implementado para oportunidad, brief, propuesta y seguimiento |
+| `CAP-14.10` | Medir resultados de comunicación y promoción | `SIN_IMPLEMENTACION` | no existe atribución AURA entre interacción, conversión, venta incremental, margen y aprendizaje |
+| `CAP-14.11` | Gestionar reputación y comentarios públicos | `MANUAL_O_EXTERNA` | no existe bandeja AURA integrada de reseñas, menciones, clasificación y escalamiento |
+
+Balance:
+
+```text
+TOTAL_CAP_14 = 11
+PARCIAL = 2
+MANUAL_O_EXTERNA = 4
+SIN_IMPLEMENTACION = 3
+BASELINE_VERIFICADA_EN_USO = 2
+```
+
+La suma es:
+
+```text
+2 + 4 + 3 + 2 = 11
+```
+
+---
+
+#### 6. Procesos canónicos de marketing
+
+La arquitectura de procesos reduce el dominio operativo inmediato a dos procesos empresariales canónicos:
+
+| Proceso | Propósito | Owner objetivo | Estado de productor |
+| --- | --- | --- | --- |
+| `VPROC-0056` | Gestionar contenido y promociones desde solicitud y aprobación hasta publicación y retiro | `aura` | `DEFINED_DEFERRED` |
+| `VPROC-0057` | Convertir consultas y oportunidades de canales digitales en casos comerciales trazables | `aura` | `DEFINED_DEFERRED` |
+
+Ambos procesos:
+
+- tienen identidad canónica estable;
+- conservan owner funcional objetivo `aura`;
+- tienen estados y eventos definidos;
+- no tienen implementación AURA demostrada;
+- no tienen binding de pantalla AURA operativo;
+- no deben reasignarse a VISO, PASS, PULSO o un canal externo por conveniencia;
+- permanecen condicionados por `AURA-AUD-010`.
+
+No se crea un tercer proceso de marketing desde esta tarea.
+
+---
+
+#### 7. Proceso `VPROC-0056`
+
+`VPROC-0056` conserva el ciclo objetivo:
+
+```text
+CONTENT_REQUESTED
+→ BRIEF_UNDER_REVIEW
+→ IN_CREATION
+→ UNDER_REVIEW
+→ PENDING_APPROVAL
+→ APPROVED
+→ SCHEDULED
+→ PUBLISHED
+→ PERFORMANCE_REVIEW
+→ CONTENT_CYCLE_REVIEWED
+```
+
+El estado actual es mixto:
+
+| Tramo | Estado actual | Evidencia |
+| --- | --- | --- |
+| solicitud estructurada | no implementado como proceso AURA | no existe intake AURA |
+| brief versionado | no implementado como proceso AURA | no existe producto runtime AURA |
+| creación de contenido web | parcial existente | VISO crea y edita `website_items` y `website_blocks` |
+| revisión/aprobación segregada | no demostrada como ciclo AURA | `is_published` no equivale a workflow completo |
+| programación multicanal | no implementada | no existe orquestador AURA |
+| publicación web | existente de forma transitoria | VISO escribe contenido consumido por Vento-Group |
+| publicación a canales externos | no integrada como AURA | enlaces sociales no son adaptadores de publicación |
+| retiro versionado | no demostrado como ciclo AURA | la superficie actual no acredita el workflow objetivo |
+| revisión de rendimiento | no implementada | no existe atribución AURA |
+| cierre y aprendizaje | no implementado | no existe expediente AURA de campaña/contenido |
+
+La existencia de publicación web no convierte todo el ciclo en operativo.
+
+---
+
+#### 8. Proceso `VPROC-0057`
+
+`VPROC-0057` conserva el ciclo objetivo:
+
+```text
+DIGITAL_INQUIRY_RECEIVED
+→ TRIAGED
+→ QUALIFICATION_PENDING
+→ QUALIFIED
+→ ASSIGNED
+→ RESPONSE_IN_PROGRESS
+→ COMMERCIAL_HANDOFF_PENDING
+→ FOLLOW_UP_IN_PROGRESS
+→ DIGITAL_INQUIRY_RESOLVED
+```
+
+El estado actual observado es:
+
+| Tramo | Estado actual | Evidencia |
+| --- | --- | --- |
+| captura correlacionable | no implementada como bandeja AURA | no existe producto AURA |
+| triage | no implementado | no existe workflow runtime AURA |
+| calificación | no implementada | no existe expediente AURA |
+| asignación | no implementada | no existe bandeja propietaria |
+| respuesta trazable | manual o externa | el sitio público usa contacto por correo y superficies externas |
+| handoff comercial | manual o externa | no existe handoff AURA implementado |
+| seguimiento | manual o externo | no existe timeline AURA |
+| cierre con resultado | no implementado | no existe cierre correlacionable de oportunidad AURA |
+
+Una interacción recibida por correo o canal externo no se considera automáticamente una instancia de `VPROC-0057`.
+
+---
+
+#### 9. CMS actual de VISO
+
+La capacidad web existente participa principalmente en `CAP-14.03` y `CAP-14.04`.
+
+VISO administra:
+
+- `website_items`;
+- `website_blocks`;
+- categorías de contenido como restaurante, empleo, servicio, evento y app;
+- campos editoriales;
+- media;
+- CTA;
+- orden;
+- estado `is_published`.
+
+Esta superficie:
+
+```text
+ES una baseline actual de contenido web
+NO ES AURA
+NO ES un sistema de campañas
+NO ES un planificador de promociones
+NO ES una bandeja de oportunidades
+NO ES una plataforma de atribución
+```
+
+El snapshot remoto observado contiene:
+
+```text
+website_items_total = 9
+website_items_published = 9
+website_blocks_total = 7
+website_blocks_published = 7
+```
+
+Distribución de `website_items`:
+
+```text
+app = 3
+event = 1
+job = 1
+restaurant = 3
+service = 1
+```
+
+La existencia de contenido publicado confirma una baseline web en uso, no un sistema operativo de marketing AURA.
+
+---
+
+#### 10. Colecciones comerciales de VISO
+
+VISO contiene una superficie `commercial_collections` que permite `kind = campaign`.
+
+El snapshot observado es:
+
+```text
+commercial_collections_total = 9
+kind_campaign_total = 2
+kind_campaign_active = 1
+kind_event_total = 0
+kind_event_active = 0
+```
+
+Sin embargo:
+
+```text
+COMMERCIAL_COLLECTION(kind=campaign)
+!= AURA_CAMPAIGN
+```
+
+La superficie observada administra colecciones comerciales asociadas a menú, sede, orden, imagen, vigencia y activación.
+
+No demuestra por sí sola:
+
+- objetivo de campaña;
+- hipótesis;
+- audiencia;
+- consentimiento;
+- presupuesto;
+- piezas multicanal;
+- aprobación de marketing;
+- integración con canales;
+- atribución;
+- aprendizaje;
+- cierre de campaña.
+
+Por tanto se registra como capacidad comercial relacionada y no como implementación de `CAP-14.05`.
+
+---
+
+#### 11. Sitio público Vento-Group
+
+Vento-Group actúa como consumidor público de contenido y como frontera de contacto, pero no como sistema operativo de marketing.
+
+Se observa:
+
+- consumo de `website_items` y `website_blocks`;
+- páginas públicas de restaurantes, servicios, empleos y ecosistema;
+- contacto mediante `mailto:hola@ventogroup.co`;
+- enlaces sociales;
+- una interfaz de newsletter en el footer;
+- un botón `Suscribirse` sin submit, handler o integración observable en el componente revisado.
+
+La newsletter permanece bajo:
+
+```text
+WEB-FRM-011
+Implementar suscripción de newsletter o retirar la interfaz
+```
+
+Por tanto:
+
+```text
+CAMPO_EMAIL + BOTON_SUSCRIBIRSE
+!= SUSCRIPCION FUNCIONAL
+```
+
+y:
+
+```text
+MAILTO
+!= CRM
+!= LEAD_AURA
+!= OPORTUNIDAD_TRAZABLE
+```
+
+---
+
+#### 12. Canales externos
+
+Instagram, LinkedIn, YouTube, correo y otros canales pueden existir como medios reales de actividad comercial o comunicación.
+
+Esta auditoría los clasifica como:
+
+```text
+CANAL_EXTERNO
+→ puede transportar publicación, contacto o métricas
+→ no se convierte en owner del proceso
+→ no demuestra integración AURA
+```
+
+No se observó desde las superficies revisadas un adaptador AURA runtime que:
+
+- publique;
+- programe;
+- reconcilie;
+- retire;
+- reciba leads;
+- consuma comentarios;
+- capture métricas;
+- mantenga idempotencia;
+- preserve credenciales bajo un contrato AURA.
+
+La actividad manual o externa puede continuar según la autoridad vigente, sin ser reclasificada como implementación AURA.
+
+---
+
+#### 13. Frontera con PASS y PULSO
+
+El inventario preserva:
+
+```text
+AURA
+→ intención de marketing, campaña y atribución cuando sea autorizada
+
+PASS
+→ identidad, consentimiento, fidelización, beneficios y redención
+
+PULSO
+→ oferta vendible, pedido, venta, cobro y efecto transaccional
+```
+
+La auditoría de código realizada no aporta evidencia suficiente para promover PASS o PULSO a owner de campañas.
+
+Una promoción o descuento ejecutado transaccionalmente no constituye por sí solo:
+
+- campaña;
+- audiencia;
+- contenido;
+- publicación;
+- atribución;
+- aprendizaje.
+
+Las relaciones exactas permanecen reservadas a:
+
+- `AURA-AUD-008 — Definir relación con PASS`;
+- `AURA-AUD-009 — Definir relación con PULSO`.
+
+---
+
+#### 14. Eventos y pantallas diferidos
+
+Los eventos empresariales de `VPROC-0056` y `VPROC-0057` están definidos documentalmente.
+
+Para `VPROC-0056` se preservan eventos desde solicitud hasta ciclo evaluado.
+
+Para `VPROC-0057` se preservan eventos desde consulta digital recibida hasta resolución.
+
+Su estado de productor permanece diferido.
+
+Además, el registro de bindings conserva:
+
+```text
+VPROC-0056 → 0 bindings de pantalla operativos
+VPROC-0057 → 0 bindings de pantalla operativos
+```
+
+Esto confirma la diferencia entre contrato de proceso y producto disponible.
+
+---
+
+#### 15. Mapa de proceso actual
+
+El estado reconciliado queda:
+
+| Materia | Superficie actual | Estado | Owner actual o autoridad | Owner objetivo |
+| --- | --- | --- | --- | --- |
+| identidad y mensajes | archivos, contenido y práctica distribuida | parcial | distribuido | AURA |
+| planificación de comunicación | práctica manual/externa | manual o externa | humana/canal | AURA + NUMERA |
+| creación de contenido web | VISO `/website-cms` | baseline en uso | VISO | AURA, sujeto a decisión futura |
+| publicación web | VISO → Vento-Group | baseline en uso | VISO + consumidor público | AURA + canales, sujeto a decisión futura |
+| campaña integral | no existe como AURA | sin implementación | ninguno como sistema AURA | AURA |
+| promociones/cupons | capacidades parciales fuera de AURA | parcial | PASS/PULSO según hecho | AURA + PASS + PULSO + NUMERA |
+| captura de oportunidades | correo/canales sin bandeja AURA | sin implementación AURA | canal/humano | AURA |
+| ventas B2B | manual o externa | manual o externa | operación comercial | AURA + PULSO + NUMERA |
+| catering/eventos comerciales | manual o externa | manual o externa | operación comercial | AURA + PULSO + FOGO + NEXO |
+| medición de marketing | no existe atribución AURA | sin implementación | fuentes dispersas | AURA + NUMERA |
+| reputación pública | manual o externa | manual o externa | canal/humano | AURA + VISO/PASS |
+
+Ninguna fila de owner objetivo autoriza una transferencia actual.
+
+---
+
+#### 16. Brechas operativas
+
+La auditoría congela estas brechas:
+
+1. AURA no dispone de producto runtime.
+2. No existe bandeja AURA de campañas.
+3. No existe workflow AURA de contenido end-to-end.
+4. No existe planificador AURA.
+5. No existe bandeja AURA de oportunidades.
+6. No existe pipeline B2B AURA.
+7. No existe workflow AURA de catering/eventos.
+8. No existe atribución AURA.
+9. No existe bandeja AURA de reputación.
+10. No existe publicación multicanal AURA.
+11. No existe conciliación AURA con canales externos.
+12. No existe automatización de newsletter funcional en el sitio observado.
+13. VISO conserva CMS y contenido web actuales.
+14. Vento-Group conserva consumo público actual.
+15. `commercial_collections.kind = campaign` no satisface `CAP-14.05`.
+16. Los eventos `VPROC-0056` y `VPROC-0057` permanecen diferidos.
+17. No se debe ampliar VISO, PASS o PULSO para llenar silenciosamente el vacío AURA.
+18. La decisión de continuidad sigue perteneciendo a `AURA-AUD-010`.
+
+---
+
+#### 17. Handoff
+
+`AURA-AUD-006` recibe un inventario estable de procesos y superficies.
+
+Debe identificar los datos y permisos efectivamente utilizados por:
+
+- CMS actual de VISO;
+- publicación web;
+- contenido y media;
+- colecciones comerciales relacionadas;
+- consumo público;
+- newsletter incompleta;
+- contacto por correo;
+- procesos canónicos diferidos `VPROC-0056` y `VPROC-0057`;
+- relaciones futuras con PASS, PULSO, NUMERA y canales.
+
+La siguiente tarea no debe asumir que un dato o permiso existe únicamente porque el modelo objetivo lo necesita.
+
+Debe separar:
+
+```text
+DATO_ACTUAL
+DATO_OBJETIVO
+PERMISO_ACTUAL
+PERMISO_RESERVADO
+PERMISO_FUTURO
+```
+
+---
+
+#### 18. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+La cobertura vigente ya protege:
+
+- identidad y versionado de campañas, contenido y publicación;
+- separación entre campaña, pieza, publicación, promoción y regla transaccional;
+- IA, privacidad, consentimiento y fuentes autorizadas;
+- oportunidades, B2B, catering, reputación y atribución;
+- ausencia de producto AURA;
+- propiedad transitoria de CMS y consumidores públicos;
+- autorización, publicación, integración y continuidad.
+
+Esta tarea inventaría el estado actual y lo reconcilia con esas obligaciones sin crear una obligación verificable material nueva.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+---
+
+#### 19. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, en especial:
+
+- `TREQ-AURA-001`, para identidad, versionado, campañas, contenido, publicación y promoción;
+- `TREQ-AURA-002`, para IA, grounding, privacidad, autorización y trazabilidad;
+- `TREQ-AURA-003`, para campañas, promociones, oportunidades, B2B, catering, reputación, resultados y fronteras PULSO/PASS/NUMERA;
+- `TREQ-AURA-004` a `TREQ-AURA-007`, para existencia, drift, disponibilidad y ownership actual;
+- `TREQ-AURA-009`, para capacidades atómicas de mutación y publicación;
+- `TREQ-AURA-019`, para separar borrador, revisión, aprobación, programación, publicación, retiro y archivo;
+- `TREQ-AURA-025`, para integridad de CTA, enlaces y destinos;
+- `TREQ-AURA-027`, para impedir una transferencia de CMS sin decisión, ADR, migración y reconciliación;
+- `TREQ-INTEGRATION-019`, para contratos internos y canales externos cuando se materialicen.
+
+Esta sección documenta cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 20. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La redacción anticipada no ejecuta la batería del checkout; el build canónico se ejecutará al incorporar la tarea. |
+| LOCAL | PASS | El artefacto fue auditado estructuralmente y normalizado para eliminar whitespace al final de todas las líneas; contiene una sola tarea, metadata completa, continuidad exacta y cero requisitos nuevos. |
+| REMOTA | PASS | Se verificaron contratos de procesos, estados, ownership, eventos, backlog `CAP-14`, `INT-MKT-001`, superficies VISO/Vento-Group y un snapshot agregado de solo lectura de contenido y colecciones comerciales. |
+| OPERATIVA | NOT_APPLICABLE | No se ejecutaron campañas, publicaciones externas, capturas de leads ni sesiones humanas; la tarea inventaría procesos y capacidades observables. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se materializa producto, campaña, integración, dato, permiso, canal ni automatización. |
+
+---
+
+#### 21. Criterios de aceptación
+
+- [x] Se inventarían exactamente once subcapacidades `CAP-14.01..11`.
+- [x] La clasificación suma exactamente 11.
+- [x] Se reconocen exactamente dos procesos canónicos inmediatos de marketing: `VPROC-0056` y `VPROC-0057`.
+- [x] Ambos conservan owner objetivo `aura`.
+- [x] Ambos conservan estado de productor diferido.
+- [x] Se registra el ciclo completo de `VPROC-0056`.
+- [x] Se registra el ciclo completo de `VPROC-0057`.
+- [x] Se separa publicación web existente de campaña AURA.
+- [x] Se separa `commercial_collections.kind = campaign` de `CAP-14.05`.
+- [x] Se documenta la baseline actual de `website_items` y `website_blocks`.
+- [x] Se documenta el snapshot actual de colecciones comerciales.
+- [x] Se clasifica la newsletter como interfaz no funcional pendiente de `WEB-FRM-011`.
+- [x] Se separa contacto por correo de oportunidad digital trazable.
+- [x] Se preservan VISO y Vento-Group como owners actuales de sus superficies.
+- [x] No se reasigna ownership a PASS o PULSO.
+- [x] Se reserva la relación con PASS a `AURA-AUD-008`.
+- [x] Se reserva la relación con PULSO a `AURA-AUD-009`.
+- [x] Se conserva la decisión de continuidad en `AURA-AUD-010`.
+- [x] Se entrega a `AURA-AUD-006` un inventario de procesos suficiente para auditar datos y permisos.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecutan cambios físicos.
+
+---
+
+#### 22. Límites
+
+Esta tarea no:
+
+- implementa AURA;
+- crea un repositorio AURA;
+- crea campañas;
+- crea briefs;
+- crea audiencias;
+- publica contenido;
+- programa publicaciones;
+- conecta canales;
+- configura redes sociales;
+- registra leads;
+- contacta clientes;
+- implementa newsletter;
+- modifica VISO;
+- modifica Vento-Group;
+- modifica PASS;
+- modifica PULSO;
+- modifica NUMERA;
+- modifica datos o permisos;
+- modifica Supabase;
+- convierte colecciones comerciales en campañas AURA;
+- redefine `VPROC-0056` o `VPROC-0057`;
+- reasigna ownership;
+- decide la relación final con VISO, reservada a `AURA-AUD-007`;
+- decide la relación final con PASS, reservada a `AURA-AUD-008`;
+- decide la relación final con PULSO, reservada a `AURA-AUD-009`;
+- decide continuidad, reemplazo o retiro, reservado a `AURA-AUD-010`;
+- desbloquea el roadmap objetivo;
+- crea ni modifica requisitos de prueba;
+- modifica el Registro 04A;
+- inicia una instancia física o package.
+
+---
+
+#### 23. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-004 — Inventariar rutas y pantallas`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-005 — Inventariar procesos de marketing`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-006 — Identificar datos y permisos utilizados`
 ### [ ] AURA-AUD-006 — Identificar datos y permisos utilizados
 ### [ ] AURA-AUD-007 — Definir relación con VISO
 ### [ ] AURA-AUD-008 — Definir relación con PASS

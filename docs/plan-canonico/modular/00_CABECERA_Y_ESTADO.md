@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1490** |
+| Tareas aprobadas | **1491** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **106** |
+| Tareas no iniciadas | **105** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **93.36% (1490/1596)** |
+| Porcentaje de completamiento | **93.42% (1491/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-AUD-004 — Inventariar rutas y pantallas** |
-| Tarea actual | **AURA-AUD-005 — Inventariar procesos de marketing** |
+| Última tarea aprobada | **AURA-AUD-005 — Inventariar procesos de marketing** |
+| Tarea actual | **AURA-AUD-006 — Identificar datos y permisos utilizados** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUD-006 — Identificar datos y permisos utilizados** |
+| Siguiente tarea | **AURA-AUD-007 — Definir relación con VISO** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 4 de 37 aprobadas; AURA-AUD-005 pendiente** |
+| Progreso del bloque | **BLOQUE W: 5 de 37 aprobadas; AURA-AUD-006 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-AUD-005** |
+| Carril documental | **ACTIVO — AURA-AUD-006** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-AUD-004` — Inventariar rutas y pantallas |
-| Tarea actual | `AURA-AUD-005` — Inventariar procesos de marketing — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUD-006` — Identificar datos y permisos utilizados |
+| Última aprobada | `AURA-AUD-005` — Inventariar procesos de marketing |
+| Tarea actual | `AURA-AUD-006` — Identificar datos y permisos utilizados — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUD-007` — Definir relación con VISO |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 4 DE 37 APROBADAS — ACTUAL AURA-AUD-005** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 5 DE 37 APROBADAS — ACTUAL AURA-AUD-006** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-AUD-004 — Inventariar rutas y pantallas
-        ↓
-TAREA ACTUAL
 AURA-AUD-005 — Inventariar procesos de marketing
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUD-006 — Identificar datos y permisos utilizados
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUD-007 — Definir relación con VISO
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 4 de 37 tareas aprobadas
+BLOQUE W — 5 de 37 tareas aprobadas
 ```
