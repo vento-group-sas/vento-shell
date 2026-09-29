@@ -31,6 +31,15 @@ Texto sin tocar.
   assert.equal(secondPass.source, result.source);
 });
 
+test('elimina espacios finales de la tarea seleccionada sin tocar otras tareas', () => {
+  const source = '### [ ] TEST-FMT-011 — Primera\n\nPárrafo con espacios  \nPárrafo con tabulación\t\n```text\nvalor  \n```\n\n### [ ] TEST-FMT-012 — Segunda\nTexto ajeno  \n';
+  const result = formatTaskFileSource(source, { taskId: 'TEST-FMT-011' });
+  assert.deepEqual(result.changedTaskIds, ['TEST-FMT-011']);
+  assert.match(result.source, /Párrafo con espacios\nPárrafo con tabulación\n```text\nvalor\n```/u);
+  assert.match(result.source, /### \[ \] TEST-FMT-012 — Segunda\nTexto ajeno  \n$/u);
+  assert.deepEqual(formatTaskFileSource(result.source, { taskId: 'TEST-FMT-011' }).changedTaskIds, []);
+});
+
 test('crea un scaffold explícito solo para una tarea no iniciada y vacía', () => {
   const source = '### [ ] TEST-FMT-003 — Vacía\n';
   const result = formatTaskFileSource(source, {
