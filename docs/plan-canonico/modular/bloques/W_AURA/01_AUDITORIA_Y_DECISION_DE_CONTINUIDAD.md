@@ -2614,7 +2614,557 @@ Esta tarea no modifica schemas, columnas, filas, RLS, grants, permisos, Storage,
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-007 — Definir relación con VISO`
-### [ ] AURA-AUD-007 — Definir relación con VISO
+### ✅ AURA-AUD-007 — Definir relación con VISO
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-006 — Identificar datos y permisos utilizados
+**Tarea siguiente:** AURA-AUD-008 — Definir relación con PASS
+**Tipo de tarea:** definición técnico-documental de la relación AURA–VISO; separa ownership funcional, aplicación primaria objetivo, runtime actual, consumo, handoffs y condiciones de transferencia sin mover rutas, datos, permisos ni producto
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda fijada la relación actual y condicionada entre AURA y VISO sin transferir CMS, rutas, procesos, datos, permisos ni despliegues
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-viso`, AURA, Vento-Group, Supabase, rutas, permisos, tablas, contratos runtime, DNS, despliegues ni repositorios
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la relación arquitectónica entre AURA y VISO usando simultáneamente el estado AS-IS y la propiedad funcional objetivo ya aprobada, sin convertir una ubicación técnica actual en ownership empresarial ni anticipar la decisión de continuidad de AURA.
+
+La regla raíz es:
+
+```text
+RUNTIME_ACTUAL
+!= APLICACION_PRIMARIA_OBJETIVO
+!= PROPIETARIA_DEL_PROCESO
+!= CONSUMIDORA
+```
+
+Para este caso:
+
+```text
+VISO = HOST Y OPERADOR ADMINISTRATIVO ACTUAL DEL CMS
+AURA = PROPIETARIA FUNCIONAL OBJETIVO DE VPROC-0056 Y VPROC-0057
+VENTO-GROUP = CONSUMIDOR PUBLICO ACTUAL DEL CONTENIDO PUBLICADO
+```
+
+Ninguna de esas tres afirmaciones autoriza una transferencia física.
+
+---
+
+#### 2. Reconciliación topológica
+
+La tarea conserva:
+
+```text
+TASK = AURA-AUD-007
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+SEQUENCE = PHASE-12-AURA
+PREVIOUS = AURA-AUD-006
+NEXT = AURA-AUD-008
+```
+
+Consecuencias:
+
+- la tarea se agota en una definición canónica;
+- no genera instancia física propia;
+- no mueve código, datos o rutas;
+- no activa AURA;
+- no decide todavía continuidad, reemplazo o retiro;
+- no reemplaza el ADR reservado a `AURA-AUD-011`;
+- no desbloquea `AURA-DOM`, `AURA-AUTH`, `AURA-UX` ni `AURA-INT`.
+
+---
+
+#### 3. Entradas aprobadas
+
+La relación consume:
+
+- `AURA-AUD-001`, que confirma ausencia de repositorio standalone AURA;
+- `AURA-AUD-002`, que confirma producto AURA no implementado y no disponible;
+- `AURA-AUD-003`, con población y autorización AURA reconciliadas;
+- `AURA-AUD-004`, con inventario de rutas y pantallas;
+- `AURA-AUD-005`, con `VPROC-0056` y `VPROC-0057` como procesos AURA diferidos;
+- `AURA-AUD-006`, con datos, permisos y fronteras actuales de VISO y Vento-Group;
+- `AUTH-UI-013`, que separa aplicación primaria, propietaria del proceso y runtime actual;
+- `AUTH-UI-014`, que separa propietaria y consumidora;
+- `PROC-CAT-005`, como autoridad de ownership funcional;
+- el contrato de handoffs vigente;
+- el inventario actual de superficies y la cobertura de prueba AURA vigente.
+
+---
+
+#### 4. Contrato de relación
+
+Se define:
+
+```text
+AURA_VISO_RELATION_CONTRACT = AURA-VISO-RELATION-001
+```
+
+La relación tiene cinco dimensiones obligatorias:
+
+| Dimensión | Decisión |
+| --- | --- |
+| ownership de proceso | lo conserva `PROC-CAT-005` y no depende del repositorio donde vive una vista |
+| aplicación primaria de superficie | la conserva `AUTH-UI-013` |
+| runtime actual | identifica dónde existe físicamente hoy la superficie |
+| consumo/handoff | lo gobierna el registro de handoffs y no el host técnico |
+| transferencia futura | queda condicionada por `AURA-AUD-010`, `AURA-AUD-011`, `AURA-AUD-012` y el contrato de migración aplicable |
+
+La relación actual se clasifica como:
+
+```text
+CURRENT_RELATION = TRANSITIONAL_RUNTIME_CUSTODY
+TARGET_RELATION = DEFERRED_FUNCTIONAL_OWNERSHIP
+TRANSFER_STATUS = NOT_AUTHORIZED
+DUAL_MASTER_ALLOWED = NO
+```
+
+---
+
+#### 5. Ownership funcional AURA
+
+Los procesos empresariales de marketing mantienen:
+
+| Proceso | Propietaria | Estado |
+| --- | --- | --- |
+| `VPROC-0056` | `aura` | `DEFINED_DEFERRED` |
+| `VPROC-0057` | `aura` | `DEFINED_DEFERRED` |
+
+`VPROC-0056` gobierna contenido y promociones desde solicitud y aprobación hasta publicación y retiro.
+
+`VPROC-0057` gobierna la conversión de consultas y oportunidades digitales en casos comerciales trazables.
+
+Por tanto:
+
+```text
+VISO_HOSTEA_CAPACIDAD_ACTUAL
+!= VISO_PROPIETARIA_DE_VPROC-0056
+!= VISO_PROPIETARIA_DE_VPROC-0057
+```
+
+VISO no adquiere propiedad funcional de marketing por contener hoy código editorial o rutas CMS.
+
+---
+
+#### 6. Runtime actual de VISO
+
+VISO conserva actualmente la responsabilidad técnica y operativa de las superficies CMS observadas.
+
+Las siete rutas administrativas de `website-cms` continúan atribuidas al runtime VISO:
+
+1. `/website-cms`;
+2. `/website-cms/blocks/new`;
+3. `/website-cms/blocks/[id]`;
+4. `/website-cms/items/new`;
+5. `/website-cms/items/[id]`;
+6. `/website-cms/venues`;
+7. `/website-cms/venues/[slug]`.
+
+También existen dos superficies VISO relacionadas con bloques de contenido:
+
+8. `/content-blocks`;
+9. `/content-blocks/[id]`.
+
+Las nueve superficies anteriores existen físicamente en `vento-viso`.
+
+Su existencia actual no autoriza:
+
+- copiarlas a un repositorio AURA;
+- duplicar las tablas de contenido;
+- crear un segundo CMS;
+- convertir VISO en propietaria funcional de `VPROC-0056`;
+- declarar que AURA ya está implementada.
+
+---
+
+#### 7. Aplicación primaria objetivo de las nueve superficies
+
+`AUTH-UI-013` ya clasificó las nueve superficies VISO anteriores con:
+
+```text
+PRIMARY_APPLICATION_ID = aura
+PROCESS_OWNER_APPLICATION_ID = aura
+APPLICATION_BINDING_MODE = DEFERRED_AURA_TARGET
+APPLICATION_BINDING_STATUS = DEFERRED_APPLICATION_BOUND
+RUNTIME_CONTAINER = viso
+```
+
+Esto significa:
+
+```text
+AURA = FRONTERA FUNCIONAL OBJETIVO
+VISO = CONTENEDOR RUNTIME AS-IS
+```
+
+No significa:
+
+```text
+TRANSFERENCIA EJECUTADA
+REPOSITORIO AURA EXISTENTE
+RUTA AURA DISPONIBLE
+VSCREEN AURA MATERIALIZADA
+CUTOVER APROBADO
+```
+
+La separación entre `primary_application_id` y `runtime_container` es obligatoria hasta que una decisión posterior autorice o descarte una transferencia.
+
+---
+
+#### 8. Propiedad actual del dato editorial
+
+Mientras no exista una transferencia aprobada:
+
+- VISO conserva el acceso administrativo actual al CMS;
+- `public.website_items` y `public.website_blocks` continúan siendo las fuentes runtime observadas para contenido web;
+- Vento-Group continúa leyendo contenido publicado como consumidor público;
+- el esquema, RLS y clientes actuales permanecen sin cambios;
+- AURA no crea tablas paralelas ni un ledger editorial competidor.
+
+La relación queda:
+
+```text
+EDITOR_ACTUAL = VISO
+PUBLIC_CONSUMER = Vento-Group
+TARGET_FUNCTIONAL_OWNER = AURA
+DATA_MASTER_DUPLICATION = PROHIBIDA
+```
+
+La ubicación actual de tablas bajo `public` no se interpreta como propiedad empresarial de VISO o AURA por sí sola.
+
+---
+
+#### 9. Autorización durante la custodia transitoria
+
+Mientras las superficies sigan en VISO:
+
+- se aplican las fronteras de autorización de VISO y los requisitos AURA ya existentes sobre lectura y mutación CMS;
+- `viso.access` no sustituye una capacidad específica de contenido;
+- `createAdminClient` no sustituye autorización de actor, acción, recurso, alcance y estado;
+- el permiso específico de CMS existente no debe confundirse con una transferencia a AURA;
+- `aura.access` no concede acceso al CMS alojado en VISO por inferencia;
+- los grants AURA observados no cambian ownership ni habilitan las rutas CMS.
+
+La corrección de permisos y controles de servidor pertenece a las tareas y packages de autorización correspondientes, no a esta auditoría.
+
+---
+
+#### 10. AURA como participante de procesos VISO
+
+La relación AURA–VISO también opera en sentido inverso: AURA puede participar en procesos cuyo owner sigue siendo VISO.
+
+El contrato de handoffs contiene tres relaciones VISO → AURA:
+
+| Proceso VISO | Relación AURA | Clase | Modalidad |
+| --- | --- | --- | --- |
+| `VPROC-0006` — Orquestar vinculación, expediente, incorporación, preparación y habilitación inicial de la persona | participante | `CONDICIONAL` | `SOLICITUD_HANDOFF_Y_EVENTO` |
+| `VPROC-0011` — Orquestar retiro laboral, devolución, revocación de accesos y cierre documental | participante | `DIRECTA` | `SOLICITUD_HANDOFF_Y_EVENTO` |
+| `VPROC-0059` — Gestionar el ciclo de acceso tecnológico desde solicitud hasta revocación y verificación | participante | `DIRECTA` | `SOLICITUD_HANDOFF_Y_EVENTO` |
+
+Para las tres relaciones:
+
+```text
+INTEGRATION_PROFILE = HANDOFF_PROJECTION
+EXCHANGE_FAMILY = HANDOFF_REQUEST
+```
+
+AURA no puede duplicar:
+
+- expediente laboral;
+- estado de vinculación;
+- plan de retiro;
+- ledger de accesos;
+- decisiones de seguridad;
+- revocación propietaria de VISO.
+
+Debe consumir únicamente proyecciones, solicitudes y eventos conforme al contrato aplicable.
+
+---
+
+#### 11. VISO no es consumidora declarada de los procesos AURA por alojar el CMS
+
+El registro de handoffs no convierte actualmente a VISO en consumidora empresarial de `VPROC-0056` o `VPROC-0057` por el hecho de contener las rutas AS-IS.
+
+La relación actual es de custodia técnica transitoria de superficies, no de consumo funcional registrado.
+
+Por tanto:
+
+```text
+VISO_RUNTIME_HOST
+!= VISO_DIRECT_CONSUMER_OF_VPROC-0056
+!= VISO_DIRECT_CONSUMER_OF_VPROC-0057
+```
+
+Si una futura arquitectura necesitara que VISO permanezca como consumidora después de materializar AURA, esa relación deberá declararse explícitamente en el contrato propietario; no se hereda del estado AS-IS.
+
+---
+
+#### 12. Frontera con Vento-Group
+
+Vento-Group continúa como consumidor público del contenido publicado.
+
+La relación AURA–VISO no modifica:
+
+- URLs públicas existentes;
+- slugs;
+- canonical URLs;
+- contratos de bloques;
+- lectura pública;
+- redirects;
+- fallback controlado;
+- SEO;
+- consumo de media.
+
+Una futura transferencia VISO → AURA deberá preservar el contrato de consumo público o versionarlo mediante un cutover explícito.
+
+Vento-Group no se convierte en AURA ni en VISO por consumir el contenido.
+
+---
+
+#### 13. Condiciones de no transferencia
+
+Mientras `AURA-AUD-010` no adopte una decisión formal, se conserva:
+
+```text
+CMS_RUNTIME_OWNER = VISO
+AURA_RUNTIME = BLOCKED
+AURA_ROUTES = 0
+AURA_SCREENS = 0
+TRANSFER_AUTHORIZED = NO
+```
+
+Quedan prohibidos por inferencia:
+
+- mover rutas a AURA;
+- copiar `website_items` o `website_blocks`;
+- crear un repositorio `vento-aura`;
+- cambiar consumidores públicos;
+- cambiar permisos por namespace;
+- eliminar o redirigir rutas VISO;
+- activar launchers AURA;
+- habilitar escritura dual;
+- mantener dos maestros editoriales activos.
+
+---
+
+#### 14. Escenario si AURA continúa
+
+Si `AURA-AUD-010` decide continuidad de AURA, esta tarea fija únicamente la frontera de transición requerida:
+
+1. AURA conserva ownership funcional de `VPROC-0056` y `VPROC-0057`.
+2. Debe existir ADR aprobado antes de transferencia.
+3. Debe definirse repositorio propietario y runtime AURA.
+4. Debe definirse contrato de datos y consumidores.
+5. Deben migrarse rutas y permisos sin duplicar maestros.
+6. Debe preservarse compatibilidad con Vento-Group.
+7. Debe existir cutover verificable.
+8. Debe existir rollback verificable.
+9. VISO conserva el runtime anterior hasta demostrar reconciliación completa.
+10. El retiro o redirect de superficies VISO ocurre únicamente después de cerrar la transferencia.
+
+No se selecciona desde `AURA-AUD-007` ninguna arquitectura física para ejecutar esos pasos.
+
+---
+
+#### 15. Escenario si AURA se reemplaza o retira
+
+Si `AURA-AUD-010` decide reemplazo o retiro:
+
+- esta tarea no selecciona la aplicación sustituta;
+- VISO no adquiere automáticamente ownership definitivo de marketing;
+- la custodia actual puede continuar únicamente según la decisión y ADR posteriores;
+- los procesos `VPROC-0056` y `VPROC-0057` deberán reconciliar su propietaria si AURA deja de ser una aplicación objetivo válida;
+- ninguna reasignación puede hacerse silenciosamente desde el runtime actual.
+
+La resolución pertenece a `AURA-AUD-010` y `AURA-AUD-011`.
+
+---
+
+#### 16. Contrato de transferencia futura
+
+Cualquier transferencia VISO → AURA debe satisfacer simultáneamente:
+
+```text
+DECISION_FORMAL_APROBADA
++
+ADR_APROBADO
++
+REPOSITORIO_Y_RUNTIME_OBJETIVO_CONFIRMADOS
++
+CONTRATO_DE_DATOS_VERSIONADO
++
+PERMISOS_Y_GUARDS_RECONCILIADOS
++
+CONSUMIDORES_PUBLICOS_RECONCILIADOS
++
+URLS_Y_MEDIA_PRESERVADAS
++
+CUTOVER_VALIDADO
++
+ROLLBACK_VALIDADO
++
+CERO_DUAL_MASTER
+```
+
+La ausencia de cualquiera de esas condiciones mantiene:
+
+```text
+VISO_CMS = CURRENT_RUNTIME
+AURA_TRANSFER = BLOCKED
+```
+
+---
+
+#### 17. Hallazgos y propietarios
+
+| Hallazgo | Bloquea `AURA-AUD-007` | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| AURA no tiene repositorio/runtime | no; la relación puede definirse documentalmente | `AURA-AUD-010..012` | decisión y desbloqueo formales |
+| nueve superficies AURA objetivo viven en VISO | no; es el estado AS-IS explícito | `AURA-AUD-007` + futura migración | decisión de transferencia o permanencia |
+| guard CMS actual es más amplio que el permiso específico disponible | no para esta definición; sí para implementación segura | autorización AURA/VISO y packages propietarios | guard específico y pruebas aplicables |
+| `createAdminClient` eleva técnicamente el acceso | no para esta definición; sí para implementación segura | autorización/DB | checks de actor, capacidad, recurso, alcance y estado |
+| Vento-Group depende del contrato editorial actual | no; obliga compatibilidad | `AURA-INT-001` y migración futura | contrato versionado y pruebas cross-repo |
+| no existe relación declarada VISO-consumidora para `VPROC-0056/0057` | no; el runtime actual no la requiere como relación empresarial | contrato de handoff si una arquitectura futura la necesita | relación explícita aprobada o confirmación de que no aplica |
+
+No se dejan hallazgos sin propietario ni se inventan tareas nuevas.
+
+---
+
+#### 18. Handoff hacia AURA-AUD-008
+
+`AURA-AUD-008 — Definir relación con PASS` recibe una frontera ya estable:
+
+- AURA conserva ownership funcional de contenido, promociones y oportunidades digitales mientras permanezca como aplicación objetivo;
+- VISO conserva hoy la custodia runtime del CMS sin convertirse en propietaria de esos procesos;
+- AURA consume tres procesos VISO mediante handoff declarado;
+- Vento-Group continúa como consumidor público;
+- la relación VISO–AURA no autoriza transferencia física;
+- datos, permisos y rutas actuales permanecen en sus owners y runtimes vigentes;
+- cualquier cambio de ownership necesita decisión formal, ADR, cutover y rollback.
+
+La siguiente tarea deberá definir exclusivamente la relación AURA–PASS sin reabrir esta frontera.
+
+---
+
+#### 19. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la propiedad actual de las rutas VISO, la protección del CMS, la separación de owners y consumidores, el contrato de datos y la transferencia futura VISO → AURA ya están cubiertos por obligaciones AURA existentes. Esta tarea fija la relación arquitectónica y no introduce una obligación verificable material nueva.
+
+---
+
+#### 20. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AURA-004`, para existencia real y ausencia de producto AURA standalone;
+- `TREQ-AURA-005`, para detectar drift de repositorio, rutas, pantallas, navegación y permisos;
+- `TREQ-AURA-006`, para mantener AURA no disponible mientras el gate siga bloqueado;
+- `TREQ-AURA-007`, para conservar las rutas administrativas actuales en VISO y las públicas en Vento-Group hasta transferencia aprobada;
+- `TREQ-AURA-008`, para lectura específica del CMS;
+- `TREQ-AURA-009`, para capacidades atómicas de mutación;
+- `TREQ-AURA-010`, para la frontera de `createAdminClient` y service role;
+- `TREQ-AURA-022`, para coherencia de eventos y rutas públicas;
+- `TREQ-AURA-024`, para contrato esquema/RLS/clientes;
+- `TREQ-AURA-027`, para transferencia futura VISO → AURA con cutover y rollback;
+- `TREQ-VISO-001`, para preservar la frontera administrativa de VISO;
+- `TREQ-INTEGRATION-019`, para contratos explícitos entre aplicaciones.
+
+Esta sección registra trazabilidad existente y no modifica el Registro 04A.
+
+---
+
+#### 21. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La tarea aún debe incorporarse al checkout y ejecutar la batería documental canónica. |
+| LOCAL | `PASS` | El artefacto fue normalizado en UTF-8/LF, contiene una sola tarea, metadata completa, continuidad exacta y cero whitespace al final de línea. |
+| REMOTA | `PASS` | Se verificaron ownership funcional, handoffs, nueve superficies VISO físicamente existentes, inventario AURA, cobertura 04A y contratos canónicos aplicables. |
+| OPERATIVA | `NOT_APPLICABLE` | No se ejecutan publicaciones, campañas, migraciones, sesiones, handoffs reales ni cambios de usuario. |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no se mueve CMS, código, dato, permiso, ruta, host ni despliegue. |
+
+---
+
+#### 22. Criterios de aceptación
+
+- [x] Se define una relación AURA–VISO sin confundir runtime y ownership funcional.
+- [x] Se preserva a `aura` como propietaria de `VPROC-0056` y `VPROC-0057`.
+- [x] Se preserva VISO como runtime actual de las superficies editoriales observadas.
+- [x] Se materializan las siete rutas `website-cms` actuales.
+- [x] Se materializan las dos rutas `content-blocks` actuales.
+- [x] Se conservan las nueve superficies como `DEFERRED_AURA_TARGET` según `AUTH-UI-013`.
+- [x] Se evita declarar transferencia ejecutada.
+- [x] Se evita dual master editorial.
+- [x] Se preserva Vento-Group como consumidor público actual.
+- [x] Se conservan `public.website_items` y `public.website_blocks` sin duplicación.
+- [x] Se preserva la frontera de autorización VISO durante la custodia transitoria.
+- [x] Se evita interpretar `aura.access` como acceso al CMS actual.
+- [x] Se identifican exactamente tres handoffs VISO → AURA.
+- [x] `VPROC-0006` queda como participación condicional de AURA.
+- [x] `VPROC-0011` queda como participación directa de AURA.
+- [x] `VPROC-0059` queda como participación directa de AURA.
+- [x] Los tres handoffs conservan `SOLICITUD_HANDOFF_Y_EVENTO`.
+- [x] Se evita declarar a VISO consumidora de `VPROC-0056/0057` por inferencia del runtime.
+- [x] Se definen condiciones mínimas de una eventual transferencia.
+- [x] Se preserva la decisión final para `AURA-AUD-010`.
+- [x] Se preserva el ADR para `AURA-AUD-011`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecutan cambios físicos.
+
+---
+
+#### 23. Límites
+
+Esta tarea no:
+
+- crea repositorio AURA;
+- implementa AURA;
+- mueve rutas desde VISO;
+- crea rutas AURA;
+- modifica `website_items` o `website_blocks`;
+- modifica Storage;
+- modifica RLS;
+- modifica permisos VISO o AURA;
+- corrige grants;
+- cambia el catálogo de aplicaciones;
+- cambia `PROC-CAT-005`;
+- agrega relaciones al registro de handoffs;
+- crea doble escritura;
+- crea un segundo CMS;
+- modifica Vento-Group;
+- decide continuidad, reemplazo o retiro;
+- registra el ADR final;
+- ejecuta cutover o rollback;
+- desbloquea los minibloques posteriores de AURA;
+- crea ni modifica requisitos de prueba;
+- modifica el Registro 04A;
+- inicia una instancia física o package.
+
+---
+
+#### 24. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-006 — Identificar datos y permisos utilizados`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-007 — Definir relación con VISO`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-008 — Definir relación con PASS`
 ### [ ] AURA-AUD-008 — Definir relación con PASS
 ### [ ] AURA-AUD-009 — Definir relación con PULSO
 ### [ ] AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
