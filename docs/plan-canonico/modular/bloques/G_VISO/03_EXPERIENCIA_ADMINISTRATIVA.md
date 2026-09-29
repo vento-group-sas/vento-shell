@@ -29363,7 +29363,1913 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-014 — Mostrar origen de permisos de forma comprensible`
-### [ ] VISO-UX-014 — Mostrar origen de permisos de forma comprensible
+### ✅ VISO-UX-014 — Mostrar origen de permisos de forma comprensible
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-013 — Limitar información según alcance territorial
+**Tarea siguiente:** VISO-UX-015 — Mostrar conflictos antes de guardar
+**Tipo de tarea:** definición técnico-documental del patrón transversal de explicación comprensible de procedencia de permisos en VISO; establece jerarquía visual, lenguaje humano, niveles de detalle, expansión progresiva, comparación de fuentes, accesibilidad, minimización y tratamiento de decisiones reales o simuladas a partir de la evidencia canónica ya evaluada, sin recalcular autorización en la interfaz, sin convertir scope en origen, sin ocultar grants o denies relevantes, sin clasificar conflictos y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato transversal de presentación comprensible del origen de permisos definido para superficies administrativas de VISO que necesiten explicar una decisión real o simulada por permiso exacto; la implementación física actual permanece AS-IS y requiere materialización posterior por `implementation_unit_id` para consumir `AuthorizationDecision` o la decisión simulada canónica, conservar sus fuentes y aplicar divulgación progresiva detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, componentes, rutas, guards, permisos, matrices, `AccessContext`, `AuthorizationDecision`, contratos de simulación, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo VISO debe explicar de manera comprensible **de dónde proviene el resultado de un permiso** sin reconstruir autoridad desde la interfaz y sin reducir una decisión compleja a frases engañosas como `lo tiene por su rol` o `está bloqueado por su rol`.
+
+La experiencia debe permitir responder, para una `permission_key` exacta:
+
+```text
+¿QUÉ PERMISO SE EVALUÓ?
+¿CUÁL FUE EL RESULTADO?
+¿QUÉ FUENTES APORTARON ALLOW?
+¿QUÉ FUENTES APORTARON DENY O BLOQUEO?
+¿QUÉ CARRIL PARTICIPÓ?
+¿QUÉ SCOPE, TERRITORIO Y RECURSO LIMITARON LA APLICABILIDAD?
+¿LA EXPLICACIÓN ES REAL, SIMULADA, VIGENTE O HISTÓRICA?
+¿QUÉ DETALLE PUEDO VER SIN EXPONER INFORMACIÓN RESTRINGIDA?
+```
+
+La regla raíz es:
+
+```text
+DECISIÓN CANÓNICA YA EVALUADA
++
+EVIDENCIA DE PROCEDENCIA YA CORRELACIONADA
++
+PRESENTACIÓN HUMANA SIN CAMBIAR SEMÁNTICA
+=
+EXPLICACIÓN COMPRENSIBLE DEL ORIGEN
+```
+
+La explicación nunca concede, amplía, revoca ni vuelve a evaluar el permiso.
+
+#### 2. Handoff recibido de `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` entrega una experiencia donde cobertura, filtro y territorio del recurso permanecen separados.
+
+La tarea anterior establece además que:
+
+- `assigned_sites` y `assigned_areas` son hechos laborales, no permisos;
+- sede o área seleccionada son preferencias de interfaz, no autoridad;
+- `administrative_coverage` es un insumo, no una decisión;
+- un scope funcional o global exacto no convierte el rol en administrador global;
+- el territorio del recurso se resuelve en servidor;
+- filtros, búsquedas, agregados y deep links no amplían autoridad.
+
+`VISO-UX-014` consume ese patrón y agrega únicamente la explicación de **procedencia autorizativa**.
+
+#### 3. Handoff recibido de `VISO-AUTH-015`
+
+`VISO-AUTH-015 — Mostrar origen de cada permiso` define la semántica de procedencia que esta tarea debe presentar sin reinterpretarla.
+
+La UX recibe, cuando aplique:
+
+```text
+plane
+app_code
+permission_key
+decision_reference
+evaluated_at
+result
+authorization_requirement
+base_result
+operational_result
+allow_sources[]
+deny_sources[]
+blocked_reasons[]
+contract_version
+source_versions
+```
+
+Los elementos internos de `allow_sources`, `deny_sources` y `blocked_reasons` conservan las estructuras canónicas del evaluador aplicable.
+
+La interfaz no reemplaza esas estructuras por un modelo local incompatible.
+
+#### 4. Fuentes vinculantes
+
+Esta tarea consume, sin redefinir:
+
+- `ADR-AUTH-001`;
+- `AUTH-MOD-013` a `AUTH-MOD-019` para alcance, carriles, precedencia y denegación;
+- `AUTH-RBAC-020` a `AUTH-RBAC-023` para concesiones, denegaciones, excepciones y dispositivos;
+- `AUTH-CTX-001` — `AccessContext`;
+- `AUTH-CTX-002` — `AuthorizationDecision`;
+- `AUTH-CTX-003` — `SimulationContext` separado;
+- `AUTH-CTX-027` — consumo centralizado de autorización;
+- `AUTH-CTX-029` — frescura e invalidación;
+- `AUTH-SIM-001` a `AUTH-SIM-014` — simulación;
+- `VISO-AUTH-003` y `VISO-AUTH-004` — matrices base y operativa;
+- `VISO-AUTH-007` a `VISO-AUTH-012` — contexto de trabajador, territorio y turno;
+- `VISO-AUTH-014` — simulación de permisos efectivos;
+- `VISO-AUTH-015` — procedencia canónica de cada permiso;
+- `VISO-UX-013` — presentación territorial transversal;
+- `VISO-CORE-006` — núcleo aprobado antes de ampliar alcance.
+
+#### 5. Naturaleza, topología y gate
+
+```text
+TASK = VISO-UX-014
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_PATTERN = VISO-UX-014::<implementation_unit_id>
+DOCUMENTARY_MUTATION = NONE
+PHYSICAL_MUTATION = NONE
+```
+
+La tarea define un contrato de experiencia reutilizable. La unidad física futura deberá consumir decisiones y evidencia canónicas; no podrá inferir procedencia desde tablas parciales, nombres de rol, componentes React o parámetros de URL.
+
+#### 6. Contrato transversal de presentación
+
+```text
+VISO_PERMISSION_ORIGIN_PRESENTATION_CONTRACT = VISO-PERMISSION-ORIGIN-PRESENTATION-001
+ORIGIN_SEMANTICS_OWNER = VISO-AUTH-015
+AUTHORITY_SOURCE = CANONICAL_DECISION_ONLY
+REAL_DECISION_SOURCE = AuthorizationDecision
+SIMULATED_DECISION_SOURCE = CANONICAL_SIMULATED_DECISION
+ONE_EXPLANATION_PER_PERMISSION = REQUIRED
+REAL_AND_SIMULATED_PLANES_MUST_DIFFER = YES
+SOURCE_AND_SCOPE_MUST_DIFFER = YES
+BASE_AND_OPERATIONAL_MUST_DIFFER = YES
+DEFAULT_DENY_MUST_BE_EXPLICIT = YES
+MULTIPLE_SOURCES_MUST_BE_PRESERVED = YES
+RESTRICTED_SOURCE_MAY_BE_REDACTED = YES
+REDACTION_MAY_CHANGE_RESULT = NO
+UI_REEVALUATES_AUTHORIZATION = NO
+UI_CALCULATES_PRECEDENCE = NO
+UI_CLASSIFIES_CONFLICTS = NO
+PROGRESSIVE_DISCLOSURE = REQUIRED
+ACCESSIBLE_WITHOUT_COLOR = REQUIRED
+TREQ_CHANGES = 0
+```
+
+#### 7. Qué significa “origen” en la experiencia
+
+La UX utiliza `origen` para explicar **qué fuentes participaron en la decisión de una capacidad exacta**.
+
+No significa:
+
+- la tabla donde se almacenó una fila;
+- la pantalla desde la que se configuró;
+- la sede seleccionada;
+- el nombre visible del rol;
+- el scope por sí solo;
+- la última fuente que apareció en una lista;
+- un texto libre creado por el frontend.
+
+#### 8. Identidad exacta del permiso
+
+Toda explicación corresponde a una `permission_key` canónica exacta y su aplicación.
+
+La interfaz podrá mostrar:
+
+```text
+Consultar programación del personal
+```
+
+pero deberá conservar detrás:
+
+```text
+app_code
+permission_key
+catalog_version
+```
+
+Dos permisos de una misma pantalla nunca comparten automáticamente el mismo origen.
+
+#### 9. Un permiso, una explicación
+
+La unidad visual mínima es un permiso evaluado.
+
+No se admite una sola etiqueta genérica de procedencia para:
+
+- todo un trabajador;
+- todo un rol;
+- toda una aplicación;
+- todo un módulo;
+- toda una pantalla;
+- toda una sede.
+
+#### 10. Plano real y plano simulado
+
+La explicación debe distinguir inequívocamente:
+
+```text
+REAL
+SIMULATED
+```
+
+El plano simulado no podrá reutilizar el mismo tratamiento visual del plano real sin una señal textual permanente.
+
+#### 11. Resultado real
+
+Una decisión real podrá mostrar el resultado canónico correspondiente y un resumen comprensible de las fuentes que participaron.
+
+La UI no cambia el resultado aunque oculte detalles sensibles de una fuente.
+
+#### 12. Resultado simulado
+
+Un resultado simulado solo utiliza estados contractuales simulados como:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+No se traducirá visualmente `WOULD_ALLOW` como `Permitido` sin la marca explícita de simulación.
+
+#### 13. Scope no equivale a origen
+
+La explicación separa dos preguntas:
+
+```text
+¿DE DÓNDE PROVIENE LA FUENTE?
+¿HASTA DÓNDE APLICA?
+```
+
+Ejemplo:
+
+```text
+Origen: Rol base
+Alcance: Sedes asignadas
+```
+
+No:
+
+```text
+Origen: Sedes asignadas
+```
+
+#### 14. Territorio no equivale a origen
+
+Sede, área y territorio del recurso explican **aplicabilidad**, no procedencia.
+
+`VISO-UX-013` conserva la semántica territorial y `VISO-UX-014` solo la referencia cuando es necesaria para comprender por qué una fuente aplicó o no aplicó.
+
+#### 15. Recurso no equivale a origen
+
+Un grant puede existir y no ser efectivo sobre el recurso evaluado.
+
+La explicación diferencia:
+
+```text
+FUENTE EXISTENTE
+FUENTE APLICABLE AL RECURSO
+```
+
+No presenta como permiso efectivo una fuente cuyo `matched_resource` sea falso.
+
+#### 16. Carriles
+
+La experiencia conserva los carriles:
+
+```text
+BASE
+OPERATIONAL
+```
+
+Nunca los fusiona bajo etiquetas ambiguas como `rol`, `acceso` o `permiso general`.
+
+#### 17. Modalidad contractual
+
+Cuando sea material para comprender el resultado, la explicación presenta la modalidad:
+
+```text
+BASE_ONLY
+OPERATIONAL_ONLY
+BASE_OR_OPERATIONAL
+BASE_AND_OPERATIONAL
+```
+
+La modalidad determina qué carriles eran necesarios; la UX no crea una regla alternativa.
+
+#### 18. Fuentes positivas canónicas
+
+La UX reconoce exactamente las cuatro clases positivas definidas por `MatchedGrant`:
+
+| `source_kind` | Etiqueta humana base |
+| --- | --- |
+| `BASE_ROLE` | Rol base |
+| `OPERATIONAL_ROLE` | Rol operativo |
+| `INDIVIDUAL_BASE` | Concesión individual administrativa |
+| `INDIVIDUAL_OPERATIONAL` | Concesión individual operativa |
+
+La etiqueta humana no elimina el valor contractual exacto.
+
+#### 19. `BASE_ROLE`
+
+Una fuente `BASE_ROLE` se explica como una concesión proveniente de la matriz del rol base real.
+
+No se redacta como:
+
+```text
+Tiene acceso porque es gerente
+```
+
+si el permiso exacto, scope, recurso o deny pueden alterar el resultado.
+
+#### 20. `OPERATIONAL_ROLE`
+
+Una fuente `OPERATIONAL_ROLE` se presenta como procedencia del rol operativo efectivo en el carril operativo.
+
+Debe ser posible comprender que:
+
+- requiere contexto operativo aplicable;
+- no se convierte en rol base;
+- no concede administración fuera del carril correspondiente.
+
+#### 21. `INDIVIDUAL_BASE`
+
+Una concesión individual base se presenta como una fuente separada del rol.
+
+No se disfraza como `incluido en su rol`.
+
+#### 22. `INDIVIDUAL_OPERATIONAL`
+
+Una concesión individual operativa conserva:
+
+- identidad individual;
+- carril operativo;
+- scope;
+- vigencia;
+- aplicabilidad territorial y de recurso.
+
+No se presenta como una excepción genérica sin carril.
+
+#### 23. Evidencia mínima de una fuente positiva
+
+Cuando el detalle autorizado lo permita, la experiencia debe poder reconstruir:
+
+```text
+grant_id
+lane
+source_kind
+source_subject_id
+scope_code
+matched_territory
+matched_resource
+source_dataset_id
+source_dataset_version
+```
+
+No todos esos campos deben aparecer en el primer nivel visual.
+
+#### 24. Múltiples fuentes positivas
+
+Un permiso puede tener varias concesiones coincidentes.
+
+La UI no escoge una sola por:
+
+- mayor jerarquía aparente del rol;
+- scope aparentemente más amplio;
+- orden de consulta;
+- orden de render;
+- conveniencia visual.
+
+El resumen puede decir:
+
+```text
+Permitido por 2 fuentes aplicables
+```
+
+con expansión posterior de cada fuente.
+
+#### 25. Fuentes negativas canónicas
+
+La UX conserva las cinco clases negativas de `MatchedDeny`:
+
+| `deny_class` | Etiqueta humana base |
+| --- | --- |
+| `STRUCTURAL` | Bloqueo estructural |
+| `ACTOR_WIDE` | Restricción general del actor |
+| `BASE_LANE` | Restricción del carril administrativo |
+| `OPERATIONAL_LANE` | Restricción del carril operativo |
+| `DEFAULT` | Sin concesión suficiente |
+
+Estas etiquetas son de presentación. La clase contractual permanece disponible en detalle autorizado.
+
+#### 26. `source_kind` de deny
+
+La UX no inventa una enumeración local cerrada para `source_kind` de una denegación.
+
+Cuando el contrato entregue un `source_kind`, se conserva como evidencia de la decisión y se humaniza únicamente si existe una traducción segura y trazable.
+
+#### 27. `STRUCTURAL`
+
+Un bloqueo estructural se presenta como una condición que impidió una evaluación autorizable normal.
+
+No se transforma en:
+
+```text
+Permiso negado por el rol
+```
+
+#### 28. `ACTOR_WIDE`
+
+Una restricción `ACTOR_WIDE` se explica como una condición aplicable al actor completo dentro del contrato evaluado.
+
+El detalle sensible puede quedar restringido sin ocultar que existe una restricción aplicable.
+
+#### 29. `BASE_LANE`
+
+Una denegación del carril base se muestra en el carril base y no contamina visualmente el carril operativo como si fuera la misma fuente.
+
+#### 30. `OPERATIONAL_LANE`
+
+Una denegación operativa se explica en relación con el carril operativo aplicable.
+
+No se transforma en pérdida del rol base.
+
+#### 31. Default deny
+
+`DEFAULT` se presenta como ausencia de una concesión suficiente bajo el contrato evaluado.
+
+Microcopy preferida:
+
+```text
+No hay una concesión suficiente para este permiso en el contexto evaluado.
+```
+
+Microcopy prohibida cuando no existe deny explícito del rol:
+
+```text
+Tu rol te niega este permiso.
+```
+
+#### 32. Ausencia de grant
+
+La ausencia de una concesión suficiente no se representa con un origen negativo ficticio.
+
+La UI diferencia:
+
+```text
+SIN GRANT SUFICIENTE
+DENY EXPLÍCITO
+```
+
+#### 33. Grant aplicable superado por deny
+
+Cuando existe una concesión coincidente pero una denegación prevalece, la explicación conserva ambas.
+
+Resumen humano válido:
+
+```text
+Existe una concesión aplicable, pero una restricción de mayor precedencia bloquea el permiso.
+```
+
+La expansión muestra cada fuente según autorización.
+
+#### 34. Múltiples denies
+
+Si varias denegaciones participaron, la UI no sustituye todos sus `reason_code` por una frase genérica.
+
+Puede agrupar visualmente, pero cada fuente debe seguir siendo reconstruible.
+
+#### 35. Bloqueos y razones estructurales
+
+`blocked_reasons` se presenta separado de:
+
+- fuentes `ALLOW`;
+- fuentes `DENY`;
+- scope;
+- resultado final.
+
+Una entrada bloqueada no genera un grant o deny inventado para completar el diseño.
+
+#### 36. Dispositivo
+
+Un dispositivo puede condicionar la evaluación, pero no se presenta como rol ni fuente humana de autoridad.
+
+Microcopy válida:
+
+```text
+El dispositivo forma parte de las condiciones de evaluación.
+```
+
+No:
+
+```text
+Permiso otorgado por el dispositivo.
+```
+
+#### 37. Referencia de decisión
+
+Toda explicación autoritativa debe poder correlacionarse con una referencia de decisión real o simulada.
+
+El identificador completo no necesita mostrarse por defecto, pero debe estar disponible en el nivel técnico autorizado.
+
+#### 38. Versiones de fuente
+
+El detalle técnico conserva:
+
+- versión de contrato;
+- versiones de datasets;
+- versión de catálogo cuando aplique;
+- momento de evaluación.
+
+La UI no presenta una explicación como vigente cuando sus versiones son incompatibles con el estado que se pretende describir.
+
+#### 39. Momento de evaluación
+
+La experiencia debe mostrar de forma comprensible cuándo se produjo el snapshot cuando el tiempo sea material.
+
+Ejemplo:
+
+```text
+Evaluado hace 3 min
+```
+
+con fecha/hora exacta disponible en detalle.
+
+#### 40. Explicación vigente
+
+Una explicación vigente describe la decisión correspondiente al snapshot actual aceptado por el contrato.
+
+No significa que pueda reutilizarse indefinidamente sin revalidación.
+
+#### 41. Explicación histórica
+
+Cuando el estado cambió después de `evaluated_at`, la explicación se presenta como histórica.
+
+Mensaje mínimo:
+
+```text
+Esta explicación corresponde a una decisión anterior y no garantiza el acceso actual.
+```
+
+#### 42. Estado simulado `VIGENTE`
+
+En una simulación, `VIGENTE` identifica una fuente tomada del estado actual del escenario simulado.
+
+No elimina la marca global de simulación.
+
+#### 43. Estado simulado `PROPUESTA`
+
+`PROPUESTA` se muestra como un cambio hipotético aún no persistido como autoridad real.
+
+#### 44. Estado simulado `SINTÉTICA`
+
+`SINTÉTICA` identifica una fuente creada únicamente para representar el escenario simulado permitido por contrato.
+
+Nunca se presenta como fila real persistida.
+
+#### 45. `source_id = null` en simulación
+
+La interfaz podrá explicar una fuente simulada sin ID físico cuando el contrato lo permita.
+
+No inventará un ID ni insinuará persistencia.
+
+#### 46. Jerarquía visual
+
+La explicación utiliza tres niveles de divulgación:
+
+```text
+NIVEL 1 — RESUMEN HUMANO
+NIVEL 2 — EXPLICACIÓN DE FUENTES
+NIVEL 3 — DETALLE TÉCNICO AUTORIZADO
+```
+
+Cada nivel agrega detalle sin cambiar el resultado ni la semántica.
+
+#### 47. Nivel 1 — Resumen humano
+
+El resumen debe permitir comprender, sin abrir detalles:
+
+- permiso;
+- resultado;
+- plano real o simulado;
+- una causa humana breve;
+- estado de frescura cuando sea material.
+
+Ejemplo:
+
+```text
+Consultar personal — Permitido
+2 fuentes aplicables · Alcance: sedes asignadas
+```
+
+#### 48. Nivel 2 — Explicación de fuentes
+
+La expansión funcional muestra:
+
+- fuentes positivas;
+- fuentes negativas;
+- carriles;
+- scope;
+- restricciones de territorio o recurso;
+- precedencia ya resuelta;
+- bloqueos estructurales.
+
+No exige exponer IDs técnicos.
+
+#### 49. Nivel 3 — Detalle técnico autorizado
+
+El nivel avanzado puede mostrar, cuando la autorización y sensibilidad lo permitan:
+
+- `permission_key`;
+- `decision_reference`;
+- `grant_id`;
+- `deny_id`;
+- `source_kind`;
+- `deny_class`;
+- `scope_code`;
+- `reason_code`;
+- IDs de sujeto fuente;
+- versiones de dataset;
+- timestamp exacto.
+
+#### 50. Expansión y colapso
+
+El control de detalle debe:
+
+- ser operable con teclado;
+- declarar estado expandido/colapsado;
+- conservar foco;
+- no ejecutar una mutación;
+- no volver a consultar una fuente menos autorizada para completar el contenido.
+
+#### 51. Resumen para `ALLOW`
+
+Cuando el resultado real es favorable, el resumen evita sugerir que un rol completo es la autoridad.
+
+Ejemplos válidos:
+
+```text
+Permitido por una concesión del rol base.
+Permitido por una concesión individual administrativa.
+Permitido por 2 fuentes aplicables.
+```
+
+#### 52. Resumen para `DENY` explícito
+
+Cuando existe una denegación aplicable:
+
+```text
+Bloqueado por una restricción aplicable.
+```
+
+La expansión explica la clase y el carril sin divulgar detalle restringido.
+
+#### 53. Resumen para default deny
+
+Cuando no existe grant suficiente:
+
+```text
+No existe una concesión suficiente para este permiso.
+```
+
+No se atribuye a un rol específico sin evidencia.
+
+#### 54. Resumen para bloqueo estructural
+
+Cuando la evaluación no puede apoyarse en un contexto válido:
+
+```text
+No se pudo establecer una autorización válida con el contexto disponible.
+```
+
+No se inventa una fuente.
+
+#### 55. Resumen simulado
+
+Toda explicación simulada debe incluir texto equivalente a:
+
+```text
+Simulación — no concede acceso real
+```
+
+La marca permanece visible incluso con el detalle colapsado.
+
+#### 56. Scope visible
+
+Cuando sea relevante, el Nivel 1 o 2 puede mostrar una etiqueta de alcance comprensible.
+
+Ejemplos:
+
+```text
+Organización ordinaria
+Sedes asignadas
+Sede específica
+Área específica
+Función administrativa específica
+```
+
+La etiqueta de scope no se incorpora a la frase de procedencia como si fuera la fuente.
+
+#### 57. Relación con `VISO-UX-013`
+
+La explicación territorial detallada permanece gobernada por `VISO-UX-013`.
+
+`VISO-UX-014` puede enlazar o resumir:
+
+```text
+Alcance: sedes asignadas
+```
+
+pero no reabre la definición de cobertura, filtros o territorio de recurso.
+
+#### 58. Recurso visible
+
+Cuando el recurso es material para explicar aplicabilidad, la UX presenta únicamente la identidad o resumen permitido.
+
+No revela contenido sensible del recurso para justificar la explicación.
+
+#### 59. Comparación visual entre fuentes
+
+Cuando existan varias fuentes, la interfaz puede compararlas en una lista o tabla siempre que preserve:
+
+- fuente;
+- carril;
+- efecto;
+- scope;
+- aplicabilidad;
+- estado real/simulado;
+- vigencia.
+
+#### 60. Orden de fuentes
+
+El orden visual no representa precedencia salvo que la decisión canónica lo declare expresamente.
+
+No se ordena por `jerarquía de rol` para inferir cuál fuente ganó.
+
+#### 61. Precedencia
+
+La UI muestra la precedencia ya resuelta por el evaluador.
+
+No vuelve a calcularla.
+
+Si la evidencia no basta para explicar qué prevaleció, se muestra explicación no autoritativa o detalle no disponible, nunca una inferencia local.
+
+#### 62. Iconografía
+
+La iconografía puede distinguir:
+
+- fuente positiva;
+- restricción;
+- bloqueo;
+- simulación;
+- información histórica.
+
+Nunca debe ser el único medio para distinguir estados.
+
+#### 63. Color
+
+Color es refuerzo visual.
+
+No sustituye:
+
+- texto de resultado;
+- clase de fuente;
+- plano real/simulado;
+- estado de frescura.
+
+#### 64. Badges
+
+Badges permitidos cuando sean comprensibles:
+
+```text
+Rol base
+Rol operativo
+Individual
+Restricción
+Simulación
+Histórico
+```
+
+No se introduce un badge `Global` que pueda confundirse con autoridad universal cuando en realidad describe un scope exacto.
+
+#### 65. Tablas
+
+Una tabla de permisos puede incluir una columna `Origen` con resumen corto y expansión por fila.
+
+La columna no reemplaza el resultado ni el scope.
+
+#### 66. Listas
+
+En listas densas, el resumen puede limitarse a:
+
+```text
+Resultado
+fuentes aplicables
+scope resumido
+```
+
+con detalle accesible por la misma fila.
+
+#### 67. Detalle de permiso
+
+Una vista de detalle puede presentar secciones:
+
+1. permiso evaluado;
+2. resultado;
+3. fuentes que permitieron;
+4. restricciones o bloqueos;
+5. alcance y recurso;
+6. snapshot y versiones.
+
+#### 68. Formularios administrativos
+
+Cuando un formulario muestre impacto de un cambio de permisos, la procedencia vigente y la procedencia simulada deben permanecer separadas.
+
+La tarea no define todavía los conflictos de la propuesta.
+
+#### 69. Matrices por rol
+
+Una matriz de configuración por rol puede enlazar a una explicación de origen efectivo, pero una fila de `role_permissions` por sí sola no es la explicación completa.
+
+#### 70. Superficies por trabajador
+
+El patrón es reutilizable cuando una superficie autorizada necesite explicar un permiso de un trabajador.
+
+La vista previa exacta integral de cada trabajador permanece reservada a `VISO-UX-016`.
+
+#### 71. Texto humano y código técnico
+
+La interfaz prioriza texto humano.
+
+El código contractual permanece disponible en detalle técnico autorizado.
+
+Ejemplo:
+
+```text
+Rol base
+BASE_ROLE
+```
+
+No se sustituye uno por otro de forma irreversible.
+
+#### 72. `reason_code`
+
+Un `reason_code` no se muestra como único mensaje humano.
+
+Debe existir microcopy comprensible y, en detalle técnico, el código exacto cuando sea autorizable.
+
+#### 73. Terminología prohibida por ambigüedad
+
+Evitar como explicación final sin contexto:
+
+```text
+Por el rol
+Por la sede
+Por el sistema
+Por configuración
+Global
+Heredado
+Excepción
+Bloqueado
+```
+
+Esas palabras pueden aparecer solo acompañadas por la semántica exacta que las vuelve inequívocas.
+
+#### 74. Terminología de fuente positiva
+
+Preferir:
+
+```text
+Concesión del rol base
+Concesión del rol operativo
+Concesión individual administrativa
+Concesión individual operativa
+```
+
+#### 75. Terminología de restricción
+
+Preferir:
+
+```text
+Restricción estructural
+Restricción general del actor
+Restricción del carril administrativo
+Restricción del carril operativo
+Sin concesión suficiente
+```
+
+#### 76. Minimización
+
+Mostrar procedencia no autoriza exponer información adicional.
+
+La UX minimiza:
+
+- identificadores personales innecesarios;
+- detalles disciplinarios;
+- datos médicos;
+- secretos;
+- tokens;
+- payloads completos;
+- datos de terceros fuera de alcance;
+- detalles internos que faciliten evasión de controles.
+
+#### 77. Fuente restringida
+
+Cuando una fuente participó pero su detalle no puede mostrarse, la explicación conserva su existencia sin revelar contenido protegido.
+
+Ejemplo:
+
+```text
+Existe una restricción aplicable. El detalle está restringido para tu nivel de acceso.
+```
+
+No se elimina la fuente de la explicación si hacerlo falsea el resultado.
+
+#### 78. Resultado final bajo redacción
+
+La redacción de detalle no puede cambiar:
+
+- resultado final;
+- número de fuentes relevantes cuando ese número pueda exponerse;
+- existencia de un bloqueo material;
+- separación real/simulada.
+
+#### 79. Autorización para consultar procedencia
+
+La experiencia no asume que estar en una pantalla de permisos autoriza a ver todo el detalle de procedencia.
+
+La futura implementación revalida en servidor:
+
+- acceso a VISO;
+- permiso exacto de consulta aplicable;
+- territorio del actor;
+- relación con el sujeto consultado;
+- sensibilidad del detalle;
+- contexto real del solicitante.
+
+#### 80. Selectores
+
+Seleccionar trabajador, rol, sede, área, permiso o aplicación en UI solo cambia la consulta solicitada.
+
+No amplía autoridad.
+
+#### 81. Query string
+
+Parámetros de URL no conceden acceso a una explicación.
+
+Todo deep link vuelve a validar identidad, permiso, scope, sujeto y sensibilidad.
+
+#### 82. Deep links
+
+Un enlace a una explicación específica puede conservar:
+
+- `permission_key`;
+- referencia de decisión;
+- contexto de navegación no autoritativo.
+
+El destino revalida antes de devolver el detalle.
+
+#### 83. Búsqueda
+
+Buscar por permiso, rol o trabajador opera únicamente dentro del universo de explicaciones autorizadas.
+
+No funciona como query builder sobre grants y denies globales.
+
+#### 84. Filtros
+
+Filtrar por:
+
+- resultado;
+- fuente;
+- carril;
+- aplicación;
+- scope;
+- plano real/simulado;
+
+solo reduce resultados ya autorizados.
+
+#### 85. Ordenamiento
+
+Ordenar por fuente o resultado no cambia precedencia ni autoridad.
+
+#### 86. Paginación
+
+La paginación se aplica después de resolver audiencia autorizada.
+
+No se pagina una colección técnica global para ocultar filas después.
+
+#### 87. Exportación
+
+Una exportación de procedencia, si una tarea posterior la materializa, revalida autorización y minimización.
+
+Esta tarea no crea permiso de exportación.
+
+#### 88. Copiar detalle técnico
+
+Copiar `permission_key`, referencia de decisión o códigos técnicos solo se habilita cuando el detalle ya es visible para el actor.
+
+No existe botón de copiar que revele datos ocultos mediante atributos o clipboard.
+
+#### 89. Caché
+
+La caché de explicaciones no mezcla:
+
+- actores;
+- sujetos consultados;
+- scopes;
+- decisiones reales y simuladas;
+- niveles de detalle autorizados.
+
+#### 90. Invalidación
+
+Cambios en:
+
+- rol;
+- turno;
+- área;
+- sede;
+- grant;
+- deny;
+- scope;
+- recurso;
+- dispositivo;
+- catálogo;
+- versiones de contrato;
+
+pueden volver obsoleta una explicación.
+
+#### 91. Concurrencia
+
+Si la decisión cambia mientras la explicación está abierta, la UX no mezcla fuentes de snapshots diferentes.
+
+Debe refrescar o marcar la explicación como histórica/stale según el contrato disponible.
+
+#### 92. Loading
+
+Durante carga no se muestra un origen provisional inferido desde datos parciales.
+
+#### 93. Estado sin decisión
+
+Cuando no existe una decisión canónica con evidencia suficiente:
+
+```text
+ORIGEN NO DISPONIBLE COMO EXPLICACIÓN AUTORITATIVA
+```
+
+No se consulta `role_permissions` como fallback para completar la procedencia.
+
+#### 94. Estado `NOT_AUTHORIZED`
+
+Si el actor no puede consultar la procedencia, la UI no revela fuentes, IDs, conteos sensibles ni razones protegidas.
+
+#### 95. Estado `NOT_AVAILABLE`
+
+Si la fuente técnica no está disponible, la UX diferencia indisponibilidad de denegación.
+
+#### 96. Estado `PARTIAL`
+
+Una explicación parcial puede mostrar únicamente lo que la evidencia y autorización permiten.
+
+Debe indicar que faltan detalles y no convertir la parte visible en una explicación completa.
+
+#### 97. Estado `STALE`
+
+Una explicación stale conserva el snapshot histórico permitido y advierte que requiere revalidación para describir el estado actual.
+
+#### 98. Estado `TECHNICAL_FAILURE`
+
+Un error técnico no se transforma en `DENY`, `sin permiso` ni `sin origen`.
+
+#### 99. Fallo cerrado de explicación
+
+Si falta identidad del permiso, referencia de decisión, clase de fuente requerida, carril, clase de deny o correlación suficiente:
+
+```text
+EXPLICACIÓN NO AUTORITATIVA
+```
+
+La UI no inventa una procedencia.
+
+#### 100. Estado AS-IS de `/roles-permissions`
+
+La superficie física actual de VISO:
+
+- se protege mediante un guard de administración de permisos;
+- lista roles activos;
+- lista permisos configurables;
+- lee `role_permissions`;
+- presenta scopes `global`, `site`, `site_type`, `area` y `area_kind`;
+- permite conceder y retirar filas de configuración por rol;
+- utiliza cliente administrativo de servidor para esa configuración.
+
+#### 101. Brecha AS-IS principal
+
+La superficie actual administra **configuración por rol**.
+
+No constituye una explicación completa del origen efectivo por permiso y trabajador porque no parte de una `AuthorizationDecision` completa ni presenta simultáneamente:
+
+- fuentes del rol base;
+- fuentes del rol operativo;
+- grants individuales;
+- denies;
+- default deny;
+- resultados por carril;
+- evidencia de recurso y territorio;
+- procedencia simulada;
+- snapshot y versiones de decisión.
+
+#### 102. `role_permissions` no equivale a origen efectivo
+
+Una fila física de `role_permissions` puede ser una fuente de configuración.
+
+No equivale por sí sola a:
+
+```text
+ORIGEN EFECTIVO COMPLETO
+```
+
+#### 103. Cliente administrativo no equivale a autoridad humana
+
+`createAdminClient()` puede habilitar acceso técnico del servidor.
+
+No prueba que el actor humano pueda consultar o modificar la procedencia solicitada.
+
+#### 104. Reconciliación física futura
+
+La materialización posterior deberá clasificar cada superficie que hoy muestra configuración de permisos como una de:
+
+```text
+KEEP_AS_CONFIGURATION_SURFACE
+ADD_ORIGIN_EXPLANATION_ENTRYPOINT
+CONSUME_CANONICAL_DECISION
+REMOVE_LOCAL_ORIGIN_INFERENCE
+DEFER_TO_AUTHORIZATION_OWNER
+```
+
+La clasificación no se ejecuta en esta tarea documental.
+
+#### 105. No recomputar desde tablas
+
+La UI futura no reconstruye procedencia consultando separadamente:
+
+- `role_permissions`;
+- roles;
+- turnos;
+- perfiles;
+- excepciones;
+- scopes.
+
+Consume la decisión autoritativa y sus matches correlacionados.
+
+#### 106. No inferir por nombre de rol
+
+Un nombre humano como `gerente`, `contador` o `auxiliar administrativa` no basta para explicar un permiso.
+
+#### 107. No inferir por jerarquía
+
+La experiencia no usa jerarquía organizacional para resolver qué fuente prevalece.
+
+#### 108. No inferir por scope más amplio
+
+Un scope aparentemente más amplio no se presenta como la fuente ganadora por esa razón.
+
+#### 109. No inferir por último cambio
+
+La última fila modificada no se asume como origen efectivo actual.
+
+#### 110. No ocultar fuentes derrotadas relevantes
+
+Cuando una concesión candidata fue superada por un deny aplicable, la explicación puede conservarla como fuente evaluada sin presentarla como autoridad efectiva final.
+
+#### 111. Frontera con `VISO-UX-015`
+
+`VISO-UX-015 — Mostrar conflictos antes de guardar` es propietario de la experiencia de conflictos de configuración.
+
+`VISO-UX-014` puede mostrar:
+
+- múltiples grants;
+- múltiples denies;
+- una concesión bloqueada por deny;
+- un bloqueo estructural ya devuelto por la decisión.
+
+Pero **no** concluye por sí sola que exista un conflicto de configuración.
+
+#### 112. Múltiples fuentes no equivalen a conflicto
+
+La presencia de varias fuentes positivas o negativas es evidencia.
+
+La clasificación de conflicto pertenece al contrato propietario de conflictos.
+
+#### 113. Frontera con `VISO-UX-016`
+
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador` conserva la composición integral por trabajador.
+
+Esta tarea entrega un patrón reutilizable de explicación por permiso, no una nueva vista completa del trabajador.
+
+#### 114. Frontera con `VISO-UX-017`
+
+La responsabilidad de evitar duplicar configuración propia de otras aplicaciones permanece reservada a `VISO-UX-017`.
+
+`VISO-UX-014` no traslada ownership funcional por mostrar una explicación.
+
+#### 115. Frontera con `VISO-UX-018`
+
+Los handoffs hacia aplicaciones propietarias permanecen reservados a `VISO-UX-018`.
+
+Una explicación puede enlazar al owner autorizado, pero no implementa aquí la navegación completa de handoff.
+
+#### 116. Frontera con `VISO-UX-019`
+
+La divulgación progresiva de seguridad avanzada permanece reservada a `VISO-UX-019` como patrón global del módulo.
+
+Esta tarea define únicamente la divulgación progresiva necesaria para explicar procedencia de permisos.
+
+#### 117. Frontera con `VISO-UX-020`
+
+Las pruebas con administradores reales permanecen reservadas a `VISO-UX-020`.
+
+Los casos definidos aquí son requisitos de materialización y no evidencia de prueba con usuarios reales.
+
+#### 118. Auditoría compatible
+
+La explicación conserva referencias y versiones suficientes para que una tarea propietaria de auditoría pueda reconstruirla.
+
+Esta tarea no implementa el visor ni el ledger de auditoría.
+
+#### 119. Historial
+
+Cuando se consulta una decisión histórica autorizada, la UX presenta su procedencia como snapshot histórico.
+
+No reescribe el pasado con la configuración actual.
+
+#### 120. Diferencia entre historia y estado actual
+
+La interfaz debe poder mostrar simultáneamente:
+
+```text
+DECISIÓN HISTÓRICA
+ESTADO ACTUAL REVALIDADO
+```
+
+solo cuando ambos datasets estén autorizados y claramente separados.
+
+#### 121. Comparación real contra simulada
+
+Cuando una pantalla futura compare real y simulado, cada columna conserva su propia procedencia.
+
+No se fusionan fuentes reales con propuestas.
+
+#### 122. Cambios propuestos
+
+Una fuente propuesta puede explicar el resultado hipotético de una simulación.
+
+No aparece como grant vigente hasta que exista una decisión real posterior que la reconozca.
+
+#### 123. Acciones desde la explicación
+
+La explicación es inicialmente de lectura.
+
+Acciones como editar rol, scope, excepción o deny pertenecen a su owner y vuelven a validar autorización.
+
+#### 124. Explicación no equivale a edición
+
+Poder ver por qué existe un permiso no concede capacidad de cambiarlo.
+
+#### 125. Explicación no equivale a exportación
+
+Poder ver procedencia no concede exportación masiva de matrices o decisiones.
+
+#### 126. Explicación no equivale a simulación
+
+Poder ver procedencia real no concede la capacidad de ejecutar simulaciones.
+
+#### 127. Explicación no equivale a auditoría global
+
+Poder ver una decisión propia del alcance autorizado no concede acceso al ledger global de seguridad.
+
+#### 128. Accesibilidad de estructura
+
+La jerarquía visual debe tener equivalente semántico para tecnologías asistivas.
+
+Fuentes positivas, restricciones y bloqueos no se distinguen solo por posición o color.
+
+#### 129. Teclado
+
+Toda expansión, colapso y navegación entre fuentes es operable sin mouse.
+
+#### 130. Lectores de pantalla
+
+El resumen accesible de una explicación debe incluir:
+
+- permiso;
+- resultado;
+- plano real/simulado;
+- estado de detalle;
+- cantidad de fuentes cuando sea seguro exponerla.
+
+#### 131. Foco
+
+Al expandir una explicación, el foco no salta de forma inesperada ni queda atrapado en contenido oculto.
+
+#### 132. Responsive
+
+En pantallas estrechas se preserva el orden semántico:
+
+```text
+PERMISO
+RESULTADO
+ORIGEN RESUMIDO
+SCOPE
+DETALLE
+```
+
+No se elimina la marca de simulación o estado histórico para ahorrar espacio.
+
+#### 133. Densidad
+
+Las superficies densas pueden colapsar detalles, pero nunca:
+
+- borrar el resultado;
+- ocultar el plano real/simulado;
+- convertir varias fuentes en una fuente ficticia;
+- ocultar una restricción que cambió el resultado.
+
+#### 134. Iconos y tooltips
+
+Un tooltip puede ampliar microcopy, pero no ser el único lugar donde exista información crítica de procedencia.
+
+#### 135. Lenguaje comprensible
+
+La primera capa utiliza lenguaje administrativo comprensible.
+
+El detalle técnico preserva códigos canónicos para diagnóstico y soporte.
+
+#### 136. Traducción de términos
+
+Las traducciones humanas son presentacionales.
+
+Nunca modifican:
+
+- `source_kind`;
+- `deny_class`;
+- `reason_code`;
+- carril;
+- resultado;
+- scope.
+
+#### 137. Estados vacíos
+
+Una lista de origen vacía debe diferenciar:
+
+- no existe decisión;
+- no existe grant suficiente;
+- el detalle está restringido;
+- la fuente está indisponible;
+- el resultado usa default deny;
+- hubo fallo técnico.
+
+#### 138. Mensajes de soporte
+
+Un mensaje de soporte puede incluir la referencia de decisión únicamente cuando el actor tiene permitido verla.
+
+#### 139. Telemetría de experiencia
+
+Una futura materialización podrá medir:
+
+- aperturas de explicación;
+- profundidad de detalle usada;
+- frecuencia de estados no autoritativos;
+- errores de comprensión detectados en pruebas;
+
+sin registrar payloads sensibles o fuentes completas innecesariamente.
+
+#### 140. Privacidad por diseño
+
+La experiencia aplica minimización incluso para administradores con capacidades amplias.
+
+#### 141. Datos de otro trabajador
+
+La procedencia de un permiso de otro trabajador solo se muestra cuando la relación, territorio y permiso exacto autorizan esa consulta.
+
+#### 142. Roles sensibles
+
+La existencia de un rol sensible puede representarse con una etiqueta segura si exponer su identidad completa no está permitido.
+
+#### 143. Denies sensibles
+
+Una denegación sensible puede aparecer como `restricción aplicable` manteniendo su efecto y clasificación accesible según el nivel autorizado.
+
+#### 144. Reason codes sensibles
+
+El código exacto puede ocultarse en niveles no autorizados, pero no se reemplaza por una causa falsa.
+
+#### 145. Integridad de explicación
+
+La explicación es íntegra cuando preserva todos los factores materiales que la audiencia autorizada necesita para no interpretar erróneamente el resultado.
+
+#### 146. Exactitud antes que simplicidad
+
+Si una explicación completa no puede reducirse a una frase sin perder significado, la UI usa divulgación progresiva en lugar de una simplificación falsa.
+
+#### 147. Sin “score” de permiso
+
+No se crea un porcentaje de confianza, score de acceso o semáforo inventado para resumir procedencia.
+
+#### 148. Sin ranking de fuentes
+
+No se clasifica `rol base > grant individual > rol operativo` mediante una jerarquía visual inventada.
+
+#### 149. Sin herencia visual implícita
+
+Agrupar permisos bajo un rol no implica que todos provengan exclusivamente de ese rol.
+
+#### 150. Sin universalidad por aplicación
+
+Tener `app.access` no explica automáticamente el origen de permisos internos de esa aplicación.
+
+#### 151. Sin universalidad por módulo
+
+El hecho de que una tarjeta sea visible no significa que todas sus acciones tengan el mismo origen.
+
+#### 152. Sin universalidad por territorio
+
+Que una sede sea visible no significa que todos los permisos dentro de ella compartan fuente o scope.
+
+#### 153. Lista resumida de permisos
+
+Cuando una superficie muestre muchos permisos, cada fila conserva al menos:
+
+```text
+PERMISSION LABEL
+RESULT
+ORIGIN SUMMARY
+SCOPE SUMMARY CUANDO APLIQUE
+PLANE
+```
+
+#### 154. Agrupación por aplicación
+
+Agrupar por aplicación es una decisión de navegación, no una fusión de procedencias.
+
+#### 155. Agrupación por resultado
+
+Agrupar `Permitidos`, `Bloqueados` o `Sin concesión suficiente` no cambia el detalle de cada permiso.
+
+#### 156. Agrupación por fuente
+
+Una vista agrupada por fuente puede existir para análisis autorizado, pero cada permiso sigue siendo evaluado individualmente.
+
+#### 157. Conteos de fuentes
+
+Un conteo como `2 fuentes aplicables` se calcula desde la evidencia de la decisión, no desde el número de filas físicas del repositorio de configuración.
+
+#### 158. Conteos restringidos
+
+Si revelar el número de fuentes expone información sensible, la UX puede mostrar `múltiples fuentes` sin falsear el resultado.
+
+#### 159. Fuentes incompatibles
+
+La existencia de fuentes que parezcan incompatibles no autoriza a esta tarea a declararlas conflicto.
+
+Se preservan para `VISO-UX-015` y su contrato propietario.
+
+#### 160. Default deny en tablas
+
+Una fila con default deny no muestra un badge de `Deny explícito`.
+
+#### 161. Restricción territorial
+
+Una fuente fuera de alcance puede aparecer, cuando sea autorizado y útil, como `fuente existente no aplicable al territorio evaluado`.
+
+No se presenta como fuente efectiva.
+
+#### 162. Restricción de recurso
+
+Una fuente no coincidente con el recurso puede explicarse como `no aplicable al recurso evaluado`.
+
+#### 163. Fuente vencida
+
+Una fuente vencida puede mostrarse en histórico autorizado, pero nunca como origen vigente.
+
+#### 164. Fuente retirada
+
+Una fuente retirada se etiqueta como histórica o no vigente cuando forma parte del snapshot histórico consultado.
+
+#### 165. Versiones incompatibles
+
+Si las versiones no permiten una explicación confiable:
+
+```text
+EXPLICACIÓN NO AUTORITATIVA
+```
+
+con indicación segura de incompatibilidad.
+
+#### 166. Estado desconocido
+
+La UI no fuerza un resultado binario si el contrato entrega estado indeterminado.
+
+#### 167. No ocultar `INDETERMINATE`
+
+En simulación, `INDETERMINATE` permanece visible y no se descarta de resúmenes para simplificar la comparación.
+
+#### 168. Explicación de `BASE_AND_OPERATIONAL`
+
+Cuando ambos carriles son obligatorios, el resumen debe permitir comprender que la acción necesita dos componentes.
+
+No se presenta el carril favorable como autorización completa si el otro no satisface el contrato.
+
+#### 169. Explicación de `BASE_OR_OPERATIONAL`
+
+Cuando cualquiera de los carriles puede autorizar, la UX conserva qué carril o carriles participaron y cuál autorizó realmente.
+
+#### 170. Carril no requerido
+
+Un carril no requerido se presenta como `No requerido`, no como `Denegado`.
+
+#### 171. Carril no resoluble
+
+Un carril requerido pero no resoluble se distingue de un carril sin grant.
+
+#### 172. Handoff a owner de edición
+
+Si la explicación ofrece una acción `Ver configuración`, el destino corresponde al owner canónico y revalida autorización.
+
+La explicación no ejecuta la mutación inline.
+
+#### 173. Handoff a simulación
+
+Si existe una acción `Simular cambio`, solo se muestra cuando la capacidad real de simulación está autorizada y el owner correspondiente la materializa.
+
+Esta tarea no crea esa capacidad.
+
+#### 174. Handoff a conflicto
+
+Si una decisión ya incluye una referencia de conflicto producida por el contrato propietario, la explicación puede enlazarla.
+
+No crea la referencia localmente.
+
+#### 175. Handoff a auditoría
+
+Si existe un visor de auditoría autorizado, la explicación puede enlazar la referencia de decisión.
+
+No expone el ledger completo desde el componente de origen.
+
+#### 176. Casos representativos obligatorios para materialización
+
+La unidad física futura deberá probar al menos:
+
+1. un `ALLOW` por `BASE_ROLE`;
+2. un `ALLOW` por `OPERATIONAL_ROLE`;
+3. un `ALLOW` por `INDIVIDUAL_BASE`;
+4. un `ALLOW` por `INDIVIDUAL_OPERATIONAL`;
+5. dos grants positivos compatibles;
+6. grant válido superado por deny;
+7. deny `STRUCTURAL`;
+8. deny `ACTOR_WIDE`;
+9. deny `BASE_LANE`;
+10. deny `OPERATIONAL_LANE`;
+11. default deny sin grant suficiente;
+12. grant existente fuera de scope;
+13. grant existente no aplicable al recurso;
+14. bloqueo estructural sin fuente inventada;
+15. permiso `BASE_AND_OPERATIONAL` con ambos carriles;
+16. permiso `BASE_OR_OPERATIONAL` autorizado por un carril;
+17. carril no requerido;
+18. carril requerido no resoluble;
+19. explicación real vigente;
+20. explicación real histórica;
+21. simulación `WOULD_ALLOW`;
+22. simulación `WOULD_DENY`;
+23. simulación `INDETERMINATE`;
+24. fuente simulada `PROPUESTA`;
+25. fuente simulada `SINTÉTICA` con `source_id = null`;
+26. fuente restringida con detalle redactado;
+27. actor sin autorización para ver procedencia;
+28. decisión inexistente;
+29. fuente técnica caída;
+30. cambio concurrente que vuelve stale la explicación.
+
+#### 177. Pruebas de semántica esperadas
+
+La materialización futura verificará que:
+
+- scope no se muestre como origen;
+- territorio no se muestre como origen;
+- recurso no se muestre como origen;
+- ausencia de grant no se convierta en deny explícito;
+- dispositivo no se muestre como rol;
+- múltiples fuentes no se reduzcan silenciosamente;
+- precedencia no se recalcule en UI;
+- una fuente vencida no aparezca como vigente.
+
+#### 178. Pruebas de render esperadas
+
+Se verificará al menos:
+
+- resumen compacto;
+- expansión Nivel 2;
+- detalle técnico Nivel 3;
+- badges humanos con código técnico preservado;
+- simulación inequívoca;
+- histórico inequívoco;
+- restricción sensible redactada;
+- responsive sin pérdida semántica.
+
+#### 179. Pruebas de autorización esperadas
+
+Se verificará que:
+
+- el servidor protege la consulta de procedencia;
+- query string no amplía audiencia;
+- deep link revalida;
+- selector de trabajador no amplía scope;
+- actor sin permiso no recibe fuentes;
+- detalle técnico respeta sensibilidad;
+- `createAdminClient()` no sustituye la autorización del actor.
+
+#### 180. Pruebas de accesibilidad esperadas
+
+Se verificará:
+
+- operación por teclado;
+- foco estable;
+- `aria-expanded` o semántica equivalente;
+- resultado y plano expresados en texto;
+- color no exclusivo;
+- lectura comprensible de listas de fuentes;
+- contenido colapsado no enfocable.
+
+#### 181. Pruebas de simulación esperadas
+
+Se verificará:
+
+- `WOULD_ALLOW` nunca aparece como `ALLOW` real;
+- propuesta no aparece como grant vigente;
+- `source_id = null` no genera ID ficticio;
+- fuentes reales y simuladas no se mezclan;
+- `INDETERMINATE` permanece visible.
+
+#### 182. Pruebas de privacidad esperadas
+
+Se verificará:
+
+- redacción de fuentes sensibles;
+- ausencia de secretos y tokens;
+- ausencia de payloads completos;
+- no fuga de datos de otros trabajadores;
+- redacción sin alterar resultado final.
+
+#### 183. Pruebas de frescura esperadas
+
+Se verificará:
+
+- cambio de grant invalida explicación stale;
+- cambio de deny invalida explicación stale;
+- cambio de rol invalida explicación stale;
+- cambio de territorio invalida explicación stale;
+- cambio de versión contractual invalida explicación stale;
+- histórico no se presenta como autoridad actual.
+
+#### 184. Pruebas AS-IS esperadas
+
+La futura unidad física deberá demostrar que `/roles-permissions` deja de tratar la lectura directa de `role_permissions` como explicación completa de origen efectivo.
+
+#### 185. Carryovers
+
+| Hallazgo | Bloquea definición documental | Owner de cierre | Condición de salida |
+| --- | --- | --- | --- |
+| `/roles-permissions` administra filas de configuración por rol, no procedencia efectiva completa | no | unidad física correspondiente de VISO | superficie consume decisión canónica para cualquier explicación de origen |
+| `createAdminClient()` está presente en superficies administrativas | no | unidad física + contratos AUTH | toda lectura de procedencia demuestra autorización humana server-side antes de exponer datos |
+| no existe todavía en VISO físico una proyección completa de origen real por trabajador y permiso | no | unidad física de `VISO-UX-014` y contratos compartidos aplicables | explicación consume decisión real correlacionada y preserva fuentes/carriles/scopes |
+| experiencia de conflictos no pertenece a esta tarea | no | `VISO-UX-015` | conflictos antes de guardar reciben experiencia propietaria sin reinterpretar origen |
+| vista previa exacta integral por trabajador no pertenece a esta tarea | no | `VISO-UX-016` | composición por trabajador consume el patrón de origen sin duplicarlo |
+| divulgación progresiva avanzada del módulo sigue pendiente | no | `VISO-UX-019` | patrón avanzado integra este componente sin cambiar su semántica |
+
+#### 186. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Justificación:** la tarea materializa en experiencia una obligación ya registrada: indicar el origen de cada permiso, preservar evidencia correlacionable, separar simulación de autoridad real, respetar scope y territorio, minimizar información y mantener coherencia con el evaluador canónico. No crea un permiso, scope, rol, clase de grant, clase de deny, reason code, resultado de autorización, estado empresarial, ruta, pantalla, proceso, tabla o transición nueva que requiera una fila adicional del registro canónico.
+
+#### 187. Cobertura de prueba vigente reutilizada
+
+La materialización reutiliza cobertura canónica existente, entre ella:
+
+- `TREQ-VISO-001` para indicar origen, respetar alcance, detectar conflictos y producir el mismo resultado consumido por las aplicaciones;
+- `TREQ-AUTH-001` para impedir que listas locales de roles concedan autoridad;
+- `TREQ-AUTH-007` para administración con capacidad y territorio explícitos;
+- `TREQ-AUTH-008` para separación de carriles y contexto;
+- `TREQ-AUTH-012` para mantener simulación separada de autoridad real;
+- `TREQ-AUTH-015` para evidencia correlacionable de contexto, permiso, recurso, resultado, razones, versión y tiempo;
+- `TREQ-UX-007` para una experiencia administrativa comprensible y segura.
+
+Estas referencias son trazabilidad heredada y no modifican el registro.
+
+#### 188. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y todavía no se ha insertado ni ejecutado la batería del checkout local. |
+| LOCAL | NOT_EXECUTED | El artefacto no se ha incorporado al archivo propietario ni normalizado mediante los scripts del repositorio. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad, topología, políticas documentales, owner G_VISO, `VISO-AUTH-014/015/016`, contratos de `AuthorizationDecision` y simulación, 04A VISO, scripts documentales y la superficie física actual `/roles-permissions` de `vento-viso/main`; `VISO-UX-012` ya está cerrada en `main` y `VISO-UX-013` permanece como única predecesora documental aprobada aún no incorporada. |
+| OPERATIVA | NOT_EXECUTED | No se consultaron ni modificaron decisiones empresariales reales, permisos, grants, denies, roles, turnos, trabajadores, sedes, áreas, recursos o simulaciones. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, Supabase, migraciones, RLS, RPC, contratos compartidos, aplicaciones ni despliegues. |
+
+#### 189. Criterios de aceptación
+
+1. la tarea conserva `VISO-UX-013` como anterior y `VISO-UX-015` como siguiente;
+2. se mantiene `PER_IMPLEMENTATION_UNIT`;
+3. se mantiene `POST_E5_PACKAGE`;
+4. no se modifica código ni infraestructura;
+5. la UX consume la semántica de `VISO-AUTH-015` sin redefinirla;
+6. la UX no vuelve a evaluar autorización;
+7. la UX no calcula precedencia;
+8. cada explicación corresponde a una `permission_key` exacta;
+9. real y simulado permanecen separados;
+10. `WOULD_ALLOW` no aparece como `ALLOW` real;
+11. scope y origen permanecen separados;
+12. territorio y origen permanecen separados;
+13. recurso y origen permanecen separados;
+14. BASE y OPERATIONAL permanecen separados;
+15. la modalidad contractual se conserva cuando es material;
+16. se reconocen las cuatro clases positivas canónicas;
+17. `BASE_ROLE` se explica sin convertir todo el rol en permiso;
+18. `OPERATIONAL_ROLE` conserva carril operativo;
+19. `INDIVIDUAL_BASE` no se disfraza como rol;
+20. `INDIVIDUAL_OPERATIONAL` conserva su carril;
+21. múltiples fuentes positivas se preservan;
+22. se reconocen las cinco clases negativas canónicas;
+23. `source_kind` de deny no recibe enum local inventado;
+24. default deny se distingue de deny explícito;
+25. ausencia de grant no se presenta como deny del rol;
+26. grant superado por deny conserva ambas fuentes;
+27. múltiples denies se preservan;
+28. bloqueos estructurales no crean fuentes ficticias;
+29. dispositivo no se presenta como rol;
+30. referencia de decisión permanece correlacionable;
+31. versiones de fuente permanecen correlacionables;
+32. timestamp permanece disponible;
+33. explicación histórica no aparece como autoridad actual;
+34. fuente simulada `PROPUESTA` no aparece como grant vigente;
+35. fuente `SINTÉTICA` no inventa persistencia;
+36. `source_id = null` no produce ID ficticio;
+37. existen tres niveles de divulgación;
+38. el Nivel 1 permite comprender resultado y origen resumido;
+39. el Nivel 2 muestra fuentes y restricciones sin exigir IDs técnicos;
+40. el Nivel 3 conserva detalle técnico autorizado;
+41. expandir o colapsar no muta datos;
+42. `ALLOW` usa microcopy que no simplifica falsamente la fuente;
+43. deny explícito y default deny usan mensajes diferentes;
+44. bloqueo estructural no se presenta como deny de rol;
+45. simulación mantiene marca permanente;
+46. scope visible no se incorpora como fuente;
+47. `VISO-UX-013` conserva propiedad de territorialización;
+48. comparación de fuentes no crea precedencia visual ficticia;
+49. iconografía no es el único canal semántico;
+50. color no es el único canal semántico;
+51. badges no introducen globalidad universal;
+52. tablas conservan resultado, origen y scope como dimensiones diferentes;
+53. detalle técnico preserva códigos contractuales;
+54. `reason_code` recibe microcopy sin perder el código autorizado;
+55. se evita terminología ambigua sin contexto;
+56. minimización no falsea el resultado;
+57. una fuente restringida puede redactarse sin desaparecer;
+58. redacción no cambia plano ni resultado;
+59. consulta de procedencia se autoriza server-side;
+60. selectores no amplían autoridad;
+61. query string no amplía autoridad;
+62. deep links revalidan;
+63. búsqueda opera dentro de audiencia autorizada;
+64. filtros solo reducen resultados autorizados;
+65. paginación ocurre después de autorización;
+66. exportación no se infiere por visibilidad;
+67. caché no mezcla actores o planos;
+68. cambios relevantes invalidan explicaciones stale;
+69. concurrencia no mezcla snapshots;
+70. loading no inventa origen provisional;
+71. ausencia de decisión produce explicación no autoritativa;
+72. `NOT_AUTHORIZED` no fuga procedencia;
+73. `NOT_AVAILABLE` no se presenta como deny;
+74. `PARTIAL` declara incompletitud;
+75. `STALE` no se presenta como vigente;
+76. `TECHNICAL_FAILURE` no se presenta como falta de permiso;
+77. `/roles-permissions` AS-IS se reconoce como configuración por rol;
+78. `role_permissions` no se declara origen efectivo completo;
+79. `createAdminClient()` no sustituye autorización humana;
+80. la UI no recomputa origen desde tablas parciales;
+81. nombre de rol no basta para explicar el permiso;
+82. jerarquía de rol no define precedencia;
+83. scope amplio no define procedencia ganadora;
+84. último cambio no define origen efectivo;
+85. fuentes derrotadas relevantes pueden conservarse sin presentarse como autoridad final;
+86. `VISO-UX-015` conserva la experiencia de conflictos;
+87. múltiples fuentes no equivalen a conflicto;
+88. `VISO-UX-016` conserva la vista previa integral por trabajador;
+89. `VISO-UX-017` conserva ownership de configuración externa;
+90. `VISO-UX-018` conserva handoffs propietarios;
+91. `VISO-UX-019` conserva divulgación progresiva avanzada del módulo;
+92. `VISO-UX-020` conserva pruebas con administradores reales;
+93. auditoría permanece fuera de esta tarea;
+94. histórico no se reescribe con configuración actual;
+95. real y simulado conservan procedencias separadas en comparaciones;
+96. explicación no concede edición;
+97. explicación no concede exportación;
+98. explicación no concede simulación;
+99. explicación no concede auditoría global;
+100. estructura accesible tiene equivalente semántico;
+101. controles son operables con teclado;
+102. lectores de pantalla reciben resultado y plano;
+103. responsive conserva marca de simulación e histórico;
+104. densidad no borra restricciones materiales;
+105. tooltips no contienen información crítica exclusiva;
+106. traducciones humanas no alteran códigos contractuales;
+107. estados vacíos distinguen causas;
+108. privacidad se mantiene para administradores amplios;
+109. datos de otros trabajadores requieren relación y alcance;
+110. roles y denies sensibles pueden redactarse sin falsear efecto;
+111. exactitud prevalece sobre simplificación;
+112. no se crea score de permiso;
+113. no se crea ranking local de fuentes;
+114. agrupar permisos no crea herencia visual;
+115. `app.access` no explica permisos internos;
+116. una tarjeta visible no homogeneiza origen de acciones;
+117. visibilidad territorial no homogeneiza procedencia;
+118. conteos de fuentes salen de la decisión, no de filas físicas;
+119. conteos sensibles pueden generalizarse sin falsear;
+120. fuentes incompatibles no se declaran conflicto en esta tarea;
+121. default deny no usa badge de deny explícito;
+122. fuente fuera de scope no aparece como efectiva;
+123. fuente fuera de recurso no aparece como efectiva;
+124. fuentes vencidas o retiradas no aparecen como vigentes;
+125. versiones incompatibles bloquean explicación autoritativa;
+126. estado indeterminado no se fuerza a binario;
+127. `INDETERMINATE` no se oculta;
+128. `BASE_AND_OPERATIONAL` conserva ambos componentes;
+129. `BASE_OR_OPERATIONAL` conserva el carril autoritativo real;
+130. carril no requerido no aparece como deny;
+131. carril requerido no resoluble no se confunde con ausencia de grant;
+132. acciones de owner se ejecutan fuera de la explicación y revalidan;
+133. los 30 casos representativos quedan definidos;
+134. las pruebas futuras cubren semántica, render, autorización, accesibilidad, simulación, privacidad y frescura;
+135. la sección de requisitos derivados conserva cero IDs afectados;
+136. la cobertura heredada se referencia fuera de la sección de cero cambios;
+137. no se entrega 04A porque no cambia requisitos;
+138. no se desarrolla `VISO-UX-015`;
+139. no se ejecuta ninguna implementación física.
+
+#### 190. Límites
+
+Esta tarea no:
+
+- crea o modifica permisos;
+- crea o modifica roles;
+- crea grants;
+- crea denies;
+- crea excepciones individuales;
+- modifica matrices RBAC;
+- crea scopes nuevos;
+- modifica `AccessContext`;
+- modifica `AuthorizationDecision`;
+- modifica contratos de simulación;
+- ejecuta simulaciones;
+- cambia resultados simulados;
+- recalcula precedencia;
+- clasifica conflictos;
+- desarrolla `VISO-UX-015`;
+- desarrolla la vista previa integral de trabajador;
+- desarrolla `VISO-UX-016`;
+- implementa ownership cross-app;
+- desarrolla `VISO-UX-017`;
+- implementa handoffs completos;
+- desarrolla `VISO-UX-018`;
+- desarrolla la experiencia avanzada completa de seguridad;
+- desarrolla `VISO-UX-019`;
+- ejecuta pruebas con administradores reales;
+- desarrolla `VISO-UX-020`;
+- administra auditoría;
+- crea permisos de exportación;
+- modifica `role_permissions`;
+- modifica `employee_permissions`;
+- modifica turnos, sedes o áreas;
+- modifica guards;
+- modifica RLS;
+- modifica RPC;
+- modifica Supabase;
+- modifica datos;
+- modifica código;
+- modifica rutas;
+- crea una pantalla nueva;
+- crea un proceso nuevo;
+- crea un séptimo dominio VISO;
+- ejecuta implementación física.
+
+#### 191. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-013 — Limitar información según alcance territorial`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-015 — Mostrar conflictos antes de guardar`
 ### [ ] VISO-UX-015 — Mostrar conflictos antes de guardar
 ### [ ] VISO-UX-016 — Permitir vista previa exacta de cada trabajador
 ### [ ] VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
