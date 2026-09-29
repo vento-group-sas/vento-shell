@@ -2478,7 +2478,2227 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-003 — Crear sección Programación`
-### [ ] VISO-UX-003 — Crear sección Programación
+### ✅ VISO-UX-003 — Crear sección Programación
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-002 — Crear sección Personal
+**Tarea siguiente:** VISO-UX-004 — Crear sección Acceso y seguridad
+**Tipo de tarea:** definición técnico-documental de la sección administrativa `Programación` de VISO; fija su workspace principal, jerarquía Semana/Mes, contexto territorial y temporal, composición de vistas semanal detallada y mensual masiva, calendario contextual, superficies globales, métricas y configuración, estados de borrador/revisión/publicación, reglas de consistencia visual y handoffs hacia ANIMA, Personal, Organización, Acceso y seguridad y Auditoría, sin redefinir políticas propietarias de `VISO-SCH-*` y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la sección `Programación` definido; su materialización runtime permanece pendiente por `implementation_unit_id` y detrás del gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, navegación runtime, pantallas, componentes, permisos, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, triggers, Storage, Auth, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar la sección administrativa `Programación` de VISO para que una persona autorizada pueda planear, revisar, comparar, publicar y corregir programación laboral desde una experiencia coherente, sin crear fuentes paralelas entre Semana y Mes, sin mezclar programación con asistencia personal y sin convertir una proyección visual en autoridad sobre turnos.
+
+La sección debe responder de forma directa:
+
+```text
+¿QUÉ PERIODO Y TERRITORIO ESTOY PROGRAMANDO?
+¿QUÉ TRABAJADORES PUEDO PROGRAMAR EN ESE CONTEXTO?
+¿QUÉ TURNOS ESTÁN EN BORRADOR, EN REVISIÓN O PUBLICADOS?
+¿QUÉ CAMBIOS ESTOY PROPONIENDO?
+¿QUÉ CONFLICTOS O LÍMITES EXISTEN ANTES DE GUARDAR O PUBLICAR?
+¿QUÉ EFECTO TENDRÁ LA PUBLICACIÓN?
+¿QUÉ VISTA NECESITO: SEMANA, MES, GLOBAL, CALENDARIO, MÉTRICAS O CONFIGURACIÓN?
+```
+
+`Programación` no es una segunda fuente de asistencia ni una colección de calendarios independientes.
+
+Es la experiencia administrativa propietaria del proceso de programación laboral `VPROC-0007` dentro de VISO.
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001` entrega sin reapertura:
+
+```text
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+DOMAIN_1 = Personal
+DOMAIN_2 = Programación
+DOMAIN_3 = Acceso y seguridad
+DOMAIN_4 = Organización
+DOMAIN_5 = Operación
+DOMAIN_6 = Auditoría
+```
+
+Para `Programación` entrega además:
+
+- Semana y Mes pertenecen al mismo dominio;
+- una variante semanal, mensual, global, de métricas o configuración no crea un dominio nuevo;
+- varias rutas no autorizan fuentes de programación paralelas;
+- las reglas específicas del delta mensual permanecen en `VISO-SCH-*`;
+- navegación visible y acceso directo no sustituyen autorización;
+- la identidad estable `VISO-ROUTE-001..061` no se renumera.
+
+Esta tarea desarrolla el contenido y la experiencia de ese dominio sin reabrir la arquitectura de primer nivel.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-002`
+
+La tarea anterior entrega explícitamente a `Programación`:
+
+```text
+VISO-ROUTE-045 = /staff/calendar
+VISO-ROUTE-046 = /staff/schedule
+VISO-ROUTE-047 = /staff/schedule/global
+VISO-ROUTE-048 = /staff/schedule/metrics
+VISO-ROUTE-049 = /staff/schedule/settings
+VISO-ROUTE-061 = /staff/schedule/month
+VSCREEN-0015 = Programación laboral
+```
+
+Las seis rutas conservan la clasificación heredada:
+
+```text
+navigation_class = CHILD_OR_DETAIL_ROUTE
+canonical_domain = Programación
+```
+
+`Personal` puede enlazar a `Programación` conservando trabajador y contexto como selectores, pero no edita turnos dentro de la sección `Personal`.
+
+---
+
+#### 4. Topología y gate
+
+La tarea conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+physical_identity = VISO-UX-003::implementation_unit_id
+```
+
+La definición documental no autoriza ninguna materialización física.
+
+Cada materialización posterior deberá demostrar que:
+
+- pertenece a la unidad de implementación correcta;
+- respeta el gate temporal;
+- consume este contrato sin crear una variante local incompatible;
+- no adelanta decisiones pendientes de `VISO-SCH-*`, `CODE-AUD-021` o `AUTH-UI-061`.
+
+---
+
+#### 5. Contrato de sección
+
+Se define:
+
+```text
+VISO_PROGRAMACION_SECTION_CONTRACT = VISO-PROGRAMACION-SECTION-001
+DOMAIN_LABEL = Programación
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-046
+PRIMARY_OBSERVED_ROUTE = /staff/schedule
+PRIMARY_CANONICAL_SCREEN = VSCREEN-0015
+PRIMARY_CANONICAL_PROCESS = VPROC-0007
+PRIMARY_CANONICAL_STEP = VPROC-0007::STEP-PLAN_AND_PUBLISH_SCHEDULE
+PRIMARY_INTENT = WORKFORCE_SCHEDULING
+TREQ_CHANGES = 0
+```
+
+La relación entre la ruta observada, la pantalla canónica y el proceso deberá materializarse y demostrarse por los contratos de pantalla, proceso y navegación aplicables.
+
+La coincidencia funcional observada no constituye por sí sola certificación física.
+
+---
+
+#### 6. Proceso propietario
+
+La sección se organiza alrededor de:
+
+```text
+VPROC-0007
+Administrar asignaciones laborales y programación publicada con historial y revisión controlada
+```
+
+VISO conserva ownership de la programación laboral.
+
+ANIMA consume programación publicada y presenta la experiencia personal del trabajador.
+
+SHELL y las aplicaciones autorizadas consumen contexto derivado cuando corresponda.
+
+Ninguna vista de calendario, tabla, dashboard, métrica o pantalla móvil se convierte en una segunda fuente de programación por mostrar turnos.
+
+---
+
+#### 7. Unidad autoritativa y revisión publicada
+
+Se conserva la decisión ya aprobada:
+
+```text
+UNIDAD AUTORITATIVA CONSUMIBLE
+=
+TURNO + REVISIÓN PUBLICADA
+```
+
+Por tanto:
+
+```text
+PUBLICAR UN TURNO
+!=
+MARCAR UNA FILA COMO VISIBLE
+```
+
+```text
+TURNO PUBLICADO
+!=
+TURNO VIGENTE EN ESTE INSTANTE
+```
+
+```text
+PUBLICACIÓN
+!=
+NOTIFICACIÓN
+```
+
+La UI debe representar estas diferencias sin inventar una semántica más simple que modifique el contrato.
+
+---
+
+#### 8. Estados canónicos de `VPROC-0007`
+
+La experiencia deberá poder representar los estados canónicos vigentes:
+
+1. `SCHEDULE_DRAFT`;
+2. `UNDER_REVIEW`;
+3. `PENDING_PUBLICATION`;
+4. `PUBLISHED`;
+5. `IN_EXECUTION`;
+6. `CHANGE_UNDER_REVIEW`;
+7. `PERIOD_RECONCILIATION_PENDING`;
+8. `SCHEDULE_PERIOD_CLOSED`.
+
+La interfaz puede usar etiquetas humanas equivalentes cuando exista traducción aprobada, pero no puede:
+
+- fusionar estados materialmente distintos;
+- tratar todo turno no publicado como el mismo estado de negocio;
+- representar `PUBLISHED` como ejecución confirmada;
+- ocultar una revisión o corrección pendiente;
+- reescribir historial para simplificar la vista.
+
+---
+
+#### 9. Flujo administrativo de referencia
+
+La sección conserva el flujo funcional:
+
+```text
+BORRADOR
+→ VALIDACIÓN
+→ REVISIÓN CUANDO APLIQUE
+→ PENDIENTE DE PUBLICACIÓN
+→ PUBLICACIÓN
+→ NOTIFICACIÓN
+→ CONSUMO EN ANIMA
+→ EJECUCIÓN / ASISTENCIA
+→ CORRECCIÓN O RECONCILIACIÓN CUANDO APLIQUE
+```
+
+La experiencia visual puede adaptar pasos que no apliquen a un caso concreto, pero no puede omitir silenciosamente:
+
+- validación;
+- autoridad;
+- conflictos;
+- revisión cuando sea exigida;
+- receipt o resultado de publicación;
+- trazabilidad de la revisión sustituida.
+
+---
+
+#### 10. Jerarquía interna del dominio
+
+La jerarquía objetivo queda:
+
+```text
+Programación
+├── Semana
+├── Mes
+├── Vista global
+├── Calendario contextual
+├── Métricas
+└── Configuración
+```
+
+Prioridad de experiencia:
+
+```text
+1. Semana / Mes
+2. Vista global cuando el alcance lo permita
+3. Calendario contextual
+4. Métricas
+5. Configuración avanzada
+```
+
+`Métricas` y `Configuración` no compiten visualmente con la actividad frecuente de planear y publicar.
+
+---
+
+#### 11. Matriz de rutas del dominio
+
+| Ruta estable | Patrón observado | Papel dentro de `Programación` | Navegación heredada | Regla principal |
+| --- | --- | --- | --- | --- |
+| `VISO-ROUTE-045` | `/staff/calendar` | `CONTEXT_CALENDAR` | `CHILD_OR_DETAIL_ROUTE` | contextualiza fechas y eventos; no es fuente de turnos |
+| `VISO-ROUTE-046` | `/staff/schedule` | `WEEKLY_PLANNER` | `CHILD_OR_DETAIL_ROUTE` | workspace semanal principal observado |
+| `VISO-ROUTE-047` | `/staff/schedule/global` | `CROSS_SITE_SCHEDULE_VIEW` | `CHILD_OR_DETAIL_ROUTE` | proyección autorizada entre sedes, sin ampliar autoridad |
+| `VISO-ROUTE-048` | `/staff/schedule/metrics` | `SCHEDULE_ANALYTICS` | `CHILD_OR_DETAIL_ROUTE` | análisis secundario; no decide política laboral |
+| `VISO-ROUTE-049` | `/staff/schedule/settings` | `PLANNER_CONFIGURATION` | `CHILD_OR_DETAIL_ROUTE` | configuración avanzada bajo divulgación progresiva |
+| `VISO-ROUTE-061` | `/staff/schedule/month` | `MONTHLY_BULK_PLANNER` | `CHILD_OR_DETAIL_ROUTE` | planificación mensual masiva del mismo proceso |
+
+No se crean rutas nuevas, no se retiran rutas y no se renumeran identidades.
+
+---
+
+#### 12. Entrada principal observada
+
+`/staff/schedule` permanece como workspace principal observado de programación.
+
+Su función objetivo es ofrecer:
+
+- contexto territorial;
+- periodo;
+- selector Semana/Mes;
+- planificación detallada;
+- estado de revisión y publicación;
+- acceso secundario a vistas globales, calendario, métricas y configuración;
+- resultados y errores comprensibles.
+
+No debe convertirse en una pantalla con widgets no relacionados que oculten la planificación.
+
+---
+
+#### 13. Selector primario Semana / Mes
+
+Semana y Mes son dos vistas del mismo contrato.
+
+El selector deberá:
+
+- ser visible dentro del workspace de programación;
+- conservar el contexto territorial permitido;
+- conservar un periodo equivalente al cambiar de horizonte;
+- evitar perder selección relevante cuando el cambio sea representable;
+- indicar con claridad qué horizonte está activo;
+- funcionar por teclado;
+- ser usable en pantalla pequeña;
+- no crear una entrada de sidebar independiente para cada horizonte.
+
+La transición conceptual es:
+
+```text
+SEMANA
+↔
+MES
+```
+
+no:
+
+```text
+APLICACIÓN SEMANAL
+↔
+APLICACIÓN MENSUAL
+```
+
+---
+
+#### 14. Fuente única de programación
+
+La regla central queda:
+
+```text
+SEMANA_SOURCE
+=
+MES_SOURCE
+=
+PROGRAMACIÓN AUTORITATIVA DE VPROC-0007
+```
+
+No se permite:
+
+```text
+SEMANA_WRITE_MODEL != MES_WRITE_MODEL
+```
+
+ni:
+
+```text
+SEMANA_PUBLICATION_POLICY != MES_PUBLICATION_POLICY
+```
+
+La tabla física, vista, RPC o shape de persistencia que materialice esa fuente se resuelve en su capa propietaria y no se congela desde esta tarea UX.
+
+---
+
+#### 15. Contexto visible obligatorio
+
+Toda vista de programación debe hacer visible el contexto material que determina qué se está observando o editando.
+
+Como mínimo debe poder expresar, cuando aplique:
+
+- sede o alcance territorial;
+- periodo activo;
+- trabajador o conjunto de trabajadores;
+- área;
+- rol operativo;
+- estado de programación;
+- revisión o versión relevante;
+- modo real frente a simulación cuando exista;
+- alcance global solo cuando esté autorizado.
+
+El contexto visible no es autoridad.
+
+El servidor vuelve a validar la operación.
+
+---
+
+#### 16. Alcance territorial
+
+La selección de sede o contexto territorial:
+
+- filtra la experiencia;
+- no concede permisos;
+- no agrega sedes no autorizadas;
+- no permite editar un trabajador fuera del alcance;
+- no convierte una vista global en wildcard;
+- no sustituye la validación de área, rol o turno.
+
+El detalle de experiencia territorial permanece reservado a `VISO-UX-013`.
+
+Esta tarea solo exige que la sección no oculte ni fabrique el contexto.
+
+---
+
+#### 17. Vista semanal detallada
+
+La vista `Semana` es la superficie de planificación detallada de corto horizonte.
+
+Debe priorizar:
+
+1. siete días del periodo semanal;
+2. trabajadores programables en el contexto;
+3. bloque o turno por día;
+4. rol operativo y área cuando apliquen;
+5. inicio y fin;
+6. descanso o pausa según contrato vigente;
+7. estado de borrador/publicación;
+8. conflictos visibles;
+9. totales relevantes del periodo;
+10. acciones de guardar, revisar, publicar o corregir según autoridad.
+
+La densidad puede ser alta en escritorio, pero la acción principal debe permanecer comprensible.
+
+---
+
+#### 18. Separación entre planificación y asistencia
+
+La vista semanal puede mostrar señales de asistencia como contexto posterior cuando sea útil y esté autorizado.
+
+Sin embargo:
+
+```text
+PROGRAMACIÓN
+!=
+ASISTENCIA
+```
+
+La programación define lo planificado y publicado.
+
+ANIMA captura hechos de asistencia.
+
+Una marca de entrada o salida no reescribe el turno histórico.
+
+Una corrección de asistencia no debe aparecer como edición implícita de programación.
+
+---
+
+#### 19. Vista mensual masiva
+
+La vista `Mes` está destinada a planificación masiva por trabajador y periodo mensual.
+
+Debe permitir comprender simultáneamente:
+
+- trabajador seleccionado;
+- mes seleccionado;
+- sede o contexto visible;
+- días válidos del mes;
+- bloques propuestos;
+- fechas de cada bloque;
+- rol y área;
+- horario;
+- descanso o pausa cuando corresponda;
+- notas autorizadas;
+- total actual;
+- total nuevo;
+- total proyectado;
+- política o límite aplicable;
+- estado del resultado.
+
+No debe exigir navegar día por día para construir un patrón mensual repetitivo.
+
+---
+
+#### 20. Calendario mensual correcto
+
+La cuadrícula o selector de fechas mensual debe usar únicamente días válidos del mes real.
+
+Se preserva:
+
+```text
+FEBRERO = 28 O 29 DÍAS
+ABRIL/JUNIO/SEPTIEMBRE/NOVIEMBRE = 30 DÍAS
+RESTO = 31 DÍAS
+```
+
+La navegación de mes deberá soportar:
+
+- cambio de mes;
+- cambio de año;
+- retorno a un periodo equivalente;
+- zona horaria contractual;
+- ausencia de fechas ficticias.
+
+La vista no puede materializar un día 31 en un mes de 30 ni tratar el 29 de febrero como universal.
+
+---
+
+#### 21. Constructor multibloque
+
+La experiencia mensual admite una composición multibloque.
+
+Cada bloque representa una intención de horario homogénea sobre un conjunto de fechas.
+
+Un bloque puede contener, según la política vigente:
+
+- tipo laboral o descanso;
+- rol operativo;
+- área;
+- hora de inicio;
+- hora de fin;
+- descanso o pausa;
+- fechas;
+- nota autorizada.
+
+El máximo de bloques y otras restricciones cuantitativas no se fijan en esta tarea UX.
+
+Se consumen desde la política canónica definida por `VISO-SCH-003`.
+
+---
+
+#### 22. Bloques plegables
+
+Para evitar una pantalla mensual excesivamente larga:
+
+- un bloque activo puede mostrar edición completa;
+- los bloques no activos pueden mostrarse plegados;
+- un bloque plegado debe conservar un resumen suficiente;
+- el resumen incluye tipo, horario cuando aplique, cantidad de días y rol/área relevante;
+- cambiar el bloque activo no pierde ediciones locales válidas;
+- quitar un bloque exige una acción explícita;
+- la expansión debe exponer `aria-expanded` o semántica accesible equivalente.
+
+El plegado es presentación.
+
+No cambia el contenido ni la autoridad del bloque.
+
+---
+
+#### 23. Pertenencia única de fecha en modalidad rápida
+
+Cuando la modalidad mensual rápida aplique la regla de exclusividad de fecha:
+
+```text
+UNA FECHA
+→ UN BLOQUE DEL CONSTRUCTOR RÁPIDO
+```
+
+Mover una fecha entre bloques debe ser explícito y visible.
+
+La interfaz debe informar:
+
+- fecha movida;
+- bloque de origen;
+- bloque de destino.
+
+No se elimina silenciosamente una fecha de un bloque al seleccionarla en otro.
+
+La política exacta permanece gobernada por `VISO-SCH-003`.
+
+---
+
+#### 24. Presets mensuales
+
+Los presets de selección de fechas son ayudas de edición, no comandos autoritativos.
+
+Pueden existir alternativas equivalentes como:
+
+- días laborables;
+- todo el mes;
+- limpiar selección;
+- patrones aprobados posteriores.
+
+Todo preset deberá:
+
+- mostrar el resultado antes de guardar;
+- respetar exclusividad de fecha cuando aplique;
+- no alterar bloques ocultos sin señal visible;
+- dejar la selección final inspeccionable.
+
+---
+
+#### 25. Horarios y duración
+
+El bloque debe mostrar inicio y fin de forma inequívoca.
+
+La UI deberá impedir o señalar duraciones inválidas según la política vigente.
+
+Las reglas sobre:
+
+- overnight;
+- turnos partidos;
+- duración máxima;
+- duración mínima;
+- granularidad;
+- descansos;
+- redondeo;
+
+permanecen bajo `VISO-SCH-003` y no se reinventan aquí.
+
+La experiencia consume esas reglas y explica el resultado.
+
+---
+
+#### 26. Descansos
+
+Un descanso o bloque no laboral debe distinguirse visual y semánticamente de un turno laboral.
+
+No se permite representar un descanso como turno de cero horas si ello cambia la semántica contractual.
+
+Cuando la política vigente use bloques de descanso:
+
+- deben identificarse como tales;
+- no deben requerir rol o área si el contrato no lo exige;
+- deben conservar fechas;
+- deben participar en validaciones de conflicto cuando corresponda;
+- no deben inflar horas laborales.
+
+---
+
+#### 27. Notas
+
+Las notas son contexto complementario.
+
+No pueden transportar:
+
+- permisos;
+- autoridad;
+- rol efectivo;
+- reglas de excepción no aprobadas;
+- información sensible innecesaria;
+- instrucciones que sustituyan un campo contractual.
+
+La nota puede usar divulgación progresiva para no ocupar espacio cuando esté vacía.
+
+---
+
+#### 28. Vista previa de impacto
+
+Antes de guardar una operación mensual masiva, la experiencia debe mostrar:
+
+```text
+ACTUAL
++
+NUEVAS
+=
+PROYECTADO
+```
+
+Además debe mostrar el límite o política aplicable cuando exista.
+
+La vista previa debe distinguir:
+
+- dato actual;
+- cambio propuesto;
+- resultado proyectado;
+- umbral preventivo cuando exista;
+- límite de bloqueo cuando exista;
+- consecuencia de guardar o publicar.
+
+El color es apoyo visual.
+
+Nunca sustituye texto, número ni decisión del servidor.
+
+---
+
+#### 29. Política de límite mensual
+
+Esta tarea no aprueba valores numéricos de horas.
+
+Los valores observados en el delta congelado permanecen provisionales:
+
+```text
+WARNING_AS_IS = 174 h
+LIMIT_AS_IS = 186 h
+```
+
+No se convierten por esta tarea en constantes UX canónicas.
+
+La experiencia final deberá consumir una política:
+
+- exacta;
+- versionada;
+- auditable;
+- compartida por Semana y Mes;
+- consistente entre cliente y servidor.
+
+La definición de esa política pertenece a `VISO-SCH-004`.
+
+---
+
+#### 30. Total mensual entre sedes
+
+Cuando el contrato de límite exige total mensual global del trabajador, el cálculo considera todas las sedes pertinentes.
+
+La experiencia administrativa conserva simultáneamente:
+
+```text
+TOTAL PARA VALIDAR LÍMITE
+PUEDE SER MULTISEDE
+```
+
+pero:
+
+```text
+DETALLE VISIBLE
+NO SE AMPLÍA POR ESE CÁLCULO
+```
+
+La UI puede mostrar un total agregado autorizado sin revelar turnos, sedes o detalles fuera del alcance visible del administrador.
+
+---
+
+#### 31. Borrador y publicación son acciones distintas
+
+La sección debe mantener separadas:
+
+```text
+GUARDAR BORRADOR
+```
+
+```text
+PUBLICAR
+```
+
+No pueden compartir una confirmación ambigua.
+
+Deben poder tener:
+
+- permisos distintos;
+- precondiciones distintas;
+- consecuencias distintas;
+- receipts distintos;
+- errores distintos.
+
+La definición detallada pertenece a `VISO-SCH-005` y a los contratos de autorización aplicables.
+
+---
+
+#### 32. Borrador sobre límite
+
+El baseline congelado conserva la posibilidad de que una propuesta sobre el límite quede como borrador cuando la política lo permita.
+
+La experiencia debe comunicar de forma explícita:
+
+```text
+SE PUEDE GUARDAR COMO BORRADOR
+!=
+SE PUEDE PUBLICAR
+```
+
+No debe mostrar un borrador sobre límite como programación válida o publicada.
+
+La regla final de política permanece bajo `VISO-SCH-004` y `VISO-SCH-005`.
+
+---
+
+#### 33. Publicación
+
+La publicación debe presentarse como transición autoritativa.
+
+Antes de solicitarla, la UI debe poder mostrar:
+
+- periodo;
+- población afectada;
+- revisión que se publica;
+- conflictos relevantes;
+- límite aplicable;
+- cambios frente a lo vigente;
+- consecuencia de la publicación;
+- notificación posterior cuando corresponda.
+
+Después de una publicación válida debe existir un resultado identificable.
+
+Una animación, toast o cambio de color no sustituye el receipt de negocio.
+
+---
+
+#### 34. Publicación semanal y mensual equivalente
+
+Semana y Mes no pueden tener semánticas incompatibles de publicación.
+
+Se conserva:
+
+```text
+WEEK_PUBLISH_POLICY
+=
+MONTH_PUBLISH_POLICY
+```
+
+para las dimensiones contractualmente compartidas.
+
+La granularidad de selección puede variar, pero no:
+
+- el significado de publicar;
+- el control de autoridad;
+- el límite aplicable;
+- la revisión vigente;
+- la trazabilidad;
+- la notificación contractual.
+
+---
+
+#### 35. Revisión y aprobación
+
+Cuando el flujo requiera revisión separada, la interfaz debe distinguir:
+
+- quien preparó;
+- quien revisa;
+- quien puede publicar;
+- estado pendiente;
+- conflictos abiertos;
+- diferencia entre revisar y ejecutar.
+
+No se infiere segregación únicamente por rol mostrado en pantalla.
+
+La autoridad efectiva se revalida.
+
+---
+
+#### 36. Conflictos antes de guardar
+
+La sección debe hacer visibles los conflictos detectables antes de guardar o publicar.
+
+Como categorías de experiencia se contemplan:
+
+- solapamiento temporal;
+- incompatibilidad de rol y área;
+- territorio no válido;
+- trabajador no elegible;
+- indisponibilidad;
+- descanso incompatible;
+- límite mensual;
+- concurrencia;
+- estado desactualizado;
+- dependencia faltante;
+- revisión obsoleta.
+
+La UI puede anticipar conflictos.
+
+El servidor debe recalcular los controles decisorios inmediatamente antes del efecto.
+
+---
+
+#### 37. Conflictos no resueltos por color
+
+Nunca se modela:
+
+```text
+ROJO = DENY
+VERDE = ALLOW
+```
+
+como única evidencia.
+
+Cada conflicto material debe poder expresar:
+
+- qué ocurrió;
+- sobre quién o qué periodo;
+- por qué bloquea o advierte;
+- qué se puede corregir;
+- si requiere otra autoridad;
+- si el estado cambió desde la carga inicial.
+
+---
+
+#### 38. Concurrencia
+
+La experiencia debe asumir que la programación puede cambiar mientras el administrador edita.
+
+Por tanto:
+
+- una vista cargada no congela el servidor;
+- un preview no reserva turnos;
+- una fila visible no demuestra que siga disponible;
+- una publicación debe detectar revisión o estado obsoleto;
+- no se resuelven conflictos empresariales con `last write wins` silencioso.
+
+La política detallada pertenece a `VISO-SCH-006`.
+
+---
+
+#### 39. Corrección de programación publicada
+
+Una corrección posterior a publicación:
+
+- no reescribe silenciosamente la revisión histórica;
+- conserva la revisión anterior;
+- conserva motivo y actor;
+- muestra qué cambia;
+- muestra a quién afecta;
+- vuelve a validar conflictos y autoridad;
+- produce una revisión o transición trazable.
+
+La experiencia no ofrece “editar publicado” como si fuera un borrador mutable ordinario.
+
+---
+
+#### 40. Eliminación masiva
+
+Cuando exista eliminación masiva de programación mensual:
+
+- debe quedar limitada al conjunto permitido por el contrato;
+- el baseline actual la restringe a borradores;
+- la selección debe ser explícita;
+- el alcance debe verse antes de confirmar;
+- el resultado debe indicar qué se eliminó y qué no;
+- la auditoría no puede omitirse.
+
+La regla exacta de estados eliminables pertenece a `VISO-SCH-005` y a la autorización de servidor aplicable.
+
+---
+
+#### 41. Contexto de trabajador
+
+Al abrir Programación desde `Personal`, el trabajador puede viajar como selector de contexto.
+
+Se conserva:
+
+```text
+PERSONAL_LINK
+→ worker_id COMO SELECTOR
+→ PROGRAMACIÓN REVALIDA ALCANCE Y AUTORIDAD
+```
+
+No se conserva:
+
+```text
+worker_id EN URL
+→ AUTORIDAD
+```
+
+La sección puede preseleccionar el trabajador si sigue siendo administrable en el contexto efectivo.
+
+---
+
+#### 42. Contexto de sede
+
+El cambio de sede debe:
+
+- usar solo sedes administrables;
+- actualizar los trabajadores y roles disponibles;
+- actualizar el periodo sin perderlo cuando sea posible;
+- invalidar selecciones incompatibles;
+- evitar conservar áreas o roles de otra sede;
+- volver a resolver acciones permitidas.
+
+La sede seleccionada no es un permiso.
+
+---
+
+#### 43. Área y rol operativo
+
+Área y rol deben presentarse como dimensiones distintas pero compatibles.
+
+La UI no puede:
+
+- inferir área únicamente por nombre de rol cuando existen varias opciones;
+- usar rol base como sustituto silencioso del rol operativo;
+- ofrecer combinaciones no válidas por conveniencia visual;
+- conservar una combinación al cambiar de sede si ya no aplica.
+
+Las matrices propietarias permanecen en Acceso y seguridad y contratos de autorización.
+
+Programación las consume.
+
+---
+
+#### 44. Vista global entre sedes
+
+`/staff/schedule/global` es una superficie secundaria de programación.
+
+Su función es permitir una proyección autorizada entre sedes cuando el administrador tenga alcance suficiente.
+
+Debe conservar:
+
+- filtros territoriales explícitos;
+- origen de cada turno;
+- sede y contexto;
+- periodo;
+- estado;
+- ausencia de wildcard implícito.
+
+Una vista global no concede capacidad de edición global.
+
+---
+
+#### 45. Calendario contextual
+
+`/staff/calendar` pertenece al dominio `Programación` como superficie contextual heredada.
+
+No obstante, el runtime observado muestra que el calendario puede presentar fechas procedentes de capacidades distintas de programación laboral.
+
+Por tanto, se fija:
+
+```text
+CALENDAR_ROUTE_DOMAIN = Programación
+CALENDAR_DATA_OWNERSHIP = POR EVENTO / CAPACIDAD PROPIETARIA
+```
+
+El calendario puede superponer fechas útiles, pero:
+
+- un evento de mantenimiento no se convierte en turno;
+- un vencimiento laboral no se convierte en programación;
+- una fecha manual no altera `VPROC-0007`;
+- una superficie de otro owner debe enlazar a su owner cuando corresponda;
+- la programación laboral mostrada sigue viniendo de la fuente autoritativa de `VPROC-0007`.
+
+---
+
+#### 46. Calendario no es editor universal
+
+La ruta de calendario no puede convertirse en un editor genérico de cualquier evento mostrado.
+
+Cada evento deberá poder distinguir al menos:
+
+- categoría;
+- fecha;
+- owner funcional;
+- acción disponible;
+- contexto territorial permitido;
+- destino de edición cuando exista.
+
+Cuando el owner sea externo a Programación, la acción es un handoff protegido, no una mutación local equivalente.
+
+---
+
+#### 47. Métricas de programación
+
+`/staff/schedule/metrics` es una superficie secundaria de análisis.
+
+Puede presentar, según contratos aprobados:
+
+- cobertura;
+- programación planificada;
+- ejecución observada;
+- asistencia correlacionada;
+- carga por periodo;
+- patrones históricos;
+- indicadores por sede;
+- indicadores agregados.
+
+Esta tarea no aprueba:
+
+- ranking laboral como política de decisión;
+- premios automáticos;
+- penalizaciones;
+- evaluación de desempeño;
+- decisiones disciplinarias;
+- scoring de personas como autoridad.
+
+Toda interpretación con efecto laboral requiere su owner y contrato específicos.
+
+---
+
+#### 48. Diferenciar programado, ejecutado y medido
+
+La experiencia de métricas debe conservar:
+
+```text
+PROGRAMADO
+!=
+ASISTIDO
+!=
+TRABAJADO
+!=
+RECONCILIADO
+!=
+DESEMPEÑO
+```
+
+Una métrica calculada desde asistencia no modifica el turno.
+
+Una métrica de puntualidad no es una decisión laboral por sí sola.
+
+Un total mensual de horas programadas no equivale a horas efectivamente trabajadas.
+
+---
+
+#### 49. Configuración del planificador
+
+`/staff/schedule/settings` es una superficie avanzada.
+
+Puede agrupar configuraciones relacionadas con:
+
+- cobertura;
+- disponibilidad;
+- reglas por trabajador;
+- límites de planificación;
+- preferencias;
+- concurrencia por rol;
+- configuración territorial compatible.
+
+La configuración avanzada usa divulgación progresiva y no ocupa el primer nivel visual del trabajo diario.
+
+---
+
+#### 50. Configuración no crea políticas locales
+
+Una pantalla de configuración no puede crear una política paralela a la fuente canónica.
+
+Se conserva:
+
+```text
+UI SETTING
+→ EDITA UNA POLÍTICA CANÓNICA AUTORIZADA
+```
+
+no:
+
+```text
+UI SETTING
+→ CREA UNA REGLA LOCAL SOLO PARA ESA PANTALLA
+```
+
+Valores con efecto sobre autorización, horas, disponibilidad o concurrencia deben conservar versión, owner, vigencia y auditoría cuando el contrato lo exija.
+
+---
+
+#### 51. Disponibilidad
+
+La disponibilidad puede ser un insumo para planificación.
+
+No equivale a turno publicado.
+
+Se conserva:
+
+```text
+DISPONIBILIDAD
+!=
+PROGRAMACIÓN
+```
+
+```text
+PREFERENCIA
+!=
+DISPONIBILIDAD OBLIGATORIA
+```
+
+```text
+SUGERENCIA
+!=
+PUBLICACIÓN
+```
+
+La sección debe evitar que una sugerencia derivada aparezca como decisión confirmada.
+
+---
+
+#### 52. Sugerencias de planificación
+
+Si la implementación ofrece sugerencias automáticas o basadas en histórico:
+
+- el resultado permanece en borrador;
+- se identifica como sugerido;
+- el administrador puede inspeccionarlo antes de aceptar;
+- no se publica automáticamente;
+- no se usa como autoridad de rol, área o disponibilidad;
+- no penaliza al trabajador por no coincidir con un patrón histórico.
+
+Esta tarea no define un algoritmo de optimización.
+
+---
+
+#### 53. Relación con ANIMA
+
+ANIMA consume programación publicada.
+
+Se conserva:
+
+```text
+VISO
+→ PUBLICA REVISIÓN
+→ CONTRATO DE INTEGRACIÓN
+→ ANIMA PRESENTA PROGRAMACIÓN DEL TRABAJADOR
+```
+
+ANIMA no mantiene un editor competidor.
+
+Un cambio realizado en VISO no se considera consumido por ANIMA únicamente porque apareció un toast de publicación.
+
+La notificación y sincronización conservan su contrato propio.
+
+---
+
+#### 54. Notificación a ANIMA
+
+La publicación puede disparar notificación o proyección hacia ANIMA.
+
+La experiencia debe distinguir:
+
+```text
+PUBLICATION_RESULT = SUCCESS
+```
+
+frente a:
+
+```text
+NOTIFICATION_RESULT = PENDING / SUCCESS / RECOVERABLE_FAILURE
+```
+
+según los contratos técnicos que se materialicen.
+
+Una notificación fallida no puede transformar una publicación válida en una edición local incierta ni ocultar el estado real.
+
+---
+
+#### 55. Relación con `Personal`
+
+`Personal` conserva trabajador, vínculo y expediente.
+
+`Programación` conserva turnos y revisiones.
+
+Los handoffs permitidos incluyen:
+
+- trabajador → abrir programación del trabajador;
+- programación → abrir detalle laboral autorizado;
+- caso laboral → consultar efecto sobre programación cuando corresponda.
+
+No se crean editores duplicados.
+
+---
+
+#### 56. Relación con `Organización`
+
+`Organización` conserva definición y gobierno de sedes, áreas y estructura.
+
+`Programación` consume esas identidades para asignar contexto.
+
+Programación no:
+
+- crea una sede para resolver un turno;
+- crea un área ad hoc;
+- renombra estructura;
+- usa un área agregada como wildcard;
+- modifica ownership organizacional.
+
+---
+
+#### 57. Relación con `Acceso y seguridad`
+
+`Acceso y seguridad` conserva:
+
+- permisos;
+- roles administrativos;
+- roles operativos;
+- matrices territoriales;
+- excepciones;
+- simulación;
+- dispositivos cuando aplique.
+
+`Programación` consume el resultado necesario para determinar qué opciones mostrar y qué acción solicitar.
+
+La autorización decisoria permanece en servidor.
+
+---
+
+#### 58. Relación con `Auditoría`
+
+`Programación` muestra receipts y trazabilidad contextual suficiente para comprender cambios recientes.
+
+La investigación histórica profunda pertenece a `Auditoría`.
+
+Se permite handoff desde:
+
+- revisión publicada;
+- corrección;
+- conflicto;
+- publicación;
+- eliminación;
+- cambio de configuración;
+
+hacia la evidencia auditable correspondiente.
+
+---
+
+#### 59. Relación con `Operación`
+
+Operación puede consumir el contexto derivado de un turno publicado para habilitar o contextualizar procesos posteriores.
+
+No puede usar una vista de Programación para ejecutar una capacidad operativa sin revalidación.
+
+Programación tampoco absorbe las pantallas operativas por mostrar rol, área o jornada.
+
+---
+
+#### 60. Deep links
+
+Un deep link puede conservar selectores como:
+
+- sede;
+- periodo;
+- trabajador;
+- horizonte;
+- revisión;
+- elemento visible.
+
+No puede transportar autoridad.
+
+Toda entrada directa debe revalidar:
+
+- sesión;
+- acceso a VISO;
+- permiso aplicable;
+- territorio;
+- recurso;
+- contexto;
+- estado actual.
+
+---
+
+#### 61. URL y privacidad
+
+No se introducirán en URL:
+
+- datos sensibles del trabajador;
+- documentos;
+- salario;
+- notas privadas;
+- permiso efectivo completo;
+- tokens;
+- justificaciones sensibles;
+- payloads de bloques.
+
+Los IDs usados como selectores permanecen sujetos a control de acceso en servidor.
+
+---
+
+#### 62. Navegación responsive
+
+La sección deberá funcionar en:
+
+- escritorio;
+- tablet;
+- móvil.
+
+La adaptación preferida queda:
+
+```text
+ESCRITORIO
+→ matriz / tabla densa + paneles
+
+TABLET
+→ matriz compacta + edición lateral o modal
+
+MÓVIL
+→ drill-down por trabajador/día/bloque + acciones explícitas
+```
+
+La vista móvil no elimina funciones críticas.
+
+Si requiere desplazamiento horizontal, debe existir jerarquía y foco claros para evitar perder el contexto.
+
+---
+
+#### 63. Semana responsive
+
+En pantallas estrechas la vista semanal puede transformar la matriz en:
+
+- lista por trabajador;
+- lista por día;
+- cards de turno;
+- selector de día;
+- drawer o modal de edición.
+
+La transformación conserva:
+
+- periodo;
+- sede;
+- trabajador;
+- estado;
+- rol/área;
+- acciones;
+- conflictos.
+
+---
+
+#### 64. Mes responsive
+
+El constructor mensual debe evitar una cuadrícula inusable en móvil.
+
+Puede usar:
+
+- bloques plegables;
+- selector de días adaptable;
+- resumen sticky o equivalente;
+- controles de periodo compactos;
+- detalle por bloque.
+
+El usuario debe poder verificar qué fechas pertenecen a cada bloque antes de guardar.
+
+---
+
+#### 65. Accesibilidad
+
+La sección deberá conservar:
+
+- navegación por teclado;
+- foco visible;
+- labels explícitos;
+- asociación entre error y campo;
+- `aria-expanded` o equivalente en bloques plegables;
+- estados anunciables para mensajes dinámicos relevantes;
+- contraste suficiente;
+- información no dependiente solo de color;
+- orden lógico al cambiar entre Semana y Mes.
+
+---
+
+#### 66. Estados de carga
+
+Una vista de programación debe diferenciar:
+
+```text
+LOADING
+EMPTY
+NO_AUTHORITY
+NO_TERRITORY
+NO_WORKERS
+NO_SCHEDULE
+ERROR
+STALE
+```
+
+No se muestra “sin turnos” cuando en realidad falló la consulta.
+
+No se muestra “sin trabajadores” cuando el administrador carece de alcance.
+
+No se muestra un dataset stale como estado vigente sin indicación cuando esa frescura sea material.
+
+---
+
+#### 67. Estado vacío semanal
+
+Si no existen turnos para una semana válida:
+
+- se conserva el contexto de semana y sede;
+- se informa que no existe programación en ese periodo;
+- solo aparece acción de creación si está autorizada;
+- no se interpreta ausencia como error;
+- no se oculta una restricción de acceso detrás del estado vacío.
+
+---
+
+#### 68. Estado vacío mensual
+
+Si un trabajador o periodo no tiene programación:
+
+- se mantiene visible el periodo;
+- se muestran días válidos;
+- se puede iniciar una propuesta solo si existe autoridad;
+- el total actual se representa como cero únicamente si fue calculado correctamente;
+- no se infiere que el trabajador pueda programarse en cualquier sede o área.
+
+---
+
+#### 69. Errores de servidor
+
+Los errores de guardado o publicación deben ser comprensibles y accionables.
+
+La UI debe distinguir, al menos conceptualmente:
+
+- falta de autorización;
+- territorio inválido;
+- trabajador no elegible;
+- conflicto de horario;
+- revisión obsoleta;
+- límite excedido;
+- estado no compatible;
+- validación de datos;
+- dependencia temporal;
+- fallo técnico recuperable.
+
+No se expone error bruto del proveedor cuando contenga información sensible.
+
+---
+
+#### 70. URLs o formularios manipulados
+
+Una URL, formulario o Server Action modificados fuera de la UI no pueden:
+
+- cambiar trabajador no autorizado;
+- ampliar sede;
+- introducir área ajena;
+- introducir rol incompatible;
+- publicar una revisión no seleccionable;
+- saltar límites;
+- cambiar estado;
+- convertir simulación en ejecución.
+
+El servidor rechaza la acción y la UI presenta un estado canónico comprensible.
+
+---
+
+#### 71. Autoridad de escritura
+
+La existencia de `requireStaffScheduleAccess` observada en el runtime demuestra una barrera de acceso, no una certificación de permisos atómicos de escritura.
+
+Esta tarea UX no aprueba reutilizar un permiso de consulta para:
+
+- crear;
+- actualizar;
+- eliminar;
+- publicar;
+- corregir;
+- autorizar excepciones.
+
+La separación de capacidades pertenece a los contratos de autorización y a `VISO-SCH-007`.
+
+---
+
+#### 72. Estado físico mensual observado
+
+El delta mensual permanece:
+
+```text
+CONGELADO_PENDIENTE_DE_ESTABILIZACION
+```
+
+Esta tarea puede usarlo como evidencia AS-IS de la experiencia existente, pero no lo declara:
+
+- estable;
+- desplegable;
+- canónico en sus valores provisionales;
+- autorizado para producción;
+- prueba de cierre de `VISO-SCH-*`.
+
+---
+
+#### 73. Valores AS-IS que no se canonizan aquí
+
+El runtime y delta observados incluyen actualmente, entre otros:
+
+```text
+MAX_MONTHLY_SHIFT_BLOCKS_AS_IS = 12
+WARNING_AS_IS = 174 h
+LIMIT_AS_IS = 186 h
+QUICK_OVERNIGHT_AS_IS = NO
+BREAK_MINUTES_AS_IS = 0 EN EL DELTA CONGELADO
+```
+
+Estos valores permanecen provisionales o propietarios de `VISO-SCH-003` y `VISO-SCH-004`.
+
+`VISO-UX-003` define cómo presentar políticas, no su número final.
+
+---
+
+#### 74. Matriz de ownership de decisiones pendientes
+
+| Decisión | Owner canónico | Tratamiento en `VISO-UX-003` |
+| --- | --- | --- |
+| misma fuente Semana/Mes | `VISO-SCH-001` | obligatoria para la UX; no se redefine almacenamiento |
+| horizontes, calendario y zona horaria | `VISO-SCH-002` | se presenta de forma coherente |
+| bloques, overnight, descansos y modalidad rápida | `VISO-SCH-003` | se consume; valores finales no se fijan aquí |
+| límite, warning, vigencia y excepciones | `VISO-SCH-004` | se visualiza; política final no se inventa |
+| borrador, revisión, publicación y corrección | `VISO-SCH-005` | se distinguen acciones y estados |
+| conflictos, concurrencia y rollback | `VISO-SCH-006` | se exponen resultados y stale state |
+| permisos, auditoría y notificación | `VISO-SCH-007` | se reflejan sin conceder autoridad visual |
+| aprobación integral pre-E5 | `VISO-SCH-008` | condición física posterior |
+| reconciliación técnica del delta | `CODE-AUD-021` | no se declara cerrada |
+| reconciliación de ruta mensual | `AUTH-UI-061` | se conserva `VISO-ROUTE-061` sin certificarla |
+
+No se crea una tarea nueva para ninguna de estas decisiones.
+
+---
+
+#### 75. Ruta mensual reservada
+
+Se preserva:
+
+```text
+VISO-ROUTE-061
+/staff/schedule/month
+```
+
+Su navegación objetivo es por selector/deep link dentro del dominio, no como entrada primaria independiente del sidebar.
+
+La tarea no certifica el runtime mensual ni reemplaza `AUTH-UI-061`.
+
+---
+
+#### 76. Vista semanal observada
+
+El runtime observado de `/staff/schedule` ya contiene elementos compatibles con el contrato objetivo:
+
+- sede;
+- semana;
+- trabajadores;
+- turnos;
+- rol y área;
+- estados de borrador/publicación;
+- totales por periodos;
+- señales de asistencia;
+- acciones de planificación.
+
+Estas observaciones sirven para reconciliar AS-IS y TO-BE.
+
+No convierten la implementación existente en cumplimiento automático.
+
+---
+
+#### 77. Vista mensual observada
+
+El runtime observado de `/staff/schedule/month` ya contiene:
+
+- meses con número real de días;
+- selector de sede;
+- trabajadores;
+- turnos del mes;
+- builder multibloque;
+- bloques plegables;
+- selección exclusiva de fecha en modalidad rápida;
+- preview actual/nuevas/proyectado;
+- warning y límite AS-IS;
+- acciones de borrador, publicación y eliminación.
+
+El contrato de esta tarea conserva los patrones útiles y separa los valores provisionales de las decisiones canónicas pendientes.
+
+---
+
+#### 78. Selector Semana/Mes observado
+
+El runtime observado dispone de un selector compartido que:
+
+- detecta `/staff/schedule`;
+- detecta `/staff/schedule/month`;
+- conserva `site_id`;
+- transforma week/month para mantener periodo equivalente;
+- muestra `Semana` y `Mes`.
+
+Este patrón es compatible con el contrato objetivo y deberá conservar paridad funcional cuando se materialice la tarea.
+
+---
+
+#### 79. Bloques plegables observados
+
+El builder mensual observado:
+
+- mantiene un bloque activo;
+- pliega los demás;
+- muestra tipo, horario, días y resumen;
+- expone `aria-expanded`;
+- permite quitar bloques;
+- muestra contenido completo del bloque activo.
+
+El patrón es válido como referencia AS-IS.
+
+La tarea no fija el componente concreto ni obliga a reutilizar su implementación física.
+
+---
+
+#### 80. Movimiento explícito de fechas observado
+
+El builder actual informa cuando una fecha se mueve entre bloques.
+
+Ese comportamiento se conserva como requisito de experiencia:
+
+```text
+FECHA MOVIDA
+→ ORIGEN VISIBLE
+→ DESTINO VISIBLE
+```
+
+La implementación futura puede cambiar el texto o componente, pero no volver silencioso el movimiento.
+
+---
+
+#### 81. Preview observado
+
+El builder mensual observado presenta:
+
+```text
+Actual
+Nuevas
+Proyectado
+Estado
+```
+
+La estructura es compatible con el contrato objetivo.
+
+La implementación final deberá obtener política y decisiones decisorias desde contratos canónicos, no desde hardcodes visuales divergentes.
+
+---
+
+#### 82. Vista global observada
+
+La existencia de `/staff/schedule/global` confirma una superficie secundaria de alcance amplio.
+
+Su materialización final debe demostrar:
+
+- alcance real del actor;
+- diferenciación entre consulta y edición;
+- identificación de sede;
+- límites de datos visibles;
+- ausencia de ampliación por agregación.
+
+---
+
+#### 83. Métricas observadas
+
+El runtime actual de métricas calcula indicadores de programación y asistencia.
+
+La UI final puede conservar indicadores útiles, pero esta tarea prohíbe promover textos, rankings o incentivos actuales a política laboral canónica sin un owner aprobado.
+
+La superficie permanece analítica y secundaria.
+
+---
+
+#### 84. Configuración observada
+
+El runtime actual de configuración contiene cobertura, disponibilidad, reglas de trabajador y límites de concurrencia.
+
+La experiencia final debe conservar:
+
+- separación entre planificación y configuración;
+- contexto territorial;
+- reglas visibles;
+- edición autorizada;
+- procedencia de la política;
+- handoff a owner cuando una regla pertenezca a otro dominio.
+
+---
+
+#### 85. No crear un segundo sidebar
+
+La sección se integra en la navegación administrativa definida por `VISO-UX-001`.
+
+No se crea:
+
+- sidebar paralelo;
+- navegación hardcoded independiente;
+- grupo `staff` adicional;
+- entrada de primer nivel por cada ruta.
+
+Las superficies secundarias viven dentro de `Programación`.
+
+---
+
+#### 86. Orden visual recomendado por intención
+
+Dentro del dominio se preserva la prioridad:
+
+```text
+PLANEAR
+→ REVISAR
+→ PUBLICAR
+→ COMPARAR / CONSULTAR
+→ CONFIGURAR
+→ AUDITAR
+```
+
+No se organiza el trabajo por nombres técnicos de archivos o tablas.
+
+---
+
+#### 87. Divulgación progresiva
+
+La sección debe ocultar complejidad avanzada hasta que sea necesaria.
+
+Ejemplos de contenido secundario:
+
+- configuración;
+- notas;
+- métricas detalladas;
+- conflictos expandidos;
+- historial;
+- información de auditoría;
+- parámetros avanzados;
+- acciones excepcionales.
+
+La divulgación progresiva no oculta advertencias críticas ni consecuencias de publicación.
+
+---
+
+#### 88. Receipt de guardado
+
+Después de guardar un borrador debe quedar claro:
+
+- qué periodo se afectó;
+- qué trabajador o conjunto fue afectado;
+- qué quedó en borrador;
+- qué no fue publicado;
+- qué advertencias permanecen;
+- qué acción sigue disponible.
+
+Un borrador guardado no se anuncia como programación comunicada al trabajador.
+
+---
+
+#### 89. Receipt de publicación
+
+Después de publicar debe quedar claro:
+
+- periodo;
+- revisión publicada;
+- población afectada;
+- resultado;
+- actor o autoridad cuando corresponda mostrarlo;
+- notificación o proyección downstream en el nivel permitido;
+- conflictos o fallos parciales si existieran.
+
+La UI no debe afirmar que ANIMA recibió algo si esa evidencia no existe.
+
+---
+
+#### 90. Receipt de corrección
+
+Después de una corrección debe poder identificarse:
+
+- revisión anterior;
+- nueva revisión;
+- motivo;
+- alcance afectado;
+- estado de publicación;
+- resultado de notificación cuando aplique.
+
+No se sobrescribe la historia para mostrar únicamente el último estado.
+
+---
+
+#### 91. Performance de experiencia
+
+La sección deberá evitar que el volumen mensual o global degrade la comprensión.
+
+Puede usar:
+
+- paginación;
+- virtualización;
+- carga por contexto;
+- filtros;
+- plegado;
+- resumen agregado;
+- lazy loading de detalles secundarios.
+
+La optimización no puede cambiar el conjunto autoritativo ni ocultar elementos afectados por una mutación masiva.
+
+---
+
+#### 92. Consistencia entre vistas
+
+Para un mismo turno y revisión:
+
+```text
+SEMANA
+MES
+GLOBAL
+CALENDARIO
+MÉTRICAS
+```
+
+deben presentar identidades y estado compatibles con su función.
+
+Una diferencia de presentación no puede producir una diferencia de verdad.
+
+Si existe inconsistencia, la UX debe favorecer el estado autoritativo y exponer la necesidad de refresco o reconciliación.
+
+---
+
+#### 93. Frescura
+
+Antes de una mutación material se revalida el estado necesario.
+
+La UI debe estar preparada para informar:
+
+- datos actualizados por otro actor;
+- periodo publicado mientras se editaba;
+- turno eliminado o modificado;
+- política cambiada;
+- cambio de territorio o autoridad.
+
+No se sobrescribe silenciosamente el estado más reciente.
+
+---
+
+#### 94. Simulación
+
+Cuando exista simulación administrativa autorizada:
+
+- se distingue visualmente del contexto real;
+- no ejecuta mutaciones reales;
+- no publica;
+- no notifica;
+- no amplía datos reales visibles;
+- no se convierte en helper de autorización real.
+
+La definición detallada permanece en las tareas propietarias de simulación y seguridad.
+
+---
+
+#### 95. Dispositivo compartido
+
+En dispositivo compartido, Programación conserva los controles de navegación y actor efectivo aplicables.
+
+La sección no supone que el dispositivo sea el actor.
+
+Toda acción sensible identifica y revalida al actor autorizado conforme a los contratos de acceso.
+
+---
+
+#### 96. Acciones masivas
+
+Toda acción masiva debe diferenciar:
+
+```text
+SELECCIONAR LO VISIBLE
+!=
+SELECCIONAR TODO EL RESULTADO
+```
+
+cuando ambas posibilidades existan.
+
+Antes de ejecutar debe poder mostrarse:
+
+- población congelada o criterio exacto;
+- cantidad afectada;
+- periodo;
+- territorio;
+- conflictos;
+- resultado esperado.
+
+Después debe existir resultado por elemento cuando el contrato lo exija.
+
+---
+
+#### 97. No inferir autorización desde rol mostrado
+
+Mostrar un rol administrativo o operativo en la interfaz no concede capacidad.
+
+La sección no implementa:
+
+```text
+IF role == gerente THEN allow
+```
+
+como autoridad final.
+
+La decisión consume permisos, alcance, contexto y recurso según los contratos vigentes.
+
+---
+
+#### 98. No inferir contexto desde preferencias
+
+Una preferencia de trabajador, sede seleccionada, último filtro o valor de formulario no sustituye:
+
+- asignación vigente;
+- territorio permitido;
+- rol aplicable;
+- área compatible;
+- turno autoritativo.
+
+La experiencia puede sugerir valores, pero el servidor determina elegibilidad.
+
+---
+
+#### 99. No retiro prematuro
+
+Esta tarea clasifica la experiencia objetivo pero no autoriza retirar rutas o componentes actuales.
+
+Cualquier retiro posterior exige:
+
+- reemplazo materializado;
+- consumidores reconciliados;
+- paridad funcional necesaria;
+- autorización equivalente o más restrictiva;
+- pruebas;
+- rollback o reversibilidad cuando corresponda.
+
+---
+
+#### 100. Carryovers a tareas posteriores del minibloque
+
+`VISO-UX-003` entrega a las tareas posteriores únicamente lo necesario:
+
+| Tarea posterior | Handoff |
+| --- | --- |
+| `VISO-UX-004` | Programación consume permisos y matrices; Acceso y seguridad conserva ownership |
+| `VISO-UX-005` | Programación consume sedes/áreas; Organización conserva ownership |
+| `VISO-UX-006` | Operación consume contexto de turno cuando corresponda, sin editar programación |
+| `VISO-UX-007` | publicaciones/correcciones producen trazabilidad investigable |
+| `VISO-UX-013` | la experiencia territorial debe aplicar alcance exacto |
+| `VISO-UX-014` | origen de permisos debe mostrarse comprensiblemente cuando aplique |
+| `VISO-UX-015` | conflictos previos a guardar se visualizan con actual/nuevo/proyectado y consecuencias |
+| `VISO-UX-016` | preview de trabajador debe reflejar efecto exacto sin ampliar detalle territorial |
+| `VISO-UX-017` | configuraciones de otros owners no se duplican |
+| `VISO-UX-018` | handoffs cross-app se materializan como enlaces protegidos |
+| `VISO-UX-019` | seguridad avanzada usa divulgación progresiva |
+| `VISO-UX-020` | pruebas con administradores cubren Semana/Mes, meses variables, exceso, corrección, publicación, navegación y errores |
+
+Esta tarea no desarrolla anticipadamente esas responsabilidades.
+
+---
+
+#### 101. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el Registro Canónico ya contiene cobertura específica para la ruta mensual, paridad Semana/Mes, meses de longitud variable, bloques, fechas, límites, borrador/publicación, conflictos, concurrencia, rollback, autorización, auditoría y notificación;
+- esta tarea organiza esa cobertura en la experiencia administrativa sin crear una regla de negocio nueva;
+- los valores de política todavía pendientes permanecen en sus tareas propietarias y no se fijan desde UX.
+
+---
+
+#### 102. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, la tarea reutiliza especialmente:
+
+- `TREQ-VISO-013` para la ruta mensual y su protección;
+- `TREQ-VISO-024` para meses de 28, 29, 30 y 31 días;
+- `TREQ-VISO-025` para una sola fuente Semana/Mes;
+- `TREQ-VISO-026` para preview reactivo actual/propuesto/proyectado;
+- `TREQ-VISO-027` para conservar datos por bloque;
+- `TREQ-VISO-028` para pertenencia única y movimiento explícito de fecha;
+- `TREQ-VISO-029` para máximo de bloques equivalente entre cliente y servidor;
+- `TREQ-VISO-030` para horario, pausas y overnight válidos;
+- `TREQ-VISO-031` para política de descanso visible;
+- `TREQ-VISO-032` para límite exacto, versionado y auditable;
+- `TREQ-VISO-033` para total mensual multisedes sin ampliar detalle visible;
+- `TREQ-VISO-034` para una única política de warning y límite;
+- `TREQ-VISO-035` para borrador sobre límite sin publicación;
+- `TREQ-VISO-036` para política equivalente de publicación Semana/Mes;
+- `TREQ-VISO-037` para separar guardar borrador y publicar;
+- `TREQ-VISO-038` para recalcular conflictos en servidor;
+- `TREQ-VISO-039` para concurrencia de publicaciones;
+- `TREQ-VISO-040` para rollback;
+- `TREQ-VISO-041` para eliminación masiva de borradores autorizados;
+- `TREQ-VISO-042` para revalidación en servidor;
+- `TREQ-VISO-043` para auditoría;
+- `TREQ-VISO-044` para notificación idempotente hacia ANIMA;
+- `TREQ-VISO-045` para bloquear manipulación de URL, formulario o Server Action.
+
+La mención en esta sección es trazabilidad heredada y no una modificación de 04A.
+
+---
+
+#### 103. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-003`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en la rama documental local de `VISO-UX-003`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, el owner del minibloque, la topología `PER_IMPLEMENTATION_UNIT`, el gate `POST_E5_PACKAGE`, `VPROC-0007`, `VSCREEN-0015`, los estados canónicos del proceso, `INT-WORK-001`, el delta mensual congelado, `VISO-SCH-001..008`, `VISO-ROUTE-045..049` y `061`, el Registro 04A aplicable y las superficies actuales de programación en `vento-viso/main`. |
+| OPERATIVA | NOT_EXECUTED | No se creó, editó, publicó ni corrigió programación real; no se notificó a ANIMA ni se ejecutó una acción sobre trabajadores. |
+| FÍSICA | NOT_EXECUTED | No se modificaron UI, Server Actions, contratos, Supabase, datos, migraciones ni despliegues; la materialización permanece por `implementation_unit_id` detrás de `POST_E5_PACKAGE`. |
+
+---
+
+#### 104. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-PROGRAMACION-SECTION-001`;
+2. la tarea conserva `VISO-UX-002` como anterior y `VISO-UX-004` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. `Programación` es el segundo dominio administrativo definido por `VISO-UX-001`;
+6. `VPROC-0007` permanece como proceso propietario;
+7. `VSCREEN-0015` permanece como pantalla canónica principal;
+8. `/staff/schedule` permanece como workspace principal observado;
+9. `VISO-ROUTE-045`, `046`, `047`, `048`, `049` y `061` permanecen dentro de Programación;
+10. las seis rutas conservan `CHILD_OR_DETAIL_ROUTE` heredado de `VISO-UX-002`;
+11. Semana y Mes son horizontes del mismo dominio;
+12. Semana y Mes consumen la misma programación autoritativa;
+13. no existe una fuente mensual paralela;
+14. no existe una fuente semanal paralela;
+15. el selector Semana/Mes conserva contexto representable;
+16. Mes usa solo fechas válidas de 28, 29, 30 o 31 días;
+17. el cambio de año no produce fechas inválidas;
+18. el contexto territorial permanece visible;
+19. contexto visible no equivale a autoridad;
+20. la vista semanal prioriza siete días y trabajadores programables;
+21. la vista mensual prioriza edición masiva por trabajador;
+22. el builder mensual soporta bloques plegables como patrón de experiencia;
+23. un bloque plegado conserva resumen suficiente;
+24. una fecha movida entre bloques se comunica explícitamente;
+25. la modalidad rápida no elimina silenciosamente fechas;
+26. rol y área permanecen dimensiones diferenciadas;
+27. horarios inválidos producen estado comprensible;
+28. overnight y descansos se rigen por `VISO-SCH-003`;
+29. el máximo de bloques se rige por `VISO-SCH-003`;
+30. `12` no se canoniza desde esta tarea;
+31. `174 h` no se canoniza desde esta tarea;
+32. `186 h` no se canoniza desde esta tarea;
+33. warning y límite provienen de una política única;
+34. la UI puede mostrar actual, nuevas y proyectado;
+35. el total multisedes no amplía detalle visible;
+36. guardar borrador y publicar son acciones distintas;
+37. un borrador sobre límite no se presenta como publicable;
+38. publicación semanal y mensual comparten semántica contractual;
+39. `PUBLISHED` no se presenta como ejecución actual por definición;
+40. publicación y notificación permanecen separadas;
+41. una publicación produce un resultado identificable;
+42. la notificación a ANIMA no se afirma sin evidencia;
+43. los ocho estados canónicos de `VPROC-0007` permanecen representables;
+44. una corrección no sobrescribe historia;
+45. conflictos se muestran antes de guardar o publicar cuando son detectables;
+46. el servidor sigue siendo decisorio sobre conflictos materiales;
+47. el color no sustituye explicación;
+48. stale state y concurrencia se contemplan;
+49. no se usa `last write wins` silencioso;
+50. eliminación masiva no se presenta como operación irrestricta;
+51. `/staff/schedule/global` no crea wildcard territorial;
+52. `/staff/calendar` permanece contextual y no fuente de turnos;
+53. los eventos de otros owners en calendario no transfieren ownership;
+54. `/staff/schedule/metrics` permanece secundario;
+55. la tarea no canoniza rankings ni premios laborales;
+56. programado, asistido, trabajado y reconciliado permanecen distintos;
+57. `/staff/schedule/settings` permanece configuración avanzada;
+58. configuración no crea políticas locales divergentes;
+59. disponibilidad no equivale a programación;
+60. preferencia no equivale a disponibilidad obligatoria;
+61. sugerencia no equivale a publicación;
+62. ANIMA no se convierte en editor competidor;
+63. Personal no edita turnos localmente;
+64. Organización conserva ownership de sedes y áreas;
+65. Acceso y seguridad conserva ownership de permisos y matrices;
+66. Auditoría conserva investigación histórica profunda;
+67. Operación no obtiene autoridad por consumir contexto de turno;
+68. deep links revalidan autoridad;
+69. URLs no contienen datos sensibles innecesarios;
+70. la experiencia funciona en escritorio, tablet y móvil;
+71. móvil conserva acciones críticas;
+72. bloques plegables exponen semántica accesible;
+73. estados dinámicos no dependen solo de color;
+74. estados `LOADING`, `EMPTY`, `NO_AUTHORITY`, `NO_TERRITORY`, `NO_WORKERS`, `NO_SCHEDULE`, `ERROR` y `STALE` no se confunden;
+75. un error de consulta no se presenta como dataset vacío;
+76. una URL o formulario manipulados no amplían alcance;
+77. `requireStaffScheduleAccess` no se declara permiso suficiente de escritura por esta tarea;
+78. el delta mensual continúa congelado hasta sus gates propietarios;
+79. `CODE-AUD-021` no se declara cerrado;
+80. `AUTH-UI-061` no se declara cerrado;
+81. `VISO-SCH-001..008` no se declaran aprobadas desde esta tarea;
+82. las rutas no se crean ni retiran;
+83. las identidades `VISO-ROUTE-*` no se renumeran;
+84. no se crea un sidebar paralelo;
+85. las vistas secundarias no compiten con Semana/Mes;
+86. toda acción masiva muestra alcance suficiente;
+87. una preferencia o filtro no se convierte en autoridad;
+88. simulación no ejecuta mutaciones reales;
+89. dispositivo compartido no se convierte en actor;
+90. no se crean requisitos de prueba;
+91. no se modifican requisitos de prueba;
+92. no se modifica 04A;
+93. la cobertura vigente se referencia fuera de la sección de cero cambios;
+94. no se realizan cambios físicos desde esta tarea documental.
+
+---
+
+#### 105. Límites
+
+Esta tarea no:
+
+- modifica `vento-viso`;
+- modifica `/staff/calendar`;
+- modifica `/staff/schedule`;
+- modifica `/staff/schedule/global`;
+- modifica `/staff/schedule/metrics`;
+- modifica `/staff/schedule/settings`;
+- modifica `/staff/schedule/month`;
+- crea rutas;
+- elimina rutas;
+- renumera `VISO-ROUTE-*`;
+- modifica navegación runtime;
+- modifica `app_navigation_items`;
+- modifica `app_screen_registry`;
+- crea componentes;
+- cambia `ScheduleViewSwitch`;
+- cambia `MonthlyShiftBuilder`;
+- fija el componente físico final;
+- crea tablas;
+- crea vistas;
+- crea funciones o RPC;
+- crea triggers;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- modifica Auth;
+- modifica Storage;
+- modifica Realtime;
+- modifica datos;
+- crea turnos reales;
+- edita turnos reales;
+- elimina turnos reales;
+- publica turnos reales;
+- corrige turnos reales;
+- crea asistencia;
+- corrige asistencia;
+- notifica a ANIMA;
+- cambia sedes;
+- cambia áreas;
+- asigna roles;
+- concede permisos;
+- aprueba `VISO-SCH-001` a `VISO-SCH-008`;
+- ejecuta `CODE-AUD-021`;
+- ejecuta `AUTH-UI-061`;
+- aprueba `12` como máximo canónico de bloques;
+- aprueba `174 h` como warning canónico;
+- aprueba `186 h` como límite canónico;
+- aprueba overnight;
+- aprueba política de descansos;
+- define permisos atómicos de escritura;
+- sustituye `VISO-UX-013` a `VISO-UX-020`;
+- selecciona package;
+- autoriza una instancia física;
+- ejecuta una instancia física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 106. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-002 — Crear sección Personal`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-003 — Crear sección Programación`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-004 — Crear sección Acceso y seguridad`
 ### [ ] VISO-UX-004 — Crear sección Acceso y seguridad
 ### [ ] VISO-UX-005 — Crear sección Organización
 ### [ ] VISO-UX-006 — Crear sección Operación
