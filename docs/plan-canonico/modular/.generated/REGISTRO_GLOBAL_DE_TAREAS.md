@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1468** |
+| Aprobadas | **1469** |
 | En propuesta | **0** |
-| No iniciadas | **128** |
+| No iniciadas | **127** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **91.98% (1468/1596)** |
+| Porcentaje de completamiento | **92.04% (1469/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **128** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1369** |
+| ⏸ NO_EVALUADA | **127** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1370** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-004` — Crear sección Acceso y seguridad | ✅ APROBADA |
-| Tarea actual | `VISO-UX-005` — Crear sección Organización | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-006` — Crear sección Operación | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-005` — Crear sección Organización | ✅ APROBADA |
+| Tarea actual | `VISO-UX-006` — Crear sección Operación | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-007` — Crear sección Auditoría | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -717,7 +717,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-002` | Crear sección Personal | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-003` | Crear sección Programación | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-004` | Crear sección Acceso y seguridad | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-005` | Crear sección Organización | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-005` | Crear sección Organización | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-006` | Crear sección Operación | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-007` | Crear sección Auditoría | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-008` | Definir inicio para propietario | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |

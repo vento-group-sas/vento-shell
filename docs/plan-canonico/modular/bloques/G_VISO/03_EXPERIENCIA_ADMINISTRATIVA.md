@@ -7041,7 +7041,2361 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-005 — Crear sección Organización`
-### [ ] VISO-UX-005 — Crear sección Organización
+### ✅ VISO-UX-005 — Crear sección Organización
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-004 — Crear sección Acceso y seguridad
+**Tarea siguiente:** VISO-UX-006 — Crear sección Operación
+**Tipo de tarea:** definición técnico-documental de la sección administrativa `Organización` de VISO; compone la estructura organizativa, jurídica, comercial y territorial canónica, sus relaciones tipadas, vigencias, cambios, impacto y handoffs hacia aplicaciones consumidoras, sin fusionar organización, titular, marca, establecimiento, instalación, sede, área, zona, estación, canal o centro de costo, sin convertir estructura en autorización y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la sección `Organización` definido; su materialización runtime permanece pendiente por `implementation_unit_id` y detrás del gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, navegación runtime, componentes, catálogos organizacionales, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, Storage, Auth, secretos, permisos, asignaciones, inventario, PASS, NUMERA, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar la sección administrativa `Organización` de VISO para que una persona autorizada pueda comprender, consultar y gobernar la estructura empresarial de Vento OS sin confundir conceptos jurídicos, comerciales, físicos, operativos, territoriales o financieros.
+
+La sección debe responder de forma directa:
+
+```text
+¿QUÉ ES LA ORGANIZACIÓN Y QUÉ NO LO ES?
+¿QUIÉN ES EL TITULAR JURÍDICO?
+¿QUÉ MARCAS OPERA EL GRUPO?
+¿QUÉ ESTABLECIMIENTOS ESTÁN DOCUMENTADOS?
+¿QUÉ INSTALACIONES FÍSICAS EXISTEN?
+¿QUÉ SEDES OPERATIVAS EXISTEN Y CUÁL ES SU VIGENCIA?
+¿QUÉ ÁREAS PERTENECEN A CADA SEDE?
+¿QUÉ ZONAS O ESTACIONES EXISTEN SIN CONVERTIRSE EN ÁREAS?
+¿QUÉ RELACIÓN TIENE CADA ELEMENTO CON LOS DEMÁS?
+¿QUÉ CAMBIO SE PROPONE Y QUÉ CONSUMIDORES AFECTA?
+¿QUÉ EVIDENCIA JURÍDICA, OPERATIVA O FÍSICA RESPALDA EL DATO?
+¿QUÉ PARTE DEL CAMBIO PERTENECE A VISO Y QUÉ PARTE REQUIERE UN HANDOFF?
+```
+
+`Organización` no es una tabla de sedes y tampoco es un árbol que derive permisos por jerarquía.
+
+Es la experiencia administrativa que proyecta y gobierna el catálogo organizacional canónico, conserva historia y relaciones, distingue fuente interna de evidencia externa y entrega identidades estables a los consumidores sin permitir catálogos competidores.
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001` entrega sin reapertura:
+
+```text
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+DOMAIN_1 = Personal
+DOMAIN_2 = Programación
+DOMAIN_3 = Acceso y seguridad
+DOMAIN_4 = Organización
+DOMAIN_5 = Operación
+DOMAIN_6 = Auditoría
+```
+
+Para `Organización` entrega además:
+
+- la responsabilidad de representar la estructura administrativa necesaria para ubicar personas, sedes, áreas y relaciones organizacionales autorizadas;
+- la obligación de no interpretar una sede seleccionada como alcance de autorización;
+- la prohibición de interpretar un área como permiso;
+- la familia observada `/businesses*` y `/sites*` como seis rutas candidatas que requieren clasificación final en esta tarea;
+- la conservación de las identidades `VISO-ROUTE-*` existentes;
+- la regla de que una ruta físicamente presente no adquiere ownership por ubicación;
+- la obligación de mantener handoffs hacia aplicaciones propietarias cuando la capacidad primaria no pertenezca a VISO.
+
+Se conserva expresamente:
+
+```text
+ORGANIZACION != SEDE
+SEDE != AREA
+AREA != PERMISO
+NOMBRE_DE_SEDE != ALCANCE
+```
+
+Esta tarea desarrolla el cuarto dominio sin reabrir la taxonomía de navegación de primer nivel.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-004`
+
+`VISO-UX-004` entrega una frontera explícita entre estructura organizacional y seguridad:
+
+```text
+Acceso y seguridad
+→ consume sedes y áreas como identidades territoriales
+→ no administra su estructura maestra
+
+Organización
+→ administra estructura organizativa
+→ no administra permisos por efecto lateral
+```
+
+Debe preservarse:
+
+```text
+ORGANIZATION_STRUCTURE_CHANGE
+!=
+SECURITY_GRANT
+```
+
+Un cambio de sede, área, relación o vigencia puede invalidar o exigir reconciliar configuraciones de seguridad.
+
+No concede silenciosamente autoridad nueva.
+
+La sección `Organización` deberá exponer el impacto de seguridad como dependencia afectada y conducir al owner correspondiente cuando se requiera reconciliación.
+
+No editará matrices, grants, denies, perfiles, excepciones o permisos como efecto lateral de un cambio estructural.
+
+---
+
+#### 4. Contrato de sección
+
+Se define:
+
+```text
+VISO_ORGANIZATION_SECTION_CONTRACT = VISO-ORGANIZATION-SECTION-001
+DOMAIN_LABEL = Organización
+DOMAIN_ORDER = 4
+PRIMARY_CANONICAL_SCREEN = VSCREEN-0008
+PRIMARY_CANONICAL_PROCESS = VPROC-0002
+PRIMARY_CANONICAL_STEP = VPROC-0002::STEP-MAINTAIN_ORGANIZATIONAL_STRUCTURE
+PRIMARY_INTENT = ADMINISTRATIVE_ORGANIZATIONAL_STRUCTURE
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-038
+PRIMARY_OBSERVED_ROUTE = /sites
+```
+
+La ruta observada no limita la identidad lógica de la pantalla.
+
+Se conserva:
+
+```text
+PRIMARY_OBSERVED_ROUTE
+!=
+COMPLETE_CANONICAL_MODEL
+```
+
+`/sites` es la entrada física actual más cercana al contrato objetivo, pero la sección canónica cubre más conceptos que la tabla o la familia de rutas existente.
+
+---
+
+#### 5. Pantalla canónica principal
+
+La pantalla canónica principal es:
+
+```text
+VSCREEN-0008 — Estructura organizativa
+```
+
+Su declaración aprobada permanece:
+
+```text
+Mantener empresas, titulares, marcas, establecimientos,
+sedes, áreas, zonas y relaciones organizativas autorizadas.
+```
+
+Su proceso principal permanece:
+
+```text
+VPROC-0002
+— Mantener una estructura organizativa y jurídica coherente
+  entre empresas, marcas, establecimientos, sedes y áreas
+```
+
+Su paso dominante permanece:
+
+```text
+VPROC-0002::STEP-MAINTAIN_ORGANIZATIONAL_STRUCTURE
+```
+
+La pantalla no deriva autorización de la jerarquía visible.
+
+---
+
+#### 6. Procesos complementarios dentro del dominio
+
+`Organización` no se reduce a `VPROC-0002`.
+
+La experiencia puede enlazar capacidades complementarias del dominio `ADM-ORG` sin fusionar procesos:
+
+| Proceso | Uso dentro de la sección | Regla |
+| --- | --- | --- |
+| `VPROC-0002` | estructura organizativa y jurídica | proceso principal |
+| `VPROC-0003` | responsabilidades, políticas, delegaciones y límites | subespacio de gobierno organizativo; no altera estructura por inferencia |
+| `VPROC-0004` | compromisos y transferencias entre negocios, sedes y áreas | coordinación relacionada; no crea una relación estructural permanente por el solo hecho de aceptar un compromiso |
+
+La existencia de un enlace entre estos procesos no significa que compartan estados o identidad de instancia.
+
+---
+
+#### 7. Pantallas canónicas relacionadas
+
+La sección organiza principalmente:
+
+| Screen ID | Pantalla | Papel en `Organización` |
+| --- | --- | --- |
+| `VSCREEN-0008` | Estructura organizativa | entrada principal y workspace propietario |
+| `VSCREEN-0009` | Políticas, delegaciones y límites | superficie relacionada de gobierno organizativo |
+| `VSCREEN-0010` | Compromisos y transferencias internas | superficie relacionada de coordinación entre unidades |
+
+`VSCREEN-0008` continúa siendo la identidad principal de la estructura.
+
+`VSCREEN-0009` no convierte una política en una relación de estructura.
+
+`VSCREEN-0010` no convierte un compromiso temporal en pertenencia organizacional permanente.
+
+Esta tarea no inventa rutas físicas nuevas para ninguna de esas pantallas.
+
+---
+
+#### 8. Familias administrativas cubiertas
+
+La sección consume las tareas de `ADM-ORG`:
+
+| Task ID | Capacidad administrativa | Tratamiento de experiencia |
+| --- | --- | --- |
+| `ADM-TASK-001` | gestionar empresas, titulares jurídicos y marcas operadas | guiada + aprobación |
+| `ADM-TASK-002` | gestionar establecimientos, sedes, áreas y zonas; referenciar centros de costo sin redefinirlos | guiada |
+| `ADM-TASK-003` | definir propietarios de proceso, responsables, suplentes y límites de decisión | guiada + aprobación |
+| `ADM-TASK-004` | crear, versionar, aprobar y retirar políticas empresariales | experta + aprobación |
+| `ADM-TASK-005` | revisar impacto de un cambio organizativo antes de publicarlo | aprobación + auditoría |
+
+La sección no incorpora `ADM-PEOPLE`, `ADM-ACCESS`, `ADM-INVENTORY`, `ADM-FINANCE` o `ADM-CUSTOMER` como editores internos.
+
+Puede mostrar su impacto y conducir mediante handoff.
+
+---
+
+#### 9. Universo conceptual cerrado
+
+El dominio debe mantener diferenciadas, como mínimo, estas identidades conceptuales:
+
+```text
+ORGANIZATION_SCOPE
+LEGAL_SUBJECT
+BRAND
+COMMERCIAL_ESTABLISHMENT
+BUSINESS_LINE
+PHYSICAL_FACILITY
+OPERATIONAL_SITE
+ORGANIZATIONAL_AREA
+PHYSICAL_ZONE
+WORKSTATION
+COMMERCIAL_CHANNEL
+EXTERNAL_OPERATIONAL_POINT
+```
+
+Además puede mostrar una referencia a `COST_CENTER` cuando exista un contrato financiero aprobado.
+
+`COST_CENTER` no se convierte por ello en entidad maestra propiedad de VISO.
+
+---
+
+#### 10. Separación semántica obligatoria
+
+Se congela:
+
+```text
+ECOSISTEMA U ORGANIZACIÓN
+!= TITULAR JURÍDICO
+!= MARCA
+!= ESTABLECIMIENTO DE COMERCIO
+!= LÍNEA DE NEGOCIO
+!= INSTALACIÓN FÍSICA
+!= SEDE OPERATIVA
+!= ÁREA
+!= ZONA
+!= ESTACIÓN
+!= CANAL
+!= CENTRO DE COSTO
+```
+
+Compartir nombre no fusiona identidades.
+
+Compartir dirección no fusiona identidades.
+
+Compartir titular no fusiona identidades.
+
+Compartir una instalación no fusiona sedes.
+
+Compartir una aplicación consumidora no fusiona dominios.
+
+---
+
+#### 11. Identidad estable
+
+Cada elemento organizacional canónico debe conservar, cuando aplique:
+
+- identificador estable e inmutable;
+- código canónico independiente del nombre visible;
+- nombre vigente;
+- tipo explícito;
+- estado;
+- vigencia;
+- propietario funcional;
+- fuente o evidencia de validación;
+- relaciones tipadas;
+- referencias históricas de reemplazo o cierre.
+
+El nombre visible no es:
+
+- clave de integración;
+- condición de negocio;
+- permiso;
+- scope;
+- capacidad operativa;
+- identificador histórico suficiente.
+
+---
+
+#### 12. Relaciones tipadas
+
+La sección debe poder representar, sin inferencia por coincidencia textual, relaciones como:
+
+```text
+BELONGS_TO_ORGANIZATION_SCOPE
+LEGALLY_OWNED_BY
+OPERATED_BY
+USES_BRAND
+REGISTERED_AS_ESTABLISHMENT_OF
+OCCUPIES_FACILITY
+CONTAINS_AREA
+CONTAINS_ZONE
+HOSTS_WORKSTATION
+SERVES_CHANNEL
+INVOICES_THROUGH
+CUSTODIED_BY
+REPLACED_BY
+VALID_FROM / VALID_TO
+```
+
+Una relación visible debe conservar su tipo.
+
+No se permitirá representar todas las relaciones como un genérico `parent_id` sin semántica visible cuando eso oculte titularidad, operación, ocupación, vigencia o reemplazo.
+
+---
+
+#### 13. Estado jurídico y estado operativo
+
+La experiencia debe mantener separados:
+
+```text
+EXISTENCIA_OPERATIVA_CONFIRMADA
+EVIDENCIA_DOCUMENTAL_DISPONIBLE
+VALIDACION_PROFESIONAL_PENDIENTE
+VIGENCIA_INTERNA
+VIGENCIA_EXTERNA_O_REGISTRAL
+PUBLICACION_PERMITIDA_O_RESTRINGIDA
+```
+
+Un elemento puede estar operativo internamente sin estar jurídicamente verificado.
+
+La UI no bloqueará la representación de una realidad operativa confirmada solo porque falte una validación externa.
+
+Sí bloqueará presentar ese dato como jurídicamente verificado o usarlo como dato oficial externo cuando la validación exigida permanezca pendiente.
+
+---
+
+#### 14. Evidencia externa
+
+Conservan autoridad externa, cuando correspondan:
+
+- razón social o nombre del titular;
+- identificación tributaria;
+- matrícula o existencia de establecimiento;
+- titularidad registral de marca;
+- dirección registral;
+- vigencia legal.
+
+Vento OS conserva referencia, copia, estado de validación y trazabilidad.
+
+No sustituye el registro oficial.
+
+---
+
+#### 15. Fuente interna de estructura
+
+La fuente interna permanece conceptualmente:
+
+```text
+SUPABASE VENTO
+→ catálogo organizacional canónico
+→ administrado mediante VISO
+→ contratos compartidos desde vento-shell
+```
+
+Las aplicaciones consumidoras no mantienen catálogos editables equivalentes.
+
+---
+
+#### 16. Fuente única y proyecciones
+
+Se conserva:
+
+```text
+ONE_CANONICAL_ORGANIZATIONAL_SOURCE
+→ MANY_CONSUMER_PROJECTIONS
+```
+
+No:
+
+```text
+ONE_EDITABLE_ORGANIZATION_COPY_PER_APP
+```
+
+Las aplicaciones pueden recibir únicamente los campos y relaciones que necesiten.
+
+Una proyección no se convierte en fuente por ser más visible, más reciente en una caché o estar físicamente alojada en otra aplicación.
+
+---
+
+#### 17. Responsabilidades por consumidor
+
+La sección debe hacer comprensible esta frontera:
+
+| Componente | Responsabilidad |
+| --- | --- |
+| VISO | administración autorizada, revisión de impacto, vigencia y gobierno experiencial de la estructura |
+| `vento-shell` | contratos, tipos, contexto y distribución segura a consumidores |
+| Supabase VENTO | persistencia, integridad, RLS, migraciones y proyecciones canónicas |
+| ANIMA | consume organización para identidad laboral, asignaciones, turnos y asistencia |
+| NEXO | consume organización para inventario, LOC, remisiones y logística; no es owner del catálogo organizacional |
+| FOGO | consume sede y área para producción y recetas |
+| ORIGO | consume estructura para compras, recepción y responsabilidad |
+| PULSO | consume sede y contexto para venta, caja y operación comercial |
+| NUMERA | consume dimensiones jurídicas, operativas y financieras; gobierna semántica financiera propia |
+| PASS | consume proyección pública de marca, sede, dirección y enlaces |
+| sitio público / CMS | consume proyección pública; no es fuente jurídica u operativa |
+
+---
+
+#### 18. Estructura de navegación interna
+
+La sección debe priorizar intención administrativa y no tabla física.
+
+Se proponen conceptualmente estas vistas internas, sin crear rutas nuevas desde esta tarea:
+
+```text
+Organización
+├── Estructura
+├── Entidades y marcas
+├── Sedes y áreas
+├── Relaciones
+├── Cambios e impacto
+└── Políticas y responsabilidades
+```
+
+La implementación puede usar tabs, subnav, paneles o páginas hijas.
+
+Debe preservar la semántica anterior y la divulgación progresiva.
+
+---
+
+#### 19. Entrada principal
+
+La entrada principal debe permitir:
+
+- comprender el alcance organizacional vigente;
+- navegar desde elementos de alto nivel hacia relaciones y unidades territoriales;
+- distinguir claramente entidad jurídica, marca, establecimiento, instalación, sede y área;
+- detectar estados pendientes o no verificados;
+- buscar por código, nombre, tipo y estado sin convertir el nombre en identidad;
+- abrir un detalle estable;
+- iniciar un cambio únicamente cuando exista autoridad exacta.
+
+La entrada no muestra por defecto todas las acciones sensibles.
+
+---
+
+#### 20. Resumen de estructura
+
+El resumen puede mostrar conteos como:
+
+- titulares;
+- marcas;
+- establecimientos;
+- instalaciones;
+- sedes activas;
+- áreas activas;
+- zonas;
+- puntos externos;
+- cambios pendientes;
+- validaciones externas pendientes.
+
+Un conteo no concede capacidad y no reemplaza el detalle.
+
+---
+
+#### 21. Disposición de las seis rutas candidatas
+
+La familia entregada por `VISO-UX-001` se resuelve así:
+
+| Route ID | Ruta | Decisión de `VISO-UX-005` |
+| --- | --- | --- |
+| `VISO-ROUTE-007` | `/businesses` | `CROSS_OWNER_TRANSITION`; mezcla proyección PASS con relación a sede, no representa el catálogo organizacional completo |
+| `VISO-ROUTE-008` | `/businesses/new` | `CROSS_OWNER_TRANSITION`; la creación conjunta de `site` + configuración PASS debe separarse por ownership |
+| `VISO-ROUTE-009` | `/businesses/[id]` | `CROSS_OWNER_TRANSITION`; detalle mixto de `sites` y `pass_satellites` |
+| `VISO-ROUTE-038` | `/sites` | `VISO_DOMAIN_ENTRY`; entrada física observada principal del dominio Organización |
+| `VISO-ROUTE-039` | `/sites/[id]` | `CHILD_OR_DETAIL_ROUTE`; detalle estructural mixto que debe preservar handoffs hacia owners externos |
+| `VISO-ROUTE-040` | `/sites/[id]/documentos` | `CROSS_OWNER_TRANSITION`; usa la sede como contexto, pero la capacidad primaria es gobierno de requisitos documentales |
+
+Los IDs no se renumeran.
+
+La clasificación no retira físicamente ninguna ruta.
+
+---
+
+#### 22. `VISO-ROUTE-038 — /sites`
+
+`/sites` es la entrada física observada más cercana a `VSCREEN-0008`.
+
+Actualmente consulta, entre otros elementos:
+
+- `sites`;
+- cantidad de `areas`;
+- existencia de configuración `pass_satellites`;
+- cantidad de `inventory_locations`.
+
+La experiencia objetivo debe distinguir:
+
+```text
+ESTRUCTURA ORGANIZACIONAL
+→ owned by Organización
+
+SEÑALES DE CONSUMIDORES
+→ read-only summary o handoff
+```
+
+La cantidad de LOC no convierte inventario en parte de la estructura organizacional editable.
+
+La existencia de configuración PASS no convierte `pass_satellites` en entidad organizacional maestra.
+
+---
+
+#### 23. `VISO-ROUTE-039 — /sites/[id]`
+
+El detalle actual mezcla:
+
+- identidad de sede;
+- áreas;
+- LOCs de inventario;
+- configuración operativa;
+- enlaces a documentos;
+- enlaces a mapa operativo.
+
+El target de `Organización` conserva dentro de su ownership únicamente lo que corresponda a estructura organizativa.
+
+La experiencia deberá separar visual y contractualmente:
+
+```text
+DETALLE ESTRUCTURAL DE SEDE
+→ Organización
+
+LOC Y UBICACIONES DE INVENTARIO
+→ NEXO
+
+CONFIGURACIÓN OPERATIVA
+→ VISO-UX-006 / owner funcional aplicable
+
+DOCUMENTOS Y REQUISITOS
+→ gobierno documental / owner aplicable
+```
+
+No se duplicará ninguna mutación en tabs distintos.
+
+---
+
+#### 24. Áreas dentro de una sede
+
+`areas` es una base parcial reutilizable.
+
+La sección debe permitir distinguir:
+
+- código estable;
+- nombre;
+- tipo o kind;
+- vigencia;
+- sede padre;
+- relación funcional;
+- estado activo/inactivo;
+- evidencia o validación cuando aplique.
+
+Se conserva:
+
+```text
+AREA
+!=
+ROL
+!=
+PERFIL
+!=
+PERMISO
+```
+
+Un área no adquiere autoridad por existir.
+
+---
+
+#### 25. Zonas y estaciones
+
+Una zona o estación representa granularidad física o funcional menor que un área.
+
+Se conserva:
+
+```text
+PHYSICAL_ZONE
+!= ORGANIZATIONAL_AREA
+
+WORKSTATION
+!= ORGANIZATIONAL_AREA
+```
+
+La UI no promoverá automáticamente:
+
+- terraza;
+- cámara fría;
+- cuarto de congelación;
+- caja;
+- mostrador;
+- recepción;
+- despacho;
+- punto de impresión;
+
+como áreas organizacionales.
+
+---
+
+#### 26. LOCs e inventario
+
+`inventory_locations` pertenece al modelo físico de inventario de NEXO.
+
+La sección `Organización` puede mostrar:
+
+- número de LOC asociados;
+- estado agregado;
+- enlace contextual;
+- impacto potencial de un cierre de sede o área.
+
+No puede:
+
+- crear LOC como parte del editor organizacional;
+- editar posiciones;
+- cambiar custodia de inventario;
+- alterar stock;
+- redefinir la taxonomía NEXO.
+
+La ruta actual que mezcla áreas y LOC queda reconocida como transición.
+
+---
+
+#### 27. `VISO-ROUTE-040 — /sites/[id]/documentos`
+
+La ruta actual administra `required_document_rules` vinculadas a una sede.
+
+La sede aporta contexto.
+
+La capacidad primaria es documental y de elegibilidad, no estructural.
+
+Por tanto:
+
+```text
+SITE_CONTEXT
+!=
+ORGANIZATION_OWNERSHIP_OF_DOCUMENT_RULE
+```
+
+La experiencia `Organización` puede enlazar hacia esa configuración.
+
+No la presenta como propiedad inherente de una sede ni como parte del catálogo organizacional.
+
+La resolución final de navegación y handoff permanece coordinada con `VISO-UX-017` y `VISO-UX-018`.
+
+---
+
+#### 28. Familia `/businesses*`
+
+El AS-IS de `/businesses*` no representa un catálogo canónico de empresas.
+
+Actualmente combina:
+
+- registros `pass_satellites`;
+- relación con `sites`;
+- creación o actualización de sede;
+- logos y estilo;
+- colores;
+- enlaces;
+- overrides de dirección y coordenadas;
+- slots u otra configuración comercial de PASS.
+
+El nombre de ruta `businesses` no redefine el significado empresarial de `LEGAL_SUBJECT`, `BRAND`, `COMMERCIAL_ESTABLISHMENT` u `OPERATIONAL_SITE`.
+
+---
+
+#### 29. Separación de `sites` y `pass_satellites`
+
+Se preserva la decisión canónica:
+
+```text
+sites
+→ estructura operativa parcial
+
+pass_satellites
+→ proyección comercial / experiencia PASS
+```
+
+Pueden coexistir.
+
+No deben competir por los mismos campos sin contrato de propiedad y precedencia.
+
+La tarea no ordena fusionar ambas estructuras.
+
+---
+
+#### 30. Alta de estructura versus alta de experiencia PASS
+
+El flujo actual de `/businesses/new` crea una sede y luego una configuración PASS dentro de la misma acción de experiencia.
+
+El target deberá separar las decisiones:
+
+```text
+CREAR O MODIFICAR ELEMENTO ESTRUCTURAL
+→ owner Organización
+
+CONFIGURAR EXPERIENCIA PASS
+→ owner PASS / proyección autorizada
+```
+
+Una falla en la configuración PASS no debe redefinir la identidad estructural.
+
+Una alta de sede no debe implicar automáticamente que la sede es pública o está disponible en PASS.
+
+---
+
+#### 31. Titular jurídico
+
+`LEGAL_SUBJECT` representa a la persona jurídica o natural que asume obligaciones frente a terceros.
+
+La sección debe distinguir:
+
+- identidad interna;
+- nombre o razón social;
+- evidencia oficial;
+- vigencia;
+- estado de validación externa;
+- relaciones con marcas y establecimientos;
+- relaciones con procesos consumidores.
+
+No debe usar:
+
+- cuenta bancaria;
+- marca visible;
+- sede;
+- dirección compartida;
+- emisor histórico de una venta aislada;
+
+como sustituto automático del titular jurídico.
+
+---
+
+#### 32. Organización como ecosistema
+
+`ORGANIZATION_SCOPE` es el paraguas interno para gobernar el ecosistema.
+
+Se conserva:
+
+```text
+VENTO GROUP — ECOSISTEMA
+→ ORGANIZATION_SCOPE
+
+VENTO GROUP S.A.S.
+→ LEGAL_SUBJECT
+```
+
+Mostrar ambos elementos con nombres relacionados no autoriza fusionarlos.
+
+---
+
+#### 33. Marca
+
+`BRAND` representa identidad comercial.
+
+Una marca:
+
+- puede operar en una o varias sedes;
+- puede compartir titular con otras marcas;
+- puede usar distintas instalaciones;
+- puede tener canales asociados;
+- puede tener titularidad registral pendiente de validación;
+- no es sede;
+- no es establecimiento por inferencia;
+- no es scope de autorización por defecto.
+
+La sección debe mostrar las relaciones sin convertir la marca en árbol jerárquico de permisos.
+
+---
+
+#### 34. Establecimiento de comercio
+
+`COMMERCIAL_ESTABLISHMENT` representa una figura comercial o registral documentada.
+
+No se crea por:
+
+- compartir nombre con una marca;
+- existir una sede;
+- tener un punto de venta;
+- aparecer en PASS;
+- usar una dirección;
+- aparecer en una factura aislada.
+
+Su estado de validación externa debe ser visible.
+
+---
+
+#### 35. Línea de negocio
+
+`BUSINESS_LINE` representa un frente u oferta comercial que no necesita sede propia.
+
+Ejemplo canónico:
+
+```text
+Catering
+→ BUSINESS_LINE / servicio
+→ usa capacidades y sedes existentes
+→ no crea sede propia por defecto
+```
+
+La experiencia debe impedir que una línea de negocio sea promovida a sede o empresa solo para facilitar navegación.
+
+---
+
+#### 36. Instalación física
+
+`PHYSICAL_FACILITY` representa un inmueble o espacio físico identificable.
+
+Puede alojar más de un contexto operativo.
+
+La instalación no concede:
+
+- permiso;
+- rol;
+- alcance a todas las sedes que aloje;
+- autoridad sobre todos los procesos del inmueble.
+
+La relación de ocupación debe ser explícita.
+
+---
+
+#### 37. Sede operativa
+
+`OPERATIONAL_SITE` es la unidad territorial primaria para contexto operativo de Vento OS.
+
+La sección debe conservar:
+
+- identidad estable;
+- estado;
+- vigencia;
+- clasificación descriptiva;
+- relaciones con instalación, marca y organización;
+- áreas contenidas;
+- capacidades explícitas cuando el contrato correspondiente las consuma.
+
+El nombre o `site_type` no concede capacidad.
+
+---
+
+#### 38. Capacidad no deriva del tipo de sede
+
+Se prohíbe:
+
+```text
+site_type = X
+→ por sí solo
+→ PUEDE VENDER / PRODUCIR / ALMACENAR / SOLICITAR / DESPACHAR / RECIBIR / ADMINISTRAR
+```
+
+Las capacidades se gobiernan mediante contratos explícitos.
+
+La sección puede mostrar capacidad como relación o resumen.
+
+No la infiere desde el nombre.
+
+---
+
+#### 39. Áreas agregadas `Todos` o `General`
+
+Un área técnica usada solo como agregador de interfaz no se presenta como unidad organizacional real.
+
+Se conserva:
+
+```text
+Todos / General
+→ filtro o compatibilidad temporal
+→ NO ORGANIZATIONAL_AREA REAL
+```
+
+No puede recibir como si fuera una unidad real:
+
+- inventario;
+- personal;
+- permisos;
+- responsabilidad;
+- procesos.
+
+La tarea no ejecuta su retiro físico.
+
+---
+
+#### 40. Puntos externos
+
+`EXTERNAL_OPERATIONAL_POINT` no es una sede ordinaria.
+
+Debe conservar, cuando se materialice:
+
+- propósito;
+- custodio;
+- bienes o procesos permitidos;
+- dirección protegida;
+- vigencia;
+- restricciones de acceso;
+- relación con una sede o proceso propietario;
+- evidencia de autorización.
+
+No aparecerá por defecto como sede seleccionable para trabajadores, inventario o navegación general.
+
+---
+
+#### 41. Casos organizacionales aprobados
+
+La experiencia deberá poder representar sin colapsar conceptos:
+
+- Vento Group como `ORGANIZATION_SCOPE`;
+- Vento Group S.A.S. como `LEGAL_SUBJECT`;
+- Vento Café como marca, establecimiento cuando esté documentado, sede e instalación relacionadas;
+- Saudo como marca, establecimiento cuando esté documentado, sede e instalación relacionadas;
+- Molka como marca, establecimiento cuando esté documentado, sede e instalación relacionadas;
+- Vento Producción como establecimiento o referencia comercial documentada cuando corresponda;
+- Centro de Producción y Distribución como una instalación y una sede principal mientras no exista evidencia territorial independiente;
+- Vaila Vainilla como marca o frente comercial con puntos externos pendientes de reconciliación, no como sede o titular jurídico por inferencia;
+- Catering como línea de negocio o servicio sin sede propia.
+
+La UI no debe presentar estas clasificaciones provisionales como validación externa completa cuando no la haya.
+
+---
+
+#### 42. Oficina 1
+
+`Oficina 1` conserva el tratamiento aprobado:
+
+```text
+SEDE ADMINISTRATIVA INTERNA ACTIVA
+RELACIÓN FÍSICA EXACTA PENDIENTE
+ESTADO REGISTRAL NO VERIFICADO
+DIRECCIÓN PÚBLICA NO PUBLICABLE SIN VALIDACIÓN
+```
+
+La sección debe permitir que un estado interno operativo coexista con validación registral pendiente.
+
+No bloqueará toda la estructura por esa incertidumbre.
+
+No publicará el dato pendiente como confirmado.
+
+---
+
+#### 43. Centro de Producción y Distribución
+
+Se conserva:
+
+```text
+CENTRO DE PRODUCCIÓN Y DISTRIBUCIÓN
+→ una instalación física
+→ una sede operativa principal
+→ varias áreas productivas, logísticas y de apoyo
+```
+
+`Distribución` no crea automáticamente una segunda sede.
+
+Recepción, alistamiento y despacho pueden ser procesos, zonas o estaciones dentro de `Bodega y Abastecimiento` mientras el contrato propietario no determine otra cosa.
+
+---
+
+#### 44. Vento Café
+
+La sección debe poder representar:
+
+```text
+Vento Café
+→ BRAND
+→ COMMERCIAL_ESTABLISHMENT cuando esté documentado
+→ OPERATIONAL_SITE
+→ PHYSICAL_FACILITY
+→ áreas propias
+→ canales asociados
+```
+
+Áreas objetivo conocidas:
+
+- Servicio / Salón;
+- Cocina;
+- Barra.
+
+Terraza es zona.
+
+Caja y mostrador son estaciones, no áreas independientes por defecto.
+
+---
+
+#### 45. Saudo
+
+La sección debe poder representar:
+
+```text
+Saudo
+→ BRAND
+→ COMMERCIAL_ESTABLISHMENT cuando esté documentado
+→ OPERATIONAL_SITE
+→ PHYSICAL_FACILITY
+→ Área Operativa Integral
+```
+
+Las diferencias funcionales internas pueden expresarse por rol, estación, proceso y permiso sin crear áreas artificiales.
+
+---
+
+#### 46. Molka
+
+La sección debe poder representar:
+
+```text
+Molka
+→ BRAND
+→ COMMERCIAL_ESTABLISHMENT cuando esté documentado
+→ OPERATIONAL_SITE
+→ PHYSICAL_FACILITY
+→ Área Operativa Integral
+```
+
+No se presenta Cocina como área productiva mientras la realidad operativa aprobada no cambie.
+
+---
+
+#### 47. Vaila Vainilla
+
+Se conserva la clasificación:
+
+```text
+BRAND / BUSINESS_FRONT
++ COMMERCIAL_CHANNELS
++ EXTERNAL_OPERATIONAL_POINTS PENDIENTES DE RECONCILIACIÓN
+```
+
+No se clasifica automáticamente como:
+
+- titular jurídico independiente;
+- establecimiento confirmado;
+- sede formal;
+- centro de costo definitivo;
+- emisor único de factura.
+
+La sección debe mostrar el carácter pendiente sin inventar una estructura definitiva.
+
+---
+
+#### 48. Centros de costo
+
+El dominio puede mostrar una referencia financiera cuando exista un contrato canónico de NUMERA.
+
+No define:
+
+- maestro financiero de centros de costo;
+- reglas de imputación;
+- conciliación;
+- contabilidad;
+- presupuesto;
+- facturación.
+
+Se conserva:
+
+```text
+ORGANIZATIONAL_RELATION_TO_COST_CENTER
+!=
+FINANCIAL_OWNERSHIP
+```
+
+La semántica financiera permanece en NUMERA y sus contratos propietarios.
+
+---
+
+#### 49. Canales comerciales
+
+`COMMERCIAL_CHANNEL` no es sede, marca ni titular.
+
+La sección puede mostrar relaciones como `SERVES_CHANNEL`.
+
+La configuración operativa y comercial del canal pertenece a su dominio propietario.
+
+No se administra desde `Organización` por el solo hecho de estar relacionado con una marca o sede.
+
+---
+
+#### 50. Cambio estructural como proceso
+
+El ciclo principal de `VPROC-0002` se conserva:
+
+```text
+STRUCTURE_CHANGE_REQUESTED
+→ UNDER_VALIDATION
+→ CHANGE_DESIGNED
+→ PENDING_APPROVAL
+→ APPROVED_FOR_IMPLEMENTATION
+→ IN_IMPLEMENTATION
+→ PENDING_VERIFICATION
+→ STRUCTURE_CHANGE_VERIFIED
+```
+
+La experiencia no colapsará esos estados en un único formulario de guardar.
+
+---
+
+#### 51. Aprobación no equivale a vigencia verificada
+
+Se conserva:
+
+```text
+APPROVED_FOR_IMPLEMENTATION
+!=
+STRUCTURE_CHANGE_VERIFIED
+```
+
+La aprobación autoriza un cambio.
+
+No demuestra:
+
+- que todas las relaciones fueron actualizadas;
+- que los consumidores adoptaron la nueva estructura;
+- que no quedan referencias legacy;
+- que la proyección pública fue reconciliada;
+- que las configuraciones de seguridad fueron revalidadas.
+
+---
+
+#### 52. Alta
+
+Una alta organizacional deberá capturar, cuando aplique:
+
+- tipo;
+- código estable;
+- nombre;
+- propietario funcional;
+- evidencia mínima;
+- relaciones obligatorias;
+- fecha de vigencia;
+- capacidades iniciales explícitas cuando exista contrato propietario;
+- revisión de autorización;
+- consumidores afectados.
+
+No se crea una entidad solo para satisfacer una ruta o una selección de interfaz.
+
+---
+
+#### 53. Cambio
+
+Un cambio deberá conservar:
+
+- motivo;
+- actor;
+- valor anterior;
+- valor propuesto;
+- fecha efectiva;
+- consumidores afectados;
+- tratamiento de operaciones abiertas;
+- aprobación cuando corresponda;
+- evidencia de verificación posterior.
+
+La UI debe diferenciar edición ordinaria de cambio estructural sensible.
+
+---
+
+#### 54. Cierre, fusión o reemplazo
+
+Antes de cerrar, fusionar o reemplazar un elemento se debe revisar, según aplique:
+
+- trabajadores activos asignados;
+- turnos o check-ins vigentes;
+- inventario o LOC activos;
+- documentos abiertos;
+- compras abiertas;
+- producción abierta;
+- remisiones abiertas;
+- pedidos abiertos;
+- caja abierta;
+- dispositivos compartidos activos;
+- referencias públicas;
+- integraciones;
+- evidencia e historia que debe conservarse.
+
+Un cierre con dependencias activas no se presenta como operación simple de borrado.
+
+---
+
+#### 55. No eliminación destructiva
+
+Un elemento referenciado no se elimina de forma que rompa historia.
+
+La experiencia debe favorecer:
+
+- vigencia temporal;
+- desactivación;
+- reemplazo explícito;
+- alias controlado;
+- relación `REPLACED_BY`;
+- trazabilidad.
+
+La tarea no fija una API física específica.
+
+---
+
+#### 56. Revisión de impacto antes de publicar
+
+`ADM-TASK-005` exige que un cambio organizativo sensible muestre impacto antes de producir efecto.
+
+El preview de impacto debe poder responder, según la entidad:
+
+```text
+¿QUÉ TRABAJADORES QUEDAN AFECTADOS?
+¿QUÉ TURNOS O CONTEXTOS TERRITORIALES QUEDAN AFECTADOS?
+¿QUÉ CONFIGURACIONES DE SEGURIDAD DEBEN REVALIDARSE?
+¿QUÉ LOC O INVENTARIO DEPENDEN DE LA SEDE O ÁREA?
+¿QUÉ DOCUMENTOS O REGLAS LA REFERENCIAN?
+¿QUÉ OPERACIONES ABIERTAS EXISTEN?
+¿QUÉ DISPOSITIVOS COMPARTIDOS DEPENDEN DEL CONTEXTO?
+¿QUÉ PROYECCIONES PÚBLICAS O INTEGRACIONES DEBEN ACTUALIZARSE?
+```
+
+El impacto es informativo y preventivo.
+
+No reemplaza las validaciones server-side de cada owner.
+
+---
+
+#### 57. Impacto cross-app
+
+Cada consumidor conserva su propia responsabilidad.
+
+`Organización` puede identificar dependencias.
+
+No ejecuta automáticamente:
+
+- correcciones de personal;
+- reprogramación de turnos;
+- cambios de permisos;
+- traslado de inventario;
+- corrección de recetas;
+- cambios de compras;
+- cierre de cajas;
+- actualizaciones de fidelización;
+- asientos financieros.
+
+Cada efecto requiere su proceso y autorización propietarios.
+
+---
+
+#### 58. Handoff a Acceso y seguridad
+
+Cuando un cambio organizacional afecte scope, sede o área usados por autorización:
+
+```text
+Organización
+→ registra cambio estructural
+→ identifica configuraciones afectadas
+→ handoff a Acceso y seguridad
+→ revalidación por owner
+```
+
+No:
+
+```text
+Organización
+→ concede, mueve o repara permisos automáticamente
+```
+
+---
+
+#### 59. Handoff a Personal
+
+Un cambio de sede o área no reasigna trabajadores silenciosamente.
+
+La sección puede mostrar cuántas relaciones laborales dependen del elemento y conducir a `Personal`.
+
+Las asignaciones laborales permanecen en su owner.
+
+---
+
+#### 60. Handoff a Programación
+
+Un cambio territorial no modifica turnos publicados por efecto lateral.
+
+La sección puede mostrar:
+
+- turnos afectados;
+- vigencias incompatibles;
+- necesidad de revisión.
+
+La modificación de programación permanece en `Programación`.
+
+---
+
+#### 61. Handoff a Operación
+
+`VISO-UX-006` conserva la configuración y supervisión administrativa del contexto operativo.
+
+`Organización` entrega:
+
+- identidades de sede;
+- identidades de área;
+- zonas o estaciones cuando el contrato las use;
+- vigencia;
+- relaciones estructurales.
+
+No absorbe:
+
+- puntos de marcación;
+- perfiles operativos;
+- roles por sede;
+- preview operativo;
+- configuración operativa de ejecución.
+
+---
+
+#### 62. Handoff a NEXO
+
+NEXO consume sedes y áreas.
+
+NEXO conserva ownership sobre:
+
+- LOC;
+- posiciones;
+- stock;
+- inventario;
+- contenedores;
+- remisiones;
+- ubicaciones logísticas propietarias.
+
+Una sede o área puede ser prerequisite de esos objetos.
+
+No los vuelve parte del catálogo organizacional editable.
+
+---
+
+#### 63. Handoff a PASS
+
+PASS consume una proyección autorizada de:
+
+- marca;
+- sede;
+- nombre público;
+- dirección pública;
+- coordenadas públicas;
+- enlaces permitidos;
+- estado de disponibilidad cuando el contrato lo defina.
+
+Los overrides y metadatos de `pass_satellites` no sustituyen el catálogo organizacional.
+
+La convergencia física permanece en sus tareas y transiciones propietarias.
+
+---
+
+#### 64. Handoff a NUMERA
+
+NUMERA consume dimensiones:
+
+- jurídicas;
+- territoriales;
+- operativas;
+- de responsabilidad;
+- de costo cuando corresponda.
+
+NUMERA no redefine sedes o titulares.
+
+VISO no redefine centros de costo, imputaciones o reglas contables.
+
+---
+
+#### 65. Políticas y responsabilidades
+
+`VSCREEN-0009` puede aparecer desde `Organización` como superficie relacionada.
+
+Debe preservar:
+
+```text
+ESTRUCTURA
+!=
+POLÍTICA
+!=
+RESPONSABILIDAD
+!=
+DELEGACIÓN
+!=
+PERMISO
+```
+
+Asignar un responsable funcional no concede automáticamente un permiso.
+
+Publicar una política no crea automáticamente una relación estructural.
+
+---
+
+#### 66. Vigencia de políticas
+
+Cuando la sección enlace políticas o delegaciones, debe distinguir:
+
+- borrador;
+- revisión;
+- aprobación;
+- publicación;
+- vigencia;
+- revisión posterior;
+- cierre del ciclo de gobierno.
+
+No presenta una versión aprobada pero no vigente como regla activa.
+
+---
+
+#### 67. Compromisos entre unidades
+
+`VSCREEN-0010` puede aparecer como superficie relacionada para coordinación entre negocios, sedes y áreas.
+
+Se conserva:
+
+```text
+COMMITMENT_ACCEPTED
+!=
+ORGANIZATIONAL_RELATION_CREATED
+```
+
+Un compromiso no altera la estructura maestra salvo que exista un cambio estructural separado y aprobado.
+
+---
+
+#### 68. Búsqueda
+
+La sección debe permitir buscar por:
+
+- código;
+- nombre;
+- tipo;
+- estado;
+- vigencia;
+- relación;
+- sede;
+- marca;
+- titular;
+- validación pendiente.
+
+La búsqueda no usa coincidencia de texto para inferir relaciones.
+
+---
+
+#### 69. Filtros
+
+Filtros útiles incluyen:
+
+- activos;
+- en validación;
+- suspendidos;
+- cerrados;
+- reemplazados;
+- con validación externa pendiente;
+- con cambios pendientes;
+- con consumidores afectados;
+- por tipo conceptual.
+
+Los filtros son proyección de consulta.
+
+No crean scope de autorización.
+
+---
+
+#### 70. Alcance territorial
+
+La sección debe mostrar claramente qué parte de la estructura puede consultar o administrar el actor.
+
+Se conserva:
+
+```text
+VISIBLE_ORGANIZATION_NODE
+!=
+AUTHORIZED_MUTATION
+```
+
+La mutación requiere autorización server-side exacta.
+
+No se deriva de:
+
+- breadcrumb;
+- árbol visible;
+- sede activa;
+- rol nominal;
+- nombre de empresa;
+- relación padre-hijo.
+
+---
+
+#### 71. Navegación por árbol
+
+Puede utilizarse un árbol o grafo para comprensión.
+
+Ese árbol es una visualización.
+
+No será la única fuente semántica porque la estructura contiene relaciones no estrictamente jerárquicas:
+
+- una marca puede relacionarse con varias sedes;
+- una instalación puede alojar más de un contexto;
+- un titular puede relacionarse con varios establecimientos;
+- una sede puede servir varios canales;
+- un reemplazo conserva historia temporal.
+
+La UI debe poder representar relaciones tipadas sin forzarlas a una sola jerarquía.
+
+---
+
+#### 72. Detalle de entidad
+
+El detalle debe poder mostrar:
+
+- identidad estable;
+- nombre y código;
+- tipo;
+- estado;
+- vigencia;
+- propietario funcional;
+- evidencia;
+- relaciones entrantes y salientes;
+- consumidores;
+- cambios pendientes;
+- historial relevante;
+- acciones autorizadas;
+- handoffs.
+
+La densidad se adapta al tipo de elemento.
+
+---
+
+#### 73. Historial
+
+Renombrar, mover, cerrar, fusionar o reemplazar no borra la historia.
+
+La experiencia debe permitir reconstruir:
+
+- valor anterior;
+- relación anterior;
+- vigencia;
+- actor;
+- motivo;
+- decisión;
+- elemento reemplazante cuando exista.
+
+La auditoría detallada puede residir en el dominio `Auditoría`.
+
+`Organización` muestra la historia necesaria para comprender el estado actual y el cambio.
+
+---
+
+#### 74. Auditoría no es estado actual
+
+Se conserva:
+
+```text
+CURRENT_ORGANIZATION_STATE
+!=
+AUDIT_HISTORY
+```
+
+El estado actual proviene de la fuente canónica vigente.
+
+La auditoría explica cómo cambió.
+
+No se reconstruye el estado actual tomando la última fila visible de un log sin contrato.
+
+---
+
+#### 75. Errores de consistencia
+
+La sección debe diferenciar:
+
+- dato inexistente;
+- relación ausente;
+- validación externa pendiente;
+- conflicto estructural;
+- referencia legacy;
+- dependencia activa que bloquea cierre;
+- fallo técnico de lectura;
+- falta de autorización.
+
+No los colapsa en `No disponible`.
+
+---
+
+#### 76. Conflictos estructurales
+
+Ejemplos que deben tratarse como conflicto o inconsistencia, según contrato:
+
+- área vinculada a una sede distinta de la declarada;
+- relación temporal solapada incompatible;
+- elemento cerrado presentado como activo;
+- relación de reemplazo cíclica;
+- tipo conceptual incompatible con una relación;
+- duplicación de identidad canónica;
+- uso de un agregado `Todos` como área real;
+- sede creada por inferencia desde un nombre;
+- dos fuentes editables compitiendo por el mismo campo canónico.
+
+La UI no debe reparar el conflicto escogiendo silenciosamente una fila.
+
+---
+
+#### 77. Concurrencia
+
+Antes de guardar un cambio estructural sensible se debe revalidar:
+
+- versión;
+- estado;
+- vigencia;
+- relaciones relevantes;
+- consumidores afectados;
+- dependencias bloqueantes;
+- autoridad del actor.
+
+Si la base cambió desde el preview, la UI no debe aplicar el cambio sobre una versión obsoleta sin reconciliación.
+
+---
+
+#### 78. Estado stale
+
+Una vista abierta de estructura puede quedar obsoleta por:
+
+- modificación paralela;
+- cambio de vigencia;
+- nueva evidencia externa;
+- cierre de una dependencia;
+- cambio de autorización;
+- actualización contractual.
+
+La experiencia debe detectar la pérdida de frescura antes de una mutación sensible.
+
+---
+
+#### 79. Confirmación de acciones sensibles
+
+Altas, cierres, fusiones, reemplazos y cambios de titular o vigencia pueden requerir confirmación reforzada según riesgo.
+
+La confirmación debe mostrar:
+
+- objeto;
+- cambio;
+- fecha efectiva;
+- impacto;
+- dependencias;
+- consecuencias conocidas;
+- handoffs pendientes.
+
+La confirmación no sustituye la autorización.
+
+---
+
+#### 80. Receipts
+
+Una mutación aceptada debe producir evidencia suficiente para responder:
+
+- qué cambió;
+- sobre qué identidad;
+- quién lo realizó;
+- cuándo;
+- con qué vigencia;
+- qué quedó pendiente;
+- qué consumidores requieren reconciliación;
+- qué verificación posterior falta.
+
+Un receipt no significa que el ciclo `VPROC-0002` ya alcanzó `STRUCTURE_CHANGE_VERIFIED`.
+
+---
+
+#### 81. Publicación y proyección externa
+
+Un dato interno no se publica automáticamente.
+
+La sección debe distinguir:
+
+```text
+INTERNAL_ACTIVE
+PUBLICABLE
+EXTERNALLY_VERIFIED
+```
+
+Un elemento puede ser válido para operación interna y no estar permitido para publicación externa.
+
+---
+
+#### 82. Direcciones
+
+La experiencia debe diferenciar:
+
+- dirección física;
+- dirección registral;
+- dirección de correspondencia;
+- dirección pública comercial;
+- referencia interna;
+- coordenadas;
+- vigencia;
+- fuente.
+
+PASS no necesita recibir una dirección privada interna.
+
+Contabilidad puede necesitar una dirección registral distinta de la dirección pública.
+
+---
+
+#### 83. Privacidad
+
+Los puntos externos pueden incluir direcciones sensibles.
+
+La sección debe aplicar minimización y autorización antes de mostrar:
+
+- domicilios privados;
+- documentos jurídicos;
+- contactos protegidos;
+- evidencia sensible;
+- coordenadas no públicas.
+
+La relación con una entidad no hace públicos sus datos.
+
+---
+
+#### 84. Archivos y evidencia
+
+Los documentos que acreditan titularidad, matrícula, dirección o relación pueden mostrarse como evidencia vinculada.
+
+El almacenamiento, visor, retención y gobierno documental permanecen en su owner.
+
+`Organización` consume referencias y estados.
+
+No crea un subsistema documental paralelo.
+
+---
+
+#### 85. Responsive
+
+La estructura debe conservar comprensión en escritorio y móvil.
+
+En pantallas estrechas:
+
+- el tipo conceptual sigue visible;
+- el código estable no desaparece cuando sea necesario para desambiguar;
+- estado y vigencia siguen distinguibles;
+- relaciones principales siguen navegables;
+- acciones sensibles no se convierten en iconos ambiguos;
+- el árbol no será el único mecanismo de navegación.
+
+---
+
+#### 86. Accesibilidad
+
+La diferenciación entre:
+
+- tipo;
+- estado;
+- pendiente;
+- conflicto;
+- relación;
+- validación externa;
+
+no dependerá únicamente de color.
+
+Los controles deben tener etiquetas comprensibles y orden de foco coherente.
+
+---
+
+#### 87. Lenguaje humano
+
+Las etiquetas primarias usarán lenguaje empresarial.
+
+La UI no presentará como conceptos principales:
+
+- tabla `sites`;
+- tabla `areas`;
+- schema;
+- FK;
+- RPC;
+- `site_type`;
+- `pass_satellites`;
+- `inventory_locations`;
+- nombres de migraciones.
+
+Esos detalles pueden aparecer en diagnóstico técnico autorizado, no como taxonomía de negocio.
+
+---
+
+#### 88. Códigos técnicos y nombres humanos
+
+El código estable puede mostrarse como información secundaria.
+
+El nombre humano puede cambiar.
+
+Se conserva:
+
+```text
+DISPLAY_NAME_CHANGE
+!=
+IDENTITY_CHANGE
+```
+
+Renombrar no crea una nueva identidad.
+
+---
+
+#### 89. Deep links
+
+Un deep link hacia sede, área u otra entidad debe revalidar:
+
+- sesión;
+- acceso a VISO;
+- permiso exacto;
+- territorio;
+- recurso;
+- estado;
+- vigencia;
+- sensibilidad.
+
+La URL no transporta autoridad.
+
+---
+
+#### 90. Navegación a consumidores
+
+Desde un detalle organizacional se pueden ofrecer enlaces contextuales a:
+
+- Personal;
+- Programación;
+- Acceso y seguridad;
+- Operación;
+- NEXO;
+- PASS;
+- NUMERA;
+- gobierno documental;
+- Auditoría.
+
+El destino revalida su autorización.
+
+El handoff conserva el identificador canónico necesario y no una copia mutable del objeto.
+
+---
+
+#### 91. No wildcard por `viso.access`
+
+`viso.access` puede permitir entrada a la aplicación cuando el contrato vigente lo admita.
+
+No concede automáticamente:
+
+- crear titular;
+- editar marca;
+- crear sede;
+- cerrar área;
+- fusionar elementos;
+- cambiar vigencia;
+- publicar datos externos;
+- administrar documentos;
+- editar consumidores.
+
+Cada acción sensible requiere su capacidad exacta cuando exista.
+
+---
+
+#### 92. AS-IS de `/businesses*`
+
+La evidencia actual muestra que las rutas `/businesses*` usan guard de acceso a VISO y administran `pass_satellites`, además de tocar `sites` en altas o ediciones.
+
+Esto se clasifica como implementación transitoria mixta.
+
+No se certifica como patrón target de ownership.
+
+La futura materialización deberá separar la mutación estructural de la proyección PASS y proteger cada operación con su contrato propietario.
+
+---
+
+#### 93. AS-IS de `/sites`
+
+La evidencia actual muestra que `/sites`:
+
+- lee `sites`;
+- consulta `areas`;
+- consulta `inventory_locations`;
+- consulta `pass_satellites`;
+- presenta enlaces a detalles y superficies relacionadas.
+
+La lectura agregada es compatible con una vista de organización si cada dato conserva owner.
+
+No autoriza editar todos esos dominios desde la misma sección.
+
+---
+
+#### 94. AS-IS de `/sites/[id]`
+
+La evidencia actual muestra acciones que administran `areas` y `inventory_locations` desde el mismo detalle, además de componentes de operación.
+
+La tarea clasifica esta composición como mezcla física de transición.
+
+La semántica target exige separar:
+
+- estructura organizacional;
+- ubicación de inventario;
+- operación;
+- documentos.
+
+No se retira ni modifica físicamente la ruta desde esta tarea.
+
+---
+
+#### 95. AS-IS de `/sites/[id]/documentos`
+
+La evidencia actual muestra acciones sobre `required_document_rules` con `site_id` como contexto.
+
+El mapa de transición de datos clasifica esa familia dentro del dominio documental y de evidencia, no dentro de la estructura organizacional.
+
+La sección `Organización` conservará un handoff contextual.
+
+No absorberá la mutación documental.
+
+---
+
+#### 96. No duplicación
+
+Una capacidad no tendrá dos editores activos con autoridad equivalente.
+
+Se conserva:
+
+```text
+OWNER_MUTATION
++ CONSUMER_PROJECTION
++ HANDOFF
+```
+
+No:
+
+```text
+OWNER_MUTATION
++ LOCAL_COPY_MUTATION
++ MANUAL_RECONCILIATION
+```
+
+---
+
+#### 97. Regla de retiro
+
+Una superficie transitoria solo puede retirarse después de demostrar:
+
+- reemplazo protegido;
+- equivalencia funcional;
+- consumidores migrados;
+- deep links tratados;
+- autorización equivalente;
+- observabilidad;
+- rollback;
+- validación de usuario;
+- monitoreo posterior.
+
+Esta tarea no declara retiradas las rutas mixtas.
+
+---
+
+#### 98. Relación con `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` desarrollará el patrón transversal de qué parte de la estructura puede ver cada actor.
+
+`VISO-UX-005` define que estructura y autoridad son distintas.
+
+No reemplaza la tarea transversal de alcance visible.
+
+---
+
+#### 99. Relación con `VISO-UX-014`
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` pertenece al dominio de seguridad.
+
+`Organización` puede mostrar que una relación o vigencia afecta contexto.
+
+No explica procedencia de permisos por su cuenta.
+
+---
+
+#### 100. Relación con `VISO-UX-015`
+
+`VISO-UX-015 — Mostrar conflictos antes de guardar` desarrollará el patrón transversal de pre-save conflict.
+
+`Organización` entrega conflictos estructurales e impacto como casos consumidores de ese patrón.
+
+---
+
+#### 101. Relación con `VISO-UX-016`
+
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador` utiliza estructura organizacional como contexto.
+
+No convierte el preview de trabajador en editor de sedes o áreas.
+
+---
+
+#### 102. Relación con `VISO-UX-017`
+
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones` recibe directamente:
+
+- `pass_satellites` versus estructura organizacional;
+- `inventory_locations` dentro del detalle de sede;
+- reglas documentales dentro de `/sites/[id]/documentos`;
+- cualquier editor cross-owner detectado durante materialización.
+
+---
+
+#### 103. Relación con `VISO-UX-018`
+
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda` desarrollará los handoffs definitivos hacia NEXO, PASS, NUMERA y otros owners.
+
+`VISO-UX-005` deja identificados los cruces y el contexto que deben conservar.
+
+---
+
+#### 104. Relación con `VISO-UX-019`
+
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` no es sustituida por esta tarea.
+
+`Organización` aplica divulgación progresiva general, pero no diseña la experiencia avanzada de seguridad.
+
+---
+
+#### 105. Relación con `VISO-UX-020`
+
+`VISO-UX-020 — Ejecutar pruebas con administradores reales` deberá validar, entre otros casos:
+
+- distinguir marca de sede;
+- distinguir sede de área;
+- comprender estado jurídico pendiente;
+- identificar owner de un dato mixto;
+- interpretar impacto antes de un cierre;
+- encontrar un handoff sin duplicar edición;
+- reconocer que una jerarquía visible no concede acceso.
+
+Esta tarea no declara esas pruebas ejecutadas.
+
+---
+
+#### 106. Handoff hacia `VISO-UX-006`
+
+`VISO-UX-006 — Crear sección Operación` recibe una frontera explícita:
+
+```text
+Organización
+→ define identidades estructurales y relaciones
+→ define vigencia organizativa
+→ entrega sede, área, zona o estación cuando existan contractualmente
+→ no administra el contexto operativo de ejecución
+
+Operación
+→ consume estructura válida
+→ administra configuración y supervisión operativa propia de VISO
+→ no redefine la organización
+```
+
+Debe preservarse:
+
+```text
+ORGANIZATIONAL_STRUCTURE
+!=
+OPERATIONAL_CONFIGURATION
+```
+
+`VISO-UX-006` deberá recibir, como mínimo:
+
+- `OPERATIONAL_SITE` vigente;
+- `ORGANIZATIONAL_AREA` vigente;
+- zonas o estaciones contractuales cuando apliquen;
+- relaciones necesarias para resolver contexto;
+- exclusión de LOC como estructura organizacional;
+- exclusión de proyección PASS como estructura operativa;
+- prohibición de inferir capacidades desde nombre o `site_type`.
+
+---
+
+#### 107. Carryovers
+
+| Carryover | Owner | Condición de salida |
+| --- | --- | --- |
+| materializar la sección y sus subviews | instancia física de `VISO-UX-005` | package y `POST_E5_PACKAGE` satisfechos, autorización física propia y validaciones de implementación |
+| completar catálogo de titulares, marcas y establecimientos | transición E3/E5 y owners ya definidos por `CAP-SCOPE-001` | modelo canónico persistido, migrado y validado sin fuentes competidoras |
+| separar `sites` de `pass_satellites` | transición propietaria de PASS y Supabase | propiedad de campos, proyección y consumidores reconciliados |
+| separar LOC del detalle estructural | NEXO + `VISO-UX-017/018` | handoff o superficie propietaria protegida disponible |
+| separar reglas documentales de la ruta de sede | owner documental + `VISO-UX-017/018` | superficie propietaria protegida y handoff validado |
+| limitar información por territorio | `VISO-UX-013` | patrón transversal de alcance visible aprobado y materializado |
+| conflictos pre-save | `VISO-UX-015` | patrón final de conflicto antes de guardar aprobado |
+| handoffs cross-app | `VISO-UX-018` | contrato de enlace y revalidación de destino aprobado |
+| pruebas con administradores reales | `VISO-UX-020` | piloto controlado y criterios de readiness satisfechos |
+
+---
+
+#### 108. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** la integridad semántica de organización, titulares, marcas, establecimientos, sedes, áreas, zonas, estaciones, canales y puntos externos ya está protegida por el Registro Canónico; también existen requisitos vigentes para fuente única, proyecciones consumidoras, navegación, ownership, rutas VISO, autorización territorial y convergencia PASS. Esta tarea compone esas decisiones en la experiencia `Organización` y clasifica superficies AS-IS sin crear entidades, relaciones, permisos, tablas, migraciones, mutaciones o reglas de negocio nuevas.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 109. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, la tarea reutiliza especialmente:
+
+- `TREQ-SUPABASE-011` para integridad semántica, identidad estable, relaciones tipadas, ausencia de fusiones por nombre o metadato, conservación histórica y no competencia de fuentes;
+- `TREQ-INTEGRATION-006` para una sola captura propietaria y propagación por contratos o eventos;
+- `TREQ-AUTH-009` para resolución territorial determinista y ausencia de ampliación de alcance por estructura visible;
+- `TREQ-VISO-001` para coherencia entre sedes, áreas, autorización, preview, conflictos y consumidores;
+- `TREQ-VISO-004` y `TREQ-VISO-005` para conservar el inventario y las identidades de rutas VISO;
+- `TREQ-VISO-022` y `TREQ-VISO-023` para no retirar prematuramente superficies y reconciliar el universo completo de rutas;
+- `TREQ-UX-005` para fuente de verdad visible, corrección trazable y ausencia de copias competidoras;
+- `TREQ-UX-020` para ownership y contrato consistentes entre aplicaciones;
+- `TREQ-UX-023` para clasificación y retiro gobernado de superficies;
+- `TREQ-PASS-004` para que los datos de sede mostrados por PASS correspondan a la fuente canónica;
+- `TREQ-PASS-006` para convergencia de `site_id`, marca, dirección y experiencia comercial.
+
+La mención en esta sección es trazabilidad heredada y no una modificación de 04A.
+
+---
+
+#### 110. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-005`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en una rama documental de `VISO-UX-005`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, protocolo, contrato de entrega, secuencia activa, topología, políticas de tarea, owner del minibloque, `VISO-UX-001..004` publicados y `VISO-UX-005` como tarea actual pendiente, `CAP-SCOPE-001`, `ADM-TASK-001..005`, `VSCREEN-0008..0010`, `VPROC-0002..0004`, inventario `VISO-ROUTE-001..061`, Registro 04A aplicable, scripts documentales vigentes y el AS-IS actual de `/businesses*` y `/sites*` en `vento-viso/main`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, cerraron, fusionaron, trasladaron ni reclasificaron entidades reales; no se modificaron sedes, áreas, trabajadores, inventario, permisos, PASS, documentos o datos financieros. |
+| FÍSICA | NOT_EXECUTED | No se modificaron UI, rutas, Server Actions, contratos, catálogos, Supabase, migraciones, RLS, Auth, datos ni despliegues; la materialización permanece por `implementation_unit_id` detrás de `POST_E5_PACKAGE`. |
+
+---
+
+#### 111. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-ORGANIZATION-SECTION-001`;
+2. la tarea conserva `VISO-UX-004` como anterior y `VISO-UX-006` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. `Organización` es el cuarto dominio administrativo definido por `VISO-UX-001`;
+6. `VSCREEN-0008` permanece como pantalla canónica principal;
+7. `VPROC-0002` permanece como proceso principal;
+8. `VPROC-0003` y `VPROC-0004` se presentan como procesos relacionados y no como estados de `VPROC-0002`;
+9. `ADM-TASK-001..005` conservan su ownership `ADM-ORG`;
+10. el universo conceptual distingue `ORGANIZATION_SCOPE`;
+11. distingue `LEGAL_SUBJECT`;
+12. distingue `BRAND`;
+13. distingue `COMMERCIAL_ESTABLISHMENT`;
+14. distingue `BUSINESS_LINE`;
+15. distingue `PHYSICAL_FACILITY`;
+16. distingue `OPERATIONAL_SITE`;
+17. distingue `ORGANIZATIONAL_AREA`;
+18. distingue `PHYSICAL_ZONE`;
+19. distingue `WORKSTATION`;
+20. distingue `COMMERCIAL_CHANNEL`;
+21. distingue `EXTERNAL_OPERATIONAL_POINT`;
+22. un centro de costo no se vuelve maestro financiero de VISO;
+23. cada elemento conserva identidad estable cuando aplique;
+24. el nombre visible no sustituye el ID o código canónico;
+25. las relaciones son tipadas;
+26. compartir nombre no crea relación;
+27. compartir dirección no crea relación;
+28. compartir titular no fusiona entidades;
+29. estado jurídico y operativo permanecen separados;
+30. validación externa pendiente no se muestra como confirmada;
+31. realidad operativa confirmada puede representarse sin fingir verificación registral;
+32. existe una sola fuente interna canónica de estructura;
+33. consumidores reciben proyecciones y no copias editables equivalentes;
+34. PASS permanece consumidor de proyección pública;
+35. NEXO permanece owner de LOC e inventario;
+36. NUMERA permanece owner de semántica financiera propia;
+37. `/sites` se clasifica como `VISO_DOMAIN_ENTRY`;
+38. `/sites/[id]` se clasifica como `CHILD_OR_DETAIL_ROUTE`;
+39. `/sites/[id]/documentos` se clasifica como `CROSS_OWNER_TRANSITION`;
+40. `/businesses` se clasifica como `CROSS_OWNER_TRANSITION`;
+41. `/businesses/new` se clasifica como `CROSS_OWNER_TRANSITION`;
+42. `/businesses/[id]` se clasifica como `CROSS_OWNER_TRANSITION`;
+43. las seis identidades de ruta permanecen estables;
+44. la clasificación no retira físicamente rutas;
+45. `pass_satellites` no se declara catálogo organizacional canónico;
+46. `sites` y `pass_satellites` pueden coexistir con ownership explícito;
+47. la alta de sede se separa conceptualmente de la configuración PASS;
+48. crear una sede no la publica automáticamente en PASS;
+49. LOC no se edita como parte de la estructura organizacional target;
+50. `required_document_rules` no se presenta como parte del catálogo organizacional;
+51. el detalle de sede reconoce la mezcla física AS-IS;
+52. el target separa estructura, inventario, operación y documentos;
+53. un área no es rol;
+54. un área no es permiso;
+55. una zona no es área por defecto;
+56. una estación no es área por defecto;
+57. `Todos` o `General` no se presenta como unidad organizacional real;
+58. `site_type` no concede capacidad;
+59. el nombre de sede no concede capacidad;
+60. la marca no es scope de autorización por defecto;
+61. el titular jurídico no sustituye contexto operativo;
+62. la instalación física no concede acceso a todos los contextos;
+63. un punto externo no es sede ordinaria;
+64. Oficina 1 conserva estado provisional seguro;
+65. Vento Group ecosistema y Vento Group S.A.S. titular permanecen separados;
+66. Vento Café puede conservar identidades relacionadas separadas;
+67. Saudo puede conservar identidades relacionadas separadas;
+68. Molka puede conservar identidades relacionadas separadas;
+69. Vaila no se convierte en sede o titular por inferencia;
+70. Catering no se convierte en sede por inferencia;
+71. Centro de Producción y Distribución no se duplica como sede sin evidencia;
+72. distribución puede expresarse como capacidad o proceso sin crear sede;
+73. `VPROC-0002` conserva los ocho estados aprobados;
+74. `APPROVED_FOR_IMPLEMENTATION` no equivale a `STRUCTURE_CHANGE_VERIFIED`;
+75. alta estructural conserva tipo, código, nombre, owner, evidencia, relaciones y vigencia;
+76. cambio estructural conserva motivo, actor, antes, después, fecha efectiva e impacto;
+77. cierre o fusión revisa dependencias activas;
+78. no se exige borrado destructivo de identidades históricas;
+79. existe preview de impacto conceptual antes de cambios sensibles;
+80. preview de impacto no ejecuta efectos cross-app;
+81. Organización no reasigna trabajadores silenciosamente;
+82. Organización no modifica turnos silenciosamente;
+83. Organización no concede permisos silenciosamente;
+84. Organización no traslada inventario silenciosamente;
+85. Organización no reescribe datos PASS silenciosamente;
+86. Organización no reescribe centros de costo silenciosamente;
+87. existe handoff hacia Personal cuando hay asignaciones afectadas;
+88. existe handoff hacia Programación cuando hay turnos afectados;
+89. existe handoff hacia Acceso y seguridad cuando hay configuración territorial afectada;
+90. existe handoff hacia Operación para configuración operativa;
+91. existe handoff hacia NEXO para LOC e inventario;
+92. existe handoff hacia PASS para proyección comercial;
+93. existe handoff hacia NUMERA para semántica financiera;
+94. `VSCREEN-0009` no convierte políticas en estructura;
+95. `VSCREEN-0010` no convierte compromisos en relaciones permanentes;
+96. búsqueda no infiere relaciones por texto;
+97. filtros no crean scope;
+98. árbol visual no es fuente de autorización;
+99. relaciones no estrictamente jerárquicas pueden representarse;
+100. detalle conserva identidad, relaciones, vigencia y consumers;
+101. historial no se borra al renombrar o reemplazar;
+102. auditoría no se confunde con estado actual;
+103. conflictos estructurales no se reparan eligiendo silenciosamente una fila;
+104. concurrencia se revalida antes de guardar;
+105. estado stale bloquea una mutación sensible hasta reconciliación;
+106. acciones sensibles muestran impacto antes de confirmación;
+107. receipts no declaran verificación final por sí solos;
+108. dato interno activo no implica publicable;
+109. direcciones conservan tipos distintos;
+110. datos sensibles de puntos externos se minimizan;
+111. evidencia documental se referencia sin crear un subsistema paralelo;
+112. responsive conserva tipo, estado y vigencia;
+113. accesibilidad no depende solo de color;
+114. lenguaje primario no usa nombres de tablas como taxonomía de negocio;
+115. cambio de nombre no cambia identidad;
+116. deep links revalidan autorización;
+117. handoffs revalidan autorización en destino;
+118. `viso.access` no es wildcard de mutaciones organizacionales;
+119. el AS-IS de `/businesses*` queda descrito como mezcla transitoria;
+120. el AS-IS de `/sites*` queda descrito sin canonizar la mezcla;
+121. no existen dos editores target para la misma capacidad;
+122. ninguna ruta se retira sin gates de sustitución;
+123. `VISO-UX-013` conserva alcance visible transversal;
+124. `VISO-UX-015` conserva patrón de conflicto pre-save;
+125. `VISO-UX-017` conserva no duplicación cross-app;
+126. `VISO-UX-018` conserva handoffs definitivos;
+127. `VISO-UX-020` conserva pruebas con administradores reales;
+128. `VISO-UX-006` recibe el handoff exacto de estructura hacia Operación;
+129. los carryovers tienen owner y condición de salida;
+130. no se crean requisitos de prueba;
+131. no se modifican requisitos de prueba;
+132. no se realizan cambios físicos desde esta tarea documental.
+
+---
+
+#### 112. Límites
+
+Esta tarea no:
+
+- modifica el catálogo organizacional físico;
+- crea tablas;
+- crea migraciones;
+- crea datos;
+- hace backfill;
+- crea titulares jurídicos reales;
+- verifica documentos externos;
+- cambia titularidad;
+- cambia facturación;
+- cambia recaudo;
+- crea o cierra sedes reales;
+- crea o cierra áreas reales;
+- crea zonas reales;
+- crea estaciones reales;
+- crea puntos externos reales;
+- elimina `Todos` o `General` físicamente;
+- modifica `sites`;
+- modifica `areas`;
+- modifica `inventory_locations`;
+- modifica `pass_satellites`;
+- modifica `required_document_rules`;
+- modifica capacidades operativas;
+- modifica `site_type`;
+- modifica asignaciones laborales;
+- modifica programación;
+- modifica permisos;
+- modifica matrices de seguridad;
+- modifica perfiles operativos;
+- modifica documentos;
+- modifica centros de costo;
+- modifica contabilidad;
+- modifica PASS;
+- modifica NEXO;
+- modifica NUMERA;
+- modifica datos públicos;
+- publica direcciones;
+- publica información registral;
+- crea permisos;
+- crea roles;
+- crea scopes;
+- define una API física nueva;
+- define una tabla física nueva por cada tipo conceptual;
+- obliga a una jerarquía de árbol única;
+- inventa rutas nuevas;
+- renumera `VISO-ROUTE-*`;
+- retira rutas existentes;
+- ejecuta una instancia física;
+- sustituye `VISO-UX-006..020`;
+- ejecuta pruebas con administradores reales;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 113. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-004 — Crear sección Acceso y seguridad`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-005 — Crear sección Organización`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-006 — Crear sección Operación`
 ### [ ] VISO-UX-006 — Crear sección Operación
 ### [ ] VISO-UX-007 — Crear sección Auditoría
 ### [ ] VISO-UX-008 — Definir inicio para propietario

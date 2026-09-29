@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1468** |
+| Tareas aprobadas | **1469** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **128** |
+| Tareas no iniciadas | **127** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **91.98% (1468/1596)** |
+| Porcentaje de completamiento | **92.04% (1469/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **VISO-UX-004 — Crear sección Acceso y seguridad** |
-| Tarea actual | **VISO-UX-005 — Crear sección Organización** |
+| Última tarea aprobada | **VISO-UX-005 — Crear sección Organización** |
+| Tarea actual | **VISO-UX-006 — Crear sección Operación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **VISO-UX-006 — Crear sección Operación** |
+| Siguiente tarea | **VISO-UX-007 — Crear sección Auditoría** |
 | Bloque actual | **BLOQUE G3 — VISO completo** |
-| Progreso del bloque | **BLOQUE G3: 4 de 20 aprobadas; VISO-UX-005 pendiente** |
+| Progreso del bloque | **BLOQUE G3: 5 de 20 aprobadas; VISO-UX-006 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — VISO-UX-005** |
+| Carril documental | **ACTIVO — VISO-UX-006** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `VISO-UX-004` — Crear sección Acceso y seguridad |
-| Tarea actual | `VISO-UX-005` — Crear sección Organización — **NO INICIADA** |
-| Siguiente tarea | `VISO-UX-006` — Crear sección Operación |
+| Última aprobada | `VISO-UX-005` — Crear sección Organización |
+| Tarea actual | `VISO-UX-006` — Crear sección Operación — **NO INICIADA** |
+| Siguiente tarea | `VISO-UX-007` — Crear sección Auditoría |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE G3: 4 DE 20 APROBADAS — ACTUAL VISO-UX-005** |
+| CONTINUIDAD ACTIVA | **BLOQUE G3: 5 DE 20 APROBADAS — ACTUAL VISO-UX-006** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-VISO-UX-004 — Crear sección Acceso y seguridad
-        ↓
-TAREA ACTUAL
 VISO-UX-005 — Crear sección Organización
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 VISO-UX-006 — Crear sección Operación
         ↓
+SIGUIENTE TAREA RESERVADA
+VISO-UX-007 — Crear sección Auditoría
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE G3 — 4 de 20 tareas aprobadas
+BLOQUE G3 — 5 de 20 tareas aprobadas
 ```
