@@ -3760,8 +3760,8 @@ La existencia de manifests similares y tooling compartido no modifica estos esta
 
 #### 38. Requisitos de prueba derivados
 
-**Resultado:** NO GENERA REQUISITOS DE PRUEBA  
-**Requisitos creados:** **0**  
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+**Requisitos creados:** **0**
 **Requisitos modificados:** **0**
 
 **Justificación:** las obligaciones de pruebas propias, compatibilidad por consumidor, identidad de release, cortes coordinados, deprecación, retiro, targets multiplataforma, lineage, rollback y evidencia ya están cubiertas por requisitos vigentes. CI005 define el habilitador ejecutable común y su forma de consolidación sin introducir una obligación empresarial independiente que requiera otra fila.
@@ -4850,4 +4850,3 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `SHELL-CI-007 — Probar NEXO antes de actualizar`
-
