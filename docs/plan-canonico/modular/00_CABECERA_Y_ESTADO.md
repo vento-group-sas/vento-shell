@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1476** |
+| Tareas aprobadas | **1477** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **120** |
+| Tareas no iniciadas | **119** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **92.48% (1476/1596)** |
+| Porcentaje de completamiento | **92.54% (1477/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **VISO-UX-012 — Definir inicio para contador** |
-| Tarea actual | **VISO-UX-013 — Limitar información según alcance territorial** |
+| Última tarea aprobada | **VISO-UX-013 — Limitar información según alcance territorial** |
+| Tarea actual | **VISO-UX-014 — Mostrar origen de permisos de forma comprensible** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **VISO-UX-014 — Mostrar origen de permisos de forma comprensible** |
+| Siguiente tarea | **VISO-UX-015 — Mostrar conflictos antes de guardar** |
 | Bloque actual | **BLOQUE G3 — VISO completo** |
-| Progreso del bloque | **BLOQUE G3: 12 de 20 aprobadas; VISO-UX-013 pendiente** |
+| Progreso del bloque | **BLOQUE G3: 13 de 20 aprobadas; VISO-UX-014 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — VISO-UX-013** |
+| Carril documental | **ACTIVO — VISO-UX-014** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `VISO-UX-012` — Definir inicio para contador |
-| Tarea actual | `VISO-UX-013` — Limitar información según alcance territorial — **NO INICIADA** |
-| Siguiente tarea | `VISO-UX-014` — Mostrar origen de permisos de forma comprensible |
+| Última aprobada | `VISO-UX-013` — Limitar información según alcance territorial |
+| Tarea actual | `VISO-UX-014` — Mostrar origen de permisos de forma comprensible — **NO INICIADA** |
+| Siguiente tarea | `VISO-UX-015` — Mostrar conflictos antes de guardar |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE G3: 12 DE 20 APROBADAS — ACTUAL VISO-UX-013** |
+| CONTINUIDAD ACTIVA | **BLOQUE G3: 13 DE 20 APROBADAS — ACTUAL VISO-UX-014** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-VISO-UX-012 — Definir inicio para contador
-        ↓
-TAREA ACTUAL
 VISO-UX-013 — Limitar información según alcance territorial
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 VISO-UX-014 — Mostrar origen de permisos de forma comprensible
         ↓
+SIGUIENTE TAREA RESERVADA
+VISO-UX-015 — Mostrar conflictos antes de guardar
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE G3 — 12 de 20 tareas aprobadas
+BLOQUE G3 — 13 de 20 tareas aprobadas
 ```

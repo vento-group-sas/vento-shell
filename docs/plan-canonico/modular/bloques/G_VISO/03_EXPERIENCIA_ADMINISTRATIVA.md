@@ -27993,7 +27993,1376 @@ La identidad exacta de cualquier unidad física futura se resolverá por el pack
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-013 — Limitar información según alcance territorial`
-### [ ] VISO-UX-013 — Limitar información según alcance territorial
+### ✅ VISO-UX-013 — Limitar información según alcance territorial
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-012 — Definir inicio para contador
+**Tarea siguiente:** VISO-UX-014 — Mostrar origen de permisos de forma comprensible
+**Tipo de tarea:** definición técnico-documental del patrón transversal de territorialización de VISO; establece cómo toda superficie administrativa limita, agrega, filtra, compara y explica información según la cobertura administrativa, el alcance exacto del grant y el territorio real del recurso, sin convertir sede o área seleccionada en autoridad, sin interpretar multisede como global, sin mezclar carril base con territorio operativo, sin revelar datos fuera de scope y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato transversal de presentación territorial de VISO definido para `Inicio`, dominios administrativos, listas, agregados, comparaciones, filtros, búsquedas y handoffs; la implementación física actual permanece AS-IS y requiere materialización posterior por `implementation_unit_id` para consumir `AccessContext`, `AuthorizationDecision`, territorio de recurso y grants canónicos de forma fail-closed detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, componentes, rutas, guards, consultas, permisos, matrices, `AccessContext`, `AuthorizationDecision`, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el patrón transversal mediante el cual VISO limita la información visible según el alcance territorial y funcional realmente autorizado para el actor, evitando que la interfaz convierta navegación, filtros, sedes primarias, preferencias de usuario, contexto operativo o acceso técnico de servidor en autoridad empresarial.
+
+La experiencia debe responder de forma comprensible y reconstruible:
+
+```text
+¿QUÉ TERRITORIO ESTOY VIENDO?
+¿QUÉ PARTE DE ESE TERRITORIO PUEDE CONSULTAR ESTA CAPACIDAD?
+¿QUÉ TERRITORIO PERTENECE REALMENTE AL RECURSO?
+¿ESTE FILTRO SOLO REDUCE LA VISTA O CAMBIA AUTORIDAD?
+¿UN TOTAL, COMPARACIÓN O BÚSQUEDA INCLUYE ÚNICAMENTE DATOS AUTORIZADOS?
+```
+
+La regla central es:
+
+```text
+IDENTIDAD REAL
++
+PERMISO EXACTO
++
+ALCANCE DEL GRANT
++
+COBERTURA ADMINISTRATIVA CUANDO APLIQUE
++
+TERRITORIO REAL DEL RECURSO
++
+DENEGACIONES Y CONTROLES APLICABLES
+=
+UNIVERSO VISIBLE POSIBLE
+```
+
+La interfaz nunca amplía ese universo.
+
+#### 2. Handoff de `VISO-UX-008..012`
+
+Las cinco variantes de `Inicio` ya definidas comparten una sola entrada, una sola pantalla canónica y un único principio: la composición visual no es una fuente de autorización.
+
+| Perfil | Semántica territorial recibida |
+| --- | --- |
+| `propietario` | gobierno organizacional con permisos exactos; la variante no equivale a wildcard |
+| `gerente_general` | dirección organizacional con permisos exactos; globalidad no elimina límites de recurso ni denies |
+| `gerente` | administración territorial basada en sedes asignadas y grants explícitos |
+| `auxiliar_administrativa` | sedes asignadas para cobertura territorial más `G-FUNC`, `ORG-REF`, `AS`, `AA`, `AS-REL` y `ORG-LOCAL` según la capacidad exacta |
+| `contador` | sin cobertura territorial base general; capacidades `G-FIN`, `G-SRC`, `ORG-REF` y `NT-APP` se evalúan de forma independiente |
+
+`VISO-UX-013` no redefine esas matrices. Define cómo se presentan y limitan sus resultados territoriales de manera uniforme.
+
+#### 3. Fuentes vinculantes
+
+Esta tarea consume, sin redefinir:
+
+- `ADR-AUTH-001`;
+- `AUTH-MOD-007` — sede asignada, primaria, seleccionada, administrativa, operativa y del recurso;
+- `AUTH-MOD-008` — área asignada, primaria, seleccionada, administrativa, operativa y del recurso;
+- `AUTH-MOD-013` — permisos globales;
+- `AUTH-MOD-014` — permisos por sede;
+- `AUTH-MOD-015` — permisos por tipo de sede;
+- `AUTH-MOD-016` — permisos por área;
+- `AUTH-MOD-017` — permisos por tipo de área;
+- `AUTH-MOD-018` — precedencia entre carriles;
+- `AUTH-MOD-019` — denegación explícita;
+- `AUTH-RBAC-027` — ausencia de acceso operativo global accidental;
+- `AUTH-RBAC-028` — independencia de administración frente a turno y check-in;
+- `AUTH-CTX-001` — `AccessContext`;
+- `AUTH-CTX-009` — `assigned_sites`, `assigned_areas` y `administrative_coverage`;
+- `AUTH-CTX-013` — territorio operativo separado;
+- `AUTH-CTX-018` y `AUTH-CTX-019` — territorio del recurso y comparación con alcance;
+- `AUTH-CTX-029` — frescura e invalidación;
+- `VISO-AUTH-013` — vista previa trabajador × sede × área × turno;
+- `VISO-CORE-006` — núcleo aprobado antes de ampliar alcance;
+- `VISO-UX-008` a `VISO-UX-012` — variantes de `Inicio` ya definidas.
+
+Ninguna regla de esta tarea crea un segundo evaluador de autorización.
+
+#### 4. Naturaleza, topología y gate
+
+```text
+TASK = VISO-UX-013
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_PATTERN = VISO-UX-013::<implementation_unit_id>
+DOCUMENTARY_MUTATION = NONE
+PHYSICAL_MUTATION = NONE
+```
+
+La tarea define el contrato reutilizable. La materialización física posterior deberá consumir el evaluador canónico y no duplicar lógica de autorización dentro de componentes React, filtros de URL o queries ad hoc.
+
+#### 5. Contrato transversal
+
+```text
+VISO_TERRITORIAL_PRESENTATION_CONTRACT = VISO-TERRITORIAL-PRESENTATION-001
+AUTHORITY_SOURCE = SERVER_SIDE_CANONICAL_AUTHORIZATION
+ACCESS_CONTEXT = AccessContext
+DECISION_CONTEXT = AuthorizationDecision
+BASE_COVERAGE = administrative_coverage
+ASSIGNED_SITES_SOURCE = assigned_sites
+ASSIGNED_AREAS_SOURCE = assigned_areas
+RESOURCE_TERRITORY = SERVER_RESOLVED
+SELECTED_SITE_IS_AUTHORITY = NO
+SELECTED_AREA_IS_AUTHORITY = NO
+PRIMARY_SITE_IS_AUTHORITY = NO
+PRIMARY_AREA_IS_AUTHORITY = NO
+MULTISITE_IS_GLOBAL = NO
+NULL_MEANS_ALL = NO
+FILTER_CAN_EXPAND_AUTHORITY = NO
+AGGREGATE_CAN_INCLUDE_HIDDEN_ROWS = NO
+DEEP_LINK_REVALIDATION = REQUIRED
+TREQ_CHANGES = 0
+```
+
+#### 6. Principio de separación territorial
+
+VISO reconoce como conceptos distintos:
+
+```text
+SEDE ASIGNADA
+SEDE PRIMARIA
+SEDE SELECCIONADA
+SEDE ADMINISTRATIVA
+SEDE OPERATIVA
+SEDE DEL RECURSO
+```
+
+Y, de manera equivalente:
+
+```text
+ÁREA ASIGNADA
+ÁREA PRIMARIA
+ÁREA SELECCIONADA
+ÁREA ADMINISTRATIVA
+ÁREA OPERATIVA
+ÁREA DEL RECURSO
+```
+
+La interfaz no podrá condensarlos bajo etiquetas ambiguas como `sede actual`, `mi sede`, `sede activa` o `área actual` cuando la acción dependa de una semántica más precisa.
+
+#### 7. Sede asignada
+
+`assigned_sites` representa relaciones laborales explícitas con sedes utilizables.
+
+Reglas:
+
+1. proviene de la fuente canónica de asignaciones de sede;
+2. una asignación habilita elegibilidad, no permisos;
+3. varias asignaciones forman un conjunto finito;
+4. varias asignaciones no producen globalidad;
+5. una asignación inactiva no entra en cobertura utilizable;
+6. una sede inexistente o inactiva no se corrige mediante fallback visual.
+
+#### 8. Sede primaria
+
+La sede primaria es una clasificación laboral estable dentro de las asignaciones.
+
+```text
+SEDE PRIMARIA
+!=
+ÚNICA SEDE AUTORIZADA
+```
+
+No puede:
+
+- recortar silenciosamente una asignación multisede;
+- sustituir el territorio real de un recurso;
+- sustituir la sede exacta de un turno;
+- actuar como fallback permisivo cuando no existe cobertura válida.
+
+#### 9. Sede seleccionada
+
+La sede seleccionada es una preferencia administrativa o de navegación.
+
+```text
+selected_site_id
+→ FILTRO / PREFERENCIA
+selected_site_id
+!= AUTORIZACIÓN
+```
+
+Cambiarla puede cambiar lo que se muestra dentro del universo permitido, pero nunca ampliar dicho universo.
+
+#### 10. Sede operativa
+
+La sede operativa pertenece al carril operativo y deriva del contexto laboral válido.
+
+No se utiliza como fallback para conceder administración base.
+
+```text
+OPERATIVE_SITE
+!= ADMINISTRATIVE_COVERAGE
+```
+
+Cerrar turno o check-out no revoca permisos `BASE_ONLY` ni cobertura administrativa base válida.
+
+#### 11. Sede del recurso
+
+La sede del recurso es el territorio real del objeto consultado o modificado y debe resolverse en servidor.
+
+No se deriva de:
+
+- la sede seleccionada;
+- la sede primaria del actor;
+- la primera sede de una lista;
+- la ruta visual;
+- una etiqueta de marca;
+- el nombre del rol.
+
+Cuando el recurso requiere sede y no puede resolverse de forma inequívoca, la operación falla cerrada.
+
+#### 12. Área asignada
+
+`assigned_areas` representa afiliaciones laborales explícitas a áreas concretas y siempre mantiene la relación con su sede propietaria.
+
+Una asignación de área:
+
+- no crea una asignación de sede silenciosa;
+- no concede permisos;
+- no se convierte en área operativa;
+- no autoriza otras áreas con el mismo nombre;
+- no autoriza automáticamente todas las áreas del mismo `area_kind`.
+
+#### 13. Área primaria
+
+El área primaria es una referencia habitual por sede y puede ser opcional.
+
+No limita otras áreas asignadas y no se convierte automáticamente en área administrativa activa.
+
+#### 14. Área seleccionada
+
+La selección de área solo reduce o cambia la presentación dentro de un universo ya autorizado.
+
+```text
+selected_area_id
+→ FILTRO / PREFERENCIA
+selected_area_id
+!= AUTORIZACIÓN
+```
+
+`null` no significa todas las áreas.
+
+#### 15. Área operativa
+
+La operación usa el área del turno cuando corresponda.
+
+No se reutiliza para conceder administración base ni para ampliar `administrative_coverage`.
+
+#### 16. Área del recurso
+
+Cuando un recurso tiene `area_id`, esa identidad territorial debe validarse contra su sede propietaria y contra el alcance aplicable.
+
+Un mismo nombre humano en dos sedes representa dos áreas distintas.
+
+#### 17. `administrative_coverage`
+
+`administrative_coverage` es un insumo territorial base, no una decisión de autorización.
+
+No contiene:
+
+- una lista de permisos;
+- una decisión final;
+- un bypass por rol;
+- el territorio operativo;
+- el territorio real del recurso;
+- una lista de pantallas visibles.
+
+La interfaz puede representarlo, pero no tratarlo como sustituto de `AuthorizationDecision`.
+
+#### 18. Modos canónicos de cobertura administrativa
+
+VISO reconoce exactamente estos modos para presentación territorial base:
+
+| Modo | Significado de experiencia |
+| --- | --- |
+| `NONE` | no existe cobertura territorial administrativa base utilizable |
+| `ORGANIZATION` | organización ordinaria, excluyendo territorios aislados o especiales |
+| `ASSIGNED_SITES` | conjunto finito de sedes asignadas utilizables |
+| `SPECIFIC_SITE` | restricción autoritativa explícita a una sede exacta |
+| `ASSIGNED_AREAS` | conjunto finito de áreas asignadas utilizables y sus sedes propietarias |
+| `SPECIFIC_AREA` | restricción autoritativa explícita a un área exacta y su sede |
+
+No se crean modos adicionales en esta tarea.
+
+#### 19. `NONE`
+
+`NONE` significa ausencia de cobertura territorial base general.
+
+No significa automáticamente:
+
+- usuario sin permisos;
+- usuario bloqueado;
+- permiso financiero inexistente;
+- permiso global funcional inexistente;
+- recurso no territorial inaccesible.
+
+Un rol funcional como `contador` puede mantener permisos globales específicos aunque su `administrative_coverage` sea `NONE`.
+
+#### 20. `ORGANIZATION`
+
+`ORGANIZATION` representa el ámbito organizacional ordinario.
+
+No equivale a:
+
+- toda la base de datos;
+- APP-REVIEW;
+- demo;
+- pruebas;
+- recursos aislados;
+- todos los permisos;
+- todas las aplicaciones;
+- wildcard.
+
+Cada recurso sigue requiriendo permiso exacto, modalidad compatible, alcance del grant, ausencia de deny y controles de sensibilidad.
+
+#### 21. `ASSIGNED_SITES`
+
+`ASSIGNED_SITES` enumera todas las sedes asignadas utilizables del actor.
+
+Una sola sede asignada continúa usando `ASSIGNED_SITES`; la cardinalidad de uno no convierte la fuente semántica en `SPECIFIC_SITE`.
+
+#### 22. `SPECIFIC_SITE`
+
+`SPECIFIC_SITE` solo existe cuando una restricción autoritativa explícita identifica una sede exacta.
+
+No se infiere desde:
+
+- una única sede asignada;
+- sede primaria;
+- selector de UI;
+- query string;
+- ruta;
+- dispositivo;
+- último contexto usado.
+
+#### 23. `ASSIGNED_AREAS`
+
+`ASSIGNED_AREAS` conserva una lista explícita de áreas utilizables y sus sedes propietarias.
+
+No se amplía automáticamente a todas las áreas de las sedes involucradas.
+
+#### 24. `SPECIFIC_AREA`
+
+`SPECIFIC_AREA` requiere una restricción explícita a un `area_id` exacto y a su `site_id` propietario.
+
+Una sola área visible por casualidad no crea `SPECIFIC_AREA`.
+
+#### 25. Cobertura predeterminada por rol base
+
+La presentación deberá respetar la cobertura predeterminada canónica:
+
+| Rol base | Cobertura territorial base |
+| --- | --- |
+| `propietario` | `ORGANIZATION` |
+| `gerente_general` | `ORGANIZATION` |
+| `gerente` | `ASSIGNED_SITES` |
+| `supervisor` | `ASSIGNED_SITES` |
+| `auxiliar_administrativa` | `ASSIGNED_SITES` |
+| `contador` | `NONE` |
+| `marketing` | `NONE` |
+
+Esta tabla no concede permisos. Solo describe el insumo territorial base.
+
+#### 26. Globalidad específica no cambia la cobertura base
+
+Un grant global exacto no modifica `administrative_coverage`.
+
+Ejemplos:
+
+```text
+contador + G-FIN
+→ capacidad financiera global específica
+→ administrative_coverage puede seguir NONE
+```
+
+```text
+auxiliar_administrativa + G-FUNC
+→ función administrativa transversal específica
+→ administrative_coverage puede seguir ASSIGNED_SITES
+```
+
+La UI no debe reemplazar esos matices por una etiqueta única `Acceso global`.
+
+#### 27. `G-FUNC`
+
+`G-FUNC` amplía únicamente la función administrativa exacta concedida.
+
+Un filtro territorial puede reducir visualmente sus resultados, pero no redefine el origen o la amplitud contractual del grant.
+
+#### 28. `G-FIN`
+
+`G-FIN` permite alcance organizacional ordinario exclusivamente para la capacidad financiera exacta concedida.
+
+No convierte al contador en administrador organizacional general.
+
+#### 29. `G-SRC`
+
+`G-SRC` permite lectura global específica de evidencia fuente para costeo, conciliación o trazabilidad financiera.
+
+Permanece de solo lectura respecto del proceso fuente.
+
+#### 30. `ORG-REF`
+
+`ORG-REF` permite referencias organizacionales necesarias para interpretar un dato o documento.
+
+No concede edición del catálogo ni gobierno organizacional.
+
+#### 31. Scopes territoriales exactos
+
+Los grants por sede, tipo de sede, área o tipo de área conservan su semántica propia y se comparan con el territorio del recurso.
+
+La interfaz no convierte:
+
+```text
+site_type
+→ todas las sedes sin validar tipo
+```
+
+ni:
+
+```text
+area_kind
+→ cualquier área del mismo nombre
+```
+
+#### 32. Alcance del recurso prevalece sobre la navegación
+
+Cuando una fila, documento, trabajador, turno, activo, movimiento, remisión, compra, recepción, vacante u otro recurso sea territorial, VISO debe resolver su territorio real antes de incluirlo en una proyección protegida.
+
+Un filtro de navegación no reemplaza esa resolución.
+
+#### 33. Operaciones multiterritoriales
+
+Una operación o documento que involucre origen y destino requiere evaluar ambos territorios conforme a su contrato.
+
+Tener cobertura sobre un solo extremo no convierte automáticamente toda la relación en editable.
+
+La presentación podrá mostrar una relación autorizada de forma parcial únicamente cuando el owner y el permiso exacto permitan esa proyección minimizada.
+
+#### 34. `AS-REL`
+
+Los recursos multisedes consumidos por la variante de auxiliar administrativa mantienen la regla de extremos explícitos.
+
+La participación de una sede autorizada no concede autoridad universal sobre las demás sedes relacionadas.
+
+#### 35. Filtro territorial
+
+Todo filtro territorial es una operación de reducción del universo visible.
+
+```text
+UNIVERSO AUTORIZADO
+∩
+FILTRO DE UI
+=
+UNIVERSO MOSTRADO
+```
+
+Nunca:
+
+```text
+UNIVERSO NO AUTORIZADO
++
+FILTRO SELECCIONADO
+=
+NUEVA AUTORIDAD
+```
+
+#### 36. Selector de sede
+
+El selector de sede solo ofrecerá opciones representables dentro del universo que la capacidad actual pueda consultar.
+
+Para `ASSIGNED_SITES`, solo ofrecerá sedes asignadas utilizables.
+
+Para `SPECIFIC_SITE`, no ofrecerá una opción capaz de ampliar el territorio.
+
+Para grants funcionales o financieros globales, podrá ofrecer sedes como filtro visual cuando el recurso permita ese corte, sin declarar que la sede seleccionada es la fuente de autoridad.
+
+#### 37. Selector de área
+
+El selector de área se limita a áreas visibles según la capacidad y el territorio vigente.
+
+Un cambio de sede vuelve a validar las áreas elegibles.
+
+No conserva una selección incompatible como autorización silenciosa.
+
+#### 38. Filtro `Todos`
+
+`Todos` significa todos los objetos dentro del universo autorizado por la capacidad actual.
+
+No significa:
+
+- todas las sedes físicas;
+- todas las áreas físicas;
+- toda la organización;
+- todos los registros accesibles mediante service role;
+- filas ocultas que luego se filtrarán en cliente.
+
+#### 39. Organización completa
+
+La etiqueta `Organización completa` solo se usa cuando el permiso exacto y su scope permiten consultar la organización ordinaria aplicable.
+
+No se muestra para `ASSIGNED_SITES` ni como sustituto de multisede.
+
+#### 40. Etiquetas comprensibles de cobertura
+
+La UI puede usar etiquetas humanas como:
+
+| Modo | Etiqueta recomendada |
+| --- | --- |
+| `ORGANIZATION` | `Organización autorizada` |
+| `ASSIGNED_SITES` | `Sedes asignadas` |
+| `SPECIFIC_SITE` | `Sede específica` |
+| `ASSIGNED_AREAS` | `Áreas asignadas` |
+| `SPECIFIC_AREA` | `Área específica` |
+| `NONE` | `Sin cobertura territorial base` |
+
+Estas etiquetas explican territorio. No explican todavía el origen del permiso, que permanece reservado a `VISO-UX-014`.
+
+#### 41. Resumen de alcance visible
+
+Cada superficie territorialmente relevante debe poder presentar un resumen corto de contexto, por ejemplo:
+
+```text
+Viendo: 2 sedes asignadas
+Filtro: Vento Café
+Datos: únicamente dentro del alcance autorizado de esta capacidad
+```
+
+No debe exponer internals como hashes, IDs sensibles, políticas completas o reason codes técnicos salvo una superficie especializada autorizada.
+
+#### 42. Diferencia entre cobertura y filtro
+
+La interfaz debe distinguir visualmente:
+
+- `Cobertura` — límite autorizado;
+- `Filtro` — subconjunto elegido dentro del límite;
+- `Recurso` — territorio propio del objeto cuando sea relevante.
+
+No se usa una sola etiqueta para los tres conceptos.
+
+#### 43. Conteos
+
+Todo conteo debe calcularse sobre filas autorizadas antes de agregarse.
+
+```text
+AUTHORIZED_ROWS
+→ COUNT
+```
+
+Está prohibido:
+
+```text
+ALL_ROWS
+→ COUNT
+→ ocultar detalle no autorizado
+```
+
+Un total global puede filtrar información aunque las filas posteriores estén ocultas.
+
+#### 44. Agregados
+
+Promedios, sumas, tasas, porcentajes, histogramas y agrupaciones se calculan únicamente sobre el universo autorizado.
+
+Cuando el scope de una métrica no pueda determinarse de forma confiable, la métrica no se muestra como dato válido.
+
+#### 45. Comparaciones
+
+Comparar dos sedes, áreas, periodos o unidades exige autorización para ambos lados de la comparación.
+
+Si uno de los lados queda fuera de alcance:
+
+- no se sustituye por cero;
+- no se muestra parcialmente de forma que revele el dato ausente;
+- no se infiere tendencia;
+- no se calcula diferencia porcentual.
+
+#### 46. Series temporales
+
+Una serie histórica debe respetar el alcance aplicable a los datos consultados y la política histórica del owner.
+
+La autorización actual no permite inferir automáticamente acceso a un snapshot histórico que tuvo otro alcance.
+
+#### 47. Mapas y distribuciones territoriales
+
+Una visualización territorial no debe incluir puntos, etiquetas, conteos, heatmaps o leyendas de sedes y áreas fuera del alcance visible.
+
+La ausencia de un territorio no debe revelar indirectamente que existe información sensible asociada.
+
+#### 48. Búsqueda
+
+La búsqueda solo consulta el universo autorizado.
+
+No se admite buscar toda la base y ocultar resultados después del match.
+
+Autocompletado, conteo de resultados y sugerencias también respetan scope.
+
+#### 49. Ordenamiento y paginación
+
+La paginación y el ordenamiento se aplican sobre el dataset autorizado.
+
+No se utiliza un `total_count` calculado antes de limitar el territorio.
+
+#### 50. Exportación
+
+Una exportación nunca amplía el alcance de la pantalla o capacidad que la originó.
+
+Debe volver a validar actor, permiso, scope, territorio de recursos, sensibilidad y vigencia.
+
+`exportar` no se deriva de `view` salvo que el contrato propietario lo permita expresamente.
+
+#### 51. Impresión y compartir
+
+Imprimir, copiar enlace, generar PDF o compartir una vista no modifica autoridad.
+
+El receptor de un enlace protegido revalida su propio contexto.
+
+#### 52. Deep links
+
+Toda ruta profunda revalida en servidor:
+
+1. identidad;
+2. sesión;
+3. permiso exacto;
+4. alcance;
+5. recurso;
+6. territorio real del recurso;
+7. denies;
+8. controles adicionales aplicables.
+
+Un query param `site_id` o `area_id` no se considera evidencia de autorización.
+
+#### 53. Acceso directo
+
+Entrar directamente por URL a una sede o área fuera de alcance produce el estado seguro correspondiente.
+
+No debe mostrar primero el contenido y ocultarlo después de cargar.
+
+#### 54. Datos no territoriales
+
+Un recurso verdaderamente organizacional o no territorial puede ser visible sin sede o área cuando el permiso exacto lo permita.
+
+La UI no inventa un `site_id` para satisfacer un patrón territorial.
+
+#### 55. `null`
+
+`null`, ausencia y lista vacía conservan significado estricto.
+
+```text
+site_id = null
+!= todas las sedes
+```
+
+```text
+area_id = null
+!= todas las áreas
+```
+
+Cuando el contrato necesita un territorio y este no puede resolverse, se falla cerrado.
+
+#### 56. Estado `NOT_AUTHORIZED`
+
+La superficie usa `NOT_AUTHORIZED` cuando existe una decisión concluyente de acceso insuficiente para esa proyección.
+
+No se representa como `0`, `sin datos` o error técnico.
+
+#### 57. Estado `EMPTY`
+
+`EMPTY` significa que la consulta autorizada fue válida y no produjo elementos visibles.
+
+No puede usarse para ocultar una denegación.
+
+#### 58. Estado `NOT_AVAILABLE`
+
+`NOT_AVAILABLE` corresponde a una capacidad o fuente temporalmente no disponible dentro de un contexto autorizado.
+
+No habilita fallback a una consulta de mayor alcance.
+
+#### 59. Estado `PARTIAL`
+
+`PARTIAL` solo se usa cuando el contrato admite composición parcial y cada segmento conserva su propio scope y estado.
+
+No suma datos no autorizados para completar un total.
+
+#### 60. Estado `STALE`
+
+Una proyección territorial se considera stale cuando cambian hechos que pueden modificar su universo autorizado, entre ellos:
+
+- asignaciones de sede;
+- asignaciones de área;
+- estado de sede o área;
+- rol base;
+- grants;
+- denies;
+- restricciones explícitas;
+- versión de contexto;
+- territorio del recurso relevante.
+
+#### 61. Invalidación
+
+Un cambio territorial invalida snapshots derivados según el contrato canónico.
+
+La UI no conserva un listado antiguo simplemente porque el filtro seleccionado siga existiendo.
+
+#### 62. Concurrencia
+
+Antes de una mutación, el servidor vuelve a resolver el contexto y el territorio.
+
+Una pantalla abierta antes de un traslado, retiro de sede o deny nuevo no conserva autoridad por haber sido cargada previamente.
+
+#### 63. Caché
+
+Las cachés deben estar particionadas por los factores de autorización necesarios.
+
+No se mezclan datos entre:
+
+- actores;
+- scopes;
+- sedes;
+- áreas;
+- funciones globales específicas;
+- versiones de contexto.
+
+#### 64. Minimización
+
+Mostrar menos datos por minimización no equivale a tener menor autoridad; mostrar más datos por conveniencia no está permitido.
+
+La proyección territorial expone únicamente información necesaria para interpretar y ejecutar la función autorizada.
+
+#### 65. Datos sensibles
+
+La territorialización no sustituye controles de sensibilidad.
+
+Un actor territorialmente autorizado puede seguir necesitando:
+
+- reautenticación;
+- finalidad válida;
+- minimización adicional;
+- permiso atómico;
+- prohibición de exportación;
+- auditoría reforzada.
+
+#### 66. Navegación entre dominios
+
+La visibilidad de un dominio o tarjeta no prueba que todos sus recursos estén dentro del alcance.
+
+Cada destino vuelve a evaluar permiso y territorio.
+
+#### 67. Handoffs cross-owner
+
+Un handoff hacia NEXO, FOGO, ORIGO, NUMERA, ANIMA, TALENTO, PASS u otro owner conserva el contexto necesario para orientar navegación, pero el owner receptor realiza su propia autorización.
+
+VISO no entrega una lista de IDs como bypass de autorización del destino.
+
+#### 68. Explicación territorial
+
+Una tarjeta o fila puede explicar de forma breve:
+
+- cobertura aplicada;
+- filtro activo;
+- sede o área del recurso cuando sea material;
+- por qué un dato está fuera del filtro, sin revelar su contenido.
+
+No explica aún la cadena de procedencia del permiso.
+
+#### 69. Frontera con `VISO-UX-014`
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` es propietario de la procedencia autorizativa.
+
+Esta tarea no atribuye un permiso a:
+
+- rol base;
+- override individual;
+- deny;
+- rol operativo;
+- simulación;
+- plantilla;
+- excepción;
+- grant concreto.
+
+Solo presenta el alcance territorial ya resuelto y la diferencia entre cobertura, filtro y territorio del recurso.
+
+#### 70. Frontera con `VISO-UX-015`
+
+La experiencia completa de conflictos de configuración permanece reservada a `VISO-UX-015`.
+
+`VISO-UX-013` puede mostrar que un territorio está inválido, ambiguo o no resoluble, pero no diseña el workflow de resolución del conflicto.
+
+#### 71. Frontera con `VISO-UX-016`
+
+La experiencia de auditoría de cambios permanece reservada a `VISO-UX-016`.
+
+Esta tarea exige trazabilidad compatible, pero no define el visor completo de auditoría.
+
+#### 72. Frontera con `VISO-UX-017`
+
+La composición de loading, vacíos y errores transversales permanece reservada a `VISO-UX-017` cuando corresponda.
+
+Los estados definidos aquí son semánticos y no sustituyen el patrón visual detallado posterior.
+
+#### 73. Frontera con `VISO-UX-018`
+
+Los patrones responsivos y de densidad permanecen reservados a su tarea propietaria cuando la secuencia lo establezca.
+
+La territorialización debe sobrevivir cualquier viewport sin ocultar el scope material.
+
+#### 74. Frontera con `VISO-UX-019`
+
+La restricción de administradores y superficies sensibles conserva su owner de seguridad.
+
+Tener territorio no implica poder administrar seguridad dentro de ese territorio.
+
+#### 75. Frontera con `VISO-UX-020`
+
+El cierre del minibloque deberá verificar consistencia entre alcance visible, procedencia, conflictos, auditoría y pruebas.
+
+Esta tarea no absorbe ese cierre.
+
+#### 76. Presentación en `Inicio`
+
+Las variantes `Inicio` de `VISO-UX-008..012` consumen este patrón transversal.
+
+Cada tarjeta, contador, indicador, señal, comparación y handoff debe declarar o inferir de forma verificable el scope aplicable antes de materializar datos.
+
+#### 77. Presentación en listas
+
+Las listas administrativas:
+
+1. consultan dataset autorizado;
+2. muestran filtro territorial aplicable;
+3. no mezclan filas ocultas en conteos;
+4. preservan territorio del recurso cuando sea necesario para comprender la fila;
+5. revalidan en acciones.
+
+#### 78. Presentación en detalle
+
+Una pantalla de detalle no adquiere autoridad adicional por conocer el ID del objeto.
+
+Si el recurso ya no está dentro de alcance, la vista falla cerrada o degrada según el contrato propietario.
+
+#### 79. Presentación en formularios
+
+Los selectores de sede y área solo ofrecen destinos permitidos para la acción específica.
+
+Que una sede sea visible para lectura no implica que sea elegible para una mutación.
+
+#### 80. Presentación en tablas cruzadas
+
+Matrices sede × área, trabajador × sede, permiso × scope u otras tablas cruzadas deben evitar celdas sintéticas que parezcan autorizables cuando una combinación no existe o no está permitida.
+
+#### 81. Presentación de multisede
+
+La UI presenta multisede como conjunto explícito, por ejemplo:
+
+```text
+Cobertura: 3 sedes asignadas
+```
+
+No usa:
+
+```text
+Cobertura: Global
+```
+
+salvo que la capacidad exacta tenga alcance organizacional/global que lo justifique.
+
+#### 82. Presentación de restricciones específicas
+
+Una restricción `SPECIFIC_SITE` o `SPECIFIC_AREA` debe ser visible como límite, no como simple filtro removible.
+
+La UI no ofrece `Quitar filtro` si quitarlo implicaría ampliar autoridad.
+
+#### 83. Presentación de scopes funcionales globales
+
+Para `G-FUNC`, `G-FIN` o `G-SRC`, la UI puede indicar la función exacta y permitir filtros reductores.
+
+No usa una etiqueta genérica `Administrador global`.
+
+#### 84. Procedencia de datos
+
+La superficie puede declarar la aplicación o dataset propietario del dato para evitar confusión de ownership.
+
+Eso no equivale a explicar el origen del permiso y no invade `VISO-UX-014`.
+
+#### 85. Estado AS-IS de VISO
+
+El VISO físico actual contiene superficies que usan `createAdminClient()`, parámetros `site_id`, `selected_site_id`, `employees.site_id` y consultas a `employee_sites` con semánticas heterogéneas.
+
+La existencia de esas rutas demuestra capacidad técnica, no cumplimiento automático del contrato territorial.
+
+#### 86. Hallazgo AS-IS — raíz `/`
+
+La raíz actual usa conteos directos de tablas mediante cliente administrativo.
+
+Esos conteos no demuestran que el universo haya sido limitado previamente por permiso y territorio.
+
+La futura materialización de las variantes `Inicio` deberá reemplazar cualquier total técnico por agregados autorizados server-side.
+
+#### 87. Hallazgo AS-IS — `selected_site_id`
+
+Existen consumidores actuales que usan `selected_site_id` como preferencia y, en algunos casos, fallback junto con `employees.site_id`.
+
+El contrato canónico exige que una preferencia no se convierta en fuente de autoridad.
+
+Toda materialización afectada deberá distinguir navegación de autorización real.
+
+#### 88. Hallazgo AS-IS — `employees.site_id`
+
+El campo legacy `employees.site_id` aparece todavía en consumidores físicos.
+
+No puede sustituir `assigned_sites` ni el territorio real del recurso cuando la política exige cobertura multisede o sede exacta.
+
+#### 89. Hallazgo AS-IS — programación global
+
+VISO contiene vistas de programación con rutas y filtros de sede, incluyendo una vista denominada global.
+
+La palabra `global` en una ruta o etiqueta no concede alcance global.
+
+Cada superficie debe resolver audiencia efectiva mediante permiso y territorio antes de retornar trabajadores, turnos o métricas.
+
+#### 90. Hallazgo AS-IS — cliente administrativo
+
+`createAdminClient()` es una herramienta técnica server-side.
+
+```text
+SERVICE ROLE CAPABILITY
+!= HUMAN AUTHORIZATION
+```
+
+Toda query que use cliente administrativo debe aplicar la autorización humana canónica antes de exponer o mutar datos.
+
+#### 91. Mapeo de materialización futura
+
+Cada superficie territorial deberá clasificarse en una de estas disposiciones durante su instancia física:
+
+```text
+KEEP_WITH_CANONICAL_TERRITORIAL_FILTER
+REWORK_TO_SERVER_AUTHORIZED_PROJECTION
+MOVE_TO_OWNER_HANDOFF
+REMOVE_UNSAFE_GLOBAL_PROJECTION
+DEFER_UNTIL_SCOPE_OWNER_READY
+```
+
+La clasificación física no se ejecuta en esta tarea.
+
+#### 92. Datos agregados de otros owners
+
+VISO puede resumir datos de otras aplicaciones solo cuando:
+
+- el owner permite la proyección;
+- el actor tiene la capacidad exacta;
+- el scope autoriza cada dato incorporado;
+- el agregado no revela elementos ocultos;
+- existe frescura y semántica suficientes.
+
+#### 93. Queries server-side
+
+La materialización futura debe preferir contratos server-side capaces de aplicar autorización antes de devolver datos.
+
+No se certifica un patrón de `fetch all + filter client` para superficies protegidas.
+
+#### 94. RLS y guards
+
+RLS, guards y evaluadores son capas complementarias.
+
+La UI no asume que una capa ausente queda compensada por otra sin contrato explícito.
+
+#### 95. Fallo cerrado
+
+Cuando existe incertidumbre material sobre:
+
+- identidad;
+- permiso;
+- scope;
+- cobertura;
+- territorio del recurso;
+- deny;
+- estado de sede o área;
+
+la superficie protegida no amplía resultados para mantener usabilidad.
+
+#### 96. Cero real frente a cero por alcance
+
+La UI distingue:
+
+```text
+AUTHORIZED_QUERY_RESULT = 0
+```
+
+de:
+
+```text
+QUERY_NOT_AUTHORIZED
+```
+
+No muestra ambos como `0`.
+
+#### 97. Conteo de sedes visibles
+
+El número de sedes visible se deriva del universo permitido para esa capacidad.
+
+No se usa el total físico de `public.sites` como indicador del alcance de un actor.
+
+#### 98. Nuevas sedes
+
+Una nueva sede ordinaria entra automáticamente en un permiso global ya existente cuando la semántica canónica de ese grant lo permita.
+
+No entra automáticamente en `ASSIGNED_SITES` de un trabajador sin una asignación laboral válida.
+
+#### 99. Nuevas áreas
+
+Una nueva área ordinaria puede quedar incluida por un permiso global o por tipo de área cuando el grant exacto lo permita.
+
+No entra automáticamente en `ASSIGNED_AREAS` sin relación laboral válida.
+
+#### 100. Desactivación territorial
+
+Una sede o área desactivada deja de participar como territorio utilizable según los contratos canónicos.
+
+La UI invalida filtros obsoletos y no conserva la entidad como opción activa por conveniencia.
+
+#### 101. Cambio de asignaciones
+
+Agregar o retirar una relación en `assigned_sites` o `assigned_areas` invalida proyecciones territoriales afectadas.
+
+La nueva cobertura debe resolverse antes de continuar una acción sensible.
+
+#### 102. Cambio de rol base
+
+Cambiar rol base puede modificar el modo predeterminado de cobertura administrativa.
+
+La UI recompone la proyección desde el contexto nuevo; no conserva tarjetas, filtros o conteos del rol anterior.
+
+#### 103. Denegaciones
+
+Un deny aplicable conserva precedencia aunque la cobertura territorial coincida.
+
+```text
+TERRITORY_MATCH
++
+DENY
+=
+NO ALLOW
+```
+
+#### 104. Simulación
+
+La simulación no se mezcla con el contexto real.
+
+Si una superficie muestra territorio simulado, debe etiquetarlo inequívocamente y mantenerlo separado de consultas reales.
+
+El detalle de simulación continúa bajo sus contratos propietarios.
+
+#### 105. Dispositivo compartido
+
+La sede o área de un dispositivo compartido no amplía la cobertura administrativa del actor.
+
+El dispositivo puede restringir o contextualizar una acción, pero no conceder territorio nuevo.
+
+#### 106. Turno y check-in
+
+Turno y check-in no son requisito universal para administración base.
+
+No se usa su ausencia para ocultar una capacidad base concedida ni su presencia para ampliar cobertura administrativa.
+
+#### 107. Permisos nuevos
+
+Un permiso nuevo no aparece automáticamente en superficies territoriales existentes.
+
+Debe contar con modalidad y alcance clasificados y con decisión de experiencia antes de incorporarse.
+
+#### 108. Recursos nuevos
+
+Un recurso nuevo debe declarar o permitir resolver su territorialidad antes de integrarse a una superficie protegida.
+
+Si no puede determinarse si es organizacional, por sede, por área o multiterritorial, se difiere su incorporación.
+
+#### 109. Privacidad por diseño
+
+Un actor puede tener permiso y territorio válidos y aun así no necesitar todos los campos del recurso.
+
+La proyección territorial aplica whitelist y minimización por finalidad.
+
+#### 110. Auditoría compatible
+
+Las acciones protegidas deben conservar suficiente contexto para reconstruir:
+
+- actor;
+- permiso;
+- scope;
+- recurso;
+- territorio resuelto;
+- resultado;
+- versión de contexto relevante.
+
+La experiencia completa de auditoría no se desarrolla aquí.
+
+#### 111. Casos representativos obligatorios para materialización
+
+La futura implementación deberá cubrir al menos:
+
+1. propietario con `ORGANIZATION` y una capacidad permitida;
+2. propietario con deny específico;
+3. gerente general con recurso organizacional válido;
+4. gerente con una sede asignada;
+5. gerente con múltiples sedes asignadas;
+6. gerente cuya sede primaria es solo una de varias asignadas;
+7. auxiliar con `ASSIGNED_SITES` y `G-FUNC` transversal;
+8. auxiliar con filtro visual a una sede dentro de `G-FUNC`;
+9. auxiliar con documento `AS-REL` entre dos sedes;
+10. contador con `administrative_coverage = NONE` y `G-FIN` válido;
+11. contador con `G-SRC` filtrado visualmente por sede;
+12. actor con `SPECIFIC_SITE` explícito;
+13. actor con `ASSIGNED_AREAS`;
+14. actor con `SPECIFIC_AREA`;
+15. sede seleccionada fuera de cobertura;
+16. área seleccionada incompatible con sede;
+17. recurso sin territorio resoluble;
+18. recurso de sede no autorizada;
+19. operación multiterritorial con un extremo fuera de alcance;
+20. deep link a recurso fuera de alcance;
+21. agregado que no debe incluir filas ocultas;
+22. comparación con un lado no autorizado;
+23. snapshot stale tras cambio de asignación;
+24. check-in activo que no amplía administración;
+25. ausencia de turno que no revoca `BASE_ONLY`.
+
+#### 112. Pruebas de autorización esperadas
+
+La instancia física deberá demostrar, entre otras condiciones:
+
+- `selected_site_id` no concede autoridad;
+- `selected_area_id` no concede autoridad;
+- `employees.site_id` no sustituye cobertura multisede;
+- multisede no se transforma en global;
+- `null` no actúa como wildcard;
+- `ORGANIZATION` no atraviesa territorios aislados;
+- `ASSIGNED_SITES` enumera únicamente asignaciones utilizables;
+- `SPECIFIC_SITE` requiere fuente explícita;
+- `ASSIGNED_AREAS` conserva coherencia sede-área;
+- `SPECIFIC_AREA` requiere fuente explícita;
+- `G-FUNC`, `G-FIN` y `G-SRC` no cambian `administrative_coverage`;
+- territorio del recurso se resuelve en servidor;
+- denies conservan precedencia;
+- turno/check-in no crean administración;
+- agregados no revelan filas ocultas;
+- deep links revalidan.
+
+#### 113. Pruebas de experiencia esperadas
+
+La materialización deberá demostrar:
+
+- cobertura y filtro visualmente distinguibles;
+- etiquetas comprensibles sin jerga innecesaria;
+- `Todos` entendido como todos los objetos autorizados;
+- restricciones específicas no presentadas como filtros removibles;
+- estados `EMPTY` y `NOT_AUTHORIZED` diferenciados;
+- scope material visible en tablas y detalles sensibles;
+- navegación sin pérdida de contexto;
+- ausencia de flashes de datos no autorizados.
+
+#### 114. Pruebas de agregación esperadas
+
+Deben cubrir:
+
+- count autorizado;
+- sum autorizado;
+- promedio autorizado;
+- agrupación por sede;
+- agrupación por área;
+- comparación autorizada;
+- filtros reductores;
+- paginación sobre dataset autorizado;
+- ausencia de `total_count` global filtrante.
+
+#### 115. Pruebas de frescura esperadas
+
+Deben cubrir invalidación después de:
+
+- asignación de sede;
+- retiro de sede;
+- asignación de área;
+- retiro de área;
+- desactivación de sede;
+- desactivación de área;
+- cambio de rol base;
+- cambio de grant;
+- cambio de deny;
+- cambio de territorio del recurso.
+
+#### 116. Carryovers
+
+| Hallazgo | Bloquea definición documental | Owner de cierre | Condición de salida |
+| --- | --- | --- | --- |
+| superficies VISO usan `createAdminClient()` sin que eso pruebe autorización humana | no | unidad física correspondiente + contratos AUTH | queries server-side demuestran permiso, scope y recurso antes de exponer datos |
+| consumidores todavía usan `employees.site_id` como dato territorial | no | adopción de contexto canónico + unidad física afectada | `assigned_sites` y territorio real sustituyen cualquier fallback autoritativo legacy |
+| existen consumidores de `selected_site_id` que requieren reconciliación | no | unidad física afectada | selección permanece solo como preferencia/filtro y no concede autoridad |
+| vistas denominadas globales pueden sugerir alcance superior | no | unidad física de VISO aplicable | audiencia efectiva se resuelve por autorización y la etiqueta no actúa como permiso |
+| patrón detallado de origen de permisos aún no pertenece a esta tarea | no | `VISO-UX-014` | procedencia de permiso materializada sin alterar alcance |
+| workflow completo de conflictos no pertenece a esta tarea | no | `VISO-UX-015` | conflictos territoriales y de configuración tienen experiencia propietaria |
+
+#### 117. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Justificación:** la tarea materializa en experiencia obligaciones ya existentes de autorización, alcance territorial, fail-closed, coherencia VISO, agregación segura, navegación, minimización, frescura y trazabilidad. No crea un permiso, scope, rol, recurso, reason code, estado empresarial, ruta, pantalla, proceso, tabla, mutación o semántica de autorización nueva que requiera una fila adicional del registro canónico.
+
+#### 118. Cobertura de prueba vigente reutilizada
+
+La materialización reutiliza cobertura canónica existente, entre ella:
+
+- `TREQ-VISO-001` para coherencia de VISO, alcance territorial, conflictos, procedencia y auditoría;
+- `TREQ-AUTH-007` para administración con capacidad y alcance explícitos;
+- `TREQ-AUTH-009` para resolución determinista de sede y área;
+- `TREQ-AUTH-013` para revalidación server-side de mutaciones;
+- `TREQ-AUTH-014` para invalidación ante cambios de contexto;
+- `TREQ-AUTH-015` para evidencia correlacionable;
+- `TREQ-UX-007` para experiencia administrativa coherente y segura.
+
+Estas referencias son trazabilidad de cobertura vigente y no modifican el registro.
+
+#### 119. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y todavía no se ha insertado ni ejecutado la batería del checkout local. |
+| LOCAL | NOT_EXECUTED | El artefacto no se ha incorporado al archivo propietario ni normalizado mediante los scripts del repositorio. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad, topología, políticas, owner G_VISO, `AUTH-MOD-007/008`, `AUTH-MOD-013..019`, `AUTH-RBAC-027/028`, `AUTH-CTX` territorial, `VISO-AUTH-013`, 04A VISO, scripts documentales y consumidores físicos actuales de `vento-viso`; `VISO-UX-011` ya está cerrada en `main` y `VISO-UX-012` permanece como predecesora documental aún no publicada. |
+| OPERATIVA | NOT_EXECUTED | No se consultaron ni modificaron recursos empresariales reales, permisos, asignaciones, turnos, sedes, áreas o datos operativos. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, Supabase, migraciones, RLS, RPC, aplicaciones ni despliegues. |
+
+#### 120. Criterios de aceptación
+
+1. la tarea conserva `VISO-UX-012` como anterior y `VISO-UX-014` como siguiente;
+2. se mantiene `PER_IMPLEMENTATION_UNIT`;
+3. se mantiene `POST_E5_PACKAGE`;
+4. no se modifica código ni infraestructura;
+5. `assigned_sites` se trata como hecho laboral, no permiso;
+6. `assigned_areas` se trata como hecho laboral, no permiso;
+7. sede primaria no equivale a única sede autorizada;
+8. sede seleccionada no autoriza;
+9. área seleccionada no autoriza;
+10. sede operativa no amplía cobertura administrativa;
+11. área operativa no amplía cobertura administrativa;
+12. territorio del recurso se resuelve en servidor;
+13. multisede no equivale a global;
+14. `null` no equivale a todas las sedes;
+15. `null` no equivale a todas las áreas;
+16. `administrative_coverage` se mantiene como insumo y no decisión;
+17. se reconocen exactamente seis modos de cobertura administrativa;
+18. `NONE` no elimina grants globales específicos;
+19. `ORGANIZATION` no equivale a wildcard;
+20. `ASSIGNED_SITES` mantiene conjunto explícito;
+21. una sola sede asignada sigue siendo `ASSIGNED_SITES`;
+22. `SPECIFIC_SITE` exige restricción explícita;
+23. `ASSIGNED_AREAS` mantiene coherencia sede-área;
+24. `SPECIFIC_AREA` exige restricción explícita;
+25. propietario usa cobertura base `ORGANIZATION`;
+26. gerente general usa cobertura base `ORGANIZATION`;
+27. gerente usa `ASSIGNED_SITES`;
+28. supervisor usa `ASSIGNED_SITES`;
+29. auxiliar administrativa usa `ASSIGNED_SITES`;
+30. contador usa cobertura base `NONE`;
+31. marketing usa cobertura base `NONE`;
+32. `G-FUNC` no cambia cobertura base;
+33. `G-FIN` no cambia cobertura base;
+34. `G-SRC` no cambia cobertura base;
+35. `ORG-REF` no concede edición;
+36. filtros solo reducen el universo autorizado;
+37. `Todos` significa todos los objetos autorizados;
+38. organización completa solo aparece cuando el permiso lo permite;
+39. cobertura, filtro y territorio del recurso se distinguen;
+40. restricciones específicas no aparecen como filtros removibles;
+41. conteos se calculan después de autorización;
+42. agregados no incluyen filas ocultas;
+43. comparaciones exigen autorización para ambos lados;
+44. búsqueda opera dentro del universo autorizado;
+45. paginación opera sobre dataset autorizado;
+46. exportación revalida autorización;
+47. deep links revalidan autorización;
+48. query params no conceden autoridad;
+49. acceso directo falla cerrado fuera de scope;
+50. datos no territoriales no reciben sede ficticia;
+51. `EMPTY` no oculta `NOT_AUTHORIZED`;
+52. `PARTIAL` no completa totales con datos prohibidos;
+53. cambios territoriales invalidan snapshots;
+54. caché no mezcla actores o scopes;
+55. territorialización no sustituye sensibilidad;
+56. un handoff no concede autoridad al destino;
+57. `VISO-UX-014` conserva procedencia de permisos;
+58. `VISO-UX-015` conserva resolución de conflictos;
+59. la raíz `/` deberá abandonar agregados técnicos no autorizados en su futura materialización;
+60. `selected_site_id` físico no podrá actuar como fuente de autoridad;
+61. `employees.site_id` legacy no podrá sustituir multisede;
+62. una ruta denominada global no concede scope global;
+63. `createAdminClient()` no sustituye permiso humano;
+64. queries protegidas se autorizan server-side antes de exponer datos;
+65. denies conservan precedencia;
+66. check-in no crea administración;
+67. ausencia de turno no revoca `BASE_ONLY`;
+68. dispositivo compartido no amplía cobertura administrativa;
+69. nuevos permisos requieren clasificación explícita;
+70. nuevos recursos requieren territorialidad resoluble;
+71. privacidad y minimización permanecen activas;
+72. auditoría futura podrá reconstruir territorio y resultado;
+73. la sección de requisitos derivados conserva cero IDs afectados;
+74. la cobertura histórica se referencia fuera de la sección de cero cambios;
+75. no se entrega 04A porque no cambia requisitos;
+76. no se desarrolla `VISO-UX-014`;
+77. no se ejecuta ninguna implementación física.
+
+#### 121. Límites
+
+Esta tarea no:
+
+- crea o modifica permisos;
+- crea o modifica roles;
+- cambia matrices RBAC;
+- crea scopes nuevos;
+- modifica `AccessContext`;
+- modifica `AuthorizationDecision`;
+- crea `administrative_coverage` nuevo;
+- modifica asignaciones de sede o área;
+- modifica sedes o áreas;
+- modifica turnos o check-ins;
+- convierte `selected_site_id` o `selected_area_id` en autoridad;
+- corrige físicamente `employees.site_id`;
+- implementa filtros en `vento-viso`;
+- implementa queries server-side;
+- modifica guards;
+- modifica RLS;
+- modifica RPC;
+- modifica Supabase;
+- modifica datos;
+- modifica código;
+- modifica rutas;
+- crea una pantalla nueva;
+- crea un proceso nuevo;
+- crea un séptimo dominio VISO;
+- define origen de permisos;
+- desarrolla `VISO-UX-014`;
+- desarrolla el workflow completo de conflictos;
+- desarrolla `VISO-UX-015`;
+- ejecuta implementación física.
+
+#### 122. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-012 — Definir inicio para contador`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-013 — Limitar información según alcance territorial`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible`
 ### [ ] VISO-UX-014 — Mostrar origen de permisos de forma comprensible
 ### [ ] VISO-UX-015 — Mostrar conflictos antes de guardar
 ### [ ] VISO-UX-016 — Permitir vista previa exacta de cada trabajador
