@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1465** |
+| Aprobadas | **1466** |
 | En propuesta | **0** |
-| No iniciadas | **131** |
+| No iniciadas | **130** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **91.79% (1465/1596)** |
+| Porcentaje de completamiento | **91.85% (1466/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **131** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1366** |
+| ⏸ NO_EVALUADA | **130** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1367** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-001` — Reorganizar navegación por dominios administrativos | ✅ APROBADA |
-| Tarea actual | `VISO-UX-002` — Crear sección Personal | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-UX-003` — Crear sección Programación | ⬜ NO INICIADA |
+| Última aprobada | `VISO-UX-002` — Crear sección Personal | ✅ APROBADA |
+| Tarea actual | `VISO-UX-003` — Crear sección Programación | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-UX-004` — Crear sección Acceso y seguridad | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -714,7 +714,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | EXISTING_NEEDS_ADOPTION_EVIDENCE | `VISO-CORE-005` | Implementar validación de conflictos y auditoría | — | — | `bloques/G_VISO/02_NUCLEO_MINIMO_PARA_OPERACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-CORE-006` | Aprobar núcleo antes de ampliar alcance | — | — | `bloques/G_VISO/02_NUCLEO_MINIMO_PARA_OPERACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-001` | Reorganizar navegación por dominios administrativos | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-002` | Crear sección Personal | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-002` | Crear sección Personal | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-003` | Crear sección Programación | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-004` | Crear sección Acceso y seguridad | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-005` | Crear sección Organización | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
