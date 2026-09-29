@@ -32837,7 +32837,1609 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-016 — Permitir vista previa exacta de cada trabajador`
-### [ ] VISO-UX-016 — Permitir vista previa exacta de cada trabajador
+### ✅ VISO-UX-016 — Permitir vista previa exacta de cada trabajador
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-015 — Mostrar conflictos antes de guardar
+**Tarea siguiente:** VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
+**Tipo de tarea:** definición técnico-documental de la vista previa administrativa integral y exacta por trabajador en VISO; compone contexto laboral vigente y propuesto, territorio, turnos, rol base y operativo, decisiones reales de autorización, simulación prospectiva cuando corresponda, procedencia de permisos, conflictos pre-save, frescura, minimización y agregados cross-site autorizados sin convertir la vista previa en fuente de autoridad, sin ampliar visibilidad territorial y sin duplicar workspaces propietarios; conserva `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato transversal de vista previa exacta por trabajador definido; la implementación física de VISO permanece AS-IS y requerirá materialización posterior por `implementation_unit_id` para consumir proyecciones server-side canónicas de contexto, autorización, simulación, procedencia, conflicto y agregados sin reconstruirlos desde tablas o paneles locales
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, componentes, guards, permisos, matrices, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, programación laboral, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo VISO debe permitir a un administrador autorizado inspeccionar una **vista previa exacta de un trabajador** antes de guardar una configuración, durante una revisión administrativa o al comparar el estado vigente con un escenario propuesto.
+
+La vista debe responder, sin mutar datos:
+
+```text
+¿QUIÉN ES EL TRABAJADOR EXACTO?
+¿QUÉ CONTEXTO LABORAL REAL TIENE?
+¿QUÉ SEDE, ÁREA, TURNO Y ROL APLICAN EN CADA FILA?
+¿QUÉ PERMISOS EFECTIVOS TIENE REALMENTE?
+¿QUÉ CAMBIARÍA BAJO LA PROPUESTA?
+¿DE DÓNDE PROVIENE CADA EFECTO?
+¿QUÉ CONFLICTOS O BLOQUEOS EXISTEN?
+¿QUÉ PARTE ES REAL Y QUÉ PARTE ES SIMULADA?
+¿QUÉ INFORMACIÓN PUEDE MOSTRARSE AL ADMINISTRADOR ACTUAL?
+¿QUÉ DATOS DEBEN PERMANECER OCULTOS O AGREGADOS?
+¿EL SNAPSHOT SIGUE VIGENTE?
+```
+
+La regla raíz es:
+
+```text
+TRABAJADOR AUTORIZADO PARA CONSULTA
++
+CONTEXTO LABORAL EXACTO
++
+DECISIONES REALES EFECTIVAS
++
+ESCENARIO PROPUESTO CUANDO EXISTA
++
+DECISIONES SIMULADAS CUANDO CORRESPONDA
++
+PROCEDENCIA AUTORIZADA
++
+CONFLICTOS APLICABLES
++
+MINIMIZACIÓN Y TERRITORIO DEL ACTOR
+→
+VISTA PREVIA EXACTA POR TRABAJADOR
+```
+
+Exactitud no significa exposición irrestricta.
+
+#### 2. Contrato canónico de presentación
+
+Se define:
+
+```text
+VISO_WORKER_EXACT_PREVIEW_CONTRACT = VISO-WORKER-EXACT-PREVIEW-001
+```
+
+Este contrato pertenece a la experiencia administrativa de VISO.
+
+No sustituye `AuthorizationDecision`, `SimulationContextV1`, `SimulatedAuthorizationDecisionV1`, las matrices de rol, los contratos de contexto ni las reglas de conflicto.
+
+#### 3. Handoff recibido de `VISO-UX-015`
+
+`VISO-UX-015 — Mostrar conflictos antes de guardar` entrega el patrón de comparación:
+
+```text
+ESTADO ACTUAL
++
+CAMBIO PROPUESTO
+→
+ESTADO PROYECTADO
+```
+
+junto con la separación entre:
+
+```text
+BLOQUEANTE
+REVISIÓN
+```
+
+016 reutiliza esos hallazgos dentro de la vista del trabajador sin redefinirlos.
+
+#### 4. Handoff recibido de `VISO-UX-014`
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` entrega la explicación de procedencia por permiso exacto.
+
+La vista previa de 016 puede expandir esa explicación, pero no recalcula el origen desde tablas locales.
+
+#### 5. Handoff recibido de `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` mantiene separados:
+
+- territorio autorizado;
+- territorio laboral del trabajador;
+- territorio del recurso;
+- sede o área seleccionada en interfaz;
+- cobertura administrativa;
+- scopes funcionales exactos.
+
+016 conserva íntegramente esa separación.
+
+#### 6. Handoff recibido de `VISO-AUTH-013`
+
+`VISO-AUTH-013 — Crear vista previa trabajador × sede × área × turno` es la fuente vinculante de la proyección contextual.
+
+Su unidad no es “el trabajador global” como objeto plano.
+
+La unidad contextual es una combinación reconstruible de:
+
+```text
+TRABAJADOR
+×
+SEDE
+×
+ÁREA CUANDO APLIQUE
+×
+TURNO O PROPUESTA DE TURNO CUANDO APLIQUE
+```
+
+La UX de 016 compone esas filas en una experiencia integral por trabajador.
+
+#### 7. Handoff recibido de `VISO-AUTH-014`
+
+`VISO-AUTH-014 — Crear simulador de permisos efectivos` conserva la evaluación hipotética por permiso exacto.
+
+Los resultados simulados son únicamente:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+Nunca se presentan como `ALLOW` o `DENY` reales.
+
+#### 8. Handoff recibido de `VISO-AUTH-015`
+
+`VISO-AUTH-015 — Mostrar origen de cada permiso` conserva las fuentes, carriles, scopes y restricciones que explican una decisión.
+
+016 consume esa trazabilidad para cada permiso mostrado cuando el actor tenga derecho a verla.
+
+#### 9. Handoff recibido de `VISO-AUTH-016`
+
+`VISO-AUTH-016 — Mostrar conflictos de configuración` conserva la semántica de conflicto.
+
+016 puede mostrar los conflictos aplicables al trabajador o a la propuesta inspeccionada, pero no reclasifica grants, denies, default deny, redundancia o legacy.
+
+#### 10. Exactitud semántica
+
+Una vista previa es exacta cuando:
+
+1. identifica al trabajador objetivo sin ambigüedad;
+2. conserva cada contexto laboral relevante por separado;
+3. usa identidades exactas de sede, área, turno, rol, aplicación, permiso y recurso;
+4. no infiere valores ausentes mediante defaults de interfaz;
+5. distingue datos reales, históricos, propuestos, simulados y enmascarados;
+6. conserva el resultado real de autorización cuando existe;
+7. conserva el resultado simulado separado cuando existe;
+8. no omite silenciosamente permisos evaluados;
+9. no colapsa causas distintas en un estado genérico;
+10. conserva frescura y versiones suficientes para revalidar.
+
+#### 11. Exactitud no equivale a máxima divulgación
+
+El resultado mostrado puede ser exacto aunque parte de su evidencia permanezca enmascarada.
+
+Ejemplo:
+
+```text
+TOTAL MENSUAL DEL TRABAJADOR = 174 h
+```
+
+puede ser exacto aunque el administrador no tenga derecho a consultar el detalle de cada turno en todas las sedes que contribuyeron al total.
+
+La vista deberá distinguir:
+
+```text
+RESULTADO EXACTO
+DETALLE COMPLETO AUTORIZADO
+DETALLE PARCIAL AUTORIZADO
+DETALLE RESTRINGIDO
+```
+
+sin inventar datos para rellenar la restricción.
+
+#### 12. Unidad principal de navegación
+
+La pantalla o componente deberá partir de un `employee_id` exacto y autorizado.
+
+El nombre, alias o texto visible no sustituye la identidad del trabajador.
+
+Dos personas con nombres iguales nunca pueden compartir una vista por coincidencia textual.
+
+#### 13. Actor real y trabajador objetivo
+
+La vista siempre diferencia:
+
+```text
+ACTOR REAL QUE CONSULTA
+≠
+TRABAJADOR OBJETIVO
+```
+
+La autoridad del actor real se evalúa antes de exponer la información del trabajador.
+
+La identidad o rol del trabajador objetivo no concede autoridad al administrador.
+
+#### 14. Estado del trabajador
+
+La vista puede mostrar, cuando esté autorizado y sea pertinente:
+
+- activo/inactivo;
+- rol base factual;
+- referencias laborales mínimas;
+- sedes asignadas pertinentes;
+- información temporal necesaria para interpretar la vista.
+
+No necesita exponer documento, teléfono, correo, PIN, credenciales ni datos personales ajenos al propósito.
+
+#### 15. Rol base factual
+
+El rol base visible es un hecho del trabajador.
+
+No se presenta como la explicación completa de sus permisos efectivos.
+
+Un permiso puede depender de fuentes distintas del rol base.
+
+#### 16. Sedes asignadas
+
+Las sedes laborales relevantes provienen de las relaciones canónicas del trabajador.
+
+La vista no sustituye:
+
+```text
+SEDE ASIGNADA
+```
+
+por:
+
+```text
+SEDE PRIMARIA
+```
+
+cuando no son la misma cosa.
+
+#### 17. Multisede
+
+Un trabajador con varias sedes conserva cada relación por separado.
+
+```text
+VARIAS SEDES ASIGNADAS
+≠
+AUTORIDAD GLOBAL
+```
+
+La vista puede agrupar visualmente por sede, pero no fusionar todas las sedes en una única identidad territorial.
+
+#### 18. Áreas habituales
+
+Las áreas laborales habituales pueden aparecer como contexto informativo cuando exista autorización.
+
+No sustituyen el `area_id` exacto de un turno ni conceden un scope de autorización.
+
+#### 19. Perfil operativo
+
+Un perfil operativo puede explicar valores de planificación, pero no sustituye el rol operativo efectivo de un turno.
+
+La interfaz deberá etiquetarlo como perfil o default, no como hecho del turno.
+
+#### 20. Turno exacto
+
+Cada turno persistido conserva su identidad.
+
+La vista puede mostrar:
+
+- fecha;
+- hora de inicio;
+- hora de fin;
+- tipo de turno;
+- estado;
+- publicación;
+- sede;
+- área cuando aplique;
+- rol operativo;
+- referencias mínimas de frescura.
+
+Dos bloques del mismo día permanecen dos filas distintas.
+
+#### 21. Propuesta de turno
+
+Una fila aún no persistida conserva una correlación inequívoca con la propuesta administrativa.
+
+No se inventa un `shift_id` real.
+
+Debe etiquetarse como propuesta.
+
+#### 22. Descanso
+
+Un descanso se presenta como descanso.
+
+La ausencia de rol operativo en un descanso no se muestra como error de rol faltante.
+
+La ausencia de área cuando es no aplicable tampoco se presenta como conflicto.
+
+#### 23. Rol operativo efectivo
+
+Para un turno laboral, el rol operativo proviene del turno exacto o de la propuesta exacta.
+
+No se obtiene desde:
+
+- rol base;
+- perfil;
+- último turno;
+- primer rol permitido;
+- nombre de área;
+- preferencia del navegador.
+
+#### 24. Sede operativa
+
+La sede operativa pertenece a la fila de turno o propuesta.
+
+La sede seleccionada en la UI puede filtrar la presentación, pero no reescribe la sede del turno ni concede autoridad.
+
+#### 25. Área operativa
+
+El área operativa se muestra únicamente cuando existe una identidad exacta o una ausencia contractualmente válida.
+
+`null` nunca significa todas las áreas.
+
+#### 26. Binding territorial
+
+La vista conserva estados como:
+
+```text
+EXACT_BINDING
+AREA_BINDING_UNRESOLVED
+NO_AREA_NOT_REQUIRED
+```
+
+cuando procedan del contrato propietario.
+
+`AREA_BINDING_UNRESOLVED` nunca se representa como “General”, “toda la sede” o wildcard.
+
+#### 27. Contexto incompleto
+
+Cuando una fila carece de una condición obligatoria, la UX preserva la causa.
+
+Ejemplos:
+
+```text
+TURNO LABORAL + ROL AUSENTE
+ROL PRESENTE + ÁREA REQUERIDA AUSENTE
+ROL + SEDE + ÁREA SIN BINDING EXACTO
+SEDE O ÁREA NO RESOLUBLE
+```
+
+No se agrupan en un único mensaje “Datos incompletos” si eso elimina la causa contractual.
+
+#### 28. Estado actual
+
+El plano actual muestra hechos y decisiones vigentes.
+
+Se etiqueta como:
+
+```text
+ACTUAL
+```
+
+No incluye propuestas como si ya estuvieran persistidas.
+
+#### 29. Estado propuesto
+
+El plano propuesto muestra exclusivamente valores explícitos de la propuesta o del escenario autorizado.
+
+Se etiqueta como:
+
+```text
+PROPUESTO
+```
+
+No se convierte en estado vigente por visualizarlo.
+
+#### 30. Comparación
+
+Cuando existen ambos planos, la vista permite comparar:
+
+```text
+ACTUAL
+PROPUESTO
+DIFERENCIA
+```
+
+La diferencia puede agrupar cambios de contexto, permisos, conflictos o agregados sin perder la identidad de las filas afectadas.
+
+#### 31. Plano real de autorización
+
+Cuando exista una decisión real autorizada para el permiso y contexto exactos, la vista puede mostrar:
+
+```text
+ALLOW
+DENY
+```
+
+como resultado real.
+
+La UI no calcula ese resultado a partir de filas de configuración.
+
+#### 32. Plano simulado de autorización
+
+Cuando la propuesta requiera simulación, el resultado se presenta como:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+La presentación debe ser inequívocamente hipotética.
+
+#### 33. Comparación permiso por permiso
+
+Para cada `app_code + permission_key` evaluado, la vista puede mostrar:
+
+```text
+PERMISO EXACTO
+RESULTADO REAL
+RESULTADO PROPUESTO/SIMULADO
+DELTA
+ORIGEN RESUMIDO
+CONFLICTO APLICABLE
+```
+
+cuando cada columna esté autorizada y exista evidencia suficiente.
+
+#### 34. Ganancia de permiso
+
+Una transición:
+
+```text
+DENY → WOULD_ALLOW
+```
+
+se presenta como ganancia proyectada.
+
+No significa que el permiso ya fue concedido.
+
+#### 35. Pérdida de permiso
+
+Una transición:
+
+```text
+ALLOW → WOULD_DENY
+```
+
+se presenta como pérdida proyectada.
+
+Debe ser visible antes de guardar cuando forme parte del universo evaluado.
+
+#### 36. Indeterminado
+
+Una transición hacia `INDETERMINATE` no se oculta.
+
+No se resume como “sin cambios”.
+
+#### 37. Permiso nuevo
+
+Si un permiso aparece únicamente en el universo propuesto, la UX lo marca como incorporación al conjunto evaluado.
+
+No se asume que el permiso existía previamente.
+
+#### 38. Permiso retirado del universo
+
+Si un permiso deja de ser evaluable por cambio contractual o de versión, la UX lo distingue de una denegación.
+
+#### 39. Permisos no evaluados
+
+La ausencia de evaluación no puede presentarse como `DENY` ni como `ALLOW`.
+
+Debe conservarse una condición explícita de no evaluado, no disponible o no aplicable según el caso.
+
+#### 40. Universo exacto de permisos
+
+Toda colección visual debe poder reconciliarse con identidades concretas de permisos.
+
+No se permiten wildcards visuales que oculten permisos omitidos.
+
+Un grupo visual puede resumir, pero debe mantener trazabilidad hacia sus miembros autorizados.
+
+#### 41. Resultado agregado
+
+La UX puede mostrar conteos como:
+
+```text
+PERMITIDOS
+DENEGADOS
+CAMBIAN A PERMITIDO
+CAMBIAN A DENEGADO
+INDETERMINADOS
+SIN CAMBIO
+```
+
+solo después de clasificar cada permiso exacto dentro del universo autorizado.
+
+#### 42. Los conteos no sustituyen las filas
+
+Un resumen “12 permitidos, 3 denegados” no es suficiente cuando el administrador necesita revisar qué permisos cambian.
+
+Los conteos son navegación, no evidencia completa.
+
+#### 43. Procedencia
+
+Cada permiso puede expandir el patrón de 014.
+
+La procedencia se consume desde evidencia canónica y puede incluir, según autorización:
+
+- rol base;
+- rol operativo;
+- concesión individual base;
+- concesión individual operativa;
+- deny aplicable;
+- scope;
+- carril;
+- source reference;
+- reason code.
+
+#### 44. Varias fuentes compatibles
+
+Múltiples grants compatibles pueden aparecer como varias fuentes sin convertirse en conflicto.
+
+La UX no escoge una “fuente ganadora” ficticia si el contrato no la define.
+
+#### 45. Default deny
+
+Default deny se explica como ausencia de concesión suficiente.
+
+No se representa como un deny explícito de un rol inexistente.
+
+#### 46. Conflictos aplicables
+
+Los hallazgos de 015 pueden mostrarse dentro del trabajador cuando afecten:
+
+- su contexto;
+- uno de sus permisos;
+- una propuesta sobre él;
+- una sede o área del escenario;
+- un turno o relación relevante.
+
+#### 47. Conflicto fuera del alcance
+
+Un conflicto ajeno al trabajador o cambio inspeccionado no se añade artificialmente a su vista.
+
+La deuda global puede resumirse fuera de la vista individual si corresponde a otra superficie.
+
+#### 48. Bloqueante
+
+Cuando un conflicto bloqueante afecta la propuesta del trabajador, la vista debe mostrar:
+
+```text
+BLOQUEANTE
+```
+
+junto con consecuencia, evidencia mínima y owner de resolución.
+
+#### 49. Revisión
+
+Una deuda o redundancia que no invalida el estado vigente se muestra como:
+
+```text
+REVISIÓN
+```
+
+No comparte el mismo tratamiento visual o textual que un bloqueo.
+
+#### 50. Resultado real y conflicto son conceptos distintos
+
+Un `DENY` real puede ser completamente válido y no implicar conflicto.
+
+La vista conserva esa diferencia.
+
+#### 51. Simulación y conflicto son conceptos distintos
+
+Un `WOULD_DENY` puede ser una consecuencia válida de una política y no necesariamente un conflicto de configuración.
+
+La UX no equipara automáticamente ambos estados.
+
+#### 52. Escenario de recurso
+
+Cuando un permiso dependa de un recurso, la vista conserva el escenario compatible suministrado por el evaluador.
+
+Puede ser:
+
+```text
+SYNTHETIC_RESOURCE
+MASKED_REAL_RESOURCE
+AUTHORIZED_REAL_REFERENCE
+RESOURCE_DRAFT
+```
+
+según contrato.
+
+#### 53. Recurso enmascarado
+
+Un recurso enmascarado puede producir una decisión o simulación exacta sin revelar el contenido sensible.
+
+El preview no des-enmascara datos para “explicar mejor”.
+
+#### 54. Cross-site — principio
+
+Algunas validaciones del trabajador requieren considerar más de una sede.
+
+Eso no concede al administrador visibilidad detallada sobre todas ellas.
+
+#### 55. Total entre sedes
+
+Cuando un owner canónico suministre un agregado cross-site necesario, la vista puede mostrar el total exacto.
+
+Para programación mensual, un patrón válido es:
+
+```text
+TOTAL DEL TRABAJADOR ENTRE SEDES
+```
+
+sin revelar automáticamente el detalle de turnos de sedes fuera del alcance visible del administrador.
+
+#### 56. Total exacto con detalle restringido
+
+La vista podrá distinguir:
+
+```text
+TOTAL VISIBLE = 174 h
+DETALLE VISIBLE = 150 h
+DETALLE RESTRINGIDO QUE CONTRIBUYE AL TOTAL = 24 h
+```
+
+solo cuando ese nivel de agregación esté autorizado por el contrato propietario.
+
+No se inventa el desglose restringido.
+
+#### 57. Sin acceso extra por agregado
+
+El cálculo de un total cross-site no amplía la autoridad del actor.
+
+El servidor puede necesitar evaluar lados territoriales adicionales para producir el agregado seguro.
+
+La UX recibe únicamente la proyección autorizada.
+
+#### 58. No inferir sedes ocultas
+
+Si el contrato solo permite mostrar un total agregado, la UI no intenta deducir qué sedes contribuyeron a él.
+
+#### 59. Límite mensual
+
+Si un owner aprobado suministra un límite y un total proyectado, 016 puede mostrar:
+
+```text
+ACTUAL
+NUEVO
+PROYECTADO
+LÍMITE
+```
+
+para el trabajador.
+
+La política del límite no se define en esta tarea.
+
+#### 60. Programación pendiente
+
+Las reglas detalladas de `VISO-SCH-006` siguen siendo propietarias de programación.
+
+016 no fija solapamientos, rollback, concurrencia ni idempotencia aún no aprobados.
+
+#### 61. Vista sin turno
+
+Un trabajador puede no tener turno aplicable.
+
+En ese caso la vista puede mostrar contexto administrativo factual sin fabricar contexto operativo.
+
+#### 62. Histórico
+
+Cuando se inspecciona un periodo histórico autorizado, la UX indica que el contexto es histórico.
+
+Una decisión histórica no se presenta como autoridad actual.
+
+#### 63. Futuro
+
+Un turno futuro real puede aparecer como futuro.
+
+Una propuesta futura no persistida sigue siendo propuesta.
+
+#### 64. Vigente
+
+Un contexto vigente se distingue de histórico y futuro.
+
+#### 65. Snapshot
+
+Toda vista previa conserva una referencia de snapshot o evidencia equivalente suficiente para detectar obsolescencia.
+
+#### 66. Frescura
+
+La UX debe poder indicar:
+
+```text
+ACTUALIZADO
+STALE
+REQUIERE RECÁLCULO
+```
+
+como estados de presentación, sin convertirlos en enums públicos de autorización.
+
+#### 67. Cambios que invalidan el preview
+
+La vista debe considerarse stale cuando cambien materialmente, según el contrato consumido:
+
+- trabajador;
+- relación trabajador-sede;
+- relación de área;
+- perfil relevante;
+- turno;
+- rol;
+- binding territorial;
+- grants;
+- denies;
+- scope;
+- recurso;
+- catálogo o versión contractual;
+- actor real o su autoridad.
+
+#### 68. Recálculo
+
+Un preview stale no autoriza guardar.
+
+La UX solicita o dispara una nueva evaluación server-side conforme al owner de la mutación.
+
+#### 69. Concurrencia
+
+Si otro administrador cambia el estado entre preview y save, la interfaz no mantiene la proyección anterior como válida.
+
+#### 70. Guardado posterior
+
+La vista previa nunca es un token de autorización.
+
+La operación real revalida actor, contexto, recurso y política en servidor.
+
+#### 71. Navegación desde lista de trabajadores
+
+Una lista puede abrir el preview de un trabajador autorizado.
+
+La pertenencia a una lista visible no demuestra por sí sola que todas las capas avanzadas de seguridad puedan mostrarse.
+
+#### 72. Navegación directa
+
+Un deep link a un trabajador revalida identidad, territorio y capacidad.
+
+La URL no concede acceso.
+
+#### 73. Búsqueda
+
+La búsqueda opera únicamente sobre el universo autorizado.
+
+No busca globalmente y luego oculta filas en cliente.
+
+#### 74. Paginación
+
+La paginación ocurre después de aplicar autorización y alcance.
+
+Los totales de paginación no revelan el tamaño de un universo no autorizado.
+
+#### 75. Filtros
+
+Los filtros reducen el universo autorizado.
+
+No amplían autoridad.
+
+#### 76. “Todos”
+
+Una opción visible `Todos` significa:
+
+```text
+TODOS LOS OBJETOS AUTORIZADOS POR LA CAPACIDAD ACTIVA
+```
+
+nunca todas las filas físicas de base de datos.
+
+#### 77. Estado seleccionado
+
+`selectedSite`, `selectedArea`, rol seleccionado, tab seleccionado o filtro visible son estado de interfaz.
+
+No son fuentes de autorización.
+
+#### 78. Orden de presentación
+
+Por defecto la vista prioriza:
+
+1. identidad y contexto;
+2. resumen de cambios;
+3. bloqueos;
+4. permisos que cambian;
+5. permisos denegados relevantes;
+6. permisos permitidos sin cambio;
+7. detalle de procedencia;
+8. evidencia técnica autorizada.
+
+Ese orden es experiencia, no precedencia contractual.
+
+#### 79. Resumen superior
+
+El resumen puede incluir:
+
+```text
+TRABAJADOR
+CONTEXTO ACTUAL
+CONTEXTO PROPUESTO
+NÚMERO DE PERMISOS QUE CAMBIAN
+NÚMERO DE BLOQUEOS
+FRESCURA
+TOTAL CROSS-SITE CUANDO APLIQUE
+```
+
+sin sustituir el detalle.
+
+#### 80. Grupos visuales
+
+La vista puede agrupar permisos por aplicación o dominio para navegación.
+
+La agrupación no crea autoridad por prefijo.
+
+#### 81. Permisos críticos
+
+La UX puede priorizar visualmente permisos de mayor sensibilidad si existe clasificación autorizada.
+
+No inventa severidad local basada en nombres.
+
+#### 82. Procedencia expandible
+
+El detalle de origen puede permanecer colapsado por defecto cuando no sea necesario.
+
+Colapsarlo no puede ocultar un bloqueo, cambio material o restricción relevante.
+
+#### 83. Evidencia técnica
+
+Identificadores técnicos, reason codes y source references pueden mostrarse en un nivel avanzado cuando el actor tenga autorización y la finalidad lo requiera.
+
+No deben saturar el resumen primario.
+
+#### 84. Minimización
+
+La vista expone solo los datos necesarios para comprender:
+
+- contexto;
+- efecto;
+- origen;
+- conflicto;
+- consecuencia;
+- frescura.
+
+#### 85. Datos personales
+
+No se muestran por defecto:
+
+- documento completo;
+- teléfono;
+- correo personal;
+- PIN;
+- hashes;
+- secretos;
+- tokens;
+- información médica;
+- contenido de documentos laborales;
+- logs completos.
+
+#### 86. Datos de terceros
+
+Una vista de un trabajador no expone información innecesaria de otros trabajadores.
+
+Cuando un conflicto involucre a un tercero, la UX minimiza su identidad según necesidad y autorización.
+
+#### 87. Fallo técnico
+
+Un fallo de consulta o evaluación se muestra como fallo técnico.
+
+No se presenta como `DENY`, `sin permisos`, `sin conflictos` o `0`.
+
+#### 88. Parcialidad
+
+Si alguna fuente requerida falla y el contrato permite mostrar un resultado parcial, la vista lo etiqueta como parcial.
+
+Nunca aparenta completitud.
+
+#### 89. No autorizado
+
+Cuando el actor no está autorizado a una capa de información, la UI no la carga como si estuviera vacía.
+
+Debe diferenciar:
+
+```text
+NOT_AUTHORIZED
+```
+
+frente a un conjunto legítimamente vacío.
+
+#### 90. Vacío
+
+Un conjunto vacío autorizado significa que la consulta válida devolvió cero elementos.
+
+No equivale a error ni falta de permiso.
+
+#### 91. No aplicable
+
+Una dimensión no aplicable se muestra como no aplicable.
+
+Ejemplo: rol operativo en descanso.
+
+#### 92. No disponible
+
+Una fuente temporalmente no disponible se distingue de ausencia funcional.
+
+#### 93. No implementado
+
+Mientras una unidad física no exista, la UI futura no debe simular que existe con datos aproximados.
+
+El contrato puede materializar un estado explícito de no implementado durante adopción.
+
+#### 94. Cache
+
+Cualquier cache de preview deberá estar correlacionada, como mínimo, con actor, trabajador, contexto, snapshot, versiones y sensibilidad requeridas.
+
+No se reutiliza entre actores o trabajadores por conveniencia.
+
+#### 95. Server-side
+
+Las decisiones reales, simulaciones, conflictos y agregados sensibles se resuelven en servidor o mediante contratos canónicos server-side.
+
+La UI no reconstruye autoridad desde datasets parciales materializados en cliente.
+
+#### 96. `createAdminClient()`
+
+La existencia técnica de un cliente administrativo de Supabase no constituye autorización humana.
+
+Toda proyección que lo use en implementación futura deberá aplicar la autorización canónica del actor antes de exponer datos.
+
+#### 97. Reconciliación AS-IS — ficha de trabajador
+
+La superficie actual `src/app/staff/[id]/page.tsx` combina en una sola ficha:
+
+- datos del trabajador;
+- rol;
+- sedes;
+- asignaciones auxiliares;
+- documentos;
+- permisos individuales;
+- turnos;
+- acciones de edición.
+
+Eso no constituye por sí mismo la vista previa exacta definida aquí.
+
+#### 98. Reconciliación AS-IS — permisos individuales
+
+El panel actual de permisos individuales muestra filas configuradas y permite grant/remove cuando existe capacidad de administración.
+
+Una fila configurada no equivale al permiso efectivo final del trabajador.
+
+016 no puede presentar esa lista como “permisos efectivos” sin consumir el evaluador canónico.
+
+#### 99. Reconciliación AS-IS — `roles-permissions`
+
+La superficie actual administra `role_permissions` por rol y scope.
+
+No constituye una vista efectiva por trabajador.
+
+No incorpora por sí sola rol operativo, overrides individuales, denies, modalidad, recurso, territorio real, contexto de turno ni precedencia completa.
+
+#### 100. Reconciliación AS-IS — programación mensual
+
+La superficie mensual actual calcula `currentMinutes`, `newMinutes` y `projectedMinutes` dentro de su flujo.
+
+Ese comportamiento existente no se eleva automáticamente a contrato canónico cross-site.
+
+La futura unidad física deberá consumir el owner aprobado y los gates territoriales correspondientes.
+
+#### 101. Categorías de materialización futura
+
+La adopción física podrá clasificar superficies AS-IS en:
+
+```text
+KEEP_AS_WORKER_PREVIEW_INPUT
+CONVERT_TO_CANONICAL_PREVIEW
+MOVE_TO_OWNER_WORKSPACE
+CONVERT_TO_OWNER_HANDOFF
+REMOVE_AFTER_REPLACEMENT
+DEFER_WITH_OWNER
+```
+
+Estas categorías documentan intención de adopción y no autorizan cambios en esta tarea.
+
+#### 102. No duplicar ownership
+
+016 compone información necesaria para el preview.
+
+No convierte VISO en editor universal de la configuración propietaria de otras aplicaciones.
+
+#### 103. Frontera con `VISO-UX-017`
+
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones` define qué configuración no debe replicarse en VISO.
+
+016 puede mostrar una proyección o resumen necesario, pero no decide todavía el patrón completo de ownership de edición.
+
+#### 104. Frontera con `VISO-UX-018`
+
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda` conserva el patrón de navegación hacia el owner.
+
+016 puede preservar `resolution_owner` o owner funcional, pero no define la experiencia de handoff completa.
+
+#### 105. Frontera con `VISO-UX-019`
+
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` conserva la arquitectura completa de progressive disclosure.
+
+016 define capas mínimas necesarias para el preview individual, sin absorber esa tarea.
+
+#### 106. Frontera con `VISO-UX-020`
+
+`VISO-UX-020 — Ejecutar pruebas con administradores reales` conserva pruebas de uso con personas reales.
+
+016 define escenarios y criterios; no ejecuta esas pruebas.
+
+#### 107. Acciones permitidas en el preview
+
+La experiencia puede permitir acciones de inspección como:
+
+```text
+EXPANDIR
+COLAPSAR
+FILTRAR
+COMPARAR
+RECALCULAR
+ABRIR ORIGEN
+ABRIR CONFLICTO
+```
+
+siempre que cada acción respete autorización.
+
+No implica capacidad de editar o guardar.
+
+#### 108. Acción de guardado
+
+Si el preview forma parte de un flujo que luego ofrece guardar, ese botón pertenece al owner de la mutación.
+
+016 no concede la capacidad de guardar por mostrar la vista.
+
+#### 109. Preview desde una mutación
+
+Cuando se abre desde una edición, el preview recibe la propuesta exacta del flujo propietario.
+
+No vuelve a reconstruir la propuesta a partir de controles visuales ambiguos.
+
+#### 110. Preview desde consulta
+
+Cuando se abre sin propuesta, muestra el estado vigente autorizado.
+
+No fabrica un escenario simulado vacío.
+
+#### 111. Preview con simulación opcional
+
+No todas las vistas requieren simular cambios.
+
+Si no existe propuesta o no aplica simulación, la columna simulada permanece ausente o no aplicable según contrato.
+
+#### 112. Preview con decisión real ausente
+
+Si no existe una decisión real comparable, la UX no rellena la columna real usando el resultado simulado.
+
+#### 113. Preview con datos enmascarados
+
+Un dato enmascarado se marca como tal cuando esa condición materialmente afecta la comprensión o confianza.
+
+#### 114. Confianza del escenario
+
+Cuando la simulación indique `COMPLETE_INPUT`, `MASKED_INPUT`, `PARTIAL_INPUT` o `VERSION_MISMATCH`, la UX conserva la condición relevante.
+
+No convierte un resultado de confianza reducida en una predicción segura.
+
+#### 115. Versiones
+
+La vista conserva versiones relevantes cuando sean necesarias para detectar desalineación.
+
+No mezcla silenciosamente decisiones reales y simuladas producidas contra contratos incompatibles.
+
+#### 116. Cambio de versión
+
+Si el catálogo o contrato cambia entre preview y save, la vista se invalida y requiere recalcular.
+
+#### 117. Disponibilidad del permiso
+
+Un permiso retirado, desconocido o de versión incompatible no desaparece silenciosamente del delta.
+
+Debe conservar una causa visible apropiada.
+
+#### 118. Aplicaciones múltiples
+
+Un trabajador puede tener permisos de varias aplicaciones.
+
+La UX puede agrupar por aplicación, pero mantiene `app_code` exacto.
+
+#### 119. No inferir acceso por aplicación
+
+Tener al menos un permiso de una aplicación no implica acceso total a esa aplicación.
+
+#### 120. Acceso base a VISO
+
+Ver el preview requiere autoridad real para la superficie correspondiente.
+
+La propia existencia de la vista no concede `viso.access` ni capacidad de administración.
+
+#### 121. Seguridad avanzada
+
+Información altamente sensible de grants, denies, simulaciones o auditoría puede requerir capacidades adicionales.
+
+La vista conserva el resultado comprensible sin revelar más evidencia de la autorizada.
+
+#### 122. Orden por cambios
+
+Cuando exista propuesta, los permisos que cambian deben poder localizarse sin recorrer primero todos los permisos sin cambio.
+
+#### 123. Orden por bloqueo
+
+Los bloqueos aplicables al trabajador o propuesta se muestran antes de acciones que podrían dar la impresión de que la operación está lista.
+
+#### 124. No depender del color
+
+ALLOW, DENY, WOULD_ALLOW, WOULD_DENY, INDETERMINATE, BLOQUEANTE, REVISIÓN y STALE requieren texto o semántica accesible además de color.
+
+#### 125. Teclado
+
+Las filas expandibles, tabs, filtros y acciones del preview deben ser operables por teclado cuando se materialicen.
+
+#### 126. Lectores de pantalla
+
+Cambios relevantes, bloqueos y estados simulados deberán poseer etiquetas comprensibles y no depender únicamente de iconografía.
+
+#### 127. Responsive
+
+En viewport estrecho se conserva el orden lógico:
+
+```text
+IDENTIDAD
+CONTEXTO
+CAMBIO
+RESULTADO
+CONSECUENCIA
+```
+
+El detalle puede apilarse sin perder asociación con el permiso o fila correspondiente.
+
+#### 128. Rendimiento
+
+La experiencia no justifica cargar todas las tablas de seguridad del sistema en el cliente.
+
+La proyección server-side debe entregar únicamente el universo autorizado y necesario.
+
+#### 129. Poblaciones grandes
+
+La vista integral es por trabajador.
+
+Listas masivas usan navegación, búsqueda y paginación autorizadas para llegar a un trabajador; no materializan previews completos de toda la organización en el navegador.
+
+#### 130. Operaciones masivas
+
+Si una operación masiva requiere preview de varios trabajadores, cada resultado conserva identidad y estado propios.
+
+Un agregado no sustituye la capacidad de identificar filas bloqueantes o indeterminadas.
+
+#### 131. Parcialidad masiva
+
+016 no define atomicidad de una mutación masiva.
+
+Si el owner admite resultados parciales, la UX los presenta con correlación por trabajador; si no los admite, no inventa ese estado.
+
+#### 132. Telemetría
+
+La instrumentación futura puede medir apertura, recálculo y resolución de estados, pero no debe registrar permisos sensibles, secretos o datos personales completos sin necesidad.
+
+Las métricas no son autoridad.
+
+#### 133. Evidencia de adopción
+
+Una unidad física futura no podrá declararse conforme únicamente porque existe una página con el nombre “preview”.
+
+Debe demostrar consumo de los contratos propietarios y paridad de resultados.
+
+#### 134. Handoff físico futuro
+
+Cada unidad física aplicable deberá resolver, como mínimo:
+
+1. superficie concreta;
+2. actor y capacidad de lectura;
+3. fuente server-side del preview;
+4. contexto laboral canónico;
+5. decisiones reales;
+6. simulación cuando aplique;
+7. procedencia;
+8. conflictos;
+9. agregados cross-site cuando apliquen;
+10. frescura;
+11. minimización;
+12. comportamiento ante error y stale.
+
+#### 135. Topología
+
+La definición documental es única dentro del plan.
+
+La materialización física se rige por:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_PATTERN = VISO-UX-016::<implementation_unit_id>
+```
+
+No se crea una implementación global única por inferencia.
+
+#### 136. Rollback documental
+
+Esta tarea no ejecuta cambios físicos y no necesita rollback operativo.
+
+Si el contrato documental debiera corregirse antes de incorporación, se reemplaza el artefacto de la misma tarea conservando trazabilidad de la corrección.
+
+#### 137. Casos mínimos — contexto
+
+La futura materialización deberá demostrar al menos:
+
+1. trabajador activo con una sede;
+2. trabajador activo multisede;
+3. trabajador sin turno aplicable;
+4. turno laboral completo;
+5. descanso con rol nulo;
+6. rol operativo ausente en turno laboral;
+7. área requerida ausente;
+8. área de otra sede;
+9. binding exacto;
+10. `AREA_BINDING_UNRESOLVED`;
+11. turno histórico;
+12. turno futuro;
+13. propuesta no persistida;
+14. cambio de sede;
+15. cambio de área;
+16. cambio de rol operativo.
+
+#### 138. Casos mínimos — autorización
+
+Deberá demostrar:
+
+1. permiso real `ALLOW`;
+2. permiso real `DENY`;
+3. resultado simulado `WOULD_ALLOW`;
+4. resultado simulado `WOULD_DENY`;
+5. resultado simulado `INDETERMINATE`;
+6. permiso nuevo en universo propuesto;
+7. permiso retirado del universo comparable;
+8. permiso desconocido;
+9. cambio `ALLOW → WOULD_DENY`;
+10. cambio `DENY → WOULD_ALLOW`;
+11. múltiples fuentes compatibles;
+12. deny válido sin conflicto;
+13. default deny;
+14. permiso dependiente de recurso;
+15. recurso enmascarado.
+
+#### 139. Casos mínimos — territorio
+
+Deberá demostrar:
+
+1. filtro de sede que solo reduce;
+2. `Todos` limitado al universo autorizado;
+3. trabajador en sede secundaria asignada;
+4. trabajador en sede no autorizada para el actor;
+5. área autorizada;
+6. área fuera de alcance;
+7. deep link revalidado;
+8. búsqueda sin fuga;
+9. paginación sin conteo global;
+10. multisede sin globalidad implícita.
+
+#### 140. Casos mínimos — cross-site
+
+Cuando el owner correspondiente aplique, deberá demostrar:
+
+1. total entre sedes exacto;
+2. actor con detalle completo;
+3. actor con detalle parcial pero agregado autorizado;
+4. ninguna revelación de filas restringidas;
+5. agregado stale tras cambio concurrente;
+6. recálculo antes de guardar;
+7. total no utilizado como autoridad territorial.
+
+#### 141. Casos mínimos — conflictos
+
+Deberá demostrar:
+
+1. conflicto bloqueante aplicable al trabajador;
+2. revisión no bloqueante;
+3. deny válido sin conflicto;
+4. conflicto de otro trabajador no agregado artificialmente;
+5. legacy histórico no vigente;
+6. legacy reactivado en propuesta;
+7. conflicto stale;
+8. owner de resolución visible sin conceder autoridad.
+
+#### 142. Casos mínimos — errores y frescura
+
+Deberá demostrar:
+
+1. loading;
+2. vacío autorizado;
+3. not authorized;
+4. not applicable;
+5. source unavailable;
+6. partial;
+7. technical failure;
+8. stale;
+9. version mismatch;
+10. recálculo exitoso.
+
+#### 143. Casos mínimos — privacidad
+
+Deberá demostrar:
+
+1. trabajador visible sin datos personales innecesarios;
+2. fuente sensible redactada;
+3. recurso enmascarado;
+4. tercero participante minimizado;
+5. agregado cross-site sin detalle prohibido;
+6. logs y tokens ausentes de la UI ordinaria.
+
+#### 144. Casos mínimos — accesibilidad
+
+Deberá demostrar:
+
+1. estados distinguibles sin color;
+2. navegación por teclado;
+3. foco correcto al abrir bloqueo;
+4. asociación de detalle con permiso;
+5. labels de real/simulado;
+6. responsive sin pérdida de consecuencia.
+
+#### 145. Carryovers identificados
+
+| Hallazgo | Bloquea 016 documental | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| ficha AS-IS mezcla edición y consulta | no | unidad física de `VISO-UX-016` | preview canónico separado o claramente delimitado y alimentado por proyección server-side |
+| panel de permisos individuales muestra configuración, no efecto final | no | unidad física de `VISO-UX-016` + contratos AUTH | resultado efectivo proviene del evaluador canónico |
+| `roles-permissions` configura por rol, no por trabajador | no | unidad física de `VISO-UX-016` | no se usa esa tabla visual como permiso efectivo individual |
+| preview contextual AUTH aún sin materialización física certificada en VISO | no | unidad física aplicable de AUTH/VISO | proyección consumida con evidencia de adopción |
+| simulador efectivo aún sin materialización física certificada | no | unidad física de `VISO-AUTH-014` aplicable | decisiones simuladas reales disponibles para consumo |
+| política detallada de conflictos de programación pendiente | no | `VISO-SCH-006` | contrato aprobado y resultado consumible por la UI |
+| política de no duplicación cross-app pendiente | no | `VISO-UX-017` | ownership de configuración definido sin duplicación |
+| handoff detallado a owner pendiente | no | `VISO-UX-018` | enlaces propietarios definidos y autorizados |
+| progressive disclosure avanzado pendiente | no | `VISO-UX-019` | capas avanzadas aprobadas |
+| validación con administradores reales pendiente | no | `VISO-UX-020` | pruebas ejecutadas con evidencia |
+
+#### 146. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La obligación de mostrar el efecto resultante por trabajador, mantener coherencia con autorización real, separar simulación, respetar territorio, conservar procedencia, detectar conflictos, revalidar antes de mutar y evitar exposición adicional por agregados ya se encuentra cubierta por requisitos vigentes.
+
+Esta tarea materializa la experiencia exacta de esa cobertura sin crear una capacidad empresarial, modalidad de autorización, resultado de decisión, clase de conflicto, regla territorial, regla de programación o transición nueva.
+
+#### 147. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, se reutiliza:
+
+- `TREQ-VISO-001` — efecto resultante por trabajador antes de guardar, conflictos, origen y territorio;
+- `TREQ-VISO-014` — rutas protegidas resuelven actor, contexto territorial, dispositivo y simulación según corresponda;
+- `TREQ-VISO-038` — recálculo server-side de conflictos antes de guardar o publicar cuando aplique programación;
+- cobertura AUTH ya relacionada por `TREQ-VISO-001` para equivalencia de evaluadores, administración explícita y simulación separada de autoridad real.
+
+Estas referencias son trazabilidad heredada y no representan cambios al Registro 04A.
+
+#### 148. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó build del checkout propietario durante esta definición documental. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no fue insertado, normalizado ni validado dentro de la rama documental de `VISO-UX-016`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad, protocolo, contrato de entrega, manifest, topología, políticas, owner, `VISO-AUTH-013`, `VISO-AUTH-014`, procedencia y conflictos aprobados, 04A VISO vigente, contratos server-side cross-site relevantes, scripts aplicables y superficies AS-IS de `vento-viso`; `main` ya incorpora `VISO-UX-015`, `active-sequence.previous_task_id` es `VISO-UX-015` y el marcador de `VISO-UX-016` permanece intacto como tarea actual. |
+| OPERATIVA | NOT_APPLICABLE | No se consultaron ni modificaron trabajadores reales desde VISO, no se ejecutaron simulaciones, no se guardaron permisos, turnos, roles, sedes, áreas, grants, denies ni configuración empresarial. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, Supabase, migraciones, RLS, RPC, contratos compartidos, aplicaciones, datos ni despliegues. |
+
+#### 149. Criterios de aceptación
+
+1. la tarea conserva `VISO-UX-015` como anterior y `VISO-UX-017` como siguiente;
+2. se mantiene `PER_IMPLEMENTATION_UNIT`;
+3. se mantiene `POST_E5_PACKAGE`;
+4. no se modifica código ni infraestructura;
+5. se define `VISO-WORKER-EXACT-PREVIEW-001`;
+6. la unidad principal usa `employee_id` exacto;
+7. actor real y trabajador objetivo permanecen separados;
+8. el rol del trabajador no concede autoridad al actor;
+9. la vista consume `VISO-AUTH-013` sin redefinir contexto;
+10. la vista consume `VISO-AUTH-014` sin convertir simulación en autoridad;
+11. la vista consume procedencia sin recalcularla;
+12. la vista consume conflictos sin reclasificarlos;
+13. exactitud no exige máxima divulgación;
+14. sede primaria no sustituye sede del turno;
+15. varias sedes no equivalen a global;
+16. áreas habituales no sustituyen `shift.area_id`;
+17. perfil no sustituye rol operativo;
+18. cada turno conserva identidad propia;
+19. propuesta no persistida no inventa `shift_id`;
+20. descanso no recibe error de rol faltante;
+21. rol operativo se toma del turno o propuesta exactos;
+22. `null` de área no crea wildcard;
+23. binding territorial conserva su estado exacto;
+24. `AREA_BINDING_UNRESOLVED` no se vuelve site-wide;
+25. contexto incompleto conserva causa;
+26. ACTUAL y PROPUESTO permanecen separados;
+27. propuesta no se presenta como persistida;
+28. decisión real usa resultado real autorizado;
+29. decisión simulada usa `WOULD_ALLOW`, `WOULD_DENY` o `INDETERMINATE`;
+30. simulated nunca se presenta como real;
+31. comparación se realiza por permiso exacto;
+32. ganancia proyectada no se presenta como grant persistido;
+33. pérdida proyectada no se oculta;
+34. indeterminate no se presenta como sin cambios;
+35. permiso nuevo se identifica;
+36. permiso fuera del universo se distingue de deny;
+37. no evaluado se distingue de deny;
+38. colección visual se reconcilia con permisos exactos;
+39. conteos se calculan sobre universo autorizado;
+40. conteos no sustituyen detalle necesario;
+41. procedencia usa patrón de 014;
+42. varias fuentes compatibles no crean conflicto;
+43. default deny no inventa fuente negativa;
+44. conflictos se limitan al trabajador/propuesta aplicables;
+45. conflicto ajeno no se agrega artificialmente;
+46. bloqueo y revisión permanecen distintos;
+47. deny válido y conflicto permanecen distintos;
+48. would deny y conflicto permanecen distintos;
+49. recurso dependiente conserva escenario compatible;
+50. recurso enmascarado no se des-enmascara;
+51. agregados cross-site no amplían visibilidad;
+52. total entre sedes puede ser exacto con detalle restringido;
+53. no se infieren sedes ocultas desde el agregado;
+54. límite mensual solo se muestra cuando owner lo suministra;
+55. no se inventan reglas de `VISO-SCH-006`;
+56. ausencia de turno no fabrica contexto operativo;
+57. histórico, futuro y vigente se distinguen;
+58. snapshot conserva evidencia de frescura;
+59. cambios materiales producen stale;
+60. stale exige recálculo;
+61. concurrencia no conserva preview obsoleto como válido;
+62. preview no es token de autorización;
+63. deep link revalida;
+64. búsqueda no fuga población global;
+65. paginación ocurre después de autorización;
+66. filtros solo reducen;
+67. `Todos` significa todos los autorizados;
+68. selección UI no concede autoridad;
+69. resumen prioriza identidad, cambios y bloqueos;
+70. agrupación por aplicación no crea wildcard de permiso;
+71. sensibilidad visual no se inventa por nombre;
+72. detalle de origen puede colapsarse sin ocultar bloqueo;
+73. evidencia técnica requiere autorización adicional cuando corresponda;
+74. se minimizan datos personales;
+75. terceros se minimizan;
+76. fallo técnico no se presenta como deny;
+77. partial no aparenta completitud;
+78. not authorized no se presenta como vacío;
+79. vacío autorizado se distingue de error;
+80. not applicable conserva semántica;
+81. no disponible se distingue de ausencia;
+82. no implementado no se rellena con aproximación;
+83. cache no mezcla actores, trabajadores o snapshots;
+84. decisiones sensibles se resuelven server-side;
+85. `createAdminClient()` no constituye autoridad humana;
+86. ficha AS-IS no se declara preview canónico por existencia;
+87. permisos individuales configurados no se declaran efectivos;
+88. `roles-permissions` no se declara preview por trabajador;
+89. cálculo mensual AS-IS no se eleva automáticamente a contrato cross-site;
+90. materialización futura clasifica superficies sin modificar owner en esta tarea;
+91. 016 no duplica workspaces propietarios;
+92. 017 conserva política de no duplicación;
+93. 018 conserva handoff propietario;
+94. 019 conserva progressive disclosure avanzado;
+95. 020 conserva pruebas con administradores;
+96. acciones de inspección no conceden edición;
+97. botón de save pertenece al owner de la mutación;
+98. propuesta se recibe correlacionada desde owner;
+99. consulta sin propuesta no fabrica simulación;
+100. simulación es opcional según caso;
+101. decisión real ausente no se rellena con simulación;
+102. datos enmascarados conservan su condición;
+103. confianza de simulación permanece visible cuando material;
+104. version mismatch no se presenta como equivalencia vigente;
+105. cambio de versión invalida preview;
+106. permisos retirados o desconocidos no desaparecen silenciosamente;
+107. múltiples aplicaciones conservan `app_code`;
+108. acceso parcial a una app no equivale a acceso total;
+109. ver preview no concede `viso.access`;
+110. seguridad avanzada puede requerir capacidad adicional;
+111. permisos que cambian son localizables;
+112. bloqueos preceden a acciones que aparenten readiness;
+113. estados no dependen solo de color;
+114. interacción por teclado es posible;
+115. lectores de pantalla reciben etiquetas comprensibles;
+116. responsive conserva identidad, cambio, resultado y consecuencia;
+117. cliente no materializa todo el sistema de seguridad;
+118. listas masivas no materializan todos los previews en browser;
+119. operaciones masivas conservan identidad por trabajador;
+120. 016 no inventa atomicidad masiva;
+121. telemetría no contiene secretos innecesarios;
+122. existencia de página “preview” no demuestra adopción;
+123. handoff físico exige consumo de contratos propietarios;
+124. instancia física sigue patrón `<task_id>::<implementation_unit_id>`;
+125. no se crea implementación global por inferencia;
+126. se definen casos mínimos de contexto;
+127. se definen casos mínimos de autorización;
+128. se definen casos mínimos de territorio;
+129. se definen casos mínimos cross-site;
+130. se definen casos mínimos de conflicto;
+131. se definen casos mínimos de error y frescura;
+132. se definen casos mínimos de privacidad;
+133. se definen casos mínimos de accesibilidad;
+134. cada carryover tiene owner y condición de salida;
+135. la sección de requisitos derivados contiene cero IDs de requisitos afectados;
+136. cobertura heredada queda fuera de la sección de cero cambios;
+137. no se entrega 04A porque no cambia requisitos;
+138. no se desarrolla `VISO-UX-017`;
+139. no se ejecuta implementación física.
+
+#### 150. Límites
+
+Esta tarea no:
+
+- modifica código de VISO;
+- modifica Supabase;
+- modifica trabajadores;
+- modifica roles;
+- modifica sedes;
+- modifica áreas;
+- modifica perfiles;
+- modifica turnos;
+- modifica permisos;
+- crea grants;
+- elimina grants;
+- crea denies;
+- elimina denies;
+- crea excepciones;
+- modifica scopes;
+- crea modalidades;
+- crea resultados de autorización;
+- modifica `AuthorizationDecision`;
+- modifica `SimulationContextV1`;
+- modifica `SimulatedAuthorizationDecisionV1`;
+- convierte simulación en autoridad;
+- ejecuta simulaciones reales;
+- define política de programación;
+- define límites mensuales;
+- define solapamientos;
+- define concurrencia de programación;
+- define rollback de programación;
+- sustituye `VISO-SCH-006`;
+- redefine procedencia;
+- redefine conflictos;
+- implementa auditoría;
+- define quién administra seguridad;
+- crea exportes;
+- duplica workspaces propietarios;
+- desarrolla `VISO-UX-017`;
+- desarrolla `VISO-UX-018`;
+- desarrolla `VISO-UX-019`;
+- ejecuta `VISO-UX-020`;
+- crea RPC;
+- crea RLS;
+- crea migraciones;
+- ejecuta SQL de escritura;
+- selecciona package;
+- prepara package gate;
+- autoriza implementación física;
+- ejecuta implementación física.
+
+#### 151. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-015 — Mostrar conflictos antes de guardar`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones`
 ### [ ] VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
 ### [ ] VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
 ### [ ] VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
