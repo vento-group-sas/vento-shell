@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1483** |
+| Tareas aprobadas | **1484** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **113** |
+| Tareas no iniciadas | **112** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **92.92% (1483/1596)** |
+| Porcentaje de completamiento | **92.98% (1484/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada** |
-| Tarea actual | **VISO-UX-020 — Ejecutar pruebas con administradores reales** |
+| Última tarea aprobada | **PASS-INT-005 — Evitar mezclar identidad cliente y trabajador** |
+| Tarea actual | **PASS-QA-001 — Probar flujo completo de acumulación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-QA-001 — Probar flujo completo de acumulación** |
-| Bloque actual | **BLOQUE G3 — VISO completo** |
-| Progreso del bloque | **BLOQUE G3: 19 de 20 aprobadas; VISO-UX-020 pendiente** |
+| Siguiente tarea | **PASS-QA-002 — Probar flujo completo de redención** |
+| Bloque actual | **BLOQUE V — PASS** |
+| Progreso del bloque | **BLOQUE V: 18 de 20 aprobadas; PASS-QA-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — VISO-UX-020** |
+| Carril documental | **ACTIVO — PASS-QA-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `VISO-UX-019` — Aplicar divulgación progresiva a seguridad avanzada |
-| Tarea actual | `VISO-UX-020` — Ejecutar pruebas con administradores reales — **NO INICIADA** |
-| Siguiente tarea | `PASS-QA-001` — Probar flujo completo de acumulación |
+| Última aprobada | `PASS-INT-005` — Evitar mezclar identidad cliente y trabajador |
+| Tarea actual | `PASS-QA-001` — Probar flujo completo de acumulación — **NO INICIADA** |
+| Siguiente tarea | `PASS-QA-002` — Probar flujo completo de redención |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE G3: 19 DE 20 APROBADAS — ACTUAL VISO-UX-020** |
+| CONTINUIDAD ACTIVA | **BLOQUE V: 18 DE 20 APROBADAS — ACTUAL PASS-QA-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
+PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
         ↓
 TAREA ACTUAL
-VISO-UX-020 — Ejecutar pruebas con administradores reales
-        ↓
-SIGUIENTE TAREA RESERVADA
 PASS-QA-001 — Probar flujo completo de acumulación
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-QA-002 — Probar flujo completo de redención
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE G3 — 19 de 20 tareas aprobadas
+BLOQUE V — 18 de 20 tareas aprobadas
 ```
