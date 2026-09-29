@@ -9396,7 +9396,1935 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-006 — Crear sección Operación`
-### [ ] VISO-UX-006 — Crear sección Operación
+### ✅ VISO-UX-006 — Crear sección Operación
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-005 — Crear sección Organización
+**Tarea siguiente:** VISO-UX-007 — Crear sección Auditoría
+**Tipo de tarea:** definición técnico-documental de la sección administrativa `Operación` de VISO; compone la configuración y supervisión del contexto operativo que VISO administra —puntos de marcación, catálogo y elegibilidad de roles operativos, perfiles operativos por trabajador y sede, y preview diagnóstico— sin convertir esa configuración en autorización real, turno publicado, check-in, permiso efectivo ni ejecución propietaria de NEXO, FOGO, ORIGO, PULSO, NUMERA, PASS o ANIMA, conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la sección `Operación` definido; su materialización runtime permanece pendiente por `implementation_unit_id` y detrás del gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, navegación runtime, componentes, Supabase, contratos compartidos, datos, migraciones, RLS, RPC, Auth, Storage, secretos, roles, permisos, turnos, asistencia, LOC, capacidades de otras aplicaciones, auditoría ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar la sección administrativa `Operación` de VISO para que una persona autorizada pueda configurar y supervisar el contexto operativo que conecta trabajador, sede, área, rol operativo y puntos físicos sin confundir configuración administrativa con autorización, programación, asistencia o ejecución empresarial.
+
+La sección debe responder de forma directa:
+
+```text
+¿QUÉ CONTEXTO OPERATIVO PUEDE EXISTIR EN UNA SEDE Y ÁREA?
+¿QUÉ ROLES OPERATIVOS ESTÁN ADMITIDOS EN CADA CONTEXTO?
+¿QUÉ ROL ES DEFAULT Y QUÉ SIGNIFICA REALMENTE ESE DEFAULT?
+¿QUÉ PUNTOS FÍSICOS PUEDEN USARSE PARA ENTRADA O SALIDA?
+¿QUÉ PERFIL OPERATIVO TIENE UN TRABAJADOR COMO PREFERENCIA O BASE DE PLANIFICACIÓN?
+¿QUÉ PARTE DEL CONTEXTO VIENE DE ORGANIZACIÓN?
+¿QUÉ PARTE LA FIJA UN TURNO PUBLICADO?
+¿QUÉ PARTE LA ACTIVA ANIMA DURANTE LA JORNADA?
+¿QUÉ PARTE ES SEGURIDAD Y NO DEBE EDITARSE AQUÍ?
+¿QUÉ CONFIGURACIÓN ESTÁ INCOMPLETA, INCOMPATIBLE O STALE?
+¿QUÉ CAMBIO ADMINISTRATIVO SE HARÁ Y QUÉ CONSUMIDORES PUEDE AFECTAR?
+¿QUÉ HANDOFF CORRESPONDE CUANDO LA MUTACIÓN PERTENECE A OTRO OWNER?
+```
+
+`Operación` no es la operación empresarial de Vento OS.
+
+Es la experiencia administrativa de VISO para gobernar la configuración de contexto que otras aplicaciones consumen durante una operación autorizada.
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001` entrega sin reapertura:
+
+```text
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+DOMAIN_1 = Personal
+DOMAIN_2 = Programación
+DOMAIN_3 = Acceso y seguridad
+DOMAIN_4 = Organización
+DOMAIN_5 = Operación
+DOMAIN_6 = Auditoría
+```
+
+Para `Operación` entrega además:
+
+- la familia física `VISO-ROUTE-024..029` como seis superficies candidatas que requieren clasificación final;
+- la regla `MULTIPLE_CHILD_ROUTES → ONE_PRIMARY_DOMAIN_ENTRY`;
+- la obligación de mantener `/operations` como entrada primaria observada cuando la materialización respete ownership y autorización;
+- la conservación de todas las identidades `VISO-ROUTE-*`;
+- la prohibición de convertir ubicación física de una ruta en ownership funcional;
+- la obligación de no absorber ejecución de otras aplicaciones;
+- la navegación data-driven y fail-closed;
+- la separación entre navegación visible y autoridad real.
+
+Se preserva:
+
+```text
+VISO_ADMINISTRA_EL_MODELO = YES
+VISO_ES_PROPIETARIO_UNIVERSAL_DE_LA_OPERACION = NO
+NAVEGACION_ES_AUTORIZACION = NO
+RUTA_VISIBLE_ES_AUTORIZACION = NO
+```
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-003`
+
+`Programación` conserva la creación, revisión y publicación de turnos.
+
+`Operación` puede consumir el contexto derivado de un turno publicado para explicar o diagnosticar configuración posterior.
+
+Se conserva:
+
+```text
+PROGRAMACION_PUBLICADA
+!=
+CONTEXTO_OPERATIVO_ACTIVO
+```
+
+Un turno puede declarar:
+
+- sede;
+- área;
+- rol operativo;
+- punto de entrada;
+- punto de salida;
+- vigencia temporal.
+
+Pero la mera existencia del turno no demuestra:
+
+- check-in activo;
+- permiso efectivo;
+- sesión válida;
+- contexto fresco;
+- autorización para ejecutar una acción concreta.
+
+`Operación` no modifica silenciosamente turnos para corregir su propia configuración.
+
+Cuando detecte incompatibilidad con un turno publicado deberá mostrarla y conducir al owner de Programación.
+
+---
+
+#### 4. Handoff recibido de `VISO-UX-004`
+
+`Acceso y seguridad` conserva ownership semántico sobre:
+
+- catálogo y asignación de permisos;
+- matrices de seguridad;
+- grants;
+- denies;
+- excepciones;
+- simulación canónica de autorización;
+- procedencia de permisos;
+- conflictos de seguridad;
+- administración restringida de seguridad.
+
+Las superficies físicas `/operations/site-roles` y `/operations/preview` permanecen en la familia observada de `Operación`, pero su ubicación no crea un segundo evaluador de seguridad.
+
+Se conserva:
+
+```text
+MATRIZ_OPERATIVA
+!=
+MATRIZ_DE_PERMISOS
+
+PREVIEW_OPERATIVO
+!=
+SIMULACION_CANONICA_DE_AUTORIZACION
+
+ROL_OPERATIVO_ADMITIDO
+!=
+PERMISO_EFECTIVO
+```
+
+`Operación` puede administrar elegibilidad operativa y mostrar diagnóstico.
+
+No puede conceder autoridad por efecto lateral.
+
+---
+
+#### 5. Handoff recibido de `VISO-UX-005`
+
+`Organización` entrega:
+
+- `OPERATIONAL_SITE` vigente;
+- `ORGANIZATIONAL_AREA` vigente;
+- zonas o estaciones contractuales cuando apliquen;
+- relaciones estructurales válidas;
+- vigencia organizativa;
+- identidad estable de los elementos.
+
+`Operación` consume esa estructura.
+
+No la redefine.
+
+Se conserva:
+
+```text
+ORGANIZATIONAL_STRUCTURE
+!=
+OPERATIONAL_CONFIGURATION
+```
+
+La sección no podrá inferir capacidades por:
+
+- nombre visible;
+- `site_type`;
+- `site_kind`;
+- marca;
+- dirección;
+- pertenencia a una instalación;
+- coincidencia textual.
+
+LOC, posiciones y ubicaciones de inventario no se convierten en estructura organizativa ni en configuración operativa propietaria de VISO.
+
+---
+
+#### 6. Contrato de sección
+
+Se define:
+
+```text
+VISO_OPERATION_SECTION_CONTRACT = VISO-OPERATION-SECTION-001
+DOMAIN_LABEL = Operación
+DOMAIN_ORDER = 5
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-024
+PRIMARY_OBSERVED_ROUTE = /operations
+OBSERVED_ROUTE_FAMILY = VISO-ROUTE-024..029
+OBSERVED_ROUTE_COUNT = 6
+CANONICAL_SCREEN_INVENTED_BY_THIS_TASK = NO
+CANONICAL_PROCESS_INVENTED_BY_THIS_TASK = NO
+MUTATION_OWNER_IS_ROUTE_LOCATION = NO
+OPERATION_CONFIGURATION_IS_AUTHORIZATION = NO
+OPERATION_CONFIGURATION_IS_SCHEDULE = NO
+OPERATION_CONFIGURATION_IS_ATTENDANCE = NO
+OPERATION_CONFIGURATION_IS_BUSINESS_EXECUTION = NO
+```
+
+El catálogo E2 vigente no demuestra una identidad `VSCREEN-*` única equivalente a toda la familia `/operations*`.
+
+Esta tarea no inventa una pantalla o proceso para llenar ese vacío.
+
+La sección se define por dominio administrativo, ownership y contratos consumidos.
+
+---
+
+#### 7. Frontera semántica principal
+
+`Operación` administra configuración y supervisión de contexto.
+
+No ejecuta el trabajo operativo de las aplicaciones propietarias.
+
+```text
+VISO / OPERACION
+→ configura contexto
+→ configura elegibilidad operativa
+→ configura puntos físicos aplicables
+→ configura defaults administrativos
+→ diagnostica coherencia
+→ proyecta impacto
+
+ANIMA
+→ activa experiencia personal del trabajador
+→ ejecuta check-in / pausa / check-out propios
+
+NEXO
+→ ejecuta inventario y logística
+
+FOGO
+→ ejecuta producción
+
+ORIGO
+→ ejecuta compras y recepción propietaria
+
+PULSO
+→ ejecuta venta y operación comercial
+
+NUMERA
+→ ejecuta dominio financiero
+
+PASS
+→ ejecuta experiencia del cliente
+```
+
+VISO no se vuelve editor universal por centralizar configuración administrativa.
+
+---
+
+#### 8. Entrada principal observada
+
+`VISO-ROUTE-024 — /operations` es la entrada física observada principal de la familia.
+
+El runtime actual la presenta como centro de configuración del contexto operativo.
+
+La experiencia objetivo debe usarla como entrada de dominio solo cuando:
+
+- la entrada de navegación esté gobernada;
+- el usuario tenga acceso administrativo válido a VISO;
+- las subcapacidades visibles estén filtradas por autoridad;
+- cada mutación conserve su owner real;
+- las superficies cross-owner no sean tratadas como editores propios de VISO.
+
+La existencia de `/operations` no concede acceso a todos sus hijos.
+
+---
+
+#### 9. Disposición de la familia `VISO-ROUTE-024..029`
+
+| Route ID | Patrón observado | Decisión de dominio | Clase de navegación | Propiedad semántica |
+| --- | --- | --- | --- | --- |
+| `VISO-ROUTE-024` | `/operations` | `Operación` | `VISO_DOMAIN_ENTRY` | composición y entrada del dominio |
+| `VISO-ROUTE-025` | `/operations/checkin-points` | `Operación` | `CHILD_OR_DETAIL_ROUTE` | configuración administrativa de puntos físicos de marcación |
+| `VISO-ROUTE-026` | `/operations/employee-profiles` | `Operación` | `CHILD_OR_DETAIL_ROUTE` | defaults y perfil operativo administrativo por trabajador/sede, sin autoridad real |
+| `VISO-ROUTE-027` | `/operations/preview` | `Operación` | `CHILD_OR_DETAIL_ROUTE` | diagnóstico de configuración operativa; no simulación canónica de seguridad |
+| `VISO-ROUTE-028` | `/operations/site-roles` | `Operación` | `CHILD_OR_DETAIL_ROUTE` | elegibilidad de rol operativo por sede/área; no matriz de permisos |
+| `VISO-ROUTE-029` | `/operations-map` | transición multiowner | `CROSS_OWNER_TRANSITION` | composición AS-IS que mezcla estructura, capacidades y LOC; requiere separación/handoff |
+
+`VISO-ROUTE-030 — /ops/audit` no pertenece a esta familia final.
+
+Su tratamiento corresponde a `VISO-UX-007`.
+
+---
+
+#### 10. Arquitectura interna del dominio
+
+La sección se organiza conceptualmente en cinco áreas:
+
+```text
+1. Resumen operativo
+2. Roles por sede y área
+3. Perfiles operativos
+4. Puntos de marcación
+5. Diagnóstico / preview
+```
+
+`Mapa operativo` no se incorpora como sexto editor propio mientras conserve mutaciones cross-owner.
+
+Puede existir como handoff o proyección durante transición.
+
+---
+
+#### 11. Modelo mínimo de contexto operativo
+
+El contexto operativo efectivo no es un único campo.
+
+Cuando el proceso lo requiera puede involucrar:
+
+```text
+principal autenticado
++ actor humano efectivo
++ vínculo laboral vigente
++ turno publicado vigente
++ check-in activo cuando aplique
++ sede operativa efectiva
++ área efectiva cuando aplique
++ rol operativo efectivo
++ permiso exacto
++ recurso
++ dispositivo
++ versión / frescura
+```
+
+La sección `Operación` administra solo las piezas que realmente pertenecen a VISO.
+
+No sustituye al evaluador canónico de autorización.
+
+---
+
+#### 12. Rol base y rol operativo
+
+Se conserva:
+
+```text
+BASE_ROLE
+!=
+OPERATIONAL_ROLE
+```
+
+El rol base representa identidad administrativa o transversal según el contrato aprobado.
+
+El rol operativo representa función efectiva de una operación y puede variar por turno y contexto.
+
+No se modifica `employees.role` como consecuencia de:
+
+- check-in;
+- cambio de sede de turno;
+- perfil operativo default;
+- selección de área;
+- uso de un punto de marcación;
+- preview.
+
+---
+
+#### 13. Catálogo de roles operativos
+
+`Operación` consume el catálogo cerrado de roles operativos aprobado por los contratos de autorización y contexto.
+
+La experiencia no permitirá roles libres por texto cuando el contrato requiera identidad canónica.
+
+Cada opción mostrada deberá preservar al menos:
+
+- código estable;
+- etiqueta humana;
+- familia cuando exista;
+- estado/vigencia;
+- requisitos operativos relevantes;
+- referencia al catálogo propietario.
+
+No se crea un rol nuevo porque un administrador escriba un nombre en una matriz.
+
+---
+
+#### 14. Matriz rol × sede × área
+
+La matriz operativa responde:
+
+```text
+¿ESTE ROL OPERATIVO PUEDE SER USADO EN ESTA SEDE Y, CUANDO APLIQUE, EN ESTA ÁREA?
+```
+
+No responde:
+
+```text
+¿ESTA PERSONA TIENE ESTE PERMISO?
+```
+
+Por tanto:
+
+```text
+SITE_OPERATIONAL_ROLE_ELIGIBILITY
+!=
+AUTHORIZATION_GRANT
+```
+
+La matriz debe conservar:
+
+- sede;
+- área opcional según contrato;
+- rol operativo canónico;
+- estado activo/inactivo;
+- condición default cuando exista;
+- requisitos de punto externo cuando existan;
+- orden o metadatos contractuales vigentes;
+- trazabilidad de cambio.
+
+---
+
+#### 15. Semántica de `default`
+
+Un rol marcado como default significa preferencia o resolución administrativa permitida dentro de un contexto compatible.
+
+No significa:
+
+- permiso automático;
+- rol efectivo permanente;
+- bypass de selección cuando existen incompatibilidades;
+- autoridad sobre toda la sede;
+- sustitución del rol declarado por un turno publicado.
+
+Cuando exista más de una opción válida y no haya resolución determinista, la experiencia deberá requerir una decisión explícita del owner correspondiente.
+
+---
+
+#### 16. Área opcional y área obligatoria
+
+Una relación de rol operativo puede ser:
+
+- aplicable a toda la sede cuando el contrato lo permita;
+- específica de un área;
+- incompatible con áreas determinadas.
+
+`area_id = null` no se interpretará automáticamente como:
+
+```text
+TODAS_LAS_AREAS_AUTORIZADAS
+```
+
+La semántica de ausencia deberá venir del contrato propietario.
+
+---
+
+#### 17. Perfil operativo por trabajador y sede
+
+El perfil operativo administrativo puede conservar defaults como:
+
+- trabajador;
+- sede;
+- rol operativo default;
+- punto de entrada default;
+- punto de salida default;
+- estado/vigencia.
+
+Se conserva:
+
+```text
+EMPLOYEE_OPERATIONAL_PROFILE
+!=
+ACTIVE_OPERATIONAL_CONTEXT
+```
+
+El perfil facilita planificación y configuración.
+
+No concede autoridad ni crea un turno.
+
+---
+
+#### 18. Perfil operativo y Programación
+
+Programación puede consumir un perfil operativo para proponer valores compatibles al crear o editar un turno.
+
+La propuesta no será una mutación silenciosa.
+
+El turno publicado conserva su propia versión y contexto.
+
+Un cambio posterior del perfil no reescribe turnos ya publicados por efecto lateral.
+
+---
+
+#### 19. Perfil operativo y Acceso y seguridad
+
+El perfil operativo no equivale a:
+
+- grant;
+- deny;
+- excepción;
+- permiso;
+- role assignment de seguridad;
+- scope global.
+
+Si la selección de un perfil revela un conflicto de autorización, `Operación` muestra el conflicto o conduce al owner.
+
+No lo corrige concediendo permisos.
+
+---
+
+#### 20. Puntos de marcación
+
+Un punto de marcación es un contexto físico utilizado para validar entrada o salida cuando el proceso lo requiere.
+
+Puede conservar:
+
+- identidad estable;
+- código;
+- etiqueta;
+- coordenadas;
+- radio de geocerca;
+- tipo físico;
+- estado/vigencia;
+- relación con la configuración que lo consume.
+
+No se presenta automáticamente como sede operativa ordinaria.
+
+---
+
+#### 21. Punto de marcación y sede operativa
+
+Se conserva:
+
+```text
+CHECKIN_POINT
+!=
+OPERATIONAL_SITE
+```
+
+Un punto físico puede usarse para geocerca sin ser el territorio de autorización.
+
+Ejemplo conceptual:
+
+```text
+sede operativa del turno = Centro de Producción y Distribución
+punto físico de entrada = patio de vehículo autorizado
+```
+
+El punto de entrada no reemplaza la sede del turno.
+
+---
+
+#### 22. `checkin_site_id` y `checkout_site_id`
+
+Cuando existan en el contrato vigente:
+
+- identifican puntos físicos de entrada o salida;
+- no conceden permisos;
+- no cambian el owner del turno;
+- no cambian el rol base;
+- no determinan por sí solos el área efectiva;
+- no convierten un punto oculto en sede navegable.
+
+La ausencia debe diferenciarse de un punto inválido o retirado.
+
+---
+
+#### 23. Geocerca
+
+La geocerca es una condición física de una operación de asistencia o presencia.
+
+No es una frontera de autorización empresarial completa.
+
+Se conserva:
+
+```text
+GEOFENCE_MATCH
+!=
+AUTHORIZED_TO_OPERATE
+```
+
+Una persona puede estar físicamente dentro de un radio y no tener:
+
+- turno válido;
+- rol operativo compatible;
+- permiso exacto;
+- vínculo vigente;
+- contexto fresco.
+
+---
+
+#### 24. Check-in y activación de contexto
+
+ANIMA conserva la experiencia personal de check-in, pausa y check-out.
+
+`Operación` configura elementos que ANIMA consume.
+
+No ejecuta el check-in del trabajador ni lo suplanta administrativamente.
+
+Se conserva:
+
+```text
+VISO_CONFIGURES
+ANIMA_ACTIVATES_PERSONAL_ATTENDANCE_FLOW
+AUTH_EVALUATES
+OWNER_APP_EXECUTES
+```
+
+---
+
+#### 25. Contexto activo
+
+Un contexto activo debe derivarse de hechos vigentes y del contrato compartido.
+
+No se persiste o reconstruye desde una selección de UI como si esa selección fuese autoridad.
+
+La sección puede mostrar una proyección administrativa del contexto.
+
+La mutación real en otra aplicación deberá revalidar el contexto.
+
+---
+
+#### 26. Frescura
+
+La experiencia debe tratar como potencialmente stale cualquier preview o diagnóstico cuando cambie cualquiera de estas entradas relevantes:
+
+- vínculo laboral;
+- asignación territorial;
+- estructura de sede o área;
+- matriz de roles operativos;
+- perfil operativo;
+- turno;
+- check-in;
+- permiso;
+- excepción;
+- dispositivo;
+- versión contractual.
+
+Un resultado stale no se reutiliza como autorización.
+
+---
+
+#### 27. Preview operativo
+
+`/operations/preview` puede ofrecer una vista administrativa de coherencia entre:
+
+- sedes;
+- áreas;
+- roles operativos;
+- perfiles;
+- puntos físicos;
+- permisos proyectados cuando sean visibles de forma autorizada;
+- warnings de configuración.
+
+Su función es explicar y diagnosticar.
+
+No ejecutar.
+
+---
+
+#### 28. Preview operativo y simulación canónica
+
+Se conserva:
+
+```text
+OPERATIONAL_PREVIEW
+!=
+AUTHORIZATION_SIMULATION
+```
+
+Para declararse simulación canónica tendría que consumir el contrato de simulación aprobado y conservar actor real, escenario hipotético, decisión por permiso, separación de autoridad real y auditoría correspondiente.
+
+Esta tarea no eleva el AS-IS actual a esa categoría.
+
+---
+
+#### 29. Warnings de configuración
+
+La experiencia puede detectar, entre otros:
+
+- sede sin matriz operativa cuando se requiere;
+- área sin rol compatible;
+- varios roles sin default cuando la operación espera resolución automática;
+- perfil con rol fuera de matriz;
+- perfil con punto retirado;
+- turno con rol no admitido;
+- punto requerido ausente;
+- referencia territorial inactiva;
+- configuración duplicada o competidora;
+- datos stale.
+
+Un warning no será tratado automáticamente como deny.
+
+---
+
+#### 30. Error, conflicto y deny
+
+Se mantienen separados:
+
+```text
+VALIDATION_ERROR
+CONFIGURATION_CONFLICT
+AUTHORIZATION_DENY
+TECHNICAL_FAILURE
+STALE_CONTEXT
+MISSING_CONTEXT
+```
+
+La interfaz deberá explicar la clase real sin inventar una causa de seguridad.
+
+---
+
+#### 31. `/operations/checkin-points`
+
+`VISO-ROUTE-025` permanece como superficie hija de `Operación`.
+
+Su experiencia objetivo administra puntos físicos de marcación sin tratarlos como sedes operativas visibles por defecto.
+
+Debe mostrar:
+
+- identidad;
+- código;
+- nombre;
+- tipo;
+- dirección o referencia permitida;
+- coordenadas cuando apliquen;
+- radio;
+- estado;
+- usos o impactos relevantes antes de retirar.
+
+---
+
+#### 32. Alta de punto físico
+
+Antes de crear un punto, la experiencia debe validar:
+
+- identidad/código no duplicados;
+- tipo permitido;
+- coordenadas válidas cuando sean obligatorias;
+- radio válido;
+- finalidad;
+- exposición permitida;
+- permisos administrativos;
+- conflictos evidentes.
+
+Crear el punto no lo asigna automáticamente a un trabajador o turno.
+
+---
+
+#### 33. Cambio de punto físico
+
+Un cambio de coordenadas, radio o estado puede afectar:
+
+- perfiles operativos;
+- turnos futuros;
+- turnos publicados;
+- check-in/check-out;
+- geocercas activas;
+- operación offline;
+- evidencia de asistencia.
+
+La experiencia deberá mostrar impacto detectable antes de guardar.
+
+No reescribe historia de asistencia.
+
+---
+
+#### 34. Retiro de punto físico
+
+Un punto referenciado no debe eliminarse destructivamente sin reconciliación.
+
+La experiencia preferirá:
+
+- desactivación;
+- vigencia;
+- reemplazo controlado;
+- bloqueo por referencias activas;
+- preservación histórica.
+
+La acción exacta depende del contrato físico propietario.
+
+---
+
+#### 35. `/operations/site-roles`
+
+`VISO-ROUTE-028` permanece como superficie hija de `Operación`.
+
+Representa la configuración de roles operativos admitidos por sede y área.
+
+No se renombra conceptualmente como `Permisos por sede`.
+
+La interfaz debe usar lenguaje de elegibilidad operativa.
+
+---
+
+#### 36. Matriz y catálogo
+
+La matriz deberá seleccionar roles desde catálogo canónico.
+
+Se prohíbe:
+
+- código libre;
+- rol inventado por UI;
+- duplicar catálogo;
+- usar `employees.role` como catálogo de roles operativos;
+- inferir rol por nombre de sede;
+- inferir permisos desde pertenencia a la matriz.
+
+---
+
+#### 37. Duplicidad física de `site_operational_roles`
+
+La evidencia canónica registra fuentes competidoras que deben reconciliarse antes de admitir una autoridad física definitiva.
+
+Por tanto esta tarea:
+
+- no declara una tabla concreta como autoridad final por inferencia;
+- no promueve una copia por ser la usada por el runtime actual;
+- no autoriza doble escritura;
+- exige convergencia antes de retirar compatibilidad;
+- conserva área, default, estado, auditoría y referencias durante transición.
+
+---
+
+#### 38. `/operations/employee-profiles`
+
+`VISO-ROUTE-026` permanece como superficie hija de `Operación`.
+
+La experiencia debe administrar defaults operativos por trabajador y sede sin presentar esos defaults como el contexto efectivo actual.
+
+Debe permitir comprender:
+
+```text
+TRABAJADOR
++ SEDE
++ ROL OPERATIVO DEFAULT
++ PUNTO ENTRADA DEFAULT
++ PUNTO SALIDA DEFAULT
++ VIGENCIA
+```
+
+---
+
+#### 39. Compatibilidad de perfil
+
+Al guardar un perfil se deben verificar, cuando sean materialmente aplicables:
+
+- trabajador vigente;
+- sede válida;
+- rol presente en catálogo;
+- rol admitido en la sede/área correspondiente;
+- puntos físicos válidos;
+- requisitos de punto externo;
+- duplicidad de perfil;
+- conflictos detectables;
+- alcance administrativo del actor.
+
+El servidor conserva la decisión final.
+
+---
+
+#### 40. `/operations/preview`
+
+`VISO-ROUTE-027` permanece como superficie hija de diagnóstico.
+
+Debe diferenciar claramente:
+
+- configuración actual;
+- escenario seleccionado;
+- warnings;
+- permisos proyectados si la lectura está autorizada;
+- fuente de cada elemento;
+- timestamp o versión suficiente para reconocer stale state.
+
+No habrá botón ambiguo que convierta preview en aplicación masiva de configuración.
+
+---
+
+#### 41. `/operations-map`
+
+`VISO-ROUTE-029` se clasifica como `CROSS_OWNER_TRANSITION`.
+
+El AS-IS observado combina en una sola superficie:
+
+- sedes;
+- áreas;
+- visibilidad operativa;
+- capacidades por sede;
+- LOC;
+- asignaciones de personas;
+- reglas o referencias de producción;
+- reglas comerciales;
+- permisos y otros consumidores.
+
+Esa composición es útil como evidencia y diagnóstico.
+
+No autoriza ownership universal de VISO.
+
+---
+
+#### 42. Disposición de `/operations-map`
+
+La evolución debe separar, mediante handoff o subviews propietarias:
+
+```text
+ESTRUCTURA ORGANIZATIVA
+→ Organización
+
+LOC / UBICACIÓN DE INVENTARIO
+→ NEXO
+
+CAPACIDAD OPERATIVA PROPIETARIA
+→ owner del proceso/capacidad
+
+SEGURIDAD
+→ Acceso y seguridad
+
+CONFIGURACIÓN DE CONTEXTO VISO
+→ Operación
+```
+
+Hasta esa separación, la ruta no se retira ni se certifica como diseño final.
+
+---
+
+#### 43. Capacidades de sede
+
+Una capacidad como vender, producir, almacenar, solicitar, preparar, despachar o recibir no se deriva de `site_type` ni del nombre.
+
+La sección puede mostrar capacidades como contexto o diagnóstico cuando estén contractualmente disponibles.
+
+No se apropia de la escritura de una capacidad cuyo owner pertenezca a otra aplicación o proceso.
+
+---
+
+#### 44. `operational_visibility`
+
+La visibilidad operativa es configuración de presentación/uso de contexto.
+
+No equivale a:
+
+- existencia jurídica;
+- sede activa en Organización;
+- autorización territorial;
+- capacidad de ejecutar todos los procesos;
+- publicación comercial.
+
+Cambiar visibilidad no concede permisos.
+
+---
+
+#### 45. Relación con Personal
+
+`Personal` conserva:
+
+- expediente laboral;
+- estado laboral;
+- vínculo;
+- asignaciones laborales propietarias;
+- retiro.
+
+`Operación` consume únicamente los atributos necesarios para configurar contexto.
+
+No modifica datos laborales protegidos como efecto lateral.
+
+---
+
+#### 46. Relación con Programación
+
+`Programación` conserva:
+
+- creación de turnos;
+- edición de turnos;
+- publicación;
+- revisión;
+- cancelación;
+- historial de programación.
+
+`Operación` provee o consume configuración compatible.
+
+No crea turnos desde sus editores de matriz o perfil.
+
+---
+
+#### 47. Relación con Acceso y seguridad
+
+`Acceso y seguridad` conserva:
+
+- permisos;
+- grants;
+- denies;
+- excepciones;
+- matrices de seguridad;
+- simulación canónica;
+- procedencia;
+- conflictos de autorización.
+
+`Operación` conserva:
+
+- catálogo operativo consumido;
+- elegibilidad rol × sede × área;
+- defaults operativos;
+- puntos físicos;
+- diagnóstico de configuración.
+
+La frontera se representa como handoff, no como duplicación.
+
+---
+
+#### 48. Relación con Organización
+
+`Organización` conserva identities y vigencias de:
+
+- sedes;
+- áreas;
+- zonas;
+- estaciones;
+- relaciones estructurales.
+
+`Operación` no crea una sede para resolver un punto de marcación.
+
+No crea un área para resolver un rol.
+
+---
+
+#### 49. Relación con ANIMA
+
+ANIMA consume:
+
+- turno publicado;
+- área;
+- rol operativo;
+- punto de entrada;
+- punto de salida;
+- contexto aplicable a asistencia.
+
+ANIMA no debe administrar matrices de terceros ni modificar `employees.role` por check-in.
+
+`Operación` no realiza la experiencia personal de asistencia.
+
+---
+
+#### 50. Relación con NEXO
+
+NEXO consume contexto operativo para autorizar y contextualizar acciones de inventario y logística.
+
+NEXO conserva ownership de:
+
+- inventario;
+- LOC;
+- stock;
+- remisiones;
+- movimientos;
+- activos logísticos dentro de su dominio.
+
+VISO no edita esas operaciones desde `Operación`.
+
+---
+
+#### 51. Relación con FOGO
+
+FOGO consume contexto de sede, área y rol operativo cuando el proceso productivo lo requiere.
+
+FOGO conserva ownership de:
+
+- lotes;
+- recetas;
+- producción;
+- calidad productiva;
+- consumos y resultados.
+
+`Operación` no inicia ni cierra lotes.
+
+---
+
+#### 52. Relación con ORIGO
+
+ORIGO conserva compras y recepción propietaria.
+
+El contexto operativo puede limitar o contextualizar actores y territorio.
+
+No convierte VISO en editor de órdenes, proveedores o recepciones.
+
+---
+
+#### 53. Relación con PULSO
+
+PULSO conserva venta y operación comercial propietaria.
+
+`Operación` puede proveer contexto de actor, sede o área mediante contratos compartidos.
+
+No administra caja, pedidos, salón o venta.
+
+---
+
+#### 54. Relación con NUMERA
+
+NUMERA conserva hechos económicos, obligaciones y dimensiones financieras propietarias.
+
+`Operación` no deriva centro de costo definitivo desde área, rol o sede por inferencia.
+
+---
+
+#### 55. Relación con PASS
+
+PASS consume proyecciones públicas o comerciales autorizadas.
+
+Un punto de marcación oculto no se publica en PASS por pertenecer físicamente a una sede.
+
+`Operación` no administra cliente, recompensas o experiencia comercial.
+
+---
+
+#### 56. Handoff hacia Auditoría
+
+`VISO-UX-007` recibe evidencia de cambios y decisiones relevantes de `Operación`.
+
+La sección `Operación` puede enlazar a auditoría cuando una persona necesite investigar:
+
+- quién cambió una matriz;
+- quién cambió un perfil;
+- quién cambió un punto;
+- qué configuración existía en un momento;
+- qué warning se produjo;
+- qué versión se consumió.
+
+No convierte el log en estado vigente.
+
+---
+
+#### 57. Navegación interna
+
+La navegación interna del dominio puede proyectar:
+
+```text
+Vista previa
+Puntos de marcación
+Roles por sede
+Perfiles operativos
+```
+
+El orden visual puede adaptarse a la tarea del usuario, pero deberá conservar:
+
+- una única entrada primaria `Operación`;
+- hijos identificables;
+- no duplicar `operations-map` como editor propio mientras siga cross-owner;
+- no crear entradas a capacidades no autorizadas;
+- no interpretar tab visible como permiso.
+
+---
+
+#### 58. Descubribilidad y autorización
+
+Una opción interna visible deberá depender de capacidad administrativa real o de una regla de navegación gobernada.
+
+La ausencia de `permissionCode` explícito observada en páginas AS-IS no certifica que el acceso de aplicación sea suficiente para una futura mutación sensible.
+
+Se conserva:
+
+```text
+viso.access
+!=
+ADMINISTRAR_TODO_EL_CONTEXTO_OPERATIVO
+```
+
+---
+
+#### 59. Acceso directo
+
+Un deep link a cualquier ruta hija debe revalidar:
+
+- sesión;
+- actor;
+- aplicación;
+- permiso exacto cuando exista;
+- territorio;
+- recurso;
+- vigencia;
+- contexto adicional aplicable.
+
+La navegación no es un control de seguridad suficiente.
+
+---
+
+#### 60. Mutaciones de servidor
+
+Toda mutación debe revalidar en servidor los datos enviados por formularios o URL.
+
+No confiará en:
+
+- opciones filtradas en cliente;
+- hidden inputs;
+- labels visibles;
+- selección previa;
+- preview;
+- ruta de origen;
+- navegación lateral.
+
+---
+
+#### 61. Concurrencia
+
+Antes de guardar un cambio sensible, la experiencia debe soportar revalidación si la configuración cambió desde la carga.
+
+No se acepta `last write wins` silencioso cuando pueda:
+
+- invalidar turnos;
+- crear matriz incompatible;
+- cambiar punto físico usado;
+- ampliar o reducir contexto;
+- ocultar una diferencia relevante.
+
+---
+
+#### 62. Preview antes de guardar
+
+Cuando el cambio tenga impacto material detectable, la experiencia debe mostrar:
+
+```text
+ACTUAL
++
+CAMBIO PROPUESTO
+=
+RESULTADO PROYECTADO
+```
+
+El preview debe indicar:
+
+- objetos afectados;
+- consumidores conocidos;
+- bloqueos;
+- warnings;
+- owner de cualquier corrección externa requerida.
+
+---
+
+#### 63. Confirmación
+
+La confirmación de una acción sensible debe nombrar el efecto real.
+
+Ejemplos de intención comprensible:
+
+- activar o desactivar elegibilidad de un rol en una sede/área;
+- cambiar el punto físico default de un perfil;
+- retirar un punto de marcación;
+- actualizar un default operativo.
+
+No usar confirmaciones genéricas que oculten consecuencias.
+
+---
+
+#### 64. Receipt
+
+Después de una mutación exitosa, la experiencia deberá mostrar un resultado suficiente para que el administrador comprenda:
+
+- qué cambió;
+- sobre qué contexto;
+- desde cuándo;
+- qué warnings permanecen;
+- si existe trabajo pendiente en otro owner;
+- referencia de trazabilidad permitida.
+
+El receipt no es auditoría completa.
+
+---
+
+#### 65. Estados de experiencia
+
+La UI debe diferenciar como mínimo:
+
+```text
+LOADING
+EMPTY
+READY
+NO_AUTHORITY
+NO_TERRITORY
+NO_MATCHES
+VALIDATION_ERROR
+CONFLICT
+STALE
+TECHNICAL_FAILURE
+PARTIAL_READ
+```
+
+No se utilizará un estado único `Sin datos` para todas las causas.
+
+---
+
+#### 66. Estado vacío
+
+Un estado vacío debe indicar qué está vacío:
+
+- no hay puntos;
+- no hay roles admitidos;
+- no hay perfiles;
+- no hay resultados para filtros;
+- no hay warnings.
+
+No debe invitar a crear datos cuando el actor no tiene autoridad.
+
+---
+
+#### 67. Fallo parcial
+
+Si una lectura compuesta falla parcialmente:
+
+- se identifica qué fuente falló;
+- no se presenta una matriz incompleta como completa;
+- no se habilita una mutación basada en información insuficiente;
+- la recuperación no borra el diagnóstico.
+
+---
+
+#### 68. Búsqueda y filtros
+
+Las listas densas podrán filtrar por:
+
+- trabajador;
+- sede;
+- área;
+- rol operativo;
+- estado;
+- necesidad de punto externo;
+- punto físico;
+- warning;
+- vigencia.
+
+Los filtros operan dentro del universo autorizado.
+
+---
+
+#### 69. Modo guiado y experto
+
+Acciones individuales y de mayor riesgo deberán priorizar modo guiado.
+
+Listados de matriz y diagnóstico podrán usar modo experto.
+
+Ambos modos comparten:
+
+- la misma autoridad;
+- la misma fuente;
+- las mismas validaciones;
+- la misma trazabilidad.
+
+El modo experto no concede scope adicional.
+
+---
+
+#### 70. Acciones masivas
+
+Si una implementación futura habilita cambios masivos, antes de aplicar deberá mostrar:
+
+- población;
+- sede/área;
+- cambio exacto;
+- exclusiones;
+- conflictos;
+- filas bloqueadas;
+- warnings;
+- autoridad requerida;
+- resultado esperado.
+
+Una selección masiva no crea wildcard territorial.
+
+---
+
+#### 71. Privacidad
+
+Los perfiles operativos deberán mostrar únicamente datos personales necesarios para identificar al trabajador y administrar el contexto.
+
+No se incluirán por defecto:
+
+- documentos médicos;
+- datos financieros;
+- información sensible no necesaria;
+- secretos;
+- tokens;
+- credenciales.
+
+---
+
+#### 72. Accesibilidad
+
+Estados críticos no dependen únicamente de color.
+
+La navegación, warnings, tablas y formularios deberán tener:
+
+- labels explícitos;
+- foco identificable;
+- orden de teclado coherente;
+- mensajes vinculados a campos;
+- confirmaciones comprensibles;
+- lectura semántica suficiente.
+
+---
+
+#### 73. Responsive
+
+En pantallas estrechas se preservan:
+
+- contexto seleccionado;
+- objeto en edición;
+- warning crítico;
+- acción primaria;
+- owner/handoff;
+- estado de guardado.
+
+Responsive no cambia autorización ni oculta condiciones materiales.
+
+---
+
+#### 74. Terminología
+
+La UI usa términos distintos para:
+
+```text
+rol base
+rol operativo
+perfil operativo
+rol del turno
+permiso
+punto de marcación
+sede
+área
+zona
+LOC
+```
+
+No se reutiliza `rol` de forma ambigua cuando el contexto exige precisión.
+
+---
+
+#### 75. Prohibición de inferencias por nombre
+
+No se decide comportamiento mediante:
+
+- `contains("centro")`;
+- `contains("saudo")`;
+- `contains("conductor")`;
+- nombre de empleado;
+- nombre de sede;
+- nombre de área;
+- texto de label.
+
+Las decisiones consumen identidades y contratos.
+
+---
+
+#### 76. Datos AS-IS
+
+Las siguientes superficies y objetos se consideran evidencia de implementación actual, no certificación automática del diseño final:
+
+- `operational_roles`;
+- `site_operational_roles`;
+- `employee_site_operational_profiles`;
+- `viso_operational_checkin_points`;
+- `vento_site_operational_role_matrix_v1`;
+- `operational_role_permissions`;
+- `employee_shifts.operational_role`;
+- `employee_shifts.area_id`;
+- `employee_shifts.checkin_site_id`;
+- `employee_shifts.checkout_site_id`;
+- `get_operational_context` y consumidores relacionados;
+- rutas `/operations*`;
+- `/operations-map`.
+
+Cada objeto debe reconciliarse con su owner y contrato vigente antes de certificación física.
+
+---
+
+#### 77. Fuente única y proyecciones
+
+La experiencia no debe crear nuevas copias editables del mismo concepto.
+
+Se conserva:
+
+```text
+CANONICAL_SOURCE
+→ AUTHORIZED_PROJECTION
+→ CONSUMER
+```
+
+No:
+
+```text
+EDITOR_A
++
+EDITOR_B
++
+EDITOR_C
+→ CONCILIACION_MANUAL
+```
+
+---
+
+#### 78. Reconciliación de matrices duplicadas
+
+La existencia documentada de más de una representación de roles por sede debe tratarse como deuda de transición con owner y gate.
+
+No se resuelve desde UX mediante:
+
+- elegir la tabla que resulte más cómoda;
+- escribir a ambas;
+- borrar una sin migración;
+- ocultar la diferencia en UI.
+
+---
+
+#### 79. Offline
+
+Una cola offline no podrá ejecutar posteriormente con un contexto operativo que ya no sea válido.
+
+Al recuperar conectividad, el consumidor propietario deberá revalidar:
+
+- vínculo;
+- turno;
+- check-in;
+- territorio;
+- rol operativo;
+- permiso;
+- frescura.
+
+Esta tarea no implementa esa cola.
+
+---
+
+#### 80. Dispositivos compartidos
+
+Cuando un contexto operativo se use desde dispositivo compartido:
+
+- el dispositivo no se convierte en trabajador;
+- el principal técnico no hereda autoridad del administrador;
+- el actor humano efectivo debe quedar identificado;
+- los límites del dispositivo se intersectan con autoridad del actor.
+
+La administración completa del dispositivo permanece en `Acceso y seguridad`.
+
+---
+
+#### 81. Simulación
+
+Un escenario simulado nunca modifica:
+
+- perfil;
+- turno;
+- check-in;
+- matriz operativa;
+- grants;
+- sesión real.
+
+Si el preview operativo presenta un escenario hipotético, deberá marcarlo claramente como diagnóstico sin autoridad.
+
+---
+
+#### 82. Auditoría
+
+Toda mutación real de configuración deberá producir evidencia según el contrato transversal aplicable.
+
+`Operación` no implementa un ledger nuevo.
+
+`VISO-UX-007` define la experiencia de consulta administrativa de esa evidencia.
+
+---
+
+#### 83. Deep links entre dominios VISO
+
+Los enlaces hacia:
+
+- Personal;
+- Programación;
+- Acceso y seguridad;
+- Organización;
+- Auditoría;
+
+transportan únicamente identificadores y filtros permitidos.
+
+El destino vuelve a autorizar.
+
+---
+
+#### 84. Deep links hacia otras aplicaciones
+
+Un handoff a NEXO, FOGO, ORIGO, PULSO, NUMERA, PASS o ANIMA debe preservar:
+
+- owner destino;
+- objeto suficiente;
+- contexto mínimo;
+- return contract cuando exista;
+- revalidación en destino.
+
+La URL no transporta autoridad.
+
+---
+
+#### 85. Handoff a `VISO-UX-007`
+
+`VISO-UX-007 — Crear sección Auditoría` recibe:
+
+- cambios de configuración operativa como hechos consultables;
+- necesidad de distinguir estado vigente de historia;
+- actor y tiempo cuando el contrato lo permita;
+- referencias a conflictos y warnings sin convertirlos en verdad actual;
+- enlaces desde matrices, perfiles y puntos hacia evidencia autorizada.
+
+Auditoría no se convierte en editor de `Operación`.
+
+---
+
+#### 86. Handoffs posteriores del minibloque
+
+| Tarea posterior | Handoff |
+| --- | --- |
+| `VISO-UX-007` | evidencia e historia consultable de cambios operativos |
+| `VISO-UX-013` | limitación visual y acciones según territorio autorizado |
+| `VISO-UX-014` | procedencia comprensible de decisiones y permisos proyectados |
+| `VISO-UX-015` | conflictos visibles antes de guardar |
+| `VISO-UX-016` | patrón final de preview por trabajador/contexto sin ampliar autoridad |
+| `VISO-UX-017` | eliminación de configuración duplicada o de owner externo |
+| `VISO-UX-018` | handoffs cross-app protegidos |
+| `VISO-UX-019` | progressive disclosure para configuración avanzada |
+| `VISO-UX-020` | pruebas con administradores reales |
+
+---
+
+#### 87. Carryovers
+
+| Carryover | Owner | Condición de salida |
+| --- | --- | --- |
+| materializar la sección y sus subviews | instancia física de `VISO-UX-006` | package aplicable y `POST_E5_PACKAGE` satisfechos, autorización física propia y validaciones de implementación |
+| reconciliar fuentes de `site_operational_roles` | transición Supabase ya propietaria | autoridad única, migración, consumidores, rollback y pruebas demostrados |
+| separar preview operativo de simulación canónica | `VISO-UX-016` + contratos AUTH | preview final consume contrato correcto o queda explícitamente diagnóstico |
+| separar mutaciones cross-owner de `/operations-map` | `VISO-UX-017/018` + owners afectados | cada mutación queda en owner o handoff protegido sin doble escritura |
+| cerrar permisos operativos efectivos | `Acceso y seguridad` + AUTH | evaluador y catálogo canónicos demostrados por paquete |
+| reconciliar turnos históricos incompatibles | Programación + owners de datos | datos corregidos mediante proceso gobernado sin reescribir historia silenciosamente |
+| limitar visualmente por territorio | `VISO-UX-013` | patrón transversal materializado y validado |
+| mostrar procedencia | `VISO-UX-014` | procedencia comprensible sin exponer internals sensibles |
+| mostrar conflictos pre-save | `VISO-UX-015` | patrón de conflicto materializado |
+| reconciliar las 61 rutas contra runtime final | `CODE-AUD-021` / `AUTH-UI-061` | inventario y código estable coinciden |
+
+---
+
+#### 88. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** el Registro Canónico vigente ya protege separación entre carriles administrativos y operativos, resolución determinista de sede/área, rol operativo, turno, check-in, autorización efectiva, trazabilidad, coherencia de VISO, contexto laboral compartido, estructura organizacional, fuentes únicas, rutas VISO y transición de matrices duplicadas; esta tarea compone esas decisiones en una sección UX sin crear una regla empresarial, PermissionKey, fuente de verdad, tabla, transición, evaluador, rol, scope, permiso, turno, geocerca, RPC o mutación nueva.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 89. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, la tarea reutiliza especialmente:
+
+- `TREQ-VISO-001` para coherencia entre configuración administrativa, territorio, perfiles, conflictos, auditoría y resultado consumido;
+- `TREQ-AUTH-008` para separar prerrequisitos administrativos y operativos y exigir contexto operativo cuando corresponda;
+- `TREQ-AUTH-009` para resolución territorial determinista y denegación de cruces no autorizados;
+- `TREQ-AUTH-012` para mantener simulación separada de autoridad real;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, rol operativo, turno, check-in, sede, área, permiso y decisión;
+- `TREQ-INTEGRATION-007` para contrato único entre programación, asistencia y contexto derivado sin duplicar jornadas;
+- `TREQ-SUPABASE-011` para integridad semántica de organización, sede, área, zona y punto externo;
+- `TREQ-SUPABASE-335` para reconciliar las fuentes competidoras de roles por sede antes de admitir nuevas escrituras definitivas;
+- `TREQ-UX-005` para fuente visible, estado y corrección sin copias competidoras;
+- `TREQ-UX-020` para mantener ownership y contrato al proyectar una capacidad en varias aplicaciones;
+- `TREQ-UX-023` para no retirar rutas ni superficies antes de reemplazo protegido, probado y reversible.
+
+La mención en esta sección es trazabilidad heredada y no una modificación de 04A.
+
+---
+
+#### 90. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-006`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en la rama documental local de `VISO-UX-006`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main` en `0f83577c3338e5759ccafde9ce13cc84504e57bc`, protocolo, contrato de entrega, continuidad, topología, políticas, owner del minibloque, `VISO-UX-001..004` publicados, la versión completa aprobada de `VISO-UX-005`, el handoff de Organización, contratos VISO/AUTH aplicables, catálogo de pantallas/procesos, inventario `VISO-ROUTE-024..030`, Registro 04A aplicable, scripts documentales y las superficies AS-IS de `vento-viso/main` en `df3f28654188e4c8a4dd64e057c1f01ef602a2ba`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon o cambiaron puntos de marcación, matrices, perfiles, turnos, check-ins, permisos, contextos activos ni capacidades reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron UI, rutas, navegación, Server Actions, contratos, Supabase, datos, migraciones, RLS, Auth, secretos ni despliegues; la materialización permanece por `implementation_unit_id` detrás de `POST_E5_PACKAGE`. |
+
+---
+
+#### 91. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-OPERATION-SECTION-001`;
+2. la tarea conserva `VISO-UX-005` como anterior y `VISO-UX-007` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. `Operación` es el quinto dominio administrativo definido por `VISO-UX-001`;
+6. `/operations` se reconoce como entrada física observada principal sin convertir ruta en ownership universal;
+7. `VISO-ROUTE-024..029` conserva exactamente seis identidades de ruta;
+8. ninguna identidad `VISO-ROUTE-*` se renumera;
+9. `VISO-ROUTE-024` se clasifica `VISO_DOMAIN_ENTRY`;
+10. `VISO-ROUTE-025` se clasifica `CHILD_OR_DETAIL_ROUTE`;
+11. `VISO-ROUTE-026` se clasifica `CHILD_OR_DETAIL_ROUTE`;
+12. `VISO-ROUTE-027` se clasifica `CHILD_OR_DETAIL_ROUTE`;
+13. `VISO-ROUTE-028` se clasifica `CHILD_OR_DETAIL_ROUTE`;
+14. `VISO-ROUTE-029` se clasifica `CROSS_OWNER_TRANSITION`;
+15. `/ops/audit` permanece reservado a `VISO-UX-007`;
+16. la tarea no inventa una identidad `VSCREEN-*` para `/operations`;
+17. la tarea no inventa un `VPROC-*` para llenar una equivalencia no demostrada;
+18. configuración operativa y autorización permanecen separadas;
+19. configuración operativa y programación permanecen separadas;
+20. configuración operativa y asistencia permanecen separadas;
+21. configuración operativa y ejecución empresarial permanecen separadas;
+22. VISO no se convierte en owner universal de NEXO;
+23. VISO no se convierte en owner universal de FOGO;
+24. VISO no se convierte en owner universal de ORIGO;
+25. VISO no se convierte en owner universal de PULSO;
+26. VISO no se convierte en owner universal de NUMERA;
+27. VISO no se convierte en owner universal de PASS;
+28. VISO no absorbe la experiencia personal de ANIMA;
+29. `BASE_ROLE` y `OPERATIONAL_ROLE` permanecen distintos;
+30. el check-in no modifica `employees.role`;
+31. un perfil default no modifica `employees.role`;
+32. un rol operativo se selecciona desde catálogo canónico;
+33. no se admiten roles operativos libres cuando el contrato exige catálogo;
+34. matriz rol×sede×área expresa elegibilidad y no permiso efectivo;
+35. un rol admitido no concede un permiso por sí solo;
+36. `default` no equivale a autoridad;
+37. `area_id = null` no se interpreta automáticamente como wildcard;
+38. el perfil operativo por trabajador/sede es default administrativo y no contexto activo;
+39. cambiar perfil no reescribe turnos publicados;
+40. Programación conserva ownership de turnos;
+41. Acceso y seguridad conserva ownership de permisos;
+42. Organización conserva ownership de estructura;
+43. un punto de marcación no se convierte automáticamente en sede;
+44. `checkin_site_id` no concede permisos;
+45. `checkout_site_id` no concede permisos;
+46. geocerca válida no equivale a autorización operativa;
+47. ANIMA conserva check-in/check-out del trabajador;
+48. Operación no ejecuta check-in administrativo en nombre del trabajador;
+49. contexto activo se deriva de hechos vigentes y no de un selector de UI;
+50. preview operativo no equivale a simulación canónica;
+51. preview no se reutiliza como autoridad;
+52. un warning no se convierte automáticamente en deny;
+53. error de validación y deny permanecen distintos;
+54. fallo técnico y deny permanecen distintos;
+55. stale context y deny permanecen distintos;
+56. `/operations/checkin-points` conserva ownership de configuración de puntos físicos de VISO;
+57. el alta de punto no lo asigna automáticamente a perfiles o turnos;
+58. el cambio de punto muestra impacto detectable;
+59. el retiro de punto preserva referencias históricas;
+60. `/operations/site-roles` usa lenguaje de elegibilidad operativa;
+61. `/operations/site-roles` no se presenta como editor de permisos;
+62. la matriz no infiere roles desde nombres de sede;
+63. la matriz no infiere permisos desde rol admitido;
+64. la duplicidad física de `site_operational_roles` permanece explícita hasta reconciliación;
+65. no se autoriza doble escritura para ocultar la duplicidad;
+66. `/operations/employee-profiles` distingue perfil de contexto efectivo;
+67. un perfil exige compatibilidad con sede/rol/puntos cuando corresponda;
+68. el servidor conserva validación final de perfil;
+69. `/operations/preview` queda como diagnóstico;
+70. preview muestra fuente o contexto suficiente para reconocer stale state;
+71. `/operations-map` no se certifica como editor final de Operación;
+72. `/operations-map` conserva clasificación `CROSS_OWNER_TRANSITION`;
+73. LOC permanece en NEXO;
+74. áreas permanecen en Organización como estructura maestra;
+75. capacidades propietarias conservan su owner;
+76. `operational_visibility` no equivale a autorización;
+77. `operational_visibility` no equivale a existencia jurídica;
+78. site type no concede capacidades;
+79. nombre de sede no concede capacidades;
+80. Personal conserva expediente y vínculo;
+81. Operación no modifica datos laborales protegidos como efecto lateral;
+82. Programación conserva publicación e historial de turnos;
+83. Operación no crea turnos desde matrices o perfiles;
+84. Acceso y seguridad conserva grants, denies y excepciones;
+85. Operación no crea grants al guardar elegibilidad;
+86. Organización conserva identidades de sede y área;
+87. Operación no crea una sede para representar un punto;
+88. Operación no crea un área para representar un rol;
+89. ANIMA consume contexto sin administrar matrices de terceros;
+90. NEXO consume contexto sin transferir ownership de inventario a VISO;
+91. FOGO consume contexto sin transferir ownership productivo a VISO;
+92. ORIGO consume contexto sin transferir ownership de compras a VISO;
+93. PULSO consume contexto sin transferir ownership comercial a VISO;
+94. NUMERA consume dimensiones sin transferir ownership financiero a VISO;
+95. PASS no publica puntos ocultos por inferencia;
+96. Auditoría recibe handoff de evidencia sin convertirse en editor;
+97. existe una sola entrada primaria de dominio Operación;
+98. los hijos no compiten como entradas primarias;
+99. la visibilidad de un hijo depende de autoridad aplicable;
+100. `viso.access` no se trata como wildcard administrativo;
+101. deep link revalida en destino;
+102. formulario manipulado no elude validación de servidor;
+103. hidden inputs no transportan autoridad;
+104. filtros de cliente no sustituyen autorización;
+105. cambios concurrentes se revalidan antes de guardar cuando son materiales;
+106. no se acepta `last write wins` silencioso para configuración sensible;
+107. preview pre-save muestra actual, cambio y proyectado cuando corresponde;
+108. confirmación sensible describe efecto real;
+109. receipt describe resultado y pendientes sin sustituir auditoría;
+110. `LOADING` y `EMPTY` permanecen distintos;
+111. `NO_AUTHORITY` y `NO_TERRITORY` permanecen distintos;
+112. `NO_MATCHES` no se presenta como falta de configuración global;
+113. `CONFLICT` y `STALE` permanecen distintos;
+114. `TECHNICAL_FAILURE` no se presenta como deny;
+115. `PARTIAL_READ` no habilita mutación basada en información incompleta;
+116. búsquedas y filtros permanecen dentro del universo autorizado;
+117. modo experto no amplía scope;
+118. acciones masivas futuras no crean wildcard territorial;
+119. privacidad limita datos del trabajador a lo necesario;
+120. estados críticos no dependen solo de color;
+121. responsive conserva contexto y acciones críticas;
+122. terminología distingue rol base, rol operativo, perfil, permiso y rol de turno;
+123. no se infiere comportamiento por nombres visibles;
+124. objetos AS-IS se tratan como evidencia y no certificación automática;
+125. no se crean copias editables de una fuente canónica;
+126. las matrices competidoras se reconcilian mediante transición gobernada;
+127. operación offline debe revalidar contexto antes de producir efectos posteriores;
+128. dispositivo compartido no se convierte en actor humano;
+129. un escenario simulado no muta contexto real;
+130. auditoría se consume mediante contratos existentes y no mediante un ledger nuevo creado aquí;
+131. handoffs internos transportan identificadores mínimos y no autoridad;
+132. handoffs cross-app revalidan en destino;
+133. `VISO-UX-007` recibe el handoff exacto de evidencia de Operación;
+134. todos los carryovers tienen owner y condición de salida;
+135. no se crean requisitos de prueba;
+136. no se modifican requisitos de prueba;
+137. no se modifica 04A;
+138. la cobertura reutilizada se declara fuera de la sección de cero cambios;
+139. no se realizan cambios físicos desde esta tarea documental;
+140. la continuidad termina en `VISO-UX-007` sin desarrollar esa tarea.
+
+---
+
+#### 92. Límites
+
+Esta tarea no:
+
+- modifica `vento-viso`;
+- modifica `/operations`;
+- modifica `/operations/checkin-points`;
+- modifica `/operations/employee-profiles`;
+- modifica `/operations/preview`;
+- modifica `/operations/site-roles`;
+- modifica `/operations-map`;
+- modifica `/ops/audit`;
+- crea rutas;
+- elimina rutas;
+- renumera `VISO-ROUTE-*`;
+- modifica navegación runtime;
+- modifica `app_navigation_items`;
+- crea un `VSCREEN-*`;
+- crea un `VPROC-*`;
+- crea roles base;
+- crea roles operativos;
+- modifica catálogos de roles;
+- crea permisos;
+- crea PermissionKeys;
+- concede grants;
+- crea denies;
+- crea excepciones;
+- modifica matriz de permisos;
+- ejecuta simulación canónica;
+- crea sedes;
+- modifica sedes;
+- crea áreas;
+- modifica áreas;
+- crea zonas;
+- crea estaciones;
+- crea LOC;
+- modifica LOC;
+- crea puntos de marcación reales;
+- modifica puntos de marcación reales;
+- elimina puntos de marcación reales;
+- crea perfiles operativos reales;
+- modifica perfiles operativos reales;
+- crea relaciones rol×sede×área reales;
+- modifica relaciones rol×sede×área reales;
+- crea turnos;
+- modifica turnos;
+- publica turnos;
+- cancela turnos;
+- crea check-ins;
+- crea check-outs;
+- corrige asistencia;
+- inicia contexto operativo real;
+- ejecuta acciones de NEXO;
+- ejecuta acciones de FOGO;
+- ejecuta acciones de ORIGO;
+- ejecuta acciones de PULSO;
+- ejecuta acciones de NUMERA;
+- ejecuta acciones de PASS;
+- cambia datos laborales en Personal;
+- cambia estructura en Organización;
+- cambia seguridad en Acceso y seguridad;
+- modifica auditoría;
+- crea tablas;
+- crea vistas;
+- crea funciones o RPC;
+- crea triggers;
+- crea migraciones;
+- modifica RLS;
+- modifica Auth;
+- modifica Storage;
+- modifica Realtime;
+- modifica secretos;
+- modifica datos;
+- despliega cambios;
+- aprueba packages;
+- selecciona package;
+- autoriza una instancia física;
+- ejecuta una instancia física;
+- sustituye `VISO-UX-007..020`;
+- ejecuta pruebas con administradores reales;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 93. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-005 — Crear sección Organización`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-006 — Crear sección Operación`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-007 — Crear sección Auditoría`
 ### [ ] VISO-UX-007 — Crear sección Auditoría
 ### [ ] VISO-UX-008 — Definir inicio para propietario
 ### [ ] VISO-UX-009 — Definir inicio para gerente general
