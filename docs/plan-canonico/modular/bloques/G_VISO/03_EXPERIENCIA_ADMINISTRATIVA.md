@@ -24081,7 +24081,2102 @@ La identidad exacta de cualquier unidad física futura se resolverá exclusivame
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-011 — Definir inicio para auxiliar administrativa`
-### [ ] VISO-UX-011 — Definir inicio para auxiliar administrativa
+### ✅ VISO-UX-011 — Definir inicio para auxiliar administrativa
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-010 — Definir inicio para gerente de sede
+**Tarea siguiente:** VISO-UX-012 — Definir inicio para contador
+**Tipo de tarea:** definición técnico-documental de la proyección `Inicio` de VISO para el rol base canónico `auxiliar_administrativa`; especializa la entrada compartida para priorizar apoyo documental, programación, registros, consultas, seguimiento administrativo y escalamiento dentro de alcances `G-FUNC`, `ORG-REF`, `AS`, `AA`, `AS-REL` y `ORG-LOCAL` expresamente autorizados, sin convertir globalidad funcional en autoridad organizacional general, sin conceder decisiones gerenciales, seguridad, aprobación financiera u operación física, sin duplicar mutaciones de aplicaciones propietarias y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la proyección `Inicio` para `auxiliar_administrativa` definido sobre la entrada especial `/`; la raíz física actual de `vento-viso` permanece AS-IS y requiere materialización posterior por `implementation_unit_id` para aplicar composición por autorización efectiva, globalidad funcional acotada, cobertura territorial, minimización y handoffs seguros detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, la ruta `/`, componentes, navegación runtime, permisos, matrices, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar `Inicio` de VISO cuando la persona resuelta posee el rol base canónico `auxiliar_administrativa`, de modo que vea el trabajo administrativo que puede preparar, registrar, consultar, corregir o escalar sin convertir la página en una consola gerencial, un backoffice global, una bandeja operativa, una superficie financiera completa ni una fuente de autorización.
+
+La experiencia debe responder:
+
+```text
+¿QUÉ TRABAJO ADMINISTRATIVO AUTORIZADO NECESITA ATENCIÓN?
+¿QUÉ DOCUMENTOS, REGISTROS O PROGRAMACIÓN DEBO PREPARAR O REVISAR?
+¿QUÉ ELEMENTOS NECESITAN INFORMACIÓN ADICIONAL O ESCALAMIENTO?
+¿QUÉ RECURSOS PUEDO CONSULTAR POR FUNCIÓN, REFERENCIA O TERRITORIO?
+¿QUÉ DOMINIO O APLICACIÓN PROPIETARIA DEBO ABRIR PARA CONTINUAR?
+¿QUÉ DATOS ESTÁN FRESCOS, PARCIALES, BLOQUEADOS O NO DISPONIBLES?
+```
+
+La regla raíz queda:
+
+```text
+INICIO AUXILIAR ADMINISTRATIVA
+=
+PROYECCIÓN DE APOYO ADMINISTRATIVO AUTORIZADO
++
+TRABAJO DOCUMENTAL Y DE PROGRAMACIÓN
++
+REGISTROS Y CONSULTAS PERMITIDAS
++
+SEGUIMIENTO Y ESCALAMIENTO
++
+ALCANCE FUNCIONAL O TERRITORIAL EXPLÍCITO
++
+HANDOFFS A OWNERS REALES
+```
+
+Y nunca:
+
+```text
+AUXILIAR ADMINISTRATIVA
+=
+GERENTE REDUCIDA
+```
+
+ni:
+
+```text
+G-FUNC
+=
+AUTORIDAD GLOBAL
+```
+
+ni:
+
+```text
+INICIO
+=
+APROBADOR UNIVERSAL O CONSOLA OPERATIVA
+```
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001 — Reorganizar navegación por dominios administrativos` entrega sin reapertura:
+
+```text
+PRIMARY_ENTRY = /
+PRIMARY_ENTRY_LABEL = Inicio
+PRIMARY_ENTRY_IS_ADMIN_DOMAIN = NO
+PRIMARY_ENTRY_IS_PERMISSION_WILDCARD = NO
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+```
+
+Los seis dominios permanecen:
+
+```text
+Personal
+Programación
+Acceso y seguridad
+Organización
+Operación
+Auditoría
+```
+
+`Inicio` puede resumir y enlazar únicamente información autorizada; no concede permisos, no sustituye guards y no crea un séptimo dominio.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-002..007`
+
+Las tareas de dominio conservan ownership y fronteras ya aprobadas.
+
+| Dominio | Uso posible desde `Inicio` de auxiliar | Frontera |
+| --- | --- | --- |
+| `Personal` | documentación laboral, personal, calendario, vacantes y referencias autorizadas | no sustituye ANIMA ni TALENTO |
+| `Programación` | creación/actualización administrativa permitida, preparación y seguimiento | no cancela ni aprueba decisiones laborales sensibles |
+| `Acceso y seguridad` | solo navegación hacia capacidades realmente concedidas | la matriz base no concede simulación ni auditoría de autorización |
+| `Organización` | referencias organizacionales autorizadas | no administra gobierno, propietarios ni permisos |
+| `Operación` | consulta o soporte administrativo autorizado | no ejecuta producción, inventario, logística, caja o recepción |
+| `Auditoría` | trazabilidad propia de acciones autorizadas cuando el owner la expone | no accede por defecto al ledger global de seguridad |
+
+---
+
+#### 4. Handoff recibido de `VISO-UX-010`
+
+`VISO-UX-010 — Definir inicio para gerente de sede` confirma que los perfiles de `VISO-UX-008..012` comparten una sola entrada y una sola pantalla canónica, pero no heredan autoridad entre sí.
+
+Se reciben como invariantes:
+
+- una sola ruta raíz `/`;
+- una sola identidad `VISO-ROUTE-001`;
+- una sola pantalla objetivo `VSCREEN-0007`;
+- `VPROC-0001` como proceso principal de la pantalla;
+- `VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK` como binding dominante de pantalla;
+- lectura, revisión, navegación y handoff como comportamiento seguro del resumen;
+- ausencia de mutaciones sensibles desde tarjetas;
+- owner de dato y mutación conservado por aplicación;
+- estados de autorización, vacío, stale, parcial, indisponibilidad y fallo técnico diferenciados.
+
+Esta tarea rompe explícitamente cualquier herencia de la matriz territorial de `gerente` hacia `auxiliar_administrativa`.
+
+---
+
+#### 5. Naturaleza, topología y gate
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = <task_id>::<implementation_unit_id>
+```
+
+La tarea define el contrato una sola vez y no autoriza materialización física.
+
+Toda materialización posterior debe conservar las fronteras de `AUTH-RBAC-005` y demostrar que `G-FUNC` nunca se interpreta como permiso global genérico.
+
+---
+
+#### 6. Contrato de `Inicio` para auxiliar administrativa
+
+```text
+VISO_ADMIN_ASSISTANT_HOME_CONTRACT = VISO-ADMIN-ASSISTANT-HOME-001
+HOME_PROFILE = auxiliar_administrativa
+PRIMARY_ENTRY_LABEL = Inicio
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-001
+PRIMARY_OBSERVED_ROUTE = /
+CANONICAL_SCREEN_TARGET = VSCREEN-0007
+CANONICAL_SCREEN_NAME = Inicio ejecutivo y gerencial
+PRIMARY_CANONICAL_PROCESS = VPROC-0001
+PRIMARY_CANONICAL_STEP = VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK
+SCREEN_MODALITY = OWNER_WORKSPACE
+PRIMARY_INTERACTION_ROLE = MONITOR
+PRIMARY_STEP_POSITION = CROSS_CUTTING
+HOME_IS_ADMIN_DOMAIN = NO
+HOME_PROFILE_IS_AUTHORIZATION = NO
+HOME_IS_GLOBAL_TASK_INBOX = NO
+HOME_IS_CROSS_OWNER_EDITOR = NO
+HOME_SCOPE_MODEL = G-FUNC + ORG-REF + AS + AA + AS-REL + ORG-LOCAL
+HOME_GLOBAL_SCOPE_ALLOWED = FUNCTION_SPECIFIC_ONLY
+HOME_GENERAL_ORGANIZATIONAL_AUTHORITY = NO
+HOME_MANAGERIAL_APPROVAL_AUTHORITY = NO
+HOME_OPERATIONAL_AUTHORITY = NO
+TREQ_CHANGES = 0
+```
+
+`VSCREEN-0007` conserva su nombre canónico vigente aunque esta variante no represente autoridad ejecutiva o gerencial. El nombre de pantalla no eleva a la persona ni amplía su matriz.
+
+---
+
+#### 7. Identidad canónica de pantalla
+
+La pantalla objetivo sigue siendo:
+
+```text
+VSCREEN-0007 — Inicio ejecutivo y gerencial
+```
+
+Su identidad no se clona por rol.
+
+No se crean:
+
+```text
+Inicio auxiliar administrativa
+Panel auxiliar administrativa
+Dashboard administrativo auxiliar
+```
+
+como nuevas identidades `VSCREEN-*`.
+
+---
+
+#### 8. Proceso principal y límite de decisión
+
+`VPROC-0001` continúa siendo el proceso principal de la pantalla por binding canónico.
+
+Para esta variante, ese binding significa **observar prioridades, compromisos, dependencias y elementos que requieren escalamiento**, no recibir autoridad para tomar decisiones reservadas.
+
+`PRIMARY_INTERACTION_ROLE = MONITOR` conserva precedencia sobre cualquier interpretación gerencial del nombre de la pantalla.
+
+---
+
+#### 9. Paso dominante
+
+```text
+VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK
+```
+
+se conserva como paso de pantalla.
+
+Para `auxiliar_administrativa`:
+
+- `review` significa revisar trabajo y contexto permitido;
+- `executive` en el identificador histórico no convierte el rol en dirección;
+- una señal de decisión pendiente puede mostrarse únicamente como información o escalamiento;
+- la resolución final permanece en el actor autorizado por el owner.
+
+---
+
+#### 10. Procesos relacionados
+
+`VPROC-0061` y `VPROC-0063` permanecen relacionados con `VSCREEN-0007`, pero la variante no adquiere por ello analítica estratégica ni gestión empresarial de riesgos.
+
+Puede mostrar únicamente señales derivadas de datos que su autorización permita consultar y siempre con owner y alcance visibles.
+
+---
+
+#### 11. Rol base `auxiliar_administrativa`
+
+La fuente canónica define:
+
+```text
+AUXILIAR ADMINISTRATIVA
++ PERMISO BASE EXPLÍCITO
++ ALCANCE FUNCIONAL O TERRITORIAL APROBADO
++ RECURSO VÁLIDO
+= ACCIÓN ADMINISTRATIVA DE APOYO POSIBLE
+```
+
+No se admite:
+
+```text
+auxiliar_administrativa = administrador global
+auxiliar_administrativa = gerente o supervisor
+auxiliar_administrativa = operación sin turno
+auxiliar_administrativa = aprobación o cancelación sensible
+auxiliar_administrativa = acceso completo a finanzas
+auxiliar_administrativa = administración de seguridad
+auxiliar_administrativa = acceso automático a APP-REVIEW
+```
+
+---
+
+#### 12. Matriz canónica consumida
+
+`AUTH-RBAC-005` evalúa 112 permisos exactamente una vez.
+
+| Resultado | Cantidad |
+| --- | ---: |
+| capacidades administrativas directas | 47 |
+| componentes base de doble condición concedidos | 0 |
+| capacidades no concedidas | 65 |
+| total evaluado | 112 |
+
+Distribución por aplicación:
+
+| Aplicación | Canónicos | Asignados | No asignados |
+| --- | ---: | ---: | ---: |
+| SHELL | 1 | 1 | 0 |
+| ANIMA | 10 | 9 | 1 |
+| AURA | 1 | 0 | 1 |
+| FOGO | 6 | 2 | 4 |
+| NEXO | 63 | 20 | 43 |
+| NUMERA | 6 | 3 | 3 |
+| ORIGO | 5 | 5 | 0 |
+| VENTO PASS | 1 | 0 | 1 |
+| PULSO | 2 | 0 | 2 |
+| VISO | 17 | 7 | 10 |
+| **Total** | **112** | **47** | **65** |
+
+El home consume esta matriz como elegibilidad, no la reimplementa.
+
+---
+
+#### 13. Perfiles de alcance
+
+La composición debe comprender los perfiles exactos:
+
+```text
+NT-APP
+G-FUNC
+ORG-REF
+AS
+AA
+AS-REL
+ORG-LOCAL
+```
+
+Ninguno se sustituye por `*` ni por una etiqueta genérica `global`.
+
+---
+
+#### 14. Semántica de `G-FUNC`
+
+`G-FUNC` es globalidad **de una función administrativa exacta**, no autoridad organizacional general.
+
+Ejemplo válido:
+
+```text
+viso.workforce.employees.view
++ G-FUNC
+= consulta funcional de personal para apoyo administrativo
+```
+
+No implica:
+
+```text
+G-FUNC
+=> todos los permisos VISO
+=> todas las aplicaciones
+=> todos los datos personales
+=> todas las acciones sobre trabajadores
+```
+
+Cada tarjeta que use `G-FUNC` debe poder explicar la función concreta que justifica la amplitud.
+
+---
+
+#### 15. Semántica de `ORG-REF`
+
+`ORG-REF` permite consultar una referencia organizacional exacta.
+
+No concede modificación, aprobación ni gobierno general.
+
+El home puede usarlo para catálogos y datos de referencia autorizados, pero no para construir una consola de configuración maestra.
+
+---
+
+#### 16. Semántica de `AS` y `AA`
+
+`AS` y `AA` limitan recursos a sedes y áreas activamente asignadas o formalmente atendidas.
+
+La sede seleccionada en UI no crea una asignación.
+
+El home puede ofrecer filtros solo dentro de cobertura ya resuelta.
+
+---
+
+#### 17. Semántica de `AS-REL`
+
+Un documento puede relacionar varias sedes.
+
+La presencia de una sede autorizada permite la visibilidad definida por el permiso, pero no concede autoridad sobre todos los extremos del documento.
+
+Toda mutación posterior revalida el contrato del recurso.
+
+---
+
+#### 18. Semántica de `ORG-LOCAL`
+
+`ORG-LOCAL` representa un recurso organizacional no territorial vinculado de forma verificable con sedes o responsabilidades autorizadas.
+
+No equivale a organización completa.
+
+---
+
+#### 19. Capacidades VISO concedidas al rol
+
+Las siete capacidades VISO base concedidas son:
+
+```text
+viso.access
+viso.organization.businesses.view
+viso.workforce.employees.view
+viso.workforce.staff_calendar.view
+viso.workforce.schedules.view
+viso.workforce.vacancies.view
+viso.delivery.rates.view
+```
+
+El home puede proyectarlas con el alcance definido por cada permiso.
+
+---
+
+#### 20. Capacidades VISO no concedidas
+
+No se proyectan por rol base:
+
+```text
+viso.platform.app_updates.view
+viso.authorization.context_simulations.view
+viso.authorization.audit_logs.view
+viso.catalog.commercial_categories.view
+viso.content.content_blocks.view
+viso.content.menu.view
+viso.content.website_content.view
+viso.finance.accounting.view
+viso.loyalty.products.view
+viso.loyalty.customers.view
+```
+
+La ausencia de una tarjeta no debe revelar detalles sobre datos ocultos.
+
+---
+
+#### 21. Capacidades `BASE_AND_OPERATIONAL`
+
+La matriz no concede ningún componente base de las cinco capacidades `BASE_AND_OPERATIONAL`.
+
+Por tanto el home no debe presentar botones o estados que sugieran que la auxiliar puede:
+
+- registrar ajustes sensibles;
+- hacer overrides operativos;
+- aprobar variaciones;
+- resolver variaciones;
+- confirmar entregas excepcionales.
+
+---
+
+#### 22. Permisos `OPERATIONAL_ONLY`
+
+Los trece permisos `OPERATIONAL_ONLY` permanecen fuera del rol base.
+
+Un turno operativo futuro se evalúa por su propio contexto y no modifica esta variante permanente de `Inicio`.
+
+---
+
+#### 23. Autoridad gerencial y de seguridad
+
+El home no presenta como propias:
+
+- administración de propietarios;
+- administración de roles y permisos;
+- simulación de autorización;
+- auditoría global de autorización;
+- recuperación de seguridad;
+- service role;
+- secretos o credenciales;
+- aprobación financiera estratégica;
+- cancelaciones sensibles.
+
+---
+
+#### 24. Estado AS-IS de la ruta raíz
+
+La ruta física observada permanece:
+
+```text
+VISO-ROUTE-001
+/
+src/app/page.tsx
+```
+
+El código AS-IS usa `requireAppAccess({ appId: "viso" })`, `createAdminClient()` y conteos directos sobre tablas o schemas.
+
+Esta tarea no declara esa implementación conforme con el contrato objetivo.
+
+---
+
+#### 25. Contenido AS-IS observado
+
+La raíz actual muestra:
+
+- trabajadores;
+- usuarios Vento Pass;
+- negocios;
+- menú comercial;
+- productos de fidelización;
+- vacantes;
+- acciones rápidas de menú;
+- creación de negocio;
+- invitación de trabajador;
+- creación de producto comercial;
+- creación de vacante;
+- contenido Pass;
+- Website CMS;
+- Venue Detail CMS.
+
+La presencia física actual no convierte ninguna de esas tarjetas en capacidad canónica del rol.
+
+---
+
+#### 26. Brecha principal del AS-IS
+
+El home actual mezcla datos globales, PASS, contenido, CMS y acciones de creación sin composición por matriz de `auxiliar_administrativa`.
+
+Además, `createAdminClient()` es una capacidad técnica del servidor y no constituye autorización humana.
+
+La materialización posterior deberá sustituir esa equivalencia implícita por queries y handoffs con autorización efectiva.
+
+---
+
+#### 27. Arquitectura de información objetivo
+
+La variante se ordena en siete regiones:
+
+1. `Contexto de trabajo`;
+2. `Trabajo administrativo pendiente`;
+3. `Documentación y personal`;
+4. `Programación y vacantes`;
+5. `Registros y referencias`;
+6. `Elementos para escalar`;
+7. `Dominios y handoffs`.
+
+No se exige que todas estén visibles simultáneamente.
+
+---
+
+#### 28. Región `Contexto de trabajo`
+
+Debe permitir comprender:
+
+- perfil resuelto;
+- función o cobertura aplicable;
+- filtros activos;
+- periodo cuando aplique;
+- datos parciales o stale;
+- existencia de restricciones.
+
+No debe mostrar una etiqueta que sugiera “acceso global” solo porque alguna capacidad usa `G-FUNC`.
+
+---
+
+#### 29. Región `Trabajo administrativo pendiente`
+
+Incluye únicamente objetos con trabajo pendiente realmente asignado o permitido.
+
+Ejemplos:
+
+- documento faltante;
+- invitación pendiente de completar;
+- turno administrativo por preparar o actualizar;
+- registro incompleto;
+- soporte pendiente;
+- dato que requiere corrección permitida;
+- recurso que debe escalarse.
+
+No es una bandeja global duplicada de SHELL.
+
+---
+
+#### 30. Trabajo pendiente no equivale a aprobación
+
+La presencia de un objeto en el home no concede:
+
+```text
+aprobar
+cancelar
+resolver financieramente
+ejecutar físicamente
+publicar fuera del permiso exacto
+```
+
+El CTA debe reflejar la acción realmente autorizada: `Abrir`, `Completar`, `Registrar`, `Actualizar`, `Consultar` o `Escalar`.
+
+---
+
+#### 31. Documentos laborales
+
+El home puede resumir documentación laboral autorizada bajo `G-FUNC`.
+
+Debe aplicar:
+
+- finalidad;
+- minimización;
+- retención;
+- segregación de campos sensibles;
+- trazabilidad de acciones.
+
+Un conteo de documentos no puede revelar categorías o estados sensibles innecesarios.
+
+---
+
+#### 32. Carga y eliminación documental
+
+La matriz concede capacidades de carga y eliminación de documentos, pero el home no ejecuta estas mutaciones directamente desde una tarjeta.
+
+El home navega al owner adecuado, donde se revalidan:
+
+- tipo documental;
+- trabajador objetivo;
+- retención;
+- motivo;
+- estado;
+- auditoría.
+
+---
+
+#### 33. Fotografías laborales
+
+La carga de fotografías es una acción propietaria de ANIMA.
+
+`Inicio` puede señalar pendientes o navegar al recurso, pero no actúa como repositorio de fotografías ni editor de identidad.
+
+---
+
+#### 34. Invitaciones de trabajadores
+
+La auxiliar puede crear invitaciones dentro de perfiles, sedes y roles previamente aprobados.
+
+`Inicio` puede mostrar invitaciones pendientes o acceso al flujo.
+
+No puede desde el home:
+
+- crear un rol;
+- inventar un perfil;
+- conceder permisos;
+- crear propietario;
+- ampliar cobertura.
+
+---
+
+#### 35. Programación de turnos
+
+Las capacidades concedidas permiten crear y actualizar turnos administrativamente bajo reglas aprobadas.
+
+El home puede priorizar:
+
+- turnos por completar;
+- información faltante;
+- conflictos detectados por la fuente;
+- cobertura que requiere revisión.
+
+No puede cancelar turnos porque `anima.attendance.shifts.cancel` no está concedido.
+
+---
+
+#### 36. Vacantes
+
+`viso.workforce.vacancies.view` está concedido bajo `G-FUNC`.
+
+El home puede mostrar vacantes relevantes al proceso administrativo, pero no presume autoridad para publicar, cerrar o aprobar una vacante salvo permiso independiente en su aplicación propietaria.
+
+---
+
+#### 37. Personal
+
+`viso.workforce.employees.view` y `anima.workforce.team_members.view` permiten consulta funcional.
+
+La página no convierte esa lectura en autoridad para modificar cualquier atributo laboral.
+
+Los campos sensibles se reducen al mínimo necesario.
+
+---
+
+#### 38. Calendario del personal
+
+`viso.workforce.staff_calendar.view` puede alimentar resumen de calendario dentro de la finalidad administrativa.
+
+No se utiliza como excusa para exponer datos personales ajenos a programación y soporte laboral.
+
+---
+
+#### 39. Referencias organizacionales
+
+`ORG-REF` puede alimentar referencias de:
+
+- empresas/unidades de negocio;
+- productos y presentaciones;
+- categorías/unidades;
+- proveedores;
+- centros de costo;
+- tarifas;
+- configuración de sedes o políticas de remisión cuando el permiso exacto exista.
+
+Una referencia no se convierte en panel de edición.
+
+---
+
+#### 40. Tarifas de entrega
+
+`viso.delivery.rates.view` se concede como `ORG-REF`.
+
+El home puede ofrecer un acceso de consulta si existe necesidad de trabajo, pero no editar tarifas ni políticas por asociación temática.
+
+---
+
+#### 41. NUMERA limitado
+
+La matriz concede:
+
+```text
+numera.access
+numera.finance.cost_centers.view
+numera.finance.expenses.view
+```
+
+No concede:
+
+```text
+numera.analytics.break_even.view
+numera.analytics.profitability.view
+numera.analytics.financial_reports.view
+```
+
+El home no presenta rentabilidad, punto de equilibrio ni reportes financieros consolidados a este perfil.
+
+---
+
+#### 42. Gastos administrativos
+
+La consulta de gastos se limita a `AS/AA` y a la finalidad de soporte administrativo.
+
+No implica modificación, aprobación, contabilidad completa ni analítica estratégica.
+
+---
+
+#### 43. Facturas internas
+
+El rol puede consultar determinados documentos y valores cuando la matriz lo concede, pero no generar, emitir, cancelar ni aprobar facturas internas.
+
+La tarjeta debe distinguir `consulta documental` de `acción financiera`.
+
+---
+
+#### 44. Compras y ORIGO
+
+Las cinco capacidades ORIGO se encuentran concedidas para entrada, consulta de órdenes, recepciones, proveedores y revisiones de producto según su scope.
+
+El home puede resumir documentos de compra que necesiten soporte administrativo.
+
+No ejecuta recepción física ni aprueba catálogo.
+
+---
+
+#### 45. Activos
+
+La matriz permite consultar y crear el registro administrativo inicial de activos dentro de cobertura autorizada.
+
+Crear un registro no asigna:
+
+- ubicación física;
+- custodia;
+- valoración;
+- conteo;
+- movimiento.
+
+`Inicio` solo conduce al flujo propietario.
+
+---
+
+#### 46. Inventario
+
+Algunas vistas administrativas de inventario se conceden para soporte.
+
+El home nunca convierte esas vistas en capacidad para:
+
+- registrar entradas;
+- hacer retiros;
+- asignar ubicaciones;
+- realizar conteos;
+- validar stock;
+- crear traslados físicos.
+
+---
+
+#### 47. Relaciones entre sedes
+
+Los recursos `AS-REL` se muestran cuando el contrato del permiso lo permita y participa una sede autorizada o formalmente atendida.
+
+La visibilidad de un extremo no concede autoridad sobre el otro.
+
+---
+
+#### 48. Operación física
+
+La variante no presenta un centro de operación.
+
+La ejecución física sigue perteneciendo a roles operativos, turno, check-in y contexto correspondiente.
+
+---
+
+#### 49. Aprobaciones
+
+El rol base no recibe una capacidad genérica de aprobación.
+
+El home no usa CTA como:
+
+```text
+Aprobar
+Resolver
+Autorizar
+Confirmar excepción
+```
+
+salvo que un permiso futuro exacto y una tarea posterior cambien la matriz canónica.
+
+---
+
+#### 50. Cancelaciones
+
+No se presentan cancelaciones de turnos, remisiones, facturas u otros objetos sensibles como acciones del home.
+
+---
+
+#### 51. Seguridad y autorización
+
+La matriz no concede simulación ni auditoría de autorización.
+
+Por tanto el dominio `Acceso y seguridad` puede aparecer solo hasta el nivel permitido por otras capacidades efectivas; nunca muestra simulación, matrices, denies o logs por el rol base.
+
+---
+
+#### 52. Auditoría
+
+La auxiliar conserva trazabilidad de sus acciones en cada owner.
+
+Eso no equivale a acceso al ledger global de autorización.
+
+Una tarjeta `Auditoría` solo aparece cuando otra capacidad explícita otorgue información concreta que pueda mostrarse de forma segura.
+
+---
+
+#### 53. PASS
+
+`pass.access` no está concedido por la matriz base.
+
+Las tarjetas AS-IS de usuarios Pass, menú comercial, productos de fidelización o contenido Pass no forman parte del home base de `auxiliar_administrativa`.
+
+---
+
+#### 54. PULSO
+
+`pulso.access` y `pulso.delivery.deliveries.override` no están concedidos.
+
+El home no muestra PULSO como destino normal de esta variante.
+
+---
+
+#### 55. AURA
+
+`aura.access` no está concedido.
+
+No se promociona AURA por asociación con tareas administrativas.
+
+---
+
+#### 56. Website CMS y contenido
+
+Las capacidades de contenido web, bloques y menú no están concedidas en VISO para este rol.
+
+Las tarjetas Website CMS, Venue Detail CMS y Contenido Pass del AS-IS no se conservan por inercia.
+
+---
+
+#### 57. Menú comercial
+
+`viso.content.menu.view` no está concedido.
+
+Aunque NEXO u otras aplicaciones puedan exponer referencias de catálogo concretas, eso no crea permiso de contenido comercial en VISO.
+
+---
+
+#### 58. Región `Elementos para escalar`
+
+La experiencia puede mostrar objetos que la auxiliar no puede resolver cuando existe una relación legítima con su trabajo y el owner expone un estado seguro de escalamiento.
+
+Debe informar:
+
+- qué falta;
+- por qué no puede resolverlo;
+- owner o responsable;
+- destino seguro cuando exista.
+
+No debe mostrar detalles que el permiso no autoriza.
+
+---
+
+#### 59. Escalamiento no equivale a delegación
+
+Escalar un objeto no transfiere autoridad a la auxiliar ni permite actuar “en nombre de” un gerente.
+
+---
+
+#### 60. Región `Dominios y handoffs`
+
+Los seis dominios VISO permanecen como navegación conceptual, pero la visibilidad y contenido se recortan por permiso efectivo.
+
+Una tarjeta de dominio sin capacidad útil para el actor puede ocultarse o degradarse de forma segura según la navegación canónica.
+
+---
+
+#### 61. Handoff no equivale a editor local
+
+Cuando un dato o mutación pertenece a ANIMA, NUMERA, NEXO, ORIGO, TALENTO u otra aplicación, VISO enlaza al owner.
+
+No replica formularios para evitar el handoff.
+
+---
+
+#### 62. Frontera con la bandeja transversal de SHELL
+
+El home no duplica `VSCREEN-0005` ni la bandeja global de tareas y notificaciones de SHELL.
+
+Puede mostrar un subconjunto contextual de trabajo administrativo relevante, no una segunda bandeja maestra.
+
+---
+
+#### 63. Priorización
+
+Solo se utiliza prioridad cuando proviene de:
+
+- estado del owner;
+- fecha límite canónica;
+- regla aprobada;
+- severidad declarada por la fuente;
+- dependencia objetiva.
+
+El home no inventa un score universal.
+
+---
+
+#### 64. Vencimientos
+
+Las fechas límite provienen del objeto fuente.
+
+Un vencimiento no se calcula desde heurísticas locales no documentadas.
+
+---
+
+#### 65. Elementos bloqueados
+
+Un elemento bloqueado conserva motivo seguro y siguiente acción posible.
+
+No se muestra como error técnico si el bloqueo es empresarial.
+
+---
+
+#### 66. Conteos autorizados
+
+Todos los conteos se calculan sobre el dataset permitido por el permiso exacto.
+
+Para `G-FUNC`, el universo corresponde a la función concreta, no a toda la base indiscriminadamente.
+
+Para `AS/AA`, el universo corresponde a cobertura autorizada.
+
+---
+
+#### 67. Cero real y cero por autorización
+
+`0` significa cero elementos dentro de un dataset autorizado y correctamente consultado.
+
+No se utiliza `0` para representar:
+
+- `DENIED`;
+- `UNAVAILABLE`;
+- `NOT_IMPLEMENTED`;
+- `PARTIAL`;
+- `TECHNICAL_FAILURE`.
+
+---
+
+#### 68. Estados vacíos
+
+La variante distingue al menos:
+
+```text
+EMPTY
+NOT_AUTHORIZED
+NOT_AVAILABLE
+NOT_IMPLEMENTED
+PARTIAL
+STALE
+TECHNICAL_FAILURE
+```
+
+---
+
+#### 69. Frescura
+
+Toda cifra temporalmente sensible debe conservar timestamp, periodo o semántica de frescura desde su owner.
+
+---
+
+#### 70. Dato stale
+
+Un dato stale puede mantenerse visible si su owner lo permite, pero debe marcarse y nunca presentarse como actual.
+
+---
+
+#### 71. Indisponibilidad
+
+Si una fuente falla, el home no sustituye el valor con cero ni con una copia local sin provenance.
+
+---
+
+#### 72. Carga parcial
+
+Un fallo parcial de una región no debe ocultar otras regiones seguras ni hacer parecer completo un resumen incompleto.
+
+---
+
+#### 73. Fuente de verdad visible
+
+Cada resumen debe permitir identificar el owner funcional cuando esa información ayude a comprender el dato o el handoff.
+
+---
+
+#### 74. Procedencia
+
+La procedencia explica origen; no concede autorización sobre el origen.
+
+---
+
+#### 75. Frontera con `VISO-UX-012`
+
+`VISO-UX-012 — Definir inicio para contador` conserva íntegramente la variante financiera especializada.
+
+La auxiliar no hereda contabilidad completa, analítica financiera estratégica ni reportes consolidados.
+
+---
+
+#### 76. Frontera con `VISO-UX-013`
+
+La presentación detallada de alcance territorial permanece reservada a `VISO-UX-013`.
+
+Esta tarea solo define cómo el home consume scopes ya resueltos.
+
+---
+
+#### 77. Frontera con `VISO-UX-014`
+
+El origen de permisos permanece reservado a `VISO-UX-014`.
+
+El home no construye su propia explicación de grants.
+
+---
+
+#### 78. Frontera con `VISO-UX-015`
+
+Los conflictos antes de guardar permanecen reservados a `VISO-UX-015`.
+
+`Inicio` puede señalar que existe un conflicto únicamente si una fuente autorizada lo expone.
+
+---
+
+#### 79. Frontera con `VISO-UX-016`
+
+El preview individual de acceso efectivo permanece reservado a `VISO-UX-016`.
+
+La auxiliar no obtiene simulación de autorización desde su home.
+
+---
+
+#### 80. Frontera con `VISO-UX-017`
+
+La prevención de duplicación de configuración cross-owner permanece en `VISO-UX-017`.
+
+---
+
+#### 81. Frontera con `VISO-UX-018`
+
+El patrón final de enlaces hacia aplicaciones propietarias permanece en `VISO-UX-018`.
+
+---
+
+#### 82. Frontera con `VISO-UX-019`
+
+La divulgación progresiva de seguridad permanece en `VISO-UX-019`.
+
+Esta variante debe ser compatible con ella sin exponer permisos sensibles por defecto.
+
+---
+
+#### 83. Frontera con `VISO-UX-020`
+
+Las pruebas con administradores reales permanecen en `VISO-UX-020`.
+
+Esta tarea define casos que deberán validarse en esa etapa.
+
+---
+
+#### 84. No edición inline sensible
+
+El home no edita inline:
+
+- permisos;
+- roles;
+- estados financieros;
+- cancelaciones;
+- documentos sensibles;
+- movimientos operativos;
+- configuración maestra.
+
+---
+
+#### 85. Acciones seguras del home
+
+Acciones ordinarias:
+
+```text
+Abrir
+Consultar
+Completar en owner
+Registrar en owner
+Actualizar en owner
+Ver detalle
+Escalar
+Volver
+```
+
+---
+
+#### 86. Deep links
+
+Un deep link transporta una referencia de recurso.
+
+El destino revalida sesión, permiso, scope, estado, recurso y contexto.
+
+---
+
+#### 87. Retorno a `Inicio`
+
+El retorno puede preservar filtros puramente visuales que no cambien autorización.
+
+---
+
+#### 88. Preferencias personales
+
+Orden, densidad o colapso de regiones pueden persistirse como preferencias de UI.
+
+No cambian permisos ni scope.
+
+---
+
+#### 89. Personalización no crea contratos paralelos
+
+No existe un home por persona codificado manualmente.
+
+La composición deriva de identidad, permisos y datos autorizados.
+
+---
+
+#### 90. Simulación
+
+`viso.authorization.context_simulations.view` no está concedido.
+
+La variante no ofrece modo de simulación de autorización.
+
+Un contexto técnico de prueba o soporte no cambia esta prohibición.
+
+---
+
+#### 91. Dispositivo compartido
+
+El dispositivo compartido no amplía capacidades.
+
+La UI minimiza información sensible y respeta reautenticación cuando aplique.
+
+---
+
+#### 92. Reautenticación
+
+Una acción sensible iniciada desde un destino propietario puede exigir reautenticación.
+
+El home no la omite por haber cargado una tarjeta previamente.
+
+---
+
+#### 93. Cambio de autoridad durante la sesión
+
+Si cambia permiso, scope, relación laboral o deny, el home debe invalidar proyecciones stale según el mecanismo canónico disponible.
+
+---
+
+#### 94. Concurrencia
+
+La visualización previa no reserva una mutación.
+
+El owner revalida el estado al ejecutar.
+
+---
+
+#### 95. Caché
+
+La caché no mezcla actores, organizaciones, scopes ni funciones.
+
+---
+
+#### 96. Carga progresiva
+
+La carga progresiva puede usarse para rendimiento, pero no debe revelar placeholders con conteos no autorizados.
+
+---
+
+#### 97. Responsive
+
+La experiencia móvil conserva:
+
+- contexto;
+- owner;
+- estado;
+- restricciones;
+- CTA seguro.
+
+---
+
+#### 98. Accesibilidad
+
+Estados y restricciones no dependen solo de color.
+
+La navegación por teclado y foco debe conservarse.
+
+---
+
+#### 99. Densidad
+
+El home prioriza síntesis y drill-down.
+
+No renderiza datasets administrativos completos en la portada.
+
+---
+
+#### 100. Privacidad
+
+`G-FUNC` no elimina minimización.
+
+La portada muestra únicamente los campos necesarios para identificar trabajo y siguiente acción.
+
+---
+
+#### 101. Identificadores visibles
+
+Se muestran identificadores empresariales útiles, no secretos, tokens, UUID técnicos innecesarios ni claves internas sensibles.
+
+---
+
+#### 102. Drill-down
+
+El drill-down revalida autorización y no confía en la visibilidad previa de la tarjeta.
+
+---
+
+#### 103. Breadcrumb y retorno
+
+La navegación debe dejar claro cuándo la persona salió de `Inicio` hacia un dominio u owner distinto.
+
+---
+
+#### 104. Búsqueda
+
+La búsqueda de `Inicio`, si se materializa, consulta únicamente objetos autorizados y no actúa como query builder global.
+
+---
+
+#### 105. Exportación
+
+Ver información no concede exportarla.
+
+El home no añade exportación genérica.
+
+---
+
+#### 106. Impresión
+
+Ver información no concede imprimirla.
+
+---
+
+#### 107. Compartir
+
+Compartir una referencia no concede acceso al receptor.
+
+---
+
+#### 108. Notificaciones
+
+`Inicio` no se convierte en centro de notificaciones paralelo de SHELL.
+
+---
+
+#### 109. Lectura silenciosa
+
+Cargar, refrescar o filtrar el home no produce efectos empresariales.
+
+---
+
+#### 110. Idempotencia de lectura
+
+Repetir una lectura con el mismo estado fuente no crea nuevos registros de negocio.
+
+La telemetría técnica puede registrar la visita según la política aplicable.
+
+---
+
+#### 111. Degradación segura
+
+Ante error de una fuente:
+
+- se conserva owner;
+- se evita fabricar valor;
+- se informa indisponibilidad segura;
+- no se amplía scope;
+- no se habilita CTA alternativo más poderoso.
+
+---
+
+#### 112. Hardcode de tarjetas
+
+Está prohibido usar una tabla local del tipo:
+
+```text
+auxiliar_administrativa -> mostrar estas tarjetas siempre
+```
+
+como fuente de autorización.
+
+Puede existir composición de presentación, pero cada tarjeta requiere elegibilidad por capacidades y datos autorizados.
+
+---
+
+#### 113. Evolución del catálogo
+
+Un permiso nuevo no entra automáticamente al home.
+
+Debe existir decisión canónica sobre rol, scope y superficie.
+
+---
+
+#### 114. Aplicaciones retiradas o diferidas
+
+Una aplicación retirada, diferida o no implementada no se promociona por el simple hecho de aparecer en un catálogo histórico.
+
+---
+
+#### 115. No retiro prematuro del AS-IS
+
+Esta tarea documental no elimina tarjetas físicas actuales.
+
+La unidad física futura debe clasificar cada elemento AS-IS antes de retirarlo o moverlo.
+
+---
+
+#### 116. Mapeo obligatorio de la raíz actual
+
+Cada elemento AS-IS deberá clasificarse como:
+
+```text
+KEEP_AS_ADMIN_ASSISTANT_HOME_PROJECTION
+MOVE_TO_VISO_DOMAIN
+CONVERT_TO_CROSS_OWNER_HANDOFF
+REMOVE_AFTER_REPLACEMENT
+DEFER_WITH_OWNER
+```
+
+La categoría no autoriza el cambio por sí sola.
+
+---
+
+#### 117. Tarjeta `Trabajadores`
+
+Puede sobrevivir como proyección autorizada porque existen capacidades de personal bajo `G-FUNC`.
+
+El conteo deberá provenir del universo funcional permitido, no de `countRows("employees")` sin filtro contractual.
+
+---
+
+#### 118. Tarjeta `Vacantes`
+
+Puede sobrevivir como proyección de consulta si utiliza el scope de `viso.workforce.vacancies.view` y no presupone autoridad de publicación.
+
+---
+
+#### 119. Tarjeta `Negocios`
+
+Puede convertirse en referencia `ORG-REF` si la tarjeta se limita a consulta permitida.
+
+No conserva por inercia acciones de alta de negocio.
+
+---
+
+#### 120. Tarjetas PASS
+
+`Usuarios Vento Pass`, `Menú comercial`, `Productos`, `Contenido Pass` y accesos equivalentes no pertenecen a la matriz base.
+
+Deben retirarse, moverse o quedar condicionados a otra responsabilidad explícita.
+
+---
+
+#### 121. Website CMS
+
+No pertenece al home base de auxiliar administrativa.
+
+---
+
+#### 122. `Crear negocio`
+
+La acción rápida AS-IS no se conserva por `viso.organization.businesses.view`, porque `view` no concede creación.
+
+---
+
+#### 123. `Invitar trabajador`
+
+Puede mantenerse como handoff a la capacidad canónica de invitación, no como formulario simplificado en la tarjeta.
+
+El destino revalida perfiles, sedes y roles permitidos.
+
+---
+
+#### 124. `Crear producto comercial`
+
+No pertenece a la matriz base.
+
+---
+
+#### 125. `Crear vacante`
+
+La capacidad `vacancies.view` no concede creación.
+
+El CTA de creación no se deriva de la vista.
+
+---
+
+#### 126. Estado de salud global
+
+No se crea un semáforo global de la empresa para este perfil.
+
+---
+
+#### 127. Score administrativo universal
+
+No se inventa un score de “salud administrativa”.
+
+---
+
+#### 128. Recomendaciones automáticas
+
+Una recomendación puede mostrarse solo si existe owner, datos autorizados, regla explicable y acción segura.
+
+No se inventa autoridad a partir de la recomendación.
+
+---
+
+#### 129. IA y análisis automático
+
+Una futura IA no puede leer más datos que el usuario ni generar una capacidad nueva.
+
+---
+
+#### 130. Filtros del home
+
+Los filtros pueden reducir el universo ya autorizado.
+
+No amplían `G-FUNC`, `AS`, `AA`, `AS-REL`, `ORG-REF` u `ORG-LOCAL`.
+
+---
+
+#### 131. Filtro territorial bajo `G-FUNC`
+
+Un filtro de sede puede reducir visualmente una función global permitida, pero no redefine el contrato del permiso.
+
+No debe usarse para inferir que `G-FUNC` nació de esa sede.
+
+---
+
+#### 132. Filtro `Todos`
+
+`Todos` significa todos los objetos autorizados por la capacidad activa.
+
+Nunca significa todas las filas físicas accesibles al cliente administrativo.
+
+---
+
+#### 133. Comparaciones
+
+La variante no compara sedes, áreas o periodos fuera del scope permitido.
+
+Las comparaciones deben tener unidades y periodos compatibles.
+
+---
+
+#### 134. Niveles de detalle
+
+Nivel recomendado:
+
+1. resumen mínimo;
+2. explicación segura;
+3. handoff al owner.
+
+El home no sustituye una pantalla experta.
+
+---
+
+#### 135. Acciones destructivas
+
+No se ejecutan desde `Inicio`.
+
+---
+
+#### 136. Confirmaciones
+
+La portada no implementa confirmaciones de mutaciones sensibles porque no ejecuta esas mutaciones.
+
+---
+
+#### 137. Errores comprensibles
+
+Los mensajes diferencian permiso, datos faltantes, estado del proceso, indisponibilidad y error técnico.
+
+---
+
+#### 138. Soporte
+
+El soporte técnico no debe exponer internals de autorización ni convertir el home en consola diagnóstica.
+
+---
+
+#### 139. Responsabilidad funcional
+
+Cada objeto visible conserva owner y responsable cuando existan.
+
+Visible a la auxiliar no significa propiedad de la auxiliar.
+
+---
+
+#### 140. Historial
+
+Los estados históricos no se mezclan con trabajo pendiente actual.
+
+---
+
+#### 141. Decisiones completadas
+
+Una decisión o aprobación completada por otro actor sale de pendientes cuando la fuente lo confirme.
+
+La auxiliar no reabre el estado desde el home.
+
+---
+
+#### 142. Versiones de contrato
+
+La materialización debe poder evolucionar sin hardcodear la matriz dentro del componente visual.
+
+---
+
+#### 143. Materialización de datos
+
+La futura implementación debe resolver los datos server-side con autorización humana efectiva.
+
+No consulta tablas completas para filtrar después en cliente.
+
+---
+
+#### 144. No usar cliente administrativo como permiso
+
+```text
+createAdminClient()
+!=
+AUTORIZACIÓN HUMANA
+```
+
+La disponibilidad técnica del cliente no modifica la matriz `AUTH-RBAC-005`.
+
+---
+
+#### 145. Queries agregadas
+
+Un agregado debe declarar qué scope usa.
+
+Ejemplos:
+
+```text
+G-FUNC exacto
+ORG-REF exacto
+AS/AA
+AS-REL
+ORG-LOCAL
+```
+
+No se acepta `count(*)` indiscriminado como sustituto.
+
+---
+
+#### 146. Datos cross-owner
+
+VISO puede resumir referencias de otros owners sin copiar su modelo completo.
+
+---
+
+#### 147. Unidades, moneda y periodo
+
+Las unidades y periodos se heredan de la fuente.
+
+La auxiliar no recibe analítica financiera estratégica por normalización de unidades.
+
+---
+
+#### 148. Zona horaria
+
+Fechas operativas y laborales respetan la zona horaria del contrato propietario.
+
+---
+
+#### 149. Rendimiento
+
+El home prioriza queries agregadas seguras y carga progresiva.
+
+No justifica ampliar privilegios para evitar varias consultas.
+
+---
+
+#### 150. Fallo de aplicación externa
+
+Un owner indisponible produce un estado explícito.
+
+No se usa una copia no autoritativa para permitir una acción.
+
+---
+
+#### 151. Fallbacks
+
+Todo fallback conserva o reduce privilegio.
+
+Nunca amplía datos ni acciones.
+
+---
+
+#### 152. Mantenimiento
+
+Una superficie en mantenimiento se distingue de `NOT_AUTHORIZED`.
+
+---
+
+#### 153. Bloqueos estructurales
+
+Un bloqueo por dependencia o configuración se presenta como tal cuando el owner puede exponerlo de forma segura.
+
+---
+
+#### 154. Seguridad de query string
+
+Ningún parámetro URL puede seleccionar:
+
+- otro rol;
+- otro actor;
+- un scope superior;
+- un modo privilegiado.
+
+---
+
+#### 155. Seguridad de almacenamiento local
+
+Preferencias almacenadas localmente son presentación, no autorización.
+
+---
+
+#### 156. Acceso directo a `/`
+
+El acceso directo conserva `requireAppAccess` y todos los controles que correspondan.
+
+---
+
+#### 157. Resultado sin elementos
+
+La ausencia de trabajo no fabrica urgencia ni recomienda acciones innecesarias.
+
+---
+
+#### 158. Alto volumen
+
+Los conjuntos grandes se sintetizan y se derivan a una pantalla experta.
+
+---
+
+#### 159. Múltiples owners
+
+Cuando una región mezcla owners, cada elemento conserva su origen y destino.
+
+---
+
+#### 160. Variación por responsabilidad adicional
+
+Una persona con `auxiliar_administrativa` y permisos adicionales puede ver más elementos por esas concesiones.
+
+El rol base no se reescribe por esa combinación.
+
+---
+
+#### 161. Rol desconocido o inconsistente
+
+Una identidad inconsistente no cae por conveniencia a `auxiliar_administrativa`, `gerente` o `gerente_general`.
+
+La resolución falla cerrado según el contrato de identidad/autorización.
+
+---
+
+#### 162. Cambio de rol
+
+Un cambio de rol obliga a recomponer el home a partir de permisos vigentes.
+
+No conserva tarjetas privilegiadas por caché.
+
+---
+
+#### 163. Principal técnico
+
+Un principal técnico no activa esta variante humana por nombre o metadata no validada.
+
+---
+
+#### 164. Owners y responsables
+
+La portada no inventa responsables si la fuente no los define.
+
+---
+
+#### 165. Riesgos y decisiones sin owner
+
+Una señal sin owner verificable se trata como evidencia incompleta, no como acción disponible.
+
+---
+
+#### 166. Explicación de una señal
+
+La explicación debe responder cuando sea posible:
+
+- qué objeto es;
+- por qué aparece;
+- cuál es su alcance;
+- qué owner lo sostiene;
+- qué puede hacer la persona.
+
+---
+
+#### 167. Explicabilidad no expone internals
+
+No se muestran reglas internas, queries, RLS, secretos o detalles que faciliten evasión de controles.
+
+---
+
+#### 168. Casos representativos obligatorios para materialización
+
+La implementación deberá cubrir como mínimo:
+
+1. auxiliar con `G-FUNC` de personal y varios trabajadores;
+2. auxiliar con programación administrativa y turnos pendientes;
+3. auxiliar con `AS/AA` limitado para gastos o inventario administrativo;
+4. auxiliar con `AS-REL` en documento entre sedes;
+5. permiso VISO denegado que no produce tarjeta;
+6. PASS/PULSO/AURA ausentes por matriz base;
+7. fuente externa indisponible;
+8. dato stale;
+9. carga parcial;
+10. deep link revalidado por owner.
+
+---
+
+#### 169. Pruebas de render esperadas
+
+La materialización posterior deberá comprobar:
+
+- composición sin tarjetas no concedidas;
+- estados vacíos diferenciados;
+- `G-FUNC` rotulado sin “autoridad global”;
+- filtros que no amplían scope;
+- CTAs de apoyo, consulta o escalamiento;
+- ausencia de aprobación genérica.
+
+---
+
+#### 170. Pruebas de autorización esperadas
+
+Deberán verificar:
+
+- 47 concesiones elegibles según permiso y scope;
+- 65 capacidades denegadas por defecto;
+- 0 componentes `BASE_AND_OPERATIONAL` concedidos;
+- ausencia de permisos operativos por rol base;
+- ausencia de simulación/auditoría de autorización;
+- ausencia de PASS y PULSO base;
+- `G-FUNC` limitado a función exacta.
+
+---
+
+#### 171. Pruebas de ownership esperadas
+
+Cada CTA cross-owner debe terminar en la aplicación propietaria y revalidar el recurso.
+
+---
+
+#### 172. Pruebas de estado y error esperadas
+
+Debe diferenciarse:
+
+```text
+EMPTY
+NOT_AUTHORIZED
+NOT_AVAILABLE
+NOT_IMPLEMENTED
+PARTIAL
+STALE
+TECHNICAL_FAILURE
+```
+
+---
+
+#### 173. Pruebas de accesibilidad esperadas
+
+Teclado, foco, etiquetas y estados no dependientes de color deberán comprobarse en la unidad física.
+
+---
+
+#### 174. Pruebas de handoff esperadas
+
+Un handoff debe conservar referencia suficiente, volver a validar autorización y ofrecer retorno comprensible cuando aplique.
+
+---
+
+#### 175. Métricas de piloto
+
+`VISO-UX-020` podrá observar:
+
+- tiempo para localizar trabajo administrativo;
+- navegación al owner correcto;
+- intentos de acciones no concedidas;
+- comprensión de `G-FUNC` frente a autoridad global;
+- comprensión de estados parciales/stale;
+- necesidad de escalamiento.
+
+No se fijan objetivos numéricos sin evidencia.
+
+---
+
+#### 176. Carryovers
+
+| Hallazgo | Bloquea `VISO-UX-011` | Owner de cierre | Condición de salida |
+| --- | --- | --- | --- |
+| la raíz física usa cliente administrativo y conteos no compuestos por permisos | no | unidad física de `VISO-UX-011` + `VISO-UX-017/018` | `/` materializado con queries server-side autorizadas y handoffs seguros |
+| las tarjetas PASS/CMS/comercial AS-IS contradicen la matriz base | no | unidad física de `VISO-UX-011` + `VISO-UX-017/018` | tarjetas retiradas, movidas o condicionadas a capacidad explícita |
+| `G-FUNC` podría confundirse con autoridad global | no | unidad física de `VISO-UX-011` + `VISO-UX-013/014` | UI explica función concreta y toda query usa la capacidad exacta |
+| existen brechas entre operaciones administrativas amplias y permisos atómicos | no | AUTH-RBAC / owners funcionales | se aplica la condición más restrictiva o se deniega hasta descomposición contractual |
+| legacy registró 40 permisos globales y asignaciones individuales redundantes | no para definición documental | AUTH-RBAC-020..024 + implementación correspondiente | permisos migrados, retirados o territorializados sin compatibilidad silenciosa |
+
+Ningún carryover autoriza cambio físico desde esta tarea.
+
+---
+
+#### 177. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Requisitos creados: 0
+Requisitos modificados: 0
+
+Justificación: la tarea especializa obligaciones ya existentes de autorización, scope, navegación, ownership, minimización, estados seguros, trazabilidad, handoff y experiencia administrativa para el perfil `auxiliar_administrativa`. No crea permiso, rol, recurso, pantalla, ruta, proceso, transición, cálculo, tabla, mutación o regla empresarial independiente que requiera una nueva fila del registro.
+
+---
+
+#### 178. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, se reutiliza especialmente:
+
+- `TREQ-VISO-001` para coherencia de VISO, alcance, conflictos, procedencia y auditoría;
+- `TREQ-VISO-004` y `TREQ-VISO-005` para conservar inventario e identidades de rutas;
+- `TREQ-VISO-011`, `TREQ-VISO-012` y `TREQ-VISO-014` para protección de rutas, superficie pública controlada y resolución de contexto;
+- `TREQ-VISO-022` y `TREQ-VISO-023` para no retirar prematuramente superficies y reconciliar el universo VISO;
+- cobertura UX vigente para navegación comprensible, ownership entre aplicaciones, clasificación por dominio y handoffs sin duplicar mutaciones.
+
+Estas referencias son trazabilidad heredada y no actualizan 04A.
+
+---
+
+#### 179. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-011`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en una rama documental de `VISO-UX-011`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, continuidad, topología, políticas de tarea, owner del minibloque, `AUTH-RBAC-005` completo, `VISO-ROUTE-001`, `VSCREEN-0007`, bindings de pantalla/proceso/paso, scripts documentales y el AS-IS vigente de `vento-viso/main` para `src/app/page.tsx`; `VISO-UX-010` ya está incorporada en `main` y la continuidad remota reconoce `VISO-UX-011` como tarea actual. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó experiencia runtime; esta tarea no autoriza implementación ni prueba operativa. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, datos, Supabase, infraestructura ni despliegues. |
+
+---
+
+#### 180. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-ADMIN-ASSISTANT-HOME-001`;
+2. la tarea conserva `VISO-UX-010` como anterior y `VISO-UX-012` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. la entrada especial continúa siendo `/`;
+6. `Inicio` no se convierte en séptimo dominio;
+7. `VISO-ROUTE-001` conserva identidad;
+8. `VSCREEN-0007` permanece pantalla canónica objetivo;
+9. el nombre de `VSCREEN-0007` no convierte a la auxiliar en actor ejecutivo;
+10. no se crea una pantalla por rol;
+11. `VPROC-0001` permanece binding principal de la pantalla;
+12. `VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK` permanece binding de paso sin conceder autoridad decisoria;
+13. `MONITOR` permanece el papel dominante de esta proyección;
+14. `VPROC-0061` y `VPROC-0063` no conceden analítica estratégica o gestión de riesgos por asociación;
+15. `auxiliar_administrativa` no se interpreta como gerente, supervisor ni wildcard;
+16. el perfil de presentación no equivale a autorización;
+17. `AUTH-RBAC-005` se consume como matriz base;
+18. se reconocen exactamente 47 concesiones y 65 capacidades no concedidas;
+19. no se concede ningún componente `BASE_AND_OPERATIONAL`;
+20. ningún permiso `OPERATIONAL_ONLY` se infiere desde el rol base;
+21. `G-FUNC` queda limitado a la función exacta;
+22. `G-FUNC` no se convierte en autoridad organizacional general;
+23. `ORG-REF` permanece consulta de referencia;
+24. `AS` y `AA` provienen de cobertura canónica, no de selección UI;
+25. `AS-REL` no concede autoridad sobre todos los extremos;
+26. `ORG-LOCAL` no equivale a organización completa;
+27. las siete capacidades VISO concedidas pueden proyectarse según scope;
+28. las diez capacidades VISO no concedidas no se muestran por rol base;
+29. la matriz no concede simulación ni auditoría de autorización;
+30. la matriz no concede contabilidad completa;
+31. la matriz no concede contenido, marketing o fidelización VISO por defecto;
+32. la matriz no concede PASS;
+33. la matriz no concede PULSO;
+34. la matriz no concede AURA;
+35. la raíz AS-IS no se declara conforme por existir;
+36. `createAdminClient()` no se trata como autorización humana;
+37. los conteos AS-IS no se reutilizan sin scope contractual;
+38. el home prioriza trabajo administrativo y no decisiones gerenciales;
+39. los documentos laborales respetan finalidad, minimización y retención;
+40. la carga/eliminación documental ocurre en owner con revalidación;
+41. invitaciones no crean roles ni permisos;
+42. creación/actualización de turnos no incluye cancelación;
+43. vacantes visibles no implican autoridad de publicación;
+44. lectura de personal no concede mutación universal;
+45. referencias organizacionales no se convierten en configuración maestra;
+46. tarifas de entrega se consultan sin editarse;
+47. NUMERA se limita a acceso, centros de costo y gastos permitidos;
+48. no se muestran punto de equilibrio, rentabilidad ni reportes financieros estratégicos;
+49. facturas internas se consultan según permiso sin emisión/cancelación/aprobación;
+50. ORIGO conserva ownership de compras y recepciones;
+51. activos pueden registrarse administrativamente sin movimiento físico;
+52. vistas de inventario no conceden operación;
+53. operaciones físicas quedan fuera del rol base;
+54. no existe CTA genérico `Aprobar`;
+55. cancelaciones sensibles no aparecen como acción del home;
+56. seguridad global no se presenta como función ordinaria;
+57. auditoría propia no equivale al ledger de autorización;
+58. PASS/CMS/comercial AS-IS no se canonizan por inercia;
+59. escalamiento no delega autoridad;
+60. los seis dominios conservan su identidad;
+61. handoffs cross-owner no crean editores locales;
+62. no se duplica la bandeja global de SHELL;
+63. prioridad proviene de fuentes o reglas canónicas;
+64. vencimientos provienen del objeto fuente;
+65. conteos operan sobre datasets autorizados;
+66. cero no se usa para deny o error;
+67. EMPTY, NOT_AUTHORIZED, NOT_AVAILABLE, NOT_IMPLEMENTED, PARTIAL, STALE y TECHNICAL_FAILURE permanecen distinguibles;
+68. stale no se presenta como actual;
+69. indisponibilidad no se presenta como cero;
+70. carga parcial no se presenta como completa;
+71. cada resumen conserva owner;
+72. `VISO-UX-012` conserva el perfil contador;
+73. `VISO-UX-013..020` conservan sus responsabilidades reservadas;
+74. no hay edición inline sensible;
+75. CTAs ordinarios son apertura, consulta, registro/actualización en owner o escalamiento;
+76. deep links transportan referencia, no autoridad;
+77. preferencias de UI no cambian permisos;
+78. no existe contrato personalizado por persona;
+79. no se ofrece simulación de autorización al rol base;
+80. dispositivo compartido no amplía permisos;
+81. reautenticación propietaria se conserva;
+82. cambios de autoridad invalidan proyecciones stale;
+83. concurrencia obliga a revalidar al actuar;
+84. caché no mezcla actores o scopes;
+85. responsive conserva contexto y restricciones;
+86. accesibilidad no depende solo de color;
+87. el home sintetiza alto volumen;
+88. privacidad aplica incluso bajo `G-FUNC`;
+89. drill-down revalida autorización;
+90. búsqueda no se convierte en query global;
+91. ver no concede exportar, imprimir o compartir acceso;
+92. cargar/refrescar el home no produce efecto empresarial;
+93. degradación segura nunca amplía privilegios;
+94. no se hardcodea `auxiliar_administrativa → mostrar todo`;
+95. permisos nuevos se deniegan hasta evaluación canónica;
+96. no se retiran superficies AS-IS desde esta tarea documental;
+97. cada elemento AS-IS recibe disposición explícita en materialización;
+98. `Trabajadores` usa `G-FUNC` autorizado y no count global técnico;
+99. `Vacantes` permanece consulta, no creación automática;
+100. `Negocios` permanece referencia, no alta automática;
+101. tarjetas PASS se retiran o condicionan a responsabilidad distinta;
+102. Website CMS no pertenece al home base;
+103. `Crear negocio` no se deriva de `businesses.view`;
+104. `Invitar trabajador` es handoff con controles propietarios;
+105. `Crear producto comercial` no pertenece al rol base;
+106. `Crear vacante` no se deriva de `vacancies.view`;
+107. no se inventa health score o score administrativo global;
+108. IA futura no amplía datos ni permisos;
+109. filtros solo reducen universos autorizados;
+110. `Todos` significa todos los objetos autorizados por la capacidad;
+111. comparaciones respetan scope, unidades y periodos;
+112. no existen acciones destructivas en portada;
+113. errores diferencian autorización, negocio y técnica;
+114. visible a la auxiliar no implica ownership;
+115. estados históricos no se mezclan con pendientes;
+116. la materialización no hardcodea la matriz dentro de la UI;
+117. datos se resuelven server-side con autorización efectiva;
+118. `createAdminClient()` no sustituye permiso;
+119. agregados declaran scope exacto;
+120. composición cross-owner no duplica modelo de datos;
+121. rendimiento no justifica ampliación de privilegios;
+122. fallos externos no activan copias no autoritativas;
+123. query string y local storage no fijan autoridad;
+124. acceso directo a `/` conserva guard;
+125. alto volumen se sintetiza;
+126. permisos adicionales se evalúan como concesiones separadas;
+127. rol inconsistente falla cerrado;
+128. principal técnico no activa la variante humana;
+129. señales sin owner se tratan como evidencia incompleta;
+130. explicación no expone internals sensibles;
+131. casos representativos futuros quedan definidos;
+132. pruebas futuras cubren render, autorización, ownership, estado, accesibilidad y handoff;
+133. carryovers tienen owner y condición de salida;
+134. no se crean requisitos de prueba;
+135. no se modifican requisitos de prueba;
+136. no se modifica el Registro Canónico de Requisitos de Prueba;
+137. no se modifica Supabase;
+138. toda futura modificación Supabase VENTO permanece en `vento-shell`;
+139. no se ejecuta implementación física desde esta tarea documental.
+
+---
+
+#### 181. Límites
+
+Esta tarea no:
+
+- modifica código de `vento-viso`;
+- modifica `src/app/page.tsx`;
+- crea componentes;
+- crea rutas;
+- mueve rutas;
+- renumera `VISO-ROUTE-*`;
+- crea redirects;
+- crea `VSCREEN-*`;
+- crea `VPROC-*`;
+- crea pasos de proceso;
+- crea permisos;
+- modifica `AUTH-RBAC-005`;
+- convierte `auxiliar_administrativa` en gerente o supervisor;
+- convierte `G-FUNC` en wildcard;
+- crea autoridad organizacional global;
+- amplía `AS`, `AA`, `AS-REL` u `ORG-LOCAL`;
+- crea grants o denies;
+- crea excepciones individuales;
+- concede componentes `BASE_AND_OPERATIONAL`;
+- concede permisos `OPERATIONAL_ONLY`;
+- concede simulación o auditoría de autorización;
+- concede PASS, PULSO o AURA;
+- concede contabilidad completa;
+- crea una segunda bandeja global;
+- modifica la bandeja de SHELL;
+- crea KPIs nuevos;
+- define fórmulas financieras;
+- crea score administrativo universal;
+- ejecuta aprobaciones;
+- ejecuta cancelaciones;
+- ejecuta movimientos físicos;
+- ejecuta mutaciones de otros owners desde la portada;
+- crea exportes genéricos;
+- crea impresión genérica;
+- crea tablas, vistas SQL, RPC, RLS, funciones o triggers;
+- crea migraciones;
+- modifica Supabase, Auth, Storage, Realtime o Edge Functions;
+- modifica datos reales;
+- cambia PASS, NUMERA, NEXO, FOGO, ORIGO, PULSO, ANIMA, TALENTO o AURA;
+- selecciona package;
+- prepara o aprueba package gate;
+- autoriza implementación física;
+- ejecuta implementación física;
+- desarrolla `VISO-UX-012`;
+- desarrolla `VISO-UX-013..020`;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+La identidad exacta de cualquier unidad física futura se resolverá por el package y gate aplicables.
+
+---
+
+#### 182. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-010 — Definir inicio para gerente de sede`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-011 — Definir inicio para auxiliar administrativa`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-012 — Definir inicio para contador`
 ### [ ] VISO-UX-012 — Definir inicio para contador
 ### [ ] VISO-UX-013 — Limitar información según alcance territorial
 ### [ ] VISO-UX-014 — Mostrar origen de permisos de forma comprensible
