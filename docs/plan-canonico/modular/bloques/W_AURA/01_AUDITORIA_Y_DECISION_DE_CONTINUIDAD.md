@@ -3165,7 +3165,555 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-008 — Definir relación con PASS`
-### [ ] AURA-AUD-008 — Definir relación con PASS
+### ✅ AURA-AUD-008 — Definir relación con PASS
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-007 — Definir relación con VISO
+**Tarea siguiente:** AURA-AUD-009 — Definir relación con PULSO
+**Tipo de tarea:** definición técnico-documental de la relación AURA–PASS; separa identidad de cliente, consentimiento, fidelización, beneficios, campañas, oportunidades, proyecciones, consumidores y referencias cruzadas sin transferir ownership ni materializar integraciones
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda fijada la frontera bidireccional AURA–PASS, incluyendo ownership, consumo canónico, proyección de sedes/restaurantes, campañas y beneficios, sin activar AURA ni alterar PASS
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica PASS, AURA, VISO, PULSO, Supabase, tablas, RLS, permisos, datos, rutas, contratos runtime, migraciones, despliegues ni repositorios
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la relación arquitectónica y empresarial entre AURA y PASS sin confundir campaña con fidelización, identidad de cliente con audiencia, beneficio con promoción ni proyección editorial con fuente maestra.
+
+La regla raíz es:
+
+```text
+AURA
+!= PASS
+
+CAMPAÑA
+!= BENEFICIO
+
+AUDIENCIA
+!= IDENTIDAD DE CLIENTE
+
+CONSENTIMIENTO
+!= SEGMENTO
+
+PROYECCIÓN
+!= FUENTE DE VERDAD
+```
+
+La relación debe permitir referencias y consumo entre ambos dominios sin crear maestros competidores.
+
+---
+
+#### 2. Reconciliación topológica
+
+La tarea conserva:
+
+```text
+TASK = AURA-AUD-008
+MODE = DEFINE_ONCE
+PHYSICAL_INSTANCE = NONE
+PREVIOUS = AURA-AUD-007
+NEXT = AURA-AUD-009
+```
+
+Consecuencias:
+
+- la tarea se agota en una definición canónica;
+- no genera implementación física propia;
+- no activa AURA;
+- no modifica PASS;
+- no crea integración runtime;
+- no decide todavía continuidad, reemplazo o retiro de AURA;
+- no sustituye `AURA-AUD-009`, que define la relación con PULSO;
+- no sustituye `AURA-AUD-010`, que decide continuidad, reemplazo o retiro.
+
+---
+
+#### 3. Entradas aprobadas
+
+La relación consume:
+
+- `AURA-AUD-001` a `AURA-AUD-006`, con existencia, producto, usuarios, superficies, procesos, datos y permisos actuales;
+- `AURA-AUD-007`, con la separación entre runtime VISO y ownership funcional AURA;
+- `VPROC-0045`, propiedad de PASS;
+- `VPROC-0056` y `VPROC-0057`, propiedad funcional de AURA y estado diferido;
+- `PROC-CAT-005`, para ownership de procesos;
+- el registro canónico de consumidoras, para relaciones directas entre procesos y aplicaciones;
+- `PASS-INT-001..005`, para límites de fidelización e identidad de cliente;
+- `INT-MKT-001..003`, para separar campaña, beneficio y efecto comercial;
+- las superficies actuales de VISO que consumen datos del esquema `pass`;
+- la cobertura de prueba AURA y PASS vigente.
+
+---
+
+#### 4. Contrato de relación AURA–PASS
+
+Se define:
+
+```text
+AURA_PASS_RELATION_CONTRACT = AURA-PASS-RELATION-001
+```
+
+La relación tiene seis dimensiones obligatorias:
+
+| Dimensión | Autoridad |
+| --- | --- |
+| campaña, contenido promocional y atribución | `AURA`, cuando su continuidad sea autorizada |
+| identidad de cliente, preferencias y consentimiento | `PASS` |
+| beneficio, recompensa, fidelización y ledger | `PASS` |
+| oportunidad e interacción digital | `AURA`, mediante `VPROC-0057` |
+| efecto comercial sobre pedido o venta | `PULSO` |
+| correlación entre dominios | referencias e integraciones explícitas; nunca escritura cruzada implícita |
+
+La regla permanente es:
+
+```text
+REFERENCIAR
+!= ADQUIRIR OWNERSHIP
+
+CONSUMIR
+!= DUPLICAR MAESTRO
+
+PUBLICAR
+!= EJECUTAR EFECTO TRANSACCIONAL
+```
+
+---
+
+#### 5. Ownership funcional de PASS
+
+PASS conserva como proceso propietario:
+
+| Proceso | Propietaria | Función |
+| --- | --- | --- |
+| `VPROC-0045` | `pass` | identificar cliente y administrar fidelización mediante ledgers y consentimientos separados |
+
+PASS conserva autoridad sobre:
+
+- persona y cuenta de cliente;
+- contactos y verificaciones;
+- preferencias y consentimientos;
+- relación de marca;
+- beneficios y recompensas;
+- reglas y versiones de fidelización;
+- puntos, movimientos y saldo proyectado;
+- redenciones;
+- historial de fidelización;
+- proyección visible al cliente de beneficios autorizados.
+
+AURA no adquiere ninguna de estas autoridades por relacionar una campaña con un beneficio o un cliente.
+
+---
+
+#### 6. Ownership funcional de AURA
+
+AURA conserva como procesos propietarios objetivo:
+
+| Proceso | Propietaria | Estado |
+| --- | --- | --- |
+| `VPROC-0056` | `aura` | `DEFINED_DEFERRED` |
+| `VPROC-0057` | `aura` | `DEFINED_DEFERRED` |
+
+`VPROC-0056` gobierna contenido y promociones desde solicitud y aprobación hasta publicación y retiro.
+
+`VPROC-0057` gobierna consultas y oportunidades digitales hasta su resolución o handoff comercial.
+
+PASS no adquiere propiedad de estos procesos por:
+
+- mostrar un beneficio relacionado;
+- aportar identidad o consentimiento;
+- recibir una proyección de campaña;
+- conservar una referencia de correlación;
+- participar en una experiencia cliente.
+
+---
+
+#### 7. Matriz bidireccional de consumo canónico
+
+La relación AURA–PASS se materializa documentalmente en tres procesos:
+
+| Proceso | Owner | Relación de la otra aplicación | Modalidad dominante | Frontera |
+| --- | --- | --- | --- | --- |
+| `VPROC-0045` | `pass` | `aura` consumidora directa | `SOLICITUD_EFECTO_Y_EVENTO` | AURA puede consumir una proyección autorizada de fidelización; no mantiene identidad, consentimiento ni ledger |
+| `VPROC-0056` | `aura` | `pass` consumidora directa | `PROYECCION_EVENTO_Y_ANALISIS` | PASS puede consumir correlación de campaña/contenido para beneficios y proyección cliente; no se convierte en sistema de campañas |
+| `VPROC-0057` | `aura` | `pass` consumidora directa | `PROYECCION_EVENTO_Y_ANALISIS` | PASS puede aportar o consumir identidad, consentimiento y contexto de cliente dentro de una relación autorizada; no gobierna la oportunidad comercial |
+
+Resultado:
+
+```text
+RELACIONES_CANONICAS_AURA_PASS = 3
+OWNERSHIP_COMPARTIDO = 0
+MAESTROS_DUPLICADOS_PERMITIDOS = 0
+```
+
+Estas relaciones describen contrato funcional. No acreditan una integración AURA runtime ya desplegada.
+
+---
+
+#### 8. Relación física actual de sedes y restaurantes
+
+La superficie VISO `/website-cms/venues` consume actualmente:
+
+```text
+pass.pass_satellites
+public.sites
+public.website_items
+```
+
+El flujo observado es:
+
+```text
+PASS SATELLITE ACTIVO
+-> VISO LEE IDENTIDAD Y DATOS DE SEDE
+-> NORMALIZA NOMBRE A SLUG
+-> CREA website_items(category = restaurant)
+-> VISO COMPLETA CURADURIA EDITORIAL
+-> Vento-Group CONSUME PUBLICACION
+```
+
+PASS conserva la autoridad sobre la identidad operacional del satélite y su vínculo con la sede.
+
+La proyección editorial no puede modificar por inferencia:
+
+- `pass_satellites.id`;
+- código del satélite;
+- `site_id`;
+- estado operacional;
+- identidad de sede;
+- datos de fidelización;
+- identidad de cliente.
+
+---
+
+#### 9. Hallazgo de identidad de importación
+
+El importador actual usa el nombre del satélite para derivar un slug y compara ese slug contra `website_items` existentes.
+
+La inserción observada crea una proyección editorial con campos de restaurante, pero no conserva en esa fila una referencia explícita al `pass_satellites.id` origen.
+
+Por tanto:
+
+```text
+SLUG_NORMALIZADO
+!= IDENTIDAD ESTABLE PASS
+```
+
+La baseline actual puede seguir describiéndose como implementación existente, pero una reconciliación futura debe conservar una identidad de origen estable y separar:
+
+```text
+DATOS IMPORTADOS DESDE PASS
+!= DATOS EDITORIALES CURADOS
+```
+
+Esta tarea no implementa la corrección.
+
+---
+
+#### 10. Colecciones comerciales y etiqueta `campaign`
+
+La superficie VISO `commercial-collections` administra datos del esquema PASS, incluyendo:
+
+```text
+pass.commercial_collections
+pass.catalog_item_collections
+pass.pass_satellites
+```
+
+`pass.commercial_collections.kind` admite el valor:
+
+```text
+campaign
+```
+
+pero se preserva obligatoriamente:
+
+```text
+COMMERCIAL_COLLECTION(kind = campaign)
+!= AURA_CAMPAIGN
+```
+
+Una colección PASS puede agrupar y presentar oferta o beneficios para consumo cliente sin convertirse en:
+
+- brief de marketing;
+- campaña AURA;
+- audiencia;
+- calendario multicanal;
+- presupuesto;
+- pieza aprobada;
+- atribución;
+- medición de campaña;
+- cierre de campaña.
+
+La palabra `campaign` en una clasificación comercial no transfiere ownership a AURA ni convierte PASS en sistema de campañas.
+
+---
+
+#### 11. Campaña AURA y beneficio PASS
+
+Un beneficio PASS puede existir sin campaña.
+
+Se permiten conceptualmente dos casos:
+
+```text
+BENEFICIO PASS
+-> SIN CAMPAÑA AURA
+```
+
+```text
+CAMPAÑA AURA
+-> REFERENCIA AUTORIZADA A BENEFICIO PASS
+```
+
+No se admite:
+
+```text
+CAMPAÑA AURA
+-> ESCRITURA DIRECTA DEL BENEFICIO PASS
+```
+
+ni:
+
+```text
+BENEFICIO PASS
+-> CREACION AUTOMATICA DE CAMPAÑA AURA
+```
+
+La correlación no cambia la propietaria de ninguno de los dos objetos.
+
+---
+
+#### 12. Identidad, consentimiento y audiencia
+
+PASS es la autoridad sobre identidad de cliente y consentimiento aplicable.
+
+AURA puede necesitar segmentación, comunicación o atribución, pero no puede convertir esa necesidad en una copia completa del cliente PASS.
+
+Se conserva:
+
+```text
+CUENTA PASS
+!= AUDIENCIA AURA
+
+CLIENTE PASS
+!= LEAD AURA
+
+CONSENTIMIENTO REGISTRADO
+!= AUTORIZACION UNIVERSAL DE MARKETING
+
+REDENCION
+!= OPT-IN
+```
+
+Cuando AURA pueda operar, solo podrá consumir la proyección mínima autorizada para la finalidad, canal, vigencia y alcance correspondientes.
+
+PASS no fabrica consentimiento para satisfacer una campaña y AURA no interpreta una compra, visita, acumulación o redención como consentimiento implícito.
+
+---
+
+#### 13. Oportunidades digitales y PASS
+
+`VPROC-0057` pertenece a AURA y conserva la oportunidad, interacción, etapa, seguimiento y atribución comercial.
+
+PASS puede participar cuando exista una identidad de cliente o consentimiento aplicable, pero:
+
+```text
+IDENTIDAD PASS
+!= OPORTUNIDAD AURA
+```
+
+AURA no debe crear una segunda persona o cuenta de cliente para gestionar una oportunidad.
+
+PASS no debe transformar toda interacción digital en cliente, oportunidad calificada o relación de fidelización.
+
+Cuando una oportunidad se vincule con una persona PASS, la relación debe conservar identificadores y finalidades separadas.
+
+---
+
+#### 14. PASS no depende de AURA diferida
+
+Mientras AURA continúe sin producto funcional:
+
+- PASS conserva sus beneficios y fidelización;
+- PASS puede publicar proyecciones de beneficios bajo sus contratos vigentes;
+- PASS conserva identidad y consentimiento;
+- PASS no necesita materializar AURA para operar sus procesos propios;
+- `commercial_collections` no se reclasifica como campaña AURA;
+- las relaciones documentales con `VPROC-0056` y `VPROC-0057` permanecen diferidas en cuanto a productor AURA;
+- ninguna ausencia de AURA autoriza a PASS a absorber campañas, oportunidades o atribución.
+
+---
+
+#### 15. Escritura cruzada prohibida
+
+La relación se basa en referencias, eventos, proyecciones y comandos propietarios.
+
+Queda prohibido como regla de arquitectura:
+
+```text
+AURA -> INSERT/UPDATE DIRECTO SOBRE LEDGER PASS
+AURA -> CAMBIO DIRECTO DE CONSENTIMIENTO PASS
+AURA -> CAMBIO DIRECTO DE BENEFICIO PASS
+PASS -> CAMBIO DIRECTO DE CAMPAÑA AURA
+PASS -> CAMBIO DIRECTO DE OPORTUNIDAD AURA
+```
+
+La materialización futura deberá usar contratos propietarios, autorización exacta, idempotencia, evidencia y reconciliación.
+
+---
+
+#### 16. Relación con PULSO reservada
+
+La relación AURA–PASS no decide el efecto de una promoción o beneficio sobre una venta.
+
+Se conserva:
+
+```text
+AURA
+-> INTENCION Y CORRELACION DE MARKETING
+
+PASS
+-> IDENTIDAD + CONSENTIMIENTO + FIDELIZACION
+
+PULSO
+-> VALIDACION Y EFECTO COMERCIAL
+```
+
+Las decisiones sobre:
+
+- pedido;
+- venta;
+- precio;
+- descuento;
+- cupón aplicado;
+- acumulación durante venta;
+- redención en caja;
+- efecto transaccional;
+
+pertenecen a `AURA-AUD-009` y a los contratos propietarios de PULSO/PASS.
+
+---
+
+#### 17. Hallazgos diferidos con propietario
+
+| Hallazgo | Estado | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| importación de restaurantes basada en slug sin vínculo estable al satélite origen | no bloquea esta definición; sí bloquea una migración robusta | `AURA-INT-001` / contrato de integración aplicable | existir identidad de origen estable, idempotencia y reconciliación sin sobrescribir curaduría |
+| `commercial_collections.kind = campaign` puede confundirse con campaña AURA | no bloquea PASS actual; bloquea equivalencia semántica | `AURA-AUD-010` y roadmap AURA posterior | decisión formal y contrato que mantenga colección PASS separada de campaña AURA |
+| integración runtime AURA↔PASS no demostrada | no bloquea auditoría; bloquea declarar integración operativa | `AURA-INT-002` | productor AURA autorizado, contrato implementado y evidencia de integración |
+| audiencias AURA no materializadas | no bloquea PASS; bloquea automatización de marketing basada en clientes | roadmap AURA posterior | contrato de finalidad, consentimiento y proyección mínima implementado |
+
+Ningún hallazgo autoriza crear una tarea administrativa nueva.
+
+---
+
+#### 18. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+La cobertura vigente ya protege la separación de ownership, la importación desde PASS, identidad y consentimiento, fidelización, beneficios, campañas, integraciones y ausencia de producto AURA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+---
+
+#### 19. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otros:
+
+- `TREQ-AURA-003`, para fronteras AURA con PASS, PULSO y NUMERA;
+- `TREQ-AURA-007`, para ownership actual y prohibición de transferencias implícitas;
+- `TREQ-AURA-016`, para importación idempotente de restaurantes desde PASS y vínculo estable con origen;
+- `TREQ-AURA-019`, para separar ciclo editorial de publicación simple;
+- `TREQ-AURA-027`, para impedir transferencias sin decisión, ADR, cutover y rollback;
+- `TREQ-PASS-008`, para ledger y redención bajo contratos propietarios;
+- `TREQ-PASS-010`, para identidad, preferencias, consentimientos y fidelización;
+- `TREQ-INTEGRATION-019`, para integraciones de marketing, idempotencia, conciliación y fuentes de verdad.
+
+Esta sección documenta trazabilidad y no actualiza el Registro 04A.
+
+---
+
+#### 20. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La tarea se prepara antes de su incorporación al checkout; la batería documental real se ejecutará al abrir e incorporar `AURA-AUD-008`. |
+| LOCAL | `PASS` | El artefacto contiene una sola tarea, metadata completa, continuidad `007 -> 008 -> 009`, sección de cero requisitos sin identificadores de prueba y cero whitespace al final de línea. |
+| REMOTA | `PASS` | Se verificaron ownership y consumidores de `VPROC-0045`, `VPROC-0056` y `VPROC-0057`, contratos PASS de fidelización, `INT-MKT-001..003`, el importador VISO de `pass_satellites` y las superficies `commercial_collections` del esquema PASS. |
+| OPERATIVA | `NOT_APPLICABLE` | No se ejecutan campañas, fidelización, redenciones, segmentaciones ni comunicaciones; se define únicamente la frontera canónica entre dominios. |
+| FÍSICA | `NOT_APPLICABLE` | La tarea es `DEFINE_ONCE` sin instancia física propia; no modifica datos, permisos, rutas, aplicaciones ni integraciones runtime. |
+
+---
+
+#### 21. Criterios de aceptación
+
+- [x] PASS conserva ownership exclusivo de `VPROC-0045`.
+- [x] AURA conserva ownership objetivo exclusivo de `VPROC-0056` y `VPROC-0057`.
+- [x] Se documentan exactamente tres relaciones canónicas directas AURA–PASS a nivel de proceso.
+- [x] Se mantienen cero procesos con ownership compartido.
+- [x] Se separan campaña y beneficio.
+- [x] Se separan identidad de cliente y audiencia.
+- [x] Se separan consentimiento y segmentación.
+- [x] Se separan beneficio visible, elegibilidad, redención y efecto comercial.
+- [x] Se documenta la importación actual `pass_satellites -> website_items` sin transferir ownership.
+- [x] Se identifica que el slug actual no sustituye una identidad PASS estable.
+- [x] Se separa `commercial_collections.kind = campaign` de una campaña AURA.
+- [x] Se impide que AURA escriba directamente beneficios, consentimientos o ledger PASS.
+- [x] Se impide que PASS escriba directamente campañas u oportunidades AURA.
+- [x] Se conserva PASS operativo independientemente de que AURA siga diferida.
+- [x] Se reserva el efecto comercial exacto a `AURA-AUD-009` y a PULSO.
+- [x] Cada hallazgo diferido tiene propietario y condición de salida.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecutan cambios físicos.
+
+---
+
+#### 22. Límites
+
+Esta tarea no:
+
+- activa AURA;
+- modifica PASS;
+- modifica VISO o PULSO;
+- crea campañas;
+- crea beneficios;
+- crea audiencias;
+- crea oportunidades;
+- crea clientes;
+- modifica consentimiento;
+- modifica puntos, ledger o redenciones;
+- crea tablas, columnas, RPC, funciones, triggers, jobs o colas;
+- cambia RLS;
+- crea permisos;
+- modifica grants;
+- migra `commercial_collections`;
+- corrige físicamente el importador de restaurantes;
+- implementa `AURA-INT-002`;
+- decide el efecto comercial de PULSO;
+- decide continuidad, reemplazo o retiro de AURA;
+- crea ni modifica requisitos de prueba;
+- modifica el Registro 04A.
+
+---
+
+#### 23. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-007 — Definir relación con VISO`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-008 — Definir relación con PASS`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-009 — Definir relación con PULSO`
 ### [ ] AURA-AUD-009 — Definir relación con PULSO
 ### [ ] AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
 ### [ ] AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
