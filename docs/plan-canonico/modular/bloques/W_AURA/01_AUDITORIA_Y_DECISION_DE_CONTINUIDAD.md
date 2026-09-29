@@ -316,7 +316,337 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-002 — Confirmar estado real del producto`
-### [ ] AURA-AUD-002 — Confirmar estado real del producto
+### ✅ AURA-AUD-002 — Confirmar estado real del producto
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-001 — Confirmar repositorio propietario
+**Tarea siguiente:** AURA-AUD-003 — Confirmar usuarios actuales
+**Tipo de tarea:** auditoría técnico-documental del estado real de producto; distingue identidad canónica, referencias de interfaz, capacidades relacionadas y producto AURA funcional, sin implementar, habilitar ni transferir capacidades
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; AURA queda confirmada como identidad canónica diferida sin producto standalone funcional, navegable o desplegado en el estado vigente
+**Cambios físicos autorizados:** ninguno; esta tarea no crea producto, repositorio, rutas, pantallas, navegación, datos, permisos, canales, despliegues, DNS, Supabase ni integraciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Confirmar el estado real de AURA como producto y separar de forma verificable cuatro conceptos que no son equivalentes:
+
+1. identidad canónica de aplicación;
+2. referencias visuales o de catálogo;
+3. capacidades relacionadas existentes en otros productos;
+4. producto AURA funcional.
+
+La conclusión canónica de esta tarea es:
+
+```text
+AURA_CANONICAL_IDENTITY = EXISTS
+AURA_STANDALONE_REPOSITORY = ABSENT
+AURA_WEB_PRODUCT = NOT_IMPLEMENTED
+AURA_WEB_AVAILABILITY = FALSE
+AURA_RUNTIME_ENTRY = UNAVAILABLE
+AURA_FUNCTIONAL_PRODUCT_STATE = DEFERRED
+AURA_CONTINUITY_DECISION = PENDING_AURA_AUD_010
+```
+
+AURA existe como identidad administrativa reservada dentro del ecosistema, pero esa identidad no corresponde hoy a un producto standalone utilizable.
+
+---
+
+#### 2. Reconciliación topológica
+
+El mini-bloque `AURA-AUD-001..012` conserva:
+
+```text
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+```
+
+`AURA-AUD-002` produce una única determinación documental del estado actual de producto.
+
+No genera instancia física, no selecciona package, no crea infraestructura y no autoriza implementación.
+
+`AURA-DOM`, `AURA-AUTH`, `AURA-UX` y `AURA-INT` permanecen bloqueadas hasta completar la decisión posterior de `AURA-AUD-010` y su registro mediante `AURA-AUD-011` cuando corresponda.
+
+---
+
+#### 3. Entradas aprobadas
+
+La tarea consume como base:
+
+- `AURA-AUD-001`, que confirma `Repositorio standalone de AURA = ABSENT` y prohíbe atribuir ownership a otro repositorio por inferencia;
+- el roadmap maestro, que clasifica AURA como aplicación administrativa diferida;
+- la auditoría técnica `TEC-01..03`, que distingue registro de aplicación, reserva de permiso y producto funcional;
+- `AUTH-UI-010`, que confirmó cero repositorios standalone, cero rutas propias y cero pantallas propias de AURA en su línea base;
+- el bloque W, que prohíbe implementar o ampliar AURA antes de cerrar la auditoría y decisión de continuidad;
+- el Registro 04A vigente de AURA;
+- el código remoto actual de SHELL y los AppSwitchers de las aplicaciones inspeccionadas.
+
+Estas entradas permiten confirmar el estado real del producto sin decidir todavía su futuro.
+
+---
+
+#### 4. Contrato de realidad de producto
+
+Se define:
+
+```text
+AURA_PRODUCT_REALITY_CONTRACT = AURA-CURRENT-PRODUCT-STATE-001
+```
+
+El contrato usa las siguientes reglas:
+
+```text
+IDENTIDAD_CANONICA
+!= PRODUCTO_FUNCIONAL
+
+PERMISO_RESERVADO
+!= CAPACIDAD_IMPLEMENTADA
+
+REFERENCIA_VISUAL
+!= SUPERFICIE_NAVEGABLE
+
+CAPACIDAD_RELACIONADA_EN_OTRO_PRODUCTO
+!= PRODUCTO_AURA
+
+ROADMAP_OBJETIVO
+!= ESTADO_RUNTIME_ACTUAL
+```
+
+Una señal documental o visual solo cuenta como producto real cuando existe una cadena técnica y funcional atribuible a AURA que pueda ser identificada como producto propio. Esa cadena no está presente en el estado vigente.
+
+---
+
+#### 5. Matriz del estado real
+
+| Dimensión | Evidencia vigente | Estado de AURA | Decisión |
+| --- | --- | --- | --- |
+| identidad de aplicación | código canónico `aura` | `EXISTS` | se conserva |
+| clasificación | aplicación administrativa | `DEFERRED` | no equivale a disponibilidad |
+| permiso base | `aura.access` | `RESERVED` | no prueba capacidad funcional |
+| repositorio standalone | auditoría y consulta remota | `ABSENT` | no existe producto técnico propio |
+| repositorio runtime propietario | no confirmado | `NO_CONFIRMADO` | no se asigna por inferencia |
+| entrada desde SHELL | AURA usa `href` vacío y estado `soon` | `UNAVAILABLE` | no hay navegación a producto |
+| metadata de login | `host: null` y `webAvailable: false` | `UNAVAILABLE` | no existe destino web habilitado |
+| AppSwitchers inspeccionados | AURA permanece `soon` con destino vacío | `PLACEHOLDER_ONLY` | no cuentan como producto |
+| rutas propias | línea base auditada | `0` | no existe navegación interna AURA confirmada |
+| pantallas propias | línea base auditada | `0` | no existe UI propia AURA confirmada |
+| navegación registrada propia | línea base auditada | `0` | no existe menú funcional AURA confirmado |
+| producto web standalone | no existe cadena repo + navegación + superficie propia | `NOT_IMPLEMENTED` | AURA no está disponible como producto |
+| capacidades actuales de website CMS | existen en VISO | `EXTERNAL_TO_AURA` | no se atribuyen a AURA |
+| consumidor web público actual | existe en `Vento-Group` | `EXTERNAL_TO_AURA` | no se atribuye a AURA |
+| capacidades objetivo del roadmap | documentadas para AURA | `TARGET_ONLY` | no demuestran implementación actual |
+| decisión continuidad/reemplazo/retiro | reservada | `PENDING` | pertenece a `AURA-AUD-010` |
+
+La combinación de identidad reservada y referencias visuales no cambia el resultado `NOT_IMPLEMENTED` del producto standalone.
+
+---
+
+#### 6. Evidencia runtime actual
+
+El estado remoto vigente presenta AURA de forma deliberadamente no navegable:
+
+- SHELL declara AURA como identidad canónica reservada, con producto web no disponible, `href` vacío y estado `soon`;
+- el login central declara `host: null` y `webAvailable: false` para AURA;
+- VISO, NEXO, FOGO, ORIGO y PULSO conservan AURA como entrada `soon` con destino vacío en sus AppSwitchers inspeccionados;
+- no existe repositorio standalone AURA confirmado;
+- no existe una cadena propia AURA de repositorio, entrada runtime y superficie funcional.
+
+Estas señales son consistentes entre sí: el sistema reconoce la identidad, pero evita presentarla como producto disponible.
+
+---
+
+#### 7. Capacidades relacionadas que no forman un producto AURA
+
+Existen capacidades empresariales y técnicas relacionadas con el dominio objetivo de marketing y contenido, pero su existencia no cambia la clasificación del producto AURA.
+
+| Capacidad relacionada | Propietario observado | Tratamiento en esta tarea |
+| --- | --- | --- |
+| administración actual de contenido web | VISO | permanece atribuida a VISO |
+| publicación y consumo público de contenido | `Vento-Group` | permanece en el consumidor público actual |
+| catálogo e identidad `aura` | gobierno transversal de VENTO | reserva canónica, no producto runtime |
+| permiso `aura.access` | catálogo de autorización | reserva de acceso, no funcionalidad implementada |
+| referencias AURA en SHELL y AppSwitchers | repositorios que presentan el ecosistema | placeholders o metadata de producto diferido |
+| capacidades objetivo de marketing | roadmap y contratos AURA | diseño futuro condicionado a decisión |
+
+No se duplica ownership y no se declara que VISO, SHELL o `Vento-Group` sean AURA.
+
+---
+
+#### 8. Estado funcional consolidado
+
+La clasificación vigente queda:
+
+```text
+PRODUCTO_AURA_STANDALONE = NO_IMPLEMENTADO
+DISPONIBILIDAD_WEB_AURA = NO
+NAVEGACION_AURA = NO_DISPONIBLE
+CAPACIDADES_AURA_PROPIAS_CONFIRMADAS = 0
+CAPACIDADES_RELACIONADAS_EN_OTROS_PRODUCTOS = EXISTEN
+ROADMAP_AURA = DIFERIDO
+IMPLEMENTACION_AURA = NO_AUTORIZADA
+```
+
+`CAPACIDADES_AURA_PROPIAS_CONFIRMADAS = 0` significa que no se ha confirmado una capacidad funcional ejecutada por un producto AURA propio. No significa que el ecosistema carezca de capacidades de marketing, contenido o publicación.
+
+---
+
+#### 9. Diferencia entre producto inexistente y producto retirado
+
+El estado `NOT_IMPLEMENTED` no equivale a producto retirado.
+
+AURA conserva:
+
+- código canónico estable;
+- clasificación funcional;
+- permiso reservado;
+- roadmap condicionado;
+- contratos objetivo;
+- cobertura de prueba vigente;
+- una puerta formal para decidir continuidad, reemplazo o retiro.
+
+Por tanto, esta tarea no cambia AURA a `RETIRED`, no libera su código y no autoriza reutilizar su identidad.
+
+---
+
+#### 10. Estado del bloqueo
+
+Permanece vigente:
+
+```text
+AURA_PRODUCT_RUNTIME = BLOCKED
+AURA_DOM = BLOCKED
+AURA_AUTH = BLOCKED
+AURA_UX = BLOCKED
+AURA_INT = BLOCKED
+```
+
+El motivo no es únicamente la ausencia de repositorio. La puerta completa exige auditar producto, usuarios, superficies, procesos, datos, relaciones con otras aplicaciones y decidir formalmente continuidad.
+
+El estado real confirmado por esta tarea permite seguir auditando; no permite implementar.
+
+---
+
+#### 11. Handoff hacia AURA-AUD-003
+
+`AURA-AUD-003 — Confirmar usuarios actuales` recibe como entrada:
+
+1. AURA existe como identidad canónica diferida;
+2. no existe producto standalone funcional disponible;
+3. no existe entrada web habilitada;
+4. `aura.access` existe como reserva y no demuestra uso efectivo;
+5. referencias `soon` y metadata de login no constituyen uso de producto;
+6. capacidades relacionadas permanecen en otros productos;
+7. no se ha determinado todavía quiénes son usuarios actuales, potenciales, asignados o efectivos de AURA.
+
+`AURA-AUD-003` deberá resolver esa última dimensión sin reinterpretar una asignación de permiso como evidencia automática de uso real del producto.
+
+---
+
+#### 12. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** el deber de distinguir referencias reservadas de producto implementado, detectar cero repositorios, rutas y pantallas propias, mantener AURA no disponible y conservar ownership de las capacidades actuales ya está protegido por la cobertura AURA vigente. Esta tarea fija el estado actual de producto contra esas reglas sin introducir una obligación verificable nueva.
+
+---
+
+#### 13. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-AURA-004`, que exige separar cero repositorios, rutas y pantallas propias de AURA de las referencias reservadas y prohíbe contar placeholders como producto implementado;
+- `TREQ-AURA-005`, que exige detectar cualquier delta futuro sobre repositorio, dominio, rutas, pantallas, launchers o navegación;
+- `TREQ-AURA-006`, que exige presentar AURA como no disponible mientras no exista repositorio, despliegue, rutas certificadas, autorización y decisión formal;
+- `TREQ-AURA-007`, que conserva las capacidades actuales de contenido web atribuidas a sus propietarios observados hasta una transferencia aprobada.
+
+Esta sección registra trazabilidad existente y no actualiza el Registro 04A.
+
+---
+
+#### 14. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `AURA-AUD-002` en su rama propia mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | El artefacto aún no ha sido incorporado al checkout del usuario ni sometido allí al formateador, quality, delivery check y batería documental. |
+| REMOTA | `PASS` | En el remoto vigente se confirmó ausencia de repositorio standalone AURA; SHELL declara AURA con `href` vacío y `status: soon`; el login central usa `host: null` y `webAvailable: false`; y los AppSwitchers inspeccionados de VISO, NEXO, FOGO, ORIGO y PULSO mantienen AURA como identidad diferida sin destino navegable. |
+| OPERATIVA | `NOT_APPLICABLE` | La tarea determina estado de producto; no requiere campañas, publicaciones, interacción con clientes ni ejecución de procesos de marketing. |
+| FÍSICA | `NOT_APPLICABLE` | `AURA-AUD-002` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni modifica producto, infraestructura o datos. |
+
+---
+
+#### 15. Criterios de aceptación
+
+- [x] Se distingue identidad canónica de producto funcional.
+- [x] Se conserva la salida aprobada de `AURA-AUD-001` sobre ausencia de repositorio standalone.
+- [x] Se confirma que el producto web AURA no está implementado ni disponible.
+- [x] Se confirma que SHELL no ofrece un destino web AURA.
+- [x] Se confirma que el login central mantiene AURA sin host y sin disponibilidad web.
+- [x] Se confirma que las referencias `soon` de las aplicaciones inspeccionadas no constituyen producto.
+- [x] Se conservan cero rutas y pantallas propias según la línea base aprobada.
+- [x] Se evita atribuir a AURA las capacidades actuales de VISO.
+- [x] Se evita atribuir a AURA el consumidor público `Vento-Group`.
+- [x] Se distingue capacidad objetivo documentada de capacidad implementada.
+- [x] Se mantiene AURA como aplicación diferida, no como aplicación retirada.
+- [x] Se mantiene bloqueada toda implementación AURA.
+- [x] Se reserva el inventario de usuarios a `AURA-AUD-003`.
+- [x] Se reserva el inventario exhaustivo de rutas y pantallas a `AURA-AUD-004`.
+- [x] Se reserva el inventario de procesos de marketing a `AURA-AUD-005`.
+- [x] Se reserva continuidad, reemplazo o retiro a `AURA-AUD-010`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecuta materialización física.
+
+---
+
+#### 16. Límites
+
+Esta tarea no:
+
+- crea o propone un repositorio AURA;
+- implementa una aplicación AURA;
+- crea rutas, pantallas, navegación o destinos web;
+- habilita `aura.access` como capacidad funcional;
+- determina usuarios actuales o futuros;
+- inventaría exhaustivamente rutas y pantallas;
+- inventaría procesos de marketing;
+- inventaría datos o permisos;
+- transfiere capacidades desde VISO;
+- transfiere consumidores desde `Vento-Group`;
+- conecta canales externos;
+- habilita IA;
+- modifica Supabase;
+- modifica DNS;
+- despliega infraestructura;
+- decide continuidad, reemplazo o retiro;
+- registra un ADR;
+- desbloquea tareas de dominio, autorización, UX o integración;
+- crea ni modifica requisitos de prueba;
+- modifica el Registro 04A;
+- inicia una instancia física o package.
+
+---
+
+#### 17. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-001 — Confirmar repositorio propietario`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-002 — Confirmar estado real del producto`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-003 — Confirmar usuarios actuales`
 ### [ ] AURA-AUD-003 — Confirmar usuarios actuales
 ### [ ] AURA-AUD-004 — Inventariar rutas y pantallas
 ### [ ] AURA-AUD-005 — Inventariar procesos de marketing
