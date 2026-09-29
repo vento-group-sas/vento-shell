@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1485** |
+| Aprobadas | **1486** |
 | En propuesta | **0** |
-| No iniciadas | **111** |
+| No iniciadas | **110** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.05% (1485/1596)** |
+| Porcentaje de completamiento | **93.11% (1486/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **111** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1386** |
+| ⏸ NO_EVALUADA | **110** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1387** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-QA-001` — Probar flujo completo de acumulación | ✅ APROBADA |
-| Tarea actual | `PASS-QA-002` — Probar flujo completo de redención | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-AUD-001` — Confirmar repositorio propietario | ⬜ NO INICIADA |
+| Última aprobada | `PASS-QA-002` — Probar flujo completo de redención | ✅ APROBADA |
+| Tarea actual | `AURA-AUD-001` — Confirmar repositorio propietario | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-AUD-002` — Confirmar estado real del producto | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1434,7 +1434,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-004` | Definir administración laboral de clientes cuando corresponda | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-INT-005` | Evitar mezclar identidad cliente y trabajador | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-QA-001` | Probar flujo completo de acumulación | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-QA-002` | Probar flujo completo de redención | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-QA-002` | Probar flujo completo de redención | — | — | `bloques/V_PASS/03_PRUEBAS_DE_ACUMULACION_Y_REDENCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-001` | Confirmar repositorio propietario | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-002` | Confirmar estado real del producto | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-003` | Confirmar usuarios actuales | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
