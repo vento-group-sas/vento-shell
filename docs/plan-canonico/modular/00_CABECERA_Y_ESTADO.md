@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1495** |
+| Tareas aprobadas | **1496** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **101** |
+| Tareas no iniciadas | **100** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **93.67% (1495/1596)** |
+| Porcentaje de completamiento | **93.73% (1496/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-AUD-009 — Definir relación con PULSO** |
-| Tarea actual | **AURA-AUD-010 — Decidir continuidad, reemplazo o retiro** |
+| Última tarea aprobada | **AURA-AUD-010 — Decidir continuidad, reemplazo o retiro** |
+| Tarea actual | **AURA-AUD-011 — Documentar decisión mediante ADR si corresponde** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUD-011 — Documentar decisión mediante ADR si corresponde** |
+| Siguiente tarea | **AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 9 de 37 aprobadas; AURA-AUD-010 pendiente** |
+| Progreso del bloque | **BLOQUE W: 10 de 37 aprobadas; AURA-AUD-011 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-AUD-010** |
+| Carril documental | **ACTIVO — AURA-AUD-011** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-AUD-009` — Definir relación con PULSO |
-| Tarea actual | `AURA-AUD-010` — Decidir continuidad, reemplazo o retiro — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUD-011` — Documentar decisión mediante ADR si corresponde |
+| Última aprobada | `AURA-AUD-010` — Decidir continuidad, reemplazo o retiro |
+| Tarea actual | `AURA-AUD-011` — Documentar decisión mediante ADR si corresponde — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUD-012` — Mantener roadmap de implementación bloqueado hasta decisión |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 9 DE 37 APROBADAS — ACTUAL AURA-AUD-010** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 10 DE 37 APROBADAS — ACTUAL AURA-AUD-011** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-AUD-009 — Definir relación con PULSO
-        ↓
-TAREA ACTUAL
 AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 9 de 37 tareas aprobadas
+BLOQUE W — 10 de 37 tareas aprobadas
 ```
