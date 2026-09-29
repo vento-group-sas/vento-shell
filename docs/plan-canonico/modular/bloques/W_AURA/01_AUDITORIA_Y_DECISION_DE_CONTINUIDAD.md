@@ -5243,7 +5243,842 @@ SIGUIENTE TAREA RESERVADA
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-011 — Documentar decisión mediante ADR si corresponde`
-### [ ] AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
+### ✅ AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-010 — Decidir continuidad, reemplazo o retiro
+**Tarea siguiente:** AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
+**Tipo de tarea:** decisión arquitectónica y técnico-documental; materializa mediante ADR la decisión de continuidad aprobada por AURA-AUD-010, preserva sus fronteras frente a VISO, PASS, PULSO, NUMERA, NEXO y FOGO, fija el tratamiento de CMS, runtime, disponibilidad y evolución futura, y entrega a AURA-AUD-012 una decisión arquitectónica estable sin liberar por sí misma el roadmap ni autorizar implementación física
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda registrado el ADR de continuidad de AURA como aplicación objetivo diferida, sin crear producto, repositorio, superficies, datos, integraciones ni despliegues
+**Cambios físicos autorizados:** ninguno; esta tarea solo registra una decisión arquitectónica y no crea ni modifica código, repositorios, tablas, RLS, RPC, funciones, triggers, jobs, colas, rutas, pantallas, DNS, secretos, canales, campañas, datos ni infraestructura
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 29 de septiembre de 2026
+
+---
+
+#### 1. Propósito
+
+Registrar de forma arquitectónica, estable y trazable la decisión adoptada por `AURA-AUD-010`:
+
+```text
+AURA_CONTINUITY_DECISION = CONTINUE
+AURA_TARGET_APPLICATION = PRESERVED
+AURA_RUNTIME_STATE = DEFERRED
+AURA_REPLACEMENT = NO
+AURA_RETIREMENT = NO
+```
+
+La tarea existe porque `AURA-AUD-010` determinó expresamente:
+
+```text
+ADR_REQUIRED = YES
+```
+
+El resultado de `AURA-AUD-011` no es volver a decidir entre continuidad, reemplazo o retiro. Su responsabilidad es conservar la decisión ya adoptada, explicar sus razones, fijar sus consecuencias y impedir reinterpretaciones futuras incompatibles con las fronteras aprobadas.
+
+Se preserva la distinción:
+
+```text
+DECIDIR
+!=
+REGISTRAR LA DECISIÓN
+!=
+RECONCILIAR EL ROADMAP
+!=
+IMPLEMENTAR
+```
+
+`AURA-AUD-010` decide.
+
+`AURA-AUD-011` registra arquitectónicamente.
+
+`AURA-AUD-012` gobierna el estado posterior del roadmap.
+
+---
+
+#### 2. Reconciliación topológica
+
+La tarea conserva:
+
+```text
+TASK = AURA-AUD-011
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+SEQUENCE = PHASE-12-AURA
+PREVIOUS = AURA-AUD-010
+NEXT = AURA-AUD-012
+```
+
+Consecuencias:
+
+- la tarea se define una sola vez;
+- no crea instancia física propia;
+- no abre package ni implementation unit;
+- no modifica una aplicación runtime;
+- no autoriza migraciones;
+- no modifica Supabase;
+- no autoriza despliegues;
+- no habilita canales externos;
+- no libera por sí misma tareas `AURA-DOM-*`, `AURA-AUTH-*`, `AURA-UX-*` o `AURA-INT-*`;
+- no sustituye los gates de package, readiness, autorización, certificación, cutover o rollback posteriores.
+
+---
+
+#### 3. Condición de aplicabilidad del ADR
+
+`AURA-AUD-010` resolvió que el ADR sí corresponde.
+
+La condición queda cerrada como:
+
+```text
+ADR_APPLICABILITY = REQUIRED
+ADR_REASON = MATERIAL_ARCHITECTURAL_DECISION
+DECISION_SOURCE = AURA-AUD-010
+DECISION_STATUS = APPROVED_FOR_RECORDING
+```
+
+La decisión es material porque determina simultáneamente:
+
+1. que AURA continúa como aplicación objetivo separada;
+2. que AURA todavía no existe como producto operativo standalone;
+3. que VISO mantiene custodia runtime transitoria de las superficies CMS actuales;
+4. que PASS no absorbe identidad de marketing, campaña, oportunidad ni atribución;
+5. que PULSO no absorbe campaña, oportunidad ni atribución;
+6. que NUMERA no absorbe creación ni operación de marketing;
+7. que NEXO y FOGO conservan sus maestros y hechos operativos;
+8. que `VPROC-0056` y `VPROC-0057` permanecen en el ownership funcional objetivo de AURA;
+9. que una eventual transferencia CMS requiere decisión explícita, migración, cutover, reconciliación y rollback;
+10. que la continuidad no equivale a disponibilidad, implementación ni liberación automática del roadmap.
+
+---
+
+#### 4. ADR de continuidad de AURA
+
+##### ADR-AURA-001 — Continuidad de AURA como aplicación objetivo diferida de marketing y desarrollo comercial
+
+##### Estado del ADR
+
+✅ **ACCEPTED**
+
+##### Estado de la tarea propietaria
+
+✅ **AURA-AUD-011 aprobada**
+
+##### Fuente de decisión
+
+`AURA-AUD-010 — Decidir continuidad, reemplazo o retiro`
+
+##### Decisión registrada
+
+```text
+ADR_ID = ADR-AURA-001
+ADR_STATUS = ACCEPTED
+AURA_CONTINUITY_DECISION = CONTINUE
+AURA_TARGET_APPLICATION = PRESERVED
+AURA_RUNTIME_STATE = DEFERRED
+AURA_REPLACEMENT = NO
+AURA_RETIREMENT = NO
+AURA_CURRENT_PRODUCT_REUSE = NOT_APPLICABLE
+AURA_CURRENT_RUNTIME_ACTIVATION = NOT_AUTHORIZED
+CMS_TRANSFER_STATUS = NOT_AUTHORIZED
+ROADMAP_RELEASE_BY_THIS_ADR = NO
+```
+
+##### Ámbito
+
+La decisión aplica al dominio arquitectónico y funcional objetivo de AURA y a sus fronteras con:
+
+```text
+vento-shell
+VISO
+PASS
+PULSO
+NUMERA
+NEXO
+FOGO
+Vento-Group
+canales externos futuros
+Supabase futuro de AURA cuando corresponda
+```
+
+También aplica a:
+
+```text
+marketing
+campañas
+contenido
+promociones
+leads y oportunidades
+atribución
+CMS
+publicación
+consumidores públicos
+autorización futura
+integraciones futuras
+launcher y navegación futura
+cutover y rollback futuros
+```
+
+##### Implementación
+
+```text
+ESTE ADR NO IMPLEMENTA CÓDIGO
+ESTE ADR NO CREA REPOSITORIO
+ESTE ADR NO CREA MIGRACIONES
+ESTE ADR NO MODIFICA SUPABASE
+ESTE ADR NO TRANSFIERE CMS
+ESTE ADR NO ACTIVA AURA
+ESTE ADR NO LIBERA EL ROADMAP POR SÍ SOLO
+```
+
+---
+
+#### 5. Contexto arquitectónico
+
+La auditoría `AURA-AUD-001` a `AURA-AUD-009` estableció un estado asimétrico:
+
+```text
+IDENTIDAD CANÓNICA AURA = EXISTE
+DOMINIO EMPRESARIAL AURA = DEFINIDO
+PROCESOS OBJETIVO AURA = DEFINIDOS
+PRODUCTO AURA STANDALONE = NO IMPLEMENTADO
+RUNTIME AURA = NO DISPONIBLE
+USUARIOS EFECTIVOS AURA = 0
+RUTAS PROPIAS AURA = 0
+PANTALLAS PROPIAS AURA = 0
+```
+
+Al mismo tiempo existen capacidades y superficies relacionadas distribuidas actualmente entre otros propietarios:
+
+- VISO conserva CMS y superficies administrativas transitorias;
+- Vento-Group conserva consumidores públicos actuales;
+- PASS conserva identidad de cliente, consentimiento y fidelización;
+- PULSO conserva oferta, pedido, venta, precio aplicado y validación comercial;
+- NUMERA conserva presupuesto, costo, margen y verdad económica;
+- NEXO conserva producto, atributos, inventario y disponibilidad según contrato;
+- FOGO conserva receta, capacidad y hechos de producción según contrato;
+- canales externos conservan su autoridad nativa de publicación, mensajería o métricas cuando existan.
+
+La decisión debía resolver si esa distribución actual se convertiría en arquitectura objetivo permanente o si AURA continuaría como aplicación especializada futura.
+
+`AURA-AUD-010` seleccionó continuidad.
+
+---
+
+#### 6. Problema arquitectónico registrado
+
+Sin un ADR, la decisión de continuidad podría degradarse con el tiempo en interpretaciones incompatibles, por ejemplo:
+
+```text
+AURA NO EXISTE HOY
+→ ENTONCES DEBE RETIRARSE
+```
+
+O:
+
+```text
+VISO TIENE EL CMS
+→ ENTONCES VISO ES EL DESTINO PERMANENTE DEL DOMINIO AURA
+```
+
+O:
+
+```text
+PULSO EJECUTA LA VENTA
+→ ENTONCES PULSO DEBE ABSORBER CAMPAÑAS
+```
+
+O:
+
+```text
+PASS TIENE CLIENTES Y BENEFICIOS
+→ ENTONCES PASS DEBE ABSORBER MARKETING
+```
+
+O:
+
+```text
+AURA CONTINÚA
+→ ENTONCES YA PUEDE ACTIVARSE
+```
+
+Ninguna de esas inferencias está autorizada.
+
+El problema arquitectónico real es conservar simultáneamente:
+
+```text
+DOMINIO AURA VÁLIDO
++
+PRODUCTO AURA TODAVÍA AUSENTE
++
+RUNTIME TRANSITORIO EN OTROS PROPIETARIOS
++
+FRONTERAS DE OWNERSHIP ESTABLES
++
+MIGRACIÓN FUTURA EXPLÍCITA Y REVERSIBLE
+```
+
+---
+
+#### 7. Decisión arquitectónica
+
+Vento OS conservará AURA como aplicación objetivo especializada de marketing y desarrollo comercial.
+
+La decisión completa es:
+
+```text
+AURA CONTINÚA
+COMO APLICACIÓN OBJETIVO DIFERIDA
+```
+
+No continúa como producto actual reutilizable, porque ese producto no existe.
+
+Continúan:
+
+- la identidad canónica `aura`;
+- el dominio empresarial definido para AURA;
+- `VPROC-0056 — Gestionar contenido y promociones`;
+- `VPROC-0057 — Convertir interacciones digitales en oportunidades comerciales`;
+- las fronteras documentadas frente a VISO, PASS, PULSO, NUMERA, NEXO y FOGO;
+- el roadmap especializado AURA como destino documental sujeto a sus gates posteriores.
+
+Permanece diferido:
+
+- repositorio standalone AURA;
+- producto web AURA;
+- rutas y pantallas AURA;
+- autorización funcional AURA;
+- datos y contratos runtime AURA;
+- canales externos AURA;
+- integraciones internas AURA;
+- disponibilidad en launcher;
+- transferencia CMS;
+- despliegue y operación productiva.
+
+---
+
+#### 8. Alternativas consideradas y descartadas
+
+El ADR registra las mismas alternativas ya resueltas por `AURA-AUD-010`; no las reabre.
+
+| Alternativa | Estado registrado | Razón arquitectónica preservada |
+| --- | --- | --- |
+| Continuidad de AURA | `ACCEPTED` | existe dominio propio, procesos objetivo, fronteras aprobadas y backlog especializado que no pertenece íntegramente a otra aplicación |
+| Reemplazo por VISO | `REJECTED` | VISO conserva custodia runtime transitoria, no ownership objetivo integral de AURA |
+| Reemplazo por PASS | `REJECTED` | PASS conserva cliente, consentimiento, fidelización, beneficios y ledger, no el dominio completo de campañas y oportunidades |
+| Reemplazo por PULSO | `REJECTED` | PULSO conserva oferta, pedido, venta, precio aplicado y validación comercial, no el dominio completo de campaña y atribución |
+| Reemplazo por NUMERA | `REJECTED` | NUMERA conserva verdad económica, no creación, publicación u oportunidad de marketing |
+| Reemplazo por canales externos | `REJECTED` | los canales son fronteras de publicación o medición, no propietarios del hecho empresarial |
+| Retiro de AURA | `REJECTED` | dejaría sin propietaria objetivo válida capacidades y procesos ya aprobados o exigiría una reasignación arquitectónica que no existe |
+
+---
+
+#### 9. Invariantes de la decisión
+
+Mientras este ADR permanezca vigente:
+
+1. AURA continúa como aplicación objetivo.
+2. AURA permanece diferida hasta cumplir sus gates posteriores.
+3. La identidad `aura` no demuestra producto operativo.
+4. `aura.access` no demuestra disponibilidad de producto.
+5. La existencia de una URL reservada no demuestra runtime válido.
+6. VISO conserva la custodia runtime transitoria del CMS actual.
+7. PASS conserva identidad de cliente, consentimiento y fidelización.
+8. PULSO conserva oferta, pedido, venta y validación comercial.
+9. NUMERA conserva autoridad económica.
+10. NEXO y FOGO conservan sus maestros y hechos operativos.
+11. AURA no duplica maestros ajenos.
+12. AURA no absorbe autoridad ajena por continuidad documental.
+13. `VPROC-0056` permanece en AURA como ownership funcional objetivo.
+14. `VPROC-0057` permanece en AURA como ownership funcional objetivo.
+15. La oportunidad deja de ser AURA cuando se convierte en compromiso comercial según la frontera aprobada con PULSO.
+16. Campaña no equivale a regla transaccional.
+17. Contenido no equivale a beneficio PASS.
+18. Publicación no equivale a venta, redención o rentabilidad.
+19. El CMS actual no se renombra como AURA por inferencia.
+20. La continuidad no autoriza migración de datos.
+21. La continuidad no autoriza transferencia de rutas.
+22. La continuidad no autoriza creación de tablas.
+23. La continuidad no autoriza conexión de canales.
+24. La continuidad no autoriza campañas reales.
+25. La continuidad no autoriza disponibilidad en launcher.
+26. La continuidad no elimina los gates de autorización, despliegue, readiness, certificación, cutover y rollback.
+27. El roadmap posterior solo cambia de estado mediante su tarea propietaria.
+
+---
+
+#### 10. Relación con VISO
+
+Se conserva como decisión arquitectónica:
+
+```text
+CURRENT_RELATION = TRANSITIONAL_RUNTIME_CUSTODY
+TARGET_RELATION = DEFERRED_FUNCTIONAL_OWNERSHIP
+TRANSFER_STATUS = NOT_AUTHORIZED
+```
+
+VISO continúa ejecutando las superficies CMS actuales mientras no exista una transición posterior aprobada.
+
+El ADR no convierte esa custodia en propiedad objetivo permanente.
+
+Tampoco convierte la continuidad de AURA en autorización de transferencia inmediata.
+
+Una futura transferencia deberá demostrar, como mínimo:
+
+- alcance exacto;
+- propietario destino;
+- consumidores;
+- contratos de datos;
+- rutas;
+- permisos;
+- media;
+- compatibilidad;
+- preservación de URLs;
+- preservación de SEO cuando aplique;
+- preservación de evidencia;
+- ausencia de maestros duplicados;
+- cutover controlado;
+- reconciliación;
+- rollback probado;
+- retiro o redirección posterior de superficies anteriores.
+
+---
+
+#### 11. Relación con PASS
+
+Se preserva la frontera aprobada en la auditoría.
+
+AURA conserva como dominio objetivo:
+
+- campaña;
+- intención promocional;
+- audiencia de marketing autorizada;
+- oportunidad;
+- correlación;
+- atribución;
+- aprendizaje de marketing.
+
+PASS conserva:
+
+- identidad de cliente;
+- perfil y relación de marca;
+- consentimiento;
+- beneficios;
+- recompensas;
+- acumulación;
+- redención;
+- ledger de fidelización.
+
+El ADR prohíbe tratar una identidad de cliente PASS como ownership de campaña AURA y prohíbe duplicar en AURA los maestros que corresponden a PASS.
+
+---
+
+#### 12. Relación con PULSO
+
+Se preserva la frontera aprobada en la auditoría.
+
+AURA conserva:
+
+- campaña;
+- intención;
+- oportunidad digital;
+- atribución;
+- aprendizaje de marketing.
+
+PULSO conserva:
+
+- oferta comercial aplicable;
+- cotización;
+- compromiso B2B;
+- pedido;
+- venta;
+- precio aplicado;
+- validación comercial;
+- snapshot transaccional.
+
+Se mantiene:
+
+```text
+CAMPAÑA AURA
+!=
+REGLA TRANSACCIONAL
+!=
+EFECTO APLICADO EN PULSO
+```
+
+El ADR no autoriza que una campaña modifique precio o descuento sin pasar por la autoridad transaccional correspondiente.
+
+---
+
+#### 13. Relación con NUMERA, NEXO y FOGO
+
+La continuidad no altera autoridades existentes.
+
+| Dominio | Autoridad preservada | Relación futura de AURA |
+| --- | --- | --- |
+| `NUMERA` | presupuesto, costo, margen, obligación, resultado económico y rentabilidad | consumir guardas y resultados económicos autorizados sin duplicar la verdad económica |
+| `NEXO` | producto, atributos maestros, inventario, disponibilidad física y logística | consumir referencias y proyecciones autorizadas |
+| `FOGO` | receta, capacidad productiva, ejecución y hechos de producción | consumir capacidad o restricciones operativas cuando el contrato correspondiente lo permita |
+
+El ADR no convierte a AURA en maestra editable de producto, inventario, receta, capacidad, costo o margen.
+
+---
+
+#### 14. Procesos propietarios preservados
+
+La decisión arquitectónica registra:
+
+| Proceso | Ownership objetivo | Estado |
+| --- | --- | --- |
+| `VPROC-0056` | `AURA` | `DEFINED_DEFERRED` |
+| `VPROC-0057` | `AURA` | `DEFINED_DEFERRED` |
+
+No se reasigna ninguno de estos procesos.
+
+No se declara materialización runtime por el hecho de conservar el ownership funcional objetivo.
+
+---
+
+#### 15. CMS y transición futura
+
+La arquitectura distingue:
+
+```text
+CMS VISO ACTUAL
+=
+RUNTIME TRANSITORIO
+```
+
+Y:
+
+```text
+AURA FUTURA
+=
+PROPIETARIA FUNCIONAL OBJETIVO DEL DOMINIO APROBADO
+```
+
+La eventual convergencia de ambas realidades no es automática.
+
+Se registra la regla:
+
+```text
+DECISIÓN FORMAL
++
+ADR VIGENTE
++
+PLAN DE MIGRACIÓN
++
+CUTOVER
++
+RECONCILIACIÓN
++
+ROLLBACK
+=
+CONDICIONES MÍNIMAS PARA UNA TRANSFERENCIA FUTURA
+```
+
+Por tanto:
+
+```text
+CMS_TRANSFER_AUTHORIZED_BY_AURA_AUD_011 = NO
+```
+
+---
+
+#### 16. Disponibilidad, launcher y navegación
+
+El ADR no modifica la disponibilidad visible de AURA.
+
+Mientras no existan los gates físicos posteriores:
+
+```text
+AURA_CATALOG_STATUS = RESERVED_NOT_AVAILABLE
+AURA_NAVIGATION = DISABLED
+AURA_RUNTIME_ENTRY = UNAVAILABLE
+AURA_FUNCTIONAL_STATE = DEFERRED
+```
+
+No se podrá interpretar la continuidad como permiso para mostrar AURA como aplicación utilizable.
+
+La disponibilidad futura deberá depender de evidencia real de producto, autorización, rutas, despliegue, navegación segura, readiness y certificación.
+
+---
+
+#### 17. Estado del roadmap después del ADR
+
+El ADR satisface la obligación de registrar la decisión, pero no altera por sí mismo el estado del roadmap.
+
+Se fija:
+
+```text
+ADR_COMPLETED = YES
+ROADMAP_RELEASE_BY_AURA_AUD_011 = NO
+ROADMAP_STATE_OWNER = AURA-AUD-012
+```
+
+Por tanto, después de `AURA-AUD-011`:
+
+```text
+AURA-AUD-010
+DECISIÓN = CONTINUE
+        ↓
+AURA-AUD-011
+ADR = ACCEPTED
+        ↓
+AURA-AUD-012
+RESOLVER ESTADO CANÓNICO DEL BLOQUEO SEGÚN LA DECISIÓN YA REGISTRADA
+```
+
+Hasta que `AURA-AUD-012` complete su responsabilidad, ninguna tarea posterior obtiene autorización de ejecución por el solo hecho de existir este ADR.
+
+---
+
+#### 18. Consecuencias aceptadas
+
+##### Consecuencia 1 — Se conserva una aplicación todavía no implementada
+
+La arquitectura acepta explícitamente que una aplicación objetivo pueda continuar definida aunque su producto runtime aún no exista.
+
+##### Consecuencia 2 — El runtime transitorio continúa fuera de AURA
+
+Las superficies actuales permanecen en sus propietarias vigentes hasta una transición autorizada.
+
+##### Consecuencia 3 — No existe migración automática desde VISO
+
+La continuidad no prescribe copiar el CMS actual ni moverlo uno a uno.
+
+##### Consecuencia 4 — El roadmap especializado conserva validez documental
+
+Las tareas AURA posteriores conservan sentido como destino de desarrollo, pero continúan sujetas a su gobierno y gates.
+
+##### Consecuencia 5 — Se evita absorción accidental por aplicaciones vecinas
+
+PASS, PULSO, NUMERA, NEXO, FOGO y VISO conservan sus responsabilidades sin ampliar ownership por ausencia actual de producto AURA.
+
+##### Consecuencia 6 — Se exige una nueva decisión si cambia la premisa material
+
+Una futura evidencia que altere dominio, procesos, viabilidad o fronteras requerirá revisión arquitectónica explícita y no una reinterpretación silenciosa de este ADR.
+
+---
+
+#### 19. Condiciones de revisión, sustitución o retiro del ADR
+
+`ADR-AURA-001` permanece vigente mientras no exista una decisión posterior aprobada que lo sustituya o enmiende.
+
+La revisión arquitectónica se vuelve necesaria si ocurre al menos una de estas condiciones:
+
+- `CAP-SCOPE-014` cambia materialmente;
+- `VPROC-0056` o `VPROC-0057` se reasignan formalmente;
+- una aplicación distinta recibe ownership integral aprobado del dominio;
+- AURA se vuelve inviable por una restricción jurídica, contractual, tecnológica o empresarial material;
+- una consolidación de aplicaciones aprobada cambia las fronteras;
+- una decisión posterior aprueba retiro o reemplazo;
+- una transferencia CMS requiere alterar las fronteras aquí registradas.
+
+No requieren sustituir el ADR por sí solos:
+
+- cambio de framework;
+- cambio de lenguaje;
+- cambio de proveedor cloud;
+- cambio de hosting;
+- cambio de diseño visual;
+- cambio de librería;
+- cambio de herramienta de analítica;
+- cambio de proveedor de canal externo.
+
+Esos cambios deberán gobernarse en sus tareas propietarias mientras respeten la decisión arquitectónica vigente.
+
+---
+
+#### 20. Reglas de no inferencia
+
+Queda prohibido derivar de este ADR cualquiera de las siguientes conclusiones:
+
+1. que AURA ya está implementada;
+2. que existe un repositorio standalone AURA;
+3. que existe una URL runtime funcional AURA;
+4. que existen usuarios AURA efectivos;
+5. que existen rutas o pantallas AURA propias;
+6. que `aura.access` basta para operar;
+7. que VISO debe transferir el CMS inmediatamente;
+8. que PASS debe compartir o transferir su maestro de cliente;
+9. que PULSO debe transferir reglas transaccionales;
+10. que NUMERA debe transferir hechos económicos;
+11. que NEXO debe transferir producto o inventario;
+12. que FOGO debe transferir receta o capacidad;
+13. que un canal externo se vuelve fuente de verdad de campaña;
+14. que se puede usar service role para suplir autorización futura;
+15. que se pueden crear tablas, RPC o RLS AURA antes de sus tareas y packages;
+16. que se puede publicar una campaña real por existir el ADR;
+17. que se puede habilitar AURA en launcher;
+18. que se puede saltar `AURA-AUD-012`;
+19. que se puede saltar `WEB-FRM-011` cuando la ruta canónica lo exija;
+20. que las tareas posteriores quedan físicamente autorizadas.
+
+---
+
+#### 21. Handoff a AURA-AUD-012
+
+`AURA-AUD-012` recibe una decisión ya cerrada y registrada.
+
+Entrada obligatoria:
+
+```text
+DECISION = CONTINUE
+ADR = ADR-AURA-001
+ADR_STATUS = ACCEPTED
+AURA_RUNTIME_STATE = DEFERRED
+REPLACEMENT = NO
+RETIREMENT = NO
+CMS_TRANSFER_STATUS = NOT_AUTHORIZED
+ROADMAP_RELEASE_BY_010 = NO
+ROADMAP_RELEASE_BY_011 = NO
+```
+
+`AURA-AUD-012` no deberá volver a decidir si AURA continúa.
+
+Su responsabilidad es mantener el estado del roadmap coherente con la decisión ya adoptada y con la frontera canónica que impide acoplamientos o ejecución anticipada.
+
+La secuencia posterior permanece reservada por la ruta canónica.
+
+---
+
+#### 22. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** `AURA-AUD-011` registra mediante ADR una decisión ya cubierta por obligaciones de prueba vigentes. No introduce una nueva conducta runtime, un nuevo objeto físico, una nueva frontera operacional ni una nueva obligación verificable distinta de las ya registradas para continuidad, disponibilidad, ownership, transferencia CMS, migración, cutover y rollback.
+
+Balance:
+
+- creados: **0**;
+- modificados: **0**;
+- diferidos: **0**;
+- descartados: **0**;
+- obsoletos: **0**.
+
+---
+
+#### 23. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar, en especial:
+
+- `TREQ-AURA-004`, para distinguir reserva e identidad de producto realmente implementado;
+- `TREQ-AURA-005`, para detectar deltas futuros de repositorio, dominio, ruta, pantalla, launcher o permiso;
+- `TREQ-AURA-006`, para mantener AURA no disponible mientras falten producto, despliegue, rutas, autorización y decisión formal completa;
+- `TREQ-AURA-007`, para conservar las superficies actuales en VISO y Vento-Group mientras no exista transferencia aprobada;
+- `TREQ-AURA-027`, para exigir decisión formal y ADR antes de una futura transferencia CMS y para exigir migración sin duplicados, cutover, reconciliación y rollback;
+- `TREQ-SHELL-001`, para impedir considerar una aplicación operativa por la sola existencia de un registro o permiso;
+- la cobertura vigente de integración, autorización, privacidad, auditoría, continuidad y rollback aplicable.
+
+Ningún requisito cambia de identidad, texto, estado, relación, propietaria, evidencia ni secuencia por `AURA-AUD-011`.
+
+---
+
+#### 24. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `AURA-AUD-011` en la rama documental del usuario. |
+| LOCAL | `NOT_EXECUTED` | El artefacto todavía no ha sido insertado en el checkout del usuario ni sometido allí al formateador, quality, delivery check y batería global. |
+| REMOTA | `PASS` | Se verificaron en el repositorio canónico el propietario de AURA, la ruta `PHASE-12-AURA`, el modo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, la sucesión `AURA-AUD-011` → `AURA-AUD-012`, el ADR existente `ADR-AUTH-001` como precedente estructural, la puerta `INT-MKT-001` y la cobertura vigente de `TREQ-AURA-027`; `AURA-AUD-010` se consume como artefacto completo aprobado por el usuario mientras termina su incorporación. |
+| OPERATIVA | `NOT_EXECUTED` | El ADR no modifica operación real, campañas, usuarios, canales, CMS, ventas, fidelización, inventario, producción ni economía. |
+| FÍSICA | `NOT_APPLICABLE` | `AURA-AUD-011` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni modifica producto, infraestructura, datos, repositorios o despliegues. |
+
+---
+
+#### 25. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+1. conserva `AURA-AUD-010` como tarea anterior;
+2. conserva `AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión` como única tarea siguiente;
+3. registra que el ADR sí corresponde;
+4. registra la decisión `CONTINUE` sin reabrir alternativas;
+5. conserva `AURA_TARGET_APPLICATION = PRESERVED`;
+6. conserva `AURA_RUNTIME_STATE = DEFERRED`;
+7. conserva `AURA_REPLACEMENT = NO`;
+8. conserva `AURA_RETIREMENT = NO`;
+9. registra `ADR-AURA-001` como ADR de continuidad;
+10. deja el ADR en `ACCEPTED` al aprobarse la tarea;
+11. preserva cero usuarios efectivos AURA como estado actual;
+12. preserva cero rutas y pantallas AURA propias como estado actual;
+13. no declara repositorio standalone AURA existente;
+14. preserva `VPROC-0056` en AURA como ownership funcional objetivo;
+15. preserva `VPROC-0057` en AURA como ownership funcional objetivo;
+16. preserva VISO como custodia runtime transitoria del CMS actual;
+17. mantiene `CMS_TRANSFER_STATUS = NOT_AUTHORIZED`;
+18. preserva PASS como autoridad de identidad, consentimiento y fidelización;
+19. preserva PULSO como autoridad de oferta, pedido, venta y validación comercial;
+20. preserva NUMERA como autoridad económica;
+21. preserva NEXO y FOGO como fuentes propietarias según contrato;
+22. prohíbe duplicar maestros;
+23. mantiene AURA no disponible mientras falten gates físicos;
+24. no libera directamente el roadmap;
+25. asigna a `AURA-AUD-012` el estado posterior del roadmap;
+26. no crea repositorio, host, rutas, datos, permisos ni integraciones;
+27. no autoriza transferencia CMS;
+28. no crea campañas;
+29. no usa datos reales;
+30. no crea requisitos de prueba;
+31. no modifica requisitos de prueba;
+32. no genera una copia del registro de requisitos;
+33. crea cero objetos físicos;
+34. modifica cero objetos físicos.
+
+---
+
+#### 26. Límites
+
+Esta tarea no:
+
+- vuelve a decidir continuidad, reemplazo o retiro;
+- modifica `CAP-SCOPE-014`;
+- reasigna `VPROC-0056`;
+- reasigna `VPROC-0057`;
+- crea el repositorio AURA;
+- selecciona framework, hosting o lenguaje;
+- crea aplicación web;
+- crea rutas o pantallas;
+- activa launcher o navegación;
+- crea tablas, vistas, RLS, RPC, funciones, triggers, jobs o colas;
+- crea migraciones;
+- modifica Supabase;
+- crea secretos o credenciales;
+- conecta Meta, Google, TikTok, WhatsApp, correo, reseñas, analítica o IA;
+- mueve el CMS de VISO;
+- mueve contenido o media;
+- copia clientes desde PASS;
+- altera beneficios o ledger PASS;
+- altera oferta, pedido, venta, precio o validación comercial PULSO;
+- altera hechos económicos NUMERA;
+- altera maestros NEXO;
+- altera receta o capacidad FOGO;
+- crea campañas o audiencias reales;
+- importa leads o métricas;
+- libera `AURA-DOM-*`;
+- libera `AURA-AUTH-*`;
+- libera `AURA-UX-*`;
+- libera `AURA-INT-*`;
+- sustituye `AURA-AUD-012`;
+- inicia una instancia física o package;
+- crea ni modifica requisitos de prueba.
+
+---
+
+#### 27. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-010 — Decidir continuidad, reemplazo o retiro`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-011 — Documentar decisión mediante ADR si corresponde`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión`
 ### [ ] AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
 
 ---
