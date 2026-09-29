@@ -13739,7 +13739,3396 @@ La identidad exacta de cualquier unidad física futura se resolverá exclusivame
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-008 — Definir inicio para propietario`
-### [ ] VISO-UX-008 — Definir inicio para propietario
+### ✅ VISO-UX-008 — Definir inicio para propietario
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-007 — Crear sección Auditoría
+**Tarea siguiente:** VISO-UX-009 — Definir inicio para gerente general
+**Tipo de tarea:** definición técnico-documental de la proyección `Inicio` de VISO para el rol base canónico `propietario`; especializa la pantalla ejecutiva existente para presentar prioridades, decisiones pendientes, excepciones, riesgos, indicadores, compromisos y accesos administrativos autorizados con alcance y procedencia explícitos, sin convertir el rol en wildcard, sin duplicar bandejas o datos de aplicaciones propietarias, sin ejecutar mutaciones desde el resumen y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la proyección `Inicio` para `propietario` definido sobre la entrada especial `/`; la raíz física actual de `vento-viso` permanece AS-IS y requiere materialización posterior por `implementation_unit_id` para alinearse con este contrato detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, la ruta `/`, componentes, navegación runtime, permisos, matrices, contratos compartidos, Supabase, datos, migraciones, RLS, RPC, Auth, Storage, secretos, aplicaciones propietarias, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar la entrada `Inicio` de VISO cuando la persona resuelta posee el rol base canónico `propietario`, de modo que pueda comprender qué requiere atención ejecutiva sin convertir la página en un backoffice universal, un launcher paralelo, una bandeja transversal duplicada o una fuente de autorización.
+
+La experiencia debe permitir responder de forma directa:
+
+```text
+¿QUÉ REQUIERE MI DECISIÓN O SEGUIMIENTO?
+¿QUÉ EXCEPCIONES O RIESGOS REQUIEREN ATENCIÓN?
+¿QUÉ INDICADORES AUTORIZADOS EXPLICAN LA SITUACIÓN?
+¿QUÉ COMPROMISOS IMPORTANTES SIGUEN ABIERTOS?
+¿QUÉ DOMINIO DE VISO DEBO ABRIR PARA INVESTIGAR O ACTUAR?
+¿QUÉ INFORMACIÓN PROVIENE DE OTRA APLICACIÓN PROPIETARIA?
+¿QUÉ ALCANCE ESTOY VIENDO?
+¿QUÉ DATOS ESTÁN FRESCOS, PARCIALES, NO DISPONIBLES O BLOQUEADOS?
+```
+
+La regla raíz queda:
+
+```text
+INICIO PROPIETARIO
+=
+PROYECCIÓN EJECUTIVA AUTORIZADA
++
+ALCANCE EXPLÍCITO
++
+PRIORIDADES DE FUENTE
++
+DECISIONES PENDIENTES
++
+EXCEPCIONES Y RIESGOS
++
+INDICADORES TRAZABLES
++
+HANDOFFS SEGUROS
+```
+
+Y nunca:
+
+```text
+ROL PROPIETARIO
+=
+AUTORIZACIÓN UNIVERSAL
+```
+
+ni:
+
+```text
+INICIO
+=
+SEGUNDO SISTEMA DE DATOS
+```
+
+ni:
+
+```text
+INICIO
+=
+CONSOLA DE MUTACIÓN DIRECTA
+```
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001 — Reorganizar navegación por dominios administrativos` entrega sin reapertura:
+
+```text
+PRIMARY_ENTRY = /
+PRIMARY_ENTRY_LABEL = Inicio
+PRIMARY_ENTRY_IS_ADMIN_DOMAIN = NO
+PRIMARY_ENTRY_IS_PERMISSION_WILDCARD = NO
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+```
+
+Los seis dominios continúan siendo exactamente:
+
+```text
+Personal
+Programación
+Acceso y seguridad
+Organización
+Operación
+Auditoría
+```
+
+La entrada `Inicio`:
+
+- puede resumir información autorizada;
+- puede conducir a destinos permitidos;
+- no concede autoridad sobre esos destinos;
+- no sustituye permisos, contexto, recursos ni guards;
+- no crea un séptimo dominio;
+- conserva la identidad histórica de la ruta raíz;
+- recibe su contenido por perfil desde `VISO-UX-008..012`.
+
+Esta tarea desarrolla únicamente la variante `propietario`.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-002..007`
+
+Las seis tareas de dominio entregan a `Inicio` superficies y fronteras ya definidas:
+
+| Dominio | Capacidad de `Inicio` | Frontera que se conserva |
+| --- | --- | --- |
+| `Personal` | resumir trabajo laboral administrativo autorizado y abrir su superficie propietaria | no absorbe TALENTO ni ANIMA |
+| `Programación` | resumir cobertura, excepciones o decisiones autorizadas de programación | no crea, publica o corrige turnos desde el home |
+| `Acceso y seguridad` | advertir sobre decisiones, conflictos o revisiones de seguridad autorizadas | no concede, revoca o simula autoridad desde el home |
+| `Organización` | presentar cambios, decisiones o estructura relevante de gobierno | no deriva permisos desde jerarquía, sede o área |
+| `Operación` | resumir configuración operativa administrativa relevante | no ejecuta operación propietaria ni crea contexto activo |
+| `Auditoría` | señalar evidencia o anomalías que merezcan investigación | no convierte historia en estado vigente ni muta desde el historial |
+
+`Inicio` compone referencias y estados.
+
+No crea un séptimo owner funcional.
+
+---
+
+#### 4. Handoff recibido de `VISO-UX-007`
+
+`VISO-UX-007 — Crear sección Auditoría` cierra el sexto dominio y deja intacta la continuidad hacia esta tarea.
+
+La proyección de propietario puede mostrar, cuando exista autoridad y evidencia suficiente:
+
+- que existen cambios relevantes recientes;
+- que una anomalía requiere investigación;
+- que una decisión produjo un resultado histórico consultable;
+- que una fuente de evidencia está incompleta o limitada.
+
+No puede:
+
+- exponer payload sensible del evento en el home;
+- sustituir la sección `Auditoría`;
+- deducir causalidad;
+- presentar historia como estado actual;
+- ejecutar corrección, rollback o replay desde una tarjeta.
+
+---
+
+#### 5. Naturaleza, topología y gate
+
+La topología permanece:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = <task_id>::<implementation_unit_id>
+```
+
+Por tanto:
+
+- esta tarea define una sola vez el contrato documental del perfil `propietario`;
+- la materialización física posterior pertenece a una unidad de implementación gobernada;
+- la aprobación documental no crea ni autoriza una instancia física;
+- ninguna materialización se ejecuta antes del gate aplicable;
+- cada unidad física debe demostrar que conserva las decisiones de este contrato.
+
+---
+
+#### 6. Contrato de `Inicio` para propietario
+
+Se define:
+
+```text
+VISO_OWNER_HOME_CONTRACT = VISO-OWNER-HOME-001
+HOME_PROFILE = propietario
+PRIMARY_ENTRY_LABEL = Inicio
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-001
+PRIMARY_OBSERVED_ROUTE = /
+CANONICAL_SCREEN_TARGET = VSCREEN-0007
+CANONICAL_SCREEN_NAME = Inicio ejecutivo y gerencial
+PRIMARY_CANONICAL_PROCESS = VPROC-0001
+PRIMARY_CANONICAL_STEP = VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK
+SCREEN_MODALITY = OWNER_WORKSPACE
+PRIMARY_INTERACTION_ROLE = MONITOR
+PRIMARY_STEP_POSITION = CROSS_CUTTING
+HOME_IS_ADMIN_DOMAIN = NO
+HOME_PROFILE_IS_AUTHORIZATION = NO
+HOME_IS_GLOBAL_TASK_INBOX = NO
+HOME_IS_CROSS_OWNER_EDITOR = NO
+TREQ_CHANGES = 0
+```
+
+La relación entre `VISO-ROUTE-001`, la ruta `/` y `VSCREEN-0007` es el objetivo canónico de esta proyección.
+
+La materialización física deberá demostrar ese binding mediante los contratos de pantalla, navegación y paquete aplicables.
+
+Esta tarea no declara que el código AS-IS ya lo cumpla.
+
+---
+
+#### 7. Identidad canónica de pantalla
+
+La pantalla objetivo ya existe:
+
+```text
+VSCREEN-0007 — Inicio ejecutivo y gerencial
+```
+
+Su declaración canónica permanece:
+
+```text
+Presentar prioridades, excepciones, indicadores y decisiones pendientes
+ de dirección o gerencia con alcance explícito.
+```
+
+La tarea no crea otra pantalla como:
+
+```text
+Inicio propietario
+Dashboard propietario
+Panel propietario
+Home owner
+```
+
+como identidad canónica independiente.
+
+El perfil `propietario` es una proyección de contenido sobre `VSCREEN-0007`.
+
+---
+
+#### 8. Proceso principal
+
+La pantalla conserva:
+
+```text
+PRIMARY_PROCESS = VPROC-0001
+```
+
+La referencia funcional vigente de ese proceso es gobernar decisiones empresariales con:
+
+- registro;
+- alcance;
+- responsable;
+- compromisos;
+- seguimiento.
+
+`Inicio` no reemplaza el proceso.
+
+Lo proyecta para revisión ejecutiva.
+
+---
+
+#### 9. Paso dominante
+
+Se conserva:
+
+```text
+VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK
+```
+
+con función:
+
+```text
+Revisar prioridades y decisiones ejecutivas
+```
+
+La modalidad es:
+
+```text
+MONITOR
+CROSS_CUTTING
+```
+
+Por ello la página privilegia comprensión, priorización y navegación.
+
+No privilegia edición directa.
+
+---
+
+#### 10. Procesos relacionados
+
+`VSCREEN-0007` conserva como procesos relacionados:
+
+```text
+VPROC-0061
+VPROC-0063
+```
+
+`VPROC-0061` aporta la dimensión de:
+
+```text
+medición
+→ análisis
+→ decisión de mejora
+→ verificación del resultado
+```
+
+`VPROC-0063` aporta la dimensión de riesgos empresariales:
+
+```text
+riesgo
+→ tratamiento
+→ responsable
+→ seguimiento
+```
+
+Ser procesos relacionados no los convierte en widgets obligatorios ni autoriza a VISO a duplicar los datos de su owner.
+
+---
+
+#### 11. Rol base `propietario`
+
+El rol `propietario` representa gobierno organizacional y puede disponer de la cobertura administrativa más amplia permitida por los contratos vigentes.
+
+Se conserva:
+
+```text
+PROPIETARIO
++
+PERMISO BASE EXPLÍCITO
++
+ALCANCE VÁLIDO
++
+RECURSO RESUELTO
+=
+AUTORIZACIÓN ADMINISTRATIVA POSIBLE
+```
+
+La palabra `propietario` no concede una acción por sí sola.
+
+---
+
+#### 12. Prohibición de wildcard
+
+Queda preservado:
+
+```text
+propietario != *
+propietario != bypass operativo
+propietario != service_role
+propietario != acceso automático a APP-REVIEW
+```
+
+La composición del home no puede implementar un atajo equivalente mediante:
+
+- mostrar todo;
+- consultar todo con cliente privilegiado y filtrar después;
+- asumir alcance global por cargo;
+- habilitar acciones porque el rol coincide;
+- omitir denegaciones individuales;
+- omitir restricciones de recurso;
+- omitir contexto cuando una capacidad lo exige.
+
+---
+
+#### 13. Perfil de presentación no equivale a autoridad
+
+Esta tarea puede utilizar el rol base resuelto para elegir una variante visual.
+
+No puede utilizarlo para decidir la autorización de cada dato o acción.
+
+Se conserva:
+
+```text
+HOME_PROFILE = propietario
+```
+
+pero:
+
+```text
+HOME_PROFILE
+!=
+AUTHORIZATION_DECISION
+```
+
+Cada proyección visible vuelve a depender de su capacidad, alcance, recurso y contexto aplicables.
+
+---
+
+#### 14. Entrada a VISO
+
+`VISO-UX-008` comienza después de que la persona ya ha entrado válidamente a VISO.
+
+La tarea no redefine el home global de SHELL.
+
+No se admite:
+
+```text
+ROL = propietario
+→ SHELL AUTOREDIRECT A VISO
+```
+
+La selección de aplicación en el ecosistema conserva sus contratos propietarios.
+
+---
+
+#### 15. Alcance del propietario
+
+La proyección no interpreta `propietario` como visibilidad territorial ilimitada.
+
+Puede existir cobertura amplia de organización ordinaria, pero permanecen vigentes:
+
+- recursos exactos;
+- ámbitos organizacionales;
+- territorios explícitos;
+- dominios aislados;
+- APP-REVIEW;
+- restricciones de sensibilidad;
+- denegaciones;
+- reglas de dispositivo;
+- reautenticación;
+- condiciones operativas de capacidades de doble carril.
+
+---
+
+#### 16. `G(B)` no equivale a universo absoluto
+
+Cuando una capacidad utilice cobertura organizacional ordinaria:
+
+```text
+G(B)
+```
+
+continúa excluyendo superficies o dominios que su contrato excluya, incluidos entornos aislados y de revisión cuando corresponda.
+
+El home no convierte `G(B)` en:
+
+```text
+ALL_DATA
+```
+
+---
+
+#### 17. Territorio explícito
+
+Una tarjeta o indicador territorial se calcula únicamente sobre el conjunto permitido.
+
+Se conserva:
+
+```text
+VISIBLE_AGGREGATE
+⊆
+AUTHORIZED_DATASET
+```
+
+Nunca:
+
+```text
+GLOBAL_AGGREGATE
+→ FILTRAR DESPUÉS
+```
+
+cuando esa estrategia exponga información que el actor no puede consultar.
+
+---
+
+#### 18. Denegaciones y restricciones conservan precedencia
+
+Una concesión amplia al rol base no elimina:
+
+- denegación individual;
+- denegación estructural;
+- restricción de recurso;
+- requisito de reautenticación;
+- bloqueo de dispositivo;
+- incompatibilidad de contexto;
+- indisponibilidad de fuente;
+- sensibilidad superior.
+
+El home debe degradar la proyección afectada sin inventar acceso alternativo.
+
+---
+
+#### 19. Estado AS-IS de la ruta raíz
+
+La ruta observada actual es:
+
+```text
+VISO-ROUTE-001
+/
+src/app/page.tsx
+```
+
+Su familia observada es:
+
+```text
+INICIO
+```
+
+Actualmente exige acceso general a VISO antes de renderizar.
+
+Eso protege la entrada a la aplicación.
+
+No demuestra todavía protección específica de cada resumen o destino.
+
+---
+
+#### 20. Contenido AS-IS observado
+
+La raíz física actual presenta un `Panel VISO` y consulta conteos de:
+
+- trabajadores;
+- usuarios de Vento Pass;
+- satélites o negocios de PASS;
+- colecciones comerciales;
+- recompensas de fidelización;
+- vacantes.
+
+También ofrece enlaces o acciones rápidas hacia:
+
+- personal;
+- PASS;
+- negocios;
+- menú comercial;
+- vacantes;
+- contenido PASS;
+- website CMS.
+
+Esta lista describe el snapshot físico.
+
+No constituye el diseño objetivo aprobado por esta tarea.
+
+---
+
+#### 21. Brecha principal del AS-IS
+
+La página actual mezcla capacidades de múltiples owners en una sola composición y utiliza acceso general a VISO como guard de entrada.
+
+El objetivo requiere:
+
+```text
+RESUMEN POR RESPONSABILIDAD EJECUTIVA
++
+PROYECCIÓN AUTORIZADA POR ELEMENTO
++
+OWNER EXPLÍCITO
++
+ALCANCE EXPLÍCITO
+```
+
+No:
+
+```text
+CONTEOS DISPONIBLES TÉCNICAMENTE
++
+LINKS HISTÓRICOS
+```
+
+---
+
+#### 22. El AS-IS no se certifica por coincidencia parcial
+
+Que la ruta actual:
+
+- exista;
+- tenga tarjetas;
+- tenga números;
+- tenga accesos rápidos;
+- use un guard de aplicación;
+
+no demuestra conformidad con `VSCREEN-0007`.
+
+La futura materialización deberá reconciliar contenido, ownership, autorización, alcance, estados, navegación y evidencia.
+
+---
+
+#### 23. Arquitectura de información objetivo
+
+La proyección `propietario` se organiza conceptualmente en estas regiones:
+
+```text
+1. Contexto y alcance
+2. Requiere decisión
+3. Excepciones y riesgos
+4. Indicadores ejecutivos autorizados
+5. Compromisos y seguimiento
+6. Dominios VISO
+7. Handoffs a owners externos
+```
+
+La implementación puede usar otros componentes visuales si conserva esta semántica.
+
+---
+
+#### 24. Región `Contexto y alcance`
+
+La cabecera deberá permitir comprender:
+
+- que la persona está en VISO;
+- que está viendo `Inicio`;
+- que la variante de presentación corresponde al perfil `propietario`;
+- qué organización o ámbito autorizado aplica;
+- si existe simulación activa;
+- si el contexto está degradado, parcial o desactualizado.
+
+No mostrará un selector que amplíe autoridad.
+
+---
+
+#### 25. Perfil visible sin tratarlo como permiso
+
+La UI puede identificar el contexto de presentación con texto comprensible como:
+
+```text
+Vista de propietario
+```
+
+siempre que no sugiera:
+
+```text
+Acceso total
+Superusuario
+Control absoluto
+```
+
+El rol explica por qué se usa esta composición.
+
+No explica por sí solo cada autorización.
+
+---
+
+#### 26. Región `Requiere decisión`
+
+Esta región presenta objetos que realmente requieran una decisión, revisión o aprobación del actor dentro de su alcance.
+
+Cada elemento debe conservar, cuando aplique:
+
+- asunto;
+- owner;
+- prioridad de fuente;
+- plazo o vencimiento;
+- alcance;
+- estado;
+- responsable;
+- consecuencia resumida;
+- destino propietario.
+
+---
+
+#### 27. Ninguna aprobación se ejecuta desde el resumen
+
+La acción principal de una tarjeta de decisión es navegar a la superficie propietaria.
+
+No se admite un botón genérico de:
+
+```text
+APROBAR
+```
+
+que ejecute la mutación desde el home sin:
+
+- contexto completo;
+- evidencia;
+- autorización atómica;
+- segregación;
+- reautenticación cuando aplique;
+- validación final del owner.
+
+---
+
+#### 28. Región `Excepciones y riesgos`
+
+La región presenta situaciones que necesitan atención por desviación, conflicto, riesgo o condición excepcional.
+
+Puede incluir proyecciones autorizadas de:
+
+- riesgos empresariales;
+- conflictos administrativos;
+- cobertura laboral problemática;
+- incumplimientos o vencimientos;
+- excepciones operativas administrativas;
+- anomalías de auditoría;
+- degradaciones relevantes de fuente.
+
+No crea un motor universal de riesgos.
+
+---
+
+#### 29. Riesgo no equivale a alerta técnica
+
+Se conserva:
+
+```text
+BUSINESS_RISK
+!=
+TECHNICAL_LOG
+!=
+APPLICATION_ERROR
+```
+
+Un incidente técnico puede alimentar una proyección ejecutiva únicamente cuando exista un contrato que lo convierta en información empresarial relevante.
+
+El home no se convierte en observabilidad.
+
+---
+
+#### 30. Conflicto no equivale a error
+
+Una contradicción de configuración, una denegación, una indisponibilidad técnica y un conflicto prospectivo conservan sus semánticas propietarias.
+
+No se muestran bajo una única etiqueta genérica:
+
+```text
+Problemas
+```
+
+si ello elimina la consecuencia o el owner.
+
+---
+
+#### 31. Región `Indicadores ejecutivos autorizados`
+
+La región presenta un conjunto reducido de indicadores con valor directivo.
+
+Cada indicador debe identificar o poder resolver:
+
+- qué mide;
+- fuente propietaria;
+- periodo;
+- alcance;
+- unidad;
+- actualización;
+- estado de disponibilidad;
+- destino para análisis cuando exista.
+
+---
+
+#### 32. No todos los conteos son indicadores
+
+Un número disponible en una tabla no se convierte automáticamente en KPI.
+
+Se preserva:
+
+```text
+ROW_COUNT
+!=
+BUSINESS_INDICATOR
+```
+
+Un indicador requiere semántica, fuente, alcance y periodo comprensibles.
+
+---
+
+#### 33. No fabricar KPI desde el home
+
+`VISO-UX-008` no define nuevas fórmulas financieras, comerciales, productivas, laborales o logísticas.
+
+Cuando el indicador pertenece a otra aplicación:
+
+- la aplicación propietaria conserva cálculo y fuente;
+- VISO consume una proyección autorizada;
+- el enlace abre el owner;
+- no se mantiene una fórmula duplicada en el home.
+
+---
+
+#### 34. Indicadores financieros
+
+NUMERA conserva ownership de hechos económicos, costos, tesorería, presupuestos, cierres y análisis financiero.
+
+`Inicio` puede presentar una proyección autorizada de alto nivel cuando exista contrato y fuente.
+
+No calcula:
+
+- margen;
+- caja;
+- utilidad;
+- presupuesto;
+- cartera;
+- costo;
+
+mediante lógica paralela.
+
+---
+
+#### 35. Indicadores operativos
+
+NEXO, FOGO, ORIGO y PULSO conservan sus métricas y hechos propietarios.
+
+VISO puede mostrar un resumen directivo autorizado.
+
+No convierte una métrica en capacidad de ejecución operativa.
+
+---
+
+#### 36. Indicadores laborales
+
+Personal y Programación pueden entregar información administrativa útil a dirección.
+
+La proyección debe aplicar minimización.
+
+No utiliza la página ejecutiva para exponer por defecto:
+
+- expediente individual completo;
+- información médica;
+- texto disciplinario;
+- documentos privados;
+- detalle personal innecesario.
+
+---
+
+#### 37. Indicadores de seguridad
+
+La presencia de una anomalía o revisión de seguridad puede proyectarse de forma mínima.
+
+El home no expone:
+
+- grants completos;
+- denies completos;
+- scopes sensibles;
+- eventos privilegiados;
+- detalles técnicos de autorización;
+
+sin abrir la superficie especializada y revalidar autoridad.
+
+---
+
+#### 38. Región `Compromisos y seguimiento`
+
+La región puede resumir compromisos empresariales abiertos relacionados con dirección.
+
+Cada elemento debe conservar:
+
+- compromiso;
+- responsable;
+- fecha;
+- estado;
+- owner;
+- alcance;
+- referencia al objeto propietario.
+
+No crea un segundo ledger de compromisos.
+
+---
+
+#### 39. Compromiso no equivale a tarea local
+
+La proyección puede presentar trabajo que requiere seguimiento.
+
+No lo copia como una nueva entidad de VISO si el owner ya conserva su identidad.
+
+Se conserva:
+
+```text
+PROJECTION_ITEM
+!=
+NEW_BUSINESS_RECORD
+```
+
+---
+
+#### 40. Frontera con la bandeja transversal de SHELL
+
+SHELL ya posee la identidad canónica:
+
+```text
+VSCREEN-0005 — Bandeja transversal de tareas y notificaciones
+```
+
+`Inicio` de VISO no duplica esa bandeja.
+
+La diferencia es:
+
+```text
+SHELL
+→ coordinación transversal de trabajo y notificaciones
+
+VISO Inicio propietario
+→ revisión ejecutiva de decisiones, excepciones, indicadores y seguimiento administrativo
+```
+
+---
+
+#### 41. No existe una segunda bandeja global
+
+Queda prohibido que `Inicio`:
+
+- replique todos los work items de SHELL;
+- consuma todas las notificaciones del ecosistema;
+- ejecute claim;
+- ejecute start;
+- cambie ownership de trabajo;
+- mantenga estados paralelos de bandeja.
+
+Puede enlazar al trabajo propietario cuando corresponda.
+
+---
+
+#### 42. Región `Dominios VISO`
+
+La página puede mostrar accesos hacia los seis dominios canónicos:
+
+```text
+Personal
+Programación
+Acceso y seguridad
+Organización
+Operación
+Auditoría
+```
+
+No los convierte en seis métricas obligatorias.
+
+Su objetivo es orientar.
+
+---
+
+#### 43. Acceso a `Personal`
+
+El acceso a `Personal` se presenta cuando la persona tenga autoridad suficiente para la superficie destino.
+
+Puede acompañarse de un resumen permitido.
+
+No muestra expedientes individuales únicamente porque el rol sea `propietario`.
+
+---
+
+#### 44. Acceso a `Programación`
+
+El acceso a `Programación` puede destacar cobertura, excepciones o decisiones autorizadas.
+
+No permite publicar, editar o eliminar programación desde el home.
+
+Toda mutación se ejecuta en la superficie propietaria con validación vigente.
+
+---
+
+#### 45. Acceso a `Acceso y seguridad`
+
+El home puede señalar que existe trabajo de seguridad relevante.
+
+No presenta una consola reducida de grants, denies, roles o perfiles.
+
+La seguridad avanzada conserva su propia profundidad y controles.
+
+---
+
+#### 46. Acceso a `Organización`
+
+El home puede mostrar cambios estructurales pendientes, decisiones o alertas de consistencia autorizadas.
+
+No trata sede, área o jerarquía como permiso.
+
+---
+
+#### 47. Acceso a `Operación`
+
+El home puede mostrar estado administrativo de configuración operativa relevante.
+
+No crea rol operativo efectivo, turno, check-in o permiso por abrir esa tarjeta.
+
+---
+
+#### 48. Acceso a `Auditoría`
+
+El home puede mostrar una señal mínima de hechos que requieren investigación.
+
+La apertura de auditoría vuelve a validar su autorización y alcance.
+
+No precarga payload histórico sensible para esconderlo visualmente después.
+
+---
+
+#### 49. Visibilidad de una tarjeta
+
+Una tarjeta o región visible requiere que su proyección sea autorizada.
+
+Se conserva:
+
+```text
+VISIBLE_HOME_ITEM
+=
+AUTHORIZED_PROJECTION
+```
+
+No:
+
+```text
+VISIBLE_HOME_ITEM
+=
+ROLE_NAME_MATCH
+```
+
+---
+
+#### 50. Destino visible no implica acción permitida
+
+Aunque un destino sea visible:
+
+```text
+DESTINATION_VISIBLE
+!=
+ALL_DESTINATION_ACTIONS_ALLOWED
+```
+
+La superficie destino revalida cada acción.
+
+---
+
+#### 51. Región `Handoffs a owners externos`
+
+El propietario puede requerir información o decisiones cuyo owner no es VISO.
+
+La página puede presentar accesos autorizados hacia aplicaciones propietarias como:
+
+- NUMERA;
+- NEXO;
+- FOGO;
+- ORIGO;
+- PULSO;
+- ANIMA;
+- otras superficies laborales canónicas cuando correspondan.
+
+La lista física final depende de capacidad, disponibilidad y contrato.
+
+---
+
+#### 52. Handoff no equivale a editor local
+
+Se conserva:
+
+```text
+CROSS_APP_LINK
+!=
+LOCAL_EDITOR
+```
+
+El home puede:
+
+- explicar qué requiere atención;
+- mostrar un resumen permitido;
+- identificar al owner;
+- abrir el destino.
+
+No replica el formulario propietario.
+
+---
+
+#### 53. PASS y la frontera cliente
+
+Una capacidad administrativa relacionada con clientes puede tener un owner laboral distinto de PASS.
+
+El tema del dato no decide la aplicación destino.
+
+La proyección utiliza el owner canónico de la acción.
+
+No usa PASS como backoffice universal por asociación temática.
+
+---
+
+#### 54. AURA diferida
+
+Una identidad o capacidad diferida no se promociona al home como destino operativo por existir en catálogo.
+
+La presentación exige:
+
+- lifecycle compatible;
+- superficie materializada;
+- autorización;
+- disponibilidad;
+- handoff válido.
+
+---
+
+#### 55. Priorización
+
+El home puede ordenar trabajo por prioridad únicamente cuando la prioridad provenga de una fuente propietaria o de una regla canónica reproducible.
+
+No calcula un score local opaco con:
+
+- cantidad de registros;
+- color;
+- rol;
+- aplicación;
+- posición en el DOM;
+- recencia aislada.
+
+---
+
+#### 56. Prioridad de fuente
+
+Cuando un objeto posea prioridad canónica:
+
+- la proyección conserva el valor;
+- puede traducirlo visualmente;
+- no lo recalcula;
+- no lo eleva porque el usuario sea propietario;
+- no lo degrada por pertenecer a otro owner.
+
+---
+
+#### 57. Sin prioridad canónica
+
+Si no existe una prioridad gobernada:
+
+- el home puede agrupar por tipo, vencimiento o owner cuando exista dato fiable;
+- no inventa `CRÍTICO`, `ALTO`, `MEDIO` o `BAJO`;
+- no sugiere una urgencia inexistente.
+
+---
+
+#### 58. Vencimientos
+
+Un vencimiento solo se muestra cuando proviene del objeto o proceso propietario.
+
+No se infiere por:
+
+- antigüedad visual;
+- fecha de actualización;
+- tiempo desde creación;
+- ausencia de actividad.
+
+---
+
+#### 59. Decisiones pendientes
+
+Un elemento se considera pendiente de decisión únicamente cuando:
+
+- existe una transición o revisión realmente pendiente;
+- el actor puede al menos consultar el objeto;
+- el contrato admite que esa persona participe en la decisión;
+- el estado es vigente;
+- el owner confirma la condición.
+
+---
+
+#### 60. Pendiente no equivale a ejecutable
+
+Puede existir un elemento que requiere atención pero cuya acción aún no sea ejecutable.
+
+Se conserva:
+
+```text
+ATTENTION_REQUIRED
+!=
+ACTION_EXECUTABLE
+```
+
+La UI explica el bloqueo sin fabricar un botón funcional.
+
+---
+
+#### 61. Elementos bloqueados
+
+Un elemento bloqueado puede aparecer si el actor está autorizado a conocer el bloqueo y esa información es útil para seguimiento.
+
+Debe distinguir:
+
+- bloqueado por dependencia;
+- bloqueado por autorización;
+- bloqueado por conflicto;
+- bloqueado por dato faltante;
+- bloqueado por indisponibilidad técnica;
+- bloqueado por lifecycle.
+
+No expone detalles sensibles del motivo si el actor no puede conocerlos.
+
+---
+
+#### 62. Conteos autorizados
+
+Todo badge o conteo se calcula sobre el conjunto visible y autorizado.
+
+Se preserva:
+
+```text
+VISIBLE_COUNT
+=
+COUNT(AUTHORIZED_SET)
+```
+
+No se admite mostrar un total global y ocultar filas posteriores cuando ese total revele información prohibida.
+
+---
+
+#### 63. Cero real y cero por autorización
+
+La experiencia debe evitar confundir:
+
+```text
+0 ELEMENTOS EXISTENTES
+```
+
+con:
+
+```text
+0 ELEMENTOS VISIBLES
+```
+
+cuando esa distinción pueda hacerse de forma segura.
+
+No revela la existencia de objetos ocultos para explicar el cero.
+
+---
+
+#### 64. Estados vacíos
+
+La UI distingue al menos conceptualmente:
+
+```text
+SIN ELEMENTOS
+SIN ELEMENTOS AUTORIZADOS
+FUENTE NO DISPONIBLE
+FUENTE NO IMPLEMENTADA
+DATOS PARCIALES
+ERROR TÉCNICO
+```
+
+La redacción final no debe revelar información que la política de seguridad prohíba.
+
+---
+
+#### 65. Frescura
+
+Un resumen ejecutivo debe permitir conocer si el dato es vigente para la decisión que representa.
+
+Cuando la fuente lo soporte, conserva:
+
+- timestamp de actualización;
+- periodo;
+- versión;
+- snapshot;
+- estado de sincronización;
+- freshness contract.
+
+---
+
+#### 66. Dato stale
+
+Un dato reconocido como stale no se presenta como vigente.
+
+La UI puede:
+
+- etiquetarlo;
+- degradar el indicador;
+- bloquear una acción dependiente;
+- ofrecer navegación al owner.
+
+No reemplaza automáticamente el valor con cero.
+
+---
+
+#### 67. Indisponibilidad
+
+Una fuente obligatoria no disponible no se convierte en:
+
+```text
+SIN PENDIENTES
+```
+
+ni en:
+
+```text
+TODO BIEN
+```
+
+La indisponibilidad conserva identidad propia.
+
+---
+
+#### 68. Carga parcial
+
+Si una región puede cargarse de forma independiente, un fallo local puede degradar únicamente esa región cuando el contrato lo permita.
+
+No debe invalidarse todo el home por un widget no crítico.
+
+Tampoco debe presentarse el home completo como sano si una fuente crítica falló.
+
+---
+
+#### 69. Fuente de verdad visible
+
+Cada resumen debe poder identificar su owner funcional.
+
+La experiencia puede usar lenguaje humano como:
+
+```text
+Fuente: NUMERA
+Fuente: Programación
+Fuente: Auditoría
+```
+
+sin exponer detalles técnicos innecesarios.
+
+---
+
+#### 70. Procedencia de datos
+
+La procedencia sirve para explicar de dónde viene el resultado.
+
+No concede autoridad.
+
+La presentación detallada del origen de permisos continúa reservada a `VISO-UX-014`.
+
+---
+
+#### 71. Frontera con `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` conserva el patrón transversal detallado de presentación territorial.
+
+Esta tarea fija únicamente la obligación de que el home:
+
+- no amplíe territorio;
+- muestre alcance suficiente para interpretar el dato;
+- no mezcle sedes invisibles en agregados;
+- no use un selector visual como autoridad.
+
+---
+
+#### 72. Frontera con `VISO-UX-014`
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` conserva la experiencia detallada de procedencia autorizativa.
+
+`Inicio` no intenta resolver anticipadamente esa explicación.
+
+Puede indicar que una acción o destino no está disponible sin fabricar el origen.
+
+---
+
+#### 73. Frontera con `VISO-UX-015`
+
+`VISO-UX-015 — Mostrar conflictos antes de guardar` conserva el patrón detallado de conflictos prospectivos.
+
+El home puede indicar que existe un conflicto que requiere atención.
+
+No ejecuta la comparación pre-save ni toma la decisión del editor propietario.
+
+---
+
+#### 74. Frontera con `VISO-UX-016`
+
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador` conserva el preview detallado individual.
+
+El home no muestra simulaciones masivas de trabajadores ni utiliza un preview como estado real.
+
+---
+
+#### 75. Frontera con `VISO-UX-017`
+
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones` conserva la decisión final sobre duplicidades físicas.
+
+Esta tarea clasifica como no conformes las mutaciones cross-owner dentro del home, pero no retira todavía las superficies históricas.
+
+---
+
+#### 76. Frontera con `VISO-UX-018`
+
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda` conserva el patrón final de handoff cross-app.
+
+Esta tarea exige que cualquier acceso externo futuro sea un handoff protegido.
+
+No fija todavía todos los destinos físicos.
+
+---
+
+#### 77. Frontera con `VISO-UX-019`
+
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` conserva la presentación detallada de información sensible.
+
+Esta tarea exige minimización en `Inicio` y evita precargar detalle privilegiado.
+
+No diseña anticipadamente los niveles internos de seguridad avanzada.
+
+---
+
+#### 78. Frontera con `VISO-UX-020`
+
+`VISO-UX-020 — Ejecutar pruebas con administradores reales` conserva la validación con personas usuarias.
+
+La proyección de propietario deberá entrar en ese piloto con casos representativos de:
+
+- decisión;
+- riesgo;
+- indicador;
+- excepción;
+- navegación a dominio;
+- handoff externo;
+- dato parcial;
+- denegación;
+- error.
+
+---
+
+#### 79. No edición inline sensible
+
+`Inicio` no debe convertirse en superficie de edición rápida para acciones de alto impacto.
+
+No se ejecutan inline:
+
+- grants;
+- denies;
+- cambios de rol;
+- publicación de horarios;
+- cambios organizacionales;
+- cierre financiero;
+- ajustes de inventario;
+- aprobaciones de compra;
+- publicación comercial;
+- rollback;
+- revocaciones;
+- cambios de retención.
+
+---
+
+#### 80. Acciones seguras del home
+
+Las acciones ordinarias del home son:
+
+```text
+ABRIR
+REVISAR
+IR AL DETALLE
+VER DOMINIO
+VER OWNER
+INVESTIGAR
+```
+
+Una futura acción adicional debe demostrar que su atomicidad, autorización y consecuencia son compatibles con la naturaleza `MONITOR` de la pantalla.
+
+---
+
+#### 81. Deep links
+
+Un enlace desde `Inicio` transporta únicamente referencias no secretas suficientes para abrir el destino.
+
+La superficie destino debe:
+
+1. resolver sesión;
+2. resolver actor;
+3. resolver recurso;
+4. resolver alcance;
+5. validar capacidad;
+6. cargar estado vigente.
+
+El home no transporta una decisión `ALLOW`.
+
+---
+
+#### 82. Retorno a `Inicio`
+
+Una superficie propietaria puede volver a `/` sin convertir parámetros del retorno en autoridad.
+
+El regreso puede conservar preferencias de UX seguras como:
+
+- sección visual;
+- periodo no sensible;
+- filtros permitidos.
+
+No conserva una autorización stale.
+
+---
+
+#### 83. Preferencias personales
+
+Una preferencia de presentación puede modificar:
+
+- orden de regiones secundarias cuando esté permitido;
+- densidad;
+- colapsado;
+- periodo por defecto;
+- widgets opcionales autorizados.
+
+No puede:
+
+- revelar una región prohibida;
+- cambiar el alcance;
+- crear una capacidad;
+- elevar prioridad canónica;
+- mantener un dato sensible tras perder autoridad.
+
+---
+
+#### 84. Personalización no crea contratos paralelos
+
+No se crea una matriz local de:
+
+```text
+rol → widgets → permisos
+```
+
+como fuente de seguridad.
+
+La composición puede tener reglas de presentación.
+
+La visibilidad real se resuelve con autorización vigente.
+
+---
+
+#### 85. Simulación
+
+Si el contexto vigente corresponde a una simulación autorizada, el home debe distinguirlo de la autoridad real.
+
+Se conserva:
+
+```text
+SIMULATED_VIEW
+!=
+REAL_AUTHORITY
+```
+
+Una simulación no habilita mutaciones desde tarjetas.
+
+---
+
+#### 86. Indicador visual de simulación
+
+La condición de simulación debe ser suficientemente visible para evitar que la persona confunda:
+
+- datos simulados;
+- alcance simulado;
+- decisiones simuladas;
+
+con su contexto real.
+
+El detalle del patrón transversal permanece en los contratos de simulación y seguridad.
+
+---
+
+#### 87. Dispositivo compartido
+
+La entrada desde un dispositivo compartido conserva las reglas del dispositivo, actor y reautenticación.
+
+El rol `propietario` no elimina esos controles.
+
+Una sesión técnica de dispositivo no se presenta como actor humano.
+
+---
+
+#### 88. Reautenticación
+
+Un enlace hacia una acción sensible puede exigir reautenticación en el destino.
+
+`Inicio` no evita ese paso porque la sesión ya exista o porque el usuario sea propietario.
+
+---
+
+#### 89. Cambio de autoridad durante la sesión
+
+Si cambian grants, denies, alcance, estado laboral o contexto relevante:
+
+- las proyecciones deben revalidarse conforme a la política de frescura;
+- un widget anteriormente visible no conserva autoridad por caché;
+- una navegación posterior revalida.
+
+---
+
+#### 90. Concurrencia
+
+Mientras el home está abierto, los objetos pueden cambiar.
+
+La tarjeta es una proyección.
+
+El destino debe volver a consultar estado vigente antes de una acción.
+
+No se aprueba un cambio usando exclusivamente el snapshot del home.
+
+---
+
+#### 91. Caché
+
+Una futura caché de la página deberá respetar:
+
+- actor;
+- ámbito;
+- versión de permisos;
+- sensibilidad;
+- freshness;
+- invalidación.
+
+No se admite una caché compartida entre actores que pueda mezclar datos autorizados.
+
+---
+
+#### 92. Carga progresiva
+
+La UI puede cargar regiones en paralelo o progresivamente.
+
+La estrategia no cambia:
+
+- autorización;
+- owner;
+- alcance;
+- semántica de ausencia;
+- semántica de error.
+
+---
+
+#### 93. Responsive
+
+La prioridad informativa se conserva en desktop, tablet y tamaños reducidos.
+
+El layout responsive no puede:
+
+- ocultar el alcance;
+- ocultar el estado de simulación;
+- ocultar un bloqueo crítico;
+- transformar una etiqueta en autorización;
+- convertir varias acciones sensibles en un menú ambiguo.
+
+---
+
+#### 94. Accesibilidad
+
+La página debe ser navegable sin depender únicamente de:
+
+- color;
+- hover;
+- posición;
+- iconografía sin nombre.
+
+Prioridad, riesgo, estado, frescura y bloqueo requieren texto o semántica accesible equivalente.
+
+---
+
+#### 95. Teclado y foco
+
+El orden de foco debe seguir la jerarquía de la información.
+
+Los elementos interactivos distinguen:
+
+- tarjeta navegable;
+- enlace;
+- filtro;
+- disclosure;
+- botón real.
+
+Una tarjeta informativa no se anuncia como botón si no ejecuta acción.
+
+---
+
+#### 96. Densidad
+
+La página ejecutiva evita presentar un muro de tablas.
+
+La información primaria debe favorecer:
+
+- síntesis;
+- excepción;
+- comparación;
+- decisión;
+- navegación.
+
+El detalle permanece en superficies especializadas.
+
+---
+
+#### 97. Divulgación progresiva general
+
+El home presenta primero información suficiente para decidir dónde profundizar.
+
+No incluye por defecto:
+
+- payloads completos;
+- listas extensas;
+- historial exhaustivo;
+- matrices completas;
+- documentos completos;
+- PII innecesaria.
+
+---
+
+#### 98. Estado `NOT_AUTHORIZED`
+
+La UI no revela datos ocultos para explicar una denegación.
+
+Dependiendo del contrato puede:
+
+- ocultar la región;
+- presentar acceso no disponible;
+- conducir a una explicación segura.
+
+No inventa un fallback privilegiado.
+
+---
+
+#### 99. Estado `NOT_AVAILABLE`
+
+Un destino autorizado puede estar temporalmente no disponible.
+
+El home distingue disponibilidad de autorización.
+
+```text
+AUTHORIZED
+!=
+AVAILABLE
+```
+
+---
+
+#### 100. Estado `NOT_IMPLEMENTED`
+
+Una capacidad canónica todavía no materializada no se presenta como operativa.
+
+El home puede omitirla o mostrar un estado gobernado cuando sea útil.
+
+No crea una ruta ficticia para llenar el espacio.
+
+---
+
+#### 101. Estado `TECHNICAL_FAILURE`
+
+Un fallo técnico no se interpreta como:
+
+- cero;
+- deny;
+- ausencia de trabajo;
+- cumplimiento;
+- estado saludable.
+
+La región degradada conserva una explicación segura.
+
+---
+
+#### 102. Error parcial versus error global
+
+El contrato debe distinguir:
+
+```text
+REGION_FAILURE
+```
+
+de:
+
+```text
+HOME_CANNOT_BE_AUTHORIZED
+```
+
+Un error secundario no inutiliza todo el home cuando las demás regiones siguen siendo seguras.
+
+Un fallo en resolución de actor o autoridad sí puede requerir fail-closed global.
+
+---
+
+#### 103. Registro de acceso
+
+Las lecturas sensibles desde `Inicio` deben conservar la trazabilidad exigida por sus contratos propietarios.
+
+Esta tarea no crea un nuevo ledger de lectura.
+
+No elimina obligaciones de auditoría por tratarse de un resumen.
+
+---
+
+#### 104. Telemetría de experiencia
+
+La futura implementación puede medir de forma minimizada:
+
+- regiones vistas;
+- navegación iniciada;
+- tiempo hasta abrir una decisión;
+- errores de carga;
+- handoffs completados;
+- abandono.
+
+La telemetría no registra contenido sensible como sustituto de eventos de negocio.
+
+---
+
+#### 105. Éxito de la experiencia
+
+El éxito del home no se mide por cantidad de tarjetas.
+
+Debe favorecer que la persona:
+
+1. reconozca qué requiere atención;
+2. entienda por qué;
+3. conozca el alcance;
+4. identifique el owner;
+5. navegue al destino correcto;
+6. no obtenga autoridad adicional;
+7. no necesite conocer rutas o tablas.
+
+---
+
+#### 106. No optimizar para “mostrar todo”
+
+El rol propietario no justifica máxima densidad.
+
+Se conserva:
+
+```text
+MÁS AUTORIDAD POTENCIAL
+!=
+MÁS INFORMACIÓN SIEMPRE VISIBLE
+```
+
+La página prioriza relevancia y minimización.
+
+---
+
+#### 107. Comparaciones
+
+Una comparación entre sedes, periodos o dominios solo se presenta cuando:
+
+- la métrica es comparable;
+- la fuente lo admite;
+- el alcance autoriza ambos lados;
+- la temporalidad es compatible;
+- la unidad es consistente.
+
+No compara cifras heterogéneas para producir una señal ejecutiva falsa.
+
+---
+
+#### 108. Tendencias
+
+Una tendencia exige al menos una serie o comparación temporal válida de la fuente propietaria.
+
+No se infiere tendencia desde dos snapshots incompatibles ni desde cambios de definición.
+
+---
+
+#### 109. Semántica de color
+
+El color puede reforzar prioridad, riesgo o estado.
+
+No los define.
+
+Se conserva:
+
+```text
+COLOR
+!=
+BUSINESS_STATE
+```
+
+---
+
+#### 110. Iconografía
+
+Un icono puede ayudar a distinguir dominios o estados.
+
+No sustituye:
+
+- texto;
+- owner;
+- estado;
+- severidad;
+- accesibilidad.
+
+---
+
+#### 111. Nomenclatura
+
+La página usa lenguaje empresarial.
+
+Evita como labels primarios:
+
+- nombres de tablas;
+- schemas;
+- RPC;
+- namespaces internos;
+- nombres de componentes;
+- identificadores técnicos;
+
+salvo en vistas de diagnóstico autorizadas.
+
+---
+
+#### 112. Navegación hacia los seis dominios
+
+El home conserva la jerarquía de primer nivel aprobada.
+
+No introduce grupos como:
+
+```text
+Otros
+Herramientas
+Legacy
+Tablas
+Backoffice
+```
+
+para esconder ownership no resuelto.
+
+---
+
+#### 113. No promoción de rutas cross-owner
+
+Una ruta histórica físicamente alojada en `vento-viso` no se convierte en acceso ejecutivo de VISO por aparecer en el código actual.
+
+Su tratamiento sigue `VISO-UX-017/018`.
+
+---
+
+#### 114. Ruta raíz estable
+
+La identidad histórica se conserva:
+
+```text
+VISO-ROUTE-001 = /
+```
+
+Esta tarea no:
+
+- renumera la ruta;
+- crea `/owner`;
+- crea `/dashboard-owner`;
+- crea `/executive`;
+- redirige el rol a otra URL.
+
+---
+
+#### 115. Pantalla estable
+
+La identidad de pantalla se conserva:
+
+```text
+VSCREEN-0007
+```
+
+Los perfiles `VISO-UX-008..012` pueden definir composiciones distintas sin crear cinco pantallas canónicas por nombre de rol.
+
+---
+
+#### 116. Frontera con `VISO-UX-009`
+
+`VISO-UX-009 — Definir inicio para gerente general` definirá la proyección del siguiente perfil.
+
+Esta tarea no decide:
+
+- qué regiones exactas verá `gerente_general`;
+- qué prioridad tendrá su contexto;
+- qué diferencias existirán con `propietario`;
+- qué acciones o resúmenes serán propios de ese perfil.
+
+---
+
+#### 117. Frontera con `VISO-UX-010`
+
+El inicio de gerente de sede queda reservado a `VISO-UX-010`.
+
+No se usa la versión `propietario` como fallback territorial para gerentes.
+
+---
+
+#### 118. Frontera con `VISO-UX-011`
+
+El inicio de auxiliar administrativa queda reservado a `VISO-UX-011`.
+
+La amplitud de la vista propietaria no se hereda por pertenecer a una función administrativa.
+
+---
+
+#### 119. Frontera con `VISO-UX-012`
+
+El inicio de contador queda reservado a `VISO-UX-012`.
+
+La información financiera no se presenta con la misma composición únicamente porque `propietario` pueda consultar parte de ella.
+
+---
+
+#### 120. Selección de variante
+
+La materialización futura debe resolver la variante desde identidad y rol base canónicos vigentes.
+
+No usa:
+
+- texto de cargo;
+- alias;
+- correo;
+- grupo local;
+- label de UI;
+- preferencia del navegador;
+- query string.
+
+La selección de variante no sustituye autorización.
+
+---
+
+#### 121. Rol desconocido o inconsistente
+
+Si la identidad requerida para elegir la variante no puede resolverse de forma confiable, la implementación no debe presentar la vista de propietario por conveniencia.
+
+El fallback final pertenece al modelo de acceso y a las demás variantes canónicas.
+
+No se asume `propietario`.
+
+---
+
+#### 122. Cambio de rol
+
+Si el rol base cambia durante la vigencia de la sesión:
+
+- la variante de home debe revalidarse según frescura;
+- no conserva widgets de propietario por caché;
+- no conserva datos ya no permitidos;
+- no conserva acciones.
+
+---
+
+#### 123. Sesión técnica no define variante humana
+
+`service_role`, un job, una función privilegiada o un principal técnico no pueden activar la variante `propietario`.
+
+La variante pertenece al actor humano resuelto.
+
+---
+
+#### 124. Owners y responsables
+
+Cada elemento proyectado conserva un responsable comprensible cuando la fuente lo proporcione.
+
+No se asigna automáticamente al propietario como responsable de todo lo visible.
+
+Se conserva:
+
+```text
+VISIBLE_TO_OWNER
+!=
+OWNED_BY_OWNER
+```
+
+---
+
+#### 125. Escalamiento
+
+Un objeto puede ser visible por escalamiento.
+
+El escalamiento debe provenir del proceso propietario.
+
+El home no crea una regla genérica:
+
+```text
+TODO VENCIDO
+→ PROPIETARIO
+```
+
+sin contrato que la sustente.
+
+---
+
+#### 126. Riesgos y decisiones sin owner
+
+Un objeto que requiera atención ejecutiva y carezca de owner válido debe presentarse como inconsistencia cuando el actor esté autorizado a conocerla.
+
+El home no corrige silenciosamente el owner.
+
+La reparación pertenece al proceso propietario.
+
+---
+
+#### 127. Ausencia de evidencia
+
+Una recomendación o decisión que requiera evidencia no se presenta como lista para aprobar si la evidencia obligatoria falta.
+
+Puede mostrarse como:
+
+```text
+EVIDENCIA INCOMPLETA
+```
+
+sin fabricar una conclusión.
+
+---
+
+#### 128. Explicación de una señal
+
+Una señal ejecutiva debe ser explicable con datos permitidos.
+
+No se acepta una tarjeta que solo diga:
+
+```text
+Atención requerida
+```
+
+sin owner, categoría o contexto suficiente para saber dónde continuar.
+
+---
+
+#### 129. Explicabilidad no expone internals
+
+La explicación puede indicar:
+
+- regla empresarial;
+- periodo;
+- alcance;
+- fuente;
+- estado;
+- resultado.
+
+No necesita exponer:
+
+- SQL;
+- stack trace;
+- token;
+- secreto;
+- query interna;
+- service role;
+- detalles de proveedor.
+
+---
+
+#### 130. Materialización de datos
+
+La futura implementación puede consumir:
+
+- proyecciones server-side;
+- servicios propietarios;
+- contratos compartidos;
+- vistas o RPC autorizadas existentes;
+- agregados propietarios.
+
+Esta tarea no escoge una arquitectura física universal.
+
+---
+
+#### 131. No usar cliente administrativo como permiso
+
+La disponibilidad técnica de un cliente privilegiado no sustituye la autorización del actor.
+
+Se preserva:
+
+```text
+SERVER PRIVILEGE
+!=
+HUMAN AUTHORITY
+```
+
+El futuro reader del home debe demostrar cómo restringe cada proyección al conjunto autorizado.
+
+---
+
+#### 132. Consultas agregadas
+
+Los agregados deben resolverse de forma segura en servidor.
+
+No se permite descargar conjuntos amplios no autorizados para:
+
+```text
+cargar todo
+→ filtrar en cliente
+→ mostrar un número
+```
+
+---
+
+#### 133. Datos cross-owner
+
+Cuando un resumen combine dimensiones de varios owners, la composición debe preservar:
+
+- fuente por dimensión;
+- compatibilidad temporal;
+- identidad de los objetos;
+- alcance;
+- ausencia o error;
+- owner de la acción siguiente.
+
+No crea una tabla maestra duplicada.
+
+---
+
+#### 134. Unidades y moneda
+
+Una métrica con unidad o moneda conserva su unidad explícita.
+
+La página no suma ni compara valores de unidades incompatibles sin una transformación canónica de su owner.
+
+---
+
+#### 135. Zona horaria
+
+Fechas, vencimientos y periodos se presentan usando la política temporal propietaria.
+
+No se convierte silenciosamente todo evento a la zona del navegador si ello cambia su significado empresarial.
+
+---
+
+#### 136. Periodo por defecto
+
+El home puede utilizar una ventana por defecto para indicadores y actividad.
+
+La ventana debe ser comprensible y no puede alterar la semántica del proceso.
+
+Cambiar el periodo de visualización no cambia autoridad.
+
+---
+
+#### 137. Búsqueda global
+
+Esta tarea no crea un buscador universal de todos los objetos de Vento OS.
+
+Una futura búsqueda debe conservar owner, autorización, minimización y clasificación.
+
+No se deriva de `Inicio` por conveniencia.
+
+---
+
+#### 138. Exportación
+
+La capacidad de ver un resumen no concede exportación.
+
+Se conserva:
+
+```text
+VIEW
+!=
+EXPORT
+```
+
+No se agrega un botón genérico de descarga del dashboard.
+
+---
+
+#### 139. Impresión
+
+La capacidad de ver el home tampoco concede impresión de datos sensibles.
+
+No se crean plantillas o permisos de impresión mediante esta tarea.
+
+---
+
+#### 140. Compartir
+
+Compartir una vista, URL o captura no es una capacidad derivada del contrato.
+
+Los links conservan revalidación de acceso.
+
+No se generan snapshots públicos.
+
+---
+
+#### 141. Notificaciones
+
+`Inicio` puede reflejar estados producidos por sistemas de notificación o trabajo.
+
+No crea una nueva notificación únicamente porque una tarjeta sea visible.
+
+La emisión pertenece a su contrato propietario.
+
+---
+
+#### 142. Lectura silenciosa no produce efecto empresarial
+
+Cargar el home no debe:
+
+- aprobar;
+- reconocer formalmente;
+- cerrar;
+- reclamar;
+- asignar;
+- cambiar prioridad;
+- marcar evidencia como revisada;
+- disparar una mutación de negocio;
+
+salvo que exista un contrato explícito posterior para esa acción.
+
+---
+
+#### 143. Idempotencia de lectura
+
+Refrescar `Inicio` conserva comportamiento de lectura.
+
+La misma carga repetida no produce efectos empresariales adicionales.
+
+---
+
+#### 144. Degradación segura
+
+Cuando una fuente opcional falla, la página no inventa datos.
+
+Cuando una fuente crítica de autoridad falla, la región o página falla cerrado según el contrato.
+
+No se sustituye una fuente canónica por una lista local hardcodeada.
+
+---
+
+#### 145. Hardcode de tarjetas
+
+Puede existir estructura de presentación en código.
+
+No puede existir un catálogo hardcodeado que declare autorización por:
+
+```text
+if role == propietario
+→ show everything
+```
+
+La elegibilidad de cada proyección consume contratos vigentes.
+
+---
+
+#### 146. Evolución del catálogo
+
+La incorporación futura de una nueva capacidad o aplicación no la agrega automáticamente al home.
+
+Debe existir:
+
+- owner;
+- finalidad ejecutiva;
+- proyección segura;
+- autorización;
+- destino;
+- tratamiento de ausencia y error.
+
+---
+
+#### 147. Aplicaciones retiradas o diferidas
+
+Una aplicación retirada, diferida o no disponible no conserva una tarjeta histórica por inercia.
+
+La retirada física del acceso se gobierna por los contratos de navegación, consumidores y rollout correspondientes.
+
+---
+
+#### 148. No retiro prematuro del AS-IS
+
+Esta tarea define el objetivo.
+
+No autoriza borrar hoy:
+
+- tarjetas;
+- rutas;
+- accesos históricos;
+- componentes;
+- páginas cross-owner.
+
+El retiro físico exige materialización, reconciliación, pruebas y rollback cuando corresponda.
+
+---
+
+#### 149. Mapeo de la raíz actual
+
+La futura unidad física deberá reconciliar cada elemento AS-IS del root con una de estas disposiciones:
+
+```text
+KEEP_AS_OWNER_HOME_PROJECTION
+MOVE_TO_VISO_DOMAIN
+CONVERT_TO_CROSS_OWNER_HANDOFF
+REMOVE_AFTER_REPLACEMENT
+DEFER_WITH_OWNER
+```
+
+No se admite:
+
+```text
+KEEP_BECAUSE_IT_ALREADY_EXISTS
+```
+
+como justificación suficiente.
+
+---
+
+#### 150. Tarjetas actuales relacionadas con PASS
+
+Las tarjetas de usuarios, contenido o recompensas de PASS no permanecen automáticamente en `Inicio` por existir en el código actual.
+
+Su tratamiento final depende de:
+
+- owner funcional;
+- utilidad ejecutiva real;
+- autorización;
+- `VISO-UX-017`;
+- `VISO-UX-018`;
+- fronteras laborales/cliente aplicables.
+
+---
+
+#### 151. Tarjetas actuales comerciales
+
+Menú comercial, producto comercial y otras superficies de venta conservan el owner definido por sus contratos.
+
+El home no se convierte en editor comercial general.
+
+Una necesidad ejecutiva puede expresarse como indicador o handoff.
+
+---
+
+#### 152. Tarjetas actuales de vacantes
+
+La existencia de vacantes puede ser relevante para dirección.
+
+Sin embargo:
+
+- TALENTO conserva candidatura y selección según sus fronteras;
+- VISO conserva trabajo administrativo que sí le corresponde;
+- el home no recrea el embudo de candidatos como widget completo.
+
+---
+
+#### 153. Website CMS
+
+La presencia histórica de accesos a website CMS en la raíz no convierte CMS en dominio VISO.
+
+La futura disposición debe respetar ownership y las tareas `VISO-UX-017/018`.
+
+---
+
+#### 154. Trabajadores
+
+Un conteo de trabajadores puede ser útil solo si existe definición ejecutiva, alcance y periodo apropiados.
+
+El número bruto de filas de `employees` no se declara KPI por esta tarea.
+
+---
+
+#### 155. Resumen de organización
+
+`Organización` puede aportar señales como cambios pendientes o estructura relevante.
+
+No se usa el número de sedes como sustituto de salud organizacional.
+
+---
+
+#### 156. Programación y cobertura
+
+La dirección puede necesitar conocer excepciones de cobertura.
+
+La proyección debe provenir del modelo de programación y no de una suma local incompatible con Semana/Mes.
+
+---
+
+#### 157. Seguridad y acceso
+
+Una revisión pendiente de acceso puede ser ejecutivamente relevante.
+
+El home presenta únicamente la mínima señal necesaria.
+
+La acción ocurre en `Acceso y seguridad`.
+
+---
+
+#### 158. Operación administrativa
+
+Una inconsistencia de perfil, punto o elegibilidad puede aparecer como excepción autorizada.
+
+No se mezcla con ejecución operativa en tiempo real.
+
+---
+
+#### 159. Auditoría y anomalías
+
+La dirección puede requerir investigar cambios de alto impacto.
+
+La tarjeta de home no contiene el ledger ni un diff completo.
+
+Conduce a la experiencia `Auditoría` cuando exista autorización.
+
+---
+
+#### 160. Estado de salud global
+
+Esta tarea no define un semáforo único de “salud de la empresa”.
+
+Un agregado de salud requeriría reglas de composición, pesos y fuentes canónicas que no se inventan aquí.
+
+---
+
+#### 161. Score ejecutivo
+
+No se crea un `executive_score`, `health_score` o ranking equivalente.
+
+Los riesgos e indicadores conservan su semántica propia.
+
+---
+
+#### 162. Recomendaciones automáticas
+
+La página puede mostrar recomendaciones únicamente si una fuente propietaria produce una recomendación explicable y gobernada.
+
+No genera decisiones empresariales con heurísticas locales no aprobadas.
+
+---
+
+#### 163. IA y análisis automático
+
+Esta tarea no autoriza que una IA:
+
+- apruebe;
+- priorice de forma autoritativa;
+- conceda acceso;
+- modifique riesgo;
+- cambie owner;
+- publique;
+- cierre.
+
+Una futura asistencia analítica requiere su propio contrato y evidencia.
+
+---
+
+#### 164. Privacidad
+
+El home aplica minimización especialmente sobre:
+
+- datos personales;
+- documentos;
+- salud;
+- disciplina;
+- seguridad;
+- clientes;
+- finanzas;
+- evidencia de investigación.
+
+La capacidad de dirección no elimina necesidad de conocer.
+
+---
+
+#### 165. Identificadores visibles
+
+La UI prioriza nombres humanos seguros.
+
+IDs técnicos pueden existir para trazabilidad o soporte autorizado.
+
+No deben convertirse en la principal orientación del propietario.
+
+---
+
+#### 166. Drill-down
+
+Toda profundización conserva:
+
+```text
+SUMMARY
+→ DOMAIN OR OWNER
+→ OBJECT
+→ ACTION
+```
+
+con revalidación en cada frontera necesaria.
+
+El home no intenta contener todo el drill-down.
+
+---
+
+#### 167. Breadcrumb y retorno
+
+La navegación debe dejar claro cuándo la persona salió de `Inicio` hacia:
+
+- un dominio VISO;
+- una superficie hija;
+- otra aplicación propietaria.
+
+La forma visual final puede variar.
+
+La identidad del owner no debe ocultarse.
+
+---
+
+#### 168. Estados históricos
+
+Un indicador histórico o de auditoría debe estar identificado como histórico.
+
+No se mezcla con estado actual sin etiqueta temporal suficiente.
+
+---
+
+#### 169. Snapshot ejecutivo
+
+Un snapshot puede representar un punto en el tiempo.
+
+Debe conservar:
+
+- periodo;
+- fuente;
+- alcance;
+- timestamp o versión;
+
+cuando el contrato lo exija.
+
+No se presenta como live si no lo es.
+
+---
+
+#### 170. Actualización manual
+
+Un control de refresco puede solicitar una nueva lectura.
+
+No ejecuta procesos empresariales ni recalcula datos mediante lógica no propietaria.
+
+---
+
+#### 171. Tiempo real
+
+Realtime no es obligatorio para todo widget.
+
+La frecuencia de actualización debe corresponder al valor y fuente del dato.
+
+Esta tarea no exige suscripciones globales ni canales nuevos.
+
+---
+
+#### 172. Rendimiento
+
+El home no debe depender de descargar datasets completos para producir cada resumen.
+
+La futura unidad deberá diseñar lecturas proporcionadas, paginadas o agregadas según la fuente.
+
+Esta tarea no fija una tecnología específica.
+
+---
+
+#### 173. Fallo de una aplicación externa
+
+Si un owner externo está degradado:
+
+- el resumen afectado declara indisponibilidad o stale según evidencia;
+- los demás dominios seguros pueden continuar;
+- no se sustituye con datos de una copia local no autoritativa.
+
+---
+
+#### 174. Fallbacks
+
+Un fallback solo es válido si su contrato propietario lo reconoce.
+
+No se admite:
+
+```text
+SOURCE ERROR
+→ USE OLD LOCAL TABLE SILENTLY
+```
+
+---
+
+#### 175. Mantenimiento
+
+Una aplicación en mantenimiento puede conservar un handoff no ejecutable con explicación segura.
+
+`NOT_AVAILABLE` no se convierte en `NOT_AUTHORIZED`.
+
+---
+
+#### 176. Bloqueos estructurales
+
+Si la identidad, autorización o estructura administrativa no pueden resolverse con confianza, la composición no inventa un home de propietario parcial como si fuera confiable.
+
+La política fail-closed aplicable prevalece.
+
+---
+
+#### 177. Seguridad de query string
+
+Parámetros de URL pueden controlar presentación segura.
+
+No pueden establecer:
+
+- rol;
+- scope;
+- site authority;
+- actor;
+- permission;
+- approval;
+- simulation authority.
+
+---
+
+#### 178. Seguridad de almacenamiento local
+
+`localStorage`, `sessionStorage` o cookies de presentación no son fuente de:
+
+- rol base;
+- territorio;
+- permiso;
+- owner;
+- resultado empresarial.
+
+---
+
+#### 179. Acceso directo a `/`
+
+La ruta raíz debe resolver su guard vigente.
+
+Una URL directa no omite:
+
+- sesión;
+- acceso a VISO;
+- actor;
+- contexto requerido;
+- variante válida.
+
+---
+
+#### 180. Resultado sin elementos
+
+Un propietario válido puede tener un home sin decisiones pendientes.
+
+La experiencia debe seguir ofreciendo orientación y accesos autorizados sin inventar urgencias para llenar el espacio.
+
+---
+
+#### 181. Resultado con alto volumen
+
+Cuando existan muchos objetos:
+
+- el home muestra síntesis;
+- limita listas;
+- conserva conteos seguros;
+- ofrece drill-down;
+- no renderiza cientos de filas como dashboard inicial.
+
+---
+
+#### 182. Resultado con múltiples owners
+
+Un bloque que contenga elementos de varios owners debe identificarlos por objeto o categoría.
+
+No los presenta como si VISO fuera el propietario de todos.
+
+---
+
+#### 183. Filtros de home
+
+Los filtros deben ser pocos y orientados a decisión.
+
+Pueden incluir, si existe soporte:
+
+- periodo;
+- ámbito autorizado;
+- categoría;
+- estado.
+
+No se convierten en un constructor de consultas universal.
+
+---
+
+#### 184. Filtro territorial no amplía
+
+Seleccionar una sede o unidad solo reduce o cambia dentro del conjunto permitido.
+
+No activa un territorio no concedido.
+
+---
+
+#### 185. Filtro “Todos”
+
+Una opción visual `Todos` significa:
+
+```text
+TODOS LOS ELEMENTOS AUTORIZADOS EN ESTA PROYECCIÓN
+```
+
+No:
+
+```text
+TODOS LOS ELEMENTOS DE LA BASE DE DATOS
+```
+
+---
+
+#### 186. Comparación “organización completa”
+
+Una vista agregada de organización completa solo existe cuando la autorización y la fuente soportan ese alcance.
+
+El rol no la fabrica.
+
+---
+
+#### 187. Niveles de detalle
+
+El home puede separar:
+
+```text
+RESUMEN
+DETALLE DE DOMINIO
+DETALLE DE OBJETO
+```
+
+La progresión no precarga datos que solo son necesarios en niveles posteriores.
+
+---
+
+#### 188. Acciones destructivas
+
+No existe acción destructiva desde la página inicial.
+
+Cualquier futuro atajo destructivo requeriría una revisión contractual explícita incompatible con la naturaleza actual `MONITOR`.
+
+---
+
+#### 189. Confirmaciones
+
+Navegar no requiere una confirmación destructiva.
+
+Las confirmaciones pertenecen a la acción propietaria cuando existe efecto.
+
+El home no añade modales genéricos de confirmación a todo.
+
+---
+
+#### 190. Errores comprensibles
+
+Los errores visibles usan lenguaje de negocio o acceso seguro.
+
+No obligan al propietario a interpretar:
+
+- PostgreSQL;
+- Supabase internals;
+- nombres de funciones;
+- código de repositorio;
+- stack traces.
+
+---
+
+#### 191. Soporte
+
+Un error técnico relevante puede ofrecer una ruta hacia soporte cuando exista.
+
+El home no se convierte en `VSCREEN-0006` ni replica diagnóstico técnico.
+
+---
+
+#### 192. Responsabilidad funcional
+
+`VSCREEN-0007` conserva foco ejecutivo.
+
+No absorbe:
+
+- mantenimiento de estructura;
+- programación;
+- seguridad;
+- operación;
+- auditoría;
+- contabilidad;
+- logística;
+- producción;
+- compras;
+- POS;
+
+como editores locales.
+
+---
+
+#### 193. Fuentes de decisión
+
+Una decisión mostrada debe tener un objeto fuente identificable.
+
+No se crea una entidad genérica `decision_pending` para copiar decisiones de todo el ecosistema por conveniencia.
+
+---
+
+#### 194. Historial de decisión
+
+El home puede indicar que existe historial.
+
+La reconstrucción pertenece a `Auditoría` o al owner correspondiente.
+
+No mantiene un historial paralelo dentro de la tarjeta.
+
+---
+
+#### 195. Decisiones completadas
+
+Una decisión ya completada deja de aparecer como pendiente cuando la fuente lo confirma.
+
+No permanece por caché hasta que el usuario la descarte manualmente.
+
+---
+
+#### 196. Riesgos cerrados
+
+Un riesgo tratado o cerrado no sigue marcado como abierto por una copia stale.
+
+Si el home usa snapshot, debe reflejar su timestamp y freshness.
+
+---
+
+#### 197. Indicador sin fuente
+
+Un KPI cuya fuente no puede resolverse no se muestra con un último valor indefinidamente sin explicación.
+
+La UI conserva estado stale o indisponible según contrato.
+
+---
+
+#### 198. Objetos no localizados
+
+Si un handoff apunta a un objeto que ya no existe o fue retirado:
+
+- el destino revalida;
+- la UI presenta resultado seguro;
+- el home no recrea el objeto desde datos embebidos.
+
+---
+
+#### 199. Versiones de contrato
+
+Cuando un indicador o decisión dependa de una versión de política o contrato, la fuente conserva esa versión.
+
+El home no usa siempre la versión actual para reinterpretar el pasado.
+
+---
+
+#### 200. Reconciliación con `VSCREEN-0007`
+
+La futura implementación se considera conforme únicamente si la raíz `/` puede demostrar que su intención dominante coincide con:
+
+```text
+prioridades
++
+excepciones
++
+indicadores
++
+decisiones pendientes
++
+alcance explícito
+```
+
+sin perder las fronteras de autorización y ownership.
+
+---
+
+#### 201. Reconciliación con `VPROC-0001`
+
+La proyección debe apoyar revisión y seguimiento de decisiones empresariales.
+
+No convierte el home en el lugar donde todos los procesos son ejecutados.
+
+---
+
+#### 202. Reconciliación con `VPROC-0061`
+
+Los indicadores y mejoras deben conservar relación entre:
+
+- medición;
+- análisis;
+- decisión;
+- verificación.
+
+Una métrica decorativa sin uso decisional no se promociona por esta tarea.
+
+---
+
+#### 203. Reconciliación con `VPROC-0063`
+
+Los riesgos visibles deben conservar la semántica del registro y tratamiento de riesgo propietario.
+
+No se crea una lista ad hoc de “riesgos” basada en errores de UI.
+
+---
+
+#### 204. Casos representativos obligatorios para materialización
+
+La futura unidad debe cubrir al menos estos escenarios:
+
+1. propietario con múltiples dominios autorizados y decisiones pendientes;
+2. propietario sin decisiones pendientes;
+3. propietario con denegación específica sobre una región;
+4. propietario con alcance territorial parcial;
+5. propietario con indicador stale;
+6. owner externo no disponible;
+7. riesgo de alta relevancia autorizado;
+8. decisión bloqueada por dependencia;
+9. simulación activa;
+10. cambio de autoridad durante sesión;
+11. error parcial de una región;
+12. fallo de resolución de autoridad;
+13. handoff cross-app válido;
+14. acceso directo al detalle revalidado;
+15. ausencia de datos que no se confunde con cero.
+
+---
+
+#### 205. Pruebas de render esperadas
+
+La futura materialización deberá verificar:
+
+- jerarquía visual;
+- responsive;
+- estados vacíos;
+- estados parciales;
+- denegaciones seguras;
+- fuentes no disponibles;
+- indicadores stale;
+- long labels;
+- altos conteos;
+- ausencia de overflow;
+- foco y teclado.
+
+Esta sección no ejecuta esas pruebas.
+
+---
+
+#### 206. Pruebas de autorización esperadas
+
+La futura unidad deberá demostrar que:
+
+- el rol no es wildcard;
+- una denegación prevalece cuando corresponde;
+- un filtro no amplía scope;
+- un deep link revalida;
+- un conteo no incluye objetos invisibles;
+- perder autoridad elimina la proyección;
+- el cliente privilegiado no funciona como bypass.
+
+---
+
+#### 207. Pruebas de ownership esperadas
+
+La futura unidad deberá demostrar que:
+
+- cada mutación se ejecuta en su owner;
+- los enlaces cross-app conservan identidad;
+- el home no duplica fórmulas;
+- el home no crea records espejo;
+- la raíz no promociona rutas históricas cross-owner como dominios VISO.
+
+---
+
+#### 208. Pruebas de estado y error esperadas
+
+Deben distinguirse:
+
+```text
+EMPTY
+DENIED
+UNAVAILABLE
+NOT_IMPLEMENTED
+PARTIAL
+STALE
+TECHNICAL_FAILURE
+```
+
+sin colapsarlos en una sola tarjeta vacía.
+
+---
+
+#### 209. Pruebas de accesibilidad esperadas
+
+La futura implementación deberá cubrir, como mínimo:
+
+- landmarks;
+- headings;
+- nombres accesibles;
+- foco visible;
+- navegación por teclado;
+- contraste;
+- estados no dependientes solo de color;
+- lectura comprensible de prioridad, riesgo, freshness y bloqueo.
+
+---
+
+#### 210. Pruebas de handoff esperadas
+
+Un handoff debe demostrar:
+
+1. destino correcto;
+2. owner correcto;
+3. referencia mínima;
+4. ausencia de secretos en URL;
+5. autorización revalidada;
+6. error seguro si el objeto cambió;
+7. retorno comprensible cuando aplique.
+
+---
+
+#### 211. Métricas de piloto
+
+`VISO-UX-020` puede observar, para esta variante:
+
+- tiempo para localizar una decisión;
+- porcentaje de navegación al owner correcto;
+- errores de interpretación de alcance;
+- confusión entre indicador y acción;
+- confusión entre VISO y aplicación propietaria;
+- tasa de intentos sobre opciones no autorizadas;
+- comprensión de estados stale o parciales.
+
+No se fijan objetivos numéricos sin evidencia de piloto.
+
+---
+
+#### 212. Carryovers
+
+Los pendientes quedan asignados:
+
+| Hallazgo | Bloquea `VISO-UX-008` | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| la raíz física actual mezcla conteos y accesos históricos de varios owners | no | unidad física de `VISO-UX-008` + `VISO-UX-017/018` | `/` materializado conforme a `VSCREEN-0007`, ownership reconciliado y handoffs seguros |
+| el binding físico entre `VISO-ROUTE-001` y `VSCREEN-0007` no está certificado por esta tarea documental | no | materialización física + validadores de pantalla/ruta aplicables | código, registro y pruebas demuestran una sola intención dominante |
+| la presentación territorial detallada aún no pertenece a esta tarea | no | `VISO-UX-013` | patrón transversal de alcance materializado y probado |
+| la explicación detallada de procedencia de permisos aún no pertenece a esta tarea | no | `VISO-UX-014` | patrón de origen de permisos materializado |
+| conflictos pre-save pertenecen a una tarea posterior | no | `VISO-UX-015` | editor propietario muestra conflicto antes de guardar |
+| preview exacto por trabajador pertenece a una tarea posterior | no | `VISO-UX-016` | preview materializado sin ampliar datos visibles |
+| duplicidades cross-owner no se retiran desde esta tarea | no | `VISO-UX-017` | cada duplicidad tiene disposición final y reemplazo seguro |
+| handoffs externos finales no se fijan todos desde esta tarea | no | `VISO-UX-018` | destino y enlace protegido definidos por superficie |
+| seguridad avanzada requiere divulgación progresiva específica | no | `VISO-UX-019` | patrón detallado materializado |
+| la comprensión real de la composición no está validada con administradores | no | `VISO-UX-020` | piloto demuestra comprensión y navegación correctas |
+
+No queda pendiente narrativo sin owner ni condición de salida.
+
+---
+
+#### 213. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** el Registro Canónico vigente ya protege autorización server-side, alcance, navegación administrativa, ownership, coherencia de VISO, inventario de rutas, minimización, estados seguros, handoffs, auditoría, conflictos y experiencia comprensible. Esta tarea especializa esas obligaciones para la composición `Inicio` del perfil `propietario` sin crear una regla empresarial nueva, permiso, recurso, rol, scope, proceso, pantalla, ruta, tabla, cálculo, transición o mutación independiente.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 214. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, la tarea reutiliza especialmente:
+
+- `TREQ-VISO-001` para coherencia de VISO, alcance, conflictos, procedencia y auditoría;
+- `TREQ-VISO-004` y `TREQ-VISO-005` para conservar inventario e identidades de rutas;
+- `TREQ-VISO-011`, `TREQ-VISO-012` y `TREQ-VISO-014` para protección de rutas, superficie pública controlada y resolución de contexto;
+- `TREQ-VISO-022` y `TREQ-VISO-023` para no retirar prematuramente superficies y reconciliar el universo VISO;
+- la cobertura UX vigente de navegación comprensible, fuente visible, ownership entre aplicaciones, clasificación por dominio y tratamiento de superficies sin duplicar mutaciones.
+
+Estas referencias son trazabilidad heredada.
+
+No actualizan 04A.
+
+---
+
+#### 215. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-008`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en una rama documental de `VISO-UX-008`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, protocolo, contrato de entrega, manifest, continuidad, topología, políticas de tarea, owner del minibloque, contrato de navegación de `VISO-UX-001`, identidades `VISO-ROUTE-001` y `VSCREEN-0007`, bindings de pantalla/proceso/paso, proceso `VPROC-0001`, procesos relacionados `VPROC-0061` y `VPROC-0063`, matriz canónica del rol `propietario`, Registro 04A aplicable, scripts documentales y el AS-IS de `vento-viso/main` para `src/app/page.tsx`; la versión completa aprobada de `VISO-UX-007` se utilizó como predecesora documental permitida por el modo de trabajo adelantado. |
+| OPERATIVA | NOT_EXECUTED | No se consultaron ni modificaron decisiones reales, riesgos, indicadores, permisos, turnos, trabajadores, clientes, finanzas, inventario o producción; no se ejecutó ninguna acción empresarial. |
+| FÍSICA | NOT_EXECUTED | No se modificaron `vento-viso`, rutas, componentes, contratos, Supabase, datos, migraciones, RLS, RPC, Auth, secretos, deploys ni configuración runtime; la materialización permanece por `implementation_unit_id` detrás de `POST_E5_PACKAGE`. |
+
+---
+
+#### 216. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-OWNER-HOME-001`;
+2. la tarea conserva `VISO-UX-007` como anterior y `VISO-UX-009` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. la entrada especial continúa siendo `/`;
+6. `Inicio` no se convierte en séptimo dominio administrativo;
+7. `VISO-ROUTE-001` conserva identidad y no se renumera;
+8. `VSCREEN-0007` es la pantalla canónica objetivo;
+9. no se crea otra pantalla por nombre de rol;
+10. `VPROC-0001` permanece proceso principal;
+11. `VPROC-0001::STEP-REVIEW_EXECUTIVE_WORK` permanece paso dominante;
+12. la modalidad permanece `OWNER_WORKSPACE`;
+13. el papel dominante permanece `MONITOR`;
+14. `VPROC-0061` y `VPROC-0063` permanecen procesos relacionados;
+15. el rol `propietario` no se interpreta como wildcard;
+16. el perfil de presentación no equivale a autorización;
+17. el rol no produce auto-redirección desde SHELL;
+18. el home empieza después de acceso válido a VISO;
+19. una denegación vigente conserva precedencia;
+20. el ámbito organizacional no se convierte en universo absoluto;
+21. los agregados se calculan únicamente sobre información autorizada;
+22. los filtros no amplían scope;
+23. una sede seleccionada no concede territorio;
+24. `Todos` significa todos los elementos autorizados;
+25. el AS-IS actual no se declara conforme por existir;
+26. la raíz actual queda identificada como `VISO-ROUTE-001`;
+27. la composición AS-IS de PASS, comercial, vacantes y CMS no se canoniza por inercia;
+28. el home objetivo se organiza alrededor de contexto, decisiones, riesgos, indicadores, seguimiento, dominios y handoffs;
+29. la cabecera permite comprender contexto y alcance;
+30. simulación se distingue de autoridad real;
+31. las decisiones pendientes provienen de su owner;
+32. una decisión pendiente no implica acción ejecutable;
+33. no existe aprobación genérica desde tarjeta;
+34. excepciones y riesgos conservan semántica propietaria;
+35. error técnico no se convierte en riesgo empresarial;
+36. conflicto no se convierte en error genérico;
+37. indicadores declaran fuente, periodo, alcance y unidad cuando aplique;
+38. un row count no se declara KPI automáticamente;
+39. el home no inventa fórmulas financieras;
+40. NUMERA conserva ownership financiero;
+41. aplicaciones operativas conservan sus métricas propietarias;
+42. datos laborales se minimizan;
+43. seguridad se resume sin exponer detalle privilegiado;
+44. compromisos conservan identidad y owner;
+45. el home no duplica la bandeja `VSCREEN-0005` de SHELL;
+46. no existe segunda bandeja global de trabajo;
+47. los seis dominios VISO permanecen accesos conceptuales principales;
+48. cada tarjeta visible corresponde a una proyección autorizada;
+49. un destino visible no concede todas sus acciones;
+50. los handoffs externos no se convierten en editor local;
+51. PASS no se usa como backoffice por asociación temática;
+52. una aplicación diferida no se promociona por catálogo;
+53. prioridad solo se conserva desde fuente o regla canónica;
+54. el home no inventa un score de prioridad;
+55. vencimientos provienen de la fuente;
+56. elementos bloqueados conservan razón segura;
+57. conteos no revelan elementos ocultos;
+58. los estados vacíos distinguen ausencia, deny, indisponibilidad, no implementación, parcial y error;
+59. datos stale no se muestran como vigentes;
+60. indisponibilidad no se presenta como cero;
+61. una carga parcial no invalida regiones seguras por defecto;
+62. cada resumen conserva owner funcional;
+63. procedencia de datos no concede autorización;
+64. `VISO-UX-013` conserva la presentación territorial detallada;
+65. `VISO-UX-014` conserva procedencia de permisos;
+66. `VISO-UX-015` conserva conflictos pre-save;
+67. `VISO-UX-016` conserva preview individual;
+68. `VISO-UX-017` conserva la deduplicación cross-owner;
+69. `VISO-UX-018` conserva el patrón final de handoff;
+70. `VISO-UX-019` conserva divulgación progresiva de seguridad;
+71. `VISO-UX-020` conserva pruebas con administradores reales;
+72. no se ejecutan mutaciones sensibles inline;
+73. las acciones ordinarias del home son navegación y revisión;
+74. deep links transportan referencias, no autoridad;
+75. preferencias de UI no cambian permisos;
+76. no existe matriz local rol→widgets como fuente de seguridad;
+77. dispositivo compartido no elimina reautenticación;
+78. cambio de autoridad invalida proyecciones stale;
+79. concurrencia obliga a revalidar en destino;
+80. caché no mezcla actores ni ámbitos;
+81. responsive conserva contexto y bloqueos;
+82. accesibilidad no depende solo de color;
+83. la densidad prioriza síntesis y drill-down;
+84. `NOT_AUTHORIZED` no revela información oculta;
+85. `NOT_AVAILABLE` se distingue de deny;
+86. `NOT_IMPLEMENTED` no inventa destino;
+87. `TECHNICAL_FAILURE` no se convierte en ausencia;
+88. acceso sensible conserva auditoría propietaria;
+89. telemetría no sustituye evidencia empresarial;
+90. más autoridad potencial no implica más información visible;
+91. comparaciones usan unidades y periodos compatibles;
+92. tendencias no se infieren desde snapshots incompatibles;
+93. color no redefine estado empresarial;
+94. labels primarios usan lenguaje empresarial;
+95. no se crean grupos genéricos para ocultar ownership;
+96. rutas cross-owner no se promocionan por ubicación física;
+97. no se crea `/owner`, `/dashboard-owner` ni otra ruta;
+98. no se crea un `VSCREEN-*` nuevo;
+99. no se crea un `VPROC-*` nuevo;
+100. `VISO-UX-009` conserva el inicio de gerente general;
+101. `VISO-UX-010` conserva gerente de sede;
+102. `VISO-UX-011` conserva auxiliar administrativa;
+103. `VISO-UX-012` conserva contador;
+104. la variante se resuelve desde identidad canónica, no query o alias;
+105. un rol inconsistente no cae a propietario por conveniencia;
+106. un principal técnico no activa la variante humana;
+107. visible al propietario no significa propiedad del propietario;
+108. escalamiento proviene de contrato propietario;
+109. evidencia incompleta no se presenta como lista para aprobar;
+110. la explicación no expone internals sensibles;
+111. disponibilidad de cliente administrativo no sustituye permiso humano;
+112. agregados se resuelven de forma segura en servidor;
+113. composición cross-owner no crea tabla maestra duplicada;
+114. zona horaria y periodo conservan semántica propietaria;
+115. ver no concede exportar;
+116. ver no concede imprimir;
+117. cargar el home no produce efecto empresarial;
+118. refrescar es idempotente respecto a efectos empresariales;
+119. no existe fallback local silencioso ante error de fuente;
+120. no se hardcodea `propietario → mostrar todo`;
+121. una capacidad nueva no entra automáticamente al home;
+122. no se retiran superficies AS-IS antes de reemplazo gobernado;
+123. cada elemento AS-IS recibe disposición verificable en materialización;
+124. website CMS no se convierte en dominio VISO por estar enlazado hoy;
+125. conteo de trabajadores no se declara KPI sin contrato;
+126. programación consume la misma fuente canónica de sus vistas;
+127. auditoría se resume sin copiar el ledger;
+128. no se crea score ejecutivo o semáforo global inventado;
+129. privacidad aplica incluso para dirección;
+130. drill-down revalida fronteras;
+131. snapshots identifican temporalidad;
+132. realtime no se exige indiscriminadamente;
+133. el home no descarga datasets completos para resumirlos;
+134. un fallo externo no activa copia no autoritativa;
+135. query string y storage local no pueden fijar autoridad;
+136. acceso directo a `/` conserva guard;
+137. ausencia de trabajo no fabrica urgencias;
+138. alto volumen se sintetiza en lugar de renderizarse completo;
+139. filtros no se convierten en query builder universal;
+140. no existen acciones destructivas desde `Inicio`;
+141. errores usan lenguaje comprensible;
+142. soporte no convierte el home en diagnóstico técnico;
+143. decisiones visibles conservan objeto fuente;
+144. decisiones completadas salen de pendientes cuando el owner lo confirma;
+145. indicadores sin fuente no conservan un valor indefinidamente sin estado;
+146. `VSCREEN-0007` mantiene una intención dominante;
+147. `VPROC-0001` mantiene revisión y seguimiento, no ejecución universal;
+148. los casos representativos de materialización quedan definidos;
+149. pruebas futuras cubren render, autorización, ownership, estados, accesibilidad y handoffs;
+150. todos los carryovers tienen owner y condición de salida;
+151. no se crean requisitos de prueba;
+152. no se modifican requisitos de prueba;
+153. no se modifica el Registro Canónico de Requisitos de Prueba;
+154. no se modifica Supabase;
+155. toda futura modificación de Supabase VENTO permanece en `vento-shell`;
+156. no se ejecuta implementación física desde esta tarea documental.
+
+---
+
+#### 217. Límites
+
+Esta tarea no:
+
+- modifica código de `vento-viso`;
+- modifica `src/app/page.tsx`;
+- crea componentes;
+- crea rutas;
+- mueve rutas;
+- renumera `VISO-ROUTE-*`;
+- retira rutas;
+- crea redirects;
+- crea `VSCREEN-*`;
+- crea `VPROC-*`;
+- crea pasos de proceso;
+- cambia ownership de procesos;
+- crea permisos;
+- modifica permisos;
+- cambia matrices;
+- asigna roles;
+- convierte `propietario` en wildcard;
+- crea scopes;
+- amplía territorio;
+- crea grants;
+- crea denies;
+- crea excepciones individuales;
+- crea una bandeja global de trabajo;
+- modifica la bandeja de SHELL;
+- crea KPIs nuevos;
+- define fórmulas financieras;
+- define fórmulas comerciales;
+- define fórmulas productivas;
+- crea un score ejecutivo;
+- crea un semáforo universal de salud;
+- ejecuta aprobaciones;
+- ejecuta publicaciones;
+- ejecuta revocaciones;
+- ejecuta rollback;
+- ejecuta mutaciones de otros owners;
+- crea exportes;
+- crea impresión;
+- crea tablas;
+- crea vistas SQL;
+- crea RPC;
+- crea RLS;
+- crea funciones;
+- crea triggers;
+- crea migraciones;
+- modifica Supabase;
+- modifica Auth;
+- modifica Storage;
+- modifica Realtime;
+- modifica Edge Functions;
+- modifica cron o colas;
+- cambia secretos;
+- modifica datos reales;
+- cambia PASS;
+- cambia NUMERA;
+- cambia NEXO;
+- cambia FOGO;
+- cambia ORIGO;
+- cambia PULSO;
+- cambia ANIMA;
+- cambia TALENTO;
+- cambia AURA;
+- selecciona package;
+- prepara package gate;
+- aprueba package gate;
+- autoriza implementación física;
+- ejecuta implementación física;
+- desarrolla `VISO-UX-009`;
+- desarrolla `VISO-UX-010`;
+- desarrolla `VISO-UX-011`;
+- desarrolla `VISO-UX-012`;
+- desarrolla `VISO-UX-013..020`;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+La identidad exacta de cualquier unidad física futura se resolverá exclusivamente mediante el package y gate aplicables.
+
+---
+
+#### 218. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-007 — Crear sección Auditoría`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-008 — Definir inicio para propietario`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-009 — Definir inicio para gerente general`
 ### [ ] VISO-UX-009 — Definir inicio para gerente general
 ### [ ] VISO-UX-010 — Definir inicio para gerente de sede
 ### [ ] VISO-UX-011 — Definir inicio para auxiliar administrativa
