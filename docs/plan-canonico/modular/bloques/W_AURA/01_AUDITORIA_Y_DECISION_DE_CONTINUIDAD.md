@@ -652,254 +652,212 @@ Esta tarea no:
 **Estado:** APROBADA
 **Tarea anterior:** AURA-AUD-002 — Confirmar estado real del producto
 **Tarea siguiente:** AURA-AUD-004 — Inventariar rutas y pantallas
-**Tipo de tarea:** auditoría técnico-documental de usuarios actuales; distingue usuarios efectivos de AURA, titulares potenciales de acceso dormido, población laboral vigente y roles sin asignación, sin crear permisos, usuarios, sesiones ni superficies
+**Tipo de tarea:** auditoría técnico-documental de usuarios actuales; distingue usuario efectivo, elegibilidad canónica, materialización runtime de `aura.access` y drift de grants sin modificar autorización ni producto
 **Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
 **Repositorio propietario:** `vento-group-sas/vento-shell`
 **Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
-**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; se confirma que el producto AURA tiene cero usuarios efectivos observados en el estado vigente y que las elegibilidades documentales futuras permanecen dormidas
-**Cambios físicos autorizados:** ninguno; esta tarea no crea ni modifica usuarios, roles, permisos, grants, overrides, sesiones, navegación, repositorios, datos, Supabase, DNS, despliegues ni configuración runtime
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; se mantienen cero usuarios efectivos AURA y se corrige el snapshot de autorización runtime
+**Cambios físicos autorizados:** ninguno; no modifica usuarios, roles, permisos, grants, overrides, sesiones, Supabase, navegación ni despliegues
 **Requisitos de prueba creados o modificados:** 0
 
 ---
 
 #### 1. Propósito
 
-Confirmar quién usa actualmente AURA y evitar cuatro equivalencias incorrectas:
+Confirmar quién usa actualmente AURA separando:
 
 ```text
 EMPLEADO ACTIVO
-!= USUARIO DE AURA
+!= USUARIO AURA
 
-ROL CANONICAMENTE ELEGIBLE
-!= GRANT RUNTIME EFECTIVO
+GRANT RUNTIME
+!= PRODUCTO AURA DISPONIBLE
 
-PERMISO DOCUMENTADO COMO DORMIDO
-!= ACCESO PRODUCTIVO
+ROL CANÓNICAMENTE ELEGIBLE
+!= GRANT CANÓNICAMENTE CORRECTO
 
-CAPACIDAD DE MARKETING EN OTRO PRODUCTO
-!= USO DE AURA
+PERMISO MATERIALIZADO
+!= CAPACIDAD PRODUCTIVA HABILITADA
 ```
 
-La conclusión vigente de esta tarea es:
+Resultado corregido:
 
 ```text
 EMPLEADOS_REGISTRADOS = 63
 EMPLEADOS_ACTIVOS = 39
 USUARIOS_EFECTIVOS_AURA = 0
-GRANTS_RUNTIME_AURA_POR_ROL = 0
+USUARIOS_PRODUCTIVOS_AURA = 0
+AURA_ACCESS_RUNTIME = PRESENTE
+GRANTS_RUNTIME_AURA_POR_ROL = 5
+GRANTS_CON_ROL_CANÓNICO_CORRECTO = 3
+GRANTS_CON_ROL_CANÓNICO_INCORRECTO = 2
+GRANTS_CON_ALCANCE_RUNTIME_CANÓNICO = 0
 OVERRIDES_RUNTIME_AURA_POR_EMPLEADO = 0
 REFERENCIAS_LEGACY_AURA_EN_EMPLOYEES = 0
-CANDIDATOS_ACTIVOS_EN_ROLES_CON_ACCESO_DORMIDO = 8
-USUARIOS_PRODUCTIVOS_AURA = 0
 ```
-
-Los ocho candidatos activos corresponden únicamente a personas cuyo rol actual pertenece a una clase que la matriz canónica prevé para un futuro `aura.access` dormido. No son usuarios actuales de AURA.
 
 ---
 
 #### 2. Reconciliación topológica
 
-El mini-bloque `AURA-AUD-001..012` conserva:
-
 ```text
+TASK = AURA-AUD-003
 MODE = DEFINE_ONCE
 EXECUTION_GATE = NO_PHYSICAL_INSTANCE
 ```
 
-`AURA-AUD-003` produce una única determinación documental sobre la población actual relacionada con AURA.
-
-No crea una instancia física, no materializa permisos, no modifica usuarios y no habilita el producto.
-
-La ausencia de usuarios efectivos es coherente con `AURA-AUD-001` y `AURA-AUD-002`: no existe repositorio standalone propietario confirmado ni producto AURA funcional y navegable.
+La tarea corrige evidencia documental. No crea ni retira grants y no habilita AURA.
 
 ---
 
-#### 3. Entradas aprobadas
+#### 3. Modelo físico correcto de `aura.access`
 
-La auditoría consume:
+El permiso canónico `aura.access` se representa físicamente mediante:
 
-- `AURA-AUD-001`, que confirma ausencia de repositorio standalone AURA;
-- `AURA-AUD-002`, que confirma `AURA_WEB_PRODUCT = NOT_IMPLEMENTED`, `AURA_WEB_AVAILABILITY = FALSE` y `AURA_RUNTIME_ENTRY = UNAVAILABLE`;
-- el catálogo canónico, donde `aura` conserva identidad administrativa diferida;
-- las matrices canónicas de roles, que tratan `aura.access` como capacidad `BASE_ONLY` y dormida;
-- el Registro 04A vigente de AURA;
-- el proyecto remoto `vento-os-dev`, consultado únicamente mediante agregados sin exponer datos personales;
-- las tablas de autorización y personal necesarias para distinguir población, elegibilidad documental y grant materializado.
+```text
+public.apps.code = aura
++
+public.app_permissions.code = access
+```
 
-La tarea no usa nombres, documentos, correos, identificadores personales ni secretos para resolver la clasificación.
+Por tanto, consultar literalmente:
+
+```text
+public.app_permissions.code = aura.access
+```
+
+es incorrecto para el esquema físico vigente.
+
+El snapshot remoto correcto demuestra:
+
+```text
+public.apps(code = aura) = 1
+public.app_permissions(app = aura, code = access) = 1
+permiso activo = SI
+role_permissions = 5
+employee_permissions = 0
+legacy employee permissions con aura = 0
+```
+
+La fila de permiso existe desde `2026-01-18`.
 
 ---
 
-#### 4. Definición de usuario actual de AURA
+#### 4. Definición de usuario efectivo
 
-Para esta auditoría, una persona solo cuenta como `USUARIO_EFECTIVO_AURA` cuando existe evidencia simultánea de:
+Una persona cuenta como usuario efectivo de AURA únicamente si coinciden:
 
-1. una persona laboral activa;
-2. una autorización efectiva atribuible a AURA;
-3. una superficie o entrada de producto AURA disponible para usar esa autorización.
+1. actor laboral activo;
+2. autorización aplicable;
+3. producto AURA funcional y disponible.
 
-En el estado vigente no se cumplen las condiciones 2 y 3.
+La condición 3 continúa ausente.
+
+```text
+USUARIOS_EFECTIVOS_AURA = 0
+```
+
+Un grant runtime por sí solo no constituye uso efectivo.
+
+---
+
+#### 5. Universo laboral observado
+
+El catálogo remoto contiene 15 roles activos. La población laboral contiene 63 filas, de las cuales 39 están activas.
+
+| Rol | Total | Activos | Inactivos | Decisión canónica `aura.access` | Grant runtime |
+| --- | ---: | ---: | ---: | --- | --- |
+| `auxiliar_administrativa` | 2 | 2 | 0 | `NO ASIGNAR` | no |
+| `barista` | 5 | 4 | 1 | `NO ASIGNAR` | no |
+| `bodeguero` | 7 | 2 | 5 | `NO ASIGNAR` | no |
+| `cajero` | 3 | 1 | 2 | `NO ASIGNAR` | no |
+| `cocinero` | 13 | 9 | 4 | `NO ASIGNAR` | no |
+| `conductor` | 1 | 1 | 0 | `NO ASIGNAR` | no |
+| `contador` | 2 | 2 | 0 | `NO ASIGNAR` | sí |
+| `gerente` | 0 | 0 | 0 | `NO ASIGNAR` | sí |
+| `gerente_general` | 4 | 4 | 0 | `ASIGNAR` | sí |
+| `marketing` | 1 | 0 | 1 | `ASIGNAR`, dormido | sí |
+| `mesero` | 9 | 4 | 5 | `NO ASIGNAR` | no |
+| `panadero` | 5 | 2 | 3 | `NO ASIGNAR` | no |
+| `pastelero` | 1 | 1 | 0 | `NO ASIGNAR` | no |
+| `propietario` | 4 | 4 | 0 | `ASIGNAR` | sí |
+| `repostero` | 6 | 3 | 3 | `NO ASIGNAR` | no |
+| **TOTAL** | **63** | **39** | **24** | — | **5 roles** |
+
+---
+
+#### 6. Reconciliación de grants
+
+Grants runtime observados:
+
+| Rol | Runtime | Alcance runtime | Decisión canónica | Resultado |
+| --- | --- | --- | --- | --- |
+| `propietario` | `ALLOW` | `global` | `ASIGNAR`, `NT-APP` | rol correcto; alcance en drift |
+| `gerente_general` | `ALLOW` | `global` | `ASIGNAR`, `NT-APP` | rol correcto; alcance en drift |
+| `marketing` | `ALLOW` | `site_type=admin` | `ASIGNAR`, `NT-APP-DORMANT` | rol correcto; alcance en drift |
+| `contador` | `ALLOW` | `global` | `NO ASIGNAR` | drift de rol y alcance |
+| `gerente` | `ALLOW` | `global` | `NO ASIGNAR` | drift de rol y alcance |
+
+El catálogo de alcance de `aura.access` admite únicamente `NT-APP`; los alcances territoriales no aplican.
 
 Por tanto:
 
 ```text
-USUARIO_EFECTIVO_AURA = 0
+GRANTS_RUNTIME = 5
+ROL_CANÓNICO_CORRECTO = 3
+ROL_CANÓNICO_INCORRECTO = 2
+ALCANCE_RUNTIME_CANÓNICO = 0
 ```
 
-No se cuentan como usuarios actuales:
-
-- personas cuyo rol podría recibir acceso en una materialización futura;
-- personas que usan VISO para administrar contenido web;
-- personas que participan en marketing fuera de AURA;
-- referencias de AURA en launchers;
-- miembros de un rol con asignación canónica dormida;
-- trabajadores inactivos;
-- una aplicación registrada sin superficie funcional.
+Esta tarea registra el drift y no lo corrige físicamente.
 
 ---
 
-#### 5. Universo laboral remoto observado
+#### 7. Población relacionada
 
-El catálogo remoto de roles contiene 15 códigos activos y la población laboral observada contiene 63 filas, de las cuales 39 están activas.
-
-| Rol | Total observado | Activos | Inactivos | Decisión canónica para `aura.access` |
-| --- | ---: | ---: | ---: | --- |
-| `auxiliar_administrativa` | 2 | 2 | 0 | `NO ASIGNAR` |
-| `barista` | 5 | 4 | 1 | `NO ASIGNAR` |
-| `bodeguero` | 7 | 2 | 5 | `NO ASIGNAR` |
-| `cajero` | 3 | 1 | 2 | `NO ASIGNAR` |
-| `cocinero` | 13 | 9 | 4 | `NO ASIGNAR` |
-| `conductor` | 1 | 1 | 0 | `NO ASIGNAR` |
-| `contador` | 2 | 2 | 0 | `NO ASIGNAR` |
-| `gerente` | 0 | 0 | 0 | `NO ASIGNAR` |
-| `gerente_general` | 4 | 4 | 0 | `ASIGNAR`, dormido mientras AURA siga diferida |
-| `marketing` | 1 | 0 | 1 | `ASIGNAR`, dormido mientras AURA siga diferida |
-| `mesero` | 9 | 4 | 5 | `NO ASIGNAR` |
-| `panadero` | 5 | 2 | 3 | `NO ASIGNAR` |
-| `pastelero` | 1 | 1 | 0 | `NO ASIGNAR` |
-| `propietario` | 4 | 4 | 0 | `ASIGNAR`, dormido mientras AURA siga diferida |
-| `repostero` | 6 | 3 | 3 | `NO ASIGNAR` |
-| **TOTAL** | **63** | **39** | **24** | — |
-
-La matriz presenta el universo de roles observado; no convierte la asignación canónica futura en un grant actual.
-
----
-
-#### 6. Titulares potenciales de acceso dormido
-
-Las matrices canónicas vigentes reservan `aura.access` para tres roles base:
-
-| Rol | Activos observados | Estado documental | Clasificación en esta auditoría |
-| --- | ---: | --- | --- |
-| `propietario` | 4 | `ASIGNAR` con acceso dormido | candidato futuro; no usuario actual |
-| `gerente_general` | 4 | `ASIGNAR` con acceso dormido | candidato futuro; no usuario actual |
-| `marketing` | 0 | `ASIGNAR` con acceso dormido | sin titular activo actual |
-| **TOTAL ACTIVO** | **8** | — | **0 usuarios efectivos** |
-
-Existe además una fila laboral inactiva con rol `marketing`; por definición no forma parte de la población actual activa ni de los ocho candidatos activos.
-
-La expresión `acceso dormido` significa que la matriz documental reconoce correspondencia funcional futura, pero la concesión no puede utilizarse productivamente mientras AURA permanezca diferida y no disponible.
-
----
-
-#### 7. Estado runtime de autorización observado
-
-La consulta remota de `vento-os-dev` arroja:
+Roles canónicamente elegibles:
 
 ```text
-public.apps(code = aura) = 1
-public.app_permissions(code = aura.access) = 0
-role_permissions para aura.access = 0
-employee_permissions para aura.access = 0
-employees.permissions con referencia legacy a aura = 0
+propietario activos = 4
+gerente_general activos = 4
+marketing activos = 0
+TOTAL ACTIVOS ELEGIBLES = 8
 ```
 
-El catálogo runtime conserva la aplicación `aura`, pero el permiso `aura.access` no está materializado actualmente en `public.app_permissions`.
-
-Como consecuencia observable:
-
-- no existe un grant materializado por rol para AURA;
-- no existe un override individual materializado para AURA;
-- no existe una referencia legacy AURA en el campo de permisos de empleados;
-- no puede derivarse ningún usuario efectivo de AURA desde la autorización runtime actual.
-
-Esta ausencia runtime no elimina la definición canónica futura de `aura.access`; registra una diferencia entre modelo documental y materialización física actual.
-
----
-
-#### 8. Tratamiento de la divergencia documental-runtime
-
-La matriz canónica define `aura.access` como permiso de entrada `BASE_ONLY` y lo reserva de forma dormida para `propietario`, `gerente_general` y `marketing`.
-
-El remoto actual no contiene la fila `aura.access` en `public.app_permissions`.
-
-La interpretación aprobada es:
+Roles con grant runtime:
 
 ```text
-MODELO_CANONICO_DE_ACCESO = DEFINIDO_Y_DORMIDO
-MATERIALIZACION_RUNTIME_DEL_PERMISO = AUSENTE
-USO_EFECTIVO = 0
+propietario activos = 4
+gerente_general activos = 4
+marketing activos = 0
+contador activos = 2
+gerente activos = 0
+TOTAL ACTIVOS EN ROLES CON GRANT = 10
 ```
 
-No se corrige esta diferencia desde `AURA-AUD-003`.
-
-El inventario y reconciliación detallada de datos y permisos pertenece a `AURA-AUD-006 — Identificar datos y permisos utilizados`.
-
-Condición de salida para ese hallazgo: `AURA-AUD-006` deberá declarar si la ausencia runtime de `aura.access` se conserva mientras AURA esté diferida o si una decisión posterior exige materializarlo, sin activar acceso productivo por inferencia.
+Ninguna cifra cambia la conclusión de cero usuarios efectivos.
 
 ---
 
-#### 9. Usuarios de capacidades relacionadas
+#### 8. Handoff
 
-Esta tarea no redefine como usuarios AURA a las personas que hoy puedan trabajar con capacidades relacionadas alojadas en otros productos.
+`AURA-AUD-006` deberá tratar por separado:
 
-En particular:
+```text
+PERMISO_CANÓNICO
+PERMISO_RUNTIME
+GRANT_CANÓNICO
+GRANT_RUNTIME
+ALCANCE_CANÓNICO
+ALCANCE_RUNTIME
+USO_EFECTIVO
+```
 
-- administrar contenido web en VISO no convierte al actor en usuario AURA;
-- consumir contenido público en `Vento-Group` no convierte al actor en usuario AURA;
-- participar en campañas, marca o contenido mediante procesos manuales no demuestra uso de AURA;
-- poseer un rol `propietario`, `gerente_general` o `marketing` no demuestra acceso efectivo al producto;
-- una referencia `soon` no constituye una sesión o uso.
-
-El inventario de procesos reales de marketing pertenece a `AURA-AUD-005` y la relación funcional con VISO pertenece a `AURA-AUD-007`.
-
----
-
-#### 10. Clasificación consolidada de población
-
-| Clase | Cantidad vigente | Tratamiento |
-| --- | ---: | --- |
-| empleados registrados | 63 | universo laboral observado |
-| empleados activos | 39 | población laboral actual |
-| empleados activos en roles con acceso canónico dormido | 8 | candidatos futuros, no usuarios AURA |
-| empleados activos con rol `marketing` | 0 | sin usuario activo de marketing por rol |
-| grants runtime AURA por rol | 0 | no materializados |
-| overrides runtime AURA por empleado | 0 | no materializados |
-| referencias legacy AURA en permisos de empleados | 0 | no observadas |
-| usuarios efectivos AURA | 0 | conclusión de la tarea |
-| usuarios productivos AURA | 0 | producto no disponible |
-
-Ninguna de estas cantidades autoriza crear permisos ni activar AURA.
+Deberá conservar como hallazgo abierto el drift de `contador`, `gerente` y de los cinco alcances runtime sin modificar Supabase desde el carril documental.
 
 ---
 
-#### 11. Handoff hacia AURA-AUD-004
-
-`AURA-AUD-004 — Inventariar rutas y pantallas` recibe como entradas:
-
-1. el producto standalone AURA no está implementado;
-2. la entrada runtime AURA no está disponible;
-3. existen cero usuarios efectivos observados;
-4. existen cero grants runtime AURA materializados;
-5. ocho empleados activos pertenecen a roles con elegibilidad canónica dormida, pero no son usuarios actuales;
-6. la ausencia runtime de `aura.access` queda registrada para reconciliación posterior en `AURA-AUD-006`;
-7. ninguna superficie de VISO, SHELL o `Vento-Group` debe atribuirse a AURA por inferencia.
-
-`AURA-AUD-004` deberá inventariar las superficies reales sin fabricar rutas AURA para justificar el catálogo o la población potencial.
-
----
-
-#### 12. Requisitos de prueba derivados
+#### 9. Requisitos de prueba derivados
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
@@ -909,86 +867,44 @@ Ninguna de estas cantidades autoriza crear permisos ni activar AURA.
 **Requisitos obsoletos:** 0
 **Fragmentos del Registro 04A afectados:** 0
 
-**Justificación:** la obligación de no tratar referencias reservadas como producto implementado, mantener AURA no disponible, detectar cambios de repositorio, rutas, launchers, navegación o permisos y conservar ownership vigente ya está cubierta por requisitos AURA existentes. Esta tarea agrega evidencia de población y autorización actual sin introducir una obligación verificable nueva.
+**Justificación:** esta corrección sustituye un snapshot runtime incorrecto por evidencia verificable. La detección de drift, indisponibilidad de AURA y protección contra inferencias de producto ya están cubiertas por requisitos AURA vigentes.
 
 ---
 
-#### 13. Cobertura de prueba vigente reutilizada
-
-Sin modificar el Registro 04A, se reutiliza principalmente:
-
-- `TREQ-AURA-004`, que impide contabilizar referencias o placeholders como producto AURA implementado;
-- `TREQ-AURA-005`, que exige detectar deltas sobre repositorio, rutas, pantallas, launchers, navegación y permiso reservado;
-- `TREQ-AURA-006`, que exige mantener AURA no disponible mientras falten repositorio, despliegue, rutas certificadas, autorización y decisión formal;
-- `TREQ-AURA-007`, que evita transferir silenciosamente a AURA capacidades actuales de otros propietarios.
-
-Esta trazabilidad no modifica el Registro 04A.
-
----
-
-#### 14. Evidencia de validación
+#### 10. Evidencia de validación
 
 | Clase | Estado | Evidencia |
 | --- | --- | --- |
-| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `AURA-AUD-003` en su rama propia mediante los scripts canónicos. |
-| LOCAL | `NOT_EXECUTED` | El artefacto todavía no ha sido incorporado al checkout del usuario ni sometido allí a formateo, quality, delivery check y batería documental. |
-| REMOTA | `PASS` | En `vento-os-dev` se observaron 63 empleados, 39 activos, 15 roles activos, una fila de aplicación `aura`, cero filas `aura.access` en `app_permissions`, cero grants de rol, cero overrides individuales y cero referencias legacy AURA en permisos de empleados; la consulta se realizó mediante agregados sin exponer datos personales. |
-| OPERATIVA | `NOT_APPLICABLE` | La tarea clasifica usuarios y elegibilidad documental; no requiere operar campañas, contenido, clientes ni una superficie AURA inexistente. |
-| FÍSICA | `NOT_APPLICABLE` | `AURA-AUD-003` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea usuarios, permisos, sesiones ni infraestructura. |
+| BUILD | `NOT_EXECUTED` | La corrección todavía debe incorporarse y compilarse en el checkout. |
+| LOCAL | `PASS` | Artefacto UTF-8/LF, una sola tarea y cero whitespace final. |
+| REMOTA | `PASS` | Supabase confirma 63 empleados, 39 activos, 15 roles de catálogo, un permiso físico `aura/access`, cinco grants de rol, cero overrides y cero referencias legacy. |
+| OPERATIVA | `NOT_APPLICABLE` | No existe producto AURA utilizable que requiera prueba humana. |
+| FÍSICA | `NOT_APPLICABLE` | No se ejecutan cambios de autorización ni datos. |
 
 ---
 
-#### 15. Criterios de aceptación
+#### 11. Criterios de aceptación
 
-- [x] Se define qué significa usuario efectivo de AURA.
-- [x] Se conserva la conclusión de `AURA-AUD-002` sobre producto no implementado y no disponible.
-- [x] Se inventaría el universo remoto por rol sin exponer datos personales.
-- [x] Se registran 63 empleados totales y 39 activos.
-- [x] Se materializan las 15 identidades de rol observadas sin faltantes ni duplicados en la matriz de esta tarea.
-- [x] Se separan roles con acceso canónico dormido de usuarios efectivos.
-- [x] Se identifican 8 empleados activos en roles con elegibilidad canónica dormida.
-- [x] Se confirma que el rol `marketing` no tiene empleados activos observados.
-- [x] Se confirma que `aura.access` no está materializado en `app_permissions` del remoto observado.
-- [x] Se confirman cero grants por rol y cero overrides individuales AURA.
-- [x] Se confirman cero referencias legacy AURA en permisos de empleados.
-- [x] Se concluyen cero usuarios efectivos y cero usuarios productivos AURA.
-- [x] Se documenta la divergencia entre modelo canónico dormido y runtime sin corregirla desde esta tarea.
-- [x] Se asigna la reconciliación de permisos a `AURA-AUD-006`.
-- [x] Se reserva el inventario de rutas y pantallas a `AURA-AUD-004`.
-- [x] Se reserva el inventario de procesos de marketing a `AURA-AUD-005`.
-- [x] No se crean ni modifican requisitos de prueba.
+- [x] Se corrige el modelo físico de `aura.access`.
+- [x] Se confirma una fila runtime activa del permiso.
+- [x] Se confirman cinco grants de rol.
+- [x] Se distinguen tres roles canónicamente asignables y dos grants de rol indebidos.
+- [x] Se confirma que los cinco alcances runtime difieren del `NT-APP` canónico.
+- [x] Se conservan cero overrides individuales.
+- [x] Se conservan cero usuarios efectivos y productivos AURA.
+- [x] No se modifica Supabase.
 - [x] No se modifica el Registro 04A.
-- [x] No se ejecutan cambios físicos.
+- [x] No se crean requisitos de prueba.
 
 ---
 
-#### 16. Límites
+#### 12. Límites
 
-Esta tarea no:
-
-- identifica personas por nombre, correo, documento o UUID;
-- crea o desactiva trabajadores;
-- modifica roles;
-- materializa `aura.access`;
-- crea grants o overrides;
-- migra la matriz canónica a Supabase;
-- decide quién deberá usar AURA en el futuro fuera de las elegibilidades ya aprobadas;
-- interpreta a usuarios de VISO como usuarios AURA;
-- inventaría exhaustivamente rutas y pantallas;
-- inventaría procesos de marketing;
-- inventaría datos o permisos más allá del snapshot necesario para esta clasificación;
-- modifica Supabase;
-- crea repositorios o infraestructura;
-- habilita navegación;
-- decide continuidad, reemplazo o retiro;
-- desbloquea `AURA-DOM`, `AURA-AUTH`, `AURA-UX` o `AURA-INT`;
-- crea ni modifica requisitos de prueba;
-- modifica el Registro 04A;
-- inicia una instancia física o package.
+Esta tarea no modifica roles, grants, permisos, alcances, usuarios, navegación, Supabase, repositorios ni infraestructura. No activa AURA y no decide continuidad, relación con VISO/PASS/PULSO ni implementación futura.
 
 ---
 
-#### 17. Continuidad
+#### 13. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
 `AURA-AUD-002 — Confirmar estado real del producto`
@@ -2092,7 +2008,612 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-006 — Identificar datos y permisos utilizados`
-### [ ] AURA-AUD-006 — Identificar datos y permisos utilizados
+### ✅ AURA-AUD-006 — Identificar datos y permisos utilizados
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-005 — Inventariar procesos de marketing
+**Tarea siguiente:** AURA-AUD-007 — Definir relación con VISO
+**Tipo de tarea:** auditoría técnico-documental de datos, almacenamiento y autorización utilizados por las capacidades actuales relacionadas con AURA; separa datos actuales, datos objetivo, permisos actuales, permisos reservados y permisos futuros sin alterar runtime
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda congelado el mapa actual de datos y permisos que soporta CMS, publicación web, colecciones comerciales y reserva de acceso AURA
+**Cambios físicos autorizados:** ninguno; no modifica tablas, políticas RLS, grants, permisos, Storage, datos, aplicaciones, repositorios, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Identificar qué datos y permisos se utilizan realmente hoy alrededor del dominio futuro de AURA y separarlos del modelo objetivo.
+
+La regla raíz es:
+
+```text
+DATO EXISTENTE
+!= DATO PROPIEDAD DE AURA
+
+PERMISO EXISTENTE
+!= PERMISO SUFICIENTE
+
+SERVICE ROLE
+!= AUTORIZACIÓN DEL ACTOR
+
+GRANT RUNTIME
+!= GRANT CANÓNICAMENTE CORRECTO
+
+DATO OBJETIVO
+!= DATO ACTUAL
+```
+
+La auditoría produce cinco clases:
+
+```text
+DATO_ACTUAL
+DATO_OBJETIVO
+PERMISO_ACTUAL
+PERMISO_RESERVADO
+PERMISO_FUTURO
+```
+
+---
+
+#### 2. Reconciliación topológica
+
+```text
+TASK = AURA-AUD-006
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+SEQUENCE = PHASE-12-AURA
+PREVIOUS = AURA-AUD-005
+NEXT = AURA-AUD-007
+```
+
+La tarea no ejecuta migraciones ni modifica autorización. Consume la corrección de `AURA-AUD-003` como evidencia válida de runtime.
+
+---
+
+#### 3. Contrato de auditoría
+
+Se define:
+
+```text
+AURA_CURRENT_DATA_PERMISSION_AUDIT = AURA-CURRENT-DATA-PERMISSION-001
+```
+
+El contrato exige conservar tres fronteras:
+
+```text
+OWNER_ACTUAL
+OWNER_OBJETIVO
+CONSUMIDOR
+```
+
+Ningún dato cambia de propietario por aparecer en una superficie relacionada con marketing.
+
+---
+
+#### 4. Datos actuales de contenido web
+
+El CMS actual de VISO usa `public.website_items` y `public.website_blocks`.
+
+`public.website_items` contiene:
+
+```text
+id
+category
+slug
+title
+excerpt
+body
+location
+schedule_text
+start_at
+end_at
+image_url
+video_url
+action_label
+action_url
+sort_order
+is_published
+created_at
+updated_at
+```
+
+Snapshot:
+
+```text
+website_items_total = 9
+website_items_published = 9
+```
+
+`public.website_blocks` contiene:
+
+```text
+id
+page_slug
+block_key
+block_type
+title
+subtitle
+body
+cta_label
+cta_url
+media_url
+media_type
+sort_order
+is_published
+created_at
+updated_at
+```
+
+Snapshot:
+
+```text
+website_blocks_total = 7
+website_blocks_published = 7
+```
+
+Vento-Group consume exclusivamente filas con `is_published = true` desde estas tablas.
+
+---
+
+#### 5. Datos actuales de sedes y restaurantes
+
+La sincronización de restaurantes de VISO consume:
+
+- `pass.pass_satellites`;
+- `public.sites`;
+- `public.website_items`.
+
+Campos utilizados de `pass.pass_satellites` incluyen:
+
+```text
+id
+code
+name
+subtitle
+site_id
+logo_url
+address_override
+sort_order
+is_active
+```
+
+Snapshot:
+
+```text
+pass_satellites_total = 3
+pass_satellites_active = 3
+sites_total = 7
+sites_active = 7
+```
+
+Estos datos continúan siendo propiedad de PASS/sedes y solo se consumen para proyección de contenido.
+
+---
+
+#### 6. Datos actuales de colecciones comerciales
+
+La superficie `commercial-collections` de VISO consume principalmente:
+
+- `pass.commercial_collections`;
+- `pass.catalog_item_collections`;
+- `pass.pass_satellites`;
+- `public.sites`;
+- tablas comerciales auxiliares del esquema `pass`.
+
+`pass.commercial_collections` contiene:
+
+```text
+id
+site_id
+code
+name
+subtitle
+description
+kind
+hero_image_url
+starts_at
+ends_at
+sort_order
+is_active
+metadata
+created_at
+updated_at
+```
+
+Snapshot:
+
+```text
+commercial_collections_total = 9
+commercial_collections_active = 7
+kind_campaign_total = 2
+kind_campaign_active = 1
+```
+
+`pass.catalog_item_collections` contiene:
+
+```text
+id
+catalog_item_id
+commercial_collection_id
+sort_order
+is_active
+is_primary
+metadata
+created_at
+updated_at
+```
+
+Snapshot:
+
+```text
+catalog_item_collections_total = 243
+catalog_item_collections_active = 243
+```
+
+Estas tablas no se reclasifican como tablas AURA.
+
+---
+
+#### 7. Storage actual
+
+El handler de media de VISO usa el bucket:
+
+```text
+website-media
+```
+
+El código actual:
+
+- exige autenticación;
+- permite solo roles locales `propietario` y `gerente_general`;
+- acepta imágenes y videos;
+- admite `image/svg+xml`;
+- acepta un `scope` enviado por formulario y lo sanitiza para formar el path;
+- usa el cliente de sesión y `storage.from(BUCKET).upload`;
+- devuelve una URL pública.
+
+El snapshot remoto observado contiene:
+
+```text
+website_media_objects = 0
+```
+
+La ausencia actual de objetos no elimina el contrato ni los riesgos del handler.
+
+---
+
+#### 8. Lectura administrativa del CMS
+
+Las rutas de `website-cms` llaman actualmente:
+
+```text
+requireAppAccess({ appId: "viso", returnTo: ... })
+```
+
+sin `permissionCode` específico.
+
+Después crean:
+
+```text
+createAdminClient()
+```
+
+para consultar y mutar contenido.
+
+Consecuencia:
+
+```text
+GUARD DE RUTA ACTUAL = viso.access
+PERMISO ESPECÍFICO CMS EN GUARD = AUSENTE
+CLIENTE DE DATOS = service role / admin client
+```
+
+El catálogo runtime sí contiene:
+
+```text
+viso.access = activo
+viso.website_cms.read = activo
+```
+
+pero `website_cms.read` no está exigido por las rutas inspeccionadas.
+
+Este hallazgo ya está cubierto por `TREQ-AURA-008` y no se corrige desde esta tarea.
+
+---
+
+#### 9. Grants actuales de VISO relevantes
+
+`viso.access` tiene grants runtime para:
+
+```text
+auxiliar_administrativa
+gerente
+contador
+gerente_general
+propietario
+```
+
+y un override individual registrado.
+
+`viso.website_cms.read` tiene grants runtime para:
+
+```text
+gerente
+gerente_general
+propietario
+```
+
+sin overrides individuales observados.
+
+La divergencia relevante es:
+
+```text
+CMS ROUTE GUARD
+→ exige viso.access
+
+CMS READ PERMISSION
+→ existe
+→ no se exige en la ruta observada
+```
+
+No se infiere que todas las mutaciones deban compartir `website_cms.read`; las capacidades atómicas futuras pertenecen al roadmap de autorización AURA/VISO.
+
+---
+
+#### 10. RLS y clientes privilegiados
+
+Las tablas auditadas tienen RLS habilitado.
+
+Para `public.website_items` y `public.website_blocks` se observa política de lectura `authenticated` limitada a:
+
+```text
+is_published = true
+```
+
+Las rutas administrativas de VISO usan `createAdminClient`, que técnicamente evita depender de esa política para el conjunto administrativo.
+
+Por tanto:
+
+```text
+SERVICE_ROLE
+!= AUTORIZACIÓN DEL ACTOR
+```
+
+El guard debe resolver al actor y la capacidad antes de usar el cliente privilegiado.
+
+La exigencia ya está cubierta por `TREQ-AURA-010`.
+
+---
+
+#### 11. RLS comercial PASS
+
+`pass.pass_satellites`, `pass.commercial_collections` y `pass.catalog_item_collections` tienen RLS habilitado.
+
+Se observan políticas públicas o anónimas de lectura para datos activos y políticas administrativas basadas en `is_owner()` o `is_global_manager()` para mutaciones y lectura administrativa.
+
+Esto confirma:
+
+```text
+DATOS PASS
+→ siguen gobernados por PASS/RLS
+→ pueden ser consumidos por VISO
+→ no pasan a ser propiedad de AURA
+```
+
+La relación funcional futura se resolverá en `AURA-AUD-008` y `AURA-AUD-009`.
+
+---
+
+#### 12. Permiso reservado AURA
+
+El permiso canónico:
+
+```text
+aura.access
+```
+
+es `BASE_ONLY` y admite únicamente `NT-APP`.
+
+El runtime actual lo materializa como:
+
+```text
+apps.code = aura
+app_permissions.code = access
+```
+
+con cinco grants:
+
+| Rol | Alcance runtime | Decisión canónica | Estado |
+| --- | --- | --- | --- |
+| `propietario` | `global` | `ASIGNAR / NT-APP` | rol correcto; scope en drift |
+| `gerente_general` | `global` | `ASIGNAR / NT-APP` | rol correcto; scope en drift |
+| `marketing` | `site_type=admin` | `ASIGNAR / NT-APP-DORMANT` | rol correcto; scope en drift |
+| `contador` | `global` | `NO ASIGNAR` | drift de rol y scope |
+| `gerente` | `global` | `NO ASIGNAR` | drift de rol y scope |
+
+También se observan:
+
+```text
+employee overrides aura.access = 0
+AURA navigation rows = 0
+AURA screen rows = 0
+```
+
+La existencia de estos grants no habilita AURA.
+
+---
+
+#### 13. Clasificación consolidada
+
+##### 13.1 DATO_ACTUAL
+
+- `public.website_items`;
+- `public.website_blocks`;
+- `public.sites` en los campos consumidos;
+- `pass.pass_satellites` en los campos consumidos;
+- `pass.commercial_collections`;
+- `pass.catalog_item_collections`;
+- media en `website-media` cuando exista;
+- metadata de apps, permisos, role grants y overrides necesaria para autorización.
+
+##### 13.2 DATO_OBJETIVO
+
+No se materializa en esta tarea. Incluye únicamente conceptos requeridos por el modelo futuro, como campañas, piezas, publicaciones multicanal, oportunidades, consentimiento, atribución, reputación y aprendizaje, cuando las tareas `AURA-DOM` los definan después del gate de continuidad.
+
+##### 13.3 PERMISO_ACTUAL
+
+- `viso.access`;
+- `viso.website_cms.read` como permiso runtime existente aunque no aplicado al guard inspeccionado;
+- controles locales del handler de media basados en rol;
+- políticas RLS vigentes;
+- `aura.access` como reserva runtime existente.
+
+##### 13.4 PERMISO_RESERVADO
+
+`aura.access` permanece reservado y dormido mientras AURA siga sin producto funcional.
+
+##### 13.5 PERMISO_FUTURO
+
+Las capacidades atómicas de:
+
+```text
+read
+create
+update
+publish
+unpublish
+delete
+import
+upload_media
+manage_campaign
+manage_audience
+manage_opportunity
+measure_attribution
+```
+
+no se consideran runtime existente salvo evidencia concreta posterior. Su definición corresponde a `AURA-AUTH-001..004` si `AURA-AUD-010` permite continuar.
+
+---
+
+#### 14. Hallazgos congelados
+
+1. AURA no tiene tablas de dominio propias observadas.
+2. AURA no tiene navegación ni pantallas runtime registradas.
+3. `aura.access` sí está materializado.
+4. Los cinco grants de `aura.access` presentan drift de alcance; dos también drift de rol.
+5. El CMS actual pertenece a VISO.
+6. El CMS usa `createAdminClient` después de un guard general de VISO.
+7. Existe `viso.website_cms.read`, pero las rutas inspeccionadas no lo exigen.
+8. Las tablas de contenido tienen RLS y lectura autenticada limitada a contenido publicado.
+9. Vento-Group consume contenido publicado con su cliente público.
+10. Las tablas comerciales siguen en el esquema PASS.
+11. El bucket `website-media` existe contractualmente en código y no contiene objetos en el snapshot observado.
+12. El upload actual usa control local por roles, no una capacidad atómica canónica.
+13. No se debe corregir silenciosamente autorización durante la auditoría.
+14. El cambio físico de matrices/grants pertenece a los datasets canónicos y migraciones versionadas del carril físico correspondiente.
+
+---
+
+#### 15. Handoff hacia AURA-AUD-007
+
+`AURA-AUD-007 — Definir relación con VISO` recibe:
+
+- VISO como owner actual del CMS;
+- Vento-Group como consumidor público;
+- tablas de contenido compartidas actualmente bajo `public`;
+- tablas comerciales bajo `pass`;
+- guard administrativo general de VISO;
+- permiso CMS específico existente pero no exigido en las rutas observadas;
+- uso de admin client para contenido;
+- handler de media con control local por rol;
+- reserva `aura.access` materializada pero dormida;
+- drift de grants y scopes que no puede interpretarse como transferencia de ownership.
+
+La siguiente tarea deberá decidir la relación arquitectónica entre AURA y VISO sin mover datos o rutas por inferencia.
+
+---
+
+#### 16. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** los hallazgos de lectura específica, acciones atómicas, service role, Storage, consumo público, contrato de datos, drift y transferencia futura ya están cubiertos por requisitos AURA vigentes. Esta tarea inventaría el estado real y no introduce una obligación verificable nueva.
+
+---
+
+#### 17. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AURA-005`, para drift de permisos y superficies;
+- `TREQ-AURA-008`, para lectura específica del CMS;
+- `TREQ-AURA-009`, para capacidades atómicas de mutación;
+- `TREQ-AURA-010`, para fronteras de `createAdminClient` y service role;
+- `TREQ-AURA-018`, para media y Storage;
+- `TREQ-AURA-020`, para lectura pública y mínimo privilegio;
+- `TREQ-AURA-024`, para contrato esquema/RLS/clientes;
+- `TREQ-AURA-027`, para futura transferencia VISO→AURA.
+
+---
+
+#### 18. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La tarea todavía debe incorporarse al checkout y ejecutar la batería documental. |
+| LOCAL | `PASS` | Artefacto UTF-8/LF, una sola tarea, metadata completa y cero whitespace final. |
+| REMOTA | `PASS` | Se inspeccionaron VISO, Vento-Group y Supabase en modo lectura; se verificaron tablas, columnas, conteos, RLS, grants, permisos, navegación, pantallas y Storage. |
+| OPERATIVA | `NOT_APPLICABLE` | No se ejecutan campañas, publicación real, carga de archivos ni sesiones humanas. |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no se modifica runtime. |
+
+---
+
+#### 19. Criterios de aceptación
+
+- [x] Se separan datos actuales y datos objetivo.
+- [x] Se inventarían las tablas actuales de contenido, sedes, satélites y colecciones.
+- [x] Se registran conteos actuales relevantes.
+- [x] Se identifica el bucket de media y su estado observado.
+- [x] Se identifica el guard actual del CMS.
+- [x] Se confirma la existencia de `viso.website_cms.read` y su ausencia en el guard inspeccionado.
+- [x] Se identifica el uso de `createAdminClient`.
+- [x] Se confirma RLS en tablas auditadas.
+- [x] Se identifica la materialización física correcta de `aura.access`.
+- [x] Se documentan cinco grants runtime AURA y su drift.
+- [x] Se confirman cero navegación y cero pantallas AURA runtime.
+- [x] Se preservan ownership actual de VISO, PASS y Vento-Group.
+- [x] No se crean permisos futuros por inferencia.
+- [x] No se modifica Supabase.
+- [x] No se modifica 04A.
+- [x] No se crean requisitos de prueba.
+
+---
+
+#### 20. Límites
+
+Esta tarea no modifica schemas, columnas, filas, RLS, grants, permisos, Storage, secretos, rutas, navegación, repositorios, aplicaciones ni despliegues. No mueve CMS a AURA, no corrige físicamente drift, no define aún la relación final con VISO/PASS/PULSO y no desbloquea `AURA-DOM`, `AURA-AUTH`, `AURA-UX` o `AURA-INT`.
+
+---
+
+#### 21. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-005 — Inventariar procesos de marketing`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-006 — Identificar datos y permisos utilizados`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUD-007 — Definir relación con VISO`
 ### [ ] AURA-AUD-007 — Definir relación con VISO
 ### [ ] AURA-AUD-008 — Definir relación con PASS
 ### [ ] AURA-AUD-009 — Definir relación con PULSO
