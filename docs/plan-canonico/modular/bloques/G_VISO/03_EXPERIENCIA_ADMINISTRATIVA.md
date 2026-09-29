@@ -39524,7 +39524,1740 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-020 — Ejecutar pruebas con administradores reales`
-### [ ] VISO-UX-020 — Ejecutar pruebas con administradores reales
+### ✅ VISO-UX-020 — Ejecutar pruebas con administradores reales
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
+**Tarea siguiente:** PASS-QA-001 — Probar flujo completo de acumulación
+**Tipo de tarea:** definición técnico-documental del contrato de validación humana de VISO con administradores reales; fija población aplicable, escenarios obligatorios, oráculos, evidencia, severidad de hallazgos, criterios de aceptación, privacidad, seguridad, recuperación y handoff hacia certificación integral, sin afirmar sesiones humanas no ejecutadas, sin certificar producción y conservando materialización `PER_IMPLEMENTATION_UNIT` detrás de `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato documental completo para pruebas controladas con administradores reales definido; la ejecución humana, captura de evidencia y corrección de hallazgos permanecen diferidas a las unidades físicas propietarias después de `POST_E5_PACKAGE`, y la certificación integral posterior permanece bajo `UX-QA-020` y `UX-QA-023`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, componentes, navegación runtime, contratos, permisos, datos, Supabase, migraciones, RLS, RPC, Auth, Storage, secretos, ambientes, despliegues ni usuarios reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo deberá validarse VISO con administradores reales cuando exista una unidad física materializada y habilitada para prueba, de manera que el cierre de experiencia no dependa únicamente de revisión técnica, walkthrough documental o datos sintéticos.
+
+La validación deberá responder con evidencia:
+
+```text
+¿EL ADMINISTRADOR ENTIENDE DÓNDE ESTÁ Y QUÉ PUEDE HACER?
+¿ENCUENTRA EL FLUJO CORRECTO SIN DEPENDER DE CONOCIMIENTO DEL SISTEMA?
+¿DISTINGUE ESTADO ACTUAL, PROPUESTA, CONFLICTO, BLOQUEO Y RESULTADO?
+¿COMPRENDE EL TERRITORIO QUE ESTÁ ADMINISTRANDO?
+¿PUEDE PROGRAMAR, CORREGIR Y PUBLICAR SIN CREAR ESTADOS INVÁLIDOS?
+¿PUEDE INTERPRETAR PERMISOS Y SU ORIGEN SIN CONFUNDIR PRESENTACIÓN CON AUTORIDAD?
+¿EL MODO GUIADO REDUCE CARGA SIN OCULTAR INFORMACIÓN MATERIAL?
+¿EL MODO EXPERTO PERMITE PROFUNDIZAR SIN AMPLIAR AUTORIDAD?
+¿LOS HANDOFFS LLEVAN AL OWNER CORRECTO Y REGRESAN SIN PERDER CONTEXTO?
+¿LOS ERRORES Y RESULTADOS DESCONOCIDOS PERMITEN CONTINUAR DE FORMA SEGURA?
+```
+
+La prueba humana valida comprensión y operabilidad.
+
+No reemplaza las comprobaciones server-side, contractuales, de autorización, integración o concurrencia.
+
+---
+
+#### 2. Naturaleza documental y ejecución posterior
+
+La topología aplicable permanece:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_IDENTITY = VISO-UX-020::implementation_unit_id
+```
+
+Por tanto:
+
+- esta tarea define una sola vez el contrato de prueba;
+- cada unidad física aplicable ejecutará el subconjunto de escenarios que le corresponda;
+- la aprobación documental no constituye una sesión humana ejecutada;
+- ninguna sesión puede considerarse evidencia de una unidad distinta por similitud visual;
+- ninguna ejecución física puede adelantarse al gate temporal propietario;
+- la certificación transversal posterior conserva su propia cardinalidad y evidencia.
+
+Se preserva:
+
+```text
+CONTRATO DE PRUEBA APROBADO
+!=
+PRUEBA HUMANA EJECUTADA
+!=
+CERTIFICACIÓN PRODUCTIVA
+```
+
+---
+
+#### 3. Contrato documental de esta tarea
+
+Se define:
+
+```text
+VISO_REAL_ADMIN_VALIDATION_CONTRACT = VISO-REAL-ADMIN-VALIDATION-001
+TEST_SUBJECT = REAL_ADMINISTRATORS
+TEST_MODE = CONTROLLED
+PRIMARY_ADMIN_PROFILE_COVERAGE = ALL_APPLICABLE
+PRODUCTION_CERTIFICATION_BY_THIS_TASK = NO
+HUMAN_SESSION_EXECUTED_BY_DOCUMENTARY_CLOSURE = NO
+PHYSICAL_EXECUTION_MODE = PER_IMPLEMENTATION_UNIT
+PHYSICAL_EXECUTION_GATE = POST_E5_PACKAGE
+INTEGRAL_CERTIFICATION_OWNER = UX-QA-023
+TREQ_CHANGES = 0
+```
+
+Este contrato gobierna qué debe demostrarse.
+
+No crea un framework runtime nuevo ni una fuente alternativa de verdad para pruebas.
+
+---
+
+#### 4. Base inmediata recibida de `VISO-UX-019`
+
+`VISO-UX-019` entrega a esta tarea una jerarquía de información ya cerrada:
+
+- modo guiado como presentación inicial;
+- modo experto autorizado bajo demanda;
+- contenido esencial siempre visible cuando cambia una decisión material;
+- detalle contextual separado de controles avanzados;
+- superficies especializadas para trabajo complejo;
+- diagnóstico técnico restringido;
+- contenido no divulgable fuera del árbol de presentación autorizado;
+- conflicto bloqueante, deny material, stale, resultado parcial y resultado desconocido visibles cuando afectan la decisión;
+- filtros avanzados activos resumidos en la capa principal;
+- navegación cross-app sin transferencia de autoridad.
+
+020 no redefine esos niveles.
+
+Los somete a prueba humana cuando exista materialización real.
+
+---
+
+#### 5. Handoffs recibidos del minibloque G3
+
+La prueba consume, sin reabrir decisiones:
+
+- `VISO-UX-001` para arquitectura de navegación;
+- `VISO-UX-002` para Personal;
+- `VISO-UX-003` para Programación;
+- `VISO-UX-004` para Acceso y seguridad;
+- `VISO-UX-005` para Organización;
+- `VISO-UX-006` para Operación;
+- `VISO-UX-007` para Auditoría;
+- `VISO-UX-008` a `VISO-UX-012` para variantes de Inicio por perfil;
+- `VISO-UX-013` para territorialidad;
+- `VISO-UX-014` para procedencia de permisos;
+- `VISO-UX-015` para conflictos antes de guardar;
+- `VISO-UX-016` para vista previa exacta por trabajador;
+- `VISO-UX-017` para frontera de ownership;
+- `VISO-UX-018` para handoff a aplicación propietaria;
+- `VISO-UX-019` para divulgación progresiva de seguridad avanzada.
+
+La prueba no puede aprobar una contradicción contra uno de estos contratos por preferencia del participante.
+
+Un hallazgo puede exigir corregir la implementación o reabrir una decisión documental mediante el mecanismo de corrección aplicable, pero la sesión no cambia por sí sola el contrato canónico.
+
+---
+
+#### 6. Relación con `UX-ADMIN-005`
+
+`UX-ADMIN-005 — Prototipar y aprobar flujos administrativos con usuarios reales` cerró mediante evidencia sustitutiva y declaró expresamente que no habían sido ejecutadas sesiones formales con administradores reales durante ese cierre.
+
+Ese carryover permanece vigente.
+
+020 toma los patrones administrativos aprobados y fija la validación específica de VISO sin reescribir:
+
+- los arquetipos guiados;
+- los arquetipos expertos;
+- la validación preventiva;
+- la vista previa de impacto;
+- los receipts;
+- la recuperación;
+- la segregación;
+- la territorialidad;
+- la privacidad.
+
+La evidencia humana futura debe confirmar esos patrones sobre una implementación materializada, no sobre una descripción aislada.
+
+---
+
+#### 7. Relación con `UX-QA-020` y `UX-QA-023`
+
+Se preserva una frontera estricta:
+
+```text
+VISO-UX-020
+→ define matriz VISO específica, escenarios, oráculos y evidencia esperada
+
+UX-QA-020
+→ conserva la puerta transversal de piloto con usuarios reales
+
+UX-QA-023
+→ conserva la certificación integral de VISO por rol administrativo
+```
+
+020 no marca `UX-QA-023` como ejecutada.
+
+Tampoco sustituye la certificación por package ni el cierre global final del BLOQUE U.
+
+---
+
+#### 8. Perfiles administrativos primarios
+
+La cobertura humana primaria deriva de las variantes de Inicio ya aprobadas:
+
+| Perfil | Fuente VISO | Foco principal de validación |
+| --- | --- | --- |
+| `propietario` | `VISO-UX-008` | gobierno organizacional sin convertir el perfil en wildcard |
+| `gerente_general` | `VISO-UX-009` | visión organizacional, pendientes y decisiones con permisos exactos |
+| `gerente` | `VISO-UX-010` | administración de sedes asignadas y límites territoriales |
+| `auxiliar_administrativa` | `VISO-UX-011` | ejecución administrativa guiada dentro de alcance delegado |
+| `contador` | `VISO-UX-012` | información financiera autorizada sin territorio implícito ni exposición excesiva |
+
+La ejecución física deberá cubrir todos los perfiles aplicables a la unidad probada.
+
+Un perfil no materializado en esa unidad no se inventa para completar una cifra.
+
+Su ausencia deberá quedar explicada y cubierta posteriormente en la unidad propietaria que corresponda.
+
+---
+
+#### 9. Participantes reales
+
+Un participante válido deberá ser una persona que ejerza o pueda ejercer legítimamente el tipo de trabajo administrativo probado dentro del alcance autorizado.
+
+La prueba no utilizará como sustituto silencioso:
+
+- una persona técnica sin responsabilidad administrativa equivalente;
+- una cuenta de service role;
+- un usuario compartido sin actor individual;
+- una persona que conoce el diseño pero no la tarea empresarial;
+- un actor con permisos superiores para simular un perfil inferior sin separación explícita.
+
+Una sesión puede usar un ambiente controlado y datos no productivos.
+
+“Real” describe al participante y su experiencia laboral, no obliga a mutar datos productivos.
+
+---
+
+#### 10. Privacidad de participantes
+
+La evidencia de prueba deberá minimizar información personal.
+
+Como mínimo:
+
+- el participante puede identificarse mediante referencia pseudonimizada;
+- el rol o perfil probado sí debe quedar registrado;
+- la sesión no necesita conservar documento, teléfono, dirección u otra información personal ajena al propósito;
+- capturas y grabaciones deberán evitar secretos, tokens y datos personales innecesarios;
+- cualquier dato sensible visible por el flujo debe usar el tratamiento autorizado por el ambiente de prueba;
+- la evidencia deberá conservar quién moderó y quién revisó sin publicar información innecesaria.
+
+---
+
+#### 11. Precondiciones para una sesión física válida
+
+Una sesión ejecutable deberá demostrar antes de comenzar:
+
+1. unidad de implementación identificada;
+2. gate `POST_E5_PACKAGE` satisfecho para la unidad aplicable;
+3. build o versión exacta identificada;
+4. ambiente de prueba identificado;
+5. contratos y datos requeridos disponibles;
+6. participante autorizado para el escenario;
+7. datos de prueba suficientes y seguros;
+8. rollback o limpieza aplicable definido cuando la sesión pueda mutar estado;
+9. mecanismos de observación y evidencia disponibles;
+10. defectos bloqueantes técnicos conocidos evaluados antes de exponer al participante.
+
+Sin estas condiciones, la sesión no se utiliza como evidencia de cierre de la unidad.
+
+---
+
+#### 12. Evidencia mínima de cada sesión
+
+Cada sesión física deberá conservar, de forma trazable:
+
+- unidad probada;
+- build o versión exacta;
+- ambiente;
+- fecha y ventana de ejecución;
+- perfil administrativo;
+- referencia pseudonimizada del participante;
+- escenarios intentados;
+- estado inicial relevante;
+- acción esperada;
+- resultado observado;
+- ayuda requerida;
+- errores de comprensión;
+- errores del sistema;
+- bloqueos;
+- resultados parciales o desconocidos;
+- hallazgos;
+- evidencia visual o técnica cuando sea necesaria;
+- decisión de salida de cada escenario;
+- responsable del hallazgo y condición de cierre.
+
+No se aceptará como evidencia suficiente una frase genérica como “funcionó bien”.
+
+---
+
+#### 13. Estados de una sesión
+
+La evidencia de una sesión deberá distinguir conceptualmente:
+
+```text
+PREPARADA
+EN_EJECUCIÓN
+COMPLETADA
+BLOQUEADA
+INVALIDADA
+```
+
+Una sesión `BLOQUEADA` conserva evidencia del bloqueo.
+
+Una sesión `INVALIDADA` no se cuenta como prueba exitosa cuando el build, ambiente, identidad o datos no correspondían al alcance declarado.
+
+Estos estados pertenecen a la evidencia de prueba y no modifican estados empresariales de VISO.
+
+---
+
+#### 14. Resultado por escenario
+
+Cada escenario deberá terminar en una de estas interpretaciones de prueba:
+
+```text
+PASS
+FAIL
+BLOCKED
+NOT_RUN
+NOT_APPLICABLE
+```
+
+`BLOCKED` no equivale a `PASS`.
+
+`NOT_RUN` no equivale a `NOT_APPLICABLE`.
+
+`NOT_APPLICABLE` exige una razón verificable de alcance.
+
+El resultado de prueba tampoco sustituye el estado real de la operación empresarial observada.
+
+---
+
+#### 15. Severidad de hallazgos
+
+Los hallazgos se clasifican por efecto, no por molestia subjetiva.
+
+| Severidad | Criterio |
+| --- | --- |
+| `BLOCKING` | puede producir autoridad incorrecta, exposición indebida, mutación equivocada, pérdida de trabajo, publicación incorrecta, estado irrecuperable o interpretación materialmente falsa |
+| `MAJOR` | impide completar una tarea legítima o obliga a una ruta de trabajo insegura, extensa o contradictoria |
+| `MINOR` | fricción local que no cambia la decisión ni compromete seguridad, integridad o recuperación |
+| `OBSERVATION` | mejora potencial sin incumplimiento demostrado |
+
+Un hallazgo `BLOCKING` impide declarar PASS a la unidad afectada.
+
+Un hallazgo no se reduce de severidad únicamente porque el participante logró terminar mediante ayuda del moderador.
+
+---
+
+#### 16. Oráculo de comprensión
+
+La prueba no evalúa solo si el usuario logra hacer clic.
+
+Debe comprobar si puede explicar correctamente:
+
+- qué objeto está administrando;
+- qué territorio participa;
+- qué estado existe ahora;
+- qué cambio propone;
+- qué efecto producirá;
+- qué conflicto o bloqueo existe;
+- qué aplicación es propietaria cuando el trabajo sale de VISO;
+- qué parte es real y qué parte es simulada;
+- qué resultado quedó confirmado y qué resultado permanece pendiente o desconocido.
+
+Una tarea completada con un modelo mental materialmente equivocado se registra como hallazgo.
+
+---
+
+#### 17. Oráculo de autoridad
+
+La prueba deberá verificar que el participante no interprete como autoridad:
+
+- ver una opción;
+- seleccionar una sede;
+- elegir `Todos`;
+- abrir modo experto;
+- conocer una URL;
+- acceder a un deep link;
+- ver un agregado;
+- observar una simulación;
+- encontrar una acción en búsqueda;
+- volver desde otra aplicación.
+
+La interfaz debe reforzar la semántica correcta y el servidor debe conservar la decisión autoritativa.
+
+---
+
+#### 18. Oráculo de territorialidad
+
+El participante deberá comprender la diferencia entre:
+
+```text
+TERRITORIO AUTORIZADO
+FILTRO DE PRESENTACIÓN
+TERRITORIO DEL RECURSO
+TERRITORIO OPERATIVO
+```
+
+Pruebas obligatorias incluyen:
+
+- selección de una sede autorizada;
+- cambio de filtro sin ampliación de autoridad;
+- opción `Todos` limitada al universo autorizado;
+- recurso fuera de alcance;
+- deep link hacia recurso no autorizado;
+- agregado cross-site autorizado sin detalle indebido;
+- estado sin territorio administrable.
+
+---
+
+#### 19. Oráculo de navegación
+
+La navegación deberá permitir que el administrador:
+
+- identifique `Inicio` y los dominios autorizados;
+- entienda cuál dominio contiene la tarea buscada;
+- conserve el dominio activo al entrar a una ruta hija;
+- vuelva sin perder el contexto relevante;
+- no confunda rutas técnicas con dominios empresariales;
+- no vea un dominio vacío por ausencia de entradas autorizadas;
+- reciba denegación coherente en acceso directo cuando corresponda.
+
+La prueba no considera éxito memorizar una URL técnica.
+
+---
+
+#### 20. Prueba de variantes de Inicio
+
+Para cada perfil aplicable se probará:
+
+1. contenido inicial relevante;
+2. pendientes y alertas dentro del alcance;
+3. accesos directos autorizados;
+4. ausencia de capacidades irrelevantes o no autorizadas;
+5. lectura correcta del territorio;
+6. transición a un dominio VISO;
+7. transición hacia owner externo cuando corresponda;
+8. retorno sin pérdida de contexto material.
+
+Las variantes no deben convertirse en cinco productos distintos ni en cinco políticas de autorización.
+
+---
+
+#### 21. Prueba de Semana y Mes
+
+La sección `Programación` deberá demostrar que Semana y Mes son vistas del mismo dominio y de la misma fuente empresarial.
+
+El participante deberá poder:
+
+- alternar Semana/Mes;
+- reconocer el periodo actual;
+- conservar sede y periodo equivalente cuando el contrato lo permita;
+- identificar borrador, revisión y publicación;
+- comprender qué cambios aún no están publicados;
+- volver a la vista anterior sin crear programación paralela.
+
+Una diferencia visual entre Semana y Mes no puede producir una diferencia semántica no autorizada.
+
+---
+
+#### 22. Prueba de calendario real
+
+La ejecución física deberá incluir meses representativos de:
+
+```text
+28 DÍAS
+29 DÍAS
+30 DÍAS
+31 DÍAS
+```
+
+También deberá cubrir transición de año cuando la unidad materializada gestione navegación temporal.
+
+El participante no debe encontrar fechas ficticias ni perder fechas válidas por un cálculo de calendario incorrecto.
+
+La prueba de año bisiesto se realiza con una fecha real compatible, no con una simulación de un día inexistente.
+
+---
+
+#### 23. Prueba del constructor multibloque
+
+El escenario deberá demostrar que cada bloque conserva, según aplique:
+
+- modalidad laboral o descanso;
+- fechas;
+- inicio y fin;
+- pausa o descanso;
+- rol operativo;
+- área;
+- nota autorizada.
+
+Además deberá comprobar:
+
+- bloques plegables sin pérdida de contenido;
+- cambio de bloque activo sin pérdida de edición válida;
+- resumen suficiente del bloque plegado;
+- eliminación explícita;
+- pertenencia inequívoca de cada fecha;
+- comportamiento cuando se alcanza una restricción propietaria de bloques.
+
+020 no fija el máximo cuantitativo.
+
+Ese valor pertenece a `VISO-SCH-003` y a la implementación que lo consuma.
+
+---
+
+#### 24. Prueba de turnos y descansos
+
+Los escenarios deberán distinguir:
+
+- turno laboral;
+- descanso;
+- turno overnight cuando la política propietaria lo permita;
+- pausa;
+- rol operativo requerido;
+- rol no aplicable;
+- área requerida;
+- área no aplicable.
+
+Un descanso no debe forzar un rol operativo inexistente.
+
+Un turno laboral incompleto no debe publicarse como válido por omisión visual.
+
+---
+
+#### 25. Prueba de total mensual y límite
+
+Cuando el owner de programación suministre total y límite, la UI deberá permitir comprender:
+
+```text
+ACTUAL
+NUEVO
+PROYECTADO
+LÍMITE
+```
+
+La sesión deberá incluir al menos:
+
+- propuesta debajo del límite;
+- propuesta exactamente en el límite cuando el contrato lo admita;
+- propuesta por encima del límite;
+- agregado entre sedes cuando corresponda;
+- detalle territorial restringido cuando el actor no pueda ver todas las filas que contribuyen al total.
+
+La persona debe comprender el efecto sin que el color sea la única señal.
+
+020 no define el valor numérico del límite.
+
+---
+
+#### 26. Prueba de conflicto pre-save
+
+La prueba deberá demostrar la diferencia entre:
+
+```text
+CONFLICTO BLOQUEANTE
+REVISIÓN NO BLOQUEANTE
+DENY VÁLIDO
+CONFIGURACIÓN INCOMPLETA
+FALLO TÉCNICO
+```
+
+Para un conflicto detectable antes de mutar, el participante deberá poder identificar:
+
+- qué elemento está afectado;
+- qué regla se incumple;
+- qué alcance participa;
+- qué consecuencia tendría continuar;
+- quién es propietario de la corrección;
+- si puede corregir ahí o debe hacer handoff.
+
+Una confirmación genérica no supera un bloqueo contractual.
+
+---
+
+#### 27. Prueba de corrección
+
+Los flujos de corrección deberán validar que el administrador distingue:
+
+- corregir un borrador;
+- corregir una propuesta antes de publicar;
+- corregir una programación ya publicada mediante el contrato permitido;
+- resolver un conflicto en la aplicación propietaria cuando no pertenezca a VISO;
+- revertir o compensar únicamente cuando exista operación propietaria para hacerlo.
+
+No se permitirá que “editar” signifique sobrescribir historia sin trazabilidad.
+
+---
+
+#### 28. Prueba de borrador, revisión y publicación
+
+Se deberá demostrar que:
+
+```text
+GUARDAR BORRADOR
+!=
+ENVIAR A REVISIÓN
+!=
+PUBLICAR
+```
+
+cuando esos estados o acciones apliquen al contrato materializado.
+
+El participante deberá comprender:
+
+- qué estado está editando;
+- qué se vuelve visible para otros;
+- qué cambia al publicar;
+- qué permiso exige cada acción;
+- qué sucede cuando publicar es bloqueado;
+- cómo regresar a una corrección segura.
+
+Semana y Mes deberán respetar la misma política propietaria de publicación.
+
+---
+
+#### 29. Prueba de vista previa exacta por trabajador
+
+La ejecución deberá cubrir una vista donde el administrador pueda distinguir:
+
+- identidad laboral mínima;
+- sede;
+- área;
+- turno;
+- rol base;
+- rol operativo;
+- estado real;
+- estado propuesto;
+- permiso efectivo;
+- procedencia autorizada;
+- conflicto;
+- frescura;
+- agregado cross-site cuando corresponda.
+
+La vista no debe fabricar contexto operativo cuando no existe turno aplicable.
+
+---
+
+#### 30. Prueba cross-site
+
+Cuando la unidad física consuma agregados cross-site se probará:
+
+1. detalle completo autorizado;
+2. detalle parcial con total agregado autorizado;
+3. recurso de una sede fuera del detalle visible;
+4. ausencia de inferencia sobre sedes ocultas;
+5. stale después de cambio concurrente;
+6. recálculo antes de una mutación sensible.
+
+El total no se convierte en autoridad territorial.
+
+---
+
+#### 31. Prueba de procedencia de permisos
+
+El administrador deberá poder responder para un permiso exacto:
+
+- resultado;
+- fuentes allow relevantes;
+- deny o bloqueo relevante;
+- carril;
+- scope;
+- territorio;
+- recurso cuando aplique;
+- real o simulado;
+- vigencia o frescura.
+
+La prueba deberá detectar frases engañosas como “lo tiene por su rol” cuando la procedencia real sea más compleja.
+
+La interfaz no puede reconstruir la autoridad desde tablas locales para producir una explicación más simple.
+
+---
+
+#### 32. Prueba de divulgación progresiva
+
+La sesión deberá validar que el participante puede comenzar por la capa esencial y descubrir detalle adicional cuando lo necesita.
+
+Se probará:
+
+- detalle contextual;
+- filtros avanzados;
+- matriz experta;
+- procedencia;
+- auditoría;
+- diagnóstico restringido;
+- superficie especializada cuando la profundidad ordinaria ya no sea adecuada.
+
+El participante no debe perder información crítica por mantener una sección colapsada.
+
+---
+
+#### 33. Prueba de modo experto
+
+El modo experto deberá demostrar simultáneamente:
+
+- mayor densidad de información;
+- filtros y columnas útiles;
+- comparación antes/después;
+- acciones atómicas identificables;
+- misma autoridad efectiva que el modo guiado;
+- misma política territorial;
+- misma revalidación de servidor;
+- mismo tratamiento de conflictos.
+
+Si abrir modo experto cambia qué puede hacer el actor sin una decisión autorizativa nueva, la prueba falla.
+
+---
+
+#### 34. Prueba de filtros avanzados
+
+Cuando existan filtros plegables:
+
+- todo filtro activo debe quedar resumido en la capa principal;
+- limpiar un filtro no limpia otros por inferencia;
+- un filtro territorial solo reduce el universo ya autorizado;
+- una tabla con cero filas por filtros activos no debe parecer una ausencia de datos global;
+- guardar una preferencia de filtro no conserva autoridad.
+
+---
+
+#### 35. Prueba de operaciones masivas
+
+Cuando una unidad permita una acción masiva, antes de ejecutar deberá presentar:
+
+- población exacta;
+- territorio;
+- cambio propuesto;
+- exclusiones;
+- conflictos;
+- elementos no elegibles;
+- autoridad requerida;
+- efecto esperado;
+- comportamiento ante resultado parcial.
+
+“Seleccionar todo” deberá referirse al universo exacto autorizado y visible según el contrato aplicable.
+
+---
+
+#### 36. Prueba de ownership
+
+La sesión deberá comprobar que el administrador entiende cuándo VISO:
+
+- administra directamente;
+- resume;
+- proyecta;
+- supervisa;
+- diagnostica;
+- enlaza hacia un owner externo.
+
+Una superficie físicamente presente en VISO no deberá inducir a pensar que VISO posee la mutación empresarial si el owner es otro.
+
+---
+
+#### 37. Prueba de handoff cross-app
+
+Un handoff válido deberá permitir que el participante identifique:
+
+- qué trabajo continúa;
+- en qué aplicación continúa;
+- qué contexto mínimo se conserva;
+- qué información no se transporta como autoridad;
+- qué ocurre si el destino deniega acceso;
+- cómo regresar a VISO;
+- qué resultado produjo el owner.
+
+El destino deberá revalidar actor, permiso, contexto y recurso según su contrato.
+
+---
+
+#### 38. Prueba de retorno
+
+Al regresar desde una aplicación propietaria, VISO deberá:
+
+- resolver el contexto actual;
+- refrescar el estado cuando corresponda;
+- no asumir que el handoff tuvo éxito por haber navegado;
+- conservar resultado parcial o desconocido;
+- evitar ejecutar otra vez la misma intención por un fallo de navegación;
+- presentar el receipt del owner cuando exista y esté autorizado.
+
+---
+
+#### 39. Prueba de errores de experiencia
+
+La matriz deberá cubrir, cuando aplique:
+
+```text
+LOADING
+EMPTY
+NO_AUTHORITY
+NO_TERRITORY
+NO_MATCHES
+CONFLICT
+STALE
+TECHNICAL_FAILURE
+PARTIAL_READ
+READY
+```
+
+El participante deberá poder distinguir qué significa cada estado y qué acción segura tiene disponible.
+
+No se presentará `EMPTY` como sustituto de fallo técnico.
+
+No se presentará `NO_AUTHORITY` como indisponibilidad del sistema.
+
+---
+
+#### 40. Prueba de resultado desconocido
+
+Cuando una acción termine sin confirmación concluyente:
+
+- la UI no la marca como exitosa;
+- no invita a repetir a ciegas;
+- ofrece consulta o recuperación propietaria;
+- conserva la intención y evidencia necesaria;
+- evita duplicar efectos idempotentes;
+- distingue navegación fallida de efecto empresarial desconocido.
+
+---
+
+#### 41. Prueba de stale y concurrencia
+
+La prueba deberá incluir escenarios donde el snapshot cambia después de ser presentado.
+
+El participante deberá observar que:
+
+- el estado anterior deja de presentarse como vigente;
+- existe indicación de recálculo o refresco;
+- la mutación final revalida el estado material;
+- una propuesta antigua no prevalece por permanecer abierta en el navegador.
+
+020 no redefine la estrategia técnica de concurrencia.
+
+---
+
+#### 42. Prueba de seguridad de navegación
+
+Se probarán rutas directas y navegación ordinaria para demostrar que:
+
+- ocultar una opción no es la única defensa;
+- conocer una URL no concede acceso;
+- una ruta hija revalida permiso y recurso;
+- búsqueda no revela recursos fuera de alcance;
+- paginación no filtra un conteo global prohibido;
+- un favorite o historial no conserva permiso antiguo.
+
+---
+
+#### 43. Prueba de datos sensibles
+
+La sesión deberá comprobar que:
+
+- información sensible no llega al cliente solo para permanecer colapsada;
+- el modo experto no revela secretos;
+- auditoría usa minimización;
+- mensajes de error no exponen payloads internos;
+- URLs no contienen secretos o tokens;
+- capturas de evidencia se redactan cuando corresponde;
+- cambio de actor elimina detalle sensible de una sesión compartida.
+
+---
+
+#### 44. Prueba de accesibilidad
+
+Los escenarios representativos deberán comprobar:
+
+- navegación por teclado;
+- nombre accesible de controles;
+- estado expandido/colapsado identificable;
+- foco predecible;
+- errores y bloqueos anunciables;
+- decisiones críticas comprensibles sin depender solo de color;
+- relación entre control y detalle revelado;
+- retorno sin pérdida de posición material.
+
+---
+
+#### 45. Prueba responsive
+
+En tamaños de pantalla admitidos por la unidad:
+
+- la navegación conserva dominio y contexto;
+- matrices pueden cambiar representación sin perder semántica;
+- filtros plegados conservan resumen activo;
+- acciones críticas permanecen disponibles según autorización;
+- actor y territorio no desaparecen cuando son relevantes;
+- la consecuencia de una mutación no se oculta por falta de espacio.
+
+Responsive nunca significa una versión más permisiva.
+
+---
+
+#### 46. Ayuda del moderador
+
+La prueba deberá registrar cada intervención necesaria para que el participante avance.
+
+Se distingue:
+
+- aclaración del objetivo de prueba;
+- ayuda para encontrar una función;
+- explicación de un término;
+- corrección de una interpretación;
+- rescate por error del sistema.
+
+Una tarea completada únicamente después de explicar al participante cómo funciona la interfaz no se registra como descubrimiento espontáneo.
+
+---
+
+#### 47. Tiempo y productividad
+
+La sesión deberá medir tiempos cuando sean útiles para comparar iteraciones o detectar fricción.
+
+020 no inventa un umbral universal de segundos o minutos.
+
+Los objetivos cuantitativos deberán provenir del paquete, proceso o criterio posterior que tenga autoridad para fijarlos.
+
+La medición mínima conserva:
+
+- inicio de escenario;
+- fin o abandono;
+- pausas por fallo técnico;
+- intervención del moderador;
+- retrabajo causado por la interfaz.
+
+---
+
+#### 48. Errores del participante versus defectos del sistema
+
+La evidencia deberá distinguir:
+
+```text
+ERROR DE COMPRENSIÓN
+ERROR DE DESCUBRIMIENTO
+ERROR DE DATOS DE PRUEBA
+DEFECTO DE IMPLEMENTACIÓN
+DEFECTO CONTRACTUAL
+FALLO DE AMBIENTE
+```
+
+No se atribuye automáticamente un error del participante a capacitación insuficiente.
+
+Primero debe evaluarse si la interfaz indujo la interpretación equivocada.
+
+---
+
+#### 49. Hallazgos y owner de corrección
+
+Todo hallazgo deberá asignarse a un propietario exacto.
+
+Ejemplos de salida:
+
+| Hallazgo | Owner esperado |
+| --- | --- |
+| navegación o jerarquía VISO | unidad física de VISO correspondiente |
+| política de programación | `VISO-SCH-001` a `VISO-SCH-008` según materia |
+| autorización o decisión server-side | contrato AUTH propietario |
+| handoff o retorno compartido | contrato SHELL propietario |
+| defecto del owner externo | aplicación propietaria correspondiente |
+| certificación integral | `UX-QA-023` y package aplicable |
+
+No se deja un “revisar después” sin condición de salida.
+
+---
+
+#### 50. Reprueba
+
+Un hallazgo corregido deberá reejecutar:
+
+- el escenario fallido;
+- el camino de recuperación relacionado;
+- los casos cercanos con riesgo de regresión;
+- la autorización y territorialidad afectadas cuando corresponda.
+
+Una corrección visual no autoriza saltar la reprueba de seguridad o integridad vinculada.
+
+---
+
+#### 51. Criterio de PASS por unidad física
+
+Una unidad podrá declararse humanamente validada únicamente cuando:
+
+1. todos los escenarios obligatorios aplicables fueron ejecutados;
+2. los perfiles aplicables fueron cubiertos;
+3. no quedan hallazgos `BLOCKING` abiertos;
+4. cualquier hallazgo `MAJOR` tiene resolución o decisión explícita compatible con el gate propietario;
+5. no existen fugas de autorización, territorio o datos;
+6. no existen resultados materiales ocultos por presentación;
+7. navegación, handoff y recuperación tienen evidencia;
+8. las correcciones relevantes fueron reprobadas;
+9. el build probado está identificado;
+10. la evidencia es trazable y revisable.
+
+PASS de una unidad no certifica otra unidad.
+
+---
+
+#### 52. Condiciones que fuerzan FAIL
+
+Sin perjuicio de otras reglas propietarias, deberá considerarse fallo bloqueante si la prueba demuestra cualquiera de estos comportamientos:
+
+- una persona obtiene autoridad por visibilidad o modo experto;
+- un filtro amplía territorio;
+- un deep link evita una comprobación de acceso;
+- una fecha mensual inválida puede seleccionarse o persistirse;
+- una fecha queda asignada a bloques incompatibles sin resolución explícita;
+- un exceso material puede publicarse cuando el contrato lo prohíbe;
+- un conflicto bloqueante queda escondido;
+- guardar borrador produce publicación;
+- publicar sobrescribe historia de manera destructiva;
+- un total cross-site revela detalle no autorizado;
+- un handoff transporta autoridad implícita;
+- un retorno presenta éxito sin confirmación del owner;
+- un resultado desconocido invita a repetir una mutación sin reconciliación;
+- un dato sensible se expone a un actor no autorizado;
+- un fallo técnico se representa como ausencia legítima;
+- la UI permite una operación que el servidor deniega por diseño pero la presenta como completada.
+
+---
+
+#### 53. Matriz mínima de escenarios obligatorios
+
+| ID | Familia | Escenario | Evidencia esperada |
+| --- | --- | --- | --- |
+| `VA-01` | Inicio | variante por perfil | contenido y acciones acordes al perfil y territorio |
+| `VA-02` | Navegación | dominio y ruta hija | dominio activo, retorno y revalidación |
+| `VA-03` | Programación | alternar Semana/Mes | misma fuente y contexto equivalente |
+| `VA-04` | Calendario | 28/29/30/31 días | solo fechas reales |
+| `VA-05` | Programación | constructor multibloque | preservación de bloque, fechas y resumen |
+| `VA-06` | Programación | pertenencia de fecha | cero asignaciones incompatibles silenciosas |
+| `VA-07` | Programación | actual/nuevo/proyectado/límite | comprensión del efecto |
+| `VA-08` | Programación | exceso | advertencia o bloqueo según owner |
+| `VA-09` | Programación | borrador/revisión/publicación | acciones y estados diferenciados |
+| `VA-10` | Programación | corrección | historia y estado preservados |
+| `VA-11` | Preview | trabajador exacto | contexto real y propuesto distinguibles |
+| `VA-12` | Territorio | multisede y agregado | total exacto sin fuga de detalle |
+| `VA-13` | Seguridad | procedencia | fuentes y decisión comprensibles |
+| `VA-14` | Seguridad | conflicto pre-save | bloqueo y owner de resolución visibles |
+| `VA-15` | Seguridad | guided/expert | más detalle sin más autoridad |
+| `VA-16` | Ownership | superficie cross-owner | ausencia de editor duplicado |
+| `VA-17` | Handoff | cambio de aplicación | owner, destino, retorno y revalidación |
+| `VA-18` | Errores | estados negativos | significado y recuperación correctos |
+| `VA-19` | Frescura | snapshot stale | recálculo antes de efecto sensible |
+| `VA-20` | Accesibilidad | teclado y semántica | operación sin depender de color/hover |
+| `VA-21` | Responsive | pantalla estrecha | contexto y controles materiales preservados |
+| `VA-22` | Privacidad | información sensible | minimización y cero fuga |
+| `VA-23` | Recuperación | resultado desconocido | consulta/reconciliación sin doble efecto |
+| `VA-24` | Auditoría | cambio confirmado | resultado trazable sin exponer secretos |
+
+Esta matriz es mínima.
+
+Una implementation unit puede requerir escenarios adicionales por su alcance.
+
+---
+
+#### 54. Matriz mínima por perfil
+
+La cobertura deberá demostrar, al menos conceptualmente:
+
+| Perfil | Inicio | Territorio | Programación | Seguridad | Handoff | Errores |
+| --- | --- | --- | --- | --- | --- | --- |
+| `propietario` | obligatorio | obligatorio | cuando aplique | obligatorio | obligatorio | obligatorio |
+| `gerente_general` | obligatorio | obligatorio | cuando aplique | según permiso | obligatorio | obligatorio |
+| `gerente` | obligatorio | obligatorio | obligatorio cuando sea responsable | según permiso | obligatorio | obligatorio |
+| `auxiliar_administrativa` | obligatorio | obligatorio | según responsabilidad | según permiso | obligatorio | obligatorio |
+| `contador` | obligatorio | según capacidad exacta | no se fuerza si no corresponde | según permiso | obligatorio cuando exista destino | obligatorio |
+
+“No aplica” requiere evidencia de alcance.
+
+No se completa una celda inventando permisos para facilitar la prueba.
+
+---
+
+#### 55. Prueba de ausencia de autoridad
+
+Los casos negativos son obligatorios donde exista riesgo.
+
+La sesión deberá comprobar, según unidad:
+
+- acción no autorizada ausente o no ejecutable;
+- llamada directa denegada de forma equivalente;
+- recurso fuera de alcance;
+- dato sensible no cargado;
+- modo experto sin elevación;
+- handoff destino denegado sin bypass local;
+- exporte separado de lectura;
+- administración de seguridad separada de acceso general a VISO.
+
+---
+
+#### 56. Prueba de estados sin datos
+
+La matriz deberá distinguir al menos:
+
+- conjunto vacío autorizado;
+- actor sin autoridad;
+- actor sin territorio;
+- filtros sin coincidencias;
+- fuente no disponible;
+- lectura parcial;
+- error técnico.
+
+El participante no debe interpretar todos estos casos como “no hay información”.
+
+---
+
+#### 57. Prueba de accesos directos y búsqueda
+
+Cuando la unidad implemente búsqueda o deep links:
+
+- el resultado solo aparece si es descubrible para el actor;
+- el destino revalida permiso;
+- la búsqueda no filtra títulos o conteos sensibles;
+- un deep link stale resuelve estado actual;
+- un enlace guardado no conserva permiso antiguo;
+- una ruta retirada usa la política de compatibilidad correspondiente.
+
+---
+
+#### 58. Prueba de auditoría y receipt
+
+Para una acción que produzca receipt, la prueba deberá verificar que el administrador puede comprender:
+
+- qué se intentó;
+- qué quedó confirmado;
+- qué quedó parcial;
+- qué quedó rechazado;
+- qué quedó desconocido;
+- cuál es la siguiente acción segura.
+
+La evidencia técnica detallada puede permanecer restringida.
+
+El receipt no se reconstruye localmente si pertenece al owner.
+
+---
+
+#### 59. Datos sintéticos y datos reales
+
+La prueba podrá utilizar datos sintéticos o referencias controladas siempre que representen fielmente las condiciones del escenario.
+
+No se usarán datos productivos únicamente para “hacer la prueba más real”.
+
+Cuando una validación dependa de una relación real no reproducible sintéticamente, el package propietario deberá definir el modo seguro de observarla sin ampliar exposición ni mutación.
+
+---
+
+#### 60. Producción y piloto
+
+020 no autoriza producción.
+
+Una prueba en staging puede validar usabilidad y contratos materializados.
+
+Un piloto con efecto real pertenece al package y gates que lo autorizan.
+
+Se preserva:
+
+```text
+USUARIO REAL
+!=
+DATO PRODUCTIVO OBLIGATORIO
+
+PILOTO CONTROLADO
+!=
+DESPLIEGUE GENERAL
+```
+
+---
+
+#### 61. Sesiones remotas o presenciales
+
+El contrato no obliga a una modalidad física única.
+
+La sesión puede ser remota o presencial si permite observar de forma confiable:
+
+- interacción;
+- comprensión;
+- dudas;
+- errores;
+- recuperación;
+- resultado.
+
+Si la modalidad impide observar un criterio crítico, esa evidencia debe obtenerse por otro medio antes de cerrar la unidad.
+
+---
+
+#### 62. Moderación
+
+El moderador debe:
+
+- explicar el objetivo de la sesión sin revelar el camino exacto;
+- evitar inducir respuestas;
+- registrar ayuda y bloqueos;
+- detener una acción cuando pueda producir un efecto no autorizado;
+- proteger datos sensibles;
+- distinguir defecto del sistema de problema del ambiente;
+- no corregir silenciosamente datos para fabricar un PASS.
+
+---
+
+#### 63. Script de escenario
+
+Cada escenario físico deberá declarar antes de ejecutarse:
+
+```text
+OBJETIVO
+PERFIL
+PRECONDICIONES
+ESTADO INICIAL
+TAREA PARA EL PARTICIPANTE
+ORÁCULO
+DATOS PERMITIDOS
+EFECTOS PERMITIDOS
+CONDICIÓN DE PASS
+CONDICIÓN DE FAIL
+RECUPERACIÓN
+EVIDENCIA
+```
+
+El script no debe incluir una secuencia de clics que transforme la prueba en una demostración guiada.
+
+---
+
+#### 64. Evidencia técnica complementaria
+
+La observación humana podrá correlacionarse con:
+
+- logs seguros;
+- request IDs;
+- correlation IDs;
+- receipts;
+- auditoría;
+- capturas de estado;
+- hashes o versiones de build;
+- resultados de pruebas automatizadas aplicables.
+
+La evidencia técnica complementa la sesión.
+
+No reemplaza una observación humana cuando el criterio es comprensión o descubribilidad.
+
+---
+
+#### 65. Paridad con pruebas automatizadas
+
+Una falla humana causada por un comportamiento que una prueba automatizada debería cubrir genera dos preguntas separadas:
+
+1. por qué falló la experiencia;
+2. por qué la automatización no detectó el defecto.
+
+No se usa la existencia de pruebas automatizadas como razón para descartar un hallazgo humano reproducible.
+
+---
+
+#### 66. Relación con requisitos de programación existentes
+
+Los contratos de programación ya poseen cobertura de prueba para:
+
+- misma fuente Semana/Mes;
+- preview reactiva;
+- multibloque;
+- pertenencia única de fecha;
+- límites de bloques;
+- duración y overnight;
+- descansos;
+- límite mensual;
+- borrador y publicación;
+- conflictos;
+- concurrencia;
+- rollback.
+
+020 no crea requisitos duplicados para volver a nombrar estos casos.
+
+La sesión humana demuestra comprensión y operabilidad sobre una materialización que también debe satisfacer sus requisitos técnicos propietarios.
+
+---
+
+#### 67. Relación con `VISO-SCH-001` a `VISO-SCH-008`
+
+Las tareas `VISO-SCH-*` conservan ownership sobre política de programación.
+
+En particular:
+
+- `VISO-SCH-003` conserva bloques, fechas, duración y modalidad rápida;
+- `VISO-SCH-004` conserva límites mensuales, advertencias, vigencia y excepciones;
+- `VISO-SCH-005` conserva borrador, revisión, publicación y corrección;
+- `VISO-SCH-006` conserva conflictos, integridad, concurrencia y recuperación.
+
+020 prueba su presentación cuando exista una implementation unit que ya consuma esas decisiones.
+
+No completa decisiones todavía no materializadas por esos owners.
+
+---
+
+#### 68. Relación con seguridad avanzada
+
+Las pruebas de seguridad de 020 deben verificar experiencia sin redefinir:
+
+- roles;
+- PermissionKeys;
+- grants;
+- denies;
+- scopes;
+- precedencia;
+- simulación;
+- administración territorial;
+- excepciones;
+- auditoría.
+
+Si la sesión descubre que un participante no comprende una decisión correcta, el hallazgo es de UX.
+
+Si descubre que la decisión efectiva es incorrecta, el hallazgo se deriva al owner de autorización.
+
+---
+
+#### 69. Métricas mínimas de sesión
+
+Cuando sean materialmente útiles, se registrarán:
+
+- escenario completado o no;
+- tiempo observado;
+- cantidad de ayudas;
+- retrocesos;
+- errores de interpretación;
+- errores del sistema;
+- hallazgos por severidad;
+- abandono;
+- recuperación exitosa o no;
+- confianza declarada como señal cualitativa, no como prueba de corrección.
+
+Ninguna métrica aislada decide el PASS.
+
+---
+
+#### 70. Métricas que no deben usarse solas
+
+No se considerará suficiente:
+
+- cantidad de clics;
+- satisfacción declarada;
+- rapidez de un usuario experto;
+- ausencia de quejas;
+- tasa de apertura de modo experto;
+- poca utilización de una función.
+
+Una capacidad crítica puede ser rara y seguir siendo obligatoria.
+
+---
+
+#### 71. Evidencia de comprensión
+
+La evidencia puede incluir preguntas de comprobación posteriores a la tarea, por ejemplo:
+
+- “¿Qué quedó publicado?”;
+- “¿Qué parte sigue siendo borrador?”;
+- “¿Qué bloqueó la acción?”;
+- “¿Qué sedes entran en este total?” cuando la respuesta autorizada sea agregada;
+- “¿Dónde continuarías la corrección?”;
+- “¿Este permiso es real o simulado?”.
+
+Las preguntas no deben revelar la respuesta antes de la interacción.
+
+---
+
+#### 72. Evidencia de descubribilidad
+
+Una función se considera descubierta cuando el participante la encuentra mediante la arquitectura disponible sin recibir la ubicación exacta.
+
+Usar búsqueda puede ser válido si el producto la ofrece como camino canónico.
+
+Conocer una URL por capacitación previa no demuestra descubribilidad de navegación.
+
+---
+
+#### 73. Evidencia de recuperación
+
+Para fallos y resultados parciales se deberá registrar:
+
+- estado observado;
+- mensaje mostrado;
+- acción ofrecida;
+- acción tomada;
+- estado posterior;
+- duplicación de efectos, si la hubo;
+- necesidad de escalar.
+
+La recuperación correcta forma parte del éxito del escenario.
+
+---
+
+#### 74. Regla de no manipulación
+
+La sesión no puede diseñarse para producir un resultado favorable.
+
+Queda prohibido:
+
+- omitir escenarios negativos porque “confunden al usuario”;
+- retirar hallazgos por ser poco frecuentes;
+- enseñar el camino exacto antes de medir descubrimiento;
+- cambiar el perfil durante la sesión para que la acción funcione;
+- borrar evidencia de fallos;
+- repetir hasta obtener PASS y descartar intentos anteriores sin explicación.
+
+---
+
+#### 75. Interrupción segura
+
+El moderador deberá detener o redirigir una sesión cuando:
+
+- exista riesgo de mutación productiva no autorizada;
+- aparezcan datos sensibles fuera del alcance;
+- el ambiente sea incorrecto;
+- el build cambie durante la sesión;
+- falle una precondición que invalide el oráculo;
+- el participante tenga una identidad distinta de la declarada;
+- la sesión pueda causar un efecto irreversible no aprobado.
+
+La interrupción se registra como evidencia, no se oculta.
+
+---
+
+#### 76. Consolidación de hallazgos
+
+Al terminar una ronda se deberá producir una matriz que permita agrupar por:
+
+- perfil;
+- dominio VISO;
+- escenario;
+- implementation unit;
+- severidad;
+- owner;
+- estado de corrección;
+- necesidad de reprueba;
+- impacto sobre certificación.
+
+Dos observaciones parecidas pueden compartir causa, pero no se fusionan si tienen efectos u owners distintos.
+
+---
+
+#### 77. Hallazgo repetido
+
+Un hallazgo repetido por varios perfiles aumenta evidencia de impacto, pero no cambia automáticamente su naturaleza técnica.
+
+Un único hallazgo de seguridad puede ser bloqueante aunque solo aparezca una vez.
+
+Un hallazgo de comprensión repetido puede indicar que la jerarquía o microcopia requiere corrección transversal.
+
+---
+
+#### 78. Hallazgos contradictorios
+
+Si distintos administradores prefieren comportamientos opuestos, la decisión no se resuelve por mayoría simple cuando afecta:
+
+- autoridad;
+- integridad;
+- segregación;
+- privacidad;
+- auditabilidad;
+- ownership;
+- consistencia de procesos.
+
+La evidencia se eleva al owner canónico para decidir sin romper contratos superiores.
+
+---
+
+#### 79. Cierre de un hallazgo
+
+Un hallazgo se considera cerrado únicamente cuando existe:
+
+- decisión de owner;
+- corrección o justificación contractual;
+- evidencia de implementación cuando aplique;
+- reprueba cuando el comportamiento cambió;
+- ausencia de regresión material en casos vinculados.
+
+Mover el hallazgo a otra lista no equivale a cierre.
+
+---
+
+#### 80. Ronda posterior a correcciones
+
+Una segunda ronda deberá priorizar:
+
+1. hallazgos `BLOCKING` corregidos;
+2. hallazgos `MAJOR` corregidos;
+3. escenarios de seguridad y territorio afectados;
+4. regresiones cercanas;
+5. flujos con mayor ayuda del moderador;
+6. comportamiento responsive o accesible modificado.
+
+No es obligatorio repetir escenarios independientes que no cambiaron cuando existe evidencia suficiente y el plan propietario permite reutilizarla.
+
+---
+
+#### 81. Cierre de BLOQUE G3
+
+La aprobación documental de 020 completa la definición de las veinte tareas `VISO-UX-001` a `VISO-UX-020`.
+
+Ese cierre significa:
+
+```text
+CONTRATO UX VISO COMPLETO
+```
+
+No significa:
+
+```text
+TODAS LAS IMPLEMENTACIONES VISO MATERIALIZADAS
+TODAS LAS PRUEBAS HUMANAS EJECUTADAS
+VISO CERTIFICADO PARA PRODUCCIÓN
+```
+
+Las instancias físicas, packages y certificación permanecen gobernados por sus gates propietarios.
+
+---
+
+#### 82. Handoff a BLOQUE U
+
+020 entrega a `UX-QA-023`:
+
+- perfiles administrativos primarios;
+- matriz mínima de escenarios VISO;
+- oráculos de comprensión, autoridad y territorialidad;
+- evidencia mínima;
+- severidad de hallazgos;
+- criterio de PASS por unidad;
+- condiciones bloqueantes;
+- política de reprueba;
+- relación con packages e implementation units.
+
+`UX-QA-023` podrá ampliar la matriz para certificación integral.
+
+No podrá reducir silenciosamente los casos obligatorios aplicables definidos aquí.
+
+---
+
+#### 83. Handoff de continuidad documental
+
+Al cerrar documentalmente G3, la ruta normal entrega continuidad a:
+
+```text
+PASS-QA-001 — Probar flujo completo de acumulación
+```
+
+Ese handoff no ejecuta la tarea de PASS ni modifica su gate físico.
+
+`PASS-QA-001` conserva `POST_E5_PACKAGE` y sus propias dependencias.
+
+---
+
+#### 84. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura canónica vigente ya asigna a `VISO-UX-013` a `VISO-UX-020` la coherencia administrativa de VISO y reserva la certificación humana integral a la familia `UX-QA-*`. Las reglas de programación mensual también poseen requisitos propietarios ya registrados. Esta tarea define la matriz humana VISO y el handoff de evidencia sin crear una nueva capacidad empresarial, PermissionKey, regla territorial, estado de proceso, transición runtime o requisito técnico adicional.
+
+---
+
+#### 85. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza cobertura existente que incluye:
+
+- `TREQ-VISO-001` para coherencia administrativa, efecto antes de guardar, conflictos, procedencia, territorio y auditoría;
+- `TREQ-VISO-025` a `TREQ-VISO-041` para Semana/Mes, multibloque, fechas, límites, borrador, publicación, conflictos, concurrencia y rollback;
+- requisitos AUTH aplicables a autorización, territorio, simulación y server-side enforcement;
+- requisitos UX transversales aplicables a comprensión, accesibilidad, recuperación y continuidad;
+- la certificación futura de `UX-QA-023`.
+
+Esta trazabilidad no cambia estado, contenido, relaciones, paquete ni evidencia del registro.
+
+---
+
+#### 86. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto de `VISO-UX-020` no ha sido incorporado al archivo modular ni procesado por `docs:plan:build` en el checkout documental del usuario. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, quality, delivery, topología, TREQ ni `git diff --check` sobre una rama local de `VISO-UX-020`. |
+| REMOTA | PASS | Se verificaron en `vento-shell/main` el protocolo, contrato de entrega modular, manifest, continuidad, secuencia G3, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas de formato y desarrollo, owner G3, `UX-ADMIN-005`, `UX-QA-020`, `UX-QA-023`, `04A_08_VISO.md`, `VISO-SCH-003`, `VISO-SCH-006`, `package.json` y los validadores de formato, semántica y entrega; la secuencia activa reconoce `VISO-UX-018` como última publicada y reserva `VISO-UX-019` y `VISO-UX-020`, mientras la base inmediata completa de 019 usada para esta preparación conserva continuidad hacia 020. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones humanas con administradores reales; esta tarea define el contrato y deja la ejecución a las implementation units propietarias y a la certificación posterior. |
+| FÍSICA | NOT_EXECUTED | No se modificaron VISO, datos, permisos, Supabase, ambientes, despliegues ni usuarios reales, y no se ejecutó ningún piloto físico. |
+
+---
+
+#### 87. Criterios de aceptación
+
+- [ ] El título es exactamente `VISO-UX-020 — Ejecutar pruebas con administradores reales`.
+- [ ] `VISO-UX-019` permanece como tarea anterior.
+- [ ] `PASS-QA-001 — Probar flujo completo de acumulación` permanece como tarea siguiente.
+- [ ] La tarea define un contrato de prueba y no inventa sesiones humanas ejecutadas.
+- [ ] La topología permanece `PER_IMPLEMENTATION_UNIT`.
+- [ ] El gate físico permanece `POST_E5_PACKAGE`.
+- [ ] Se define `VISO_REAL_ADMIN_VALIDATION_CONTRACT = VISO-REAL-ADMIN-VALIDATION-001`.
+- [ ] Los perfiles primarios aplicables se derivan de `VISO-UX-008` a `VISO-UX-012`.
+- [ ] Un participante real no obliga a utilizar datos productivos.
+- [ ] La evidencia minimiza datos personales.
+- [ ] Cada sesión identifica unidad, build, ambiente y perfil.
+- [ ] Cada escenario declara oráculo y condición de salida.
+- [ ] PASS, FAIL, BLOCKED, NOT_RUN y NOT_APPLICABLE permanecen diferenciados.
+- [ ] Un bloqueo no se cuenta como éxito.
+- [ ] Un escenario no ejecutado no se declara no aplicable sin justificación.
+- [ ] Los hallazgos tienen severidad basada en efecto.
+- [ ] Un hallazgo de seguridad puede bloquear con una sola reproducción.
+- [ ] Se prueba comprensión además de clics.
+- [ ] Se prueba que visibilidad no equivale a autoridad.
+- [ ] Se prueba territorialidad y filtros reductivos.
+- [ ] Se prueba navegación por dominios y rutas hijas.
+- [ ] Se prueban las variantes de Inicio aplicables.
+- [ ] Semana y Mes consumen la misma semántica y fuente empresarial.
+- [ ] Se prueban meses de 28, 29, 30 y 31 días.
+- [ ] Se prueba transición de año cuando aplique.
+- [ ] Se prueba constructor multibloque.
+- [ ] Bloques plegables no pierden datos.
+- [ ] Cada fecha conserva pertenencia inequívoca.
+- [ ] Se prueban turnos, descansos, rol y área según aplicabilidad.
+- [ ] Se prueba actual, nuevo, proyectado y límite cuando owner lo suministre.
+- [ ] Se prueba exceso sin fijar aquí el valor numérico del límite.
+- [ ] Se prueba conflicto bloqueante antes de guardar o publicar.
+- [ ] Se prueba corrección sin sobrescritura destructiva.
+- [ ] Guardar borrador y publicar permanecen acciones distintas.
+- [ ] Semana y Mes aplican política de publicación equivalente.
+- [ ] Se prueba vista previa exacta por trabajador.
+- [ ] Se prueba agregado cross-site sin fuga de detalle.
+- [ ] Se prueba procedencia de permiso sin recomputar autoridad en UI.
+- [ ] Se prueba divulgación progresiva.
+- [ ] Modo experto no amplía autoridad.
+- [ ] Filtros avanzados activos permanecen resumidos.
+- [ ] Operaciones masivas muestran población, alcance y resultado esperado.
+- [ ] Se prueba frontera de ownership.
+- [ ] Se prueba handoff cross-app.
+- [ ] Se prueba retorno y refresco.
+- [ ] Se distinguen loading, vacío, ausencia de autoridad, ausencia de territorio, conflicto, stale, fallo técnico y lectura parcial.
+- [ ] Resultado desconocido no se convierte en éxito.
+- [ ] Snapshot stale exige actualización antes de efecto sensible.
+- [ ] Deep links no evitan autorización.
+- [ ] Búsqueda no fuga recursos.
+- [ ] Datos sensibles no dependen de CSS o colapso visual para estar protegidos.
+- [ ] Se prueba accesibilidad por teclado y semántica.
+- [ ] Responsive conserva contexto y consecuencias materiales.
+- [ ] Toda ayuda del moderador queda registrada.
+- [ ] No se inventa un umbral universal de tiempo.
+- [ ] Se distinguen errores de comprensión, datos, implementación, contrato y ambiente.
+- [ ] Todo hallazgo tiene owner y condición de salida.
+- [ ] Toda corrección material exige reprueba proporcional.
+- [ ] PASS de una unidad no certifica otra unidad.
+- [ ] Cero hallazgos `BLOCKING` abiertos es condición necesaria de PASS.
+- [ ] La matriz `VA-01` a `VA-24` queda definida como mínimo reutilizable.
+- [ ] La cobertura por perfil no inventa permisos.
+- [ ] Se prueban casos negativos de ausencia de autoridad.
+- [ ] Empty, deny, ausencia de territorio y fallo técnico no se confunden.
+- [ ] Auditoría y receipt permiten comprender resultado y siguiente acción.
+- [ ] Datos sintéticos son válidos cuando preservan el oráculo.
+- [ ] Usuario real no implica dato productivo obligatorio.
+- [ ] La sesión puede ser remota o presencial si preserva observabilidad suficiente.
+- [ ] El moderador no guía la solución antes de medir descubrimiento.
+- [ ] Cada escenario físico define objetivo, perfil, precondiciones, tarea, oráculo, efectos y evidencia.
+- [ ] Evidencia técnica complementa, pero no sustituye, comprensión humana.
+- [ ] Un fallo humano reproducible no se descarta porque existan pruebas automatizadas.
+- [ ] La cobertura mensual existente no se duplica con nuevos TREQ.
+- [ ] `VISO-SCH-003` conserva ownership de bloques, fechas y duración.
+- [ ] `VISO-SCH-004` conserva ownership de límites.
+- [ ] `VISO-SCH-005` conserva ownership de borrador, publicación y corrección.
+- [ ] `VISO-SCH-006` conserva ownership de conflictos, concurrencia y recuperación.
+- [ ] La sesión no redefine contratos de seguridad.
+- [ ] Las métricas no deciden PASS por sí solas.
+- [ ] Se registra evidencia de comprensión, descubribilidad y recuperación.
+- [ ] La sesión no se manipula para producir PASS.
+- [ ] Una sesión insegura se interrumpe y conserva evidencia.
+- [ ] Los hallazgos se consolidan sin fusionar owners diferentes.
+- [ ] Hallazgos repetidos no reducen seguridad a una votación.
+- [ ] Hallazgos contradictorios se resuelven por owner canónico cuando afectan contratos superiores.
+- [ ] Un hallazgo no se cierra sin decisión, corrección o justificación, y reprueba cuando corresponda.
+- [ ] El cierre documental completa `VISO-UX-001` a `VISO-UX-020` sin afirmar implementación completa.
+- [ ] Se entrega a `UX-QA-023` la matriz específica VISO.
+- [ ] La continuidad documental pasa a `PASS-QA-001` sin ejecutarlo.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No existe cambio físico durante el cierre documental.
+
+---
+
+#### 88. Límites
+
+Esta tarea no:
+
+- ejecuta sesiones humanas desde el cierre documental;
+- declara participantes inexistentes;
+- inventa resultados de usabilidad;
+- certifica producción;
+- certifica `UX-QA-023`;
+- modifica `vento-viso`;
+- crea componentes;
+- modifica rutas;
+- modifica navegación runtime;
+- crea datos de prueba productivos;
+- modifica programación real;
+- publica turnos reales;
+- crea o modifica límites mensuales;
+- define máximo de bloques;
+- redefine overnight;
+- redefine descansos;
+- redefine `VISO-SCH-001` a `VISO-SCH-008`;
+- redefine roles;
+- crea PermissionKeys;
+- crea grants;
+- crea denies;
+- cambia scopes;
+- amplía territorio;
+- modifica autorización efectiva;
+- modifica `AuthorizationDecision`;
+- modifica simulación;
+- cambia precedencia;
+- aprueba excepciones;
+- cambia segregación;
+- cambia ownership;
+- crea handoffs;
+- modifica contratos de retorno;
+- crea receipts runtime;
+- modifica auditoría runtime;
+- crea instrumentación productiva;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- crea RPC;
+- modifica Auth;
+- modifica Storage;
+- modifica secretos;
+- modifica datos;
+- modifica ambientes;
+- despliega;
+- autoriza implementation units;
+- ejecuta package gates;
+- ejecuta pilotos;
+- desarrolla `PASS-QA-001`;
+- inicia BLOQUE U;
+- crea requisitos de prueba nuevos.
 
 ### Alcance del delta
 
@@ -39535,3 +41268,16 @@ Esta tarea no:
 `VISO-UX-016` incluye total entre sedes sin revelar detalle innecesario.
 
 `VISO-UX-020` prueba multibloque, longitudes de mes, exceso, corrección, publicación, navegación y errores.
+
+---
+
+#### 89. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-020 — Ejecutar pruebas con administradores reales`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-QA-001 — Probar flujo completo de acumulación`

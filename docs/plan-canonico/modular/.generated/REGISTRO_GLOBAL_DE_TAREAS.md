@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1483** |
+| Aprobadas | **1484** |
 | En propuesta | **0** |
-| No iniciadas | **113** |
+| No iniciadas | **112** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **92.92% (1483/1596)** |
+| Porcentaje de completamiento | **92.98% (1484/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **113** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1384** |
+| ⏸ NO_EVALUADA | **112** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1385** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-UX-019` — Aplicar divulgación progresiva a seguridad avanzada | ✅ APROBADA |
-| Tarea actual | `VISO-UX-020` — Ejecutar pruebas con administradores reales | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-QA-001` — Probar flujo completo de acumulación | ⬜ NO INICIADA |
+| Última aprobada | `PASS-INT-005` — Evitar mezclar identidad cliente y trabajador | ✅ APROBADA |
+| Tarea actual | `PASS-QA-001` — Probar flujo completo de acumulación | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-QA-002` — Probar flujo completo de redención | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -732,7 +732,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-017` | Evitar duplicar configuración propia de otras aplicaciones | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-018` | Enlazar a la aplicación propietaria cuando corresponda | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-019` | Aplicar divulgación progresiva a seguridad avanzada | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `VISO-UX-020` | Ejecutar pruebas con administradores reales | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `VISO-UX-020` | Ejecutar pruebas con administradores reales | — | — | `bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-AUD-001` | Buscar código duplicado entre repositorios | — | — | `bloques/H_FUNDACION_COMPARTIDA/01_AUDITORIA_DE_COMPONENTES_COMPARTIDOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-AUD-002` | Comparar guards de autenticación | — | — | `bloques/H_FUNDACION_COMPARTIDA/01_AUDITORIA_DE_COMPONENTES_COMPARTIDOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-AUD-003` | Comparar helpers de permisos | — | — | `bloques/H_FUNDACION_COMPARTIDA/01_AUDITORIA_DE_COMPONENTES_COMPARTIDOS.md` |
