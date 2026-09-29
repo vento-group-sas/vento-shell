@@ -35510,7 +35510,2011 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda`
-### [ ] VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
+### ✅ VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
+**Tarea siguiente:** VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
+**Tipo de tarea:** documental; definición de la experiencia de navegación y handoff con la que VISO conduce trabajo hacia la aplicación propietaria cuando una acción, dato, regla, transición o workspace no pertenece a VISO, preservando ownership, intención, contexto mínimo, retorno seguro y revalidación en destino sin convertir navegación en autorización ni duplicar la mutación empresarial
+**Bloque:** `BLOQUE G3 — VISO completo`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato documental de handoff y navegación hacia aplicación propietaria definido; materialización física diferida por unidad de implementación
+**Cambios físicos autorizados:** ninguno durante el cierre documental; la materialización futura queda sujeta a `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo VISO debe conducir a la aplicación propietaria cuando el trabajo visible en una superficie administrativa no pertenece funcionalmente a VISO.
+
+La regla raíz es:
+
+```text
+VISO IDENTIFICA EL OWNER
++
+PRESENTA CONTEXTO MINIMO AUTORIZADO
++
+OFRECE NAVEGACION O HANDOFF CUANDO EXISTE DESTINO CANONICO
++
+EL DESTINO REVALIDA SU PROPIA AUTORIDAD
+=
+CONTINUIDAD SIN DUPLICACION
+```
+
+Y nunca:
+
+```text
+ENLACE CROSS-APP
+=
+PERMISO
+=
+OWNERSHIP
+=
+HANDOFF ACEPTADO
+=
+EFECTO EMPRESARIAL EJECUTADO
+```
+
+La experiencia debe permitir que el usuario entienda dónde continúa el trabajo, por qué VISO no lo ejecuta localmente y qué información se conserva durante la transición, sin inventar rutas, autoridades ni estados.
+
+---
+
+#### 2. Fuentes vinculantes
+
+Esta tarea consume, sin redefinir:
+
+- `VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones` y su clasificación de ownership y disposición por acción;
+- la regla transversal del protocolo que conserva una única aplicación propietaria por función transversal o una frontera distribuida explícita;
+- `UX-ADMIN-OWNERSHIP-BOUNDARY-001`;
+- `UX-ADMIN-EXPERIENCE-ROUTING-MATRIX-001`;
+- `C-ADMIN-014` para handoffs y retornos entre aplicaciones;
+- `SHELL-CON-014` como autoridad sobre `ApplicationHandoffRelation`;
+- `SHELL-CON-016` como autoridad de propiedad funcional;
+- `SHELL-APP-014` para retorno seguro entre aplicaciones;
+- `SHELL-APP-015` para conservación no autoritativa de contexto durante cambio de aplicación;
+- `SHELL-APP-016` para conservación de trabajo en curso cuando exista una obligación empresarial vigente;
+- `SCREEN-CROSS-OWNER-PROJECTION-RULES-001`;
+- el contrato de composición de pantallas cross-app que conserva `source_screen_id`, `source_application_id`, `destination_screen_id`, `destination_application_id`, `business_object_ref` y `return_contract`;
+- `PROC-CAT-005` para aplicación propietaria de procesos;
+- `PROC-CAT-006` para relaciones de consumidoras directas y condicionales;
+- el catálogo canónico de aplicaciones y sus estados de disponibilidad;
+- las superficies AS-IS de `vento-viso`, incluidas navegación local, AppSwitcher, enlaces externos observados, rutas administrativas y referencias a otras aplicaciones;
+- los contratos de autorización, contexto, recurso, territorio, dispositivo y simulación ya aprobados.
+
+Ninguna de estas fuentes autoriza por sí sola una ruta nueva, un deep link nuevo, un dominio nuevo, un redirect productivo ni una mutación cross-app.
+
+---
+
+#### 3. Contrato documental de esta tarea
+
+```text
+VISO_OWNER_HANDOFF_CONTRACT = VISO-OWNER-HANDOFF-001
+SOURCE_APP = viso
+OWNER_RESOLUTION_REQUIRED = YES
+DESTINATION_CANONICAL_REQUIRED = YES
+HANDOFF_RELATION_WHEN_APPLICABLE = REQUIRED
+RETURN_CONTRACT_REQUIRED = YES
+DESTINATION_REAUTHORIZATION = REQUIRED
+CROSS_APP_MUTATION_IN_VISO = FORBIDDEN
+GUESS_DESTINATION = FORBIDDEN
+HANDOFF_TRANSFERS_AUTHORITY = NO
+HANDOFF_TRANSFERS_OWNERSHIP = NO
+HANDOFF_ACCEPTANCE_BY_NAVIGATION = NO
+TREQ_CHANGES = 0
+```
+
+Este contrato es una decisión UX documental. No crea un tipo runtime nuevo ni modifica `ApplicationHandoffRelation`.
+
+---
+
+#### 4. Definición de “aplicación propietaria” para 018
+
+Para esta tarea, la aplicación propietaria se obtiene exclusivamente desde las fuentes canónicas de ownership y proceso vigentes.
+
+No se deriva desde:
+
+- el repositorio donde hoy exista una pantalla;
+- la tabla que una página consulte;
+- el dominio visible en una URL;
+- la aplicación desde la que el usuario inició la navegación;
+- el rol del actor;
+- el número de rutas disponibles;
+- un AppSwitcher local;
+- una cadena histórica de enlaces;
+- una integración temporal;
+- una conveniencia de implementación.
+
+Cuando la propiedad sea distribuida, cada tramo conserva su owner propio.
+
+---
+
+#### 5. Handoff empresarial versus navegación ordinaria
+
+Se distinguen dos experiencias:
+
+| Experiencia | Propósito | Requiere relación empresarial | Produce aceptación |
+| --- | --- | --- | --- |
+| navegación ordinaria | abrir otra aplicación o superficie disponible | no necesariamente | no |
+| handoff empresarial | continuar una intención perteneciente a un proceso, recurso o trabajo compartido | sí, cuando el contrato aplicable lo exige | no por navegar |
+
+Por tanto:
+
+```text
+ABRIR NEXO
+!=
+HANDOFF A NEXO
+```
+
+```text
+ABRIR NUMERA
+!=
+TRANSFERIR UNA OBLIGACION FINANCIERA
+```
+
+```text
+ABRIR ANIMA
+!=
+ACEPTAR UNA TRANSFERENCIA LABORAL
+```
+
+La UX debe nombrar el handoff solo cuando pueda demostrar su naturaleza empresarial.
+
+---
+
+#### 6. Condiciones mínimas para ofrecer un handoff propietario
+
+VISO puede ofrecer un handoff cuando todas las condiciones aplicables estén demostradas:
+
+1. la acción visible no pertenece a VISO o requiere un tramo propietario distinto;
+2. el owner está resuelto canónicamente;
+3. la aplicación destino existe en el catálogo canónico aplicable;
+4. la aplicación está disponible para ese ambiente y ciclo de vida;
+5. existe una pantalla o destino canónico conocido cuando el handoff requiere navegación exacta;
+6. la relación de proceso y owner no contradice `PROC-CAT-005`;
+7. cuando la semántica sea `ApplicationHandoffRelation`, la relación pertenece al universo aprobado;
+8. la transición no depende de una URL inventada;
+9. la referencia empresarial que se transportará está permitida;
+10. existe una política de retorno segura cuando se espera volver a VISO;
+11. la aplicación destino puede revalidar actor, permiso, contexto, territorio, recurso, versión y estado;
+12. la transición no intenta transferir un permiso, claim, contexto efectivo o decisión stale.
+
+Si una condición material no puede demostrarse, no se presenta un handoff operativo como disponible.
+
+---
+
+#### 7. Condiciones que bloquean el handoff
+
+El handoff se bloquea o degrada cuando:
+
+- el owner está `OWNERSHIP_UNRESOLVED`;
+- el owner existe, pero no hay aplicación destino aprobada;
+- la aplicación está diferida;
+- la pantalla destino no existe o no es canónica;
+- el deep link conocido es legacy sin compatibilidad aprobada;
+- el ambiente no coincide;
+- el actor cambió y la navegación anterior ya no es reutilizable;
+- la referencia de recurso quedó stale;
+- la relación `CONDICIONAL` no demuestra su condición;
+- la tarea o recurso ya alcanzó un estado terminal incompatible;
+- el destino requiere datos que VISO no está autorizado a transportar;
+- el destino exige autorización que solo puede determinarse allí;
+- la ruta observada AS-IS no tiene ownership reconciliado;
+- la aplicación está técnicamente indisponible y no existe recuperación contractual.
+
+La UX no reemplaza un destino inválido por la aplicación “más parecida”.
+
+---
+
+#### 8. Estados UX del enlace propietario
+
+Se define una clasificación de presentación, no un enum persistido:
+
+| Estado UX | Significado | Acción visible |
+| --- | --- | --- |
+| `LOCAL_OWNER` | la acción sigue perteneciendo a VISO | continuar en VISO |
+| `OWNER_LINK_READY` | owner externo y destino canónico disponibles | abrir owner |
+| `HANDOFF_READY` | existe intención empresarial y contrato aplicable | continuar en owner |
+| `OWNER_KNOWN_DESTINATION_UNKNOWN` | owner resuelto, destino exacto no demostrado | explicar owner; no inventar enlace |
+| `OWNER_UNRESOLVED` | ownership aún no aprobado | bloquear nueva duplicación y no navegar por inferencia |
+| `DESTINATION_UNAVAILABLE` | app o ruta no disponible | informar indisponibilidad sin absorber lógica |
+| `DESTINATION_BLOCKED` | actor no puede usar el destino según su propia política | explicar bloqueo seguro; no ofrecer bypass |
+| `LEGACY_HANDOFF_COMPATIBILITY` | existe destino transitorio explícitamente gobernado | usar solo dentro de su compatibilidad aprobada |
+| `HANDOFF_STALE` | la intención o referencia dejó de ser vigente | recalcular o cerrar transición |
+
+Estos estados no modifican el lifecycle empresarial del objeto.
+
+---
+
+#### 9. Relación con la clasificación de 017
+
+La decisión de 017 determina cómo 018 actúa:
+
+| Disposición de 017 | Tratamiento en 018 |
+| --- | --- |
+| `KEEP_NATIVE_VISO` | no requiere handoff por ownership |
+| `KEEP_PROJECTION_ONLY` | puede ofrecer acceso al owner si existe destino canónico; la proyección permanece read-only |
+| `CONVERT_TO_OWNER_HANDOFF` | la mutación local debe convertirse en navegación/handoff cuando exista destino propietario válido |
+| `DEPRECATE_DUPLICATE_MUTATION` | el destino propietario debe quedar identificado antes del retiro físico de la escritura duplicada |
+| `KEEP_LEGACY_COMPATIBILITY_TEMPORARILY` | conserva únicamente el destino transitorio aprobado y su condición de retiro |
+| `BLOCK_NEW_DUPLICATION_PENDING_OWNER` | no crea handoff hasta resolver owner y destino |
+
+018 no reabre la decisión de qué acción pertenece a cada clase.
+
+---
+
+#### 10. Forma conceptual mínima de composición de pantalla
+
+Cuando una pantalla VISO conduzca a otra aplicación, la experiencia consume la forma ya aprobada:
+
+```text
+source_screen_id
+source_application_id
+destination_screen_id
+destination_application_id
+business_object_ref
+return_contract
+```
+
+Para VISO:
+
+```text
+source_application_id = viso
+```
+
+El resto de identidades deben proceder de sus contratos canónicos.
+
+018 no crea un `handoff_id` paralelo ni serializa la relación en una URL.
+
+---
+
+#### 11. `business_object_ref`
+
+`business_object_ref` es una referencia de continuidad, no autoridad.
+
+Puede identificar el objeto que el usuario necesita continuar revisando cuando el contrato aplicable lo permita.
+
+No puede por sí sola:
+
+- otorgar acceso;
+- definir territorio;
+- confirmar que el objeto sigue vigente;
+- confirmar que el objeto pertenece al actor;
+- sustituir una resolución de servidor;
+- fijar versión;
+- habilitar mutación;
+- actuar como token secreto.
+
+El destino resuelve el recurso autoritativo desde esa referencia o rechaza el acceso.
+
+---
+
+#### 12. `return_contract`
+
+Toda transición que espere volver a VISO debe utilizar la política de retorno seguro ya aprobada.
+
+El retorno conserva:
+
+- intención de navegación válida;
+- origen y destino conocidos;
+- referencia de proceso o recurso cuando corresponda;
+- correlación necesaria;
+- condición de retorno.
+
+El retorno no conserva como autoridad:
+
+- permiso concedido previamente;
+- `ALLOW` anterior;
+- contexto operativo stale;
+- rol operativo anterior;
+- claim de otro actor;
+- estado empresarial congelado;
+- filtros de VISO;
+- actor previo en dispositivo compartido.
+
+---
+
+#### 13. `returnTo` no es el contrato empresarial
+
+`returnTo` puede participar como dato de transporte de navegación, pero:
+
+```text
+returnTo
+!=
+HANDOFF
+!=
+AUTORIZACION
+!=
+OWNERSHIP
+```
+
+VISO no debe construir autoridad a partir de un query parameter de retorno.
+
+Un destino absoluto requiere origen, aplicación, ambiente y flujo aprobados por la política propietaria de retorno.
+
+---
+
+#### 14. URL y deep link
+
+Una URL conocida no demuestra que sea el destino correcto.
+
+Para que un deep link sea utilizable debe existir compatibilidad contractual con:
+
+- aplicación destino;
+- ambiente;
+- ruta vigente;
+- pantalla o superficie canónica cuando aplique;
+- referencia empresarial admitida;
+- política de autorización destino;
+- política de retorno cuando aplique.
+
+Queda prohibido:
+
+- concatenar dominios por convención;
+- inferir hosts por nombre de aplicación;
+- usar rutas “parecidas”;
+- usar el primer enlace disponible;
+- mantener enlaces retirados por conveniencia;
+- transportar secretos o tokens de autoridad en la URL.
+
+---
+
+#### 15. AppSwitcher
+
+El AppSwitcher es una superficie de navegación entre aplicaciones.
+
+No constituye por sí mismo:
+
+- un handoff empresarial;
+- una relación `ApplicationHandoffRelation`;
+- una transferencia de recurso;
+- una aceptación;
+- un vínculo hacia el objeto exacto;
+- una política de retorno.
+
+Si VISO solo necesita que el actor abra una aplicación y no continuar una intención empresarial exacta, puede utilizar navegación ordinaria conforme al catálogo y autorización vigentes.
+
+---
+
+#### 16. Aplicación destino y pantalla destino
+
+Cuando exista `destination_screen_id`, la UX debe usar la identidad canónica de pantalla.
+
+No se reemplaza por:
+
+- una ruta física hardcodeada como autoridad;
+- una ruta observada en un repositorio sin vínculo canónico;
+- un componente React;
+- una tabla;
+- una entrada histórica de menú.
+
+Si existe owner pero no existe pantalla destino reconciliada, el estado es `OWNER_KNOWN_DESTINATION_UNKNOWN` y 018 no inventa un deep link.
+
+---
+
+#### 17. Owner conocido con aplicación no disponible
+
+Conocer el owner no hace que la aplicación esté disponible.
+
+Caso general:
+
+```text
+OWNER RESUELTO
++
+APP NO DISPONIBLE
+=
+NO HANDOFF OPERATIVO
+```
+
+VISO puede explicar:
+
+- cuál es el owner;
+- por qué la acción no se ejecuta en VISO;
+- que el destino aún no está disponible;
+- cuál es la alternativa contractual, si existe una ya aprobada.
+
+No puede reimplementar el workspace para “resolver” la indisponibilidad.
+
+---
+
+#### 18. AURA diferida
+
+AURA permanece diferida mientras no exista disponibilidad operativa aprobada.
+
+Por tanto:
+
+- una referencia documental a AURA no crea link operativo;
+- una relación condicional no activa AURA;
+- un host reservado no prueba disponibilidad;
+- una tarjeta `soon` no se convierte en destino de handoff;
+- VISO no mueve CMS o campañas hacia AURA por inferencia.
+
+El estado de ciclo de vida prevalece sobre la conveniencia de navegación.
+
+---
+
+#### 19. PASS
+
+PASS conserva su frontera cliente y sus responsabilidades propietarias aprobadas.
+
+VISO no debe inferir un destino web laboral hacia PASS únicamente porque existan datos `pass.*`, rutas AS-IS o una entrada del catálogo.
+
+Cuando exista un flujo empresarial hacia PASS:
+
+- se valida que corresponda a la identidad y acción cliente aprobadas;
+- no se transporta contexto laboral por transitividad;
+- no se presume destino web si el catálogo vigente no lo aprueba;
+- el destino vuelve a aplicar su política propia.
+
+---
+
+#### 20. NEXO
+
+Cuando el owner sea NEXO, VISO puede conducir hacia NEXO para trabajo propietario como:
+
+- inventario;
+- existencia;
+- ubicación;
+- activo;
+- logística interna;
+- recepción del efecto de stock que NEXO gobierna;
+- catálogo cuando la propiedad aprobada corresponda a NEXO.
+
+VISO no duplica la mutación de estos hechos.
+
+Un enlace existente hacia un activo NEXO es evidencia AS-IS de navegación, no prueba suficiente de que todos los objetos de esa familia compartan la misma ruta.
+
+---
+
+#### 21. FOGO
+
+Cuando el owner sea FOGO, VISO conduce al workspace propietario para:
+
+- recetas;
+- versionado de receta;
+- producción;
+- lote y resultado productivo cuando el proceso lo asigne a FOGO.
+
+VISO puede mostrar impacto o resumen autorizado, pero no publica ni corrige una receta mediante una copia local.
+
+---
+
+#### 22. ORIGO
+
+Cuando el owner sea ORIGO, VISO conduce hacia ORIGO para:
+
+- proveedores;
+- solicitudes o procesos de compra;
+- órdenes de compra;
+- recepción y diferencias cuando el proceso propietario corresponda a ORIGO.
+
+La proyección administrativa en VISO no convierte la compra en un objeto VISO.
+
+---
+
+#### 23. PULSO
+
+Cuando el owner sea PULSO, VISO conduce hacia PULSO para trabajo propietario como:
+
+- oferta vendible;
+- venta;
+- pedido;
+- caja;
+- pago de venta;
+- entrega asociada a pedido cuando el proceso lo determine.
+
+VISO no convierte indicadores comerciales en un editor alternativo del proceso de venta.
+
+---
+
+#### 24. NUMERA
+
+Cuando el owner sea NUMERA, VISO conduce hacia NUMERA para:
+
+- hechos económicos;
+- conciliación;
+- costos;
+- análisis financiero;
+- cierre o registro financiero cuando pertenezca al contrato NUMERA.
+
+VISO puede presentar indicadores administrativos autorizados sin permitir corregir desde VISO un hecho gobernado por NUMERA.
+
+---
+
+#### 25. ANIMA
+
+Cuando ANIMA sea propietaria o canal válido de una experiencia personal:
+
+- VISO puede iniciar o referenciar el handoff;
+- ANIMA revalida actor y contexto;
+- asistencia, experiencia personal y acciones del trabajador conservan su frontera;
+- VISO no copia el flujo personal solo para evitar el cambio de aplicación.
+
+Las correcciones administrativas que permanezcan bajo autoridad VISO continúan en VISO aunque consuman hechos originados en ANIMA.
+
+---
+
+#### 26. SHELL
+
+SHELL conserva responsabilidades transversales de acceso, navegación, contexto y plataforma que le correspondan.
+
+Un salto a SHELL puede servir para:
+
+- volver al Hub;
+- resolver acceso o contexto;
+- recuperar navegación;
+- continuar un flujo transversal aprobado.
+
+SHELL no se convierte por ello en owner de la mutación empresarial que originó el salto.
+
+---
+
+#### 27. CMS web administrativo
+
+El CMS web administrativo conserva la atribución vigente a VISO mientras no exista una transferencia formal aprobada.
+
+Por tanto, 018 no crea un handoff a AURA para:
+
+- `/website-cms`;
+- bloques;
+- items;
+- venues;
+- media administrativa asociada.
+
+Si en el futuro cambia ownership, ese cambio deberá aprobarse primero en su fuente propietaria y después podrá producir un nuevo destino.
+
+---
+
+#### 28. `content-blocks` y ownership no resuelto
+
+Cuando una superficie AS-IS permanezca con ownership no resuelto para decisiones nuevas:
+
+```text
+NO OWNER APROBADO
+→ NO DEEP LINK INVENTADO
+→ NO HANDOFF OPERATIVO INVENTADO
+→ NO NUEVA MUTACION DUPLICADA
+```
+
+VISO conserva el estado canónico vigente hasta que la tarea propietaria resuelva la frontera.
+
+---
+
+#### 29. Universo actual de `ApplicationHandoffRelation`
+
+El contrato estático compartido vigente materializa:
+
+```text
+49 relaciones
+27 directas
+22 condicionales
+8 procesos
+1 aplicación propietaria: viso
+9 aplicaciones participantes
+0 tuplas duplicadas
+0 relaciones owner=participant
+```
+
+018 consume ese universo cuando corresponda.
+
+No lo interpreta como inventario completo de toda navegación posible de Vento OS.
+
+---
+
+#### 30. Procesos del universo materializado
+
+Los ocho procesos actuales del contrato son:
+
+```text
+VPROC-0005
+VPROC-0006
+VPROC-0007
+VPROC-0009
+VPROC-0011
+VPROC-0059
+VPROC-0065
+VPROC-0066
+```
+
+Un `ProcessId` válido fuera de este conjunto no se convierte por inferencia en una relación `ApplicationHandoffRelation` vigente.
+
+---
+
+#### 31. Aplicaciones participantes del universo materializado
+
+El universo estático actual reconoce como participantes:
+
+```text
+shell
+anima
+nexo
+fogo
+origo
+pulso
+numera
+aura
+pass
+```
+
+La presencia de una app en esta lista no demuestra disponibilidad operativa ni autorización del actor.
+
+---
+
+#### 32. Relación directa
+
+`DIRECTA` conserva exactamente la clasificación contractual del proceso.
+
+No significa:
+
+- permiso automático;
+- mutación automática;
+- aceptación automática;
+- navegación sin revalidación;
+- disponibilidad técnica garantizada.
+
+---
+
+#### 33. Relación condicional
+
+`CONDICIONAL` exige demostrar la condición empresarial y técnica que hace aplicable el handoff.
+
+La UX no debe presentar una relación condicional como CTA habilitada únicamente porque la tupla existe.
+
+Si la condición no puede evaluarse con confianza:
+
+```text
+HANDOFF = NOT_READY
+```
+
+---
+
+#### 34. Solicitud, proyección y hecho de handoff
+
+Se conservan separados:
+
+```text
+HANDOFF_REQUEST
+HANDOFF_PROJECTION
+HANDOFF_FACT
+```
+
+Reglas:
+
+- una solicitud no es aceptación;
+- una proyección no es autoridad;
+- un hecho confirmado no crea una relación nueva;
+- una relación admitida no obliga a enviar todos los eventos del proceso;
+- navegación no crea por sí sola ninguno de estos hechos empresariales.
+
+---
+
+#### 35. Emisión, recepción, aceptación y resultado
+
+Cuando exista handoff empresarial, la experiencia debe distinguir:
+
+1. preparado;
+2. emitido;
+3. recibido;
+4. aceptado;
+5. ejecutado o rechazado;
+6. resultado confirmado;
+7. retorno o siguiente acción.
+
+No se presenta “transferido” si solo ocurrió navegación.
+
+No se presenta “completado” si solo ocurrió emisión.
+
+---
+
+#### 36. Revalidación en destino
+
+La aplicación destino revalida como mínimo lo que resulte aplicable:
+
+- relación de handoff;
+- actor;
+- función receptora;
+- permiso;
+- contexto;
+- territorio;
+- recurso;
+- estado;
+- versión;
+- dispositivo;
+- claim o custodia;
+- vigencia de la tarea;
+- condición de relación condicional.
+
+VISO no puede declarar esas validaciones ya cumplidas mediante parámetros de URL.
+
+---
+
+#### 37. Contexto cross-app
+
+018 consume la regla de `SHELL-APP-015`:
+
+```text
+CONTEXTO ORIGEN
+→ REFERENCIA MINIMA
+→ DESTINO RESUELVE CONTEXTO NUEVO
+```
+
+No se transporta `AccessContextV1` como autoridad cross-app.
+
+Una proyección segura puede orientar temporalmente, pero el destino resuelve su propio contexto.
+
+---
+
+#### 38. Sede y área
+
+Sede y área visibles en VISO pueden acompañar una transición como referencia cuando el contrato lo admita.
+
+No pueden:
+
+- imponer territorio al destino;
+- crear scope;
+- sustituir la sede real del recurso;
+- elegir una sede por defecto para ampliar cobertura;
+- fabricar un área no resuelta.
+
+El destino vuelve a resolver territorio y alcance.
+
+---
+
+#### 39. Cambio de actor
+
+Si cambia el actor durante el handoff o retorno:
+
+- se descarta la autoridad del actor anterior;
+- se reevalúa el destino;
+- se revalida autorización;
+- se evita exponer datos del actor anterior;
+- un claim anterior no se transfiere por navegación.
+
+Un destino que era válido para un actor no permanece válido automáticamente para otro.
+
+---
+
+#### 40. Dispositivo compartido
+
+En dispositivo compartido:
+
+- el principal técnico y el actor humano permanecen separados;
+- el actor nuevo debe identificarse antes de mostrar continuidad privada;
+- no se transporta autoridad máxima del dispositivo;
+- no se conserva trabajo sensible del actor anterior como vista previa visible;
+- el destino revalida su propio contexto.
+
+---
+
+#### 41. Trabajo en curso
+
+Cuando exista un `work_item_id` vigente, 018 consume las reglas de `SHELL-APP-016`.
+
+El handoff puede conservar referencia a la misma obligación cuando siga siendo el mismo trabajo empresarial.
+
+No puede:
+
+- clonar el work item;
+- crear una tarea espejo en VISO;
+- crear un claim nuevo por navegar;
+- liberar el claim anterior;
+- marcar trabajo como `IN_PROGRESS` por abrir el destino;
+- completar el trabajo por retornar a VISO.
+
+---
+
+#### 42. `HANDOFF_REQUIRED` en reanudación
+
+Si la clasificación de reanudación vigente indica `HANDOFF_REQUIRED`, VISO debe:
+
+1. localizar la obligación autoritativa;
+2. identificar el owner actual;
+3. validar destino;
+4. mostrar la transición necesaria;
+5. conservar referencias mínimas;
+6. dejar que el destino revalide claim, contexto, permiso y recurso.
+
+No transforma `HANDOFF_REQUIRED` en `RESUMABLE` local.
+
+---
+
+#### 43. Fallo de navegación después de emitir handoff
+
+Si el handoff empresarial fue emitido pero la navegación falla:
+
+- no se emite automáticamente otro handoff al recargar;
+- no se interpreta el fallo de navegación como rechazo empresarial;
+- no se interpreta como aceptación;
+- no se libera claim por inferencia;
+- se consulta el estado autoritativo antes de reintentar;
+- se conserva la correlación necesaria para recuperar resultado.
+
+---
+
+#### 44. Destino técnicamente indisponible
+
+Una indisponibilidad técnica:
+
+```text
+DESTINO NO DISPONIBLE
+!=
+DENY EMPRESARIAL
+```
+
+VISO presenta indisponibilidad y recuperación segura si existe contrato aprobado.
+
+No ejecuta la acción propietaria como fallback.
+
+---
+
+#### 45. Destino no autorizado
+
+Un destino válido puede estar prohibido para el actor actual.
+
+```text
+URL VALIDA
++
+APP VALIDA
++
+PANTALLA VALIDA
+!=
+AUTORIZACION
+```
+
+La aplicación destino conserva su guard.
+
+VISO no ofrece un botón alternativo que ejecute localmente la misma acción para sortear el bloqueo.
+
+---
+
+#### 46. Resultado confirmado por el owner
+
+Cuando el owner confirma la mutación:
+
+- VISO puede mostrar el receipt o resumen permitido;
+- el estado local se refresca desde fuente contractual;
+- una proyección stale deja de presentarse como vigente;
+- la UX distingue `RESULTADO_CONFIRMADO` de `RESULTADO_DESCONOCIDO`.
+
+La confirmación local de navegación no sustituye el receipt del owner.
+
+---
+
+#### 47. Resultado desconocido
+
+Cuando VISO no puede demostrar el resultado final:
+
+- no muestra éxito;
+- no repite automáticamente la mutación;
+- conserva correlación o referencia disponible;
+- consulta idempotencia/receipt/estado mediante los contratos propietarios;
+- permite recuperación segura cuando exista;
+- bloquea acciones que podrían duplicar el efecto.
+
+---
+
+#### 48. Retorno a VISO
+
+Al volver a VISO:
+
+1. VISO revalida actor y acceso;
+2. resuelve su contexto actual;
+3. localiza el recurso o caso vigente;
+4. consulta el resultado confirmado por el owner;
+5. descarta proyecciones stale;
+6. actualiza el resumen;
+7. ofrece la siguiente acción conforme al estado actual.
+
+Volver no reactiva el contexto que existía antes del salto.
+
+---
+
+#### 49. Breadcrumbs cross-app
+
+Una breadcrumb puede explicar procedencia y retorno, pero no debe crear una cadena de autoridad.
+
+Puede mostrar:
+
+```text
+VISO
+→ NEXO
+→ volver a VISO
+```
+
+No significa:
+
+```text
+VISO AUTORIZO NEXO
+```
+
+ni:
+
+```text
+NEXO TRANSFIRIO OWNERSHIP A VISO AL VOLVER
+```
+
+---
+
+#### 50. Etiquetas de CTA
+
+El CTA debe describir el destino y la intención.
+
+Preferencias contractuales:
+
+- `Abrir en NEXO`;
+- `Continuar en ORIGO`;
+- `Revisar en NUMERA`;
+- `Abrir experiencia en ANIMA`;
+- `Volver a VISO`.
+
+Evitar etiquetas ambiguas como:
+
+- `Resolver` cuando VISO no puede resolver;
+- `Aprobar` si la aprobación pertenece al owner;
+- `Aplicar` si la mutación ocurrirá en otra app;
+- `Forzar`;
+- `Continuar` sin identificar destino cuando la transición es material.
+
+La microcopia exacta puede adaptarse por flujo sin cambiar la semántica.
+
+---
+
+#### 51. Información visible antes del handoff
+
+Antes de salir de VISO, la interfaz debe mostrar en forma proporcional:
+
+- qué acción se está intentando continuar;
+- cuál es la aplicación propietaria;
+- qué objeto o caso está involucrado;
+- qué parte permanece en VISO;
+- qué parte se realizará en el owner;
+- si existe trabajo pendiente o resultado desconocido;
+- si se espera retorno;
+- si la transición está bloqueada o condicionada.
+
+No se exponen secretos, tokens, claims internos, SQLSTATE ni referencias sensibles innecesarias.
+
+---
+
+#### 52. Información visible en destino
+
+018 no controla el layout del destino, pero exige que el handoff no permita a VISO afirmar que el destino ya validó:
+
+- acceso;
+- permiso;
+- scope;
+- territorio;
+- contexto;
+- recurso;
+- versión;
+- claim;
+- segregación;
+- estado.
+
+El destino debe resolverlos por su propia autoridad.
+
+---
+
+#### 53. Aplicación propietaria versus aplicación participante
+
+Para relaciones compartidas:
+
+```text
+owner_application
+→ conserva registro principal, reglas, estado, corrección y cierre
+
+participant_application
+→ solicita, recibe o ejecuta solo el efecto permitido
+```
+
+La participación no convierte a la participante en co-owner universal.
+
+---
+
+#### 54. Handoff distribuido con varios owners
+
+Cuando una experiencia tenga ownership distribuido:
+
+- cada tramo identifica su owner;
+- VISO no crea un mega-workspace que unifique mutaciones heterogéneas;
+- un cambio de owner entre etapas requiere transición explícita;
+- la correlación puede mantenerse sin mezclar fuentes de verdad;
+- el receipt de cada efecto permanece en su propietario.
+
+---
+
+#### 55. Proyección read-only con acceso al owner
+
+Una superficie `KEEP_PROJECTION_ONLY` puede ofrecer un enlace al owner sin dejar de ser proyección.
+
+Reglas:
+
+- la proyección permanece read-only;
+- el enlace no transforma la proyección en formulario;
+- el dato visible conserva fuente;
+- el destino no se infiere desde la fila visible;
+- el actor puede perder acceso al owner aunque vea la proyección autorizada;
+- una falta de acceso al owner no habilita edición local.
+
+---
+
+#### 56. Conversión de mutación duplicada
+
+Para `CONVERT_TO_OWNER_HANDOFF`:
+
+1. identificar la mutación local exacta;
+2. identificar owner contractual;
+3. identificar destino canónico;
+4. demostrar paridad funcional necesaria;
+5. preservar referencias de continuidad;
+6. disponer retorno seguro si aplica;
+7. retirar la mutación local solo en materialización física autorizada;
+8. validar que no quede un segundo writer.
+
+018 define la experiencia; no ejecuta el retiro.
+
+---
+
+#### 57. Retiro de mutación duplicada
+
+Para `DEPRECATE_DUPLICATE_MUTATION` no basta con tener un link.
+
+La materialización futura deberá demostrar:
+
+- owner correcto;
+- destino correcto;
+- capacidad equivalente necesaria;
+- consumidores reconciliados;
+- compatibilidad temporal cuando aplique;
+- rollback;
+- autorización destino;
+- pruebas del recorrido;
+- ausencia de dependencia residual de la mutación local.
+
+Hasta entonces no se declara retirada.
+
+---
+
+#### 58. Compatibilidad legacy
+
+`LEGACY_HANDOFF_COMPATIBILITY` conserva solo el puente explícitamente aprobado.
+
+No puede:
+
+- expandirse a nuevas acciones;
+- convertirse en fuente de rutas canónicas;
+- justificar ownership por antigüedad;
+- esconder un owner nuevo ya aprobado;
+- permanecer indefinidamente sin condición de salida.
+
+---
+
+#### 59. Seguridad de parámetros
+
+No se transportan como autoridad en query parameters:
+
+- permisos;
+- grants;
+- denies;
+- decisión `ALLOW`;
+- rol operativo;
+- scope efectivo;
+- actor efectivo;
+- `service_role`;
+- secretos;
+- tokens internos;
+- claims;
+- estado empresarial pretendido;
+- confirmaciones de aprobación.
+
+Una referencia admitida sigue siendo una referencia que el destino debe validar.
+
+---
+
+#### 60. Simulación
+
+Si el usuario está en un contexto simulado:
+
+- la navegación no convierte `WOULD_ALLOW` en `ALLOW`;
+- un handoff simulado no ejecuta la mutación real;
+- el destino real no hereda contexto simulado;
+- la UI conserva señalización de simulación conforme a sus contratos;
+- la salida de simulación requiere volver a resolver contexto real.
+
+018 no desarrolla la arquitectura visual completa de seguridad avanzada reservada a 019.
+
+---
+
+#### 61. Progressive disclosure reservado a 019
+
+018 define qué información debe existir para comprender un handoff.
+
+No define todavía:
+
+- cuántas capas de detalle de seguridad se muestran;
+- cómo se ocultan diagnósticos avanzados por defecto;
+- qué paneles expertos se expanden;
+- la jerarquía visual final de reason codes;
+- la política de disclosure por nivel técnico.
+
+Eso permanece en `VISO-UX-019`.
+
+---
+
+#### 62. Accesibilidad
+
+La transición cross-app deberá:
+
+- ser operable por teclado;
+- identificar claramente que cambia de aplicación cuando sea material;
+- no depender solo de color o icono externo;
+- anunciar bloqueo o indisponibilidad;
+- conservar foco coherente antes y después del retorno cuando la plataforma lo permita;
+- no ocultar la aplicación destino en una etiqueta ambigua;
+- mantener suficiente contexto textual para comprender el siguiente paso.
+
+---
+
+#### 63. Privacidad y minimización
+
+La continuidad no justifica copiar datos adicionales.
+
+VISO transporta únicamente referencias y contexto permitidos por el contrato aplicable.
+
+No se duplica información sensible únicamente para:
+
+- evitar que el usuario cambie de app;
+- precargar formularios no propietarios;
+- construir breadcrumbs ricos;
+- simplificar diagnóstico;
+- preservar filtros visuales.
+
+---
+
+#### 64. Observabilidad
+
+La materialización futura debe permitir correlacionar, cuando aplique:
+
+```text
+ORIGEN VISO
+OWNER RESUELTO
+DESTINO
+TIPO DE NAVEGACION O HANDOFF
+PROCESO / INSTANCIA
+RECURSO
+CORRELACION
+EMISION
+RECEPCION
+ACEPTACION
+RESULTADO
+RETORNO
+```
+
+Observar estos estados no concede autoridad para alterarlos.
+
+---
+
+#### 65. Analítica
+
+Las métricas de UX pueden medir:
+
+- intentos de transición;
+- handoffs ofrecidos;
+- handoffs bloqueados;
+- destino no disponible;
+- retorno exitoso;
+- abandono después de transición;
+- resultado desconocido recuperado;
+- enlaces legacy todavía usados.
+
+No se mide “handoff exitoso” únicamente por un click.
+
+---
+
+#### 66. Estados vacíos y fallos
+
+La UX diferencia:
+
+| Estado | Presentación |
+| --- | --- |
+| no existe trabajo externo | no mostrar CTA artificial |
+| owner conocido sin destino | mostrar ownership y límite |
+| app diferida | mostrar no disponible |
+| app bloqueada para actor | mostrar acceso no disponible sin revelar datos sensibles |
+| destino técnico caído | mostrar indisponibilidad |
+| referencia stale | solicitar recálculo o recarga segura |
+| resultado desconocido | mostrar estado pendiente y recuperación |
+| owner no resuelto | bloquear nueva duplicación |
+
+No se confunden ausencia, deny e indisponibilidad técnica.
+
+---
+
+#### 67. AS-IS del AppSwitcher de VISO
+
+El runtime observado de `vento-viso` contiene destinos estáticos para varias aplicaciones y estados `active`/`soon`.
+
+018 clasifica ese patrón como navegación AS-IS.
+
+No se adopta como autoridad canónica para:
+
+- disponibilidad;
+- ownership;
+- handoff empresarial;
+- destino exacto de objetos;
+- ambiente;
+- autorización.
+
+La materialización futura deberá consumir las fuentes canónicas vigentes y no ampliar la lista local como nueva autoridad.
+
+---
+
+#### 68. AS-IS de enlaces directos
+
+Se observan enlaces cross-app puntuales, por ejemplo referencias de activos hacia NEXO.
+
+Estos enlaces son evidencia de que existe navegación física actual.
+
+No demuestran por sí mismos:
+
+- que la ruta sea canónica para toda la familia;
+- que el actor tenga permiso;
+- que el objeto continúe existiendo;
+- que exista un handoff empresarial;
+- que la ruta deba replicarse en otras pantallas.
+
+---
+
+#### 69. AS-IS de `returnTo`
+
+VISO utiliza `returnTo` principalmente en sus guards y flujos de acceso.
+
+018 no modifica ese runtime.
+
+La política de retorno segura permanece gobernada por SHELL y sus contratos correspondientes.
+
+VISO solo consume esa frontera y no construye una política local paralela.
+
+---
+
+#### 70. Regla para nuevas superficies VISO
+
+Toda nueva superficie que muestre trabajo perteneciente a otra aplicación debe decidir explícitamente:
+
+1. owner;
+2. si la superficie es proyección o workspace;
+3. si existe mutación local;
+4. si esa mutación pertenece a VISO;
+5. destino canónico si corresponde;
+6. tipo de navegación;
+7. retorno;
+8. referencias mínimas;
+9. política de fallo;
+10. owner de la corrección si falta el destino.
+
+No puede incorporarse una mutación externa sin esa decisión.
+
+---
+
+#### 71. Regla para acciones existentes
+
+Cada acción AS-IS clasificada por 017 debe producir una decisión 018 cuando corresponda:
+
+```text
+ACCION
+→ OWNER
+→ DISPOSICION 017
+→ ¿NECESITA TRANSICION?
+→ DESTINO CANONICO
+→ TIPO: NAVEGACION | HANDOFF
+→ RETORNO
+→ REVALIDACION DESTINO
+```
+
+La ausencia de destino es un resultado válido y cerrado, no una invitación a inventarlo.
+
+---
+
+#### 72. Condición de materialización futura
+
+La futura unidad física de 018 solo puede materializar una transición cuando existan:
+
+- owner contractual;
+- fuente canónica de destino;
+- aplicación disponible;
+- screen o ruta reconciliada cuando aplique;
+- permiso/guard destino;
+- política de retorno;
+- compatibilidad de ambiente;
+- referencias seguras;
+- pruebas de navegación y revalidación;
+- rollback.
+
+No se materializa por prefijo de URL ni por nombre de app.
+
+---
+
+#### 73. Topología física
+
+La tarea conserva:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_PATTERN = VISO-UX-018::<implementation_unit_id>
+```
+
+Cada unidad física se materializa como máximo una vez y puede servir a varios paquetes mediante lineage.
+
+El cierre documental no crea ninguna instancia física.
+
+---
+
+#### 74. Matriz de decisión principal
+
+| Caso | Owner | Destino | Tratamiento |
+| --- | --- | --- | --- |
+| acción propia VISO | VISO | VISO | continuar local |
+| proyección externa con owner y destino | externo | canónico | read-only + abrir owner |
+| mutación duplicada con owner y destino listos | externo | canónico | convertir a owner handoff en materialización |
+| owner conocido, destino exacto ausente | externo | desconocido | sin link inferido |
+| owner no resuelto | desconocido | ninguno | bloquear nueva duplicación |
+| app diferida | conocido | no disponible | sin handoff operativo |
+| relación condicional no satisfecha | conocido | potencial | no habilitar handoff |
+| destino técnicamente caído | conocido | temporalmente indisponible | recuperar sin absorber lógica |
+| actor sin autorización destino | conocido | válido | destino deniega; VISO no bypass |
+| referencia stale | conocido | potencial | recalcular antes de navegar |
+| resultado empresarial ya confirmado | conocido | válido | mostrar resultado; no repetir acción |
+| resultado desconocido | conocido | válido | recuperar estado antes de reintentar |
+
+---
+
+#### 75. Handoff de proceso y pantalla
+
+Cuando un handoff pertenezca a un proceso con bindings de pantalla:
+
+- `process_owner_application_id` se consulta; no se redefine;
+- la modalidad `OWNER_WORKSPACE` mantiene el trabajo en el owner;
+- `SUPERVISION_SURFACE` no adquiere ownership;
+- `TRANSVERSAL_ENTRY` entrega control al owner;
+- un proceso relacionado no convierte la pantalla VISO en workspace primario del proceso externo.
+
+---
+
+#### 76. Separación con permisos
+
+La procedencia de permiso definida en 014 y el ownership de 017 permanecen separados.
+
+Ejemplo conceptual:
+
+```text
+USUARIO PUEDE VER PROYECCION EN VISO
++
+NO TIENE PERMISO DE MUTACION EN OWNER
+=
+PROYECCION VISIBLE
++
+HANDOFF BLOQUEADO O DENEGADO EN DESTINO
+```
+
+VISO no convierte visibilidad local en permiso remoto.
+
+---
+
+#### 77. Separación con conflictos
+
+Un conflicto detectado por 015 puede requerir handoff para resolverse.
+
+Eso no cambia la propiedad de la regla que produjo el conflicto.
+
+La UX debe indicar:
+
+- conflicto;
+- owner de resolución;
+- destino cuando exista;
+- si el conflicto bloquea continuar;
+- si el resultado debe volver a VISO.
+
+No se crea un editor local del conflicto externo.
+
+---
+
+#### 78. Separación con preview por trabajador
+
+La vista exacta de 016 puede incluir datos procedentes de varias aplicaciones.
+
+018 puede añadir acceso contextual al owner cuando corresponda.
+
+No convierte toda fuente de la preview en una mutación disponible.
+
+La preview sigue siendo una composición read-only salvo acciones cuya autoridad VISO ya posea.
+
+---
+
+#### 79. Separación con seguridad avanzada
+
+018 debe exponer suficiente información para un handoff seguro:
+
+- owner;
+- destino;
+- estado;
+- bloqueo;
+- retorno;
+- resultado.
+
+La profundidad del detalle técnico, reason codes, evidencia avanzada y diagnósticos sensibles se desarrolla en 019.
+
+---
+
+#### 80. Separación con pruebas humanas
+
+018 no ejecuta pruebas con administradores reales.
+
+`VISO-UX-020` deberá comprobar, entre otros aspectos:
+
+- comprensión del cambio de aplicación;
+- comprensión del owner;
+- ausencia de sensación de pérdida de trabajo;
+- claridad del retorno;
+- respuesta ante bloqueo;
+- recuperación de resultado desconocido;
+- accesibilidad y carga cognitiva.
+
+---
+
+#### 81. Cobertura de owners resueltos
+
+018 conserva los owners establecidos por 017 y sus fuentes:
+
+- VISO para estructura, administración laboral y acceso donde corresponde;
+- ANIMA para registros personales y asistencia donde corresponde;
+- NEXO para catálogo, inventario, activos y logística donde corresponde;
+- FOGO para recetas y producción;
+- ORIGO para compras y proveedores;
+- PULSO para oferta, venta, pedido, caja y pago donde corresponda;
+- PASS para identidad y acciones directas de cliente;
+- NUMERA para hechos económicos y análisis propios;
+- SHELL para acceso, navegación y plataforma transversal;
+- AURA solo donde exista ownership documental, sin disponibilidad inferida.
+
+No se reasigna ownership en esta tarea.
+
+---
+
+#### 82. CMS y Vento-Group
+
+El hecho de que el CMS administrativo de VISO alimente superficies públicas de Vento-Group no convierte el sitio público en owner de la configuración administrativa.
+
+La navegación de preview público puede existir como navegación externa autorizada, pero:
+
+- no es una mutación cross-app;
+- no transfiere ownership;
+- no convierte la URL pública en autoridad de CMS;
+- no sustituye validaciones de publicación.
+
+---
+
+#### 83. Referencias de correlación
+
+Cuando un handoff empresarial lo requiera, pueden preservarse referencias de correlación y causalidad conforme a contratos compartidos.
+
+Estas referencias sirven para:
+
+- asociar emisión y recepción;
+- recuperar resultado;
+- vincular retorno;
+- evitar duplicación;
+- auditar el recorrido.
+
+No conceden permiso ni ownership.
+
+---
+
+#### 84. Idempotencia
+
+La navegación repetida no puede producir efectos repetidos.
+
+Para efectos empresariales:
+
+```text
+HANDOFF_REQUEST
++
+CONSUMER EFFECT KEY
++
+UNICO RESULTADO POR ALCANCE
+```
+
+La implementación concreta de inbox, outbox, locks, retries o conciliación pertenece a sus tareas técnicas propietarias.
+
+018 no las implementa.
+
+---
+
+#### 85. Botón atrás e historial
+
+El historial del navegador no es fuente de verdad.
+
+Volver atrás:
+
+- no reactiva permiso previo;
+- no revive claim;
+- no vuelve vigente un recurso stale;
+- no repite handoff;
+- no deshace una mutación confirmada;
+- no reabre automáticamente trabajo terminal.
+
+La superficie reabierta consulta estado actual.
+
+---
+
+#### 86. Multi-tab
+
+Abrir owner en otra pestaña no debe producir dos fuentes de ejecución paralela.
+
+Cada pestaña debe revalidar:
+
+- estado;
+- versión;
+- claim;
+- permiso;
+- resultado previo.
+
+018 no prescribe abrir siempre en pestaña nueva o misma pestaña; esa decisión de componente no puede cambiar la semántica contractual.
+
+---
+
+#### 87. Móvil, tablet y escritorio
+
+El contrato se conserva en cualquier factor de forma.
+
+La versión compacta no puede omitir:
+
+- aplicación destino;
+- bloqueo material;
+- owner;
+- condición de retorno;
+- estado desconocido;
+- advertencia de cambio de aplicación cuando sea necesaria para comprender la transición.
+
+---
+
+#### 88. Localización y lenguaje
+
+Las etiquetas visibles deben usar nombres de aplicación y acciones comprensibles.
+
+Los identificadores técnicos pueden mostrarse solo en detalle autorizado.
+
+La experiencia principal evita exponer:
+
+- `ProcessId` como única explicación;
+- `AppCode` sin nombre humano;
+- UUIDs;
+- códigos internos de integración;
+- stack traces.
+
+---
+
+#### 89. Error de owner
+
+Si VISO detecta que una superficie está intentando mutar un dominio cuyo owner contractual es distinto:
+
+- no normaliza esa divergencia como “comportamiento esperado”;
+- clasifica la acción conforme a 017;
+- identifica el owner;
+- prepara el handoff si puede demostrarse;
+- deja la corrección física a la unidad correspondiente;
+- conserva trazabilidad de la deuda.
+
+---
+
+#### 90. Owner cambiado por una fuente posterior
+
+Si una fuente canónica posterior cambia ownership:
+
+- no se reutiliza automáticamente el destino anterior;
+- se recalcula el handoff;
+- las referencias legacy se clasifican;
+- se valida compatibilidad;
+- se actualiza retorno;
+- la unidad física afectada se revalida antes de seguir.
+
+Un owner histórico no tiene precedencia sobre una decisión canónica posterior.
+
+---
+
+#### 91. Ruta renombrada
+
+Si una ruta del owner cambia:
+
+- se utiliza el destino vigente o una compatibilidad explícita;
+- no se busca por similitud;
+- no se redirige al root si eso perdería la intención empresarial sin contrato que lo permita;
+- se marca stale el destino anterior;
+- se preserva retorno solo si continúa válido.
+
+---
+
+#### 92. Recurso eliminado o supersedido
+
+Si el recurso ya no existe o fue supersedido:
+
+- no se navega a una mutación vieja;
+- el owner determina el estado actual;
+- VISO muestra el resultado seguro permitido;
+- puede ofrecer el reemplazo únicamente si existe relación explícita;
+- no inventa un objeto nuevo para mantener el flujo.
+
+---
+
+#### 93. Sin fallback funcional en VISO
+
+Queda expresamente prohibido:
+
+```text
+OWNER CAIDO
+→ EJECUTAR EN VISO
+```
+
+salvo que exista un contrato de contingencia propietario aprobado que asigne esa capacidad a VISO.
+
+La mera indisponibilidad no transfiere ownership.
+
+---
+
+#### 94. Sin proxy universal
+
+VISO no se convierte en:
+
+- proxy de APIs de otras aplicaciones;
+- router universal de mutaciones;
+- bypass de RLS;
+- adaptador genérico de service role;
+- almacén universal de drafts;
+- workflow engine transversal;
+- motor universal de claims;
+- owner de receipts externos.
+
+---
+
+#### 95. Matriz de referencias transportables
+
+| Referencia | Puede acompañar transición | Es autoridad en destino |
+| --- | --- | --- |
+| app origen | sí | no |
+| app destino | sí | no por sí sola |
+| screen origen | sí | no |
+| screen destino | sí | no |
+| process id | cuando aplique | no |
+| process instance ref | cuando aplique | no |
+| business object ref | cuando aplique | no |
+| correlation ref | cuando aplique | no |
+| return contract | sí | gobierna navegación, no permiso |
+| contexto origen | solo proyección mínima | no |
+| permiso origen | no como autoridad | no |
+| claim | solo referencia bajo contrato | no; revalidar |
+| resultado confirmado | puede mostrarse como evidencia | no crea permiso |
+
+---
+
+#### 96. Matriz de comportamiento por falla
+
+| Falla | Comportamiento |
+| --- | --- |
+| owner no resuelto | no handoff; bloquear nueva duplicación |
+| app no disponible | informar; no fallback funcional |
+| ruta no reconciliada | no adivinar |
+| autorización destino denegada | respetar deny |
+| contexto destino no resuelto | bloquear acción contextual |
+| recurso stale | refrescar/consultar owner |
+| claim incompatible | no duplicar ejecución |
+| relación condicional no aplicable | no emitir handoff |
+| navegación fallida después de emisión | recuperar estado antes de reemitir |
+| resultado desconocido | consultar receipt/idempotencia/estado |
+| retorno inválido | fail closed y recuperación segura |
+
+---
+
+#### 97. Handoff desde una supervisión VISO
+
+Una `SUPERVISION_SURFACE` puede:
+
+- mostrar estado de proceso externo;
+- explicar una anomalía;
+- abrir el owner;
+- iniciar una corrección contractual si esa corrección pertenece a VISO;
+- conducir al owner si la corrección pertenece fuera.
+
+No puede editar el hecho externo solo porque VISO supervise el proceso.
+
+---
+
+#### 98. Handoff desde Inicio
+
+Las variantes de Inicio definidas en 008 a 012 pueden mostrar trabajo propietario externo solo conforme a:
+
+- perfil;
+- permiso;
+- territorio;
+- ownership;
+- proyección mínima;
+- handoff seguro.
+
+Una tarjeta del home no se convierte en duplicación del workspace destino.
+
+---
+
+#### 99. CTA desde Inicio
+
+Para trabajo externo, Inicio puede ofrecer, según el destino canónico resuelto:
+
+- `Abrir en NEXO`;
+- `Continuar en ORIGO`;
+- `Revisar en NUMERA`;
+- `Abrir experiencia en ANIMA`.
+
+No ofrece edición inline del dominio externo por conveniencia.
+
+Si no existe destino canónico, muestra estado y owner sin CTA inventado.
+
+---
+
+#### 100. Conservación de filtros de Inicio
+
+Un filtro administrativo de VISO puede conservarse como preferencia de presentación únicamente si el destino posee contrato para interpretarlo.
+
+No se transporta como:
+
+- scope;
+- territorio efectivo;
+- permiso;
+- contexto operativo.
+
+Si el destino no reconoce la preferencia, la descarta.
+
+---
+
+#### 101. Receipt y retorno
+
+Cuando el owner produce receipt:
+
+- VISO puede usarlo para confirmar el resultado de la intención original;
+- el receipt no se regenera localmente;
+- el retorno muestra qué cambió realmente;
+- un resultado parcial conserva su estado parcial;
+- un timeout no se presenta como éxito.
+
+---
+
+#### 102. Reconciliación
+
+Si VISO y owner divergen después del retorno:
+
+- la fuente propietaria prevalece para el hecho empresarial;
+- la proyección VISO se marca stale o en conciliación;
+- se evita ofrecer una mutación basada en el snapshot divergente;
+- se remite a la tarea técnica propietaria si la divergencia es de sincronización.
+
+018 no crea un motor de conciliación.
+
+---
+
+#### 103. Consistencia con 017
+
+018 satisface la salida de 017 porque:
+
+- transforma `CONVERT_TO_OWNER_HANDOFF` en una experiencia definida;
+- mantiene `KEEP_PROJECTION_ONLY` como read-only;
+- no reabre `KEEP_NATIVE_VISO`;
+- no inventa owner en `BLOCK_NEW_DUPLICATION_PENDING_OWNER`;
+- preserva compatibilidad legacy gobernada;
+- no retira físicamente mutaciones.
+
+---
+
+#### 104. Frontera con 019
+
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` recibe de 018:
+
+- owner visible;
+- destino visible;
+- tipo de transición;
+- estado del handoff;
+- bloqueo;
+- retorno;
+- necesidad de revalidación;
+- separación entre contexto, permiso, claim, ownership y resultado.
+
+019 puede decidir niveles de detalle sin alterar estas semánticas.
+
+---
+
+#### 105. Frontera con 020
+
+`VISO-UX-020 — Ejecutar pruebas con administradores reales` deberá validar la experiencia ya definida.
+
+018 no sustituye pruebas humanas ni declara usabilidad demostrada.
+
+---
+
+#### 106. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos descartados: 0
+Requisitos obsoletos: 0
+```
+
+Justificación: la tarea especializa para VISO la experiencia de ownership, handoff, navegación, retorno, contexto, work items, autorización y proyecciones ya cubiertas por requisitos canónicos vigentes. No introduce una identidad empresarial nueva, un nuevo estado de handoff, una nueva fuente de autoridad ni un nuevo comportamiento físico que requiera una fila adicional.
+
+---
+
+#### 107. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza cobertura vigente que protege:
+
+- coherencia administrativa de VISO con el efecto consumido por aplicaciones operativas;
+- handoff con proceso, recurso, actor, territorio, estado, acción pendiente y retorno, con revalidación destino;
+- destino de retorno limitado a superficies aprobadas;
+- navegación derivada de contexto y permiso sin sustituir autorización;
+- continuidad de contexto cross-app sin transportar autoridad;
+- identidad y continuidad de work items sin clonación;
+- idempotencia y recuperación de resultados desconocidos;
+- fronteras de ownership y aplicación propietaria;
+- accesibilidad y continuidad entre aplicaciones.
+
+La trazabilidad reutilizada no modifica el 04A.
+
+---
+
+#### 108. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto de `VISO-UX-018` todavía no fue incorporado al archivo modular ni procesado por la batería documental del checkout local. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron `docs:task:format`, quality, delivery, validadores de dominio, topología, TREQ ni `git diff --check` sobre una rama local de `VISO-UX-018`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main` en `247a4f202ad6f02a56ce57ec682005d82002b55b`, `active-sequence.json`, protocolo, contrato de entrega, manifest, continuidad, topología, políticas, owner G3, `package.json`, contratos `SHELL-CON-014`, `SHELL-CON-016`, `SHELL-APP-014` a `016`, reglas cross-owner de pantallas, ownership funcional, 04A VISO y navegación AS-IS de `vento-viso`; `main` ya incorpora `VISO-UX-017`, `active-sequence.previous_task_id` es `VISO-UX-017` y `VISO-UX-018` conserva su marcador intacto como tarea actual. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define una experiencia documental de navegación y handoff; no ejecuta procesos, redirects productivos, mutaciones, claims, handoffs runtime ni usuarios reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron repositorios de producto, rutas, componentes, Supabase, contratos runtime, datos, despliegues ni configuración. |
+
+---
+
+#### 109. Criterios de aceptación
+
+- [ ] El título es exactamente `VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda`.
+- [ ] `VISO-UX-017` permanece como tarea anterior.
+- [ ] `VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` permanece como tarea siguiente.
+- [ ] La tarea es exclusivamente documental.
+- [ ] Se define `VISO_OWNER_HANDOFF_CONTRACT = VISO-OWNER-HANDOFF-001`.
+- [ ] La aplicación propietaria procede de fuentes canónicas y no de la ruta actual.
+- [ ] Navegación ordinaria y handoff empresarial permanecen separados.
+- [ ] Abrir una aplicación no se presenta como aceptación de handoff.
+- [ ] Enviar un handoff no equivale a aceptación.
+- [ ] Recibir un handoff no concede autorización.
+- [ ] El destino revalida actor, permiso, contexto, recurso, estado y versión cuando apliquen.
+- [ ] Se conserva la forma `source_screen_id`, `source_application_id`, `destination_screen_id`, `destination_application_id`, `business_object_ref`, `return_contract`.
+- [ ] No se crea un `handoff_id` paralelo.
+- [ ] `returnTo` no se usa como autoridad empresarial.
+- [ ] URLs y deep links no se infieren por branding o nombre de app.
+- [ ] No se crea una lista local de hosts como autoridad.
+- [ ] El ambiente forma parte de la validez del destino.
+- [ ] AppSwitcher permanece navegación y no handoff empresarial.
+- [ ] Owner conocido sin destino exacto no produce link inventado.
+- [ ] Owner no resuelto bloquea nueva duplicación.
+- [ ] Aplicación diferida no se vuelve destino operativo por inferencia.
+- [ ] AURA permanece diferida.
+- [ ] PASS conserva su frontera cliente.
+- [ ] CMS web administrativo permanece atribuido a VISO mientras no exista transferencia aprobada.
+- [ ] `content-blocks` no recibe owner nuevo por inferencia.
+- [ ] Se conservan 49 relaciones de `ApplicationHandoffRelation` sin modificación.
+- [ ] Se conservan 27 directas y 22 condicionales.
+- [ ] Se conservan los 8 procesos del universo materializado.
+- [ ] Se conservan 9 aplicaciones participantes.
+- [ ] `DIRECTA` no equivale a permiso automático.
+- [ ] `CONDICIONAL` exige condición propietaria satisfecha.
+- [ ] `HANDOFF_REQUEST`, `HANDOFF_PROJECTION` y `HANDOFF_FACT` permanecen separados.
+- [ ] Navegación no produce efecto empresarial.
+- [ ] Contexto origen no se usa como contexto autoritativo destino.
+- [ ] Sede y área transportadas como referencia no crean scope.
+- [ ] Cambio de actor invalida autoridad anterior.
+- [ ] Dispositivo compartido no transporta autoridad del actor previo.
+- [ ] Work item no se clona al cambiar de aplicación.
+- [ ] Claim no se transfiere por navegación.
+- [ ] `HANDOFF_REQUIRED` no se convierte en ejecución local.
+- [ ] Fallo de navegación no genera handoff duplicado.
+- [ ] Indisponibilidad técnica no se presenta como deny empresarial.
+- [ ] Denegación del destino no habilita bypass local.
+- [ ] Receipt del owner conserva la verdad del resultado.
+- [ ] Resultado desconocido no se presenta como éxito.
+- [ ] Retorno a VISO resuelve contexto actual y refresca estado.
+- [ ] Breadcrumbs no se convierten en cadena de autoridad.
+- [ ] CTA identifica destino cuando el cambio de aplicación es material.
+- [ ] No se transportan secretos, permisos ni claims como query params autoritativos.
+- [ ] Simulación no se convierte en ejecución real.
+- [ ] Progressive disclosure completo permanece reservado a 019.
+- [ ] Pruebas con administradores permanecen reservadas a 020.
+- [ ] Se preservan accesibilidad y privacidad.
+- [ ] Métricas de handoff no usan click como sinónimo de éxito.
+- [ ] Ausencia, deny e indisponibilidad técnica permanecen separados.
+- [ ] El AppSwitcher AS-IS no se adopta como catálogo autoritativo.
+- [ ] Los enlaces AS-IS puntuales no se generalizan por inferencia.
+- [ ] La política `returnTo` permanece gobernada por SHELL.
+- [ ] Cada nueva superficie cross-owner decide owner, proyección/workspace, destino y retorno.
+- [ ] Cada acción AS-IS de 017 puede producir una decisión de transición explícita.
+- [ ] La materialización futura exige owner, destino, guard, ambiente, referencias seguras, retorno, pruebas y rollback.
+- [ ] `OWNER_WORKSPACE`, `SUPERVISION_SURFACE` y `TRANSVERSAL_ENTRY` conservan significados distintos.
+- [ ] Visibilidad local no se convierte en permiso remoto.
+- [ ] Resolver un conflicto externo no se mueve a VISO por conveniencia.
+- [ ] La preview de 016 permanece read-only respecto de fuentes externas.
+- [ ] 018 consume 017 sin reabrir ownership.
+- [ ] La unidad física futura usa `PER_IMPLEMENTATION_UNIT`.
+- [ ] El gate físico futuro permanece `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No existe cambio físico durante el cierre documental.
+
+---
+
+#### 110. Límites
+
+Esta tarea no:
+
+- implementa código de producto;
+- modifica `vento-viso`;
+- modifica `vento-shell` runtime;
+- modifica NEXO, FOGO, ORIGO, PULSO, NUMERA, PASS, ANIMA o AURA;
+- crea rutas;
+- crea URLs;
+- crea deep links;
+- crea dominios;
+- modifica AppSwitcher;
+- modifica `returnTo`;
+- crea tokens de retorno;
+- crea payload runtime de handoff;
+- modifica `ApplicationHandoffRelation`;
+- modifica las 49 relaciones de handoff;
+- crea relaciones nuevas;
+- cambia ownership;
+- resuelve owners pendientes;
+- activa AURA;
+- transfiere CMS a otra aplicación;
+- crea una aplicación nueva;
+- crea un nuevo tipo de contexto;
+- transporta `AccessContextV1` cross-app;
+- implementa work items;
+- implementa claims o leases;
+- implementa inbox u outbox;
+- implementa idempotencia física;
+- implementa receipts;
+- implementa conciliación;
+- modifica permisos;
+- modifica grants, denies o scopes;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- crea RPC;
+- modifica Storage;
+- modifica datos;
+- cambia despliegues;
+- desarrolla la divulgación progresiva de 019;
+- ejecuta pruebas humanas de 020;
+- autoriza implementación física.
+
+---
+
+#### 111. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada`
 ### [ ] VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
 ### [ ] VISO-UX-020 — Ejecutar pruebas con administradores reales
 
