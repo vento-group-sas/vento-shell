@@ -4699,7 +4699,2348 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-004 — Crear sección Acceso y seguridad`
-### [ ] VISO-UX-004 — Crear sección Acceso y seguridad
+### ✅ VISO-UX-004 — Crear sección Acceso y seguridad
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-003 — Crear sección Programación
+**Tarea siguiente:** VISO-UX-005 — Crear sección Organización
+**Tipo de tarea:** definición técnico-documental de la sección administrativa `Acceso y seguridad` de VISO; compone en una experiencia coherente los contratos aprobados de roles base y operativos, matrices de permisos, elegibilidad territorial, perfiles y asignaciones, preview contextual, simulación, procedencia, conflictos, excepciones, gobierno de dispositivos compartidos, auditoría de seguridad, solicitudes y certificaciones de acceso y exporte controlado de matriz, sin crear una segunda fuente de autorización y conservando `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la sección `Acceso y seguridad` definido; su materialización runtime permanece pendiente por `implementation_unit_id` y detrás del gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, navegación runtime, componentes, catálogos de autorización, contratos compartidos, permisos, grants, denies, perfiles, asignaciones, dispositivos, Supabase, datos, migraciones, RLS, RPC, Auth, secretos, sesiones, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar la sección administrativa `Acceso y seguridad` de VISO para que una persona autorizada pueda comprender, revisar y gobernar el acceso de Vento OS sin confundir catálogo, configuración, contexto, simulación, decisión efectiva, auditoría o navegación.
+
+La sección debe responder de forma directa:
+
+```text
+¿QUÉ ROLES Y PERMISOS CANÓNICOS EXISTEN?
+¿QUÉ CONCESIONES BASE Y OPERATIVAS ESTÁN CONFIGURADAS?
+¿QUÉ SEDE, ÁREA, PERFIL O TURNO PARTICIPAN EN EL CONTEXTO?
+¿QUÉ ACCESO EFECTIVO TENDRÍA ESTE TRABAJADOR?
+¿DE DÓNDE PROVIENE CADA PERMISO O DENEGACIÓN?
+¿EXISTE UN CONFLICTO REAL DE CONFIGURACIÓN?
+¿HAY UNA EXCEPCIÓN INDIVIDUAL Y CUÁNDO VENCE?
+¿QUÉ DISPOSITIVO COMPARTIDO PARTICIPA Y CON QUÉ LÍMITES?
+¿QUIÉN PUEDE ADMINISTRAR ESTE CAMBIO?
+¿QUÉ CAMBIÓ, QUIÉN LO HIZO Y QUÉ RESULTADO PRODUJO?
+```
+
+`Acceso y seguridad` no es una colección de switches de permisos ni una pantalla que traduzca el nombre de un rol en autoridad.
+
+Es la experiencia administrativa de gobierno del acceso que consume los contratos canónicos de autorización y el proceso `VPROC-0059` sin reemplazarlos.
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001` entrega sin reapertura:
+
+```text
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+DOMAIN_1 = Personal
+DOMAIN_2 = Programación
+DOMAIN_3 = Acceso y seguridad
+DOMAIN_4 = Organización
+DOMAIN_5 = Operación
+DOMAIN_6 = Auditoría
+```
+
+Para `Acceso y seguridad` entrega además:
+
+- administración de roles, permisos, matrices, simulación permitida, dispositivos y configuración administrativa de acceso;
+- prohibición de interpretar visibilidad de navegación como autorización;
+- navegación data-driven sin wildcard por dominio;
+- clasificación de `/roles-permissions` y `/app-navigation` como superficies candidatas de esta sección;
+- conservación de las identidades `VISO-ROUTE-*` existentes;
+- obligación de mantener handoffs protegidos en vez de duplicar ownership.
+
+Se conserva expresamente:
+
+```text
+ACCESS_SECTION_VISIBLE
+!=
+ALL_SECURITY_ACTIONS_ALLOWED
+```
+
+Esta tarea desarrolla el contenido del tercer dominio sin reabrir la arquitectura de primer nivel.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-002`
+
+`VISO-UX-002` entrega a `Acceso y seguridad` la responsabilidad experiencial sobre la creación y gobierno posterior de dispositivos compartidos que hoy aparece físicamente dentro de la familia `/staff*`.
+
+La identidad observada preservada es:
+
+```text
+VISO-ROUTE-050
+/staff/shared-devices/new
+```
+
+Su clasificación objetivo dentro de esta arquitectura es:
+
+```text
+canonical_domain = Acceso y seguridad
+navigation_class = CHILD_OR_DETAIL_ROUTE
+```
+
+La ubicación física bajo `/staff` no convierte el dispositivo en contenido de `Personal`.
+
+`Personal` puede mostrar relaciones de acceso de un trabajador y enlazar a esta sección, pero no se convierte en editor paralelo de seguridad.
+
+---
+
+#### 4. Handoff recibido de `VISO-UX-003`
+
+`VISO-UX-003` conserva una frontera explícita:
+
+```text
+Programación
+→ consume roles operativos, sedes, áreas, perfiles y decisiones de autorización
+→ no administra la fuente de esos contratos
+```
+
+Por tanto:
+
+- `Programación` puede seleccionar un rol operativo elegible para un turno;
+- puede mostrar que un rol o área son incompatibles;
+- puede consumir una evaluación autorizativa o de contexto;
+- puede bloquear una publicación por validaciones propietarias;
+- no puede conceder un permiso;
+- no puede crear un rol canónico;
+- no puede ampliar el territorio del administrador;
+- no puede convertir un perfil de planificación en autoridad.
+
+La administración de esos contratos permanece en `Acceso y seguridad` y en sus tareas propietarias `VISO-AUTH-*`.
+
+---
+
+#### 5. Topología y gate
+
+La tarea conserva:
+
+```text
+TASK_ID = VISO-UX-004
+SEQUENCE_ID = PHASE-09-VISO-COMPLETE
+WORK_MODE = PER_IMPLEMENTATION_UNIT
+PHYSICAL_INSTANCE_IDENTITY = <task_id>::<implementation_unit_id>
+EXECUTION_GATE = POST_E5_PACKAGE
+DOCUMENTARY_PHYSICAL_CHANGES = 0
+```
+
+La definición documental no autoriza ninguna instancia física.
+
+Cada futura materialización deberá resolver su `implementation_unit_id`, package y gate correspondiente antes de tocar UI, rutas, datos, autorización o Supabase.
+
+---
+
+#### 6. Contrato raíz de la sección
+
+Se define:
+
+```text
+VISO_ACCESO_SEGURIDAD_SECTION_CONTRACT = VISO-ACCESO-SEGURIDAD-SECTION-001
+DOMAIN_LABEL = Acceso y seguridad
+PRIMARY_OBSERVED_ROUTE_ID = VISO-ROUTE-037
+PRIMARY_OBSERVED_ROUTE = /roles-permissions
+PRIMARY_CANONICAL_SCREEN = VSCREEN-0019
+PRIMARY_CANONICAL_PROCESS = VPROC-0059
+PRIMARY_CANONICAL_STEP = VPROC-0059::STEP-MAINTAIN_ACCESS_CATALOG
+PRIMARY_INTENT = ACCESS_AND_SECURITY_GOVERNANCE
+TREQ_CHANGES = 0
+```
+
+`PRIMARY_OBSERVED_ROUTE` identifica la superficie física existente más cercana al propósito principal.
+
+No implica que su implementación AS-IS satisfaga el contrato canónico ni que todas las capacidades del dominio deban materializarse en una única URL.
+
+---
+
+#### 7. Regla cardinal de autoridad
+
+Toda la experiencia se subordina a:
+
+```text
+INTERFAZ
+!=
+AUTORIDAD
+```
+
+```text
+ROL VISIBLE
+!=
+PERMISO EFECTIVO
+```
+
+```text
+PERMISO MOSTRADO
+!=
+PERMISO CONCEDIDO
+```
+
+```text
+NAVEGACIÓN VISIBLE
+!=
+AUTORIZACIÓN
+```
+
+```text
+SIMULACIÓN ALLOW
+!=
+AUTORIDAD REAL
+```
+
+La sección explica y administra configuración mediante operaciones autorizadas.
+
+La decisión efectiva sigue perteneciendo al modelo canónico de autorización, evaluado en servidor con identidad, actor, permiso exacto, carril, territorio, recurso, contexto, vigencia, denegaciones y demás condiciones contractuales.
+
+---
+
+#### 8. Proceso propietario
+
+El proceso canónico es:
+
+```text
+VPROC-0059
+Gestionar el ciclo de acceso tecnológico desde solicitud hasta revocación y verificación
+```
+
+`Acceso y seguridad` no reduce ese ciclo a una tabla de permisos.
+
+La sección debe poder representar configuración permanente, decisiones, solicitudes, revisiones, aprovisionamiento, vigencia, revocación, dispositivos, evidencia y auditoría sin fundir sus significados.
+
+---
+
+#### 9. Estados de `VPROC-0059`
+
+La experiencia deberá representar sin colapsar:
+
+```text
+ACCESS_REQUESTED
+IDENTITY_VALIDATING
+OWNER_APPROVAL_PENDING
+SECURITY_REVIEW_PENDING
+APPROVED
+PROVISIONING_IN_PROGRESS
+ACCESS_ACTIVE
+PERIODIC_REVIEW_PENDING
+DEPROVISIONING_IN_PROGRESS
+ACCESS_LIFECYCLE_CLOSED
+```
+
+Cada estado conserva su verdad mínima.
+
+En particular:
+
+```text
+APPROVED
+!=
+PROVISIONED
+```
+
+```text
+PROVISIONING_IN_PROGRESS
+!=
+ACCESS_ACTIVE
+```
+
+```text
+DEPROVISIONING_IN_PROGRESS
+!=
+ACCESS_LIFECYCLE_CLOSED
+```
+
+La UI no utilizará una etiqueta genérica `Activo/Inactivo` para borrar la diferencia entre solicitud, aprobación, disponibilidad efectiva, revisión y cierre.
+
+---
+
+#### 10. Pantallas canónicas principales
+
+El dominio consume como núcleo cuatro pantallas canónicas ya registradas:
+
+| Pantalla | Nombre | Paso principal | Rol de pantalla |
+| --- | --- | --- | --- |
+| `VSCREEN-0019` | Catálogo de roles y permisos | `VPROC-0059::STEP-MAINTAIN_ACCESS_CATALOG` | `CONFIGURE` |
+| `VSCREEN-0020` | Perfil de acceso del trabajador | `VPROC-0059::STEP-ASSIGN_EFFECTIVE_ACCESS` | `CONFIGURE` |
+| `VSCREEN-0021` | Simulación de permisos y conflictos | `VPROC-0059::STEP-SIMULATE_ACCESS_DECISION` | `SIMULATE` |
+| `VSCREEN-0022` | Gobierno de dispositivos compartidos | `VPROC-0059::STEP-GOVERN_SHARED_DEVICES` | `CONFIGURE` |
+
+La existencia de estas identidades lógicas no autoriza inventar cuatro rutas físicas nuevas.
+
+La materialización podrá resolver navegación interna, tabs, subviews o rutas existentes únicamente durante su instancia física propietaria y sin romper las identidades de pantalla.
+
+---
+
+#### 11. Pantalla de solicitudes y certificaciones
+
+La sección reconoce además:
+
+```text
+VSCREEN-0114 = Solicitudes y certificaciones de acceso
+VPROC-0059::STEP-REVIEW_AND_CERTIFY_ACCESS
+ROLE = APPROVE
+POSITION = DECISION
+```
+
+Esta pantalla completa la dimensión de ciclo de vida que no cabe en un catálogo o perfil individual.
+
+Permite representar solicitud, aprobación, vigencia, revisión periódica y revocación sin confundir:
+
+```text
+CATÁLOGO
+CONCESIÓN
+SOLICITUD
+APROBACIÓN
+APROVISIONAMIENTO
+ACCESO ACTIVO
+REVISIÓN
+REVOCACIÓN
+```
+
+No sustituye `VSCREEN-0019..0022`.
+
+---
+
+#### 12. Familias administrativas consumidas
+
+La sección compone las familias:
+
+| Familia | Propósito dentro del dominio |
+| --- | --- |
+| `ADM-TASK-018` | gestionar catálogos de roles base y operativos |
+| `ADM-TASK-019` | gestionar permisos, alcances, denegaciones y matrices por rol |
+| `ADM-TASK-020` | asignar perfiles, sedes y áreas permitidas a trabajadores |
+| `ADM-TASK-021` | gobernar excepciones individuales, delegaciones, vigencias y revocaciones |
+| `ADM-TASK-022` | simular acceso efectivo, explicar procedencia y resolver conflictos |
+| `ADM-TASK-023` | gobernar dispositivos compartidos durante su ciclo autorizado |
+| `ADM-TASK-024` | revisar auditoría de seguridad y exportar la matriz cuando exista capacidad autorizada |
+
+Estas familias son intenciones administrativas.
+
+No crean permisos, rutas, tablas ni operaciones físicas por sí mismas.
+
+---
+
+#### 13. Arquitectura interna del dominio
+
+La experiencia se organiza conceptualmente en siete áreas internas:
+
+```text
+1. Resumen de acceso
+2. Roles y matrices
+3. Personas y asignaciones
+4. Simulación y conflictos
+5. Excepciones y solicitudes
+6. Dispositivos compartidos
+7. Auditoría y exporte
+```
+
+Son áreas de experiencia del mismo dominio.
+
+No son siete dominios de navegación primaria ni siete fuentes de autorización.
+
+---
+
+#### 14. Resumen de acceso
+
+La entrada al dominio deberá priorizar situación y riesgo antes que densidad técnica.
+
+Puede resumir, dentro del alcance autorizado:
+
+- configuraciones pendientes de revisión;
+- accesos en solicitud o aprobación;
+- conflictos bloqueantes conocidos;
+- excepciones próximas a vencer;
+- revisiones periódicas pendientes;
+- dispositivos suspendidos o con atención requerida;
+- cambios recientes relevantes;
+- enlaces hacia matrices, perfiles, simulación y auditoría.
+
+No podrá mostrar un contador global de seguridad si el actor no está autorizado para observar su población completa.
+
+Una cifra agregada nunca amplía el territorio visible.
+
+---
+
+#### 15. Disposición de rutas observadas
+
+La tarea fija la siguiente clasificación objetivo sin ejecutar movimiento físico:
+
+| Route ID | Ruta observada | Tratamiento de experiencia | Regla |
+| --- | --- | --- | --- |
+| `VISO-ROUTE-037` | `/roles-permissions` | `VISO_DOMAIN_ENTRY` objetivo | entrada física observada más cercana al catálogo y matrices; debe evolucionar hacia el contrato canónico sin conservar autoridad legacy |
+| `VISO-ROUTE-005` | `/app-navigation` | `CHILD_OR_DETAIL_ROUTE` de configuración relacionada | administra descubribilidad y agrupación de navegación, nunca concede autoridad |
+| `VISO-ROUTE-050` | `/staff/shared-devices/new` | `CHILD_OR_DETAIL_ROUTE` | alta observada de dispositivo; no representa por sí sola el ciclo completo de gobierno |
+
+La clasificación anterior es semántica de destino.
+
+No elimina, renombra ni mueve físicamente ninguna ruta desde esta tarea documental.
+
+---
+
+#### 16. `VISO-ROUTE-037 — /roles-permissions`
+
+Esta ruta es la entrada física observada más cercana a `VSCREEN-0019`.
+
+Su propósito objetivo será conducir al administrador hacia:
+
+- catálogos canónicos de roles;
+- matrices base y operativas;
+- scopes admitidos;
+- relaciones territoriales;
+- permisos exactos;
+- explicación de restricciones;
+- preview o simulación antes de cambios sensibles cuando corresponda;
+- trazabilidad de la operación administrativa.
+
+La implementación actual se considera evidencia AS-IS.
+
+No se certifica como implementación final únicamente porque ya permita agregar o quitar filas de permisos.
+
+---
+
+#### 17. `VISO-ROUTE-005 — /app-navigation`
+
+`/app-navigation` pertenece a la experiencia de administración relacionada con acceso porque muestra qué superficies se ofrecen y qué permiso declarado condiciona su presencia.
+
+Sin embargo:
+
+```text
+required_permission_code EN NAVEGACIÓN
+!=
+DECISIÓN DE AUTORIZACIÓN
+```
+
+La configuración de navegación puede:
+
+- agrupar entradas;
+- ordenar entradas;
+- activar o desactivar exposición del menú dentro de su contrato;
+- vincular una entrada con un permiso declarado.
+
+No puede:
+
+- crear una `PermissionKey`;
+- conceder un grant;
+- borrar un deny;
+- ampliar scope;
+- fabricar una capability inexistente;
+- convertir una ruta en autorizada por hacerla visible.
+
+---
+
+#### 18. `VISO-ROUTE-050 — /staff/shared-devices/new`
+
+La ruta observada conserva su identidad estable y pasa a ser tratada como detalle de `Acceso y seguridad`.
+
+Su existencia demuestra únicamente una superficie de alta.
+
+La experiencia completa de `VSCREEN-0022` deberá cubrir el ciclo autorizado de dispositivo y no podrá reducirse a:
+
+```text
+CREATE DEVICE
+=
+GOVERN DEVICE
+```
+
+La creación es una etapa del gobierno del dispositivo, no el contrato completo.
+
+---
+
+#### 19. Superficies `/operations*` con contenido de seguridad
+
+El runtime actual contiene capacidades relacionadas con seguridad bajo rutas de la familia `/operations*`, entre ellas superficies de matriz rol/sede y preview.
+
+Se conserva la clasificación de navegación recibida de `VISO-UX-001`:
+
+```text
+/operations*
+→ candidata a dominio Operación
+→ detalle final reservado a VISO-UX-006
+```
+
+`VISO-UX-004` no renumera ni reclasifica físicamente esas rutas.
+
+Lo que sí fija es la propiedad semántica de los contratos de autorización:
+
+```text
+MATRIZ DE SEGURIDAD CANÓNICA
+SIMULACIÓN CANÓNICA
+PROCEDENCIA
+CONFLICTOS
+→ Acceso y seguridad
+```
+
+Una superficie transitoria en `Operación` no adquiere una segunda fuente de verdad por su ubicación.
+
+---
+
+#### 20. `/operations/site-roles` como transición
+
+La superficie observada `/operations/site-roles` puede representar parte de la configuración rol × sede × área.
+
+Hasta su reconciliación física:
+
+- no se crea un segundo editor equivalente dentro de `Acceso y seguridad`;
+- no se declara el AS-IS como contrato definitivo;
+- no se retira la ruta;
+- no se pierde acceso existente todavía requerido;
+- cualquier futura consolidación deberá conservar datos, autorización, auditabilidad y rollback;
+- `VISO-UX-006`, `VISO-UX-017` y `VISO-UX-018` conservan el tratamiento posterior de ruta, duplicidad y handoff.
+
+---
+
+#### 21. `/operations/preview` como transición
+
+La superficie observada `/operations/preview` muestra una vista construida a partir de matrices físicas existentes.
+
+No se declara equivalente a `VISO-AUTH-013` ni a `VISO-AUTH-014` únicamente por usar la palabra preview o simulación.
+
+El contrato canónico exige distinguir:
+
+```text
+PREVIEW CONTEXTUAL
+→ describe contexto actual o propuesto
+
+SIMULACIÓN DE AUTORIZACIÓN
+→ evalúa permisos exactos mediante contrato de simulación
+```
+
+Una lista calculada en UI a partir de una matriz observada no sustituye `SimulatedAuthorizationDecisionV1` ni puede otorgar autoridad.
+
+---
+
+#### 22. Catálogo de roles base
+
+La sección consume el catálogo administrativo aprobado de exactamente ocho roles base vigentes.
+
+La experiencia deberá mantenerlos separados de:
+
+- roles operativos;
+- permisos;
+- sedes;
+- áreas;
+- dispositivos;
+- usuarios técnicos;
+- oficios legacy;
+- aliases locales.
+
+El código canónico es la identidad.
+
+La etiqueta humana es presentación.
+
+La posición visual no define jerarquía autorizativa.
+
+---
+
+#### 23. Catálogo de roles operativos
+
+La sección consume el catálogo administrativo aprobado de exactamente doce roles operativos vigentes.
+
+El rol operativo representa función temporal dentro de contexto válido.
+
+Se conserva:
+
+```text
+ROL OPERATIVO CATALOGADO
+!=
+ROL OPERATIVO ASIGNADO
+!=
+ROL OPERATIVO EFECTIVO
+!=
+PERMISO
+```
+
+La experiencia podrá mostrar familia, uso y restricciones sin transformar esa información en concesión.
+
+---
+
+#### 24. Matriz de permisos por rol base
+
+La matriz base deberá mostrar de forma administrable:
+
+- rol base canónico;
+- permiso canónico exacto;
+- modalidad;
+- scope admitido;
+- territorio cuando aplique;
+- condición y vigencia cuando correspondan;
+- estado de la configuración;
+- procedencia de la configuración;
+- impacto esperado antes de mutar cuando el flujo lo exija.
+
+Ausencia de grant no se presentará automáticamente como deny explícito.
+
+No existe un `manage all permissions` implícito.
+
+---
+
+#### 25. Matriz de permisos por rol operativo
+
+La matriz operativa permanece separada de la matriz base.
+
+La UI no unifica ambas en una tabla que oculte el carril de procedencia.
+
+Cada concesión deberá conservar:
+
+- `OperationalRoleCode` exacto;
+- `PermissionKey` exacta;
+- modalidad compatible;
+- scope compatible;
+- restricciones contextuales;
+- evidencia de configuración.
+
+Un rol operativo no recibe permisos por pertenecer a una familia funcional.
+
+---
+
+#### 26. Elegibilidad rol × sede
+
+La relación rol operativo × sede expresa elegibilidad de configuración.
+
+No significa:
+
+```text
+ROL ELEGIBLE EN SEDE
+=
+TRABAJADOR ASIGNADO
+```
+
+ni:
+
+```text
+ROL ELEGIBLE EN SEDE
+=
+PERMISO EFECTIVO
+```
+
+La experiencia deberá mostrar el carácter territorial de la relación y evitar lenguaje de concesión final.
+
+---
+
+#### 27. Elegibilidad rol × área
+
+La relación rol operativo × área está subordinada a su sede válida.
+
+La UI deberá preservar los estados contractuales cuando apliquen:
+
+```text
+EXACT_BINDING
+AREA_BINDING_UNRESOLVED
+NO_AREA_NOT_REQUIRED
+```
+
+`NO_AREA_NOT_REQUIRED` no es wildcard.
+
+`AREA_BINDING_UNRESOLVED` no autoriza inferir un área.
+
+---
+
+#### 28. Perfil operativo por trabajador
+
+El perfil operativo es configuración habitual de planificación.
+
+Puede proponer valores predeterminados permitidos, pero no concede autoridad.
+
+Se conserva:
+
+```text
+PERFIL
+!=
+ASIGNACIÓN TERRITORIAL
+!=
+ROL DE TURNO
+!=
+PERMISO
+```
+
+La experiencia deberá indicar cuándo un perfil está completo, incompleto, inactivo o incompatible sin completar silenciosamente el dato faltante.
+
+---
+
+#### 29. Sedes asignadas al trabajador
+
+La asignación trabajador × sede expresa relación laboral o administrativa autorizada.
+
+No concede por sí misma una capacidad.
+
+La UI deberá diferenciar:
+
+- sede primaria;
+- sedes adicionales asignadas;
+- vigencia de la relación;
+- estado activo o terminado;
+- territorio que puede llegar a ser elegible para una operación;
+- permiso efectivo finalmente evaluado.
+
+Una sede primaria no sustituye la sede de un turno ni una sede de alcance autorizativo.
+
+---
+
+#### 30. Áreas asignadas al trabajador
+
+La asignación trabajador × área expresa afiliación habitual cuando el contrato la usa.
+
+No se presenta como requisito universal ni como área operativa efectiva.
+
+La experiencia deberá mostrar su sede padre y evitar cualquier área huérfana o traslado implícito entre sedes.
+
+---
+
+#### 31. Rol operativo del turno
+
+La sección reconoce que el rol operativo de un turno se administra en coordinación con `Programación`, pero su semántica de autorización proviene del contrato aprobado.
+
+No se permite completar un turno laboral mediante fallback desde:
+
+- rol base;
+- perfil;
+- default;
+- único rol visible;
+- historial;
+- área habitual;
+- selección previa de UI.
+
+El rol del turno debe ser explícito cuando el contrato lo exige.
+
+---
+
+#### 32. Validación de turno sin rol
+
+Un turno laboral sin rol operativo requerido es una configuración incompleta.
+
+La sección deberá permitir entender:
+
+- qué turno está afectado;
+- por qué falta el rol;
+- qué dato debe corregirse;
+- si el defecto bloquea publicación;
+- qué propietario resuelve la configuración.
+
+No sugerirá cambiar el rol base del trabajador para reparar un turno.
+
+---
+
+#### 33. Validación de área incompatible
+
+Un turno con rol presente puede continuar bloqueado por incompatibilidad territorial.
+
+La experiencia deberá conservar el orden lógico:
+
+```text
+ROL VÁLIDO
+→ SEDE VÁLIDA
+→ ÁREA PRESENTE O AUSENCIA PERMITIDA
+→ ÁREA EXISTE Y ESTÁ ACTIVA
+→ ÁREA PERTENECE A LA SEDE
+→ BINDING EXACTO ROL × SEDE × ÁREA
+```
+
+No se inferirá el área desde perfil, afiliación habitual, dispositivo o último turno.
+
+---
+
+#### 34. Perfil de acceso del trabajador
+
+`VSCREEN-0020` será la superficie lógica para comprender el acceso de un trabajador concreto.
+
+Debe componer, según autorización:
+
+- identidad laboral mínima necesaria;
+- rol base;
+- sedes asignadas;
+- áreas asignadas cuando existan;
+- perfiles operativos;
+- roles operativos elegibles;
+- grants individuales;
+- denies aplicables;
+- excepciones y vigencias;
+- contexto de turno cuando corresponda;
+- estado de solicitudes o revisión;
+- resultado de preview y enlaces de simulación.
+
+No debe presentar todo lo anterior como una única “lista de permisos”.
+
+---
+
+#### 35. Vista previa trabajador × sede × área × turno
+
+El preview canónico de `VISO-AUTH-013` describe una combinación concreta y justificable.
+
+Puede comparar:
+
+```text
+ESTADO ACTUAL
+ESTADO PROPUESTO
+```
+
+sin persistir la propuesta.
+
+El preview no produce una decisión autorizativa.
+
+Antes de guardar, la operación propietaria debe revalidar actor, permiso, datos, territorio y cambios concurrentes en servidor.
+
+---
+
+#### 36. Simulador de permisos efectivos
+
+`VSCREEN-0021` deberá invocar la semántica de simulación aprobada.
+
+La simulación:
+
+- parte de un actor real autorizado para simular;
+- conserva contexto real de referencia;
+- construye un contexto hipotético separado;
+- evalúa permisos exactos mediante el contrato de simulación;
+- devuelve resultado hipotético;
+- no modifica sesión real;
+- no modifica grants;
+- no modifica asignaciones;
+- no modifica turnos;
+- no modifica datos empresariales.
+
+Se conserva:
+
+```text
+SIMULATED ALLOW
+!=
+REAL ALLOW
+```
+
+---
+
+#### 37. Indicador persistente de simulación
+
+Mientras exista un escenario simulado, la UI deberá mostrar un indicador persistente y comprensible.
+
+Ese estado no podrá depender únicamente de color.
+
+Acciones con efecto real no podrán reutilizar automáticamente el resultado simulado como autorización.
+
+Salir de simulación debe eliminar la proyección hipotética de la experiencia sin alterar el estado real.
+
+---
+
+#### 38. Origen de cada permiso
+
+La procedencia explica una decisión ya evaluada.
+
+La sección deberá poder mostrar, cuando la evidencia exista:
+
+- permiso exacto;
+- decisión;
+- carril;
+- grants coincidentes;
+- denies aplicables;
+- scope;
+- territorio;
+- restricción de dispositivo cuando participe;
+- versiones contractuales relevantes;
+- plano real o simulado.
+
+No se permite resumir siempre:
+
+```text
+Tiene permiso por su rol
+```
+
+si la procedencia real es más compleja.
+
+---
+
+#### 39. Procedencia no es reevaluación
+
+La interfaz no reconstruirá autoridad leyendo por separado tablas de roles, perfiles y excepciones.
+
+Se conserva:
+
+```text
+PROCEDENCIA
+→ explica una decisión
+
+PROCEDENCIA
+!=
+SEGUNDO EVALUADOR
+```
+
+Si no existe evidencia suficiente, la UI deberá indicar que la procedencia autoritativa no puede reconstruirse, no inventarla.
+
+---
+
+#### 40. Conflictos de configuración
+
+La sección deberá distinguir:
+
+```text
+CONFLICTO REAL
+REDUNDANCIA
+DENY VÁLIDO
+DEFAULT DENY
+CONFIGURACIÓN INCOMPLETA
+DEUDA LEGACY
+FALLO TÉCNICO
+```
+
+No todos los estados negativos son conflicto.
+
+Un conflicto real existe cuando configuraciones o contrato canónico no pueden coexistir válidamente dentro del mismo snapshot aplicable.
+
+---
+
+#### 41. Conflicto no equivale a deny
+
+Un deny válido puede coexistir con grants candidatos y producir una decisión final denegada sin constituir conflicto de configuración.
+
+La UI deberá mostrar la procedencia del deny y reservar la etiqueta de conflicto para una incompatibilidad contractual real.
+
+---
+
+#### 42. Conflictos antes de guardar
+
+Cuando el conflicto sea detectable antes de una mutación, la experiencia deberá mostrar:
+
+- elemento afectado;
+- regla incompatible;
+- alcance;
+- severidad;
+- efecto sobre la propuesta;
+- propietario de resolución;
+- si bloquea o solo advierte;
+- acción segura disponible.
+
+Un conflicto bloqueante no se supera mediante confirmación genérica de UI.
+
+---
+
+#### 43. Excepciones individuales
+
+Las excepciones son configuraciones explícitas y limitadas para una persona concreta.
+
+No se utilizarán para:
+
+- reconstruir una matriz incompleta;
+- copiar todos los permisos de otro rol;
+- corregir una sede incompatible;
+- corregir un área incompatible;
+- crear una PermissionKey inexistente;
+- saltar segregación de funciones;
+- otorgar autoridad al dispositivo.
+
+---
+
+#### 44. Experiencia de excepción
+
+Una excepción deberá mostrar, según su contrato:
+
+- sujeto exacto;
+- permiso exacto;
+- efecto solicitado;
+- scope;
+- territorio;
+- motivo;
+- vigencia;
+- solicitante;
+- aprobador requerido;
+- estado;
+- efecto simulado cuando corresponda;
+- conflictos;
+- auditoría;
+- acción de suspensión o revocación disponible según autoridad.
+
+No existe excepción “permanente por comodidad” sin la vigencia y gobierno que exija el contrato.
+
+---
+
+#### 45. Autoridad para administrar seguridad
+
+La capacidad de ver el dominio no concede capacidad de mutación.
+
+La sección deberá evaluar operaciones administrativas atómicas y exactas.
+
+Se prohíbe crear por UX un permiso genérico equivalente a:
+
+```text
+manage all security
+```
+
+La autoridad de cada acción se resuelve mediante el catálogo vigente y sus contratos.
+
+---
+
+#### 46. Rol privilegiado no equivale a bypass
+
+Se conserva:
+
+```text
+role = propietario
+!=
+BYPASS
+```
+
+```text
+role = gerente_general
+!=
+BYPASS
+```
+
+```text
+role = gerente
+!=
+SECURITY_ADMIN_GLOBAL
+```
+
+El nombre del rol puede participar en un grant canónico, pero no reemplaza el permiso exacto ni el scope.
+
+---
+
+#### 47. Segregación de funciones
+
+La experiencia deberá impedir que una interfaz densa convierta en equivalentes operaciones que tienen autoridades distintas.
+
+Deben permanecer distinguibles, cuando existan contractualmente:
+
+```text
+VER
+PROPONER
+APROBAR
+CONCEDER
+SUSPENDER
+REVOCAR
+SIMULAR
+AUDITAR
+EXPORTAR
+```
+
+La autoridad para auditar no concede mutación.
+
+La autoridad para mutar un grant no concede el permiso objetivo que se está administrando.
+
+---
+
+#### 48. Reautenticación y controles reforzados
+
+Cuando el contrato propietario de una acción sensible requiera reautenticación, segregación, aprobación o confirmación reforzada, la experiencia deberá integrarlas explícitamente.
+
+`VISO-UX-004` no crea una regla de reautenticación nueva ni decide qué operaciones la exigen.
+
+Solo prohíbe omitir un gate que el contrato vigente requiera.
+
+---
+
+#### 49. Cambio de seguridad como operación explicable
+
+Antes de una mutación sensible, la UI deberá mostrar un resumen suficiente de:
+
+```text
+ANTES
+CAMBIO PROPUESTO
+DESPUÉS ESPERADO
+SUJETO
+PERMISO O RELACIÓN
+SCOPE / TERRITORIO
+VIGENCIA
+CONFLICTOS
+AUTORIDAD REQUERIDA
+```
+
+La densidad exacta dependerá del tipo de operación.
+
+No se exige mostrar información que el actor no está autorizado a conocer.
+
+---
+
+#### 50. Resultado de una mutación
+
+Una operación de seguridad exitosa deberá producir un resultado comprensible que permita identificar:
+
+- qué cambió;
+- sobre qué sujeto o configuración;
+- desde cuándo;
+- qué quedó vigente;
+- qué quedó pendiente;
+- qué evidencia o auditoría se generó;
+- qué debe revisarse después.
+
+Un toast “Guardado” sin contexto no es suficiente para una acción de alto impacto.
+
+---
+
+#### 51. Dispositivos compartidos
+
+`VSCREEN-0022` gobierna el ciclo administrativo de dispositivos compartidos.
+
+La experiencia deberá mantener separados:
+
+```text
+PRINCIPAL TÉCNICO DEL DISPOSITIVO
+ACTOR HUMANO EFECTIVO
+SEDE
+ÁREA
+PLANTILLA / CAPACIDADES DEL DISPOSITIVO
+PERMISOS DEL ACTOR
+```
+
+La autoridad efectiva en dispositivo compartido no puede exceder la intersección permitida por dispositivo y actor.
+
+---
+
+#### 52. Ciclo de dispositivo compartido
+
+La experiencia de dispositivo no termina en la creación.
+
+Deberá poder representar, conforme a sus contratos propietarios:
+
+- registro;
+- activación;
+- uso;
+- cambio de actor;
+- expiración cuando aplique;
+- suspensión;
+- rotación de credenciales cuando corresponda;
+- revocación;
+- retiro;
+- evidencia y auditoría.
+
+`VISO-ROUTE-050` AS-IS cubre solo una parte observable de ese ciclo.
+
+---
+
+#### 53. Dispositivo no es aprobador
+
+Se conserva:
+
+```text
+DEVICE IDENTITY
+!=
+HUMAN AUTHORITY
+```
+
+Una plantilla de dispositivo puede restringir aplicaciones o acciones.
+
+No puede conceder a una persona una capacidad que el actor no posee.
+
+---
+
+#### 54. `service_role` y cliente administrativo
+
+La existencia de un cliente administrativo o `service_role` en una implementación no constituye autorización empresarial.
+
+La UI no mostrará el acceso técnico interno como si fuera una capability administrativa concedida.
+
+Toda mutación sigue necesitando decisión de negocio autorizada antes del efecto privilegiado.
+
+---
+
+#### 55. Solicitudes de acceso
+
+Una solicitud de acceso deberá conservar como mínimo la separación entre:
+
+```text
+NECESIDAD SOLICITADA
+IDENTIDAD VALIDADA
+APROBACIÓN DEL PROPIETARIO
+REVISIÓN DE SEGURIDAD
+APROBACIÓN
+APROVISIONAMIENTO
+ACCESO ACTIVO
+```
+
+Registrar una solicitud no crea permiso, sesión ni acceso efectivo.
+
+---
+
+#### 56. Revisión periódica
+
+`PERIODIC_REVIEW_PENDING` deberá presentarse como una obligación de recertificación o revisión, no como acceso automáticamente inválido ni automáticamente renovado.
+
+La decisión posterior debe preservar:
+
+- necesidad;
+- propietario;
+- uso;
+- vigencia;
+- evidencia de revisión;
+- resultado aplicado.
+
+---
+
+#### 57. Revocación y cierre
+
+La sección deberá representar revocación coordinada y verificable cuando el proceso o vínculo la exijan.
+
+No se confunde:
+
+```text
+SOLICITAR REVOCACIÓN
+INICIAR DEPROVISIONING
+REVOCAR COMPONENTES
+VERIFICAR RESIDUOS
+CERRAR CICLO
+```
+
+El cierre no borra historia ni convierte un reingreso posterior en restauración automática de permisos antiguos.
+
+---
+
+#### 58. Auditoría de seguridad
+
+La sección deberá ofrecer acceso contextual a la auditoría de seguridad aprobada en `VISO-AUTH-018`.
+
+La auditoría permite responder:
+
+- qué cambió o se intentó cambiar;
+- sobre qué objeto;
+- quién actuó;
+- bajo qué autoridad;
+- con qué territorio y contexto históricos;
+- cuál era el estado anterior;
+- cuál fue el estado posterior;
+- cuál fue el resultado.
+
+La auditoría es append-only desde la perspectiva de la experiencia administrativa.
+
+---
+
+#### 59. Frontera con el dominio `Auditoría`
+
+`Acceso y seguridad` puede mostrar historial contextual del elemento que se administra y enlazar a una investigación más profunda.
+
+`VISO-UX-007 — Crear sección Auditoría` conserva ownership sobre la experiencia transversal de investigación, correlación y revisión histórica amplia.
+
+Se evita:
+
+```text
+AUDITORÍA CONTEXTUAL DE SEGURIDAD
+=
+SEGUNDO SISTEMA DE AUDITORÍA
+```
+
+---
+
+#### 60. Exporte de matriz de acceso
+
+El exporte definido por `VISO-AUTH-020` es una fotografía real, consistente y point-in-time de autoridad efectiva y procedencia.
+
+No es:
+
+- simulación;
+- editor;
+- fuente de permisos;
+- historial de auditoría;
+- mecanismo de reimportación.
+
+La sección puede reservar su acción y mostrar su estado de disponibilidad.
+
+---
+
+#### 61. Exporte bloqueado por capacidad ausente
+
+La tarea no inventa una PermissionKey de exportación.
+
+Si el catálogo vigente no contiene la capacidad exacta propietaria de esa operación, la experiencia deberá mantener el exporte físicamente no ejecutable y explicar el bloqueo de forma segura.
+
+Se conserva:
+
+```text
+UI BUTTON EXISTING
+!=
+EXPORT AUTHORIZED
+```
+
+---
+
+#### 62. Formato del exporte
+
+`VISO-UX-004` no fija XLSX, CSV, JSON ni otro formato como única serialización canónica.
+
+La futura implementación deberá elegir una representación que preserve semántica, clasificación, volumen, seguridad y trazabilidad.
+
+No se habilita reimportación desde el archivo exportado.
+
+---
+
+#### 63. Navegación interna
+
+La sección deberá evitar convertir cada contrato de seguridad en una entrada de primer nivel.
+
+La navegación interna puede usar:
+
+- tabs;
+- subnavegación;
+- filtros;
+- drawers;
+- detail panels;
+- deep links protegidos;
+- enlaces contextuales desde Personal, Programación u Organización.
+
+La elección física final se resuelve en implementación.
+
+La semántica deberá conservarse aunque cambie el componente.
+
+---
+
+#### 64. Deep links
+
+Un deep link puede preservar selectores como:
+
+- trabajador;
+- rol;
+- permiso;
+- sede;
+- área;
+- solicitud;
+- dispositivo;
+- snapshot o referencia de auditoría permitida.
+
+Los selectores nunca transportan autoridad.
+
+Al abrir el destino se revalidan sesión, actor, permiso, territorio, recurso, vigencia y demás contexto aplicable.
+
+---
+
+#### 65. URL y datos sensibles
+
+Los deep links no incluirán innecesariamente:
+
+- secretos;
+- tokens;
+- PIN;
+- credenciales;
+- hashes;
+- payloads completos de autorización;
+- datos personales sensibles;
+- estructuras internas que permitan escalar o reconstruir seguridad.
+
+Un identificador opaco tampoco convierte el destino en autorizado.
+
+---
+
+#### 66. Densidad guiada y experta
+
+La sección debe aplicar divulgación progresiva.
+
+Modo guiado prioriza:
+
+- intención;
+- sujeto;
+- acción;
+- alcance;
+- impacto;
+- conflictos;
+- aprobación;
+- resultado.
+
+Modo experto puede exponer matrices densas, scopes y filtros necesarios para administración autorizada.
+
+El modo experto no añade autoridad ni omite validaciones.
+
+---
+
+#### 67. Roles y permisos en modo experto
+
+Las matrices extensas podrán ofrecer:
+
+- búsqueda;
+- filtros por aplicación;
+- filtros por rol;
+- filtros por permiso;
+- filtros por modalidad;
+- filtros por scope;
+- filtros territoriales autorizados;
+- agrupación comprensible;
+- comparación antes/después.
+
+No se utilizará una cuadrícula visual para ocultar datos contractuales esenciales de una relación.
+
+---
+
+#### 68. Configuración individual guiada
+
+El perfil de acceso de un trabajador deberá ser preferentemente guiado para acciones individuales.
+
+El administrador debe poder comprender la diferencia entre:
+
+- relación laboral;
+- sede asignada;
+- área asignada;
+- perfil operativo;
+- rol de turno;
+- grant individual;
+- deny;
+- excepción;
+- permiso efectivo.
+
+No se resumirá todo bajo una etiqueta ambigua “Rol y permisos”.
+
+---
+
+#### 69. Operaciones masivas
+
+Cuando una implementación futura permita acciones masivas, la experiencia deberá mostrar antes de ejecutar:
+
+- población objetivo;
+- territorio;
+- cambio exacto;
+- exclusiones;
+- conflictos;
+- filas bloqueadas;
+- autoridad requerida;
+- resultado esperado.
+
+Una acción masiva no transforma una capacidad individual en capacidad global.
+
+---
+
+#### 70. Alcance territorial
+
+La sección consume el territorio canónico.
+
+El scope visible debe corresponder al scope efectivo permitido para el actor.
+
+Se prohíbe:
+
+```text
+FILTRO = Todas las sedes
+→ AUTORIZACIÓN GLOBAL
+```
+
+Si el actor administra varias sedes, la experiencia muestra únicamente el universo permitido.
+
+`VISO-UX-013` conserva la definición detallada de limitación visual según alcance territorial.
+
+---
+
+#### 71. Organización no es seguridad
+
+`VISO-UX-005 — Crear sección Organización` conserva ownership sobre:
+
+- empresas;
+- marcas;
+- establecimientos;
+- sedes;
+- áreas;
+- zonas;
+- relaciones organizativas.
+
+`Acceso y seguridad` consume esas identidades para scopes, asignaciones y matrices.
+
+No edita la estructura organizativa como efecto lateral de una configuración de permisos.
+
+---
+
+#### 72. Programación no es seguridad
+
+`Programación` conserva ownership de la creación, revisión y publicación de turnos.
+
+`Acceso y seguridad` define y explica las reglas de roles, áreas, perfiles y permisos que esos turnos deben respetar.
+
+Una corrección de seguridad no reprograma turnos silenciosamente.
+
+Una corrección de programación no concede permisos silenciosamente.
+
+---
+
+#### 73. Personal no es seguridad
+
+`Personal` conserva el expediente laboral y los handoffs administrativos de la persona.
+
+Puede enlazar al perfil de acceso del trabajador.
+
+No administra grants o denies dentro del expediente como una copia local.
+
+La vista de persona puede mostrar un resumen de acceso autorizado, pero la mutación pertenece a esta sección.
+
+---
+
+#### 74. Operación no es seguridad
+
+`Operación` puede consumir rol operativo efectivo, territorio, dispositivo y permisos para ejecutar acciones empresariales.
+
+No debe ofrecer un editor paralelo de la matriz canónica.
+
+Las superficies legacy de configuración existentes dentro de `/operations*` permanecen transitorias hasta su reconciliación propietaria.
+
+---
+
+#### 75. SHELL y contratos compartidos
+
+SHELL conserva las fundaciones compartidas de identidad, sesión, contexto, autorización, contratos y componentes transversales que le correspondan.
+
+VISO administra el gobierno empresarial permitido sobre esas capacidades.
+
+Se conserva:
+
+```text
+VISO ADMINISTRA
+!=
+VISO REDEFINE EL CONTRATO COMPARTIDO
+```
+
+La UI no escribe archivos versionados de contratos ni crea strings locales de permisos para resolver una necesidad visual.
+
+---
+
+#### 76. ANIMA
+
+ANIMA no se convierte en consola de administración de seguridad.
+
+Puede consumir contexto efectivo y mostrar al trabajador la información propia autorizada.
+
+No puede:
+
+- conceder permisos;
+- editar matrices;
+- aprobar excepciones;
+- administrar dispositivos compartidos;
+- modificar territorio de otros trabajadores.
+
+---
+
+#### 77. Onboarding y activación
+
+La creación o activación de una persona no equivale a completar su seguridad.
+
+Se mantiene la separación entre:
+
+```text
+IDENTIDAD
+VÍNCULO LABORAL
+ASIGNACIONES
+APROBACIONES DE ACCESO
+APROVISIONAMIENTO
+ACCESO ACTIVO
+```
+
+La sección podrá recibir handoffs de incorporación y mostrar pendientes de seguridad sin convertir el onboarding en un grant automático.
+
+---
+
+#### 78. Offboarding y revocación
+
+El retiro laboral debe coordinar el cierre de acceso conforme a los contratos propietarios.
+
+`Acceso y seguridad` deberá permitir observar la revocación y sus residuos relevantes sin borrar:
+
+- persona;
+- vínculo histórico;
+- programación histórica;
+- asistencia;
+- documentos sujetos a retención;
+- auditoría.
+
+Un reingreso posterior no reactiva automáticamente configuraciones anteriores.
+
+---
+
+#### 79. Permisos inexistentes o retirados
+
+Una clave desconocida, inexistente o retirada no se presentará como “permiso que el usuario no tiene”.
+
+La experiencia deberá fallar cerrada y distinguir, según contratos vigentes, error estructural de ausencia ordinaria de grant.
+
+La UI no ofrecerá crear automáticamente la clave desde una matriz o ruta.
+
+---
+
+#### 80. Errores técnicos
+
+Un timeout, dependencia caída o fuente no confiable no se convertirá en un deny empresarial inventado.
+
+La experiencia debe distinguir:
+
+```text
+DENY DECIDIDO
+CONFIGURACIÓN INCONSISTENTE
+PERMISO NO REGISTRADO
+FALLO TÉCNICO
+```
+
+El mensaje público será seguro y accionable sin revelar arquitectura sensible.
+
+---
+
+#### 81. Fail closed
+
+Ante evidencia insuficiente para una mutación sensible:
+
+```text
+EJECUTAR = NO
+```
+
+La UI podrá conservar el trabajo no autoritativo permitido, mostrar qué falta y ofrecer recuperación segura.
+
+No ejecutará usando un resultado stale, incompleto o reconstruido por fallback local.
+
+---
+
+#### 82. Concurrencia
+
+Entre preview y guardado pueden cambiar:
+
+- grants;
+- denies;
+- rol;
+- asignaciones;
+- territorio;
+- turno;
+- dispositivo;
+- catálogo;
+- versión contractual.
+
+La operación propietaria deberá revalidar la autoridad y el estado relevante inmediatamente antes del efecto.
+
+El preview no bloquea el mundo ni crea un lease de autorización salvo contrato explícito futuro.
+
+---
+
+#### 83. Estado stale
+
+La experiencia deberá poder indicar que una vista o simulación quedó obsoleta.
+
+Un resultado stale no puede reutilizarse como decisión vigente.
+
+La recuperación es volver a resolver el contexto y la autorización, no ocultar el cambio.
+
+---
+
+#### 84. Confirmaciones
+
+Una confirmación de seguridad no deberá usar texto genérico cuando el efecto sea material.
+
+Debe identificar suficientemente:
+
+- acción;
+- sujeto;
+- permiso o configuración;
+- alcance;
+- vigencia;
+- consecuencia principal.
+
+La confirmación no sustituye autorización server-side.
+
+---
+
+#### 85. Receipts y evidencia
+
+Después de una operación autorizada, la experiencia deberá poder ofrecer una evidencia navegable o referencia segura hacia:
+
+- resultado;
+- actor;
+- momento;
+- configuración afectada;
+- decisión de autorización correlacionable;
+- evento de auditoría correspondiente cuando exista.
+
+No se exponen secretos o payloads internos para demostrar trazabilidad.
+
+---
+
+#### 86. Búsqueda y filtros
+
+La búsqueda debe ser un mecanismo de navegación dentro del universo ya autorizado.
+
+Buscar por trabajador, rol, permiso, sede o dispositivo no amplía la población visible.
+
+Un resultado cero puede significar cero coincidencias dentro del scope permitido; no se utilizará para inferir existencia de información fuera del territorio.
+
+---
+
+#### 87. Minimización
+
+La sección mostrará la mínima información necesaria para tomar una decisión administrativa autorizada.
+
+Por defecto no expondrá:
+
+- secretos;
+- tokens;
+- credenciales;
+- PIN;
+- hashes;
+- valores internos de sesión;
+- datos personales no necesarios;
+- dumps de tablas;
+- payloads completos de evaluación cuando basta una explicación segura.
+
+---
+
+#### 88. Información sensible y masking
+
+Masking visual no sustituye autorización ni minimización de payload.
+
+Cuando un campo no está autorizado, deberá excluirse o protegerse en la capa propietaria correspondiente antes de depender de presentación.
+
+La UI no cargará el modelo completo para después ocultarlo solamente con CSS.
+
+---
+
+#### 89. Accesibilidad
+
+Las decisiones críticas no dependerán solo de:
+
+- color;
+- posición;
+- icono sin etiqueta;
+- hover;
+- densidad visual.
+
+Conflictos, denies, simulación, estados pendientes, riesgos y bloqueos deberán contar con texto o semántica accesible equivalente.
+
+---
+
+#### 90. Responsive
+
+La sección deberá conservar capacidad administrativa en escritorio, tablet y móvil sin transformar móvil en una versión permisiva o incompleta.
+
+En pantallas estrechas:
+
+- las matrices pueden reflow a cards o detalle;
+- filtros pueden plegarse;
+- información avanzada puede usar disclosure;
+- acciones críticas conservan contexto y confirmación;
+- el estado de simulación permanece visible;
+- el actor y territorio efectivos no desaparecen cuando son materialmente relevantes.
+
+---
+
+#### 91. Estados de experiencia
+
+La sección deberá diferenciar al menos:
+
+```text
+LOADING
+EMPTY
+NO_AUTHORITY
+NO_TERRITORY
+NO_MATCHES
+CONFLICT
+STALE
+TECHNICAL_FAILURE
+PARTIAL_READ
+READY
+```
+
+No se presentará `EMPTY` cuando la consulta falló.
+
+No se presentará `NO_AUTHORITY` como error técnico.
+
+No se presentará `CONFLICT` como deny ordinario.
+
+---
+
+#### 92. Operaciones sin autoridad
+
+Una acción que el actor no puede ejecutar debe quedar ausente o claramente no ejecutable según el patrón UX aplicable.
+
+La interfaz nunca dependerá de un botón deshabilitado como única defensa.
+
+La llamada directa a Server Action, Route Handler, RPC u otro canal deberá producir una decisión equivalente.
+
+---
+
+#### 93. Navegación basada en autorización
+
+El menú puede ocultar entradas que el actor no puede usar.
+
+Eso mejora experiencia, no seguridad.
+
+Se conserva:
+
+```text
+NAV FILTER
+=
+PROYECCIÓN UX
+```
+
+```text
+SERVER AUTHORIZATION
+=
+CONTROL DECISORIO
+```
+
+---
+
+#### 94. No wildcard por `viso.access`
+
+El acceso general a VISO no concede administración de seguridad.
+
+`viso.access`, la existencia de una sesión o poder abrir la sección son prerrequisitos insuficientes para mutaciones sensibles.
+
+Cada operación usa su capacidad exacta vigente.
+
+---
+
+#### 95. No wildcard por permiso legacy
+
+Las superficies actuales que usan permisos amplios observados se consideran transición.
+
+Esta tarea no certifica como autoridad canónica:
+
+- `staff.permissions.manage` como wildcard universal;
+- `staff.manage` como gobierno completo de dispositivos o seguridad;
+- cualquier alias legacy equivalente;
+- cualquier permiso elegido únicamente porque la pantalla actual lo consume.
+
+La materialización deberá reconciliar cada operación con el catálogo vigente sin inventar nombres nuevos.
+
+---
+
+#### 96. AS-IS de `/roles-permissions`
+
+El runtime observado actualmente:
+
+- exige un permiso legacy de administración de permisos;
+- carga roles;
+- carga un catálogo humano de permisos;
+- carga sedes, áreas y tipos de área;
+- consulta y muta `role_permissions`;
+- permite guardar o retirar relaciones con scopes.
+
+Se clasifica:
+
+```text
+EVIDENCIA AS-IS
+NO CERTIFICACIÓN DEL CONTRATO FINAL
+```
+
+La futura materialización deberá cerrar la diferencia contra `VISO-AUTH-003`, `004` y `019` antes de declarar cumplimiento.
+
+---
+
+#### 97. AS-IS de `/app-navigation`
+
+El runtime observado actualmente:
+
+- agrupa navegación;
+- edita filas de `app_navigation_items`;
+- promueve pantallas detectadas;
+- muestra `required_permission_code`;
+- protege sus mutaciones con un permiso legacy observado.
+
+Se conserva como superficie de navegación administrada, pero no como editor de grants.
+
+La reconciliación futura deberá separar claramente:
+
+```text
+PUBLICAR UNA ENTRADA DE NAVEGACIÓN
+!=
+CONCEDER SU PERMISO
+```
+
+---
+
+#### 98. AS-IS de creación de dispositivo compartido
+
+El runtime observado actualmente permite crear un usuario técnico, aplicar plantilla, relacionar apps/políticas y registrar un evento de creación.
+
+Esa evidencia no demuestra todavía el ciclo completo requerido por `VSCREEN-0022`.
+
+Quedan fuera de la certificación de esta tarea documental:
+
+- activación real completa;
+- suspensión;
+- rotación;
+- revocación;
+- retiro;
+- cierre de sesiones o credenciales residuales;
+- equivalencia entre todos los consumidores.
+
+---
+
+#### 99. AS-IS del preview operativo
+
+El runtime observado de `/operations/preview` deriva acciones visibles a partir de matrices físicas y selectores de sede, área y rol.
+
+No se utilizará como evidencia de que existe el simulador canónico de permisos efectivos.
+
+Para ser simulación canónica deberá consumir el contrato de simulación, conservar actor real, escenario hipotético, decisión por permiso y separación estricta de autoridad real.
+
+---
+
+#### 100. AS-IS de matriz de roles por sede
+
+El runtime observado de `/operations/site-roles` representa relaciones de rol, sede y área.
+
+No se elimina ni duplica desde esta tarea.
+
+Su futura reconciliación deberá demostrar:
+
+- compatibilidad con catálogos canónicos;
+- autoridad administrativa exacta;
+- territorio;
+- relaciones padre e hijo;
+- ausencia de permisos implícitos;
+- auditoría;
+- convergencia con la experiencia de `Acceso y seguridad`.
+
+---
+
+#### 101. Regla de no duplicación
+
+Para una misma capacidad mutable deberá existir un único owner de escritura canónica.
+
+Durante la transición pueden coexistir:
+
+- una superficie antigua todavía consumida;
+- una proyección nueva;
+- un handoff;
+- una vista read-only.
+
+No pueden coexistir dos editores que modifiquen la misma autoridad con contratos divergentes.
+
+---
+
+#### 102. Regla de retiro
+
+Ninguna ruta o editor AS-IS se retira por esta definición.
+
+El retiro físico posterior requiere:
+
+- destino materializado;
+- paridad funcional necesaria;
+- autorización equivalente o más restrictiva;
+- migración o reconciliación de datos cuando aplique;
+- consumidores actualizados;
+- pruebas;
+- rollback;
+- monitorización y evidencia.
+
+`VISO-UX-017` y `VISO-UX-018` conservan la decisión transversal de evitar duplicación y construir handoffs.
+
+---
+
+#### 103. Relación con `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` desarrollará la aplicación transversal de scope visible.
+
+`VISO-UX-004` fija únicamente que ninguna superficie de seguridad puede ampliar territorio por:
+
+- filtro;
+- selector;
+- ruta;
+- rol visible;
+- simulación;
+- dispositivo;
+- matriz local.
+
+---
+
+#### 104. Relación con `VISO-UX-014`
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` conserva el diseño transversal final de la explicación de procedencia.
+
+Esta tarea reserva dentro de `Acceso y seguridad` el lugar donde esa explicación se utiliza y exige que no sea reemplazada por frases ambiguas.
+
+No adelanta el diseño final de copy, jerarquía o visualización de procedencia.
+
+---
+
+#### 105. Relación con `VISO-UX-015`
+
+`VISO-UX-015 — Mostrar conflictos antes de guardar` conserva el patrón transversal de conflicto pre-save.
+
+`VISO-UX-004` identifica las configuraciones de seguridad como consumidoras prioritarias de ese patrón.
+
+No redefine la taxonomía propietaria de conflictos aprobada en `VISO-AUTH-016`.
+
+---
+
+#### 106. Relación con `VISO-UX-016`
+
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador` desarrollará la experiencia transversal final de preview individual.
+
+Esta tarea fija que `Acceso y seguridad` debe consumir el preview sin confundirlo con simulación o autoridad.
+
+---
+
+#### 107. Relación con `VISO-UX-017`
+
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones` decidirá la convergencia final de superficies que hoy viven físicamente en ubicaciones no propietarias.
+
+`VISO-UX-004` no retira ni clona esas superficies anticipadamente.
+
+---
+
+#### 108. Relación con `VISO-UX-018`
+
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda` desarrollará los handoffs cross-app definitivos.
+
+Esta tarea exige que un enlace preserve intención y selectores permitidos, pero que la aplicación destino revalide autoridad y contexto.
+
+---
+
+#### 109. Relación con `VISO-UX-019`
+
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` conserva el diseño transversal final de densidad y progressive disclosure.
+
+`VISO-UX-004` define qué contenido de seguridad necesita niveles guiado y experto sin decidir todavía cada componente final.
+
+---
+
+#### 110. Relación con `VISO-UX-020`
+
+`VISO-UX-020 — Ejecutar pruebas con administradores reales` deberá validar la comprensión, seguridad y operabilidad de esta sección con roles administrativos representativos.
+
+Esta tarea no declara esas pruebas ejecutadas.
+
+---
+
+#### 111. Handoff hacia `VISO-UX-005`
+
+`VISO-UX-005 — Crear sección Organización` recibe una frontera explícita:
+
+```text
+Acceso y seguridad
+→ consume sedes y áreas como identidades territoriales
+→ no administra su estructura maestra
+
+Organización
+→ administra estructura organizativa
+→ no administra permisos por efecto lateral
+```
+
+Debe preservarse:
+
+```text
+ORGANIZATION STRUCTURE CHANGE
+!=
+SECURITY GRANT
+```
+
+Un cambio de sede o área puede invalidar o exigir reconciliar configuraciones de seguridad, pero no crea silenciosamente autoridad nueva.
+
+---
+
+#### 112. Carryovers
+
+| Carryover | Owner | Condición de salida |
+| --- | --- | --- |
+| materializar la sección y sus subviews | instancia física de `VISO-UX-004` | package y `POST_E5_PACKAGE` satisfechos, autorización física propia y validaciones de implementación |
+| limitar información por territorio | `VISO-UX-013` | patrón transversal de alcance visible aprobado y materializado |
+| explicar procedencia de forma comprensible | `VISO-UX-014` | patrón final de origen de permisos aprobado |
+| mostrar conflictos antes de guardar | `VISO-UX-015` | patrón final de conflicto pre-save aprobado |
+| preview exacto por trabajador | `VISO-UX-016` | experiencia transversal de preview aprobada |
+| retirar duplicidad de superficies legacy | `VISO-UX-017` | owner, reemplazo, paridad, pruebas y rollback demostrados |
+| handoffs cross-app | `VISO-UX-018` | contrato de enlace y revalidación de destino aprobado |
+| progressive disclosure avanzado | `VISO-UX-019` | patrón de seguridad avanzada aprobado |
+| validación con administradores reales | `VISO-UX-020` | pruebas ejecutadas y evidencia aceptada |
+| reconciliar rutas `/operations*` con ownership final | `VISO-UX-006`, `VISO-UX-017`, `VISO-UX-018` | navegación y mutación sin segundo editor ni pérdida de consumidores |
+| habilitar exporte real de matriz | contrato y package propietarios de autorización | PermissionKey exacta activa, autorización server-side y materialización física validada |
+
+No queda un pendiente narrativo sin propietario.
+
+---
+
+#### 113. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Justificación:** el Registro Canónico ya protege autorización por permiso/contexto/scope, catálogos, administración territorial, segregación, dispositivo compartido, simulación, server-side enforcement, revocación y coherencia administrativa de VISO; el minibloque `VISO-AUTH-001..020` ya definió los contratos sustantivos que esta tarea compone experiencialmente; y esta tarea no crea PermissionKeys, roles, scopes, grants, denies, tablas, transiciones, dispositivos, evaluadores, mutaciones o reglas de negocio nuevas.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos descartados:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 114. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, la tarea reutiliza especialmente:
+
+- `TREQ-VISO-001` para coherencia entre administración de roles, permisos, sedes, áreas, perfiles, excepciones, preview, conflictos, procedencia, territorio, auditoría y resultado consumido;
+- `TREQ-AUTH-001` para impedir que nombres locales de rol sustituyan autorización canónica;
+- `TREQ-AUTH-002` para exigir que toda clave de permiso exista en el catálogo vigente;
+- `TREQ-AUTH-003` para ciclo auditable de dispositivos compartidos;
+- `TREQ-AUTH-004` para equivalencia entre evaluadores;
+- `TREQ-AUTH-007` para administración explícitamente autorizada y territorial;
+- `TREQ-AUTH-008` para separar prerrequisitos administrativos y operativos;
+- `TREQ-AUTH-009` para resolución territorial determinista;
+- `TREQ-AUTH-010` para segregación de funciones y límites de concesiones individuales;
+- `TREQ-AUTH-011` para intersección entre dispositivo y actor efectivo;
+- `TREQ-AUTH-012` para separar simulación y autoridad real;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC;
+- `TREQ-AUTH-014` para coherencia de carriles administrativo y operativo;
+- `TREQ-AUTH-015` para controles y trazabilidad de simulación;
+- `TREQ-AUTH-016` para revocación coordinada y ausencia de autoridad residual;
+- `TREQ-UX-001` para navegación y acción principal comprensibles;
+- `TREQ-UX-002` para errores y recuperación en lenguaje humano;
+- `TREQ-UX-003` para densidad, acciones e información adecuadas a autorización y tarea.
+
+La mención en esta sección es trazabilidad heredada y no una modificación de 04A.
+
+---
+
+#### 115. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-004`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en la rama documental local de `VISO-UX-004`. |
+| REMOTA | PASS | Se verificaron `vento-shell/main`, el protocolo, contrato de entrega, continuidad, topología, políticas de tarea, owner del minibloque, `VISO-UX-001` y `002` publicados, la base aprobada `VISO-UX-003`, `VISO-AUTH-001..020`, `VPROC-0059`, `VSCREEN-0019..0022` y `0114`, las familias `ADM-TASK-018..024`, el inventario `VISO-ROUTE-*`, el Registro 04A aplicable, los scripts documentales vigentes y las superficies AS-IS relevantes en `vento-viso/main`. |
+| OPERATIVA | NOT_EXECUTED | No se concedieron, retiraron, simularon, aprobaron ni revocaron permisos reales; no se administraron trabajadores, dispositivos, sesiones o accesos reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron UI, rutas, Server Actions, contratos, catálogos, Supabase, datos, migraciones, RLS, Auth, secretos ni despliegues; la materialización permanece por `implementation_unit_id` detrás de `POST_E5_PACKAGE`. |
+
+---
+
+#### 116. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-ACCESO-SEGURIDAD-SECTION-001`;
+2. la tarea conserva `VISO-UX-003` como anterior y `VISO-UX-005` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. `Acceso y seguridad` es el tercer dominio administrativo definido por `VISO-UX-001`;
+6. `VPROC-0059` permanece como proceso propietario principal;
+7. `VSCREEN-0019` permanece como pantalla canónica principal del catálogo;
+8. `VSCREEN-0020` permanece como perfil de acceso del trabajador;
+9. `VSCREEN-0021` permanece como simulación de permisos y conflictos;
+10. `VSCREEN-0022` permanece como gobierno de dispositivos compartidos;
+11. `VSCREEN-0114` permanece como superficie de solicitudes y certificaciones de acceso;
+12. `/roles-permissions` se identifica como entrada física observada más cercana sin certificar su AS-IS como implementación final;
+13. `/app-navigation` se clasifica como configuración relacionada y no como fuente de autoridad;
+14. `/staff/shared-devices/new` pertenece semánticamente a `Acceso y seguridad` como detalle de alta;
+15. `VISO-ROUTE-050` conserva identidad estable;
+16. las rutas `/operations*` no se renumeran ni reclasifican físicamente desde esta tarea;
+17. `/operations/site-roles` no se duplica con un segundo editor canónico;
+18. `/operations/preview` no se declara simulador canónico por su nombre;
+19. el dominio no crea rutas nuevas;
+20. el dominio no retira rutas existentes;
+21. navegación visible no equivale a autorización;
+22. abrir VISO no concede administración de seguridad;
+23. abrir la sección no concede mutaciones;
+24. rol visible no equivale a permiso efectivo;
+25. rol base y rol operativo permanecen separados;
+26. el catálogo base conserva exactamente ocho identidades vigentes;
+27. el catálogo operativo conserva exactamente doce identidades vigentes;
+28. códigos canónicos y etiquetas humanas permanecen diferenciados;
+29. una posición visual no crea jerarquía autorizativa;
+30. la matriz base permanece separada de la matriz operativa;
+31. ausencia de grant no se presenta automáticamente como deny explícito;
+32. no existe wildcard implícito por nombre de rol;
+33. rol × sede expresa elegibilidad y no permiso;
+34. rol × área expresa compatibilidad y no permiso;
+35. `NO_AREA_NOT_REQUIRED` no se convierte en wildcard;
+36. `AREA_BINDING_UNRESOLVED` no infiere área;
+37. perfil operativo no equivale a asignación territorial;
+38. perfil operativo no equivale a rol efectivo;
+39. perfil operativo no equivale a permiso;
+40. sede asignada no equivale a permiso;
+41. área asignada no equivale a área efectiva universal;
+42. rol operativo de turno se mantiene explícito cuando el contrato lo exige;
+43. turno sin rol no usa fallback desde perfil o rol base;
+44. incompatibilidad de área conserva validación rol → sede → área → binding;
+45. el perfil de acceso no colapsa todas las relaciones en una lista de permisos;
+46. preview contextual no muta;
+47. preview contextual no autoriza;
+48. estado actual y propuesto permanecen diferenciados;
+49. la operación final revalida después del preview;
+50. simulación usa actor real autorizado para simular;
+51. simulación conserva contexto hipotético separado;
+52. simulación no muta grants;
+53. simulación no muta asignaciones;
+54. simulación no muta turnos;
+55. simulated allow no equivale a real allow;
+56. el estado de simulación se indica persistentemente;
+57. salir de simulación no altera autoridad real;
+58. procedencia explica una decisión y no reevalúa permisos;
+59. procedencia puede distinguir fuentes positivas y negativas;
+60. una procedencia insuficiente no se inventa;
+61. conflicto real, deny, default deny, redundancia y fallo técnico permanecen diferenciados;
+62. deny válido no se convierte automáticamente en conflicto;
+63. conflicto bloqueante no se supera con confirmación genérica;
+64. excepciones individuales no reconstruyen roles;
+65. excepciones individuales no corrigen territorio inválido;
+66. excepciones individuales no crean PermissionKeys;
+67. excepciones conservan sujeto, permiso, scope, motivo y vigencia;
+68. la autoridad de seguridad usa capacidades atómicas exactas;
+69. la tarea no crea un permiso `manage all security`;
+70. `propietario` no obtiene bypass por nombre;
+71. `gerente_general` no obtiene bypass por nombre;
+72. `gerente` no obtiene administración global por nombre;
+73. ver, proponer, aprobar, conceder, suspender, revocar, simular, auditar y exportar pueden conservar autoridades distintas;
+74. autoridad de auditoría no concede mutación;
+75. administrar un grant no concede automáticamente el permiso objetivo;
+76. gates de reautenticación o segregación propietarios no se omiten;
+77. cambios sensibles muestran antes/después cuando corresponde;
+78. una mutación exitosa produce resultado identificable;
+79. dispositivo compartido conserva principal técnico y actor humano separados;
+80. dispositivo no concede autoridad por sí mismo;
+81. autoridad en dispositivo compartido no excede la intersección permitida;
+82. alta de dispositivo no se confunde con ciclo completo;
+83. `service_role` no se presenta como autoridad empresarial;
+84. solicitud de acceso no crea acceso efectivo;
+85. `APPROVED` no se presenta como `ACCESS_ACTIVE`;
+86. revisión periódica no renueva automáticamente;
+87. deprovisioning no se presenta como cierre hasta verificar residuos;
+88. revocación no borra historia;
+89. reingreso no restaura automáticamente autoridad anterior;
+90. auditoría de seguridad es append-only desde UX;
+91. auditoría contextual no duplica el dominio `Auditoría`;
+92. exporte representa snapshot real y no simulación;
+93. exporte no es editor;
+94. exporte no es fuente de permisos;
+95. exporte no es reimportable;
+96. no se inventa una PermissionKey de exportación;
+97. exporte permanece bloqueado mientras no exista capacidad exacta autorizada;
+98. no se fija XLSX, CSV o JSON como único formato;
+99. navegación interna no crea nuevos dominios primarios;
+100. deep links conservan selectores y revalidan autoridad;
+101. URLs no transportan secretos ni autoridad;
+102. modo guiado y experto comparten las mismas reglas de seguridad;
+103. filtros expertos no amplían scope;
+104. configuración individual distingue rol, perfil, asignación, grant, deny y excepción;
+105. acciones masivas muestran población, alcance, conflictos y resultado;
+106. un selector “todas las sedes” no crea alcance global;
+107. Organización conserva ownership de estructura maestra;
+108. Programación conserva ownership de turnos;
+109. Personal conserva ownership de expediente laboral;
+110. Operación no obtiene un editor paralelo de seguridad;
+111. SHELL conserva contratos compartidos sin que VISO los redefina;
+112. ANIMA no administra seguridad de terceros;
+113. onboarding no concede autoridad automáticamente;
+114. offboarding coordina revocación sin borrar evidencia;
+115. permiso inexistente no se presenta como falta personal de grant;
+116. fallo técnico no se convierte en deny empresarial;
+117. fail closed aplica ante evidencia insuficiente;
+118. resultados stale no se reutilizan como autoridad;
+119. cambios concurrentes obligan revalidación propietaria;
+120. confirmaciones sensibles identifican efecto material;
+121. receipts conservan trazabilidad sin exponer secretos;
+122. búsqueda opera únicamente dentro del universo autorizado;
+123. minimización se aplica antes de depender de masking visual;
+124. estados críticos no dependen solo de color;
+125. la experiencia responsive conserva contexto y acciones críticas;
+126. `LOADING`, `EMPTY`, `NO_AUTHORITY`, `NO_TERRITORY`, `NO_MATCHES`, `CONFLICT`, `STALE`, `TECHNICAL_FAILURE`, `PARTIAL_READ` y `READY` no se confunden;
+127. ocultar un control no sustituye protección de servidor;
+128. Server Action, API, RPC y demás canales no pueden eludir autorización;
+129. `viso.access` no es wildcard de seguridad;
+130. `staff.permissions.manage` observado no se certifica como permiso canónico universal;
+131. `staff.manage` observado no se certifica como gobierno completo de dispositivos;
+132. el AS-IS de `/roles-permissions` permanece evidencia y no certificación;
+133. el AS-IS de `/app-navigation` no concede grants;
+134. el AS-IS de shared device creation no se declara ciclo completo;
+135. el AS-IS de preview operativo no se declara simulación canónica;
+136. el AS-IS de matriz por sede no se declara owner definitivo de experiencia;
+137. no existen dos editores canónicos simultáneos para la misma capacidad;
+138. ningún editor legacy se retira antes de paridad, pruebas y rollback;
+139. `VISO-UX-013` conserva el patrón territorial detallado;
+140. `VISO-UX-014` conserva el patrón final de procedencia comprensible;
+141. `VISO-UX-015` conserva el patrón final de conflictos pre-save;
+142. `VISO-UX-016` conserva el patrón final de preview por trabajador;
+143. `VISO-UX-017` conserva la eliminación de duplicidad;
+144. `VISO-UX-018` conserva handoffs a owners;
+145. `VISO-UX-019` conserva progressive disclosure avanzado;
+146. `VISO-UX-020` conserva pruebas con administradores reales;
+147. `VISO-UX-005` recibe la frontera de estructura organizativa;
+148. no se crean requisitos de prueba;
+149. no se modifican requisitos de prueba;
+150. no se modifica 04A;
+151. la cobertura vigente se referencia fuera de la sección de cero cambios;
+152. no se realizan cambios físicos desde esta tarea documental.
+
+---
+
+#### 117. Límites
+
+Esta tarea no:
+
+- modifica `vento-viso`;
+- modifica `/roles-permissions`;
+- modifica `/app-navigation`;
+- modifica `/staff/shared-devices/new`;
+- modifica `/operations/site-roles`;
+- modifica `/operations/preview`;
+- crea rutas;
+- elimina rutas;
+- renumera `VISO-ROUTE-*`;
+- crea un nuevo dominio de navegación;
+- modifica navegación runtime;
+- modifica `app_navigation_items`;
+- modifica `app_screen_registry`;
+- crea componentes;
+- crea PermissionKeys;
+- renombra PermissionKeys;
+- retira PermissionKeys;
+- crea roles base;
+- crea roles operativos;
+- modifica catálogos versionados de roles;
+- crea grants;
+- elimina grants;
+- crea denies;
+- elimina denies;
+- crea excepciones reales;
+- revoca excepciones reales;
+- cambia sedes;
+- cambia áreas;
+- asigna sedes a trabajadores;
+- asigna áreas a trabajadores;
+- crea perfiles operativos;
+- modifica perfiles operativos;
+- asigna roles a turnos;
+- crea turnos;
+- modifica turnos;
+- publica turnos;
+- crea dispositivos compartidos;
+- activa dispositivos;
+- suspende dispositivos;
+- rota credenciales;
+- revoca dispositivos;
+- crea usuarios técnicos;
+- crea sesiones;
+- revoca sesiones;
+- crea tokens;
+- revoca tokens;
+- ejecuta simulaciones reales;
+- genera exportes reales;
+- reimporta matrices;
+- modifica auditoría;
+- crea tablas;
+- crea vistas;
+- crea funciones o RPC;
+- crea triggers;
+- crea migraciones;
+- modifica RLS;
+- modifica grants de base de datos;
+- modifica Auth;
+- modifica Storage;
+- modifica Realtime;
+- modifica secretos;
+- modifica datos;
+- despliega cambios;
+- aprueba packages;
+- selecciona package;
+- autoriza una instancia física;
+- ejecuta una instancia física;
+- sustituye `VISO-AUTH-001..020`;
+- sustituye `VISO-UX-005..020`;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 118. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-003 — Crear sección Programación`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-004 — Crear sección Acceso y seguridad`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-005 — Crear sección Organización`
 ### [ ] VISO-UX-005 — Crear sección Organización
 ### [ ] VISO-UX-006 — Crear sección Operación
 ### [ ] VISO-UX-007 — Crear sección Auditoría
