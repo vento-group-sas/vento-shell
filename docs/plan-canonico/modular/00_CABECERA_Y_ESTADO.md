@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1488** |
+| Tareas aprobadas | **1489** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **108** |
+| Tareas no iniciadas | **107** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **93.23% (1488/1596)** |
+| Porcentaje de completamiento | **93.30% (1489/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-AUD-002 — Confirmar estado real del producto** |
-| Tarea actual | **AURA-AUD-003 — Confirmar usuarios actuales** |
+| Última tarea aprobada | **AURA-AUD-003 — Confirmar usuarios actuales** |
+| Tarea actual | **AURA-AUD-004 — Inventariar rutas y pantallas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUD-004 — Inventariar rutas y pantallas** |
+| Siguiente tarea | **AURA-AUD-005 — Inventariar procesos de marketing** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 2 de 37 aprobadas; AURA-AUD-003 pendiente** |
+| Progreso del bloque | **BLOQUE W: 3 de 37 aprobadas; AURA-AUD-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-AUD-003** |
+| Carril documental | **ACTIVO — AURA-AUD-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-AUD-002` — Confirmar estado real del producto |
-| Tarea actual | `AURA-AUD-003` — Confirmar usuarios actuales — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUD-004` — Inventariar rutas y pantallas |
+| Última aprobada | `AURA-AUD-003` — Confirmar usuarios actuales |
+| Tarea actual | `AURA-AUD-004` — Inventariar rutas y pantallas — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUD-005` — Inventariar procesos de marketing |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 2 DE 37 APROBADAS — ACTUAL AURA-AUD-003** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 3 DE 37 APROBADAS — ACTUAL AURA-AUD-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-AUD-002 — Confirmar estado real del producto
-        ↓
-TAREA ACTUAL
 AURA-AUD-003 — Confirmar usuarios actuales
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUD-004 — Inventariar rutas y pantallas
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUD-005 — Inventariar procesos de marketing
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 2 de 37 tareas aprobadas
+BLOQUE W — 3 de 37 tareas aprobadas
 ```
