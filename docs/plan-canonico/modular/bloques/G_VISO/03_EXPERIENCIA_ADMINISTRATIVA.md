@@ -11325,7 +11325,2420 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-007 — Crear sección Auditoría`
-### [ ] VISO-UX-007 — Crear sección Auditoría
+### ✅ VISO-UX-007 — Crear sección Auditoría
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-006 — Crear sección Operación
+**Tarea siguiente:** VISO-UX-008 — Definir inicio para propietario
+**Tipo de tarea:** definición técnico-documental de la sección administrativa `Auditoría` de VISO; establece una experiencia transversal de investigación y reconstrucción histórica autorizada sobre cambios, intentos, decisiones, conflictos, correcciones, rollbacks y evidencia relacionada, sin confundir auditoría con estado vigente, autorización, observabilidad, recuperación, exportación o mutación, y conserva `PER_IMPLEMENTATION_UNIT` con gate físico `POST_E5_PACKAGE`
+**Bloque:** BLOQUE G3 — VISO completo
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato completo de la sección `Auditoría` definido; la superficie física observada `/ops/audit` permanece como diagnóstico de consistencia AS-IS y no demuestra materialización de la auditoría canónica; la implementación runtime queda pendiente por `implementation_unit_id` y detrás de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-viso`, rutas, navegación runtime, componentes, contratos, permisos, Supabase, tablas, vistas, migraciones, RPC, RLS, Auth, datos, writers, retención, despliegues ni configuración remota
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe funcionar la sección administrativa `Auditoría` de VISO para que un actor autorizado pueda reconstruir hechos históricos relevantes sin convertir el visor de evidencia en una segunda fuente de estado, una consola de seguridad, un SIEM o un mecanismo de ejecución.
+
+La sección debe responder de forma directa:
+
+```text
+¿QUÉ OCURRIÓ O SE INTENTÓ HACER?
+¿CUÁNDO OCURRIÓ Y CUÁNDO QUEDÓ REGISTRADO?
+¿QUIÉN SOLICITÓ, APROBÓ O EJECUTÓ LA ACCIÓN?
+¿QUÉ SUJETO, RECURSO, CONFIGURACIÓN O PROCESO FUE AFECTADO?
+¿CUÁL ERA EL ESTADO HISTÓRICO ANTERIOR?
+¿CUÁL FUE EL RESULTADO HISTÓRICO POSTERIOR?
+¿QUÉ DECISIÓN, MOTIVO, CONFLICTO O CORRELACIÓN EXPLICA EL HECHO?
+¿QUÉ TERRITORIO HISTÓRICO APLICABA?
+¿QUÉ EVIDENCIA ES CANÓNICA, LEGACY, RELACIONADA O INCOMPLETA?
+¿DÓNDE DEBO IR PARA ACTUAR, SIN MUTAR DESDE EL HISTORIAL?
+```
+
+La regla raíz queda:
+
+```text
+AUDITORÍA
+=
+RECONSTRUCCIÓN HISTÓRICA AUTORIZADA
++
+EVIDENCIA TRAZABLE
++
+CORRELACIÓN
++
+CONTEXTO HISTÓRICO
++
+MINIMIZACIÓN
+```
+
+Y nunca:
+
+```text
+AUDITORÍA
+=
+ESTADO VIGENTE
+```
+
+ni:
+
+```text
+AUDITORÍA
+=
+AUTORIZACIÓN
+```
+
+ni:
+
+```text
+AUDITORÍA
+=
+CONSOLA DE MUTACIÓN
+```
+
+---
+
+#### 2. Handoff recibido de `VISO-UX-001`
+
+`VISO-UX-001` entrega sin reapertura:
+
+```text
+ADMINISTRATIVE_DOMAIN_COUNT = 6
+DOMAIN_1 = Personal
+DOMAIN_2 = Programación
+DOMAIN_3 = Acceso y seguridad
+DOMAIN_4 = Organización
+DOMAIN_5 = Operación
+DOMAIN_6 = Auditoría
+```
+
+Para `Auditoría` entrega además:
+
+```text
+AUDITORIA_DESCRIBE_LO_OCURRIDO = YES
+AUDITORIA_ES_ESTADO_VIGENTE = NO
+AUDITORIA_ES_AUTORIZACION = NO
+```
+
+También conserva que una superficie físicamente presente en `vento-viso` no adquiere ownership, intención ni ubicación primaria únicamente por su ruta o nombre.
+
+La familia observada contiene una candidata histórica:
+
+```text
+VISO-ROUTE-030
+/ops/audit
+```
+
+pero `VISO-UX-001` deja su clasificación final a esta tarea.
+
+---
+
+#### 3. Handoff recibido de `VISO-UX-004`
+
+`VISO-UX-004 — Crear sección Acceso y seguridad` entrega una frontera explícita:
+
+```text
+HISTORIAL CONTEXTUAL DE SEGURIDAD
+!=
+EXPERIENCIA TRANSVERSAL DE AUDITORÍA
+```
+
+`Acceso y seguridad` puede:
+
+- mostrar historial contextual de un elemento administrado;
+- explicar cambios relevantes al permiso, grant, deny, perfil o configuración que el actor está consultando;
+- enlazar una investigación más profunda.
+
+`Auditoría` conserva ownership sobre:
+
+- investigación transversal;
+- correlación entre eventos;
+- reconstrucción histórica amplia;
+- navegación entre evidencia relacionada;
+- lectura de before/after;
+- filtros históricos;
+- contexto territorial histórico;
+- explicación del resultado sin reinterpretarlo.
+
+La existencia de historial contextual dentro de `Acceso y seguridad` no crea un segundo sistema de auditoría.
+
+---
+
+#### 4. Handoff recibido de `VISO-UX-006`
+
+`VISO-UX-006 — Crear sección Operación` reserva expresamente:
+
+```text
+VISO-ROUTE-030 — /ops/audit
+```
+
+para esta tarea.
+
+También deja fijadas estas fronteras:
+
+- `Operación` administra configuración y supervisión del contexto operativo propio de VISO;
+- `Organización` conserva sedes, áreas y estructura;
+- `Programación` conserva turnos;
+- ANIMA conserva check-in/check-out y experiencia del trabajador;
+- `Acceso y seguridad` conserva permisos, grants, denies, excepciones, procedencia, conflictos y simulación canónica;
+- NEXO conserva LOC, inventario y ejecución logística;
+- las demás aplicaciones conservan sus operaciones empresariales propietarias.
+
+Por tanto, `Auditoría` puede investigar evidencia de esas capacidades únicamente cuando exista una fuente auditable autorizada.
+
+No absorbe su estado vigente ni sus acciones propietarias.
+
+---
+
+#### 5. Handoff recibido de `VISO-AUTH-018`
+
+`VISO-AUTH-018 — Auditar cambios de seguridad` define la semántica y seguridad de la auditoría de cambios de autorización.
+
+Esta tarea la consume sin reabrirla.
+
+Se preserva:
+
+```text
+CAMBIO HISTÓRICO
+!=
+ESTADO ACTUAL
+
+DECISIÓN ALLOW
+!=
+CAMBIO APLICADO
+
+AUDITAR SEGURIDAD
+!=
+ADMINISTRAR SEGURIDAD
+```
+
+La sección `Auditoría` debe materializar una experiencia coherente con ese contrato.
+
+No redefine qué constituye evidencia válida.
+
+---
+
+#### 6. Topología y gate
+
+La tarea conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La definición documental ocurre una sola vez.
+
+La materialización física posterior:
+
+- pertenece a una `implementation_unit_id` gobernada;
+- requiere el package propietario aplicable;
+- requiere `E5-GATE-008::<package_id> = PASS` cuando corresponda;
+- no se autoriza desde esta tarea documental;
+- no se ejecuta por la existencia del AS-IS actual;
+- debe conservar las fronteras definidas aquí.
+
+No existe una instancia global implícita para `VISO-UX-007`.
+
+---
+
+#### 7. Contrato de sección
+
+Se define:
+
+```text
+VISO_AUDIT_SECTION_CONTRACT = VISO-AUDIT-SECTION-001
+DOMAIN_LABEL = Auditoría
+DOMAIN_ORDER = 6
+OBSERVED_AUDIT_ROUTE_ID = VISO-ROUTE-030
+OBSERVED_AUDIT_ROUTE = /ops/audit
+OBSERVED_AUDIT_ROUTE_AS_IS = OPERATIONAL_CONSISTENCY_DIAGNOSTIC
+TREQ_CHANGES = 0
+```
+
+No se declara un `VSCREEN-*` ni un `VPROC-*` principal porque las fuentes canónicas vigentes no demuestran una identidad uno-a-uno aprobada para la experiencia transversal de auditoría definida aquí.
+
+No se inventan esos identificadores para completar una matriz visual.
+
+---
+
+#### 8. Auditoría como sexto dominio administrativo
+
+`Auditoría` es el sexto dominio de navegación administrativa de VISO.
+
+Su función no es ejecutar trabajo primario.
+
+Su función es permitir que un actor autorizado:
+
+1. encuentre evidencia histórica;
+2. reconstruya una acción o intento;
+3. entienda actores y sujetos;
+4. distinga decisión de ejecución;
+5. revise before/after cuando exista;
+6. siga correlación y causalidad explícitas;
+7. entienda el territorio histórico;
+8. examine conflictos o resultados;
+9. navegue a evidencia relacionada;
+10. identifique el owner de una acción posterior.
+
+La sección no convierte una investigación en permiso para corregir el sistema desde el mismo historial.
+
+---
+
+#### 9. Regla semántica de pertenencia
+
+Una superficie pertenece al dominio `Auditoría` cuando su intención primaria es reconstruir hechos históricos respaldados por evidencia auditable.
+
+Por tanto:
+
+```text
+CONSULTAR ESTADO ACTUAL
+!=
+AUDITAR
+```
+
+```text
+BUSCAR INCONSISTENCIAS ACTUALES
+!=
+AUDITAR
+```
+
+```text
+MOSTRAR KPIs ACTUALES
+!=
+AUDITAR
+```
+
+```text
+MOSTRAR updated_at
+!=
+AUDITAR
+```
+
+Una pantalla de diagnóstico puede ser útil, pero no se convierte en auditoría histórica por usar la palabra `audit` en su ruta, título o componente.
+
+---
+
+#### 10. AS-IS verificado de `VISO-ROUTE-030`
+
+La ruta física observada es:
+
+```text
+VISO-ROUTE-030
+/ops/audit
+src/app/ops/audit/page.tsx
+```
+
+Su implementación actual:
+
+- exige acceso general a VISO mediante `requireAppAccess`;
+- usa un cliente administrativo para lectura;
+- consulta `sites`;
+- consulta `areas`;
+- consulta `area_kinds`;
+- consulta `inventory_locations`;
+- consulta `employees`;
+- consulta `employee_sites`;
+- consulta `employee_inventory_location_assignments`;
+- calcula consistencia del estado actual;
+- muestra áreas sin LOC;
+- muestra LOCs sin área;
+- muestra trabajadores sin LOC de retiro;
+- muestra tipos de área inactivos en uso;
+- muestra posibles nombres duplicados de áreas;
+- enlaza a superficies de trabajadores.
+
+No consulta un historial de cambios.
+
+No reconstruye eventos históricos.
+
+No consume la capacidad exacta de lectura de auditoría de seguridad.
+
+---
+
+#### 11. Decisión sobre `/ops/audit`
+
+Se congela:
+
+```text
+/ops/audit AS-IS
+!=
+VISO_AUDIT_SECTION_CONTRACT
+```
+
+Mientras conserve su semántica actual, `VISO-ROUTE-030` se trata como `CROSS_OWNER_TRANSITION` para la reorganización administrativa.
+
+La razón es contractual:
+
+- mezcla estado vigente de Organización;
+- mezcla LOC y relaciones de inventario de NEXO;
+- mezcla trabajadores y asignaciones;
+- ejecuta diagnóstico de consistencia actual;
+- no describe hechos históricos;
+- no posee una única semántica de auditoría canónica demostrada.
+
+Esta clasificación no retira la ruta.
+
+No renumera `VISO-ROUTE-030`.
+
+No autoriza a moverla físicamente.
+
+No decide todavía qué owner recibe cada diagnóstico interno.
+
+---
+
+#### 12. No promover el AS-IS a entrada canónica
+
+La entrada de navegación `Auditoría` no puede apuntar a `/ops/audit` y declararse conforme mientras la ruta conserve su implementación actual.
+
+Se preserva:
+
+```text
+RUTA CON NOMBRE audit
+!=
+ENTRADA CANÓNICA DE AUDITORÍA
+```
+
+La futura materialización deberá reconciliar la navegación, la identidad semántica, el permiso de lectura y la superficie física sin hacer que una misma ruta represente intenciones contradictorias.
+
+Esta tarea no inventa una ruta física nueva para resolver esa brecha.
+
+---
+
+#### 13. No retiro prematuro de `VISO-ROUTE-030`
+
+`VISO-ROUTE-030` permanece dentro del inventario protegido.
+
+No se elimina por no cumplir todavía el contrato objetivo.
+
+Cualquier retiro, traslado o transformación física posterior exige:
+
+- owner resuelto;
+- consumidores identificados;
+- reemplazo o handoff materializado cuando corresponda;
+- navegación reconciliada;
+- autorización equivalente o más restrictiva;
+- pruebas;
+- rollback o reversibilidad;
+- inventario de rutas consistente.
+
+---
+
+#### 14. Experiencia objetivo de entrada
+
+Cuando exista una materialización conforme, la entrada `Auditoría` deberá presentar una experiencia de consulta histórica y no un dashboard de estado actual.
+
+La composición conceptual es:
+
+```text
+Auditoría
+├── ventana temporal acotada
+├── filtros autorizados
+├── lista histórica estable
+├── resultado del evento
+├── actor y sujeto minimizados
+├── fuente y nivel de evidencia
+├── contexto histórico permitido
+└── acceso al detalle
+```
+
+No se fija aquí una ruta física concreta para esa entrada.
+
+---
+
+#### 15. Cómo debe verse la lista histórica
+
+La lista debe priorizar comprensión empresarial antes que nombres de tablas.
+
+Ejemplo conceptual:
+
+```text
+28 sep 2026 · 16:44
+Permiso operativo revocado
+Resultado: APPLIED
+Actor: Administrador autorizado
+Sujeto: trabajador / rol / permiso
+Territorio histórico: Sede Centro
+Fuente: CANONICAL
+
+28 sep 2026 · 15:12
+Intento de cambio bloqueado
+Resultado: CONFLICT
+Actor: Administrador autorizado
+Sujeto: configuración protegida
+Fuente: CANONICAL
+```
+
+La representación visual no crea nuevos valores canónicos.
+
+---
+
+#### 16. La lista no es un feed genérico
+
+La sección no muestra cualquier log disponible.
+
+Un elemento solo entra al universo consultable cuando:
+
+- existe una fuente auditable identificable;
+- el evento posee identidad estable o referencia estable;
+- el actor tiene capacidad de lectura aplicable;
+- el alcance permite ver el evento;
+- la proyección respeta sensibilidad y minimización;
+- la fuente puede explicar su completitud.
+
+No se agregan logs de consola, observabilidad o timestamps de filas para llenar la interfaz.
+
+---
+
+#### 17. Familias de evidencia
+
+La sección puede relacionar las familias definidas por el contrato de seguridad:
+
+```text
+SECURITY_CONFIGURATION_CHANGE
+SECURITY_CONFIGURATION_ATTEMPT
+AUTHORIZATION_DECISION
+SIMULATION_AUDIT
+DEVICE_LIFECYCLE_AUDIT
+CONTEXT_INVALIDATION_EVIDENCE
+RELATED_SECURITY_EVIDENCE
+```
+
+También puede consumir evidencia histórica de otros dominios de VISO cuando exista un contrato propietario auditable.
+
+No se crea una tabla universal ni un tipo universal de evento para homogeneizar fuentes incompatibles.
+
+---
+
+#### 18. Estado de la fuente de evidencia
+
+La experiencia debe poder distinguir, cuando corresponda:
+
+```text
+CANONICAL
+LEGACY_LIMITED
+RELATED_EVIDENCE
+EVIDENCE_INCOMPLETE
+```
+
+Estas etiquetas describen la calidad y procedencia de la evidencia presentada.
+
+No modifican el evento persistido.
+
+No elevan una fuente legacy al nivel canónico.
+
+---
+
+#### 19. Fuente canónica histórica
+
+La fuente de verdad histórica es la evidencia persistida por el mecanismo propietario del cambio, intento, decisión o evento.
+
+No son equivalentes:
+
+- la fila vigente;
+- el estado actual del trabajador;
+- el rol actual;
+- la sede actual;
+- el área actual;
+- la selección visual actual;
+- un mensaje de éxito;
+- una notificación;
+- un log de consola;
+- `created_at` o `updated_at` aislados;
+- una comparación ad hoc entre dos lecturas actuales.
+
+La UI no reconstruye historia inventando deltas.
+
+---
+
+#### 20. Evidencia append-only
+
+La experiencia de auditoría trata la evidencia histórica como append-only.
+
+Una corrección, compensación, aclaración o rollback posterior genera nueva evidencia vinculada cuando el contrato propietario así lo exige.
+
+No se permite desde la sección:
+
+```text
+EDITAR EVENTO HISTÓRICO
+BORRAR EVENTO PARA OCULTAR ERROR
+REESCRIBIR BEFORE/AFTER
+CAMBIAR ACTOR HISTÓRICO
+CAMBIAR TERRITORIO HISTÓRICO
+CAMBIAR RESULTADO HISTÓRICO
+```
+
+---
+
+#### 21. Resultado aplicado e intento
+
+La sección debe separar:
+
+```text
+CAMBIO APLICADO
+```
+
+de:
+
+```text
+INTENTO DE CAMBIO
+```
+
+Una autorización `ALLOW` no prueba que la mutación se aplicó.
+
+La aplicación exige evidencia de resultado material.
+
+---
+
+#### 22. Categorías de resultado
+
+Cuando la fuente propietaria las utilice, la vista puede representar:
+
+```text
+APPLIED
+DENIED
+INVALID
+CONFLICT
+TECHNICAL_FAILURE
+NO_CHANGE
+ROLLED_BACK
+```
+
+La interfaz puede traducir etiquetas para comprensión.
+
+No puede cambiar la semántica de la fuente.
+
+---
+
+#### 23. `DENIED` y `TECHNICAL_FAILURE`
+
+Se preserva:
+
+```text
+DENIED
+!=
+TECHNICAL_FAILURE
+```
+
+`DENIED` representa una negativa de seguridad o regla aplicable.
+
+`TECHNICAL_FAILURE` representa una falla técnica que impidió resolver o completar la operación.
+
+La UI no presenta un fallo técnico como decisión de seguridad.
+
+---
+
+#### 24. `CONFLICT`
+
+Un resultado `CONFLICT` puede vincularse a la evidencia de conflicto propietaria.
+
+La sección puede mostrar:
+
+- tipo de conflicto;
+- fuente;
+- cambio solicitado;
+- actor;
+- resultado;
+- referencia correlacionada;
+- tiempo.
+
+No vuelve a evaluar ni cambiar si el conflicto era bloqueante.
+
+---
+
+#### 25. `NO_CHANGE`
+
+`NO_CHANGE` significa que el estado autoritativo no cambió.
+
+Puede representar una solicitud idempotente o redundante.
+
+No se transforma en:
+
+```text
+APPLIED
+```
+
+ni en:
+
+```text
+DENIED
+```
+
+---
+
+#### 26. `ROLLED_BACK`
+
+Un evento `ROLLED_BACK` conserva evidencia de:
+
+- intento;
+- decisión relacionada;
+- proceso o transacción;
+- motivo;
+- resultado del rollback;
+- correlación.
+
+La interfaz no afirma `cero efectos` si la atomicidad no puede demostrarse.
+
+---
+
+#### 27. Change sets
+
+Cuando una acción administrativa produzca varios cambios ligados a un mismo comando, la sección debe conservar la unidad del change set.
+
+Conceptualmente:
+
+```text
+CHANGE_SET
+├── identidad
+├── actor
+├── decisión
+├── motivo
+├── aprobación
+├── correlación
+├── resultado
+└── items ordenados
+```
+
+La lista puede mostrar primero la acción agrupada y desplegar sus items.
+
+No crea eventos falsos independientes para cada fila cuando la fuente define una sola transacción.
+
+---
+
+#### 28. Cardinalidad del change set
+
+Cuando exista `change_count`, debe coincidir con el número real de items persistidos.
+
+La UI no:
+
+- oculta items para cuadrar el total;
+- inventa items faltantes;
+- duplica items para ajustar cardinalidad;
+- calcula una cardinalidad alternativa como si fuera canónica.
+
+---
+
+#### 29. Before y after
+
+Cuando la fuente preserve snapshots históricos, la experiencia puede mostrar:
+
+```text
+BEFORE
+→
+CHANGED_FIELDS
+→
+AFTER
+```
+
+Los snapshots provienen de evidencia histórica persistida.
+
+No se recalculan desde el estado actual.
+
+---
+
+#### 30. Creación y ausencia histórica
+
+Para una creación legítima puede existir:
+
+```text
+before = no existente
+after = estado creado
+```
+
+La ausencia no se transforma en un objeto vacío inventado.
+
+La UI debe diferenciar `no existía` de `evidencia faltante`.
+
+---
+
+#### 31. Evidencia incompleta
+
+Si un evento requiere before/after, actor, decisión o correlación y la fuente no los posee, la experiencia debe indicar:
+
+```text
+EVIDENCIA INCOMPLETA
+```
+
+No completa huecos mediante inferencia.
+
+La falta de datos puede limitar el detalle sin ocultar la identidad del hallazgo autorizado.
+
+---
+
+#### 32. Campos cambiados
+
+`changed_fields`, cuando exista, delimita las propiedades afectadas.
+
+La interfaz puede resaltar esos campos.
+
+No infiere cambios adicionales comparando objetos con distintas representaciones, defaults o versiones.
+
+---
+
+#### 33. Fingerprints y versiones
+
+Cuando la fuente incluya fingerprints o versiones, la sección puede presentarlos como evidencia técnica autorizada.
+
+Ejemplos conceptuales:
+
+```text
+before_fingerprint
+after_fingerprint
+item_fingerprint
+change_set_fingerprint
+contract_version
+dataset_version
+dataset_hash
+```
+
+La UI no recalcula esos valores en cliente para sustituir la evidencia persistida.
+
+---
+
+#### 34. Decisión de autorización vinculada
+
+Cuando el contrato propietario incluya una referencia como:
+
+```text
+authorization_decision_id
+```
+
+la experiencia puede navegar conceptualmente:
+
+```text
+CAMBIO
+→
+DECISIÓN DE AUTORIZACIÓN
+```
+
+sin convertir la decisión en el cambio mismo.
+
+---
+
+#### 35. Decisión y ejecución
+
+Se conserva:
+
+```text
+DECISIÓN
+!=
+EJECUCIÓN
+```
+
+Una decisión `ALLOW` demuestra que se permitió continuar según el contrato correspondiente.
+
+No demuestra por sí sola:
+
+- escritura aplicada;
+- transacción confirmada;
+- evento emitido;
+- caché invalidada;
+- notificación entregada.
+
+---
+
+#### 36. Correlación
+
+La experiencia puede correlacionar referencias explícitas como:
+
+```text
+correlation_id
+causation_id
+command_id
+authorization_decision_id
+change_set_id
+permission_change_id
+```
+
+La correlación no se infiere únicamente porque dos eventos:
+
+- ocurrieron cerca en el tiempo;
+- afectaron al mismo trabajador;
+- usaron la misma pantalla;
+- fueron ejecutados por el mismo actor.
+
+---
+
+#### 37. Causalidad
+
+`causation_id`, cuando existe, expresa causalidad explícita.
+
+La UI puede representarla como cadena o vínculo.
+
+No fabrica una relación causal para mejorar visualmente una línea de tiempo.
+
+---
+
+#### 38. Vínculos de evidencia
+
+Cuando la fuente los permita, se pueden presentar vínculos tipados como:
+
+```text
+AUTHORIZATION_DECISION
+APPROVAL
+SOURCE_EVIDENCE
+INCIDENT
+CORRECTION
+MIGRATION
+AUDIT_ENTRY
+```
+
+Un vínculo demuestra relación.
+
+No concede automáticamente acceso al contenido completo del sistema relacionado.
+
+---
+
+#### 39. Solicitante, aprobador y ejecutor
+
+La sección debe distinguir, cuando existan:
+
+```text
+SOLICITÓ
+APROBÓ
+EJECUTÓ
+```
+
+No se colapsan siempre en `modificado por`.
+
+Un mismo actor puede ocupar varios papeles solo cuando la evidencia así lo demuestre.
+
+---
+
+#### 40. Principal, actor y principal técnico
+
+La experiencia debe conservar la diferencia entre:
+
+```text
+principal_id
+effective_actor_id
+technical_principal_id
+```
+
+El principal técnico no se presenta como autor empresarial cuando existe un actor humano efectivo.
+
+Un job o una migración no recibe un humano ficticio.
+
+---
+
+#### 41. Dispositivo y sesión
+
+`device_id` y `session_id`, cuando existan, pueden formar parte del detalle autorizado.
+
+No sustituyen la identidad del actor.
+
+Su exposición queda sujeta a minimización, sensibilidad y necesidad de investigación.
+
+---
+
+#### 42. Tiempo histórico
+
+La sección distingue:
+
+```text
+occurred_at
+!=
+recorded_at
+```
+
+`occurred_at` representa cuándo ocurrió la acción o hecho.
+
+`recorded_at` representa cuándo la evidencia quedó registrada.
+
+La UI no utiliza un solo timestamp ambiguo cuando ambos tienen significado distinto.
+
+---
+
+#### 43. Territorio histórico
+
+La investigación usa el territorio relevante cuando ocurrió el evento.
+
+Ejemplo:
+
+```text
+EVENTO OCURRIÓ EN SEDE A
++
+TRABAJADOR HOY ESTÁ EN SEDE B
+```
+
+El historial no se reclasifica como si hubiera ocurrido en Sede B.
+
+Se conserva:
+
+```text
+TERRITORIO HISTÓRICO
+!=
+TERRITORIO ACTUAL
+```
+
+---
+
+#### 44. Recurso protegido y resolución territorial
+
+Para auditoría de seguridad se conservan:
+
+```text
+permission = viso.authorization.audit_logs.view
+resource = AUDIT_EVENT
+territory = RECURSIVE_EVENT
+mode = BASE_ONLY
+```
+
+La lectura no depende de un turno operativo ni check-in por sí misma.
+
+La concesión de la capacidad y su alcance siguen perteneciendo a las matrices y excepciones canónicas.
+
+Esta tarea no otorga el permiso a ningún actor nuevo.
+
+---
+
+#### 45. Auditoría transversal no significa permiso universal
+
+Poder entrar al dominio `Auditoría` no concede acceso a toda evidencia de Vento OS.
+
+Cada evento o familia relacionada conserva:
+
+- capacidad de lectura;
+- recurso;
+- alcance;
+- sensibilidad;
+- minimización;
+- política de vínculo;
+- owner.
+
+La sección compone una experiencia.
+
+No crea un wildcard.
+
+---
+
+#### 46. Filtros mínimos conceptuales
+
+La experiencia puede ofrecer filtros por dimensiones que la fuente auditable soporte, por ejemplo:
+
+- rango temporal;
+- actor;
+- sujeto;
+- trabajador objetivo;
+- rol base;
+- rol operativo;
+- permiso;
+- aplicación;
+- familia de evidencia;
+- source kind;
+- change kind;
+- resultado;
+- carril;
+- efecto;
+- organización;
+- sede;
+- área;
+- correlation id;
+- command id;
+- reason code;
+- sensibilidad;
+- referencia de aprobación;
+- referencia de origen.
+
+No se presenta un filtro que obligue a inventar campos inexistentes.
+
+---
+
+#### 47. Los filtros reducen, nunca amplían
+
+Se conserva:
+
+```text
+FILTRO SOLICITADO
+⊆
+CONJUNTO AUTORIZADO
+```
+
+Un `site_id`, `area_id`, actor, subject o event id enviado por cliente no amplía la consulta.
+
+El servidor construye o valida la lectura contra el conjunto permitido.
+
+---
+
+#### 48. Búsqueda por trabajador
+
+Buscar por trabajador objetivo no concede acceso a todos sus eventos.
+
+Cada evento sigue sujeto a:
+
+```text
+CAPACIDAD DE LECTURA
++
+AUDIT_EVENT
++
+RECURSIVE_EVENT
++
+ALCANCE DEL AUDITOR
++
+MINIMIZACIÓN
+```
+
+---
+
+#### 49. Búsqueda por actor
+
+Buscar por actor tampoco crea propiedad.
+
+Un auditor no obtiene acceso a toda su propia actividad solo por ser el actor de eventos históricos.
+
+La política del evento sigue aplicando.
+
+---
+
+#### 50. Ventana temporal acotada
+
+La lista usa una ventana temporal explícita o una ventana por defecto acotada.
+
+No se hace una consulta ilimitada como comportamiento ordinario.
+
+El actor puede ampliar el rango únicamente dentro de los límites permitidos.
+
+---
+
+#### 51. Orden estable
+
+El orden por defecto de una fuente compatible debe ser temporal descendente y estable.
+
+Conceptualmente:
+
+```text
+occurred_at DESC
++
+identificador estable DESC
+```
+
+Los empates no se reordenan de forma no determinista entre páginas.
+
+---
+
+#### 52. Paginación server-side
+
+La lista se pagina en servidor o mediante un mecanismo equivalente que preserve seguridad y estabilidad.
+
+No se permite:
+
+```text
+DESCARGAR TODO
+→
+FILTRAR EN CLIENTE
+```
+
+La paginación no ocurre antes de establecer el conjunto autorizado de forma que pueda filtrar silenciosamente eventos prohibidos y revelar cardinalidades laterales.
+
+---
+
+#### 53. Cursor y crecimiento del historial
+
+Los eventos pueden seguir llegando mientras el auditor pagina.
+
+La implementación debe usar un cursor estable o una estrategia equivalente.
+
+No se bloquea el sistema de escritura solo para mantener una lista congelada.
+
+---
+
+#### 54. Detalle de evento
+
+El detalle puede presentar, cuando existan y estén autorizados:
+
+```text
+identidad del evento
+familia
+actor
+principal
+sujeto
+aplicación
+permiso
+carril
+efecto
+operación
+resultado
+changed_fields
+before
+after
+motivo
+aprobación
+fuente
+territorio histórico
+decision_id
+correlation_id
+causation_id
+versiones
+fingerprints
+occurred_at
+recorded_at
+retención
+links
+```
+
+No todos los campos se muestran a todo auditor.
+
+---
+
+#### 55. Profundidad progresiva
+
+La experiencia puede organizar el detalle como:
+
+```text
+RESUMEN
+→
+CAMBIO
+→
+BEFORE / AFTER
+→
+DECISIÓN
+→
+APROBACIÓN
+→
+EVIDENCIA RELACIONADA
+```
+
+Abrir un nivel más profundo revalida la autoridad aplicable cuando corresponda.
+
+No se precarga todo el payload sensible únicamente porque el primer nivel sea visible.
+
+---
+
+#### 56. Acceso directo
+
+Una URL directa o deep link a un evento no hereda autorización de una visita anterior.
+
+Para auditoría de seguridad se revalida, según el contrato:
+
+```text
+viso.authorization.audit_logs.view
++
+actor
++
+alcance
++
+AUDIT_EVENT
++
+RECURSIVE_EVENT
+```
+
+Una lista previamente autorizada no funciona como capability token.
+
+---
+
+#### 57. Consistencia lista–detalle
+
+Un evento visible en lista debe poder abrirse con la misma política o explicar de forma segura por qué dejó de estar disponible.
+
+La lista no muestra campos que la política de detalle prohíbe revelar.
+
+Un cambio de autoridad exige revalidación.
+
+---
+
+#### 58. Errores seguros y denegación
+
+Una consulta sin autoridad suficiente no revela:
+
+- si existe un evento oculto;
+- quién actuó;
+- qué permiso fue afectado;
+- qué sede o área contiene;
+- qué reason code posee;
+- qué evidencia relacionada existe.
+
+La experiencia distingue:
+
+```text
+SIN EVENTOS VISIBLES
+!=
+NO AUTORIZADO
+!=
+FUENTE NO DISPONIBLE
+!=
+FALLO TÉCNICO
+```
+
+sin filtrar información sensible.
+
+---
+
+#### 59. Estado vacío
+
+Un estado vacío debe explicar únicamente lo que el actor puede concluir.
+
+Ejemplo conceptual:
+
+```text
+No hay eventos visibles para los filtros y el periodo seleccionados.
+```
+
+No afirma que no existan eventos fuera del alcance del auditor.
+
+---
+
+#### 60. Minimización
+
+La auditoría contiene evidencia suficiente para investigar.
+
+No se convierte en un repositorio duplicado de datos personales.
+
+Los snapshots y detalles se limitan a campos permitidos, referencias y valores necesarios.
+
+La investigación no elimina la obligación de mínimo privilegio.
+
+---
+
+#### 61. Datos que no se reconstruyen para completar un evento
+
+La experiencia no intenta recuperar o reconstruir desde otras fuentes valores sensibles prohibidos en payloads auditables, como:
+
+```text
+jwt
+refresh_token
+api_key
+pin
+password
+credential_secret
+private_key
+raw_session_token
+email
+phone
+document
+address
+photo
+medical
+disciplinary_text
+```
+
+La ausencia deliberada de esos datos no convierte la evidencia en incompleta.
+
+---
+
+#### 62. Sensibilidad
+
+Cuando la evidencia conserve clasificación, la sección respeta valores como:
+
+```text
+FUNCTIONAL
+FUNCTIONAL_SENSITIVE
+ADMINISTRATIVE
+PRIVILEGED
+```
+
+La sensibilidad puede afectar:
+
+- visibilidad;
+- detalle;
+- vínculos;
+- retención;
+- tratamiento visual.
+
+No es una etiqueta decorativa.
+
+---
+
+#### 63. Retención
+
+La sección puede mostrar la clase de retención autorizada cuando sea relevante.
+
+No cambia:
+
+- política de retención;
+- legal hold;
+- plazo;
+- purga;
+- excepción permanente.
+
+La lectura de auditoría no concede capacidad de eliminación.
+
+---
+
+#### 64. Correcciones
+
+Una corrección histórica se representa como evidencia nueva y vinculada.
+
+Cuando el contrato use:
+
+```text
+CORRECT_METADATA
+```
+
+la experiencia debe diferenciar una corrección de metadata de un cambio de autoridad material.
+
+La corrección no reemplaza el evento original.
+
+---
+
+#### 65. Migraciones y jobs
+
+Una evidencia originada por:
+
+```text
+JOB
+MIGRATION
+RECOVERY
+```
+
+puede carecer legítimamente de actor humano interactivo.
+
+La UI conserva:
+
+- source;
+- principal técnico;
+- comando;
+- correlación;
+- motivo o referencia;
+- versión;
+- resultado.
+
+No atribuye la acción al último administrador que inició sesión.
+
+---
+
+#### 66. Legacy
+
+Una fuente legacy puede mostrarse como evidencia limitada cuando:
+
+- su origen es conocido;
+- su identidad es estable;
+- su lectura está autorizada;
+- se conoce su grado de completitud;
+- la UI la etiqueta como limitada.
+
+No se normalizan por inferencia actor, permiso, carril, territorio, reason code o resultado que la fuente no pueda demostrar.
+
+---
+
+#### 67. Métricas de auditoría
+
+La experiencia puede mostrar conteos derivados únicamente cuando:
+
+- se calculan sobre el conjunto autorizado;
+- no permiten inferir eventos ocultos;
+- separan cambios aplicados de intentos;
+- no mezclan `DENIED` con `TECHNICAL_FAILURE`;
+- no mezclan cambios con decisiones;
+- la ventana temporal es explícita.
+
+Las métricas no sustituyen la lista de eventos ni el detalle.
+
+---
+
+#### 68. Color, iconos y etiquetas
+
+El diseño visual puede usar color, iconos o etiquetas para facilitar lectura.
+
+Se conserva:
+
+```text
+REPRESENTACIÓN VISUAL
+!=
+RESULTADO CANÓNICO
+```
+
+Un color rojo no transforma automáticamente un evento en deny, conflicto o error.
+
+Un check verde no convierte una decisión `ALLOW` en cambio aplicado.
+
+---
+
+#### 69. Auditoría del acceso a auditoría
+
+Consultar evidencia sensible también puede ser una acción auditable.
+
+La implementación física deberá conservar el contrato aplicable sin crear recursión infinita.
+
+La sección no oculta el hecho de que un auditor consultó evidencia cuando esa consulta debe registrarse.
+
+---
+
+#### 70. Frontera con `Acceso y seguridad`
+
+`Acceso y seguridad` sigue siendo owner de:
+
+- catálogos de roles;
+- matrices;
+- grants;
+- denies;
+- excepciones;
+- procedencia;
+- conflictos de seguridad;
+- simulación canónica;
+- administración de seguridad.
+
+`Auditoría` puede investigar su evidencia histórica.
+
+No edita esos objetos desde la vista histórica.
+
+---
+
+#### 71. Capacidad exacta de auditoría de seguridad
+
+Para el historial de seguridad se conserva:
+
+```text
+viso.authorization.audit_logs.view
+```
+
+La existencia de `viso.access`, una sesión administrativa o acceso general a VISO no sustituye esa capacidad.
+
+La ausencia actual de un consumidor físico de `audit_logs.view` en `vento-viso` no autoriza un fallback a `requireAppAccess` para declarar conforme la sección.
+
+---
+
+#### 72. Frontera con `VISO-AUTH-019`
+
+`VISO-AUTH-019` conserva quién puede administrar seguridad.
+
+Esta tarea preserva:
+
+```text
+AUDITAR SEGURIDAD
+!=
+ADMINISTRAR SEGURIDAD
+```
+
+Y también:
+
+```text
+PODER ADMINISTRAR
+!=
+PODER VER TODA AUDITORÍA
+```
+
+si el alcance de lectura no lo permite.
+
+---
+
+#### 73. Frontera con `VISO-UX-013`
+
+`VISO-UX-013 — Limitar información según alcance territorial` conserva la presentación general de información administrativa por alcance.
+
+Esta tarea fija para la auditoría que:
+
+- el territorio histórico no se reemplaza por el actual;
+- un filtro territorial solo reduce;
+- el evento se autoriza sobre su contexto histórico aplicable;
+- un cambio posterior de sede no reescribe el pasado.
+
+---
+
+#### 74. Frontera con `VISO-UX-019`
+
+`VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada` conserva la estrategia visual general para revelar detalle sensible.
+
+Esta tarea define qué niveles de evidencia puede necesitar la investigación.
+
+No adelanta el diseño final de seguridad avanzada.
+
+---
+
+#### 75. Frontera con Organización
+
+`Organización` conserva el estado vigente y las mutaciones autorizadas de estructura.
+
+`Auditoría` puede investigar cambios históricos de organización únicamente cuando exista evidencia propietaria auditable.
+
+No se crea historia comparando la fila actual de `sites` o `areas` con una memoria local.
+
+---
+
+#### 76. Frontera con Programación
+
+`Programación` conserva turnos, borradores, publicaciones, correcciones y su experiencia propietaria.
+
+La auditoría puede correlacionar publicaciones o correcciones cuando exista evidencia histórica canónica.
+
+Se preserva el handoff ya declarado:
+
+```text
+PUBLICACIONES / CORRECCIONES
+→
+TRAZABILIDAD INVESTIGABLE
+```
+
+La sección no modifica turnos desde el historial.
+
+---
+
+#### 77. Frontera con Operación
+
+`Operación` conserva la configuración administrativa operativa propia de VISO.
+
+`Auditoría` recibe el handoff explícito de evidencia de cambios y decisiones relevantes de `Operación`. Cuando exista una fuente auditable, debe permitir investigar:
+
+- quién cambió una matriz;
+- quién cambió un perfil operativo;
+- quién cambió un punto de marcación;
+- qué configuración existía en un momento histórico;
+- qué warning se produjo;
+- qué versión se consumió.
+
+Toda mutación real de configuración debe producir evidencia según el contrato transversal aplicable. `Operación` no implementa un ledger nuevo y `Auditoría` no lo inventa.
+
+No convierte el estado vigente de:
+
+- puntos de marcación;
+- perfiles operativos;
+- roles por sede;
+- preview;
+
+
+en eventos históricos por inferencia.
+
+---
+
+#### 78. Frontera con NEXO y LOC
+
+NEXO conserva ownership de LOC, inventario y ejecución logística.
+
+La presencia de `inventory_locations` dentro de `/ops/audit` no transfiere ownership a VISO.
+
+Los diagnósticos actuales sobre LOC pertenecen al carryover de reconciliación y handoff.
+
+La auditoría transversal puede enlazar evidencia de NEXO únicamente mediante contratos autorizados.
+
+---
+
+#### 79. Frontera con ANIMA
+
+ANIMA conserva la experiencia del trabajador y los eventos operativos que le correspondan, incluyendo captura de asistencia según sus contratos.
+
+VISO no copia un historial de ANIMA para fabricar una auditoría propia.
+
+Cuando exista evidencia relacionada autorizada, `Auditoría` puede enlazarla preservando owner, permiso y minimización.
+
+---
+
+#### 80. Frontera con otras aplicaciones
+
+FOGO, ORIGO, PULSO, NUMERA, PASS, AURA y demás aplicaciones conservan sus auditorías, procesos y datos propietarios.
+
+La sección `Auditoría` no se convierte en repositorio central de todos sus logs.
+
+Una investigación transversal puede usar referencias o proyecciones autorizadas sin duplicar el sistema propietario.
+
+---
+
+#### 81. Handoffs en lugar de mutación
+
+Desde un evento histórico puede existir una acción contextual como:
+
+```text
+VER OBJETO ACTUAL
+IR A SUPERFICIE PROPIETARIA
+ABRIR EVIDENCIA RELACIONADA
+```
+
+cada una sujeta a autorización propia.
+
+No existe una acción genérica:
+
+```text
+CORREGIR DESDE AQUÍ
+```
+
+---
+
+#### 82. No replay
+
+Un evento histórico no ofrece un botón universal `Repetir`.
+
+Reejecutar una intención requeriría:
+
+- nueva solicitud;
+- autorización actual;
+- recurso actual;
+- contexto actual;
+- idempotencia actual;
+- nueva evidencia.
+
+La historia no es una cola de comandos ejecutables.
+
+---
+
+#### 83. No consola de recuperación
+
+La sección no puede, por sí misma:
+
+- revocar grants;
+- revocar denies;
+- cambiar matrices;
+- cambiar roles;
+- cambiar sedes;
+- cambiar áreas;
+- cambiar turnos;
+- cerrar sesiones;
+- bloquear dispositivos;
+- ejecutar rollback;
+- corregir eventos.
+
+Puede enlazar a una superficie propietaria cuando exista y el actor tenga autoridad.
+
+---
+
+#### 84. No SIEM
+
+`Auditoría` no se convierte en:
+
+- SIEM;
+- visor universal de logs;
+- observabilidad general;
+- agregador de errores;
+- consola SQL;
+- visor de stack traces;
+- visor de secretos;
+- explorador de logs de proveedor;
+- sistema genérico de incidentes.
+
+La sección administra evidencia empresarial y de seguridad conforme a contratos VENTO.
+
+---
+
+#### 85. Investigación no equivale a expediente
+
+La auditoría puede aportar evidencia a una investigación.
+
+No crea automáticamente:
+
+- incidente;
+- caso disciplinario;
+- investigación laboral;
+- expediente jurídico;
+- ticket técnico.
+
+La apertura y gestión de esos objetos pertenece a sus owners.
+
+---
+
+#### 86. Exportación no incluida
+
+La lectura de auditoría no implica exportación masiva.
+
+Esta tarea no define:
+
+- CSV;
+- JSON;
+- XLSX;
+- PDF;
+- archivo bruto;
+- dump;
+- descarga masiva.
+
+Una exportación sensible futura requiere contrato y capacidad explícitos.
+
+---
+
+#### 87. Impresión no incluida
+
+La capacidad de lectura tampoco implica impresión.
+
+Esta tarea no crea:
+
+- plantilla imprimible;
+- permiso de impresión;
+- job de impresión;
+- archivo para terceros.
+
+---
+
+#### 88. No inventar capacidad de exporte
+
+No se crea:
+
+```text
+viso.authorization.audit_logs.export
+```
+
+ni una capacidad equivalente no presente en el catálogo canónico.
+
+`audit_logs.view` no se interpreta como `export`.
+
+---
+
+#### 89. Privacidad del auditor
+
+Ser auditor no elimina la privacidad.
+
+La proyección visible debe limitar:
+
+- datos personales;
+- campos sensibles;
+- referencias no necesarias;
+- contenido de sistemas relacionados;
+- internals técnicos.
+
+La investigación se diseña bajo mínimo privilegio.
+
+---
+
+#### 90. Error técnico visible
+
+Cuando falle la carga de evidencia, la UI debe informar un estado técnico seguro.
+
+No debe mostrar:
+
+- SQL;
+- stack trace;
+- secretos;
+- credenciales;
+- mensajes internos del proveedor;
+- payloads completos no minimizados.
+
+Un fallo técnico no se presenta como `DENIED`.
+
+---
+
+#### 91. Fuente no disponible
+
+Una fuente obligatoria temporalmente inaccesible se representa como indisponible.
+
+No se sustituye con:
+
+- caché sin frescura demostrable;
+- timestamps actuales;
+- copia local no versionada;
+- otra fuente con semántica parecida.
+
+La sección puede degradar el detalle sin inventar certeza.
+
+---
+
+#### 92. Frescura y revalidación
+
+La autorización de lectura se revalida cuando:
+
+- cambia el actor;
+- cambia el alcance;
+- cambia la sesión;
+- se abre un deep link;
+- se abre un nivel sensible;
+- el contrato exige frescura nueva.
+
+La existencia de una lista ya cargada no otorga autoridad permanente.
+
+---
+
+#### 93. Caché
+
+Cualquier caché futura debe preservar:
+
+- identidad de evento;
+- política de acceso;
+- sensibilidad;
+- versión;
+- frescura;
+- revocación o invalidación aplicable.
+
+La tarea no autoriza cachear payloads sensibles en cliente por conveniencia.
+
+---
+
+#### 94. Rendimiento
+
+La experiencia debe evitar cargas masivas.
+
+El rendimiento se protege mediante:
+
+- ventana temporal acotada;
+- filtros server-side;
+- paginación estable;
+- proyección mínima;
+- carga progresiva de detalle;
+- no precarga de evidencia relacionada sensible.
+
+No se cambia semántica para optimizar consultas.
+
+---
+
+#### 95. Responsive y accesibilidad
+
+La experiencia debe mantener comprensible:
+
+- orden temporal;
+- resultado;
+- actor;
+- sujeto;
+- fuente;
+- before/after;
+- relación entre eventos;
+
+sin depender exclusivamente de color o ancho de escritorio.
+
+En pantallas estrechas, la jerarquía puede apilarse sin perder la relación entre evento, resultado y contexto.
+
+---
+
+#### 96. Lenguaje visible
+
+La interfaz prioriza lenguaje empresarial comprensible.
+
+Puede traducir conceptos técnicos manteniendo el valor canónico disponible para detalle autorizado.
+
+Ejemplos:
+
+```text
+APPLIED → Aplicado
+DENIED → Denegado
+CONFLICT → Conflicto
+NO_CHANGE → Sin cambio
+ROLLED_BACK → Revertido
+```
+
+La traducción no modifica el dato persistido.
+
+---
+
+#### 97. Navegación data-driven
+
+La futura entrada `Auditoría` debe integrarse con la navegación gobernada de VISO.
+
+Se conserva:
+
+```text
+NAVIGATION_SOURCE_IS_GOVERNED_DATA = YES
+```
+
+La tarea no ordena crear un árbol hardcoded paralelo.
+
+La presencia en navegación requiere identidad semántica, destino conforme y permiso de lectura resoluble.
+
+---
+
+#### 98. Navegación visible no es autorización
+
+Se conserva:
+
+```text
+AUDIT_MENU_VISIBLE
+!=
+AUDIT_EVENT_AUTHORIZED
+```
+
+La navegación puede proyectar que existe el dominio.
+
+Cada consulta y cada detalle vuelven a validar la autorización aplicable.
+
+---
+
+#### 99. Permiso faltante
+
+Una entrada de auditoría que requiera capacidad exacta no se publica como funcional usando acceso general a VISO cuando esa capacidad no puede resolverse.
+
+La ausencia del permiso exacto no se corrige con:
+
+- rol nominal;
+- `viso.access`;
+- app admin client;
+- service role;
+- visibilidad previa;
+- query client-side.
+
+---
+
+#### 100. `service_role` no es autoridad del usuario
+
+La futura implementación puede usar infraestructura técnica privilegiada únicamente dentro del patrón autorizado.
+
+Un cliente administrativo o `service_role` no demuestra que el actor humano tenga derecho a leer el evento.
+
+La autorización se resuelve antes de devolver la proyección sensible.
+
+---
+
+#### 101. Lista, detalle y métricas comparten frontera
+
+No se admite que:
+
+```text
+LISTA = FILTRADA
+DETALLE = SIN FILTRO
+```
+
+ni:
+
+```text
+LISTA = AUTORIZADA
+MÉTRICA = GLOBAL
+```
+
+Lista, detalle, conteos y vínculos deben respetar la misma frontera o una más restrictiva.
+
+---
+
+#### 102. No inferir eventos ocultos por conteos
+
+Los KPIs o totales no pueden revelar que existen eventos fuera del alcance del auditor.
+
+Un conteo global no se muestra si la política solo autoriza un subconjunto.
+
+La paginación tampoco revela cardinalidades prohibidas por side channel.
+
+---
+
+#### 103. Estado actual opcional separado
+
+Cuando sea útil enlazar al estado actual, la experiencia lo presenta como referencia separada.
+
+Conceptualmente:
+
+```text
+SNAPSHOT HISTÓRICO
+──────────────
+ESTADO ACTUAL — abrir en superficie propietaria
+```
+
+No se mezclan campos de ambas épocas en un solo objeto.
+
+---
+
+#### 104. Fuente de seguridad y `AUTH-DB-012`
+
+La fundación física de `AUTH-DB-012` cubre cambios de permisos mediante evidencia append-only.
+
+La sección conserva sus identidades cuando corresponda.
+
+No declara `AUTH-DB-012` como tabla universal de auditoría de VISO.
+
+---
+
+#### 105. Adopción de writers
+
+La existencia de infraestructura de auditoría no prueba que todos los writers actuales emitan evidencia canónica.
+
+Se conserva:
+
+```text
+INFRAESTRUCTURA DISPONIBLE
+!=
+COBERTURA END-TO-END
+```
+
+La futura implementación debe verificar adopción real por writer y package.
+
+La UI no etiqueta como `CANONICAL` una fuente que todavía no demuestre esa adopción.
+
+---
+
+#### 106. Simulación
+
+Una simulación de autorización puede producir evidencia relacionada.
+
+Se conserva:
+
+```text
+SIMULACIÓN
+!=
+CAMBIO REAL
+```
+
+La sección no presenta una simulación como mutación aplicada.
+
+---
+
+#### 107. Lifecycle de dispositivos
+
+La auditoría del lifecycle de dispositivos conserva su owner y contrato.
+
+`Auditoría` puede enlazar evidencia relacionada cuando sea pertinente y autorizada.
+
+No copia el lifecycle a una tabla local para homogeneizarlo.
+
+---
+
+#### 108. Invalidación de contexto
+
+Una mutación puede generar invalidación de contexto o autoridad derivada.
+
+La interfaz solo presenta una relación:
+
+```text
+CAMBIO
+→
+INVALIDACIÓN
+```
+
+cuando exista correlación demostrable.
+
+No infiere invalidación por el tipo del cambio.
+
+---
+
+#### 109. Eventos de catálogo
+
+Una activación de catálogo puede conservar versión, hash, fuente y timestamp.
+
+La sección no representa ese evento como si se hubiera modificado individualmente cada trabajador afectado indirectamente.
+
+El evento de catálogo conserva su granularidad real.
+
+---
+
+#### 110. Grants y denies históricos
+
+Un grant histórico conserva su efecto aunque después aparezca un deny.
+
+Un deny histórico conserva su efecto aunque después se revoque.
+
+La auditoría no reescribe el pasado con el estado efectivo actual.
+
+---
+
+#### 111. Revocación y expiración
+
+Se conserva:
+
+```text
+REVOKE
+!=
+DELETE
+```
+
+Y:
+
+```text
+EXPIRE
+!=
+REVOKE
+```
+
+La historia conserva identidad y motivo de la transición real.
+
+---
+
+#### 112. Aprobación y activación
+
+Cuando el contrato admita ambos momentos:
+
+```text
+APPROVE
+!=
+ACTIVATE
+```
+
+La auditoría puede mostrar cada hecho por separado.
+
+La aprobación no inventa una activación inmediata.
+
+---
+
+#### 113. Vigencia empresarial
+
+Cuando un cambio tenga `effective_from` o `effective_until`, esos valores representan vigencia empresarial.
+
+No se confunden con el timestamp en que el evento de auditoría fue escrito.
+
+La interfaz puede mostrar ambas dimensiones.
+
+---
+
+#### 114. Carryover sobre `/ops/audit`
+
+El AS-IS de `/ops/audit` deja un hallazgo no bloqueante para esta definición documental:
+
+| Hallazgo | Bloquea `VISO-UX-007` | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `VISO-ROUTE-030` conserva un diagnóstico actual que mezcla sedes, áreas, LOC, trabajadores y asignaciones y no cumple la semántica histórica del dominio `Auditoría` | no | `VISO-UX-017` / `VISO-UX-018` / owners aplicables | la superficie queda reconciliada por ownership y handoff o por una materialización explícita que elimine la contradicción semántica sin renumerar ni retirar prematuramente la ruta |
+
+No se decide por inferencia cuál de los owners debe absorber toda la superficie.
+
+---
+
+#### 115. Carryover de entrada física conforme
+
+Las fuentes vigentes no demuestran todavía una ruta física ya conforme que pueda declararse entrada canónica final del dominio `Auditoría`.
+
+Esto no bloquea el contrato documental.
+
+Propietario de salida:
+
+```text
+materialización física de VISO-UX-007
++
+reconciliación de navegación y pantallas
+```
+
+Condición exacta de salida:
+
+- identidad semántica no contradictoria;
+- destino físico aprobado;
+- permiso de lectura resoluble;
+- lista y detalle autorizados;
+- evidencia histórica real;
+- navegación gobernada;
+- pruebas aplicables.
+
+---
+
+#### 116. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+La tarea organiza y especializa una experiencia administrativa de auditoría ya protegida por contratos vigentes de trazabilidad, autorización, territorio, evidencia, inventario de rutas, ownership, privacidad y no retiro prematuro.
+
+No introduce una regla empresarial protegida independiente que exija modificar el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 117. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad heredada y no modifica el Registro Canónico de Requisitos de Prueba.
+
+Se reutiliza especialmente:
+
+- `TREQ-VISO-001` para coherencia entre administración, autorización, efecto visible, conflictos, procedencia, territorio y auditoría;
+- `TREQ-VISO-004` y `TREQ-VISO-005` para conservar el inventario y las identidades estables de rutas VISO;
+- `TREQ-VISO-022` y `TREQ-VISO-023` para no retirar prematuramente superficies y reconciliar el universo de rutas;
+- `TREQ-AUTH-007` para administración y lectura sensible bajo capacidad y territorio autorizados;
+- `TREQ-AUTH-009` para resolución territorial determinista;
+- `TREQ-AUTH-011` para atribución de actor, dispositivo, sede, área y cambios de trabajador;
+- `TREQ-AUTH-012` para separar simulación de autoridad real y conservar evidencia;
+- `TREQ-AUTH-013` para impedir bypass server-side mediante input manipulado;
+- `TREQ-AUTH-014` para invalidación y frescura de autoridad derivada;
+- `TREQ-AUTH-015` para decisiones y acciones protegidas con evidencia correlacionable, incluyendo denegaciones, reintentos, rollback y operaciones administrativas;
+- `TREQ-AUTH-016` para revocación sin destruir historia;
+- `TREQ-UX-020` para ownership y contrato consistentes entre aplicaciones;
+- `TREQ-UX-023` para clasificación y retiro gobernado de superficies.
+
+La mención de estos identificadores es únicamente cobertura existente.
+
+---
+
+#### 118. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental del checkout local todavía no se ha ejecutado para `VISO-UX-007`. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido insertado, normalizado ni validado en una rama documental de `VISO-UX-007`. |
+| REMOTA | PASS | Se verificaron el `main` vigente de `vento-shell`, la continuidad del bloque G3, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, owner documental, `VISO-UX-001..006` publicados, el inventario de `VISO-ROUTE-030`, `VISO-AUTH-018`, contratos de auditoría y el AS-IS actual de `src/app/ops/audit/page.tsx` en `vento-viso/main`; la superficie actual es un diagnóstico de consistencia y no un historial de cambios. |
+| OPERATIVA | NOT_EXECUTED | No se consultaron eventos productivos, no se ejecutaron investigaciones reales y no se modificaron configuraciones, permisos, sedes, áreas, LOC, trabajadores, turnos ni datos empresariales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron `vento-viso`, Supabase, tablas de auditoría, writers, rutas, navegación, contratos, migraciones, datos, RLS, RPC, Auth ni despliegues. |
+
+---
+
+#### 119. Criterios de aceptación
+
+1. existe exactamente un contrato `VISO-AUDIT-SECTION-001`;
+2. la tarea conserva `VISO-UX-006` como anterior y `VISO-UX-008` como siguiente;
+3. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+4. el gate físico permanece `POST_E5_PACKAGE`;
+5. `Auditoría` es el sexto dominio administrativo definido por `VISO-UX-001`;
+6. auditoría describe hechos históricos y no estado vigente;
+7. auditoría no se convierte en autorización;
+8. auditoría no se convierte en consola de mutación;
+9. la experiencia transversal de investigación permanece separada del historial contextual de `Acceso y seguridad`;
+10. `VISO-AUTH-018` conserva la semántica de auditoría de seguridad;
+11. `VISO-UX-007` no redefine qué evidencia es válida;
+12. no se inventa un `VSCREEN-*` principal;
+13. no se inventa un `VPROC-*` principal;
+14. `VISO-ROUTE-030` conserva su identidad;
+15. `/ops/audit` AS-IS se reconoce como diagnóstico de consistencia actual;
+16. `/ops/audit` AS-IS no se declara auditoría canónica;
+17. `/ops/audit` no se promociona como `VISO_DOMAIN_ENTRY` conforme mientras conserve semántica contradictoria;
+18. `VISO-ROUTE-030` se trata como `CROSS_OWNER_TRANSITION` mientras persista el AS-IS actual;
+19. no se retira prematuramente `VISO-ROUTE-030`;
+20. no se inventa una nueva ruta física para llenar la brecha;
+21. la futura entrada `Auditoría` requiere destino semánticamente conforme;
+22. la navegación permanece data-driven;
+23. menú visible no equivale a evento autorizado;
+24. `viso.access` no sustituye la capacidad exacta de auditoría de seguridad;
+25. `viso.authorization.audit_logs.view` permanece la capacidad exacta para esa familia;
+26. `AUDIT_EVENT` permanece el recurso protegido de esa lectura;
+27. `RECURSIVE_EVENT` conserva la resolución territorial histórica;
+28. la lectura permanece `BASE_ONLY` para esa capacidad;
+29. la tarea no concede capacidades a actores nuevos;
+30. la evidencia histórica se separa del estado actual;
+31. la evidencia permanece append-only;
+32. una corrección produce nueva evidencia vinculada cuando aplica;
+33. `ALLOW` se distingue de cambio aplicado;
+34. cambio aplicado se distingue de intento;
+35. `DENIED` se distingue de `TECHNICAL_FAILURE`;
+36. `INVALID` conserva su significado;
+37. `CONFLICT` conserva su significado;
+38. `NO_CHANGE` no se presenta como aplicado;
+39. `ROLLED_BACK` conserva evidencia;
+40. change set e items conservan su granularidad;
+41. la cardinalidad declarada coincide con items reales;
+42. before/after proviene de evidencia persistida;
+43. CREATE puede tener before inexistente;
+44. evidencia faltante no se inventa;
+45. `changed_fields` delimita el diff cuando existe;
+46. fingerprints no se recalculan en cliente como sustituto;
+47. decisión y ejecución permanecen separadas;
+48. correlación no se infiere por proximidad;
+49. causalidad no se infiere sin referencia;
+50. links relacionados no conceden acceso al objeto destino;
+51. solicitante, aprobador y ejecutor pueden distinguirse;
+52. actor humano no se sustituye por principal técnico;
+53. jobs y migraciones no fabrican actor humano;
+54. `occurred_at` se distingue de `recorded_at`;
+55. territorio histórico no se reescribe con territorio actual;
+56. el dominio no crea permiso universal de auditoría;
+57. los filtros solo usan dimensiones respaldadas por la fuente;
+58. los filtros solo reducen el conjunto autorizado;
+59. búsqueda por trabajador no concede todos sus eventos;
+60. búsqueda por actor no crea propiedad;
+61. la ventana temporal es acotada;
+62. el orden de lista es estable;
+63. la paginación es server-side o equivalente seguro;
+64. el cursor tolera crecimiento append-only sin orden inestable;
+65. el detalle aplica minimización;
+66. la profundidad progresiva no precarga payload sensible;
+67. el acceso directo revalida autorización;
+68. lista y detalle conservan política consistente;
+69. los errores no revelan eventos ocultos;
+70. el vacío no afirma inexistencia fuera del alcance;
+71. no se reconstruyen secretos para completar evidencia;
+72. sensibilidad se respeta;
+73. retención se respeta y no se administra desde la sección;
+74. legacy se etiqueta como limitado cuando corresponda;
+75. legacy no se normaliza por inferencia;
+76. métricas se calculan solo sobre conjunto autorizado;
+77. métricas no permiten inferir eventos ocultos;
+78. color e iconos no redefinen resultados;
+79. consultar auditoría puede ser auditable;
+80. `Acceso y seguridad` conserva ownership de sus mutaciones;
+81. `VISO-AUTH-019` conserva quién administra seguridad;
+82. `VISO-UX-013` conserva la experiencia territorial general;
+83. `VISO-UX-019` conserva divulgación progresiva de seguridad avanzada;
+84. Organización conserva estructura vigente;
+85. Programación conserva turnos y publicaciones;
+86. Operación conserva configuración operativa vigente;
+87. NEXO conserva LOC e inventario;
+88. ANIMA conserva su experiencia y eventos propietarios;
+89. otras aplicaciones conservan sus auditorías y procesos;
+90. los handoffs no mutan desde el historial;
+91. no existe replay genérico;
+92. la sección no es consola de recuperación;
+93. la sección no es SIEM;
+94. la investigación no crea expediente disciplinario o incidente por inferencia;
+95. la lectura no implica exportación;
+96. la lectura no implica impresión;
+97. no se inventa una capacidad de exporte;
+98. la privacidad del auditor aplica mínimo privilegio;
+99. los errores técnicos no exponen internals;
+100. una fuente indisponible no se sustituye por datos no equivalentes;
+101. la autoridad se revalida ante cambios relevantes;
+102. una caché futura no puede ampliar autoridad;
+103. el rendimiento usa rango, filtros, paginación y carga progresiva;
+104. la experiencia es usable sin depender solo de color;
+105. las etiquetas visibles no cambian valores canónicos;
+106. `service_role` no es autoridad del usuario;
+107. lista, detalle y métricas respetan una frontera coherente;
+108. conteos no revelan eventos ocultos;
+109. el estado actual, si se enlaza, permanece separado del snapshot histórico;
+110. `AUTH-DB-012` no se declara auditoría universal de VISO;
+111. infraestructura de auditoría no se confunde con adopción end-to-end de writers;
+112. simulación no se presenta como cambio real;
+113. lifecycle de dispositivo conserva su owner;
+114. invalidación solo se correlaciona cuando existe evidencia;
+115. eventos de catálogo conservan su granularidad;
+116. grants y denies históricos no se reescriben por el estado actual;
+117. `REVOKE` se distingue de delete;
+118. `EXPIRE` se distingue de revoke;
+119. aprobación se distingue de activación cuando aplica;
+120. vigencia empresarial se distingue del timestamp de auditoría;
+121. el carryover de `/ops/audit` tiene owner y condición de salida;
+122. la ausencia de ruta física conforme tiene condición de salida explícita;
+123. no se crean requisitos de prueba;
+124. no se modifican requisitos de prueba;
+125. no se modifica el Registro Canónico de Requisitos de Prueba;
+126. no se ejecutan cambios físicos;
+127. no se modifica Supabase;
+128. toda futura modificación de Supabase de VENTO permanece en `vento-shell`.
+
+---
+
+#### 120. Límites
+
+Esta tarea no:
+
+- modifica código de `vento-viso`;
+- modifica `/ops/audit`;
+- mueve rutas;
+- crea rutas;
+- renumera `VISO-ROUTE-*`;
+- retira rutas;
+- crea `VSCREEN-*`;
+- crea `VPROC-*`;
+- crea tablas de auditoría;
+- crea vistas SQL;
+- crea RPC;
+- crea RLS;
+- crea funciones;
+- crea triggers;
+- crea migraciones;
+- modifica Supabase;
+- modifica Auth;
+- modifica Storage;
+- modifica Realtime;
+- modifica Edge Functions;
+- modifica cron o colas;
+- cambia secretos;
+- crea eventos reales;
+- corrige eventos históricos;
+- borra evidencia;
+- cambia retención;
+- ejecuta purgas;
+- crea legal holds;
+- crea permisos;
+- reasigna permisos;
+- crea `audit_logs.export`;
+- exporta auditoría;
+- imprime auditoría;
+- administra grants;
+- administra denies;
+- administra matrices;
+- cambia perfiles;
+- cambia sedes;
+- cambia áreas;
+- cambia turnos;
+- cambia LOC;
+- cambia inventario;
+- cambia dispositivos;
+- ejecuta simulaciones;
+- ejecuta rollback;
+- ejecuta replay;
+- abre incidentes;
+- abre casos disciplinarios;
+- crea SIEM;
+- agrega logs de infraestructura;
+- expone SQL o stack traces;
+- copia auditorías propietarias de otras aplicaciones;
+- selecciona package;
+- prepara package gate;
+- aprueba package gate;
+- autoriza implementación física;
+- ejecuta implementación física;
+- desarrolla `VISO-UX-008`;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba.
+
+La identidad exacta de cualquier unidad física futura se resolverá exclusivamente mediante el package y gate aplicables.
+
+---
+
+#### 121. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-006 — Crear sección Operación`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-007 — Crear sección Auditoría`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-008 — Definir inicio para propietario`
 ### [ ] VISO-UX-008 — Definir inicio para propietario
 ### [ ] VISO-UX-009 — Definir inicio para gerente general
 ### [ ] VISO-UX-010 — Definir inicio para gerente de sede
