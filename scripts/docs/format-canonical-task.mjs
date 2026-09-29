@@ -409,7 +409,7 @@ export function parseTaskBlocks(source) {
 }
 
 export function formatTaskBlock(block, { scaffold = false, canonicalTitles = new Map() } = {}) {
-  let candidate = normalizeSource(block);
+  let candidate = normalizeSource(block).replace(/[ \t]+(?=\n|$)/gu, '');
   const parsed = parseTaskBlocks(candidate);
   if (parsed.length !== 1 || parsed[0].index !== 0) {
     fail('el bloque debe contener exactamente una tarea canónica desde su primera línea.');
