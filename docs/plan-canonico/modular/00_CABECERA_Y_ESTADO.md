@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1480** |
+| Tareas aprobadas | **1481** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **116** |
+| Tareas no iniciadas | **115** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **92.73% (1480/1596)** |
+| Porcentaje de completamiento | **92.79% (1481/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **VISO-UX-016 — Permitir vista previa exacta de cada trabajador** |
-| Tarea actual | **VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones** |
+| Última tarea aprobada | **VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones** |
+| Tarea actual | **VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda** |
+| Siguiente tarea | **VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada** |
 | Bloque actual | **BLOQUE G3 — VISO completo** |
-| Progreso del bloque | **BLOQUE G3: 16 de 20 aprobadas; VISO-UX-017 pendiente** |
+| Progreso del bloque | **BLOQUE G3: 17 de 20 aprobadas; VISO-UX-018 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — VISO-UX-017** |
+| Carril documental | **ACTIVO — VISO-UX-018** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `VISO-UX-016` — Permitir vista previa exacta de cada trabajador |
-| Tarea actual | `VISO-UX-017` — Evitar duplicar configuración propia de otras aplicaciones — **NO INICIADA** |
-| Siguiente tarea | `VISO-UX-018` — Enlazar a la aplicación propietaria cuando corresponda |
+| Última aprobada | `VISO-UX-017` — Evitar duplicar configuración propia de otras aplicaciones |
+| Tarea actual | `VISO-UX-018` — Enlazar a la aplicación propietaria cuando corresponda — **NO INICIADA** |
+| Siguiente tarea | `VISO-UX-019` — Aplicar divulgación progresiva a seguridad avanzada |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE G3: 16 DE 20 APROBADAS — ACTUAL VISO-UX-017** |
+| CONTINUIDAD ACTIVA | **BLOQUE G3: 17 DE 20 APROBADAS — ACTUAL VISO-UX-018** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-VISO-UX-016 — Permitir vista previa exacta de cada trabajador
-        ↓
-TAREA ACTUAL
 VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
         ↓
+SIGUIENTE TAREA RESERVADA
+VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE G3 — 16 de 20 tareas aprobadas
+BLOQUE G3 — 17 de 20 tareas aprobadas
 ```

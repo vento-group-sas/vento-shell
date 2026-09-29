@@ -34440,7 +34440,1076 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones`
-### [ ] VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
+### ✅ VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-UX-016 — Permitir vista previa exacta de cada trabajador
+**Tarea siguiente:** VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
+**Tipo de tarea:** documental; definición de la frontera de propiedad funcional y experiencia administrativa con la que VISO puede resumir, proyectar, diagnosticar u orquestar trabajo de otros dominios sin convertirse en una segunda fuente de verdad ni duplicar formularios, reglas, mutaciones, validaciones, receipts o lifecycle pertenecientes a la aplicación propietaria
+**Bloque:** `BLOQUE G3 — VISO completo`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/03_EXPERIENCIA_ADMINISTRATIVA.md`
+**Estado físico resultante:** contrato documental definido; materialización física diferida por unidad de implementación
+**Cambios físicos autorizados:** ninguno durante el cierre documental; la materialización futura queda sujeta a `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera UX con la que VISO conserva su función de superficie administrativa sin transformarse en propietario universal de datos, reglas y mutaciones de VENTO OS.
+
+La regla raíz es:
+
+```text
+VISO
++ CONTEXTO ADMINISTRATIVO
++ RESUMEN AUTORIZADO
++ ESTADO, CONFLICTO O IMPACTO
++ HANDOFF CUANDO CORRESPONDA
+≠
+SEGUNDA FUENTE DE VERDAD
+≠
+COPIA DEL WORKSPACE PROPIETARIO
+≠
+REIMPLEMENTACION DE LA LOGICA EMPRESARIAL DEL OWNER
+```
+
+La experiencia deberá permitir comprender y coordinar trabajo transversal sin introducir maestros competidores, formularios duplicados ni escrituras paralelas.
+
+---
+
+#### 2. Fuentes vinculantes
+
+Esta tarea consume, sin redefinir:
+
+- la regla transversal del protocolo según la cual toda función transversal debe conservar una aplicación propietaria y las demás aplicaciones pueden consumirla sin duplicar su lógica;
+- `UX-ADMIN-OWNERSHIP-BOUNDARY-001`;
+- `UX-ADMIN-EXPERIENCE-ROUTING-MATRIX-001`;
+- la decisión de experiencia administrativa que establece que VISO administra personas, acceso y configuración transversal, pero no replica formularios propios de NEXO, FOGO, ORIGO, PULSO, NUMERA o PASS;
+- la regla que conserva el dato, la regla y la mutación en la aplicación propietaria mientras VISO puede mostrar estado, conflicto, resumen o enlace contextual;
+- `CAP-MAP-008` y la proyección de ownership funcional vigente;
+- `BKL-VISO-005 — Separar administración, catálogo, CMS y capacidades consumidoras`;
+- `H-CODE-002-005 — VISO expone producto, menú, comercio y CMS junto a administración`;
+- `H-CODE-019-003 — VISO y NEXO concentran superficie técnica sin ser propietarios universales`;
+- `VISO-UX-013` para alcance territorial;
+- `VISO-UX-014` para procedencia de permisos;
+- `VISO-UX-015` para conflictos antes de guardar;
+- `VISO-UX-016` para vista previa exacta por trabajador;
+- los contratos vigentes de VISO-AUTH, VISO-CORE y acciones de servidor;
+- el inventario actual de superficies VISO y sus guards observados;
+- la atribución vigente del CMS web administrativo a VISO mientras no exista una transferencia formal aprobada;
+- el contrato de ownership funcional generado para `CAP-01` a `CAP-18`.
+
+Ninguna de estas fuentes autoriza por sí sola una migración, eliminación o traslado físico.
+
+---
+
+#### 3. Regla canónica de propiedad funcional
+
+Para una capacidad, configuración o hecho empresarial deben distinguirse al menos:
+
+```text
+APLICACION PROPIETARIA
+APLICACIONES CONSUMIDORAS
+SUPERFICIE ADMINISTRATIVA
+FUENTE DE VERDAD
+MOTOR DE REGLAS
+MUTACION AUTORITATIVA
+RECEIPT O RESULTADO CONFIRMADO
+PROYECCIONES DERIVADAS
+```
+
+La aplicación propietaria conserva:
+
+1. el dato maestro o hecho empresarial;
+2. la regla empresarial que determina su validez;
+3. la mutación autoritativa;
+4. la transición de estado;
+5. la semántica de error y concurrencia;
+6. la idempotencia y compensación cuando apliquen;
+7. el receipt o evidencia de resultado;
+8. la auditoría funcional de su cambio.
+
+VISO puede conservar:
+
+1. contexto administrativo;
+2. resumen autorizado;
+3. estado observado;
+4. alerta;
+5. conflicto;
+6. impacto transversal;
+7. referencia segura;
+8. coordinación administrativa;
+9. comparación o vista previa;
+10. handoff controlado cuando la tarea siguiente lo materialice.
+
+VISO no obtiene ownership por el hecho de poder ver o coordinar un dominio.
+
+---
+
+#### 4. Qué se considera duplicación problemática
+
+Existe duplicación problemática cuando VISO crea una segunda implementación capaz de evolucionar independientemente respecto de la propietaria y cualquiera de estas condiciones se cumple:
+
+- mantiene un maestro equivalente;
+- ofrece el mismo formulario de configuración con escritura propia;
+- replica reglas empresariales del owner;
+- valida localmente criterios que deberían resolverse en el owner y permite continuar ante divergencia;
+- persiste cambios directamente sobre hechos cuyo lifecycle pertenece a otra aplicación;
+- produce un receipt local como si fuera la confirmación autoritativa;
+- inventa estados equivalentes pero no contractualmente sincronizados;
+- reconstruye permisos, precios, inventario, receta, oferta, pago, gasto, cliente, contenido o activo mediante joins locales que sustituyen al contrato propietario;
+- mantiene un catálogo local como fuente maestra cuando existe un owner definido;
+- permite editar la misma configuración desde VISO y desde el owner sin contrato único de escritura;
+- duplica una transición sensible bajo nombres distintos;
+- transforma una proyección cacheada en superficie editable;
+- convierte compatibilidad legacy en propiedad permanente por inercia;
+- crea defaults o normalizaciones propios que cambian el significado del dato del owner.
+
+La existencia de dos interfaces no es suficiente para declarar duplicación problemática si una es una proyección read-only, un handoff, un consumidor contractual o una compatibilidad temporal gobernada.
+
+---
+
+#### 5. Qué sí constituye una proyección válida
+
+Una proyección válida puede:
+
+- mostrar nombre, estado, indicador o resumen proveniente del owner;
+- mostrar información derivada ya autorizada para el actor;
+- combinar referencias de varios dominios sin mutarlos;
+- identificar que una dependencia existe o falta;
+- explicar impacto esperado;
+- mostrar un conflicto cuya regla pertenece al owner;
+- presentar un receipt ya confirmado por el owner;
+- conservar correlation IDs o referencias seguras;
+- limitar información por territorio, sensibilidad y permiso;
+- ofrecer un acceso contextual al owner mediante el contrato posterior;
+- mantener una copia materializada únicamente cuando exista un contrato explícito de proyección, frescura, reconciliación y no-autoritatividad.
+
+Una proyección no puede adquirir mutabilidad únicamente porque el usuario esté dentro de VISO.
+
+---
+
+#### 6. Clasificación UX de ownership
+
+Para esta tarea se define una clasificación de presentación, no un enum persistido ni una nueva taxonomía de negocio:
+
+| Clase UX | Significado | Escritura desde VISO | Fuente de verdad |
+| --- | --- | --- | --- |
+| `VISO_OWNER` | VISO es propietario funcional de la configuración | permitida solo con permiso y contrato VISO aplicables | VISO / contrato canónico del dominio |
+| `DISTRIBUTED_OWNER` | varios propietarios conservan resultados distintos dentro del mismo flujo | solo para el tramo cuyo owner sea VISO | owner de cada tramo |
+| `EXTERNAL_OWNER` | otra aplicación conserva dato, regla y mutación | no duplicar mutación | aplicación propietaria |
+| `PROJECTION_ONLY` | VISO consume una proyección autorizada | no | owner o servicio contractual |
+| `LEGACY_COMPATIBILITY` | existe una compatibilidad temporal todavía activa | no crea ownership nuevo | owner vigente + contrato de transición |
+| `OWNERSHIP_UNRESOLVED` | la fuente definitiva aún no está aprobada | bloquear nueva duplicación; no inventar owner | estado canónico vigente hasta resolución |
+
+Estas clases sirven para decidir la experiencia de VISO; no sustituyen `CAP-MAP-008`, procesos, contratos ni ownership de datos.
+
+---
+
+#### 7. Regla por familia de capacidades
+
+La proyección de ownership vigente produce esta lectura para VISO:
+
+| Familia | Owner o frontera vigente | Tratamiento de VISO |
+| --- | --- | --- |
+| `CAP-01` | VISO para estructura, políticas, riesgos, decisiones y seguimiento administrativo | `VISO_OWNER` con límites humanos y documentales |
+| `CAP-02` | VISO para administración laboral; ANIMA para registros personales y asistencia | `DISTRIBUTED_OWNER` |
+| `CAP-03` | VISO | `VISO_OWNER` con fuentes externas oficiales preservadas |
+| `CAP-04` | NEXO para catálogo; FOGO para recetas; PULSO para oferta vendible | `EXTERNAL_OWNER` o `DISTRIBUTED_OWNER`; VISO no crea maestro paralelo |
+| `CAP-05` | ORIGO | `EXTERNAL_OWNER` |
+| `CAP-06` | NEXO | `EXTERNAL_OWNER` |
+| `CAP-07` | NEXO | `EXTERNAL_OWNER` |
+| `CAP-08` | FOGO | `EXTERNAL_OWNER` |
+| `CAP-09` | PULSO | `EXTERNAL_OWNER` |
+| `CAP-10` | PULSO para relación operativa; PASS para identidad y acciones directas del cliente | `DISTRIBUTED_OWNER` |
+| `CAP-11` | NEXO para traslado interno; PULSO para entrega asociada a pedido | `DISTRIBUTED_OWNER` |
+| `CAP-12` | PULSO para caja/pago; NUMERA para hechos económicos, costos y análisis | `DISTRIBUTED_OWNER` |
+| `CAP-13` | NEXO para espacio, activo, novedad y estado | `EXTERNAL_OWNER` |
+| `CAP-14` | AURA para comunicación/campaña; PULSO para promociones aplicadas a ventas; AURA todavía diferida | `OWNERSHIP_UNRESOLVED` para lo no materializado; no inferir traslado desde VISO |
+| `CAP-15` | VISO para identidad/acceso; NEXO para activo; cada aplicación para su configuración | `DISTRIBUTED_OWNER` |
+| `CAP-16` | aplicación propietaria del hecho respaldado | `PROJECTION_ONLY` salvo hecho propio de VISO |
+| `CAP-17` | aplicación de origen para hechos; NUMERA para indicadores y análisis derivados | `DISTRIBUTED_OWNER` |
+| `CAP-18` | aplicación afectada para incidente local; registro transversal aún sin fuente definitiva | `OWNERSHIP_UNRESOLVED` para el registro transversal |
+
+La tabla no autoriza retirar una superficie actual sin validar consumidores y transición.
+
+---
+
+#### 8. Regla de lectura de las superficies AS-IS de VISO
+
+La existencia de una pantalla actual en `vento-viso` demuestra implementación, no ownership funcional.
+
+Por tanto:
+
+```text
+PANTALLA EXISTENTE EN VISO
+≠
+PROPIEDAD EMPRESARIAL DE VISO
+```
+
+Cada superficie deberá clasificarse por la capacidad que administra, su owner contractual y la naturaleza de su acción.
+
+---
+
+#### 9. Superficies nativas de VISO
+
+Se consideran coherentes con el ownership propio de VISO, sujetas a sus contratos específicos:
+
+- organización administrativa cuando la fuente y lifecycle pertenezcan a VISO;
+- empresas, sedes y áreas bajo el contrato organizacional vigente;
+- administración laboral propia de VISO;
+- trabajadores desde la perspectiva administrativa laboral;
+- asignaciones de sede y área bajo autoridad VISO;
+- roles base, roles operativos y bindings cuyo owner canónico sea VISO;
+- autorización administrativa y matrices de permisos VISO;
+- programación laboral cuando el owner aprobado siga siendo VISO;
+- vista previa, simulación, procedencia, conflictos y auditoría de acceso dentro de las fronteras aprobadas;
+- gobierno administrativo que el catálogo de capacidades asigne expresamente a VISO.
+
+Estas superficies no se vuelven ilimitadas: continúan sujetas a permisos, territorio, separación de actor/objetivo, datos sensibles y reglas de servidor.
+
+---
+
+#### 10. Personas: frontera VISO ↔ ANIMA
+
+Para `CAP-02`:
+
+```text
+VISO
+→ administración laboral
+→ estructura de trabajo
+→ asignaciones administrativas
+→ acceso y programación según contrato
+
+ANIMA
+→ experiencia personal del trabajador
+→ registros personales autorizados
+→ asistencia y novedades según ownership aprobado
+```
+
+VISO no deberá duplicar la experiencia personal propia de ANIMA únicamente porque consulte el mismo trabajador.
+
+ANIMA no adquiere propiedad de roles, permisos o configuración laboral únicamente porque muestre información del trabajador.
+
+Un resumen cruzado deberá identificar qué parte proviene de cada owner.
+
+---
+
+#### 11. Catálogo, productos y presentaciones: frontera con NEXO
+
+Las superficies actuales de productos en VISO no convierten a VISO en propietario del catálogo.
+
+Para `CAP-04`:
+
+```text
+NEXO
+→ catálogo de producto
+→ unidades/presentaciones bajo su contrato
+
+FOGO
+→ receta
+
+PULSO
+→ oferta vendible
+
+VISO
+→ contexto, resumen o coordinación administrativa
+```
+
+VISO no deberá mantener una segunda alta o edición de producto que pueda divergir de NEXO.
+
+Una referencia a producto dentro de VISO deberá utilizar identidad canónica y no crear un maestro alterno.
+
+---
+
+#### 12. Recetas y producción: frontera con FOGO
+
+FOGO conserva:
+
+- receta;
+- versionado productivo;
+- reglas del ciclo de producción;
+- resultado productivo bajo su contrato.
+
+VISO puede mostrar estado, dependencia o evidencia autorizada cuando sea material para una decisión administrativa.
+
+VISO no deberá replicar editores de receta, parámetros productivos, lote, consumo, desperdicio o cierre productivo.
+
+---
+
+#### 13. Compras y recepción: frontera con ORIGO
+
+ORIGO conserva `CAP-05`.
+
+VISO puede:
+
+- mostrar una compra pendiente;
+- mostrar estado de proveedor o recepción;
+- señalar una excepción que requiere decisión;
+- mostrar dependencia con otra tarea administrativa.
+
+VISO no deberá:
+
+- crear un pedido de compra paralelo;
+- mantener su propio lifecycle de recepción;
+- recalcular aprobación de compra como regla local;
+- confirmar recepción como si la escritura perteneciera a VISO.
+
+---
+
+#### 14. Inventario, activos y logística: frontera con NEXO
+
+NEXO conserva las capacidades de inventario, espacio, activo, estado, novedad y traslado que le asigna el contrato funcional.
+
+VISO podrá mostrar:
+
+- disponibilidad resumida;
+- impacto administrativo;
+- alerta;
+- estado de un activo;
+- dependencia de una acción;
+- referencia autorizada.
+
+VISO no deberá ofrecer una segunda mutación de:
+
+- stock;
+- LPN;
+- ubicación;
+- ajuste;
+- remisión;
+- custodia;
+- traslado;
+- estado físico del activo.
+
+Un permiso administrativo de VISO no sustituye permisos NEXO.
+
+---
+
+#### 15. Ventas y oferta comercial: frontera con PULSO
+
+PULSO conserva la oferta vendible, pedido, caja y pago de venta según la familia aplicable.
+
+Las superficies AS-IS de VISO relacionadas con:
+
+- menú comercial;
+- colecciones comerciales;
+- disponibilidad comercial;
+- categorías comerciales;
+- menú legacy o complementario;
+- precio u oferta;
+
+deben evaluarse como candidatas a proyección, transición o handoff, no como prueba de ownership VISO.
+
+VISO no deberá mantener un segundo editor de oferta vendible capaz de divergir de PULSO.
+
+---
+
+#### 16. Cliente y lealtad: frontera con PASS y PULSO
+
+`CAP-10` está dividido:
+
+- PULSO conserva la relación operativa de venta;
+- PASS conserva identidad y acciones directas del cliente.
+
+Las superficies VISO de usuarios PASS o contenido relacionado no convierten a VISO en propietario universal de cliente o lealtad.
+
+VISO podrá mostrar resumen administrativo únicamente con permisos específicos y minimización.
+
+No se permitirá:
+
+- duplicar perfil cliente;
+- duplicar ledger de puntos;
+- duplicar redención;
+- crear una segunda fuente de identidad PASS;
+- asumir que `viso.access` permite editar cliente.
+
+---
+
+#### 17. Finanzas: frontera con NUMERA y PULSO
+
+Para `CAP-12` y `CAP-17`:
+
+```text
+PULSO
+→ caja y pago de venta
+
+NUMERA
+→ hechos económicos
+→ costos
+→ conciliación
+→ análisis e indicadores derivados
+
+APLICACION DE ORIGEN
+→ hecho empresarial que genera la consecuencia financiera
+```
+
+Una superficie VISO de contabilidad o indicador financiero puede ser una proyección administrativa autorizada.
+
+No deberá convertirse en un segundo libro, conciliador, editor de gasto, cierre de periodo o motor de rentabilidad.
+
+NUMERA no podrá corregir desde su analítica un hecho gobernado por otra aplicación; VISO tampoco.
+
+---
+
+#### 18. Comunicaciones, campañas y CMS
+
+La reserva AURA no autoriza una transferencia implícita.
+
+El estado vigente conserva las superficies administrativas actuales de CMS web atribuidas a VISO hasta que una decisión aprobada cambie esa propiedad.
+
+Por tanto:
+
+```text
+AURA RESERVADA
+≠
+OWNER ACTUAL AUTOMATICO DEL CMS
+```
+
+VISO-UX-017 no ordena mover el CMS a AURA.
+
+Mientras la propiedad actual siga vigente:
+
+- VISO puede continuar siendo owner de esas superficies bajo sus permisos atómicos y contratos aplicables;
+- no se crearán superficies duplicadas en AURA;
+- cualquier transferencia futura deberá conservar consumidores, autorización, medios, publicación y rollback;
+- el simple hecho de que `CAP-14` proyecte AURA como objetivo futuro no autoriza migración física.
+
+---
+
+#### 19. `content-blocks` y contenido PASS
+
+El inventario actual clasifica `content-blocks` como `CONTENIDO_PASS`.
+
+Esa clasificación funcional no basta por sí sola para inventar un owner nuevo en esta tarea.
+
+Hasta que el contrato propietario exacto quede resuelto:
+
+- la superficie actual se clasifica como `OWNERSHIP_UNRESOLVED` para decisiones nuevas de ownership;
+- no se crea un editor equivalente en PASS por inferencia;
+- no se amplía la mutación VISO por inercia;
+- cualquier transición deberá identificar owner, consumidores, permisos y compatibilidad.
+
+La incertidumbre de ownership no autoriza duplicación.
+
+---
+
+#### 20. `delivery-rates` y configuraciones de frontera distribuida
+
+Una configuración que afecta entrega, cliente, pedido y operación puede tener ownership distribuido.
+
+Si la fuente exacta no está resuelta por el contrato consumido:
+
+- VISO puede mostrar el estado actual si está autorizado;
+- no debe crear otra fuente;
+- no debe asumir PULSO, NEXO o PASS por nombre de pantalla;
+- deberá preservar el estado vigente hasta que el owner exacto sea trazable.
+
+Esta tarea no inventa el propietario de una capacidad ambigua.
+
+---
+
+#### 21. Configuración transversal de aplicaciones
+
+`CAP-15` conserva la regla:
+
+```text
+VISO
+→ identidad y acceso
+
+NEXO
+→ activo
+
+CADA APLICACION
+→ su configuración funcional
+```
+
+VISO no deberá convertirse en un panel universal que edite toda configuración funcional de las aplicaciones.
+
+Puede mostrar:
+
+- que una configuración existe;
+- versión;
+- estado;
+- disponibilidad;
+- dependencia;
+- owner;
+- conflicto administrativo;
+- necesidad de acción.
+
+La edición sigue en la aplicación que gobierna la configuración, salvo contrato transversal explícito.
+
+---
+
+#### 22. Documentos y evidencia
+
+Para `CAP-16`, el hecho respaldado conserva su aplicación propietaria.
+
+La existencia de un documento, índice, adjunto, archivo o evidencia no transfiere ownership del hecho.
+
+VISO podrá mostrar evidencia relacionada con decisiones administrativas cuando esté autorizado, pero no reescribir el lifecycle del hecho fuente.
+
+---
+
+#### 23. Analítica
+
+VISO puede presentar indicadores ejecutivos o administrativos.
+
+La aplicación de origen conserva el hecho.
+
+NUMERA conserva indicadores, comparaciones y análisis derivados cuando el contrato funcional así lo indique.
+
+Un KPI visible en VISO:
+
+```text
+NO CONVIERTE A VISO
+EN FUENTE DE VERDAD DEL HECHO SUBYACENTE
+```
+
+La corrección del hecho deberá ocurrir en su owner.
+
+---
+
+#### 24. Incidentes y continuidad
+
+Un incidente local permanece en la aplicación afectada mientras no exista un owner transversal aprobado para el registro común.
+
+VISO puede exponer alertas o coordinación administrativa.
+
+No deberá crear un maestro transversal definitivo de incidentes mediante inferencia.
+
+`OWNERSHIP_UNRESOLVED` obliga a no multiplicar fuentes.
+
+---
+
+#### 25. Regla de mutación
+
+Antes de ofrecer una acción editable en VISO deberá poder responderse:
+
+```text
+¿VISO ES OWNER DE ESTA MUTACION?
+```
+
+Si la respuesta es `NO`:
+
+```text
+NO REIMPLEMENTAR LA MUTACION
+```
+
+Si la respuesta es `DISTRIBUIDA`:
+
+```text
+MUTAR SOLO EL TRAMO PROPIO
++
+CONSERVAR HANDOFF Y CONFIRMACION DEL OWNER DEL RESTO
+```
+
+Si la respuesta es `NO RESUELTA`:
+
+```text
+NO CREAR UNA NUEVA FUENTE DE VERDAD
+```
+
+---
+
+#### 26. Regla de validación
+
+VISO puede ejecutar validaciones de interfaz para reducir errores, pero una regla empresarial del owner deberá revalidarse en el owner o servicio contractual competente.
+
+Queda prohibido que una validación local de VISO permita una mutación cuando el owner la rechazaría.
+
+También queda prohibido que VISO convierta una imposibilidad de consultar al owner en `PASS` local.
+
+---
+
+#### 27. Regla de receipt
+
+Cuando la aplicación propietaria sea otra:
+
+- VISO no deberá presentar una intención enviada como resultado confirmado;
+- el resultado final visible deberá derivarse del receipt, evento o confirmación contractual del owner;
+- un timeout o resultado desconocido deberá mantenerse como desconocido;
+- no se repetirá la mutación a ciegas para obtener una confirmación visual;
+- el estado local no se declarará final hasta reconciliarlo con el owner.
+
+---
+
+#### 28. Regla de autorización entre aplicaciones
+
+Un handoff o una proyección no transportan autoridad implícita.
+
+Cada aplicación propietaria deberá resolver nuevamente:
+
+- actor;
+- sesión;
+- permiso;
+- territorio;
+- dispositivo;
+- recurso;
+- estado;
+- segregación;
+- controles adicionales aplicables.
+
+VISO no podrá asumir que una acción está autorizada en otra aplicación porque el actor pudo verla o iniciarla desde VISO.
+
+---
+
+#### 29. Filtros y territorio
+
+Los filtros de VISO solo reducen el conjunto ya autorizado.
+
+Un filtro de sede, área, empresa, periodo, trabajador o dominio:
+
+- no cambia ownership;
+- no concede autoridad;
+- no autoriza una mutación externa;
+- no convierte una proyección en fuente maestra.
+
+Las reglas territoriales de `VISO-UX-013` continúan vigentes.
+
+---
+
+#### 30. Procedencia y ownership
+
+La procedencia de permiso definida en `VISO-UX-014` y la propiedad funcional son conceptos distintos.
+
+```text
+ORIGEN DEL PERMISO
+≠
+OWNER DEL HECHO EMPRESARIAL
+```
+
+Un actor puede tener un permiso que le permita consultar una proyección VISO sin que VISO sea propietaria del dato.
+
+---
+
+#### 31. Conflictos y ownership
+
+`VISO-UX-015` puede mostrar un conflicto cuya resolución pertenece a otra aplicación.
+
+Mostrar el conflicto no transfiere ownership de la regla ni de la corrección.
+
+La UX deberá poder expresar:
+
+- conflicto detectado;
+- owner competente;
+- alcance afectado;
+- estado pendiente;
+- ausencia de corrección local.
+
+El mecanismo concreto de navegación al owner queda reservado a 018.
+
+---
+
+#### 32. Preview individual y ownership
+
+`VISO-UX-016` puede componer una vista exacta por trabajador con datos y decisiones de varios contratos.
+
+Esa composición:
+
+- no convierte a VISO en owner de cada dato proyectado;
+- no habilita editar cada fuente desde el preview;
+- deberá distinguir datos propios, proyecciones y referencias externas cuando sea material;
+- conserva minimización y alcance.
+
+---
+
+#### 33. Separación respecto de `VISO-UX-018`
+
+`VISO-UX-017` decide cuándo VISO **no debe duplicar** una configuración externa.
+
+`VISO-UX-018` definirá cómo la experiencia enlaza o transfiere al owner cuando corresponda.
+
+Por tanto esta tarea no define:
+
+- URL final de handoff;
+- parámetros de navegación;
+- retorno exacto;
+- correlation envelope;
+- deep link definitivo;
+- recuperación de navegación;
+- fallback de destino.
+
+Solo fija la obligación de no duplicar la mutación y de conservar el owner correcto.
+
+---
+
+#### 34. Separación respecto de `VISO-UX-019`
+
+La divulgación progresiva de seguridad avanzada permanece reservada a 019.
+
+017 no decide qué detalle técnico de seguridad se oculta o expande.
+
+---
+
+#### 35. Separación respecto de `VISO-UX-020`
+
+Las pruebas con administradores reales permanecen reservadas a 020.
+
+017 define los criterios que esas pruebas deberán poder verificar respecto de ownership y duplicación.
+
+---
+
+#### 36. Estado AS-IS de VISO que requiere reconciliación futura
+
+El repositorio actual contiene, entre otras, superficies para:
+
+- organización;
+- personal;
+- permisos;
+- programación;
+- productos;
+- menú;
+- colecciones comerciales;
+- categorías comerciales;
+- contenido PASS;
+- contabilidad;
+- usuarios PASS;
+- CMS web;
+- tarifas de entrega.
+
+Ese inventario demuestra concentración técnica.
+
+No demuestra que VISO sea owner universal.
+
+La futura materialización deberá clasificar cada acción, no solo cada pantalla.
+
+---
+
+#### 37. Matriz de disposición física futura
+
+Cada acción AS-IS deberá terminar en una de estas disposiciones de implementación:
+
+| Disposición | Significado |
+| --- | --- |
+| `KEEP_NATIVE_VISO` | la acción pertenece funcionalmente a VISO y conserva su mutación allí |
+| `KEEP_PROJECTION_ONLY` | la superficie permanece, pero solo como lectura/resumen contractual |
+| `CONVERT_TO_OWNER_HANDOFF` | la mutación local se retira cuando exista el handoff propietario de 018 |
+| `DEPRECATE_DUPLICATE_MUTATION` | la escritura duplicada se retira tras paridad, consumidores y rollback |
+| `KEEP_LEGACY_COMPATIBILITY_TEMPORARILY` | compatibilidad activa preservada hasta transición gobernada |
+| `BLOCK_NEW_DUPLICATION_PENDING_OWNER` | owner no resuelto; se prohíbe crear otra fuente mientras se decide |
+
+La clasificación es una salida para la futura unidad física; no ejecuta esos cambios durante el cierre documental.
+
+---
+
+#### 38. Condiciones para retirar una mutación duplicada
+
+No se retirará una escritura de VISO solo por concluir que el owner es externo.
+
+Antes deberán existir, cuando apliquen:
+
+1. owner aprobado;
+2. contrato de escritura del owner;
+3. paridad de comportamiento;
+4. consumidor alternativo disponible;
+5. autorización equivalente o más estricta;
+6. preservación de territorio;
+7. migración de referencias;
+8. estrategia de compatibilidad;
+9. evidencia de no pérdida de datos;
+10. rollback;
+11. observabilidad;
+12. receipt o confirmación del owner;
+13. pruebas de regresión.
+
+La eliminación prematura puede crear una pérdida funcional aunque la duplicación conceptual esté correctamente identificada.
+
+---
+
+#### 39. Compatibilidad legacy
+
+Una compatibilidad legacy puede conservarse temporalmente cuando exista evidencia de consumidor activo.
+
+Ejemplo material ya detectado:
+
+```text
+logo_url
+→ compatibilidad todavía activa
+→ card_logo_url / header_logo_url como contrato objetivo
+```
+
+La presencia de compatibilidad no concede ownership permanente.
+
+El retiro deberá seguir las tareas de transición propietarias y preservar paridad.
+
+---
+
+#### 40. Estado no disponible del owner
+
+Si una proyección depende de otra aplicación y esa fuente no está disponible:
+
+- no se habilita una mutación local equivalente;
+- no se muestra información vieja como actual sin indicador de frescura;
+- no se convierte `NOT_AVAILABLE` en `EMPTY`;
+- no se asume resultado final;
+- no se promueve un cache a fuente maestra.
+
+La degradación deberá ser explícita.
+
+---
+
+#### 41. Frescura de proyecciones
+
+Toda proyección externa deberá poder distinguir al menos:
+
+- vigente;
+- stale;
+- parcial;
+- no disponible;
+- no autorizada;
+- no implementada;
+- fallo técnico.
+
+Una proyección stale puede servir como contexto si el contrato lo permite, pero no como base silenciosa para una mutación material.
+
+---
+
+#### 42. Datos sensibles
+
+Evitar duplicación también implica evitar replicar datos personales o sensibles innecesarios.
+
+La superficie administrativa deberá preferir:
+
+- referencia segura;
+- etiqueta mínima;
+- estado;
+- dato derivado autorizado;
+- enlace controlado.
+
+No deberá copiar expedientes completos únicamente para evitar que el usuario cambie de aplicación.
+
+---
+
+#### 43. Performance y cache
+
+La necesidad de rendimiento no autoriza ownership duplicado.
+
+Cuando exista cache o materialización:
+
+- deberá declararse derivada;
+- conservar source/version/freshness cuando corresponda;
+- tener estrategia de reconciliación;
+- no aceptar escrituras como si fuera el maestro;
+- no ocultar divergencias.
+
+---
+
+#### 44. Auditoría
+
+La auditoría deberá permitir reconstruir:
+
+- qué aplicación era propietaria de la acción;
+- qué superficie inició la intención;
+- qué actor la inició;
+- qué contexto se transfirió;
+- dónde ocurrió la mutación autoritativa;
+- qué resultado confirmó el owner;
+- qué proyección recibió VISO después;
+- si existió degradación, retry o reconciliación.
+
+VISO no deberá registrar una mutación externa como propia.
+
+---
+
+#### 45. Criterio de consistencia cross-app
+
+Una misma acción empresarial no debe tener dos reglas divergentes en VISO y en el owner.
+
+La consistencia correcta es:
+
+```text
+UNA REGLA EMPRESARIAL AUTORITATIVA
++
+CERO MUTACIONES COMPETIDORAS
++
+CERO MAESTROS PARALELOS
++
+PROYECCIONES RECONCILIABLES
+```
+
+La interfaz puede variar; la autoridad no.
+
+---
+
+#### 46. Topología de materialización futura
+
+La tarea se documenta una vez, pero su materialización física se rige por:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+INSTANCE_PATTERN = VISO-UX-017::<implementation_unit_id>
+```
+
+Cada unidad física futura deberá aplicar la frontera únicamente sobre los targets asignados por su paquete.
+
+No existe autorización para un refactor global indiscriminado de VISO desde esta tarea documental.
+
+---
+
+#### 47. Handoff de implementación
+
+La futura unidad física deberá:
+
+1. inventariar acciones del target asignado;
+2. mapear cada acción a capacidad y owner;
+3. clasificarla con la disposición de la sección 37;
+4. demostrar que las mutaciones nativas VISO continúan funcionando;
+5. impedir nueva escritura duplicada;
+6. conservar proyecciones autorizadas;
+7. no retirar compatibilidad sin consumer evidence;
+8. preparar los puntos donde 018 materializará handoff;
+9. preservar permisos, territorio y receipts;
+10. dejar evidencia por acción y no únicamente por pantalla.
+
+---
+
+#### 48. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+La tarea no introduce una nueva obligación verificable distinta de la cobertura vigente sobre ownership, proyección administrativa, separación entre aplicaciones, autorización, consistencia cross-app y ausencia de fuentes competidoras.
+
+Requisitos creados: 0
+
+Requisitos modificados: 0
+
+Requisitos diferidos: 0
+
+Requisitos descartados: 0
+
+Requisitos obsoletos: 0
+
+---
+
+#### 49. Cobertura de prueba vigente reutilizada
+
+La trazabilidad reutiliza, sin modificar el registro:
+
+- `TREQ-VISO-001` para coherencia administrativa, efecto resultante, ownership y consistencia con aplicaciones operativas;
+- `TREQ-AURA-007` para conservar la atribución vigente del CMS administrativo mientras no exista transferencia aprobada;
+- `TREQ-INTEGRATION-019` para propiedad y consumo de contenido entre aplicaciones cuando corresponda;
+- requisitos de autorización aplicables a server actions y guards;
+- requisitos de integración y consistencia que impiden fuentes de verdad competidoras.
+
+Estas referencias son cobertura heredada y no cambios al registro.
+
+---
+
+#### 50. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó build del checkout propietario durante la definición documental. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no fue insertado, normalizado ni validado dentro de la rama documental local de `VISO-UX-017`. |
+| REMOTA | PASS | Se verificaron `main`, `active-sequence`, protocolo, contrato de entrega, topología, políticas de tarea, archivo propietario, ownership funcional `CAP-01..18`, experiencia administrativa, backlog `BKL-VISO-005`, hallazgos AS-IS, registro 04A aplicable, inventario actual de superficies VISO y estado remoto de `vento-viso`. |
+| OPERATIVA | NOT_APPLICABLE | No se ejecutaron flujos empresariales, handoffs, mutaciones, migraciones, reconciliaciones ni cambios de ownership. |
+| FÍSICA | NOT_EXECUTED | No se modificaron VISO, otras aplicaciones, Supabase, contratos compartidos, datos, APIs, server actions, navegación, packages ni despliegues. |
+
+---
+
+#### 51. Criterios de aceptación
+
+- [ ] VISO no se define como propietario universal por concentración técnica.
+- [ ] Toda función transversal conserva aplicación propietaria o estado explícito de ownership no resuelto.
+- [ ] La aplicación propietaria conserva dato, regla, mutación y receipt.
+- [ ] VISO puede mostrar estado, conflicto, resumen, impacto o referencia sin adquirir ownership.
+- [ ] Una superficie existente en VISO no constituye prueba de propiedad funcional.
+- [ ] La tarea diferencia duplicación problemática de proyección válida.
+- [ ] Se distingue `VISO_OWNER` de `EXTERNAL_OWNER`.
+- [ ] Se distingue `DISTRIBUTED_OWNER` de owner único.
+- [ ] Se distingue `PROJECTION_ONLY` de una superficie editable.
+- [ ] Se distingue `LEGACY_COMPATIBILITY` de ownership permanente.
+- [ ] Se distingue `OWNERSHIP_UNRESOLVED` de ausencia de dato.
+- [ ] `CAP-01` conserva VISO con sus fronteras.
+- [ ] `CAP-02` conserva administración laboral VISO y experiencia personal/asistencia ANIMA.
+- [ ] `CAP-04` conserva NEXO/FOGO/PULSO según el resultado funcional.
+- [ ] `CAP-05` conserva ORIGO.
+- [ ] `CAP-06`, `CAP-07` y `CAP-13` conservan NEXO.
+- [ ] `CAP-08` conserva FOGO.
+- [ ] `CAP-09` conserva PULSO.
+- [ ] `CAP-10` conserva separación PULSO/PASS.
+- [ ] `CAP-11` conserva separación NEXO/PULSO.
+- [ ] `CAP-12` conserva separación PULSO/NUMERA.
+- [ ] `CAP-14` no convierte AURA diferida en owner actual por inferencia.
+- [ ] `CAP-15` conserva VISO para identidad/acceso, NEXO para activo y cada aplicación para su configuración.
+- [ ] `CAP-16` conserva owner del hecho respaldado.
+- [ ] `CAP-17` conserva hecho en aplicación fuente y análisis derivado en NUMERA cuando corresponde.
+- [ ] `CAP-18` no inventa owner transversal para incidentes.
+- [ ] Productos VISO AS-IS no convierten VISO en owner del catálogo.
+- [ ] Menú y comercio VISO AS-IS no convierten VISO en owner de oferta vendible.
+- [ ] Contabilidad VISO AS-IS no convierte VISO en libro financiero.
+- [ ] Usuarios PASS visibles en VISO no convierten VISO en fuente de identidad cliente.
+- [ ] CMS administrativo conserva atribución VISO mientras no exista transferencia aprobada.
+- [ ] `content-blocks` no recibe owner nuevo por inferencia.
+- [ ] Configuraciones ambiguas no generan una nueva fuente mientras se resuelve ownership.
+- [ ] Una mutación externa no se reimplementa localmente en VISO.
+- [ ] Un flujo distribuido solo permite mutar en VISO el tramo que VISO posee.
+- [ ] VISO no declara final un resultado externo sin confirmación del owner.
+- [ ] Timeout y resultado desconocido se conservan como tales.
+- [ ] Los permisos se revalidan en la aplicación propietaria.
+- [ ] Un handoff no transporta autoridad implícita.
+- [ ] Los filtros no cambian ownership ni autoridad.
+- [ ] La procedencia de permiso no se confunde con ownership funcional.
+- [ ] Mostrar un conflicto externo no transfiere la regla ni su corrección a VISO.
+- [ ] La vista previa por trabajador no vuelve editables todas sus fuentes.
+- [ ] 017 no desarrolla navegación detallada reservada a 018.
+- [ ] 017 no desarrolla divulgación progresiva reservada a 019.
+- [ ] 017 no ejecuta pruebas con administradores reservadas a 020.
+- [ ] Cada acción AS-IS futura recibe una disposición explícita.
+- [ ] Ninguna mutación duplicada se retira sin owner, paridad, consumidores, autorización, rollback y evidencia.
+- [ ] Compatibilidad legacy se conserva mientras tenga consumidores demostrados.
+- [ ] Cache o proyección materializada permanece no autoritativa.
+- [ ] Datos sensibles no se copian únicamente para mantener al usuario dentro de VISO.
+- [ ] La auditoría distingue aplicación iniciadora de aplicación propietaria de la mutación.
+- [ ] Una misma acción empresarial conserva una regla autoritativa y cero maestros paralelos.
+- [ ] La materialización futura usa `PER_IMPLEMENTATION_UNIT`.
+- [ ] La materialización futura respeta `POST_E5_PACKAGE`.
+- [ ] No existe cambio físico durante el cierre documental.
+- [ ] No existen cambios TREQ.
+
+---
+
+#### 52. Límites
+
+Esta tarea no:
+
+- implementa código de producto;
+- modifica `vento-viso`;
+- modifica NEXO, FOGO, ORIGO, PULSO, NUMERA, PASS, ANIMA, AURA o SHELL;
+- mueve físicamente una pantalla;
+- elimina una superficie legacy;
+- migra datos;
+- modifica Supabase;
+- crea migraciones;
+- cambia RLS;
+- crea RPC;
+- cambia Storage;
+- cambia contratos compartidos;
+- cambia catálogo de permisos;
+- cambia ownership empresarial ya aprobado;
+- decide un owner donde las fuentes lo mantienen no resuelto;
+- transfiere CMS hacia AURA;
+- desarrolla el patrón detallado de handoff de 018;
+- define la divulgación progresiva de 019;
+- ejecuta pruebas humanas de 020;
+- declara paridad física;
+- autoriza implementación.
+
+---
+
+#### 53. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-UX-016 — Permitir vista previa exacta de cada trabajador`
+
+**TAREA ACTUAL APROBADA**
+`VISO-UX-017 — Evitar duplicar configuración propia de otras aplicaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda`
 ### [ ] VISO-UX-018 — Enlazar a la aplicación propietaria cuando corresponda
 ### [ ] VISO-UX-019 — Aplicar divulgación progresiva a seguridad avanzada
 ### [ ] VISO-UX-020 — Ejecutar pruebas con administradores reales
