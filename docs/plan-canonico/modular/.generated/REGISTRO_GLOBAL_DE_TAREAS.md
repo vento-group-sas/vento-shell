@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1533** |
+| Aprobadas | **1534** |
 | En propuesta | **0** |
-| No iniciadas | **63** |
+| No iniciadas | **62** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **96.05% (1533/1596)** |
+| Porcentaje de completamiento | **96.12% (1534/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **63** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1434** |
+| ⏸ NO_EVALUADA | **62** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1435** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-010` — Bodeguero puede preparar pero no producir | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-011` — Producción puede producir pero no ajustar inventario global | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-012` — Cajero puede operar PULSO pero no configurar | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-011` — Producción puede producir pero no ajustar inventario global | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-012` — Cajero puede operar PULSO pero no configurar | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-013` — Conductor puede transitar sin área productiva | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1365,7 +1365,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-008` | Trabajador solo ve su área | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-009` | Trabajador rotado cambia de permisos por turno | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-010` | Bodeguero puede preparar pero no producir | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-011` | Producción puede producir pero no ajustar inventario global | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-011` | Producción puede producir pero no ajustar inventario global | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-012` | Cajero puede operar PULSO pero no configurar | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-013` | Conductor puede transitar sin área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-014` | Conductor no puede preparar ni recibir inventario general | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
