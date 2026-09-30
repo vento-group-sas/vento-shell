@@ -54,11 +54,19 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
   assert.doesNotMatch(result.source, /CONTENIDO CANÓNICO DE LA TAREA OBJETIVO/u);
 
   assert.match(result.documentationSource, /INTENT_LOCK: DOCUMENTATION/u);
-  assert.equal(result.documentationAheadSource, result.documentationSource);
+  assert.notEqual(result.documentationAheadSource, result.documentationSource);
   assert.equal(
     result.outputs.find(({ key }) => key === 'documentationAhead')?.source,
-    result.documentationSource,
+    result.documentationAheadSource,
   );
+  assert.match(result.documentationAheadSource, /REGLA PRIORITARIA — UNA SOLA BATERÍA, SIN APROBADO POR CHAT/u);
+  assert.match(result.documentationAheadSource, /SINGLE_COPYABLE_POWERSHELL_BLOCK: REQUIRED/u);
+  assert.match(result.documentationAheadSource, /EXECUTING_BLOCK_IS_DOCUMENTARY_APPROVAL: TRUE/u);
+  assert.match(result.documentationAheadSource, /SEPARATE_APROBADO_MESSAGE_REQUIRED: FALSE/u);
+  assert.match(result.documentationAheadSource, /docs:task:start[\s\S]*reemplaza[\s\S]*docs:task:format --write[\s\S]*docs:task:finish/iu);
+  assert.match(result.documentationAheadSource, /No ejecuta finish tras un fallo/u);
+  assert.doesNotMatch(result.documentationAheadSource, /La aprobación canónica requiere siempre la palabra explícita|la palabra exacta `APROBADO` cuando corresponda|Cierre después de APROBADO y validaciones PASS/u);
+  assert.doesNotMatch(result.documentationSource, /SINGLE_COPYABLE_POWERSHELL_BLOCK: REQUIRED/u);
   assert.match(result.documentationSource, /CONVERSATION_LANE: DOCUMENTARY/u);
   assert.match(result.documentationSource, /DO_NOT_SWITCH_LANES: TRUE/u);
   assert.match(

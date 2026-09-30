@@ -50,6 +50,7 @@ const baseResult = {
   },
   source: 'BASE SELECTOR\n',
   documentationSource: 'INTENT_LOCK: DOCUMENTATION\nCONVERSATION_LANE: DOCUMENTARY\nDO_NOT_SWITCH_LANES: TRUE\nBASE DOCUMENTATION\n',
+  documentationAheadSource: 'INTENT_LOCK: DOCUMENTATION\nCONVERSATION_LANE: DOCUMENTARY\nDO_NOT_SWITCH_LANES: TRUE\nAHEAD SINGLE BATTERY\n',
   implementationSource: 'INTENT_LOCK: PHYSICAL_IMPLEMENTATION\nCONVERSATION_LANE: PHYSICAL\nDO_NOT_SWITCH_LANES: TRUE\nNO EXISTE UNA INSTANCIA FÍSICA ACTIVA.\n',
 };
 
@@ -71,10 +72,12 @@ test('el mismo snapshot de readiness se inyecta en selector y todos los iniciado
   assert.match(result.implementationSource, /^INTENT_LOCK: PHYSICAL_IMPLEMENTATION/u);
   assert.ok(result.documentationSource.indexOf('PACKAGE READINESS SCANNER') > result.documentationSource.indexOf('DO_NOT_SWITCH_LANES: TRUE'));
   assert.ok(result.implementationSource.indexOf('PACKAGE READINESS SCANNER') > result.implementationSource.indexOf('DO_NOT_SWITCH_LANES: TRUE'));
-  assert.equal(result.documentationAheadSource, result.documentationSource);
+  assert.notEqual(result.documentationAheadSource, result.documentationSource);
+  assert.match(result.documentationAheadSource, /AHEAD SINGLE BATTERY/u);
+  assert.doesNotMatch(result.documentationSource, /AHEAD SINGLE BATTERY/u);
   assert.equal(
     result.outputs.find(({ key }) => key === 'documentationAhead')?.source,
-    result.documentationSource,
+    result.documentationAheadSource,
   );
   for (const source of [
     result.source,
