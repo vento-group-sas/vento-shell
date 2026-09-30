@@ -3568,7 +3568,1034 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas`
 
-### [ ] AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
+### ✅ AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros
+**Tarea siguiente:** AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos
+**Tipo de tarea:** documental; diseño canónico de la experiencia de campañas, promociones, cupones, experimentos y guardas económicas y operativas de AURA, preservando ownership de PASS, PULSO, NUMERA, NEXO y FOGO y sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, repositorios, campañas reales, promociones, cupones, beneficios, reglas transaccionales, experimentos activos, audiencias operativas, tablas, migraciones, RLS, funciones, RPC, jobs, colas, integraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá convertir una campaña planificada y aprobada en un expediente comprensible de ejecución comercial y experimental, mostrando qué se quiere lograr, qué se va a comunicar, qué promociones o cupones están relacionados, qué experimento aplica, qué guardas habilitan o bloquean el avance y qué dominios propietarios deben confirmar los efectos antes de operar.
+
+La regla raíz es:
+
+```text
+CAMPANA AURA
+=
+INTENCION DE MARKETING
++ HIPOTESIS
++ AUDIENCIA Y EXCLUSIONES
++ PIEZAS Y TARGETS
++ PROMOCION O CUPON CUANDO APLIQUE
++ EXPERIMENTO CUANDO APLIQUE
++ GUARDAS
++ TRAZABILIDAD
+```
+
+pero:
+
+```text
+CAMPANA
+!= PROMOCION
+!= CUPON
+!= BENEFICIO
+!= REGLA TRANSACCIONAL
+!= REDENCION
+!= DESCUENTO APLICADO
+!= VENTA
+```
+
+La experiencia facilita decisiones y coordinación. No convierte AURA en autoridad transaccional, económica, de fidelización, inventario o capacidad productiva.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-004`, para recibir versión aprobada, targets, programación, publicación, recuperación, retiro y estado multicanal sin redefinir ese ciclo;
+- `AURA-DOM-006`, para campaña, experimento, promoción, cupón, guardas económicas y operativas, correlación y fronteras con otros dominios;
+- `AURA-AUTH-003`, para proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas, incluyendo finalidad, minimización, consentimiento, alcance y revalidación;
+- `AURA-AUTH-002`, para mantener separadas creación, revisión, aprobación, programación y publicación;
+- `AURA-AUTH-001`, para empresa, marca, función, capacidad, recurso y contexto;
+- `AURA-DOM-005`, para no redefinir publicación, reintentos, retiro o reconciliación por canal;
+- `PASS`, para identidad de cliente, consentimiento, preferencias, beneficios, reglas de fidelización, elegibilidad, redención y ledger;
+- `PULSO`, para pedido, venta, condiciones comerciales, validación de aplicabilidad y efecto realmente aplicado;
+- `NUMERA`, para presupuesto, costo, margen, rentabilidad y guardas económicas autorizadas;
+- `NEXO`, para producto, existencia, disponibilidad e inventario;
+- `FOGO`, para capacidad y restricciones productivas;
+- `AURA-DOM-008`, para atribución, confianza, incrementalidad y aprendizaje cuantitativo posterior;
+- `CAP-SCOPE-014`, especialmente las fronteras de campañas, experimentos, promociones y cupones;
+- `VPROC-0056`, para el ciclo canónico de contenido y promociones asociado a una campaña;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+
+Ninguna de estas fuentes cambia de propietaria por esta tarea.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer una experiencia que permita responder, para una campaña concreta:
+
+```text
+¿QUE OBJETIVO E HIPOTESIS GOBIERNAN ESTA CAMPANA?
+¿QUE AUDIENCIA Y EXCLUSIONES APLICAN?
+¿QUE PIEZAS Y TARGETS ESTAN VINCULADOS?
+¿EXISTE UNA PROMOCION, CUPON O BENEFICIO RELACIONADO?
+¿QUE DOMINIO MATERIALIZA LA REGLA REAL?
+¿EXISTE UN EXPERIMENTO Y COMO SE ASIGNA?
+¿QUE GUARDAS ESTAN VIGENTES, BLOQUEADAS, VENCIDAS O SIN EVIDENCIA?
+¿QUE IMPIDE INICIAR, CONTINUAR O AMPLIAR?
+¿QUE EFECTOS YA OCURRIDOS DEBEN PRESERVARSE?
+```
+
+La experiencia se divide en seis espacios conceptuales conectados:
+
+1. portafolio y detalle de campañas;
+2. promoción y cupón relacionados;
+3. configuración experimental;
+4. panel de guardas;
+5. preparación, inicio, pausa, cancelación y seguimiento;
+6. historial y correlaciones con publicaciones, redenciones, ventas y resultados.
+
+---
+
+#### 4. Fronteras conceptuales obligatorias
+
+La interfaz deberá preservar explícitamente:
+
+```text
+IDEA != CAMPANA != EXPERIMENTO != PIEZA != PUBLICACION
+```
+
+```text
+PROMOCION != CUPON != BENEFICIO PASS != REGLA TRANSACCIONAL
+```
+
+```text
+VISIBLE != ELEGIBLE != APLICABLE != APLICADO
+```
+
+```text
+HIPOTESIS != RESULTADO OBSERVADO != CAUSALIDAD DEMOSTRADA
+```
+
+```text
+PRESUPUESTO REFERENCIADO != GASTO AUTORIZADO != GASTO REAL
+```
+
+```text
+STOCK OBSERVADO != STOCK RESERVADO != DISPONIBILIDAD GARANTIZADA
+```
+
+```text
+CAPACIDAD OBSERVADA != CAPACIDAD COMPROMETIDA
+```
+
+```text
+PAUSAR CAMPANA != REVERTIR EFECTOS YA CONFIRMADOS
+```
+
+La experiencia no podrá colapsar estas diferencias en etiquetas genéricas de activo/inactivo o válido/inválido.
+
+---
+
+#### 5. Arquitectura de experiencia
+
+La experiencia se organiza alrededor de un `campaign_id` estable y una versión identificable.
+
+Desde el portafolio se accede a:
+
+- identidad y objetivo;
+- hipótesis;
+- audiencia y exclusiones;
+- calendario;
+- piezas y publicaciones vinculadas;
+- promociones, cupones o beneficios referenciados;
+- experimentos;
+- guardas;
+- responsables y aprobaciones;
+- correlaciones con ejecución externa;
+- historial de decisiones.
+
+Las superficies podrán resumir el estado, pero la decisión material siempre deberá permitir abrir la evidencia propietaria que la soporta.
+
+---
+
+#### 6. Entrada desde AURA-UX-004
+
+La 005 recibe de la 004 una experiencia ya capaz de distinguir:
+
+- versión aprobada;
+- aprobación vigente;
+- targets;
+- programación;
+- publicación confirmada o ambigua;
+- fallos y recuperación;
+- retiro;
+- historial por canal;
+- autoridad y segregación;
+- parcialidad multicanal.
+
+La 005 no modifica esos estados para representar una campaña.
+
+Una campaña podrá correlacionar varias publicaciones, pero:
+
+```text
+ESTADO DE CAMPANA
+!=
+ESTADO TECNICO DE PUBLICACION
+```
+
+La caída de un target no se transforma automáticamente en cancelación total de campaña, y una campaña activa no convierte un target fallido en publicado.
+
+---
+
+#### 7. Portafolio de campañas
+
+El portafolio deberá priorizar comprensión operativa y no densidad administrativa.
+
+Cada fila o tarjeta podrá resumir:
+
+- campaña y versión;
+- marca;
+- objetivo;
+- responsable;
+- periodo;
+- estado de preparación o ejecución;
+- guardas materiales;
+- experimento cuando exista;
+- promoción o cupón relacionado;
+- señales de bloqueo;
+- próxima decisión requerida.
+
+Filtros y agrupaciones podrán incluir marca, periodo, responsable, objetivo y situación, pero un filtro visual no concede autoridad sobre los recursos mostrados.
+
+---
+
+#### 8. Detalle de campaña
+
+El detalle deberá separar como mínimo:
+
+1. **Resumen:** objetivo, hipótesis, audiencia, vigencia y responsable;
+2. **Contenido y canales:** piezas, versiones y targets provenientes del ciclo creativo/publicación;
+3. **Oferta:** promociones, cupones o beneficios referenciados;
+4. **Experimento:** unidad, tratamientos, control, exclusiones y ventana;
+5. **Guardas:** económicas, operativas, de consentimiento, publicación y autorización;
+6. **Ejecución:** decisiones de inicio, pausa, cancelación y cierre;
+7. **Evidencia:** correlaciones, cambios, actores y resultados observados.
+
+El detalle no deberá obligar al usuario a interpretar tablas técnicas para conocer si existe un bloqueo material.
+
+---
+
+#### 9. Identidad y versionado de campaña
+
+Una campaña conserva identidad estable y versiones materiales.
+
+La experiencia deberá mostrar cuándo una modificación cambia materialmente:
+
+- objetivo;
+- hipótesis;
+- audiencia;
+- oferta;
+- promoción;
+- cupón;
+- experimento;
+- guardas;
+- periodo;
+- presupuesto referenciado;
+- piezas o targets relevantes.
+
+Una nueva versión no sobrescribe historial ni reutiliza silenciosamente aprobaciones o guardas evaluadas para una versión anterior.
+
+---
+
+#### 10. Objetivo e hipótesis
+
+La cabecera de campaña deberá hacer visible:
+
+- objetivo empresarial;
+- hipótesis;
+- indicador o señal que se pretende observar;
+- supuestos materiales;
+- restricciones conocidas;
+- responsable;
+- fecha o ventana de evaluación.
+
+La hipótesis se presenta como hipótesis, no como verdad.
+
+La experiencia no deberá convertir métricas preliminares, interacción o correlación en causalidad demostrada. La evaluación cuantitativa final pertenece a `AURA-DOM-008`.
+
+---
+
+#### 11. Audiencia y exclusiones
+
+La campaña deberá mostrar audiencia y exclusiones como referencias gobernadas, no como una lista libre de personas.
+
+La experiencia deberá distinguir:
+
+```text
+AUDIENCIA DEFINIDA
+!= SEGMENTO MATERIALIZADO
+!= MIEMBROS IDENTIFICABLES
+!= PERSONAS CONTACTABLES
+```
+
+Cuando una acción dependa de identidad, finalidad, consentimiento o preferencia, la interfaz deberá mostrar el resultado vigente proveniente de la fuente propietaria y bloquear el efecto cuando no pueda demostrarse.
+
+La membresía histórica no se presenta como elegibilidad actual.
+
+---
+
+#### 12. Preparación para iniciar
+
+Antes de presentar una campaña como elegible para iniciar, la experiencia deberá componer, sin asumir ownership de los hechos:
+
+```text
+PLAN APROBADO
++ CONTENIDO APROBADO
++ TARGETS PUBLICABLES
++ REGLAS MATERIALIZABLES CUANDO APLIQUEN
++ GUARDAS ECONOMICAS RESUELTAS
++ GUARDAS OPERATIVAS RESUELTAS
++ AUTORIZACION VIGENTE
+```
+
+Cada término deberá poder abrir su evidencia.
+
+La ausencia, vencimiento o conflicto de una condición material no se degrada a advertencia decorativa cuando el dominio propietario exige bloqueo.
+
+---
+
+#### 13. Espacio de promoción
+
+La promoción relacionada deberá presentarse como intención comercial gobernada.
+
+La experiencia podrá mostrar:
+
+- identidad y versión;
+- oferta comunicada;
+- alcance;
+- vigencia;
+- producto, categoría o beneficio referenciados;
+- límites y exclusiones;
+- compatibilidades;
+- regla propietaria relacionada;
+- guardas;
+- autoridad y aprobación;
+- publicaciones correlacionadas;
+- criterio de pausa o retiro.
+
+Nunca deberá insinuar que la promoción por sí sola aplica un descuento o concede un beneficio.
+
+---
+
+#### 14. Promoción y regla transaccional
+
+La separación visible será:
+
+```text
+AURA
+-> INTENCION PROMOCIONAL
+```
+
+```text
+PASS / PULSO
+-> REGLA EJECUTABLE SEGUN EL DOMINIO
+```
+
+```text
+PULSO
+-> VALIDACION EN CONTEXTO
+-> EFECTO REALMENTE APLICADO
+```
+
+La UI deberá permitir saber qué regla propietaria materializa la intención sin duplicar su lógica dentro de AURA.
+
+Si la regla no existe, está vencida, no está disponible o no coincide con la versión de campaña, el caso se muestra bloqueado o no materializable, no “aproximadamente listo”.
+
+---
+
+#### 15. Espacio de cupón
+
+Cuando exista cupón, la experiencia deberá conservar:
+
+- promoción o beneficio de origen;
+- regla y versión propietarias;
+- vigencia;
+- alcance de marca, sede, canal o modalidad;
+- límites;
+- exclusiones;
+- compatibilidad;
+- carácter público o individualizado cuando corresponda;
+- autoridad de validación;
+- correlación con el efecto comercial.
+
+Se conserva:
+
+```text
+CODIGO DE CUPON != AUTORIZACION DE DESCUENTO
+```
+
+La interfaz no declarará “usado” o “redimido” por mera visibilidad, copia o presentación del código.
+
+---
+
+#### 16. Cupón público e individualizado
+
+La experiencia deberá distinguir un instrumento de difusión general de uno asociado a una identidad o elegibilidad particular.
+
+Para cupones individualizados:
+
+- AURA no crea maestro paralelo de cliente;
+- la identidad se resuelve mediante la fuente propietaria;
+- consentimiento y finalidad siguen aplicando cuando corresponda;
+- compartir un código no amplía la elegibilidad;
+- el resultado de redención proviene del dominio que ejecuta la regla.
+
+Los datos identificables se muestran con minimización y alcance proporcional.
+
+---
+
+#### 17. Espacio de experimento
+
+Un experimento deberá presentarse como objeto separado de la campaña.
+
+La experiencia deberá mostrar:
+
+- identidad;
+- campaña y versión de origen;
+- hipótesis;
+- unidad de asignación;
+- población elegible;
+- exclusiones;
+- tratamientos o variantes;
+- control o comparación;
+- ventana;
+- guardas;
+- criterio de pausa o detención;
+- referencias futuras de medición;
+- responsable y aprobaciones.
+
+La campaña puede existir sin experimento y un experimento no adquiere autoridad comercial adicional por pertenecer a una campaña.
+
+---
+
+#### 18. Unidad de asignación
+
+La UI deberá nombrar y explicar la unidad sobre la que se asigna el tratamiento.
+
+Cuando la unidad corresponda a una referencia de persona, cuenta, pedido, sede, canal, publicación o periodo:
+
+- AURA conserva la referencia necesaria;
+- el dominio propietario conserva la identidad y el hecho;
+- una ausencia técnica no se transforma en grupo control;
+- la unidad deberá ser compatible con finalidad, consentimiento y guardas aplicables.
+
+No se permite una unidad implícita inferida solo por conveniencia de interfaz.
+
+---
+
+#### 19. Tratamientos, variantes y control
+
+La experiencia deberá distinguir:
+
+```text
+VARIANTE CREATIVA
+!= PROMOCION
+!= REGLA DE PRECIO
+```
+
+Un tratamiento podrá referenciar contenido, horario, canal, oferta comunicada, incentivo o secuencia cuando el contrato lo permita.
+
+El grupo de control o comparación deberá ser explícito.
+
+No se clasificarán como control personas, pedidos o targets que simplemente quedaron sin efecto por error técnico, denegación, falta de datos, revocación o fallo del proveedor.
+
+---
+
+#### 20. Exclusiones y contaminación experimental
+
+La UI deberá hacer visibles las incompatibilidades materiales entre campañas, experimentos o promociones.
+
+Podrán mostrarse:
+
+- exclusiones entre experimentos;
+- incompatibilidades de promociones;
+- solapamiento de audiencia;
+- exposición previa relevante;
+- restricciones por marca, sede o canal;
+- motivo de exclusión;
+- regla que impide una asignación.
+
+La experiencia no inventa una política universal de exclusión; representa la política gobernada que aplique a cada caso.
+
+---
+
+#### 21. Sistema de guardas
+
+Las guardas se presentarán como evaluaciones independientes, trazables y con fuente.
+
+Toda guarda material deberá poder responder:
+
+- qué protege;
+- qué fuente la decide;
+- qué versión o dato se evaluó;
+- cuándo se evaluó;
+- hasta cuándo es utilizable;
+- cuál fue el resultado;
+- por qué bloquea cuando bloquea;
+- quién puede resolver el caso;
+- qué debe revalidarse antes de un efecto.
+
+La interfaz no reduce guardas heterogéneas a un único booleano sin evidencia.
+
+---
+
+#### 22. Guardas económicas
+
+Las guardas económicas consumen decisiones autorizadas de NUMERA o de la autoridad económica propietaria.
+
+La experiencia podrá mostrar, cuando corresponda:
+
+- presupuesto referenciado;
+- límite autorizado;
+- margen mínimo o condición económica gobernada;
+- exposición máxima;
+- costo esperado;
+- tope financiado;
+- resultado de evaluación;
+- fuente, versión y frescura.
+
+AURA no recalcula una verdad económica propia para transformar un bloqueo en autorización.
+
+Dato económico ausente, vencido, conflictivo o inaccesible no se presenta como `PASS` implícito.
+
+---
+
+#### 23. Guardas de inventario y disponibilidad
+
+Cuando una campaña prometa producto o disponibilidad, la experiencia deberá consumir hechos autorizados de NEXO y distinguir:
+
+```text
+LECTURA DE INVENTARIO
+!= RESERVA
+!= PROMESA FUTURA
+```
+
+La UI deberá mostrar cuando una lectura está desactualizada o cuando una condición ya no satisface la guarda.
+
+La campaña no reserva inventario ni corrige existencias desde AURA.
+
+---
+
+#### 24. Guardas de capacidad
+
+Cuando una campaña pueda afectar producción o servicio, la experiencia deberá consumir la señal o decisión autorizada de capacidad.
+
+Se conserva:
+
+```text
+CAPACIDAD OBSERVADA
+!= CAPACIDAD COMPROMETIDA
+```
+
+AURA podrá mostrar restricciones, ventanas o bloqueos provenientes de FOGO u otra fuente propietaria aplicable, pero no comprometer producción por inferencia.
+
+---
+
+#### 25. Guardas de consentimiento y finalidad
+
+Cuando la campaña implique contacto o tratamiento de datos personales, la experiencia deberá mostrar la situación vigente de:
+
+- finalidad;
+- consentimiento aplicable;
+- preferencia de canal;
+- vigencia;
+- revocación;
+- exclusiones;
+- fuente propietaria.
+
+Una revocación aplicable bloquea nuevos efectos afectados.
+
+El permiso para ver una campaña o un lead no equivale a permiso para contactar una persona.
+
+---
+
+#### 26. Guardas de publicación
+
+La campaña podrá consumir el estado de targets definido por AURA-UX-004, pero no redefinirlo.
+
+La experiencia deberá distinguir:
+
+- target preparado;
+- target bloqueado;
+- target programado;
+- publicación confirmada;
+- publicación ambigua;
+- recuperación pendiente;
+- retiro solicitado o confirmado.
+
+Una campaña no se presenta como completamente ejecutada si targets materiales permanecen ambiguos o bloqueados.
+
+---
+
+#### 27. Estado de una guarda
+
+La experiencia podrá resumir una guarda como satisfecha, bloqueante, vencida, pendiente de evidencia, no aplicable o técnicamente no resoluble, siempre que el detalle preserve el resultado propietario real.
+
+Estos descriptores son de presentación y no crean un namespace de estados empresariales competidor.
+
+La diferencia entre:
+
+```text
+DENEGACION
+AUSENCIA DE DATO
+DATO VENCIDO
+CONFLICTO
+FALLO TECNICO
+NO_APLICABLE
+```
+
+debe permanecer visible.
+
+---
+
+#### 28. Confirmación de inicio
+
+La acción de iniciar una campaña deberá presentar una confirmación proporcional al riesgo.
+
+Antes de confirmar, la experiencia deberá resumir:
+
+- campaña y versión;
+- objetivo;
+- periodo;
+- audiencia y exclusiones;
+- promoción/cupón cuando aplique;
+- experimento cuando aplique;
+- publicaciones o targets implicados;
+- guardas materiales;
+- bloqueos resueltos;
+- responsable;
+- efectos que ocurrirán fuera de AURA.
+
+La confirmación visual no sustituye la revalidación autoritativa inmediatamente antes de cada efecto protegido.
+
+---
+
+#### 29. Monitor de campaña activa
+
+Durante ejecución, la experiencia deberá separar:
+
+- estado de la campaña;
+- estado de publicaciones;
+- estado de experimento;
+- vigencia de promoción o cupón;
+- estado de guardas;
+- efectos confirmados de dominios propietarios;
+- incidencias abiertas;
+- próxima decisión humana.
+
+El monitor deberá permitir comprender parcialidad sin declarar éxito global por la existencia de algunos efectos correctos.
+
+---
+
+#### 30. Pausa, cancelación y cierre
+
+Las acciones de pausa, cancelación y cierre deberán mostrar su alcance real.
+
+Se conserva:
+
+```text
+PAUSAR CAMPANA
+!= CANCELAR NUEVOS EFECTOS
+!= RETIRAR PUBLICACIONES
+!= REVERTIR REDENCIONES
+!= REVERTIR VENTAS
+```
+
+Una pausa puede impedir nuevos efectos según el contrato aplicable, pero no borra ni revierte hechos ya confirmados.
+
+La interfaz deberá advertir qué superficies requieren acciones adicionales de dominios propietarios.
+
+---
+
+#### 31. Detención experimental
+
+Cuando una guarda o señal exija detener un experimento, la experiencia deberá conservar:
+
+- motivo;
+- momento;
+- responsable;
+- unidades ya asignadas;
+- efectos ya confirmados;
+- tratamientos suspendidos;
+- evidencia disponible;
+- elementos que requieren reconciliación.
+
+Detener el experimento no elimina historia ni reclasifica silenciosamente exposiciones previas.
+
+---
+
+#### 32. Resultado promocional y redención
+
+AURA podrá mostrar correlaciones con:
+
+- cupones emitidos;
+- elegibilidad;
+- redenciones;
+- descuentos aplicados;
+- ventas relacionadas;
+- reversas cuando existan.
+
+Pero los estados y montos deberán provenir de PASS/PULSO o del dominio propietario correspondiente.
+
+Se conserva:
+
+```text
+PROMOCION PUBLICADA
+!= REDENCION
+!= DESCUENTO APLICADO
+!= VENTA
+```
+
+AURA no inventa resultados faltantes para completar el embudo.
+
+---
+
+#### 33. Lectura temprana del experimento
+
+La experiencia podrá mostrar observaciones preliminares cuando existan, pero deberá distinguirlas de una conclusión estadística o causal.
+
+Toda lectura temprana deberá indicar, cuando corresponda:
+
+- ventana observada;
+- fuente;
+- cobertura;
+- datos todavía incompletos;
+- restricciones;
+- motivo de alerta;
+- si existe una guarda que exige detener.
+
+La decisión sobre confianza, incrementalidad y atribución final pertenece a `AURA-DOM-008`.
+
+---
+
+#### 34. Presupuesto y exposición
+
+La experiencia podrá mostrar presupuesto referenciado, consumo observado y exposición cuando existan fuentes autorizadas.
+
+Deberá diferenciar:
+
+```text
+PRESUPUESTO REFERENCIADO
+!= COMPROMISO
+!= GASTO REAL
+!= RESULTADO ECONOMICO
+```
+
+Los números no se recalculan silenciosamente dentro de AURA.
+
+Una discrepancia deberá mostrar fuente, frescura y necesidad de conciliación en lugar de seleccionar el valor más conveniente.
+
+---
+
+#### 35. Frescura y revalidación
+
+Toda guarda material deberá mostrar cuándo fue evaluada y cuándo necesita revalidación.
+
+La experiencia deberá revalidar o exigir revalidación antes de nuevos efectos cuando cambien elementos como:
+
+- versión de campaña;
+- promoción o cupón;
+- audiencia;
+- consentimiento;
+- presupuesto;
+- disponibilidad;
+- capacidad;
+- autorización;
+- publicación;
+- periodo o vigencia.
+
+Una evaluación histórica puede conservar valor probatorio sin continuar siendo ejecutable.
+
+---
+
+#### 36. Acciones masivas
+
+Cuando una acción afecte múltiples recursos, la experiencia deberá mostrar antes de ejecutar:
+
+- universo candidato;
+- elementos autorizados;
+- exclusiones;
+- motivo de exclusión;
+- volumen;
+- efecto pretendido;
+- guardas aplicables;
+- riesgo de parcialidad;
+- tratamiento ante fallos.
+
+La selección de muchas filas no escala automáticamente una capacidad individual.
+
+Los nuevos efectos deberán detenerse si la autoridad o una condición material deja de ser válida.
+
+---
+
+#### 37. Parcialidad y recuperación
+
+Una operación parcial deberá distinguir:
+
+- candidatos;
+- autorizados;
+- excluidos;
+- ejecutados;
+- fallidos;
+- ambiguos;
+- pendientes de reconciliación.
+
+La experiencia no ofrecerá “reintentar todo” cuando algunos efectos ya estén confirmados.
+
+Los reintentos deberán preservar idempotencia y la autoridad vigente del dominio propietario.
+
+---
+
+#### 38. Auditoría e historial
+
+El historial de campaña deberá permitir reconstruir:
+
+- actor;
+- versión;
+- objetivo e hipótesis;
+- cambios materiales;
+- audiencia y exclusiones;
+- promoción o cupón referenciado;
+- experimento;
+- guardas evaluadas;
+- decisión de inicio, pausa, cancelación o cierre;
+- publicaciones relacionadas;
+- efectos confirmados;
+- fallos y parcialidad;
+- correlaciones con dominios propietarios;
+- timestamp y motivo cuando corresponda.
+
+La experiencia deberá distinguir decisión empresarial, ejecución técnica y resultado observado.
+
+---
+
+#### 39. Simplicidad, accesibilidad y comunicación de riesgo
+
+La experiencia esencial no dependerá únicamente de:
+
+- color;
+- iconos sin etiqueta;
+- hover;
+- gestos de precisión;
+- abreviaturas técnicas.
+
+Los bloqueos materiales deberán expresar:
+
+1. qué impide avanzar;
+2. por qué;
+3. qué fuente lo decidió;
+4. quién puede resolverlo;
+5. qué sucedería si la condición cambia.
+
+La interfaz podrá usar divulgación progresiva para detalles técnicos sin ocultar riesgos materiales.
+
+---
+
+#### 40. Relación con AURA-UX-004
+
+La 005 no absorbe:
+
+- aprobación editorial;
+- configuración técnica de targets;
+- programación de publicaciones;
+- estado técnico por canal;
+- reintentos de publicación;
+- reconciliación externa;
+- retiro de publicaciones.
+
+Cuando la campaña necesite operar una publicación, navegará a la superficie propietaria preservando `campaign_id`, versión, target y motivo.
+
+---
+
+#### 41. Handoff a `AURA-UX-006`
+
+`AURA-UX-005` entrega a `AURA-UX-006` una experiencia capaz de conservar:
+
+- campaña de origen;
+- objetivo e hipótesis;
+- marca;
+- audiencia o contraparte cuando corresponda;
+- promociones u ofertas comunicadas;
+- canal y publicación de origen;
+- responsable;
+- fechas;
+- guardas relevantes;
+- correlación y contexto suficiente para explicar por qué surgió una señal comercial.
+
+`AURA-UX-006` deberá diseñar bandeja de oportunidades, B2B, catering y eventos sin convertir automáticamente interacción, campaña o respuesta en lead, cliente, propuesta o pedido y sin reabrir las reglas de campaña, promoción, cupón o experimento fijadas aquí.
+
+---
+
+#### 42. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- campañas, promociones, oportunidades, presupuesto, guardas y fronteras PULSO/PASS/NUMERA ya cuentan con cobertura vigente;
+- consentimiento, privacidad, autorización, exportación y acciones masivas ya están protegidos por requisitos vigentes de PASS, AUTH e integración;
+- publicación, idempotencia y reconciliación se encuentran cubiertas por contratos previamente aprobados;
+- esta tarea desarrolla la arquitectura de experiencia de obligaciones existentes sin crear una nueva regla protegida;
+- no modifica texto, estado, relación, propietario, paquete, ambiente ni evidencia de ninguna fila del registro canónico.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 43. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, esta tarea reutiliza:
+
+- `TREQ-AURA-003`, para campañas, promociones, oportunidades, presupuesto, guardas, atribución y fronteras PULSO/PASS/NUMERA;
+- `TREQ-AURA-001`, para mantener idea, campaña, pieza, publicación y promoción como objetos diferenciados y gobernados por identidad, versión y vigencia;
+- `TREQ-AURA-002`, para límites de autonomía de IA, fuentes, frescura y prohibición de promocionar o contactar sin autoridad;
+- `TREQ-PASS-010`, para identidad, contactos, preferencias, consentimiento, finalidad, canal, versión y vigencia;
+- `TREQ-PASS-011`, para comunicaciones y resultados con autoridad explícita;
+- `TREQ-PASS-012`, para privacidad, revocación y bloqueo de marketing posterior cuando aplique;
+- `TREQ-PULSO-005` y `TREQ-PULSO-006`, para pedido, venta, descuentos, estados comerciales y acciones sensibles auditables;
+- `TREQ-NUMERA-004`, para presupuesto, costo, margen, escenarios y rentabilidad con método, fuente, versión y vigencia;
+- `TREQ-AUTH-018`, para protección de datos de clientes y exportaciones bajo finalidad y alcance;
+- `TREQ-INTEGRATION-019`, para canales, payloads, identificadores, idempotencia, eventos tardíos y reconciliación.
+
+Esta enumeración constituye trazabilidad de cobertura vigente y no crea ni modifica requisitos.
+
+---
+
+#### 44. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni validado dentro del checkout del usuario |
+| REMOTA | PASS | se verificaron continuidad, archivo propietario, topología `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`, dependencia de `AURA-DOM-006`, protección de `AURA-AUTH-003`, fronteras con PASS/PULSO/NUMERA/NEXO/FOGO, cobertura 04A de AURA y validadores documentales vigentes; además se consumió la versión completa aprobada de `AURA-UX-004` disponible para trabajo adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea diseña experiencia documental y no inicia campañas, ejecuta promociones, emite cupones, asigna experimentos, contacta audiencias, aplica descuentos ni modifica presupuestos, inventario o capacidad reales |
+| FÍSICA | NOT_APPLICABLE | la familia `AURA-UX-001` a `AURA-UX-008` es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se autorizan runtime, Supabase, integraciones, campañas, datos ni despliegues |
+
+---
+
+#### 45. Criterios de aceptación
+
+`AURA-UX-005` queda satisfecha cuando simultáneamente:
+
+1. campaña, promoción, cupón, beneficio, regla transaccional, redención, descuento y venta permanecen conceptos distintos;
+2. AURA conserva intención, campaña, hipótesis, experimento y correlación sin apropiarse de reglas transaccionales;
+3. PASS conserva identidad, consentimiento, beneficios, fidelización y redención cuando corresponda;
+4. PULSO conserva pedido, venta, validación de aplicabilidad y efecto comercial aplicado;
+5. NUMERA conserva presupuesto, costo, margen y rentabilidad;
+6. NEXO conserva producto, existencia e inventario;
+7. FOGO conserva capacidad productiva;
+8. el portafolio identifica objetivo, responsable, periodo, guardas y próxima decisión;
+9. el detalle separa contenido, oferta, experimento, guardas, ejecución e historial;
+10. cambios materiales crean una nueva versión o invalidan decisiones reutilizadas cuando corresponda;
+11. hipótesis se presenta como hipótesis y no como hecho;
+12. audiencia no equivale a segmento materializado ni a persona contactable;
+13. la preparación para inicio muestra cada dependencia material y su evidencia;
+14. promoción no aplica directamente un efecto comercial;
+15. código de cupón no equivale a autorización de descuento;
+16. cupones individualizados no crean maestro paralelo de cliente;
+17. experimento permanece objeto separado de campaña;
+18. unidad de asignación es explícita y gobernada;
+19. variante creativa no equivale a promoción ni regla de precio;
+20. grupo control no se construye con fallos técnicos o denegaciones;
+21. exclusiones y contaminación experimental permanecen visibles;
+22. cada guarda muestra fuente, versión, frescura, resultado, motivo y owner de resolución;
+23. dato económico ausente o vencido no se convierte en autorización;
+24. lectura de inventario no equivale a reserva ni promesa futura;
+25. capacidad observada no equivale a capacidad comprometida;
+26. revocación aplicable bloquea nuevos efectos afectados;
+27. guardas de publicación consumen AURA-UX-004 sin redefinir estados técnicos por canal;
+28. denegación, ausencia, vencimiento, conflicto, fallo técnico y no aplicabilidad permanecen distintos;
+29. confirmación de inicio resume alcance y riesgo pero no sustituye revalidación autoritativa;
+30. monitor de campaña separa campaña, publicación, experimento, promoción y guardas;
+31. pausa, cancelación, retiro y reversión permanecen acciones distintas;
+32. detener experimento preserva asignaciones y evidencia;
+33. resultados de redención, descuento y venta provienen de dominios propietarios;
+34. lectura temprana no se presenta como causalidad demostrada;
+35. presupuesto referenciado, compromiso, gasto y resultado económico permanecen separados;
+36. guardas se revalidan ante cambios materiales;
+37. una acción masiva muestra candidatos, autorizados, exclusiones, volumen y efecto;
+38. reintentos no duplican efectos confirmados;
+39. historial distingue decisión empresarial, ejecución técnica y resultado observado;
+40. la experiencia esencial no depende solo de color, hover o gesto de precisión;
+41. `AURA-UX-004` conserva ownership de aprobación y publicación multicanal;
+42. `AURA-UX-006` recibe contexto de origen sin convertir automáticamente interacción en lead, cliente, propuesta o pedido;
+43. se crean y modifican cero requisitos de prueba;
+44. no se crea ninguna instancia física;
+45. la continuidad queda reservada exclusivamente a `AURA-UX-006`.
+
+---
+
+#### 46. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear repositorio, runtime, ruta, pantalla o componente de AURA;
+- crear tablas, migraciones, vistas, funciones, RPC, triggers, RLS, Storage, Realtime, jobs, colas o Edge Functions;
+- crear campañas productivas;
+- activar experimentos reales;
+- asignar personas o transacciones a tratamientos reales;
+- crear promociones reales;
+- crear o modificar reglas transaccionales de PASS o PULSO;
+- emitir, redimir o revertir cupones reales;
+- aplicar descuentos o beneficios;
+- crear pedidos o ventas;
+- modificar identidad, consentimiento o preferencias de clientes;
+- materializar segmentos reales;
+- contactar audiencias;
+- exportar datos;
+- cambiar presupuesto, costo, margen o rentabilidad;
+- reservar o ajustar inventario;
+- comprometer capacidad productiva;
+- programar, publicar, reintentar, reconciliar o retirar contenido real;
+- declarar causalidad o incrementalidad final;
+- crear leads, propuestas o pedidos por inferencia;
+- modificar requisitos del registro 04A;
+- adelantar `AURA-UX-006`.
+
+---
+
+#### 47. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos`
 
 ### [ ] AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos
 
