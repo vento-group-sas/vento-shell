@@ -7325,7 +7325,757 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-011 — Producción puede producir pero no ajustar inventario global`
-### [ ] AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
+### ✅ AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-010 — Bodeguero puede preparar pero no producir
+**Tarea siguiente:** AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
+**Tipo de tarea:** documental; definición canónica de una prueba integral de segregación de funciones para los roles operativos `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`, reutilizable por paquete y certificable globalmente, para demostrar que pueden ejecutar producción y consumo trazable dentro de su área autorizada sin adquirir la capacidad combinada de ajuste genérico de inventario por rol, aplicación visible, dispositivo, coincidencia territorial, componente base aislado ni permisos ajenos
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-011::<package_id>` y la certificación `AUTH-QA-011::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, check-ins, roles, permisos, órdenes, lotes, retiros, ajustes de inventario ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que los roles operativos de producción conservan una frontera funcional estricta entre ejecución productiva y corrección general de inventario.
+
+La regla positiva raíz queda:
+
+```text
+ROL OPERATIVO PRODUCTIVO VÁLIDO
++ CONTEXTO PRODUCTIVO VÁLIDO
++ PERMISO EXACTO fogo.production.batches.create
++ ORDEN / RECETA OPERATIVA / ÁREA COMPATIBLES
+→ CREACIÓN DE LOTE AUTORIZABLE
+```
+
+Y simultáneamente:
+
+```text
+MISMO ACTOR
++ MISMO TURNO
++ MISMO CHECK-IN
++ MISMA SEDE
++ MISMA ÁREA PRODUCTIVA
++ PERMISO nexo.inventory.adjustments.register
+→ DENY SI NO EXISTEN AMBOS COMPONENTES CANÓNICOS REQUERIDOS
+```
+
+La tarea certifica segregación de funciones. No redefine las matrices de producción, inventario ni gerencia.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos veinte resultados obligatorios:
+
+1. `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria` se resuelven como roles operativos desde el turno válido;
+2. los tres roles conservan exactamente dieciséis grants operativos vigentes cada uno en el dataset materializado actual;
+3. cada rol productivo conserva cinco grants FOGO y once grants NEXO;
+4. la capacidad positiva principal es `fogo.production.batches.create`;
+5. `fogo.production.batches.create` es `OPERATIONAL_ONLY` y requiere turno y check-in activos, rol, sede, área, orden, receta operativa, cantidades y estado compatibles;
+6. cada rol productivo puede registrar consumo trazable mediante `nexo.inventory.withdrawals.register` únicamente contra una orden o lote de su área;
+7. el retiro productivo no equivale a un ajuste genérico de inventario;
+8. `nexo.inventory.adjustments.register` permanece sin grant para los tres roles productivos;
+9. `nexo.inventory.adjustments.register` es `BASE_AND_OPERATIONAL` y no puede autorizarse con un solo carril;
+10. un actor productivo con rol base `trabajador_operativo` no obtiene el componente base de `nexo.inventory.adjustments.register`;
+11. incluso cuando un actor tenga un componente base válido por otra autoridad, un rol operativo productivo no aporta por sí mismo el componente operativo de `nexo.inventory.adjustments.register`;
+12. la combinación incompleta produce `DENY` y cero efectos empresariales;
+13. la denegación de ajuste no se simula retirando turno, check-in, rol, sede o área cuando la prueba pretende aislar segregación de funciones;
+14. `nexo.access`, `fogo.access`, navegación, dispositivo o visibilidad de inventario no funcionan como wildcards;
+15. producción puede consultar y consumir únicamente los recursos mínimos autorizados por su matriz sin obtener administración general de inventario;
+16. la autorización de lote y la denegación de ajuste se evalúan como decisiones independientes sobre PermissionKey exactas;
+17. servidor, RPC, RLS y demás superficies aplicables conservan la misma frontera para el mismo contexto y permiso;
+18. un intento de ajuste denegado conserva cero mutaciones de stock, ajustes, movimientos, auditoría empresarial falsa o efectos derivados;
+19. la certificación usa catálogo y datasets vigentes, no snapshots históricos como autoridad runtime;
+20. ninguna prueba física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- identidad efectiva del actor humano;
+- `AccessContext@1.x`;
+- turno publicado y vigente;
+- check-in activo cuando el permiso lo exige;
+- roles operativos `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`;
+- sede operativa derivada del turno;
+- área operativa derivada del turno;
+- estado y relación laboral activos;
+- catálogo vigente de 140 PermissionKey;
+- dataset `vento.authorization.operational-role-grants@1.0.0`;
+- dataset vigente de grants base;
+- matrices `AUTH-RBAC-014`, `AUTH-RBAC-015` y `AUTH-RBAC-016`;
+- reconciliaciones contractuales posteriores del catálogo y datasets;
+- modalidades `OPERATIONAL_ONLY`, `BASE_OR_OPERATIONAL` y `BASE_AND_OPERATIONAL`;
+- separación de carriles base y operativo;
+- precedencia de turno, check-in, rol, sede, área, dispositivo, grant, scope y recurso;
+- contrato de default deny;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- gate físico `POST_E5_PACKAGE`.
+
+La tarea no crea nuevos roles, permisos, grants, denies, aliases ni excepciones.
+
+---
+
+#### 4. Universo productivo certificado
+
+La tarea cubre exactamente tres roles operativos productivos centrales:
+
+| Rol operativo | Sede y área productiva canónica | Grants vigentes | FOGO | NEXO |
+| --- | --- | ---: | ---: | ---: |
+| `produccion_cocina` | Centro de Producción + Cocina Caliente | 16 | 5 | 11 |
+| `produccion_panaderia` | Centro de Producción + Galletería y Panadería | 16 | 5 | 11 |
+| `produccion_reposteria` | Centro de Producción + Repostería | 16 | 5 | 11 |
+
+La coincidencia cuantitativa no implica herencia entre roles. Cada grant conserva su `operational_role_code`, PermissionKey, scope, condición y source task propios.
+
+No forman parte de este universo:
+
+- `cocinero_satelite`;
+- `bodeguero`;
+- `gerencia_operativa`;
+- roles base administrativos;
+- dispositivos de producción;
+- perfiles de navegación.
+
+---
+
+#### 5. Significado exacto de “puede producir”
+
+Para esta certificación, la mutación productiva positiva principal se expresa mediante la PermissionKey activa:
+
+```text
+fogo.production.batches.create
+```
+
+La capacidad representa creación trazable de un lote productivo para una orden válida del área exacta del rol.
+
+No significa por inferencia:
+
+- editar recetas maestras;
+- operar un área productiva distinta;
+- aprobar o cerrar cualquier estado futuro no representado por una PermissionKey vigente;
+- administrar inventario general;
+- registrar ajustes de stock;
+- mover inventario entre sedes;
+- operar bodega;
+- ejecutar compras o recepción;
+- ampliar autoridad por compartir el Centro de Producción.
+
+Si el catálogo futuro descompone el ciclo productivo en nuevas PermissionKey, cada futura instancia deberá reconciliar el conjunto activo del package evaluado. Esta tarea no convierte `batches.create` en wildcard de producción.
+
+---
+
+#### 6. Significado exacto de “no ajustar inventario global”
+
+En esta tarea, la frontera negativa principal se expresa mediante:
+
+```text
+nexo.inventory.adjustments.register
+```
+
+La PermissionKey representa un ajuste genérico o excepcional del inventario y su modalidad vigente es:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+Por tanto:
+
+```text
+BASE ALLOW
++
+OPERATIONAL ALLOW
+=
+CONDICIÓN NECESARIA, NO SUFICIENTE POR SÍ SOLA
+```
+
+antes de aplicar territorio, recurso, estado, reautenticación, auditoría u otras restricciones.
+
+La ausencia de cualquiera de los dos carriles obligatorios impide `ALLOW`.
+
+“Global” no significa que toda ejecución tenga scope organizacional ilimitado. En esta prueba significa que la producción no recibe autoridad genérica de corrección de existencias por el mero hecho de producir o consumir insumos.
+
+---
+
+#### 7. Diferencia obligatoria entre consumo y ajuste
+
+Los tres roles productivos sí conservan:
+
+```text
+nexo.inventory.withdrawals.register
+```
+
+como grant `OPERATIONAL_ONLY` para registrar consumo trazable de insumos desde ubicaciones autorizadas hacia una orden o lote de su área.
+
+Ese permiso exige, entre otros controles:
+
+- turno y check-in activos;
+- stock disponible;
+- producto, presentación y unidad válidos;
+- lote y ubicación compatibles;
+- cantidad válida;
+- orden, receta o lote relacionado;
+- idempotencia;
+- concurrencia;
+- prohibición de stock negativo.
+
+La relación obligatoria es:
+
+```text
+CONSUMO PRODUCTIVO TRAZABLE
+≠
+AJUSTE GENÉRICO DE INVENTARIO
+```
+
+Una implementación no puede bloquear todo efecto de inventario de producción para hacer pasar esta tarea, ni puede reutilizar `withdrawals.register` como alias de `adjustments.register`.
+
+---
+
+#### 8. Fixture positiva — `produccion_cocina`
+
+El fixture mínimo utiliza:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+active_shift = EXACTLY_ONE_PUBLISHED_CURRENT
+active_shift.operational_role_code = produccion_cocina
+site_fixture = CENTRO_PROD
+area_fixture = COC-CAL
+checkin = ACTIVE_COMPATIBLE
+operational_role.role_code = produccion_cocina
+permission = fogo.production.batches.create
+resource = ORDER_AND_RECIPE_COMPATIBLE_WITH_COCINA_CALIENTE
+```
+
+El fixture debe mantener válidos todos los componentes ajenos a la segregación de funciones.
+
+---
+
+#### 9. Fixture positiva — `produccion_panaderia`
+
+El fixture mínimo utiliza:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+active_shift = EXACTLY_ONE_PUBLISHED_CURRENT
+active_shift.operational_role_code = produccion_panaderia
+site_fixture = CENTRO_PROD
+area_fixture = PAN-GALL
+checkin = ACTIVE_COMPATIBLE
+operational_role.role_code = produccion_panaderia
+permission = fogo.production.batches.create
+resource = ORDER_AND_RECIPE_COMPATIBLE_WITH_GALLETERIA_Y_PANADERIA
+```
+
+El fixture no reutiliza el área de otro rol productivo.
+
+---
+
+#### 10. Fixture positiva — `produccion_reposteria`
+
+El fixture mínimo utiliza:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+active_shift = EXACTLY_ONE_PUBLISHED_CURRENT
+active_shift.operational_role_code = produccion_reposteria
+site_fixture = CENTRO_PROD
+area_fixture = REPOSTERIA
+checkin = ACTIVE_COMPATIBLE
+operational_role.role_code = produccion_reposteria
+permission = fogo.production.batches.create
+resource = ORDER_AND_RECIPE_COMPATIBLE_WITH_REPOSTERIA
+```
+
+El fixture no obtiene autoridad sobre Cocina Caliente ni Galletería y Panadería por compartir sede.
+
+---
+
+#### 11. Oracle positivo obligatorio
+
+Para cada uno de los tres roles, la futura ejecución debe demostrar:
+
+```text
+permission_key = fogo.production.batches.create
+grant_type = DIRECT_OPERATIONAL
+authorization_mode = OPERATIONAL_ONLY
+operational_role_code = rol exacto del fixture
+final_decision = ALLOW
+```
+
+solo cuando todas las condiciones contractuales del rol, territorio, permiso y recurso estén satisfechas.
+
+La evidencia debe conservar el grant exacto consumido y no solo un booleano de interfaz.
+
+---
+
+#### 12. Fixture negativa primaria — ajuste sin autoridad combinada
+
+La fixture negativa principal reutiliza un contexto productivo válido y cambia únicamente la PermissionKey objetivo:
+
+```text
+permission = nexo.inventory.adjustments.register
+```
+
+Para el caso base ordinario:
+
+```text
+base_role = trabajador_operativo
+operational_role = uno de los tres roles productivos
+turno = válido
+checkin = válido
+sede = válida
+área = válida
+recurso = inventario territorialmente compatible
+```
+
+El dataset vigente no concede `nexo.inventory.adjustments.register` a `trabajador_operativo` en el carril base ni a ninguno de los tres roles productivos en el carril operativo.
+
+---
+
+#### 13. Oracle negativo primario
+
+Para cada rol productivo, el resultado obligatorio es:
+
+```text
+permission_key = nexo.inventory.adjustments.register
+authorization_mode = BASE_AND_OPERATIONAL
+final_decision = DENY
+business_effect_count = 0
+```
+
+La evidencia debe demostrar que el `DENY` procede de autoridad insuficiente para la PermissionKey exacta y no de un contexto artificialmente roto.
+
+Cuando el evaluador exponga razones por carril, debe conservar las razones canónicas que correspondan a los componentes ausentes o denegados. La certificación no fuerza una única razón pública si el contrato vigente conserva evidencia separada de carril base y operativo.
+
+---
+
+#### 14. Control adversarial — componente base aislado no basta
+
+La prueba debe incluir al menos un escenario donde el actor posea un componente base válido de:
+
+```text
+nexo.inventory.adjustments.register
+```
+
+por un rol base que realmente lo conceda y, simultáneamente, tenga un rol operativo productivo válido.
+
+La condición a demostrar es:
+
+```text
+BASE_COMPONENT = ALLOW
+OPERATIONAL_ROLE = produccion_cocina | produccion_panaderia | produccion_reposteria
+OPERATIONAL_COMPONENT para adjustments.register = AUSENTE
+→ COMBINATION = DENY
+```
+
+El componente base aislado no puede convertir a producción en autoridad de ajuste.
+
+La prueba no otorga artificialmente `gerencia_operativa` ni otra concesión operativa compatible con el ajuste.
+
+---
+
+#### 15. Control positivo de consumo productivo
+
+Para evitar una falsa implementación que bloquee toda mutación de inventario desde producción, cada package aplicable debe probar al menos un caso válido de:
+
+```text
+nexo.inventory.withdrawals.register
+```
+
+con consumo vinculado a orden o lote del área exacta.
+
+Resultado esperado:
+
+```text
+final_decision = ALLOW
+```
+
+cuando se satisfacen sus condiciones.
+
+Esto demuestra que la frontera certificada es específica:
+
+```text
+PRODUCCIÓN PUEDE CONSUMIR TRAZABLEMENTE
+PERO NO PUEDE AJUSTAR INVENTARIO GENÉRICAMENTE
+```
+
+---
+
+#### 16. Frontera de aplicación y dispositivo
+
+Las superficies visibles no cambian la matriz.
+
+No se admite:
+
+```text
+fogo.access → todas las acciones FOGO
+nexo.access → todas las acciones NEXO
+production_kitchen → autoridad empresarial propia
+production_bakery → autoridad empresarial propia
+production_pastry → autoridad empresarial propia
+misma sede → acceso a todas las áreas
+rol productivo → ajuste de inventario
+```
+
+El dispositivo compartido solo puede restringir el contexto disponible. Nunca crea el componente base ni el componente operativo de una PermissionKey.
+
+---
+
+#### 17. Separación territorial entre roles productivos
+
+La tarea no reabre la certificación territorial de `AUTH-QA-007` y `AUTH-QA-008`, pero la usa como precondición.
+
+Cada caso positivo debe conservar:
+
+```text
+produccion_cocina      → Cocina Caliente
+produccion_panaderia   → Galletería y Panadería
+produccion_reposteria  → Repostería
+```
+
+Un `ALLOW` obtenido mediante área incorrecta, selector de interfaz, dispositivo o recurso de otra área invalida la prueba aunque la PermissionKey sea correcta.
+
+---
+
+#### 18. Paridad entre evaluadores
+
+Cuando una PermissionKey y su contexto sean equivalentes, las superficies autoritativas aplicables deben coincidir en:
+
+- decisión final;
+- modalidad de autorización;
+- grants consumidos;
+- reasons o evidencia de carril aplicable;
+- territorio;
+- recurso;
+- cero efectos ante `DENY`.
+
+No se admite que la UI niegue un ajuste pero una Server Action, API, RPC o política de datos lo ejecute, ni el caso inverso para la creación de lote autorizada.
+
+---
+
+#### 19. Persistencia y cero efectos indebidos
+
+Un intento denegado de `nexo.inventory.adjustments.register` no puede producir:
+
+- fila de ajuste válida;
+- cambio de cantidad disponible;
+- cambio de lote o LPN;
+- movimiento compensatorio;
+- entrada o retiro artificial;
+- evento empresarial que declare ajuste aplicado;
+- reintento que convierta el `DENY` en efecto;
+- escritura parcial antes del fallo.
+
+La evidencia técnica de intento denegado puede auditarse conforme al contrato, pero no puede confundirse con un ajuste ejecutado.
+
+---
+
+#### 20. Auditoría mínima
+
+Cada caso futuro debe conservar evidencia suficiente para reconstruir:
+
+```text
+principal
+actor_effective
+base_role
+operational_role
+shift_id
+checkin_id_or_state
+site_id
+area_id
+device_id_or_null
+permission_key
+authorization_mode
+resource_identity
+matched_allows
+matched_denies
+lane_decisions
+final_decision
+reason_codes
+business_effect_count
+catalog_version
+dataset_version
+timestamp
+correlation_id
+```
+
+La ausencia de una de estas dimensiones no se corrige inventándola desde el cliente.
+
+---
+
+#### 21. Casos mínimos obligatorios
+
+La suite futura debe contener como mínimo:
+
+| Caso | Rol | PermissionKey | Contexto | Resultado |
+| --- | --- | --- | --- | --- |
+| A | `produccion_cocina` | `fogo.production.batches.create` | Cocina Caliente válida | ALLOW |
+| B | `produccion_panaderia` | `fogo.production.batches.create` | Galletería y Panadería válida | ALLOW |
+| C | `produccion_reposteria` | `fogo.production.batches.create` | Repostería válida | ALLOW |
+| D | `produccion_cocina` | `nexo.inventory.adjustments.register` | contexto productivo válido | DENY + cero efectos |
+| E | `produccion_panaderia` | `nexo.inventory.adjustments.register` | contexto productivo válido | DENY + cero efectos |
+| F | `produccion_reposteria` | `nexo.inventory.adjustments.register` | contexto productivo válido | DENY + cero efectos |
+| G | uno de los tres roles productivos | `nexo.inventory.adjustments.register` | componente base válido + rol productivo válido | DENY por combinación incompleta |
+| H | uno de los tres roles productivos | `nexo.inventory.withdrawals.register` | consumo válido de orden/lote propio | ALLOW |
+
+Los casos D, E y F no pueden provocar el `DENY` eliminando turno, check-in, sede, área o rol.
+
+---
+
+#### 22. Clasificación de fallos
+
+La futura ejecución deberá distinguir al menos:
+
+```text
+FAIL_PRODUCTION_GRANT_MISSING
+FAIL_WRONG_PRODUCTION_ROLE
+FAIL_WRONG_PRODUCTION_AREA
+FAIL_PRODUCTION_RESOURCE_SCOPE
+FAIL_ADJUSTMENT_GRANTED_TO_PRODUCTION
+FAIL_BASE_AND_OPERATIONAL_COLLAPSED_TO_ONE_LANE
+FAIL_WITHDRAWAL_BLOCKED_AS_IF_IT_WERE_ADJUSTMENT
+FAIL_ADJUSTMENT_ALIASED_FROM_WITHDRAWAL
+FAIL_ZERO_EFFECT_VIOLATION
+FAIL_CHANNEL_DIVERGENCE
+FAIL_STALE_MATRIX_USED_AS_RUNTIME_AUTHORITY
+```
+
+Un fallo no se corrige ampliando una matriz de producción dentro de esta tarea.
+
+La corrección pertenece al owner contractual o de implementación correspondiente y debe preservar la segregación registrada por `TREQ-AUTH-010`.
+
+---
+
+#### 23. Modelo de ejecución por paquete
+
+La topología vigente es:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Cada package aplicable materializa:
+
+```text
+AUTH-QA-011::<package_id>
+```
+
+únicamente después de:
+
+```text
+E5-GATE-008::<package_id> = PASS
+```
+
+porque el gate físico vigente es:
+
+```text
+POST_E5_PACKAGE
+```
+
+La tarea documental no selecciona package, no ejecuta E5 y no crea instancias físicas.
+
+---
+
+#### 24. Evidencia mínima por package
+
+Cada futura instancia debe registrar como mínimo:
+
+```text
+package_id
+repository
+commit_or_release_under_test
+catalog_version
+base_grants_dataset_version
+operational_grants_dataset_version
+production_role_under_test
+actor_fixture
+shift_fixture
+checkin_fixture
+site_fixture
+area_fixture
+positive_production_permission
+positive_production_resource
+positive_production_decision
+negative_adjustment_permission
+negative_adjustment_decision
+base_lane_outcome
+operational_lane_outcome
+consumption_control_permission
+consumption_control_decision
+matched_grants
+reason_codes
+business_effect_count
+channels_tested
+validation_commands
+result
+```
+
+No se considera evidencia suficiente una captura de UI ni una lista estática de menús sin decisión de autorización verificable.
+
+---
+
+#### 25. Certificación global final
+
+`AUTH-QA-011::GLOBAL-FINAL` podrá certificarse únicamente después de reconciliar las instancias por package aplicables y demostrar que:
+
+1. los tres roles productivos continúan presentes en el catálogo operativo vigente;
+2. cada uno conserva los grants productivos esperados del package evaluado;
+3. `fogo.production.batches.create` continúa autorizable únicamente con contexto productivo compatible;
+4. `nexo.inventory.adjustments.register` no se concede como capacidad completa a los roles productivos;
+5. la semántica `BASE_AND_OPERATIONAL` conserva ambos carriles obligatorios;
+6. la existencia de un componente base aislado no convierte a producción en autoridad de ajuste;
+7. `nexo.inventory.withdrawals.register` conserva el consumo trazable permitido sin convertirse en alias de ajuste;
+8. cada rol permanece dentro de su área productiva exacta;
+9. ninguna superficie autoritativa conserva un bypass por rol, dispositivo, aplicación o helper local;
+10. toda denegación de ajuste conserva cero efectos;
+11. no existen packages aplicables pendientes sin resultado concluyente.
+
+La certificación global no reabre ni modifica las matrices por sí misma.
+
+---
+
+#### 26. Handoff a `AUTH-QA-012`
+
+`AUTH-QA-011` entrega a la tarea siguiente una frontera ya cerrada:
+
+```text
+PRODUCCIÓN
+→ puede ejecutar producción autorizada
+→ puede consumir insumos de forma trazable
+→ no recibe ajuste genérico de inventario por rol productivo
+```
+
+`AUTH-QA-012` recibe exclusivamente la responsabilidad de probar la segregación de PULSO:
+
+```text
+CAJERO
+→ puede operar PULSO
+→ no puede configurar PULSO
+```
+
+La tarea siguiente no debe reabrir las matrices de producción ni inventario.
+
+---
+
+#### 27. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La tarea certifica reglas ya registradas y no cambia el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 28. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar sus filas, la cobertura vigente de:
+
+- `TREQ-AUTH-001`, para impedir autorización por listas locales de nombres de rol;
+- `TREQ-AUTH-004`, para paridad entre evaluadores;
+- `TREQ-AUTH-008`, para separación de carril base y operativo y exigencia del contexto laboral aplicable;
+- `TREQ-AUTH-009`, para territorio operativo derivado de contexto;
+- `TREQ-AUTH-010`, que exige expresamente que producción produzca sin ajustar inventario global y preserva segregación de funciones;
+- `TREQ-AUTH-013`, para validación server-side de toda mutación;
+- cobertura contractual del catálogo, modalidad `BASE_AND_OPERATIONAL` y datasets materializados que mantiene separados roles, permisos y grants.
+
+Esta sección es trazabilidad de cobertura existente y no representa una actualización de 04A.
+
+---
+
+#### 29. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado en la rama documental de `AUTH-QA-011` ni sometido al build canónico del plan. |
+| LOCAL | NOT_EXECUTED | El checkout local todavía no ha ejecutado formateo, quality, delivery, topología, TREQ ni la batería global posterior a la inserción. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, continuidad `AUTH-QA-010 → AUTH-QA-011 → AUTH-QA-012`, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, las matrices `AUTH-RBAC-014` a `AUTH-RBAC-016`, el catálogo activo de 140 PermissionKey, el dataset operacional vigente con 16 grants por cada rol productivo —5 FOGO y 11 NEXO—, `fogo.production.batches.create` y `nexo.inventory.withdrawals.register` concedidos a los tres roles, ausencia de `nexo.inventory.adjustments.register` en esos roles, modalidad `BASE_AND_OPERATIONAL` del ajuste, componentes base restringidos y cobertura existente de `TREQ-AUTH-010`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron casos reales de producción, consumo, ajuste, turno, check-in, lote ni autorización. |
+| FÍSICA | NOT_EXECUTED | No se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes, permisos, roles, datasets ni ambientes. |
+
+---
+
+#### 30. Criterios de aceptación
+
+`AUTH-QA-011` queda documentalmente correcta cuando se demuestra que:
+
+1. el universo certificado contiene exactamente `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`;
+2. cada rol se evalúa con su área productiva exacta;
+3. cada rol conserva dieciséis grants vigentes en el dataset observado, distribuidos en cinco FOGO y once NEXO;
+4. `fogo.production.batches.create` está concedido como `DIRECT_OPERATIONAL` y `OPERATIONAL_ONLY` a los tres roles;
+5. el caso positivo exige turno, check-in, área, orden, receta y recurso compatibles;
+6. `nexo.inventory.withdrawals.register` permanece autorizado únicamente como consumo trazable y acotado;
+7. `nexo.inventory.adjustments.register` no aparece como grant de ninguno de los tres roles productivos;
+8. el ajuste conserva modalidad `BASE_AND_OPERATIONAL` y no se reduce a un solo carril;
+9. los casos negativos mantienen contexto productivo válido para aislar segregación de funciones;
+10. un componente base aislado no permite el ajuste cuando el rol productivo carece del componente operativo;
+11. la denegación de ajuste conserva cero efectos;
+12. acceso a FOGO, NEXO, dispositivo o misma sede no amplía autoridad;
+13. los evaluadores aplicables conservan paridad;
+14. la certificación usa catálogo y datasets vigentes;
+15. no se crean ni modifican requisitos de prueba;
+16. no se ejecutan cambios físicos.
+
+---
+
+#### 31. Límites
+
+Esta tarea no:
+
+- redefine las matrices completas de `produccion_cocina`, `produccion_panaderia` o `produccion_reposteria`;
+- cambia sus grants vigentes;
+- redefine la matriz de `gerencia_operativa`;
+- concede ajustes a producción;
+- elimina consumo productivo legítimo;
+- convierte `withdrawals.register` en ajuste;
+- crea o elimina PermissionKey;
+- crea grants o denies;
+- redefine el catálogo de permisos;
+- define permisos futuros de estados productivos no materializados;
+- certifica PULSO; pertenece a `AUTH-QA-012`;
+- certifica conductor; pertenece a `AUTH-QA-013` y `AUTH-QA-014`;
+- certifica compras o recepción; pertenece a `AUTH-QA-015` y `AUTH-QA-016`;
+- modifica UI o navegación;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos o datasets;
+- ejecuta `AUTH-QA-011::<package_id>`;
+- ejecuta `AUTH-QA-011::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`.
+
+---
+
+#### 32. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-010 — Bodeguero puede preparar pero no producir`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-011 — Producción puede producir pero no ajustar inventario global`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-012 — Cajero puede operar PULSO pero no configurar`
 ### [ ] AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
 ### [ ] AUTH-QA-013 — Conductor puede transitar sin área productiva
 ### [ ] AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general

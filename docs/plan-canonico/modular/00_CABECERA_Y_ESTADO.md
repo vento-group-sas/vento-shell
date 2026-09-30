@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1533** |
+| Tareas aprobadas | **1534** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **63** |
+| Tareas no iniciadas | **62** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **96.05% (1533/1596)** |
+| Porcentaje de completamiento | **96.12% (1534/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-010 — Bodeguero puede preparar pero no producir** |
-| Tarea actual | **AUTH-QA-011 — Producción puede producir pero no ajustar inventario global** |
+| Última tarea aprobada | **AUTH-QA-011 — Producción puede producir pero no ajustar inventario global** |
+| Tarea actual | **AUTH-QA-012 — Cajero puede operar PULSO pero no configurar** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-012 — Cajero puede operar PULSO pero no configurar** |
+| Siguiente tarea | **AUTH-QA-013 — Conductor puede transitar sin área productiva** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 10 de 60 aprobadas; AUTH-QA-011 pendiente** |
+| Progreso del bloque | **BLOQUE U: 11 de 60 aprobadas; AUTH-QA-012 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-011** |
+| Carril documental | **ACTIVO — AUTH-QA-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-010` — Bodeguero puede preparar pero no producir |
-| Tarea actual | `AUTH-QA-011` — Producción puede producir pero no ajustar inventario global — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-012` — Cajero puede operar PULSO pero no configurar |
+| Última aprobada | `AUTH-QA-011` — Producción puede producir pero no ajustar inventario global |
+| Tarea actual | `AUTH-QA-012` — Cajero puede operar PULSO pero no configurar — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-013` — Conductor puede transitar sin área productiva |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 10 DE 60 APROBADAS — ACTUAL AUTH-QA-011** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 11 DE 60 APROBADAS — ACTUAL AUTH-QA-012** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-010 — Bodeguero puede preparar pero no producir
-        ↓
-TAREA ACTUAL
 AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-013 — Conductor puede transitar sin área productiva
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 10 de 60 tareas aprobadas
+BLOQUE U — 11 de 60 tareas aprobadas
 ```
