@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1536** |
+| Tareas aprobadas | **1537** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **60** |
+| Tareas no iniciadas | **59** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **96.24% (1536/1596)** |
+| Porcentaje de completamiento | **96.30% (1537/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-013 — Conductor puede transitar sin área productiva** |
-| Tarea actual | **AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general** |
+| Última tarea aprobada | **AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general** |
+| Tarea actual | **AUTH-QA-015 — Compras puede crear órdenes según alcance** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-015 — Compras puede crear órdenes según alcance** |
+| Siguiente tarea | **AUTH-QA-016 — Recepción puede recibir pero no aprobar compras** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 13 de 60 aprobadas; AUTH-QA-014 pendiente** |
+| Progreso del bloque | **BLOQUE U: 14 de 60 aprobadas; AUTH-QA-015 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-014** |
+| Carril documental | **ACTIVO — AUTH-QA-015** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-013` — Conductor puede transitar sin área productiva |
-| Tarea actual | `AUTH-QA-014` — Conductor no puede preparar ni recibir inventario general — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-015` — Compras puede crear órdenes según alcance |
+| Última aprobada | `AUTH-QA-014` — Conductor no puede preparar ni recibir inventario general |
+| Tarea actual | `AUTH-QA-015` — Compras puede crear órdenes según alcance — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-016` — Recepción puede recibir pero no aprobar compras |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 13 DE 60 APROBADAS — ACTUAL AUTH-QA-014** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 14 DE 60 APROBADAS — ACTUAL AUTH-QA-015** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-013 — Conductor puede transitar sin área productiva
-        ↓
-TAREA ACTUAL
 AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-015 — Compras puede crear órdenes según alcance
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 13 de 60 tareas aprobadas
+BLOQUE U — 14 de 60 tareas aprobadas
 ```
