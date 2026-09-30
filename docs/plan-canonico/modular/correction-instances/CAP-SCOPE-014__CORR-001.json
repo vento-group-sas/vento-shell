@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,36 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/05_03_COMERCIAL_CLIENTES_LOGISTICA_FINANZAS_E_INSTALACIONES.md",
+      "change": "MODIFY",
+      "scope": "Corregir exclusivamente H-CAP-SCOPE-014-029 reemplazando la referencia erronea TREQ-SUPABASE-007 por el requisito historico vigente TREQ-DATA-003. No modificar el texto del hallazgo, su identidad, severidad, etapa ni ninguna otra relacion."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "La correccion cambia exclusivamente una referencia documental de cobertura de H-CAP-SCOPE-014-029. TREQ-DATA-003 ya existe y ningun requisito TREQ ni fragmento 04A es creado, modificado, diferido u obsoleto.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-30T03:52:53.058Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: corregir la contradiccion documental confirmada de H-CAP-SCOPE-014-029 sin modificar requisitos TREQ ni 04A.",
+    "source_contract_sha256": "e70857cae64e4d101cd020e419793e51cef15b4ccd3e747a592b6c26c2d6378e"
+  },
   "evidence": [],
   "opened_at": "2026-09-30T03:28:31.309Z"
 }

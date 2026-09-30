@@ -12,17 +12,23 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `CAP-SCOPE-014::CORR-001`
+### 1. Termina la corrección abierta — `CAP-SCOPE-014::CORR-001`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO: corregir la contradiccion documental confirmada de H-CAP-SCOPE-014-029 sin modificar requisitos TREQ ni 04A.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/05_03_COMERCIAL_CLIENTES_LOGISTICA_FINANZAS_E_INSTALACIONES.md`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `npm run docs:correction:check`
+  2. `npm run docs:correction:test`
+  3. `npm run docs:plan:check`
+  4. `npm run docs:plan:test`
+  5. `npm run docs:treq:check`
+  6. `npm run docs:treq:test`
+  7. `git --no-pager diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id CAP-SCOPE-014::CORR-001`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-002`
