@@ -17288,7 +17288,1060 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-023 — Cruce de sede queda bloqueado`
-### [ ] AUTH-QA-023 — Cruce de sede queda bloqueado
+### ✅ AUTH-QA-023 — Cruce de sede queda bloqueado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-022 — RPC manipulada queda bloqueada
+**Tarea siguiente:** AUTH-QA-024 — Cruce de área queda bloqueado
+**Tipo de tarea:** documental; definición canónica de una prueba integral adversarial de autorización territorial por sede, reutilizable por paquete y certificable globalmente, que demuestra que ninguna lectura, mutación, transferencia, operación multisede, lote, RPC, API, Server Action, validación interna privilegiada ni cambio de sede puede cruzar hacia una sede no cubierta por la capacidad, el recurso y el contexto efectivos, y que todos los lados territoriales obligatorios se resuelven y autorizan antes del primer efecto protegido
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-023::<package_id>` y la certificación `AUTH-QA-023::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; los contratos territoriales de sede de `AUTH-SRV-006` y `AUTH-SRV-012`, junto con los contratos de RPC, contexto, permisos y RLS aplicables, existen documentalmente pero esta tarea no infiere materialización completa ni certificación E2E de los cruces de sede en los packages consumidores
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan lecturas o mutaciones cross-site reales, no se transfieren recursos, no se invocan RPC ni APIs operativas, no se alteran sedes, asignaciones, turnos, dispositivos, grants, RLS, funciones, migraciones, datos, código, ambientes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una sede autorizada nunca presta autoridad sobre otra sede y que una operación que necesita uno o varios territorios resuelve y valida todos sus lados reales antes de leer datos protegidos o producir efectos.
+
+La regla raíz queda:
+
+```text
+AUTORIDAD EN SEDE A
+≠
+AUTORIDAD EN SEDE B
+```
+
+Y para toda operación territorial aplicable:
+
+```text
+OPERACION EFECTIVA
++ RECURSO / BORRADOR CANONICO
++ CLASIFICACION TERRITORIAL
++ REQUIRED_SIDES
++ SEDES REALES RESUELTAS
++ EXISTENCIA Y ACTIVIDAD
++ PERMISO EXACTO Y SCOPE POR LADO
++ CONTEXTO / DISPOSITIVO / ESTADO APLICABLES
+=
+DECISION TERRITORIAL COMPLETA
+ANTES DE LECTURA PROTEGIDA O EFECTO
+```
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y seis resultados obligatorios:
+
+1. conocer, seleccionar o enviar una sede no concede autoridad sobre ella;
+2. `site_id`, `selected_site_id`, sede primaria, sede del dispositivo o sede preferida no sustituyen la sede real del recurso;
+3. una operación `SINGLE_SITE` usa la sede real resuelta por el contrato propietario;
+4. una operación `MULTI_SITE_RESOURCE` resuelve todos los lados obligatorios;
+5. una operación `SITE_TRANSFER` conserva separadas la sede actual y la propuesta;
+6. una dependencia `VALIDATION_ONLY_CROSS_SITE_DEPENDENCY` no amplía visibilidad ni autoridad;
+7. `NON_TERRITORIAL` no recibe una sede artificial para satisfacer el test;
+8. `required_sides` procede del contrato canónico del recurso y de la acción;
+9. cada lado obligatorio resuelve una identidad de sede determinista;
+10. toda sede requerida debe existir y cumplir la condición de actividad que corresponda antes del efecto;
+11. una sede ausente, inactiva, aislada, ambigua o no resoluble falla cerrada cuando sea material;
+12. la capacidad exacta se evalúa para cada lado que el contrato exija;
+13. un lado autorizado no compensa otro lado denegado;
+14. `GLOBAL` conserva dominio, recurso, estado y restricciones de entorno y no significa autoridad universal;
+15. `ASSIGNED_SITES` exige cobertura efectiva de cada sede requerida;
+16. `SPECIFIC_SITE` no se promueve a otra sede;
+17. un alcance por tipo de sede no convierte cualquier sede de ese tipo en autoridad sin las demás condiciones;
+18. contexto operativo de una sede no se presta a otra;
+19. rol base u operativo no crea cobertura multisede por sí solo;
+20. el vínculo territorial del trabajador objetivo no sustituye la autoridad territorial del actor;
+21. un dispositivo compartido puede restringir territorio y nunca ampliarlo;
+22. simulación puede evaluar un cruce hipotético pero no ejecutar un cruce real;
+23. una lectura cross-site no autorizada no devuelve filas, agregados o existencia protegida que creen fuga territorial;
+24. una mutación cross-site no produce efectos parciales antes de completar todos los lados obligatorios;
+25. lotes y conjuntos heterogéneos no heredan autoridad de un miembro permitido;
+26. cambios de sede A → B requieren las condiciones territoriales de A y B que declare el contrato;
+27. la sede real y las asignaciones se revalidan cuando frescura, estado o concurrencia puedan invalidarlas;
+28. Server Actions, API routes, RPC, RLS y funciones privilegiadas conservan la misma frontera territorial;
+29. `service_role`, admin client o `SECURITY DEFINER` no sustituyen autoridad empresarial cross-site;
+30. validaciones internas que necesiten hechos de otras sedes minimizan el resultado y no amplían `read_scope` ni `write_scope`;
+31. errores y denegaciones no revelan recursos o sedes fuera de alcance;
+32. auditoría conserva los lados y la decisión territorial sin convertir argumentos cliente en fuente de verdad;
+33. el bypass de superficie permanece cubierto por `AUTH-QA-020..022` y no sustituye esta matriz cross-site;
+34. el cruce integral de área permanece reservado a `AUTH-QA-024`;
+35. la ejecución física se realiza por package y luego mediante certificación global final;
+36. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `AUTH-SRV-004`, para tratar valores cliente como intención no autoritativa;
+- `AUTH-SRV-005`, para el permiso exacto de la operación;
+- `AUTH-SRV-006`, para resolver y validar la sede real de operaciones single-site;
+- `AUTH-SRV-007..011`, para área, turno, rol operativo, dispositivo y estado cuando correspondan;
+- `AUTH-SRV-012`, para clasificación cross-site, `required_sides`, cobertura completa y no ampliación por validación interna;
+- `AUTH-SRV-013`, únicamente como gate posterior de área cuando la operación lo requiera;
+- `AUTH-SRV-014..018`, para atribución, simulación, errores, helpers compartidos y acciones administrativas;
+- `AUTH-DB-007`, para la resolución de sede dentro de RPC sensibles cuando esa materialización sea aplicable;
+- `AUTH-DB-009`, para el permiso exacto dentro de RPC sensibles;
+- `AUTH-DB-021`, para RLS y grants canónicos por esquema;
+- los contratos vigentes de recurso, alcance, contexto, frescura, denegaciones, auditoría e identidad territorial;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La prueba no usa como autoridad una sede seleccionada en UI, un parámetro de URL, una sede primaria, `employees.site_id`, una sede del dispositivo, un body, una RPC argument, un filtro de tabla, una decisión previa stale ni una credencial técnica privilegiada.
+
+---
+
+#### 4. Semántica exacta de “cruce de sede queda bloqueado”
+
+El título no significa que toda operación que mencione dos sedes sea inválida.
+
+La certificación distingue:
+
+```text
+OPERACION LEGITIMAMENTE MULTISEDE
++ TODOS LOS LADOS REQUERIDOS RESUELTOS
++ TODAS LAS SEDES VALIDAS
++ COBERTURA SUFICIENTE POR LADO
++ RESTO DE GATES SATISFECHOS
+→ OPERACION POSIBLE
+```
+
+De:
+
+```text
+OPERACION TERRITORIAL
++ AL MENOS UN LADO FUERA DE COBERTURA
+→ DENY / RESPUESTA SEGURA
+→ CERO FUGA Y CERO EFECTO PROTEGIDO
+```
+
+Y de:
+
+```text
+ESCRITURA SINGLE-SITE AUTORIZADA
++ VALIDACION INTERNA NECESITA HECHOS DE OTRAS SEDES
+→ LECTURA INTERNA MINIMA
+→ SIN AMPLIAR READ_SCOPE NI WRITE_SCOPE DEL ACTOR
+```
+
+La propiedad certificada es que el sistema conoce qué sedes necesita la operación y no transforma la autorización parcial, la selección del cliente o el privilegio técnico en cobertura territorial completa.
+
+---
+
+#### 5. Frontera con pruebas territoriales anteriores
+
+`AUTH-QA-003` demuestra la cobertura territorial de un gerente respecto de sus sedes.
+
+`AUTH-QA-007` demuestra el aislamiento de un trabajador respecto de la sede operativa efectiva de su turno.
+
+`AUTH-QA-009` demuestra que una rotación de turno recalcula contexto y permisos sin herencia.
+
+`AUTH-QA-023` no redefine esos perfiles.
+
+Su responsabilidad es transversal y orientada al recurso/operación:
+
+```text
+DADO CUALQUIER ACTOR Y CAPACIDAD APLICABLES
+¿QUE SUCEDE CUANDO LA OPERACION REAL TOCA,
+INTENTA MOVERSE HACIA O DEPENDE DE OTRA SEDE?
+```
+
+Las fixtures de actor se seleccionan desde los contratos ya aprobados y no se inventa un rol especial “cross-site”.
+
+---
+
+#### 6. Universo de certificación
+
+`AUTH-QA-023` no inventa un conteo global de operaciones territoriales.
+
+El universo aplicable se deriva por package desde la intersección verificable entre:
+
+```text
+acciones / lecturas con recurso territorial
+∩
+recursos o borradores materialmente presentes
+∩
+contratos de territorio / required_sides
+∩
+superficies server y de datos que ejecutan la operación
+∩
+package propietario
+```
+
+Cada entrada aplicable debe clasificarse exactamente una vez y conservar referencia al recurso, acción, superficie y contrato que determinan sus sedes.
+
+Una superficie inexistente en el package no se fabrica para completar la prueba.
+
+---
+
+#### 7. Clasificación territorial obligatoria
+
+Toda operación aplicable debe quedar en una de estas clases:
+
+| Clase | Semántica de `AUTH-QA-023` |
+| --- | --- |
+| `SINGLE_SITE` | Todos los lados obligatorios resuelven una sola sede y no cambia la propiedad territorial. Consume la sede validada por `AUTH-SRV-006`. |
+| `MULTI_SITE_RESOURCE` | La acción exige simultáneamente dos o más sedes reales y debe autorizar todos los lados requeridos. |
+| `SITE_TRANSFER` | La acción cambia la sede propietaria o territorial de un recurso existente y conserva separadas sede actual y sede propuesta. |
+| `VALIDATION_ONLY_CROSS_SITE_DEPENDENCY` | El efecto permanece en una sede autorizada pero una invariante server-side necesita hechos mínimos de sedes adicionales. No amplía autoridad. |
+| `NON_TERRITORIAL` | El recurso o acción no posee dimensión de sede material. Se registra como no aplicable sin inventar territorio. |
+
+La clasificación se obtiene antes del primer efecto y no cambia implícitamente para evitar un gate.
+
+---
+
+#### 8. Identidad de sede y fuentes canónicas
+
+Para sedes empresariales ordinarias, existencia y estado se resuelven desde la fuente canónica vigente de sedes, incluida `public.sites` donde ese contrato aplique.
+
+Las asignaciones laborales se resuelven desde `public.employee_sites` cuando el modo de alcance las consume.
+
+Se mantienen separados:
+
+```text
+assigned_site
+primary_site
+selected_site
+administrative_active_site
+operational_active_site
+resource_site
+requested_site
+device_site
+```
+
+Ninguna de esas identidades se promueve a otra por conveniencia.
+
+`employees.site_id` conserva carácter legacy y no sustituye una relación canónica de asignación cuando el contrato exige `employee_sites`.
+
+---
+
+#### 9. `required_sides`
+
+La prueba consume `required_sides` desde el contrato canónico del recurso y de la acción.
+
+Entre los lados válidos pueden existir:
+
+```text
+RESOURCE
+ORIGIN
+DESTINATION
+SOURCE
+TARGET
+PARENT
+CHILD
+CUSTODIAN
+VEHICLE
+```
+
+No todas las acciones sobre un recurso multisede exigen todos sus lados.
+
+La certificación falla tanto si un lado obligatorio se omite como si se inventa un lado no exigido para bloquear una operación válida.
+
+---
+
+#### 10. Baseline `SINGLE_SITE`
+
+Toda matriz cross-site incluye un control single-site positivo y uno negativo.
+
+Control positivo:
+
+```text
+RECURSO EN SEDE A
++ ACTOR CUBRE A
++ RESTO DEL CONTRATO VALIDO
+→ RESULTADO PERMITIDO SEGUN LA OPERACION
+```
+
+Control negativo:
+
+```text
+RECURSO EN SEDE B
++ ACTOR SOLO CUBRE A
+→ DENY / RESPUESTA SEGURA
+```
+
+El test demuestra que la lógica cross-site no rompe el camino single-site válido y que el mismo permiso no cruza a otra sede por inferencia.
+
+---
+
+#### 11. Recurso multisede
+
+Para `MULTI_SITE_RESOURCE`:
+
+```text
+required_sides
+→ resolver identidad de sede por lado
+→ validar existencia / actividad
+→ evaluar capacidad y scope por lado
+→ combinar sin ampliacion
+```
+
+Si el contrato exige:
+
+```text
+[ORIGIN, DESTINATION]
+```
+
+entonces:
+
+```text
+ORIGIN = ALLOW
+DESTINATION = DENY
+→ DENY TOTAL
+```
+
+Y simétricamente para cualquier otro lado obligatorio.
+
+---
+
+#### 12. Transferencia de sede
+
+Un cambio territorial de un recurso existente se clasifica como `SITE_TRANSFER`.
+
+La prueba conserva:
+
+```text
+current_site = A
+proposed_site = B
+```
+
+Y demuestra que:
+
+- autoridad únicamente en `A` no permite colocar el recurso en `B`;
+- autoridad únicamente en `B` no permite tomar un recurso desde `A`;
+- el request no puede convertir la transferencia en update ordinario enviando solo `B`;
+- la sede actual se relee desde el recurso vigente;
+- la sede propuesta se valida antes del efecto;
+- el contrato propietario decide qué capacidad o capacidades exactas aplican a cada lado.
+
+---
+
+#### 13. Dependencia interna de validación cross-site
+
+Una operación single-site puede necesitar hechos de otras sedes para validar una invariante.
+
+Ejemplo contractual ya existente: un total mensual puede necesitar considerar todas las sedes del trabajador sin ampliar lo que el administrador puede ver o mutar.
+
+La certificación exige:
+
+```text
+write_scope = sede autorizada del efecto
+validation_dependency_scope = hechos minimos adicionales
+```
+
+Y demuestra que la dependencia interna:
+
+- no devuelve filas auxiliares protegidas;
+- no habilita navegación a otra sede;
+- no amplía `read_scope` visible;
+- no amplía `write_scope`;
+- no convierte un agregado interno en permiso de consulta;
+- conserva finalidad limitada y trazabilidad.
+
+---
+
+#### 14. Lectura cross-site
+
+Una lectura protegida de otra sede debe fallar o minimizarse conforme al contrato propietario.
+
+No puede revelar indirectamente:
+
+- filas;
+- nombres;
+- conteos sensibles;
+- estados;
+- existencia de recursos;
+- identificadores;
+- agregados que permitan inferencia indebida;
+- metadata territorial no autorizada.
+
+La ausencia de una mutación no convierte una fuga territorial en PASS.
+
+---
+
+#### 15. Mutación cross-site
+
+Toda mutación territorial exige que la decisión completa preceda al primer efecto protegido.
+
+No puede quedar:
+
+- primera fila actualizada antes de validar el segundo lado;
+- origen debitado y destino no autorizado;
+- recurso retirado de A antes de validar B;
+- evento, mensaje o job emitido antes del gate territorial completo;
+- auditoría que afirme éxito para una operación denegada;
+- compensación usada como sustituto rutinario de autorización previa cuando el contrato exige atomicidad.
+
+---
+
+#### 16. Permiso exacto por lado
+
+Cada lado consume la capacidad exacta definida por la operación.
+
+No son sustitutos:
+
+```text
+app access
+view permission
+role name
+screen visibility
+selected site
+site assignment aislada
+```
+
+Si origen y destino requieren capacidades distintas, cada lado conserva su propia clave canónica.
+
+Una coincidencia de rol o sede no fusiona permisos.
+
+---
+
+#### 17. Scopes de sede
+
+La certificación conserva las semánticas aprobadas:
+
+```text
+GLOBAL
+ASSIGNED_SITES
+SPECIFIC_SITE
+scope por tipo de sede cuando exista
+```
+
+Reglas mínimas:
+
+- `GLOBAL` cubre únicamente el dominio de la capacidad exacta y no elimina recurso, estado ni restricciones de entorno;
+- `ASSIGNED_SITES` exige que cada sede obligatoria pertenezca al conjunto efectivo cuando ese scope consuma asignación;
+- `SPECIFIC_SITE` cubre solo la identidad exacta declarada;
+- un scope por tipo de sede continúa exigiendo una sede real válida, activa y compatible;
+- `null` nunca se interpreta como wildcard global por ausencia de contrato explícito.
+
+---
+
+#### 18. Carril administrativo y carril operativo
+
+Una misma operación puede tener condiciones territoriales distintas según su carril.
+
+Administrativo:
+
+```text
+actor
++ capacidad exacta
++ cobertura administrativa
++ recurso / required_sides
+```
+
+Operativo:
+
+```text
+actor
++ capacidad exacta
++ contexto operativo vigente
++ sede operativa aplicable
++ recurso / required_sides
+```
+
+Un turno activo en una sede no presta autoridad operativa sobre otra.
+
+Una capacidad administrativa válida sin turno tampoco elimina los controles territoriales que sí le correspondan.
+
+---
+
+#### 19. Actor y trabajador objetivo
+
+En operaciones sobre otra persona se mantienen separados:
+
+```text
+ACTOR
+TARGET EMPLOYEE
+```
+
+Que el trabajador objetivo esté vinculado a la sede B no demuestra que el actor pueda administrar B.
+
+La prueba debe poder demostrar de forma independiente:
+
+- elegibilidad territorial del recurso o trabajador objetivo;
+- autoridad territorial del actor;
+- capacidad exacta para la acción.
+
+---
+
+#### 20. Sede ausente, inactiva, aislada o ambigua
+
+Cuando sea material para la operación, cualquiera de estas condiciones bloquea el efecto:
+
+```text
+required_site_missing
+required_site_inactive
+required_site_unresolved
+required_site_conflict
+required_site_scope_mismatch
+isolated_site_not_authorized
+```
+
+La clasificación es diagnóstica.
+
+No crea reason codes públicos nuevos ni autoriza fallback hacia sede primaria, seleccionada o enviada por cliente.
+
+---
+
+#### 21. Dispositivo compartido
+
+Un dispositivo puede fijar o restringir el territorio utilizable por la sesión.
+
+Nunca puede:
+
+- ampliar las sedes del actor;
+- sustituir `required_sides`;
+- convertir su propia sede en sede del recurso;
+- prestar autoridad humana a un actor que no la posee.
+
+Si una restricción de dispositivo es incompatible con un lado obligatorio, el resultado permanece no ejecutable conforme al contrato del dispositivo.
+
+---
+
+#### 22. Simulación
+
+La simulación conserva dos territorios conceptualmente distintos:
+
+```text
+territorio real del actor
+territorio hipotetico evaluado
+```
+
+Una simulación puede calcular `WOULD_ALLOW` o `WOULD_DENY` para un cruce.
+
+No puede:
+
+- ejecutar una transferencia real;
+- persistir sobre la sede simulada;
+- convertir una sede hipotética en asignación real;
+- conservar autoridad simulada después de salir de su frontera.
+
+La certificación propietaria de no herencia simulada permanece en `AUTH-QA-019`.
+
+---
+
+#### 23. Estado, frescura y concurrencia
+
+La sede y la cobertura pueden cambiar entre evaluación y efecto.
+
+La prueba debe cubrir, cuando sea material:
+
+```text
+resource site cambia A → B
+assignment de A se revoca
+site se vuelve inactive
+required side cambia
+turno o contexto territorial rota
+version del recurso cambia
+```
+
+La regla queda:
+
+```text
+HECHOS TERRITORIALES STALE
+→ REAUTHORIZE OR FAIL
+```
+
+Nunca:
+
+```text
+ALLOW ANTERIOR
+→ EFECTO SOBRE NUEVO TERRITORIO
+```
+
+---
+
+#### 24. Operaciones masivas y conjuntos heterogéneos
+
+Un lote puede contener recursos de:
+
+```text
+site A
+site B
+site C
+```
+
+La certificación exige que cada recurso y cada lado obligatorio conserve su propia resolución territorial.
+
+La política de todo-o-nada o procesamiento parcial pertenece al comando propietario.
+
+En cualquier caso queda prohibido:
+
+- tratar una fila permitida como evidencia para las demás;
+- producir efectos sobre miembros no autorizados;
+- devolver miembros fuera de alcance;
+- esconder una denegación territorial dentro de un resultado global de éxito.
+
+---
+
+#### 25. Server Actions y handlers
+
+Una Server Action o handler territorial debe poder demostrar:
+
+```text
+request
+→ operacion efectiva
+→ recurso / draft validado
+→ clasificacion territorial
+→ required_sides
+→ sedes reales
+→ autorizacion por lado
+→ restantes gates
+→ efecto
+```
+
+Una página previamente filtrada por sede no sustituye ese recorrido.
+
+Una llamada directa al handler debe producir la misma frontera territorial.
+
+---
+
+#### 26. API routes
+
+Una API route no usa como autoridad:
+
+```text
+path site
+query site
+body site
+header site
+```
+
+Para un recurso existente debe releer su territorio antes de decidir.
+
+Si un update cambia la sede, debe clasificarse como `SITE_TRANSFER` en vez de tratar el nuevo `site_id` como contexto ya autorizado.
+
+---
+
+#### 27. RPC y funciones privilegiadas
+
+Una RPC territorial directa debe conservar la misma resolución de lados que el camino visible.
+
+Los argumentos:
+
+```text
+p_site_id
+origin_site
+destination_site
+target_site
+selected_site
+```
+
+son intención o localizadores según contrato, no autoridad.
+
+Una función `SECURITY DEFINER` o equivalente que calcule reglas multisede debe:
+
+- identificar la operación;
+- reconstruir o recibir contexto validado según su frontera;
+- resolver todos los lados materiales;
+- limitar resultados auxiliares;
+- conservar trazabilidad;
+- no omitir autorización empresarial porque la función pueda omitir RLS.
+
+La resistencia específica de la RPC frente a manipulación directa permanece además cubierta por `AUTH-QA-022`.
+
+---
+
+#### 28. RLS, grants y Data API
+
+RLS, grants, Data API y autorización de aplicación son capas relacionadas pero no intercambiables.
+
+La certificación exige que una ampliación territorial no aparezca porque:
+
+- una función tenga `EXECUTE` amplio;
+- una tabla tenga policy demasiado permisiva;
+- una capa de aplicación filtre pero una RPC privilegiada no;
+- una policy proteja escritura pero una lectura auxiliar devuelva filas de otra sede;
+- `service_role` evite RLS.
+
+Cada capa conserva su owner y sus pruebas propietarias.
+
+---
+
+#### 29. `service_role`, admin client y privilegio técnico
+
+Una credencial técnica puede necesitar acceso amplio para resolver una invariante.
+
+Eso no significa:
+
+```text
+all_sites_business_authority
+```
+
+La utilización válida exige, cuando aplique:
+
+```text
+authorized target operation
++ required cross-site validation dependency
++ minimal privileged read
++ no visibility expansion
++ effect confined to authorized scope
+```
+
+---
+
+#### 30. Errores seguros y no enumeración
+
+Una denegación territorial no debe crear un oráculo para descubrir recursos de otra sede.
+
+La proyección pública puede minimizar diferencias entre:
+
+```text
+resource absent
+resource outside scope
+site outside scope
+```
+
+cuando el contrato de sensibilidad lo requiera.
+
+Internamente deben conservarse causas suficientes para auditoría y diagnóstico sin exponer:
+
+- identificadores ajenos;
+- nombres de sedes no visibles;
+- permisos internos;
+- SQL;
+- tokens;
+- stack traces;
+- filas auxiliares de validación.
+
+---
+
+#### 31. Auditoría y lineage
+
+La evidencia de cada caso aplicable debe poder reconstruir, sin registrar secretos:
+
+- `package_id`;
+- acción u operación canónica;
+- actor efectivo;
+- recurso o borrador controlado;
+- clasificación territorial;
+- `required_sides`;
+- sede resuelta por lado;
+- fuente de cada sede;
+- estado/actividad relevante;
+- capacidad y scope aplicables;
+- resultado territorial por lado;
+- restricciones de dispositivo o contexto cuando apliquen;
+- dependencias de validación internas;
+- decisión final;
+- efectos protegidos observados;
+- correlación y evidencia.
+
+Los valores enviados por cliente pueden registrarse de forma minimizada para comparar intención versus resolución, pero no se convierten en identidad territorial autoritativa.
+
+---
+
+#### 32. Frontera con `AUTH-QA-022`
+
+`AUTH-QA-022` demuestra que una RPC directa manipulada no obtiene autoridad por argumentos, grants o privilegio técnico.
+
+`AUTH-QA-023` usa esas superficies cuando correspondan, pero su pregunta es distinta:
+
+```text
+¿TODOS LOS LADOS DE SEDE QUE LA OPERACION REAL EXIGE
+ESTAN RESUELTOS Y AUTORIZADOS?
+```
+
+Una RPC puede pasar `AUTH-QA-022` contra manipulación de parámetros y todavía fallar `AUTH-QA-023` si omite un lado obligatorio del recurso multisede.
+
+---
+
+#### 33. Frontera con `AUTH-QA-024`
+
+`AUTH-QA-023` certifica la dimensión de sede.
+
+No demuestra que el actor pueda operar cualquier área dentro de una sede aceptada.
+
+La siguiente tarea conserva íntegramente:
+
+```text
+AUTH-QA-024 — Cruce de área queda bloqueado
+```
+
+Cuando una operación exija ambos territorios, el gate de sede debe completarse sin absorber la matriz de áreas.
+
+---
+
+#### 34. Frontera con `AUTH-QA-026`
+
+Una cola offline o reintento diferido que finalmente ejecute una operación territorial debe reevaluar la sede y los lados materiales en el momento de ejecución.
+
+`AUTH-QA-023` certifica únicamente que una decisión territorial stale no sea reutilizada como autoridad.
+
+La semántica integral de cola offline, replay, persistencia local y revalidación al sincronizar permanece reservada a `AUTH-QA-026`.
+
+---
+
+#### 35. Baseline físico observado
+
+El estado verificable es **contractualmente definido pero no certificado integralmente** para `AUTH-QA-023`:
+
+1. `AUTH-SRV-006` define cómo resolver y validar la sede real de una escritura single-site;
+2. `AUTH-SRV-012` define clasificación `SINGLE_SITE`, `MULTI_SITE_RESOURCE`, `SITE_TRANSFER`, dependencias internas de validación y cobertura por `required_sides`;
+3. `AUTH-DB-007` define la adopción de resolución territorial dentro de RPC sensibles por package;
+4. `AUTH-DB-009` y `AUTH-DB-021` conservan permiso exacto, RLS y grants donde correspondan;
+5. el Registro 04A ya exige denegación de cruces territoriales y resolución de todas las sedes obligatorias;
+6. `TREQ-VISO-033` ya exige calcular el total mensual con todas las sedes relevantes sin ampliar la visibilidad del administrador;
+7. `TREQ-PULSO-015` ya prohíbe que `site_id` amplíe el territorio del actor;
+8. esta tarea no transforma esos contratos u obligaciones en evidencia física de PASS.
+
+---
+
+#### 36. Casos mínimos obligatorios por package
+
+| Caso | Condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-023-A` | operación single-site válida en sede autorizada | comportamiento permitido únicamente después de resolver y autorizar la sede real |
+| `AUTH-QA-023-B` | mismo recurso o acción apunta a sede fuera del scope | `DENY` o respuesta segura; cero dato/efecto ajeno |
+| `AUTH-QA-023-C` | cliente cambia `site_id` pero el recurso persiste en otra sede | prevalece sede del recurso; cero bypass |
+| `AUTH-QA-023-D` | `MULTI_SITE_RESOURCE` con todos los lados autorizados | operación posible solo después de autorizar todos los lados requeridos |
+| `AUTH-QA-023-E` | origen autorizado y destino denegado | `DENY`; cero efecto parcial |
+| `AUTH-QA-023-F` | destino autorizado y origen denegado | `DENY`; cero efecto parcial |
+| `AUTH-QA-023-G` | un lado obligatorio no puede resolverse | fail-closed; cero efecto |
+| `AUTH-QA-023-H` | una sede obligatoria está inactiva cuando debe estar activa | `DENY`; cero efecto |
+| `AUTH-QA-023-I` | `SITE_TRANSFER` A → B con autoridad solo en A | `DENY`; recurso no sale de A |
+| `AUTH-QA-023-J` | `SITE_TRANSFER` A → B con autoridad solo en B | `DENY`; recurso no es tomado desde A |
+| `AUTH-QA-023-K` | `SPECIFIC_SITE=A` intenta tocar B | `DENY`; grant no se promueve |
+| `AUTH-QA-023-L` | `ASSIGNED_SITES` contiene A pero no B y la acción exige ambas | `DENY` completo |
+| `AUTH-QA-023-M` | capacidad global exacta sobre recurso permitido | se conserva resolución de lados, estado y límites del dominio; no wildcard universal |
+| `AUTH-QA-023-N` | turno operativo en A intenta mutar recurso de B | `DENY` salvo contrato canónico que cubra B sin prestar contexto de A |
+| `AUTH-QA-023-O` | dispositivo restringido a A y operación exige B incompatible | `DENY`; dispositivo no amplía autoridad |
+| `AUTH-QA-023-P` | simulación evalúa B y luego intenta ejecutar mutación real | `DENY`; contexto simulado no ejecutable |
+| `AUTH-QA-023-Q` | validación interna necesita hechos de B/C para un efecto autorizado en A | se usa información mínima; no se devuelven filas ni se amplía scope visible |
+| `AUTH-QA-023-R` | lote mezcla recursos de A/B/C y uno queda fuera de alcance | ninguna fila ajena se lee o muta; política parcial/todo-o-nada sigue al comando propietario |
+| `AUTH-QA-023-S` | recurso cambia de sede o asignación entre evaluación y efecto | reautorizar o fallar; cero `ALLOW` stale |
+| `AUTH-QA-023-T` | llamada directa a Server Action/API/RPC intenta omitir un lado | misma decisión territorial que el camino ordinario |
+| `AUTH-QA-023-U` | función privilegiada o `service_role` accede a hechos cross-site | privilegio técnico no amplía autoridad empresarial ni respuesta visible |
+| `AUTH-QA-023-V` | RLS o grant permitiría una fila que la autorización empresarial no cubre | la capa aplicable bloquea; no se presenta una capa como sustituto automático de otra |
+| `AUTH-QA-023-W` | recurso fuera de alcance se consulta para enumerar existencia | respuesta segura y minimizada; cero fuga territorial |
+| `AUTH-QA-023-X` | denegación se detecta después de un primer efecto | `FAIL`; la certificación exige autorización completa antes del primer efecto protegido |
+
+Los casos se ejecutan únicamente donde sean materialmente aplicables. `NOT_APPLICABLE` requiere evidencia de incompatibilidad real con la operación o package, no un PASS vacío.
+
+---
+
+#### 37. Clasificación de fallos
+
+Los fallos de `AUTH-QA-023` se clasifican por la frontera rota:
+
+- `CROSS_SITE_RESOURCE_SCOPE_BYPASS` — recurso de otra sede resulta visible o mutable;
+- `REQUIRED_SITE_SIDE_OMITTED` — un lado obligatorio no participa en la decisión;
+- `PARTIAL_SITE_AUTHORIZATION_ACCEPTED` — un subconjunto autorizado legitima lados denegados;
+- `SITE_TRANSFER_CURRENT_SIDE_BYPASS` — se toma un recurso desde una sede sin cobertura válida;
+- `SITE_TRANSFER_PROPOSED_SIDE_BYPASS` — se coloca el recurso en una sede sin cobertura válida;
+- `CLIENT_SITE_AUTHORITY_ACCEPTED` — `site_id` o equivalente se trata como autoridad;
+- `LEGACY_SITE_FALLBACK_AUTHORITY` — una fuente legacy o fallback reemplaza la relación territorial canónica;
+- `INACTIVE_SITE_EXECUTION` — una sede materialmente inactiva participa como válida;
+- `AMBIGUOUS_SITE_RESOLUTION` — territorio ambiguo se acepta sin resolución determinista;
+- `CROSS_SITE_OPERATIONAL_CONTEXT_BORROWED` — turno/check-in/contexto de una sede autoriza otra;
+- `CROSS_SITE_DEVICE_ESCALATION` — dispositivo amplía el territorio del actor;
+- `CROSS_SITE_SIMULATION_EXECUTION` — sede simulada produce efecto real;
+- `VALIDATION_DEPENDENCY_SCOPE_LEAK` — lectura interna auxiliar amplía visibilidad o autoridad;
+- `CROSS_SITE_BATCH_BYPASS` — un miembro autorizado legitima miembros fuera de alcance;
+- `STALE_SITE_AUTHORIZATION_REPLAY` — se reutiliza autorización territorial después de drift material;
+- `PRIVILEGED_CROSS_SITE_BYPASS` — privilegio técnico sustituye autorización empresarial;
+- `CROSS_SITE_INFORMATION_LEAK` — respuesta o error revela recursos/sedes fuera de alcance;
+- `PARTIAL_EFFECT_BEFORE_SITE_DENY` — existe side effect antes de completar todos los lados;
+- `CROSS_SITE_AUDIT_GAP` — la evidencia no permite reconstruir lados, sedes y resultado.
+
+La clasificación es diagnóstica y no crea nuevos reason codes públicos.
+
+---
+
+#### 38. Modelo de ejecución por paquete
+
+Cada package con operaciones territoriales aplicables ejecutará:
+
+```text
+AUTH-QA-023::<package_id>
+```
+
+únicamente cuando:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas territoriales aplicables estén disponibles;
+- recursos, lados y estados reproducibles existan para las fixtures;
+- haya actores controlados con scopes suficientes para los casos positivos y negativos;
+- las superficies server/data del package estén materializadas;
+- la instancia esté autorizada conforme al lifecycle físico vigente.
+
+Cada ejecución debe registrar por caso o superficie al menos:
+
+- `package_id`;
+- acción/operación;
+- clasificación territorial;
+- recurso o fixture;
+- `required_sides`;
+- sede esperada por lado;
+- fuente de resolución;
+- actor y contexto;
+- permiso y scope aplicables;
+- decisión esperada;
+- decisión observada;
+- exposición de datos observada `YES/NO`;
+- efectos protegidos observados `YES/NO`;
+- resultado `PASS/FAIL/NOT_APPLICABLE`;
+- referencia de evidencia.
+
+Esta tarea documental no selecciona package ni abre una instancia física.
+
+---
+
+#### 39. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-023::GLOBAL-FINAL
+```
+
+consolida todas las ejecuciones de los packages aplicables y falla si existe al menos una superficie donde:
+
+- una sede enviada por cliente se convierte en autoridad;
+- un recurso de otra sede se lee o muta sin cobertura válida;
+- un `required_side` material queda sin resolver o sin decisión;
+- un lado autorizado legitima otro denegado;
+- una transferencia valida solo la sede actual o solo la propuesta cuando el contrato exige ambas;
+- `ASSIGNED_SITES` o `SPECIFIC_SITE` se amplían por inferencia;
+- contexto operativo o dispositivo de una sede presta autoridad a otra;
+- una sede simulada produce efecto real;
+- una dependencia interna de validación amplía visibilidad;
+- un lote permite miembros fuera de scope;
+- una decisión stale continúa ejecutable después de drift territorial;
+- una función privilegiada, RLS amplia o `service_role` sustituye autorización empresarial;
+- ocurre un efecto parcial antes de completar la decisión territorial;
+- una respuesta revela información protegida de otra sede;
+- una operación territorial material queda sin clasificación, fixture o evidencia.
+
+La certificación global no inventa un total fijo de operaciones: exige reconciliación completa del universo material observado en cada package.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación territorial integral ya exigida por requisitos vigentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-007` — administración de roles, perfiles y permisos limita cada fila al territorio autorizado del actor;
+- `TREQ-AUTH-009` — sede y área efectivas se resuelven determinísticamente y todo cruce territorial se deniega en servidor, RPC y RLS;
+- `TREQ-AUTH-013` — mutaciones revalidan permiso, actor, territorio, contexto, estado y columnas antes del efecto;
+- `TREQ-AUTH-170` — la necesidad de asignación deriva del scope, carril y recurso en vez de imponerse globalmente;
+- `TREQ-AUTH-173` — el evaluador resuelve requisito y asignación antes de clasificar mismatch y no completa grants con territorio inventado;
+- `TREQ-AUTH-183` — recursos territoriales únicos o multisede resuelven todas las sedes obligatorias y no autorizan parcialmente un extremo;
+- `TREQ-VISO-033` — el total mensual considera todas las sedes del trabajador sin ampliar el acceso visible del administrador;
+- `TREQ-PULSO-015` — `site_id` no amplía territorio y toda ruta/acción resuelve la sede contra contexto y alcance autorizado.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado al checkout del usuario; build y suites globales permanecen pendientes del lifecycle documental. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y cierre permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el marcador propietario de `AUTH-QA-023`, continuidad vigente del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, contratos `AUTH-SRV-006` y `AUTH-SRV-012`, frontera posterior de `AUTH-SRV-013`, obligaciones de `AUTH-DB-007`/`AUTH-DB-009`/`AUTH-DB-021` y cobertura 04A territorial reutilizada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron cruces de sede, transferencias, lecturas auxiliares privilegiadas ni mutaciones contra ambientes operativos. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-023::<package_id>` ni `AUTH-QA-023::GLOBAL-FINAL`; ningún package se declara certificado por esta definición documental. |
+
+---
+
+#### 43. Criterios de aceptación
+
+- [ ] El título canónico es exactamente `AUTH-QA-023 — Cruce de sede queda bloqueado`.
+- [ ] La continuidad usa `AUTH-QA-022` como anterior y `AUTH-QA-024` como siguiente reservada.
+- [ ] El universo por package se deriva de recursos, acciones y superficies materialmente presentes.
+- [ ] Toda operación aplicable se clasifica como `SINGLE_SITE`, `MULTI_SITE_RESOURCE`, `SITE_TRANSFER`, `VALIDATION_ONLY_CROSS_SITE_DEPENDENCY` o `NON_TERRITORIAL`.
+- [ ] `required_sides` procede del contrato canónico y no de heurística cliente.
+- [ ] Cada lado obligatorio resuelve una sede determinista desde el recurso o borrador validado.
+- [ ] Sede seleccionada, primaria, preferida, de dispositivo o enviada por request no sustituye sede real del recurso.
+- [ ] `public.employee_sites` se usa cuando el scope consume asignación; `employees.site_id` no sustituye esa relación canónica.
+- [ ] Una sede ausente, inactiva, ambigua o fuera de scope no queda autorizada por fallback.
+- [ ] Un lado autorizado no legitima otro lado denegado.
+- [ ] `SITE_TRANSFER` conserva y valida sede actual y propuesta según el contrato propietario.
+- [ ] `GLOBAL`, `ASSIGNED_SITES`, `SPECIFIC_SITE` y scopes por tipo conservan sus límites exactos.
+- [ ] El carril operativo no presta contexto entre sedes.
+- [ ] El vínculo del trabajador objetivo no sustituye autoridad del actor.
+- [ ] El dispositivo compartido solo restringe.
+- [ ] Simulación no produce mutación cross-site real.
+- [ ] Lecturas cross-site no autorizadas no filtran filas ni información sensible.
+- [ ] Dependencias internas de validación no amplían `read_scope` ni `write_scope`.
+- [ ] Lotes y conjuntos heterogéneos no heredan autoridad de miembros permitidos.
+- [ ] Drift de sede, asignación, estado o versión obliga a reautorizar o fallar.
+- [ ] Server Actions, API routes, RPC, RLS y funciones privilegiadas conservan la misma frontera de lados.
+- [ ] `service_role`, admin client o `SECURITY DEFINER` no sustituyen autorización empresarial.
+- [ ] Ningún efecto protegido ocurre antes de completar todos los lados obligatorios.
+- [ ] Errores no crean enumeración territorial indebida.
+- [ ] Auditoría conserva clasificación, lados, sedes y resultado.
+- [ ] `AUTH-QA-022` conserva la resistencia específica de RPC directa.
+- [ ] `AUTH-QA-024` conserva la certificación integral cross-area.
+- [ ] `AUTH-QA-026` conserva la certificación integral de cola offline y replay.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 44. Límites
+
+Esta tarea no:
+
+- redefine roles, permisos, scopes, catálogo de sedes ni asignaciones;
+- crea un rol o permiso genérico cross-site;
+- redefine `required_sides` de recursos propietarios;
+- inventa un conteo global de operaciones territoriales;
+- sustituye `AUTH-SRV-006` ni `AUTH-SRV-012`;
+- redefine el evaluador de autorización;
+- redefine el modelo de turno, check-in, rol operativo o dispositivo;
+- redefine simulación;
+- redefine la semántica integral de área;
+- corrige código de Server Actions, API routes, RPC o clientes;
+- modifica `public.sites`, `public.employee_sites`, `employees.site_id` ni otros datos;
+- modifica funciones, grants, RLS, Data API, schemas, Auth, Storage, Realtime o Edge Functions;
+- crea ni altera migraciones Supabase;
+- ejecuta transferencias, lecturas cross-site, lotes o mutaciones reales;
+- certifica la manipulación directa de RPC, reservada a `AUTH-QA-022`;
+- certifica el cruce integral de área, reservado a `AUTH-QA-024`;
+- certifica el lifecycle integral de cola offline, reservado a `AUTH-QA-026`;
+- ejecuta `AUTH-QA-023::<package_id>`;
+- ejecuta `AUTH-QA-023::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-022 — RPC manipulada queda bloqueada`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-023 — Cruce de sede queda bloqueado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-024 — Cruce de área queda bloqueado`
 ### [ ] AUTH-QA-024 — Cruce de área queda bloqueado
 ### [ ] AUTH-QA-025 — Check-out retira permisos operativos
 ### [ ] AUTH-QA-026 — Cola offline de ANIMA se revalida

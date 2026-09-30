@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1545** |
+| Aprobadas | **1546** |
 | En propuesta | **0** |
-| No iniciadas | **51** |
+| No iniciadas | **50** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **96.80% (1545/1596)** |
+| Porcentaje de completamiento | **96.87% (1546/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **51** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1446** |
+| ⏸ NO_EVALUADA | **50** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1447** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-022` — RPC manipulada queda bloqueada | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-023` — Cruce de sede queda bloqueado | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-024` — Cruce de área queda bloqueado | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-023` — Cruce de sede queda bloqueado | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-024` — Cruce de área queda bloqueado | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-025` — Check-out retira permisos operativos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1377,7 +1377,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-020` | Acceso directo por URL queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-021` | Formulario manipulado queda bloqueado en servidor | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-022` | RPC manipulada queda bloqueada | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-023` | Cruce de sede queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-023` | Cruce de sede queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-024` | Cruce de área queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-025` | Check-out retira permisos operativos | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-026` | Cola offline de ANIMA se revalida | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
