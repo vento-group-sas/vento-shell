@@ -10731,4 +10731,1225 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables`
 
-### [ ] AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables
+### ✅ AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
+**Tarea siguiente:** AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función
+**Tipo de tarea:** definición técnico-documental del contrato canónico del radar de oportunidades y recomendaciones explicables de AURA; fija fuentes, calidad, frescura, cobertura, diagnóstico, oportunidad, recomendación, confianza, impacto esperado, restricciones, guardas, revisión humana, trazabilidad y transferencia a dominios propietarios sin otorgar a AURA autoridad automática para ejecutar acciones empresariales ni crear una instancia física propia
+**Bloque:** BLOQUE W — AURA — dominio de marketing y creación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; contrato lógico del radar y de recomendaciones explicables definido sin consumir datos productivos ni ejecutar acciones
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica AURA runtime, Supabase, datos, métricas, modelos, canales, campañas, promociones, precios, inventario, capacidad, clientes, consentimiento, reputación, reclamos, permisos, integraciones, despliegues ni repositorios
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-29
+
+---
+
+#### 1. Propósito
+
+Definir el contrato empresarial con el que AURA deberá transformar señales gobernadas en oportunidades y recomendaciones explicables sin confundir observación con diagnóstico, correlación con causalidad, recomendación con decisión, decisión con autorización ni autorización con ejecución.
+
+La tarea cierra específicamente:
+
+- `H-CAP-SCOPE-014-028`, porque una recomendación automática puede optimizar volumen o interacción sacrificando margen, capacidad, reputación o consentimiento;
+- `H-CAP-SCOPE-014-029`, porque una recomendación no es confiable si las fuentes carecen de evidencia de calidad, frescura y cobertura;
+- la frontera con `CAP-SCOPE-017`, que gobierna calidad analítica, identificación de problemas y oportunidades, acciones de mejora y comprobación de resultados;
+- la frontera con `AURA-DOM-004`, que gobierna grounding, proveedor, memoria, restricciones y revisión humana de la asistencia de IA;
+- la frontera con `AURA-DOM-006`, que gobierna campañas, experimentos, promociones, cupones y guardas económicas y operativas;
+- la frontera con `AURA-DOM-008`, que gobierna métricas, atribución, confianza, incrementalidad, aprendizaje y cierre;
+- la frontera con `AURA-DOM-009`, que gobierna reputación y escalamiento a servicio;
+- el paso inmediato hacia `AURA-AUTH-001`, que deberá proteger el acceso al universo de marcas, campañas, activos, audiencias, canales y resultados.
+
+El resultado es una definición documental. No constituye un motor productivo de recomendaciones, un modelo estadístico desplegado, un agente autónomo, un tablero operativo ni una automatización de decisiones.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea se define una sola vez como contrato reusable;
+- no genera instancia física propia;
+- no crea tablas, vistas, funciones, RPC, colas, jobs, modelos, embeddings, almacenes vectoriales o pipelines;
+- no conecta fuentes externas;
+- no consume datos reales;
+- no calcula recomendaciones productivas;
+- no modifica métricas, hechos o maestros;
+- no publica, promociona, contacta clientes ni responde crisis;
+- no crea un nuevo namespace técnico de estados;
+- no selecciona algoritmo, proveedor, framework o arquitectura física;
+- toda materialización posterior deberá respetar este contrato y las tareas de autorización, experiencia e integración aplicables.
+
+---
+
+#### 3. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-001`, para memoria de marca, claims, restricciones y vigencia;
+- `AURA-DOM-002`, para objetivos, audiencias, briefs, calendario, presupuesto y dependencias;
+- `AURA-DOM-003`, para activos, derechos, versiones, reutilización y vigencia;
+- `AURA-DOM-004`, para grounding, memoria, proveedores de IA, trazabilidad y revisión humana;
+- `AURA-DOM-005`, para cuentas, canales, publicación, programación, retiro y reconciliación;
+- `AURA-DOM-006`, para campañas, experimentos, promociones, cupones y guardas;
+- `AURA-DOM-007`, para oportunidades, leads, pipeline B2B y transferencia a operación;
+- `AURA-DOM-008`, para métricas, atribución, confianza, incrementalidad y aprendizaje;
+- `AURA-DOM-009`, para reputación, respuesta pública y escalamiento a servicio;
+- `CAP-SCOPE-014`, especialmente los hallazgos `H-CAP-SCOPE-014-028`, `H-CAP-SCOPE-014-029` y la frontera de adopción expresada por `H-CAP-SCOPE-014-030`;
+- `CAP-SCOPE-017`, para contratos de recopilación, calidad, frescura, cobertura, diagnóstico, oportunidades, acciones de mejora y comprobación de resultados;
+- el registro canónico de requisitos de prueba vigente;
+- la corrección documental `CAP-SCOPE-014::CORR-001`, que restableció para `H-CAP-SCOPE-014-029` la referencia de cobertura correcta hacia `TREQ-DATA-003`.
+
+La tarea no redefine ninguna de esas fuentes.
+
+---
+
+#### 4. Resultado canónico
+
+AURA deberá poder representar conceptualmente una recomendación comercial explicable capaz de responder, como mínimo:
+
+1. qué señal o conjunto de señales originó la recomendación;
+2. qué fuentes fueron usadas;
+3. cuál es la versión y fecha de corte de cada fuente relevante;
+4. cuál es la frescura observada;
+5. cuál es la cobertura disponible;
+6. qué estado de calidad o degradación aplica;
+7. qué hecho es observado y qué parte es inferida;
+8. qué problema u oportunidad se diagnostica;
+9. qué objetivo empresarial pretende apoyar;
+10. qué acción se propone;
+11. qué evidencia sustenta esa acción;
+12. qué método o razonamiento explica la relación entre señal y propuesta;
+13. qué nivel de confianza existe;
+14. qué supuestos son necesarios;
+15. qué información falta;
+16. qué restricciones aplican;
+17. qué guardas económicas, operativas, reputacionales, de consentimiento o capacidad deben mantenerse;
+18. qué impacto esperado se estima y con qué incertidumbre;
+19. quién debe revisar la propuesta;
+20. qué dominio deberá aceptar o rechazar una eventual acción;
+21. qué autoridad adicional sería necesaria para ejecutar;
+22. cómo se medirá posteriormente el resultado;
+23. cuándo la recomendación debe expirar, invalidarse o volver a evaluarse;
+24. qué evidencia queda para aprendizaje posterior.
+
+La recomendación no sustituye ninguna fuente de verdad empresarial.
+
+---
+
+#### 5. Regla raíz
+
+Se fija permanentemente:
+
+```text
+SEÑAL
+!=
+DIAGNÓSTICO
+!=
+OPORTUNIDAD
+!=
+RECOMENDACIÓN
+!=
+DECISIÓN
+!=
+AUTORIZACIÓN
+!=
+EJECUCIÓN
+!=
+RESULTADO
+```
+
+Y:
+
+```text
+RECOMENDACIÓN EXPLICABLE
+=
+FUENTES IDENTIFICABLES
++ FRESCURA
++ COBERTURA
++ CALIDAD
++ EVIDENCIA
++ MÉTODO O RAZÓN
++ CONFIANZA
++ SUPUESTOS
++ RESTRICCIONES
++ GUARDAS
++ RESPONSABLE
++ TRAZABILIDAD
+```
+
+Pero:
+
+```text
+RECOMENDACIÓN
+!=
+ORDEN
+```
+
+---
+
+#### 6. Señal, problema, oportunidad y recomendación
+
+Una señal es una observación gobernada que puede justificar investigación.
+
+Ejemplos conceptuales:
+
+- variación material de una métrica;
+- cambio de demanda;
+- contenido con desempeño diferente;
+- oportunidad comercial recurrente;
+- patrón de abandono;
+- reputación deteriorada o mejorada;
+- capacidad o stock que habilita una ventana comercial;
+- restricción que hace inviable una acción habitual;
+- aprendizaje reciente de una campaña o experimento;
+- cambio de frescura, cobertura o calidad de una fuente.
+
+Una señal no prueba por sí misma que exista un problema ni una oportunidad.
+
+Un problema es una condición adversa suficientemente sustentada para requerir diagnóstico.
+
+Una oportunidad es una condición potencialmente favorable que conserva:
+
+- objetivo relacionado;
+- evidencia;
+- impacto posible;
+- restricciones;
+- incertidumbre;
+- propietario de la eventual acción.
+
+Una recomendación es una propuesta revisable para responder a un problema u oportunidad.
+
+---
+
+#### 7. Contrato mínimo de fuentes
+
+Toda recomendación material deberá declarar las fuentes utilizadas.
+
+Cada fuente relevante deberá conservar, cuando aplique:
+
+- dominio propietario;
+- entidad o proceso propietario;
+- identificador de contrato;
+- versión;
+- fecha del hecho;
+- fecha de carga;
+- fecha de actualización;
+- fecha de corte;
+- granularidad;
+- dimensiones;
+- cobertura;
+- estado de calidad;
+- estado de reconciliación;
+- linaje suficiente;
+- autoridad de lectura;
+- restricciones de finalidad;
+- limitaciones conocidas.
+
+Una URL, dashboard, exportación o respuesta de un modelo no constituye por sí sola una fuente canónica.
+
+---
+
+#### 8. Frescura, cobertura y calidad
+
+La tarea adopta la frontera corregida por `CAP-SCOPE-014::CORR-001`.
+
+Para recomendaciones AURA:
+
+```text
+FUENTE VENCIDA
+OR
+FUENTE INCOMPLETA
+OR
+FUENTE DEGRADADA
+OR
+FUENTE SIN RECONCILIAR
+=>
+NO PUEDE PRESENTARSE COMO EVIDENCIA CERTIFICADA
+```
+
+La falta de evidencia de frescura, cobertura o calidad no podrá degradarse silenciosamente a confianza normal.
+
+AURA deberá distinguir:
+
+```text
+DATO AUSENTE
+!=
+CERO
+!=
+DESCONOCIDO
+!=
+NO RECIBIDO
+!=
+PENDIENTE
+!=
+NO APLICA
+```
+
+Cuando una recomendación dependa de información degradada, deberá:
+
+- mostrar la degradación;
+- reducir la confianza;
+- bloquear afirmaciones materiales que no puedan sostenerse;
+- impedir automatización de acciones sensibles;
+- permitir investigación o solicitud de evidencia adicional.
+
+---
+
+#### 9. Corrección canónica de H-CAP-SCOPE-014-029
+
+La referencia vigente es:
+
+```text
+H-CAP-SCOPE-014-029
+-> AURA-INT-002
+-> CAP-SCOPE-017
+-> TREQ-DATA-003
+```
+
+La relación anterior con un requisito de autorización de Supabase no forma parte de este contrato.
+
+La corrección no crea requisito nuevo; restablece la relación documental con el requisito de datos ya existente.
+
+---
+
+#### 10. Radar de oportunidades
+
+El radar conceptual de AURA no es una lista plana de alertas.
+
+Deberá permitir agrupar señales relacionadas por:
+
+- organización;
+- marca;
+- sede;
+- canal;
+- campaña;
+- audiencia;
+- producto o familia cuando la fuente propietaria lo permita;
+- oportunidad comercial;
+- periodo;
+- objetivo;
+- tipo de riesgo o potencial;
+- fuente;
+- confianza;
+- urgencia;
+- horizonte temporal.
+
+Una misma señal podrá contribuir a más de una investigación sin duplicarse como hecho.
+
+---
+
+#### 11. Detección no equivale a recomendación
+
+Se fija:
+
+```text
+UMBRAL SUPERADO
+!=
+RECOMENDACIÓN VÁLIDA
+```
+
+```text
+ANOMALÍA
+!=
+CAUSA IDENTIFICADA
+```
+
+```text
+CORRELACIÓN
+!=
+CAUSALIDAD
+```
+
+```text
+OPORTUNIDAD ESTIMADA
+!=
+BENEFICIO GARANTIZADO
+```
+
+La detección deberá abrir espacio para:
+
+1. verificar calidad;
+2. entender contexto;
+3. comparar contra línea base;
+4. revisar restricciones;
+5. buscar explicación;
+6. decidir si existe una oportunidad material;
+7. construir una recomendación.
+
+---
+
+#### 12. Diagnóstico
+
+Toda recomendación material deberá declarar un diagnóstico.
+
+El diagnóstico deberá separar:
+
+- hechos observados;
+- relaciones conocidas;
+- inferencias;
+- hipótesis;
+- causas confirmadas, cuando existan;
+- causas candidatas;
+- incertidumbres;
+- evidencia faltante;
+- alternativas explicativas.
+
+Cuando no exista evidencia suficiente:
+
+```text
+DIAGNÓSTICO = NO CONCLUYENTE
+```
+
+es un resultado válido.
+
+---
+
+#### 13. Explicabilidad
+
+La explicación deberá ser suficiente para que una persona autorizada pueda entender por qué la recomendación existe.
+
+Como mínimo deberá expresar:
+
+- qué cambió o qué oportunidad fue detectada;
+- contra qué referencia se compara;
+- qué fuentes sustentan la lectura;
+- qué datos faltan;
+- qué factores parecen influir;
+- qué factores solo están correlacionados;
+- qué restricciones aplican;
+- qué acción se propone;
+- qué beneficio se espera;
+- qué daño podría producir;
+- qué guardas deben comprobarse;
+- cómo se sabrá si funcionó.
+
+Una explicación no podrá limitarse a:
+
+```text
+EL MODELO LO RECOMIENDA
+```
+
+---
+
+#### 14. Confianza
+
+La recomendación deberá conservar un nivel de confianza interpretable.
+
+Ese nivel podrá considerar:
+
+- calidad de fuentes;
+- frescura;
+- cobertura;
+- estabilidad del patrón;
+- cantidad y representatividad de evidencia;
+- consistencia entre fuentes;
+- fuerza del método;
+- presencia de causalidad demostrada;
+- comparabilidad del periodo;
+- incertidumbre de supuestos;
+- evidencia contradictoria.
+
+No se fija en esta tarea una escala numérica obligatoria.
+
+La confianza no deberá presentarse con precisión artificial.
+
+---
+
+#### 15. Impacto esperado
+
+Toda recomendación que afirme impacto deberá declarar:
+
+- dimensión de impacto;
+- dirección esperada;
+- horizonte;
+- población o alcance;
+- línea base disponible;
+- supuesto principal;
+- incertidumbre;
+- guardas relacionadas.
+
+Ejemplos de dimensiones posibles:
+
+- venta;
+- margen;
+- recurrencia;
+- conversión;
+- costo;
+- capacidad;
+- ocupación;
+- reputación;
+- satisfacción;
+- oportunidad comercial;
+- tiempo operativo.
+
+AURA no inventará magnitudes cuando las fuentes no permitan estimarlas.
+
+---
+
+#### 16. Guardas obligatorias
+
+Una recomendación no podrá optimizar una dimensión ignorando daño material en otra.
+
+Antes de promover una recomendación a decisión humana deberán considerarse, cuando apliquen:
+
+- margen;
+- presupuesto;
+- precio;
+- inventario;
+- disponibilidad;
+- capacidad;
+- tiempos operativos;
+- calidad;
+- seguridad;
+- consentimiento;
+- finalidad;
+- reputación;
+- carga de servicio;
+- derechos de contenido;
+- restricciones de marca;
+- vigencia de oferta;
+- territorio;
+- canal;
+- riesgo de duplicidad;
+- deuda o dependencia técnica visible.
+
+Una métrica favorable no puede ocultar una guarda incumplida.
+
+---
+
+#### 17. Verdad económica
+
+NUMERA conserva la autoridad económica.
+
+AURA podrá consumir referencias autorizadas a:
+
+- presupuesto;
+- costo;
+- margen;
+- rentabilidad;
+- variación económica;
+- límite o guarda aprobada.
+
+AURA no deberá:
+
+- recalcular unilateralmente la verdad económica;
+- promover un supuesto financiero a hecho;
+- recomendar promociones ignorando margen;
+- declarar retorno cuando NUMERA no lo soporte;
+- escribir o corregir hechos financieros.
+
+---
+
+#### 18. Verdad operativa
+
+NEXO, FOGO, ORIGO y los dominios operativos conservan sus hechos propietarios.
+
+AURA podrá consumir, según contrato autorizado:
+
+- disponibilidad;
+- inventario;
+- capacidad;
+- abastecimiento;
+- producción;
+- restricciones;
+- tiempos;
+- cumplimiento.
+
+Pero:
+
+```text
+DISPONIBILIDAD OBSERVADA
+!=
+RESERVA
+```
+
+```text
+CAPACIDAD OBSERVADA
+!=
+CAPACIDAD COMPROMETIDA
+```
+
+Una recomendación deberá reflejar esa diferencia.
+
+---
+
+#### 19. Clientes, consentimiento y finalidad
+
+PASS y los dominios de cliente conservan identidad, consentimiento y finalidad.
+
+AURA no podrá inferir permiso de contacto porque:
+
+- una persona compró;
+- una persona interactuó;
+- una persona comentó;
+- una persona aparece en una audiencia técnica;
+- un lead fue capturado;
+- existe una segmentación analítica.
+
+Una recomendación de contacto, audiencia o activación deberá señalar la dependencia de consentimiento y autorización aplicables.
+
+---
+
+#### 20. Reputación y servicio
+
+Las señales de `AURA-DOM-009` pueden alimentar el radar.
+
+Sin embargo:
+
+```text
+SEÑAL REPUTACIONAL
+!=
+RECLAMO RESUELTO
+```
+
+Una recomendación no podrá:
+
+- responder públicamente por sí sola;
+- cerrar casos;
+- autorizar compensaciones;
+- eliminar evidencia;
+- minimizar un incidente porque otra métrica es positiva;
+- convertir un patrón reputacional en causa confirmada sin investigación.
+
+Cuando corresponda, la recomendación deberá dirigir la acción al dominio propietario.
+
+---
+
+#### 21. Campañas y contenido
+
+Las recomendaciones podrán proponer investigar o considerar acciones relacionadas con:
+
+- brief;
+- contenido;
+- canal;
+- calendario;
+- audiencia;
+- inversión;
+- campaña;
+- variante;
+- experimento;
+- activo;
+- mensaje.
+
+Pero no podrán reabrir silenciosamente decisiones ya fijadas por:
+
+- memoria de marca;
+- derechos de activos;
+- aprobación de contenido;
+- vigencia;
+- restricciones;
+- contratos de publicación.
+
+Una recomendación de cambio material devuelve el elemento a su ciclo propietario de revisión y aprobación.
+
+---
+
+#### 22. Promociones y cupones
+
+Una recomendación podrá sugerir evaluar una promoción.
+
+No podrá:
+
+- crear el descuento transaccional;
+- emitir automáticamente un cupón;
+- declarar elegibilidad;
+- aplicar el beneficio;
+- alterar puntos;
+- crear redención;
+- modificar precio;
+- saltar guardas.
+
+La eventual acción deberá regresar a los contratos propietarios definidos en `AURA-DOM-006`, PASS, PULSO y NUMERA.
+
+---
+
+#### 23. Oportunidades comerciales
+
+El radar podrá priorizar oportunidades del contrato de `AURA-DOM-007`.
+
+Podrá considerar:
+
+- etapa;
+- valor estimado;
+- probabilidad;
+- siguiente acción;
+- vencimiento;
+- origen;
+- respuesta;
+- contexto;
+- restricciones;
+- aprendizaje histórico.
+
+Pero:
+
+```text
+OPORTUNIDAD PRIORIZADA
+!=
+PEDIDO
+```
+
+La recomendación no podrá crear por sí sola cotización, pedido, reserva, producción o compromiso frente al cliente.
+
+---
+
+#### 24. Clases conceptuales de recomendación
+
+Sin crear un namespace técnico de estados, una recomendación podrá pertenecer conceptualmente a una de estas familias:
+
+- investigar;
+- corregir información o calidad de fuente;
+- crear hipótesis;
+- diseñar experimento;
+- ajustar campaña;
+- revisar contenido;
+- revisar audiencia;
+- revisar canal;
+- evaluar promoción;
+- priorizar oportunidad;
+- escalar riesgo;
+- mantener sin cambios;
+- detener o pausar una acción;
+- retirar una propuesta;
+- solicitar evidencia adicional.
+
+La lista describe intención empresarial, no APIs ni estados físicos.
+
+---
+
+#### 25. Prioridad
+
+La prioridad de una recomendación no deberá reducirse a impacto estimado.
+
+Podrá considerar:
+
+```text
+PRIORIDAD
+=
+IMPACTO
++ URGENCIA
++ CONFIANZA
++ FACTIBILIDAD
++ COSTO DE OPORTUNIDAD
++ RIESGO
++ GUARDAS
++ REVERSIBILIDAD
+```
+
+La fórmula exacta no se fija en esta tarea.
+
+Una recomendación de alta magnitud pero baja confianza o alto riesgo podrá quedar por debajo de una acción menor y mejor sustentada.
+
+---
+
+#### 26. Factibilidad
+
+Toda recomendación accionable deberá declarar dependencias y factibilidad conocidas.
+
+Como mínimo, cuando corresponda:
+
+- disponibilidad de presupuesto;
+- capacidad;
+- stock;
+- activo creativo;
+- aprobación;
+- canal habilitado;
+- audiencia válida;
+- consentimiento;
+- ventana temporal;
+- responsable;
+- integración disponible;
+- datos suficientemente confiables.
+
+Una acción imposible no deberá mostrarse como recomendación lista para ejecutar.
+
+---
+
+#### 27. Revisión humana
+
+Toda recomendación material permanece sujeta a revisión humana.
+
+La revisión deberá poder:
+
+- aceptar;
+- rechazar;
+- pedir evidencia;
+- corregir interpretación;
+- cambiar prioridad;
+- diferir;
+- transformar la propuesta;
+- dirigirla a otro dominio.
+
+La persona revisora deberá poder conocer:
+
+- fuentes;
+- explicación;
+- confianza;
+- restricciones;
+- guardas;
+- impacto esperado;
+- incertidumbres.
+
+La revisión no otorga automáticamente capacidad técnica para ejecutar.
+
+---
+
+#### 28. Rol de inteligencia artificial
+
+La IA puede asistir en:
+
+- resumir señales;
+- agrupar evidencia;
+- proponer hipótesis;
+- explicar patrones;
+- redactar alternativas;
+- identificar dependencias;
+- comparar restricciones;
+- sugerir investigaciones;
+- generar una propuesta de recomendación.
+
+La IA no puede, por esta tarea:
+
+- promover inferencia a hecho;
+- ocultar datos faltantes;
+- responder crisis;
+- contactar clientes;
+- publicar;
+- aprobar;
+- aceptar propuestas;
+- aplicar descuentos;
+- modificar precios;
+- alterar inventario;
+- comprometer capacidad;
+- cerrar reclamos;
+- ejecutar pagos;
+- cambiar permisos;
+- enviar datos a un proveedor no autorizado.
+
+Se conservan las reglas de `AURA-DOM-004`.
+
+---
+
+#### 29. Autoridad de ejecución
+
+AURA conserva el expediente de recomendación.
+
+La acción pertenece al dominio propietario.
+
+Ejemplos:
+
+```text
+RECOMENDACIÓN SOBRE PRECIO O MARGEN
+-> NUMERA / PULSO SEGÚN CONTRATO
+```
+
+```text
+RECOMENDACIÓN SOBRE INVENTARIO
+-> NEXO
+```
+
+```text
+RECOMENDACIÓN SOBRE CAPACIDAD
+-> FOGO
+```
+
+```text
+RECOMENDACIÓN SOBRE CLIENTE O CONSENTIMIENTO
+-> PASS / DOMINIO PROPIETARIO
+```
+
+```text
+RECOMENDACIÓN SOBRE RECLAMO
+-> PROCESO DE SERVICIO PROPIETARIO
+```
+
+```text
+RECOMENDACIÓN SOBRE PUBLICACIÓN
+-> CICLO AURA DE CONTENIDO Y PUBLICACIÓN
+```
+
+La transferencia deberá conservar trazabilidad entre recomendación y eventual acción.
+
+---
+
+#### 30. Decisión y aceptación
+
+Aceptar una recomendación significa que una persona o dominio autorizado considera válida su progresión.
+
+No significa que la acción ya ocurrió.
+
+Se fija:
+
+```text
+RECOMENDACIÓN ACEPTADA
+!=
+ACCIÓN EJECUTADA
+```
+
+Y:
+
+```text
+ACCIÓN EJECUTADA
+!=
+RESULTADO POSITIVO
+```
+
+La ejecución real deberá producir su propia evidencia propietaria.
+
+---
+
+#### 31. Seguimiento posterior
+
+Cuando una recomendación se convierta legítimamente en acción, el expediente deberá poder relacionar:
+
+- recomendación original;
+- decisión humana;
+- acción autorizada;
+- propietario;
+- fecha;
+- línea base;
+- meta;
+- guardas;
+- evidencia de ejecución;
+- resultado;
+- efectos no deseados;
+- confianza posterior;
+- aprendizaje;
+- decisión de cerrar, iterar, revertir o escalar.
+
+Esta relación no autoriza a AURA a escribir hechos ajenos.
+
+---
+
+#### 32. Aprendizaje
+
+El resultado de una recomendación puede ser:
+
+- favorable;
+- desfavorable;
+- mixto;
+- no concluyente;
+- no ejecutado;
+- invalidado por cambio de contexto.
+
+El aprendizaje deberá conservar incluso:
+
+- recomendaciones rechazadas;
+- experimentos fallidos;
+- acciones revertidas;
+- hipótesis no confirmadas;
+- guardas activadas;
+- señales degradadas;
+- datos faltantes.
+
+No se eliminará evidencia negativa para mejorar retrospectivamente la precisión percibida del radar.
+
+---
+
+#### 33. Caducidad e invalidación
+
+Una recomendación deberá considerarse susceptible de caducar cuando cambien:
+
+- fuentes;
+- versión de métrica;
+- calidad;
+- frescura;
+- cobertura;
+- precio;
+- margen;
+- presupuesto;
+- inventario;
+- capacidad;
+- consentimiento;
+- campaña;
+- brief;
+- marca;
+- claim;
+- reputación;
+- normativa;
+- horizonte temporal;
+- supuesto crítico.
+
+Una recomendación caducada no deberá permanecer presentada como vigente.
+
+---
+
+#### 34. Duplicados y reconciliación
+
+La misma oportunidad puede aparecer por múltiples señales.
+
+AURA deberá conservar correlaciones sin crear recomendaciones competidoras por defecto.
+
+La reconciliación deberá poder detectar:
+
+- señal repetida;
+- fuente duplicada;
+- recomendación equivalente;
+- acción ya tomada;
+- recomendación reemplazada;
+- contexto cambiado;
+- conflicto entre recomendaciones;
+- resultado externo aún no reconciliado.
+
+La deduplicación no eliminará evidencia de procedencia.
+
+---
+
+#### 35. Recomendaciones conflictivas
+
+Dos recomendaciones pueden competir.
+
+Por ejemplo:
+
+```text
+AUMENTAR VOLUMEN
+vs
+PRESERVAR MARGEN
+```
+
+```text
+AUMENTAR PROMOCIÓN
+vs
+CAPACIDAD LIMITADA
+```
+
+```text
+CONTACTAR AUDIENCIA
+vs
+CONSENTIMIENTO INSUFICIENTE
+```
+
+El sistema deberá mostrar el conflicto y sus guardas.
+
+No deberá resolverlo silenciosamente mediante una prioridad técnica opaca.
+
+---
+
+#### 36. Simplicidad diaria
+
+La explicabilidad no implica saturar la interfaz con toda la evidencia de forma simultánea.
+
+La experiencia futura deberá poder ofrecer divulgación progresiva:
+
+1. qué oportunidad existe;
+2. qué recomienda AURA;
+3. por qué;
+4. confianza;
+5. principales guardas;
+6. acción requerida;
+7. detalle y fuentes bajo demanda.
+
+El diseño concreto pertenece a `AURA-UX-008`.
+
+---
+
+#### 37. Auditoría y trazabilidad
+
+Toda recomendación deberá poder reconstruir, según aplique:
+
+- identidad estable;
+- señal de origen;
+- fuentes;
+- versiones;
+- fecha de corte;
+- calidad;
+- frescura;
+- cobertura;
+- actor;
+- proveedor o modelo cuando intervenga IA;
+- diagnóstico;
+- recomendación;
+- confianza;
+- restricciones;
+- guardas;
+- revisión;
+- decisión;
+- transferencia;
+- acción relacionada;
+- resultado;
+- aprendizaje;
+- reemplazo o invalidación.
+
+La ausencia de una relación no podrá completarse por inferencia silenciosa.
+
+---
+
+#### 38. Handoff a AURA-AUTH-001
+
+`AURA-DOM-010` entrega a `AURA-AUTH-001` un dominio ya definido que deberá proteger, como mínimo:
+
+- marcas;
+- campañas;
+- activos;
+- audiencias;
+- canales;
+- resultados;
+- métricas consumidas;
+- señales;
+- oportunidades;
+- recomendaciones;
+- diagnósticos;
+- evidencia;
+- explicaciones;
+- restricciones;
+- guardas;
+- decisiones;
+- exportaciones o vistas posteriores.
+
+`AURA-AUTH-001` deberá determinar quién puede leer, investigar, comparar o actuar sobre esos objetos por empresa, marca y función.
+
+Esta tarea no define roles ni capacidades concretas.
+
+---
+
+#### 39. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+Motivo:
+
+- el riesgo de recomendación dañina, opaca o autónoma ya está protegido;
+- la obligación de declarar fuentes, frescura, restricciones y razón ya está protegida;
+- la calidad, cobertura, datos tardíos y reconciliación ya están protegidas;
+- la regla que impide que una recomendación ejecute cambios por sí sola ya está protegida;
+- las fronteras con hechos empresariales, autorización e integración ya están protegidas.
+
+Por tanto:
+
+```text
+REQUISITOS CREADOS = 0
+REQUISITOS MODIFICADOS = 0
+REQUISITOS DIFERIDOS = 0
+REQUISITOS OBSOLETOS = 0
+```
+
+No se modifica el registro canónico de requisitos.
+
+---
+
+#### 40. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-002`, para grounding, fuentes autorizadas, frescura, separación entre hecho, inferencia y propuesta, trazabilidad de IA, revisión humana y límites de autonomía;
+- `TREQ-AURA-003`, para recomendaciones con fuentes, frescura, restricciones y razón, además de fronteras comerciales, atribución y resultados;
+- `TREQ-DATA-003`, para contratos de origen, cobertura, datos tardíos, reconciliación, linaje y bloqueo de certificación cuando la fuente esté vencida, incompleta, degradada o sin reconciliar;
+- `TREQ-DATA-005`, para separar señal, diagnóstico, hipótesis, acción, experimento, línea base, meta, guardrails, resultado, confianza y aprendizaje, y para impedir que una recomendación ejecute cambios empresariales por sí sola;
+- `TREQ-INTEGRATION-019`, para correlación, reconciliación, idempotencia y contratos de integración de AURA;
+- los requisitos propietarios de PULSO, PASS, NUMERA, NEXO y otros dominios cuando una eventual recomendación dependa de sus hechos.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación, modificación ni actualización del registro.
+
+---
+
+#### 41. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | `NOT_EXECUTED` | el artefacto todavía no se ha incorporado ni validado en el checkout del usuario |
+| REMOTA | `PASS` | protocolo, contrato de entrega, continuidad, topología, archivo propietario, CAP-SCOPE-014 corregido, CAP-SCOPE-017, requisitos AURA/DATA/INTEGRATION y sucesora AURA-AUTH-001 fueron inspeccionados antes de redactar |
+| OPERATIVA | `NOT_APPLICABLE` | no se consumieron datos productivos ni se generaron recomendaciones, decisiones o acciones reales |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; la tarea se agota en su contrato documental |
+
+---
+
+#### 42. Criterios de aceptación
+
+La tarea queda sustantivamente completa cuando:
+
+- señal, diagnóstico, oportunidad, recomendación, decisión, autorización, ejecución y resultado están separados;
+- toda recomendación material identifica fuentes;
+- frescura, cobertura y calidad quedan visibles;
+- la referencia corregida de `H-CAP-SCOPE-014-029` se apoya en la cobertura de datos vigente;
+- cero, ausencia, desconocido, pendiente y no aplicable no se confunden;
+- una fuente degradada reduce confianza o bloquea afirmaciones materiales;
+- anomalía no se presenta como causa;
+- correlación no se presenta como causalidad;
+- oportunidad estimada no se presenta como beneficio garantizado;
+- toda recomendación explica por qué existe;
+- toda recomendación material conserva confianza, supuestos y limitaciones;
+- impacto esperado declara incertidumbre;
+- guardas económicas, operativas, reputacionales y de consentimiento pueden bloquear progresión;
+- NUMERA conserva verdad económica;
+- NEXO, FOGO y otros dominios conservan sus hechos operativos;
+- PASS y dominios de cliente conservan identidad y consentimiento;
+- AURA no cierra reclamos ni ejecuta respuestas autónomas;
+- AURA no crea descuentos ni reglas transaccionales;
+- una recomendación de oportunidad no crea pedido;
+- IA no adquiere autoridad implícita;
+- revisión humana permanece obligatoria para acciones materiales;
+- una recomendación aceptada no equivale a acción ejecutada;
+- una acción ejecutada no equivale a resultado positivo;
+- recomendaciones caducan o se invalidan cuando cambia contexto material;
+- duplicados y conflictos son reconciliables;
+- evidencia negativa y resultados no concluyentes permanecen;
+- la experiencia futura puede ser simple mediante divulgación progresiva;
+- `AURA-AUTH-001` recibe el handoff de autorización sin que esta tarea defina permisos concretos;
+- no se crean ni modifican requisitos de prueba;
+- no se autoriza implementación física;
+- la siguiente tarea reservada es exactamente `AURA-AUTH-001`.
+
+---
+
+#### 43. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear tablas, vistas, RPC, funciones, triggers, jobs, colas o migraciones;
+- modificar Supabase, RLS, Storage, Realtime o Edge Functions;
+- crear warehouse, mart, lake, feature store, vector store o motor físico de recomendaciones;
+- seleccionar modelos de machine learning;
+- seleccionar proveedor de IA;
+- desplegar modelos;
+- entrenar con datos reales;
+- importar datos reales;
+- conectar Meta, Google, TikTok, WhatsApp, correo, reseñas, BI u otras plataformas;
+- crear dashboards productivos;
+- publicar recomendaciones a usuarios reales;
+- ejecutar acciones automáticamente;
+- crear campañas;
+- crear experimentos reales;
+- crear promociones o cupones;
+- cambiar precios;
+- cambiar presupuesto;
+- modificar margen;
+- modificar inventario;
+- reservar stock;
+- comprometer capacidad;
+- crear producción;
+- crear compras;
+- contactar clientes;
+- alterar consentimiento;
+- crear leads reales;
+- crear cotizaciones o pedidos;
+- responder comentarios;
+- cerrar reclamos;
+- aprobar compensaciones;
+- modificar hechos PULSO, PASS, NUMERA, NEXO, FOGO, ORIGO o VISO;
+- crear roles o capacidades de `AURA-AUTH-*`;
+- diseñar la experiencia de `AURA-UX-008`;
+- definir adaptadores o contratos físicos de `AURA-INT-*`;
+- crear o modificar requisitos del registro canónico de pruebas.
+
+---
+
+#### 44. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función`
