@@ -9575,7 +9575,725 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general`
-### [ ] AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
+### ✅ AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-013 — Conductor puede transitar sin área productiva
+**Tarea siguiente:** AUTH-QA-015 — Compras puede crear órdenes según alcance
+**Tipo de tarea:** documental; definición canónica de una prueba integral de segregación de funciones para el rol operativo `conductor_logistica`, reutilizable por paquete y certificable globalmente, para demostrar que las capacidades logísticas de custodia, tránsito, lectura acotada y entrega física no conceden preparación de remisiones, recepción por el destino ni autoridad sobre inventario general, incluso con turno, check-in, sede, ruta, vehículo, remisión y custodia válidos
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-014::<package_id>` y la certificación `AUTH-QA-014::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, check-ins, roles, permisos, rutas, vehículos, journeys, shipments, remisiones, custodia, inventario, preparación, recepción, diferencias, conteos, movimientos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que `conductor_logistica` conserva una frontera estricta entre transporte/custodia y las responsabilidades de preparación, recepción e inventario general.
+
+La regla negativa raíz queda:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ TURNO PUBLICADO Y VIGENTE
++ CHECK-IN ACTIVO CUANDO APLIQUE
++ ROL OPERATIVO = conductor_logistica
++ SEDE OPERATIVA AUTORIZADA
++ ASIGNACIÓN LOGÍSTICA VIGENTE
++ RUTA / VEHÍCULO / JOURNEY COMPATIBLES
++ REMISIÓN / SHIPMENT RELACIONADO
++ CUSTODIA VÁLIDA CUANDO APLIQUE
++ INTENTO DE PREPARAR, RECIBIR O ADMINISTRAR INVENTARIO GENERAL
+→ DENY / NO EXPOSURE
+→ CERO EFECTOS
+```
+
+La existencia de contexto logístico válido no amplía el conjunto de capacidades del conductor.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos veintiocho resultados obligatorios:
+
+1. `conductor_logistica` se resuelve como rol operativo vigente y no desde el rol base legacy `conductor`;
+2. el dataset materializado vigente contiene exactamente dieciséis grants para `conductor_logistica`;
+3. los dieciséis grants vigentes pertenecen a NEXO;
+4. `nexo.inventory.remissions.accept_custody`, `nexo.inventory.remissions.start_transit` y `nexo.inventory.remissions.deliver` son las mutaciones atómicas de remisión concedidas al conductor;
+5. `nexo.inventory.remissions.prepare` no pertenece al conjunto de grants del conductor;
+6. `nexo.inventory.remissions.receive` no pertenece al conjunto de grants del conductor;
+7. aceptar custodia no concede preparación ni edición de cantidades;
+8. iniciar tránsito no concede preparación, recepción, ajuste ni entrada de inventario;
+9. registrar entrega física no ejecuta recepción por el destino;
+10. entregar físicamente no crea por sí solo inventario en destino;
+11. la visibilidad de una remisión no concede capacidad para preparar, recibir, cancelar ni editar libremente la remisión;
+12. la visibilidad de LPN se limita a bultos o contenedores relacionados con la carga autorizada;
+13. la visibilidad de movimientos se limita a eventos relacionados con la cadena de custodia autorizada;
+14. una PermissionKey de lectura logística concedida no se transforma en autoridad de inventario general;
+15. stock general, ubicaciones internas, entradas, traslados, conteos, ajustes y operaciones de bodega requieren sus capacidades y relaciones propietarias;
+16. un recurso ajeno a la asignación del conductor nunca queda expuesto por pertenecer a la misma sede, ruta o fecha;
+17. `active_area_id` ausente no concede inventario general ni autoridad de bodega;
+18. un `area_id` enviado por cliente no convierte al conductor en bodeguero o receptor;
+19. `nexo.access` no funciona como wildcard de inventario;
+20. vehículo, dispositivo, PIN, geolocalización, check-in o proximidad física no añaden PermissionKey;
+21. una entrega con diferencias no autoriza al conductor a corregir cantidades ni resolver la diferencia;
+22. una incidencia no autoriza ajustes, cancelaciones, recepciones ni movimientos generales de inventario;
+23. todo intento prohibido conserva cero efectos empresariales;
+24. servidor, RPC, RLS y demás evaluadores aplicables conservan una decisión equivalente para el mismo contexto;
+25. `AUTH-QA-013` conserva la certificación positiva de tránsito sin área productiva y esta tarea no la duplica;
+26. la certificación por package prueba las fronteras solo sobre superficies materialmente presentes;
+27. no se crean ni modifican requisitos de prueba;
+28. no se ejecuta ningún cambio físico durante esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad actual:
+
+- catálogo activo congelado de 140 PermissionKey;
+- dataset `vento.authorization.operational-role-grants@1.0.0`;
+- reconciliación vinculante de `AUTH-RBAC-018` posterior a `AUTH-CAT-022` a `AUTH-CAT-025`;
+- contrato de autorización de remisiones y logística vigente;
+- modelo de contexto, recurso y alcance vigente;
+- separación entre preparación, custodia, tránsito, entrega física y recepción;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate `POST_E5_PACKAGE`.
+
+El snapshot histórico de 112 permisos y catorce concesiones de `AUTH-RBAC-018` se conserva como lineage, pero no determina autorización runtime.
+
+---
+
+#### 4. Dataset vigente de conductor
+
+El dataset materializado vigente contiene exactamente dieciséis grants para `conductor_logistica`:
+
+```text
+nexo.access
+nexo.catalog.presentations.view
+nexo.catalog.products.view
+nexo.catalog.units.view
+nexo.inventory.lpns.view
+nexo.inventory.movements.view
+nexo.inventory.remissions.accept_custody
+nexo.inventory.remissions.deliver
+nexo.inventory.remissions.start_transit
+nexo.inventory.remissions.view
+nexo.logistics.driver_operations.view
+nexo.logistics.fulfillment.view
+nexo.logistics.fulfillment_routes.view
+nexo.logistics.operations.view
+nexo.logistics.operations_board.view
+nexo.logistics.supply_routes.view
+```
+
+La prueba usa esta lista como universo positivo del rol. Toda capacidad no concedida permanece denegada salvo que otro carril de autoridad válido y explícito la conceda de acuerdo con su contrato; esta tarea no crea ese carril.
+
+---
+
+#### 5. Frontera de segregación de funciones
+
+El conductor transporta y conserva custodia logística. No sustituye al actor de origen que prepara ni al actor de destino que recibe.
+
+La frontera queda:
+
+```text
+PREPARACIÓN
+→ actor de origen autorizado
+
+CUSTODIA / TRÁNSITO / ENTREGA FÍSICA
+→ conductor_logistica dentro de su asignación
+
+RECEPCIÓN
+→ actor autorizado del destino
+```
+
+Compartir la misma remisión no fusiona responsabilidades.
+
+---
+
+#### 6. Preparación permanece bloqueada
+
+`conductor_logistica` no recibe autoridad para:
+
+- reservar cantidades;
+- alistar líneas;
+- sustituir productos;
+- modificar cantidades preparadas;
+- registrar faltantes como decisión del origen;
+- definir empaque;
+- declarar una remisión lista para transporte;
+- reabrir o rehacer preparación.
+
+La capacidad contractual exacta es:
+
+```text
+nexo.inventory.remissions.prepare
+```
+
+No está incluida entre los dieciséis grants del conductor.
+
+Con un conductor plenamente válido y una remisión asignada, intentar esa capacidad debe producir `DENY` y cero efectos.
+
+---
+
+#### 7. Aceptar custodia no equivale a preparar
+
+La capacidad:
+
+```text
+nexo.inventory.remissions.accept_custody
+```
+
+permite al conductor aceptar custodia de una carga ya preparada y compatible con el manifiesto.
+
+No permite:
+
+- modificar líneas;
+- recalcular cantidades;
+- sustituir productos;
+- completar faltantes;
+- cambiar la preparación;
+- corregir diferencias del origen.
+
+Si el manifiesto no coincide, la aceptación de custodia debe bloquearse o registrarse conforme al contrato de excepción aplicable. Nunca debe corregirse la carga mediante autoridad del conductor.
+
+---
+
+#### 8. Recepción permanece bloqueada
+
+`conductor_logistica` no recibe autoridad para confirmar por el destino:
+
+- cantidades recibidas;
+- producto recibido;
+- condición final;
+- faltantes o sobrantes como resolución;
+- diferencias de recepción;
+- aceptación final de la remisión;
+- entrada resultante al inventario del destino.
+
+La capacidad contractual exacta es:
+
+```text
+nexo.inventory.remissions.receive
+```
+
+Permanece separada y pertenece al actor receptor autorizado del destino.
+
+---
+
+#### 9. Entrega física no equivale a recepción
+
+La capacidad:
+
+```text
+nexo.inventory.remissions.deliver
+```
+
+registra el handoff físico del conductor al receptor previsto.
+
+El oracle obligatorio es:
+
+```text
+DELIVER = ALLOW
+RECEIVE = NOT_EXECUTED_BY_DRIVER
+DESTINATION_INVENTORY_EFFECT = NONE_FROM_DELIVER_ALONE
+```
+
+Firma, fotografía, código, geolocalización u otra evidencia de entrega no sustituye la autorización de recepción.
+
+---
+
+#### 10. Inicio de tránsito no concede inventario
+
+La capacidad:
+
+```text
+nexo.inventory.remissions.start_transit
+```
+
+solo inicia la fase de tránsito después de custodia válida.
+
+No autoriza:
+
+- reservar o preparar stock;
+- registrar entradas;
+- crear traslados internos;
+- confirmar recepción;
+- cerrar diferencias;
+- realizar conteos;
+- aprobar ajustes;
+- cambiar cantidades del manifiesto.
+
+---
+
+#### 11. Inventario general permanece fuera del rol
+
+La certificación debe demostrar que el conductor no adquiere por contexto logístico acceso general a:
+
+- stock de la sede;
+- ubicaciones internas de bodega;
+- asignaciones de ubicación;
+- entradas de inventario;
+- traslados internos;
+- conteos y diferencias;
+- ajustes;
+- operaciones generales de bodega;
+- recursos de otras remisiones o custodias.
+
+Cuando una superficie o PermissionKey correspondiente exista materialmente en el package, la ausencia de autoridad del conductor debe observarse como `DENY`, exclusión de la proyección autorizada o `NOT_APPLICABLE` cuando la superficie no esté materializada.
+
+---
+
+#### 12. Lectura de LPN no es lectura global
+
+`nexo.inventory.lpns.view` está concedida al conductor, pero su alcance queda restringido a LPN, bultos o contenedores relacionados con la carga asignada y la custodia vigente.
+
+Debe demostrarse:
+
+```text
+LPN RELACIONADO
+→ VISIBLE DENTRO DE LA PROYECCIÓN AUTORIZADA
+
+LPN AJENO
+→ NO EXPOSURE
+```
+
+La PermissionKey de lectura no concede mutación de contenido, ubicación, cantidad o estado.
+
+---
+
+#### 13. Lectura de movimientos no es inventario general
+
+`nexo.inventory.movements.view` está concedida al conductor únicamente para eventos vinculados a la cadena de custodia de sus operaciones.
+
+No permite consultar el historial general de inventario ni usar esa lectura para inferir o ejecutar:
+
+- ajustes;
+- entradas;
+- traslados;
+- conteos;
+- movimientos de otras sedes o actores.
+
+---
+
+#### 14. Recurso relacionado sigue siendo obligatorio
+
+Incluso con PermissionKey concedida, turno y contexto válidos, el conductor solo puede operar recursos relacionados con:
+
+- su asignación;
+- su ruta o journey;
+- su vehículo cuando aplique;
+- su remisión/shipment;
+- su custodia vigente.
+
+Misma sede, misma fecha, mismo origen o mismo destino no bastan para relacionar un recurso.
+
+---
+
+#### 15. Ausencia de área no amplía inventario
+
+La semántica positiva de `AUTH-QA-013` permanece:
+
+```text
+active_area_id = null
+```
+
+puede ser válida para una acción logística compatible.
+
+Pero esta tarea exige demostrar simultáneamente:
+
+```text
+active_area_id = null
+!=
+warehouse_scope
+
+active_area_id = null
+!=
+all_inventory
+
+active_area_id = null
+!=
+permission_bypass
+```
+
+La ausencia de área productiva no convierte al conductor en actor de bodega.
+
+---
+
+#### 16. Área enviada por cliente no concede autoridad
+
+Un `area_id`, `site_id`, filtro, URL, payload, estado local o selector de interfaz no puede crear el carril de preparación o recepción.
+
+La prueba debe demostrar que cambiar solo un valor controlado por cliente no modifica la autoridad efectiva del conductor.
+
+---
+
+#### 17. `nexo.access` no es wildcard
+
+`nexo.access` permite entrada a NEXO dentro de su contrato.
+
+No significa:
+
+```text
+nexo.access
+→ prepare
+→ receive
+→ stock general
+→ entries
+→ transfers
+→ counts
+→ adjustments
+```
+
+Cada capacidad protegida conserva su PermissionKey, contexto, recurso y estado propios.
+
+---
+
+#### 18. Dispositivo, vehículo y geolocalización no conceden permisos
+
+Un terminal del vehículo, dispositivo móvil, PIN, etiqueta, sesión técnica, GPS, geocerca o proximidad física puede restringir o describir contexto.
+
+La autoridad efectiva permanece:
+
+```text
+AUTORIDAD DEL ACTOR
+∩
+LÍMITES DEL DISPOSITIVO
+∩
+RELACIÓN CON RECURSO
+```
+
+Nunca la unión.
+
+---
+
+#### 19. Diferencias no convierten al conductor en receptor
+
+Si durante carga, tránsito o entrega se observa:
+
+- faltante;
+- sobrante;
+- producto incorrecto;
+- daño;
+- sello incompatible;
+- rechazo;
+- entrega fallida;
+- retorno;
+
+el conductor puede aportar evidencia o bloquear continuidad cuando el contrato lo permita.
+
+No puede resolver la diferencia mediante:
+
+- modificación de cantidades preparadas;
+- recepción por el destino;
+- ajuste de inventario;
+- creación de entrada;
+- sustitución de producto;
+- cierre unilateral de la excepción.
+
+---
+
+#### 20. Cero efectos obligatorios
+
+Todo caso negativo debe comprobar cero efectos sobre, según aplique:
+
+- cantidades solicitadas;
+- cantidades preparadas;
+- cantidades recibidas;
+- stock disponible;
+- entradas;
+- traslados;
+- conteos;
+- ajustes;
+- ubicaciones;
+- asignaciones;
+- estado de recepción;
+- resolución de diferencias;
+- custodia ajena;
+- versión del recurso.
+
+Una respuesta `DENY` con una mutación parcial es fallo de certificación.
+
+---
+
+#### 21. Frontera con `AUTH-QA-013`
+
+`AUTH-QA-013 — Conductor puede transitar sin área productiva` certifica la capacidad positiva de tránsito y la semántica de área ausente.
+
+Esta tarea consume ese resultado como control positivo, pero no lo reabre.
+
+`AUTH-QA-014` certifica específicamente que esa autoridad logística no se extiende a:
+
+- preparación;
+- recepción;
+- inventario general;
+- resolución de diferencias.
+
+---
+
+#### 22. Frontera con bodeguero y receptor
+
+El actor de origen autorizado conserva la responsabilidad de preparación.
+
+El actor del destino autorizado conserva la responsabilidad de recepción.
+
+El conductor puede participar en el handoff físico sin adquirir la PermissionKey ni la responsabilidad de ninguno de los extremos.
+
+La certificación no redefine las matrices de bodeguero ni del actor receptor.
+
+---
+
+#### 23. Paridad de evaluadores
+
+Para los mismos:
+
+- principal;
+- actor efectivo;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área ausente o contexto aplicable;
+- PermissionKey;
+- ruta/journey;
+- vehículo;
+- shipment/remisión;
+- custodia;
+- estado;
+- versión;
+- recurso objetivo;
+
+todos los evaluadores aplicables deben conservar la misma frontera de segregación.
+
+No se admite que UI o cliente oculten una acción mientras servidor, RPC o RLS la permitan por otra ruta.
+
+---
+
+#### 24. Auditoría
+
+La evidencia de cada caso debe permitir reconstruir como mínimo:
+
+- package e identidad de ejecución;
+- principal;
+- actor efectivo;
+- rol base y operativo cuando estén disponibles;
+- turno;
+- check-in;
+- sede;
+- área observada;
+- dispositivo cuando aplique;
+- PermissionKey solicitada;
+- ruta/journey;
+- vehículo;
+- shipment/remisión;
+- custodia;
+- estado y versión;
+- recurso objetivo;
+- decisión;
+- razones;
+- efecto o cero efecto;
+- versión contractual;
+- timestamp.
+
+La auditoría no sustituye la autorización previa.
+
+---
+
+#### 25. Casos mínimos obligatorios por package
+
+| Caso | Acción o superficie | Condición diferencial | Resultado esperado |
+| --- | --- | --- | --- |
+| `AUTH-QA-014-A` | `remissions.prepare` | conductor válido sobre remisión asignada | `DENY`, cero efecto |
+| `AUTH-QA-014-B` | `remissions.receive` | conductor válido entrega en destino | `DENY`, cero efecto |
+| `AUTH-QA-014-C` | `remissions.deliver` | handoff válido | `ALLOW` solo para entrega física; recepción no ejecutada |
+| `AUTH-QA-014-D` | lectura LPN | LPN relacionado con carga asignada | visible solo dentro de proyección autorizada |
+| `AUTH-QA-014-E` | lectura LPN | LPN ajeno | `NO EXPOSURE` |
+| `AUTH-QA-014-F` | lectura de movimientos | evento relacionado con custodia | visible dentro del alcance autorizado |
+| `AUTH-QA-014-G` | lectura o mutación de inventario general | recurso no relacionado o capability no concedida | `DENY` o `NO EXPOSURE`, cero efecto |
+| `AUTH-QA-014-H` | preparación o recepción | `area_id` manipulado por cliente | `DENY`, cero efecto |
+| `AUTH-QA-014-I` | diferencia de entrega | conductor intenta resolver cantidades/inventario | `DENY`, cero efecto |
+| `AUTH-QA-014-J` | acción prohibida | dispositivo, vehículo o geolocalización válidos | autoridad sin ampliación |
+
+Si una superficie necesaria para un caso condicional no existe materialmente en el package, se registra `NOT_APPLICABLE` con evidencia. No se inventa una superficie para forzar ejecución.
+
+---
+
+#### 26. Clasificación de fallos
+
+Un fallo de `AUTH-QA-014` se clasifica por la frontera rota:
+
+- `DRIVER_PREPARE_BYPASS` — conductor prepara o modifica cantidades;
+- `DRIVER_RECEIVE_BYPASS` — conductor ejecuta recepción por el destino;
+- `DELIVER_AUTO_RECEIVE` — entrega física produce recepción automática;
+- `GENERAL_INVENTORY_EXPOSURE` — conductor obtiene lectura general de inventario sin relación válida;
+- `GENERAL_INVENTORY_MUTATION` — conductor ejecuta entrada, traslado, conteo, ajuste u otra mutación no concedida;
+- `RESOURCE_SCOPE_BYPASS` — LPN, movimiento o remisión ajenos quedan expuestos o mutables;
+- `CLIENT_CONTEXT_ESCALATION` — `area_id`, `site_id`, URL o payload amplían autoridad;
+- `DEVICE_OR_VEHICLE_GRANT` — dispositivo, vehículo o geolocalización añaden permisos;
+- `DIFFERENCE_RESOLUTION_BYPASS` — conductor resuelve unilateralmente una diferencia;
+- `PARTIAL_EFFECT_ON_DENY` — una denegación conserva efectos parciales;
+- `EVALUATOR_DIVERGENCE` — capas aplicables producen decisiones incompatibles;
+- `AUDIT_GAP` — no puede reconstruirse la decisión o el efecto.
+
+La clasificación no crea nuevos reason codes públicos ni modifica contratos de error.
+
+---
+
+#### 27. Modelo de ejecución por paquete
+
+Cada package que materialice superficies afectadas ejecutará:
+
+```text
+AUTH-QA-014::<package_id>
+```
+
+únicamente después de que:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- la instancia se encuentre autorizada conforme al lifecycle físico correspondiente.
+
+Esta tarea documental no selecciona package ni abre una instancia física.
+
+---
+
+#### 28. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-014::GLOBAL-FINAL
+```
+
+consolida evidencia de packages aplicables y demuestra que la segregación del conductor es uniforme entre consumidores.
+
+Debe fallar si existe al menos un consumidor aplicable donde:
+
+- el conductor pueda preparar;
+- el conductor pueda recibir por el destino;
+- `deliver` auto-ejecute recepción;
+- lectura logística se convierta en inventario general;
+- un recurso ajeno quede expuesto;
+- un contexto controlado por cliente amplíe autoridad;
+- una diferencia pueda resolverse sin autoridad propietaria;
+- una denegación produzca efectos parciales.
+
+---
+
+#### 29. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por requisitos existentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 30. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-001` — autorización final por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-004` — paridad entre evaluadores y superficies autoritativas;
+- `TREQ-AUTH-010` — segregación de funciones, incluyendo conductor sin facultades productivas o de recepción general;
+- `TREQ-AUTH-013` — imposibilidad de bypass por cliente, API o RPC;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisión y acción;
+- `TREQ-NEXO-006` — efectos de remisión sin doble contabilización;
+- `TREQ-NEXO-007` — fallbacks legacy sin ampliación silenciosa de alcance;
+- `TREQ-NEXO-009` — jerarquía única y reutilizable para capacidades de remisiones;
+- `TREQ-NEXO-016` — separación de preparación, custodia, tránsito, entrega y recepción;
+- `TREQ-NEXO-269` — diferencias de remisión sin cierre o recepción implícitos;
+- `TREQ-NEXO-291` — guion de conductor que debe demostrar que no puede preparar, recibir ni resolver diferencias.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 31. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no fue incorporado todavía al checkout del usuario; la batería global se ejecutará después del reemplazo. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron todavía las validaciones locales de formato, calidad, entrega, topología, requisitos de prueba ni consistencia de diferencias sobre el owner modificado. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, la reconciliación vigente de `AUTH-RBAC-018`, las dieciséis concesiones del conductor, la separación entre `accept_custody`, `start_transit`, `deliver`, `prepare` y `receive`, y cobertura existente del Registro 04A, incluido el requisito específico que obliga a demostrar que el conductor no puede preparar, recibir ni resolver diferencias. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron casos reales de preparación, recepción, inventario, custodia, tránsito, entrega, diferencias ni autorización. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-014::<package_id>` ni `AUTH-QA-014::GLOBAL-FINAL`; ambas identidades permanecen sujetas a su lifecycle y gate físico. |
+
+---
+
+#### 32. Criterios de aceptación
+
+- [ ] `conductor_logistica` consume exactamente dieciséis grants vigentes del dataset actual.
+- [ ] La prueba no usa como autoridad el snapshot histórico de catorce grants.
+- [ ] `accept_custody`, `start_transit` y `deliver` conservan sus fronteras atómicas.
+- [ ] `nexo.inventory.remissions.prepare` no autoriza al conductor.
+- [ ] `nexo.inventory.remissions.receive` no autoriza al conductor.
+- [ ] Aceptar custodia no permite modificar cantidades preparadas.
+- [ ] Iniciar tránsito no crea autoridad de inventario.
+- [ ] Entrega física no ejecuta recepción por el destino.
+- [ ] Entrega física no crea inventario en destino por sí sola.
+- [ ] Lectura LPN queda limitada a carga relacionada.
+- [ ] Lectura de movimientos queda limitada a la cadena de custodia relacionada.
+- [ ] Recursos ajenos no quedan expuestos por compartir sede, ruta o fecha.
+- [ ] Área ausente no equivale a inventario general.
+- [ ] Un `area_id` o `site_id` enviado por cliente no amplía autoridad.
+- [ ] `nexo.access` no funciona como wildcard.
+- [ ] Dispositivo, vehículo, PIN y geolocalización no conceden PermissionKey.
+- [ ] Una diferencia no puede resolverse unilateralmente por el conductor.
+- [ ] Toda denegación demuestra cero efectos.
+- [ ] Los evaluadores aplicables conservan una decisión equivalente.
+- [ ] `AUTH-QA-013` conserva la certificación positiva de tránsito y no se duplica.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 33. Límites
+
+Esta tarea no:
+
+- redefine `AUTH-RBAC-018`;
+- cambia los dieciséis grants vigentes del conductor;
+- crea PermissionKey;
+- crea grants, denies, aliases o fallbacks;
+- redefine preparación de remisiones;
+- redefine recepción de remisiones;
+- redefine el modelo global de inventario;
+- redefine bodeguero ni actor receptor;
+- convierte `active_area_id = null` en regla universal para otros roles;
+- implementa journeys, shipments, rutas, vehículos, custodia o geolocalización;
+- modifica UI o navegación;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos o datasets;
+- ejecuta `AUTH-QA-013::<package_id>`;
+- ejecuta `AUTH-QA-014::<package_id>`;
+- ejecuta `AUTH-QA-014::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 34. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-013 — Conductor puede transitar sin área productiva`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-015 — Compras puede crear órdenes según alcance`
 ### [ ] AUTH-QA-015 — Compras puede crear órdenes según alcance
 ### [ ] AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
 ### [ ] AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado

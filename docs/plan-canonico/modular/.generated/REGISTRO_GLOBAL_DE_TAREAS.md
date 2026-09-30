@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1536** |
+| Aprobadas | **1537** |
 | En propuesta | **0** |
-| No iniciadas | **60** |
+| No iniciadas | **59** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **96.24% (1536/1596)** |
+| Porcentaje de completamiento | **96.30% (1537/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **60** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1437** |
+| ⏸ NO_EVALUADA | **59** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1438** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-013` — Conductor puede transitar sin área productiva | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-014` — Conductor no puede preparar ni recibir inventario general | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-015` — Compras puede crear órdenes según alcance | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-014` — Conductor no puede preparar ni recibir inventario general | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-015` — Compras puede crear órdenes según alcance | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-016` — Recepción puede recibir pero no aprobar compras | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1368,7 +1368,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-011` | Producción puede producir pero no ajustar inventario global | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-012` | Cajero puede operar PULSO pero no configurar | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-013` | Conductor puede transitar sin área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-014` | Conductor no puede preparar ni recibir inventario general | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-014` | Conductor no puede preparar ni recibir inventario general | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-015` | Compras puede crear órdenes según alcance | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-016` | Recepción puede recibir pero no aprobar compras | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-017` | Dispositivo compartido limita al administrador autenticado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
