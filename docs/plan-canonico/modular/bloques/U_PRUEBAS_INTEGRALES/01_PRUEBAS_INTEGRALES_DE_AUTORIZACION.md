@@ -16305,7 +16305,989 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-022 — RPC manipulada queda bloqueada`
-### [ ] AUTH-QA-022 — RPC manipulada queda bloqueada
+### ✅ AUTH-QA-022 — RPC manipulada queda bloqueada
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
+**Tarea siguiente:** AUTH-QA-023 — Cruce de sede queda bloqueado
+**Tipo de tarea:** documental; definición canónica de una prueba integral adversarial de autorización para invocación directa de RPC consumidas por Vento OS, reutilizable por paquete y certificable globalmente, que demuestra que conocer una función, construir manualmente su llamada o manipular sus argumentos, firma, recurso, contexto o estado no concede autoridad adicional y que toda RPC aplicable queda protegida por exposición mínima, resolución autoritativa, autorización empresarial, controles de datos y fallo cerrado antes del primer efecto protegido
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-022::<package_id>` y la certificación `AUTH-QA-022::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la fundación global de separación de RPC expuestas, privilegios de Data API y contexto canónico ya posee materialización parcial en BLOQUE R, mientras la adopción por RPC sensibles y la certificación adversarial por package continúan pendientes donde correspondan
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se invocan RPC reales, no se alteran grants, RLS, `SECURITY DEFINER`, esquemas expuestos, funciones, migraciones, datos, usuarios, sesiones, secretos, código, ambientes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una RPC no puede obtener autoridad empresarial a partir del mero hecho de ser invocable ni de argumentos construidos por el caller.
+
+La regla raíz queda:
+
+```text
+CONOCER RPC + PODER CONSTRUIR LLAMADA + ENVIAR ARGUMENTOS
+≠
+AUTORIZACION
+```
+
+Y toda invocación aplicable debe satisfacer:
+
+```text
+RPC OBJETIVO
++ PRINCIPAL TECNICO VIGENTE
++ ACTOR EFECTIVO
++ OPERACION / PERMISO EXACTOS
++ CONTEXTO Y TERRITORIO REQUERIDOS
++ RECURSO Y ESTADO ACTUALES
++ ARGUMENTOS PERMITIDOS Y VALIDADOS
++ CONTROLES DE BASE DE DATOS APLICABLES
+=
+DECISION AUTORITATIVA ANTES DEL EFECTO
+```
+
+Una RPC que no pueda demostrar esa cadena debe quedar no invocable para el caller o fallar cerrada antes de producir el efecto protegido.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y ocho resultados obligatorios:
+
+1. una RPC expuesta no constituye autorización;
+2. conocer `schema` y nombre de función no concede capacidad empresarial;
+3. una llamada directa debe producir una decisión equivalente a la que corresponde al mismo actor, recurso y contexto por el flujo autorizado;
+4. la identidad contractual de `AUTH-SRV-003` se reconcilia con la función física realmente invocada antes de ejecutar pruebas;
+5. cuando exista overload o firma ambigua no se adivina la función efectiva;
+6. el universo de prueba se deriva por package desde RPC materialmente consumidas y físicamente alcanzables;
+7. una RPC server-only debe impedir invocación directa desde roles no autorizados;
+8. una RPC que sí sea invocable por cliente debe aplicar dentro de su frontera todos los controles empresariales que no pueda delegar de forma segura;
+9. `anon`, `authenticated`, `service_role`, owner y otros roles técnicos no se interpretan como roles empresariales;
+10. principal técnico y actor efectivo permanecen separados;
+11. `user_id`, `employee_id`, `actor_id` o autoría enviados como argumentos no sustituyen la identidad autoritativa;
+12. permiso, capability, acción o rol enviados por el caller no deciden qué autorización se evalúa;
+13. `site_id` y `area_id` son referencias a validar, no cobertura territorial;
+14. el identificador de un recurso no prueba ownership ni scope;
+15. el estado y versión del recurso se releen cuando gobiernan el efecto;
+16. argumentos privilegiados o derivados no se aceptan como autoridad por estar presentes en la firma;
+17. argumentos desconocidos, incompatibles o ambiguos no pueden seleccionar una semántica más permisiva;
+18. ausencia, `null`, valor vacío y default se distinguen cuando su diferencia sea material;
+19. un parámetro opcional o default SQL no puede relajar un gate requerido;
+20. la función física aplicable se identifica de forma determinista antes del test;
+21. grants de esquema, `EXECUTE` y exposición de Data API forman parte de la frontera de invocación y no sustituyen autorización empresarial;
+22. RLS y autorización de aplicación o de función permanecen controles distintos cuando ambos aplican;
+23. `SECURITY INVOKER` no convierte automáticamente una RPC en segura;
+24. `SECURITY DEFINER` no convierte capacidad técnica elevada en autoridad empresarial;
+25. toda RPC `SECURITY DEFINER` aplicable conserva `search_path` seguro, privilegios mínimos y pruebas negativas acordes con su contrato propietario;
+26. `service_role` o admin client no se usan para demostrar permiso de usuario;
+27. una RPC de lectura no puede filtrar datos fuera del alcance autorizado;
+28. una RPC mutante no puede escribir columnas, filas o relaciones fuera de la operación autorizada;
+29. una RPC que produzca múltiples efectos debe mantener la atomicidad o compensación exigida por su contrato;
+30. reintentos no pueden transformar una denegación o respuesta perdida en un efecto duplicado cuando la operación exige idempotencia;
+31. un fallo del evaluador, contexto, RLS, dependencia o consulta de estado no degrada a ejecución;
+32. una denegación no puede ocurrir después de un efecto protegido parcial;
+33. el error público no revela secretos, SQL interno, existencia de recursos fuera de alcance ni detalles que creen un oráculo indebido;
+34. la auditoría conserva principal, actor, RPC, operación, recurso, contexto, decisión y resultado sin tratar argumentos manipulados como autoridad;
+35. la prueba de formulario manipulado permanece en `AUTH-QA-021` y no se repite aquí como frontera propietaria;
+36. el cruce integral de sede y área permanece reservado a `AUTH-QA-023` y `AUTH-QA-024`;
+37. la ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`;
+38. no se ejecuta ningún cambio físico desde esta definición documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `AUTH-SRV-003`, para el inventario de RPC utilizadas y su identidad contractual por esquema y función;
+- `AUTH-SRV-004`, para tratar argumentos y payloads del caller como intención no autoritativa y reconstruir datos derivados;
+- `AUTH-SRV-005..013`, para permiso exacto, sede, área, turno, rol operativo, dispositivo, estado actual y cruces territoriales;
+- `AUTH-SRV-014..018`, para atribución, simulación, normalización de errores, helpers compartidos y acciones administrativas;
+- `AUTH-DB-006..010`, para la adopción de contexto, sede, área, permiso exacto y principal/actor dentro de RPC sensibles cuando aplique;
+- `AUTH-DB-017`, para esquemas expuestos y privilegios de Data API;
+- `AUTH-DB-018`, para separación entre vistas/RPC expuestas y helpers internos;
+- `AUTH-DB-021`, para políticas RLS y grants canónicos cuando correspondan al objeto o datos afectados;
+- `AUTH-UI-043`, cuando exista una acción de aplicación que deba permanecer vinculada al mismo contrato server-side;
+- los contratos vigentes de contexto, recurso, autorización, error, auditoría, idempotencia y datos aplicables a cada RPC;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La prueba no usa como autoridad el nombre de la RPC, su mera exposición, el rol técnico de conexión, un argumento enviado por cliente, una pantalla previa, un permiso serializado ni el hecho de que otra capa haya permitido llegar hasta la llamada.
+
+---
+
+#### 4. Semántica exacta de “RPC manipulada queda bloqueada”
+
+El título no significa que toda llamada directa a una RPC deba ser rechazada.
+
+La certificación distingue:
+
+```text
+RPC LEGITIMAMENTE INVOCABLE
++ ACTOR AUTORIZADO
++ CONTEXTO VIGENTE
++ RECURSO / ESTADO VALIDOS
++ ARGUMENTOS VALIDOS
+→ EFECTO O PROYECCION POSIBLE
+```
+
+```text
+RPC SERVER-ONLY
++ LLAMADA DIRECTA DESDE ROL NO AUTORIZADO
+→ INVOCACION NO DISPONIBLE / RECHAZO SEGURO
+→ CERO EFECTOS PROTEGIDOS
+```
+
+```text
+RPC INVOCABLE
++ ARGUMENTOS MANIPULADOS
++ RESULTADO TODAVIA COMPATIBLE CON EL CONTRATO
+→ NORMALIZAR / RESOLVER / REVALIDAR
+→ EFECTO POSIBLE SOLO SI TODO EL CONTRATO PASA
+```
+
+```text
+RPC INVOCABLE
++ AUTORIDAD / TERRITORIO / RECURSO / ESTADO / CAMPO PRIVILEGIADO INCOMPATIBLE
+→ DENY / RECHAZO SEGURO
+→ CERO EFECTOS PROTEGIDOS
+```
+
+La propiedad certificada es que una llamada construida fuera del flujo visible no puede obtener un resultado empresarial que el mismo actor no tendría bajo el contrato canónico.
+
+---
+
+#### 5. Universo de certificación
+
+`AUTH-QA-022` no inventa un conteo global nuevo de RPC.
+
+El universo aplicable se resuelve por package desde la intersección material entre:
+
+```text
+RPC UTILIZADAS SEGUN AUTH-SRV-003 Y DRIFT VIGENTE
+∩
+FUNCIONES FISICAS RESUELTAS EN EL AMBIENTE DE PRUEBA
+∩
+EXPOSICION / GRANTS / DATA API REALMENTE APLICABLES
+∩
+CONSUMIDORES Y EFECTOS PRESENTES EN EL PACKAGE
+```
+
+La ejecución debe reconciliar la identidad contractual con el catálogo físico actual antes de probar.
+
+Una RPC que ya no exista, haya cambiado de esquema, firma, exposición o consumidor se clasifica mediante evidencia de drift; no se prueba contra una identidad supuesta.
+
+Una función SQL que nunca sea alcanzable como RPC por el package no se fabrica para completar cobertura.
+
+---
+
+#### 6. Identidad de RPC y resolución de firma
+
+La identidad heredada de `AUTH-SRV-003` conserva:
+
+```text
+rpc_schema
++
+rpc_name
+=
+rpc_contract_identity
+```
+
+Para ejecutar una prueba física, esa identidad debe resolver una función PostgreSQL concreta.
+
+Cuando exista más de una firma compatible o la resolución dependa de overload, la ejecución debe registrar la firma física resuelta o bloquearse por ambigüedad.
+
+Queda prohibido concluir seguridad sobre una RPC diferente solo porque comparte nombre.
+
+La evidencia física deberá conservar, cuando exista:
+
+- schema;
+- nombre;
+- firma resuelta;
+- modo de seguridad de la función;
+- owner;
+- exposición aplicable;
+- grants de ejecución materiales;
+- caller o consumidor del package.
+
+---
+
+#### 7. Alcanzabilidad y exposición
+
+Toda RPC aplicable debe demostrar una de estas situaciones materiales, sin convertirlas en una taxonomía global paralela:
+
+- el caller probado puede invocarla directamente y la función debe proteger por sí misma la parte de autorización que le corresponda;
+- el caller probado no debe poder invocarla y los controles de exposición/grants bloquean la llamada;
+- la RPC es consumida únicamente detrás de una frontera server-side y la llamada directa del rol cliente no forma parte de su contrato;
+- la RPC no está presente o no es material para el package y queda `NOT_APPLICABLE` con evidencia.
+
+No se admite un PASS basado únicamente en que la aplicación normal “nunca llama así”.
+
+---
+
+#### 8. Vectores de invocación directa
+
+Cuando sean materialmente posibles, la ejecución debe contemplar llamadas equivalentes a:
+
+```text
+supabase.rpc(...)
+```
+
+```text
+supabase.schema(...).rpc(...)
+```
+
+```text
+POST /rest/v1/rpc/<funcion>
+```
+
+u otro transporte oficial que alcance la misma función mediante Data API.
+
+El vector se ejecuta con credenciales controladas del fixture correspondiente y nunca con secretos productivos.
+
+No se inventa una ruta HTTP para una RPC que no esté expuesta por el contrato del ambiente.
+
+---
+
+#### 9. Principal técnico y actor efectivo
+
+El rol técnico de conexión y el actor empresarial no son equivalentes.
+
+La prueba debe demostrar, cuando aplique:
+
+```text
+auth.uid() / JWT / sesion tecnica
+→ principal tecnico
+→ vinculo empresarial vigente
+→ actor efectivo
+```
+
+Argumentos como:
+
+```text
+user_id
+employee_id
+actor_id
+created_by
+updated_by
+approved_by
+```
+
+no sustituyen esa resolución.
+
+Si la RPC recibe alguno de esos campos por razones de dominio, debe demostrar que no puede usarse para suplantar actor o autoría.
+
+---
+
+#### 10. Permiso y operación exactos
+
+La RPC no puede autorizarse por:
+
+- nombre parecido a una operación permitida;
+- acceso general a la aplicación;
+- permiso de lectura cuando ejecuta escritura;
+- rol laboral;
+- rol operativo enviado por caller;
+- `navigation_role`;
+- visibilidad previa de una pantalla;
+- `permission_key` enviado libremente;
+- decisión previa no revalidada cuando haya perdido frescura.
+
+La operación efectiva y su permiso exacto se resuelven desde el contrato propietario de la RPC o del comando empresarial que materializa.
+
+Si una misma función soporta operaciones semánticamente distintas, la ejecución debe demostrar que una rama más privilegiada no se selecciona mediante argumentos manipulables sin el gate correspondiente.
+
+---
+
+#### 11. Sede y área
+
+`site_id` y `area_id` pueden ser argumentos legítimos de selección.
+
+No constituyen cobertura.
+
+La RPC debe validar o resolver, cuando corresponda:
+
+- sede real del recurso;
+- sede objetivo;
+- área real;
+- pertenencia del área a la sede;
+- alcance efectivo del actor;
+- compatibilidad territorial de todos los extremos requeridos.
+
+`AUTH-QA-022` verifica que una RPC directa no acepte esos argumentos como autoridad.
+
+La certificación integral del cruce de sede permanece reservada a `AUTH-QA-023`, y la del cruce de área a `AUTH-QA-024`.
+
+---
+
+#### 12. Recurso, ownership y escalamiento horizontal
+
+Un identificador válido solo demuestra que existe una referencia sintácticamente aceptable.
+
+La prueba debe cubrir, cuando exista recurso direccionable:
+
+```text
+ACTOR AUTORIZADO PARA RECURSO A
++ RPC VALIDA
++ ID CAMBIADO A RECURSO B FUERA DE ALCANCE
+→ DENY / RESPUESTA SEGURA
+→ CERO EFECTO SOBRE B
+```
+
+Y el control positivo:
+
+```text
+ACTOR AUTORIZADO
++ RECURSO DENTRO DE ALCANCE
++ RESTO DEL CONTRATO VALIDO
+→ RESULTADO POSIBLE
+```
+
+UUID, slug, Vento ID, código, referencia externa o cualquier otro identificador no amplían scope por sí solos.
+
+---
+
+#### 13. Estado actual, versión y transición
+
+Argumentos como:
+
+```text
+status
+state
+version
+approved
+published
+cancelled
+current_step
+```
+
+no sustituyen el estado vigente cuando la operación depende de él.
+
+La RPC debe releer o validar el estado material que gobierna la transición antes del efecto.
+
+Una llamada creada a partir de un snapshot viejo no puede forzar una transición que dejó de ser válida.
+
+Cuando exista control optimista, token de frescura o versión, la prueba conserva su semántica propietaria y demuestra que un valor manipulado no evita la detección de stale state.
+
+---
+
+#### 14. Clasificación de argumentos
+
+Los argumentos que proceden del caller conservan la frontera de confianza de `AUTH-SRV-004`.
+
+La ejecución debe justificar, según corresponda:
+
+- selector de intención;
+- contenido empresarial realmente editable;
+- dato derivado por servidor;
+- estado actual;
+- cálculo cliente;
+- dato de navegación o transporte.
+
+Un argumento existente en la firma SQL no se vuelve automáticamente editable por el usuario.
+
+Actor, autoría, permiso, rol, territorio efectivo, ownership, estado protegido y campos privilegiados siguen siendo no autoritativos cuando provienen del caller.
+
+---
+
+#### 15. Argumentos privilegiados y mass assignment semántico
+
+Aunque una RPC tenga parámetros nominales explícitos, puede existir el equivalente funcional a mass assignment si un argumento permite al caller elegir directamente un campo o resultado privilegiado.
+
+La prueba debe impedir que el caller controle, sin contrato específico:
+
+- actor o autoría;
+- permiso evaluado;
+- rol efectivo;
+- sede o área efectiva;
+- ownership;
+- estado final;
+- flags administrativos;
+- columnas sensibles;
+- límites o totales server-derived;
+- bypass de auditoría;
+- destinatarios fuera de alcance.
+
+La protección se demuestra por reconstrucción, validación, allowlist o rechazo según el contrato propietario.
+
+---
+
+#### 16. Ausencia, `null`, defaults y coerción
+
+La llamada manipulada puede alterar no solo valores sino presencia y shape de argumentos.
+
+La ejecución debe cubrir cuando sea material:
+
+- argumento omitido;
+- `null` explícito;
+- string vacío;
+- cero;
+- booleano representado con otro tipo;
+- array u objeto donde se esperaba escalar;
+- número fuera de rango;
+- UUID inválido;
+- identificador bien formado pero inexistente;
+- default SQL activado por omisión.
+
+La ausencia de un dato requerido para autorización, contexto, recurso o estado falla cerrada.
+
+Un default solo es válido si su semántica empresarial está definida y no reduce controles.
+
+---
+
+#### 17. Overload, parámetros homónimos y ambigüedad
+
+Una familia de funciones sobrecargadas no puede producir seguridad por accidente.
+
+Antes del test debe conocerse qué firma alcanzará el transporte usado.
+
+Si dos firmas hacen ambigua la llamada o una combinación de argumentos puede seleccionar una variante más privilegiada, la certificación falla o queda bloqueada hasta resolver la identidad exacta.
+
+No se autoriza una función alternativa por inferencia desde el nombre.
+
+---
+
+#### 18. Grants, schema y Data API
+
+La posibilidad de invocar una RPC depende, entre otros controles físicos aplicables, de:
+
+- esquema expuesto;
+- `USAGE` del esquema;
+- `EXECUTE` sobre la función o privilegios equivalentes;
+- configuración de Data API;
+- rol técnico efectivo;
+- contratos de exposición definidos por BLOQUE R.
+
+La prueba distingue:
+
+```text
+NO INVOCABLE POR CONTRATO
+→ el rol no autorizado no alcanza la funcion
+```
+
+frente a:
+
+```text
+INVOCABLE POR CONTRATO
+→ la funcion debe aplicar los controles empresariales requeridos
+```
+
+Un grant correcto no demuestra por sí solo autorización de negocio.
+
+---
+
+#### 19. RLS como capa independiente
+
+RLS no sustituye autorización empresarial cuando ambas capas son aplicables.
+
+La prueba debe demostrar que:
+
+- una RPC no se considera segura solo porque las tablas tengan RLS;
+- una función que opera con privilegios que eluden RLS conserva validación empresarial explícita;
+- una función `SECURITY INVOKER` no asume que RLS cubre permiso, estado, idempotencia, auditoría o reglas de dominio que no pertenecen a la policy;
+- un deny de RLS no se transforma en éxito por fallback;
+- el resultado no expone filas que el caller no puede ver bajo el contrato aprobado.
+
+---
+
+#### 20. `SECURITY INVOKER`
+
+Una RPC `SECURITY INVOKER` ejecuta bajo privilegios del caller, pero eso no la exime de sus contratos de negocio.
+
+La certificación debe comprobar los gates que no puedan delegarse únicamente a privileges/RLS:
+
+- operación exacta;
+- recurso;
+- estado;
+- reglas de dominio;
+- atribución;
+- idempotencia;
+- errores;
+- auditoría.
+
+La seguridad técnica del invoker es una capa, no la decisión empresarial completa.
+
+---
+
+#### 21. `SECURITY DEFINER`
+
+Una RPC `SECURITY DEFINER` tiene riesgo adicional porque puede ejecutar con privilegios superiores al caller.
+
+La prueba exige, cuando sea material para la función propietaria:
+
+- necesidad explícita del modo privilegiado;
+- owner esperado;
+- `search_path` fijado de forma segura;
+- resolución no ambigua de objetos;
+- grants mínimos;
+- ausencia de authority-by-argument;
+- autorización empresarial antes del efecto protegido;
+- pruebas negativas con actor y territorio insuficientes;
+- cero dependencia en el hecho de que la función pueda técnicamente omitir RLS.
+
+`SECURITY DEFINER` nunca equivale a `ALLOW`.
+
+---
+
+#### 22. `service_role`, admin client y callers privilegiados
+
+Una capa de servidor puede invocar una RPC con credenciales técnicas elevadas.
+
+Eso no autoriza a trasladar sin revalidación los argumentos de un cliente hasta una función privilegiada.
+
+La prueba debe demostrar, cuando aplique:
+
+```text
+REQUEST CLIENTE
+→ RESOLUCION / AUTORIZACION SERVER-SIDE
+→ ARGUMENTOS CANONICOS
+→ RPC PRIVILEGIADA
+```
+
+Y nunca:
+
+```text
+REQUEST CLIENTE
+→ service_role
+→ RPC
+→ EFECTO
+```
+
+sin los gates empresariales propietarios.
+
+Las credenciales privilegiadas no se exponen ni se usan como fixture cliente para demostrar autorización de usuario.
+
+---
+
+#### 23. RPC de lectura
+
+Una RPC de lectura puede producir una fuga aunque no escriba.
+
+La certificación debe verificar, cuando aplique:
+
+- columnas devueltas;
+- filas devueltas;
+- filtros territoriales;
+- ownership;
+- finalidad;
+- sensibilidad;
+- agregaciones que puedan revelar información fuera de alcance;
+- diferencias de error que permitan inferir existencia de recursos.
+
+Una proyección mínima y autorizada puede ser válida.
+
+Un resultado técnicamente exitoso con datos fuera de alcance es `FAIL`.
+
+---
+
+#### 24. RPC mutante
+
+Una RPC mutante debe resolver todos los gates aplicables antes del primer efecto protegido.
+
+La evidencia debe demostrar que una llamada denegada no deja:
+
+- filas creadas o modificadas;
+- estados cambiados;
+- saldos o inventarios alterados;
+- archivos o referencias creadas;
+- outbox o eventos emitidos;
+- jobs o colas disparadas;
+- auditoría que afirme éxito;
+- efectos externos iniciados.
+
+Cuando una operación legítima tenga efectos múltiples, se conserva el contrato de atomicidad o compensación propietario.
+
+---
+
+#### 25. Idempotencia, replay y concurrencia
+
+Cuando la RPC represente un hecho que exige idempotencia, la prueba debe cubrir al menos:
+
+- repetición exacta de la misma solicitud;
+- respuesta perdida seguida de retry;
+- idempotency key manipulada cuando exista;
+- dos intentos concurrentes incompatibles;
+- estado que cambia entre autorización inicial y efecto.
+
+El resultado debe respetar el contrato propietario sin duplicar el hecho ni usar un replay para eludir autorización o frescura.
+
+Una RPC que no requiera idempotencia no adquiere esa obligación por esta tarea; debe quedar justificado como `NOT_APPLICABLE` para ese caso.
+
+---
+
+#### 26. Orden de gates y cero efectos parciales
+
+La secuencia conceptual exigida queda:
+
+```text
+RESOLVER FUNCION / FIRMA
+→ VALIDAR INVOCABILIDAD
+→ RESOLVER PRINCIPAL Y ACTOR
+→ RESOLVER OPERACION Y PERMISO
+→ RESOLVER CONTEXTO / TERRITORIO
+→ RESOLVER RECURSO Y ESTADO
+→ VALIDAR ARGUMENTOS / REGLAS DE DOMINIO
+→ APLICAR CONTROLES DE DATOS
+→ EFECTO O PROYECCION
+→ AUDITORIA
+```
+
+El orden físico puede variar si conserva equivalencia y ninguna capacidad protegida aparece antes de los gates requeridos.
+
+Una denegación posterior a un side effect protegido es fallo de certificación.
+
+---
+
+#### 27. Errores seguros y anti-oráculo
+
+La prueba mantiene separados internamente:
+
+```text
+INPUT_INVALID
+AUTHORIZATION_DENIED
+RESOURCE_OR_STATE_CONFLICT
+TECHNICAL_FAILURE
+```
+
+sin obligar a crear reason codes nuevos.
+
+La proyección pública no puede:
+
+- revelar secretos;
+- devolver SQL o stack traces sensibles;
+- exponer nombres internos innecesarios;
+- confirmar existencia de un recurso fuera de alcance cuando el contrato lo prohíba;
+- enumerar permisos internos de forma innecesaria;
+- convertir un error de autorización en una respuesta distinguible que facilite escalamiento;
+- afirmar éxito cuando el efecto fue rechazado;
+- convertir fallo técnico en `ALLOW`.
+
+Los errores consumen `AUTH-SRV-016` y los contratos propietarios aplicables.
+
+---
+
+#### 28. Auditoría y atribución
+
+Cada ejecución aplicable debe poder reconstruir, sin registrar secretos:
+
+- `package_id`;
+- schema y RPC;
+- firma física cuando sea necesaria;
+- modo de seguridad;
+- principal técnico;
+- actor efectivo;
+- acción u operación empresarial;
+- permiso exacto cuando aplique;
+- recurso;
+- sede y área cuando apliquen;
+- estado o versión material;
+- dimensión o argumento manipulado;
+- decisión esperada;
+- decisión observada;
+- efectos protegidos observados;
+- correlación;
+- referencia de evidencia.
+
+Los argumentos manipulados pueden registrarse de forma minimizada o mediante fingerprint seguro, pero nunca pasan a ser la fuente autoritativa de actor, permiso o contexto en la auditoría.
+
+---
+
+#### 29. Frontera con `AUTH-QA-021`
+
+`AUTH-QA-021` demuestra que alterar un formulario, `FormData`, JSON, URL o estado cliente no concede autoridad al handler de servidor.
+
+`AUTH-QA-022` comienza en la frontera RPC y responde una pregunta distinta:
+
+```text
+SI EL CALLER CONSTRUYE DIRECTAMENTE LA INVOCACION RPC,
+¿PUEDE OBTENER UN RESULTADO QUE EL CONTRATO EMPRESARIAL NO AUTORIZA?
+```
+
+Que un Server Action valide correctamente antes de llamar una RPC no certifica por sí solo que la RPC sea segura frente a invocación directa cuando esa invocación sea físicamente posible.
+
+Que una RPC esté correctamente cerrada a cliente tampoco sustituye la prueba del handler de `AUTH-QA-021`.
+
+---
+
+#### 30. Frontera con `AUTH-QA-023` y `AUTH-QA-024`
+
+`AUTH-QA-022` incluye manipulación de `site_id` y `area_id` como argumentos adversariales para demostrar que una RPC directa no convierte esos valores en autoridad.
+
+No absorbe la matriz integral de operaciones cross-site ni cross-area.
+
+Esas certificaciones permanecen en:
+
+```text
+AUTH-QA-023 — Cruce de sede queda bloqueado
+AUTH-QA-024 — Cruce de área queda bloqueado
+```
+
+Una misma RPC puede quedar cubierta por las tres tareas desde fronteras distintas.
+
+---
+
+#### 31. Baseline físico observado
+
+El estado remoto vigente demuestra una fundación parcial relevante, sin convertirla en PASS de `AUTH-QA-022`:
+
+1. `AUTH-SRV-003` conserva el inventario contractual de RPC utilizadas;
+2. `AUTH-DB-018::GLOBAL` está materializada y separa RPC/vistas expuestas de helpers internos;
+3. `AUTH-DB-017::GLOBAL` está materializada y gobierna esquemas expuestos y privilegios de Data API;
+4. `AUTH-DB-006..010` definen la incorporación de contexto, sede, área, permiso y principal/actor dentro de RPC sensibles, pero su adopción física sigue dependiendo de las unidades y packages aplicables;
+5. `AUTH-DB-021` conserva RLS y grants canónicos por esquema para los objetos donde corresponda;
+6. `TREQ-AUTH-013` exige expresamente que una RPC manipulada no pueda eludir autorización;
+7. existen requisitos de dominio, incluidos casos de fidelización, que enlazan su certificación a `AUTH-QA-022`;
+8. esta tarea no transforma ninguna de esas especificaciones o materializaciones parciales en evidencia adversarial final.
+
+La futura ejecución debe medir el estado físico vigente del package en ese momento y no depender de conteos históricos como si fueran invariantes permanentes.
+
+---
+
+#### 32. Casos mínimos obligatorios por package
+
+| Caso | Condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-022-A` | actor autorizado, RPC correcta, recurso/estado válidos y argumentos legítimos | resultado permitido únicamente después de gates aplicables |
+| `AUTH-QA-022-B` | caller sin sesión intenta RPC que exige actor autenticado | rechazo seguro; cero dato/efecto protegido |
+| `AUTH-QA-022-C` | caller no autorizado conoce schema, nombre y shape de la RPC | exposición no concede autoridad; rechazo seguro |
+| `AUTH-QA-022-D` | se envía permiso, capability o rol favorable como argumento | valor del caller no gobierna autorización |
+| `AUTH-QA-022-E` | se cambia `user_id`, `employee_id`, `actor_id` o autoría | actor efectivo y namespace se resuelven autoritativamente |
+| `AUTH-QA-022-F` | se cambia `site_id` por sede fuera de alcance | no amplía territorio; cero efecto protegido |
+| `AUTH-QA-022-G` | se cambia `area_id` por área fuera de alcance | no amplía territorio; cero efecto protegido |
+| `AUTH-QA-022-H` | se cambia ID de recurso por otro existente fuera de alcance | deny/respuesta segura; cero acceso o efecto lateral |
+| `AUTH-QA-022-I` | se manipula estado o versión para forzar transición | estado vigente prevalece; transición inválida no ocurre |
+| `AUTH-QA-022-J` | se manipula argumento privilegiado o derivado | reconstrucción, validación o rechazo; sin authority-by-argument |
+| `AUTH-QA-022-K` | se omite argumento material y entra un default | el default no relaja autorización; fail-closed cuando falte evidencia |
+| `AUTH-QA-022-L` | `null`, vacío, tipo incompatible o estructura malformada | interpretación determinista o rechazo seguro |
+| `AUTH-QA-022-M` | overload o firma física resulta ambigua | no se adivina la función; ejecución bloqueada/fallida hasta resolver identidad |
+| `AUTH-QA-022-N` | rol cliente intenta RPC que debe ser server-only | grants/exposición impiden invocación directa |
+| `AUTH-QA-022-O` | RPC invocable usa `SECURITY INVOKER` | RLS/privilegios y gates empresariales aplicables conservan el scope |
+| `AUTH-QA-022-P` | RPC aplicable usa `SECURITY DEFINER` | privilegio elevado no sustituye autorización; búsqueda/owner/grants y pruebas negativas conformes |
+| `AUTH-QA-022-Q` | caller intenta obtener datos de lectura fuera de alcance | cero filas/columnas protegidas fuera de contrato y sin oráculo indebido |
+| `AUTH-QA-022-R` | caller intenta mutación fuera de alcance | cero escritura, evento, job o side effect protegido |
+| `AUTH-QA-022-S` | dependencia crítica de contexto/autorización falla | fallo técnico fail-closed; cero efecto |
+| `AUTH-QA-022-T` | estado cambia concurrentemente antes del efecto | se revalida frescura; resultado stale no fuerza operación |
+| `AUTH-QA-022-U` | retry o replay sobre RPC idempotente | no duplica el hecho y no elude autorización |
+| `AUTH-QA-022-V` | denegación ocurre después de un efecto protegido | `FAIL`; el gate debía preceder al efecto |
+| `AUTH-QA-022-W` | error de RPC expone SQL, secreto, recurso ajeno o detalle sensible | `FAIL`; respuesta pública debe ser segura |
+
+Los casos se ejecutan únicamente sobre RPC y dimensiones materialmente aplicables al package. Un caso no aplicable se registra como `NOT_APPLICABLE` con evidencia concreta; no se convierte en PASS vacío.
+
+---
+
+#### 33. Clasificación de fallos
+
+Un fallo de `AUTH-QA-022` se clasifica por la frontera rota:
+
+- `RPC_DIRECT_AUTHORIZATION_BYPASS` — invocación directa obtiene una operación no autorizada;
+- `RPC_EXPOSURE_CONTRACT_BYPASS` — una RPC server-only queda invocable por un rol que no debe alcanzarla;
+- `RPC_PERMISSION_ARGUMENT_TRUST` — argumento controlado por caller decide permiso o capability;
+- `RPC_ACTOR_IMPERSONATION` — argumento sustituye principal o actor efectivo;
+- `RPC_RESOURCE_SCOPE_BYPASS` — ID manipulado accede o afecta recurso fuera de alcance;
+- `RPC_SITE_SCOPE_BYPASS` — sede manipulada amplía territorio;
+- `RPC_AREA_SCOPE_BYPASS` — área manipulada amplía territorio;
+- `RPC_STALE_STATE_EXECUTION` — estado o versión manipulados fuerzan transición inválida;
+- `RPC_PRIVILEGED_ARGUMENT_ACCEPTED` — argumento derivado o privilegiado gobierna el efecto sin reconstrucción;
+- `RPC_DEFAULT_FAIL_OPEN` — omisión o default elimina un gate requerido;
+- `RPC_AMBIGUOUS_SIGNATURE` — no puede demostrarse de forma determinista qué función física fue invocada;
+- `RPC_RLS_ASSUMPTION_GAP` — RLS se usa como sustituto de un control empresarial no cubierto;
+- `RPC_SECURITY_DEFINER_ESCALATION` — privilegio de función produce acceso o efecto empresarial no autorizado;
+- `RPC_PRIVILEGED_CALLER_BYPASS` — caller técnico elevado sustituye autorización del actor;
+- `RPC_READ_INFORMATION_LEAK` — lectura devuelve información fuera de alcance o crea un oráculo indebido;
+- `RPC_PARTIAL_EFFECT_BEFORE_DENY` — existe side effect protegido antes del rechazo;
+- `RPC_REPLAY_DUPLICATE_EFFECT` — replay/retry duplica un hecho que debía ser idempotente;
+- `RPC_TECHNICAL_FAILURE_FAIL_OPEN` — indisponibilidad técnica produce ejecución;
+- `RPC_ERROR_INFORMATION_LEAK` — error revela información sensible indebida;
+- `RPC_AUDIT_ATTRIBUTION_GAP` — no puede reconstruirse principal, actor, RPC, recurso, decisión y resultado.
+
+La clasificación es diagnóstica para la certificación y no crea reason codes públicos nuevos.
+
+---
+
+#### 34. Modelo de ejecución por package
+
+Cada package con RPC materialmente aplicables ejecutará:
+
+```text
+AUTH-QA-022::<package_id>
+```
+
+únicamente cuando:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- el inventario RPC del package pueda reconciliarse con el catálogo físico vigente;
+- exista un ambiente controlado con grants, Data API y RLS representativos;
+- existan actores y recursos reproducibles para casos positivos y negativos;
+- las pruebas puedan observar efectos sin usar secretos productivos;
+- la instancia esté autorizada conforme al lifecycle físico vigente.
+
+La ejecución debe reconciliar todas las RPC aplicables del package sin omisiones ni duplicados y registrar por RPC/caso al menos:
+
+- `package_id`;
+- `rpc_schema`;
+- `rpc_name`;
+- firma física cuando sea necesaria;
+- caller/consumidor material;
+- rol técnico del fixture;
+- modo de seguridad de la función cuando aplique;
+- exposición/grants relevantes;
+- actor controlado;
+- operación empresarial;
+- recurso y contexto materiales;
+- argumento o dimensión manipulada;
+- decisión esperada;
+- decisión observada;
+- efectos protegidos observados `YES/NO`;
+- resultado `PASS/FAIL/NOT_APPLICABLE`;
+- referencia de evidencia.
+
+Esta tarea documental no selecciona package, no abre una instancia física y no modifica readiness.
+
+---
+
+#### 35. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-022::GLOBAL-FINAL
+```
+
+consolida las ejecuciones de todos los packages aplicables y falla si existe al menos una RPC material donde:
+
+- un caller puede invocar una función server-only;
+- la invocación directa obtiene un resultado que el actor no debería obtener;
+- permiso, rol, principal, actor, sede o área se aceptan como autoridad desde argumentos;
+- un ID manipulado amplía ownership o scope;
+- estado/version stale fuerzan una transición;
+- defaults u omisiones reducen gates;
+- overload o firma quedan ambiguos;
+- RLS se usa para justificar controles empresariales que no cubre;
+- `SECURITY DEFINER` o privilegio técnico amplían autoridad empresarial;
+- una lectura filtra datos fuera de alcance;
+- una mutación produce efecto parcial antes del deny;
+- replay duplica un hecho idempotente;
+- un fallo técnico degrada a ejecución;
+- un error crea fuga u oráculo indebido;
+- una RPC material aplicable queda sin clasificación o evidencia.
+
+La certificación global no congela un conteo histórico de RPC; exige reconciliación completa del universo material de cada package contra la realidad física vigente.
+
+---
+
+#### 36. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación adversarial ya exigida por requisitos vigentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 37. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-013` — ninguna URL directa, formulario alterado, llamada API o RPC manipulada puede eludir autorización; cada mutación revalida permiso exacto, principal/actor, territorio, contexto, estado y columnas permitidas con errores seguros;
+- `TREQ-AUTH-001`, `TREQ-AUTH-005`, `TREQ-AUTH-006`, `TREQ-AUTH-007`, `TREQ-AUTH-009`, `TREQ-AUTH-012` y `TREQ-AUTH-015` — conservan autorización, identidad, campos privilegiados, administración territorial, contexto, simulación y evidencia correlacionable;
+- `TREQ-AUTH-017` y `TREQ-AUTH-018` — mantienen protección frente a RPC directa para información SST/médica y datos de clientes cuando esos dominios resulten aplicables;
+- `TREQ-PASS-025` y `TREQ-PASS-027` — enlazan explícitamente acumulación y redención de fidelización con RPC, autorización, atomicidad y `AUTH-QA-022`;
+- los requisitos de cada dominio consumidor que referencien `AUTH-SRV-*`, `AUTH-DB-*` o `AUTH-QA-022` continúan gobernando sus invariantes específicos sin ser reescritos aquí.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 38. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout del usuario; build y suites globales permanecen pendientes del lifecycle documental. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y cierre permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el marcador propietario de `AUTH-QA-022`, continuidad `AUTH-QA-021 → AUTH-QA-022 → AUTH-QA-023`, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, inventario `AUTH-SRV-003`, frontera `AUTH-SRV-004..018`, materialización global relevante de `AUTH-DB-017`/`AUTH-DB-018`, obligaciones `AUTH-DB-006..010`/`AUTH-DB-021` y cobertura 04A vigente de RPC manipuladas. |
+| OPERATIVA | NOT_EXECUTED | No se enviaron llamadas RPC directas ni payloads adversariales contra ambientes operativos. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-022::<package_id>` ni `AUTH-QA-022::GLOBAL-FINAL`; ninguna RPC se declara certificada por esta definición documental. |
+
+---
+
+#### 39. Criterios de aceptación
+
+- [ ] El título canónico es exactamente `AUTH-QA-022 — RPC manipulada queda bloqueada`.
+- [ ] La continuidad usa `AUTH-QA-021` como anterior y `AUTH-QA-023` como siguiente reservada.
+- [ ] El universo se deriva de RPC materialmente consumidas, funciones físicas vigentes, exposición real y package aplicable.
+- [ ] La identidad contractual se reconcilia con una función física determinista antes de ejecutar pruebas.
+- [ ] Overloads o firmas ambiguas no se resuelven por inferencia.
+- [ ] RPC server-only quedan no invocables para roles cliente no autorizados.
+- [ ] RPC client-callable conservan autorización empresarial y controles de datos aplicables.
+- [ ] Principal técnico y actor efectivo permanecen separados.
+- [ ] Permiso, rol, actor, sede, área y campos privilegiados enviados por caller no crean autoridad.
+- [ ] IDs de recurso no amplían ownership ni scope.
+- [ ] Estado y versión actuales prevalecen sobre argumentos stale.
+- [ ] Ausencia, `null`, defaults y coerción no producen fallos abiertos.
+- [ ] Grants, schema, Data API, RLS y autorización empresarial permanecen controles explícitos y no intercambiables.
+- [ ] `SECURITY INVOKER` no sustituye gates de negocio no cubiertos por privileges/RLS.
+- [ ] `SECURITY DEFINER` conserva necesidad, owner, `search_path`, grants mínimos y autorización empresarial aplicables.
+- [ ] `service_role` o admin client no sustituyen autorización del actor.
+- [ ] RPC de lectura no filtran datos fuera de alcance.
+- [ ] RPC mutantes no producen side effects antes del resultado autorizativo favorable.
+- [ ] Idempotencia/replay se prueba donde el contrato propietario la exige.
+- [ ] Fallos técnicos permanecen fail-closed.
+- [ ] Errores públicos no crean fugas u oráculos indebidos.
+- [ ] Auditoría conserva principal, actor, RPC, recurso, decisión y resultado.
+- [ ] La frontera de formularios permanece en `AUTH-QA-021`.
+- [ ] El cruce integral de sede y área permanece en `AUTH-QA-023`/`AUTH-QA-024`.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 40. Límites
+
+Esta tarea no:
+
+- redefine el inventario de RPC de `AUTH-SRV-003`;
+- inventa un conteo global nuevo de RPC;
+- redefine la frontera de confianza de `AUTH-SRV-004`;
+- redefine permisos, catálogo, roles, grants o denies empresariales;
+- redefine contexto, sede, área, turno, check-in, rol operativo, dispositivo o simulación;
+- reemplaza `AUTH-DB-017` ni `AUTH-DB-018`;
+- implementa físicamente `AUTH-DB-006..010` ni `AUTH-DB-021`;
+- modifica funciones, esquemas, grants, RLS, Data API, Auth, tablas, Storage, Realtime, Edge Functions o datos;
+- crea ni altera migraciones Supabase;
+- prueba con `service_role` como si fuera un usuario final;
+- crea secretos, fixtures productivos ni usuarios reales;
+- redefine schemas o argumentos propietarios de una RPC;
+- corrige código de aplicación, SQL o funciones;
+- ejecuta llamadas RPC contra producción;
+- certifica formularios manipulados, reservado a `AUTH-QA-021`;
+- certifica el cruce integral de sede, reservado a `AUTH-QA-023`;
+- certifica el cruce integral de área, reservado a `AUTH-QA-024`;
+- ejecuta `AUTH-QA-022::<package_id>`;
+- ejecuta `AUTH-QA-022::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 41. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-022 — RPC manipulada queda bloqueada`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-023 — Cruce de sede queda bloqueado`
 ### [ ] AUTH-QA-023 — Cruce de sede queda bloqueado
 ### [ ] AUTH-QA-024 — Cruce de área queda bloqueado
 ### [ ] AUTH-QA-025 — Check-out retira permisos operativos
