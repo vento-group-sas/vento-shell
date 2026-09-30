@@ -1128,4 +1128,1195 @@ Esta tarea no autoriza ni ejecuta:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-INT-002 — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO`
-### [ ] AURA-INT-002 — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO
+### ✅ AURA-INT-002 — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa
+**Tarea siguiente:** AUTH-QA-001 — Propietario sin check-in entra a administración
+**Tipo de tarea:** definición técnico-documental del contrato canónico de integración interna de AURA para lecturas autorizadas, proyecciones mínimas, eventos empresariales, frescura, correlación, idempotencia, reconciliación y manejo de incertidumbre con NEXO, PULSO, PASS, NUMERA, VISO y FOGO, preservando fuentes de verdad y sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — integraciones de canales y datos`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/05_INTEGRACIONES_DE_CANALES_Y_DATOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean APIs, endpoints, eventos, topics, colas, workers, tablas, vistas, migraciones, RLS, RPC, funciones, triggers, Realtime, Edge Functions, credenciales, datos, escrituras cross-app ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá leer hechos empresariales y consumir eventos de NEXO, PULSO, PASS, NUMERA, VISO y FOGO sin copiar maestros, reconstruir ledgers, ampliar permisos ni convertir una proyección de consumo en fuente de verdad.
+
+La decisión raíz es:
+
+```text
+FUENTE PROPIETARIA
+!=
+PROYECCION PARA AURA
+!=
+CACHE O SNAPSHOT
+!=
+HECHO PROPIO DE AURA
+```
+
+Y además:
+
+```text
+LECTURA
+!=
+EVENTO
+!=
+COMANDO
+!=
+ESCRITURA CROSS-APP
+```
+
+`AURA-INT-002` especializa para AURA los contratos internos ya aprobados en `INT-APP-001` a `INT-APP-010`. No crea un segundo bus de eventos, no redefine emisoras, consumidoras ni ownership y no autoriza escrituras directas en dominios ajenos.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-INT-001`, para separación entre integración externa e interna, identidad, correlación, frescura, incertidumbre, reconciliación y prohibición de usar canales externos como bypass de autorización interna;
+- `AURA-DOM-006`, para campañas, promociones, experimentos y guardas de margen, stock y capacidad sin transferir autoridad a AURA;
+- `AURA-DOM-007`, para oportunidades, leads, B2B, catering, eventos y handoff a operación;
+- `AURA-DOM-008`, para métricas, atribución, confianza, incrementalidad y aprendizaje;
+- `AURA-DOM-009`, para reputación, comentarios, respuestas y escalamiento;
+- `AURA-DOM-010`, para radar de oportunidades y recomendaciones explicables;
+- `AURA-AUTH-001` a `AURA-AUTH-004`, para alcance, segregación de funciones, datos sensibles, clientes, exportaciones, secretos y terceros;
+- `AURA-UX-005` a `AURA-UX-008`, para campañas, oportunidades, reputación, resultados, atribución y recomendaciones;
+- `INT-APP-001`, para catálogo de eventos empresariales;
+- `INT-APP-002`, para aplicación emisora propietaria de cada evento;
+- `INT-APP-003`, para consumidoras, finalidades, condiciones, sensibilidad, perfiles de proyección y estado de entrega;
+- `INT-APP-004`, para idempotencia de entrega y efecto;
+- `INT-APP-005`, para reintentos y backoff por consumidora;
+- `INT-APP-006`, para compensaciones empresariales sin reversión improvisada;
+- `INT-APP-007`, para auditoría transversal;
+- `INT-APP-008`, para estados pendientes de sincronización, offline e incertidumbre;
+- `INT-APP-009`, para errores parciales, cuarentena e intervención;
+- `INT-APP-010`, para prohibición de escrituras cruzadas sin contrato propietario;
+- `INT-MKT-001` a `INT-MKT-003`, para puerta de AURA, beneficios publicados en PASS y validación comercial desde PULSO;
+- `CAP-SCOPE-006`, `CAP-SCOPE-008`, `CAP-SCOPE-009`, `CAP-SCOPE-010`, `CAP-SCOPE-012`, `CAP-SCOPE-014` y `CAP-SCOPE-017`, para inventario, producción, venta, cliente, economía, marketing y datos;
+- el registro canónico de requisitos de prueba vigente;
+- la topología que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE` para `AURA-INT-002`.
+
+Ninguna de estas fuentes cambia de propietaria por esta tarea.
+
+---
+
+#### 3. Naturaleza y topología
+
+La tarea se desarrolla una sola vez como contrato documental reutilizable:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Por tanto:
+
+- no existe instancia global propia de esta tarea;
+- no existe instancia por package;
+- no existe instancia por implementation unit;
+- no crea lecturas productivas;
+- no crea suscripciones ni consumidores runtime;
+- no crea comandos ni writers;
+- no crea almacenamiento de proyecciones;
+- no crea cambios de Supabase;
+- toda futura materialización pertenece a las unidades y packages físicos que correspondan.
+
+---
+
+#### 4. Resultado canónico
+
+AURA deberá poder consumir información interna mediante contratos que demuestren, para cada lectura o evento:
+
+1. aplicación propietaria del hecho;
+2. finalidad empresarial de consumo por AURA;
+3. recurso, proceso o hecho origen;
+4. perfil de proyección autorizado;
+5. allowlist de campos mínima;
+6. clasificación de sensibilidad;
+7. requisito de autorización de la consumidora;
+8. identidad y versión de la fuente;
+9. tiempo de vigencia, observación o corte;
+10. frescura y completitud disponibles;
+11. correlación con campaña, publicación, oportunidad o análisis cuando aplique;
+12. condición explícita cuando el consumo sea condicional;
+13. semántica de ausencia, `null`, desconocido, no aplicable y dato vencido;
+14. estado de entrega o disponibilidad del contrato;
+15. resultado de consumo o pendiente correlacionado cuando aplique;
+16. tratamiento de duplicados y entregas repetidas;
+17. reconciliación cuando lectura, evento y fuente discrepen;
+18. evidencia suficiente para reconstruir qué dato se consumió, por qué y bajo qué autoridad.
+
+AURA nunca deberá necesitar acceso directo e irrestricto al almacenamiento propietario para satisfacer este contrato.
+
+---
+
+#### 5. Fronteras conceptuales obligatorias
+
+Se preservan las siguientes diferencias:
+
+```text
+REFERENCIA
+!=
+COPIA MAESTRA
+```
+
+```text
+SNAPSHOT
+!=
+ESTADO ACTUAL GARANTIZADO
+```
+
+```text
+EVENTO RECIBIDO
+!=
+HECHO NUEVO DE AURA
+```
+
+```text
+EVENTO REPETIDO
+!=
+SEGUNDO EFECTO
+```
+
+```text
+LECTURA FALLIDA
+!=
+VALOR CERO
+```
+
+```text
+DATO VENCIDO
+!=
+DATO FALSO
+```
+
+```text
+AUSENTE
+!=
+NULL
+!=
+DESCONOCIDO
+!=
+NO APLICA
+!=
+DENEGADO
+!=
+FALLO TECNICO
+```
+
+```text
+CORRELACION
+!=
+CAUSALIDAD
+```
+
+```text
+SEÑAL DE VENTA
+!=
+CONVERSION ATRIBUIDA
+!=
+VENTA INCREMENTAL
+```
+
+---
+
+#### 6. Universo cerrado de aplicaciones propietarias
+
+Esta tarea cubre exactamente seis aplicaciones internas:
+
+| Aplicación | Fuente de verdad que AURA debe respetar | Uso permitido desde AURA | Prohibición principal |
+| --- | --- | --- | --- |
+| `NEXO` | producto, inventario, disponibilidad física y hechos logísticos dentro de su ownership | contexto, referencia y guardas operativas autorizadas | AURA no modifica stock, movimientos, remisiones, activos ni disponibilidad |
+| `PULSO` | oferta vendible, pedido, venta, pago, servicio y entrega comercial dentro de su ownership | señales comerciales, validación de efecto, conversiones correlacionables y analítica autorizada | AURA no crea pedidos, ventas, pagos, precios ni descuentos aplicados |
+| `PASS` | identidad de cliente, preferencias, consentimiento, fidelización, beneficios, puntos y canjes dentro de su ownership | segmentación autorizada, elegibilidad o resultado mínimo, consentimiento y señal de fidelización | AURA no crea identidad, consentimiento, saldo, beneficio, punto o redención |
+| `NUMERA` | presupuesto, costo, margen, rentabilidad, obligación y verdad económica dentro de su ownership | guardas económicas, conciliación y analítica autorizada | AURA no fija costo, reconoce ingreso, crea asiento ni recalcula verdad económica |
+| `VISO` | procesos administrativos que le pertenezcan y superficies CMS transitorias mientras no exista transferencia aprobada | referencias, lifecycle, handoffs y contexto administrativo autorizado | AURA no absorbe CMS ni procesos VISO por conveniencia |
+| `FOGO` | receta, plan, lote, ejecución, calidad y capacidad productiva dentro de su ownership | guardas de capacidad y restricciones productivas mediante lectura o proyección autorizada | AURA no modifica receta, plan, lote, calidad ni producción |
+
+El conjunto es cerrado para esta tarea. ORIGO, ANIMA, SHELL y terceros no se agregan por inferencia.
+
+---
+
+#### 7. Contrato mínimo de lectura interna
+
+Una lectura interna para AURA deberá declarar conceptualmente:
+
+```text
+source_application
+source_owner_reference
+consumer_application = aura
+consumer_purpose_code
+projection_profile
+field_allowlist_ref
+sensitivity_class
+authorization_requirement
+source_version_or_revision
+observed_or_effective_at
+freshness_state
+completeness_state
+correlation_reference cuando aplique
+condition_ref cuando aplique
+```
+
+Estas identidades son contractuales y no obligan a crear una tabla, vista o endpoint con esos nombres.
+
+La lectura debe poder responder:
+
+- quién es propietario del dato;
+- qué finalidad justifica el consumo;
+- qué campos mínimos se exponen;
+- qué versión o corte representa;
+- cuándo deja de ser suficientemente fresco;
+- qué hace AURA si la lectura está ausente, vencida, incompleta o denegada.
+
+---
+
+#### 8. Perfiles de proyección reutilizados
+
+AURA reutiliza el vocabulario cerrado aprobado en `INT-APP-003`:
+
+- `REFERENCE_PROJECTION`;
+- `VERSIONED_REFERENCE_PROJECTION`;
+- `LIFECYCLE_PROJECTION`;
+- `HANDOFF_PROJECTION`;
+- `IMMUTABLE_FACT_PROJECTION`;
+- `EFFECT_CONFIRMATION_PROJECTION`;
+- `EXECUTION_SIGNAL_PROJECTION`;
+- `RECONCILIATION_PROJECTION`;
+- `MARKETING_ANALYTICS_PROJECTION`;
+- `ANALYTICS_PROJECTION`.
+
+`AURA-INT-002` no crea un perfil undécimo.
+
+Cada consumo deberá usar el perfil aprobado por el proceso o una evolución explícita del contrato propietario; nunca se escogerá un perfil más amplio solo porque resulte conveniente para marketing.
+
+---
+
+#### 9. Baseline canónico de AURA como consumidora de eventos
+
+`INT-APP-003` materializa para AURA, como consumidora, el siguiente baseline:
+
+```text
+RELACIONES DE PROCESO DIRECTAS A AURA        19
+RELACIONES DE PROCESO CONDICIONALES A AURA   8
+RELACIONES DE PROCESO TOTALES A AURA        27
+
+RELACIONES DE EVENTO DIRECTAS A AURA       106
+RELACIONES DE EVENTO CONDICIONALES A AURA   47
+RELACIONES DE EVENTO TOTALES A AURA        153
+```
+
+Estas 153 relaciones pertenecen exclusivamente a las seis aplicaciones nombradas por esta tarea.
+
+Las 197 relaciones vinculadas con AURA que aparecen en el contrato transversal incluyen además otras direcciones o relaciones del ecosistema. `AURA-INT-002` no reinterpreta 197 como 153 ni viceversa.
+
+---
+
+#### 10. Distribución por aplicación emisora
+
+| Emisora | Procesos con AURA consumidora | Eventos directos | Eventos condicionales | Total de eventos | Decisión de esta tarea |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `NEXO` | 2 | 9 | 0 | 9 | preservar referencias canónicas directas |
+| `PULSO` | 7 | 28 | 12 | 40 | preservar referencias, confirmaciones de efecto y analítica de marketing |
+| `PASS` | 1 | 6 | 0 | 6 | preservar confirmación de efecto con mínimo dato |
+| `NUMERA` | 5 | 18 | 12 | 30 | preservar conciliación y analítica económica autorizada |
+| `VISO` | 12 | 45 | 23 | 68 | preservar referencias, lifecycle y handoffs según proceso |
+| `FOGO` | 0 | 0 | 0 | 0 | no inventar suscripción; usar lectura/guarda autorizada mientras el catálogo de eventos no declare AURA consumidora |
+| **TOTAL** | **27** | **106** | **47** | **153** | baseline congelado |
+
+La fila FOGO no significa que AURA pueda ignorar capacidad productiva. Significa que el contrato actual no autoriza afirmar que FOGO emite hoy un evento consumido por AURA.
+
+---
+
+#### 11. Contrato NEXO → AURA
+
+El baseline de eventos preservado es:
+
+```text
+VPROC-0015 -> 4 eventos -> DIRECT -> REFERENCE_PROJECTION
+VPROC-0018 -> 5 eventos -> DIRECT -> REFERENCE_PROJECTION
+```
+
+Total:
+
+```text
+2 relaciones de proceso
+9 relaciones de evento directas
+0 condicionales
+```
+
+AURA podrá consumir referencias o proyecciones mínimas para:
+
+- identificar producto o recurso empresarial autorizado;
+- verificar contexto de disponibilidad o inventario cuando una campaña lo necesite como guarda;
+- evitar prometer una condición física que la fuente propietaria no sostenga;
+- correlacionar una campaña o recomendación con la referencia propietaria sin copiar el maestro.
+
+AURA no podrá:
+
+- actualizar existencias;
+- reservar stock por inferencia;
+- crear movimientos;
+- modificar remisiones;
+- decidir custodia o ubicación;
+- convertir una lectura puntual en disponibilidad garantizada futura.
+
+---
+
+#### 12. Contrato PULSO → AURA
+
+El baseline preservado cubre:
+
+```text
+VPROC-0017 -> 4 eventos  -> DIRECT      -> VERSIONED_REFERENCE_PROJECTION
+VPROC-0040 -> 6 eventos  -> CONDITIONAL -> EFFECT_CONFIRMATION_PROJECTION
+VPROC-0041 -> 6 eventos  -> DIRECT      -> EFFECT_CONFIRMATION_PROJECTION
+VPROC-0046 -> 6 eventos  -> DIRECT      -> EFFECT_CONFIRMATION_PROJECTION
+VPROC-0047 -> 6 eventos  -> DIRECT      -> EFFECT_CONFIRMATION_PROJECTION
+VPROC-0050 -> 6 eventos  -> CONDITIONAL -> EFFECT_CONFIRMATION_PROJECTION
+VPROC-0068 -> 6 eventos  -> DIRECT      -> MARKETING_ANALYTICS_PROJECTION
+```
+
+Total:
+
+```text
+7 relaciones de proceso
+28 relaciones de evento directas
+12 relaciones de evento condicionales
+40 relaciones de evento totales
+```
+
+AURA podrá consumir, conforme a finalidad y allowlist:
+
+- referencias de oferta o contexto comercial;
+- confirmaciones de efectos comerciales cuando el proceso lo permita;
+- señales de pedido, venta o resultado únicamente al nivel autorizado;
+- métricas o agregados de marketing cuando el perfil lo establezca;
+- correlaciones con campaña, promoción, publicación u oportunidad sin declarar causalidad automática.
+
+AURA no podrá:
+
+- crear o editar pedidos;
+- modificar precios;
+- aplicar descuentos;
+- registrar pagos;
+- alterar caja;
+- completar una venta;
+- convertir cualquier venta temporalmente cercana en conversión atribuida.
+
+---
+
+#### 13. Contrato PASS → AURA
+
+El baseline preservado es:
+
+```text
+VPROC-0045 -> 6 eventos -> DIRECT -> EFFECT_CONFIRMATION_PROJECTION
+```
+
+Total:
+
+```text
+1 relación de proceso
+6 relaciones de evento directas
+0 condicionales
+```
+
+AURA podrá consumir únicamente la proyección mínima necesaria para:
+
+- verificar consentimiento o preferencia cuando la finalidad lo requiera;
+- usar segmentación gobernada sin copiar la identidad completa;
+- conocer confirmaciones de beneficio, fidelización o efecto cuando el proceso lo autorice;
+- correlacionar campañas con resultados de fidelización sin reconstruir el ledger.
+
+AURA no podrá:
+
+- inferir consentimiento por compra, visita, redención o interacción;
+- crear clientes;
+- editar preferencias por conveniencia de campaña;
+- crear puntos;
+- modificar saldo;
+- crear, redimir o revertir beneficios;
+- exportar PII fuera de la finalidad autorizada.
+
+---
+
+#### 14. Contrato NUMERA → AURA
+
+El baseline preservado cubre:
+
+```text
+VPROC-0051 -> 6 eventos -> CONDITIONAL -> RECONCILIATION_PROJECTION
+VPROC-0053 -> 6 eventos -> CONDITIONAL -> RECONCILIATION_PROJECTION
+VPROC-0054 -> 6 eventos -> DIRECT      -> RECONCILIATION_PROJECTION
+VPROC-0061 -> 6 eventos -> DIRECT      -> ANALYTICS_PROJECTION
+VPROC-0069 -> 6 eventos -> DIRECT      -> ANALYTICS_PROJECTION
+```
+
+Total:
+
+```text
+5 relaciones de proceso
+18 relaciones de evento directas
+12 relaciones de evento condicionales
+30 relaciones de evento totales
+```
+
+AURA podrá consumir:
+
+- presupuesto autorizado o su proyección mínima;
+- guardas de margen y costo;
+- resultado económico conciliado;
+- análisis o agregados permitidos;
+- referencias necesarias para explicar rentabilidad sin recalcular la verdad económica.
+
+AURA no podrá:
+
+- fijar costos;
+- reconocer ingreso;
+- crear asientos;
+- reconstruir contabilidad desde eventos de venta;
+- tratar presupuesto como autorización automática de gasto;
+- calcular margen propio y presentarlo como NUMERA.
+
+---
+
+#### 15. Contrato VISO → AURA
+
+El baseline preservado cubre:
+
+```text
+VPROC-0001 -> 5 eventos -> CONDITIONAL -> LIFECYCLE_PROJECTION
+VPROC-0002 -> 6 eventos -> DIRECT      -> REFERENCE_PROJECTION
+VPROC-0003 -> 4 eventos -> DIRECT      -> REFERENCE_PROJECTION
+VPROC-0004 -> 6 eventos -> CONDITIONAL -> LIFECYCLE_PROJECTION
+VPROC-0006 -> 6 eventos -> CONDITIONAL -> HANDOFF_PROJECTION
+VPROC-0011 -> 6 eventos -> DIRECT      -> HANDOFF_PROJECTION
+VPROC-0058 -> 6 eventos -> DIRECT      -> LIFECYCLE_PROJECTION
+VPROC-0059 -> 6 eventos -> DIRECT      -> HANDOFF_PROJECTION
+VPROC-0060 -> 5 eventos -> DIRECT      -> LIFECYCLE_PROJECTION
+VPROC-0062 -> 6 eventos -> DIRECT      -> LIFECYCLE_PROJECTION
+VPROC-0063 -> 6 eventos -> DIRECT      -> LIFECYCLE_PROJECTION
+VPROC-0064 -> 6 eventos -> CONDITIONAL -> LIFECYCLE_PROJECTION
+```
+
+Total:
+
+```text
+12 relaciones de proceso
+45 relaciones de evento directas
+23 relaciones de evento condicionales
+68 relaciones de evento totales
+```
+
+AURA podrá consumir únicamente referencias, lifecycle y handoffs compatibles con el proceso propietario.
+
+Mientras las superficies CMS actuales continúen bajo VISO:
+
+- AURA no se convierte en propietaria por consumir referencias;
+- una lectura de contenido no equivale a transferencia de CMS;
+- un handoff no permite reescribir el origen;
+- un evento VISO no concede acceso administrativo general;
+- la transferencia futura sigue requiriendo decisión, ADR, migración, cutover y reconciliación aprobados.
+
+---
+
+#### 16. Contrato FOGO → AURA
+
+FOGO conserva:
+
+- receta;
+- plan;
+- lote;
+- ejecución;
+- calidad;
+- capacidad productiva;
+- restricciones técnicas de producción dentro de su ownership.
+
+AURA necesita esa frontera para no diseñar campañas inviables, pero el baseline vigente de `INT-APP-003` contiene:
+
+```text
+RELACIONES DE PROCESO FOGO -> AURA = 0
+RELACIONES DE EVENTO FOGO -> AURA = 0
+```
+
+Por tanto:
+
+1. `AURA-INT-002` no crea una suscripción FOGO→AURA;
+2. la guardia de capacidad se satisface mediante lectura o proyección autorizada definida por el contrato propietario aplicable;
+3. AURA deberá tratar ausencia de una proyección fresca como guarda no satisfecha cuando la campaña dependa materialmente de capacidad;
+4. AURA no podrá leer recetas o detalles productivos completos por conveniencia de marketing;
+5. una futura relación de evento FOGO→AURA requerirá evolución explícita de `INT-APP-*`, versionado, compatibilidad, pruebas y autorización; no nace de esta tarea.
+
+---
+
+#### 17. Lectura de guardas antes de una acción de marketing
+
+Cuando una campaña o recomendación dependa de condiciones empresariales, AURA deberá evaluar guardas mediante fuentes propietarias.
+
+Ejemplos de guardas:
+
+| Guarda | Fuente propietaria principal | Conducta de AURA si no puede demostrarse |
+| --- | --- | --- |
+| disponibilidad o stock | NEXO | bloquear promesa o exigir revisión |
+| capacidad productiva | FOGO | bloquear promesa o exigir revisión |
+| elegibilidad comercial | PULSO/PASS según regla propietaria | no asumir aplicabilidad |
+| consentimiento | PASS | no contactar con finalidad de marketing |
+| presupuesto o margen | NUMERA | no presentar la iniciativa como económicamente aprobada |
+| estado administrativo o CMS transitorio | VISO cuando corresponda | no asumir transferencia o vigencia |
+
+La ausencia de una guarda material no equivale a aprobación.
+
+---
+
+#### 18. Semántica de frescura
+
+Toda lectura material deberá poder distinguir:
+
+```text
+FRESH
+STALE
+UNKNOWN
+NOT_APPLICABLE
+UNAVAILABLE
+DENIED
+```
+
+Estas etiquetas son conceptuales y no crean un enum físico obligatorio.
+
+Reglas:
+
+1. `STALE` conserva el último valor observado, pero no autoriza afirmar que continúa vigente;
+2. `UNKNOWN` no se transforma en `false`, `0` ni lista vacía;
+3. `UNAVAILABLE` describe fallo de acceso o fuente, no ausencia del hecho;
+4. `DENIED` describe falta de autoridad, no inexistencia del dato;
+5. una campaña no puede convertir una lectura vieja de stock, margen, consentimiento o capacidad en promesa vigente;
+6. una recomendación deberá declarar la frescura material de las fuentes que soportan su razón.
+
+---
+
+#### 19. Ausencia, `null` y cero
+
+AURA deberá preservar:
+
+```text
+0
+!=
+NULL
+!=
+AUSENTE
+!=
+DESCONOCIDO
+!=
+NO APLICA
+!=
+DENEGADO
+!=
+FALLO
+```
+
+Ejemplos:
+
+- margen desconocido no es margen cero;
+- stock no consultable no es stock cero;
+- ausencia de evento no demuestra que el hecho no ocurrió;
+- consentimiento no disponible no equivale a opt-in;
+- capacidad no calculada no equivale a capacidad disponible.
+
+---
+
+#### 20. Contrato de evento consumido por AURA
+
+Toda relación de evento que llegue a AURA deberá preservar los campos contractuales aprobados por `INT-APP-003`:
+
+```text
+event_definition_id
+process_id
+producer_application
+consumer_application
+consumer_relation
+condition_ref cuando aplique
+consumer_purpose_code
+projection_profile
+sensitivity_class
+field_allowlist_ref
+authorization_requirement
+delivery_status
+consumer_result_ref
+origin_task
+```
+
+La emisora conserva la definición del hecho.
+
+AURA no renombra el evento para convertirlo en un hecho de marketing ni amplía el payload por conveniencia analítica.
+
+---
+
+#### 21. Relaciones directas y condicionales
+
+Una relación `DIRECT` significa que la finalidad aprobada permite a AURA recibir esa proyección cuando se materialice el contrato.
+
+Una relación `CONDITIONAL` exige además `condition_ref` y evaluación de la condición empresarial correspondiente.
+
+Reglas:
+
+- condicional no significa opcional sin regla;
+- directa no significa acceso irrestricto;
+- ambas conservan field allowlist, sensibilidad y autorización;
+- una condición no satisfecha no se convierte en entrega parcial silenciosa;
+- un cambio de condición exige versionado y compatibilidad.
+
+---
+
+#### 22. Estado diferido de AURA
+
+Las relaciones internas aprobadas no equivalen a consumidores productivos activos.
+
+Se preserva:
+
+```text
+CONTRATO DEFINIDO
++
+AURA CONSUMIDORA DECLARADA
+!=
+SUSCRIPCION ACTIVA
+!=
+DATOS ENTREGADOS
+!=
+READINESS
+```
+
+Las relaciones vinculadas con AURA permanecen diferidas hasta que la materialización física aplicable satisfaga cobertura, autorización, readiness, dependencias y gates del paquete correspondiente.
+
+Esta tarea no cambia ese estado.
+
+---
+
+#### 23. Idempotencia de consumo
+
+`AURA-INT-002` consume la política de `INT-APP-004` sin redefinirla.
+
+Reglas obligatorias:
+
+1. una entrega repetida no crea un segundo efecto empresarial;
+2. la misma identidad con la misma huella conserva el resultado original;
+3. la misma identidad con contenido incompatible produce conflicto, no overwrite silencioso;
+4. la idempotencia se evalúa por alcance y efecto, no por un ID universal improvisado;
+5. una métrica tardía no crea otra conversión;
+6. un evento comercial repetido no crea otro lead;
+7. una confirmación repetida no duplica aprendizaje, guardas o resultados.
+
+No se promete exactly-once de transporte.
+
+---
+
+#### 24. Orden, retraso y entrega fuera de secuencia
+
+AURA no asumirá orden global entre aplicaciones.
+
+Se preserva:
+
+- orden por agregado o contrato cuando exista;
+- posibilidad de eventos tardíos;
+- posibilidad de entrega repetida;
+- posibilidad de que una lectura posterior sea más fresca que un evento anterior;
+- necesidad de reconciliación cuando el estado observado contradiga la secuencia recibida.
+
+Un evento tardío no reabre automáticamente una campaña cerrada ni modifica retrospectivamente la historia.
+
+---
+
+#### 25. Retry y backoff
+
+Los reintentos de entrega pertenecen a `INT-APP-005`.
+
+AURA deberá:
+
+- preservar identidad de la misma entrega;
+- no convertir retry en evento nuevo;
+- no ampliar payload durante retry;
+- no saltar autorización para mejorar tasa de éxito;
+- no reintentar indefinidamente un error permanente;
+- conservar resultado desconocido cuando no exista evidencia suficiente;
+- respetar vigencia y finalidad antes de aceptar un evento reintentado.
+
+La implementación física de colas, scheduler, backoff o circuit breaker no pertenece a esta tarea.
+
+---
+
+#### 26. Error parcial e incertidumbre
+
+AURA deberá distinguir:
+
+```text
+DELIVERED
+!=
+CONSUMED
+!=
+EFFECT_APPLIED
+!=
+RECONCILED
+```
+
+Y conservar estados pendientes cuando:
+
+- parte de un lote fue procesada y otra parte no;
+- una lectura falló después de recibir un evento;
+- la fuente propietaria todavía no confirma el resultado;
+- una correlación existe pero no está completa;
+- un evento llega con referencia no resoluble;
+- la autorización cambió durante el proceso.
+
+Queda prohibido cerrar una parcialidad como éxito total para limpiar backlog.
+
+---
+
+#### 27. Reconciliación entre evento y lectura
+
+Cuando AURA reciba un evento y posteriormente consulte la fuente propietaria:
+
+```text
+EVENTO
+-> DISPARA O ACTUALIZA CONTEXTO
+-> LECTURA AUTORIZADA PUEDE CONFIRMAR ESTADO
+-> DISCREPANCIA GENERA RECONCILIACION
+```
+
+El evento no autoriza escribir de vuelta sobre la fuente.
+
+Si la lectura y el evento difieren:
+
+- se conserva la evidencia de ambos;
+- se identifica versión y tiempo;
+- se determina si el evento fue tardío, duplicado, corregido o superado;
+- se evita presentar como vigente un valor no reconciliado;
+- la propietaria del hecho decide la corrección.
+
+---
+
+#### 28. Replay y backfill
+
+Replay y backfill no se ejecutan por defecto.
+
+Se preservan las reglas de `INT-APP-*`:
+
+1. una consumidora añadida posteriormente no recibe historia automáticamente;
+2. replay conserva audiencia histórica o usa una migración explícita;
+3. backfill no reinterpreta el hecho con reglas actuales sin decisión versionada;
+4. un replay no repite efectos ya confirmados;
+5. una campaña cerrada no se reabre solo porque llegue historia atrasada;
+6. la corrección histórica se registra como nueva evidencia o revisión, no como borrado de la secuencia original.
+
+---
+
+#### 29. Correlación empresarial
+
+AURA podrá conservar referencias que relacionen:
+
+- campaña;
+- experimento;
+- publicación;
+- promoción;
+- oportunidad;
+- interacción reputacional;
+- pedido o venta cuando exista contrato;
+- beneficio o redención cuando exista contrato;
+- hecho económico cuando exista contrato;
+- guarda de inventario o capacidad.
+
+Pero:
+
+```text
+CORRELATION_ID
+!=
+OWNERSHIP
+```
+
+Y:
+
+```text
+CORRELACION TEMPORAL
+!=
+ATRIBUCION
+!=
+CAUSALIDAD
+```
+
+La interpretación de impacto permanece en `AURA-DOM-008` y `AURA-UX-008`.
+
+---
+
+#### 30. Minimización y sensibilidad
+
+Cada lectura y evento deberá usar:
+
+- finalidad explícita;
+- field allowlist versionada;
+- clasificación de sensibilidad;
+- mínimo privilegio;
+- mínimo dato;
+- nivel de agregación compatible con la finalidad;
+- retención proporcional;
+- auditoría suficiente.
+
+AURA no necesita una copia completa del cliente, pedido, ledger, inventario, receta, caso o asiento para decidir marketing.
+
+La disponibilidad técnica de un campo no autoriza su consumo.
+
+---
+
+#### 31. Autorización de la consumidora
+
+`authorization_requirement` permanece obligatorio cuando corresponda.
+
+Reglas:
+
+1. que la emisora pueda publicar un evento no autoriza a cualquier consumidor;
+2. que AURA tenga acceso a una lectura no autoriza exportarla a un canal externo;
+3. que un actor pueda ver un dashboard no autoriza drill-down a PII;
+4. un service role no sustituye autorización empresarial;
+5. un evento sensible deberá filtrarse antes de llegar a una experiencia no autorizada;
+6. revocación, cambio de contexto o cambio de finalidad obligan a reautorizar acciones posteriores.
+
+Una lectura interna autorizada no concede por sí sola permiso para enviar la misma información a un tercero.
+
+---
+
+#### 32. Prohibición de escritura cruzada
+
+`AURA-INT-002` es contrato de lectura y eventos.
+
+No autoriza:
+
+```text
+AURA -> UPDATE NEXO
+AURA -> UPDATE PULSO
+AURA -> UPDATE PASS
+AURA -> UPDATE NUMERA
+AURA -> UPDATE VISO
+AURA -> UPDATE FOGO
+```
+
+Cuando una acción futura requiera efecto en otra aplicación:
+
+- deberá usar el comando o contrato propietario aprobado;
+- la aplicación propietaria reautoriza;
+- la propietaria ejecuta el efecto;
+- el resultado vuelve como confirmación o evento correlacionado;
+- AURA no escribe directamente en tablas ajenas.
+
+---
+
+#### 33. Analítica sin nuevo maestro
+
+AURA podrá construir análisis de marketing utilizando proyecciones autorizadas, pero no deberá crear un maestro competidor de:
+
+- clientes;
+- pedidos;
+- ventas;
+- pagos;
+- beneficios;
+- puntos;
+- inventario;
+- productos;
+- capacidad;
+- recetas;
+- costos;
+- margen;
+- presupuesto;
+- CMS vigente;
+- casos administrativos.
+
+Un agregado analítico de AURA es una vista de decisión de marketing, no una nueva fuente del hecho subyacente.
+
+---
+
+#### 34. Frontera con `AURA-INT-001`
+
+`AURA-INT-001` gobierna sistemas y proveedores externos.
+
+`AURA-INT-002` gobierna consumo interno de aplicaciones VENTO.
+
+Por tanto, esta tarea no redefine:
+
+- OAuth;
+- API keys;
+- HMAC externo;
+- credenciales de proveedor;
+- webhooks externos;
+- rate limits externos;
+- backoff de proveedores externos;
+- conciliación de cuentas externas.
+
+Si un dato llega desde un canal externo y luego se relaciona con PULSO, PASS, NUMERA, NEXO, VISO o FOGO, la frontera externa termina antes de que empiece el contrato interno propietario.
+
+---
+
+#### 35. Frontera con Supabase
+
+Esta tarea no crea ni modifica:
+
+- schemas;
+- tablas;
+- vistas;
+- índices;
+- constraints;
+- funciones;
+- RPC;
+- triggers;
+- grants;
+- RLS;
+- Auth;
+- Storage;
+- Realtime;
+- Edge Functions;
+- cron;
+- colas;
+- secretos;
+- datos remotos.
+
+Si una futura materialización requiere Supabase, toda modificación VENTO deberá crearse, versionarse, documentarse y ejecutarse desde `vento-group-sas/vento-shell` bajo la tarea física propietaria.
+
+---
+
+#### 36. Frontera con infraestructura transversal
+
+El contrato interno no selecciona ni materializa:
+
+- outbox;
+- inbox;
+- broker;
+- topic;
+- queue;
+- subscription;
+- worker;
+- scheduler;
+- dead-letter store;
+- cache;
+- transport protocol;
+- tracing backend;
+- observability backend.
+
+Esas capacidades pertenecen a sus contratos transversales y lifecycles físicos.
+
+---
+
+#### 37. Cierre del mini-bloque AURA-INT
+
+Con `AURA-INT-001` y `AURA-INT-002` quedan definidas documentalmente las dos fronteras de integración de AURA:
+
+```text
+AURA-INT-001
+-> EXTERIOR DE VENTO
+-> canales, proveedores, credenciales, webhooks, limites y conciliacion externa
+```
+
+```text
+AURA-INT-002
+-> INTERIOR DE VENTO
+-> lecturas, proyecciones y eventos de aplicaciones propietarias
+```
+
+No queda una tercera categoría implícita entre ambas.
+
+Una integración que cruce ambas fronteras deberá preservar los dos contratos y no usar una para evitar los controles de la otra.
+
+---
+
+#### 38. Handoff de cierre de AURA hacia `AUTH-QA-001`
+
+Al incorporarse canónicamente esta tarea:
+
+- el bloque W completa sus 37 tareas documentales;
+- `AURA-INT-001` y `AURA-INT-002` cierran el mini-bloque de integraciones;
+- la continuidad normal entrega el control a `AUTH-QA-001` en `PHASE-13-U-INTEGRAL-CERTIFICATION`;
+- el handoff no crea una instancia física de AURA;
+- el handoff no declara que AURA esté desplegada;
+- el handoff no ejecuta pruebas integrales por sí mismo;
+- `AUTH-QA-001` conserva su propia topología, criterios y gates.
+
+La transición de bloque es documental y no constituye autorización física.
+
+---
+
+#### 39. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. AURA consume fuentes propietarias; no las reemplaza;
+2. lectura, evento, comando y escritura cruzada son contratos distintos;
+3. el universo de esta tarea contiene exactamente NEXO, PULSO, PASS, NUMERA, VISO y FOGO;
+4. se reutilizan los diez perfiles de proyección de `INT-APP-003` sin crear otro;
+5. el baseline de AURA como consumidora es 27 relaciones de proceso y 153 relaciones de evento;
+6. las 153 relaciones se dividen en 106 directas y 47 condicionales;
+7. NEXO aporta 9 relaciones de evento directas;
+8. PULSO aporta 40 relaciones, 28 directas y 12 condicionales;
+9. PASS aporta 6 relaciones directas;
+10. NUMERA aporta 30 relaciones, 18 directas y 12 condicionales;
+11. VISO aporta 68 relaciones, 45 directas y 23 condicionales;
+12. FOGO aporta cero relaciones FOGO→AURA en el baseline actual y no se inventa una suscripción;
+13. FOGO sigue siendo fuente autorizada de capacidad y producción mediante lectura/proyección aplicable;
+14. una relación directa no equivale a acceso irrestricto;
+15. una relación condicional exige condición explícita;
+16. ausencia, `null`, desconocido, no aplica, denegado y fallo permanecen distintos;
+17. dato stale no se presenta como hecho vigente;
+18. el evento conserva productor, proceso, finalidad, sensibilidad, allowlist y perfil;
+19. la entrega repetida no crea segundo efecto;
+20. no se promete exactly-once de transporte;
+21. no existe orden global entre aplicaciones;
+22. eventos tardíos y out-of-order conservan reconciliación;
+23. replay y backfill no ocurren automáticamente;
+24. correlación no equivale a atribución ni causalidad;
+25. consentimiento permanece en PASS;
+26. venta y pedido permanecen en PULSO;
+27. costo, margen y resultado económico permanecen en NUMERA;
+28. inventario y disponibilidad física permanecen en NEXO;
+29. receta, producción, calidad y capacidad permanecen en FOGO;
+30. procesos y superficies VISO conservan ownership mientras no exista transferencia aprobada;
+31. una lectura interna no autoriza exportación externa;
+32. AURA no ejecuta escrituras cross-app desde esta tarea;
+33. Supabase no se modifica;
+34. no se crean ni modifican requisitos de prueba;
+35. no se crea ninguna instancia física;
+36. el mini-bloque `AURA-INT-001` a `AURA-INT-002` queda documentalmente cerrado;
+37. la siguiente tarea reservada es exactamente `AUTH-QA-001`.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: los requisitos vigentes ya protegen ownership, lecturas, contratos de integración, consumidoras, idempotencia, retries, errores parciales, autorización, fuentes de verdad, campañas, consentimientos, ventas, beneficios, guardas económicas, atribución y reconciliación. Esta tarea materializa el contrato responsable de consumo interno sin introducir una obligación verificable nueva ni alterar texto, relación, paquete, ambiente, evidencia u ownership de una fila existente.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-001`, para fuentes autorizadas, identidad, estados y prohibición de crear maestros competidores;
+- `TREQ-AURA-002`, para grounding, fuentes, frescura, minimización, privacidad y trazabilidad de IA;
+- `TREQ-AURA-003`, para campañas, promociones, oportunidades, resultados, guardas y fronteras con PULSO, PASS y NUMERA;
+- `TREQ-INTEGRATION-019`, para contratos internos, adaptadores externos, identificadores, payloads, idempotencia, eventos tardíos, conciliación y fuentes de verdad;
+- `TREQ-PULSO-005` y `TREQ-PULSO-006`, para venta, promociones y efectos comerciales propietarios;
+- `TREQ-PASS-010` y `TREQ-PASS-011`, para identidad, consentimiento, fidelización, beneficios y fronteras de consumo;
+- `TREQ-NUMERA-004`, para verdad económica y conciliación;
+- la cobertura vigente de NEXO, FOGO y VISO sobre sus hechos propietarios;
+- `TREQ-INTEGRATION-080` a `TREQ-INTEGRATION-317`, ya creados por `INT-APP-003` a `INT-APP-010` para consumidoras, idempotencia, retry, compensación, auditoría, pendientes, parcialidad y escrituras cruzadas.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación del registro 04A.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la incorporación y compilación documental requieren el checkout local de `vento-shell`; no se ejecutaron desde esta entrega |
+| LOCAL | `NOT_EXECUTED` | el artefacto todavía no ha sido insertado, formateado ni validado por los scripts del repositorio en el checkout del usuario |
+| REMOTA | `PASS` | se verificaron en `vento-shell/main` el archivo propietario, continuidad, topología, políticas documentales, `AURA-DOM-*`, `AURA-AUTH-*`, `AURA-UX-*`, `INT-APP-001..010`, `INT-MKT-001..003`, registro 04A AURA y la matriz de consumidoras; se recalcularon 27 relaciones de proceso y 153 relaciones de evento hacia AURA desde las seis aplicaciones nombradas |
+| OPERATIVA | `NOT_EXECUTED` | no se consultaron datos empresariales reales, no se publicaron eventos, no se ejecutaron lecturas internas y no se produjeron efectos cross-app |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; la tarea se agota en su contrato documental |
+
+La evidencia remota valida coherencia documental de la propuesta. La validación real del repositorio corresponde a la incorporación controlada del artefacto y a la batería canónica.
+
+---
+
+#### 43. Criterios de aceptación
+
+`AURA-INT-002` queda satisfecha cuando simultáneamente:
+
+1. preserva exactamente seis aplicaciones propietarias;
+2. separa lectura, evento, comando y escritura cruzada;
+3. define contrato mínimo de lectura con finalidad, allowlist, sensibilidad, versión, frescura y autorización;
+4. reutiliza los diez perfiles cerrados de proyección;
+5. conserva 27 relaciones de proceso hacia AURA;
+6. conserva 153 relaciones de evento hacia AURA;
+7. conserva 106 relaciones directas y 47 condicionales;
+8. conserva la distribución NEXO 9, PULSO 40, PASS 6, NUMERA 30, VISO 68 y FOGO 0;
+9. no inventa eventos FOGO→AURA;
+10. define la guarda de capacidad FOGO mediante lectura/proyección autorizada;
+11. preserva ownership de NEXO sobre inventario y disponibilidad física;
+12. preserva ownership de PULSO sobre pedido, venta, pago y efecto comercial;
+13. preserva ownership de PASS sobre identidad, consentimiento, fidelización, beneficios y redenciones;
+14. preserva ownership de NUMERA sobre costo, margen, presupuesto, rentabilidad y verdad económica;
+15. preserva ownership de VISO sobre sus procesos y CMS transitorio mientras corresponda;
+16. preserva ownership de FOGO sobre receta, producción, calidad y capacidad;
+17. distingue fresco, stale, desconocido, no aplica, indisponible y denegado;
+18. distingue cero, `null`, ausencia, desconocido y fallo;
+19. conserva los campos contractuales de evento de `INT-APP-003`;
+20. exige condición explícita para relaciones condicionales;
+21. mantiene AURA diferida como consumidora física;
+22. aplica idempotencia sin prometer exactly-once;
+23. preserva orden por contrato sin inventar orden global;
+24. trata eventos tardíos y duplicados de forma reconciliable;
+25. prohíbe replay/backfill automático;
+26. reconcilia evento y lectura sin escribir de vuelta;
+27. preserva minimización y sensibilidad;
+28. exige reautorización en la consumidora cuando corresponda;
+29. prohíbe escritura directa AURA→NEXO/PULSO/PASS/NUMERA/VISO/FOGO;
+30. evita crear un data master alterno dentro de AURA;
+31. conserva integración externa bajo `AURA-INT-001`;
+32. mantiene Supabase y runtime fuera del alcance;
+33. no crea ni modifica requisitos de prueba;
+34. no crea ninguna instancia física;
+35. cierra documentalmente el mini-bloque AURA-INT;
+36. entrega continuidad exactamente a `AUTH-QA-001`.
+
+---
+
+#### 44. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear APIs o endpoints internos;
+- crear consumers, subscriptions, topics, queues, workers, schedulers o brokers;
+- crear outbox o inbox;
+- crear tablas de proyección o caches físicos;
+- crear eventos nuevos;
+- cambiar emisoras o consumidoras de `INT-APP-003`;
+- añadir FOGO como emisora hacia AURA sin evolución contractual explícita;
+- publicar eventos reales;
+- ejecutar replay o backfill;
+- leer datos reales de NEXO, PULSO, PASS, NUMERA, VISO o FOGO;
+- escribir en dominios ajenos;
+- copiar maestros a AURA;
+- crear data warehouse, data mart o ledger alterno;
+- modificar inventario, stock, remisiones o activos;
+- modificar pedidos, ventas, pagos, precios o descuentos;
+- modificar clientes, consentimientos, puntos, beneficios o canjes;
+- modificar costos, margen, presupuesto, rentabilidad, asientos u obligaciones;
+- modificar recetas, producción, lotes, calidad o capacidad;
+- migrar CMS desde VISO;
+- crear o modificar tablas, vistas, funciones, RPC, triggers, RLS, Storage, Realtime o Edge Functions;
+- crear migraciones Supabase;
+- usar service role como sustituto de autorización;
+- crear o modificar requisitos del registro 04A;
+- iniciar `AUTH-QA-001` desde esta tarea.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa`
+
+**TAREA ACTUAL APROBADA**
+`AURA-INT-002 — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-001 — Propietario sin check-in entra a administración`
