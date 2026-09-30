@@ -6552,7 +6552,779 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-010 — Bodeguero puede preparar pero no producir`
-### [ ] AUTH-QA-010 — Bodeguero puede preparar pero no producir
+### ✅ AUTH-QA-010 — Bodeguero puede preparar pero no producir
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
+**Tarea siguiente:** AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
+**Tipo de tarea:** documental; definición canónica de una prueba integral de segregación de funciones del rol operativo `bodeguero`, reutilizable por paquete y certificable globalmente, para demostrar que puede ejecutar la preparación de remisiones y demás capacidades explícitamente concedidas de bodega sin adquirir capacidades de producción FOGO por nombre de rol, aplicación visible, dispositivo, rol base legacy, contexto territorial o permisos ajenos
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-010::<package_id>` y la certificación `AUTH-QA-010::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, check-ins, roles, permisos, remisiones, lotes de producción, inventario ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que el rol operativo `bodeguero` conserva una frontera funcional estricta entre operación de bodega y producción.
+
+La regla raíz queda:
+
+```text
+ROL OPERATIVO = bodeguero
++ CONTEXTO DE BODEGA VÁLIDO
++ PERMISO EXACTO nexo.inventory.remissions.prepare
++ REMISIÓN PREPARABLE DEL ORIGEN AUTORIZADO
+→ PREPARACIÓN AUTORIZABLE
+```
+
+Y simultáneamente:
+
+```text
+ROL OPERATIVO = bodeguero
++ MISMO ACTOR
++ MISMO TURNO
++ MISMO CHECK-IN
++ MISMA SEDE
++ MISMA ÁREA
++ PERMISO FOGO DE PRODUCCIÓN
+→ DENY
+```
+
+La tarea certifica segregación de funciones. No redefine la matriz de bodeguero ni la matriz de producción.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos dieciocho resultados obligatorios:
+
+1. `bodeguero` se resuelve como rol operativo desde el turno válido y no desde un nombre de rol base;
+2. la capacidad positiva principal es `nexo.inventory.remissions.prepare`;
+3. la preparación solo puede evaluarse dentro del carril operativo y del territorio de bodega aplicable;
+4. preparar una remisión no equivale a despacharla, iniciar tránsito, aceptar custodia de conductor ni recibirla en nombre de otro extremo;
+5. las seis PermissionKey activas de FOGO permanecen sin grant operativo para `bodeguero`;
+6. `fogo.production.batches.create` produce `DENY` para el carril operativo de `bodeguero` aunque los demás componentes de contexto sean válidos;
+7. la denegación productiva no se convierte en ausencia de turno, check-in, rol, sede o área cuando esos componentes sí están válidos;
+8. la causa esperada ante ausencia ordinaria de grant operativo es `AUTH_OPERATIONAL_PERMISSION_DENIED`;
+9. `nexo.access` no funciona como wildcard que habilite FOGO ni otras capacidades internas;
+10. una aplicación visible no crea permiso;
+11. un dispositivo `warehouse_kiosk` no amplía el conjunto de grants del trabajador;
+12. la coincidencia textual histórica `BASE/bodeguero` y `OPERATIONAL/bodeguero` no mezcla namespaces ni grants;
+13. ninguna concesión individual, override local o alias puede convertir al bodeguero en productor sin una regla canónica explícita distinta;
+14. servidor, RPC, RLS y demás superficies aplicables deben conservar la misma decisión para el mismo permiso y contexto;
+15. cualquier intento de mutación productiva denegada conserva cero efectos empresariales;
+16. la evidencia distingue autorización de preparación y denegación de producción como decisiones independientes;
+17. la certificación usa el dataset operacional vigente y no un conteo histórico obsoleto;
+18. ninguna prueba física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- identidad efectiva del actor humano;
+- rol base `trabajador_operativo` cuando corresponda al modelo final;
+- `AccessContext@1.x`;
+- turno publicado y vigente;
+- check-in activo cuando el permiso lo exige;
+- `operational_role.role_code = bodeguero`;
+- sede operativa derivada del turno;
+- área operativa de bodega derivada del turno;
+- estado y relación laboral activos;
+- catálogo vigente de PermissionKey;
+- dataset `vento.authorization.operational-role-grants@1.0.0`;
+- matriz histórica `AUTH-RBAC-017` únicamente como lineage documental;
+- reconciliaciones posteriores `AUTH-CAT-022` a `AUTH-CAT-025`;
+- separación de carriles base y operativo;
+- precedencia de turno, check-in, rol, sede, área, dispositivo, grant, scope y recurso;
+- contrato de default deny;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- gate físico `POST_E5_PACKAGE`.
+
+La tarea no crea nuevos roles, permisos, grants, denies, aliases ni excepciones.
+
+---
+
+#### 4. Reconciliación contractual obligatoria
+
+La matriz histórica `AUTH-RBAC-017` documentó un snapshot de 112 permisos y 35 concesiones operativas para `bodeguero`.
+
+Ese conteo histórico no gobierna la autorización runtime vigente.
+
+El contrato materializado actual conserva:
+
+```text
+PermissionKey activas = 140
+operational_role = bodeguero
+grants vigentes = 36
+```
+
+Distribución vigente del rol:
+
+```text
+NEXO  = 31 grants
+ORIGO = 5 grants
+FOGO  = 0 grants
+```
+
+La concesión adicional respecto del snapshot histórico es:
+
+```text
+origo.procurement.receipts.register
+```
+
+incorporada por la evolución contractual posterior del catálogo.
+
+Esta reconciliación no altera la frontera de esta tarea:
+
+```text
+PREPARAR REMISIÓN = CONCESIÓN VIGENTE
+PRODUCIR EN FOGO  = SIN GRANT PARA bodeguero
+```
+
+Toda instancia de `AUTH-QA-010` debe comparar contra el catálogo y el dataset vigentes del paquete evaluado; no debe fallar ni pasar únicamente por reproducir el conteo histórico de 35.
+
+---
+
+#### 5. Significado exacto de “preparar”
+
+En esta tarea, “preparar” significa exclusivamente ejercer:
+
+```text
+nexo.inventory.remissions.prepare
+```
+
+sobre una remisión cuyo origen autorizado corresponda a la bodega operativa del actor y cuyo estado admita preparación.
+
+La preparación puede comprender, según el recurso y contratos propietarios:
+
+- reserva o selección física de existencias autorizadas;
+- alistamiento;
+- cantidades preparadas;
+- registro de faltantes;
+- sustituciones permitidas por el contrato de remisión;
+- empaque;
+- trazabilidad del actor;
+- transición al estado listo para transporte cuando corresponda al permiso exacto.
+
+No comprende por inferencia:
+
+- solicitar la remisión en nombre de terceros;
+- editar libremente el recurso;
+- cancelar la remisión;
+- aceptar custodia del conductor;
+- iniciar tránsito;
+- entregar físicamente;
+- recibir en el destino;
+- producir bienes;
+- crear lotes productivos;
+- administrar recetas.
+
+---
+
+#### 6. Significado exacto de “producir”
+
+Para esta certificación, la frontera productiva se expresa mediante el catálogo FOGO activo.
+
+Las seis PermissionKey activas son:
+
+```text
+fogo.access
+fogo.production.batches.view
+fogo.production.batches.create
+fogo.production.orders.view
+fogo.production.recipe_book.view
+fogo.production.recipes.view
+```
+
+El dataset operativo vigente de `bodeguero` debe contener:
+
+```text
+0 grants FOGO
+```
+
+La acción negativa primaria será:
+
+```text
+fogo.production.batches.create
+```
+
+porque representa una mutación productiva inequívoca y su ausencia de grant no depende de interpretación narrativa del verbo “producir”.
+
+---
+
+#### 7. Fixture positiva primaria
+
+La fixture positiva mínima usa:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+base_role = trabajador_operativo
+active_shift = EXACTLY_ONE_PUBLISHED_CURRENT
+active_shift.operational_role_code = bodeguero
+active_shift.site_id = SITE_W
+active_shift.area_id = AREA_W
+operational_role.role_code = bodeguero
+operational_site.site_id = SITE_W
+operational_area.area_id = AREA_W
+operational_area.kind = warehouse | bodega compatible
+active_checkin_session = VALID_AND_MATCHING
+permission = nexo.inventory.remissions.prepare
+resource = REMISSION_R
+resource.origin_site_id = SITE_W
+resource.state = PREPARABLE
+```
+
+`nexo.inventory.remissions.prepare` usa prerrequisito `T+C`; por tanto, el check-in de esta fixture debe ser único, abierto y compatible con actor, turno y sede.
+
+La fixture no utiliza:
+
+- rol base legacy `bodeguero` como autoridad;
+- `navigation_role`;
+- `same_site_active_worker`;
+- app visible;
+- dispositivo como actor;
+- cookie;
+- override local;
+- simulación como autoridad real.
+
+---
+
+#### 8. Oracle positivo de preparación
+
+Con la fixture positiva completa, el evaluador debe producir una decisión autorizable para:
+
+```text
+nexo.inventory.remissions.prepare
+```
+
+únicamente si también pasan:
+
+- permiso exacto;
+- modalidad aplicable;
+- rol operativo efectivo;
+- turno vigente;
+- check-in cuando corresponda;
+- sede;
+- área;
+- habilitación rol–territorio;
+- scope;
+- estado del recurso;
+- relación del actor con el recurso;
+- restricciones de dispositivo cuando exista;
+- deny explícito aplicable;
+- reglas de concurrencia e idempotencia del recurso.
+
+El resultado positivo no significa:
+
+```text
+bodeguero → allow global
+```
+
+Significa:
+
+```text
+bodeguero
++ nexo.inventory.remissions.prepare
++ contexto válido
++ recurso válido
+→ ALLOW de esa capacidad exacta
+```
+
+---
+
+#### 9. Control de frontera de la preparación
+
+La misma fixture no debe convertir `prepare` en capacidades posteriores o laterales.
+
+Como mínimo se debe demostrar que la autorización de preparación no concede por transitividad:
+
+```text
+nexo.inventory.remissions.update
+nexo.inventory.remissions.cancel
+```
+
+ni cualquier clave vigente de custodia, tránsito o entrega que pertenezca al conductor o a otra etapa.
+
+La prueba no redefine qué actor posee cada etapa; únicamente demuestra que el grant positivo no es wildcard.
+
+---
+
+#### 10. Fixture negativa productiva primaria
+
+Se conserva el mismo actor y, cuando sea posible, exactamente el mismo snapshot válido:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+active_shift.operational_role_code = bodeguero
+operational_role.role_code = bodeguero
+operational_site = VALID
+operational_area = VALID_WAREHOUSE
+active_checkin_session = VALID_AND_MATCHING
+```
+
+Se cambia únicamente la capacidad objetivo:
+
+```text
+permission = fogo.production.batches.create
+```
+
+La fixture puede utilizar un recurso productivo sintético o controlado suficiente para alcanzar el gate de permiso sin ejecutar efecto alguno.
+
+No se debe fabricar una incompatibilidad territorial para obtener la denegación: el objetivo es demostrar segregación por grant de rol.
+
+---
+
+#### 11. Oracle negativo productivo primario
+
+Para `fogo.production.batches.create` y `operational_role = bodeguero`:
+
+```text
+matched_operational_grant = NONE
+→ DENY
+→ executable = false
+→ business_effects = 0
+```
+
+Cuando la ausencia ordinaria de grant sea la causa decisiva, la respuesta debe conservar:
+
+```text
+AUTH_OPERATIONAL_PERMISSION_DENIED
+```
+
+o la identidad canónica equivalente que el contrato vigente del evaluador establezca para default deny operacional.
+
+No debe degradarse a:
+
+- falta de turno;
+- falta de check-in;
+- rol faltante;
+- sede faltante;
+- área faltante;
+- fallo técnico;
+- permiso inexistente;
+
+si esos hechos no describen la fixture.
+
+---
+
+#### 12. Barrido negativo de FOGO
+
+Además del caso primario, la instancia debe evaluar las seis PermissionKey FOGO activas contra `bodeguero`.
+
+Resultado esperado de grants directos de `bodeguero`:
+
+| PermissionKey | Grant operativo esperado |
+| --- | --- |
+| `fogo.access` | ninguno |
+| `fogo.production.batches.view` | ninguno |
+| `fogo.production.batches.create` | ninguno |
+| `fogo.production.orders.view` | ninguno |
+| `fogo.production.recipe_book.view` | ninguno |
+| `fogo.production.recipes.view` | ninguno |
+
+La prueba no exige que todas produzcan idéntica razón final si una capacidad adicionalmente depende de otro gate anterior. Sí exige que ninguna pueda alcanzar `ALLOW` por la matriz operativa de `bodeguero`.
+
+---
+
+#### 13. Namespace tipado de `bodeguero`
+
+El código textual `bodeguero` tuvo presencia histórica en más de un catálogo.
+
+La certificación debe conservar:
+
+```text
+BASE/bodeguero
+≠
+OPERATIONAL/bodeguero
+```
+
+La autoridad positiva de esta tarea procede únicamente de:
+
+```text
+active_shift.operational_role_code = bodeguero
+→ OperationalRoleCode
+→ operational-role-grants
+```
+
+No procede de:
+
+```text
+employees.role = bodeguero
+```
+
+ni de un alias, cast o fallback nominal.
+
+Si una implementación todavía conserva el rol base legacy, su existencia no puede completar ni ampliar el carril operativo.
+
+---
+
+#### 14. Dispositivo compartido y navegación
+
+Un dispositivo compatible con bodega puede restringir el entorno, pero no crear grants empresariales.
+
+Por tanto:
+
+```text
+warehouse_kiosk
++ navigation_role = bodeguero
+≠
+autorización de producción
+```
+
+Y:
+
+```text
+FOGO visible
+≠
+fogo.production.batches.create permitido
+```
+
+La navegación nunca sustituye la evaluación server-side de la acción concreta.
+
+---
+
+#### 15. Recurso y estado en el caso positivo
+
+La prueba positiva no se considera válida si solo demuestra que el rol tiene el grant.
+
+Debe demostrar además que la remisión evaluada cumple el contexto mínimo propietario, incluyendo cuando corresponda:
+
+- origen autorizado;
+- estado preparable;
+- líneas solicitadas válidas;
+- cantidades y presentaciones válidas;
+- stock o reserva compatible;
+- faltantes y sustituciones dentro de la política;
+- versión vigente del recurso;
+- ausencia de cancelación o transición incompatible;
+- idempotencia de la mutación.
+
+Una remisión inválida puede ser `DENY` aunque el grant exista; ese resultado no contradice la matriz.
+
+---
+
+#### 16. Separación entre matriz y autorización final
+
+La prueba distingue dos preguntas:
+
+```text
+¿EL ROL TIENE EL GRANT?
+```
+
+Y:
+
+```text
+¿LA SOLICITUD COMPLETA ESTÁ AUTORIZADA?
+```
+
+Para `remissions.prepare`:
+
+```text
+grant = PRESENT
+final decision = depende del resto de gates
+```
+
+Para `fogo.production.batches.create`:
+
+```text
+grant = ABSENT
+final decision = DENY
+```
+
+No se acepta una implementación que convierta el primer resultado en permiso global ni el segundo en permiso por pertenecer a Centro de Producción.
+
+---
+
+#### 17. Paridad entre evaluadores
+
+Para la misma identidad de actor, permiso, turno, sede, área, dispositivo y recurso, los evaluadores aplicables deben conservar decisión y razones equivalentes.
+
+La cobertura puede incluir, según el package:
+
+- Server Actions;
+- Route Handlers;
+- fetch/RSC;
+- SDK compartido;
+- RPC/PostgREST;
+- RLS/Data API;
+- Edge Functions;
+- Realtime;
+- clientes nativos;
+- dispositivo compartido.
+
+No se exige que todos los packages materialicen todos los canales. Sí se exige que ningún canal disponible permita producción a `bodeguero` por una copia local más permisiva.
+
+---
+
+#### 18. Cero efectos en la denegación
+
+Toda solicitud negativa productiva debe terminar sin efectos empresariales.
+
+Como mínimo no puede:
+
+- crear un lote;
+- reservar identificadores de negocio como si el lote existiera;
+- consumir inventario;
+- registrar producción;
+- alterar estado de una orden;
+- generar movimientos de inventario;
+- publicar eventos de éxito;
+- confirmar una operación al cliente;
+- dejar reintentos ambiguos que puedan aplicar el efecto después.
+
+La auditoría de una denegación no cuenta como efecto empresarial.
+
+---
+
+#### 19. Casos mínimos obligatorios
+
+| Caso | Contexto | PermissionKey | Resultado mínimo |
+| --- | --- | --- | --- |
+| A | `bodeguero`, bodega válida, turno válido, check-in válido cuando corresponda, remisión preparable | `nexo.inventory.remissions.prepare` | grant presente; `ALLOW` si pasan todos los gates restantes |
+| B | mismo contexto válido | `fogo.production.batches.create` | `DENY`, cero efectos |
+| C | mismo rol con cada una de las seis claves FOGO activas | familia FOGO | cero grants operativos de bodeguero; ningún `ALLOW` por esta matriz |
+| D | `BASE/bodeguero` sin rol operativo derivado del turno | `nexo.inventory.remissions.prepare` | no autoriza por coincidencia nominal |
+| E | `warehouse_kiosk` sin actor/rol efectivo válido | `nexo.inventory.remissions.prepare` | no autoriza por dispositivo |
+| F | `bodeguero` con grant de preparación pero recurso no preparable | `nexo.inventory.remissions.prepare` | `DENY` por gate de recurso/estado correspondiente, no por ausencia del grant |
+| G | `bodeguero` con `nexo.access` | una capacidad FOGO | `DENY`; acceso de aplicación no es wildcard |
+
+---
+
+#### 20. Clasificación de fallos
+
+La instancia falla si observa cualquiera de estos estados:
+
+```text
+FAIL_GRANT_MISSING_FOR_REMISSION_PREPARE
+FAIL_FOGO_GRANT_PRESENT_FOR_WAREHOUSE_ROLE
+FAIL_PRODUCTION_ALLOWED_FOR_WAREHOUSE_ROLE
+FAIL_BASE_ROLE_COLLISION_BYPASS
+FAIL_DEVICE_ROLE_BYPASS
+FAIL_APP_ACCESS_WILDCARD
+FAIL_RESOURCE_GATE_SKIPPED
+FAIL_ZERO_EFFECT_VIOLATION
+FAIL_CHANNEL_DIVERGENCE
+FAIL_STALE_OR_LEGACY_MATRIX_USED_AS_RUNTIME_AUTHORITY
+```
+
+Un fallo no se corrige ampliando la matriz de `bodeguero` dentro de esta tarea.
+
+La corrección pertenece al owner contractual o de implementación que corresponda y debe conservar `TREQ-AUTH-010`.
+
+---
+
+#### 21. Modelo de ejecución por paquete
+
+La topología vigente es:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Cada package aplicable materializa:
+
+```text
+AUTH-QA-010::<package_id>
+```
+
+únicamente después de:
+
+```text
+E5-GATE-008::<package_id> = PASS
+```
+
+porque el gate físico vigente es:
+
+```text
+POST_E5_PACKAGE
+```
+
+La tarea documental no selecciona package, no ejecuta E5 y no crea instancias físicas.
+
+---
+
+#### 22. Evidencia mínima por package
+
+Cada futura instancia debe registrar como mínimo:
+
+```text
+package_id
+repository
+commit_or_release_under_test
+catalog_version
+operational_grants_dataset_version
+actor_fixture
+shift_fixture
+checkin_fixture
+operational_role_code
+site_fixture
+area_fixture
+positive_permission_key
+positive_resource_fixture
+positive_decision
+negative_permission_key
+negative_decision
+fogo_active_permission_set
+matched_grants
+reason_codes
+business_effect_count
+channels_tested
+validation_commands
+result
+```
+
+No se considera evidencia suficiente una captura de UI o una lista estática de menús sin decisión de autorización verificable.
+
+---
+
+#### 23. Certificación global final
+
+`AUTH-QA-010::GLOBAL-FINAL` podrá certificarse únicamente después de reconciliar las instancias por package aplicables y demostrar que:
+
+1. el catálogo activo usado por las pruebas es el canónico vigente;
+2. el dataset operacional usado por las pruebas es el canónico vigente;
+3. `bodeguero` conserva grants de preparación de bodega aplicables;
+4. las seis claves FOGO activas continúan sin grant para `bodeguero`;
+5. ningún consumidor conserva un bypass por rol legacy, dispositivo, app o helper local;
+6. toda denegación productiva conserva cero efectos;
+7. no existen packages aplicables pendientes sin resultado concluyente.
+
+La certificación global no reabre ni modifica las matrices por sí misma.
+
+---
+
+#### 24. Handoff a `AUTH-QA-011`
+
+`AUTH-QA-010` entrega a la tarea siguiente una frontera ya cerrada:
+
+```text
+BODEGUERO
+→ puede preparar remisiones cuando el contexto completo lo autoriza
+→ no recibe producción FOGO
+```
+
+`AUTH-QA-011` recibe exclusivamente la responsabilidad de probar la frontera inversa de producción:
+
+```text
+PRODUCCIÓN
+→ puede producir
+→ no puede ajustar inventario global
+```
+
+La tarea siguiente no debe reabrir los grants de bodeguero.
+
+---
+
+#### 25. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La tarea certifica reglas ya registradas y no cambia el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 26. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar sus filas, la cobertura vigente de:
+
+- `TREQ-AUTH-001`, para impedir autorización por listas locales de nombres de rol;
+- `TREQ-AUTH-004`, para paridad entre evaluadores;
+- `TREQ-AUTH-008`, para separación de carril base y operativo y exigencia del contexto laboral aplicable;
+- `TREQ-AUTH-009`, para territorio operativo derivado de contexto;
+- `TREQ-AUTH-010`, que exige expresamente que bodeguero prepare sin producir y preserva segregación de funciones;
+- `TREQ-AUTH-013`, para validación server-side de toda mutación;
+- `TREQ-AUTH-014`, para invalidación de decisiones obsoletas cuando cambia el contexto;
+- cobertura contractual del catálogo operativo y del dataset materializado que mantiene separados roles, permisos y grants.
+
+Esta sección es trazabilidad de cobertura existente y no representa una actualización de 04A.
+
+---
+
+#### 27. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado en la rama documental de `AUTH-QA-010` ni sometido al build canónico del plan. |
+| LOCAL | NOT_EXECUTED | El checkout local todavía no ha ejecutado formateo, quality, delivery, topología, TREQ ni la batería global posterior a la inserción. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `AUTH-RBAC-017`, el catálogo activo de 140 PermissionKey, `vento.authorization.operational-role-grants@1.0.0`, 36 grants vigentes de `bodeguero` distribuidos en 31 NEXO y 5 ORIGO, cero grants FOGO para `bodeguero`, las seis claves FOGO activas y la cobertura existente de `TREQ-AUTH-010`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron casos reales de preparación, producción, turno, check-in, remisión, lote ni autorización. |
+| FÍSICA | NOT_EXECUTED | No se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes, permisos, roles, datasets ni ambientes. |
+
+---
+
+#### 28. Criterios de aceptación
+
+`AUTH-QA-010` queda documentalmente correcta cuando se demuestra que:
+
+1. `bodeguero` se trata como rol operativo tipado y derivado del turno;
+2. la vigencia contractual actual usa 140 PermissionKey y 36 grants de `bodeguero`, sin convertir el snapshot histórico de 35 en autoridad runtime;
+3. `nexo.inventory.remissions.prepare` está presente como grant operativo de `bodeguero`;
+4. el caso positivo exige contexto laboral, territorio, permiso exacto y recurso preparable;
+5. preparar no concede editar, cancelar, transitar, entregar o recibir por inferencia;
+6. las seis PermissionKey FOGO activas tienen cero grants para `bodeguero`;
+7. `fogo.production.batches.create` produce denegación con cero efectos para `bodeguero`;
+8. la denegación no se falsifica provocando artificialmente ausencia de turno, check-in, rol, sede o área;
+9. el rol base legacy no puede ampliar el rol operativo por coincidencia textual;
+10. dispositivo, navegación o app visible no pueden ampliar grants;
+11. servidor y demás evaluadores aplicables conservan decisión equivalente;
+12. la ausencia de grant productivo no se corrige dentro de esta tarea;
+13. no se crean ni modifican requisitos de prueba;
+14. no se ejecutan cambios físicos.
+
+---
+
+#### 29. Límites
+
+Esta tarea no:
+
+- redefine la matriz completa de `bodeguero`;
+- redefine la matriz de producción;
+- cambia los 36 grants vigentes de `bodeguero`;
+- restaura el conteo histórico de 35 como autoridad runtime;
+- crea o elimina PermissionKey;
+- crea grants o denies;
+- modifica `AUTH-CAT-022` a `AUTH-CAT-025`;
+- define nuevos permisos de recepción, producción, inventario o logística;
+- determina la matriz de `produccion_cocina`, `produccion_panaderia` o `produccion_reposteria`;
+- certifica que producción no ajuste inventario global; pertenece a `AUTH-QA-011`;
+- certifica PULSO; pertenece a `AUTH-QA-012`;
+- certifica conductor; pertenece a `AUTH-QA-013`;
+- modifica UI o navegación;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos o datasets;
+- ejecuta `AUTH-QA-010::<package_id>`;
+- ejecuta `AUTH-QA-010::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`.
+
+---
+
+#### 30. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-009 — Trabajador rotado cambia de permisos por turno`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-010 — Bodeguero puede preparar pero no producir`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-011 — Producción puede producir pero no ajustar inventario global`
 ### [ ] AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
 ### [ ] AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
 ### [ ] AUTH-QA-013 — Conductor puede transitar sin área productiva
