@@ -188,14 +188,18 @@ REGLA PRIORITARIA — UNA SOLA BATERÍA, SIN APROBADO POR CHAT
 SINGLE_COPYABLE_POWERSHELL_BLOCK: REQUIRED
 EXECUTING_BLOCK_IS_DOCUMENTARY_APPROVAL: TRUE
 SEPARATE_APROBADO_MESSAGE_REQUIRED: FALSE
+PREDELIVERY_ARTIFACT_CHECK: REQUIRED
+
+Antes de entregar como lista una tarea descargable, valida ese archivo de forma aislada y sin reemplazar el marcador en el repositorio: npm run docs:task:quality -- --task-id ID_EXACTO --artifact RUTA_DESCARGABLE y npm run docs:delivery:check -- --task RUTA_DESCARGABLE. Resuelve el ID y la ruta reales. Revisa además los fragmentos 04A si la tarea declara TREQ afectados. Corrige el descargable y repite ambas comprobaciones hasta PASS. No declares validación ejecutada si no pudiste correrla.
 
 Cuando entregues la tarea adelantada, presenta UN ÚNICO bloque PowerShell listo para copiar y ejecutar. Dentro de ese mismo bloque, en este orden y con ID, rutas y archivos descargados reales:
 
-1. Comprueba NEXT_TASK_ALLOWED: SI del cierre anterior antes de abrir o reemplazar la sucesora. El archivo descargable puede prepararse y revisarse antes de ese cierre.
-2. Ejecuta docs:task:start para la tarea entregada y su preflight exacto.
-3. Reemplaza únicamente el marcador exacto de esa tarea con el archivo descargado completo. Si hay 04A afectado, incorpora sus fragmentos propietarios exactos; conserva intactas las demás tareas y fragmentos.
-4. Ejecuta docs:task:format --write y luego --check, docs:task:quality, docs:delivery:check, los validadores de dominio y la batería global aplicable, incluido git diff --check.
-5. Si todo pasó, ejecuta docs:task:finish para la misma tarea y comprueba NEXT_TASK_ALLOWED: SI, main sincronizado 0/0 y worktree limpio.
+1. Antes de crear rama, ejecuta sobre el descargable los dos checks aislados anteriores y detén toda la batería si alguno falla. Esto impide publicar una rama para un artefacto que ya contradice la política semántica o el contrato de entrega.
+2. Comprueba NEXT_TASK_ALLOWED: SI del cierre anterior antes de abrir o reemplazar la sucesora. El archivo descargable puede prepararse y revisarse antes de ese cierre.
+3. Ejecuta docs:task:start para la tarea entregada y su preflight exacto.
+4. Reemplaza únicamente el marcador exacto de esa tarea con el archivo descargado completo. Si hay 04A afectado, incorpora sus fragmentos propietarios exactos; conserva intactas las demás tareas y fragmentos.
+5. Ejecuta docs:task:format --write y luego --check, docs:task:quality, docs:delivery:check, los validadores de dominio y la batería global aplicable, incluido git diff --check.
+6. Si todo pasó, ejecuta docs:task:finish para la misma tarea y comprueba NEXT_TASK_ALLOWED: SI, main sincronizado 0/0 y worktree limpio.
 
 La batería es fail-fast: ante FAIL detiene el avance, conserva el worktree y devuelve RESULTADO PARA CHATGPT. No ejecuta finish tras un fallo. No cierra la terminal con exit. No uses placeholders, pseudocódigo, importadores nuevos ni comandos separados que el usuario deba ensamblar. No repitas start si ya consta READY_TO_WORK: SI para esa misma tarea; en ese caso la batería continúa desde el reemplazo, pero conserva validaciones y finish en el mismo bloque.
 

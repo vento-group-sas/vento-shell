@@ -101,7 +101,7 @@ function physicalContradiction(metadata) {
   const state = metadata.get('Estado físico resultante') ?? '';
   const changes = metadata.get('Cambios físicos autorizados') ?? '';
   const normalizedChanges = changes.replaceAll('`', '').trim();
-  const noPhysicalChanges = /^(?:0|cero|ninguno)(?:\s+(?:durante|en)\s+(?:(?:el|este)\s+marcador(?:\s+global)?|(?:esta|la)\s+tarea))?(?:\s*[.;]|$)/iu
+  const noPhysicalChanges = /^(?:0|cero|ninguno)(?:\s+(?:durante|en)\s+(?:(?:el|este)\s+marcador(?:\s+global)?|(?:esta|la)\s+tarea(?:\s+documental)?))?(?:\s*[.;]|$)/iu
     .test(normalizedChanges)
     || /^sin\s+(?:cambios?|modificaciones?)\s+físic[oa]s?(?:\s+autorizad[oa]s?)?(?:\s*[.;]|$)/iu
       .test(normalizedChanges);

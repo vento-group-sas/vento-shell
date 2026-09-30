@@ -11,6 +11,7 @@ import {
   validateTaskDevelopmentPolicy,
   validateTaskSemanticContract,
 } from './task-semantic-contract.mjs';
+import { validateTaskArtifact } from './task-quality.mjs';
 import {
   auditProspectiveTaskSet,
   renderProspectiveAuditErrors,
@@ -227,6 +228,42 @@ test('acepta ninguno durante el marcador global como cero cambios físicos', () 
     policy,
   });
   assert.ok(!result.errors.some(({ code }) => code === 'PHYSICAL_SCOPE_CONTRADICTION'));
+});
+
+test('acepta ninguno durante esta tarea documental como cero cambios físicos', () => {
+  const result = validateTaskSemanticContract({
+    block: validBlock.replace(
+      '**Cambios físicos autorizados:** ninguno',
+      '**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se crean permisos ni políticas',
+    ),
+    task: { id: 'TEST-SEM-011', state: 'APROBADA' },
+    ownerRelativePath: 'bloques/X/test.md',
+    inventory,
+    policy,
+  });
+  assert.ok(!result.errors.some(({ code }) => code === 'PHYSICAL_SCOPE_CONTRADICTION'));
+});
+
+test('el descargable se comprueba antes de abrir rama y conserva el archivo propietario', (t) => {
+  const taskId = 'AURA-AUTH-001';
+  const owner = readCanonicalTaskInventory().get(taskId);
+  assert.ok(owner);
+  const before = fs.readFileSync(owner.filePath, 'utf8');
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-task-artifact-'));
+  t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
+  const artifactPath = path.join(temp, `${taskId}_APROBADA_PARA_REEMPLAZAR.md`);
+  fs.writeFileSync(artifactPath, `${owner.block.trimEnd()}\n`);
+
+  assert.deepEqual(validateTaskArtifact({ taskId, artifactPath }).errors, []);
+  const invalid = owner.block.replace(
+    /^\*\*Cambios físicos autorizados:\*\*.*$/mu,
+    '**Cambios físicos autorizados:** modificar código consumidor',
+  );
+  fs.writeFileSync(artifactPath, `${invalid.trimEnd()}\n`);
+  assert.ok(validateTaskArtifact({ taskId, artifactPath }).errors.some(
+    ({ code }) => code === 'PHYSICAL_SCOPE_CONTRADICTION',
+  ));
+  assert.equal(fs.readFileSync(owner.filePath, 'utf8'), before);
 });
 
 test('acepta una aclaración futura después de declarar cero cambios físicos', () => {

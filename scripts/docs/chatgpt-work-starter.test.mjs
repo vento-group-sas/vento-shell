@@ -63,6 +63,10 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
   assert.match(result.documentationAheadSource, /SINGLE_COPYABLE_POWERSHELL_BLOCK: REQUIRED/u);
   assert.match(result.documentationAheadSource, /EXECUTING_BLOCK_IS_DOCUMENTARY_APPROVAL: TRUE/u);
   assert.match(result.documentationAheadSource, /SEPARATE_APROBADO_MESSAGE_REQUIRED: FALSE/u);
+  assert.match(result.documentationAheadSource, /PREDELIVERY_ARTIFACT_CHECK: REQUIRED/u);
+  assert.match(result.documentationAheadSource, /docs:task:quality -- --task-id ID_EXACTO --artifact RUTA_DESCARGABLE/u);
+  assert.match(result.documentationAheadSource, /docs:delivery:check -- --task RUTA_DESCARGABLE/u);
+  assert.ok(result.documentationAheadSource.indexOf('Antes de crear rama, ejecuta sobre el descargable') < result.documentationAheadSource.indexOf('Ejecuta docs:task:start para la tarea entregada'));
   assert.match(result.documentationAheadSource, /docs:task:start[\s\S]*reemplaza[\s\S]*docs:task:format --write[\s\S]*docs:task:finish/iu);
   assert.match(result.documentationAheadSource, /No ejecuta finish tras un fallo/u);
   assert.doesNotMatch(result.documentationAheadSource, /La aprobación canónica requiere siempre la palabra explícita|la palabra exacta `APROBADO` cuando corresponda|Cierre después de APROBADO y validaciones PASS/u);
