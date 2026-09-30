@@ -3429,4 +3429,1424 @@ Esta tarea no autoriza:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros`
 
-### [ ] AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros
+### ✅ AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas
+**Tarea siguiente:** AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades
+**Tipo de tarea:** documental; contrato canónico de autorización reforzada y protección de secretos, credenciales, tokens, proveedores de IA, prompts, archivos y transferencias de información hacia terceros, con materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE W — AURA — autorización de marketing y canales
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`; contrato de autorización reforzada definido y futura materialización reservada a `AURA-AUTH-004::<implementation_unit_id>` únicamente después de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea; no se crean credenciales, tokens, secretos, cuentas externas, proveedores, integraciones, prompts productivos, cargas externas, permisos, políticas, tablas, funciones, RPC, Storage, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá proteger las capacidades que atraviesan la frontera técnica y empresarial hacia servicios externos: credenciales, tokens, secretos, cuentas y proveedores de IA, prompts gobernados, archivos y datos enviados a terceros.
+
+La tarea impide que una persona, servicio, integración, job, proveedor o credencial técnicamente válida convierta capacidad técnica en autorización empresarial, o que información visible dentro de Vento OS pueda salir a un tercero únicamente porque una API, modelo o canal externo permita recibirla.
+
+La decisión raíz es:
+
+```text
+CREDENCIAL TECNICAMENTE VALIDA
+!=
+AUTORIZACION EMPRESARIAL
+```
+
+Y además:
+
+```text
+DATO DISPONIBLE
+!=
+DATO NECESARIO
+!=
+DATO AUTORIZADO PARA TERCERO
+```
+
+```text
+PROMPT
+!=
+INSTRUCCION PUBLICABLE
+!=
+FUENTE DE VERDAD
+!=
+AUTORIZACION DE ACCION
+```
+
+```text
+ARCHIVO AUTORIZADO EN VENTO
+!=
+ARCHIVO AUTORIZADO PARA PROVEEDOR EXTERNO
+```
+
+```text
+PROVEEDOR DE IA
+!=
+PROPIETARIO DEL DOMINIO
+!=
+APROBADOR
+!=
+ACTOR EMPRESARIAL
+```
+
+La tarea recibe finalidad, minimización, consentimiento, datos de cliente, exportaciones y acciones masivas de `AURA-AUTH-003`; recibe grounding, trazabilidad de modelo/proveedor y revisión humana de `AURA-DOM-004`; y no reabre la segregación editorial de `AURA-AUTH-002` ni el alcance base de `AURA-AUTH-001`.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto:
+
+- esta tarea define una sola vez el contrato documental reusable;
+- no crea una instancia física desde el carril documental;
+- cada materialización futura deberá usar `AURA-AUTH-004::<implementation_unit_id>`;
+- cada unidad deberá conservar identidad y evidencia propias;
+- ninguna unidad podrá ejecutarse antes de satisfacer el gate `POST_E5_PACKAGE` aplicable;
+- la existencia del contrato documental no demuestra que AURA tenga runtime, proveedor, secreto, cuenta, integración o almacenamiento materializado;
+- la autorización física continúa separada de la aprobación documental.
+
+---
+
+#### 3. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-AUTH-001`, para empresa, marca, función, capacidad, recurso, contexto, revalidación server-side y denegación segura;
+- `AURA-AUTH-002`, para separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública;
+- `AURA-AUTH-003`, para finalidad, minimización, consentimiento, segmentos, leads, datos de clientes, exportaciones y acciones masivas;
+- `AURA-DOM-003`, para activos, versiones, derechos, autorizaciones y usos permitidos;
+- `AURA-DOM-004`, para grounding, memoria gobernada, proveedor/modelo, clasificación de hecho/inferencia/propuesta, revisión humana y trazabilidad de generación;
+- `AURA-DOM-005`, para cuenta empresarial, endpoint, custodia, recuperación y separación entre cuenta, endpoint, credencial, principal técnico y publicación;
+- `VPROC-0056`, para el ciclo canónico de contenido y promociones;
+- `CAP-SCOPE-014`, en particular las brechas relativas a prompts, archivos, datos de clientes, cuentas, propietarios, tokens y recuperación;
+- `CAP-SCOPE-015`, para cuenta, permiso, credencial, secreto, proveedor, acceso privilegiado y exposición accidental en canales técnicos;
+- `CAP-SCOPE-016`, para clasificación, finalidad, minimización, datos sensibles, terceros, retención, compartición y evidencia;
+- `INFO-AUTH-001`, para autorización por clasificación, finalidad, identidad, relación, recurso, territorio y estado;
+- `INFO-AUTH-002`, para autorización reforzada de salidas, compartición externa y acceso temporal;
+- `INFO-DOM-010`, para terceros, destinatarios, transferencias, responsabilidades, revocación y ciclo de evidencia;
+- `TI-AUTH-002`, para separar cuenta, identidad, principal, permiso, credencial, secreto y autorización, y para impedir que `service_role` o tokens técnicos representen autoridad humana;
+- `TI-AUTH-004`, para minimización y protección de secretos, logs, capturas, archivos y datos personales cuando se comparten con terceros;
+- el registro canónico de requisitos de prueba vigente.
+
+Ninguna de estas fuentes cambia de propietaria por esta tarea.
+
+---
+
+#### 4. Resultado canónico
+
+Toda operación AURA que use un secreto, credencial, token o proveedor externo, o que envíe un prompt, archivo o dato fuera de Vento OS, deberá poder resolver como mínimo:
+
+1. principal autenticado o servicio identificado;
+2. actor efectivo cuando exista acción humana;
+3. capacidad exacta solicitada;
+4. empresa, marca, función y recurso autorizados;
+5. finalidad empresarial concreta;
+6. proveedor, cuenta, tenant, proyecto o endpoint de destino cuando aplique;
+7. clase de credencial o token requerido, sin revelar su valor;
+8. dato, prompt, archivo o representación exacta que saldrá;
+9. clasificación y sensibilidad aplicables;
+10. fuente y propietario de cada dato o archivo;
+11. minimización previa;
+12. consentimiento, preferencia, derecho de uso o autorización aplicable cuando corresponda;
+13. destinatario, finalidad externa y territorio cuando deban resolverse;
+14. reglas conocidas de retención, reutilización o entrenamiento del proveedor cuando sean materiales;
+15. modelo, versión o capacidad externa cuando pueda cambiar tratamiento o resultado;
+16. estado y vigencia de credencial, cuenta y autorización;
+17. decisión de autorización vigente en el momento de producir el efecto;
+18. evidencia suficiente para reconstruir qué salió, por qué, hacia dónde y con qué resultado sin almacenar secretos innecesarios.
+
+Si una dimensión obligatoria no puede resolverse de forma confiable, la operación deberá bloquearse de forma segura.
+
+---
+
+#### 5. Ecuación de autorización reforzada para terceros
+
+El contrato conceptual queda:
+
+```text
+AUTORIZACION_TERCERO_AURA
+=
+AUTORIZACION_AURA_BASE
++ FINALIDAD_AUTORIZADA
++ PROVEEDOR_Y_DESTINO_AUTORIZADOS
++ CREDENCIAL_TECNICA_APTA
++ DATOS_MINIMIZADOS
++ ARCHIVOS_Y_DERECHOS_COMPATIBLES
++ PROMPT_GOBERNADO
++ TRATAMIENTO_EXTERNO_COMPATIBLE
++ REVALIDACION_AL_EJECUTAR
+- DENEGACIONES
+```
+
+Donde `AUTORIZACION_AURA_BASE` representa la intersección fijada por `AURA-AUTH-001` y las guardas de datos fijadas por `AURA-AUTH-003`.
+
+La credencial técnica participa como mecanismo, no como autoridad empresarial.
+
+---
+
+#### 6. Familias protegidas
+
+Esta tarea protege seis familias diferentes:
+
+| Familia | Objeto protegido | Riesgo principal |
+| --- | --- | --- |
+| credenciales y secretos | material que autentica, firma, recupera o amplía acceso técnico | toma de control, persistencia o exposición |
+| tokens | credenciales temporales o delegadas de acceso, refresh, sesión, webhook u operación equivalente | reutilización, fuga, alcance excesivo o vigencia indebida |
+| proveedores de IA | relación técnica con proveedor, cuenta, modelo, capacidades y tratamiento | dependencia opaca, autoridad indebida o uso excesivo de datos |
+| prompts | plantilla, instrucción versionada y prompt materializado | filtración, comportamiento no gobernado o mezcla de datos |
+| archivos | activo, adjunto, representación o archivo transferido | exposición de contenido, derechos o datos ocultos |
+| datos enviados a terceros | conjunto material transferido a proveedor o canal externo | uso fuera de finalidad, copia no controlada o retención incompatible |
+
+Una autorización sobre una familia no concede las demás.
+
+---
+
+#### 7. Separaciones obligatorias
+
+Se fijan las siguientes diferencias:
+
+```text
+CUENTA
+!=
+IDENTIDAD
+!=
+PRINCIPAL
+!=
+PERMISO
+!=
+CREDENCIAL
+!=
+SECRETO
+!=
+TOKEN
+!=
+AUTORIZACION
+```
+
+```text
+PROVEEDOR
+!=
+CUENTA DEL PROVEEDOR
+!=
+MODELO
+!=
+CREDENCIAL DEL PROVEEDOR
+!=
+SESION
+```
+
+```text
+PLANTILLA DE PROMPT
+!=
+PROMPT MATERIALIZADO
+!=
+DATOS DE CONTEXTO
+!=
+SALIDA DEL MODELO
+```
+
+```text
+ARCHIVO FUENTE
+!=
+DERIVADO
+!=
+REPRESENTACION MINIMIZADA
+!=
+ARCHIVO ALOJADO POR EL PROVEEDOR
+```
+
+```text
+CAPACIDAD TECNICA DEL PROVEEDOR
+!=
+AUTORIDAD PARA USARLA
+```
+
+---
+
+#### 8. Frontera con AURA-AUTH-003
+
+`AURA-AUTH-003` determina si determinados datos, segmentos, leads o proyecciones pueden utilizarse para una finalidad y bajo qué minimización, consentimiento y alcance.
+
+Esta tarea agrega la pregunta independiente:
+
+```text
+DATO AUTORIZADO DENTRO DE VENTO
++
+FINALIDAD AUTORIZADA
+!=
+TRANSFERENCIA A TERCERO AUTORIZADA
+```
+
+Por tanto, una operación deberá resolver además proveedor, destinatario, tratamiento, credencial, prompt, archivo y condición externa aplicables.
+
+---
+
+#### 9. Frontera con AURA-AUTH-002
+
+La autoridad para revisar, aprobar, programar, publicar, retirar o responder públicamente no concede por sí sola autoridad para:
+
+- conocer secretos;
+- obtener tokens;
+- administrar cuentas externas;
+- cambiar proveedor de IA;
+- ampliar datos enviados;
+- adjuntar archivos adicionales;
+- alterar prompts gobernados;
+- habilitar entrenamiento o retención externa;
+- sustituir un proveedor por otro con condiciones distintas.
+
+La segregación editorial y la protección de secretos permanecen controles diferentes.
+
+---
+
+#### 10. Frontera con AURA-DOM-004
+
+`AURA-DOM-004` define cómo el copiloto usa contexto versionado, grounding, memoria gobernada, proveedor/modelo y revisión humana.
+
+`AURA-AUTH-004` define quién y bajo qué condiciones puede materializar técnicamente ese uso externo.
+
+Se conserva:
+
+```text
+PROVEEDOR DEFINIDO EN EL CONTRATO DE DOMINIO
+!=
+PROVEEDOR HABILITADO PARA PRODUCCION
+```
+
+Y:
+
+```text
+MODELO DISPONIBLE
+!=
+MODELO AUTORIZADO PARA UNA CLASE DE DATOS
+```
+
+---
+
+#### 11. Frontera con AURA-DOM-005
+
+`AURA-DOM-005` define cuenta empresarial, endpoint, titularidad, propietario, custodio, recuperación y estado operativo.
+
+Esta tarea protege la materialización de:
+
+- credenciales;
+- tokens;
+- secretos;
+- recuperación;
+- acceso de terceros;
+- datos enviados fuera de Vento.
+
+La existencia de una cuenta o endpoint no concede el secreto necesario para operarlo.
+
+---
+
+#### 12. Cuenta empresarial y credencial personal
+
+Una cuenta empresarial de canal o proveedor no podrá depender estructuralmente de una credencial personal como único mecanismo ordinario de continuidad.
+
+Reglas:
+
+1. la titularidad empresarial debe ser verificable;
+2. deben existir propietario funcional y custodio técnico identificables;
+3. la recuperación debe ser institucional cuando el proveedor lo permita;
+4. la salida de un trabajador o tercero obliga a revisar accesos y mecanismos asociados;
+5. una credencial personal no puede convertirse en secreto compartido por conveniencia;
+6. la pérdida de un secreto no significa pérdida de la identidad de la cuenta;
+7. mantener una sesión iniciada no sustituye el ciclo de acceso;
+8. una agencia o proveedor externo no se convierte en propietario empresarial por custodiar técnicamente una cuenta.
+
+---
+
+#### 13. Definición de secreto
+
+Se considera secreto o material equivalente cualquier valor cuya posesión pueda autenticar, firmar, recuperar, impersonar o ampliar acceso técnico.
+
+Incluye, cuando existan:
+
+- contraseñas;
+- API keys;
+- client secrets;
+- tokens de acceso;
+- refresh tokens;
+- cookies de sesión;
+- secretos de webhook;
+- claves privadas;
+- códigos de recuperación;
+- OTP;
+- credenciales de servicio;
+- materiales equivalentes de autenticación o recuperación.
+
+La lista describe clases y no afirma que todas existan en AURA.
+
+---
+
+#### 14. El secreto no forma parte del expediente empresarial
+
+AURA podrá conservar referencias no secretas como:
+
+- identificador lógico de la credencial;
+- proveedor;
+- cuenta o integración asociada;
+- propietario y custodio;
+- estado;
+- alcance;
+- ambiente;
+- fecha de última revisión;
+- fecha o condición de expiración cuando exista;
+- fecha de última rotación conocida;
+- referencia al mecanismo de custodia aprobado.
+
+No deberá conservar deliberadamente el valor completo del secreto en:
+
+- contenido editorial;
+- briefs;
+- campañas;
+- comentarios;
+- prompts;
+- mensajes;
+- archivos de evidencia ordinaria;
+- logs;
+- respuestas de error;
+- registros de auditoría de negocio.
+
+---
+
+#### 15. Ciclo de vida mínimo de credencial
+
+Toda materialización futura deberá poder distinguir como mínimo:
+
+```text
+IDENTIFICADA
+-> PROVISIONADA
+-> ACTIVA
+-> ROTACION_REQUERIDA CUANDO APLIQUE
+-> REVOCADA O EXPIRADA
+-> VERIFICADA_COMO_INUTILIZABLE
+```
+
+Los nombres anteriores son categorías conceptuales y no obligan a un enum físico.
+
+El ciclo deberá preservar:
+
+- origen de la necesidad;
+- propietario;
+- custodio;
+- proveedor o servicio;
+- alcance;
+- ambiente;
+- creación o provisión;
+- activación;
+- revisión;
+- rotación cuando corresponda;
+- revocación o expiración;
+- verificación posterior;
+- evidencia suficiente sin copiar el valor secreto.
+
+---
+
+#### 16. Tokens y alcance
+
+Un token es una credencial técnica, no una capacidad empresarial.
+
+Cuando exista un token deberá poder distinguirse, según el proveedor y sin inventar categorías no soportadas:
+
+- sujeto o principal técnico;
+- cuenta o integración de origen;
+- finalidad;
+- scopes o capacidades técnicas concedidas;
+- recurso o proyecto;
+- ambiente;
+- inicio y expiración cuando existan;
+- mecanismo de revocación;
+- estado de rotación;
+- referencia de custodia.
+
+Un scope técnico amplio no autoriza a AURA a usar todas las operaciones que el proveedor expone.
+
+---
+
+#### 17. Tokens de larga duración
+
+Cuando una plataforma solo permita credenciales de larga duración o sin expiración demostrable, el riesgo deberá representarse explícitamente.
+
+La ausencia de expiración nativa no autoriza permanencia sin control.
+
+Se deberá establecer, mediante el mecanismo propietario futuro:
+
+- revisión periódica;
+- necesidad vigente;
+- propietario y custodio;
+- revocación disponible;
+- rotación cuando sea posible;
+- detección de uso anómalo;
+- condición de retiro.
+
+No se inventa aquí una frecuencia universal.
+
+---
+
+#### 18. `service_role` y clientes administrativos
+
+Se conserva la regla transversal:
+
+```text
+SERVICE_ROLE
+=
+CAPACIDAD TECNICA PRIVILEGIADA
+!=
+AUTORIZACION EMPRESARIAL
+```
+
+Toda operación iniciada por una persona deberá resolver primero actor, capacidad, recurso, alcance, estado y finalidad antes de utilizar una credencial técnica privilegiada.
+
+Todo proceso autónomo deberá tener:
+
+- identidad de servicio;
+- operación permitida;
+- recurso y ambiente autorizados;
+- propietario humano;
+- evidencia de ejecución;
+- mecanismo de suspensión.
+
+Una credencial privilegiada nunca se entrega como sustituto de identidad humana.
+
+---
+
+#### 19. Proveedor de IA como dependencia gobernada
+
+Un proveedor de IA será una dependencia externa, no un nuevo dominio propietario.
+
+Antes de habilitarlo deberá poder resolverse:
+
+- identidad del proveedor;
+- cuenta, tenant o proyecto aplicable;
+- propietario empresarial;
+- custodio técnico;
+- finalidades autorizadas;
+- capacidades permitidas;
+- clases de información admitidas;
+- modelos autorizados cuando la distinción sea material;
+- modalidades habilitadas, como texto o archivos, cuando existan;
+- reglas relevantes de retención y reutilización;
+- territorio o localización cuando deba gobernarse;
+- subencargados o subprocesadores cuando sean materialmente relevantes y estén disponibles;
+- mecanismo de autenticación;
+- límites técnicos observables;
+- mecanismo de suspensión o retiro;
+- evidencia contractual o de configuración suficiente para la decisión.
+
+No se selecciona proveedor concreto desde esta tarea.
+
+---
+
+#### 20. Cambio de proveedor
+
+Cambiar de proveedor no será equivalente a cambiar una URL técnica.
+
+La revalidación deberá cubrir, cuando cambien materialmente:
+
+- finalidad;
+- datos admitidos;
+- retención;
+- reutilización o entrenamiento;
+- archivos;
+- modelos;
+- territorio;
+- subprocesadores;
+- límites;
+- credenciales;
+- observabilidad;
+- capacidades de herramienta;
+- condiciones de salida o borrado.
+
+Un fallback no podrá ampliar datos, finalidad o autoridad porque el proveedor principal esté indisponible.
+
+---
+
+#### 21. Cambio de modelo o capacidad
+
+Un cambio de modelo, versión o capacidad externa deberá tratarse como material cuando pueda modificar:
+
+- comportamiento factual;
+- grounding;
+- límites de contexto;
+- tratamiento de archivos;
+- uso de herramientas;
+- persistencia de estado;
+- política de datos;
+- trazabilidad;
+- seguridad;
+- resultados relevantes para revisión humana.
+
+La nueva capacidad no queda autorizada solo porque use la misma cuenta o credencial.
+
+---
+
+#### 22. Contrato de prompt gobernado
+
+AURA deberá separar:
+
+```text
+PROMPT_TEMPLATE
++
+VERSION
++
+FINALIDAD
++
+RESTRICCIONES
++
+INPUTS_PERMITIDOS
+=
+INSTRUCCION_GOBERNADA
+```
+
+Un prompt gobernado deberá poder conservar, cuando corresponda:
+
+- identidad estable;
+- versión;
+- propietario funcional;
+- finalidad;
+- caso de uso;
+- proveedor/modelo compatible cuando sea material;
+- clases de entradas permitidas;
+- clases de datos prohibidas;
+- reglas de grounding;
+- restricciones de marca o negocio;
+- formato de salida esperado;
+- revisión y aprobación aplicables;
+- vigencia;
+- condición de retiro.
+
+---
+
+#### 23. Plantilla, contexto y prompt materializado
+
+La plantilla no deberá incorporar datos reales de clientes, secretos o contenido sensible por defecto.
+
+El prompt materializado deberá poder distinguir:
+
+- instrucción versionada;
+- variables o contexto insertados;
+- fuentes utilizadas;
+- datos minimizados;
+- archivos adjuntos;
+- actor o servicio que lo materializa;
+- proveedor/modelo destino;
+- timestamp;
+- resultado de autorización de transferencia.
+
+No es necesario almacenar indiscriminadamente el prompt completo cuando ello aumente exposición. Debe conservarse evidencia suficiente para auditoría mediante versión, referencias, hashes u otra representación aprobada sin convertir auditoría en un segundo almacén de datos sensibles.
+
+---
+
+#### 24. Prompt injection y contenido externo
+
+Contenido recuperado de fuentes externas, archivos, páginas, mensajes o campos de usuario se tratará como datos, no como instrucciones de autoridad.
+
+Se preserva:
+
+```text
+CONTENIDO EXTERNO
+!=
+POLITICA
+!=
+AUTORIZACION
+!=
+INSTRUCCION DEL SISTEMA
+```
+
+Una entrada externa no podrá:
+
+- ampliar permisos;
+- pedir secretos;
+- cambiar proveedor;
+- activar herramientas no autorizadas;
+- elevar la cantidad de datos enviados;
+- suprimir controles de consentimiento o finalidad;
+- alterar la segregación editorial.
+
+La defensa técnica específica se materializará en la unidad y arquitectura que corresponda; esta tarea fija la invariancia contractual.
+
+---
+
+#### 25. Archivos como entrada externa
+
+Antes de enviar un archivo a un proveedor externo deberán resolverse, cuando corresponda:
+
+- identidad y versión del archivo;
+- propietario;
+- derechos y usos permitidos;
+- finalidad;
+- clasificación;
+- datos personales o sensibles presentes;
+- malware o validación de seguridad aplicable;
+- tamaño y tipo admitidos;
+- minimización o redacción posible;
+- proveedor y modelo destino;
+- vigencia;
+- necesidad real de transferir el archivo completo.
+
+Si una representación reducida cumple la finalidad, el archivo completo no deberá enviarse por conveniencia.
+
+---
+
+#### 26. Derechos y propiedad intelectual
+
+Que Vento OS pueda visualizar un activo no significa que pueda enviarlo a un proveedor de IA para análisis, transformación o generación derivada.
+
+Deberán respetarse las restricciones de `AURA-DOM-003` sobre:
+
+- propietario;
+- licencia;
+- autorización de personas;
+- territorios;
+- canales;
+- finalidad;
+- vigencia;
+- original y derivados;
+- usos permitidos.
+
+Una transformación del proveedor no limpia ni reemplaza las restricciones del activo fuente.
+
+---
+
+#### 27. Datos enviados a terceros
+
+Toda transferencia deberá poder reconstruir:
+
+- fuente;
+- propietario;
+- finalidad;
+- actor o servicio solicitante;
+- capacidad exacta;
+- proveedor o destinatario;
+- cuenta o proyecto;
+- categorías de datos;
+- campos o representación enviados;
+- archivos relacionados;
+- minimización aplicada;
+- consentimiento, preferencia o autorización relevante cuando corresponda;
+- clasificación;
+- destino o territorio cuando sea material;
+- timestamp;
+- respuesta o resultado técnico;
+- retención o condición de eliminación aplicable cuando pueda resolverse;
+- evidencia de revocación o reconciliación cuando corresponda.
+
+La transferencia no convierte al tercero en fuente maestra.
+
+---
+
+#### 28. Datos de clientes y proveedores de IA
+
+Los datos de clientes permanecen sujetos a `AURA-AUTH-003` incluso cuando el proveedor de IA ofrezca controles empresariales.
+
+Reglas:
+
+1. se prefiere contexto no identificable cuando cumple la finalidad;
+2. no se envía perfil completo si basta una proyección mínima;
+3. consentimiento general no se interpreta como autorización universal de IA;
+4. una preferencia de marketing no autoriza por sí sola transferencia a un proveedor;
+5. una revocación aplicable bloquea nuevos envíos afectados;
+6. datos de terceros incidentales se excluyen cuando no son necesarios;
+7. notas internas o campos sensibles no se incluyen por conveniencia;
+8. la trazabilidad no requiere copiar nuevamente todos los datos enviados.
+
+---
+
+#### 29. Secretos y prompts
+
+Ningún prompt deberá incluir deliberadamente:
+
+- API keys;
+- contraseñas;
+- refresh tokens;
+- cookies de sesión;
+- client secrets;
+- claves privadas;
+- códigos de recuperación;
+- secretos de webhook;
+- credenciales de `service_role`;
+- materiales equivalentes.
+
+Si el flujo necesita referenciar una integración, deberá usar una identidad o referencia no secreta.
+
+---
+
+#### 30. Secretos y archivos
+
+Un archivo puede contener secretos aunque su tipo o nombre no lo indique.
+
+La futura materialización deberá contemplar controles capaces de detectar o impedir, según la superficie y riesgo:
+
+- variables de entorno copiadas;
+- archivos de configuración sensibles;
+- certificados o claves privadas;
+- tokens incrustados;
+- cabeceras de autorización;
+- exports de herramientas que incluyan credenciales;
+- capturas con secretos visibles.
+
+No se afirma que exista hoy un detector universal; se fija la condición de protección.
+
+---
+
+#### 31. Retención del proveedor
+
+Cuando la política del proveedor permita configurar retención o persistencia, la selección deberá ser compatible con la finalidad y clasificación autorizadas.
+
+Si la retención real no puede demostrarse o gobernarse:
+
+- la incertidumbre se registra;
+- se reduce el conjunto de datos cuando sea posible;
+- se evita enviar información cuya protección dependa de una garantía inexistente;
+- se bloquea la operación cuando la compatibilidad sea obligatoria y no demostrable.
+
+No se inventa un periodo universal de retención.
+
+---
+
+#### 32. Reutilización y entrenamiento por terceros
+
+La posibilidad de que un proveedor reutilice entradas, salidas o archivos para entrenamiento, mejora, evaluación u otros fines debe formar parte de la evaluación cuando sea material y verificable.
+
+Se conserva:
+
+```text
+USO PARA PRESTAR EL SERVICIO
+!=
+REUTILIZACION PARA OTRO FIN
+```
+
+Una finalidad autorizada en Vento OS no se extiende automáticamente a una finalidad adicional del tercero.
+
+---
+
+#### 33. Estado administrado por el proveedor
+
+Threads, conversaciones, archivos alojados, stores, cachés, memorias, índices, historiales o sesiones del proveedor no se convierten en maestros canónicos por existir técnicamente.
+
+Reglas:
+
+- deben poder correlacionarse con la operación interna cuando se utilicen;
+- no sustituyen identidad, consentimiento ni aprobación;
+- no conservan datos más allá de lo autorizado por conveniencia;
+- su pérdida no debe destruir la evidencia empresarial mínima;
+- su existencia no autoriza nuevos usos;
+- su eliminación o expiración debe reconciliarse cuando forme parte de una obligación de cierre.
+
+---
+
+#### 34. Herramientas y acciones del proveedor
+
+Si un proveedor de IA o plataforma externa puede ejecutar herramientas, acciones o llamadas adicionales, cada acción material deberá pasar por la autoridad propietaria correspondiente.
+
+Se conserva:
+
+```text
+MODELO PUEDE LLAMAR HERRAMIENTA
+!=
+MODELO ESTA AUTORIZADO A EJECUTAR ACCION
+```
+
+La IA no podrá por autonomía propia:
+
+- publicar;
+- programar;
+- retirar;
+- crear promociones;
+- contactar personas;
+- cambiar consentimientos;
+- exportar datos;
+- mutar maestros;
+- aceptar propuestas;
+- aprobar gasto.
+
+---
+
+#### 35. Proveedores de canales y de IA
+
+La misma regla de autoridad se aplica a un proveedor de redes, mensajería, correo, analítica o IA:
+
+- la cuenta externa no es autoridad;
+- el token no es autoridad;
+- el webhook no es autoridad;
+- el SDK no es autoridad;
+- la capacidad de una API no es autoridad;
+- el panel del proveedor no reemplaza el expediente canónico;
+- un tercero no se convierte en maestro de producto, cliente, consentimiento, campaña, venta o costo.
+
+Las diferencias técnicas entre proveedores se materializarán en `AURA-INT-001`.
+
+---
+
+#### 36. Acceso de agencia, proveedor o tercero
+
+Un tercero que participe en marketing o soporte de un canal deberá usar una identidad trazable y un alcance explícito.
+
+Cuando exista acceso humano privilegiado deberán preservarse las reglas transversales de:
+
+- patrocinador interno;
+- identidad atribuible;
+- finalidad;
+- recurso;
+- alcance;
+- ventana;
+- aprobación aplicable;
+- sesión;
+- expiración;
+- revocación;
+- verificación de cierre.
+
+Una relación comercial vigente no concede acceso técnico por sí sola.
+
+---
+
+#### 37. Compartición de credenciales
+
+Queda prohibido diseñar como operación ordinaria:
+
+- contraseñas compartidas por chat;
+- secretos enviados por correo o mensajes;
+- tokens pegados en tickets;
+- credenciales copiadas en documentos de campaña;
+- archivos de configuración entregados completos a terceros;
+- una única cuenta humana compartida para acciones sensibles.
+
+Cuando un proveedor no ofrezca delegación granular, la limitación deberá registrarse como riesgo y la solución futura deberá minimizar exposición, mantener atribución y conservar revocación verificable.
+
+---
+
+#### 38. Recuperación de cuentas
+
+La recuperación de una cuenta externa deberá ser institucional y trazable cuando el proveedor lo permita.
+
+La recuperación no deberá depender únicamente de:
+
+- correo personal;
+- teléfono personal;
+- autenticador personal no recuperable institucionalmente;
+- dispositivo de una sola persona;
+- tercero sin patrocinio interno.
+
+Códigos de recuperación y secretos equivalentes permanecen bajo custodia protegida y no se incorporan a contenido, prompts o evidencia ordinaria.
+
+---
+
+#### 39. Rotación y revocación
+
+La rotación o revocación será obligatoria cuando la fuente propietaria determine que el secreto quedó comprometido, vencido, retirado o ya no es necesario.
+
+Una materialización futura deberá contemplar como disparadores, cuando correspondan:
+
+- exposición confirmada o probable;
+- salida de un actor con acceso;
+- terminación de proveedor;
+- cambio de cuenta o proyecto;
+- cambio de privilegios;
+- fin de la integración;
+- cambio de entorno;
+- sospecha de uso indebido;
+- política de rotación aplicable.
+
+Rotar el secreto no borra la evidencia histórica de que existió la integración.
+
+---
+
+#### 40. Exposición accidental de un secreto
+
+Si un secreto aparece en un prompt, log, captura, archivo, comentario, respuesta o mensaje:
+
+1. se detiene su propagación;
+2. se restringe el artefacto afectado;
+3. no se vuelve a copiar el valor en diagnósticos o comunicaciones;
+4. se identifica el tipo y propietario sin reproducir el secreto;
+5. se activa revocación, rotación o invalidación mediante su autoridad propietaria cuando corresponda;
+6. se revisan copias, destinatarios y jobs correlacionados;
+7. se conserva evidencia mínima del incidente sin transformar la evidencia en otro almacén del secreto;
+8. se verifica que la credencial anterior dejó de ser utilizable cuando el mecanismo lo permita.
+
+---
+
+#### 41. Denegación segura
+
+Deberá bloquearse la operación cuando no pueda demostrarse cualquiera de estas condiciones obligatorias:
+
+- proveedor permitido;
+- cuenta o proyecto permitido;
+- credencial apta;
+- actor o servicio autorizado;
+- finalidad;
+- clasificación;
+- minimización;
+- derecho sobre archivo;
+- consentimiento o autorización aplicable;
+- política externa compatible cuando sea necesaria;
+- vigencia;
+- destino o destinatario exigible;
+- capacidad técnica esperada.
+
+No se permitirá degradar a un proveedor, modelo, cuenta o credencial menos gobernados para evitar el bloqueo.
+
+---
+
+#### 42. Revalidación al ejecutar
+
+Toda operación diferida deberá revalidar antes del efecto:
+
+- autorización;
+- credencial;
+- cuenta;
+- proveedor;
+- prompt/version;
+- archivo y derechos;
+- finalidad;
+- minimización;
+- consentimiento o base aplicable;
+- estado de revocación;
+- vigencia del dato cuando corresponda.
+
+Una decisión válida al programar no garantiza que siga siendo válida al ejecutar.
+
+---
+
+#### 43. Jobs, colas y reintentos
+
+Un job o reintento no hereda indefinidamente la autorización ni el secreto.
+
+Reglas:
+
+1. cada ejecución usa la referencia vigente de credencial y no una copia del valor embebida en el payload;
+2. una credencial revocada bloquea nuevos intentos;
+3. un cambio de finalidad o proveedor exige nueva evaluación;
+4. los payloads de cola no deberán transportar secretos deliberadamente;
+5. un resultado ambiguo se reconcilia antes de repetir un efecto externo material;
+6. una revocación durante ejecución impide nuevos efectos desde el punto en que pueda controlarse;
+7. los efectos ya confirmados se conservan y no se duplican por recuperación.
+
+---
+
+#### 44. Auditoría mínima
+
+Toda operación material de esta tarea deberá permitir reconstruir, según corresponda:
+
+- actor humano;
+- principal técnico;
+- servicio o job;
+- capacidad;
+- finalidad;
+- empresa y marca;
+- proveedor;
+- cuenta o proyecto;
+- credencial lógica utilizada sin revelar secreto;
+- prompt y versión;
+- categorías de datos;
+- referencias de archivos;
+- minimización aplicada;
+- autorización de transferencia;
+- modelo o capacidad externa;
+- timestamp;
+- resultado;
+- error o degradación;
+- revocación o reconciliación posterior.
+
+La auditoría no deberá registrar valores secretos ni duplicar innecesariamente datos sensibles.
+
+---
+
+#### 45. Observabilidad
+
+La futura operación deberá poder detectar, como mínimo:
+
+- credencial vencida o revocada;
+- cuenta sin propietario o custodio;
+- secreto próximo a condición de revisión cuando exista esa política;
+- uso de proveedor no autorizado;
+- cambio de modelo relevante;
+- prompt retirado todavía utilizado;
+- archivo enviado sin derechos o clasificación resueltos;
+- datos enviados fuera de finalidad;
+- volumen de datos inesperado;
+- transferencia sin correlación;
+- fallo de eliminación o cierre externo cuando aplique;
+- proveedor con estado incierto;
+- secretos detectados en superficies no permitidas;
+- reintentos bloqueados por revocación;
+- drift entre configuración esperada y observada.
+
+La observabilidad no concede autoridad para corregir automáticamente un problema sensible.
+
+---
+
+#### 46. Operación degradada
+
+Ante indisponibilidad, pérdida de credencial o degradación de proveedor:
+
+- se limita el alcance afectado;
+- no se migra automáticamente a una credencial personal;
+- no se cambia a un proveedor con mayor exposición de datos por conveniencia;
+- no se reduce minimización;
+- no se saltan revisión o aprobación;
+- se preservan resultados confirmados;
+- se bloquean efectos cuyo resultado o seguridad no puedan demostrarse;
+- la recuperación reconcilia primero credenciales, jobs, archivos y resultados inciertos.
+
+---
+
+#### 47. Recuperación y rollback
+
+Rollback no significa restaurar una credencial comprometida ni reactivar automáticamente un token revocado.
+
+La recuperación deberá distinguir:
+
+- configuración anterior todavía válida;
+- credencial anterior que ya no debe reutilizarse;
+- proveedor anterior aún autorizado o ya retirado;
+- jobs pendientes;
+- archivos alojados externamente;
+- datos ya transferidos;
+- efectos ya confirmados;
+- evidencia histórica.
+
+Un rollback técnico no puede ampliar autoridad ni degradar las reglas de tratamiento.
+
+---
+
+#### 48. Matriz mínima de pruebas negativas futuras
+
+Cada `AURA-AUTH-004::<implementation_unit_id>` deberá cubrir, según su superficie:
+
+| Caso negativo | Resultado esperado |
+| --- | --- |
+| usuario con `aura.access` intenta leer secreto | DENY |
+| actor autorizado para contenido intenta obtener token de proveedor | DENY |
+| token técnicamente válido se usa fuera de la operación autorizada | DENY |
+| `service_role` intenta sustituir autorización de actor | DENY |
+| prompt incluye secreto | BLOCK |
+| archivo contiene datos o secretos fuera de finalidad | BLOCK o minimización previa demostrada |
+| dato autorizado internamente se envía a proveedor no autorizado | DENY |
+| proveedor permitido recibe más campos de los necesarios | DENY |
+| proveedor cambia política material sin revalidación | BLOCK |
+| modelo nuevo amplía herramientas o tratamiento sin aprobación aplicable | BLOCK |
+| credencial revocada permanece en job pendiente | NO_EFFECT |
+| reintento usa payload con secreto embebido | BLOCK |
+| tercero externo usa identidad compartida en operación privilegiada | DENY |
+| cuenta pierde recuperación institucional y no existe control alterno aprobado | BLOCK o estado degradado explícito |
+| secreto expuesto se vuelve a copiar en evidencia | BLOCK |
+| rollback intenta restaurar secreto comprometido | DENY |
+
+Los nombres de resultado expresan semántica de prueba y no crean estados físicos obligatorios.
+
+---
+
+#### 49. Frontera con AURA-INT-001
+
+`AURA-AUTH-004` define autoridad, protección y restricciones.
+
+`AURA-INT-001` definirá posteriormente la integración concreta de:
+
+- adaptadores;
+- APIs;
+- OAuth;
+- webhooks;
+- firmas;
+- rate limits;
+- backoff;
+- payloads;
+- consultas de estado;
+- reconciliación;
+- mecanismos de credencial del proveedor.
+
+Esta tarea no selecciona proveedor, SDK, endpoint, librería o implementación.
+
+---
+
+#### 50. Frontera con AURA-INT-002
+
+`AURA-INT-002` conservará los contratos internos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO.
+
+Una lectura interna autorizada no concede por sí sola permiso para enviar la misma información a un tercero.
+
+Toda salida externa vuelve a pasar por este contrato de autorización reforzada.
+
+---
+
+#### 51. Frontera con experiencia AURA
+
+Las tareas `AURA-UX-*` deberán mostrar el estado empresarial necesario sin exponer secretos ni saturar la experiencia con detalles técnicos.
+
+La experiencia podrá mostrar, según la necesidad:
+
+- proveedor;
+- estado de conexión;
+- cuenta o proyecto;
+- si la credencial está apta, sin mostrar su valor;
+- advertencias de finalidad o datos;
+- archivos incluidos;
+- necesidad de revisión;
+- resultado y error sanitizados.
+
+No deberá convertir una pantalla de configuración en un administrador irrestricto de secretos.
+
+---
+
+#### 52. Cierre del mini-bloque AURA-AUTH
+
+Con esta tarea quedan definidos documentalmente los cuatro contratos del mini-bloque:
+
+1. `AURA-AUTH-001`: empresa, marca, función, capacidad, recurso y contexto;
+2. `AURA-AUTH-002`: segregación editorial, publicación, retiro y respuesta pública;
+3. `AURA-AUTH-003`: promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas;
+4. `AURA-AUTH-004`: credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros.
+
+Ninguno de estos contratos constituye por sí mismo implementación física.
+
+---
+
+#### 53. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. cuenta, identidad, principal, permiso, credencial, secreto, token y autorización son conceptos distintos;
+2. una credencial técnicamente válida no concede autoridad empresarial;
+3. una cuenta empresarial no debe depender como único acceso ordinario de una credencial personal cuando exista alternativa institucional;
+4. secretos no forman parte del expediente editorial ni del prompt;
+5. AURA conserva únicamente referencias no secretas necesarias para gobierno;
+6. tokens se limitan por finalidad, recurso, cuenta, ambiente y estado cuando el proveedor lo permita;
+7. credenciales de larga duración exigen gobierno explícito y no permanencia silenciosa;
+8. `service_role` conserva cero autoridad empresarial automática;
+9. proveedor de IA es dependencia externa, no propietario del dominio;
+10. cambiar proveedor exige revalidar diferencias materiales de tratamiento y capacidad;
+11. cambiar modelo o capacidad puede requerir nueva revisión aunque la credencial sea la misma;
+12. plantilla, prompt materializado, contexto y salida son objetos distintos;
+13. contenido externo no se convierte en instrucción de autoridad;
+14. prompt injection no puede ampliar permisos, datos ni herramientas autorizadas;
+15. enviar un archivo exige finalidad, derechos, clasificación y minimización compatibles;
+16. ver un archivo internamente no concede enviarlo a un tercero;
+17. datos enviados a terceros conservan fuente, finalidad, minimización, destinatario y trazabilidad;
+18. consentimiento general no se interpreta como autorización universal para IA;
+19. secretos nunca se incluyen deliberadamente en prompts;
+20. archivos pueden contener secretos y deben gobernarse por contenido, no solo por extensión;
+21. retención del proveedor forma parte de la decisión cuando sea material;
+22. reutilización o entrenamiento por tercero es una finalidad distinta de prestar el servicio;
+23. estado técnico del proveedor no se convierte en maestro canónico;
+24. capacidad de herramienta del modelo no equivale a autoridad para ejecutar acciones;
+25. proveedores de canal e IA obedecen la misma regla de mínima autoridad;
+26. un tercero humano requiere identidad trazable y alcance explícito;
+27. compartir credenciales por mensajería, contenido o tickets no es operación ordinaria permitida;
+28. recuperación de cuentas debe ser institucional cuando sea posible;
+29. rotación y revocación no destruyen evidencia histórica;
+30. exposición accidental de secreto exige contención sin volver a copiar el valor;
+31. incertidumbre material produce fail-closed;
+32. jobs y reintentos revalidan credencial, finalidad y autorización;
+33. auditoría nunca exige almacenar valores secretos;
+34. observabilidad no concede autoridad de corrección;
+35. operación degradada no autoriza proveedor o credencial menos gobernados;
+36. rollback no restaura secretos comprometidos;
+37. `AURA-INT-001` conserva implementación de adaptadores y mecanismos externos;
+38. `AURA-INT-002` conserva contratos internos de lectura y eventos;
+39. las tareas `AURA-UX-*` conservan experiencia sin exponer secretos;
+40. se crean y modifican cero requisitos de prueba;
+41. la tarea documental no crea ninguna instancia física;
+42. el mini-bloque AURA-AUTH queda documentalmente definido;
+43. la continuidad queda reservada exclusivamente a `AURA-UX-001`.
+
+---
+
+#### 54. Handoff obligatorio a AURA-UX-001
+
+`AURA-UX-001` deberá recibir de este mini-bloque:
+
+- acceso general separado de autoridad material;
+- empresa, marca, función y alcance explícitos;
+- segregación de acciones editoriales y públicas;
+- protección reforzada de promociones, segmentos, leads y datos de clientes;
+- diferencia entre lectura, exportación y acción masiva;
+- estado de proveedor y conexión sin exposición de secretos;
+- reglas de advertencia y bloqueo cuando falten finalidad, consentimiento, vigencia o autorización;
+- principio de divulgación progresiva para detalles técnicos;
+- obligación de no representar una acción bloqueada como disponible solo porque exista conexión técnica.
+
+Con esa base, `AURA-UX-001` podrá diseñar el inicio diario sin convertir prioridades, calendario, pendientes u oportunidades en un bypass de autorización.
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Justificación: la conducta observable exigida por esta tarea ya está cubierta por requisitos vigentes de AURA, autorización transversal, gobierno de información, seguridad de cuentas y secretos e integración. Esta tarea concreta el contrato documental previsto por esa cobertura sin ampliar ni modificar el registro canónico.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-002`, para grounding, proveedor/modelo, datos enviados, revisión humana, límites de autonomía y minimización antes de terceros;
+- `TREQ-AURA-009`, para exigir capacidades atómicas y comprobación server-side de acciones AURA;
+- `TREQ-AURA-010`, para impedir que `createAdminClient`, `service_role` o elevación técnica sustituyan actor, capacidad, recurso, alcance y estado;
+- `TREQ-AURA-018`, para carga gobernada de archivos, validación de contenido, alcance, integridad y autorización;
+- `TREQ-AURA-024`, para contratos de esquema/políticas/cliente y dependencia de secretos declarada y probada como unidad;
+- `TREQ-AUTH-018`, para protección equivalente de datos de clientes frente a distintas superficies, exportaciones, logs y revocación;
+- `TREQ-SHELL-010`, para separar cuenta, permiso, credencial, secreto, proveedor, vigencia, actor y cierre;
+- `TREQ-SHELL-011`, para exigir identidad, finalidad, clasificación, recurso, destinatario y acción exacta antes de divulgar información;
+- `TREQ-INTEGRATION-019`, para proveedores de IA, canales externos, credenciales, datos excesivos, idempotencia y reconciliación;
+- `TREQ-INTEGRATION-021`, para ciclo de información, documentos, terceros, copias externas, revocación, retención y reconciliación.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación del registro.
+
+---
+
+#### 57. Cobertura de prueba futura
+
+Cada `AURA-AUTH-004::<implementation_unit_id>` deberá probar, según la superficie:
+
+- autorización positiva y negativa;
+- acceso a referencias sin exposición del valor secreto;
+- token válido fuera de finalidad;
+- token revocado;
+- cuenta sin propietario o custodio;
+- separación entre actor humano y principal técnico;
+- `service_role` sin autorización empresarial;
+- prompt versionado;
+- prompt con dato prohibido;
+- prompt injection;
+- archivo con derechos incompatibles;
+- archivo con datos innecesarios;
+- proveedor autorizado y no autorizado;
+- cambio de modelo;
+- cambio de política o capacidad externa;
+- retención incompatible;
+- reutilización o entrenamiento no autorizado;
+- job diferido después de revocación;
+- idempotencia y reconciliación de reintentos;
+- exposición accidental de secreto;
+- rotación y revocación;
+- auditoría sin valor secreto;
+- recuperación y rollback;
+- regresión contra `AURA-AUTH-001`, `AURA-AUTH-002` y `AURA-AUTH-003`.
+
+La evidencia física pertenece a cada unidad futura y no se sustituye con la aprobación documental.
+
+---
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó `docs:plan:build` contra el checkout del usuario desde esta entrega |
+| LOCAL | NOT_EXECUTED | el artefacto no se incorporó al checkout del usuario ni se ejecutaron allí los validadores del repositorio |
+| REMOTA | PASS | se verificaron en el remoto vigente protocolo, contrato de entrega, continuidad, topología `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, archivo propietario, `AURA-DOM-004`, `AURA-DOM-005`, brechas `H-CAP-SCOPE-014-011` y `H-CAP-SCOPE-014-013`, controles de `CAP-SCOPE-015` y `CAP-SCOPE-016`, `INFO-AUTH-002`, `TI-AUTH-002`, `TI-AUTH-004`, cobertura 04A de AURA/AUTH/SHELL/INTEGRATION, package.json y validadores; además se contrastó la versión completa aprobada de `AURA-AUTH-003` disponible como base adelantada sin tratarla como publicada |
+| OPERATIVA | NOT_APPLICABLE | esta tarea define autorización documental y no crea, usa, rota o revoca secretos reales, no habilita proveedores y no transfiere prompts, archivos o datos reales |
+| FÍSICA | NOT_APPLICABLE | la aprobación documental no crea código, cuentas, secretos, políticas, Supabase, proveedores, integraciones, datos ni despliegues |
+
+---
+
+#### 59. Criterios de aceptación
+
+La tarea queda documentalmente aceptable únicamente si se conserva todo lo siguiente:
+
+1. cuenta, identidad, principal, permiso, credencial, secreto, token y autorización permanecen separados;
+2. `AURA-AUTH-001` conserva empresa, marca, función, capacidad, recurso y contexto;
+3. `AURA-AUTH-002` conserva segregación editorial y pública;
+4. `AURA-AUTH-003` conserva finalidad, consentimiento, minimización, exportaciones y acciones masivas;
+5. una credencial válida no concede autoridad empresarial;
+6. credenciales personales no se convierten en acceso empresarial compartido ordinario;
+7. secretos se referencian sin copiar su valor en expedientes AURA;
+8. el ciclo de credencial conserva propietario, custodio, alcance, ambiente, revisión, revocación y evidencia;
+9. tokens técnicos no se interpretan como permisos empresariales;
+10. credenciales de larga duración no quedan sin revisión ni condición de retiro;
+11. `service_role` no sustituye autorización;
+12. proveedor de IA permanece dependencia externa;
+13. proveedor, cuenta, proyecto, modelo y credencial permanecen separados;
+14. cambio de proveedor revalida diferencias materiales;
+15. cambio de modelo o capacidad no se hereda automáticamente de la autorización anterior;
+16. prompt template, prompt materializado, contexto y salida permanecen distintos;
+17. prompts gobernados conservan identidad, versión, finalidad y restricciones;
+18. contenido externo no adquiere autoridad de instrucción;
+19. prompt injection no amplía permisos, herramientas o datos;
+20. un archivo solo sale cuando finalidad, derechos, clasificación y minimización son compatibles;
+21. ver internamente no equivale a enviar a un tercero;
+22. propiedad intelectual y derechos sobreviven a transformaciones asistidas;
+23. cada transferencia conserva fuente, proveedor, finalidad y conjunto material enviado;
+24. datos de clientes permanecen bajo las restricciones de `AURA-AUTH-003`;
+25. secretos no se incluyen deliberadamente en prompts;
+26. archivos con secretos se bloquean o sanitizan antes de transferencia según el contrato aplicable;
+27. retención externa debe ser compatible cuando sea material;
+28. reutilización o entrenamiento externo no se confunden con prestación del servicio;
+29. estado administrado por proveedor no se convierte en maestro canónico;
+30. capacidad de herramienta del modelo no equivale a autoridad de acción;
+31. terceros humanos usan identidad trazable y alcance explícito;
+32. credenciales no se comparten mediante canales editoriales o de soporte ordinario;
+33. recuperación de cuentas conserva control institucional cuando sea posible;
+34. revocación y rotación invalidan usos futuros afectados;
+35. exposición accidental de secreto se contiene sin replicar el valor;
+36. fallos de autorización o tratamiento producen fail-closed;
+37. jobs y reintentos revalidan antes de ejecutar;
+38. auditoría conserva metadatos suficientes sin registrar secreto;
+39. observabilidad detecta drift y exposición sin autoautorizar correcciones;
+40. operación degradada no amplía datos ni cambia a un proveedor menos gobernado;
+41. rollback no restaura secretos comprometidos;
+42. `AURA-INT-001` conserva adaptadores, OAuth, webhooks, rate limits y mecanismos externos;
+43. `AURA-INT-002` conserva integración interna;
+44. `AURA-UX-*` conserva experiencia sin exposición de secretos;
+45. se crean y modifican cero requisitos de prueba;
+46. no se crea ninguna instancia física desde el carril documental;
+47. el mini-bloque `AURA-AUTH-001` a `AURA-AUTH-004` queda cerrado documentalmente;
+48. la siguiente tarea reservada es exactamente `AURA-UX-001`.
+
+---
+
+#### 60. Límites
+
+Esta tarea no autoriza:
+
+- crear un repositorio o runtime de AURA;
+- seleccionar o contratar un proveedor real de IA;
+- crear cuentas externas reales;
+- crear, recuperar, rotar o revocar credenciales reales;
+- mostrar, copiar o almacenar valores secretos;
+- crear API keys, client secrets, refresh tokens, OAuth grants o códigos de recuperación;
+- configurar MFA real;
+- enviar prompts productivos;
+- enviar datos personales reales a terceros;
+- enviar archivos reales a proveedores;
+- activar entrenamiento o reutilización externa;
+- configurar retención real de proveedor;
+- crear stores, threads, memoria o índices externos;
+- crear agentes o herramientas autónomas;
+- crear adaptadores, APIs, webhooks, firmas, colas, jobs o políticas de backoff;
+- crear tablas, migraciones, RLS, funciones, RPC, Storage o secretos de Supabase;
+- cambiar VISO, PASS, PULSO, NEXO, FOGO, ORIGO o NUMERA;
+- transferir el CMS de VISO a AURA;
+- modificar requisitos del registro 04A;
+- adelantar `AURA-UX-001`.
+
+---
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades`
