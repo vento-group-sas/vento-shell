@@ -2248,6 +2248,1185 @@ Esta tarea no autoriza:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas`
 
-### [ ] AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas
+### ✅ AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública
+**Tarea siguiente:** AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros
+**Tipo de tarea:** documental; contrato canónico de autorización reforzada de AURA para promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas, con materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE W — AURA — autorización de marketing y canales
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`; contrato de autorización reforzada definido y futura materialización reservada a `AURA-AUTH-003::<implementation_unit_id>` únicamente después de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea; no se crean capacidades, permisos, grants, asignaciones, RLS, políticas, tablas, funciones, RPC, exportaciones, campañas, segmentos operativos, contactos, datos, jobs, integraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá proteger las operaciones de mayor exposición comercial y de datos: promociones, materialización de segmentos, leads, datos de clientes, exportaciones y acciones masivas.
+
+La tarea impide que una persona, principal técnico, automatización o integración convierta acceso general a AURA, visibilidad de una campaña, pertenencia a Marketing o capacidad sobre un recurso relacionado en autoridad suficiente para extraer datos, contactar personas, activar promociones o ejecutar cambios masivos.
+
+La decisión raíz es:
+
+```text
+VER UNA CAMPANA
+!=
+OPERAR UNA PROMOCION
+!=
+MATERIALIZAR UN SEGMENTO
+!=
+VER DATOS DE CLIENTES
+!=
+EXPORTAR DATOS
+!=
+EJECUTAR UNA ACCION MASIVA
+```
+
+Y además:
+
+```text
+DEFINIR UNA AUDIENCIA
+!=
+OBTENER SUS MIEMBROS
+!=
+CONTACTAR A SUS MIEMBROS
+```
+
+```text
+LEAD
+!=
+CLIENTE
+!=
+CUENTA PASS
+```
+
+```text
+PROMOCION AURA
+!=
+REGLA TRANSACCIONAL
+!=
+DESCUENTO APLICADO
+!=
+REDENCION
+```
+
+La tarea recibe la segregación fijada por `AURA-AUTH-002` y no reabre empresa, marca, función, capacidad, recurso ni contexto definidos por `AURA-AUTH-001`.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto:
+
+- esta tarea define una sola vez el contrato documental reusable;
+- no crea una instancia física desde el carril documental;
+- cada futura materialización deberá usar `AURA-AUTH-003::<implementation_unit_id>`;
+- cada unidad deberá conservar cardinalidad e identidad propias;
+- ninguna unidad podrá ejecutarse antes del gate `POST_E5_PACKAGE` aplicable;
+- el contrato documental no demuestra que AURA disponga de runtime, tablas, políticas, integraciones o jobs implementados;
+- la autorización física continúa separada de la aprobación documental.
+
+---
+
+#### 3. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-AUTH-001`, para empresa, marca, función, capacidad, recurso, contexto, revalidación server-side y fail-closed;
+- `AURA-AUTH-002`, para separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública;
+- `AURA-DOM-006`, para campaña, experimento, promoción, cupón y guardas económicas y operativas;
+- `AURA-DOM-007`, para interacción, lead, oportunidad, pipeline, handoff y minimización de datos;
+- `AURA-DOM-008`, para métricas, atribución y consumo de proyecciones autorizadas;
+- `AURA-DOM-009`, para reputación, respuesta pública y frontera con servicio;
+- `AURA-DOM-010`, para señales, oportunidades y recomendaciones explicables;
+- `VPROC-0056`, para contenido y promociones;
+- `VPROC-0057`, para consultas y oportunidades digitales;
+- `CAP-SCOPE-010`, para identidad de cliente, consentimiento, fidelización, comunicaciones y servicio;
+- `CAP-SCOPE-016`, para finalidad, privacidad, retención, exportaciones y datos sensibles;
+- `INFO-AUTH-001`, para proteger información por clasificación, finalidad, identidad, relación, recurso, territorio y estado;
+- `INFO-AUTH-002`, para proteger datos sensibles, descargas, impresiones, exportaciones, compartición y URLs firmadas;
+- el contrato transversal de autorización de servidor, que exige protección equivalente para datos de clientes ante UI, URL, RPC, exportación y demás superficies;
+- el gobierno de información vigente, que exige finalidad, destinatario, expiración y control de copias en operaciones de exportación;
+- el registro canónico de requisitos de prueba vigente.
+
+Ninguna fuente cambia de propietaria por esta tarea.
+
+---
+
+#### 4. Resultado canónico
+
+Toda operación sensible de AURA incluida en esta tarea deberá poder resolver, como mínimo:
+
+1. principal autenticado;
+2. actor efectivo cuando aplique;
+3. capacidad exacta solicitada;
+4. empresa, marca y función autorizadas;
+5. recurso o conjunto exacto afectado;
+6. finalidad empresarial concreta;
+7. fuente propietaria de los datos o reglas consumidos;
+8. nivel de sensibilidad aplicable;
+9. consentimiento, preferencia o base autorizada cuando corresponda;
+10. vigencia de promoción, segmento, lead o dato;
+11. canal o destino cuando exista transferencia o contacto;
+12. volumen y alcance cuando la operación sea masiva;
+13. exclusiones obligatorias;
+14. guardas económicas y operativas cuando aplique promoción;
+15. decisión de autorización vigente;
+16. evidencia suficiente para auditar decisión, ejecución y resultado.
+
+Si una dimensión obligatoria no puede resolverse de forma confiable, la operación deberá bloquearse de forma segura.
+
+---
+
+#### 5. Ecuación de autorización reforzada
+
+El contrato conceptual queda:
+
+```text
+AUTORIZACION_AURA_SENSIBLE
+=
+AUTORIZACION_AURA_BASE
++ CAPACIDAD_SENSIBLE_EXACTA
++ FINALIDAD_AUTORIZADA
++ PROYECCION_MINIMA_NECESARIA
++ CONSENTIMIENTO_O_BASE_APLICABLE
++ DESTINO_AUTORIZADO_CUANDO_APLIQUE
++ GUARDA_VIGENTE_CUANDO_APLIQUE
++ REVALIDACION_AL_EJECUTAR
+- DENEGACIONES
+```
+
+Donde `AUTORIZACION_AURA_BASE` es la decisión fijada por `AURA-AUTH-001`.
+
+Ninguna capacidad de esta tarea podrá inferirse únicamente de:
+
+- `aura.access`;
+- pertenencia a Marketing;
+- nombre de rol o cargo;
+- creación previa de la campaña, promoción, segmento o lead;
+- visibilidad de una tabla, filtro o botón;
+- conocimiento de un ID;
+- pertenencia a la empresa o marca;
+- acceso a una vista agregada;
+- disponibilidad de una cuenta técnica;
+- uso de `service role`;
+- recepción previa de un archivo o reporte.
+
+---
+
+#### 6. Familias protegidas
+
+Esta tarea protege de forma explícita seis familias:
+
+| Familia | Objeto protegido | Riesgo principal |
+| --- | --- | --- |
+| promociones | intención promocional, estado, elegibilidad y operación autorizada | descuento o beneficio fuera de autoridad |
+| segmentos | definición, materialización y membresía | exposición o uso indebido de personas |
+| leads | identidad parcial, origen, oportunidad y seguimiento | contacto o acceso fuera de finalidad |
+| datos de clientes | proyecciones autorizadas desde fuentes propietarias | perfilamiento o exposición excesiva |
+| exportaciones | extracción estructurada hacia un destinatario | copia fuera de control |
+| acciones masivas | operación sobre múltiples recursos o personas | efecto amplio no intencional o no autorizado |
+
+Una autorización para una familia no concede las demás.
+
+---
+
+#### 7. Frontera con AURA-AUTH-001
+
+`AURA-AUTH-001` continúa definiendo quién puede alcanzar qué recursos y bajo qué empresa, marca, función, capacidad y contexto.
+
+Esta tarea agrega guardas reforzadas para operaciones sensibles.
+
+Se conserva:
+
+```text
+RECURSO DENTRO DE ALCANCE
+!=
+AUTORIZACION PARA EXTRAER DATOS
+!=
+AUTORIZACION PARA CONTACTAR
+!=
+AUTORIZACION PARA OPERAR EN MASA
+```
+
+La relación entre recursos nunca transfiere autoridad de forma implícita.
+
+---
+
+#### 8. Frontera con AURA-AUTH-002
+
+`AURA-AUTH-002` conserva la segregación entre creación, revisión, aprobación, programación, publicación, retiro y respuesta pública.
+
+Esta tarea no permite usar una autorización editorial para saltar las guardas de datos o ejecución masiva.
+
+Por tanto:
+
+```text
+PROMOCION APROBADA
+!=
+SEGMENTO MATERIALIZABLE
+!=
+CONTACTO AUTORIZADO
+!=
+EXPORTACION AUTORIZADA
+```
+
+Una decisión editorial válida puede quedar bloqueada por consentimiento, finalidad, sensibilidad, guarda económica, estado del cliente, revocación o alcance masivo.
+
+---
+
+#### 9. Promoción y autoridad material
+
+AURA conserva la intención promocional y su correlación.
+
+PULSO, PASS y NUMERA conservan las autoridades fijadas por `AURA-DOM-006`:
+
+- PULSO valida y aplica efectos comerciales en pedido o venta;
+- PASS gobierna beneficios, elegibilidad, fidelización, redención, identidad y consentimiento aplicables;
+- NUMERA conserva presupuesto, costo, margen, rentabilidad y resultado económico;
+- AURA no transforma una pieza, campaña o código visible en una regla transaccional.
+
+La capacidad para gestionar una promoción AURA no concede permiso para mutar reglas PULSO o PASS.
+
+---
+
+#### 10. Intención promocional versus regla ejecutable
+
+La frontera obligatoria permanece:
+
+```text
+AURA
+-> INTENCION PROMOCIONAL
+```
+
+```text
+PASS / PULSO
+-> REGLA EJECUTABLE SEGUN EL DOMINIO
+```
+
+```text
+PULSO
+-> VALIDACION EN CONTEXTO
+-> EFECTO APLICADO
+```
+
+Una implementación futura deberá impedir que AURA:
+
+- cree descuentos directos por inferencia;
+- marque una promoción como aplicable a una venta sin validación propietaria;
+- fuerce redenciones;
+- escriba el ledger de fidelización;
+- modifique precio transaccional por haber aprobado contenido;
+- omita guardas económicas u operativas.
+
+---
+
+#### 11. Guardas de promociones
+
+Antes de habilitar una acción promocional material, deberán revalidarse las guardas aplicables a la versión concreta.
+
+Podrán incluir, según el contrato propietario:
+
+- vigencia;
+- marca, sede, canal y modalidad;
+- producto o beneficio elegible;
+- presupuesto autorizado;
+- margen o exposición permitida;
+- stock o disponibilidad suficiente;
+- capacidad operativa;
+- límites de uso;
+- incompatibilidades;
+- consentimiento o elegibilidad cuando la promoción sea individualizada;
+- estado de la regla transaccional propietaria.
+
+Dato ausente, vencido, conflictivo o técnicamente inaccesible no se interpreta como guarda satisfecha.
+
+---
+
+#### 12. Audiencia, segmento y membresía
+
+Se fija:
+
+```text
+AUDIENCIA CONCEPTUAL
+!=
+DEFINICION DE SEGMENTO
+!=
+MEMBRESIA MATERIALIZADA
+!=
+LISTA EXPORTADA
+!=
+DESTINATARIOS CONTACTADOS
+```
+
+Una persona autorizada para diseñar una audiencia no obtiene automáticamente acceso a sus miembros identificables.
+
+---
+
+#### 13. Definición de segmento
+
+Una definición de segmento deberá conservar criterios y finalidad sin exigir por defecto materializar identidades.
+
+La definición podrá referenciar atributos autorizados, condiciones comerciales o señales permitidas, pero no deberá:
+
+- copiar perfiles completos por conveniencia;
+- convertir datos sensibles en filtros ordinarios;
+- inferir consentimiento desde comportamiento;
+- incluir campos no necesarios para la finalidad;
+- convertir una vista analítica agregada en acceso individual.
+
+La posibilidad técnica de expresar un filtro no lo convierte en criterio permitido.
+
+---
+
+#### 14. Materialización de segmento
+
+La materialización de miembros es una operación distinta de la definición.
+
+Deberá exigir, cuando corresponda:
+
+- capacidad exacta;
+- finalidad vigente;
+- empresa y marca correctas;
+- fuente propietaria autorizada;
+- campos mínimos necesarios;
+- consentimiento o preferencia aplicable;
+- exclusiones vigentes;
+- timestamp de resolución;
+- versión de la definición;
+- trazabilidad del conjunto resultante.
+
+Una membresía histórica no demuestra elegibilidad actual.
+
+---
+
+#### 15. Lead y cliente permanecen separados
+
+Se conserva la decisión de `AURA-DOM-007`:
+
+```text
+INTERACCION
+!=
+LEAD
+!=
+CLIENTE
+!=
+OPORTUNIDAD
+!=
+PEDIDO
+```
+
+AURA puede gobernar el lead y la oportunidad, pero no crea por ello una identidad maestra de cliente.
+
+Coincidencia de nombre, teléfono, correo, alias o identificador externo no autoriza fusionar registros ni declarar que dos referencias representan a la misma persona.
+
+---
+
+#### 16. Acceso a leads
+
+El acceso a leads deberá limitarse por finalidad, empresa, marca, función, capacidad, asignación o responsabilidad aplicable y estado del expediente.
+
+Ver un lead no concede automáticamente:
+
+- perfil PASS completo;
+- historial completo de compras;
+- saldo o ledger de fidelización;
+- documentos financieros;
+- información de crédito;
+- datos sensibles;
+- comunicaciones ajenas a la finalidad comercial;
+- acceso a oportunidades no relacionadas.
+
+La proyección presentada deberá ser la mínima suficiente para la acción autorizada.
+
+---
+
+#### 17. Datos de clientes como proyección autorizada
+
+AURA no será fuente maestra de identidad de cliente.
+
+Cuando necesite datos de una persona o cuenta, deberá consumir una proyección autorizada desde la fuente propietaria correspondiente.
+
+La proyección deberá quedar limitada por:
+
+- finalidad;
+- capacidad;
+- empresa y marca;
+- relación con campaña, lead u oportunidad cuando aplique;
+- sensibilidad;
+- vigencia;
+- consentimiento o preferencia;
+- campos mínimos requeridos.
+
+Un acceso amplio en la fuente no obliga a entregar el mismo conjunto a AURA.
+
+---
+
+#### 18. Finalidad y minimización
+
+Toda lectura, materialización, exportación o contacto deberá declarar finalidad suficiente y vigente.
+
+Se fija:
+
+```text
+DATO DISPONIBLE
+!=
+DATO NECESARIO
+!=
+DATO AUTORIZADO PARA ESTA FINALIDAD
+```
+
+La implementación futura deberá minimizar:
+
+- columnas;
+- filas;
+- periodo;
+- precisión;
+- identificadores directos;
+- historial;
+- adjuntos;
+- campos sensibles;
+- retención de copias.
+
+La conveniencia operativa no justifica ampliar el conjunto.
+
+---
+
+#### 19. Consentimiento, preferencia y canal
+
+Cuando una acción dependa de consentimiento o preferencias, deberán resolverse desde la fuente propietaria y conservar como mínimo:
+
+- finalidad;
+- canal;
+- versión;
+- fuente;
+- vigencia;
+- retiro o revocación cuando exista.
+
+Se conserva:
+
+```text
+CONSENTIMIENTO GENERAL
+!=
+CONSENTIMIENTO DE MARKETING
+!=
+PREFERENCIA DE CANAL
+!=
+ACEPTACION CONTRACTUAL
+```
+
+Un consentimiento válido para un canal o finalidad no se extiende a otra por inferencia.
+
+---
+
+#### 20. Revocación de marketing
+
+Una revocación aplicable deberá impedir nuevas acciones de marketing afectadas desde el momento en que sea efectiva según el contrato propietario.
+
+No será válido continuar contacto porque:
+
+- la persona pertenecía previamente al segmento;
+- una exportación fue creada antes de la revocación;
+- un job ya estaba programado;
+- el canal externo conserva una lista anterior;
+- una campaña seguía activa;
+- un actor tenía permiso histórico.
+
+La ejecución deberá revalidar las exclusiones vigentes antes del efecto material.
+
+---
+
+#### 21. Contacto comercial
+
+La capacidad para ver un lead u oportunidad no concede por sí sola autoridad para contactar.
+
+Antes de un contacto deberá poder resolverse:
+
+- finalidad;
+- canal permitido;
+- identidad o referencia mínima suficiente;
+- consentimiento o base aplicable;
+- marca y contexto correctos;
+- responsable autorizado;
+- estado del lead u oportunidad;
+- exclusiones o revocaciones;
+- límites de frecuencia o política cuando existan en el contrato propietario.
+
+La autorización de contacto no convierte a la persona en cliente ni representante autorizado de una organización.
+
+---
+
+#### 22. Acciones masivas como capacidad independiente
+
+Toda operación que afecte múltiples recursos, leads, personas, oportunidades, promociones o estados deberá tratarse como acción masiva explícita.
+
+Se conserva:
+
+```text
+PODER ACTUAR SOBRE UN ELEMENTO
+!=
+PODER ACTUAR SOBRE MIL ELEMENTOS
+```
+
+La autoridad individual no escala automáticamente por cardinalidad.
+
+---
+
+#### 23. Previsualización obligatoria de alcance masivo
+
+Antes de una acción masiva material, la implementación futura deberá poder mostrar o calcular de forma verificable:
+
+- acción exacta;
+- conjunto objetivo;
+- cantidad total;
+- criterios de selección;
+- exclusiones;
+- empresa y marca afectadas;
+- campos o estados que cambiarán;
+- destino cuando exista transferencia;
+- efectos materiales esperados;
+- casos bloqueados por autorización, consentimiento o estado.
+
+La previsualización no sustituye la revalidación al ejecutar.
+
+---
+
+#### 24. Revalidación al ejecutar acciones masivas
+
+Una selección preparada o revisada previamente puede quedar obsoleta.
+
+Antes de aplicar cada efecto material deberán revalidarse las condiciones que puedan haber cambiado, incluyendo según corresponda:
+
+- autorización del actor;
+- alcance del recurso;
+- consentimiento;
+- revocación;
+- estado del lead;
+- vigencia de promoción;
+- exclusiones;
+- guardas económicas u operativas;
+- estado de la fuente propietaria.
+
+Un snapshot autorizado para análisis no se convierte automáticamente en autoridad para mutación posterior.
+
+---
+
+#### 25. Parcialidad e idempotencia de acciones masivas
+
+Una acción masiva deberá ser auditable aun cuando solo una parte pueda ejecutarse.
+
+El contrato futuro deberá distinguir:
+
+- candidatos;
+- autorizados;
+- excluidos;
+- ejecutados;
+- omitidos;
+- fallidos;
+- ambiguos;
+- reintentados;
+- reconciliados.
+
+Un reintento no podrá duplicar contacto, promoción, cambio de estado o transferencia ya confirmados.
+
+La existencia de un fallo parcial no autoriza aplicar por fuerza los elementos previamente denegados.
+
+---
+
+#### 26. Exportación como operación sensible independiente
+
+Se fija:
+
+```text
+VER DATOS
+!=
+EXPORTAR DATOS
+```
+
+```text
+EXPORTAR UN REPORTE AGREGADO
+!=
+EXPORTAR DATOS IDENTIFICABLES
+```
+
+La capacidad de lectura no concede exportación por defecto.
+
+Toda exportación deberá tener una capacidad específica y una finalidad concreta.
+
+---
+
+#### 27. Alcance mínimo de exportación
+
+Antes de producir una exportación deberán resolverse como mínimo:
+
+- actor;
+- finalidad;
+- empresa y marca;
+- recurso u origen;
+- columnas;
+- filas;
+- periodo;
+- nivel de identificación;
+- sensibilidad;
+- destinatario o categoría autorizada de destinatario;
+- vigencia o expiración aplicable;
+- motivo empresarial;
+- referencia de autorización;
+- evidencia de generación.
+
+Una exportación no incluirá campos adicionales por comodidad técnica.
+
+---
+
+#### 28. Destinatario y copias exportadas
+
+Una exportación deberá conservar trazabilidad suficiente para conocer quién o qué sistema era destinatario autorizado y bajo qué finalidad.
+
+Se prohíbe tratar una copia exportada como libre de gobierno por haber salido de la vista original.
+
+Las futuras integraciones deberán mantener, cuando aplique:
+
+- receptor;
+- finalidad;
+- sensibilidad;
+- expiración;
+- revocación o retiro de autorización;
+- reconciliación de copias controladas;
+- evidencia de transferencia.
+
+La tarea no presume que una copia ya entregada a un tercero pueda eliminarse técnicamente sin un contrato específico de ese receptor.
+
+---
+
+#### 29. Datos sensibles y control reforzado
+
+Datos médicos, biométricos, geográficos precisos, financieros, documentos de identidad u otras categorías declaradas sensibles por el gobierno de información no podrán convertirse en atributos ordinarios de segmentación o exportación.
+
+Cuando una operación legítima requiera una categoría sensible, deberá existir autorización reforzada, finalidad explícita, minimización y contrato propietario compatible.
+
+La ausencia de ese contrato produce denegación.
+
+---
+
+#### 30. Agregados y drill-down
+
+Una métrica o agregado autorizado no concede automáticamente acceso a las personas o filas que lo componen.
+
+Se conserva:
+
+```text
+VER CONTEO DE SEGMENTO
+!=
+VER MIEMBROS DEL SEGMENTO
+```
+
+```text
+VER RESULTADO DE CAMPANA
+!=
+VER HISTORIA COMPLETA DE CADA CLIENTE
+```
+
+El drill-down deberá evaluarse como una nueva solicitud de autorización.
+
+---
+
+#### 31. Filtros, búsquedas y selección de interfaz
+
+Un filtro, buscador, selector, checkbox o tabla no es autoridad.
+
+La implementación futura deberá impedir que la interfaz amplíe alcance mediante:
+
+- parámetros manipulados;
+- selección de empresa o marca no autorizada;
+- filtros ocultos;
+- selección total sobre resultados paginados;
+- IDs enviados por cliente;
+- listas pegadas manualmente;
+- filtros guardados creados por otro actor;
+- selección de elementos que cambiaron de estado después de cargarse.
+
+La decisión final permanece en servidor.
+
+---
+
+#### 32. APIs, RPC y `service role`
+
+Toda API, RPC, función de servidor o proceso técnico que opere recursos de esta tarea deberá aplicar autorización equivalente o superior a la superficie visual.
+
+Se preserva:
+
+```text
+SERVICE ROLE
+!=
+AUTORIDAD EMPRESARIAL
+```
+
+La elevación técnica no podrá:
+
+- ampliar columnas;
+- ampliar filas;
+- omitir finalidad;
+- saltar consentimiento;
+- ignorar empresa o marca;
+- operar promociones fuera de guardas;
+- ejecutar una acción masiva sin decisión trazable.
+
+---
+
+#### 33. Importaciones y fuentes externas
+
+Un archivo, canal, formulario, webhook o proveedor externo no se convierte automáticamente en fuente maestra de cliente, lead, elegibilidad o consentimiento.
+
+Antes de incorporar información deberá resolverse:
+
+- origen;
+- finalidad;
+- identidad externa;
+- correlación interna cuando exista;
+- legitimidad del campo recibido;
+- sensibilidad;
+- minimización;
+- deduplicación gobernada;
+- estado de consentimiento cuando aplique.
+
+Una importación no autoriza contacto ni activación masiva por sí sola.
+
+---
+
+#### 34. Matriz de ownership entre dominios
+
+| Materia | Propietaria | AURA puede | AURA no puede |
+| --- | --- | --- | --- |
+| intención promocional | AURA | definir y gobernar intención | aplicar directamente el efecto transaccional |
+| beneficio y fidelización | PASS | referenciar y correlacionar | escribir ledger o redimir por inferencia |
+| identidad y consentimiento cliente | PASS o fuente propietaria aplicable | consumir proyección mínima | crear maestro paralelo o ampliar finalidad |
+| pedido, venta y descuento aplicado | PULSO | correlacionar resultado | alterar venta o precio por campaña |
+| lead y oportunidad | AURA | gobernar origen, etapa, responsable y handoff | convertirlos automáticamente en cliente o pedido |
+| margen, presupuesto y rentabilidad | NUMERA | consumir guarda o resultado autorizado | fabricar dato económico propio para habilitar promoción |
+| disponibilidad e inventario | NEXO | consumir hechos autorizados | reservar o ajustar stock por campaña |
+| capacidad productiva | FOGO | consumir decisión o señal autorizada | comprometer producción por inferencia |
+| exportación y gobierno de copias | gobierno de información + dominio propietario | solicitar bajo finalidad y capacidad | considerar libre una copia por salir de AURA |
+
+---
+
+#### 35. Reasignación y cambios sobre leads u oportunidades
+
+Reasignar, cambiar etapa, cerrar, reabrir o modificar en masa leads u oportunidades exige capacidades distintas cuando el contrato de catálogo así lo establezca.
+
+No se autoriza por defecto:
+
+- reasignar por poder ver;
+- cerrar por poder editar notas;
+- marcar ganado sin hecho propietario;
+- convertir una interacción en oportunidad sin triage;
+- transferir datos completos al nuevo responsable;
+- alterar historia para simplificar el pipeline.
+
+Toda transición conserva actor, antes, después, motivo y timestamp cuando sea material.
+
+---
+
+#### 36. Denegación segura
+
+Toda operación protegida deberá fallar cerrada cuando:
+
+- la capacidad no exista o no esté vigente;
+- el actor no cubra empresa, marca o función;
+- el recurso quede fuera de alcance;
+- falte finalidad;
+- el consentimiento aplicable sea ausente, inválido, revocado o incompatible;
+- el dato sea más sensible de lo permitido;
+- la exportación exceda columnas, filas o destinatario autorizados;
+- una acción masiva incluya elementos denegados sin política segura de exclusión;
+- la guarda promocional esté vencida, ausente o conflictiva;
+- el sistema propietario no pueda responder de forma confiable;
+- exista ambigüedad técnica que impida saber si un efecto ya ocurrió.
+
+El fallo técnico no se convierte en autorización.
+
+---
+
+#### 37. Matriz mínima de pruebas negativas futuras
+
+Cada materialización física deberá cubrir, cuando corresponda, al menos:
+
+| Escenario | Resultado exigido |
+| --- | --- |
+| actor puede ver campaña pero intenta operar promoción sin capacidad sensible | denegado |
+| actor puede definir segmento pero intenta ver miembros identificables | denegado |
+| actor puede ver lead pero intenta abrir perfil completo de cliente | denegado |
+| actor con lectura intenta exportar | denegado |
+| actor intenta exportar columnas adicionales no autorizadas | denegado |
+| segmento histórico incluye consentimiento ya revocado | miembro excluido del efecto material |
+| job masivo intenta producir nuevos efectos después de revocación de permiso del actor | bloqueado antes de nuevos efectos; efectos ya confirmados se preservan y reconcilian |
+| selección masiva incluye recursos de otra marca | esos recursos no se ejecutan y el resultado queda trazado |
+| promoción aprobada pierde guarda económica u operativa | efecto bloqueado |
+| retry masivo repite un efecto ya confirmado | no duplica efecto |
+| service role intenta ampliar filas o columnas | denegado por contrato empresarial |
+| backend de autorización falla | fail-closed |
+| actor, finalidad, consentimiento, recurso y guardas son válidos | elegible para la acción exacta solicitada |
+
+La última fila no elimina condiciones del dominio propietario ni de `AURA-AUTH-004`.
+
+---
+
+#### 38. Auditoría mínima
+
+Toda decisión y efecto material deberá poder reconstruir, sin exponer más datos de los necesarios:
+
+- principal;
+- actor efectivo;
+- capacidad;
+- empresa y marca;
+- función;
+- recurso o conjunto;
+- finalidad;
+- fuente propietaria;
+- campos o categorías de datos implicados;
+- consentimiento o base aplicable cuando corresponda;
+- volumen;
+- destinatario cuando exista;
+- guardas evaluadas;
+- versión de política;
+- decisión de autorización;
+- resultado de ejecución;
+- exclusiones y fallos parciales;
+- correlación;
+- timestamp.
+
+La auditoría deberá permitir distinguir denegación, exclusión, fallo técnico, reintento y efecto confirmado.
+
+---
+
+#### 39. Observabilidad
+
+La futura implementación deberá poder detectar, cuando corresponda:
+
+- exportaciones fuera de política;
+- acciones masivas con fallo parcial;
+- miembros contactados después de revocación;
+- segmentaciones con campos no permitidos;
+- leads sin finalidad o responsabilidad válida;
+- materializaciones de segmento obsoletas;
+- promociones activas con guardas vencidas;
+- reintentos con riesgo de duplicación;
+- uso de cuenta técnica fuera de contrato;
+- discrepancias entre AURA y la fuente propietaria de consentimiento o identidad.
+
+La observabilidad no autoriza corregir silenciosamente un efecto ya ocurrido.
+
+---
+
+#### 40. Revocación y cambio de contexto
+
+La autorización sensible deberá revalidarse cuando cambie cualquiera de estos elementos materiales:
+
+- permiso o asignación del actor;
+- empresa o marca;
+- función;
+- finalidad;
+- consentimiento;
+- preferencia de canal;
+- estado del lead;
+- versión de segmento;
+- versión o vigencia de promoción;
+- destinatario;
+- sensibilidad del dato;
+- guarda económica u operativa.
+
+Una decisión histórica puede seguir existiendo como evidencia sin seguir siendo ejecutable.
+
+---
+
+#### 41. Recuperación y rollback
+
+La recuperación de una implementación futura no podrá ampliar autoridad ni eliminar trazabilidad.
+
+Un rollback válido podrá restaurar una versión anterior soportada de políticas, catálogos o adaptadores, pero no podrá:
+
+- reactivar consentimiento revocado;
+- ampliar miembros de un segmento;
+- restaurar una exportación previamente denegada;
+- reintentar masivamente sin reconciliación;
+- convertir una cuenta técnica en bypass;
+- aplicar una promoción con guardas vencidas;
+- borrar evidencia de exclusiones o efectos parciales.
+
+Si la recuperación no puede demostrar preservación del contrato, la acción sensible permanece bloqueada.
+
+---
+
+#### 42. Frontera con AURA-AUTH-004
+
+`AURA-AUTH-004` conservará la protección específica de:
+
+- credenciales;
+- tokens;
+- secretos;
+- proveedores de IA;
+- prompts gobernados;
+- archivos;
+- datos enviados a terceros.
+
+Esta tarea determina si AURA está autorizada para usar o transferir determinados datos dentro de una finalidad; no concede acceso a los secretos técnicos necesarios para ejecutar una integración.
+
+Se conserva:
+
+```text
+DATOS AUTORIZADOS PARA UNA FINALIDAD
+!=
+CREDENCIAL AUTORIZADA
+!=
+ENVIO A TERCERO AUTORIZADO
+```
+
+---
+
+#### 43. Frontera con experiencia e integración
+
+Las tareas `AURA-UX-*` deberán reflejar selección, exclusiones, sensibilidad, alcance y resultado sin convertir controles visuales en autorización final.
+
+Las tareas `AURA-INT-*` deberán conservar:
+
+- correlación;
+- identidad interna y externa;
+- finalidad;
+- minimización;
+- idempotencia;
+- reintentos;
+- conciliación;
+- límites del proveedor;
+- evidencia de transferencia o efecto.
+
+Un adaptador externo no podrá ampliar autoridad ni reescribir la decisión empresarial.
+
+---
+
+#### 44. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas son familias sensibles distintas;
+2. `aura.access` no concede ninguna de estas capacidades por sí sola;
+3. `AURA-AUTH-001` conserva empresa, marca, función, capacidad, recurso y contexto;
+4. `AURA-AUTH-002` conserva segregación editorial y pública;
+5. AURA gobierna intención promocional, no el efecto transaccional;
+6. PASS conserva identidad, consentimiento, fidelización, beneficio y redención cuando correspondan;
+7. PULSO conserva pedido, venta y efecto comercial aplicado;
+8. NUMERA conserva presupuesto, costo, margen y rentabilidad;
+9. audiencia, definición de segmento, membresía, exportación y contacto no son equivalentes;
+10. definir un segmento no concede acceso a miembros identificables;
+11. una membresía histórica no demuestra elegibilidad actual;
+12. lead no equivale a cliente ni cuenta PASS;
+13. coincidencias débiles no autorizan fusión de identidad;
+14. AURA consume proyecciones mínimas de datos de clientes;
+15. finalidad y minimización son obligatorias;
+16. consentimiento general, marketing, preferencia de canal y aceptación contractual permanecen separados;
+17. una revocación aplicable bloquea nuevos efectos de marketing afectados;
+18. permiso para ver no equivale a permiso para contactar;
+19. autoridad individual no escala automáticamente a operación masiva;
+20. acciones masivas deben declarar alcance, exclusiones y efecto;
+21. cada efecto material revalida condiciones vigentes;
+22. reintentos masivos deben ser idempotentes;
+23. ver datos no equivale a exportarlos;
+24. exportar agregados no equivale a exportar datos identificables;
+25. toda exportación conserva finalidad, alcance y destinatario;
+26. una copia exportada no queda fuera de gobierno por salir de AURA;
+27. datos sensibles exigen control reforzado;
+28. agregado autorizado no concede drill-down;
+29. filtros y selección de UI no son autoridad;
+30. `service role` no sustituye autorización empresarial;
+31. importación no convierte una fuente externa en maestro de cliente o consentimiento;
+32. cambios sobre leads u oportunidades conservan autoridad y trazabilidad;
+33. fallo técnico produce fail-closed;
+34. revocación y cambios materiales invalidan decisiones ejecutables cuando corresponda;
+35. rollback no puede ampliar autoridad;
+36. `AURA-AUTH-004` conserva secretos, credenciales y datos enviados a terceros;
+37. se crean y modifican cero requisitos de prueba;
+38. la tarea documental no crea ninguna instancia física;
+39. la continuidad queda reservada exclusivamente a `AURA-AUTH-004`.
+
+---
+
+#### 45. Handoff obligatorio a AURA-AUTH-004
+
+`AURA-AUTH-004` deberá recibir de esta tarea:
+
+- la separación entre dato disponible, necesario y autorizado;
+- finalidad y minimización obligatorias;
+- consentimiento y preferencia revalidados cuando correspondan;
+- la separación entre definición de segmento, membresía, exportación y contacto;
+- la protección reforzada de leads y datos de clientes;
+- la regla de que una exportación conserva destinatario y gobierno;
+- la prohibición de convertir `service role` en autoridad empresarial;
+- la obligación de revalidar antes de acciones masivas;
+- la distinción entre autorización de datos y autorización de secretos o proveedores.
+
+Con esa base, `AURA-AUTH-004` deberá proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros sin reabrir las reglas de finalidad, consentimiento, minimización y exportación aquí fijadas.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Justificación: la conducta observable exigida por esta tarea ya está cubierta por requisitos vigentes de AURA, autorización transversal, identidad y consentimiento PASS, privacidad, integración y gobierno de información. Esta tarea concreta el contrato documental previsto por esa cobertura sin ampliar el registro.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-003`, para promociones, oportunidades, B2B, origen, audiencia o contraparte, guardas, acciones, resultados y separación entre lead, cliente, oportunidad, propuesta y pedido;
+- `TREQ-AURA-002`, para impedir autonomía de IA sobre contacto, promoción o uso de datos y exigir minimización antes de terceros;
+- `TREQ-PASS-010`, para identidad, contactos, preferencias, consentimientos, finalidad, canal, versión, vigencia y retiro;
+- `TREQ-PASS-011`, para comunicaciones, casos, reclamos, reservas y resultados con autoridad explícita;
+- `TREQ-PASS-012`, para privacidad, revocación y prohibición de continuar marketing después de una revocación aplicable;
+- `TREQ-PULSO-005` y `TREQ-PULSO-006`, para pedido, venta, descuentos, estados comerciales y acciones sensibles auditables;
+- `TREQ-NUMERA-004`, para presupuesto, costo, margen, escenarios y rentabilidad con método, fuente, versión y vigencia;
+- `TREQ-AUTH-018`, para protección equivalente de datos de clientes frente a distintas superficies y exportaciones;
+- `TREQ-INTEGRATION-019`, para canales, leads, identificadores, payloads, idempotencia, eventos tardíos y reconciliación;
+- `TREQ-INTEGRATION-021`, para ciclo de información, documentos, copias, terceros, revocación, retención y reconciliación.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación del registro.
+
+---
+
+#### 48. Cobertura de prueba futura
+
+Cada `AURA-AUTH-003::<implementation_unit_id>` deberá probar, según su superficie:
+
+- autorización positiva y negativa;
+- acceso individual versus masivo;
+- definición versus materialización de segmento;
+- consentimiento vigente y revocado;
+- minimización de columnas y filas;
+- lead versus cliente;
+- proyecciones de datos;
+- operación promocional y guardas;
+- exportación;
+- acciones masivas;
+- parcialidad;
+- idempotencia;
+- revocación;
+- concurrencia;
+- fail-closed;
+- auditoría;
+- recuperación y rollback;
+- regresión contra las fronteras de PASS, PULSO, NUMERA, NEXO y FOGO.
+
+La evidencia física pertenece a cada unidad futura y no se sustituye con la aprobación documental.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó `docs:plan:build` contra el checkout del usuario desde esta entrega |
+| LOCAL | NOT_EXECUTED | el artefacto no se incorporó al checkout del usuario ni se ejecutaron allí los validadores del repositorio |
+| REMOTA | PASS | se verificaron en el remoto vigente el protocolo, contrato de entrega, manifest, continuidad, topología `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, archivo propietario, AURA-AUTH-001, AURA-DOM-006, AURA-DOM-007, hallazgos CAP-SCOPE-014 relevantes, CAP-SCOPE-016, INFO-AUTH-001, INFO-AUTH-002, procesos VPROC-0056 y VPROC-0057, cobertura 04A de AURA/PASS/autorización/integración, package.json y validadores; además se contrastó la versión completa aprobada de AURA-AUTH-002 disponible como base adelantada sin tratarla como publicada |
+| OPERATIVA | NOT_APPLICABLE | esta tarea define autorización documental y no activa promociones, materializa segmentos, contacta personas, exporta datos ni ejecuta operaciones masivas reales |
+| FÍSICA | NOT_APPLICABLE | la aprobación documental no crea código, permisos, políticas, Supabase, jobs, integraciones, datos ni despliegues |
+
+---
+
+#### 50. Criterios de aceptación
+
+La tarea queda documentalmente aceptable únicamente si se conserva todo lo siguiente:
+
+1. promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas permanecen familias distintas;
+2. `AURA-AUTH-001` conserva empresa, marca, función, capacidad, recurso y contexto;
+3. `AURA-AUTH-002` conserva segregación editorial y pública;
+4. AURA no aplica descuentos ni redenciones directamente;
+5. promociones consumen reglas y guardas de los dominios propietarios;
+6. audiencia no equivale a segmento materializado;
+7. definir segmento no concede acceso a miembros;
+8. membresía se revalida antes del efecto material cuando corresponda;
+9. lead no equivale a cliente;
+10. AURA no crea maestro paralelo de cliente;
+11. datos de clientes se consumen como proyección mínima autorizada;
+12. finalidad y minimización se aplican a lectura, materialización, exportación y contacto;
+13. consentimiento y preferencias conservan finalidad, canal, versión, fuente, vigencia y retiro;
+14. revocación aplicable bloquea nuevos efectos afectados;
+15. ver un lead no concede autoridad de contacto;
+16. operación masiva exige capacidad y alcance explícitos;
+17. una selección masiva muestra alcance, exclusiones y efecto antes de ejecutar;
+18. cada efecto material revalida condiciones cambiantes;
+19. parcialidad conserva candidatos, autorizados, excluidos, ejecutados, fallidos y ambiguos;
+20. reintentos no duplican efectos confirmados;
+21. lectura no concede exportación;
+22. exportación declara finalidad, alcance, destinatario y sensibilidad;
+23. datos sensibles no se convierten en filtros ordinarios;
+24. agregados no conceden drill-down;
+25. filtros, UI y IDs cliente no amplían autoridad;
+26. APIs, RPC y service role respetan autorización equivalente;
+27. una fuente externa no se convierte en maestro por importación;
+28. reasignaciones y cambios de leads u oportunidades conservan trazabilidad;
+29. denegaciones y fallos técnicos producen fail-closed;
+30. auditoría conserva actor, capacidad, finalidad, alcance, volumen, decisión y resultado;
+31. revocación y cambios materiales invalidan decisiones ejecutables cuando corresponda;
+32. rollback no amplía autoridad;
+33. `AURA-AUTH-004` conserva credenciales, tokens, IA, prompts, archivos y datos enviados a terceros;
+34. se crean y modifican cero requisitos de prueba;
+35. no se crea ninguna instancia física desde el carril documental;
+36. la siguiente tarea reservada es exactamente `AURA-AUTH-004`.
+
+---
+
+#### 51. Límites
+
+Esta tarea no autoriza:
+
+- crear un repositorio o runtime de AURA;
+- crear capacidades definitivas fuera del catálogo canónico;
+- asignar permisos o roles;
+- crear o modificar RLS;
+- crear tablas, migraciones, funciones, RPC, triggers, jobs o colas;
+- crear promociones reales;
+- crear o mutar reglas transaccionales PULSO o PASS;
+- emitir o redimir cupones reales;
+- materializar segmentos reales;
+- leer perfiles completos de clientes;
+- importar listas reales de personas;
+- contactar clientes o prospectos;
+- cambiar consentimientos;
+- exportar datos reales;
+- ejecutar acciones masivas reales;
+- fusionar identidades;
+- crear pedidos, ventas, descuentos aplicados o redenciones;
+- cambiar presupuesto, margen o rentabilidad;
+- reservar inventario o capacidad;
+- transferir datos o archivos a proveedores externos;
+- acceder a credenciales o tokens;
+- adelantar `AURA-AUTH-004`;
+- crear evidencia física inexistente.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros`
 
 ### [ ] AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros
