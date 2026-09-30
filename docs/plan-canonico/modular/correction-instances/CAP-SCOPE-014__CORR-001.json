@@ -45,6 +45,15 @@
     "approval_statement": "APROBADO: corregir la contradiccion documental confirmada de H-CAP-SCOPE-014-029 sin modificar requisitos TREQ ni 04A.",
     "source_contract_sha256": "e70857cae64e4d101cd020e419793e51cef15b4ccd3e747a592b6c26c2d6378e"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-30T04:04:59.334Z",
+      "candidate_head_before": "7a63cafcd9e7c9b67fbcf70e24daa496b106242b",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-30T03:28:31.309Z"
 }
