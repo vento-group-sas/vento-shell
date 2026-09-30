@@ -4658,7 +4658,900 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-008 — Trabajador solo ve su área`
-### [ ] AUTH-QA-008 — Trabajador solo ve su área
+### ✅ AUTH-QA-008 — Trabajador solo ve su área
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-007 — Trabajador solo ve su sede
+**Tarea siguiente:** AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
+**Tipo de tarea:** documental; definición canónica de una prueba integral de aislamiento territorial operativo por área reutilizable por paquete y certificable globalmente, para demostrar que un trabajador cuyo carril exige área queda limitado al área efectiva derivada de su turno, sin convertir áreas asignadas, primarias, seleccionadas, de dispositivo, check-in o recurso en autoridad, y sin bloquear los carriles site-wide o no aplicables que legítimamente no requieren área
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-008::<package_id>` y la certificación `AUTH-QA-008::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, áreas, sedes, roles, permisos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un trabajador con contexto operativo válido queda restringido al área efectiva de su turno cuando el permiso, rol o recurso exigen área, sin convertir esa restricción en un bloqueo indiscriminado para capacidades site-wide o sin dimensión de área.
+
+La condición territorial raíz es:
+
+```text
+active_shift.area_id
+→ operational_area.area_id
+```
+
+cuando el turno declara un área válida y el contrato de autorización la requiere.
+
+La tarea certifica simultáneamente:
+
+```text
+área primaria
+área seleccionada
+employee_areas
+employees.area_id
+área del dispositivo
+área de check-in aislado
+área del recurso
+area_id enviado por cliente
+≠
+operational_area
+```
+
+No redefine la sede operativa, que pertenece a `AUTH-QA-007`, ni la rotación de permisos, que pertenece a `AUTH-QA-009`.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definido un contrato de prueba con catorce resultados obligatorios:
+
+1. `operational_area.area_id` coincide exactamente con `active_shift.area_id` cuando el turno declara un área resoluble;
+2. `operational_area.site_id` coincide con `operational_site.site_id` y con la sede propietaria real del área;
+3. el área operativa procede del turno y no de afiliaciones, selectores, dispositivo, check-in aislado, recurso o cliente;
+4. el check-in compatible puede confirmar el área del turno, pero nunca crearla ni reemplazarla;
+5. `assigned_areas` no es prerrequisito general del área operativa;
+6. un área inexistente, ambigua, de otra sede o inactiva no se convierte en contexto válido mediante fallback;
+7. un rol habilitado site-wide puede conservar `operational_area = null` cuando el permiso admite `SITE_SUFFICIENT`;
+8. un permiso `NOT_APPLICABLE` no fabrica ni exige área;
+9. un permiso `REQUIRED` exige un área operativa activa y compatible;
+10. un rol no habilitado para el área efectiva conserva la razón `AUTH_OPERATIONAL_ROLE_INVALID_FOR_AREA`;
+11. un recurso de otra área conserva una causa territorial distinta de la incompatibilidad rol–área;
+12. `null` nunca significa wildcard sobre todas las áreas;
+13. servidor, RPC, RLS y demás superficies aplicables preservan la misma frontera;
+14. ninguna prueba física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- identidad laboral efectiva;
+- `AccessContext@1.x`;
+- `active_shift`;
+- `active_checkin_session`;
+- `operational_role`;
+- `operational_site`;
+- `operational_area`;
+- catálogo canónico de áreas y relación área–sede;
+- habilitación territorial del rol;
+- `operational_area_requirement`;
+- resolución del territorio real del recurso;
+- separación entre carril base y carril operativo;
+- precedencia de turno, check-in, rol, sede, área, dispositivo, permiso, scope y recurso;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- gate físico `POST_E5_PACKAGE`.
+
+La tarea no redefine catálogos, áreas, sedes, turnos, roles, permisos, matrices, grants, razones públicas ni reglas de rotación.
+
+---
+
+#### 4. Significado exacto de “su área”
+
+En esta prueba, “su área” significa exclusivamente el área operativa efectiva derivada del turno vigente cuando el contrato aplicable exige dimensión de área.
+
+Cuando existe:
+
+```text
+operational_area.area_id
+=
+active_shift.area_id
+```
+
+y:
+
+```text
+operational_area.site_id
+=
+operational_site.site_id
+```
+
+No significa:
+
+- primera área asignada;
+- área primaria;
+- todas las áreas asignadas;
+- área seleccionada;
+- área del dispositivo;
+- área del punto de check-in;
+- área del recurso solicitado;
+- `employees.area_id`;
+- `employee_areas[0]`;
+- `area_kind` sin identidad exacta;
+- área enviada por query, body, RPC o cliente;
+- área inferida desde el nombre del rol.
+
+“Solo ve su área” describe la frontera operativa aplicable, no la eliminación de información laboral personal legítimamente visible en superficies autorizadas.
+
+---
+
+#### 5. Clasificación exacta del requisito de área
+
+Toda evaluación debe consumir el valor canónico de:
+
+```text
+operational_area_requirement
+```
+
+Solo se admiten:
+
+```text
+REQUIRED
+SITE_SUFFICIENT
+NOT_APPLICABLE
+```
+
+Reglas:
+
+```text
+REQUIRED
+→ exige área operativa válida cuando el carril alcanza esta fase
+```
+
+```text
+SITE_SUFFICIENT
+→ una sede operativa válida puede ser suficiente
+→ operational_area puede ser null
+```
+
+```text
+NOT_APPLICABLE
+→ la acción no fabrica ni exige área operativa
+```
+
+La aplicación no puede reclasificar el requisito por conveniencia local.
+
+---
+
+#### 6. Fixture positivo primario — área requerida
+
+Fixture mínimo:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+active_shift = EXACTLY_ONE_PUBLISHED_CURRENT
+active_shift.site_id = SITE_A
+active_shift.area_id = AREA_A
+active_shift.operational_role_code = ROLE_R
+operational_site.site_id = SITE_A
+operational_role.role_code = ROLE_R
+operational_role.valid_for_site = true
+operational_role.valid_for_area = true
+operational_area.area_id = AREA_A
+operational_area.site_id = SITE_A
+operational_area.area_active = true
+operational_area.compatible_with_role = true
+operational_area_requirement = REQUIRED
+resource_site_id = SITE_A
+resource_area_id = AREA_A
+```
+
+Cuando el permiso exige `T+C`, el check-in válido también debe estar satisfecho antes de alcanzar esta fase territorial.
+
+---
+
+#### 7. Forma mínima esperada de `operational_area`
+
+La prueba conserva la forma contractual:
+
+```text
+area_id
+site_id
+area_kind
+source
+area_active
+compatible_with_role
+```
+
+Oracle estructural:
+
+```text
+area_id = active_shift.area_id
+site_id = operational_site.site_id
+area_active = true
+compatible_with_role = true
+```
+
+`area_kind` procede del catálogo del área y no sustituye `area_id`.
+
+---
+
+#### 8. Fuente exclusiva del área operativa
+
+La fuente de autoridad territorial operativa es el turno:
+
+```text
+active_shift.area_id
+→ operational_area.area_id
+```
+
+No se admite como sustituto:
+
+```text
+assigned_areas
+primary_area_id
+selected_area_id
+employees.area_id
+device_area_id
+checkin_area_id aislado
+resource_area_id
+request.area_id
+area_kind
+```
+
+Si el área del turno es incorrecta, ausente cuando resulta obligatoria o pertenece a otra sede, debe corregirse la fuente propietaria; el evaluador no elige otra área para obtener autorización.
+
+---
+
+#### 9. Coherencia área–sede
+
+Todo `operational_area` válido debe satisfacer:
+
+```text
+operational_area.site_id
+=
+operational_site.site_id
+```
+
+y:
+
+```text
+operational_area.area_id
+→ área canónica
+→ canonical_area.site_id
+=
+operational_site.site_id
+```
+
+Un área de otra sede no se reescribe para hacerla coincidir.
+
+Resultado:
+
+```text
+área contradictoria con la sede
+→ no constituye operational_area válida
+→ fail closed conforme a la razón propietaria
+```
+
+---
+
+#### 10. Check-in confirma; no crea área
+
+Cuando el check-in declara exactamente el área del turno:
+
+```text
+active_checkin_session.area_id = active_shift.area_id
+```
+
+puede producir:
+
+```text
+source = CHECKIN_CONFIRMED_SHIFT
+```
+
+El significado es:
+
+```text
+turno define área
++
+check-in confirma esa misma área
+```
+
+Nunca:
+
+```text
+check-in_area_id
+→ reemplaza active_shift.area_id
+```
+
+Si el check-in no declara área, el área válida del turno puede conservar:
+
+```text
+source = SHIFT
+```
+
+---
+
+#### 11. Check-in incompatible
+
+Fixture:
+
+```text
+active_shift.area_id = AREA_A
+active_checkin_session.area_id = AREA_B
+AREA_A != AREA_B
+```
+
+Resultado:
+
+- `AREA_B` no reemplaza `AREA_A`;
+- el check-in incompatible no satisface por sí mismo el prerrequisito de presencia;
+- la incompatibilidad conserva su clasificación estructural;
+- no se autoriza mediante selección de una de las dos áreas.
+
+La tarea no redefine el contrato de asistencia; únicamente certifica que el check-in no puede prestar territorio.
+
+---
+
+#### 12. `assigned_areas` no crea área operativa
+
+Fixture:
+
+```text
+assigned_areas = [AREA_A, AREA_B]
+active_shift.area_id = AREA_B
+```
+
+Resultado:
+
+```text
+operational_area.area_id = AREA_B
+```
+
+`AREA_A` permanece como afiliación laboral o administrativa cuando corresponda, pero no como territorio operativo simultáneo.
+
+También es válido:
+
+```text
+assigned_areas = []
+active_shift.area_id = AREA_B
+```
+
+si el área del turno es válida y el carril operativo no exige una afiliación administrativa independiente.
+
+---
+
+#### 13. Área primaria y área seleccionada
+
+Fixture:
+
+```text
+primary_area_id = AREA_A
+selected_area_id = AREA_A
+active_shift.area_id = AREA_B
+```
+
+Resultado:
+
+```text
+operational_area.area_id = AREA_B
+```
+
+Ni el área primaria ni la selección visual corrigen, limitan o amplían el área del turno.
+
+La selección puede participar en navegación o filtrado de una superficie autorizada, pero no modifica la autoridad.
+
+---
+
+#### 14. Oracle positivo para `REQUIRED`
+
+Con:
+
+```text
+operational_area_requirement = REQUIRED
+operational_area.area_id = AREA_A
+area_active = true
+compatible_with_role = true
+resource_area_id = AREA_A
+```
+
+la frontera territorial de área queda satisfecha.
+
+Esto permite continuar el árbol de decisión, pero no obliga a `ALLOW`: permiso, grant, deny, dispositivo, estado del recurso y demás gates posteriores continúan aplicando.
+
+---
+
+#### 15. Control negativo — área requerida ausente
+
+Con:
+
+```text
+operational_area_requirement = REQUIRED
+active_shift.area_id = null
+```
+
+no se inventa un área.
+
+Resultado contractual:
+
+```text
+operational_area = null
+reason_code = AUTH_ACTIVE_AREA_REQUIRED
+```
+
+cuando la resolución autoritativa concluye que la acción requiere un área activa y no existe una candidata válida y compatible. La ausencia de área no puede degradarse a permiso implícito.
+
+No se utiliza como fallback:
+
+- área primaria;
+- área seleccionada;
+- `employees.area_id`;
+- `employee_areas`;
+- check-in;
+- dispositivo;
+- recurso;
+- primera área activa.
+
+---
+
+#### 16. Control negativo — área inactiva o no resoluble
+
+Cuando `active_shift.area_id`:
+
+- no existe;
+- es ambiguo;
+- apunta a un área inactiva;
+- no puede resolverse de forma concluyente;
+
+no se obtiene un área operativa autorizante.
+
+La causa debe conservarse separada de:
+
+- asignación administrativa de área ausente;
+- turno ausente;
+- rol no habilitado para el área;
+- cruce de recurso;
+- fallo técnico de evaluación.
+
+---
+
+#### 17. Control negativo — rol no habilitado para el área
+
+Con:
+
+```text
+operational_area.area_id = AREA_A
+operational_area.area_active = true
+operational_role.valid_for_site = true
+operational_role.valid_for_area = false
+```
+
+y un carril que exige compatibilidad por área:
+
+```text
+lane_decision = DENY
+reason_code = AUTH_OPERATIONAL_ROLE_INVALID_FOR_AREA
+business_effects = 0
+```
+
+El sistema no busca otra área donde el rol sí esté habilitado.
+
+---
+
+#### 18. Control negativo — recurso de otra área
+
+Con el mismo contexto:
+
+```text
+operational_area.area_id = AREA_A
+resource_area_id = AREA_B
+AREA_A != AREA_B
+```
+
+la solicitud no puede obtener autoridad area-scoped por:
+
+- pertenecer `AREA_B` a la misma sede;
+- existir afiliación administrativa a `AREA_B`;
+- seleccionar `AREA_B`;
+- enviar `AREA_B` desde el cliente;
+- existir el permiso en otra combinación territorial.
+
+Este cruce de recurso conserva una causa territorial distinta de `AUTH_OPERATIONAL_ROLE_INVALID_FOR_AREA`.
+
+La certificación adversarial completa de cruces de área permanece reservada a `AUTH-QA-024`.
+
+---
+
+#### 19. Control `SITE_SUFFICIENT`
+
+Fixture:
+
+```text
+operational_area_requirement = SITE_SUFFICIENT
+operational_site.site_id = SITE_A
+operational_role.valid_for_site = true
+active_shift.area_id = null
+operational_area = null
+resource_scope = SITE_LEVEL
+```
+
+Resultado: la dimensión de área no bloquea por sí sola y la evaluación continúa usando la sede operativa y los demás gates del permiso y del recurso.
+
+No se crea un área sintética “general”, “toda la sede”, “primera área” o “área primaria”.
+
+El `null` significa ausencia legítima de dimensión de área para ese contrato, no wildcard.
+
+---
+
+#### 20. Control `NOT_APPLICABLE`
+
+Fixture:
+
+```text
+operational_area_requirement = NOT_APPLICABLE
+operational_area = null
+```
+
+La ausencia de área no bloquea la acción solo por esta dimensión.
+
+La acción continúa su árbol de autorización conforme a su modalidad, scope, recurso y demás condiciones.
+
+La aplicación no puede exigir área por su propio nombre o por pertenecer a un módulo operativo.
+
+---
+
+#### 21. `null` nunca es wildcard
+
+Quedan prohibidas:
+
+```text
+operational_area = null
+→ cualquier área
+```
+
+```text
+resource_area_id = null
+→ todas las áreas
+```
+
+```text
+SITE_SUFFICIENT
+→ permiso automático sobre cualquier acción area-scoped
+```
+
+La ausencia legítima de área conserva la semántica exacta del permiso y del recurso.
+
+---
+
+#### 22. Área visible versus autoridad
+
+La interfaz puede mostrar información legítima que no constituye autoridad operativa, por ejemplo:
+
+- afiliaciones laborales propias;
+- área primaria;
+- historial personal;
+- información de programación;
+- filtros permitidos.
+
+La prueba no exige ocultar esos datos cuando otra capacidad los autoriza.
+
+Sí exige que:
+
+```text
+visibilidad informativa
+≠
+operational_area
+≠
+autoridad sobre recursos del área
+```
+
+---
+
+#### 23. Filtrado de lecturas
+
+Cuando una lectura empresarial está limitada al área activa:
+
+```text
+resolved actor
++
+operational_area
++
+permission
++
+resource scope
+→ query autorizada y filtrada
+```
+
+No se acepta:
+
+```text
+cargar múltiples áreas
+→ ocultar AREA_B solo en UI
+```
+
+Si el servidor o RLS debe limitar filas, las filas fuera del territorio autorizado no deben entregarse al consumidor.
+
+---
+
+#### 24. Mutaciones
+
+Toda mutación area-scoped debe revalidar antes del primer efecto:
+
+- principal y actor efectivos;
+- permiso exacto;
+- turno vigente;
+- check-in cuando corresponda;
+- rol operativo;
+- sede operativa;
+- área operativa cuando sea `REQUIRED`;
+- compatibilidad rol–área;
+- territorio real del recurso;
+- scope;
+- estado mutable relevante.
+
+Un `area_id` recibido desde cliente nunca sustituye la resolución autoritativa.
+
+---
+
+#### 25. Recursos site-level
+
+Un recurso legítimamente site-level puede carecer de `resource_area_id`.
+
+En ese caso:
+
+```text
+resource_area_id = null
+```
+
+no significa todas las áreas.
+
+El permiso y el recurso deben admitir explícitamente la semántica site-level.
+
+Una capacidad area-scoped no se convierte en site-wide porque el recurso tenga `null`.
+
+---
+
+#### 26. Recursos multiárea
+
+Cuando una operación afecta varias áreas, el conjunto completo debe resolverse antes del efecto.
+
+Esta tarea únicamente fija la frontera:
+
+```text
+una coincidencia parcial
+≠
+autorización de toda la operación
+```
+
+La certificación adversarial completa del cruce multiárea pertenece a `AUTH-QA-024`.
+
+---
+
+#### 27. Invalidez, frescura y reautorización
+
+Cambios en cualquiera de estos hechos invalidan la reutilización ciega de una decisión previa:
+
+- turno;
+- `area_id` del turno;
+- sede propietaria del área;
+- actividad del área;
+- rol operativo;
+- habilitación rol–área;
+- permiso;
+- scope;
+- recurso;
+- actor;
+- dispositivo;
+- check-in cuando corresponda.
+
+Caché, Realtime, offline o replay deben exigir una decisión vigente antes de producir efectos protegidos.
+
+---
+
+#### 28. Paridad entre canales
+
+Para un mismo snapshot relevante deben conservar decisión y causa equivalentes en las superficies aplicables:
+
+- navegación protegida;
+- Server Actions;
+- Route Handlers;
+- fetch/RSC;
+- RPC/PostgREST;
+- RLS/Data API;
+- Edge Functions;
+- Realtime;
+- clientes nativos;
+- dispositivos compartidos.
+
+Ninguna superficie puede aceptar un `area_id` más permisivo que las demás.
+
+---
+
+#### 29. Modelo de ejecución por paquete
+
+La topología vigente es:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Por cada paquete aplicable:
+
+```text
+AUTH-QA-008::<package_id>
+```
+
+La ejecución física solo puede ocurrir con:
+
+```text
+E5-GATE-008::<package_id> = PASS
+```
+
+La instancia deberá demostrar los casos aplicables sin modificar el contrato global.
+
+---
+
+#### 30. Certificación global final
+
+La identidad:
+
+```text
+AUTH-QA-008::GLOBAL-FINAL
+```
+
+solo puede certificarse después de reconciliar las instancias por paquete aplicables.
+
+La certificación global deberá demostrar, como mínimo:
+
+- fuente única del área operativa;
+- coherencia área–sede;
+- separación de afiliación administrativa;
+- tratamiento correcto de `REQUIRED`;
+- tratamiento correcto de `SITE_SUFFICIENT`;
+- tratamiento correcto de `NOT_APPLICABLE`;
+- compatibilidad rol–área;
+- ausencia de área sintética;
+- paridad entre canales;
+- ausencia de bypass por cliente;
+- invalidación ante cambios territoriales.
+
+---
+
+#### 31. Handoff hacia AUTH-QA-009
+
+`AUTH-QA-008` entrega a `AUTH-QA-009` un contexto territorial de área ya definido y certificable.
+
+La siguiente tarea podrá variar el turno y demostrar que el cambio de:
+
+```text
+shift_id
+site_id
+area_id
+operational_role_code
+```
+
+recalcula el contexto y los permisos efectivos sin conservar autoridad del turno anterior.
+
+`AUTH-QA-008` no desarrolla todavía esa rotación.
+
+---
+
+#### 32. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Justificación:** la resolución del área operativa desde el turno, la separación entre afiliación administrativa y contexto operativo, los estados de área activa, la compatibilidad rol–área, el tratamiento de `REQUIRED`, `SITE_SUFFICIENT` y `NOT_APPLICABLE`, los cruces territoriales, la paridad multicanal y la invalidación ya disponen de requisitos vigentes. Esta tarea define su certificación integral y no introduce una obligación nueva.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 33. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-009`, para sede y área efectivas deterministas y denegación de cruces territoriales;
+- `TREQ-AUTH-013`, para revalidación server-side de permiso, territorio, contexto, recurso y columnas;
+- `TREQ-AUTH-014`, para invalidación de contexto, caché y decisiones ante cambios;
+- `TREQ-AUTH-189` a `TREQ-AUTH-198`, para dependencia explícita de asignación administrativa de área sin contaminar el carril operativo;
+- `TREQ-AUTH-199` a `TREQ-AUTH-208`, para área activa requerida, tratamiento de `SITE_SUFFICIENT`, fuente exclusiva del turno, precedencia y paridad entre canales;
+- `TREQ-AUTH-259` a `TREQ-AUTH-268`, para habilitación exacta rol–área, compatibilidad por permiso y carril, razones, canales, invalidación y regresión;
+- cobertura vigente de servidor, RPC, RLS y consumidores que referencia `AUTH-QA-008`.
+
+Esta sección es trazabilidad de requisitos existentes y no representa una modificación del registro.
+
+---
+
+#### 34. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea documental no ejecuta builds de producto ni materializaciones por paquete |
+| LOCAL | NOT_EXECUTED | la incorporación y los validadores del checkout se ejecutan durante la batería documental del usuario |
+| REMOTA | PASS | se inspeccionaron en `main` el archivo propietario, contratos de contexto territorial, catálogo de requisito de área, razones, precedencia, topología, políticas documentales, 04A AUTH y scripts aplicables antes de redactar el artefacto |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron casos reales de turno, área, recurso ni autorización |
+| FÍSICA | NOT_EXECUTED | no se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes ni ambientes |
+
+---
+
+#### 35. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se demuestre que:
+
+1. el área operativa procede exclusivamente del turno vigente;
+2. el área pertenece a la sede operativa efectiva;
+3. `area_id` y `area_kind` no se confunden;
+4. check-in solo confirma el área del turno;
+5. afiliaciones de área no crean `operational_area`;
+6. área primaria y seleccionada no funcionan como autoridad;
+7. `employees.area_id` no funciona como fallback;
+8. un área de otra sede falla cerrado;
+9. un área inactiva o no resoluble no autoriza;
+10. `REQUIRED` exige área válida cuando alcanza esta fase;
+11. `SITE_SUFFICIENT` admite ausencia legítima de área;
+12. `NOT_APPLICABLE` no fabrica ni exige área;
+13. `null` nunca funciona como wildcard;
+14. un rol no habilitado para el área conserva `AUTH_OPERATIONAL_ROLE_INVALID_FOR_AREA`;
+15. cruce de recurso y compatibilidad rol–área permanecen causas distintas;
+16. una vista autorizada de afiliaciones propias no amplía el territorio operativo;
+17. un recurso site-level no convierte permisos area-scoped en site-wide;
+18. una operación multiárea no se autoriza por coincidencia parcial;
+19. filtrado visual no sustituye filtrado autoritativo;
+20. mutaciones revalidan territorio antes del efecto;
+21. servidor, RPC y RLS preservan la misma frontera;
+22. cambios territoriales invalidan decisiones previas;
+23. el handoff a `AUTH-QA-009` conserva área, sede, rol y turno como hechos recalculables;
+24. no se crean ni modifican requisitos de prueba;
+25. no se ejecuta ningún cambio físico durante esta tarea documental.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- redefine la sede operativa certificada por `AUTH-QA-007`;
+- desarrolla la rotación de permisos, reservada a `AUTH-QA-009`;
+- ejecuta la certificación adversarial completa cross-area, reservada a `AUTH-QA-024`;
+- redefine `employee_areas`;
+- redefine áreas primarias o seleccionadas;
+- redefine el catálogo de áreas;
+- redefine `operational_area_requirement`;
+- redefine habilitaciones rol–área;
+- redefine razones públicas;
+- crea permisos, grants o denegaciones;
+- modifica RLS, RPC, Supabase, aplicaciones, datos o migraciones;
+- ejecuta instancias físicas `AUTH-QA-008::<package_id>`;
+- ejecuta `AUTH-QA-008::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba `E5-GATE-008`;
+- convierte `null` en wildcard;
+- concede autoridad por parámetros enviados por cliente.
+
+---
+
+#### 37. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-007 — Trabajador solo ve su sede`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-008 — Trabajador solo ve su área`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-009 — Trabajador rotado cambia de permisos por turno`
 ### [ ] AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
 ### [ ] AUTH-QA-010 — Bodeguero puede preparar pero no producir
 ### [ ] AUTH-QA-011 — Producción puede producir pero no ajustar inventario global

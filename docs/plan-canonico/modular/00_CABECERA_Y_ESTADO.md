@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1530** |
+| Tareas aprobadas | **1531** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **66** |
+| Tareas no iniciadas | **65** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **95.86% (1530/1596)** |
+| Porcentaje de completamiento | **95.93% (1531/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-007 — Trabajador solo ve su sede** |
-| Tarea actual | **AUTH-QA-008 — Trabajador solo ve su área** |
+| Última tarea aprobada | **AUTH-QA-008 — Trabajador solo ve su área** |
+| Tarea actual | **AUTH-QA-009 — Trabajador rotado cambia de permisos por turno** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-009 — Trabajador rotado cambia de permisos por turno** |
+| Siguiente tarea | **AUTH-QA-010 — Bodeguero puede preparar pero no producir** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 7 de 60 aprobadas; AUTH-QA-008 pendiente** |
+| Progreso del bloque | **BLOQUE U: 8 de 60 aprobadas; AUTH-QA-009 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-008** |
+| Carril documental | **ACTIVO — AUTH-QA-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-007` — Trabajador solo ve su sede |
-| Tarea actual | `AUTH-QA-008` — Trabajador solo ve su área — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-009` — Trabajador rotado cambia de permisos por turno |
+| Última aprobada | `AUTH-QA-008` — Trabajador solo ve su área |
+| Tarea actual | `AUTH-QA-009` — Trabajador rotado cambia de permisos por turno — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-010` — Bodeguero puede preparar pero no producir |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 7 DE 60 APROBADAS — ACTUAL AUTH-QA-008** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 8 DE 60 APROBADAS — ACTUAL AUTH-QA-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-007 — Trabajador solo ve su sede
-        ↓
-TAREA ACTUAL
 AUTH-QA-008 — Trabajador solo ve su área
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-010 — Bodeguero puede preparar pero no producir
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 7 de 60 tareas aprobadas
+BLOQUE U — 8 de 60 tareas aprobadas
 ```
