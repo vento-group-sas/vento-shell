@@ -20657,7 +20657,1365 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-026 — Cola offline de ANIMA se revalida`
-### [ ] AUTH-QA-026 — Cola offline de ANIMA se revalida
+### ✅ AUTH-QA-026 — Cola offline de ANIMA se revalida
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-025 — Check-out retira permisos operativos
+**Tarea siguiente:** AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
+**Tipo de tarea:** documental; definición canónica de una prueba integral de persistencia durable, identidad estable, idempotencia, replay, reautorización server-side, concurrencia, conciliación y recuperación de la cola offline de asistencia de ANIMA, reutilizable por paquete y certificable globalmente, para demostrar que ninguna intención diferida conserva autoridad capturada, que cada intento capaz de producir efecto se reautoriza con contexto vigente y que respuesta perdida, retry, cambio de actor, turno, territorio, rol, dispositivo o vínculo nunca producen un efecto duplicado, retargeteado o autorizado con una decisión stale
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-026::<package_id>` y la certificación `AUTH-QA-026::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; los contratos de cola offline de `ANIMA-AUTH-014`, reautorización de `ANIMA-AUTH-015`, invalidación de `AUTH-CTX-029`, idempotencia y recuperación `QUEUE-ARC-*`, resolución canónica y requisitos transversales existen documentalmente, pero esta tarea no infiere materialización completa ni certificación E2E del flujo offline en los packages consumidores
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se generan marcaciones reales, no se procesan colas de dispositivos, no se ejecutan retries, conciliaciones o recovery reales, no se modifican RPC, RLS, funciones, migraciones, datos, permisos, cachés, código, dispositivos, ambientes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que toda intención de asistencia capturada offline en ANIMA permanece como una intención durable pero no autorizada hasta que una frontera server-side vigente revalide identidad, vínculo, tiempo, turno, revisión, territorio, rol, dispositivo, secuencia, estado empresarial y autorización inmediatamente antes de producir o recuperar el efecto.
+
+La regla raíz queda:
+
+```text
+INTENCION OFFLINE DURABLE
++
+IDENTIDAD ESTABLE
++
+CONTENIDO LOGICO INMUTABLE
++
+REAUTORIZACION SERVER-SIDE FRESCA
++
+IDEMPOTENCIA / CONCILIACION
+=
+EFECTO UNICO O RESULTADO SEGURO
+```
+
+Y nunca:
+
+```text
+AUTORIZACION CAPTURADA ANTES DE QUEDAR OFFLINE
+→
+AUTORIZACION REUTILIZABLE AL SINCRONIZAR
+```
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos cuarenta y ocho resultados obligatorios:
+
+1. una intención offline no equivale a un hecho empresarial confirmado;
+2. la cola solo puede declararse durable después de confirmar persistencia local exitosa;
+3. `client_event_id` existe antes del primer intento de envío y permanece estable;
+4. el contenido lógico de la intención conserva fingerprint estable;
+5. restaurar la aplicación no genera otra identidad para el mismo hecho;
+6. retry no genera otra identidad para el mismo hecho;
+7. el mismo identificador y mismo fingerprint recuperan el resultado ya existente cuando corresponda;
+8. el mismo identificador con fingerprint distinto produce conflicto y cero efectos;
+9. un elemento de cola no transporta un `ALLOW` reutilizable;
+10. un elemento de cola no transporta un `AccessContext` ejecutable;
+11. una proyección optimista de UI no concede autoridad;
+12. cada intento capaz de producir efecto obtiene identidad técnica vigente;
+13. el principal se deriva de la sesión actual y no de un payload durable;
+14. el actor efectivo se resuelve de nuevo y no se toma de un `employee_id` manipulable;
+15. cambio de usuario no retargetea una intención anterior;
+16. un vínculo laboral terminado no borra la intención histórica pero puede bloquear su ejecución automática;
+17. `EVENT_TIME` y `EXECUTION_TIME` permanecen separados;
+18. `occurred_at` no cambia al reconectar;
+19. turno y revisión se resuelven contra el evento original y no contra el turno visible al sincronizar;
+20. una revisión posterior no reescribe la intención antigua;
+21. una revisión borrador no autoriza;
+22. una revisión irresoluble o ambigua falla cerrada o entra a aislamiento;
+23. sede, área y rol se resuelven desde la misma fuente autoritativa aplicable;
+24. selección local, sede predeterminada o geofence latch no amplían territorio;
+25. `anima.access` por sí sola no materializa un hecho de asistencia;
+26. permisos administrativos de turnos no sustituyen la autorización de la transición de asistencia;
+27. check-in, check-out, inicio de descanso y fin de descanso conservan prerrequisitos distintos;
+28. un check-in offline encolado no crea `active_checkin_session` ni habilita permisos dependientes de presencia;
+29. un check-out offline encolado no cierra server-side una sesión hasta confirmación autoritativa;
+30. un inicio o fin de descanso offline no crea ni cierra una pausa por estado local únicamente;
+31. cada item se revalida individualmente; autorización a nivel de lote está prohibida;
+32. el efecto de un item anterior obliga a reevaluar cualquier item posterior dependiente;
+33. un estado local `syncing` no equivale a claim distribuido, lease ni fencing;
+34. dos dispositivos o replays concurrentes no producen dos efectos incompatibles;
+35. una respuesta perdida con efecto posible produce `RESULT_UNKNOWN`, no retry ciego;
+36. `RESULT_UNKNOWN` se concilia antes de admitir otro intento;
+37. un retry conserva identidad, fingerprint, `occurred_at` y presupuesto;
+38. retry vuelve a reautorizar; esperar conectividad no conserva autoridad;
+39. una ejecución `force` no omite autenticación, reautorización, cuarentena ni conciliación;
+40. ausencia o incompatibilidad de la frontera server-side falla cerrada;
+41. un fallback legacy no puede ejecutar un direct insert salvo paridad contractual demostrada por su propietario;
+42. denegación, bloqueo, conflicto, fallo técnico, resultado recuperado y resultado desconocido conservan semánticas distintas;
+43. credenciales y tokens no se persisten dentro del payload durable de la cola;
+44. logout, revocación o cambio de actor impiden procesar una intención bajo otro usuario;
+45. caché, snapshot o decisión stale no sobreviven a cambios invalidantes;
+46. la compatibilidad de paquetes y repositorios permanece reservada a `AUTH-QA-027`;
+47. auditoría transversal y regresión final permanecen reservadas a `AUTH-QA-029` y `AUTH-QA-030`;
+48. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `ANIMA-AUTH-014`, para persistencia durable, identidad, fingerprint, estados, custodia, retry, aislamiento y recuperación de la intención offline;
+- `ANIMA-AUTH-015`, para reautorización server-side de cada intención y cada intento capaz de producir efecto;
+- `ANIMA-AUTH-009`, para la semántica propietaria del checkout cuando la intención diferida sea una salida;
+- `ANIMA-AUTH-010`, para la semántica propietaria de descansos cuando la intención diferida sea inicio o fin de pausa;
+- `AUTH-CTX-029`, para invalidación, write barrier, freshness, caché y la prohibición de transportar autorización offline como permiso;
+- `AUTH-CTX-030`, para concurrencia, temporalidad, check-in cerrado, fallos de infraestructura y pruebas negativas de stale authority;
+- `QUEUE-ARC-003`, para idempotencia por trabajo y fingerprint lógico;
+- `QUEUE-ARC-006`, para retries, backoff, límites y presupuesto;
+- `QUEUE-ARC-008`, para aislamiento, recuperación y tratamiento controlado de unidades no procesables;
+- `QUEUE-ARC-009`, para concurrencia, claim y efecto único;
+- `QUEUE-ARC-010`, para estados y outcomes transversales;
+- `AUTH-DB-033`/`AUTH-DB-034`, para resolver contexto y decisión canónicos cuando correspondan;
+- `AUTH-DB-035`, para invalidación y frescura transaccionales cuando exista materialización;
+- `AUTH-SRV-004..018`, para revalidación server-side, territorio, recurso, actor, errores y auditoría aplicables;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La tarea no convierte en autoridad una fila local, estado de UI, `can_operate`, `employee_id` de cliente, `shiftId` transportado, turno visible, sede seleccionada, `force`, token antiguo, geofence latch, último log, última decisión ni resultado inferido por el dispositivo.
+
+---
+
+#### 4. Frontera exacta entre `AUTH-QA-025` y `AUTH-QA-026`
+
+`AUTH-QA-025` certifica qué ocurre después de un check-out confirmado:
+
+```text
+CHECKOUT CONFIRMADO
+→ INVALIDACION DE AUTORIDAD OPERATIVA DEPENDIENTE
+```
+
+`AUTH-QA-026` certifica qué ocurre cuando la intención de check-out todavía está offline o se sincroniza posteriormente:
+
+```text
+INTENCION DE CHECKOUT OFFLINE
+→ NO CIERRE SERVER-SIDE TODAVIA
+→ REAUTORIZACION / IDEMPOTENCIA / CONCILIACION
+→ SOLO ENTONCES RESULTADO AUTORITATIVO
+```
+
+Por tanto, `AUTH-QA-026` no reabre la semántica de invalidación ya definida en `AUTH-QA-025`; demuestra que el camino diferido llega a esa transición sin autoridad stale, duplicación ni retargeting.
+
+---
+
+#### 5. Frontera con `AUTH-QA-027`
+
+`AUTH-QA-026` certifica la cola offline y su sincronización.
+
+`AUTH-QA-027` conserva la responsabilidad de demostrar que una actualización de paquete no rompe otros repositorios o consumidores.
+
+Queda fuera de esta tarea:
+
+- compatibilidad semver de paquetes;
+- publicación de paquetes compartidos;
+- actualización coordinada de consumidores;
+- drift de versiones entre repositorios;
+- rollback de una actualización transversal;
+- certificación multi-repositorio de adopción.
+
+---
+
+#### 6. Unidad lógica de certificación
+
+La unidad de prueba es una intención durable individual.
+
+Conceptualmente:
+
+```text
+ONE OFFLINE INTENT
+=
+ONE client_event_id
++
+ONE logical fingerprint
++
+ONE immutable occurred_at
++
+n attempts
++
+0..1 authoritative effect
++
+0..1 recoverable final result
+```
+
+No es unidad de autoridad:
+
+- toda la cola;
+- un lote de sincronización;
+- el usuario actual completo;
+- el último check-in visto;
+- la aplicación completa;
+- el dispositivo completo.
+
+---
+
+#### 7. Identidades que deben permanecer separadas
+
+La certificación distingue como mínimo:
+
+| Identidad | Propósito |
+| --- | --- |
+| `queue_item_id` | identidad técnica local de la entrada de cola |
+| `client_event_id` | identidad estable de la intención empresarial capturada |
+| `operation_id` | identidad transversal cuando el trabajo ingresa al contrato asíncrono aplicable |
+| `correlation_id` | correlación técnica del intento y evidencia |
+| `attempt_no` | ordinal técnico de ejecución, no identidad del hecho |
+| `shift_id` | referencia de turno, no identidad idempotente |
+| `attendance_session_reference` | sesión empresarial relacionada, no identidad del item |
+| resultado autoritativo | evidencia del efecto o decisión final, no nueva intención |
+
+Ninguna de estas identidades se sustituye por otra por conveniencia.
+
+---
+
+#### 8. Identidad estable antes del primer envío
+
+La intención debe obtener una identidad estable antes del primer envío.
+
+Reglas:
+
+1. el ID no nace después de una respuesta de red;
+2. el ID no cambia al reintentar;
+3. restaurar la aplicación no genera otro ID;
+4. reabrir la cola no genera otro ID;
+5. cambiar token técnico no genera otro ID;
+6. cambiar `attempt_no` no genera otro ID;
+7. borrar y recrear el item local no autoriza reemplazar la identidad empresarial;
+8. una colisión incompatible no se resuelve generando un ID nuevo silenciosamente.
+
+---
+
+#### 9. Fingerprint lógico
+
+La identidad se acompaña de una huella del contenido lógico relevante.
+
+La certificación exige:
+
+```text
+SAME client_event_id
++
+SAME logical fingerprint
+→ replay compatible / result recovery
+```
+
+Y:
+
+```text
+SAME client_event_id
++
+DIFFERENT logical fingerprint
+→ CONFLICT
+→ ZERO NEW EFFECT
+```
+
+El fingerprint no se modifica para hacer compatible una intención que dejó de ser válida.
+
+---
+
+#### 10. Persistencia durable antes de `queued`
+
+El estado visible o lógico equivalente a `queued` solo es válido después de demostrar persistencia durable.
+
+Secuencia:
+
+```text
+CONSTRUIR INTENCION
+→ ASIGNAR IDENTIDAD
+→ PERSISTIR
+→ CONFIRMAR PERSISTENCIA
+→ EXPONER ESTADO ENCOLADO
+```
+
+No:
+
+```text
+MOSTRAR ENCOLADO
+→ INTENTAR PERSISTIR DESPUES
+```
+
+Si la persistencia falla, la intención no puede presentarse como durable ni confirmada.
+
+---
+
+#### 11. Estado de cola no equivale a estado empresarial
+
+Los estados técnicos locales son proyecciones de ejecución.
+
+La semántica transversal esperada puede incluir:
+
+| Condición | Estado lógico |
+| --- | --- |
+| intención durable lista | `queued` |
+| espera de retry | `retry_pending` |
+| ejecución con autoridad técnica adquirida | `processing` |
+| condición temporalmente bloqueada | `blocked` |
+| efecto posible pero no confirmado | `result_unknown` |
+| conciliación activa | `reconciling` |
+| unidad aislada | `quarantined` |
+| presupuesto automático agotado | `dead_letter` |
+| resultado confirmado | `succeeded` |
+| fallo definitivo contractual | `failed` |
+| cancelación efectiva | `cancelled` |
+| vencimiento sin efecto ambiguo | `expired` |
+
+Un estado local `syncing` no demuestra claim distribuido.
+
+Un estado local `failed` no demuestra por sí solo terminalidad empresarial.
+
+---
+
+#### 12. Custodia y supervivencia local
+
+Una intención confirmada como durable debe sobrevivir, según el contrato de almacenamiento aplicable:
+
+- cierre de la pantalla;
+- suspensión de la aplicación;
+- reinicio de la aplicación;
+- pérdida y recuperación de red;
+- restore del hook o worker;
+- foreground posterior;
+- reinicio del dispositivo cuando el storage aprobado lo soporte;
+- actualización compatible de la aplicación.
+
+La supervivencia local no concede autoridad adicional.
+
+---
+
+#### 13. Segregación por actor
+
+La cola permanece segregada por actor.
+
+Reglas:
+
+1. una cola de un usuario no se procesa bajo la sesión de otro;
+2. un cambio de usuario bloquea retarget automático;
+3. un dispositivo compartido no presta actor ni rol;
+4. una intención retenida después de logout permanece bloqueada hasta resolver una sesión compatible o recovery propietario;
+5. no se reescribe `employee_id` para adaptar la intención al usuario actual;
+6. una intención de actor anterior no se adopta por coincidencia de sede, turno o dispositivo.
+
+---
+
+#### 14. Credenciales y secretos
+
+La cola durable no conserva como parte de su payload autoritativo:
+
+- access token;
+- refresh token;
+- cookie de sesión;
+- bearer token;
+- service-role key;
+- secreto de dispositivo;
+- decisión `ALLOW`;
+- capability token derivado;
+- contexto completo usado como credencial.
+
+La sesión vigente se resuelve al intentar sincronizar.
+
+---
+
+#### 15. Evidencia capturada no equivale a autoridad
+
+La intención puede conservar evidencia histórica como:
+
+```text
+captured_actor_reference
+captured_shift_reference
+captured_revision_reference
+captured_site_reference
+captured_area_reference
+captured_operational_role_reference
+captured_geofence_evidence
+device_context_reference
+```
+
+Esta evidencia permite reconstrucción y comparación.
+
+No convierte al cliente en fuente de autoridad.
+
+---
+
+#### 16. Modelo temporal dual
+
+Cada intento debe distinguir:
+
+```text
+EVENT_TIME
+= occurred_at original
+```
+
+Y:
+
+```text
+EXECUTION_TIME
+= resolved_at server-side del intento actual
+```
+
+`EVENT_TIME` determina el hecho pretendido y su contexto histórico aplicable.
+
+`EXECUTION_TIME` determina si hoy existe autoridad y seguridad suficiente para materializar, recuperar, bloquear, denegar, aislar o conciliar esa intención.
+
+---
+
+#### 17. Inmutabilidad de `occurred_at`
+
+Está prohibido alterar el evento original para hacerlo ejecutable.
+
+No se permite:
+
+- reemplazar `occurred_at` por hora de reconexión;
+- mover el evento al día actual;
+- usar `now()` para salvar una ventana;
+- usar `received_at` como ocurrencia;
+- adaptar el evento al turno actual;
+- cambiar el tiempo en cada retry.
+
+Un timestamp inválido o irresoluble impide ejecución automática y conserva la intención para el tratamiento correspondiente.
+
+---
+
+#### 18. Resolución de turno y revisión
+
+La certificación exige una resolución determinista del turno y revisión aplicables al evento original.
+
+Orden conceptual:
+
+```text
+ACTOR
+→ VINCULO
+→ EVENT_TIME
+→ TURNO
+→ REVISION PUBLICADA
+→ TERRITORIO / ROL
+→ PRERREQUISITOS DE LA TRANSICION
+```
+
+Queda prohibido usar por conveniencia:
+
+- primer turno encontrado;
+- último turno encontrado;
+- turno visible al reconectar;
+- revisión más reciente;
+- turno del día actual;
+- fallback por coincidencia textual.
+
+---
+
+#### 19. Publicación, reemplazo y cancelación
+
+Una revisión posterior no reescribe un evento antiguo.
+
+Una cancelación, retiro, reemplazo o corrección posterior puede cambiar la elegibilidad de ejecución automática.
+
+La intención original se conserva y puede terminar en:
+
+- ejecución autorizada;
+- resultado ya recuperado;
+- bloqueo temporal;
+- denegación;
+- conflicto;
+- cuarentena;
+- conciliación;
+- fallo técnico.
+
+No se retargetea silenciosamente a una revisión nueva.
+
+---
+
+#### 20. Turnos overnight y fronteras temporales
+
+La certificación usa intervalos absolutos y la semántica temporal propietaria.
+
+Cuando aplique:
+
+```text
+starts_at <= EVENT_TIME < ends_at
+```
+
+Un turno iniciado el día anterior puede seguir siendo el correcto.
+
+`shift_date = hoy` no demuestra aplicabilidad.
+
+La hora de sincronización posterior al fin no invalida por sí sola una intención histórica; la transición propietaria decide si aún puede materializarse, recuperarse o debe conciliarse.
+
+---
+
+#### 21. Sede y área
+
+Sede y área se resuelven desde la misma revisión o fuente autoritativa aplicable.
+
+No se permite reparar incompatibilidades mediante:
+
+- sede seleccionada;
+- sede predeterminada del empleado;
+- última sede usada;
+- última sede de check-in;
+- asignación más permisiva;
+- área enviada por cliente;
+- `null` tratado como wildcard;
+- cobertura administrativa genérica.
+
+La certificación conserva las fronteras de `AUTH-QA-023` y `AUTH-QA-024`.
+
+---
+
+#### 22. Rol operativo
+
+El rol capturado es evidencia histórica, no grant.
+
+La reautorización verifica:
+
+- rol canónico;
+- vigencia del código;
+- compatibilidad territorial;
+- compatibilidad con turno/revisión;
+- presencia cuando el contrato la exige;
+- ausencia de sustitución por rol base;
+- ausencia de sustitución por `navigation_role`;
+- ausencia de override local como fuente de autoridad.
+
+---
+
+#### 23. Permiso y `authorization_requirement`
+
+La tarea no crea permisos nuevos.
+
+Cada transición consume el contrato de autorización propietario vigente.
+
+Reglas:
+
+1. el permiso no lo elige el cliente;
+2. el permiso no se infiere del botón;
+3. el permiso no se reemplaza por uno menos restrictivo;
+4. el catálogo vigente se usa en el intento actual;
+5. `anima.access` no basta por sí sola para materializar asistencia;
+6. permisos administrativos de programación no se usan como permiso de marcación;
+7. si no existe permiso específico aprobado, esta tarea no inventa uno.
+
+---
+
+#### 24. Check-in offline
+
+Una intención offline de check-in puede estar durable y pendiente sin crear presencia real.
+
+Mientras no exista confirmación server-side:
+
+```text
+active_checkin_session
+NO SE CREA POR LA COLA LOCAL
+```
+
+Y:
+
+```text
+T+C
+NO QUEDA SATISFECHO POR ESTADO LOCAL
+```
+
+La reautorización debe comprobar identidad, vínculo, turno/revisión, ventana, territorio, rol, evidencia de ubicación cuando aplique, ausencia de sesión incompatible y decisión vigente.
+
+---
+
+#### 25. Check-out offline
+
+Una intención offline de salida:
+
+```text
+PERSISTIDA LOCALMENTE
+!=
+SESION CERRADA EN SERVIDOR
+```
+
+Debe conservar la referencia exacta o resoluble de la sesión que pretende cerrar.
+
+Está prohibido cerrar “la última sesión” únicamente por conveniencia.
+
+Cuando el servidor confirma el checkout, se activan las obligaciones de invalidación de `AUTH-QA-025`.
+
+---
+
+#### 26. Descansos offline
+
+Inicio y fin de descanso conservan identidad propia y transición propietaria.
+
+La certificación exige:
+
+- inicio vinculado a sesión compatible;
+- fin vinculado al descanso exacto que pretende cerrar;
+- identidad idempotente persistida;
+- transición atómica server-side;
+- replay seguro;
+- resultado recuperable;
+- conflicto visible;
+- cero cierres de otro descanso por conveniencia.
+
+---
+
+#### 27. Orden y dependencias entre eventos
+
+El orden lógico no depende solo de la posición en un arreglo local.
+
+Como mínimo:
+
+1. checkout no puede aplicarse antes de su check-in dependiente;
+2. inicio de descanso no puede aplicarse sin sesión compatible;
+3. fin de descanso no cierra otro descanso;
+4. eventos diferentes conservan identidades diferentes;
+5. `created_at` local no sustituye `occurred_at`;
+6. un efecto confirmado puede cambiar el contexto de los items siguientes;
+7. después de cada efecto relevante, los items dependientes vuelven a evaluarse.
+
+---
+
+#### 28. Reautorización por item
+
+Cada item capaz de producir efecto se reautoriza de forma individual.
+
+Queda prohibido:
+
+```text
+AUTORIZAR LOTE UNA VEZ
+→ EJECUTAR TODOS LOS ITEMS
+```
+
+La secuencia correcta es equivalente a:
+
+```text
+ITEM 1
+→ REAUTORIZAR
+→ EJECUTAR / RECUPERAR
+→ OBSERVAR NUEVO ESTADO
+
+ITEM 2
+→ REAUTORIZAR DE NUEVO
+→ ...
+```
+
+---
+
+#### 29. Replay de la misma intención
+
+Para la misma identidad y mismo fingerprint:
+
+```text
+EFECTO YA EXISTE
+→ RESULT_RECOVERED
+→ ZERO SECOND EFFECT
+```
+
+No se crean:
+
+- dos check-ins;
+- dos check-outs;
+- dos descansos;
+- dos cierres de descanso;
+- dos eventos empresariales equivalentes;
+- dos timestamps terminales para el mismo hecho.
+
+---
+
+#### 30. Colisión de identidad
+
+Para la misma identidad con contenido distinto:
+
+```text
+CONFLICT
+→ QUARANTINE / RECOVERY SEGUN CONTRATO
+→ ZERO NEW EFFECT
+```
+
+No se permite:
+
+- tratarlo como duplicate inocuo;
+- regenerar identidad automáticamente;
+- sobrescribir payload antiguo;
+- elegir el payload más reciente;
+- ejecutar ambos.
+
+---
+
+#### 31. Concurrencia entre dispositivos
+
+Dos dispositivos pueden presentar la misma intención o intenciones incompatibles.
+
+La certificación exige mecanismos que produzcan como máximo un efecto empresarial compatible.
+
+El estado local `syncing` no demuestra exclusión distribuida.
+
+La frontera propietaria debe usar claim, lock, versión, unicidad, compare-and-set, fencing o mecanismo equivalente cuando corresponda.
+
+---
+
+#### 32. Resultado desconocido
+
+Si una respuesta se pierde después de que el servidor pudo producir efecto:
+
+```text
+TIMEOUT / NETWORK LOSS
++
+POSSIBLE EFFECT
+→ RESULT_UNKNOWN
+```
+
+No:
+
+```text
+TIMEOUT
+→ NEW BLIND RETRY
+```
+
+Una lectura vacía sin garantía fuerte no prueba que el efecto no ocurrió.
+
+---
+
+#### 33. Conciliación
+
+La conciliación usa la misma identidad y consulta fuentes autoritativas para resolver, como mínimo:
+
+- efecto aplicado;
+- efecto no aplicado y seguro de reintentar;
+- conflicto;
+- resultado todavía incierto;
+- referencia de sesión afectada;
+- evidencia faltante;
+- posibilidad o prohibición de un nuevo intento.
+
+La conciliación no crea una intención nueva para ocultar incertidumbre.
+
+---
+
+#### 34. Retry, backoff y presupuesto
+
+Un retry ordinario solo procede cuando:
+
+- el error es reintentable;
+- no existe resultado ambiguo sin conciliar;
+- queda presupuesto;
+- la intención sigue vigente;
+- no está cancelada;
+- no está en conflicto o cuarentena no liberada;
+- `next_retry_at` permite el intento;
+- `Retry-After` se respeta cuando aplique;
+- la reautorización fresca permite continuar.
+
+Reabrir la aplicación o recuperar red no reinicia el presupuesto.
+
+---
+
+#### 35. Ejecución `force`
+
+Una modalidad técnica equivalente a `force` puede solicitar reevaluación inmediata.
+
+No puede:
+
+- omitir autenticación;
+- omitir reautorización;
+- convertir `DENIED` en `PROCEED`;
+- liberar cuarentena por sí sola;
+- ignorar conciliación de `RESULT_UNKNOWN`;
+- reiniciar presupuesto;
+- cambiar `client_event_id`;
+- cambiar fingerprint;
+- volver a ejecutar un resultado ya recuperado.
+
+“Procesar ahora” no significa “autorizar ahora”.
+
+---
+
+#### 36. Outcomes de reautorización
+
+La certificación usa outcomes compatibles con el contrato vigente:
+
+| Outcome | Semántica |
+| --- | --- |
+| `PROCEED` | prerequisitos frescos satisfechos; puede entrar a frontera de efecto |
+| `RESULT_RECOVERED` | la misma intención ya posee resultado autoritativo |
+| `BLOCKED` | condición temporalmente resoluble sin cambiar identidad |
+| `DENIED` | la autoridad vigente no permite materializar la intención |
+| `CONFLICT` | identidad o estado incompatible exige aislamiento |
+| `RESULT_UNKNOWN` | el efecto pudo ocurrir y requiere conciliación |
+| `TECHNICAL_ERROR` | no existe decisión empresarial concluyente por fallo técnico |
+
+Estos outcomes no crean una taxonomía paralela en ANIMA.
+
+---
+
+#### 37. Denegación, bloqueo y fallo técnico
+
+Se exige distinguir:
+
+```text
+DENIED
+!=
+BLOCKED
+!=
+CONFLICT
+!=
+RESULT_UNKNOWN
+!=
+TECHNICAL_ERROR
+```
+
+Un fallo técnico no se presenta como “sin permiso”.
+
+Una denegación no se convierte en retry infinito.
+
+Un bloqueo temporal no autoriza retarget.
+
+Un conflicto no se resuelve por last-write-wins.
+
+---
+
+#### 38. Contrato server-side ausente o incompatible
+
+Si la frontera de sincronización:
+
+- no existe;
+- responde con schema desconocido;
+- no puede resolver contexto;
+- no puede verificar integridad;
+- tiene versión incompatible;
+- pierde una dependencia crítica;
+
+entonces:
+
+```text
+NO DIRECT INSERT
+NO FALLBACK PERMISIVO
+NO APPLIED INVENTADO
+NO REGENERACION DE IDENTIDAD
+```
+
+La intención permanece durable con diagnóstico técnico compatible.
+
+---
+
+#### 39. Baseline verificable del cliente ANIMA
+
+La revisión read-only del repositorio actual confirma que existen:
+
+- `PendingAttendanceEvent`;
+- almacenamiento durable mediante `SecureStore`;
+- `syncPendingAttendanceQueue`;
+- ejecución desde bootstrap/foreground;
+- modalidad `force`;
+- `syncAttendanceEventOnServer`;
+- llamada a `sync_attendance_events`;
+- `clientEventId` en el flujo de asistencia;
+- cola y helpers específicos para asistencia y descansos.
+
+También se observó que el camino actual conserva fallback legacy cuando `sync_attendance_events` no está disponible.
+
+Este baseline demuestra superficies reales existentes, no conformidad integral con esta certificación.
+
+---
+
+#### 40. Baseline verificable de la frontera Supabase
+
+El contrato documental vigente registra que `public.sync_attendance_events(jsonb)` posee una base útil: deriva trabajador desde la identidad autenticada, valida payload, admite check-in/check-out, valida fuente y sede, registra `client_event_id` y puede devolver resultados como `duplicate`.
+
+No se considera suficiente por sí solo para certificar:
+
+- fingerprint de contenido como parte integral de deduplicación;
+- revisión publicada exacta del evento;
+- ventana temporal histórica completa;
+- rol y área de la misma revisión;
+- invalidaciones concurrentes;
+- decisión canónica fresca;
+- target exacto de sesión para checkout;
+- idempotencia vinculante de descansos;
+- paridad de cualquier fallback alternativo.
+
+---
+
+#### 41. Fallback legacy de escritura
+
+Un fallback puede existir durante una transición técnica, pero no puede considerarse conforme si omite cualquiera de:
+
+- identidad estable;
+- fingerprint;
+- actor resuelto;
+- turno/revisión;
+- territorio;
+- rol;
+- autorización;
+- idempotencia;
+- resultado recuperable;
+- concurrencia;
+- auditoría;
+- tratamiento de incertidumbre.
+
+La ausencia de la RPC principal no autoriza degradación silenciosa a una escritura directa.
+
+---
+
+#### 42. Invalidación y frescura durante sincronización
+
+Cambios posteriores a la captura pueden volver stale una decisión anterior.
+
+La certificación cubre, entre otros:
+
+- cambio de turno;
+- publicación o retiro de revisión;
+- cambio de rol;
+- cambio de actor;
+- cambio de sede;
+- cambio de área;
+- check-in o checkout confirmado;
+- revocación de sesión;
+- cambio o revocación de dispositivo;
+- finalización del vínculo laboral;
+- cambio de catálogo o requisito;
+- frontera temporal alcanzada.
+
+Todo intento posterior vuelve a resolver autoridad.
+
+---
+
+#### 43. Caché y snapshots
+
+La cola no puede convertir en autoridad durable:
+
+- L0 de otro request;
+- L1 compartida sin token vigente;
+- L2 de cliente;
+- `can_operate`;
+- decisión tomada al renderizar;
+- objeto serializado de contexto;
+- resultado previo sin identidad verificable.
+
+Un cache HIT stale, una decisión vieja o un snapshot restaurado que permita efecto constituye fallo de certificación.
+
+---
+
+#### 44. Realtime y conectividad recuperada
+
+Realtime, listeners, foreground y network callbacks pueden despertar la evaluación.
+
+No conceden autoridad.
+
+Regla:
+
+```text
+CONECTIVIDAD RECUPERADA
+→ OPORTUNIDAD DE REEVALUAR
+```
+
+No:
+
+```text
+CONECTIVIDAD RECUPERADA
+→ EJECUTAR TODA LA COLA SIN NUEVA DECISION
+```
+
+---
+
+#### 45. Logout, cambio de usuario y revocación
+
+Logout o cambio de usuario no deben borrar silenciosamente la intención durable si el dominio requiere conservarla para conciliación.
+
+Pero sí deben impedir:
+
+- procesarla bajo otro usuario;
+- usar una sesión antigua;
+- retargetear actor;
+- adoptar el item por coincidencia de dispositivo;
+- regenerar identidad para evitar el bloqueo.
+
+Un vínculo terminado o una sesión revocada invalida la autoridad anterior aunque la intención haya sido capturada legítimamente.
+
+---
+
+#### 46. Actualización de aplicación y restore
+
+Una actualización compatible puede conservar el item durable, pero debe validar:
+
+- schema de almacenamiento;
+- versión contractual;
+- integridad del payload;
+- identidad y fingerprint;
+- estados desconocidos;
+- presupuesto de retry;
+- `next_retry_at`;
+- referencia de resultado previo;
+- necesidad de cuarentena ante incompatibilidad.
+
+La migración local no puede convertir automáticamente un item incompatible en `queued` autorizado.
+
+---
+
+#### 47. Privacidad y minimización
+
+La evidencia debe conservar lo necesario para reconstruir la decisión sin duplicar datos sensibles innecesarios.
+
+Reglas:
+
+- no persistir credenciales;
+- no volcar tokens a logs;
+- no exportar payloads completos de cola a telemetría general;
+- evitar coordenadas precisas en logs cuando baste referencia o redacción segura;
+- no exponer horarios, roles, sedes o causas internas a otro actor;
+- distinguir evidencia de seguridad de mensajes visibles al trabajador.
+
+---
+
+#### 48. Evidencia auditable mínima
+
+Cada intento debe poder correlacionar, cuando aplique:
+
+```text
+client_event_id
+payload_fingerprint
+correlation_id
+attempt_no
+original_occurred_at
+queued_at
+server_resolved_at
+authenticated_principal
+effective_actor
+labor_link_reference
+shift_id
+published_revision_reference
+attendance_session_reference
+site_reference
+area_reference
+operational_role_reference
+device_reference
+authorization_contract_version
+catalog_version
+decision_reference
+decision_outcome
+blocked_or_denied_reasons
+result_reference
+reconciliation_reference
+```
+
+La evidencia capturada y la resuelta deben poder diferenciarse.
+
+---
+
+#### 49. Matriz integral de casos
+
+La certificación deberá cubrir, al menos, los siguientes casos:
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-026-A` | check-in offline persistido correctamente | item durable `queued`; cero sesión server-side todavía |
+| `AUTH-QA-026-B` | storage local falla antes de confirmar cola | no `queued`; fallo visible y cero falsa confirmación |
+| `AUTH-QA-026-C` | reinicio de app después de persistir | misma identidad y fingerprint restaurados |
+| `AUTH-QA-026-D` | retry tras recuperar red | misma identidad; nueva reautorización |
+| `AUTH-QA-026-E` | mismo ID y mismo contenido ya aplicado | `RESULT_RECOVERED`; cero segundo efecto |
+| `AUTH-QA-026-F` | mismo ID con contenido distinto | `CONFLICT`; cero efecto |
+| `AUTH-QA-026-G` | usuario actual distinto del actor capturado | no retarget; bloqueo/aislamiento |
+| `AUTH-QA-026-H` | sesión técnica revocada | fail-closed antes de efecto |
+| `AUTH-QA-026-I` | vínculo laboral terminó después de captura | autoridad antigua no se reutiliza; conservar evidencia |
+| `AUTH-QA-026-J` | turno original sigue resoluble | evaluar revisión histórica aplicable |
+| `AUTH-QA-026-K` | turno original reemplazado por revisión nueva | no retarget; usar historia o aislar según contrato |
+| `AUTH-QA-026-L` | revisión original borrador | no autoriza ejecución |
+| `AUTH-QA-026-M` | múltiples revisiones aplicables ambiguas | fail-closed / cuarentena |
+| `AUTH-QA-026-N` | overnight cruza medianoche | resolver por intervalos absolutos |
+| `AUTH-QA-026-O` | sede capturada difiere de fuente autoritativa | clasificar antes de efecto; cero reparación permisiva |
+| `AUTH-QA-026-P` | área capturada difiere | deny/bloqueo seguro según contrato; cero wildcard |
+| `AUTH-QA-026-Q` | rol local difiere del rol autoritativo | usar fuente autoritativa; cero override local |
+| `AUTH-QA-026-R` | `anima.access` existe pero transición no satisface prerequisitos | no materializar por permiso general |
+| `AUTH-QA-026-S` | check-in offline válido | confirmar solo después de autorización fresca |
+| `AUTH-QA-026-T` | check-in offline ya aplicado por otro dispositivo | recuperar resultado; cero duplicado |
+| `AUTH-QA-026-U` | check-out offline apunta a sesión exacta todavía abierta | revalidar y cerrar una sola vez |
+| `AUTH-QA-026-V` | check-out offline apunta a sesión ya cerrada por mismo evento | recuperar resultado |
+| `AUTH-QA-026-W` | check-out offline apunta a otra sesión | conflicto/deny; cero cierre por conveniencia |
+| `AUTH-QA-026-X` | inicio de descanso replayado | un solo descanso |
+| `AUTH-QA-026-Y` | fin de descanso replayado | un solo cierre del descanso exacto |
+| `AUTH-QA-026-Z` | fin de descanso intenta cerrar otro descanso | conflicto/deny; cero efecto incorrecto |
+| `AUTH-QA-026-AA` | checkout llega antes de check-in dependiente | bloqueo/orden; cero efecto inválido |
+| `AUTH-QA-026-AB` | efecto de item 1 cambia contexto del item 2 | item 2 se reautoriza de nuevo |
+| `AUTH-QA-026-AC` | lote con diez items | diez decisiones por item cuando puedan producir efecto |
+| `AUTH-QA-026-AD` | estado local `syncing` duplicado en dos procesos | no asumir exclusión; servidor impide doble efecto |
+| `AUTH-QA-026-AE` | timeout antes de saber si hubo efecto | `RESULT_UNKNOWN`; conciliación |
+| `AUTH-QA-026-AF` | conciliación confirma efecto | recuperar resultado sin mutar otra vez |
+| `AUTH-QA-026-AG` | conciliación confirma no efecto y retry seguro | retry con misma identidad y nueva autorización |
+| `AUTH-QA-026-AH` | conciliación sigue inconclusa | permanece `RESULT_UNKNOWN`; sin retry ciego |
+| `AUTH-QA-026-AI` | presupuesto agotado sin efecto ambiguo | `dead_letter` cuando aplique; conservar evidencia |
+| `AUTH-QA-026-AJ` | `force` sobre item denegado | sigue denegado; no `PROCEED` |
+| `AUTH-QA-026-AK` | `force` sobre cuarentena | no libera sin recovery aprobado |
+| `AUTH-QA-026-AL` | `force` sobre `RESULT_UNKNOWN` | conciliación primero |
+| `AUTH-QA-026-AM` | RPC de sincronización ausente | fail-closed; no direct insert permisivo |
+| `AUTH-QA-026-AN` | schema de RPC incompatible | fail-closed; item durable conservado |
+| `AUTH-QA-026-AO` | fallback alternativo omite `client_event_id` | `FAIL`; paridad contractual rota |
+| `AUTH-QA-026-AP` | fallback alternativo omite autorización fresca | `FAIL`; cero certificación |
+| `AUTH-QA-026-AQ` | snapshot de contexto anterior sigue en memoria | no puede autorizar el intento |
+| `AUTH-QA-026-AR` | Realtime no llega | token/fuente autoritativa sigue bloqueando stale authority |
+| `AUTH-QA-026-AS` | dispositivo revocado durante espera | nueva evaluación bloquea efecto |
+| `AUTH-QA-026-AT` | cambio de actor en dispositivo compartido | item anterior no se procesa bajo actor nuevo |
+| `AUTH-QA-026-AU` | logout seguido de login de otra persona | cola anterior aislada |
+| `AUTH-QA-026-AV` | update de app conserva schema compatible | item mantiene identidad, fingerprint y presupuesto |
+| `AUTH-QA-026-AW` | update de app encuentra schema incompatible | cuarentena/migración segura; no auto-ejecución |
+| `AUTH-QA-026-AX` | error técnico del resolver | `TECHNICAL_ERROR`, no `DENIED` inventado |
+| `AUTH-QA-026-AY` | denegación empresarial concluyente | `DENIED`; no retry infinito |
+| `AUTH-QA-026-AZ` | efecto protegido ocurre antes de reautorización | `FAIL` de certificación |
+
+---
+
+#### 50. Taxonomía de fallos de certificación
+
+`AUTH-QA-026` falla si aparece cualquiera de estas clases:
+
+- `QUEUE_DURABILITY_FALSE_POSITIVE`;
+- `UNSTABLE_EVENT_IDENTITY`;
+- `FINGERPRINT_MISMATCH_ACCEPTED`;
+- `BLIND_REPLAY`;
+- `DUPLICATE_EFFECT`;
+- `ACTOR_RETARGET`;
+- `STALE_AUTHORITY_REUSE`;
+- `STALE_CONTEXT_REUSE`;
+- `EVENT_TIME_REWRITE`;
+- `SHIFT_RETARGET`;
+- `REVISION_RETARGET`;
+- `TERRITORY_FALLBACK_BYPASS`;
+- `ROLE_OVERRIDE_BYPASS`;
+- `BATCH_LEVEL_AUTHORIZATION`;
+- `LOCAL_SYNCING_AS_DISTRIBUTED_LOCK`;
+- `UNKNOWN_RESULT_BLIND_RETRY`;
+- `FORCE_AUTHORIZATION_BYPASS`;
+- `DIRECT_INSERT_FALLBACK_WITHOUT_PARITY`;
+- `TECHNICAL_ERROR_AS_DENY`;
+- `CREDENTIAL_PERSISTED_IN_QUEUE`;
+- `CROSS_USER_QUEUE_EXECUTION`;
+- `DEPENDENCY_ORDER_BROKEN`;
+- `POST_EFFECT_REAUTHORIZATION`.
+
+Cada fallo debe conservar owner físico y evidencia de reproducción en la futura ejecución correspondiente.
+
+---
+
+#### 51. Ejecución por paquete
+
+La topología vigente es:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+```
+
+Cada package aplicable ejecutará conceptualmente:
+
+```text
+AUTH-QA-026::<package_id>
+```
+
+La ejecución por paquete deberá demostrar únicamente las superficies de cola offline realmente consumidas por ese package.
+
+No se inventa cobertura de ANIMA en packages que no consuman la capacidad.
+
+La instancia documental no autoriza por sí sola ninguna ejecución física.
+
+---
+
+#### 52. Certificación global final
+
+La certificación global será:
+
+```text
+AUTH-QA-026::GLOBAL-FINAL
+```
+
+Solo podrá cerrarse cuando la evidencia por package aplicable permita demostrar transversalmente:
+
+- cero pérdida silenciosa de intenciones durables;
+- cero efectos duplicados;
+- cero retarget de identidad;
+- cero reuse de autoridad stale;
+- cero blind retry de resultados ambiguos;
+- cero fallback permisivo incompatible;
+- reautorización por item;
+- paridad de outcomes y recovery;
+- evidencia suficiente de concurrencia, replay, cambio de actor, reinicio, update y fallos técnicos.
+
+La definición documental actual no declara esa certificación ejecutada.
+
+---
+
+#### 53. Requisitos de prueba derivados
+
+`NO GENERA REQUISITOS DE PRUEBA`
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- persistencia durable, identidad estable, idempotencia, replay y recuperación ya poseen cobertura vigente;
+- la reautorización offline y la prohibición de autoridad stale ya poseen cobertura vigente;
+- concurrencia, retry, backoff, resultado desconocido y conciliación ya están cubiertos transversalmente;
+- programación, asistencia y contexto comparten obligaciones existentes;
+- esta tarea certifica integralmente esas obligaciones en el BLOQUE U sin introducir una capacidad, permiso, transición empresarial o riesgo normativo nuevo.
+
+---
+
+#### 54. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza:
+
+- `TREQ-ANIMA-003`, para persistencia durable antes de mostrar encolado, `client_event_id` estable, supervivencia a reinicio, replay seguro, conflicto por contenido distinto y prohibición de fallback sin paridad;
+- `TREQ-ANIMA-004`, para descansos atómicos, idempotentes, concurrentes y reconciliables;
+- `TREQ-INTEGRATION-003`, para identidad estable, fingerprint, estado durable, resultado recuperable, retry, backoff, jitter, timeout incierto, claim, concurrencia, dead-letter y recovery;
+- `TREQ-INTEGRATION-007`, para convergencia única entre programación, asistencia, contexto y Supabase sin duplicar jornadas ni tiempo trabajado;
+- `TREQ-AUTH-014`, para invalidación de contexto, caché y tokens derivados y reautorización de colas offline;
+- `TREQ-AUTH-015`, para evidencia correlacionable de actor, turno, check-in, territorio, permiso, decisión, razones, versión y timestamp;
+- `TREQ-AUTH-016`, para impedir que una cola offline ejecute después de retiro o finalización con autoridad anterior;
+- `TREQ-AUTH-217`, para invalidación por cambios de publicación, actor, horario, territorio o rol y solicitud nueva al sincronizar;
+- `TREQ-AUTH-237`, para impedir que offline, concurrencia y replay creen autoridad o sesiones duplicadas y exigir nueva decisión tras confirmación;
+- `TREQ-AUTH-247`, para impedir que caché, offline o replay conserven rol, actor, turno, sede, área, catálogo, check-in o dispositivo stale;
+- `TREQ-AUTH-312`, para retry técnico limitado, idempotente, trazable y con nueva solicitud/fuentes frescas después de fallo concluyente.
+
+Ninguna de estas filas cambia texto, owner, estado, relaciones, secuencia ni evidencia por efecto de `AUTH-QA-026`.
+
+---
+
+#### 55. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó build durante el desarrollo documental del artefacto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout documental del usuario ni sometido a format, quality, delivery y batería global. |
+| REMOTA | PASS | Se verificaron `main`, continuidad y marcador vigente del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, contratos `ANIMA-AUTH-014`/`015`, contratos `QUEUE-ARC-*`, contexto `AUTH-CTX-029`, cobertura 04A reutilizada y código read-only actual de `vento-anima` para `PendingAttendanceEvent`, SecureStore, `syncPendingAttendanceQueue`, `syncAttendanceEventOnServer`, `clientEventId` y `sync_attendance_events`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron marcaciones offline reales, reinicio de dispositivo, cambio de usuario, concurrencia, response loss, retry, force, conciliación ni recovery sobre una jornada operativa. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, RPC, RLS, migraciones, funciones, datos, configuración, storage, colas, dispositivos ni despliegues. |
+
+`REMOTA = PASS` acredita la coherencia documental contra las fuentes verificadas; no certifica ningún package físico ni ambiente operativo.
+
+---
+
+#### 56. Criterios de aceptación
+
+`AUTH-QA-026` queda documentalmente aceptable cuando:
+
+- [ ] El título canónico es exactamente `AUTH-QA-026 — Cola offline de ANIMA se revalida`.
+- [ ] La intención offline se mantiene separada del hecho empresarial confirmado.
+- [ ] Persistencia durable antecede al estado `queued`.
+- [ ] `client_event_id` existe antes del primer envío.
+- [ ] Restore y retry preservan identidad.
+- [ ] Fingerprint lógico permanece estable.
+- [ ] Mismo ID y mismo fingerprint recuperan resultado sin segundo efecto.
+- [ ] Mismo ID y fingerprint distinto producen conflicto.
+- [ ] `queue_item_id`, `client_event_id`, `operation_id` y referencias empresariales no se confunden.
+- [ ] La cola no transporta autoridad reutilizable.
+- [ ] La cola no transporta credenciales persistentes.
+- [ ] Cada intento resuelve sesión técnica vigente.
+- [ ] El servidor deriva principal y actor.
+- [ ] Cambio de usuario no retargetea una intención.
+- [ ] Vínculo laboral se revalida.
+- [ ] `EVENT_TIME` y `EXECUTION_TIME` se separan.
+- [ ] `occurred_at` no se reescribe.
+- [ ] Turno y revisión se resuelven respecto del evento original.
+- [ ] Revisión posterior no retargetea el hecho.
+- [ ] Revisión borrador no autoriza.
+- [ ] Ambigüedad temporal o de revisión falla cerrada.
+- [ ] Overnight usa intervalos absolutos.
+- [ ] Sede y área provienen de fuente autoritativa compatible.
+- [ ] Selección local no amplía territorio.
+- [ ] Rol capturado no equivale a grant.
+- [ ] `anima.access` no basta para materializar asistencia.
+- [ ] No se inventa permiso de check-in/check-out.
+- [ ] Check-in local encolado no crea sesión activa server-side.
+- [ ] Check-out local encolado no cierra sesión server-side.
+- [ ] Descansos conservan transición e identidad propias.
+- [ ] Checkout no antecede al check-in dependiente.
+- [ ] Inicio de descanso exige sesión compatible.
+- [ ] Fin de descanso identifica el descanso exacto.
+- [ ] Cada item se reautoriza por separado.
+- [ ] Batch-level authorization está prohibido.
+- [ ] Efecto anterior invalida decisiones dependientes posteriores.
+- [ ] `syncing` local no se presenta como lock distribuido.
+- [ ] Concurrencia no produce efectos duplicados.
+- [ ] Response loss con efecto posible produce `RESULT_UNKNOWN`.
+- [ ] `RESULT_UNKNOWN` se concilia antes de retry.
+- [ ] Conciliación usa identidad original.
+- [ ] Retry conserva identidad, fingerprint y `occurred_at`.
+- [ ] Retry respeta presupuesto, backoff y `next_retry_at`.
+- [ ] Retry vuelve a reautorizar.
+- [ ] `force` no salta autenticación.
+- [ ] `force` no salta autorización.
+- [ ] `force` no libera cuarentena automáticamente.
+- [ ] `force` no omite conciliación.
+- [ ] Denegación, bloqueo, conflicto, unknown y fallo técnico son distinguibles.
+- [ ] RPC ausente no activa direct insert permisivo.
+- [ ] Schema incompatible falla cerrado.
+- [ ] Un fallback solo puede ser aceptable con paridad contractual demostrada.
+- [ ] Snapshots y decisiones stale no autorizan el replay.
+- [ ] Realtime no sustituye fuente autoritativa.
+- [ ] Logout o cambio de actor aíslan la cola incompatible.
+- [ ] Update de app no ejecuta automáticamente items de schema incompatible.
+- [ ] Evidencia capturada y resuelta permanecen distinguibles.
+- [ ] No se exponen credenciales ni datos sensibles innecesarios.
+- [ ] `AUTH-QA-025` conserva la invalidación post-checkout confirmada.
+- [ ] `AUTH-QA-027` conserva compatibilidad de paquetes y repositorios.
+- [ ] `AUTH-QA-029` conserva auditoría transversal.
+- [ ] `AUTH-QA-030` conserva regresión/orquestación final.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 57. Límites
+
+Esta tarea no:
+
+- modifica `vento-anima`;
+- modifica `vento-shell` fuera del contenido documental de esta tarea;
+- cambia la implementación de SecureStore;
+- cambia el worker de sincronización;
+- cambia polling, backoff, retry o budgets físicos;
+- crea una nueva arquitectura de colas;
+- crea permisos de check-in o check-out;
+- crea nuevos outcomes públicos;
+- cambia la UX de diagnóstico del trabajador;
+- ejecuta marcaciones reales;
+- reescribe eventos históricos;
+- corrige datos de asistencia;
+- migra payloads locales;
+- ejecuta recovery manual;
+- libera cuarentenas;
+- cambia `public.sync_attendance_events(jsonb)`;
+- crea, reemplaza o despliega RPC;
+- modifica RLS, grants o Data API;
+- modifica Edge Functions;
+- modifica Auth o sesiones;
+- modifica migraciones, schemas, índices o constraints;
+- habilita caché L1 ni cambia freshness tokens;
+- implementa `AUTH-DB-033`, `AUTH-DB-034` o `AUTH-DB-035`;
+- certifica compatibilidad entre paquetes o repositorios, reservada a `AUTH-QA-027`;
+- certifica rollback por aplicación, reservado a `AUTH-QA-028`;
+- certifica auditoría integral, reservada a `AUTH-QA-029`;
+- orquesta la regresión final, reservada a `AUTH-QA-030`;
+- ejecuta `AUTH-QA-026::<package_id>`;
+- ejecuta `AUTH-QA-026::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 58. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-025 — Check-out retira permisos operativos`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-026 — Cola offline de ANIMA se revalida`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-027 — Actualización de paquete no rompe otros repositorios`
 ### [ ] AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
 ### [ ] AUTH-QA-028 — Rollback funciona por aplicación
 ### [ ] AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
