@@ -10294,7 +10294,874 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-015 — Compras puede crear órdenes según alcance`
-### [ ] AUTH-QA-015 — Compras puede crear órdenes según alcance
+### ✅ AUTH-QA-015 — Compras puede crear órdenes según alcance
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
+**Tarea siguiente:** AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización, alcance territorial y segregación de funciones para la creación administrativa de órdenes de compra ORIGO, reutilizable por paquete y certificable globalmente, para demostrar que un actor base autorizado puede crear una `PURCHASE_ORDER` únicamente dentro de su cobertura administrativa y sobre destinos, proveedor, relaciones y centro de costo válidos, sin convertir creación en aprobación, emisión, recepción, inventario, pago ni autoridad global por nombre de rol, sede seleccionada o datos enviados por cliente
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-015::<package_id>` y la certificación `AUTH-QA-015::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; el caso positivo de creación solo es ejecutable en packages donde la identidad objetivo `origo.procurement.purchase_orders.create` ya esté materializada y adoptada de forma gobernada
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra packages, aplicaciones, Supabase, datos, órdenes, proveedores, centros de costo, sedes, aprobaciones, recepciones, inventario, pagos, documentos externos, RLS, RPC, Server Actions ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que la responsabilidad empresarial de compras puede preparar y crear una orden únicamente mediante autoridad base explícita y alcance válido, sin concentrar en el mismo acto las decisiones de aprobación, emisión al proveedor, recepción física, afectación de inventario o pago.
+
+La regla positiva raíz queda:
+
+```text
+PRINCIPAL Y ACTOR EFECTIVO VÁLIDOS
++ ACTOR LABORAL ACTIVO
++ ACCESO ORIGO CUANDO APLIQUE
++ PERMISSIONKEY EXACTA origo.procurement.purchase_orders.create
++ CARRIL BASE VÁLIDO
++ RECURSO PURCHASE_ORDER
++ PROVEEDOR Y RELACIONES ADMISIBLES
++ TODOS LOS DESTINOS PROPUESTOS AUTORIZADOS
++ CENTRO DE COSTO VÁLIDO Y AUTORIZABLE CUANDO APLIQUE
++ ESTADO / INPUT / COLUMNAS COMPATIBLES
+→ CREATE AUTORIZABLE
+→ ORDEN NO APROBADA Y NO EMITIDA
+```
+
+Y simultáneamente:
+
+```text
+CREATE = ALLOW
+!= APPROVE = ALLOW
+!= RECEIVE = ALLOW
+!= INVENTORY EFFECT = ALLOW
+!= PAYMENT = ALLOW
+```
+
+La tarea certifica autorización y segregación de funciones. No redefine el proceso de compras ni materializa permisos ausentes.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y dos resultados obligatorios:
+
+1. la creación de órdenes se protege mediante la identidad exacta `origo.procurement.purchase_orders.create`;
+2. el recurso protegido es `PURCHASE_ORDER`;
+3. la modalidad contractual de `purchase_orders.create` es `BASE_ONLY`;
+4. `VPROC-0021` no admite un rol operativo directo que cree órdenes por turno o check-in;
+5. la responsabilidad de proceso `RESPONSABLE_DE_COMPRAS` identifica participación empresarial y no constituye por sí sola una PermissionKey ni un grant;
+6. la política objetivo de creación asigna capacidad base a `propietario`, `gerente_general`, `gerente` y `auxiliar_administrativa` dentro de sus condiciones y cobertura;
+7. `contador` no recibe creación por defecto;
+8. un `trabajador_operativo` o un rol operativo no recibe creación por turno;
+9. `gerente` queda limitado a sedes, relaciones y territorio de su cobertura administrativa;
+10. `auxiliar_administrativa` puede preparar y crear dentro de su función de soporte, pero no adquiere aprobación final por esa capacidad;
+11. crear una orden produce únicamente un recurso no aprobado y no emitido;
+12. `purchase_orders.create` no puede saltar directamente a `APPROVED` ni `ORDER_ISSUED`;
+13. crear no concede `origo.procurement.purchase_orders.approve`;
+14. crear no concede recepción ni sustituye `origo.procurement.receipts.register`;
+15. crear no produce entrada de inventario, stock, movimientos, recepción económica ni pago;
+16. el alcance territorial de una orden usa `PO_DESTINATIONS`;
+17. todos los destinos propuestos de una creación deben estar autorizados antes del primer efecto;
+18. una orden multidestino no admite creación parcial silenciosa: un destino obligatorio fuera de alcance bloquea la mutación completa;
+19. `site_id` enviado por formulario, `selected_site_id`, `employee.site_id`, query, prefill o filtro no crean autoridad;
+20. cuando aplique, `cost_center_ref` es una dimensión adicional de política y atribución, distinta de sede y área;
+21. un helper que resuelva un centro de costo no concede autorización;
+22. proveedor, producto, presentación y relaciones requeridas deben existir y ser admisibles antes de crear la orden;
+23. la creación no fabrica relación producto–proveedor ni autoridad sobre proveedor;
+24. un actor con grant pero territorio incompatible recibe `DENY` y cero writes;
+25. un actor con territorio válido pero sin PermissionKey exacta recibe `DENY` y cero writes;
+26. un actor con creación válida pero sin aprobación conserva la orden en estado previo a aprobación;
+27. servidor, RPC, RLS y demás evaluadores autoritativos aplicables deben preservar una decisión equivalente para el mismo actor, recurso y alcance;
+28. los fallos de autorización no se reparan mediante lista local de roles, botón visible, ruta visible, acceso a ORIGO o valores del cliente;
+29. la evidencia conserva actor, permiso, recurso, destinos, centro de costo cuando aplique, decisión, razones y resultado;
+30. el caso positivo no se ejecuta físicamente mientras `purchase_orders.create` siga ausente del package compartido consumible por la unidad;
+31. no se crean ni modifican requisitos de prueba;
+32. no se ejecuta ningún cambio físico durante esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume sin redefinir:
+
+- `ORIGO-AUTH-005` para identidad, recurso, modalidad y política objetivo de creación;
+- `ORIGO-AUTH-006` para separar creación de aprobación y conservar segregación de funciones;
+- `ORIGO-AUTH-009` para `PO_DESTINATIONS`, tratamiento multidestino y centro de costo;
+- `ORIGO-AUTH-010` para proyección y protección de información sensible;
+- `ORIGO-AUTH-013` para preservar el carril administrativo base sin turno/check-in artificial;
+- `ORIGO-AUTH-014` para el estado real de materialización/adopción de packages y capacidades;
+- `VPROC-0021` para la responsabilidad empresarial de aprobar y emitir compras;
+- requisitos ORIGO y AUTH vigentes del Registro 04A;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate `POST_E5_PACKAGE`.
+
+La prueba no convierte las decisiones documentales anteriores en evidencia de implementación física.
+
+---
+
+#### 4. Estado físico actual de la capacidad positiva
+
+El contrato objetivo de ORIGO contempla quince identidades.
+
+El package compartido observado por `ORIGO-AUTH-014` materializa actualmente seis identidades ORIGO:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.receipts.register
+origo.procurement.suppliers.view
+origo.catalog.product_reviews.view
+```
+
+`origo.procurement.purchase_orders.create` forma parte de las nueve identidades objetivo todavía no materializadas en ese baseline físico.
+
+Por tanto:
+
+```text
+CONTRATO DE CREATE = DEFINIDO
+IDENTIDAD OBJETIVO = APROBADA DOCUMENTALMENTE
+MATERIALIZACIÓN FÍSICA ACTUAL EN PACKAGE = AUSENTE
+```
+
+La certificación por package no puede fabricar una PermissionKey local, un alias, un mock autorizante ni un grant temporal para forzar el caso positivo.
+
+---
+
+#### 5. Identidad exacta de creación
+
+La única identidad positiva de creación de orden cubierta por esta tarea es:
+
+```text
+origo.procurement.purchase_orders.create
+```
+
+Recurso:
+
+```text
+PURCHASE_ORDER
+```
+
+Efecto máximo:
+
+```text
+CREAR ORDEN NO APROBADA / NO EMITIDA
+DENTRO DEL ALCANCE AUTORIZADO
+```
+
+No se acepta como sustituto:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.purchase_orders.approve
+permiso legacy amplio
+lista local de roles
+botón visible
+ruta visible
+service_role sin actor/autoridad empresarial
+```
+
+---
+
+#### 6. Modalidad `BASE_ONLY`
+
+`purchase_orders.create` conserva modalidad:
+
+```text
+BASE_ONLY
+```
+
+La autorización positiva no depende de:
+
+- turno operativo;
+- check-in;
+- rol operativo;
+- área activa de jornada;
+- dispositivo de recepción;
+- geolocalización;
+- presencia física en una sede.
+
+La ausencia de turno o check-in no debe bloquear una creación administrativa válida cuando todos los controles base, de recurso y alcance sean correctos.
+
+La ausencia de turno tampoco concede autoridad que no exista.
+
+---
+
+#### 7. Responsabilidad de Compras no es un grant
+
+`RESPONSABLE_DE_COMPRAS` identifica una responsabilidad dentro de `VPROC-0021`.
+
+No significa:
+
+```text
+RESPONSABLE_DE_COMPRAS
+→ purchase_orders.create = ALLOW
+```
+
+La decisión se obtiene desde:
+
+```text
+ACTOR BASE EFECTIVO
+∩ PERMISSIONKEY EXACTA
+∩ COBERTURA ADMINISTRATIVA
+∩ RECURSO / DESTINOS
+∩ POLÍTICA / ESTADO
+```
+
+La etiqueta del proceso ayuda a atribuir responsabilidad, pero no sustituye la autorización.
+
+---
+
+#### 8. Política objetivo de actores base para creación
+
+La certificación consume la política objetivo de `ORIGO-AUTH-005` y `ORIGO-AUTH-013`:
+
+| Rol base | Decisión objetivo | Frontera |
+| --- | --- | --- |
+| `propietario` | `ALLOW` si posee la capacidad y el recurso es admisible | la creación no concede aprobación automática |
+| `gerente_general` | `ALLOW` si posee la capacidad y el recurso es admisible | la creación no concede aprobación automática |
+| `gerente` | `ALLOW` solo dentro de su cobertura administrativa | no obtiene alcance organizacional completo |
+| `auxiliar_administrativa` | `ALLOW` dentro de su función de soporte y cobertura | puede preparar/crear; no aprobar por esa capacidad |
+| `contador` | `DENY` por ausencia de grant objetivo de creación | consulta/conciliación no crean órdenes |
+| `trabajador_operativo` | `DENY` por ausencia de grant objetivo de creación | un turno no crea autoridad administrativa |
+
+La prueba no infiere grants únicamente desde estos nombres. La unidad física deberá usar el dataset/materialización canónica vigente de su versión.
+
+---
+
+#### 9. Cobertura administrativa del `gerente`
+
+El `gerente` no adquiere autoridad global por su nombre de rol.
+
+El caso positivo exige que todos los destinos de la nueva orden pertenezcan a relaciones autorizadas para el actor.
+
+Ejemplo:
+
+```text
+GERENTE CON COBERTURA = SEDE_A
++ purchase_orders.create
++ DESTINOS = [SEDE_A]
+→ AUTORIZABLE
+```
+
+Control negativo:
+
+```text
+GERENTE CON COBERTURA = SEDE_A
++ purchase_orders.create
++ DESTINOS = [SEDE_B]
+→ DENY
+→ CERO WRITES
+```
+
+---
+
+#### 10. Frontera de `auxiliar_administrativa`
+
+Una `auxiliar_administrativa` con grant y cobertura válidos puede preparar y crear la orden dentro del carril base.
+
+Eso no significa:
+
+```text
+CREATE
+→ APPROVE
+→ ORDER_ISSUED
+```
+
+La prueba debe distinguir de forma expresa:
+
+```text
+purchase_orders.create = ALLOW
+purchase_orders.approve = DENY / NO AUTHORITY
+```
+
+cuando el fixture use una auxiliar sin autoridad aprobadora independiente.
+
+---
+
+#### 11. Resultado permitido de `create`
+
+La creación produce un objeto de trabajo previo a aprobación y emisión.
+
+Oracle positivo:
+
+```text
+CREATE_RESULT = PURCHASE_ORDER_CREATED
+APPROVAL_RESULT = NOT_PERFORMED
+ISSUE_RESULT = NOT_PERFORMED
+RECEIPT_RESULT = NOT_PERFORMED
+INVENTORY_EFFECT = NONE
+PAYMENT_EFFECT = NONE
+```
+
+El literal técnico concreto del estado persistido se valida contra la implementación materializada del package y no se inventa desde esta tarea.
+
+La propiedad contractual obligatoria es que `create` no cruce por sí solo el punto de aprobación ni emisión.
+
+---
+
+#### 12. Creación no equivale a aprobación
+
+`origo.procurement.purchase_orders.approve` permanece como autoridad separada.
+
+La prueba debe demostrar que un actor con `create` puede dejar una orden preparada sin que exista aprobación implícita.
+
+No se acepta:
+
+```text
+purchase_orders.create
+→ APPROVED
+```
+
+ni:
+
+```text
+purchase_orders.create
+→ ORDER_ISSUED
+```
+
+Una transición de aprobación posterior debe revalidar su PermissionKey, actor funcional, segregación, estado, política y alcance propios.
+
+---
+
+#### 13. Segregación con actor aprobador
+
+La creación no elimina la regla de que iniciador/preparador y actor aprobador deben respetar la política de segregación aplicable.
+
+La certificación debe incluir un caso donde:
+
+- el creador posee `purchase_orders.create`;
+- el creador no posee autoridad aprobadora válida para ese caso;
+- la orden se crea correctamente;
+- cualquier intento inmediato de aprobar mediante el mismo contexto no autorizado produce `DENY` y cero transición.
+
+La tarea no impide que un mismo humano posea capacidades distintas cuando una política aprobada lo permita; impide inferir la segunda desde la primera.
+
+---
+
+#### 14. `PO_DESTINATIONS` gobierna la creación
+
+El alcance territorial de `PURCHASE_ORDER` usa:
+
+```text
+PO_DESTINATIONS
+```
+
+Para `create`:
+
+```text
+TODOS LOS DESTINOS PROPUESTOS AUTORIZADOS
+```
+
+es condición previa al primer write.
+
+No existe una semántica de creación parcial invisible sobre una misma orden.
+
+---
+
+#### 15. Orden multidestino
+
+Una orden puede relacionar varios destinos.
+
+Caso positivo:
+
+```text
+DESTINOS PROPUESTOS = [SEDE_A, SEDE_B]
+ACTOR AUTORIZADO = [SEDE_A, SEDE_B]
+→ CONTINÚA EVALUACIÓN
+```
+
+Caso negativo:
+
+```text
+DESTINOS PROPUESTOS = [SEDE_A, SEDE_B]
+ACTOR AUTORIZADO = [SEDE_A]
+→ DENY
+→ CERO WRITES
+```
+
+La presencia de al menos un destino válido no autoriza crear una orden que también afecte un destino fuera de cobertura.
+
+---
+
+#### 16. `site_id` del cliente no crea autoridad
+
+Los siguientes valores son inputs o hints, no fuentes de autoridad:
+
+```text
+form.site_id
+query.site_id
+selected_site_id
+prefill.site_id
+employee.site_id
+```
+
+Antes de crear la orden, el servidor debe resolver los destinos reales y contrastarlos con la cobertura administrativa efectiva.
+
+Modificar el cliente para enviar una sede diferente nunca amplía scope.
+
+---
+
+#### 17. Fuente territorial administrativa
+
+Cuando el scope administrativo dependa de sedes asignadas, la fuente canónica aprobada se resuelve desde relaciones autorizadas del actor y no desde el selector visual.
+
+La prueba debe distinguir:
+
+```text
+SELECTED_SITE
+```
+
+de:
+
+```text
+AUTHORIZED_SITE_SET
+```
+
+Un selector puede reducir presentación, pero nunca fabricar autoridad.
+
+---
+
+#### 18. Centro de costo
+
+Cuando la política de la compra exija centro de costo, se evalúa una referencia canónica:
+
+```text
+cost_center_ref
+```
+
+Debe demostrarse que:
+
+- existe;
+- está vigente;
+- pertenece al ámbito organizacional compatible;
+- es compatible con la sede/estructura aplicable;
+- está dentro de la cobertura autorizada del actor para la acción;
+- queda correlacionado con la versión de la orden cuando corresponda.
+
+Se conserva:
+
+```text
+site_id != cost_center_ref
+area_id != cost_center_ref
+```
+
+---
+
+#### 19. Helper de centro de costo no concede permiso
+
+Un helper o RPC que obtenga una referencia de centro de costo puede resolver datos.
+
+No puede transformar:
+
+```text
+ACTOR SIN SCOPE
++ COST_CENTER_RESUELTO
+```
+
+en:
+
+```text
+ALLOW
+```
+
+El caso debe producir `DENY` si la referencia no es autorizable para el actor o si la política aplicable no queda satisfecha.
+
+---
+
+#### 20. Proveedor y relaciones admisibles
+
+Crear una orden consume proveedores y relaciones ya válidas.
+
+La capacidad de crear orden no concede:
+
+- alta de proveedor;
+- activación de proveedor;
+- modificación de condiciones sensibles;
+- creación de relación producto–proveedor;
+- modificación de catálogo;
+- ampliación de territorio a partir del proveedor.
+
+Un proveedor inexistente, inactivo o no admisible según el contrato aplicable bloquea la creación.
+
+---
+
+#### 21. Producto y presentación
+
+Las líneas de la orden deben referenciar identidades de producto/presentación válidas para el contrato materializado.
+
+La prueba no acepta que `create` fabrique:
+
+- producto;
+- presentación;
+- unidad;
+- equivalencia;
+- condición comercial inexistente.
+
+Una referencia inválida debe fallar cerrada y conservar cero writes de la orden.
+
+---
+
+#### 22. `origo.access` no es wildcard
+
+`origo.access` permite entrada a ORIGO dentro de su contrato.
+
+No significa:
+
+```text
+origo.access
+→ purchase_orders.create
+→ purchase_orders.approve
+→ receipts.register
+→ suppliers.create
+```
+
+Cada efecto protegido requiere su PermissionKey y demás condiciones propietarias.
+
+---
+
+#### 23. Rol operativo, turno y check-in no conceden creación
+
+`VPROC-0021` no admite rol operativo directo para crear órdenes.
+
+Por tanto:
+
+```text
+ROL OPERATIVO VÁLIDO
++ TURNO VIGENTE
++ CHECK-IN VÁLIDO
++ SIN GRANT BASE purchase_orders.create
+→ DENY
+```
+
+La prueba no reutiliza `bodeguero`, `gerencia_operativa` u otro rol operativo como sustituto de la capacidad administrativa.
+
+---
+
+#### 24. Creación no concede recepción
+
+`AUTH-QA-016` conserva la certificación específica del actor receptor y de la frontera frente a aprobación de compras.
+
+`AUTH-QA-015` debe comprobar únicamente que una creación exitosa no ejecuta por implicación:
+
+```text
+origo.procurement.receipts.register
+```
+
+ni produce aceptación física, documental o económica de una entrega inexistente.
+
+La matriz exhaustiva de recepción pertenece a `AUTH-QA-016`.
+
+---
+
+#### 25. Creación no produce inventario ni pago
+
+Una orden creada no puede por ese hecho:
+
+- registrar entrada de inventario;
+- aumentar stock;
+- crear movimiento NEXO;
+- registrar recepción;
+- generar pago;
+- marcar obligación pagada;
+- reconciliar cantidades recibidas;
+- cerrar diferencias.
+
+Las integraciones posteriores conservan sus contratos y autoridades independientes.
+
+---
+
+#### 26. Protección de datos sensibles
+
+La capacidad de crear una orden no concede lectura o mutación irrestricta de:
+
+- precios sensibles;
+- costos internos;
+- condiciones comerciales;
+- datos tributarios o bancarios de proveedor;
+- notas internas;
+- documentos internos;
+- campos excluidos por field mask.
+
+La prueba debe utilizar la proyección materializada permitida por el package y no interpretar `create` como autorización de todas las columnas.
+
+---
+
+#### 27. Bypass por cliente y superficie
+
+No autorizan creación por sí solos:
+
+- URL conocida;
+- página de nueva orden visible;
+- botón habilitado por UI;
+- `site_id` manipulado;
+- proveedor precargado;
+- query parameter;
+- cookie;
+- lista local de roles;
+- nombre de responsabilidad;
+- helper legacy;
+- llamada directa a Server Action, API o RPC.
+
+El primer efecto debe ocurrir solo después de una decisión autoritativa server-side.
+
+---
+
+#### 28. Paridad de evaluadores
+
+Para los mismos:
+
+- principal;
+- actor efectivo;
+- rol base;
+- PermissionKey;
+- recurso;
+- destinos;
+- centro de costo cuando aplique;
+- proveedor;
+- estado/input;
+- package/versión contractual;
+
+los evaluadores autoritativos aplicables deben producir decisión y razones equivalentes.
+
+No se admite que UI deniegue mientras una Server Action crea, ni que UI permita mientras el servidor cree fuera de alcance.
+
+---
+
+#### 29. Auditoría
+
+La evidencia de cada caso debe permitir reconstruir como mínimo:
+
+- package e identidad de ejecución;
+- principal;
+- actor efectivo;
+- rol base;
+- responsabilidad de proceso cuando esté disponible;
+- PermissionKey evaluada;
+- recurso `PURCHASE_ORDER` o intención de creación;
+- destinos propuestos;
+- destinos autorizados;
+- `cost_center_ref` cuando aplique;
+- proveedor y referencias materiales necesarias;
+- decisión;
+- razones;
+- cero efecto o recurso creado;
+- estado resultante;
+- versión contractual;
+- timestamp.
+
+La auditoría no sustituye la autorización previa.
+
+---
+
+#### 30. Casos mínimos obligatorios por package
+
+| Caso | Actor / condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-015-A` | actor base con `purchase_orders.create`, todos los destinos autorizados y referencias válidas | `ALLOW`; orden creada no aprobada/no emitida |
+| `AUTH-QA-015-B` | `gerente` con destino fuera de su cobertura | `DENY`, cero writes |
+| `AUTH-QA-015-C` | `auxiliar_administrativa` crea y luego intenta aprobar sin autoridad aprobadora | creación `ALLOW`; aprobación `DENY`, orden no aprobada |
+| `AUTH-QA-015-D` | `contador` sin grant de creación | `DENY`, cero writes |
+| `AUTH-QA-015-E` | rol operativo con turno/check-in válidos pero sin grant base | `DENY`, cero writes |
+| `AUTH-QA-015-F` | orden multidestino con un destino no autorizado | `DENY`, cero writes |
+| `AUTH-QA-015-G` | `site_id` de cliente manipulado fuera de cobertura | `DENY`, cero writes |
+| `AUTH-QA-015-H` | centro de costo requerido pero no vigente/incompatible/no autorizado | `DENY`, cero writes |
+| `AUTH-QA-015-I` | proveedor o relación requerida inválida | `DENY`, cero writes |
+| `AUTH-QA-015-J` | creación válida inspeccionada por efectos posteriores | cero aprobación, recepción, inventario y pago implícitos |
+| `AUTH-QA-015-K` | acceso a ORIGO o permiso `.view` sin `purchase_orders.create` | `DENY`, cero writes |
+| `AUTH-QA-015-L` | package todavía no materializa la PermissionKey objetivo | `NOT_APPLICABLE`, sin mocks autorizantes ni alias locales |
+
+Un caso se clasifica `NOT_APPLICABLE` únicamente por ausencia material demostrada de la superficie/capacidad necesaria en ese package, nunca para ocultar un `DENY`, un fallo o una implementación incompleta que sí debía estar presente.
+
+---
+
+#### 31. Clasificación de fallos
+
+Un fallo de `AUTH-QA-015` se clasifica por la frontera rota:
+
+- `CREATE_PERMISSION_BYPASS` — creación ejecutada sin PermissionKey exacta;
+- `BASE_ROLE_POLICY_BYPASS` — rol no autorizado crea por nombre o fallback;
+- `OPERATIONAL_ROLE_ESCALATION` — turno/rol operativo concede creación administrativa;
+- `DESTINATION_SCOPE_BYPASS` — destino fuera de cobertura aceptado;
+- `MULTI_DESTINATION_PARTIAL_WRITE` — orden parcialmente creada pese a destino obligatorio no autorizado;
+- `CLIENT_SITE_AUTHORITY_BYPASS` — valor de cliente crea o amplía territorio;
+- `COST_CENTER_SCOPE_BYPASS` — referencia económica inválida o fuera de alcance aceptada;
+- `SUPPLIER_RELATION_BYPASS` — proveedor o relación inadmisible aceptados;
+- `CREATE_APPROVE_COLLAPSE` — creación produce aprobación o usa autoridad aprobadora por inferencia;
+- `CREATE_RECEIVE_COLLAPSE` — creación produce recepción;
+- `CREATE_INVENTORY_SIDE_EFFECT` — creación modifica inventario;
+- `CREATE_PAYMENT_SIDE_EFFECT` — creación produce efecto financiero/pago impropio;
+- `FIELD_MASK_BYPASS` — creación expone o muta campos sensibles no autorizados;
+- `EVALUATOR_DIVERGENCE` — capas autoritativas producen decisiones incompatibles;
+- `AUDIT_GAP` — no puede reconstruirse actor, alcance, decisión o efecto;
+- `PHYSICAL_CAPABILITY_ABSENT_MISREPORTED` — capacidad no materializada se presenta falsamente como PASS.
+
+La clasificación no crea nuevos reason codes públicos ni modifica el contrato de errores.
+
+---
+
+#### 32. Modelo de ejecución por paquete
+
+Cada package que materialice una superficie aplicable ejecutará:
+
+```text
+AUTH-QA-015::<package_id>
+```
+
+únicamente después de que:
+
+- exista el package propietario aplicable;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas requeridas estén disponibles;
+- la instancia esté autorizada conforme al lifecycle físico;
+- la capacidad objetivo necesaria para el caso haya sido materializada/adoptada de forma gobernada.
+
+La ausencia actual de `purchase_orders.create` en el baseline compartido no autoriza a esta tarea documental a crearla.
+
+---
+
+#### 33. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-015::GLOBAL-FINAL
+```
+
+consolida evidencia de los packages aplicables y demuestra que la creación de órdenes converge en una sola semántica de permiso, alcance y segregación.
+
+Debe fallar si existe al menos un consumidor aplicable donde:
+
+- se pueda crear sin `purchase_orders.create`;
+- un rol operativo cree por turno/check-in;
+- un `gerente` cree fuera de su cobertura;
+- un destino no autorizado sea aceptado;
+- un valor de cliente fabrique autoridad;
+- crear apruebe, reciba, afecte inventario o pague por implicación;
+- la misma intención produzca decisiones distintas entre capas autoritativas.
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por obligaciones existentes de autorización, segregación, alcance y compras y no introduce una obligación verificable nueva.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-001` — autorización final mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-008` — separación entre autoridad administrativa base y contexto operativo cuando el contrato lo permite;
+- `TREQ-AUTH-010` — segregación de funciones entre compras, aprobación y recepción;
+- `TREQ-AUTH-013` — revalidación server-side de permiso, actor, territorio, contexto, estado y campos;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisiones y acciones protegidas;
+- `TREQ-ORIGO-002` — órdenes limitadas por permiso, sede o centro de costo, estado y columnas;
+- `TREQ-ORIGO-004` — separación de necesidad, selección, aprobación, orden y recepción, con políticas por empresa, sede, centro de costo, categoría, importe, riesgo y urgencia;
+- `TREQ-ORIGO-005` — gobierno de proveedor, condiciones comerciales y datos sensibles.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no fue incorporado todavía al checkout del usuario; la batería global corresponde a la incorporación posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron formateo, quality, delivery, topología, TREQ ni diff del owner modificado en el checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, continuidad hacia `AUTH-QA-015`, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `ORIGO-AUTH-005`, `ORIGO-AUTH-006`, `ORIGO-AUTH-009`, `ORIGO-AUTH-013`, `ORIGO-AUTH-014`, el estado físico 6/15 de identidades ORIGO compartidas, la ausencia material actual de `purchase_orders.create` en ese baseline, la política de actores base, `PO_DESTINATIONS`, centro de costo y cobertura existente del Registro 04A. |
+| OPERATIVA | NOT_EXECUTED | No se crearon órdenes, no se evaluaron actores reales ni se ejecutaron casos de sede, multidestino, proveedor, centro de costo, aprobación, recepción o inventario. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-015::<package_id>` ni `AUTH-QA-015::GLOBAL-FINAL`; ambas identidades permanecen sujetas a su lifecycle, materialización de capacidades y gate físico. |
+
+---
+
+#### 37. Criterios de aceptación
+
+- [ ] La capacidad positiva exacta es `origo.procurement.purchase_orders.create`.
+- [ ] El recurso protegido es `PURCHASE_ORDER`.
+- [ ] La modalidad permanece `BASE_ONLY`.
+- [ ] La responsabilidad `RESPONSABLE_DE_COMPRAS` no se usa como grant implícito.
+- [ ] La política de actores conserva creación para `propietario`, `gerente_general`, `gerente` y `auxiliar_administrativa` únicamente según grants y cobertura materializados.
+- [ ] `contador` y roles operativos no reciben creación por defecto.
+- [ ] Un turno o check-in no concede creación administrativa.
+- [ ] `gerente` queda limitado a su cobertura administrativa.
+- [ ] Todos los destinos propuestos son autorizables antes del primer write.
+- [ ] Una orden multidestino con un destino obligatorio fuera de alcance falla completa.
+- [ ] `site_id`, `selected_site_id`, query, prefill o `employee.site_id` no crean autoridad.
+- [ ] El centro de costo se valida como dimensión independiente cuando aplique.
+- [ ] Un helper de centro de costo no concede scope.
+- [ ] Proveedor y relaciones requeridas son admisibles antes de crear.
+- [ ] Crear produce una orden no aprobada y no emitida.
+- [ ] Crear no concede `purchase_orders.approve`.
+- [ ] Crear no registra recepción.
+- [ ] Crear no afecta inventario ni pago.
+- [ ] La proyección sensible conserva field masks y finalidad.
+- [ ] Toda denegación conserva cero writes.
+- [ ] Los evaluadores autoritativos aplicables conservan decisión equivalente.
+- [ ] La evidencia conserva actor, permiso, destinos, centro de costo cuando aplique, decisión y resultado.
+- [ ] Un package sin `purchase_orders.create` materializado registra el caso positivo como `NOT_APPLICABLE` y no fabrica un mock autorizante.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- materializa `origo.procurement.purchase_orders.create`;
+- modifica el catálogo compartido de permisos;
+- crea grants base;
+- modifica roles base u operativos;
+- redefine `RESPONSABLE_DE_COMPRAS`;
+- redefine `VPROC-0021`;
+- redefine `PO_DESTINATIONS`;
+- crea o modifica centros de costo;
+- redefine proveedores, productos, presentaciones o relaciones de catálogo;
+- modifica políticas de aprobación;
+- aprueba compras;
+- emite órdenes a proveedores;
+- registra recepciones;
+- modifica inventario;
+- genera pagos o hechos financieros;
+- modifica field masks ni contratos de datos sensibles;
+- modifica UI, Server Actions, RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos físicos;
+- ejecuta `ORIGO-AUTH-014::<implementation_unit_id>`;
+- ejecuta `ORIGO-AUTH-015::<implementation_unit_id>`;
+- ejecuta `AUTH-QA-015::<package_id>`;
+- ejecuta `AUTH-QA-015::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- desarrolla la matriz exhaustiva de recepción reservada a `AUTH-QA-016`;
+- modifica el Registro 04A.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-015 — Compras puede crear órdenes según alcance`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-016 — Recepción puede recibir pero no aprobar compras`
 ### [ ] AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
 ### [ ] AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
 ### [ ] AUTH-QA-018 — PIN identifica al trabajador real
