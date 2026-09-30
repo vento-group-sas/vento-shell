@@ -3541,22 +3541,403 @@ La tarea exige resolver físicamente la superficie existente: implementar la sus
 | modalidad | `PER_IMPLEMENTATION_UNIT` |
 | gate temporal | `POST_E5_PACKAGE` |
 
-### [ ] WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz
+### ✅ WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz
 
-- **Estado:** NO INICIADA
-- **Origen:** hallazgo `H-CODE-010-004` de `CODE-AUD-010`
-- **Propietario:** plan web de Vento Group
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
+**Tarea siguiente:** AURA-DOM-001 — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia
+**Tipo de tarea:** definición técnico-documental de resolución de la interfaz pública de newsletter; cierra el hallazgo existente seleccionando la retirada fail-closed de la superficie sin contrato operativo y define la materialización física posterior por `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`
+**Bloque:** `BLOQUE E1 — Descubrimiento integral de operación, capacidades y cobertura de implementación`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_02_GOBIERNO_DE_PRUEBAS_STUBS_Y_SUPERFICIES_INCOMPLETAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
 
-**Resultado esperado:** la interfaz registra consentimiento y un resultado real
-mediante un contrato aprobado, o se retira por completo sin confirmar una
-suscripción inexistente.
+---
 
-**Límite:** este marcador registra la tarea ya identificada; no inicia su
-implementación ni la incorpora a la secuencia documental activa.
+#### 1. Propósito
 
-La continuidad será:
+Resolver de forma determinista el hallazgo de newsletter pública identificado previamente, evitando que Vento Group publique un control que solicita correo electrónico sin disponer de un contrato operativo verificable que registre suscripción, consentimiento y resultado real.
+
+La tarea define una sola vez qué debe ocurrir con la superficie existente y separa esa decisión documental de su futura materialización física.
 
 ```text
-CODE-AUD-011
-— Detectar infraestructura sin proceso funcional utilizable
+INTERFAZ PUBLICA EXISTENTE
++
+SIN CONTRATO OPERATIVO APROBADO
++
+SIN PERSISTENCIA VERIFICABLE
++
+SIN CONSENTIMIENTO VERIFICABLE
+=
+RETIRADA FAIL-CLOSED DE LA INTERFAZ
 ```
+
+Esta resolución no implementa un servicio de newsletter, no crea persistencia y no autoriza tratamiento de datos personales.
+
+---
+
+#### 2. Decisión canónica
+
+Se aprueba la siguiente resolución:
+
+```text
+NEWSLETTER_CURRENT_SURFACE = PUBLIC_FAKE_CONTROL
+NEWSLETTER_BACKEND_CONTRACT = NOT_FOUND
+NEWSLETTER_PERSISTENCE = NOT_FOUND
+NEWSLETTER_CONSENT_CONTRACT = NOT_FOUND
+WEB_FRM_011_RESOLUTION = RETIRE_PUBLIC_INTERFACE
+PHYSICAL_EXECUTION = DEFERRED_TO_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+SUPABASE_CHANGE = NO
+VENTO_VISO_CHANGE = NO_BY_SELECTED_BRANCH
+```
+
+La opción de implementar una suscripción real no queda rechazada permanentemente como capacidad futura. Queda fuera de esta resolución porque no existe actualmente un contrato aprobado que permita afirmar qué sistema será propietario de la suscripción, cómo se registrará el consentimiento, cuál será su ciclo de vida, cómo se gestionarán duplicados o bajas, ni qué tratamiento posterior estará autorizado.
+
+Mientras esas condiciones no existan, la única salida compatible con la regla fail-closed vigente es retirar el control público que promete una suscripción inexistente.
+
+---
+
+#### 3. Evidencia actual verificada
+
+La superficie pública vigente se encuentra en el componente compartido de footer de `Vento-Group` y contiene:
+
+- un campo de tipo correo electrónico;
+- una etiqueta accesible de correo;
+- un botón `Suscribirse`;
+- ausencia de `form` con envío;
+- ausencia de handler de submit;
+- ausencia de Server Action asociada;
+- ausencia de llamada API asociada;
+- ausencia de persistencia observable desde el componente.
+
+La búsqueda remota vigente tampoco identifica en `vento-viso` una implementación de newsletter, suscripción o consentimiento que pueda reclamarse como backend aprobado de esta superficie.
+
+En `vento-shell` no se encontró una tabla, endpoint o contrato de persistencia denominado como suscripción de newsletter que permita promover la interfaz actual a funcional sin introducir una decisión nueva.
+
+Por tanto, la existencia visual del control no constituye una capacidad implementada.
+
+---
+
+#### 4. Hallazgo y riesgo cerrado documentalmente
+
+El hallazgo propietario permanece:
+
+```text
+H-CODE-010-004
+newsletter publica debe implementarse o retirarse
+```
+
+La condición observada es `interfaz sin contrato final`.
+
+Los riesgos materiales son:
+
+1. presentar al visitante una acción que no produce el efecto anunciado;
+2. capturar o aparentar capturar un correo sin tratamiento definido;
+3. generar falsa confirmación de suscripción;
+4. perder contactos que el usuario cree haber registrado;
+5. introducir posteriormente persistencia ad hoc sin contrato de consentimiento;
+6. distribuir una interfaz engañosa en todas las páginas que reutilizan el footer;
+7. confundir la presencia del SDK de Supabase con autorización para almacenar datos.
+
+La resolución elimina la promesa pública hasta que exista una capacidad real gobernada.
+
+---
+
+#### 5. Alternativas evaluadas
+
+| Alternativa | Estado | Motivo |
+| --- | --- | --- |
+| Implementar inmediatamente la newsletter sobre una tabla nueva | `RECHAZADA_EN_ESTA_TAREA` | no existe contrato aprobado de propiedad, consentimiento, lifecycle ni tratamiento; además implicaría materialización física y potencial cambio Supabase fuera del marcador documental |
+| Conectar el control directamente a `vento-viso` | `RECHAZADA_EN_ESTA_TAREA` | no se encontró un contrato newsletter vigente en VISO y la presencia de CMS no concede propiedad por inferencia |
+| Conectar un proveedor externo | `RECHAZADA_EN_ESTA_TAREA` | no existe proveedor, credencial, DPA, política de consentimiento ni integración aprobados para esta capacidad |
+| Mantener el control sin efecto hasta una fase posterior | `RECHAZADA` | perpetúa exactamente el hallazgo y contradice la regla que prohíbe publicar una newsletter sin resultado real |
+| Retirar la interfaz pública y conservar el resto del footer | `APROBADA` | elimina la promesa ficticia sin introducir datos, credenciales, backend, migraciones ni ownership nuevos |
+
+---
+
+#### 6. Resolución de producto para la superficie actual
+
+La resolución aprobada es retirar únicamente la superficie de suscripción de newsletter actualmente expuesta.
+
+La retirada comprende conceptualmente:
+
+- el campo de correo dedicado a newsletter;
+- su etiqueta asociada;
+- el botón `Suscribirse`;
+- el contenedor cuya única responsabilidad sea esa suscripción;
+- estilos dedicados que queden sin consumidor después de la retirada;
+- expectativas de accesibilidad, navegación por teclado o pruebas que sigan esperando esa superficie.
+
+No se retiran ni modifican por esta decisión:
+
+- enlaces de navegación del footer;
+- enlaces sociales;
+- contacto por correo existente;
+- branding;
+- sedes o categorías mostradas;
+- CMS público;
+- contenidos publicados;
+- otros formularios que tengan un contrato funcional distinto.
+
+---
+
+#### 7. Contrato de materialización posterior
+
+La topología canónica aplicable es:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+```
+
+Por tanto, esta tarea define el contrato una vez y la ejecución física posterior deberá:
+
+1. derivar una unidad de implementación canónica;
+2. identificar su paquete propietario;
+3. demostrar `E5-GATE-008` en `PASS` para ese paquete antes de tocar código;
+4. recibir la autorización física correspondiente;
+5. ejecutar una sola materialización para la unidad;
+6. conservar lineage hacia los paquetes consumidores cuando corresponda;
+7. validar la ausencia de la superficie engañosa después del cambio;
+8. conservar rollback del cambio físico hasta cerrar la evidencia.
+
+La aprobación documental de `WEB-FRM-011` no equivale a autorización de implementación física.
+
+---
+
+#### 8. Alcance físico futuro exacto
+
+Cuando exista una instancia física admisible, la resolución seleccionada limita el cambio a la superficie web pública que actualmente expone la newsletter ficticia.
+
+El alcance esperado de esa futura unidad es:
+
+- repositorio físico objetivo: `carlosibarraariza/Vento-Group`;
+- retirar el bloque de suscripción del componente `src/components/site-footer.tsx`;
+- retirar reglas CSS exclusivas de newsletter que queden sin uso en `src/app/globals.css`;
+- actualizar pruebas, snapshots o evidencia de accesibilidad únicamente cuando dependan de la existencia del campo o botón retirados;
+- verificar que las páginas públicas que reutilizan el footer ya no expongan input o botón de newsletter;
+- preservar el resto del footer sin cambios funcionales no relacionados.
+
+No se autoriza desde esta definición:
+
+- crear una API de newsletter;
+- crear Server Actions de newsletter;
+- crear tablas o columnas;
+- crear Edge Functions;
+- crear triggers;
+- crear RLS o grants nuevos;
+- agregar proveedores externos;
+- almacenar correos;
+- importar contactos;
+- enviar campañas;
+- modificar VISO para asumir propiedad de la capacidad.
+
+---
+
+#### 9. Frontera de datos y privacidad
+
+La rama seleccionada produce cero captura nueva de datos.
+
+Mientras no exista una newsletter real aprobada:
+
+```text
+VISITANTE
+→ NO ENTREGA CORREO A NEWSLETTER
+→ NO EXISTE SUSCRIPCION
+→ NO EXISTE CONSENTIMIENTO DE NEWSLETTER REGISTRADO
+→ NO EXISTE TRATAMIENTO POSTERIOR DERIVADO DE ESTA SUPERFICIE
+```
+
+Ningún repositorio podrá interpretar la retirada como permiso para comenzar una lista de contactos por otra vía.
+
+Una futura reintroducción deberá demostrar, antes de publicar el control:
+
+- propietaria del dato;
+- finalidad;
+- base y texto de consentimiento aplicables;
+- alta;
+- duplicado;
+- baja;
+- error;
+- auditoría;
+- retención;
+- acceso autorizado;
+- integración de envío si llegara a existir;
+- resultado verdadero comunicado al usuario.
+
+---
+
+#### 10. Supabase y VISO
+
+La decisión no crea ni modifica Supabase.
+
+```text
+SUPABASE_MIGRATION = NONE
+SUPABASE_TABLE_CHANGE = NONE
+SUPABASE_RLS_CHANGE = NONE
+SUPABASE_FUNCTION_CHANGE = NONE
+SUPABASE_EDGE_FUNCTION_CHANGE = NONE
+```
+
+La existencia de `@supabase/supabase-js` en el proyecto público no constituye un contrato de newsletter.
+
+Tampoco se modifica `vento-viso`. La ausencia de implementación newsletter en VISO impide asignarle esa propiedad por inferencia, y la rama de retirada no necesita un backend editorial para cerrarse.
+
+---
+
+#### 11. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la obligación verificable para esta brecha ya existe y cubre explícitamente ambas salidas admitidas: suscripción real con consentimiento y resultado verdadero, o ausencia de publicación de la interfaz. Esta tarea selecciona la segunda salida sin alterar la regla protegida.
+
+---
+
+#### 12. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar:
+
+- `TREQ-INTEGRATION-002`, que exige que toda interfaz pública de newsletter registre suscripción y consentimiento reales mediante contrato aprobado y comunique un resultado verdadero; cuando esa condición no pueda satisfacerse, la interfaz no debe publicarse.
+
+El requisito conserva su identidad, dominio, origen, riesgo y ciclo de vida vigentes. Esta tarea no actualiza el registro 04A.
+
+---
+
+#### 13. Matriz de aceptación de la futura unidad física
+
+| Caso | Precondición | Resultado requerido |
+| --- | --- | --- |
+| footer público | unidad física autorizada | no existe campo de correo destinado a newsletter |
+| footer público | unidad física autorizada | no existe botón `Suscribirse` de la newsletter retirada |
+| páginas consumidoras del footer | build de la unidad | no renderizan la superficie retirada |
+| navegación por teclado | superficie retirada | no aparece foco sobre controles inexistentes de newsletter |
+| accesibilidad | superficie retirada | no se conserva una etiqueta huérfana ni control inaccesible asociado a newsletter |
+| CSS | superficie retirada | no quedan reglas exclusivas sin consumidor cuando su eliminación sea segura |
+| regresión de footer | superficie retirada | navegación, contacto, enlaces sociales y branding continúan disponibles |
+| datos | superficie retirada | no se envía ni persiste correo por esta capacidad |
+| Supabase | superficie retirada | cero cambios derivados de esta decisión |
+| VISO | superficie retirada | cero cambios derivados de esta decisión |
+
+La salida física satisface el contrato cuando la newsletter ficticia deja de existir públicamente y el resto del footer conserva su comportamiento esperado.
+
+---
+
+#### 14. Rollback y comportamiento fail-closed
+
+La materialización futura deberá conservar rollback simple del cambio de UI hasta completar su verificación.
+
+Si la retirada rompe el footer o elimina contenido ajeno a la newsletter:
+
+```text
+VALIDACION FAIL
+→ NO CERRAR UNIDAD
+→ REVERTIR SOLO EL CAMBIO DE LA UNIDAD
+→ CONSERVAR EVIDENCIA
+→ CORREGIR SIN INTRODUCIR BACKEND IMPROVISADO
+```
+
+Si durante la materialización aparece un backend newsletter previamente no identificado, la unidad no deberá conectarlo automáticamente. Ese hallazgo exige reconciliar propiedad, consentimiento, lifecycle y contrato antes de cambiar la resolución.
+
+La ausencia de backend continúa siendo fail-closed: nunca se sustituye la retirada por una confirmación ficticia.
+
+---
+
+#### 15. Dependencias y gates
+
+La definición documental consume:
+
+- el hallazgo `H-CODE-010-004`;
+- la brecha de backlog `BKL-WEB-001`;
+- el estado real del componente público de footer;
+- la ausencia verificable de un contrato newsletter en las superficies consultadas;
+- la topología `PER_IMPLEMENTATION_UNIT`;
+- el gate `POST_E5_PACKAGE`.
+
+La materialización posterior permanece condicionada por:
+
+1. asignación de unidad de implementación;
+2. paquete propietario aplicable;
+3. `E5-GATE-008` del paquete en `PASS`;
+4. autorización física explícita;
+5. disponibilidad del repositorio físico objetivo;
+6. batería técnica del paquete y del repositorio consumidor.
+
+Ninguna de estas dependencias se satisface por el simple cierre documental de esta tarea.
+
+---
+
+#### 16. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea documental no ejecuta build del repositorio físico consumidor. |
+| LOCAL | NOT_EXECUTED | No se ejecutó modificación en checkout local ni se materializó la retirada. |
+| REMOTA | PASS | Se contrastaron remotamente el marcador canónico, el hallazgo propietario, la topología, el requisito vigente, el backlog y la superficie pública actual; no se identificó contrato operativo newsletter que permita afirmar una suscripción real. |
+| OPERATIVA | NOT_EXECUTED | No se probó una newsletter real porque la resolución seleccionada es retirar la interfaz y su materialización permanece diferida. |
+| FÍSICA | NOT_APPLICABLE | El marcador documental define el contrato; la ejecución física corresponde a una futura unidad autorizada después de `POST_E5_PACKAGE`. |
+
+---
+
+#### 17. Criterios de aceptación
+
+`WEB-FRM-011` queda documentalmente cerrada cuando se cumplan simultáneamente estas condiciones:
+
+1. el hallazgo de newsletter queda asociado a una resolución inequívoca;
+2. la resolución es `RETIRE_PUBLIC_INTERFACE`;
+3. no se inventa un backend, proveedor, tabla, endpoint o propietaria;
+4. se conserva la separación entre decisión documental y ejecución física;
+5. la topología permanece `PER_IMPLEMENTATION_UNIT`;
+6. el gate permanece `POST_E5_PACKAGE`;
+7. la futura unidad física tiene alcance acotado al control ficticio y sus residuos técnicos directos;
+8. no se autoriza Supabase;
+9. no se autoriza modificación de VISO;
+10. la obligación de prueba existente se reutiliza sin modificación;
+11. no se crean requisitos de prueba nuevos;
+12. la continuidad documental avanza hacia `AURA-DOM-001` sin reabrir tareas históricas ya aprobadas.
+
+---
+
+#### 18. Límites
+
+Esta tarea no:
+
+- implementa código;
+- elimina todavía el control público;
+- crea una instancia física;
+- asigna un `implementation_unit_id`;
+- selecciona un package por inferencia;
+- ejecuta E5;
+- modifica Supabase;
+- modifica VISO;
+- crea listas de contactos;
+- define campañas;
+- selecciona plataforma de email marketing;
+- define double opt-in;
+- autoriza tratamiento futuro de correos;
+- reabre `CODE-AUD-010`;
+- reabre `CODE-AUD-011`;
+- modifica el requisito de integración vigente;
+- declara cerrada evidencia E2E que aún no fue ejecutada físicamente.
+
+Una futura decisión de reintroducir newsletter deberá usar un contrato nuevo o vigente que demuestre todas las obligaciones de datos, consentimiento, operación, seguridad y prueba aplicables antes de publicar nuevamente una interfaz de suscripción.
+
+---
+
+#### 19. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión`
+
+**TAREA ACTUAL APROBADA**
+`WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-001 — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia`
