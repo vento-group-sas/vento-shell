@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "correction_id": "CAP-SCOPE-014::CORR-001",
+  "task_id": "CAP-SCOPE-014",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "DOCUMENTARY_CONTRADICTION",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": false,
+  "blocked_targets": [],
+  "baseline": {
+    "main_commit": "c99fde1649b2281f8f37a52ee322281afce8116d",
+    "target_task_path": "docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/05_03_COMERCIAL_CLIENTES_LOGISTICA_FINANZAS_E_INSTALACIONES.md",
+    "target_task_sha256": "e70857cae64e4d101cd020e419793e51cef15b4ccd3e747a592b6c26c2d6378e",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-09-30T03:28:31.309Z"
+}
