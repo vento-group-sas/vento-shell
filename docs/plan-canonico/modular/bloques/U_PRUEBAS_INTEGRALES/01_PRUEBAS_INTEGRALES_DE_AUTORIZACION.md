@@ -19585,7 +19585,1078 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-025 — Check-out retira permisos operativos`
-### [ ] AUTH-QA-025 — Check-out retira permisos operativos
+### ✅ AUTH-QA-025 — Check-out retira permisos operativos
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-024 — Cruce de área queda bloqueado
+**Tarea siguiente:** AUTH-QA-026 — Cola offline de ANIMA se revalida
+**Tipo de tarea:** documental; definición canónica de una prueba integral de invalidación de autoridad operativa por check-out, reutilizable por paquete y certificable globalmente, para demostrar que un cierre de asistencia confirmado invalida inmediatamente todo contexto, caché, proyección y decisión cuya autoridad dependía de la sesión cerrada, sin cerrar por inferencia la autenticación, el turno vigente, el carril base ni capacidades que no exigen check-in, y obligando a toda acción posterior a resolver contexto y autorización frescos antes de cualquier efecto protegido
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-025::<package_id>` y la certificación `AUTH-QA-025::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; los contratos de cierre de contexto de `ANIMA-AUTH-009`, frescura e invalidación de `AUTH-CTX-029`, token transaccional de `AUTH-DB-035`, caché validada de `SHELL-CTX-006` y resolución de check-in vigente existen documentalmente, pero esta tarea no infiere materialización completa ni certificación E2E de invalidación post-check-out en los packages consumidores
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se registran check-outs reales, no se cierran sesiones de asistencia, no se invalidan cachés o tokens reales, no se modifican turnos, permisos, dispositivos, colas, RPC, RLS, funciones, migraciones, datos, código, ambientes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un check-out confirmado retira inmediatamente la autoridad que dependía de la presencia operativa cerrada y que ninguna superficie puede continuar ejecutando con un snapshot, decisión, proyección, caché o token derivado anterior al cierre.
+
+La regla raíz queda:
+
+```text
+CHECKOUT CONFIRMADO
++
+SESION DE ASISTENCIA EXACTA CERRADA
++
+INVALIDACION DEL CONTEXTO DEPENDIENTE
++
+FRESCURA ACTUALIZADA
+=
+AUTORIDAD PRE-CHECKOUT NO REUTILIZABLE
+```
+
+Toda acción posterior debe cumplir:
+
+```text
+NUEVA SOLICITUD O BARRERA DE ESCRITURA
+→ NUEVO CONTEXTO
+→ NUEVA DECISION
+→ EFECTO SOLO SI LOS PRERREQUISITOS VIGENTES LO PERMITEN
+```
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos cuarenta y dos resultados obligatorios:
+
+1. tocar un control de salida no equivale a check-out confirmado;
+2. una intención local no retira autoridad server-side antes del commit;
+3. el check-out cierra exactamente una sesión de asistencia aplicable;
+4. el cierre de asistencia no equivale a logout de autenticación;
+5. el cierre no elimina por inferencia el turno publicado vigente;
+6. el cierre no borra rol base ni cobertura administrativa;
+7. el cierre no revoca capacidades base cuyo contrato no depende de check-in;
+8. el contexto usado antes del check-out queda obsoleto para acciones posteriores dependientes;
+9. una nueva resolución no presenta la sesión cerrada como `active_checkin_session`;
+10. una sesión cerrada permanece disponible para historia y auditoría;
+11. el check-out no modifica `context_id` in-place;
+12. el cierre produce una frontera de invalidación, no una edición local del snapshot anterior;
+13. una mutación posterior en el mismo request exige write barrier y nueva evaluación;
+14. una solicitud posterior no puede recibir L0 anterior;
+15. una entrada L1 anterior no puede producir HIT con un token de frescura nuevo;
+16. una proyección L2 anterior no autoriza y debe refrescarse o eliminarse según contrato;
+17. `operational_lane_generation` cambia cuando el check-out altera el carril operativo;
+18. el incremento de generación y la escritura empresarial deben conservar atomicidad cuando se materialicen;
+19. un evento Realtime puede acelerar convergencia pero no constituye la barrera de seguridad;
+20. perder el evento de invalidación no conserva autoridad;
+21. TTL vigente no salva una entrada cuyo token ya no coincide;
+22. una decisión tomada al renderizar no sobrevive como capability token;
+23. una UI abierta antes del check-out no conserva autoridad después del cierre;
+24. un permiso `T+C` deja de satisfacer el prerrequisito de check-in después del cierre;
+25. un permiso `T` no se convierte en `T+C` por esta tarea;
+26. una capacidad sin carril operativo no adquiere dependencia de check-in por esta tarea;
+27. el turno puede continuar vigente aunque `active_checkin_session = null`;
+28. rol, sede y área operativos pueden seguir siendo hechos contextuales cuando el turno siga vigente, sin demostrar presencia;
+29. una acción protegida concurrente con el check-out reautoriza o falla antes del efecto;
+30. una decisión stale no puede ganar una carrera frente al check-out confirmado;
+31. el dispositivo compartido conserva separadas sesión técnica, actor humano y sesión de asistencia;
+32. cerrar asistencia no termina automáticamente la sesión técnica del dispositivo;
+33. cerrar asistencia no termina automáticamente la sesión ligera del actor salvo contrato propietario distinto;
+34. una sesión `CLOSED`, `EXPIRED` o `INVALID` no satisface el prerrequisito de presencia;
+35. una sesión de otro actor, sede o turno no puede utilizarse como presencia residual;
+36. respuestas y errores posteriores deben conservar la causa vigente sin revelar internals innecesarios;
+37. logout y expiración de sesión conservan contratos propios y no se confunden con check-out;
+38. la intención de check-out offline no se trata como cierre server-side hasta su confirmación;
+39. la reautorización integral de la cola offline permanece reservada a `AUTH-QA-026`;
+40. la auditoría integral transversal permanece reservada a `AUTH-QA-029`;
+41. la regresión/orquestación final permanece reservada a `AUTH-QA-030`;
+42. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `ANIMA-AUTH-009`, para la semántica del cierre exacto de una sesión de asistencia y la invalidación posterior;
+- `AUTH-CTX-029`, para write barrier, generaciones, caché, frescura, L0, L1, L2 y reglas offline;
+- `AUTH-CTX-030`, para los escenarios contractuales de check-out cerrado y concurrencia durante evaluación;
+- `AUTH-DB-035`, para el contrato de generaciones e invalidación transaccional cuando exista materialización;
+- `SHELL-CTX-006`, para la caché L1 validada por token y la prohibición de autoridad stale;
+- `SHELL-AUTH-003`, para scope por solicitud y write barrier L0 cuando se materialice;
+- `AUTH-DB-033`/`AUTH-DB-034`, para resolución canónica de contexto y decisión cuando correspondan;
+- `AUTH-SRV-004..018`, para la revalidación server-side de mutaciones y las fronteras de seguridad aplicables;
+- los contratos de turno, check-in, rol operativo, sede, área, dispositivo, recurso, error y auditoría vigentes;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La tarea no convierte en fuente de autoridad una bandera local, un botón, un evento Realtime, una proyección cliente, `can_operate`, un snapshot previo, una decisión previa, un `decision_id`, un valor de caché, una cola offline ni un timestamp enviado por cliente.
+
+---
+
+#### 4. Semántica exacta de “check-out”
+
+Para esta certificación, un check-out autoritativo es una transición confirmada por la frontera propietaria de asistencia sobre la sesión exacta aplicable.
+
+La secuencia esperada es:
+
+```text
+INTENCION DE SALIDA
+→ RESOLVER ACTOR Y SESION
+→ VALIDAR SECUENCIA / IDEMPOTENCIA / CONCURRENCIA
+→ PERSISTIR
+→ COMMIT
+→ SESION CERRADA
+→ INVALIDAR CONTEXTO DEPENDIENTE
+→ REAUTORIZAR ACCIONES POSTERIORES
+```
+
+No se certifica como check-out:
+
+- tocar un botón;
+- cambiar estado React;
+- ocultar una pantalla;
+- limpiar una variable local;
+- encolar una intención todavía no confirmada;
+- recibir una respuesta optimista;
+- asumir que el turno terminó;
+- tomar “el último log” sin identidad determinista de sesión.
+
+---
+
+#### 5. Sesión exacta cerrada
+
+La sesión de asistencia debe identificarse de forma determinista por su identidad propietaria o relación canónica equivalente.
+
+El cierre no puede dirigirse únicamente por:
+
+```text
+employee_id
+shift_id
+site_id
+ultimo_evento
+ultimo_checkin
+timestamp_cliente
+estado_local
+```
+
+Si no puede resolverse una única sesión aplicable:
+
+```text
+NO CIERRE AUTORITATIVO
+NO INVALIDACION INVENTADA
+NO EFECTO POSTERIOR BASADO EN SUPOSICION
+```
+
+---
+
+#### 6. Estado posterior de la sesión
+
+Después del check-out confirmado, el estado histórico puede conservar conceptualmente:
+
+```text
+status = CLOSED
+checked_out_at = instante_autoritativo
+```
+
+La siguiente resolución real debe producir:
+
+```text
+active_checkin_session = null
+```
+
+La fila o evento histórico no se elimina para fabricar un contexto limpio.
+
+---
+
+#### 7. Check-out no es logout
+
+La certificación mantiene separadas:
+
+```text
+SESION DE AUTENTICACION
+SESION DE ACTOR
+SESION DE ASISTENCIA
+TURNO
+CONTEXTO OPERATIVO
+```
+
+Por tanto:
+
+```text
+CHECKOUT CONFIRMADO
+!=
+LOGOUT
+```
+
+El check-out no revoca automáticamente la sesión central de autenticación.
+
+La certificación de logout, expiración y cookies conserva los propietarios que ya las gobiernan.
+
+---
+
+#### 8. Check-out no termina el turno por inferencia
+
+Cerrar presencia no equivale a cerrar programación.
+
+Puede existir de forma válida:
+
+```text
+active_shift != null
+active_checkin_session = null
+```
+
+si el turno publicado continúa vigente.
+
+La prueba falla si una implementación necesita falsear o borrar el turno para demostrar que el check-out retiró presencia.
+
+---
+
+#### 9. Efecto exacto sobre permisos `T+C`
+
+Para una capacidad cuyo carril operativo exige turno y check-in:
+
+```text
+TURNO VIGENTE
++
+CHECKOUT CONFIRMADO
++
+active_checkin_session = null
+=
+PRERREQUISITO DE CHECK-IN NO SATISFECHO
+```
+
+Una acción posterior dependiente de `T+C` no puede ejecutarse con el `ALLOW` previo.
+
+Debe resolverse y decidirse nuevamente.
+
+---
+
+#### 10. Efecto exacto sobre permisos `T`
+
+Una capacidad que exige turno pero no check-in conserva su propia semántica.
+
+La prueba no acepta:
+
+```text
+CHECKOUT
+→ convertir T en T+C
+```
+
+Si el turno sigue vigente y los demás gates se satisfacen, el check-out por sí solo no introduce un prerrequisito nuevo.
+
+---
+
+#### 11. Efecto sobre capacidades sin carril operativo
+
+Una capacidad que no depende del carril operativo no queda revocada únicamente porque exista un check-out.
+
+Siguen aplicando sus propios contratos de:
+
+- identidad;
+- permiso;
+- territorio;
+- recurso;
+- estado;
+- sesión;
+- dispositivo;
+- denegaciones.
+
+El check-out no se convierte en un “logout empresarial” global.
+
+---
+
+#### 12. Carril base
+
+El check-out no borra por sí solo:
+
+- rol base;
+- cobertura administrativa;
+- asignaciones administrativas;
+- permisos base;
+- acceso a superficies administrativas cuyo contrato no exija presencia;
+- sesión técnica del dispositivo.
+
+La prueba debe detectar implementaciones que limpien o denieguen indiscriminadamente el carril base para simular seguridad.
+
+---
+
+#### 13. Hechos operativos posteriores
+
+Cuando el turno continúe vigente, una resolución fresca puede conservar:
+
+```text
+operational_role
+operational_site
+operational_area
+```
+
+según sus contratos.
+
+Eso no implica presencia.
+
+La prueba exige que ninguna de esas dimensiones sustituya el `active_checkin_session` cuando la capacidad exige `T+C`.
+
+---
+
+#### 14. Write barrier en el mismo request
+
+Si una solicitud:
+
+1. resuelve contexto;
+2. confirma un check-out;
+3. intenta otra acción protegida;
+
+la segunda acción no puede reutilizar el snapshot previo.
+
+Debe ocurrir conceptualmente:
+
+```text
+CHECKOUT COMMIT
+→ WRITE BARRIER
+→ L0 APLICABLE INVALIDADA
+→ NUEVO TOKEN / FRESCURA
+→ NUEVO CONTEXTO
+→ NUEVA DECISION
+```
+
+Cualquier efecto posterior autorizado con la decisión pre-check-out constituye `FAIL`.
+
+---
+
+#### 15. Nueva solicitud
+
+Una solicitud posterior al check-out debe resolver desde la realidad autoritativa actual.
+
+No es válido transportar entre requests:
+
+- `AccessContext` anterior;
+- `AuthorizationDecision` anterior;
+- `can_operate=true`;
+- rol efectivo guardado;
+- sede o área operativas como autoridad;
+- check-in abierto guardado;
+- una autorización emitida antes del cierre.
+
+---
+
+#### 16. `operational_lane_generation`
+
+El contrato de frescura declara al check-out como cambio del carril operativo.
+
+Cuando exista la materialización correspondiente, el cierre debe reflejarse en la generación aplicable de forma que un token anterior deje de coincidir.
+
+La prueba exige equivalencia funcional aunque el package todavía opere en `REQUEST_ONLY` y L1 no esté activa.
+
+---
+
+#### 17. Atomicidad de invalidación
+
+Cuando el mecanismo físico de generaciones esté materializado, la corrección exige que el dato empresarial y su invalidación transaccional no queden separados por un commit best-effort.
+
+El oráculo es:
+
+```text
+CIERRE CONFIRMADO
++
+INVALIDACION APLICABLE
+=
+MISMA FRONTERA DE CORRECCION
+```
+
+Si la invalidación obligatoria falla y el sistema confirma el cierre dejando utilizable autoridad stale, la certificación falla.
+
+---
+
+#### 18. L0 request-scoped
+
+La memoización L0 termina con el request y, dentro del mismo request, se invalida por write barrier cuando el check-out cambia el contexto aplicable.
+
+La prueba cubre:
+
+- lectura antes del cierre;
+- cierre confirmado;
+- segunda lectura en el mismo request;
+- ausencia de reutilización del valor anterior.
+
+---
+
+#### 19. L1 compartida
+
+Cuando un package utilice L1 validada:
+
+```text
+TOKEN ANTERIOR
+!=
+TOKEN ACTUAL POST-CHECKOUT
+```
+
+por lo que la entrada antigua no puede producir HIT.
+
+Un TTL no expirado no cambia ese resultado.
+
+Una purga temprana puede mejorar rendimiento, pero no sustituye la comparación autoritativa de frescura.
+
+---
+
+#### 20. L2 y proyecciones cliente
+
+Una proyección segura de cliente es presentación, no autoridad.
+
+Después del check-out debe converger mediante refresh, eliminación o reemplazo conforme al contrato.
+
+La prueba falla si:
+
+- L2 mantiene `can_operate` como autoridad;
+- un botón sigue ejecutando por una bandera guardada;
+- la aplicación omite reautorización porque la proyección aún no expiró;
+- se conserva un rol operativo cliente como bearer capability.
+
+---
+
+#### 21. Evento de invalidación perdido
+
+Realtime, outbox, NOTIFY, webhook o señal equivalente pueden acelerar purga y refresco.
+
+La prueba incluye pérdida o demora de esa señal.
+
+Resultado obligatorio:
+
+```text
+EVENTO PERDIDO
+→ NO STALE ALLOW
+```
+
+porque la barrera de frescura y la revalidación server-side continúan siendo obligatorias.
+
+---
+
+#### 22. Realtime
+
+Una actualización Realtime puede hacer que la UI refleje antes el cierre.
+
+No puede:
+
+- construir autoridad nueva;
+- certificar por sí sola el cierre;
+- reemplazar la lectura autoritativa;
+- mantener permisos si la señal no llega;
+- devolver un snapshot viejo como autoridad mientras refresca.
+
+---
+
+#### 23. Decisiones previas
+
+Una `AuthorizationDecision` anterior al check-out no se trata como token reutilizable.
+
+Aunque conserve:
+
+- `ALLOW`;
+- `decision_id`;
+- `context_id`;
+- evidencia completa;
+
+su vigencia no se extiende a una nueva mutación post-check-out.
+
+La acción posterior produce una decisión nueva.
+
+---
+
+#### 24. Recurso y estado actual
+
+Retirar autoridad operativa no elimina la obligación de resolver recurso y estado actual.
+
+Para una acción posterior:
+
+```text
+CONTEXTO FRESCO
++
+RECURSO FRESCO
++
+ESTADO FRESCO
++
+DECISION FRESCA
+```
+
+son dimensiones independientes.
+
+La prueba no acepta que una denegación de check-in oculte una implementación que dejaría ejecutar con un recurso stale cuando el check-in sea restaurado.
+
+---
+
+#### 25. Concurrencia: acción protegida vs check-out
+
+Se prueba una acción operativa concurrente con el cierre.
+
+Casos mínimos:
+
+- autorización comienza antes y efecto intenta ocurrir después del checkout;
+- checkout confirma primero y la acción todavía conserva un `ALLOW` en memoria;
+- ambas operaciones compiten por el mismo contexto;
+- la señal de invalidación llega después de la acción.
+
+Resultado:
+
+```text
+EFECTO POSTERIOR AL CIERRE
+→ REAUTORIZAR O FALLAR
+```
+
+No se acepta “ya estaba autorizado al inicio” como justificación automática.
+
+---
+
+#### 26. Check-out vs expiración
+
+Una sesión puede dejar de ser válida por expiración antes de que exista un checkout manual.
+
+La certificación distingue:
+
+```text
+EXPIRED
+CLOSED
+INVALID
+```
+
+según el modelo propietario.
+
+Ninguno de esos estados satisface un prerrequisito de check-in activo.
+
+El checkout posterior puede reconciliar historia sin recrear autoridad retroactiva.
+
+---
+
+#### 27. Check-out vs cierre administrativo
+
+Un cierre administrativo posee autoridad y auditoría propias.
+
+La prueba no lo trata como checkout personal por conveniencia.
+
+Sí exige que, una vez exista una transición terminal autoritativa que elimina la sesión activa, el contexto dependiente deje de otorgar presencia operativa.
+
+---
+
+#### 28. Check-out durante descanso
+
+Un descanso abierto no mantiene autoridad después de cerrar la sesión de asistencia.
+
+La semántica de cómo se finaliza o reconcilia el descanso pertenece a su contrato propietario.
+
+Esta tarea prueba únicamente:
+
+```text
+SESSION CLOSED
+→ BREAK NO PUEDE SER FUENTE DE AUTORIDAD OPERATIVA
+```
+
+---
+
+#### 29. Dispositivo compartido
+
+En un dispositivo compartido se mantienen separados:
+
+```text
+principal tecnico
+actor_session
+actor humano
+attendance session
+```
+
+El checkout de asistencia:
+
+- no convierte al dispositivo en actor;
+- no permite heredar el actor anterior;
+- no presta autoridad del principal técnico;
+- no cierra por inferencia la sesión técnica;
+- invalida cualquier contexto cuya presencia dependía de la sesión cerrada.
+
+---
+
+#### 30. Cambio de actor después del check-out
+
+Si el dispositivo cambia de actor, el nuevo actor no puede recibir:
+
+- sesión de asistencia anterior;
+- contexto operativo anterior;
+- rol operativo cacheado del actor previo;
+- decisión previa;
+- proyección autoritativa previa.
+
+La separación por actor y la invalidación son acumulativas, no alternativas.
+
+---
+
+#### 31. Simulación
+
+Un contexto simulado nunca se convierte en autoridad real para compensar la pérdida del check-in.
+
+Después del checkout:
+
+```text
+SIMULATED CHECKIN ACTIVE
+!=
+REAL CHECKIN ACTIVE
+```
+
+La prueba falla si una simulación o override cliente permite ejecutar una mutación real `T+C`.
+
+---
+
+#### 32. Navegación y superficies ya abiertas
+
+Una ruta, pantalla, modal, formulario o sesión de UI abiertos antes del checkout no preservan autoridad.
+
+Se prueba:
+
+- página abierta antes del cierre;
+- formulario completado antes del cierre y enviado después;
+- Server Action invocada después del cierre;
+- API request preparada antes y enviada después;
+- RPC llamada directamente después;
+- cliente nativo con snapshot anterior.
+
+Todas las mutaciones vuelven a la frontera server-side vigente.
+
+---
+
+#### 33. Paridad de canales
+
+Para una capacidad que requiere check-in, después del checkout deben converger en ausencia de autoridad operativa equivalente:
+
+- navegación protegida cuando corresponda;
+- Server Actions;
+- Route Handlers;
+- fetch/RSC;
+- RPC/PostgREST;
+- RLS/Data API;
+- Edge Functions;
+- Realtime protegido;
+- clientes nativos;
+- dispositivos compartidos.
+
+La representación pública puede variar por canal, pero ningún canal conserva el `ALLOW` anterior.
+
+---
+
+#### 34. RPC y funciones privilegiadas
+
+Una RPC, función `SECURITY DEFINER`, admin client o `service_role` no puede utilizar privilegio SQL para conservar autoridad empresarial que dependía del check-in cerrado.
+
+La prueba exige revalidación compatible con:
+
+```text
+principal
+actor
+contexto actual
+permiso exacto
+territorio
+recurso
+estado
+```
+
+antes del efecto aplicable.
+
+---
+
+#### 35. RLS y Data API
+
+RLS y grants no sustituyen la invalidación del contexto de aplicación.
+
+Tampoco una decisión correcta en aplicación compensa una policy que permita una operación incompatible.
+
+Para el mismo caso post-check-out, las capas aplicables deben conservar una frontera compatible y ninguna puede ampliar autoridad por usar datos stale.
+
+---
+
+#### 36. Errores y reason codes
+
+Después del checkout, una capacidad que exige `T+C` debe proyectar la causa vigente conforme a los contratos de check-in y precedencia.
+
+La certificación distingue:
+
+- ausencia limpia de sesión;
+- sesión cerrada normalmente;
+- sesión residual contradictoria;
+- mismatch de actor/sede/turno;
+- multiplicidad;
+- fallo técnico no concluyente.
+
+No se acepta convertir indiscriminadamente todos los casos en “sin permiso”.
+
+---
+
+#### 37. Cero efecto parcial
+
+Si una acción post-check-out es no ejecutable, el gate debe anteceder al primer efecto protegido.
+
+Constituye `FAIL`:
+
+```text
+WRITE PARCIAL
+→ DETECTAR CHECKOUT
+→ INTENTAR COMPENSAR
+```
+
+cuando el contrato de la operación exige autorización previa completa.
+
+---
+
+#### 38. Offline: frontera con `AUTH-QA-026`
+
+Una intención de check-out offline puede existir localmente, pero:
+
+```text
+QUEUED LOCALLY
+!=
+CLOSED ON SERVER
+```
+
+`AUTH-QA-025` prueba únicamente la consecuencia de un cierre autoritativo confirmado y la prohibición de reutilizar autoridad después de ese hecho.
+
+`AUTH-QA-026` conserva:
+
+- persistencia durable de cola;
+- `client_event_id`;
+- replay;
+- reconciliación;
+- reautorización al sincronizar;
+- cambios entre `EVENT_TIME` y `EXECUTION_TIME`;
+- resultado desconocido;
+- retry y recovery.
+
+---
+
+#### 39. Logout y sesión central
+
+Los requisitos de SHELL que enlazan `AUTH-QA-025` reutilizan la misma regla transversal de invalidación, pero esta tarea no redefine el contrato de logout.
+
+La distinción obligatoria es:
+
+```text
+CHECKOUT
+→ retira presencia operativa dependiente
+
+LOGOUT
+→ invalida sesion central segun su contrato
+```
+
+Ambos eventos pueden invalidar contexto, pero por causas y alcances distintos.
+
+---
+
+#### 40. Simulación laboral persistida en cliente
+
+Si una aplicación conserva una simulación laboral o override visual, el checkout no puede hacer que ese estado local reconstituya autoridad real.
+
+La prueba cubre que:
+
+- simulación continúa separada de autoridad;
+- caché o reinstalación no recrean presencia;
+- un override de rol/sede no repone `active_checkin_session`;
+- una mutación crítica sigue bloqueada si requiere presencia real.
+
+---
+
+#### 41. Freshness y límites temporales
+
+La certificación no se limita al evento explícito de checkout.
+
+Se comprueba que el sistema también respeta los límites temporales del contrato de frescura y que una sesión no se prolonga porque:
+
+- no llegó un evento;
+- el TTL no venció;
+- la UI no refrescó;
+- un worker no corrió;
+- una conexión Realtime cayó.
+
+El check-out es un evento invalidante explícito; la frescura temporal conserva una barrera adicional.
+
+---
+
+#### 42. Evidencia mínima por caso
+
+Cada ejecución aplicable debe conservar, sin exponer secretos:
+
+```text
+package_id
+case_id
+principal reference
+actor reference
+attendance session reference
+shift reference
+site / area references when applicable
+permission key
+operational prerequisite mode
+context_id_before
+context_fingerprint_before
+checkout result reference
+freshness basis before / after
+context_id_after when resolved
+decision reference before / after when applicable
+resource reference
+correlation_id
+result
+reason class
+effect count
+timestamp
+```
+
+La evidencia debe permitir demostrar que el efecto posterior se decidió contra la realidad post-check-out.
+
+---
+
+#### 43. Casos mínimos de certificación
+
+| Caso | Escenario | Oracle |
+| --- | --- | --- |
+| `AUTH-QA-025-A` | actor con turno y check-in válidos ejecuta capacidad `T+C` antes del checkout | comportamiento permitido solo con decisión vigente |
+| `AUTH-QA-025-B` | mismo actor confirma checkout | sesión exacta queda cerrada e invalidación aplicable ocurre |
+| `AUTH-QA-025-C` | capacidad `T+C` se intenta después del cierre | nueva evaluación no satisface check-in; cero efecto |
+| `AUTH-QA-025-D` | capacidad `T` se intenta con turno aún vigente | checkout no inventa dependencia de check-in |
+| `AUTH-QA-025-E` | capacidad base/administrativa independiente se intenta después | checkout no la revoca por inferencia; demás gates siguen vigentes |
+| `AUTH-QA-025-F` | UI conserva botón habilitado post-checkout | servidor revalida; UI no preserva autoridad |
+| `AUTH-QA-025-G` | formulario preparado antes y enviado después | nueva decisión; cero uso de `ALLOW` previo |
+| `AUTH-QA-025-H` | segunda acción ocurre en el mismo request lógico después del commit | write barrier impide reutilizar L0 anterior |
+| `AUTH-QA-025-I` | nueva request intenta usar cache L1 anterior | token/frescura impide HIT stale |
+| `AUTH-QA-025-J` | proyección L2 aún muestra contexto viejo | no autoriza; se refresca/elimina según contrato |
+| `AUTH-QA-025-K` | evento de invalidación/Reatime se pierde | no existe stale allow |
+| `AUTH-QA-025-L` | TTL de cache todavía no vence | token distinto prevalece; entrada vieja no es autoridad |
+| `AUTH-QA-025-M` | acción operativa compite con checkout y quiere escribir después | reautoriza o falla antes del efecto |
+| `AUTH-QA-025-N` | RPC directa usa decisión/contexto previo | rechazo o reautorización; cero bypass |
+| `AUTH-QA-025-O` | `SECURITY DEFINER`/service role ejecuta camino privilegiado | privilegio técnico no conserva presencia empresarial |
+| `AUTH-QA-025-P` | sesión técnica de dispositivo sigue viva | no restaura sesión de asistencia cerrada |
+| `AUTH-QA-025-Q` | actor cambia en dispositivo | cero herencia de contexto, check-in o decisión anterior |
+| `AUTH-QA-025-R` | simulación declara check-in hipotético | no ejecuta mutación real `T+C` |
+| `AUTH-QA-025-S` | sesión cerrada permanece en historial | no aparece como activa ni concede autoridad |
+| `AUTH-QA-025-T` | turno sigue vigente después del checkout | puede persistir como turno, sin presencia activa |
+| `AUTH-QA-025-U` | logout ocurre en otro escenario | se mantiene separado del checkout y sigue su owner |
+| `AUTH-QA-025-V` | intención de checkout solo está en cola offline | no se declara cierre server-side; frontera queda para `AUTH-QA-026` |
+| `AUTH-QA-025-W` | sesión ya expiró y luego se registra salida válida | no crea autoridad retroactiva; historia se reconcilia según owner |
+| `AUTH-QA-025-X` | denegación ocurre después de un primer efecto protegido | `FAIL`; el gate debía preceder al efecto |
+
+---
+
+#### 44. Clasificación de fallos
+
+Un fallo se clasifica por la frontera rota, como mínimo:
+
+```text
+CHECKOUT_IDENTITY_FAILURE
+CHECKOUT_SESSION_RESOLUTION_FAILURE
+CHECKOUT_STATE_TRANSITION_FAILURE
+CHECKOUT_INVALIDATION_FAILURE
+WRITE_BARRIER_FAILURE
+FRESHNESS_FAILURE
+STALE_CONTEXT_REUSE
+STALE_DECISION_REUSE
+CLIENT_PROJECTION_AUTHORITY_LEAK
+CHANNEL_PARITY_FAILURE
+PRIVILEGED_PATH_BYPASS
+CONCURRENCY_STALE_ALLOW
+DEVICE_ACTOR_LEAK
+SIMULATION_REAL_AUTHORITY_LEAK
+POST_CHECKOUT_PARTIAL_EFFECT
+ERROR_CLASSIFICATION_FAILURE
+AUDIT_EVIDENCE_FAILURE
+```
+
+La clasificación de prueba no crea una nueva taxonomía pública de reason codes.
+
+---
+
+#### 45. Modelo de ejecución por paquete
+
+Cada package aplicable ejecutará:
+
+```text
+AUTH-QA-025::<package_id>
+```
+
+solo después de superar su gate temporal `POST_E5_PACKAGE`.
+
+La instancia selecciona únicamente superficies del package que:
+
+- consumen carril operativo;
+- dependen de check-in o contexto laboral cuando corresponda;
+- conservan caché, proyección o autorización derivada susceptible de quedar stale;
+- realizan lecturas o mutaciones protegidas después del cierre;
+- participan en dispositivo compartido, RPC, RLS, API, Server Action o cliente nativo cuando aplique.
+
+No se inventa un conteo global fijo desde esta tarea.
+
+---
+
+#### 46. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-025::GLOBAL-FINAL
+```
+
+requiere evidencia agregada de los packages aplicables y debe demostrar:
+
+1. cero `ALLOW` reutilizado después de un check-out confirmado cuando el permiso exige presencia;
+2. cero efectos protegidos producidos con contexto pre-check-out stale;
+3. paridad suficiente entre canales y capas aplicables;
+4. separación de `T`, `T+C` y capacidades sin carril;
+5. separación entre checkout, logout, fin de turno y cambio de actor;
+6. write barrier/freshness efectiva donde corresponda;
+7. cero autoridad derivada de proyección cliente, caché stale o evento Realtime;
+8. evidencia correlacionable para cada caso obligatorio;
+9. cero omisiones CRITICAL aplicables.
+
+La certificación global no reemplaza `AUTH-QA-030`.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La cobertura vigente ya exige invalidar autoridad derivada por check-out, reautorizar operaciones posteriores, distinguir prerrequisitos de check-in por carril y mantener equivalencia entre capas y consumidores.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+Se reutiliza, entre otra cobertura aplicable:
+
+- `TREQ-AUTH-014`, que exige que check-out y otros cambios invaliden contexto, caché y tokens derivados y que ninguna decisión obsoleta continúe autorizando;
+- `TREQ-AUTH-207`, para invalidación inmediata de contexto, decisiones, cachés y suscripciones ante cambios territoriales o contextuales;
+- `TREQ-AUTH-229`, para el resultado cuando una capacidad `T+C` carece de sesión de check-in abierta compatible;
+- `TREQ-AUTH-230`, para impedir que la falta de check-in bloquee carriles `T` o capacidades sin carril operativo;
+- `TREQ-AUTH-231`, para identidad, actor, turno, sede, unicidad y estado autoritativo de la sesión de check-in;
+- `TREQ-AUTH-232`, para distinguir cierre normal, contradicción, mismatch, multiplicidad y fallo técnico;
+- `TREQ-AUTH-233`, para preservar la precedencia de turno, check-in, rol y controles posteriores;
+- `TREQ-AUTH-234`, para paridad de respuesta de check-in requerido entre canales;
+- `TREQ-AUTH-237`, para invalidación de contexto y nueva decisión ante concurrencia, replay y sincronización;
+- `TREQ-SHELL-017`, para invalidación transversal de contexto al cerrar sesión central, reutilizada aquí únicamente como frontera relacionada y no como equivalencia semántica con checkout;
+- `TREQ-SHELL-024`, para comportamiento fail-closed ante ausencia o invalidez de sesión central;
+- `TREQ-PASS-020`, para impedir que una simulación o estado local persistido sobreviva como autoridad real después de perder el contexto aplicable.
+
+Ninguna de estas filas cambia texto, owner, estado, relaciones ni evidencia por esta tarea.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó build durante el desarrollo documental del artefacto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout documental del usuario ni sometido a format/quality/delivery del repositorio. |
+| REMOTA | PASS | Se verificaron `main`, continuidad y marcador vigente del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, `ANIMA-AUTH-009`, `AUTH-CTX-029`, matriz de pruebas `AUTH-CTX-030`, contratos de `AUTH-DB-035` y `SHELL-CTX-006`, integración laboral transversal y cobertura 04A de invalidación/check-in reutilizada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron check-outs reales, carreras contra acciones, logout, Realtime, caché, dispositivos, RPC ni escenarios de negocio. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, migraciones, funciones, triggers, generations, outbox, RLS, grants, datos, cachés, configuración ni despliegues. |
+
+`REMOTA = PASS` valida la definición documental contra las fuentes verificables consultadas; no certifica todavía ningún package físico.
+
+---
+
+#### 50. Criterios de aceptación
+
+`AUTH-QA-025` queda documentalmente aceptable cuando:
+
+- [ ] El título canónico es exactamente `AUTH-QA-025 — Check-out retira permisos operativos`.
+- [ ] El checkout se define como transición server-side confirmada, no como gesto de UI.
+- [ ] Se cierra una sesión de asistencia exacta y no una sesión inferida por “último evento”.
+- [ ] Una sesión cerrada deja de aparecer como `active_checkin_session`.
+- [ ] El histórico del checkout se conserva.
+- [ ] Checkout y logout permanecen separados.
+- [ ] Checkout y fin de turno permanecen separados.
+- [ ] El turno puede seguir vigente después del checkout.
+- [ ] El carril base no se borra por inferencia.
+- [ ] Capacidad `T+C` exige nueva decisión y deja de satisfacer presencia.
+- [ ] Capacidad `T` no adquiere dependencia de check-in.
+- [ ] Capacidad sin carril operativo no adquiere dependencia de check-in.
+- [ ] El contexto pre-check-out no se reutiliza después del cierre.
+- [ ] La write barrier invalida L0 aplicable dentro del mismo request.
+- [ ] Una request posterior resuelve contexto nuevo.
+- [ ] Una entrada L1 anterior no produce HIT después de cambiar frescura.
+- [ ] TTL no sustituye token.
+- [ ] Un evento de invalidación no es la única barrera.
+- [ ] Realtime no crea autoridad.
+- [ ] L2 no autoriza mutaciones.
+- [ ] Una decisión previa no funciona como capability token.
+- [ ] UI, formulario, API o RPC preparados antes del cierre revalidan al ejecutar.
+- [ ] Una acción concurrente que intenta efecto después del cierre reautoriza o falla.
+- [ ] `service_role`, admin client y `SECURITY DEFINER` no conservan presencia empresarial.
+- [ ] RLS y Data API mantienen frontera compatible.
+- [ ] Dispositivo compartido conserva separación entre principal, actor y asistencia.
+- [ ] Cambio de actor no hereda check-in ni decisión anteriores.
+- [ ] Simulación no repone presencia real.
+- [ ] Sesión expirada o invalidada no satisface check-in activo.
+- [ ] Cierre administrativo no se confunde con checkout personal.
+- [ ] Descanso abierto no mantiene autoridad después de sesión cerrada.
+- [ ] Las causas de bloqueo distinguen ausencia limpia, cierre, contradicción y fallo técnico.
+- [ ] Ningún efecto protegido antecede la revalidación post-checkout.
+- [ ] Una intención offline local no se declara cierre autoritativo.
+- [ ] `AUTH-QA-026` conserva toda la certificación integral de cola offline.
+- [ ] `AUTH-QA-029` conserva la auditoría transversal final.
+- [ ] `AUTH-QA-030` conserva la regresión/orquestación integral.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 51. Límites
+
+Esta tarea no:
+
+- implementa el checkout físico de ANIMA;
+- modifica `attendance_logs`, sesiones de asistencia o eventos laborales;
+- crea un permiso nuevo para check-in o check-out;
+- redefine la semántica propietaria de turnos;
+- redefine descansos, auto-close, corrección o cierre administrativo;
+- redefine logout o expiración de sesión central;
+- implementa `AUTH-DB-035::GLOBAL`;
+- materializa `SHELL-CTX-006::<implementation_unit_id>`;
+- habilita L1 compartida;
+- cambia TTL, token, generations u outbox;
+- modifica `AccessContext@1.0.0` ni `AuthorizationDecision@1.0.0`;
+- modifica `SimulationContext@1.0.0`;
+- ejecuta check-outs, mutaciones, carreras o eventos Realtime reales;
+- modifica Server Actions, API routes, RPC, RLS, Data API, Edge Functions o clientes nativos;
+- modifica Auth, cookies, Storage, Realtime, schemas ni configuración de Supabase;
+- crea ni altera migraciones;
+- modifica código de `vento-anima`, `vento-shell` u otros repositorios;
+- certifica persistencia, replay o reautorización de cola offline, reservados a `AUTH-QA-026`;
+- certifica compatibilidad de paquetes, reservada a `AUTH-QA-027`;
+- certifica rollback por aplicación, reservado a `AUTH-QA-028`;
+- certifica auditoría integral, reservada a `AUTH-QA-029`;
+- orquesta la regresión final, reservada a `AUTH-QA-030`;
+- ejecuta `AUTH-QA-025::<package_id>`;
+- ejecuta `AUTH-QA-025::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-024 — Cruce de área queda bloqueado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-025 — Check-out retira permisos operativos`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-026 — Cola offline de ANIMA se revalida`
 ### [ ] AUTH-QA-026 — Cola offline de ANIMA se revalida
 ### [ ] AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
 ### [ ] AUTH-QA-028 — Rollback funciona por aplicación
