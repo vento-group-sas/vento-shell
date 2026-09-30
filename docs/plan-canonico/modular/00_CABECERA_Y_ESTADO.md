@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1503** |
+| Tareas aprobadas | **1504** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **93** |
+| Tareas no iniciadas | **92** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **94.17% (1503/1596)** |
+| Porcentaje de completamiento | **94.24% (1504/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana** |
-| Tarea actual | **AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal** |
+| Última tarea aprobada | **AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal** |
+| Tarea actual | **AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas** |
+| Siguiente tarea | **AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 17 de 37 aprobadas; AURA-DOM-005 pendiente** |
+| Progreso del bloque | **BLOQUE W: 18 de 37 aprobadas; AURA-DOM-006 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-DOM-005** |
+| Carril documental | **ACTIVO — AURA-DOM-006** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-DOM-004` — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana |
-| Tarea actual | `AURA-DOM-005` — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal — **NO INICIADA** |
-| Siguiente tarea | `AURA-DOM-006` — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas |
+| Última aprobada | `AURA-DOM-005` — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal |
+| Tarea actual | `AURA-DOM-006` — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas — **NO INICIADA** |
+| Siguiente tarea | `AURA-DOM-007` — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 17 DE 37 APROBADAS — ACTUAL AURA-DOM-005** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 18 DE 37 APROBADAS — ACTUAL AURA-DOM-006** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana
-        ↓
-TAREA ACTUAL
 AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 17 de 37 tareas aprobadas
+BLOQUE W — 18 de 37 tareas aprobadas
 ```

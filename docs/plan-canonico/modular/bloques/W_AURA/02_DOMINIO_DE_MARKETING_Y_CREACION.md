@@ -2858,7 +2858,1267 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal`
 
-### [ ] AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal
+### ✅ AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana
+**Tarea siguiente:** AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas
+**Tipo de tarea:** definición técnico-documental del contrato canónico de cuentas, endpoints, objetivos de publicación, programación, intentos, confirmación externa, reintentos, retiro y reconciliación multicanal de AURA; separa cuenta, credencial, contenido, publicación, intento y estado externo sin crear integraciones ni instancias físicas
+**Bloque:** `BLOQUE W — AURA — dominio de marketing y creación`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean cuentas reales, credenciales, tokens, webhooks, adaptadores, colas, jobs, tablas, migraciones, publicaciones, mensajes, campañas, promociones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-29
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá identificar cuentas y endpoints de canal, preparar y programar una publicación aprobada, registrar cada intento técnico, distinguir confirmación de incertidumbre, retirar contenido y reconciliar el estado esperado con el estado observado en cada medio externo o propio.
+
+La decisión raíz es:
+
+```text
+CONTENIDO APROBADO
+!=
+PUBLICACION PROGRAMADA
+!=
+INTENTO DE ENVIO
+!=
+PUBLICACION EXTERNA CONFIRMADA
+```
+
+Y además:
+
+```text
+CANAL
+!=
+CUENTA
+!=
+ENDPOINT
+!=
+CREDENCIAL
+!=
+PUBLICACION
+```
+
+AURA gobierna la intención y el ciclo editorial de publicación. El canal externo conserva únicamente la realidad técnica observada en su plataforma; no se convierte en maestro de contenido, campaña, producto, cliente, consentimiento, precio, venta ni resultado económico.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-001`, para marca, identidad, mensajes, claims, restricciones y vigencia;
+- `AURA-DOM-002`, para objetivo, audiencia, brief, calendario, presupuesto y dependencias;
+- `AURA-DOM-003`, para activos, derechos, versiones, reutilización y aprobación de contenido;
+- `AURA-DOM-004`, para grounding, memoria, asistencia de IA y revisión humana;
+- `CAP-SCOPE-014`, para publicación multicanal, hallazgos de cuentas y plataformas, idempotencia y conciliación;
+- `H-CAP-SCOPE-014-009`, para impedir que una versión vencida continúe publicándose;
+- `H-CAP-SCOPE-014-013`, para eliminar dependencia estructural de credenciales personales en cuentas empresariales;
+- `H-CAP-SCOPE-014-014`, para representar límites, permisos, revisiones y cambios de plataforma sin estados ambiguos;
+- `H-CAP-SCOPE-014-015`, para impedir efectos duplicados por reintentos o webhooks repetidos;
+- `AURA-CURRENT-FINDING-005`, `AURA-CURRENT-FINDING-006` y `AURA-CURRENT-FINDING-009`, como evidencia transitoria de publicación por defecto, consumidor público incoherente y eliminación física sin ciclo editorial suficiente;
+- `OPS-CAN-001`, para familias de canal, endpoints, propiedad, seguridad, continuidad y la regla de que un canal no es propietario del hecho empresarial;
+- `VPROC-0056`, para el proceso canónico de contenido y promociones desde solicitud hasta publicación, retiro y evaluación;
+- `INT-MKT-001`, para preservar la diferencia entre dominio objetivo documentado y capacidad operativa materializada;
+- `AURA-AUD-001` a `AURA-AUD-012`, para las fronteras de continuidad y de las superficies transitorias actuales;
+- el registro canónico de requisitos de prueba vigente;
+- las tareas posteriores `AURA-AUTH-*`, `AURA-UX-*` y `AURA-INT-*` como propietarias de autorización, experiencia e integración física futura.
+
+Ninguna de estas fuentes se modifica por esta tarea.
+
+---
+
+#### 3. Resultado canónico
+
+Se define un contrato de publicación multicanal gobernado por identidades estables y estados separados.
+
+La unidad mínima deberá poder responder:
+
+1. qué versión de contenido fue aprobada;
+2. para qué marca, audiencia, finalidad y vigencia;
+3. en qué familia de canal y endpoint se pretende publicar;
+4. mediante qué cuenta empresarial gobernada;
+5. cuál es la zona horaria y ventana válida;
+6. qué formato o variante exacta se envía;
+7. qué aprobación habilita esa versión y ese objetivo;
+8. qué intento técnico produjo cada resultado;
+9. qué identificador externo fue devuelto;
+10. si la plataforma confirmó, rechazó o dejó el resultado ambiguo;
+11. qué reintentos ocurrieron y con qué identidad idempotente;
+12. si la versión continúa vigente;
+13. si existe una orden de retiro;
+14. si el estado externo coincide con el estado esperado;
+15. qué evidencia permite reconstruir la secuencia completa.
+
+La existencia de una cuenta o endpoint no implica que esté autorizado, disponible, conectado o listo para publicar.
+
+---
+
+#### 4. Fronteras conceptuales obligatorias
+
+Se fijan las siguientes diferencias:
+
+```text
+FAMILIA DE CANAL
+!=
+ENDPOINT DE CANAL
+```
+
+```text
+CUENTA EXTERNA
+!=
+CREDENCIAL
+!=
+PRINCIPAL TECNICO
+```
+
+```text
+PIEZA APROBADA
+!=
+OBJETIVO DE PUBLICACION
+!=
+PUBLICACION EXTERNA
+```
+
+```text
+PROGRAMADO
+!=
+ENVIADO
+!=
+PUBLICADO
+!=
+CONFIRMADO
+```
+
+```text
+TIMEOUT
+!=
+FALLO CONFIRMADO
+!=
+EXITO CONFIRMADO
+```
+
+```text
+REINTENTO
+!=
+NUEVA PUBLICACION
+```
+
+```text
+RETIRO SOLICITADO
+!=
+RETIRO EXTERNO CONFIRMADO
+```
+
+```text
+ESTADO EXTERNO OBSERVADO
+!=
+FUENTE DE VERDAD EMPRESARIAL
+```
+
+Estas separaciones son obligatorias incluso cuando un proveedor exponga una sola API, un único booleano de publicación o un panel que mezcle contenido, campaña y analítica.
+
+---
+
+#### 5. Universo de familias de canal consumido
+
+`AURA-DOM-005` reutiliza las familias aprobadas por `OPS-CAN-001` sin convertirlas automáticamente en cuentas reales ni declarar que todas admiten publicación automatizada.
+
+| Código | Familia | Tratamiento desde AURA-DOM-005 |
+| --- | --- | --- |
+| `CAN-WEB-CORP` | web corporativa | objetivo publicable cuando exista consumidor y contrato vigente |
+| `CAN-WEB-BRAND` | páginas, menús y landings de marca | objetivo publicable con versión, vigencia y fuente empresarial autorizada |
+| `CAN-SOCIAL` | redes y perfiles sociales | objetivo publicable sujeto a cuenta gobernada, permisos y reconciliación |
+| `CAN-EMAIL` | correo corporativo, buzones y alias | medio de salida condicionado por finalidad, audiencia y consentimiento aplicable |
+| `CAN-MSG` | WhatsApp, ManyChat y mensajería equivalente | medio de salida condicionado por finalidad, consentimiento y límites de automatización |
+| `CAN-VOICE` | llamadas | no se convierte en objetivo de publicación editorial por defecto; conserva su proceso de comunicación |
+| `CAN-MARKETPLACE` | Rappi y marketplaces equivalentes | solo admite proyecciones gobernadas por contrato; no adquiere maestros de producto, stock, precio o venta |
+| `CAN-ECOM` | Shopify u otro comercio electrónico | solo admite proyecciones gobernadas por contrato y reconciliación con fuentes propietarias |
+| `CAN-PRESENCIAL` | salón, mostrador, caja y POS | no se convierte en publicación remota por inferencia; materiales físicos o POS conservan sus contratos propietarios |
+| `CAN-PASS` | Vento Pass y superficies propias de cliente | objetivo de comunicación cuando PASS y el consentimiento lo permitan; PASS conserva identidad y preferencias |
+| `CAN-B2B` | captación y relación B2B/catering | canal de caso comercial; no se convierte en difusión masiva por inferencia |
+| `CAN-FEEDBACK` | encuestas, QR y retroalimentación | conserva finalidad de medición y caso; no se convierte en medio promocional por inferencia |
+
+Una familia solo se materializa como objetivo de publicación cuando existe un `channel_endpoint_id` gobernado y la capacidad concreta está soportada.
+
+---
+
+#### 6. Cuenta, endpoint y credencial
+
+La arquitectura conserva objetos distintos.
+
+##### 6.1. Cuenta empresarial de canal
+
+Representa la identidad externa o tenant utilizado para operar en un proveedor.
+
+Como mínimo conserva:
+
+- identificador interno estable;
+- proveedor o plataforma;
+- referencia externa no secreta;
+- empresa o titular empresarial documentado;
+- marca o ámbito permitido;
+- propietario empresarial;
+- responsable operativo;
+- suplente;
+- custodio técnico;
+- estado de la cuenta;
+- método de recuperación institucional;
+- fecha de última verificación de titularidad;
+- referencia a política de acceso;
+- referencia a credencial o principal técnico, sin secreto embebido.
+
+##### 6.2. Endpoint de canal
+
+Representa el destino o punto operativo concreto: perfil, página, dominio, buzón, número, tienda, superficie propia o equivalente.
+
+Debe conservar:
+
+- `channel_endpoint_id`;
+- familia de canal;
+- cuenta asociada cuando corresponda;
+- marca, empresa, sede, país, idioma y zona horaria aplicables;
+- capacidades soportadas;
+- finalidades autorizadas;
+- estado operativo;
+- rutas o identificadores públicos verificables;
+- contrato/adaptador esperado;
+- responsable y suplente;
+- política de contingencia;
+- fecha de última revisión.
+
+##### 6.3. Credencial
+
+La credencial permite operar técnicamente y pertenece al contrato de seguridad.
+
+AURA-DOM-005 solo conserva una referencia opaca y el estado operativo necesario. Contraseñas, tokens, códigos de recuperación, secretos, client secrets, API keys y refresh tokens no forman parte del contenido documental ni del dominio editorial.
+
+---
+
+#### 7. Gobierno de cuentas empresariales
+
+Toda cuenta utilizada por AURA deberá cumplir estas reglas antes de considerarse apta:
+
+1. tiene titularidad empresarial verificable;
+2. tiene propietario funcional;
+3. tiene custodio técnico;
+4. tiene responsable operativo y suplente;
+5. dispone de recuperación institucional;
+6. una cuenta personal no es el único mecanismo de acceso;
+7. cuando el proveedor lo permita, se prefieren usuarios nominativos, MFA y roles delegados;
+8. una agencia o tercero no puede ser el único propietario del dominio, cuenta, píxel, catálogo, número o historial;
+9. el acceso se revisa cuando cambia cargo, proveedor, agencia o relación laboral;
+10. la cuenta puede suspender publicación sin perder evidencia histórica;
+11. la cuenta puede declararse `NO_APTA` sin borrar publicaciones previas ni la correlación histórica;
+12. la pérdida de credenciales no se representa como inexistencia de la cuenta;
+13. la falta de autorización impide operar aunque la credencial continúe técnicamente válida.
+
+La implementación concreta de permisos, vault, rotación, MFA y secretos corresponde a `AURA-AUTH-004` y `AURA-INT-001`.
+
+---
+
+#### 8. Capacidades de un endpoint
+
+Cada endpoint publicable declarará explícitamente sus capacidades.
+
+Ejemplos de capacidad conceptual:
+
+```text
+CREATE_PUBLICATION
+UPDATE_PUBLICATION
+SCHEDULE_PUBLICATION
+CANCEL_SCHEDULE
+HIDE_PUBLICATION
+DELETE_EXTERNAL_PUBLICATION
+READ_PUBLICATION_STATUS
+READ_PROVIDER_METRICS
+RECEIVE_WEBHOOK
+```
+
+La presencia de una capacidad en el contrato objetivo no afirma que el proveedor real la soporte.
+
+Si una capacidad no existe o no está certificada:
+
+- AURA no la simula silenciosamente;
+- la interfaz deberá bloquearla o mostrar una alternativa controlada;
+- el retiro podrá requerir intervención humana documentada;
+- la conciliación conservará el estado hasta verificar el resultado.
+
+---
+
+#### 9. Objeto canónico de publicación
+
+Una publicación en AURA no es el contenido original ni el registro remoto del proveedor.
+
+Se define:
+
+```text
+PUBLICACION
+=
+VERSION DE CONTENIDO APROBADA
++ OBJETIVO DE CANAL
++ CUENTA/ENDPOINT
++ AUDIENCIA O CONTEXTO
++ VENTANA DE VIGENCIA
++ CONFIGURACION DE ENTREGA
++ ESTADO
++ TRAZABILIDAD
+```
+
+Campos conceptuales mínimos:
+
+```text
+publication_id
+content_version_id
+brand_id
+channel_endpoint_id
+channel_account_id cuando aplique
+purpose
+audience_reference cuando aplique
+locale
+timezone
+scheduled_for
+valid_from
+valid_until
+approval_reference
+payload_version
+idempotency_scope
+publication_state
+external_publication_id cuando exista
+last_reconciled_at
+created_by
+created_at
+```
+
+La publicación referencia la versión aprobada; no la copia como un nuevo maestro independiente.
+
+---
+
+#### 10. Objetivo de publicación por endpoint
+
+Una misma versión de contenido puede tener varios objetivos independientes.
+
+Ejemplo conceptual:
+
+```text
+VERSION APROBADA
+  ├─ TARGET WEB CORPORATIVA
+  ├─ TARGET INSTAGRAM MARCA A
+  ├─ TARGET PASS
+  └─ TARGET EMAIL AUTORIZADO
+```
+
+Cada target conserva su propio:
+
+- endpoint;
+- formato;
+- variante;
+- calendario;
+- estado;
+- payload;
+- identificador externo;
+- intentos;
+- error;
+- retiro;
+- reconciliación.
+
+El éxito en un target no convierte en exitosos los demás.
+
+---
+
+#### 11. Relación con VPROC-0056
+
+`AURA-DOM-005` no redefine el proceso canónico.
+
+Se preservan sus estados:
+
+```text
+CONTENT_REQUESTED
+→ BRIEF_UNDER_REVIEW
+→ IN_CREATION
+→ UNDER_REVIEW
+→ PENDING_APPROVAL
+→ APPROVED
+→ SCHEDULED
+→ PUBLISHED
+→ PERFORMANCE_REVIEW
+→ CONTENT_CYCLE_REVIEWED
+```
+
+Reglas obligatorias:
+
+1. `APPROVED` significa versión autorizada, no publicada;
+2. `SCHEDULED` exige canal, fecha, audiencia y versión de publicación;
+3. `PUBLISHED` exige evidencia suficiente de que la pieza está activa en el canal controlado;
+4. un target ambiguo no debe elevar el proceso a verdad de publicación por inferencia;
+5. la evaluación final no prueba impacto financiero;
+6. el retiro y su evidencia forman parte del cierre del ciclo aunque el proveedor no ofrezca una transición homónima;
+7. los estados técnicos de cada target complementan al proceso, no lo sustituyen.
+
+---
+
+#### 12. Estados técnicos por target
+
+Para evitar que un único estado de proceso o un booleano externo oculte fallos parciales, cada objetivo de publicación tendrá un estado técnico independiente.
+
+Estados conceptuales mínimos:
+
+| Estado | Significado |
+| --- | --- |
+| `PLANNED` | target definido pero sin envío autorizado |
+| `SCHEDULED` | target programado con versión y ventana válidas |
+| `QUEUED` | operación aceptada por el mecanismo de ejecución interno |
+| `DISPATCHING` | intento en curso hacia el proveedor |
+| `PUBLISHED_CONFIRMED` | proveedor o consumidor confirmado y correlacionado |
+| `PUBLISHED_UNCONFIRMED` | existe evidencia parcial o ambigua; requiere reconciliación |
+| `FAILED_RETRYABLE` | fallo transitorio clasificado y todavía elegible para reintento |
+| `FAILED_FINAL` | fallo no reintentable o ventana agotada |
+| `CANCELLED_BEFORE_DISPATCH` | programación cancelada antes de producir efecto externo |
+| `RETIREMENT_PENDING` | existe una orden de retiro aún no confirmada |
+| `RETIRED_CONFIRMED` | retiro externo verificado |
+| `RECONCILIATION_REQUIRED` | estado interno y externo no pueden declararse equivalentes |
+
+Estos nombres constituyen contrato conceptual de dominio. La representación técnica futura deberá conservar sus significados aunque use otra estructura física aprobada.
+
+---
+
+#### 13. Programación
+
+Programar una publicación exige como mínimo:
+
+- versión aprobada e inmutable para ese target;
+- cuenta y endpoint aptos;
+- canal y formato compatibles;
+- zona horaria explícita;
+- fecha y hora objetivo;
+- ventana de vigencia;
+- derechos vigentes;
+- mensaje, claim, precio, oferta o enlace todavía válidos cuando apliquen;
+- audiencia autorizada cuando corresponda;
+- CTA y destino activos;
+- referencia a aprobación;
+- política de contingencia.
+
+No se programa contenido cuyo `valid_until` preceda el momento de publicación.
+
+No se programa una variante que dependa de una ruta pública inexistente o retirada.
+
+La programación no congela indefinidamente hechos dinámicos. Si un dato material debe verificarse al momento de publicar, el target conserva esa dependencia y puede bloquearse antes del envío.
+
+---
+
+#### 14. Zona horaria y calendario
+
+Toda fecha de publicación conservará:
+
+- instante absoluto;
+- zona horaria empresarial del target;
+- zona horaria del operador cuando sea material;
+- calendario aplicable;
+- cambios de programación;
+- actor y motivo del cambio.
+
+Una fecha textual sin zona horaria no constituye programación ejecutable.
+
+Los cambios de horario no podrán alterar silenciosamente la versión de contenido aprobada.
+
+---
+
+#### 15. Congelación de versión para envío
+
+Al programar o despachar un target se fija la versión exacta que se pretende publicar.
+
+```text
+EDICION POSTERIOR DEL CONTENIDO
+!=
+MUTACION SILENCIOSA DEL TARGET YA PROGRAMADO
+```
+
+Si cambia materialmente:
+
+- copy;
+- claim;
+- precio u oferta proyectada;
+- activo;
+- CTA;
+- audiencia;
+- marca;
+- derechos;
+- condición legal;
+- destino;
+
+el target deberá volver al punto de revisión o aprobación que corresponda antes de despachar la nueva versión.
+
+Un cambio puramente operativo de horario podrá conservar aprobación solo cuando la política lo permita y las vigencias sigan siendo válidas.
+
+---
+
+#### 16. Intento de publicación
+
+Cada llamada o acción técnica que pueda producir un efecto externo genera un intento independiente.
+
+Como mínimo conserva:
+
+```text
+publication_attempt_id
+publication_id
+channel_endpoint_id
+operation
+idempotency_key
+attempt_number
+requested_at
+provider_request_reference
+payload_hash
+contract_version
+provider_response_reference
+http_or_provider_status
+classified_outcome
+started_at
+finished_at
+```
+
+Los secretos no se guardan en el intento.
+
+El historial de intentos es inmutable; un reintento agrega un intento nuevo y conserva la misma intención idempotente cuando representa la misma operación empresarial.
+
+---
+
+#### 17. Clave de idempotencia
+
+Una operación de publicación deberá tener una identidad estable que permita distinguir reintento de nueva intención.
+
+Conceptualmente:
+
+```text
+IDEMPOTENCY KEY
+=
+OPERACION EMPRESARIAL
++ PUBLICATION_ID
++ TARGET
++ VERSION
++ ACTION GENERATION
+```
+
+La misma clave no se reutiliza para una versión o acción materialmente nueva.
+
+Publicar, actualizar y retirar son acciones distintas aunque afecten el mismo `publication_id`.
+
+Un webhook repetido, reenvío del proveedor, retry interno o respuesta duplicada no crea una segunda publicación por sí mismo.
+
+---
+
+#### 18. Resultado ambiguo y fail-closed
+
+La ausencia de respuesta no equivale a fallo.
+
+La regla obligatoria es:
+
+```text
+REQUEST ENVIADO
++
+TIMEOUT O RESPUESTA AMBIGUA
+→
+PUBLISHED_UNCONFIRMED O RECONCILIATION_REQUIRED
+→
+CONSULTAR / RECONCILIAR
+→
+SOLO DESPUES DECIDIR REINTENTO
+```
+
+Queda prohibido:
+
+```text
+TIMEOUT
+→ RETRY CIEGO
+→ POSIBLE DUPLICADO
+```
+
+Cuando el proveedor no permita consultar el estado, el caso permanece explícitamente incierto y sigue la contingencia definida para ese canal.
+
+---
+
+#### 19. Clasificación de fallos
+
+Los fallos deberán clasificarse antes de decidir reintento.
+
+Familias mínimas:
+
+| Familia | Ejemplo conceptual | Tratamiento |
+| --- | --- | --- |
+| autenticación/autorización | token revocado, permiso removido | bloquear cola del alcance afectado y escalar a custodia |
+| rate limit | límite temporal del proveedor | reintento gobernado dentro de la ventana válida |
+| transitorio técnico | red, timeout conocido sin efecto, 5xx clasificable | retry según política y reconciliación previa cuando exista ambigüedad |
+| validación | formato, tamaño, campo inválido | corregir antes de reintentar; no repetir ciegamente |
+| política/plataforma | rechazo de contenido o revisión externa | revisión humana y decisión; no evadir controles |
+| destino inexistente | endpoint, ruta o publicación no encontrada | reconciliar identidad y estado antes de actuar |
+| incompatibilidad contractual | versión o capacidad no soportada | bloquear hasta resolver contrato/adaptador |
+| incierto | no existe evidencia suficiente de éxito o fallo | reconciliación obligatoria |
+
+La política concreta de backoff, límites, circuit breaker, cola y compensación pertenece a `AURA-INT-001` y a la infraestructura transversal aplicable.
+
+---
+
+#### 20. Reintentos
+
+Un reintento solo es admisible cuando:
+
+1. la acción original sigue siendo válida;
+2. la versión continúa aprobada;
+3. la vigencia no expiró;
+4. la cuenta y endpoint siguen aptos;
+5. no existe confirmación previa del mismo efecto;
+6. la clase de fallo permite retry;
+7. la clave idempotente se conserva cuando se trata de la misma acción;
+8. la política de canal permite un nuevo intento;
+9. el reintento no reintroduce contenido retirado;
+10. no viola límites de frecuencia, consentimiento o plataforma.
+
+Un reintento tardío después de `valid_until`, retiro o cancelación queda bloqueado.
+
+---
+
+#### 21. Publicación parcial multicanal
+
+Una operación multicanal puede terminar parcialmente.
+
+Ejemplo:
+
+```text
+WEB = PUBLISHED_CONFIRMED
+SOCIAL_A = FAILED_RETRYABLE
+PASS = PUBLISHED_CONFIRMED
+EMAIL = RECONCILIATION_REQUIRED
+```
+
+La regla es:
+
+```text
+FALLO PARCIAL
+!=
+RECREAR TODOS LOS TARGETS
+```
+
+Cada target se recupera de forma independiente.
+
+Una decisión de retirar targets exitosos debido al fallo de otro target debe ser explícita; no se ejecuta como compensación universal por inferencia.
+
+---
+
+#### 22. Confirmación externa
+
+Un target pasa a `PUBLISHED_CONFIRMED` cuando existe evidencia suficiente y correlacionable.
+
+Según el canal podrá incluir:
+
+- identificador externo;
+- URL o permalink;
+- timestamp del proveedor;
+- estado consultado;
+- respuesta firmada o autenticada;
+- snapshot de campos relevantes;
+- webhook correlacionado;
+- consumidor público verificable.
+
+Una respuesta HTTP exitosa sin prueba de efecto no obliga a declarar publicación confirmada si el contrato del proveedor es asíncrono.
+
+---
+
+#### 23. Edición después de publicar
+
+Una modificación de una publicación externa debe conservar:
+
+- versión interna anterior;
+- versión nueva;
+- publicación externa afectada;
+- payload anterior y nuevo por referencia o hash;
+- aprobación aplicable;
+- intento de actualización;
+- resultado;
+- evidencia de reconciliación.
+
+No se sobrescribe la historia para fingir que la versión nueva fue la publicada originalmente.
+
+Si el proveedor no soporta actualización, la operación deberá convertirse en retiro y nueva publicación únicamente mediante una decisión explícita y trazable.
+
+---
+
+#### 24. Retiro
+
+El retiro se trata como una acción propia y auditable.
+
+Puede significar, según el canal:
+
+- cancelar una programación todavía no enviada;
+- ocultar;
+- despublicar;
+- archivar;
+- eliminar externamente cuando la política lo permita;
+- cambiar vigencia en una superficie propia;
+- sustituir por contenido de contingencia aprobado.
+
+No todas estas acciones son equivalentes.
+
+AURA deberá registrar cuál se solicitó, cuál se ejecutó y cuál confirmó el proveedor.
+
+---
+
+#### 25. Regla de retiro seguro
+
+Una publicación retirada no podrá reaparecer por:
+
+- caché controlable;
+- job pendiente;
+- automatización antigua;
+- programación previa;
+- reintento tardío;
+- webhook repetido;
+- fallback editorial no gobernado;
+- réplica o target no reconciliado.
+
+El retiro interno no se considera completo mientras existan targets activos que debían ser retirados o mientras el estado externo permanezca desconocido sin tratamiento explícito.
+
+La evidencia histórica interna no se elimina por retirar el contenido externo.
+
+---
+
+#### 26. Reconciliación
+
+La reconciliación compara intención y estado esperado contra estado externo observado.
+
+Por target deberá poder resolver:
+
+```text
+EXPECTED_VERSION
+EXPECTED_STATE
+EXPECTED_EXTERNAL_ID
+EXPECTED_VISIBILITY
+EXPECTED_VALIDITY
+```
+
+contra:
+
+```text
+OBSERVED_VERSION O FINGERPRINT
+OBSERVED_STATE
+OBSERVED_EXTERNAL_ID
+OBSERVED_VISIBILITY
+OBSERVED_TIMESTAMP
+```
+
+La salida mínima distingue:
+
+- `MATCHED`;
+- `MISSING_REMOTE`;
+- `UNEXPECTED_REMOTE`;
+- `VERSION_DRIFT`;
+- `STATUS_DRIFT`;
+- `IDENTITY_DRIFT`;
+- `RECONCILIATION_BLOCKED`.
+
+La implementación futura podrá ampliar esta taxonomía sin colapsar diferencias entre ausencia, divergencia y bloqueo técnico.
+
+---
+
+#### 27. Cambios hechos fuera de AURA
+
+Una edición, publicación, retiro o eliminación hecha directamente en el proveedor externo constituye estado observado externo.
+
+No se promueve automáticamente a verdad canónica.
+
+La reconciliación deberá:
+
+1. detectar el cambio;
+2. identificar el endpoint y objeto externo;
+3. conservar evidencia;
+4. comparar contra la versión esperada;
+5. marcar drift;
+6. determinar si puede importarse como observación, requiere revisión o debe corregirse externamente;
+7. no destruir el historial interno.
+
+El acceso directo al proveedor no se asume prohibido por este contrato, pero nunca queda fuera de trazabilidad cuando afecta una superficie gobernada.
+
+---
+
+#### 28. Contenido de contingencia y fallback
+
+Un fallback no puede actuar como una publicación invisible y sin gobierno.
+
+Debe conservar:
+
+- identidad;
+- versión;
+- finalidad de contingencia;
+- canales donde aplica;
+- marca;
+- vigencia;
+- responsable;
+- aprobación;
+- condición que lo activa;
+- condición que lo desactiva;
+- evidencia de retorno a operación normal.
+
+Una falla de credenciales, tabla o API no autoriza mostrar placeholders, promociones retiradas, eventos inexistentes o contenido histórico como vigente.
+
+---
+
+#### 29. Integridad de enlaces y consumidores
+
+Antes de publicar contenido que dependa de una ruta o consumidor público debe existir un destino válido y activo.
+
+Se preserva la regla de que:
+
+```text
+CONTENIDO CREADO
++
+DESTINO INEXISTENTE
+!=
+CONTENIDO PUBLICABLE
+```
+
+En particular, mientras una ruta redirija a un destino que no representa la acción anunciada, la publicación deberá bloquearse, advertirse o dirigirse a un destino explícitamente aprobado.
+
+URLs, CTAs, canonicals, previews y redirecciones deberán conservar su validación propietaria posterior; esta tarea no redefine `AURA-INT-001` ni las políticas de seguridad de enlaces.
+
+---
+
+#### 30. Fuente de verdad y proyecciones dinámicas
+
+Precio, producto, disponibilidad, stock, capacidad, horario, beneficio, consentimiento, cliente, venta, costo y margen permanecen en sus dominios propietarios.
+
+AURA solo puede publicar su proyección autorizada y vigente.
+
+Si un target depende de un hecho dinámico cuya frescura ya no puede demostrarse, AURA deberá:
+
+- bloquear el envío;
+- degradar el claim según una regla aprobada; o
+- exigir revisión.
+
+Nunca convierte una copia antigua en maestro porque el canal todavía la muestre.
+
+---
+
+#### 31. Métricas del proveedor
+
+El proveedor puede aportar impresiones, alcance, clics, vistas, entregas, errores u otros hechos técnicos.
+
+`AURA-DOM-005` solo exige que esas métricas mantengan:
+
+- endpoint;
+- publicación externa;
+- periodo;
+- zona horaria;
+- versión o definición cuando aplique;
+- fuente;
+- fecha de obtención;
+- estado de conciliación.
+
+La interpretación de rendimiento, atribución, incrementalidad y aprendizaje permanece reservada a `AURA-DOM-008`.
+
+---
+
+#### 32. Auditoría mínima
+
+Toda transición material de publicación deberá poder correlacionar:
+
+- actor humano cuando exista;
+- principal técnico;
+- capacidad o acción;
+- cuenta y endpoint;
+- `publication_id`;
+- versión de contenido;
+- estado anterior;
+- estado nuevo;
+- intento;
+- identificador externo;
+- resultado;
+- motivo;
+- timestamps;
+- evidencia.
+
+Una tarea automática no elimina la responsabilidad de reconstruir quién aprobó la versión que originó el efecto.
+
+---
+
+#### 33. Observabilidad mínima
+
+La futura operación deberá poder detectar, como mínimo:
+
+- publicaciones internas sin confirmación externa;
+- publicaciones externas no correlacionadas;
+- targets vencidos todavía visibles;
+- retiros pendientes;
+- jobs tardíos;
+- reintentos repetidos;
+- webhooks duplicados;
+- credenciales inválidas;
+- cuentas sin responsable o suplente;
+- límites de proveedor activos;
+- discrepancias de versión;
+- URLs rotas;
+- medios faltantes;
+- consumidores públicos incompatibles;
+- fallbacks activos fuera de su condición.
+
+La métrica de salud técnica no sustituye la evaluación comercial.
+
+---
+
+#### 34. Operación degradada
+
+Cuando un canal no pueda operar normalmente:
+
+1. se identifica el endpoint afectado;
+2. se pausa únicamente el alcance afectado cuando sea posible;
+3. se preservan publicaciones ya confirmadas;
+4. se bloquean envíos cuya seguridad o resultado no pueda demostrarse;
+5. se conserva la cola pendiente sin perder vigencia;
+6. se usa canal alterno solo si está autorizado;
+7. la captura manual conserva correlación;
+8. al recuperar servicio se reconcilia antes de liberar reintentos ambiguos;
+9. se verifican publicaciones y retiros pendientes;
+10. se cierra la contingencia con evidencia.
+
+Una cuenta personal no se convierte en contingencia automática.
+
+---
+
+#### 35. Superficies transitorias actuales
+
+Las superficies actuales observadas en VISO y Vento-Group siguen siendo evidencia de transición.
+
+Esta tarea no:
+
+- transfiere el CMS de VISO a AURA;
+- declara AURA desplegada;
+- convierte `website_items` o `website_blocks` en el modelo físico objetivo;
+- convierte `is_published` en ciclo editorial suficiente;
+- crea un registro de cuentas en VISO;
+- migra `website-media`;
+- cambia RLS;
+- cambia consumidores públicos;
+- corrige rutas existentes;
+- publica eventos;
+- habilita `/eventos`;
+- modifica fallbacks;
+- cambia service role, anon o identidad de lectura pública.
+
+La futura materialización deberá conservar compatibilidad o ejecutar la migración formal gobernada por las tareas propietarias correspondientes.
+
+---
+
+#### 36. Frontera con AURA-AUTH-002
+
+`AURA-DOM-005` define qué estados y acciones existen.
+
+`AURA-AUTH-002` definirá quién puede:
+
+- crear;
+- revisar;
+- aprobar;
+- programar;
+- publicar;
+- retirar;
+- responder públicamente.
+
+Por tanto, esta tarea no asigna permisos concretos a roles ni permite autoaprobación.
+
+---
+
+#### 37. Frontera con AURA-AUTH-004
+
+`AURA-DOM-005` exige cuenta gobernada, custodia y recuperación.
+
+`AURA-AUTH-004` gobernará:
+
+- credenciales;
+- tokens;
+- secretos;
+- acceso de terceros;
+- proveedores;
+- prompts y archivos cuando corresponda;
+- datos enviados fuera de Vento.
+
+Esta tarea no almacena ni selecciona secretos reales.
+
+---
+
+#### 38. Frontera con AURA-UX-004
+
+El dominio define estados y decisiones; `AURA-UX-004` diseñará la experiencia de aprobación y publicación multicanal.
+
+La interfaz deberá poder mostrar sin ambigüedad:
+
+- qué versión está aprobada;
+- qué targets existen;
+- qué está programado;
+- qué fue confirmado;
+- qué falló;
+- qué está incierto;
+- qué requiere reconciliación;
+- qué retiro sigue pendiente.
+
+La experiencia no puede representar todos estos estados como un único check de “publicado”.
+
+---
+
+#### 39. Frontera con AURA-INT-001
+
+`AURA-DOM-005` define semántica y resultados esperados.
+
+`AURA-INT-001` definirá la integración concreta de:
+
+- adaptadores;
+- APIs;
+- OAuth;
+- credenciales;
+- webhooks;
+- firmas;
+- rate limits;
+- backoff;
+- colas;
+- payloads;
+- errores de proveedor;
+- consultas de estado;
+- reconciliación externa.
+
+No se selecciona un proveedor ni una implementación desde esta tarea.
+
+---
+
+#### 40. Frontera con AURA-DOM-006
+
+`AURA-DOM-005` publica contenido aprobado hacia targets.
+
+`AURA-DOM-006` definirá:
+
+- campañas;
+- experimentos;
+- variantes experimentales;
+- promociones;
+- cupones;
+- guardas económicas;
+- guardas de stock;
+- guardas de capacidad;
+- detención por daño.
+
+Por tanto:
+
+```text
+PUBLICACION
+!=
+CAMPANA
+!=
+PROMOCION
+!=
+CUPON
+```
+
+Una publicación puede existir fuera de una campaña, y una campaña no autoriza por sí sola publicar una versión no aprobada.
+
+---
+
+#### 41. Frontera con AURA-DOM-009
+
+Publicar contenido editorial y responder a una interacción pública son responsabilidades distintas.
+
+`AURA-DOM-009` gobernará comentarios, reseñas, respuestas y escalamiento a servicio.
+
+El hecho de que una cuenta permita publicar no autoriza al mismo actor o proceso a responder reclamos, crisis o comentarios sin el contrato correspondiente.
+
+---
+
+#### 42. Frontera con AURA-DOM-008
+
+`AURA-DOM-005` conserva hechos técnicos y métricas de publicación.
+
+`AURA-DOM-008` decidirá cómo convertir esos hechos en:
+
+- métricas gobernadas;
+- atribución;
+- nivel de confianza;
+- incrementalidad;
+- aprendizaje;
+- cierre de campaña.
+
+Una publicación confirmada no prueba conversión, venta, margen ni causalidad.
+
+---
+
+#### 43. Handoff contractual hacia integración
+
+La futura integración de un proveedor solo podrá considerarse compatible si puede demostrar, para cada efecto externo:
+
+```text
+INTENCION INTERNA
+→ TARGET
+→ INTENTO
+→ RESPUESTA O AMBIGUEDAD
+→ IDENTIDAD EXTERNA
+→ ESTADO OBSERVADO
+→ RECONCILIACION
+→ CIERRE
+```
+
+Si una plataforma no ofrece todos los mecanismos, la integración deberá documentar la limitación y una compensación gobernada; no podrá inventar confirmación.
+
+---
+
+#### 44. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. canal, cuenta, endpoint, credencial, contenido y publicación son objetos distintos;
+2. se reutiliza el universo de familias de `OPS-CAN-001` sin declarar endpoints físicos por inferencia;
+3. una cuenta empresarial debe tener titularidad, propietario, custodio, responsable y suplente;
+4. una cuenta personal no puede ser el único acceso empresarial ordinario;
+5. una credencial no equivale a autorización;
+6. una versión aprobada no equivale a publicación;
+7. cada target multicanal tiene estado independiente;
+8. `VPROC-0056` conserva su ciclo de proceso y no se reemplaza por estados técnicos del proveedor;
+9. la programación exige zona horaria, versión, vigencia, endpoint apto y aprobación;
+10. un cambio material de contenido invalida el target programado hasta nueva revisión o aprobación aplicable;
+11. cada intento de efecto externo conserva identidad y trazabilidad;
+12. el reintento de la misma intención conserva idempotencia;
+13. timeout o respuesta ambigua obligan a reconciliar antes de reintentar;
+14. un fallo parcial no recrea targets ya confirmados;
+15. retirar es una acción propia y no equivale a borrar evidencia;
+16. retiro solicitado y retiro confirmado son estados distintos;
+17. el retiro debe impedir reaparición por jobs, cache, reintentos o fallbacks gobernables;
+18. el estado externo se observa pero no se convierte en fuente de verdad empresarial;
+19. ediciones directas en un proveedor generan drift y reconciliación;
+20. fallbacks deben ser contenido gobernado y versionado;
+21. no se publica hacia consumidores o destinos inexistentes;
+22. datos dinámicos continúan perteneciendo a sus fuentes propietarias;
+23. métricas del proveedor se conservan como hechos técnicos, no como impacto empresarial demostrado;
+24. la autorización detallada permanece en `AURA-AUTH-*`;
+25. experiencia permanece en `AURA-UX-004`;
+26. adaptadores, APIs, webhooks y credenciales físicas permanecen en `AURA-INT-001`;
+27. campañas, experimentos, promociones, cupones y guardas permanecen en `AURA-DOM-006`;
+28. reputación y respuesta pública permanecen en `AURA-DOM-009`;
+29. atribución y aprendizaje permanecen en `AURA-DOM-008`;
+30. las superficies actuales de VISO/Vento-Group no se transfieren ni modifican;
+31. se crean y modifican cero requisitos de prueba;
+32. no se crea ninguna instancia física;
+33. la continuidad queda reservada exclusivamente a `AURA-DOM-006`.
+
+---
+
+#### 45. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea materializa y organiza reglas ya protegidas por requisitos vigentes sobre ciclo editorial, cuentas, autorización, idempotencia, publicación, consumidores, fallbacks, links, observabilidad e integración. No introduce una obligación de prueba nueva ni cambia el alcance de una fila existente.
+
+---
+
+#### 46. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-001`, para separación de contenido, publicación y estados editoriales;
+- `TREQ-AURA-009`, para capacidades atómicas de mutación y publicación;
+- `TREQ-AURA-011` a `TREQ-AURA-013`, para creación, actualización, referencias y retiro lógico del contenido actual;
+- `TREQ-AURA-019`, para estados distintos de borrador, revisión, aprobación, programación, publicación, ocultamiento, retiro y archivo;
+- `TREQ-AURA-020`, para consumo público con identidad técnica explícita y fallos observables;
+- `TREQ-AURA-021`, para fallbacks gobernados y retiro efectivo;
+- `TREQ-AURA-022`, para impedir publicar hacia consumidores inexistentes;
+- `TREQ-AURA-023`, para contrato versionado entre editor y consumidor;
+- `TREQ-AURA-024`, para compatibilidad entre esquema, políticas y consumidores;
+- `TREQ-AURA-025`, para integridad de URLs, CTAs, canonicals, previews y redirecciones;
+- `TREQ-AURA-026`, para auditoría, observabilidad y reconciliación editorial;
+- `TREQ-INTEGRATION-019`, para adaptadores, identificadores internos/externos, idempotencia, webhooks, reintentos y conciliación de marketing.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación, modificación ni actualización del registro.
+
+---
+
+#### 47. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | `NOT_EXECUTED` | el artefacto todavía no se ha insertado ni validado en el checkout del usuario |
+| REMOTA | `PASS` | fuentes canónicas vigentes, topología, CAP-SCOPE-014, OPS-CAN-001, VPROC-0056, 04A y contratos de integración fueron inspeccionados antes de redactar |
+| OPERATIVA | `NOT_EXECUTED` | no se conectaron ni consultaron cuentas o proveedores reales y no se ejecutaron publicaciones |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; la tarea se agota en su contrato documental |
+
+---
+
+#### 48. Criterios de aceptación
+
+La tarea queda sustantivamente completa cuando se cumple todo lo siguiente:
+
+- cuenta, endpoint, credencial y principal técnico quedan separados;
+- el universo de familias de canal reutiliza `OPS-CAN-001` sin inventar cuentas reales;
+- cada publicación referencia una versión aprobada;
+- cada target conserva estado independiente;
+- programación conserva zona horaria, vigencia y aprobación;
+- `VPROC-0056` permanece intacto como proceso propietario;
+- los estados técnicos no sustituyen estados de proceso;
+- los intentos son auditables;
+- la idempotencia distingue retry de nueva intención;
+- los resultados ambiguos pasan por reconciliación;
+- un fallo parcial no duplica publicaciones ya confirmadas;
+- retiro, borrado externo y evidencia interna permanecen distintos;
+- los fallbacks están gobernados;
+- los consumidores inexistentes bloquean publicación;
+- las métricas externas no se presentan como impacto empresarial probado;
+- las superficies transitorias actuales no cambian de ownership;
+- `AURA-DOM-006`, `AURA-DOM-008`, `AURA-DOM-009`, `AURA-AUTH-*`, `AURA-UX-004` y `AURA-INT-001` conservan sus responsabilidades;
+- no se crean ni modifican requisitos de prueba;
+- no se autoriza ninguna implementación física;
+- la siguiente tarea reservada es exactamente `AURA-DOM-006`.
+
+---
+
+#### 49. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear o recuperar cuentas reales;
+- tomar propiedad de perfiles, dominios, números, buzones o tiendas;
+- almacenar contraseñas, tokens, secretos o códigos de recuperación;
+- configurar MFA, OAuth o service accounts;
+- crear adaptadores, APIs, webhooks o firmas;
+- crear colas, jobs, cron, workers, circuit breakers o políticas de backoff;
+- crear tablas, migraciones, RLS, funciones, RPC o Storage;
+- modificar VISO o Vento-Group;
+- migrar el CMS;
+- publicar contenido real;
+- programar publicaciones reales;
+- enviar mensajes reales;
+- editar o retirar publicaciones reales;
+- consumir métricas reales;
+- responder comentarios o reseñas;
+- crear campañas, experimentos, promociones o cupones;
+- alterar precios, descuentos, beneficios, stock o capacidad;
+- definir permisos concretos por rol;
+- desplegar proveedores o credenciales;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-DOM-006`.
+
+---
+
+#### 50. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas`
 
 ### [ ] AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas
 
