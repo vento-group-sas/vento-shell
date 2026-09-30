@@ -4918,7 +4918,7 @@ Las respuestas operativas ya recopiladas en el registro vivo se consolidarán en
 | H-CAP-SCOPE-014-026 | Una respuesta pública puede cerrar visualmente un reclamo sin resolver el caso de servicio.                                           | crítica   | AURA-DOM-009; CAP-SCOPE-010; TREQ-PASS-011                              | E2/E3    |
 | H-CAP-SCOPE-014-027 | No se gobiernan pruebas A/B, grupos de control, periodos comparables ni detención por daño.                                           | alta      | AURA-DOM-006; AURA-DOM-008                                              | E2/E3    |
 | H-CAP-SCOPE-014-028 | Las recomendaciones automáticas pueden optimizar volumen o interacción sacrificando margen, capacidad, reputación o consentimiento.   | crítica   | AURA-DOM-010; AURA-DOM-004; AURA-AUTH-003                               | E2/E3    |
-| H-CAP-SCOPE-014-029 | No existe evidencia de calidad, frescura y cobertura de las fuentes que alimentarían recomendaciones de AURA.                         | crítica   | AURA-INT-002; CAP-SCOPE-017; TREQ-SUPABASE-007                          | E2/E3/E5 |
+| H-CAP-SCOPE-014-029 | No existe evidencia de calidad, frescura y cobertura de las fuentes que alimentarían recomendaciones de AURA.                         | crítica   | AURA-INT-002; CAP-SCOPE-017; TREQ-DATA-003                          | E2/E3/E5 |
 | H-CAP-SCOPE-014-030 | Una aplicación saturada de explicaciones, tablas y configuración técnica impediría que Marketing adopte AURA como herramienta diaria. | alta      | AURA-UX-001 a AURA-UX-008; UX-QA-001 a UX-QA-029                        | E2/E5    |
 
 ---
