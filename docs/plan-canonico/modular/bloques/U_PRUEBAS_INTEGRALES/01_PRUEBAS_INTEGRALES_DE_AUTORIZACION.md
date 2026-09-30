@@ -12954,7 +12954,818 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-018 — PIN identifica al trabajador real`
-### [ ] AUTH-QA-018 — PIN identifica al trabajador real
+### ✅ AUTH-QA-018 — PIN identifica al trabajador real
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
+**Tarea siguiente:** AUTH-QA-019 — Rol simulado no hereda permisos reales
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización para dispositivos compartidos, reutilizable por paquete y certificable globalmente, que demuestra que un PIN, firma o mecanismo ligero aprobado identifica server-side al trabajador humano real y puede producir una sesión de actor o evidencia de firma correlacionable sin convertirse en permiso, rol, turno, check-in, cobertura, reautenticación fuerte ni fuente de autoridad empresarial
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-018::<package_id>` y la certificación `AUTH-QA-018::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la infraestructura y consumidores parciales observados no constituyen certificación integral de identificación humana, lifecycle, secreto efímero ni controles adversariales
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra packages, aplicaciones, dispositivos, PIN reales, sesiones de actor, firmas, empleados, datos, Supabase, RLS, RPC, Server Actions, rate limiting, lockout, secretos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un PIN, firma o mecanismo ligero aprobado en un dispositivo compartido identifica al trabajador humano real mediante resolución autoritativa de servidor, sin permitir que el cliente elija al actor ni que la prueba humana se convierta en una fuente de autoridad empresarial.
+
+La regla raíz queda:
+
+```text
+PRINCIPAL TÉCNICO DEL DISPOSITIVO
++
+PRUEBA HUMANA LIGERA PRESENTADA
++
+RESOLUCIÓN SERVER-SIDE ÚNICA DEL EMPLEADO
+→ IDENTIDAD HUMANA VERIFICABLE
+→ SESIÓN DE ACTOR O FIRMA CORRELACIONABLE CUANDO APLIQUE
+```
+
+Y simultáneamente:
+
+```text
+PIN / FIRMA LIGERA / QR / MECANISMO APROBADO
+≠ PERMISO
+≠ ROL
+≠ TURNO
+≠ CHECK-IN
+≠ COBERTURA
+≠ ALLOW FINAL
+≠ REAUTENTICACIÓN FUERTE
+```
+
+La tarea certifica identidad y atribución humana; la autorización empresarial continúa resolviéndose por sus contratos propietarios.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y seis resultados obligatorios:
+
+1. el dispositivo compartido continúa siendo un principal técnico y no un empleado ficticio;
+2. el actor efectivo de una operación laboral es un empleado humano real cuando la superficie exige actor humano;
+3. el PIN, firma o mecanismo ligero se presenta como prueba humana y no como identidad autoritativa elegida por cliente;
+4. el servidor resuelve el empleado asociado con la prueba;
+5. un `employee_id` enviado por cliente no puede sustituir la resolución server-side;
+6. la prueba solo es válida cuando resuelve un único trabajador compatible;
+7. cero trabajadores resolubles produce fallo cerrado;
+8. múltiples trabajadores resolubles o una identidad ambigua producen fallo cerrado;
+9. una prueba inválida no crea sesión de actor, firma válida ni autoridad;
+10. la respuesta de prueba inválida no revela si otro trabajador existe ni detalles del secreto;
+11. una prueba válida puede identificar al trabajador y, cuando el contrato lo permita, iniciar una sesión de actor;
+12. una sesión de actor vincula dispositivo y empleado humano sin conceder por sí sola un permiso;
+13. solo puede existir un actor efectivo utilizable por dispositivo en un instante conforme al contrato vigente;
+14. cuando una acción exige firma individual, la evidencia se obtiene antes del comando protegido;
+15. la firma de acción se vincula al humano exacto y a la operación concreta;
+16. una firma emitida para una operación no se reutiliza como prueba universal para otra operación materialmente distinta;
+17. el actor de la firma debe coincidir con el actor de la sesión cuando ambos existan;
+18. el PIN correcto no crea `ALLOW` final;
+19. el PIN correcto no crea rol base ni operativo;
+20. el PIN correcto no crea turno ni check-in;
+21. el PIN correcto no crea sede, área ni cobertura administrativa;
+22. el PIN correcto no amplía el techo del dispositivo ni habilita una aplicación ausente;
+23. el PIN correcto no satisface `STRONG_REAUTH_REQUIRED`;
+24. la autorización posterior sigue exigiendo permiso, modalidad, territorio, recurso, estado, prerrequisitos, techo del dispositivo y ausencia de denegaciones;
+25. un actor identificado sin permiso continúa denegado para la capacidad correspondiente;
+26. un actor identificado con permiso pero fuera del techo del dispositivo continúa denegado;
+27. un actor identificado sin turno o check-in requeridos continúa denegado;
+28. una prueba humana no compensa territorio o recurso incompatibles;
+29. el secreto crudo es efímero y no se conserva en contexto, auditoría, logs, métricas, mensajes ni receipts;
+30. la evidencia persistible usa una referencia opaca de servidor, no el PIN ni una copia reversible del secreto;
+31. éxito, error, cambio de cliente, cambio de modo, expiración o cambio de actor deben impedir reutilización indebida del secreto o evidencia incompatible conforme a los contratos físicos propietarios;
+32. límites de intentos, bloqueo, rotación y respuesta uniforme permanecen obligatorios donde los requisitos existentes los exigen y deben certificarse físicamente antes del PASS correspondiente;
+33. la existencia de inputs, tablas legacy, helpers parciales o una referencia de firma no demuestra por sí sola identificación integral conforme;
+34. toda denegación conserva cero efectos empresariales y sí conserva evidencia de auditoría cuando corresponda;
+35. no se crean ni modifican requisitos de prueba;
+36. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- la separación entre principal técnico, dispositivo y actor humano;
+- `AUTH-DEV-007` como contrato propietario de identificación humana y firma ligera;
+- `AUTH-DEV-008` para la intersección posterior entre autoridad humana y techo del dispositivo;
+- `AUTH-DEV-009` para no herencia de autoridad administrativa;
+- `AUTH-DEV-010` para trazabilidad conjunta de dispositivo y trabajador;
+- `AUTH-SRV-010` para el gate de dispositivo compartido, actor session, clasificación STANDARD/STRONG/NOT_ALLOWED y restricciones server-side;
+- la política de lifecycle de sesión y cambio de actor del BLOQUE P;
+- los contratos de secreto efímero y controles adversariales ya registrados para PULSO;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La prueba no utiliza como autoridad `employee_id` de cliente, `navigation_role`, último trabajador, último PIN, sede del dispositivo, área del dispositivo, estado de interfaz, cookie, ruta ni etiqueta visual.
+
+---
+
+#### 4. Semántica exacta de PIN, sesión y firma
+
+La certificación distingue tres objetos:
+
+| Objeto | Significado | Autoridad empresarial |
+| --- | --- | --- |
+| PIN o mecanismo ligero | secreto o prueba presentada por el trabajador para demostrar presencia e identidad | ninguna por sí sola |
+| sesión de actor | vínculo temporal autoritativo entre dispositivo y empleado humano | identifica actor; no concede permiso por sí sola |
+| firma de acción | referencia opaca emitida por servidor después de validar al humano para una operación concreta | atribuye la operación; no sustituye autorización |
+
+La palabra **firma** no significa imagen, trazo, booleano del cliente ni texto libre. Es evidencia server-side correlacionable con el humano y la operación.
+
+---
+
+#### 5. Resolución server-side del trabajador
+
+El cliente puede transportar la prueba efímera, pero no puede declarar autoritativamente:
+
+- `employee_id`;
+- actor efectivo;
+- `actor_session_id`;
+- rol;
+- turno;
+- check-in;
+- sede;
+- área;
+- permiso;
+- resultado de autorización.
+
+La resolución válida debe demostrar:
+
+```text
+PRUEBA HUMANA
+→ VALIDACIÓN EN SERVIDOR
+→ EMPLEADO ÚNICO RESUELTO
+→ EMPLEADO VIGENTE Y ELEGIBLE PARA EL FLUJO
+→ IDENTIDAD HUMANA VERIFICABLE
+```
+
+Si esa cadena no puede demostrarse, el resultado es fail-closed.
+
+---
+
+#### 6. Cliente no selecciona al actor
+
+Deben existir casos adversariales donde el cliente intente:
+
+- enviar un `employee_id` distinto del asociado con el PIN;
+- reutilizar el trabajador del intento anterior;
+- seleccionar un empleado desde una lista;
+- forzar un `actor_session_id` ajeno;
+- utilizar `navigation_role` como actor;
+- usar el usuario técnico del dispositivo como empleado;
+- usar sede o área del dispositivo para inferir persona;
+- atribuir la firma a un empleado distinto del resuelto.
+
+Ninguno puede alterar la identidad resuelta por servidor.
+
+---
+
+#### 7. Cero coincidencias y ambigüedad
+
+Los siguientes estados no son equivalentes a un PIN válido:
+
+```text
+0 EMPLEADOS RESUELTOS
+→ FAIL CLOSED
+
+>1 EMPLEADOS COMPATIBLES / RESULTADO AMBIGUO
+→ FAIL CLOSED
+
+PRUEBA NO RESOLUBLE
+→ FAIL CLOSED
+```
+
+No se selecciona automáticamente:
+
+- el empleado más reciente;
+- el empleado de la sede;
+- el empleado del último PIN;
+- el actor de la última sesión;
+- el actor cuyo rol haga pasar la autorización.
+
+---
+
+#### 8. Sesión de actor
+
+Cuando el contrato permita iniciar una sesión de actor después de identificar al trabajador, la prueba deberá demostrar que la sesión:
+
+- pertenece al mismo dispositivo;
+- referencia al empleado resuelto por servidor;
+- se encuentra vigente;
+- no está revocada ni expirada;
+- no reutiliza un actor anterior;
+- no se deriva de `navigation_role`;
+- no concede permiso por sí sola;
+- no crea turno ni check-in;
+- no completa contexto faltante;
+- no fusiona dos actores simultáneos.
+
+Una sesión inválida deja de producir actor efectivo.
+
+---
+
+#### 9. Firma individual de acción
+
+Cuando una capacidad exija firma individual:
+
+```text
+ACTOR HUMANO RESUELTO
++
+OPERACIÓN CONCRETA QUE EXIGE FIRMA
++
+VALIDACIÓN HUMANA VIGENTE
+→ REFERENCIA OPACA DE FIRMA
+→ COMANDO PROTEGIDO CONTINÚA A AUTORIZACIÓN
+```
+
+La firma deberá poder correlacionarse, según aplique, con:
+
+- dispositivo;
+- principal técnico;
+- actor humano;
+- sesión de actor;
+- aplicación;
+- operación o comando;
+- permiso;
+- recurso;
+- correlación temporal.
+
+La firma no constituye un `ALLOW` autónomo.
+
+---
+
+#### 10. Coincidencia entre actor de sesión y actor de firma
+
+Cuando una sesión de actor y una firma individual participen en la misma operación:
+
+```text
+ACTOR_SESSION.employee_id = FIRMA.employee_id
+```
+
+es una condición obligatoria.
+
+Un mismatch produce bloqueo de la acción y cero efectos empresariales.
+
+No se corrige silenciosamente el actor tomando el de la firma, el de la sesión o el de la interfaz según cuál permita continuar.
+
+---
+
+#### 11. PIN identifica; no autoriza
+
+Después de una identificación positiva, la acción empresarial continúa su evaluación independiente.
+
+Debe demostrarse al menos:
+
+```text
+PIN VÁLIDO + ACTOR SIN PERMISO
+→ DENY
+
+PIN VÁLIDO + PERMISO + CAPACIDAD FUERA DEL TECHO DEL DISPOSITIVO
+→ DENY
+
+PIN VÁLIDO + PERMISO + FALTA TURNO/CHECK-IN REQUERIDO
+→ DENY
+
+PIN VÁLIDO + PERMISO + TERRITORIO INCOMPATIBLE
+→ DENY
+```
+
+Un PIN correcto solo resuelve identidad o firma ligera según el flujo aprobado.
+
+---
+
+#### 12. PIN no crea contexto laboral
+
+Identificar al trabajador no fabrica:
+
+- turno;
+- check-in;
+- rol operativo;
+- sede operativa;
+- área operativa;
+- cobertura administrativa;
+- asignación a recurso;
+- relación con vehículo, ubicación o estación.
+
+Cada dimensión se resuelve desde su propia fuente autoritativa cuando el permiso la exige.
+
+---
+
+#### 13. PIN no amplía el dispositivo
+
+La prueba humana no altera:
+
+- aplicaciones efectivas;
+- techo máximo de capacidades;
+- reducción vigente de instancia;
+- territorio del dispositivo;
+- clasificación `STANDARD_ACTOR_SESSION`;
+- clasificación `STRONG_REAUTH_REQUIRED`;
+- clasificación `NOT_ALLOWED`.
+
+Un PIN válido no convierte una capacidad bloqueada por dispositivo en ejecutable.
+
+---
+
+#### 14. PIN ligero no es STRONG
+
+La certificación debe demostrar explícitamente:
+
+```text
+LIGHTWEIGHT_PIN
+→ IDENTIDAD / FIRMA LIGERA POSIBLE
+→ NO STRONG_REAUTH
+```
+
+Una capacidad `STRONG_REAUTH_REQUIRED` continúa exigiendo reautenticación personal fuerte, vigente, para el mismo actor, aplicación, acción y recurso conforme al contrato aplicable.
+
+No se degrada STRONG a PIN por limitaciones del terminal.
+
+---
+
+#### 15. `NOT_ALLOWED` permanece bloqueado
+
+Si una capacidad está clasificada como `NOT_ALLOWED` en dispositivo compartido:
+
+```text
+PIN VÁLIDO
++ ACTOR PRIVILEGIADO
++ PERMISO FUERA DEL DEVICE
++ FIRMA LIGERA
+→ DENY
+```
+
+Ni la identidad correcta ni la autoridad del actor fuera de ese terminal eliminan la prohibición.
+
+---
+
+#### 16. Secreto efímero
+
+El PIN o prueba humana cruda es un secreto efímero.
+
+No debe persistirse en:
+
+- `DeviceContext`;
+- `AccessContext`;
+- logs;
+- métricas;
+- mensajes;
+- receipts;
+- auditoría empresarial;
+- analytics;
+- snapshots;
+- cachés reutilizables;
+- payloads de evidencia.
+
+La evidencia durable conserva referencias opacas y metadatos suficientes para atribución, nunca el secreto crudo.
+
+---
+
+#### 17. No exposición y respuesta uniforme
+
+Una prueba inválida debe responder sin revelar información que permita enumerar trabajadores o inferir el estado del secreto.
+
+La certificación debe cubrir:
+
+- PIN incorrecto;
+- trabajador inexistente;
+- trabajador inactivo cuando el contrato lo invalide;
+- prueba expirada o no resoluble;
+- actor incompatible;
+- sesión incompatible;
+- intento repetido sujeto a controles físicos aplicables.
+
+La interfaz y la frontera de servidor no deben diferenciar de forma insegura estados secretos que faciliten enumeración o ataque.
+
+---
+
+#### 18. Intentos, bloqueo y rotación
+
+Los requisitos vigentes exigen controles contra replay y fuerza bruta para los flujos que usan PIN/firma en PULSO.
+
+La certificación física aplicable deberá demostrar, conforme al owner físico correspondiente:
+
+- límites de intentos;
+- lockout o bloqueo;
+- rotación cuando corresponda;
+- expiración;
+- limpieza de secreto;
+- respuesta uniforme;
+- ausencia de reutilización después del cambio de actor o modo.
+
+`AUTH-QA-018` no inventa valores numéricos de intentos, tiempos de bloqueo, longitud del PIN, algoritmo de hashing ni cadencia de rotación. Esos valores deben provenir del contrato físico propietario antes de certificar el escenario que los requiera.
+
+---
+
+#### 19. Limpieza del secreto y estado incompatible
+
+La prueba debe demostrar que el secreto o evidencia incompatible no sobrevive indebidamente después de:
+
+- éxito;
+- error;
+- cancelación;
+- cambio de cliente;
+- cambio de modo;
+- cambio de aplicación cuando invalide la evidencia;
+- cambio de actor;
+- expiración de sesión;
+- revocación;
+- nueva operación materialmente distinta.
+
+Una firma emitida para A no puede autorizar B y una prueba del trabajador A no puede quedar disponible al trabajador B.
+
+---
+
+#### 20. Cambio de trabajador
+
+En transición A → B:
+
+```text
+ACTOR A IDENTIFICADO
+→ FIN / INVALIDACIÓN SEGÚN LIFECYCLE
+→ LIMPIEZA DE ESTADO INCOMPATIBLE
+→ PRUEBA HUMANA DE B
+→ ACTOR B RESUELTO SERVER-SIDE
+```
+
+El nuevo trabajador no puede obtener como prueba válida:
+
+- el último PIN de A;
+- la firma de A;
+- la sesión de actor de A;
+- una reautenticación de A;
+- una decisión de autorización cacheada para A.
+
+---
+
+#### 21. Dispositivo sin actor
+
+Un dispositivo técnico válido puede estar disponible sin actor humano.
+
+Mientras no exista identificación o sesión humana válida donde el contrato la exige:
+
+```text
+PRINCIPAL TÉCNICO VÁLIDO
++ DISPOSITIVO ACTIVO
++ ACTOR HUMANO AUSENTE
+→ CERO ACCIÓN EMPRESARIAL PROTEGIDA
+```
+
+La ausencia de actor no se completa con el último trabajador, `navigation_role`, sede, área, plantilla o app visible.
+
+---
+
+#### 22. Auditoría y privacidad
+
+La evidencia de prueba debe permitir reconstruir, según corresponda:
+
+- principal técnico;
+- dispositivo;
+- actor humano resuelto;
+- `actor_session_id`;
+- referencia opaca de firma;
+- aplicación;
+- permiso;
+- recurso;
+- decisión;
+- razones;
+- resultado;
+- timestamp y correlación.
+
+Nunca debe registrar el PIN crudo ni una forma reversible del secreto.
+
+La auditoría demuestra atribución; no crea autoridad.
+
+---
+
+#### 23. Protección de datos sensibles
+
+La identidad correcta del trabajador no amplía por sí sola acceso a datos sensibles.
+
+Cuando el flujo proteja información SST, médica, de cliente u otra información restringida, después de identificar al humano se conservan íntegramente:
+
+- permiso exacto;
+- finalidad;
+- vínculo vigente;
+- sede;
+- área;
+- recurso;
+- sensibilidad;
+- estado;
+- controles adicionales del dominio.
+
+PIN válido no equivale a acceso válido al dato.
+
+---
+
+#### 24. Baseline físico observado
+
+Las fuentes canónicas registran bases parciales útiles, pero insuficientes para PASS integral:
+
+- existen consumidores que solicitan firma de actor en dispositivo compartido;
+- existe evidencia de una función de servidor que produce una referencia de firma asociada al trabajador;
+- existe infraestructura legacy relacionada con firmas de actor de dispositivo;
+- PULSO tiene un input de tipo secreto/password observado en el flujo relevante;
+- se ha observado limpieza tras éxito en parte del flujo;
+- el registro 04A conserva pendientes los controles integrales de intentos, bloqueo, rotación, respuesta uniforme, limpieza y certificación E2E.
+
+Estas bases no demuestran por sí solas:
+
+- resolución server-side única del humano en todos los consumidores;
+- actor session completa y vigente;
+- protección uniforme contra manipulación de `employee_id`;
+- no reutilización entre actores;
+- rate limiting y lockout completos;
+- rotación;
+- limpieza en todos los estados;
+- ausencia de fuga en logs y métricas;
+- paridad entre superficies;
+- evidencia física por package.
+
+Por tanto, la tarea no declara el escenario físicamente certificado.
+
+---
+
+#### 25. Matriz mínima de escenarios positivos
+
+Cada package aplicable materializa únicamente los escenarios que su superficie real soporte.
+
+Como mínimo, cuando sean materialmente aplicables:
+
+| Escenario | Resultado esperado |
+| --- | --- |
+| PIN válido asociado inequívocamente con trabajador A | servidor resuelve A; ninguna autoridad adicional se concede |
+| identificación válida que inicia actor session | sesión pertenece al mismo dispositivo y a A |
+| acción que exige firma individual | referencia opaca emitida para A y esa operación antes del comando |
+| actor A con permiso y resto de condiciones válidas | la operación puede continuar a la decisión de autorización normal |
+| cambio controlado A → B | B requiere su propia prueba y no hereda evidencia de A |
+
+Un caso positivo solo demuestra la parte materialmente ejecutada; no autoriza extrapolar a consumidores ausentes.
+
+---
+
+#### 26. Matriz mínima de escenarios negativos
+
+Cuando sean aplicables, deben cubrirse:
+
+| Escenario adversarial | Resultado obligatorio |
+| --- | --- |
+| PIN incorrecto | fallo cerrado; cero actor nuevo; cero efecto empresarial |
+| `employee_id` cliente ≠ empleado resuelto | identidad cliente ignorada o intento rechazado; no se suplanta actor |
+| `actor_session_id` ajeno | bloqueo |
+| prueba no resoluble | fallo cerrado |
+| identidad ambigua | fallo cerrado |
+| actor de firma ≠ actor de sesión | bloqueo |
+| PIN válido pero sin permiso | DENY |
+| PIN válido pero sin turno/check-in exigido | DENY |
+| PIN válido pero territorio incompatible | DENY |
+| PIN válido pero capacidad fuera del techo | DENY |
+| PIN válido ante `STRONG_REAUTH_REQUIRED` sin STRONG | DENY |
+| PIN válido ante `NOT_ALLOWED` | DENY |
+| reutilización de firma en otra operación | bloqueo |
+| reutilización de A después de cambio a B | bloqueo |
+| secreto presente en log/evidencia persistente | FAIL de certificación |
+| controles obligatorios de intentos/bloqueo no demostrados | FAIL o evidencia insuficiente para el escenario correspondiente |
+
+---
+
+#### 27. Paridad entre fronteras
+
+Una certificación no es válida si el PIN identifica correctamente al humano en una interfaz pero otra frontera acepta actor suministrado por cliente o elude la validación.
+
+Las superficies aplicables deben mantener semántica equivalente entre:
+
+- UI;
+- Server Action;
+- API;
+- RPC;
+- funciones de servidor;
+- reintentos;
+- integraciones que produzcan el mismo efecto empresarial.
+
+Ningún canal alternativo puede degradar identificación, secreto o autorización.
+
+---
+
+#### 28. Cero efectos empresariales en deny
+
+Todo caso negativo de `AUTH-QA-018` debe conservar:
+
+```text
+EFECTO EMPRESARIAL = 0
+```
+
+Esto incluye, según el flujo:
+
+- cero mutación de datos;
+- cero puntos;
+- cero redención;
+- cero movimiento de inventario;
+- cero cambio de estado;
+- cero acción administrativa;
+- cero nueva autoridad;
+- cero sesión atribuida al trabajador incorrecto.
+
+La obligación de auditoría permanece independiente y no se interpreta como efecto empresarial autorizado.
+
+---
+
+#### 29. Ejecución por package
+
+La topología de `AUTH-QA-018` es `PER_PACKAGE_AND_GLOBAL_FINAL`.
+
+Para un package aplicable, la instancia conceptual es:
+
+```text
+AUTH-QA-018::<package_id>
+```
+
+Solo puede ejecutarse cuando:
+
+- el package propietario haya superado su gate E5 aplicable;
+- las superficies reales del package estén identificadas;
+- el mecanismo de identificación/firma que corresponda esté materializado;
+- los actores, dispositivos y fixtures sean controlados y trazables;
+- los contratos que el escenario consume estén disponibles;
+- la evidencia pueda distinguir resultado de identificación, decisión de autorización y efecto empresarial.
+
+Esta tarea documental no selecciona package ni abre una instancia física.
+
+---
+
+#### 30. Regla de aplicabilidad física
+
+Para cada package o superficie:
+
+```text
+MECANISMO PIN/FIRMA MATERIALMENTE PRESENTE Y GOBERNADO
+→ ESCENARIOS APLICABLES DEBEN EJECUTARSE
+
+MECANISMO NO MATERIALIZADO / SUPERFICIE AUSENTE
+→ NOT_APPLICABLE PARA ESE ESCENARIO
+```
+
+`NOT_APPLICABLE` requiere evidencia de ausencia material y no puede utilizarse para ocultar una implementación incompleta que sí pretende operar con PIN o firma.
+
+Una implementación parcial que expone el flujo pero carece de controles obligatorios no obtiene `NOT_APPLICABLE`; permanece sin PASS.
+
+---
+
+#### 31. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-018::GLOBAL-FINAL
+```
+
+consolida la evidencia de todos los packages aplicables y debe demostrar que la identificación del humano real, la separación PIN/autoridad y la protección del secreto son uniformes entre consumidores.
+
+Debe fallar si existe al menos un consumidor aplicable donde:
+
+- el cliente pueda elegir autoritativamente `employee_id`;
+- un PIN resuelva ambiguamente más de un actor;
+- se reutilice el último trabajador;
+- el principal técnico se convierta en actor humano;
+- una prueba válida conceda permisos por sí sola;
+- PIN ligero satisfaga STRONG;
+- una firma pueda reutilizarse para otra operación;
+- A transfiera evidencia a B;
+- el secreto crudo se persista o registre;
+- una denegación produzca efecto empresarial;
+- controles obligatorios de secreto no tengan evidencia suficiente;
+- otra frontera eluda la identidad server-side.
+
+---
+
+#### 32. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por cobertura existente y no introduce una obligación verificable nueva.
+
+---
+
+#### 33. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-011` — en dispositivo compartido, la autoridad efectiva se restringe por límites del dispositivo y permisos del trabajador identificado; PIN o mecanismo aprobado identifica al humano real;
+- `TREQ-AUTH-014` — cambios de trabajador, dispositivo, rol, territorio o contexto invalidan autoridad derivada incompatible;
+- `TREQ-AUTH-015` — toda decisión y acción protegida conserva evidencia correlacionable de principal, actor, contexto, dispositivo, permiso, recurso, decisión y razones;
+- `TREQ-AUTH-017` — información SST y sensible conserva autorización por identidad real y no puede ampliar alcance mediante dispositivo compartido;
+- `TREQ-AUTH-054` — cambio de aplicación o actor recalcula acceso, limpia estado incompatible e invalida reautenticaciones incompatibles;
+- `TREQ-AUTH-063` — capacidades STRONG exigen reautenticación fuerte personal y no pueden degradarse a PIN ligero;
+- `TREQ-PASS-029` — mutaciones PULSO-PASS desde dispositivo compartido exigen firma del trabajador real y no transfieren privilegios de la sesión técnica;
+- `TREQ-PASS-030` — PIN/firma se tratan como secreto efímero y exigen controles de intentos, bloqueo, rotación, respuesta uniforme y limpieza.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 34. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no ha sido incorporado todavía al checkout del usuario; build y suites de consumidores corresponden a la incorporación posterior y a las ejecuciones físicas propietarias. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle documental permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, la topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `AUTH-DEV-007`, la intersección y no herencia de `AUTH-DEV-008..010`, el gate server-side de `AUTH-SRV-010`, el estado parcial observado de consumidores/firma, la cobertura AUTH/PASS y los requisitos que referencian expresamente `AUTH-QA-018`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron PIN, firmas, actor sessions, cambios de trabajador, intentos adversariales, acciones PULSO-PASS ni accesos sensibles reales. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-018::<package_id>` ni `AUTH-QA-018::GLOBAL-FINAL`; los controles físicos y E2E permanecen sujetos a sus packages, unidades y gates. |
+
+---
+
+#### 35. Criterios de aceptación
+
+- [ ] El principal técnico y el trabajador humano permanecen separados.
+- [ ] El PIN o mecanismo ligero es tratado como prueba humana y no como grant.
+- [ ] El servidor resuelve al empleado real asociado con la prueba.
+- [ ] `employee_id` suministrado por cliente no selecciona al actor autoritativo.
+- [ ] Cero coincidencias produce fallo cerrado.
+- [ ] Ambigüedad de identidad produce fallo cerrado.
+- [ ] Una prueba inválida no crea actor session ni firma válida.
+- [ ] La respuesta inválida no facilita enumeración insegura de trabajadores o secretos.
+- [ ] Una prueba válida puede producir identidad humana verificable sin conceder autoridad.
+- [ ] Una actor session pertenece al dispositivo y al empleado exactos.
+- [ ] La actor session no es permiso, turno ni check-in.
+- [ ] La firma individual se obtiene antes del comando protegido cuando es obligatoria.
+- [ ] La firma queda correlacionada con el actor y la operación concreta.
+- [ ] La firma no se reutiliza universalmente entre operaciones.
+- [ ] Actor de sesión y actor de firma coinciden cuando ambos participan.
+- [ ] PIN válido sin permiso continúa en DENY.
+- [ ] PIN válido sin contexto requerido continúa en DENY.
+- [ ] PIN válido fuera del techo del dispositivo continúa en DENY.
+- [ ] PIN válido no crea cobertura administrativa ni territorio.
+- [ ] PIN ligero no satisface STRONG.
+- [ ] `NOT_ALLOWED` permanece bloqueado.
+- [ ] El secreto crudo no se persiste ni aparece en evidencia durable.
+- [ ] La evidencia durable usa referencia opaca de servidor.
+- [ ] Cambio de actor invalida evidencia incompatible del actor anterior.
+- [ ] Éxito, error, cambio de modo y expiración no dejan secreto reutilizable cuando el flujo físico aplica.
+- [ ] Los controles de intentos, bloqueo, rotación y respuesta uniforme se exigen donde corresponda sin inventar valores numéricos en esta tarea.
+- [ ] Las bases parciales observadas no se presentan como certificación integral.
+- [ ] Las fronteras equivalentes no permiten bypass de identidad server-side.
+- [ ] Toda denegación conserva cero efectos empresariales.
+- [ ] La auditoría no persiste PIN y conserva atribución suficiente.
+- [ ] La identidad correcta no amplía acceso a datos sensibles.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- redefine el algoritmo de autenticación del trabajador;
+- fija longitud de PIN;
+- fija cantidad numérica de intentos;
+- fija duración numérica de lockout;
+- selecciona algoritmo de hashing;
+- fija cadencia numérica de rotación;
+- crea biometría, passkey, contraseña personal o MFA nueva;
+- convierte PIN ligero en reautenticación fuerte;
+- redefine el lifecycle de actor session;
+- redefine revocación de dispositivo;
+- redefine limpieza integral de cambio de trabajador;
+- redefine la intersección actor–dispositivo de `AUTH-DEV-008`;
+- redefine la no herencia administrativa de `AUTH-DEV-009`;
+- redefine la auditoría propietaria de `AUTH-DEV-010`;
+- crea roles, PermissionKey, grants, denies, paquetes, plantillas, aplicaciones o dispositivos;
+- cambia el universo canónico de dispositivos;
+- promueve infraestructura legacy a cumplimiento;
+- modifica UI, navegación o estado de cliente;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos productivos o configuración de dispositivos;
+- ejecuta `AUTH-QA-017::<package_id>`;
+- ejecuta `AUTH-QA-018::<package_id>`;
+- ejecuta `AUTH-QA-018::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 37. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-018 — PIN identifica al trabajador real`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-019 — Rol simulado no hereda permisos reales`
 ### [ ] AUTH-QA-019 — Rol simulado no hereda permisos reales
 ### [ ] AUTH-QA-020 — Acceso directo por URL queda bloqueado
 ### [ ] AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
