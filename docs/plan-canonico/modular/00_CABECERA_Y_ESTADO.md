@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1513** |
+| Tareas aprobadas | **1514** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **83** |
+| Tareas no iniciadas | **82** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **94.80% (1513/1596)** |
+| Porcentaje de completamiento | **94.86% (1514/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros** |
-| Tarea actual | **AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades** |
+| Última tarea aprobada | **AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades** |
+| Tarea actual | **AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual** |
+| Siguiente tarea | **AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 27 de 37 aprobadas; AURA-UX-001 pendiente** |
+| Progreso del bloque | **BLOQUE W: 28 de 37 aprobadas; AURA-UX-002 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-UX-001** |
+| Carril documental | **ACTIVO — AURA-UX-002** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-AUTH-004` — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros |
-| Tarea actual | `AURA-UX-001` — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades — **NO INICIADA** |
-| Siguiente tarea | `AURA-UX-002` — Diseñar sistema de marca, brief guiado y calendario visual |
+| Última aprobada | `AURA-UX-001` — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades |
+| Tarea actual | `AURA-UX-002` — Diseñar sistema de marca, brief guiado y calendario visual — **NO INICIADA** |
+| Siguiente tarea | `AURA-UX-003` — Diseñar estudio creativo asistido y fábrica de variantes reutilizables |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 27 DE 37 APROBADAS — ACTUAL AURA-UX-001** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 28 DE 37 APROBADAS — ACTUAL AURA-UX-002** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-AUTH-004 — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros
-        ↓
-TAREA ACTUAL
 AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 27 de 37 tareas aprobadas
+BLOQUE W — 28 de 37 tareas aprobadas
 ```
