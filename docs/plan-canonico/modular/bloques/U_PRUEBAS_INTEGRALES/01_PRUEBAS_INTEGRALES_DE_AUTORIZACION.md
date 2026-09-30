@@ -5552,7 +5552,1006 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-009 — Trabajador rotado cambia de permisos por turno`
-### [ ] AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
+### ✅ AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-008 — Trabajador solo ve su área
+**Tarea siguiente:** AUTH-QA-010 — Bodeguero puede preparar pero no producir
+**Tipo de tarea:** documental; definición canónica de una prueba integral de rotación de contexto y permisos operativos por turno reutilizable por paquete y certificable globalmente, para demostrar que el mismo trabajador pierde la autoridad derivada del turno anterior y obtiene únicamente la autoridad derivada del turno actualmente válido, sin unión de roles, permisos, sede, área, check-in, caché ni decisiones entre turnos
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-009::<package_id>` y la certificación `AUTH-QA-009::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, check-ins, roles, permisos, sedes, áreas, cachés, colas ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una rotación laboral modifica el contexto operativo efectivo y, por tanto, recalcula los permisos operativos del trabajador desde el turno actualmente válido.
+
+La regla raíz queda:
+
+```text
+TURN_A CURRENT
+→ ROLE_A / SITE_A / AREA_A / CHECKIN_A
+→ PERMISSIONS_A
+
+TURN_A STALE
++
+TURN_B CURRENT
+→ ROLE_B / SITE_B / AREA_B / CHECKIN_B
+→ PERMISSIONS_B
+```
+
+Nunca:
+
+```text
+PERMISSIONS_A
++
+PERMISSIONS_B
+→ UNION EFECTIVA
+```
+
+La tarea certifica la rotación del carril operativo. No redefine el rol base, las matrices específicas de cada rol ni las fronteras funcionales que pertenecen a `AUTH-QA-010` y siguientes.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos diecisiete resultados obligatorios:
+
+1. el turno efectivo se resuelve de nuevo después de la transición;
+2. el nuevo turno no hereda `operational_role` del turno anterior;
+3. `operational_role` procede exclusivamente del `operational_role_code` del turno actualmente válido;
+4. sede y área operativas se vuelven a resolver desde el turno actualmente válido;
+5. un check-in ligado al turno anterior no satisface un carril `T+C` del nuevo turno;
+6. el rol base del trabajador no se modifica por la rotación operativa;
+7. permisos base independientes del carril operativo no se eliminan por el solo cambio de turno;
+8. permisos operativos exclusivos de `ROLE_A` dejan de autorizar después de la rotación a `ROLE_B`;
+9. permisos operativos exclusivos de `ROLE_B` solo pueden autorizar después de resolver válidamente `TURN_B` y los demás gates aplicables;
+10. un permiso compartido entre ambos roles se reevalúa y no se conserva por herencia;
+11. no existe unión, acumulación, fallback ni “último rol conocido” entre turnos;
+12. toda decisión derivada de `TURN_A` queda stale al cambiar la fuente efectiva;
+13. caché, replay, offline, RSC, RPC, RLS y demás consumidores no pueden seguir autorizando con el snapshot anterior;
+14. una superposición ambigua de turnos no permite seleccionar arbitrariamente el más permisivo;
+15. la historia de auditoría del turno anterior no se reescribe al activarse el nuevo turno;
+16. la misma transición produce una frontera equivalente en todas las superficies aplicables;
+17. ninguna prueba física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- identidad laboral y actor efectivo;
+- rol base;
+- `AccessContext@1.x`;
+- `active_shift`;
+- revisión publicada del turno;
+- `active_checkin_session`;
+- `operational_role`;
+- `operational_site`;
+- `operational_area`;
+- matrices canónicas rol–permiso y rol–territorio;
+- modalidad `BASE_ONLY`, `OPERATIONAL_ONLY` y `BASE_OR_OPERATIONAL` cuando corresponda;
+- carriles `T` y `T+C`;
+- precedencia canónica de turno, check-in, rol, sede, área, dispositivo, simulación, permiso, scope y recurso;
+- contratos de frescura, invalidación y reautorización;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- gate físico `POST_E5_PACKAGE`.
+
+La tarea no redefine permisos concretos de bodeguero, producción, PULSO, conductor, compras o recepción.
+
+---
+
+#### 4. Definición exacta de rotación por turno
+
+Para esta prueba existe rotación cuando el mismo actor laboral pasa de un turno efectivo `TURN_A` a otro turno efectivo `TURN_B` mediante una transición canónica y verificable.
+
+La identidad humana permanece:
+
+```text
+effective_actor_A
+=
+effective_actor_B
+```
+
+pero cambia al menos una dimensión operativa del turno:
+
+```text
+shift_id
+operational_role_code
+site_id
+area_id
+```
+
+La variante primaria exige cambio de rol:
+
+```text
+TURN_A.operational_role_code = ROLE_A
+TURN_B.operational_role_code = ROLE_B
+ROLE_A != ROLE_B
+```
+
+Puede cambiar además sede o área, pero ese cambio no es obligatorio para demostrar la rotación funcional.
+
+---
+
+#### 5. Invariante de no herencia
+
+Cuando `TURN_B` se convierte en el turno actualmente válido:
+
+```text
+previous_effective_operational_role = STALE
+previous_operational_site = STALE
+previous_operational_area = STALE
+previous_operational_decision = STALE
+```
+
+La resolución nueva parte de `TURN_B`.
+
+Queda prohibido completar `TURN_B` desde:
+
+- `ROLE_A`;
+- último rol operativo exitoso;
+- perfil predeterminado;
+- rol base;
+- cookie;
+- dispositivo;
+- navegación;
+- sesión cliente;
+- historial;
+- caché;
+- check-in del turno anterior;
+- decisión previa.
+
+---
+
+#### 6. Selección de roles y permisos para la fixture
+
+Cada instancia de prueba seleccionará dos roles operativos canónicos y activos:
+
+```text
+ROLE_A
+ROLE_B
+```
+
+con una diferencia observable de autoridad.
+
+Debe existir al menos:
+
+```text
+PERM_A_ONLY
+→ permitido por ROLE_A en la combinación territorial de la fixture
+→ no permitido por ROLE_B en esa misma condición contractual
+```
+
+Y:
+
+```text
+PERM_B_ONLY
+→ permitido por ROLE_B en la combinación territorial de la fixture
+→ no permitido por ROLE_A en esa misma condición contractual
+```
+
+Si existe un permiso común útil para el paquete puede añadirse:
+
+```text
+PERM_SHARED
+```
+
+La instancia no inventa roles ni permisos para satisfacer la matriz; debe usar identidades canónicas reales disponibles en su paquete o ambiente controlado.
+
+---
+
+#### 7. Fixture primaria — aislamiento del cambio de rol
+
+Para aislar el efecto funcional, la fixture primaria conserva sede y área cuando el catálogo real permita una pareja compatible:
+
+```text
+actor = EMPLOYEE_E
+base_role = BASE_ROLE_E
+
+TURN_A.shift_id = SHIFT_A
+TURN_A.site_id = SITE_X
+TURN_A.area_id = AREA_X
+TURN_A.operational_role_code = ROLE_A
+
+TURN_B.shift_id = SHIFT_B
+TURN_B.site_id = SITE_X
+TURN_B.area_id = AREA_X
+TURN_B.operational_role_code = ROLE_B
+
+ROLE_A != ROLE_B
+SHIFT_A != SHIFT_B
+```
+
+Si el paquete no dispone de dos roles válidos sobre exactamente el mismo territorio, la instancia puede usar un cambio territorial adicional, pero deberá distinguir qué denegaciones se deben al rol y cuáles al territorio.
+
+---
+
+#### 8. Estado A — antes de la rotación
+
+En un instante donde `TURN_A` es exactamente el turno publicado y vigente aplicable:
+
+```text
+active_shift.shift_id = SHIFT_A
+operational_role.role_code = ROLE_A
+operational_site.site_id = TURN_A.site_id
+operational_area.area_id = TURN_A.area_id cuando corresponda
+```
+
+Para `PERM_A_ONLY`, si todos los demás gates están satisfechos:
+
+```text
+operational_lane = ALLOW
+```
+
+Para `PERM_B_ONLY`:
+
+```text
+operational_lane = DENY
+```
+
+La denegación no puede corregirse localmente escogiendo `ROLE_B` antes de que `TURN_B` sea efectivo.
+
+---
+
+#### 9. Transición A → B
+
+La transición de la fixture debe producir una frontera temporal clara:
+
+```text
+TURN_A deja de ser el turno actualmente válido
+TURN_B pasa a ser el turno actualmente válido
+```
+
+La causa puede ser, según el contrato real del paquete:
+
+- fin normal de `TURN_A` y comienzo de `TURN_B`;
+- revisión publicada que sustituye el rol del turno vigente;
+- transición canónica equivalente que cambie el turno efectivo.
+
+La prueba no requiere mutar datos productivos; la ejecución física futura utilizará fixtures controladas.
+
+---
+
+#### 10. Invalidación inmediata del snapshot anterior
+
+En la frontera A → B deben invalidarse como autoridad:
+
+```text
+context_id_A
+effective_shift_id_A
+operational_role_A
+operational_site_A
+operational_area_A
+permission_decision_A
+protected query result A
+subscription authority A
+offline authorization A
+```
+
+Una referencia histórica puede conservarse para auditoría o correlación.
+
+No puede utilizarse para una nueva operación empresarial.
+
+---
+
+#### 11. Estado B — después de la rotación
+
+Después de resolver `TURN_B`:
+
+```text
+active_shift.shift_id = SHIFT_B
+operational_role.role_code = ROLE_B
+operational_site.site_id = TURN_B.site_id
+operational_area.area_id = TURN_B.area_id cuando corresponda
+```
+
+`ROLE_A` no permanece como rol operativo secundario ni fallback.
+
+La autorización de cada acción se evalúa nuevamente con el contexto B.
+
+---
+
+#### 12. Oracle de pérdida de permiso anterior
+
+Para `PERM_A_ONLY`, después de la rotación:
+
+```text
+TURN_B CURRENT
++
+ROLE_B
++
+PERM_A_ONLY no concedido en ROLE_B
+→ DENY
+```
+
+La razón de autorización debe corresponder a la denegación operacional aplicable y no a un error ficticio de turno si `TURN_B` está correctamente resuelto.
+
+Resultado mínimo:
+
+```text
+business_effects = 0
+```
+
+Queda prohibido autorizar por:
+
+- el éxito previo de `PERM_A_ONLY`;
+- caché;
+- token derivado de `TURN_A`;
+- decisión de UI;
+- permiso del rol anterior;
+- historial de asignación.
+
+---
+
+#### 13. Oracle de adquisición del permiso nuevo
+
+Para `PERM_B_ONLY`, después de la rotación y con todos los demás gates satisfechos:
+
+```text
+TURN_B CURRENT
++
+ROLE_B
++
+PERM_B_ONLY válido para ROLE_B
+→ el gate de rol/permiso puede continuar como ALLOW
+```
+
+Esto no elimina gates posteriores de:
+
+- sede;
+- área;
+- check-in cuando sea `T+C`;
+- dispositivo;
+- simulación;
+- scope;
+- recurso;
+- estado mutable;
+- cross-site;
+- cross-area.
+
+La rotación no convierte un permiso del nuevo rol en autorización automática de la operación completa.
+
+---
+
+#### 14. Control de permiso compartido
+
+Cuando `PERM_SHARED` existe en ambos roles:
+
+```text
+ALLOW en TURN_A
++
+rotación
++
+PERM_SHARED válido en ROLE_B
+→ nueva evaluación puede producir ALLOW
+```
+
+La continuidad aparente del resultado no demuestra herencia.
+
+Debe existir evidencia de que:
+
+```text
+decision_B
+```
+
+se calculó con `SHIFT_B` y `ROLE_B`, no reutilizando `decision_A`.
+
+---
+
+#### 15. Prohibición de unión de permisos
+
+Queda prohibido producir:
+
+```text
+effective_permissions
+=
+permissions(ROLE_A) ∪ permissions(ROLE_B)
+```
+
+por el hecho de que ambos turnos pertenezcan al mismo trabajador.
+
+También queda prohibido conservar temporalmente:
+
+```text
+old role grants
+```
+
+mientras se carga el nuevo contexto.
+
+Durante una transición aún no resoluble:
+
+```text
+NO CONTEXTO OPERATIVO CONFIABLE
+→ NO AUTORIDAD OPERATIVA NUEVA
+```
+
+---
+
+#### 16. Rol base versus rol operativo
+
+La rotación no cambia por sí sola:
+
+```text
+base_role
+```
+
+El actor puede conservar capacidades base que su contrato permita mientras cambia el rol operativo.
+
+Por tanto:
+
+```text
+ROTACION OPERATIVA
+≠
+MUTACION DEL ROL BASE
+```
+
+Y:
+
+```text
+PERMISO BASE INDEPENDIENTE
+```
+
+no debe desaparecer únicamente porque `ROLE_A` cambió a `ROLE_B`.
+
+La prueba distingue siempre carril base y carril operativo.
+
+---
+
+#### 17. Check-in al cambiar de turno
+
+Para una capacidad `T+C`, la sesión de check-in debe ser compatible con el turno actualmente válido.
+
+Si existe:
+
+```text
+checkin.shift_id = SHIFT_A
+active_shift.shift_id = SHIFT_B
+```
+
+la sesión anterior no satisface el nuevo contexto.
+
+No se permite:
+
+```text
+CHECKIN_A
+→ reutilizar
+→ TURN_B
+```
+
+La resolución conserva la precedencia y la razón aplicables a mismatch, ausencia limpia o indisponibilidad sin convertir el check-in en fuente del rol.
+
+---
+
+#### 18. Cambio simultáneo de territorio
+
+Una variante puede rotar también:
+
+```text
+SITE_A / AREA_A
+→
+SITE_B / AREA_B
+```
+
+En ese caso la prueba exige que el nuevo contexto derive sede y área desde `TURN_B` y que ninguna autoridad territorial de `TURN_A` sobreviva.
+
+Las causas deben permanecer separadas:
+
+```text
+permiso ausente en ROLE_B
+≠
+rol no habilitado en SITE_B
+≠
+rol no habilitado en AREA_B
+≠
+recurso cross-site
+≠
+recurso cross-area
+```
+
+La certificación adversarial completa de cruces territoriales sigue perteneciendo a `AUTH-QA-023` y `AUTH-QA-024`.
+
+---
+
+#### 19. Turnos solapados o ambiguos
+
+Si la resolución produce más de un candidato simultáneamente válido sin una regla canónica única que seleccione uno:
+
+```text
+SHIFT AMBIGUITY
+→ DENY / CONFLICT SEGUN CONTRATO VIGENTE
+```
+
+Nunca:
+
+```text
+elegir el turno con más permisos
+usar el primero
+usar el último
+limit 1
+fusionar roles
+```
+
+La prueba debe demostrar ausencia de selección permisiva arbitraria.
+
+---
+
+#### 20. Revisión del rol dentro del mismo turno
+
+Si una transición canónica modifica el rol del turno vigente sin cambiar `shift_id`:
+
+```text
+ROLE_A
+→ ROLE_B
+```
+
+la autoridad derivada de `ROLE_A` queda stale de la misma forma.
+
+La identidad estable del turno no convierte el rol anterior en válido después de una revisión publicada efectiva.
+
+La instancia deberá conservar evidencia suficiente para distinguir:
+
+```text
+same shift identity
++
+new published role revision
+```
+
+sin mezclar ambas versiones.
+
+---
+
+#### 21. Caché y decisiones derivadas
+
+Después de la rotación quedan obsoletos los artefactos cuya autoridad dependa del contexto A, incluyendo cuando aplique:
+
+- contexto de acceso;
+- decisión de permiso;
+- listado filtrado;
+- capability map;
+- autorización de mutación;
+- suscripción protegida;
+- optimistic state;
+- token o fingerprint derivado;
+- proyección segura que se esté usando como referencia vigente.
+
+La siguiente operación debe resolver o revalidar contra el contexto B.
+
+---
+
+#### 22. Navegación y cambio entre aplicaciones
+
+Una navegación iniciada durante `TURN_A` no transporta autoridad hacia una aplicación abierta después de la rotación.
+
+La aplicación destino debe resolver contexto fresco.
+
+Si los valores visibles cambian:
+
+```text
+TURN_A → TURN_B
+```
+
+la experiencia puede actualizarse, bloquearse o redirigir conforme a su contrato, pero no conservar el snapshot A como autoridad para evitar fricción de UI.
+
+---
+
+#### 23. Operación offline y replay
+
+Una intención capturada bajo `TURN_A` y sincronizada cuando `TURN_B` ya es efectivo debe reautorizarse conforme al contrato aplicable.
+
+Queda prohibido:
+
+```text
+captured_allow_A
+→ replay
+→ effect under TURN_B
+```
+
+La cola puede conservar intención y trazabilidad, no autoridad vencida.
+
+La certificación completa de la cola offline permanece reservada a `AUTH-QA-026`.
+
+---
+
+#### 24. Realtime y suscripciones
+
+Si una suscripción o stream protegido dependía del contexto A, la rotación debe impedir que continúe entregando información fuera del nuevo alcance autorizado.
+
+La implementación física futura deberá demostrar invalidación o revalidación conforme al contrato propietario.
+
+No basta con ocultar filas nuevas en la UI si el canal sigue entregándolas al cliente.
+
+---
+
+#### 25. Mutaciones concurrentes
+
+Una mutación iniciada bajo A pero todavía no comprometida cuando ocurre la rotación debe respetar la frontera de revalidación definida por su contrato.
+
+Cuando la autorización deba ser fresca inmediatamente antes del efecto:
+
+```text
+context_A stale
+→ revalidate
+→ context_B
+→ nueva decisión
+```
+
+No se admite commit basándose únicamente en una decisión A anterior a la rotación.
+
+---
+
+#### 26. Auditoría e historia
+
+La rotación no reescribe el pasado.
+
+Una operación realizada válidamente bajo A conserva en su evidencia:
+
+```text
+actor
+SHIFT_A
+ROLE_A
+SITE_A
+AREA_A cuando aplique
+decision_A
+timestamp_A
+```
+
+Una operación posterior usa:
+
+```text
+actor
+SHIFT_B
+ROLE_B
+SITE_B
+AREA_B cuando aplique
+decision_B
+timestamp_B
+```
+
+La auditoría no transforma operaciones históricas de A para que parezcan ejecutadas con B.
+
+---
+
+#### 27. Paridad entre superficies
+
+La misma rotación debe producir una frontera equivalente en las superficies aplicables:
+
+```text
+navigation
+Server Actions
+Route Handlers
+fetch / RSC
+RPC / PostgREST
+RLS / Data API
+Edge Functions
+Realtime
+clientes nativos
+dispositivos compartidos
+```
+
+Ninguna superficie puede conservar `ROLE_A` como fallback local después de que `TURN_B` sea la fuente efectiva.
+
+---
+
+#### 28. Casos mínimos de certificación
+
+Cada instancia aplicable debe demostrar como mínimo:
+
+**Caso A — antes de rotación**
+
+```text
+TURN_A + ROLE_A + PERM_A_ONLY
+→ ALLOW del carril aplicable
+```
+
+**Caso B — antes de rotación, permiso del rol futuro**
+
+```text
+TURN_A + ROLE_A + PERM_B_ONLY
+→ DENY
+```
+
+**Caso C — después de rotación, permiso anterior**
+
+```text
+TURN_B + ROLE_B + PERM_A_ONLY
+→ DENY
+→ cero efectos
+```
+
+**Caso D — después de rotación, permiso nuevo**
+
+```text
+TURN_B + ROLE_B + PERM_B_ONLY
+→ gate de rol/permiso satisfecho
+```
+
+**Caso E — check-in anterior contra nuevo turno cuando aplique `T+C`**
+
+```text
+TURN_B + CHECKIN_A
+→ no satisface presencia del nuevo turno
+```
+
+**Caso F — decisión stale o replay**
+
+```text
+decision_A / cached_A / offline_A
++
+TURN_B CURRENT
+→ no autoridad
+```
+
+**Caso G — ambigüedad de turnos**
+
+```text
+multiple current candidates
+→ no selección permisiva
+```
+
+---
+
+#### 29. Evidencia mínima por caso
+
+Cada caso debe conservar, cuando aplique:
+
+```text
+principal_id o identidad pseudonimizada
+effective_actor_id o equivalente seguro
+base_role
+resolved_at
+active_shift_id
+shift_revision_identity
+operational_role_code
+operational_site_id
+operational_area_id
+checkin_session_id o estado seguro
+permission_key
+authorization_mode
+lane_result
+reason_code
+context_id o fingerprint seguro
+resource identity minimizada
+business_effect_count
+```
+
+La evidencia no necesita exponer secretos ni datos personales innecesarios.
+
+---
+
+#### 30. Prueba de ausencia de efectos
+
+Toda solicitud denegada después de la rotación debe demostrar:
+
+```text
+business_effect_count = 0
+```
+
+Cuando aplique también deberá comprobar:
+
+- cero filas mutadas;
+- cero transición de estado;
+- cero job empresarial nuevo;
+- cero publicación;
+- cero aprobación;
+- cero movimiento de inventario;
+- cero escritura protegida;
+- cero exposición territorial adicional.
+
+---
+
+#### 31. Clasificación de fallos
+
+La prueba debe distinguir como mínimo:
+
+```text
+OLD_ROLE_RETAINED
+OLD_PERMISSION_RETAINED
+ROLE_UNION_DETECTED
+OLD_CHECKIN_REUSED
+OLD_SITE_RETAINED
+OLD_AREA_RETAINED
+STALE_DECISION_ACCEPTED
+STALE_QUERY_OR_SUBSCRIPTION_ACCEPTED
+SHIFT_AMBIGUITY_FAIL_OPEN
+BASE_ROLE_MUTATED_BY_ROTATION
+CHANNEL_DIVERGENCE
+AUDIT_LINEAGE_BROKEN
+```
+
+Un resultado funcionalmente denegado no se considera correcto si la razón o el lineage demuestran que el sistema evaluó el turno incorrecto.
+
+---
+
+#### 32. Modelo de ejecución por paquete
+
+La topología vigente es:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Por cada paquete aplicable:
+
+```text
+AUTH-QA-009::<package_id>
+```
+
+La ejecución física solo puede ocurrir con:
+
+```text
+E5-GATE-008::<package_id> = PASS
+```
+
+La instancia debe seleccionar roles y permisos canónicos reales del paquete y demostrar la transición sin modificar el contrato global.
+
+---
+
+#### 33. Certificación global final
+
+La identidad:
+
+```text
+AUTH-QA-009::GLOBAL-FINAL
+```
+
+solo puede certificarse después de reconciliar las instancias por paquete aplicables.
+
+La certificación global deberá demostrar al menos:
+
+- fuente exclusiva del rol desde el turno efectivo;
+- ausencia de unión entre permisos de turnos sucesivos;
+- pérdida de permisos exclusivos del rol anterior;
+- adquisición condicionada de permisos exclusivos del rol nuevo;
+- independencia del rol base;
+- incompatibilidad del check-in anterior con un nuevo turno cuando aplique;
+- invalidación de snapshots y decisiones obsoletas;
+- reautorización offline/replay cuando corresponda;
+- ausencia de selección permisiva ante ambigüedad;
+- paridad multicanal;
+- lineage de auditoría intacto.
+
+---
+
+#### 34. Handoff hacia AUTH-QA-010
+
+`AUTH-QA-009` entrega a `AUTH-QA-010` una mecánica de rotación ya definida y certificable:
+
+```text
+turno efectivo
+→ rol operativo efectivo
+→ permisos operativos efectivos
+```
+
+sin herencia del turno anterior.
+
+`AUTH-QA-010` podrá entonces seleccionar el rol canónico de bodeguero y demostrar su frontera funcional específica entre preparar y producir.
+
+`AUTH-QA-009` no define todavía qué permisos exactos corresponden a bodeguero.
+
+---
+
+#### 35. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Justificación:** la recalculación territorial por rotación, la derivación exclusiva del rol desde el turno, la compatibilidad del check-in con el turno vigente, la invalidación de contexto y decisiones obsoletas, la reautorización de operaciones diferidas y la paridad entre superficies ya disponen de cobertura vigente. Esta tarea define la certificación integral de esas obligaciones y no introduce una obligación verificable nueva.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 36. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-008`, para separación entre carriles administrativos y operativos y exigencia de turno/check-in/rol cuando corresponda;
+- `TREQ-AUTH-009`, que exige explícitamente recalcular permisos ante rotación y resolver sede y área de forma determinista;
+- `TREQ-AUTH-013`, para revalidación server-side de permiso exacto, contexto, territorio, recurso y efecto;
+- `TREQ-AUTH-014`, para invalidación de contexto, caché y autoridad derivada ante cambio de turno, área, trabajador, dispositivo, rol o asignación;
+- `TREQ-AUTH-187`, `TREQ-AUTH-197` y `TREQ-AUTH-207`, para invalidación de decisiones, cachés y suscripciones ante cambios territoriales o de turno;
+- `TREQ-AUTH-229` a `TREQ-AUTH-238`, para compatibilidad exacta del check-in con actor, sede y turno y reautorización posterior;
+- `TREQ-AUTH-239` a `TREQ-AUTH-248`, para fuente exclusiva del rol operativo desde el turno, precedencia, canales e invalidación del rol anterior;
+- cobertura vigente de servidor, RPC, RLS, offline, Realtime y consumidores que referencia rotación, frescura y revalidación.
+
+Esta sección es trazabilidad de requisitos existentes y no representa una modificación del registro.
+
+---
+
+#### 37. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea documental no ejecuta builds de producto ni materializaciones por paquete |
+| LOCAL | NOT_EXECUTED | la incorporación y los validadores del checkout se ejecutan durante la batería documental del usuario |
+| REMOTA | PASS | se inspeccionaron en `main` el archivo propietario, contratos de turno y rol operativo, precedencia, matrices operativas, contratos de invalidación/frescura, topología, políticas documentales, 04A AUTH y scripts aplicables antes de redactar el artefacto |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron rotaciones reales, check-ins, decisiones de permisos ni operaciones empresariales |
+| FÍSICA | NOT_EXECUTED | no se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes, turnos, roles, permisos ni ambientes |
+
+---
+
+#### 38. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se demuestre que:
+
+1. el turno actualmente válido se vuelve a resolver después de la rotación;
+2. el nuevo turno no hereda el rol operativo anterior;
+3. el rol efectivo procede exclusivamente del turno actualmente válido;
+4. sede y área operativas se recalculan desde ese turno;
+5. el rol base no se muta por rotación;
+6. permisos base independientes no desaparecen por el solo cambio de turno;
+7. `PERM_A_ONLY` deja de autorizar después de pasar a `ROLE_B`;
+8. `PERM_B_ONLY` no autoriza antes de `TURN_B`;
+9. `PERM_B_ONLY` solo puede continuar después de resolver válidamente el contexto B;
+10. un permiso común se reevalúa y no se hereda;
+11. no existe unión de permisos entre A y B;
+12. un check-in de `SHIFT_A` no satisface `SHIFT_B` en `T+C`;
+13. una rotación territorial no conserva sede o área anteriores;
+14. una revisión del rol dentro del mismo turno invalida la autoridad anterior;
+15. cachés y decisiones dependientes de A dejan de ser autoridad;
+16. navegación cross-app vuelve a resolver contexto;
+17. offline/replay no conserva `ALLOW_A` como autoridad;
+18. una suscripción protegida no continúa entregando alcance de A sin revalidación;
+19. mutaciones sujetas a frescura revalidan antes del efecto;
+20. una ambigüedad de turnos no elige el rol más permisivo;
+21. auditoría histórica de A se conserva sin reescribirse como B;
+22. todas las superficies aplicables mantienen frontera equivalente;
+23. toda denegación demuestra cero efectos;
+24. `AUTH-QA-010` recibe una mecánica de rol por turno sin matrices funcionales específicas redefinidas;
+25. no se crean ni modifican requisitos de prueba;
+26. no se ejecuta ningún cambio físico durante esta tarea documental.
+
+---
+
+#### 39. Límites
+
+Esta tarea no:
+
+- redefine la resolución de turno publicada por tareas propietarias anteriores;
+- redefine el rol base;
+- redefine el catálogo de roles operativos;
+- redefine las matrices rol–permiso;
+- define permisos específicos de bodeguero, reservado a `AUTH-QA-010`;
+- define permisos específicos de producción, reservado a `AUTH-QA-011`;
+- define permisos específicos de PULSO, reservado a `AUTH-QA-012`;
+- certifica en detalle conductor, compras o recepción;
+- redefine sede o área operativas ya tratadas por `AUTH-QA-007` y `AUTH-QA-008`;
+- redefine reasons públicos;
+- convierte el check-in en fuente de rol;
+- permite unión temporal de roles;
+- crea permisos, grants o denies;
+- modifica RLS, RPC, Supabase, aplicaciones, datos o migraciones;
+- ejecuta instancias físicas `AUTH-QA-009::<package_id>`;
+- ejecuta `AUTH-QA-009::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba `E5-GATE-008`;
+- ejecuta la certificación completa de cruces territoriales de `AUTH-QA-023`/`AUTH-QA-024`;
+- ejecuta la certificación completa de cola offline de `AUTH-QA-026`.
+
+---
+
+#### 40. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-008 — Trabajador solo ve su área`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-009 — Trabajador rotado cambia de permisos por turno`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-010 — Bodeguero puede preparar pero no producir`
 ### [ ] AUTH-QA-010 — Bodeguero puede preparar pero no producir
 ### [ ] AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
 ### [ ] AUTH-QA-012 — Cajero puede operar PULSO pero no configurar

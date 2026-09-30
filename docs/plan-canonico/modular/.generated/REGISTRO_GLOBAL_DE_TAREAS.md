@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1531** |
+| Aprobadas | **1532** |
 | En propuesta | **0** |
-| No iniciadas | **65** |
+| No iniciadas | **64** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **95.93% (1531/1596)** |
+| Porcentaje de completamiento | **95.99% (1532/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **65** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1432** |
+| ⏸ NO_EVALUADA | **64** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1433** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-008` — Trabajador solo ve su área | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-009` — Trabajador rotado cambia de permisos por turno | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-010` — Bodeguero puede preparar pero no producir | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-009` — Trabajador rotado cambia de permisos por turno | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-010` — Bodeguero puede preparar pero no producir | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-011` — Producción puede producir pero no ajustar inventario global | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1363,7 +1363,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-006` | Trabajador con turno y check-in obtiene su rol operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-007` | Trabajador solo ve su sede | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-008` | Trabajador solo ve su área | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-009` | Trabajador rotado cambia de permisos por turno | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-009` | Trabajador rotado cambia de permisos por turno | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-010` | Bodeguero puede preparar pero no producir | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-011` | Producción puede producir pero no ajustar inventario global | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-012` | Cajero puede operar PULSO pero no configurar | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
