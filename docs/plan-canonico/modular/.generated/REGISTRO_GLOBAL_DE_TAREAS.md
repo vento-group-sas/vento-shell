@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1516** |
+| Aprobadas | **1517** |
 | En propuesta | **0** |
-| No iniciadas | **80** |
+| No iniciadas | **79** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **94.99% (1516/1596)** |
+| Porcentaje de completamiento | **95.05% (1517/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **80** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1417** |
+| ⏸ NO_EVALUADA | **79** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1418** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-UX-003` — Diseñar estudio creativo asistido y fábrica de variantes reutilizables | ✅ APROBADA |
-| Tarea actual | `AURA-UX-004` — Diseñar aprobación y publicación multicanal con estado y recuperación claros | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-UX-005` — Diseñar campañas, promociones, cupones, experimentos y guardas | ⬜ NO INICIADA |
+| Última aprobada | `AURA-UX-004` — Diseñar aprobación y publicación multicanal con estado y recuperación claros | ✅ APROBADA |
+| Tarea actual | `AURA-UX-005` — Diseñar campañas, promociones, cupones, experimentos y guardas | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-UX-006` — Diseñar bandeja de oportunidades, B2B, catering y eventos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1464,7 +1464,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-001` | Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-002` | Diseñar sistema de marca, brief guiado y calendario visual | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-003` | Diseñar estudio creativo asistido y fábrica de variantes reutilizables | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-004` | Diseñar aprobación y publicación multicanal con estado y recuperación claros | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-004` | Diseñar aprobación y publicación multicanal con estado y recuperación claros | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-005` | Diseñar campañas, promociones, cupones, experimentos y guardas | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-006` | Diseñar bandeja de oportunidades, B2B, catering y eventos | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-007` | Diseñar reputación, comentarios, respuestas y escalamiento | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
