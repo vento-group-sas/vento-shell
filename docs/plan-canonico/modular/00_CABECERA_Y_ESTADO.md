@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1518** |
+| Tareas aprobadas | **1519** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **78** |
+| Tareas no iniciadas | **77** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **95.11% (1518/1596)** |
+| Porcentaje de completamiento | **95.18% (1519/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas** |
-| Tarea actual | **AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos** |
+| Última tarea aprobada | **AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos** |
+| Tarea actual | **AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento** |
+| Siguiente tarea | **AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 32 de 37 aprobadas; AURA-UX-006 pendiente** |
+| Progreso del bloque | **BLOQUE W: 33 de 37 aprobadas; AURA-UX-007 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-UX-006** |
+| Carril documental | **ACTIVO — AURA-UX-007** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-UX-005` — Diseñar campañas, promociones, cupones, experimentos y guardas |
-| Tarea actual | `AURA-UX-006` — Diseñar bandeja de oportunidades, B2B, catering y eventos — **NO INICIADA** |
-| Siguiente tarea | `AURA-UX-007` — Diseñar reputación, comentarios, respuestas y escalamiento |
+| Última aprobada | `AURA-UX-006` — Diseñar bandeja de oportunidades, B2B, catering y eventos |
+| Tarea actual | `AURA-UX-007` — Diseñar reputación, comentarios, respuestas y escalamiento — **NO INICIADA** |
+| Siguiente tarea | `AURA-UX-008` — Diseñar tablero de resultados, atribución y copiloto de recomendaciones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 32 DE 37 APROBADAS — ACTUAL AURA-UX-006** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 33 DE 37 APROBADAS — ACTUAL AURA-UX-007** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
-        ↓
-TAREA ACTUAL
 AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 32 de 37 tareas aprobadas
+BLOQUE W — 33 de 37 tareas aprobadas
 ```
