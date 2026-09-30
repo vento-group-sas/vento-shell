@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1543** |
+| Tareas aprobadas | **1544** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **53** |
+| Tareas no iniciadas | **52** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **96.68% (1543/1596)** |
+| Porcentaje de completamiento | **96.74% (1544/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-020 — Acceso directo por URL queda bloqueado** |
-| Tarea actual | **AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor** |
+| Última tarea aprobada | **AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor** |
+| Tarea actual | **AUTH-QA-022 — RPC manipulada queda bloqueada** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-022 — RPC manipulada queda bloqueada** |
+| Siguiente tarea | **AUTH-QA-023 — Cruce de sede queda bloqueado** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 20 de 60 aprobadas; AUTH-QA-021 pendiente** |
+| Progreso del bloque | **BLOQUE U: 21 de 60 aprobadas; AUTH-QA-022 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-021** |
+| Carril documental | **ACTIVO — AUTH-QA-022** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-020` — Acceso directo por URL queda bloqueado |
-| Tarea actual | `AUTH-QA-021` — Formulario manipulado queda bloqueado en servidor — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-022` — RPC manipulada queda bloqueada |
+| Última aprobada | `AUTH-QA-021` — Formulario manipulado queda bloqueado en servidor |
+| Tarea actual | `AUTH-QA-022` — RPC manipulada queda bloqueada — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-023` — Cruce de sede queda bloqueado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 20 DE 60 APROBADAS — ACTUAL AUTH-QA-021** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 21 DE 60 APROBADAS — ACTUAL AUTH-QA-022** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-020 — Acceso directo por URL queda bloqueado
-        ↓
-TAREA ACTUAL
 AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-022 — RPC manipulada queda bloqueada
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-023 — Cruce de sede queda bloqueado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 20 de 60 tareas aprobadas
+BLOQUE U — 21 de 60 tareas aprobadas
 ```
