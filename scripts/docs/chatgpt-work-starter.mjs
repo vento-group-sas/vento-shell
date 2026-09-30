@@ -134,7 +134,7 @@ Carga solamente uno de los dos iniciadores según la intención de la conversaci
 `;
 }
 
-export function renderManualDocumentationAhead({ task, workTopology }) {
+export function renderManualDocumentationAhead({ task, workTopology, singleBattery = false }) {
   const index = workTopology.ordered.findIndex(({ id }) => id === task.id);
   const next = index >= 0 ? workTopology.ordered.slice(index + 1)
     .find((candidate) => taskState(candidate) !== 'APROBADA') : null;
@@ -162,7 +162,7 @@ ENTREGA Y COMANDO HABITUAL
 
 - Entrega el mismo archivo completo y el mismo FORMATO_ENTREGA_VENTO_V1. Mantén el formato documental validable; descargarlo no equivale a aprobarlo ni a incorporarlo.
 - Indica fuera del artefacto canónico: PREPARACION_ANTICIPADA: SI, la tarea anterior usada como base y CIERRE_ANTERIOR: PENDIENTE cuando corresponda.
-- Mantén el comando integral habitual de reemplazo, apertura y cierre. No pidas ejecutar docs:task:start de la sucesora antes de poder redactarla.
+- ${singleBattery ? 'Entrega una sola batería PowerShell ejecutable: apertura, reemplazo del descargable, validaciones y cierre. No dividas esos pasos en bloques separados ni pidas APROBADO por chat. La ejecución voluntaria de la batería después de revisar el artefacto constituye la aprobación documental.' : 'Mantén el comando integral habitual de reemplazo, apertura y cierre.'} No pidas ejecutar docs:task:start de la sucesora antes de poder redactarla.
 - Los comandos resueltos más abajo pertenecen a la tarea inicial de este archivo. En la entrega adelantada resuelve el ID y las rutas de la sucesora; no copies comandos de la anterior ni repitas su apertura o cierre.
 - Ese comando solo se ejecuta tras NEXT_TASK_ALLOWED: SI de la anterior y comprobando que el contenido aprobado usado como base coincide con el incorporado, incluido 04A cuando aplique.
 - Si el cierre falla por un problema técnico, conserva el archivo siguiente. Si cambia el contenido de su base, revisa las partes afectadas antes de incorporar el archivo; no lo declares vigente automáticamente.
@@ -181,7 +181,40 @@ ${next.block.trim()}` : 'No hay sucesora pendiente identificada en esta ruta. No
 `;
 }
 
-function renderDocumentationWork({ control, workTopology, templateHash, repositoryRoot }) {
+const AHEAD_SINGLE_BATTERY_RULE = `============================================================
+REGLA PRIORITARIA — UNA SOLA BATERÍA, SIN APROBADO POR CHAT
+============================================================
+
+SINGLE_COPYABLE_POWERSHELL_BLOCK: REQUIRED
+EXECUTING_BLOCK_IS_DOCUMENTARY_APPROVAL: TRUE
+SEPARATE_APROBADO_MESSAGE_REQUIRED: FALSE
+
+Cuando entregues la tarea adelantada, presenta UN ÚNICO bloque PowerShell listo para copiar y ejecutar. Dentro de ese mismo bloque, en este orden y con ID, rutas y archivos descargados reales:
+
+1. Comprueba NEXT_TASK_ALLOWED: SI del cierre anterior antes de abrir o reemplazar la sucesora. El archivo descargable puede prepararse y revisarse antes de ese cierre.
+2. Ejecuta docs:task:start para la tarea entregada y su preflight exacto.
+3. Reemplaza únicamente el marcador exacto de esa tarea con el archivo descargado completo. Si hay 04A afectado, incorpora sus fragmentos propietarios exactos; conserva intactas las demás tareas y fragmentos.
+4. Ejecuta docs:task:format --write y luego --check, docs:task:quality, docs:delivery:check, los validadores de dominio y la batería global aplicable, incluido git diff --check.
+5. Si todo pasó, ejecuta docs:task:finish para la misma tarea y comprueba NEXT_TASK_ALLOWED: SI, main sincronizado 0/0 y worktree limpio.
+
+La batería es fail-fast: ante FAIL detiene el avance, conserva el worktree y devuelve RESULTADO PARA CHATGPT. No ejecuta finish tras un fallo. No cierra la terminal con exit. No uses placeholders, pseudocódigo, importadores nuevos ni comandos separados que el usuario deba ensamblar. No repitas start si ya consta READY_TO_WORK: SI para esa misma tarea; en ese caso la batería continúa desde el reemplazo, pero conserva validaciones y finish en el mismo bloque.
+
+La descarga y la lectura no aprueban la tarea. Si el usuario revisa el artefacto y ejecuta voluntariamente la batería completa, esa acción es su aprobación documental; no solicites la palabra APROBADO por separado ni interrumpas entre validaciones y finish. Esto no autoriza implementación física ni apertura automática de otra tarea. Esta regla prevalece sobre cualquier mención posterior de APROBADO conversacional en el protocolo documental de este iniciador.`;
+
+function aheadDocumentationProtocol() {
+  const replacements = [
+    ['`APROBADO` cierra la decisión documental.', 'La ejecución voluntaria de la batería única después de revisar el archivo cierra la decisión documental.'],
+    ['La aprobación canónica requiere siempre la palabra explícita:\n\n`APROBADO`', 'La aprobación canónica ocurre cuando el usuario, tras revisar el archivo, ejecuta voluntariamente la batería única completa. No se pide una palabra adicional por chat.'],
+    ['- no lo trates como aprobado canónicamente antes de `APROBADO`;', '- no lo trates como aprobado canónicamente antes de que el usuario ejecute la batería única;'],
+    ['11. la palabra exacta `APROBADO` cuando corresponda a la decisión documental;\n12. el cierre posterior exacto mediante `docs:task:finish`', '11. la batería PowerShell única cuya ejecución constituye la aprobación documental;\n12. el cierre dentro de esa misma batería mediante `docs:task:finish`'],
+  ];
+  return replacements.reduce((source, [before, after]) => {
+    if (!source.includes(before)) throw new Error(`faltó una regla documental para el iniciador adelantado: ${before}`);
+    return source.replace(before, after);
+  }, DOCUMENTATION_PROTOCOL);
+}
+
+function renderDocumentationWork({ control, workTopology, templateHash, repositoryRoot, ahead = false }) {
   const task = workTopology.inventory.get(control.documentary.taskId);
   if (!task) throw new Error(`no se encontró ${control.documentary.taskId} en el inventario canónico.`);
   const lifecycle = workTopology.topology.get(task.id);
@@ -194,12 +227,13 @@ function renderDocumentationWork({ control, workTopology, templateHash, reposito
   return `INTENT_LOCK: DOCUMENTATION
 CONVERSATION_LANE: DOCUMENTARY
 DO_NOT_SWITCH_LANES: TRUE
+${ahead ? `\n${AHEAD_SINGLE_BATTERY_RULE}` : ''}
 
 REGLA CRÍTICA DE ESTA CONVERSACIÓN
 
 Esta conversación trabaja EXCLUSIVAMENTE el carril documental. Su referencia inicial es ${task.id}; el usuario puede solicitar preparar su sucesora mientras se publica la anterior conforme al modo manual de trabajo adelantado.
 
-${renderManualDocumentationAhead({ task, workTopology })}
+${renderManualDocumentationAhead({ task, workTopology, singleBattery: ahead })}
 
 - Una instancia física pendiente, autorizada, en progreso, implementada o bloqueada NO cambia la tarea documental de esta conversación.
 - NO autorices implementaciones desde este iniciador.
@@ -230,15 +264,15 @@ METODOLOGÍA DOCUMENTAL VIGENTE
 - El usuario humano realiza los reemplazos y comandos locales.
 - Antes de desarrollar, verifica 01_PROTOCOLO.md, delivery-contract.json, manifest.json, continuidad, topología, políticas de formato/desarrollo, archivo propietario, dependencias, 04A cuando aplique, package.json y validadores reales.
 - Si docs:task:start -- --task-id ${task.id} ya produjo PASS y READY_TO_WORK: SI, no lo repitas.
-- El artefacto de tarea se entrega completo, listo para reemplazar el marcador exacto, pero no se vuelve canónico hasta que el usuario responda APROBADO.
-- En modo manual, APROBADO no autoriza implementación física ni avance automático a la siguiente tarea. Una AUTORIZACIÓN DOCUMENTAL NOCTURNA válida puede delegar exclusivamente los gates conversacionales definidos por el punto 4.9 de 01_PROTOCOLO.md.
+- ${ahead ? 'El artefacto de tarea se entrega completo y se vuelve canónico cuando el usuario, tras revisarlo, ejecuta voluntariamente la batería única. No pidas APROBADO por chat.' : 'El artefacto de tarea se entrega completo, listo para reemplazar el marcador exacto, pero no se vuelve canónico hasta que el usuario responda APROBADO.'}
+- ${ahead ? 'La ejecución de la batería aprueba únicamente esta tarea documental.' : 'En modo manual, APROBADO no autoriza implementación física ni avance automático a la siguiente tarea.'} Una AUTORIZACIÓN DOCUMENTAL NOCTURNA válida puede delegar exclusivamente los gates conversacionales definidos por el punto 4.9 de 01_PROTOCOLO.md.
 - El cierre documental conserva npm run docs:task:finish -- --task-id ${task.id} y no se sustituye por commits manuales.
 - No pegues en el chat el contenido completo de la tarea ni de 04A cuando existan archivos descargables preparados para reemplazo.
 - Distingue VALIDACIÓN ESTRUCTURAL DEL ARTEFACTO de VALIDACIÓN REAL DEL REPOSITORIO.
 
 PROTOCOLO DOCUMENTAL COMPLETO RESTAURADO
 
-${DOCUMENTATION_PROTOCOL}
+${ahead ? aheadDocumentationProtocol() : DOCUMENTATION_PROTOCOL}
 
 ${NIGHT_DOCUMENTATION_GOVERNANCE}
 
@@ -251,7 +285,7 @@ COMANDOS DOCUMENTALES RESUELTOS PARA ESTA TAREA
 - Orden obligatorio de validación: FORMAT_WRITE -> FORMAT_CHECK -> TASK_QUALITY -> DELIVERY_CHECK -> validadores de dominio -> batería global.
 - Calidad de tarea: npm run docs:task:quality
 - Batería global esperada cuando aplique: npm run docs:plan:build; npm run docs:plan:check; npm run docs:plan:test; npm run docs:treq:check; npm run docs:treq:test; git diff --check.
-- Cierre después de APROBADO y validaciones PASS: npm run docs:task:finish -- --task-id ${task.id}
+- ${ahead ? 'Cierre dentro de la misma batería tras validaciones PASS' : 'Cierre después de APROBADO y validaciones PASS'}: npm run docs:task:finish -- --task-id ${task.id}
 - Resultado que habilita apertura y reemplazo en el repositorio: NEXT_TASK_ALLOWED: SI. No bloquea la redacción anticipada en ChatGPT.
 
 CARRIL FÍSICO — SOLO ESTADO INFORMATIVO
@@ -647,6 +681,11 @@ export function buildChatgptWorkStarter({ root = process.cwd() } = {}) {
     renderDocumentationWork({ control, workTopology, templateHash, repositoryRoot }),
     'DOCUMENTATION',
   );
+  const documentationAheadSource = renderFromTemplate(
+    template,
+    renderDocumentationWork({ control, workTopology, templateHash, repositoryRoot, ahead: true }),
+    'DOCUMENTATION',
+  );
   const implementationSource = renderFromTemplate(
     template,
     renderImplementationWork({ control, workTopology, templateHash, repositoryRoot }),
@@ -660,7 +699,7 @@ export function buildChatgptWorkStarter({ root = process.cwd() } = {}) {
     documentationOutputPath: path.join(repositoryRoot, DOCUMENTATION_OUTPUT_PATH),
     documentationSource,
     documentationAheadOutputPath: path.join(repositoryRoot, DOCUMENTATION_AHEAD_OUTPUT_PATH),
-    documentationAheadSource: documentationSource,
+    documentationAheadSource,
     implementationOutputPath: path.join(repositoryRoot, IMPLEMENTATION_OUTPUT_PATH),
     implementationSource,
     outputs: Object.freeze([
@@ -669,7 +708,7 @@ export function buildChatgptWorkStarter({ root = process.cwd() } = {}) {
       {
         key: 'documentationAhead',
         relativePath: DOCUMENTATION_AHEAD_OUTPUT_PATH,
-        source: documentationSource,
+        source: documentationAheadSource,
       },
       { key: 'implementation', relativePath: IMPLEMENTATION_OUTPUT_PATH, source: implementationSource },
     ]),
