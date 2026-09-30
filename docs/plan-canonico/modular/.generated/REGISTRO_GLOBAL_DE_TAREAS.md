@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1506** |
+| Aprobadas | **1507** |
 | En propuesta | **0** |
-| No iniciadas | **90** |
+| No iniciadas | **89** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **94.36% (1506/1596)** |
+| Porcentaje de completamiento | **94.42% (1507/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **90** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1407** |
+| ⏸ NO_EVALUADA | **89** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1408** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-DOM-007` — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación | ✅ APROBADA |
-| Tarea actual | `AURA-DOM-008` — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-DOM-009` — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio | ⬜ NO INICIADA |
+| Última aprobada | `AURA-DOM-008` — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | ✅ APROBADA |
+| Tarea actual | `AURA-DOM-009` — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-DOM-010` — Definir radar de oportunidades y recomendaciones comerciales explicables | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1454,7 +1454,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-005` | Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-006` | Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-007` | Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-008` | Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-008` | Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-009` | Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-010` | Definir radar de oportunidades y recomendaciones comerciales explicables | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUTH-001` | Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |

@@ -7041,7 +7041,1955 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña`
 
-### [ ] AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña
+### ✅ AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación
+**Tarea siguiente:** AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
+**Tipo de tarea:** definición técnico-documental del contrato canónico de medición de AURA; fija métricas gobernadas, fuentes, grano, ventanas, correlación, atribución, confianza, incrementalidad, evaluación experimental, aprendizaje y cierre analítico de campaña sin crear una instancia física propia ni reinterpretar hechos propietarios de PULSO, PASS, NUMERA, NEXO, FOGO, VISO o canales externos
+**Bloque:** BLOQUE W — AURA — dominio de marketing y creación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; queda definido el contrato documental de medición, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña de AURA
+**Cambios físicos autorizados:** ninguno; esta tarea no crea métricas runtime, eventos, tablas, vistas, RPC, dashboards, pipelines, jobs, modelos, integraciones, campañas, experimentos, ventas, redenciones, costos, datos, Supabase ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo AURA convertirá señales de publicación, interacción, conversión, oportunidad, venta, redención y resultado económico en una lectura de campaña trazable y honesta, sin presentar actividad como impacto, correlación como causalidad, ingreso como margen ni coincidencia temporal como incrementalidad.
+
+La tarea deberá permitir responder, para una campaña o experimento futuro:
+
+1. qué se intentaba cambiar;
+2. qué métrica estaba definida antes de observar el resultado;
+3. qué hechos se observaron realmente;
+4. de qué fuentes provienen;
+5. bajo qué grano, periodo, zona horaria y versión son comparables;
+6. qué relación existe entre exposición, interacción, conversión, venta y resultado económico;
+7. qué método de atribución se utilizó;
+8. qué nivel de confianza soporta la conclusión;
+9. si puede hablarse de incrementalidad o solo de asociación;
+10. qué limitaciones, faltantes o sesgos afectan la lectura;
+11. qué aprendizaje queda registrado;
+12. si la campaña puede cerrarse analíticamente y con qué conclusión.
+
+El objetivo no es maximizar la cantidad de métricas, sino impedir conclusiones empresariales más fuertes que la evidencia disponible.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-002`, que fija objetivo empresarial, hipótesis, criterios de éxito, fuentes esperadas, presupuesto, ciclo documental y obligación de conservar resultado y aprendizaje al cierre;
+- `AURA-DOM-005`, que separa métricas técnicas del proveedor de impacto empresarial y exige identidad, periodo, fuente y reconciliación de publicaciones;
+- `AURA-DOM-006`, que fija hipótesis experimental, unidad de asignación, variantes, control o comparación, exclusiones, contaminación, guardas y detención por daño;
+- `AURA-DOM-007`, que entrega origen, oportunidad, fechas, etapas, handoff, resultado, motivo de pérdida y referencias comerciales sin convertir una oportunidad ganada en causalidad de marketing;
+- `CAP-SCOPE-014`, especialmente `CAP-14.10 — Medir resultados de comunicación y promoción`;
+- `H-CAP-SCOPE-014-022`, que prohíbe presentar likes, alcance o impresiones como éxito empresarial sin venta, margen, redención o aprendizaje;
+- `H-CAP-SCOPE-014-023`, que exige método y nivel de confianza para atribución multicanal;
+- `H-CAP-SCOPE-014-024`, que exige un contrato común para UTM, códigos, cupones, campañas, conversiones y eventos de venta;
+- `H-CAP-SCOPE-014-027`, que exige gobierno de pruebas A/B, controles, periodos comparables y detención por daño;
+- `INT-MKT-001`, para la frontera entre campaña, fuentes propietarias, medición y atribución;
+- `INT-MKT-003`, para la correlación futura entre campaña y hechos comerciales PULSO sin convertir correlación en causalidad;
+- `NUMERA-DOM-008`, para conservar a NUMERA como autoridad de rentabilidad, margen y resultado económico reproducible;
+- `VPROC-0056`, incluido `PERFORMANCE_REVIEW` y `CONTENT_CYCLE_REVIEWED`, sin redefinir su máquina de estados;
+- `TREQ-INTEGRATION-019`, para identidad, idempotencia, reconciliación y trazabilidad de conversiones y métricas cuando se materialicen;
+- el registro canónico de requisitos de prueba vigente.
+
+La tarea no modifica estas fuentes ni crea un maestro analítico competidor.
+
+---
+
+#### 3. Topología y naturaleza
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea define una sola vez el contrato de medición reutilizable;
+- no crea una instancia física propia;
+- no ejecuta campañas ni experimentos;
+- no ingiere métricas reales;
+- no consulta cuentas externas;
+- no crea un warehouse, mart, dashboard o modelo estadístico;
+- no autoriza backfills, escrituras, tracking productivo ni instrumentación física;
+- no cambia ownership de hechos comerciales, de cliente o económicos.
+
+---
+
+#### 4. Resultado canónico
+
+AURA deberá conservar la siguiente separación:
+
+```text
+ACTIVIDAD O ENTREGA
+!=
+INTERACCION
+!=
+CONVERSION
+!=
+VENTA CORRELACIONADA
+!=
+VENTA INCREMENTAL
+!=
+MARGEN
+!=
+RENTABILIDAD
+```
+
+Además:
+
+```text
+CORRELACION
+!=
+ATRIBUCION
+!=
+CAUSALIDAD
+!=
+INCREMENTALIDAD
+```
+
+Una lectura analítica solo podrá avanzar de un nivel al siguiente cuando exista método, fuente y evidencia suficientes.
+
+---
+
+#### 5. Propiedad de los hechos medidos
+
+AURA gobierna la interpretación de marketing y la correlación de campaña, pero no se convierte en fuente maestra de los hechos que analiza.
+
+| Materia | Fuente o propietaria | Uso permitido en AURA |
+| --- | --- | --- |
+| campaña, experimento, variante y objetivo | AURA | contexto analítico y comparación contra objetivo |
+| publicación y métricas técnicas nativas | canal externo / contrato de publicación | señales de entrega, alcance e interacción con fuente y periodo |
+| identidad y consentimiento de cliente | PASS | proyección mínima autorizada para deduplicación, elegibilidad o análisis |
+| beneficio y redención de fidelización | PASS | hecho de beneficio o redención correlacionable cuando corresponda |
+| pedido y venta | PULSO | hecho comercial, líneas y efectos realmente aplicados |
+| oportunidad y handoff comercial | AURA, con resultados posteriores referenciados desde PULSO | flujo de oportunidad y conversión comercial sin recrear el caso operativo |
+| costo, margen, presupuesto y rentabilidad | NUMERA | consumo de resultado económico publicado o autorizado |
+| producto e inventario | NEXO | contexto autorizado; no se copia como maestro analítico editable |
+| capacidad productiva | FOGO / NEXO según el hecho | contexto de guardas y explicación operacional |
+| casos administrativos o de servicio | propietaria aplicable | señal o referencia cuando la finalidad lo permita |
+
+AURA no corrige una fuente propietaria sobrescribiéndola desde una métrica.
+
+---
+
+#### 6. Contrato de métrica gobernada
+
+Toda métrica utilizada para decisión, comparación o cierre deberá conservar, como mínimo:
+
+- identidad estable de la métrica;
+- nombre empresarial inequívoco;
+- definición;
+- propósito;
+- objeto o población medida;
+- unidad;
+- numerador y denominador cuando aplique;
+- grano mínimo soportado;
+- dimensiones permitidas;
+- filtros y exclusiones;
+- fuente o fuentes;
+- propietaria de cada hecho fuente;
+- periodo y zona horaria;
+- fecha de corte;
+- política de eventos tardíos;
+- versión de definición;
+- estado de frescura;
+- estado de completitud;
+- método de cálculo;
+- limitaciones conocidas;
+- responsable de la definición;
+- evidencia suficiente para reproducir el resultado.
+
+Una etiqueta visible como `conversion`, `engagement`, `revenue`, `ROI` o `success` no constituye una definición suficiente.
+
+---
+
+#### 7. Versionado de definiciones
+
+Una métrica puede evolucionar, pero un cambio de definición no reescribe silenciosamente resultados históricos.
+
+Si cambia cualquiera de estos elementos de forma material:
+
+- fórmula;
+- fuente;
+- población;
+- ventana;
+- exclusión;
+- denominador;
+- unidad;
+- dimensión;
+- regla de deduplicación;
+- regla de atribución;
+
+la definición deberá adquirir una nueva versión o conservar una transición explícita capaz de explicar la comparabilidad.
+
+Dos valores con definiciones distintas no se comparan como una misma serie sin reconciliación.
+
+---
+
+#### 8. Familias de medición
+
+AURA deberá diferenciar al menos estas familias conceptuales:
+
+1. **entrega técnica**, que demuestra intento, entrega, publicación o visibilidad según el canal;
+2. **exposición**, que demuestra oportunidad de ver o recibir;
+3. **interacción**, que demuestra una acción de usuario o respuesta observada;
+4. **conversión**, que demuestra la ocurrencia de un evento empresarial definido previamente;
+5. **resultado comercial correlacionado**, que vincula una venta, redención u oportunidad con una campaña bajo un método declarado;
+6. **resultado incremental**, que estima el cambio causado respecto de un contrafactual o comparación válida;
+7. **resultado económico**, que consume ingreso, costo, margen o rentabilidad desde NUMERA;
+8. **aprendizaje**, que documenta qué puede concluirse y con qué fuerza.
+
+No existe promoción automática entre familias.
+
+---
+
+#### 9. Entrega técnica
+
+Las métricas técnicas de proveedor podrán incluir, según canal y contrato:
+
+- publicación confirmada;
+- entrega;
+- rebote;
+- error;
+- visibilidad;
+- impresión;
+- alcance;
+- reproducción;
+- apertura;
+- clic;
+- respuesta técnica.
+
+Estas señales describen ejecución o consumo del canal.
+
+No demuestran por sí solas:
+
+- intención de compra;
+- oportunidad calificada;
+- venta;
+- redención;
+- margen;
+- incrementalidad;
+- rentabilidad.
+
+---
+
+#### 10. Exposición
+
+Una exposición deberá conservar la semántica concreta que el canal puede demostrar.
+
+No se utilizará una palabra genérica `exposure` para mezclar:
+
+- impresión servida;
+- impresión visible;
+- mensaje entregado;
+- email abierto;
+- video iniciado;
+- visita a una superficie;
+- publicación potencialmente disponible.
+
+Cuando el proveedor no pueda demostrar exposición individual, AURA conservará la métrica agregada con esa limitación y no inventará identidad de audiencia.
+
+---
+
+#### 11. Interacción
+
+Una interacción podrá representar, según el canal:
+
+- clic;
+- respuesta;
+- reacción;
+- visita;
+- guardado;
+- mensaje;
+- inicio de formulario;
+- otra acción explícitamente definida.
+
+La interacción debe conservar canal, objeto, timestamp, definición y fuente.
+
+Por defecto:
+
+```text
+INTERACCION
+!=
+CONVERSION
+```
+
+La conversión solo existe si el evento definido para esa campaña ocurrió en su fuente autorizada.
+
+---
+
+#### 12. Conversión
+
+Una conversión es la ocurrencia verificable de un evento empresarial definido antes de interpretar el resultado.
+
+Cada definición de conversión deberá declarar:
+
+- `conversion_name` conceptual o equivalente;
+- hecho empresarial que la materializa;
+- fuente propietaria;
+- identidad o referencia del hecho;
+- campaña u objetivo para el que es relevante;
+- reglas de elegibilidad;
+- ventana temporal;
+- reglas de deduplicación;
+- unidad contada;
+- tratamiento de cancelaciones, anulaciones, devoluciones o reversas cuando corresponda;
+- limitaciones de identidad o correlación.
+
+Ejemplos conceptuales válidos solo cuando la campaña los haya definido y la fuente los demuestre:
+
+- oportunidad calificada;
+- handoff comercial aceptado;
+- venta válida;
+- redención válida;
+- registro autorizado;
+- reserva confirmada;
+- otro hecho propietario explícito.
+
+Un clic no se convierte en conversión porque el objetivo de la campaña sea vender.
+
+---
+
+#### 13. Conversión primaria y secundaria
+
+Una campaña podrá tener:
+
+- una métrica primaria de decisión;
+- métricas secundarias de diagnóstico;
+- guardas que nunca se optimizan sacrificándolas.
+
+La métrica primaria deberá estar definida antes de evaluar el resultado cuando exista una hipótesis experimental.
+
+Las métricas secundarias ayudan a explicar el mecanismo, pero no sustituyen la primaria después de observar un resultado desfavorable.
+
+Queda prohibido escoger retrospectivamente la métrica que mejor se vea y presentarla como objetivo original sin declarar el cambio.
+
+---
+
+#### 14. Venta correlacionada
+
+Una venta correlacionada es una venta PULSO o un hecho comercial propietario que puede relacionarse con una campaña mediante una referencia o método declarado.
+
+Puede existir correlación por:
+
+- referencia explícita de campaña;
+- código o cupón autorizado;
+- UTM o identificador de enlace correlacionable;
+- publicación o canal de origen;
+- oportunidad originada en campaña;
+- otra relación trazable autorizada.
+
+Pero:
+
+```text
+VENTA CORRELACIONADA
+!=
+VENTA CAUSADA
+```
+
+La correlación conserva evidencia de relación; no demuestra qué habría ocurrido sin la campaña.
+
+---
+
+#### 15. Venta incremental
+
+Una venta incremental representa una diferencia atribuible al tratamiento respecto de un contrafactual o comparación metodológicamente defendible.
+
+No podrá declararse incrementalidad únicamente porque:
+
+- la venta ocurrió dentro de la campaña;
+- la venta usó un código;
+- el cliente hizo clic;
+- el canal reportó conversión;
+- las ventas subieron frente al periodo anterior;
+- hubo más ventas que el presupuesto;
+- existe correlación temporal.
+
+La incrementalidad requiere método explícito y evidencia de comparación suficiente.
+
+---
+
+#### 16. Resultado económico
+
+AURA no recrea margen ni rentabilidad.
+
+Se conserva:
+
+```text
+VENTA Y EFECTO COMERCIAL
+-> PULSO
+
+BENEFICIO Y REDENCION
+-> PASS
+
+COSTO / MARGEN / PRESUPUESTO / RENTABILIDAD
+-> NUMERA
+
+INTERPRETACION DE CAMPANA Y ATRIBUCION
+-> AURA
+```
+
+Cuando AURA muestre ingreso, margen, costo o rentabilidad asociados a una campaña, deberá conservar:
+
+- referencia al resultado NUMERA;
+- fórmula o capa económica que representa;
+- periodo;
+- fecha de corte;
+- dimensiones;
+- moneda;
+- completitud;
+- versión;
+- nivel de conciliación aplicable.
+
+AURA no convierte ingreso en margen ni margen bruto en rentabilidad por conveniencia visual.
+
+---
+
+#### 17. Comparación contra objetivo
+
+El cierre de campaña deberá comparar lo observado contra el objetivo definido en `AURA-DOM-002`.
+
+La comparación deberá separar:
+
+- objetivo empresarial;
+- métrica primaria;
+- valor esperado o criterio de decisión cuando exista;
+- valor observado;
+- diferencia;
+- evidencia;
+- confianza;
+- limitaciones;
+- guardas incumplidas o activadas.
+
+Una campaña puede cumplir una métrica de actividad y fallar el objetivo empresarial.
+
+---
+
+#### 18. Grano analítico
+
+Cada métrica deberá declarar el nivel mínimo al que su evidencia es válida.
+
+El grano podrá corresponder, según el contrato fuente, a:
+
+- campaña;
+- experimento;
+- variante;
+- publicación;
+- canal;
+- audiencia o segmento autorizado;
+- oportunidad;
+- venta;
+- redención;
+- producto o línea;
+- sede;
+- periodo;
+- otra dimensión canónica soportada.
+
+No se desagregará un agregado a un nivel que la fuente no pueda sustentar.
+
+Un total de canal no se repartirá entre campañas por proporción inventada.
+
+---
+
+#### 19. Dimensiones
+
+Las dimensiones analíticas permanecen referencias a identidades canónicas, no catálogos paralelos.
+
+Como mínimo se deberá preservar, cuando aplique:
+
+- empresa o alcance organizacional;
+- marca;
+- sede;
+- canal;
+- campaña;
+- experimento;
+- variante;
+- promoción;
+- publicación;
+- producto o presentación;
+- audiencia o segmento;
+- oportunidad;
+- periodo.
+
+La ausencia de una dimensión no autoriza inferirla desde nombre visible, copy, URL, correo, canal o campaña.
+
+---
+
+#### 20. Tiempo y zona horaria
+
+Toda medición deberá distinguir, cuando corresponda:
+
+- timestamp del hecho;
+- timestamp de recepción;
+- timestamp de reconciliación;
+- periodo analítico;
+- fecha de corte;
+- zona horaria;
+- ventana de atribución;
+- ventana experimental;
+- ventana de observación posterior.
+
+Un evento tardío no se moverá al periodo más conveniente para la campaña.
+
+---
+
+#### 21. Fuentes y lineage
+
+Cada resultado deberá permitir navegar hacia sus fuentes.
+
+El lineage mínimo deberá responder:
+
+```text
+RESULTADO MOSTRADO
+-> DEFINICION DE METRICA
+-> FUENTES
+-> HECHOS O AGREGADOS AUTORIZADOS
+-> VERSIONES
+-> CORRELACIONES
+-> METODO DE ATRIBUCION
+-> LIMITACIONES
+```
+
+Una captura manual o spreadsheet podrá ser evidencia transitoria si está gobernada, pero no adquiere automáticamente autoridad sobre venta, cliente, costo o campaña.
+
+---
+
+#### 22. Frescura
+
+Toda fuente material deberá declarar o permitir derivar su frescura.
+
+AURA distinguirá al menos:
+
+- dato actualizado para la ventana requerida;
+- dato retrasado pero todavía interpretable con advertencia;
+- dato vencido para la decisión;
+- frescura desconocida.
+
+Estas categorías son condiciones analíticas conceptuales y no crean estados físicos persistidos por esta tarea.
+
+Una métrica vencida no se presenta como actual solo porque sea el último valor disponible.
+
+---
+
+#### 23. Completitud
+
+La medición deberá poder declarar cuando faltan hechos materiales.
+
+Ejemplos:
+
+- proveedor todavía no entregó métricas;
+- ventas aún no conciliadas;
+- costo o margen pendiente;
+- eventos tardíos dentro de la ventana permitida;
+- identidad no resoluble;
+- handoff comercial todavía abierto;
+- redenciones pendientes de conciliación;
+- grupo de comparación incompleto.
+
+La incompletitud no se convierte en cero.
+
+---
+
+#### 24. Cero, ausencia, desconocido y no aplicable
+
+AURA deberá mantener separados:
+
+```text
+0
+!=
+NULL O AUSENCIA
+!=
+DESCONOCIDO
+!=
+NO APLICA
+!=
+NO CALCULABLE
+```
+
+Ejemplos:
+
+- cero ventas observadas es un dato distinto de ventas todavía no recibidas;
+- cero costo no puede sustituir costo faltante;
+- una tasa sin denominador válido no se presenta como 0 %;
+- una campaña sin experimento puede tener incrementalidad no evaluable, no incrementalidad igual a cero.
+
+---
+
+#### 25. Contrato común de correlación
+
+Para resolver `H-CAP-SCOPE-014-024`, toda correlación futura entre marketing y resultado deberá conservar un sobre conceptual común.
+
+Como mínimo:
+
+- identificador interno de campaña cuando exista;
+- identificador de experimento y variante cuando existan;
+- identificador de publicación o touchpoint cuando exista;
+- canal;
+- referencia externa;
+- UTM o código cuando exista;
+- promoción o cupón cuando exista;
+- evento de conversión definido;
+- referencia de oportunidad, venta o redención cuando exista;
+- timestamp del hecho;
+- timestamp de recepción;
+- fuente;
+- versión;
+- idempotencia;
+- estado de reconciliación;
+- método que usa la referencia.
+
+La ausencia de una referencia no se rellena por inferencia silenciosa.
+
+---
+
+#### 26. UTM y referencias de enlace
+
+UTM u otros parámetros de campaña son referencias de correlación.
+
+No son por sí mismos:
+
+- identidad de cliente;
+- prueba de exposición;
+- conversión;
+- venta;
+- causalidad;
+- autorización comercial.
+
+Cada uso deberá conservar nombres y valores observados, normalización gobernada y relación con la campaña o publicación correspondiente.
+
+Un parámetro perdido o reescrito deberá quedar como limitación, no reconstruirse por suposición.
+
+---
+
+#### 27. Códigos, cupones y promociones
+
+Un código o cupón podrá aportar evidencia fuerte de correlación cuando la fuente comercial demuestre su uso válido.
+
+Sin embargo:
+
+```text
+CODIGO USADO
+!=
+VENTA INCREMENTAL
+```
+
+La fuente propietaria deberá demostrar:
+
+- regla aplicada;
+- elegibilidad;
+- efecto real;
+- venta o redención relacionada;
+- reversas o anulaciones aplicables.
+
+AURA conserva la correlación y el contexto de campaña; no ejecuta ni reinterpreta la regla transaccional.
+
+---
+
+#### 28. Eventos de conversión
+
+Un evento de conversión deberá tener identidad suficiente para evitar doble conteo.
+
+La futura materialización deberá conservar:
+
+- identificador del evento o del hecho propietario;
+- tipo de conversión;
+- fuente;
+- sujeto o unidad cuando esté autorizado;
+- timestamp;
+- campaña o referencia correlacionada;
+- versión;
+- idempotency key o equivalente;
+- estado de conciliación;
+- reversa o compensación cuando aplique.
+
+Un webhook repetido, retry o backfill no crea una segunda conversión empresarial.
+
+---
+
+#### 29. Eventos tardíos y backfills
+
+Los eventos recibidos después del corte deberán conservar su timestamp original y la fecha en que fueron incorporados.
+
+La política analítica deberá declarar:
+
+- hasta cuándo se esperan eventos tardíos;
+- cuándo un resultado es preliminar;
+- cuándo un cierre puede estabilizarse;
+- cómo se corrige un resultado publicado;
+- qué versión incorpora el ajuste.
+
+Un backfill no reescribe silenciosamente el reporte que ya sustentó una decisión.
+
+---
+
+#### 30. Deduplicación
+
+La deduplicación se realiza con identidades y contratos, no con aproximaciones de conveniencia.
+
+Queda prohibido deduplicar únicamente por:
+
+- nombre visible;
+- email parecido;
+- teléfono normalizado sin autoridad de identidad;
+- timestamp cercano;
+- mismo monto;
+- misma URL;
+- misma campaña.
+
+Cuando la identidad no pueda resolverse con suficiente evidencia, el caso permanece ambiguo.
+
+---
+
+#### 31. Definición de atribución
+
+Atribución es la regla o método que asigna relación analítica entre uno o más touchpoints de marketing y un resultado observado.
+
+Toda atribución deberá declarar:
+
+- resultado que intenta explicar;
+- población;
+- touchpoints elegibles;
+- ventana;
+- orden temporal requerido;
+- exclusiones;
+- identidad o correlación disponible;
+- tratamiento de múltiples touchpoints;
+- método;
+- versión;
+- nivel de confianza;
+- limitaciones.
+
+El nombre de una campaña no constituye un método de atribución.
+
+---
+
+#### 32. Métodos de atribución permitidos conceptualmente
+
+Esta tarea no impone un único método universal.
+
+AURA podrá distinguir, cuando la evidencia lo soporte:
+
+1. **correlación determinística por referencia**, cuando una clave gobernada conecta touchpoint y resultado;
+2. **atribución por regla declarada**, cuando una metodología de reparto o selección de touchpoints está definida y versionada;
+3. **estimación causal experimental**, cuando un diseño válido permite estimar diferencia respecto de control o contrafactual;
+4. **asociación observacional**, cuando existe relación temporal o comportamental pero no evidencia causal suficiente;
+5. **no atribuible**, cuando la evidencia no permite asignar relación defendible.
+
+La interfaz y el reporte deberán mostrar cuál se utilizó.
+
+---
+
+#### 33. Regla de atribución por referencia
+
+Una referencia determinística puede demostrar que un resultado está vinculado operativamente a una campaña.
+
+Ejemplos conceptuales:
+
+- cupón de campaña efectivamente aplicado;
+- oportunidad creada desde una referencia gobernada;
+- venta con correlación de campaña preservada por PULSO;
+- redención PASS ligada a una promoción referenciada.
+
+Esta relación puede soportar atribución operativa fuerte, pero no demuestra por sí sola incrementalidad.
+
+---
+
+#### 34. Atribución por regla declarada
+
+Cuando múltiples touchpoints puedan reclamar relación con un mismo resultado, AURA deberá aplicar una regla versionada y explícita.
+
+La regla deberá definir:
+
+- universo de touchpoints;
+- prioridad o reparto;
+- ventana;
+- tratamiento de touchpoints simultáneos;
+- canales excluidos;
+- eventos sin identidad resoluble;
+- total de crédito asignable;
+- tratamiento de ventas no atribuibles.
+
+No se cambia la regla después de ver qué canal queda mejor sin declarar una nueva versión y recalcular bajo ambas definiciones cuando sea necesario comparar.
+
+---
+
+#### 35. Ventana de atribución
+
+Toda atribución deberá tener una ventana temporal explícita cuando el método la requiera.
+
+La ventana deberá justificar:
+
+- inicio;
+- fin;
+- zona horaria;
+- tipo de touchpoint;
+- tipo de conversión;
+- naturaleza del ciclo de compra;
+- tratamiento de eventos tardíos.
+
+Una ventana no se extiende retrospectivamente para capturar una venta conveniente.
+
+---
+
+#### 36. Touchpoints múltiples
+
+Una persona, cuenta, oportunidad o venta puede relacionarse con varios touchpoints.
+
+Por tanto:
+
+```text
+SUMA DE CREDITOS DE ATRIBUCION
+```
+
+no podrá exceder el total atribuible bajo la regla seleccionada salvo que el reporte indique explícitamente que las métricas no son aditivas.
+
+No se sumarán atribuciones de métodos diferentes como si fueran partes de una misma venta.
+
+---
+
+#### 37. Identidad y privacidad en atribución
+
+AURA no crea una identidad paralela para resolver atribución.
+
+Cuando se necesite identidad:
+
+- PASS conserva identidad y consentimiento de cliente;
+- PULSO conserva identidad operativa de pedido o venta;
+- AURA consume únicamente la proyección mínima autorizada;
+- datos sensibles no se incorporan por comodidad analítica;
+- coincidencias débiles no se promueven a identidad confirmada;
+- la falta de consentimiento puede limitar la atribución individual sin autorizar un bypass.
+
+La pérdida de capacidad de atribución es preferible a una unión de identidad no autorizada.
+
+---
+
+#### 38. Confianza de atribución
+
+Toda conclusión de atribución deberá declarar un nivel de confianza basado en la evidencia disponible.
+
+Se fijan cuatro niveles conceptuales:
+
+| Nivel | Significado |
+| --- | --- |
+| `CAUSAL_DEMONSTRADA` | existe diseño y evidencia suficientes para sostener un efecto causal dentro del alcance declarado |
+| `ATRIBUCION_SOPORTADA` | existe relación determinística o metodológicamente fuerte con el resultado, pero no se demuestra el contrafactual requerido para causalidad |
+| `ASOCIACION_LIMITADA` | existe señal o relación plausible, pero faltan identidad, cobertura, comparabilidad, control o evidencia material |
+| `NO_ATRIBUIBLE` | la evidencia disponible no permite asignar el resultado a la campaña de forma defendible |
+
+Estos niveles son categorías analíticas documentales; no crean estados físicos ni sustituyen la evidencia subyacente.
+
+`CAUSAL_DEMONSTRADA` exige algo más fuerte que correlación determinística.
+
+---
+
+#### 39. Evidencia mínima por nivel de confianza
+
+Para declarar `CAUSAL_DEMONSTRADA` deberán documentarse, según el método:
+
+- hipótesis previa;
+- unidad de asignación;
+- tratamiento;
+- control o contrafactual defendible;
+- comparabilidad;
+- ventana;
+- guardas;
+- resultado;
+- método de estimación;
+- incertidumbre;
+- contaminación o desviaciones;
+- criterios de detención;
+- limitaciones.
+
+Para `ATRIBUCION_SOPORTADA` deberán existir al menos:
+
+- resultado propietario verificable;
+- correlación gobernada;
+- regla de atribución;
+- ventana;
+- deduplicación;
+- fuente;
+- limitaciones.
+
+Los niveles inferiores deberán explicar específicamente qué evidencia falta.
+
+---
+
+#### 40. Incrementalidad
+
+Incrementalidad es la diferencia entre el resultado observado bajo el tratamiento y el resultado que razonablemente se habría esperado sin ese tratamiento bajo el método aprobado.
+
+Conceptualmente:
+
+```text
+RESULTADO INCREMENTAL
+=
+RESULTADO OBSERVADO
+-
+CONTRAFACTUAL ESTIMADO
+```
+
+La fórmula anterior expresa semántica, no impone una técnica estadística única.
+
+Sin contrafactual o comparación defendible, la salida puede ser asociación o atribución soportada, pero no incrementalidad demostrada.
+
+---
+
+#### 41. Evaluación experimental
+
+Cuando exista experimento definido por `AURA-DOM-006`, la evaluación deberá preservar:
+
+- `experiment_id`;
+- versión de campaña;
+- hipótesis;
+- métrica primaria;
+- métricas secundarias;
+- guardas;
+- unidad de asignación;
+- población elegible;
+- exclusiones;
+- variantes;
+- control o comparación;
+- asignación observada;
+- ventana;
+- exposición realmente recibida cuando sea material;
+- desviaciones;
+- contaminación;
+- resultado;
+- incertidumbre;
+- regla de decisión;
+- motivo de cierre.
+
+Un experimento ejecutado no equivale a incrementalidad demostrada.
+
+---
+
+#### 42. Control válido
+
+El grupo de control o comparación debe ser explícito y metodológicamente defendible.
+
+No se trata como control válido automáticamente a:
+
+- usuarios que no recibieron la pieza por error;
+- contactos sin consentimiento;
+- personas fuera de la población elegible;
+- transacciones sin tracking;
+- canales caídos;
+- sedes sin stock;
+- periodos afectados por una contingencia material diferente.
+
+Si estas diferencias alteran comparabilidad, deberán declararse como limitación o invalidar la inferencia causal correspondiente.
+
+---
+
+#### 43. Comparación temporal no experimental
+
+Una comparación antes/después o periodo contra periodo puede ser útil para diagnóstico.
+
+Pero deberá conservar:
+
+- definición comparable;
+- misma base económica cuando corresponda;
+- estacionalidad conocida;
+- cambios de precio u oferta;
+- cambios de stock o capacidad;
+- cambios de canal;
+- eventos externos conocidos;
+- cobertura y frescura.
+
+Por defecto, una mejora temporal observada es asociación, no causalidad.
+
+---
+
+#### 44. Contaminación y solapamiento
+
+Si una unidad recibió múltiples campañas, promociones o variantes que impiden aislar efecto, AURA deberá:
+
+- conservar todas las exposiciones conocidas;
+- aplicar la regla de exclusión o atribución aprobada;
+- marcar contaminación cuando no pueda resolverse;
+- reducir el nivel de confianza;
+- evitar declarar incrementalidad específica si el diseño ya no lo soporta.
+
+No se elimina una exposición inconveniente para limpiar artificialmente el resultado.
+
+---
+
+#### 45. Detención temprana y daño
+
+Una campaña o experimento puede detenerse por guardas de `AURA-DOM-006`.
+
+El cierre deberá conservar:
+
+- fecha y motivo de detención;
+- métrica o guarda que disparó la decisión;
+- evidencia disponible en ese momento;
+- responsable;
+- impacto sobre interpretación;
+- datos pendientes;
+- si el análisis final puede o no sostener la hipótesis.
+
+Detener por daño no convierte automáticamente el resultado en aprendizaje causal completo.
+
+---
+
+#### 46. No optimizar contra guardas
+
+Una métrica primaria favorable no convierte una campaña en exitosa si viola una guarda material.
+
+Ejemplos:
+
+- más ventas con margen inaceptable;
+- más redenciones con costo económico no permitido;
+- más leads sin consentimiento válido;
+- más demanda con capacidad sobrecomprometida;
+- más interacción con deterioro reputacional severo;
+- mayor conversión con errores de precio o duplicación.
+
+El cierre deberá registrar el conflicto y no ocultarlo detrás de un promedio favorable.
+
+---
+
+#### 47. Presupuesto y gasto
+
+AURA conserva presupuesto de campaña como contexto gobernado, pero la verdad económica pertenece a NUMERA.
+
+Para comparar plan y ejecución deberán mantenerse separados:
+
+- presupuesto aprobado;
+- compromiso o gasto observado;
+- costo económico reconocido;
+- variaciones;
+- moneda;
+- periodo;
+- fuente;
+- fecha de corte.
+
+Un gasto de plataforma sin conciliación económica no se presenta como costo final.
+
+---
+
+#### 48. Ingreso, margen y resultado asociado
+
+Cuando se presente resultado económico de campaña se deberá distinguir:
+
+- ingreso correlacionado;
+- ingreso incremental estimado cuando exista evidencia causal suficiente;
+- margen asociado suministrado o derivado desde la fuente económica autorizada;
+- rentabilidad o resultado gerencial según la definición NUMERA aplicable.
+
+AURA no recalcula silenciosamente costos ni distribuciones compartidas.
+
+---
+
+#### 49. Oportunidades y B2B
+
+Los hechos provenientes de `AURA-DOM-007` podrán alimentar métricas como:
+
+- interacciones comerciales recibidas;
+- oportunidades calificadas;
+- tiempo a calificación;
+- handoffs solicitados;
+- handoffs aceptados, devueltos o rechazados;
+- oportunidades cerradas;
+- motivos de pérdida;
+- casos comerciales correlacionados;
+- ventas B2B posteriores cuando exista referencia propietaria.
+
+Pero:
+
+```text
+OPORTUNIDAD GANADA
+!=
+VENTA INCREMENTAL DE MARKETING
+```
+
+La causalidad deberá evaluarse con el contrato de esta tarea.
+
+---
+
+#### 50. Publicaciones y contenido
+
+`AURA-DOM-005` conserva métricas técnicas por publicación y canal.
+
+Esta tarea puede usarlas para explicar:
+
+- entrega;
+- exposición;
+- interacción;
+- diferencias entre variantes;
+- secuencia previa a una conversión.
+
+No las transforma por sí solas en resultado empresarial.
+
+`CONTENT_CYCLE_REVIEWED` demuestra que el ciclo de contenido fue evaluado con método y limitaciones; no demuestra impacto financiero ni causalidad de campaña.
+
+---
+
+#### 51. Beneficios y redenciones PASS
+
+Cuando una campaña referencie un beneficio PASS:
+
+- PASS conserva elegibilidad;
+- PASS conserva ledger;
+- PASS conserva redención;
+- AURA conserva campaña y correlación;
+- PULSO conserva venta cuando exista;
+- NUMERA conserva efecto económico.
+
+Una redención puede ser conversión definida, pero no implica automáticamente venta incremental ni rentabilidad positiva.
+
+---
+
+#### 52. Resultados de PULSO
+
+PULSO podrá aportar hechos autorizados de:
+
+- venta;
+- líneas;
+- descuento o efecto aplicado;
+- promoción o cupón correlacionado;
+- canal;
+- sede;
+- timestamps;
+- reversas o anulaciones;
+- referencias de campaña cuando existan.
+
+AURA no modifica la venta para mejorar la atribución.
+
+Una venta sin campaña correlacionable permanece venta válida y no se fuerza dentro de una campaña.
+
+---
+
+#### 53. Resultado económico NUMERA
+
+NUMERA conserva la verdad de:
+
+- ingreso realizado;
+- costo trazable;
+- margen;
+- resultado gerencial;
+- rentabilidad;
+- presupuesto y variación cuando corresponda.
+
+AURA podrá mostrar una proyección autorizada para análisis de campaña únicamente con fórmula, versión, periodo, dimensiones, fuente y estado de completitud suficientes.
+
+Si el resultado NUMERA está incompleto, AURA deberá conservar esa limitación.
+
+---
+
+#### 54. Métricas no aditivas
+
+No toda métrica puede sumarse.
+
+Ejemplos que requieren cautela:
+
+- alcance entre plataformas;
+- usuarios únicos sin identidad común autorizada;
+- atribución de múltiples métodos;
+- conversiones con poblaciones superpuestas;
+- tasas;
+- promedios;
+- resultados con ventanas diferentes.
+
+El reporte deberá indicar cuándo una agregación no es válida.
+
+---
+
+#### 55. Tasas y denominadores
+
+Toda tasa deberá mostrar su denominador y la unidad poblacional.
+
+Ejemplos:
+
+```text
+TASA DE CONVERSION
+=
+CONVERSIONES ELEGIBLES
+/
+UNIDADES ELEGIBLES EXPUESTAS O DEFINIDAS POR EL METODO
+```
+
+La fórmula exacta dependerá de la definición de la métrica.
+
+Queda prohibido cambiar el denominador entre campañas sin hacerlo visible.
+
+Si el denominador es cero, ausente o no comparable, la tasa permanece no calculable.
+
+---
+
+#### 56. Periodos comparables
+
+Para comparar campañas, variantes o periodos deberán coincidir o reconciliarse:
+
+- definición de métrica;
+- población;
+- dimensiones;
+- moneda;
+- fuente;
+- ventana;
+- política de eventos tardíos;
+- disponibilidad de producto;
+- capacidad;
+- restricciones relevantes;
+- versión de atribución.
+
+Una comparación con bases diferentes puede mostrarse como contexto, pero no como diferencia directamente atribuible sin ajuste y explicación.
+
+---
+
+#### 57. Incertidumbre
+
+Toda estimación que no sea un conteo determinístico deberá declarar la incertidumbre material que corresponda al método.
+
+La futura materialización podrá usar intervalos, errores, sensibilidad u otras técnicas apropiadas, pero esta tarea fija la obligación de no reducir una estimación incierta a un único número sin contexto cuando ello cambie la decisión.
+
+La ausencia de un método de incertidumbre requerido reduce la fuerza de la conclusión.
+
+---
+
+#### 58. Aprendizaje
+
+El aprendizaje es una conclusión gobernada derivada de objetivo, hipótesis, evidencia y limitaciones.
+
+Deberá conservar:
+
+- pregunta o hipótesis evaluada;
+- resultado observado;
+- método;
+- nivel de confianza;
+- fuentes;
+- periodo;
+- limitaciones;
+- guardas activadas;
+- decisión resultante;
+- alcance de reutilización;
+- responsable;
+- fecha;
+- versión.
+
+Un dato aislado no se convierte en aprendizaje reutilizable.
+
+---
+
+#### 59. Estados de aprendizaje
+
+Se preserva la clasificación empresarial ya definida en `CAP-SCOPE-014`:
+
+- **confirmado**, cuando la evidencia soporta suficientemente la conclusión dentro del alcance declarado;
+- **probable**, cuando existe evidencia útil pero quedan limitaciones materiales;
+- **no concluyente**, cuando la evidencia no permite sostener ni rechazar suficientemente la hipótesis.
+
+Esta clasificación no sustituye el nivel de confianza de atribución; ambos deben poder coexistir.
+
+Por ejemplo, una campaña puede tener atribución soportada de ventas correlacionadas y aun así un aprendizaje no concluyente sobre incrementalidad.
+
+---
+
+#### 60. Aprendizaje negativo
+
+Una campaña sin mejora puede producir aprendizaje válido.
+
+El cierre deberá poder registrar:
+
+- hipótesis no soportada;
+- variante inferior;
+- ausencia de diferencia detectable;
+- guarda activada;
+- segmento incompatible;
+- canal no apto;
+- dato insuficiente;
+- diseño contaminado;
+- resultado económico adverso.
+
+No se exige fabricar una recomendación positiva para considerar útil el cierre.
+
+---
+
+#### 61. No generalización automática
+
+Un aprendizaje pertenece al alcance de evidencia que lo sustenta.
+
+No se generaliza automáticamente entre:
+
+- marcas;
+- sedes;
+- productos;
+- canales;
+- segmentos;
+- fechas;
+- promociones;
+- países;
+- condiciones económicas;
+- periodos con capacidad diferente.
+
+La reutilización futura deberá declarar por qué la evidencia sigue siendo aplicable.
+
+`AURA-DOM-010` decidirá cómo convertir señales y aprendizajes en recomendaciones explicables.
+
+---
+
+#### 62. Contrato de cierre analítico de campaña
+
+Cerrar analíticamente una campaña exige conservar, como mínimo:
+
+- campaña y versión;
+- objetivo;
+- hipótesis cuando exista;
+- periodo ejecutado;
+- presupuesto aplicable;
+- publicaciones y acciones relevantes;
+- experimento y variantes cuando existan;
+- métrica primaria;
+- métricas secundarias;
+- guardas;
+- hechos de conversión;
+- resultados comerciales correlacionados;
+- resultados económicos disponibles;
+- método de atribución;
+- nivel de confianza;
+- incrementalidad cuando sea evaluable;
+- calidad, frescura y completitud de fuentes;
+- eventos tardíos pendientes o corte definitivo;
+- desviaciones e incidentes;
+- resultado contra objetivo;
+- aprendizaje;
+- limitaciones;
+- responsable del cierre;
+- evidencia.
+
+Cerrar no borra la campaña ni congela para siempre los hechos fuente.
+
+---
+
+#### 63. Resultado de cierre
+
+El cierre deberá permitir concluir explícitamente una de estas situaciones conceptuales:
+
+- resultado soportado con evidencia suficiente para la decisión declarada;
+- resultado útil pero limitado por incertidumbre o cobertura;
+- resultado no concluyente;
+- campaña detenida por guarda o daño;
+- campaña cerrada sin datos suficientes para atribución o incrementalidad.
+
+Estas salidas son conclusiones analíticas, no nuevos estados de `VPROC-0056` ni namespaces físicos.
+
+No se utilizará `éxito` o `fracaso` sin indicar el criterio que lo sustenta.
+
+---
+
+#### 64. Cierre y `VPROC-0056`
+
+La máquina de `VPROC-0056` permanece intacta:
+
+```text
+CONTENT_REQUESTED
+-> BRIEF_UNDER_REVIEW
+-> IN_CREATION
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> APPROVED
+-> SCHEDULED
+-> PUBLISHED
+-> PERFORMANCE_REVIEW
+-> CONTENT_CYCLE_REVIEWED
+```
+
+`PERFORMANCE_REVIEW` es el punto de análisis del contenido o promoción.
+
+`CONTENT_CYCLE_REVIEWED` exige revisión de rendimiento con método y limitaciones declarados.
+
+El cierre analítico de campaña puede consumir uno o varios ciclos de contenido y no los fusiona en un solo registro.
+
+---
+
+#### 65. Cierre preliminar y datos tardíos
+
+Cuando todavía existan datos materialmente tardíos, el análisis puede conservar una lectura preliminar.
+
+La lectura preliminar deberá indicar:
+
+- qué falta;
+- fuente;
+- fecha esperada o condición de corte;
+- impacto potencial;
+- decisiones que no deben tomarse todavía.
+
+Una lectura preliminar no se presenta como cierre final estable.
+
+---
+
+#### 66. Corrección posterior al cierre
+
+Si aparece evidencia válida después del cierre:
+
+1. se conserva el cierre anterior;
+2. se registra la nueva evidencia;
+3. se determina si afecta la conclusión;
+4. se genera una nueva versión del análisis cuando corresponda;
+5. se explica qué cambió;
+6. no se elimina la conclusión histórica que soportó una decisión anterior.
+
+Una corrección analítica no reescribe ventas, redenciones ni resultados NUMERA.
+
+---
+
+#### 67. Reconciliación de métricas externas
+
+Una métrica externa deberá poder reconciliarse con:
+
+- cuenta y endpoint;
+- publicación o campaña;
+- periodo;
+- versión de definición del proveedor cuando sea conocida;
+- timestamp de extracción;
+- resultado recibido;
+- reintentos;
+- duplicados;
+- correcciones del proveedor.
+
+Si el proveedor modifica retroactivamente una cifra, AURA conserva el cambio y no lo trata como si siempre hubiera sido el valor original.
+
+---
+
+#### 68. Atribución multicanal
+
+La atribución multicanal deberá reconocer que:
+
+- un mismo resultado puede tener varios touchpoints;
+- los proveedores pueden usar definiciones distintas;
+- alcance único entre canales puede no ser demostrable;
+- identidades pueden no ser resolubles entre plataformas;
+- ventanas pueden diferir;
+- métricas nativas no son necesariamente aditivas.
+
+Por tanto, AURA deberá mostrar método, cobertura y confianza antes de presentar un total atribuido multicanal.
+
+---
+
+#### 69. Métricas del proveedor frente a métricas de negocio
+
+Se conserva:
+
+```text
+METRICA NATIVA DEL PROVEEDOR
+-> HECHO TECNICO O SENAL
+
+METRICA DE NEGOCIO
+-> DEFINICION VENTO + FUENTE PROPIETARIA + METODO
+```
+
+Un proveedor puede llamar `conversion` a una acción que Vento no considera conversión empresarial.
+
+AURA deberá mapear o mantener separadas ambas definiciones.
+
+---
+
+#### 70. Reporte de campaña
+
+El reporte de cierre deberá priorizar:
+
+1. objetivo;
+2. resultado empresarial;
+3. confianza;
+4. guardas;
+5. aprendizaje;
+6. limitaciones;
+7. evidencia de soporte.
+
+Las métricas de canal se presentan como diagnóstico, no como encabezado de éxito cuando no representan el objetivo empresarial.
+
+La experiencia detallada pertenece a `AURA-UX-008`.
+
+---
+
+#### 71. Explicabilidad
+
+Toda cifra material mostrada para decisión deberá poder responder:
+
+- qué significa;
+- de dónde viene;
+- cuándo se actualizó;
+- qué periodo cubre;
+- qué fórmula usa;
+- qué filtros tiene;
+- qué no incluye;
+- qué nivel de confianza tiene;
+- si es correlación, atribución o incrementalidad;
+- qué fuente puede auditarse.
+
+Una visualización no sustituye estas respuestas.
+
+---
+
+#### 72. Auditoría mínima
+
+Cada cierre analítico deberá poder reconstruir:
+
+- actor que revisó;
+- actor que aprobó el cierre cuando aplique;
+- versión de campaña;
+- objetivo e hipótesis;
+- versión de métricas;
+- fuentes;
+- snapshots o referencias de datos;
+- método de atribución;
+- confianza;
+- resultados;
+- guardas;
+- limitaciones;
+- aprendizaje;
+- timestamp;
+- cambios posteriores.
+
+Una IA que redacte un resumen no se convierte en autora de los hechos.
+
+---
+
+#### 73. Automatización permitida y límite
+
+Una futura automatización podrá:
+
+- recolectar métricas autorizadas;
+- validar frescura;
+- detectar faltantes;
+- calcular fórmulas versionadas;
+- reconciliar identificadores;
+- preparar comparaciones;
+- señalar anomalías;
+- proponer una lectura;
+- generar un borrador de aprendizaje con fuentes.
+
+No podrá por sí sola:
+
+- inventar ventas faltantes;
+- elegir retrospectivamente la métrica ganadora;
+- declarar causalidad sin método;
+- cambiar la regla de atribución para mejorar resultado;
+- corregir hechos PULSO/PASS/NUMERA;
+- publicar una conclusión material sin la autoridad aplicable;
+- ejecutar una nueva campaña por el resultado observado.
+
+---
+
+#### 74. Frontera con AURA-DOM-006
+
+`AURA-DOM-006` permanece propietaria de:
+
+- campaña;
+- experimento;
+- hipótesis experimental;
+- variantes;
+- asignación;
+- control;
+- promoción;
+- cupón;
+- guardas;
+- criterio de pausa o detención.
+
+Esta tarea evalúa esos objetos; no los redefine.
+
+Por tanto:
+
+```text
+EXPERIMENTO EJECUTADO
+!=
+INCREMENTALIDAD DEMOSTRADA
+```
+
+---
+
+#### 75. Frontera con AURA-DOM-007
+
+`AURA-DOM-007` permanece propietaria de:
+
+- interacción comercial;
+- lead;
+- oportunidad;
+- etapa;
+- responsable;
+- siguiente acción;
+- handoff;
+- motivo de pérdida;
+- cierre operativo de `VPROC-0057`.
+
+Esta tarea consume sus hechos para medición.
+
+No redefine pipeline ni handoff.
+
+---
+
+#### 76. Frontera con AURA-DOM-009
+
+`AURA-DOM-009` definirá:
+
+- reputación;
+- comentarios públicos;
+- menciones;
+- clasificación;
+- respuesta;
+- escalamiento a servicio.
+
+Esta tarea podrá consumir en el futuro métricas reputacionales ya gobernadas, pero no crea el inbox, no clasifica comentarios y no responde públicamente.
+
+Una señal reputacional puede actuar como guarda o dimensión de análisis sin transferir ownership.
+
+---
+
+#### 77. Frontera con AURA-DOM-010
+
+`AURA-DOM-010` definirá radar de oportunidades y recomendaciones comerciales explicables.
+
+Esta tarea entrega a esa etapa:
+
+- métricas versionadas;
+- resultados;
+- confianza;
+- limitaciones;
+- aprendizajes;
+- frescura;
+- fuentes;
+- guardas activadas.
+
+No convierte automáticamente un aprendizaje en recomendación ni ejecuta una acción comercial.
+
+---
+
+#### 78. Frontera con AURA-UX-008
+
+Esta tarea define semántica y evidencia.
+
+`AURA-UX-008` diseñará la experiencia para mostrar:
+
+- resultados;
+- comparaciones;
+- confianza;
+- atribución;
+- incrementalidad;
+- fuentes;
+- limitaciones;
+- aprendizaje.
+
+La UI no podrá ocultar una conclusión `NO_ATRIBUIBLE` detrás de un gráfico de interacción favorable.
+
+---
+
+#### 79. Frontera con AURA-INT-001
+
+`AURA-INT-001` materializará adaptadores externos para:
+
+- métricas de proveedores;
+- IDs externos;
+- webhooks;
+- reintentos;
+- rate limits;
+- consultas de estado;
+- reconciliación.
+
+Esta tarea no selecciona proveedores, APIs, endpoints ni credenciales.
+
+---
+
+#### 80. Frontera con AURA-INT-002
+
+`AURA-INT-002` materializará contratos internos autorizados para consumir hechos de:
+
+- PULSO;
+- PASS;
+- NUMERA;
+- NEXO;
+- FOGO;
+- VISO;
+- otros dominios aprobados.
+
+Deberá preservar identidad, versiones, correlación, idempotencia, eventos tardíos y reconciliación conforme a este contrato.
+
+Esta tarea define la semántica de medición; no define payloads físicos.
+
+---
+
+#### 81. Frontera con autorización
+
+Las tareas `AURA-AUTH-*` conservarán las decisiones de acceso a:
+
+- datos de clientes;
+- segmentos;
+- ventas;
+- costos y margen;
+- exportaciones;
+- resultados sensibles;
+- acciones masivas;
+- proveedores externos.
+
+El derecho a ver una campaña no concede automáticamente acceso a ventas individuales, identidad de cliente o margen detallado.
+
+---
+
+#### 82. Frontera con NUMERA
+
+AURA puede preguntar:
+
+```text
+QUE RESULTADO ECONOMICO CORRELACIONADO O ATRIBUIBLE PUEDE MOSTRARSE
+```
+
+pero NUMERA conserva:
+
+```text
+COMO SE RECONOCE INGRESO
+COMO SE CALCULA COSTO
+COMO SE CALCULA MARGEN
+COMO SE ASIGNA COSTO COMPARTIDO
+COMO SE PUBLICA RENTABILIDAD
+```
+
+Una campaña no crea una fórmula económica alternativa.
+
+---
+
+#### 83. Frontera con PULSO
+
+PULSO conserva pedido, venta y efecto comercial real.
+
+AURA conserva atribución y lectura de campaña.
+
+Se preserva:
+
+```text
+PULSO DICE QUE VENTA OCURRIO
+AURA DICE COMO SE RELACIONA CON CAMPANA SEGUN METODO
+```
+
+AURA no modifica PULSO para obtener un resultado analítico más favorable.
+
+---
+
+#### 84. Frontera con PASS
+
+PASS conserva identidad, consentimiento, beneficio, recompensa, ledger y redención.
+
+AURA podrá consumir una proyección mínima para:
+
+- correlación;
+- segmentación analítica autorizada;
+- redención como conversión cuando esté definida;
+- medición de recurrencia cuando el contrato lo permita.
+
+Una compra, visita o redención no crea consentimiento de marketing implícito.
+
+---
+
+#### 85. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. actividad, interacción, conversión, venta correlacionada, venta incremental, margen y rentabilidad permanecen separados;
+2. correlación, atribución, causalidad e incrementalidad permanecen separados;
+3. toda métrica material requiere definición, fuente, grano, periodo, versión y evidencia;
+4. cambiar una definición no reescribe silenciosamente historia;
+5. la campaña conserva métrica primaria y métricas secundarias cuando corresponda;
+6. una métrica secundaria no sustituye retrospectivamente la primaria para declarar éxito;
+7. un clic no equivale a conversión;
+8. una venta correlacionada no equivale a venta causada;
+9. una venta causada no se declara incremental sin contrafactual o comparación defendible;
+10. AURA no recrea venta, redención, costo, margen ni rentabilidad;
+11. PULSO conserva pedido y venta;
+12. PASS conserva identidad, consentimiento, beneficio y redención;
+13. NUMERA conserva verdad económica;
+14. métricas de proveedor son señales técnicas hasta que exista una definición Vento de negocio;
+15. cero, ausencia, desconocido, no aplicable y no calculable son valores distintos;
+16. UTM, códigos y cupones son referencias de correlación, no prueba automática de causalidad;
+17. conversiones conservan identidad e idempotencia;
+18. eventos tardíos y backfills conservan versión histórica;
+19. la deduplicación no se basa en similitud débil de datos personales;
+20. toda atribución declara método, ventana, reglas y limitaciones;
+21. métodos diferentes no se mezclan como una sola verdad;
+22. la atribución multicanal conserva cobertura y no suma métricas no aditivas;
+23. la confianza se expresa mediante `CAUSAL_DEMONSTRADA`, `ATRIBUCION_SOPORTADA`, `ASOCIACION_LIMITADA` o `NO_ATRIBUIBLE` según evidencia;
+24. `CAUSAL_DEMONSTRADA` exige evidencia más fuerte que correlación determinística;
+25. incrementalidad compara contra contrafactual o comparación defendible;
+26. una comparación antes/después es asociación por defecto, no causalidad;
+27. contaminación experimental reduce o invalida la inferencia correspondiente;
+28. un control accidental por fallo técnico no se convierte en control experimental válido;
+29. detención por guarda conserva impacto sobre interpretación;
+30. una métrica favorable no compensa silenciosamente una guarda material violada;
+31. presupuesto de AURA no sustituye gasto o costo NUMERA;
+32. ingreso no equivale a margen;
+33. oportunidad ganada no equivale a impacto incremental de marketing;
+34. `CONTENT_CYCLE_REVIEWED` no prueba impacto financiero;
+35. redención PASS no equivale a venta incremental;
+36. una venta PULSO sin campaña correlacionable permanece válida y no se fuerza a una campaña;
+37. una métrica agregada no se desagrega sin soporte;
+38. toda tasa muestra denominador y definición;
+39. periodos no comparables no producen comparaciones causales válidas;
+40. toda estimación material conserva incertidumbre cuando el método lo requiera;
+41. aprendizaje conserva hipótesis, resultado, método, confianza, fuentes y limitaciones;
+42. aprendizaje puede ser confirmado, probable o no concluyente;
+43. un resultado negativo puede producir aprendizaje válido;
+44. un aprendizaje no se generaliza fuera de su alcance sin justificación;
+45. cierre analítico exige objetivo, resultados, atribución, confianza, fuentes, limitaciones y aprendizaje;
+46. un cierre puede ser no concluyente;
+47. datos tardíos permiten revisión versionada, no reescritura silenciosa;
+48. `VPROC-0056` permanece intacto;
+49. `AURA-DOM-006` conserva campaña, experimentos, promociones y guardas;
+50. `AURA-DOM-007` conserva leads, oportunidades y handoff;
+51. `AURA-DOM-009` conserva reputación y respuesta pública;
+52. `AURA-DOM-010` conserva radar y recomendaciones;
+53. `AURA-UX-008` conserva experiencia de resultados;
+54. `AURA-INT-001` y `AURA-INT-002` conservan integración física;
+55. `AURA-AUTH-*` conserva autorización;
+56. se crean y modifican cero requisitos de prueba;
+57. no se crea ninguna instancia física;
+58. la continuidad queda reservada exclusivamente a `AURA-DOM-009`.
+
+---
+
+#### 86. Handoff obligatorio a AURA-DOM-009
+
+La siguiente tarea deberá recibir como entrada, sin absorber la semántica de medición definida aquí:
+
+- campaña y publicaciones correlacionables cuando existan;
+- métricas o señales reputacionales únicamente como contexto analítico;
+- regla de que señal reputacional no equivale a reclamo resuelto;
+- fuentes, frescura y confianza aplicables a cualquier métrica reputacional;
+- referencia de campaña cuando una mención o comentario esté correlacionado;
+- regla de que respuesta pública y cierre de servicio permanecen separados;
+- resultados de campaña suficientes para no presentar interacción favorable como sustituto de riesgo reputacional.
+
+`AURA-DOM-009` definirá reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio. No deberá redefinir las métricas, atribución, confianza, incrementalidad ni cierre analítico fijados aquí.
+
+---
+
+#### 87. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la separación entre interacción, conversión, venta, margen e impacto; la obligación de método y confianza; la correlación e idempotencia; la integración de métricas; las fronteras AURA/PULSO/PASS/NUMERA; y la trazabilidad de campañas y resultados ya están protegidas por requisitos vigentes. Esta tarea desarrolla el contrato documental previsto por esa cobertura sin ampliar el alcance de una fila existente.
+
+---
+
+#### 88. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-003`, para campañas, resultados, cierre, atribución con método y confianza, prohibición de presentar interacción como impacto empresarial y fronteras con PULSO, PASS y NUMERA;
+- `TREQ-AURA-002`, para fuentes autorizadas, frescura, separación entre hecho, inferencia y propuesta y límites de IA;
+- `TREQ-AURA-001`, para identidad, versión, vigencia y trazabilidad de campaña, contenido y publicación;
+- `TREQ-INTEGRATION-019`, para conversiones, métricas, identificadores internos/externos, idempotencia, eventos tardíos, reconciliación y atribución parcial;
+- `TREQ-PULSO-005` y `TREQ-PULSO-006`, para hecho comercial y efecto transaccional propietario;
+- `TREQ-PASS-010` y `TREQ-PASS-011`, para identidad, consentimiento, fidelización y fronteras de cliente;
+- `TREQ-NUMERA-004`, para costo, margen, presupuesto y verdad económica cuando corresponda.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación, modificación ni actualización del registro.
+
+---
+
+#### 89. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | `NOT_EXECUTED` | el artefacto todavía no se ha insertado ni validado en el checkout del usuario |
+| REMOTA | `PASS` | protocolo, contrato de entrega, continuidad, topología, archivo propietario, CAP-SCOPE-014, hallazgos 022/023/024/027, VPROC-0056, INT-MKT, NUMERA y cobertura 04A aplicable fueron inspeccionados antes de redactar |
+| OPERATIVA | `NOT_APPLICABLE` | no se consultaron métricas productivas ni se ejecutaron campañas, experimentos, ventas, redenciones o cierres reales |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; la tarea se agota en su contrato documental |
+
+---
+
+#### 90. Criterios de aceptación
+
+La tarea queda sustantivamente completa cuando se cumple todo lo siguiente:
+
+- actividad, interacción, conversión, venta correlacionada, venta incremental, margen y rentabilidad están separados;
+- toda métrica material tiene definición, fuente, grano, periodo, versión y evidencia;
+- existe distinción explícita entre cero, ausencia, desconocido, no aplicable y no calculable;
+- la conversión se define desde un hecho empresarial propietario y no desde una señal de canal;
+- UTM, códigos y cupones se tratan como referencias de correlación, no causalidad automática;
+- eventos de conversión son deduplicables e idempotentes;
+- eventos tardíos y backfills preservan historia;
+- toda atribución declara método, ventana, población, touchpoints, versión y limitaciones;
+- la atribución multicanal reconoce superposición y métricas no aditivas;
+- se definen niveles de confianza con criterios diferenciados;
+- causalidad exige evidencia más fuerte que correlación;
+- incrementalidad exige contrafactual o comparación defendible;
+- pruebas A/B y controles consumen el diseño fijado por `AURA-DOM-006` sin redefinirlo;
+- controles accidentales por fallos no se tratan como control válido;
+- contaminación y detención temprana quedan visibles;
+- guardas no pueden ocultarse detrás de una métrica favorable;
+- PULSO, PASS y NUMERA conservan ownership de sus hechos;
+- AURA no recrea margen ni rentabilidad;
+- resultados de oportunidad y B2B consumen el handoff de `AURA-DOM-007` sin confundir oportunidad ganada con incrementalidad;
+- el aprendizaje puede ser confirmado, probable o no concluyente;
+- aprendizaje negativo y no concluyente permanecen resultados válidos;
+- el cierre analítico conserva objetivo, método, confianza, fuentes, limitaciones y aprendizaje;
+- correcciones posteriores al cierre crean nueva versión analítica sin reescribir historia;
+- `VPROC-0056` permanece intacto;
+- `AURA-DOM-009`, `AURA-DOM-010`, `AURA-UX-008`, `AURA-INT-001`, `AURA-INT-002` y `AURA-AUTH-*` conservan sus responsabilidades;
+- no se crean ni modifican requisitos de prueba;
+- no se autoriza ninguna implementación física;
+- la siguiente tarea reservada es exactamente `AURA-DOM-009`.
+
+---
+
+#### 91. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear tablas, vistas, RPC, funciones o migraciones;
+- modificar Supabase, RLS, Storage, Realtime o Edge Functions;
+- crear warehouse, mart, lake, dashboard o modelo físico;
+- instrumentar tracking productivo;
+- crear UTMs, códigos o cupones reales;
+- conectar plataformas de analítica;
+- leer cuentas reales de redes, email, mensajería o publicidad;
+- importar métricas reales;
+- ejecutar backfills;
+- crear campañas o experimentos;
+- asignar variantes a clientes reales;
+- aplicar promociones;
+- crear ventas, pedidos o redenciones;
+- modificar hechos PULSO;
+- modificar identidad, consentimiento o ledger PASS;
+- recalcular costos, margen o rentabilidad NUMERA;
+- crear una fuente maestra de cliente, producto, venta o economía en AURA;
+- declarar una campaña real exitosa o fallida;
+- declarar incrementalidad real;
+- seleccionar una técnica estadística o proveedor analítico concreto como implementación obligatoria;
+- definir la experiencia de `AURA-UX-008`;
+- definir el inbox o respuesta reputacional de `AURA-DOM-009`;
+- crear recomendaciones de `AURA-DOM-010`;
+- definir permisos concretos de `AURA-AUTH-*`;
+- definir endpoints, payloads, webhooks o credenciales de `AURA-INT-*`;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-DOM-009`.
+
+---
+
+#### 92. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio`
 
 ### [ ] AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
 
