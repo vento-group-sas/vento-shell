@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1514** |
+| Aprobadas | **1515** |
 | En propuesta | **0** |
-| No iniciadas | **82** |
+| No iniciadas | **81** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **94.86% (1514/1596)** |
+| Porcentaje de completamiento | **94.92% (1515/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **82** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1415** |
+| ⏸ NO_EVALUADA | **81** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1416** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-UX-001` — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades | ✅ APROBADA |
-| Tarea actual | `AURA-UX-002` — Diseñar sistema de marca, brief guiado y calendario visual | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-UX-003` — Diseñar estudio creativo asistido y fábrica de variantes reutilizables | ⬜ NO INICIADA |
+| Última aprobada | `AURA-UX-002` — Diseñar sistema de marca, brief guiado y calendario visual | ✅ APROBADA |
+| Tarea actual | `AURA-UX-003` — Diseñar estudio creativo asistido y fábrica de variantes reutilizables | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-UX-004` — Diseñar aprobación y publicación multicanal con estado y recuperación claros | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1462,7 +1462,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-003` | Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-004` | Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-001` | Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-002` | Diseñar sistema de marca, brief guiado y calendario visual | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-002` | Diseñar sistema de marca, brief guiado y calendario visual | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-003` | Diseñar estudio creativo asistido y fábrica de variantes reutilizables | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-004` | Diseñar aprobación y publicación multicanal con estado y recuperación claros | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-005` | Diseñar campañas, promociones, cupones, experimentos y guardas | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
