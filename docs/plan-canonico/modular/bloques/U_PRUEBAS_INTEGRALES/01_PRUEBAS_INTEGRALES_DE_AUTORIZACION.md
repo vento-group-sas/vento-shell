@@ -8906,7 +8906,675 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-013 — Conductor puede transitar sin área productiva`
-### [ ] AUTH-QA-013 — Conductor puede transitar sin área productiva
+### ✅ AUTH-QA-013 — Conductor puede transitar sin área productiva
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
+**Tarea siguiente:** AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización territorial y funcional para el rol operativo `conductor_logistica`, reutilizable por paquete y certificable globalmente, para demostrar que puede ejercer tránsito y custodia logística sobre recursos asignados sin exigir un área productiva interna, sin convertir la ausencia de área en alcance global y sin adquirir autoridad productiva, de inventario general o basada en PermissionKey legacy
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-013::<package_id>` y la certificación `AUTH-QA-013::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, check-ins, roles, permisos, rutas, vehículos, journeys, shipments, remisiones, custodia, tránsito, entregas, producción, inventario ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que `conductor_logistica` es un rol operativo de nivel sede, ruta, vehículo y recurso asignado, no un rol productivo dependiente de un área interna.
+
+La regla positiva raíz queda:
+
+```text
+ACTOR HUMANO IDENTIFICADO
++ TURNO PUBLICADO Y VIGENTE
++ CHECK-IN ACTIVO CUANDO APLIQUE
++ ROL OPERATIVO = conductor_logistica
++ SEDE OPERATIVA AUTORIZADA
++ active_area_id = AUSENTE
++ ASIGNACIÓN LOGÍSTICA VIGENTE
++ RUTA / VEHÍCULO / JOURNEY COMPATIBLES
++ REMISIÓN / SHIPMENT RELACIONADO
++ CUSTODIA PREVIA VIGENTE
++ PERMISO EXACTO nexo.inventory.remissions.start_transit
++ ESTADO Y VERSIÓN ADMISIBLES
+→ TRANSIT_STARTED AUTORIZABLE
+```
+
+La ausencia de un área productiva interna no es una excepción ni un bypass. Es una forma válida de contexto para un rol logístico cuya autoridad se resuelve por sede, asignación y recurso.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos veinticuatro resultados obligatorios:
+
+1. `conductor_logistica` se resuelve como rol operativo desde el turno vigente y no desde el rol base legacy `conductor`;
+2. el dataset materializado vigente contiene exactamente dieciséis grants para `conductor_logistica`;
+3. los dieciséis grants vigentes pertenecen a NEXO;
+4. `nexo.inventory.remissions.start_transit` es una PermissionKey activa y concedida al conductor;
+5. `nexo.inventory.remissions.accept_custody` es una PermissionKey activa y concedida, pero aceptar custodia no inicia tránsito;
+6. `nexo.inventory.remissions.deliver` es una PermissionKey activa y concedida, pero registrar el handoff físico no confirma recepción;
+7. `nexo.inventory.remissions.view` conserva lectura acotada a remisiones relacionadas con el actor, ruta o vehículo;
+8. las capacidades logísticas de lectura vigentes permanecen limitadas a trabajo asignado y no al tablero global;
+9. `conductor_logistica` puede operar con `active_area_id` ausente cuando el permiso, rol y recurso admiten contexto logístico de nivel sede/ruta;
+10. la ausencia de área no se interpreta como todas las áreas;
+11. la ausencia de área no concede producción, bodega, inventario general, configuración ni autoridad administrativa;
+12. no se fabrica un área productiva para satisfacer artificialmente la autorización del tránsito;
+13. un `area_id` enviado por cliente no crea autoridad ni sustituye sede, asignación, ruta, vehículo, journey o custodia;
+14. una ruta no asignada produce `DENY` aunque turno, check-in y PermissionKey sean válidos;
+15. un recurso no relacionado con la custodia del actor produce `DENY`;
+16. una custodia ausente o incompatible bloquea `start_transit`;
+17. una versión o estado previo incompatible bloquea el inicio;
+18. `nexo.access` no funciona como wildcard logístico;
+19. vehículo, dispositivo, PIN, geolocalización o proximidad física no conceden PermissionKey;
+20. `nexo.inventory.remissions.dispatch`, `nexo.inventory.remissions.transit` y `nexo.transit.view` no pertenecen al conjunto activo y no autorizan runtime;
+21. tránsito no produce efectos nuevos de inventario, preparación o recepción en destino;
+22. servidor, RPC, RLS y demás evaluadores aplicables conservan decisión equivalente para el mismo contexto;
+23. no se crean ni modifican requisitos de prueba;
+24. no se ejecuta ningún cambio físico durante esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad actual:
+
+- catálogo activo congelado de 140 PermissionKey;
+- dataset `vento.authorization.operational-role-grants@1.0.0`;
+- reconciliación vinculante de `AUTH-RBAC-018` posterior a `AUTH-CAT-022` a `AUTH-CAT-025`;
+- contrato de tránsito `NEXO-AUTH-009`;
+- modelo de contexto y alcance vigente;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate `POST_E5_PACKAGE`.
+
+El snapshot histórico de 112 permisos y catorce concesiones de `AUTH-RBAC-018` se conserva como lineage, pero no determina autorización runtime.
+
+---
+
+#### 4. Dataset vigente de conductor
+
+El dataset materializado vigente contiene exactamente dieciséis grants para `conductor_logistica`:
+
+```text
+nexo.access
+nexo.catalog.presentations.view
+nexo.catalog.products.view
+nexo.catalog.units.view
+nexo.inventory.lpns.view
+nexo.inventory.movements.view
+nexo.inventory.remissions.accept_custody
+nexo.inventory.remissions.deliver
+nexo.inventory.remissions.start_transit
+nexo.inventory.remissions.view
+nexo.logistics.driver_operations.view
+nexo.logistics.fulfillment.view
+nexo.logistics.fulfillment_routes.view
+nexo.logistics.operations.view
+nexo.logistics.operations_board.view
+nexo.logistics.supply_routes.view
+```
+
+La certificación usa esta lista vigente. No restaura las claves legacy retiradas.
+
+---
+
+#### 5. Frontera de área
+
+La autoridad del conductor se resuelve mediante un contexto logístico de nivel sede y recurso.
+
+La prueba debe demostrar:
+
+```text
+active_area_id = null
+!=
+contexto inválido por definición
+```
+
+para una acción logística compatible con `conductor_logistica`.
+
+También debe demostrar simultáneamente:
+
+```text
+active_area_id = null
+!=
+todas las áreas
+```
+
+La ausencia de área significa que esa dimensión interna no es requerida para el rol y recurso de la prueba. No significa wildcard territorial.
+
+---
+
+#### 6. Área productiva no se fabrica
+
+Un conductor no necesita ser adscrito artificialmente a Cocina, Panadería, Repostería, Bodega u otra área productiva para iniciar tránsito.
+
+Queda prohibido resolver el caso positivo mediante:
+
+```text
+conductor_logistica
++ active_area_id = AREA_PRODUCTIVA_FICTICIA
+→ ALLOW
+```
+
+La prueba positiva debe conservar `active_area_id` ausente y demostrar que la autoridad proviene de:
+
+- rol operativo;
+- turno y check-in aplicables;
+- sede;
+- asignación;
+- ruta o journey;
+- vehículo cuando aplique;
+- shipment/remisión;
+- custodia;
+- PermissionKey exacta;
+- estado y versión.
+
+---
+
+#### 7. PermissionKey positiva principal
+
+La capacidad positiva principal de esta tarea es:
+
+```text
+nexo.inventory.remissions.start_transit
+```
+
+Su uso exige una remisión o shipment ya admitido por la frontera anterior de despacho/custodia.
+
+El caso positivo no puede sustituirse por:
+
+```text
+nexo.inventory.remissions.dispatch
+nexo.inventory.remissions.transit
+nexo.transit.view
+```
+
+porque esas claves no pertenecen al conjunto activo vigente.
+
+---
+
+#### 8. Handoff de entrada obligatorio
+
+Antes de `start_transit`, el fixture debe disponer de un handoff válido que demuestre, según el contrato materializado del package:
+
+- shipment o remisión identificable;
+- versión esperada;
+- origen y destino;
+- estado previo admisible;
+- custodia aceptada;
+- actor asignado;
+- ruta o journey vigente;
+- vehículo compatible cuando aplique;
+- bultos, LPN o sellos requeridos por el recurso;
+- ausencia de bloqueo incompatible.
+
+La prueba no puede fabricar el handoff dentro del mismo paso para ocultar una frontera faltante.
+
+---
+
+#### 9. Oracle positivo de tránsito
+
+Con fixture válido y `active_area_id` ausente, el oracle esperado es:
+
+```text
+DECISION = ALLOW
+PERMISSION = nexo.inventory.remissions.start_transit
+ROLE = conductor_logistica
+ACTIVE_AREA = ABSENT
+RESOURCE_RELATION = ASSIGNED
+CUSTODY = VALID
+```
+
+El efecto permitido se limita al inicio idempotente y versionado del tránsito conforme al contrato del package.
+
+La evidencia debe demostrar que el `ALLOW` no depende de un área productiva inyectada.
+
+---
+
+#### 10. Control positivo de lectura logística
+
+La certificación debe incluir al menos una capacidad de lectura logística vigente compatible con contexto sin área interna, por ejemplo una ruta asignada mediante:
+
+```text
+nexo.logistics.fulfillment_routes.view
+```
+
+El resultado puede ser `ALLOW` únicamente sobre rutas relacionadas con la jornada y asignación del conductor.
+
+No autoriza modificar secuencia, ventanas, destinos, conductor o vehículo.
+
+---
+
+#### 11. Control negativo de ruta no asignada
+
+Con el mismo actor, turno, check-in, sede y PermissionKey, cambiar exclusivamente el recurso a una ruta o journey no asignado debe producir:
+
+```text
+DENY
+```
+
+La ausencia de área no puede ampliar la relación con recursos.
+
+La prueba debe conservar cero efectos.
+
+---
+
+#### 12. Control negativo de custodia
+
+Con actor y asignación válidos, intentar `start_transit` sin custodia previa válida debe producir:
+
+```text
+DENY
+```
+
+El caso debe distinguir:
+
+```text
+NO_AREA
+```
+
+de:
+
+```text
+NO_CUSTODY
+```
+
+para impedir que una causa logística se reporte falsamente como ausencia de área.
+
+---
+
+#### 13. Control negativo de estado o versión
+
+Una remisión o shipment con:
+
+- estado previo incompatible;
+- versión obsoleta;
+- handoff contradictorio;
+- tránsito ya iniciado con otra versión;
+
+debe producir `DENY` o conflicto fail-closed según el contrato exacto del comando.
+
+Ningún caso puede forzar éxito agregando un área al contexto.
+
+---
+
+#### 14. Control negativo productivo
+
+El mismo conductor, incluso dentro de una sede que contenga áreas productivas, no adquiere por ello autoridad FOGO.
+
+Debe demostrarse al menos que una capacidad productiva exacta, cuando forme parte del package probado, no recibe `ALLOW` desde `conductor_logistica`.
+
+La causa no puede maquillarse como ausencia de área. La frontera es de permiso/rol/recurso.
+
+Esta tarea no redefine las matrices FOGO.
+
+---
+
+#### 15. Área enviada por cliente no autoriza
+
+Un `area_id` enviado por URL, formulario, payload, estado local o dispositivo es una referencia no confiable.
+
+La prueba debe demostrar que:
+
+```text
+CLIENT_AREA = PRODUCTIVE_AREA
+```
+
+no convierte al conductor en productor ni amplía la ruta autorizada.
+
+El servidor debe resolver nuevamente el contexto y el recurso.
+
+---
+
+#### 16. `nexo.access` no es wildcard
+
+`nexo.access` permite entrada a NEXO dentro de su contrato.
+
+No significa:
+
+```text
+nexo.access
+→ start_transit
+→ deliver
+→ receive
+→ prepare
+→ inventario general
+```
+
+Cada acción protegida usa su PermissionKey exacta y sus relaciones de recurso.
+
+---
+
+#### 17. Códigos legacy bloqueados
+
+La certificación debe comprobar que los siguientes códigos no autorizan runtime:
+
+```text
+nexo.inventory.remissions.dispatch
+nexo.inventory.remissions.transit
+nexo.transit.view
+```
+
+No se acepta:
+
+- alias uno-a-muchos;
+- traducción silenciosa;
+- fallback;
+- coincidencia por sufijo;
+- permiso por prefijo;
+- uso como compatibilidad autorizante.
+
+Si una superficie legacy todavía los consume, la prueba física correspondiente debe fallar hasta que el package propietario converja.
+
+---
+
+#### 18. Dispositivo y vehículo
+
+Un `logistics_vehicle_terminal`, vehículo asignado, PIN, etiqueta, sesión técnica o geolocalización puede restringir o describir contexto, pero nunca añadir permisos.
+
+La autoridad efectiva permanece:
+
+```text
+AUTORIDAD DEL ACTOR
+∩
+LÍMITES DEL DISPOSITIVO
+∩
+RELACIÓN CON RECURSO
+```
+
+Nunca la unión.
+
+---
+
+#### 19. Geolocalización no concede tránsito
+
+Una coordenada, geocerca o proximidad al origen/destino es evidencia auxiliar.
+
+No puede por sí sola:
+
+- iniciar tránsito;
+- aceptar custodia;
+- transferir custodia;
+- registrar entrega;
+- ampliar sede;
+- crear un área;
+- confirmar recepción.
+
+---
+
+#### 20. Cero efectos de inventario
+
+`TRANSIT_STARTED` no puede volver a:
+
+- descontar stock;
+- modificar cantidades preparadas;
+- crear una entrada en destino;
+- registrar recepción;
+- rehacer preparación;
+- consumir producción;
+- ajustar diferencias.
+
+La prueba debe comprobar ausencia de esos efectos cuando el package materialice persistencia relacionada.
+
+---
+
+#### 21. Frontera con `AUTH-QA-014`
+
+Esta tarea certifica principalmente que el conductor puede transitar sin área productiva y que esa ausencia no amplía autoridad.
+
+`AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general` conserva la certificación específica y exhaustiva de:
+
+- preparación;
+- recepción;
+- inventario general;
+- límites adicionales del conductor frente a extremos de la remisión.
+
+`AUTH-QA-013` puede verificar que `start_transit` no auto-recibe ni auto-prepara como invariante del comando, pero no absorbe la matriz negativa completa de `AUTH-QA-014`.
+
+---
+
+#### 22. Paridad de evaluadores
+
+Para los mismos:
+
+- principal;
+- actor efectivo;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área ausente;
+- PermissionKey;
+- ruta/journey;
+- vehículo;
+- shipment/remisión;
+- custodia;
+- estado;
+- versión;
+
+todos los evaluadores aplicables deben producir la misma decisión y razones equivalentes.
+
+No se admite que UI permita, servidor deniegue o RLS expanda el recurso por interpretar `area_id = null` de manera diferente.
+
+---
+
+#### 23. Auditoría
+
+La evidencia de cada caso debe permitir reconstruir como mínimo:
+
+- package e identidad de ejecución;
+- principal;
+- actor efectivo;
+- rol base y operativo cuando estén disponibles;
+- turno;
+- check-in;
+- sede;
+- área ausente o valor observado;
+- dispositivo cuando aplique;
+- PermissionKey;
+- ruta/journey;
+- vehículo;
+- shipment/remisión;
+- custodia;
+- estado y versión;
+- decisión;
+- razones;
+- efecto o cero efecto;
+- versión contractual;
+- timestamp.
+
+La auditoría no sustituye la autorización previa.
+
+---
+
+#### 24. Casos mínimos obligatorios por package
+
+| Caso | Área | Condición diferencial | Resultado esperado |
+| --- | --- | --- | --- |
+| `AUTH-QA-013-A` | ausente | `start_transit`, ruta asignada, custodia válida | `ALLOW` |
+| `AUTH-QA-013-B` | ausente | ruta/journey no asignado | `DENY`, cero efecto |
+| `AUTH-QA-013-C` | ausente | custodia ausente/incompatible | `DENY`, cero efecto |
+| `AUTH-QA-013-D` | ausente | estado o versión incompatible | `DENY` o conflicto fail-closed, cero efecto |
+| `AUTH-QA-013-E` | ausente | lectura de ruta asignada | `ALLOW` limitado al recurso |
+| `AUTH-QA-013-F` | ausente | PermissionKey legacy `dispatch`, `transit` o `transit.view` | `DENY`, cero efecto |
+| `AUTH-QA-013-G` | productiva enviada por cliente | intenta ampliar autoridad del conductor | `DENY` para la ampliación, cero efecto |
+| `AUTH-QA-013-H` | ausente | capacidad productiva cuando esté materialmente presente en el package | `DENY`, cero efecto |
+
+Si una capacidad necesaria para un caso condicional no existe materialmente en el package, se registra `NOT_APPLICABLE` con evidencia. No se inventa una superficie para forzar ejecución.
+
+---
+
+#### 25. Clasificación de fallos
+
+Un fallo de `AUTH-QA-013` se clasifica por la frontera rota:
+
+- `AREA_REQUIRED_INCORRECTLY` — tránsito legítimo bloqueado solo por ausencia de área;
+- `NULL_AREA_EXPANDS_SCOPE` — ausencia de área interpretada como global;
+- `RESOURCE_RELATION_BYPASS` — ruta/journey/remisión ajena autorizada;
+- `CUSTODY_BYPASS` — tránsito iniciado sin custodia válida;
+- `STATE_VERSION_BYPASS` — estado o versión incompatible aceptados;
+- `LEGACY_PERMISSION_BYPASS` — clave retirada autoriza runtime;
+- `PRODUCTIVE_SCOPE_ESCALATION` — área o sede productiva convierte al conductor en productor;
+- `DEVICE_OR_VEHICLE_GRANT` — dispositivo o vehículo añade permisos;
+- `INVENTORY_SIDE_EFFECT` — tránsito produce efecto de inventario impropio;
+- `EVALUATOR_DIVERGENCE` — capas aplicables producen decisiones incompatibles;
+- `AUDIT_GAP` — no puede reconstruirse la decisión o el efecto.
+
+La clasificación no crea nuevos reason codes públicos ni modifica contratos de error.
+
+---
+
+#### 26. Modelo de ejecución por paquete
+
+Cada package que materialice superficies afectadas ejecutará:
+
+```text
+AUTH-QA-013::<package_id>
+```
+
+únicamente después de que:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- la instancia se encuentre autorizada conforme al lifecycle físico correspondiente.
+
+Esta tarea documental no selecciona package ni abre una instancia física.
+
+---
+
+#### 27. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-013::GLOBAL-FINAL
+```
+
+consolida evidencia de packages aplicables y demuestra que la semántica de área ausente para el conductor es uniforme entre consumidores.
+
+Debe fallar si existe al menos un consumidor aplicable donde:
+
+- se exija área productiva indebidamente para tránsito válido;
+- `null` amplíe autoridad;
+- una PermissionKey legacy autorice runtime;
+- una ruta ajena resulte visible o mutable;
+- tránsito produzca efectos de inventario reservados a otra etapa.
+
+---
+
+#### 28. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por requisitos existentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 29. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-001` — autorización final por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-004` — paridad entre evaluadores;
+- `TREQ-AUTH-008` — separación de carril administrativo y operacional;
+- `TREQ-AUTH-009` — resolución territorial determinista;
+- `TREQ-AUTH-010` — segregación de funciones, incluyendo conductor que transita sin facultades productivas o de recepción general;
+- `TREQ-AUTH-013` — imposibilidad de bypass por cliente, API o RPC;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisión y acción;
+- `TREQ-NEXO-009` — jerarquía única y reutilizable para capacidades de remisiones;
+- `TREQ-NEXO-016` — separación logística de ruta, viaje, conductor, carga, custodia, entrega y recepción;
+- `TREQ-NEXO-121` a `TREQ-NEXO-132` — contrato de tránsito, revalidación, handoff, journey, idempotencia, custodia, incidentes, retorno, entrega y convergencia física ya registrados por `NEXO-AUTH-009`.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 30. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no fue incorporado todavía al checkout del usuario; la batería global se ejecutará después del reemplazo. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron formateo, quality, delivery, topología, TREQ ni `git diff --check` sobre el owner modificado. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `AUTH-RBAC-018` reconciliada, catálogo activo de 140 PermissionKey, dieciséis grants vigentes de `conductor_logistica`, las claves activas `accept_custody`, `start_transit` y `deliver`, exclusión runtime de `dispatch`, `transit` y `transit.view`, el contrato vigente `NEXO-AUTH-009` y cobertura existente del Registro 04A. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron casos reales de ruta, custodia, tránsito, journey, shipment, vehículo, área, producción, entrega ni autorización. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-013::<package_id>` ni `AUTH-QA-013::GLOBAL-FINAL`; ambas identidades permanecen sujetas a su lifecycle y gate físico. |
+
+---
+
+#### 31. Criterios de aceptación
+
+- [ ] `conductor_logistica` consume exactamente dieciséis grants vigentes del dataset actual.
+- [ ] La prueba no usa como autoridad el snapshot histórico de catorce grants.
+- [ ] `nexo.inventory.remissions.start_transit` es la PermissionKey positiva principal.
+- [ ] `active_area_id` ausente no bloquea por sí solo el tránsito válido del conductor.
+- [ ] `active_area_id` ausente nunca significa todas las áreas.
+- [ ] La prueba positiva no fabrica un área productiva.
+- [ ] La autoridad se limita a sede, asignación, ruta/journey, vehículo, recurso y custodia compatibles.
+- [ ] Una ruta no asignada produce `DENY`.
+- [ ] Custodia ausente produce `DENY`.
+- [ ] Estado o versión incompatibles fallan cerrado.
+- [ ] `nexo.access` no amplía autoridad interna.
+- [ ] `dispatch`, `transit` y `transit.view` no autorizan runtime.
+- [ ] Un área productiva enviada por cliente no convierte al conductor en productor.
+- [ ] Dispositivo, vehículo, PIN y geolocalización no conceden permisos.
+- [ ] Tránsito no reproduce efectos de inventario, preparación o recepción.
+- [ ] `AUTH-QA-014` conserva la certificación específica de preparación, recepción e inventario general.
+- [ ] Los evaluadores aplicables conservan decisión equivalente.
+- [ ] Toda denegación demuestra cero efectos.
+- [ ] La evidencia conserva actor, contexto, recurso, PermissionKey, decisión, versión y resultado.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 32. Límites
+
+Esta tarea no:
+
+- redefine `AUTH-RBAC-018`;
+- cambia los dieciséis grants vigentes del conductor;
+- restaura los códigos legacy retirados;
+- crea PermissionKey;
+- crea grants, denies, aliases o fallbacks;
+- redefine el modelo global de áreas;
+- convierte `active_area_id = null` en regla universal para otros roles;
+- redefine áreas productivas;
+- redefine producción FOGO;
+- redefine preparación o recepción de remisiones;
+- certifica exhaustivamente que el conductor no prepara ni recibe inventario general, reservado a `AUTH-QA-014`;
+- implementa journeys, shipments, rutas, vehículos, custodia o geolocalización;
+- modifica UI o navegación;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos o datasets;
+- ejecuta `NEXO-AUTH-009::<implementation_unit_id>`;
+- ejecuta `AUTH-QA-013::<package_id>`;
+- ejecuta `AUTH-QA-013::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 33. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-012 — Cajero puede operar PULSO pero no configurar`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-013 — Conductor puede transitar sin área productiva`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general`
 ### [ ] AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
 ### [ ] AUTH-QA-015 — Compras puede crear órdenes según alcance
 ### [ ] AUTH-QA-016 — Recepción puede recibir pero no aprobar compras

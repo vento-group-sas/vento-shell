@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1535** |
+| Aprobadas | **1536** |
 | En propuesta | **0** |
-| No iniciadas | **61** |
+| No iniciadas | **60** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **96.18% (1535/1596)** |
+| Porcentaje de completamiento | **96.24% (1536/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **61** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1436** |
+| ⏸ NO_EVALUADA | **60** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1437** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-012` — Cajero puede operar PULSO pero no configurar | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-013` — Conductor puede transitar sin área productiva | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-014` — Conductor no puede preparar ni recibir inventario general | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-013` — Conductor puede transitar sin área productiva | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-014` — Conductor no puede preparar ni recibir inventario general | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-015` — Compras puede crear órdenes según alcance | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1367,7 +1367,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-010` | Bodeguero puede preparar pero no producir | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-011` | Producción puede producir pero no ajustar inventario global | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-012` | Cajero puede operar PULSO pero no configurar | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-013` | Conductor puede transitar sin área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-013` | Conductor puede transitar sin área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-014` | Conductor no puede preparar ni recibir inventario general | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-015` | Compras puede crear órdenes según alcance | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-016` | Recepción puede recibir pero no aprobar compras | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
