@@ -12153,7 +12153,807 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado`
-### [ ] AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
+### ✅ AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
+**Tarea siguiente:** AUTH-QA-018 — PIN identifica al trabajador real
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización para dispositivos compartidos, reutilizable por paquete y certificable globalmente, para demostrar que el principal técnico, el administrador que configuró o abrió el terminal, una sesión administrativa previa, el trabajador anterior, `navigation_role`, las aplicaciones visibles y cualquier estado residual no transfieren autoridad al actor humano actual, y que incluso un administrador humano vigente con autoridad base legítima solo puede actuar dentro de la intersección entre su propia autoridad y el techo efectivo del dispositivo
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-017::<package_id>` y la certificación `AUTH-QA-017::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; ninguna identidad de dispositivo observada, configurada o futura se declara certificada por esta definición documental
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra packages, aplicaciones, dispositivos, sesiones, actores, permisos, Supabase, datos, RLS, RPC, Server Actions, terminales, PIN, reautenticación, auditoría ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un dispositivo compartido actúa únicamente como restricción adicional de la autoridad humana y nunca como origen, suma, persistencia o transferencia de privilegios administrativos.
+
+La regla raíz queda:
+
+```text
+ACTOR HUMANO ACTUAL RESUELTO
++ AUTORIDAD PROPIA DEL ACTOR
++ TECHO EFECTIVO DEL DISPOSITIVO
++ APLICACIÓN EFECTIVA
++ MODO DE SESIÓN COMPATIBLE
++ TERRITORIO COMPATIBLE
++ RECURSO Y ESTADO COMPATIBLES
++ PRERREQUISITOS Y CONTROLES REQUERIDOS
++ CERO DENEGACIONES APLICABLES
+→ CAPACIDAD CANDIDATA AUTORIZABLE
+```
+
+Y simultáneamente:
+
+```text
+PRINCIPAL TÉCNICO
+O ADMINISTRADOR CONFIGURADOR
+O SESIÓN ADMINISTRATIVA PREVIA
+O TRABAJADOR ANTERIOR
+O navigation_role
+O APP VISIBLE
+O PLANTILLA / PAQUETE
+O ESTADO RESIDUAL
+→ NO APORTA AUTORIDAD EMPRESARIAL AL ACTOR ACTUAL
+```
+
+La prueba debe demostrar tanto la ausencia de herencia como el carácter restrictivo del dispositivo sobre la autoridad legítima del actor actual.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta resultados obligatorios:
+
+1. el dispositivo compartido es un principal técnico y no un actor empresarial;
+2. toda acción empresarial desde dispositivo compartido exige un actor humano resoluble cuando el contrato lo requiera;
+3. la autoridad del actor humano se resuelve independientemente del dispositivo;
+4. el dispositivo solo puede restringir una capacidad que el actor ya posee;
+5. una clave incluida en el techo del dispositivo no crea `ALLOW` si el actor no posee la autoridad correspondiente;
+6. una clave fuera del techo produce `DENY` aunque el actor humano posea legítimamente la capacidad;
+7. el administrador que creó, enroló, abrió, configuró, reparó o soportó el dispositivo no presta privilegios al actor siguiente;
+8. una sesión administrativa personal previa no complementa la autoridad del actor actual;
+9. el trabajador anterior no presta rol, permiso, cobertura, alcance, reautenticación, firma ni decisión cacheada al trabajador siguiente;
+10. `navigation_role` permanece fuera de autorización;
+11. una aplicación visible o permitida no concede `<app>.access` ni capacidades internas;
+12. una plantilla o paquete del dispositivo es techo restrictivo y no grant;
+13. sede y área físicas del dispositivo restringen territorio y nunca crean cobertura administrativa humana;
+14. cookies, almacenamiento local, parámetros, cabeceras, cachés, snapshots o estado de interfaz no restauran autoridad administrativa;
+15. una credencial técnica privilegiada, `service_role` o cliente administrativo no crea autoridad empresarial;
+16. el actor administrativo actual puede ejercer únicamente su propia capacidad base válida dentro del techo del dispositivo;
+17. `management_terminal` no concede administración por ser terminal administrativa;
+18. `procurement_reception` conserva modos administrativo y operativo excluyentes y no fusiona carriles;
+19. una capacidad `BASE_ONLY` no se vuelve operativa por ejecutarse en un dispositivo compartido;
+20. una capacidad operativa no adquiere carril base porque el actor tenga rol administrativo;
+21. una capacidad `STANDARD_ACTOR_SESSION` conserva actor y contexto válidos;
+22. una capacidad `STRONG_REAUTH_REQUIRED` exige reautenticación fuerte personal y soporte real del dispositivo;
+23. un PIN o firma ligera no satisface reautenticación fuerte ni crea autoridad administrativa;
+24. una capacidad `NOT_ALLOWED` permanece excluida aunque el actor la posea fuera de ese dispositivo;
+25. una denegación aplicable prevalece sobre cualquier allow candidato;
+26. cambios de actor, sesión, permiso, cobertura, aplicación, dispositivo, territorio, recurso o techo invalidan decisiones incompatibles o stale;
+27. toda denegación conserva cero efectos empresariales y sí conserva evidencia de auditoría cuando corresponda;
+28. la certificación por package solo evalúa superficies e identidades materialmente presentes;
+29. no se crean ni modifican requisitos de prueba;
+30. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- separación entre principal técnico, dispositivo y actor humano;
+- identificación humana y sesión/firma definidas por el BLOQUE P;
+- intersección restrictiva definida por `AUTH-DEV-008`;
+- prohibición de herencia administrativa definida por `AUTH-DEV-009`;
+- trazabilidad conjunta definida por `AUTH-DEV-010`;
+- matriz restrictiva de plantillas e instancias de `AUTH-RBAC-023`;
+- modelo canónico de roles base, roles operativos, permisos, coberturas y denegaciones;
+- contrato de dispositivo compartido del contexto efectivo;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate `POST_E5_PACKAGE`.
+
+La prueba no utiliza como autoridad listas locales de roles, identidad visual del terminal, `navigation_role`, rutas, nombres de aplicaciones ni privilegios técnicos de infraestructura.
+
+---
+
+#### 4. Semántica exacta de “administrador autenticado”
+
+El título no significa que el dispositivo posea un administrador empresarial propio.
+
+La certificación distingue tres situaciones:
+
+```text
+A. PRINCIPAL TÉCNICO DEL DISPOSITIVO
+→ identidad técnica
+→ no aporta permisos empresariales
+
+B. ADMINISTRADOR QUE CONFIGURÓ / ABRIÓ / SOPORTÓ EL TERMINAL
+→ actor histórico distinto del trabajador actual
+→ no transfiere autoridad
+
+C. ADMINISTRADOR HUMANO ACTUAL
+→ puede poseer autoridad base legítima propia
+→ esa autoridad sigue limitada por techo, aplicación, territorio, recurso y controles del dispositivo
+```
+
+La prueba falla si cualquiera de esas tres identidades se fusiona o si la autoridad de una se usa como sustituto de otra.
+
+---
+
+#### 5. Principal técnico no es actor empresarial
+
+En dispositivo compartido:
+
+```text
+principal_type = SHARED_DEVICE
+```
+
+identifica la credencial o principal técnico que autentica al terminal.
+
+No implica:
+
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- permiso;
+- cobertura administrativa;
+- autoridad de firma humana;
+- actor empresarial final.
+
+Una operación técnicamente ejecutable por el principal no es por ese hecho una operación empresarial autorizada.
+
+---
+
+#### 6. Autoridad del actor y techo del dispositivo
+
+La regla de autorización candidata es una intersección, no una unión:
+
+```text
+AUTORIDAD EFECTIVA DEL ACTOR
+∩
+TECHO EFECTIVO DEL DISPOSITIVO
+∩
+APLICACIÓN EFECTIVA
+∩
+MODO DE SESIÓN
+∩
+TERRITORIO
+∩
+RECURSO
+∩
+PRERREQUISITOS
+∩
+CONTROLES DE SENSIBILIDAD
+∩
+AUSENCIA DE DENEGACIONES
+```
+
+Debe demostrarse:
+
+```text
+ACTOR TIENE CAPACIDAD + DISPOSITIVO NO LA ADMITE
+→ DENY
+
+DISPOSITIVO ADMITE CAPACIDAD + ACTOR NO LA TIENE
+→ DENY
+
+ACTOR TIENE CAPACIDAD + DISPOSITIVO LA ADMITE + RESTO DE CONDICIONES VÁLIDAS
+→ ALLOW POSIBLE
+```
+
+El dispositivo nunca completa una condición humana ausente.
+
+---
+
+#### 7. Administrador configurador no transfiere privilegios
+
+La prueba debe demostrar que el actor que:
+
+- creó la instancia;
+- enroló el dispositivo;
+- instaló o configuró una aplicación;
+- seleccionó sede, área o plantilla;
+- abrió una sesión técnica persistente;
+- ejecutó soporte o reparación;
+- dejó una superficie administrativa abierta;
+- emitió una consulta o decisión anterior;
+
+no se convierte en fuente de autoridad del trabajador humano actual.
+
+La administración técnica del terminal y la autoridad empresarial del actor son dominios separados.
+
+---
+
+#### 8. Sesión administrativa previa no complementa al actor actual
+
+Una sesión personal o administrativa previa no puede aportar al actor actual:
+
+- rol base;
+- permisos;
+- cobertura;
+- alcance;
+- reautenticación;
+- firma;
+- decisiones cacheadas;
+- actor efectivo;
+- recurso autorizado.
+
+Al operar como dispositivo compartido, el principal técnico y el actor humano se resuelven conforme al contrato de dispositivo. El estado de una sesión personal anterior no se suma al nuevo contexto.
+
+---
+
+#### 9. Trabajador anterior no presta autoridad
+
+Cuando cambia el actor humano, el nuevo trabajador no hereda del anterior:
+
+- rol base;
+- rol operativo;
+- permisos;
+- cobertura administrativa;
+- turno;
+- check-in;
+- sede o área operativa;
+- excepciones;
+- reautenticaciones;
+- firmas;
+- decisiones de permiso;
+- autorizaciones de procesos que requieran al actor original.
+
+La limpieza y transición completa de sesión pertenece a su contrato propietario, pero `AUTH-QA-017` certifica que ninguna autoridad anterior sea utilizable como fuente del nuevo actor.
+
+---
+
+#### 10. Administrador humano actual también queda limitado
+
+La prohibición de herencia no bloquea administración legítima desde un dispositivo compartido.
+
+Un administrador humano actual puede ejecutar una capacidad administrativa solo cuando:
+
+```text
+ACTOR HUMANO ACTUAL
++ CAPACIDAD BASE PROPIA
++ COBERTURA ADMINISTRATIVA DEL MISMO ACTOR
++ RECURSO Y ESTADO COMPATIBLES
++ CAPACIDAD DENTRO DEL TECHO DEL DISPOSITIVO
++ APLICACIÓN PERMITIDA
++ TERRITORIO COMPATIBLE
++ REAUTENTICACIÓN FUERTE CUANDO APLIQUE
++ CERO DENEGACIONES
+→ ALLOW POSIBLE
+```
+
+Si el actor posee una capacidad administrativa fuera del techo del terminal, la decisión es `DENY` para ese dispositivo.
+
+Esta es la prueba directa de que el dispositivo limita incluso al administrador autenticado.
+
+---
+
+#### 11. `management_terminal`
+
+La plantilla administrativa `management_terminal` conserva una superficie limitada y no constituye un bypass.
+
+La certificación debe comprobar que:
+
+- solo las aplicaciones admitidas por la política efectiva del terminal pueden participar;
+- la autoridad procede del actor humano actual;
+- el actor necesita el permiso base exacto;
+- la cobertura administrativa procede del actor, no de la ubicación física;
+- la plantilla no concede un rol global;
+- una capacidad fuera del techo se deniega aunque el actor la posea en otro contexto;
+- una capacidad sensible exige sus controles reforzados;
+- el principal técnico del terminal nunca aparece como administrador empresarial final.
+
+---
+
+#### 12. `procurement_reception` mantiene modos excluyentes
+
+La plantilla `procurement_reception` puede exponer un modo administrativo y un modo operativo, pero no puede fusionarlos.
+
+La certificación exige:
+
+```text
+MODO ADMINISTRATIVO
+→ autoridad base propia del actor
+→ sin fabricar turno o rol operativo
+
+MODO OPERATIVO
+→ autoridad operativa propia del actor
+→ turno / check-in / rol / territorio según contrato
+
+PROHIBIDO
+→ mezclar piezas de ambos carriles para fabricar ALLOW
+```
+
+Una decisión administrativa previa no completa un carril operativo incompleto, y una operación válida no crea autoridad administrativa.
+
+---
+
+#### 13. Terminales operativas no adquieren administración
+
+Las terminales operativas o mixtas no reciben autoridad administrativa por:
+
+- tipo o nombre de terminal;
+- ubicación;
+- aplicación instalada;
+- actor que las configuró;
+- `navigation_role`;
+- amplitud del paquete;
+- haber sido utilizadas antes por un administrador.
+
+Esto aplica, entre otras, a superficies satélite, producción, bodega, logística y coordinación operativa.
+
+---
+
+#### 14. Aplicación visible no equivale a permiso
+
+Una aplicación visible o permitida solo habilita la posibilidad de exponer una superficie dentro del dispositivo.
+
+No implica:
+
+```text
+APP VISIBLE
+→ <app>.access
+→ capacidades internas
+→ cobertura administrativa
+```
+
+Cada capacidad mantiene su PermissionKey, modalidad, actor, cobertura, recurso, territorio, sensibilidad y denegaciones.
+
+---
+
+#### 15. `navigation_role` no participa en autorización
+
+`navigation_role` puede orientar presentación o navegación.
+
+No puede determinar:
+
+- actor efectivo;
+- rol base;
+- rol operativo;
+- permiso;
+- cobertura administrativa;
+- sede o área autorizada;
+- capacidad ejecutable;
+- decisión final.
+
+Cambiar únicamente `navigation_role` sin cambiar las fuentes autoritativas no puede transformar un `DENY` en `ALLOW`.
+
+---
+
+#### 16. Territorio del dispositivo solo restringe
+
+Sede, área o conjunto territorial asociado al dispositivo funcionan como restricciones adicionales.
+
+La certificación debe demostrar:
+
+```text
+TERRITORIO DEL ACTOR
+∩
+TERRITORIO DEL DISPOSITIVO
+∩
+TERRITORIO DEL RECURSO
+→ TERRITORIO UTILIZABLE
+```
+
+El sitio físico del dispositivo no crea cobertura administrativa del actor y un área permitida por la instancia no crea el área operativa del trabajador.
+
+---
+
+#### 17. Estado residual del cliente no restaura autoridad
+
+No pueden utilizarse como fuente de autoridad:
+
+- cookies de una sesión anterior;
+- local/session storage;
+- estado React u otro estado de interfaz;
+- parámetros de ruta o query;
+- cabeceras controladas por cliente;
+- snapshots antiguos;
+- filtros seleccionados;
+- último actor;
+- último PIN;
+- última sede o área;
+- decisiones cacheadas para otro actor, aplicación o recurso.
+
+El estado persistente puede orientar experiencia cuando el contrato lo permita, pero nunca restaurar privilegios empresariales.
+
+---
+
+#### 18. Infraestructura privilegiada no crea autoridad empresarial
+
+`service_role`, admin clients, funciones privilegiadas o procesos internos pueden poseer capacidad técnica de ejecución.
+
+Eso no sustituye:
+
+- actor humano efectivo;
+- permiso empresarial;
+- cobertura;
+- recurso;
+- contexto;
+- segregación;
+- auditoría.
+
+La certificación falla si la existencia de privilegio técnico se usa como explicación suficiente de una mutación empresarial.
+
+---
+
+#### 19. PIN, firma ligera y reautenticación fuerte
+
+Un PIN o firma ligera puede identificar al humano real o producir evidencia de atribución conforme a su contrato.
+
+No puede:
+
+- conceder permisos;
+- crear cobertura administrativa;
+- crear turno;
+- crear check-in;
+- ampliar el techo del dispositivo;
+- sustituir una reautenticación fuerte.
+
+Cuando una capacidad sea `STRONG_REAUTH_REQUIRED`, debe existir evidencia fuerte personal válida para el mismo actor y uso compatible.
+
+Una capacidad `NOT_ALLOWED` permanece denegada universalmente desde ese dispositivo.
+
+---
+
+#### 20. Denegaciones prevalecen
+
+Ninguna de estas condiciones puede vencer un deny aplicable:
+
+- actor con rol administrativo amplio;
+- terminal administrativa;
+- aplicación permitida;
+- permiso presente en otra sede;
+- principal técnico privilegiado;
+- PIN válido;
+- reautenticación de otro actor o recurso;
+- decisión cacheada previa.
+
+La precedencia conserva:
+
+```text
+DENY APLICABLE
+→ DENY
+```
+
+sin suma posterior de autoridad.
+
+---
+
+#### 21. Universo canónico de 19 identidades de dispositivo
+
+La certificación conserva el universo heredado de diecinueve identidades y no inventa dispositivos adicionales:
+
+| Identidad | Clase / estado documental | Regla de certificación de `AUTH-QA-017` |
+| --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` / `REGISTERED_UNVERIFIED` | el usuario técnico, navegación, apps y sesiones previas no conceden autoridad; actor y techo se resuelven independientemente |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` / `REGISTERED_UNVERIFIED` | misma sede y política legacy no crean autoridad administrativa; solo actor actual dentro del techo |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` / `OBSERVED_ONLY` | no se infiere administrador, actor, rol ni permiso hasta existir identidad canónica materializada |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` / `OBSERVED_ONLY` | el uso histórico o cuenta compartida no constituye autoridad |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | no hereda privilegios del configurador ni de actores previos |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | apps, plantilla y navegación no crean administración |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | no reutiliza autoridad de caja, gerencia u otro trabajador |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | cuenta compartida o pantalla abierta no equivalen a autoridad |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | proximidad con caja, servicio o administrador no concede privilegios |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | integrar funciones no suma roles o permisos de otros perfiles |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | producción no hereda administración ni autoridad de otras áreas |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | solo autoridad propia del actor y área exacta |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | solo autoridad propia del actor y área exacta |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | ubicación, `navigation_role` y política legacy no crean administración |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | vehículo, ruta y sedes visitadas no transfieren autoridad administrativa |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | modos administrativo y operativo permanecen excluyentes |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | amplitud de superficie no crea rol base ni cobertura administrativa |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | solo permisos base y cobertura del actor actual dentro del techo |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` / `NO_APLICA` | su historia no puede reactivar ni trasladar privilegios |
+
+La clasificación heredada se conserva; esta tarea solo define cómo certificar la frontera de autoridad.
+
+---
+
+#### 22. Configuraciones y observaciones no equivalen a certificación
+
+Las dos identidades `configured_device:*` permanecen registradas pero no verificadas integralmente.
+
+Las dos `physical_observation:*` son observaciones físicas y no identidades canónicas operables por inferencia.
+
+Por tanto:
+
+- la existencia de una fila o configuración no produce `PASS` de runtime;
+- una observación física no se promociona a dispositivo canónico;
+- una plantilla objetivo no ejecuta acciones por sí sola;
+- un caso físico se marca `NOT_APPLICABLE` cuando la superficie necesaria no está materializada en el package evaluado.
+
+---
+
+#### 23. Cambio de actor y decisiones stale
+
+Cuando cambia cualquiera de estos elementos:
+
+- actor humano;
+- sesión de actor;
+- principal técnico;
+- dispositivo;
+- estado del dispositivo;
+- permiso o deny;
+- cobertura administrativa;
+- turno o rol operativo cuando apliquen;
+- aplicación;
+- sede o área;
+- recurso;
+- techo o versión de política;
+- reautenticación;
+
+la decisión previa no puede reutilizarse si el cambio puede alterar su resultado.
+
+Un `ALLOW` histórico nunca funciona como autoridad autónoma.
+
+---
+
+#### 24. Recurso, estado y acción exactos permanecen obligatorios
+
+La autoridad administrativa o operativa se evalúa sobre una acción y recurso concretos.
+
+El dispositivo no permite convertir:
+
+- acceso a aplicación en wildcard;
+- visibilidad en mutación;
+- cobertura de sede en cobertura global;
+- una decisión sobre recurso A en autoridad sobre recurso B;
+- un permiso sobre estado A en transición sobre estado B.
+
+Toda acción protegida debe revalidar las dimensiones que su contrato exige antes del efecto.
+
+---
+
+#### 25. Cero efectos empresariales y auditoría obligatoria
+
+Todo caso negativo debe demostrar cero efectos empresariales sobre el recurso objetivo.
+
+Cuando el contrato de auditoría lo exija, la denegación conserva evidencia correlacionable de:
+
+- package e identidad de ejecución;
+- principal técnico;
+- dispositivo;
+- actor humano o estado `UNRESOLVED`;
+- sesión de actor cuando aplique;
+- rol base y operativo relevantes;
+- turno y check-in cuando correspondan;
+- sede y área;
+- aplicación;
+- PermissionKey;
+- techo o política efectiva;
+- recurso y estado;
+- decisión;
+- razones;
+- cero efecto;
+- versión contractual;
+- timestamp.
+
+Registrar la denegación no constituye un efecto empresarial sobre el recurso protegido.
+
+---
+
+#### 26. Casos mínimos obligatorios por package
+
+| Caso | Condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-017-A` | actor administrativo actual posee capacidad y la capacidad está dentro del techo, cobertura y contexto válidos | `ALLOW` posible solo por autoridad propia del actor |
+| `AUTH-QA-017-B` | mismo actor posee capacidad pero está fuera del techo del dispositivo | `DENY`, cero efecto |
+| `AUTH-QA-017-C` | trabajador operativo usa terminal configurada o abierta por administrador | no hereda autoridad administrativa |
+| `AUTH-QA-017-D` | permanece sesión administrativa previa | la sesión previa no complementa al actor actual |
+| `AUTH-QA-017-E` | trabajador anterior poseía mayor autoridad | actor nuevo no hereda rol, permisos, cobertura ni decisiones |
+| `AUTH-QA-017-F` | `navigation_role` anuncia rol privilegiado | sin cambio de autoridad efectiva |
+| `AUTH-QA-017-G` | aplicación administrativa visible | no concede acceso ni capacidades sin permiso del actor |
+| `AUTH-QA-017-H` | sede/área del dispositivo más amplia que cobertura del actor | la intersección conserva el territorio menor; fuera de él `DENY` |
+| `AUTH-QA-017-I` | principal técnico o backend usa credencial privilegiada | privilegio técnico no crea autoridad empresarial |
+| `AUTH-QA-017-J` | capacidad exige `STRONG_REAUTH_REQUIRED` y solo existe PIN/firma ligera | `DENY`, cero efecto |
+| `AUTH-QA-017-K` | capacidad clasificada `NOT_ALLOWED` | `DENY` aunque el actor la posea en otro contexto |
+| `AUTH-QA-017-L` | cambio de actor después de una decisión candidata | decisión stale no reutilizable; reevaluación obligatoria |
+| `AUTH-QA-017-M` | dispositivo activo sin actor humano requerido | ninguna acción empresarial ejecutable |
+| `AUTH-QA-017-N` | `management_terminal` con actor sin permiso base exacto | `DENY`, sin bypass por tipo de terminal |
+| `AUTH-QA-017-O` | `procurement_reception` mezcla piezas de modo administrativo y operativo | `DENY`, sin autoridad híbrida |
+
+Si la superficie necesaria para un caso no existe materialmente en el package, el caso se registra `NOT_APPLICABLE` con evidencia. No se inventa una superficie ni un grant para forzar ejecución.
+
+---
+
+#### 27. Clasificación de fallos
+
+Un fallo de `AUTH-QA-017` se clasifica por la frontera rota:
+
+- `TECHNICAL_PRINCIPAL_PRIVILEGE_TRANSFER` — el principal técnico aporta autoridad empresarial;
+- `ADMIN_CONFIGURATOR_PRIVILEGE_TRANSFER` — el administrador configurador presta privilegios al actor actual;
+- `PRIOR_ADMIN_SESSION_REUSE` — una sesión administrativa previa complementa al actor actual;
+- `PREVIOUS_ACTOR_AUTHORITY_REUSE` — el nuevo trabajador hereda autoridad del anterior;
+- `DEVICE_CEILING_BYPASS` — el actor ejecuta una capacidad fuera del techo;
+- `DEVICE_GRANT_CREATION` — plantilla, paquete o dispositivo se tratan como grant;
+- `NAVIGATION_ROLE_AUTHORITY` — `navigation_role` participa en autorización;
+- `VISIBLE_APP_AUTHORITY` — una app visible o permitida concede capacidad;
+- `DEVICE_TERRITORY_ESCALATION` — sede o área del dispositivo amplían cobertura humana;
+- `PRIVILEGED_INFRA_AUTHORITY` — `service_role` o admin client sustituyen autoridad empresarial;
+- `LIGHT_PIN_STRONG_BYPASS` — PIN/firma ligera satisfacen indebidamente STRONG;
+- `NOT_ALLOWED_BYPASS` — una capacidad excluida resulta ejecutable;
+- `LANE_MIXING` — se mezclan carriles administrativo y operativo para fabricar allow;
+- `STALE_AUTHORITY_REUSE` — se reutiliza una decisión después de un cambio material;
+- `PARTIAL_EFFECT_ON_DENY` — una denegación produce efecto empresarial parcial;
+- `AUDIT_ATTRIBUTION_GAP` — no puede distinguirse principal, dispositivo, actor o fuente de autoridad.
+
+La clasificación es diagnóstica y no crea nuevos reason codes públicos.
+
+---
+
+#### 28. Modelo de ejecución por paquete
+
+Cada package que materialice superficies afectadas ejecutará:
+
+```text
+AUTH-QA-017::<package_id>
+```
+
+únicamente cuando:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- las superficies necesarias estén materializadas;
+- la instancia se encuentre autorizada conforme al lifecycle físico correspondiente.
+
+Esta tarea documental no selecciona package, no abre una instancia física y no altera el estado de readiness.
+
+---
+
+#### 29. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-017::GLOBAL-FINAL
+```
+
+consolida evidencia de todos los packages aplicables y debe demostrar que la política de dispositivo compartido es restrictiva de forma uniforme entre consumidores.
+
+Debe fallar si existe al menos un consumidor aplicable donde:
+
+- el principal técnico actúe como administrador empresarial;
+- el administrador configurador transfiera autoridad;
+- el actor actual reutilice una sesión administrativa previa;
+- el trabajador nuevo herede autoridad del anterior;
+- una capacidad fuera del techo pueda ejecutarse;
+- una app, plantilla o `navigation_role` concedan autoridad;
+- el territorio del dispositivo amplíe cobertura;
+- STRONG se degrade a PIN ligero;
+- `NOT_ALLOWED` sea ejecutable;
+- carriles administrativo y operativo se mezclen;
+- una decisión stale conserve autoridad;
+- una denegación produzca efecto empresarial.
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por cobertura existente y no introduce una obligación verificable nueva.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-001` — toda capacidad protegida se resuelve por permisos, contexto y alcance canónicos;
+- `TREQ-AUTH-011` — autoridad efectiva como intersección entre límites del dispositivo y permisos del trabajador identificado, sin transferencia de privilegios administrativos;
+- `TREQ-AUTH-014` — cambios de identidad, dispositivo, rol, territorio o contexto invalidan autoridad derivada cuando corresponde;
+- `TREQ-AUTH-015` — evidencia correlacionable de principal, actor, dispositivo, permiso, recurso, decisión y razones;
+- `TREQ-AUTH-019` — dispositivo, endpoint, activo, estación, principal técnico y actor humano permanecen separados;
+- `TREQ-AUTH-021` — vínculo técnico de principal, endpoint y dispositivo es único, explícito, versionado y server-side;
+- `TREQ-AUTH-054` — cambio de aplicación o actor recalcula acceso e invalida estado incompatible;
+- `TREQ-AUTH-056` — terminales de recepción, gerencia operativa y gerencia administrativa conservan sus restricciones propias sin ampliar cobertura;
+- `TREQ-AUTH-062` — toda acción desde dispositivo compartido intersecta actor, techo, aplicación, modo, territorio, recurso, prerrequisitos y denegaciones;
+- `TREQ-AUTH-063` — STANDARD conserva actor/contexto, STRONG exige reautenticación fuerte y NOT_ALLOWED permanece excluido;
+- `TREQ-PASS-029` — mutaciones PULSO-PASS desde dispositivo compartido no transfieren privilegios de la sesión administrativa al trabajador que firma.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 32. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no ha sido incorporado todavía al checkout del usuario; build y suites de consumidores corresponden a la incorporación posterior y a las ejecuciones físicas propietarias. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle documental permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, la topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `AUTH-DEV-007..010`, la matriz restrictiva de `AUTH-RBAC-023`, el universo heredado de 19 identidades, la separación principal/dispositivo/actor, la intersección de autoridad, la no herencia administrativa y la cobertura vigente del Registro 04A que referencia expresamente `AUTH-QA-017`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron cambios de actor, sesiones administrativas, PIN, reautenticación, acciones administrativas, dispositivos reales ni intentos de bypass. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-017::<package_id>` ni `AUTH-QA-017::GLOBAL-FINAL`; las identidades físicas permanecen sujetas a su lifecycle y gate. |
+
+---
+
+#### 33. Criterios de aceptación
+
+- [ ] El principal técnico y el actor humano permanecen separados.
+- [ ] El dispositivo no aporta permisos base ni cobertura administrativa.
+- [ ] La autoridad efectiva es una intersección y nunca una suma.
+- [ ] Una capacidad fuera del techo se deniega aunque el actor la posea.
+- [ ] Una capacidad dentro del techo no se concede si el actor no la posee.
+- [ ] El administrador configurador no transfiere privilegios al actor actual.
+- [ ] Una sesión administrativa previa no complementa al trabajador actual.
+- [ ] El trabajador anterior no presta autoridad al siguiente.
+- [ ] `navigation_role` no participa en autorización.
+- [ ] Las aplicaciones visibles o permitidas no conceden capacidades.
+- [ ] Plantillas y paquetes se comportan únicamente como techos restrictivos.
+- [ ] Sede y área del dispositivo no crean cobertura administrativa.
+- [ ] `service_role` y clientes privilegiados no crean autoridad empresarial.
+- [ ] Un administrador humano actual solo usa su propia autoridad dentro del techo del dispositivo.
+- [ ] `management_terminal` no constituye bypass administrativo.
+- [ ] `procurement_reception` conserva modos administrativo y operativo excluyentes.
+- [ ] `STANDARD_ACTOR_SESSION` conserva actor y contexto válidos.
+- [ ] STRONG exige reautenticación fuerte personal compatible.
+- [ ] PIN y firma ligera no sustituyen STRONG.
+- [ ] `NOT_ALLOWED` permanece excluido.
+- [ ] Denegaciones prevalecen sobre allows candidatos.
+- [ ] Cambios materiales invalidan decisiones incompatibles o stale.
+- [ ] Toda denegación conserva cero efectos empresariales.
+- [ ] La evidencia distingue principal, dispositivo, actor y fuente de autoridad.
+- [ ] Se conserva el universo exacto de 19 identidades sin inventar dispositivos.
+- [ ] Las observaciones físicas no se promocionan a identidades canónicas por inferencia.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 34. Límites
+
+Esta tarea no:
+
+- redefine la identidad técnica del dispositivo;
+- redefine el mecanismo de PIN o firma humana de `AUTH-DEV-007`;
+- redefine la intersección contractual de `AUTH-DEV-008`;
+- reabre la no herencia administrativa de `AUTH-DEV-009`;
+- redefine la auditoría propietaria de `AUTH-DEV-010`;
+- define la revocación o expiración de dispositivos y sesiones;
+- implementa la limpieza completa de cambio de trabajador;
+- crea roles, PermissionKey, grants, denies, paquetes, plantillas, aplicaciones o dispositivos;
+- cambia el universo de 19 identidades heredadas;
+- promueve observaciones físicas a dispositivos canónicos;
+- cambia los techos de `AUTH-RBAC-023`;
+- redefine la clasificación STANDARD, STRONG o NOT_ALLOWED;
+- crea bypass administrativo para `management_terminal`;
+- fusiona los modos de `procurement_reception`;
+- modifica UI, navegación o estado de cliente;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos, datasets o configuración de dispositivos;
+- ejecuta `AUTH-QA-016::<package_id>`;
+- ejecuta `AUTH-QA-017::<package_id>`;
+- ejecuta `AUTH-QA-017::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 35. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-016 — Recepción puede recibir pero no aprobar compras`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-018 — PIN identifica al trabajador real`
 ### [ ] AUTH-QA-018 — PIN identifica al trabajador real
 ### [ ] AUTH-QA-019 — Rol simulado no hereda permisos reales
 ### [ ] AUTH-QA-020 — Acceso directo por URL queda bloqueado
