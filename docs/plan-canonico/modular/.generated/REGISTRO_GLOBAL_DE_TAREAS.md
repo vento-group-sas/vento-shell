@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1509** |
+| Aprobadas | **1510** |
 | En propuesta | **0** |
-| No iniciadas | **87** |
+| No iniciadas | **86** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **94.55% (1509/1596)** |
+| Porcentaje de completamiento | **94.61% (1510/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **87** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1410** |
+| ⏸ NO_EVALUADA | **86** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1411** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-DOM-010` — Definir radar de oportunidades y recomendaciones comerciales explicables | ✅ APROBADA |
-| Tarea actual | `AURA-AUTH-001` — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-AUTH-002` — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública | ⬜ NO INICIADA |
+| Última aprobada | `AURA-AUTH-001` — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función | ✅ APROBADA |
+| Tarea actual | `AURA-AUTH-002` — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-AUTH-003` — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1457,7 +1457,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-008` | Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-009` | Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-010` | Definir radar de oportunidades y recomendaciones comerciales explicables | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUTH-001` | Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-001` | Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUTH-002` | Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUTH-003` | Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUTH-004` | Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
