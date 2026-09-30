@@ -2546,7 +2546,844 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado`
-### [ ] AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado
+### ✅ AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-004 — Trabajador sin turno queda bloqueado
+**Tarea siguiente:** AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
+**Tipo de tarea:** documental; definición canónica de una prueba integral de bloqueo operativo reutilizable por paquete y certificable globalmente, para demostrar que un trabajador con turno laboral publicado y vigente no obtiene autoridad en un carril `T+C` cuando falta una sesión de check-in autoritativa y compatible, sin imponer check-in a carriles `T` ni a capacidades base
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-005::<package_id>` y la certificación `AUTH-QA-005::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, asistencia ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un actor laboral activo que ya posee exactamente un turno laboral publicado y vigente no puede obtener autorización para una capacidad cuyo carril operativo exige `T+C` cuando la resolución autoritativa del check-in concluye que no existe una sesión abierta y compatible con el actor, la sede y el turno vigentes.
+
+La condición raíz es:
+
+```text
+SESIÓN AUTENTICADA VÁLIDA
++
+EMPLEADO ACTIVO
++
+APLICACIÓN ACCESIBLE
++
+CAPACIDAD CON CARRIL OPERATIVO T+C
++
+EXACTAMENTE UN TURNO LABORAL PUBLICADO Y VIGENTE
++
+CHECKIN_RESOLUTION = CONCLUSIVE_ABSENT
+→
+DENY DEL CARRIL OPERATIVO
++
+AUTH_CHECKIN_REQUIRED
++
+403
++
+CERO EFECTOS
+```
+
+La tarea certifica que un turno válido no equivale a presencia laboral confirmada cuando la capacidad exige check-in y que esa presencia no puede reconstruirse desde estado del cliente, cookies, eventos recientes, sede seleccionada, dispositivo, caché ni cualquier booleano sin identidad de sesión.
+
+No crea check-ins, eventos de asistencia, turnos, roles, permisos, sesiones ni excepciones.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definido un único contrato de prueba con ocho resultados obligatorios:
+
+1. **DENY operativo por ausencia limpia de check-in:** un carril `T+C` queda bloqueado cuando el turno existe y está vigente, pero no existe una sesión de check-in autoritativa y compatible;
+2. **razón exacta:** la ausencia limpia utiliza `AUTH_CHECKIN_REQUIRED` y no una razón genérica de asistencia, turno, rol o permiso;
+3. **cero efectos:** la solicitud denegada no produce mutaciones, reservas, movimientos, transiciones, escrituras, eventos empresariales, colas ni efectos offline;
+4. **sesión de autenticación conservada:** el bloqueo no implica cerrar sesión automáticamente;
+5. **sin presencia inventada:** ninguna señal local, evento reciente, sede, dispositivo o caché puede fabricar `active_checkin_session`;
+6. **sin sobrebloqueo:** los carriles `T` y las capacidades base que no exigen check-in continúan evaluándose por sus propios contratos;
+7. **precedencia estable:** ausencia de turno, turno fuera de ventana, conflictos de asistencia, indisponibilidad técnica y rol operativo faltante conservan sus razones propietarias;
+8. **paridad entre evaluadores:** las superficies aplicables producen una decisión equivalente para el mismo actor, permiso, turno, sede, recurso y estado de asistencia.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- el modelo canónico de identidad y actor laboral;
+- la separación entre carril base y carril operativo;
+- la clasificación de prerrequisitos `N`, `T` y `T+C`;
+- la regla de que el turno publicado y vigente se resuelve antes del check-in;
+- el contrato autoritativo de sesión activa basado en asistencia;
+- la precedencia de denegaciones y errores de contexto;
+- `AUTH-ERR-009 — Sin turno publicado`;
+- `AUTH-ERR-010 — Fuera de turno`;
+- `AUTH-ERR-011 — Check-in requerido`;
+- los contratos posteriores de rol operativo, territorio, dispositivo y permiso;
+- la paridad exigida entre interfaz, SDK, servidor, RPC, RLS y demás consumidores materializados;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate físico `POST_E5_PACKAGE`.
+
+La tarea no redefine catálogos, matrices, errores ni contratos de autorización ya aprobados.
+
+---
+
+#### 4. Semántica exacta de “trabajador con turno”
+
+El fixture primario utiliza un actor humano laboral con:
+
+```text
+principal = HUMAN_USER
+actor = EMPLOYEE
+employee_status = ACTIVE
+base_role = trabajador_operativo
+published_shift_count = 1
+active_shift = EXACTLY_ONE
+shift_window = CURRENT
+```
+
+El turno debe ser:
+
+- laboral;
+- publicado mediante la fuente autoritativa vigente;
+- aplicable al actor efectivo;
+- temporalmente vigente en `resolved_at`;
+- territorialmente resoluble para la sede operativa correspondiente;
+- inequívoco, sin solapamientos ni múltiples candidatos.
+
+La tarea no certifica un turno inexistente ni uno fuera de ventana. Esos estados pertenecen a las tareas anteriores de la cadena causal.
+
+---
+
+#### 5. Semántica exacta de “sin check-in”
+
+Para el caso principal, “sin check-in” significa:
+
+```text
+REQUIRES_CHECKIN = true
++
+ACTIVE_SHIFT = exactly_one
++
+ACTIVE_CHECKIN_SESSION = null
++
+CHECKIN_STATE = ABSENT
++
+CHECKIN_RESOLUTION = CONCLUSIVE
+```
+
+También se considera ausencia limpia para una nueva operación `T+C` cuando una sesión anterior compatible quedó correctamente cerrada:
+
+```text
+CHECKIN_STATE = CLOSED
+→
+AUTH_CHECKIN_REQUIRED
+```
+
+No pertenecen a esta ausencia limpia:
+
+| Estado observado | Propietario de la decisión |
+| --- | --- |
+| no existe turno publicado | `AUTH-QA-004` / `AUTH-ERR-009` |
+| existe turno publicado fuera de ventana | `AUTH-ERR-010` |
+| check-in de otro actor, sede o turno | conflicto estructural; no ausencia limpia |
+| múltiples sesiones abiertas | conflicto; no seleccionar una arbitrariamente |
+| sesión residual o check-out contradictorio | contrato de conflicto de asistencia |
+| fuente de asistencia no verificable | contrato de indisponibilidad técnica |
+| carril operativo `T` | continuar sin check-in si los demás controles se cumplen |
+| capacidad sin carril operativo | no evaluar esta razón |
+| falta rol operativo después de satisfacer check-in | `AUTH-ERR-012` |
+
+`active_checkin_session = null` por sí solo no basta: primero debe estar demostrado que el permiso y el carril exigen check-in y que turno, temporalidad y fuentes anteriores fueron resueltos correctamente.
+
+---
+
+#### 6. Unidad de prueba
+
+La unidad lógica mínima es:
+
+```text
+actor
++
+permission_code
++
+authorization_requirement
++
+selected_lane
++
+application
++
+resource
++
+active_shift
++
+operational_site
++
+checkin_requirement
++
+checkin_state
++
+resolved_at
+```
+
+El oracle compara la misma identidad, permiso, turno, sede y recurso cambiando únicamente el estado de check-in cuando corresponda.
+
+No se certifica el caso cambiando simultáneamente rol, permiso, turno, sede o recurso de forma que la causa de la decisión quede indeterminada.
+
+---
+
+#### 7. Fixture mínimo
+
+El fixture lógico mínimo contiene:
+
+| Identidad | Estado |
+| --- | --- |
+| sesión | válida y personal |
+| empleado | activo |
+| rol base | `trabajador_operativo` |
+| aplicación | accesible |
+| sede operativa | derivada del turno vigente y compatible |
+| turno publicado | exactamente uno |
+| ventana temporal | vigente |
+| permiso | exacto y vigente |
+| carril seleccionado | `OPERATIONAL` |
+| prerrequisito | `T+C` |
+| sesión de check-in | ausente de forma concluyente |
+| conflictos de asistencia | ninguno |
+| disponibilidad de fuente | válida |
+| efectos previos | cero |
+
+El fixture debe evitar una denegación anterior que oculte la ausencia de check-in.
+
+---
+
+#### 8. Caso A — turno vigente y check-in ausente
+
+Entrada:
+
+```text
+employee = ACTIVE
+active_shift = EXACTLY_ONE
+shift_window = CURRENT
+permission = válido
+selected_lane = OPERATIONAL
+authorization_requirement = T+C
+checkin_state = ABSENT
+checkin_resolution = CONCLUSIVE
+```
+
+Oracle:
+
+```text
+lane_decision = DENY
+reason_code = AUTH_CHECKIN_REQUIRED
+http_status = 403
+executable = false
+side_effects = 0
+```
+
+La sesión de autenticación se conserva.
+
+---
+
+#### 9. Caso B — sesión anterior correctamente cerrada
+
+Entrada:
+
+```text
+active_shift = EXACTLY_ONE
+shift_window = CURRENT
+authorization_requirement = T+C
+previous_checkin_session = CLOSED
+active_checkin_session = null
+```
+
+Oracle:
+
+```text
+DENY
+AUTH_CHECKIN_REQUIRED
+ZERO_EFFECTS
+```
+
+Una sesión cerrada no se reutiliza como presencia activa. La recuperación consiste en completar un nuevo check-in autorizado y emitir una solicitud nueva.
+
+---
+
+#### 10. Caso C — intención local no confirmada por servidor
+
+Entrada:
+
+```text
+authorization_requirement = T+C
+active_shift = válido
+client_checkin_intent = present
+server_confirmed_active_checkin = false
+```
+
+Oracle:
+
+```text
+DENY
+AUTH_CHECKIN_REQUIRED
+```
+
+Una intención local, cola offline pendiente, estado visual, cookie o evento aún no confirmado no constituye presencia autoritativa.
+
+---
+
+#### 11. Caso D — carril operativo T sin check-in
+
+Entrada:
+
+```text
+active_shift = válido
+authorization_requirement = T
+active_checkin_session = null
+```
+
+Oracle:
+
+```text
+NO AUTH_CHECKIN_REQUIRED
+CONTINUAR EVALUACIÓN
+```
+
+La ausencia de check-in no puede degradar un carril `T` a `T+C`.
+
+---
+
+#### 12. Caso E — carril base independiente
+
+Entrada:
+
+```text
+base_lane = aplicable
+authorization_requirement = N o BASE_ONLY
+active_checkin_session = null
+```
+
+Oracle:
+
+```text
+NO AUTH_CHECKIN_REQUIRED
+EVALUAR CARRIL BASE SEGÚN SU PROPIO CONTRATO
+```
+
+El nombre de la aplicación o del rol no convierte una capacidad base en operación presencial.
+
+---
+
+#### 13. Caso F — turno ausente
+
+Entrada:
+
+```text
+requires_shift = true
+published_shift_count = 0
+active_checkin_session = null
+```
+
+Oracle:
+
+```text
+AUTH_PUBLISHED_SHIFT_REQUIRED
+```
+
+No debe alcanzarse `AUTH_CHECKIN_REQUIRED`, porque la publicación de turno se resuelve antes.
+
+---
+
+#### 14. Caso G — turno fuera de ventana
+
+Entrada:
+
+```text
+published_shift_count = 1
+resolved_at outside [starts_at, ends_at)
+active_checkin_session = null
+```
+
+Oracle:
+
+```text
+AUTH_OUTSIDE_SHIFT_WINDOW
+```
+
+La ausencia de check-in no desplaza la razón temporal anterior.
+
+---
+
+#### 15. Caso H — check-in incompatible
+
+Entrada:
+
+```text
+active_shift = válido
+requires_checkin = true
+checkin_session = presente
+checkin_actor != actor_effective
+```
+
+O:
+
+```text
+checkin_site != operational_site
+```
+
+O:
+
+```text
+checkin_shift != active_shift
+```
+
+Oracle:
+
+```text
+FAIL CLOSED
+NO AUTH_CHECKIN_REQUIRED COMO AUSENCIA LIMPIA
+```
+
+El mismatch concluyente pertenece al contrato de conflicto correspondiente. No se descarta la sesión incompatible para fingir una ausencia simple.
+
+---
+
+#### 16. Caso I — múltiples sesiones activas
+
+Entrada:
+
+```text
+matching_open_checkin_candidates > 1
+```
+
+Oracle:
+
+```text
+FAIL CLOSED
+NO LIMIT 1
+NO AUTH_CHECKIN_REQUIRED COMO AUSENCIA LIMPIA
+```
+
+No se selecciona la primera ni la más reciente para continuar.
+
+---
+
+#### 17. Caso J — fuente de asistencia no verificable
+
+Entrada:
+
+```text
+checkin_source = UNAVAILABLE
+```
+
+Oracle:
+
+```text
+FAIL CLOSED TÉCNICO
+NO AUTH_CHECKIN_REQUIRED COMO AUSENCIA LIMPIA
+```
+
+La indisponibilidad no se presenta como si el trabajador simplemente no hubiera marcado entrada.
+
+---
+
+#### 18. Caso K — check-in válido
+
+Entrada:
+
+```text
+active_shift = EXACTLY_ONE
+shift_window = CURRENT
+authorization_requirement = T+C
+active_checkin_session = ACTIVE
+checkin_actor = actor_effective
+checkin_site = operational_site
+checkin_shift = active_shift
+server_confirmed = true
+session_unique = true
+```
+
+Oracle de esta tarea:
+
+```text
+CHECKIN_GATE = PASS
+NO AUTH_CHECKIN_REQUIRED
+CONTINUAR EVALUACIÓN
+```
+
+Este resultado no concede autorización final. El handoff positivo continúa en `AUTH-QA-006`, que debe comprobar la obtención del rol operativo efectivo y la continuación del árbol de autorización.
+
+---
+
+#### 19. Contrato de compatibilidad de la sesión activa
+
+Una sesión de check-in solo satisface el gate cuando prueba simultáneamente:
+
+```text
+employee_id = actor_effective.employee_id
+AND site_id = operational_site.site_id
+AND shift_id = active_shift.shift_id
+AND check_in_confirmed_by_server = true
+AND session_is_open = true
+AND session_is_unique = true
+AND references_are_consistent = true
+```
+
+No basta con:
+
+- cualquier evento reciente;
+- el último check-in del empleado sin contexto;
+- un booleano `checked_in_now` aislado;
+- una solicitud offline todavía pendiente;
+- el estado visual de una aplicación;
+- una sede seleccionada;
+- una sesión cerrada;
+- un evento producido por otro dispositivo o actor.
+
+---
+
+#### 20. Clasificación por permiso y carril
+
+La prueba conserva la distribución canónica vigente:
+
+| Grupo | Cantidad | Regla de check-in |
+| --- | ---: | --- |
+| permisos sin carril operativo | 68 | no aplica este bloqueo |
+| carriles operativos `T` | 19 | no requieren check-in |
+| carriles operativos `T+C` | 53 | requieren check-in activo |
+| total de permisos canónicos | 140 | decisión explícita por permiso y carril |
+
+La unidad de autorización es el permiso y su carril. Una política global por aplicación no sustituye esta clasificación.
+
+---
+
+#### 21. Modalidades de autorización
+
+| Modalidad | Resultado ante check-in ausente |
+| --- | --- |
+| `BASE_ONLY` | no evalúa esta razón |
+| `OPERATIONAL_ONLY` con `T` | continúa sin check-in |
+| `OPERATIONAL_ONLY` con `T+C` | deniega con `AUTH_CHECKIN_REQUIRED` |
+| `BASE_OR_OPERATIONAL` | evalúa ambos carriles por separado; un carril base completo puede autorizar sin check-in |
+| `BASE_AND_OPERATIONAL` | si el componente operativo exige `T+C`, la ausencia de check-in deniega la decisión final |
+
+No se combinan fragmentos incompletos de distintos carriles para fabricar un `ALLOW`.
+
+---
+
+#### 22. Antipatrones prohibidos
+
+La prueba debe fallar si cualquier consumidor utiliza como autoridad:
+
+```text
+checked_in_now enviado por cliente
+last_checkin_event
+selected_site
+navigation_role
+device_last_actor
+cached_operational_context
+cookie de presencia
+estado visual de asistencia
+última sesión conocida
+```
+
+También queda prohibido:
+
+- escoger una sesión mediante `limit 1` cuando existen múltiples candidatas;
+- aceptar una sesión de otro turno o sede;
+- convertir un error de lectura en ausencia limpia;
+- reanudar automáticamente una operación después de un check-in posterior;
+- usar propietario, gerente general, gerente o cualquier nombre de rol como bypass implícito;
+- exigir check-in a un permiso `T` únicamente por pertenecer a una aplicación que suele usar `T+C`.
+
+---
+
+#### 23. Paridad entre superficies
+
+Para la misma identidad, turno, permiso, carril, sede, recurso y ausencia concluyente de check-in, las superficies materializadas deben producir una decisión equivalente.
+
+| Superficie | Condición mínima |
+| --- | --- |
+| navegación / UI | no ofrecer la operación `T+C` como ejecutable sin presencia confirmada |
+| contrato compartido / SDK | conservar `DENY` y `AUTH_CHECKIN_REQUIRED` |
+| Server Actions / Route Handlers | revalidar asistencia antes del efecto |
+| RPC / PostgREST | denegar llamadas directas con el mismo contexto |
+| RLS / Data API | no permitir un efecto que dependa del carril `T+C` incompleto |
+| Edge Functions | no mantener bypass local de presencia |
+| Realtime / colas / offline | revalidar antes de entregar o aplicar un efecto protegido |
+| clientes nativos o dispositivos compartidos | no prestar la presencia del dispositivo, administrador o actor anterior |
+
+La UI no constituye el control de seguridad final.
+
+---
+
+#### 24. Efectos prohibidos
+
+Un caso bloqueado certificado debe demostrar cero efectos observables en el dominio aplicable, incluyendo cuando corresponda:
+
+- cero inserts o updates empresariales;
+- cero movimientos de inventario;
+- cero transiciones de remisión;
+- cero lotes o consumos;
+- cero ventas, cobros, entregas o confirmaciones;
+- cero órdenes o recepciones;
+- cero cambios de configuración;
+- cero eventos de negocio que afirmen éxito;
+- cero jobs o colas comprometidas;
+- cero efectos offline reintentados automáticamente;
+- cero privilegios persistidos para reutilización posterior.
+
+La evidencia de intento o auditoría de seguridad sí puede registrarse conforme a su contrato; no se considera efecto empresarial autorizado.
+
+---
+
+#### 25. Recuperación, frescura y nueva solicitud
+
+Un check-in realizado después del `DENY` no reanuda automáticamente la operación anterior.
+
+La recuperación correcta es:
+
+```text
+DENY
+→ usuario completa check-in autorizado
+→ sesión queda confirmada por servidor
+→ contexto anterior se invalida o deja de ser reutilizable
+→ nueva solicitud
+→ nueva resolución completa
+```
+
+Toda mutación protegida debe revalidar el contexto inmediatamente antes del primer efecto material. Una decisión positiva antigua no puede sobrevivir a check-out, cambio de turno, sede, actor o estado de sesión.
+
+---
+
+#### 26. Auditoría obligatoria
+
+La evidencia por caso debe permitir reconstruir, sin exponer secretos:
+
+- principal y actor efectivos;
+- aplicación y permiso evaluados;
+- modalidad y carril seleccionados;
+- identidad del turno vigente minimizada;
+- requisito de check-in;
+- estado de resolución de la sesión;
+- decisión del carril;
+- reason code público;
+- contexto territorial relevante minimizado;
+- fingerprint o versión del contexto cuando el consumidor lo soporte;
+- confirmación de cero efectos empresariales.
+
+No se registran tokens, secretos, payloads completos ni información laboral innecesaria para la evidencia.
+
+---
+
+#### 27. Casos mínimos de certificación
+
+Cada ejecución física aplicable debe cubrir como mínimo:
+
+| Caso | Escenario | Oracle |
+| --- | --- | --- |
+| A | `T+C`, turno vigente, sin sesión | `DENY` + `AUTH_CHECKIN_REQUIRED` |
+| B | `T+C`, sesión anterior cerrada | mismo `DENY`; exige nueva presencia |
+| C | `T+C`, intención local no confirmada | mismo `DENY` |
+| D | `T`, turno vigente, sin check-in | no usar `AUTH_CHECKIN_REQUIRED` |
+| E | carril base independiente | no usar `AUTH_CHECKIN_REQUIRED` |
+| F | sin turno publicado | razón de `AUTH-QA-004` |
+| G | turno fuera de ventana | razón temporal propietaria |
+| H | sesión de otro actor/sede/turno | conflicto; no ausencia limpia |
+| I | múltiples sesiones | fail closed; no selección arbitraria |
+| J | fuente de asistencia indisponible | fail closed técnico |
+| K | `T+C` con sesión válida | superar este gate y continuar a `AUTH-QA-006` |
+| L | llamada directa por RPC/API sin check-in | misma denegación efectiva y cero efectos |
+
+No se permite marcar PASS con casos críticos omitidos o convertidos en `skip` por ausencia de fixture.
+
+---
+
+#### 28. Clasificación de fallos
+
+La ejecución de `AUTH-QA-005` falla si ocurre cualquiera de estas condiciones:
+
+1. una capacidad `T+C` resulta ejecutable sin sesión de check-in válida y compatible;
+2. se acepta presencia desde estado del cliente, cookie, evento reciente, caché o dispositivo;
+3. se usa un reason code distinto para una ausencia limpia concluyente;
+4. un carril `T` queda bloqueado únicamente por falta de check-in;
+5. una capacidad base independiente queda bloqueada únicamente por falta de check-in;
+6. ausencia de turno o turno fuera de ventana se reclasifican como falta de check-in;
+7. un mismatch, multiplicidad o sesión residual se degrada a ausencia limpia;
+8. una indisponibilidad técnica se presenta como `AUTH_CHECKIN_REQUIRED`;
+9. una superficie permite el efecto mientras otra lo deniega;
+10. una llamada directa evita el control;
+11. existen efectos empresariales parciales después del `DENY`;
+12. una operación previamente denegada se reanuda automáticamente después de un check-in tardío.
+
+---
+
+#### 29. Modelo de ejecución por paquete
+
+`AUTH-QA-005` usa la topología del BLOQUE U:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Cada paquete que materialice una superficie relevante conserva una identidad física:
+
+```text
+AUTH-QA-005::<package_id>
+```
+
+Esa ejecución solo puede ocurrir cuando el paquete propietario haya satisfecho su gate `POST_E5_PACKAGE`, incluido el `E5-GATE-008::<package_id>` aplicable.
+
+La tarea documental no selecciona paquetes, no autoriza instancias y no ejecuta pruebas físicas.
+
+---
+
+#### 30. Certificación global final
+
+La certificación global:
+
+```text
+AUTH-QA-005::GLOBAL-FINAL
+```
+
+agrega evidencia de los paquetes aplicables y verifica como mínimo:
+
+- ningún consumidor autoriza un carril `T+C` sin check-in compatible;
+- ningún consumidor exige check-in a un carril `T` o base por inferencia local;
+- ausencia, conflicto e indisponibilidad conservan razones distintas;
+- ninguna superficie fabrica presencia desde estado no autoritativo;
+- no hay divergencia entre UI, SDK, servidor, RPC y RLS aplicables;
+- cero casos críticos fallidos;
+- cero casos críticos omitidos por incompatibilidad de fixture;
+- toda excepción futura está respaldada por contrato canónico explícito y no por bypass local.
+
+La certificación global no sustituye las ejecuciones por paquete ni permite ejecutar antes de E5.
+
+---
+
+#### 31. Handoff hacia AUTH-QA-006
+
+`AUTH-QA-006` recibe exactamente este estado:
+
+```text
+employee = ACTIVE
+published_shift = exactamente uno
+shift_window = vigente
+authorization_requirement = T+C
+active_checkin_session = válida
+checkin_actor = actor_effective
+checkin_site = operational_site
+checkin_shift = active_shift
+server_confirmed = true
+session_unique = true
+```
+
+Su responsabilidad será demostrar que, una vez satisfechos turno y check-in, el contexto obtiene el rol operativo efectivo desde la fuente canónica correspondiente y continúa el árbol de autorización sin convertir ese rol en permiso final automático.
+
+`AUTH-QA-006` no reabre la ausencia de check-in definida aquí.
+
+---
+
+#### 32. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La cobertura requerida ya existe en el registro canónico vigente y esta tarea la convierte en un contrato integral certificable sin alterar el registro.
+
+---
+
+#### 33. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`, para impedir autorización final por nombre de rol o atajos locales;
+- `TREQ-AUTH-004`, para exigir decisiones y razones equivalentes entre evaluadores;
+- `TREQ-AUTH-008`, para mantener la separación entre carriles base, `T` y `T+C`;
+- `TREQ-AUTH-009`, para resolver sede y contexto operativo de forma determinista;
+- `TREQ-AUTH-013`, para impedir bypass mediante URL, formulario, API o RPC y exigir revalidación server-side;
+- `TREQ-AUTH-014`, para invalidar contexto y autoridad derivada cuando cambia la sesión o la jornada;
+- `TREQ-AUTH-182`, para preservar precedencia entre turno, temporalidad, check-in, conflicto e indisponibilidad;
+- `TREQ-AUTH-229` a `TREQ-AUTH-236`, para identidad de `AUTH_CHECKIN_REQUIRED`, clasificación por carril, sesión compatible, precedencia, paridad entre canales, cobertura de aplicaciones y experiencia de recuperación;
+- `TREQ-AUTH-330`, para mantener mutuamente excluyentes ausencia limpia, conflicto e indisponibilidad de asistencia;
+- el contrato vigente `AUTH-ERR-011 — Check-in requerido`.
+
+Estas referencias son trazabilidad heredada, no cambios 04A.
+
+---
+
+#### 34. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no ejecuta builds de producto; la batería documental posterior valida el plan |
+| LOCAL | NOT_EXECUTED | no se ha ejecutado todavía el fixture contra un paquete o checkout del usuario |
+| REMOTA | PASS | fuentes canónicas, archivo propietario, topología, contrato de check-in y registro 04A fueron inspeccionados en el repositorio vigente |
+| OPERATIVA | NOT_EXECUTED | las instancias por paquete y la certificación global permanecen pendientes |
+| FÍSICA | NOT_APPLICABLE | esta tarea documental no autoriza materialización física |
+
+---
+
+#### 35. Criterios de aceptación
+
+`AUTH-QA-005` queda documentalmente completa cuando se acepta que:
+
+1. un carril `T+C` con turno publicado y vigente deniega cuando la resolución concluye ausencia de sesión compatible;
+2. la razón exacta es `AUTH_CHECKIN_REQUIRED`;
+3. la denegación conserva autenticación y produce cero efectos empresariales;
+4. una sesión válida debe coincidir exactamente con actor, sede y turno y estar abierta, confirmada y ser única;
+5. carriles `T` y capacidades base no heredan el requisito de check-in por aplicación o rol;
+6. ausencia de turno, ventana temporal, mismatch, multiplicidad, sesión residual e indisponibilidad conservan razones propias;
+7. ninguna señal local, cookie, dispositivo, evento reciente o caché fabrica presencia;
+8. las superficies aplicables producen una decisión equivalente;
+9. las llamadas directas no evitan el control;
+10. realizar check-in después de un `DENY` exige una solicitud nueva;
+11. el handoff hacia `AUTH-QA-006` comienza únicamente con una sesión activa autoritativa y compatible;
+12. el modelo físico continúa siendo por paquete más certificación global final y permanece fuera del alcance de esta tarea documental;
+13. no se crean ni modifican requisitos de prueba;
+14. no se ejecuta ningún cambio físico.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- redefine la ausencia de turno publicada por `AUTH-QA-004`;
+- redefine la ventana temporal del turno;
+- prueba como resultado final la obtención del rol operativo; pertenece a `AUTH-QA-006`;
+- convierte cualquier `active_checkin_session = null` en ausencia limpia sin verificar el carril y la fuente;
+- exige check-in a carriles `T`, `BASE_ONLY` o a un carril base válido por inferencia local;
+- selecciona sesiones ambiguas;
+- convierte indisponibilidad técnica en ausencia;
+- crea check-ins, eventos de asistencia o turnos;
+- modifica permisos, matrices, RLS, RPC, Supabase, aplicaciones o datos;
+- ejecuta instancias físicas `AUTH-QA-005::<package_id>`;
+- ejecuta `AUTH-QA-005::GLOBAL-FINAL`;
+- reemplaza las validaciones específicas de cada paquete;
+- crea una excepción para legacy.
+
+---
+
+#### 37. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-004 — Trabajador sin turno queda bloqueado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo`
 ### [ ] AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
 ### [ ] AUTH-QA-007 — Trabajador solo ve su sede
 ### [ ] AUTH-QA-008 — Trabajador solo ve su área
