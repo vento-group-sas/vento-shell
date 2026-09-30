@@ -6959,4 +6959,1151 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones`
 
-### [ ] AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones
+### ✅ AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
+**Tarea siguiente:** AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa
+**Tipo de tarea:** documental; diseño canónico de la experiencia de resultados, atribución, confianza, incrementalidad, aprendizaje y recomendaciones explicables de AURA, preservando ownership de las fuentes propietarias y sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, dashboards, métricas runtime, modelos, tablas, vistas, migraciones, RLS, funciones, RPC, jobs, integraciones, datos, recomendaciones reales, acciones automáticas ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá presentar resultados de campañas y experimentos, explicar atribución y confianza, distinguir correlación de causalidad, mostrar incrementalidad únicamente cuando exista evidencia suficiente y convertir señales gobernadas en recomendaciones comerciales explicables que permanezcan sujetas a revisión humana y a ejecución por el dominio propietario.
+
+La regla raíz es:
+
+```text
+ACTIVIDAD
+!= INTERACCION
+!= CONVERSION
+!= VENTA CORRELACIONADA
+!= VENTA INCREMENTAL
+!= MARGEN
+!= RENTABILIDAD
+```
+
+Y:
+
+```text
+SEÑAL
+!= DIAGNOSTICO
+!= RECOMENDACION
+!= DECISION
+!= ACCION EJECUTADA
+!= RESULTADO
+```
+
+El tablero debe ayudar a decidir sin presentar conclusiones más fuertes que la evidencia disponible.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-001`, para simplicidad diaria, jerarquía, divulgación progresiva y navegación hacia superficies propietarias;
+- `AURA-UX-005`, para campañas, promociones, experimentos y guardas;
+- `AURA-UX-006`, para oportunidades y handoff comercial;
+- `AURA-UX-007`, para reputación, escalamiento y separación entre tratamiento público y servicio;
+- `AURA-DOM-008`, para métricas, fuentes, grano, tiempo, correlación, atribución, confianza, incrementalidad, aprendizaje y cierre analítico;
+- `AURA-DOM-010`, para radar de oportunidades y recomendaciones comerciales explicables;
+- `AURA-DOM-004`, para grounding, separación entre hecho, inferencia y propuesta, trazabilidad de IA y revisión humana;
+- `AURA-AUTH-001` a `AURA-AUTH-004`, para alcance, segregación, datos sensibles, exportaciones, secretos, proveedores y acciones autorizadas;
+- las fuentes propietarias de PULSO, PASS, NUMERA, NEXO, FOGO, ORIGO y VISO;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y ausencia de instancia física propia.
+
+La experiencia no crea métricas, maestros, permisos ni motores analíticos alternos.
+
+---
+
+#### 3. Naturaleza y topología
+
+La tarea se desarrolla una sola vez como contrato documental reutilizable:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+```
+
+Por tanto:
+
+- no crea runtime;
+- no crea una instancia física identificable;
+- no materializa un dashboard productivo;
+- no ejecuta modelos ni cálculos sobre datos reales;
+- no conecta fuentes;
+- no escribe en dominios propietarios;
+- no autoriza automatización de recomendaciones;
+- no sustituye las tareas de integración posteriores.
+
+---
+
+#### 4. Resultado canónico
+
+AURA deberá disponer conceptualmente de una superficie de resultados capaz de responder:
+
+1. qué objetivo se intentó lograr;
+2. qué ocurrió realmente;
+3. qué datos soportan la lectura;
+4. qué tan frescos y completos están;
+5. qué método de atribución se utilizó;
+6. con qué confianza puede sostenerse la conclusión;
+7. si existe evidencia de incrementalidad o solo asociación;
+8. qué guardas económicas, operativas, reputacionales o de consentimiento se activaron;
+9. qué aprendizaje quedó registrado;
+10. qué recomienda AURA revisar o considerar;
+11. por qué lo recomienda;
+12. qué dominio tendría que ejecutar cualquier acción posterior.
+
+---
+
+#### 5. Frontera de ownership
+
+La experiencia deberá reflejar la propiedad de los hechos sin recrearlos.
+
+| Materia | Fuente o propietaria | Rol de AURA |
+| --- | --- | --- |
+| campaña, experimento, variante y objetivo | AURA | contexto y lectura analítica |
+| publicación y métricas nativas | canal externo / contrato de integración | señal con fuente, corte y limitaciones |
+| identidad, consentimiento y fidelización | PASS | proyección mínima autorizada |
+| pedido, venta y efecto comercial | PULSO | hecho comercial correlacionable |
+| presupuesto, costo, margen y rentabilidad | NUMERA | verdad económica consumida |
+| producto, inventario y disponibilidad | NEXO | contexto y guardas |
+| capacidad productiva | FOGO | contexto y guardas |
+| compras y abastecimiento | ORIGO | contexto cuando corresponda |
+| casos y administración transversal | propietaria aplicable / VISO como superficie | referencia autorizada |
+
+AURA interpreta marketing y recomendación; no corrige las fuentes propietarias sobrescribiéndolas.
+
+---
+
+#### 6. Arquitectura general de la experiencia
+
+La superficie se organiza en cuatro capas:
+
+1. **resumen ejecutivo**, con objetivo, resultado, estado de evidencia y principales guardas;
+2. **desglose analítico**, con métricas, atribución, comparación, confianza e incrementalidad;
+3. **aprendizaje**, con conclusiones válidas, limitaciones y cambios respecto de hipótesis previas;
+4. **copiloto de recomendaciones**, con propuestas explicables, prioridad, guardas, caducidad y handoff al dominio propietario.
+
+La primera capa debe permitir orientación rápida. Las capas posteriores se abren mediante divulgación progresiva.
+
+---
+
+#### 7. Contexto y encabezado
+
+La vista deberá mantener identificables, cuando apliquen:
+
+- empresa o ámbito autorizado;
+- marca;
+- campaña;
+- experimento;
+- variante;
+- periodo;
+- fecha de corte;
+- zona horaria;
+- estado de cierre analítico;
+- filtros activos.
+
+Cambiar filtros no cambia definición, fuente ni autoridad de una métrica.
+
+---
+
+#### 8. Resumen ejecutivo
+
+La cabecera de resultados deberá mostrar de forma breve:
+
+- objetivo empresarial;
+- métrica primaria definida;
+- resultado observado;
+- condición frente al objetivo;
+- confianza de la lectura;
+- estado de frescura y completitud;
+- guardas activadas;
+- conclusión permitida;
+- principal siguiente acción o recomendación cuando exista.
+
+Una campaña puede tener mucha actividad y aun así no demostrar impacto empresarial.
+
+---
+
+#### 9. Ventana analítica
+
+Toda lectura visible deberá estar vinculada a una ventana temporal explícita.
+
+La experiencia deberá distinguir:
+
+- periodo de campaña;
+- fecha de corte;
+- ventana de atribución;
+- ventana experimental;
+- periodo comparable;
+- ventana de observación posterior;
+- eventos tardíos todavía esperados.
+
+El usuario no deberá inferir que un valor es final cuando la ventana sigue abierta.
+
+---
+
+#### 10. Tarjetas de métricas
+
+Una tarjeta de métrica podrá mostrar:
+
+- nombre empresarial;
+- valor;
+- unidad;
+- comparación válida;
+- tendencia cuando proceda;
+- fuente;
+- fecha de corte;
+- estado de frescura;
+- completitud;
+- definición resumida;
+- advertencia cuando el dato no sea comparable o calculable.
+
+La etiqueta visual nunca sustituye la definición gobernada.
+
+---
+
+#### 11. Familias de medición
+
+La interfaz deberá diferenciar como mínimo:
+
+- entrega técnica;
+- exposición;
+- interacción;
+- conversión;
+- resultado comercial correlacionado;
+- resultado incremental;
+- resultado económico;
+- aprendizaje.
+
+No se promociona automáticamente una métrica de una familia a otra.
+
+---
+
+#### 12. Cero, ausencia y desconocido
+
+Se preserva visual y semánticamente:
+
+```text
+0
+!= AUSENCIA
+!= DESCONOCIDO
+!= NO APLICA
+!= NO CALCULABLE
+!= PENDIENTE
+```
+
+Una tasa sin denominador válido no se representa como `0 %`. Un costo pendiente no se representa como cero. Una campaña sin diseño experimental no muestra incrementalidad igual a cero.
+
+---
+
+#### 13. Frescura, completitud y calidad
+
+Toda métrica material deberá poder mostrar, de forma proporcional:
+
+- frescura;
+- completitud;
+- calidad;
+- cobertura;
+- reconciliación pendiente;
+- limitaciones relevantes.
+
+Un dato degradado podrá seguir visible con advertencia, pero no sostendrá una afirmación material que exceda su calidad.
+
+---
+
+#### 14. Lineage y fuentes
+
+Desde cualquier resultado material deberá ser posible abrir, bajo demanda:
+
+```text
+RESULTADO
+-> DEFINICION DE METRICA
+-> FUENTES
+-> VERSIONES
+-> PERIODO
+-> CORRELACIONES
+-> METODO
+-> LIMITACIONES
+```
+
+La experiencia cotidiana no muestra payloads ni trazas técnicas por defecto, pero conserva acceso a evidencia suficiente para revisión autorizada.
+
+---
+
+#### 15. Drill-down gobernado
+
+El drill-down deberá respetar el grano máximo que la fuente soporte.
+
+Queda prohibido:
+
+- desagregar un total de canal a campañas sin evidencia;
+- reconstruir identidad individual desde agregados;
+- inferir sede, producto o segmento ausentes;
+- mostrar datos de cliente fuera de la finalidad autorizada.
+
+El detalle se detiene donde termina la evidencia.
+
+---
+
+#### 16. Objetivo versus resultado
+
+Cada campaña o experimento deberá poder comparar:
+
+- objetivo declarado;
+- métrica primaria;
+- criterio esperado cuando exista;
+- valor observado;
+- diferencia;
+- confianza;
+- limitaciones;
+- guardas activadas.
+
+La interfaz no escogerá retrospectivamente la métrica secundaria que mejor se vea para presentar éxito.
+
+---
+
+#### 17. Comparación entre campañas o variantes
+
+Una comparación solo será válida cuando las definiciones, ventanas, fuentes y poblaciones sean suficientemente compatibles.
+
+Si no lo son, la interfaz deberá declarar `NO COMPARABLE` o equivalente empresarial comprensible.
+
+No se utilizarán barras, porcentajes o rankings visuales para sugerir equivalencia donde la metodología no la soporte.
+
+---
+
+#### 18. Panel de atribución
+
+La experiencia deberá mostrar:
+
+- método de atribución;
+- touchpoints o referencias consideradas;
+- ventana;
+- fuentes;
+- eventos correlacionados;
+- limitaciones de identidad;
+- reversas o anulaciones relevantes;
+- confianza de la atribución.
+
+La atribución se presenta como método, no como hecho natural del dato.
+
+---
+
+#### 19. Etiqueta del método
+
+Toda conclusión atribuida deberá identificar su método en lenguaje comprensible.
+
+Ejemplos conceptuales:
+
+- correlación explícita por código o referencia;
+- relación por oportunidad originada;
+- ventana temporal declarada;
+- comparación experimental;
+- otra metodología aprobada.
+
+La experiencia no deberá usar un término genérico `atribuido` ocultando reglas diferentes.
+
+---
+
+#### 20. Confianza
+
+La confianza deberá expresarse de forma comprensible y sin precisión artificial.
+
+Podrá depender de:
+
+- calidad de fuentes;
+- frescura;
+- completitud;
+- cobertura;
+- estabilidad;
+- comparabilidad;
+- fuerza del método;
+- incertidumbre;
+- evidencia contradictoria.
+
+Una confianza baja no se oculta detrás de una visualización contundente.
+
+---
+
+#### 21. Incrementalidad
+
+La interfaz solo mostrará una conclusión incremental cuando exista contrafactual o comparación metodológicamente defendible.
+
+Se conserva:
+
+```text
+VENTA CORRELACIONADA
+!= VENTA CAUSADA
+!= VENTA INCREMENTAL
+```
+
+Si la incrementalidad no puede evaluarse, la experiencia deberá decirlo explícitamente.
+
+---
+
+#### 22. Experimentos y grupos de comparación
+
+Cuando exista experimento gobernado, la experiencia podrá mostrar:
+
+- hipótesis;
+- tratamiento;
+- grupo de comparación;
+- métrica primaria;
+- guardas;
+- periodo;
+- tamaño o cobertura disponible;
+- resultado;
+- confianza;
+- razón de detención cuando aplique.
+
+No se presentará una prueba A/B como válida si los grupos o periodos no son comparables.
+
+---
+
+#### 23. Guardas y daño
+
+El panel deberá hacer visibles guardas activadas incluso cuando la métrica primaria mejore.
+
+Ejemplos:
+
+- margen deteriorado;
+- capacidad insuficiente;
+- inventario crítico;
+- consentimiento insuficiente;
+- aumento de reclamos;
+- reputación degradada;
+- costo excesivo;
+- riesgo operativo.
+
+Una mejora de volumen no convierte una campaña en exitosa si viola una guarda material.
+
+---
+
+#### 24. Resultado económico
+
+Cuando AURA muestre ingreso, costo, margen o rentabilidad deberá indicar que provienen de NUMERA o de la fuente económica propietaria aplicable.
+
+La experiencia deberá conservar:
+
+- moneda;
+- periodo;
+- fecha de corte;
+- definición económica;
+- nivel de conciliación;
+- dimensiones;
+- completitud.
+
+AURA no recalcula margen ni rentabilidad unilateralmente.
+
+---
+
+#### 25. Oportunidades y resultado comercial
+
+Los resultados provenientes de `AURA-UX-006` podrán aparecer como:
+
+- oportunidades originadas;
+- handoffs aceptados;
+- conversiones comerciales propietarias;
+- resultados conocidos posteriores.
+
+Pero:
+
+```text
+OPORTUNIDAD
+!= PEDIDO
+!= VENTA
+```
+
+La experiencia deberá preservar qué parte pertenece a AURA y qué parte proviene de PULSO u otro dominio.
+
+---
+
+#### 26. Reputación como contexto de resultado
+
+Las señales de `AURA-UX-007` podrán aportar contexto a una campaña.
+
+La interfaz deberá separar:
+
+- volumen reputacional;
+- tema;
+- severidad;
+- tendencia;
+- casos formales relacionados cuando estén autorizados;
+- respuesta pública;
+- estado del proceso de servicio.
+
+No se presentará sentimiento o volumen de comentarios como impacto económico ni como causa demostrada.
+
+---
+
+#### 27. Cierre analítico de campaña
+
+Una campaña podrá marcarse como analíticamente cerrada únicamente cuando la experiencia pueda mostrar:
+
+- objetivo;
+- datos disponibles;
+- estado de eventos tardíos;
+- método;
+- confianza;
+- guardas;
+- conclusión;
+- limitaciones;
+- aprendizaje;
+- versión del cierre.
+
+Un cierre posterior corregido conserva lineage y no borra la versión usada para una decisión anterior.
+
+---
+
+#### 28. Aprendizaje
+
+El aprendizaje deberá distinguir:
+
+- hecho observado;
+- interpretación;
+- hipótesis confirmada o no confirmada;
+- limitación;
+- decisión tomada;
+- cambio propuesto para el siguiente ciclo.
+
+Resultados desfavorables, mixtos o no concluyentes permanecen visibles.
+
+---
+
+#### 29. Radar de recomendaciones
+
+El radar deberá presentar únicamente recomendaciones que tengan identidad, fuentes y contexto suficientes.
+
+Cada recomendación mostrará como mínimo:
+
+- qué propone revisar o considerar;
+- por qué aparece;
+- fuente o señales principales;
+- confianza;
+- impacto esperado cualitativo o cuantitativo cuando esté soportado;
+- guardas;
+- factibilidad;
+- vigencia;
+- propietario de la acción eventual.
+
+---
+
+#### 30. Tarjeta de recomendación
+
+La primera capa deberá responder:
+
+```text
+QUE
+POR QUE
+CON QUE CONFIANZA
+QUE PUEDE BLOQUEARLA
+QUIEN DEBE ACTUAR
+```
+
+La evidencia detallada se abre bajo demanda.
+
+No se presentará `el modelo lo recomienda` como explicación suficiente.
+
+---
+
+#### 31. Explicación progresiva
+
+La explicación de una recomendación tendrá capas:
+
+1. resumen empresarial;
+2. principales señales;
+3. confianza y limitaciones;
+4. guardas y dependencias;
+5. detalle de fuentes y versiones;
+6. razonamiento contractual reproducible cuando corresponda.
+
+La simplicidad no elimina trazabilidad.
+
+---
+
+#### 32. Impacto esperado
+
+Cuando se muestre impacto esperado deberá declararse:
+
+- dimensión;
+- dirección;
+- horizonte;
+- población o alcance;
+- línea base;
+- supuesto principal;
+- incertidumbre;
+- guardas.
+
+Si no puede estimarse magnitud con evidencia suficiente, la experiencia no inventará un número.
+
+---
+
+#### 33. Guardas de recomendación
+
+Antes de promover una recomendación a decisión humana deberán ser visibles las guardas aplicables sobre:
+
+- presupuesto;
+- margen;
+- precio;
+- inventario;
+- capacidad;
+- calidad;
+- seguridad;
+- consentimiento;
+- finalidad;
+- reputación;
+- carga de servicio;
+- derechos;
+- marca;
+- vigencia;
+- territorio;
+- canal;
+- deuda o dependencia técnica relevante.
+
+Una guarda incumplida puede bloquear progresión aunque el impacto esperado sea alto.
+
+---
+
+#### 34. Recomendaciones conflictivas
+
+Cuando existan recomendaciones incompatibles, la experiencia deberá mostrar el conflicto explícitamente.
+
+Ejemplos:
+
+```text
+AUMENTAR VOLUMEN
+vs PRESERVAR MARGEN
+```
+
+```text
+AUMENTAR PROMOCION
+vs CAPACIDAD LIMITADA
+```
+
+```text
+CONTACTAR AUDIENCIA
+vs CONSENTIMIENTO INSUFICIENTE
+```
+
+No se resolverá el conflicto mediante un score opaco.
+
+---
+
+#### 35. Caducidad e invalidación
+
+Una recomendación deberá mostrar si está vigente, degradada, caducada o invalidada por cambio material de contexto.
+
+Cambios que pueden invalidarla incluyen:
+
+- fuentes;
+- definición de métrica;
+- frescura;
+- cobertura;
+- precio;
+- margen;
+- presupuesto;
+- inventario;
+- capacidad;
+- consentimiento;
+- campaña;
+- marca;
+- reputación;
+- horizonte;
+- supuesto crítico.
+
+Una recomendación caducada no permanece presentada como accionable.
+
+---
+
+#### 36. Revisión humana
+
+Toda recomendación material deberá poder pasar por revisión humana.
+
+La persona revisora podrá:
+
+- aceptar para progresión;
+- rechazar;
+- pedir evidencia;
+- corregir interpretación;
+- cambiar prioridad;
+- diferir;
+- transformar la propuesta;
+- dirigirla a otro dominio.
+
+La revisión no concede por sí sola capacidad técnica para ejecutar.
+
+---
+
+#### 37. Autoridad de ejecución
+
+Se fija:
+
+```text
+RECOMENDACION ACEPTADA
+!= ACCION EJECUTADA
+```
+
+La acción pertenece al dominio propietario.
+
+Ejemplos:
+
+- precio o efecto comercial → PULSO / NUMERA según contrato;
+- inventario → NEXO;
+- capacidad → FOGO;
+- cliente o consentimiento → PASS;
+- reclamo → proceso de servicio propietario;
+- contenido o publicación → ciclo AURA correspondiente.
+
+---
+
+#### 38. Handoff de una recomendación
+
+Cuando una recomendación progrese, la experiencia deberá conservar:
+
+- identidad de recomendación;
+- decisión humana;
+- destino propietario;
+- contexto mínimo;
+- guardas;
+- versión;
+- fecha;
+- estado de transferencia;
+- eventual referencia de acción propietaria.
+
+Un handoff no crea el efecto empresarial por sí mismo.
+
+---
+
+#### 39. Seguimiento de recomendaciones
+
+La experiencia podrá mostrar posteriormente:
+
+- no ejecutada;
+- en análisis propietario;
+- ejecutada;
+- revertida;
+- invalidada;
+- resultado favorable;
+- resultado desfavorable;
+- resultado mixto;
+- no concluyente.
+
+Estos estados conceptuales no reemplazan los estados físicos del dominio propietario.
+
+---
+
+#### 40. Copiloto de IA
+
+La IA podrá ayudar a:
+
+- resumir resultados;
+- explicar diferencias;
+- agrupar señales;
+- proponer hipótesis;
+- identificar datos faltantes;
+- comparar guardas;
+- redactar una recomendación;
+- señalar conflictos;
+- sugerir investigaciones.
+
+No podrá por esta tarea:
+
+- promover inferencia a hecho;
+- ocultar incertidumbre;
+- aceptar su propia recomendación;
+- publicar;
+- contactar personas;
+- cambiar precios;
+- emitir descuentos;
+- modificar inventario;
+- comprometer capacidad;
+- cerrar reclamos;
+- ejecutar pagos;
+- alterar permisos.
+
+---
+
+#### 41. Grounding y referencias
+
+Toda explicación asistida por IA que afecte una decisión material deberá permitir identificar:
+
+- fuentes utilizadas;
+- frescura;
+- versión;
+- datos faltantes;
+- restricciones;
+- qué es hecho;
+- qué es inferencia;
+- qué es propuesta.
+
+Una afirmación material no comprobada deberá bloquearse o presentarse explícitamente como no comprobada.
+
+---
+
+#### 42. Datos degradados
+
+Si una fuente está vencida, incompleta, degradada o sin reconciliar, la experiencia deberá:
+
+- reducir confianza;
+- advertir la condición;
+- limitar conclusiones;
+- impedir una recomendación material cuando la regla lo exija;
+- permitir investigar la causa de calidad sin convertirla en cero.
+
+La ausencia de evidencia suficiente no concede permiso para rellenar el dato mediante IA.
+
+---
+
+#### 43. Filtros y dimensiones
+
+Los filtros podrán usar dimensiones autorizadas como:
+
+- marca;
+- campaña;
+- experimento;
+- variante;
+- canal;
+- publicación;
+- sede;
+- producto;
+- periodo;
+- audiencia o segmento cuando esté autorizado.
+
+Filtrar no altera la definición de la métrica ni permite inferir dimensiones no presentes en la fuente.
+
+---
+
+#### 44. Privacidad y minimización
+
+El tablero deberá evitar revelar datos personales o sensibles que no sean necesarios para la decisión.
+
+La experiencia deberá priorizar agregados y referencias cuando sean suficientes.
+
+Abrir un drill-down individual requerirá autorización y finalidad compatibles.
+
+Los datos públicos, reputacionales o de canal siguen sujetos a privacidad, minimización y retención.
+
+---
+
+#### 45. Exportación y compartición
+
+La posibilidad futura de exportar o compartir resultados no se deriva del permiso de ver el tablero.
+
+Se conserva:
+
+```text
+VER
+!= EXPORTAR
+!= COMPARTIR
+```
+
+La tarea no diseña ni autoriza exportaciones; únicamente evita que la experiencia implique una autoridad inexistente.
+
+---
+
+#### 46. Estados de carga, parcialidad y error
+
+La experiencia deberá diferenciar:
+
+- cargando;
+- sin datos aplicables;
+- fuente no disponible;
+- datos parciales;
+- datos vencidos;
+- reconciliación pendiente;
+- error técnico;
+- sin autorización;
+- resultado vigente.
+
+Un error parcial no bloquea zonas independientes que sí tengan datos confiables.
+
+---
+
+#### 47. Accesibilidad y visualización
+
+Los resultados no dependerán exclusivamente de:
+
+- color;
+- tamaño;
+- posición;
+- hover;
+- animación;
+- gráficos sin alternativa textual.
+
+Como mínimo se deberán preservar:
+
+- navegación por teclado;
+- foco visible;
+- etiquetas comprensibles;
+- semántica de tablas y gráficos;
+- descripciones o valores equivalentes;
+- contraste suficiente;
+- texto ampliable;
+- estados distinguibles sin color.
+
+---
+
+#### 48. Densidad y simplicidad
+
+La experiencia cotidiana priorizará:
+
+1. qué ocurrió;
+2. qué significa con la evidencia disponible;
+3. qué guardas importan;
+4. qué recomienda AURA;
+5. qué requiere revisión humana.
+
+Fórmulas, payloads, configuraciones, prompts, logs y detalles de integración permanecerán bajo demanda o en superficies técnicas propietarias.
+
+---
+
+#### 49. Navegación desde el inicio diario
+
+`AURA-UX-001` podrá llevar directamente a:
+
+- campaña o experimento que requiere revisión;
+- resultado con guarda activada;
+- atribución insuficiente;
+- recomendación pendiente;
+- aprendizaje que invalida un supuesto.
+
+`AURA-UX-008` recibe ese contexto y muestra el análisis detallado sin duplicar la prioridad de inicio.
+
+---
+
+#### 50. Frontera con `AURA-DOM-008`
+
+`AURA-DOM-008` conserva:
+
+- definición de métricas;
+- fuentes;
+- grano;
+- ventanas;
+- correlación;
+- atribución;
+- confianza;
+- incrementalidad;
+- aprendizaje;
+- cierre analítico.
+
+Esta tarea diseña cómo esas decisiones se presentan y exploran; no redefine el contrato analítico.
+
+---
+
+#### 51. Frontera con `AURA-DOM-010`
+
+`AURA-DOM-010` conserva:
+
+- señales;
+- diagnóstico;
+- recomendación;
+- explicación;
+- confianza;
+- guardas;
+- caducidad;
+- decisión humana;
+- handoff al dominio propietario.
+
+Esta tarea diseña su experiencia, no otro motor de recomendación.
+
+---
+
+#### 52. Frontera con `AURA-UX-007`
+
+`AURA-UX-007` conserva:
+
+- inbox reputacional;
+- clasificación;
+- respuesta pública;
+- moderación;
+- escalamiento a servicio;
+- seguimiento reputacional.
+
+La 008 puede consumir señales reputacionales gobernadas como contexto analítico, pero no responde comentarios ni gestiona casos.
+
+---
+
+#### 53. Frontera con `AURA-AUTH-*`
+
+La experiencia respeta que:
+
+- ver una métrica no autoriza exportarla;
+- ver una recomendación no autoriza ejecutarla;
+- ver un resultado económico no concede acceso a información financiera adicional;
+- una agregación no autoriza drill-down individual;
+- la IA no adquiere capacidad empresarial por generar una recomendación.
+
+La autorización se revalida en el recurso y acción propietarios.
+
+---
+
+#### 54. Handoff a `AURA-INT-001`
+
+`AURA-UX-008` entrega a `AURA-INT-001` una experiencia que depende de datos externos gobernados y que requiere, como mínimo:
+
+- identidad estable de canal, cuenta y objeto externo;
+- métricas con timestamp y fuente;
+- estado de frescura;
+- límites y capacidades reales del proveedor;
+- reintentos idempotentes;
+- webhooks y polling reconciliables;
+- tratamiento de eventos tardíos y fuera de orden;
+- diferencias entre dato confirmado, parcial y ambiguo;
+- credenciales separadas de autoridad empresarial;
+- errores de proveedor traducibles a impacto empresarial sin perder diagnóstico técnico;
+- posibilidad de enlazar resultado visible con evidencia externa autorizada.
+
+`AURA-INT-001` definirá adaptadores, webhooks, límites, credenciales y reconciliación externa. No deberá redefinir la experiencia analítica fijada aquí.
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la separación entre actividad, conversión, atribución, causalidad e incrementalidad; la obligación de mostrar fuentes, frescura, cobertura, confianza, restricciones y razón; los límites de IA; la no ejecución autónoma de recomendaciones; la calidad y lineage de datos; y las fronteras con hechos económicos, comerciales y operativos ya cuentan con cobertura vigente suficiente. Esta tarea materializa la experiencia prevista por esa cobertura sin ampliar ni modificar el registro.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-002`, para grounding, fuentes autorizadas, frescura, trazabilidad de IA, revisión humana y límites de autonomía;
+- `TREQ-AURA-003`, para resultados, atribución, confianza y recomendaciones con fuentes, restricciones y razón;
+- `TREQ-DATA-003`, para origen, cobertura, datos tardíos, reconciliación, lineage y bloqueo de conclusiones cuando la fuente esté degradada;
+- `TREQ-DATA-005`, para separar señal, diagnóstico, hipótesis, acción, experimento, línea base, meta, guardas, resultado, confianza y aprendizaje;
+- `TREQ-INTEGRATION-019`, para correlación, identificadores, payloads, estados, idempotencia, eventos tardíos y reconciliación de AURA;
+- `TREQ-NUMERA-004`, para verdad económica cuando se consumen costo, margen, presupuesto o rentabilidad;
+- los requisitos propietarios de PULSO, PASS, NEXO, FOGO, ORIGO y VISO cuando una vista o recomendación dependa de sus hechos.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación, modificación ni actualización del registro 04A.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la compilación documental corresponde a la incorporación mediante el lifecycle del repositorio |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni sometido a formatter, quality, delivery check y batería global en el checkout del usuario |
+| REMOTA | PASS | se verificaron continuidad, archivo propietario, topología de `AURA-UX-001` a `AURA-UX-008`, `AURA-DOM-008`, `AURA-DOM-010`, `AURA-DOM-004`, autorizaciones AURA, hallazgos 027 a 030, cobertura 04A aplicable, `package.json` y lifecycle documental; además se consumió la versión completa aprobada de `AURA-UX-007` disponible para trabajo adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea diseña una experiencia documental; no consulta métricas productivas, no genera recomendaciones reales y no ejecuta decisiones |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE`; no se autorizan runtime, Supabase, modelos, datos, integraciones ni despliegues |
+
+---
+
+#### 58. Criterios de aceptación
+
+`AURA-UX-008` queda satisfecha cuando simultáneamente:
+
+1. actividad, interacción, conversión, venta correlacionada, incrementalidad, margen y rentabilidad permanecen separadas;
+2. señal, diagnóstico, recomendación, decisión, acción y resultado permanecen separados;
+3. el resumen ejecutivo muestra objetivo, resultado, confianza, frescura, completitud y guardas;
+4. la ventana analítica, fecha de corte y zona horaria son visibles cuando afectan interpretación;
+5. cero, ausencia, desconocido, no aplicable, no calculable y pendiente no se confunden;
+6. toda métrica material conserva definición, fuente y lineage accesibles;
+7. el drill-down no excede el grano soportado;
+8. comparación y ranking no simulan equivalencia metodológica inexistente;
+9. atribución muestra método y limitaciones;
+10. confianza no usa precisión artificial;
+11. venta correlacionada no se presenta como venta incremental;
+12. incrementalidad solo aparece con método defendible;
+13. experimentos muestran hipótesis, tratamiento, comparación, métrica primaria y guardas;
+14. una guarda activada permanece visible aunque la métrica primaria mejore;
+15. NUMERA conserva verdad económica;
+16. PULSO conserva venta y efecto comercial;
+17. PASS conserva identidad y consentimiento;
+18. NEXO, FOGO y ORIGO conservan hechos operativos;
+19. reputación puede aportar contexto sin convertirse en causalidad ni cierre de servicio;
+20. el cierre analítico conserva versión, limitaciones y aprendizaje;
+21. resultados negativos, mixtos y no concluyentes permanecen visibles;
+22. cada recomendación explica qué, por qué, confianza, guardas y propietario eventual;
+23. impacto esperado no inventa magnitudes;
+24. recomendaciones conflictivas se muestran como conflicto;
+25. recomendaciones caducadas o invalidadas dejan de mostrarse como accionables;
+26. revisión humana permanece disponible para toda recomendación material;
+27. recomendación aceptada no equivale a acción ejecutada;
+28. el handoff conserva identidad, contexto, decisión y destino propietario;
+29. IA puede asistir pero no adquirir autoridad de ejecución;
+30. grounding permite distinguir hecho, inferencia y propuesta;
+31. datos degradados reducen confianza o bloquean conclusiones materiales;
+32. filtros no cambian definición ni autorización;
+33. ver no equivale a exportar ni compartir;
+34. carga, parcialidad, frescura insuficiente, error y falta de autorización permanecen estados distintos;
+35. gráficos y estados son accesibles sin depender solo de color o hover;
+36. la interfaz usa divulgación progresiva y no se convierte en consola técnica;
+37. `AURA-DOM-008` conserva el contrato analítico;
+38. `AURA-DOM-010` conserva el contrato de recomendaciones;
+39. `AURA-UX-007` conserva reputación y escalamiento;
+40. `AURA-INT-001` recibe el handoff de integración externa sin redefinir la experiencia;
+41. se crean y modifican cero requisitos de prueba;
+42. no se crea ninguna instancia física;
+43. la continuidad queda reservada exclusivamente a `AURA-INT-001`.
+
+---
+
+#### 59. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear repositorio, runtime, ruta, pantalla o componente real de AURA;
+- crear dashboards productivos;
+- crear tablas, vistas, materializaciones, RPC, funciones, triggers, jobs, colas o migraciones;
+- modificar Supabase, RLS, Storage, Realtime o Edge Functions;
+- crear warehouse, mart, lake, feature store o vector store;
+- conectar canales externos;
+- importar métricas reales;
+- crear tracking productivo;
+- ejecutar backfills;
+- crear modelos estadísticos o de machine learning;
+- seleccionar o desplegar proveedores de IA;
+- entrenar con datos reales;
+- publicar recomendaciones reales;
+- aceptar recomendaciones automáticamente;
+- ejecutar acciones automáticamente;
+- crear campañas, experimentos, promociones o cupones reales;
+- modificar precios, presupuesto, margen o rentabilidad;
+- modificar inventario o capacidad;
+- contactar clientes o prospectos;
+- alterar consentimientos;
+- crear cotizaciones, pedidos o reservas;
+- responder comentarios o cerrar reclamos;
+- exportar datos;
+- cambiar permisos o roles;
+- redefinir contratos de `AURA-DOM-008` o `AURA-DOM-010`;
+- definir adaptadores, webhooks, OAuth, rate limits o payloads de `AURA-INT-001`;
+- crear o modificar requisitos del registro 04A;
+- iniciar implementación física;
+- adelantar `AURA-INT-001`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa`

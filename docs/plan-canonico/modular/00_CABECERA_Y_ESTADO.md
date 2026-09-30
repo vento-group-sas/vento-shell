@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1520** |
+| Tareas aprobadas | **1521** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **76** |
+| Tareas no iniciadas | **75** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **95.24% (1520/1596)** |
+| Porcentaje de completamiento | **95.30% (1521/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento** |
-| Tarea actual | **AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones** |
+| Última tarea aprobada | **AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones** |
+| Tarea actual | **AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa** |
+| Siguiente tarea | **AURA-INT-002 — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 34 de 37 aprobadas; AURA-UX-008 pendiente** |
+| Progreso del bloque | **BLOQUE W: 35 de 37 aprobadas; AURA-INT-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-UX-008** |
+| Carril documental | **ACTIVO — AURA-INT-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-UX-007` — Diseñar reputación, comentarios, respuestas y escalamiento |
-| Tarea actual | `AURA-UX-008` — Diseñar tablero de resultados, atribución y copiloto de recomendaciones — **NO INICIADA** |
-| Siguiente tarea | `AURA-INT-001` — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa |
+| Última aprobada | `AURA-UX-008` — Diseñar tablero de resultados, atribución y copiloto de recomendaciones |
+| Tarea actual | `AURA-INT-001` — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa — **NO INICIADA** |
+| Siguiente tarea | `AURA-INT-002` — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 34 DE 37 APROBADAS — ACTUAL AURA-UX-008** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 35 DE 37 APROBADAS — ACTUAL AURA-INT-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
-        ↓
-TAREA ACTUAL
 AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-INT-001 — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-INT-002 — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 34 de 37 tareas aprobadas
+BLOQUE W — 35 de 37 tareas aprobadas
 ```
