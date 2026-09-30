@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1497** |
+| Aprobadas | **1498** |
 | En propuesta | **0** |
-| No iniciadas | **99** |
+| No iniciadas | **98** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.80% (1497/1596)** |
+| Porcentaje de completamiento | **93.86% (1498/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **99** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1398** |
+| ⏸ NO_EVALUADA | **98** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1399** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-AUD-011` — Documentar decisión mediante ADR si corresponde | ✅ APROBADA |
-| Tarea actual | `AURA-AUD-012` — Mantener roadmap de implementación bloqueado hasta decisión | ⬜ NO INICIADA |
-| Siguiente reservada | `WEB-FRM-011` — Implementar suscripción de newsletter o retirar la interfaz | ⬜ NO INICIADA |
+| Última aprobada | `AURA-AUD-012` — Mantener roadmap de implementación bloqueado hasta decisión | ✅ APROBADA |
+| Tarea actual | `WEB-FRM-011` — Implementar suscripción de newsletter o retirar la interfaz | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-DOM-001` — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1446,7 +1446,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-009` | Definir relación con PULSO | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-010` | Decidir continuidad, reemplazo o retiro | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-011` | Documentar decisión mediante ADR si corresponde | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUD-012` | Mantener roadmap de implementación bloqueado hasta decisión | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-012` | Mantener roadmap de implementación bloqueado hasta decisión | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-001` | Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-002` | Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-003` | Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
