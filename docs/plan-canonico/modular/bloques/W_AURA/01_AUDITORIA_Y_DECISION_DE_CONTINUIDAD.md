@@ -6079,7 +6079,583 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión`
-### [ ] AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
+### ✅ AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUD-011 — Documentar decisión mediante ADR si corresponde
+**Tarea siguiente:** WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz
+**Tipo de tarea:** cierre documental de la puerta de auditoría de AURA y reconciliación del estado del roadmap; confirma que la condición previa de decisión y ADR quedó satisfecha, permite continuar la ruta documental canónica y mantiene bloqueada toda materialización física de AURA mientras no exista repositorio, runtime, ambiente, autorización y gates técnicos aplicables
+**Bloque:** BLOQUE W — AURA — AUDITORÍA Y DECISIÓN DE CONTINUIDAD
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; se cierra la puerta documental previa de decisión, pero AURA permanece `DEFERRED`, `ENV-AURA-BLOCKED` y con planificación física `BLOQUEADO_AURA_SIN_REPOSITORIO`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea repositorio, aplicación, rutas, pantallas, datos, integraciones, infraestructura, migraciones, Supabase, secretos, canales, campañas ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 29 de septiembre de 2026
+
+---
+
+#### 1. Propósito
+
+Cerrar la puerta documental de auditoría y decisión de AURA sin confundir ese cierre con autorización de implementación.
+
+`AURA-AUD-010` aprobó la continuidad de AURA como aplicación objetivo separada y mantuvo su runtime diferido.
+
+`AURA-AUD-011` registró esa decisión mediante `ADR-AURA-001 — ACCEPTED`.
+
+Por tanto, la condición previa que mantenía detenido el roadmap hasta contar con decisión y ADR ya está satisfecha. Esta tarea debe reconciliar ese hecho con el estado real del producto y separar dos carriles que no son equivalentes:
+
+```text
+CONTINUIDAD DOCUMENTAL DE LA RUTA
+!=
+LIBERACIÓN DE IMPLEMENTACIÓN FÍSICA
+```
+
+Resultado esperado:
+
+```text
+DECISIÓN DE CONTINUIDAD = CERRADA
+ADR DE CONTINUIDAD = REGISTRADO
+PUERTA DOCUMENTAL PREVIA = SATISFECHA
+RUTA DOCUMENTAL = PUEDE CONTINUAR
+AURA RUNTIME = DEFERRED
+AMBIENTE AURA = ENV-AURA-BLOCKED
+PLANIFICACIÓN FÍSICA AURA = BLOQUEADO_AURA_SIN_REPOSITORIO
+```
+
+---
+
+#### 2. Reconciliación topológica
+
+La tarea conserva:
+
+```text
+TASK = AURA-AUD-012
+MODE = DEFINE_ONCE
+EXECUTION_GATE = NO_PHYSICAL_INSTANCE
+SEQUENCE = PHASE-12-AURA
+PREVIOUS = AURA-AUD-011
+NEXT = WEB-FRM-011
+```
+
+Consecuencias:
+
+- se define una sola vez;
+- no crea instancia física propia;
+- no abre package ni implementation unit;
+- no implementa AURA;
+- no modifica Supabase;
+- no altera aplicaciones existentes;
+- no salta `WEB-FRM-011`, que permanece como siguiente tarea canónica de la ruta;
+- no adelanta `AURA-DOM-001` antes de completar la etapa intermedia definida por la ruta.
+
+---
+
+#### 3. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-AUD-001` a `AURA-AUD-009`, como auditoría de existencia, estado real, procesos y relaciones con VISO, PASS y PULSO;
+- `AURA-AUD-010`, como decisión formal de continuidad;
+- `AURA-AUD-011`, como registro arquitectónico de esa decisión;
+- `ADR-AURA-001 — ACCEPTED`, como decisión arquitectónica vigente de continuidad;
+- `CAP-SCOPE-014`, como definición del producto objetivo de marketing y desarrollo comercial;
+- `INT-MKT-001`, como puerta que separa aprobación de AURA de materialización de campañas;
+- el inventario de superficies y navegación que mantiene AURA diferida y no disponible;
+- la cobertura `TREQ-AURA-*` vigente, en especial las reglas de existencia, disponibilidad, ownership y futura transferencia CMS;
+- la ruta `PHASE-12-AURA`, que ubica `WEB-FRM-011` inmediatamente después de `AURA-AUD-012`.
+
+Ninguna de estas decisiones se redefine en esta tarea.
+
+---
+
+#### 4. Estado recibido de AURA-AUD-010
+
+La decisión formal recibida es:
+
+```text
+AURA_CONTINUITY_DECISION = CONTINUE
+AURA_TARGET_APPLICATION = PRESERVED
+AURA_RUNTIME_STATE = DEFERRED
+AURA_REPLACEMENT = NO
+AURA_RETIREMENT = NO
+```
+
+Esto significa:
+
+1. AURA continúa como aplicación objetivo propia;
+2. no se reemplaza por VISO, PASS, PULSO, NUMERA, NEXO, FOGO ni un proveedor externo;
+3. no se retira del modelo objetivo de Vento OS;
+4. no se declara implementada;
+5. no se declara disponible;
+6. no se crea repositorio por inferencia;
+7. no se habilita runtime por inferencia;
+8. no se transfiere CMS por inferencia;
+9. no se activa ninguna campaña, canal, dato, credencial o integración.
+
+---
+
+#### 5. Estado recibido de AURA-AUD-011
+
+`AURA-AUD-011` registró:
+
+```text
+ADR_ID = ADR-AURA-001
+ADR_STATUS = ACCEPTED
+AURA_CONTINUITY_DECISION = CONTINUE
+AURA_TARGET_APPLICATION = PRESERVED
+AURA_RUNTIME_STATE = DEFERRED
+CMS_TRANSFER_STATUS = NOT_AUTHORIZED
+ROADMAP_RELEASE_BY_THIS_ADR = NO
+```
+
+La función de `AURA-AUD-012` no es crear un segundo ADR ni reabrir la decisión. Su función es convertir el cierre de la puerta de decisión en un estado de roadmap coherente.
+
+---
+
+#### 6. Distinción obligatoria entre roadmap documental y roadmap físico
+
+A partir de esta tarea se mantienen dos estados separados.
+
+##### 6.1. Roadmap documental
+
+La condición previa de auditoría queda satisfecha porque:
+
+```text
+AURA-AUD-010 = DECISIÓN COMPLETA
+AURA-AUD-011 = ADR COMPLETO
+```
+
+Por tanto, la ruta documental puede continuar conforme a `continuity-route.json` y `execution-route.json`.
+
+El siguiente paso no se elige por inferencia. Es exactamente:
+
+```text
+WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz
+```
+
+Solo después de esa tarea intermedia la ruta alcanza `AURA-DOM-001`.
+
+##### 6.2. Roadmap físico
+
+La implementación física de AURA continúa bloqueada porque siguen faltando condiciones materiales:
+
+- repositorio standalone propietario confirmado;
+- runtime AURA operativo;
+- ambiente AURA habilitado;
+- superficies propias certificadas;
+- contratos físicos de datos y autorización materializados;
+- packages e implementation units correspondientes;
+- readiness y autorización de ejecución;
+- evidencia de compatibilidad, migración, rollback y certificación cuando aplique.
+
+Por tanto:
+
+```text
+CIERRE DE AUDITORÍA
+!=
+IMPLEMENTATION_READY
+```
+
+---
+
+#### 7. Resultado del bloqueo previo
+
+El bloqueo específico que existía por ausencia de decisión queda cerrado como condición documental previa.
+
+Antes:
+
+```text
+AURA-AUD-010 PENDIENTE
++
+AURA-AUD-011 PENDIENTE
+=>
+NO CONTINUAR ROADMAP AURA
+```
+
+Después de esta tarea:
+
+```text
+AURA-AUD-010 APROBADA
++
+AURA-AUD-011 APROBADA
++
+AURA-AUD-012 APROBADA
+=>
+PUERTA DOCUMENTAL DE AUDITORÍA CERRADA
+=>
+CONTINUAR RUTA CANÓNICA
+```
+
+Este cierre no elimina los bloqueos físicos derivados de inexistencia de producto runtime.
+
+---
+
+#### 8. Estado físico que permanece bloqueado
+
+Se conserva el estado material observado:
+
+```text
+REPOSITORIO STANDALONE AURA = ABSENT / NO_CONFIRMADO
+RUNTIME AURA = DEFERRED
+ENTORNO AURA = ENV-AURA-BLOCKED
+PLANIFICACIÓN FÍSICA AURA = BLOQUEADO_AURA_SIN_REPOSITORIO
+DISPONIBILIDAD AURA = NO DISPONIBLE
+USUARIOS EFECTIVOS AURA = 0
+RUTAS PROPIAS AURA = 0
+PANTALLAS PROPIAS AURA = 0
+```
+
+La continuidad documental no convierte ninguno de esos valores en estado implementado.
+
+---
+
+#### 9. Estado de launcher y navegación
+
+AURA permanece diferida en cualquier representación de launcher, AppSwitcher o navegación.
+
+La regla sigue siendo:
+
+```text
+IDENTIDAD RESERVADA DE APLICACIÓN
+!=
+APLICACIÓN NAVEGABLE
+```
+
+Mientras no exista implementación física autorizada y certificada:
+
+- un código de aplicación no habilita navegación;
+- `aura.access` no prueba disponibilidad;
+- una URL reservada no prueba runtime;
+- una tarjeta `soon`, `reserved` o equivalente no se convierte en acceso real;
+- no se crea deep link a una aplicación inexistente;
+- no se presenta un error de runtime como si fuera una denegación de autorización.
+
+---
+
+#### 10. Estado de VISO y CMS
+
+La decisión de continuidad de AURA no transfiere el CMS actual.
+
+Se mantiene:
+
+```text
+CMS RUNTIME ACTUAL = VISO
+TRANSFERENCIA HACIA AURA = NOT_AUTHORIZED
+```
+
+VISO conserva:
+
+- las superficies administrativas CMS existentes;
+- la operación transitoria aprobada de esas superficies;
+- su responsabilidad hasta que exista una transferencia formal.
+
+Una futura transferencia deberá definir de forma explícita:
+
+1. propietaria destino;
+2. consumidores;
+3. contrato de datos;
+4. permisos y autorización;
+5. migración de rutas;
+6. migración de contenido y media;
+7. compatibilidad pública;
+8. cutover;
+9. reconciliación;
+10. rollback;
+11. retiro o redirección de superficies anteriores.
+
+`AURA-AUD-012` no autoriza esa transferencia.
+
+---
+
+#### 11. Frontera con PASS
+
+PASS conserva:
+
+- identidad de cliente;
+- consentimiento y preferencias;
+- fidelización;
+- niveles;
+- puntos;
+- ledger;
+- beneficios y redenciones según sus contratos.
+
+AURA puede diseñarse posteriormente como consumidora de señales y contexto permitidos, pero esta tarea no crea integración ni copia maestros.
+
+La continuidad de AURA no convierte PASS en motor de campañas ni convierte AURA en propietaria del ledger PASS.
+
+---
+
+#### 12. Frontera con PULSO
+
+PULSO conserva:
+
+- oferta transaccional;
+- pedido;
+- venta;
+- precio aplicado;
+- descuento aplicado;
+- validación comercial;
+- evidencia de transacción.
+
+AURA conserva como objetivo futuro la intención de campaña, oportunidad y atribución que ya fueron separadas por la auditoría.
+
+No se crea integración física entre AURA y PULSO en esta tarea.
+
+---
+
+#### 13. Frontera con NUMERA
+
+NUMERA conserva la verdad económica aplicable:
+
+- presupuesto;
+- costo;
+- margen;
+- resultado económico;
+- métricas financieras propietarias.
+
+AURA podrá consumir resultados autorizados en etapas posteriores para análisis y aprendizaje, pero no reemplaza a NUMERA como fuente económica.
+
+---
+
+#### 14. Frontera con NEXO y FOGO
+
+NEXO conserva los maestros y hechos logísticos que le corresponden.
+
+FOGO conserva receta, producción, capacidad y hechos productivos que le corresponden.
+
+La continuidad de AURA no crea copias locales de producto, inventario, receta, disponibilidad o capacidad.
+
+---
+
+#### 15. Campañas e integraciones externas
+
+La puerta de auditoría cerrada no autoriza materializar campañas.
+
+Se conserva:
+
+```text
+AURA APROBADA PARA CONTINUAR DOCUMENTALMENTE
+!=
+CAMPAÑA OPERATIVA
+```
+
+Por esta tarea no se autoriza:
+
+- Meta;
+- Instagram;
+- Facebook;
+- TikTok;
+- Google Ads;
+- Google Business Profile;
+- WhatsApp;
+- correo masivo;
+- SMS;
+- reseñas;
+- analítica externa;
+- proveedores de IA;
+- automatización de publicación;
+- contacto con clientes;
+- importación de audiencias;
+- gasto publicitario.
+
+Cada integración futura conserva sus propias tareas, contratos y gates.
+
+---
+
+#### 16. IA y proveedores externos
+
+La decisión de continuidad preserva la posibilidad futura de capacidades de IA dentro del producto objetivo AURA, pero no habilita ningún proveedor.
+
+Antes de usar IA real deberán existir como mínimo:
+
+- propósito aprobado;
+- proveedor aprobado;
+- contrato de datos;
+- minimización de información;
+- clasificación de información sensible;
+- grounding;
+- trazabilidad de fuentes y frescura;
+- revisión humana;
+- autorización de acciones;
+- auditoría;
+- manejo de errores;
+- límites de autonomía;
+- rollback o desactivación segura.
+
+No se conectan secretos ni credenciales en esta tarea.
+
+---
+
+#### 17. Estado del roadmap AURA posterior a la auditoría
+
+El roadmap se clasifica así:
+
+| Superficie | Estado después de AURA-AUD-012 | Efecto |
+| --- | --- | --- |
+| auditoría y decisión `AURA-AUD-001..012` | `CERRADA` | la puerta documental previa queda satisfecha |
+| ruta documental `PHASE-12-AURA` | `CONTINÚA` | avanza exclusivamente por la secuencia canónica |
+| `WEB-FRM-011` | `SIGUIENTE` | debe resolverse antes de `AURA-DOM-001` |
+| `AURA-DOM-*` | `DOCUMENTABLE CUANDO LA RUTA LOS ALCANCE` | no implica implementación |
+| `AURA-AUTH-*` | `DOCUMENTABLE CUANDO LA RUTA LOS ALCANCE` | no implica implementación |
+| `AURA-UX-*` | `DOCUMENTABLE CUANDO LA RUTA LOS ALCANCE` | no implica implementación |
+| `AURA-INT-*` | `DOCUMENTABLE CUANDO LA RUTA LOS ALCANCE` | no implica implementación |
+| repositorio AURA | `NO_CONFIRMADO` | no se crea por esta tarea |
+| runtime AURA | `DEFERRED` | no se activa |
+| entorno AURA | `ENV-AURA-BLOCKED` | no se habilita |
+| planificación física AURA | `BLOQUEADO_AURA_SIN_REPOSITORIO` | no se autoriza implementación |
+| transferencia CMS | `NOT_AUTHORIZED` | VISO conserva custodia runtime |
+
+---
+
+#### 18. Handoff hacia WEB-FRM-011
+
+La ruta canónica coloca `WEB-FRM-011` inmediatamente después del cierre de la auditoría AURA.
+
+El handoff exacto es:
+
+```text
+AURA-AUD-012
+        ↓
+WEB-FRM-011
+        ↓
+AURA-DOM-001
+```
+
+`AURA-AUD-012` no desarrolla, adelanta ni modifica `WEB-FRM-011`.
+
+Solo fija que la puerta de decisión de AURA ya no bloquea la continuidad documental y que el siguiente trabajo debe respetar la secuencia vigente.
+
+---
+
+#### 19. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- la tarea no introduce un comportamiento físico nuevo;
+- no modifica runtime;
+- no crea una nueva regla de negocio distinta de las ya aprobadas;
+- no crea integraciones;
+- no cambia autorización;
+- no altera persistencia;
+- no cambia contratos de datos;
+- no autoriza transferencia CMS;
+- no cambia la disponibilidad material de AURA;
+- el cierre de decisión, la no disponibilidad actual, el ownership transitorio, el futuro cutover y la prohibición de asumir producto implementado ya están cubiertos por requisitos vigentes.
+
+Requisitos creados: `0`.
+
+Requisitos modificados: `0`.
+
+Requisitos diferidos: `0`.
+
+Requisitos obsoletos: `0`.
+
+El Registro 04A no se modifica.
+
+---
+
+#### 20. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar, en especial:
+
+- `TREQ-AURA-004`, para distinguir identidad/reserva de producto realmente implementado;
+- `TREQ-AURA-005`, para detectar cualquier aparición futura de repositorio, dominio, ruta, pantalla, launcher o permiso relacionado con AURA;
+- `TREQ-AURA-006`, para mantener AURA no disponible mientras falten producto, despliegue, rutas, autorización y demás condiciones materiales;
+- `TREQ-AURA-007`, para conservar VISO y Vento-Group como propietarias de las superficies actuales mientras no exista transferencia aprobada;
+- `TREQ-AURA-027`, para exigir decisión formal, ADR, migración, cutover, reconciliación y rollback antes de una futura transferencia CMS;
+- la cobertura vigente de integración, autorización, privacidad, auditoría, continuidad y rollback aplicable.
+
+Ningún requisito cambia de identidad, texto, estado, relación, propietaria, evidencia ni secuencia por `AURA-AUD-012`.
+
+---
+
+#### 21. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `AURA-AUD-012` en la rama documental del usuario. |
+| LOCAL | `NOT_EXECUTED` | El artefacto aún no ha sido insertado en el checkout del usuario ni sometido allí al formateador, quality, delivery check y batería global. |
+| REMOTA | `PASS` | Se verificaron en el repositorio canónico la identidad y título de `AURA-AUD-012`, su propietario, la secuencia `PHASE-12-AURA`, el modo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, el siguiente trabajo `WEB-FRM-011`, las condiciones de continuidad de AURA, `INT-MKT-001`, el estado `BLOQUEADO_AURA_SIN_REPOSITORIO` y la cobertura AURA vigente; `AURA-AUD-011` se consume como artefacto completo aprobado por el usuario mientras termina su incorporación. |
+| OPERATIVA | `NOT_EXECUTED` | La tarea no modifica operación real, campañas, CMS, clientes, ventas, fidelización, inventario, producción, economía, canales ni proveedores. |
+| FÍSICA | `NOT_APPLICABLE` | `AURA-AUD-012` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea ni modifica producto, infraestructura, datos, repositorios o despliegues. |
+
+---
+
+#### 22. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+1. conserva `AURA-AUD-011` como tarea anterior;
+2. conserva `WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz` como única tarea siguiente;
+3. confirma que la decisión de continuidad ya existe;
+4. confirma que el ADR de continuidad ya existe;
+5. no reabre continuidad, reemplazo o retiro;
+6. cierra la puerta documental previa de auditoría;
+7. permite continuar exclusivamente por la ruta canónica;
+8. no salta `WEB-FRM-011`;
+9. no inicia `AURA-DOM-001` anticipadamente;
+10. mantiene AURA como aplicación objetivo preservada;
+11. mantiene AURA `DEFERRED` en runtime;
+12. mantiene `ENV-AURA-BLOCKED`;
+13. mantiene la planificación física `BLOQUEADO_AURA_SIN_REPOSITORIO`;
+14. mantiene AURA no disponible para navegación real;
+15. no declara repositorio standalone existente;
+16. conserva cero usuarios efectivos AURA como estado actual;
+17. conserva cero rutas propias AURA como estado actual;
+18. conserva cero pantallas propias AURA como estado actual;
+19. mantiene VISO como custodia runtime transitoria del CMS;
+20. mantiene la transferencia CMS no autorizada;
+21. conserva PASS como autoridad de identidad, consentimiento y fidelización;
+22. conserva PULSO como autoridad transaccional y de validación comercial;
+23. conserva NUMERA como autoridad económica;
+24. conserva NEXO y FOGO como fuentes propietarias según contrato;
+25. no crea campañas;
+26. no conecta canales;
+27. no habilita IA;
+28. no usa datos reales de AURA;
+29. no crea ni modifica Supabase;
+30. no crea repositorio, host, DNS, rutas, pantallas ni secretos;
+31. no crea requisitos de prueba;
+32. no modifica requisitos de prueba;
+33. no modifica el Registro 04A;
+34. no crea instancia física ni package.
+
+---
+
+#### 23. Límites
+
+Esta tarea no:
+
+- cambia la decisión `CONTINUE`;
+- sustituye `ADR-AURA-001`;
+- implementa AURA;
+- crea un repositorio AURA;
+- elige stack tecnológico;
+- crea hosting o DNS;
+- crea rutas o pantallas;
+- crea navegación real;
+- modifica launcher runtime;
+- crea usuarios AURA;
+- crea permisos nuevos;
+- modifica Supabase;
+- crea tablas, vistas, funciones, RPC, RLS, triggers, jobs o colas;
+- crea secretos;
+- conecta canales externos;
+- conecta proveedores de IA;
+- crea campañas, audiencias, leads u oportunidades reales;
+- mueve CMS desde VISO;
+- migra contenido o media;
+- copia maestros desde PASS, PULSO, NUMERA, NEXO o FOGO;
+- ejecuta cutover;
+- ejecuta rollback;
+- abre `WEB-FRM-011` dentro de esta tarea;
+- adelanta `AURA-DOM-001`;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- inicia una instancia física o package.
 
 ---
 
@@ -6094,3 +6670,16 @@ Esta tarea no:
 > La existencia de estas tareas no autoriza implementación, conexión de canales,
 > uso de datos reales, publicación, contacto con clientes ni contratación de
 > proveedores de inteligencia artificial.
+
+---
+
+#### 24. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUD-011 — Documentar decisión mediante ADR si corresponde`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUD-012 — Mantener roadmap de implementación bloqueado hasta decisión`
+
+**SIGUIENTE TAREA RESERVADA**
+`WEB-FRM-011 — Implementar suscripción de newsletter o retirar la interfaz`
