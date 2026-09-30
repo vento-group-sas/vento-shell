@@ -5758,6 +5758,1205 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento`
 
-### [ ] AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
+### ✅ AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos
+**Tarea siguiente:** AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones
+**Tipo de tarea:** documental; diseño canónico de la experiencia de inbox reputacional, clasificación, respuesta pública, moderación, escalamiento a servicio, seguimiento y cierre visible de AURA, preservando ownership de PULSO, PASS y VISO y sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, repositorios, cuentas de canal, reseñas, comentarios, respuestas, reclamos, compensaciones, identidades, tablas, migraciones, RLS, funciones, RPC, webhooks, jobs, integraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá recibir y gobernar señales públicas de reputación provenientes de reseñas, comentarios, menciones, valoraciones y otras superficies autorizadas, clasificarlas, priorizarlas, preparar respuestas trazables, escalar a servicio cuando corresponda y mostrar de forma inequívoca qué parte del tratamiento público está resuelta y qué parte continúa abierta en un proceso propietario distinto.
+
+La regla raíz es:
+
+```text
+RESEÑA
+!= COMENTARIO
+!= MENCION
+!= FEEDBACK
+!= RECLAMO FORMAL
+!= CASO DE SERVICIO
+!= RESPUESTA PUBLICA
+!= RESOLUCION
+```
+
+AURA gobierna reputación, contexto público, clasificación, respuesta y seguimiento reputacional. PULSO conserva reclamos, devoluciones, compensaciones y cierre formal de `VPROC-0046`. PASS conserva identidad y consentimiento. VISO conserva la superficie administrativa de servicio prevista.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-006`, para mantener separadas oportunidad comercial, caso B2B y señal reputacional y no convertir comentarios públicos en leads por inferencia;
+- `AURA-DOM-009`, para identidad reputacional, clasificación, severidad, respuesta pública, moderación, escalamiento a servicio, reconciliación y cierre reputacional;
+- `AURA-DOM-004`, para grounding, separación entre hecho, inferencia y propuesta, trazabilidad de IA y revisión humana;
+- `AURA-DOM-005`, para cuentas, endpoints, publicación, idempotencia, resultado ambiguo, retiro y reconciliación externa;
+- `AURA-DOM-008`, para impedir que volumen, sentimiento o comentarios se presenten como impacto empresarial sin método y confianza;
+- `AURA-AUTH-002`, para separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública;
+- `AURA-AUTH-003`, para proteger leads, datos de clientes, exportaciones y acciones masivas cuando una señal reputacional se correlacione con una persona o caso;
+- `AURA-AUTH-004`, para credenciales, proveedores, archivos y datos enviados a terceros;
+- `VPROC-0046 — Gestionar reclamo, devolución, compensación y aprendizaje de causa`, bajo ownership PULSO;
+- `CAP-SCOPE-010`, para separar pregunta, solicitud, reclamo, feedback, devolución, compensación, reserva y comunicación;
+- `CAP-SCOPE-014`, especialmente `CAP-14.11 — Gestionar reputación y comentarios públicos`;
+- los hallazgos `H-CAP-SCOPE-014-025` y `H-CAP-SCOPE-014-026`;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+
+Ninguna de estas fuentes cambia de propietaria por esta tarea.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer una experiencia capaz de responder, para cada señal reputacional:
+
+```text
+¿DONDE APARECIO?
+¿CUAL ES EL ELEMENTO EXACTO?
+¿QUE CONTENIDO ORIGINAL SE OBSERVO?
+¿QUE PARTE ES HECHO Y QUE PARTE ES INFERENCIA?
+¿QUE CLASIFICACION Y SEVERIDAD TIENE?
+¿QUE CONFIANZA TIENE ESA CLASIFICACION?
+¿REQUIERE RESPUESTA PUBLICA?
+¿REQUIERE REVISION HUMANA?
+¿REQUIERE ESCALAMIENTO A SERVICIO?
+¿EXISTE UN CASO FORMAL RELACIONADO?
+¿QUIEN ES RESPONSABLE?
+¿QUE RESPUESTA FUE PROPUESTA, APROBADA Y PUBLICADA?
+¿EL ESTADO EXTERNO ESTA CONFIRMADO O ES AMBIGUO?
+¿QUE PARTE SIGUE ABIERTA FUERA DE AURA?
+```
+
+La experiencia se organiza alrededor de seis superficies conceptuales:
+
+1. inbox reputacional;
+2. detalle y contexto de la señal;
+3. clasificación, riesgo y decisión de tratamiento;
+4. preparación, revisión y publicación de respuesta;
+5. escalamiento y vínculo con servicio;
+6. seguimiento, reconciliación, historial y cierre reputacional.
+
+---
+
+#### 4. Fronteras conceptuales obligatorias
+
+La interfaz deberá preservar explícitamente:
+
+```text
+CONTENIDO OBSERVADO != CLASIFICACION != INFERENCIA != HECHO EMPRESARIAL
+```
+
+```text
+AUTOR PUBLICO != PERSONA CLIENTE CONFIRMADA
+```
+
+```text
+RESPUESTA PROPUESTA != RESPUESTA APROBADA != RESPUESTA PUBLICADA
+```
+
+```text
+RESPUESTA PUBLICA PUBLICADA != RECLAMO RESUELTO != COMPENSACION APROBADA
+```
+
+```text
+PRIORIDAD REPUTACIONAL != PRIORIDAD VPROC-0046
+```
+
+```text
+ELEMENTO ELIMINADO EN CANAL != PROBLEMA RESUELTO
+```
+
+Estas diferencias permanecen aunque una misma vista presente los objetos relacionados.
+
+---
+
+#### 5. Arquitectura de experiencia
+
+La experiencia deberá ofrecer navegación estable entre:
+
+- señal original;
+- proveedor y canal;
+- marca y sede cuando exista evidencia;
+- publicación o campaña relacionada cuando corresponda;
+- autor externo mínimo permitido;
+- clasificación;
+- severidad;
+- confianza;
+- responsable;
+- decisión de tratamiento;
+- borrador y versiones de respuesta;
+- revisión y aprobación;
+- estado externo de publicación;
+- moderación cuando exista;
+- escalamiento;
+- caso formal correlacionado cuando exista;
+- seguimiento;
+- reconciliación;
+- historial y cierre reputacional.
+
+La navegación no convierte estas relaciones en un objeto único ni borra ownership externo.
+
+---
+
+#### 6. Entrada desde AURA-UX-006
+
+La 007 recibe continuidad de experiencia desde la 006 sin absorber el pipeline comercial.
+
+Se conserva:
+
+```text
+INTERACCION COMERCIAL
+!= SEÑAL REPUTACIONAL
+```
+
+Una interacción pública podrá contener una oportunidad comercial, un reclamo, una pregunta o una señal reputacional, pero deberá clasificarse antes de enviarse al proceso correspondiente.
+
+Si existe una necesidad comercial real, la experiencia podrá enlazar con el objeto de AURA-UX-006 sin convertir la señal reputacional en oportunidad automáticamente.
+
+Si existe investigación, remedio o decisión de servicio, el destino correcto será el proceso propietario de servicio y no el pipeline B2B.
+
+---
+
+#### 7. Inbox reputacional canónico
+
+El inbox deberá reunir de forma gobernada reseñas, comentarios, menciones, valoraciones y otras señales públicas autorizadas.
+
+Cada elemento deberá poder resumir:
+
+- tipo de señal;
+- canal o proveedor;
+- marca;
+- sede cuando esté demostrada;
+- publicación o campaña correlacionada cuando exista;
+- fragmento seguro del contenido;
+- timestamp de origen;
+- clasificación;
+- severidad;
+- confianza;
+- responsable;
+- decisión pendiente;
+- estado de respuesta;
+- estado de escalamiento;
+- referencia de caso formal cuando exista;
+- indicadores de ambigüedad, duplicado o reconciliación.
+
+El inbox no reducirá toda la operación a leído/no leído o abierto/cerrado.
+
+---
+
+#### 8. Vistas de trabajo del inbox
+
+La experiencia deberá permitir distinguir, como mínimo:
+
+- sin clasificar;
+- clasificados pendientes de decisión;
+- pendientes de revisión humana;
+- respuestas en preparación;
+- respuestas pendientes de aprobación;
+- respuestas publicadas pendientes de confirmación;
+- escalaciones pendientes;
+- elementos vinculados con caso de servicio;
+- elementos bajo seguimiento;
+- elementos con reconciliación pendiente;
+- tratamiento reputacional cerrado con proceso externo todavía abierto;
+- completamente cerrados dentro del alcance reputacional.
+
+Una agrupación visual podrá resumir, pero no colapsar estados materialmente distintos.
+
+---
+
+#### 9. Filtros y orden
+
+Los filtros deberán operar sobre atributos autorizados y no ampliar acceso.
+
+Podrán incluir, cuando corresponda:
+
+- canal;
+- marca;
+- sede demostrada;
+- tipo de señal;
+- tema;
+- severidad;
+- confianza;
+- responsable;
+- estado de tratamiento;
+- estado de respuesta;
+- estado de escalamiento;
+- existencia de caso formal;
+- fecha;
+- campaña o publicación correlacionada.
+
+Filtrar o seleccionar elementos no concede capacidad para responder, moderar, exportar o ejecutar acciones masivas.
+
+---
+
+#### 10. Detalle de la señal
+
+El detalle deberá mantener separado:
+
+- contenido original observado;
+- evidencia de captura;
+- identidad externa;
+- contexto de publicación;
+- clasificación vigente;
+- historial de clasificaciones;
+- inferencias asistidas;
+- fuentes empresariales relacionadas;
+- respuestas y versiones;
+- escalaciones;
+- vínculos con casos formales;
+- acciones de moderación;
+- eventos de reconciliación;
+- historial de responsables.
+
+La interfaz no reescribirá el contenido original para ajustarlo a una clasificación posterior.
+
+---
+
+#### 11. Identidad del elemento
+
+La experiencia deberá hacer visible que:
+
+```text
+MISMO TEXTO != MISMO ELEMENTO
+```
+
+```text
+MISMO AUTOR VISIBLE != MISMA PERSONA CLIENTE
+```
+
+```text
+MISMA PUBLICACION != MISMO COMENTARIO
+```
+
+La identidad deberá apoyarse en identificadores del proveedor, canal, contexto y timestamps cuando estén disponibles.
+
+Una posible duplicidad se presenta como hipótesis revisable y no como fusión automática.
+
+---
+
+#### 12. Observado versus interpretado
+
+La interfaz deberá distinguir visualmente:
+
+- texto observado;
+- dato nativo del canal;
+- clasificación humana;
+- clasificación asistida;
+- nivel de confianza;
+- inferencia de intención;
+- hecho empresarial confirmado desde otra fuente.
+
+Una afirmación del autor no se presenta como verdad confirmada por Vento.
+
+Una etiqueta generada por IA no se presenta como hecho observado.
+
+---
+
+#### 13. Ejes de clasificación
+
+La experiencia deberá permitir revisar por separado:
+
+1. naturaleza de la interacción;
+2. tema principal;
+3. severidad o riesgo;
+4. necesidad de respuesta;
+5. necesidad de escalamiento;
+6. confianza y limitaciones de la clasificación.
+
+Estos ejes pueden divergir.
+
+Por ejemplo, una reseña positiva puede contener un problema de seguridad que exija escalamiento.
+
+---
+
+#### 14. Naturaleza de la interacción
+
+La clasificación deberá poder representar, cuando aplique:
+
+- pregunta pública;
+- reconocimiento o felicitación;
+- sugerencia;
+- experiencia compartida;
+- inconformidad;
+- alegación o acusación;
+- solicitud de ayuda;
+- solicitud de remedio;
+- contenido abusivo;
+- spam;
+- contenido no relacionado;
+- señal ambigua.
+
+Estas categorías orientan tratamiento; no crean automáticamente un reclamo formal.
+
+---
+
+#### 15. Tema y contexto
+
+La experiencia podrá referenciar temas como:
+
+- producto;
+- calidad percibida;
+- servicio;
+- pedido;
+- entrega;
+- pago;
+- promoción o beneficio;
+- reserva o evento;
+- sede;
+- canal;
+- marca;
+- comunicación o campaña;
+- privacidad;
+- seguridad;
+- riesgo material.
+
+El tema no determina por sí solo causa, responsabilidad ni remedio.
+
+---
+
+#### 16. Severidad
+
+La severidad deberá mostrar su razón y no derivarse únicamente del sentimiento.
+
+La experiencia deberá resaltar cuando exista posible:
+
+- afectación a seguridad;
+- riesgo legal o regulatorio;
+- exposición de datos personales;
+- acusación de fraude o conducta grave;
+- devolución, reembolso o compensación potencial;
+- incidente operacional activo;
+- alta difusión pública;
+- incidente multicanal;
+- riesgo reputacional significativo.
+
+La severidad reputacional no sustituye la prioridad formal del caso de servicio.
+
+---
+
+#### 17. Confianza e incertidumbre
+
+Cuando clasificación, identidad, sede, producto, pedido, campaña, causa o intención sean inciertos, la interfaz deberá conservar la incertidumbre.
+
+Se deberá poder mostrar:
+
+- clasificación propuesta;
+- confianza;
+- evidencia usada;
+- dato faltante;
+- necesidad de revisión.
+
+Baja confianza en una decisión material no conduce a silencio automático; conduce a revisión.
+
+---
+
+#### 18. Revisión humana reforzada
+
+La experiencia deberá forzar o destacar revisión humana cuando exista:
+
+- riesgo legal;
+- seguridad;
+- privacidad;
+- acusación grave;
+- crisis;
+- posible compensación;
+- reclamo formal o potencial;
+- contenido ambiguo con impacto material;
+- respuesta que admita hechos o responsabilidades;
+- cuenta sensible;
+- fuente con autoridad o frescura dudosa.
+
+Una recomendación asistida no puede saltar esta guarda.
+
+---
+
+#### 19. Responsable y asignación
+
+Todo elemento que requiera acción deberá mostrar responsable vigente y fecha de asignación.
+
+La asignación reputacional no concede automáticamente autoridad para:
+
+- aprobar respuesta;
+- publicar;
+- moderar;
+- compensar;
+- cerrar un caso de servicio.
+
+Cambiar de responsable conserva historial y motivo.
+
+---
+
+#### 20. Decisión de tratamiento
+
+La experiencia deberá exigir una decisión explícita entre estados conceptuales como:
+
+- no requiere respuesta;
+- requiere respuesta pública;
+- requiere revisión adicional;
+- requiere conversación privada autorizada;
+- requiere escalamiento a servicio;
+- requiere escalamiento a otra función competente;
+- requiere moderación o reporte;
+- requiere monitoreo.
+
+La decisión conserva actor, motivo y timestamp.
+
+---
+
+#### 21. Espacio de preparación de respuesta
+
+El editor o espacio conceptual de respuesta deberá mostrar:
+
+- señal exacta respondida;
+- marca y cuenta objetivo;
+- tono y lineamientos vigentes;
+- borrador actual;
+- versiones previas;
+- fuentes usadas para afirmaciones materiales;
+- alertas de privacidad;
+- alertas de hechos no comprobados;
+- estado de revisión;
+- estado de aprobación;
+- estado de publicación.
+
+Una respuesta no se considera publicada por estar aprobada.
+
+---
+
+#### 22. Grounding de respuestas
+
+Antes de aprobar una respuesta con afirmaciones materiales, la experiencia deberá permitir verificar su fuente.
+
+No se presentará como confirmado sin evidencia suficiente:
+
+- composición o atributo específico de producto;
+- aprobación de devolución o reembolso;
+- fecha de entrega;
+- disponibilidad;
+- responsabilidad de una persona;
+- compensación;
+- conclusión de investigación;
+- falsedad de una reseña;
+- resolución de un caso todavía abierto.
+
+La UI deberá favorecer la corrección factual sobre la velocidad de respuesta.
+
+---
+
+#### 23. Privacidad en público
+
+Antes de publicar, la experiencia deberá detectar o advertir exposición innecesaria de:
+
+- nombre completo;
+- teléfono;
+- correo;
+- dirección;
+- datos de pago;
+- identificadores sensibles de pedido;
+- detalle interno de investigación;
+- documentos;
+- datos laborales;
+- información de terceros;
+- compensaciones confidenciales.
+
+Cuando se requiera información privada, la acción correcta será mover la conversación a un canal autorizado, no solicitar datos sensibles en público.
+
+---
+
+#### 24. Paso de público a privado
+
+Mover una conversación deberá conservar:
+
+- elemento público origen;
+- razón del cambio de canal;
+- canal privado autorizado;
+- responsable;
+- timestamp;
+- correlación posterior;
+- restricciones de minimización.
+
+La UI deberá mantener visible:
+
+```text
+CONVERSACION TRASLADADA A PRIVADO != CASO RESUELTO
+```
+
+---
+
+#### 25. Asistencia de IA
+
+La IA podrá ayudar a:
+
+- resumir;
+- proponer tema;
+- sugerir sentimiento;
+- detectar señales de riesgo;
+- proponer borradores;
+- comparar tono de marca;
+- detectar posible duplicidad;
+- priorizar revisión.
+
+La experiencia deberá impedir presentar como acción ejecutable autónoma:
+
+- publicar respuesta;
+- responder crisis;
+- admitir responsabilidad;
+- negar hechos no comprobados;
+- prometer compensación;
+- crear o cerrar reclamos;
+- moderar contenido;
+- identificar definitivamente una persona cliente.
+
+---
+
+#### 26. Segregación visible de acciones
+
+La experiencia deberá mantener acciones, estados y permisos diferenciados para:
+
+```text
+CLASIFICAR
+!= PROPONER RESPUESTA
+!= REVISAR RESPUESTA
+!= APROBAR RESPUESTA
+!= PUBLICAR RESPUESTA
+!= MODERAR
+!= ESCALAR A SERVICIO
+!= CERRAR CASO DE SERVICIO
+```
+
+La UI nunca utilizará un único botón o estado que haga parecer equivalentes estas decisiones.
+
+---
+
+#### 27. Ciclo visible de respuesta
+
+La respuesta deberá mostrar un ciclo explícito, como mínimo conceptual:
+
+```text
+SIN_RESPUESTA_DEFINIDA
+-> BORRADOR
+-> REVISION
+-> APROBACION
+-> LISTA_PARA_PUBLICAR
+-> PUBLICACION_SOLICITADA
+-> PUBLICADA_CONFIRMADA
+```
+
+Y deberá permitir estados no terminales o excepcionales como:
+
+```text
+PUBLICACION_AMBIGUA
+RECONCILIACION_REQUERIDA
+CORRECCION_REQUERIDA
+RETIRO_REQUERIDO
+```
+
+Estos nombres son representación UX del contrato y no crean un nuevo namespace técnico propietario.
+
+---
+
+#### 28. Disparadores de escalamiento a servicio
+
+La experiencia deberá destacar escalamiento cuando exista necesidad de investigación, decisión o remedio formal, incluyendo:
+
+- devolución;
+- reembolso;
+- reposición;
+- compensación;
+- problema de pedido, entrega, pago o beneficio;
+- inconformidad que requiera decisión formal;
+- incidente de seguridad, salud o privacidad;
+- repetición de un problema que exija investigación de causa;
+- evidencia que deba gestionarse mediante expediente formal;
+- situación en la que responder públicamente no sea suficiente.
+
+Escalar no presupone responsabilidad ni validez del reclamo.
+
+---
+
+#### 29. Proyección de `VPROC-0046`
+
+Cuando exista caso formal relacionado, AURA deberá mostrar únicamente una proyección autorizada del proceso propietario.
+
+Los estados canónicos preservados son:
+
+```text
+CLAIM_RECEIVED
+-> TRIAGE_IN_PROGRESS
+-> EVIDENCE_PENDING
+-> UNDER_INVESTIGATION
+-> RESOLUTION_PROPOSED
+-> AUTHORIZATION_PENDING
+-> REMEDY_IN_PROGRESS
+-> CAUSE_ACTION_PENDING
+-> CUSTOMER_VALIDATION_PENDING
+-> CLAIM_CASE_CLOSED
+```
+
+AURA no podrá editar esas transiciones desde la experiencia reputacional.
+
+---
+
+#### 30. Handoff mínimo a servicio
+
+La acción de escalar deberá mostrar y confirmar únicamente el contexto necesario:
+
+- identidad del elemento reputacional;
+- canal y referencia externa;
+- texto o evidencia relevante;
+- timestamp;
+- marca y sede demostradas;
+- producto, publicación, campaña, pedido o venta correlacionados con evidencia cuando existan;
+- motivo de escalamiento;
+- clasificación y limitaciones;
+- riesgo observado;
+- respuestas públicas ya emitidas;
+- identidad cliente únicamente cuando exista correlación autorizada;
+- adjuntos permitidos.
+
+La UI no ofrecerá por defecto copiar un perfil completo del cliente.
+
+---
+
+#### 31. Resultado del handoff
+
+La experiencia deberá distinguir claramente:
+
+- aceptado y correlacionado;
+- devuelto por información insuficiente;
+- rechazado por proceso incorrecto;
+- ya existente y deduplicado;
+- resultado desconocido pendiente de reconciliación.
+
+Estos resultados no comparten un mismo estado de éxito/fallo.
+
+---
+
+#### 32. Handoff ambiguo
+
+Si no se conoce el resultado de una transferencia, la experiencia deberá bloquear el reintento ciego cuando exista riesgo de duplicar casos.
+
+Se conserva:
+
+```text
+RESULTADO DESCONOCIDO != HANDOFF FALLIDO
+```
+
+La UI deberá orientar a reconciliación antes de volver a transferir.
+
+---
+
+#### 33. Autor desconocido o no vinculado
+
+Una señal pública podrá existir sin identidad PASS conocida.
+
+La experiencia deberá poder mostrar:
+
+```text
+AUTOR PUBLICO NO VINCULADO
+```
+
+sin forzar:
+
+- creación de cuenta PASS;
+- fusión por nombre;
+- fusión por correo o teléfono no verificados;
+- enriquecimiento innecesario de perfil.
+
+Una correlación posterior conserva cuándo y bajo qué evidencia se estableció.
+
+---
+
+#### 34. Correlación con pedido o venta
+
+Cuando se intente relacionar una señal con pedido o venta, la UI deberá mostrar la fuente de la correlación y su confianza.
+
+No bastan por sí solos:
+
+- fecha aproximada;
+- nombre visible;
+- producto mencionado;
+- publicación de campaña;
+- sede inferida.
+
+La experiencia no permitirá revelar públicamente que una persona realizó una compra como consecuencia de una coincidencia débil.
+
+---
+
+#### 35. Calificación, feedback y reclamo
+
+La experiencia deberá representar explícitamente:
+
+```text
+CALIFICACION BAJA != RECLAMO AUTOMATICO
+```
+
+```text
+FEEDBACK != RECLAMO != CONVERSACION
+```
+
+Una señal negativa puede activar revisión o sugerir escalamiento, pero no abrir ni cerrar por sí sola un caso formal.
+
+---
+
+#### 36. Resultado de servicio de vuelta a AURA
+
+Cuando el caso formal cambie, AURA podrá mostrar una proyección mínima autorizada, como:
+
+- referencia de caso;
+- estado general utilizable externamente;
+- existencia de una decisión comunicable;
+- confirmación de que un seguimiento público es permitido;
+- timestamp de cambio;
+- resultado externo seguro cuando corresponda.
+
+La experiencia no requiere el expediente interno completo de servicio.
+
+---
+
+#### 37. Estado público y estado de servicio separados
+
+La UI deberá poder mostrar simultáneamente combinaciones como:
+
+| Tratamiento público | Caso de servicio | Lectura correcta |
+| --- | --- | --- |
+| pendiente | no creado | requiere decisión reputacional |
+| completado | abierto | comunicación pública atendida; servicio continúa |
+| pendiente | cerrado | caso formal terminó; comunicación pública todavía pendiente |
+| completado | cerrado | ambos frentes completados |
+| sin respuesta deliberada | abierto | silencio público decidido; servicio continúa |
+
+No se utilizará un único booleano `resolved`.
+
+---
+
+#### 38. Compensaciones y remedios
+
+AURA no deberá presentar controles para aprobar o ejecutar desde esta experiencia:
+
+- devolución;
+- reembolso;
+- reposición;
+- descuento;
+- cortesía;
+- cupón;
+- puntos;
+- crédito;
+- otro efecto económico.
+
+La experiencia podrá comunicar un remedio únicamente después de recibir una decisión autorizada desde su dominio propietario.
+
+---
+
+#### 39. Moderación
+
+Responder y moderar permanecen acciones distintas.
+
+La experiencia de moderación deberá mostrar, cuando exista soporte del proveedor:
+
+- política aplicable;
+- motivo;
+- autoridad requerida;
+- acción solicitada;
+- resultado externo;
+- timestamp;
+- evidencia;
+- necesidad de reconciliación.
+
+Un comentario incómodo o negativo no podrá clasificarse automáticamente como spam para mejorar métricas.
+
+---
+
+#### 40. Edición o eliminación del contenido fuente
+
+La experiencia deberá distinguir:
+
+```text
+ELEMENTO EDITADO
+!= HISTORIA ANTERIOR BORRADA
+```
+
+```text
+ELEMENTO ELIMINADO
+!= PROBLEMA RESUELTO
+```
+
+Cuando el proveedor cambie o elimine el contenido, AURA deberá mostrar la versión externa vigente y conservar la evidencia histórica permitida según retención y privacidad.
+
+---
+
+#### 41. Corrección o retiro de respuesta propia
+
+Si Vento debe corregir, editar o retirar una respuesta, la experiencia deberá conservar:
+
+- relación con la versión anterior;
+- motivo;
+- autoridad;
+- nueva versión;
+- acción externa solicitada;
+- estado confirmado o ambiguo;
+- timestamp.
+
+No se sobrescribe silenciosamente la historia.
+
+La corrección de respuesta no cambia automáticamente el estado de `VPROC-0046`.
+
+---
+
+#### 42. Idempotencia y reconciliación
+
+La UI deberá impedir que doble clic, retry, timeout o recuperación de conexión se presenten como razón suficiente para repetir una publicación o moderación.
+
+Cuando el resultado externo sea ambiguo deberá mostrar:
+
+```text
+RECONCILIACION_REQUERIDA
+```
+
+antes de volver a ejecutar una acción potencialmente duplicable.
+
+---
+
+#### 43. Eventos tardíos y fuera de orden
+
+Un evento externo tardío no deberá hacer que la experiencia:
+
+- recree un elemento ya conciliado;
+- reabra automáticamente un caso formal cerrado;
+- marque una respuesta antigua como vigente;
+- convierta eliminación externa en resolución;
+- duplique una moderación.
+
+La UI deberá preferir historial y reconciliación antes que reescritura silenciosa.
+
+---
+
+#### 44. No responder como decisión explícita
+
+Cuando un elemento revisado no deba recibir respuesta, la experiencia deberá registrar la decisión y su motivo.
+
+Podrá corresponder a:
+
+- política;
+- duplicidad;
+- spam confirmado;
+- conversación ya trasladada;
+- riesgo de amplificación;
+- limitación del canal;
+- otra razón aprobada.
+
+Falta de asignación, error técnico o elemento perdido no se presentarán como decisión deliberada de no responder.
+
+---
+
+#### 45. Seguimiento
+
+El seguimiento deberá conservar lineage con el elemento original cuando:
+
+- el caso formal siga abierto;
+- la respuesta publicada requiera confirmación;
+- exista nueva réplica material;
+- el problema se repita;
+- aumente el riesgo reputacional;
+- la función competente solicite actualización pública.
+
+La interfaz no creará otra identidad de caso por comodidad.
+
+---
+
+#### 46. Crisis, seguridad, privacidad y riesgo legal
+
+Cuando exista posible crisis, seguridad, privacidad o riesgo legal, la experiencia deberá:
+
+- bloquear automatización autónoma de respuesta;
+- destacar revisión humana obligatoria;
+- preservar evidencia;
+- escalar a la función competente;
+- impedir promesas antes de decisión;
+- mantener trazabilidad reputacional sin adquirir ownership de la investigación.
+
+La rapidez de respuesta no prevalece sobre estas guardas.
+
+---
+
+#### 47. Alegaciones y hechos no comprobados
+
+La experiencia deberá permitir distinguir:
+
+- afirmación del autor;
+- hecho confirmado;
+- hecho contradicho por evidencia;
+- asunto no comprobado;
+- opinión subjetiva.
+
+Un borrador que transforme una inferencia interna en afirmación pública deberá mostrar una guarda antes de aprobación.
+
+---
+
+#### 48. Incidentes con múltiples elementos
+
+Cuando varias señales puedan pertenecer al mismo incidente, la experiencia podrá agruparlas sin destruir identidades fuente.
+
+La agrupación deberá conservar:
+
+- cada elemento;
+- cada autor;
+- cada canal;
+- regla de agrupación;
+- confianza;
+- posibilidad de separar elementos;
+- relación con uno o varios casos formales.
+
+Agrupar no fusiona personas ni crea causa confirmada.
+
+---
+
+#### 49. Reputación por marca, sede y producto
+
+Toda asociación a marca, sede o producto deberá mostrar fuente o evidencia suficiente.
+
+No se inferirá sede únicamente por ubicación aproximada, horario o producto común.
+
+No se creará un producto alternativo desde texto libre.
+
+Cuando la correlación sea incierta, la interfaz deberá conservar ese estado en vez de completar el dato por conveniencia.
+
+---
+
+#### 50. Privacidad de trabajadores y terceros
+
+Una mención pública a una persona trabajadora o tercero no autoriza exponer:
+
+- expediente laboral;
+- desempeño;
+- medidas internas;
+- identidad completa innecesaria;
+- datos del cliente;
+- investigación reservada.
+
+Si se requiere investigación laboral, disciplinaria, legal o de seguridad, la experiencia deberá escalar al propietario competente sin crear un expediente paralelo en AURA.
+
+---
+
+#### 51. Evidencia audiovisual y archivos
+
+Fotografías, videos, capturas y adjuntos deberán mostrarse bajo minimización y acceso por finalidad.
+
+La experiencia no deberá ofrecer envío automático de ese contenido a proveedores de IA o terceros.
+
+Los archivos deberán conservar referencia, propietario, vigencia, sensibilidad y acceso gobernado cuando corresponda.
+
+---
+
+#### 52. Auditoría e historial
+
+Toda acción material deberá poder reconstruir:
+
+- actor;
+- acción;
+- objeto;
+- versión;
+- motivo;
+- timestamp;
+- fuente;
+- autorización relevante;
+- resultado;
+- referencia externa;
+- referencia de caso formal cuando exista.
+
+Cambios posteriores de clasificación, severidad, responsable, correlación, respuesta o vínculo con caso no borran el estado histórico que sustentó decisiones anteriores.
+
+---
+
+#### 53. Cierre reputacional
+
+El tratamiento reputacional podrá cerrarse cuando:
+
+- la clasificación y decisión estén registradas;
+- cualquier respuesta requerida tenga estado externo conocido o excepción explícita;
+- cualquier escalamiento requerido tenga resultado conocido;
+- no existan acciones reputacionales pendientes sin responsable;
+- la relación con procesos externos permanezca visible;
+- el cierre no falsee el estado del servicio.
+
+Se preserva:
+
+```text
+TRATAMIENTO REPUTACIONAL CERRADO
+!= CASO DE SERVICIO CERRADO
+```
+
+---
+
+#### 54. Handoff a AURA-UX-008
+
+La siguiente experiencia podrá recibir de la 007 únicamente señales gobernadas y resultados reputacionales trazables, incluyendo cuando corresponda:
+
+- volumen por tipo y canal;
+- tiempos de observación, clasificación, respuesta y escalamiento;
+- distribución de temas y severidad;
+- estado de respuesta;
+- estado de escalamiento;
+- relación con caso formal;
+- resultados externos reconciliados;
+- confianza e incertidumbre;
+- tendencias agregadas autorizadas.
+
+Se preserva:
+
+```text
+SEÑAL REPUTACIONAL != CAUSA DEMOSTRADA != IMPACTO EMPRESARIAL
+```
+
+`AURA-UX-008` podrá presentar resultados y recomendaciones, pero no deberá reinterpretar un cierre público como cierre de servicio ni convertir volumen de comentarios en causalidad.
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la separación entre reputación y servicio, el gobierno de respuestas públicas, la prohibición de autonomía sensible de IA, identidad, privacidad, idempotencia, reconciliación y fronteras AURA/PULSO/PASS ya están cubiertos por requisitos vigentes. Esta tarea desarrolla la experiencia prevista por esa cobertura sin ampliar el registro.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-003`, para reputación, resultados, cierre y separación entre respuesta pública y reclamo formal;
+- `TREQ-AURA-002`, para grounding, privacidad, trazabilidad de IA y prohibición de respuesta autónoma sensible;
+- `TREQ-AURA-001`, para identidad, versión, aprobación, publicación y trazabilidad de contenido;
+- `TREQ-PASS-011`, para preguntas, solicitudes, reclamos, feedback, decisión, comunicación y cierre separados;
+- `TREQ-PASS-010`, para identidad, consentimiento y prohibición de fusiones implícitas;
+- `TREQ-INTEGRATION-019`, para comentarios, identificadores internos/externos, payloads, estados, idempotencia, reintentos y reconciliación;
+- la cobertura vigente de PULSO asociada a reclamos, devoluciones, compensaciones y acciones sensibles;
+- la cobertura transversal vigente de autorización, privacidad, auditoría y evidencia.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación ni modificación del registro.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la compilación documental corresponde a la incorporación mediante el lifecycle del repositorio y no se ejecutó desde esta entrega |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha incorporado al checkout del usuario ni sometido allí a formatter, quality, delivery check y batería global |
+| REMOTA | PASS | se verificaron protocolo, contrato de entrega, continuidad, topología `DEFINE_ONCE`/`NO_PHYSICAL_INSTANCE`, owner AURA, `AURA-DOM-009`, `AURA-AUTH-002`, `AURA-AUTH-003`, los estados canónicos de `VPROC-0046`, ownership PULSO, hallazgos reputacionales 025/026, cobertura 04A aplicable, package.json y lifecycle documental vigentes; además se utiliza como base adelantada el artefacto completo aprobado de `AURA-UX-006` sin tratarlo como publicado |
+| OPERATIVA | NOT_APPLICABLE | no se consultaron cuentas, reseñas, comentarios, clientes, reclamos ni casos reales y no se ejecutó ninguna respuesta o moderación |
+| FÍSICA | NOT_APPLICABLE | la tarea es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no crea código, datos, permisos, integraciones, Supabase ni despliegues |
+
+---
+
+#### 58. Criterios de aceptación
+
+La tarea queda sustantivamente completa cuando se cumple simultáneamente:
+
+1. existe inbox reputacional separado del pipeline comercial;
+2. reseña, comentario, mención, feedback, reclamo y caso formal permanecen objetos distintos;
+3. contenido observado, clasificación, inferencia y hecho empresarial se distinguen visualmente;
+4. autor público no se presenta como identidad PASS por inferencia;
+5. clasificación conserva naturaleza, tema, severidad, escalamiento y confianza por separado;
+6. sentimiento no decide por sí solo routing ni cierre;
+7. baja confianza material conduce a revisión;
+8. elementos que requieren acción tienen responsable;
+9. no respuesta puede ser una decisión explícita y no un fallo oculto;
+10. respuesta pública conserva señal origen, versión, fuentes, actores y estado externo;
+11. privacidad pública impide exponer datos sensibles;
+12. mover a privado no cierra el asunto;
+13. IA puede asistir pero no publicar, moderar, compensar ni resolver crisis de forma autónoma;
+14. clasificar, proponer, revisar, aprobar, publicar, moderar y escalar permanecen separados;
+15. existen disparadores claros para escalamiento a servicio;
+16. `VPROC-0046` mantiene sus estados y ownership PULSO;
+17. AURA consume `VPROC-0046` solo como proyección autorizada;
+18. handoff de servicio minimiza datos;
+19. handoff aceptado, devuelto, rechazado, deduplicado y ambiguo permanecen distintos;
+20. resultado ambiguo se reconcilia antes de retry;
+21. correlación con pedido o venta exige evidencia;
+22. calificación baja no crea reclamo automáticamente;
+23. tratamiento público y servicio muestran estados independientes;
+24. AURA no decide devoluciones, reembolsos, compensaciones ni otros remedios;
+25. moderación exige política, autoridad y trazabilidad;
+26. contenido negativo legítimo no se clasifica como spam por conveniencia;
+27. edición o eliminación externa no prueba resolución ni borra historia;
+28. corrección o retiro de respuesta conserva lineage;
+29. publicaciones y moderaciones potencialmente duplicables son idempotentes y reconciliables;
+30. eventos tardíos no reescriben estados terminales válidos;
+31. prioridad reputacional y prioridad de servicio permanecen distintas;
+32. crisis, seguridad, privacidad y riesgo legal fuerzan revisión humana apropiada;
+33. alegaciones no se presentan como hechos confirmados;
+34. incidentes multi-elemento conservan identidad de cada señal y autor;
+35. marca, sede y producto no se completan sin evidencia;
+36. privacidad de trabajadores y terceros queda protegida;
+37. evidencia audiovisual no se envía automáticamente a IA o terceros;
+38. historial y auditoría preservan decisiones anteriores;
+39. cierre reputacional no falsea el estado de servicio;
+40. el handoff a `AURA-UX-008` entrega señales y resultados gobernados, no causalidad inventada;
+41. se crean y modifican cero requisitos de prueba;
+42. no se crea ninguna instancia física;
+43. la siguiente tarea reservada es exactamente `AURA-UX-008`.
+
+---
+
+#### 59. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- conectar cuentas o proveedores externos;
+- leer reseñas, comentarios o menciones reales;
+- publicar respuestas reales;
+- editar o retirar respuestas reales;
+- ocultar, borrar o reportar contenido real;
+- crear bots de moderación;
+- crear modelos de sentimiento o clasificación;
+- seleccionar proveedor de IA;
+- enviar contenido real a IA o terceros;
+- crear cuentas PASS desde identidades públicas;
+- identificar clientes por inferencia;
+- abrir, modificar o cerrar reclamos reales;
+- ejecutar devoluciones, reembolsos o compensaciones;
+- modificar pedidos o ventas;
+- crear tablas, vistas, funciones, RPC, triggers o migraciones;
+- modificar Supabase, RLS, Storage, Realtime o Edge Functions;
+- redefinir `VPROC-0046`;
+- diseñar adaptadores, webhooks, OAuth o payloads de `AURA-INT-001`;
+- definir contratos físicos de `AURA-INT-002`;
+- asignar permisos concretos de `AURA-AUTH-*`;
+- redefinir métricas o atribución de `AURA-DOM-008`;
+- crear o modificar requisitos del registro 04A;
+- iniciar implementación física;
+- adelantar `AURA-UX-008`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones`
 
 ### [ ] AURA-UX-008 — Diseñar tablero de resultados, atribución y copiloto de recomendaciones

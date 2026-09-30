@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1519** |
+| Aprobadas | **1520** |
 | En propuesta | **0** |
-| No iniciadas | **77** |
+| No iniciadas | **76** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **95.18% (1519/1596)** |
+| Porcentaje de completamiento | **95.24% (1520/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **77** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1420** |
+| ⏸ NO_EVALUADA | **76** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1421** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-UX-006` — Diseñar bandeja de oportunidades, B2B, catering y eventos | ✅ APROBADA |
-| Tarea actual | `AURA-UX-007` — Diseñar reputación, comentarios, respuestas y escalamiento | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-UX-008` — Diseñar tablero de resultados, atribución y copiloto de recomendaciones | ⬜ NO INICIADA |
+| Última aprobada | `AURA-UX-007` — Diseñar reputación, comentarios, respuestas y escalamiento | ✅ APROBADA |
+| Tarea actual | `AURA-UX-008` — Diseñar tablero de resultados, atribución y copiloto de recomendaciones | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-INT-001` — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1467,7 +1467,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-004` | Diseñar aprobación y publicación multicanal con estado y recuperación claros | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-005` | Diseñar campañas, promociones, cupones, experimentos y guardas | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-006` | Diseñar bandeja de oportunidades, B2B, catering y eventos | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-007` | Diseñar reputación, comentarios, respuestas y escalamiento | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-007` | Diseñar reputación, comentarios, respuestas y escalamiento | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-008` | Diseñar tablero de resultados, atribución y copiloto de recomendaciones | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-INT-001` | Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa | — | — | `bloques/W_AURA/05_INTEGRACIONES_DE_CANALES_Y_DATOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-INT-002` | Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO | — | — | `bloques/W_AURA/05_INTEGRACIONES_DE_CANALES_Y_DATOS.md` |
