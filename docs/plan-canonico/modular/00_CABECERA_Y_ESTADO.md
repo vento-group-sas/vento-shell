@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1524** |
+| Tareas aprobadas | **1525** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **72** |
+| Tareas no iniciadas | **71** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **95.49% (1524/1596)** |
+| Porcentaje de completamiento | **95.55% (1525/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-001 — Propietario sin check-in entra a administración** |
-| Tarea actual | **AUTH-QA-002 — Gerente general sin check-in entra a administración** |
+| Última tarea aprobada | **AUTH-QA-002 — Gerente general sin check-in entra a administración** |
+| Tarea actual | **AUTH-QA-003 — Gerente de sede solo opera sus sedes** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-003 — Gerente de sede solo opera sus sedes** |
+| Siguiente tarea | **AUTH-QA-004 — Trabajador sin turno queda bloqueado** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 1 de 60 aprobadas; AUTH-QA-002 pendiente** |
+| Progreso del bloque | **BLOQUE U: 2 de 60 aprobadas; AUTH-QA-003 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-002** |
+| Carril documental | **ACTIVO — AUTH-QA-003** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-001` — Propietario sin check-in entra a administración |
-| Tarea actual | `AUTH-QA-002` — Gerente general sin check-in entra a administración — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-003` — Gerente de sede solo opera sus sedes |
+| Última aprobada | `AUTH-QA-002` — Gerente general sin check-in entra a administración |
+| Tarea actual | `AUTH-QA-003` — Gerente de sede solo opera sus sedes — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-004` — Trabajador sin turno queda bloqueado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 1 DE 60 APROBADAS — ACTUAL AUTH-QA-002** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 2 DE 60 APROBADAS — ACTUAL AUTH-QA-003** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-001 — Propietario sin check-in entra a administración
-        ↓
-TAREA ACTUAL
 AUTH-QA-002 — Gerente general sin check-in entra a administración
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-003 — Gerente de sede solo opera sus sedes
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-004 — Trabajador sin turno queda bloqueado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 1 de 60 tareas aprobadas
+BLOQUE U — 2 de 60 tareas aprobadas
 ```

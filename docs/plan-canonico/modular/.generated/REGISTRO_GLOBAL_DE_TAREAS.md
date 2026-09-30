@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1524** |
+| Aprobadas | **1525** |
 | En propuesta | **0** |
-| No iniciadas | **72** |
+| No iniciadas | **71** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **95.49% (1524/1596)** |
+| Porcentaje de completamiento | **95.55% (1525/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **72** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1425** |
+| ⏸ NO_EVALUADA | **71** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1426** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-001` — Propietario sin check-in entra a administración | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-002` — Gerente general sin check-in entra a administración | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-003` — Gerente de sede solo opera sus sedes | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-002` — Gerente general sin check-in entra a administración | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-003` — Gerente de sede solo opera sus sedes | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-004` — Trabajador sin turno queda bloqueado | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1356,7 +1356,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-CI-023` | Ejecutar hypercare, conciliación y estabilización | — | — | `bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-CI-024` | Certificar cierre del paquete y transferencia a soporte | — | — | `bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-001` | Propietario sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-002` | Gerente general sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-002` | Gerente general sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-003` | Gerente de sede solo opera sus sedes | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-004` | Trabajador sin turno queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-005` | Trabajador con turno sin check-in queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
