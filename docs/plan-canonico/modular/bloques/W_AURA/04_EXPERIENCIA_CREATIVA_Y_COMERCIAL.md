@@ -768,7 +768,921 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual`
 
-### [ ] AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual
+### ✅ AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades
+**Tarea siguiente:** AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
+**Tipo de tarea:** documental; diseño canónico de la experiencia de memoria de marca, brief guiado y calendario visual de AURA, con versionado, estados, validaciones, navegación y fronteras hacia creación, aprobación y publicación posteriores, sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, repositorios, tablas, migraciones, RLS, funciones, RPC, Storage, jobs, integraciones, datos, campañas, credenciales, proveedores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá permitir comprender y preparar trabajo de marketing sin perder gobierno de marca ni convertir planificación visual en ejecución automática.
+
+La experiencia une tres responsabilidades relacionadas pero distintas:
+
+```text
+SISTEMA DE MARCA
+-> define el contexto creativo gobernado
+
+BRIEF GUIADO
+-> convierte una necesidad en una iniciativa suficientemente completa y versionada
+
+CALENDARIO VISUAL
+-> proyecta temporalmente iniciativas, hitos, dependencias y ventanas previstas
+```
+
+pero conserva:
+
+```text
+MEMORIA DE MARCA
+!= BRIEF
+!= CAMPANA
+!= PIEZA
+!= PUBLICACION
+!= COLA DE PUBLICACION
+```
+
+El objetivo es que una persona autorizada pueda pasar de contexto de marca a un brief revisable y a una lectura temporal compartida sin depender de formularios extensos, configuraciones técnicas o conocimiento del modelo interno de datos.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-001`, que fija contexto autorizado de empresa y marca, divulgación progresiva, navegación sin duplicar fuentes de verdad, estados diferenciados y calendario inmediato como proyección;
+- `AURA-DOM-001`, para memoria de marca versionada, identidad, propósito, tono, mensajes, claims, restricciones, variantes, vigencia, responsabilidad y evidencia;
+- `AURA-DOM-002`, para objetivo empresarial, hipótesis, audiencia y exclusiones, brief versionado, calendario, presupuesto referenciado, dependencias, responsables, aprobación y ciclo documental de campaña;
+- `AURA-DOM-003`, para activos, derechos, versiones y reutilización que el brief podrá referenciar pero no administrar en detalle;
+- `AURA-DOM-005`, para mantener publicación, programación externa, reintentos, retiro y reconciliación fuera del calendario de planificación;
+- `AURA-AUTH-001` a `AURA-AUTH-004`, para alcance por empresa, marca, función, capacidad y recurso, segregación de funciones, protección de datos y secretos y acceso a terceros;
+- `VPROC-0056`, para preservar solicitud, brief, creación, revisión, aprobación, programación, publicación, rendimiento y cierre como estados y responsabilidades diferenciados;
+- `CAP-SCOPE-014`, para memoria de marca versionada, brief guiado y calendario como capacidades objetivo de AURA;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+
+Esta tarea no crea una nueva fuente maestra para marcas, productos, precios, disponibilidad, clientes, ventas, presupuesto, activos o publicación externa.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer una experiencia continua que permita responder:
+
+```text
+¿CON QUÉ MARCA Y VERSIÓN ESTOY TRABAJANDO?
+¿QUÉ REGLAS DE IDENTIDAD Y RESTRICCIONES APLICAN?
+¿QUÉ NECESIDAD EMPRESARIAL ESTOY CONVIRTIENDO EN BRIEF?
+¿QUÉ INFORMACIÓN FALTA ANTES DE REVISAR O APROBAR?
+¿QUÉ HITOS Y DEPENDENCIAS EXISTEN EN EL TIEMPO?
+¿QUÉ ELEMENTOS DEL CALENDARIO SON SOLO PLANIFICACIÓN Y CUÁLES YA TIENEN ESTADO EN SU FLUJO PROPIETARIO?
+```
+
+La experiencia se compone de tres espacios conceptuales conectados:
+
+1. sistema de marca;
+2. brief guiado;
+3. calendario visual.
+
+Los tres comparten contexto y referencias, pero ninguno sustituye al otro.
+
+---
+
+#### 4. Principios de experiencia
+
+La experiencia se rige por estos principios:
+
+1. **identidad antes que creación:** toda iniciativa parte de una marca y una versión gobernadas cuando la actividad sea de marca;
+2. **guía antes que formulario plano:** el brief se construye por decisiones comprensibles, no mediante una lista indiscriminada de campos;
+3. **completitud visible:** la persona puede distinguir qué está completo, qué falta, qué está bloqueado y por qué;
+4. **hechos desde fuentes propietarias:** precio, disponibilidad, presupuesto, consentimiento, producto y capacidad no se inventan para completar un brief;
+5. **versionado visible:** marca y brief muestran cuál versión está vigente y qué cambió materialmente;
+6. **calendario como proyección:** mover o mostrar un elemento en calendario no ejecuta una publicación ni cambia por sí solo un estado empresarial;
+7. **divulgación progresiva:** evidencia, historial, restricciones y fuentes aparecen bajo demanda sin desaparecer del contrato;
+8. **autorización antes que acción:** ver una marca, brief o evento no concede editar, aprobar, programar o publicar;
+9. **estado semántico antes que color:** ningún estado depende exclusivamente de color, posición o iconografía;
+10. **continuidad de contexto:** al pasar entre marca, brief y calendario se conserva el contexto aplicable sin fabricar autoridad.
+
+---
+
+#### 5. Sistema de marca
+
+El sistema de marca será la superficie de consulta y gobierno de la memoria aprobada que alimenta briefs y creación posterior.
+
+Deberá permitir reconocer, como mínimo:
+
+- marca seleccionada;
+- relación con el contexto organizacional autorizado;
+- versión de memoria de marca;
+- estado y vigencia;
+- propósito;
+- tono y reglas de expresión;
+- mensajes aprobados;
+- claims y su condición de evidencia;
+- restricciones;
+- variantes explícitas aplicables;
+- referencias de identidad visual;
+- responsables de revisión y aprobación;
+- historial de versiones.
+
+No deberá representar una marca como una carpeta de archivos, un prompt libre o una colección de copies sin vigencia.
+
+---
+
+#### 6. Selector y contexto de marca
+
+La experiencia deberá mostrar claramente qué marca gobierna el trabajo actual.
+
+Cuando el actor tenga acceso a varias marcas, el selector deberá:
+
+- listar únicamente marcas autorizadas;
+- distinguir marca de empresa, sujeto legal, establecimiento, sede y canal;
+- conservar el contexto activo durante la navegación compatible;
+- advertir cuando cambiar de marca afecte un brief todavía no guardado o una comparación actual;
+- no trasladar automáticamente datos, claims o variantes de una marca a otra;
+- impedir que un filtro visual amplíe alcance de autorización.
+
+Un cambio de marca es cambio de contexto, no reasignación automática de un objeto ya versionado.
+
+---
+
+#### 7. Resumen de marca
+
+La vista resumida de una marca priorizará información útil para tomar decisiones creativas y de planificación.
+
+Como mínimo mostrará:
+
+1. propósito aprobado;
+2. versión vigente;
+3. vigencia;
+4. rasgos de tono principales;
+5. mensajes o pilares reutilizables;
+6. restricciones críticas;
+7. claims vigentes que sean relevantes;
+8. variantes activas por sede, canal, audiencia o contexto cuando existan;
+9. advertencias por evidencia vencida o revisión pendiente;
+10. acceso al historial y detalle.
+
+La vista resumida no deberá ocultar una restricción crítica para simplificar la pantalla.
+
+---
+
+#### 8. Tono, mensajes y restricciones
+
+La experiencia deberá separar visual y semánticamente:
+
+```text
+TONO
+!= MENSAJE
+!= CLAIM
+!= RESTRICCION
+```
+
+El tono describe cómo puede expresarse la marca.
+
+Los mensajes definen formulaciones o significados aprobados dentro de un ámbito.
+
+Los claims son afirmaciones verificables que requieren fuente y vigencia.
+
+Las restricciones limitan lo que puede decirse o hacerse aunque resulte creativamente conveniente.
+
+Cada elemento deberá permitir conocer su ámbito y vigencia sin obligar a leer toda la memoria de marca.
+
+---
+
+#### 9. Claims y evidencia
+
+Cuando un claim sea visible en el sistema de marca, la experiencia deberá distinguir como mínimo:
+
+- claim utilizable y vigente;
+- claim próximo a revisión;
+- claim con evidencia vencida;
+- claim sustituido;
+- claim restringido al contexto actual;
+- claim no disponible para el actor.
+
+La interfaz podrá resumir la fuente, pero deberá permitir abrir la evidencia autorizada o su referencia.
+
+Queda prohibido tratar como claim aprobado un copy observado, una salida de IA, una pieza histórica o un texto repetido sin evidencia y vigencia suficientes.
+
+---
+
+#### 10. Variantes de marca
+
+Una variante explícita deberá mostrarse como extensión de una versión base, no como una marca paralela.
+
+La experiencia deberá dejar claro:
+
+- qué perfil base hereda;
+- qué dimensión especializa;
+- qué valores modifica;
+- qué restricciones permanecen heredadas;
+- cuál es su ámbito;
+- cuál es su vigencia;
+- quién la aprobó.
+
+Las variantes implícitas por costumbre local, canal, persona o proveedor no se presentarán como canónicas.
+
+---
+
+#### 11. Historial de marca
+
+El historial deberá permitir reconstruir versiones sin convertir una versión antigua en vigente por el solo hecho de consultarla.
+
+Una comparación entre versiones deberá priorizar cambios materiales en:
+
+- propósito;
+- tono;
+- mensajes;
+- claims;
+- restricciones;
+- ámbitos;
+- variantes;
+- vigencia;
+- responsabilidad.
+
+La interfaz deberá diferenciar `vigente`, `futura`, `sustituida`, `vencida` y `archivada` cuando esas semánticas apliquen.
+
+---
+
+#### 12. Acciones sobre memoria de marca
+
+Las acciones visibles dependerán de capacidad y estado.
+
+Conceptualmente podrán existir acciones como:
+
+- consultar;
+- proponer cambio;
+- revisar;
+- comparar versiones;
+- someter a aprobación;
+- aprobar cuando exista autoridad separada;
+- programar vigencia documental cuando el contrato lo permita;
+- sustituir o retirar una versión.
+
+La tarea no asigna permisos concretos ni convierte estas acciones en endpoints o componentes físicos.
+
+Una persona capaz de crear un brief no adquiere por ello capacidad de editar o aprobar memoria de marca.
+
+---
+
+#### 13. Entrada al brief guiado
+
+El brief podrá iniciarse desde:
+
+- una necesidad o solicitud;
+- una iniciativa ya registrada;
+- una campaña en preparación;
+- una marca seleccionada;
+- una acción derivada del inicio diario;
+- una duplicación controlada de un brief previo como nueva versión o nuevo borrador.
+
+La entrada deberá resolver el contexto disponible sin asumir datos faltantes.
+
+Duplicar un brief no duplica automáticamente su vigencia, aprobación, presupuesto, audiencia, disponibilidad ni calendario. Esos elementos deberán revalidarse.
+
+---
+
+#### 14. Estructura del brief guiado
+
+El brief se construirá por etapas comprensibles.
+
+La secuencia conceptual será:
+
+1. objetivo e hipótesis;
+2. marca y versión de memoria;
+3. audiencia y exclusiones;
+4. mensaje, oferta o acción propuesta;
+5. piezas o entregables esperados;
+6. canales candidatos;
+7. periodo y calendario;
+8. presupuesto o límite referenciado cuando aplique;
+9. dependencias y datos requeridos;
+10. riesgos, restricciones y guardas;
+11. responsables y aprobaciones;
+12. revisión de completitud antes de avanzar.
+
+La implementación futura podrá presentar pasos combinados o adaptativos, siempre que conserve estas decisiones y no oculte faltantes materiales.
+
+---
+
+#### 15. Objetivo e hipótesis en el brief
+
+El brief deberá empezar por el resultado empresarial que se busca y no por la pieza deseada.
+
+La experiencia diferenciará:
+
+```text
+RESULTADO EMPRESARIAL
+!= ACTIVIDAD
+!= METRICA DE VANIDAD
+!= ENTREGABLE CREATIVO
+```
+
+La hipótesis se mostrará como relación propuesta y no como hecho demostrado.
+
+Cuando el objetivo sea ambiguo o solo describa una actividad, la experiencia deberá pedir refinamiento antes de considerar el brief completo.
+
+---
+
+#### 16. Audiencia y exclusiones
+
+El brief guiado deberá permitir definir audiencia sin convertir la experiencia en un exportador de personas.
+
+La persona deberá poder comprender:
+
+- propósito de la audiencia;
+- criterios de inclusión;
+- criterios de exclusión;
+- canal o contexto previsto;
+- vigencia;
+- restricciones de consentimiento o finalidad;
+- fuente de atributos cuando sea material.
+
+La experiencia no deberá mostrar miembros identificables por defecto cuando la tarea solo requiere definir la audiencia lógica.
+
+Una audiencia definida no equivale a lista exportada, contacto autorizado ni segmento materializado.
+
+---
+
+#### 17. Mensaje, oferta y hechos variables
+
+El brief deberá distinguir entre intención creativa y hechos empresariales variables.
+
+Cuando el mensaje dependa de:
+
+- precio;
+- disponibilidad;
+- producto;
+- capacidad;
+- horario;
+- presupuesto;
+- beneficio;
+- consentimiento;
+- fecha comercial;
+- claim verificable;
+
+la experiencia deberá identificar la fuente propietaria o declarar el dato como pendiente.
+
+Un campo vacío no se completa con inferencia ni con generación de IA.
+
+---
+
+#### 18. Piezas y entregables esperados
+
+El brief podrá declarar qué resultados creativos se necesitan sin diseñarlos todavía.
+
+Cada entregable podrá expresar, cuando corresponda:
+
+- finalidad;
+- formato esperado;
+- canal candidato;
+- audiencia o contexto;
+- fecha objetivo;
+- dependencias;
+- activos requeridos;
+- derechos o restricciones conocidas;
+- estado de preparación.
+
+La creación, edición y fábrica de variantes corresponden a `AURA-UX-003`.
+
+---
+
+#### 19. Canales candidatos
+
+El brief podrá declarar canales previstos, pero la experiencia deberá mantener visible que:
+
+```text
+CANAL CANDIDATO
+!= CUENTA HABILITADA
+!= ENDPOINT APTO
+!= PUBLICACION PROGRAMADA
+```
+
+Un canal previsto sirve para orientar formato, longitud, entregables y calendario.
+
+La habilitación real, las credenciales y la publicación permanecen en sus tareas propietarias.
+
+---
+
+#### 20. Presupuesto y límites económicos
+
+Cuando una iniciativa requiera presupuesto, el brief deberá poder mostrar:
+
+- monto o límite referenciado;
+- periodo;
+- fuente económica;
+- estado de aprobación cuando exista;
+- responsable;
+- distribución prevista cuando sea relevante;
+- advertencia por desactualización o ausencia de fuente.
+
+AURA no se convierte en fuente económica ni permite asumir disponibilidad presupuestal a partir de un número escrito en el brief.
+
+---
+
+#### 21. Dependencias y guardas
+
+La experiencia deberá presentar dependencias como condiciones verificables y no como notas perdidas en texto libre.
+
+Una dependencia podrá estar:
+
+- satisfecha;
+- pendiente;
+- bloqueada;
+- vencida;
+- no aplicable;
+- desconocida por falta de evidencia.
+
+Las guardas materiales deberán destacarse antes de revisión o aprobación.
+
+Ejemplos incluyen evidencia de claim, disponibilidad, capacidad, presupuesto, consentimiento, derechos de activos, canal apto o aprobación requerida.
+
+`desconocido` no equivale a `satisfecho`.
+
+---
+
+#### 22. Completitud del brief
+
+La experiencia deberá ofrecer una lectura simple de completitud sin convertirla en un porcentaje engañoso.
+
+Como mínimo distinguirá:
+
+```text
+BORRADOR INCOMPLETO
+LISTO PARA REVISION
+EN REVISION
+REQUIERE CAMBIOS
+LISTO PARA APROBACION
+APROBADO
+```
+
+Estos nombres expresan semántica de experiencia y no crean por sí solos un namespace físico obligatorio.
+
+Un brief no podrá aparecer `listo` cuando falte una guarda material aunque todos los campos visuales tengan contenido.
+
+---
+
+#### 23. Validación contextual del brief
+
+La validación se presentará cerca de la decisión afectada y en lenguaje empresarial.
+
+Deberá distinguir:
+
+- campo faltante;
+- dato no verificable;
+- contradicción con memoria de marca;
+- claim sin evidencia suficiente;
+- dependencia no satisfecha;
+- vigencia incompatible;
+- falta de autorización;
+- error técnico;
+- dato vencido;
+- conflicto de versión.
+
+La experiencia no usará un mensaje genérico de `formulario inválido` cuando pueda indicar la causa material.
+
+---
+
+#### 24. Versionado del brief
+
+Cada cambio material deberá quedar asociado a una versión reconstruible.
+
+La experiencia deberá permitir reconocer:
+
+- versión actual;
+- estado;
+- autoría;
+- fecha;
+- cambio material;
+- versión anterior;
+- revisión o aprobación asociada;
+- motivo de cambio cuando sea requerido.
+
+Cambiar objetivo, marca, audiencia, oferta principal, presupuesto, periodo, claim material, canal principal o dependencia crítica después de aprobación deberá hacer visible la necesidad de nueva revisión proporcional.
+
+---
+
+#### 25. Revisión del brief
+
+Antes de pasar a creación, la experiencia deberá resumir en una sola vista revisable:
+
+- objetivo e hipótesis;
+- marca y versión;
+- audiencia y exclusiones;
+- mensaje u oferta;
+- entregables;
+- canales candidatos;
+- tiempo;
+- presupuesto referenciado;
+- dependencias;
+- guardas;
+- responsables;
+- faltantes o bloqueos.
+
+La revisión debe evitar que el aprobador tenga que reconstruir el brief recorriendo cada paso de entrada.
+
+Aprobar permanece separado de crear y editar.
+
+---
+
+#### 26. Calendario visual
+
+El calendario será una proyección temporal de planificación.
+
+Deberá permitir visualizar, según contexto autorizado:
+
+- iniciativas;
+- hitos de brief;
+- ventanas de creación;
+- revisiones;
+- aprobaciones previstas;
+- fechas objetivo de entregables;
+- ventanas de publicación previstas;
+- fechas comerciales relevantes;
+- dependencias temporales;
+- revisiones de resultados;
+- cierres previstos.
+
+No será fuente maestra de publicación ni reemplazará el estado del proceso propietario.
+
+---
+
+#### 27. Vistas del calendario
+
+El diseño deberá admitir al menos tres lecturas conceptuales del mismo conjunto autorizado:
+
+1. **periodo**, para comprender carga y distribución temporal;
+2. **agenda**, para ordenar próximos hitos y vencimientos;
+3. **iniciativa**, para leer la secuencia temporal de una campaña o brief concreto.
+
+La implementación futura podrá materializar estas lecturas como mes, semana, lista, timeline u otra composición compatible.
+
+La tarea no obliga a un componente o librería de calendario específica.
+
+---
+
+#### 28. Identidad visual de eventos
+
+Un elemento del calendario deberá comunicar sin depender solo del color:
+
+- tipo de objeto o hito;
+- marca;
+- estado;
+- fecha o ventana;
+- responsable cuando aplique;
+- bloqueo o dependencia;
+- relación con la iniciativa;
+- indicador de publicación real únicamente cuando provenga del flujo propietario correspondiente.
+
+El color podrá reforzar agrupación por marca, estado o categoría, pero deberá existir texto, iconografía accesible o etiqueta equivalente.
+
+---
+
+#### 29. Movimiento y edición temporal
+
+Mover visualmente un elemento no deberá producir una mutación empresarial silenciosa.
+
+Cuando la implementación futura permita reprogramar mediante drag-and-drop u otra interacción directa, deberá:
+
+1. comprobar que el actor puede modificar ese objeto;
+2. mostrar el cambio propuesto;
+3. recalcular dependencias y vigencias afectadas;
+4. advertir conflictos;
+5. confirmar cuando el cambio sea material;
+6. conservar auditoría;
+7. no alterar publicaciones externas ya programadas sin pasar por el flujo propietario.
+
+Por tanto:
+
+```text
+ARRASTRAR EN CALENDARIO
+!= REPROGRAMAR PUBLICACION EXTERNA AUTOMATICAMENTE
+```
+
+---
+
+#### 30. Conflictos de calendario
+
+La experiencia deberá hacer visibles conflictos temporales relevantes, por ejemplo:
+
+- entregable previsto después de su publicación objetivo;
+- aprobación posterior a la ventana necesaria;
+- dependencia no satisfecha antes del hito;
+- claim o condición que vence antes de ejecución;
+- campañas que compiten por una restricción conocida;
+- fecha fuera de vigencia de una oferta;
+- actividad bloqueada por un cambio material no revisado.
+
+La detección de conflicto no autoriza reordenamiento automático.
+
+---
+
+#### 31. Calendario y publicación real
+
+El calendario deberá diferenciar claramente:
+
+```text
+FECHA PREVISTA
+FECHA APROBADA
+TARGET PROGRAMADO
+PUBLICACION CONFIRMADA
+```
+
+Una fecha prevista puede cambiar durante planificación.
+
+Una publicación programada pertenece al contrato de canal y debe conservar cuenta, endpoint, versión, zona horaria, autorización y evidencia.
+
+Una publicación confirmada proviene del estado reconciliado del canal, no de haber alcanzado una fecha visual en el calendario.
+
+---
+
+#### 32. Filtros del calendario
+
+Los filtros podrán incluir, según autoridad:
+
+- marca;
+- iniciativa;
+- estado;
+- tipo de hito;
+- responsable;
+- canal candidato;
+- periodo;
+- bloqueos;
+- entregables.
+
+Un filtro reduce o reorganiza una proyección; nunca amplía autorización.
+
+Los filtros activos deberán permanecer visibles cuando puedan cambiar materialmente la interpretación de carga o próximos hitos.
+
+---
+
+#### 33. Estados vacíos, error y datos vencidos
+
+Sistema de marca, brief y calendario deberán distinguir:
+
+- no existen objetos todavía;
+- no existen objetos para el filtro actual;
+- el actor no está autorizado a verlos;
+- existe carga en curso;
+- existe fallo técnico;
+- existe resultado parcial;
+- la información está vencida;
+- existe conflicto de versión.
+
+Una pantalla vacía no podrá presentarse como evidencia de que no hay campañas, briefs o hitos en el sistema.
+
+---
+
+#### 34. Accesibilidad y adaptación de superficie
+
+La experiencia deberá conservar:
+
+- navegación completa por teclado;
+- foco visible;
+- semántica y nombres accesibles;
+- contraste suficiente;
+- información de estado no dependiente solo de color;
+- alternativas a hover;
+- alternativa a drag-and-drop para cambios temporales cuando esa acción exista;
+- lectura con texto ampliado;
+- jerarquía estable en superficies estrechas;
+- orden lógico de lectura para sistemas de asistencia.
+
+El calendario no deberá exigir precisión motora como única forma de modificar una fecha.
+
+---
+
+#### 35. Navegación entre las tres superficies
+
+La navegación deberá permitir:
+
+```text
+MARCA
+-> iniciar o consultar BRIEF
+
+BRIEF
+-> abrir CONTEXTO DE MARCA
+-> abrir CALENDARIO relacionado
+
+CALENDARIO
+-> abrir INICIATIVA o BRIEF propietario
+```
+
+El cambio de superficie conserva referencias e identidad, pero cada owner sigue siendo responsable de su estado.
+
+No se copiará el mismo objeto para simular continuidad entre vistas.
+
+---
+
+#### 36. Relación con `AURA-UX-001`
+
+La 002 consume el contexto y lenguaje fijados por el inicio diario.
+
+Cuando una prioridad del inicio lleve a marca, brief o calendario:
+
+- se conserva empresa y marca aplicables;
+- se conserva el objeto origen;
+- se mantiene la razón por la que requiere atención;
+- se evita exigir al usuario volver a localizar manualmente la iniciativa;
+- la superficie especializada muestra detalle suficiente para resolver el trabajo.
+
+La 002 no redefine las seis familias del inicio diario ni crea un segundo dashboard inicial.
+
+---
+
+#### 37. Relación con `AURA-UX-003`
+
+`AURA-UX-003` recibirá briefs suficientemente completos y referencias de marca gobernadas para diseñar estudio creativo y variantes.
+
+La frontera queda:
+
+```text
+AURA-UX-002
+-> contexto de marca
+-> brief guiado
+-> planificación temporal
+
+AURA-UX-003
+-> creación asistida
+-> edición
+-> variantes reutilizables
+-> trabajo sobre activos y outputs creativos
+```
+
+Esta tarea no diseña canvas creativo, editor de piezas, generación de imágenes, copy asistido, prompts creativos ni biblioteca de variantes.
+
+---
+
+#### 38. Relación con aprobación y publicación posteriores
+
+La experiencia podrá mostrar que un brief o hito requiere aprobación, pero no absorbe la superficie detallada de aprobación y publicación multicanal de `AURA-UX-004`.
+
+Tampoco convierte el calendario en scheduler externo.
+
+Las acciones críticas continuarán respetando segregación de funciones, versión, autorización y revalidación antes del efecto.
+
+---
+
+#### 39. Handoff a `AURA-UX-003`
+
+`AURA-UX-002` entrega a `AURA-UX-003` las siguientes decisiones ya fijadas:
+
+- toda creación parte de contexto de marca gobernado y versión identificable;
+- el brief es versionado y distingue objetivo, hipótesis, audiencia, mensaje, entregables, canales candidatos, tiempo, presupuesto, dependencias y guardas;
+- un brief incompleto no se promueve silenciosamente a listo;
+- hechos variables continúan en sus fuentes propietarias;
+- piezas y entregables esperados pueden declararse antes de crearse;
+- canales candidatos no equivalen a publicación ni cuenta habilitada;
+- cambios materiales del brief exigen nueva revisión proporcional;
+- el calendario es proyección de planificación y no cola de publicación;
+- una interacción visual de calendario no ejecuta efectos externos;
+- marca, brief y calendario comparten contexto sin duplicar fuentes de verdad.
+
+`AURA-UX-003` deberá diseñar el estudio creativo asistido y la fábrica de variantes reutilizables consumiendo este contexto sin redefinir memoria de marca, brief o calendario.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- la identidad y memoria de marca, briefs, calendarios, campañas, contenido, versiones y vigencias ya están protegidos por cobertura vigente de AURA;
+- la simplicidad, contexto, estado, autorización y navegación ya están protegidos por cobertura transversal de experiencia;
+- esta tarea desarrolla la arquitectura de experiencia para contratos ya aprobados sin crear una obligación protegida nueva;
+- no modifica texto, estado, relación, propietario, paquete, ambiente ni evidencia de ninguna fila del registro canónico.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, esta tarea reutiliza:
+
+- `TREQ-AURA-001`, para marcas, audiencias, briefs, calendarios, campañas, contenido, versiones, vigencias, propietarios y estados diferenciados;
+- `TREQ-AURA-011`, para creación gobernada de contenido y validación de identidad, fechas, alcance y estado inicial sin publicación accidental;
+- `TREQ-AURA-012`, para actualización con concurrencia, preservación de identidad, versión, referencias y auditoría;
+- `TREQ-AURA-019`, para conservar historial editorial y recuperación sin pérdida de trazabilidad;
+- `TREQ-AURA-026`, para auditoría, observabilidad y reconciliación de cambios editoriales;
+- `TREQ-UX-001`, para tarea, acción principal y estado identificables;
+- `TREQ-UX-003`, para información, acciones y densidad adecuadas al actor y su autorización;
+- `TREQ-UX-008`, para clasificar por acción y superficie sin derivar autoridad del rol o dispositivo;
+- `TREQ-UX-009`, para resolver contexto operativo sin fabricar autoridad.
+
+Esta enumeración constituye trazabilidad de cobertura existente y no crea ni modifica requisitos.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni validado dentro del checkout del usuario |
+| REMOTA | PASS | se verificaron continuidad, topología `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`, archivo propietario, `AURA-DOM-001`, `AURA-DOM-002`, fronteras con `AURA-DOM-003` y `AURA-DOM-005`, autorizaciones AURA, `VPROC-0056`, cobertura 04A aplicable, `package.json` y validadores documentales vigentes; además se consumió el handoff completo aprobado de `AURA-UX-001` |
+| OPERATIVA | NOT_APPLICABLE | la tarea diseña experiencia documental; no crea briefs productivos, campañas, contenido, aprobaciones, publicaciones, presupuestos ni contactos reales |
+| FÍSICA | NOT_APPLICABLE | la familia `AURA-UX-001` a `AURA-UX-008` es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se autorizan runtime, Supabase, rutas, componentes, datos, integraciones ni despliegues |
+
+La validación remota demuestra consistencia documental del artefacto con las fuentes consultadas. La validación real del repositorio permanece pendiente hasta incorporar el archivo en su rama documental y ejecutar los validadores canónicos.
+
+---
+
+#### 43. Criterios de aceptación
+
+`AURA-UX-002` queda satisfecha cuando simultáneamente:
+
+1. sistema de marca, brief guiado y calendario visual son superficies relacionadas pero no colapsadas;
+2. la marca seleccionada y su versión gobiernan el contexto creativo aplicable;
+3. marca, empresa, sujeto legal, establecimiento, sede y canal permanecen diferenciados;
+4. propósito, tono, mensajes, claims, restricciones, variantes y vigencia son distinguibles;
+5. claims muestran condición de evidencia y vigencia sin promover copy observado a verdad canónica;
+6. las variantes muestran perfil base, ámbito, cambios y restricciones heredadas;
+7. el historial permite reconstruir versiones sin reactivar una versión antigua;
+8. crear un brief no concede capacidad para editar o aprobar memoria de marca;
+9. el brief comienza por objetivo e hipótesis y no por una pieza aislada;
+10. audiencia y exclusiones se definen sin materializar listas de personas por defecto;
+11. hechos variables conservan fuente propietaria y faltantes no se inventan;
+12. piezas y entregables esperados se declaran sin absorber el estudio creativo;
+13. canales candidatos no se presentan como cuentas habilitadas o publicaciones programadas;
+14. presupuesto se referencia sin convertir AURA en fuente económica;
+15. dependencias y guardas tienen estado explícito y `desconocido` no equivale a satisfecho;
+16. la completitud del brief distingue borrador, revisión, cambios, aprobación y bloqueos materiales;
+17. errores y validaciones se explican cerca de la decisión afectada;
+18. cambios materiales de brief conservan versión y nueva revisión proporcional;
+19. existe una vista de revisión que resume las decisiones materiales del brief;
+20. el calendario proyecta iniciativas, hitos, revisiones, aprobaciones, entregables y ventanas sin ser fuente de publicación;
+21. las lecturas de periodo, agenda e iniciativa pueden derivarse del mismo conjunto autorizado;
+22. los eventos comunican estado y contexto sin depender solo de color;
+23. mover un elemento del calendario no produce una mutación empresarial silenciosa;
+24. los conflictos temporales materiales son visibles y no se resuelven automáticamente;
+25. fecha prevista, fecha aprobada, target programado y publicación confirmada permanecen diferenciados;
+26. filtros no amplían autorización;
+27. vacío, filtro sin resultados, falta de autorización, error, parcialidad, vencimiento y conflicto de versión permanecen distintos;
+28. la experiencia dispone de alternativas accesibles a hover, color y drag-and-drop;
+29. navegar entre marca, brief y calendario conserva identidad sin duplicar objetos;
+30. `AURA-UX-001` conserva ownership del inicio diario;
+31. `AURA-UX-003` conserva ownership del estudio creativo y variantes;
+32. `AURA-UX-004` conserva ownership de aprobación y publicación multicanal detalladas;
+33. se crean y modifican cero requisitos de prueba;
+34. no se crea ninguna instancia física;
+35. la continuidad queda reservada exclusivamente a `AURA-UX-003`.
+
+---
+
+#### 44. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear repositorio, runtime, ruta, pantalla, componente o prototipo ejecutable de AURA;
+- seleccionar framework, librería visual o componente de calendario;
+- modificar VISO, Vento-Group, SHELL u otra aplicación;
+- crear tablas, migraciones, vistas, funciones, RPC, triggers, RLS, Storage, Realtime, jobs o Edge Functions;
+- crear o cambiar marcas reales, identidades organizacionales o titularidad;
+- aprobar copies observados como memoria canónica;
+- crear claims sin evidencia;
+- crear briefs productivos, campañas, presupuestos, audiencias materiales o segmentos reales;
+- exportar personas o datos de clientes;
+- generar piezas, imágenes, copy, prompts o variantes creativas;
+- administrar activos o derechos en detalle;
+- aprobar, programar, publicar, retirar o reconciliar contenido externo;
+- crear cuentas, endpoints, credenciales, tokens o secretos;
+- conectar Meta, Google, TikTok, WhatsApp, correo, reseñas, analítica o proveedores de IA;
+- ejecutar drag-and-drop, scheduling o mutaciones reales;
+- redefinir permisos, roles o capacidades;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-UX-003`.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-001 — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables`
 
 ### [ ] AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
 
