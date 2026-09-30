@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1504** |
+| Aprobadas | **1505** |
 | En propuesta | **0** |
-| No iniciadas | **92** |
+| No iniciadas | **91** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **94.24% (1504/1596)** |
+| Porcentaje de completamiento | **94.30% (1505/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **92** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1405** |
+| ⏸ NO_EVALUADA | **91** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1406** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-DOM-005` — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal | ✅ APROBADA |
-| Tarea actual | `AURA-DOM-006` — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-DOM-007` — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación | ⬜ NO INICIADA |
+| Última aprobada | `AURA-DOM-006` — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas | ✅ APROBADA |
+| Tarea actual | `AURA-DOM-007` — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-DOM-008` — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1452,7 +1452,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-003` | Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-004` | Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-005` | Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-006` | Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-006` | Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-007` | Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-008` | Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-009` | Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
