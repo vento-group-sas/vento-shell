@@ -13766,7 +13766,829 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-019 — Rol simulado no hereda permisos reales`
-### [ ] AUTH-QA-019 — Rol simulado no hereda permisos reales
+### ✅ AUTH-QA-019 — Rol simulado no hereda permisos reales
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-018 — PIN identifica al trabajador real
+**Tarea siguiente:** AUTH-QA-020 — Acceso directo por URL queda bloqueado
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización para simulación, reutilizable por paquete y certificable globalmente, que demuestra la separación bidireccional entre autoridad real y evaluación hipotética: el rol, sede, área, turno, check-in, permiso o sujeto simulados nunca conceden autoridad real, y los permisos, territorio, turno, check-in o grants reales del simulador nunca completan silenciosamente un escenario simulado incompleto ni alteran su resultado hipotético
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-019::<package_id>` y la certificación `AUTH-QA-019::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; existen componentes canónicos de auditoría y presentación de simulación, pero continúan superficies legacy y overrides cliente que requieren transición y evidencia física antes de certificar separación integral entre autoridad real y contexto simulado
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra packages, aplicaciones, usuarios, roles, simulaciones activas, cookies, AsyncStorage, datos, Supabase, RLS, RPC, Server Actions, Route Handlers, Edge Functions, colas, integraciones, dispositivos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que la simulación permanece estrictamente separada de la autoridad ejecutable.
+
+La regla raíz queda:
+
+```text
+AUTORIDAD REAL
+≠
+EVALUACIÓN SIMULADA
+```
+
+Y debe cumplirse en ambos sentidos:
+
+```text
+ROL / SEDE / ÁREA / TURNO / CHECK-IN / PERMISO SIMULADOS
+→ NO CONCEDEN AUTORIDAD REAL
+```
+
+```text
+ROL / SEDE / ÁREA / TURNO / CHECK-IN / PERMISOS REALES DEL SIMULADOR
+→ NO COMPLETAN NI ALTERAN SILENCIOSAMENTE EL ESCENARIO SIMULADO
+```
+
+La prueba debe demostrar que una persona puede inspeccionar un escenario hipotético sin convertirse en el sujeto simulado, sin recibir sus permisos y sin contaminar la evaluación hipotética con autoridad real propia.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y dos resultados obligatorios:
+
+1. el actor real y el sujeto simulado permanecen identidades distintas;
+2. la sesión real y la sesión o referencia de simulación permanecen separadas;
+3. el rol base real no se reemplaza por el rol base simulado;
+4. el rol operativo real no se reemplaza por el rol operativo simulado;
+5. el rol real no completa un rol simulado ausente o inválido;
+6. la sede real no completa una sede simulada ausente o inválida;
+7. el área real no completa un área simulada ausente o inválida;
+8. el turno real no satisface un prerrequisito de turno simulado;
+9. el check-in real no satisface un prerrequisito de check-in simulado;
+10. un permiso real del simulador no se agrega al conjunto hipotético;
+11. un permiso simulado no se agrega al conjunto real;
+12. `WOULD_ALLOW` nunca equivale a `ALLOW`;
+13. `WOULD_DENY` nunca retira por sí mismo una autoridad real legítima fuera de la simulación;
+14. `INDETERMINATE` nunca produce fallback hacia el plano real;
+15. la lectura de datos reales permanece limitada por permiso, alcance y RLS reales del simulador;
+16. una simulación puede explicar acceso hipotético sin revelar datos reales fuera de la autoridad del simulador;
+17. RLS, RPC, Server Actions, Edge Functions, jobs, webhooks e integraciones no consumen autoridad simulada;
+18. una mutación empresarial originada en simulación se bloquea antes del primer efecto real;
+19. una lectura protegida no puede usar el rol simulado para ampliar filas o detalle;
+20. las operaciones propias del lifecycle de simulación usan autoridad real del simulador y no la del rol simulado;
+21. cookies, AsyncStorage, localStorage, query, headers, estado React o labels no crean autoridad;
+22. `simulation_id` es correlación y nunca credencial;
+23. una simulación no emite tokens, claims o sesiones Auth con permisos hipotéticos;
+24. cache real y cache simulado permanecen separados;
+25. salir de simulación descarta estado hipotético y exige contexto real fresco antes de una acción real;
+26. una simulación no puede iniciar otra simulación usando autoridad simulada;
+27. aliases, labels o catálogos locales de roles no sustituyen el catálogo canónico;
+28. toda denegación conserva cero efectos empresariales y evidencia de auditoría cuando corresponda;
+29. las superficies legacy observadas no se presentan como certificación canónica por existir;
+30. la ejecución física conserva `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`;
+31. no se crean ni modifican requisitos de prueba;
+32. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La certificación consume como autoridad vigente:
+
+- `AUTH-SIM-001` a `AUTH-SIM-005` para solicitante, rol, sede, área, turno y check-in simulados;
+- `AUTH-SIM-006` para separación estricta entre autoridad real, evaluación simulada, presentación y auditoría;
+- `AUTH-SIM-007` a `AUTH-SIM-011` para aviso, lifecycle, bloqueo de acciones críticas y modo read-only;
+- `AUTH-SIM-012` para navegación simulada sin recuperación de autoridad real;
+- `AUTH-SIM-013` para Server Actions y bloqueo previo al efecto;
+- `AUTH-SIM-014` para cobertura transversal entre aplicaciones;
+- `AUTH-SRV-015` para separación server-side de simulación y autoridad ejecutable;
+- `AUTH-DB-013` para auditoría canónica append-only de simulación y resultados no ejecutables;
+- los contratos vigentes de actor, sesión, permiso, territorio, recurso, contexto, denegaciones, auditoría y frescura;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La certificación no usa como autoridad un nombre de rol visible, una cookie de override, una entrada de AsyncStorage, una selección de sede, una pantalla de preview, un `simulation_id` recibido del cliente ni un booleano de permiso.
+
+---
+
+#### 4. Cuatro planos obligatorios
+
+La certificación conserva cuatro planos separados:
+
+| Plano | Fuente | Función | Puede producir autoridad real |
+| --- | --- | --- | --- |
+| `REAL_AUTHORITY_PLANE` | actor, sesión, permisos, alcances, denegaciones y contexto reales | controlar entrada, datos y ejecución | Sí |
+| `SIMULATED_EVALUATION_PLANE` | escenario hipotético validado y versionado | producir `WOULD_ALLOW`, `WOULD_DENY` o `INDETERMINATE` | No |
+| `SIMULATION_PRESENTATION_PLANE` | resultado hipotético ya calculado | representar navegación, controles y razones | No |
+| `SIMULATION_AUDIT_PLANE` | actor real + solicitud + escenario + resultados | trazabilidad y reproducción | No |
+
+La prueba falla si un mismo valor ambiguo funciona simultáneamente como autoridad real y resultado simulado.
+
+---
+
+#### 5. Semántica exacta de “no hereda permisos reales”
+
+El título exige demostrar una separación bidireccional.
+
+Primera dirección:
+
+```text
+ROL SIMULADO
++ PERMISOS HIPOTÉTICOS
+→ NO SE INCORPORAN AL ACTOR REAL
+```
+
+Segunda dirección:
+
+```text
+ACTOR REAL
++ PERMISOS REALES ADICIONALES
+→ NO SE INCORPORAN AL ROL SIMULADO
+```
+
+La segunda dirección es obligatoria porque una simulación contaminada por los grants del simulador produciría una explicación falsa de lo que realmente podría hacer el rol hipotético.
+
+---
+
+#### 6. Actor real y sujeto simulado
+
+Deben conservarse como identidades distintas:
+
+```text
+real_actor_id
+≠
+simulated_subject_reference
+```
+
+El sujeto simulado:
+
+- no autentica;
+- no reautentica;
+- no sustituye al actor real;
+- no firma acciones reales;
+- no hereda una sesión Auth;
+- no recibe tokens del actor real;
+- no puede ser utilizado como actor de una mutación empresarial.
+
+El actor real conserva la responsabilidad de solicitar y consultar la simulación dentro de su propia autoridad.
+
+---
+
+#### 7. Rol real y rol simulado
+
+La certificación exige mantener separados:
+
+```text
+real_base_role_code
+real_operational_role_code
+simulated_base_role_code
+simulated_operational_role_code
+```
+
+El rol simulado no reemplaza el rol real en:
+
+- autorización de servidor;
+- RLS;
+- RPC;
+- Server Actions;
+- cobertura territorial;
+- auditoría del actor;
+- decisiones ejecutables.
+
+El rol real tampoco se agrega a la evaluación hipotética cuando el escenario no lo incluye.
+
+---
+
+#### 8. El permiso real no completa la simulación
+
+Si el actor real posee un permiso que el rol simulado no tendría:
+
+```text
+REAL ACTOR = HAS_PERMISSION
+SIMULATED ROLE = NO_PERMISSION
+→ SIMULATION = WOULD_DENY O INDETERMINATE SEGÚN EL CONTRATO
+```
+
+Queda prohibido producir `WOULD_ALLOW` solo porque el simulador tenga el permiso en su contexto real.
+
+La misma regla aplica a grants individuales, roles amplios, coberturas administrativas, permisos operativos y excepciones reales.
+
+---
+
+#### 9. El permiso simulado no completa la autoridad real
+
+Si el rol simulado tendría una capacidad que el actor real no posee:
+
+```text
+SIMULATION = WOULD_ALLOW
+REAL AUTHORITY = DENY
+```
+
+El resultado hipotético puede explicar la diferencia, pero no puede:
+
+- abrir datos reales;
+- habilitar una mutación;
+- firmar una operación;
+- crear una sesión real;
+- ampliar RLS;
+- convertir un control de preview en un control ejecutable.
+
+---
+
+#### 10. `WOULD_ALLOW` no es `ALLOW`
+
+La certificación exige vocabularios separados:
+
+```text
+REAL: ALLOW | DENY
+SIMULADO: WOULD_ALLOW | WOULD_DENY | INDETERMINATE
+```
+
+Un resultado simulado debe conservar semántica no ejecutable.
+
+No puede exponerse como:
+
+- `ALLOW`;
+- `true` ambiguo;
+- `canOperate=true` reutilizable;
+- permiso efectivo;
+- claim;
+- token;
+- grant persistente;
+- decisión cacheada consumible por un writer real.
+
+---
+
+#### 11. `WOULD_DENY` tampoco modifica autoridad real
+
+Una simulación puede concluir que el sujeto hipotético sería denegado.
+
+Eso no significa que el actor real pierda una autoridad legítima que posea fuera de la simulación.
+
+La separación debe permitir simultáneamente:
+
+```text
+REAL_ALLOW
++
+WOULD_DENY
+```
+
+sin mezclar los dos resultados.
+
+---
+
+#### 12. `INDETERMINATE` falla cerrado dentro del plano simulado
+
+Si faltan datos hipotéticos obligatorios, la simulación no puede completar el escenario con el contexto real del usuario.
+
+Ejemplos prohibidos:
+
+- falta sede simulada → usar sede real;
+- falta área simulada → usar área real;
+- falta turno simulado → usar turno real;
+- falta check-in simulado → usar check-in real;
+- falta rol simulado → usar rol real;
+- falta permiso objetivo resoluble → usar permiso real más cercano.
+
+La salida conserva `INDETERMINATE` o el resultado de denegación contractual aplicable.
+
+---
+
+#### 13. Territorio real no completa territorio simulado
+
+Las dimensiones deben permanecer separadas:
+
+```text
+real_site_ids        != simulated_site_id
+real_area_ids        != simulated_area_id
+```
+
+La sede o área real del simulador limita qué información real puede consultar durante la preview, pero no completa automáticamente el escenario hipotético.
+
+Una simulación sobre otra sede puede explicar un resultado sin otorgar al simulador acceso a datos reales de esa sede.
+
+---
+
+#### 14. Turno y check-in real no completan prerrequisitos simulados
+
+Para permisos `T` y `T+C`:
+
+| Prerrequisito | Plano real | Plano simulado |
+| --- | --- | --- |
+| `N` | no exige turno real | no exige turno simulado |
+| `T` | exige turno real válido | exige turno simulado válido |
+| `T+C` | exige turno y check-in reales | exige turno y check-in hipotéticos compatibles |
+
+Un turno o check-in real no puede satisfacer el requisito hipotético faltante.
+
+Un turno o check-in simulado tampoco satisface el requisito de una acción real.
+
+---
+
+#### 15. Lectura de datos reales
+
+Durante una simulación, los datos empresariales reales permanecen gobernados por:
+
+```text
+PERMISO REAL DEL SIMULADOR
++ ALCANCE REAL DEL SIMULADOR
++ RLS REAL
++ RECURSO REAL
+```
+
+El permiso simulado puede determinar cómo se representa un escenario, pero no qué filas reales se consultan.
+
+Debe ser posible mostrar:
+
+```text
+EL ROL SIMULADO TENDRÍA ACCESO
+```
+
+sin revelar el contenido protegido cuando el actor real no pueda consultarlo.
+
+---
+
+#### 16. RLS no consume simulación como autoridad
+
+RLS no puede ampliar acceso usando:
+
+- `simulation_id`;
+- rol simulado;
+- sede simulada;
+- área simulada;
+- turno simulado;
+- check-in simulado;
+- permiso simulado;
+- `WOULD_ALLOW`;
+- cookies o headers de preview;
+- claims generados por simulación.
+
+Las políticas reales continúan resolviendo actor, sesión, permisos, alcance y recurso reales.
+
+---
+
+#### 17. Server Actions y mutaciones empresariales
+
+Una Server Action empresarial alcanzada con procedencia simulada debe bloquear el efecto real antes de la primera mutación.
+
+La regla queda:
+
+```text
+SIMULATED ORIGIN
++
+REAL BUSINESS ACTION
+→ DENY BEFORE EFFECT
+```
+
+El rol simulado nunca es fuente de permiso para una Server Action.
+
+La ausencia de un `simulation_id` enviado por cliente tampoco convierte automáticamente la intención en real cuando el servidor puede demostrar procedencia simulada por una fuente autoritativa.
+
+---
+
+#### 18. Lecturas protegidas mediante Server Action
+
+Una lectura protegida no queda autorizada por ser read-only en términos de persistencia.
+
+Si el actor real no puede leer el recurso, un `WOULD_ALLOW` del rol simulado no puede devolver:
+
+- filas reales;
+- archivos;
+- costos;
+- documentos;
+- detalles sensibles;
+- proyecciones ampliadas.
+
+Cuando la preview necesite datos reales que el actor sí puede consultar, la lectura usa autoridad real independiente.
+
+---
+
+#### 19. Operaciones propias de simulación
+
+Las operaciones propietarias de simulación pueden modificar exclusivamente su propio lifecycle, evaluación, revisión, auditoría o evidencia cuando el contrato las autorice.
+
+Pueden incluir, según owner:
+
+- iniciar una simulación;
+- registrar una revisión;
+- producir una evaluación hipotética;
+- registrar evidencia;
+- finalizar, expirar, revocar o invalidar la simulación.
+
+Esas operaciones usan autoridad real del simulador y no la autoridad del rol simulado.
+
+---
+
+#### 20. Cliente no es fuente de autoridad
+
+No pueden funcionar como fuente autoritativa de rol o territorio real:
+
+- cookie de `roleOverride`;
+- cookie de sede seleccionada;
+- `AsyncStorage`;
+- `localStorage`;
+- `sessionStorage`;
+- estado React;
+- query params;
+- hidden inputs;
+- headers controlados por cliente;
+- labels o textos visibles;
+- `simulation_id` unilateral;
+- un `WOULD_ALLOW` recibido del cliente.
+
+Todos esos valores requieren resolución y validación server-side cuando participen en una preview.
+
+---
+
+#### 21. Baseline SHELL de override cliente
+
+El template actual de ProfileMenu conserva superficies cliente de override de rol y sede.
+
+La certificación trata esas superficies como baseline a controlar, no como autoridad.
+
+Debe demostrarse que:
+
+```text
+CAMBIAR ROLE_OVERRIDE_COOKIE
+O APP_SITE_OVERRIDE_ID
+→ NO CAMBIA PERMISOS REALES
+→ NO CAMBIA COBERTURA REAL
+→ NO CAMBIA ACTOR REAL
+```
+
+La presentación puede variar cuando el contrato de simulación lo permita; la decisión ejecutable no.
+
+---
+
+#### 22. Baseline PASS de override local
+
+La cobertura vigente registra persistencia de rol y sede simulados en cliente bajo `vento.roleOverride`.
+
+La certificación exige que:
+
+- AsyncStorage no conceda permiso;
+- un rol textual no cambie contexto server-side;
+- una sede local no amplíe territorio;
+- el cambio de usuario no reutilice una simulación anterior;
+- una recuperación de caché no reactive autoridad simulada;
+- la limpieza y expiración respeten el lifecycle propietario.
+
+La existencia de override local es evidencia de superficie a certificar, no evidencia de cumplimiento.
+
+---
+
+#### 23. `SimulatedRoleNotice` es presentación, no autoridad
+
+El componente compartido de aviso de rol simulado se trata como una superficie de presentación.
+
+Su contrato de certificación exige que no resuelva por sí mismo:
+
+- permisos;
+- actor;
+- sesión;
+- alcance;
+- lifecycle;
+- `WOULD_ALLOW`;
+- `ALLOW`;
+- persistencia de simulación.
+
+Un aviso visible correcto no sustituye la validación del owner que decide si la simulación está activa.
+
+---
+
+#### 24. Navegación simulada no recupera autoridad real
+
+Una preview puede representar navegación hipotética, pero la transición permanece en el plano simulado mientras la simulación siga vigente.
+
+Debe demostrarse:
+
+```text
+REAL ACTOR MAY ACCESS DESTINATION
++
+CURRENT ORIGIN IS SIMULATED
+→ CURRENT TRANSITION REMAINS SIMULATED
+```
+
+Y también:
+
+```text
+SIMULATED ROLE WOULD ACCESS DESTINATION
++
+REAL ACTOR CANNOT ACCESS DESTINATION
+→ NO REAL ACCESS
+```
+
+La prueba específica de bypass por acceso directo a URL pertenece a `AUTH-QA-020` y no se absorbe en esta tarea.
+
+---
+
+#### 25. Simulación no crea tokens, claims ni sesiones Auth
+
+Una simulación no puede:
+
+- emitir un access token con permisos simulados;
+- persistir rol, sede, área o permiso simulados en cookies de autenticación;
+- crear una sesión Auth para el sujeto simulado;
+- almacenar `WOULD_ALLOW` como claim;
+- convertir `simulation_id` en credencial.
+
+Si existe un token técnico de preview, debe estar restringido a la finalidad de simulación y ser inaceptable para RLS y endpoints empresariales como autoridad ejecutable.
+
+---
+
+#### 26. Cache real y simulado permanecen separados
+
+La certificación prohíbe una clave de cache compartida que pueda mezclar ambos planos.
+
+Debe impedirse:
+
+- usar una respuesta real cacheada para completar el escenario hipotético;
+- usar un resultado simulado para una mutación real posterior;
+- restaurar automáticamente una simulación como contexto efectivo;
+- conservar autoridad después de expiración, revocación, cambio de actor o salida.
+
+Un cache miss obliga a reevaluar; no habilita fallback al otro plano.
+
+---
+
+#### 27. Salida de simulación y regreso a contexto real
+
+Para ejecutar una acción real después de una simulación debe existir una transición explícita:
+
+```text
+TERMINAR / ABANDONAR SIMULACIÓN
+→ DESCARTAR CONTEXTO, CACHE Y RESULTADO SIMULADOS
+→ RESTAURAR REPRESENTACIÓN REAL
+→ RESOLVER ACTOR, SESIÓN, PERMISO, ALCANCE Y RECURSO REALES
+→ NUEVA DECISIÓN REAL
+```
+
+Un `WOULD_ALLOW` anterior no se reutiliza en la nueva decisión.
+
+---
+
+#### 28. Simulación anidada no hereda autoridad
+
+Una simulación vigente no puede iniciar otra simulación utilizando:
+
+- rol simulado;
+- permisos hipotéticos;
+- alcance simulado;
+- `WOULD_ALLOW`;
+- sujeto simulado.
+
+Para iniciar otra simulación debe recuperarse contexto real válido y volver a resolver la elegibilidad del simulador.
+
+---
+
+#### 29. Catálogos y aliases locales no autorizan
+
+Roles locales, aliases ingleses, labels humanos, roles legacy u opciones de UI no constituyen claves definitivas de autorización.
+
+La certificación debe demostrar que un override que use un nombre local no puede:
+
+- crear un rol canónico inexistente;
+- mapearse silenciosamente a un rol más privilegiado;
+- omitir restricciones de sede, área o modalidad;
+- conceder grants fuera del catálogo canónico.
+
+La reconciliación del catálogo es una dependencia contractual; la UI no puede resolverla por conveniencia.
+
+---
+
+#### 30. Baseline físico observado
+
+El estado físico actual contiene piezas útiles pero no equivale a certificación completa:
+
+1. `AUTH-DB-013` materializa auditoría canónica append-only de simulación;
+2. las evaluaciones persistidas aceptan únicamente `WOULD_ALLOW`, `WOULD_DENY` o `INDETERMINATE`;
+3. las evaluaciones canónicas conservan `executable = false`;
+4. la migración mantiene superficies legacy de simulación para transición y las declara no adoptadas como persistencia canónica;
+5. continúan presentes `get_effective_context_v1`, `has_effective_permission_v1`, `start_context_simulation_v1` y `stop_context_simulation_v1` como superficies legacy preservadas;
+6. `packages/os-context` todavía expone un `EffectiveContext` único con `source`, roles efectivos y `simulation_id`;
+7. `packages/os-context` todavía expone `hasEffectivePermission` sobre `has_effective_permission_v1`;
+8. el template AppShell conserva overrides cliente de rol y sede;
+9. existe un componente compartido `SimulatedRoleNotice` diseñado como presentación sin autoridad propia;
+10. la cobertura PASS registra persistencia cliente de rol y sede simulados.
+
+Este baseline permite diseñar y localizar pruebas, pero no autoriza declarar que todos los consumidores ya cumplen la separación real/simulada.
+
+---
+
+#### 31. Casos mínimos obligatorios por package
+
+| Caso | Condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-019-A` | actor real sin permiso; rol simulado sí tendría el permiso | `WOULD_ALLOW` posible, pero autoridad real permanece `DENY` y no hay efecto |
+| `AUTH-QA-019-B` | actor real sí posee permiso; rol simulado no lo tendría | simulación conserva `WOULD_DENY` o resultado contractual equivalente; no hereda el permiso real |
+| `AUTH-QA-019-C` | falta sede simulada pero el actor real tiene sede válida | no se completa con sede real; escenario falla cerrado o queda indeterminado |
+| `AUTH-QA-019-D` | falta turno/check-in simulado pero el actor real los posee | no se usan para satisfacer `T` o `T+C` hipotéticos |
+| `AUTH-QA-019-E` | cookie o estado local cambia rol a uno privilegiado | la autoridad real no cambia |
+| `AUTH-QA-019-F` | sede local o query cambia a territorio más amplio | la cobertura real no cambia |
+| `AUTH-QA-019-G` | preview requiere datos que el actor real no puede leer | no se revelan datos; puede mostrarse explicación mínima |
+| `AUTH-QA-019-H` | Server Action empresarial recibe procedencia simulada | `DENY` antes del primer efecto empresarial |
+| `AUTH-QA-019-I` | `simulation_id` se presenta como credencial | no concede autoridad; se valida solo como referencia de escenario |
+| `AUTH-QA-019-J` | cliente omite referencia de simulación pero el servidor prueba origen simulado | la procedencia sigue siendo simulada; efecto real bloqueado |
+| `AUTH-QA-019-K` | usuario sale de simulación e intenta acción real | contexto simulado descartado y autorización real recalculada desde cero |
+| `AUTH-QA-019-L` | intento de iniciar otra simulación desde contexto simulado | `DENY` hasta recuperar contexto real y reevaluar elegibilidad |
+| `AUTH-QA-019-M` | rol local/legacy no coincide con catálogo canónico | no se convierte en autoridad ni en escenario válido por inferencia |
+| `AUTH-QA-019-N` | `WOULD_ALLOW` llega por cache o input cliente | no se consume como `ALLOW` ni como permiso efectivo |
+| `AUTH-QA-019-O` | `WOULD_DENY` en simulación y actor real sí tiene permiso | no retira la autoridad real fuera de la simulación; planos permanecen separados |
+
+Si una superficie necesaria para un caso no existe materialmente en el package, el caso se registra `NOT_APPLICABLE` con evidencia. No se fabrica una superficie para forzar ejecución.
+
+---
+
+#### 32. Clasificación de fallos
+
+Un fallo de `AUTH-QA-019` se clasifica por la frontera rota:
+
+- `SIMULATED_TO_REAL_PRIVILEGE_LEAK` — el rol o permiso simulado amplía autoridad real;
+- `REAL_TO_SIMULATED_PRIVILEGE_CONTAMINATION` — permiso real del simulador altera la evaluación hipotética;
+- `SIMULATED_TERRITORY_REAL_ESCALATION` — sede o área simuladas amplían cobertura real;
+- `REAL_TERRITORY_SIMULATION_FALLBACK` — territorio real completa un escenario hipotético incompleto;
+- `REAL_SHIFT_SIMULATION_FALLBACK` — turno o check-in reales satisfacen prerrequisitos simulados;
+- `SIMULATED_CONTEXT_REAL_PREREQUISITE` — turno/check-in simulados satisfacen una acción real;
+- `WOULD_ALLOW_EXECUTION_ALIAS` — `WOULD_ALLOW` se trata como `ALLOW` o permiso ejecutable;
+- `AMBIGUOUS_PERMISSION_BOOLEAN` — un booleano mezcla autoridad real y resultado simulado;
+- `SIMULATION_DATA_EXPOSURE` — datos reales quedan expuestos por autoridad simulada;
+- `CLIENT_OVERRIDE_AUTHORITY` — cookie, storage, query, header o estado UI concede autoridad;
+- `SIMULATION_ID_CREDENTIALIZATION` — `simulation_id` funciona como credencial;
+- `SIMULATION_TOKEN_AUTHORITY` — token o claim de preview es aceptado por una frontera real;
+- `SIMULATION_CACHE_CROSS_CONTAMINATION` — cache real y simulado se mezclan;
+- `SIMULATION_EXIT_STALE_AUTHORITY` — autoridad simulada sobrevive a la salida;
+- `NESTED_SIMULATION_AUTHORITY` — una simulación inicia otra con autoridad hipotética;
+- `LOCAL_ROLE_CATALOG_ESCALATION` — alias o rol local crea autoridad canónica inexistente;
+- `PARTIAL_EFFECT_ON_SIMULATION_DENY` — una denegación por simulación produce efecto empresarial parcial;
+- `AUDIT_PLANE_AMBIGUITY` — la evidencia no permite distinguir actor real, escenario y resultado simulado.
+
+La clasificación es diagnóstica y no crea nuevos reason codes públicos.
+
+---
+
+#### 33. Modelo de ejecución por paquete
+
+Cada package que materialice superficies afectadas ejecutará:
+
+```text
+AUTH-QA-019::<package_id>
+```
+
+únicamente cuando:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- las superficies de simulación y autorización necesarias estén materializadas;
+- la instancia se encuentre autorizada conforme al lifecycle físico correspondiente.
+
+La ejecución por package debe cubrir únicamente superficies realmente presentes y conservar `NOT_APPLICABLE` para casos materialmente ausentes.
+
+---
+
+#### 34. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-019::GLOBAL-FINAL
+```
+
+consolida evidencia de todos los packages aplicables y debe demostrar uniformidad entre consumidores.
+
+Debe fallar si existe al menos un consumidor donde:
+
+- un rol simulado conceda autoridad real;
+- un permiso real contamine el resultado hipotético;
+- territorio real y simulado se fusionen;
+- turno o check-in crucen de un plano al otro;
+- `WOULD_ALLOW` resulte ejecutable;
+- datos reales se amplíen por simulación;
+- un override cliente conceda autoridad;
+- una Server Action empresarial ejecute desde procedencia simulada;
+- `simulation_id` opere como credencial;
+- cache o tokens mezclen planos;
+- una simulación terminal conserve autoridad;
+- un rol local o legacy permita escalamiento;
+- una denegación produzca un efecto empresarial.
+
+---
+
+#### 35. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por cobertura existente y no introduce una obligación verificable nueva.
+
+---
+
+#### 36. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación el Registro 04A:
+
+- `TREQ-AUTH-012` — la simulación permanece separada de la autoridad real, no mezcla permisos reales y simulados, bloquea acciones críticas y conserva auditoría;
+- `TREQ-AUTH-015` — decisiones y acciones protegidas conservan evidencia correlacionable de actor, simulación, rol, contexto, permiso, recurso, decisión y razones;
+- `TREQ-SHELL-031` — simulación de rol y selección de sede del ProfileMenu permanecen separadas de autoridad real y cookies o escrituras cliente no conceden rol, sede ni permiso efectivo;
+- `TREQ-PASS-019` — rol y sede almacenados en PASS son exclusivamente simulación visible y no conceden permisos ni modifican contexto server-side;
+- `TREQ-PASS-020` — simulación laboral en PASS exige actor autorizado, aviso, lifecycle, expiración, limpieza y bloqueo de mutaciones críticas;
+- `TREQ-PASS-021` — roles locales de PASS se reconcilian con el catálogo canónico y no funcionan como claves definitivas de autorización.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 37. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no ha sido incorporado todavía al checkout del usuario; build y suites de consumidores corresponden a la incorporación posterior y a las ejecuciones físicas propietarias. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle documental permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, la topología `PER_PACKAGE_AND_GLOBAL_FINAL`, los contratos `AUTH-SIM-001..014`, la separación real/simulada de `AUTH-SIM-006`, la validación de navegación y Server Actions, `AUTH-DB-013`, el baseline actual de `packages/os-context`, el override cliente del template AppShell, el componente `SimulatedRoleNotice` y la cobertura vigente 04A que referencia expresamente `AUTH-QA-019`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron simulaciones reales, cambios de rol, cambios de sede, lecturas protegidas, Server Actions, mutaciones, salidas de simulación ni intentos de contaminación entre planos. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-019::<package_id>` ni `AUTH-QA-019::GLOBAL-FINAL`; las superficies y consumidores permanecen sujetos a su lifecycle y gate físicos. |
+
+---
+
+#### 38. Criterios de aceptación
+
+- [ ] Actor real y sujeto simulado permanecen separados.
+- [ ] Sesión real y referencia de simulación permanecen separadas.
+- [ ] Rol real y rol simulado permanecen separados.
+- [ ] Permisos reales no completan el escenario simulado.
+- [ ] Permisos simulados no amplían autoridad real.
+- [ ] `WOULD_ALLOW` nunca equivale a `ALLOW`.
+- [ ] `WOULD_DENY` no retira por sí solo autoridad real legítima.
+- [ ] `INDETERMINATE` no cae en fallback al contexto real.
+- [ ] Sede y área reales no completan territorio simulado.
+- [ ] Sede y área simuladas no amplían territorio real.
+- [ ] Turno y check-in reales no satisfacen prerrequisitos simulados.
+- [ ] Turno y check-in simulados no satisfacen prerrequisitos reales.
+- [ ] Los datos reales visibles permanecen bajo autoridad real del simulador.
+- [ ] RLS no consume rol, sede, área, permiso ni resultado simulados como autoridad.
+- [ ] Server Actions empresariales bloquean procedencia simulada antes del efecto.
+- [ ] Lecturas protegidas no amplían datos por autoridad simulada.
+- [ ] Lifecycle de simulación usa autoridad real del simulador.
+- [ ] Cookies, AsyncStorage, localStorage, query, headers y estado UI no conceden autoridad.
+- [ ] `simulation_id` no funciona como credencial.
+- [ ] Simulación no crea tokens o claims ejecutables.
+- [ ] Cache real y simulado permanecen separados.
+- [ ] Salir de simulación exige contexto real fresco.
+- [ ] Una simulación no inicia otra con autoridad simulada.
+- [ ] Roles locales y aliases no sustituyen el catálogo canónico.
+- [ ] El baseline legacy no se presenta como certificación integral.
+- [ ] Toda denegación conserva cero efectos empresariales.
+- [ ] La evidencia permite distinguir plano real, plano simulado, presentación y auditoría.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 39. Límites
+
+Esta tarea no:
+
+- redefine quién puede iniciar una simulación;
+- redefine qué roles son simulables;
+- redefine sede, área, turno o check-in simulados;
+- redefine el lifecycle de simulación;
+- redefine el aviso persistente;
+- redefine el modo read-only;
+- redefine la matriz `FULL_PREVIEW`, `DECISION_ONLY` o `NOT_ALLOWED`;
+- reabre los contratos `AUTH-SIM-001..014`;
+- convierte `packages/os-context` en contrato canónico nuevo;
+- retira superficies legacy de simulación;
+- modifica `get_effective_context_v1` ni `has_effective_permission_v1`;
+- modifica el template AppShell ni sus cookies;
+- modifica PASS ni `vento.roleOverride`;
+- modifica `SimulatedRoleNotice`;
+- modifica código, RLS, RPC, migraciones, Edge Functions, Supabase, datos o configuración;
+- certifica bypass por acceso directo a URL, reservado a `AUTH-QA-020`;
+- certifica manipulación de formularios, reservada a `AUTH-QA-021`;
+- certifica manipulación directa de RPC, reservada a `AUTH-QA-022`;
+- certifica cruce de sede, reservado a `AUTH-QA-023`;
+- certifica cruce de área, reservado a `AUTH-QA-024`;
+- ejecuta `AUTH-QA-018::<package_id>`;
+- ejecuta `AUTH-QA-019::<package_id>`;
+- ejecuta `AUTH-QA-019::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 40. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-018 — PIN identifica al trabajador real`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-019 — Rol simulado no hereda permisos reales`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-020 — Acceso directo por URL queda bloqueado`
 ### [ ] AUTH-QA-020 — Acceso directo por URL queda bloqueado
 ### [ ] AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
 ### [ ] AUTH-QA-022 — RPC manipulada queda bloqueada
