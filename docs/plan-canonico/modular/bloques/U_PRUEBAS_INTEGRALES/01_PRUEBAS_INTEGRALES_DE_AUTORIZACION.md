@@ -11162,7 +11162,997 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-016 — Recepción puede recibir pero no aprobar compras`
-### [ ] AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
+### ✅ AUTH-QA-016 — Recepción puede recibir pero no aprobar compras
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-015 — Compras puede crear órdenes según alcance
+**Tarea siguiente:** AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización, contexto operativo, atribución y segregación de funciones para la recepción de compras ORIGO, reutilizable por paquete y certificable globalmente, para demostrar que un receptor operativo autorizado puede registrar una recepción mediante `origo.procurement.receipts.register` únicamente con actor efectivo, turno, check-in, territorio y recurso válidos, sin adquirir por esa recepción autoridad administrativa para `origo.procurement.purchase_orders.approve`, resolver diferencias, reversar recepciones, administrar proveedores, afectar inventario fuera del handoff propietario ni ampliar alcance por rol base, dispositivo, sede seleccionada o datos enviados por cliente
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-016::<package_id>` y la certificación `AUTH-QA-016::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; un package que conserve `receipts.register` con modalidad o grants incompatibles con `OPERATIONAL_ONLY` y `T+C` no es certificable como PASS
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra packages, aplicaciones, Supabase, datos, órdenes, recepciones, inventario, proveedores, turnos, check-ins, actores, firmas, dispositivos compartidos, RLS, RPC, Server Actions ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que la responsabilidad de recepción puede registrar un hecho de recepción de compra únicamente por el carril operativo aprobado, sin convertir esa autoridad en aprobación de compras ni en una autorización administrativa general de ORIGO.
+
+La regla positiva raíz queda:
+
+```text
+PRINCIPAL Y ACTOR EFECTIVO VÁLIDOS
++ ACTOR RECEPTOR RESUELTO
++ TURNO PUBLICADO Y VIGENTE
++ CHECK-IN ACTIVO Y COMPATIBLE
++ ROL OPERATIVO CON GRANT EXPLÍCITO
++ SEDE / ÁREA EFECTIVAS COMPATIBLES
++ origo.procurement.receipts.register
++ PURCHASE_RECEIPT / OBJETIVO DE RECEPCIÓN VÁLIDO
++ ORDEN O CAUSA CONTROLADA ELEGIBLE
+→ RECEPCIÓN NUEVA AUTORIZABLE
+```
+
+Y simultáneamente:
+
+```text
+MISMO ACTOR O MISMA ESTACIÓN
++ MISMO TURNO / CHECK-IN / SEDE
++ INTENTO DE APROBAR LA COMPRA
++ SIN AUTORIDAD BASE INDEPENDIENTE PARA purchase_orders.approve
+→ DENY
+→ CERO EFECTOS DE APROBACIÓN
+```
+
+Recibir una compra no concede aprobarla.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y dos resultados obligatorios:
+
+1. `RECEPCION_EN_SEDE` se trata como responsabilidad funcional de proceso y no como PermissionKey, rol base ni rol operativo autónomo;
+2. `origo.procurement.receipts.register` es la capacidad exacta para registrar una recepción nueva;
+3. `receipts.register` protege `PURCHASE_RECEIPT` y el objetivo de recepción suficientemente determinado antes del primer efecto;
+4. la modalidad contractual de `receipts.register` es `OPERATIONAL_ONLY`;
+5. su prerrequisito operativo es `T+C`;
+6. `bodeguero` y `gerencia_operativa` son los roles operativos objetivo que pueden recibir el grant conforme a sus restricciones aprobadas;
+7. ningún rol base administrativo recibe `receipts.register` por sí solo;
+8. un rol base administrativo solo puede registrar recepción si además resuelve un carril operativo válido con grant, `T+C`, territorio y recurso compatibles;
+9. `origo.procurement.purchase_orders.approve` es una capacidad administrativa distinta y `BASE_ONLY`;
+10. turno, check-in, rol operativo, dispositivo de recepción o presencia física no conceden `purchase_orders.approve`;
+11. `bodeguero` y `gerencia_operativa` no reciben aprobación de compras por el carril operativo;
+12. el actor receptor no se infiere del comprador, aprobador, creador de la orden, principal técnico del dispositivo ni último actor observado;
+13. una recepción autorizada exige actor humano efectivo atribuible;
+14. en dispositivo compartido, el principal técnico y el actor receptor permanecen separados;
+15. cuando la acción exige firma humana, el actor que autoriza, firma y recibe debe permanecer correlacionable con el efecto;
+16. una firma o PIN identifica o confirma al humano, pero no crea permiso, turno, check-in, territorio ni autoridad de aprobación;
+17. una cola, formulario, orden visible o `origo.access` no conceden `receipts.register`;
+18. un `site_id`, `area_id`, `selected_site_id`, query, payload o prefill controlado por cliente no crea contexto efectivo;
+19. la sede y área efectivas del carril operativo deben resolverse de forma autoritativa y ser compatibles con el recurso;
+20. una recepción ordinaria contra orden exige una orden elegible y relacionada con la sede receptora;
+21. una recepción directa o de emergencia sigue exigiendo `receipts.register`, `T+C`, actor efectivo, territorio y causa controlada;
+22. `record_only` sigue siendo una recepción empresarial y mantiene los mismos controles de autorización aunque no mueva inventario;
+23. el modo inventariable no convierte `receipts.register` en autoridad general sobre stock, LOC, posiciones o costos fuera del handoff propietario;
+24. `receipts.register` no autoriza reversión ni corrección de una recepción previa;
+25. `receipts.register` no autoriza resolver unilateralmente diferencias;
+26. registrar recepción no aprueba, edita ni emite la orden de compra;
+27. un humano que posea autoridad administrativa independiente para aprobar debe resolver esa autoridad por su carril base, política y segregación; la recepción nunca es fuente de ese allow;
+28. el package compartido observado materializa `receipts.register`, pero conserva un drift de modalidad/grants incompatible con el contrato objetivo y por tanto no puede certificarse PASS mientras ese drift persista;
+29. una denegación de recepción o aprobación conserva cero efectos parciales;
+30. evaluadores y canales aplicables deben conservar decisiones equivalentes para el mismo principal, actor, contexto, permiso, recurso y estado;
+31. la certificación por package solo prueba superficies materialmente presentes y compatibles con el contrato objetivo;
+32. no se crean ni modifican requisitos de prueba y no se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La certificación consume sin reinterpretación:
+
+- `ORIGO-AUTH-006 — Definir permisos de aprobación`;
+- `ORIGO-AUTH-007 — Definir permisos de recepción`;
+- `ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`;
+- `ORIGO-AUTH-011 — Registrar actor de recepción`;
+- `ORIGO-AUTH-012 — Integrar contexto operativo donde aplique`;
+- `ORIGO-AUTH-013 — Mantener administración sin check-in`;
+- `ORIGO-AUTH-014 — Migrar a paquetes de vento-shell`;
+- modelo transversal de principal, actor efectivo, modalidad, contexto, recurso, territorio y evidencia;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate `POST_E5_PACKAGE`.
+
+La tarea no redefine esas decisiones. Las convierte en un contrato de certificación transversal específico para la frontera recepción versus aprobación.
+
+---
+
+#### 4. Identidad exacta de recepción
+
+La capacidad positiva de esta tarea es:
+
+```text
+origo.procurement.receipts.register
+```
+
+Recurso protegido:
+
+```text
+PURCHASE_RECEIPT
+```
+
+Efecto máximo autorizado:
+
+```text
+REGISTRAR UNA RECEPCIÓN NUEVA
+DENTRO DEL CONTEXTO OPERATIVO AUTORIZADO
+```
+
+No concede por sí sola:
+
+- consulta global de ORIGO;
+- aprobación de compra;
+- actualización administrativa de la orden;
+- cancelación de la orden;
+- reversión de recepción;
+- resolución de diferencias;
+- administración de proveedores;
+- acceso irrestricto a datos sensibles;
+- autoridad financiera;
+- inventario general fuera del handoff propietario.
+
+---
+
+#### 5. Modalidad `OPERATIONAL_ONLY`
+
+El contrato objetivo de `receipts.register` queda:
+
+```text
+authorization_requirement = OPERATIONAL_ONLY
+operational_prerequisite = T+C
+base_prerequisite = N/A
+```
+
+Por tanto:
+
+```text
+ROL BASE ADMINISTRATIVO VÁLIDO
++ SIN CARRIL OPERATIVO AUTORIZADO
+→ NO AUTORIZA receipts.register
+```
+
+Y:
+
+```text
+GRANT OPERATIVO VÁLIDO
++ SIN TURNO VIGENTE O SIN CHECK-IN COMPATIBLE
+→ DENY
+```
+
+No se permite construir un allow híbrido con rol base, sede primaria, app visible, contexto incompleto o permiso legacy amplio.
+
+---
+
+#### 6. `T+C` es obligatorio
+
+`T+C` significa simultáneamente:
+
+- turno publicado;
+- turno vigente;
+- turno perteneciente al actor efectivo;
+- rol operativo efectivo compatible;
+- check-in activo;
+- check-in perteneciente al mismo actor;
+- check-in perteneciente al mismo turno;
+- sede compatible;
+- área compatible cuando aplique;
+- frescura suficiente al momento de la mutación.
+
+La pérdida del check-in invalida el carril `T+C`.
+
+El fin del turno invalida el carril operativo.
+
+Una autorización calculada antes de un cambio material de actor, turno, check-in, sede, área, dispositivo, grant o recurso debe revalidarse antes del efecto.
+
+---
+
+#### 7. Roles operativos objetivo
+
+La política objetivo de `ORIGO-AUTH-007` concede `receipts.register` únicamente por carril operativo a:
+
+| Rol operativo | Decisión objetivo | Frontera |
+| --- | --- | --- |
+| `bodeguero` | `ASIGNAR_OPERATIVO` | recepción dentro de sede, bodega o área autorizadas, con `T+C`, recurso y actor resueltos |
+| `gerencia_operativa` | `ASIGNAR_OPERATIVO` | coordinación o recepción en sede activa con `T+C`, territorio y recurso coincidentes; sin alcance global |
+
+La etiqueta del rol no es suficiente. La autorización final exige grant, contexto, territorio, recurso y ausencia de denegaciones aplicables.
+
+---
+
+#### 8. `RECEPCION_EN_SEDE` no es un grant
+
+`RECEPCION_EN_SEDE` identifica la responsabilidad funcional principal de `VPROC-0022`.
+
+No debe transformarse en:
+
+- nombre de PermissionKey;
+- rol operativo adicional inventado;
+- rol base;
+- bypass de autorización;
+- permiso de aprobación;
+- wildcard de ORIGO.
+
+La certificación debe mapear la responsabilidad empresarial al actor real y a las capacidades atómicas materializadas.
+
+---
+
+#### 9. Identidad exacta de aprobación
+
+La capacidad administrativa separada es:
+
+```text
+origo.procurement.purchase_orders.approve
+```
+
+Su modalidad contractual es:
+
+```text
+BASE_ONLY
+```
+
+La aprobación no puede derivarse de:
+
+- `receipts.register`;
+- turno;
+- check-in;
+- rol operativo;
+- sede activa;
+- área receptora;
+- firma de recepción;
+- dispositivo de recepción;
+- orden visible;
+- recepción registrada;
+- `origo.access`.
+
+---
+
+#### 10. Recepción no equivale a aprobación
+
+El oracle principal de segregación queda:
+
+```text
+RECEIPT_REGISTER = ALLOW
+PURCHASE_APPROVE = DENY
+```
+
+cuando el actor solo posee autoridad operativa de recepción y no posee una autoridad administrativa independiente de aprobación.
+
+La prueba debe demostrar que registrar una recepción no:
+
+- mueve la orden a un estado de aprobación;
+- crea un evento de aprobación;
+- registra al receptor como aprobador;
+- reutiliza firma/PIN como aprobación;
+- ejecuta una Server Action de aprobación;
+- cambia un flag o columna equivalente a aprobación;
+- fabrica una aprobación por haber recibido físicamente la mercancía.
+
+---
+
+#### 11. Un mismo humano puede tener autoridades independientes
+
+Esta tarea certifica la fuente de autoridad, no impone una prohibición universal a una identidad humana que legítimamente posea varias responsabilidades.
+
+Si el mismo humano posee además una autoridad base independiente para:
+
+```text
+origo.procurement.purchase_orders.approve
+```
+
+la aprobación debe volver a resolver de manera separada:
+
+- grant base exacto;
+- actor funcional autorizante;
+- cobertura administrativa;
+- recurso;
+- estado;
+- política de aprobación;
+- segregación del caso concreto;
+- versión;
+- evidencia.
+
+La existencia de una recepción previa del mismo actor no satisface ninguno de esos requisitos.
+
+Cuando la política de segregación prohíba autoaprobación o acumulación para el caso concreto, el resultado debe ser `DENY` aunque el humano posea otras capacidades.
+
+---
+
+#### 12. Actor receptor obligatorio
+
+Toda recepción nueva debe quedar atribuida a un actor humano efectivo cuando el contrato exija actor humano.
+
+La relación mínima queda:
+
+```text
+PRINCIPAL AUTENTICADO
+→ ACTOR EFECTIVO
+→ ACTOR RECEPTOR
+→ receipts.register
+→ PURCHASE_RECEIPT
+```
+
+El actor receptor no se infiere de:
+
+- comprador;
+- aprobador;
+- creador de la orden;
+- proveedor;
+- dispositivo;
+- `shared_device_id`;
+- `employee.site_id`;
+- `selected_site_id`;
+- último actor del dispositivo.
+
+Actor ausente, ambiguo, inactivo, stale o no correlacionable falla cerrado.
+
+---
+
+#### 13. Dispositivo compartido
+
+En un dispositivo compartido deben permanecer separadas:
+
+```text
+PRINCIPAL TÉCNICO DEL DISPOSITIVO
+ACTOR HUMANO EFECTIVO
+ACTOR RECEPTOR
+```
+
+La autorización efectiva es la intersección de:
+
+- límites del dispositivo;
+- actor humano;
+- turno;
+- check-in;
+- rol operativo;
+- permiso exacto;
+- territorio;
+- recurso;
+- estado.
+
+El dispositivo solo puede restringir. No puede ampliar la autoridad del actor.
+
+---
+
+#### 14. Firma o PIN no crean autoridad
+
+Cuando exista firma, PIN u otro mecanismo de atribución:
+
+```text
+FIRMA VÁLIDA
+→ IDENTIFICA / CONFIRMA ACTOR
+```
+
+pero nunca:
+
+```text
+FIRMA VÁLIDA
+→ CREA PERMISO
+→ CREA TURNO
+→ CREA CHECK-IN
+→ CREA SCOPE
+→ APRUEBA COMPRA
+```
+
+La evidencia de firma debe permanecer correlacionada con el actor y el efecto empresarial correspondiente.
+
+---
+
+#### 15. Orden de resolución en recepción nueva
+
+Antes del primer efecto de `receipts.register`, el sistema debe resolver como mínimo:
+
+```text
+PRINCIPAL
+→ ACTOR EFECTIVO
+→ SESIÓN / FIRMA CUANDO APLIQUE
+→ TURNO
+→ CHECK-IN
+→ ROL OPERATIVO
+→ GRANT
+→ SEDE / ÁREA EFECTIVAS
+→ OBJETIVO DE RECEPCIÓN
+→ ORDEN O CAUSA CONTROLADA
+→ MODALIDAD DE RECEPCIÓN
+→ DECISIÓN
+→ EFECTO
+```
+
+No se admite decidir el permiso para un principal técnico y atribuir después la recepción a un humano distinto.
+
+---
+
+#### 16. Territorio de recepción
+
+La recepción física está ligada a una sede efectiva y, cuando corresponda, a un área efectiva.
+
+La sede o área deben ser compatibles con:
+
+- actor;
+- turno;
+- check-in;
+- rol operativo;
+- dispositivo cuando aplique;
+- recurso de recepción;
+- orden relacionada;
+- reglas territoriales aplicables.
+
+La certificación debe demostrar que:
+
+```text
+form.site_id
+query.site_id
+selected_site_id
+preferredSiteId
+preferredAreaId
+employee.site_id
+```
+
+no son autoridad por sí mismos.
+
+---
+
+#### 17. Cola y formulario no conceden recepción
+
+`VSCREEN-0076 — Cola de recepciones` y `VSCREEN-0077 — Recepción total o parcial` pueden presentar trabajo.
+
+La visibilidad de la cola o del formulario no demuestra permiso.
+
+Antes de registrar, el servidor debe volver a resolver:
+
+- permiso exacto;
+- actor;
+- contexto `T+C`;
+- territorio;
+- recurso;
+- elegibilidad de la orden o causa;
+- estado.
+
+UI oculta, visible o manipulada nunca es la fuente final de autoridad.
+
+---
+
+#### 18. Recepción ordinaria contra orden
+
+Una recepción ordinaria solo puede registrarse contra una orden elegible y relacionada con la sede receptora.
+
+Debe comprobarse al menos:
+
+- identidad de orden válida;
+- relación con la recepción;
+- sede receptora autorizada;
+- actor receptor atribuido;
+- cantidades y líneas compatibles con el contrato aplicable;
+- estado empresarial compatible;
+- modalidad de recepción explícita.
+
+Recibir la orden no cambia su historial de aprobación ni convierte al receptor en aprobador.
+
+---
+
+#### 19. Recepción directa o de emergencia
+
+La ausencia de una orden ordinaria no elimina autorización.
+
+Una recepción directa o de emergencia sigue requiriendo:
+
+```text
+receipts.register
++ T+C
++ ACTOR EFECTIVO
++ SEDE / ÁREA AUTORIZADAS
++ CAUSA CONTROLADA
++ EVIDENCIA
+```
+
+La regularización comercial, presupuestal o de aprobación permanece bajo su política propietaria.
+
+La emergencia no autoriza autoaprobación por el receptor.
+
+---
+
+#### 20. Modo inventariable
+
+Una recepción inventariable puede activar un handoff hacia los owners de inventario aplicables.
+
+`receipts.register` no concede por sí sola autoridad general para:
+
+- editar stock arbitrariamente;
+- crear ubicaciones;
+- reasignar LOC;
+- mover inventario no relacionado;
+- modificar posiciones;
+- alterar costos fuera del contrato de recepción;
+- ejecutar ajustes generales;
+- modificar recursos ajenos.
+
+El efecto físico debe permanecer correlacionado con la recepción autorizada y con el owner correspondiente.
+
+---
+
+#### 21. Modo `record_only`
+
+`record_only` no mueve inventario, pero sí afirma un hecho empresarial de recepción.
+
+Por tanto mantiene:
+
+- permiso `receipts.register`;
+- actor receptor;
+- `T+C`;
+- sede/área autorizadas;
+- recurso válido;
+- evidencia;
+- idempotencia;
+- auditoría.
+
+La ausencia de movimiento físico no convierte el registro en una acción administrativa libre.
+
+---
+
+#### 22. Consulta y registro permanecen separados
+
+`origo.procurement.receipts.view` y `origo.procurement.receipts.register` no son intercambiables.
+
+Una lectura válida no concede mutación.
+
+Un permiso de registro no debe convertirse en lectura global de recepciones.
+
+La certificación debe usar el permiso exacto de cada operación.
+
+---
+
+#### 23. Reversión y corrección permanecen separadas
+
+`receipts.register` autoriza una recepción nueva.
+
+No autoriza:
+
+- reversar una recepción existente;
+- sustituir una recepción histórica;
+- corregir silenciosamente una recepción confirmada;
+- reutilizar una recepción nueva como bypass de reversión.
+
+La reversión y el flujo correctivo conservan sus capacidades y contratos propietarios.
+
+---
+
+#### 24. Diferencias permanecen fuera de la recepción ordinaria
+
+La recepción puede detectar:
+
+- faltantes;
+- sobrantes;
+- producto distinto;
+- condición incompatible;
+- documento faltante;
+- discrepancia de precio o cantidad;
+- rechazo o aceptación condicionada.
+
+Registrar esa observación no concede autoridad para resolverla.
+
+La resolución de diferencias debe conservar actor, política y segregación propios.
+
+---
+
+#### 25. Efectos sobre la orden no son aprobación
+
+Una recepción puede producir efectos derivados autorizados sobre cantidades recibidas o seguimiento de la orden.
+
+Esos efectos no equivalen a:
+
+- aprobar la compra;
+- reaprobarla;
+- editar destructivamente la orden aprobada;
+- emitirla al proveedor;
+- cancelar la orden;
+- cambiar al receptor en aprobador.
+
+Toda mutación derivada debe estar limitada por el contrato de recepción y no por una PermissionKey de aprobación implícita.
+
+---
+
+#### 26. Estado físico actual de `receipts.register`
+
+El baseline compartido observado materializa seis identidades ORIGO activas e incluye:
+
+```text
+origo.procurement.receipts.register
+```
+
+Sin embargo, `ORIGO-AUTH-014` documenta un drift materializado:
+
+```text
+AS-IS:
+receipts.register = BASE_OR_OPERATIONAL
++ grants base administrativos
+
+TARGET APROBADO:
+receipts.register = OPERATIONAL_ONLY
++ T+C
++ cero grants base
++ grants operativos aprobados
+```
+
+Consecuencia para esta certificación:
+
+```text
+PACKAGE QUE CONSERVE EL DRIFT
+→ AUTH-QA-016 NO PUEDE DECLARAR PASS
+```
+
+La existencia física de la PermissionKey no basta; la modalidad, grants, contexto y semántica consumidos deben coincidir con el contrato objetivo.
+
+---
+
+#### 27. Estado físico actual de `purchase_orders.approve`
+
+El mismo baseline observado todavía incluye `origo.procurement.purchase_orders.approve` entre las identidades objetivo no materializadas del package compartido.
+
+Por tanto:
+
+- no se inventa una superficie física de aprobación para forzar un test;
+- cuando una ejecución por package no contenga materialmente la capacidad/superficie, el caso físico correspondiente se registra `NOT_APPLICABLE` con evidencia;
+- cuando la capacidad quede materializada y adoptada, el receptor operativo sin autoridad base independiente deberá obtener `DENY`;
+- `GLOBAL-FINAL` no puede certificar segregación completa hasta consolidar evidencia de todos los consumidores aplicables donde ambas fronteras sean verificables.
+
+---
+
+#### 28. Bypass por rol base prohibido
+
+La certificación debe probar que los roles base administrativos no obtienen `receipts.register` únicamente por ser:
+
+- `propietario`;
+- `gerente_general`;
+- `gerente`;
+- `auxiliar_administrativa`;
+- `contador`;
+- otra identidad administrativa.
+
+Si un humano con uno de esos roles también posee rol operativo autorizado, la recepción se justifica por el carril operativo completo, nunca por el rol base.
+
+---
+
+#### 29. Bypass por contexto cliente prohibido
+
+Debe probarse que modificar únicamente:
+
+- URL;
+- query;
+- `site_id`;
+- `area_id`;
+- `selected_site_id`;
+- `preferredSiteId`;
+- `preferredAreaId`;
+- payload;
+- formulario;
+- estado local;
+- cookie no autoritativa;
+
+no cambia un `DENY` en `ALLOW`.
+
+Todo valor cliente se trata como hint, selección o dato a validar, nunca como autoridad final.
+
+---
+
+#### 30. `origo.access` no es wildcard
+
+`origo.access` permite entrada a la aplicación dentro de su contrato.
+
+No equivale a:
+
+```text
+receipts.register
+purchase_orders.approve
+receipts.reverse
+suppliers.update
+stock global
+```
+
+Cada capacidad mantiene permiso, modalidad, contexto, recurso y alcance propios.
+
+---
+
+#### 31. Paridad de evaluadores
+
+Para los mismos:
+
+- principal;
+- actor efectivo;
+- actor receptor;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- PermissionKey;
+- recurso;
+- orden o causa de recepción;
+- modalidad;
+- estado;
+- versión;
+
+todos los evaluadores y canales aplicables deben preservar la misma decisión y razones equivalentes.
+
+No se admite que UI o cliente bloqueen mientras Server Action, API, RPC o RLS permitan una ruta alternativa incompatible.
+
+---
+
+#### 32. Cero efectos en denegaciones
+
+Todo caso `DENY` debe demostrar cero efectos sobre, según corresponda:
+
+- recepción creada;
+- líneas recibidas;
+- cantidades recibidas;
+- stock;
+- movimientos;
+- costos;
+- estado de orden;
+- aprobación;
+- actor aprobador;
+- firma;
+- diferencia;
+- reversión;
+- estado empresarial protegido distinto de la evidencia de denegación.
+
+La denegación sí debe conservar auditoría suficiente; cero efectos no significa cero evidencia.
+
+Una respuesta de error después de un write parcial es fallo de certificación.
+
+---
+
+#### 33. Auditoría
+
+La evidencia de cada caso debe permitir reconstruir como mínimo:
+
+- package e identidad de ejecución;
+- principal;
+- actor efectivo;
+- actor receptor;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- firma o referencia cuando aplique;
+- PermissionKey solicitada;
+- recurso;
+- orden o causa controlada;
+- modalidad de recepción;
+- estado y versión;
+- decisión;
+- razones;
+- efectos o cero efectos;
+- versión contractual;
+- timestamp.
+
+La auditoría no sustituye la autorización previa.
+
+---
+
+#### 34. Casos mínimos obligatorios por package
+
+| Caso | Acción o superficie | Condición diferencial | Resultado esperado |
+| --- | --- | --- | --- |
+| `AUTH-QA-016-A` | `receipts.register` | `bodeguero` con grant, actor, `T+C`, territorio y recurso válidos | `ALLOW` cuando el package materializado sea compatible con el contrato objetivo |
+| `AUTH-QA-016-B` | `receipts.register` | `gerencia_operativa` con grant, actor, `T+C`, territorio y recurso válidos | `ALLOW` dentro de sede/recurso autorizados; nunca global |
+| `AUTH-QA-016-C` | `receipts.register` | mismo actor sin check-in compatible | `DENY`, cero efecto |
+| `AUTH-QA-016-D` | `receipts.register` | rol base administrativo sin carril operativo | `DENY`, cero efecto |
+| `AUTH-QA-016-E` | `purchase_orders.approve` | receptor operativo sin autoridad base independiente | `DENY` cuando la capacidad esté materializada; `NOT_APPLICABLE` si no existe en el package |
+| `AUTH-QA-016-F` | recepción + aprobación | mismo humano con dos autoridades independientes | aprobación se reevalúa por carril base, política y segregación; recepción no constituye fuente del allow |
+| `AUTH-QA-016-G` | `receipts.register` | `site_id` o `area_id` manipulado por cliente | `DENY` o contexto resuelto sin ampliación; cero efecto indebido |
+| `AUTH-QA-016-H` | recepción compartida | principal dispositivo válido pero actor humano ausente/ambiguo | `DENY`, cero efecto |
+| `AUTH-QA-016-I` | `record_only` | actor válido con `T+C` | exige la misma autorización de recepción aunque no mueva inventario |
+| `AUTH-QA-016-J` | diferencia | receptor intenta resolverla solo por `receipts.register` | `DENY` para la decisión reservada; recepción no amplía autoridad |
+| `AUTH-QA-016-K` | reversión/corrección | receptor intenta usar `receipts.register` sobre recepción previa | `DENY`, cero efecto correctivo |
+| `AUTH-QA-016-L` | baseline con drift | `receipts.register` conserva grants base o modalidad distinta de `OPERATIONAL_ONLY` | certificación `FAIL`; no se acepta como paridad objetivo |
+
+Si una superficie necesaria para un caso condicional no existe materialmente en el package, se registra `NOT_APPLICABLE` con evidencia. No se inventa una superficie para forzar ejecución.
+
+---
+
+#### 35. Clasificación de fallos
+
+Un fallo de `AUTH-QA-016` se clasifica por la frontera rota:
+
+- `RECEIPT_REGISTER_BASE_BYPASS` — rol base autoriza recepción sin carril operativo;
+- `RECEIPT_REGISTER_CONTEXT_BYPASS` — recepción sin `T+C` válido;
+- `RECEIPT_REGISTER_ROLE_BYPASS` — rol operativo no autorizado recibe grant o efecto;
+- `RECEIPT_ACTOR_MISMATCH` — permiso, firma y efecto se atribuyen a actores distintos;
+- `SHARED_DEVICE_PRINCIPAL_AS_ACTOR` — principal técnico sustituye al humano;
+- `CLIENT_CONTEXT_ESCALATION` — datos cliente amplían sede, área o autoridad;
+- `RECEIVER_APPROVAL_ESCALATION` — recepción concede aprobación de compra;
+- `APPROVAL_SOURCE_MIXUP` — una aprobación usa recepción, turno o rol operativo como fuente de autoridad;
+- `RECEIPT_REVERSE_BYPASS` — `receipts.register` se usa para reversión/corrección;
+- `DIFFERENCE_RESOLUTION_BYPASS` — receptor resuelve una diferencia sin autoridad propietaria;
+- `GENERAL_INVENTORY_ESCALATION` — recepción concede inventario general fuera del handoff;
+- `MATERIALIZED_CONTRACT_DRIFT` — package consume modalidad o grants distintos del contrato objetivo;
+- `PARTIAL_EFFECT_ON_DENY` — una denegación conserva writes parciales;
+- `EVALUATOR_DIVERGENCE` — canales aplicables producen decisiones incompatibles;
+- `AUDIT_GAP` — no puede reconstruirse actor, contexto, decisión o efecto.
+
+La clasificación no crea nuevos reason codes públicos ni modifica contratos de error.
+
+---
+
+#### 36. Modelo de ejecución por paquete
+
+Cada package que materialice superficies afectadas ejecutará:
+
+```text
+AUTH-QA-016::<package_id>
+```
+
+únicamente después de que:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- la instancia se encuentre autorizada conforme al lifecycle físico correspondiente;
+- el contrato materializado sea identificable y comparable con el target aprobado.
+
+Esta tarea documental no selecciona package ni abre una instancia física.
+
+---
+
+#### 37. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-016::GLOBAL-FINAL
+```
+
+consolida evidencia de packages aplicables y demuestra que la frontera recepción versus aprobación es uniforme entre consumidores.
+
+Debe fallar si existe al menos un consumidor aplicable donde:
+
+- `receipts.register` pueda autorizarse por rol base sin carril operativo;
+- se omita `T+C` donde es obligatorio;
+- un principal técnico sustituya al receptor humano;
+- `site_id` o `area_id` cliente creen autoridad;
+- una recepción conceda o ejecute aprobación;
+- `purchase_orders.approve` use turno, check-in o rol operativo como fuente de autoridad;
+- `receipts.register` permita reversión, corrección o resolución de diferencias reservadas;
+- la modalidad materializada difiera del contrato objetivo;
+- una denegación produzca efectos parciales;
+- no exista evidencia suficiente para reconstruir la decisión.
+
+---
+
+#### 38. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por requisitos canónicos vigentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 39. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-001` — autorización final por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-008` — separación entre capacidades administrativas y operativas, con turno/check-in cuando el contrato lo exige;
+- `TREQ-AUTH-010` — segregación de funciones, incluyendo expresamente que compras crea según alcance y recepción recibe sin aprobar;
+- `TREQ-AUTH-013` — cada mutación revalida server-side permiso, principal, actor, territorio, contexto, estado y columnas/efectos;
+- `TREQ-AUTH-015` — evidencia correlacionable de principal, actor, rol, turno, check-in, territorio, dispositivo, permiso, recurso, decisión y razones;
+- `TREQ-ORIGO-001` — modalidad de recepción visible/auditable y protección contra duplicación de efectos;
+- `TREQ-ORIGO-002` — órdenes limitadas por permiso, territorio, estado y columnas;
+- `TREQ-ORIGO-003` — recepción atómica, idempotente, correlacionable y reconciliable;
+- `TREQ-ORIGO-004` — separación de necesidad, solicitud, selección, aprobación, orden, comprador, aprobador y receptor.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 40. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental no fue incorporado todavía al checkout del usuario; build, typecheck, lint y suites físicas corresponden a la incorporación y a las instancias posteriores. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron todavía formato, quality, delivery, topología, batería global, TREQ ni lifecycle documental sobre el owner modificado. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, continuidad hacia `AUTH-QA-016`, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `ORIGO-AUTH-006`, `ORIGO-AUTH-007`, `ORIGO-AUTH-011`, `ORIGO-AUTH-012`, `ORIGO-AUTH-013`, `ORIGO-AUTH-014`, la modalidad objetivo `OPERATIONAL_ONLY` + `T+C`, los grants operativos objetivo de `bodeguero` y `gerencia_operativa`, la separación con `purchase_orders.approve`, el drift físico actual de `receipts.register` y la cobertura existente del Registro 04A. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron recepciones, aprobaciones, firmas, diferencias, reversiones, movimientos de inventario, turnos, check-ins ni casos de dispositivo compartido. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-016::<package_id>` ni `AUTH-QA-016::GLOBAL-FINAL`; ambas identidades permanecen sujetas al lifecycle físico y al gate aplicable. |
+
+---
+
+#### 41. Criterios de aceptación
+
+- [ ] `RECEPCION_EN_SEDE` permanece responsabilidad funcional y no se convierte en grant.
+- [ ] `origo.procurement.receipts.register` es la PermissionKey exacta de recepción nueva.
+- [ ] `receipts.register` protege `PURCHASE_RECEIPT` o su objetivo suficientemente determinado.
+- [ ] La modalidad objetivo de `receipts.register` es `OPERATIONAL_ONLY`.
+- [ ] El prerrequisito operativo es `T+C`.
+- [ ] `bodeguero` conserva el grant operativo objetivo dentro de su territorio y recurso.
+- [ ] `gerencia_operativa` conserva el grant operativo objetivo sin alcance global.
+- [ ] Ningún rol base recibe `receipts.register` por sí solo.
+- [ ] Un actor administrativo solo recibe cuando además resuelve un carril operativo completo válido.
+- [ ] `purchase_orders.approve` permanece `BASE_ONLY` y separado.
+- [ ] Turno, check-in, dispositivo o rol operativo no conceden aprobación.
+- [ ] El actor receptor se resuelve y atribuye de forma explícita.
+- [ ] En shared device, principal técnico y actor humano permanecen separados.
+- [ ] Firma/PIN no crean permiso, contexto ni aprobación.
+- [ ] Cola y formulario no sustituyen el check server-side.
+- [ ] `site_id`, `area_id`, selected/preferred site o payload cliente no crean autoridad.
+- [ ] Recepción ordinaria exige orden/caso elegible y territorio compatible.
+- [ ] Recepción directa/emergencia conserva permiso, `T+C`, actor y causa controlada.
+- [ ] `record_only` mantiene autorización completa aunque no mueva inventario.
+- [ ] Modo inventariable no concede inventario general.
+- [ ] `receipts.register` no autoriza reversión, corrección ni resolución de diferencias.
+- [ ] Registrar recepción no aprueba ni emite la orden.
+- [ ] Autoridad administrativa independiente, cuando exista, se reevalúa aparte y respeta segregación.
+- [ ] El drift físico actual de `receipts.register` se trata como incompatibilidad que impide PASS, no como contrato vigente.
+- [ ] La ausencia física de `purchase_orders.approve` se registra `NOT_APPLICABLE` por package cuando corresponda, sin inventar superficie.
+- [ ] Toda denegación conserva cero efectos parciales.
+- [ ] Los evaluadores aplicables conservan decisiones equivalentes.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 42. Límites
+
+Esta tarea no:
+
+- redefine `ORIGO-AUTH-006` ni `ORIGO-AUTH-007`;
+- crea o modifica PermissionKey;
+- corrige físicamente el drift de `receipts.register`;
+- modifica grants base u operativos;
+- materializa `purchase_orders.approve`;
+- inventa un rol operativo `recepcion`;
+- convierte `RECEPCION_EN_SEDE` en permiso;
+- redefine política de aprobación;
+- define umbrales económicos;
+- autoriza autoaprobación;
+- redefine reversión o corrección;
+- redefine resolución de diferencias;
+- redefine el ledger físico de inventario;
+- implementa firma o PIN;
+- modifica UI o navegación;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos o datasets;
+- ejecuta `AUTH-QA-015::<package_id>`;
+- ejecuta `AUTH-QA-016::<package_id>`;
+- ejecuta `AUTH-QA-016::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 43. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-015 — Compras puede crear órdenes según alcance`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-016 — Recepción puede recibir pero no aprobar compras`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado`
 ### [ ] AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
 ### [ ] AUTH-QA-018 — PIN identifica al trabajador real
 ### [ ] AUTH-QA-019 — Rol simulado no hereda permisos reales
