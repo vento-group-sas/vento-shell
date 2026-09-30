@@ -2105,7 +2105,758 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana`
 
-### [ ] AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana
+### ✅ AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-003 — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido
+**Tarea siguiente:** AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal
+**Tipo de tarea:** definición técnico-documental del contrato canónico del copiloto creativo de AURA; fija grounding, memoria gobernada, clasificación de salidas, restricciones, trazabilidad de modelo y proveedor, minimización de datos y revisión humana sin seleccionar proveedor concreto ni crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — dominio de marketing y creación`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean repositorios, proveedores, cuentas, contratos externos, credenciales, secretos, tablas, migraciones, funciones, buckets, modelos, embeddings, índices, memoria persistente, agentes, automatizaciones, datos, integraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-29
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA podrá asistir al equipo de marketing en ideación, redacción, adaptación, comparación y preparación creativa mediante inteligencia artificial, preservando al mismo tiempo fuentes autorizadas, frescura, contexto versionado, memoria gobernada, restricciones empresariales, privacidad, trazabilidad y revisión humana.
+
+La tarea resuelve principalmente:
+
+- `H-CAP-SCOPE-014-010`, que identifica el riesgo de que la IA invente ingredientes, beneficios, precios, disponibilidad, fechas o resultados cuando no usa fuentes controladas;
+- la parte de `H-CAP-SCOPE-014-011` que exige que el dominio no presuponga que prompts, archivos o datos pueden enviarse libremente a un proveedor externo; la autorización detallada de esos envíos permanece en `AURA-AUTH-003`, `AURA-AUTH-004`, `CAP-SCOPE-010` y `CAP-SCOPE-016`;
+- la frontera de `H-CAP-SCOPE-014-012`, que exige mantener separados borrador asistido, contenido aprobado y publicación efectiva; la segregación de funciones y experiencia propietaria permanece en `AURA-AUTH-002`, `AURA-UX-003` y `AURA-UX-004`;
+- la contribución de `AURA-DOM-004` a `H-CAP-SCOPE-014-028`, evitando que una asistencia o recomendación automatizada adquiera autoridad para optimizar volumen o interacción sacrificando margen, capacidad, reputación o consentimiento.
+
+La regla raíz es:
+
+```text
+SALIDA DE IA
+!=
+HECHO EMPRESARIAL
+!=
+CONTENIDO APROBADO
+!=
+PUBLICACION
+!=
+ACCION AUTORIZADA
+```
+
+Y además:
+
+```text
+MEMORIA DE AURA
+!=
+FUENTE DE VERDAD EMPRESARIAL
+```
+
+El copiloto deberá ayudar a crear y razonar sobre contenido sin convertirse en una autoridad autónoma sobre datos, marca, producto, clientes, promociones, publicación o decisiones operativas.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-001`, para marca, identidad, tono, mensajes, claims, restricciones, vigencias y fuentes aprobadas;
+- `AURA-DOM-002`, para objetivo, audiencia, brief, calendario, presupuesto, dependencias y contexto de campaña;
+- `AURA-DOM-003`, para activos, derechos, licencias, autorizaciones, original, derivados, versiones, vigencia, reutilización y aprobación de contenido;
+- `CAP-SCOPE-014`, especialmente el estudio creativo asistido y los límites de grounding de inteligencia artificial;
+- `CAP-SCOPE-016`, para finalidad, minimización, clasificación, acceso, conservación, evidencia y tratamiento de información y archivos;
+- `CAP-SCOPE-017`, para calidad, frescura, cobertura, linaje y separación entre señal, hipótesis, recomendación y acción;
+- `VPROC-0056`, como ciclo canónico del contenido desde solicitud y brief hasta creación, revisión, aprobación, publicación, revisión de rendimiento y cierre;
+- la auditoría AURA vigente, que mantiene AURA sin runtime propio y conserva las capacidades actuales de VISO como superficies transitorias;
+- `INT-MKT-001`, que separa la arquitectura objetivo de marketing de cualquier capacidad física todavía no materializada;
+- el registro canónico de requisitos de prueba vigente.
+
+Esta tarea no copia producto, precio, disponibilidad, cliente, venta, campaña ni activos como maestros nuevos. El copiloto consume referencias autorizadas y versionadas a sus propietarios.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer un copiloto creativo capaz de:
+
+- proponer conceptos, nombres, hooks, copies, guiones y llamadas a la acción;
+- crear variantes por canal, formato, audiencia y longitud;
+- preparar kits derivados de material aprobado sin duplicar innecesariamente activos;
+- generar shot lists, briefs de diseño y planes de grabación;
+- comparar variantes contra reglas vigentes de marca;
+- detectar datos no comprobados, fuentes ausentes, vigencia vencida y promesas riesgosas;
+- preparar propuestas para post, historia, reel, WhatsApp, correo y PASS sin publicar por sí mismo;
+- explicar qué fuentes, restricciones y decisiones influyeron en la salida;
+- conservar la trazabilidad de proveedor, modelo, instrucción relevante, contexto utilizado, datos enviados, versión de salida, actor, revisores y aprobación.
+
+Toda capacidad anterior será asistiva. Ninguna salida del copiloto podrá autoaprobarse, autopublicarse ni adquirir autoridad empresarial por el solo hecho de haber sido generada.
+
+---
+
+#### 4. Fronteras conceptuales obligatorias
+
+Se preserva:
+
+```text
+HECHO
+!=
+INFERENCIA
+!=
+PROPUESTA
+```
+
+```text
+FUENTE
+!=
+MEMORIA
+!=
+CONTEXTO DE SESION
+!=
+SALIDA GENERADA
+```
+
+```text
+CONTEXTO RECUPERADO
+!=
+DATO VIGENTE
+```
+
+```text
+SALIDA GENERADA
+!=
+BORRADOR HUMANO APROBADO
+```
+
+```text
+REVISION HUMANA
+!=
+APROBACION
+!=
+PROGRAMACION
+!=
+PUBLICACION
+```
+
+```text
+PROVEEDOR DE IA
+!=
+PROPIETARIO DEL DOMINIO
+```
+
+```text
+CAMBIO DE MODELO
+!=
+CAMBIO INVISIBLE DE COMPORTAMIENTO
+```
+
+```text
+CAPACIDAD TECNICA DEL MODELO
+!=
+AUTORIDAD EMPRESARIAL
+```
+
+Estas fronteras deberán sobrevivir en dominio, autorización, experiencia, integración, auditoría y pruebas.
+
+---
+
+#### 5. Contrato de contexto versionado
+
+Cada ejecución asistida deberá partir de un contexto explícito y reconstruible. El contexto podrá referenciar únicamente fuentes que el actor y la finalidad tengan derecho a utilizar.
+
+Cada referencia de contexto deberá poder identificar como mínimo:
+
+- fuente propietaria;
+- identidad estable del recurso;
+- versión o corte utilizado cuando aplique;
+- vigencia o fecha efectiva cuando aplique;
+- momento de recuperación;
+- finalidad dentro de la tarea creativa;
+- alcance empresarial, de marca, sede, campaña o audiencia pertinente;
+- restricciones de uso conocidas;
+- estado de disponibilidad o calidad cuando sea material.
+
+Un contexto recuperado no se considerará automáticamente vigente. Cuando una fuente indique versión vencida, retiro, ausencia, degradación o conflicto, el copiloto deberá reflejar esa condición y no reutilizar el valor como hecho confirmado.
+
+---
+
+#### 6. Fuentes autorizadas y grounding
+
+Toda afirmación material deberá cumplir una de estas condiciones:
+
+1. estar respaldada por una fuente autorizada, identificable y suficientemente fresca para la finalidad;
+2. estar marcada inequívocamente como inferencia;
+3. estar marcada inequívocamente como propuesta pendiente de comprobación.
+
+El copiloto no deberá ocultar la ausencia de grounding mediante redacción segura o convincente.
+
+El grounding deberá conservar el vínculo entre la afirmación y las referencias relevantes. No es suficiente registrar una lista genérica de fuentes al final cuando no sea posible reconstruir qué afirmación dependió de cuál fuente.
+
+La ausencia de evidencia deberá degradar la certeza de la salida, no elevar la autonomía del modelo.
+
+---
+
+#### 7. Clasificación de hechos, inferencias y propuestas
+
+AURA deberá distinguir de forma persistente y visible:
+
+- **hecho:** valor derivado de una fuente autorizada y vigente dentro de su alcance;
+- **inferencia:** conclusión producida a partir de uno o más hechos, cuya interpretación no existe como hecho maestro;
+- **propuesta:** contenido creativo, hipótesis, opción o recomendación que aún requiere decisión o comprobación humana.
+
+Reglas:
+
+1. una inferencia no podrá almacenarse como si fuera el dato maestro que la originó;
+2. una propuesta no podrá promocionarse a hecho por repetirse en varias generaciones;
+3. una corrección humana deberá quedar distinguida de la salida original del modelo;
+4. una aprobación editorial no convierte una afirmación falsa en hecho válido;
+5. una fuente posterior que contradiga el contexto anterior obliga a revalidar cualquier salida material afectada.
+
+---
+
+#### 8. Afirmaciones que la IA no puede inventar
+
+Se conserva de forma explícita la prohibición de inventar:
+
+- ingredientes;
+- propiedades o beneficios;
+- precios;
+- descuentos;
+- fechas;
+- disponibilidad;
+- capacidad;
+- resultados de campaña;
+- testimonios;
+- reseñas;
+- cifras;
+- condiciones legales;
+- condiciones promocionales.
+
+Además, cualquier claim material gobernado por `AURA-DOM-001` deberá referenciar la versión de marca y la evidencia que lo autoriza.
+
+Cuando falte evidencia suficiente, el copiloto podrá sugerir una redacción hipotética únicamente si queda marcada como propuesta y no puede confundirse con una condición vigente.
+
+---
+
+#### 9. Relación con marca, producto y oferta
+
+El copiloto deberá resolver contexto sin crear maestros competidores:
+
+```text
+MARCA, TONO Y CLAIMS
+-> AURA-DOM-001
+
+BRIEF Y CAMPANA PLANIFICADA
+-> AURA-DOM-002
+
+ACTIVOS Y DERECHOS
+-> AURA-DOM-003
+
+PRODUCTO Y ATRIBUTOS
+-> fuente propietaria autorizada
+
+PRECIO, MARGEN Y PRESUPUESTO
+-> fuente económica autorizada
+
+DISPONIBILIDAD Y CAPACIDAD
+-> fuente operativa autorizada
+
+CLIENTE Y CONSENTIMIENTO
+-> fuente cliente autorizada
+```
+
+El copiloto podrá utilizar esas referencias para redactar o comparar opciones, pero no podrá editar sus fuentes maestras como efecto lateral de una generación.
+
+---
+
+#### 10. Modelo canónico de memoria
+
+La memoria del copiloto será una capa gobernada de contexto reutilizable, no una base maestra paralela.
+
+Conceptualmente se distinguirán:
+
+1. **contexto temporal de trabajo**, utilizado durante una solicitud, brief o sesión creativa y descartable cuando deja de ser necesario;
+2. **referencias canónicas reutilizables**, que conservan punteros a fuentes propietarias y sus versiones en lugar de copiar silenciosamente el maestro;
+3. **memoria creativa aprobada**, formada por decisiones, ejemplos, preferencias o aprendizajes explícitamente admitidos para reutilización y con alcance definido;
+4. **historial de generación y revisión**, que conserva qué produjo el modelo, qué cambió el humano y cuál fue el resultado, como evidencia y no como verdad automática;
+5. **estado técnico del proveedor**, cuando exista, que nunca se considerará memoria canónica por sí mismo.
+
+Esta clasificación es conceptual y no crea enums, tablas ni almacenamiento físico en esta tarea.
+
+---
+
+#### 11. Admisión de memoria reutilizable
+
+Una salida generada no podrá incorporarse a memoria reutilizable solo porque fue aceptada visualmente o porque no recibió correcciones.
+
+Para admitir memoria creativa reutilizable deberá poder demostrarse:
+
+- finalidad;
+- propietario;
+- alcance de marca, campaña, audiencia o tipo de trabajo;
+- fuente o decisión humana que la respalda;
+- versión;
+- fecha de vigencia o condición de revisión cuando corresponda;
+- actor que la admite;
+- restricciones de reutilización;
+- relación con activos y derechos cuando exista material creativo asociado.
+
+La memoria no podrá convertir automáticamente un resultado exitoso de campaña en una regla universal; el aprendizaje cuantitativo y la atribución pertenecen a `AURA-DOM-008`, y las recomendaciones comerciales explicables pertenecen a `AURA-DOM-010`.
+
+---
+
+#### 12. Actualización, invalidación y olvido operativo
+
+La memoria reutilizable deberá ser versionada y susceptible de quedar inválida sin destruir la evidencia histórica.
+
+Condiciones de revalidación o invalidación incluyen:
+
+- nueva versión de marca;
+- claim retirado o reemplazado;
+- brief o campaña cerrados;
+- activo retirado o con derechos vencidos;
+- cambio de producto, oferta, precio, disponibilidad o capacidad;
+- cambio de finalidad o consentimiento;
+- fuente desactualizada o degradada;
+- decisión humana que reemplace una regla creativa anterior.
+
+Invalidar para uso futuro no equivale a borrar evidencia histórica. Conservación, disposición y eliminación real permanecen gobernadas por `CAP-SCOPE-016` y sus propietarios.
+
+---
+
+#### 13. Proveedor de IA como dependencia sustituible
+
+El dominio no se acoplará a un proveedor concreto como parte de esta definición.
+
+Toda integración futura deberá registrar como mínimo:
+
+- identidad del proveedor;
+- identidad o versión del modelo cuando sea verificable;
+- capacidades habilitadas;
+- finalidad autorizada;
+- clases de información permitidas;
+- restricciones contractuales y de tratamiento relevantes;
+- política aplicable de retención cuando corresponda;
+- límites, fallos y degradaciones observables;
+- configuración o versión de integración que pueda afectar el resultado.
+
+La selección de proveedor deberá permanecer separada de las decisiones empresariales y de aprobación de contenido.
+
+---
+
+#### 14. Cambio de proveedor o modelo
+
+Cambiar proveedor, modelo o configuración relevante no podrá tratarse como una implementación invisible cuando pueda alterar:
+
+- calidad factual;
+- capacidad de grounding;
+- comportamiento creativo;
+- política de datos;
+- retención;
+- tratamiento de archivos;
+- límites de contexto;
+- disponibilidad;
+- costos;
+- trazabilidad;
+- capacidades de herramientas o acciones.
+
+Una sustitución futura deberá permitir comparar el comportamiento relevante antes de adoptarla para trabajo aprobado. Un fallback técnico no podrá ampliar datos enviados, finalidad o autoridad.
+
+Si no existe un proveedor compatible con las restricciones del trabajo solicitado, la salida correcta será degradar o bloquear la asistencia correspondiente, no relajar silenciosamente las restricciones.
+
+---
+
+#### 15. Minimización antes de proveedores externos
+
+Antes de que información salga a un proveedor externo, el diseño deberá aplicar minimización proporcional a la finalidad.
+
+No deberá enviarse por defecto:
+
+- datos personales no necesarios;
+- secretos o credenciales;
+- identificadores internos innecesarios;
+- expedientes completos cuando basta un fragmento autorizado;
+- archivos completos cuando basta una referencia o representación reducida;
+- propiedad intelectual fuera del alcance necesario;
+- información de otras marcas, sedes, campañas o clientes que no participa en la tarea.
+
+Que un dato sea visible para el actor dentro de Vento OS no significa automáticamente que pueda enviarse a un tercero.
+
+La autorización detallada de datos, acciones masivas, exportaciones y proveedores permanece en las tareas `AURA-AUTH-*` y en el gobierno transversal aplicable.
+
+---
+
+#### 16. Estado técnico del proveedor no canónico
+
+Threads, conversaciones, cachés, historiales, archivos temporales o memorias administradas por un proveedor externo serán estado técnico del proveedor salvo que exista un contrato canónico posterior que los incorpore expresamente.
+
+Por tanto:
+
+- no serán fuente maestra;
+- no podrán resolver identidad empresarial;
+- no podrán sustituir una versión de marca o brief;
+- no podrán considerarse consentimiento;
+- no podrán sustituir evidencia de aprobación;
+- no podrán utilizarse para publicar o actuar si Vento OS perdió la correlación local necesaria.
+
+La pérdida del estado de proveedor no deberá destruir el expediente canónico de generación, revisión y aprobación que Vento OS deba conservar.
+
+---
+
+#### 17. Instrucciones y trazabilidad de generación
+
+Cada salida material asistida deberá conservar suficiente evidencia para reconstruir:
+
+- solicitud o propósito;
+- actor que inicia;
+- brief o recurso relacionado;
+- fuentes y versiones utilizadas;
+- proveedor y modelo;
+- instrucción relevante o su versión gobernada;
+- restricciones aplicadas;
+- datos o activos enviados cuando corresponda;
+- resultado recibido;
+- versión de la salida;
+- revisiones humanas;
+- decisión posterior.
+
+No se exige convertir todo razonamiento interno del modelo en evidencia. Se exige conservar las entradas, referencias, decisiones y resultados necesarios para auditar el uso empresarial de la asistencia.
+
+---
+
+#### 18. Grounding de activos y derechos
+
+Cuando el copiloto utilice un activo gobernado por `AURA-DOM-003`, deberá respetar:
+
+- identidad del activo;
+- original y derivados;
+- versión;
+- propietario funcional;
+- derechos y licencia;
+- autorización de personas cuando corresponda;
+- vigencia;
+- finalidades y usos permitidos;
+- restricciones por canal, territorio o contexto cuando existan.
+
+Que un proveedor técnicamente pueda leer, transformar o generar a partir de un archivo no significa que Vento OS tenga derecho a enviarlo o reutilizarlo de esa forma.
+
+Una transformación asistida que cambie materialmente una oferta, claim, condición o significado requiere el ciclo de revisión correspondiente y no hereda aprobación de la pieza original.
+
+---
+
+#### 19. Integración con `VPROC-0056`
+
+La asistencia de IA se inserta dentro del proceso canónico existente sin crear un workflow competidor:
+
+```text
+CONTENT_REQUESTED
+-> BRIEF_UNDER_REVIEW
+-> IN_CREATION
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> APPROVED
+-> SCHEDULED
+-> PUBLISHED
+-> PERFORMANCE_REVIEW
+-> CONTENT_CYCLE_REVIEWED
+```
+
+El copiloto participa principalmente en `IN_CREATION` y puede aportar evidencia para `UNDER_REVIEW`.
+
+No podrá saltar automáticamente:
+
+- `UNDER_REVIEW`;
+- `PENDING_APPROVAL`;
+- `APPROVED`;
+- las condiciones de programación y publicación.
+
+La existencia de IA no cambia el significado de una transición del proceso.
+
+---
+
+#### 20. Revisión humana obligatoria
+
+Toda salida creativa asistida permanecerá sujeta a revisión humana antes de adquirir cualquier aprobación empresarial.
+
+La revisión deberá permitir identificar al menos:
+
+- qué parte proviene del modelo;
+- qué fuentes respaldan afirmaciones materiales;
+- qué hechos permanecen pendientes de comprobar;
+- qué restricciones de marca aplicaron;
+- qué cambios introdujo el revisor;
+- qué versión exacta se somete a aprobación.
+
+Un revisor podrá corregir, rechazar o devolver la propuesta. La ausencia de cambios no equivale por sí sola a una aprobación formal.
+
+La definición de quién puede revisar, aprobar, programar o publicar pertenece a `AURA-AUTH-002` y tareas de autorización posteriores.
+
+---
+
+#### 21. Acciones que la IA no puede ejecutar por autonomía propia
+
+La asistencia de IA no podrá, por inferencia o capacidad técnica del proveedor:
+
+- publicar contenido;
+- programar publicaciones;
+- retirar contenido;
+- crear o activar promociones;
+- modificar precios o descuentos;
+- cambiar disponibilidad o capacidad;
+- contactar clientes;
+- crear audiencias masivas;
+- exportar datos de clientes;
+- responder una crisis públicamente;
+- aceptar una propuesta comercial;
+- cerrar una oportunidad;
+- registrar una venta;
+- aprobar gasto;
+- mutar maestros de producto, marca, cliente o finanzas.
+
+Una futura acción asistida deberá pasar por la autoridad y el contrato propietario de esa acción. La generación de una propuesta nunca constituye la autorización para ejecutarla.
+
+---
+
+#### 22. Manejo de ausencia, contradicción y baja confianza
+
+Cuando falte una fuente necesaria o existan fuentes incompatibles, el copiloto deberá distinguir al menos:
+
+- dato no disponible;
+- dato desactualizado;
+- conflicto entre fuentes;
+- dato fuera del alcance autorizado;
+- inferencia posible pero no verificable;
+- fallo técnico de recuperación.
+
+No deberá convertir ninguna de esas condiciones en un valor inventado.
+
+Cuando la salida dependa de una afirmación material no comprobada, deberá quedar bloqueada para tratamiento como hecho y permanecer como propuesta hasta resolver la evidencia.
+
+---
+
+#### 23. Fallo y degradación del proveedor
+
+Un timeout, rechazo, límite, indisponibilidad o respuesta inválida del proveedor deberá conservar estado observable.
+
+Reglas:
+
+1. un fallo técnico no se presentará como rechazo editorial;
+2. una respuesta parcial no se presentará como salida completa;
+3. un fallback no podrá cambiar silenciosamente finalidad, proveedor o tratamiento de datos;
+4. un reintento deberá poder correlacionarse con la solicitud original;
+5. una salida de un reintento no sobrescribirá evidencia previa sin versión;
+6. si no puede demostrarse la procedencia del resultado, no se promoverá al flujo editorial normal.
+
+La implementación técnica de reintentos e idempotencia pertenece a las tareas de integración posteriores cuando corresponda.
+
+---
+
+#### 24. Memoria y recomendaciones no ejecutables
+
+La memoria podrá ayudar a sugerir patrones, ejemplos, formatos o decisiones previamente aprobadas, pero no podrá ejecutar una recomendación ni convertir un patrón histórico en regla obligatoria.
+
+Especialmente:
+
+- interacción alta no equivale a rentabilidad;
+- repetición de una práctica no equivale a autorización;
+- correlación no equivale a causalidad;
+- contenido exitoso no equivale a contenido adecuado para otra marca, audiencia o fecha;
+- preferencia creativa histórica no invalida una nueva restricción de marca o negocio.
+
+El radar de oportunidades y recomendaciones comerciales explicables permanece en `AURA-DOM-010`.
+
+---
+
+#### 25. Simplicidad de experiencia y divulgación progresiva
+
+La trazabilidad completa no obliga a saturar la experiencia principal con configuración técnica.
+
+El contrato permite una interfaz progresiva en la que el usuario pueda ver primero:
+
+- propuesta;
+- hechos relevantes;
+- advertencias;
+- fuentes esenciales;
+- acciones de revisión.
+
+Y abrir bajo demanda:
+
+- detalle completo de fuentes;
+- versión de modelo y proveedor;
+- instrucciones relevantes;
+- datos enviados;
+- auditoría;
+- diagnóstico técnico.
+
+La definición de la experiencia concreta pertenece a `AURA-UX-*`. Esta tarea únicamente exige que la simplificación visual no elimine la trazabilidad necesaria.
+
+---
+
+#### 26. Auditoría y observabilidad
+
+El uso del copiloto deberá poder auditarse sin registrar indiscriminadamente información sensible.
+
+La evidencia deberá permitir correlacionar, cuando corresponda:
+
+- actor;
+- finalidad;
+- recurso o brief;
+- proveedor y modelo;
+- fuentes;
+- versión de contexto;
+- resultado;
+- clasificación de hecho, inferencia o propuesta;
+- revisión;
+- aprobación posterior;
+- error o degradación;
+- momento de ejecución.
+
+Las métricas operativas futuras deberán distinguir calidad del servicio de IA, calidad factual, tasa de revisión, rechazo y corrección sin convertir rapidez o volumen de generación en un objetivo empresarial por sí mismos.
+
+---
+
+#### 27. Handoff a `AURA-DOM-005`
+
+Esta tarea entrega a `AURA-DOM-005` únicamente contenido o propuestas que ya tienen:
+
+- identidad y versión;
+- relación con brief o campaña cuando corresponda;
+- fuentes y frescura relevantes;
+- trazabilidad de generación;
+- estado editorial distinguible;
+- revisión y aprobación cuando corresponda;
+- activos y derechos gobernados;
+- restricciones de marca y negocio identificadas.
+
+`AURA-DOM-005` deberá definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal sin redefinir grounding, memoria, proveedor o autoridad del copiloto.
+
+Una salida generada o revisada que todavía no alcance el estado editorial requerido no podrá entrar a la cola de publicación como si estuviera aprobada.
+
+---
+
+#### 28. Requisitos de prueba derivados
+
+`NO GENERA REQUISITOS DE PRUEBA`.
+
+Justificación:
+
+- el registro vigente ya protege de forma directa el grounding, la clasificación de hechos e inferencias, la trazabilidad de proveedor y modelo, la minimización de datos, los límites de autonomía y la revisión humana de la asistencia de IA;
+- esta tarea desarrolla el contrato documental propietario de esas obligaciones sin introducir una regla protegida nueva que exija otro identificador;
+- no cambia texto, estado, relación, owner, paquete, ambiente ni evidencia de ninguna fila del registro 04A.
+
+Requisitos creados: 0.
+
+Requisitos modificados: 0.
+
+Requisitos diferidos: 0.
+
+Requisitos obsoletos: 0.
+
+---
+
+#### 29. Cobertura de prueba vigente reutilizada
+
+La tarea queda trazada, sin modificar el registro, contra:
+
+- `TREQ-AURA-002`, como cobertura principal de contexto versionado, fuentes autorizadas, hecho/inferencia/propuesta, referencias, frescura, trazabilidad de modelo/proveedor, límites de autonomía y minimización de datos;
+- `TREQ-AURA-001`, para marca, mensajes, contenido, activos, versiones, vigencias y separación entre contenido aprobado y publicación;
+- `TREQ-AURA-018`, para la frontera segura de carga y tratamiento de media cuando activos participen en flujos asistidos;
+- `TREQ-AURA-019`, para mantener borrador, revisión, aprobación, programación, publicación, retiro y archivo como estados y transiciones distintos;
+- `TREQ-AURA-026`, para auditoría, observabilidad y reconciliación de mutaciones editoriales;
+- `TREQ-INTEGRATION-019`, para contratos de integración de marketing y proveedores externos;
+- las obligaciones transversales vigentes de autorización, privacidad, datos y Supabase relacionadas desde esos requisitos.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación de requisitos.
+
+---
+
+#### 30. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó `docs:plan:build` contra un checkout local desde esta entrega |
+| LOCAL | NOT_EXECUTED | no se modificó un checkout local ni se ejecutaron validadores del repositorio desde esta entrega |
+| REMOTA | PASS | se verificaron el archivo propietario, topología `DEFINE_ONCE`, gate `NO_PHYSICAL_INSTANCE`, `CAP-SCOPE-014`, `H-CAP-SCOPE-014-010` a `H-CAP-SCOPE-014-012`, `H-CAP-SCOPE-014-028` a `H-CAP-SCOPE-014-030`, `CAP-SCOPE-016`, `CAP-SCOPE-017`, `VPROC-0056`, la auditoría AURA, el registro 04A de AURA, `package.json` y los validadores documentales actuales |
+| OPERATIVA | NOT_APPLICABLE | esta tarea define el contrato documental del copiloto y no ejecuta generación empresarial real, proveedores externos, memoria persistente, publicación ni acciones comerciales |
+| FÍSICA | NOT_APPLICABLE | la topología canónica `DEFINE_ONCE` resuelve `NO_PHYSICAL_INSTANCE`; no se autorizan runtime, Supabase, secretos, proveedores, datos, integraciones ni despliegues |
+
+La validación remota demuestra consistencia documental de la propuesta. La validación real del repositorio corresponde a la incorporación del artefacto en su rama documental y a la batería canónica local.
+
+---
+
+#### 31. Criterios de aceptación
+
+`AURA-DOM-004` queda satisfecha cuando simultáneamente:
+
+1. el copiloto queda definido como asistencia creativa y no como autoridad autónoma;
+2. hecho, inferencia y propuesta permanecen distintos;
+3. cada afirmación material usa fuente autorizada o queda marcada como no comprobada;
+4. se bloquea la invención de ingredientes, beneficios, precios, descuentos, fechas, disponibilidad, capacidad, resultados, testimonios, reseñas, cifras, condiciones legales y promociones;
+5. el contexto utilizado conserva fuente, versión, vigencia o corte, recuperación y alcance relevante;
+6. memoria de AURA no sustituye fuentes maestras;
+7. se distinguen contexto temporal, referencias canónicas, memoria creativa aprobada, historial de generación y estado del proveedor;
+8. una salida generada no se auto-promueve a memoria reutilizable;
+9. la memoria puede invalidarse por cambios de marca, claim, brief, derechos, producto, oferta, finalidad o fuente;
+10. proveedor y modelo quedan trazables sin escoger un proveedor concreto en esta tarea;
+11. cambiar proveedor o modelo no puede alterar silenciosamente tratamiento de datos o comportamiento material;
+12. los datos enviados a terceros se minimizan por finalidad;
+13. visibilidad interna no equivale a autorización para transferencia externa;
+14. estado técnico del proveedor no se convierte en memoria canónica;
+15. cada salida material conserva solicitud, fuentes, modelo/proveedor, instrucción relevante, resultado, versión, revisión y decisión suficientes para auditoría;
+16. activos y derechos de `AURA-DOM-003` se respetan antes de cualquier transformación asistida;
+17. `VPROC-0056` permanece como proceso canónico y la IA no salta revisión ni aprobación;
+18. la revisión humana sigue siendo obligatoria antes de aprobación empresarial;
+19. la IA no publica, promociona, contacta clientes, responde crisis, acepta propuestas ni muta maestros por autonomía propia;
+20. ausencia, conflicto, dato vencido y fallo técnico no se convierten en valores inventados;
+21. un fallback de proveedor no amplía finalidad, datos ni autoridad;
+22. aprendizaje cuantitativo y atribución permanecen en `AURA-DOM-008`;
+23. recomendaciones comerciales permanecen en `AURA-DOM-010`;
+24. experiencia concreta permanece en `AURA-UX-*` sin perder trazabilidad;
+25. `AURA-DOM-005` recibe únicamente el handoff editorial necesario para publicación y no absorbe el contrato del copiloto;
+26. se crean y modifican cero requisitos de prueba;
+27. no se crea ninguna instancia física;
+28. la continuidad queda reservada exclusivamente a `AURA-DOM-005`.
+
+---
+
+#### 32. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear un repositorio o runtime de AURA;
+- contratar o seleccionar un proveedor real de IA;
+- crear cuentas, API keys, secretos o credenciales;
+- enviar prompts, datos o archivos reales a terceros;
+- crear tablas, migraciones, embeddings, índices vectoriales, funciones, RPC, RLS, jobs o Storage;
+- crear memoria persistente, base vectorial o catálogo físico de prompts;
+- activar herramientas, agentes o acciones autónomas;
+- modificar producto, precio, disponibilidad, cliente, venta, margen o presupuesto;
+- cargar, transformar o publicar activos reales;
+- entrenar, ajustar o evaluar modelos con datos reales de Vento;
+- configurar retención de un proveedor real;
+- aprobar contenido automáticamente;
+- programar o publicar contenido;
+- crear promociones, cupones, descuentos o campañas ejecutables;
+- contactar clientes o audiencias;
+- responder comentarios, reseñas o crisis reales;
+- redefinir permisos o roles;
+- resolver jurídicamente condiciones de proveedores o tratamiento de datos;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-DOM-005`.
+
+---
+
+#### 33. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-003 — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal`
 
 ### [ ] AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal
 
