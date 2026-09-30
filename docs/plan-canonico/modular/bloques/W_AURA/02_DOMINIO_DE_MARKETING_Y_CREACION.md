@@ -8991,6 +8991,1744 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio`
 
-### [ ] AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
+### ✅ AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña
+**Tarea siguiente:** AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables
+**Tipo de tarea:** definición técnico-documental del contrato canónico de reputación pública de AURA; fija captura, identidad, clasificación, prioridad, respuesta, moderación, escalamiento a servicio, trazabilidad y reconciliación de reseñas, comentarios y menciones sin convertir AURA en propietaria de reclamos, devoluciones, compensaciones ni casos operativos y sin crear una instancia física propia
+**Bloque:** BLOQUE W — AURA — dominio de marketing y creación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`; contrato lógico de reputación, respuesta pública y escalamiento definido sin conectar cuentas reales ni crear almacenamiento o automatización
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica AURA runtime, canales externos, PULSO, PASS, VISO, Supabase, datos, RLS, permisos, cuentas, credenciales, comentarios, reseñas, respuestas, reclamos, compensaciones, integraciones, despliegues ni repositorios
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato empresarial con el que AURA deberá recibir y gobernar señales públicas de reputación sin confundir una interacción visible con un reclamo formal, una clasificación asistida con una decisión humana, una respuesta pública con resolución de servicio ni una acción de moderación con eliminación legítima de evidencia.
+
+La tarea cierra específicamente las brechas:
+
+- `H-CAP-SCOPE-014-025`, porque no existe un inbox canónico de reseñas, comentarios, menciones y respuestas públicas;
+- `H-CAP-SCOPE-014-026`, porque una respuesta visible puede aparentar cierre sin que el caso de servicio esté resuelto;
+- la frontera de `CAP-14.11 — Gestionar reputación y comentarios públicos` entre AURA y los dominios de servicio;
+- la necesidad de consumir `VPROC-0046` sin adquirir ownership de reclamos, devoluciones o compensaciones;
+- la necesidad de conservar trazabilidad, autoridad, privacidad, idempotencia y reconciliación cuando una respuesta o moderación se materialice posteriormente.
+
+El resultado es una definición documental. No constituye una bandeja implementada, un bot de respuesta, una integración con redes ni una política de servicio ejecutada.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+- la tarea se define una sola vez como contrato reusable;
+- no genera instancia física propia;
+- no conecta Meta, Google, TikTok, WhatsApp, correo, mapas, marketplaces ni otro proveedor;
+- no crea tablas, vistas, RPC, funciones, colas, webhooks o jobs;
+- no publica, edita, oculta, elimina, reporta ni responde contenido real;
+- no abre, resuelve ni cierra reclamos reales;
+- no modifica el lifecycle de `VPROC-0046`;
+- no crea un nuevo namespace técnico de estados;
+- la futura materialización deberá respetar este contrato y las tareas de autorización, experiencia e integración posteriores.
+
+---
+
+#### 3. Entradas canónicas consumidas
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-004`, que exige grounding, separación entre hecho, inferencia y propuesta, trazabilidad de IA y revisión humana;
+- `AURA-DOM-005`, que separa canal, cuenta, endpoint, credencial, publicación, resultado ambiguo, reintento y reconciliación;
+- `AURA-DOM-006`, que conserva campañas, promociones, experimentos y guardas;
+- `AURA-DOM-008`, que entrega métricas reputacionales solo como contexto analítico y conserva la regla de que señal reputacional no equivale a reclamo resuelto;
+- `CAP-SCOPE-010`, que mantiene pregunta, solicitud, reclamo, feedback, devolución, compensación, reserva y comunicación como expedientes o semánticas diferentes;
+- `CAP-SCOPE-014`, en especial `CAP-14.11`;
+- `VPROC-0046 — Gestionar reclamo, devolución, compensación y aprendizaje de causa`;
+- `VPROC-0068`, cuando exista una medición de experiencia del cliente que pueda aportar contexto sin convertirse automáticamente en reclamo;
+- `TREQ-AURA-003`, para reputación, resultado, cierre y frontera con servicio;
+- `TREQ-PASS-011`, para casos, reclamos, feedback, comunicaciones, autoridad y cierre;
+- `TREQ-INTEGRATION-019`, para comentarios, métricas, identificadores, reintentos, idempotencia y reconciliación.
+
+La tarea no modifica esas fuentes ni crea maestros competidores.
+
+---
+
+#### 4. Resultado canónico
+
+AURA deberá disponer conceptualmente de un expediente reputacional capaz de responder, para cada señal pública:
+
+1. dónde apareció;
+2. cuál es su identidad interna y externa;
+3. qué contenido original se observó;
+4. cuándo se observó;
+5. qué marca, sede, publicación, campaña, producto, pedido o servicio podría estar relacionado cuando exista evidencia;
+6. qué tipo de interacción es;
+7. qué tema o riesgo contiene;
+8. qué severidad y prioridad de atención se justifican;
+9. qué parte de la clasificación es observada y qué parte es inferida;
+10. si requiere respuesta pública;
+11. si requiere mover la conversación a un canal privado autorizado;
+12. si requiere escalamiento a servicio;
+13. si existe un caso formal relacionado;
+14. quién es responsable del tratamiento reputacional;
+15. qué respuesta fue propuesta, revisada, aprobada y finalmente publicada;
+16. si hubo edición, eliminación, moderación, error o reconciliación en el canal;
+17. qué parte quedó resuelta públicamente y qué parte continúa abierta en otro dominio;
+18. qué evidencia queda disponible para aprendizaje sin falsear cierre de servicio.
+
+El expediente reputacional no sustituye el expediente formal del proceso propietario.
+
+---
+
+#### 5. Regla raíz
+
+Se fija permanentemente:
+
+```text
+RESEÑA
+!= COMENTARIO
+!= MENCION
+!= MENSAJE
+!= FEEDBACK
+!= RECLAMO FORMAL
+!= CASO DE SERVICIO
+!= RESPUESTA PUBLICA
+!= RESOLUCION
+```
+
+Y:
+
+```text
+RESPUESTA PUBLICA PUBLICADA
+!= RECLAMO RESUELTO
+!= COMPENSACION APROBADA
+!= CASO CERRADO
+```
+
+AURA gobierna reputación y comunicación pública. El dominio de servicio gobierna la investigación, decisión, remedio y cierre formal cuando corresponda.
+
+---
+
+#### 6. Frontera de ownership
+
+La frontera queda:
+
+| Materia | Propietaria | Límite |
+| --- | --- | --- |
+| reseña, comentario o mención pública observada | AURA | no crea por sí sola un reclamo |
+| clasificación reputacional y riesgo comunicacional | AURA | no sustituye triage formal del caso de servicio |
+| borrador de respuesta pública | AURA | no equivale a respuesta aprobada |
+| publicación de respuesta en canal externo | AURA mediante contrato de canal posterior | requiere autoridad, estado e idempotencia |
+| reclamo, devolución y compensación | PULSO mediante `VPROC-0046` | AURA no decide el remedio |
+| administración interna del caso de servicio | VISO como superficie administrativa prevista | no transfiere ownership del proceso |
+| presentación y seguimiento del caso propio al cliente | PASS cuando corresponda | no convierte PASS en sistema de reputación |
+| verdad de pedido, venta y efecto comercial | PULSO | AURA solo referencia hechos autorizados |
+| identidad y consentimiento de cliente | PASS o fuente propietaria aplicable | una cuenta pública no crea identidad PASS |
+| efecto económico de compensación | fuente económica propietaria | AURA no autoriza ni registra el efecto |
+
+Ninguna relación autoriza escritura cruzada implícita.
+
+---
+
+#### 7. Expediente reputacional lógico
+
+El expediente reputacional es una unidad lógica de gobierno y no una tabla física definida por esta tarea.
+
+Como mínimo deberá poder conservar:
+
+- identificador interno estable;
+- proveedor o canal de origen;
+- cuenta o endpoint empresarial aplicable cuando exista;
+- identificador externo del elemento;
+- URL o referencia externa cuando el proveedor la exponga;
+- tipo de elemento observado;
+- marca aplicable;
+- sede aplicable cuando pueda demostrarse;
+- publicación, campaña o pieza correlacionada cuando exista referencia válida;
+- fecha y hora de origen reportadas por el canal;
+- fecha y hora de primera observación por Vento;
+- contenido textual observado;
+- referencias a medios o adjuntos permitidos;
+- autor externo o identificador mínimo permitido;
+- idioma cuando sea material para el tratamiento;
+- clasificación actual;
+- confianza o limitación de la clasificación;
+- severidad y motivo;
+- responsable actual;
+- estado de atención reputacional;
+- decisión de respuesta;
+- decisión de escalamiento;
+- referencia de caso de servicio cuando exista;
+- historial de respuestas y acciones externas;
+- timestamps y actores relevantes;
+- evidencia de reconciliación cuando exista ambigüedad externa.
+
+La implementación física futura podrá usar otros nombres técnicos, pero no podrá perder estas diferencias semánticas.
+
+---
+
+#### 8. Identidad de la señal pública
+
+Cada señal deberá conservar una identidad que permita distinguir:
+
+```text
+MISMO TEXTO
+!= MISMO ELEMENTO
+```
+
+```text
+MISMO AUTOR VISIBLE
+!= MISMA PERSONA CLIENTE
+```
+
+```text
+MISMA PUBLICACION
+!= MISMO COMENTARIO
+```
+
+La identidad deberá priorizar identificadores del proveedor, contexto del canal, timestamp y correlaciones verificables antes que similitud textual.
+
+No se fusionarán elementos únicamente porque:
+
+- contienen el mismo texto;
+- usan el mismo nombre visible;
+- ocurren cerca en el tiempo;
+- mencionan el mismo producto;
+- expresan el mismo sentimiento;
+- parecen pertenecer a la misma persona.
+
+---
+
+#### 9. Fuentes admitidas
+
+El contrato podrá recibir señales desde canales autorizados contemplados por la arquitectura AURA y sus adaptadores posteriores, incluyendo cuando corresponda:
+
+- reseñas;
+- comentarios en publicaciones;
+- respuestas a comentarios;
+- menciones públicas;
+- etiquetas o referencias públicas;
+- valoraciones acompañadas o no de texto;
+- mensajes públicos asociados a una publicación;
+- resultados de moderación reportados por el proveedor.
+
+La existencia conceptual de una fuente no demuestra que la cuenta esté conectada ni que exista autorización para leerla.
+
+`AURA-INT-001` definirá adaptadores, webhooks, polling, límites, credenciales y reconciliación externa.
+
+---
+
+#### 10. Evidencia de captura
+
+La primera observación deberá preservar evidencia suficiente para reconstruir qué se vio en ese momento.
+
+Cuando el proveedor lo permita, podrá conservarse referencia a:
+
+- texto observado;
+- calificación o score nativo;
+- identidad externa permitida;
+- publicación padre;
+- timestamp del proveedor;
+- estado visible;
+- URL o ID externo;
+- adjuntos o media referenciables;
+- versión o payload de origen necesario para auditoría.
+
+La captura no autoriza almacenar datos excesivos ni conservar indefinidamente contenido que deba eliminarse o minimizarse por otra política.
+
+---
+
+#### 11. Elemento observado versus interpretación
+
+Se conserva:
+
+```text
+CONTENIDO OBSERVADO
+!= CLASIFICACION
+!= INFERENCIA DE INTENCION
+!= HECHO EMPRESARIAL
+```
+
+Por tanto:
+
+- el texto original permanece distinguible de etiquetas asignadas;
+- sentimiento, intención y tema pueden ser inferencias;
+- una afirmación del autor no se convierte automáticamente en hecho comprobado;
+- una acusación no se etiqueta como falsa sin evidencia;
+- una clasificación automática no se vuelve canónica únicamente por confianza del modelo.
+
+---
+
+#### 12. Ejes mínimos de clasificación
+
+La clasificación reputacional deberá poder separar al menos:
+
+1. naturaleza de la interacción;
+2. tema principal;
+3. nivel de riesgo o severidad;
+4. necesidad de respuesta;
+5. necesidad de escalamiento;
+6. confianza y limitaciones de la clasificación.
+
+Los ejes pueden coexistir. Una reseña puede ser positiva en sentimiento y contener un asunto operativo que requiere atención.
+
+---
+
+#### 13. Naturaleza de la interacción
+
+La clasificación deberá poder distinguir conceptualmente, cuando aplique:
+
+- pregunta pública;
+- reconocimiento o felicitación;
+- sugerencia;
+- experiencia compartida;
+- inconformidad;
+- alegación o acusación;
+- solicitud de ayuda;
+- solicitud de remedio;
+- contenido abusivo;
+- spam o contenido no relacionado;
+- señal ambigua que requiere revisión.
+
+Estas categorías son semánticas de tratamiento reputacional y no crean por sí mismas un caso formal.
+
+---
+
+#### 14. Tema principal
+
+La clasificación temática podrá referenciar materias empresariales existentes sin adquirir su ownership, por ejemplo:
+
+- producto;
+- calidad percibida;
+- servicio;
+- pedido;
+- entrega;
+- pago;
+- promoción o beneficio;
+- reserva o evento;
+- sede;
+- canal;
+- marca;
+- comunicación o campaña;
+- privacidad;
+- seguridad o riesgo material;
+- otro tema que exija revisión.
+
+El tema orienta el routing; no determina por sí solo culpabilidad, causa ni resolución.
+
+---
+
+#### 15. Severidad y riesgo
+
+La severidad deberá derivarse de señales observables y reglas versionadas, no solo del tono del texto.
+
+La evaluación deberá considerar, cuando corresponda:
+
+- posible afectación a seguridad;
+- posible riesgo legal o regulatorio;
+- posible exposición de datos personales;
+- acusación de fraude o conducta grave;
+- necesidad de devolución, reembolso o compensación;
+- afectación operacional activa;
+- alcance o difusión pública;
+- repetición coordinada o incidente multicanal;
+- riesgo reputacional para marca o sede;
+- urgencia de proteger a una persona o evitar daño adicional.
+
+La severidad reputacional no sustituye la prioridad formal del caso de servicio cuando se abra uno.
+
+---
+
+#### 16. Sentimiento
+
+El sentimiento podrá utilizarse como señal auxiliar, nunca como autoridad suficiente.
+
+Se conserva:
+
+```text
+SENTIMIENTO NEGATIVO
+!= RECLAMO
+```
+
+```text
+SENTIMIENTO POSITIVO
+!= CASO RESUELTO
+```
+
+```text
+SENTIMIENTO NEUTRO
+!= AUSENCIA DE RIESGO
+```
+
+Un modelo podrá sugerir sentimiento, pero la ruta de atención deberá considerar contenido, contexto y riesgo material.
+
+---
+
+#### 17. Confianza de clasificación
+
+Toda clasificación asistida que pueda cambiar routing, prioridad o necesidad de revisión deberá poder declarar su grado de confianza o limitación.
+
+Si la evidencia es insuficiente:
+
+- se conserva la ambigüedad;
+- se solicita revisión humana cuando sea material;
+- no se asigna falsamente una causa;
+- no se descarta una posible escalación solo porque el modelo no detectó riesgo.
+
+La ausencia de confianza suficiente deberá fallar hacia revisión, no hacia silencio automático.
+
+---
+
+#### 18. Cola e inbox canónicos
+
+El inbox de reputación deberá permitir, conceptualmente:
+
+- ver elementos sin clasificar;
+- ver elementos clasificados pendientes de decisión;
+- ver respuestas pendientes de revisión o aprobación;
+- ver escalaciones pendientes;
+- ver elementos con caso de servicio relacionado;
+- ver respuestas publicadas pendientes de conciliación;
+- ver elementos que requieren monitoreo;
+- distinguir elementos cerrados de elementos con trabajo externo todavía abierto.
+
+`AURA-UX-007` definirá la experiencia concreta de esa bandeja.
+
+---
+
+#### 19. Responsable y asignación
+
+Cada elemento que requiera acción deberá tener un responsable identificable.
+
+La asignación reputacional:
+
+- no concede autoridad de servicio;
+- no concede autoridad para compensar;
+- no concede autoridad para eliminar contenido;
+- no concede autoridad para publicar una respuesta sensible;
+- no sustituye las reglas de autorización futuras de `AURA-AUTH-*`.
+
+Un elemento sin responsable cuando la política exige atención permanece pendiente; no se trata como resuelto por antigüedad.
+
+---
+
+#### 20. Decisión de tratamiento
+
+Cada señal deberá poder terminar en una decisión explícita de tratamiento, como mínimo entre:
+
+- no requiere respuesta;
+- requiere respuesta pública;
+- requiere revisión adicional;
+- requiere conversación privada autorizada;
+- requiere escalamiento a servicio;
+- requiere escalamiento a otra función competente;
+- requiere moderación o reporte sujeto a política;
+- requiere monitoreo antes de actuar.
+
+La decisión conserva motivo, actor y timestamp.
+
+---
+
+#### 21. Contrato de respuesta pública
+
+Una respuesta pública deberá conservar:
+
+- referencia exacta al elemento respondido;
+- marca o cuenta desde la que se responde;
+- idioma y tono aprobados;
+- versión del texto;
+- fuentes utilizadas para afirmaciones materiales;
+- actor que propuso;
+- actor que revisó cuando aplique;
+- actor que aprobó cuando aplique;
+- actor o principal técnico que publicó;
+- timestamp de publicación;
+- identificador externo de respuesta cuando exista;
+- estado de confirmación y reconciliación.
+
+Una respuesta publicada no altera el contenido original ni reescribe su clasificación histórica.
+
+---
+
+#### 22. Hechos, claims y promesas en respuesta
+
+Toda respuesta deberá utilizar únicamente hechos autorizados y vigentes.
+
+Queda prohibido afirmar sin fuente suficiente:
+
+- que un producto contiene o no contiene un ingrediente específico;
+- que una devolución o reembolso ya fue aprobada;
+- que un pedido será entregado en una fecha no confirmada;
+- que existe disponibilidad no verificada;
+- que una persona o trabajador tuvo responsabilidad demostrada;
+- que una compensación será otorgada;
+- que una investigación concluyó cuando sigue abierta;
+- que una reseña es falsa;
+- que el problema fue resuelto cuando el caso sigue abierto.
+
+Las reglas de grounding de `AURA-DOM-004` permanecen vigentes.
+
+---
+
+#### 23. Privacidad en respuesta pública
+
+Una respuesta pública no deberá exponer:
+
+- nombre completo innecesario;
+- teléfono;
+- correo;
+- dirección;
+- datos de pago;
+- identificadores sensibles de pedido;
+- detalle interno de investigación;
+- documentos;
+- datos laborales;
+- información de terceros;
+- compensaciones confidenciales.
+
+Cuando sea necesario continuar con información privada, AURA deberá orientar hacia un canal autorizado sin solicitar que la persona publique datos sensibles.
+
+---
+
+#### 24. Paso de público a privado
+
+Mover una conversación a un canal privado no cierra el elemento público ni resuelve el caso.
+
+El handoff deberá conservar:
+
+- referencia al elemento público;
+- razón para cambiar de canal;
+- canal privado autorizado;
+- responsable;
+- timestamp;
+- correlación posterior cuando exista;
+- regla de minimización de datos.
+
+La continuidad privada deberá poder volver a informar una respuesta pública segura cuando corresponda, sin exponer el contenido reservado.
+
+---
+
+#### 25. Asistencia de IA
+
+La IA podrá ayudar a:
+
+- resumir;
+- sugerir tema;
+- sugerir sentimiento;
+- detectar señales de riesgo;
+- proponer borradores;
+- comparar tono y memoria de marca;
+- detectar posible duplicidad para revisión;
+- priorizar elementos para revisión humana.
+
+La IA no podrá por sí sola:
+
+- publicar respuestas;
+- responder crisis;
+- admitir responsabilidad;
+- negar hechos no comprobados;
+- prometer compensaciones;
+- crear o cerrar reclamos;
+- ocultar o eliminar contenido;
+- identificar definitivamente una persona cliente desde un alias público;
+- concluir que una acusación es verdadera o falsa sin evidencia.
+
+Modelo, proveedor, instrucciones relevantes y revisión permanecerán trazables cuando aplique `AURA-DOM-004`.
+
+---
+
+#### 26. Revisión humana
+
+La revisión humana será obligatoria cuando exista cualquiera de estas condiciones materiales:
+
+- riesgo legal;
+- riesgo de seguridad;
+- privacidad;
+- acusación grave;
+- crisis o difusión significativa;
+- posible compensación;
+- reclamo formal o potencial;
+- contenido ambiguo con impacto material;
+- respuesta que admita hechos o responsabilidades;
+- respuesta desde una cuenta sensible;
+- uso de una fuente cuya frescura o autoridad no esté clara.
+
+La política futura podrá exigir revisión adicional en más escenarios, pero no reducir estas guardas sin decisión canónica.
+
+---
+
+#### 27. Segregación de acciones
+
+Se mantienen separadas:
+
+```text
+CLASIFICAR
+!= PROPONER RESPUESTA
+!= APROBAR RESPUESTA
+!= PUBLICAR RESPUESTA
+!= MODERAR
+!= ESCALAR A SERVICIO
+!= CERRAR CASO DE SERVICIO
+```
+
+`AURA-AUTH-002` definirá la segregación concreta de creación, revisión, aprobación, publicación, retiro y respuesta pública.
+
+---
+
+#### 28. Cuándo escalar a servicio
+
+AURA deberá escalar a servicio cuando el contenido requiera investigación, decisión o remedio que exceda la comunicación reputacional.
+
+Entre los disparadores conceptuales se incluyen:
+
+- solicitud explícita de devolución, reembolso, reposición, compensación o corrección;
+- problema de pedido, entrega, pago o beneficio que requiera reconstrucción de hechos;
+- inconformidad que requiera una decisión formal;
+- incidente de seguridad, salud, privacidad o conducta que necesite expediente;
+- repetición de un problema que exija investigación de causa;
+- evidencia que deba ser gestionada bajo el proceso formal;
+- cualquier caso en el que una respuesta pública no sea suficiente para resolver la necesidad del cliente.
+
+El escalamiento no presupone que el reclamo sea válido ni que exista responsabilidad demostrada.
+
+---
+
+#### 29. Frontera con `VPROC-0046`
+
+`VPROC-0046` permanece propiedad funcional de PULSO.
+
+Estados vigentes preservados:
+
+```text
+CLAIM_RECEIVED
+-> TRIAGE_IN_PROGRESS
+-> EVIDENCE_PENDING
+-> UNDER_INVESTIGATION
+-> RESOLUTION_PROPOSED
+-> AUTHORIZATION_PENDING
+-> REMEDY_IN_PROGRESS
+-> CAUSE_ACTION_PENDING
+-> CUSTOMER_VALIDATION_PENDING
+-> CLAIM_CASE_CLOSED
+```
+
+AURA no crea un estado alternativo para ese proceso.
+
+En particular:
+
+```text
+AURA: ELEMENTO PUBLICO ESCALADO
+!=
+VPROC-0046: CLAIM_CASE_CLOSED
+```
+
+---
+
+#### 30. Handoff mínimo a servicio
+
+Cuando corresponda escalar, el handoff deberá poder entregar únicamente el contexto necesario y autorizado:
+
+- identidad interna del elemento reputacional;
+- canal y referencia externa;
+- texto o evidencia relevante;
+- timestamp;
+- marca y sede cuando estén demostradas;
+- producto, publicación, campaña, pedido o venta correlacionados cuando existan referencias válidas;
+- motivo de escalamiento;
+- clasificación y limitaciones;
+- riesgo observado;
+- respuestas públicas ya emitidas;
+- identidad de cliente únicamente cuando exista correlación autorizada;
+- adjuntos permitidos;
+- actor que escaló;
+- timestamp del escalamiento.
+
+El handoff no debe copiar por comodidad un perfil completo de cliente ni datos no necesarios para el caso.
+
+---
+
+#### 31. Aceptación, devolución o rechazo del handoff
+
+El contrato de integración posterior deberá poder distinguir:
+
+- handoff aceptado y correlacionado con un caso;
+- handoff devuelto por información insuficiente;
+- handoff rechazado por no pertenecer al proceso;
+- handoff ya existente y deduplicado;
+- resultado desconocido pendiente de reconciliación.
+
+AURA no debe crear múltiples casos por reintentar un handoff cuyo resultado es ambiguo.
+
+---
+
+#### 32. Identidad desconocida
+
+Una persona podrá publicar una reseña o comentario sin identidad PASS conocida.
+
+Se conserva:
+
+```text
+AUTOR PUBLICO
+!= PERSONA CLIENTE CONFIRMADA
+```
+
+AURA no creará una cuenta PASS ficticia para procesar el elemento.
+
+Si posteriormente existe verificación autorizada, podrá correlacionarse el caso conservando la identidad original de la señal y el momento en que se estableció la relación.
+
+---
+
+#### 33. Vinculación con pedido o venta
+
+Un comentario podrá referenciar un pedido o venta únicamente cuando exista evidencia suficiente.
+
+Queda prohibido:
+
+- adivinar un pedido por fecha aproximada;
+- usar nombre visible como identidad suficiente;
+- revelar públicamente que una persona realizó una compra;
+- escribir en PULSO para forzar una correlación;
+- declarar que una publicación pertenece a una campaña solo porque menciona un producto promocionado.
+
+La correlación autorizada conserva su fuente y confianza.
+
+---
+
+#### 34. Calificación, feedback y reclamo
+
+Se preserva `CAP-SCOPE-010`:
+
+```text
+CALIFICACION BAJA
+!= RECLAMO AUTOMATICO
+```
+
+Y:
+
+```text
+FEEDBACK
+!= RECLAMO
+!= CONVERSACION
+```
+
+Una señal negativa puede justificar revisión o sugerir apertura de caso, pero no sustituye la decisión del proceso formal.
+
+`VPROC-0068` podrá aportar mediciones de experiencia; su resultado tampoco constituye por sí mismo un reclamo ni un éxito o fracaso de campaña.
+
+---
+
+#### 35. Resultado de servicio de vuelta a AURA
+
+Cuando un caso formal relacionado avance o cierre, AURA podrá consumir una proyección mínima autorizada para decidir si corresponde actualizar la comunicación pública.
+
+La proyección deberá evitar exponer detalles internos innecesarios y podrá incluir, cuando esté permitido:
+
+- referencia de caso;
+- estado general utilizable externamente;
+- existencia de una decisión comunicable;
+- confirmación de que una respuesta o seguimiento público es permitido;
+- timestamp de cambio;
+- resultado externo seguro cuando corresponda.
+
+AURA no necesita ni adquiere el expediente completo para administrar reputación.
+
+---
+
+#### 36. Respuesta pública versus cierre de servicio
+
+Se fija:
+
+```text
+RESPUESTA PUBLICA COMPLETADA
+!= SERVICIO COMPLETADO
+```
+
+Un elemento reputacional puede quedar sin nueva acción pública mientras el caso formal continúa abierto.
+
+La interfaz futura deberá poder representar simultáneamente:
+
+- tratamiento público completado;
+- caso de servicio abierto;
+- seguimiento público pendiente;
+- caso cerrado pero respuesta pública pendiente;
+- ambos frentes completados.
+
+No se usa un único booleano `resolved` para colapsar estas realidades.
+
+---
+
+#### 37. Compensaciones y remedios
+
+AURA no decide ni ejecuta:
+
+- devolución;
+- reembolso;
+- reposición;
+- descuento;
+- cortesía;
+- cupón;
+- puntos;
+- crédito;
+- otro efecto económico o transaccional.
+
+Si un remedio es aprobado por su dominio propietario, AURA podrá comunicar únicamente lo autorizado y necesario.
+
+Una respuesta pública no anunciará un remedio antes de que la decisión exista.
+
+---
+
+#### 38. Moderación, ocultamiento y reporte
+
+Moderación es una acción sensible distinta de responder.
+
+No se ocultará, eliminará ni reportará contenido únicamente para mejorar una métrica reputacional.
+
+Toda acción de moderación futura deberá conservar:
+
+- política o regla aplicable;
+- motivo;
+- actor o autoridad;
+- elemento afectado;
+- acción solicitada;
+- resultado del proveedor;
+- timestamp;
+- evidencia y reconciliación cuando corresponda.
+
+Un comentario incómodo o negativo no constituye por sí solo spam ni abuso.
+
+---
+
+#### 39. Spam, abuso y contenido no relacionado
+
+Una clasificación de spam, abuso o contenido no relacionado podrá orientar el tratamiento, pero no ejecutar automáticamente una acción irreversible.
+
+Cuando exista riesgo para una persona, amenaza, acoso o contenido potencialmente ilícito, la tarea deberá escalar a la función competente y preservar evidencia conforme a las políticas aplicables.
+
+AURA no inventa desde esta tarea un proceso legal, disciplinario o de seguridad paralelo.
+
+---
+
+#### 40. Edición o eliminación del contenido fuente
+
+Un proveedor externo puede permitir que el autor edite o elimine contenido después de la captura.
+
+Se conserva:
+
+```text
+ELEMENTO ELIMINADO EN CANAL
+!= PROBLEMA RESUELTO
+```
+
+```text
+ELEMENTO EDITADO
+!= HISTORIA ANTERIOR BORRADA
+```
+
+La historia interna conservará evidencia permitida y suficiente para auditoría, respetando retención y privacidad.
+
+La versión visible más reciente y las observaciones históricas deberán distinguirse.
+
+---
+
+#### 41. Edición, corrección o retiro de una respuesta
+
+Cuando una respuesta pública de Vento deba corregirse, editarse o retirarse:
+
+- la nueva acción deberá estar vinculada con la respuesta anterior;
+- se conservará motivo;
+- se conservará autoridad;
+- se conservará estado externo confirmado o ambiguo;
+- no se sobrescribirá silenciosamente el texto histórico en AURA;
+- la corrección no alterará por sí misma el estado del caso de servicio.
+
+La publicación y reconciliación técnica permanecen gobernadas por `AURA-DOM-005` y `AURA-INT-001`.
+
+---
+
+#### 42. Idempotencia de respuesta
+
+Una misma intención de respuesta no debe producir respuestas públicas duplicadas por:
+
+- doble clic;
+- reintento;
+- webhook repetido;
+- timeout;
+- recuperación de conexión;
+- procesamiento concurrente.
+
+La futura materialización deberá conservar identificador interno, identificador externo cuando exista, versión, estado y clave idempotente conforme a `TREQ-INTEGRATION-019`.
+
+---
+
+#### 43. Resultado ambiguo
+
+Si el proveedor devuelve timeout, respuesta parcial o estado no concluyente después de publicar o moderar, AURA deberá entrar en reconciliación antes de repetir la acción.
+
+Se prohíbe:
+
+```text
+RESPUESTA AMBIGUA
+-> RETRY CIEGO
+-> SEGUNDA RESPUESTA PUBLICA
+```
+
+El comportamiento fail-closed definido en `AURA-DOM-005` también aplica a respuestas y acciones reputacionales.
+
+---
+
+#### 44. Webhooks tardíos y fuera de orden
+
+Un evento externo tardío no podrá:
+
+- recrear un elemento ya conciliado;
+- reabrir automáticamente un caso formal cerrado;
+- marcar una respuesta anterior como la versión vigente si fue sustituida;
+- convertir una eliminación externa en resolución del asunto;
+- duplicar una acción de moderación.
+
+Toda corrección deberá respetar identidad, versión y orden lógico.
+
+---
+
+#### 45. Tiempo de atención
+
+El expediente deberá conservar timestamps suficientes para medir posteriormente:
+
+- primera observación;
+- clasificación;
+- asignación;
+- propuesta de respuesta;
+- aprobación;
+- publicación;
+- escalamiento;
+- aceptación del handoff;
+- seguimiento;
+- cierre del tratamiento reputacional.
+
+Esta tarea no fija minutos u horas de SLA específicos.
+
+Los SLA del caso formal permanecen en su dominio propietario.
+
+---
+
+#### 46. Prioridad reputacional versus prioridad de servicio
+
+Se conserva:
+
+```text
+PRIORIDAD REPUTACIONAL
+!= PRIORIDAD VPROC-0046
+```
+
+Una publicación de alta difusión puede requerir respuesta reputacional rápida sin cambiar automáticamente la prioridad formal del caso.
+
+Un caso de servicio crítico puede existir aunque el elemento público tenga baja difusión.
+
+Las dos prioridades pueden correlacionarse, pero mantienen propietarios y criterios distintos.
+
+---
+
+#### 47. Crisis, seguridad, privacidad y riesgo legal
+
+Cuando una señal involucre posible crisis, seguridad, privacidad, riesgo legal o impacto material fuera de la capacidad ordinaria de Marketing:
+
+- se detiene cualquier automatización autónoma de respuesta;
+- se conserva evidencia;
+- se notifica o escala a la función competente según contratos vigentes;
+- la respuesta pública requiere autoridad humana adecuada;
+- no se promete resultado antes de decisión;
+- AURA conserva la trazabilidad de reputación sin adquirir ownership de la investigación especializada.
+
+La IA no responde una crisis de forma autónoma.
+
+---
+
+#### 48. Alegaciones y hechos no comprobados
+
+AURA deberá poder distinguir:
+
+- afirmación del autor;
+- hecho confirmado por Vento;
+- hecho contradicho por evidencia;
+- asunto todavía no comprobado;
+- opinión o valoración subjetiva.
+
+La respuesta no deberá presentar una inferencia interna como hecho público.
+
+Tampoco deberá acusar al autor de falsedad sin evidencia y autoridad suficientes.
+
+---
+
+#### 49. Respuesta a elogios y comentarios positivos
+
+Los elementos positivos también pertenecen al gobierno reputacional cuando requieren acción.
+
+Una respuesta de agradecimiento:
+
+- utiliza tono de marca vigente;
+- no inventa una relación personal;
+- no convierte al autor en cliente identificado;
+- no crea consentimiento de marketing;
+- no promete beneficios;
+- no usa el elogio como testimonio comercial reutilizable sin derechos y autorización aplicables.
+
+La reutilización como activo o testimonial permanece sujeta a `AURA-DOM-003` y las reglas de derechos correspondientes.
+
+---
+
+#### 50. Comentarios relacionados con campañas
+
+Cuando exista referencia válida a una campaña, pieza o publicación AURA, el expediente reputacional podrá conservar la correlación.
+
+Pero:
+
+```text
+COMENTARIO SOBRE CAMPANA
+!= RESULTADO CAUSADO POR CAMPANA
+```
+
+`AURA-DOM-008` conserva toda interpretación de atribución, confianza e incrementalidad.
+
+Esta tarea no redefine métricas de campaña.
+
+---
+
+#### 51. Señales reputacionales como guardas
+
+Una acumulación de señales críticas o un incidente material podrá actuar como entrada para una guarda reputacional de campañas o publicaciones.
+
+La decisión de pausar, retirar o cambiar una campaña sigue las reglas propietarias de `AURA-DOM-006` y `AURA-DOM-005`.
+
+Un único comentario negativo no activa automáticamente una pausa global.
+
+---
+
+#### 52. Incidentes con múltiples elementos
+
+Varios comentarios, reseñas o menciones podrán referirse al mismo incidente.
+
+La agrupación deberá:
+
+- preservar cada identidad fuente;
+- evitar contar un mismo elemento dos veces;
+- declarar la regla de agrupación;
+- permitir separar elementos si la hipótesis de relación resulta incorrecta;
+- evitar abrir un caso de servicio por cada duplicado cuando existe un caso único adecuado;
+- conservar distintos autores sin fusionarlos como una persona.
+
+Una agrupación analítica no crea un nuevo hecho empresarial.
+
+---
+
+#### 53. Duplicados y republicaciones
+
+Una misma opinión puede ser copiada o republicada en varios canales.
+
+AURA podrá detectar posible duplicidad para revisión, pero no colapsará automáticamente elementos de proveedores distintos si eso destruye evidencia de difusión o contexto.
+
+La deduplicación deberá distinguir:
+
+- duplicado técnico;
+- republicación real;
+- referencia cruzada;
+- elementos distintos con texto semejante.
+
+---
+
+#### 54. Respuestas de terceros
+
+Una conversación pública puede incluir respuestas de otros usuarios.
+
+AURA no asumirá que:
+
+- una respuesta de tercero representa a Vento;
+- una respuesta de otro cliente resuelve el asunto;
+- una discusión entre usuarios convierte todas las intervenciones en un solo caso;
+- una acusación repetida por terceros se vuelve hecho confirmado por volumen.
+
+La identidad y autoría de cada intervención permanecen separadas.
+
+---
+
+#### 55. Cuenta y marca de respuesta
+
+Toda respuesta empresarial deberá utilizar una cuenta o endpoint autorizado y coherente con la marca, sede o canal aplicable.
+
+No se responderá desde una cuenta personal por conveniencia cuando la cuenta empresarial correspondiente sea obligatoria.
+
+La propiedad de cuentas, tokens, roles y recuperación permanece en `AURA-DOM-005`, `AURA-AUTH-004` y `AURA-INT-001`.
+
+---
+
+#### 56. Retención y privacidad
+
+El expediente reputacional puede contener información pública y aun así estar sujeto a privacidad, minimización, derechos y retención.
+
+La condición de "público" no autoriza:
+
+- copiar datos ilimitadamente;
+- enriquecer perfiles sin finalidad;
+- conservar identificadores indefinidamente;
+- fusionar datos con PASS por similitud;
+- exportar conversaciones completas a proveedores externos por comodidad.
+
+Las políticas transversales de información y privacidad mantienen autoridad.
+
+---
+
+#### 57. Auditoría
+
+Toda acción material deberá poder reconstruirse con:
+
+- actor;
+- acción;
+- objeto;
+- versión;
+- motivo;
+- timestamp;
+- fuente;
+- autorización relevante;
+- resultado;
+- referencia externa cuando exista;
+- referencia de caso formal cuando exista.
+
+La auditoría no convierte a AURA en fuente propietaria de los efectos ejecutados por otros dominios.
+
+---
+
+#### 58. Frontera con `AURA-DOM-005`
+
+`AURA-DOM-005` conserva:
+
+- cuentas;
+- endpoints;
+- programación;
+- publicación;
+- reintentos;
+- retiro;
+- reconciliación externa.
+
+Esta tarea añade la semántica empresarial de respuesta reputacional, pero no redefine el mecanismo técnico de publicación.
+
+Una respuesta pública es un tipo de acción comunicacional que deberá reutilizar esas garantías.
+
+---
+
+#### 59. Frontera con `AURA-DOM-004`
+
+`AURA-DOM-004` conserva:
+
+- grounding;
+- memoria;
+- proveedores de IA;
+- trazabilidad de generación;
+- separación hecho/inferencia/propuesta;
+- revisión humana;
+- límites de autonomía.
+
+Esta tarea no crea otro copiloto ni otro contrato de IA.
+
+---
+
+#### 60. Frontera con `AURA-DOM-008`
+
+`AURA-DOM-008` conserva:
+
+- definición de métricas;
+- atribución;
+- confianza;
+- incrementalidad;
+- aprendizaje cuantitativo;
+- cierre analítico de campaña.
+
+Esta tarea puede producir hechos reputacionales gobernados que luego sean medidos, pero no decide cómo demostrar impacto empresarial.
+
+Se conserva:
+
+```text
+VOLUMEN DE COMENTARIOS
+!= IMPACTO EMPRESARIAL
+```
+
+---
+
+#### 61. Frontera con `AURA-AUTH-*`
+
+Las tareas de autorización conservarán:
+
+- quién puede ver datos sensibles;
+- quién puede clasificar;
+- quién puede aprobar respuestas;
+- quién puede publicar;
+- quién puede moderar;
+- quién puede exportar;
+- quién puede acceder a clientes o casos;
+- quién puede usar proveedores externos.
+
+Esta tarea define qué acciones existen, no concede permisos concretos.
+
+---
+
+#### 62. Frontera con `AURA-UX-007`
+
+`AURA-UX-007` diseñará la experiencia de:
+
+- inbox;
+- filtros y prioridad;
+- contexto;
+- clasificación;
+- borrador y aprobación de respuesta;
+- escalamiento;
+- vínculo con caso de servicio;
+- seguimiento y cierre visible.
+
+Esta tarea entrega el contrato semántico y no diseña componentes de UI.
+
+---
+
+#### 63. Frontera con `AURA-INT-001`
+
+`AURA-INT-001` definirá:
+
+- adaptadores de redes y plataformas;
+- webhooks;
+- polling;
+- OAuth y credenciales;
+- rate limits;
+- errores de proveedor;
+- reintentos;
+- reconciliación;
+- capacidades de responder, editar, eliminar, ocultar o reportar según proveedor.
+
+Esta tarea no inventa capacidades que un proveedor no soporte.
+
+---
+
+#### 64. Frontera con `AURA-INT-002`
+
+`AURA-INT-002` definirá los contratos autorizados para consumir hechos internos de PULSO, PASS, VISO, NUMERA, NEXO y FOGO.
+
+Esta tarea define qué contexto puede ser necesario para reputación, pero no diseña payloads, endpoints o eventos físicos.
+
+---
+
+#### 65. Frontera con `VPROC-0046`
+
+La integración futura deberá respetar los eventos canónicos ya definidos de `VPROC-0046` sin crear eventos paralelos desde AURA.
+
+AURA puede consumir proyecciones autorizadas para reputación y aprendizaje.
+
+AURA no puede:
+
+- ejecutar `RESOLUTION_PROPOSED`;
+- aprobar `AUTHORIZATION_PENDING`;
+- ejecutar `REMEDY_IN_PROGRESS`;
+- declarar `CLAIM_CASE_CLOSED`.
+
+---
+
+#### 66. Frontera con VISO
+
+VISO permanece como superficie administrativa prevista para colas, asignaciones, investigación, decisiones y seguimiento de servicio conforme a `CAP-SCOPE-010`.
+
+AURA no replica esa superficie.
+
+El usuario de Marketing podrá ver únicamente la proyección mínima autorizada necesaria para gestionar la comunicación reputacional.
+
+---
+
+#### 67. Frontera con PASS
+
+PASS permanece como superficie personal del cliente para presentar y consultar casos propios cuando corresponda.
+
+AURA no usa una cuenta social como sustituto de identidad PASS.
+
+Un caso relacionado con una persona autenticada podrá correlacionarse bajo contrato autorizado sin exponer públicamente esa identidad.
+
+---
+
+#### 68. Frontera con PULSO
+
+PULSO conserva `VPROC-0046` y los hechos de pedido, venta, devolución y compensación.
+
+AURA puede consumir señales y resultados mínimos para:
+
+- reputación;
+- aprendizaje de comunicación;
+- seguimiento público;
+- detección de expectativas problemáticas.
+
+AURA no altera el caso ni el efecto transaccional.
+
+---
+
+#### 69. Condiciones de cierre del tratamiento reputacional
+
+El tratamiento reputacional podrá considerarse completo solo cuando:
+
+- la clasificación y decisión de tratamiento estén registradas;
+- cualquier respuesta requerida haya alcanzado un estado externo conocido o una excepción explícita;
+- cualquier escalamiento requerido haya sido aceptado, devuelto o rechazado de forma conocida;
+- las acciones pendientes estén asignadas;
+- la relación con casos externos al dominio permanezca visible;
+- el cierre no falsee el estado de servicio.
+
+Si un caso formal sigue abierto, el elemento puede completar su trabajo público sin etiquetar el problema empresarial como resuelto.
+
+---
+
+#### 70. Motivos de no respuesta
+
+No responder también deberá ser una decisión trazable cuando exista un elemento que fue revisado.
+
+El motivo podrá corresponder a política, duplicidad, spam confirmado, conversación ya trasladada, riesgo de amplificación, limitación del canal u otra razón aprobada.
+
+Silencio por omisión, pérdida de asignación o error técnico no se registra como "no responder" deliberado.
+
+---
+
+#### 71. Seguimiento posterior
+
+Un elemento podrá requerir seguimiento cuando:
+
+- el caso formal continúe abierto;
+- la respuesta publicada necesite confirmación del proveedor;
+- aparezca una nueva réplica material;
+- el problema se repita;
+- exista riesgo de escalamiento reputacional;
+- la función competente solicite una actualización pública posterior.
+
+El seguimiento conserva vínculo con el elemento original y no crea otra identidad de caso por comodidad.
+
+---
+
+#### 72. Aprendizaje reputacional
+
+AURA podrá extraer aprendizaje cualitativo o cuantitativo de elementos reputacionales gobernados, pero deberá separar:
+
+- frecuencia observada;
+- tema;
+- señal;
+- hipótesis;
+- causa confirmada;
+- decisión de servicio;
+- efecto de campaña.
+
+Una repetición de quejas puede señalar un problema, pero la causa pertenece a la investigación del proceso propietario.
+
+`AURA-DOM-008` conserva el contrato cuantitativo de métricas y confianza.
+
+---
+
+#### 73. Uso de reseñas como contenido
+
+Una reseña o comentario no se convierte automáticamente en activo promocional reutilizable.
+
+Para reutilizar una opinión como testimonial, pieza o material de campaña deberán cumplirse las reglas aplicables de:
+
+- derechos;
+- consentimiento;
+- finalidad;
+- atribución permitida;
+- vigencia;
+- contexto;
+- aprobación.
+
+`AURA-DOM-003` conserva la biblioteca de activos y derechos.
+
+---
+
+#### 74. Publicidad y respuestas pagadas
+
+Esta tarea no autoriza convertir una respuesta reputacional en anuncio, remarketing, audiencia o mensaje promocional.
+
+Responder a una persona públicamente no crea consentimiento para campañas posteriores.
+
+Cualquier reutilización promocional pertenece a los contratos de campaña, audiencia y consentimiento correspondientes.
+
+---
+
+#### 75. Reputación por marca y sede
+
+Los elementos podrán asociarse a marca o sede solo con evidencia suficiente.
+
+No se inferirá sede exclusivamente por:
+
+- ubicación aproximada del usuario;
+- nombre parecido;
+- publicación genérica de marca;
+- horario;
+- producto común a varias sedes.
+
+Una asociación dudosa permanece no resuelta hasta que exista evidencia.
+
+---
+
+#### 76. Reputación de producto
+
+Una mención de producto deberá conservar la identidad canónica cuando sea posible.
+
+AURA no creará productos alternativos desde texto libre ni modificará atributos del catálogo.
+
+Si el producto no puede resolverse con confianza, la referencia permanece descriptiva hasta que la fuente propietaria permita correlacionarla.
+
+---
+
+#### 77. Reputación de trabajador
+
+Una mención pública a una persona trabajadora no autoriza exponer identidad laboral, expediente, desempeño o medidas internas.
+
+Cuando la señal requiera investigación laboral o disciplinaria, AURA deberá escalar a la función competente sin crear un expediente paralelo de personas.
+
+La respuesta pública deberá proteger la privacidad del trabajador y del cliente.
+
+---
+
+#### 78. Evidencia audiovisual
+
+Fotografías, videos, capturas u otros adjuntos podrán contener datos personales, documentos, rostros, placas, pagos o información de terceros.
+
+Su uso deberá aplicar minimización, acceso por finalidad y reglas de conservación.
+
+AURA no envía automáticamente esa evidencia a proveedores de IA o terceros.
+
+---
+
+#### 79. Reconciliación de estado externo
+
+El sistema futuro deberá poder detectar diferencias entre estado interno y canal externo, por ejemplo:
+
+- respuesta registrada internamente pero no visible externamente;
+- respuesta visible externamente sin confirmación local;
+- comentario eliminado externamente pero todavía activo internamente;
+- edición externa no observada;
+- acción de moderación solicitada pero no aplicada;
+- duplicado externo después de retry.
+
+La reconciliación resuelve el estado técnico; no decide el resultado del caso de servicio.
+
+---
+
+#### 80. Historial y no reescritura
+
+Cambios posteriores de:
+
+- clasificación;
+- severidad;
+- responsable;
+- marca o sede correlacionada;
+- respuesta;
+- vínculo con caso;
+- política de moderación;
+
+no deberán borrar el estado histórico que sustentó una decisión anterior.
+
+Una corrección crea nueva versión o registro trazable de cambio.
+
+---
+
+#### 81. Incertidumbre
+
+Cuando AURA no pueda demostrar:
+
+- autor;
+- marca;
+- sede;
+- producto;
+- pedido;
+- campaña;
+- causa;
+- intención;
+- necesidad de servicio;
+
+deberá conservar la incertidumbre y no completar el dato por conveniencia.
+
+La ausencia de certeza puede requerir revisión, pero no habilita afirmaciones inventadas.
+
+---
+
+#### 82. Seguridad contra optimización dañina
+
+Ningún objetivo de rapidez, tasa de respuesta, sentimiento, rating o volumen de cierre podrá incentivar:
+
+- ocultar críticas legítimas;
+- cerrar casos sin resolución;
+- negar reclamos para mejorar indicadores;
+- contestar automáticamente contenido sensible;
+- pedir datos personales en público;
+- entregar compensaciones sin autoridad;
+- reportar usuarios por expresar inconformidad legítima.
+
+La experiencia futura deberá mostrar guardas antes que convertir métricas reputacionales en objetivos absolutos.
+
+---
+
+#### 83. Frontera con `AURA-DOM-010`
+
+`AURA-DOM-010` podrá consumir señales reputacionales gobernadas para detectar oportunidades o riesgos, pero deberá mantener:
+
+```text
+SEÑAL REPUTACIONAL
+!= RECOMENDACION
+!= DECISION
+!= ACCION AUTOMATICA
+```
+
+Esta tarea no crea el radar ni recomienda acciones comerciales.
+
+El handoff a `AURA-DOM-010` deberá conservar fuentes, frescura, calidad, restricciones y razón suficiente para impedir recomendaciones opacas.
+
+---
+
+#### 84. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. reseña, comentario, mención, mensaje, feedback, reclamo, caso, respuesta y resolución son conceptos distintos;
+2. AURA gobierna el expediente reputacional;
+3. `VPROC-0046` permanece propiedad de PULSO;
+4. VISO conserva la superficie administrativa de servicio prevista;
+5. PASS conserva la superficie personal del cliente prevista;
+6. una respuesta pública nunca cierra por sí sola un reclamo;
+7. una calificación negativa no crea automáticamente un reclamo;
+8. autor público no equivale a identidad PASS;
+9. texto similar no equivale a mismo elemento;
+10. sentimiento es señal auxiliar y no autoridad;
+11. clasificación asistida conserva incertidumbre;
+12. routing material de baja confianza exige revisión;
+13. toda respuesta pública conserva versión, fuentes, actores y estado externo;
+14. una respuesta pública no expone datos sensibles;
+15. mover a privado no resuelve el caso;
+16. IA puede proponer, no publicar ni resolver crisis autónomamente;
+17. acciones sensibles requieren revisión humana según riesgo;
+18. clasificar, responder, aprobar, publicar, moderar y escalar son acciones distintas;
+19. AURA escala a servicio cuando se requiere investigación, decisión o remedio formal;
+20. el handoff de servicio minimiza datos;
+21. handoff aceptado, devuelto, rechazado, deduplicado y ambiguo son resultados distintos;
+22. un retry no debe duplicar casos;
+23. una persona desconocida no obliga a crear cuenta PASS;
+24. correlación con pedido o venta exige evidencia;
+25. resultado de servicio vuelve a AURA solo como proyección mínima autorizada;
+26. respuesta pública completada y servicio completado son estados independientes;
+27. AURA no decide compensaciones;
+28. moderación no existe para mejorar métricas;
+29. comentario negativo no equivale a spam;
+30. eliminación externa no equivale a resolución;
+31. edición externa no borra historia;
+32. corrección de respuesta conserva lineage;
+33. reintentos de respuesta son idempotentes;
+34. resultados ambiguos se reconcilian antes de retry;
+35. webhooks tardíos no reescriben estado terminal válido;
+36. timestamps de atención permanecen auditables;
+37. prioridad reputacional no equivale a prioridad de servicio;
+38. crisis, seguridad, privacidad y riesgo legal detienen automatización autónoma;
+39. alegación no equivale a hecho probado;
+40. elogio no crea consentimiento ni derecho de reutilización;
+41. comentario sobre campaña no demuestra impacto causal;
+42. señales reputacionales pueden alimentar guardas sin activar pausas automáticas por una sola señal;
+43. incidentes multi-elemento conservan cada identidad fuente;
+44. republicaciones y duplicados técnicos son conceptos distintos;
+45. respuestas de terceros no representan a Vento;
+46. respuesta empresarial usa cuenta autorizada;
+47. contenido público sigue sujeto a privacidad y retención;
+48. toda acción material es auditable;
+49. `AURA-DOM-005` conserva publicación y reconciliación técnica;
+50. `AURA-DOM-004` conserva grounding e IA;
+51. `AURA-DOM-008` conserva métricas, atribución e incrementalidad;
+52. `AURA-AUTH-*` conserva permisos y segregación;
+53. `AURA-UX-007` conserva la experiencia;
+54. `AURA-INT-001` conserva adaptadores externos;
+55. `AURA-INT-002` conserva contratos internos;
+56. AURA no ejecuta transiciones propietarias de `VPROC-0046`;
+57. el cierre reputacional no falsea estados externos al dominio;
+58. no responder requiere decisión explícita cuando hubo revisión;
+59. seguimiento conserva lineage;
+60. aprendizaje reputacional no inventa causa;
+61. una reseña no se convierte automáticamente en testimonial;
+62. responder no crea consentimiento de marketing;
+63. marca, sede y producto no se infieren sin evidencia;
+64. menciones a trabajadores protegen privacidad;
+65. adjuntos sensibles no se envían automáticamente a terceros;
+66. reconciliación externa no decide cierre de servicio;
+67. correcciones no reescriben historia;
+68. incertidumbre se conserva;
+69. métricas de reputación no justifican prácticas dañinas;
+70. `AURA-DOM-010` recibe señales gobernadas pero conserva radar y recomendación;
+71. se crean y modifican cero requisitos de prueba;
+72. no se crea ninguna instancia física;
+73. la continuidad queda reservada exclusivamente a `AURA-DOM-010`.
+
+---
+
+#### 85. Handoff obligatorio a `AURA-DOM-010`
+
+La siguiente tarea deberá recibir como entrada:
+
+- señales reputacionales gobernadas y no datos crudos sin contexto;
+- identidad de fuente y timestamp;
+- marca, sede, producto o campaña solo cuando estén correlacionados con evidencia;
+- clasificación e incertidumbre;
+- riesgo o severidad con su razón;
+- referencia de caso de servicio cuando exista y únicamente su proyección autorizada;
+- diferencia explícita entre señal, inferencia, hecho confirmado y acción ejecutada;
+- frescura y cobertura de la fuente;
+- restricciones de privacidad y consentimiento;
+- evidencia de repetición o tendencia cuando exista sin convertirla automáticamente en causa;
+- regla de que una recomendación futura no puede ejecutar respuesta, compensación, campaña o acción de servicio por sí misma.
+
+`AURA-DOM-010` definirá radar de oportunidades y recomendaciones comerciales explicables. No deberá redefinir el inbox, la clasificación, la respuesta pública ni el escalamiento a servicio fijados aquí.
+
+---
+
+#### 86. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la separación entre reputación y servicio, el tratamiento de reclamos y feedback, la prohibición de cerrar un caso mediante respuesta pública, la trazabilidad de comentarios y respuestas, los límites de IA, la privacidad, idempotencia, reconciliación y fronteras AURA/PULSO/PASS/VISO ya están cubiertos por requisitos vigentes. Esta tarea desarrolla el contrato documental previsto por esa cobertura sin ampliar el alcance de las filas existentes.
+
+---
+
+#### 87. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-003`, para reputación, cierre, separación de respuesta pública y reclamo formal, resultados y fronteras de dominio;
+- `TREQ-AURA-002`, para grounding, privacidad, trazabilidad de IA y prohibición de respuesta autónoma sensible;
+- `TREQ-AURA-001`, para identidad, versión, aprobación, publicación y trazabilidad de contenido;
+- `TREQ-PASS-011`, para preguntas, solicitudes, reclamos, feedback, caso, categoría, prioridad, responsable, SLA, investigación, decisión, comunicación y cierre separados;
+- `TREQ-PASS-010`, para identidad, consentimiento y prohibición de fusiones implícitas;
+- `TREQ-INTEGRATION-019`, para comentarios, conversiones, métricas, identificadores internos/externos, payloads, estados, idempotencia, reintentos y reconciliación;
+- la cobertura vigente de PULSO asociada a pedido, venta, devolución, compensación y acciones sensibles;
+- la cobertura transversal de autorización, privacidad, auditoría y evidencia.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación, modificación ni actualización del registro.
+
+---
+
+#### 88. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la compilación documental corresponde a la incorporación de la tarea mediante el lifecycle del repositorio |
+| LOCAL | `NOT_EXECUTED` | el artefacto todavía no se ha insertado ni sometido a formatter, quality, delivery check y batería global en el checkout del usuario |
+| REMOTA | `PASS` | protocolo, contrato de entrega, continuidad, topología, políticas, owner AURA, `CAP-SCOPE-010`, `CAP-SCOPE-014`, hallazgos 025/026, `VPROC-0046`, relación AURA–PULSO, 04A aplicable, `package.json` y validadores fueron inspeccionados antes de redactar |
+| OPERATIVA | `NOT_APPLICABLE` | no se consultaron cuentas reales, reseñas, comentarios, clientes, reclamos ni casos productivos |
+| FÍSICA | `NOT_APPLICABLE` | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; la tarea se agota en su contrato documental |
+
+---
+
+#### 89. Criterios de aceptación
+
+La tarea queda sustantivamente completa cuando:
+
+- existe contrato de expediente reputacional con identidad interna y externa;
+- reseña, comentario, mención, feedback, reclamo y caso formal permanecen separados;
+- la captura conserva evidencia sin convertir afirmaciones del autor en hechos empresariales;
+- clasificación observada e inferida permanecen diferenciadas;
+- naturaleza, tema, severidad, necesidad de respuesta y necesidad de escalamiento pueden evaluarse por separado;
+- sentimiento no decide por sí solo routing ni cierre;
+- incertidumbre material provoca revisión en vez de silencio automático;
+- el inbox permite distinguir clasificación, respuesta, escalamiento, reconciliación y seguimiento;
+- toda acción que requiera atención tiene responsable;
+- no respuesta puede ser una decisión explícita y no un fallo oculto;
+- toda respuesta pública conserva fuentes, versión, actores y estado externo;
+- la respuesta pública minimiza datos personales;
+- mover la conversación a privado no resuelve el asunto;
+- IA puede asistir pero no responder crisis ni ejecutar acciones sensibles sin autoridad;
+- clasificar, proponer, aprobar, publicar, moderar y escalar permanecen separados;
+- existen disparadores claros para escalar a servicio;
+- `VPROC-0046` permanece intacto y propietario de reclamo, devolución, compensación y cierre;
+- el handoff a servicio usa contexto mínimo, correlación e idempotencia;
+- un resultado ambiguo de handoff no crea casos duplicados;
+- autor público no se transforma en identidad PASS por inferencia;
+- pedido o venta solo se correlacionan con evidencia;
+- feedback y calificación negativa no se convierten automáticamente en reclamo;
+- AURA consume únicamente la proyección mínima de servicio necesaria para comunicación pública;
+- tratamiento público completado y caso formal cerrado pueden coexistir en estados distintos;
+- AURA no decide ni ejecuta remedios;
+- moderación exige política, autoridad y trazabilidad;
+- contenido negativo legítimo no se clasifica como spam por conveniencia;
+- edición o eliminación externa no borra evidencia ni prueba resolución;
+- respuestas corregidas conservan lineage;
+- respuestas y moderaciones son idempotentes y reconciliables;
+- prioridad reputacional y prioridad de servicio permanecen separadas;
+- crisis, seguridad, privacidad y riesgo legal exigen revisión humana apropiada;
+- alegaciones no se tratan como hechos comprobados;
+- elogios no crean consentimiento ni derechos de reutilización;
+- señales de campaña no redefinen atribución ni incrementalidad;
+- señales reputacionales pueden alimentar guardas sin automatizar decisiones desproporcionadas;
+- incidentes múltiples conservan identidades fuente;
+- deduplicación técnica y republicación real permanecen distintas;
+- terceros no se presentan como voz de Vento;
+- respuestas usan cuentas empresariales autorizadas;
+- contenido público continúa sujeto a privacidad y retención;
+- todas las acciones materiales son auditables;
+- las fronteras con `AURA-DOM-004`, `AURA-DOM-005`, `AURA-DOM-008`, `AURA-AUTH-*`, `AURA-UX-007`, `AURA-INT-001`, `AURA-INT-002`, PULSO, PASS y VISO quedan explícitas;
+- `AURA-DOM-010` recibe únicamente el handoff de señales gobernadas, no acciones ya decididas;
+- no se crean ni modifican requisitos de prueba;
+- no se autoriza implementación física;
+- la siguiente tarea reservada es exactamente `AURA-DOM-010`.
+
+---
+
+#### 90. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- conectar cuentas o proveedores externos;
+- leer reseñas, comentarios o menciones reales;
+- publicar respuestas;
+- editar o retirar respuestas;
+- ocultar, borrar o reportar contenido real;
+- crear bots de moderación;
+- crear modelos de sentimiento o clasificación;
+- seleccionar proveedor de IA;
+- enviar contenido real a un proveedor de IA;
+- crear cuentas PASS desde identidades públicas;
+- identificar clientes por inferencia;
+- abrir, modificar o cerrar reclamos reales;
+- ejecutar devoluciones, reembolsos o compensaciones;
+- cambiar pedidos o ventas;
+- crear tablas, vistas, RPC, funciones, triggers o migraciones;
+- modificar Supabase, RLS, Storage, Realtime o Edge Functions;
+- definir pantallas de `AURA-UX-007`;
+- definir adaptadores, webhooks, OAuth, límites o payloads de `AURA-INT-001`;
+- definir contratos físicos internos de `AURA-INT-002`;
+- definir permisos concretos de `AURA-AUTH-*`;
+- redefinir las métricas o atribución de `AURA-DOM-008`;
+- crear recomendaciones de `AURA-DOM-010`;
+- crear o modificar requisitos del registro 04A;
+- iniciar implementación física;
+- adelantar `AURA-DOM-010`.
+
+---
+
+#### 91. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables`
 
 ### [ ] AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables
