@@ -2618,7 +2618,955 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros`
 
-### [ ] AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros
+### ✅ AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
+**Tarea siguiente:** AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
+**Tipo de tarea:** documental; diseño canónico de la experiencia de aprobación, programación, publicación multicanal, seguimiento por target, recuperación, retiro y reconciliación de AURA, preservando segregación de funciones, versionado, autorización y estados técnicos diferenciados sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, repositorios, tablas, migraciones, RLS, funciones, RPC, Storage, jobs, colas, webhooks, integraciones, cuentas, credenciales, publicaciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá permitir revisar una versión preparada, emitir una decisión de aprobación, definir targets multicanal, programar o ejecutar una publicación autorizada, comprender el estado independiente de cada target y recuperar fallos o resultados ambiguos sin perder trazabilidad ni producir efectos duplicados.
+
+La regla raíz de experiencia es:
+
+```text
+VERSION PREPARADA
+-> REVISION
+-> APROBACION
+-> TARGETS DE PUBLICACION
+-> PROGRAMACION O EJECUCION
+-> ESTADO POR TARGET
+-> RECONCILIACION
+-> RECUPERACION O RETIRO
+```
+
+pero conserva:
+
+```text
+REVISAR
+!= APROBAR
+!= PROGRAMAR
+!= PUBLICAR
+!= CONFIRMAR EXTERNAMENTE
+!= RETIRAR
+```
+
+La experiencia no deberá reducir un ciclo distribuido y parcialmente incierto a un único booleano de publicación.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-003`, para recibir versiones suficientemente preparadas con brief, marca, versión, pieza, variantes, fuentes, activos, derechos, claims, cambios materiales, revisión humana, estado editorial, bloqueos, canales candidatos y trazabilidad de asistencia;
+- `AURA-DOM-005`, para cuenta empresarial, endpoint, publicación, target, programación, intento, idempotencia, resultado ambiguo, reintento, retiro y reconciliación por canal;
+- `AURA-AUTH-002`, para separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública, exigir segregación de funciones y revalidar autoridad inmediatamente antes del efecto;
+- `AURA-AUTH-001`, para empresa, marca, función, capacidad, recurso y contexto;
+- `AURA-AUTH-004`, para mantener credenciales, tokens, secretos y principales técnicos fuera de la autoridad empresarial visible en la experiencia;
+- `VPROC-0056`, para preservar el ciclo canónico desde creación hasta revisión, aprobación, programación, publicación, evaluación y cierre;
+- `CAP-SCOPE-014`, para publicación multicanal gobernada, idempotencia, conciliación, estados claros y ausencia de publicación accidental;
+- `OPS-CAN-001`, para familias de canal, endpoints, propiedad, seguridad y continuidad;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+
+La tarea no redefine el estudio creativo, grounding, biblioteca de activos, fábrica de variantes, seguridad de secretos ni integración técnica con proveedores.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer una experiencia que permita responder, para una versión concreta:
+
+```text
+¿QUE VERSION ESTOY REVISANDO?
+¿QUE CAMBIO DESDE LA VERSION ANTERIOR?
+¿QUIEN PUEDE APROBARLA Y QUE BLOQUEOS EXISTEN?
+¿PARA QUE TARGETS SE PRETENDE PUBLICAR?
+¿QUE TARGETS ESTAN LISTOS, BLOQUEADOS, PROGRAMADOS O EN EJECUCION?
+¿QUE PASO REALMENTE EN CADA CANAL?
+¿QUE REQUIERE REINTENTO, RECONCILIACION, INTERVENCION O RETIRO?
+```
+
+La experiencia se divide en cinco espacios conceptuales conectados:
+
+1. bandeja y detalle de aprobación;
+2. configuración de targets de publicación;
+3. programación y confirmación de acción;
+4. monitor de estado por target;
+5. recuperación, reconciliación y retiro.
+
+---
+
+#### 4. Principios de experiencia
+
+La experiencia se rige por:
+
+1. **versión exacta antes que decisión:** nunca se aprueba una pieza abstracta sin identificar la versión;
+2. **autoridad antes que acción:** una acción visible no implica que el actor pueda ejecutarla;
+3. **target antes que publicación genérica:** cada canal conserva estado propio;
+4. **estado externo antes que optimismo:** la UI no declara éxito sin evidencia suficiente;
+5. **ambigüedad visible:** timeout, respuesta parcial o confirmación incompleta no se degradan a fallo o éxito inventados;
+6. **recuperación antes que repetición:** un reintento solo aparece cuando la situación es reconciliada o clasificada como segura para repetir;
+7. **segregación comprensible:** la interfaz explica por qué una persona puede revisar pero no aprobar, o aprobar pero no publicar;
+8. **evidencia bajo demanda:** historial, actor, intentos, referencias externas y diagnóstico permanecen accesibles;
+9. **fail-closed en acciones críticas:** falta de autorización, versión, vigencia o correlación bloquea el efecto;
+10. **simplicidad sin colapsar estados:** la interfaz resume, pero no fusiona conceptos materialmente distintos.
+
+---
+
+#### 5. Entrada desde AURA-UX-003
+
+La 004 recibe únicamente una versión preparada para decisión.
+
+La entrada deberá conservar:
+
+- brief y objetivo;
+- marca y versión;
+- pieza y versión exacta;
+- variantes incluidas;
+- fuentes y frescura relevantes;
+- activos y derechos;
+- claims;
+- cambios materiales;
+- revisión humana realizada cuando corresponda;
+- estado editorial;
+- bloqueos o condiciones todavía vigentes;
+- canales candidatos;
+- trazabilidad de asistencia cuando aplique.
+
+Si la versión deja de coincidir con la entregada por la 003, la experiencia deberá invalidar cualquier decisión que dependiera de la versión anterior.
+
+---
+
+#### 6. Bandeja de aprobación
+
+La bandeja de aprobación deberá priorizar decisiones reales pendientes y no una lista genérica de contenido.
+
+Cada elemento deberá mostrar como mínimo:
+
+- pieza o iniciativa;
+- marca;
+- versión;
+- tipo de decisión pendiente;
+- actor o función que preparó la versión cuando sea material;
+- revisión previa requerida y su estado;
+- bloqueos materiales;
+- vigencia relevante;
+- targets previstos;
+- fecha o ventana cuando exista;
+- razón por la que requiere decisión ahora.
+
+La bandeja no deberá exponer objetos fuera del alcance autorizado ni derivar permisos a partir del nombre del rol.
+
+---
+
+#### 7. Filtros de la bandeja
+
+La bandeja podrá filtrar por:
+
+- marca;
+- estado;
+- tipo de contenido;
+- responsable;
+- fecha o vencimiento;
+- canal candidato;
+- bloqueo;
+- decisión requerida.
+
+Los filtros reorganizan el conjunto autorizado y nunca amplían autorización.
+
+Un filtro sin resultados deberá distinguirse de falta de autorización, fallo técnico o ausencia real de pendientes.
+
+---
+
+#### 8. Detalle de aprobación
+
+El detalle deberá permitir revisar la versión exacta sin reconstruir el contexto recorriendo múltiples superficies.
+
+Como mínimo presentará:
+
+1. brief y objetivo;
+2. marca y versión;
+3. preview de la pieza o composición;
+4. cambios materiales respecto de la versión relevante anterior;
+5. claims y hechos variables;
+6. activos y derechos;
+7. fuentes y frescura;
+8. revisión humana previa;
+9. bloqueos y guardas;
+10. targets candidatos;
+11. vigencias;
+12. historial de decisión cuando exista.
+
+La información técnica profunda permanecerá bajo demanda.
+
+---
+
+#### 9. Comparación de versiones
+
+La aprobación deberá poder comparar la versión actual con aquella que fue revisada o aprobada previamente cuando exista.
+
+La comparación priorizará cambios en:
+
+- copy;
+- claim;
+- oferta o hecho variable;
+- CTA;
+- enlace;
+- activo;
+- audiencia o contexto;
+- marca;
+- restricción;
+- derecho;
+- target previsto;
+- vigencia.
+
+Un cambio material deberá impedir que una aprobación antigua se presente como todavía aplicable por defecto.
+
+---
+
+#### 10. Resultado de revisión
+
+La experiencia distinguirá al menos:
+
+```text
+PENDIENTE DE REVISION
+REQUIERE CAMBIOS
+REVISION FAVORABLE
+PENDIENTE DE APROBACION
+APROBADO
+RECHAZADO
+```
+
+Estos estados de experiencia no sustituyen los estados canónicos de `VPROC-0056`; deberán mapearse sin crear un namespace competidor.
+
+Una revisión favorable no equivale a aprobación final.
+
+---
+
+#### 11. Acción de aprobación
+
+La acción de aprobar deberá mostrar explícitamente:
+
+- versión exacta;
+- objetivo de la aprobación;
+- alcance de la decisión;
+- guardas todavía vigentes;
+- targets cubiertos cuando el alcance lo incluya;
+- vigencia o condiciones de reutilización cuando existan;
+- actor que emite la decisión.
+
+La experiencia no podrá ofrecer una aprobación silenciosa mediante cambio de color, toggle genérico o guardado automático.
+
+---
+
+#### 12. Segregación de funciones visible
+
+Cuando una acción esté denegada por segregación de funciones, la experiencia deberá explicar la razón sin exponer información sensible innecesaria.
+
+Ejemplos:
+
+```text
+CREASTE ESTA VERSION
+-> PUEDES CORREGIRLA
+-> NO PUEDES EMITIR LA APROBACION FINAL DE LA MISMA DECISION CRITICA
+```
+
+```text
+APROBASTE LA VERSION
+-> LA APROBACION NO CONCEDE PUBLICACION POR SI SOLA
+```
+
+```text
+PUEDES PUBLICAR
+-> LA CAPACIDAD NO CONCEDE ACCESO A CREDENCIALES
+```
+
+La UI no resolverá conflictos de segregación habilitando manualmente botones ocultos.
+
+---
+
+#### 13. Denegaciones y bloqueos
+
+Las acciones deberán mostrar bloqueo explícito ante, entre otros:
+
+- capacidad ausente;
+- recurso fuera de empresa o marca;
+- versión no aprobada;
+- aprobación vencida o invalidada;
+- conflicto de segregación;
+- cuenta o endpoint no apto;
+- derechos vencidos;
+- dato material vencido;
+- CTA o destino inválido;
+- estado incompatible;
+- servicio de autorización no disponible;
+- correlación insuficiente;
+- target sin capacidad requerida.
+
+Una denegación no se representará como error técnico genérico cuando la causa sea de autoridad o estado.
+
+---
+
+#### 14. Definición de targets multicanal
+
+Una versión aprobada podrá tener varios targets independientes.
+
+La experiencia deberá representar:
+
+```text
+VERSION APROBADA
+  -> TARGET A
+  -> TARGET B
+  -> TARGET C
+```
+
+Cada target conserva su propio:
+
+- familia de canal;
+- endpoint;
+- cuenta empresarial cuando aplique;
+- formato o variante;
+- audiencia o contexto;
+- locale;
+- zona horaria;
+- fecha prevista;
+- vigencia;
+- autorización;
+- estado;
+- intentos;
+- referencia externa;
+- retiro y reconciliación.
+
+El éxito de un target no cambia el estado de los demás.
+
+---
+
+#### 15. Selector de endpoint
+
+El selector deberá mostrar únicamente endpoints autorizados y aptos para el contexto.
+
+Deberá distinguir:
+
+```text
+FAMILIA DE CANAL
+!= CUENTA
+!= ENDPOINT
+!= CREDENCIAL
+```
+
+La experiencia podrá mostrar estado de aptitud, marca, ámbito, capacidades relevantes y última verificación necesaria para decidir.
+
+No mostrará secretos ni permitirá inferirlos.
+
+---
+
+#### 16. Compatibilidad por target
+
+Antes de permitir programación o publicación, la experiencia deberá comprobar y mostrar compatibilidad entre:
+
+- variante y formato;
+- canal;
+- dimensiones o restricciones técnicas relevantes;
+- locale;
+- vigencia;
+- CTA y destino;
+- derechos;
+- audiencia o finalidad;
+- capacidad soportada por el endpoint.
+
+Una incompatibilidad técnica no deberá disfrazarse como falta de aprobación ni viceversa.
+
+---
+
+#### 17. Preview multicanal
+
+La experiencia podrá presentar previews por target para ayudar a revisar cómo se materializará la misma intención en canales distintos.
+
+El preview deberá indicar:
+
+- qué variante usa;
+- qué información es simulada;
+- qué elementos dependen de la plataforma real;
+- qué CTA y destino se esperan;
+- qué restricciones podrían alterar el resultado final.
+
+Un preview nunca constituye evidencia de publicación real.
+
+---
+
+#### 18. Integridad de enlaces y CTA
+
+Antes de aprobar un target publicable, la experiencia deberá hacer visible la validación del destino cuando exista URL, CTA, canonical o redirección.
+
+Deberán bloquearse o marcarse como incompatibles, según el contrato propietario:
+
+- destinos inexistentes;
+- `#` utilizado como sustituto de acción real;
+- destinos retirados;
+- ciclos;
+- esquemas inseguros;
+- redirecciones inesperadas;
+- rutas que no representan la acción anunciada.
+
+La experiencia no corrige por inferencia un destino materialmente incorrecto.
+
+---
+
+#### 19. Programación
+
+Programar deberá ser una acción distinta de aprobar.
+
+La superficie deberá solicitar o confirmar, cuando corresponda:
+
+- target exacto;
+- versión aprobada;
+- fecha y hora;
+- zona horaria;
+- ventana de vigencia;
+- locale;
+- audiencia o contexto;
+- política de contingencia;
+- guardas pendientes que deben revalidarse al ejecutar.
+
+Una fecha textual sin zona horaria explícita no deberá presentarse como programación ejecutable.
+
+---
+
+#### 20. Revalidación antes del efecto
+
+La experiencia deberá comunicar que una publicación programada puede bloquearse posteriormente si pierde una condición necesaria.
+
+Ejemplos:
+
+- aprobación invalidada;
+- versión sustituida;
+- derecho vencido;
+- oferta vencida;
+- CTA retirado;
+- endpoint no apto;
+- permiso revocado;
+- dato material desactualizado.
+
+La programación no congela indefinidamente autoridad ni hechos dinámicos.
+
+---
+
+#### 21. Cambio material después de aprobación
+
+Si una versión cambia materialmente después de aprobación, la experiencia deberá:
+
+1. identificar la aprobación afectada;
+2. marcar targets dependientes;
+3. bloquear nuevas ejecuciones de la versión modificada;
+4. conservar publicaciones históricas ya confirmadas;
+5. devolver la nueva versión al punto de revisión o aprobación correspondiente;
+6. evitar que un target programado cambie silenciosamente de contenido.
+
+Una edición posterior no muta el payload de una publicación ya autorizada sin nueva decisión.
+
+---
+
+#### 22. Monitor de publicación
+
+La experiencia deberá mostrar estado por target y no únicamente por pieza.
+
+Estados técnicos mínimos visibles o representables:
+
+```text
+PLANNED
+SCHEDULED
+QUEUED
+DISPATCHING
+PUBLISHED_CONFIRMED
+PUBLISHED_UNCONFIRMED
+FAILED_RETRYABLE
+FAILED_FINAL
+CANCELLED_BEFORE_DISPATCH
+RETIREMENT_PENDING
+RETIRED_CONFIRMED
+RECONCILIATION_REQUIRED
+```
+
+La representación visual podrá simplificar nombres para el usuario, pero no fusionar significados incompatibles.
+
+---
+
+#### 23. Estado agregado de una publicación multicanal
+
+Cuando una pieza tenga varios targets, el estado agregado deberá ser una proyección explicable del conjunto y nunca ocultar fallos parciales.
+
+Ejemplos conceptuales:
+
+```text
+3 DE 4 TARGETS CONFIRMADOS
+1 TARGET REQUIERE RECONCILIACION
+```
+
+```text
+PUBLICACION PARCIAL
+```
+
+```text
+RETIRO PARCIAL
+```
+
+La UI deberá permitir abrir inmediatamente el target divergente.
+
+---
+
+#### 24. Resultado ambiguo
+
+La experiencia deberá tratar explícitamente la incertidumbre.
+
+Regla obligatoria:
+
+```text
+REQUEST ENVIADO
++ TIMEOUT O RESPUESTA AMBIGUA
+-> PUBLISHED_UNCONFIRMED O RECONCILIATION_REQUIRED
+-> RECONCILIAR
+-> SOLO DESPUES DECIDIR REINTENTO
+```
+
+La interfaz no ofrecerá un botón principal de `Reintentar` cuando todavía exista posibilidad razonable de que el primer efecto se haya producido.
+
+---
+
+#### 25. Vista de intentos
+
+Cada target deberá poder mostrar historial de intentos sin saturar la vista principal.
+
+El detalle incluirá, cuando corresponda:
+
+- operación;
+- número de intento;
+- momento;
+- resultado clasificado;
+- referencia técnica no secreta;
+- error o diagnóstico;
+- evidencia de confirmación;
+- correlación con el target;
+- condición de reintento;
+- estado de reconciliación.
+
+Los intentos anteriores no se sobrescriben cuando existe un reintento.
+
+---
+
+#### 26. Reintento seguro
+
+Un reintento deberá aparecer como acción solo si:
+
+- el fallo es clasificable como reintentable;
+- no existe resultado ambiguo sin reconciliar;
+- la versión sigue vigente;
+- la autorización sigue vigente;
+- la ventana temporal sigue abierta;
+- el endpoint continúa apto;
+- la operación conserva identidad idempotente;
+- ninguna condición material cambió.
+
+Un reintento no es una nueva publicación empresarial cuando representa la misma intención.
+
+---
+
+#### 27. Recuperación guiada
+
+La experiencia deberá ofrecer rutas de recuperación distintas según causa.
+
+Ejemplos:
+
+| Situación | Acción principal de experiencia |
+| --- | --- |
+| autenticación o permiso revocado | bloquear ejecución y derivar a custodia/autorización |
+| rate limit | mostrar espera/reintento gobernado |
+| validación de formato | volver a corregir variante o target |
+| timeout ambiguo | reconciliar antes de repetir |
+| rechazo de política de plataforma | revisión humana |
+| endpoint inexistente | corregir configuración gobernada |
+| CTA inválido | volver al owner del destino o pieza |
+| aprobación invalidada | volver a aprobación |
+| ventana vencida | reprogramar únicamente si las demás guardas siguen válidas |
+
+La experiencia no deberá usar un único mensaje `Falló la publicación` para todas estas condiciones.
+
+---
+
+#### 28. Reconciliación
+
+La superficie de reconciliación deberá permitir comparar:
+
+```text
+ESTADO INTERNO ESPERADO
+VS
+ESTADO EXTERNO OBSERVADO
+```
+
+Deberá responder:
+
+- qué se esperaba;
+- qué se observó;
+- cuándo se observó;
+- qué identificador externo existe;
+- qué evidencia falta;
+- si existe una acción segura;
+- si debe escalarse a intervención humana.
+
+La reconciliación no convierte automáticamente al canal externo en fuente maestra empresarial.
+
+---
+
+#### 29. Retiro
+
+Retirar deberá ser una acción distinta de eliminar evidencia.
+
+La experiencia deberá mostrar:
+
+- publicación o target exacto;
+- motivo;
+- autoridad requerida;
+- estado externo conocido;
+- efecto esperado;
+- dependencia de confirmación externa;
+- conservación del historial.
+
+Se distingue:
+
+```text
+RETIRO SOLICITADO
+!= RETIRO EXTERNO CONFIRMADO
+```
+
+---
+
+#### 30. Retiro parcial multicanal
+
+Una orden de retiro sobre varios targets deberá permitir ver el estado independiente de cada uno.
+
+La experiencia no mostrará `Retirado` a nivel global mientras exista un target aún visible, ambiguo o pendiente de confirmación.
+
+Un retiro fallido o parcial deberá entrar a recuperación y reconciliación sin borrar la publicación histórica.
+
+---
+
+#### 31. Cancelación antes del despacho
+
+La cancelación de una programación antes de producir efecto externo deberá diferenciarse del retiro de una publicación ya producida.
+
+La experiencia deberá mostrar si la operación fue:
+
+- cancelada antes de cola;
+- cancelada antes de despacho;
+- imposible de cancelar porque el proveedor ya recibió el intento;
+- transformada en retiro porque el efecto externo ya existe o puede existir.
+
+No se tratará una cancelación tardía como garantía de ausencia de efecto sin evidencia.
+
+---
+
+#### 32. Auditoría y timeline
+
+Cada publicación deberá disponer de un timeline capaz de reconstruir:
+
+- creación o preparación de la versión;
+- revisión;
+- aprobación;
+- definición de targets;
+- programación;
+- cambios de horario;
+- intentos;
+- confirmaciones;
+- fallos;
+- reconciliaciones;
+- reintentos;
+- retiros;
+- actores empresariales;
+- principales técnicos cuando aplique.
+
+La experiencia distinguirá decisión empresarial, ejecución técnica y confirmación externa.
+
+---
+
+#### 33. Responsabilidad y siguiente acción
+
+Para cada estado no terminal la UI deberá mostrar quién o qué owner debe intervenir a continuación, sin convertir esa asignación en autorización.
+
+Ejemplos:
+
+- creador corrige contenido;
+- revisor confirma cambios;
+- aprobador decide;
+- operador autorizado programa;
+- custodia resuelve cuenta o permiso;
+- integración reconcilia estado externo;
+- responsable editorial decide ante rechazo de plataforma.
+
+Los pendientes no deberán quedar como errores narrativos sin propietario funcional.
+
+---
+
+#### 34. Notificaciones
+
+Las notificaciones derivadas de aprobación o publicación deberán ser informativas y accionables, pero no ejecutar efectos por sí mismas.
+
+Podrán informar, según autorización:
+
+- aprobación requerida;
+- aprobación rechazada;
+- programación próxima;
+- target bloqueado;
+- publicación confirmada;
+- publicación ambigua;
+- fallo final;
+- retiro pendiente;
+- reconciliación requerida.
+
+Una notificación nunca sustituye la revalidación al abrir la acción protegida.
+
+---
+
+#### 35. Estados vacíos, parciales y de error
+
+La experiencia deberá diferenciar:
+
+- no existen pendientes;
+- el filtro no devuelve resultados;
+- el actor no tiene acceso;
+- carga en curso;
+- respuesta parcial;
+- fallo técnico;
+- datos desactualizados;
+- estado externo no disponible;
+- reconciliación pendiente;
+- canal temporalmente no apto.
+
+Una pantalla sin publicaciones confirmadas no demuestra que no existan intentos o efectos ambiguos.
+
+---
+
+#### 36. Accesibilidad y seguridad de interacción
+
+La experiencia deberá conservar:
+
+- navegación completa por teclado;
+- foco visible;
+- nombres accesibles;
+- estados no dependientes solo de color;
+- alternativa a hover;
+- confirmación explícita de acciones críticas;
+- diferenciación clara entre acciones destructivas, reversibles y recuperables;
+- lectura estable en superficies estrechas;
+- mensajes de error asociados a la decisión afectada.
+
+La publicación o retiro no podrán depender únicamente de gestos o interacciones de precisión.
+
+---
+
+#### 37. Relación con AURA-AUTH-002
+
+La 004 consume las autoridades diferenciadas definidas por `AURA-AUTH-002`.
+
+La experiencia no decide quién tiene cada capacidad; únicamente respeta y hace comprensible la decisión autoritativa vigente.
+
+Se preserva:
+
+```text
+CREAR != REVISAR != APROBAR != PROGRAMAR != PUBLICAR != RETIRAR
+```
+
+Un principal técnico podrá ejecutar una transición ya autorizada, pero no aparecer como aprobador empresarial por poseer una credencial o service role.
+
+---
+
+#### 38. Relación con AURA-DOM-005
+
+`AURA-DOM-005` conserva ownership del contrato de cuenta, endpoint, target, publicación, intento, idempotencia, estados técnicos, reconciliación y retiro.
+
+`AURA-UX-004` únicamente diseña cómo esos conceptos se entienden y operan de forma segura por una persona autorizada.
+
+La UI no crea un segundo estado de publicación ni sustituye el estado reconciliado del dominio.
+
+---
+
+#### 39. Relación con AURA-UX-003
+
+La 004 no absorbe:
+
+- canvas o editor creativo;
+- grounding;
+- memoria de IA;
+- generación;
+- variantes;
+- activos y derechos en detalle;
+- prompts creativos.
+
+Cuando una decisión requiera corregir contenido, la navegación regresará a la superficie propietaria de creación preservando versión, motivo y contexto.
+
+---
+
+#### 40. Handoff a `AURA-UX-005`
+
+`AURA-UX-004` entrega a `AURA-UX-005` una experiencia ya capaz de distinguir:
+
+- versión aprobada;
+- aprobación vigente;
+- targets;
+- programación;
+- publicación confirmada o ambigua;
+- fallos y recuperación;
+- retiro;
+- historial por canal;
+- autoridad y segregación;
+- estado parcial multicanal;
+- correlación con la pieza y el canal.
+
+`AURA-UX-005` deberá diseñar campañas, promociones, cupones, experimentos y guardas sin redefinir aprobación editorial, publicación, reintentos, retiro o reconciliación por canal.
+
+---
+
+#### 41. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- identidad, versionado, separación entre aprobación y publicación, retiro lógico, integridad de enlaces, auditoría, autorización e idempotencia ya cuentan con cobertura vigente;
+- la publicación multicanal, los resultados ambiguos y la reconciliación ya están protegidos por contratos de dominio, autorización e integración existentes;
+- esta tarea desarrolla la arquitectura de experiencia de obligaciones ya aprobadas sin crear una nueva regla protegida;
+- no modifica texto, estado, relación, propietario, paquete, ambiente ni evidencia de ninguna fila del registro canónico.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 42. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, esta tarea reutiliza:
+
+- `TREQ-AURA-001`, para identidades, versiones, vigencias, estados editoriales y separación entre aprobación y publicación;
+- `TREQ-AURA-011`, para impedir publicación accidental al crear contenido;
+- `TREQ-AURA-012`, para preservar identidad, versión, concurrencia y referencias al actualizar;
+- `TREQ-AURA-013`, para retiro reversible, conservación de evidencia y prohibición de eliminación física como comportamiento canónico;
+- `TREQ-AURA-019`, para mantener borrador, revisión, aprobación, programación, publicación, ocultamiento, retiro y archivo como transiciones distintas;
+- `TREQ-AURA-025`, para integridad de URL, CTA, canonical, preview y redirecciones;
+- `TREQ-AURA-026`, para auditoría, observabilidad y reconciliación de mutaciones editoriales y publicaciones;
+- `TREQ-INTEGRATION-019`, para canales, payloads, identificadores externos, idempotencia, eventos tardíos y conciliación;
+- `TREQ-AUTH-018`, para mantener finalidad, alcance y protección de datos cuando un target involucre información de clientes.
+
+Esta enumeración constituye trazabilidad de cobertura vigente y no crea ni modifica requisitos.
+
+---
+
+#### 43. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni validado dentro del checkout del usuario |
+| REMOTA | PASS | se verificaron continuidad, topología `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`, archivo propietario, dependencia explícita de `AURA-DOM-005` y `AURA-AUTH-002`, estados de `VPROC-0056`, contratos de autorización AURA, cobertura 04A de AURA/AUTH/INTEGRATION, `package.json` y validadores documentales vigentes; además se consumió el handoff completo aprobado de `AURA-UX-003` disponible para trabajo adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea diseña experiencia documental; no aprueba, programa, publica, reintenta, retira ni reconcilia contenido real |
+| FÍSICA | NOT_APPLICABLE | la familia `AURA-UX-001` a `AURA-UX-008` es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se autorizan runtime, Supabase, canales, cuentas, credenciales, colas, datos, integraciones ni despliegues |
+
+---
+
+#### 44. Criterios de aceptación
+
+`AURA-UX-004` queda satisfecha cuando simultáneamente:
+
+1. revisión, aprobación, programación, publicación, confirmación externa y retiro permanecen decisiones distintas;
+2. la experiencia identifica la versión exacta sometida a decisión;
+3. cambios materiales invalidan la reutilización automática de una aprobación previa;
+4. la bandeja de aprobación muestra contexto, versión, bloqueos, vigencia y decisión requerida;
+5. una revisión favorable no equivale a aprobación final;
+6. la segregación de funciones es comprensible y no se deriva de un rol nominal;
+7. una aprobación no concede programación ni publicación por sí sola;
+8. cada target conserva endpoint, formato, variante, audiencia o contexto, zona horaria, estado, intentos y referencia externa propios;
+9. familia de canal, cuenta, endpoint y credencial permanecen separados;
+10. el selector no expone secretos ni convierte credenciales en autoridad;
+11. preview multicanal no se presenta como publicación real;
+12. URL y CTA se validan antes de un target publicable;
+13. programación exige versión aprobada, fecha, zona horaria y vigencia compatibles;
+14. la programación no congela indefinidamente hechos dinámicos ni autoridad;
+15. una edición posterior no muta silenciosamente un target ya programado;
+16. los estados técnicos por target conservan los significados definidos por `AURA-DOM-005`;
+17. el estado agregado no oculta fallos o divergencias parciales;
+18. timeout o resultado ambiguo no se presenta como fallo ni éxito confirmado;
+19. un resultado ambiguo se reconcilia antes de ofrecer reintento;
+20. los intentos anteriores permanecen trazables;
+21. un reintento exige vigencia, autoridad, ventana, endpoint apto e idempotencia;
+22. recuperación distingue autenticación, rate limit, validación, timeout, rechazo de plataforma, endpoint, CTA, aprobación y ventana vencida;
+23. reconciliación compara estado interno esperado con estado externo observado;
+24. retiro solicitado y retiro externo confirmado permanecen separados;
+25. el retiro preserva evidencia histórica;
+26. cancelación previa al despacho y retiro posterior al efecto permanecen distintos;
+27. la auditoría distingue decisión empresarial, ejecución técnica y confirmación externa;
+28. cada situación no terminal tiene owner o siguiente acción identificable;
+29. notificaciones no ejecutan efectos ni sustituyen revalidación;
+30. vacío, falta de autorización, parcialidad, fallo técnico y estado externo no disponible permanecen diferenciados;
+31. la experiencia esencial no depende exclusivamente de color, hover o gestos de precisión;
+32. `AURA-AUTH-002` conserva ownership de autoridad y segregación;
+33. `AURA-DOM-005` conserva ownership del contrato de publicación y reconciliación;
+34. `AURA-UX-003` conserva ownership del estudio creativo y variantes;
+35. `AURA-UX-005` recibe el handoff de publicación sin redefinirlo;
+36. se crean y modifican cero requisitos de prueba;
+37. no se crea ninguna instancia física;
+38. la continuidad queda reservada exclusivamente a `AURA-UX-005`.
+
+---
+
+#### 45. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear repositorio, runtime, ruta, pantalla, componente o prototipo ejecutable de AURA;
+- crear tablas, migraciones, vistas, funciones, RPC, triggers, RLS, Storage, Realtime, jobs, colas o Edge Functions;
+- conectar canales reales;
+- crear, modificar o recuperar cuentas reales;
+- crear, leer, rotar o revelar credenciales o secretos;
+- generar, editar o transformar contenido real;
+- aprobar contenido productivo;
+- programar publicaciones reales;
+- publicar, actualizar, ocultar o retirar contenido externo;
+- emitir reintentos reales;
+- reconciliar proveedores reales;
+- enviar mensajes o contactar audiencias;
+- crear campañas, promociones, cupones o experimentos productivos;
+- modificar datos de clientes, producto, precio, disponibilidad, venta, costo o margen;
+- redefinir roles, capacidades o segregación;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-UX-005`.
+
+---
+
+#### 46. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas`
 
 ### [ ] AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
 
