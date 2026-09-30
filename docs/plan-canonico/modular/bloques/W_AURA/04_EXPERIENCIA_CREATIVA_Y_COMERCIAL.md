@@ -4597,7 +4597,1166 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos`
 
-### [ ] AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos
+### ✅ AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
+**Tarea siguiente:** AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
+**Tipo de tarea:** documental; diseño canónico de la experiencia de bandeja unificada de interacciones, leads, oportunidades, pipeline B2B, catering, eventos y handoff comercial de AURA, preservando ownership de PASS, PULSO, NEXO, FOGO, ORIGO y NUMERA y sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, repositorios, leads reales, oportunidades reales, cuentas B2B, cotizaciones, pedidos, reservas, eventos, contactos, exportaciones, tablas, migraciones, RLS, funciones, RPC, jobs, colas, integraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá recibir, clasificar, calificar, priorizar y dar seguimiento a interacciones comerciales provenientes de campañas, formularios, mensajes, redes, WhatsApp, correo, referidos u otros orígenes autorizados, convirtiéndolas únicamente cuando corresponda en leads u oportunidades trazables y transfiriéndolas explícitamente a PULSO cuando se requiera cotización, pedido, catering, evento, reserva o compromiso comercial.
+
+La regla raíz es:
+
+```text
+INTERACCION
+!= CONSULTA
+!= LEAD
+!= CLIENTE
+!= OPORTUNIDAD
+!= PROPUESTA
+!= COTIZACION
+!= PEDIDO
+!= COMPROMISO OPERATIVO
+```
+
+AURA gobierna origen, triage, lead, oportunidad, etapa, responsable, siguiente acción y handoff. PASS conserva identidad y consentimiento. PULSO conserva caso comercial, cotización, pedido y compromiso frente al cliente. NEXO, FOGO, ORIGO y NUMERA conservan inventario, capacidad, compras y hechos económicos.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-005`, para recibir campaña de origen, objetivo, hipótesis, marca, audiencia o contraparte, oferta comunicada, canal, publicación, responsable, fechas, guardas y correlación sin convertir señal comercial en oportunidad por inferencia;
+- `AURA-DOM-007`, para interacción, lead, oportunidad, pipeline, B2B, catering, eventos y transferencia a operación;
+- `AURA-AUTH-003`, para proteger leads, datos de clientes, reasignaciones, exportaciones y acciones masivas bajo finalidad, minimización, consentimiento y alcance;
+- `AURA-AUTH-001`, para empresa, marca, función, capacidad, recurso y contexto;
+- `AURA-DOM-006`, para no redefinir campaña, experimento, promoción, cupón ni guardas;
+- `AURA-DOM-009`, para no absorber reputación, comentario público, respuesta pública ni escalamiento a servicio;
+- `VPROC-0057`, como proceso canónico de consultas y oportunidades digitales de AURA;
+- `VPROC-0041`, como proceso propietario de cotización, aprobación, capacidad, producción, facturación y entrega de catering o venta B2B;
+- `OPS-B2B-001`, para modalidades B2B y contrato de transferencia AURA → PULSO;
+- `PASS`, para identidad, preferencias, consentimiento y finalidad;
+- `PULSO`, para caso comercial, oferta, cotización, pedido, reserva y compromiso;
+- `NEXO`, para producto, inventario, reserva física, alistamiento y entrega;
+- `FOGO`, para capacidad productiva, orden, lote y restricciones de producción;
+- `ORIGO`, para compras y recepciones requeridas;
+- `NUMERA`, para costo, margen, crédito, pago, cartera y rentabilidad;
+- `CAP-SCOPE-014`, especialmente los hallazgos sobre bandeja unificada, identidad, B2B/catering y pipeline;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+
+Ninguna de estas fuentes cambia de propietaria por esta tarea.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer una experiencia que permita responder, para cada interacción u oportunidad:
+
+```text
+¿DE DONDE LLEGO?
+¿QUE TIPO DE INTERACCION ES?
+¿EXISTE UN LEAD O UNA OPORTUNIDAD REAL?
+¿QUE FINALIDAD Y CONSENTIMIENTO APLICAN?
+¿QUIEN ES RESPONSABLE?
+¿CUAL ES LA ETAPA CANONICA?
+¿CUAL ES LA SIGUIENTE ACCION?
+¿CUANDO VENCE?
+¿QUE VALOR O PROBABILIDAD SON SOLO ESTIMACIONES?
+¿REQUIERE HANDOFF A PULSO?
+¿PULSO ACEPTO, DEVOLVIO O RECHAZO?
+¿QUE PROCESO PROPIETARIO CONTINUA?
+¿COMO SE CERRO Y POR QUE?
+```
+
+La experiencia se divide en seis espacios conceptuales conectados:
+
+1. bandeja unificada de interacciones;
+2. triage y calificación;
+3. pipeline de leads y oportunidades;
+4. detalle de oportunidad y seguimiento;
+5. B2B, catering, eventos y handoff comercial;
+6. historial, correlaciones y resultados posteriores autorizados.
+
+---
+
+#### 4. Fronteras conceptuales obligatorias
+
+La interfaz deberá preservar explícitamente:
+
+```text
+INTERACCION != LEAD != OPORTUNIDAD != CLIENTE
+```
+
+```text
+PERSONA O CONTACTO != CLIENTE PASS != CUENTA B2B != REPRESENTANTE AUTORIZADO
+```
+
+```text
+OPORTUNIDAD AURA != CASO COMERCIAL PULSO != COTIZACION PULSO != PEDIDO PULSO
+```
+
+```text
+PROPUESTA != ACEPTACION DEL CLIENTE != APROBACION INTERNA != COMPROMISO OPERATIVO
+```
+
+```text
+FECHA SOLICITADA != FECHA PROMETIDA != CAPACIDAD RESERVADA
+```
+
+```text
+VALOR ESTIMADO != PRECIO APROBADO != VENTA REAL != INGRESO RECONOCIDO
+```
+
+```text
+PROBABILIDAD ESTIMADA != HECHO != CONVERSION DEMOSTRADA
+```
+
+Estas diferencias permanecen aunque la misma pantalla las muestre relacionadas.
+
+---
+
+#### 5. Arquitectura de experiencia
+
+La experiencia se organiza alrededor de identidades estables de interacción, lead y oportunidad.
+
+Desde la bandeja se podrá navegar hacia:
+
+- origen y canal;
+- interacción original;
+- triage;
+- lead cuando exista;
+- oportunidad cuando exista;
+- contraparte preliminar;
+- campaña o publicación de origen;
+- etapa canónica;
+- responsable;
+- siguiente acción;
+- vencimiento;
+- valor y probabilidad estimados cuando correspondan;
+- modalidad B2B preliminar;
+- handoff;
+- referencias PULSO posteriores;
+- cierre y motivo.
+
+La interfaz no creará una identidad única artificial que borre estas capas.
+
+---
+
+#### 6. Entrada desde AURA-UX-005
+
+La 006 recibe de la 005, cuando exista, contexto suficiente para explicar el origen de una señal comercial:
+
+- campaña;
+- objetivo e hipótesis;
+- marca;
+- audiencia o contraparte;
+- promoción u oferta comunicada;
+- canal;
+- publicación;
+- responsable;
+- fechas;
+- guardas relevantes;
+- correlación.
+
+Se preserva:
+
+```text
+CAMPANA
+-> PUEDE ORIGINAR INTERACCION
+-> PUEDE ORIGINAR LEAD U OPORTUNIDAD
+```
+
+pero:
+
+```text
+CAMPANA != OPORTUNIDAD != PEDIDO
+```
+
+Una respuesta, clic, mensaje o formulario no nace automáticamente como lead calificado.
+
+---
+
+#### 7. Bandeja unificada
+
+La bandeja deberá reunir de forma gobernada interacciones provenientes de formularios, mensajes, redes, WhatsApp, correo, referidos y otros canales autorizados.
+
+Cada fila o tarjeta deberá poder resumir:
+
+- origen;
+- canal;
+- contraparte preliminar;
+- contenido o necesidad mínima;
+- campaña o publicación de origen cuando exista;
+- clasificación;
+- estado canónico;
+- responsable;
+- siguiente acción;
+- vencimiento;
+- indicación de consentimiento o restricción aplicable;
+- señales de duplicado, conflicto o handoff.
+
+La bandeja no es un inbox sin semántica: debe permitir distinguir qué requiere triage, calificación, respuesta, transferencia o cierre.
+
+---
+
+#### 8. Orígenes y canales
+
+Formularios, mensajes, redes, WhatsApp, correo, ManyChat, referidos y otros canales son fuentes de interacción, no fuentes maestras de oportunidad o cliente.
+
+La experiencia deberá conservar, cuando exista:
+
+- identificador interno;
+- identificador externo;
+- canal;
+- cuenta o endpoint;
+- timestamp;
+- contenido relevante;
+- campaña o publicación correlacionada;
+- estado de ingestión;
+- evidencia de duplicado o reintento.
+
+El canal nunca podrá declarar por sí solo cliente, oportunidad ganada o pedido.
+
+---
+
+#### 9. Máquina canónica VPROC-0057
+
+La experiencia deberá representar exactamente la máquina aprobada:
+
+```text
+DIGITAL_INQUIRY_RECEIVED
+-> TRIAGED
+-> QUALIFICATION_PENDING
+-> QUALIFIED
+-> ASSIGNED
+-> RESPONSE_IN_PROGRESS
+-> COMMERCIAL_HANDOFF_PENDING
+-> FOLLOW_UP_IN_PROGRESS
+-> DIGITAL_INQUIRY_RESOLVED
+```
+
+El pipeline AURA es una proyección de estos estados y no una segunda máquina paralela.
+
+La UI podrá agrupar o resumir visualmente, pero no podrá perder ni sustituir el significado canónico de cada estado.
+
+---
+
+#### 10. Nacimiento y triage
+
+`DIGITAL_INQUIRY_RECEIVED` exige una interacción correlacionable con canal, contraparte preliminar y contenido mínimo.
+
+Al nacer:
+
+```text
+INTERACCION RECIBIDA
+!= OPORTUNIDAD CALIFICADA
+!= CLIENTE
+!= PEDIDO
+!= RECLAMO
+!= VENTA
+```
+
+`TRIAGED` deberá distinguir al menos:
+
+- consulta informativa;
+- señal de interés comercial;
+- oportunidad potencial;
+- intención de pedido;
+- solicitud B2B;
+- catering o evento;
+- reserva o requerimiento operativo;
+- reclamo o servicio;
+- interacción sin finalidad comercial válida;
+- duplicado o ruido.
+
+La clasificación no cambia el propietario del proceso destino.
+
+---
+
+#### 11. Lead
+
+La experiencia de lead deberá representar una señal comercial identificable o correlacionable que amerita evaluación, pero todavía no demuestra una oportunidad calificada.
+
+Podrá mostrar, cuando exista:
+
+- `lead_id`;
+- origen y canal;
+- campaña o publicación;
+- contraparte preliminar;
+- necesidad o señal;
+- momento de captura;
+- responsable o cola inicial;
+- finalidad;
+- consentimiento;
+- restricciones de contacto;
+- referencias permitidas a mensajes o adjuntos.
+
+Un lead no equivale a cliente PASS ni autoriza contacto fuera de finalidad.
+
+---
+
+#### 12. Oportunidad
+
+Una oportunidad deberá mostrar como mínimo:
+
+- `opportunity_id`;
+- origen;
+- relación con `lead_id` cuando exista;
+- campaña o publicación de origen;
+- contraparte preliminar autorizada;
+- necesidad y alcance;
+- categoría comercial;
+- etapa vigente;
+- valor estimado cuando exista sustento;
+- probabilidad estimada cuando se use;
+- responsable;
+- siguiente acción;
+- vencimiento;
+- restricciones y consentimiento;
+- evidencias o documentos referenciados;
+- motivo de descarte, pérdida o cierre cuando corresponda;
+- referencias de handoff y resultados posteriores.
+
+La oportunidad no duplica el caso comercial de PULSO.
+
+---
+
+#### 13. Calificación
+
+`QUALIFICATION_PENDING` deberá mostrar qué falta para decidir si existe una oportunidad real.
+
+La experiencia deberá permitir resolver, cuando aplique:
+
+- necesidad y alcance preliminar;
+- contraparte y rol de contacto;
+- finalidad legítima;
+- consentimiento o base aplicable;
+- fecha o ventana requerida;
+- marca, producto o servicio;
+- modalidad comercial;
+- presupuesto orientativo declarado;
+- compatibilidad preliminar con oferta;
+- restricciones conocidas;
+- información faltante;
+- siguiente acción.
+
+Dato ausente no se completa por inferencia.
+
+---
+
+#### 14. Resultado de calificación
+
+La experiencia deberá distinguir resultados como:
+
+- requiere más información;
+- consulta sin oportunidad;
+- oportunidad calificada;
+- transferida a otro proceso propietario;
+- duplicada pero correlacionable;
+- fuera de alcance;
+- descartada con motivo;
+- requiere revisión humana.
+
+`QUALIFIED` significa que cumple criterios para seguimiento comercial, no que exista venta, precio aprobado, capacidad, crédito o pedido.
+
+---
+
+#### 15. Correlación y duplicados
+
+Dos interacciones no se fusionarán por coincidencia débil.
+
+La experiencia no tratará como evidencia suficiente por sí sola:
+
+- mismo nombre;
+- mismo correo;
+- mismo teléfono;
+- misma empresa;
+- mismo canal;
+- texto similar;
+- misma campaña.
+
+Deberá ser posible marcar la relación como:
+
+- misma oportunidad;
+- oportunidades diferentes;
+- seguimiento del mismo asunto;
+- caso ya transferido;
+- correlación incierta.
+
+La interacción original nunca se elimina para simplificar el pipeline.
+
+---
+
+#### 16. Identidad y PASS
+
+Se preserva:
+
+```text
+CLIENTE PASS != LEAD AURA
+IDENTIDAD PASS != OPORTUNIDAD AURA
+```
+
+Cuando exista identidad PASS autorizada, AURA mostrará una referencia mínima y claramente identificada como externa al dominio de oportunidad.
+
+AURA no deberá presentar como editable dentro de la oportunidad:
+
+- perfil completo;
+- consentimientos maestros;
+- historial total de compras;
+- ledger de fidelización;
+- datos sensibles no necesarios.
+
+---
+
+#### 17. Pipeline
+
+El pipeline deberá mostrar el trabajo activo sin reducirlo a abierto/cerrado.
+
+Como mínimo deberá hacer visibles:
+
+- recibidas;
+- clasificadas;
+- calificación pendiente;
+- calificadas;
+- asignadas;
+- respuesta en curso;
+- handoff comercial pendiente;
+- seguimiento en curso;
+- resueltas.
+
+Cada agrupación visual deberá permitir volver al estado canónico exacto.
+
+---
+
+#### 18. Responsable, siguiente acción y vencimiento
+
+Toda oportunidad activa deberá mostrar de forma prominente:
+
+- responsable vigente;
+- siguiente acción;
+- fecha o condición de vencimiento;
+- dependencia conocida;
+- bloqueo cuando exista.
+
+La experiencia deberá señalar como anomalía una oportunidad activa sin responsable o sin siguiente acción.
+
+Cambiar responsable conserva la transferencia; no reescribe la historia.
+
+---
+
+#### 19. Valor estimado y probabilidad
+
+El valor estimado, cuando exista, deberá mostrar:
+
+- moneda;
+- rango o valor;
+- origen;
+- fecha;
+- supuestos;
+- actor;
+- vigencia.
+
+La probabilidad, cuando se use, deberá indicar si proviene de:
+
+- juicio humano;
+- regla;
+- modelo;
+- otra estimación versionada.
+
+Se preserva:
+
+```text
+VALOR ESTIMADO != COTIZACION != VENTA != INGRESO
+PROBABILIDAD != HECHO
+```
+
+---
+
+#### 20. Detalle de oportunidad
+
+El detalle deberá separar como mínimo:
+
+1. **Origen:** interacción, canal, campaña y publicación;
+2. **Necesidad:** descripción, alcance y modalidad preliminar;
+3. **Contraparte:** referencia mínima autorizada;
+4. **Pipeline:** estado, responsable, siguiente acción y vencimiento;
+5. **Estimaciones:** valor, probabilidad y supuestos;
+6. **Seguimiento:** respuestas, acciones y resultados;
+7. **Handoff:** destino, estado y correlación;
+8. **Resultado:** pérdida, transferencia, cierre o hecho propietario posterior;
+9. **Historia:** cambios, actores y timestamps.
+
+La cotización o pedido relacionado se presenta como referencia PULSO, no como sección editable de AURA.
+
+---
+
+#### 21. Respuesta y seguimiento
+
+`RESPONSE_IN_PROGRESS` y `FOLLOW_UP_IN_PROGRESS` permanecerán separados.
+
+La experiencia deberá conservar:
+
+- finalidad vigente;
+- consentimiento o permiso aplicable;
+- responsable;
+- última acción;
+- siguiente acción;
+- canal;
+- fecha;
+- resultado;
+- referencias relevantes.
+
+No se continuará contacto si la finalidad, consentimiento o restricción aplicable lo impiden.
+
+---
+
+#### 22. Consentimiento y finalidad
+
+Una interacción iniciada por una contraparte no concede permiso ilimitado de marketing.
+
+La experiencia deberá poder diferenciar:
+
+- respuesta a solicitud iniciada por la contraparte;
+- seguimiento relacionado con la solicitud;
+- marketing futuro;
+- permiso por canal;
+- tratamiento necesario para cotización o prestación del servicio.
+
+Una compra, mensaje, visita, campaña o interacción pública no fabrican consentimiento.
+
+---
+
+#### 23. Datos mínimos de contraparte
+
+Antes del handoff, la experiencia operará con información mínima necesaria.
+
+Podrá representar, según necesidad:
+
+- nombre o razón social preliminar;
+- tipo de contraparte;
+- contacto de trabajo;
+- rol declarado;
+- organización;
+- localidad relevante;
+- necesidad;
+- fecha;
+- restricciones;
+- canal de origen;
+- finalidad o consentimiento.
+
+AURA no crea expediente completo de cliente, crédito, facturación o KYC.
+
+---
+
+#### 24. B2B y modalidades preservadas
+
+Cuando una oportunidad requiera `VPROC-0041`, la experiencia podrá clasificar preliminarmente las modalidades aprobadas:
+
+- `B2B-PROG` — suministro empresarial programado;
+- `B2B-PUNT` — pedido empresarial puntual;
+- `CAT-EMP` — catering empresarial;
+- `EV-COM` — evento comercial complejo;
+- `B2B-DIST` — distribución o reventa autorizada.
+
+La modalidad ayuda a enrutar; no declara por sí sola viabilidad, precio, capacidad, crédito o aprobación.
+
+Una compra grande no se convierte automáticamente en B2B.
+
+---
+
+#### 25. Cuenta B2B y personas relacionadas
+
+La experiencia deberá preservar:
+
+```text
+CUENTA B2B
+!= REPRESENTANTE LEGAL
+!= CONTACTO COMERCIAL
+!= CONTACTO OPERATIVO
+!= PAGADOR
+!= RECEPTOR
+!= BENEFICIARIO
+!= USUARIO AUTENTICADO
+```
+
+AURA podrá mostrar contraparte y roles preliminares suficientes para calificación.
+
+La verificación completa de autoridad, facturación, crédito y compromiso pertenece al expediente PULSO y a los dominios propietarios.
+
+---
+
+#### 26. Catering empresarial
+
+Una oportunidad `CAT-EMP` podrá capturar antes del handoff, cuando corresponda:
+
+- organización;
+- tipo de evento o servicio;
+- fecha y ventana solicitadas;
+- asistentes o cobertura estimada;
+- necesidades preliminares;
+- restricciones alimentarias declaradas;
+- destinos;
+- servicio, montaje o equipos solicitados;
+- documentos disponibles;
+- contacto responsable;
+- canal de origen;
+- restricciones y consentimiento.
+
+La interfaz deberá presentar estos datos como requerimientos o solicitudes, nunca como confirmaciones.
+
+---
+
+#### 27. Eventos comerciales
+
+La experiencia deberá separar:
+
+```text
+EVENTO COMERCIAL
+!= CAMPANA DE MARKETING
+!= PUBLICACION DE EVENTO
+!= RESERVA COMERCIAL
+```
+
+AURA conserva origen, oportunidad y seguimiento.
+
+PULSO conserva reserva comercial, condiciones, cambios, cancelación y cierre cuando corresponda.
+
+Una conversación o pieza promocional no reserva capacidad.
+
+---
+
+#### 28. No promesa antes de handoff
+
+Antes de confirmación por los dominios propietarios, AURA no mostrará como comprometidos:
+
+- precio definitivo;
+- descuento;
+- crédito;
+- capacidad;
+- inventario;
+- fecha firme;
+- transporte;
+- producción;
+- facturación;
+- disponibilidad garantizada.
+
+Fecha solicitada, presupuesto orientativo y necesidad declarada deberán estar etiquetados como datos de la contraparte o estimaciones.
+
+---
+
+#### 29. Criterios de handoff
+
+`COMMERCIAL_HANDOFF_PENDING` deberá hacerse visible cuando continuar materialmente requiera otro proceso propietario.
+
+La experiencia deberá orientar a handoff cuando se necesite:
+
+- cotización formal;
+- pedido;
+- venta B2B;
+- catering;
+- evento comercial complejo;
+- reserva comercial;
+- condición especial de precio o crédito;
+- validación de capacidad;
+- compromiso operativo.
+
+Una conversación sin contexto mínimo no crea automáticamente un handoff.
+
+---
+
+#### 30. Preparación del handoff AURA → PULSO
+
+Antes de transferir, la UX deberá mostrar el sobre mínimo que será compartido:
+
+- `opportunity_id`;
+- origen y canal;
+- campaña o publicación de origen cuando exista;
+- contraparte preliminar;
+- necesidad y alcance;
+- fecha y siguiente acción;
+- responsable;
+- consentimiento y restricciones;
+- adjuntos permitidos;
+- correlación;
+- intención/versionado necesario para idempotencia.
+
+La persona deberá poder reconocer qué datos viajan y por qué.
+
+---
+
+#### 31. Resultado del handoff
+
+Los resultados deberán mostrarse como estados diferentes:
+
+```text
+ACEPTADO != DEVUELTO != RECHAZADO
+```
+
+Cuando PULSO acepte:
+
+- AURA conserva `opportunity_id`;
+- PULSO crea o correlaciona `commercial_case_id`;
+- las identidades quedan vinculadas;
+- todavía no existe cotización ni pedido por ese solo hecho.
+
+Si se devuelve, la UX deberá mostrar la información faltante o inconsistencia.
+
+Si se rechaza, deberá mostrar motivo y proceso alternativo cuando exista.
+
+---
+
+#### 32. Idempotencia y handoff ambiguo
+
+Reintentar la misma transferencia no deberá crear casos comerciales duplicados.
+
+La experiencia deberá conservar y, cuando sea material, hacer visible:
+
+- intención estable;
+- versión de oportunidad;
+- correlación;
+- resultado anterior;
+- motivo del reintento;
+- evidencia del receptor.
+
+Se preserva:
+
+```text
+RESULTADO DESCONOCIDO != HANDOFF FALLIDO
+```
+
+Ante resultado ambiguo, la acción primaria será reconciliar antes de reenviar.
+
+---
+
+#### 33. Después del handoff
+
+Un handoff aceptado no convierte AURA en interfaz operativa de PULSO.
+
+AURA podrá consumir proyecciones autorizadas para mostrar:
+
+- estado comercial relevante;
+- `commercial_case_id`;
+- versión y vigencia de cotización cuando exista;
+- referencia de pedido o reserva cuando exista;
+- resultado comercial permitido;
+- necesidad de seguimiento AURA.
+
+Estas proyecciones serán de solo lectura salvo contrato explícito posterior.
+
+---
+
+#### 34. Propuesta, cotización y pedido
+
+La UX deberá preservar:
+
+```text
+OPORTUNIDAD AURA
+-> REFERENCIA A PROPUESTA O COTIZACION PULSO
+```
+
+No:
+
+```text
+OPORTUNIDAD AURA
+-> COTIZACION EDITABLE EN AURA
+```
+
+Y además:
+
+```text
+OPORTUNIDAD AURA != PEDIDO PULSO
+```
+
+Precio, impuestos, crédito, condiciones, aceptación, pedido y compromiso operativo permanecen en PULSO y dominios relacionados.
+
+---
+
+#### 35. Capacidad, inventario, compras y economía
+
+La experiencia podrá mostrar necesidades y referencias autorizadas, pero no prometer hechos propietarios.
+
+Se preserva:
+
+```text
+NECESIDAD CAPTURADA != CAPACIDAD VALIDADA != CAPACIDAD RESERVADA
+```
+
+Después del handoff:
+
+- FOGO conserva capacidad productiva;
+- NEXO conserva inventario, reserva física, alistamiento y entrega;
+- ORIGO conserva compras y recepciones;
+- NUMERA conserva costo, margen, crédito, pago, cartera y rentabilidad;
+- PULSO conserva el compromiso comercial.
+
+Una falla de consulta no se transforma en aprobación.
+
+---
+
+#### 36. Reclamos, servicio y reputación
+
+Cuando el triage detecte reclamo, devolución, caso de servicio, comentario reputacional o interacción pública negativa, la UX deberá impedir que se convierta en oportunidad para cerrar o esconder el problema.
+
+Se preserva:
+
+```text
+RECLAMO != OPORTUNIDAD
+COMENTARIO PUBLICO != LEAD
+RESPUESTA PUBLICA != CIERRE DE CASO
+```
+
+La clasificación deberá permitir transferir o navegar hacia el proceso propietario manteniendo origen y referencia mínima.
+
+La experiencia de reputación y respuesta pública pertenece a `AURA-UX-007`.
+
+---
+
+#### 37. Cierre, pérdida y oportunidad ganada
+
+Toda oportunidad cerrada sin conversión deberá mostrar motivo suficientemente específico.
+
+La experiencia deberá distinguir, cuando corresponda:
+
+- no era oportunidad;
+- fuera de alcance;
+- falta de información;
+- contraparte no elegible;
+- necesidad no atendible;
+- fecha no viable;
+- precio o condición no aceptados;
+- capacidad no disponible;
+- cliente desistió;
+- no hubo respuesta;
+- duplicado;
+- transferida a otro proceso;
+- otra razón documentada.
+
+AURA no declarará ganada una oportunidad solo por respuesta positiva, reunión, cotización enviada, handoff aceptado o reserva solicitada.
+
+Cuando ganar dependa de un hecho comercial, el resultado se consume desde PULSO o la fuente propietaria.
+
+---
+
+#### 38. Resolución de VPROC-0057
+
+`DIGITAL_INQUIRY_RESOLVED` deberá mostrar que la interacción recibió respuesta o handoff aceptado y que el seguimiento terminó con resultado documentado.
+
+Resolver `VPROC-0057` no cierra automáticamente:
+
+- pedido;
+- reclamo;
+- reserva;
+- venta;
+- cartera;
+- producción;
+- entrega.
+
+La experiencia deberá mantener enlaces de continuidad hacia esos procesos cuando existan.
+
+---
+
+#### 39. Operación degradada
+
+Si falla un canal o integración, la UX deberá permitir distinguir captura manual controlada de operación normal.
+
+Deberá preservarse:
+
+- origen;
+- referencia o mensaje original;
+- responsable;
+- siguiente acción;
+- estado de consentimiento;
+- incertidumbre de correlación;
+- necesidad de reconciliación.
+
+No se reenviará un handoff ambiguo ni se prometerá precio, fecha o capacidad por falta de acceso a la fuente propietaria.
+
+---
+
+#### 40. Datos personales y adjuntos
+
+La UX aplicará minimización antes de almacenar, mostrar, exportar o transferir información.
+
+No mostrará por conveniencia:
+
+- perfil PASS completo;
+- historial completo de compras;
+- ledger de puntos;
+- documentos financieros completos;
+- información de crédito;
+- documentos de identidad no requeridos;
+- datos sensibles no necesarios.
+
+Un adjunto deberá conservar referencia, finalidad, propietario, acceso y vigencia.
+
+Un archivo recibido no se presume válido, vigente, contractual ni prueba de aceptación.
+
+---
+
+#### 41. Acciones sensibles y masivas
+
+Ver una oportunidad no autoriza automáticamente:
+
+- reasignar;
+- cerrar;
+- marcar ganada;
+- exportar;
+- contactar;
+- modificar en masa.
+
+Cuando exista una acción masiva autorizada, la experiencia deberá mostrar universo, elementos autorizados, exclusiones, efecto, parcialidad y motivo de los elementos no ejecutables.
+
+La selección visual de múltiples filas no constituye autoridad.
+
+---
+
+#### 42. Auditoría e historial
+
+La experiencia deberá permitir reconstruir:
+
+- interacción original;
+- `lead_id` cuando exista;
+- `opportunity_id`;
+- origen y canal;
+- campaña o publicación;
+- clasificación;
+- estado `VPROC-0057`;
+- responsable;
+- siguiente acción;
+- estimaciones y fuentes;
+- consentimiento o finalidad;
+- handoff solicitado;
+- resultado del handoff;
+- referencias PULSO posteriores;
+- cierre y motivo;
+- actor y timestamp de cambios materiales.
+
+La interfaz deberá diferenciar hechos históricos de acciones todavía ejecutables.
+
+---
+
+#### 43. Observabilidad y alertas
+
+La futura experiencia deberá poder señalar, como mínimo:
+
+- interacción sin triage;
+- oportunidad sin responsable;
+- oportunidad sin siguiente acción;
+- oportunidad vencida;
+- duplicado no resuelto;
+- conflicto de identidad;
+- consentimiento ausente o retirado;
+- handoff pendiente;
+- handoff ambiguo;
+- handoff potencialmente duplicado;
+- caso PULSO sin correlación cuando debía existir;
+- oportunidad cerrada sin motivo;
+- oportunidad marcada ganada sin hecho propietario;
+- interacción resuelta con proceso derivado todavía sin referencia.
+
+Una alerta no autoriza corregir datos silenciosamente.
+
+---
+
+#### 44. Simplicidad, accesibilidad y divulgación progresiva
+
+La bandeja deberá priorizar trabajo accionable y no densidad de CRM.
+
+La experiencia esencial no dependerá únicamente de:
+
+- color;
+- iconos sin etiqueta;
+- hover;
+- drag-and-drop;
+- gestos de precisión;
+- abreviaturas técnicas.
+
+La información técnica de integración, IDs externos y payloads se mostrará bajo demanda, sin ocultar bloqueos materiales, vencimientos, consentimientos ni resultados ambiguos.
+
+---
+
+#### 45. Handoff a `AURA-UX-007`
+
+`AURA-UX-006` entrega a `AURA-UX-007` una experiencia capaz de distinguir correctamente:
+
+- interacción comercial;
+- comentario público;
+- reclamo o caso de servicio;
+- origen y canal;
+- identidad o contraparte mínima autorizada;
+- clasificación de triage;
+- campaña o publicación relacionada;
+- referencia al proceso propietario cuando exista;
+- historial suficiente para no duplicar ni ocultar el caso.
+
+`AURA-UX-007` deberá diseñar reputación, comentarios, respuestas y escalamiento sin convertir comentario público en oportunidad, sin cerrar reclamos por responder públicamente y sin reabrir el pipeline B2B, catering, eventos o handoff comercial fijado aquí.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- la separación entre lead, cliente, oportunidad, propuesta y pedido ya está cubierta por requisitos vigentes;
+- oportunidades, B2B, catering, origen, contraparte, responsable, etapa, guardas, acciones, resultado y cierre ya cuentan con cobertura AURA;
+- identidad, consentimiento, finalidad y correlación ya están protegidos por PASS y autorización transversal;
+- pedido, venta, acciones sensibles e idempotencia ya están cubiertos por PULSO;
+- canales, leads, identificadores y reconciliación ya están protegidos por integración;
+- esta tarea desarrolla la arquitectura de experiencia de obligaciones existentes sin crear una nueva regla protegida;
+- no modifica texto, estado, relación, propietario, paquete, ambiente ni evidencia de ninguna fila del registro canónico.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, esta tarea reutiliza:
+
+- `TREQ-AURA-003`, para oportunidades, B2B, catering, origen, contraparte, responsable, etapa, fechas, acciones, resultado y cierre, y para separar lead, cliente, oportunidad, propuesta y pedido;
+- `TREQ-AURA-002`, para impedir autonomía de IA sobre contacto, aceptación o acciones comerciales y exigir grounding cuando exista asistencia;
+- `TREQ-PASS-010`, para identidad, consentimiento, finalidad, correlación y prohibición de fusiones automáticas débiles;
+- `TREQ-PASS-011`, para separar solicitudes, reclamos, reservas, comunicaciones, compensaciones y resultados de servicio;
+- `TREQ-PASS-012`, para privacidad, revocación y bloqueo de usos futuros afectados;
+- `TREQ-PULSO-005` y `TREQ-PULSO-006`, para pedido, venta, acciones sensibles, estados independientes, idempotencia y preservación histórica;
+- `TREQ-NUMERA-004`, para presupuesto, costo, margen, escenarios y rentabilidad con método, fuente, versión y vigencia;
+- `TREQ-AUTH-018`, para proteger datos de clientes, búsquedas, exportaciones y usos posteriores a revocación;
+- `TREQ-INTEGRATION-019`, para leads, canales, identificadores internos y externos, payloads, idempotencia, eventos tardíos y conciliación.
+
+Esta enumeración constituye trazabilidad de cobertura vigente y no crea ni modifica requisitos.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni validado dentro del checkout del usuario |
+| REMOTA | PASS | se verificaron continuidad, archivo propietario, topología `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`, `AURA-DOM-007`, estados exactos de `VPROC-0057`, `VPROC-0041`, modalidades B2B, hallazgos `H-CAP-SCOPE-014-018` a `021`, autorización de leads y datos, cobertura 04A y validadores documentales vigentes; además se consumió la versión completa aprobada de `AURA-UX-005` disponible para trabajo adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea diseña experiencia documental y no captura leads, contacta personas, crea cotizaciones, pedidos, reservas, eventos, ventas ni compromisos reales |
+| FÍSICA | NOT_APPLICABLE | la familia `AURA-UX-001` a `AURA-UX-008` es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se autorizan runtime, Supabase, integraciones, datos ni despliegues |
+
+---
+
+#### 49. Criterios de aceptación
+
+`AURA-UX-006` queda satisfecha cuando simultáneamente:
+
+1. interacción, consulta, lead, cliente, oportunidad, propuesta, cotización, pedido y compromiso permanecen separados;
+2. la bandeja unifica orígenes sin convertir canales en maestros de cliente u oportunidad;
+3. `VPROC-0057` conserva exactamente sus nueve estados canónicos;
+4. el pipeline proyecta `VPROC-0057` sin crear otra máquina de estados;
+5. una interacción recibida no nace como oportunidad calificada;
+6. triage distingue oportunidad de reclamo, pedido, consulta y otros procesos;
+7. lead no equivale a identidad PASS;
+8. oportunidad conserva `opportunity_id`, origen, necesidad, etapa, responsable, siguiente acción y vencimiento;
+9. coincidencias débiles no fusionan interacciones o identidades automáticamente;
+10. consentimiento y finalidad permanecen visibles y gobernados;
+11. una oportunidad activa sin responsable o siguiente acción se identifica como anomalía;
+12. valor estimado y probabilidad se presentan como estimaciones y no hechos;
+13. la experiencia preserva `B2B-PROG`, `B2B-PUNT`, `CAT-EMP`, `EV-COM` y `B2B-DIST` como modalidades preliminares gobernadas;
+14. una compra grande no se clasifica automáticamente como B2B;
+15. catering captura requerimientos sin confirmar menú, precio, capacidad, logística o fecha;
+16. evento comercial se separa de campaña, publicación y reserva;
+17. AURA no promete precio, descuento, crédito, capacidad, inventario, transporte, producción ni fecha firme;
+18. `COMMERCIAL_HANDOFF_PENDING` identifica necesidad de transferencia sin crear pedido;
+19. el handoff AURA → PULSO muestra el conjunto mínimo que será transferido;
+20. aceptar, devolver y rechazar handoff son resultados distintos;
+21. handoff aceptado crea o correlaciona caso comercial sin crear cotización ni pedido automáticamente;
+22. handoff ambiguo exige reconciliación antes de retry;
+23. propuestas, cotizaciones, pedidos y reservas PULSO se muestran como proyecciones autorizadas;
+24. PULSO conserva caso comercial, oferta, cotización, pedido y compromiso;
+25. PASS conserva identidad y consentimiento;
+26. FOGO conserva capacidad productiva;
+27. NEXO conserva inventario, reserva física, alistamiento y entrega;
+28. ORIGO conserva compras y recepciones;
+29. NUMERA conserva costo, margen, crédito, pago, cartera y rentabilidad;
+30. reclamos y comentarios públicos no se convierten en oportunidades para evitar su proceso propietario;
+31. oportunidad perdida o descartada conserva motivo;
+32. oportunidad ganada depende del hecho propietario aplicable;
+33. resolver `VPROC-0057` no cierra pedidos, reclamos, reservas, ventas, cartera, producción ni entrega;
+34. operación degradada conserva origen, trazabilidad y reconciliación;
+35. datos personales y adjuntos aplican minimización, finalidad, acceso y vigencia;
+36. ver una oportunidad no autoriza reasignar, cerrar, marcar ganada, exportar o contactar;
+37. el historial reconstruye interacción, lead, oportunidad, estado, responsable, handoff y cierre;
+38. la observabilidad detecta oportunidades huérfanas, vencidas, duplicadas o con handoff ambiguo;
+39. la experiencia esencial no depende solo de color, iconos, hover o drag-and-drop;
+40. `AURA-UX-005` conserva campañas, promociones, cupones, experimentos y guardas;
+41. `AURA-UX-007` conserva reputación, comentarios, respuestas y escalamiento;
+42. se crean y modifican cero requisitos de prueba;
+43. no se crea ninguna instancia física;
+44. la continuidad queda reservada exclusivamente a `AURA-UX-007`.
+
+---
+
+#### 50. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear repositorio, runtime, ruta, pantalla o componente de AURA;
+- crear tablas, migraciones, vistas, funciones, RPC, triggers, RLS, Storage, Realtime, jobs, colas o Edge Functions;
+- capturar leads reales;
+- importar conversaciones reales;
+- contactar clientes o prospectos;
+- crear campañas, promociones o cupones;
+- exportar segmentos, listas o datos reales;
+- crear o fusionar cuentas PASS;
+- modificar consentimientos;
+- crear cuentas B2B reales;
+- verificar documentos de contrapartes reales;
+- crear cotizaciones;
+- aprobar precios, descuentos o crédito;
+- crear pedidos o ventas;
+- reservar capacidad;
+- reservar inventario;
+- crear órdenes de producción o compra;
+- crear reservas comerciales;
+- comprometer fechas o entregas;
+- emitir facturas;
+- crear cartera;
+- transferir archivos o datos personales a terceros reales;
+- crear adaptadores, APIs o webhooks;
+- modificar VISO, PASS, PULSO, NEXO, FOGO, ORIGO o NUMERA;
+- definir métricas, atribución, confianza o incrementalidad;
+- diseñar reputación, comentario público o respuesta pública de `AURA-UX-007`;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-UX-007`.
+
+---
+
+#### 51. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-006 — Diseñar bandeja de oportunidades, B2B, catering y eventos`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento`
 
 ### [ ] AURA-UX-007 — Diseñar reputación, comentarios, respuestas y escalamiento
 
