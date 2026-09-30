@@ -2,31 +2,36 @@
   "schema_version": 1,
   "generated_from": "execution-route.json",
   "route_id": "NORMAL-CANONICAL-FLOW-001",
-  "sequence_id": "PHASE-12-AURA",
-  "block_code": "BLOQUE W",
-  "block_title": "AURA — decisión y aplicación diferida",
-  "previous_task_id": "AURA-INT-001",
+  "sequence_id": "PHASE-13-U-INTEGRAL-CERTIFICATION",
+  "block_code": "BLOQUE U",
+  "block_title": "Pruebas integrales y certificación transversal",
+  "previous_task_id": "AURA-INT-002",
   "latest_treq_task_id": "NEXO-UX-025",
-  "handoff_task_id": "AUTH-QA-001",
-  "handoff_sequence_id": "PHASE-13-U-INTEGRAL-CERTIFICATION",
+  "handoff_task_id": "AUTH-DB-030",
+  "handoff_sequence_id": "PHASE-13-R3-LEGACY-RETIREMENT",
   "segments": [
     {
-      "prefix": "AURA-INT",
-      "from": 2,
-      "to": 2
+      "prefix": "AUTH-QA",
+      "from": 1,
+      "to": 30
+    },
+    {
+      "prefix": "UX-QA",
+      "from": 1,
+      "to": 30
     }
   ],
   "block_progress": {
-    "total_tasks": 37,
-    "approved_tasks": 36,
-    "pending_tasks": 1
+    "total_tasks": 60,
+    "approved_tasks": 0,
+    "pending_tasks": 60
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 74,
+    "pending_tasks": 73,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
-    "active_stage": 30
+    "active_stage": 31
   },
   "selected_route_id": "NORMAL-CANONICAL-FLOW-001",
   "resumed_after_priority_route_id": "PASS-LOYALTY-001",
