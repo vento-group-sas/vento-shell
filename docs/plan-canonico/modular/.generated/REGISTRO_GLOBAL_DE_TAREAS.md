@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1512** |
+| Aprobadas | **1513** |
 | En propuesta | **0** |
-| No iniciadas | **84** |
+| No iniciadas | **83** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **94.74% (1512/1596)** |
+| Porcentaje de completamiento | **94.80% (1513/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **84** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1413** |
+| ⏸ NO_EVALUADA | **83** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1414** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-AUTH-003` — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas | ✅ APROBADA |
-| Tarea actual | `AURA-AUTH-004` — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-UX-001` — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades | ⬜ NO INICIADA |
+| Última aprobada | `AURA-AUTH-004` — Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros | ✅ APROBADA |
+| Tarea actual | `AURA-UX-001` — Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-UX-002` — Diseñar sistema de marca, brief guiado y calendario visual | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1460,7 +1460,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-001` | Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-002` | Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-003` | Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-AUTH-004` | Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUTH-004` | Proteger credenciales, tokens, proveedores de IA, prompts, archivos y datos enviados a terceros | — | — | `bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-001` | Diseñar inicio diario simple con prioridades, calendario, pendientes y oportunidades | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-002` | Diseñar sistema de marca, brief guiado y calendario visual | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-UX-003` | Diseñar estudio creativo asistido y fábrica de variantes reutilizables | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
