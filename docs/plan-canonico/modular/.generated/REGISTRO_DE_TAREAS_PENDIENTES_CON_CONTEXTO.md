@@ -8,28 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar CAP-SCOPE-014::CORR-001; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar MATURE_PACKAGE_GATE sobre GAP-PKG-002.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `CAP-SCOPE-014::CORR-001`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO: corregir la contradiccion documental confirmada de H-CAP-SCOPE-014-029 sin modificar requisitos TREQ ni 04A.
-- **Edita solamente:**
-  - `MODIFY` `docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/05_03_COMERCIAL_CLIENTES_LOGISTICA_FINANZAS_E_INSTALACIONES.md`
-- **Valida, en este orden:**
-  1. `npm run docs:correction:check`
-  2. `npm run docs:correction:test`
-  3. `npm run docs:plan:check`
-  4. `npm run docs:plan:test`
-  5. `npm run docs:treq:check`
-  6. `npm run docs:treq:test`
-  7. `git --no-pager diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id CAP-SCOPE-014::CORR-001`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-002`
 
