@@ -1121,7 +1121,1132 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública`
 
-### [ ] AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública
+### ✅ AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función
+**Tarea siguiente:** AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas
+**Tipo de tarea:** documental; contrato canónico de segregación de funciones y transiciones editoriales y públicas de AURA, con materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE W — AURA — autorización de marketing y canales
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/03_AUTORIZACION_DE_MARKETING_Y_CANALES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`; contrato de segregación definido y futura materialización reservada a `AURA-AUTH-002::<implementation_unit_id>` únicamente después de `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea; no se crean capacidades, permisos, grants, asignaciones, RLS, políticas, estados técnicos, tablas, funciones, RPC, cuentas, integraciones, publicaciones, respuestas, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá mantener separadas las autoridades de creación, revisión, aprobación, programación, publicación, retiro y respuesta pública, de modo que poseer alcance sobre un recurso no permita ejecutar cualquier transición sobre él y que una persona, principal técnico o automatización no pueda convertir por sí sola preparación, revisión o capacidad técnica en aprobación final.
+
+La decisión raíz es:
+
+```text
+ESTAR EN ALCANCE DEL RECURSO
+!=
+PODER EJECUTAR CUALQUIER TRANSICION DEL RECURSO
+```
+
+Y además:
+
+```text
+CREAR
+!=
+REVISAR
+!=
+APROBAR
+!=
+PROGRAMAR
+!=
+PUBLICAR
+!=
+RETIRAR
+!=
+RESPONDER PUBLICAMENTE
+```
+
+```text
+APROBADO
+!=
+PROGRAMADO
+!=
+PUBLICADO
+```
+
+```text
+RESPUESTA PUBLICA PUBLICADA
+!=
+RECLAMO RESUELTO
+```
+
+La tarea concreta el handoff obligatorio de `AURA-AUTH-001` sin redefinir empresa, marca, función, recurso, identidad ni alcance.
+
+---
+
+#### 2. Naturaleza y topología
+
+La topología canónica aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto:
+
+- esta tarea define una sola vez el contrato documental reusable;
+- no crea una instancia física desde el carril documental;
+- cada materialización futura deberá usar la identidad `AURA-AUTH-002::<implementation_unit_id>`;
+- ninguna instancia podrá materializarse antes de satisfacer `POST_E5_PACKAGE`;
+- la aprobación documental no crea estados runtime, permisos, políticas, integraciones ni automatizaciones;
+- cada implementación futura deberá demostrar segregación, denegación segura, auditoría y recuperación sobre la unidad concreta que materialice;
+- la tarea no convierte la arquitectura objetivo de AURA en una aplicación ya disponible.
+
+---
+
+#### 3. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-AUTH-001`, para empresa, marca, función, capacidad, recurso, contexto, denegaciones, revalidación server-side y auditoría mínima;
+- `AURA-DOM-003`, para activos, versiones, revisión, aprobación, retiro y derechos de uso;
+- `AURA-DOM-004`, para grounding, asistencia de IA, revisión humana y prohibición de autoaprobación o autopublicación;
+- `AURA-DOM-005`, para cuentas, endpoints, programación, publicación, intentos, confirmación externa, retiro y reconciliación por canal;
+- `AURA-DOM-009`, para reputación, propuesta de respuesta, revisión humana, aprobación, publicación y escalamiento a servicio;
+- `VPROC-0056`, como proceso canónico de contenido y promociones desde solicitud y aprobación hasta publicación y retiro;
+- la matriz canónica de roles y responsabilidades de `VPROC-0056`, que exige aprobación separada de la decisión crítica;
+- `TREQ-AURA-001`, para estados y transiciones editoriales diferenciadas;
+- `TREQ-AURA-002`, para impedir autonomía de IA sobre publicación y respuesta sensible;
+- `TREQ-AURA-003`, para impedir que una respuesta pública cierre un reclamo formal;
+- `TREQ-AURA-011`, para impedir publicación por defecto durante creación;
+- `TREQ-AURA-018`, para carga de medios gobernada y no equivalente a publicación;
+- `TREQ-AURA-019`, como requisito propietario de segregación del ciclo editorial;
+- el modelo transversal de autorización y evidencia vigente.
+
+Ninguna de esas fuentes se modifica por esta tarea.
+
+---
+
+#### 4. Resultado canónico
+
+AURA deberá poder decidir cada transición material mediante un contrato que responda, como mínimo:
+
+1. qué recurso y versión exacta se intenta transformar;
+2. en qué empresa y marca se encuentra el recurso;
+3. qué función empresarial actúa;
+4. qué capacidad exacta se solicita;
+5. qué estado editorial o reputacional existe antes de la acción;
+6. qué estado o efecto pretende producir la acción;
+7. qué actor preparó o creó la versión;
+8. qué actor la revisó cuando aplique;
+9. qué actor emitió la aprobación final cuando aplique;
+10. qué actor o principal técnico intenta programar, publicar o retirar;
+11. qué restricciones de vigencia, derechos, canal, privacidad, oferta y negocio aplican;
+12. si existe conflicto de segregación para esa decisión concreta;
+13. si una aprobación previa continúa vigente para la versión y objetivo actuales;
+14. si el canal y cuenta objetivo siguen siendo compatibles;
+15. qué evidencia sostiene la transición;
+16. cuál fue el resultado de autorización y de negocio;
+17. qué correlación permite reconstruir la secuencia completa.
+
+Una dimensión obligatoria ausente, ambigua, vencida o incompatible deberá bloquear la transición protegida de forma segura.
+
+---
+
+#### 5. Principio de segregación
+
+La segregación se aplica a autoridades y decisiones, no únicamente a pantallas o botones.
+
+Se preserva:
+
+```text
+CAPACIDAD DE CREAR
+!=
+CAPACIDAD DE APROBAR
+```
+
+```text
+CAPACIDAD DE APROBAR
+!=
+CAPACIDAD DE PUBLICAR
+```
+
+```text
+CAPACIDAD TECNICA DE ENVIAR A UN CANAL
+!=
+AUTORIDAD EMPRESARIAL PARA APROBAR
+```
+
+```text
+CAPACIDAD DE RETIRAR
+!=
+CAPACIDAD DE ELIMINAR EVIDENCIA
+```
+
+Una misma persona podrá poseer más de una capacidad no incompatible únicamente cuando el modelo canónico lo permita; poseer varias capacidades no elimina los conflictos específicos de una decisión crítica.
+
+---
+
+#### 6. Relación obligatoria con AURA-AUTH-001
+
+`AURA-AUTH-001` decide si el actor puede alcanzar el recurso dentro de empresa, marca, función y contexto.
+
+`AURA-AUTH-002` decide si, estando ya dentro de ese universo autorizado, puede ejecutar la transición exacta solicitada.
+
+Por tanto:
+
+```text
+AUTORIZADO_SOBRE_RECURSO
++
+TRANSICION_ESPECIFICA_AUTORIZADA
++
+PRECONDICIONES_DEL_ESTADO
++
+SEGREGACION_SATISFECHA
+=
+ELEGIBLE_PARA_EJECUTAR
+```
+
+La elegibilidad todavía podrá quedar bloqueada por guardas de privacidad, promoción, credenciales, proveedor, integración o reglas propietarias posteriores.
+
+---
+
+#### 7. Ciclo canónico consumido de VPROC-0056
+
+Esta tarea no crea un namespace alterno de estados.
+
+Preserva los estados canónicos vigentes de `VPROC-0056`:
+
+```text
+CONTENT_REQUESTED
+BRIEF_UNDER_REVIEW
+IN_CREATION
+UNDER_REVIEW
+PENDING_APPROVAL
+APPROVED
+SCHEDULED
+PUBLISHED
+PERFORMANCE_REVIEW
+CONTENT_CYCLE_REVIEWED
+```
+
+Sus límites permanecen:
+
+- `CONTENT_REQUESTED` no constituye pieza aprobada, programación, publicación ni promoción vigente;
+- `PENDING_APPROVAL` espera autoridad para continuar;
+- `APPROVED` significa versión autorizada pero todavía no publicada;
+- `SCHEDULED` exige canal, fecha, audiencia y versión de publicación;
+- `PUBLISHED` representa contenido activo en el canal controlado;
+- el cierre normal exige que vigencia, retiro y rendimiento hayan sido controlados.
+
+El retiro, ocultamiento, archivo y reconciliación podrán requerir representación física propia posteriormente, pero esta tarea no inventa nuevos códigos de estado para `VPROC-0056`.
+
+---
+
+#### 8. Familias de acción protegida
+
+Quedan separadas semánticamente las siguientes familias:
+
+| Familia | Resultado permitido | No concede por sí sola |
+| --- | --- | --- |
+| creación | crear o modificar una versión no aprobada dentro del alcance permitido | revisar, aprobar, programar, publicar o retirar |
+| revisión | evaluar una versión, registrar observaciones y devolver o recomendar | aprobación final ni publicación |
+| aprobación | autorizar una versión y su objetivo dentro de condiciones explícitas | programación, envío técnico o confirmación externa |
+| programación | preparar fecha, ventana, canal, cuenta y versión aprobada | cambiar contenido, autoaprobar o publicar fuera de ventana |
+| publicación | ejecutar la salida autorizada hacia el canal correspondiente | alterar la aprobación, ampliar alcance o declarar impacto |
+| retiro | ordenar o ejecutar retiro conforme a autoridad y estado | borrar historia, evidencia o reemplazar aprobación previa |
+| respuesta pública | preparar o emitir comunicación reputacional gobernada | cerrar reclamos, aprobar compensaciones ni alterar hechos propietarios |
+
+Los nombres anteriores son familias semánticas. Esta tarea no inventa claves definitivas de permisos; toda implementación deberá usar capacidades existentes en el catálogo canónico vigente o introducirlas mediante su proceso propietario antes de consumirlas.
+
+---
+
+#### 9. Creación
+
+Crear o editar una versión deberá exigir:
+
+- recurso y contexto dentro del alcance de `AURA-AUTH-001`;
+- identidad estable del objeto;
+- versión identificable;
+- brief, marca, campaña o contexto requerido cuando aplique;
+- fuentes y derechos suficientes;
+- actor productor trazable;
+- estado que admita edición;
+- ausencia de una transición incompatible en curso.
+
+La creación no deberá:
+
+- publicar por defecto;
+- marcar aprobación implícita;
+- reutilizar una aprobación de otra versión;
+- convertir un borrador asistido por IA en decisión empresarial;
+- sobrescribir silenciosamente una versión ya aprobada o publicada.
+
+---
+
+#### 10. Revisión
+
+La revisión es una evaluación diferenciada de la creación y de la aprobación final.
+
+Deberá permitir registrar, según corresponda:
+
+- exactitud;
+- marca y tono;
+- derechos;
+- privacidad;
+- precio y disponibilidad consumidos desde sus fuentes;
+- vigencia;
+- claims;
+- formato de canal;
+- restricciones comerciales o legales;
+- observaciones;
+- cambios requeridos;
+- recomendación de aprobar o rechazar.
+
+Una revisión favorable no constituye aprobación final.
+
+Un actor que tenga capacidad tanto de revisar como de aprobar solo podrá ejecutar ambas acciones cuando no exista una incompatibilidad de segregación para la decisión concreta y ambas capacidades estén autorizadas de forma independiente.
+
+---
+
+#### 11. Aprobación
+
+La aprobación deberá quedar vinculada al objeto exacto que autoriza.
+
+Como mínimo deberá identificar:
+
+- recurso;
+- versión;
+- marca;
+- objetivo o finalidad;
+- canal o familia de canal cuando sea material;
+- audiencia o alcance lógico cuando corresponda;
+- vigencia;
+- restricciones;
+- actor aprobador;
+- autoridad utilizada;
+- timestamp;
+- evidencia y correlación.
+
+Se preserva:
+
+```text
+APROBACION DE VERSION A
+!=
+APROBACION DE VERSION B
+```
+
+```text
+APROBACION PARA CANAL A
+!=
+APROBACION UNIVERSAL PARA TODOS LOS CANALES
+```
+
+Una aprobación no produce por sí sola programación, publicación, retiro ni respuesta externa.
+
+---
+
+#### 12. Aprobación obligatoria de VPROC-0056
+
+La matriz canónica vigente de `VPROC-0056` establece:
+
+- iniciador primario funcional: `RESPONSABLE_DE_MARCA`;
+- iniciadores alternos: `RESPONSABLE_COMERCIAL`, `GERENCIA_GENERAL` y `EVENTO_CANONICO_DE_PROCESO`;
+- ejecutor principal funcional: `RESPONSABLE_DE_MARCA`;
+- apoyos: `RESPONSABLE_COMERCIAL`, `RESPONSABLE_DE_CATALOGO` y `RESPONSABLE_DE_CLIENTE_Y_SERVICIO`;
+- aprobador funcional: `GERENCIA_GENERAL`;
+- aprobación: `OBLIGATORIA` para contenido, promoción, condiciones, publicación o retiro.
+
+La misma matriz fija:
+
+```text
+INICIADOR_O_PREPARADOR_O_EJECUTOR
+!=
+APROBADOR_FINAL_DE_LA_MISMA_DECISION_CRITICA
+```
+
+Y además:
+
+```text
+CREADOR
+O
+PUBLICADOR_TECNICO
+!=
+APROBACION_COMERCIAL_O_LEGAL
+```
+
+Estos nombres expresan responsabilidad funcional del proceso. No sustituyen la evaluación de capacidad, empresa, marca, función, recurso y contexto exigida por `AURA-AUTH-001`.
+
+---
+
+#### 13. Programación
+
+Programar deberá requerir una versión aprobada y todavía vigente.
+
+La programación deberá fijar, cuando aplique:
+
+- versión exacta;
+- canal y endpoint objetivo;
+- cuenta empresarial gobernada;
+- fecha y hora;
+- zona horaria;
+- ventana válida;
+- audiencia o destino;
+- formato o variante;
+- aprobación de la que depende;
+- política de reintento aplicable;
+- correlación.
+
+Programar no podrá:
+
+- modificar silenciosamente el contenido aprobado;
+- ampliar marca, audiencia o canal respecto de la aprobación;
+- convertir una aprobación vencida en vigente;
+- saltar restricciones de derechos o disponibilidad;
+- publicar inmediatamente como efecto secundario no declarado.
+
+---
+
+#### 14. Publicación
+
+La publicación deberá revalidar autorización y estado en el momento de ejecución.
+
+No bastará con que:
+
+- el usuario haya visto antes el botón;
+- exista una aprobación histórica;
+- el job haya sido creado cuando la autorización era válida;
+- el principal técnico tenga credenciales del canal;
+- la pieza haya estado publicada anteriormente;
+- el recurso permanezca en caché.
+
+Antes del efecto externo deberán seguir siendo compatibles:
+
+- versión;
+- aprobación;
+- vigencia;
+- empresa;
+- marca;
+- función;
+- capacidad;
+- canal;
+- cuenta;
+- audiencia o destino;
+- derechos;
+- restricciones materiales.
+
+Un cambio relevante posterior a la aprobación deberá impedir reutilizarla como autoridad automática.
+
+---
+
+#### 15. Publicación interna y confirmación externa
+
+Se conserva la frontera de `AURA-DOM-005`:
+
+```text
+AUTORIZADO_PARA_PUBLICAR
+!=
+INTENTO_TECNICO
+!=
+CONFIRMACION_EXTERNA
+```
+
+Por tanto:
+
+- una transición interna a ejecución no prueba que el proveedor haya publicado;
+- un timeout no podrá asumirse como fallo seguro si el proveedor pudo procesar la solicitud;
+- un identificador externo no sustituye la decisión interna de autorización;
+- reconciliación e idempotencia deberán impedir efectos duplicados;
+- la autorización no se ampliará durante reintentos.
+
+---
+
+#### 16. Retiro
+
+El retiro deberá mantenerse separado de creación, aprobación y eliminación física.
+
+Se conserva:
+
+```text
+RETIRAR DE USO O CANAL
+!=
+BORRAR HISTORIA
+!=
+BORRAR EVIDENCIA
+```
+
+Una orden o ejecución de retiro deberá conservar, según corresponda:
+
+- objeto y versión;
+- canal o publicación afectada;
+- motivo;
+- autoridad;
+- actor decisor;
+- actor o principal técnico ejecutor;
+- timestamp;
+- confirmación externa o estado ambiguo;
+- reintentos;
+- reconciliación;
+- evidencia posterior.
+
+Para `VPROC-0056`, la decisión crítica de retiro permanece dentro del objeto de aprobación obligatoria definido por la matriz canónica del proceso.
+
+---
+
+#### 17. Respuesta pública
+
+La respuesta pública se trata como una acción gobernada y trazable, no como texto libre enviado desde una cuenta disponible.
+
+Se deberán mantener separadas, cuando apliquen:
+
+```text
+CLASIFICAR
+!=
+PROPONER_RESPUESTA
+!=
+REVISAR_RESPUESTA
+!=
+APROBAR_RESPUESTA
+!=
+PUBLICAR_RESPUESTA
+!=
+ESCALAR_A_SERVICIO
+```
+
+La respuesta deberá conservar como mínimo:
+
+- elemento público exacto al que responde;
+- marca y cuenta aplicables;
+- versión del texto;
+- fuentes para afirmaciones materiales;
+- actor proponente;
+- actor revisor cuando aplique;
+- actor aprobador cuando aplique;
+- actor o principal técnico publicador;
+- timestamp;
+- identificador externo cuando exista;
+- estado de confirmación y reconciliación.
+
+---
+
+#### 18. Revisión humana reforzada para respuesta pública
+
+Se preserva la revisión humana obligatoria definida por `AURA-DOM-009` cuando exista, entre otros, impacto material relacionado con:
+
+- riesgo legal;
+- seguridad;
+- privacidad;
+- acusación grave;
+- crisis o difusión significativa;
+- posible compensación;
+- reclamo formal o potencial;
+- ambigüedad con impacto material;
+- admisión de hechos o responsabilidades;
+- cuenta sensible;
+- fuente cuya frescura o autoridad no esté clara.
+
+Una IA podrá sugerir o resumir, pero no podrá por sí sola aprobar ni publicar respuestas sensibles.
+
+---
+
+#### 19. Respuesta pública y frontera con servicio
+
+Se conserva permanentemente:
+
+```text
+RESPUESTA PUBLICA
+!=
+RESOLUCION DE SERVICIO
+```
+
+Una respuesta pública no podrá por sí sola:
+
+- cerrar un reclamo;
+- aprobar devolución;
+- aprobar reembolso;
+- aprobar compensación;
+- declarar concluida una investigación abierta;
+- modificar el estado propietario del pedido;
+- modificar verdad de venta o pago;
+- identificar definitivamente una persona cliente desde un alias público.
+
+Cuando corresponda, AURA deberá escalar al proceso propietario manteniendo correlación sin adquirir su autoridad.
+
+---
+
+#### 20. Vinculación de aprobación a versión y objetivo
+
+Toda aprobación material deberá ser específica.
+
+Una aprobación quedará inválida para ejecución posterior cuando cambie de forma material cualquiera de los elementos que la sustentaban, incluyendo cuando corresponda:
+
+- contenido;
+- activo o derivado utilizado;
+- claim;
+- precio u oferta referenciada;
+- vigencia;
+- marca;
+- audiencia;
+- canal;
+- cuenta;
+- finalidad;
+- condición promocional;
+- derecho de uso;
+- dato material consumido desde otra fuente;
+- restricción aplicable.
+
+La corrección exclusivamente técnica que no altere el objeto aprobado solo podrá conservar aprobación si el contrato propietario la clasifica expresamente como no material y queda evidencia suficiente.
+
+---
+
+#### 21. Reaprobación
+
+Si una modificación invalida la aprobación vigente, el recurso deberá volver al punto del ciclo que corresponda antes de poder programarse o publicarse de nuevo.
+
+No se admitirá:
+
+- copiar el identificador de una aprobación anterior a una nueva versión;
+- conservar `APPROVED` por simple edición de un campo;
+- mantener un job programado cuando la versión subyacente dejó de estar aprobada;
+- reintentar una publicación cambiando payload material sin nueva decisión;
+- reutilizar una aprobación de otra marca o audiencia.
+
+---
+
+#### 22. Segregación por decisión, no por identidad nominal
+
+La segregación deberá evaluarse sobre la decisión concreta.
+
+No será suficiente comparar nombres visibles de usuario.
+
+La implementación futura deberá poder resolver, cuando aplique:
+
+- principal autenticado;
+- actor efectivo;
+- identidad del iniciador;
+- identidad del preparador o creador;
+- identidad del revisor;
+- identidad del aprobador;
+- identidad del ejecutor técnico;
+- relación entre esos actores;
+- versión y objeto sobre los que actuaron.
+
+Un mismo principal técnico actuando por varios usuarios no deberá borrar la atribución del actor efectivo.
+
+---
+
+#### 23. Conflicto obligatorio en la decisión crítica de VPROC-0056
+
+Para la aprobación final obligatoria de `VPROC-0056`, un actor que haya actuado como iniciador, preparador o ejecutor de la misma decisión crítica no podrá convertirse en aprobador final únicamente porque también posea o herede una capacidad de aprobación.
+
+La regla se aplica a la decisión, no a toda relación laboral permanente.
+
+No implica que todas las tareas editoriales requieran personas diferentes para cada paso; exige que la aprobación final de la decisión crítica permanezca separada conforme a la matriz canónica del proceso.
+
+---
+
+#### 24. Rol, función y capacidad
+
+La función empresarial participa en el contrato, pero no reemplaza la autorización.
+
+Se conserva:
+
+```text
+GERENCIA_GENERAL
+!=
+PERMISO_AUTOMATICO
+```
+
+```text
+RESPONSABLE_DE_MARCA
+!=
+PERMISO_AUTOMATICO
+```
+
+Un actor funcionalmente elegible deberá además satisfacer:
+
+- identidad confiable;
+- capacidad exacta;
+- empresa;
+- marca cuando aplique;
+- recurso;
+- contexto;
+- estado;
+- restricciones;
+- segregación.
+
+La UI no podrá deducir autoridad final únicamente por nombre de rol.
+
+---
+
+#### 25. Principales técnicos y automatización
+
+Jobs, service roles, integraciones, webhooks y otros principales técnicos no adquieren aprobación empresarial por ejecutar técnicamente una acción.
+
+Una automatización podrá ejecutar una transición ya autorizada únicamente si:
+
+- la decisión empresarial necesaria existe y sigue vigente;
+- el principal técnico está autorizado para la operación técnica concreta;
+- el recurso y versión continúan siendo los aprobados;
+- el alcance no se amplía;
+- la ejecución es idempotente cuando corresponde;
+- la correlación preserva quién autorizó y qué principal ejecutó.
+
+Un evento canónico podrá iniciar `VPROC-0056` cuando el proceso lo admite; no podrá emitir por sí solo la aprobación final obligatoria salvo que una fuente canónica posterior redefina expresamente esa autoridad.
+
+---
+
+#### 26. Revalidación server-side
+
+Toda transición material deberá revalidarse en servidor o en la frontera autoritativa equivalente inmediatamente antes del efecto protegido.
+
+La decisión no podrá confiar únicamente en:
+
+- controles visuales;
+- estado del cliente;
+- claims no verificados del frontend;
+- un ID suministrado por cliente;
+- una aprobación almacenada en memoria sin validar vigencia;
+- un job antiguo;
+- un rol enviado por el cliente;
+- una cuenta o marca seleccionada en interfaz.
+
+El uso de service role o credenciales privilegiadas no podrá omitir la autorización del actor ni la segregación.
+
+---
+
+#### 27. Precondiciones de estado
+
+Cada familia de acción deberá comprobar que el estado actual admite la transición.
+
+Como mínimo:
+
+| Acción | Precondición mínima conceptual |
+| --- | --- |
+| crear o editar | estado editable y versión identificable |
+| revisar | versión disponible para revisión y evidencia suficiente |
+| aprobar | versión revisable, restricciones resueltas y segregación válida |
+| programar | aprobación vigente y objetivo de publicación válido |
+| publicar | aprobación vigente, estado publicable, autorización actual y canal compatible |
+| retirar | publicación o uso retirable, autoridad vigente y objetivo exacto |
+| responder públicamente | elemento reputacional válido, autoridad de respuesta y guardas de revisión aplicables |
+
+Una transición inválida por estado deberá denegarse aunque el actor posea la capacidad nominal.
+
+---
+
+#### 28. Denegación segura
+
+La futura implementación deberá fallar de forma segura al menos ante:
+
+- capacidad ausente;
+- recurso fuera de empresa o marca;
+- versión no aprobada;
+- aprobación vencida o invalidada;
+- conflicto de segregación;
+- cuenta o canal no autorizado;
+- estado incompatible;
+- derechos vencidos;
+- restricción material no satisfecha;
+- servicio de autorización no disponible;
+- correlación insuficiente para reconstruir la decisión;
+- intento de usar una respuesta pública para cerrar un caso de servicio;
+- principal técnico que intenta convertir credencial en autoridad empresarial.
+
+La denegación no deberá producir efectos externos parciales silenciosos.
+
+---
+
+#### 29. Concurrencia, idempotencia y carreras
+
+La segregación deberá conservarse bajo concurrencia.
+
+La futura materialización deberá impedir, según corresponda:
+
+- aprobar una versión mientras otra edición material se confirma en paralelo;
+- programar una versión que cambió después de ser seleccionada;
+- publicar dos veces por reintento no idempotente;
+- retirar y volver a publicar por carreras sin reconciliación;
+- aceptar una aprobación sobre una versión obsoleta;
+- responder dos veces al mismo elemento por eventos duplicados;
+- perder la identidad del actor por procesamiento asíncrono.
+
+Los locks, versiones, claves idempotentes o mecanismos técnicos concretos pertenecen a la implementación; la obligación semántica queda fijada aquí.
+
+---
+
+#### 30. Auditoría de transición
+
+Toda transición material futura deberá poder reconstruir:
+
+- principal autenticado;
+- actor efectivo;
+- capacidad solicitada;
+- recurso;
+- versión;
+- empresa;
+- marca;
+- función;
+- estado anterior;
+- acción solicitada;
+- estado o efecto esperado;
+- actor creador o preparador cuando sea material;
+- actor revisor cuando sea material;
+- actor aprobador cuando aplique;
+- principal técnico ejecutor cuando aplique;
+- decisión de segregación;
+- versión de política y catálogo;
+- correlación;
+- timestamp;
+- resultado de autorización;
+- resultado técnico;
+- referencia externa cuando exista.
+
+La auditoría deberá distinguir decisión empresarial, ejecución técnica y confirmación externa.
+
+---
+
+#### 31. Evidencia mínima de aprobación
+
+Una aprobación futura deberá conservar evidencia suficiente para demostrar:
+
+- quién aprobó;
+- qué versión aprobó;
+- con qué autoridad;
+- sobre qué empresa y marca;
+- para qué objetivo;
+- qué restricciones existían;
+- qué revisión previa era aplicable;
+- cuándo se produjo;
+- hasta cuándo era utilizable cuando exista vigencia;
+- qué decisión de segregación permitió emitirla.
+
+La ausencia de evidencia mínima no deberá interpretarse como aprobación implícita.
+
+---
+
+#### 32. CMS transitorio de VISO
+
+El CMS actual de VISO conserva su ownership transitorio hasta una transferencia formal aprobada.
+
+Esta tarea no:
+
+- migra el CMS;
+- cambia sus capacidades actuales;
+- convierte sus booleanos o acciones observadas en modelo canónico completo;
+- declara AURA implementada;
+- autoriza publicación por existir una superficie administrativa actual.
+
+Cualquier materialización futura que proteja superficies transitorias deberá respetar este contrato sin simular que la transferencia a AURA ya ocurrió.
+
+---
+
+#### 33. Frontera con AURA-AUTH-003
+
+`AURA-AUTH-003` conserva la protección reforzada de:
+
+- promociones;
+- segmentos;
+- leads;
+- datos de clientes;
+- exportaciones;
+- acciones masivas.
+
+Esta tarea únicamente separa las autoridades editoriales y públicas.
+
+No autoriza:
+
+- extraer miembros de audiencia;
+- contactar personas;
+- exportar PII;
+- activar campañas masivas;
+- aplicar descuentos;
+- redimir beneficios;
+- decidir reglas promocionales transaccionales.
+
+La siguiente tarea deberá recibir las transiciones aquí definidas sin convertir una aprobación editorial en autorización para usar datos o ejecutar promociones.
+
+---
+
+#### 34. Frontera con AURA-AUTH-004
+
+`AURA-AUTH-004` conserva la protección de:
+
+- credenciales;
+- tokens;
+- secretos;
+- proveedores de IA;
+- prompts gobernados;
+- archivos;
+- datos enviados a terceros.
+
+Poder programar, publicar, retirar o responder no concede acceso directo a secretos ni autoriza el envío de información a un tercero.
+
+La integración futura deberá usar intermediación gobernada sin exponer credenciales a quien solo necesita ejecutar una acción empresarial.
+
+---
+
+#### 35. Frontera con experiencia e integración
+
+Las tareas `AURA-UX-*` podrán presentar flujos de creación, revisión, aprobación y publicación, pero no serán autoridad final.
+
+En especial, `AURA-UX-004` deberá diseñar aprobación y publicación multicanal respetando los estados, denegaciones y recuperación de este contrato.
+
+Las tareas `AURA-INT-*` deberán conservar:
+
+- versión;
+- correlación;
+- actor;
+- aprobación;
+- idempotencia;
+- intento;
+- resultado externo;
+- reconciliación;
+- límites del proveedor.
+
+Un adaptador no podrá aprobar por el usuario ni ampliar una transición autorizada.
+
+---
+
+#### 36. Matriz obligatoria de pruebas futuras
+
+Cada instancia física `AURA-AUTH-002::<implementation_unit_id>` deberá demostrar, cuando la unidad materialice las superficies correspondientes, al menos:
+
+| Escenario | Resultado exigido |
+| --- | --- |
+| creador intenta aprobar su misma decisión crítica de VPROC-0056 | denegado |
+| ejecutor técnico intenta sustituir aprobación final | denegado |
+| revisor favorable intenta publicar sin capacidad de publicación | denegado |
+| aprobador intenta publicar solo por haber aprobado | denegado salvo capacidad independiente y demás guardas satisfechas |
+| programador intenta usar versión no aprobada | denegado |
+| publicación programada pierde aprobación antes de ejecutarse | bloqueada |
+| versión cambia materialmente después de aprobación | exige nueva decisión antes de publicación |
+| actor con publicación intenta recurso fuera de marca | denegado por AURA-AUTH-001 |
+| job conserva autorización histórica después de revocación | denegado |
+| publicación se reintenta tras timeout ambiguo | reconciliada e idempotente antes de repetir efecto |
+| actor intenta retirar sin autoridad aplicable | denegado |
+| retiro autorizado intenta borrar evidencia histórica | denegado |
+| IA intenta autoaprobar o autopublicar | denegado |
+| respuesta sensible intenta publicarse sin revisión humana requerida | denegado |
+| respuesta pública intenta cerrar reclamo formal | denegado en esa frontera |
+| flujo válido con aprobación separada y capacidades correctas | elegible para ejecutar la transición correspondiente |
+
+La última fila no exime las guardas de `AURA-AUTH-003`, `AURA-AUTH-004`, privacidad, integración ni reglas propietarias.
+
+---
+
+#### 37. Recuperación y rollback
+
+La futura materialización deberá poder recuperarse sin colapsar la segregación.
+
+Un rollback válido no podrá:
+
+- convertir aprobación en publicación automática;
+- reactivar una aprobación invalidada;
+- borrar quién aprobó o ejecutó;
+- eliminar el historial de versiones;
+- restaurar un bypass por rol nominal;
+- permitir que un creador se autoapruebe;
+- reutilizar jobs programados contra versiones obsoletas;
+- perder la correlación con publicaciones o respuestas externas.
+
+Si no puede demostrarse que el rollback conserva autoridad, versión y evidencia, la acción deberá permanecer bloqueada.
+
+---
+
+#### 38. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. estar en alcance de un recurso no concede todas sus transiciones;
+2. creación, revisión, aprobación, programación, publicación, retiro y respuesta pública son autoridades diferenciadas;
+3. las familias semánticas no inventan por sí mismas claves definitivas de permiso;
+4. `AURA-AUTH-001` continúa gobernando empresa, marca, función, capacidad, recurso y contexto;
+5. revisión favorable no equivale a aprobación final;
+6. aprobación no equivale a programación;
+7. programación no equivale a publicación;
+8. autorización para publicar no equivale a confirmación externa;
+9. retiro no equivale a eliminación de evidencia;
+10. respuesta pública no equivale a resolución de servicio;
+11. `VPROC-0056` conserva su namespace canónico de estados;
+12. `VPROC-0056` exige aprobación final obligatoria para su decisión crítica;
+13. el aprobador funcional vigente de `VPROC-0056` es `GERENCIA_GENERAL`;
+14. la función `GERENCIA_GENERAL` no constituye permiso automático;
+15. iniciador, preparador o ejecutor no puede emitir la aprobación final de la misma decisión crítica de `VPROC-0056`;
+16. creador y publicador técnico no sustituyen aprobación comercial o legal;
+17. un actor puede poseer varias capacidades no incompatibles si cada una está autorizada independientemente;
+18. los conflictos se evalúan sobre la decisión concreta;
+19. aprobación se vincula a versión, objetivo y restricciones materiales;
+20. cambios materiales invalidan la reutilización automática de aprobación;
+21. publicación revalida autorización inmediatamente antes del efecto;
+22. jobs y principales técnicos no adquieren autoridad empresarial por poseer credenciales;
+23. reintentos no amplían autoridad;
+24. concurrencia no puede permitir publicación de versión obsoleta;
+25. IA no puede autoaprobar ni autopublicar;
+26. respuestas públicas sensibles conservan revisión humana reforzada;
+27. una respuesta pública no cierra reclamos ni aprueba compensaciones;
+28. auditoría distingue decisión empresarial, ejecución técnica y resultado externo;
+29. el CMS transitorio de VISO no se reclasifica como AURA implementada;
+30. `AURA-AUTH-003` conserva promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas;
+31. `AURA-AUTH-004` conserva credenciales, tokens, proveedores de IA, prompts, archivos y datos a terceros;
+32. rollback no puede ampliar autoridad ni destruir trazabilidad;
+33. se crean y modifican cero requisitos de prueba;
+34. la tarea documental no crea ninguna instancia física;
+35. la continuidad queda reservada exclusivamente a `AURA-AUTH-003`.
+
+---
+
+#### 39. Handoff obligatorio a AURA-AUTH-003
+
+`AURA-AUTH-003` deberá recibir de esta tarea:
+
+- la separación entre creación, revisión, aprobación, programación, publicación, retiro y respuesta pública;
+- la regla de aprobación final separada de la decisión crítica de `VPROC-0056`;
+- la vinculación de aprobación a versión y objetivo;
+- la revalidación antes del efecto;
+- la separación entre decisión empresarial y principal técnico;
+- la denegación de autoaprobación;
+- la obligación de auditoría por transición;
+- la regla de que una transición editorial autorizada no concede uso de datos, promociones o acciones masivas.
+
+Con esa base, `AURA-AUTH-003` deberá proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas sin reabrir la segregación editorial aquí fijada.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Justificación: la separación de estados y transiciones editoriales, la segregación de funciones, la autorización por acción, la protección de publicación y media, y la trazabilidad del ciclo ya cuentan con cobertura vigente suficiente. Esta tarea desarrolla el contrato documental previsto por esa cobertura sin crear ni modificar requisitos del registro.
+
+No se modifica el registro 04A desde esta tarea.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-001`, para identidad, versión, estados diferenciados y separación entre aprobación y publicación;
+- `TREQ-AURA-002`, para impedir autonomía de IA sobre publicación, promoción, contacto o respuesta pública sin autoridad explícita;
+- `TREQ-AURA-003`, para campañas, promociones, oportunidades, reputación y fronteras comerciales;
+- `TREQ-AURA-011`, para impedir publicación accidental al crear contenido;
+- `TREQ-AURA-018`, para proteger carga de media mediante capacidad, validación y alcance;
+- `TREQ-AURA-019`, para estados y transiciones distintas entre borrador, revisión, aprobación, programación, publicación, ocultamiento, retiro y archivo.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación del registro 04A.
+
+---
+
+#### 42. Cobertura de prueba futura
+
+La materialización física posterior deberá cubrir, según la unidad concreta:
+
+- contrato de estados y transiciones;
+- autorización positiva y negativa;
+- segregación de funciones;
+- cambio de versión después de aprobación;
+- revocación;
+- concurrencia;
+- idempotencia;
+- denegación fail-closed;
+- reintentos y reconciliación;
+- publicación y retiro;
+- respuesta pública y escalamiento;
+- auditoría y recuperación;
+- regresión contra `VPROC-0056` y los requisitos AURA vigentes.
+
+La evidencia física pertenece a cada `implementation_unit_id`; la aprobación documental no la sustituye.
+
+---
+
+#### 43. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó `docs:plan:build` contra un checkout local desde esta entrega |
+| LOCAL | NOT_EXECUTED | no se modificó un checkout local ni se ejecutaron validadores del repositorio desde esta entrega |
+| REMOTA | PASS | se verificaron en `main` la continuidad AURA-AUTH-001 → AURA-AUTH-002 → AURA-AUTH-003, el archivo propietario, la reconciliación `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, el handoff de AURA-AUTH-001, AURA-DOM-003, AURA-DOM-005, AURA-DOM-009, los estados generados de VPROC-0056, su matriz de roles y responsabilidades, y `TREQ-AURA-001`, `002`, `003`, `011`, `018` y `019` del registro 04A de AURA |
+| OPERATIVA | NOT_APPLICABLE | esta tarea define segregación documental y no crea, revisa, aprueba, programa, publica, retira ni responde contenido real |
+| FÍSICA | NOT_APPLICABLE | esta aprobación documental no crea permisos, políticas, código, Supabase, integraciones, cuentas, publicaciones, respuestas, datos ni despliegues |
+
+---
+
+#### 44. Criterios de aceptación
+
+La tarea queda documentalmente aceptable únicamente si se conserva todo lo siguiente:
+
+1. creación, revisión, aprobación, programación, publicación, retiro y respuesta pública permanecen acciones diferenciadas;
+2. `AURA-AUTH-001` sigue siendo autoridad sobre empresa, marca, función, capacidad, recurso y contexto;
+3. se preservan los estados canónicos vigentes de `VPROC-0056` sin crear un namespace competidor;
+4. la aprobación de `VPROC-0056` sigue siendo obligatoria para la decisión crítica definida por su matriz;
+5. iniciador, preparador o ejecutor no puede emitir la aprobación final de esa misma decisión crítica;
+6. `GERENCIA_GENERAL` permanece como aprobador funcional vigente de `VPROC-0056`, sin convertirse en bypass de autorización;
+7. revisión favorable no equivale a aprobación;
+8. aprobación no equivale a publicación;
+9. aprobación queda vinculada a versión y objetivo;
+10. un cambio material exige nueva decisión antes de ejecutar;
+11. programación exige aprobación vigente;
+12. publicación revalida autoridad y estado al ejecutar;
+13. principal técnico y credencial no sustituyen autoridad empresarial;
+14. reintentos son idempotentes y no amplían autoridad;
+15. retiro conserva evidencia;
+16. respuesta pública conserva separación entre propuesta, revisión, aprobación, publicación y escalamiento cuando aplique;
+17. respuesta pública no cierra reclamo formal;
+18. IA no autoaprueba ni autopublica;
+19. respuestas sensibles conservan revisión humana reforzada;
+20. la auditoría conserva actor, versión, decisión, ejecutor y resultado;
+21. la matriz negativa de pruebas futuras queda definida;
+22. rollback no puede ampliar autoridad;
+23. el CMS transitorio de VISO no se declara transferido;
+24. `AURA-AUTH-003` y `AURA-AUTH-004` conservan sus fronteras;
+25. se crean y modifican cero TREQ;
+26. no se crea ninguna instancia física desde el carril documental;
+27. la siguiente tarea reservada es exactamente `AURA-AUTH-003`.
+
+---
+
+#### 45. Límites
+
+Esta tarea no autoriza:
+
+- crear un repositorio o runtime de AURA;
+- crear capacidades definitivas fuera del catálogo canónico;
+- asignar roles o permisos;
+- crear o modificar RLS;
+- crear tablas, migraciones, RPC, funciones, triggers, jobs o colas;
+- conectar canales externos;
+- crear o rotar credenciales;
+- publicar contenido real;
+- programar contenido real;
+- retirar contenido real;
+- responder comentarios, reseñas o menciones reales;
+- aprobar promociones reales;
+- extraer segmentos o datos de clientes;
+- exportar información;
+- ejecutar acciones masivas;
+- transferir el CMS actual de VISO a AURA;
+- modificar los estados canónicos de `VPROC-0056`;
+- cambiar la matriz de roles y responsabilidades de `VPROC-0056`;
+- adelantar `AURA-AUTH-003`;
+- crear evidencia física inexistente.
+
+---
+
+#### 46. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función`
+
+**TAREA ACTUAL APROBADA**
+`AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas`
 
 ### [ ] AURA-AUTH-003 — Proteger promociones, segmentos, leads, datos de clientes, exportaciones y acciones masivas
 
