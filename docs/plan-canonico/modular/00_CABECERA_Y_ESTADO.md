@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1505** |
+| Tareas aprobadas | **1506** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **91** |
+| Tareas no iniciadas | **90** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **94.30% (1505/1596)** |
+| Porcentaje de completamiento | **94.36% (1506/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas** |
-| Tarea actual | **AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación** |
+| Última tarea aprobada | **AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación** |
+| Tarea actual | **AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña** |
+| Siguiente tarea | **AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 19 de 37 aprobadas; AURA-DOM-007 pendiente** |
+| Progreso del bloque | **BLOQUE W: 20 de 37 aprobadas; AURA-DOM-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-DOM-007** |
+| Carril documental | **ACTIVO — AURA-DOM-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-DOM-006` — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas |
-| Tarea actual | `AURA-DOM-007` — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación — **NO INICIADA** |
-| Siguiente tarea | `AURA-DOM-008` — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña |
+| Última aprobada | `AURA-DOM-007` — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación |
+| Tarea actual | `AURA-DOM-008` — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña — **NO INICIADA** |
+| Siguiente tarea | `AURA-DOM-009` — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 19 DE 37 APROBADAS — ACTUAL AURA-DOM-007** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 20 DE 37 APROBADAS — ACTUAL AURA-DOM-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas
-        ↓
-TAREA ACTUAL
 AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-DOM-008 — Definir métricas, atribución, confianza, incrementalidad, aprendizaje y cierre de campaña
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 19 de 37 tareas aprobadas
+BLOQUE W — 20 de 37 tareas aprobadas
 ```
