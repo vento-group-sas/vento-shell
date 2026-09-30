@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,152 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/05_03_COMERCIAL_CLIENTES_LOGISTICA_FINANZAS_E_INSTALACIONES.md",
+      "change": "MODIFY",
+      "scope": "Corregir exclusivamente H-CAP-SCOPE-014-029 reemplazando la referencia erronea TREQ-SUPABASE-007 por el requisito historico vigente TREQ-DATA-003. No modificar el texto del hallazgo, su identidad, severidad, etapa ni ninguna otra relacion."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-30T03:28:31.309Z"
+  "zero_treq_reason": "La correccion cambia exclusivamente una referencia documental de cobertura de H-CAP-SCOPE-014-029. TREQ-DATA-003 ya existe y ningun requisito TREQ ni fragmento 04A es creado, modificado, diferido u obsoleto.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-30T03:52:53.058Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: corregir la contradiccion documental confirmada de H-CAP-SCOPE-014-029 sin modificar requisitos TREQ ni 04A.",
+    "source_contract_sha256": "e70857cae64e4d101cd020e419793e51cef15b4ccd3e747a592b6c26c2d6378e"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-30T04:04:59.334Z",
+      "candidate_head_before": "7a63cafcd9e7c9b67fbcf70e24daa496b106242b",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-30T04:05:11.428Z",
+      "execution_started_at": "2026-09-30T04:05:10.152Z",
+      "duration_ms": 1274,
+      "execution_candidate_head": "ea4ab0ead11b4bf8735ffcfa840d3162d9ce9d2e",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-30T04:10:23.348Z",
+      "candidate_head": "c619509a1b7144715895f2283dbb425fbe0489e7",
+      "commands": [
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "git --no-pager diff --check"
+      ],
+      "results": [
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 2281,
+          "started_at": "2026-09-30T04:05:42.585Z",
+          "completed_at": "2026-09-30T04:05:44.867Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "58244da014f0cc77d4c8ab1050edd8f217df184bd4d000e82bd3c71173f83afa",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "duration_ms": 26232,
+          "started_at": "2026-09-30T04:05:44.868Z",
+          "completed_at": "2026-09-30T04:06:11.102Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d90abeb047bd3b7603866ad406c6c552fa27abc8e27b80d34fb5ceab4f79e76f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 214098,
+          "started_at": "2026-09-30T04:06:11.103Z",
+          "completed_at": "2026-09-30T04:09:45.202Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d67f958c14eeb5f2e0bde7427d2026d6144365ef58e51c8eb4ed6b81200b11bb",
+          "stderr_sha256": "bc5a6abfca92d5557beaab90c2b0c255a41f41b7b42f886d194f09bf78060794"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 33515,
+          "started_at": "2026-09-30T04:09:45.202Z",
+          "completed_at": "2026-09-30T04:10:18.718Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "7098587d9e33e297f69e1a14386c91b00c6f69fa4e6d6182f1004d28647e245f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 3870,
+          "started_at": "2026-09-30T04:10:18.719Z",
+          "completed_at": "2026-09-30T04:10:22.590Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fae61db78684a0d99759837929da2020bc8f7bbb299cd4e402ae2c61330df253",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 648,
+          "started_at": "2026-09-30T04:10:22.591Z",
+          "completed_at": "2026-09-30T04:10:23.240Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b5f519f62527ea0f9c27735dbe57e60b5f9ac1ca0bac3ed9beef6b4c68560bac",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git --no-pager diff --check",
+          "duration_ms": 106,
+          "started_at": "2026-09-30T04:10:23.240Z",
+          "completed_at": "2026-09-30T04:10:23.347Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-30T04:16:15.667Z",
+      "validated_candidate_head": "c619509a1b7144715895f2283dbb425fbe0489e7",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-30T03:28:31.309Z",
+  "implemented_at": "2026-09-30T04:05:22.231Z",
+  "verified_at": "2026-09-30T04:16:15.667Z"
 }
