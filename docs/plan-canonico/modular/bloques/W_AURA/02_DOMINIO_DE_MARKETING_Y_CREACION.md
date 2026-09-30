@@ -4120,7 +4120,1364 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas`
 
-### [ ] AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas
+### ✅ AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal
+**Tarea siguiente:** AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación
+**Tipo de tarea:** definición técnico-documental del contrato canónico de campañas ejecutables, experimentos, promociones, cupones y guardas económicas y operativas de AURA; fija separación de intención, regla, elegibilidad, redención, efecto comercial, presupuesto, margen, disponibilidad y capacidad sin crear reglas transaccionales ni instancias físicas
+**Bloque:** `BLOQUE W — AURA — dominio de marketing y creación`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean campañas reales, experimentos activos, audiencias operativas, promociones, cupones, reglas transaccionales, beneficios, descuentos, presupuestos ejecutables, reservas de inventario, bloqueos de capacidad, tablas, migraciones, integraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-29
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá convertir una campaña planificada en un mecanismo gobernado de ejecución comercial y experimental sin asumir autoridad sobre precio, venta, fidelización, presupuesto, margen, inventario, capacidad, redención ni resultado económico.
+
+La decisión raíz es:
+
+```text
+CAMPANA AURA
+=
+INTENCION DE MARKETING GOBERNADA
++ HIPOTESIS
++ AUDIENCIA
++ OFERTA O PROPUESTA
++ PIEZAS Y CANALES
++ PRESUPUESTO REFERENCIADO
++ EXPERIMENTO CUANDO APLIQUE
++ GUARDAS
++ TRAZABILIDAD
+```
+
+pero:
+
+```text
+CAMPANA
+!=
+PROMOCION
+!=
+CUPON
+!=
+BENEFICIO
+!=
+REGLA TRANSACCIONAL
+!=
+REDENCION
+!=
+DESCUENTO APLICADO
+!=
+VENTA
+```
+
+AURA gobierna la intención promocional, el diseño de campaña, la hipótesis y la correlación necesaria para aprender. PULSO, PASS, NUMERA, NEXO y FOGO conservan las decisiones y hechos de sus dominios.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-001`, para marca, identidad, mensajes, claims, restricciones y vigencia;
+- `AURA-DOM-002`, para objetivo, hipótesis, audiencia, brief, calendario, presupuesto, dependencias, guardas previas y ciclo documental de campaña;
+- `AURA-DOM-003`, para activos, derechos, versiones, reutilización y aprobación de contenido;
+- `AURA-DOM-004`, para grounding, memoria, asistencia de IA, límites de autonomía y revisión humana;
+- `AURA-DOM-005`, para cuentas, endpoints, publicación, programación, idempotencia, retiro y reconciliación por canal;
+- `CAP-SCOPE-014`, especialmente `CAP-14.05` y `CAP-14.06`, para campañas, experimentos, promociones, cupones y fronteras entre AURA, PULSO, PASS y NUMERA;
+- `H-CAP-SCOPE-014-007`, para impedir que idea, campaña, pieza, publicación y promoción se confundan;
+- `H-CAP-SCOPE-014-016`, para impedir que AURA ejecute descuentos y compita con PULSO o PASS;
+- `H-CAP-SCOPE-014-017`, para bloquear promociones inviables por margen, stock, capacidad o condiciones operativas;
+- `INT-MKT-001`, para separar campaña operativa de mera documentación de dominio;
+- `INT-MKT-002`, para preservar PASS como propietaria de beneficios, reglas y fidelización;
+- `INT-MKT-003`, para preservar PULSO como propietaria de la validación y aplicación del efecto comercial;
+- `OPS-CAN-001`, para canales gobernados y separación entre canal y hecho empresarial;
+- `VPROC-0056`, para el ciclo canónico del contenido y promociones asociado a una campaña;
+- `CAP-SCOPE-006`, para disponibilidad e inventario;
+- `CAP-SCOPE-008`, para capacidad productiva;
+- `CAP-SCOPE-009`, para pedido, venta, promoción y ejecución comercial;
+- `CAP-SCOPE-010`, para cliente, consentimiento, fidelización, beneficios y redención;
+- `CAP-SCOPE-012`, para presupuesto, costo, margen y rentabilidad;
+- `CAP-SCOPE-017`, para calidad de datos, métricas y aprendizaje;
+- el registro canónico de requisitos de prueba vigente;
+- las tareas posteriores de AURA para autorización, experiencia, integración, atribución y oportunidades.
+
+Ninguna de estas fuentes cambia de propietaria por esta tarea.
+
+---
+
+#### 3. Resultado canónico
+
+Se define una campaña ejecutable como un expediente gobernado que conserva, como mínimo:
+
+1. identidad estable;
+2. objetivo empresarial;
+3. hipótesis;
+4. audiencia y exclusiones;
+5. marca y versión de memoria de marca;
+6. oferta o propuesta comunicada;
+7. piezas y variantes aprobadas;
+8. canales y targets previstos;
+9. periodo y calendario;
+10. presupuesto o límite económico referenciado;
+11. experimento y grupos cuando aplique;
+12. promoción o beneficio relacionado cuando aplique;
+13. reglas y versiones externas que deben materializar el efecto;
+14. guardas económicas;
+15. guardas de disponibilidad, stock y capacidad;
+16. condiciones legales, reputacionales, de consentimiento y canal;
+17. responsables y aprobaciones;
+18. criterios de inicio, pausa, cancelación y cierre;
+19. correlaciones con publicaciones, reglas, redenciones, ventas y resultados;
+20. evidencia suficiente para reconstruir qué se autorizó y bajo qué condiciones.
+
+La campaña no copia maestros de otros dominios. Conserva referencias versionadas y resultados de evaluación.
+
+---
+
+#### 4. Fronteras conceptuales obligatorias
+
+Se preservan las siguientes diferencias:
+
+```text
+IDEA
+!=
+CAMPANA
+!=
+EXPERIMENTO
+!=
+PIEZA
+!=
+PUBLICACION
+```
+
+```text
+PROMOCION
+!=
+CUPON
+!=
+BENEFICIO PASS
+!=
+REGLA TRANSACCIONAL
+```
+
+```text
+VISIBLE
+!=
+ELEGIBLE
+!=
+APLICABLE
+!=
+APLICADO
+```
+
+```text
+HIPOTESIS
+!=
+RESULTADO OBSERVADO
+!=
+CAUSALIDAD DEMOSTRADA
+```
+
+```text
+PRESUPUESTO REFERENCIADO
+!=
+GASTO AUTORIZADO
+!=
+GASTO REAL
+```
+
+```text
+STOCK OBSERVADO
+!=
+STOCK RESERVADO
+!=
+DISPONIBILIDAD GARANTIZADA
+```
+
+```text
+CAPACIDAD OBSERVADA
+!=
+CAPACIDAD COMPROMETIDA
+```
+
+```text
+PAUSAR CAMPANA
+!=
+REVERTIR VENTAS O REDENCIONES YA OCURRIDAS
+```
+
+Estas separaciones permanecen obligatorias aunque una herramienta externa las presente juntas.
+
+---
+
+#### 5. Propiedad empresarial
+
+La propiedad queda distribuida así:
+
+| Materia | Propietaria o autoridad | Frontera obligatoria |
+| --- | --- | --- |
+| intención, campaña, hipótesis, experimento y correlación de marketing | `AURA` | no aplica descuentos, no redime beneficios y no modifica maestros económicos u operativos |
+| beneficio, recompensa, reglas de fidelización, elegibilidad y ledger | `PASS` | AURA puede referenciar; no crea ni muta la fidelización |
+| pedido, venta, condiciones comerciales, validación y efecto aplicado | `PULSO` | la campaña no sustituye validación transaccional |
+| presupuesto, costo, margen, rentabilidad y resultado económico | `NUMERA` | AURA referencia decisiones y resultados; no los fabrica |
+| producto y atributos maestros | `NEXO` | AURA no duplica producto ni presentación |
+| existencia, disponibilidad y hechos de inventario | `NEXO` | una lectura no equivale a reserva ni garantía futura |
+| capacidad productiva y restricciones de producción | `FOGO` | AURA no compromete producción por inferencia |
+| publicación externa y estado técnico del canal | canal y contrato de `AURA-DOM-005` | publicar no ejecuta una promoción transaccional |
+| consentimiento y preferencias de cliente | `PASS` o fuente propietaria aplicable | la audiencia no fabrica consentimiento |
+| atribución, confianza, incrementalidad y aprendizaje cuantitativo | `AURA-DOM-008` | esta tarea conserva diseño experimental y correlaciones, no declara causalidad final |
+
+Ninguna fila autoriza escritura cruzada.
+
+---
+
+#### 6. Relación con AURA-DOM-002
+
+`AURA-DOM-002` define el sobre de planificación.
+
+`AURA-DOM-006` consume ese sobre y agrega el contrato de ejecución gobernada.
+
+Se conserva:
+
+```text
+AURA-DOM-002
+-> objetivo
+-> hipotesis
+-> audiencia
+-> brief
+-> calendario
+-> presupuesto referenciado
+-> dependencias
+-> ciclo documental
+```
+
+```text
+AURA-DOM-006
+-> experimento
+-> variantes y control
+-> promocion
+-> cupon
+-> guardas economicas
+-> guardas operativas
+-> reglas de activacion y pausa
+-> correlacion con ejecucion transaccional
+```
+
+Una campaña no podrá entrar a ejecución si su versión de planificación ya no coincide con la versión que fue aprobada.
+
+---
+
+#### 7. Identidad de campaña
+
+Cada campaña deberá conservar identidad estable y versión.
+
+Como mínimo deberá poder reconstruirse:
+
+- campaña de origen;
+- versión vigente;
+- iniciativa o brief aprobado del que proviene;
+- marca;
+- objetivo;
+- hipótesis;
+- audiencia;
+- oferta o propuesta;
+- responsables;
+- periodo;
+- presupuesto referenciado;
+- experimentos relacionados;
+- promociones relacionadas;
+- publicaciones relacionadas;
+- estado de sus guardas;
+- decisión de inicio, pausa, cancelación o cierre.
+
+Una nueva versión material no sobrescribe la anterior.
+
+---
+
+#### 8. Campaña y mecanismo ejecutable
+
+La campaña se considera preparada para ejecución únicamente cuando pueda demostrarse que las dependencias materiales de la versión aprobada están satisfechas.
+
+La preparación deberá distinguir al menos:
+
+```text
+PLAN APROBADO
++
+CONTENIDO APROBADO
++
+TARGETS PUBLICABLES
++
+REGLAS PROMOCIONALES MATERIALIZABLES CUANDO APLIQUEN
++
+GUARDAS ECONOMICAS RESUELTAS
++
+GUARDAS OPERATIVAS RESUELTAS
++
+AUTORIZACION APLICABLE
+=
+CAMPANA ELEGIBLE PARA INICIAR
+```
+
+La igualdad anterior es conceptual. No crea un estado físico ni un namespace técnico nuevo.
+
+---
+
+#### 9. Hipótesis experimental
+
+Cuando una campaña incluya experimento deberá conservar una hipótesis explícita.
+
+La hipótesis deberá expresar:
+
+```text
+SI se aplica una variante o tratamiento aprobado
+A una unidad de asignacion definida
+Bajo condiciones y guardas conocidas
+ENTONCES se espera un cambio observable
+```
+
+La hipótesis:
+
+- no se trata como hecho;
+- no se convierte en causalidad por mera correlación;
+- conserva supuestos materiales;
+- distingue resultado esperado de observado;
+- puede quedar invalidada o no concluyente;
+- no autoriza por sí sola contacto, gasto, descuento, redención ni publicación.
+
+La evaluación estadística, confianza e incrementalidad pertenecen a `AURA-DOM-008`.
+
+---
+
+#### 10. Identidad de experimento
+
+Un experimento es un objeto distinto de la campaña.
+
+Una campaña puede:
+
+- no tener experimento;
+- tener un experimento;
+- tener varios experimentos secuenciales o separados cuando no se contaminen entre sí.
+
+Cada experimento deberá conservar, cuando aplique:
+
+- identidad estable;
+- campaña y versión de origen;
+- hipótesis;
+- unidad de asignación;
+- población o universo elegible;
+- exclusiones;
+- tratamiento o variantes;
+- control o comparación;
+- ventana temporal;
+- condiciones de entrada;
+- guardas de seguridad;
+- criterio de pausa o detención;
+- referencias de medición que después resolverá `AURA-DOM-008`;
+- responsable y aprobaciones.
+
+---
+
+#### 11. Unidad de asignación
+
+Todo experimento deberá declarar la unidad sobre la que se asigna una variante.
+
+La unidad podrá corresponder, según el contrato futuro y la finalidad autorizada, a una referencia de:
+
+- persona o cuenta;
+- pedido o transacción;
+- sede;
+- canal;
+- publicación;
+- periodo o ventana temporal;
+- otra unidad explícitamente aprobada.
+
+AURA no crea la identidad maestra de esa unidad.
+
+Si la unidad depende de cliente o consentimiento, la fuente propietaria deberá resolverlos. Si depende de pedido o venta, PULSO conserva la autoridad del hecho transaccional.
+
+---
+
+#### 12. Tratamiento, variante y control
+
+Se conserva:
+
+```text
+VARIANTE CREATIVA
+!=
+PROMOCION
+!=
+REGLA DE PRECIO
+```
+
+El tratamiento puede variar, cuando esté autorizado:
+
+- contenido;
+- creatividad;
+- mensaje;
+- canal;
+- horario;
+- oferta comunicada;
+- incentivo o promoción referenciada;
+- secuencia de exposición.
+
+El grupo de control o comparación deberá tener definición explícita.
+
+No se considerará control válido simplemente a quienes no recibieron una publicación por error técnico, falta de permiso, dato ausente o fallo del proveedor.
+
+---
+
+#### 13. Exclusiones y contaminación experimental
+
+El diseño deberá prevenir que una misma unidad quede sometida a variantes incompatibles cuando eso impida interpretar el resultado o produzca un efecto comercial incorrecto.
+
+Deberán quedar explícitos, cuando apliquen:
+
+- exclusiones entre experimentos simultáneos;
+- incompatibilidades entre promociones;
+- reglas de solapamiento;
+- exposición previa relevante;
+- campañas que comparten audiencia;
+- restricciones por marca, sede o canal;
+- condiciones que obligan a sacar una unidad del experimento.
+
+No se inventa una política universal de exclusión; cada experimento deberá declarar la que corresponda.
+
+---
+
+#### 14. Experimentos y comunicaciones obligatorias
+
+Un experimento no podrá usar como control la omisión de una comunicación que sea obligatoria por operación, seguridad, cumplimiento, servicio o compromiso contractual.
+
+Por tanto:
+
+```text
+EXPERIMENTO DE MARKETING
+!=
+AUTORIZACION PARA RETENER COMUNICACION OBLIGATORIA
+```
+
+Las comunicaciones transaccionales u operativas conservan sus procesos y finalidades propias.
+
+---
+
+#### 15. Detención experimental
+
+Una prueba podrá pausarse o detenerse ante evidencia suficiente de riesgo o inviabilidad.
+
+Las condiciones de detención deberán poder incluir, según el caso:
+
+- daño económico;
+- agotamiento o indisponibilidad material;
+- saturación de capacidad;
+- error de precio o regla;
+- afectación reputacional;
+- incumplimiento de consentimiento o finalidad;
+- falla de canal;
+- conflicto de reglas;
+- señal de fraude o abuso;
+- decisión humana autorizada;
+- imposibilidad de medir de forma confiable el experimento.
+
+Pausar no borra asignaciones ni evidencia histórica.
+
+---
+
+#### 16. Promoción
+
+Una promoción es una intención comercial gobernada que propone condiciones bajo las cuales podría existir un efecto sobre una operación o un beneficio.
+
+Una promoción deberá conservar, cuando aplique:
+
+- identidad estable;
+- campaña de origen cuando exista;
+- versión;
+- objetivo;
+- oferta;
+- producto, categoría o beneficio referenciados;
+- público o alcance;
+- sede, canal o modalidad aplicables;
+- vigencia;
+- límites;
+- exclusiones;
+- compatibilidades o reglas de acumulación;
+- referencia de presupuesto y guarda económica;
+- referencias de disponibilidad y capacidad;
+- regla propietaria que deberá materializar el efecto;
+- autoridad de aprobación;
+- correlación con publicaciones;
+- criterio de retiro o pausa.
+
+La promoción no contiene por sí sola autoridad transaccional.
+
+---
+
+#### 17. Intención promocional y regla transaccional
+
+La separación obligatoria es:
+
+```text
+AURA
+-> INTENCION PROMOCIONAL
+```
+
+```text
+PULSO / PASS
+-> REGLA EJECUTABLE SEGUN EL DOMINIO
+```
+
+```text
+PULSO
+-> VALIDACION Y EFECTO EN PEDIDO O VENTA
+```
+
+```text
+NUMERA
+-> GUARDA Y RESULTADO ECONOMICO
+```
+
+AURA no transforma una pieza, un copy, un código visible ni una campaña en una regla aplicable en caja.
+
+---
+
+#### 18. Cupón
+
+Un cupón es un instrumento o referencia que permite identificar una regla o beneficio potencialmente aplicable bajo condiciones explícitas.
+
+Se conserva:
+
+```text
+CODIGO DE CUPON
+!=
+AUTORIZACION DE DESCUENTO
+```
+
+```text
+CUPON EMITIDO
+!=
+CUPON ELEGIBLE
+!=
+CUPON REDIMIDO
+!=
+EFECTO COMERCIAL APLICADO
+```
+
+El contrato de cupón deberá poder resolver, cuando aplique:
+
+- promoción o beneficio de origen;
+- regla y versión propietarias;
+- vigencia;
+- alcance de marca, sede, canal o modalidad;
+- límites globales o por sujeto cuando existan;
+- exclusiones;
+- compatibilidad con otras reglas;
+- si es reutilizable o de uso limitado;
+- si requiere identidad o consentimiento;
+- autoridad que valida la redención;
+- correlación con el efecto comercial.
+
+AURA no genera aquí códigos reales ni define su almacenamiento físico.
+
+---
+
+#### 19. Cupón público e individualizado
+
+El dominio deberá distinguir entre un instrumento de difusión general y uno asociado a una identidad o elegibilidad particular.
+
+Un cupón individualizado no autoriza a AURA a mantener un maestro paralelo de cliente.
+
+Cuando requiera identidad, la correlación deberá resolverse con la fuente propietaria correspondiente y conservar finalidad y consentimiento aplicables.
+
+Una captura de pantalla, texto copiado o código compartido no amplía la elegibilidad definida por la regla.
+
+---
+
+#### 20. Frontera con PASS
+
+PASS conserva:
+
+- identidad del cliente;
+- consentimiento y preferencias;
+- beneficio;
+- recompensa;
+- regla de fidelización;
+- elegibilidad propia del programa;
+- redención;
+- ledger;
+- reversión de fidelización.
+
+AURA conserva únicamente la intención de marketing y la correlación de campaña.
+
+Se preserva:
+
+```text
+CAMPAÑA AURA
+!=
+BENEFICIO PASS
+```
+
+Un beneficio puede existir sin campaña. Un beneficio por campaña continúa siendo un beneficio gobernado por PASS.
+
+---
+
+#### 21. Frontera con PULSO
+
+PULSO conserva:
+
+- pedido;
+- venta;
+- línea;
+- precio aplicado;
+- condición comercial;
+- validación de aplicabilidad;
+- descuento o efecto efectivamente aplicado;
+- snapshot de la transacción;
+- reversas comerciales correspondientes.
+
+La secuencia conceptual permanece:
+
+```text
+AURA
+-> INTENCION Y CORRELACION
+
+PASS / FUENTE PROPIETARIA
+-> BENEFICIO O REGLA CUANDO APLIQUE
+
+PULSO
+-> VALIDACION EN CONTEXTO
+-> EFECTO APLICADO
+```
+
+Una promoción válida documentalmente puede resultar no aplicable a una transacción concreta.
+
+---
+
+#### 22. Frontera con NUMERA
+
+NUMERA conserva la verdad económica.
+
+Las guardas económicas de una campaña o promoción deberán consumir una decisión, regla, escenario o parámetro autorizado proveniente de NUMERA o de la autoridad económica que el contrato canónico designe.
+
+AURA podrá conservar:
+
+- referencia a presupuesto;
+- referencia a método o escenario;
+- límite autorizado;
+- resultado de la evaluación;
+- versión y vigencia;
+- fecha de lectura;
+- causa de bloqueo cuando corresponda.
+
+AURA no recalcula silenciosamente el margen con fórmulas propias para otorgarse autorización.
+
+---
+
+#### 23. Guardas económicas
+
+Una campaña o promoción deberá poder bloquear inicio, continuidad o ampliación cuando una guarda económica material no esté satisfecha.
+
+Las guardas podrán cubrir, según corresponda:
+
+- presupuesto disponible;
+- límite de gasto;
+- margen mínimo autorizado;
+- exposición máxima a descuento o beneficio;
+- costo esperado;
+- pérdida máxima tolerada;
+- rentabilidad o umbral económico;
+- condición de financiación o subsidio;
+- tope de redenciones o unidades financiadas.
+
+Los valores concretos no se inventan en AURA-DOM-006. Deben provenir de una decisión económica autorizada y versionada.
+
+---
+
+#### 24. Evaluación económica
+
+Toda evaluación económica material deberá poder reconstruir:
+
+- fuente;
+- método o regla aplicable;
+- versión;
+- fecha de evaluación;
+- vigencia o frescura;
+- campaña o promoción evaluada;
+- resultado;
+- responsable o autoridad;
+- motivo cuando bloquea.
+
+Un dato económico ausente, vencido, conflictivo o técnicamente inaccesible no se convierte en `PASS` por defecto.
+
+---
+
+#### 25. Guardas de disponibilidad e inventario
+
+Cuando una campaña prometa producto, cantidad, disponibilidad o condición ligada a inventario, deberá consumir hechos autorizados de NEXO.
+
+Se conserva:
+
+```text
+LECTURA DE INVENTARIO
+!=
+RESERVA
+!=
+PROMESA FUTURA
+```
+
+La campaña deberá poder detenerse o limitarse cuando:
+
+- el producto deje de ser elegible;
+- la disponibilidad caiga por debajo del umbral autorizado;
+- exista inconsistencia de inventario relevante;
+- la fuente esté desactualizada;
+- la sede o canal ya no pueda cumplir la promesa.
+
+AURA no ajusta inventario ni reserva stock por sí sola.
+
+---
+
+#### 26. Guardas de capacidad productiva
+
+Cuando una campaña pueda aumentar demanda sobre producción, preparación o servicio, deberá consumir hechos o decisiones de capacidad desde FOGO y las fuentes operativas aplicables.
+
+Se conserva:
+
+```text
+CAPACIDAD OBSERVADA
+!=
+CAPACIDAD COMPROMETIDA
+```
+
+La campaña no podrá asumir capacidad ilimitada porque una pieza esté aprobada o porque exista presupuesto disponible.
+
+---
+
+#### 27. Guardas de sede, canal y modalidad
+
+La viabilidad deberá respetar las condiciones particulares del contexto.
+
+Una promoción válida para:
+
+- una sede;
+- un canal;
+- una modalidad;
+- una ventana horaria;
+- un producto;
+- un tipo de cliente;
+
+no se extiende automáticamente al resto.
+
+Una campaña multicanal no elimina restricciones particulares de cada regla, beneficio o endpoint.
+
+---
+
+#### 28. Frescura de guardas
+
+Toda guarda cuyo hecho pueda cambiar con el tiempo deberá declarar una política de frescura o condición de revalidación.
+
+La lectura deberá poder distinguir:
+
+```text
+DATO VIGENTE
+DATO VENCIDO
+DATO AUSENTE
+DATO CONFLICTIVO
+FALLO TECNICO
+```
+
+Ninguno de los cuatro últimos estados se interpreta silenciosamente como guarda satisfecha.
+
+Los nombres anteriores son categorías conceptuales y no crean estados físicos obligatorios.
+
+---
+
+#### 29. Inicio de campaña
+
+Antes de iniciar una campaña deberán estar resueltas las dependencias materiales aplicables.
+
+Como mínimo, cuando correspondan:
+
+- versión de campaña aprobada;
+- marca y claims vigentes;
+- audiencia y exclusiones válidas;
+- contenido aprobado;
+- derechos y activos vigentes;
+- targets publicables;
+- consentimiento o finalidad aplicables;
+- regla promocional materializable;
+- beneficio PASS referenciado correctamente;
+- validación económica disponible;
+- disponibilidad suficiente;
+- capacidad suficiente;
+- autorizaciones requeridas;
+- ausencia de bloqueo legal, reputacional u operativo conocido.
+
+La falta de una condición material bloquea el inicio de esa versión.
+
+---
+
+#### 30. Cambios materiales durante ejecución
+
+Se consideran materiales, cuando afecten la decisión aprobada:
+
+- objetivo;
+- hipótesis;
+- audiencia;
+- oferta;
+- producto o beneficio;
+- promoción o cupón;
+- regla o versión transaccional;
+- presupuesto;
+- margen o guarda económica;
+- periodo;
+- canal;
+- sede;
+- tratamiento experimental;
+- asignación o grupo de control;
+- límite de redención;
+- restricción de disponibilidad o capacidad.
+
+Un cambio material obliga a revalidar las guardas y las aprobaciones afectadas antes de continuar.
+
+---
+
+#### 31. Pausa de campaña
+
+Pausar una campaña significa detener nuevos efectos de marketing bajo su control hasta que exista una decisión de reanudación o cierre.
+
+La pausa deberá conservar:
+
+- motivo;
+- actor o decisión que la origina;
+- momento efectivo;
+- componentes afectados;
+- publicaciones que requieren retiro o suspensión;
+- promociones o reglas que deben quedar no utilizables prospectivamente cuando corresponda;
+- experimentos afectados;
+- guardas que fallaron;
+- condición necesaria para reanudar.
+
+Pausa no borra historia ni revierte automáticamente efectos ya consumados.
+
+---
+
+#### 32. Cancelación y cierre
+
+La cancelación interrumpe una iniciativa antes de completar su objetivo previsto.
+
+El cierre termina el ciclo gobernado de una campaña y conserva su resultado.
+
+En ambos casos deberán preservarse:
+
+- motivo;
+- versión final;
+- publicaciones relacionadas;
+- reglas o beneficios relacionados;
+- efectos ya ocurridos;
+- pendientes de retiro o reconciliación;
+- aprendizajes y resultado, incluso cuando sean no concluyentes;
+- referencias necesarias para `AURA-DOM-008`.
+
+Cerrar una campaña no elimina piezas, publicaciones, ventas, redenciones ni evidencia histórica.
+
+---
+
+#### 33. Retiro de promoción y cupón
+
+Retirar una promoción o cupón significa impedir nuevos usos conforme al contrato de la regla propietaria.
+
+Se conserva:
+
+```text
+RETIRO PROSPECTIVO
+!=
+REVERSA DE EFECTO HISTORICO
+```
+
+Los efectos ya aplicados solo podrán revertirse mediante los procesos propietarios correspondientes.
+
+AURA puede solicitar o correlacionar el retiro; no edita retrospectivamente ventas ni ledgers.
+
+---
+
+#### 34. Reversas y compensaciones
+
+Las reversas permanecen distribuidas por dominio.
+
+- PULSO gobierna reversas comerciales de pedido o venta conforme a sus contratos;
+- PASS gobierna reversas de fidelización;
+- NUMERA conserva el efecto económico resultante;
+- AURA conserva la correlación con campaña y promoción.
+
+Una cancelación de campaña no constituye por sí sola una orden de devolución, reembolso, compensación o reversión de puntos.
+
+---
+
+#### 35. Solapamiento de promociones
+
+Dos promociones simultáneas no se acumulan por defecto.
+
+Cada regla deberá declarar o referenciar la política aplicable de compatibilidad.
+
+La evaluación deberá poder distinguir:
+
+- compatibles;
+- mutuamente excluyentes;
+- priorizadas;
+- condicionadas;
+- no evaluables por falta de información.
+
+AURA no resuelve un conflicto transaccional inventando una prioridad. PULSO y PASS aplican las reglas autorizadas de sus dominios.
+
+---
+
+#### 36. Límites de uso y exposición
+
+Las promociones y cupones deberán poder conservar límites cuando estos formen parte de la regla autorizada.
+
+Entre otros:
+
+- límite total;
+- límite por cliente o cuenta;
+- límite por transacción;
+- límite por sede;
+- límite por canal;
+- límite por periodo;
+- límite presupuestal;
+- límite de unidades o redenciones.
+
+AURA conserva la intención y el límite referenciado. La aplicación y conteo efectivo pertenecen al sistema propietario de la regla o transacción.
+
+---
+
+#### 37. Audiencia, consentimiento y contacto
+
+Definir una audiencia o un grupo experimental no autoriza todavía contacto real.
+
+Se conserva:
+
+```text
+AUDIENCIA AURA
+!=
+IDENTIDAD PASS
+!=
+CONSENTIMIENTO
+!=
+CONTACTO AUTORIZADO
+```
+
+Antes de cualquier acción masiva o personalizada deberán satisfacerse las autorizaciones y finalidades del dominio propietario.
+
+La protección de segmentos, clientes, exportaciones y acciones masivas permanece en `AURA-AUTH-003`.
+
+---
+
+#### 38. Relación con AURA-DOM-005
+
+`AURA-DOM-005` gobierna cómo una versión aprobada se publica y reconcilia por canal.
+
+`AURA-DOM-006` gobierna por qué, bajo qué experimento, promoción, cupón y guardas esa publicación forma parte de una campaña.
+
+Se conserva:
+
+```text
+PUBLICACION CONFIRMADA
+!=
+PROMOCION APLICADA
+```
+
+```text
+PROMOCION APLICADA
+!=
+VENTA ATRIBUIDA
+```
+
+Un fallo de publicación se resuelve por el contrato de `AURA-DOM-005`; no autoriza modificar una regla promocional.
+
+---
+
+#### 39. Relación con VPROC-0056
+
+`VPROC-0056` permanece como proceso canónico del contenido y promociones asociado a AURA.
+
+Se conservan sus estados canónicos de solicitud, revisión, creación, aprobación, programación, publicación y evaluación.
+
+`AURA-DOM-006` no crea un proceso paralelo de contenido.
+
+Una campaña puede coordinar múltiples instancias de contenido, pero no sustituye ninguna de ellas.
+
+---
+
+#### 40. Frontera con autorización
+
+La definición de esta tarea no concede permisos.
+
+`AURA-AUTH-001` y `AURA-AUTH-002` conservarán segregación de funciones sobre campañas, contenido y publicación.
+
+`AURA-AUTH-003` conservará protección sobre:
+
+- promociones;
+- segmentos;
+- datos de clientes;
+- exportaciones;
+- acciones masivas;
+- leads cuando corresponda.
+
+La existencia de una campaña aprobada no concede automáticamente autoridad para crear reglas, ejecutar descuentos o contactar audiencias.
+
+---
+
+#### 41. Frontera con integración
+
+`AURA-INT-002` deberá materializar los contratos autorizados de lectura o eventos entre AURA y NEXO, PULSO, PASS, NUMERA, VISO y FOGO.
+
+Esta tarea define qué necesita consumir, no la forma técnica del contrato.
+
+No se definen aquí:
+
+- nombres de tablas;
+- RPC;
+- endpoints;
+- eventos físicos;
+- topics;
+- colas;
+- payloads definitivos;
+- webhooks;
+- credenciales;
+- políticas de retry.
+
+---
+
+#### 42. Frontera con AURA-DOM-008
+
+`AURA-DOM-006` define:
+
+- hipótesis;
+- diseño experimental;
+- variantes;
+- control cuando aplique;
+- asignación;
+- guardas;
+- correlaciones necesarias.
+
+`AURA-DOM-008` definirá:
+
+- métricas gobernadas;
+- atribución;
+- confianza;
+- incrementalidad;
+- comparación contra objetivo;
+- aprendizaje cuantitativo;
+- cierre analítico de campaña.
+
+Por tanto:
+
+```text
+EXPERIMENTO EJECUTADO
+!=
+INCREMENTALIDAD DEMOSTRADA
+```
+
+---
+
+#### 43. Frontera con AURA-DOM-007
+
+`AURA-DOM-006` no convierte respuestas, formularios, mensajes o interacciones en leads, oportunidades, propuestas ni pedidos.
+
+`AURA-DOM-007` conservará:
+
+- oportunidad;
+- lead;
+- pipeline B2B;
+- catering;
+- eventos comerciales;
+- transferencia explícita a operación.
+
+Una campaña puede originar una interacción correlacionable, pero no crea un pedido ni un cliente por inferencia.
+
+---
+
+#### 44. Evidencia y auditoría
+
+Cada decisión material deberá conservar evidencia suficiente para reconstruir:
+
+- campaña y versión;
+- experimento y variante cuando aplique;
+- promoción o cupón;
+- reglas propietarias referenciadas;
+- evaluaciones económicas;
+- evaluaciones de disponibilidad y capacidad;
+- fuentes y frescura;
+- aprobaciones;
+- cambios materiales;
+- decisión de inicio, pausa o cierre;
+- publicaciones relacionadas;
+- efectos comerciales y redenciones correlacionados cuando existan;
+- divergencias o fallos detectados.
+
+La evidencia no convierte a AURA en propietaria de los hechos correlacionados.
+
+---
+
+#### 45. Falla de una guarda
+
+Cuando una guarda material falle, la respuesta deberá ser proporcional al alcance de la guarda.
+
+Podrá implicar:
+
+- bloquear inicio;
+- pausar una promoción;
+- retirar un target de publicación;
+- limitar una sede o canal;
+- detener un experimento;
+- solicitar nueva aprobación;
+- cerrar la campaña.
+
+La acción concreta dependerá de la regla y autoridad aplicables.
+
+No se permite continuar silenciosamente con el último valor conocido si dejó de ser válido.
+
+---
+
+#### 46. Guarda no verificable
+
+Una guarda no verificable no equivale a una guarda satisfecha.
+
+Se conserva:
+
+```text
+NO VERIFICABLE
+!=
+CUMPLE
+```
+
+La campaña podrá conservar estado documental y evidencia mientras espera resolución, pero no deberá materializar un efecto cuya seguridad o viabilidad dependa de una condición no demostrada.
+
+---
+
+#### 47. Modo degradado
+
+Un modo degradado solo podrá conservar acciones que no dependan de la guarda perdida.
+
+Ejemplo conceptual:
+
+```text
+NO HAY FUENTE CONFIABLE DE STOCK
+-> PUEDE CONTINUAR CONTENIDO INSTITUCIONAL NO LIGADO A DISPONIBILIDAD
+-> SE BLOQUEA PROMESA DE DISPONIBILIDAD O PROMOCION DEPENDIENTE DE STOCK
+```
+
+La degradación nunca amplía autoridad.
+
+---
+
+#### 48. Coherencia histórica
+
+Cambios posteriores no reescriben la campaña histórica.
+
+Debe preservarse la versión de:
+
+- campaña;
+- contenido;
+- promoción;
+- cupón;
+- regla;
+- beneficio;
+- guarda económica;
+- disponibilidad o capacidad observadas;
+- aprobación;
+- resultado aplicado.
+
+La trazabilidad deberá permitir explicar una venta o redención histórica aun cuando la campaña actual ya haya cambiado o cerrado.
+
+---
+
+#### 49. Decisiones fijadas
+
+Quedan fijadas las siguientes decisiones:
+
+1. campaña, experimento, promoción, cupón, beneficio, regla, redención y venta son objetos distintos;
+2. AURA gobierna intención, campaña, hipótesis, experimento y correlación;
+3. PASS conserva beneficio, fidelización, elegibilidad propia, redención y ledger;
+4. PULSO conserva validación y efecto comercial en pedido o venta;
+5. NUMERA conserva presupuesto, margen, costo, rentabilidad y resultado económico;
+6. NEXO conserva producto, inventario y disponibilidad física;
+7. FOGO conserva capacidad productiva;
+8. `AURA-DOM-002` conserva planificación y `AURA-DOM-006` agrega ejecución gobernada;
+9. una campaña no es una instancia de `VPROC-0056`;
+10. un experimento es distinto de la campaña;
+11. la unidad de asignación debe quedar explícita;
+12. control no significa ausencia accidental de exposición;
+13. experimentos no omiten comunicaciones obligatorias;
+14. las pruebas pueden detenerse por daño económico, operacional, reputacional o de cumplimiento;
+15. una promoción no ejecuta por sí sola un descuento;
+16. un código de cupón no concede autoridad comercial;
+17. un beneficio por campaña continúa bajo PASS;
+18. PULSO debe validar aplicabilidad en la transacción;
+19. las guardas económicas consumen autoridad de NUMERA;
+20. las guardas de disponibilidad consumen hechos de NEXO;
+21. las guardas de capacidad consumen hechos de FOGO;
+22. dato ausente, vencido, conflictivo o fallo técnico no equivalen a guarda satisfecha;
+23. una campaña no inicia con una dependencia material no resuelta;
+24. cambios materiales obligan a revalidación proporcional;
+25. pausa no borra evidencia ni revierte efectos históricos;
+26. retiro prospectivo no equivale a reversa histórica;
+27. promociones simultáneas no se acumulan por defecto;
+28. audiencia no equivale a consentimiento ni contacto autorizado;
+29. `AURA-DOM-005` conserva publicación por canal;
+30. `AURA-DOM-008` conserva atribución, confianza e incrementalidad;
+31. `AURA-DOM-007` conserva oportunidades y transferencia comercial;
+32. autorización detallada permanece en `AURA-AUTH-*`;
+33. integración física permanece en `AURA-INT-002` y tareas propietarias;
+34. se crean y modifican cero requisitos de prueba;
+35. no se crea ninguna instancia física;
+36. la continuidad queda reservada exclusivamente a `AURA-DOM-007`.
+
+---
+
+#### 50. Handoff obligatorio a AURA-DOM-007
+
+La siguiente tarea deberá recibir como entrada, cuando exista relación comercial:
+
+- campaña y versión de origen;
+- canal o publicación que originó la interacción;
+- promoción o cupón relacionado cuando exista;
+- audiencia o contexto comercial aplicable sin copiar identidades maestras;
+- referencia de consentimiento o finalidad cuando sea necesaria;
+- origen trazable;
+- información suficiente para correlación comercial;
+- regla explícita de que interacción, lead, cliente, oportunidad, propuesta y pedido permanecen objetos distintos.
+
+`AURA-DOM-007` definirá oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación. No deberá redefinir campaña, promoción, cupón ni guardas de ejecución ya fijados aquí.
+
+---
+
+#### 51. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: las obligaciones de campaña, promoción, guardas económicas y operativas, ejecución transaccional, fidelización e integración ya están cubiertas por requisitos vigentes. Esta tarea materializa el contrato documental previsto por esas filas sin ampliar su alcance.
+
+---
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación:
+
+- `TREQ-AURA-003`, para campañas, promociones, presupuestos, guardas, fronteras PULSO/PASS/NUMERA y resultado;
+- `TREQ-AURA-001`, para separación entre campaña, contenido, publicación, promoción y estados gobernados;
+- `TREQ-PULSO-005` y `TREQ-PULSO-006`, para pedido, venta, descuentos, acciones sensibles, idempotencia, conciliación y preservación histórica;
+- `TREQ-PASS-010` y `TREQ-PASS-011`, para identidad, consentimiento, fidelización, beneficios, redenciones y resultados distintos;
+- `TREQ-NUMERA-004`, para presupuesto, margen, escenarios y rentabilidad con fuente y versión;
+- `TREQ-INTEGRATION-019`, para contratos AURA con NEXO, PULSO, PASS, NUMERA, VISO y FOGO, cupones, idempotencia y conciliación.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación del registro.
+
+---
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó `docs:plan:build` contra el checkout del usuario desde esta entrega |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni validado con los scripts del checkout del usuario |
+| REMOTA | PASS | se verificaron protocolo, contrato de entrega, manifest, continuidad, topología, archivo propietario, `CAP-SCOPE-014`, `H-CAP-SCOPE-014-016/017`, `INT-MKT-002`, `INT-MKT-003`, 04A aplicable, `package.json` y validadores vigentes |
+| OPERATIVA | NOT_APPLICABLE | esta tarea define contratos; no crea campañas, promociones, cupones, contactos, ventas, redenciones, presupuestos ni reservas reales |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no existe instancia física propia ni autorización de implementación |
+
+---
+
+#### 54. Criterios de aceptación
+
+La tarea queda sustantivamente completa cuando se cumple simultáneamente:
+
+1. campaña, experimento, promoción, cupón, beneficio, regla, redención y venta permanecen separados;
+2. la campaña consume sin redefinir el sobre de planificación de `AURA-DOM-002`;
+3. cada campaña conserva versión y trazabilidad de sus dependencias;
+4. una campaña no se declara ejecutable por tener únicamente título, fechas y piezas;
+5. el experimento conserva hipótesis, unidad de asignación, variantes, control cuando aplique y guardas;
+6. control no se confunde con falta accidental de exposición;
+7. experimentos no retienen comunicaciones obligatorias;
+8. promociones conservan condiciones, vigencia, límites, exclusiones y regla propietaria;
+9. un cupón visible o conocido no equivale a descuento autorizado;
+10. PASS conserva beneficios, reglas de fidelización, elegibilidad y ledger;
+11. PULSO conserva validación y efecto aplicado en la transacción;
+12. NUMERA conserva presupuesto, margen, costo y resultado económico;
+13. NEXO conserva disponibilidad e inventario;
+14. FOGO conserva capacidad productiva;
+15. una guarda material ausente, vencida, conflictiva o no verificable no se considera satisfecha;
+16. inicio, pausa, cancelación y cierre conservan decisión y evidencia;
+17. cambios materiales revalidan las guardas afectadas;
+18. pausa o cierre no reescriben ventas, redenciones ni evidencia histórica;
+19. retiro prospectivo no se confunde con reversa;
+20. promociones concurrentes requieren política de compatibilidad y no se acumulan por defecto;
+21. audiencia no equivale a consentimiento ni contacto autorizado;
+22. publicación permanece gobernada por `AURA-DOM-005`;
+23. métricas, atribución, confianza e incrementalidad permanecen en `AURA-DOM-008`;
+24. oportunidades, leads y transferencia a operación permanecen en `AURA-DOM-007`;
+25. autorización e integración permanecen en sus tareas propietarias;
+26. se crean y modifican cero requisitos de prueba;
+27. no se crea ninguna instancia física;
+28. la siguiente tarea reservada es exactamente `AURA-DOM-007`.
+
+---
+
+#### 55. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear campañas reales;
+- activar experimentos reales;
+- asignar clientes reales a grupos;
+- contactar audiencias;
+- exportar segmentos;
+- crear promociones reales;
+- generar cupones reales;
+- crear o modificar beneficios PASS;
+- crear o modificar reglas de fidelización;
+- aplicar descuentos;
+- cambiar precios;
+- crear pedidos o ventas;
+- redimir beneficios;
+- mover puntos;
+- reservar inventario;
+- bloquear stock;
+- comprometer capacidad de producción;
+- comprometer presupuesto;
+- recalcular o publicar márgenes;
+- crear tablas, migraciones, RLS, funciones, RPC, Storage, cron, colas o jobs;
+- crear contratos físicos de integración;
+- publicar contenido real;
+- cambiar cuentas o credenciales;
+- responder comentarios o reseñas;
+- definir métricas finales, atribución, confianza o incrementalidad de `AURA-DOM-008`;
+- definir oportunidades, pipeline B2B, catering o transferencia a operación de `AURA-DOM-007`;
+- crear permisos ni matrices de autorización;
+- modificar requisitos del registro 04A;
+- adelantar `AURA-DOM-007`.
+
+---
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-005 — Definir cuentas, medios, publicación, programación, reintentos, retiro y reconciliación por canal`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-006 — Definir campañas, experimentos, promociones, cupones y guardas económicas y operativas`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación`
 
 ### [ ] AURA-DOM-007 — Definir oportunidades, leads, pipeline B2B, catering, eventos y transferencia a operación
 
