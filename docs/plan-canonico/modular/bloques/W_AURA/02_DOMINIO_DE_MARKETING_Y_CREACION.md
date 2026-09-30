@@ -1353,7 +1353,757 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-DOM-003 — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido`
 
-### [ ] AURA-DOM-003 — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido
+### ✅ AURA-DOM-003 — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-DOM-002 — Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña
+**Tarea siguiente:** AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana
+**Tipo de tarea:** definición técnico-documental del contrato canónico de biblioteca de activos y contenido de AURA; fija identidad, propiedad, derechos, licencias, autorizaciones, original y derivados, versiones, vigencia, reutilización, revisión, aprobación, retiro y trazabilidad sin crear una instancia física propia ni migrar medios actuales
+**Bloque:** `BLOQUE W — AURA — dominio de marketing y creación`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean repositorios, tablas, migraciones, buckets, archivos, activos reales, cargas, transformaciones, canales, credenciales, integraciones, datos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-29
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico con el que AURA deberá gobernar fotografías, videos, diseños, audios, logos, plantillas, documentos y demás representaciones creativas que participen en comunicación y marketing, preservando de forma verificable identidad, propiedad, derechos, autorizaciones, original, derivados, versiones, vigencia, reutilización, revisión, aprobación y retiro.
+
+La tarea resuelve principalmente las brechas identificadas por `CAP-SCOPE-014`:
+
+- `H-CAP-SCOPE-014-007`, que exige impedir la confusión entre idea, campaña, pieza, publicación y promoción;
+- `H-CAP-SCOPE-014-008`, que identifica la ausencia de una biblioteca empresarial gobernada de fotografías, videos, diseños, plantillas, licencias y derechos de uso;
+- `H-CAP-SCOPE-014-009`, que identifica el riesgo de publicar contenido contra una versión vencida de marca, producto u oferta.
+
+La regla raíz es:
+
+```text
+ACTIVO CREATIVO
+!=
+PIEZA DE CONTENIDO
+!=
+PUBLICACION
+!=
+CAMPANA
+!=
+PROMOCION
+```
+
+Y además:
+
+```text
+ARCHIVO O URL
+!=
+ACTIVO GOBERNADO
+```
+
+Un archivo almacenado, una URL pública o un medio visible en una aplicación no se considerará por sí solo un activo reutilizable, aprobado ni vigente.
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-DOM-001`, para la memoria de marca, claims, restricciones, versiones y vigencias que deben gobernar cualquier uso creativo;
+- `AURA-DOM-002`, para objetivo, audiencia, brief, calendario, presupuesto y dependencias que pueden requerir activos o piezas;
+- `CAP-SCOPE-014`, especialmente `CAP-14.03 — Crear y aprobar contenido`, la biblioteca de activos y la fábrica de contenido;
+- `CAP-SCOPE-016`, para clasificación, propiedad funcional, custodia, versión, vigencia, conservación, evidencia y disposición de información y archivos;
+- `VPROC-0056`, como ciclo canónico del contenido desde solicitud y brief hasta creación, revisión, aprobación, publicación, revisión de rendimiento y cierre;
+- la auditoría AURA vigente, que confirma la existencia transitoria de superficies CMS y carga de media en VISO sin demostrar una biblioteca AURA completa;
+- `INT-MKT-001`, que conserva la separación entre diseño objetivo y capacidad operativa materializada;
+- el registro canónico de requisitos de prueba vigente.
+
+Esta tarea no transfiere ownership del CMS actual, no migra el bucket `website-media`, no convierte VISO en AURA y no crea una fuente maestra competidora.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá gobernar cada activo o pieza de contenido como una identidad estable y trazable, capaz de responder como mínimo:
+
+1. qué es;
+2. quién lo creó, aportó o entregó;
+3. quién es su propietario funcional;
+4. a qué marca o marcas puede asociarse;
+5. qué original lo origina;
+6. qué derivados existen;
+7. qué versión está vigente;
+8. qué derechos, licencia o autorización permiten usarlo;
+9. qué personas identificables aparecen y qué autorización aplica cuando corresponda;
+10. para qué finalidades puede utilizarse;
+11. en qué canales, formatos, territorios o contextos puede utilizarse cuando existan restricciones;
+12. desde cuándo y hasta cuándo puede utilizarse;
+13. con qué campaña, producto, sede o brief se relaciona cuando corresponda;
+14. qué estado de revisión y aprobación conserva;
+15. qué transformaciones se han realizado;
+16. qué reemplazo, retiro o vencimiento afecta su uso;
+17. qué evidencia respalda derechos, aprobación y trazabilidad;
+18. qué uso posterior depende todavía de validaciones de campaña, publicación o canal.
+
+La biblioteca deberá permitir localizar y reutilizar evidencia aprobada sin perder procedencia ni convertir la copia de un archivo en un nuevo original.
+
+---
+
+#### 4. Universo mínimo de activos
+
+El universo funcional mínimo reconocido por `CAP-SCOPE-014` incluye:
+
+- fotografías;
+- videos;
+- diseños;
+- audios;
+- logos;
+- plantillas;
+- documentos.
+
+La arquitectura deberá admitir otros tipos únicamente cuando el proceso propietario los registre de forma explícita; la existencia de una extensión de archivo no crea por inferencia una categoría empresarial nueva.
+
+Una pieza puede referenciar uno o varios activos. Un mismo activo puede participar en varias piezas únicamente cuando sus derechos, vigencia, marca, finalidad y usos permitidos lo permitan.
+
+---
+
+#### 5. Fronteras conceptuales obligatorias
+
+Se preserva:
+
+```text
+ACTIVO
+!=
+ARCHIVO / BLOB / URL
+```
+
+```text
+ACTIVO
+!=
+PIEZA
+```
+
+```text
+PIEZA
+!=
+PUBLICACION
+```
+
+```text
+ORIGINAL
+!=
+DERIVADO
+!=
+VARIANTE
+!=
+NUEVA VERSION MATERIAL
+```
+
+```text
+APROBACION DEL ACTIVO
+!=
+APROBACION DE LA PIEZA
+!=
+APROBACION DE PUBLICACION
+```
+
+```text
+DERECHO DE ALMACENAR
+!=
+DERECHO DE EDITAR
+!=
+DERECHO DE PUBLICAR
+!=
+DERECHO DE REUTILIZAR
+```
+
+```text
+VIGENTE EN BIBLIOTECA
+!=
+VALIDO PARA CUALQUIER CAMPANA O CANAL
+```
+
+```text
+RETIRADO
+!=
+BORRADO SIN TRAZABILIDAD
+```
+
+Estas diferencias deberán mantenerse en dominio, autorización, experiencia e integración.
+
+---
+
+#### 6. Identidad estable y procedencia
+
+Cada activo gobernado deberá conservar una identidad estable independiente de:
+
+- nombre de archivo;
+- ruta física;
+- URL pública o firmada;
+- nombre de carpeta;
+- slug de una página;
+- posición en una galería;
+- campaña en la que se use;
+- aplicación desde la cual se consulte.
+
+La procedencia deberá permitir distinguir como mínimo:
+
+- creación interna;
+- entrega por tercero;
+- material recibido de proveedor;
+- material importado desde una superficie transitoria;
+- derivado producido desde un original existente.
+
+La procedencia no concede derechos. Todo activo importado deberá conservar su origen real y permanecer no reutilizable cuando la evidencia necesaria para usarlo no sea suficiente.
+
+---
+
+#### 7. Propiedad funcional y custodia
+
+La biblioteca deberá distinguir:
+
+```text
+PROPIETARIO FUNCIONAL
+!=
+AUTOR O CREADOR
+!=
+TITULAR DE DERECHOS
+!=
+CUSTODIO TECNICO
+!=
+PERSONA QUE CARGA EL ARCHIVO
+```
+
+El propietario funcional responde por la finalidad y vigencia empresarial del activo.
+
+El custodio técnico conserva la representación física bajo los controles aprobados, pero no adquiere por ello derecho a autorizar usos comerciales.
+
+La persona que carga un archivo no se convierte automáticamente en autora, titular de derechos ni aprobadora.
+
+---
+
+#### 8. Derechos, licencia y evidencia de uso
+
+Un activo deberá conservar la evidencia aplicable que permita decidir si puede usarse.
+
+Cuando corresponda, deberá poder conocerse:
+
+- titular o fuente del derecho;
+- instrumento, licencia, autorización o evidencia que habilita el uso;
+- alcance del uso permitido;
+- marcas o entidades beneficiarias cuando exista limitación;
+- canales, formatos, territorios o contextos permitidos cuando existan restricciones;
+- posibilidad o restricción de modificación;
+- posibilidad o restricción de reutilización;
+- vigencia;
+- condición de revocación o terminación cuando aplique;
+- evidencia de aprobación empresarial del uso.
+
+AURA no interpretará automáticamente una licencia ni resolverá controversias jurídicas. Cuando el derecho no pueda demostrarse con suficiente evidencia, el activo deberá permanecer bloqueado para el uso afectado hasta que el propietario competente resuelva la condición.
+
+---
+
+#### 9. Autorización de personas y material identificable
+
+Cuando una fotografía, video, audio u otro activo permita identificar personas y el uso requiera autorización, la biblioteca deberá conservar la relación con la evidencia aplicable y su vigencia.
+
+La existencia de una persona en un activo no implica automáticamente:
+
+- autorización para marketing;
+- autorización para cualquier canal;
+- autorización indefinida;
+- autorización para IA o transformación;
+- autorización para una campaña distinta;
+- autorización para transferir el material a un tercero.
+
+Las reglas transversales de privacidad y evidencia continúan bajo `CAP-SCOPE-016` y el BLOQUE AA; esta tarea únicamente exige que AURA respete su resultado.
+
+---
+
+#### 10. Originales y derivados
+
+Todo derivado deberá mantener relación explícita con el original o con el derivado inmediatamente anterior que lo produce.
+
+Como mínimo deberán poder reconstruirse:
+
+```text
+ORIGINAL
+-> DERIVADO
+-> VARIANTE
+-> USO EN PIEZA
+```
+
+La cadena podrá incluir operaciones como:
+
+- recorte;
+- redimensionamiento;
+- cambio de relación de aspecto;
+- subtitulado;
+- compresión;
+- ajuste de formato;
+- adaptación permitida a canal.
+
+Una transformación no podrá destruir la procedencia del original.
+
+Si una transformación cambia materialmente una afirmación, una oferta, el significado, la representación de una persona, la identidad de marca o una condición relevante, dejará de tratarse como adaptación puramente mecánica y requerirá nueva revisión antes de uso.
+
+---
+
+#### 11. Versionado
+
+La biblioteca deberá conservar versión y vigencia sin sobrescritura silenciosa de una versión aprobada.
+
+Reglas:
+
+1. un cambio material produce una nueva versión o derivado relacionado;
+2. una corrección de metadatos deberá diferenciarse de una modificación material del contenido;
+3. la versión aplicable a una fecha deberá poder reconstruirse;
+4. una versión reemplazada no desaparece de la historia;
+5. un activo vigente puede dejar de ser utilizable para un contexto específico sin eliminarse del expediente;
+6. el archivo físico y sus metadatos deberán permanecer correlacionables;
+7. la relación con marca, claim, producto, oferta, campaña y permisos deberá poder reconstruirse para el momento del uso.
+
+No se define desde esta tarea una estructura de tabla ni un algoritmo físico de versionado.
+
+---
+
+#### 12. Vigencia
+
+La vigencia deberá evaluarse antes de reutilizar un activo o pieza.
+
+Como mínimo deberán considerarse cuando correspondan:
+
+- derechos o licencia;
+- autorización de personas;
+- memoria de marca y claim aplicable;
+- producto o servicio representado;
+- oferta o condición comercial mostrada;
+- sede o local representado;
+- campaña asociada;
+- restricción territorial o de canal;
+- reemplazo explícito;
+- retiro por decisión empresarial;
+- obligación de conservación que impida eliminación física.
+
+Un activo puede conservarse por evidencia histórica y simultáneamente estar prohibido para nuevos usos.
+
+```text
+CONSERVAR
+!=
+AUTORIZAR REUTILIZACION
+```
+
+---
+
+#### 13. Relación con marca, producto, sede y campaña
+
+La biblioteca podrá relacionar activos con:
+
+- marca;
+- producto o categoría;
+- sede;
+- campaña;
+- brief;
+- pieza;
+- canal previsto;
+- publicación ejecutada cuando exista posteriormente.
+
+Estas relaciones no convierten a AURA en fuente maestra de producto, precio, disponibilidad, sede ni venta.
+
+La información material de producto, precio, disponibilidad o condición comercial deberá consumirse desde su fuente autorizada. Si el activo contiene texto o representación de un hecho variable, el uso deberá comprobar la vigencia de ese hecho antes de aprobar una nueva pieza o reutilización.
+
+---
+
+#### 14. Biblioteca y contenido
+
+La biblioteca deberá separar al menos dos niveles conceptuales:
+
+```text
+ACTIVO
+-> material reutilizable gobernado
+```
+
+```text
+PIEZA DE CONTENIDO
+-> composición o resultado editorial destinado a una finalidad concreta
+```
+
+Una pieza podrá usar múltiples activos y conservar:
+
+- brief o iniciativa de origen;
+- marca y versión de memoria de marca;
+- mensaje o claim relevante;
+- activos y versiones consumidas;
+- autoría y ediciones;
+- revisores;
+- aprobación;
+- contexto y finalidad;
+- canales o formatos previstos;
+- vigencia;
+- relación con versiones posteriores o reemplazos.
+
+La pieza no adquiere estado de publicación por quedar aprobada.
+
+---
+
+#### 15. Ciclo de contenido
+
+`VPROC-0056` conserva la autoridad sobre el ciclo canónico de contenido:
+
+```text
+CONTENT_REQUESTED
+-> BRIEF_UNDER_REVIEW
+-> IN_CREATION
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+-> APPROVED
+-> SCHEDULED
+-> PUBLISHED
+-> PERFORMANCE_REVIEW
+-> CONTENT_CYCLE_REVIEWED
+```
+
+`AURA-DOM-003` desarrolla principalmente los tramos de creación, revisión y aprobación, además de la procedencia de los activos utilizados.
+
+No crea un segundo namespace de estados para competir con `VPROC-0056`.
+
+La programación, envío a canal, publicación efectiva, fallo, retiro y reconciliación externa corresponden a `AURA-DOM-005` y las integraciones posteriores.
+
+---
+
+#### 16. Revisión de contenido
+
+Antes de aprobar una pieza deberá poder comprobarse, según corresponda:
+
+- brief y objetivo aplicables;
+- marca y versión de memoria de marca;
+- claims y mensajes permitidos;
+- activos y versiones exactas consumidas;
+- derechos y vigencias;
+- autorizaciones de personas;
+- productos, datos o condiciones materiales contra fuentes autorizadas;
+- restricciones legales, reputacionales y de canal conocidas;
+- consistencia entre texto, imagen, audio y CTA;
+- destino de enlaces cuando existan;
+- responsables de revisión requeridos.
+
+Una revisión no debe convertir automáticamente una propuesta en publicación ni activar promociones.
+
+---
+
+#### 17. Aprobación
+
+La aprobación deberá ser una decisión trazable sobre una versión exacta.
+
+Deberá conservar como mínimo:
+
+- versión aprobada;
+- actor o autoridad que aprueba;
+- momento;
+- alcance de la aprobación;
+- observaciones o condiciones cuando existan;
+- evidencia consumida;
+- relación con el brief, marca y restricciones vigentes.
+
+Cambiar materialmente una pieza después de su aprobación invalida la aprobación de esa versión modificada y exige nueva revisión.
+
+La aprobación no equivale a:
+
+- programación;
+- publicación;
+- gasto;
+- descuento;
+- envío a audiencia;
+- respuesta pública;
+- aceptación de una campaña completa.
+
+---
+
+#### 18. Reutilización
+
+AURA podrá proponer reutilización de un activo o una pieza únicamente si puede demostrar que la reutilización respeta:
+
+- derechos;
+- autorizaciones;
+- marca;
+- versión;
+- vigencia;
+- finalidad;
+- canal o uso permitido;
+- contexto de campaña;
+- hechos materiales actuales;
+- restricciones aplicables.
+
+La reutilización se clasifica conceptualmente como:
+
+```text
+REUSO SIN CAMBIO MATERIAL
+-> puede consumir aprobación vigente cuando el alcance aprobado lo cubra
+```
+
+```text
+ADAPTACION MECANICA PERMITIDA
+-> conserva procedencia y requiere verificación de alcance
+```
+
+```text
+CAMBIO MATERIAL
+-> requiere nueva revisión y aprobación
+```
+
+No se crea desde esta tarea un motor automático que decida jurídicamente si una transformación es material.
+
+---
+
+#### 19. Transformaciones automáticas permitidas
+
+El contrato objetivo admite que AURA pueda, después de una aprobación válida y cuando el alcance lo permita:
+
+- redimensionar;
+- recortar;
+- subtitular;
+- comprimir;
+- adaptar formato;
+- producir variantes técnicas equivalentes.
+
+Estas transformaciones deberán:
+
+- conservar el original;
+- registrar el derivado;
+- conservar trazabilidad de la operación;
+- respetar derechos y restricciones;
+- no modificar silenciosamente una oferta o afirmación material;
+- no cambiar significado o contexto de forma engañosa;
+- no ampliar un uso no autorizado.
+
+La generación o edición asistida por modelos de IA, el envío de activos a proveedores externos y sus restricciones corresponden a `AURA-DOM-004` y `AURA-AUTH-004`.
+
+---
+
+#### 20. Retiro, reemplazo y archivo
+
+Retirar un activo o pieza de nuevos usos no significa destruir su evidencia.
+
+El ciclo deberá permitir distinguir:
+
+```text
+VIGENTE
+-> puede ser evaluado para uso
+```
+
+```text
+REEMPLAZADO
+-> conserva historia pero no es la versión preferente
+```
+
+```text
+RETIRADO
+-> no debe utilizarse en nuevos trabajos salvo decisión excepcional autorizada
+```
+
+```text
+ARCHIVADO / CONSERVADO
+-> persiste por historia, evidencia o retención
+```
+
+La eliminación física y los periodos de retención pertenecen al gobierno transversal de información y no se fijan desde esta tarea.
+
+---
+
+#### 21. Relaciones públicas, enlaces y consumidores
+
+Una pieza que incluya CTA, URL, canonical, ruta pública o referencia a consumidor deberá comprobar la existencia y vigencia del destino antes de ser considerada utilizable.
+
+AURA no podrá tratar como publicación válida una pieza que apunte a:
+
+- `#` como sustituto de destino real;
+- rutas retiradas;
+- destinos que contradicen la acción anunciada;
+- rutas inexistentes;
+- URLs inseguras o no autorizadas.
+
+La integridad detallada de publicación, rutas, canales y reconciliación permanece en `AURA-DOM-005` y `AURA-INT-001`.
+
+---
+
+#### 22. Línea base transitoria actual
+
+La auditoría vigente demuestra superficies transitorias en VISO relacionadas con contenido y media, incluida una superficie de carga de imagen o video y el uso del bucket `website-media`.
+
+Estas evidencias:
+
+- demuestran capacidad parcial actual;
+- no demuestran una biblioteca AURA completa;
+- no demuestran gobierno de derechos, autorizaciones, originales, derivados, reutilización y vigencia;
+- no transfieren ownership hacia AURA;
+- no autorizan migrar medios;
+- no convierten una URL pública en el identificador canónico del activo;
+- no autorizan ampliar el CMS actual para ocupar anticipadamente el dominio AURA.
+
+La transferencia futura del CMS o de medios solo podrá ocurrir mediante las decisiones de continuidad, integración y cutover ya gobernadas por tareas propietarias.
+
+---
+
+#### 23. Auditoría y trazabilidad
+
+Toda acción material sobre un activo o pieza deberá poder reconstruir:
+
+- actor;
+- capacidad o autoridad aplicable;
+- recurso;
+- versión anterior y nueva cuando exista cambio;
+- origen;
+- operación;
+- motivo;
+- resultado;
+- timestamp o momento correlacionable;
+- evidencia consumida;
+- relación con publicación afectada cuando exista.
+
+La observabilidad deberá permitir detectar, al menos conceptualmente:
+
+- medios faltantes;
+- activos sin evidencia suficiente de uso;
+- referencias rotas;
+- contenido publicado vencido;
+- versiones sustituidas todavía referenciadas;
+- derivados sin original reconstruible;
+- divergencias entre metadatos y representación física.
+
+La instrumentación técnica concreta se define en los carriles de implementación e integración correspondientes.
+
+---
+
+#### 24. Handoff a `AURA-DOM-004`
+
+`AURA-DOM-003` entrega a `AURA-DOM-004` un contexto creativo gobernado que permite saber:
+
+- qué activos existen conceptualmente;
+- qué versión es aplicable;
+- cuál es su procedencia;
+- qué derechos y restricciones deben respetarse;
+- qué piezas y activos pueden reutilizarse;
+- qué evidencia debe acompañar una transformación;
+- qué cambio material exige nueva revisión;
+- qué información no debe enviarse a un proveedor de IA por inferencia.
+
+`AURA-DOM-004` deberá definir copiloto creativo, grounding, memoria, proveedores de IA y revisión humana sin redefinir la propiedad, los derechos, el versionado ni el ciclo de aprobación establecidos aquí.
+
+---
+
+#### 25. Requisitos de prueba derivados
+
+`NO GENERA REQUISITOS DE PRUEBA`.
+
+Justificación:
+
+- el gobierno de activos, derechos, versiones, original y derivados, vigencia, aprobación, publicación y auditoría ya está protegido por requisitos vigentes del dominio AURA, Supabase, integración y gobierno de información;
+- esta tarea desarrolla el contrato documental responsable de `CAP-14.03` y de las brechas asignadas sin introducir una obligación protegida que requiera un identificador nuevo;
+- no cambia texto, estado, relación, owner, paquete, ambiente ni evidencia de ninguna fila del registro 04A.
+
+Requisitos creados: 0.
+
+Requisitos modificados: 0.
+
+Requisitos diferidos: 0.
+
+Requisitos obsoletos: 0.
+
+---
+
+#### 26. Cobertura de prueba vigente reutilizada
+
+La tarea queda trazada, sin modificar el registro, contra:
+
+- `TREQ-AURA-001`, para identidades estables, versiones, vigencias, activos, derechos, original, derivados, usos permitidos y separación entre pieza, publicación y promoción;
+- `TREQ-AURA-009`, para separar capacidades de carga y mutación de media de otros permisos administrativos;
+- `TREQ-AURA-011`, `TREQ-AURA-012` y `TREQ-AURA-013`, para creación, actualización, versionado, referencias, retiro y recuperación de contenido;
+- `TREQ-AURA-014` y `TREQ-AURA-015`, para contratos versionados de bloques y compatibilidad con consumidores;
+- `TREQ-AURA-025`, para integridad de enlaces, CTA, preview y destinos públicos;
+- `TREQ-AURA-026`, para auditoría, observabilidad y reconciliación editorial;
+- `TREQ-SUPABASE-004`, para almacenamiento y acceso de archivos conforme a clasificación y contrato;
+- `TREQ-INTEGRATION-019`, para fronteras e integraciones de marketing.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye creación ni modificación de requisitos.
+
+---
+
+#### 27. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó `docs:plan:build` contra un checkout local desde esta entrega |
+| LOCAL | NOT_EXECUTED | no se modificó un checkout local ni se ejecutaron validadores del repositorio desde esta entrega |
+| REMOTA | PASS | se verificaron el archivo propietario, la topología `DEFINE_ONCE`, `CAP-SCOPE-014`, `CAP-SCOPE-016`, `H-CAP-SCOPE-014-007`, `H-CAP-SCOPE-014-008`, `H-CAP-SCOPE-014-009`, `VPROC-0056`, la auditoría AURA vigente, el registro 04A de AURA, `package.json` y los validadores documentales actuales |
+| OPERATIVA | NOT_APPLICABLE | esta tarea define el contrato documental de activos y contenido y no carga, transforma, aprueba, publica, retira ni reutiliza medios reales |
+| FÍSICA | NOT_APPLICABLE | la topología canónica no crea instancia física propia y la tarea no autoriza runtime, Supabase, Storage, repositorios, datos, integraciones ni despliegues |
+
+La validación remota demuestra consistencia documental de la propuesta. La validación real del repositorio permanece pendiente hasta incorporar el artefacto en la rama documental correspondiente y ejecutar los validadores canónicos.
+
+---
+
+#### 28. Criterios de aceptación
+
+`AURA-DOM-003` queda satisfecha cuando simultáneamente:
+
+1. fotografía, video, diseño, audio, logo, plantilla y documento quedan cubiertos por una biblioteca gobernada;
+2. archivo, URL, activo, pieza, publicación, campaña y promoción permanecen conceptos distintos;
+3. cada activo conserva identidad estable independiente de nombre de archivo, ruta o URL;
+4. procedencia y propiedad funcional se separan de autoría, titularidad de derechos, custodia y actor que carga;
+5. derechos, licencia, autorización de personas y vigencia pueden bloquear un uso sin borrar el activo;
+6. originales y derivados conservan una cadena reconstruible;
+7. una versión aprobada no se sobrescribe silenciosamente;
+8. reutilización verifica derechos, marca, versión, vigencia, finalidad, canal, contexto y hechos materiales actuales;
+9. una adaptación mecánica permitida no altera una oferta o afirmación material;
+10. un cambio material exige nueva revisión y aprobación;
+11. la aprobación queda vinculada a una versión exacta;
+12. aprobación de pieza no equivale a programación ni publicación;
+13. retiro no equivale a borrado irreversible;
+14. obligaciones de conservación permanecen bajo `CAP-SCOPE-016` y sus tareas propietarias;
+15. `VPROC-0056` permanece como ciclo canónico del contenido y no se crea un namespace competidor;
+16. `AURA-DOM-004` conserva ownership de IA, grounding, proveedores externos y revisión humana asistida;
+17. `AURA-DOM-005` conserva ownership de canales, programación, publicación, reintentos, retiro y reconciliación externa;
+18. la línea base transitoria de VISO y `website-media` no se reclasifica como biblioteca AURA terminada;
+19. se crean y modifican cero requisitos de prueba;
+20. no se crea ninguna instancia física;
+21. la continuidad queda reservada exclusivamente a `AURA-DOM-004`.
+
+---
+
+#### 29. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear un repositorio o runtime de AURA;
+- crear tablas, migraciones, RPC, RLS, funciones, triggers, jobs o Storage;
+- crear, renombrar, privatizar, publicar o migrar buckets;
+- transferir `website-media` a AURA;
+- cargar, copiar, mover, transformar o eliminar archivos reales;
+- importar una biblioteca real desde VISO, Vento-Group, PASS u otra fuente;
+- redefinir retención legal o periodos documentales;
+- interpretar jurídicamente licencias o derechos;
+- conectar proveedores de IA ni enviarles archivos;
+- generar contenido real mediante IA;
+- publicar, programar, responder o retirar contenido en canales reales;
+- crear campañas, promociones, cupones o descuentos;
+- cambiar productos, precios, disponibilidad, sedes, ventas o datos maestros;
+- crear permisos o capacidades técnicas;
+- crear una fuente de verdad paralela a NEXO, PASS, PULSO, NUMERA, VISO, FOGO o el gobierno transversal de información;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-DOM-004`.
+
+---
+
+#### 30. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-DOM-002 — Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña`
+
+**TAREA ACTUAL APROBADA**
+`AURA-DOM-003 — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana`
 
 ### [ ] AURA-DOM-004 — Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana
 
