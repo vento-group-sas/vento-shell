@@ -1684,7 +1684,939 @@ Esta tarea no autoriza ni ejecuta:
 **SIGUIENTE TAREA RESERVADA**
 `AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables`
 
-### [ ] AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
+### ✅ AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
+
+**Estado:** APROBADA
+**Tarea anterior:** AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual
+**Tarea siguiente:** AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros
+**Tipo de tarea:** documental; diseño canónico de la experiencia del estudio creativo asistido de AURA y de la fábrica de variantes reutilizables, con grounding, procedencia, versiones, derechos, revisión humana, estados editoriales y fronteras de autorización, sin crear una instancia física propia
+**Bloque:** `BLOQUE W — AURA — experiencia creativa y comercial`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no se crean rutas, pantallas, componentes, repositorios, tablas, migraciones, RLS, funciones, RPC, Storage, índices, embeddings, jobs, proveedores, credenciales, prompts productivos, datos, activos reales, publicaciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-30
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia con la que AURA deberá transformar un brief suficientemente completo y un contexto de marca gobernado en propuestas creativas versionadas, revisables y reutilizables, sin convertir asistencia de IA, edición o generación de variantes en aprobación ni publicación.
+
+La experiencia deberá permitir crear, adaptar, comparar, revisar y reutilizar contenido conservando procedencia, fuentes, derechos, versión, vigencia, contexto y responsabilidad.
+
+La regla raíz es:
+
+```text
+CONTEXTO GOBERNADO
++ BRIEF VERSIONADO
++ ACTIVOS Y DERECHOS VALIDOS
++ FUENTES AUTORIZADAS
++ ASISTENCIA CREATIVA
++ REVISION HUMANA
+=
+PROPUESTA CREATIVA TRAZABLE
+```
+
+pero:
+
+```text
+SALIDA GENERADA
+!= CONTENIDO APROBADO
+!= PUBLICACION
+```
+
+```text
+VARIANTE
+!= DERIVADO
+!= NUEVA VERSION MATERIAL
+!= NUEVO ORIGINAL
+```
+
+---
+
+#### 2. Base canónica consumida
+
+Esta tarea consume sin reabrir:
+
+- `AURA-UX-002`, que entrega contexto de marca gobernado, brief versionado, piezas y entregables esperados, canales candidatos, calendario como proyección y hechos variables en sus fuentes propietarias;
+- `AURA-DOM-003`, para activos, propiedad funcional, derechos, autorizaciones, originales, derivados, versiones, vigencia, reutilización, revisión y aprobación;
+- `AURA-DOM-004`, para grounding, contexto versionado, hecho/inferencia/propuesta, memoria gobernada, proveedor/modelo, minimización de datos, trazabilidad y revisión humana;
+- `AURA-DOM-001`, para memoria de marca, claims, restricciones, variantes y vigencias;
+- `AURA-DOM-002`, para objetivo, hipótesis, audiencia, brief, calendario, presupuesto referenciado y dependencias;
+- `AURA-AUTH-002`, para mantener separadas creación, revisión, aprobación, programación, publicación, retiro y respuesta pública;
+- `AURA-AUTH-004`, para credenciales, proveedores de IA, prompts, archivos, datos enviados a terceros, minimización y tratamiento de contenido externo no confiable;
+- `VPROC-0056`, para conservar el ciclo canónico desde `CONTENT_REQUESTED` hasta `CONTENT_CYCLE_REVIEWED` sin crear un workflow paralelo;
+- `CAP-SCOPE-014`, en especial la biblioteca empresarial de activos, la fábrica de contenido, la asistencia de IA y la separación entre borrador asistido, aprobación y publicación;
+- `CAP-SCOPE-016`, para propiedad, custodia, derechos, clasificación, retención y disposición de información y archivos;
+- el registro canónico de requisitos de prueba vigente;
+- la reconciliación topológica de `AURA-UX-001` a `AURA-UX-008`, que fija `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+
+Esta tarea no crea un runtime creativo, no selecciona proveedor de IA y no modifica fuentes maestras de marca, producto, precio, disponibilidad, cliente, venta, presupuesto ni publicación.
+
+---
+
+#### 3. Resultado canónico
+
+AURA deberá ofrecer un estudio creativo en el que una persona autorizada pueda responder, sin perder contexto:
+
+```text
+¿QUÉ BRIEF ESTOY RESOLVIENDO?
+¿QUÉ MARCA, VERSIÓN Y RESTRICCIONES GOBIERNAN EL TRABAJO?
+¿QUÉ FUENTES Y ACTIVOS PUEDO USAR?
+¿QUÉ PARTE ES HECHO, INFERENCIA O PROPUESTA?
+¿QUÉ VARIANTES EXISTEN Y DE DÓNDE PROVIENEN?
+¿QUÉ CAMBIÓ ENTRE VERSIONES?
+¿QUÉ FALTA VALIDAR ANTES DE ENVIAR A REVISIÓN?
+```
+
+La experiencia se divide conceptualmente en:
+
+1. contexto y brief activo;
+2. espacio de creación y edición;
+3. fuentes, activos y grounding;
+4. variantes y reutilización;
+5. historial y comparación;
+6. preparación para revisión.
+
+Cada espacio comparte el mismo expediente creativo sin convertirse en una fuente de verdad paralela.
+
+---
+
+#### 4. Principios de experiencia
+
+El estudio creativo se rige por estos principios:
+
+1. **brief antes que generación:** toda creación deberá quedar asociada a un propósito, marca y contexto identificables;
+2. **fuentes antes que afirmaciones:** un hecho material no se inventa para completar una pieza;
+3. **propuesta antes que aprobación:** una salida generada o editada permanece propuesta hasta atravesar revisión y aprobación;
+4. **procedencia antes que reutilización:** toda variante debe conservar de dónde proviene;
+5. **derechos antes que transformación:** la capacidad técnica de transformar un archivo no demuestra derecho a hacerlo;
+6. **versionado antes que sobrescritura:** un cambio material no destruye la versión anterior;
+7. **human-in-the-loop:** la asistencia acelera creación, no sustituye responsabilidad editorial;
+8. **minimización antes que terceros:** solo se envía a un proveedor la información necesaria y autorizada;
+9. **estado semántico antes que apariencia:** borrador, propuesta, revisión y aprobación no dependen de color o posición visual;
+10. **reutilización gobernada:** una variante reutilizable conserva alcance, vigencia, restricciones y evidencia.
+
+---
+
+#### 5. Arquitectura conceptual del estudio
+
+El estudio deberá mantener visibles, en distintos niveles de detalle, cinco referencias principales:
+
+```text
+BRIEF ACTIVO
+MARCA Y VERSION
+PIEZA / PROPUESTA ACTUAL
+FUENTES Y ACTIVOS CONSUMIDOS
+ESTADO EDITORIAL
+```
+
+Ninguna de estas referencias podrá derivarse de una selección visual si el expediente no la contiene explícitamente.
+
+El estudio podrá ofrecer herramientas diferentes según tipo de trabajo, pero todas deberán preservar el mismo contrato de trazabilidad.
+
+---
+
+#### 6. Entrada desde `AURA-UX-002`
+
+Al ingresar desde un brief, el estudio deberá recibir sin reinterpretar:
+
+- objetivo empresarial;
+- hipótesis cuando exista;
+- marca y versión de memoria;
+- audiencia y exclusiones aplicables;
+- mensaje, oferta o acción prevista;
+- entregables requeridos;
+- canales candidatos;
+- periodo y calendario;
+- presupuesto referenciado cuando corresponda;
+- dependencias;
+- guardas;
+- responsables;
+- información faltante o bloqueos vigentes.
+
+Un brief incompleto podrá abrirse para exploración creativa únicamente si la experiencia deja claro qué partes no permiten todavía producir una propuesta revisable o aprobable.
+
+---
+
+#### 7. Contexto creativo visible
+
+La superficie principal deberá permitir conocer de forma compacta:
+
+- marca activa;
+- versión de memoria de marca;
+- brief y versión;
+- objetivo;
+- audiencia o contexto previsto;
+- entregable actual;
+- restricciones críticas;
+- claims o mensajes relevantes;
+- fuentes pendientes de verificar;
+- estado editorial actual.
+
+La divulgación progresiva permitirá abrir el detalle sin saturar la superficie principal.
+
+---
+
+#### 8. Frontera entre hecho, inferencia y propuesta
+
+Toda asistencia deberá conservar la distinción:
+
+```text
+HECHO
+-> respaldado por fuente autorizada y vigente
+
+INFERENCIA
+-> interpretación explícita derivada de hechos
+
+PROPUESTA
+-> contenido creativo que requiere decisión humana
+```
+
+La interfaz no deberá presentar una inferencia o propuesta como hecho mediante estilo, redacción o ubicación.
+
+Cuando una afirmación material no pueda comprobarse, deberá permanecer marcada como pendiente o bloqueada para tratamiento factual.
+
+---
+
+#### 9. Asistencia creativa de IA
+
+La asistencia podrá ayudar a:
+
+- proponer enfoques;
+- generar borradores de copy;
+- sugerir estructuras;
+- resumir un brief;
+- adaptar longitud;
+- proponer variantes;
+- transformar tono dentro de límites aprobados;
+- sugerir combinaciones de activos permitidos;
+- señalar inconsistencias;
+- identificar información faltante;
+- comparar alternativas.
+
+La asistencia no podrá adquirir por sí sola autoridad para aprobar, publicar, promocionar, contactar clientes, responder crisis, cambiar maestros ni ejecutar acciones externas.
+
+---
+
+#### 10. Grounding y fuentes
+
+El estudio deberá permitir reconocer qué fuentes sustentan el trabajo actual.
+
+La experiencia podrá mostrar primero referencias esenciales y permitir abrir bajo demanda:
+
+- fuente;
+- versión o corte;
+- frescura;
+- ámbito;
+- evidencia;
+- conflicto con otra fuente;
+- dato pendiente;
+- razón de uso.
+
+Las fuentes recuperadas no se copiarán como nuevos maestros de AURA.
+
+---
+
+#### 11. Datos variables y frescura
+
+Precio, disponibilidad, horario, capacidad, beneficio, producto, condición comercial, consentimiento, presupuesto y demás hechos variables permanecerán en su propietario.
+
+El estudio deberá distinguir:
+
+- vigente;
+- próximo a vencer;
+- vencido;
+- no disponible;
+- contradictorio;
+- fuera del alcance autorizado;
+- fallo técnico de recuperación.
+
+Ninguna de esas condiciones se reemplaza silenciosamente por un valor estimado para completar una pieza.
+
+---
+
+#### 12. Contenido externo no confiable
+
+Texto, documento, sitio, comentario, archivo o contenido recuperado desde una fuente externa será tratado como dato de entrada y no como instrucción con autoridad sobre el estudio.
+
+El estudio deberá impedir que contenido externo:
+
+- cambie las restricciones de marca;
+- amplíe acceso a herramientas;
+- solicite secretos o credenciales;
+- cambie el proveedor autorizado;
+- suprima guardas;
+- autorice publicación;
+- altere el alcance del actor;
+- redefina el brief;
+- convierta una propuesta en aprobación.
+
+La experiencia podrá advertir cuando una fuente incluya instrucciones incompatibles con el contexto gobernado.
+
+---
+
+#### 13. Prompts e instrucciones creativas
+
+Las instrucciones utilizadas para asistencia deberán ser gobernables y trazables sin obligar al usuario a administrar configuración técnica.
+
+La experiencia deberá distinguir entre:
+
+- intención expresada por el usuario;
+- brief y reglas de marca;
+- instrucciones creativas gobernadas;
+- contexto recuperado;
+- restricciones del trabajo;
+- parámetros técnicos que no deben dominar la experiencia principal.
+
+Una edición libre de texto no deberá permitir desactivar restricciones, inventar autoridad o borrar procedencia.
+
+---
+
+#### 14. Minimización antes de proveedores
+
+Antes de enviar información a un proveedor externo, la experiencia deberá poder identificar qué datos, fragmentos o archivos son necesarios para la finalidad concreta.
+
+No se enviarán por defecto:
+
+- datos personales no necesarios;
+- secretos;
+- credenciales;
+- expedientes completos cuando basta una proyección;
+- información de otras marcas o campañas;
+- archivos completos cuando basta una representación reducida;
+- propiedad intelectual fuera del uso autorizado;
+- identificadores internos irrelevantes.
+
+Ver un dato dentro de Vento OS no implica permiso para transferirlo a terceros.
+
+---
+
+#### 15. Transparencia de proveedor y modelo
+
+La superficie principal no deberá llenarse de configuración técnica, pero el usuario autorizado podrá consultar bajo demanda:
+
+- proveedor;
+- modelo o versión cuando sea verificable;
+- finalidad;
+- fuentes utilizadas;
+- instrucciones relevantes gobernadas;
+- datos o activos enviados;
+- resultado;
+- advertencias de degradación.
+
+Cambiar proveedor o modelo no podrá presentarse como irrelevante cuando pueda alterar comportamiento material, datos enviados o restricciones.
+
+---
+
+#### 16. Biblioteca de activos dentro del estudio
+
+El estudio podrá consultar activos gobernados sin convertirse en propietario de la biblioteca.
+
+Cada activo visible deberá preservar, cuando corresponda:
+
+- identidad estable;
+- original;
+- derivados;
+- versión;
+- propietario funcional;
+- derechos;
+- autorizaciones;
+- vigencia;
+- marcas o ámbitos permitidos;
+- finalidades;
+- restricciones de transformación y reutilización.
+
+Un archivo o URL sin gobierno suficiente no se presentará como activo reutilizable aprobado.
+
+---
+
+#### 17. Guardas de derechos y uso
+
+Antes de incorporar o transformar un activo, la experiencia deberá poder bloquear o advertir por:
+
+- derecho no demostrado;
+- licencia vencida;
+- autorización de persona ausente o incompatible;
+- canal no permitido;
+- territorio no permitido;
+- modificación no autorizada;
+- reutilización fuera de finalidad;
+- marca incompatible;
+- activo retirado;
+- evidencia insuficiente.
+
+La persona usuaria no deberá resolver jurídicamente una condición mediante una simple confirmación visual cuando el contrato exige evidencia o autoridad distinta.
+
+---
+
+#### 18. Original, derivado, variante y nueva versión material
+
+La fábrica deberá distinguir:
+
+```text
+ORIGINAL
+-> fuente creativa gobernada
+
+DERIVADO
+-> representación transformada que conserva procedencia
+
+VARIANTE
+-> adaptación con propósito o contexto explícito
+
+NUEVA VERSION MATERIAL
+-> cambio que altera contenido, significado, oferta, claim, marca o condición relevante
+```
+
+Una variante no se convertirá en nuevo original por exportarse o duplicarse.
+
+Un cambio material no heredará automáticamente la aprobación de la versión previa.
+
+---
+
+#### 19. Fábrica de variantes reutilizables
+
+La fábrica deberá permitir producir familias de variantes desde una propuesta o activo gobernado, preservando una relación explícita con su origen.
+
+Cada variante deberá poder declarar:
+
+- propósito;
+- brief de origen;
+- marca y versión;
+- pieza o activo base;
+- dimensión adaptada;
+- canal candidato;
+- formato;
+- audiencia o contexto cuando aplique;
+- idioma o locale cuando corresponda;
+- restricciones;
+- vigencia;
+- revisión requerida;
+- relación con otras variantes.
+
+Crear múltiples variantes no multiplica autoridad ni aprobación.
+
+---
+
+#### 20. Dimensiones de variante
+
+La experiencia podrá permitir variantes por dimensiones como:
+
+- relación de aspecto;
+- duración;
+- longitud de copy;
+- formato visual;
+- idioma o locale autorizado;
+- canal candidato;
+- audiencia o contexto explícito;
+- sede cuando exista variante de marca autorizada;
+- CTA;
+- plantilla;
+- composición;
+- tono dentro del rango permitido.
+
+No toda combinación de dimensiones es válida. La fábrica deberá conservar restricciones de marca, derechos, canal, vigencia y negocio.
+
+---
+
+#### 21. Variantes técnicas y variantes materiales
+
+La experiencia deberá distinguir:
+
+```text
+VARIANTE TECNICA
+-> cambia representación sin alterar significado material
+```
+
+```text
+VARIANTE MATERIAL
+-> cambia copy, claim, oferta, audiencia, CTA, significado, contexto o condición relevante
+```
+
+Una variante técnica podrá requerir una revisión menor cuando el alcance aprobado lo permita.
+
+Una variante material deberá volver al nivel de revisión proporcional a lo que cambió.
+
+---
+
+#### 22. Reutilización
+
+El estudio podrá sugerir reutilizar contenido únicamente cuando se pueda demostrar compatibilidad con:
+
+- derechos;
+- autorización;
+- marca;
+- versión;
+- vigencia;
+- finalidad;
+- audiencia o contexto;
+- canal previsto;
+- hechos materiales actuales;
+- restricciones aplicables.
+
+Historial de uso o desempeño favorable no equivale a permiso para reutilizar.
+
+---
+
+#### 23. Plantillas y patrones creativos
+
+Una plantilla o patrón reutilizable deberá representar estructura creativa y no una aprobación permanente de su contenido.
+
+Deberá conservar, cuando corresponda:
+
+- identidad;
+- propósito;
+- marca o ámbito compatible;
+- campos variables;
+- elementos bloqueados;
+- restricciones;
+- versión;
+- vigencia;
+- activos obligatorios u opcionales;
+- reglas de adaptación.
+
+Una plantilla no podrá congelar precio, disponibilidad, claim o condición comercial como si fueran hechos eternos.
+
+---
+
+#### 24. Edición de copy
+
+La experiencia de copy deberá permitir distinguir:
+
+- texto original generado o aportado;
+- ediciones humanas;
+- sugerencias asistidas;
+- hechos respaldados;
+- claims;
+- placeholders pendientes;
+- restricciones aplicables.
+
+Una edición que elimina una advertencia o fuente no elimina la obligación contractual que la originó.
+
+---
+
+#### 25. Trabajo visual y multimedia
+
+Cuando el entregable incluya imagen, video, audio o documento, el estudio deberá conservar relación entre:
+
+- pieza;
+- activos fuente;
+- transformaciones;
+- versión;
+- derechos;
+- subtítulos, copy o audio asociados;
+- dimensiones o formato;
+- restricciones;
+- variante resultante.
+
+La experiencia no deberá presentar una transformación generativa como si fuera el original aportado.
+
+---
+
+#### 26. Consistencia multimodal
+
+Texto, imagen, audio, CTA y metadatos deberán revisarse como una pieza coherente.
+
+Como mínimo se deberán detectar contradicciones materiales entre:
+
+- copy y activo visual;
+- claim y evidencia;
+- producto mencionado y producto mostrado;
+- oferta y condición comercial;
+- fecha y vigencia;
+- CTA y destino;
+- marca y variante aplicada.
+
+Corregir una modalidad no deberá dejar silenciosamente otra en una versión incompatible.
+
+---
+
+#### 27. Versionado creativo
+
+Cada propuesta deberá conservar identidad y versión.
+
+Una versión nueva deberá poder registrar:
+
+- versión anterior;
+- actor;
+- origen del cambio;
+- cambios materiales;
+- fuentes o activos añadidos o retirados;
+- resultado de asistencia cuando corresponda;
+- motivo;
+- estado editorial.
+
+Guardar no equivale a aprobar.
+
+---
+
+#### 28. Comparación entre versiones
+
+La experiencia deberá permitir comparar versiones priorizando cambios relevantes en:
+
+- copy;
+- claims;
+- activos;
+- CTA;
+- audiencia o contexto;
+- marca;
+- derechos;
+- fuentes;
+- restricciones;
+- vigencia.
+
+Una comparación deberá evitar que cambios materiales queden ocultos entre ajustes puramente visuales o mecánicos.
+
+---
+
+#### 29. Borradores y recuperación
+
+La experiencia deberá poder distinguir al menos:
+
+- borrador guardado;
+- cambios no guardados;
+- versión recuperada;
+- conflicto de edición;
+- autosave o persistencia pendiente cuando exista implementación futura;
+- fallo de proveedor de IA;
+- fallo al recuperar una fuente;
+- fallo al obtener un activo.
+
+Un error técnico no deberá convertir una versión anterior en la versión actual por inferencia.
+
+---
+
+#### 30. Edición concurrente
+
+Cuando dos actores trabajen sobre el mismo expediente, la experiencia futura deberá evitar sobrescritura silenciosa.
+
+Ante conflicto deberá ser posible reconocer:
+
+- base común;
+- versión local;
+- versión remota;
+- actor;
+- momento;
+- diferencias materiales;
+- opciones de resolución autorizadas.
+
+Esta tarea define la experiencia y no prescribe todavía un mecanismo físico de concurrencia.
+
+---
+
+#### 31. Preparación para revisión
+
+Antes de enviar una versión a revisión, el estudio deberá mostrar un resumen de preparación que permita comprobar, según corresponda:
+
+- brief y objetivo;
+- marca y versión;
+- restricciones;
+- claims y fuentes;
+- activos y derechos;
+- hechos variables y frescura;
+- variantes incluidas;
+- CTA y destinos;
+- información pendiente;
+- cambios materiales desde la última revisión;
+- responsable de la propuesta.
+
+Si falta una guarda material, la versión no deberá presentarse como lista para revisión.
+
+---
+
+#### 32. Integración con `VPROC-0056`
+
+El estudio se inserta principalmente en:
+
+```text
+BRIEF_UNDER_REVIEW
+-> IN_CREATION
+-> UNDER_REVIEW
+-> PENDING_APPROVAL
+```
+
+La frontera es:
+
+```text
+IN_CREATION
+-> crear y editar propuestas
+
+UNDER_REVIEW
+-> revisión editorial o especializada
+
+PENDING_APPROVAL
+-> versión concreta preparada para decisión de aprobación
+```
+
+El estudio no redefine estos estados ni permite saltarlos por usar IA.
+
+---
+
+#### 33. Revisión humana
+
+Toda salida asistida deberá permanecer sujeta a revisión humana antes de aprobación empresarial.
+
+La revisión deberá poder mostrar:
+
+- qué parte fue generada o transformada;
+- qué parte fue editada por personas;
+- fuentes materiales;
+- hechos pendientes;
+- restricciones aplicadas;
+- activos y derechos;
+- cambios desde la versión anterior;
+- versión exacta sometida a revisión.
+
+Un revisor puede corregir, devolver o rechazar. Revisar no equivale a aprobar.
+
+---
+
+#### 34. Frontera de autorización
+
+La interfaz deberá separar capacidad de:
+
+```text
+VER
+CREAR
+EDITAR
+GENERAR
+TRANSFORMAR
+REVISAR
+SOMETER A APROBACION
+APROBAR
+PROGRAMAR
+PUBLICAR
+RETIRAR
+```
+
+El hecho de poder crear o generar contenido no concede las capacidades posteriores.
+
+Las transiciones sensibles consumen la autorización propietaria de `AURA-AUTH-002` y demás controles aplicables.
+
+---
+
+#### 35. Estados de IA y degradación
+
+El estudio deberá distinguir, cuando exista asistencia:
+
+- disponible;
+- procesando;
+- resultado parcial;
+- resultado completo;
+- cancelado;
+- limitado;
+- timeout;
+- proveedor no disponible;
+- respuesta inválida;
+- fuente faltante;
+- contexto insuficiente;
+- bloqueado por política o autorización.
+
+Un fallo técnico no deberá presentarse como rechazo editorial ni un resultado parcial como pieza completa.
+
+---
+
+#### 36. Reintentos y resultados múltiples
+
+Un reintento de generación deberá conservar relación con la solicitud original y no sobrescribir silenciosamente salidas anteriores.
+
+La experiencia deberá permitir comparar resultados alternativos sin perder:
+
+- versión;
+- proveedor/modelo cuando aplique;
+- contexto;
+- fuentes;
+- restricciones;
+- actor;
+- momento;
+- decisión humana posterior.
+
+Elegir una alternativa la convierte en propuesta seleccionada, no en contenido aprobado.
+
+---
+
+#### 37. Accesibilidad y operación por teclado
+
+Las operaciones esenciales del estudio deberán poder comprenderse y ejecutarse sin depender exclusivamente de drag-and-drop, color, hover o gestos de precisión.
+
+Como mínimo deberán existir alternativas accesibles para:
+
+- seleccionar versión;
+- navegar variantes;
+- comparar;
+- abrir fuentes;
+- reconocer bloqueos;
+- enviar a revisión;
+- descartar una propuesta;
+- volver al brief.
+
+Los estados deben contar con texto o semántica equivalente además de representación visual.
+
+---
+
+#### 38. Navegación y preservación de contexto
+
+Al navegar entre brief, estudio, biblioteca y revisión deberá preservarse:
+
+- empresa y marca;
+- brief;
+- pieza o variante actual;
+- versión;
+- razón de navegación;
+- estado editorial;
+- filtros relevantes que no impliquen autoridad.
+
+Volver al brief no deberá perder el trabajo actual ni cambiar silenciosamente de marca o versión.
+
+---
+
+#### 39. Handoff a `AURA-UX-004`
+
+`AURA-UX-003` entrega a `AURA-UX-004` únicamente versiones suficientemente preparadas para revisión y aprobación, conservando:
+
+- brief y objetivo;
+- marca y versión;
+- pieza y versión exacta;
+- variantes incluidas;
+- fuentes y frescura relevantes;
+- assets y derechos;
+- claims;
+- cambios materiales;
+- revisión humana realizada cuando corresponda;
+- estado editorial;
+- bloqueos o condiciones todavía vigentes;
+- canales candidatos sin asumir publicación;
+- trazabilidad de asistencia cuando aplique.
+
+`AURA-UX-004` deberá diseñar aprobación y publicación multicanal sin redefinir el estudio creativo, grounding, biblioteca de activos ni fábrica de variantes.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación:
+
+- grounding, asistencia de IA, fuentes, revisión humana, minimización, límites de autonomía, activos, derechos, versionado y estados editoriales ya están protegidos por cobertura vigente de AURA, autorización e integración;
+- esta tarea desarrolla la arquitectura de experiencia de contratos ya aprobados sin introducir una obligación protegida nueva;
+- no modifica texto, estado, relación, propietario, paquete, ambiente ni evidencia de ninguna fila del registro canónico.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, esta tarea reutiliza:
+
+- `TREQ-AURA-001`, para marcas, contenido, activos, versiones, vigencias, propietarios y separación entre pieza, publicación y promoción;
+- `TREQ-AURA-002`, para contexto versionado, fuentes autorizadas, hecho/inferencia/propuesta, proveedor/modelo, minimización de datos, trazabilidad y límites de autonomía de IA;
+- `TREQ-AURA-011`, para creación gobernada de contenido sin publicación accidental;
+- `TREQ-AURA-012`, para actualización con preservación de identidad, versión, concurrencia y auditoría;
+- `TREQ-AURA-018`, para carga y tratamiento seguro de media con validación de archivo, derechos y alcance;
+- `TREQ-AURA-019`, para separar borrador, revisión, aprobación, programación, publicación, retiro y archivo;
+- `TREQ-AURA-026`, para auditoría, observabilidad y reconciliación editorial;
+- `TREQ-AUTH-018`, para minimización, finalidad, sensibilidad y límites sobre datos personales;
+- `TREQ-INTEGRATION-019`, para contratos versionados con proveedores externos, correlación, payload, estado y conciliación de datos excesivos o credenciales.
+
+Esta enumeración constituye trazabilidad de cobertura vigente y no crea ni modifica requisitos.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la incorporación y compilación documental corresponden al lifecycle local de la tarea |
+| LOCAL | NOT_EXECUTED | el artefacto todavía no se ha insertado ni validado dentro del checkout del usuario |
+| REMOTA | PASS | se verificaron continuidad, topología `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`, archivo propietario, `AURA-DOM-003`, `AURA-DOM-004`, fronteras de `AURA-AUTH-002` y `AURA-AUTH-004`, brechas de `CAP-SCOPE-014`, `VPROC-0056`, cobertura 04A de AURA/AUTH/INTEGRATION, `package.json` y validadores documentales vigentes; además se consumió el handoff completo aprobado de `AURA-UX-002` disponible para trabajo adelantado |
+| OPERATIVA | NOT_APPLICABLE | la tarea diseña experiencia documental; no genera contenido empresarial real, no usa proveedores, no transforma activos reales y no ejecuta publicación ni contacto |
+| FÍSICA | NOT_APPLICABLE | la familia `AURA-UX-001` a `AURA-UX-008` es `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no se autorizan runtime, Supabase, rutas, componentes, datos, proveedores, integraciones ni despliegues |
+
+La validación remota demuestra consistencia documental del artefacto con las fuentes consultadas. La validación real del repositorio permanece pendiente hasta incorporar el archivo en su rama documental y ejecutar los validadores canónicos.
+
+---
+
+#### 43. Criterios de aceptación
+
+`AURA-UX-003` queda satisfecha cuando simultáneamente:
+
+1. el estudio parte de brief, marca y versión identificables;
+2. el usuario puede distinguir hecho, inferencia y propuesta;
+3. la asistencia de IA permanece subordinada a fuentes, restricciones y revisión humana;
+4. los datos variables no se inventan ni se congelan como maestros de AURA;
+5. contenido externo no confiable no adquiere autoridad sobre instrucciones, permisos o herramientas;
+6. prompts e instrucciones creativas permanecen gobernables sin saturar la experiencia con configuración técnica;
+7. la minimización de datos ocurre antes de cualquier proveedor externo;
+8. proveedor y modelo pueden consultarse bajo demanda sin convertirse en el centro de la experiencia;
+9. los activos conservan identidad, original, derivados, versión, derechos, vigencia y restricciones;
+10. original, derivado, variante y nueva versión material permanecen separados;
+11. cada variante conserva origen, propósito, dimensión adaptada, restricciones y estado;
+12. variantes técnicas y materiales tienen tratamiento de revisión proporcional;
+13. reutilización exige compatibilidad vigente de derechos, marca, finalidad, canal y hechos materiales;
+14. plantillas y patrones no congelan claims o hechos variables como verdades permanentes;
+15. copy, imagen, audio, CTA y metadatos pueden revisarse como pieza coherente;
+16. el versionado preserva historia y no sobrescribe silenciosamente trabajo aprobado o revisado;
+17. los conflictos de edición no se resuelven mediante pérdida silenciosa de una versión;
+18. antes de revisión existe un resumen de preparación con bloqueos y cambios materiales;
+19. `VPROC-0056` conserva `IN_CREATION`, `UNDER_REVIEW`, `PENDING_APPROVAL` y demás estados canónicos;
+20. revisar no equivale a aprobar;
+21. crear, editar, generar, revisar, aprobar, programar y publicar permanecen capacidades distintas;
+22. fallo de proveedor, resultado parcial y bloqueo de política permanecen estados distintos;
+23. los reintentos de generación conservan versiones y resultados anteriores;
+24. la experiencia esencial no depende exclusivamente de drag-and-drop, color, hover o gestos finos;
+25. la navegación conserva contexto sin fabricar autoridad;
+26. `AURA-UX-004` recibe una versión preparada para decisión sin absorber el estudio creativo;
+27. se crean y modifican cero requisitos de prueba;
+28. no se crea ninguna instancia física;
+29. la continuidad queda reservada exclusivamente a `AURA-UX-004`.
+
+---
+
+#### 44. Límites
+
+Esta tarea no autoriza ni ejecuta:
+
+- crear repositorio, runtime, ruta, pantalla, componente o prototipo ejecutable de AURA;
+- seleccionar framework, editor, canvas, librería gráfica o proveedor de IA;
+- crear cuentas, API keys, tokens, secretos o credenciales;
+- enviar prompts, datos o archivos reales a terceros;
+- crear tablas, migraciones, vistas, funciones, RPC, triggers, RLS, Storage, Realtime, embeddings, índices vectoriales, jobs o Edge Functions;
+- generar, editar o transformar piezas reales;
+- cargar o migrar activos reales;
+- cambiar derechos, licencias o autorizaciones;
+- crear memoria persistente o catálogo físico de prompts;
+- entrenar o ajustar modelos con datos de Vento;
+- crear briefs, campañas, audiencias, promociones o presupuestos productivos;
+- aprobar contenido;
+- programar, publicar, retirar o reconciliar contenido externo;
+- contactar clientes o audiencias;
+- modificar producto, precio, disponibilidad, inventario, venta, cliente, consentimiento, costo o margen;
+- redefinir permisos, roles o capacidades;
+- crear o modificar requisitos del registro 04A;
+- adelantar `AURA-UX-004`.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual`
+
+**TAREA ACTUAL APROBADA**
+`AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables`
+
+**SIGUIENTE TAREA RESERVADA**
+`AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros`
 
 ### [ ] AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros
 

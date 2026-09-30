@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1515** |
+| Tareas aprobadas | **1516** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **81** |
+| Tareas no iniciadas | **80** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **94.92% (1515/1596)** |
+| Porcentaje de completamiento | **94.99% (1516/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual** |
-| Tarea actual | **AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables** |
+| Última tarea aprobada | **AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables** |
+| Tarea actual | **AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros** |
+| Siguiente tarea | **AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 29 de 37 aprobadas; AURA-UX-003 pendiente** |
+| Progreso del bloque | **BLOQUE W: 30 de 37 aprobadas; AURA-UX-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-UX-003** |
+| Carril documental | **ACTIVO — AURA-UX-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-UX-002` — Diseñar sistema de marca, brief guiado y calendario visual |
-| Tarea actual | `AURA-UX-003` — Diseñar estudio creativo asistido y fábrica de variantes reutilizables — **NO INICIADA** |
-| Siguiente tarea | `AURA-UX-004` — Diseñar aprobación y publicación multicanal con estado y recuperación claros |
+| Última aprobada | `AURA-UX-003` — Diseñar estudio creativo asistido y fábrica de variantes reutilizables |
+| Tarea actual | `AURA-UX-004` — Diseñar aprobación y publicación multicanal con estado y recuperación claros — **NO INICIADA** |
+| Siguiente tarea | `AURA-UX-005` — Diseñar campañas, promociones, cupones, experimentos y guardas |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 29 DE 37 APROBADAS — ACTUAL AURA-UX-003** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 30 DE 37 APROBADAS — ACTUAL AURA-UX-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-UX-002 — Diseñar sistema de marca, brief guiado y calendario visual
-        ↓
-TAREA ACTUAL
 AURA-UX-003 — Diseñar estudio creativo asistido y fábrica de variantes reutilizables
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-UX-004 — Diseñar aprobación y publicación multicanal con estado y recuperación claros
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-UX-005 — Diseñar campañas, promociones, cupones, experimentos y guardas
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 29 de 37 tareas aprobadas
+BLOQUE W — 30 de 37 tareas aprobadas
 ```
