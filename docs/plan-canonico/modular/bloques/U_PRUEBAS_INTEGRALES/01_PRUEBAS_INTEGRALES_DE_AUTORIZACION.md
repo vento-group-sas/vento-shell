@@ -15436,7 +15436,875 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor`
-### [ ] AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
+### ✅ AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-020 — Acceso directo por URL queda bloqueado
+**Tarea siguiente:** AUTH-QA-022 — RPC manipulada queda bloqueada
+**Tipo de tarea:** documental; definición canónica de una prueba integral adversarial de autorización para formularios, submits y payloads de cliente que alcanzan efectos protegidos, reutilizable por paquete y certificable globalmente, que demuestra que alterar campos visibles, ocultos, deshabilitados, identificadores, contexto, acción, estado, cálculos o propiedades privilegiadas nunca sustituye la reconstrucción y revalidación autoritativa en servidor y que toda manipulación incompatible falla cerrada antes del primer efecto protegido
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-021::<package_id>` y la certificación `AUTH-QA-021::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; los contratos server-side `AUTH-SRV-004..018` y el binding de acciones de `AUTH-UI-043` están especificados documentalmente, pero esta tarea no infiere materialización ni certificación E2E de los formularios, Server Actions, Route Handlers, API routes o adaptadores existentes
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se envían formularios reales, no se invocan Server Actions, Route Handlers, API routes, RPC, RLS, Edge Functions ni otros efectos, no se alteran usuarios, sesiones, recursos, Supabase, datos, código, fixtures, ambientes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una mutación o efecto protegido no puede obtener autoridad a partir de un formulario, `FormData`, JSON, parámetro, estado de cliente o payload construido por el caller.
+
+La regla raíz queda:
+
+```text
+VALOR ENVIADO POR CLIENTE
+=
+INTENCIÓN / SELECTOR / CONTENIDO PROPUESTO
+
+VALOR ENVIADO POR CLIENTE
+≠
+ACTOR
+≠
+PERMISO
+≠
+TERRITORIO
+≠
+ESTADO ACTUAL
+≠
+CAMPO PRIVILEGIADO
+≠
+PAYLOAD EFECTIVO
+≠
+AUTORIZACIÓN
+```
+
+La propiedad certificada es que el servidor reconstruye y revalida el efecto efectivo desde fuentes canónicas antes de escribir, publicar, borrar, aprobar, transferir, cargar, ejecutar una operación privilegiada o producir cualquier otro side effect protegido.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y cuatro resultados obligatorios:
+
+1. un formulario renderizado no constituye autorización;
+2. un botón visible, habilitado u oculto no constituye autorización persistente;
+3. un `submit` legítimo solo puede producir efecto después de una decisión server-side vigente;
+4. un campo oculto es manipulable y nunca se trata como autoridad;
+5. un campo deshabilitado en UI es manipulable y nunca se trata como autoridad;
+6. `FormData`, JSON, query, headers no criptográficamente confiables y estado serializado son input no autoritativo;
+7. campos adicionales no reconocidos no pueden producir mass assignment;
+8. campos privilegiados se reconstruyen o rechazan en servidor;
+9. el permiso exacto se deriva de la operación efectiva y no del cliente;
+10. `action_key`, command name o equivalente enviado por cliente no permiten escoger qué permiso evaluar;
+11. principal y actor efectivos se resuelven desde fuentes autoritativas;
+12. `employee_id`, `actor_id`, `created_by`, `updated_by`, `approved_by` o `published_by` enviados por cliente no sustituyen atribución server-side;
+13. `site_id` y `area_id` recibidos son selectores o referencias, no cobertura territorial;
+14. un identificador de recurso no prueba ownership ni alcance;
+15. turno y check-in se revalidan cuando la capacidad los exige;
+16. rol operativo se resuelve desde el contexto vigente y no desde el formulario;
+17. un dispositivo compartido no presta autoridad al actor ni acepta una identidad humana declarada por el cliente;
+18. simulación no convierte una mutación real en ejecutable;
+19. el estado actual del recurso se relee antes del efecto cuando el contrato lo exige;
+20. estado, versión o transición enviados por cliente no sustituyen el estado autoritativo;
+21. cruces de sede y área se resuelven en servidor para todos los lados requeridos;
+22. cálculos de cliente que afecten prioridad, total, límite, conflicto, disponibilidad o resultado se recalculan cuando son server-derived;
+23. payload final privilegiado usa allowlist o construcción explícita y no copia indiscriminadamente el request;
+24. claves desconocidas, duplicadas o ambiguas no pueden cambiar la semántica del comando;
+25. tipos inválidos, coerciones inesperadas y estructuras malformadas fallan de forma controlada;
+26. ausencia de un campo requerido no habilita defaults permisivos;
+27. una invocación directa del handler atraviesa la misma autorización que el submit visible;
+28. un cliente no puede elegir una rama de autorización más favorable alterando intent, state o action;
+29. RLS y autorización de aplicación permanecen capas independientes cuando ambas aplican;
+30. `service_role`, admin client o privilegio técnico no sustituyen autorización empresarial;
+31. ninguna denegación puede ocurrir después de un efecto parcial protegido;
+32. errores de validación, autorización y fallo técnico se proyectan de forma segura sin degradar a `ALLOW`;
+33. la llamada RPC manipulada directamente permanece reservada a `AUTH-QA-022` y no se certifica aquí;
+34. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `AUTH-UI-031`, para la identidad y el permiso de las acciones de cada vista;
+- `AUTH-UI-042`, para la regla de que la visibilidad o habilitación del control no sustituye autorización;
+- `AUTH-UI-043`, para el binding exacto entre acción canónica y protección de servidor;
+- `AUTH-SRV-001..003`, para los inventarios físicos de Server Actions, API routes y RPC utilizadas;
+- `AUTH-SRV-004`, para tratar todo input de cliente como intención no autoritativa y reconstruir el payload efectivo;
+- `AUTH-SRV-005`, para validar el permiso exacto en cada escritura;
+- `AUTH-SRV-006..013`, para sede, área, turno, rol operativo, dispositivo compartido, estado actual y cruces territoriales;
+- `AUTH-SRV-014..018`, para atribución, simulación, errores, helpers compartidos y acciones administrativas sin turno;
+- los contratos vigentes de contexto, recurso, frescura, denegaciones, RLS y auditoría;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La prueba no usa como autoridad el DOM, un campo oculto, un control deshabilitado, una selección del usuario, una cookie aislada, un valor calculado por JavaScript, un payload serializado, una ruta, un nombre de handler, un permiso enviado por cliente ni una decisión previa de interfaz.
+
+---
+
+#### 4. Semántica exacta de “formulario manipulado queda bloqueado en servidor”
+
+El título no significa que todo valor modificado por el usuario sea inválido.
+
+La certificación distingue:
+
+```text
+CONTENIDO EDITABLE VÁLIDO
++ ACTOR AUTORIZADO
++ CONTEXTO VIGENTE
++ RECURSO Y ESTADO VÁLIDOS
++ REGLAS DE DOMINIO SATISFECHAS
+→ EFECTO POSIBLE DESPUÉS DE REVALIDACIÓN
+```
+
+```text
+CAMPO / SELECTOR MANIPULADO
++ RESULTADO TODAVÍA COMPATIBLE CON EL CONTRATO
+→ NORMALIZAR / RESOLVER / REVALIDAR EN SERVIDOR
+→ EFECTO POSIBLE SOLO SI TODO EL CONTRATO PASA
+```
+
+```text
+CAMPO / SELECTOR MANIPULADO
++ AUTORIDAD, TERRITORIO, ESTADO, RECURSO O CAMPO PRIVILEGIADO INCOMPATIBLE
+→ DENY / RECHAZO SEGURO
+→ CERO EFECTOS PROTEGIDOS
+```
+
+Por tanto, la propiedad certificada no es detectar visualmente que el cliente “hizo trampa”; es demostrar que ninguna modificación del request puede convertir input no confiable en autoridad o efecto que el servidor no habría autorizado desde sus fuentes canónicas.
+
+---
+
+#### 5. Universo de certificación
+
+`AUTH-QA-021` no inventa un conteo global de formularios.
+
+El universo aplicable se construye por package a partir de la intersección material y verificable entre:
+
+```text
+acciones canónicas con efecto protegido
+∩
+formularios / submits / payloads cliente realmente materializados
+∩
+Server Actions / Route Handlers / API routes / adapters que reciben esa intención
+∩
+recursos y operaciones presentes en el package
+```
+
+La fuente de identidad de acción permanece `VIEW-ACTION-PERMISSION-ASSIGNMENT-REGISTER-001`, que conserva 1.320 `action_key` canónicas. La prueba no declara que las 1.320 sean formularios ni que todas produzcan efecto server-side.
+
+La fuente de superficies server permanece en los inventarios `AUTH-SRV-001..003`. Cada ejecución debe demostrar cuáles filas son materialmente alcanzables por payload cliente dentro del package y clasificar todas las aplicables sin duplicados ni omisiones.
+
+Una superficie inexistente en el package no se fabrica para completar la prueba.
+
+---
+
+#### 6. Clasificación obligatoria de entradas
+
+Toda entrada aplicable conserva la clasificación de confianza de `AUTH-SRV-004`:
+
+| Clase | Tratamiento de `AUTH-QA-021` |
+| --- | --- |
+| `SELECTOR_INTENT` | Se acepta únicamente como referencia de lo que el actor pretende operar; existencia, relación, territorio, ownership, estado y autorización se resuelven en servidor. |
+| `USER_CONTENT` | Se valida, normaliza y limita según contrato; solo puede persistirse en campos expresamente permitidos. |
+| `SERVER_DERIVED` | Nunca se acepta como autoridad desde cliente; se reconstruye desde fuentes canónicas. |
+| `CURRENT_STATE` | Se vuelve a leer desde la fuente vigente antes del efecto cuando sea material. |
+| `CLIENT_CALCULATION` | No gobierna la decisión; se recalcula en servidor cuando afecte el efecto protegido. |
+| `NAVIGATION_ONLY` | Puede orientar UX posterior, pero no modifica autorización, recurso, territorio ni payload efectivo. |
+
+Toda futura ejecución debe poder justificar la clase de cada campo material que participe en el efecto.
+
+---
+
+#### 7. Allowlist y prohibición de mass assignment
+
+El payload efectivo no puede construirse copiando indiscriminadamente:
+
+```text
+request
+body
+FormData serializado
+objeto cliente extendido
+```
+
+cuando contenga o pueda contener campos protegidos.
+
+La certificación exige que cada handler material aplique una de estas salidas seguras:
+
+- construcción explícita del payload permitido;
+- schema con allowlist cerrada y semántica equivalente;
+- rechazo controlado de campos no reconocidos;
+- ignorado explícito de campos no autorizados cuando el contrato así lo defina.
+
+Nunca es válido persistir un campo privilegiado solo porque el cliente lo envió con un nombre conocido por el servidor.
+
+---
+
+#### 8. Binding entre acción y handler
+
+El servidor debe conocer o resolver la acción canónica que protege su propio handler.
+
+Queda prohibido:
+
+```text
+cliente envía action_key
+→ servidor decide qué permiso evaluar usando ese valor libre
+```
+
+La relación correcta queda:
+
+```text
+handler / operación efectiva
+→ action_key esperada controlada por servidor
+→ permiso / fórmula canónica
+→ decisión vigente
+→ efecto
+```
+
+Si el cliente envía una identidad de acción y no coincide con la esperada, la discrepancia no selecciona otra rama más favorable: se rechaza o ignora conforme al contrato sin ampliar autoridad.
+
+---
+
+#### 9. Permiso exacto
+
+Una mutación no puede autorizarse con:
+
+- acceso general a la aplicación;
+- permiso de lectura;
+- permiso parecido;
+- rol o cargo;
+- `navigation_role`;
+- visibilidad de pantalla;
+- estado previo del botón;
+- permiso enviado por el cliente.
+
+El permiso aplicable se deriva en servidor de la operación efectiva y conserva las ramas de estado exactas que ya defina la acción canónica.
+
+---
+
+#### 10. Principal, actor y campos de autoría
+
+El request puede transportar identificadores, pero no decide quién actúa.
+
+Deben resolverse desde fuentes autoritativas cuando apliquen:
+
+```text
+principal técnico
+actor efectivo
+actor de sesión en dispositivo compartido
+actor operativo
+simulación
+```
+
+Campos empresariales de autoría como:
+
+```text
+created_by
+updated_by
+approved_by
+published_by
+cancelled_by
+```
+
+no reciben automáticamente el identificador enviado en el formulario ni el `auth_user_id` si el schema exige otro namespace.
+
+La ejecución debe demostrar que el valor persistido corresponde al actor y namespace definidos por el contrato propietario.
+
+---
+
+#### 11. Recurso, ownership y escalamiento horizontal
+
+Un identificador enviado por el cliente solo expresa intención de operar un recurso.
+
+La prueba debe cubrir como mínimo:
+
+```text
+RECURSO EXISTE
++ ACTOR AUTORIZADO PARA OTRO RECURSO
++ ID MANIPULADO
+→ DENY / RECHAZO SEGURO
+→ CERO EFECTO SOBRE EL RECURSO AJENO
+```
+
+Y:
+
+```text
+RECURSO EXISTE
++ ACTOR AUTORIZADO PARA ESE RECURSO
++ RESTO DEL CONTRATO VÁLIDO
+→ EFECTO POSIBLE
+```
+
+Cambiar `id`, UUID, slug, Vento ID, referencia, propietario u otra identidad direccionable no amplía scope.
+
+---
+
+#### 12. Sede y área
+
+`site_id` y `area_id` pueden ser selectores legítimos.
+
+No constituyen cobertura.
+
+La prueba exige resolver o validar en servidor:
+
+- sede real del recurso existente;
+- sede objetivo de creación cuando aplique;
+- área real o requerida;
+- pertenencia del área a la sede válida;
+- alcance efectivo del actor para la capacidad exacta;
+- todos los lados requeridos cuando la operación sea cross-site o cross-area.
+
+Una sede o área insertada manualmente en el payload nunca modifica por sí sola la autoridad territorial.
+
+---
+
+#### 13. Turno, check-in y rol operativo
+
+El formulario no puede declarar que una acción es administrativa para evitar turno ni declarar un rol operativo para habilitarla.
+
+Cuando la capacidad exija carril operativo, el servidor resuelve:
+
+- turno publicado y vigente;
+- compatibilidad con actor, sede y área;
+- check-in cuando corresponda;
+- rol operativo efectivo;
+- compatibilidad del rol con la capacidad.
+
+Cuando la capacidad sea administrativa y su contrato no exija turno, la ausencia de turno no elimina los demás controles.
+
+---
+
+#### 14. Dispositivo compartido
+
+En dispositivo compartido deben permanecer separados:
+
+```text
+identidad técnica del dispositivo
+≠
+actor humano efectivo
+```
+
+Manipular en el request:
+
+- actor;
+- PIN derivado;
+- rol;
+- aplicación;
+- sede;
+- área;
+- permiso;
+- `navigation_role`;
+
+no puede elevar la autoridad del trabajador.
+
+El dispositivo puede restringir la autoridad ya válida; nunca concederla.
+
+---
+
+#### 15. Simulación
+
+Una simulación no convierte un formulario real en ejecutable.
+
+La prueba debe demostrar que:
+
+- un rol simulado enviado en payload no reemplaza el rol real;
+- un `WOULD_ALLOW` no autoriza una mutación;
+- un formulario abierto durante preview no conserva autoridad simulada al ejecutarse fuera de su frontera;
+- el actor real permanece atribuible;
+- cualquier operación prohibida en simulación produce cero efectos empresariales.
+
+La certificación específica de que el rol simulado no hereda permisos reales permanece en `AUTH-QA-019`.
+
+---
+
+#### 16. Estado actual, transición y concurrencia
+
+Campos como:
+
+```text
+status
+state
+version
+published
+approved
+cancelled
+current_step
+```
+
+no son autoridad cuando el valor correcto depende del estado vigente del sistema.
+
+Antes de una transición protegida, el servidor vuelve a resolver:
+
+- recurso canónico;
+- estado actual;
+- versión o condición de frescura cuando aplique;
+- transición solicitada;
+- predicado de estado;
+- compatibilidad con la operación efectiva.
+
+Un formulario construido desde un snapshot viejo no puede forzar una transición que ya dejó de ser válida.
+
+---
+
+#### 17. Cálculos del cliente
+
+Totales, prioridades, límites, disponibilidad, conflictos, impuestos, descuentos, saldos, conteos, capacidades, cuotas y otros cálculos que gobiernen un efecto protegido no se aceptan como verdad solo porque aparezcan en el formulario.
+
+Cuando su contrato los clasifique como derivados o dependientes de estado, el servidor los recalcula desde fuentes canónicas.
+
+La manipulación de un valor calculado puede producir rechazo o ser ignorada, pero nunca un resultado privilegiado distinto al cálculo autoritativo.
+
+---
+
+#### 18. Campos ocultos y controles deshabilitados
+
+HTML no es una frontera de confianza.
+
+La prueba trata como manipulables:
+
+- `hidden`;
+- `disabled` reactivado;
+- `readonly` alterado;
+- valores de `select` no ofrecidos;
+- radio o checkbox fuera del conjunto presentado;
+- nombres de campos agregados manualmente;
+- inputs eliminados;
+- payload enviado sin renderizar la página.
+
+La existencia o ausencia visual del campo no modifica el contrato de servidor.
+
+---
+
+#### 19. Claves duplicadas, ambigüedad y coerción
+
+Una entrada ambigua no puede seleccionar accidentalmente un valor permisivo.
+
+La ejecución debe cubrir cuando sea material:
+
+- mismo nombre repetido varias veces;
+- array donde se esperaba escalar;
+- objeto donde se esperaba identificador;
+- string vacío versus ausencia;
+- `null` versus ausencia;
+- booleanos representados como string;
+- números fuera de rango;
+- valores Unicode o normalizados que puedan alterar identidad;
+- claves desconocidas.
+
+El parser y el contrato deben producir una interpretación determinista o rechazo seguro antes del efecto.
+
+---
+
+#### 20. Campos faltantes y defaults
+
+Eliminar un campo del formulario no puede activar un fallback más permisivo.
+
+Si falta un dato requerido para demostrar autorización, territorio, recurso, estado o regla de dominio, la decisión falla cerrada.
+
+Un default de UX solo puede aplicarse cuando su significado empresarial esté definido y el servidor pueda resolverlo de forma autoritativa.
+
+---
+
+#### 21. Invocación directa de Server Action, Route Handler o API
+
+La prueba no depende de que el usuario haya navegado por la pantalla correcta.
+
+Una invocación construida manualmente debe atravesar los mismos gates que el submit ordinario:
+
+```text
+REQUEST DIRECTO
+→ PARSEO / SCHEMA
+→ RESOLUCIÓN DE ACTOR Y CONTEXTO
+→ RESOLUCIÓN DE OPERACIÓN
+→ AUTORIZACIÓN
+→ TERRITORIO / RECURSO / ESTADO
+→ REGLAS DE DOMINIO
+→ EFECTO
+```
+
+No existe una ruta rápida porque el botón normalmente estaría oculto o deshabilitado.
+
+---
+
+#### 22. RLS y protección de aplicación
+
+RLS no sustituye el binding de la acción ni la validación server-side cuando ambas capas son aplicables.
+
+La aplicación tampoco puede considerar que una mutación está protegida solo porque una tabla tenga RLS.
+
+La certificación exige que cada capa conserve su responsabilidad:
+
+```text
+AUTORIZACIÓN DE APLICACIÓN
++
+PROTECCIÓN DE DATOS APLICABLE
+→ DEFENSA EN PROFUNDIDAD
+```
+
+Un fallo o ausencia en una capa no se presenta como compensado automáticamente por la otra.
+
+---
+
+#### 23. `service_role`, admin client y elevación técnica
+
+Una credencial técnica privilegiada amplía capacidad técnica del proceso; no amplía autoridad empresarial del actor.
+
+Cuando una superficie utilice `service_role`, admin client, `SECURITY DEFINER` u otra vía privilegiada, la prueba exige que antes del efecto se resuelvan los gates empresariales aplicables.
+
+Queda prohibido aceptar el recurso, actor, territorio, permiso o campos privilegiados del cliente como sustituto porque la conexión pueda omitir RLS.
+
+---
+
+#### 24. Orden de gates y cero efectos parciales
+
+La autorización y las precondiciones aplicables deben resolverse antes del primer efecto protegido.
+
+Ante rechazo no puede quedar, salvo contrato compensatorio explícito y probado:
+
+- escritura parcial;
+- fila creada;
+- estado cambiado;
+- archivo almacenado;
+- publicación emitida;
+- mensaje o evento enviado;
+- job encolado;
+- impresión iniciada;
+- sesión empresarial modificada;
+- auditoría que afirme éxito.
+
+Cuando una operación legítimamente tenga múltiples efectos, la evidencia debe distinguir qué parte fue autorizada y qué contrato de atomicidad o compensación la gobierna.
+
+---
+
+#### 25. Errores seguros
+
+La prueba mantiene separados internamente:
+
+```text
+INPUT_INVALID
+AUTHORIZATION_DENIED
+RESOURCE_OR_STATE_CONFLICT
+TECHNICAL_FAILURE
+```
+
+La proyección pública puede minimizar detalles según sensibilidad, pero nunca:
+
+- convertir un fallo técnico en `ALLOW`;
+- revelar permisos internos innecesarios;
+- revelar la existencia de recursos fuera de alcance;
+- exponer tokens, cookies, SQL, stack traces o payloads sensibles;
+- afirmar éxito cuando no hubo efecto autorizado.
+
+Los errores normalizados consumen el contrato de `AUTH-SRV-016` y los contratos `AUTH-ERR-*` aplicables sin redefinirlos.
+
+---
+
+#### 26. Auditoría y atribución
+
+La evidencia de una ejecución debe poder reconstruir, cuando sea aplicable y sin registrar secretos:
+
+- principal técnico real;
+- actor efectivo;
+- sesión o dispositivo;
+- simulación;
+- acción canónica esperada;
+- permiso exacto;
+- recurso;
+- sede y área;
+- estado o versión relevante;
+- decisión;
+- razón estructurada;
+- resultado del efecto;
+- correlación.
+
+El request manipulado puede formar parte de evidencia minimizada o de un fingerprint seguro, pero no se convierte en la fuente de identidad o autoridad registrada.
+
+---
+
+#### 27. Frontera con `AUTH-QA-020`
+
+`AUTH-QA-020` demuestra que conocer o construir una dirección no concede lectura ni acceso.
+
+`AUTH-QA-021` comienza cuando existe una intención de mutación o efecto enviada desde cliente y demuestra que alterar su payload no concede autoridad adicional.
+
+Una misma operación puede requerir ambas certificaciones sin que una sustituya a la otra.
+
+---
+
+#### 28. Frontera con `AUTH-QA-022`
+
+`AUTH-QA-021` puede observar que un handler de formulario termina llamando una RPC y debe demostrar que el handler no pasa autoridad cliente sin revalidación.
+
+No certifica la resistencia de la RPC frente a una invocación directa manipulada por fuera del handler.
+
+Esa responsabilidad permanece íntegramente reservada a:
+
+```text
+AUTH-QA-022 — RPC manipulada queda bloqueada
+```
+
+---
+
+#### 29. Baseline físico observado
+
+El estado remoto verificable es **contractualmente especificado pero no certificable integralmente**:
+
+1. `AUTH-UI-043` exige que cada acción con efecto protegido quede vinculada a una protección de servidor controlada por el servidor;
+2. `AUTH-SRV-004` prohíbe tratar request, `FormData` o valores derivados de UI como payload privilegiado final;
+3. `AUTH-SRV-005..013` separan permiso, sede, área, turno, rol operativo, dispositivo, estado y cruces territoriales;
+4. `AUTH-SRV-014..018` definen atribución, simulación, error, composición compartida y acciones administrativas;
+5. esas tareas declaran `ESPECIFICADO_NO_MATERIALIZADO` para sus contratos globales y su materialización posterior depende de unidades físicas y E5;
+6. el Registro 04A ya contiene obligaciones explícitas de protección server-side y pruebas adversariales, incluida la obligación transversal que cubre formulario alterado;
+7. VISO contiene una obligación específica para bloquear URL, formulario o Server Action manipulados, pero su ejecución permanece pendiente;
+8. existen obligaciones relacionadas en PULSO, PASS y AURA para mutaciones, identificación, elevación técnica, recursos y payloads manipulables;
+9. esta tarea no transforma especificaciones ni requisitos pendientes en evidencia física de PASS.
+
+---
+
+#### 30. Casos mínimos obligatorios por package
+
+| Caso | Condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-021-A` | formulario válido, actor autorizado y estado vigente | efecto permitido únicamente después de revalidación completa |
+| `AUTH-QA-021-B` | se habilita manualmente un botón que la UI había deshabilitado | servidor conserva la decisión real; cero bypass |
+| `AUTH-QA-021-C` | se modifica un campo oculto privilegiado | valor cliente no gobierna; reconstrucción o rechazo seguro |
+| `AUTH-QA-021-D` | se agrega un campo privilegiado no permitido | sin mass assignment; ignorado o rechazado según contrato |
+| `AUTH-QA-021-E` | se cambia `action_key` o intent por una operación más permisiva | handler resuelve su acción esperada; mismatch no amplía autoridad |
+| `AUTH-QA-021-F` | se envía permiso, rol o `navigation_role` favorable | valor cliente no participa como autoridad |
+| `AUTH-QA-021-G` | se cambia `employee_id`, `actor_id` o campo de autoría | actor y namespace se resuelven en servidor |
+| `AUTH-QA-021-H` | se cambia `id` por recurso fuera de alcance | `DENY` o respuesta segura; cero efecto sobre recurso ajeno |
+| `AUTH-QA-021-I` | se cambia `site_id` por sede no autorizada | no amplía territorio; cero efecto |
+| `AUTH-QA-021-J` | se cambia `area_id` por área no autorizada | no amplía territorio; cero efecto |
+| `AUTH-QA-021-K` | se declara turno, check-in o rol operativo incompatible | servidor usa contexto vigente; cero bypass |
+| `AUTH-QA-021-L` | dispositivo compartido recibe actor o rol manipulados | sesión de actor y límites del dispositivo prevalecen |
+| `AUTH-QA-021-M` | payload de simulación intenta ejecutar efecto real | `DENY`; autoridad hipotética no ejecutable |
+| `AUTH-QA-021-N` | estado o versión del recurso cambió desde el render | estado actual se relee; transición stale no se fuerza |
+| `AUTH-QA-021-O` | total, límite, disponibilidad, conflicto o prioridad calculados en cliente se alteran | servidor recalcula o rechaza; valor alterado no gobierna |
+| `AUTH-QA-021-P` | mismo campo llega duplicado o con estructura ambigua | interpretación determinista o rechazo seguro |
+| `AUTH-QA-021-Q` | falta un campo material para autorizar o resolver el efecto | fail-closed; ningún default permisivo |
+| `AUTH-QA-021-R` | handler usa admin client o `service_role` | privilegio técnico no sustituye actor, capacidad, recurso, territorio ni estado |
+| `AUTH-QA-021-S` | backend de autorización o dependencia crítica falla | fallo técnico fail-closed; cero efecto protegido |
+| `AUTH-QA-021-T` | denegación ocurre después de intentar efecto | `FAIL`; la certificación exige que el bloqueo preceda al primer efecto protegido |
+
+Los casos se ejecutan únicamente sobre superficies materialmente presentes en el package. Un caso no aplicable debe registrarse como `NOT_APPLICABLE` con evidencia de ausencia o incompatibilidad, no como PASS vacío.
+
+---
+
+#### 31. Clasificación de fallos
+
+Un fallo de `AUTH-QA-021` se clasifica por la frontera rota:
+
+- `FORM_ACTION_PERMISSION_BYPASS` — payload manipulado obtiene una operación sin permiso exacto;
+- `SERVER_ACTION_BINDING_MISMATCH` — el cliente consigue escoger o alterar la acción/permiso evaluados;
+- `MASS_ASSIGNMENT_PRIVILEGED_FIELD` — un campo adicional o protegido llega al payload efectivo sin contrato;
+- `CLIENT_DERIVED_AUTHORITY_ACCEPTED` — un valor de cliente se usa como actor, permiso, territorio o autoridad;
+- `ACTOR_IMPERSONATION_BY_FORM` — identificador enviado sustituye al actor efectivo;
+- `RESOURCE_SCOPE_FORM_BYPASS` — un ID manipulado afecta recurso fuera de alcance;
+- `FORM_SITE_SCOPE_BYPASS` — sede manipulada amplía territorio;
+- `FORM_AREA_SCOPE_BYPASS` — área manipulada amplía territorio;
+- `SHIFT_OR_ROLE_FORM_BYPASS` — turno, check-in o rol enviados eluden contexto vigente;
+- `SHARED_DEVICE_FORM_ESCALATION` — dispositivo o PIN se convierten en autoridad empresarial;
+- `SIMULATION_FORM_EXECUTION` — autoridad simulada produce efecto real;
+- `STALE_STATE_FORM_EXECUTION` — snapshot cliente fuerza transición incompatible con estado actual;
+- `CLIENT_CALCULATION_TRUST` — un cálculo manipulable gobierna un efecto que debía recalcularse;
+- `AMBIGUOUS_FORM_PARSING` — duplicidad o coerción selecciona una semántica permisiva;
+- `MISSING_FIELD_FAIL_OPEN` — ausencia de dato material produce default permisivo;
+- `PRIVILEGED_CLIENT_BYPASS` — admin client o `service_role` sustituyen autorización empresarial;
+- `PARTIAL_EFFECT_BEFORE_DENY` — existe side effect protegido antes del rechazo;
+- `FORM_ERROR_INFORMATION_LEAK` — el error expone información protegida o crea un oráculo indebido;
+- `FORM_TECHNICAL_FAILURE_FAIL_OPEN` — indisponibilidad técnica produce ejecución;
+- `AUDIT_ATTRIBUTION_FORM_GAP` — no puede reconstruirse actor, acción, recurso, decisión y resultado.
+
+La clasificación es diagnóstica y no crea nuevos reason codes públicos.
+
+---
+
+#### 32. Modelo de ejecución por paquete
+
+Cada package con formularios o payloads cliente que alcancen efectos protegidos ejecutará:
+
+```text
+AUTH-QA-021::<package_id>
+```
+
+únicamente cuando:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- las superficies server y consumidores del package estén materializados;
+- exista actor o fixture controlado válido;
+- exista recurso y estado reproducibles para los casos aplicables;
+- la instancia esté autorizada conforme al lifecycle físico vigente.
+
+La ejecución deberá reconciliar el subconjunto material de acciones y superficies server sin omisiones ni duplicados y registrar por caso o superficie al menos:
+
+- `package_id`;
+- `action_key` cuando exista acción canónica;
+- superficie cliente o mecanismo de invocación;
+- handler server objetivo;
+- clase de entrada manipulada;
+- campo o dimensión alterada;
+- actor o fixture controlado;
+- recurso objetivo cuando exista;
+- contexto material aplicable;
+- decisión esperada;
+- decisión observada;
+- efectos protegidos observados `YES/NO`;
+- evidencia de reconstrucción/revalidación server-side;
+- resultado `PASS/FAIL/NOT_APPLICABLE`;
+- referencia de evidencia.
+
+Esta tarea documental no selecciona package, no abre una instancia física y no altera readiness.
+
+---
+
+#### 33. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-021::GLOBAL-FINAL
+```
+
+consolida las ejecuciones de todos los packages aplicables y falla si existe al menos un consumidor donde:
+
+- el request decide qué permiso o acción se evalúa;
+- un campo privilegiado se persiste por mass assignment;
+- actor o autoría se toman del formulario sin resolución autoritativa;
+- `site_id` o `area_id` amplían territorio;
+- un ID manipulado opera un recurso fuera de alcance;
+- turno, check-in o rol enviados sustituyen contexto vigente;
+- un dispositivo compartido amplía autoridad;
+- simulación produce un efecto real;
+- estado o versión stale permiten una transición inválida;
+- un cálculo cliente gobierna un efecto server-derived;
+- parsing ambiguo o campo ausente produce fallback permisivo;
+- `service_role` o admin client sustituyen autorización empresarial;
+- ocurre un efecto parcial antes del deny;
+- un fallo técnico degrada a ejecución;
+- la respuesta filtra información sensible indebida;
+- una superficie material aplicable queda sin clasificación o evidencia.
+
+La certificación global no inventa un total fijo de formularios: exige reconciliación completa del universo material observado en cada package y trazabilidad hasta sus acciones y superficies server canónicas.
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación adversarial ya exigida por requisitos vigentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-013` — ninguna URL directa, formulario alterado, API o RPC manipulada puede eludir autorización; cada mutación revalida en servidor permiso, principal, actor, territorio, contexto, estado y columnas permitidas;
+- `TREQ-AUTH-005`, `TREQ-AUTH-006`, `TREQ-AUTH-007`, `TREQ-AUTH-009`, `TREQ-AUTH-012` y `TREQ-AUTH-015` — protegen fuente de identidad y asignación, campos privilegiados, administración territorial, contexto territorial, separación de simulación y evidencia correlacionable;
+- `TREQ-UX-2011..2016`, `TREQ-UX-2021..2026`, `TREQ-UX-2031..2036`, `TREQ-UX-2041..2046`, `TREQ-UX-2051..2056` y `TREQ-UX-2061..2066` — conservan prerrequisitos por acción de turno, check-in, sede, área, dispositivo compartido y simulación ya vinculados por `AUTH-UI-043`;
+- `TREQ-VISO-038` — conflictos se recalculan en servidor antes de guardar o publicar;
+- `TREQ-VISO-042` — persona, sede, área, rol, fechas y alcance se validan nuevamente en servidor;
+- `TREQ-VISO-045` — URL, formulario o Server Action manipulados quedan bloqueados con error canónico comprensible;
+- `TREQ-PULSO-006` — ventas, pagos, caja, documentos, descuentos, anulaciones y demás efectos protegidos usan acciones nombradas, autorizadas y auditables;
+- `TREQ-PASS-022` y `TREQ-PASS-023` — PULSO/PASS revalida acciones exactas, identidad cliente, sede y finalidad operativa sin confiar en permisos amplios o códigos manipulados;
+- `TREQ-AURA-009`, `TREQ-AURA-010` y `TREQ-AURA-018` — mutaciones atómicas, límites de elevación técnica y carga de media conservan autorización server-side y no aceptan scope o IDs de cliente como autoridad.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado al checkout del usuario; build y suites globales permanecen pendientes del lifecycle documental. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y cierre permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el marcador propietario de `AUTH-QA-021`, la continuidad activa del BLOQUE U, la topología `PER_PACKAGE_AND_GLOBAL_FINAL`, el gate `POST_E5_PACKAGE`, `AUTH-UI-043`, `AUTH-SRV-004..018`, el contrato modular 04A y los requisitos vigentes relacionados con formularios, payloads, acciones y protección server-side. |
+| OPERATIVA | NOT_EXECUTED | No se enviaron formularios, payloads manipulados, Server Actions, Route Handlers, API requests ni efectos empresariales contra un ambiente operativo. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-021::<package_id>` ni `AUTH-QA-021::GLOBAL-FINAL`; ninguna superficie se declara certificada por esta definición documental. |
+
+---
+
+#### 37. Criterios de aceptación
+
+- [ ] El título canónico es exactamente `AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor`.
+- [ ] La continuidad usa `AUTH-QA-020` como anterior y `AUTH-QA-022` como siguiente reservada.
+- [ ] Todo valor procedente del cliente se trata según su clase de confianza y nunca como autoridad implícita.
+- [ ] El universo por package se deriva de acciones y superficies materialmente presentes, sin inventar un conteo global de formularios.
+- [ ] El servidor controla el binding de la acción esperada y el cliente no escoge qué permiso evaluar.
+- [ ] El permiso exacto se deriva de la operación efectiva.
+- [ ] Principal, actor y campos de autoría se resuelven desde fuentes autoritativas y namespaces correctos.
+- [ ] IDs de recurso no amplían ownership ni scope.
+- [ ] `site_id` y `area_id` no crean cobertura territorial.
+- [ ] Turno, check-in y rol operativo se revalidan cuando corresponden.
+- [ ] Dispositivo compartido no concede ni amplía autoridad empresarial.
+- [ ] Simulación no convierte un formulario real en ejecutable.
+- [ ] Estado y versión actuales se revalidan antes de transiciones protegidas cuando aplican.
+- [ ] Cálculos server-derived no confían en valores manipulables del cliente.
+- [ ] Campos privilegiados no llegan al efecto mediante mass assignment.
+- [ ] Claves duplicadas, estructuras ambiguas y tipos inválidos no producen una semántica permisiva.
+- [ ] Campos faltantes no activan defaults que relajen autorización.
+- [ ] Invocación directa del handler atraviesa los mismos gates que el submit visible.
+- [ ] RLS y protección de aplicación permanecen capas independientes cuando ambas aplican.
+- [ ] `service_role`, admin client o `SECURITY DEFINER` no sustituyen autorización empresarial.
+- [ ] Ningún efecto protegido ocurre antes de la decisión favorable aplicable.
+- [ ] Los errores permanecen seguros y el fallo técnico nunca degrada a ejecución.
+- [ ] La auditoría conserva actor, acción, recurso, decisión y resultado sin tratar el request como autoridad.
+- [ ] La manipulación directa de RPC permanece reservada a `AUTH-QA-022`.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- redefine las 1.320 acciones de `AUTH-UI-031`/`AUTH-UI-043`;
+- crea un inventario paralelo de Server Actions, API routes o RPC;
+- inventa un total global de formularios;
+- redefine la clasificación de confianza de `AUTH-SRV-004`;
+- redefine permisos, catálogo, roles, grants o denies;
+- redefine sede, área, turno, check-in, rol operativo, dispositivo compartido o simulación;
+- redefine schemas de formularios ni reglas de dominio propietarias;
+- corrige código, Server Actions, Route Handlers, API routes, helpers o componentes;
+- modifica RLS, RPC, funciones, Edge Functions, tablas, Storage, Realtime, Auth, datos ni configuración de Supabase;
+- modifica campos de autoría ni schemas físicos;
+- crea fixtures productivos;
+- ejecuta mutaciones reales;
+- certifica acceso directo por URL, reservado a `AUTH-QA-020`;
+- certifica invocación directa de RPC manipulada, reservado a `AUTH-QA-022`;
+- certifica el cruce integral de sede, reservado a `AUTH-QA-023`;
+- certifica el cruce integral de área, reservado a `AUTH-QA-024`;
+- ejecuta `AUTH-QA-021::<package_id>`;
+- ejecuta `AUTH-QA-021::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-020 — Acceso directo por URL queda bloqueado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-022 — RPC manipulada queda bloqueada`
 ### [ ] AUTH-QA-022 — RPC manipulada queda bloqueada
 ### [ ] AUTH-QA-023 — Cruce de sede queda bloqueado
 ### [ ] AUTH-QA-024 — Cruce de área queda bloqueado
