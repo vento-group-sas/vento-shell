@@ -14589,7 +14589,853 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-020 — Acceso directo por URL queda bloqueado`
-### [ ] AUTH-QA-020 — Acceso directo por URL queda bloqueado
+### ✅ AUTH-QA-020 — Acceso directo por URL queda bloqueado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-019 — Rol simulado no hereda permisos reales
+**Tarea siguiente:** AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
+**Tipo de tarea:** documental; definición canónica de una prueba integral de autorización para acceso directo a superficies y recursos direccionables, reutilizable por paquete y certificable globalmente, que demuestra que conocer, construir, restaurar o recibir una URL, deep link, bookmark, redirect, alias, path, query, hash o identificador de recurso nunca sustituye la revalidación autoritativa del destino y que toda entrada no autorizada falla cerrada antes de exponer payload protegido
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-020::<package_id>` y la certificación `AUTH-QA-020::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; el runtime observado contiene fronteras parciales de sesión y autorización, pero la navegación directa continúa sin certificación E2E completa y conserva brechas AS-IS expresamente registradas, incluida la aceptación amplia de `returnTo` y exclusiones de middleware que requieren protección propietaria adicional
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra packages, rutas, deep links, bookmarks, redirects, aliases, sesiones, usuarios, datos, recursos, Supabase, RLS, RPC, Server Actions, Route Handlers, middleware, navegadores, dispositivos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una superficie o recurso protegido no puede abrirse por el solo hecho de conocer, reconstruir, restaurar o recibir su dirección.
+
+La regla raíz queda:
+
+```text
+CONOCE LA URL
+≠
+ESTÁ AUTORIZADO
+```
+
+Y la admisión correcta queda:
+
+```text
+ENTRADA DIRECTA
++ DESTINO CANÓNICO RESUELTO
++ ACTOR Y SESIÓN VIGENTES
++ CONTEXTO VIGENTE
++ PERMISO O POLÍTICA PROPIETARIA EXACTOS
++ RECURSO Y ALCANCE VÁLIDOS
++ ESTADO EMPRESARIAL COMPATIBLE
++ CONTROLES ADICIONALES APLICABLES
++ CERO DENEGACIONES
+→ ALLOW POSIBLE
+```
+
+Cualquier ausencia, invalidez, ambigüedad o imposibilidad de demostrar una condición aplicable produce bloqueo fail-closed sin exponer previamente información protegida.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos treinta y dos resultados obligatorios:
+
+1. una URL conocida no constituye autorización;
+2. un enlace visible no equivale a `ALLOW` directo;
+3. un enlace oculto no constituye por sí solo un `DENY` si el motivo era únicamente presentación o relevancia;
+4. bookmark, history, back, forward, refresh y restauración no conservan autoridad;
+5. deep links transportan intención o referencia, no actor, permiso ni decisión;
+6. redirects resuelven el destino y revalidan su contrato;
+7. aliases heredan su fuente y revalidan el destino efectivo;
+8. path, slug, query y hash no crean PermissionKey ni autoridad;
+9. parámetros de recurso no amplían alcance;
+10. actor, sesión, territorio, recurso y estado se resuelven desde fuentes autoritativas vigentes;
+11. una identidad `ASSIGNED` solo abre después de una decisión actual válida;
+12. una identidad `BLOCKED` permanece en `DEFAULT_DENY`;
+13. una identidad `NOT_APPLICABLE` conserva su política propietaria y nunca recibe un `ALLOW` genérico;
+14. ocultamiento de navegación no sustituye protección del destino;
+15. guard de cliente no constituye frontera suficiente;
+16. middleware puede aplicar autenticación o redirección temprana, pero no sustituye autorización específica cuando el contrato la exige;
+17. una ruta excluida de middleware conserva protección propietaria obligatoria;
+18. login y `returnTo` no transportan autoridad empresarial;
+19. una continuación posterior a autenticación debe revalidar el destino;
+20. una URL externa arbitraria no puede convertirse en retorno confiable por el solo hecho de usar `http` o `https`;
+21. una lectura o exportación protegida alcanzada por URL directa conserva autorización server-side propia;
+22. ningún payload protegido se entrega antes del `ALLOW` aplicable;
+23. `NOT_FOUND`, `DENY`, `UNKNOWN` y fallo técnico permanecen distinguibles internamente sin crear un oráculo de enumeración;
+24. un cambio de actor en dispositivo compartido invalida la proyección anterior;
+25. una simulación no transforma una URL en autoridad real;
+26. contexto stale, grant retirado o deny nuevo invalida la decisión anterior;
+27. cache u offline no restauran acceso salvo contrato offline explícito, vigente y acotado;
+28. un fallo técnico nunca degrada a `ALLOW`;
+29. la certificación por package solo prueba identidades y superficies materialmente presentes;
+30. la certificación global final reconcilia el universo aplicable sin inventar superficies;
+31. no se crean ni modifican requisitos de prueba;
+32. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `AUTH-UI-041 — Bloquear acceso directo por URL`, incluido `DIRECT-URL-ENFORCEMENT-REGISTER-001`;
+- `AUTH-UI-030..040`, para identidad de superficie, permiso de lectura, acciones, turno, check-in, sede, área, dispositivo compartido, simulación, sensibilidad, masking y presentación;
+- la prohibición de derivar permisos desde nombres de ruta reservada a `AUTH-UI-044`;
+- la protección server-side de operaciones reservada a `AUTH-UI-043`;
+- el contrato de navegación con bloqueos reales de `SHELL-APP-020`;
+- el contrato de separación entre navegación y autorización de SHELL;
+- los contratos de actor, sesión, contexto, territorio, recurso, frescura y denegaciones vigentes;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La prueba no usa como autoridad el menú, el estado visual, el nombre de una ruta, un parámetro cliente, un redirect, un bookmark, una cookie aislada ni una decisión cacheada.
+
+---
+
+#### 4. Semántica exacta de “acceso directo por URL queda bloqueado”
+
+El título no significa que toda navegación directa deba denegarse.
+
+La certificación distingue:
+
+```text
+URL DIRECTA + ACTOR AUTORIZADO + CONTEXTO VÁLIDO
+→ ALLOW POSIBLE DESPUÉS DE REVALIDACIÓN
+```
+
+```text
+URL DIRECTA + AUTORIDAD INSUFICIENTE O NO DEMOSTRABLE
+→ DENY FAIL-CLOSED
+```
+
+```text
+URL DIRECTA A SUPERFICIE PÚBLICA O CON POLÍTICA ESPECIAL
+→ APLICAR SU POLÍTICA PROPIETARIA
+```
+
+Por tanto, la propiedad certificada es que **la entrada directa nunca evade la decisión que habría aplicado al destino por su contrato canónico**.
+
+---
+
+#### 5. Universo heredado de 264 identidades
+
+`AUTH-UI-041` conserva exactamente el universo AS-IS de 264 identidades direccionables o relacionadas con navegación:
+
+| Familia | Identidades |
+| --- | ---: |
+| NEXO | 64 |
+| FOGO | 9 |
+| ORIGO | 13 |
+| PULSO y PULSO-PASS | 13 |
+| VISO | 60 |
+| NUMERA | 7 |
+| ANIMA | 37 |
+| SHELL | 7 |
+| PASS | 24 |
+| AURA | 30 |
+| **Total** | **264** |
+
+La distribución contractual heredada es:
+
+| Estado heredado | Identidades | Regla de `AUTH-QA-020` |
+| --- | ---: | --- |
+| `ASSIGNED` | **125** | revalidar permiso exacto y todas las condiciones aplicables antes de presentar el destino |
+| `BLOCKED` | **38** | conservar `DEFAULT_DENY`; ninguna dirección o estado previo resuelve la brecha |
+| `NOT_APPLICABLE` | **101** | aplicar política propietaria de sesión, contenedor, redirect, alias, runtime, endpoint, cliente o publicación |
+| **Total** | **264** | exactamente una decisión heredada por identidad |
+
+La tarea no duplica ni reescribe el registro de 264 filas: la identidad y su clase se consumen del registro aprobado de `AUTH-UI-041`. Cada futura ejecución por package debe demostrar cobertura exacta de las filas materialmente presentes y registrar explícitamente las no presentes como fuera del package, no inventarlas.
+
+---
+
+#### 6. Identidades `ASSIGNED`
+
+Para una identidad `ASSIGNED`, conocer la dirección no cambia el contrato de acceso.
+
+La prueba debe demostrar:
+
+```text
+ACTOR / SESIÓN VIGENTES
++ PERMISO DE LECTURA EXACTO
++ TURNO / CHECK-IN CUANDO APLIQUEN
++ SEDE / ÁREA CUANDO APLIQUEN
++ DISPOSITIVO COMPATIBLE CUANDO APLIQUE
++ SIMULACIÓN COMPATIBLE CUANDO APLIQUE
++ RECURSO Y ALCANCE
++ ESTADO EMPRESARIAL
++ CERO DENEGACIONES
+→ DESTINO PRESENTABLE
+```
+
+Si una condición aplicable no puede demostrarse, el acceso directo queda bloqueado aunque la ruta exista, haya sido usada anteriormente o permanezca en historial.
+
+---
+
+#### 7. Identidades `BLOCKED`
+
+Las 38 identidades con brecha de lectura permanecen en `DEFAULT_DENY`.
+
+No pueden abrirse mediante:
+
+- `<app>.access` como sustituto;
+- rol base o rol operativo;
+- permiso parecido;
+- permiso de mutación;
+- route name;
+- slug;
+- URL conocida;
+- bookmark;
+- history;
+- deep link;
+- redirect;
+- alias;
+- caché;
+- simulación;
+- dispositivo compartido;
+- estado cliente previo.
+
+La única salida válida de una brecha `BLOCKED` pertenece al propietario canónico de la capacidad y a una versión contractual posterior; `AUTH-QA-020` no crea ese permiso.
+
+---
+
+#### 8. Identidades `NOT_APPLICABLE`
+
+`NOT_APPLICABLE` no significa público ni permitido.
+
+La certificación conserva la decisión propietaria según la clase:
+
+- contenedor de navegación → resolver cada destino hijo o política de sesión;
+- redirect → resolver destino canónico y revalidar;
+- autenticación o denegación → aplicar política de sesión;
+- subsuperficie embebida → heredar host sin ampliar autoridad;
+- estado de runtime → aplicar integridad/compatibilidad/recuperación;
+- auxiliar server/static → aplicar token, rate-limit o política de endpoint;
+- cliente o público → aplicar ownership, sesión, token acotado o estado de publicación;
+- placeholder → `DENY_NO_CAPABILITY`;
+- alias → heredar la fuente y revalidar.
+
+Ninguna clase recibe un `ALLOW` genérico por ausencia de permiso laboral independiente.
+
+---
+
+#### 9. URL, path, slug, query y hash
+
+Los componentes de una dirección pueden localizar una intención o recurso.
+
+No pueden declarar por sí solos:
+
+- actor;
+- sesión;
+- rol;
+- permiso;
+- sede;
+- área;
+- turno;
+- check-in;
+- cobertura;
+- tenant o marca;
+- estado empresarial;
+- sensibilidad;
+- `ALLOW`.
+
+Todo valor procedente de path, query, hash o fragmento equivalente se trata como input no autoritativo hasta resolverlo contra las fuentes propietarias.
+
+---
+
+#### 10. Parámetros de recurso no amplían alcance
+
+Un identificador válido de recurso no implica derecho de lectura.
+
+La prueba debe cubrir como mínimo:
+
+```text
+RECURSO EXISTE + ACTOR SIN ALCANCE
+→ DENY / RESPUESTA SEGURA
+```
+
+```text
+RECURSO EXISTE + ACTOR CON ALCANCE
+→ ALLOW POSIBLE DESPUÉS DE REVALIDACIÓN
+```
+
+Cambiar `id`, `site_id`, `area_id`, slug, referencia o cualquier parámetro direccionable no puede producir escalamiento horizontal ni territorial.
+
+La certificación de formulario manipulado permanece en `AUTH-QA-021`; aquí se prueba exclusivamente la admisión y lectura derivadas de direccionamiento directo.
+
+---
+
+#### 11. Autenticación no equivale a autorización del destino
+
+La ausencia de sesión válida puede conducir al flujo de login propietario.
+
+Después de autenticarse:
+
+1. la identidad de sesión se resuelve de nuevo;
+2. el actor efectivo se resuelve de nuevo;
+3. el destino pendiente se normaliza y valida;
+4. se resuelve su identidad canónica;
+5. se ejecuta la decisión de autorización y contexto del destino;
+6. solo entonces puede presentarse la superficie protegida.
+
+Un login exitoso no convierte automáticamente el `returnTo` previo en destino autorizado.
+
+---
+
+#### 12. `returnTo` y retorno posterior al login
+
+`returnTo` es continuidad de navegación, no credencial.
+
+La prueba debe demostrar que:
+
+- acepta únicamente rutas internas o orígenes Vento OS explícitamente aprobados por el contrato vigente;
+- normaliza el destino antes de usarlo;
+- rechaza URLs absolutas arbitrarias, esquemas no aprobados, credenciales embebidas y dominios no registrados;
+- no transporta actor, permiso, cobertura, estado empresarial ni `ALLOW`;
+- revalida el destino después del login;
+- no permite open redirect hacia un origen no autorizado.
+
+El baseline SHELL observado todavía acepta cualquier cadena `http://` o `https://` en `safeReturnTo`; por tanto esta propiedad no se presenta como certificada físicamente.
+
+---
+
+#### 13. Redirects y aliases
+
+Un redirect o alias nunca constituye bypass.
+
+Para un redirect:
+
+```text
+URL ORIGEN
+→ RESOLVER DESTINO CANÓNICO
+→ REVALIDAR CONTRATO DEL DESTINO
+→ ALLOW / DENY
+```
+
+Para un alias:
+
+```text
+ALIAS
+→ HEREDAR CONTRATO DE LA FUENTE
+→ RESOLVER DESTINO EFECTIVO CUANDO EXISTA
+→ REVALIDAR
+```
+
+Una cadena de redirects no puede lavar una procedencia no autorizada ni reutilizar una decisión antigua.
+
+---
+
+#### 14. Deep links y navegación entre aplicaciones
+
+Un deep link transporta como máximo una intención o referencia mínima necesaria.
+
+No transporta de forma autoritativa:
+
+- actor;
+- sesión empresarial reutilizable;
+- PermissionKey;
+- rol efectivo;
+- cobertura;
+- territorio;
+- decisión `ALLOW`;
+- estado de recurso.
+
+La aplicación destino resuelve de nuevo sus fuentes propias. SHELL u otra aplicación origen no puede prestar su `ALLOW` al destino.
+
+---
+
+#### 15. Bookmark, history, refresh, back y forward
+
+Un bookmark conserva una dirección, no una decisión.
+
+`history`, back/forward, refresh y restauración de sesión no pueden restaurar:
+
+- permiso previamente efectivo;
+- actor anterior;
+- contexto anterior;
+- recurso previamente visible;
+- proyección sensible;
+- `ALLOW` cacheado.
+
+Cada entrada protegida reevalúa las dimensiones materiales vigentes cuando su contrato lo exige.
+
+---
+
+#### 16. Caché y offline
+
+Una respuesta cacheada no es autoridad.
+
+Ante entrada directa:
+
+- cache keys deben distinguir contexto material cuando corresponda;
+- una proyección protegida incompatible no puede mostrarse mientras se revalida;
+- un cambio de actor, sesión, grant, deny, sede, área, turno, recurso o política invalida resultados incompatibles;
+- un cache miss no produce fallback permisivo;
+- indisponibilidad de red no convierte el último `ALLOW` en autorización indefinida.
+
+Offline solo puede presentar información protegida cuando existe un contrato offline explícito, vigente y acotado para esa superficie, actor, contexto y recurso. Fuera de ese contrato, la entrada falla cerrada.
+
+---
+
+#### 17. Guard cliente no es frontera suficiente
+
+La protección visual, router guard, menú oculto o componente cliente pueden mejorar experiencia, pero no constituyen autoridad final.
+
+La certificación exige una revalidación autoritativa antes de exponer la superficie protegida o sus datos.
+
+La materialización puede usar middleware, layout server-side, loader, Route Handler, endpoint propietario u otra primitiva compatible, siempre que:
+
+- consuma la misma fuente autoritativa;
+- falle cerrada;
+- no cree un catálogo paralelo de permisos;
+- no dependa de que el frontend haya ocultado el enlace.
+
+---
+
+#### 18. Middleware es una frontera parcial
+
+Middleware puede resolver sesión y aplicar redirección temprana.
+
+No prueba por sí solo:
+
+- permiso exacto de una vista;
+- actor laboral válido;
+- sede o área autorizadas;
+- recurso dentro de alcance;
+- estado empresarial compatible;
+- sensibilidad o masking;
+- protección de endpoints excluidos por matcher.
+
+La certificación falla si se considera que “pasó middleware” equivale a `ALLOW` final.
+
+---
+
+#### 19. Rutas excluidas de middleware
+
+Toda exclusión de middleware debe ser explícita y gobernada.
+
+Una ruta `api`, endpoint auxiliar, archivo generado o handler fuera del matcher no recibe autorización por estar excluido.
+
+Si la superficie entrega datos protegidos o ejecuta una operación protegida, debe aplicar su control propietario en servidor.
+
+`AUTH-QA-020` certifica el bypass de lectura o entrada directa; la manipulación de formularios y llamadas RPC permanecen reservadas respectivamente a `AUTH-QA-021` y `AUTH-QA-022`.
+
+---
+
+#### 20. Lecturas y exportaciones alcanzables por URL
+
+Una lectura protegida no deja de ser protegida por usar GET, ruta directa o endpoint de descarga.
+
+Esto incluye, cuando existan en el package:
+
+- detalle de recursos;
+- reportes;
+- documentos;
+- archivos;
+- vistas administrativas;
+- exports;
+- PDFs;
+- media protegida;
+- rutas de cliente o trabajador con ownership/territorio;
+- recursos dinámicos identificados por path o query.
+
+Toda salida conserva permiso, actor, alcance, sensibilidad y política propietaria aplicables antes de devolver contenido.
+
+---
+
+#### 21. Cero payload protegido antes del `ALLOW`
+
+Ante `DENY`, `UNKNOWN`, contrato inválido o fallo técnico no resuelto:
+
+- no se renderiza previamente la superficie con datos reales;
+- no se precarga detalle sensible para ocultarlo después;
+- no se devuelve un recurso fuera de alcance;
+- no se reutiliza una proyección cacheada incompatible;
+- no se incluye información sensible dentro de un mensaje de error;
+- no se produce una respuesta optimista que revele existencia o estado.
+
+La seguridad se demuestra antes de la exposición, no mediante ocultamiento posterior.
+
+---
+
+#### 22. Recurso inexistente, fuera de alcance y fallo técnico
+
+`NOT_FOUND`, `DENY`, `UNKNOWN` y fallo técnico permanecen estados internos distinguibles para observabilidad autorizada.
+
+La respuesta al actor no debe funcionar como oráculo que permita enumerar recursos protegidos.
+
+Por tanto:
+
+- ninguno de esos estados concede acceso;
+- la semántica visible puede minimizar diferencias cuando revelar existencia sea sensible;
+- la auditoría interna conserva la causa suficiente para diagnóstico;
+- un error técnico nunca se traduce en `ALLOW`.
+
+---
+
+#### 23. Aplicación versus capacidad interna
+
+El acceso directo debe evaluar el contrato exacto del destino.
+
+Un `DENY` de una capacidad interna no bloquea automáticamente toda la aplicación si el permiso de entrada independiente sigue válido.
+
+Simétricamente:
+
+```text
+APP ACCESS = ALLOW
+CAPACIDAD INTERNA = DENY
+→ LA CAPACIDAD INTERNA SIGUE BLOQUEADA
+```
+
+La URL de una capacidad no puede degradar esa precisión a un permiso general de aplicación.
+
+---
+
+#### 24. Sesión presente no equivale a actor laboral autorizado
+
+Una sesión Supabase o equivalente técnicamente válida no basta cuando el destino exige actor laboral, vínculo vigente, rol operativo, territorio, turno, check-in u otras dimensiones.
+
+La prueba falla si una sesión presente permite abrir una superficie protegida aunque la identidad laboral o el contexto requerido sean inválidos, ambiguos, expirados o incompatibles.
+
+---
+
+#### 25. Territorio no se deriva de la URL
+
+`site_id`, `area_id`, location IDs, slugs o parámetros equivalentes son solicitudes de contexto o recurso.
+
+No crean cobertura.
+
+La prueba debe demostrar que:
+
+- otra sede no se obtiene modificando query;
+- otra área no se obtiene modificando path;
+- la sede seleccionada en cliente no sustituye asignación o contexto efectivo;
+- el territorio del dispositivo solo restringe cuando aplique;
+- el recurso se valida contra el alcance actual del actor.
+
+La certificación específica de cruces de sede y área continúa en `AUTH-QA-023` y `AUTH-QA-024`; `AUTH-QA-020` prueba aquí únicamente que la URL no crea autoridad territorial.
+
+---
+
+#### 26. Dispositivo compartido y cambio de actor
+
+Una URL abierta en un dispositivo compartido no pertenece al actor anterior.
+
+Al cambiar actor:
+
+- se invalida cualquier proyección personal incompatible;
+- se resuelve de nuevo la sesión o firma humana aplicable;
+- se reconstruye contexto;
+- se reevalúa permiso y alcance;
+- el principal técnico no completa autoridad humana;
+- un bookmark o tab abierto no conserva permisos del trabajador anterior.
+
+---
+
+#### 27. Simulación
+
+Una simulación puede representar navegación hipotética conforme a su contrato, pero no convierte la URL en autoridad real.
+
+La prueba exige:
+
+- deep link de preview no abre la superficie real por `WOULD_ALLOW`;
+- rol o territorio simulados no alimentan el guard real;
+- salir de preview exige contexto real fresco antes de una navegación real;
+- una brecha `BLOCKED` no se resuelve mediante simulación;
+- una URL de preview no funciona como token de autorización.
+
+---
+
+#### 28. Frescura e invalidación
+
+Un `ALLOW` anterior pierde utilidad cuando cambia una dimensión que puede alterar la decisión.
+
+Debe reevaluarse, según contrato, ante cambios de:
+
+- actor;
+- sesión;
+- vínculo laboral;
+- rol o grant;
+- deny;
+- sede;
+- área;
+- turno;
+- check-in;
+- dispositivo;
+- aplicación;
+- recurso;
+- estado empresarial;
+- política o versión contractual.
+
+La URL no funciona como checkpoint de una decisión histórica.
+
+---
+
+#### 29. Baseline físico observado
+
+El snapshot remoto observado presenta un estado **parcial y no certificable integralmente**:
+
+1. `middleware.ts` cubre rutas SHELL no excluidas y valida una sesión Supabase mediante `auth.getUser()` antes de continuar;
+2. el matcher excluye explícitamente `_next`, `login`, `favicon.ico`, `logos`, `images`, `fonts` y `api`, por lo que esas superficies requieren contrato propietario cuando sean sensibles;
+3. la frontera observada de middleware acredita autenticación temprana, no permiso granular final de cada destino;
+4. `src/app/login/page.tsx` contiene `safeReturnTo` que acepta cualquier valor iniciado por `http://` o `https://`, brecha ya registrada por `TREQ-SHELL-018` y `SHELL-APP-020`;
+5. `SHELL-APP-020` registra la navegación directa como obligación de enforcement en destino y la clasifica como no certificada E2E;
+6. `AUTH-UI-041` define el contrato completo pero permanece `ESPECIFICADO_NO_MATERIALIZADO`;
+7. existen requisitos específicos de URL directa en SHELL, ANIMA, VISO, FOGO, PULSO, PASS y AURA, pero sus ejecuciones de certificación permanecen pendientes;
+8. esta tarea no infiere PASS físico desde documentación, tests parciales o existencia de middleware.
+
+---
+
+#### 30. Casos mínimos obligatorios por package
+
+| Caso | Condición diferencial | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-020-A` | actor autorizado abre URL protegida directamente | `ALLOW` solo después de revalidación fresca |
+| `AUTH-QA-020-B` | actor sin permiso conoce la URL protegida | `DENY`, cero payload protegido |
+| `AUTH-QA-020-C` | identidad heredada `BLOCKED` recibe acceso directo | `DENY_DEFAULT` |
+| `AUTH-QA-020-D` | identidad `NOT_APPLICABLE` recibe acceso directo | aplicar política propietaria; sin `ALLOW` genérico |
+| `AUTH-QA-020-E` | sesión ausente abre ruta protegida | flujo de autenticación propietario; destino todavía no autorizado |
+| `AUTH-QA-020-F` | login termina con `returnTo` aprobado | normalizar y revalidar destino antes de presentar |
+| `AUTH-QA-020-G` | `returnTo` externo/no aprobado | rechazo seguro; sin open redirect |
+| `AUTH-QA-020-H` | se cambia `id` por recurso de otro alcance | `DENY` o respuesta minimizada equivalente; cero dato ajeno |
+| `AUTH-QA-020-I` | se cambia `site_id` o `area_id` en URL | no amplía territorio; decisión con contexto real |
+| `AUTH-QA-020-J` | deep link cross-app apunta a destino protegido | destino revalida; no hereda `ALLOW` del origen |
+| `AUTH-QA-020-K` | redirect o alias conduce a destino protegido | destino/fuente se resuelven y revalidan |
+| `AUTH-QA-020-L` | bookmark creado durante `ALLOW`, luego grant retirado | decisión histórica no reutilizable; nueva evaluación |
+| `AUTH-QA-020-M` | back/forward o refresh después de cambio material | no restaura payload ni `ALLOW` stale |
+| `AUTH-QA-020-N` | actor cambia en dispositivo compartido con tab abierto | nuevo actor no hereda la proyección anterior |
+| `AUTH-QA-020-O` | preview simulada produce `WOULD_ALLOW` y se abre URL real | autoridad simulada no abre el destino real |
+| `AUTH-QA-020-P` | endpoint protegido está fuera del matcher general | protección propietaria obligatoria antes de contenido |
+| `AUTH-QA-020-Q` | backend de autorización indisponible | bloqueo técnico fail-closed; nunca `ALLOW` |
+| `AUTH-QA-020-R` | recurso inexistente versus fuera de alcance | sin exposición que funcione como oráculo indebido |
+| `AUTH-QA-020-S` | cache contiene proyección de contexto anterior | no se presenta como vigente sin contrato compatible |
+| `AUTH-QA-020-T` | modo offline sin contrato offline válido | fail-closed |
+
+Si una superficie necesaria para un caso no existe materialmente en el package evaluado, el caso se registra `NOT_APPLICABLE` con evidencia. No se crea una ruta, recurso, permiso o fixture productivo para forzar ejecución.
+
+---
+
+#### 31. Clasificación de fallos
+
+Un fallo de `AUTH-QA-020` se clasifica por la frontera rota:
+
+- `DIRECT_URL_PERMISSION_BYPASS` — una URL directa abre una superficie sin permiso aplicable;
+- `BLOCKED_VIEW_OPENED` — una identidad `BLOCKED` resulta accesible;
+- `NOT_APPLICABLE_GENERIC_ALLOW` — una identidad sin permiso laboral independiente recibe allow genérico;
+- `RESOURCE_ID_SCOPE_BYPASS` — un identificador direccionable amplía alcance;
+- `URL_TERRITORY_ESCALATION` — path/query amplían sede o área;
+- `CLIENT_GUARD_AS_AUTHORITY` — la protección depende exclusivamente del cliente;
+- `MIDDLEWARE_AS_FINAL_AUTHORITY` — pasar autenticación temprana se trata como autorización final;
+- `MIDDLEWARE_EXCLUSION_UNPROTECTED` — una superficie excluida carece de protección propietaria necesaria;
+- `RETURN_TO_OPEN_REDIRECT` — retorno permite origen externo no aprobado;
+- `RETURN_TO_AUTHORITY_REUSE` — retorno conserva autoridad previa sin revalidación;
+- `DEEP_LINK_AUTHORITY_TRANSFER` — un origen transfiere actor, permiso o allow al destino;
+- `REDIRECT_AUTHORITY_TRANSFER` — redirect o alias evita la decisión del destino;
+- `BOOKMARK_OR_HISTORY_AUTHORITY_REUSE` — historial restaura autoridad vieja;
+- `STALE_URL_AUTHORITY_REUSE` — la URL reutiliza una decisión invalidada;
+- `CACHE_PROTECTED_PAYLOAD_LEAK` — cache expone una proyección incompatible;
+- `OFFLINE_UNGOVERNED_ACCESS` — modo offline abre sin contrato vigente;
+- `SIMULATION_DIRECT_URL_ESCALATION` — preview o `WOULD_ALLOW` abren contexto real;
+- `PREAUTH_PROTECTED_PAYLOAD` — se entrega información antes del allow;
+- `RESOURCE_ENUMERATION_ORACLE` — la respuesta filtra existencia protegida;
+- `TECHNICAL_FAILURE_FAIL_OPEN` — indisponibilidad o respuesta inválida concede acceso;
+- `PREVIOUS_ACTOR_URL_REUSE` — un nuevo actor hereda tab, payload o autorización del anterior;
+- `AUDIT_ATTRIBUTION_GAP` — no puede reconstruirse destino, actor, decisión y razón.
+
+La clasificación es diagnóstica y no crea nuevos reason codes públicos.
+
+---
+
+#### 32. Modelo de ejecución por paquete
+
+Cada package que materialice superficies direccionables afectadas ejecutará:
+
+```text
+AUTH-QA-020::<package_id>
+```
+
+únicamente cuando:
+
+- el package aplicable exista;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias físicas aplicables estén disponibles;
+- las superficies del package estén materializadas;
+- exista fixture o actor controlado válido para los casos aplicables;
+- la instancia esté autorizada conforme al lifecycle físico vigente.
+
+La ejecución deberá reconciliar el subconjunto material de `DIRECT-URL-ENFORCEMENT-REGISTER-001` sin omisiones ni duplicados y registrar por identidad al menos:
+
+- `identity_id`;
+- clase heredada;
+- estado heredado;
+- ruta/dirección o mecanismo equivalente probado;
+- actor o fixture controlado;
+- contexto material aplicable;
+- recurso objetivo cuando exista;
+- decisión esperada;
+- decisión observada;
+- exposición de payload `YES/NO`;
+- evidencia de revalidación;
+- resultado `PASS/FAIL/NOT_APPLICABLE`;
+- referencia de evidencia.
+
+Esta tarea documental no selecciona package, no abre una instancia física y no altera readiness.
+
+---
+
+#### 33. Certificación global final
+
+La certificación:
+
+```text
+AUTH-QA-020::GLOBAL-FINAL
+```
+
+consolida las ejecuciones de todos los packages aplicables y falla si existe al menos un consumidor donde:
+
+- una URL directa evita autorización;
+- una identidad `BLOCKED` puede abrirse;
+- `NOT_APPLICABLE` cae en allow genérico;
+- path/query/hash amplían alcance;
+- `site_id` o `area_id` crean territorio;
+- una exclusión de middleware deja una superficie protegida sin guard propietario;
+- `returnTo` permite origen externo no aprobado;
+- deep link, redirect o alias transfieren autoridad;
+- bookmark/history/cache restauran autoridad stale;
+- un actor nuevo hereda la proyección de otro;
+- simulación abre contexto real;
+- un fallo técnico produce acceso;
+- se entrega payload protegido antes de la decisión;
+- la respuesta permite enumerar recursos protegidos de forma indebida.
+
+La certificación global conserva la distribución heredada 125/38/101 y exige trazabilidad de toda identidad aplicable materializada sin convertir ausencias de runtime en PASS.
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea materializa una certificación ya exigida por requisitos vigentes y no introduce una obligación verificable nueva.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-AUTH-013` — URL directa, formularios, API y RPC no pueden eludir autorización;
+- `TREQ-AUTH-015` — toda decisión protegida conserva evidencia correlacionable y segura;
+- `TREQ-AUTH-052` — una aplicación inexistente, inactiva, no desplegada o fuera del conjunto efectivo no se abre por ruta directa;
+- `TREQ-SHELL-016` — una aplicación sin acceso permanece no navegable y el destino conserva enforcement propio;
+- `TREQ-SHELL-018` — `returnTo` se limita a rutas internas u orígenes Vento OS aprobados;
+- `TREQ-SHELL-023` — el matcher de middleware conserva exclusiones explícitas y gobernadas;
+- `TREQ-ANIMA-013`, `TREQ-ANIMA-021` y `TREQ-ANIMA-022` — navegación, URL directa y deep links respetan autorización y alcance;
+- `TREQ-VISO-011`, `TREQ-VISO-012` y `TREQ-VISO-013` — páginas VISO protegidas conservan autenticación y autorización en acceso directo;
+- `TREQ-FOGO-013` y `TREQ-FOGO-015` — páginas y endpoints de exportación FOGO fallan cerrados ante entrada directa sin autoridad;
+- `TREQ-PULSO-014` y `TREQ-PULSO-015` — rutas PULSO revalidan sesión, permiso y territorio y no aceptan `site_id` como autoridad;
+- `TREQ-PASS-016`, `TREQ-PASS-017`, `TREQ-PASS-022` y `TREQ-PASS-023` — superficies laborales, perfil e identificación asociada a PASS conservan identidad, autorización y alcance;
+- `TREQ-AURA-010` y `TREQ-AURA-018` — privilegio técnico, IDs, slugs y scope cliente no amplían lectura, mutación o media protegida;
+- la cobertura UX heredada por `AUTH-UI-041`, incluida la separación entre autorización, visibilidad, deep links, caché, offline e invalidación.
+
+Estas referencias son trazabilidad de cobertura existente y no una actualización del Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado al checkout del usuario; build y suites de consumidores corresponden al lifecycle posterior y a las ejecuciones físicas propietarias. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle documental permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, `AUTH-UI-041`, `SHELL-APP-020`, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, `middleware.ts`, `src/app/login/page.tsx`, el comportamiento actual de `safeReturnTo` y la cobertura 04A de AUTH, SHELL, ANIMA, VISO, FOGO, PULSO, PASS y AURA relacionada con acceso directo. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron URLs, deep links, bookmarks, redirects, cambios de actor, cambios de permisos, rutas protegidas, exports ni recursos reales contra un ambiente operativo. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-020::<package_id>` ni `AUTH-QA-020::GLOBAL-FINAL`; ninguna aplicación o superficie se declara certificada por esta definición documental. |
+
+---
+
+#### 37. Criterios de aceptación
+
+- [ ] El título canónico es exactamente `AUTH-QA-020 — Acceso directo por URL queda bloqueado`.
+- [ ] La continuidad usa `AUTH-QA-019` como anterior y `AUTH-QA-021` como siguiente reservada.
+- [ ] Conocer una URL no constituye autorización.
+- [ ] Una entrada directa autorizada puede continuar únicamente después de revalidación fresca.
+- [ ] Una entrada directa no autorizada falla cerrada.
+- [ ] Las 125 identidades `ASSIGNED` conservan permiso exacto y contexto aplicable.
+- [ ] Las 38 identidades `BLOCKED` permanecen en `DEFAULT_DENY`.
+- [ ] Las 101 identidades `NOT_APPLICABLE` conservan política propietaria.
+- [ ] La distribución heredada 125/38/101 se conserva sin inventar identidades.
+- [ ] Path, slug, query y hash no crean permisos.
+- [ ] IDs de recurso no amplían scope.
+- [ ] `site_id` y `area_id` no crean territorio.
+- [ ] Login exitoso no autoriza automáticamente el `returnTo`.
+- [ ] `returnTo` arbitrario externo queda rechazado por el contrato objetivo.
+- [ ] Redirects y aliases revalidan destino o fuente.
+- [ ] Deep links no transfieren actor, permiso ni `ALLOW`.
+- [ ] Bookmark, history, back/forward y refresh no restauran autoridad.
+- [ ] Cache no sustituye revalidación.
+- [ ] Offline requiere contrato explícito y vigente o falla cerrado.
+- [ ] Guard cliente no sustituye enforcement autoritativo.
+- [ ] Middleware no se interpreta como permiso granular final.
+- [ ] Rutas excluidas de middleware conservan protección propietaria.
+- [ ] Lecturas y exports protegidos conservan autorización server-side.
+- [ ] Ningún payload protegido se entrega antes del `ALLOW` aplicable.
+- [ ] `NOT_FOUND`, `DENY`, `UNKNOWN` y fallo técnico no producen un oráculo de recursos protegidos.
+- [ ] Un cambio de actor invalida proyecciones incompatibles.
+- [ ] Simulación no abre rutas reales mediante `WOULD_ALLOW`.
+- [ ] Cambios materiales invalidan decisiones stale.
+- [ ] Fallo técnico nunca degrada a `ALLOW`.
+- [ ] El baseline AS-IS se presenta como parcial y no como certificación E2E.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- redefine las 264 identidades de `AUTH-UI-041`;
+- reabre las asignaciones de lectura de `AUTH-UI-030`;
+- reabre permisos de acción de `AUTH-UI-031`;
+- redefine turno, check-in, sede, área, dispositivo compartido, simulación, sensibilidad o masking;
+- corrige `safeReturnTo`;
+- modifica `middleware.ts`;
+- modifica rutas, redirects, aliases, deep links ni componentes;
+- crea o retira exclusiones del matcher;
+- crea permisos ni cierra brechas `BLOCKED`;
+- modifica login o cookies;
+- modifica caché u offline;
+- modifica RLS, RPC, Server Actions, Route Handlers, Edge Functions o Supabase;
+- ejecuta exports, descargas ni lecturas reales;
+- certifica formularios manipulados, reservado a `AUTH-QA-021`;
+- certifica RPC manipulada, reservado a `AUTH-QA-022`;
+- certifica cruce integral de sede, reservado a `AUTH-QA-023`;
+- certifica cruce integral de área, reservado a `AUTH-QA-024`;
+- ejecuta `AUTH-QA-019::<package_id>`;
+- ejecuta `AUTH-QA-020::<package_id>`;
+- ejecuta `AUTH-QA-020::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-019 — Rol simulado no hereda permisos reales`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-020 — Acceso directo por URL queda bloqueado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor`
 ### [ ] AUTH-QA-021 — Formulario manipulado queda bloqueado en servidor
 ### [ ] AUTH-QA-022 — RPC manipulada queda bloqueada
 ### [ ] AUTH-QA-023 — Cruce de sede queda bloqueado

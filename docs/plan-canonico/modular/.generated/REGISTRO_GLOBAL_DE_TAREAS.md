@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1542** |
+| Aprobadas | **1543** |
 | En propuesta | **0** |
-| No iniciadas | **54** |
+| No iniciadas | **53** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **96.62% (1542/1596)** |
+| Porcentaje de completamiento | **96.68% (1543/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **54** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1443** |
+| ⏸ NO_EVALUADA | **53** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1444** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-019` — Rol simulado no hereda permisos reales | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-020` — Acceso directo por URL queda bloqueado | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-021` — Formulario manipulado queda bloqueado en servidor | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-020` — Acceso directo por URL queda bloqueado | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-021` — Formulario manipulado queda bloqueado en servidor | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-022` — RPC manipulada queda bloqueada | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1374,7 +1374,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-017` | Dispositivo compartido limita al administrador autenticado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-018` | PIN identifica al trabajador real | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-019` | Rol simulado no hereda permisos reales | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-020` | Acceso directo por URL queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-020` | Acceso directo por URL queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-021` | Formulario manipulado queda bloqueado en servidor | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-022` | RPC manipulada queda bloqueada | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-023` | Cruce de sede queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
