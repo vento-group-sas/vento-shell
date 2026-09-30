@@ -64,6 +64,11 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
   assert.match(result.documentationAheadSource, /EXECUTING_BLOCK_IS_DOCUMENTARY_APPROVAL: TRUE/u);
   assert.match(result.documentationAheadSource, /SEPARATE_APROBADO_MESSAGE_REQUIRED: FALSE/u);
   assert.match(result.documentationAheadSource, /PREDELIVERY_ARTIFACT_CHECK: REQUIRED/u);
+  assert.match(result.documentationAheadSource, /REPLACE_WHOLE_TASK_BLOCK: REQUIRED/u);
+  assert.match(result.documentationAheadSource, /Sustituye el BLOQUE COMPLETO desde su encabezado/u);
+  assert.match(result.documentationAheadSource, /Nunca hagas Replace\(\) del texto del encabezado/u);
+  assert.match(result.documentationAheadSource, /Simula primero el archivo resultante en memoria/u);
+  assert.match(result.documentationAheadSource, /No agregues recuperación ad hoc posterior al merge ni borrado manual de ramas/u);
   assert.match(result.documentationAheadSource, /docs:task:quality -- --task-id ID_EXACTO --artifact RUTA_DESCARGABLE/u);
   assert.match(result.documentationAheadSource, /docs:delivery:check -- --task RUTA_DESCARGABLE/u);
   assert.ok(result.documentationAheadSource.indexOf('Antes de crear rama, ejecuta sobre el descargable') < result.documentationAheadSource.indexOf('Ejecuta docs:task:start para la tarea entregada'));
