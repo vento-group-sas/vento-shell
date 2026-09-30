@@ -8076,7 +8076,836 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-012 — Cajero puede operar PULSO pero no configurar`
-### [ ] AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
+### ✅ AUTH-QA-012 — Cajero puede operar PULSO pero no configurar
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-011 — Producción puede producir pero no ajustar inventario global
+**Tarea siguiente:** AUTH-QA-013 — Conductor puede transitar sin área productiva
+**Tipo de tarea:** documental; definición canónica de una prueba integral de segregación de funciones para el rol operativo `cajero_satelite`, reutilizable por paquete y certificable globalmente, para demostrar que puede ejercer las capacidades PULSO explícitamente concedidas dentro de su turno, check-in, sede, área, recurso y modalidad aplicables sin adquirir autoridad administrativa de configuración por nombre de rol, aplicación visible, dispositivo, permiso broad legacy, acceso de aplicación, componente operativo aislado o visibilidad de una superficie administrativa
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-012::<package_id>` y la certificación `AUTH-QA-012::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, check-ins, roles, permisos, pedidos, pagos, sesiones de caja, zonas, mesas, mappings, reglas de consumo, importaciones ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que el rol operativo `cajero_satelite` puede operar PULSO únicamente mediante capacidades explícitas y contexto válido, sin convertir esa autoridad operativa en administración de PULSO.
+
+La regla positiva raíz queda:
+
+```text
+ROL OPERATIVO = cajero_satelite
++ TURNO PUBLICADO Y VIGENTE
++ CHECK-IN CUANDO CORRESPONDA
++ SEDE Y ÁREA cashier COMPATIBLES
++ PermissionKey PULSO EXPLÍCITA
++ RECURSO Y ESTADO COMPATIBLES
+→ OPERACIÓN PULSO AUTORIZABLE
+```
+
+Y simultáneamente:
+
+```text
+MISMO ACTOR
++ MISMO TURNO
++ MISMO CHECK-IN
++ MISMA SEDE
++ MISMA ÁREA
++ SUPERFICIE O MUTACIÓN DE CONFIGURACIÓN PULSO
+→ NO EXISTE AUTORIDAD ADMINISTRATIVA POR SER cajero_satelite
+```
+
+La tarea certifica segregación de funciones. No redefine el catálogo PULSO, la matriz de cajero ni el contrato de configuración administrativa.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos veintidós resultados obligatorios:
+
+1. `cajero_satelite` se resuelve como rol operativo desde el turno válido y no desde `employees.role`, navegación, dispositivo o texto local;
+2. el catálogo activo observado contiene once PermissionKey PULSO;
+3. el dataset operacional vigente materializa veinte grants totales para `cajero_satelite`, distribuidos en diez NEXO y diez PULSO;
+4. de los diez grants PULSO, cinco son `DIRECT_OPERATIONAL` y cinco son `OPERATIONAL_COMPONENT` de capacidades `BASE_AND_OPERATIONAL`;
+5. `pulso.delivery.deliveries.override` permanece fuera del dataset operacional ordinario de `cajero_satelite`;
+6. una capacidad `DIRECT_OPERATIONAL` solo puede autorizarse con contexto, territorio, recurso, estado y ausencia de denegaciones compatibles;
+7. `pulso.access` habilita entrada a la aplicación y no funciona como wildcard de capacidades internas;
+8. `pulso.sales.orders.create` constituye el caso positivo primario de operación ordinaria;
+9. `pulso.payments.transactions.collect` constituye un control positivo independiente de cobro ordinario;
+10. `pulso.cash.sessions.start` y `pulso.cash.sessions.close` se evalúan como capacidades exactas independientes y no como autoridad administrativa de terminal o configuración;
+11. los cinco `OPERATIONAL_COMPONENT` sensibles no producen `ALLOW` final para un cajero que carezca del componente base compatible;
+12. la existencia de diez grants PULSO no significa diez autorizaciones finales incondicionales;
+13. el catálogo PULSO activo no materializa actualmente una PermissionKey administrativa genérica de configuración;
+14. la tarea no inventa una PermissionKey de configuración para simular esa frontera;
+15. configuración de zonas, mesas, mappings, reglas de consumo, parámetros administrativos e importaciones sensibles conserva ownership en `PULSO-AUTH-014` y su materialización propietaria;
+16. `pulso.pos.main` legacy, `pulso.access`, aplicación visible, ruta visible, botón visible, `pos_satellite`, PIN, área de caja o rol de cajero no conceden configuración;
+17. una mutación administrativa materializada exige capability administrativa exacta, actor, territorio, recurso, estado y demás controles de su contrato propietario;
+18. un package sin capability administrativa materializada no fabrica el caso: lo registra `NOT_APPLICABLE` con evidencia y conserva la comprobación de ausencia de bypass;
+19. una mutación administrativa denegada conserva cero cambios de configuración y cero efectos derivados;
+20. servidor, RPC, RLS y demás superficies autoritativas aplicables conservan la misma frontera entre operación y administración;
+21. la certificación usa catálogo y datasets vigentes y no snapshots históricos como autoridad runtime;
+22. ninguna prueba física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- identidad humana efectiva;
+- `AccessContext@1.x`;
+- turno publicado y vigente;
+- check-in activo cuando la capacidad lo exige;
+- `operational_role = cajero_satelite`;
+- sede operativa efectiva;
+- área operativa compatible de tipo `cashier`;
+- catálogo activo de PermissionKey;
+- dataset de grants operativos vigente;
+- modalidad `OPERATIONAL_ONLY`;
+- modalidad `BASE_AND_OPERATIONAL`;
+- separación entre `DIRECT_OPERATIONAL` y `OPERATIONAL_COMPONENT`;
+- precedencia de permiso, territorio, recurso, estado y denegaciones;
+- frontera entre operación PULSO y configuración administrativa fijada por `PULSO-AUTH-014`;
+- protección server-side de acciones sensibles;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate `POST_E5_PACKAGE`.
+
+La tarea no reabre decisiones de catálogo ni crea nuevas identidades de permiso.
+
+---
+
+#### 4. Universo PULSO vigente certificado
+
+El catálogo materializado observado contiene exactamente once PermissionKey PULSO activas:
+
+```text
+pulso.access
+pulso.delivery.deliveries.override
+pulso.sales.orders.create
+pulso.payments.transactions.collect
+pulso.payments.transactions.reverse
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+pulso.sales.orders.cancel
+pulso.sales.returns.create
+pulso.payments.transactions.refund
+pulso.sales.discounts.apply
+```
+
+Este universo sustituye, para la certificación runtime, snapshots históricos anteriores que describían menos claves o una descomposición todavía no materializada.
+
+La prueba debe leer el catálogo vigente del package evaluado y fallar si existen duplicados, claves desconocidas o una reconciliación no explicada.
+
+---
+
+#### 5. Universo vigente de `cajero_satelite`
+
+El dataset operacional materializado observado contiene veinte grants para `cajero_satelite`:
+
+```text
+10 NEXO
+10 PULSO
+```
+
+Los diez PULSO son:
+
+```text
+DIRECT_OPERATIONAL
+- pulso.access
+- pulso.cash.sessions.close
+- pulso.cash.sessions.start
+- pulso.payments.transactions.collect
+- pulso.sales.orders.create
+
+OPERATIONAL_COMPONENT / BASE_AND_OPERATIONAL
+- pulso.payments.transactions.refund
+- pulso.payments.transactions.reverse
+- pulso.sales.discounts.apply
+- pulso.sales.orders.cancel
+- pulso.sales.returns.create
+```
+
+No se encuentra grant operacional ordinario de:
+
+```text
+pulso.delivery.deliveries.override
+```
+
+La cardinalidad es evidencia de integridad del dataset actual, no un reemplazo de las condiciones de autorización de cada capacidad.
+
+---
+
+#### 6. Significado exacto de “puede operar PULSO”
+
+En esta tarea, operar PULSO significa únicamente que una acción ordinaria puede llegar a `ALLOW` cuando existe una PermissionKey exacta concedida al actor por la modalidad aplicable y se satisfacen todos sus prerrequisitos.
+
+No significa:
+
+```text
+abrir PULSO
+→ todas las acciones PULSO
+```
+
+ni:
+
+```text
+rol = cajero_satelite
+→ wildcard PULSO
+```
+
+ni:
+
+```text
+10 grants PULSO
+→ 10 ALLOW finales incondicionales
+```
+
+Cada decisión conserva permiso, modalidad, resource contract, territorio y estado propios.
+
+---
+
+#### 7. Significado exacto de “no configurar”
+
+“Configurar” comprende únicamente mutaciones administrativas que alteran reglas o estructuras persistentes de PULSO, entre ellas cuando existan materialmente:
+
+- zonas;
+- mesas;
+- layout o numeración;
+- activación o inactivación de recursos configurables;
+- mappings de importación;
+- reglas de consumo;
+- parámetros administrativos;
+- configuración sensible de importaciones o integraciones.
+
+No se confunde configuración con:
+
+- crear una venta;
+- cobrar;
+- abrir o cerrar una sesión de caja cuando la PermissionKey exacta lo permite;
+- ejecutar una acción empresarial PULSO concedida explícitamente.
+
+La frontera administrativa consume `PULSO-AUTH-014` y sus propietarios físicos; esta tarea solo la certifica para `cajero_satelite`.
+
+---
+
+#### 8. La ausencia actual de PermissionKey administrativa no autoriza a inventarla
+
+El catálogo activo observado no expone una PermissionKey PULSO genérica equivalente a:
+
+```text
+pulso.configure
+pulso.settings.manage
+pulso.admin.configure
+```
+
+Ninguna identidad semejante puede introducirse por esta tarea.
+
+Si un package ya materializa una capability administrativa exacta derivada de `PULSO-AUTH-014`, la prueba consume esa identidad real.
+
+Si no la materializa, el caso de mutación administrativa se registra como `NOT_APPLICABLE` para ese package y la prueba conserva como obligaciones verificables:
+
+1. ausencia de grant administrativo implícito para `cajero_satelite`;
+2. ausencia de fallback a `pulso.pos.main`;
+3. ausencia de DML o mutación libre por mera sesión, rol, dispositivo o territorio operativo.
+
+---
+
+#### 9. Fixture positiva primaria — creación de pedido
+
+La fixture positiva primaria usa:
+
+```text
+operational_role = cajero_satelite
+permission = pulso.sales.orders.create
+modalidad = OPERATIONAL_ONLY
+grant_type = DIRECT_OPERATIONAL
+```
+
+Debe resolver de forma concluyente:
+
+- actor efectivo;
+- empleado activo;
+- turno publicado y vigente;
+- check-in cuando el contrato vigente de la capacidad lo exige;
+- sede efectiva;
+- área `cashier` compatible;
+- recurso de pedido dentro del territorio;
+- estado inicial válido;
+- columnas o transición permitidas;
+- ausencia de denegación superior.
+
+La prueba no usa una omisión de contexto para producir un falso positivo o negativo de segregación.
+
+---
+
+#### 10. Oracle positivo primario
+
+Con la fixture positiva válida:
+
+```text
+pulso.sales.orders.create
+→ ALLOW
+```
+
+El resultado debe demostrar simultáneamente:
+
+- actor humano efectivo correcto;
+- PermissionKey exacta;
+- rol operativo correcto;
+- turno y check-in aplicables;
+- sede y área correctas;
+- recurso y estado compatibles;
+- efecto empresarial único e idempotente cuando corresponda;
+- evidencia correlacionable.
+
+El `ALLOW` no concede ninguna capacidad administrativa adicional.
+
+---
+
+#### 11. Controles positivos ordinarios adicionales
+
+Cuando el package materialice los recursos correspondientes, se prueban de forma independiente:
+
+```text
+pulso.payments.transactions.collect
+pulso.cash.sessions.start
+pulso.cash.sessions.close
+```
+
+Cada caso usa su recurso y estado reales.
+
+Un PASS en una capacidad no permite inferir PASS en las otras.
+
+La prueba debe detectar si una implementación reutiliza una autorización broad para varias acciones distintas.
+
+---
+
+#### 12. Control de entrada de aplicación
+
+`pulso.access` se verifica como permiso de entrada y nunca como autorización de recursos internos.
+
+Debe cumplirse:
+
+```text
+pulso.access = ALLOW
+```
+
+cuando su contexto es válido, sin que eso implique por sí solo:
+
+```text
+orders.create
+payments.collect
+cash.sessions.start
+cash.sessions.close
+refund
+reverse
+discount
+cancel
+return
+configuración administrativa
+```
+
+Toda inferencia semejante constituye fallo.
+
+---
+
+#### 13. Control de componentes sensibles `BASE_AND_OPERATIONAL`
+
+Los cinco grants siguientes del cajero son únicamente componentes operativos:
+
+```text
+pulso.payments.transactions.refund
+pulso.payments.transactions.reverse
+pulso.sales.discounts.apply
+pulso.sales.orders.cancel
+pulso.sales.returns.create
+```
+
+La fixture adversarial usa un actor con contexto operativo de cajero válido pero sin componente base compatible.
+
+El oracle exige:
+
+```text
+OPERATIONAL_COMPONENT AISLADO
+→ DENY
+→ CERO EFECTOS
+```
+
+La tarea no cambia qué roles base pueden aportar el componente base.
+
+---
+
+#### 14. Fixture negativa administrativa primaria
+
+La fixture administrativa debe seleccionar una mutación de configuración que exista materialmente en el package evaluado y pertenezca al contrato de `PULSO-AUTH-014`.
+
+Orden de preferencia cuando exista más de una:
+
+1. mutación de zona o mesa;
+2. mutación de mapping de importación;
+3. mutación de regla de consumo;
+4. otra mutación administrativa PULSO con capability exacta y owner canónico demostrables.
+
+La fixture mantiene válido el contexto operativo del cajero para aislar segregación de funciones.
+
+No se provoca el `DENY` retirando turno, check-in, sede o rol si esos elementos no son la frontera que se pretende comprobar.
+
+---
+
+#### 15. Oracle negativo administrativo
+
+Cuando la mutación administrativa y su capability exacta existan materialmente:
+
+```text
+cajero_satelite
++ contexto operativo válido
++ mutación administrativa PULSO
++ sin autoridad administrativa exacta
+→ DENY
+→ CERO CAMBIO DE CONFIGURACIÓN
+```
+
+La razón observada debe ser la razón canónica realmente materializada por el package para ausencia o insuficiencia de autoridad administrativa.
+
+Esta tarea no inventa un reason code.
+
+Si la capability no existe materialmente, el package registra:
+
+```text
+ADMIN_CONFIG_CASE = NOT_APPLICABLE
+```
+
+con evidencia de ausencia y sin fabricar una acción sustituta.
+
+---
+
+#### 16. `pulso.pos.main` legacy no es bypass
+
+Toda presencia residual de:
+
+```text
+pulso.pos.main
+```
+
+se trata como evidencia legacy broad y nunca como permiso final suficiente de configuración.
+
+La prueba falla si una capa autoritativa utiliza `pulso.pos.main` para permitir:
+
+- editar zonas o mesas;
+- editar mappings;
+- editar reglas de consumo;
+- publicar o configurar importaciones por mera equivalencia broad;
+- ejecutar DML administrativo sin capability exacta.
+
+Su existencia puede ser objeto de migración o compatibilidad, pero no amplía la matriz de `cajero_satelite`.
+
+---
+
+#### 17. Dispositivo, UI y navegación no conceden configuración
+
+La presencia de un dispositivo `pos_satellite`, una pantalla PULSO o una pestaña administrativa puede restringir o exponer superficies, pero no concede permisos.
+
+Debe cumplirse:
+
+```text
+ACTOR AUTHORITY
+∩ DEVICE CEILING
+∩ RESOURCE/STATE
+```
+
+Nunca:
+
+```text
+DEVICE OR UI VISIBILITY
+→ ADMIN AUTHORITY
+```
+
+Ocultar un control tampoco sustituye la validación server-side.
+
+---
+
+#### 18. Separación entre operación y configuración
+
+Una sesión ordinaria de caja puede producir efectos empresariales operativos cuando existe permiso exacto.
+
+Una modificación administrativa cambia reglas, estructura o interpretación futura y requiere autoridad distinta.
+
+La prueba debe conservar:
+
+```text
+OPERATIONAL EVENT
+!=
+CONFIG CHANGE
+```
+
+Una auditoría no puede registrar una mutación de configuración como si fuera una venta, cobro, pedido o sesión ordinaria para ocultar su naturaleza.
+
+---
+
+#### 19. Territorio y configuración
+
+Un contexto operativo válido de caja no crea alcance administrativo sobre toda la sede.
+
+Debe fallar toda construcción equivalente a:
+
+```text
+cajero_satelite
++ ACTIVE_OPERATIONAL_SITE
+→ ADMINISTRAR CONFIGURACIÓN DE LA SEDE
+```
+
+El `site_id` solicitado, la sede del dispositivo o la sede del turno solo forman parte del contexto aplicable; no sustituyen permiso administrativo ni resource scope.
+
+---
+
+#### 20. Paridad entre evaluadores
+
+Para una misma combinación de:
+
+- principal;
+- actor;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- PermissionKey o capability administrativa;
+- recurso;
+- estado;
+- versión contractual;
+
+todas las superficies autoritativas aplicables deben producir decisión compatible.
+
+Se incluyen cuando existan:
+
+- helper compartido;
+- Server Action;
+- API;
+- RPC;
+- RLS;
+- servicio propietario;
+- consumidor PULSO;
+- simulador o evaluador de autorización.
+
+Una discrepancia entre capas constituye fallo aunque una UI aparente comportarse correctamente.
+
+---
+
+#### 21. Persistencia y cero efectos indebidos
+
+Todo caso negativo debe demostrar que no quedó mutación parcial.
+
+Para configuración, según el recurso materializado, se verifica ausencia de cambios en:
+
+- identidad del recurso;
+- nombre;
+- número;
+- layout;
+- estado activo/inactivo;
+- mapping;
+- regla de consumo;
+- parámetros administrativos;
+- versión de configuración;
+- efectos posteriores que dependan de esa configuración.
+
+Si la mutación usa transacción, RPC o Server Action, la evidencia debe probar que el `DENY` ocurrió antes del efecto o que el contrato físico produjo rollback completo.
+
+---
+
+#### 22. Auditoría mínima
+
+Cada decisión ejecutada debe permitir correlacionar, según aplique:
+
+```text
+principal
+actor_effective
+base_role
+operational_role
+shift_id
+checkin_id
+site_id
+area_id
+device_id
+permission_or_capability
+resource_type
+resource_id
+decision
+reasons
+contract_version
+correlation_id
+timestamp
+```
+
+Para una mutación administrativa exitosa ejecutada por otro actor autorizado en un control separado, la auditoría debe conservar además target y cambio.
+
+La tarea no obliga a inventar un schema nuevo de auditoría.
+
+---
+
+#### 23. Casos mínimos obligatorios
+
+Cada instancia aplicable debe cubrir como mínimo:
+
+| Caso | Escenario | Resultado obligatorio |
+| --- | --- | --- |
+| A | `cajero_satelite` + `pulso.sales.orders.create` + contexto válido | `ALLOW` |
+| B | `cajero_satelite` + `pulso.payments.transactions.collect` + contexto válido | `ALLOW` cuando el recurso esté materializado |
+| C | `cajero_satelite` + `pulso.cash.sessions.start` + contexto válido | `ALLOW` cuando el recurso esté materializado |
+| D | `cajero_satelite` + componente PULSO `BASE_AND_OPERATIONAL` sin componente base | `DENY`, cero efectos |
+| E | `cajero_satelite` + mutación administrativa materializada sin autoridad administrativa | `DENY`, cero cambios |
+| F | package sin capability administrativa materializada | `NOT_APPLICABLE` documentado; cero bypass por broad permission |
+| G | `pulso.access` válido usado como sustituto de acción interna | la acción interna no obtiene `ALLOW` por `pulso.access` |
+| H | `pulso.pos.main` legacy usado como autoridad de configuración | `DENY` / bypass inexistente |
+
+Los casos B, C y E solo se ejecutan donde el package materialice sus recursos y superficies. La no aplicabilidad requiere evidencia explícita.
+
+---
+
+#### 24. Clasificación de fallos
+
+Una instancia falla si ocurre cualquiera de estas condiciones:
+
+- `cajero_satelite` obtiene autoridad por nombre de rol sin PermissionKey/capability exacta;
+- `pulso.access` funciona como wildcard;
+- `pulso.pos.main` funciona como wildcard de configuración;
+- un componente `BASE_AND_OPERATIONAL` aislado produce `ALLOW` final;
+- una mutación administrativa ocurre con autoridad exclusivamente operativa;
+- UI o dispositivo amplían autoridad;
+- `site_id` o área de caja crean alcance administrativo;
+- un `DENY` deja cambio parcial;
+- se inventa una capability para convertir `NOT_APPLICABLE` en PASS;
+- evaluadores autoritativos discrepan para el mismo contexto;
+- se usa un snapshot histórico incompatible con catálogo/datasets vigentes sin reconciliación;
+- la evidencia no permite identificar permiso/capability, recurso y decisión.
+
+---
+
+#### 25. Modelo de ejecución por package
+
+La tarea utiliza:
+
+```text
+mode = PER_PACKAGE_AND_GLOBAL_FINAL
+execution_gate = POST_E5_PACKAGE
+```
+
+Para cada package aplicable existe conceptualmente:
+
+```text
+AUTH-QA-012::<package_id>
+```
+
+La instancia solo puede ejecutarse cuando el package haya satisfecho el gate físico aplicable definido por la topología.
+
+Esta tarea documental no selecciona ningún `package_id`, no autoriza `E5-GATE-008` y no ejecuta las instancias.
+
+---
+
+#### 26. Aplicabilidad por package
+
+Un package es aplicable cuando materializa al menos una de estas superficies:
+
+- autorización PULSO del rol `cajero_satelite`;
+- `pulso.sales.orders.create`;
+- `pulso.payments.transactions.collect`;
+- sesiones de caja;
+- componente PULSO `BASE_AND_OPERATIONAL` concedido al cajero;
+- configuración administrativa PULSO;
+- consumidores que puedan introducir bypass por `pulso.access`, `pulso.pos.main`, dispositivo, UI, RPC o RLS.
+
+Una instancia no puede declarar PASS sobre una superficie ausente.
+
+Las porciones no aplicables se registran individualmente sin invalidar los casos sí materializados en el mismo package.
+
+---
+
+#### 27. Evidencia mínima por package
+
+Cada instancia ejecutada deberá conservar como mínimo:
+
+- `package_id`;
+- SHA o versión del package evaluado;
+- versión de catálogo de permisos;
+- versión del dataset operacional;
+- actor y rol efectivo de fixture;
+- turno/check-in/sede/área de fixture;
+- PermissionKey o capability administrativa exacta evaluada;
+- recurso y estado inicial;
+- decisión y razones;
+- efecto observado o prueba de cero efecto;
+- superficie evaluadora;
+- evidencia de no aplicabilidad cuando corresponda;
+- timestamps y correlación suficiente para reproducir la decisión.
+
+Una captura de UI aislada no satisface esta evidencia.
+
+---
+
+#### 28. Certificación global final
+
+`AUTH-QA-012::GLOBAL-FINAL` podrá certificarse únicamente después de reconciliar todas las instancias por package aplicables y demostrar que:
+
+1. el universo PULSO vigente está reconciliado contra el catálogo materializado;
+2. los grants de `cajero_satelite` se leen del dataset vigente y no de un snapshot obsoleto;
+3. las capacidades `DIRECT_OPERATIONAL` solo autorizan dentro de su contexto exacto;
+4. los componentes `BASE_AND_OPERATIONAL` no autorizan por sí solos;
+5. `pulso.delivery.deliveries.override` no se adquiere por rol ordinario de cajero;
+6. `pulso.access` no funciona como wildcard;
+7. `pulso.pos.main` no funciona como autoridad de configuración;
+8. toda capability administrativa materializada queda fuera de la autoridad ordinaria de `cajero_satelite` salvo concesión canónica explícita distinta;
+9. cada package sin capability administrativa materializada registra la no aplicabilidad sin inventar una;
+10. zonas, mesas, mappings, reglas de consumo u otras configuraciones materializadas no admiten mutación por mera autoridad operativa;
+11. las denegaciones conservan cero efectos;
+12. no existen bypasses discrepantes entre servidor, RPC, RLS, UI o dispositivo;
+13. no quedan packages aplicables sin resultado concluyente.
+
+La certificación global no crea ni modifica permisos.
+
+---
+
+#### 29. Handoff a `AUTH-QA-013`
+
+`AUTH-QA-012` entrega a la tarea siguiente una frontera cerrada:
+
+```text
+CAJERO
+→ puede operar PULSO mediante grants exactos
+→ componentes sensibles conservan su modalidad
+→ no adquiere configuración administrativa por operar PULSO
+```
+
+`AUTH-QA-013` recibe exclusivamente la responsabilidad de probar la semántica territorial del conductor:
+
+```text
+CONDUCTOR
+→ puede transitar
+→ no requiere área productiva para el tránsito cuando el contrato así lo define
+```
+
+La tarea siguiente no debe reabrir la matriz PULSO de cajero.
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La tarea certifica reglas ya registradas y no cambia el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar sus filas, la cobertura vigente de:
+
+- `TREQ-AUTH-001`, para impedir autorización final por nombre local de rol;
+- `TREQ-AUTH-004`, para paridad entre evaluadores;
+- `TREQ-AUTH-008`, para separar autoridad operativa de autoridad base/administrativa y exigir contexto cuando corresponda;
+- `TREQ-AUTH-009`, para territorio efectivo de sede y área;
+- `TREQ-AUTH-010`, que exige expresamente que el cajero opere PULSO sin configurar y preserva segregación de funciones;
+- `TREQ-AUTH-013`, para impedir bypass por URL, formulario, API, RPC o servidor;
+- `TREQ-AUTH-015`, para evidencia correlacionable de decisiones y acciones;
+- `TREQ-PULSO-004`, para mutaciones nombradas con permiso, sede, estado y columnas permitidas;
+- `TREQ-PULSO-006`, para separar y auditar venta, pago, caja, descuento, anulación, devolución, reembolso y cierre;
+- `TREQ-PULSO-014`, para acceso protegido de rutas de negocio;
+- `TREQ-PULSO-015`, para impedir ampliación territorial mediante `site_id`;
+- `TREQ-PULSO-016`, para revalidar acciones y no conceder mutaciones por mera apertura de `/orders`;
+- `TREQ-PULSO-024`, para no confundir infraestructura existente con autorización completa;
+- `TREQ-PULSO-026`, para no adoptar `pulso.pos.main` como suficiencia contractual;
+- `TREQ-PULSO-027`, para preservar ownership y fronteras entre aplicaciones.
+
+Esta sección es trazabilidad de cobertura existente y no representa una actualización de 04A.
+
+---
+
+#### 32. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado en la rama documental de `AUTH-QA-012` ni sometido al build canónico del plan. |
+| LOCAL | NOT_EXECUTED | El checkout local todavía no ha ejecutado formateo, quality, delivery, topología, TREQ ni la batería global posterior a la inserción. |
+| REMOTA | PASS | Se verificaron en `main` el owner del BLOQUE U, continuidad `AUTH-QA-011 → AUTH-QA-012 → AUTH-QA-013`, topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`, `AUTH-RBAC-008`, `PULSO-AUTH-006`, `PULSO-AUTH-014`, el catálogo PULSO activo con once PermissionKey, el dataset operacional vigente con veinte grants de `cajero_satelite` —diez NEXO y diez PULSO—, cinco grants PULSO `DIRECT_OPERATIONAL`, cinco componentes PULSO `BASE_AND_OPERATIONAL`, ausencia de grant ordinario de `pulso.delivery.deliveries.override` y cobertura existente de `TREQ-AUTH-010`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, cobros, sesiones de caja, cancelaciones, refunds, configuración, mappings, zonas, mesas, reglas de consumo ni autorización real. |
+| FÍSICA | NOT_EXECUTED | No se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes, permisos, roles, datasets ni ambientes. |
+
+---
+
+#### 33. Criterios de aceptación
+
+`AUTH-QA-012` queda documentalmente correcta cuando se demuestra que:
+
+1. el actor primario es `cajero_satelite` resuelto desde turno válido;
+2. el universo activo observado contiene once PermissionKey PULSO;
+3. el dataset actual contiene veinte grants de cajero, diez NEXO y diez PULSO;
+4. los diez PULSO se distinguen entre cinco `DIRECT_OPERATIONAL` y cinco `OPERATIONAL_COMPONENT`;
+5. `pulso.sales.orders.create` constituye el caso positivo primario;
+6. `pulso.payments.transactions.collect` y sesiones de caja conservan decisiones independientes;
+7. `pulso.access` no funciona como wildcard;
+8. los componentes `BASE_AND_OPERATIONAL` aislados no producen `ALLOW` final;
+9. `pulso.delivery.deliveries.override` permanece fuera del grant ordinario de cajero;
+10. la ausencia de PermissionKey administrativa genérica no se corrige inventando una;
+11. una capability administrativa materializada se deniega al cajero salvo concesión canónica explícita distinta;
+12. packages sin capability administrativa materializada registran `NOT_APPLICABLE` con evidencia;
+13. `pulso.pos.main` legacy no autoriza configuración;
+14. UI, dispositivo, PIN, sede o área no amplían autoridad administrativa;
+15. un caso negativo conserva cero cambios de configuración;
+16. los evaluadores aplicables mantienen paridad;
+17. la certificación usa catálogo y datasets vigentes;
+18. no se crean ni modifican requisitos de prueba;
+19. no se ejecutan cambios físicos.
+
+---
+
+#### 34. Límites
+
+Esta tarea no:
+
+- redefine `AUTH-RBAC-008`;
+- redefine `PULSO-AUTH-006`;
+- redefine `PULSO-AUTH-014`;
+- crea PermissionKey administrativas PULSO;
+- elimina PermissionKey vigentes;
+- crea grants o denies;
+- cambia los veinte grants observados de `cajero_satelite`;
+- convierte componentes `BASE_AND_OPERATIONAL` en grants finales;
+- concede `pulso.delivery.deliveries.override` al cajero;
+- reintroduce `pulso.pos.main` como autoridad canónica broad;
+- define la configuración física final de zonas, mesas, mappings, reglas de consumo o importaciones;
+- modifica UI o navegación;
+- modifica RLS, RPC, migraciones, Edge Functions o Supabase;
+- modifica datos o datasets;
+- certifica conductor; pertenece a `AUTH-QA-013` y `AUTH-QA-014`;
+- certifica compras o recepción; pertenece a `AUTH-QA-015` y `AUTH-QA-016`;
+- ejecuta `AUTH-QA-012::<package_id>`;
+- ejecuta `AUTH-QA-012::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`.
+
+---
+
+#### 35. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-011 — Producción puede producir pero no ajustar inventario global`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-012 — Cajero puede operar PULSO pero no configurar`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-013 — Conductor puede transitar sin área productiva`
 ### [ ] AUTH-QA-013 — Conductor puede transitar sin área productiva
 ### [ ] AUTH-QA-014 — Conductor no puede preparar ni recibir inventario general
 ### [ ] AUTH-QA-015 — Compras puede crear órdenes según alcance
