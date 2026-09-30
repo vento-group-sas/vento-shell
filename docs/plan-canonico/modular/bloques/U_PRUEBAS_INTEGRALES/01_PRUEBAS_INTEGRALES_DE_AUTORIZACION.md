@@ -3384,7 +3384,597 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo`
-### [ ] AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
+### ✅ AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado
+**Tarea siguiente:** AUTH-QA-007 — Trabajador solo ve su sede
+**Tipo de tarea:** documental; definición canónica de una prueba integral positiva de resolución de contexto operativo reutilizable por paquete y certificable globalmente, para demostrar que un trabajador con turno laboral publicado y vigente y check-in activo compatible obtiene exclusivamente el rol operativo declarado por su turno, sin convertir turno, check-in o rol en autorización final
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-006::<package_id>` y la certificación `AUTH-QA-006::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, asistencia, roles, permisos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un actor laboral activo que posee exactamente un turno laboral publicado y vigente, y que además satisface el check-in cuando el carril evaluado lo exige, obtiene un `operational_role` efectivo exclusivamente a partir del código de rol contenido en ese turno.
+
+La condición raíz es:
+
+```text
+SESIÓN AUTENTICADA VÁLIDA
++
+EMPLEADO ACTIVO
++
+EXACTAMENTE UN TURNO LABORAL PUBLICADO Y VIGENTE
++
+CHECK-IN ACTIVO Y COMPATIBLE CUANDO EL CARRIL EXIGE T+C
++
+active_shift.operational_role_code PRESENTE Y CANÓNICO
++
+ROL ACTIVO Y RESOLUBLE EN EL CATÁLOGO OPERATIVO
+→
+operational_role RESUELTO DESDE EL TURNO
++
+operational readiness EVALUABLE
+```
+
+La tarea certifica la resolución positiva del rol operativo. No certifica por sí sola que una acción empresarial deba terminar en `ALLOW`.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definido un único contrato de prueba con diez resultados obligatorios:
+
+1. un turno publicado y vigente puede aportar un código de rol operativo efectivo;
+2. el check-in compatible satisface únicamente la precondición de presencia cuando el carril exige `T+C`;
+3. `operational_role.role_code` coincide exactamente con `active_shift.operational_role_code` después de validación canónica;
+4. `operational_role.shift_id`, `site_id` y `area_id` proceden del mismo turno efectivo;
+5. rol base, perfil predeterminado, último rol, dispositivo, cookie, selector, frontend, permiso solicitado o check-in no pueden crear ni sustituir el rol operativo;
+6. un rol resuelto no concede permisos por su sola existencia;
+7. permiso, modalidad, grant, deny, territorio, scope y recurso continúan evaluándose después de resolver el contexto;
+8. las superficies aplicables obtienen el mismo rol efectivo y una decisión compatible para el mismo snapshot;
+9. un cambio de turno, rol, check-in o contexto invalida la autoridad derivada anterior y exige una decisión nueva;
+10. ninguna validación física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- el actor laboral efectivo y la separación entre identidad, rol base y rol operativo;
+- la clasificación de carriles base, `T` y `T+C`;
+- la regla de que el turno publicado y vigente precede a check-in y rol operativo;
+- el contrato `AccessContext@1.x`;
+- la resolución de `active_shift`;
+- la resolución de `active_checkin_session`;
+- la semántica de `operational_role`;
+- `AUTH-ERR-009 — Sin turno publicado`;
+- `AUTH-ERR-010 — Fuera de turno`;
+- `AUTH-ERR-011 — Check-in requerido`;
+- `AUTH-ERR-012 — Rol operativo faltante`;
+- los contratos posteriores de habilitación de sede, compatibilidad de área, dispositivo, simulación, permiso, scope y recurso;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate físico `POST_E5_PACKAGE`.
+
+La tarea no redefine catálogos de roles, permisos, matrices, errores ni reglas territoriales.
+
+---
+
+#### 4. Fixture positivo primario
+
+El fixture primario utiliza un actor humano laboral con:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+base_role = trabajador_operativo
+published_shift_count = 1
+active_shift = EXACTLY_ONE
+shift_window = CURRENT
+active_shift.operational_role_code = CANONICAL_ACTIVE_OPERATIONAL_ROLE
+active_checkin_session = ACTIVE_COMPATIBLE
+```
+
+Cuando el permiso bajo prueba exige `T+C`, la sesión de check-in debe coincidir exactamente con:
+
+```text
+actor_effective.employee_id
++
+active_shift.shift_id
++
+active_shift.site_id
+```
+
+Si el carril bajo prueba exige únicamente `T`, la existencia de un check-in válido puede formar parte del fixture, pero no se convierte en un requisito adicional del permiso.
+
+---
+
+#### 5. Fuente exclusiva del rol operativo
+
+La resolución autorizada es:
+
+```text
+active_shift.operational_role_code
+→ catálogo operativo canónico
+→ validación de actividad y vigencia
+→ validación territorial estructural
+→ operational_role
+```
+
+El código efectivo no procede de:
+
+- `employees.role`;
+- `base_role`;
+- `employee_site_operational_profiles.default_operational_role`;
+- último turno;
+- último rol usado;
+- historial laboral;
+- `active_checkin_session`;
+- sede seleccionada;
+- área seleccionada;
+- `navigation_role`;
+- plantilla o sesión de dispositivo;
+- cookie;
+- caché no revalidada;
+- permiso solicitado;
+- aplicación abierta;
+- pantalla visitada;
+- nombre del cargo;
+- alias informal;
+- valor enviado por el cliente.
+
+---
+
+#### 6. Forma mínima esperada de `operational_role`
+
+El nodo resuelto debe conservar la forma contractual vigente y, como mínimo, demostrar equivalencia causal con el turno efectivo:
+
+```text
+operational_role.role_code = active_shift.operational_role_code validado
+operational_role.shift_id   = active_shift.shift_id
+operational_role.site_id    = active_shift.site_id
+operational_role.area_id    = active_shift.area_id
+```
+
+Además debe conservar los indicadores territoriales contractuales aplicables, incluidos `valid_for_site` y `valid_for_area`, sin convertir esos indicadores en permisos.
+
+La tarea no agrega propiedades al contrato público vigente.
+
+---
+
+#### 7. Semántica exacta del check-in en esta prueba
+
+El check-in no asigna rol y no concede permisos.
+
+Para un carril `T+C`:
+
+```text
+ACTIVE_SHIFT válido
++
+ACTIVE_CHECKIN_SESSION compatible
+→ precondición de presencia satisfecha
+```
+
+Después de esa precondición, el rol continúa resolviéndose exclusivamente desde el turno.
+
+Quedan prohibidas estas equivalencias:
+
+```text
+check-in válido → rol operativo
+check-in válido → permiso
+check-in válido → sede global
+check-in válido → bypass de grant
+check-in válido → bypass de recurso
+```
+
+---
+
+#### 8. Oracle positivo de resolución
+
+Para el fixture primario, la prueba debe demostrar simultáneamente:
+
+```text
+active_shift = válido
+active_checkin_session = válido
+operational_role != null
+operational_role.role_code = active_shift.operational_role_code
+operational_role.shift_id = active_shift.shift_id
+operational_role.site_id = active_shift.site_id
+operational_role.area_id = active_shift.area_id
+```
+
+Cuando sede, área y rol sean estructuralmente compatibles, el contexto puede alcanzar:
+
+```text
+operational readiness = READY
+```
+
+Ese estado habilita la evaluación del carril operativo; no es una decisión final de autorización.
+
+---
+
+#### 9. Control positivo con permiso permitido
+
+Una instancia materializada debe incluir al menos un caso donde:
+
+- el actor, turno, check-in y rol son válidos;
+- el permiso exacto admite el carril operativo;
+- el rol posee el grant aplicable;
+- no existe deny prevalente;
+- sede, área, scope y recurso son compatibles.
+
+El resultado esperado es que el evaluador pueda producir `ALLOW` por el carril operativo únicamente después de completar todas esas condiciones.
+
+El `ALLOW` demuestra la cadena completa, pero no convierte la presencia del rol en una concesión automática.
+
+---
+
+#### 10. Control de separación rol–permiso
+
+La prueba debe incluir un caso donde:
+
+```text
+turno = válido
+check-in = válido
+operational_role = válido
+permiso exacto = no concedido o explicit deny
+```
+
+Resultado:
+
+```text
+operational_role permanece resuelto
+operational readiness permanece estructuralmente válido
+final_decision = DENY
+cero efectos
+```
+
+Este control demuestra que obtener el rol operativo no equivale a obtener todos los permisos del rol ni una autorización general de aplicación.
+
+---
+
+#### 11. Control de rol ausente
+
+Con turno y check-in válidos, pero sin código de rol operativo utilizable en la revisión publicada:
+
+```text
+operational_role = null
+→ AUTH_OPERATIONAL_ROLE_REQUIRED cuando corresponda
+```
+
+La prueba positiva no puede completar el rol desde el rol base, un perfil predeterminado, el dispositivo ni el último rol conocido.
+
+---
+
+#### 12. Control de rol inválido o no canónico
+
+Si el turno contiene un código desconocido, inactivo, deprecado, ambiguo o perteneciente al namespace incorrecto:
+
+```text
+operational_role = null
+```
+
+La condición no se trata como caso positivo y conserva el propietario causal definido por los contratos vigentes.
+
+No se usa coincidencia aproximada, alias no aprobado, `LIKE`, `ILIKE` ni normalización heurística para recuperar un rol.
+
+---
+
+#### 13. Control de namespace
+
+Cuando el código proceda del campo operacional del turno, se resuelve únicamente contra el catálogo operativo:
+
+```text
+active_shift.operational_role_code
+→ operational_roles
+```
+
+No se resuelve contra el catálogo de roles base aunque exista una cadena coincidente.
+
+El actor puede conservar simultáneamente un rol base y un rol operativo; ambos mantienen responsabilidades separadas.
+
+---
+
+#### 14. Control territorial estructural
+
+La resolución del rol debe conservar la sede y el área del mismo turno que produjo el rol.
+
+Queda prohibido completar el contexto con:
+
+- sede primaria del empleado;
+- sede seleccionada en UI;
+- sede del dispositivo;
+- última sede usada;
+- primera sede permitida;
+- área seleccionada;
+- área del último check-in;
+- primera área compatible encontrada.
+
+La autorización sobre qué recursos puede ver o usar el trabajador dentro de ese territorio pertenece a las tareas siguientes, comenzando por `AUTH-QA-007`.
+
+---
+
+#### 15. Control de check-in cruzado
+
+Un check-in perteneciente a otro actor, turno o sede no satisface el fixture positivo.
+
+No se selecciona arbitrariamente una sesión mediante orden temporal o `limit 1`.
+
+Un mismatch concluyente conserva su razón propietaria y no puede transformarse en un rol operativo válido.
+
+---
+
+#### 16. Control de turnos múltiples o ambiguos
+
+La prueba positiva exige exactamente un `active_shift` resoluble.
+
+Dos turnos vigentes candidatos, una revisión ambigua o un turno incompatible con el actor impiden construir el fixture positivo.
+
+No se elige el primer turno ni el más reciente para fabricar `operational_role`.
+
+---
+
+#### 17. Paridad entre evaluadores
+
+Para un mismo snapshot de:
+
+```text
+principal
+actor_effective
+employee
+active_shift
+active_checkin_session
+permission_key
+resource
+resolved_at
+```
+
+las superficies aplicables deben resolver el mismo `operational_role.role_code`, la misma identidad de turno y razones compatibles.
+
+La paridad debe abarcar los evaluadores materializados por cada paquete, incluidos cuando correspondan:
+
+- navegación;
+- Server Actions;
+- Route Handlers;
+- fetch o RSC;
+- SDK;
+- RPC o PostgREST;
+- RLS o Data API;
+- Edge Functions;
+- Realtime;
+- clientes nativos;
+- dispositivos compartidos.
+
+---
+
+#### 18. Cero autoridad desde el cliente
+
+Ninguna de estas entradas puede alterar el rol operativo efectivo:
+
+```text
+request.body.role
+query.role
+cookie.role
+localStorage.role
+selectedRole
+navigationRole
+deviceRole
+cachedRole
+```
+
+Si una superficie recibe alguno de esos valores para UX o navegación, debe tratarlos como no autoritativos y resolver el contexto real en servidor antes de cualquier efecto protegido.
+
+---
+
+#### 19. Frescura e invalidación
+
+Un cambio de cualquiera de estas condiciones invalida la decisión derivada anterior:
+
+- actor efectivo;
+- publicación o revisión del turno;
+- ventana temporal;
+- código de rol del turno;
+- estado del rol;
+- habilitación territorial;
+- área;
+- check-in o check-out;
+- dispositivo;
+- simulación;
+- grant o deny;
+- scope;
+- recurso protegido.
+
+Después del cambio se requiere una solicitud y decisión nuevas. Caché, offline o replay no pueden conservar autoridad operativa obsoleta.
+
+---
+
+#### 20. Auditoría mínima
+
+La evidencia de una instancia materializada debe permitir reconstruir, sin depender de estado de UI:
+
+- actor efectivo;
+- identidad del turno;
+- revisión publicada consumida;
+- código de rol observado en el turno;
+- rol operativo resuelto;
+- sede y área derivadas del turno;
+- estado de check-in cuando era requerido;
+- permiso y modalidad evaluados;
+- decisión final;
+- razones y denies aplicables;
+- identificador o fingerprint de contexto;
+- momento de resolución.
+
+No se exige exponer esos datos completos al usuario final.
+
+---
+
+#### 21. Casos mínimos de certificación
+
+Cada instancia `AUTH-QA-006::<package_id>` debe materializar, como mínimo, estos casos cuando sean aplicables al paquete:
+
+| Caso | Turno | Check-in | Rol del turno | Permiso | Resultado esperado |
+| --- | --- | --- | --- | --- | --- |
+| A | publicado y vigente | activo y compatible | canónico y activo | concedido y compatible | rol resuelto; carril operativo puede terminar en `ALLOW` |
+| B | publicado y vigente | activo y compatible | canónico y activo | no concedido o denegado | rol resuelto; decisión final `DENY` |
+| C | publicado y vigente | activo y compatible | ausente | aplicable | rol no resuelto; bloqueo propietario de rol faltante |
+| D | publicado y vigente | activo y compatible | inválido o no canónico | aplicable | rol no resuelto; fallo cerrado con razón propietaria |
+| E | publicado y vigente | incompatible con actor, turno o sede | presente | aplicable | no certificar caso positivo; conservar razón de asistencia o contexto |
+| F | ambiguo o múltiple | cualquiera | presente | aplicable | no certificar caso positivo; fail-closed |
+
+Los casos A y B son obligatorios para demostrar que rol resuelto y autorización final son conceptos distintos.
+
+---
+
+#### 22. Modelo de ejecución por paquete
+
+`AUTH-QA-006` conserva modalidad:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Cada paquete aplicable obtiene una identidad:
+
+```text
+AUTH-QA-006::<package_id>
+```
+
+La ejecución física requiere:
+
+```text
+E5-GATE-008::<package_id> = PASS
+```
+
+La tarea documental actual define el contrato y no selecciona ni ejecuta ningún `package_id`.
+
+---
+
+#### 23. Certificación global final
+
+Después de completar las instancias aplicables, la identidad:
+
+```text
+AUTH-QA-006::GLOBAL-FINAL
+```
+
+debe reconciliar que:
+
+1. los paquetes prueban la misma fuente exclusiva del rol;
+2. no existe un consumidor que complete rol desde identidad base, cliente o dispositivo;
+3. la semántica de check-in es consistente con `T` y `T+C`;
+4. rol resuelto y autorización final permanecen separados;
+5. las diferencias territoriales pertenecen a las tareas propietarias posteriores;
+6. no existen contradicciones entre aplicaciones, SDK, RPC, RLS u otros canales materializados.
+
+La certificación global final no se ejecuta en esta tarea documental.
+
+---
+
+#### 24. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La tarea reutiliza cobertura ya registrada y no modifica el registro 04A.
+
+---
+
+#### 25. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, esta tarea consume trazabilidad existente de:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-004`;
+- `TREQ-AUTH-008`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-229` a `TREQ-AUTH-233`;
+- `TREQ-AUTH-239` a `TREQ-AUTH-248`.
+
+En particular, la cobertura vigente ya exige que el rol real proceda exclusivamente de `active_shift.operational_role_code`, que turno y check-in se resuelvan antes del rol cuando corresponda, y que las demás decisiones de autorización continúen después de obtener el contexto.
+
+---
+
+#### 26. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea documental no ejecuta builds de producto ni materializaciones por paquete |
+| LOCAL | NOT_EXECUTED | la incorporación y los validadores del checkout se ejecutan durante la batería documental del usuario |
+| REMOTA | PASS | se inspeccionaron en `main` el archivo propietario, contratos de contexto, ADR, precedencia, topología, políticas documentales, 04A AUTH y scripts aplicables antes de redactar el artefacto |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron casos reales de turno, check-in, rol o autorización |
+| FÍSICA | NOT_EXECUTED | no se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes ni ambientes |
+
+---
+
+#### 27. Criterios de aceptación
+
+`AUTH-QA-006` queda documentalmente correcta cuando se demuestra que:
+
+1. existe exactamente una definición de rol operativo efectivo;
+2. el rol procede exclusivamente del código del turno publicado y vigente;
+3. el check-in no crea ni selecciona rol;
+4. el rol resuelto conserva identidad del mismo turno, sede y área;
+5. un rol válido puede coexistir con una decisión final `DENY` por falta de permiso u otra razón posterior;
+6. un permiso válido puede terminar en `ALLOW` solo después de completar todas sus precondiciones y controles;
+7. turno, check-in y rol no actúan como bypass de territorio, scope, recurso, dispositivo, deny ni autorización final;
+8. ausencia o invalidez del rol falla cerrado sin fallback desde identidad base o frontend;
+9. los evaluadores aplicables conservan paridad;
+10. cambios de contexto invalidan decisiones previas;
+11. las instancias por paquete y `GLOBAL-FINAL` permanecen pendientes del gate físico correspondiente;
+12. no se crean ni modifican requisitos de prueba;
+13. no se ejecutan cambios físicos.
+
+---
+
+#### 28. Límites
+
+Esta tarea no:
+
+- redefine los bloqueos por ausencia de turno o check-in;
+- convierte check-in en fuente de rol;
+- concede todos los permisos del rol por resolverlo;
+- define visibilidad territorial final del trabajador; comienza en `AUTH-QA-007`;
+- define restricción de área final; pertenece a `AUTH-QA-008`;
+- prueba rotación de permisos entre turnos; pertenece a `AUTH-QA-009`;
+- redefine matrices específicas de bodeguero, producción, PULSO, conductor, compras o recepción;
+- modifica catálogos de roles o permisos;
+- crea turnos, check-ins, roles, grants, denies o datos;
+- modifica RLS, RPC, migraciones, Edge Functions, aplicaciones o Supabase;
+- ejecuta instancias `AUTH-QA-006::<package_id>`;
+- ejecuta `AUTH-QA-006::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba `E5-GATE-008`;
+- crea una excepción legacy.
+
+---
+
+#### 29. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-007 — Trabajador solo ve su sede`
 ### [ ] AUTH-QA-007 — Trabajador solo ve su sede
 ### [ ] AUTH-QA-008 — Trabajador solo ve su área
 ### [ ] AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
