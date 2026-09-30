@@ -1215,7 +1215,675 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-003 — Gerente de sede solo opera sus sedes`
-### [ ] AUTH-QA-003 — Gerente de sede solo opera sus sedes
+### ✅ AUTH-QA-003 — Gerente de sede solo opera sus sedes
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-002 — Gerente general sin check-in entra a administración
+**Tarea siguiente:** AUTH-QA-004 — Trabajador sin turno queda bloqueado
+**Tipo de tarea:** documental; definición canónica de una prueba integral territorial reutilizable por paquete y certificable globalmente, para demostrar que un gerente solo obtiene autoridad sobre sedes activamente asignadas, sin alcance global, sin autorización por sede primaria o seleccionada y sin bypass de los prerrequisitos del carril operativo
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-003::<package_id>` y la certificación `AUTH-QA-003::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un actor laboral activo con rol base `gerente` solo obtiene autoridad administrativa o capacidad territorial sobre las sedes y áreas que pertenecen a su cobertura canónica vigente, sin convertir el rol, la sede primaria, la sede seleccionada, un parámetro enviado por cliente o una relación parcial entre sedes en alcance global.
+
+La condición territorial central es:
+
+```text
+EMPLEADO ACTIVO
++
+ROL BASE gerente
++
+PERMISO EXACTO Y VIGENTE
++
+SEDE / ÁREA DENTRO DE COBERTURA ACTIVA
++
+RECURSO COMPATIBLE
+→
+AUTORIZACIÓN TERRITORIAL POSIBLE
+```
+
+pero simultáneamente:
+
+```text
+MISMO ACTOR
++
+MISMO PERMISO
++
+SEDE FUERA DE COBERTURA
+→
+DENY
+```
+
+Y:
+
+```text
+SEDE PRIMARIA O SELECCIONADA
++
+SIN ASIGNACIÓN TERRITORIAL ACTIVA
+→
+NO AUTORIZA
+```
+
+Y, cuando la capacidad sea operativa:
+
+```text
+ROL gerente
++
+SEDE ASIGNADA
++
+SIN TURNO / CHECK-IN / ROL OPERATIVO REQUERIDOS
+→
+NO ALLOW OPERATIVO
+```
+
+La prueba certifica una frontera ya definida. No crea sedes, asignaciones, permisos, roles, scopes, excepciones ni bypasses.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definido un único contrato de prueba con seis resultados obligatorios:
+
+1. **ALLOW dentro de cobertura:** una capacidad compatible puede resolverse dentro de una sede o área activamente asignada cuando el permiso y el resto de condiciones aplicables sean válidos;
+2. **DENY fuera de cobertura:** la misma identidad y el mismo permiso no autorizan un recurso equivalente situado en una sede no asignada;
+3. **cero alcance global por nombre de rol:** `gerente` no equivale a `gerente_general`, `propietario`, `G` ni “todas las sedes”;
+4. **cero autorización por preferencia:** `employees.site_id`, sede primaria, sede seleccionada o un `site_id` recibido del cliente no sustituyen la cobertura canónica;
+5. **cero bypass operativo:** una sede asignada no sustituye turno, check-in, rol operativo ni demás prerrequisitos cuando la modalidad de la capacidad los exige;
+6. **cero escalación relacional:** la relación de un recurso con una sede autorizada no concede autoridad general sobre otro extremo no autorizado.
+
+La certificación falla si solo demuestra acceso en una sede asignada y no ejecuta los controles negativos territoriales aplicables.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- la matriz `AUTH-RBAC-003`, donde `gerente` representa administración integral de sede y no administración organizacional global;
+- el inventario de 112 permisos evaluados para `gerente`, con 80 capacidades administrativas directas, cinco componentes base de doble condición, 27 capacidades sin concesión base y 85 claves con concesión base;
+- la prohibición de cualquier concesión con alcance global `G` para `gerente`;
+- los perfiles territoriales `AS`, `AA`, `ORG-LOCAL`, `AS-REL` y `AS/AA ∩ CTX`;
+- la regla de que `AS` se resuelve desde asignaciones activas de sede y nunca desde sede primaria o seleccionada;
+- la regla `null ≠ todas las sedes`;
+- la obligación de limitar una lectura transversal a la unión de territorios individualmente autorizados;
+- la obligación de validar todos los extremos exigidos por el contrato antes de una mutación relacional;
+- la separación entre carril administrativo y carril operativo;
+- la obligación de mantener equivalencia entre UI, SDK, servidor, RPC y RLS para las mismas entradas;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` y el gate `POST_E5_PACKAGE` aplicables al BLOQUE U.
+
+Esta tarea no modifica ninguno de esos contratos.
+
+---
+
+#### 4. Semántica exacta de “sus sedes”
+
+Para esta prueba, “sus sedes” significa únicamente el conjunto de sedes laborales que la fuente canónica de cobertura resuelva como **activamente asignadas** al actor en el momento evaluado.
+
+La cobertura puede contener una o varias sedes.
+
+```text
+AS = unión de sedes activamente asignadas
+```
+
+pero:
+
+```text
+AS ≠ organización completa
+AS ≠ todas las sedes del mismo tipo
+AS ≠ sede primaria
+AS ≠ sede seleccionada
+AS ≠ site_id recibido del cliente
+```
+
+Cuando el permiso trabaje a nivel de área, el área deberá pertenecer a una sede autorizada y satisfacer la asignación o regla territorial aplicable.
+
+Una sede inactiva, no asignada o no resoluble no forma parte de `AS`.
+
+---
+
+#### 5. Semántica exacta de “opera”
+
+El título no convierte el rol base `gerente` en un rol operativo.
+
+La prueba distingue dos carriles:
+
+**Carril administrativo local**
+
+```text
+gerente
++ permiso base explícito
++ AS / AA compatible
++ recurso válido
+→ evaluación administrativa local
+```
+
+Cuando el contrato del permiso no exige turno ni check-in, su ausencia no bloquea este carril.
+
+**Carril operativo**
+
+```text
+gerente
++ componente base aplicable
++ rol operativo efectivo
++ turno vigente
++ check-in activo
++ territorio compatible
++ recurso válido
+→ evaluación operativa posible
+```
+
+Por tanto, “solo opera sus sedes” significa que ninguna acción territorial puede superar la cobertura autorizada y que una acción operativa conserva además todos sus prerrequisitos propios.
+
+---
+
+#### 6. Unidad de prueba
+
+Cada ejecución física posterior deberá probar una capacidad concreta incluida en el `package_id` aplicable mediante:
+
+```text
+ACTOR CONTROLADO
++
+PERMISO BAJO PRUEBA
++
+COBERTURA TERRITORIAL CONTROLADA
++
+RECURSO EN SEDE ASIGNADA
++
+RECURSO EQUIVALENTE EN SEDE NO ASIGNADA
++
+SUPERFICIE / SERVIDOR / RPC / RLS APLICABLES
++
+EVIDENCIA CORRELACIONADA
+```
+
+Cuando el paquete materialice una capacidad operativa o de doble condición, la unidad incluye el contexto operativo requerido.
+
+Cuando materialice un recurso multisede, la unidad incluye los extremos territoriales exigidos por ese contrato.
+
+La tarea no selecciona un `package_id`, aplicación ni permiso concreto.
+
+---
+
+#### 7. Fixture territorial mínimo
+
+La ejecución deberá construir un fixture controlado con estas propiedades mínimas:
+
+| Dimensión | Valor requerido |
+| --- | --- |
+| tipo de actor | `EMPLOYEE` |
+| identidad | autenticada, resoluble y no simulada |
+| trabajador | activo |
+| rol base | `gerente` |
+| permiso bajo prueba | exacto, vigente y compatible con la matriz de gerente |
+| sede `S1` | activa y canónicamente asignada al actor |
+| sede `S2` | activa pero no asignada al actor |
+| área `A1`, cuando aplique | perteneciente a `S1` y compatible con la cobertura |
+| recurso positivo | vinculado a `S1` o `A1` según el contrato |
+| recurso negativo | equivalente y vinculado a `S2` |
+| sede primaria | no utilizada como fuente de autoridad |
+| sede seleccionada | no utilizada como fuente de autoridad |
+| simulación | desactivada |
+
+La diferencia entre `S1` y `S2` debe ser deliberada y demostrable.
+
+---
+
+#### 8. Caso A — autoridad dentro de sede asignada
+
+Con el fixture positivo, la prueba debe demostrar conjuntamente:
+
+1. el actor se resuelve como trabajador activo;
+2. el rol base se resuelve como `gerente`;
+3. la cobertura contiene `S1` mediante una asignación canónica activa;
+4. el permiso exacto está concedido y vigente;
+5. el recurso pertenece territorialmente a `S1` o `A1` según su contrato;
+6. el alcance se mantiene en `AS`, `AA`, `ORG-LOCAL`, `AS-REL` o la combinación permitida, nunca en `G`;
+7. la decisión puede ser `ALLOW` únicamente si las demás condiciones del permiso también son válidas;
+8. la evidencia conserva la identidad de la sede o área realmente evaluada.
+
+Para una capacidad administrativa base compatible, la prueba no debe fabricar turno ni check-in.
+
+---
+
+#### 9. Caso B — misma capacidad en sede no asignada
+
+La misma identidad `gerente`, con el mismo permiso exacto, deberá evaluarse contra un recurso equivalente de `S2`.
+
+Resultado obligatorio:
+
+```text
+gerente
++ permiso válido
++ S2 no asignada
+→ DENY TERRITORIAL
+```
+
+La prueba falla si `S2` se autoriza por:
+
+- nombre del rol;
+- pertenecer al mismo tipo de sede que `S1`;
+- pertenecer a la misma unidad de negocio sin contrato `ORG-LOCAL` válido;
+- una sede primaria histórica;
+- una sede seleccionada en interfaz;
+- un parámetro `site_id` enviado por cliente;
+- un helper legacy que interprete `gerente` como administrador global;
+- `null` interpretado como todas las sedes;
+- una política RLS o RPC más amplia que la decisión canónica.
+
+---
+
+#### 10. Caso C — sede primaria o seleccionada no autoriza
+
+La prueba deberá demostrar que cambiar o presentar una preferencia de sede no amplía autoridad.
+
+Como mínimo, cuando `S2` no pertenezca a la cobertura activa:
+
+```text
+selected_site_id = S2
+→ no agrega S2 a AS
+```
+
+Y:
+
+```text
+primary_site = S2
+→ no agrega S2 a AS
+```
+
+La navegación puede utilizar una preferencia válida para presentación, pero toda capacidad protegida deberá reevaluar el territorio desde las fuentes canónicas de autorización.
+
+---
+
+#### 11. Caso D — carril operativo conserva prerrequisitos
+
+Cuando el paquete materialice una capacidad `OPERATIONAL_ONLY` o una acción cuyo resultado final dependa de contexto operativo, la sede asignada por sí sola no basta.
+
+Control negativo mínimo:
+
+```text
+gerente
++ S1 asignada
++ permiso / componente base aplicable
++ contexto operativo incompleto
+→ NO ALLOW OPERATIVO
+```
+
+Si el paquete permite construir el caso positivo completo, este deberá demostrar:
+
+```text
+gerente
++ S1 asignada
++ rol operativo compatible
++ turno vigente
++ check-in activo
++ permiso efectivo
++ recurso en S1
+→ ALLOW solo cuando el contrato completo lo autorice
+```
+
+La prueba no exige que toda capacidad del gerente sea operativa ni convierte una capacidad base en operativa.
+
+---
+
+#### 12. Caso E — recursos entre sedes
+
+Cuando el recurso relacione varias sedes, el test deberá usar el contrato propietario del recurso.
+
+Una relación con `S1` puede permitir una lectura limitada cuando el contrato `AS-REL` así lo defina, pero nunca concede autoridad general sobre un extremo `S2` no asignado.
+
+Toda mutación que exija autoridad sobre ambos extremos deberá fallar si alguno queda fuera de cobertura.
+
+Resultado prohibido:
+
+```text
+S1 autorizada
++ relación con S2
+→ autoridad implícita sobre S2
+```
+
+La prueba deberá registrar qué extremo fue autorizado, cuál quedó fuera de cobertura y qué regla del recurso produjo el resultado.
+
+---
+
+#### 13. Cobertura multisede autorizada
+
+Un gerente puede tener más de una sede activamente asignada.
+
+La prueba deberá preservar:
+
+```text
+AS = {S1, S3, ...}
+```
+
+sin convertirlo en:
+
+```text
+AS = ALL_SITES
+```
+
+Cada sede debe conservar identidad y evidencia propias.
+
+La presencia de múltiples asignaciones no habilita sedes futuras, inactivas, del mismo tipo o de otra unidad que no pertenezcan explícitamente a la cobertura resuelta.
+
+---
+
+#### 14. Paridad de evaluadores
+
+Para una misma entrada efectiva, las capas materializadas en el paquete deberán producir una decisión territorial equivalente.
+
+Se deberán comparar, según existan:
+
+- navegación o loader;
+- SDK o resolvedor compartido;
+- Server Action;
+- Route Handler o API;
+- RPC / PostgREST;
+- RLS / Data API;
+- Edge Function;
+- Realtime;
+- cliente nativo o dispositivo compartido.
+
+No es PASS si una capa bloquea `S2` pero otra devuelve datos, permite una mutación o conserva una suscripción sobre esa sede.
+
+---
+
+#### 15. Persistencia y efectos indebidos
+
+Los controles negativos deberán demostrar cero efectos empresariales no autorizados.
+
+Ante un intento fuera de cobertura no podrá producirse por consecuencia del intento:
+
+- inserción;
+- actualización;
+- eliminación;
+- cambio de estado;
+- creación de movimiento;
+- aprobación;
+- confirmación;
+- asignación territorial;
+- elevación de scope;
+- publicación de evento empresarial;
+- suscripción residual que entregue datos de la sede no autorizada.
+
+Un error de UI sin comprobación server-side no satisface este criterio.
+
+---
+
+#### 16. Auditoría obligatoria
+
+La evidencia de cada caso deberá permitir reconstruir al menos:
+
+- actor efectivo;
+- rol base;
+- permiso evaluado;
+- modalidad;
+- sedes y áreas resueltas;
+- recurso objetivo;
+- sede o área del recurso;
+- origen de la cobertura territorial;
+- contexto operativo cuando aplique;
+- decisión final;
+- razón estructurada;
+- capa o evaluador;
+- resultado de la operación;
+- correlación entre capas.
+
+No se registrarán secretos, credenciales completas ni datos personales innecesarios.
+
+---
+
+#### 17. Casos mínimos de certificación
+
+| Caso | Entrada | Resultado obligatorio |
+| --- | --- | --- |
+| A | `gerente` + permiso válido + recurso en `S1` asignada | `ALLOW` solo si todas las condiciones aplicables son válidas |
+| B | mismo actor y permiso + recurso equivalente en `S2` no asignada | `DENY` territorial |
+| C | `S2` solo como sede primaria, seleccionada o enviada por cliente | `DENY`; no amplía cobertura |
+| D1 | `S1` asignada + acción operativa + contexto operativo incompleto | `DENY` o no `ALLOW` operativo |
+| D2 | cuando aplique: `S1` + contexto operativo completo y compatible | `ALLOW` únicamente bajo el contrato operativo completo |
+| E | relación `S1`–`S2` con autoridad incompleta sobre los extremos | sin escalación; mutación bloqueada cuando el contrato exige ambos extremos |
+
+Un paquete que no materialice un tipo de caso deberá declararlo `NOT_APPLICABLE`; no podrá presentarlo como PASS ejecutado.
+
+---
+
+#### 18. Clasificación de fallos
+
+La prueba deberá distinguir al menos:
+
+- permiso ausente o inactivo;
+- sede no asignada;
+- área no autorizada;
+- recurso fuera de cobertura;
+- contexto operativo incompleto;
+- scope incompatible;
+- relación multisede con autoridad insuficiente;
+- denegación individual o estructural;
+- recurso inexistente o inactivo;
+- fallo técnico del evaluador o de la fuente territorial.
+
+Un fallo técnico no se transforma en `ALLOW` ni se registra como una denegación territorial concluyente cuando no pudo resolverse la información necesaria.
+
+---
+
+#### 19. Modelo de ejecución por paquete
+
+La definición documental es única.
+
+La materialización posterior conserva:
+
+```text
+AUTH-QA-003::<package_id>
+```
+
+para cada paquete aplicable y:
+
+```text
+AUTH-QA-003::GLOBAL-FINAL
+```
+
+para la certificación agregada.
+
+Cada instancia por paquete deberá:
+
+1. identificar las capacidades territoriales realmente materializadas por ese paquete;
+2. vincular el `E5-GATE-008::<package_id> = PASS` correspondiente antes de ejecutar físicamente;
+3. declarar qué casos A–E son aplicables;
+4. usar fixtures controlados;
+5. ejecutar las capas realmente presentes;
+6. conservar evidencia por commit, ambiente y paquete;
+7. fallar cerrado ante cobertura territorial incompleta o evidencia insuficiente.
+
+---
+
+#### 20. Certificación global final
+
+`AUTH-QA-003::GLOBAL-FINAL` deberá reconciliar todas las instancias aplicables y demostrar como mínimo:
+
+- ausencia de paquetes que conviertan `gerente` en alcance global;
+- ausencia de permisos con scope `G` concedidos por esta matriz;
+- bloqueo consistente de recursos en sedes no asignadas;
+- ausencia de autorización por sede primaria, seleccionada o enviada por cliente;
+- paridad de decisión entre evaluadores;
+- ausencia de RLS, RPC o endpoints con cobertura territorial más amplia;
+- preservación de prerrequisitos operativos;
+- tratamiento correcto de recursos multisede;
+- cero instancias aplicables faltantes, `FAIL` o sin evidencia suficiente.
+
+Si una instancia aplicable permanece `FAIL`, `UNKNOWN` o sin evidencia suficiente, `GLOBAL-FINAL` no puede declararse PASS.
+
+---
+
+#### 21. Handoff hacia AUTH-QA-004
+
+`AUTH-QA-003` cubre exclusivamente la frontera territorial del rol base `gerente`.
+
+No demuestra por inferencia el comportamiento del trabajador operativo sin turno.
+
+La siguiente tarea deberá probar que un trabajador que dependa del carril operativo permanece bloqueado cuando no existe turno válido, preservando la diferencia entre:
+
+- rol base;
+- asignación territorial;
+- turno;
+- check-in;
+- rol operativo efectivo;
+- permiso final.
+
+---
+
+#### 22. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea convierte obligaciones territoriales ya registradas en un contrato de ejecución y certificación del BLOQUE U. No introduce una regla verificable material nueva que requiera crear o modificar filas del registro canónico.
+
+---
+
+#### 23. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro canónico, la tarea reutiliza especialmente:
+
+- `TREQ-AUTH-001`, para impedir autorización final basada en nombres de rol;
+- `TREQ-AUTH-004`, para exigir decisiones y razones equivalentes entre evaluadores;
+- `TREQ-AUTH-007`, para impedir que `gerente` conceda administración global y limitar administración de seguridad al territorio autorizado;
+- `TREQ-AUTH-008`, para preservar la separación entre capacidades administrativas y operativas y sus prerrequisitos;
+- `TREQ-AUTH-009`, que exige explícitamente que un gerente solo opere sus sedes y que todo cruce territorial se deniegue en servidor, RPC y RLS;
+- `TREQ-AUTH-013`, para impedir bypass por URL, formulario, API o RPC en mutaciones protegidas;
+- la matriz canónica `AUTH-RBAC-003`, con 85 claves de concesión base, 80 capacidades directas, cinco de doble condición, 27 no concedidas y cero concesiones `G`;
+- la cobertura vigente de auditoría, contexto territorial, SHELL, servidor, RPC y RLS.
+
+Estas referencias son trazabilidad reutilizada y no representan cambios 04A.
+
+---
+
+#### 24. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La batería documental y las futuras pruebas por paquete todavía no se ejecutaron sobre el checkout local de la rama de `AUTH-QA-003`. |
+| LOCAL | NOT_EXECUTED | El bloque todavía no fue insertado, normalizado ni validado en la rama documental local. |
+| REMOTA | PASS | Se verificaron en `vento-shell` el marcador y título canónicos, la secuencia del BLOQUE U, la topología `PER_PACKAGE_AND_GLOBAL_FINAL`, el gate `POST_E5_PACKAGE`, la matriz `AUTH-RBAC-003`, los perfiles `AS`, `AA`, `ORG-LOCAL`, `AS-REL`, la prohibición de alcance `G`, la separación administrativo/operativa, la resolución territorial desde asignaciones activas y la cobertura 04A ya existente. La base inmediata `AUTH-QA-002` se toma de su artefacto completo aprobado en esta conversación conforme al modo de trabajo adelantado. |
+| OPERATIVA | NOT_EXECUTED | El contrato define fixtures y oracles territoriales, pero no se ejecutó ninguna prueba E2E o de autorización contra una aplicación o paquete materializado. |
+| FÍSICA | NOT_EXECUTED | No se creó ni ejecutó ninguna instancia `AUTH-QA-003::<package_id>` ni `AUTH-QA-003::GLOBAL-FINAL`; no se modificaron Supabase, datos, aplicaciones ni infraestructura. |
+
+---
+
+#### 25. Criterios de aceptación
+
+- [x] El actor bajo prueba es `EMPLOYEE` activo.
+- [x] El rol base bajo prueba es exactamente `gerente`.
+- [x] La autoridad se limita a sedes o áreas de cobertura canónica activa.
+- [x] La cobertura se deriva de asignaciones autorizadas y no de preferencias de interfaz.
+- [x] La sede primaria no autoriza por sí sola.
+- [x] La sede seleccionada no autoriza por sí sola.
+- [x] Un `site_id` enviado por cliente no amplía autoridad.
+- [x] `null` no se interpreta como todas las sedes.
+- [x] La prueba conserva cero concesiones con alcance `G`.
+- [x] El caso positivo usa una sede asignada controlada.
+- [x] El caso negativo usa una sede no asignada equivalente.
+- [x] La misma identidad y permiso producen `DENY` fuera de cobertura.
+- [x] Múltiples sedes asignadas forman una unión explícita y no alcance global.
+- [x] Los recursos `AS-REL` no convierten una relación parcial en autoridad sobre el extremo no autorizado.
+- [x] Las mutaciones relacionales respetan la autoridad exigida sobre todos los extremos obligatorios.
+- [x] El carril administrativo local permanece separado del carril operativo.
+- [x] Una sede asignada no sustituye turno, check-in ni rol operativo cuando sean requeridos.
+- [x] La prueba exige paridad entre las capas materializadas.
+- [x] Los controles negativos exigen cero efectos empresariales indebidos.
+- [x] La evidencia conserva actor, permiso, territorio, recurso, decisión y resultado.
+- [x] Un fallo técnico no se presenta como PASS.
+- [x] La tarea no selecciona paquetes.
+- [x] La ejecución física queda condicionada a `E5-GATE-008::<package_id> = PASS`.
+- [x] La topología conserva una instancia por paquete aplicable y una certificación global final.
+- [x] `GLOBAL-FINAL` no puede pasar con instancias aplicables faltantes o no PASS.
+- [x] `AUTH-QA-004` permanece reservada para el trabajador sin turno.
+- [x] Se crean cero requisitos de prueba.
+- [x] Se modifican cero requisitos de prueba.
+- [x] No se ejecuta implementación física desde esta tarea documental.
+
+---
+
+#### 26. Límites
+
+Esta tarea no:
+
+- crea empleados;
+- crea sedes;
+- crea áreas;
+- crea `employee_sites`;
+- crea `employee_areas`;
+- cambia sede primaria;
+- cambia sede seleccionada;
+- crea turnos;
+- crea check-ins;
+- crea roles;
+- crea roles operativos;
+- crea permisos;
+- crea grants;
+- crea denies;
+- modifica `AUTH-RBAC-003`;
+- concede alcance `G`;
+- modifica scopes;
+- convierte `gerente` en `gerente_general`;
+- crea excepciones multisede;
+- modifica `AccessContext`;
+- modifica resolutores de territorio;
+- crea helpers de bypass;
+- modifica navegación;
+- modifica SHELL;
+- modifica VISO;
+- modifica NEXO;
+- modifica FOGO;
+- modifica ORIGO;
+- modifica PULSO;
+- modifica NUMERA;
+- modifica ANIMA;
+- modifica PASS;
+- modifica AURA;
+- modifica Supabase;
+- crea tablas;
+- crea vistas;
+- crea migraciones;
+- crea RLS;
+- crea RPC;
+- crea funciones;
+- crea triggers;
+- crea Edge Functions;
+- crea Storage;
+- crea Realtime;
+- modifica datos;
+- ejecuta fixtures reales;
+- ejecuta pruebas físicas;
+- selecciona `package_id`;
+- aprueba `E5-GATE-008`;
+- crea una instancia `AUTH-QA-003::<package_id>`;
+- crea `AUTH-QA-003::GLOBAL-FINAL`;
+- desarrolla `AUTH-QA-004`;
+- crea requisitos de prueba;
+- modifica requisitos de prueba.
+
+---
+
+#### 27. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-002 — Gerente general sin check-in entra a administración`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-003 — Gerente de sede solo opera sus sedes`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-004 — Trabajador sin turno queda bloqueado`
 ### [ ] AUTH-QA-004 — Trabajador sin turno queda bloqueado
 ### [ ] AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado
 ### [ ] AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
