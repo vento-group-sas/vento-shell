@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1498** |
+| Aprobadas | **1499** |
 | En propuesta | **0** |
-| No iniciadas | **98** |
+| No iniciadas | **97** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.86% (1498/1596)** |
+| Porcentaje de completamiento | **93.92% (1499/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **98** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1399** |
+| ⏸ NO_EVALUADA | **97** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1400** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-AUD-012` — Mantener roadmap de implementación bloqueado hasta decisión | ✅ APROBADA |
-| Tarea actual | `WEB-FRM-011` — Implementar suscripción de newsletter o retirar la interfaz | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-DOM-001` — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | ⬜ NO INICIADA |
+| Última aprobada | `WEB-FRM-011` — Implementar suscripción de newsletter o retirar la interfaz | ✅ APROBADA |
+| Tarea actual | `AURA-DOM-001` — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-DOM-002` — Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -246,7 +246,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `CODE-AUD-008` | Detectar `TODO`, `FIXME`, stubs y funciones no terminadas | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_02_GOBIERNO_DE_PRUEBAS_STUBS_Y_SUPERFICIES_INCOMPLETAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `CODE-AUD-009` | Detectar valores hardcodeados y decisiones técnicas temporales | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_02_GOBIERNO_DE_PRUEBAS_STUBS_Y_SUPERFICIES_INCOMPLETAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `CODE-AUD-010` | Detectar pantallas con interfaz pero sin lógica completa | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_02_GOBIERNO_DE_PRUEBAS_STUBS_Y_SUPERFICIES_INCOMPLETAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `WEB-FRM-011` | Implementar suscripción de newsletter o retirar la interfaz | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_02_GOBIERNO_DE_PRUEBAS_STUBS_Y_SUPERFICIES_INCOMPLETAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `WEB-FRM-011` | Implementar suscripción de newsletter o retirar la interfaz | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_02_GOBIERNO_DE_PRUEBAS_STUBS_Y_SUPERFICIES_INCOMPLETAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `CODE-AUD-011` | Detectar infraestructura sin proceso funcional utilizable | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_03_PROCESOS_PARCIALES_LEGACY_DUPLICADOS_Y_SIN_CONSUMIDOR.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `CODE-AUD-012` | Detectar procesos implementados solo parcialmente | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_03_PROCESOS_PARCIALES_LEGACY_DUPLICADOS_Y_SIN_CONSUMIDOR.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `CODE-AUD-013` | Detectar código legacy todavía activo | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_03_PROCESOS_PARCIALES_LEGACY_DUPLICADOS_Y_SIN_CONSUMIDOR.md` |
