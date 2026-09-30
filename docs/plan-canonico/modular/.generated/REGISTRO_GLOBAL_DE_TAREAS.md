@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1499** |
+| Aprobadas | **1500** |
 | En propuesta | **0** |
-| No iniciadas | **97** |
+| No iniciadas | **96** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **93.92% (1499/1596)** |
+| Porcentaje de completamiento | **93.98% (1500/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **97** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1400** |
+| ⏸ NO_EVALUADA | **96** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1401** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `WEB-FRM-011` — Implementar suscripción de newsletter o retirar la interfaz | ✅ APROBADA |
-| Tarea actual | `AURA-DOM-001` — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-DOM-002` — Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña | ⬜ NO INICIADA |
+| Última aprobada | `AURA-DOM-001` — Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | ✅ APROBADA |
+| Tarea actual | `AURA-DOM-002` — Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña | ⬜ NO INICIADA |
+| Siguiente reservada | `AURA-DOM-003` — Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1447,7 +1447,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-010` | Decidir continuidad, reemplazo o retiro | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-011` | Documentar decisión mediante ADR si corresponde | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-AUD-012` | Mantener roadmap de implementación bloqueado hasta decisión | — | — | `bloques/W_AURA/01_AUDITORIA_Y_DECISION_DE_CONTINUIDAD.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-001` | Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-DOM-001` | Definir arquitectura de marcas, identidad, tono, mensajes, claims, restricciones y vigencia | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-002` | Definir objetivos, audiencias, briefs, calendario, presupuestos, dependencias y ciclo de campaña | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-003` | Definir biblioteca de activos, derechos, versiones, reutilización y ciclo de aprobación de contenido | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-DOM-004` | Definir copiloto creativo, grounding, memoria, restricciones, proveedores de IA y revisión humana | — | — | `bloques/W_AURA/02_DOMINIO_DE_MARKETING_Y_CREACION.md` |
