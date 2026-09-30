@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1508** |
+| Tareas aprobadas | **1509** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **88** |
+| Tareas no iniciadas | **87** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **94.49% (1508/1596)** |
+| Porcentaje de completamiento | **94.55% (1509/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio** |
-| Tarea actual | **AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables** |
+| Última tarea aprobada | **AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables** |
+| Tarea actual | **AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función** |
+| Siguiente tarea | **AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública** |
 | Bloque actual | **BLOQUE W — AURA — decisión y aplicación diferida** |
-| Progreso del bloque | **BLOQUE W: 22 de 37 aprobadas; AURA-DOM-010 pendiente** |
+| Progreso del bloque | **BLOQUE W: 23 de 37 aprobadas; AURA-AUTH-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AURA-DOM-010** |
+| Carril documental | **ACTIVO — AURA-AUTH-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AURA-DOM-009` — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio |
-| Tarea actual | `AURA-DOM-010` — Definir radar de oportunidades y recomendaciones comerciales explicables — **NO INICIADA** |
-| Siguiente tarea | `AURA-AUTH-001` — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función |
+| Última aprobada | `AURA-DOM-010` — Definir radar de oportunidades y recomendaciones comerciales explicables |
+| Tarea actual | `AURA-AUTH-001` — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función — **NO INICIADA** |
+| Siguiente tarea | `AURA-AUTH-002` — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE W: 22 DE 37 APROBADAS — ACTUAL AURA-DOM-010** |
+| CONTINUIDAD ACTIVA | **BLOQUE W: 23 DE 37 APROBADAS — ACTUAL AURA-AUTH-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AURA-DOM-009 — Definir reputación, comentarios públicos, clasificación, respuesta y escalamiento a servicio
-        ↓
-TAREA ACTUAL
 AURA-DOM-010 — Definir radar de oportunidades y recomendaciones comerciales explicables
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AURA-AUTH-001 — Proteger marcas, campañas, activos, audiencias, canales y resultados por empresa, marca y función
         ↓
+SIGUIENTE TAREA RESERVADA
+AURA-AUTH-002 — Separar creación, revisión, aprobación, programación, publicación, retiro y respuesta pública
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE W — 22 de 37 tareas aprobadas
+BLOQUE W — 23 de 37 tareas aprobadas
 ```
