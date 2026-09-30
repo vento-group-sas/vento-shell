@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1547** |
+| Aprobadas | **1548** |
 | En propuesta | **0** |
-| No iniciadas | **49** |
+| No iniciadas | **48** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **96.93% (1547/1596)** |
+| Porcentaje de completamiento | **96.99% (1548/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **49** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1448** |
+| ⏸ NO_EVALUADA | **48** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1449** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-024` — Cruce de área queda bloqueado | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-025` — Check-out retira permisos operativos | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-026` — Cola offline de ANIMA se revalida | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-025` — Check-out retira permisos operativos | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-026` — Cola offline de ANIMA se revalida | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-027` — Actualización de paquete no rompe otros repositorios | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1379,7 +1379,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-022` | RPC manipulada queda bloqueada | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-023` | Cruce de sede queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-024` | Cruce de área queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-025` | Check-out retira permisos operativos | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-025` | Check-out retira permisos operativos | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-026` | Cola offline de ANIMA se revalida | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-027` | Actualización de paquete no rompe otros repositorios | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-028` | Rollback funciona por aplicación | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
