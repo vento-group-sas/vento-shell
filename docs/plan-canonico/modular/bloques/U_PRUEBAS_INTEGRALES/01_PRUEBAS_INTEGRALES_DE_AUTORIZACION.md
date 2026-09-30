@@ -3975,7 +3975,689 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-007 — Trabajador solo ve su sede`
-### [ ] AUTH-QA-007 — Trabajador solo ve su sede
+### ✅ AUTH-QA-007 — Trabajador solo ve su sede
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
+**Tarea siguiente:** AUTH-QA-008 — Trabajador solo ve su área
+**Tipo de tarea:** documental; definición canónica de una prueba integral de aislamiento territorial operativo reutilizable por paquete y certificable globalmente, para demostrar que un trabajador con contexto operativo válido queda limitado a la sede efectiva derivada de su turno y no obtiene visibilidad ni autoridad sobre recursos de otra sede por asignación múltiple, sede primaria, selección de interfaz, dispositivo, check-in o datos enviados por cliente
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-007::<package_id>` y la certificación `AUTH-QA-007::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos, asignaciones, sedes, roles, permisos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un trabajador con identidad laboral activa, turno publicado y vigente, rol operativo resoluble y demás prerrequisitos satisfechos solo puede utilizar el carril operativo dentro de la sede efectiva declarada por ese mismo turno.
+
+La condición territorial raíz es:
+
+```text
+active_shift.site_id
+→ operational_site.site_id
+→ única sede operativa efectiva del snapshot
+```
+
+La tarea certifica simultáneamente que:
+
+```text
+sede primaria
+sede seleccionada
+sede del dispositivo
+punto de check-in
+otra sede asignada
+site_id enviado por cliente
+≠
+operational_site
+```
+
+No define todavía la restricción exacta por área, que pertenece a `AUTH-QA-008`.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definido un único contrato de prueba con doce resultados obligatorios:
+
+1. `operational_site.site_id` coincide exactamente con `active_shift.site_id`;
+2. `operational_site.source_shift_id` coincide con el turno efectivo que originó el contexto;
+3. la sede operativa es única por snapshot y no equivale a todas las sedes asignadas al trabajador;
+4. la sede del turno debe ser resoluble, activa y compatible con la relación laboral aplicable;
+5. la habilitación del rol operativo se verifica contra la sede exacta del turno;
+6. un recurso perteneciente a otra sede no entra en el territorio operativo del trabajador por selección, parámetro o navegación;
+7. una segunda sede laboralmente asignada no se convierte en territorio operativo simultáneo;
+8. sede primaria, sede seleccionada, sede del dispositivo, check-in y cliente no sustituyen la sede del turno;
+9. un fallo de compatibilidad rol–sede y un cruce de recurso entre sedes conservan causas distintas;
+10. las capacidades base independientes del territorio operativo no se bloquean solo porque el trabajador no pueda operar en otra sede;
+11. servidor, RPC, RLS y demás superficies aplicables conservan la misma frontera territorial;
+12. ninguna prueba física ni modificación de producto se ejecuta durante esta tarea documental.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- identidad laboral efectiva;
+- `AccessContext@1.x`;
+- resolución de `active_shift`;
+- resolución de `operational_role`;
+- resolución de `operational_site`;
+- asignaciones laborales de sede;
+- estado activo de la sede;
+- habilitación del par rol–sede;
+- resolución del territorio real del recurso;
+- modalidades `BASE_ONLY`, `OPERATIONAL_ONLY`, `BASE_OR_OPERATIONAL` y `BASE_AND_OPERATIONAL`;
+- separación entre carril base y carril operativo;
+- precedencia de turno, check-in, rol, sede, área, dispositivo, permiso, scope y recurso;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- gate físico `POST_E5_PACKAGE`.
+
+La tarea no redefine catálogos, sedes, asignaciones, roles, matrices, grants, razones públicas ni reglas de área.
+
+---
+
+#### 4. Significado exacto de “su sede”
+
+En esta prueba, “su sede” significa exclusivamente:
+
+```text
+operational_site.site_id
+=
+active_shift.site_id
+```
+
+No significa:
+
+- primera sede asignada;
+- sede primaria;
+- todas las sedes asignadas;
+- última sede usada;
+- sede elegida en un selector;
+- sede contenida en una cookie;
+- sede del dispositivo;
+- sede del punto físico de marcación;
+- sede del recurso solicitado;
+- sede enviada por query, body, RPC o cliente;
+- sede inferida desde el rol.
+
+La sede del turno es un hecho de contexto operativo; la autorización final continúa dependiendo del permiso, la modalidad, el scope y el recurso.
+
+---
+
+#### 5. Fixture positivo primario
+
+El fixture positivo mínimo utiliza:
+
+```text
+principal = HUMAN_USER
+actor_effective = EMPLOYEE
+employee_status = ACTIVE
+active_shift = EXACTLY_ONE_PUBLISHED_CURRENT
+active_shift.site_id = SITE_A
+active_shift.operational_role_code = ROLE_R
+operational_role.role_code = ROLE_R
+operational_site.site_id = SITE_A
+operational_site.source_shift_id = active_shift.shift_id
+operational_site.site_active = true
+operational_site.assignment_valid = true
+operational_role.valid_for_site = true
+resource_site_id = SITE_A
+```
+
+Cuando el permiso exige `T+C`, el check-in compatible también debe estar satisfecho antes de alcanzar esta fase territorial.
+
+---
+
+#### 6. Forma mínima esperada de `operational_site`
+
+El nodo territorial consumido por la prueba conserva:
+
+```text
+site_id
+source_shift_id
+site_active
+assignment_valid
+```
+
+Oracle estructural:
+
+```text
+site_id = active_shift.site_id
+source_shift_id = active_shift.shift_id
+site_active = true
+assignment_valid = true
+```
+
+La prueba no añade campos ni usa el nodo como contenedor de permisos o decisión final.
+
+---
+
+#### 7. Fuente exclusiva de la sede operativa
+
+La fuente de autoridad territorial operativa es el turno vigente:
+
+```text
+active_shift.site_id
+→ operational_site.site_id
+```
+
+No se admite como sustituto:
+
+```text
+primary_site_id
+selected_site_id
+device_site_id
+checkin_site_id
+employees.site_id
+assigned_sites[0]
+last_site_id
+request.site_id
+```
+
+Si la sede del turno es incorrecta, la solución es corregir la fuente correspondiente; nunca elegir una sede más conveniente durante la autorización.
+
+---
+
+#### 8. Oracle positivo en la sede del turno
+
+Con contexto válido y recurso en `SITE_A`:
+
+```text
+operational_site.site_id = SITE_A
+resource_site_id = SITE_A
+```
+
+la frontera territorial de sede queda satisfecha.
+
+Esto únicamente permite continuar el árbol de decisión. No obliga a `ALLOW` si falta permiso, grant, scope, compatibilidad de área, dispositivo u otra condición posterior.
+
+---
+
+#### 9. Control negativo de recurso en otra sede
+
+Con el mismo actor y snapshot:
+
+```text
+operational_site.site_id = SITE_A
+resource_site_id = SITE_B
+SITE_A != SITE_B
+```
+
+la solicitud no puede obtener autorización operativa por el solo hecho de que:
+
+- `SITE_B` también esté asignada laboralmente al trabajador;
+- `SITE_B` sea su sede primaria;
+- el usuario la seleccione en interfaz;
+- el dispositivo esté configurado para `SITE_B`;
+- el cliente envíe `SITE_B`;
+- el permiso exista para su rol en otra sede.
+
+El cruce territorial debe fallar cerrado conforme al contrato del permiso y del recurso, sin mutaciones ni datos parciales de la sede ajena.
+
+---
+
+#### 10. Control de trabajador multisede
+
+Fixture:
+
+```text
+assigned_sites = [SITE_A, SITE_B]
+active_shift.site_id = SITE_B
+```
+
+Resultado esperado:
+
+```text
+operational_site.site_id = SITE_B
+```
+
+`SITE_A` permanece como asignación laboral disponible para otro contexto válido, pero no como territorio operativo simultáneo del snapshot actual.
+
+La prueba debe demostrar que multisede no significa operación cross-site.
+
+---
+
+#### 11. Control de sede primaria
+
+Fixture:
+
+```text
+primary_site_id = SITE_A
+active_shift.site_id = SITE_B
+```
+
+Resultado:
+
+```text
+operational_site.site_id = SITE_B
+```
+
+La sede primaria no:
+
+- sustituye al turno;
+- restringe automáticamente una asignación multisede;
+- corrige un turno;
+- actúa como fallback;
+- convierte un recurso de `SITE_A` en recurso permitido durante el turno de `SITE_B`.
+
+---
+
+#### 12. Control de sede seleccionada
+
+Fixture:
+
+```text
+selected_site_id = SITE_A
+active_shift.site_id = SITE_B
+```
+
+Resultado:
+
+```text
+operational_site.site_id = SITE_B
+```
+
+La selección puede filtrar una experiencia permitida cuando su contrato lo autorice, pero no modifica el territorio efectivo ni concede permiso.
+
+---
+
+#### 13. Control de check-in y dispositivo
+
+El check-in y el dispositivo solo pueden confirmar o restringir compatibilidad.
+
+Si existe check-in:
+
+```text
+active_checkin_session.site_id
+=
+operational_site.site_id
+```
+
+debe ser coherente cuando el carril lo exige.
+
+Si no coincide, el check-in no traslada la sede del turno.
+
+Asimismo:
+
+```text
+device_site_id
+≠
+fuente de operational_site
+```
+
+Un dispositivo puede restringir la sesión; nunca amplía el territorio del trabajador.
+
+---
+
+#### 14. Control de asignación laboral inválida
+
+Puede observarse un turno cuyo `site_id` sea resoluble pero cuya relación laboral con esa sede no sea válida.
+
+Resultado estructural:
+
+```text
+operational_site.site_id = active_shift.site_id
+assignment_valid = false
+```
+
+La prueba debe fallar cerrado para el carril operativo y no insertar automáticamente la sede dentro de `assigned_sites`.
+
+La ausencia de relación laboral, una asignación inactiva y una sede inactiva conservan causas distintas.
+
+---
+
+#### 15. Control de sede inactiva o no resoluble
+
+Si la sede del turno es nula, inexistente, ambigua, inactiva o no resoluble, la prueba no debe fabricar una sede efectiva desde otra fuente.
+
+Resultado esperado:
+
+```text
+operational_site = null
+OR
+operational_site.site_active = false
+```
+
+según el estado canónico aplicable, con fallo cerrado y sin elegir otra sede disponible.
+
+---
+
+#### 16. Control de rol no habilitado para la sede
+
+Fixture:
+
+```text
+active_shift.site_id = SITE_A
+operational_role.role_code = ROLE_R
+operational_role.valid_for_site = false
+```
+
+Resultado esperado del carril operativo:
+
+```text
+DENY
+AUTH_OPERATIONAL_ROLE_INVALID_FOR_SITE
+403
+CERO EFECTOS
+```
+
+La corrección no consiste en cambiar localmente a otra sede donde `ROLE_R` sí esté habilitado.
+
+---
+
+#### 17. Separación entre compatibilidad rol–sede y cruce de recurso
+
+La prueba conserva dos controles diferentes:
+
+```text
+ROL NO HABILITADO EN operational_site
+→ incompatibilidad rol–sede
+```
+
+```text
+ROL HABILITADO EN operational_site
++
+RECURSO EN OTRA SEDE
+→ cruce territorial del recurso
+```
+
+El segundo caso no debe reclasificarse como si el rol no estuviera habilitado en la sede real del turno.
+
+---
+
+#### 18. Independencia del carril base
+
+Una denegación territorial del carril operativo no elimina por sí sola capacidades base independientes que el actor posea válidamente.
+
+Por tanto:
+
+```text
+operational lane = DENY
+```
+
+no implica automáticamente:
+
+```text
+base lane = DENY
+```
+
+La composición final depende de la modalidad del permiso exacto.
+
+---
+
+#### 19. Permiso y scope después de resolver sede
+
+Una sede correcta tampoco concede autoridad por sí sola.
+
+El orden lógico conserva:
+
+```text
+contexto operativo válido
+→ sede efectiva resuelta
+→ compatibilidad territorial aplicable
+→ permiso exacto
+→ grant / deny
+→ scope
+→ recurso
+→ decisión final
+```
+
+La prueba debe incluir al menos un caso donde la sede es correcta pero el permiso o scope no permiten la acción, demostrando que territorio válido no equivale a `ALLOW`.
+
+---
+
+#### 20. Visibilidad y acceso directo
+
+Cuando una superficie lista recursos operativos territoriales, el resultado visible debe respetar la frontera autorizada y no exponer filas de otra sede por defecto.
+
+Esto no prohíbe que una superficie personal o administrativa expresamente autorizada muestre al trabajador sus propias asignaciones laborales activas, incluida más de una sede. Ver una asignación propia no convierte esa sede en `operational_site` ni concede autoridad operativa sobre sus recursos.
+
+La ocultación o filtrado de interfaz no sustituye autorización.
+
+Una referencia directa a un recurso de otra sede debe volver a evaluarse en la frontera autoritativa y no puede confiar en que el recurso estuviera oculto en la pantalla anterior.
+
+---
+
+#### 21. Paridad entre evaluadores
+
+Para el mismo principal, actor efectivo, turno, rol, sede, permiso, recurso y versión de contexto, las superficies aplicables deben producir decisiones territorialmente equivalentes.
+
+La cobertura incluye, cuando corresponda:
+
+- navegación;
+- Server Actions;
+- Route Handlers;
+- fetch o RSC;
+- RPC o PostgREST;
+- RLS o Data API;
+- Edge Functions;
+- Realtime;
+- clientes nativos;
+- dispositivos compartidos.
+
+Ninguna capa puede convertir una sede solicitada por cliente en territorio efectivo.
+
+---
+
+#### 22. Cero autoridad desde el cliente
+
+Quedan prohibidos como fuente de autorización:
+
+```text
+query.site_id
+body.site_id
+form.site_id
+cookie.site_id
+local_storage.site_id
+selected_site_id
+navigation_site
+header_site
+```
+
+Estos valores pueden identificar el recurso o una preferencia de presentación cuando el contrato lo permite, pero nunca reemplazan la resolución server-side del territorio laboral.
+
+---
+
+#### 23. Frescura e invalidación
+
+Un cambio en cualquiera de estos hechos invalida el snapshot aplicable:
+
+- turno;
+- sede del turno;
+- estado de la sede;
+- asignación laboral;
+- rol operativo;
+- habilitación rol–sede;
+- actor;
+- check-in cuando aplique;
+- dispositivo;
+- simulación;
+- frontera temporal.
+
+Después de un cambio, caché, offline, Realtime y replay no pueden conservar acceso territorial previo. La acción debe obtener una decisión nueva antes del efecto.
+
+---
+
+#### 24. Auditoría mínima
+
+La evidencia de una ejecución futura deberá permitir correlacionar como mínimo:
+
+```text
+request_id
+actor_effective
+employee_id
+shift_id
+operational_role_code
+operational_site_id
+resource_site_id cuando aplique
+permission_key
+decision
+reason_code cuando exista
+context_version
+```
+
+La auditoría prueba la decisión; no amplía autoridad ni almacena datos innecesarios del trabajador.
+
+---
+
+#### 25. Casos mínimos de certificación
+
+Cada instancia aplicable deberá cubrir como mínimo:
+
+| Caso | Contexto | Resultado esperado |
+| --- | --- | --- |
+| A | turno en `SITE_A`, rol habilitado, recurso `SITE_A`, permiso y demás controles válidos | frontera de sede satisfecha; continuar hasta decisión final |
+| B | turno en `SITE_A`, rol habilitado, recurso `SITE_B` | cruce territorial denegado; cero efectos |
+| C | trabajador asignado a `SITE_A` y `SITE_B`, turno actual en `SITE_B` | solo `SITE_B` es territorio operativo del snapshot |
+| D | sede primaria o seleccionada distinta a la sede del turno | no modifica `operational_site` |
+| E | rol del turno no habilitado en la sede del turno | `AUTH_OPERATIONAL_ROLE_INVALID_FOR_SITE`; cero efectos |
+| F | sede correcta, permiso o scope insuficiente | `DENY` por la causa propietaria posterior; no convertir en error de sede |
+| G | asignación laboral de la sede inválida o retirada | carril operativo bloqueado; sin autoasignación |
+| H | contexto territorial cambia después de una decisión previa | snapshot anterior inválido; nueva decisión obligatoria |
+
+---
+
+#### 26. Modelo de ejecución por paquete
+
+La topología vigente es:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Cada paquete propietario aplicable materializará, después del gate correspondiente:
+
+```text
+AUTH-QA-007::<package_id>
+```
+
+La instancia deberá usar recursos, permisos y consumidores reales del paquete sin reinterpretar el contrato global ni invadir el alcance de otros paquetes.
+
+---
+
+#### 27. Certificación global final
+
+Después de completar las instancias aplicables, la certificación:
+
+```text
+AUTH-QA-007::GLOBAL-FINAL
+```
+
+reconciliará cobertura, resultados, excepciones justificadas, paridad entre canales y ausencia de brechas territoriales no asignadas.
+
+La certificación global no sustituye pruebas específicas de paquete ni autoriza correcciones productivas por sí misma.
+
+---
+
+#### 28. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+Requisitos creados: 0
+
+Requisitos modificados: 0
+
+Requisitos diferidos: 0
+
+Requisitos obsoletos: 0
+
+La tarea reutiliza cobertura vigente y no modifica el registro canónico.
+
+---
+
+#### 29. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-009`, para resolución determinista de sede y área efectivas y denegación de cruces territoriales;
+- `TREQ-AUTH-013`, para impedir bypass por URL, formulario, API o RPC en mutaciones protegidas;
+- `TREQ-AUTH-014`, para invalidar contexto y decisiones ante cambios materiales;
+- `TREQ-AUTH-170` a `TREQ-AUTH-179`, para relación laboral de sede, ausencia, estado, canales e invalidación;
+- `TREQ-AUTH-249` a `TREQ-AUTH-258`, para habilitación exacta rol–sede, precedencia, paridad entre canales y regresión territorial;
+- cobertura vigente de SHELL, VISO, PASS, servidor, RPC y RLS que referencia esta certificación.
+
+Esta sección es trazabilidad de requisitos existentes y no representa una modificación del registro.
+
+---
+
+#### 30. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea documental no ejecuta builds de producto ni materializaciones por paquete |
+| LOCAL | NOT_EXECUTED | la incorporación y los validadores del checkout se ejecutan durante la batería documental del usuario |
+| REMOTA | PASS | se inspeccionaron en `main` el archivo propietario, contratos territoriales y de contexto, precedencia, topología, políticas documentales, 04A AUTH y scripts aplicables antes de redactar el artefacto |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron casos reales de turno, sede, recurso ni autorización |
+| FÍSICA | NOT_EXECUTED | no se modificó ni ejecutó Supabase, aplicaciones, datos, paquetes ni ambientes |
+
+---
+
+#### 31. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se demuestre que:
+
+1. la sede operativa procede exclusivamente del turno vigente;
+2. el `source_shift_id` conserva la identidad del mismo turno;
+3. un trabajador multisede conserva una sola sede operativa por snapshot;
+4. la sede primaria no funciona como fallback;
+5. la sede seleccionada no funciona como autoridad;
+6. el check-in no cambia la sede del turno;
+7. el dispositivo no amplía territorio;
+8. una asignación laboral inválida no se autocorrige;
+9. una sede inactiva o no resoluble falla cerrado;
+10. el par rol–sede se valida de forma exacta;
+11. un rol no habilitado en la sede produce su razón propietaria;
+12. un recurso de otra sede no se autoriza por pertenecer a otra asignación del trabajador;
+13. cruce de recurso y compatibilidad rol–sede permanecen causas distintas;
+14. un carril base independiente no se bloquea automáticamente por una denegación operativa territorial;
+15. sede válida no equivale a permiso válido;
+16. una vista autorizada de asignaciones propias no amplía `operational_site`;
+17. filtrado visual no sustituye autorización server-side;
+18. servidor, RPC y RLS preservan la misma frontera territorial;
+19. cambios de turno, sede, asignación o matriz invalidan decisiones previas;
+20. la evidencia futura permite correlacionar actor, turno, sede, recurso, permiso y decisión;
+21. no se crean ni modifican requisitos de prueba;
+22. no se ejecuta ningún cambio físico durante esta tarea documental.
+
+---
+
+#### 32. Límites
+
+Esta tarea no:
+
+- desarrolla la restricción por área, reservada a `AUTH-QA-008`;
+- desarrolla el cambio de permisos por rotación, reservado a `AUTH-QA-009`;
+- redefine asignaciones laborales;
+- redefine sede primaria;
+- redefine contratos de selección de interfaz;
+- redefine el catálogo de sedes;
+- redefine habilitaciones rol–sede;
+- redefine razones públicas;
+- crea permisos, grants o denegaciones;
+- modifica RLS, RPC, Supabase, aplicaciones, datos o migraciones;
+- ejecuta instancias físicas `AUTH-QA-007::<package_id>`;
+- ejecuta `AUTH-QA-007::GLOBAL-FINAL`;
+- usa visibilidad de interfaz como sustituto de autorización;
+- convierte una asignación multisede en operación simultánea cross-site;
+- concede autoridad por parámetros enviados por cliente.
+
+---
+
+#### 33. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-007 — Trabajador solo ve su sede`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-008 — Trabajador solo ve su área`
 ### [ ] AUTH-QA-008 — Trabajador solo ve su área
 ### [ ] AUTH-QA-009 — Trabajador rotado cambia de permisos por turno
 ### [ ] AUTH-QA-010 — Bodeguero puede preparar pero no producir
