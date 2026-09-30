@@ -18342,7 +18342,1249 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-024 — Cruce de área queda bloqueado`
-### [ ] AUTH-QA-024 — Cruce de área queda bloqueado
+### ✅ AUTH-QA-024 — Cruce de área queda bloqueado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-023 — Cruce de sede queda bloqueado
+**Tarea siguiente:** AUTH-QA-025 — Check-out retira permisos operativos
+**Tipo de tarea:** documental; definición canónica de una prueba integral adversarial de autorización territorial por área, reutilizable por paquete y certificable globalmente, para demostrar que una sede válida no presta autoridad sobre todas sus áreas, que toda operación area-scoped resuelve y autoriza las áreas reales exigidas por el recurso y la capacidad, que los cambios de área conservan territorio vigente y propuesto, y que ninguna lectura, mutación, lote, RPC, API, Server Action, RLS, cliente privilegiado o dependencia interna puede ampliar el alcance de área antes del primer efecto protegido
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-024::<package_id>` y la certificación `AUTH-QA-024::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; los contratos de resolución y autorización por área de `AUTH-SRV-007` y `AUTH-SRV-013`, junto con la plantilla RPC de `AUTH-DB-008` y los gates de permiso, contexto y RLS aplicables, existen documentalmente pero esta tarea no infiere materialización completa ni certificación E2E de cruces de área en los packages consumidores
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan lecturas o mutaciones cross-area reales, no se trasladan recursos entre áreas, no se invocan RPC ni APIs operativas, no se alteran áreas, asignaciones, turnos, dispositivos, grants, RLS, funciones, migraciones, datos, código, ambientes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una sede autorizada no concede automáticamente autoridad sobre todas sus áreas y que cada operación sensible a área resuelve, valida y autoriza el territorio real que exige antes de revelar datos protegidos o producir efectos.
+
+La regla raíz queda:
+
+```text
+AUTORIDAD EN SEDE S
++
+AUTORIDAD EN AREA A
+≠
+AUTORIDAD EN AREA B
+```
+
+Y para toda operación materialmente sensible a área:
+
+```text
+OPERACION EFECTIVA
++ RECURSO / BORRADOR CANONICO
++ SEDE YA VALIDADA
++ REQUISITO REAL DE AREA
++ AREAS REALES RESUELTAS
++ INTEGRIDAD AREA-SEDE
++ EXISTENCIA Y ACTIVIDAD CUANDO APLIQUE
++ PERMISO EXACTO Y SCOPE DE AREA
++ CONTEXTO / DISPOSITIVO / ESTADO APLICABLES
+=
+DECISION TERRITORIAL COMPLETA
+ANTES DE LECTURA PROTEGIDA O EFECTO
+```
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definidos cuarenta resultados obligatorios:
+
+1. una sede autorizada no concede automáticamente todas sus áreas;
+2. conocer, seleccionar o enviar un `area_id` no concede autoridad sobre esa área;
+3. el área del recurso se resuelve desde su contrato y relaciones canónicas;
+4. el área concreta se identifica por `area_id`, no por nombre, texto visible, posición o semejanza;
+5. `area_kind` clasifica y no sustituye la identidad de área;
+6. toda área concreta debe pertenecer a una sede previamente aceptada;
+7. una combinación área–sede incompatible falla cerrada;
+8. una operación legítimamente site-level no recibe un área sintética;
+9. `null` no significa todas las áreas;
+10. un área obligatoria ausente o no resoluble no se completa con fallback permisivo;
+11. un recurso de área única conserva su área real;
+12. un recurso multiárea resuelve todas las áreas obligatorias;
+13. una operación que cambia A → B conserva separadas área vigente y propuesta;
+14. un cambio de área dentro de la misma sede sigue siendo un cruce territorial;
+15. un cambio simultáneo de sede y área conserva primero la decisión cross-site y luego la decisión cross-area;
+16. `required_sides` mantiene la dimensión de área de cada lado que la exija;
+17. un lado que no requiera área no recibe una artificial;
+18. un área autorizada no compensa otra área denegada;
+19. una fila de `employee_areas` no concede por sí sola una capacidad;
+20. un permiso no fabrica una asignación de área que el contrato exija;
+21. `employees.area_id` permanece legacy y no sustituye asignaciones ni área operativa;
+22. área primaria y área seleccionada no constituyen autoridad;
+23. el área operativa procede del turno publicado y vigente cuando el carril la exige;
+24. un área administrativa no sustituye el área operativa;
+25. el dispositivo compartido puede restringir área y nunca ampliarla;
+26. el área del trabajador objetivo no sustituye la autoridad territorial del actor;
+27. scopes específicos de área no se amplían a otra área de la misma sede;
+28. scopes por tipo de área conservan su modalidad y límite superior de sede;
+29. una capacidad global no convierte un área inexistente, inactiva o no resoluble en válida;
+30. lecturas cross-area no autorizadas no filtran filas, agregados, existencia ni metadatos protegidos;
+31. dependencias internas de validación entre áreas no amplían `read_scope` ni `write_scope` visibles;
+32. lotes y conjuntos heterogéneos no heredan autoridad de miembros permitidos;
+33. Server Actions, API routes, RPC, RLS y funciones privilegiadas conservan una frontera territorial compatible;
+34. `service_role`, admin client y `SECURITY DEFINER` no sustituyen autorización empresarial;
+35. decisiones stale se reautorizan o fallan ante cambios de área, sede, turno, rol, recurso, dispositivo, permiso o scope;
+36. ningún efecto protegido ocurre antes de completar todas las áreas obligatorias;
+37. errores y denegaciones no crean enumeración territorial indebida;
+38. auditoría conserva fuente, lado, sede, área y resultado sin convertir argumentos cliente en autoridad;
+39. el lifecycle integral de check-out permanece reservado a `AUTH-QA-025` y la cola offline a `AUTH-QA-026`;
+40. no se ejecuta ningún cambio físico desde esta tarea documental.
+
+---
+
+#### 3. Autoridad contractual vigente
+
+La prueba consume como autoridad vigente:
+
+- `AUTH-SRV-004`, para tratar valores del cliente como intención no autoritativa;
+- `AUTH-SRV-005`, para la capacidad exacta de la operación;
+- `AUTH-SRV-006`, para la sede real ya validada;
+- `AUTH-SRV-007`, para resolver requisito, identidad y coherencia ordinaria de área;
+- `AUTH-SRV-008..011`, para turno, rol operativo, dispositivo y estado cuando correspondan;
+- `AUTH-SRV-012`, para sedes y lados cross-site cuando la operación los requiera;
+- `AUTH-SRV-013`, para autorización cross-area, multiárea, cambios de área y dependencias internas;
+- `AUTH-SRV-014..018`, para atribución, simulación, errores, helpers compartidos y acciones administrativas;
+- `AUTH-DB-008`, para resolución de área dentro de RPC sensibles cuando esa materialización sea aplicable;
+- `AUTH-DB-009`, para el permiso exacto dentro de RPC sensibles;
+- `AUTH-DB-021`, para RLS y grants canónicos por esquema;
+- los contratos vigentes de recurso, alcance, contexto, frescura, denegación y auditoría;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate `POST_E5_PACKAGE`.
+
+La prueba no usa como autoridad `selected_area_id`, área primaria, `employees.area_id`, un nombre de área, `area_kind` aislado, `body.areaId`, query, path, header, `roleContext`, área del dispositivo, argumento RPC, filtro de tabla, decisión stale ni credencial técnica privilegiada.
+
+---
+
+#### 4. Semántica exacta de “cruce de área queda bloqueado”
+
+El título no significa que toda operación que mencione varias áreas sea inválida.
+
+La certificación distingue:
+
+```text
+OPERACION LEGITIMAMENTE MULTIAREA
++ TODAS LAS AREAS OBLIGATORIAS RESUELTAS
++ INTEGRIDAD AREA-SEDE
++ COBERTURA SUFICIENTE POR LADO
++ RESTO DE GATES SATISFECHOS
+→ OPERACION POSIBLE
+```
+
+De:
+
+```text
+OPERACION AREA-SCOPED
++ AL MENOS UN AREA OBLIGATORIA FUERA DE COBERTURA
+→ DENY / RESPUESTA SEGURA
+→ CERO FUGA Y CERO EFECTO PROTEGIDO
+```
+
+Y de:
+
+```text
+OPERACION LEGITIMAMENTE SITE-LEVEL
++ CONTRATO NO EXIGE AREA CONCRETA
+→ NO SE FABRICA AREA
+→ AUSENCIA DE AREA NO BLOQUEA POR SI SOLA
+```
+
+La propiedad certificada es que la dimensión de área se exige únicamente cuando corresponde y, cuando corresponde, se resuelve completa y no puede ampliarse mediante una selección, un fallback, un área hermana o un privilegio técnico.
+
+---
+
+#### 5. Handoff recibido de `AUTH-QA-023`
+
+`AUTH-QA-023` entrega una frontera de sede ya definida:
+
+```text
+operacion territorial
+→ required site sides
+→ sedes reales resueltas
+→ autorización de sede por lado
+→ decisión cross-site
+```
+
+`AUTH-QA-024` no reabre una sede denegada para hacer coincidir un área.
+
+Cuando una operación toca varias sedes y áreas:
+
+```text
+AUTH-QA-023
+→ debe satisfacer la dimensión de sede
+
+AUTH-QA-024
+→ evalúa las áreas obligatorias dentro de esas sedes aceptadas
+```
+
+Un área nunca repara una sede no autorizada, inactiva o no resoluble.
+
+---
+
+#### 6. Universo de certificación
+
+`AUTH-QA-024` no inventa un conteo global de operaciones area-scoped.
+
+El universo aplicable se deriva por package desde la intersección verificable entre:
+
+```text
+acciones / lecturas con dimensión de área
+∩
+recursos o borradores materialmente presentes
+∩
+contratos de recurso y required_sides
+∩
+permisos, scopes y carriles aplicables
+∩
+superficies ejecutables del package
+```
+
+Cada `AUTH-QA-024::<package_id>` debe demostrar:
+
+```text
+AREA_SURFACES_EXPECTED = N
+AREA_SURFACES_CLASSIFIED = N
+AREA_SURFACES_UNCOVERED = 0
+```
+
+`N` procede del package y su evidencia material, no de una lista histórica congelada.
+
+---
+
+#### 7. Clasificación territorial mínima por operación
+
+Cada superficie aplicable debe resolver una de estas semánticas contractuales, sin convertirlas en un catálogo paralelo:
+
+```text
+AREA_NO_APLICABLE / RECURSO SITE-LEVEL
+AREA UNICA
+RECURSO MULTIAREA
+CAMBIO DE AREA
+DEPENDENCIA INTERNA DE VALIDACION ENTRE AREAS
+```
+
+La clasificación procede de la capacidad y el contrato del recurso.
+
+No procede de:
+
+- forma del request;
+- presencia o ausencia de `area_id`;
+- pantalla utilizada;
+- nombre de rol;
+- selector visible;
+- cantidad de filas filtradas por la UI.
+
+---
+
+#### 8. Regla de área no aplicable y recurso site-level
+
+Una capacidad o recurso puede ser legítimamente site-level o no requerir área concreta.
+
+En ese caso:
+
+```text
+area_id = null
+```
+
+no significa:
+
+```text
+all_areas
+```
+
+Significa únicamente que el contrato vigente no exige granularidad de área para ese efecto.
+
+La prueba falla si la implementación:
+
+- fabrica una primera área;
+- usa área primaria como default autoritativo;
+- bloquea una capacidad site-level por no tener área cuando ningún contrato adicional la exige;
+- convierte `null` en wildcard.
+
+---
+
+#### 9. Regla de área obligatoria
+
+Cuando el permiso, recurso, rol operativo o proceso exige área:
+
+```text
+AREA_REQUIRED
++
+AREA_UNRESOLVED
+→ DENY
+```
+
+No existe fallback a:
+
+- área primaria;
+- área seleccionada;
+- primera área de la sede;
+- `employees.area_id`;
+- área del dispositivo;
+- última área usada;
+- coincidencia por nombre;
+- coincidencia por `area_kind` sin identidad real.
+
+---
+
+#### 10. Fuente canónica del área del recurso
+
+El área se obtiene desde el recurso o borrador normalizado y su `territory_resolver`.
+
+Para un recurso existente:
+
+```text
+resource_id
+→ resource / relaciones canónicas
+→ area_id o ausencia contractual
+```
+
+Para una creación:
+
+```text
+validated draft
+→ canonical area resolution
+→ area/site integrity
+→ payload final
+```
+
+`area_id` recibido por cliente solo expresa intención.
+
+---
+
+#### 11. Identidad de área y clasificación funcional
+
+La identidad concreta es:
+
+```text
+area_id
+```
+
+La clasificación funcional puede usar:
+
+```text
+area_kind
+```
+
+pero se mantiene:
+
+```text
+AREA KIND
+≠
+AREA ID
+```
+
+Dos áreas del mismo tipo siguen siendo territorios distintos.
+
+Nombres, labels, traducciones, slugs o coincidencias parciales no crean equivalencia de autorización.
+
+---
+
+#### 12. Integridad área–sede
+
+Toda área concreta utilizada por la decisión debe pertenecer a la sede ya aceptada para su lado:
+
+```text
+resolved_area.site_id
+=
+validated_site_id
+```
+
+Si ocurre:
+
+```text
+validated site = S1
+resolved area belongs to S2
+```
+
+el resultado no se corrige cambiando silenciosamente la sede o el área.
+
+Debe fallar cerrado.
+
+---
+
+#### 13. Área única
+
+Cuando todos los lados relevantes resuelven una única área y no existe cambio territorial:
+
+```text
+resource area
+→ valid area identity
+→ valid parent site
+→ exact permission/scope
+→ remaining gates
+```
+
+La prueba demuestra que no se consulta o aplica autoridad sobre otra área para completar el efecto.
+
+`AUTH-QA-024` no exige una segunda autorización artificial a una operación ya declarada correctamente como single-area.
+
+---
+
+#### 14. Recurso multiárea
+
+Un recurso, lote o conjunto puede exigir varias áreas reales aun dentro de una sola sede.
+
+La regla queda:
+
+```text
+same site
+≠
+same area authority
+```
+
+Cada área obligatoria debe resolverse antes del primer efecto.
+
+Una sola área autorizada no legitima el conjunto.
+
+---
+
+#### 15. `required_sides` con dimensión de área
+
+Cada lado territorial conserva su identidad.
+
+Para todo lado que requiera área:
+
+```text
+side
+→ validated site
+→ area requirement
+→ resolved area
+→ authorization basis
+→ authorization result
+```
+
+Un lado site-level no recibe un área sintética.
+
+Un lado area-scoped no puede degradarse a site-level porque otro lado carezca de área.
+
+---
+
+#### 16. Cobertura completa antes del primer efecto
+
+Cuando el contrato exige varias áreas:
+
+```text
+AREA A = ALLOW
+AREA B = DENY
+→ DENY ALL
+```
+
+No es válido:
+
+```text
+write A
+→ discover DENY B
+→ compensate later
+```
+
+La autorización completa precede al primer efecto protegido cuando el comando es todo-o-nada.
+
+---
+
+#### 17. Cambio de área A → B
+
+Cuando un recurso existente tiene:
+
+```text
+persisted_area = A
+proposed_area = B
+A != B
+```
+
+la operación es un cambio territorial aunque la sede permanezca igual.
+
+La prueba exige conservar:
+
+```text
+current_area
+proposed_area
+```
+
+hasta completar la decisión.
+
+No se sobrescribe primero `A` para autorizar solo `B`.
+
+---
+
+#### 18. Autoridad requerida en cambio de área
+
+Un cambio de área debe satisfacer las condiciones del territorio vigente y del propuesto que el contrato de la acción declare obligatorias.
+
+La certificación debe cubrir, cuando aplique:
+
+```text
+ALLOW A + ALLOW B → puede continuar
+ALLOW A + DENY B  → DENY
+DENY A  + ALLOW B → DENY
+DENY A  + DENY B  → DENY
+```
+
+No se permite tomar un recurso desde un área no autorizada por el solo hecho de poder operar el destino.
+
+Tampoco se permite colocar el recurso en un área no autorizada por el solo hecho de poder operar el origen.
+
+---
+
+#### 19. Cambio simultáneo de sede y área
+
+Para:
+
+```text
+SITE S1 / AREA A1
+→
+SITE S2 / AREA A2
+```
+
+la prueba exige:
+
+1. satisfacer el cruce de sede definido por `AUTH-QA-023`;
+2. mantener las áreas asociadas a cada lado aceptado;
+3. comprobar integridad área–sede;
+4. aplicar el gate cross-area sin reutilizar autoridad de una sede o área en otra.
+
+Ninguna dimensión sustituye a la otra.
+
+---
+
+#### 20. Áreas asignadas del actor
+
+Cuando el scope consuma asignaciones administrativas de área, la relación aplicable procede de las fuentes canónicas vigentes, entre ellas `employee_areas` cuando corresponda.
+
+Se mantiene:
+
+```text
+AREA ASSIGNMENT
+≠
+PERMISSION
+```
+
+Y:
+
+```text
+PERMISSION
+≠
+FABRICATED AREA ASSIGNMENT
+```
+
+La cobertura incompleta de una fuente no autoriza fallbacks expansivos.
+
+---
+
+#### 21. `employees.area_id` permanece legacy
+
+`employees.area_id` no se utiliza como fuente canónica de:
+
+- conjunto de áreas asignadas;
+- área operativa;
+- área del recurso;
+- autorización;
+- fallback ante ausencia de `employee_areas`.
+
+La prueba falla si un cruce bloqueado se habilita únicamente porque ese campo legacy coincide con el área objetivo.
+
+---
+
+#### 22. Área primaria y área seleccionada
+
+`is_primary` y `selected_area_id` pueden apoyar experiencia de usuario o preferencias.
+
+No significan:
+
+```text
+authorized_area
+operational_area
+resource_area
+```
+
+La prueba debe demostrar que cambiar la selección visible no cambia por sí mismo la autoridad efectiva.
+
+---
+
+#### 23. Carril administrativo
+
+Una capacidad administrativa puede ser:
+
+- site-wide;
+- area-scoped;
+- por tipo de área;
+- organizacional;
+
+según su contrato.
+
+No se exige un turno operativo por el solo hecho de que exista una dimensión de área.
+
+Cuando el contrato administrativo exige área, el actor debe satisfacer esa cobertura sin tomar prestado el área operativa de otro carril.
+
+---
+
+#### 24. Carril operativo
+
+Cuando una capacidad operativa exige área:
+
+```text
+operational_area
+```
+
+procede del turno publicado y vigente conforme al contrato canónico.
+
+No se sustituye con:
+
+- área primaria;
+- área seleccionada;
+- `employee_areas`;
+- `employees.area_id`;
+- área del dispositivo;
+- área del recurso;
+- parámetro cliente.
+
+Si el recurso exige otra área distinta, la diferencia debe ser tratada por la autorización territorial, no por un fallback.
+
+---
+
+#### 25. Scope específico de área
+
+Para un scope de área específica, la identidad debe coincidir con el área real requerida.
+
+```text
+PERMISSION AREA = A
+RESOURCE AREA = B
+A != B
+→ DENY
+```
+
+Compartir sede, tipo, nombre o rol no amplía el scope.
+
+---
+
+#### 26. Scopes por tipo de área
+
+La certificación conserva las modalidades canónicas aplicables, entre ellas:
+
+```text
+assigned_areas_of_type
+all_areas_of_type_within_site_scope
+active_operational_area_of_type
+```
+
+El tipo de área nunca elimina:
+
+- identidad concreta cuando el recurso la exige;
+- sede superior autorizada;
+- asignación cuando la modalidad la requiere;
+- contexto operativo cuando la modalidad lo requiere.
+
+`area_kind` no es wildcard organizacional.
+
+---
+
+#### 27. Capacidad global
+
+Una capacidad global exacta puede cubrir múltiples áreas ordinarias dentro de su dominio contractual.
+
+Aun así:
+
+```text
+GLOBAL
+≠
+AREA UNRESOLVED
+```
+
+La prueba conserva:
+
+- recurso real;
+- área real cuando exista;
+- existencia y actividad cuando correspondan;
+- aislamiento de entorno;
+- estado;
+- dispositivo;
+- denies explícitos;
+- límites propios de la capacidad.
+
+---
+
+#### 28. Trabajador objetivo versus actor
+
+En acciones administrativas sobre otra persona:
+
+```text
+ACTOR AREA AUTHORITY
+≠
+TARGET EMPLOYEE AREA
+```
+
+El trabajador objetivo puede necesitar vínculo, perfil o turno en un área.
+
+Ese hecho no concede al actor autoridad sobre ella.
+
+La prueba separa elegibilidad del objetivo y autoridad del actor.
+
+---
+
+#### 29. Dispositivo compartido
+
+El área del dispositivo puede reducir autoridad efectiva.
+
+Nunca puede:
+
+- crear área del recurso;
+- crear asignación laboral;
+- sustituir el turno;
+- ampliar cobertura administrativa;
+- convertir una operación cross-area en permitida.
+
+Una incompatibilidad material del dispositivo debe mantener el resultado restrictivo correspondiente.
+
+---
+
+#### 30. Simulación
+
+Una simulación puede evaluar hipotéticamente:
+
+```text
+actor real
++ área real permitida para simular
++ área hipotética
+→ would_allow / would_deny
+```
+
+No puede ejecutar una mutación cross-area real ni convertir el área simulada en contexto operativo efectivo.
+
+Las rutas reales de negocio no aceptan estado simulado como autoridad.
+
+---
+
+#### 31. Lecturas y visibilidad cross-area
+
+La prueba no se limita a escrituras.
+
+Debe demostrar, cuando el contrato sea de lectura, que un actor no obtiene de otra área:
+
+- filas protegidas;
+- detalles de recurso;
+- agregados reveladores;
+- existencia sensible;
+- conteos que actúen como oráculo;
+- metadatos de estado;
+- campos auxiliares usados por una validación interna.
+
+Un filtro enviado por cliente solo puede reducir el universo autorizado.
+
+---
+
+#### 32. Dependencias internas de validación entre áreas
+
+Una operación autorizada en un área puede necesitar hechos internos de otra área para validar una invariante.
+
+Ese caso no equivale a autoridad visible sobre el área auxiliar.
+
+Se mantiene:
+
+```text
+write_scope
+≠
+validation_dependency_scope
+```
+
+La lectura interna:
+
+- usa finalidad explícita;
+- minimiza datos;
+- no devuelve filas auxiliares al cliente;
+- no habilita navegación;
+- no amplía `read_scope`;
+- no amplía `write_scope`.
+
+---
+
+#### 33. Lotes y conjuntos heterogéneos
+
+Para un conjunto:
+
+```text
+AREA A
+AREA B
+AREA C
+```
+
+cada recurso conserva su territorio.
+
+La prueba cubre:
+
+- lote todo-o-nada con un miembro denegado;
+- política parcial cuando esté expresamente declarada por el comando;
+- miembro sin área cuando el contrato la exige;
+- miembro site-level legítimo;
+- mezcla de áreas de una misma sede;
+- mezcla de áreas pertenecientes a sedes distintas.
+
+No se filtra silenciosamente un miembro prohibido si el contrato exige atomicidad total.
+
+---
+
+#### 34. Server Actions y API routes
+
+Una Server Action o API sensible a área debe producir la misma decisión aunque se invoque sin la pantalla normal.
+
+Se manipulan, cuando existan:
+
+```text
+areaId
+area_id
+roleContext
+siteId
+resourceId
+shiftId
+```
+
+La ruta debe releer el recurso y la relación territorial material antes de producir efecto.
+
+Que la UI ofrezca solo áreas permitidas no constituye enforcement suficiente.
+
+---
+
+#### 35. RPC directas
+
+Cuando una RPC materialmente aplicable consuma área:
+
+```text
+p_area_id
+```
+
+u otro argumento equivalente no se convierte en autoridad.
+
+`AUTH-DB-008` exige que la RPC sensible resuelva el área desde el recurso, borrador o relaciones canónicas y conserve estados como `RESOLVED`, `MULTI_RESOLVED` o `UNRESOLVED` según corresponda.
+
+`AUTH-QA-024` verifica el resultado observable:
+
+- área manipulada no amplía acceso;
+- área de otra sede falla cerrada;
+- recurso con área distinta al argumento conserva la del recurso;
+- recurso multiárea mantiene todos sus lados;
+- `service_role` o `SECURITY DEFINER` no eliminan la frontera empresarial.
+
+---
+
+#### 36. RLS, grants y paridad entre capas
+
+Para el mismo:
+
+```text
+principal
+actor
+capacidad
+recurso
+sede
+área
+estado
+contexto
+```
+
+la capa de aplicación, RPC y RLS no pueden producir una ampliación territorial contradictoria.
+
+No se considera PASS que una Server Action bloquee el cruce si una RPC privilegiada o política de base de datos permite el mismo efecto sin la dimensión de área requerida.
+
+La implementación física permanece en sus owners canónicos.
+
+---
+
+#### 37. Cliente privilegiado, admin client y `service_role`
+
+Una credencial privilegiada puede ser necesaria para ejecutar una validación o comando interno.
+
+No significa:
+
+```text
+all_areas
+skip_area_resolution
+global_business_authority
+```
+
+Antes del efecto deben existir hechos suficientes de actor, recurso, sede, requisito de área y capacidad exacta.
+
+El owner técnico de PostgreSQL no se convierte en actor empresarial.
+
+---
+
+#### 38. Frescura, concurrencia y TOCTOU
+
+La certificación invalida decisiones anteriores cuando cambie materialmente cualquiera de estos hechos:
+
+- área del recurso;
+- sede propietaria del área;
+- actividad del área;
+- asignación administrativa;
+- turno;
+- rol operativo;
+- dispositivo;
+- recurso;
+- capacidad;
+- scope;
+- versión o estado.
+
+No es válido:
+
+```text
+authorize AREA A
+→ resource moves to AREA B
+→ write using old decision
+```
+
+La implementación debe reautorizar o fallar según su contrato de concurrencia.
+
+---
+
+#### 39. Errores seguros
+
+Una denegación cross-area no debe revelar información protegida adicional para explicar por qué falló.
+
+La prueba distingue conceptualmente causas como:
+
+```text
+required area missing
+inactive area
+area/site mismatch
+area scope mismatch
+unresolved area
+cross-area side denied
+state/concurrency conflict
+technical resolution failure
+```
+
+La taxonomía pública final pertenece a los contratos de error propietarios.
+
+No se permite convertir un fallo técnico en autorización ni en “área no requerida”.
+
+---
+
+#### 40. Auditoría mínima
+
+Cada caso aplicable debe conservar evidencia suficiente para reconstruir, sin exponer secretos:
+
+```text
+package_id
+surface identity
+effective operation
+resource identity / version
+required sides
+validated site by side
+area requirement by side
+resolved area by side
+area source by side
+area/site integrity
+scope or operational basis
+area authorization result
+cross-area detection
+validation-only dependencies
+privileged path usage
+final decision
+correlation reference
+```
+
+El argumento cliente no se registra como fuente autoritativa cuando solo fue intención.
+
+---
+
+#### 41. Casos mínimos de certificación
+
+Cada package cubre las variantes materialmente aplicables de esta matriz:
+
+| Caso | Condición adversarial o de control | Oracle mínimo |
+| --- | --- | --- |
+| `AUTH-QA-024-A` | operación legítimamente site-level sin área | no se fabrica área; resultado según demás gates |
+| `AUTH-QA-024-B` | recurso single-area con área autorizada | acceso/efecto posible solo tras gates completos |
+| `AUTH-QA-024-C` | área requerida ausente | deny; cero fuga/efecto |
+| `AUTH-QA-024-D` | área inexistente | deny seguro |
+| `AUTH-QA-024-E` | área inactiva cuando la política exige actividad | deny seguro |
+| `AUTH-QA-024-F` | área pertenece a otra sede | deny; no se corrige silenciosamente |
+| `AUTH-QA-024-G` | recurso persiste área A y request envía B | A gobierna mientras no exista cambio autorizado |
+| `AUTH-QA-024-H` | actor autorizado en A intenta recurso de B | deny |
+| `AUTH-QA-024-I` | actor autorizado en B intenta mover recurso desde A sin autoridad exigida en A | deny |
+| `AUTH-QA-024-J` | actor autorizado en A intenta mover recurso hacia B sin autoridad exigida en B | deny |
+| `AUTH-QA-024-K` | cambio A → B con coberturas completas | puede continuar según demás gates |
+| `AUTH-QA-024-L` | varias áreas obligatorias y una denegada | deny all cuando el contrato es todo-o-nada |
+| `AUTH-QA-024-M` | varias áreas del mismo `area_kind` | tipo no colapsa identidades |
+| `AUTH-QA-024-N` | `selected_area_id` favorable fuera de cobertura | no amplía autoridad |
+| `AUTH-QA-024-O` | área primaria favorable fuera de cobertura | no amplía autoridad |
+| `AUTH-QA-024-P` | `employees.area_id` coincide con objetivo pero falta fuente canónica exigida | no autoriza |
+| `AUTH-QA-024-Q` | asignación `employee_areas` existe pero falta permiso | deny |
+| `AUTH-QA-024-R` | permiso existe pero falta asignación cuando el scope la exige | deny |
+| `AUTH-QA-024-S` | scope específico A intenta B dentro de la misma sede | deny |
+| `AUTH-QA-024-T` | scope por tipo fuera del site scope autorizado | deny |
+| `AUTH-QA-024-U` | área administrativa distinta del área operacional requerida | no se sustituyen |
+| `AUTH-QA-024-V` | dispositivo fija área incompatible | restringe; no amplía |
+| `AUTH-QA-024-W` | dependencia interna necesita otra área | solo resultado mínimo; sin visibilidad adicional |
+| `AUTH-QA-024-X` | lote heterogéneo contiene miembro fuera de cobertura | política contractual aplicada sin herencia de autoridad |
+| `AUTH-QA-024-Y` | llamada directa a API/Server Action con `areaId` manipulado | misma decisión territorial que flujo normal |
+| `AUTH-QA-024-Z` | RPC directa con argumento de área manipulado | no amplía autoridad |
+| `AUTH-QA-024-AA` | RPC privilegiada o `SECURITY DEFINER` omite área obligatoria | `FAIL`; privilegio técnico no sustituye gate |
+| `AUTH-QA-024-AB` | RLS permite una fila que capa de aplicación deniega solo por área | `FAIL`; paridad territorial rota |
+| `AUTH-QA-024-AC` | área o asignación cambia concurrentemente antes del efecto | reautoriza o falla |
+| `AUTH-QA-024-AD` | fallo técnico de resolución de área | fail-closed; cero efecto |
+| `AUTH-QA-024-AE` | error revela recurso o área protegida fuera de alcance | `FAIL` |
+| `AUTH-QA-024-AF` | denegación ocurre después de un efecto protegido | `FAIL` |
+| `AUTH-QA-024-AG` | cambio simultáneo sede+área con sede no autorizada | falla sin intentar reparar por área |
+| `AUTH-QA-024-AH` | cambio simultáneo sede+área con sede válida y área inválida | deny cross-area |
+| `AUTH-QA-024-AI` | área `null` en recurso que legítimamente es site-level | no wildcard; no bloqueo artificial |
+| `AUTH-QA-024-AJ` | área `null` cuando el contrato la exige | deny |
+
+Los casos que no existan materialmente en un package se marcan no aplicables con evidencia del universo, no se simulan como PASS.
+
+---
+
+#### 42. Modelo de ejecución por package
+
+Cada package elegible ejecutará:
+
+```text
+AUTH-QA-024::<package_id>
+```
+
+únicamente después del gate físico correspondiente.
+
+La instancia debe registrar como mínimo:
+
+```text
+package_id
+source commit / candidate
+area surfaces expected
+area surfaces classified
+resource contracts
+required sides
+area requirements
+resolved areas
+area/site integrity checks
+scope modes
+operational area sources
+privileged paths
+negative cases executed
+positive controls executed
+failures
+artifacts / evidence
+```
+
+PASS exige:
+
+```text
+EXPECTED = CLASSIFIED = COVERED
+UNCOVERED = 0
+UNEXPLAINED FAILURES = 0
+```
+
+---
+
+#### 43. Certificación global final
+
+Después de que todas las instancias aplicables por package hayan alcanzado su estado requerido, la certificación:
+
+```text
+AUTH-QA-024::GLOBAL-FINAL
+```
+
+debe demostrar transversalmente:
+
+1. ningún package omite una superficie area-scoped conocida;
+2. no existen semánticas divergentes para área requerida versus site-level;
+3. no existe `null` usado como wildcard territorial;
+4. no existen fallbacks expansivos desde selección, primary, legacy o dispositivo;
+5. las RPC sensibles conservan resolución de área compatible con `AUTH-DB-008`;
+6. la aplicación, RPC y RLS no discrepan ampliando territorio;
+7. los cambios A → B conservan territorio vigente y propuesto;
+8. los recursos multiárea no autorizan parcialmente un extremo;
+9. las dependencias internas no amplían visibilidad;
+10. no existen efectos parciales previos a la denegación.
+
+La ausencia de una instancia obligatoria impide `GLOBAL-FINAL = PASS`.
+
+---
+
+#### 44. Frontera con `AUTH-QA-025`
+
+`AUTH-QA-024` puede usar un contexto operativo válido o inválido como fixture para demostrar la decisión territorial de área.
+
+No certifica el lifecycle completo de salida del trabajador.
+
+La siguiente tarea conserva íntegramente:
+
+```text
+AUTH-QA-025 — Check-out retira permisos operativos
+```
+
+La prueba de `AUTH-QA-025` deberá demostrar que el check-out invalida el contexto y los permisos operativos correspondientes.
+
+`AUTH-QA-024` solo exige que una decisión de área stale no se reutilice después de que el contexto material ya dejó de ser válido.
+
+---
+
+#### 45. Frontera con `AUTH-QA-026`
+
+Una intención offline o reintento diferido que finalmente ejecute una operación area-scoped debe reevaluar el área y su contexto en el momento de ejecución.
+
+`AUTH-QA-024` certifica únicamente la no reutilización de una decisión territorial stale.
+
+La semántica integral de cola offline, replay, persistencia local y revalidación al sincronizar permanece reservada a `AUTH-QA-026`.
+
+---
+
+#### 46. Baseline contractual observado
+
+El estado verificable es **contractualmente definido pero no certificado integralmente** para `AUTH-QA-024`:
+
+1. `AUTH-SRV-007` define resolución, necesidad, identidad y coherencia ordinaria de área;
+2. `AUTH-SRV-013` define multiárea, cambio de área, cobertura completa, dependencia interna y no ampliación cross-area;
+3. `AUTH-DB-008` define la plantilla por package para resolver área dentro de RPC sensibles;
+4. `AUTH-DB-009` conserva la decisión de permiso exacto contra los hechos territoriales resueltos;
+5. `AUTH-DB-021` conserva RLS y grants aplicables;
+6. `TREQ-AUTH-009` referencia expresamente `AUTH-QA-024` dentro de la certificación de cruces territoriales;
+7. `TREQ-AUTH-200`, `TREQ-AUTH-201`, `TREQ-AUTH-203` y `TREQ-AUTH-207` ya cubren requisito de área, fuente operacional, recursos multiárea y revalidación;
+8. `TREQ-VISO-042` exige revalidación server-side de persona, sede, área, rol, fechas y alcance;
+9. la materialización y evidencia E2E permanecen pendientes de sus packages y gates.
+
+Este baseline no equivale a PASS físico.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La cobertura vigente ya exige resolución determinista de área, bloqueo de cruces territoriales, revalidación server-side, cobertura completa de recursos multiárea y resistencia a superficies manipuladas.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad heredada y no modifica el Registro 04A.
+
+Se reutiliza:
+
+- `TREQ-AUTH-007`, para limitar administración de seguridad por sede o área al territorio autorizado del actor;
+- `TREQ-AUTH-009`, para resolución determinista de sede y área y denegación de todo cruce territorial fuera de alcance en servidor, RPC y RLS, con referencia explícita a `AUTH-QA-024`;
+- `TREQ-AUTH-013`, para impedir bypass mediante URL, formulario, API o RPC manipulada y exigir revalidación server-side;
+- `TREQ-AUTH-200`, para derivar correctamente cuándo una acción requiere área y no fabricar una para casos site-level o no aplicables;
+- `TREQ-AUTH-201`, para exigir que el área operativa proceda exclusivamente del turno publicado y vigente;
+- `TREQ-AUTH-203`, para resolver en servidor el conjunto completo de áreas obligatorias de recursos de área única o multiárea sin autorizar parcialmente un extremo;
+- `TREQ-AUTH-207`, para invalidar y revalidar decisiones ante cambios de área, sede, turno, rol, recurso, dispositivo, cobertura, permiso o scope;
+- `TREQ-VISO-042`, para revalidar en servidor persona, sede, área, rol, fechas y alcance.
+
+Ninguna de estas filas cambia texto, owner, estado, relación o secuencia por efecto de `AUTH-QA-024`.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado al checkout del usuario; build y suites globales permanecen pendientes del lifecycle documental. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y cierre permanecen pendientes del checkout local del usuario. |
+| REMOTA | PASS | Se verificaron en `main` el marcador propietario de `AUTH-QA-024`, continuidad vigente del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, contratos `AUTH-SRV-007` y `AUTH-SRV-013`, obligaciones de `AUTH-DB-008`/`AUTH-DB-009`/`AUTH-DB-021` y cobertura 04A de área reutilizada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron cruces de área, cambios de área, lotes, validaciones internas privilegiadas ni mutaciones contra ambientes operativos. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-024::<package_id>` ni `AUTH-QA-024::GLOBAL-FINAL`; ningún package se declara certificado por esta definición documental. |
+
+`REMOTA = PASS` valida el desarrollo documental contra fuentes canónicas consultadas; no certifica una futura instancia física.
+
+---
+
+#### 50. Criterios de aceptación
+
+- [ ] El título canónico es exactamente `AUTH-QA-024 — Cruce de área queda bloqueado`.
+- [ ] La continuidad usa `AUTH-QA-023` como anterior y `AUTH-QA-025` como siguiente reservada.
+- [ ] El universo por package se deriva de recursos, capacidades y superficies materialmente presentes.
+- [ ] Cada operación distingue área no aplicable/site-level, área única, recurso multiárea, cambio de área o dependencia interna según el contrato.
+- [ ] `null` nunca funciona como wildcard de todas las áreas.
+- [ ] Un área obligatoria ausente o no resoluble falla cerrada.
+- [ ] Cada área concreta se identifica por `area_id` y no por nombre o similitud textual.
+- [ ] `area_kind` no sustituye la identidad concreta del recurso.
+- [ ] Cada área concreta pertenece a una sede previamente aceptada.
+- [ ] Un mismatch área–sede no se corrige silenciosamente.
+- [ ] Área seleccionada, primaria, de dispositivo o enviada por request no sustituye el área real del recurso.
+- [ ] `employees.area_id` no sustituye las fuentes canónicas de asignación o contexto.
+- [ ] Una asignación de área no crea permiso.
+- [ ] Un permiso no fabrica una asignación exigida por su scope.
+- [ ] El área operativa procede del turno publicado y vigente cuando corresponde.
+- [ ] Área administrativa y operacional permanecen separadas.
+- [ ] Scope específico de área no se amplía a otra área de la misma sede.
+- [ ] Scopes por tipo conservan identidad, modalidad y límite superior de sede.
+- [ ] Una capacidad global no autoriza área no resoluble o inválida.
+- [ ] Recurso multiárea conserva y valida todos los lados obligatorios.
+- [ ] Un lado autorizado no legitima otro denegado.
+- [ ] Cambio A → B conserva área vigente y propuesta hasta completar la decisión.
+- [ ] Cambio simultáneo de sede y área conserva los gates de `AUTH-QA-023` y `AUTH-QA-024`.
+- [ ] El dispositivo compartido solo restringe.
+- [ ] El área del trabajador objetivo no sustituye autoridad del actor.
+- [ ] Simulación no produce mutación cross-area real.
+- [ ] Lecturas cross-area no autorizadas no filtran datos o existencia protegida.
+- [ ] Dependencias internas no amplían `read_scope` ni `write_scope` visibles.
+- [ ] Lotes heterogéneos aplican la política contractual sin heredar autoridad.
+- [ ] Server Actions y API directas producen la misma decisión territorial que el flujo normal.
+- [ ] RPC sensibles conservan resolución de área compatible con `AUTH-DB-008`.
+- [ ] RLS y grants no amplían la decisión de aplicación o RPC.
+- [ ] `service_role`, admin client y `SECURITY DEFINER` no sustituyen autoridad empresarial.
+- [ ] Drift territorial o de contexto obliga a reautorizar o fallar.
+- [ ] Ningún efecto protegido ocurre antes de completar todos los gates de área obligatorios.
+- [ ] Errores no crean enumeración territorial indebida.
+- [ ] Auditoría conserva lado, sede, área, fuente y resultado.
+- [ ] `AUTH-QA-025` conserva la certificación integral del check-out.
+- [ ] `AUTH-QA-026` conserva la certificación integral de cola offline y replay.
+- [ ] La ejecución física sigue `PER_PACKAGE_AND_GLOBAL_FINAL` y `POST_E5_PACKAGE`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+---
+
+#### 51. Límites
+
+Esta tarea no:
+
+- redefine catálogo de áreas, roles, permisos, scopes o asignaciones;
+- crea un permiso genérico cross-area;
+- redefine `required_sides` de recursos propietarios;
+- inventa un conteo global de operaciones area-scoped;
+- sustituye `AUTH-SRV-007` ni `AUTH-SRV-013`;
+- reabre una sede denegada por `AUTH-QA-023`;
+- redefine el evaluador de autorización;
+- redefine turno, check-in, rol operativo o dispositivo;
+- redefine simulación;
+- crea ni puebla `employee_areas`;
+- migra `employees.area_id` legacy;
+- normaliza físicamente `area_kind`;
+- corrige código de Server Actions, API routes, RPC o clientes;
+- modifica `public.areas`, `employee_areas`, turnos, recursos ni otros datos;
+- modifica funciones, grants, RLS, Data API, schemas, Auth, Storage, Realtime o Edge Functions;
+- crea ni altera migraciones Supabase;
+- ejecuta cambios de área, lecturas cross-area, lotes o mutaciones reales;
+- certifica el cruce integral de sede, ya reservado a `AUTH-QA-023`;
+- certifica el lifecycle integral de check-out, reservado a `AUTH-QA-025`;
+- certifica el lifecycle integral de cola offline, reservado a `AUTH-QA-026`;
+- ejecuta `AUTH-QA-024::<package_id>`;
+- ejecuta `AUTH-QA-024::GLOBAL-FINAL`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-023 — Cruce de sede queda bloqueado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-024 — Cruce de área queda bloqueado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-025 — Check-out retira permisos operativos`
 ### [ ] AUTH-QA-025 — Check-out retira permisos operativos
 ### [ ] AUTH-QA-026 — Cola offline de ANIMA se revalida
 ### [ ] AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
