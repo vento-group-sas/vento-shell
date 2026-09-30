@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1521** |
+| Aprobadas | **1522** |
 | En propuesta | **0** |
-| No iniciadas | **75** |
+| No iniciadas | **74** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **95.30% (1521/1596)** |
+| Porcentaje de completamiento | **95.36% (1522/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **75** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1422** |
+| ⏸ NO_EVALUADA | **74** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1423** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-UX-008` — Diseñar tablero de resultados, atribución y copiloto de recomendaciones | ✅ APROBADA |
-| Tarea actual | `AURA-INT-001` — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa | ⬜ NO INICIADA |
-| Siguiente reservada | `AURA-INT-002` — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO | ⬜ NO INICIADA |
+| Última aprobada | `AURA-INT-001` — Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa | ✅ APROBADA |
+| Tarea actual | `AURA-INT-002` — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-001` — Propietario sin check-in entra a administración | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1469,7 +1469,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-006` | Diseñar bandeja de oportunidades, B2B, catering y eventos | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-007` | Diseñar reputación, comentarios, respuestas y escalamiento | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-UX-008` | Diseñar tablero de resultados, atribución y copiloto de recomendaciones | — | — | `bloques/W_AURA/04_EXPERIENCIA_CREATIVA_Y_COMERCIAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-INT-001` | Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa | — | — | `bloques/W_AURA/05_INTEGRACIONES_DE_CANALES_Y_DATOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AURA-INT-001` | Definir adaptadores de canales, webhooks, límites, credenciales y reconciliación externa | — | — | `bloques/W_AURA/05_INTEGRACIONES_DE_CANALES_Y_DATOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AURA-INT-002` | Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO | — | — | `bloques/W_AURA/05_INTEGRACIONES_DE_CANALES_Y_DATOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `INT-APP-001` | Crear catálogo de eventos empresariales | — | — | `bloques/X_INTEGRACIONES/01_EVENTOS_ENTRE_APLICACIONES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `INT-APP-002` | Definir aplicación emisora de cada evento | — | — | `bloques/X_INTEGRACIONES/01_EVENTOS_ENTRE_APLICACIONES.md` |

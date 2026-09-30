@@ -5,25 +5,25 @@
   "sequence_id": "PHASE-12-AURA",
   "block_code": "BLOQUE W",
   "block_title": "AURA — decisión y aplicación diferida",
-  "previous_task_id": "AURA-UX-008",
+  "previous_task_id": "AURA-INT-001",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "AUTH-QA-001",
   "handoff_sequence_id": "PHASE-13-U-INTEGRAL-CERTIFICATION",
   "segments": [
     {
       "prefix": "AURA-INT",
-      "from": 1,
+      "from": 2,
       "to": 2
     }
   ],
   "block_progress": {
     "total_tasks": 37,
-    "approved_tasks": 35,
-    "pending_tasks": 2
+    "approved_tasks": 36,
+    "pending_tasks": 1
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 75,
+    "pending_tasks": 74,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 30
