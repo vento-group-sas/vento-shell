@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1523** |
+| Aprobadas | **1524** |
 | En propuesta | **0** |
-| No iniciadas | **73** |
+| No iniciadas | **72** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **95.43% (1523/1596)** |
+| Porcentaje de completamiento | **95.49% (1524/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **73** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1424** |
+| ⏸ NO_EVALUADA | **72** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1425** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AURA-INT-002` — Definir contratos de lectura y eventos con NEXO, PULSO, PASS, NUMERA, VISO y FOGO | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-001` — Propietario sin check-in entra a administración | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-002` — Gerente general sin check-in entra a administración | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-001` — Propietario sin check-in entra a administración | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-002` — Gerente general sin check-in entra a administración | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-003` — Gerente de sede solo opera sus sedes | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1355,7 +1355,7 @@
 | ✅ APROBADA | 🧩 MAPEADA | — | `SHELL-CI-022` | Ejecutar cutover y piloto conforme al plan aprobado | `SHELL-CI-022::GAP-PKG-001`<br>`SHELL-CI-022::GAP-PKG-018`<br>`SHELL-CI-022::GAP-PKG-019`<br>`SHELL-CI-022::GAP-PKG-045` | — | `bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-CI-023` | Ejecutar hypercare, conciliación y estabilización | — | — | `bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `SHELL-CI-024` | Certificar cierre del paquete y transferencia a soporte | — | — | `bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-001` | Propietario sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-001` | Propietario sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-002` | Gerente general sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-003` | Gerente de sede solo opera sus sedes | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-004` | Trabajador sin turno queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
