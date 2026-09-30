@@ -1884,7 +1884,668 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-004 — Trabajador sin turno queda bloqueado`
-### [ ] AUTH-QA-004 — Trabajador sin turno queda bloqueado
+### ✅ AUTH-QA-004 — Trabajador sin turno queda bloqueado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-003 — Gerente de sede solo opera sus sedes
+**Tarea siguiente:** AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado
+**Tipo de tarea:** documental; definición canónica de una prueba integral de bloqueo operativo reutilizable por paquete y certificable globalmente, para demostrar que un trabajador sin turno laboral publicado y utilizable no obtiene autoridad operativa, sin bloquear capacidades base que no dependen de turno ni desplazar razones posteriores de temporalidad, check-in o rol operativo
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-004::<package_id>` y la certificación `AUTH-QA-004::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pruebas contra paquetes, aplicaciones, Supabase, datos, turnos ni ambientes reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que un actor laboral activo que intenta usar una capacidad cuyo carril operativo exige turno no puede obtener autorización operativa cuando la resolución autoritativa concluye que no existe un turno laboral publicado y utilizable aplicable al intento.
+
+La condición raíz es:
+
+```text
+SESIÓN AUTENTICADA VÁLIDA
++
+EMPLEADO ACTIVO
++
+APLICACIÓN ACCESIBLE
++
+CAPACIDAD CON CARRIL OPERATIVO QUE EXIGE TURNO
++
+RESOLUCIÓN DE TURNO CONCLUYENTE
++
+NINGÚN TURNO LABORAL PUBLICADO UTILIZABLE
+→
+DENY DEL CARRIL OPERATIVO
++
+AUTH_PUBLISHED_SHIFT_REQUIRED
++
+CERO EFECTOS
+```
+
+La tarea certifica que el turno es una precondición real del carril operativo y no un dato decorativo que pueda sustituirse con sede seleccionada, sede primaria, perfil predeterminado, dispositivo, último turno conocido, check-in residual o rol base.
+
+No crea turnos, publicaciones, check-ins, roles, permisos, sesiones ni excepciones.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea deja definido un único contrato de prueba con siete resultados obligatorios:
+
+1. **DENY operativo por ausencia limpia de turno publicado:** una capacidad operativa que exige turno queda bloqueada cuando no existe una publicación laboral utilizable;
+2. **razón exacta:** el bloqueo limpio utiliza `AUTH_PUBLISHED_SHIFT_REQUIRED` y no una razón genérica o posterior;
+3. **cero efectos:** la solicitud denegada no produce mutaciones, reservas, movimientos, transiciones, escrituras, emisiones, confirmaciones ni efectos empresariales parciales;
+4. **sin turno inventado:** ninguna sede, preferencia, dispositivo, perfil o dato legacy puede fabricar `active_shift`, `operational_role` u `operational_site`;
+5. **sin sobrebloqueo del carril base:** una capacidad base que no depende de turno continúa evaluándose por su propio contrato;
+6. **precedencia estable:** turno fuera de ventana, check-in ausente, rol faltante, conflicto estructural e indisponibilidad técnica conservan sus razones propietarias y no se reescriben como “sin turno”;
+7. **paridad entre evaluadores:** todas las superficies aplicables producen una decisión equivalente para el mismo actor, permiso, contexto y recurso.
+
+---
+
+#### 3. Base canónica consumida
+
+La prueba consume sin redefinir:
+
+- el modelo canónico de identidad y actor laboral;
+- la separación entre carril base y carril operativo;
+- la regla de que el rol operativo efectivo procede del turno publicado y vigente;
+- la resolución determinista de sede y área operativas;
+- la precedencia de denegaciones y errores de contexto;
+- el contrato `AUTH-ERR-009 — Sin turno publicado`;
+- los contratos posteriores de ventana temporal, check-in y rol operativo;
+- la paridad exigida entre interfaz, SDK, servidor, RPC, RLS y demás consumidores materializados;
+- la topología `PER_PACKAGE_AND_GLOBAL_FINAL` del BLOQUE U;
+- el gate físico `POST_E5_PACKAGE`.
+
+La tarea no redefine catálogos, matrices, errores ni contratos de autorización ya aprobados.
+
+---
+
+#### 4. Semántica exacta de “trabajador”
+
+El fixture primario utiliza un actor humano laboral con:
+
+```text
+principal = HUMAN_USER
+actor = EMPLOYEE
+employee_status = ACTIVE
+base_role = trabajador_operativo
+```
+
+El objetivo no es autorizar por el nombre `trabajador_operativo`. La prueba conserva expresamente:
+
+```text
+ROL BASE
+≠
+ROL OPERATIVO
+```
+
+Y:
+
+```text
+TRABAJADOR ACTIVO
+≠
+TRABAJADOR AUTORIZADO PARA OPERAR
+```
+
+La misma regla de precondición deberá mantenerse cuando otro rol base intente entrar a un carril operativo: el permiso, el carril y el contexto determinan la decisión; el nombre del rol base no sustituye el turno.
+
+---
+
+#### 5. Semántica exacta de “sin turno”
+
+Para el caso principal de esta tarea, “sin turno” significa:
+
+```text
+REQUIRES_PUBLISHED_SHIFT = true
++
+PUBLISHED_SHIFT_RESOLUTION = CONCLUSIVE
++
+USABLE_PUBLISHED_LABOR_SHIFT_COUNT = 0
+```
+
+No significa automáticamente cualquier `active_shift = null`.
+
+Deben distinguirse al menos estos estados:
+
+| Estado observado | Propietario de la decisión |
+| --- | --- |
+| no existe publicación laboral utilizable | esta tarea / `AUTH-ERR-009` |
+| existe publicación, pero todavía no inicia o ya terminó | `AUTH-ERR-010` |
+| existe turno vigente, pero falta check-in requerido | `AUTH-QA-005` / `AUTH-ERR-011` |
+| existe turno vigente y check-in aplicable, pero falta rol operativo | contrato de rol operativo / `AUTH-ERR-012` |
+| existen varios turnos candidatos o una contradicción estructural | contrato de conflicto correspondiente |
+| la fuente no puede resolverse de forma confiable | contrato de indisponibilidad técnica correspondiente |
+| la capacidad no exige turno | continuar por el carril aplicable; no usar este bloqueo |
+
+La prueba falla si un consumidor colapsa esas condiciones en una sola etiqueta genérica.
+
+---
+
+#### 6. Unidad de prueba
+
+La unidad lógica mínima es:
+
+```text
+actor
++
+permission_code
++
+authorization_requirement
++
+selected_lane
++
+application
++
+resource
++
+assigned_sites / assigned_areas
++
+published_shift_state
++
+resolved_at
+```
+
+El oracle primario compara la misma identidad, permiso y recurso cambiando únicamente el estado del turno cuando corresponda.
+
+No se certifica el caso cambiando simultáneamente rol, permiso, sede, recurso o aplicación de forma que la causa del resultado quede indeterminada.
+
+---
+
+#### 7. Fixture mínimo
+
+El fixture lógico mínimo contiene:
+
+| Identidad | Estado |
+| --- | --- |
+| sesión | válida y personal |
+| empleado | activo |
+| rol base | `trabajador_operativo` |
+| aplicación | accesible |
+| sede asignada | activa y compatible |
+| área asignada | activa cuando el permiso la requiere |
+| permiso | exacto y vigente |
+| carril seleccionado | `OPERATIONAL` |
+| requisito de turno | `true` |
+| publicación laboral aplicable | ninguna |
+| resolución de turno | concluyente |
+| efectos previos | cero |
+
+El fixture debe evitar otra denegación anterior que oculte la ausencia de turno.
+
+---
+
+#### 8. Caso A — operación sin turno publicado
+
+Entrada:
+
+```text
+employee = ACTIVE
+base_role = trabajador_operativo
+permission = válido
+selected_lane = OPERATIONAL
+requires_shift = true
+assigned_site = válida
+published_shift_count = 0
+shift_resolution = CONCLUSIVE
+```
+
+Oracle:
+
+```text
+lane_decision = DENY
+reason_code = AUTH_PUBLISHED_SHIFT_REQUIRED
+executable = false
+side_effects = 0
+```
+
+Para una respuesta no navegacional, el contrato de bloqueo conserva `403 Forbidden`.
+
+La sesión del usuario se conserva. No se fuerza logout, no se publica un turno automáticamente y no se reintenta la operación por cuenta del usuario.
+
+---
+
+#### 9. Caso B — la sede no fabrica turno
+
+Se mantiene el mismo caso A y se añade cualquiera de estas señales:
+
+```text
+selected_site_id = sede_asignada
+```
+
+```text
+primary_site_id = sede_asignada
+```
+
+```text
+device_site_id = sede_asignada
+```
+
+Oracle:
+
+```text
+active_shift = null
+operational_role = null
+operational_site = null
+lane_decision = DENY
+reason_code = AUTH_PUBLISHED_SHIFT_REQUIRED
+```
+
+Una sede válida define territorio potencial; no crea jornada ni rol operativo.
+
+---
+
+#### 10. Caso C — perfil o rol predeterminado no fabrica turno
+
+Entrada adicional:
+
+```text
+default_operational_role = rol_válido
+```
+
+pero:
+
+```text
+published_shift_count = 0
+```
+
+Oracle:
+
+```text
+effective_operational_role = null
+lane_decision = DENY
+reason_code = AUTH_PUBLISHED_SHIFT_REQUIRED
+```
+
+Un perfil predeterminado puede ayudar a planificar un turno futuro, pero no constituye autoridad runtime.
+
+---
+
+#### 11. Caso D — check-in residual no fabrica turno
+
+Si existe una señal legacy o residual que parezca un check-in, pero no existe un turno publicado utilizable compatible, el sistema no puede invertir la dependencia:
+
+```text
+checkin_like_signal = present
+published_shift_count = 0
+→
+NO active_shift derivado
+NO operational_role derivado
+NO ALLOW operativo
+```
+
+Si la señal residual crea además un conflicto estructural, la razón final seguirá la precedencia canónica correspondiente; nunca se usará el check-in como fuente para reconstruir el turno.
+
+---
+
+#### 12. Caso E — capacidad base sin dependencia de turno
+
+Control negativo contra sobrebloqueo:
+
+```text
+employee = ACTIVE
+base_permission = válido
+authorization_requirement = N
+active_shift = null
+```
+
+Resultado esperado:
+
+```text
+NO AUTH_PUBLISHED_SHIFT_REQUIRED
+```
+
+La decisión del carril base continúa evaluándose con permiso, cobertura, recurso, denegaciones y demás condiciones propias.
+
+La prueba falla si la ausencia de turno bloquea indiscriminadamente navegación o administración que el contrato clasifica como independiente de jornada.
+
+---
+
+#### 13. Caso F — turno publicado fuera de ventana
+
+Entrada:
+
+```text
+published_shift_count = 1
+published_shift = autoritativo
+resolved_at fuera de [starts_at, ends_at)
+```
+
+Resultado:
+
+```text
+NO AUTH_PUBLISHED_SHIFT_REQUIRED
+```
+
+La decisión pertenece al contrato de ventana temporal y debe conservar su razón específica.
+
+Este caso prueba precedencia; no amplía el alcance de `AUTH-QA-004`.
+
+---
+
+#### 14. Caso G — turno vigente sin check-in
+
+Entrada:
+
+```text
+published_shift = exactamente uno
+shift_window = vigente
+requires_checkin = true
+active_checkin_session = null
+```
+
+Resultado:
+
+```text
+NO AUTH_PUBLISHED_SHIFT_REQUIRED
+```
+
+La evaluación avanza hasta el gate de check-in y queda en el ámbito de `AUTH-QA-005`.
+
+Este control demuestra el handoff exacto entre ambas tareas.
+
+---
+
+#### 15. Caso H — turno vigente para carril T
+
+Para una capacidad cuyo carril operativo exige turno pero no check-in:
+
+```text
+published_shift = exactamente uno
+shift_window = vigente
+requires_checkin = false
+```
+
+La ausencia de check-in no puede reintroducir el bloqueo de esta tarea.
+
+La evaluación continúa hacia rol operativo, territorio, permiso, recurso y demás controles aplicables. Este control no obliga a un `ALLOW` final si otra condición válida deniega.
+
+---
+
+#### 16. Casos ambiguos e indisponibilidad
+
+No se consideran “sin turno” limpio:
+
+- dos o más publicaciones candidatas incompatibles;
+- publicación corrupta o imposible de interpretar;
+- catálogo o fuente de turnos no disponible;
+- lectura técnica incompleta;
+- turno con identidad laboral contradictoria;
+- resultado de caché cuyo origen no puede revalidarse.
+
+El sistema debe fallar cerrado usando la razón propietaria del conflicto o de indisponibilidad. No puede escoger el primer turno, usar el último turno conocido ni degradar un error técnico a ausencia limpia.
+
+---
+
+#### 17. Paridad de evaluadores
+
+Para el mismo fixture, todos los evaluadores materializados aplicables deben conservar semántica equivalente:
+
+| Superficie | Requisito |
+| --- | --- |
+| navegación / UI | no ofrecer una operación como ejecutable cuando el carril operativo está bloqueado |
+| contrato compartido / SDK | conservar decisión y razón canónicas |
+| Server Actions / Route Handlers | revalidar antes del efecto y denegar |
+| RPC / PostgREST | no producir efecto mediante llamada directa |
+| RLS / Data API | no permitir acceso o mutación que dependa del carril operativo incompleto |
+| Edge Functions | resolver contexto y autorización sin bypass local |
+| Realtime / colas / offline | no reproducir una autorización antigua; revalidar antes de aplicar efectos |
+| clientes nativos o dispositivos compartidos | no derivar turno desde dispositivo, PIN o estado de navegación |
+
+La UI no constituye el control de seguridad final.
+
+---
+
+#### 18. Efectos prohibidos
+
+Un caso A certificado debe demostrar cero efectos observables en el dominio aplicable, incluyendo cuando corresponda:
+
+- cero inserts o updates empresariales;
+- cero movimientos de inventario;
+- cero transiciones de remisión;
+- cero lotes o consumos;
+- cero ventas, entregas o confirmaciones;
+- cero órdenes o recepciones;
+- cero cambios de configuración;
+- cero eventos de negocio que afirmen éxito;
+- cero efectos diferidos en colas u offline;
+- cero privilegios persistidos para reutilización posterior.
+
+La evidencia de intento o auditoría de seguridad sí puede registrarse conforme a su contrato; no se considera efecto empresarial autorizado.
+
+---
+
+#### 19. Caché, cambio de contexto y frescura
+
+Una decisión anterior no sobrevive a la pérdida o ausencia de turno.
+
+La prueba debe rechazar como fuentes de autoridad:
+
+```text
+last_known_shift
+last_known_operational_role
+cached_can_operate
+cached_active_site
+selected_site
+navigation_role
+legacy_role_override
+```
+
+Toda operación protegida revalida el contexto necesario antes del efecto. Una corrección administrativa de la jornada requiere una solicitud nueva; no se reanuda automáticamente una operación previamente denegada.
+
+---
+
+#### 20. Auditoría obligatoria
+
+La evidencia por caso debe permitir reconstruir, sin exponer secretos:
+
+- principal y actor efectivos;
+- aplicación y permiso evaluados;
+- modalidad y carril seleccionados;
+- requisito de turno;
+- estado de resolución de publicación;
+- cantidad de turnos utilizables encontrada;
+- decisión del carril;
+- reason code público;
+- contexto territorial relevante minimizado;
+- fingerprint o versión del contexto cuando el consumidor lo soporte;
+- confirmación de cero efectos empresariales.
+
+No se registran tokens, secretos ni payloads sensibles completos.
+
+---
+
+#### 21. Casos mínimos de certificación
+
+Cada ejecución física aplicable debe cubrir como mínimo:
+
+| Caso | Escenario | Oracle |
+| --- | --- | --- |
+| A | operativo, cero turnos publicados utilizables | `DENY` + `AUTH_PUBLISHED_SHIFT_REQUIRED` |
+| B | misma ausencia + sede primaria/seleccionada/dispositivo | mismo `DENY`; sin turno inventado |
+| C | misma ausencia + perfil operativo predeterminado | mismo `DENY`; sin rol runtime inventado |
+| D | señal residual de check-in sin turno | no reconstruir turno |
+| E | capacidad base `N` sin turno | no usar `AUTH_PUBLISHED_SHIFT_REQUIRED` |
+| F | turno publicado fuera de ventana | razón temporal propietaria, no `AUTH-ERR-009` |
+| G | turno vigente `T+C` sin check-in | avanzar a la razón de `AUTH-QA-005` |
+| H | turno vigente `T` | superar exclusivamente el gate de turno y continuar evaluación |
+| I | fuente de turno indisponible | fail closed técnico; no ausencia limpia |
+| J | bypass directo por RPC/API | misma denegación efectiva y cero efectos |
+
+No se permite marcar PASS con casos críticos omitidos o convertidos en `skip` por ausencia de fixture.
+
+---
+
+#### 22. Clasificación de fallos
+
+La ejecución de `AUTH-QA-004` falla si ocurre cualquiera de estas condiciones:
+
+1. una operación que exige turno resulta ejecutable sin publicación laboral utilizable;
+2. se deriva turno desde sede, dispositivo, check-in, rol base, perfil o caché;
+3. se usa un reason code distinto para una ausencia limpia concluyente;
+4. una capacidad base independiente queda bloqueada únicamente por falta de turno;
+5. un turno fuera de ventana se clasifica como ausencia de publicación;
+6. un turno vigente sin check-in vuelve a clasificarse como ausencia de turno;
+7. una superficie permite el efecto mientras otra lo deniega;
+8. una llamada directa evita el control de contexto;
+9. existen efectos empresariales parciales después del `DENY`;
+10. una indisponibilidad técnica se degrada silenciosamente a ausencia limpia.
+
+---
+
+#### 23. Modelo de ejecución por paquete
+
+`AUTH-QA-004` usa la topología del BLOQUE U:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Cada paquete que materialice una superficie relevante conserva una identidad física:
+
+```text
+AUTH-QA-004::<package_id>
+```
+
+Esa ejecución solo puede ocurrir cuando el paquete propietario haya satisfecho su gate `POST_E5_PACKAGE`, incluido el `E5-GATE-008::<package_id>` aplicable.
+
+La tarea documental no selecciona paquetes, no autoriza instancias y no ejecuta pruebas físicas.
+
+---
+
+#### 24. Certificación global final
+
+La certificación global:
+
+```text
+AUTH-QA-004::GLOBAL-FINAL
+```
+
+agrega evidencia de los paquetes aplicables y verifica como mínimo:
+
+- ningún consumidor autoriza operación sin turno requerido;
+- ninguna superficie fabrica contexto operativo;
+- razón y precedencia permanecen coherentes;
+- no hay divergencia entre UI, SDK, servidor, RPC y RLS aplicables;
+- cero casos críticos fallidos;
+- cero casos críticos omitidos por incompatibilidad de fixture;
+- toda excepción futura está respaldada por contrato canónico explícito y no por bypass local.
+
+La certificación global no sustituye las ejecuciones por paquete ni permite ejecutar antes de E5.
+
+---
+
+#### 25. Handoff hacia AUTH-QA-005
+
+`AUTH-QA-005` recibe exactamente este estado:
+
+```text
+employee = ACTIVE
+published_shift = exactamente uno
+shift_window = vigente
+requires_checkin = true
+active_checkin_session = null
+```
+
+Su responsabilidad será demostrar que el turno válido por sí solo no completa una operación `T+C` cuando falta check-in.
+
+`AUTH-QA-005` no reabre la ausencia de publicación definida aquí.
+
+---
+
+#### 26. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La cobertura requerida ya existe en el registro canónico vigente y esta tarea la convierte en un contrato integral certificable sin alterar el registro.
+
+---
+
+#### 27. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`, para impedir autorización final por nombre de rol o atajos locales;
+- `TREQ-AUTH-004`, para exigir decisiones y razones equivalentes entre evaluadores;
+- `TREQ-AUTH-008`, para mantener la separación entre carril administrativo/base y carril operativo con turno y check-in cuando correspondan;
+- `TREQ-AUTH-009`, para resolver contexto territorial y operativo de forma determinista;
+- `TREQ-AUTH-013`, para impedir bypass mediante URL, formulario, API o RPC y exigir revalidación server-side;
+- `TREQ-AUTH-182`, para preservar la precedencia entre ausencia de turno, ventana temporal, check-in y conflictos de contexto;
+- los contratos vigentes de `AUTH-ERR-009`, `AUTH-ERR-010`, `AUTH-ERR-011` y del rol operativo requerido.
+
+Estas referencias son trazabilidad heredada, no cambios 04A.
+
+---
+
+#### 28. Evidencia de validación
+
+| Clase | Estado | Evidencia documental |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea no ejecuta builds de producto; la batería documental posterior valida el plan |
+| LOCAL | NOT_EXECUTED | no se ha ejecutado todavía el fixture contra un paquete o checkout del usuario |
+| REMOTA | PASS | fuentes canónicas, archivo propietario, topología, contratos de turno/error y registro 04A fueron inspeccionados en el repositorio vigente |
+| OPERATIVA | NOT_EXECUTED | las instancias por paquete y la certificación global permanecen pendientes |
+| FÍSICA | NOT_APPLICABLE | esta tarea documental no autoriza materialización física |
+
+---
+
+#### 29. Criterios de aceptación
+
+`AUTH-QA-004` queda documentalmente completa cuando se acepta que:
+
+1. la ausencia limpia de un turno publicado utilizable deniega el carril operativo cuando el permiso exige turno;
+2. la razón exacta es `AUTH_PUBLISHED_SHIFT_REQUIRED`;
+3. una sede, área, dispositivo, check-in residual, perfil, rol base o caché no pueden crear turno ni rol operativo;
+4. la ausencia de turno no bloquea por sí sola un carril base que no depende de jornada;
+5. turno fuera de ventana, check-in ausente, rol faltante, conflicto e indisponibilidad conservan razones propias;
+6. las superficies aplicables producen una decisión equivalente;
+7. la denegación produce cero efectos empresariales;
+8. las llamadas directas no evitan el control;
+9. el handoff hacia `AUTH-QA-005` comienza únicamente después de demostrar un turno publicado y vigente;
+10. el modelo físico continúa siendo por paquete más certificación global final y permanece fuera del alcance de esta tarea documental;
+11. no se crean ni modifican requisitos de prueba;
+12. no se ejecuta ningún cambio físico.
+
+---
+
+#### 30. Límites
+
+Esta tarea no:
+
+- prueba el caso “turno vigente sin check-in” como resultado final; pertenece a `AUTH-QA-005`;
+- prueba el caso positivo completo “turno y check-in válidos”; pertenece a `AUTH-QA-006`;
+- redefine mensajes o códigos de `AUTH-ERR-009` a `AUTH-ERR-012`;
+- convierte todo `active_shift = null` en ausencia de publicación;
+- autoriza por rol base, sede seleccionada o dispositivo;
+- crea turnos, publicaciones o check-ins;
+- modifica permisos, matrices, RLS, RPC, Supabase, aplicaciones o datos;
+- ejecuta instancias físicas `AUTH-QA-004::<package_id>`;
+- ejecuta `AUTH-QA-004::GLOBAL-FINAL`;
+- reemplaza las validaciones específicas de cada paquete;
+- crea una excepción para legacy.
+
+---
+
+#### 31. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-003 — Gerente de sede solo opera sus sedes`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-004 — Trabajador sin turno queda bloqueado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado`
 ### [ ] AUTH-QA-005 — Trabajador con turno sin check-in queda bloqueado
 ### [ ] AUTH-QA-006 — Trabajador con turno y check-in obtiene su rol operativo
 ### [ ] AUTH-QA-007 — Trabajador solo ve su sede
