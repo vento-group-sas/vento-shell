@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1526** |
+| Aprobadas | **1527** |
 | En propuesta | **0** |
-| No iniciadas | **70** |
+| No iniciadas | **69** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **95.61% (1526/1596)** |
+| Porcentaje de completamiento | **95.68% (1527/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **70** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1427** |
+| ⏸ NO_EVALUADA | **69** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1428** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-003` — Gerente de sede solo opera sus sedes | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-004` — Trabajador sin turno queda bloqueado | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-005` — Trabajador con turno sin check-in queda bloqueado | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-004` — Trabajador sin turno queda bloqueado | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-005` — Trabajador con turno sin check-in queda bloqueado | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-006` — Trabajador con turno y check-in obtiene su rol operativo | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1358,7 +1358,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-001` | Propietario sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-002` | Gerente general sin check-in entra a administración | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-003` | Gerente de sede solo opera sus sedes | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-004` | Trabajador sin turno queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-004` | Trabajador sin turno queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-005` | Trabajador con turno sin check-in queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-006` | Trabajador con turno y check-in obtiene su rol operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-007` | Trabajador solo ve su sede | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
