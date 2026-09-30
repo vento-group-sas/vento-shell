@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1540** |
+| Tareas aprobadas | **1541** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **56** |
+| Tareas no iniciadas | **55** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **96.49% (1540/1596)** |
+| Porcentaje de completamiento | **96.55% (1541/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado** |
-| Tarea actual | **AUTH-QA-018 — PIN identifica al trabajador real** |
+| Última tarea aprobada | **AUTH-QA-018 — PIN identifica al trabajador real** |
+| Tarea actual | **AUTH-QA-019 — Rol simulado no hereda permisos reales** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-019 — Rol simulado no hereda permisos reales** |
+| Siguiente tarea | **AUTH-QA-020 — Acceso directo por URL queda bloqueado** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 17 de 60 aprobadas; AUTH-QA-018 pendiente** |
+| Progreso del bloque | **BLOQUE U: 18 de 60 aprobadas; AUTH-QA-019 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-018** |
+| Carril documental | **ACTIVO — AUTH-QA-019** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-017` — Dispositivo compartido limita al administrador autenticado |
-| Tarea actual | `AUTH-QA-018` — PIN identifica al trabajador real — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-019` — Rol simulado no hereda permisos reales |
+| Última aprobada | `AUTH-QA-018` — PIN identifica al trabajador real |
+| Tarea actual | `AUTH-QA-019` — Rol simulado no hereda permisos reales — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-020` — Acceso directo por URL queda bloqueado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 17 DE 60 APROBADAS — ACTUAL AUTH-QA-018** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 18 DE 60 APROBADAS — ACTUAL AUTH-QA-019** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-017 — Dispositivo compartido limita al administrador autenticado
-        ↓
-TAREA ACTUAL
 AUTH-QA-018 — PIN identifica al trabajador real
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-019 — Rol simulado no hereda permisos reales
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-020 — Acceso directo por URL queda bloqueado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 17 de 60 tareas aprobadas
+BLOQUE U — 18 de 60 tareas aprobadas
 ```
