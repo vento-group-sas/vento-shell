@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1552** |
+| Tareas aprobadas | **1553** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **44** |
+| Tareas no iniciadas | **43** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **97.24% (1552/1596)** |
+| Porcentaje de completamiento | **97.31% (1553/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-029 — Auditoría conserva actor, turno, sede y área** |
-| Tarea actual | **AUTH-QA-030 — Ejecutar prueba de regresión completa** |
+| Última tarea aprobada | **AUTH-QA-030 — Ejecutar prueba de regresión completa** |
+| Tarea actual | **UX-QA-001 — El trabajador identifica su siguiente tarea** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **UX-QA-001 — El trabajador identifica su siguiente tarea** |
+| Siguiente tarea | **UX-QA-002 — La acción principal se encuentra sin capacitación** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 29 de 60 aprobadas; AUTH-QA-030 pendiente** |
+| Progreso del bloque | **BLOQUE U: 30 de 60 aprobadas; UX-QA-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-030** |
+| Carril documental | **ACTIVO — UX-QA-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-029` — Auditoría conserva actor, turno, sede y área |
-| Tarea actual | `AUTH-QA-030` — Ejecutar prueba de regresión completa — **NO INICIADA** |
-| Siguiente tarea | `UX-QA-001` — El trabajador identifica su siguiente tarea |
+| Última aprobada | `AUTH-QA-030` — Ejecutar prueba de regresión completa |
+| Tarea actual | `UX-QA-001` — El trabajador identifica su siguiente tarea — **NO INICIADA** |
+| Siguiente tarea | `UX-QA-002` — La acción principal se encuentra sin capacitación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 29 DE 60 APROBADAS — ACTUAL AUTH-QA-030** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 30 DE 60 APROBADAS — ACTUAL UX-QA-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
-        ↓
-TAREA ACTUAL
 AUTH-QA-030 — Ejecutar prueba de regresión completa
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 UX-QA-001 — El trabajador identifica su siguiente tarea
         ↓
+SIGUIENTE TAREA RESERVADA
+UX-QA-002 — La acción principal se encuentra sin capacitación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 29 de 60 tareas aprobadas
+BLOQUE U — 30 de 60 tareas aprobadas
 ```
