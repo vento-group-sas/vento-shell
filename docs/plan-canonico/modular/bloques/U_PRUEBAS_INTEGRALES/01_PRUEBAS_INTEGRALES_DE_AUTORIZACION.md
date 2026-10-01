@@ -25383,8 +25383,1420 @@ Un `PASS` de `AUTH-QA-029` es entrada de `AUTH-QA-030`, no sustituto.
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-030 — Ejecutar prueba de regresión completa`
-### [ ] AUTH-QA-030 — Ejecutar prueba de regresión completa
+### ✅ AUTH-QA-030 — Ejecutar prueba de regresión completa
 
-### Subconjunto VISO mensual
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
+**Tarea siguiente:** UX-QA-001 — El trabajador identifica su siguiente tarea
+**Tipo de tarea:** documental; definición canónica de la puerta final de regresión integral de autorización para orquestar por paquete y globalmente todas las pruebas funcionales, contractuales, de base de datos, SDK, aplicaciones, RLS, RPC, caché, legacy, seguridad, migración, rendimiento, rollback, auditoría y evidencia exigidas por el modelo de autorización, con cero fallos críticos, cero omisiones críticas y trazabilidad reproducible, sin ejecutar físicamente la regresión durante esta tarea documental
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de regresión integral definido; las ejecuciones `AUTH-QA-030::<package_id>` y la certificación `AUTH-QA-030::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; esta tarea consume la evidencia aplicable de `AUTH-QA-001` a `AUTH-QA-029`, de los validadores técnicos propietarios y de las suites de experiencia aplicables cuando existan físicamente, pero no infiere que ningún package, repositorio, aplicación, ambiente ni cierre global ya haya superado la regresión
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan suites de producto, pruebas E2E, migraciones, RLS, RPC, fuzzing, load testing, rollback, canary, smoke productivo, mutaciones de datos, despliegues, cambios de configuración ni modificaciones de Supabase; no se crea ni modifica infraestructura de pruebas
+**Requisitos de prueba creados o modificados:** 0
 
-`003`, `017`, `019`, `020`, `021`, `023`, `024`, `027`, `028`, `029` y `030` son obligatorias para el package.
+---
+
+#### 1. Propósito
+
+Definir la puerta final con la que Vento OS demostrará que el modelo de autorización permanece correcto después de integrar contratos, datos, paquetes, consumidores y aplicaciones reales.
+
+`AUTH-QA-030` no equivale a ejecutar una selección informal de tests.
+
+La condición raíz queda:
+
+```text
+TODOS LOS CASOS CRITICAL = PASS
++ TODOS LOS CASOS HIGH OBLIGATORIOS = PASS
++ FAILED = 0
++ SKIPPED_CRITICAL = 0
++ QUARANTINED_CRITICAL = 0
++ DRIFT = NONE O APPROVED
++ ROLLBACK_TESTED = TRUE
++ evidence complete = true
++ SUBSUITES APLICABLES CERRADAS
++ CERO CONTRADICCIONES ENTRE SUPERFICIES
+= REGRESIÓN INTEGRAL DE AUTORIZACIÓN CERTIFICABLE
+```
+
+Y siempre:
+
+```text
+BUILD VERDE AISLADO
+O TEST UNITARIO AISLADO
+O SMOKE AISLADO
+O RESULTADO DE OTRO COMMIT
+O RESULTADO DE OTRO PACKAGE
+O SUITE CON CASOS CRITICOS OMITIDOS
+O EVIDENCIA STALE
+≠ PASS DE AUTH-QA-030
+```
+
+#### 2. Resultado canónico
+
+`AUTH-QA-030` establece `AUTH-QA-AUTHORIZATION-REGRESSION-CERTIFICATION-001@1.0.0`.
+
+El contrato certifica conjuntamente:
+
+1. completitud de la regresión aplicable;
+2. coherencia entre contratos, SDK, servidor, RPC, RLS y consumidores;
+3. cobertura de los veintinueve contratos funcionales anteriores cuando correspondan al package;
+4. ausencia de bypass, stale allow, herencia indebida o cruce territorial;
+5. compatibilidad de packages y consumidores;
+6. rollback probado cuando el alcance lo requiere;
+7. auditoría y evidencia reconstruibles;
+8. ausencia de drift no aprobado;
+9. reproducibilidad por commit, versiones, fixtures y entorno;
+10. capacidad de emitir un resultado final `PASS`, `FAIL`, `BLOCKED` o `STALE` sin falsos verdes.
+
+La aprobación documental de esta tarea no ejecuta ninguna de esas pruebas.
+
+#### 3. Alcance exacto
+
+Esta tarea define:
+
+- la unidad de regresión por package;
+- la certificación `GLOBAL-FINAL`;
+- las precondiciones de entrada;
+- el conjunto de sub-suites obligatorias;
+- la relación con `AUTH-QA-001..029`;
+- la clasificación de riesgo;
+- los estados de caso y de ejecución;
+- el contrato de evidencia;
+- la matriz de completitud;
+- la regla para skips, cuarentenas y flakiness;
+- la regla para evidencia stale;
+- la consolidación de contratos, SQL, SDK, apps, RLS, RPC, caché, legacy, seguridad, migración, performance y UX aplicable;
+- la validación del Registro Canónico de Requisitos de Prueba;
+- los oráculos y fixtures requeridos;
+- el tratamiento de fallos, incidentes y regresiones nuevas;
+- la condición exacta de `PASS` por package;
+- la condición exacta de `PASS` global;
+- el handoff documental a `UX-QA-001`;
+- el handoff físico posterior del BLOQUE U hacia retiro legacy y certificación final cuando toda la secuencia correspondiente esté cerrada.
+
+#### 4. Regla de entrada del BLOQUE U
+
+`AUTH-QA-030` consume, pero no sustituye, evidencia producida antes de la certificación U.
+
+Antes de un `PASS` físico deben existir, cuando apliquen al package:
+
+```text
+pruebas unitarias
+pruebas contractuales
+pruebas de integración
+pruebas negativas de autorización
+pruebas de migraciones
+pruebas de idempotencia y concurrencia
+evidencia por repositorio
+Registro Canónico de Requisitos de Prueba vigente
+readiness/cutover/pilot/hypercare cuando correspondan
+```
+
+La certificación U puede rechazar el cierre aunque esas etapas anteriores hayan terminado.
+
+#### 5. Handoff recibido de `AUTH-QA-029`
+
+`AUTH-QA-029` entrega el contrato de auditoría integral y la regla de reconstruibilidad histórica.
+
+`AUTH-QA-030` consume como entrada:
+
+- estado por package;
+- evidencia de principal y actor;
+- turno y check-in cuando apliquen;
+- sede y área cuando apliquen;
+- dispositivo;
+- simulación separada;
+- permiso y recurso;
+- decisión y razones;
+- versiones contractuales;
+- correlación decisión–ejecución;
+- retries;
+- rollback;
+- operaciones administrativas;
+- brechas y bloqueadores de auditoría.
+
+La regresión falla o queda bloqueada si una dimensión requerida por `AUTH-QA-029` sigue siendo irreconstruible.
+
+#### 6. Frontera con `AUTH-QA-029`
+
+`AUTH-QA-029` certifica la suficiencia de la auditoría.
+
+`AUTH-QA-030` no vuelve a diseñar la auditoría.
+
+Su responsabilidad es comprobar que la evidencia auditada participa correctamente dentro de la regresión completa y que una corrección, rollback, reintento, cambio de actor, cambio territorial o ruta alternativa no rompe esa trazabilidad.
+
+#### 7. Frontera con `UX-QA-001..030`
+
+Las tareas `UX-QA-*` conservan la certificación de experiencia y proceso.
+
+`AUTH-QA-030` puede consumir evidencia UX aplicable cuando exista físicamente y el package la requiera, especialmente para comprobar que:
+
+- los bloqueos correctos llegan a la superficie adecuada;
+- una UI no reemplaza autoridad de servidor;
+- no se expone información sensible;
+- el contexto presentado corresponde al contexto autorizado;
+- la recuperación de fallos no introduce un bypass.
+
+Pero:
+
+```text
+AUTH-QA-030
+≠
+CERTIFICACIÓN UX COMPLETA
+```
+
+La continuidad documental siguiente sigue siendo `UX-QA-001`.
+
+#### 8. Frontera con retiro legacy y certificación final
+
+`AUTH-QA-030` es la puerta final del minibloque de autorización, pero no es la certificación final del sistema completo.
+
+Después del cierre de la secuencia U correspondiente permanecen propietarios posteriores para:
+
+- retiro legacy;
+- comprobación de ausencia de consumidores heredados;
+- certificación final global.
+
+`AUTH-QA-030` no retira código legacy, no elimina funciones, no cambia policies y no emite por sí sola la certificación final de base de datos.
+
+#### 9. Topología de trabajo
+
+La topología vigente es:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+El gate es:
+
+```text
+POST_E5_PACKAGE
+```
+
+Por tanto existen dos identidades físicas distintas:
+
+```text
+AUTH-QA-030::<package_id>
+AUTH-QA-030::GLOBAL-FINAL
+```
+
+No existe una ejecución global única que reemplace las pruebas por package.
+
+#### 10. Unidad `AUTH-QA-030::<package_id>`
+
+Cada instancia por package representa la regresión completa del conjunto aplicable a una unidad E5 concreta.
+
+Debe fijar como mínimo:
+
+```text
+package_id
+repository_set
+commit_sha_set
+package_version_set
+environment
+fixture_set_id
+fixture_seed
+clock_profile
+applicable_auth_qa_tasks[]
+applicable_ux_evidence[]
+applicable_treq_set[]
+applicable_contracts[]
+applicable_migrations[]
+applicable_surfaces[]
+run_id
+result
+```
+
+Un package no puede usar como evidencia la ejecución de otro package salvo artefactos globales explícitamente declarados como reutilizables por su contrato propietario.
+
+#### 11. Certificación `AUTH-QA-030::GLOBAL-FINAL`
+
+La certificación global no reejecuta necesariamente cada test.
+
+Debe reconciliar las ejecuciones válidas por package y demostrar:
+
+```text
+TODOS LOS PACKAGES REQUERIDOS CLASIFICADOS
++ TODOS LOS PACKAGES APLICABLES CON PASS
++ TODAS LAS GLOBAL-FINAL PREVIAS REQUERIDAS COHERENTES
++ CERO FAIL ABIERTOS
++ CERO BLOCKED SIN CONDICIÓN DE SALIDA
++ CERO EVIDENCIA STALE
++ CERO CASOS CRITICAL OMITIDOS
++ CERO CONTRADICCIONES ENTRE IMPLEMENTACIONES
++ REGISTRO TREQ VÁLIDO
+= GLOBAL-FINAL PASS
+```
+
+#### 12. Contrato de evidencia consumido
+
+La estrategia contractual define evidencia equivalente a:
+
+```text
+AuthorizationTestEvidence@1.0.0
+```
+
+Cada ejecución usada como gate debe conservar al menos:
+
+```text
+evidence_id
+suite_id
+suite_version
+run_id
+repository
+commit_sha
+branch_or_tag
+environment
+database_baseline_id
+migration_hashes[]
+contracts{}
+package_versions{}
+catalog_versions{}
+dataset_hashes{}
+fixture_set_id
+fixture_seed
+clock_profile
+started_at
+completed_at
+planned
+executed
+passed
+failed
+skipped
+quarantined
+coverage{}
+mutation{}
+performance{}
+failures[]
+artifacts[]
+rollback_tested
+drift_status
+approval_status
+```
+
+Los nombres físicos pueden variar si preservan la misma información y relaciones.
+
+#### 13. Evidencia que no sirve como gate
+
+No constituye evidencia suficiente:
+
+- captura aislada;
+- mensaje verbal;
+- “funcionó en mi máquina”;
+- salida sin commit;
+- salida sin versiones;
+- salida sin entorno;
+- resultado sin dataset o fixture cuando son materiales;
+- test manual sin pasos reproducibles;
+- snapshot autoaceptado;
+- suite con casos críticos omitidos;
+- suite de otro package presentada como propia;
+- evidencia de otro SHA después de rebase;
+- evidencia anterior a un cambio material de contrato, migración o catálogo.
+
+#### 14. Fuente de aplicabilidad
+
+La instancia no inventa qué pruebas pertenecen a un package.
+
+La aplicabilidad debe resolverse desde el paquete canónico y su evidencia vigente, incluyendo cuando corresponda:
+
+- `DELIV-PKG-016`;
+- la matriz por package;
+- el Registro Canónico de Requisitos de Prueba;
+- los contratos propietarios;
+- la identidad física real del package;
+- los consumidores declarados;
+- las superficies materializadas;
+- los validadores del repositorio propietario.
+
+Un test no se marca `NOT_APPLICABLE` solo porque no exista todavía automatización.
+
+#### 15. Inventario funcional obligatorio `AUTH-QA-001..029`
+
+La regresión conserva como subcontratos funcionales:
+
+| Tarea | Responsabilidad |
+| --- | --- |
+| `AUTH-QA-001` | Propietario sin check-in entra a administración |
+| `AUTH-QA-002` | Gerente general sin check-in entra a administración |
+| `AUTH-QA-003` | Gerente de sede solo opera sus sedes |
+| `AUTH-QA-004` | Trabajador sin turno queda bloqueado |
+| `AUTH-QA-005` | Trabajador con turno sin check-in queda bloqueado |
+| `AUTH-QA-006` | Trabajador con turno y check-in obtiene su rol operativo |
+| `AUTH-QA-007` | Trabajador solo ve su sede |
+| `AUTH-QA-008` | Trabajador solo ve su área |
+| `AUTH-QA-009` | Trabajador rotado cambia de permisos por turno |
+| `AUTH-QA-010` | Bodeguero puede preparar pero no producir |
+| `AUTH-QA-011` | Producción puede producir pero no ajustar inventario global |
+| `AUTH-QA-012` | Cajero puede operar PULSO pero no configurar |
+| `AUTH-QA-013` | Conductor puede transitar sin área productiva |
+| `AUTH-QA-014` | Conductor no puede preparar ni recibir inventario general |
+| `AUTH-QA-015` | Compras puede crear órdenes según alcance |
+| `AUTH-QA-016` | Recepción puede recibir pero no aprobar compras |
+| `AUTH-QA-017` | Dispositivo compartido limita al administrador autenticado |
+| `AUTH-QA-018` | PIN identifica al trabajador real |
+| `AUTH-QA-019` | Rol simulado no hereda permisos reales |
+| `AUTH-QA-020` | Acceso directo por URL queda bloqueado |
+| `AUTH-QA-021` | Formulario manipulado queda bloqueado en servidor |
+| `AUTH-QA-022` | RPC manipulada queda bloqueada |
+| `AUTH-QA-023` | Cruce de sede queda bloqueado |
+| `AUTH-QA-024` | Cruce de área queda bloqueado |
+| `AUTH-QA-025` | Check-out retira permisos operativos |
+| `AUTH-QA-026` | Cola offline de ANIMA se revalida |
+| `AUTH-QA-027` | Actualización de paquete no rompe otros repositorios |
+| `AUTH-QA-028` | Rollback funciona por aplicación |
+| `AUTH-QA-029` | Auditoría conserva actor, turno, sede y área |
+
+`AUTH-QA-030` no redefine sus oráculos; los orquesta y exige consistencia conjunta.
+
+#### 16. Clasificación de riesgo
+
+Los niveles son:
+
+```text
+CRITICAL
+HIGH
+MEDIUM
+LOW
+```
+
+Se consideran `CRITICAL` al menos:
+
+- suplantación de actor;
+- bypass por rol;
+- acceso entre sedes;
+- acceso entre áreas;
+- stale allow;
+- denegación ignorada;
+- permiso manipulado;
+- recurso manipulado;
+- service role usado como bypass empresarial;
+- dispositivo sin actor humano requerido;
+- simulación convertida en autoridad real;
+- decisión reutilizada para otra solicitud o recurso;
+- RLS más permisiva que el evaluador;
+- RPC sin validación equivalente;
+- cache poisoning.
+
+Se consideran `HIGH` al menos:
+
+- scope incorrecto;
+- turno o check-in incorrectos;
+- campo sensible expuesto;
+- auditoría incompleta;
+- recurso ambiguo;
+- fallback legacy;
+- incompatibilidad entre aplicaciones o consumidores.
+
+#### 17. Estados de caso
+
+Cada caso registrado conserva un estado de automatización o disponibilidad equivalente a:
+
+```text
+DEFINED
+AUTOMATED
+MANUAL_CONTROLLED
+BLOCKED
+DEPRECATED
+```
+
+Reglas:
+
+- un caso `CRITICAL` debe quedar automatizado para la puerta final salvo imposibilidad contractual explícita que bloquee el cierre;
+- `BLOCKED` exige causa, owner y condición de salida;
+- `MANUAL_CONTROLLED` no se usa para ocultar una ausencia de automatización técnicamente razonable;
+- un caso no cuenta como ejecutado si el fixture no es reproducible;
+- un caso deprecado conserva historial y razón de retiro.
+
+#### 18. Estados de ejecución de `AUTH-QA-030`
+
+La instancia usa únicamente:
+
+```text
+PASS
+FAIL
+BLOCKED
+STALE
+```
+
+`PASS` significa cumplimiento completo del universo aplicable.
+
+`FAIL` significa que al menos un oracle ejecutado contradice el resultado requerido.
+
+`BLOCKED` significa que falta una precondición necesaria que no puede sustituirse legítimamente.
+
+`STALE` significa que la evidencia pertenecía a otra realidad material.
+
+No existe `PARTIAL_PASS` como salida de certificación.
+
+#### 19. Fórmula de `PASS` por package
+
+`AUTH-QA-030::<package_id>` solo puede ser `PASS` cuando simultáneamente:
+
+```text
+APPLICABILITY_RESOLVED = TRUE
+CRITICAL_PLANNED = CRITICAL_EXECUTED
+CRITICAL_FAILED = 0
+CRITICAL_SKIPPED = 0
+CRITICAL_QUARANTINED = 0
+HIGH_MANDATORY_FAILED = 0
+TOTAL_FAILED = 0
+DRIFT_STATUS IN {NONE, APPROVED}
+ROLLBACK_REQUIRED -> ROLLBACK_TESTED = TRUE
+EVIDENCE_COMPLETE = TRUE
+TREQ_REFERENCES_VALID = TRUE
+NO_STALE_EVIDENCE = TRUE
+NO_CROSS_SURFACE_CONTRADICTION = TRUE
+AUTH_QA_001_029_APPLICABLE = CLOSED_OR_VALIDLY_NA
+```
+
+#### 20. Fórmula de `PASS` global
+
+`AUTH-QA-030::GLOBAL-FINAL` exige:
+
+```text
+REQUIRED_PACKAGES = COMPLETE
+EACH_REQUIRED_PACKAGE.AUTH_QA_030 = PASS
+PRIOR_AUTH_QA_GLOBAL_EVIDENCE = COHERENT
+GLOBAL_CONTRACT_MATRIX = PASS
+GLOBAL_CONSUMER_MATRIX = PASS
+GLOBAL_DRIFT = NONE O APPROVED
+GLOBAL_TREQ_REGISTRY = VALID
+GLOBAL_CRITICAL_FAILURES = 0
+GLOBAL_CRITICAL_SKIPS = 0
+GLOBAL_CRITICAL_QUARANTINES = 0
+GLOBAL_STALE_EVIDENCE = 0
+GLOBAL_UNOWNED_BLOCKERS = 0
+```
+
+#### 21. Casos `CRITICAL`
+
+Un solo fallo crítico bloquea la certificación.
+
+No se permite:
+
+- degradar el riesgo después del fallo solo para cerrar;
+- convertir el caso en `NOT_APPLICABLE` sin cambio contractual;
+- ocultarlo mediante snapshot nuevo;
+- excluirlo de la suite final;
+- moverlo a manual sin owner y evidencia;
+- compensarlo con un porcentaje alto de tests verdes.
+
+#### 22. Casos `HIGH` obligatorios
+
+Los casos `HIGH` que pertenezcan al alcance del package también deben terminar `PASS`.
+
+Si un caso `HIGH` queda bloqueado, la instancia es `BLOCKED`, no `PASS`.
+
+La criticidad no se rebaja por ausencia de implementación.
+
+#### 23. Skips
+
+Todo skip debe conservar:
+
+```text
+case_id
+reason
+owner_task
+owner
+expiry_or_exit_condition
+risk_class
+```
+
+Se prohíben skips en controles críticos de:
+
+- actor binding;
+- precedencia de deny;
+- scope;
+- RLS;
+- RPC;
+- frescura de caché;
+- rollback crítico;
+- cruce de sede;
+- cruce de área;
+- autoridad simulada.
+
+#### 24. Quarantine y flakiness
+
+Un caso crítico flaky bloquea release hasta estabilización o clasificación formal que preserve el fallo.
+
+La cuarentena no convierte el caso en aprobado.
+
+La evidencia debe distinguir:
+
+```text
+FLAKY_DETECTED
+FLAKY_REPRODUCED
+FIXED
+QUARANTINED_BLOCKING
+```
+
+Una suite que excluya un caso crítico quarantined no puede producir `PASS`.
+
+#### 25. Evidencia stale
+
+Una evidencia queda stale cuando cambia materialmente cualquiera de estas identidades:
+
+- commit;
+- package version;
+- contrato;
+- migración;
+- catálogo;
+- matriz de permisos;
+- dataset;
+- fixture contractual;
+- consumidor;
+- runtime material;
+- baseline de DB;
+- configuración que altere el comportamiento probado.
+
+Una ejecución stale debe repetirse o quedar `STALE`.
+
+#### 26. Contratos y tipos
+
+La regresión consolida pruebas de:
+
+- contratos publicados;
+- tipos compartidos;
+- serialización;
+- compatibilidad de versiones;
+- parsers;
+- reason codes;
+- catálogos;
+- invariantes estructurales.
+
+Un contrato que compile pero diverja del comportamiento físico produce `FAIL`.
+
+#### 27. SQL y persistencia
+
+Cuando el package materialice base de datos, la regresión incluye según aplique:
+
+- migrations limpias;
+- upgrade;
+- constraints;
+- triggers;
+- funciones;
+- índices;
+- grants;
+- RLS;
+- persistencia de decisiones;
+- auditoría;
+- compatibilidad de datos;
+- idempotencia;
+- recuperación.
+
+#### 28. SDK y adapters
+
+La certificación comprueba que los consumidores compartidos no:
+
+- omitan scopes;
+- agreguen permisos locales;
+- conviertan roles en autoridad final;
+- reutilicen decisiones stale;
+- mezclen contexto real y simulado;
+- oculten reason codes materiales;
+- acepten un contrato incompatible.
+
+#### 29. Aplicaciones
+
+Cada aplicación incluida debe demostrar que sus superficies protegidas consumen la misma semántica canónica.
+
+La aplicación no puede declararse conforme solo porque:
+
+- oculta un botón;
+- redirige una ruta;
+- muestra un mensaje;
+- llama a un helper local;
+- recibe un `200` de una operación que no debió ejecutarse.
+
+#### 30. RLS
+
+Las policies aplicables deben probar al menos:
+
+- actor válido;
+- actor ajeno;
+- sede ajena;
+- área ajena;
+- recurso ajeno;
+- campo restringido;
+- sesión revocada;
+- `anon`;
+- `authenticated`;
+- `service_role` sin reinterpretarlo como autoridad empresarial.
+
+RLS nunca puede ser más permisiva que el contrato canónico.
+
+#### 31. RPC y acciones de servidor
+
+Cada RPC o frontera equivalente sensible debe probar:
+
+- autenticación;
+- actor;
+- app;
+- permiso;
+- recurso;
+- sede;
+- área;
+- estado;
+- campos;
+- errores;
+- auditoría;
+- llamada directa;
+- request manipulado;
+- decisión vigente.
+
+La ausencia de UI no cambia el oracle.
+
+#### 32. Equivalencia RPC–RLS–evaluador
+
+Para la misma fixture y acción:
+
+```text
+RPC_OUTCOME
+=
+RLS_OUTCOME
+=
+AUTHORIZATION_DECISION_EXPECTED
+```
+
+Toda divergencia debe clasificarse como:
+
+- bug RPC;
+- bug RLS;
+- bug evaluador;
+- gap contractual;
+- fixture incorrecta.
+
+No se acepta resolver la divergencia eligiendo silenciosamente el resultado más permisivo.
+
+#### 33. Caché e invalidación
+
+La regresión cubre:
+
+- cache hit válido;
+- miss;
+- expiración;
+- actor switch;
+- check-out;
+- cambio de turno;
+- cambio de área;
+- cambio de sede;
+- cambio de rol;
+- revocación de dispositivo;
+- actualización de permisos;
+- colisión de key;
+- stampede;
+- replay;
+- stale entry.
+
+Un stale cache nunca puede producir `ALLOW`.
+
+#### 34. Compatibilidad legacy
+
+Legacy puede participar únicamente como objeto de compatibilidad o retiro controlado.
+
+La regresión debe impedir que:
+
+- helper legacy sustituya al evaluador;
+- columna legacy se convierta en autoridad nueva;
+- claim antiguo amplíe alcance;
+- adapter temporal sobreviva sin owner;
+- una ruta heredada omita controles nuevos.
+
+La evidencia legacy debe estar clasificada y atribuida.
+
+#### 35. Seguridad adversarial
+
+Casos adversariales obligatorios incluyen cuando apliquen:
+
+- JWT manipulado;
+- claim de rol;
+- claim de sede;
+- employee ID ajeno;
+- site ID ajena;
+- area ID ajena;
+- permission key manipulada;
+- app code manipulada;
+- resource ID ajeno;
+- field injection;
+- mass assignment;
+- parameter pollution;
+- replay de `decision_id`;
+- replay de proyección;
+- cookie role override;
+- local storage manipulado;
+- query string manipulada;
+- body manipulado;
+- URL directa;
+- RPC directa;
+- RLS directa;
+- service role usado como bypass;
+- cache poisoning;
+- timing de enumeración;
+- error forzado;
+- respuesta parcial;
+- actor switch race;
+- logout race.
+
+El resultado debe ser `DENY`, error seguro o no aplicable según contrato; nunca `ALLOW` por degradación.
+
+#### 36. Territorio
+
+La regresión conserva las garantías de sede y área:
+
+```text
+GERENTE -> SOLO COBERTURA AUTORIZADA
+TRABAJADOR -> SEDE/AREA OPERATIVA APLICABLE
+ROTACION -> RECALCULO
+CROSS_SITE NO AUTORIZADO -> DENY
+CROSS_AREA NO AUTORIZADO -> DENY
+```
+
+La misma semántica debe sostenerse en servidor, RPC, RLS y consumidores.
+
+#### 37. Turno, check-in y rol operativo
+
+La regresión cubre como mínimo:
+
+- sin turno cuando es requerido;
+- turno vigente;
+- turno expirado;
+- turno rotado;
+- sin check-in cuando es requerido;
+- check-in incompatible;
+- rol operativo ausente;
+- rol operativo válido;
+- rol operativo stale;
+- operación administrativa que legítimamente no requiere contexto operativo.
+
+No se permite fabricar contexto para lograr un `PASS`.
+
+#### 38. Dispositivo compartido
+
+Debe comprobarse que:
+
+- el dispositivo limita pero no concede autoridad adicional;
+- el principal técnico no se convierte en actor humano;
+- el administrador autenticado no presta privilegios;
+- el mecanismo aprobado identifica al trabajador real;
+- un cambio de trabajador invalida la autoridad anterior;
+- una sesión de actor expirada no revive por caché o replay.
+
+#### 39. Simulación
+
+La regresión demuestra:
+
+```text
+REAL_AUTHORITY
+≠
+SIMULATED_AUTHORITY
+```
+
+Debe cubrir:
+
+- actor real;
+- sujeto simulado;
+- rol simulado;
+- territorio simulado;
+- turno/check-in simulados;
+- resultado `WOULD_*` no ejecutable;
+- mutación real bloqueada;
+- auditoría separada.
+
+Una simulación jamás produce un permiso real.
+
+#### 40. Manipulación de frontend y API
+
+La suite debe volver a demostrar:
+
+- URL directa bloqueada cuando corresponde;
+- formulario manipulado bloqueado en servidor;
+- API manipulada bloqueada;
+- RPC manipulada bloqueada;
+- campos sensibles no inyectables;
+- estado actual revalidado;
+- permiso exacto revalidado.
+
+El frontend no forma parte de la raíz de confianza.
+
+#### 41. Check-out, revocación y offline
+
+La regresión prueba que después de invalidación material:
+
+- el contexto anterior no se reutiliza;
+- la caché anterior no concede;
+- el token derivado anterior no concede;
+- una cola offline reautoriza al sincronizar;
+- una acción tardía no revive autoridad;
+- un reintento conserva idempotencia sin reusar permiso stale.
+
+#### 42. Compatibilidad de packages
+
+La evidencia de `AUTH-QA-027` debe seguir siendo válida para la combinación exacta certificada.
+
+La regresión falla si:
+
+- cambia una versión y se reutiliza evidencia anterior;
+- un consumidor queda fuera de la matriz;
+- el lockfile diverge;
+- los tipos compilan pero el comportamiento diverge;
+- una actualización exige deploy simultáneo no probado;
+- una excepción local restaura un bypass.
+
+#### 43. Rollback
+
+Cuando el alcance lo exija:
+
+```text
+rollback_tested = true
+```
+
+La regresión debe conservar:
+
+- rollback de aplicación;
+- rollback de adapter;
+- rollback de caché;
+- rollback de configuración;
+- rollback de catálogo cuando corresponda;
+- compatibilidad con datos escritos durante la ventana;
+- auditoría histórica;
+- seguridad del target anterior.
+
+No se acepta un rollback que restaure un bypass prohibido.
+
+#### 44. Auditoría
+
+La regresión consume la certificación de `AUTH-QA-029` y vuelve a comprobar que los caminos ejecutados conservan evidencia correlacionable.
+
+Un resultado funcional correcto con auditoría obligatoria rota produce `FAIL` o `BLOCKED` según la causa; nunca `PASS`.
+
+#### 45. Registro Canónico de Requisitos de Prueba
+
+El cierre exige que el registro vigente conserve:
+
+- IDs únicos;
+- catorce columnas;
+- estados permitidos;
+- relaciones resolubles;
+- owners existentes;
+- evidencia obligatoria para estados que la requieren;
+- reanudación para diferidos;
+- ausencia de eliminación silenciosa.
+
+Cada package debe declarar los requisitos realmente afectados o cubiertos por su ejecución.
+
+#### 46. Frecuencia mínima de regresión
+
+La estrategia conserva:
+
+| Tipo | Frecuencia mínima |
+| --- | --- |
+| contratos y tipos | `ON_PULL_REQUEST` |
+| núcleo de decisión | `ON_PULL_REQUEST` |
+| matriz generada completa | `NIGHTLY` y `PRE_RELEASE` |
+| migraciones, RLS y RPC | `ON_MIGRATION` |
+| concurrencia y caché | `NIGHTLY` |
+| performance | `NIGHTLY` y `PRE_RELEASE` |
+| rollback | `PRE_CUTOVER` |
+| smoke seguro | `POST_DEPLOY` |
+| regresión completa | `PRE_RELEASE` y `PRE_CUTOVER` |
+
+`AUTH-QA-030` consume las ejecuciones correspondientes a la puerta que pretende certificar.
+
+#### 47. Entornos
+
+La regresión distingue:
+
+```text
+LOCAL_EFIMERO
+CI_EFIMERO
+STAGING
+PRODUCTION_SAFE_SMOKE
+```
+
+Producción no se usa para fuzzing, suplantación, mutaciones destructivas ni pruebas de seguridad invasivas.
+
+Staging debe reproducir la arquitectura objetivo y usar datos sintéticos o anonimizados según el contrato aplicable.
+
+#### 48. Fixture, semilla y reloj
+
+Toda evidencia usada para cierre debe poder reproducir:
+
+- fixtures;
+- semilla;
+- clock profile;
+- versiones de dataset;
+- catálogos;
+- identidades;
+- roles;
+- turnos;
+- check-ins;
+- dispositivos;
+- permisos;
+- recursos;
+- denegaciones;
+- simulaciones.
+
+No se acepta una fixture implícita basada en estado residual del ambiente.
+
+#### 49. Oráculos
+
+La regresión usa tres familias de oráculo:
+
+1. **contractual primario** — expresa el resultado esperado desde el contrato canónico;
+2. **propiedades** — invariantes que deben sostenerse para cualquier entrada válida;
+3. **diferencial** — compara implementaciones y detecta divergencias.
+
+Cuando dos implementaciones difieren, el diferencial no elige ganadora.
+
+Prevalece el oráculo contractual hasta resolver la divergencia.
+
+#### 50. Property testing y generación combinatoria
+
+Los dominios con múltiples dimensiones deben cubrir combinaciones relevantes de:
+
+- actor;
+- rol;
+- permiso;
+- modalidad;
+- sede;
+- área;
+- turno;
+- check-in;
+- dispositivo;
+- recurso;
+- estado;
+- simulación;
+- consumidor.
+
+La matriz no puede limitarse a “happy paths”.
+
+#### 51. Mutation testing
+
+Cuando el contrato de la suite lo exija, la evidencia debe demostrar que mutantes críticos de seguridad no sobreviven.
+
+Ejemplos:
+
+- invertir un deny;
+- omitir scope;
+- aceptar stale context;
+- ignorar área;
+- usar rol como allow;
+- saltar revalidación;
+- desactivar comprobación de actor.
+
+Un mutante crítico superviviente bloquea la certificación correspondiente.
+
+#### 52. Fuzzing
+
+El fuzzing aplicable cubre:
+
+- JSON contractual;
+- permission keys;
+- app codes;
+- IDs;
+- resource requests;
+- requested fields;
+- reason codes;
+- proyecciones legacy;
+- registros de caché;
+- serialización de tokens.
+
+Objetivos:
+
+```text
+NO CRASH
+NO UNEXPECTED ALLOW
+NO SECRET/PII LEAK
+STABLE SAFE ERROR
+BOUNDED INPUT
+```
+
+#### 53. Concurrencia
+
+Escenarios relevantes incluyen:
+
+- cambio de turno durante resolución;
+- check-out durante evaluación;
+- deny creado durante evaluación;
+- actor cambiado durante request;
+- dispositivo revocado;
+- rol cambiado;
+- recurso transferido;
+- dos mutaciones simultáneas;
+- cache stampede;
+- double-read;
+- rollback concurrente.
+
+El resultado debe ser determinista o fallar cerrado.
+
+#### 54. Resiliencia
+
+Fallos inyectables cuando correspondan:
+
+- DB no disponible;
+- timeout;
+- caché no disponible;
+- token no disponible;
+- outbox retrasado;
+- Realtime caído;
+- package incompatible;
+- schema inválido;
+- error de serialización;
+- error de auditoría;
+- réplica retrasada;
+- red intermitente;
+- respuesta truncada.
+
+No existe fallback permisivo.
+
+#### 55. Performance
+
+La regresión de performance usa baseline aprobado cuando el package lo requiera.
+
+Una optimización no puede cambiar la decisión.
+
+La degradación permitida, los objetivos p95 y las comparaciones se toman del contrato técnico propietario; `AUTH-QA-030` no inventa thresholds alternativos.
+
+#### 56. Load testing
+
+Cuando aplique, perfiles relevantes incluyen:
+
+- login masivo;
+- inicio de turno;
+- cambio de turno;
+- check-in masivo;
+- apertura simultánea de SHELL;
+- POS compartido;
+- invalidación global de catálogo;
+- invalidación por aplicación;
+- cache cold start;
+- despliegue multiinstancia.
+
+La saturación no puede degradar autorización a fallback permisivo.
+
+#### 57. Drift
+
+La certificación acepta solamente:
+
+```text
+NONE
+APPROVED
+```
+
+Drift no aprobado en:
+
+- esquema;
+- funciones;
+- grants;
+- RLS;
+- tipos;
+- versiones;
+- hashes;
+- triggers;
+- índices;
+- catálogos;
+- matrices;
+- superficies desplegadas;
+
+bloquea el `PASS`.
+
+#### 58. Documentación ejecutable
+
+El cierre verifica que:
+
+- contratos publicados coinciden con tipos;
+- reason codes están documentados;
+- tareas tienen owner;
+- cambios de versión tienen evidencia;
+- deprecaciones tienen retiro;
+- brechas tienen propietario;
+- casos tienen evidencia;
+- consumidores tienen estado;
+- el Registro 04A valida íntegramente.
+
+#### 59. Incidentes y regresiones nuevas
+
+Un incidente material de autorización debe producir, antes de considerarse cerrado:
+
+1. fixture reproducible;
+2. test case estable;
+3. reproducción del fallo;
+4. corrección;
+5. evidencia del fallo previo;
+6. evidencia del pass posterior;
+7. caso de regresión permanente cuando corresponda;
+8. revisión de casos similares;
+9. revisión de evidencia histórica;
+10. revisión de necesidad de cambio contractual.
+
+#### 60. Casos positivos mínimos de `AUTH-QA-030`
+
+| Caso | Escenario | Resultado |
+| --- | --- | --- |
+| `AUTH-QA-030-A` | package con todos los casos aplicables verdes y evidencia vigente | `PASS` |
+| `AUTH-QA-030-B` | dos consumidores compatibles en versiones soportadas distintas | `PASS` |
+| `AUTH-QA-030-C` | administración válida sin turno para capacidad que no lo exige | `PASS` |
+| `AUTH-QA-030-D` | operación válida con turno/check-in/rol/sede/área correctos | `PASS` |
+| `AUTH-QA-030-E` | dispositivo compartido con actor humano correcto | `PASS` |
+| `AUTH-QA-030-F` | simulación válida devuelve resultado no ejecutable | `PASS` |
+| `AUTH-QA-030-G` | rollback probado conserva datos y auditoría | `PASS` |
+| `AUTH-QA-030-H` | retry idempotente conserva un único efecto | `PASS` |
+| `AUTH-QA-030-I` | evidencia repetida contra mismo estado material produce resultado consistente | `PASS` |
+| `AUTH-QA-030-J` | global final reconcilia todos los packages requeridos | `PASS` |
+
+#### 61. Casos negativos mínimos de `AUTH-QA-030`
+
+| Caso | Escenario | Resultado |
+| --- | --- | --- |
+| `AUTH-QA-030-K` | un caso `CRITICAL` falla | `FAIL` |
+| `AUTH-QA-030-L` | caso `CRITICAL` skipped | `FAIL` |
+| `AUTH-QA-030-M` | caso `CRITICAL` quarantined | `FAIL` |
+| `AUTH-QA-030-N` | evidencia pertenece a otro commit | `STALE` |
+| `AUTH-QA-030-O` | contrato cambió después de la ejecución | `STALE` |
+| `AUTH-QA-030-P` | package requerido no tiene ejecución | `BLOCKED` |
+| `AUTH-QA-030-Q` | RLS permite lo que evaluador deniega | `FAIL` |
+| `AUTH-QA-030-R` | RPC omite una validación territorial | `FAIL` |
+| `AUTH-QA-030-S` | UI oculta acción pero llamada directa ejecuta | `FAIL` |
+| `AUTH-QA-030-T` | stale cache produce `ALLOW` | `FAIL` |
+| `AUTH-QA-030-U` | service role se usa como autorización empresarial | `FAIL` |
+| `AUTH-QA-030-V` | sujeto simulado ejecuta mutación real | `FAIL` |
+| `AUTH-QA-030-W` | cross-site o cross-area no autorizado ejecuta | `FAIL` |
+| `AUTH-QA-030-X` | actor cambia y la decisión anterior se reutiliza | `FAIL` |
+| `AUTH-QA-030-Y` | rollback restaura un bypass prohibido | `FAIL` |
+| `AUTH-QA-030-Z` | ledger funcional pasa pero auditoría obligatoria es irreconstruible | `FAIL` |
+| `AUTH-QA-030-AA` | un requisito registrado pierde relación u owner | `FAIL` |
+| `AUTH-QA-030-AB` | suite reporta verde con cero casos ejecutados | `FAIL` |
+| `AUTH-QA-030-AC` | snapshot se autoactualiza para ocultar diferencia | `FAIL` |
+| `AUTH-QA-030-AD` | un consumidor se omite de la matriz | `BLOCKED` |
+| `AUTH-QA-030-AE` | drift no aprobado | `BLOCKED` |
+| `AUTH-QA-030-AF` | rollback requerido no fue probado | `BLOCKED` |
+| `AUTH-QA-030-AG` | evidencia sin commit, fixtures o versiones materiales | `BLOCKED` |
+| `AUTH-QA-030-AH` | un HIGH obligatorio falla | `FAIL` |
+| `AUTH-QA-030-AI` | un BLOCKED se presenta como NOT_APPLICABLE sin contrato | `FAIL` |
+| `AUTH-QA-030-AJ` | global final usa evidencia de otro package como sustituto | `FAIL` |
+
+#### 62. Criterio de no efecto parcial
+
+Una ejecución de regresión no modifica datos empresariales para “hacer pasar” el caso.
+
+Las fixtures destructivas pertenecen a entornos controlados.
+
+Si una prueba deja efectos inesperados, ese hecho forma parte del fallo y debe quedar reconciliado antes de certificar.
+
+#### 63. Identidad de artefactos
+
+Toda evidencia referenciada por el resultado debe ser direccionable y estable.
+
+Debe poder resolverse, según el mecanismo propietario, a:
+
+- reporte;
+- logs de test controlados;
+- coverage;
+- mutation report;
+- resultados SQL;
+- artefactos de build;
+- resultados E2E;
+- evidencia de rollback;
+- drift report;
+- matrices de compatibilidad;
+- evidencia de auditoría.
+
+No se requiere exponer secretos ni datos sensibles dentro del artefacto.
+
+#### 64. Privacidad y minimización
+
+La regresión no justifica copiar datos productivos sensibles a fixtures.
+
+Se usan datos sintéticos, anonimizados o mínimos autorizados.
+
+La evidencia no debe incluir por defecto:
+
+- JWT;
+- service role key;
+- secrets;
+- cookies;
+- contraseñas;
+- PIN;
+- documentos personales;
+- datos médicos;
+- payloads completos innecesarios.
+
+#### 65. Ejecución `AUTH-QA-030::<package_id>`
+
+La futura ejecución física deberá:
+
+1. resolver el package canónico;
+2. comprobar `POST_E5_PACKAGE`;
+3. fijar commits y versiones;
+4. resolver matriz de pruebas aplicable;
+5. resolver requisitos de prueba aplicables;
+6. resolver contratos y migraciones aplicables;
+7. verificar fixtures, semilla y clock profile;
+8. ejecutar las suites propietarias exigidas;
+9. consolidar resultados sin ocultar fallos;
+10. verificar skips y quarantine;
+11. verificar drift;
+12. verificar rollback cuando corresponda;
+13. verificar auditoría;
+14. verificar compatibilidad de consumidores;
+15. verificar que la evidencia pertenece al mismo estado material;
+16. emitir `PASS`, `FAIL`, `BLOCKED` o `STALE`;
+17. conservar artefactos y referencias;
+18. no ejecutar `GLOBAL-FINAL` como sustituto de packages faltantes.
+
+#### 66. Ejecución `AUTH-QA-030::GLOBAL-FINAL`
+
+La futura certificación global deberá:
+
+1. enumerar todos los packages requeridos por la certificación de autorización;
+2. demostrar que cada uno fue clasificado;
+3. exigir `PASS` a cada ejecución aplicable;
+4. reconciliar los resultados globales de `AUTH-QA-001..029` cuando correspondan;
+5. reconciliar contratos compartidos;
+6. reconciliar consumidores;
+7. reconciliar RLS/RPC/SDK/apps;
+8. reconciliar compatibilidad y rollback;
+9. reconciliar auditoría;
+10. validar el Registro Canónico de Requisitos de Prueba completo;
+11. rechazar evidencia stale;
+12. rechazar drift no aprobado;
+13. rechazar cualquier crítico omitido;
+14. emitir una única certificación global trazable;
+15. entregar evidencia suficiente para el cierre posterior del BLOQUE U y sus owners de certificación final.
+
+#### 67. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+La regresión consume requisitos ya registrados y exige que su registro permanezca íntegro, pero no asigna nuevas identidades ni reescribe requisitos históricos.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, entre otros, estos requisitos ya existentes:
+
+- `TREQ-AUTH-001`, resolución canónica de toda capacidad protegida;
+- `TREQ-AUTH-004`, equivalencia de evaluadores para las mismas entradas;
+- `TREQ-AUTH-009`, resolución territorial y denegación de cruces;
+- `TREQ-AUTH-011`, autoridad de dispositivo compartido limitada por el actor humano;
+- `TREQ-AUTH-012`, separación de simulación y autoridad real;
+- `TREQ-AUTH-013`, resistencia a URL, formulario, API y RPC manipulados;
+- `TREQ-AUTH-014`, invalidación de contexto, caché y tokens derivados;
+- `TREQ-AUTH-015`, evidencia correlacionable de decisiones y acciones;
+- `TREQ-AUTH-016`, revocación coordinada y ausencia de autoridad residual;
+- `TREQ-SHELL-005`, comandos reproducibles de build y pruebas;
+- `TREQ-SHELL-006`, matriz de compatibilidad de packages y consumidores;
+- `TREQ-SHELL-007`, rollback independiente;
+- `TREQ-SHELL-008`, integridad automática del Registro Canónico de Requisitos de Prueba;
+- `TREQ-INTEGRATION-003`, idempotencia, retry y recuperación en operaciones asíncronas.
+
+La lista es trazabilidad reutilizada, no una modificación del registro.
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado al checkout local del usuario y no se ejecutó build, regresión ni batería del repositorio para `AUTH-QA-030`. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron `docs:task:quality`, `docs:delivery:check`, formato, suites de dominio ni batería global contra este artefacto dentro del checkout local del usuario. |
+| REMOTA | PASS | Se revisaron en `main` el cierre de `AUTH-QA-029`, el marcador pendiente `AUTH-QA-030`, la topología `PER_PACKAGE_AND_GLOBAL_FINAL`, el gate `POST_E5_PACKAGE`, la estrategia del BLOQUE U, el contrato maestro `AUTH-CTX-030`, el inventario `AUTH-QA-001..029`, los requisitos 04A relevantes, el contrato de entrega y la continuidad posterior hacia `UX-QA-001`; el contenido incorporado de `AUTH-QA-029` coincide con el artefacto aprobado usado como base, SHA-256 `27e7328c26461172b150a7252268b651ef36b0305ea913983f08c6c761b8e2c2`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó regresión sobre aplicaciones, usuarios, dispositivos, packages, ambientes ni procesos reales. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-030::<package_id>` ni `AUTH-QA-030::GLOBAL-FINAL`; no se modificaron código, Supabase, datos, configuraciones, packages, despliegues ni ambientes. |
+
+#### 70. Criterios de aceptación
+
+`AUTH-QA-030` queda documentalmente aceptable cuando:
+
+- [ ] el título es exactamente `AUTH-QA-030 — Ejecutar prueba de regresión completa`;
+- [ ] la tarea anterior es `AUTH-QA-029`;
+- [ ] la siguiente tarea es `UX-QA-001`;
+- [ ] conserva topología `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [ ] conserva gate `POST_E5_PACKAGE`;
+- [ ] define ejecución por package;
+- [ ] define certificación `GLOBAL-FINAL`;
+- [ ] no trata un build aislado como regresión completa;
+- [ ] exige todos los `CRITICAL` en `PASS`;
+- [ ] exige todos los `HIGH` obligatorios aplicables en `PASS`;
+- [ ] exige `failed = 0`;
+- [ ] exige `skipped CRITICAL = 0`;
+- [ ] exige `quarantined CRITICAL = 0`;
+- [ ] exige drift `NONE` o `APPROVED`;
+- [ ] exige rollback probado cuando aplica;
+- [ ] exige evidencia completa;
+- [ ] consume `AUTH-QA-001..029` sin redefinirlos;
+- [ ] integra contratos, SQL, SDK, apps, RLS, RPC, caché y legacy;
+- [ ] integra seguridad, migraciones, performance y evidencia UX aplicable;
+- [ ] exige equivalencia de superficies;
+- [ ] cubre contexto, territorio, dispositivos y simulación;
+- [ ] cubre manipulación directa y bypasses;
+- [ ] cubre invalidación, offline y retries;
+- [ ] cubre compatibilidad de packages;
+- [ ] cubre rollback;
+- [ ] cubre auditoría;
+- [ ] valida el Registro Canónico de Requisitos de Prueba;
+- [ ] define evidence identity por commit/versiones/fixtures;
+- [ ] define `PASS`, `FAIL`, `BLOCKED` y `STALE`;
+- [ ] prohíbe `PARTIAL_PASS`;
+- [ ] prohíbe evidencia stale;
+- [ ] prohíbe skips críticos;
+- [ ] prohíbe cuarentena crítica como bypass;
+- [ ] conserva incidentes como regresiones futuras;
+- [ ] no absorbe las tareas `UX-QA-*`;
+- [ ] no retira legacy;
+- [ ] no sustituye la certificación final posterior;
+- [ ] no crea ni modifica requisitos de prueba;
+- [ ] no ejecuta cambios físicos durante la definición documental.
+
+#### 71. Límites
+
+`AUTH-QA-030` no:
+
+- ejecuta físicamente la regresión durante esta tarea documental;
+- crea tests nuevos por sí sola;
+- crea harnesses;
+- modifica fixtures físicas;
+- modifica CI;
+- modifica aplicaciones;
+- modifica packages;
+- modifica SDK;
+- modifica adapters;
+- modifica contratos runtime;
+- modifica Supabase;
+- crea migrations;
+- modifica RLS;
+- modifica RPC;
+- modifica grants;
+- modifica caché;
+- modifica datos;
+- ejecuta fuzzing real;
+- ejecuta load testing real;
+- ejecuta rollback real;
+- ejecuta canary;
+- ejecuta pruebas destructivas en producción;
+- cambia la clasificación de riesgo para cerrar un fallo;
+- convierte skips en PASS;
+- convierte evidence stale en PASS;
+- autoaprueba snapshots;
+- modifica el Registro 04A;
+- absorbe `UX-QA-001..030`;
+- ejecuta retiro legacy;
+- emite la certificación final de base de datos;
+- crea nuevas tareas para obligaciones que ya tienen owner.
+
+---
+
+#### 72. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-029 — Auditoría conserva actor, turno, sede y área`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-030 — Ejecutar prueba de regresión completa`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-001 — El trabajador identifica su siguiente tarea`
