@@ -24309,7 +24309,1080 @@ Esta evidencia demuestra materialización de habilitadores, no una certificació
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-029 — Auditoría conserva actor, turno, sede y área`
-### [ ] AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
+### ✅ AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-028 — Rollback funciona por aplicación
+**Tarea siguiente:** AUTH-QA-030 — Ejecutar prueba de regresión completa
+**Tipo de tarea:** documental; definición canónica de la certificación integral de auditoría y trazabilidad de autorización para demostrar por paquete y de forma global que toda decisión y acción protegida conserva evidencia correlacionable, histórica, reproducible y minimizada de principal técnico, actor efectivo, simulación cuando aplique, roles, turno, check-in, sede, área, dispositivo, permiso, recurso, decisión, razones, versiones contractuales y tiempo, sin confundir observabilidad con auditoría ni declarar cobertura desde fingerprints no reconstruibles
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-029::<package_id>` y la certificación `AUTH-QA-029::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; las fundaciones `AUTH-DB-033::GLOBAL`, `AUTH-DB-034::GLOBAL`, `AUTH-DB-032::GLOBAL`, `AUTH-DB-012::GLOBAL`, `AUTH-DB-013::GLOBAL` y `AUTH-DB-014::GLOBAL` existen materializadas y verificadas, pero esta tarea no infiere que un paquete real preserve ya todas las dimensiones exigidas de auditoría ni que la cobertura global esté certificada
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se crean ni modifican migraciones, tablas, vistas, funciones, RPC, triggers, RLS, grants, datos, logs, métricas, traces, packages, consumidores, configuración, caché, despliegues ni ambientes; no se ejecutan instancias físicas ni se modifica Supabase
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una decisión de autorización y cualquier acción protegida relacionada pueden reconstruirse posteriormente sin depender de memoria humana, logs ambiguos, estado actual mutable ni inferencias desde la interfaz.
+
+La regla raíz queda:
+
+```text
+PRINCIPAL TÉCNICO REAL
++ ACTOR EFECTIVO REAL
++ CONTEXTO OPERATIVO APLICABLE
++ SIMULACIÓN SEPARADA CUANDO EXISTA
++ PERMISO Y RECURSO EXACTOS
++ DECISIÓN Y RAZONES
++ VERSIÓN CONTRACTUAL Y FINGERPRINTS
++ RESULTADO DE EJECUCIÓN
++ CORRELACIÓN Y TIEMPO
++ EVIDENCIA HISTÓRICA RECONSTRUIBLE
+= AUDITORÍA DE AUTORIZACIÓN CERTIFICABLE
+```
+
+Y, de forma fail-closed:
+
+```text
+LOG DE TEXTO
+O MÉTRICA
+O TRACE
+O USER_ID DEL FRONTEND
+O CONTEXT_FINGERPRINT SIN FUENTE RECONSTRUIBLE
+O ESTADO ACTUAL CONSULTADO DESPUÉS
+O DECISION_ID SIN CONTEXTO
+≠ AUDITORÍA INTEGRAL
+```
+
+#### 2. Resultado canónico
+
+`AUTH-QA-029` establece `AUTH-QA-AUDIT-CORRELATION-CERTIFICATION-001@1.0.0` para certificar cinco propiedades simultáneas:
+
+1. **atribución** — quién presentó la credencial y a quién se atribuye la acción empresarial;
+2. **contexto** — bajo qué turno, check-in, sede, área, rol y dispositivo operó el actor cuando esas dimensiones aplicaban;
+3. **decisión** — qué permiso, recurso, estado, lanes, razones y versión contractual produjeron `ALLOW` o `DENY`;
+4. **ejecución** — qué efecto ocurrió, no ocurrió, falló, fue reintentado, revertido o quedó en conciliación;
+5. **reproducibilidad histórica** — la evidencia puede interpretarse con las versiones y snapshots del momento sin reinterpretarla con el estado actual.
+
+El resultado documental no marca ninguna ejecución real como certificada.
+
+#### 3. Alcance exacto
+
+Esta tarea define:
+
+- la unidad de evidencia por decisión y acción protegida;
+- el conjunto mínimo de dimensiones obligatorias;
+- las reglas de aplicabilidad y `null` legítimo;
+- la separación entre principal, actor, rol, dispositivo y simulación;
+- la correlación entre decisión, ejecución, cambios administrativos y auditorías especializadas;
+- la preservación de turno, check-in, sede y área cuando correspondan;
+- la evidencia de denegaciones, reintentos, rollback y operaciones administrativas;
+- la frontera entre auditoría empresarial y observabilidad técnica;
+- los criterios de completitud, frescura, inmutabilidad y minimización;
+- los casos positivos, negativos y de regresión;
+- la ejecución `AUTH-QA-029::<package_id>`;
+- la certificación `AUTH-QA-029::GLOBAL-FINAL`;
+- el handoff exacto a `AUTH-QA-030`.
+
+Esta tarea no modifica físicamente el modelo de auditoría.
+
+#### 4. Handoff recibido
+
+La certificación consume como contratos ya definidos:
+
+```text
+AUTH-DB-033
+→ AccessContext autoritativo
+
+AUTH-DB-034
+→ AuthorizationDecision y AuthorizationAuditContext
+
+AUTH-DB-032
+→ persistencia durable de decisiones y vínculos decisión–ejecución
+
+AUTH-DB-012
+→ auditoría de cambios de permisos
+
+AUTH-DB-013
+→ auditoría de simulación
+
+AUTH-DB-014
+→ auditoría del ciclo de dispositivos
+
+AUTH-SRV-014
+→ principal real, actor efectivo y contexto operativo aplicable
+
+AUTH-SRV-015
+→ separación entre actor real, sujeto simulado y rol simulado
+```
+
+`AUTH-QA-029` no redefine esos contratos: demuestra que, combinados por cada paquete aplicable, satisfacen la obligación transversal de auditoría.
+
+#### 5. Frontera con `AUTH-QA-028`
+
+`AUTH-QA-028` certifica rollback por aplicación.
+
+`AUTH-QA-029` consume como hecho auditable que:
+
+- un rollback es una operación nueva;
+- conserva actor, causa, origen, destino y resultado;
+- no borra evidencia histórica válida;
+- una restauración no puede reatribuir eventos anteriores a otro actor;
+- un rollback fallido, bloqueado o stale también deja evidencia.
+
+`AUTH-QA-029` no vuelve a certificar la mecánica de rollback.
+
+#### 6. Frontera con `AUTH-QA-030`
+
+`AUTH-QA-030` conserva la orquestación de la regresión completa.
+
+`AUTH-QA-029` entrega a esa tarea:
+
+- contrato de completitud de auditoría;
+- matriz de casos obligatorios;
+- estado por paquete;
+- evidencia por dimensión;
+- brechas y bloqueadores;
+- resultado global de auditoría cuando exista.
+
+`AUTH-QA-029` no sustituye la regresión integral final y no declara cerrado el BLOQUE U.
+
+#### 7. Unidad de auditoría certificable
+
+La unidad mínima de certificación es:
+
+```text
+audit_unit_id
+package_id
+repository
+application
+operation_kind
+request_source
+decision_id
+correlation_id
+execution_reference
+occurred_at / decided_at
+```
+
+La identidad física puede variar si conserva equivalencia inequívoca.
+
+Una unidad no puede mezclar dos actores, dos decisiones o dos operaciones lógicas solo para reducir cardinalidad.
+
+#### 8. Dimensiones obligatorias
+
+Cada unidad deberá clasificar explícitamente estas dimensiones:
+
+| Dimensión | Evidencia exigida |
+| --- | --- |
+| principal técnico | tipo e identidad técnica no secreta |
+| actor efectivo | tipo, identidad y fuente de atribución |
+| simulación | ausencia explícita o identidad de simulación separada |
+| rol base | valor/version aplicable o `NOT_APPLICABLE` justificado |
+| rol operativo | valor/version aplicable o `NOT_APPLICABLE` justificado |
+| turno | identidad/revisión aplicable o ausencia semántica demostrada |
+| check-in | identidad/estado aplicable o ausencia semántica demostrada |
+| sede | identidad o conjunto de sedes realmente validadas cuando aplique |
+| área | identidad o conjunto de áreas realmente validadas cuando aplique |
+| dispositivo | identidad aplicable o ausencia explícita |
+| permiso | `PermissionKey` exacta y versión/catálogo asociado |
+| recurso | tipo, identidad, lados y versión/fingerprint aplicables |
+| decisión | `ALLOW` o `DENY` real, nunca valor simulado |
+| razones | reason codes estructurados suficientes para reproducir el outcome |
+| contrato | versiones, hashes y fingerprints necesarios |
+| tiempo | timestamp de servidor y referencias temporales relevantes |
+| ejecución | resultado del efecto o ausencia de efecto |
+| correlación | vínculo entre decisión, intento, efecto y auditorías especializadas |
+
+#### 9. Regla de aplicabilidad
+
+No todas las dimensiones deben tener un valor no nulo en todas las acciones.
+
+La certificación distingue:
+
+```text
+PRESENT
+NOT_APPLICABLE
+ABSENT_BUT_REQUIRED
+AMBIGUOUS
+STALE
+UNRECONSTRUCTIBLE
+```
+
+Solo `PRESENT` y `NOT_APPLICABLE` correctamente justificado son estados aceptables para una dimensión obligatoria.
+
+Un `null` sin semántica demostrable no equivale a `NOT_APPLICABLE`.
+
+#### 10. Principal técnico y actor efectivo
+
+La evidencia preserva:
+
+```text
+principal
+≠ actor_effective
+```
+
+Casos permitidos incluyen:
+
+- sesión personal con principal humano y actor empleado;
+- dispositivo compartido con principal técnico del dispositivo y actor humano;
+- proceso de sistema con principal técnico y actor `SYSTEM`;
+- proceso delegado con principal técnico y actor empleado explícitamente delegado.
+
+Se prohíbe inferir actor desde `created_by`, `published_by`, email, nombre de job o valor cliente no validado.
+
+#### 11. Namespace del actor
+
+La evidencia debe permitir distinguir como mínimo:
+
+```text
+EMPLOYEE
+CUSTOMER
+SYSTEM
+UNRESOLVED
+```
+
+Un identificador sin namespace no es evidencia suficiente cuando diferentes dominios pueden compartir forma de ID.
+
+`auth_user_id` no se trata automáticamente como `employee_id`.
+
+#### 12. Rol no equivale a actor
+
+La auditoría conserva roles como contexto de autorización, no como identidad humana.
+
+Queda prohibido:
+
+```text
+role_code -> actor_id
+navigation_role -> actor_id
+device_role -> actor_id
+```
+
+Un cambio de rol no crea un actor nuevo; crea contexto nuevo del mismo actor o una nueva decisión según corresponda.
+
+#### 13. Turno
+
+Cuando el permiso o la operación dependen del carril operativo, la evidencia debe preservar una referencia reproducible al turno utilizado.
+
+La certificación deberá distinguir:
+
+- turno publicado y vigente usado por la decisión;
+- revisión publicada correspondiente cuando el contrato la requiera;
+- ausencia legítima de turno para carriles administrativos o base-only;
+- ausencia inválida cuando el turno era prerrequisito.
+
+Consultar el turno actual después del hecho no sustituye conservar la referencia histórica usada.
+
+#### 14. Check-in
+
+Cuando el permiso requiere check-in o la decisión depende de su estado, la evidencia debe conservar:
+
+- identidad o referencia de la sesión de check-in;
+- estado relevante al momento de evaluar;
+- compatibilidad con turno, sede y área cuando aplique.
+
+Un check-in creado, cerrado o cambiado después no debe reinterpretar una decisión histórica.
+
+#### 15. Sede
+
+La sede auditada es la sede autoritativa realmente validada para la operación.
+
+No se sustituye por:
+
+- sede seleccionada en UI;
+- sede primaria por conveniencia;
+- única sede visible;
+- valor cliente no validado;
+- sede actual consultada después.
+
+En operaciones multi-sede, se preserva el conjunto de lados o identidades requeridos; una sede representativa no basta.
+
+#### 16. Área
+
+La evidencia conserva el área autoritativa realmente aplicable cuando la operación es area-scoped.
+
+Se distingue:
+
+```text
+AREA_EXACT
+SITE_WIDE_WITHOUT_AREA
+MULTI_AREA
+NOT_APPLICABLE
+```
+
+`operational_area = null` puede ser legítimo únicamente cuando el contrato admite operación site-wide y esa semántica es demostrable.
+
+No se rellena un área ausente con `employees.area_id`, filtro de UI o fallback de dispositivo.
+
+#### 17. Dispositivo
+
+Cuando interviene un dispositivo compartido o una restricción de dispositivo, la evidencia preserva la identidad técnica correspondiente sin convertirla en actor.
+
+La certificación comprueba separación entre:
+
+```text
+device_id
+principal técnico
+actor_session
+actor efectivo
+```
+
+Un cambio posterior de trabajador no reatribuye los eventos anteriores del dispositivo.
+
+#### 18. Simulación
+
+Una simulación conserva dos planos separados:
+
+```text
+ACTOR REAL + AUTORIDAD REAL
+≠
+SUJETO / ROL / TERRITORIO / TURNO / CHECK-IN SIMULADOS
+```
+
+La evidencia de simulación deberá conservar actor y sesión reales, escenario simulado, versiones, fingerprints, resultado `WOULD_ALLOW | WOULD_DENY | INDETERMINATE` y `executable=false`.
+
+Una simulación nunca reemplaza la auditoría de una decisión real.
+
+#### 19. Permiso
+
+La evidencia conserva la `PermissionKey` exacta utilizada por el evaluador y la identidad de catálogo o release necesaria para interpretarla históricamente.
+
+Un nombre de pantalla, acción UI o string legacy no sustituye la clave contractual exacta.
+
+#### 20. Recurso
+
+La auditoría debe conservar tipo e identidad suficiente del recurso o conjunto de recursos afectado.
+
+Para recursos versionados o estados mutables se conserva fingerprint, versión esperada/observada o referencia equivalente cuando el contrato lo requiera.
+
+Una operación masiva no puede auditarse con un único recurso de muestra.
+
+#### 21. Decisión
+
+La evidencia real usa exclusivamente:
+
+```text
+ALLOW
+DENY
+```
+
+`WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE` pertenecen al plano simulado.
+
+Un fallo técnico previo a construir una decisión válida no se convierte en `DENY` ficticio.
+
+#### 22. Razones
+
+Las razones se conservan como códigos estructurados y versionables.
+
+La certificación comprueba que:
+
+- explican el outcome;
+- no dependen de copy de interfaz;
+- no se sustituyen por un mensaje técnico genérico;
+- no mezclan denegación empresarial con indisponibilidad técnica;
+- se interpretan con el contrato vigente al momento de la decisión.
+
+#### 23. Versiones y fingerprints
+
+La evidencia deberá fijar las identidades necesarias para reconstruir la decisión, incluyendo según aplique:
+
+- versión de contrato;
+- schema version;
+- release hash;
+- catálogo de permisos;
+- datasets utilizados;
+- evaluador y versión;
+- context fingerprint;
+- resource fingerprint;
+- versiones de rol o matrices cuando intervengan;
+- revisión de turno cuando sea parte de la autoridad.
+
+Un fingerprint demuestra identidad de contenido, no describe por sí mismo el contenido que representa.
+
+#### 24. Fingerprint no sustituye referencia reconstruible
+
+La certificación falla si una dimensión exigida solo queda representada por un hash cuyo contenido no puede reconstruirse desde evidencia canónica retenida.
+
+En particular:
+
+```text
+context_fingerprint
+sin snapshot, referencia o evidencia resoluble
+≠ turno + check-in + sede + área auditados
+```
+
+El fingerprint puede reforzar integridad; no reemplaza las identidades empresariales requeridas.
+
+#### 25. Tiempo
+
+Se conservan timestamps de servidor suficientes para ordenar y reproducir hechos.
+
+Cuando una operación se origina y ejecuta en tiempos distintos se distinguen las referencias temporales correspondientes.
+
+La evidencia no usa el reloj cliente como autoridad final.
+
+#### 26. Correlación
+
+`decision_id` identifica una decisión inmutable.
+
+`correlation_id` puede unir:
+
+- request;
+- evaluación;
+- ejecución;
+- evento de auditoría especializado;
+- retry;
+- rollback;
+- conciliación.
+
+Ninguno funciona como bearer token ni autoriza un efecto por existir.
+
+#### 27. Decisión y ejecución
+
+La certificación mantiene separados:
+
+```text
+authorization decision
+≠ business effect
+```
+
+Una decisión `ALLOW` puede terminar como:
+
+- ejecutada;
+- no ejecutada;
+- conflicto;
+- fallo;
+- resultado desconocido;
+- rollback posterior.
+
+La evidencia debe permitir conocer cuál ocurrió.
+
+#### 28. Denegaciones
+
+Las denegaciones forman parte obligatoria de la auditoría.
+
+Cuando el contrato mínimo sea resoluble se conserva:
+
+- principal;
+- actor efectivo o estado no resuelto;
+- permiso;
+- recurso o intento de recurso;
+- territorio aplicable;
+- dispositivo cuando corresponda;
+- outcome;
+- razones;
+- tiempo;
+- correlación.
+
+No se inventa actor, turno, sede o área para completar una denegación.
+
+#### 29. Fallos técnicos
+
+Un fallo técnico que impide producir `AuthorizationDecision` válida usa evidencia técnica separada.
+
+La certificación comprueba:
+
+```text
+TECHNICAL_FAILURE
+≠ DENY
+```
+
+Cuando exista `evaluation_attempt_id`, retry budget, stage o error category, estos permanecen separados del ledger de decisiones reales.
+
+#### 30. Reintentos
+
+Cada reintento debe ser distinguible.
+
+Puede compartir la correlación lógica, pero no reutiliza una decisión stale como autoridad.
+
+Si cambia cualquiera de estas dimensiones materiales:
+
+```text
+actor
+sesión
+turno
+check-in
+rol
+sede
+área
+dispositivo
+permiso
+recurso
+estado
+contrato
+catálogo
+```
+
+se exige nueva evaluación y nueva evidencia aplicable.
+
+#### 31. Offline, colas y ejecución diferida
+
+Una intención originada offline o encolada conserva al actor originador cuando sea verificable, pero la autoridad efectiva se revalida en el momento definido por su contrato.
+
+La evidencia distingue:
+
+```text
+originator
+technical executor
+actor autorizado al ejecutar
+```
+
+Un worker de cola no se convierte automáticamente en autor empresarial.
+
+#### 32. Operaciones administrativas
+
+Una acción administrativa válida puede no requerir turno, check-in o contexto operativo.
+
+En ese caso la certificación exige:
+
+- actor y principal reales;
+- permiso administrativo exacto;
+- alcance administrativo aplicable;
+- recurso;
+- decisión y razones;
+- resultado;
+- evidencia explícita de que las dimensiones operativas eran `NOT_APPLICABLE`.
+
+La ausencia de turno no se interpreta como pérdida de auditoría cuando el contrato no lo exige.
+
+#### 33. Cambios de permisos
+
+La auditoría especializada de cambios de autoridad permanece bajo `AUTH-DB-012`.
+
+`AUTH-QA-029` comprueba que un cambio de grants, denies, matrices o configuración de permisos pueda correlacionarse con:
+
+- decisión que autorizó el cambio cuando exista;
+- actor/principal;
+- operación administrativa;
+- before/after o delta reproducible;
+- intento fallido cuando corresponda;
+- tiempo y correlación.
+
+Una decisión de autorización no sustituye el audit entry del cambio de permisos.
+
+#### 34. Simulación persistida
+
+La auditoría especializada de simulación permanece bajo `AUTH-DB-013`.
+
+La certificación comprueba que el plano simulado conserve identidad, escenario y versiones sin contaminar la autoridad real.
+
+La existencia de una simulación no permite escribir `WOULD_ALLOW` en el ledger de decisiones reales.
+
+#### 35. Ciclo de dispositivos
+
+La auditoría especializada del dispositivo permanece bajo `AUTH-DB-014`.
+
+La certificación comprueba que alta, revisión, cambio de binding, suspensión, revocación y demás eventos aplicables conserven dispositivo, actor/principal autorizante, decisión asociada, correlación y configuración/fingerprint requeridos sin exponer credenciales.
+
+#### 36. Persistencia de decisiones
+
+`AUTH-DB-032` es la ancla durable para decisiones reales y vínculos decisión–ejecución.
+
+La línea base física vigente conserva directamente en el ledger central, entre otras dimensiones:
+
+```text
+decision_id
+correlation_id
+principal_id
+actor_id
+device_id
+app_code
+permission_key
+resource_type
+resource_ids
+outcome
+authorization_reason_codes
+context_fingerprint
+resource_fingerprint
+catalog_hash
+dataset_hashes
+evaluator_version
+```
+
+La existencia de estas columnas no prueba por sí sola completitud transversal de auditoría.
+
+#### 37. Brecha física que la certificación no puede ocultar
+
+El `AuthorizationAuditContext` materializado actualmente no expone directamente como campos propios:
+
+```text
+shift_id
+checkin_id
+validated_site_ids
+validated_area_ids
+```
+
+Por tanto:
+
+```text
+AUTH-DB-032::GLOBAL = VERIFIED
+```
+
+no implica:
+
+```text
+AUTH-QA-029 = PASS
+```
+
+Para cada paquete, `AUTH-QA-029` deberá demostrar una cadena autoritativa y retenida que haga esas dimensiones reconstruibles cuando eran obligatorias.
+
+Si esa cadena no existe, el resultado de la ejecución correspondiente es bloqueante y la corrección física pertenece al owner canónico existente; esta tarea no inventa una migración ni una tarea nueva.
+
+#### 38. Fuentes aceptables para completar una dimensión
+
+Una dimensión puede considerarse reconstruible únicamente mediante evidencia canónica atribuible, por ejemplo:
+
+- campo durable específico;
+- snapshot contractual retenido;
+- referencia inmutable a una revisión histórica;
+- vínculo a evento especializado inmutable;
+- payload durable autorizado que preserve la identidad exacta;
+- relación normalizada cuya historia requerida esté preservada.
+
+No son suficientes por sí solos:
+
+- estado actual mutable;
+- lookup no versionado;
+- nombre mostrado en UI;
+- log libre;
+- métrica;
+- trace;
+- hash sin contenido resoluble;
+- cache local;
+- objeto del navegador.
+
+#### 39. Auditoría y observabilidad
+
+Se conserva la separación:
+
+```text
+AUDITORÍA EMPRESARIAL
+≠ LOGS
+≠ MÉTRICAS
+≠ TRACES
+```
+
+Pueden compartir `correlation_id`.
+
+Observabilidad puede ayudar a detectar un fallo, pero no reemplaza el hecho empresarial durable ni la atribución exigida.
+
+#### 40. Minimización y privacidad
+
+La auditoría conserva identificadores y metadatos necesarios sin copiar datos personales o secretos por conveniencia.
+
+No se exige por defecto almacenar:
+
+- nombre;
+- correo;
+- teléfono;
+- documento;
+- tokens;
+- cookies;
+- API keys;
+- secretos;
+- OTP;
+- payload empresarial completo cuando una proyección mínima basta.
+
+Una investigación autorizada podrá resolver atributos descriptivos desde su owner correspondiente.
+
+#### 41. Inmutabilidad histórica
+
+Una decisión o evento auditado no cambia de significado porque cambien después:
+
+- rol;
+- turno;
+- sede;
+- área;
+- catálogo;
+- recurso;
+- empleado;
+- dispositivo;
+- contrato.
+
+La historia se interpreta con las identidades y versiones conservadas del momento.
+
+Una corrección genera nueva evidencia; no reescribe silenciosamente la anterior.
+
+#### 42. Rollback y auditoría
+
+Un rollback posterior nunca elimina ni reatribuye la evidencia original.
+
+La cadena debe poder reconstruir:
+
+```text
+cambio original
+→ decisión
+→ ejecución
+→ incidente o trigger
+→ decisión de rollback
+→ rollback ejecutado / bloqueado / fallido
+→ verificación posterior
+```
+
+Si recuperar software exige perder esa historia, el rollback no es auditable y no puede certificarse como seguro.
+
+#### 43. Evidencia stale
+
+Una evidencia queda `STALE` para certificación cuando cambian materialmente los inputs a los que estaba ligada, incluidos cuando aplique:
+
+- repository/commit;
+- package/version;
+- contrato;
+- esquema;
+- catálogo;
+- dataset;
+- recurso;
+- matriz de roles;
+- política;
+- mecanismo de persistencia;
+- perfil de auditoría.
+
+`STALE` no borra evidencia histórica; impide reutilizarla como prueba vigente.
+
+#### 44. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Justificación:** la obligación transversal de evidencia correlacionable, atribución, contexto, auditoría de simulación y dispositivos, preservación histórica, revocación sin borrado, idempotencia y consistencia administrativa ya está registrada. Esta tarea define cómo certificar integralmente esa cobertura sin crear una obligación empresarial nueva.
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro canónico:
+
+- `TREQ-AUTH-004` — coherencia de decisión y razones para el mismo contexto;
+- `TREQ-AUTH-011` — dispositivo, principal, actor, sede, área y cambio de trabajador en dispositivos compartidos;
+- `TREQ-AUTH-012` — separación y auditoría de simulación;
+- `TREQ-AUTH-014` — invalidación de contexto y autoridad stale;
+- `TREQ-AUTH-015` — evidencia correlacionable completa de decisiones y acciones protegidas;
+- `TREQ-AUTH-016` — revocación coordinada sin borrar historia ni auditoría;
+- `TREQ-AUTH-019` — separación de identidades de dispositivo, endpoint, activo, estación, principal y actor;
+- `TREQ-VISO-001` — cambios administrativos coherentes y auditables;
+- `TREQ-INTEGRATION-003` — identidad estable, retries, resultado recuperable, conciliación y recuperación de operaciones asíncronas.
+
+Ninguna de estas filas cambia texto, owner, estado, relación, secuencia ni evidencia por efecto de esta tarea documental.
+
+#### 46. Estados de certificación por dimensión
+
+Cada ejecución deberá producir para cada dimensión exigida exactamente uno de estos resultados:
+
+```text
+PASS_PRESENT
+PASS_NOT_APPLICABLE
+FAIL_REQUIRED_MISSING
+FAIL_AMBIGUOUS
+FAIL_STALE
+FAIL_UNRECONSTRUCTIBLE
+```
+
+No se permite un estado genérico `PASS` de la unidad mientras exista una dimensión obligatoria en estado `FAIL_*`.
+
+#### 47. Resultado de la unidad
+
+Una unidad puede cerrar como:
+
+```text
+PASS
+FAIL
+BLOCKED
+STALE
+```
+
+Reglas:
+
+- `PASS`: todas las dimensiones aplicables son reconstruibles y las pruebas pasan;
+- `FAIL`: existe contradicción o incumplimiento observado;
+- `BLOCKED`: falta materialización/evidencia necesaria para decidir sin inventar;
+- `STALE`: la evidencia fue válida para otra combinación material y debe reejecutarse.
+
+No se convierte `BLOCKED` en `PASS` por ausencia de datos.
+
+#### 48. Casos positivos mínimos
+
+Cada paquete deberá cubrir cuando aplique:
+
+| ID | Caso | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-029-A` | sesión personal, acción base-only | actor/principal correctos; turno y check-in `NOT_APPLICABLE` justificados |
+| `AUTH-QA-029-B` | acción operacional con turno y check-in | turno, check-in, sede, área y rol reconstruibles |
+| `AUTH-QA-029-C` | acción site-wide sin área específica | sede presente; área `NOT_APPLICABLE` semánticamente demostrada |
+| `AUTH-QA-029-D` | dispositivo compartido | principal técnico, device, actor session y actor humano separados |
+| `AUTH-QA-029-E` | denegación por territorio | actor, permiso, recurso, sede/área intentadas, outcome y razones correlacionables |
+| `AUTH-QA-029-F` | acción administrativa sin turno | contexto operativo ausente de forma legítima y explícita |
+| `AUTH-QA-029-G` | simulación válida | actor real y escenario simulado separados; resultado no ejecutable |
+| `AUTH-QA-029-H` | cambio de permiso autorizado | decisión y audit entry administrativo enlazados sin fusionarse |
+| `AUTH-QA-029-I` | lifecycle de dispositivo | evento de dispositivo correlacionado con autorización y actor correctos |
+| `AUTH-QA-029-J` | retry de una operación | intentos distinguibles; correlación común permitida; autoridad fresca |
+| `AUTH-QA-029-K` | rollback posterior | historia original preservada y nuevo evento de recuperación correlacionado |
+| `AUTH-QA-029-L` | operación asíncrona | originador, ejecutor técnico y actor autorizado al efecto distinguibles |
+
+#### 49. Casos negativos mínimos
+
+La certificación deberá fallar o bloquear ante:
+
+| ID | Caso |
+| --- | --- |
+| `AUTH-QA-029-M` | `auth_user_id` usado como `employee_id` sin resolución |
+| `AUTH-QA-029-N` | rol usado como actor |
+| `AUTH-QA-029-O` | dispositivo usado como actor humano |
+| `AUTH-QA-029-P` | turno requerido sin referencia reconstruible |
+| `AUTH-QA-029-Q` | check-in requerido inferido desde estado actual |
+| `AUTH-QA-029-R` | sede auditada tomada del filtro de UI |
+| `AUTH-QA-029-S` | área faltante completada desde `employees.area_id` |
+| `AUTH-QA-029-T` | `context_fingerprint` presentado como única prueba de turno/sede/área |
+| `AUTH-QA-029-U` | decisión `ALLOW` sin vínculo al resultado de ejecución cuando el efecto debe auditarse |
+| `AUTH-QA-029-V` | denegación omitida del ledger |
+| `AUTH-QA-029-W` | fallo técnico persistido como `DENY` |
+| `AUTH-QA-029-X` | `WOULD_ALLOW` persistido como decisión real |
+| `AUTH-QA-029-Y` | simulación reemplaza actor real |
+| `AUTH-QA-029-Z` | retry reutiliza decisión stale |
+| `AUTH-QA-029-AA` | rollback elimina evidencia original |
+| `AUTH-QA-029-AB` | logs o métricas usados como única auditoría empresarial |
+| `AUTH-QA-029-AC` | evidencia de otro commit/package/versión reutilizada |
+| `AUTH-QA-029-AD` | secreto o token almacenado para “mejorar trazabilidad” |
+| `AUTH-QA-029-AE` | lote auditado solo con un recurso representativo |
+| `AUTH-QA-029-AF` | operación administrativa omite actor porque no había turno |
+
+#### 50. Regresiones obligatorias
+
+La suite futura deberá conservar protección contra:
+
+1. principal y actor fusionados;
+2. device y actor fusionados;
+3. role y actor fusionados;
+4. pérdida de namespace del actor;
+5. pérdida de turno histórico;
+6. pérdida de check-in histórico;
+7. sede actual usada para reinterpretar historia;
+8. área actual usada para reinterpretar historia;
+9. `null` ambiguo tratado como `NOT_APPLICABLE`;
+10. fingerprint sin fuente reconstruible aceptado como evidencia completa;
+11. reason codes reemplazados por copy de UI;
+12. versión de contrato omitida;
+13. evidencia de simulación mezclada con decisión real;
+14. `WOULD_ALLOW` ejecutable;
+15. denegación sin evidencia;
+16. technical failure convertido en deny;
+17. retry que oculta intentos previos;
+18. rollback que borra la operación defectuosa;
+19. cambio de permisos sin delta auditable;
+20. evento de dispositivo sin actor/principal autorizante cuando aplica;
+21. operación async atribuida al worker por defecto;
+22. lote que pierde miembros afectados;
+23. evidencia stale reutilizada;
+24. datos sensibles innecesarios dentro del audit payload;
+25. observabilidad usada como sustituto del ledger empresarial.
+
+#### 51. Ejecución `AUTH-QA-029::<package_id>`
+
+Cada package elegible deberá producir una ejecución propia después de su gate físico aplicable.
+
+La ejecución debe:
+
+1. resolver el package exacto desde la ruta canónica;
+2. identificar repositorios, superficies y operaciones protegidas del package;
+3. seleccionar casos reales y negativos representativos según contratos del package;
+4. ligar cada evidencia a repository, commit, package/version, ambiente y contrato exactos;
+5. verificar las dimensiones obligatorias de la sección 8;
+6. demostrar actor/principal y namespace;
+7. demostrar turno/check-in cuando apliquen;
+8. demostrar sede/área cuando apliquen;
+9. demostrar device y simulación cuando apliquen;
+10. demostrar permiso, recurso, decisión y razones;
+11. demostrar vínculo decisión–ejecución para mutaciones y efectos auditables;
+12. cubrir denegaciones;
+13. cubrir retry/rollback/administración cuando existan en el package;
+14. detectar gaps de reconstruibilidad;
+15. publicar evidencia machine-readable atribuible;
+16. cerrar `PASS`, `FAIL`, `BLOCKED` o `STALE` sin inferencias permisivas.
+
+Una ejecución sintética de una fundación global no sustituye esta evidencia de package.
+
+#### 52. Criterio de `PASS` por paquete
+
+`AUTH-QA-029::<package_id>` solo puede quedar `PASS` si:
+
+```text
+TODAS LAS SUPERFICIES PROTEGIDAS MATERIALIZADAS DEL PACKAGE INVENTARIADAS
++
+TODAS LAS DIMENSIONES OBLIGATORIAS RECONSTRUIBLES
++
+TODOS LOS CASOS REQUERIDOS EJECUTADOS
++
+DENEGACIONES CUBIERTAS
++
+CERO EVIDENCIA STALE
++
+CERO BRECHA DE ATRIBUCIÓN
++
+CERO DIMENSIÓN OBLIGATORIA BASADA SOLO EN INFERENCIA
++
+EVIDENCIA ATRIBUIBLE
+= PASS
+```
+
+#### 53. Bloqueadores por paquete
+
+Son bloqueadores, entre otros:
+
+- actor no resoluble donde era obligatorio;
+- turno/check-in requeridos sin evidencia histórica;
+- sede/área requeridas no reconstruibles;
+- dependencia exclusiva de estado actual mutable;
+- `context_fingerprint` sin contenido o referencia retenida suficiente;
+- decisiones no persistidas cuando el contrato exige evidencia durable;
+- mutaciones sin vínculo decisión–ejecución;
+- denegaciones omitidas;
+- simulación mezclada con autoridad real;
+- audit store no accesible al proceso de prueba autorizado;
+- evidencia stale;
+- auditoría que expone secretos;
+- contradicción entre ledger central y auditoría especializada.
+
+#### 54. Handoff de una brecha física
+
+`AUTH-QA-029` no crea automáticamente SQL ni un nuevo owner.
+
+Ante una brecha física:
+
+1. identifica la dimensión exacta ausente;
+2. identifica qué evidencia existe y por qué no basta;
+3. identifica el owner canónico ya existente;
+4. bloquea la certificación afectada;
+5. exige corrección bajo el lifecycle físico correspondiente;
+6. reejecuta la evidencia después de la corrección.
+
+No se modifica el Registro 04A solo para registrar que una implementación todavía no satisface un requisito ya existente.
+
+#### 55. Certificación `AUTH-QA-029::GLOBAL-FINAL`
+
+La certificación global podrá ejecutarse únicamente después de que las ejecuciones requeridas por la topología estén resueltas.
+
+Debe reconciliar:
+
+```text
+package_id
+repository
+application
+surface
+principal/actor model
+turn/check-in model
+site/area model
+device model
+simulation model
+decision ledger
+specialized audits
+decision-execution links
+contract versions
+result
+artifact identity
+```
+
+El global final falla si:
+
+- falta una ejecución requerida;
+- existe un `FAIL`;
+- existe un `BLOCKED` no resuelto;
+- existe evidencia `STALE`;
+- la misma dimensión usa semánticas incompatibles entre paquetes;
+- un consumidor depende de una excepción no registrada;
+- la cadena actor–turno–sede–área no puede reconstruirse donde corresponde.
+
+#### 56. No duplicación de `AUTH-QA-030`
+
+`AUTH-QA-029::GLOBAL-FINAL` certifica auditoría.
+
+`AUTH-QA-030` seguirá siendo responsable de combinar auditoría con el resto de regresiones de autorización y emitir la evidencia final del minibloque.
+
+Un `PASS` de `AUTH-QA-029` es entrada de `AUTH-QA-030`, no sustituto.
+
+`AUTH-QA-029` no ejecuta la regresión completa reservada a `AUTH-QA-030`.
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado en el checkout local del usuario ni se ejecutó build o batería del repositorio para `AUTH-QA-029`. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron `docs:task:quality`, `docs:delivery:check`, formato, tests de base de datos ni batería global contra este artefacto dentro del checkout local del usuario. |
+| REMOTA | PASS | Se revisaron en `main` la continuidad hasta `AUTH-QA-027`, el marcador pendiente de `AUTH-QA-028`, la sucesora `AUTH-QA-029`, la topología `PER_PACKAGE_AND_GLOBAL_FINAL`, el gate `POST_E5_PACKAGE`, los contratos `AUTH-SRV-014` y `AUTH-SRV-015`, la cobertura 04A relevante y las fundaciones físicas verificadas `AUTH-DB-033::GLOBAL`, `AUTH-DB-034::GLOBAL`, `AUTH-DB-032::GLOBAL`, `AUTH-DB-012::GLOBAL`, `AUTH-DB-013::GLOBAL` y `AUTH-DB-014::GLOBAL`; también se contrastó la forma física vigente de `AuthorizationAuditContext`, que no expone directamente turno, check-in, sede ni área. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron acciones protegidas reales ni pruebas de package para demostrar todavía la cadena actor–turno–sede–área. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-029::<package_id>` ni `AUTH-QA-029::GLOBAL-FINAL`; no se modificaron Supabase, aplicaciones, packages, datos, auditoría ni ambientes. |
+
+#### 58. Criterios de aceptación
+
+`AUTH-QA-029` queda documentalmente aceptable cuando:
+
+- [ ] el título es exactamente `AUTH-QA-029 — Auditoría conserva actor, turno, sede y área`;
+- [ ] conserva topología `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [ ] conserva gate `POST_E5_PACKAGE`;
+- [ ] separa principal, actor, rol, dispositivo y simulación;
+- [ ] turno y check-in tienen reglas explícitas de aplicabilidad y reconstruibilidad;
+- [ ] sede y área tienen reglas explícitas de aplicabilidad y reconstruibilidad;
+- [ ] un `null` ambiguo no se trata como no aplicable;
+- [ ] permiso, recurso, decisión y razones quedan incluidos;
+- [ ] versiones, fingerprints y timestamps quedan incluidos;
+- [ ] denegaciones quedan incluidas;
+- [ ] technical failures permanecen separados de `DENY`;
+- [ ] retries quedan trazables;
+- [ ] offline y colas distinguen originador, ejecutor técnico y actor autorizado;
+- [ ] operaciones administrativas pueden justificar ausencia de contexto operativo sin perder actor;
+- [ ] rollback preserva historia;
+- [ ] `AUTH-DB-012`, `013`, `014` y `032` conservan sus fronteras;
+- [ ] se reconoce explícitamente que el ledger central actual no basta por sí solo para probar turno/check-in/sede/área;
+- [ ] fingerprints no se aceptan como sustituto de identidades no reconstruibles;
+- [ ] auditoría y observabilidad permanecen separadas;
+- [ ] privacidad y minimización están definidas;
+- [ ] existen casos positivos, negativos y regresiones;
+- [ ] se define `PASS`, `FAIL`, `BLOCKED` y `STALE`;
+- [ ] se define ejecución por package;
+- [ ] se define global final;
+- [ ] `AUTH-QA-030` conserva la regresión completa;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecuta cambio físico desde esta tarea documental.
+
+#### 59. Límites
+
+`AUTH-QA-029` no:
+
+- crea tablas de auditoría;
+- crea migraciones;
+- modifica `AuthorizationDecision`;
+- modifica `AuthorizationAuditContext`;
+- añade columnas al ledger;
+- modifica `AccessContext`;
+- modifica catálogos de roles o permisos;
+- modifica resolución de turno, check-in, sede o área;
+- modifica RLS, grants o ACL;
+- cambia retención;
+- expone auditoría a clientes;
+- modifica logs, métricas o traces;
+- crea un sistema SIEM;
+- ejecuta queries productivas de investigación;
+- cambia datos;
+- modifica Supabase remoto;
+- ejecuta packages E5;
+- ejecuta `AUTH-QA-029::<package_id>`;
+- ejecuta `AUTH-QA-029::GLOBAL-FINAL`;
+- ejecuta la regresión completa reservada a `AUTH-QA-030`;
+- modifica el Registro 04A.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-028 — Rollback funciona por aplicación`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-029 — Auditoría conserva actor, turno, sede y área`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-030 — Ejecutar prueba de regresión completa`
 ### [ ] AUTH-QA-030 — Ejecutar prueba de regresión completa
 
 ### Subconjunto VISO mensual
