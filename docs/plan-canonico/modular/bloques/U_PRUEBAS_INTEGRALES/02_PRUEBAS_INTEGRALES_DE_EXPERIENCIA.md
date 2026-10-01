@@ -22733,7 +22733,1414 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-020 — Cada aplicación supera piloto con usuarios reales`
-### [ ] UX-QA-020 — Cada aplicación supera piloto con usuarios reales
+### ✅ UX-QA-020 — Cada aplicación supera piloto con usuarios reales
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-019 — Los fallos parciales permiten recuperación
+**Tarea siguiente:** UX-QA-021 — Probar SHELL por tipo de actor
+**Tipo de tarea:** documental; definición canónica de la certificación transversal de piloto con usuarios reales que demuestra por package y globalmente que las aplicaciones canónicas aplicables fueron observadas en operación controlada con personas reales del alcance, que la experiencia certificada por `UX-QA-001` a `UX-QA-019` se sostiene bajo condiciones reales, que los hallazgos conservan owner y criterio de salida, y que ninguna aplicación se declara lista por compilación, despliegue, tiempo transcurrido, percepción o métricas agregadas favorables sin evidencia trazable
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación transversal de piloto con usuarios reales definido; las ejecuciones `UX-QA-020::<package_id>` y `UX-QA-020::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física de `SHELL-CI-022::<package_id>` y de los contratos de package, readiness, cutover, experiencia y requisitos aplicables, sin ejecutar cutover, piloto, hypercare, expansión de rollout ni cierre productivo
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, datos, configuración, permisos, roles, rutas, componentes, contratos runtime, paquetes, ambientes, despliegues, tráfico, cohortes, dispositivos, Supabase, migraciones, RLS, RPC, colas, jobs, eventos, integraciones, observabilidad productiva ni usuarios reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que una aplicación o conjunto de aplicaciones incluido en un package superó un piloto real de manera trazable, proporcional y segura, sin confundir evidencia técnica con evidencia humana ni convertir una exposición controlada en aprobación automática de producción.
+
+La certificación deberá poder responder, para cada alcance aplicable:
+
+```text
+¿QUÉ PACKAGE Y CANDIDATO FUERON PILOTADOS?
+¿QUÉ APLICACIÓN O APLICACIONES FUERON EXPUESTAS?
+¿QUÉ USUARIOS REALES PARTICIPARON SEGÚN EL ALCANCE AUTORIZADO?
+¿QUÉ PROCESOS, ROLES, ÁREAS, SEDES, DISPOSITIVOS Y CONDICIONES FUERON OBSERVADOS?
+¿QUÉ ESCENARIOS DE UX-QA-001..019 ERAN APLICABLES?
+¿QUÉ OCURRIÓ REALMENTE?
+¿QUÉ HALLAZGOS APARECIERON?
+¿QUIÉN ES DUEÑO DE CADA HALLAZGO?
+¿QUÉ EVIDENCIA DEMUESTRA SU CIERRE?
+¿LA SALIDA DEL PILOTO ES COMPATIBLE CON LA EVIDENCIA?
+```
+
+Regla central:
+
+```text
+SOFTWARE DESPLEGADO
++
+USUARIOS REALES EXPUESTOS
+!=
+PILOTO APROBADO
+```
+
+Y también:
+
+```text
+EVIDENCIA TÉCNICA
++
+EVIDENCIA OPERATIVA
++
+OBSERVACIÓN HUMANA REAL
++
+CRITERIOS PREDEFINIDOS
++
+HALLAZGOS RESUELTOS
+=
+PILOTO CERTIFICABLE
+```
+
+#### 2. Resultado documental
+
+`UX-QA-020` define el contrato transversal que convierte la obligación “cada aplicación supera piloto con usuarios reales” en una condición verificable.
+
+El resultado establece:
+
+- unidad certificable por package;
+- certificación agregada `GLOBAL-FINAL`;
+- relación con `SHELL-CI-022::<package_id>`;
+- definición de usuario real;
+- universo de aplicaciones canónicas;
+- regla especial de AURA;
+- criterios de selección de participantes;
+- cobertura proporcional de escenarios;
+- matriz de condiciones reales;
+- evidencia mínima de piloto;
+- métricas y límites de interpretación;
+- gobierno de observación y privacidad;
+- hallazgos, severidad, ownership y cierre;
+- criterio PASS por package;
+- criterio `GLOBAL-FINAL`;
+- fronteras con `UX-QA-021` a `UX-QA-030`;
+- handoff exacto a `UX-QA-021`.
+
+#### 3. Topología contractual
+
+La topología vigente es:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-020::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-020::GLOBAL-FINAL
+```
+
+La tarea documental define el contrato una sola vez.
+
+Cada ejecución física futura conserva identidad propia:
+
+```text
+UX-QA-020::<package_id>
+```
+
+Y la certificación agregada final conserva:
+
+```text
+UX-QA-020::GLOBAL-FINAL
+```
+
+#### 4. Handoff recibido de `UX-QA-019`
+
+`UX-QA-019` entrega a `UX-QA-020`:
+
+- package y escenarios certificados;
+- `process_id` y aplicación propietaria aplicables;
+- operaciones y unidades evaluadas;
+- efectos esperados y clasificación final por unidad;
+- alcances de fallo observados;
+- clases de parcialidad observadas;
+- estados de sincronización relevantes;
+- disposiciones ejecutadas o esperadas por contrato;
+- efectos confirmados preservados;
+- resultados desconocidos resueltos o excepciones abiertas vigentes;
+- conciliaciones y compensaciones aplicables con su outcome o estado;
+- unidades independientes que pudieron continuar;
+- unidades dependientes y condiciones de salida;
+- residuales aceptados con owner y seguimiento;
+- evidencia de recuperación offline, proveedor, evidencia o periférico cuando aplique;
+- estado humano mostrado al usuario y siguiente acción segura;
+- hallazgos cerrados y excepciones vigentes.
+
+`UX-QA-020` consume esos resultados para observar comportamiento humano y operativo en piloto sin redefinir ownership, idempotencia, parcialidad, compensación ni recuperación.
+
+#### 5. Relación con BLOQUE T
+
+El BLOQUE U no reemplaza el lifecycle físico de implementación.
+
+La cadena relevante permanece:
+
+```text
+E5-GATE-008::<package_id>
+→ SHELL-CI-020::<package_id>
+→ SHELL-CI-021::<package_id>
+→ SHELL-CI-022::<package_id>
+→ SHELL-CI-023::<package_id>
+→ SHELL-CI-024::<package_id>
+```
+
+`UX-QA-020` consume evidencia real producida por el package y puede rechazar la certificación transversal.
+
+No crea un segundo sistema de cutover o piloto.
+
+#### 6. Frontera con `SHELL-CI-022`
+
+`SHELL-CI-022::<package_id>` gobierna:
+
+- entrada al piloto;
+- ventana;
+- candidato;
+- ambiente;
+- alcance;
+- activación por unidades u olas;
+- checkpoints;
+- convivencia;
+- prevención de doble efecto;
+- conciliación;
+- decisiones `CONTINUAR`, `PAUSAR` y `REVERTIR`;
+- métricas del piloto;
+- decisión de salida;
+- evidencia física del cutover y piloto.
+
+`UX-QA-020::<package_id>` gobierna:
+
+- si la evidencia de exposición humana es suficiente;
+- si los participantes corresponden a usuarios reales del alcance;
+- si la cobertura humana representa las condiciones relevantes;
+- si la experiencia común de `UX-QA-001..019` se sostuvo;
+- si los hallazgos humanos y operativos tienen owner y cierre;
+- si una aplicación puede declararse pilotada desde la perspectiva de experiencia.
+
+```text
+CI022 VERIFIED
+!=
+UX-QA-020 PASS AUTOMÁTICO
+```
+
+La certificación UX debe evaluar su propia evidencia.
+
+#### 7. Regla de no duplicación de piloto
+
+`UX-QA-020` no vuelve a ejecutar una ventana física ya gobernada por CI022.
+
+La observación humana deberá integrarse al piloto real cuando corresponda.
+
+```text
+PILOTO FÍSICO CI022
++
+OBSERVACIÓN UX ESTRUCTURADA
+=
+UNA SOLA EXPOSICIÓN CONTROLADA
+```
+
+No se exige crear una campaña independiente si la evidencia puede obtenerse durante el piloto autorizado.
+
+#### 8. Universo canónico de aplicaciones
+
+El catálogo canónico conserva exactamente diez `app_code`:
+
+```text
+shell
+anima
+viso
+nexo
+fogo
+origo
+pulso
+numera
+aura
+pass
+```
+
+La certificación no agrega `hub`, `default`, `talento` ni otro identificador al catálogo por inferencia.
+
+#### 9. Secuencia especializada de certificación
+
+La especialización documental posterior permanece:
+
+| Aplicación | Tarea especializada |
+| --- | --- |
+| SHELL | `UX-QA-021 — Probar SHELL por tipo de actor` |
+| ANIMA | `UX-QA-022 — Probar ANIMA con trabajadores y administradores` |
+| VISO | `UX-QA-023 — Probar VISO por rol administrativo` |
+| NEXO | `UX-QA-024 — Probar NEXO por rol operativo` |
+| FOGO | `UX-QA-025 — Probar FOGO por área productiva` |
+| ORIGO | `UX-QA-026 — Probar ORIGO por etapa de compra` |
+| PULSO | `UX-QA-027 — Probar PULSO por punto operativo` |
+| NUMERA | `UX-QA-028 — Probar NUMERA por alcance financiero` |
+| PASS | `UX-QA-029 — Probar PASS como cliente` |
+| AURA | `UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad` |
+
+`UX-QA-020` define el contrato común y no absorbe las matrices específicas de esas tareas.
+
+#### 10. Regla especial de AURA
+
+AURA es una aplicación canónica diferida.
+
+Por tanto:
+
+```text
+APP_CODE AURA EXISTENTE
+!=
+PRODUCTO OPERATIVO PILOTABLE
+```
+
+`UX-QA-020` no podrá:
+
+- inventar un repositorio de AURA;
+- inventar usuarios piloto;
+- inventar pantallas;
+- inventar procesos activos;
+- inventar ambiente;
+- inventar package;
+- marcar AURA como pilotada por aparecer en catálogos o launchers.
+
+La cobertura específica de AURA se ejecutará únicamente conforme a `UX-QA-030` después de una decisión canónica válida de continuidad.
+
+#### 11. Definición de usuario real
+
+Para esta certificación, un usuario real es una persona que pertenece legítimamente a la población prevista por el escenario y participa con contexto operativo auténtico dentro del alcance autorizado.
+
+Según la aplicación podrá tratarse de:
+
+- trabajador;
+- administrador;
+- gerente;
+- supervisor;
+- operador;
+- personal productivo;
+- personal de compras;
+- personal financiero;
+- cajero u operador de punto;
+- cliente;
+- otro actor canónico aplicable.
+
+Un script, fixture, mock, bot, cuenta sintética o reviewer técnico no sustituye evidencia de usuario real.
+
+#### 12. Usuario real no implica exposición indiscriminada
+
+La participación real no exige abrir acceso a toda la organización.
+
+El piloto deberá conservar:
+
+- alcance autorizado;
+- cohorte o unidad aplicable;
+- actor real;
+- permisos reales compatibles;
+- sede o contexto cuando aplique;
+- dispositivo previsto cuando aplique;
+- ventana gobernada;
+- soporte y recuperación vigentes.
+
+Un participante real fuera de alcance no convierte una prueba inválida en evidencia válida.
+
+#### 13. Personal existente y carga proporcional
+
+La validación humana utiliza personal existente cuando el contrato lo permita.
+
+No se presupone:
+
+- contratar participantes externos;
+- probar cada proceso con cada persona;
+- detener varios días la operación;
+- crear un equipo permanente de observación;
+- repetir escenarios equivalentes sin motivo;
+- transformar al trabajador en técnico o tester profesional.
+
+La cobertura se concentra en escenarios representativos y riesgos materiales.
+
+#### 14. No existe tamaño de muestra inventado
+
+`UX-QA-020` no establece un número universal de participantes.
+
+La cantidad debe derivarse del alcance real y quedar registrada.
+
+La suficiencia se evalúa contra:
+
+- actores aplicables;
+- procesos aplicables;
+- roles aplicables;
+- sedes o áreas materialmente distintas;
+- dispositivos o estaciones materialmente distintos;
+- condiciones ambientales relevantes;
+- riesgos del package;
+- escenarios críticos;
+- patrones no equivalentes.
+
+Si una decisión posterior necesita un mínimo numérico, ese mínimo debe proceder de su contrato propietario; no se inventa aquí.
+
+#### 15. No existe duración UX inventada
+
+La duración del piloto proviene del plan físico aprobado y de sus contratos.
+
+`UX-QA-020` no crea horas o días adicionales por defecto.
+
+Sí exige que la observación cubra suficiente operación real para evaluar los escenarios aplicables.
+
+```text
+TIEMPO TRANSCURRIDO
+!=
+SUFICIENCIA DE EVIDENCIA
+```
+
+#### 16. Identidad de la certificación por package
+
+Cada evaluación deberá conservar como mínimo:
+
+```text
+package_id
+candidate_ref
+environment
+authorized_scope_ref
+pilot_evidence_ref
+application_codes[]
+process_ids[]
+scenario_ids[]
+participant_cohorts[]
+observed_roles[]
+observed_sites_or_areas[]
+observed_devices[]
+observed_conditions[]
+ux_qa_001_019_applicability[]
+findings[]
+result
+```
+
+Los valores no aplicables se justifican; no se completan con datos inventados.
+
+#### 17. Mismo candidato y mismo alcance
+
+La evidencia humana solo es válida para el candidato y alcance observados.
+
+Si cambia materialmente:
+
+- build;
+- commit;
+- configuración;
+- feature flag;
+- permiso;
+- flujo;
+- superficie;
+- dispositivo objetivo;
+- proceso;
+- integración;
+- comportamiento de recuperación;
+
+la evidencia afectada deberá reevaluarse conforme al cambio.
+
+No se hereda por parecido visual.
+
+#### 18. Cobertura común heredada de `UX-QA-001..019`
+
+El piloto transversal deberá considerar, cuando aplique:
+
+1. siguiente tarea identificable;
+2. acción principal localizable sin capacitación extraordinaria;
+3. estado del proceso comprensible;
+4. errores con siguiente acción segura;
+5. ausencia de opciones irrelevantes por rol;
+6. interacción táctil adecuada cuando aplique;
+7. separación entre administración y operación;
+8. continuidad entre aplicaciones;
+9. ausencia de doble registro manual;
+10. trazabilidad de cambios;
+11. continuidad con conectividad inestable;
+12. retorno entre aplicaciones con contexto;
+13. continuidad del proceso después del retorno;
+14. tiempo objetivo cuando exista un objetivo canónico;
+15. bloqueos comprensibles sin códigos técnicos;
+16. ocultamiento correcto de información sensible;
+17. conservación de aplicación propietaria y fuente de verdad;
+18. idempotencia sin efectos duplicados;
+19. recuperación segura de fallos parciales.
+
+`UX-QA-020` observa si esas obligaciones sobreviven al uso real; no redefine sus contratos.
+
+#### 19. Matriz de aplicabilidad
+
+Cada package deberá producir una matriz que relacione:
+
+```text
+APPLICATION
+× ACTOR / COHORTE
+× PROCESS / SCENARIO
+× UX-QA-001..019 APPLICABLE
+× DEVICE / SURFACE
+× CONNECTIVITY / ENVIRONMENTAL CONDITION
+× EXPECTED RESULT
+× OBSERVED RESULT
+× EVIDENCE
+× FINDING
+```
+
+No todos los cruces son obligatorios.
+
+Todo cruce material deberá quedar cubierto o justificado.
+
+#### 20. Selección de escenarios
+
+La selección se deriva de:
+
+- requisitos vinculados al package;
+- `DELIV-PKG-016`;
+- procesos y superficies incluidas;
+- actores y roles incluidos;
+- riesgos del package;
+- hallazgos de readiness;
+- `UX-QA-001..019`;
+- contratos de autorización;
+- contratos de integración;
+- contratos de dispositivos;
+- continuidad y recuperación;
+- evidencia de CI022.
+
+No se reemplaza el inventario por una lista de “casos felices” elegidos por conveniencia.
+
+#### 21. Escenario nominal
+
+Cuando aplique, el piloto observará al menos una ejecución nominal de la intención principal del alcance.
+
+El participante deberá poder:
+
+- reconocer qué debe hacer;
+- iniciar la acción correcta;
+- completar los datos necesarios;
+- comprender confirmación o resultado;
+- reconocer el siguiente estado.
+
+La ayuda del observador no se oculta: se registra como evidencia de fricción.
+
+#### 22. Error y bloqueo
+
+Cuando el package incluya errores o bloqueos relevantes, se observará que la persona:
+
+- reconoce que existe un problema;
+- entiende qué parte quedó preservada;
+- conoce la siguiente acción segura;
+- no necesita interpretar códigos técnicos;
+- no recurre a repetir indiscriminadamente la operación;
+- no crea una segunda fuente manual para “arreglar” el sistema.
+
+#### 23. Recuperación
+
+Cuando aplique una condición recuperable, la prueba humana deberá comprobar que:
+
+- el trabajo válido se conserva;
+- la persona puede reanudar desde el punto permitido;
+- el sistema no invita a repetir efectos confirmados;
+- el estado incierto se presenta como incierto;
+- la recuperación no exige diagnosticar infraestructura;
+- la siguiente acción coincide con el contrato propietario.
+
+#### 24. Conectividad inestable
+
+Cuando el alcance soporte degradación u offline, se observará en las condiciones previstas por contrato.
+
+La prueba deberá distinguir:
+
+- captura local;
+- cola pendiente;
+- envío;
+- confirmación;
+- resultado desconocido;
+- conflicto;
+- conciliación;
+- recuperación.
+
+Una pantalla que permanece visible no demuestra continuidad operacional.
+
+#### 25. Dispositivos y ergonomía
+
+Cuando el package use estaciones o dispositivos físicos, la observación considerará según aplicabilidad:
+
+- alcance físico;
+- tacto;
+- teclado;
+- escáner;
+- impresora;
+- báscula;
+- datáfono;
+- visibilidad;
+- iluminación;
+- ruido;
+- guantes;
+- manos húmedas;
+- harina, vapor u otras condiciones ambientales;
+- batería y energía;
+- conectividad disponible.
+
+No se certifica ergonomía real únicamente desde un viewport de navegador.
+
+#### 26. Relevo, dispositivo compartido y cambio de actor
+
+Cuando aplique, se observará que el relevo:
+
+- no transfiere atribución silenciosamente;
+- no conserva información personal del actor anterior;
+- no hereda permisos por caché;
+- no adopta trabajo sin un contrato de claim/handoff;
+- conserva el contexto necesario sin exponer más información de la requerida.
+
+#### 27. Navegación entre aplicaciones
+
+Un piloto cross-app deberá observar:
+
+- destino correcto;
+- proceso correcto;
+- recurso correcto;
+- contexto permitido;
+- retorno permitido;
+- reautorización cuando corresponda;
+- ausencia de doble captura;
+- ausencia de proceso paralelo accidental.
+
+El cambio visual de aplicación no se considera por sí solo un handoff correcto.
+
+#### 28. Fuente de verdad
+
+La persona podrá consultar o accionar desde una superficie consumidora, pero la certificación deberá confirmar que la experiencia no induce a tratar una proyección como fuente propietaria.
+
+Se observarán especialmente:
+
+- correcciones;
+- cierres;
+- estados derivados;
+- dashboards;
+- caches;
+- documentos;
+- resultados externos.
+
+#### 29. Idempotencia en uso real
+
+Cuando una acción pueda repetirse por doble toque, duda, refresh, reconexión o retry, el piloto observará que:
+
+- el sistema conserva identidad lógica;
+- la persona no recibe instrucciones para “crear de nuevo”;
+- el resultado previo se recupera cuando corresponde;
+- un conflicto de contenido se bloquea;
+- no aparecen dos efectos empresariales.
+
+`UX-QA-020` consume la certificación técnica de `UX-QA-018`; no vuelve a definir el mecanismo.
+
+#### 30. Fallo parcial en uso real
+
+Cuando exista parcialidad, la interfaz deberá permitir reconocer:
+
+- qué ocurrió;
+- qué no ocurrió;
+- qué está pendiente;
+- qué sigue desconocido;
+- qué unidad puede continuar;
+- qué unidad queda bloqueada;
+- quién debe actuar cuando corresponda.
+
+Un mensaje genérico de “error” no es suficiente cuando escondería efectos materiales.
+
+#### 31. Datos sensibles y privacidad durante observación
+
+La evidencia del piloto deberá minimizar datos personales y sensibles.
+
+La observación no autoriza:
+
+- capturar secretos;
+- registrar contraseñas;
+- copiar tokens;
+- fotografiar información sensible innecesaria;
+- exportar payloads completos por conveniencia;
+- conservar conversaciones o documentos fuera de su política;
+- ampliar visibilidad del observador.
+
+La evidencia deberá demostrar comportamiento sin convertir el piloto en una nueva fuente de exposición.
+
+#### 32. Evidencia de identidad humana
+
+La certificación necesita demostrar que participó una población real compatible con el escenario, pero no exige almacenar información personal innecesaria.
+
+Puede conservar referencias minimizadas como:
+
+```text
+participant_ref
+actor_class
+role_or_scope
+site_or_area
+session_or_window_ref
+```
+
+cuando esos campos sean suficientes.
+
+#### 33. Observador no sustituye al usuario
+
+El observador puede:
+
+- registrar hechos;
+- pedir explicación posterior;
+- marcar fricción;
+- detener por seguridad conforme al protocolo;
+- enlazar evidencia.
+
+No deberá:
+
+- completar la tarea por la persona;
+- indicar cada clic como procedimiento normal;
+- conceder permisos;
+- cambiar datos para lograr PASS;
+- reinterpretar un error como éxito;
+- ocultar ayuda brindada.
+
+#### 34. Capacitación permitida
+
+El piloto puede consumir la capacitación o onboarding previstos por el producto.
+
+No es válido crear una capacitación extraordinaria diseñada solo para que el piloto pase cuando el sistema pretende operar sin ella.
+
+La necesidad de ayuda adicional se registra como señal de experiencia.
+
+#### 35. Aprendizaje y repetición
+
+Si la misma persona repite un escenario, deberá distinguirse:
+
+- primer contacto;
+- repetición;
+- aprendizaje;
+- cambio de producto;
+- ayuda recibida.
+
+Una mejora por memorización no se atribuye automáticamente a mejora de interfaz.
+
+#### 36. Medición de tiempo
+
+Cuando exista un objetivo temporal canónico, se conserva:
+
+- inicio definido;
+- fin definido;
+- pausas;
+- interrupciones;
+- ayuda;
+- errores;
+- recuperación;
+- contexto operativo.
+
+`UX-QA-020` no inventa umbrales.
+
+Una tarea puede ser funcionalmente correcta y aun fallar un objetivo temporal aplicable.
+
+#### 37. Éxito de tarea
+
+Una tarea se considera completada por el usuario solo cuando el resultado empresarial o la confirmación propietaria aplicable queda demostrada.
+
+No equivalen a éxito:
+
+- cerrar un modal;
+- navegar a otra pantalla;
+- ver un toast;
+- recibir un ACK técnico;
+- ocultar el error;
+- terminar el cronómetro;
+- declarar verbalmente “listo”.
+
+#### 38. Fricción observable
+
+La evidencia podrá registrar, cuando sea material:
+
+```text
+help_required
+wrong_action_attempted
+backtrack_count
+repeated_submit_attempt
+state_misunderstanding
+unnecessary_navigation
+manual_workaround_created
+abandonment
+recovery_needed
+```
+
+Estos campos son observaciones, no umbrales universales.
+
+#### 39. Métricas del piloto UX
+
+Cada métrica usada para decisión deberá conservar:
+
+- nombre;
+- definición;
+- población elegible;
+- numerador;
+- denominador cuando aplique;
+- unidad;
+- ventana;
+- dimensiones;
+- exclusiones;
+- fuente;
+- calidad del dato;
+- regla de decisión si es vinculante.
+
+No se usan métricas vanity como sustituto de aceptación.
+
+#### 40. Cero, ausencia y no aplicabilidad
+
+La certificación distinguirá:
+
+```text
+0
+SIN_DATOS
+NO_OBSERVADO
+NO_APLICA
+DATO_INVALIDO
+```
+
+No son equivalentes.
+
+La ausencia de reporte de error no prueba cero errores si el escenario no fue observado.
+
+#### 41. Segmentación
+
+Cuando el riesgo cambie materialmente por dimensión, la evidencia se conserva segmentada por:
+
+- aplicación;
+- rol;
+- proceso;
+- sede;
+- área;
+- estación;
+- dispositivo;
+- conectividad;
+- cohorte;
+- escenario.
+
+Un promedio agregado no puede ocultar un segmento crítico.
+
+#### 42. Baseline
+
+Una comparación contra baseline se utiliza únicamente cuando el contrato aplicable define una baseline compatible.
+
+La comparación preserva:
+
+- misma definición;
+- misma unidad;
+- población comparable;
+- periodo compatible;
+- calidad mínima;
+- exclusiones justificadas.
+
+No se fabrica una baseline después del piloto para justificar el resultado.
+
+#### 43. Percepción no reemplaza evidencia
+
+Comentarios como:
+
+```text
+“se sintió bien”
+“a la gente le gustó”
+“nadie se quejó”
+“parece más rápido”
+```
+
+pueden registrarse como evidencia cualitativa, pero no sustituyen:
+
+- resultado de tarea;
+- errores;
+- seguridad;
+- trazabilidad;
+- recuperación;
+- criterios contractuales.
+
+#### 44. Evidencia cualitativa
+
+Cuando se registren comentarios humanos deberán conservar contexto suficiente para interpretarlos sin atribuirles autoridad contractual.
+
+La evidencia podrá indicar:
+
+- escenario;
+- actor class;
+- momento;
+- observación;
+- impacto;
+- relación con finding.
+
+No se convierte una opinión aislada en requisito nuevo durante la ejecución.
+
+#### 45. Hallazgos
+
+Cada hallazgo deberá conservar:
+
+```text
+finding_id
+package_id
+application_code
+scenario_id
+participant_cohort
+observed_condition
+expected_behavior
+observed_behavior
+risk
+severity
+owner_task_or_package
+exit_condition
+evidence_ref
+status
+```
+
+No se dejan hallazgos narrativos sin propietario.
+
+#### 46. Clasificación de hallazgos
+
+La severidad deberá reflejar impacto real y contratos existentes.
+
+Ejemplos de hallazgos materialmente bloqueantes incluyen, según aplicabilidad:
+
+- efecto empresarial duplicado;
+- acción crítica imposible;
+- usuario autorizado bloqueado sin recuperación;
+- usuario no autorizado con acción disponible;
+- exposición sensible;
+- fuente de verdad competidora;
+- resultado incierto presentado como éxito;
+- recuperación que repite un efecto confirmado;
+- pérdida de trabajo material;
+- error que induce una acción peligrosa;
+- dispositivo objetivo físicamente inutilizable para la tarea.
+
+La certificación no reduce severidad para cerrar calendario.
+
+#### 47. Hallazgo local no reabre todo el sistema
+
+Un hallazgo se asigna a su owner exacto.
+
+Si el problema es local a:
+
+- pantalla;
+- componente;
+- copy;
+- flujo;
+- integración;
+- contrato;
+- dispositivo;
+- configuración;
+- package;
+
+la corrección se mantiene en esa frontera cuando sea posible.
+
+No se reabre toda la arquitectura por defecto.
+
+#### 48. Corrección y nueva evidencia
+
+Una corrección exige evidencia nueva sobre el alcance afectado.
+
+No necesariamente invalida escenarios independientes.
+
+Debe registrarse:
+
+```text
+finding_id
+correction_ref
+candidate_before
+candidate_after
+scope_invalidated
+retest_scope
+retest_result
+```
+
+Si cambia materialmente el candidato, aplican también los gates físicos propietarios.
+
+#### 49. No aprobación con pendientes incompatibles
+
+La instancia no obtiene PASS cuando existe un hallazgo que contradice un criterio obligatorio y sigue abierto.
+
+Tampoco se usa un texto equivalente a:
+
+```text
+PASS CON PENDIENTES
+```
+
+para ocultar una condición bloqueante.
+
+#### 50. Evidencia mínima por escenario
+
+Cada escenario ejecutado deberá conservar, según aplicabilidad:
+
+- identidad del package;
+- candidato y ambiente;
+- aplicación;
+- proceso;
+- actor class;
+- contexto;
+- dispositivo o superficie;
+- condición de conectividad;
+- objetivo;
+- resultado esperado;
+- resultado observado;
+- ayudas recibidas;
+- incidentes;
+- finding asociado;
+- evidencia de resultado;
+- timestamp o referencia temporal;
+- versión del criterio aplicado.
+
+#### 51. Evidencia automatizada de apoyo
+
+Puede incluir:
+
+- logs minimizados;
+- trazas correlacionadas;
+- métricas;
+- receipts;
+- screenshots permitidos;
+- eventos;
+- resultado propietario;
+- auditoría;
+- health checks;
+- evidencia de CI022.
+
+La evidencia automatizada apoya, pero no sustituye la observación humana cuando el criterio exige usuarios reales.
+
+#### 52. Evidencia manual
+
+Puede incluir, cuando esté permitida:
+
+- acta estructurada de observación;
+- checklist de escenario;
+- notas minimizadas;
+- evidencia fotográfica de hardware sin datos sensibles;
+- referencia a incidente;
+- confirmación de resultado por la fuente propietaria.
+
+La evidencia debe ser recuperable y atribuible.
+
+#### 53. Evidencia de entorno real
+
+Cuando una condición física sea parte del riesgo, deberá existir evidencia de que el escenario se observó bajo una condición representativa.
+
+Ejemplos:
+
+- punto operativo;
+- área productiva;
+- bodega;
+- tablet compartida;
+- estación administrativa;
+- dispositivo móvil;
+- condición de red;
+- periférico;
+- iluminación o ruido material.
+
+No se exige materializar condiciones irrelevantes al package.
+
+#### 54. Soporte durante piloto
+
+La disponibilidad de soporte no puede ocultar que el producto requiere asistencia ordinaria excesiva.
+
+Se diferenciará:
+
+```text
+SOPORTE DE PILOTO
+!=
+SUPERVISIÓN NECESARIA PARA OPERAR
+```
+
+Una intervención excepcional se registra; no se borra de la evidencia.
+
+#### 55. Workarounds
+
+Todo workaround observado deberá clasificarse.
+
+Un workaround:
+
+- puede permitir continuidad temporal;
+- no convierte un defecto en PASS;
+- no crea una nueva fuente de verdad;
+- no debe duplicar registro por defecto;
+- no puede permanecer sin owner y condición de salida.
+
+#### 56. Operación en papel, Excel o chat
+
+Si la persona necesita recurrir a papel, Excel, chat u otra superficie paralela para completar una obligación que el sistema pretende gobernar, se registra como hallazgo salvo que la contingencia esté explícitamente autorizada por contrato.
+
+La costumbre histórica no convierte el workaround en diseño aprobado.
+
+#### 57. Accesibilidad
+
+Cuando aplique al actor y superficie, la prueba humana deberá respetar los criterios de accesibilidad definidos por las tareas y requisitos propietarios.
+
+La automatización de accesibilidad no reemplaza por sí sola una validación manual exigida por el contrato.
+
+`UX-QA-020` no inventa una discapacidad, dispositivo asistivo o escenario que el package no incluya; tampoco omite uno que el requisito aplicable exija.
+
+#### 58. Seguridad durante experiencia
+
+La búsqueda de facilidad de uso no autoriza relajar:
+
+- autenticación;
+- autorización;
+- territorio;
+- reautorización;
+- segregación;
+- step-up;
+- rate limit;
+- redacción;
+- privacidad;
+- trazabilidad.
+
+Si una persona solo logra completar la tarea mediante un bypass, el escenario falla.
+
+#### 59. Aplicaciones múltiples en un package
+
+Un package puede afectar más de una aplicación.
+
+En ese caso `UX-QA-020::<package_id>` deberá declarar explícitamente:
+
+- aplicaciones afectadas;
+- aplicación propietaria por escenario;
+- consumidoras;
+- participantes requeridos por aplicación;
+- escenarios compartidos;
+- escenarios específicos;
+- handoffs;
+- evidencia por aplicación.
+
+Un PASS agregado no puede ocultar una aplicación participante sin evidencia suficiente.
+
+#### 60. Packages sin exposición humana propia
+
+Si un package no posee una superficie, actor o escenario humano propio, la instancia no inventa participantes.
+
+Deberá justificar la no aplicabilidad del componente humano y demostrar qué evidencia de experiencia, si alguna, corresponde a consumidores o packages dependientes.
+
+La justificación no puede usarse para omitir una exposición humana realmente incluida.
+
+#### 61. Criterio PASS por escenario
+
+Un escenario obtiene PASS cuando:
+
+- fue ejecutado sobre el candidato y alcance correctos;
+- el participante pertenece a la población prevista;
+- el resultado esperado se alcanzó;
+- no se requirió bypass;
+- la ayuda recibida es compatible con el diseño previsto;
+- no apareció un efecto prohibido;
+- la evidencia es suficiente;
+- cualquier finding asociado está cerrado o demostrado como no bloqueante conforme al contrato propietario.
+
+#### 62. Criterio por package
+
+`UX-QA-020::<package_id>` obtiene PASS únicamente cuando:
+
+- package, candidato, ambiente y alcance están resueltos;
+- existe evidencia física de piloto aplicable y vigente;
+- las aplicaciones afectadas están identificadas;
+- los participantes reales son compatibles con las poblaciones previstas;
+- la matriz de aplicabilidad está completa;
+- los escenarios críticos aplicables fueron observados;
+- las condiciones físicas relevantes fueron cubiertas cuando correspondía;
+- `UX-QA-001..019` no presenta una obligación aplicable sin evaluar o justificar;
+- los resultados desconocidos materiales están resueltos;
+- no existe duplicidad material no resuelta;
+- no existe exposición sensible material no resuelta;
+- no existe fuente propietaria ambigua no resuelta;
+- no existe fallo parcial material sin tratamiento verificable;
+- no existe workaround crítico sin owner y salida;
+- los hallazgos bloqueantes están cerrados;
+- la evidencia corresponde al candidato certificado;
+- la decisión no depende únicamente de percepción, tiempo o promedio.
+
+#### 63. Relación con la decisión de salida de CI022
+
+Una instancia que consume piloto físico deberá conservar la decisión física correspondiente.
+
+Cuando existe piloto propio:
+
+```text
+CI022 VERIFIED
++
+pilot_exit_decision = APROBAR_SALIDA
+```
+
+es evidencia necesaria para una certificación positiva, pero no sustituye la verificación UX.
+
+Si la decisión es:
+
+```text
+EXIGIR_CORRECCIONES
+```
+
+la certificación UX no puede declarar PASS sobre el mismo candidato y alcance mientras la corrección aplicable permanezca abierta.
+
+Si la decisión está bloqueada, la certificación no inventa una salida.
+
+#### 64. `GLOBAL-FINAL`
+
+`UX-QA-020::GLOBAL-FINAL` certifica el cierre agregado del contrato de piloto humano.
+
+Debe comprobar:
+
+- todos los packages aplicables tienen resultado final trazable;
+- ninguna aplicación canónica activa quedó omitida sin justificación;
+- las especializaciones `UX-QA-021` a `UX-QA-029` aplicables disponen de evidencia suficiente cuando corresponda;
+- AURA se trata exclusivamente conforme a una decisión de continuidad válida y `UX-QA-030`;
+- ningún package usa evidencia stale;
+- no existe contradicción entre evidencia física y experiencia observada;
+- no existe hallazgo bloqueante abierto que invalide la aplicación o alcance correspondiente;
+- los resultados agregados no ocultan fallos por aplicación, rol, sede, proceso o dispositivo;
+- la cobertura humana no fue sustituida por automatización;
+- los requisitos aplicables conservan evidencia trazable.
+
+El cierre global no sustituye una ejecución por package faltante.
+
+#### 65. Aplicación no se considera finalizada por infraestructura
+
+La existencia de:
+
+- build;
+- deploy;
+- rutas;
+- tablas;
+- permisos;
+- contratos;
+- tests automáticos;
+- observabilidad;
+- un piloto iniciado;
+
+no basta para declarar una aplicación finalizada.
+
+La experiencia real debe ser compatible con su alcance operativo y sus criterios.
+
+#### 66. Frontera con `UX-QA-021..030`
+
+`UX-QA-020` define:
+
+```text
+CÓMO SE DEMUESTRA QUE UN PILOTO HUMANO ES VÁLIDO
+QUÉ EVIDENCIA TRANSVERSAL DEBE EXISTIR
+CUÁNDO UN RESULTADO PUEDE CERTIFICARSE
+```
+
+`UX-QA-021..030` definirán:
+
+```text
+QUIÉNES PARTICIPAN POR APLICACIÓN
+QUÉ ROLES / ÁREAS / ETAPAS / PUNTOS SON REPRESENTATIVOS
+QUÉ ESCENARIOS ESPECÍFICOS DE CADA APLICACIÓN SE EJECUTAN
+QUÉ HALLAZGOS ESPECÍFICOS BLOQUEAN SU CERTIFICACIÓN
+```
+
+Por tanto, esta tarea no adelanta esas matrices.
+
+#### 67. Frontera con `UX-QA-019`
+
+`UX-QA-019` ya define recuperación de fallos parciales.
+
+`UX-QA-020` observa esa recuperación en piloto cuando sea aplicable, pero no redefine:
+
+- clases de parcialidad;
+- disposiciones;
+- cuarentena;
+- dead-letter;
+- intervención;
+- conciliación;
+- compensación;
+- retry.
+
+#### 68. Frontera con `UX-QA-018`
+
+`UX-QA-018` ya certifica idempotencia y ausencia de efectos duplicados.
+
+`UX-QA-020` puede observar doble toque, reconexión o retry humano para comprobar que la experiencia real no induce duplicación, sin redefinir claves, huellas, receipts o reglas idempotentes.
+
+#### 69. Frontera con `UX-QA-017`
+
+`UX-QA-017` ya certifica aplicación propietaria y fuente de verdad.
+
+`UX-QA-020` observa que las personas corrigen y completan la tarea mediante la frontera correcta, sin decidir de nuevo qué aplicación posee el hecho.
+
+#### 70. Frontera con piloto e hypercare
+
+La certificación de experiencia no extiende el alcance del piloto ni ejecuta hypercare.
+
+`UX-QA-020` no define:
+
+- duración de hypercare;
+- soporte normal final;
+- tendencia post-piloto;
+- cierre de package;
+- retiro legacy;
+- expansión de rollout;
+- promoción de ambiente.
+
+Esas responsabilidades permanecen en sus owners.
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+Justificación: `UX-QA-020` materializa en BLOQUE U la certificación humana transversal de obligaciones ya protegidas por los requisitos de experiencia, aplicación, proceso, autorización, integración, dispositivos, continuidad y por los planes de prueba vinculados mediante `DELIV-PKG-016`. No introduce una nueva regla empresarial ejecutable, permiso, estado de dominio, identidad, efecto o requisito funcional independiente que necesite una nueva identidad de prueba.
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Esta sección es únicamente trazabilidad y no actualiza el Registro Canónico.
+
+La certificación reutiliza, según aplicabilidad:
+
+- requisitos `TREQ-*` vinculados al `DELIV-PKG` correspondiente;
+- requisitos de aplicación asociados a `UX-QA-021` a `UX-QA-030`;
+- requisitos de experiencia vinculados a `UX-QA-001` a `UX-QA-019`;
+- `TREQ-INTEGRATION-003`, para idempotencia, resultado recuperable y retry seguro;
+- `TREQ-INTEGRATION-004`, para trazabilidad de disparadores, intentos, resultados, errores y efectos;
+- `TREQ-UX-002`, para error, bloqueo o fallo parcial comprensible con recuperación;
+- `TREQ-UX-006`, para recuperación segura ante pérdida de sesión, red, dispositivo o proveedor;
+- requisitos de autorización, privacidad, dispositivos, accesibilidad, continuidad y seguridad que el package declare aplicables.
+
+La cobertura exacta por package se resuelve desde sus fuentes canónicas; esta tarea no inventa un subconjunto global sustituto.
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no ejecutó build de producto, package ni materialización física. |
+| LOCAL | NOT_EXECUTED | Los checks reales de formato, `docs:task:quality`, `docs:delivery:check`, topología, TREQ y batería global corresponden al checkout actualizado durante la incorporación. |
+| REMOTA | PASS | Se revisaron `main`, continuidad vigente, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, BLOQUE U, contrato de piloto `SHELL-CI-022`, evidencia E2 de validación humana diferida, orden canónico de implementación, catálogo de diez aplicaciones y reglas de AURA diferida. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron pilotos, sesiones con usuarios reales, observación de campo, mediciones humanas, cutover, rollout, hypercare ni correcciones operativas. |
+| FÍSICA | NOT_APPLICABLE | Esta tarea define el contrato de certificación; las evidencias físicas corresponderán a futuras instancias `UX-QA-020::<package_id>` y `UX-QA-020::GLOBAL-FINAL`. |
+
+#### 74. Criterios de aceptación
+
+`UX-QA-020` queda documentalmente completa cuando:
+
+- [x] consume exactamente el handoff de `UX-QA-019`;
+- [x] conserva `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [x] conserva gate `POST_E5_PACKAGE`;
+- [x] distingue certificación UX de ejecución física CI022;
+- [x] prohíbe duplicar el piloto físico;
+- [x] conserva exactamente diez aplicaciones canónicas;
+- [x] mantiene AURA diferida y condicionada a continuidad;
+- [x] define usuario real sin convertir fixtures o bots en evidencia humana;
+- [x] evita exposición indiscriminada de usuarios;
+- [x] usa personal y cobertura proporcionales;
+- [x] no inventa tamaño de muestra;
+- [x] no inventa duración de piloto;
+- [x] preserva package, candidato, ambiente y alcance;
+- [x] consume `UX-QA-001..019` como contrato común;
+- [x] define matriz de aplicabilidad;
+- [x] cubre escenario nominal cuando aplica;
+- [x] cubre errores y bloqueos cuando aplican;
+- [x] cubre recuperación cuando aplica;
+- [x] cubre conectividad degradada cuando aplica;
+- [x] cubre dispositivo y ergonomía cuando aplica;
+- [x] cubre dispositivos compartidos y relevo cuando aplica;
+- [x] cubre navegación cross-app cuando aplica;
+- [x] conserva fuente de verdad;
+- [x] observa idempotencia sin redefinirla;
+- [x] observa fallos parciales sin redefinirlos;
+- [x] minimiza evidencia sensible;
+- [x] separa observador de usuario;
+- [x] registra ayuda y capacitación extraordinaria;
+- [x] separa aprendizaje de calidad de interfaz;
+- [x] usa objetivos temporales solo cuando existen canónicamente;
+- [x] define éxito por resultado y no por feedback visual aislado;
+- [x] registra fricción sin inventar thresholds;
+- [x] define métricas reproducibles;
+- [x] distingue cero, ausencia, no observado y no aplica;
+- [x] evita promedios que oculten segmentos críticos;
+- [x] usa baseline solo cuando existe contrato compatible;
+- [x] separa percepción de aceptación;
+- [x] define hallazgos con owner y criterio de salida;
+- [x] impide aprobación con pendientes bloqueantes;
+- [x] define evidencia mínima por escenario;
+- [x] combina evidencia automatizada y manual sin sustituir usuarios reales;
+- [x] cubre entorno físico únicamente cuando es material;
+- [x] separa soporte de supervisión necesaria;
+- [x] gobierna workarounds;
+- [x] no normaliza papel, Excel o chat como fuente paralela;
+- [x] conserva accesibilidad aplicable;
+- [x] conserva seguridad sin bypass UX;
+- [x] soporta packages multi-app sin ocultar una aplicación;
+- [x] permite justificar no aplicabilidad sin fabricar participantes;
+- [x] define PASS por escenario;
+- [x] define PASS por package;
+- [x] conserva la decisión de salida física como evidencia necesaria cuando aplica;
+- [x] define `GLOBAL-FINAL` sin omitir packages o aplicaciones;
+- [x] no confunde infraestructura con cierre de aplicación;
+- [x] preserva `UX-QA-021..030` como especializaciones posteriores;
+- [x] no crea ni modifica requisitos de prueba;
+- [x] no modifica 04A;
+- [x] no ejecuta cambios físicos durante esta tarea documental.
+
+#### 75. Límites
+
+Esta tarea:
+
+- no ejecuta `SHELL-CI-022`;
+- no crea una instancia física de piloto;
+- no autoriza una instancia física;
+- no selecciona participantes reales;
+- no contacta participantes;
+- no programa ventanas;
+- no abre acceso;
+- no concede permisos;
+- no cambia cohortes;
+- no activa sedes;
+- no activa áreas;
+- no activa procesos;
+- no cambia tráfico;
+- no cambia feature flags;
+- no ejecuta rollout;
+- no ejecuta rollback;
+- no ejecuta recuperación;
+- no ejecuta compensación;
+- no ejecuta conciliación;
+- no captura datos reales;
+- no registra comentarios reales;
+- no crea incidentes reales;
+- no modifica código;
+- no modifica datos;
+- no modifica Supabase;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no despliega;
+- no ejecuta hypercare;
+- no certifica cierre de package;
+- no retira legacy;
+- no desarrolla las matrices específicas de `UX-QA-021` a `UX-QA-030`;
+- no prueba AURA sin continuidad aprobada;
+- no crea TREQ;
+- no modifica TREQ;
+- no modifica 04A.
+
+#### 76. Handoff a `UX-QA-021`
+
+`UX-QA-020` entrega a `UX-QA-021`:
+
+- contrato común de certificación de piloto humano;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` y gate `POST_E5_PACKAGE`;
+- separación entre evidencia CI022 y certificación UX;
+- definición de usuario real;
+- reglas de proporcionalidad de participantes y escenarios;
+- matriz común de aplicabilidad;
+- esquema mínimo de evidencia por escenario;
+- criterios de observación de ayuda, fricción y recuperación;
+- reglas de métricas sin thresholds inventados;
+- reglas de privacidad y minimización de evidencia;
+- contrato de hallazgos con owner y condición de salida;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- universo de diez aplicaciones canónicas;
+- regla de que cada especialización posterior consume este contrato sin redefinirlo.
+
+`UX-QA-021` podrá concretar SHELL por tipo de actor sin volver a diseñar el contrato transversal de piloto ni absorber las especializaciones de otras aplicaciones.
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-019 — Los fallos parciales permiten recuperación`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-020 — Cada aplicación supera piloto con usuarios reales`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-021 — Probar SHELL por tipo de actor`
 ### [ ] UX-QA-021 — Probar SHELL por tipo de actor
 ### [ ] UX-QA-022 — Probar ANIMA con trabajadores y administradores
 ### [ ] UX-QA-023 — Probar VISO por rol administrativo
