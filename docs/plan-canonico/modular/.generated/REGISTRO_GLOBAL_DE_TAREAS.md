@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1549** |
+| Aprobadas | **1550** |
 | En propuesta | **0** |
-| No iniciadas | **47** |
+| No iniciadas | **46** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.06% (1549/1596)** |
+| Porcentaje de completamiento | **97.12% (1550/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **47** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1450** |
+| ⏸ NO_EVALUADA | **46** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1451** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-026` — Cola offline de ANIMA se revalida | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-027` — Actualización de paquete no rompe otros repositorios | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-028` — Rollback funciona por aplicación | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-027` — Actualización de paquete no rompe otros repositorios | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-028` — Rollback funciona por aplicación | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-QA-029` — Auditoría conserva actor, turno, sede y área | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1381,7 +1381,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-024` | Cruce de área queda bloqueado | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-025` | Check-out retira permisos operativos | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-026` | Cola offline de ANIMA se revalida | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-027` | Actualización de paquete no rompe otros repositorios | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-027` | Actualización de paquete no rompe otros repositorios | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-028` | Rollback funciona por aplicación | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-029` | Auditoría conserva actor, turno, sede y área | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-030` | Ejecutar prueba de regresión completa | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |

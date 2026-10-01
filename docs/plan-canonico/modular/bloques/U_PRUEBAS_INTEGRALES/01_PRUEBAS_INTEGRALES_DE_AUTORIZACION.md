@@ -22016,7 +22016,1250 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-027 — Actualización de paquete no rompe otros repositorios`
-### [ ] AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
+### ✅ AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-026 — Cola offline de ANIMA se revalida
+**Tarea siguiente:** AUTH-QA-028 — Rollback funciona por aplicación
+**Tipo de tarea:** documental; definición canónica de la prueba integral de compatibilidad y adopción independiente de paquetes compartidos entre repositorios Vento OS, reutilizable por paquete y certificable globalmente, para demostrar que una versión o conjunto mínimo de versiones puede evaluarse, adoptarse y desplegarse por consumidor sin romper otros repositorios, sin reutilizar evidencia ajena o stale, sin ocultar incompatibilidades de tipos, comportamiento, catálogo, contexto o autorización y sin exigir actualización simultánea
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-027::<package_id>` y la certificación `AUTH-QA-027::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; los habilitadores globales de pruebas, build, release, changelog, compatibilidad, actualización controlada de consumidores, pruebas específicas por consumidor, rollback e independencia de despliegue existen materializados y verificados en `SHELL-CI-001..015`, pero esta tarea no infiere que una combinación real package–consumidor, una actualización real ni el conjunto global de repositorios ya estén certificados
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se publican packages, tags o releases, no se modifican manifests o lockfiles reales, no se crean ramas o pull requests de consumidores, no se fusionan cambios, no se despliegan aplicaciones, no se ejecutan migraciones, no se modifican datos ni configuración y no se ejecuta rollback
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que actualizar un package compartido no rompe otros repositorios y que cada consumidor puede adoptar una versión compatible de forma independiente, con evidencia atribuible a la combinación exacta evaluada y sin depender de un despliegue coordinado de todo el ecosistema.
+
+La regla raíz queda:
+
+```text
+PACKAGE / CONJUNTO MINIMO DE PACKAGES IDENTIFICADO
++
+ARTEFACTO Y VERSION EXACTOS
++
+MATRIZ DE COMPATIBILIDAD VIGENTE
++
+CONSUMIDOR Y COMMIT EXACTOS
++
+MANIFEST + LOCKFILE EXACTOS
++
+LINEA BASE Y SUITE DEL CONSUMIDOR
++
+GATES DE ADOPCION COMPLETOS
++
+EVIDENCIA NO STALE
++
+INDEPENDENCIA ENTRE REPOSITORIOS
+=
+ACTUALIZACION ELEGIBLE SIN ROMPER OTROS REPOSITORIOS
+```
+
+Y, de forma fail-closed:
+
+```text
+BUILD DEL PACKAGE EN VERDE
+≠
+COMPATIBILIDAD DE TODOS LOS CONSUMIDORES
+
+COMPATIBILIDAD DE UN CONSUMIDOR
+≠
+COMPATIBILIDAD DE OTRO CONSUMIDOR
+
+RANGO SEMVER DECLARADO
+≠
+EVIDENCIA EJECUTADA
+
+MERGE EN UN REPOSITORIO
+≠
+OBLIGACION DE MERGE O DEPLOY SIMULTANEO EN LOS DEMAS
+```
+
+---
+
+#### 2. Resultado canónico
+
+`AUTH-QA-027` establece `AUTH-QA-PACKAGE-CONSUMER-COMPATIBILITY-CERTIFICATION-001@1.0.0` con estos resultados:
+
+1. cada certificación se atribuye a un package o conjunto mínimo cerrado de packages y a un consumidor exacto;
+2. ninguna evidencia de otro package, versión, artefacto, consumidor, commit, manifest, lockfile, runtime o target puede reutilizarse como propia;
+3. las cuatro familias compartidas conservan versionado independiente;
+4. las siete aplicaciones web base conservan exactamente veintiocho relaciones package–consumidor base;
+5. consumidores o targets adicionales solo entran mediante bindings propietarios explícitos;
+6. una relación no ejecutada permanece pendiente de evidencia y nunca se infiere compatible;
+7. toda adopción consume evidencia vigente de package, build, release, compatibilidad y consumidor según los gates aplicables;
+8. manifest y lockfile del consumidor cambian como una unidad coherente;
+9. la instalación usa versiones exactas y resolución reproducible;
+10. typecheck, build/export, pruebas e integración del consumidor se ejecutan contra el commit exacto propuesto;
+11. cambios de contrato, tipos, catálogo, contexto, autorización, runtime, renderer o peers forman parte de la compatibilidad;
+12. `PATCH`, `MINOR`, `MAJOR`, seguridad y deprecación conservan controles proporcionales sin eliminar gates universales;
+13. una actualización multi-package contiene solo el conjunto mínimo cerrado requerido;
+14. un repositorio puede adoptar una versión mientras otro permanece temporalmente en una versión soportada distinta;
+15. una propuesta que solo sería segura mediante actualización o despliegue simultáneo no probado queda bloqueada;
+16. merge, despliegue y adopción permanecen eventos distintos;
+17. evidencia anterior queda `STALE` ante cualquier cambio material;
+18. fallos preexistentes del consumidor no se borran ni se atribuyen al package sin evidencia;
+19. compatibilidad no autoriza cambios Supabase desde el consumidor;
+20. la ejecución y certificación de rollback permanecen reservadas a `AUTH-QA-028`.
+
+---
+
+#### 3. Fuentes canónicas consumidas
+
+La certificación consume sin redefinir:
+
+- `SHELL-PKG-001..008`, para distribución, SemVer, identidad de release, compatibilidad, deprecación, rollback, actualización por PR y gobierno de consumidores;
+- `SHELL-CI-001`, para pruebas propias del package;
+- `SHELL-CI-002`, para build independiente y artefacto distribuible;
+- `SHELL-CI-003`, para identidad inmutable de release;
+- `SHELL-CI-004`, para changelog y release notes;
+- `SHELL-CI-005`, para matriz ejecutable de compatibilidad package–consumidor;
+- `SHELL-CI-006`, para actualización controlada de consumidores mediante PR;
+- `SHELL-CI-007..013`, para líneas base y suites específicas de NEXO, FOGO, ORIGO, PULSO, VISO, NUMERA y ANIMA;
+- `SHELL-CI-014`, como contrato de rollback por repositorio que `AUTH-QA-028` certificará integralmente;
+- `SHELL-CI-015`, para independencia de despliegue y prohibición de coordinación obligatoria no demostrada;
+- la familia 04A vigente, especialmente la cobertura SHELL de compatibilidad, evidencia, releases, deprecación y rollback.
+
+Ninguna de estas fuentes es modificada por esta tarea.
+
+---
+
+#### 4. Topología y ejecución futura
+
+La topología vigente para `PHASE-13-U-INTEGRAL-CERTIFICATION` es:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+```
+
+Por tanto, la identidad física futura es:
+
+```text
+AUTH-QA-027::<package_id>
+AUTH-QA-027::GLOBAL-FINAL
+```
+
+Reglas:
+
+1. una instancia por package certifica únicamente el package y universo consumidor que le corresponde;
+2. `GLOBAL-FINAL` no sustituye ejecuciones por package faltantes;
+3. una ejecución de otro `package_id` no sirve como evidencia de la actual;
+4. ninguna instancia se materializa desde este marcador documental;
+5. `POST_E5_PACKAGE` impide anticipar la certificación física a un package que todavía no ha superado su gate E5 correspondiente.
+
+---
+
+#### 5. Distinción entre habilitador global y certificación integral
+
+Los habilitadores `SHELL-CI-005::GLOBAL`, `SHELL-CI-006::GLOBAL`, `SHELL-CI-007::GLOBAL` a `SHELL-CI-015::GLOBAL` pueden estar materializados y verificados sin que una actualización real concreta esté certificada.
+
+La relación es:
+
+```text
+HABILITADOR VERIFIED
+→ demuestra que el mecanismo puede evaluar
+
+EJECUCION REAL DE COMBINACION
+→ demuestra package/version/consumer/commit concretos
+
+AUTH-QA-027::<package_id>
+→ certifica la combinación exigida por ese package
+
+AUTH-QA-027::GLOBAL-FINAL
+→ certifica cobertura transversal completa
+```
+
+Está prohibido convertir el `VERIFIED` del habilitador en evidencia automática de que todos los consumidores están en verde.
+
+---
+
+#### 6. Universo de packages compartidos base
+
+La matriz web base conserva exactamente cuatro familias:
+
+1. `@vento/contracts`;
+2. `@vento/os-context`;
+3. `@vento/supabase`;
+4. `@vento/ui-web`.
+
+Una quinta familia no se incorpora por existir en un workspace, aparecer en `package.json` o compartir prefijo `@vento/`. Requiere contrato y binding canónicos.
+
+---
+
+#### 7. Universo de consumidores web base
+
+Las relaciones base usan exactamente siete consumidores web:
+
+1. `vento-shell`;
+2. `vento-viso`;
+3. `vento-nexo`;
+4. `vento-fogo`;
+5. `vento-origo`;
+6. `vento-pulso`;
+7. `vento-numera`.
+
+La cardinalidad base queda:
+
+```text
+4 packages × 7 consumidores = 28 relaciones
+```
+
+ANIMA no se incorpora por inferencia a esas veintiocho relaciones porque su runtime Expo/React Native tiene frontera propia. Cuando un contrato aprobado la declare consumidora de un package o unidad, se evalúa como extensión explícita con su target y renderer reales.
+
+---
+
+#### 8. Matriz base inmutable de veintiocho relaciones
+
+La certificación conserva exactamente las relaciones `PKG-COMP-MX-001..028`:
+
+| Rango | Package | Consumidores cubiertos | Cardinalidad |
+| --- | --- | --- | ---: |
+| `PKG-COMP-MX-001..007` | `@vento/contracts` | siete consumidores web base | 7 |
+| `PKG-COMP-MX-008..014` | `@vento/os-context` | siete consumidores web base | 7 |
+| `PKG-COMP-MX-015..021` | `@vento/supabase` | siete consumidores web base | 7 |
+| `PKG-COMP-MX-022..028` | `@vento/ui-web` | siete consumidores web base | 7 |
+
+Conciliación obligatoria:
+
+```text
+ESPERADAS = 28
+MATERIALIZADAS = 28
+FALTANTES = 0
+DUPLICADAS = 0
+RELACION_29_INVENTADA = 0
+```
+
+La tarea no declara las relaciones reales `COMPATIBLE` sin ejecución física atribuible.
+
+---
+
+#### 9. Extensiones de consumidor y target
+
+Un consumidor, target o renderer fuera de la matriz base solo es evaluable cuando existe binding explícito que identifique, como mínimo:
+
+```text
+binding_identity
+contract_owner
+package_or_unit
+consumer_repository
+target_identity
+renderer_class
+compatibility_profile
+required_tests
+```
+
+Reglas:
+
+1. Expo Web no se normaliza automáticamente como `@vento/ui-web`;
+2. React Native no hereda evidencia de un build Next.js;
+3. un target nativo no reutiliza evidencia de otro target;
+4. una extensión no crea un nuevo `PKG-COMP-MX-*` base por inferencia;
+5. ausencia de binding significa fuera del universo certificado, no compatibilidad implícita.
+
+---
+
+#### 10. Identidad exacta del package candidato
+
+Toda evaluación conserva:
+
+```text
+package_name
+package_version
+package_source_commit
+package_manifest_identity
+artifact_identity
+artifact_integrity
+release_identity
+internal_dependency_set
+channel
+```
+
+Una versión textual sin correspondencia con artefacto, commit e integridad no basta.
+
+Un package publicado bajo la misma versión pero bytes diferentes constituye una violación de identidad y no una actualización compatible.
+
+---
+
+#### 11. Identidad exacta del consumidor
+
+Toda evaluación conserva:
+
+```text
+consumer_repository
+consumer_commit
+consumer_manifest_identity
+consumer_lockfile_identity
+runtime_identity
+toolchain_identity
+target_identity
+renderer_class
+configuration_identity
+```
+
+La evidencia pertenece a esa combinación exacta.
+
+Un rebase, nuevo commit, cambio de lockfile, toolchain, target o configuración material invalida la evidencia anterior.
+
+---
+
+#### 12. Línea base previa del consumidor
+
+Antes de modificar versiones, el consumidor debe demostrar una línea base atribuible al commit exacto.
+
+La línea base debe permitir distinguir:
+
+```text
+FALLO PREEXISTENTE
+≠
+REGRESION INTRODUCIDA POR LA ACTUALIZACION
+```
+
+Reglas:
+
+1. se prueba antes de modificar packages;
+2. utiliza los comandos reales del consumidor;
+3. no actualiza snapshots para forzar verde;
+4. no silencia lint, typecheck o tests;
+5. no cambia datos o configuración real para aprobar;
+6. conserva evidencia de fallos y bloqueos existentes;
+7. un consumidor ya roto no puede producir una certificación ambigua.
+
+---
+
+#### 13. Pruebas específicas por consumidor
+
+Se consumen los habilitadores especializados:
+
+| Consumidor | Habilitador |
+| --- | --- |
+| NEXO | `SHELL-CI-007::GLOBAL` |
+| FOGO | `SHELL-CI-008::GLOBAL` |
+| ORIGO | `SHELL-CI-009::GLOBAL` |
+| PULSO | `SHELL-CI-010::GLOBAL` |
+| VISO | `SHELL-CI-011::GLOBAL` |
+| NUMERA | `SHELL-CI-012::GLOBAL` |
+| ANIMA | `SHELL-CI-013::GLOBAL` |
+
+Una suite de otro repositorio no sustituye la suite propietaria.
+
+`vento-shell` permanece cubierto por los gates package–consumidor y sus pruebas propias/raíz aplicables, sin inventar un octavo habilitador de consumidor web.
+
+---
+
+#### 14. Matriz de compatibilidad antes de adoptar
+
+Una relación puede satisfacer compatibilidad únicamente con evidencia atribuible a la combinación exacta.
+
+Estados permitidos por el contrato de compatibilidad se conservan separados; para una adopción normal no se interpreta ausencia de evidencia como éxito.
+
+Regla:
+
+```text
+PENDIENTE_DE_EVIDENCIA
+≠ COMPATIBLE
+
+INCOMPATIBLE
+≠ COMPATIBLE_CON_RESTRICCIONES
+
+STALE
+≠ PASS
+```
+
+Una restricción solo es válida cuando está formalizada, atribuida y demostrada por pruebas que pasan bajo esa restricción.
+
+---
+
+#### 15. Doce ejes de compatibilidad
+
+`AUTH-QA-027` consume los doce ejes canónicos de `SHELL-CI-005` y exige ejecutar los que apliquen a cada relación.
+
+La cobertura incluye, como mínimo:
+
+- instalación reproducible;
+- identidad de artefacto;
+- exports y contrato público;
+- TypeScript/declarations;
+- runtime y Node;
+- framework/SSR cuando corresponda;
+- peers y dependencias;
+- contratos, schemas y catálogos;
+- contexto y autorización cuando aplique;
+- target y renderer;
+- comportamiento especializado por familia;
+- lint, typecheck, build/export, pruebas e integración del consumidor.
+
+Un eje obligatorio sin runner, fixture u oracle permanece pendiente o bloqueado; nunca se marca no aplicable por conveniencia.
+
+---
+
+#### 16. Dieciséis gates de actualización
+
+La certificación consume exactamente `PKG-GATE-001..016` según el contrato de `SHELL-CI-006`.
+
+Los quince gates universales requieren `PASS`.
+
+El único gate condicional puede usar `NOT_APPLICABLE` solo con justificación válida del contrato propietario.
+
+La prueba integral debe demostrar, entre otros:
+
+1. identidad de release;
+2. elegibilidad de versión;
+3. coherencia manifest–lockfile;
+4. instalación bloqueada reproducible;
+5. pruebas propias del package;
+6. lint/análisis estático del consumidor;
+7. typecheck del consumidor;
+8. build/export del consumidor;
+9. pruebas automatizadas del consumidor;
+10. matriz de compatibilidad;
+11. perfil especializado de familia;
+12. requisitos de prueba afectados;
+13. controles reforzados por riesgo cuando apliquen;
+14. vigencia y coherencia de evidencia;
+15. revisión y protección de merge;
+16. separación de merge, despliegue y adopción.
+
+`SKIPPED`, `NEUTRAL`, ausencia, timeout, cancelación, bloqueo o stale no satisfacen un gate universal.
+
+---
+
+#### 17. Manifest y lockfile como unidad
+
+Una adopción válida modifica manifest y lockfile de manera coherente.
+
+Está prohibido certificar:
+
+- manifest actualizado con lockfile anterior;
+- lockfile regenerado con drift no explicado;
+- una dependencia `@vento/*` flotante;
+- tag, branch, URL Git o fuente local como sustituto ordinario de una versión exacta publicada;
+- override permanente usado para esconder una incompatibilidad;
+- un lockfile que resuelva una versión distinta de la certificada.
+
+---
+
+#### 18. Instalación reproducible
+
+La combinación debe poder instalarse desde el snapshot evaluado sin depender de estado residual de una máquina.
+
+La instalación certificada identifica:
+
+```text
+runtime
+package_manager
+lockfile
+registry/source aprobada
+package versions
+peer resolutions
+install result
+```
+
+Un `node_modules` previamente existente no constituye evidencia suficiente.
+
+---
+
+#### 19. Typecheck y contratos
+
+Una actualización no puede declararse compatible si requiere:
+
+- casts globales para ocultar ruptura;
+- `any` añadido para evitar errores contractuales;
+- duplicar tipos localmente para evitar el package;
+- desactivar `strict` o reglas equivalentes;
+- importar rutas internas no públicas;
+- conservar una firma incompatible bajo alias local.
+
+Los errores de tipos son evidencia de incompatibilidad o de migración pendiente, no un inconveniente descartable.
+
+---
+
+#### 20. Build, export y runtime
+
+Cada consumidor ejecuta el build o export que corresponde a su stack real.
+
+Reglas:
+
+1. un build de `vento-shell` no certifica VISO, NEXO, FOGO, ORIGO, PULSO o NUMERA;
+2. un build Next.js no certifica ANIMA nativa;
+3. Expo Web no se usa como sustituto automático del renderer web estándar;
+4. un target omitido queda sin certificar;
+5. warnings contractuales que el perfil declare bloqueantes no se descartan;
+6. el build debe corresponder al commit y lockfile evaluados.
+
+---
+
+#### 21. Comportamiento y regresión del consumidor
+
+La certificación no se reduce a compilar.
+
+Debe probar el comportamiento protegido por el consumidor y el package aplicable, incluidos cuando correspondan:
+
+- serialización y schemas;
+- catálogos cerrados;
+- navegación y AppShell;
+- contexto operativo;
+- autorización y fail-closed;
+- territorialidad;
+- seguridad server/client;
+- contratos Supabase consumidos;
+- UI compartida y tokens;
+- integraciones y efectos idempotentes;
+- regresiones específicas del dominio consumidor.
+
+Un `build PASS` con comportamiento incompatible no es compatibilidad.
+
+---
+
+#### 22. Contexto y autorización
+
+Cuando el package participa en autorización o contexto, la actualización debe demostrar que no cambia de forma incompatible:
+
+- catálogo de permisos;
+- forma y versión de contratos;
+- semántica de `ALLOW`/`DENY`/fallo técnico;
+- identidad de actor;
+- resolución de turno, sede y área;
+- fronteras server/client;
+- simulación;
+- compatibilidad legacy aprobada;
+- invalidación y frescura;
+- razones/proyecciones seguras.
+
+Una nueva versión no puede restaurar bypasses, fallbacks permisivos o autoridad local retirada.
+
+---
+
+#### 23. Frontera Supabase
+
+Actualizar `@vento/supabase` o cualquier package que describa contratos de Supabase no equivale a aplicar una migración.
+
+La certificación de `AUTH-QA-027`:
+
+- puede validar tipos, schema esperado y compatibilidad declarada;
+- no crea ni ejecuta migraciones;
+- no modifica RLS, RPC, grants, Storage, Realtime, Edge Functions o datos;
+- bloquea la adopción si necesita una modificación física no materializada;
+- exige que cualquier cambio físico pertenezca a su tarea propietaria en `vento-shell`.
+
+---
+
+#### 24. `PATCH_UPDATE`
+
+Una actualización patch debe demostrar:
+
+1. identidad de release válida;
+2. defecto o cambio objetivo trazable;
+3. ausencia de ruptura pública incompatible;
+4. regresión focal del defecto;
+5. suite base del consumidor;
+6. matriz de compatibilidad vigente;
+7. gates universales completos.
+
+El número patch no autoriza a omitir pruebas.
+
+---
+
+#### 25. `MINOR_UPDATE`
+
+Una actualización minor puede añadir capacidad pública compatible, pero debe demostrar:
+
+- compatibilidad hacia consumidores existentes;
+- escenarios nuevos;
+- ausencia de cambio incompatible de forma o conducta;
+- peer ranges soportados por evidencia;
+- adopción independiente.
+
+Un cambio etiquetado minor que exige migración simultánea de todos los consumidores es incompatible con este contrato salvo que exista otro contrato explícito que lo gobierne y lo demuestre.
+
+---
+
+#### 26. `MAJOR_UPDATE`
+
+Una actualización major exige, además de los gates universales:
+
+- guía de migración;
+- inventario de superficies afectadas;
+- clasificación de incompatibilidades;
+- consumidores y relaciones afectados;
+- compatibilidad objetivo;
+- impacto de datos, configuración y caché;
+- evidencia de transición soportada;
+- aprobación reforzada aplicable;
+- referencia de rollback para la tarea propietaria.
+
+`MAJOR` permite declarar ruptura; no permite desplegarla sin gestionar a los consumidores.
+
+---
+
+#### 27. `SECURITY_UPDATE`
+
+Una actualización de seguridad puede priorizarse, pero no elimina:
+
+- compatibilidad;
+- revisión;
+- suites de consumidor;
+- evidencia atribuible;
+- separación de merge/deploy;
+- rollback disponible;
+- prohibición de restaurar bypasses.
+
+Urgencia no significa auto-merge ni `PASS` implícito.
+
+---
+
+#### 28. Deprecación y retiro
+
+Cuando la actualización introduce o consume una deprecación:
+
+1. se conserva el expediente propietario `DEP-*` cuando corresponda;
+2. la superficie y reemplazo son explícitos;
+3. el inventario de consumidores permanece vigente;
+4. no se retira una superficie con uso residual no resuelto;
+5. no se despublica ni muta una versión histórica;
+6. la evidencia de compatibilidad se vuelve a ejecutar cuando el retiro cambia una entrada material.
+
+El fin de soporte de una línea no se deduce del simple paso del tiempo.
+
+---
+
+#### 29. Actualización multi-package
+
+Una propuesta multi-package solo es válida cuando el conjunto es mínimo y cerrado por dependencias exactas o por una migración indivisible del mismo consumidor.
+
+Reglas:
+
+1. no se agregan packages sin cambio por lockstep;
+2. cada package conserva versión independiente;
+3. dependencias internas usan versiones exactas compatibles;
+4. la matriz se calcula sobre el conjunto realmente resuelto;
+5. los perfiles de prueba se unen sin reducir cobertura;
+6. el lockfile final debe ser resoluble;
+7. un consumidor puede adoptar el conjunto sin obligar a otro consumidor.
+
+---
+
+#### 30. Independencia entre repositorios
+
+La regla funcional que esta tarea certifica es:
+
+```text
+CONSUMIDOR A ADOPTA VERSION NUEVA COMPATIBLE
++
+CONSUMIDOR B PERMANECE EN VERSION SOPORTADA ANTERIOR
+=
+ESTADO TRANSITORIO VALIDO
+```
+
+siempre que ambos lados conserven sus contratos soportados.
+
+Está prohibido exigir como mecanismo ordinario:
+
+```text
+MERGE A + MERGE B + MERGE C + ...
+EN LA MISMA VENTANA
+```
+
+para esconder una incompatibilidad de package.
+
+---
+
+#### 31. Despliegue no simultáneo
+
+`SHELL-CI-015` aporta la barrera de independencia de despliegue.
+
+`AUTH-QA-027` debe demostrar que:
+
+1. un consumidor actualizado puede desplegarse sin que otro deba desplegar de inmediato;
+2. el consumidor no actualizado continúa en una combinación soportada;
+3. backend o contratos compartidos conservan coexistencia cuando la transición la requiere;
+4. una propuesta que necesita simultaneidad no probada queda bloqueada;
+5. orden de despliegue, cuando importe, está explicitado y probado.
+
+La coordinación deliberada puede existir para una migración propietaria, pero no se usa para ocultar falta de compatibilidad.
+
+---
+
+#### 32. Separación entre compatibilidad, propuesta, merge, deploy y adopción
+
+Son estados distintos:
+
+```text
+COMPATIBLE
+→ puede ser elegible para propuesta
+
+PROPUESTA VALIDADA
+→ puede ser revisada
+
+MERGED
+→ código integrado
+
+DEPLOYED
+→ artefacto ejecutándose en ambiente
+
+ADOPTED
+→ evidencia propietaria confirma adopción
+```
+
+Ninguna transición se infiere por la anterior.
+
+`AUTH-QA-027` no fusiona, despliega ni declara `ADOPTED` durante su definición documental.
+
+---
+
+#### 33. Evidencia stale
+
+La evidencia deja de certificar la combinación cuando cambia una entrada material, incluyendo:
+
+- package source commit;
+- versión o candidato;
+- manifest del package;
+- artefacto o integridad;
+- dependencia interna;
+- commit del consumidor;
+- manifest;
+- lockfile;
+- runtime o toolchain;
+- target o renderer;
+- configuración;
+- fixtures u oracles;
+- contrato de compatibilidad;
+- required gates;
+- requisito afectado;
+- código del gate relevante.
+
+Regla:
+
+```text
+CAMBIO MATERIAL
+→ EVIDENCIA ANTERIOR STALE
+→ NUEVA EJECUCION
+```
+
+---
+
+#### 34. Evidencia cruzada prohibida
+
+Está prohibido utilizar como `PASS`:
+
+- evidencia de otro consumidor;
+- evidencia de otro commit;
+- evidencia de otro target;
+- evidencia de otra versión;
+- evidencia de otra relación `PKG-COMP-MX-*`;
+- evidencia de otro `package_id`;
+- evidencia de otro ambiente cuando el ambiente sea parte del contrato;
+- evidencia sintética de autocertificación como sustituto de una ejecución real.
+
+---
+
+#### 35. Falsos verdes prohibidos
+
+Constituyen fallo de la certificación:
+
+1. cero tests requeridos ejecutados;
+2. test runner inexistente tratado como success;
+3. comando que no ejecuta la herramienta anunciada;
+4. `|| true`, `continue-on-error` u otro mecanismo usado para esconder un gate obligatorio;
+5. snapshot actualizado automáticamente para apagar una regresión;
+6. cast o alias global introducido para esconder incompatibilidad;
+7. `NOT_APPLICABLE` usado en gate universal;
+8. warning crítico ignorado contra el perfil;
+9. lockfile regenerado sin atribución;
+10. resultado stale presentado como vigente.
+
+---
+
+#### 36. Fallos preexistentes del consumidor
+
+Una línea base roja puede revelar deuda previa.
+
+El tratamiento correcto es:
+
+```text
+FALLO PREEXISTENTE IDENTIFICADO
+→ SE CONSERVA
+→ BLOQUEA O SE TRATA SEGUN SU OWNER
+→ NO SE ATRIBUYE AUTOMATICAMENTE AL PACKAGE
+→ NO SE BORRA PARA APROBAR LA ACTUALIZACION
+```
+
+Si no puede distinguirse con evidencia el antes y el después, la actualización no obtiene certificación concluyente.
+
+---
+
+#### 37. Compatibilidad con restricciones
+
+`COMPATIBLE_CON_RESTRICCIONES` solo puede aceptarse cuando la restricción:
+
+- está escrita y versionada;
+- tiene owner;
+- identifica package, consumidor y target;
+- conserva pruebas que pasan bajo esa condición;
+- no oculta un eje obligatorio fallido;
+- no obliga a un bypass;
+- no exige mutar un consumidor ajeno fuera de su lifecycle;
+- tiene condición de salida cuando sea temporal.
+
+---
+
+#### 38. Publicación y adopción independientes
+
+Una release de package no obliga a que todos los consumidores la adopten de inmediato.
+
+Asimismo, una adopción en un consumidor no vuelve obsoletas automáticamente las versiones soportadas que otros consumidores siguen usando.
+
+La coexistencia queda gobernada por:
+
+- SemVer;
+- bandas soportadas demostradas;
+- deprecación;
+- matriz de compatibilidad;
+- evidencia por consumidor;
+- política de retiro.
+
+---
+
+#### 39. Concurrencia de cambios
+
+Si el consumidor cambia mientras se evalúa una actualización:
+
+```text
+BASE_COMMIT CAMBIA
+→ EVIDENCIA ANTERIOR STALE
+→ REBASE / NUEVA BASE
+→ NUEVA VALIDACION
+```
+
+No se conserva el `PASS` por equivalencia visual ni porque el cambio parezca no relacionado.
+
+Un cambio material del package durante la evaluación produce la misma invalidación.
+
+---
+
+#### 40. Seguridad de la automatización
+
+Un automatizador de actualización no puede:
+
+- autoaprobar su propio cambio;
+- fusionar sin la protección propietaria;
+- desplegar por tener tests verdes;
+- usar credenciales de publicación para administrar consumidores;
+- usar credenciales de consumidor para publicar packages;
+- escribir secretos en manifest, lockfile, logs o comentarios;
+- modificar reglas de protección;
+- ejecutar Supabase desde el repositorio consumidor;
+- declarar adopción sin evidencia del consumidor.
+
+---
+
+#### 41. Auditoría mínima de compatibilidad
+
+La evidencia futura debe permitir correlacionar, como mínimo:
+
+```text
+package_name
+package_version
+package_source_commit
+artifact_identity
+artifact_integrity
+consumer_repository
+consumer_commit
+consumer_manifest_identity
+consumer_lockfile_identity
+runtime_identity
+toolchain_identity
+target_identity
+renderer_class
+compatibility_relation_id
+compatibility_evidence_identity
+update_relation_id
+update_id
+update_class
+gate_results
+consumer_baseline_evidence
+consumer_post_update_evidence
+required_treq_scope
+evidence_freshness
+result
+```
+
+No se almacenan secretos dentro de este payload de evidencia.
+
+---
+
+#### 42. Casos positivos mínimos
+
+La ejecución física de cada instancia aplicable deberá cubrir, como mínimo:
+
+| ID | Escenario | Oracle |
+| --- | --- | --- |
+| `AUTH-QA-027-A` | patch compatible en un consumidor web | todos los gates aplicables pasan; otros repos no cambian |
+| `AUTH-QA-027-B` | minor compatible con capacidad aditiva | consumidor actualizado pasa; consumidores anteriores siguen soportados |
+| `AUTH-QA-027-C` | consumidor permanece en versión soportada anterior | no requiere migración simultánea |
+| `AUTH-QA-027-D` | dos consumidores adoptan en momentos distintos | ambos conservan evidencia propia |
+| `AUTH-QA-027-E` | conjunto multi-package mínimo y cerrado | lockfile resoluble; perfiles combinados completos |
+| `AUTH-QA-027-F` | misma combinación reejecutada sin cambio material | resultado determinista e identidad estable según contrato |
+| `AUTH-QA-027-G` | binding nativo explícito | usa target/renderer propios; no se mezcla con matriz web base |
+| `AUTH-QA-027-H` | compatibilidad con restricción válida | restricción atribuida, probada y no oculta fallo obligatorio |
+| `AUTH-QA-027-I` | actualización de seguridad compatible | prioridad no elimina gates ni revisión |
+| `AUTH-QA-027-J` | major con migración completa | incompatibilidades, guía y consumidores afectados quedan explícitos |
+| `AUTH-QA-027-K` | package sin cambio en corte coordinado | no recibe versión artificial |
+| `AUTH-QA-027-L` | un consumidor falla por deuda previa | fallo se conserva y no contamina evidencia de otros consumidores |
+
+---
+
+#### 43. Casos negativos mínimos
+
+| ID | Escenario | Oracle |
+| --- | --- | --- |
+| `AUTH-QA-027-M` | compatibilidad inferida solo por rango SemVer | FAIL |
+| `AUTH-QA-027-N` | evidencia de otro consumidor | FAIL |
+| `AUTH-QA-027-O` | evidencia de otro commit | FAIL |
+| `AUTH-QA-027-P` | evidencia de otra versión | FAIL |
+| `AUTH-QA-027-Q` | manifest y lockfile divergen | FAIL |
+| `AUTH-QA-027-R` | instalación depende de estado residual | FAIL |
+| `AUTH-QA-027-S` | typecheck falla y se añade cast global para ocultarlo | FAIL |
+| `AUTH-QA-027-T` | build de otro repositorio usado como sustituto | FAIL |
+| `AUTH-QA-027-U` | test requerido omitido | FAIL |
+| `AUTH-QA-027-V` | gate universal marcado `NOT_APPLICABLE` | FAIL |
+| `AUTH-QA-027-W` | matriz omite una relación base requerida | FAIL |
+| `AUTH-QA-027-X` | relación 29 inventada sin binding propietario | FAIL |
+| `AUTH-QA-027-Y` | Expo Web tratado automáticamente como `@vento/ui-web` | FAIL |
+| `AUTH-QA-027-Z` | actualización requiere deploy simultáneo no probado | BLOCKED/FAIL de certificación |
+| `AUTH-QA-027-AA` | evidencia stale después de rebase | FAIL |
+| `AUTH-QA-027-AB` | package cambia después de compatibilidad | nueva ejecución obligatoria |
+| `AUTH-QA-027-AC` | cambio Supabase requerido pero no materializado | BLOCKED |
+| `AUTH-QA-027-AD` | auto-merge desde el actualizador | FAIL |
+| `AUTH-QA-027-AE` | actualización de seguridad restaura bypass | FAIL |
+| `AUTH-QA-027-AF` | major sin guía de migración | FAIL |
+| `AUTH-QA-027-AG` | deprecación retira superficie con consumidor residual | FAIL |
+| `AUTH-QA-027-AH` | multi-package incluye package sin necesidad | FAIL |
+| `AUTH-QA-027-AI` | consumidor B es obligado a actualizar solo porque A actualizó | FAIL |
+| `AUTH-QA-027-AJ` | test runner devuelve verde con cero pruebas | FAIL |
+| `AUTH-QA-027-AK` | snapshot se reescribe para convertir fallo en verde | FAIL |
+| `AUTH-QA-027-AL` | lockfile usa versión distinta de la certificada | FAIL |
+| `AUTH-QA-027-AM` | evidencia sintética de habilitador se usa como ejecución real | FAIL |
+| `AUTH-QA-027-AN` | restricción oculta eje incompatible | FAIL |
+| `AUTH-QA-027-AO` | cambio de runtime no invalida evidencia | FAIL |
+| `AUTH-QA-027-AP` | fallo de consumidor se copia como fallo de todos | FAIL de aislamiento |
+
+---
+
+#### 44. Casos de independencia entre consumidores
+
+La certificación global final debe demostrar explícitamente:
+
+1. fallo de NEXO no cambia el expediente de FOGO;
+2. fallo de FOGO no cambia el expediente de ORIGO;
+3. fallo de ORIGO no cambia el expediente de PULSO;
+4. fallo de PULSO no cambia el expediente de VISO;
+5. fallo de VISO no cambia el expediente de NUMERA;
+6. fallo de NUMERA no inventa fallo de ANIMA;
+7. evidencia de ANIMA no satisface un consumidor web;
+8. un consumidor actualizado no muta manifest/lockfile de otro;
+9. un PR consumidor no publica una nueva versión del package;
+10. una release nueva no modifica por sí sola ningún consumidor.
+
+---
+
+#### 45. Frontera exacta con `AUTH-QA-026`
+
+`AUTH-QA-026` certifica persistencia, replay, reautorización y recovery de la cola offline de ANIMA.
+
+`AUTH-QA-027` puede usar ANIMA como consumidor declarado de packages, pero no repite la semántica de cola offline ni sus oracles de asistencia.
+
+La actualización de un package no puede debilitar aquella semántica; la regresión específica permanece en la suite propietaria de ANIMA.
+
+---
+
+#### 46. Frontera exacta con `AUTH-QA-028`
+
+`AUTH-QA-027` exige que exista una combinación soportada y una referencia de recuperación cuando la política la requiera, pero no ejecuta ni certifica el rollback integral.
+
+Queda reservado a `AUTH-QA-028`:
+
+- rollback de código por aplicación;
+- rollback de manifest/lockfile;
+- rollback de configuración;
+- rollback de caché;
+- rollback relacionado con migraciones cuando corresponda;
+- preservación de datos y auditoría durante recuperación;
+- ensayo efectivo de volver a un snapshot soportado.
+
+Regla de frontera:
+
+```text
+AUTH-QA-027
+→ DEMUESTRA QUE LA ADOPCION NO EXIGE ROMPER OTROS REPOS
+
+AUTH-QA-028
+→ DEMUESTRA QUE CADA APLICACION PUEDE RECUPERARSE
+```
+
+---
+
+#### 47. Frontera con `AUTH-QA-029`
+
+La evidencia de esta tarea debe ser correlacionable, pero `AUTH-QA-029` conserva la certificación transversal de que auditoría mantiene actor, turno, sede y área donde correspondan.
+
+`AUTH-QA-027` no redefine el modelo final de auditoría empresarial.
+
+---
+
+#### 48. Frontera con `AUTH-QA-030`
+
+`AUTH-QA-030` orquesta la regresión integral final.
+
+`AUTH-QA-027` entrega a esa regresión:
+
+- combinaciones certificadas;
+- relaciones evaluadas;
+- resultados por consumidor;
+- evidencia de independencia;
+- bloqueos no resueltos;
+- identidades de ejecución;
+- ausencia de falsos verdes.
+
+No sustituye el cierre global de `AUTH-QA-030`.
+
+---
+
+#### 49. Ejecución `AUTH-QA-027::<package_id>`
+
+Cada instancia por package deberá resolver antes de ejecutarse:
+
+```text
+package_id
+package_name / package_set
+package version(s)
+source commit(s)
+artifact identity/integrity
+required consumer relations
+extension bindings
+consumer base commits
+manifests
+lockfiles
+targets/renderers
+compatibility evidence
+consumer baseline evidence
+applicable gates
+E5 gate evidence
+```
+
+La salida debe clasificar cada relación requerida de forma individual.
+
+Un solo consumidor fallido bloquea la certificación de la relación afectada, pero no altera resultados de relaciones independientes.
+
+---
+
+#### 50. Certificación `AUTH-QA-027::GLOBAL-FINAL`
+
+La certificación global final exige, como mínimo:
+
+```text
+required_package_instances = COMPLETE
+required_consumer_relations = COMPLETE
+missing_required_relations = 0
+duplicate_base_relations = 0
+stale_required_evidence = 0
+incompatible_unresolved_relations = 0
+unproven_simultaneous_dependency = 0
+cross_consumer_evidence_reuse = 0
+false_green_findings = 0
+```
+
+No exige que todos los consumidores usen la misma versión simultáneamente.
+
+Exige que cada combinación activa o de transición pertenezca a una banda soportada y demostrada.
+
+---
+
+#### 51. Taxonomía mínima de fallo
+
+La evidencia distinguirá al menos:
+
+```text
+PACKAGE_TEST_FAILURE
+PACKAGE_BUILD_FAILURE
+RELEASE_IDENTITY_FAILURE
+COMPATIBILITY_MISSING
+COMPATIBILITY_INCOMPATIBLE
+COMPATIBILITY_RESTRICTED_UNSATISFIED
+CONSUMER_BASELINE_FAILURE
+CONSUMER_LINT_FAILURE
+CONSUMER_TYPECHECK_FAILURE
+CONSUMER_BUILD_FAILURE
+CONSUMER_TEST_FAILURE
+MANIFEST_LOCKFILE_MISMATCH
+STALE_EVIDENCE
+TARGET_MISMATCH
+RENDERER_MISMATCH
+RUNTIME_MISMATCH
+UNRESOLVED_PEER_SET
+UNAUTHORIZED_SUPABASE_DEPENDENCY
+SIMULTANEOUS_DEPLOY_REQUIRED_UNPROVEN
+DEPRECATION_BLOCKED
+SECURITY_REGRESSION
+AUTOMATION_AUTHORITY_VIOLATION
+TECHNICAL_BLOCKER
+```
+
+Un fallo técnico no se convierte en compatibilidad ni en incompatibilidad empresarial sin evidencia suficiente.
+
+---
+
+#### 52. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+La tarea certifica integralmente obligaciones ya existentes de compatibilidad, evidencia, consumer-driven testing, release, adopción independiente, deprecación y rollback sin introducir una capacidad empresarial, riesgo o regla verificable nueva.
+
+---
+
+#### 53. Cobertura de prueba vigente reutilizada
+
+Se reutilizan sin modificación:
+
+- `TREQ-SHELL-005`, para comandos reproducibles de instalación, lint, typecheck, build/export y pruebas;
+- `TREQ-SHELL-006`, requisito directo de pruebas propias, matriz contra cada consumidor, adopción independiente y detección de incompatibilidades de tipos, comportamiento, catálogo, contexto y autorización;
+- `TREQ-SHELL-007`, como obligación de rollback independiente cuya certificación integral permanece en `AUTH-QA-028`;
+- `TREQ-SHELL-008`, para declaración de requisitos afectados y evidencia reproducible por package y PR;
+- `TREQ-SHELL-009`, para identidad verificable de repositorio, commit, ambiente y superficie ejecutada;
+- `TREQ-SHELL-036`, para correspondencia inmutable entre package, SemVer, manifest, tag, release, commit, tarball e integridad;
+- `TREQ-SHELL-037`, para cortes coordinados sin lockstep artificial y con dependencias internas exactas;
+- `TREQ-SHELL-038`, para deprecación trazable, inventario de consumidores y ventana soportada;
+- `TREQ-SHELL-039`, para impedir retiro con consumidores activos sin compatibilidad, builds, pruebas y rollback;
+- `TREQ-SHELL-059`, cuando exista una frontera nativa o de renderer declarada, para matriz por consumidor y target;
+- `TREQ-SHELL-060`, cuando aplique unidad compartida, para lineage exacto de package, versión, commit, digest y rollback reproducible.
+
+Esta enumeración es trazabilidad heredada y no representa una actualización del Registro 04A.
+
+---
+
+#### 54. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido incorporado en el checkout local del usuario ni se ejecutó la batería del repositorio para `AUTH-QA-027`. |
+| LOCAL | NOT_EXECUTED | `docs:task:format`, `docs:task:quality`, `docs:delivery:check`, plan, TREQ, topología y `git diff --check` deben ejecutarse después del reemplazo real en la rama documental. |
+| REMOTA | PASS | Se verificaron en `main` continuidad hasta `AUTH-QA-025`, marcador pendiente `AUTH-QA-026`, sucesora `AUTH-QA-027`, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, contratos de packages/compatibilidad/consumidores, `SHELL-CI-005::GLOBAL` a `SHELL-CI-015::GLOBAL` relevantes en estado `VERIFIED`, código actual de gates compartidos y cobertura 04A SHELL aplicable. |
+| OPERATIVA | NOT_EXECUTED | No se actualizó package alguno en consumidores reales, no se abrieron PR, no se ejecutaron adopciones escalonadas ni escenarios reales de coexistencia entre versiones. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó `AUTH-QA-027::<package_id>` ni `AUTH-QA-027::GLOBAL-FINAL`; no se modificaron packages, repositorios consumidores, releases, ambientes, datos, configuración o Supabase. |
+
+La evidencia remota prueba disponibilidad contractual y de habilitadores, no compatibilidad de una combinación real todavía no ejecutada.
+
+---
+
+#### 55. Criterios de aceptación
+
+`AUTH-QA-027` queda documentalmente aceptable cuando se conserva contractualmente todo lo siguiente:
+
+- [ ] El título canónico es exactamente `AUTH-QA-027 — Actualización de paquete no rompe otros repositorios`.
+- [ ] La tarea anterior es `AUTH-QA-026`.
+- [ ] La siguiente tarea reservada es `AUTH-QA-028`.
+- [ ] El modo físico es `PER_PACKAGE_AND_GLOBAL_FINAL`.
+- [ ] El gate físico es `POST_E5_PACKAGE`.
+- [ ] Se conservan exactamente cuatro families base de package.
+- [ ] Se conservan exactamente siete consumidores web base.
+- [ ] Se conservan exactamente veintiocho relaciones `PKG-COMP-MX-001..028`.
+- [ ] No se inventa una relación base adicional por inferencia.
+- [ ] Extensiones nativas o de target requieren binding propietario explícito.
+- [ ] Cada evidencia pertenece a package, versión, artefacto, consumidor, commit, manifest, lockfile, runtime y target exactos.
+- [ ] Una relación sin evidencia no se declara compatible.
+- [ ] Evidencia de otro consumidor no se reutiliza.
+- [ ] Evidencia de otro commit no se reutiliza.
+- [ ] Evidencia stale no satisface un gate.
+- [ ] Manifest y lockfile cambian como unidad coherente.
+- [ ] Versiones `@vento/*` adoptadas son exactas.
+- [ ] Instalación bloqueada es reproducible.
+- [ ] Se ejecutan pruebas propias del package.
+- [ ] Se ejecuta la matriz de compatibilidad aplicable.
+- [ ] Se ejecuta la línea base específica del consumidor.
+- [ ] Se ejecuta lint/análisis aplicable del consumidor.
+- [ ] Se ejecuta typecheck aplicable del consumidor.
+- [ ] Se ejecuta build/export del consumidor real.
+- [ ] Se ejecutan pruebas automatizadas aplicables del consumidor.
+- [ ] Los perfiles especializados se conservan.
+- [ ] Los requisitos afectados se declaran y validan.
+- [ ] `NOT_APPLICABLE` no satisface un gate universal.
+- [ ] No se convierten `FAIL`, `BLOCKED`, `CANCELLED`, `TIMED_OUT` o `STALE` en `PASS`.
+- [ ] Compatibilidad incluye tipos, comportamiento, catálogos, contexto y autorización cuando correspondan.
+- [ ] Un build de otro repositorio no certifica al consumidor actual.
+- [ ] Un target de otro renderer no certifica al target actual.
+- [ ] ANIMA se valida con su runtime cuando sea consumidor declarado.
+- [ ] Expo Web no se equipara automáticamente con `@vento/ui-web`.
+- [ ] Un patch no omite pruebas por ser patch.
+- [ ] Un minor no introduce ruptura no declarada.
+- [ ] Un major exige guía e impacto completo.
+- [ ] Una actualización de seguridad conserva controles.
+- [ ] Una deprecación no retira consumidores activos silenciosamente.
+- [ ] Una actualización multi-package contiene el conjunto mínimo cerrado.
+- [ ] No existe lockstep artificial entre packages sin cambio.
+- [ ] Un consumidor puede permanecer en una versión soportada anterior.
+- [ ] Un merge en un consumidor no obliga al merge de otro.
+- [ ] Un deploy en un consumidor no obliga al deploy simultáneo de otro.
+- [ ] Una dependencia de simultaneidad no probada bloquea la certificación.
+- [ ] Merge, deploy y adopción permanecen estados distintos.
+- [ ] La automatización no autoaprueba, automergea ni autodespliega.
+- [ ] La automatización no modifica Supabase desde consumidores.
+- [ ] Un fallo preexistente permanece visible y atribuible.
+- [ ] La falla de un consumidor no contamina expedientes de otro.
+- [ ] `AUTH-QA-028` conserva la ejecución integral de rollback.
+- [ ] Requisitos creados = 0.
+- [ ] Requisitos modificados = 0.
+- [ ] No se entrega ni modifica 04A.
+- [ ] Las cinco clases de evidencia están presentes.
+- [ ] Ninguna validación pendiente se presenta como ejecutada.
+
+---
+
+#### 56. Límites
+
+Esta tarea no:
+
+- publica un package real;
+- crea una nueva familia `@vento/*`;
+- cambia SemVer de una release;
+- modifica tags o releases existentes;
+- modifica manifests o lockfiles reales de consumidores;
+- abre ramas o pull requests reales;
+- fusiona pull requests;
+- despliega aplicaciones;
+- declara consumidores `ADOPTED`;
+- crea o modifica migraciones Supabase;
+- ejecuta DDL o DML;
+- modifica RLS, RPC, grants, Storage, Realtime o Edge Functions;
+- cambia secretos o credenciales;
+- retira superficies deprecadas;
+- ejecuta rollback;
+- certifica auditoría transversal de `AUTH-QA-029`;
+- ejecuta la regresión completa de `AUTH-QA-030`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 57. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-026 — Cola offline de ANIMA se revalida`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-027 — Actualización de paquete no rompe otros repositorios`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-028 — Rollback funciona por aplicación`
 ### [ ] AUTH-QA-028 — Rollback funciona por aplicación
 ### [ ] AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
 ### [ ] AUTH-QA-030 — Ejecutar prueba de regresión completa
