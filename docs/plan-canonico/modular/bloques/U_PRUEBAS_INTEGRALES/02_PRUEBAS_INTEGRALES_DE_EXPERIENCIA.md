@@ -32262,7 +32262,1685 @@ No transfiere ownership ORIGO a PULSO ni convierte etapas de compra en etapas de
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-027 — Probar PULSO por punto operativo`
-### [ ] UX-QA-027 — Probar PULSO por punto operativo
+### ✅ UX-QA-027 — Probar PULSO por punto operativo
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-026 — Probar ORIGO por etapa de compra
+**Tarea siguiente:** UX-QA-028 — Probar NUMERA por alcance financiero
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de PULSO por punto operativo, demostrando por package y globalmente que caja, salón, barra, cocina y mostrador permiten ejecutar las intenciones comerciales aplicables con actor efectivo, autoridad, territorio, estación, dispositivo, ergonomía, recuperación, idempotencia y handoffs correctos, consumiendo `UX-QA-020`, `UX-QA-026`, `PULSO-AUTH-001..016`, `PULSO-UX-001..021`, el universo canónico de veinte superficies PULSO, los procesos y fronteras vigentes y la cobertura de prueba existente sin reabrir contratos empresariales ya aprobados
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de PULSO por punto operativo definido; las ejecuciones `UX-QA-027::<package_id>` y `UX-QA-027::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física y humana aplicable del piloto sin ejecutar ventas, pagos, caja, salón, preparación, loyalty, inventario, hechos económicos, dispositivos, Supabase, packages, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, navegación, procesos, ventas, pedidos, pagos, cajas, mesas, loyalty, inventario, datos, Supabase, migraciones, RLS, RPC, Realtime, Storage, secretos, packages, periféricos, ambientes, despliegues ni cuentas de prueba
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que PULSO funciona correctamente en cada punto operativo material del piloto sin convertir la mera existencia de una ruta, una estación, un rol nominal, un dispositivo o una señal visual en evidencia suficiente de operación correcta.
+
+La certificación deberá responder, para cada escenario aplicable:
+
+```text
+¿QUÉ PUNTO OPERATIVO ESTÁ SIENDO PROBADO?
+¿QUÉ ACTOR HUMANO EFECTIVO EJECUTA LA ACCIÓN?
+¿QUÉ ESTACIÓN Y DISPOSITIVO INTERVIENEN?
+¿QUÉ PROCESO Y SUPERFICIE CANÓNICA SON PROPIETARIOS?
+¿QUÉ AUTORIDAD, TERRITORIO, RECURSO Y ESTADO SON APLICABLES?
+¿QUÉ RESULTADO EMPRESARIAL SE ESPERA?
+¿QUÉ EFECTOS PERTENECEN A PULSO Y CUÁLES A OTROS OWNERS?
+¿EL DOBLE TOQUE, RETRY O TIMEOUT DUPLICAN EFECTOS?
+¿EL CAMBIO DE ACTOR LIMPIA CONTEXTO Y AUTORIDAD?
+¿LA PERSONA ENTIENDE ESTADO, SIGUIENTE ACCIÓN Y RECUPERACIÓN?
+¿LOS PERIFÉRICOS Y CONDICIONES FÍSICAS SON USABLES CUANDO APLICAN?
+¿LOS HALLAZGOS TIENEN OWNER Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+PUNTO OPERATIVO
++
+ACTOR EFECTIVO
++
+AUTORIDAD EXPLÍCITA
++
+SEDE / RECURSO / ESTADO
++
+ESTACIÓN / DISPOSITIVO COMPATIBLES
++
+PROCESO Y SUPERFICIE CORRECTOS
++
+RESULTADO EMPRESARIAL OBSERVADO
++
+IDEMPOTENCIA / RECUPERACIÓN
++
+EVIDENCIA HUMANA Y TÉCNICA SUFICIENTE
+=
+PUNTO OPERATIVO CERTIFICABLE
+```
+
+No es válido:
+
+```text
+ESTACIÓN CORRECTA
+=
+AUTORIDAD
+```
+
+ni:
+
+```text
+PANTALLA VISIBLE
+=
+FLUJO CERTIFICADO
+```
+
+ni:
+
+```text
+CAMBIO VISUAL DE ESTADO
+=
+EFECTO EMPRESARIAL CONFIRMADO
+```
+
+---
+
+#### 2. Handoff recibido de `UX-QA-026`
+
+`UX-QA-026` entrega únicamente continuidad transversal del BLOQUE U:
+
+- contrato común `UX-QA-020`;
+- identidad de certificación por package;
+- disciplina de evidencia sobre el mismo candidato y alcance;
+- tratamiento de findings, corrección y reprueba;
+- criterio de PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- separación entre runtime parcial y certificación.
+
+No transfiere ownership ORIGO a PULSO ni convierte etapas de compra en etapas de venta.
+
+---
+
+#### 3. Contrato común heredado de `UX-QA-020`
+
+Esta tarea consume sin redefinir:
+
+- usuario real compatible con el escenario;
+- tamaño de muestra proporcional y no inventado;
+- duración derivada del piloto real y no inventada;
+- matriz de aplicabilidad por package;
+- escenario nominal, error, bloqueo, recuperación y conectividad cuando apliquen;
+- observación de ergonomía y dispositivo cuando el riesgo sea material;
+- control de relevo, dispositivo compartido y cambio de actor;
+- conservación de fuente de verdad;
+- observación de idempotencia y fallo parcial;
+- privacidad y minimización de evidencia;
+- registro de ayuda, capacitación y fricción;
+- findings con owner y condición de salida;
+- evidencia nueva después de una corrección;
+- prohibición de `PASS CON PENDIENTES` cuando exista un bloqueo material.
+
+---
+
+#### 4. Naturaleza y topología
+
+La topología aplicable es:
+
+```text
+mode = PER_PACKAGE_AND_GLOBAL_FINAL
+execution_gate = POST_E5_PACKAGE
+```
+
+Identidades físicas futuras:
+
+```text
+UX-QA-027::<package_id>
+UX-QA-027::GLOBAL-FINAL
+```
+
+Consecuencias:
+
+1. el marcador define una sola vez el contrato documental;
+2. cada `package_id` aplicable conserva su propia ejecución;
+3. ninguna ejecución física ocurre antes de `E5-GATE-008::<package_id> = PASS`;
+4. `GLOBAL-FINAL` agrega resultados después de cerrar packages aplicables;
+5. un PASS de un package no certifica otro package;
+6. esta tarea documental no crea ni ejecuta instancias físicas.
+
+---
+
+#### 5. Entrada obligatoria de `PULSO-UX-019`
+
+`PULSO-UX-019` cerró la validación documental del prototipo con:
+
+```text
+PULSO-UX-019 = PASS_WITH_CARRYOVER
+```
+
+Ese resultado significa coherencia documental, no certificación productiva.
+
+El carryover hacia esta tarea exige evidencia humana y física sobre:
+
+- caja;
+- salón;
+- barra;
+- cocina;
+- mostrador;
+- actor efectivo;
+- cambio de actor A→B;
+- interacción táctil;
+- guantes, humedad y ruido cuando apliquen;
+- tiempos reales cuando exista objetivo canónico;
+- periféricos desplegados;
+- fallos y recuperación;
+- concurrencia real;
+- idempotencia observable.
+
+---
+
+#### 6. Entrada obligatoria de `PULSO-UX-021`
+
+`PULSO-UX-021` congeló la arquitectura funcional y técnica objetivo de PULSO y preservó este piloto como prueba humana/física posterior.
+
+Esta certificación debe probar el sistema materializado contra contratos canónicos y no contra el prototipo histórico de `vento-platform`.
+
+Regla:
+
+```text
+RUNTIME AS-IS
+!=
+CONTRATO OBJETIVO
+```
+
+La existencia histórica de una tabla, componente, acción o flujo no constituye criterio de PASS.
+
+---
+
+#### 7. Entrada de autorización `PULSO-AUTH-016`
+
+`PULSO-AUTH-016` conserva la certificación de autorización por unidad física y establece que:
+
+- la baseline CI010 no sustituye la certificación empresarial;
+- allow y deny deben ser demostrados;
+- `site_id` no amplía territorio;
+- actor, principal técnico y dispositivo permanecen separados;
+- caja, pagos, loyalty, salón, importaciones y mutaciones sensibles requieren autoridad propietaria;
+- retry, concurrencia y resultado desconocido deben permanecer seguros;
+- PULSO, PASS, NEXO y NUMERA conservan ownership diferenciado.
+
+`UX-QA-027` consume esas decisiones como precondición de experiencia; no redefine PermissionKeys, grants o RLS.
+
+---
+
+#### 8. Candidato y alcance
+
+Toda evidencia utilizada por una instancia debe pertenecer a la misma combinación material de:
+
+```text
+package_id
+candidate_ref
+environment
+authorized_scope_ref
+pilot_evidence_ref
+pulso_build_or_commit
+backend_identity
+permission_contract_identity
+site_or_point_scope
+device_or_station_scope
+integration_versions
+```
+
+Cambios materiales en flujo, permisos, superficies, configuración, feature flags, dispositivo, integración o recuperación invalidan la evidencia afectada hasta reprueba.
+
+---
+
+#### 9. Universo obligatorio de cinco puntos operativos
+
+La certificación conserva exactamente los cinco puntos definidos por `PULSO-UX-019`:
+
+| Punto | Rol representativo | Arquetipo principal | Propósito dominante |
+| --- | --- | --- | --- |
+| caja | `cajero_satelite` | `SERVICE_CHECKOUT` | venta, cobro, caja y cliente |
+| salón | `servicio_salon` | `SERVICE_CHECKOUT + MOBILE` | mesa, servicio, pedido y cuenta |
+| barra | `barista_satelite` | `KITCHEN_PREP` | cola, preparación y cambio de estado |
+| cocina | `cocinero_satelite` | `KITCHEN_PREP` | preparación, prioridad y cumplimiento |
+| mostrador | `mostrador_satelite` | `SERVICE_CHECKOUT / KITCHEN_PREP` | venta, alistamiento, handoff y entrega |
+
+Estos roles describen población representativa. No conceden autoridad por sí mismos.
+
+---
+
+#### 10. Punto operativo no equivale a permiso
+
+En los cinco puntos se conserva:
+
+```text
+ROL
++
+PUNTO
++
+ESTACIÓN
++
+UBICACIÓN
+!=
+AUTORIDAD
+```
+
+La prueba debe demostrar que el sistema revalida la autoridad propietaria antes del efecto y falla cerrado cuando falta una condición material.
+
+---
+
+#### 11. Universo de veinte superficies canónicas PULSO
+
+La arquitectura vigente conserva exactamente:
+
+```text
+VSCREEN-0080..VSCREEN-0093
+VSCREEN-0147..VSCREEN-0152
+```
+
+Total:
+
+```text
+20
+```
+
+La existencia de seis rutas AS-IS no reduce ni fusiona este universo.
+
+---
+
+#### 12. Inventario nominal de superficies
+
+La certificación reconoce:
+
+1. `VSCREEN-0080` — Inicio POS;
+2. `VSCREEN-0081` — Creación de venta o pedido;
+3. `VSCREEN-0082` — Mapa de salón y mesas;
+4. `VSCREEN-0083` — Detalle y modificación de pedido;
+5. `VSCREEN-0084` — Cobro y medios de pago;
+6. `VSCREEN-0085` — Identificación de cliente y acumulación;
+7. `VSCREEN-0086` — Redención de puntos o beneficios;
+8. `VSCREEN-0087` — Bandeja de pedidos de canales externos;
+9. `VSCREEN-0088` — Seguimiento de preparación y entrega;
+10. `VSCREEN-0089` — Apertura de caja;
+11. `VSCREEN-0090` — Cierre de caja;
+12. `VSCREEN-0091` — Anulación, devolución y reembolso;
+13. `VSCREEN-0092` — Oferta, menú, precio comercial y disponibilidad;
+14. `VSCREEN-0093` — Revisión de ventas, caja y terminales;
+15. `VSCREEN-0147` — Oportunidades y cotizaciones de catering o B2B;
+16. `VSCREEN-0148` — Ejecución de catering o venta B2B;
+17. `VSCREEN-0149` — Operación de reservas y eventos;
+18. `VSCREEN-0150` — Casos de reclamo y compensación;
+19. `VSCREEN-0151` — Coordinación de entrega mediante tercero;
+20. `VSCREEN-0152` — Análisis de satisfacción y servicio.
+
+No todas las superficies son obligatorias en cada package o punto. Toda no aplicabilidad debe justificarse.
+
+---
+
+#### 13. Universo AS-IS de rutas PULSO
+
+El runtime remoto verificado conserva exactamente:
+
+| ID | Ruta | Clasificación |
+| --- | --- | --- |
+| `PULSO-ROUTE-001` | `/` | vista de negocio / scanner |
+| `PULSO-ROUTE-002` | `/no-access` | estado de denegación |
+| `PULSO-ROUTE-003` | `/orders` | pedidos y operación |
+| `PULSO-ROUTE-004` | `/sales-imports` | importación administrativa |
+| `PULSO-ROUTE-005` | `/salon` | salón |
+| `PULSO-ROUTE-006` | `/scanner` | vista de negocio / scanner |
+
+Cardinalidad AS-IS:
+
+```text
+PAGE_ROUTES = 6
+BUSINESS_ROUTES = 5
+DENY_ROUTES = 1
+DYNAMIC_ROUTES = 0
+ROUTE_HANDLERS = 0
+```
+
+---
+
+#### 14. Seis rutas no equivalen a veinte superficies
+
+La certificación prohíbe inferir:
+
+```text
+6 RUTAS AS-IS
+=
+20 PANTALLAS CANÓNICAS
+```
+
+Una ruta puede materializar varias responsabilidades, una parte de una superficie o un estado técnico.
+
+El package deberá declarar qué superficies canónicas materializa y qué rutas/componentes físicos las implementan.
+
+---
+
+#### 15. Universo de procesos comerciales relacionados
+
+La certificación puede consumir, según alcance, los procesos:
+
+- `VPROC-0017` — oferta comercial publicada;
+- `VPROC-0038` — servicio en mesa;
+- `VPROC-0039` — venta de mostrador o para llevar;
+- `VPROC-0040` — pedidos de canales externos;
+- `VPROC-0041` — catering o venta B2B;
+- `VPROC-0042` — modificación, cancelación, anulación y devolución;
+- `VPROC-0043` — pago;
+- `VPROC-0044` — caja;
+- `VPROC-0045` — fidelización, propiedad de PASS con ejecución contextual desde PULSO;
+- `VPROC-0046` — reclamos y compensación;
+- `VPROC-0047` — reservas y eventos;
+- `VPROC-0050` — entrega mediante tercero;
+- `VPROC-0068` — satisfacción y servicio.
+
+No se exige que cada package materialice todos estos procesos.
+
+---
+
+#### 16. Ownership de procesos
+
+PULSO conserva los hechos comerciales, servicio, pedido, pago, caja, reclamo y resultado comercial que le pertenecen.
+
+PASS conserva identidad, consentimiento, ledger, saldo, reglas y beneficios de fidelización.
+
+NEXO conserva movimientos físicos de inventario y custodia.
+
+FOGO conserva receta y producción propietaria.
+
+NUMERA conserva hechos económicos y conciliación financiera.
+
+Regla:
+
+```text
+INTEGRACIÓN
+!=
+TRANSFERENCIA DE OWNERSHIP
+```
+
+---
+
+#### 17. Matriz de aplicabilidad por package
+
+Cada instancia deberá relacionar, como mínimo:
+
+```text
+PACKAGE
+× PUNTO OPERATIVO
+× ACTOR / COHORTE
+× PROCESO
+× SUPERFICIE
+× DISPOSITIVO / ESTACIÓN
+× CONDICIÓN AMBIENTAL
+× ESCENARIO
+× RESULTADO ESPERADO
+× RESULTADO OBSERVADO
+× EVIDENCIA
+× FINDING
+```
+
+Un cruce material no puede desaparecer por no estar implementado en una ruta AS-IS.
+
+---
+
+#### 18. Selección de escenarios
+
+Los escenarios se derivan de:
+
+- alcance del package;
+- `DELIV-PKG-016`;
+- contratos PULSO-AUTH y PULSO-UX aplicables;
+- veinte superficies canónicas;
+- riesgos de caja, pago, pedido, salón, preparación, loyalty e integración;
+- hallazgos de readiness;
+- `UX-QA-001..019`;
+- dispositivos y periféricos reales;
+- condiciones de conectividad y operación.
+
+No se seleccionan únicamente casos felices.
+
+---
+
+#### 19. Caja — alcance mínimo
+
+Cuando el package incluya caja, la prueba deberá considerar:
+
+- entrada compatible mediante `VSCREEN-0080`;
+- creación de venta/pedido mediante `VSCREEN-0081` cuando aplique;
+- cobro mediante `VSCREEN-0084`;
+- identificación/acumulación y redención mediante `VSCREEN-0085/0086` cuando sean elegibles;
+- apertura de caja mediante `VSCREEN-0089`;
+- cierre mediante `VSCREEN-0090`;
+- acciones sensibles mediante `VSCREEN-0091`;
+- revisión mediante `VSCREEN-0093` cuando corresponda a supervisión.
+
+Caja no hereda refund, cierre forzado, loyalty o anulación por el solo hecho de ser caja.
+
+---
+
+#### 20. Caja — escenario nominal
+
+El escenario nominal deberá demostrar, según alcance:
+
+```text
+ACTOR Y SEDE VÁLIDOS
+→ CAJA ABIERTA CUANDO ES PRERREQUISITO
+→ VENTA / CUENTA ELEGIBLE
+→ COBRO
+→ RESULTADO AUTORITATIVO
+→ SOPORTE / ESTADO CONCILIABLE
+→ CONTINUIDAD
+```
+
+Un cambio visual de pantalla no demuestra pago.
+
+---
+
+#### 21. Caja — apertura
+
+La apertura debe conservar:
+
+- responsable;
+- sede;
+- terminal;
+- fondo cuando aplique;
+- actor efectivo;
+- autoridad exacta;
+- resultado confirmado.
+
+Entrar a PULSO o crear una venta no abre caja implícitamente.
+
+---
+
+#### 22. Caja — cierre
+
+El cierre debe permitir comprender y conciliar:
+
+- ventas;
+- pagos;
+- efectivo;
+- soportes;
+- diferencias;
+- pendientes;
+- decisión final.
+
+Una diferencia no desaparece para producir un cierre visual limpio.
+
+---
+
+#### 23. Caja — pago simple
+
+El participante debe reconocer:
+
+- qué se cobra;
+- importe;
+- medio;
+- estado pendiente/confirmado/fallido/desconocido;
+- siguiente acción.
+
+Un timeout no se convierte automáticamente en fallo definitivo.
+
+---
+
+#### 24. Caja — pagos parciales y combinados
+
+Cuando estén en alcance, la prueba debe comprobar que:
+
+- cada componente conserva importe, medio, referencia y estado;
+- el saldo pendiente es comprensible;
+- retry de un componente no repite los demás;
+- un pago parcial no cierra la cuenta por inferencia.
+
+---
+
+#### 25. Caja — efectivo
+
+Cuando aplique efectivo se observará:
+
+- importe recibido;
+- cambio;
+- relación con sesión de caja;
+- actor;
+- movimiento auditable;
+- conciliación posterior.
+
+Efectivo recibido no equivale a cierre de caja.
+
+---
+
+#### 26. Caja — acciones sensibles
+
+Debe conservarse:
+
+```text
+CANCELACIÓN
+!=
+VOID
+!=
+DEVOLUCIÓN
+!=
+REFUND
+!=
+REAPERTURA
+```
+
+La persona debe identificar cuál acción ejecuta, por qué y qué efectos posteriores produce.
+
+---
+
+#### 27. Salón — alcance mínimo
+
+Cuando el package incluya salón se observará:
+
+- `VSCREEN-0080` como entrada compatible;
+- `VSCREEN-0082` para mesa y servicio;
+- `VSCREEN-0083` para modificación gobernada;
+- `VSCREEN-0084` como handoff de cobro cuando corresponda;
+- `VSCREEN-0088` para seguimiento;
+- `VSCREEN-0149` cuando reservas/eventos afecten el flujo.
+
+Mesa, sesión, pedido, cuenta y pago permanecen identidades distintas.
+
+---
+
+#### 28. Salón — mesa y sesión
+
+La prueba debe demostrar aislamiento por sede y claridad sobre:
+
+- mesa disponible/ocupada;
+- sesión actual;
+- pedido asociado;
+- actor de servicio;
+- llamadas o pendientes;
+- estado de preparación;
+- cobro pendiente o completado.
+
+Ver una mesa no concede autoridad para modificarla o cerrarla.
+
+---
+
+#### 29. Salón — modificación de pedido
+
+Modificar un pedido requiere estado y autoridad vigentes.
+
+La persona debe poder distinguir:
+
+- adición;
+- sustitución;
+- corrección;
+- cancelación;
+- cambio que exige compensación posterior.
+
+No se sobrescribe silenciosamente la historia material.
+
+---
+
+#### 30. Salón — concurrencia
+
+La prueba representativa deberá cubrir cuando aplique:
+
+- dos actores observando la misma mesa;
+- cambio remoto de estado;
+- actualización Realtime;
+- conflicto de versión;
+- reasignación o relevo.
+
+La versión anterior no debe sobrescribir un estado posterior.
+
+---
+
+#### 31. Barra — alcance mínimo
+
+Barra usa principalmente el arquetipo `KITCHEN_PREP`.
+
+Debe demostrar:
+
+- cola visible;
+- pedido/revisión de origen;
+- preparación requerida;
+- prioridad;
+- estado actual;
+- siguiente acción;
+- excepción o bloqueo;
+- handoff posterior.
+
+No crea autoridad comercial por estar físicamente en barra.
+
+---
+
+#### 32. Barra — condiciones ambientales
+
+Cuando sean representativas se probarán:
+
+- manos húmedas;
+- guantes;
+- ruido;
+- densidad de cola;
+- visibilidad;
+- distancia de lectura;
+- fallback de señalización o impresión.
+
+La eficacia física no se certifica desde un viewport de escritorio.
+
+---
+
+#### 33. Barra — acción repetitiva
+
+Las acciones recurrentes deben conservar:
+
+- target táctil adecuado;
+- separación suficiente;
+- feedback perceptible;
+- protección frente a doble toque;
+- estado in-flight visible;
+- cero duplicación de efecto.
+
+---
+
+#### 34. Cocina — alcance mínimo
+
+Cocina usa `KITCHEN_PREP` para preparación derivada de pedidos PULSO aplicables.
+
+Debe conservar:
+
+- cola;
+- prioridad;
+- origen del pedido;
+- estado;
+- siguiente acción;
+- bloqueo;
+- transición autorizada;
+- handoff al servicio o entrega.
+
+Preparado no equivale automáticamente a entregado.
+
+---
+
+#### 35. Cocina — legibilidad
+
+Se observará cuando aplique:
+
+- lectura a distancia operativa;
+- tamaño y contraste suficientes;
+- identificación inequívoca del pedido;
+- cantidades/modificadores comprensibles;
+- estado no dependiente solo de color;
+- persistencia de información crítica con calor, humedad o ruido.
+
+---
+
+#### 36. Cocina — transición de estado
+
+La persona no debe poder marcar una etapa posterior sin satisfacer el estado previo y la autoridad aplicable.
+
+Una comanda impresa o señal sonora no constituye por sí sola un estado autoritativo.
+
+---
+
+#### 37. Mostrador — alcance mínimo
+
+Mostrador debe cubrir, según package:
+
+- `VSCREEN-0080`;
+- `VSCREEN-0081`;
+- `VSCREEN-0084` cuando exista cobro autorizado;
+- `VSCREEN-0087` para pedidos externos cuando aplique;
+- `VSCREEN-0088` para seguimiento y handoff;
+- `VSCREEN-0151` cuando exista entrega mediante tercero.
+
+Mostrador no hereda salón, caja, barra o cocina por proximidad física.
+
+---
+
+#### 38. Mostrador — pedido para llevar
+
+La prueba deberá mantener correlacionados:
+
+- pedido;
+- preparación;
+- identidad o referencia de entrega cuando corresponda;
+- cobro;
+- handoff;
+- resultado final.
+
+Pagar no equivale a entregar y entregar no equivale a pagar.
+
+---
+
+#### 39. Mostrador — canales externos
+
+Cuando el package incluya `VPROC-0040`, se observará que el canal externo:
+
+- no escribe estados internos por autoridad propia;
+- no duplica el pedido;
+- conserva identidad externa;
+- se deduplica;
+- entra al flujo interno con resultado reconocible;
+- conserva fallo o conciliación cuando el resultado es incierto.
+
+---
+
+#### 40. Arquetipo `SERVICE_CHECKOUT`
+
+La certificación espera, según punto:
+
+- actor efectivo visible;
+- sede/punto resueltos;
+- una acción primaria;
+- estados comprensibles;
+- confirmación reforzada solo cuando corresponda;
+- recuperación sin duplicación;
+- limpieza al cambiar actor.
+
+---
+
+#### 41. Arquetipo `KITCHEN_PREP`
+
+La certificación espera:
+
+- cola legible;
+- prioridad visible;
+- siguiente acción inequívoca;
+- controles adecuados para repetición;
+- feedback suficiente;
+- protección frente a concurrencia;
+- ausencia de autoridad comercial implícita.
+
+---
+
+#### 42. Inicio POS compartido
+
+`VSCREEN-0080` conserva una identidad compartida.
+
+No se crea un home distinto por cada punto.
+
+La composición puede variar por actor, autorización, estación, trabajo y estado sin cambiar la identidad canónica.
+
+---
+
+#### 43. Actor efectivo
+
+Toda acción humana sensible debe diferenciar:
+
+```text
+PRINCIPAL TÉCNICO
+ACTOR HUMANO EFECTIVO
+DISPOSITIVO
+ESTACIÓN
+SEDE
+```
+
+La evidencia debe atribuir el efecto al actor correcto sin depender del último usuario conocido.
+
+---
+
+#### 44. Cambio de actor A→B
+
+Cuando una estación cambia de actor:
+
+- la autoridad de A deja de gobernar acciones nuevas;
+- datos sensibles de A se limpian;
+- B no confirma trabajo de A salvo contrato explícito;
+- el efecto ya emitido conserva autoría original;
+- el foco se recalcula;
+- no se heredan permisos desde caché.
+
+---
+
+#### 45. Estación sin actor
+
+Una estación compartida sin actor efectivo debe fallar cerrada para acciones actor-bound.
+
+Puede mostrar contexto mínimo seguro, pero no ejecutar por inferencia desde dispositivo, rol del equipo o sesión anterior.
+
+---
+
+#### 46. Territorio y sede
+
+Se debe probar, según alcance:
+
+- sede correcta + recurso correcto;
+- sede correcta + recurso de otra sede;
+- `site_id` manipulado;
+- cambio de contexto entre evaluación y commit;
+- dispositivo con límite más estrecho que el actor;
+- supervisor con cobertura parcial.
+
+Regla:
+
+```text
+REQUESTED_SITE
+!=
+EFFECTIVE_SITE
+```
+
+---
+
+#### 47. Acción primaria única
+
+Cada estado interactivo debe permitir identificar una acción principal clara cuando exista trabajo ejecutable.
+
+No se acepta que varias acciones críticas compitan visualmente ni que una actualización mueva una acción destructiva bajo el dedo durante la interacción.
+
+---
+
+#### 48. Interacción táctil
+
+Para acciones recurrentes nuevas se conserva como preferencia PULSO el piso de:
+
+```text
+48 x 48 CSS px
+```
+
+La prueba física debe evaluar el dispositivo real y no solo la métrica CSS.
+
+---
+
+#### 49. Separación de controles
+
+Las acciones destructivas o sensibles deben quedar suficientemente diferenciadas de acciones repetitivas.
+
+Guantes, humedad, movilidad y densidad pueden exigir separación mayor.
+
+---
+
+#### 50. Teclado, foco y entrada
+
+Cuando existan campos numéricos o textuales se observará:
+
+- foco correcto;
+- foco visible;
+- teclado virtual sin cubrir información crítica;
+- cerrar teclado no confirma;
+- reapertura no duplica valor;
+- orden lógico con teclado físico;
+- ausencia de trampas de foco.
+
+---
+
+#### 51. Accesibilidad
+
+Estados, acciones y errores críticos no dependen únicamente de:
+
+- color;
+- icono;
+- posición;
+- animación;
+- sonido.
+
+La automatización de accesibilidad apoya, pero no sustituye una observación manual cuando el contrato la exige.
+
+---
+
+#### 52. Scanner
+
+Cuando aplique scanner se probará:
+
+- lectura válida;
+- lectura inválida;
+- lectura repetida;
+- recurso distinto;
+- procesamiento pendiente;
+- resultado previo recuperado;
+- actor y sede vigentes.
+
+Dos lecturas del mismo evento no crean dos intenciones empresariales.
+
+---
+
+#### 53. Doble toque
+
+Mientras una mutación esté in-flight:
+
+- un segundo toque no crea otra intención;
+- la identidad idempotente permanece estable;
+- la UI comunica pendiente;
+- deshabilitar visualmente no sustituye deduplicación de servidor.
+
+---
+
+#### 54. Realtime durante interacción
+
+Si cambia el estado remoto:
+
+- se revalida antes del commit;
+- la persona comprende que cambió la base;
+- una versión antigua no sobrescribe una posterior;
+- éxito y conflicto permanecen diferenciados.
+
+---
+
+#### 55. Conectividad degradada
+
+Cuando el contrato lo soporte, la persona debe poder distinguir:
+
+```text
+ONLINE
+DEGRADADO
+SOLO LECTURA
+CAPTURA LOCAL PERMITIDA
+SINCRONIZACIÓN PENDIENTE
+CONFLICTO
+RESULTADO DESCONOCIDO
+```
+
+No existe un modo offline universal para PULSO.
+
+---
+
+#### 56. Resultado desconocido
+
+Ante timeout o pérdida de confirmación después de una posible mutación:
+
+```text
+UNKNOWN_OUTCOME
+→ CONSULTAR / RECONCILIAR
+→ NO REEJECUTAR A CIEGAS
+```
+
+La interfaz no debe inducir a crear un segundo efecto para “asegurarse”.
+
+---
+
+#### 57. Periféricos
+
+Impresora, KDS, scanner, cámara, datáfono, cajón y señalización se tratan como capacidades.
+
+Un periférico:
+
+- no concede permiso;
+- no define owner;
+- no confirma por sí mismo un hecho empresarial;
+- debe tener estado y fallback cuando su disponibilidad sea material.
+
+---
+
+#### 58. Falla de periférico
+
+Cuando la operación dependa materialmente del periférico, el piloto deberá demostrar:
+
+- detección del fallo;
+- estado comprensible;
+- fallback permitido;
+- ausencia de duplicación;
+- recuperación posterior;
+- continuidad sin inventar confirmaciones.
+
+---
+
+#### 59. Identificación de cliente
+
+La identificación desde PULSO debe conservar proyección mínima y autoridad exacta.
+
+Cliente identificado no implica acumulación, redención ni acceso a datos innecesarios.
+
+---
+
+#### 60. Acumulación de puntos
+
+Cuando sea elegible se observará que:
+
+- venta y cliente correctos están correlacionados;
+- el actor está autorizado;
+- la intención es estable;
+- retry no duplica ledger o saldo;
+- PASS conserva ownership;
+- PULSO no presenta éxito antes del resultado propietario.
+
+---
+
+#### 61. Redención
+
+La prueba deberá incluir, cuando aplique:
+
+- redención válida;
+- usada;
+- cancelada;
+- vencida;
+- inválida;
+- otra sede o cliente cuando sea material;
+- intento concurrente;
+- respuesta incierta.
+
+Un lookup preliminar no autoriza el efecto.
+
+---
+
+#### 62. Loyalty independiente del cobro
+
+Se conserva:
+
+```text
+VENTA
+!=
+PAGO
+!=
+ACUMULACIÓN
+!=
+REDENCIÓN
+```
+
+Una falla de loyalty no debe convertir automáticamente una venta válida en inexistente, salvo contrato explícito del escenario.
+
+---
+
+#### 63. Inventario y NEXO
+
+Una venta o pedido PULSO puede producir un efecto hacia NEXO, pero PULSO no mantiene un ledger físico paralelo.
+
+Se observará:
+
+- identidad causal;
+- cantidades;
+- UOM/presentación cuando corresponda;
+- resultado NEXO;
+- retry;
+- conflicto;
+- compensación o reconciliación.
+
+---
+
+#### 64. Stock insuficiente
+
+La experiencia no debe inventar disponibilidad cuando NEXO o el contrato propietario la niega.
+
+La persona debe entender qué quedó preservado y cuál es la siguiente acción permitida.
+
+---
+
+#### 65. NUMERA
+
+La venta, pago o cierre puede producir hechos hacia NUMERA.
+
+PULSO conserva el hecho comercial y NUMERA el hecho económico/conciliación aplicable.
+
+Regla:
+
+```text
+VENTA
+!=
+HECHO ECONÓMICO
+!=
+OBLIGACIÓN
+!=
+PAGO CONTABLE
+```
+
+---
+
+#### 66. PASS
+
+PULSO puede ejecutar acumulación o redención dentro de una venta autorizada, pero PASS conserva:
+
+- identidad;
+- consentimiento;
+- ledger;
+- saldo;
+- regla;
+- reward;
+- resultado propietario.
+
+No se acepta saldo paralelo en PULSO.
+
+---
+
+#### 67. FOGO
+
+Cuando preparación dependa de FOGO, PULSO no se apropia de receta, rendimiento o ejecución productiva.
+
+El piloto comprueba que el handoff preserva el pedido y el estado necesario sin duplicar el proceso productivo.
+
+---
+
+#### 68. Pedidos externos
+
+Los canales externos se tratan como fuentes o ejecutores bajo contrato, no como autoridad sobre el estado interno.
+
+La prueba debe observar deduplicación, mapeo, aceptación, seguimiento y recuperación cuando sean materiales al package.
+
+---
+
+#### 69. Delivery mediante tercero
+
+Cuando aplique `VSCREEN-0151` / `VPROC-0050`, PULSO conserva promesa, seguimiento, prueba y cierre comercial.
+
+El tercero no obtiene acceso persistente ni gobierna el pedido interno por su sola integración.
+
+---
+
+#### 70. Reclamos y compensación
+
+Cuando `VSCREEN-0150` sea parte del alcance, se deben distinguir:
+
+- reclamo;
+- devolución;
+- refund;
+- producto de reemplazo;
+- descuento;
+- cortesía;
+- puntos;
+- cierre del caso.
+
+Una puntuación negativa no crea un reclamo automáticamente.
+
+---
+
+#### 71. Reservas y eventos
+
+Cuando `VSCREEN-0149` sea aplicable, la prueba preservará:
+
+- capacidad;
+- confirmación;
+- cambios;
+- asistencia;
+- servicio;
+- comunicaciones;
+- cancelación/no-show cuando correspondan.
+
+Crear una solicitud no compromete cupo por inferencia.
+
+---
+
+#### 72. Catering y B2B
+
+Cuando `VSCREEN-0147/0148` estén en alcance se observarán fronteras entre:
+
+- oportunidad;
+- cotización;
+- capacidad;
+- aprobación;
+- pedido;
+- producción;
+- entrega;
+- facturación;
+- cierre.
+
+Una etapa no acepta automáticamente las demás.
+
+---
+
+#### 73. Oferta comercial
+
+`VSCREEN-0092` debe consumir oferta, disponibilidad, precio y vigencia gobernados sin duplicar el maestro físico.
+
+La prueba deberá impedir que un precio o disponibilidad stale se interprete como confirmación final cuando el contrato exija revalidación.
+
+---
+
+#### 74. Supervisión
+
+`VSCREEN-0093` permite revisar ventas, caja y terminales dentro del alcance autorizado.
+
+Ver no equivale a ejecutar cierre, refund, reapertura, modificación de pedido o cambio de configuración.
+
+---
+
+#### 75. Importaciones
+
+Si el package incluye `/sales-imports`, la prueba deberá conservar separados:
+
+- archivo;
+- hash;
+- mapping;
+- cuarentena;
+- lote;
+- warnings;
+- publicación;
+- efectos de inventario;
+- recuperación.
+
+La importación administrativa no se convierte en operación ordinaria de caja.
+
+---
+
+#### 76. Paridad y legacy
+
+Si el package afecta el tablero legacy, la evidencia deberá demostrar la paridad exigida antes del retiro y cero dependencia runtime no autorizada después del cutover.
+
+Ocultar legacy en navegación no demuestra retiro.
+
+---
+
+#### 77. Escenario nominal por punto
+
+Cada punto aplicable deberá observar al menos una intención principal completa sobre el candidato real.
+
+El participante deberá:
+
+- reconocer qué debe hacer;
+- iniciar correctamente;
+- completar datos necesarios;
+- comprender confirmación/resultado;
+- reconocer el siguiente estado.
+
+---
+
+#### 78. Error y bloqueo por punto
+
+La persona debe poder reconocer:
+
+- qué falló;
+- qué quedó preservado;
+- qué está pendiente;
+- qué no debe repetir;
+- cuál es la siguiente acción segura.
+
+Códigos técnicos no sustituyen explicación operativa.
+
+---
+
+#### 79. Recuperación
+
+Una condición recuperable debe permitir retomar desde el punto permitido sin duplicar efectos confirmados ni exigir diagnóstico de infraestructura al trabajador.
+
+---
+
+#### 80. Evidencia mínima por escenario
+
+Cada escenario ejecutado conservará, según aplicabilidad:
+
+```text
+package_id
+candidate_ref
+environment
+point_or_station
+actor_class
+site_or_scope
+process_id
+surface_ref
+scenario_description
+expected_result
+observed_result
+connectivity_condition
+device_or_peripheral
+help_received
+finding_ref
+evidence_ref
+result
+```
+
+No se almacenan secretos ni datos sensibles innecesarios.
+
+---
+
+#### 81. Evidencia automatizada de apoyo
+
+Puede incluir:
+
+- logs minimizados;
+- receipts;
+- trazas correlacionadas;
+- eventos;
+- auditoría;
+- screenshots permitidos;
+- métricas;
+- estado de integración;
+- evidencia de CI022.
+
+No sustituye al usuario real cuando el criterio es humano.
+
+---
+
+#### 82. Evidencia manual
+
+Puede incluir:
+
+- observación estructurada;
+- checklist de escenario;
+- notas minimizadas;
+- evidencia de hardware sin datos sensibles;
+- referencia a incidente;
+- confirmación del resultado por la fuente propietaria.
+
+---
+
+#### 83. Ayuda y capacitación
+
+La capacitación prevista por el producto es válida.
+
+La ayuda extraordinaria necesaria para completar el escenario se registra como fricción y no se oculta para producir PASS.
+
+---
+
+#### 84. Workarounds
+
+Papel, Excel, chat u otra superficie paralela se registra como finding cuando sustituye una obligación que PULSO pretende gobernar, salvo contingencia explícitamente autorizada.
+
+La costumbre histórica no convierte un workaround en diseño aprobado.
+
+---
+
+#### 85. Hallazgos
+
+Todo finding deberá conservar:
+
+```text
+finding_ref
+package_id
+point_or_station
+scenario
+observed_behavior
+expected_behavior
+impact
+owner
+blocking_or_non_blocking
+exit_condition
+candidate_ref
+```
+
+No queda un hallazgo narrativo sin propietario.
+
+---
+
+#### 86. Hallazgos bloqueantes
+
+Bloquean PASS, entre otros, cuando sean aplicables al alcance:
+
+- acción sensible disponible sin autoridad;
+- cruce de sede o recurso;
+- atribución a actor incorrecto;
+- doble venta, pago, redención, movimiento o efecto;
+- estado incierto presentado como éxito;
+- caja irreconciliable ocultada;
+- preparación o entrega sobre pedido equivocado;
+- exposición sensible material;
+- fuente de verdad competidora;
+- pérdida de trabajo material;
+- dispositivo físicamente inutilizable para la tarea;
+- flujo que exige bypass o manipulación manual peligrosa.
+
+---
+
+#### 87. Corrección y reprueba
+
+Una corrección requiere evidencia nueva sobre el alcance invalidado.
+
+No se invalida por defecto un escenario independiente, pero sí cualquier evidencia cuyo candidato, permiso, flujo, integración o dispositivo haya cambiado materialmente.
+
+---
+
+#### 88. Criterio PASS por escenario
+
+Un escenario obtiene PASS únicamente cuando:
+
+- se ejecuta sobre candidato y alcance correctos;
+- el participante es compatible con la población prevista;
+- el resultado esperado se alcanza;
+- no se requiere bypass;
+- no aparece un efecto prohibido;
+- la ayuda recibida es compatible con el diseño previsto;
+- la evidencia es suficiente;
+- los findings asociados están cerrados o son no bloqueantes conforme a contrato.
+
+---
+
+#### 89. Criterio PASS por punto operativo
+
+Un punto obtiene PASS cuando:
+
+- sus escenarios materiales están cubiertos;
+- actor, sede, estación y dispositivo están resueltos;
+- autoridad aplicable fue demostrada;
+- condiciones ambientales relevantes fueron observadas;
+- fallos y recuperación aplicables fueron cubiertos;
+- no existen findings bloqueantes abiertos;
+- las integraciones materiales conservan owner y resultado correlacionable.
+
+Un promedio entre escenarios no compensa un fallo crítico.
+
+---
+
+#### 90. Criterio PASS por package
+
+`UX-QA-027::<package_id>` obtiene PASS únicamente cuando:
+
+- package, candidato, ambiente y alcance están resueltos;
+- puntos operativos aplicables están declarados;
+- superficies y procesos aplicables están trazados;
+- la matriz `UX-QA-001..019` está cubierta o justificada;
+- escenarios críticos fueron observados;
+- evidencia humana y técnica pertenece al mismo candidato;
+- resultados desconocidos materiales están resueltos;
+- no existe duplicación material no resuelta;
+- no existe exposición sensible material no resuelta;
+- no existe fuente propietaria ambigua;
+- no existe workaround crítico sin owner y salida;
+- findings bloqueantes están cerrados;
+- la decisión física de salida aplicable no contradice el PASS.
+
+---
+
+#### 91. `GLOBAL-FINAL`
+
+`UX-QA-027::GLOBAL-FINAL` solo puede cerrarse cuando:
+
+- todos los packages PULSO aplicables tienen decisión final válida;
+- cada punto operativo material del alcance agregado está cubierto por al menos una evidencia representativa o una no aplicabilidad justificable;
+- no existe package omitido por conveniencia;
+- no existe finding bloqueante abierto relevante a la certificación agregada;
+- no existe drift material que invalide evidencia previa;
+- las fronteras PULSO/NEXO/FOGO/PASS/NUMERA permanecen coherentes;
+- la evidencia agregada sigue perteneciendo a candidatos compatibles con la decisión final.
+
+`GLOBAL-FINAL` no convierte en PASS un package fallido.
+
+---
+
+#### 92. Runtime remoto observado
+
+La revisión remota actual confirma en `vento-pulso` una base AS-IS parcial con:
+
+- `/`;
+- `/scanner`;
+- `/orders`;
+- `/sales-imports`;
+- `/salon`;
+- `/no-access`;
+- componentes de pedidos y Realtime;
+- módulos POS;
+- acciones de loyalty;
+- componentes de scanner;
+- componentes de salón.
+
+Esa existencia demuestra materialización parcial, no cobertura completa del contrato objetivo ni de las veinte superficies canónicas.
+
+---
+
+#### 93. Baseline técnica de autorización
+
+`PULSO-AUTH-016` conserva doce superficies técnicas de baseline y 42 casos contractuales de CI010.
+
+Esa baseline aporta evidencia técnica, pero:
+
+```text
+CI010 BASELINE PASS
+!=
+UX-QA-027 PASS
+```
+
+La experiencia real por punto exige usuarios, dispositivos, contexto y resultados observados.
+
+---
+
+#### 94. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+**Justificación:** la certificación por punto operativo concreta criterios de ejecución y evidencia ya protegidos por requisitos vigentes de PULSO, autorización, UX, PASS, NEXO, NUMERA, integración, resiliencia y dispositivos. No introduce una conducta empresarial nueva ni modifica el significado de una obligación de prueba existente.
+
+---
+
+#### 95. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza, entre otros:
+
+- `TREQ-PULSO-001` para el ciclo POS E2E antes de declararlo operativo;
+- `TREQ-PULSO-002` para paridad y retiro gobernado del tablero legacy;
+- `TREQ-PULSO-003` para impedir herencia del prototipo histórico por mera existencia;
+- `TREQ-PULSO-004` para mutaciones nombradas y revalidación server-side;
+- `TREQ-PULSO-005` para pedido, preparación, cumplimiento, mesa, cuenta y venta;
+- `TREQ-PULSO-006` para pagos, caja, diferencias, anulaciones, devoluciones, refunds y cierre;
+- `TREQ-PULSO-007` para cumplimiento, entrega y reintentos sin duplicación;
+- `TREQ-PULSO-008` a `TREQ-PULSO-027` para inventario de rutas, territorio, acciones, salón, drift y fronteras técnicas;
+- cobertura PASS vigente para identidad, loyalty, ledger, redención, idempotencia y privacidad;
+- cobertura AUTH vigente para actor efectivo, autorización, territorio, dispositivo, bypass, frescura y auditoría;
+- cobertura INTEGRATION vigente para identidad, retry, compensación, eventos y resultados durables;
+- cobertura NEXO vigente para inventario físico y ausencia de doble contabilización;
+- cobertura NUMERA vigente para hechos económicos y conciliación;
+- cobertura UX vigente para estación, accesibilidad, conectividad, recuperación y piloto humano.
+
+Esta sección es trazabilidad existente y no una actualización del registro.
+
+---
+
+#### 96. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global, TREQ y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@8d9f2f29134895c92e2d5beda64100f1ae6e9436`, `vento-pulso/main@715b5683db05caa010d725679b5ada4705a6da6e`, continuidad vigente `UX-QA-026 → UX-QA-027 → UX-QA-028`, owner del bloque U, topología `PER_PACKAGE_AND_GLOBAL_FINAL / POST_E5_PACKAGE`, `PULSO-AUTH-016`, `PULSO-UX-019..021`, veinte superficies canónicas, seis rutas AS-IS, doce superficies técnicas baseline, cinco puntos operativos y registro 04A vigente. El predecesor inmediato `UX-QA-026` ya está incorporado en `main` como tarea aprobada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ventas, pagos, caja, mesas, preparación, loyalty, pedidos externos, reclamos, delivery, importaciones ni sesiones con usuarios reales. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó ninguna instancia `UX-QA-027::<package_id>` ni `UX-QA-027::GLOBAL-FINAL`. |
+
+---
+
+#### 97. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] conserva exactamente cinco puntos operativos: caja, salón, barra, cocina y mostrador;
+- [ ] conserva exactamente veinte superficies canónicas PULSO;
+- [ ] conserva el snapshot AS-IS de seis rutas sin elevarlo a arquitectura completa;
+- [ ] separa rol, punto, estación y dispositivo de autoridad;
+- [ ] consume el contrato común `UX-QA-020` sin redefinirlo;
+- [ ] consume `PULSO-UX-019` como carryover humano/físico;
+- [ ] consume `PULSO-UX-021` como arquitectura objetivo vigente;
+- [ ] consume `PULSO-AUTH-016` como contrato de autorización integral;
+- [ ] caja cubre apertura, venta, cobro, cierre y acciones sensibles cuando apliquen;
+- [ ] salón conserva mesa, sesión, pedido, cuenta y pago separados;
+- [ ] barra y cocina conservan preparación sin autoridad comercial implícita;
+- [ ] mostrador conserva venta, pedido externo, handoff y cobro separados;
+- [ ] actor efectivo y cambio A→B están cubiertos;
+- [ ] `site_id` no amplía territorio;
+- [ ] doble toque, retry y concurrencia no duplican efectos;
+- [ ] resultado desconocido exige consulta/reconciliación;
+- [ ] Realtime no permite sobrescribir una versión posterior;
+- [ ] interacción táctil y accesibilidad se observan en dispositivo material cuando aplican;
+- [ ] guantes, humedad, ruido y distancia se incluyen cuando son riesgos reales;
+- [ ] periféricos no conceden autoridad ni confirman efectos por sí solos;
+- [ ] venta, pago, caja, inventario, loyalty y hecho económico permanecen separados;
+- [ ] PULSO no mantiene ledger físico NEXO ni saldo PASS paralelo;
+- [ ] NUMERA conserva hechos económicos y conciliación;
+- [ ] legacy no obtiene autoridad por su sola existencia;
+- [ ] findings bloqueantes impiden PASS;
+- [ ] PASS por package no se obtiene por promedio;
+- [ ] `GLOBAL-FINAL` no oculta packages fallidos;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se modifica Registro 04A;
+- [ ] no se ejecuta ningún cambio físico.
+
+---
+
+#### 98. Condiciones de fallo o bloqueo físico futuro
+
+Una ejecución futura no puede producir PASS si existe, dentro de su alcance:
+
+- actor efectivo ausente o incorrecto;
+- autoridad ambigua o bypass;
+- cruce de sede o recurso;
+- doble efecto empresarial;
+- pago incierto presentado como éxito;
+- caja irreconciliable ocultada;
+- pedido, preparación o entrega correlacionados incorrectamente;
+- loyalty duplicado o atribuido al cliente equivocado;
+- movimiento físico duplicado o ownership invadido;
+- resultado económico duplicado;
+- cambio de actor sin limpieza;
+- acción crítica impracticable en el dispositivo real;
+- falla de periférico sin fallback seguro cuando es material;
+- actualización Realtime que permite sobrescribir estado posterior;
+- evidencia stale;
+- finding bloqueante abierto.
+
+El resultado correcto será `FAIL`, `BLOCKED` o `STALE` según la causa demostrada.
+
+---
+
+#### 99. Límites
+
+Esta tarea no:
+
+- implementa PULSO;
+- modifica `vento-pulso`;
+- modifica `vento-platform`;
+- modifica `vento-pass`;
+- modifica `vento-nexo`;
+- modifica `vento-numera`;
+- modifica `vento-fogo`;
+- crea ventas o pedidos reales;
+- procesa pagos reales;
+- abre o cierra cajas reales;
+- modifica mesas o sesiones reales;
+- ejecuta preparación real;
+- acumula o redime puntos reales;
+- importa ventas reales;
+- modifica inventario real;
+- registra hechos económicos reales;
+- emite documentos fiscales reales;
+- configura estaciones o periféricos;
+- cambia rutas, componentes o pantalla runtime;
+- crea PermissionKeys, roles, grants o scopes;
+- crea tablas, columnas, constraints, índices, funciones, triggers, RPC, RLS, Storage, Edge Functions, cron o colas;
+- ejecuta migraciones;
+- modifica Supabase o datos;
+- modifica packages;
+- ejecuta cutover o rollback;
+- retira legacy;
+- modifica Registro 04A;
+- crea una instancia física;
+- desarrolla `UX-QA-028`.
+
+---
+
+#### 100. Handoff a `UX-QA-028`
+
+`UX-QA-027` entrega a `UX-QA-028` únicamente continuidad transversal del BLOQUE U.
+
+El handoff conserva:
+
+- contrato común `UX-QA-020`;
+- disciplina de evidencia por package;
+- tratamiento de findings y reprueba;
+- criterio `GLOBAL-FINAL`;
+- separación entre runtime parcial y certificación;
+- frontera PULSO → NUMERA como integración sin transferencia de ownership.
+
+No transfiere ownership comercial PULSO a NUMERA ni convierte ventas, pagos o cierres en hechos financieros equivalentes por inferencia.
+
+---
+
+#### 101. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-026 — Probar ORIGO por etapa de compra`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-027 — Probar PULSO por punto operativo`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-028 — Probar NUMERA por alcance financiero`
 ### [ ] UX-QA-028 — Probar NUMERA por alcance financiero
 ### [ ] UX-QA-029 — Probar PASS como cliente
 ### [ ] UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad

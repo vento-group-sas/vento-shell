@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1579** |
+| Aprobadas | **1580** |
 | En propuesta | **0** |
-| No iniciadas | **17** |
+| No iniciadas | **16** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.93% (1579/1596)** |
+| Porcentaje de completamiento | **99.00% (1580/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **17** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1480** |
+| ⏸ NO_EVALUADA | **16** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1481** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-026` — Probar ORIGO por etapa de compra | ✅ APROBADA |
-| Tarea actual | `UX-QA-027` — Probar PULSO por punto operativo | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-028` — Probar NUMERA por alcance financiero | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-027` — Probar PULSO por punto operativo | ✅ APROBADA |
+| Tarea actual | `UX-QA-028` — Probar NUMERA por alcance financiero | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-029` — Probar PASS como cliente | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1411,7 +1411,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-024` | Probar NEXO por rol operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-025` | Probar FOGO por área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-026` | Probar ORIGO por etapa de compra | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-027` | Probar PULSO por punto operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-027` | Probar PULSO por punto operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-028` | Probar NUMERA por alcance financiero | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-029` | Probar PASS como cliente | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-030` | Probar AURA únicamente después de aprobar su continuidad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
