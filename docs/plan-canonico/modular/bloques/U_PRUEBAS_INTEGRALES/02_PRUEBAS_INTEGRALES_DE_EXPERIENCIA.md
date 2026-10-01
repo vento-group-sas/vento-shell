@@ -12984,7 +12984,1307 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-013 — El retorno conserva el proceso cuando corresponde`
-### [ ] UX-QA-013 — El retorno conserva el proceso cuando corresponde
+### ✅ UX-QA-013 — El retorno conserva el proceso cuando corresponde
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-012 — El retorno entre aplicaciones conserva contexto
+**Tarea siguiente:** UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por package y globalmente que, después de un retorno entre aplicaciones, Vento OS conserva, reanuda, revisa, espera, reasigna, concilia o termina el proceso según su estado autoritativo vigente, sin convertir navegación, checkpoint, borrador, claim, receipt, historial del navegador ni contexto preservado en autoridad ni reiniciar silenciosamente una obligación ya ejecutada
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de continuidad y reanudación del proceso después del retorno definido; las ejecuciones `UX-QA-013::<package_id>` y `UX-QA-013::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff de `UX-QA-012`, `UX-BASE-014`, `SHELL-APP-016`, contratos vigentes de work items y la superficie materializada `InterruptedProcessState`, pero no afirma que ningún package desplegado haya demostrado todavía continuidad end-to-end
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican estados de proceso, work items, claims, leases, checkpoints, borradores, handoffs, rutas, deep links, autorización, sesiones, eventos, colas, datos, Supabase, dispositivos, componentes, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que, después de volver de otra aplicación o superficie, la persona continúa el mismo proceso únicamente cuando el estado empresarial vigente permite hacerlo.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿EL PROCESO SIGUE VIGENTE?
+¿SIGUE SIENDO LA MISMA INSTANCIA EMPRESARIAL?
+¿EL TRABAJO SIGUE PERTENECIENDO AL MISMO ACTOR O RESPONSABLE?
+¿EL RECURSO Y SU VERSIÓN SIGUEN SIENDO COMPATIBLES?
+¿EL WORK ITEM SIGUE ABIERTO Y EN UN ESTADO REANUDABLE?
+¿EXISTE CLAIM, LEASE, CUSTODIA, BORRADOR O CHECKPOINT QUE DEBA REVALIDARSE?
+¿HAY UN RESULTADO PENDIENTE O DESCONOCIDO QUE IMPIDA CONTINUAR?
+¿EL PROCESO DEBE REANUDARSE, REVISARSE, ESPERAR, HACER HANDOFF, REASIGNARSE, CONCILIARSE O TERMINAR?
+```
+
+Regla central:
+
+```text
+VOLVER AL CONTEXTO CORRECTO
+!=
+REANUDAR AUTOMÁTICAMENTE EL PROCESO
+```
+
+#### 2. Resultado canónico
+
+`UX-QA-013` establece `UX-QA-PROCESS-CONTINUITY-AFTER-RETURN-CERTIFICATION-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de continuidad del proceso después del retorno;
+- decisión observable de continuidad para la misma obligación empresarial;
+- relación entre proceso, instancia, work item, recurso, estado y punto semántico;
+- condiciones de reanudación directa y reanudación con revisión;
+- tratamiento de espera, bloqueo, handoff, reasignación, reautenticación y conciliación;
+- tratamiento de estados terminales, supersesión y expiración;
+- relación entre checkpoint, borrador, receipt, claim, custodia y estado empresarial;
+- prohibición de crear continuidad por navegación o historial;
+- casos positivos y negativos por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-014`.
+
+#### 3. Alcance exacto
+
+La certificación aplica cuando `UX-QA-012` ya determinó el contexto correcto del retorno y el flujo aprobado necesita decidir qué ocurre con el proceso relacionado.
+
+Incluye, cuando apliquen:
+
+- retorno al mismo proceso y misma instancia;
+- retorno a un paso posterior del mismo proceso;
+- retorno con trabajo todavía en ejecución;
+- retorno con pausa controlada;
+- retorno con claim o lease vigente, expirado o conflictivo;
+- retorno con dependencia esperada;
+- retorno con bloqueo recuperable;
+- retorno después de handoff;
+- retorno después de cambio de actor;
+- retorno después de cambio de sede, área, turno o dispositivo;
+- retorno con borrador o checkpoint recuperable;
+- retorno con resultado pendiente o desconocido;
+- retorno con conflicto o conciliación requerida;
+- retorno después de que el proceso terminó, fue cancelado, expiró o fue sustituido.
+
+No exige reanudar un proceso cuando la verdad autoritativa indique que ya no corresponde.
+
+#### 4. Handoff recibido de `UX-QA-012`
+
+`UX-QA-012` entrega:
+
+- relación cross-app validada;
+- aplicación origen y destino;
+- superficie de retorno;
+- proceso e instancia;
+- recurso y versión vigente observada;
+- actor actual revalidado cuando aplica;
+- contexto operativo vigente;
+- estado del handoff;
+- resultado confirmado, pendiente, rechazado, parcial o en conciliación;
+- receipt y correlación disponibles;
+- checkpoint o referencia recuperable cuando existe;
+- trabajo pendiente;
+- evidencia de que el retorno no transportó autoridad;
+- evidencia de que el contexto visible corresponde al mismo caso.
+
+`UX-QA-013` usa ese handoff sin reabrir la identidad cross-app ni la semántica del retorno.
+
+#### 5. Frontera con `UX-QA-012`
+
+`UX-QA-012` responde:
+
+```text
+¿AL VOLVER ENTRE APLICACIONES
+SE CONSERVA EL CONTEXTO CORRECTO DEL TRABAJO?
+```
+
+`UX-QA-013` responde:
+
+```text
+¿CON ESE CONTEXTO YA CORRECTO
+EL PROCESO DEBE CONTINUAR Y DE QUÉ FORMA?
+```
+
+Un retorno puede ser correcto y aun no permitir reanudación porque el trabajo terminó, fue reasignado, expiró, cambió de versión, perdió autorización o requiere conciliación.
+
+#### 6. Frontera con `UX-BASE-014`
+
+`UX-BASE-014` define el contrato transversal de reanudación después de interrupciones.
+
+Se conserva su regla:
+
+```text
+REANUDAR
+!=
+VOLVER A LA ÚLTIMA PANTALLA
+```
+
+Y su secuencia conceptual:
+
+```text
+RECONSTRUIR EL PUNTO DE TRABAJO
++
+REVALIDAR EL ESTADO ACTUAL
++
+COMPARAR CAMBIOS
++
+CONTINUAR DE FORMA SEGURA
+```
+
+`UX-QA-013` no redefine ese contrato; certifica su cumplimiento observable por package después de un retorno.
+
+#### 7. Frontera con `SHELL-APP-016`
+
+`SHELL-APP-016` define para SHELL cuándo una obligación merece continuidad prioritaria y cómo tratar estados de work item, claim, checkpoint y recuperación.
+
+`UX-QA-013` no convierte esa definición en una regla exclusiva de SHELL.
+
+La certificación exige semántica equivalente en cualquier package aplicable, respetando siempre a la aplicación propietaria del proceso.
+
+#### 8. Frontera con `UX-QA-014`
+
+`UX-QA-014` certificará si el trabajador completa la tarea dentro del tiempo objetivo.
+
+`UX-QA-013` no mide productividad, duración, latencia humana ni cumplimiento de SLA de experiencia.
+
+Regla:
+
+```text
+CONTINUIDAD CORRECTA DEL PROCESO
+!=
+TIEMPO OBJETIVO DE COMPLETAR LA TAREA
+```
+
+Una espera legítima, un bloqueo externo, una reautenticación, un handoff o una conciliación no deberán convertirse en tiempo improductivo por inferencia en `UX-QA-014`.
+
+#### 9. Unidad certificable
+
+La unidad mínima es:
+
+```text
+PACKAGE
++
+RELACIÓN DE RETORNO APLICABLE
++
+PROCESO E INSTANCIA
++
+WORK ITEM O OBLIGACIÓN RELACIONADA
++
+ESTADO AUTORITATIVO POST-RETORNO
++
+DECISIÓN DE CONTINUIDAD
++
+RESULTADO OBSERVABLE
+```
+
+Cada caso deberá poder demostrar si la obligación continúa, cambia de tratamiento o termina.
+
+#### 10. Identidad de continuidad
+
+La continuidad deberá conservar, cuando existan:
+
+```text
+process_id
+process_instance_id
+work_item_id
+task_or_work_item_ref
+process_step
+business_object_ref
+resource_version_or_observed_version
+owner_app_code
+status
+readiness_status
+claim_or_lease_ref
+checkpoint_ref
+draft_ref
+pending_operation_ref
+receipt_ref
+correlation_ref
+```
+
+La forma es conceptual. La tarea no crea un payload runtime nuevo.
+
+#### 11. Misma obligación empresarial
+
+La reanudación solo puede tratarse como continuidad cuando sigue existiendo la misma obligación empresarial o una continuación explícitamente relacionada por el contrato propietario.
+
+Regla:
+
+```text
+MISMA PANTALLA
+!=
+MISMA OBLIGACIÓN
+```
+
+```text
+MISMO RECURSO
+!=
+MISMO WORK ITEM
+```
+
+```text
+MISMO PROCESS_ID
+!=
+MISMA PROCESS_INSTANCE_ID
+```
+
+#### 12. Navegación sin mutación implícita
+
+Se conserva:
+
+```text
+ABRIR APLICACIÓN
+!= START
+
+VOLVER A SHELL
+!= PAUSE
+
+CAMBIAR DE APLICACIÓN
+!= RELEASE
+
+VOLVER AL RECURSO
+!= RESUME
+
+REFRESH
+!= RETRY EMPRESARIAL
+```
+
+La navegación no cambia por sí sola el estado empresarial.
+
+#### 13. Trabajo ya iniciado
+
+Por defecto:
+
+```text
+TRABAJO VÁLIDO EN EJECUCIÓN
+→ CONSERVA CONTINUIDAD
+```
+
+siempre que continúen siendo válidos:
+
+- proceso;
+- instancia;
+- recurso;
+- estado;
+- responsabilidad;
+- contexto;
+- autorización;
+- claim o lease cuando aplique;
+- custodia cuando aplique;
+- resultado conocido.
+
+#### 14. Work item como referencia
+
+Cuando exista `work_item_id`, se conserva como referencia opaca a la obligación runtime.
+
+No se utiliza para inferir autoridad.
+
+```text
+CONOCER work_item_id
+!=
+PODER REANUDARLO
+```
+
+La aplicación propietaria debe confirmar que el work item sigue vigente y visible para el actor actual.
+
+#### 15. Estados conceptuales de work item
+
+La certificación reconoce el contrato vigente de estados conceptuales:
+
+```text
+NOT_READY
+AVAILABLE
+OFFERED
+ASSIGNED
+CLAIMED
+IN_PROGRESS
+WAITING
+BLOCKED
+PAUSED
+COMPLETION_PENDING_SYNC
+COMPLETED
+CANCELLED
+SUPERSEDED
+EXPIRED
+CONFLICT
+RECONCILIATION_REQUIRED
+```
+
+`UX-QA-013` no crea estados nuevos ni modifica sus significados.
+
+#### 16. Estados de reanudación observables
+
+La materialización compartida `InterruptedProcessState` expone diecisiete estados canónicos:
+
+```text
+NO_CHECKPOINT
+DRAFT_ONLY
+CHECKPOINT_AVAILABLE
+VALIDATING
+RESUMABLE
+RESUMABLE_WITH_REVIEW
+WAITING_FOR_DEPENDENCY
+HANDOFF_REQUIRED
+REASSIGNMENT_REQUIRED
+CONFLICT
+RESULT_UNKNOWN
+REAUTH_REQUIRED
+RECONCILIATION_REQUIRED
+SUPERSEDED
+COMPLETED
+EXPIRED
+INVALID
+```
+
+Estos estados de presentación y continuidad no sustituyen `WorkItemStatus` ni estados de dominio.
+
+#### 17. Sin mapeo uno a uno obligatorio
+
+No se exige una equivalencia uno a uno entre `WorkItemStatus` e `InterruptedProcessStatus`.
+
+Ejemplo:
+
+```text
+WORK ITEM = CLAIMED
+```
+
+puede producir una decisión distinta según vigencia del claim, actor, contexto, recurso y política de takeover.
+
+La certificación observa coherencia semántica, no una tabla artificial de equivalencias.
+
+#### 18. `RESUMABLE`
+
+Solo procede cuando la evidencia confirma, según aplique:
+
+- mismo proceso e instancia;
+- obligación todavía abierta;
+- recurso vigente;
+- versión compatible;
+- actor permitido;
+- contexto compatible;
+- autorización revalidada;
+- claim o lease válido o renovado;
+- custodia compatible;
+- ausencia de resultado desconocido;
+- ausencia de conflicto no resuelto;
+- checkpoint o borrador compatibles cuando existan.
+
+La reanudación abre el punto semántico correcto, no una portada genérica.
+
+#### 19. `RESUMABLE_WITH_REVIEW`
+
+Se utiliza cuando el proceso puede continuar, pero cambió información material desde la interrupción.
+
+La experiencia deberá mostrar qué cambió antes de permitir una acción final.
+
+Puede incluir:
+
+- versión del recurso cambiada;
+- campos no superpuestos modificados;
+- prioridad cambiada;
+- responsable actualizado sin perder ownership;
+- dependencia resuelta;
+- borrador parcialmente compatible;
+- resultado nuevo que altera el siguiente paso.
+
+No se permite `last write wins` silencioso.
+
+#### 20. `VALIDATING`
+
+Mientras se resuelven actor, contexto, estado, recurso, versión, claim, custodia, receipts o pendientes:
+
+```text
+VALIDATING
+→ NO CONTINUAR TODAVÍA
+```
+
+La UI no mostrará una acción material de continuidad como si la clasificación estuviera resuelta.
+
+#### 21. `NO_CHECKPOINT`
+
+La ausencia de checkpoint no demuestra que el proceso terminó ni que sea imposible recuperarlo.
+
+La aplicación propietaria deberá resolver la obligación autoritativa disponible.
+
+La prueba falla si:
+
+- se inventa un proceso nuevo por no encontrar checkpoint;
+- se trata la última URL como checkpoint;
+- se reinicia un flujo ya existente;
+- se oculta una obligación todavía vigente.
+
+#### 22. `DRAFT_ONLY`
+
+Un borrador recuperable no equivale a un proceso activo ni autoriza una mutación.
+
+Puede conservarse para:
+
+- revisión;
+- copia segura de información;
+- reaplicación compatible;
+- soporte;
+- conciliación.
+
+No puede sobreescribir el estado autoritativo por existir localmente.
+
+#### 23. `CHECKPOINT_AVAILABLE`
+
+Un checkpoint disponible es una referencia de continuidad, no una decisión final de reanudación.
+
+Debe pasar por revalidación antes de convertirse en `RESUMABLE` o cualquier otro estado operativo.
+
+#### 24. `WAITING_FOR_DEPENDENCY`
+
+Una obligación en espera conserva:
+
+- proceso e instancia;
+- condición esperada;
+- responsable actual;
+- última actualización;
+- vencimiento cuando exista;
+- siguiente acción segura.
+
+No se fuerza como foco principal cuando el actor no tiene una acción inmediata.
+
+#### 25. Bloqueo recuperable
+
+Cuando el proceso está `BLOCKED`, la certificación deberá demostrar quién posee la siguiente acción.
+
+Si el actor actual puede resolver, escalar o proteger custodia, el proceso puede conservar prioridad.
+
+Si el bloqueo pertenece exclusivamente a otro actor o dependencia, la experiencia deberá reflejarlo sin fingir reanudación activa.
+
+#### 26. `HANDOFF_REQUIRED`
+
+Se utiliza cuando la continuidad exige transferir formalmente responsabilidad, custodia o trabajo.
+
+Regla:
+
+```text
+HANDOFF REQUERIDO
+!=
+CAMBIO SILENCIOSO DE ACTOR
+```
+
+Hasta aceptación válida, el receptor no hereda responsabilidad.
+
+#### 27. `REASSIGNMENT_REQUIRED`
+
+Se utiliza cuando el trabajo sigue existiendo, pero ya no puede continuar bajo el actor o asignación anterior.
+
+La prueba deberá demostrar:
+
+- causa de la reasignación;
+- conservación de la obligación;
+- ausencia de autoridad heredada;
+- siguiente propietario o mecanismo gobernado;
+- preservación de evidencia y pendientes.
+
+#### 28. `REAUTH_REQUIRED`
+
+Si la sesión, step-up, permiso o contexto vencieron:
+
+- se conserva referencia segura al trabajo;
+- no se conserva autoridad vencida;
+- se reautentica o reautoriza según contrato;
+- se vuelve a resolver el estado vigente;
+- solo entonces se determina la continuidad.
+
+#### 29. `RESULT_UNKNOWN`
+
+Cuando una intención pudo haber sido enviada antes de la interrupción:
+
+```text
+RESULT_UNKNOWN
+→ CONSULTAR IDEMPOTENCIA
+→ CONSULTAR RECEIPT
+→ CONSULTAR ESTADO AUTORITATIVO
+→ CLASIFICAR
+```
+
+Queda prohibido iniciar otra intención para “asegurar” el resultado.
+
+#### 30. `CONFLICT`
+
+Ante conflicto de versión, actor, claim, custodia o estado:
+
+- se conserva el caso;
+- se muestran las diferencias materiales;
+- no se oculta el conflicto mediante navegación;
+- no se aplica sobrescritura silenciosa;
+- la continuidad se transforma en trabajo de resolución.
+
+#### 31. `RECONCILIATION_REQUIRED`
+
+La conciliación se exige cuando los hechos disponibles no permiten determinar con seguridad el estado empresarial.
+
+Puede incluir:
+
+- operación con receipt ambiguo;
+- custodia física y digital divergentes;
+- handoff parcialmente aceptado;
+- efecto externo sin confirmación;
+- evento fuera de orden;
+- proceso y recurso con versiones incompatibles.
+
+No se reanuda el paso material hasta resolver la incertidumbre.
+
+#### 32. `COMPLETION_PENDING_SYNC`
+
+Este estado no equivale a `COMPLETED`.
+
+Al volver:
+
+- se consulta la intención original;
+- se consulta receipt;
+- se consulta estado empresarial;
+- se evita un segundo intento;
+- se clasifica el resultado antes de habilitar otra acción.
+
+#### 33. `COMPLETED`
+
+Un proceso o work item completado no se reanuda como activo.
+
+La superficie puede mostrar resultado, receipt, trazabilidad o siguiente obligación separada.
+
+Regla:
+
+```text
+COMPLETED
+!=
+RESUMABLE
+```
+
+#### 34. `CANCELLED`
+
+Un estado empresarial cancelado permanece terminal salvo que el contrato propietario cree una nueva obligación explícita.
+
+Volver a una pantalla antigua no reabre el proceso.
+
+#### 35. `SUPERSEDED`
+
+Cuando una obligación fue sustituida:
+
+- no se reanuda la obligación anterior;
+- se conserva su identidad para explicación y trazabilidad;
+- solo se orienta hacia el reemplazo cuando existe relación explícita;
+- no se adivina el reemplazo por similitud de nombre o recurso.
+
+#### 36. `EXPIRED`
+
+Una obligación expirada:
+
+- no recupera autoridad por volver;
+- no renueva automáticamente un claim o aprobación;
+- conserva evidencia y explicación necesarias;
+- ofrece únicamente acciones permitidas por el contrato vigente.
+
+#### 37. `INVALID`
+
+Se utiliza cuando la referencia de continuidad ya no puede resolverse de forma segura.
+
+La prueba falla si el sistema:
+
+- abre otro recurso por heurística;
+- crea una obligación sustituta sin contrato;
+- restaura un proceso antiguo;
+- ignora incompatibilidad de esquema o identidad.
+
+#### 38. Cambio de paso dentro del mismo proceso
+
+El mismo proceso puede continuar en un paso distinto si la transición fue confirmada por la autoridad propietaria.
+
+Regla:
+
+```text
+MISMA INSTANCIA
++
+NUEVO PASO VIGENTE
+=
+CONTINUIDAD POSIBLE
+```
+
+No se fuerza volver al paso anterior por conservar una pantalla o checkpoint viejo.
+
+#### 39. Cambio de recurso
+
+Si la transición aprobada del proceso cambia legítimamente el recurso de trabajo, la continuidad deberá demostrar la relación explícita.
+
+Sin esa relación:
+
+```text
+RECURSO DISTINTO
+→ NO ASUMIR MISMO TRABAJO
+```
+
+#### 40. Cambio de versión
+
+La versión observada antes del retorno sirve para comparar.
+
+No impone el estado anterior.
+
+Se distinguirá:
+
+```text
+SIN CAMBIOS
+CAMBIOS COMPATIBLES
+CAMBIOS QUE EXIGEN REVISIÓN
+CAMBIOS EN CONFLICTO
+RECURSO CERRADO
+RECURSO CANCELADO
+RECURSO REEMPLAZADO
+ESQUEMA INCOMPATIBLE
+```
+
+#### 41. Claim y lease
+
+La existencia de una referencia previa no demuestra vigencia.
+
+Se deberá comprobar, según aplique:
+
+- propietario;
+- actor;
+- recurso;
+- etapa;
+- versión;
+- vencimiento;
+- heartbeat;
+- dispositivo;
+- área;
+- posibilidad de renovación;
+- política de takeover.
+
+#### 42. Custodia
+
+La custodia física no se deriva del estado visual.
+
+Cuando exista custodia:
+
+- se identifica la última transferencia confirmada;
+- se compara con el estado digital;
+- se impiden dobles aceptaciones;
+- se separan actor físico, transcriptor y aprobador cuando corresponda;
+- divergencias van a conciliación.
+
+#### 43. Cambio de actor
+
+Si el actor cambia:
+
+- el trabajo anterior no cambia de propietario por navegación;
+- se protege información personal;
+- la autoridad se resuelve desde cero;
+- un borrador personal no se transfiere implícitamente;
+- claim y custodia requieren contrato explícito;
+- la continuidad puede convertirse en handoff, reasignación o bloqueo.
+
+#### 44. Mismo actor
+
+Cuando el mismo actor continúa:
+
+- se revalida sesión;
+- se revalida contexto;
+- se revalida autorización;
+- se consulta estado vigente;
+- se preserva identidad del trabajo;
+- se evita recaptura innecesaria;
+- no se presume que el claim sigue vigente.
+
+#### 45. Cambio de sede, área o turno
+
+Toda variación material obliga a resolver un contexto nuevo.
+
+```text
+CONTEXTO NUEVO COMPATIBLE
+→ CONTINUIDAD POSIBLE DESPUÉS DE REVALIDAR
+
+CONTEXTO NUEVO INCOMPATIBLE
+→ BLOQUEAR, REASIGNAR O HACER HANDOFF
+```
+
+La sede anterior no se usa como fallback autoritativo.
+
+#### 46. Cambio de dispositivo
+
+Continuar en otro dispositivo exige una referencia sincronizada o transferencia segura.
+
+No se prometerá recuperar:
+
+- borradores solo locales;
+- archivos no sincronizados;
+- selecciones efímeras;
+- estado UI no persistido;
+- autoridad del dispositivo anterior.
+
+#### 47. Reinicio y actualización
+
+Después de reinicio, suspensión o actualización:
+
+- no se ejecuta trabajo en segundo plano por inferencia;
+- no se restaura autoridad obsoleta;
+- no se muestran datos del actor anterior;
+- se validan esquema, sesión, contexto, recurso, pendientes y cancelaciones.
+
+#### 48. Resultado confirmado en la aplicación destino
+
+Si el destino completó un efecto empresarial que cambia el proceso:
+
+- se refleja el nuevo estado autoritativo;
+- se conserva receipt cuando aplique;
+- no se repite el paso anterior;
+- la continuidad puede avanzar al siguiente paso o quedar terminal.
+
+Abrir la aplicación destino nunca es evidencia suficiente del efecto.
+
+#### 49. Cancelación o rechazo en destino
+
+Cancelar o rechazar una acción auxiliar no determina por sí solo que el proceso completo termine.
+
+La aplicación propietaria deberá resolver:
+
+- qué obligación sigue vigente;
+- qué paso permanece pendiente;
+- si debe volver al paso anterior;
+- si requiere otra acción;
+- si el proceso pasa a un estado terminal.
+
+#### 50. Aceptación parcial
+
+Cuando el destino produjo un resultado parcial:
+
+- se conservan elementos confirmados;
+- se conservan rechazados y pendientes;
+- no se repiten efectos aceptados;
+- la continuidad se calcula sobre el estado residual real.
+
+#### 51. Proceso no equivalente a pantalla
+
+Una pantalla puede representar más de un estado de proceso.
+
+Un proceso puede atravesar varias pantallas.
+
+Por tanto:
+
+```text
+PANTALLA ABIERTA
+!=
+ESTADO DEL PROCESO
+```
+
+La certificación se ancla en identidades y hechos, no en rutas visuales.
+
+#### 52. Prohibición de clonar trabajo para reanudar
+
+No se certifica una solución que:
+
+- duplique `work_item_id`;
+- cree un work item espejo de retorno;
+- copie estado anterior y lo marque vigente;
+- convierta una notificación en obligación;
+- reconstruya un proceso desde historial del navegador;
+- genere otra intención para sortear un resultado desconocido.
+
+#### 53. Borrador, checkpoint, receipt y estado empresarial
+
+Se conserva la separación:
+
+```text
+BORRADOR
+!= CHECKPOINT
+!= OPERACIÓN PENDIENTE
+!= RECEIPT
+!= ESTADO EMPRESARIAL
+```
+
+Cada objeto aporta evidencia distinta y no sustituye a los demás.
+
+#### 54. Trabajo pendiente
+
+El retorno deberá conservar perceptible el trabajo todavía pendiente, por ejemplo:
+
+- acción no ejecutada;
+- dependencia en espera;
+- conciliación;
+- reautenticación;
+- revisión de cambios;
+- aceptación de handoff;
+- reasignación;
+- resolución de conflicto.
+
+No se oculta un pendiente porque la pantalla volvió a cargar.
+
+#### 55. Foco frente a estado
+
+El foco pertenece a la experiencia del actor.
+
+El estado pertenece al proceso o work item.
+
+Por tanto:
+
+```text
+IN_PROGRESS
+→ NORMALMENTE FOCO
+
+WAITING
+→ NORMALMENTE EN ESPERA
+
+BLOCKED
+→ FOCO O COLA SEGÚN SIGUIENTE ACCIÓN
+
+RECONCILIATION_REQUIRED
+→ FOCO DE RECUPERACIÓN CUANDO EXIGE ACCIÓN
+```
+
+La UI no modifica el estado empresarial para acomodar la jerarquía visual.
+
+#### 56. Prioridad al volver
+
+Cuando existan múltiples obligaciones recuperables, la experiencia priorizará sin alterar sus estados.
+
+Orden conceptual:
+
+```text
+1. RESULTADOS DESCONOCIDOS O CONCILIACIONES
+2. CUSTODIAS Y HANDOFFS PENDIENTES
+3. TRABAJO EN EJECUCIÓN CON CONTINUIDAD VÁLIDA
+4. PAUSAS Y BORRADORES RECUPERABLES
+5. TAREAS PRÓXIMAS A VENCER
+6. COLA ORDINARIA
+```
+
+Una prioridad visual no concede autorización.
+
+#### 57. Caso positivo mínimo
+
+Un caso positivo demuestra:
+
+1. contexto de retorno correcto según `UX-QA-012`;
+2. misma obligación o relación explícita de continuidad;
+3. estado autoritativo posterior conocido;
+4. actor y contexto revalidados;
+5. recurso y versión compatibles o diferencia explicada;
+6. claim, custodia, checkpoint y borrador tratados según contrato;
+7. resultado pendiente o desconocido resuelto antes de repetir;
+8. decisión de continuidad correcta;
+9. superficie y acción coherentes con esa decisión;
+10. cero autoridad restaurada desde navegación o cliente.
+
+#### 58. Casos positivos obligatorios por package
+
+Según alcance, deberán cubrir:
+
+- `IN_PROGRESS` que continúa;
+- `PAUSED` reanudable;
+- `RESUMABLE_WITH_REVIEW` por versión cambiada;
+- `WAITING` con dependencia pendiente;
+- `BLOCKED` con acción propia;
+- bloqueo que pertenece a otro actor;
+- claim válido;
+- claim expirado;
+- handoff requerido;
+- reasignación requerida;
+- sesión expirada con reautenticación;
+- resultado desconocido;
+- conflicto;
+- conciliación;
+- completado;
+- cancelado;
+- superseded;
+- expirado;
+- cambio de dispositivo cuando aplique;
+- cambio de sede o área cuando aplique.
+
+Los casos no aplicables deberán justificarse por el package.
+
+#### 59. Casos negativos mínimos
+
+La certificación deberá detectar:
+
+- reanudar solo porque volvió la misma URL;
+- reanudar un proceso completado;
+- reabrir uno cancelado;
+- revivir una obligación superseded;
+- renovar claim por inferencia;
+- transferir borrador por cambio de actor;
+- restaurar autoridad vencida;
+- perder trabajo pendiente;
+- repetir una operación con resultado desconocido;
+- sobrescribir cambios concurrentes;
+- convertir un checkpoint en estado empresarial;
+- cambiar de instancia sin contrato;
+- clonar un work item para retorno;
+- ocultar conciliación;
+- tratar `WAITING` como trabajo activo obligatorio;
+- mantener un bloqueo sin owner;
+- reanudar sobre contexto incompatible;
+- adivinar recurso o reemplazo;
+- abrir el paso anterior cuando el proceso ya avanzó.
+
+#### 60. Oracle de continuidad
+
+Para cada caso:
+
+```text
+SI UX-QA-012 no demuestra contexto de retorno válido
+→ NO CERTIFICAR CONTINUIDAD COMO PASS
+
+SI la obligación está terminal
+→ NO REANUDAR
+
+SI existe resultado desconocido
+→ RESOLVER ANTES DE REPETIR
+
+SI existe conflicto o conciliación pendiente
+→ RECUPERAR / CONCILIAR, NO CONTINUAR CIEGAMENTE
+
+SI el actor o contexto ya no son compatibles
+→ REAUTH / HANDOFF / REASSIGNMENT / BLOCK
+
+SI la obligación sigue abierta, el estado es compatible,
+el actor está autorizado y no existe incertidumbre material
+→ RESUMABLE O RESUMABLE_WITH_REVIEW SEGÚN CAMBIOS
+```
+
+#### 61. Identidad del caso de prueba
+
+Cada caso deberá declarar, como mínimo:
+
+- `case_id`;
+- package;
+- relación de retorno;
+- aplicación origen y destino;
+- proceso;
+- instancia;
+- work item cuando exista;
+- paso anterior;
+- paso vigente;
+- recurso;
+- versión anterior y vigente;
+- estado anterior;
+- estado autoritativo posterior;
+- estado de reanudación observable;
+- actor;
+- contexto;
+- claim o lease;
+- custodia cuando aplique;
+- checkpoint;
+- borrador;
+- receipt y pendientes;
+- decisión esperada;
+- decisión observada;
+- evidencia;
+- veredicto.
+
+#### 62. Evidencia mínima posterior
+
+La evidencia deberá permitir reconstruir:
+
+- que el retorno corresponde al mismo caso;
+- estado del proceso antes y después;
+- estado del work item cuando exista;
+- actor y contexto vigentes;
+- recurso y versión;
+- claim o lease;
+- custodia;
+- checkpoint o borrador;
+- operaciones pendientes;
+- receipts;
+- conflicto o conciliación;
+- decisión de continuidad;
+- acción presentada;
+- acción realmente ejecutada;
+- veredicto.
+
+#### 63. Evidencia insuficiente por sí sola
+
+No bastan:
+
+- screenshot de una pantalla de continuidad;
+- que exista un botón `Continuar`;
+- que renderice `InterruptedProcessState`;
+- que el work item exista en cliente;
+- que la ruta coincida;
+- que un checkpoint esté presente;
+- que exista un receipt sin interpretar;
+- que el actor sea el mismo nombre visible;
+- que la app vuelva al mismo recurso.
+
+La evidencia debe demostrar coherencia con la verdad autoritativa.
+
+#### 64. Materialización física existente y límite
+
+Existe materialización compartida de:
+
+- contrato estático de work items;
+- estados y contratos de procesos;
+- `InterruptedProcessState`;
+- contratos de handoff y contexto relacionados.
+
+Esa existencia:
+
+- permite inspección contractual;
+- permite pruebas estáticas de las superficies compartidas;
+- no demuestra adopción por consumidores;
+- no demuestra clasificación correcta por package;
+- no demuestra continuidad end-to-end;
+- no sustituye las futuras ejecuciones `UX-QA-013::<package_id>`.
+
+#### 65. Estado de certificación por package
+
+Estados permitidos:
+
+```text
+PASS
+FAIL
+BLOCKED
+STALE
+```
+
+`BLOCKED` exige dependencia externa o evidencia imposible de obtener todavía.
+
+Un comportamiento incorrecto observado es `FAIL`.
+
+#### 66. `STALE`
+
+La evidencia previa se vuelve stale cuando cambia materialmente:
+
+- contrato de proceso;
+- identidad o estados de work item;
+- política de reanudación;
+- clasificación de `InterruptedProcessState`;
+- handoff;
+- return contract;
+- autorización;
+- claim o lease;
+- recurso o esquema;
+- aplicación propietaria;
+- consumidor evaluado;
+- reglas de checkpoint o borrador.
+
+#### 67. Hallazgos diferibles
+
+Un hallazgo solo podrá diferirse si:
+
+- no reanuda una obligación terminal;
+- no duplica efectos;
+- no amplía autoridad;
+- no cambia de instancia o recurso;
+- no pierde custodia ni trabajo confirmado;
+- no oculta conflicto o resultado desconocido;
+- tiene owner canónico;
+- tiene condición exacta de salida;
+- su impacto sobre `GLOBAL-FINAL` queda documentado.
+
+#### 68. Criterio de PASS por package
+
+Un package obtiene PASS únicamente si:
+
+1. inventaria todas las relaciones de retorno donde deba decidir continuidad;
+2. clasifica correctamente cada obligación posterior al retorno;
+3. no confunde navegación con estado empresarial;
+4. revalida actor, contexto y autorización;
+5. revalida claim, custodia y recurso cuando aplican;
+6. distingue reanudación directa de revisión, espera, bloqueo, handoff, reasignación y conciliación;
+7. no reanuda estados terminales;
+8. no repite efectos con resultado pendiente o desconocido;
+9. preserva evidencia y pendientes;
+10. presenta una acción coherente con el estado autoritativo;
+11. conserva privacidad en cambios de actor o dispositivo;
+12. no mantiene fallos críticos abiertos.
+
+#### 69. Criterio de `GLOBAL-FINAL`
+
+`UX-QA-013::GLOBAL-FINAL` solo puede obtener PASS cuando:
+
+- todos los packages aplicables tienen decisión válida;
+- todas las relaciones certificadas por `UX-QA-012` que exigen continuidad están cubiertas;
+- no existe ningún package que reanude un proceso terminal;
+- no existen dos semánticas incompatibles de `RESUMABLE`, espera, handoff o conciliación;
+- ningún consumidor convierte navegación en mutación;
+- ningún consumidor clona work items para volver;
+- resultados desconocidos e idempotencia mantienen la misma política transversal;
+- claims, custodia y contexto se revalidan de forma coherente;
+- los hallazgos diferidos no invalidan la continuidad global;
+- la evidencia no está stale.
+
+#### 70. Identidad de ejecución física futura
+
+La topología es:
+
+```text
+MODE: PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE: POST_E5_PACKAGE
+```
+
+Identidades futuras:
+
+```text
+UX-QA-013::<package_id>
+UX-QA-013::GLOBAL-FINAL
+```
+
+Aprobar este contrato documental no crea ni ejecuta esas instancias.
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea certifica obligaciones de continuidad, reanudación, idempotencia, handoff, contexto y recuperación ya registradas. No introduce una obligación verificable nueva que requiera modificar el registro canónico de requisitos de prueba.
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, la cobertura reutilizada incluye:
+
+- `TREQ-UX-024` a `TREQ-UX-040` — identidad de work item, elegibilidad, asignación, claim, ejecución, prioridad, continuidad, handoff, concurrencia, leases, offline, frescura, reanudación, accesibilidad, eventos y versionado;
+- `TREQ-UX-274` a `TREQ-UX-296` — checkpoint, interrupciones, reanudación, borradores, receipts, resultados desconocidos, actores, handoffs, claims, custodia, contexto, conflictos, dispositivos, aplicaciones, privacidad, retención y pruebas;
+- `TREQ-UX-006` — recuperación ante pérdida de red, sesión, dispositivo o proveedor sin perder ni duplicar trabajo;
+- `TREQ-INTEGRATION-003` — idempotencia, resultado recuperable y tratamiento seguro de reintentos;
+- `TREQ-INTEGRATION-005` — continuidad de proceso, recurso, actor, estado, acción pendiente y retorno entre aplicaciones con revalidación;
+- requisitos propietarios de proceso, autorización, contexto, custodia, handoff y recuperación que cada package declare aplicables.
+
+Estas referencias son trazabilidad heredada y no representan cambios del registro.
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia documental disponible en esta aprobación |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecuta build físico ni de producto para aprobar el contrato documental. |
+| LOCAL | NOT_EXECUTED | La incorporación, formateo y validadores reales del checkout corresponden a la batería posterior. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner del BLOQUE U, `UX-BASE-014`, `SHELL-APP-016`, contratos vigentes de work items y procesos, `InterruptedProcessState`, cobertura 04A de integración y la base aprobada `UX-QA-012`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron recorridos end-to-end de reanudación o conciliación sobre packages desplegados durante esta aprobación documental. |
+| FÍSICA | NOT_EXECUTED | Las instancias por package y `GLOBAL-FINAL` permanecen sujetas a `POST_E5_PACKAGE`. |
+
+#### 74. Seguridad de la evidencia
+
+La evidencia no deberá contener:
+
+- tokens;
+- secretos;
+- PIN;
+- credenciales;
+- contenido sensible completo de borradores;
+- AccessContext serializado innecesariamente;
+- datos privados de otro actor;
+- payloads completos de autorización;
+- URLs con información secreta.
+
+#### 75. Fallos críticos
+
+Bloquean PASS del package:
+
+- reanudar una obligación terminal;
+- abrir otra instancia o recurso por heurística;
+- restaurar autoridad desde checkpoint, URL o cliente;
+- renovar claim sin validación;
+- transferir custodia o borrador implícitamente;
+- repetir una operación con resultado desconocido;
+- ocultar conflicto o conciliación;
+- presentar `COMPLETION_PENDING_SYNC` como `COMPLETED`;
+- reconstruir un work item espejo;
+- perder evidencia o trabajo confirmado;
+- continuar con contexto incompatible;
+- aplicar `last write wins` silencioso;
+- no poder relacionar retorno, proceso, instancia y obligación con el mismo caso.
+
+#### 76. Casos fuera de alcance
+
+Quedan fuera de esta aprobación documental:
+
+- crear checkpoints;
+- crear borradores persistentes;
+- implementar claims o leases;
+- implementar handoffs;
+- crear work items runtime;
+- modificar estados de proceso;
+- crear rutas o deep links;
+- modificar `InterruptedProcessState`;
+- migrar consumidores;
+- modificar autorización;
+- modificar idempotencia;
+- modificar colas;
+- modificar Supabase;
+- modificar datos;
+- ejecutar pruebas físicas;
+- medir todavía el tiempo objetivo del trabajador.
+
+#### 77. Criterios de aceptación
+
+- [ ] Se define un contrato de certificación de continuidad post-retorno por package y global final.
+- [ ] El contexto correcto de `UX-QA-012` se consume sin reabrir su responsabilidad.
+- [ ] Reanudar no equivale a volver a la última pantalla.
+- [ ] Navegación y retorno no mutan el estado empresarial por sí solos.
+- [ ] La misma pantalla no se confunde con la misma obligación.
+- [ ] `process_id`, `process_instance_id`, `work_item_id`, recurso y paso permanecen semánticamente separados.
+- [ ] Los dieciséis estados conceptuales de work item conservan su semántica vigente.
+- [ ] Los diecisiete estados de `InterruptedProcessState` se tratan como clasificación de continuidad y no como autoridad.
+- [ ] `RESUMABLE` exige revalidación completa aplicable.
+- [ ] `RESUMABLE_WITH_REVIEW` explica cambios materiales antes de continuar.
+- [ ] `WAITING`, bloqueo, handoff, reasignación, reautenticación y conciliación conservan tratamientos distintos.
+- [ ] `RESULT_UNKNOWN` se resuelve antes de cualquier repetición.
+- [ ] `COMPLETED`, `CANCELLED`, `SUPERSEDED` y `EXPIRED` no se reanudan como obligación activa.
+- [ ] Claim, lease y custodia se revalidan y no se presumen vigentes.
+- [ ] Borrador, checkpoint, operación pendiente, receipt y estado empresarial permanecen separados.
+- [ ] Cambio de actor o dispositivo no transfiere trabajo ni autoridad implícitamente.
+- [ ] Cambios de versión no usan `last write wins` silencioso.
+- [ ] La ausencia de checkpoint no crea una obligación nueva.
+- [ ] La evidencia posterior relaciona retorno, proceso, instancia, work item y decisión de continuidad.
+- [ ] La materialización compartida existente no se trata como evidencia suficiente de adopción end-to-end.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos.
+- [ ] `UX-QA-014` conserva íntegramente la responsabilidad de certificar tiempo objetivo después de que la continuidad del proceso esté correctamente clasificada.
+
+#### 78. Límites
+
+Esta tarea:
+
+- no implementa reanudación;
+- no persiste checkpoints;
+- no crea work items;
+- no modifica claims ni leases;
+- no transfiere custodia;
+- no crea handoffs;
+- no cambia ownership;
+- no reescribe estados de dominio;
+- no implementa retry;
+- no ejecuta conciliación;
+- no cambia autorización;
+- no modifica rutas;
+- no modifica consumidores;
+- no publica componentes;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta pruebas físicas;
+- no certifica packages sin evidencia posterior a E5;
+- no evalúa productividad individual ni tiempo objetivo.
+
+#### 79. Handoff a `UX-QA-014`
+
+`UX-QA-013` entrega a `UX-QA-014`:
+
+- package y caso certificado;
+- proceso e instancia;
+- work item u obligación aplicable;
+- estado autoritativo post-retorno;
+- clasificación de continuidad;
+- actor y contexto revalidados;
+- recurso y versión vigente;
+- claim, custodia y checkpoint relevantes;
+- resultados pendientes o desconocidos ya clasificados;
+- condición de espera, bloqueo, handoff, reasignación o conciliación cuando exista;
+- instante o referencia desde la cual el trabajo vuelve a ser ejecutable de forma legítima;
+- evidencia de que navegación y recuperación técnica no fueron contabilizadas como acción empresarial.
+
+`UX-QA-014` podrá medir el tiempo objetivo sin confundir esperas legítimas, fallas técnicas, reautenticación, handoffs o conciliaciones con demora atribuible al trabajador.
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-012 — El retorno entre aplicaciones conserva contexto`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-013 — El retorno conserva el proceso cuando corresponde`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo`
 ### [ ] UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
 ### [ ] UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
 ### [ ] UX-QA-016 — La información sensible se oculta correctamente
