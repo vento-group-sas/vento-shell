@@ -18258,7 +18258,1531 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-017 — La aplicación propietaria conserva la fuente de verdad`
-### [ ] UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
+### ✅ UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-016 — La información sensible se oculta correctamente
+**Tarea siguiente:** UX-QA-018 — Los eventos idempotentes no duplican efectos
+**Tipo de tarea:** documental; definición canónica de la certificación integral de propiedad funcional y fuente de verdad que demuestra por package y globalmente que cada hecho, proceso, capacidad y registro empresarial conserva una propietaria resoluble, que las consumidoras no crean fuentes competidoras ni corrigen directamente estados ajenos, que las proyecciones, caches, reportes, eventos, handoffs, archivos, infraestructura y superficies no adquieren autoridad por representación o ubicación física, y que toda transición de propiedad mantiene identidad, historia, compatibilidad, evidencia y rollback sin invadir la certificación de idempotencia reservada a `UX-QA-018`
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de propiedad funcional y fuente de verdad definido; las ejecuciones `UX-QA-017::<package_id>` y `UX-QA-017::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff aprobado de `UX-QA-016`, las 69 asignaciones de propietaria de proceso, las 217 decisiones de fuente de `CAP-MAP-008`, la proyección materializada de `@vento/contracts/ownership`, los contratos de integración y las fuentes canónicas aplicables, sin afirmar que una tabla, repositorio, servicio, UI, evento, proyección o writer técnico pruebe por sí solo ownership empresarial
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, contratos runtime, catálogos, ownership, procesos, permisos, roles, tablas, esquemas, migraciones, RLS, RPC, APIs, Server Actions, workers, eventos, handoffs, caches, datos, Supabase, consumidores, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que la aplicación propietaria conserva la fuente de verdad de cada hecho, proceso, capacidad o registro empresarial después de la implementación de un package.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿QUÉ SUJETO EMPRESARIAL SE ESTÁ EVALUANDO?
+¿QUÉ APLICACIÓN ES SU PROPIETARIA CANÓNICA?
+¿DÓNDE NACE EL HECHO?
+¿QUIÉN PUEDE CORREGIRLO?
+¿QUIÉN DECIDE SU ESTADO O CIERRE?
+¿QUÉ COPIAS O PROYECCIONES EXISTEN?
+¿ALGUNA CONSUMIDORA PUEDE MODIFICAR EL ORIGINAL SIN PASAR POR LA PROPIETARIA?
+¿UN EVENTO, HANDOFF, CACHE, REPORTE O ARCHIVO SE ESTÁ TRATANDO COMO REGISTRO PRINCIPAL?
+¿EL BACKEND PROPIETARIO REVALIDA LA SOLICITUD ANTES DE MUTAR?
+¿UNA TRANSICIÓN DE PROPIETARIA CONSERVA IDENTIDAD, HISTORIA Y ROLLBACK?
+```
+
+Regla central:
+
+```text
+APARECER EN UNA APLICACIÓN
+!=
+SER PROPIEDAD DE ESA APLICACIÓN
+```
+
+Y también:
+
+```text
+APLICACIÓN PROPIETARIA
++
+REGISTRO PRINCIPAL
++
+REGLA DE CORRECCIÓN
++
+CONTRATO DE CONSUMO
++
+FRONTERA DE ESCRITURA
+=
+FUENTE DE VERDAD CERTIFICABLE
+```
+
+#### 2. Resultado documental
+
+`UX-QA-017` define el contrato de certificación integral de propiedad funcional y fuente de verdad para BLOQUE U.
+
+El resultado establece:
+
+- unidad certificable por package y escenario;
+- resolución de propietaria por proceso y capacidad;
+- resolución de fuente actual, fuente objetivo y estado de transición;
+- clasificación de representaciones propietarias y no propietarias;
+- oracle de creación, lectura, mutación, corrección y cierre;
+- pruebas de escritura cross-app;
+- pruebas de proyección, caché, derivación y evidencia;
+- pruebas de handoff, evento y navegación sin transferencia implícita de propiedad;
+- pruebas de infraestructura compartida sin ownership implícito;
+- pruebas de fuentes externas y referencias internas;
+- pruebas de cambio de propietaria y transición controlada;
+- métricas de fuentes competidoras y mutaciones ajenas;
+- criterios de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-018`.
+
+Topología contractual:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-017::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-017::GLOBAL-FINAL
+```
+
+#### 3. Handoff recibido de `UX-QA-016`
+
+`UX-QA-016` entrega a `UX-QA-017`:
+
+- package y escenarios certificados;
+- aplicaciones y superficies observadas;
+- actor, finalidad, territorio y contexto;
+- categorías y clases de información aplicables;
+- campos o elementos evaluados;
+- tratamiento esperado y observado;
+- proyección cliente observada;
+- masking, omisión, supresión y agregación aplicados;
+- fuente declarada por la superficie para cada dato material;
+- puntos donde una proyección fue correcta pero la procedencia o ownership requieren confirmación;
+- evidencia de búsqueda, notificación, shared device, offline, archivo, exportación y accesibilidad aplicable;
+- hallazgos de divergencia entre aplicaciones para el mismo dato;
+- defectos cerrados y excepciones vigentes.
+
+`UX-QA-017` podrá certificar la fuente de verdad propietaria sin reabrir la clasificación ni el tratamiento de exposición ya certificados por `UX-QA-016`.
+
+#### 4. Alcance exacto
+
+La certificación aplica, cuando corresponda, a:
+
+- procesos `VPROC-*` incluidos por el package;
+- subcapacidades `CAP-*` incluidas por el package;
+- registros principales;
+- estados de workflow;
+- hechos y ledgers;
+- maestros compartidos;
+- referencias compartidas;
+- proyecciones consumidoras;
+- caches controlados;
+- resultados derivados;
+- documentos y evidencia;
+- comandos entre aplicaciones;
+- queries entre aplicaciones;
+- eventos empresariales;
+- handoffs;
+- integraciones internas;
+- integraciones con terceros;
+- datos mantenidos en Supabase;
+- estados mantenidos fuera de Supabase;
+- trabajo offline;
+- snapshots o materializaciones locales;
+- migraciones y transiciones de propietaria;
+- interfaces administrativas;
+- interfaces operativas;
+- SHELL como coordinador transversal;
+- NUMERA como consumidor o propietario de resultados económicos propios;
+- PASS, PULSO, NEXO, FOGO, ORIGO, VISO, ANIMA y AURA según su ownership canónico;
+- aplicaciones futuras o diferidas solo en el estado aprobado que corresponda.
+
+#### 5. Fuentes normativas de ownership
+
+La certificación no inventa propietarias.
+
+Las decisiones se resuelven desde las autoridades canónicas vigentes, entre ellas:
+
+- `PROC-CAT-005` y `PROC-APPLICATION-OWNERSHIP-REGISTRY-001` para propietaria de los 69 procesos;
+- `CAP-MAP-008` para fuente actual y fuente objetivo de las 217 subcapacidades;
+- `CAP-MAP-013` para conflictos AS-IS de propiedad competidora;
+- `@vento/contracts/ownership` como proyección compartida reconciliada, sin sustituir las autoridades documentales;
+- contratos `INT-APP-*` para interacción entre aplicaciones;
+- contratos de handoff, eventos y acciones compartidas aplicables;
+- contratos propios de cada dominio cuando definan una frontera más específica.
+
+La prueba falla si deduce ownership únicamente desde:
+
+- nombre del repositorio;
+- nombre del esquema;
+- nombre de la tabla;
+- ubicación en Supabase;
+- ruta de frontend;
+- aplicación que renderiza;
+- permiso que permite abrir la pantalla;
+- servicio que ejecuta infraestructura;
+- último writer observado;
+- evento que transporta el dato;
+- archivo que contiene una copia;
+- dashboard que lo agrega.
+
+#### 6. Universo de propiedad de procesos
+
+El contrato compartido vigente representa **69 asignaciones de propietaria de proceso**.
+
+Distribución de referencia:
+
+```text
+shell   0
+anima   1
+viso   20
+nexo   16
+fogo    6
+origo   4
+pulso  12
+numera  7
+aura    2
+pass    1
+TOTAL  69
+```
+
+La diferencia entre pertenecer al catálogo de aplicaciones y poseer un proceso es deliberada.
+
+```text
+APP_CODE EXISTENTE
+!=
+PROCESO PROPIO
+```
+
+En particular:
+
+```text
+shell = 0 procesos propietarios en el corte vigente
+```
+
+SHELL puede coordinar, presentar, enlazar o transportar contexto sin apropiarse del hecho empresarial.
+
+#### 7. Universo de fuente por capacidad
+
+`CAP-MAP-008` cubre **217 decisiones de fuente** y la proyección compartida vigente materializa exactamente **18 proyecciones base de familia** sin fabricar una tabla plana de 217 filas.
+
+El modelo canónico permanece:
+
+```text
+FUENTE BASE DE LA FAMILIA
++
+EXCEPCIÓN DE LA SUBCAPACIDAD
+=
+FUENTE ACTUAL Y FUENTE OBJETIVO DE LA SUBCAPACIDAD
+```
+
+La certificación no reemplaza ese modelo por una tabla inferida desde código.
+
+Una referencia específica como:
+
+```text
+CAP-06.04
+```
+
+no podrá resolverse únicamente con la base de:
+
+```text
+CAP-06
+```
+
+cuando exista posibilidad de excepción canónica.
+
+#### 8. Estados canónicos de fuente objetivo
+
+Se conservan exactamente los cinco estados de `CAP-MAP-008`:
+
+```text
+OBJETIVO_FUERTE
+OBJETIVO_CON_FRONTERA
+OBJETIVO_DIVIDIDO
+OBJETIVO_DIFERIDO
+SIN_FUENTE_ADECUADA
+```
+
+Interpretación para prueba:
+
+| Estado | Regla de certificación |
+| --- | --- |
+| `OBJETIVO_FUERTE` | existe una propietaria principal inequívoca para el resultado evaluado |
+| `OBJETIVO_CON_FRONTERA` | la propietaria gobierna su resultado, respetando hechos o documentos gobernados por otra fuente |
+| `OBJETIVO_DIVIDIDO` | la subcapacidad contiene resultados distintos con propietarias distintas; no se fusionan |
+| `OBJETIVO_DIFERIDO` | la dirección objetivo existe, pero no permite afirmar disponibilidad o ownership runtime no materializado |
+| `SIN_FUENTE_ADECUADA` | no se inventa propietaria; el package no puede presentar ese resultado como fuente final sin resolver el gap propietario |
+
+#### 9. Definición operativa de fuente de verdad
+
+Una fuente de verdad no es simplemente donde aparece un dato.
+
+Para el sujeto evaluado debe poder responderse:
+
+1. dónde nace el registro o hecho;
+2. dónde se considera válida la versión vigente;
+3. quién puede corregirlo;
+4. cómo se conserva la versión anterior;
+5. quién decide su transición o cierre;
+6. qué aplicaciones lo consumen sin recrearlo;
+7. cómo se demuestra la procedencia de una copia o proyección.
+
+Cuando una de esas respuestas se divide legítimamente por resultado, el oracle deberá separar los resultados antes de emitir veredicto.
+
+#### 10. Identidad del sujeto propietario
+
+No existe un `ownership_id` serial universal.
+
+La certificación se ancla en identidades canónicas como:
+
+- `process_id`;
+- `capability_id` o subcapacidad exacta;
+- `resource_type` y `resource_id` cuando exista contrato estable;
+- identificador de hecho, ledger, documento o workflow definido por su dominio;
+- autoridad que resuelve la propiedad;
+- versión efectiva de la decisión.
+
+Está prohibido fabricar una identidad concatenando:
+
+```text
+app + tabla + ruta + repositorio
+```
+
+para convertirla en ownership canónico.
+
+#### 11. Clases de representación no propietaria
+
+La proyección compartida conserva cinco clases conceptuales:
+
+```text
+REFERENCE
+PROJECTION
+CONTROLLED_CACHE
+DERIVED_RESULT
+EVIDENCE_COPY
+```
+
+Reglas:
+
+- `REFERENCE` señala al original; no puede corregirlo;
+- `PROJECTION` reproduce un subconjunto o vista; no puede reescribir el original;
+- `CONTROLLED_CACHE` acelera acceso dentro de frescura y política; no adquiere autoridad;
+- `DERIVED_RESULT` puede ser fuente de su propia derivación, pero no de los hechos que la alimentan;
+- `EVIDENCE_COPY` demuestra o acompaña un hecho; no sustituye el estado empresarial salvo que el contrato del dominio lo defina expresamente.
+
+#### 12. Clases de estado propietario
+
+Para la prueba se distinguen como mínimo:
+
+```text
+SOURCE_OF_TRUTH_STATE
+IMMUTABLE_FACT_OR_LEDGER
+OWNER_WORKFLOW_STATE
+CONSUMER_PROJECTION
+SHARED_REFERENCE
+INTEGRATION_METADATA
+AUDIT_OR_EVIDENCE
+```
+
+La clasificación se usa para resolver qué escritura es admisible y qué evidencia debe observarse.
+
+#### 13. Oracle mínimo por sujeto
+
+Cada sujeto material evaluado tendrá un oracle documental con:
+
+```text
+package_id
+scenario_id
+subject_kind
+subject_ref
+process_id
+capability_ref
+canonical_owner_app
+owner_authority_ref
+source_status
+ownership_scope
+representation_class
+source_of_truth_location_ref
+consumer_app
+consumer_role
+interaction_family
+expected_read_path
+expected_write_path
+expected_correction_path
+expected_close_path
+expected_projection_behavior
+expected_freshness_rule
+expected_external_source_boundary
+observed_read_path
+observed_write_path
+observed_correction_path
+observed_close_path
+observed_owner_confirmation
+observed_competing_source
+verdict
+```
+
+Los campos no aplicables deberán omitirse o justificarse; no se completarán con valores inventados.
+
+#### 14. Regla de escritura propietaria
+
+Una consumidora no escribe directamente el estado privado de la propietaria.
+
+Secuencia esperada:
+
+```text
+CONSUMIDORA
+-> SOLICITA UNA ACCIÓN POR CONTRATO AUTORIZADO
+-> PROPIETARIA REVALIDA ACTOR, CONTEXTO, PERMISO, RECURSO, ESTADO Y VERSIÓN
+-> PROPIETARIA APLICA O RECHAZA
+-> PROPIETARIA CONFIRMA EL HECHO RESULTANTE
+-> CONSUMIDORAS ACTUALIZAN SU PROYECCIÓN
+```
+
+La prueba falla cuando una aplicación participante puede modificar directamente la fuente ajena sin un contrato propietario que preserve esta semántica.
+
+#### 15. Lectura no equivale a ownership
+
+Poder consultar un registro no concede propiedad.
+
+La prueba deberá cubrir casos donde una consumidora:
+
+- consulta;
+- lista;
+- busca;
+- agrega;
+- muestra un resumen;
+- abre un deep link;
+- recibe una notificación;
+- conserva una referencia;
+- recibe una proyección.
+
+Ninguna de esas acciones permite inferir:
+
+```text
+CONSUMIDORA = PROPIETARIA
+```
+
+#### 16. Corrección no equivale a edición transversal
+
+Una corrección del hecho propietario deberá ocurrir mediante la semántica aprobada del dominio.
+
+Se verificará que:
+
+- la consumidora no edite silenciosamente la copia y la trate como nueva verdad;
+- la propietaria conserve el valor anterior cuando el riesgo lo requiera;
+- la corrección conserve motivo, actor y relación con el original cuando aplique;
+- una solicitud de corrección no se presente como corrección consumada antes de confirmación propietaria;
+- un resultado derivado se recalcule o invalide después de la corrección del hecho fuente según contrato.
+
+#### 17. Cierre propietario
+
+Cerrar una vista, tarea, notificación o proyección no cierra automáticamente el proceso propietario.
+
+La prueba distinguirá:
+
+```text
+CERRAR UI
+CERRAR WORK ITEM
+CERRAR HANDOFF
+CERRAR PROCESO
+CERRAR CASO
+CERRAR LEDGER / PERIODO
+```
+
+Solo la frontera propietaria aplicable podrá producir el cierre empresarial correspondiente.
+
+#### 18. SHELL no es propietaria universal
+
+SHELL puede:
+
+- resolver navegación;
+- presentar aplicaciones;
+- proyectar contexto seguro;
+- mostrar referencias;
+- mostrar work items;
+- transportar handoff;
+- coordinar retorno.
+
+SHELL no adquiere por ello propiedad sobre:
+
+- ventas;
+- compras;
+- inventario;
+- producción;
+- talento;
+- finanzas;
+- clientes;
+- asistencia;
+- recetas;
+- incidentes de otros dominios.
+
+La prueba falla si un estado transversal en SHELL se vuelve editable como sustituto del estado propietario.
+
+#### 19. Supabase no es propietario empresarial
+
+Supabase puede contener físicamente:
+
+- tablas;
+- vistas;
+- funciones;
+- RPC;
+- Storage;
+- Realtime;
+- Auth;
+- datos de varias aplicaciones.
+
+Esa ubicación no convierte a Supabase en propietario empresarial.
+
+La prueba deberá separar:
+
+```text
+PERSISTENCIA FÍSICA
+!=
+PROPIEDAD FUNCIONAL
+```
+
+Una tabla compartida exige una frontera funcional explícita; no autoriza que cualquier aplicación con acceso técnico la trate como maestra propia.
+
+#### 20. `vento-shell` no es fuente empresarial universal
+
+`vento-shell` es fuente técnica canónica para contratos, tooling y migraciones VENTO cuando corresponda.
+
+No se convierte por ello en fuente empresarial de:
+
+- pedido;
+- recepción;
+- inventario;
+- receta;
+- turno;
+- pago;
+- cliente;
+- venta;
+- caso operativo;
+- cualquier otro hecho mantenido por una aplicación de dominio.
+
+La prueba no utilizará la ubicación del código como oracle de ownership empresarial.
+
+#### 21. Repositorio no equivale a propiedad
+
+El repositorio que contiene un componente, adaptador, tipo o integración no define por sí solo la propietaria del proceso.
+
+La prueba falla si se justifica ownership mediante frases equivalentes a:
+
+```text
+ESTÁ EN EL REPO DE X, POR ESO X ES EL DUEÑO
+```
+
+sin resolver la autoridad canónica correspondiente.
+
+#### 22. Pantalla no equivale a propiedad
+
+Una pantalla puede componer información de varios dominios.
+
+Cuando una superficie muestre:
+
+- datos propios;
+- referencias ajenas;
+- proyecciones ajenas;
+- estado derivado;
+- documentos relacionados;
+- acciones cross-app;
+
+el oracle deberá conservar la propietaria por sujeto.
+
+La aplicación que renderiza no podrá reclamar ownership del conjunto completo.
+
+#### 23. Ruta no equivale a propiedad
+
+Abrir una ruta en VISO, SHELL, PASS u otra aplicación no reasigna la fuente.
+
+Deep links, alias, rutas administrativas y launchers deberán conducir a la propietaria o a una proyección explícita sin crear una fuente paralela.
+
+#### 24. Último writer no equivale a propietaria
+
+La observación de que una aplicación escribió físicamente una fila no es suficiente para certificar ownership.
+
+Puede tratarse de:
+
+- migración controlada;
+- adaptador propietario;
+- servicio técnico;
+- trigger;
+- tarea de backfill;
+- aplicación legacy;
+- deuda AS-IS;
+- operación inválida.
+
+La certificación exige autoridad documental y semántica, no solo telemetría del writer.
+
+#### 25. Comandos cross-app
+
+Un comando cross-app válido deberá conservar, según aplicabilidad:
+
+- aplicación solicitante;
+- aplicación propietaria;
+- proceso;
+- instancia de proceso;
+- recurso;
+- acción solicitada;
+- actor efectivo;
+- contexto;
+- versión;
+- autorización;
+- correlación;
+- resultado propietario.
+
+La consumidora no declara el resultado antes de que la propietaria lo confirme.
+
+#### 26. Queries cross-app
+
+Una query puede devolver una proyección de la propietaria.
+
+La prueba verifica que:
+
+- la query no habilite mutación oculta;
+- el consumidor conozca procedencia y frescura cuando sea material;
+- una vista local no permita corregir el original;
+- la ausencia o stale no se rellene con una copia competidora sin contrato;
+- la autorización de lectura no se transforme en permiso de escritura.
+
+#### 27. Eventos empresariales
+
+Un evento comunica un hecho confirmado.
+
+No transfiere automáticamente propiedad a:
+
+- broker;
+- outbox;
+- inbox;
+- consumidora;
+- analítica;
+- SHELL;
+- observabilidad.
+
+La aplicación emisora conserva el hecho que le corresponde; la consumidora puede producir un hecho nuevo de su propio dominio cuando el contrato lo defina.
+
+La duplicación o idempotencia de entrega se certificará en `UX-QA-018`; esta tarea solo verifica que el evento no se convierta en una fuente competidora.
+
+#### 28. Handoffs
+
+Un handoff puede transferir:
+
+- trabajo;
+- atención;
+- custodia;
+- responsabilidad de ejecutar un siguiente paso;
+- contexto necesario.
+
+No transfiere automáticamente:
+
+- propiedad del proceso completo;
+- propiedad del hecho anterior;
+- derecho de reescribir el registro de origen;
+- autoridad sobre un ledger ajeno.
+
+La receptora revalida contrato y autoridad antes de actuar.
+
+#### 29. Work items
+
+Mostrar un work item no convierte a la aplicación anfitriona en propietaria de la obligación.
+
+Se verificará que:
+
+- el work item conserve referencia a su origen;
+- el estado visible no se use para falsificar cierre empresarial;
+- la acción principal conduzca a la capacidad propietaria o use un contrato autorizado;
+- el host no mantenga una segunda máquina de estados competidora.
+
+#### 30. Proyecciones consumidoras
+
+Una `CONSUMER_PROJECTION` deberá ser:
+
+- derivada;
+- trazable a su fuente;
+- reemplazable;
+- gobernada por frescura;
+- incapaz de corregir por sí sola el original;
+- incapaz de convertirse en fuente por permanecer disponible cuando el owner está caído.
+
+La prueba falla si una proyección queda más autoritativa que su fuente.
+
+#### 31. Cache controlado
+
+Un cache no adquiere ownership.
+
+La prueba deberá verificar:
+
+- procedencia;
+- versión o frescura;
+- invalidación;
+- aislamiento de actor/contexto cuando aplique;
+- comportamiento ante revocación;
+- prohibición de mutar el hecho desde el cache como si fuera original.
+
+Un cache stale puede servir para lectura limitada según contrato, pero no para afirmar una transición propietaria nueva.
+
+#### 32. Resultados derivados
+
+Un `DERIVED_RESULT` puede ser fuente de verdad de su propio cálculo si el dominio así lo define.
+
+Ejemplo conceptual:
+
+```text
+HECHOS OPERATIVOS
+-> NUMERA CALCULA RESULTADO ECONÓMICO
+```
+
+NUMERA puede gobernar el resultado económico derivado aprobado, pero no corregir desde ese resultado la venta, compra, inventario o producción de origen.
+
+La prueba separará:
+
+```text
+PROPIEDAD DE LA DERIVACIÓN
+!=
+PROPIEDAD DE LOS HECHOS FUENTE
+```
+
+#### 33. Reportes y dashboards
+
+Un reporte o dashboard no es fuente de verdad del hecho mostrado.
+
+La prueba verifica que:
+
+- no exista edición del hecho a través de un agregado sin ruta propietaria;
+- drill-down preserve procedencia;
+- correcciones se realicen en el dominio correcto;
+- un cálculo oficial tenga autoridad sobre su métrica, no sobre los eventos que la alimentan.
+
+#### 34. Documentos y evidencia
+
+Un documento puede ser evidencia de un hecho sin apropiarse del hecho.
+
+La aplicación propietaria del hecho conserva su semántica; el sistema documental puede gobernar:
+
+- versión del archivo;
+- autenticidad;
+- firma;
+- retención;
+- clasificación;
+- acceso al documento.
+
+La prueba distinguirá esos dos ownerships.
+
+#### 35. Fuentes externas
+
+Un sistema externo puede ser fuente de un hecho externo.
+
+Ejemplos conceptuales:
+
+- banco para movimiento bancario;
+- autoridad para documento oficial;
+- proveedor logístico para evento externo de entrega;
+- marketplace para solicitud o evento originado allí.
+
+La aplicación VENTO propietaria deberá conservar la referencia y el estado interno que le corresponden sin declarar que controla el hecho externo.
+
+#### 36. Estado interno frente a estado externo
+
+Cuando exista tercero:
+
+```text
+ESTADO EXTERNO
+!=
+ESTADO INTERNO
+```
+
+La prueba verificará traducción y conciliación sin que:
+
+- el callback externo escriba arbitrariamente estados internos;
+- VENTO reescriba el registro externo;
+- la UI mezcle ambos estados en una única etiqueta ambigua;
+- un timeout permita inventar cuál fuente tiene razón.
+
+#### 37. Maestros compartidos
+
+Los maestros compartidos conservan una propietaria designada.
+
+Las demás aplicaciones consumen:
+
+- identificador estable;
+- versión;
+- atributos autorizados;
+- eventos o proyecciones aprobados.
+
+No mantienen un maestro mutable paralelo por conveniencia.
+
+#### 38. Producto y presentación
+
+NEXO conserva la fuente objetivo de producto y presentación según el contrato vigente.
+
+FOGO, ORIGO, PULSO y NUMERA consumen la identidad compartida sin crear una identidad maestra competidora.
+
+La certificación por package debe aplicar únicamente cuando esos sujetos formen parte del alcance del package.
+
+#### 39. Receta y versión productiva
+
+FOGO conserva receta y versión productiva.
+
+NEXO y NUMERA pueden consumir efectos, cantidades o costos según contrato sin editar la receta desde sus proyecciones.
+
+Una copia operativa en otra aplicación no se declara receta maestra.
+
+#### 40. Proveedor y compra
+
+ORIGO conserva proveedor y ciclo de compra según la frontera canónica aplicable.
+
+NEXO y NUMERA consumen recepción y efecto económico sin recrear orden, proveedor o decisión comercial como fuente paralela.
+
+#### 41. Inventario y movimiento
+
+NEXO gobierna existencia y movimiento.
+
+Compras, producción y ventas pueden originar hechos que producen efectos de inventario, pero esos efectos se aplican por la frontera propietaria aprobada.
+
+Una aplicación origen no conserva un saldo de inventario competidor como autoridad final.
+
+#### 42. Producción
+
+FOGO gobierna orden, lote y resultado productivo.
+
+NEXO recibe movimientos aceptados de insumos y producto terminado; NUMERA puede analizar costos.
+
+La prueba separa esos resultados y sus propietarias.
+
+#### 43. Venta, caja y pago aplicado
+
+PULSO gobierna pedido, venta, caja y pago aplicado según el alcance canónico.
+
+NUMERA recibe hechos económicos sin recrear la venta como registro principal.
+
+PASS puede consumir identidad, fidelización o tracking sin apropiarse de la venta.
+
+#### 44. Cliente
+
+PASS gobierna identidad de cliente y acciones directas del cliente según los contratos aplicables.
+
+PULSO conserva solo la información necesaria para operar venta y relación comercial que le corresponda.
+
+La coexistencia no autoriza dos perfiles maestros independientes.
+
+#### 45. Personas y trabajo
+
+La familia de personas y trabajo contiene ownership dividido.
+
+VISO gobierna administración laboral y decisiones correspondientes; ANIMA gobierna registros personales y asistencia que le corresponden.
+
+La prueba no fusionará ambos resultados bajo una única propietaria por conveniencia.
+
+#### 46. Asistencia
+
+Cuando el sujeto sea asistencia individual, el oracle deberá distinguirla de:
+
+- turno publicado;
+- asignación laboral;
+- identidad laboral;
+- nómina;
+- contexto de autorización.
+
+Una aplicación que consume asistencia no podrá editarla como propia salvo contrato específico aprobado.
+
+#### 47. Finanzas
+
+Los hechos económicos pueden tener ownership distinto de los hechos operativos que los originan.
+
+La certificación debe distinguir:
+
+- venta;
+- pago aplicado;
+- movimiento bancario;
+- obligación;
+- conciliación;
+- costo;
+- presupuesto;
+- asiento o documento externo cuando aplique.
+
+No se creará una única “fuente financiera” universal por simplificación.
+
+#### 48. AURA diferida
+
+El contrato de ownership asigna procesos objetivo a AURA, pero la disponibilidad de AURA permanece gobernada por su decisión de continuidad y readiness.
+
+La certificación falla si:
+
+- una reserva de ownership se presenta como aplicación operativa ya disponible;
+- una ruta legacy se reasigna a AURA por inferencia;
+- una proyección existente se declara fuente AURA sin transición aprobada.
+
+`OBJETIVO_DIFERIDO` no equivale a runtime certificado.
+
+#### 49. Caso AS-IS de propiedad competidora
+
+El contrato compartido preserva como deuda preexistente el caso:
+
+```text
+public.employee_shifts
+AS-IS: VISO + ANIMA pueden editar
+OBJETIVO: VISO publica o corrige
+CONSUMIDORA: ANIMA consulta
+```
+
+`UX-QA-017` no puede considerar ese patrón correcto por el solo hecho de ser legacy.
+
+El package aplicable deberá demostrar la frontera objetivo o una transición aprobada que conserve una sola autoridad efectiva durante la ventana evaluada.
+
+#### 50. Dual write y shadow
+
+Una transición puede conservar una copia shadow sin crear propiedad competidora cuando:
+
+- una única frontera propietaria decide el efecto;
+- el shadow no acepta correcciones independientes;
+- existe reconciliación;
+- existe procedencia;
+- existe criterio de retiro;
+- existe rollback;
+- la UI no presenta ambos como equivalentes autoritativos.
+
+La prueba falla cuando dos sistemas aceptan mutaciones independientes del mismo hecho sin una regla única de precedencia y reconciliación.
+
+#### 51. Migración de propietaria
+
+Un cambio de propietaria deberá conservar:
+
+- `VPROC-*`;
+- identidad del recurso cuando corresponda;
+- historial;
+- consumidores;
+- compatibilidad;
+- datos;
+- eventos;
+- pruebas;
+- evidencias;
+- versiones;
+- rollback;
+- momento efectivo de transferencia.
+
+Mover datos físicamente no completa por sí solo la transferencia funcional.
+
+#### 52. Momento efectivo de transferencia
+
+La prueba deberá poder identificar:
+
+```text
+ANTES DEL CUTOVER
+DURANTE TRANSICIÓN CONTROLADA
+DESPUÉS DEL CUTOVER
+ROLLBACK
+```
+
+En cada estado debe existir una única regla para decidir qué fuente es autoritativa.
+
+No se acepta una ventana donde “depende de cuál aplicación haya escrito último”.
+
+#### 53. Cambio de propietaria y evidencia stale
+
+La evidencia deja de ser suficiente cuando cambia materialmente:
+
+- `PROC-CAT-005`;
+- `CAP-MAP-008`;
+- propietaria del proceso;
+- fuente objetivo;
+- frontera de escritura;
+- command path;
+- tabla o servicio si el cambio altera semántica propietaria;
+- consumidoras;
+- estrategia de migración;
+- política de corrección;
+- contrato de handoff o evento que determine el efecto.
+
+La evidencia antigua podrá conservarse solo si se demuestra que el cambio no altera el oracle aplicable.
+
+#### 54. Aplicación propietaria caída
+
+La indisponibilidad de la propietaria no autoriza a una consumidora a convertirse temporalmente en fuente por defecto.
+
+El comportamiento permitido deberá provenir del contrato de continuidad aplicable:
+
+- lectura stale limitada;
+- captura local pendiente;
+- cola;
+- contingencia manual;
+- bloqueo;
+- fallback externo aprobado.
+
+Una consumidora no inventa un commit propietario durante la caída.
+
+#### 55. Offline
+
+Offline no transfiere propiedad.
+
+Una captura offline puede representar:
+
+```text
+INTENCIÓN PENDIENTE
+HECHO LOCAL PROVISIONAL AUTORIZADO
+EVIDENCIA PENDIENTE
+```
+
+según contrato.
+
+No se declarará hecho propietario final hasta satisfacer la confirmación requerida.
+
+#### 56. Stale
+
+Una proyección stale no adquiere autoridad por ser la última copia disponible.
+
+La prueba verificará:
+
+- indicador de frescura cuando sea material;
+- bloqueo de mutaciones que requieran estado vigente;
+- reconsulta o reconciliación antes de corregir;
+- no sobrescritura del owner con una versión vieja.
+
+#### 57. Dispositivo compartido
+
+Cambiar de actor no cambia la propietaria del dato.
+
+La prueba combina con el resultado de `UX-QA-016` para verificar:
+
+- limpieza de proyecciones del actor anterior;
+- conservación del mismo source-of-truth ref;
+- revalidación de autoridad para nuevas acciones;
+- ausencia de copias locales mutables que sobrevivan como fuente competidora.
+
+#### 58. Autorización y ownership
+
+Permiso y propiedad son dimensiones distintas.
+
+```text
+ACTOR AUTORIZADO A SOLICITAR
+!=
+APLICACIÓN PROPIETARIA DEL HECHO
+```
+
+La aplicación propietaria debe seguir revalidando la acción según su contrato.
+
+La concesión de un permiso a una consumidora no convierte su storage o UI en fuente de verdad.
+
+#### 59. Ownership y custodia
+
+Custodia física o lógica de un objeto no equivale automáticamente a ownership del proceso completo.
+
+Ejemplos conceptuales:
+
+- NEXO puede gobernar custodia o movimiento de inventario sin apropiarse de la orden de compra;
+- un transportador puede custodiar una entrega sin apropiarse del pedido;
+- un sistema documental puede custodiar un archivo sin apropiarse del hecho respaldado.
+
+#### 60. Ownership y auditoría
+
+Logs, traces y auditoría sirven para demostrar:
+
+- solicitud;
+- decisión;
+- mutación;
+- propagación;
+- error;
+- denegación;
+- corrección.
+
+No reemplazan el estado propietario.
+
+La prueba falla si se reconstruye “la verdad actual” únicamente desde logs cuando el contrato exige un registro principal resoluble.
+
+#### 61. Ownership y evidencia
+
+La evidencia puede demostrar un hecho.
+
+No se usará una foto, PDF, captura o recibo como registro principal mutable salvo que el contrato del dominio lo defina expresamente.
+
+La corrección del hecho no se realiza editando la evidencia histórica.
+
+#### 62. Integración metadata
+
+Outbox, inbox, receipt, delivery attempt, lease, dedup record o correlation id son metadata de integración.
+
+No constituyen por sí solos:
+
+- pedido;
+- venta;
+- recepción;
+- movimiento;
+- lote;
+- pago;
+- caso;
+- turno;
+- cierre.
+
+La prueba no contará estados técnicos como hechos empresariales propietarios.
+
+#### 63. Familias mínimas de interacción
+
+El package seleccionará las familias aplicables:
+
+| Familia | Objetivo de prueba |
+| --- | --- |
+| `OWNER_COMMAND` | la propietaria recibe y decide una intención |
+| `OWNER_QUERY` | la consumidora obtiene una proyección sin mutar |
+| `EVENT_NOTIFICATION` | un hecho confirmado se propaga sin transferir propiedad |
+| `HANDOFF_REQUEST` | trabajo/contexto se transfiere sin reescribir el origen |
+| `CONSUMER_PROJECTION_UPDATE` | una proyección se actualiza manteniendo procedencia |
+| `CORRECTION_REQUEST` | una corrección se solicita y confirma en la propietaria |
+| `COMPENSATION_REQUEST` | una compensación futura respeta propiedad; su semántica exacta permanece en contratos aplicables |
+| `RECONCILIATION_CASE` | divergencias se resuelven sin elegir arbitrariamente la última copia |
+| `EXTERNAL_ADAPTER_EXCHANGE` | se separan hecho externo y estado interno |
+| `CONTROLLED_MIGRATION` | el cambio de propietaria conserva una autoridad efectiva única |
+
+#### 64. Clases mínimas de escenario
+
+Cada package seleccionará las clases aplicables y justificará las no aplicables:
+
+| Clase | Escenario |
+| --- | --- |
+| `O1_OWNER_CREATE` | creación del registro principal por la propietaria |
+| `O2_OWNER_UPDATE` | actualización válida en propietaria |
+| `O3_OWNER_CORRECT` | corrección preservando procedencia |
+| `O4_CONSUMER_READ` | lectura desde consumidora |
+| `O5_CONSUMER_WRITE_ATTEMPT` | intento de escritura ajena |
+| `O6_CROSS_APP_COMMAND` | solicitud a propietaria por contrato |
+| `O7_EVENT_PROJECTION` | evento actualiza proyección sin transferir ownership |
+| `O8_HANDOFF` | traspaso sin crear proceso paralelo |
+| `O9_SHARED_INFRA` | varias apps sobre misma infraestructura |
+| `O10_EXTERNAL_SOURCE` | fuente externa + estado interno |
+| `O11_DERIVED_RESULT` | analítica o resultado derivado |
+| `O12_STALE_OFFLINE` | copia local o stale sin autoridad nueva |
+| `O13_OWNER_TRANSITION` | migración/cutover/rollback de propietaria |
+| `O14_COMPETING_SOURCE` | detección de dos fuentes mutables competidoras |
+
+No todos los packages requieren las catorce clases. Sí requieren matriz de aplicabilidad.
+
+#### 65. Casos positivos mínimos
+
+Según alcance, un caso positivo deberá demostrar al menos uno de estos patrones:
+
+- la propietaria crea y confirma el registro;
+- la propietaria corrige manteniendo historia;
+- una consumidora consulta sin mutar;
+- una consumidora solicita comando y espera resultado propietario;
+- un evento refresca una proyección;
+- un handoff abre el destino conservando el proceso original;
+- una cache se invalida y reconstruye desde la fuente;
+- un resultado derivado conserva referencias a sus hechos fuente;
+- un tercero conserva el hecho externo y VENTO su estado interno;
+- un cutover mantiene una única autoridad efectiva.
+
+#### 66. Casos negativos mínimos
+
+Según riesgo, se probarán escenarios como:
+
+- escritura directa de consumidora sobre estado propietario;
+- corrección local no propagada;
+- dos pantallas editando copias maestras diferentes;
+- SHELL guardando un estado empresarial como reemplazo del owner;
+- dashboard tratado como fuente;
+- caché stale sobrescribiendo owner;
+- evento reescribiendo retrospectivamente al emisor;
+- handoff creando un segundo proceso;
+- tabla compartida interpretada como multi-owner;
+- trigger técnico usado como prueba de ownership;
+- archivo exportado reimportado como maestro sin contrato;
+- fuente externa confundida con estado interno;
+- app diferida presentada como owner runtime activo;
+- dual write independiente sin reconciliación;
+- último writer elegido como verdad por conveniencia.
+
+#### 67. Evidencia por package
+
+Cada `UX-QA-017::<package_id>` deberá conservar como mínimo:
+
+- `package_id`;
+- versión desplegada;
+- ambiente;
+- procesos y capacidades evaluados;
+- propietarias esperadas;
+- fuentes objetivo esperadas;
+- consumidoras;
+- tablas/servicios/rutas observadas cuando sean materialmente relevantes;
+- matriz de escenarios aplicables;
+- oracle por sujeto;
+- comandos o queries ejecutados;
+- evidencia de intentos de escritura ajena;
+- evidencia de corrección propietaria;
+- evidencia de procedencia de proyecciones;
+- evidencia de frescura cuando aplique;
+- evidencia de transición o rollback cuando aplique;
+- defectos abiertos;
+- responsable de corrección;
+- estado final.
+
+#### 68. Evidencia automatizada
+
+Cuando sea automatizable, la evidencia puede incluir:
+
+- validación de contratos de ownership;
+- resolución de `process_id -> owner_app_code`;
+- resolución de fuente por capacidad;
+- pruebas contractuales de APIs o comandos;
+- tests de autorización server-side;
+- intentos negativos de escritura cross-app;
+- comparación entre owner state y consumer projection;
+- validación de procedencia/versionado;
+- pruebas de invalidación de cache;
+- pruebas de cutover;
+- inventario de writers;
+- detección de rutas o componentes con estado mutable duplicado;
+- reconciliación de datos durante transición.
+
+La automatización no sustituye una decisión canónica de ownership por heurísticas de código.
+
+#### 69. Evidencia operativa
+
+Cuando el package llegue al gate físico correspondiente, la validación operativa deberá confirmar que el flujo humano no induce a crear fuentes paralelas.
+
+Se observará, cuando aplique, si una persona:
+
+- corrige el dato en el lugar correcto;
+- reconoce cuándo está viendo una proyección;
+- no necesita editar el mismo hecho en dos aplicaciones;
+- no mantiene Excel, chat o papel como maestro paralelo por defecto;
+- puede identificar dónde resolver una divergencia;
+- no interpreta un dashboard como sistema de registro;
+- no confunde estado externo con estado interno.
+
+#### 70. Métricas obligatorias de integridad
+
+Se registran, cuando sean observables:
+
+```text
+owner_resolution_failure_count
+owner_mismatch_count
+competing_mutable_source_count
+direct_foreign_write_count
+consumer_projection_promoted_count
+stale_projection_write_count
+untracked_correction_count
+handoff_parallel_process_count
+shared_infra_owner_inference_count
+external_internal_state_conflation_count
+uncontrolled_dual_write_count
+owner_transition_ambiguity_count
+```
+
+Para una ejecución PASS:
+
+```text
+owner_resolution_failure_count = 0
+owner_mismatch_count = 0
+competing_mutable_source_count = 0
+direct_foreign_write_count = 0
+consumer_projection_promoted_count = 0
+stale_projection_write_count = 0
+untracked_correction_count = 0
+handoff_parallel_process_count = 0
+shared_infra_owner_inference_count = 0
+external_internal_state_conflation_count = 0
+uncontrolled_dual_write_count = 0
+owner_transition_ambiguity_count = 0
+```
+
+No se usa como métrica de PASS el número de repositorios, tablas o copias existentes de forma aislada.
+
+#### 71. Severidad de hallazgos
+
+| Hallazgo | Severidad mínima |
+| --- | --- |
+| dos fuentes mutables competidoras para el mismo hecho | crítica |
+| consumidora puede modificar directamente el estado propietario sin contrato | crítica |
+| owner canónico no resoluble para un proceso activo | crítica |
+| corrección cambia una copia y no el registro principal | crítica |
+| handoff crea proceso paralelo para el mismo hecho | crítica |
+| transición deja dos autoridades efectivas ambiguas | crítica |
+| fuente externa e interna se confunden y permiten cierre falso | crítica |
+| proyección stale puede sobrescribir owner | crítica |
+| SHELL o dashboard actúa como maestro empresarial universal | alta |
+| UI atribuye ownership a aplicación equivocada sin mutación efectiva | alta |
+| procedencia de proyección no puede resolverse | alta |
+| representación secundaria carece de indicador de frescura cuando era obligatorio | media |
+
+Una severidad inferior no produce PASS automáticamente; el gate aplica todos sus criterios.
+
+#### 72. Criterio por package
+
+`UX-QA-017::<package_id>` obtiene PASS únicamente cuando:
+
+- la matriz de aplicabilidad está completa;
+- todos los procesos activos del package resuelven una propietaria canónica;
+- las capacidades evaluadas resuelven fuente con granularidad suficiente;
+- no hay fuentes mutables competidoras;
+- las consumidoras no escriben directamente el estado propietario fuera de contrato;
+- las correcciones se ejecutan en la propietaria o por su command path autorizado;
+- proyecciones, caches y derivados conservan procedencia y no adquieren autoridad indebida;
+- handoffs y eventos no transfieren ownership implícitamente;
+- infraestructura compartida no se interpreta como ownership compartido;
+- fuentes externas se separan del estado interno;
+- cambios de propietaria aplicables tienen transición, reconciliación y rollback verificables;
+- cualquier estado diferido permanece claramente no disponible cuando corresponda;
+- los defectos críticos y altos de ownership están cerrados;
+- la evidencia corresponde a la versión certificada.
+
+#### 73. Criterio `GLOBAL-FINAL`
+
+`UX-QA-017::GLOBAL-FINAL` obtiene PASS cuando:
+
+- todos los packages aplicables tienen resultado final aceptable;
+- no existe package omitido sin justificación;
+- las 69 asignaciones de proceso usadas por los packages son compatibles con la autoridad canónica vigente;
+- no existe una misma identidad empresarial gobernada simultáneamente por dos aplicaciones sin frontera explícita;
+- los estados `OBJETIVO_DIVIDIDO` permanecen divididos por resultado y no por duplicación del mismo hecho;
+- los estados `OBJETIVO_DIFERIDO` no fueron activados por inferencia;
+- los casos `SIN_FUENTE_ADECUADA` aplicables se resolvieron antes de certificar disponibilidad final;
+- las transiciones de ownership no dejaron consumidoras huérfanas ni fuentes legacy mutables sin control;
+- la proyección compartida de ownership no diverge de sus autoridades;
+- no existen defectos bloqueantes abiertos;
+- la evidencia corresponde a las versiones que se pretenden certificar.
+
+El cierre global no sustituye una ejecución por package faltante.
+
+#### 74. Frontera con `UX-QA-018`
+
+`UX-QA-017` certifica:
+
+```text
+QUIÉN POSEE EL HECHO
+DÓNDE SE CORRIGE
+CÓMO SE PROPAGA SIN DUPLICAR OWNERSHIP
+```
+
+`UX-QA-018` certificará:
+
+```text
+QUE REINTENTOS, REPLAYS, EVENTOS Y COMANDOS IDEMPOTENTES
+NO DUPLIQUEN EFECTOS EMPRESARIALES
+```
+
+Por tanto, `UX-QA-017` puede observar un replay o redelivery únicamente para comprobar que no transfiere ownership ni habilita una escritura ajena; no decide todavía el cumplimiento exhaustivo de idempotencia.
+
+#### 75. Frontera con `UX-QA-016`
+
+`UX-QA-016` ya certifica la exposición correcta de información sensible.
+
+`UX-QA-017` no reabre:
+
+- clasificación;
+- masking;
+- supresión;
+- anti-enumeración;
+- limpieza visual;
+- minimización de payload;
+- privacidad de exportaciones.
+
+Sí puede usar esa evidencia para resolver qué dato se observó y de qué fuente provino.
+
+#### 76. No inferencia desde implementación parcial
+
+La existencia de:
+
+- `owner_app_code` en un tipo;
+- helper `resolveProcessOwner()`;
+- contrato generado;
+- tabla de catálogo;
+- API con nombre de dominio;
+- carpeta por aplicación;
+- RLS;
+- trigger;
+- event producer;
+- dashboard;
+- ruta;
+- componente;
+
+no certifica por sí sola que el runtime conserve la fuente de verdad.
+
+La certificación exige observar los escenarios aplicables y las fronteras de mutación reales.
+
+#### 77. Responsabilidad de hallazgos
+
+Cada hallazgo deberá conservar:
+
+```text
+finding_id
+package_id
+subject_ref
+expected_owner
+observed_owner_or_writer
+failure_mode
+severity
+owner_task_or_package
+exit_condition
+evidence_ref
+status
+```
+
+No se dejarán hallazgos narrativos sin owner.
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+Justificación: `UX-QA-017` materializa en BLOQUE U la certificación transversal de obligaciones ya protegidas por requisitos vigentes de propiedad funcional, fuente única, handoff, integración, UX y transición de propietaria. No introduce una nueva regla empresarial ejecutable, identidad, permiso, estado, fuente, evento o efecto que requiera otra identidad `TREQ-*`.
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Esta sección es únicamente trazabilidad y no actualiza el Registro Canónico.
+
+La certificación reutiliza, entre otra cobertura específica de cada package:
+
+- `TREQ-PROC-018` — cada proceso activo resuelve exactamente una propietaria canónica;
+- `TREQ-PROC-019` — la propietaria gobierna registro principal, reglas, estado, corrección y cierre;
+- `TREQ-PROC-020` — un cambio de propietaria conserva identidad, historial, consumidores, compatibilidad, datos, eventos, pruebas y rollback;
+- `TREQ-PROC-021` — las fronteras entre aplicaciones impiden duplicar responsabilidades y fuentes;
+- `TREQ-PROC-022` — una propietaria diferida no implica disponibilidad operativa;
+- `TREQ-INTEGRATION-005` — un handoff conserva contexto y revalida autoridad en destino;
+- `TREQ-INTEGRATION-006` — cada dato empresarial conserva fuente única y no admite fuentes competidoras;
+- `TREQ-SHELL-057` — renderers o aplicaciones propietarias conservan responsabilidades de dominio salvo sharing canónico completo;
+- `TREQ-SHELL-063` — proyecciones y lógica cliente no se convierten en autoridad;
+- `TREQ-UX-005` — experiencia, estado, contexto y fuente de verdad permanecen coherentes para la persona usuaria.
+
+Los requisitos específicos de cada dominio o package siguen aplicando cuando su alcance los incluya.
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia canónica |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea documental no ejecuta materialización física ni build de aplicaciones |
+| LOCAL | NOT_EXECUTED | la incorporación, formateo y validación local pertenecen a la batería documental del repositorio |
+| REMOTA | PASS | se contrastaron la continuidad vigente, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, `CAP-MAP-008`, la proyección `@vento/contracts/ownership`, contratos de propiedad e integración y el archivo propietario remoto |
+| OPERATIVA | NOT_EXECUTED | la certificación de flujo y escritura real se ejecutará por package después del gate físico aplicable |
+| FÍSICA | NOT_APPLICABLE | esta tarea define el contrato de certificación; no autoriza mutaciones, migraciones, Supabase ni despliegues |
+
+#### 81. Criterios de aceptación
+
+- [ ] Se define certificación por package y `GLOBAL-FINAL`.
+- [ ] Se consume íntegramente el handoff de `UX-QA-016` sin reabrir privacidad y masking.
+- [ ] Las propietarias se resuelven desde autoridad canónica y no por inferencia técnica.
+- [ ] Se preserva el universo de 69 procesos y su distribución vigente.
+- [ ] Se preservan las 217 decisiones de fuente de `CAP-MAP-008`.
+- [ ] Las cinco clases de estado de fuente objetivo permanecen diferenciadas.
+- [ ] `OBJETIVO_DIVIDIDO` separa resultados y no autoriza dos fuentes para el mismo hecho.
+- [ ] `OBJETIVO_DIFERIDO` no equivale a runtime disponible.
+- [ ] `SIN_FUENTE_ADECUADA` no se rellena por inferencia.
+- [ ] `shell` no se trata como propietaria universal.
+- [ ] Supabase no se trata como propietario empresarial.
+- [ ] `vento-shell` no se trata como fuente empresarial universal.
+- [ ] Un repositorio no determina ownership por sí mismo.
+- [ ] Una pantalla o ruta no determina ownership por sí misma.
+- [ ] El último writer no determina ownership por sí mismo.
+- [ ] Una referencia no puede corregir el original.
+- [ ] Una proyección no puede corregir el original.
+- [ ] Un cache no adquiere autoridad.
+- [ ] Un resultado derivado no reescribe sus hechos fuente.
+- [ ] Una copia de evidencia no sustituye el estado propietario.
+- [ ] Un evento no transfiere propiedad.
+- [ ] Un handoff no transfiere automáticamente propiedad del hecho.
+- [ ] Un work item no crea una máquina de estados empresarial paralela.
+- [ ] Una consumidora no escribe directamente el estado privado de la propietaria fuera de contrato.
+- [ ] La propietaria revalida autoridad, estado, contexto y versión antes de mutar.
+- [ ] Una corrección ocurre en la frontera propietaria o por command path autorizado.
+- [ ] El cierre de UI o work item no se confunde con cierre de proceso.
+- [ ] Fuentes externas se separan del estado interno VENTO.
+- [ ] Estados externos e internos no se fusionan de forma ambigua.
+- [ ] Maestros compartidos conservan una propietaria designada.
+- [ ] Producto/presentación, receta, compra, inventario, producción, venta, cliente, trabajo y finanzas conservan sus fronteras cuando el package los incluye.
+- [ ] AURA diferida no se presenta como owner runtime activo por inferencia.
+- [ ] El caso legacy de `public.employee_shifts` no se considera correcto por su sola existencia.
+- [ ] Shadow o dual write no crea dos autoridades efectivas.
+- [ ] Toda transición de propietaria conserva identidad, historia, consumidores, evidencia y rollback.
+- [ ] Existe un momento efectivo de transferencia resoluble.
+- [ ] Stale no se convierte en autoridad por disponibilidad.
+- [ ] Offline no transfiere ownership.
+- [ ] Una caída del owner no permite a la consumidora apropiarse del hecho.
+- [ ] Permiso y ownership permanecen como dimensiones separadas.
+- [ ] Custodia y ownership permanecen como dimensiones separadas.
+- [ ] Auditoría y estado propietario permanecen separados.
+- [ ] Metadata de integración no se presenta como hecho empresarial.
+- [ ] Cada package declara matriz de familias y escenarios aplicables.
+- [ ] Los casos negativos cubren escritura ajena, fuente competidora y transición ambigua cuando apliquen.
+- [ ] El oracle conserva autoridad, fuente, paths esperados y resultado observado.
+- [ ] Las métricas críticas permanecen en cero para PASS.
+- [ ] PASS por package exige cierre de hallazgos críticos y altos.
+- [ ] `GLOBAL-FINAL` no oculta packages omitidos ni ownership ambiguo.
+- [ ] La evidencia se invalida ante cambios materiales de ownership o fuente.
+- [ ] La existencia de contratos compartidos no se trata como certificación runtime completa.
+- [ ] Todos los hallazgos conservan owner y condición de salida.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos durante esta tarea documental.
+- [ ] `UX-QA-018` conserva íntegramente la responsabilidad de certificar idempotencia y ausencia de efectos duplicados.
+
+#### 82. Límites
+
+Esta tarea:
+
+- no reasigna propietarias;
+- no modifica `PROC-CAT-005`;
+- no modifica `CAP-MAP-008`;
+- no modifica `@vento/contracts/ownership`;
+- no crea `ownership_id`;
+- no cambia procesos ni subcapacidades;
+- no crea tablas ni esquemas;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no crea permisos;
+- no cambia autorización;
+- no crea APIs ni Server Actions;
+- no crea workers;
+- no crea eventos;
+- no crea handoffs;
+- no ejecuta correcciones;
+- no ejecuta compensaciones;
+- no migra datos;
+- no ejecuta cutover;
+- no modifica caches;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta despliegues;
+- no ejecuta pruebas físicas;
+- no certifica packages antes de `POST_E5_PACKAGE`;
+- no reabre privacidad y exposición de `UX-QA-016`;
+- no certifica exhaustivamente reintentos, deduplicación o idempotencia, responsabilidad de `UX-QA-018`.
+
+#### 83. Handoff a `UX-QA-018`
+
+`UX-QA-017` entrega a `UX-QA-018`:
+
+- package y escenarios certificados;
+- `process_id` y capacidad aplicables;
+- aplicación propietaria resuelta;
+- fuente de verdad resuelta;
+- estado de fuente objetivo;
+- representación observada por consumidora;
+- command path y query path observados;
+- eventos y handoffs que participan sin transferir propiedad;
+- recursos y efectos que solo la propietaria puede confirmar;
+- claves o identidades operativas observadas que deban conservarse entre retry/replay cuando el contrato aplicable las defina;
+- evidencia de que una consumidora no produce directamente el efecto propietario;
+- puntos de integración donde un retry o replay podría intentar repetir el mismo efecto;
+- transiciones de propietaria o dual-write controlado que condicionen la interpretación de duplicados;
+- hallazgos cerrados y excepciones vigentes.
+
+`UX-QA-018` podrá certificar idempotencia y ausencia de efectos duplicados sin reabrir la decisión de ownership ya certificada por `UX-QA-017`.
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-016 — La información sensible se oculta correctamente`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-017 — La aplicación propietaria conserva la fuente de verdad`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-018 — Los eventos idempotentes no duplican efectos`
 ### [ ] UX-QA-018 — Los eventos idempotentes no duplican efectos
 ### [ ] UX-QA-019 — Los fallos parciales permiten recuperación
 ### [ ] UX-QA-020 — Cada aplicación supera piloto con usuarios reales
