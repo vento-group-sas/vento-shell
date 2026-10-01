@@ -21221,7 +21221,1518 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-019 — Los fallos parciales permiten recuperación`
-### [ ] UX-QA-019 — Los fallos parciales permiten recuperación
+### ✅ UX-QA-019 — Los fallos parciales permiten recuperación
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-018 — Los eventos idempotentes no duplican efectos
+**Tarea siguiente:** UX-QA-020 — Cada aplicación supera piloto con usuarios reales
+**Tipo de tarea:** documental; definición canónica de la certificación integral de recuperación ante fallos parciales que demuestra por package y globalmente que cada unidad y efecto esperado conserva identidad, propietaria, certeza, resultado y disposición independientes; que efectos confirmados no se repiten ni se ocultan; que resultados desconocidos permanecen abiertos hasta consulta o conciliación; que retry, espera, cuarentena, dead-letter, intervención, corrección, compensación y continuidad de unidades independientes se aplican únicamente bajo sus contratos propietarios; y que el usuario comprende qué ocurrió y cuál es la siguiente acción segura, sin reabrir ownership ni idempotencia ya certificados por `UX-QA-017` y `UX-QA-018`
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de recuperación de fallos parciales definido; las ejecuciones `UX-QA-019::<package_id>` y `UX-QA-019::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff aprobado de `UX-QA-018`, `INT-APP-005`, `INT-APP-006`, `INT-APP-007`, `INT-APP-008`, `INT-APP-009`, `SHELL-CON-023`, `SHELL-CON-024`, los contratos de integración y la cobertura vigente aplicable, sin afirmar recuperación runtime ni operación productiva
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, contratos runtime, tablas, índices, constraints, migraciones, RLS, RPC, APIs, Server Actions, workers, colas, quarantine stores, dead-letter stores, claims, eventos, replays, datos, Supabase, consumidores, proveedores, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que un fallo parcial no convierte una operación distribuida, un lote, una entrega, una integración externa, una sincronización o una evidencia en un estado ambiguo, duplicado o falsamente terminado después de la implementación de un package.
+
+La certificación deberá responder, para cada escenario aplicable:
+
+```text
+¿CUÁLES ERAN LAS UNIDADES Y EFECTOS ESPERADOS?
+¿CUÁLES QUEDARON CONFIRMADOS?
+¿CUÁLES FUERON RECHAZADOS?
+¿CUÁLES ESTÁN BLOQUEADOS?
+¿CUÁLES SON CONFLICTIVOS?
+¿CUÁLES SIGUEN DESCONOCIDOS?
+¿QUÉ ALCANCE DE FALLO APLICA A CADA UNIDAD?
+¿QUÉ CLASE DE PARCIALIDAD RESULTA?
+¿QUÉ UNIDADES PUEDEN CONTINUAR DE FORMA INDEPENDIENTE?
+¿QUÉ UNIDADES DEBEN PERMANECER BLOQUEADAS?
+¿CUÁL ES LA DISPOSICIÓN SEGURA DE CADA UNIDAD?
+¿QUIÉN ES LA PROPIETARIA Y QUIÉN ES RESPONSABLE DE RESOLVERLA?
+¿QUÉ SIGUIENTE ACCIÓN VERIFICABLE EXISTE?
+¿QUÉ RESULTADO O EVIDENCIA PERMITE CERRAR EL CASO?
+¿EL USUARIO PUEDE ENTENDER QUÉ OCURRIÓ SIN REPETIR UN EFECTO YA CONFIRMADO?
+```
+
+Regla central:
+
+```text
+ALGUNAS UNIDADES EXITOSAS
+≠
+OPERACIÓN COMPLETAMENTE EXITOSA
+```
+
+Y también:
+
+```text
+FALLO TÉCNICO
+≠
+AUSENCIA DEMOSTRADA DE EFECTO
+```
+
+Por tanto:
+
+```text
+RECUPERACIÓN SEGURA
+=
+CLASIFICAR POR UNIDAD Y EFECTO
++
+PRESERVAR IDENTIDAD Y RESULTADOS CONFIRMADOS
++
+RESOLVER INCERTIDUMBRE ANTES DE REPETIR
++
+CONTINUAR SOLO UNIDADES INDEPENDIENTES
++
+APLICAR DISPOSICIÓN AUTORIZADA
++
+CONSERVAR OWNER, RESPONSABLE, EVIDENCIA Y RESIDUALES
+```
+
+#### 2. Resultado documental
+
+`UX-QA-019` define el contrato de certificación integral de recuperación ante fallos parciales para BLOQUE U.
+
+El resultado establece:
+
+- unidad certificable por package y escenario;
+- manifestación obligatoria de unidades y efectos esperados;
+- oracles de alcance de fallo y parcialidad;
+- cobertura de los ocho alcances de fallo;
+- cobertura de las nueve clases de parcialidad;
+- cobertura de las doce disposiciones;
+- cobertura de las ocho razones de cuarentena;
+- cobertura de las siete puertas acumulativas de dead-letter;
+- cobertura de las diez acciones manuales autorizables;
+- reutilización de los ocho outcomes de cierre de conciliación;
+- conservación de los catorce estados y cuarenta y seis transiciones de sincronización heredados;
+- conservación de los ocho perfiles de retry y doce clases de error heredados;
+- recuperación por unidad sin reaplicar efectos confirmados;
+- consulta autoritativa y conciliación antes de repetir cuando el resultado sea desconocido;
+- separación estricta entre retry, cuarentena, dead-letter, rechazo, conciliación, compensación y contingencia;
+- continuidad de unidades causalmente independientes;
+- bloqueo de unidades dependientes;
+- controles de intervención manual y autorización;
+- tratamiento de residuales y obligaciones abiertas;
+- presentación humana del fallo parcial y de la siguiente acción segura;
+- evidencia por package y consolidación `GLOBAL-FINAL`.
+
+No crea un motor runtime de recuperación ni redefine las políticas propietarias que consume.
+
+#### 3. Handoff recibido de `UX-QA-018`
+
+`UX-QA-018` entrega a `UX-QA-019`:
+
+- package y escenarios certificados;
+- `process_id`, propietaria y fuente de verdad aplicables heredados de `UX-QA-017`;
+- operación lógica y alcance idempotente;
+- `scope_owner_ref`, namespace e identidad estable;
+- versión y referencia de huella lógica;
+- estado de claim observado;
+- outcome idempotente observado;
+- resultado durable o referencia recuperable;
+- `source_command_id`, `event_id`, consumidora y `effect_code` cuando apliquen;
+- unidades o efectos ya confirmados que no deberán repetirse;
+- unidades aún no confirmadas o con resultado desconocido;
+- evidencia de concurrencia, retry, redelivery, offline o replay aplicable;
+- referencia de conciliación cuando exista incertidumbre;
+- conflictos de reutilización detectados y rechazados;
+- hallazgos cerrados y excepciones vigentes.
+
+`UX-QA-019` podrá certificar recuperación de fallos parciales sin volver a decidir ownership ni repetir unidades o efectos cuya idempotencia y resultado durable ya fueron certificados por `UX-QA-018`.
+
+#### 4. Universo canónico protegido
+
+La certificación consume sin renombrar ni reducir:
+
+| Universo | Cobertura canónica |
+| --- | ---: |
+| procesos | **69** |
+| definiciones normales de evento | **395** |
+| relaciones evento-consumidora | **2.020** |
+| estados de sincronización heredados | **14** |
+| transiciones de sincronización heredadas | **46** |
+| perfiles de retry heredados | **8** |
+| clases de error heredadas | **12** |
+| alcances de fallo | **8** |
+| clases de parcialidad | **9** |
+| disposiciones | **12** |
+| razones de cuarentena | **8** |
+| gates de dead-letter | **7** |
+| acciones manuales | **10** |
+| outcomes de cierre reutilizados | **8** |
+
+Estos conteos son fronteras contractuales heredadas. La tarea no crea vocabularios alternos por aplicación o package.
+
+#### 5. Garantía que se certifica
+
+Para cada caso aplicable deberá cumplirse simultáneamente:
+
+```text
+EFECTO CONFIRMADO
+→ se conserva
+→ no se repite
+→ no se borra
+→ no se convierte en “falló” por el fallo de otra unidad
+
+EFECTO NO CONFIRMADO CON NO-EFECTO DEMOSTRADO
+→ puede evaluar retry o rechazo según contrato
+
+RESULTADO DESCONOCIDO
+→ no se declara fallido
+→ no se repite por conveniencia
+→ consulta fuente autoritativa o concilia
+
+UNIDAD INDEPENDIENTE
+→ puede continuar si conserva autoridad y precondiciones
+
+UNIDAD DEPENDIENTE
+→ permanece bloqueada hasta condición verificable
+```
+
+El PASS de esta tarea demuestra recuperabilidad sin reescritura destructiva de historia y sin rollback global inventado.
+
+#### 6. Dimensiones ortogonales
+
+La certificación deberá mantener separadas estas dimensiones:
+
+| Dimensión | Pregunta |
+| --- | --- |
+| fallo técnico | ¿qué mecanismo o dependencia falló? |
+| sincronización | ¿dónde está la intención respecto del resultado autoritativo? |
+| parcialidad | ¿qué efectos ocurrieron y con qué certeza? |
+| retry | ¿es seguro repetir exactamente la misma operación? |
+| reversibilidad | ¿un efecto confirmado admite corrección o compensación? |
+| confianza | ¿el contenido conserva autenticidad, integridad y contrato suficientes? |
+| intervención | ¿qué decisión humana autorizada falta? |
+| cierre | ¿qué evidencia demuestra el resultado final del caso? |
+
+Prohibiciones:
+
+- un timeout no determina parcialidad por sí solo;
+- un estado técnico no determina un outcome empresarial;
+- agotar retries no determina dead-letter completo;
+- dead-letter no determina rechazo terminal;
+- cuarentena no determina ausencia de efecto;
+- una compensación no equivale a retry;
+- una conciliación no equivale a compensación;
+- una vista operativa no sustituye fuentes autoritativas.
+
+#### 7. Alcances de fallo canónicos
+
+La certificación usa exactamente:
+
+```text
+REQUEST_OR_COMMAND
+OWNER_TRANSACTION
+EVENT_EMISSION
+DELIVERY
+CONSUMER_EFFECT
+BATCH_OR_BULK_ITEM
+EXTERNAL_EXCHANGE
+OFFLINE_OR_EVIDENCE
+```
+
+Cada hallazgo deberá identificar un alcance principal y podrá enlazar alcances secundarios sin fusionar sus identidades.
+
+#### 8. `REQUEST_OR_COMMAND`
+
+Este alcance certifica la intención y su aceptación propietaria.
+
+Debe probarse que:
+
+- la operación conserva identidad idempotente;
+- una recepción técnica no se confunde con aceptación empresarial;
+- una denegación o rechazo pertenece a la intención exacta;
+- una respuesta perdida después de aceptar no habilita otra intención;
+- un resultado desconocido se consulta antes de repetir;
+- una nueva intención material usa sucesora o identidad nueva;
+- la autoridad se revalida antes de cualquier nuevo efecto.
+
+#### 9. `OWNER_TRANSACTION`
+
+Este alcance certifica efectos indivisibles dentro de la frontera propietaria.
+
+Debe probarse que:
+
+- la propietaria resuelve el resultado;
+- un efecto confirmado permanece confirmado aunque fallen efectos downstream;
+- una transacción propietaria no se “deshace” narrativamente por un error externo;
+- compensación o corrección, cuando procedan, crean hechos gobernados posteriores;
+- no existe edición destructiva para simular que el efecto original nunca ocurrió.
+
+#### 10. `EVENT_EMISSION`
+
+Este alcance certifica la emisión de un evento empresarial concreto.
+
+Debe probarse que:
+
+- un evento confirmado conserva `event_id`;
+- el fallo de una consumidora no recrea el evento fuente;
+- una publicación pendiente no inventa otro hecho propietario;
+- un evento emitido y una entrega fallida permanecen resultados diferentes;
+- replay conserva identidad histórica conforme a `UX-QA-018`.
+
+#### 11. `DELIVERY`
+
+Este alcance certifica cada relación evento-consumidora.
+
+Debe probarse que:
+
+- cada consumidora conserva resultado independiente;
+- una entrega exitosa no acredita las demás;
+- una entrega fallida no invalida una entrega ya confirmada;
+- redelivery conserva el evento original;
+- el intento técnico puede cambiar sin crear una nueva operación empresarial;
+- el presupuesto de retry no se reinicia por worker, proceso o despliegue.
+
+#### 12. `CONSUMER_EFFECT`
+
+Este alcance certifica el efecto propio derivado en una consumidora.
+
+Debe probarse que:
+
+- el `effect_code` identifica el efecto correspondiente;
+- un efecto confirmado no se reaplica durante recuperación;
+- un efecto desconocido se consulta o concilia antes de repetir;
+- una consumidora no modifica el dominio propietario para “arreglar” parcialidad;
+- una corrección o compensación se ejecuta mediante el owner del efecto.
+
+#### 13. `BATCH_OR_BULK_ITEM`
+
+Este alcance certifica operaciones compuestas o masivas por elemento.
+
+Debe probarse que:
+
+- cada elemento conserva identidad y resultado;
+- el resumen del batch no reemplaza resultados individuales;
+- un elemento confirmado no se repite porque otro falle;
+- un elemento rechazado no cancela unidades independientes;
+- un elemento desconocido no se presenta como fallido para cerrar el batch;
+- dead-letter puede aplicarse por elemento sin promover el lote completo;
+- residuales se conservan por unidad cuando corresponda.
+
+#### 14. `EXTERNAL_EXCHANGE`
+
+Este alcance certifica fronteras con proveedor externo.
+
+Debe probarse que:
+
+- request, receipt, identidad externa y estado interno permanecen correlacionados;
+- ACK técnico no se interpreta como efecto comercial, físico o financiero;
+- ausencia de respuesta no se interpreta como no-efecto;
+- se consulta el proveedor o la fuente propietaria cuando el contrato lo permite;
+- divergencias permanecen abiertas hasta conciliación o cierre autorizado;
+- un proveedor no adquiere ownership interno por reportar un resultado.
+
+#### 15. `OFFLINE_OR_EVIDENCE`
+
+Este alcance certifica operaciones offline, archivos, evidencia y periféricos.
+
+Debe probarse que:
+
+- la identidad se preserva entre desconexión y reanudación;
+- un archivo subido pero no vinculado no confirma un requisito;
+- una impresión enviada sin acuse no confirma una impresión válida;
+- un upload parcial no se presenta como evidencia completa;
+- un dispositivo compartido no transfiere atribución al siguiente actor;
+- el resultado se revalida cuando vuelve conectividad o disponibilidad del proveedor.
+
+#### 16. Identidad del caso de disposición
+
+Cuando el contrato materializado la use, `IntegrationDispositionCaseId` permanece:
+
+- estable;
+- opaco;
+- no secreto;
+- distinto de `event_id`;
+- distinto de `receipt_id`;
+- distinto de `attempt_id`;
+- distinto de `delivery_id`;
+- distinto de mapping ID;
+- distinto de sale ID;
+- distinto de correlation ID;
+- distinto de idempotency key.
+
+Un retry técnico no crea otro caso por defecto y una identidad cerrada no se reutiliza para otra situación material.
+
+#### 17. Manifiesto por unidad y efecto
+
+Cada escenario deberá poder producir o reconstruir conceptualmente, según aplicabilidad:
+
+```text
+case_or_partial_error_ref
+operation_ref
+process_id
+process_instance_ref
+owner_application
+failure_scope
+partiality_class
+expected_effects[]
+confirmed_effects[]
+rejected_effects[]
+blocked_effects[]
+conflicting_effects[]
+unknown_effects[]
+sync_state
+retry_error_class
+idempotency_ref
+result_refs[]
+disposition[]
+quarantine_ref
+reconciliation_ref
+compensation_ref
+responsible_owner_ref
+responsible_party_ref
+next_action_ref
+reactivation_condition_ref
+residual_obligations[]
+closure_outcome
+evidence_refs[]
+audit_refs[]
+```
+
+El manifiesto no se convierte en otra fuente empresarial; referencia resultados propietarios y evidencia acreditada.
+
+#### 18. Clases de parcialidad canónicas
+
+La certificación utiliza exactamente:
+
+```text
+NO_EFFECT_CONFIRMED
+SOME_EFFECTS_CONFIRMED
+SOME_EFFECTS_UNKNOWN
+ALL_EFFECTS_UNKNOWN
+DEPENDENCY_INCOMPLETE
+CONFLICTING_RESULTS
+UNTRUSTED_OR_TAMPERED_INPUT
+CONTRACT_OR_SCHEMA_INCOMPATIBLE
+EXTERNAL_STATE_DIVERGENCE
+```
+
+No se aceptan aliases locales que fusionen certeza, causa técnica y resultado empresarial.
+
+#### 19. `NO_EFFECT_CONFIRMED`
+
+Solo aplica cuando se demuestra que ninguna unidad del alcance evaluado produjo el efecto empresarial protegido.
+
+No puede inferirse por:
+
+- timeout;
+- agotamiento de retry;
+- ausencia de logs;
+- caída de worker;
+- cierre de aplicación;
+- falta de respuesta del proveedor;
+- entrada en cuarentena;
+- movimiento a dead-letter.
+
+Cuando el no-efecto está demostrado, puede evaluarse retry, rechazo o sucesora conforme al contrato propietario.
+
+#### 20. `SOME_EFFECTS_CONFIRMED`
+
+Aplica cuando al menos un efecto ocurrió y otro quedó rechazado, bloqueado o pendiente.
+
+La recuperación debe:
+
+- congelar los efectos confirmados;
+- impedir su repetición;
+- resolver únicamente las unidades pendientes o fallidas;
+- conservar causalidad;
+- permitir compensación solo de efectos confirmados elegibles;
+- explicar al usuario qué parte sí ocurrió.
+
+#### 21. `SOME_EFFECTS_UNKNOWN`
+
+Aplica cuando existen efectos conocidos y al menos uno no puede determinarse.
+
+La recuperación debe:
+
+- conservar los confirmados;
+- no asumir fallidos los desconocidos;
+- consultar resultado autoritativo, receipt, proveedor, ledger o evidencia acreditada;
+- abrir conciliación cuando la consulta no resuelve;
+- impedir retry material mientras la incertidumbre pueda producir duplicación;
+- impedir compensación de un efecto meramente hipotético.
+
+#### 22. `ALL_EFFECTS_UNKNOWN`
+
+Aplica cuando no puede confirmarse ni descartarse ningún efecto esperado.
+
+El caso permanece abierto y requiere evidencia autoritativa o conciliación. No se cierra por antigüedad, silencio, reinicio, redeploy ni ausencia de alertas.
+
+#### 23. `DEPENDENCY_INCOMPLETE`
+
+Aplica cuando una unidad no puede avanzar porque falta un prerequisito real.
+
+Debe existir:
+
+- dependencia identificada;
+- owner de la dependencia;
+- condición verificable de liberación;
+- unidades dependientes bloqueadas;
+- unidades independientes separadas;
+- prohibición de saltar la dependencia por prioridad o antigüedad.
+
+#### 24. `CONFLICTING_RESULTS`
+
+Aplica cuando fuentes autoritativas o efectos reportan resultados incompatibles.
+
+Debe producir:
+
+- comparación explícita de fuentes;
+- conservación de ambas evidencias;
+- no sobrescritura silenciosa;
+- conciliación o decisión propietaria;
+- residual si la divergencia no puede eliminarse de forma legítima.
+
+#### 25. `UNTRUSTED_OR_TAMPERED_INPUT`
+
+Aplica cuando autenticidad, integridad o procedencia no son confiables.
+
+La unidad puede requerir cuarentena, pero:
+
+- no se asume no-efecto;
+- no se usa el contenido no confiable para fabricar un resultado;
+- no se expone payload sensible en diagnóstico;
+- no se reprocesa sin resolución de confianza y autorización.
+
+#### 26. `CONTRACT_OR_SCHEMA_INCOMPATIBLE`
+
+Aplica cuando la versión, contrato o esquema no permiten interpretar el contenido con seguridad.
+
+La recuperación debe distinguir:
+
+- incompatibilidad transitoria resoluble por dependencia;
+- versión históricamente válida que requiere adaptador acreditado;
+- contenido inválido terminal;
+- necesidad de corrección o sucesora.
+
+No se “arregla” editando payload histórico o relajando el contrato en caliente.
+
+#### 27. `EXTERNAL_STATE_DIVERGENCE`
+
+Aplica cuando un proveedor y la fuente interna conservan estados materialmente distintos.
+
+La certificación exige:
+
+- identidad externa estable o receipt;
+- autenticidad aplicable;
+- estado interno;
+- estado externo;
+- consultas realizadas;
+- evidencia comparada;
+- decisión propietaria;
+- residual o siguiente acción cuando persista divergencia.
+
+#### 28. Estados de sincronización heredados
+
+`UX-QA-019` no redefine la máquina de `INT-APP-008` y conserva exactamente:
+
+```text
+LOCAL_DRAFT
+READY_TO_SYNC
+WAITING_FOR_DEPENDENCY
+REAUTH_REQUIRED
+SYNCING
+PENDING_CONFIRMATION
+REJECTED_RETRYABLE
+CONFLICT
+RESULT_UNKNOWN
+RECONCILIATION_REQUIRED
+ACKNOWLEDGED
+REJECTED_TERMINAL
+CANCELLED_LOCAL
+SUPERSEDED
+```
+
+Las **46 transiciones** heredadas continúan siendo autoridad de la evolución de cada intención.
+
+Reglas críticas:
+
+- `ACKNOWLEDGED` de una unidad no confirma otras unidades;
+- `REJECTED_TERMINAL` exige no-efecto para esa unidad;
+- `RESULT_UNKNOWN` no admite repetición ciega;
+- `SUPERSEDED` requiere una sucesora explícita;
+- refrescar una pantalla no modifica el estado.
+
+#### 29. Perfiles de retry heredados
+
+La certificación conserva exactamente los ocho perfiles de `INT-APP-005`:
+
+```text
+RETRY_NONE
+RETRY_INTERACTIVE_SAFE
+RETRY_OWNER_COMMAND
+RETRY_EVENT_STANDARD
+RETRY_EVENT_CRITICAL
+RETRY_PROVIDER_RATE_LIMITED
+RETRY_OFFLINE_SYNC
+RETRY_OUT_OF_ORDER
+```
+
+`UX-QA-019` no modifica intentos, demoras, jitter, edad máxima ni `Retry-After`.
+
+Lo que certifica es que el perfil elegido no reaplica unidades confirmadas ni convierte incertidumbre en retry automático.
+
+#### 30. Clases de error heredadas
+
+La certificación conserva exactamente:
+
+```text
+TRANSIENT_CONNECTIVITY
+TRANSIENT_DEPENDENCY
+RATE_LIMITED
+CONCURRENCY_RETRYABLE
+OUT_OF_ORDER_WAIT
+AUTH_REFRESH_REQUIRED
+UNKNOWN_OUTCOME
+PERMANENT_CONTRACT
+PERMANENT_BUSINESS
+SECURITY_DENIED
+CONFLICTING_REUSE
+CANCELLED_OR_EXPIRED
+```
+
+Un código HTTP, una excepción de SDK o un mensaje humano no sustituye esta clasificación.
+
+`UNKNOWN_OUTCOME` exige consulta o conciliación antes de repetición material.
+
+#### 31. Disposiciones canónicas
+
+La certificación utiliza exactamente:
+
+```text
+RETRY_SAME_OPERATION
+WAIT_FOR_DEPENDENCY
+QUERY_AUTHORITATIVE_RESULT
+RECONCILE
+QUARANTINE
+DEAD_LETTER_CANDIDATE
+MANUAL_INTERVENTION_REQUIRED
+PERMANENTLY_REJECT
+COMPENSATE_CONFIRMED_EFFECTS
+CREATE_CORRECTION_OR_SUCCESSOR
+CONTINUE_INDEPENDENT_UNITS
+BLOCK_DEPENDENT_UNITS
+```
+
+Una misma situación puede producir disposiciones complementarias sobre unidades distintas, pero no acciones incompatibles sobre el mismo efecto.
+
+#### 32. `RETRY_SAME_OPERATION`
+
+Solo es válido cuando:
+
+- la identidad original se conserva;
+- la huella es compatible;
+- el owner es el mismo;
+- la autoridad actual sigue vigente;
+- el resultado no es desconocido sin resolver;
+- no existe efecto confirmado que vaya a repetirse;
+- el perfil y presupuesto de retry permiten otro intento.
+
+Un cambio material de intención no es retry.
+
+#### 33. `WAIT_FOR_DEPENDENCY`
+
+Requiere:
+
+- prerequisito real;
+- owner del prerequisito;
+- condición de reactivación;
+- prohibición de sondeo o retry destructivo cuando el contrato no lo permite;
+- mantenimiento de la unidad en estado visible y recuperable.
+
+#### 34. `QUERY_AUTHORITATIVE_RESULT`
+
+Se utiliza cuando el resultado puede resolverse mediante:
+
+- fuente propietaria;
+- registro durable idempotente;
+- receipt acreditado;
+- ledger propietario;
+- estado consultable de proveedor;
+- resultado físico o evidencia acreditada.
+
+La consulta no produce un nuevo efecto empresarial.
+
+#### 35. `RECONCILE`
+
+Se utiliza cuando una única consulta no resuelve la divergencia o la parcialidad.
+
+La conciliación deberá:
+
+- comparar fuentes autoritativas;
+- conservar evidencia previa;
+- no sustituir ownership;
+- no escribir cruzado para “alinear” dominios;
+- no reejecutar efectos confirmados;
+- producir decisión, siguiente acción y residuales trazables.
+
+#### 36. `QUARANTINE`
+
+La cuarentena es aislamiento operativo, no outcome empresarial.
+
+Debe conservar:
+
+- identidad original;
+- contenido original o evidencia protegida;
+- referencia de integridad;
+- contrato y versión;
+- procedencia;
+- sensibilidad;
+- razón de cuarentena;
+- owner y siguiente acción;
+- auditoría.
+
+No se libera por edad ni por desaparición de una alerta.
+
+#### 37. `DEAD_LETTER_CANDIDATE`
+
+Dead-letter es una disposición operativa y solo es elegible después de evaluar las siete puertas acumulativas.
+
+No equivale a:
+
+- rechazo empresarial;
+- no-efecto demostrado;
+- compensación;
+- cierre de conciliación;
+- eliminación de la obligación.
+
+#### 38. `MANUAL_INTERVENTION_REQUIRED`
+
+Solo aplica cuando existe una decisión humana concreta que no puede resolverse automáticamente.
+
+La intervención debe exigir:
+
+- actor o principal autorizado;
+- autoridad vigente;
+- finalidad;
+- motivo;
+- unidad exacta;
+- evidencia previa;
+- acción permitida;
+- resultado auditado;
+- residual y siguiente responsable cuando el caso permanezca abierto.
+
+#### 39. `PERMANENTLY_REJECT`
+
+Solo aplica cuando:
+
+- la unidad exacta está identificada;
+- el contrato aplicable impide continuar;
+- existe causa terminal;
+- no existe efecto incompatible confirmado;
+- no permanece `OUTCOME_UNKNOWN` ni `RESULT_UNKNOWN` material;
+- owner y autoridad de decisión están resueltos;
+- la evidencia queda preservada.
+
+No se usa para vaciar colas o reducir backlog.
+
+#### 40. `COMPENSATE_CONFIRMED_EFFECTS`
+
+Solo aplica a efectos confirmados y elegibles.
+
+La certificación exige:
+
+- identidad del efecto original;
+- owner del efecto;
+- política de reversibilidad o compensación válida;
+- autoridad vigente;
+- plan o referencia de compensación;
+- identidad e idempotencia propias de la compensación;
+- resultado verificable;
+- dependencias y residuales explícitos.
+
+No se compensa un efecto hipotético, un timeout, un ACK técnico ni una entrega no confirmada.
+
+#### 41. `CREATE_CORRECTION_OR_SUCCESSOR`
+
+Aplica cuando cambia materialmente:
+
+- intención;
+- payload empresarial;
+- recurso;
+- importe;
+- cantidad;
+- destinatario;
+- versión;
+- acción;
+- autoridad.
+
+La nueva intención recibe identidad propia y conserva relación con el original. El original no se reinterpreta ni sobrescribe.
+
+#### 42. `CONTINUE_INDEPENDENT_UNITS`
+
+Solo permite avanzar unidades que:
+
+- no dependen causalmente del fallo;
+- conservan autorización;
+- conservan contexto y ownership;
+- no consumen un resultado todavía desconocido;
+- no violan custodia, inventario, cierre, contabilidad o seguridad;
+- mantienen evidencia separada.
+
+#### 43. `BLOCK_DEPENDENT_UNITS`
+
+Debe activarse cuando continuar pueda:
+
+- romper causalidad;
+- consumir dato no confirmado;
+- duplicar efecto;
+- violar custodia;
+- producir saldo o inventario incoherente;
+- ejecutar con autoridad vencida;
+- cerrar evidencia incompleta;
+- ocultar una divergencia externa.
+
+El bloqueo debe tener razón humana, owner y condición de salida.
+
+#### 44. Razones de cuarentena
+
+La certificación reconoce exactamente:
+
+```text
+UNTRUSTED_SIGNATURE_OR_AUTHENTICITY
+SCHEMA_OR_VERSION_UNSUPPORTED
+PAYLOAD_INTEGRITY_FAILED
+IDENTITY_OR_ROUTING_AMBIGUOUS
+SENSITIVITY_OR_POLICY_VIOLATION
+REPEATED_POISON_MESSAGE
+EVIDENCE_LINKAGE_INVALID
+MANUAL_HOLD_FOR_INVESTIGATION
+```
+
+Un fallo transitorio ordinario no se eleva a cuarentena para evitar la política de retry.
+
+#### 45. Gates acumulativos de dead-letter
+
+Los siete gates son:
+
+```text
+AUTOMATION_BUDGET_CLOSED
+ITEM_ISOLATED
+IDENTITY_AND_CONTENT_PRESERVED
+BUSINESS_OUTCOME_CLASSIFIED_OR_RECONCILIATION_OPEN
+OWNER_AND_NEXT_ACTION_ASSIGNED
+REPROCESSING_REQUIRES_AUTHORIZATION
+RETENTION_AND_AUDIT_DEFINED
+```
+
+PASS de dead-letter exige **7/7** cuando esa disposición aplique.
+
+Agotar retry puede satisfacer `AUTOMATION_BUDGET_CLOSED`, pero no acredita automáticamente las otras seis puertas.
+
+#### 46. Acciones manuales autorizables
+
+La interfaz o herramienta de intervención solo podrá presentar, cuando el contrato y la autoridad lo permitan:
+
+```text
+RETRY_AUTHORIZED
+QUERY_RECEIPT
+CORRECT_METADATA
+CREATE_SUCCESSOR
+RELINK_EVIDENCE
+REPROCESS_FROM_QUARANTINE
+REPROCESS_FROM_DEAD_LETTER
+PERMANENT_REJECT
+START_RECONCILIATION
+START_COMPENSATION
+```
+
+No son acciones válidas:
+
+- editar directamente la base para forzar éxito;
+- borrar el elemento;
+- cambiar arbitrariamente la propietaria;
+- regenerar una idempotency key para evitar conflicto;
+- repetir un efecto confirmado;
+- cerrar incertidumbre sin evidencia.
+
+#### 47. Frontera de compensación
+
+`UX-QA-019` consume `INT-APP-006` y `SHELL-CON-024`; no redefine compensaciones.
+
+Debe certificar que:
+
+- solo efectos confirmados son candidatos;
+- cada propietaria compensa únicamente sus propios efectos;
+- la compensación conserva identidad propia;
+- la compensación es idempotente;
+- el original no se borra ni edita;
+- una compensación parcial conserva pasos confirmados, pendientes, imposibles y residuales;
+- retry de la compensación no repite una compensación confirmada.
+
+#### 48. Prohibición de rollback global
+
+No existe rollback global entre dominios por conveniencia.
+
+En particular, una recuperación no puede asumir una transacción ACID universal entre:
+
+```text
+PULSO
+NEXO
+NUMERA
+PASS
+PROVEEDOR EXTERNO
+```
+
+La consistencia se obtiene mediante:
+
+- identidad por alcance;
+- idempotencia;
+- resultados durables;
+- retry seguro;
+- conciliación;
+- correcciones o sucesoras;
+- compensaciones propietarias elegibles;
+- residuales explícitos.
+
+#### 49. Conciliación
+
+La certificación podrá usar `IntegrationReconciliationRef` cuando aplique.
+
+Debe verificar que la conciliación:
+
+- conserva una identidad propia;
+- permanece distinta del caso de disposición;
+- compara fuentes autoritativas;
+- conserva evidencia;
+- no reescribe historia;
+- no concede escritura cruzada;
+- no repite efectos confirmados;
+- no se cierra por tiempo o silencio;
+- produce outcome de cierre permitido o permanece abierta.
+
+#### 50. Outcomes de cierre reutilizados
+
+La certificación reutiliza exactamente los ocho outcomes de `SHELL-CON-023`:
+
+```text
+RESOLVED_CONFIRMED
+RESOLVED_NO_EFFECT
+RESOLVED_DUPLICATE_PRIOR_RESULT
+RESOLVED_CORRECTED
+RESOLVED_COMPENSATED
+RESOLVED_WITH_ACCEPTED_RESIDUAL
+PERMANENTLY_REJECTED
+SUPERSEDED_BY_SUCCESSOR
+```
+
+No existe cierre `UNKNOWN`.
+
+`RESOLVED_WITH_ACCEPTED_RESIDUAL` exige residual, owner, responsable, riesgo, control, autoridad de aceptación, condición o tiempo de seguimiento y evidencia de decisión.
+
+#### 51. Residuales
+
+Todo residual aceptado debe conservar:
+
+- identidad o descripción exacta;
+- owner;
+- responsable;
+- riesgo;
+- control vigente;
+- autoridad que lo acepta;
+- condición o tiempo de seguimiento;
+- evidencia de decisión.
+
+Un residual sin responsable no constituye cierre válido.
+
+#### 52. Ownership, responsable y aging
+
+Todo caso abierto debe conservar:
+
+- aplicación propietaria;
+- responsable actual;
+- edad;
+- prioridad cuando aplique;
+- `due_at` o condición de reactivación;
+- SLA de clasificación o escalamiento cuando exista;
+- siguiente acción.
+
+La antigüedad no cierra, borra ni degrada el caso.
+
+#### 53. Experiencia de recuperación
+
+La superficie que muestre un fallo parcial deberá explicar en lenguaje humano:
+
+```text
+QUÉ SÍ OCURRIÓ
+QUÉ NO OCURRIÓ
+QUÉ SIGUE PENDIENTE
+QUÉ NO PODEMOS CONFIRMAR TODAVÍA
+QUÉ PARTE ESTÁ BLOQUEADA
+QUÉ PARTE PUEDE CONTINUAR
+QUIÉN DEBE RESOLVER
+CUÁL ES LA SIGUIENTE ACCIÓN SEGURA
+```
+
+La interfaz no podrá reducir una parcialidad material a:
+
+```text
+Error
+Falló
+Listo
+Procesado con advertencias
+```
+
+cuando esas palabras oculten unidades, certeza o obligaciones diferentes.
+
+La recuperación debe preservar el trabajo válido y evitar redigitación o reenvío innecesarios.
+
+#### 54. Dispositivos compartidos y cambio de actor
+
+En dispositivos compartidos:
+
+- la cola conserva actor y contexto originales;
+- un nuevo trabajador no hereda atribución;
+- visibilidad sensible se reevalúa;
+- una intervención requiere autoridad propia;
+- una operación pendiente no se “adopta” por abrirla;
+- un reprocess conserva identidad y finalidad;
+- un cambio material de actor autorizado se gobierna explícitamente y no por sustitución silenciosa.
+
+#### 55. Seguridad y privacidad
+
+Cuarentena, dead-letter, intervención, auditoría y observabilidad deberán aplicar minimización.
+
+No se copian por conveniencia:
+
+- API keys;
+- bearer tokens;
+- service role keys;
+- private keys;
+- passwords;
+- firmas reutilizables;
+- datos bancarios completos;
+- documentos completos cuando basta una referencia protegida;
+- payload personal completo cuando basta metadata mínima;
+- URLs firmadas o credenciales en parámetros.
+
+Acceso al caso no implica acceso automático a toda la evidencia protegida.
+
+#### 56. Proveedores externos
+
+Para cada proveedor aplicable deberá probarse:
+
+- identidad de sistema y ambiente;
+- request u operación interna;
+- identidad o receipt externo;
+- autenticidad aplicable;
+- estado consultado;
+- resultado empresarial propietario;
+- divergencia, si existe;
+- disposición elegida;
+- evidencia y conciliación.
+
+Cambiar endpoint, credencial, worker o aplicación para obtener una respuesta distinta no resuelve una operación desconocida.
+
+#### 57. Offline, evidencia y periféricos
+
+Casos mínimos aplicables:
+
+- operación capturada offline y sincronización posterior;
+- pérdida de red después del envío;
+- reinicio antes de recibir respuesta;
+- archivo subido sin vínculo final;
+- upload parcial;
+- evidencia local no subida;
+- impresión enviada sin acuse;
+- periférico temporalmente indisponible;
+- reconexión con autoridad o contexto cambiado.
+
+PASS exige preservar identidad, certeza y siguiente acción sin duplicar el efecto.
+
+#### 58. ORIGO → NEXO → NUMERA
+
+La certificación debe distinguir, cuando aplique:
+
+- recepción comercial;
+- ingreso físico;
+- obligación económica;
+- movimientos o documentos derivados.
+
+Si ORIGO confirma recepción y NEXO falla, la recepción no se elimina ni se repite para “arreglar” NEXO.
+
+Si NEXO confirmó inventario y NUMERA permanece pendiente o desconocido, el inventario no se reaplica durante la recuperación financiera.
+
+#### 59. FOGO → NEXO → PULSO
+
+Producción, liberación, entrada de terminado, disponibilidad y cumplimiento de pedido permanecen efectos separados.
+
+Un fallo downstream no autoriza:
+
+- duplicar producción;
+- duplicar entrada de inventario;
+- volver a liberar el lote;
+- confirmar cumplimiento sin evidencia;
+- editar el hecho productor original.
+
+#### 60. PULSO → PASS → NUMERA
+
+Venta, pago, puntos y hecho económico son unidades correlacionadas pero distintas.
+
+Casos mínimos:
+
+- venta confirmada + puntos fallidos;
+- pago confirmado + respuesta perdida;
+- puntos confirmados + NUMERA pendiente;
+- proveedor de pago desconocido;
+- devolución o compensación parcial.
+
+La recuperación nunca usa un retry global que vuelva a cobrar, vender, descontar stock o acreditar puntos ya confirmados.
+
+#### 61. VISO → ANIMA → SHELL
+
+Turno, asistencia, novedad laboral y contexto de acceso permanecen separados.
+
+Casos mínimos:
+
+- turno confirmado + proyección ANIMA pendiente;
+- marcación offline con resultado desconocido;
+- contexto de SHELL stale después de cambio de turno;
+- reautorización requerida;
+- dispositivo compartido con actor distinto.
+
+Una recuperación no revive permisos vencidos ni crea otra asistencia por repetir una marcación ya confirmada.
+
+#### 62. AURA diferida
+
+Las relaciones de AURA conservan semántica y cobertura definidas, pero no se presentan como runtime recuperable mientras continúen diferidas.
+
+La certificación no crea:
+
+- cuarentenas productivas de AURA;
+- dead-letter productivo de AURA;
+- reprocesos de AURA;
+- conciliaciones automáticas de AURA;
+- compensaciones de AURA;
+- métricas de backlog inexistente.
+
+Su materialización permanece condicionada a readiness y package E5 aplicable.
+
+#### 63. Matriz mínima por escenario
+
+Cada escenario de `UX-QA-019::<package_id>` deberá registrar, según aplicabilidad:
+
+| Campo | Obligación |
+| --- | --- |
+| `package_id` | package certificado |
+| `scenario_id` | identidad estable del escenario |
+| `process_id` | proceso aplicable |
+| `owner_application` | propietaria resuelta |
+| `operation_ref` | operación original |
+| `failure_scope` | uno de los ocho alcances |
+| `expected_effects` | conjunto esperado |
+| `confirmed_effects` | efectos confirmados |
+| `rejected_effects` | efectos rechazados |
+| `blocked_effects` | efectos bloqueados |
+| `unknown_effects` | efectos desconocidos |
+| `conflicting_effects` | efectos conflictivos |
+| `partiality_class` | una de nueve clases |
+| `sync_state` | estado heredado cuando aplique |
+| `retry_profile` | perfil aplicable cuando exista |
+| `retry_error_class` | clase aplicable cuando exista |
+| `idempotency_ref` | referencia heredada de `UX-QA-018` |
+| `dispositions` | tratamientos elegidos |
+| `reconciliation_ref` | conciliación cuando aplique |
+| `compensation_ref` | compensación cuando aplique |
+| `responsible_owner` | owner de resolución |
+| `responsible_party` | responsable concreto cuando corresponda |
+| `next_action` | siguiente acción verificable |
+| `reactivation_condition` | condición de reanudación cuando aplique |
+| `residual_obligations` | residuales abiertos o aceptados |
+| `closure_outcome` | outcome final o ausencia de cierre |
+| `evidence_refs` | evidencia correlacionada |
+| `user_visible_state` | explicación observada en superficie |
+
+No se exige un campo cuando el contrato del escenario demuestra que no aplica; esa no-aplicabilidad debe ser explícita y trazable.
+
+#### 64. Casos positivos mínimos
+
+Cada package deberá ejecutar los casos aplicables de su alcance, incluyendo al menos cuando existan las capacidades correspondientes:
+
+1. fallo antes de cualquier efecto con `NO_EFFECT_CONFIRMED`;
+2. un efecto confirmado y otro bloqueado;
+3. un efecto confirmado y otro desconocido;
+4. retry seguro de una unidad no aplicada;
+5. consulta de resultado autoritativo después de timeout;
+6. conciliación que confirma efecto previo sin repetirlo;
+7. unidad independiente que continúa mientras otra permanece bloqueada;
+8. dependencia que bloquea únicamente las unidades dependientes;
+9. cuarentena por una razón válida;
+10. liberación autorizada desde cuarentena sin cambiar identidad;
+11. dead-letter elegible con siete gates satisfechos;
+12. intervención manual permitida y auditada;
+13. corrección o sucesora por cambio material;
+14. compensación de un efecto confirmado elegible;
+15. residual aceptado con owner y seguimiento;
+16. recuperación offline sin duplicar trabajo;
+17. recuperación de evidencia o periférico pendiente;
+18. superficie que explica qué ocurrió y qué sigue.
+
+#### 65. Casos negativos mínimos
+
+La certificación deberá bloquear o detectar, según aplicabilidad:
+
+1. declarar éxito global porque una unidad terminó;
+2. declarar fallo global y repetir una unidad confirmada;
+3. interpretar timeout como no-efecto;
+4. convertir resultado desconocido en retry automático;
+5. convertir cuarentena en no-efecto;
+6. convertir dead-letter en resultado empresarial terminal;
+7. enviar a dead-letter con menos de siete gates satisfechos;
+8. usar `PERMANENTLY_REJECT` con efecto confirmado o incertidumbre abierta;
+9. compensar un efecto no confirmado;
+10. compensar desde una aplicación que no es owner del efecto;
+11. corregir historial mediante edición destructiva;
+12. reabrir una operación cerrada reutilizando identidad;
+13. saltar una dependencia por prioridad o antigüedad;
+14. cancelar unidades independientes por fallo de otra unidad;
+15. permitir que un actor nuevo adopte silenciosamente una cola de dispositivo compartido;
+16. exponer secretos o payload sensible en diagnóstico;
+17. borrar un caso para reducir backlog;
+18. cerrar un residual sin responsable;
+19. cerrar conciliación por edad, silencio o reinicio;
+20. ejecutar rollback global cross-domain;
+21. presentar AURA diferida como recuperación runtime certificada.
+
+#### 66. Evidencia por package
+
+Cada futura instancia `UX-QA-019::<package_id>` deberá conservar evidencia suficiente para reconstruir:
+
+```text
+package_id
+candidate_or_revision
+environment
+scenario_id
+process_id
+owner_application
+operation_ref
+idempotency_ref
+failure_scope
+partiality_class
+expected_effects
+observed_effects_by_certainty
+sync_state
+retry_class_and_profile_when_applicable
+dispositions
+quarantine_or_dead_letter_gates_when_applicable
+manual_intervention_when_applicable
+reconciliation_ref_when_applicable
+compensation_ref_when_applicable
+responsible_owner_and_party
+next_action_or_reactivation_condition
+residuals
+closure_outcome
+user_visible_state
+evidence_refs
+defects_or_exceptions
+observed_at
+```
+
+La evidencia debe ser correlacionable con la misma revisión y ambiente del package; no se presta evidencia entre packages.
+
+#### 67. Métricas de certificación
+
+Cada scenario y package deberá poder calcular al menos:
+
+```text
+expected_effect_count
+confirmed_effect_count
+rejected_effect_count
+blocked_effect_count
+unknown_effect_count
+conflicting_effect_count
+repeated_confirmed_effect_count
+unclassified_effect_count
+unsafe_retry_count
+dead_letter_gate_violation_count
+unauthorized_manual_action_count
+compensation_without_confirmed_effect_count
+open_case_without_owner_count
+open_case_without_next_action_count
+closed_unknown_outcome_count
+orphan_residual_count
+hidden_partiality_ui_count
+```
+
+Estas métricas son oracles de certificación; no crean un sistema de observabilidad paralelo.
+
+#### 68. Severidad
+
+Un hallazgo es **CRÍTICO** cuando pueda producir o haya producido, entre otros:
+
+- doble pago o cobro;
+- doble movimiento de inventario;
+- doble movimiento de puntos;
+- duplicación de producción o entrega;
+- repetición de efecto físico irreversible;
+- pérdida u ocultamiento de un efecto confirmado;
+- compensación de un efecto inexistente;
+- cierre de incertidumbre que permita repetición material;
+- intervención no autorizada;
+- escritura cruzada para forzar consistencia;
+- pérdida de evidencia necesaria para conciliación.
+
+Un hallazgo es **ALTO** cuando permita cierre falso, residual huérfano, bloqueo sin recuperación, actor incorrecto, parcialidad oculta o tratamiento contractual incorrecto sin evidencia de efecto crítico ya materializado.
+
+Los hallazgos medios o bajos conservan owner y condición de salida y no pueden agregarse para ocultar un hallazgo crítico o alto.
+
+#### 69. Condición de PASS por scenario
+
+Un scenario queda PASS únicamente cuando:
+
+```text
+unclassified_effect_count = 0
+repeated_confirmed_effect_count = 0
+unsafe_retry_count = 0
+dead_letter_gate_violation_count = 0
+unauthorized_manual_action_count = 0
+compensation_without_confirmed_effect_count = 0
+open_case_without_owner_count = 0
+open_case_without_next_action_count = 0
+closed_unknown_outcome_count = 0
+orphan_residual_count = 0
+hidden_partiality_ui_count = 0
+```
+
+Además:
+
+- todos los efectos esperados están clasificados;
+- todo resultado desconocido permanece abierto o fue resuelto por evidencia válida;
+- todo efecto confirmado conserva resultado y no fue reaplicado;
+- toda disposición usada es compatible con el caso;
+- todo residual aceptado cumple su contrato;
+- no existe hallazgo crítico o alto aplicable abierto;
+- la evidencia pertenece al mismo candidate, ambiente y scenario.
+
+#### 70. Condición de PASS por package
+
+`UX-QA-019::<package_id>` queda PASS cuando:
+
+1. todos los scenarios aplicables quedaron PASS;
+2. no faltan unidades o efectos esperados del alcance probado;
+3. las dependencias y unidades independientes fueron tratadas correctamente;
+4. todos los casos abiertos conservan owner, responsable y siguiente acción;
+5. no existen efectos confirmados repetidos durante recuperación;
+6. no existe incertidumbre cerrada artificialmente;
+7. no existe dead-letter inválido;
+8. no existe intervención o compensación no autorizada;
+9. no existen residuales huérfanos;
+10. la experiencia explica correctamente la parcialidad material;
+11. los hallazgos críticos y altos aplicables están cerrados;
+12. la evidencia permanece vigente para el mismo package, candidate y ambiente.
+
+#### 71. `GLOBAL-FINAL`
+
+`UX-QA-019::GLOBAL-FINAL` no repite cada prueba física. Consolida las instancias por package y demuestra que:
+
+- todo package aplicable cuenta con instancia evaluada;
+- no existen packages omitidos por falta de evidencia;
+- el vocabulario de parcialidad es único;
+- las disposiciones conservan la misma semántica entre aplicaciones;
+- no existe un rollback global inventado en una frontera;
+- no existen residuales críticos huérfanos entre packages;
+- no existen efectos confirmados reaplicados durante recovery cross-package;
+- las excepciones vigentes tienen owner y condición de salida;
+- la certificación global no oculta un package FAIL o UNKNOWN.
+
+Si una instancia aplicable falta, está stale o permanece bloqueada, `GLOBAL-FINAL` no puede concluir PASS.
+
+#### 72. Invalidez de evidencia
+
+No sirve como evidencia de cierre:
+
+- log aislado sin correlación;
+- ausencia de error visible;
+- dashboard verde sin detalle por unidad;
+- cola vacía obtenida borrando elementos;
+- retry que “funcionó” sin demostrar qué ocurrió antes;
+- ACK técnico usado como outcome empresarial;
+- captura de pantalla sin revisión/candidate/ambiente;
+- evidencia de otro package;
+- evidencia anterior a un cambio material;
+- compensación sin referencia del efecto original;
+- conciliación cerrada sin outcome permitido;
+- residual sin owner;
+- texto humano “resuelto” sin evidencia autoritativa.
+
+#### 73. Relación con `UX-QA-020`
+
+`UX-QA-019` certifica la seguridad y recuperabilidad de fallos parciales.
+
+No certifica que usuarios reales hayan superado el piloto integral de cada aplicación, responsabilidad de `UX-QA-020`.
+
+La frontera queda:
+
+```text
+UX-QA-019
+→ DEMUESTRA QUE LOS FALLOS PARCIALES SON CLASIFICABLES Y RECUPERABLES SIN REPETIR EFECTOS
+
+UX-QA-020
+→ DEMUESTRA EN PILOTO CON USUARIOS REALES QUE LA APLICACIÓN COMPLETA ES OPERABLE Y ACEPTABLE EN SU CONTEXTO
+```
+
+`UX-QA-020` podrá consumir los casos de recuperación, defectos cerrados, excepciones y estados humanos de `UX-QA-019` sin redefinir la semántica de parcialidad.
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Fragmentos 04A afectados:** 0
+
+**Justificación:** `UX-QA-019` define la certificación de conductas ya exigidas por los contratos y requisitos vigentes de idempotencia, retry, compensación, auditoría, sincronización, manejo de errores parciales y experiencia de recuperación. Crear requisitos nuevos duplicaría obligaciones ya registradas sin introducir una regla funcional material adicional.
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+La trazabilidad heredada se reutiliza sin modificar el Registro 04A, incluyendo:
+
+- `TREQ-INTEGRATION-003`, para idempotencia, resultado recuperable, resultado desconocido, concurrencia y conciliación;
+- `TREQ-INTEGRATION-004`, para trazabilidad de disparadores, intentos, resultados, errores y efectos finales;
+- `TREQ-INTEGRATION-138` a `TREQ-INTEGRATION-167`, para retry, error classes, presupuestos y tratamiento seguro de reintentos;
+- `TREQ-INTEGRATION-168` a `TREQ-INTEGRATION-197`, para compensaciones propietarias y efectos confirmados;
+- `TREQ-INTEGRATION-198` a `TREQ-INTEGRATION-227`, para auditoría transversal;
+- `TREQ-INTEGRATION-228` a `TREQ-INTEGRATION-257`, para estados pendientes de sincronización y resultado desconocido;
+- `TREQ-INTEGRATION-258` a `TREQ-INTEGRATION-287`, para política completa de errores parciales;
+- `TREQ-UX-002`, para explicar error, bloqueo o fallo parcial en lenguaje humano con causa, estado preservado y recuperación;
+- `TREQ-UX-006`, para recuperación segura ante pérdida de sesión, red, dispositivo o proveedor sin perder ni duplicar trabajo.
+
+Esta sección documenta cobertura existente; no actualiza 04A.
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no ejecutó build de producto, package ni implementación física. |
+| LOCAL | NOT_EXECUTED | Los checks reales de `docs:task:quality`, `docs:delivery:check`, formato, TREQ y batería global corresponden al checkout actualizado durante la incorporación. |
+| REMOTA | PASS | Se revisaron `main`, continuidad vigente, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, `INT-APP-005..009`, `SHELL-CON-023`, `SHELL-CON-024`, 04A de INTEGRATION y scripts de validación aplicables. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron inyecciones de fallo, reprocess, conciliaciones, cuarentenas, dead-letter, compensaciones ni pruebas con operación real. |
+| FÍSICA | NOT_APPLICABLE | El marcador documental define la certificación; las evidencias físicas corresponderán a futuras instancias `UX-QA-019::<package_id>` y `UX-QA-019::GLOBAL-FINAL`. |
+
+#### 77. Criterios de aceptación
+
+`UX-QA-019` queda documentalmente completa cuando:
+
+- [x] consume exactamente el handoff de `UX-QA-018`;
+- [x] conserva `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [x] conserva gate `POST_E5_PACKAGE`;
+- [x] cubre los 69 procesos, 395 eventos y 2.020 relaciones sin crear taxonomías locales competidoras;
+- [x] conserva los 14 estados y 46 transiciones de sincronización heredados;
+- [x] conserva los 8 perfiles de retry y 12 clases de error heredados;
+- [x] conserva exactamente 8 alcances de fallo;
+- [x] conserva exactamente 9 clases de parcialidad;
+- [x] conserva exactamente 12 disposiciones;
+- [x] conserva exactamente 8 razones de cuarentena;
+- [x] conserva exactamente 7 gates acumulativos de dead-letter;
+- [x] conserva exactamente 10 acciones manuales autorizables;
+- [x] reutiliza los 8 outcomes de cierre de conciliación sin vocabulario paralelo;
+- [x] exige clasificación por unidad y efecto;
+- [x] impide repetir efectos confirmados;
+- [x] impide interpretar timeout como no-efecto;
+- [x] impide retry material de resultado desconocido antes de consulta o conciliación;
+- [x] permite continuar únicamente unidades independientes;
+- [x] bloquea unidades dependientes con condición de salida;
+- [x] mantiene cuarentena y dead-letter separados de outcome empresarial;
+- [x] exige 7/7 gates para dead-letter cuando aplique;
+- [x] restringe intervención manual a allowlist y autoridad vigente;
+- [x] permite compensación solo de efectos confirmados elegibles;
+- [x] prohíbe rollback global cross-domain;
+- [x] conserva residuales con owner y seguimiento;
+- [x] exige explicación humana de la parcialidad y siguiente acción segura;
+- [x] cubre offline, evidencia, periféricos y dispositivos compartidos;
+- [x] conserva AURA diferida sin fabricar runtime;
+- [x] define evidencia por scenario, package y `GLOBAL-FINAL`;
+- [x] define métricas de PASS sin umbrales temporales inventados;
+- [x] no crea ni modifica requisitos de prueba;
+- [x] no modifica 04A;
+- [x] no ejecuta cambios físicos durante esta tarea documental;
+- [x] conserva `UX-QA-020` como responsabilidad separada de piloto con usuarios reales.
+
+#### 78. Límites
+
+Esta tarea:
+
+- no modifica `INT-APP-005`;
+- no modifica `INT-APP-006`;
+- no modifica `INT-APP-007`;
+- no modifica `INT-APP-008`;
+- no modifica `INT-APP-009`;
+- no modifica `SHELL-CON-023`;
+- no modifica `SHELL-CON-024`;
+- no crea casos runtime de disposición;
+- no crea cuarentenas runtime;
+- no crea dead-letter runtime;
+- no crea conciliaciones runtime;
+- no ejecuta compensaciones runtime;
+- no crea tablas ni índices;
+- no crea constraints;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no crea APIs ni Server Actions;
+- no crea workers;
+- no crea colas;
+- no crea scheduler ni cron;
+- no emite eventos;
+- no replaya eventos;
+- no ejecuta backfills;
+- no ejecuta retries;
+- no ejecuta reprocesos;
+- no muta inventario;
+- no procesa pagos;
+- no modifica puntos;
+- no imprime documentos;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta despliegues;
+- no ejecuta piloto;
+- no ejecuta pruebas físicas;
+- no certifica packages antes de `POST_E5_PACKAGE`;
+- no reabre ownership certificado en `UX-QA-017`;
+- no reabre idempotencia certificada en `UX-QA-018`;
+- no certifica piloto con usuarios reales, responsabilidad de `UX-QA-020`.
+
+#### 79. Handoff a `UX-QA-020`
+
+`UX-QA-019` entrega a `UX-QA-020`:
+
+- package y escenarios certificados;
+- `process_id` y aplicación propietaria aplicables;
+- operaciones y unidades evaluadas;
+- efectos esperados y clasificación final por unidad;
+- alcances de fallo observados;
+- clases de parcialidad observadas;
+- estados de sincronización relevantes;
+- disposiciones ejecutadas o esperadas por contrato;
+- efectos confirmados preservados;
+- resultados desconocidos resueltos o excepciones abiertas vigentes;
+- conciliaciones y compensaciones aplicables con su outcome o estado;
+- unidades independientes que pudieron continuar;
+- unidades dependientes y condiciones de salida;
+- residuales aceptados con owner y seguimiento;
+- evidencia de recuperación offline, proveedor, evidencia o periférico cuando aplique;
+- estado humano mostrado al usuario y siguiente acción segura;
+- hallazgos cerrados y excepciones vigentes.
+
+`UX-QA-020` podrá ejecutar la certificación de piloto con usuarios reales consumiendo estos escenarios de recuperación sin volver a definir ownership, idempotencia ni semántica de fallos parciales.
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-018 — Los eventos idempotentes no duplican efectos`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-019 — Los fallos parciales permiten recuperación`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-020 — Cada aplicación supera piloto con usuarios reales`
 ### [ ] UX-QA-020 — Cada aplicación supera piloto con usuarios reales
 ### [ ] UX-QA-021 — Probar SHELL por tipo de actor
 ### [ ] UX-QA-022 — Probar ANIMA con trabajadores y administradores
