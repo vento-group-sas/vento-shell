@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1574** |
+| Aprobadas | **1575** |
 | En propuesta | **0** |
-| No iniciadas | **22** |
+| No iniciadas | **21** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.62% (1574/1596)** |
+| Porcentaje de completamiento | **98.68% (1575/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **22** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1475** |
+| ⏸ NO_EVALUADA | **21** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1476** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-021` — Probar SHELL por tipo de actor | ✅ APROBADA |
-| Tarea actual | `UX-QA-022` — Probar ANIMA con trabajadores y administradores | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-023` — Probar VISO por rol administrativo | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-022` — Probar ANIMA con trabajadores y administradores | ✅ APROBADA |
+| Tarea actual | `UX-QA-023` — Probar VISO por rol administrativo | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-024` — Probar NEXO por rol operativo | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1406,7 +1406,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-019` | Los fallos parciales permiten recuperación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-020` | Cada aplicación supera piloto con usuarios reales | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-021` | Probar SHELL por tipo de actor | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-022` | Probar ANIMA con trabajadores y administradores | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-022` | Probar ANIMA con trabajadores y administradores | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-023` | Probar VISO por rol administrativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-024` | Probar NEXO por rol operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-025` | Probar FOGO por área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
