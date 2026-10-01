@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1583** |
+| Tareas aprobadas | **1584** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **13** |
+| Tareas no iniciadas | **12** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **99.19% (1583/1596)** |
+| Porcentaje de completamiento | **99.25% (1584/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad** |
-| Tarea actual | **AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada** |
+| Última tarea aprobada | **AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada** |
+| Tarea actual | **AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones** |
+| Siguiente tarea | **NINGUNA — CIERRE SIN HANDOFF DECLARADO** |
 | Bloque actual | **BLOQUE R3 — Retiro legacy y certificación final** |
-| Progreso del bloque | **BLOQUE R3: 0 de 2 aprobadas; AUTH-DB-030 pendiente** |
+| Progreso del bloque | **BLOQUE R3: 1 de 2 aprobadas; AUTH-DB-031 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-DB-030** |
+| Carril documental | **ACTIVO — AUTH-DB-031** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad |
-| Tarea actual | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada — **NO INICIADA** |
-| Siguiente tarea | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones |
+| Última aprobada | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada |
+| Tarea actual | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones — **NO INICIADA** |
+| Siguiente tarea | NINGUNA — CIERRE SIN HANDOFF DECLARADO |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE R3: 0 DE 2 APROBADAS — ACTUAL AUTH-DB-030** |
+| CONTINUIDAD ACTIVA | **BLOQUE R3: 1 DE 2 APROBADAS — ACTUAL AUTH-DB-031** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,11 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad
-        ↓
-TAREA ACTUAL
 AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones
         ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE R3 — 0 de 2 tareas aprobadas
+BLOQUE R3 — 1 de 2 tareas aprobadas
 ```
