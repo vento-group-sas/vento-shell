@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1553** |
+| Aprobadas | **1554** |
 | En propuesta | **0** |
-| No iniciadas | **43** |
+| No iniciadas | **42** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.31% (1553/1596)** |
+| Porcentaje de completamiento | **97.37% (1554/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **43** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1454** |
+| ⏸ NO_EVALUADA | **42** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1455** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-030` — Ejecutar prueba de regresión completa | ✅ APROBADA |
-| Tarea actual | `UX-QA-001` — El trabajador identifica su siguiente tarea | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-002` — La acción principal se encuentra sin capacitación | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-001` — El trabajador identifica su siguiente tarea | ✅ APROBADA |
+| Tarea actual | `UX-QA-002` — La acción principal se encuentra sin capacitación | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-003` — El trabajador comprende el estado del proceso | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1385,7 +1385,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-028` | Rollback funciona por aplicación | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-029` | Auditoría conserva actor, turno, sede y área | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-030` | Ejecutar prueba de regresión completa | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-001` | El trabajador identifica su siguiente tarea | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-001` | El trabajador identifica su siguiente tarea | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-002` | La acción principal se encuentra sin capacitación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-003` | El trabajador comprende el estado del proceso | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-004` | Los errores indican cómo continuar | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
