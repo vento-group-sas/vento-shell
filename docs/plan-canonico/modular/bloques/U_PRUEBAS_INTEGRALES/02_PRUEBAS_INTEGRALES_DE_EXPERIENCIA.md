@@ -25364,7 +25364,1229 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-022 — Probar ANIMA con trabajadores y administradores`
-### [ ] UX-QA-022 — Probar ANIMA con trabajadores y administradores
+### ✅ UX-QA-022 — Probar ANIMA con trabajadores y administradores
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-021 — Probar SHELL por tipo de actor
+**Tarea siguiente:** UX-QA-023 — Probar VISO por rol administrativo
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de ANIMA con trabajadores y personas que ejercen capacidades administrativas o de supervisión efectivas, demostrando por package y globalmente que la experiencia personal, la administración móvil autorizada, los cambios de carril, asistencia, navegación, recuperación, privacidad y estados degradados conservan las fronteras aprobadas sin convertir rol, pestaña visible o estado local en autoridad, consumiendo `UX-QA-020`, `UX-QA-021`, `ANIMA-UX-001..017`, `ANIMA-AUTH-001..020` y la cobertura vigente sin reabrir ownership, autorización, idempotencia ni fuente de verdad
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de ANIMA con trabajadores y administración autorizada definido; las ejecuciones `UX-QA-022::<package_id>` y `UX-QA-022::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física aplicable del piloto y de ANIMA sin ejecutar usuarios reales, modificar runtime, datos, Supabase, dispositivos, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, rutas, componentes, contratos runtime, roles, grants, denies, permisos, contexto, datos, Supabase, migraciones, RLS, RPC, Edge Functions, colas offline, notificaciones, sesiones, dispositivos, catálogos, configuración, packages, ambientes, despliegues ni cuentas de usuarios
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que ANIMA puede ser usada por trabajadores y por personas con capacidades administrativas o de supervisión efectivas sin mezclar experiencia personal, administración, diagnóstico técnico, identidad, rol, contexto, autorización ni estado local.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿QUIÉN ES EL ACTOR EFECTIVO?
+¿EL PARTICIPANTE ESTÁ EN CARRIL TRABAJADOR O ADMINISTRACIÓN/SUPERVISIÓN?
+¿LA INTENCIÓN ACTUAL REQUIERE CAPACIDAD ADMINISTRATIVA?
+¿LA CAPACIDAD EFECTIVA FUE RESUELTA EN SERVIDOR?
+¿LA PANTALLA Y LA ACCIÓN PERTENECEN AL CARRIL CORRECTO?
+¿EL CONTEXTO DE TURNO, SEDE, ÁREA Y ROL OPERATIVO ES AUTORITATIVO?
+¿LA UI DISTINGUE CONFIRMADO, PENDIENTE, BLOQUEADO, CONFLICTO E INDISPONIBILIDAD?
+¿LA NAVEGACIÓN DIRECTA REVALIDA AUTORIDAD?
+¿EL CAMBIO DE CARRIL LIMPIA ESTADO QUE NO PUEDE HEREDARSE?
+¿LA EXPERIENCIA PERSONAL SIGUE SIENDO PERSONAL AUNQUE EL ACTOR TENGA CAPACIDADES ADMINISTRATIVAS?
+¿UN TRABAJADOR SIN CAPACIDAD ADMINISTRATIVA QUEDA PROTEGIDO DE DATOS Y ACCIONES DE TERCEROS?
+¿EL MODO OFFLINE O DEGRADADO EXPLICA LO QUE REALMENTE PUEDE HACERSE?
+¿LOS HALLAZGOS TIENEN OWNER, SEVERIDAD Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+ACTOR EFECTIVO
++
+INTENCIÓN ACTUAL
++
+CONTEXTO VIGENTE
++
+DECISIÓN DE AUTORIZACIÓN VIGENTE
++
+POLÍTICA DE PRESENTACIÓN
+=
+EXPERIENCIA ANIMA OBSERVABLE
+```
+
+No es válido:
+
+```text
+ROL GERENCIAL
+=
+MODO ADMINISTRADOR PERMANENTE
+```
+
+ni:
+
+```text
+PESTAÑA VISIBLE
+=
+AUTORIZACIÓN PARA OPERAR
+```
+
+ni:
+
+```text
+FILTRO DE SEDE
+=
+SEDE OPERATIVA DEL TRABAJADOR
+```
+
+#### 2. Resultado documental
+
+`UX-QA-022` define el contrato específico de certificación humana de ANIMA para los dos usos funcionales que su diseño ya separa:
+
+1. experiencia personal/operativa del trabajador;
+2. administración o supervisión móvil expresamente autorizada.
+
+El resultado establece:
+
+- universo cerrado de catorce pantallas móviles;
+- distribución `8 TRABAJADOR + 2 ADMIN/SUPERVISIÓN + 1 TÉCNICA + 3 ACCESO`;
+- cobertura de nueve pestañas autenticadas, siete generales y dos condicionadas;
+- perfil de participante trabajador;
+- perfil de participante con capacidad administrativa o de supervisión efectiva;
+- regla de que una misma persona puede recorrer ambos carriles sin fusionarlos;
+- cobertura de Home, Turnos, Historial, Documentos, Carnet, Novedades, Soporte y Configuración personal;
+- cobertura administrativa de `/operativo` y `/team`;
+- exclusión del diagnóstico técnico del carril ordinario;
+- reutilización íntegra de los dieciséis escenarios de asistencia de `ANIMA-UX-015`;
+- cobertura de navegación, autorización, privacidad, offline, recuperación, notificaciones y estados degradados;
+- evidencia mínima por escenario;
+- casos positivos y negativos;
+- criterios de PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-023`.
+
+#### 3. Topología contractual
+
+Se conserva:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-022::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-022::GLOBAL-FINAL
+```
+
+La aprobación documental de este marcador no crea una instancia física.
+
+#### 4. Handoff recibido de `UX-QA-021`
+
+`UX-QA-021` entrega a `UX-QA-022` únicamente contratos reutilizables de certificación:
+
+- método de especialización del piloto humano por aplicación;
+- identidad de escenario por package/candidato/ambiente;
+- separación entre actor y rol;
+- reglas de evidencia humana minimizada;
+- contrato de findings y retest;
+- tratamiento de sesión, dispositivo, conectividad, bloqueo y recuperación;
+- regla de que navegación no transporta autoridad;
+- regla de que la aplicación propietaria conserva el resultado empresarial;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar un actor o población aplicable mediante agregación.
+
+`UX-QA-022` deberá concretar ANIMA con trabajadores y administradores usando sus propios contratos, superficies y owners.
+
+#### 5. Contrato transversal heredado de `UX-QA-020`
+
+La especialización conserva sin redefinir:
+
+- definición de usuario real;
+- proporcionalidad de participantes y escenarios;
+- neutralidad del protocolo;
+- observación de ayuda, fricción y recuperación;
+- privacidad y minimización de evidencia;
+- registro de findings con owner y condición de salida;
+- separación entre evidencia de CI/cutover y evidencia UX;
+- ausencia de thresholds inventados;
+- PASS por escenario, package y consolidación global.
+
+`UX-QA-022` no convierte una sesión controlada, un smoke test o una opinión de satisfacción en certificación integral.
+
+#### 6. Fuentes propietarias consumidas
+
+La certificación consume, según aplicabilidad:
+
+- `ANIMA-UX-001` — inventario de pantallas personales;
+- `ANIMA-UX-002` — inventario de pantallas administrativas;
+- `ANIMA-UX-003` — separación trabajador/administración;
+- `ANIMA-UX-004` y `ANIMA-UX-005` — inicio y contexto de turno;
+- `ANIMA-UX-006` a `ANIMA-UX-012` — check-in, check-out, estados, errores, offline y reanudación;
+- `ANIMA-UX-013` — documentos y datos personales;
+- `ANIMA-UX-014` — administración de equipo autorizada;
+- `ANIMA-UX-015` — prueba específica de check-in/check-out con trabajadores reales;
+- `ANIMA-UX-016` — recordatorios operativos;
+- `ANIMA-UX-017` — ciclo de novedades internas;
+- `ANIMA-AUTH-001` a `ANIMA-AUTH-020` — turno, territorio, rol operativo, contexto, offline, diagnóstico, auditoría y fuente de verdad;
+- contratos transversales de autorización, privacidad, dispositivos, integración, evidencia y recuperación vigentes.
+
+No se crea un contrato paralelo que compita con estas fuentes.
+
+#### 7. Universo móvil canónico
+
+Se conserva exactamente:
+
+```text
+ANIMA_SCREEN_TOTAL = 14
+```
+
+La distribución objetivo aprobada es:
+
+| Carril primario | Cantidad |
+| --- | ---: |
+| `TRABAJADOR` | **8** |
+| `SUPERVISION_ANIMA / ADMIN_ANIMA` | **2** |
+| `TECNICA` | **1** |
+| `ACCESO` | **3** |
+| **TOTAL** | **14** |
+
+No se crean nuevas identidades de pantalla para esta certificación.
+
+#### 8. Matriz de las catorce pantallas
+
+| ID | Patrón | Carril primario | Cobertura en `UX-QA-022` |
+| --- | --- | --- | --- |
+| `ANIMA-SCREEN-001` | `/` | `ACCESO` | bootstrap y redirección segura |
+| `ANIMA-SCREEN-002` | `/splash` | `ACCESO` | resolución de sesión sin exposición protegida |
+| `ANIMA-SCREEN-003` | `/login` | `ACCESO` | autenticación y recuperación sin privilegio implícito |
+| `ANIMA-SCREEN-004` | `/home` | `TRABAJADOR` | jornada, asistencia, turno, contexto y estados |
+| `ANIMA-SCREEN-005` | `/shifts` | `TRABAJADOR` | lectura personal de turnos y frontera con administración |
+| `ANIMA-SCREEN-006` | `/history` | `TRABAJADOR` | historial propio e incidencias permitidas |
+| `ANIMA-SCREEN-007` | `/documents` | `TRABAJADOR` | documentos propios y separación de terceros |
+| `ANIMA-SCREEN-008` | `/carnet` | `TRABAJADOR` | identidad laboral y elegibilidad propias |
+| `ANIMA-SCREEN-009` | `/announcements` | `TRABAJADOR` | lectura personal y frontera editorial |
+| `ANIMA-SCREEN-010` | `/operativo` | `SUPERVISION_ANIMA` | supervisión móvil acotada |
+| `ANIMA-SCREEN-011` | `/team` | `ADMIN_ANIMA` | directorio e invitación cuando sean autorizables |
+| `ANIMA-SCREEN-012` | `/support` | `TRABAJADOR` | soporte propio y frontera de contacto dirigido |
+| `ANIMA-SCREEN-013` | `/account-settings` | `TRABAJADOR` | cuenta, permisos de dispositivo y sesión propios |
+| `ANIMA-SCREEN-014` | `/anima-diagnostics` | `TECNICA` | exclusión del uso ordinario y capacidad técnica separada |
+
+Cada identidad se certifica una sola vez en su carril primario, aunque pueda contener handoffs hacia otras capacidades.
+
+#### 9. Navegación autenticada
+
+La certificación conserva el contrato de nueve pestañas:
+
+```text
+AUTHENTICATED_TABS = 9
+GENERAL_TABS = 7
+CONDITIONAL_TABS = 2
+```
+
+Las dos pestañas condicionadas son:
+
+```text
+Resumen
+Equipo
+```
+
+Ocultar una pestaña no sustituye el control de acceso de la pantalla ni del servidor.
+
+#### 10. Trabajador no equivale a rol base
+
+`TRABAJADOR` describe la finalidad de la experiencia, no un `BaseRoleCode` concreto.
+
+Una persona con rol base gerencial puede seguir usando:
+
+- Home personal;
+- Turnos propios;
+- Historial propio;
+- Documentos propios;
+- Carnet propio;
+- Novedades aplicables;
+- Soporte propio;
+- Configuración de su cuenta.
+
+La jerarquía no convierte automáticamente esas superficies en administración.
+
+#### 11. Administrador no es un actor paralelo
+
+Para esta tarea, un participante administrativo es:
+
+```text
+EMPLOYEE
++
+CAPACIDAD ADMINISTRATIVA O DE SUPERVISIÓN EFECTIVA
++
+INTENCIÓN ADMINISTRATIVA EXPLÍCITA
+```
+
+No se crea un `actor_type = ADMIN`.
+
+No se permite:
+
+```text
+ROL BASE GERENCIAL
+-> TODA ANIMA EN MODO ADMIN
+```
+
+La administración debe aparecer únicamente en superficies e intenciones que correspondan y después de autorización vigente.
+
+#### 12. Poblaciones de certificación
+
+Cada package aplicable deberá clasificar sus participantes por capacidad real, no por etiqueta informal.
+
+Como mínimo lógico, la cobertura distingue:
+
+| Población | Definición | Objetivo |
+| --- | --- | --- |
+| `WORKER_PERSONAL` | empleado válido que utiliza experiencia personal | demostrar autoservicio y operación propia sin exposición administrativa |
+| `WORKER_WITH_ADMIN_CAPABILITY` | empleado válido que además posee una capacidad administrativa/supervisión efectiva | demostrar separación de carriles y ausencia de administración implícita en el flujo personal |
+| `ADMIN_INTENT_ACTIVE` | el mismo tipo de empleado cuando entra explícitamente a una intención administrativa autorizada | demostrar alcance, territorio, población visible, mutaciones y handoff correctos |
+
+Una misma persona puede cubrir más de una población únicamente cuando la evidencia mantiene separados los escenarios y la autoridad efectiva de cada uno.
+
+#### 13. Proporcionalidad de participantes
+
+`UX-QA-022` no inventa un número universal de participantes.
+
+Cada package deberá justificar representatividad según:
+
+- capacidades incluidas;
+- plataformas y dispositivos aplicables;
+- sedes y territorios relevantes;
+- condiciones de conectividad;
+- primera experiencia y experiencia recurrente;
+- sensibilidad de la acción;
+- riesgos y hallazgos abiertos.
+
+Para el subconjunto de asistencia se conserva la exigencia de `ANIMA-UX-015`: al menos una persona cubierta por ese protocolo no debe conocer previamente el flujo nuevo de check-in/check-out.
+
+#### 14. Experiencia del trabajador
+
+La experiencia ordinaria de ANIMA debe permitir que el trabajador:
+
+1. identifique su sesión y contexto relevante;
+2. comprenda turno actual o siguiente turno cuando exista;
+3. vea sede, área, horario y rol operativo aplicables;
+4. ejecute o comprenda check-in/check-out cuando corresponda;
+5. distinga confirmado, pendiente, bloqueado, conflicto e indisponibilidad;
+6. consulte su historial permitido;
+7. consulte sus documentos permitidos;
+8. comprenda su carnet o elegibilidad laboral;
+9. lea novedades para las cuales sea elegible;
+10. gestione soporte y cuenta dentro de su propio alcance;
+11. continúe o recupere trabajo sin duplicar efectos;
+12. permanezca fuera de información administrativa de terceros que no necesite.
+
+#### 15. Experiencia administrativa y de supervisión
+
+Cuando existe intención administrativa autorizada, la certificación deberá demostrar que ANIMA:
+
+- delimita población y territorio antes de mostrar datos;
+- diferencia supervisión móvil de administración propietaria de otros dominios;
+- conserva `/operativo` como supervisión acotada;
+- conserva `/team` como administración móvil limitada;
+- permite únicamente acciones que pertenezcan a ANIMA y estén autorizadas;
+- realiza handoff hacia VISO/SHELL u otro propietario cuando la intención no pertenece a ANIMA;
+- no convierte filtros, selección de trabajador, rol operativo ni sede operativa personal en autoridad administrativa;
+- no hereda al volver al carril trabajador la población, empleado o sede seleccionados en administración.
+
+#### 16. Cinco superficies mixtas heredadas
+
+La certificación debe respetar la separación ya decidida para:
+
+| Superficie | Núcleo personal | Capacidad administrativa separada |
+| --- | --- | --- |
+| `/home` | jornada, marcación, turno, contexto y estado propio | reportes o métricas sobre terceros |
+| `/shifts` | programación propia | crear, editar, publicar, confirmar/cancelar y gestionar programación de equipo |
+| `/documents` | documentos y alertas propios | carga, filtrado o administración documental de terceros |
+| `/announcements` | lectura personal | creación, edición, audiencia, publicación y archivo |
+| `/support` | tickets, mensajes y ayuda propios | contacto dirigido a trabajadores |
+
+Un actor con capacidad administrativa no hace que ambos núcleos se rendericen mezclados por defecto.
+
+#### 17. Frontera de `/operativo`
+
+`/operativo` se prueba como supervisión móvil acotada.
+
+PASS exige:
+
+- acceso directo y navegación usan la misma decisión efectiva;
+- la población observada pertenece al alcance autorizado;
+- filtros no amplían el territorio;
+- métricas agregadas no revelan población oculta;
+- una indisponibilidad no se presenta como cero datos;
+- una persona sin capacidad no obtiene la pantalla ni sus datos mediante deep link;
+- la salida hacia analítica densa o administración fuera de ANIMA usa handoff propietario.
+
+#### 18. Frontera de `/team`
+
+`/team` se prueba como superficie administrativa separada.
+
+La experiencia ordinaria se limita a capacidades propietarias aprobadas, incluyendo según autorización efectiva:
+
+- consulta de directorio permitido;
+- resumen mínimo de integrante;
+- invitación cuando sea accionable.
+
+No se certifica como correcto:
+
+- editar rol por conveniencia de UI;
+- editar permisos desde Team;
+- borrar permanentemente una persona;
+- transformar filtros en asignaciones;
+- tratar una invitación enviada como trabajador activo;
+- ampliar alcance por fallback a rol gerencial local.
+
+#### 19. Programación de turnos
+
+ANIMA trabajador consume la programación publicada que le corresponde.
+
+La certificación deberá demostrar que:
+
+```text
+MI TURNO
+!=
+PLANNER ADMINISTRATIVO
+```
+
+La creación, actualización, publicación o cancelación administrativa de programación conserva sus owners canónicos y autorización de servidor.
+
+Un administrador en ANIMA no adquiere ownership universal del planner por ver la pantalla `/shifts`.
+
+#### 20. Contexto laboral visible
+
+Cuando aplique, el trabajador debe poder interpretar correctamente:
+
+- turno;
+- sede;
+- área;
+- horario;
+- rol operativo;
+- estado de asistencia.
+
+Estos hechos provienen de fuentes autoritativas.
+
+No los sustituyen:
+
+- sede seleccionada en UI;
+- sede primaria;
+- último turno;
+- último check-in;
+- filtro administrativo;
+- rol base;
+- preferencia local.
+
+#### 21. Gate de turno y territorio
+
+Los escenarios que requieren asistencia consumen las decisiones de `ANIMA-AUTH-001..006`.
+
+La experiencia debe preservar diferencias entre:
+
+- sin turno publicado;
+- turno fuera de ventana;
+- publicación ambigua;
+- fuente no disponible;
+- sede inválida;
+- área incompatible;
+- rol operativo faltante o inválido;
+- rol no habilitado en sede;
+- rol no habilitado en área;
+- permiso denegado.
+
+No se colapsan todas en “No puedes marcar”.
+
+#### 22. Subconjunto obligatorio de asistencia
+
+Los dieciséis escenarios de `ANIMA-UX-015` forman parte del oracle de `UX-QA-022` cuando el package cubre asistencia:
+
+| ID heredado | Escenario |
+| --- | --- |
+| `UX015-S01` | check-in online sin incidente |
+| `UX015-S02` | check-out online sin incidente |
+| `UX015-S03` | doble toque o repetición rápida |
+| `UX015-S04` | permiso de ubicación denegado |
+| `UX015-S05` | permiso habilitado después del bloqueo |
+| `UX015-S06` | ubicación no disponible o desactualizada |
+| `UX015-S07` | pérdida de red antes de persistencia durable |
+| `UX015-S08` | pérdida de red después de persistencia durable |
+| `UX015-S09` | background y retorno durante la marcación |
+| `UX015-S10` | reinicio con intención durable pendiente |
+| `UX015-S11` | respuesta remota perdida después de posible efecto |
+| `UX015-S12` | sesión expirada durante el flujo |
+| `UX015-S13` | turno o contexto cambia durante interrupción |
+| `UX015-S14` | estado autoritativo contradice el supuesto local |
+| `UX015-S15` | retorno a Home después del resultado |
+| `UX015-S16` | consulta posterior del estado/historial |
+
+`UX-QA-022` no renumera estos escenarios ni sustituye la evidencia ya obtenida de una ejecución válida del mismo candidate/package/ambiente.
+
+#### 23. Estados de asistencia observables
+
+Cuando aparezcan, el participante deberá distinguir como mínimo:
+
+```text
+CONFIRMADO
+PENDIENTE_DURABLE
+NO_PERSISTIDO
+BLOQUEADO
+CONFLICTO
+RESULTADO_INCIERTO
+REAUTENTICACION_REQUERIDA
+CONCILIACION_REQUERIDA
+```
+
+La UI no puede inducir al trabajador a repetir una intención solo porque la respuesta previa sea incierta.
+
+#### 24. Offline y cola
+
+Una marcación offline solo puede presentarse como encolada después de persistencia durable.
+
+La certificación deberá probar, según aplicabilidad:
+
+- identidad estable de la intención;
+- supervivencia a background/reinicio;
+- replay sin doble efecto;
+- conflicto ante reutilización incompatible;
+- separación entre pendiente y confirmado;
+- revalidación de sesión y contexto antes de aplicar;
+- explicación humana de qué se conserva y qué falta.
+
+#### 25. Historial
+
+`/history` deberá permitir al trabajador consultar únicamente información permitida de su propia asistencia.
+
+La prueba deberá cubrir:
+
+- carga;
+- vacío válido;
+- error o indisponibilidad;
+- detalle permitido;
+- reporte de incidencia cuando exista;
+- manipulación local que intente acceder a registros de terceros.
+
+Un vacío válido y una falla de lectura no son equivalentes.
+
+#### 26. Documentos y datos personales
+
+`/documents` deberá mantener separado:
+
+```text
+MIS DOCUMENTOS
+!=
+ADMINISTRACIÓN DE EXPEDIENTES DE TERCEROS
+```
+
+La prueba deberá verificar:
+
+- minimización de datos;
+- finalidad;
+- sensibilidad y vigencia;
+- acciones permitidas sobre el documento propio;
+- ausencia de enumeración de terceros;
+- handoff o superficie propietaria para administración documental;
+- tratamiento seguro de error, stale y falta de autorización.
+
+#### 27. Carnet
+
+`/carnet` deberá presentar únicamente identidad laboral y elegibilidad del trabajador autenticado.
+
+No podrá presentar un carnet válido cuando falte una condición requerida.
+
+La prueba distinguirá:
+
+- identidad;
+- empleo;
+- contrato;
+- documentos requeridos;
+- elegibilidad final.
+
+#### 28. Novedades como trabajador
+
+El trabajador deberá poder leer únicamente novedades para las cuales sea elegible.
+
+La prueba deberá demostrar:
+
+- la audiencia de lectura se aplica antes de entregar contenido;
+- recibir push no concede lectura;
+- no tener token push no elimina visibilidad válida en ANIMA;
+- una novedad archivada o vencida sigue las reglas de vigencia aprobadas;
+- fallback/solo lectura se presenta explícitamente;
+- controles administrativos no aparecen como utilizables cuando no pueden completarse.
+
+#### 29. Novedades como administración
+
+Cuando el participante posee capacidad editorial vigente, la certificación deberá cubrir según package:
+
+- borrador;
+- audiencia persistente;
+- publicación;
+- edición versionada;
+- reenvío explícito;
+- vigencia;
+- archivo;
+- visibilidad;
+- notificación separada de fuente de verdad.
+
+No se certificará eliminación destructiva como sustituto ordinario de archivo/historial cuando el contrato aprobado exige preservación.
+
+#### 30. Soporte
+
+`/support` deberá separar:
+
+- tickets propios;
+- mensajes propios;
+- ayuda personal;
+- contacto dirigido a trabajadores cuando exista capacidad administrativa.
+
+La prueba deberá impedir que deep links, filtros o selección local expongan conversaciones de terceros fuera del alcance autorizado.
+
+#### 31. Configuración de cuenta
+
+`/account-settings` opera únicamente sobre la cuenta autenticada.
+
+La prueba deberá distinguir:
+
+- permisos reales del dispositivo;
+- cierre de sesión;
+- limpieza de datos locales;
+- solicitud de eliminación de cuenta;
+- estado y trazabilidad de esas solicitudes.
+
+Una limpieza local no equivale a disposición de historias laborales o evidencia regulada.
+
+#### 32. Diagnóstico técnico
+
+`/anima-diagnostics` no pertenece al carril trabajador ni a la administración laboral ordinaria.
+
+La certificación deberá verificar que:
+
+- el acceso exige capacidad técnica canónica;
+- una allowlist local o correo hardcodeado no es autoridad suficiente;
+- la navegación y la pantalla usan una decisión coherente;
+- un administrador laboral sin capacidad técnica no obtiene acceso por jerarquía;
+- la pantalla no se usa para “resolver” pruebas administrativas ordinarias.
+
+#### 33. Acceso, splash y login
+
+Las tres superficies de acceso se certifican como precondiciones compartidas:
+
+```text
+/
+-> /splash
+-> /home CON SESIÓN
+   O
+-> /login SIN SESIÓN
+```
+
+La prueba debe detectar bucles, exposición intermedia de una pantalla protegida o creación de un carril privilegiado durante login.
+
+#### 34. Notificaciones y deep links
+
+Las respuestas de notificación conservan destinos cerrados.
+
+La certificación deberá comprobar que:
+
+- tipos de turno permitidos navegan a `/shifts`;
+- `support_message` navega a `/support`;
+- tipos desconocidos no abren destinos arbitrarios;
+- abrir una notificación antigua obliga a recuperar el estado vigente;
+- una notificación no transporta autorización ni resultado empresarial.
+
+#### 35. Cambio de carril trabajador → administración
+
+Al entrar a administración o supervisión se deberá observar:
+
+- intención explícita;
+- autorización vigente;
+- alcance administrativo resoluble;
+- tratamiento de trabajo personal en curso;
+- limpieza o aislamiento de filtros y selección previa;
+- ausencia de promoción silenciosa del contexto operativo personal a territorio administrativo.
+
+Una acción sensible pendiente puede bloquear el cambio hasta tomar una decisión segura.
+
+#### 36. Cambio de carril administración → trabajador
+
+Al volver al trabajador se deberá:
+
+- resolver de nuevo contexto personal vigente;
+- limpiar o ignorar filtros administrativos;
+- impedir que el trabajador seleccionado se convierta en actor efectivo;
+- impedir que sede administrativa quede como sede operativa;
+- recuperar cola offline y estados propios del actor real;
+- reflejar resultado autoritativo de cualquier acción ya completada.
+
+#### 37. Cambio de actor o sesión
+
+Ante cambio de actor, logout, expiración o sesión nueva:
+
+- no se heredan datos de terceros;
+- no se heredan filtros administrativos sensibles;
+- no se hereda una decisión `ALLOW` previa;
+- no se hereda una marcación pendiente de otro actor;
+- se reevalúan capabilities, contexto y navegación;
+- la evidencia debe permitir demostrar que no hubo contaminación cross-actor.
+
+#### 38. Dispositivo y plataforma
+
+ANIMA conserva prioridad de móvil personal.
+
+La aplicación principal permanece gobernada para iOS y Android; web-auth es auxiliar y no convierte ANIMA en aplicación web de operación laboral.
+
+Cada package deberá probar los runtimes y dispositivos que realmente declara.
+
+No se reutiliza un build web de otro consumidor como evidencia de ANIMA nativa.
+
+#### 39. Accesibilidad
+
+Los escenarios humanos deberán registrar barreras de accesibilidad que afecten:
+
+- descubribilidad de la acción;
+- lectura de estado;
+- uso de teclado/lector cuando aplique;
+- tamaño o alcance táctil;
+- dependencia exclusiva de color;
+- comprensión de bloqueo y recuperación.
+
+Completar una tarea mediante compensación o ayuda no convierte la barrera en PASS.
+
+#### 40. Privacidad y minimización
+
+La evidencia humana no deberá almacenar más datos personales de los necesarios.
+
+Como mínimo:
+
+- participante pseudonimizado;
+- capturas redactadas cuando expongan información sensible;
+- cero secretos, tokens o credenciales;
+- cero payloads completos de otros trabajadores salvo necesidad autorizada y protegida;
+- separación entre evidencia de comportamiento y datos empresariales no necesarios.
+
+#### 41. Protocolo neutral
+
+El facilitador no debe enseñar la respuesta que desea observar.
+
+No se permite, antes de la primera interpretación del participante:
+
+- señalar el botón exacto;
+- dictar la secuencia ordinaria;
+- revelar la causa del bloqueo;
+- decir qué estado debería interpretar;
+- usar una cuenta privilegiada para completar por el trabajador una acción que el escenario exige que realice él.
+
+Toda intervención se registra.
+
+#### 42. Matriz mínima de escenarios del trabajador
+
+Además de los dieciséis casos `UX015-S01..S16` cuando sean aplicables, cada package deberá seleccionar los escenarios pertinentes de esta matriz:
+
+| ID | Superficie/tema | Escenario | Oracle |
+| --- | --- | --- | --- |
+| `UX022-W01` | acceso | sesión válida llega al inicio personal | sin desvío administrativo automático |
+| `UX022-W02` | acceso | sesión ausente o expirada | login/reautenticación sin exposición protegida |
+| `UX022-W03` | Home | turno actual o siguiente disponible | contexto comprensible y fuente vigente |
+| `UX022-W04` | Home | sin turno válido | estado explícito sin fabricar turno |
+| `UX022-W05` | Home | fuente de contexto no disponible | indisponibilidad distinta de ausencia |
+| `UX022-W06` | Turnos | consulta de programación propia | cero edición administrativa implícita |
+| `UX022-W07` | Historial | historial propio con datos | solo registros permitidos |
+| `UX022-W08` | Historial | vacío válido versus error | estados distinguibles |
+| `UX022-W09` | Documentos | consulta de documentos propios | minimización y cero exposición de terceros |
+| `UX022-W10` | Carnet | elegibilidad completa | estado válido explicable |
+| `UX022-W11` | Carnet | condición requerida faltante | no declarar carnet válido |
+| `UX022-W12` | Novedades | lectura autorizada | solo audiencia elegible |
+| `UX022-W13` | Novedades | fallback/solo lectura | controles imposibles no aparecen como utilizables |
+| `UX022-W14` | Soporte | ticket o mensaje propio | conversación limitada al actor |
+| `UX022-W15` | Cuenta | permiso del dispositivo cambia | estado real reflejado y recuperación comprensible |
+| `UX022-W16` | Cuenta | logout | sesión y estado sensible se limpian correctamente |
+| `UX022-W17` | navegación | deep link a superficie no autorizada | bloqueo coherente sin fuga |
+| `UX022-W18` | notificación | destino permitido | navegación revalida estado y autoridad |
+| `UX022-W19` | notificación | tipo desconocido | no abrir destino arbitrario |
+| `UX022-W20` | conectividad | recuperación después de interrupción | no duplicar efecto ni perder estado protegido |
+
+La no-aplicabilidad debe justificarse por package; no se elimina silenciosamente un caso aplicable.
+
+#### 43. Matriz mínima de escenarios administrativos
+
+Cada package que exponga capacidad administrativa o de supervisión deberá seleccionar los casos aplicables:
+
+| ID | Tema | Escenario | Oracle |
+| --- | --- | --- | --- |
+| `UX022-A01` | entrada | actor con capacidad entra explícitamente a administración | carril visible y autorizado sin alterar el personal |
+| `UX022-A02` | entrada | actor sin capacidad usa navegación ordinaria | administración no se ofrece como operable |
+| `UX022-A03` | deep link | actor sin capacidad abre `/operativo` | bloqueo y cero datos sensibles |
+| `UX022-A04` | deep link | actor sin capacidad abre `/team` | bloqueo y cero datos sensibles |
+| `UX022-A05` | `/operativo` | población dentro del alcance | datos y agregados corresponden al territorio autorizado |
+| `UX022-A06` | `/operativo` | filtro intenta ampliar territorio | no amplía autoridad |
+| `UX022-A07` | `/team` | consulta de directorio permitida | solo población autorizada |
+| `UX022-A08` | `/team` | invitación válida | resultado de invitación no simula trabajador activo |
+| `UX022-A09` | `/team` | invitación duplicada o respuesta perdida | idempotencia/resultado desconocido preservados |
+| `UX022-A10` | `/team` | intento de editar rol/permiso fuera de ownership | acción ausente o handoff propietario |
+| `UX022-A11` | Turnos | intento de administrar programación desde carril personal | no mezclar planner con lectura propia |
+| `UX022-A12` | Novedades | ciclo editorial permitido | audiencia, publicación, edición y archivo conservan contrato |
+| `UX022-A13` | Documentos | intento de administrar terceros | superficie/handoff propietario y minimización |
+| `UX022-A14` | Soporte | contacto dirigido autorizado | sujeto y territorio correctos |
+| `UX022-A15` | cambio de carril | volver al trabajador | filtros, sujeto y sede administrativa no contaminan contexto personal |
+| `UX022-A16` | cambio de actor | sesión cambia durante administración | cero herencia de población o autoridad |
+| `UX022-A17` | fallo técnico | evaluador/contexto no disponible | fail closed sin fallback por rol |
+| `UX022-A18` | diagnóstico | admin laboral intenta abrir diagnóstico técnico | no obtiene capacidad técnica por jerarquía |
+
+#### 44. Casos negativos obligatorios
+
+La certificación deberá detectar o bloquear, según aplicabilidad:
+
+1. rol gerencial convertido en modo administrativo global;
+2. pestaña visible usada como permiso;
+3. botón oculto como único control de seguridad;
+4. deep link que evita guard de la pantalla;
+5. selected site usada como territorio autoritativo;
+6. trabajador seleccionado convertido en actor efectivo;
+7. filtro que amplía población;
+8. conteo que incluye población oculta;
+9. pantalla personal cargando datos de terceros innecesarios;
+10. fallback local a roles para conceder administración;
+11. permiso legado usado después de una denegación canónica;
+12. fuente no disponible representada como lista vacía;
+13. estado pendiente representado como confirmado;
+14. respuesta perdida tratada como no-efecto y seguida de repetición ciega;
+15. evento offline no persistido presentado como encolado;
+16. actor nuevo heredando cola o navegación del anterior;
+17. notificación usada como fuente de verdad;
+18. push usado como autorización de lectura;
+19. novedad segmentada degradada a audiencia global;
+20. control editorial utilizable en modo solo lectura;
+21. eliminación destructiva donde el contrato exige archivo/historial;
+22. `/anima-diagnostics` habilitado por correo hardcodeado;
+23. cuenta privilegiada del facilitador usada para completar la tarea del participante;
+24. dato sensible capturado en evidencia sin necesidad;
+25. escenario aplicable omitido para sostener un PASS agregado.
+
+#### 45. Evidencia mínima por escenario
+
+Cada escenario de `UX-QA-022::<package_id>` deberá registrar, según aplicabilidad:
+
+| Campo | Obligación |
+| --- | --- |
+| `package_id` | package certificado |
+| `candidate_ref` | revisión/build exacto |
+| `environment_ref` | ambiente autorizado |
+| `scenario_id` | identidad estable del escenario |
+| `participant_ref` | referencia pseudonimizada |
+| `participant_profile` | población lógica cubierta |
+| `lane` | trabajador, administración/supervisión, acceso o técnica cuando aplique |
+| `surface_ref` | pantalla o superficie observada |
+| `intent_ref` | intención humana evaluada |
+| `authorization_ref` | decisión o referencia segura cuando aplique |
+| `context_ref` | contexto necesario sin exponer datos innecesarios |
+| `precondition` | estado previo relevante |
+| `expected_outcome` | oracle contractual |
+| `observed_outcome` | resultado observado |
+| `participant_understanding` | interpretación inicial resumida |
+| `facilitator_intervention` | ninguna o intervención registrada |
+| `attempt_count` | intentos iniciados por el participante |
+| `result` | PASS, FAIL o ABORTED |
+| `issue_ref` | finding asociado cuando exista |
+| `evidence_refs` | evidencia segura y redactada |
+| `observed_at` | instante de observación |
+
+Una evidencia de otro candidate, package, ambiente o combinación materialmente distinta no se reutiliza como PASS vigente.
+
+#### 46. Métricas sin thresholds inventados
+
+La certificación deberá poder consolidar, sin fijar umbrales no aprobados:
+
+```text
+scenario_count
+pass_count
+fail_count
+aborted_count
+uncovered_applicable_scenario_count
+participant_help_count
+participant_retry_count
+misinterpretation_count
+unauthorized_surface_exposure_count
+unauthorized_data_exposure_count
+cross_lane_state_leak_count
+cross_actor_state_leak_count
+false_confirmation_count
+unsafe_repeat_count
+unowned_finding_count
+critical_open_finding_count
+high_open_finding_count
+```
+
+La interpretación de estas métricas se realiza mediante los criterios contractuales de PASS, no mediante un porcentaje arbitrario.
+
+#### 47. Findings
+
+Todo finding deberá conservar:
+
+- `issue_id` estable;
+- scenario y superficie afectada;
+- package/candidate/ambiente;
+- población afectada;
+- severidad;
+- evidencia mínima;
+- owner canónico;
+- condición exacta de salida;
+- decisión de retest;
+- relación con un requisito vigente cuando aplique.
+
+No se crea una tarea nueva si ya existe un owner canónico.
+
+#### 48. Severidad crítica
+
+Un finding es **CRÍTICO** cuando pueda permitir o haya producido, entre otros:
+
+- acceso administrativo no autorizado;
+- exposición de datos laborales de terceros;
+- check-in/check-out duplicado por una sola intención;
+- confirmación falsa de asistencia;
+- pérdida de una marcación que la UI declaró protegida;
+- uso de otro trabajador como actor efectivo;
+- fuga de sesión o autoridad entre actores;
+- navegación técnica privilegiada por correo o rol no autorizado;
+- mutación de programación, expediente o audiencia fuera del owner autorizado;
+- repetición material causada por resultado incierto mal tratado.
+
+#### 49. Severidad alta
+
+Un finding es **ALTO** cuando produzca, entre otros:
+
+- bloqueo sin ruta segura de recuperación;
+- carriles trabajador/admin mezclados de forma que induzcan acciones equivocadas;
+- indisponibilidad interpretada como ausencia ordinaria;
+- audiencia o población mostrada de forma incorrecta sin evidencia de exposición crítica consumada;
+- información de estado que pueda inducir repetición insegura;
+- barrera de accesibilidad que impida una acción laboral crítica;
+- falta de owner o condición de salida para un hallazgo material.
+
+#### 50. Condición de PASS por escenario
+
+Un escenario queda PASS únicamente cuando:
+
+1. el oracle aplicable está satisfecho;
+2. el participante cubre la población declarada;
+3. la evidencia pertenece al mismo candidate/package/ambiente;
+4. no existe exposición de datos o capacidad fuera de alcance;
+5. no existe confirmación falsa;
+6. no existe repetición insegura inducida por la interfaz;
+7. la intervención del facilitador, si ocurrió, está registrada y no sustituye la conducta que debía observarse;
+8. los hallazgos críticos o altos aplicables al escenario están cerrados;
+9. los findings restantes tienen owner y condición de salida compatibles con PASS;
+10. la comprensión observable no contradice el estado real de la aplicación.
+
+#### 51. Condición de PASS por package
+
+`UX-QA-022::<package_id>` queda PASS cuando:
+
+1. todos los escenarios aplicables quedaron PASS;
+2. `uncovered_applicable_scenario_count = 0`;
+3. no existe finding crítico o alto aplicable abierto;
+4. la cobertura incluye las poblaciones realmente expuestas por el package;
+5. las superficies personales no mezclan administración por jerarquía;
+6. las superficies administrativas revalidan autorización y territorio;
+7. no existen fugas cross-lane ni cross-actor;
+8. los estados offline y de recuperación no inducen duplicación;
+9. la privacidad de participantes y terceros se conserva;
+10. la evidencia corresponde al mismo candidate y ambiente;
+11. los escenarios `UX015-S01..S16` aplicables quedaron cubiertos o se reutilizaron desde una ejecución válida exactamente compatible;
+12. todo finding residual permitido conserva owner y condición de salida.
+
+#### 52. `GLOBAL-FINAL`
+
+`UX-QA-022::GLOBAL-FINAL` consolida las instancias por package y demuestra que:
+
+- todo package ANIMA aplicable cuenta con instancia evaluada;
+- no existen packages omitidos por falta de evidencia;
+- la separación trabajador/administración mantiene la misma semántica;
+- los catorce `ANIMA-SCREEN-*` no presentan huecos de cobertura aplicables;
+- la navegación de nueve pestañas no contradice autorización efectiva;
+- los dieciséis escenarios de asistencia aplicables están cubiertos en el conjunto;
+- los requisitos ANIMA aplicables tienen evidencia trazable o bloqueo explícito;
+- no existen findings críticos o altos abiertos que permitan declarar experiencia integral aprobada;
+- la agregación no oculta una población, plataforma, superficie o package FAIL/UNKNOWN.
+
+Si una instancia aplicable falta, está stale o permanece bloqueada, `GLOBAL-FINAL` no puede concluir PASS.
+
+#### 53. Invalidez de evidencia
+
+No sirve como evidencia de certificación:
+
+- captura aislada sin candidate/ambiente;
+- video sin identidad de escenario;
+- sesión de facilitador usada como sustituto del trabajador;
+- prueba con cuenta privilegiada cuando el escenario exige trabajador ordinario;
+- ausencia de quejas;
+- “funciona en mi teléfono”;
+- build de otro runtime;
+- log de otro package;
+- evidencia anterior a un cambio material;
+- navegación exitosa sin demostrar autorización;
+- botón oculto como prueba de seguridad;
+- lista vacía usada para inferir cero población cuando la fuente falló;
+- resultado de smoke test usado como sustituto del piloto humano.
+
+#### 54. Relación con autorización
+
+La certificación no reabre la matriz de grants o denies.
+
+La prueba verifica que una decisión canónica vigente sea respetada por la experiencia.
+
+No se autoriza mediante:
+
+- nombre de rol;
+- lista local de roles;
+- `canManage*` local como fuente final;
+- pestaña visible;
+- correo hardcodeado;
+- sede seleccionada;
+- estado local;
+- decisión previa reutilizada después de un cambio material.
+
+#### 55. Relación con ownership
+
+ANIMA conserva ownership sobre su experiencia personal y las capacidades explícitamente asignadas.
+
+No adquiere ownership universal sobre:
+
+- programación laboral administrativa;
+- roles y permisos;
+- expedientes documentales;
+- analítica histórica densa;
+- identidad técnica;
+- decisiones empresariales de otras aplicaciones.
+
+La certificación debe observar handoffs cuando la intención sale de la frontera de ANIMA.
+
+#### 56. Relación con idempotencia y recuperación
+
+`UX-QA-022` consume los contratos ya definidos de idempotencia y recuperación.
+
+No redefine:
+
+- identidad de operación;
+- resultado durable;
+- conflicto por reutilización;
+- sincronización offline;
+- conciliación;
+- retry seguro;
+- tratamiento de resultado desconocido.
+
+La certificación comprueba que la experiencia humana no contradiga esos contratos.
+
+#### 57. Relación con recordatorios
+
+Los recordatorios de turno se evalúan cuando formen parte del package o escenario.
+
+La prueba deberá demostrar que:
+
+- un recordatorio no inventa estado de asistencia;
+- una entrada o salida confirmada suprime recordatorios incompatibles;
+- una intención durable pendiente no induce repetición;
+- una notificación antigua recupera estado vigente;
+- la ausencia de push no cambia el hecho laboral autoritativo.
+
+#### 58. Relación con novedades
+
+`UX-QA-022` certifica la experiencia observable del contrato editorial definido por `ANIMA-UX-017`.
+
+No rediseña:
+
+- estados editoriales;
+- modelo de audiencia;
+- versión de contenido;
+- archivo/historial;
+- contratos de notificación.
+
+Un finding debe volver al owner ya definido cuando la causa sea contractual o física y no una deficiencia del protocolo de certificación.
+
+#### 59. Relación con `TREQ-ANIMA-001..025`
+
+El dominio ANIMA conserva exactamente veinticinco requisitos registrados en el snapshot consultado.
+
+`UX-QA-022` los consume como oracles de certificación según aplicabilidad y no crea una segunda taxonomía de prueba.
+
+#### 60. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Fragmentos 04A afectados:** 0
+
+**Justificación:** `UX-QA-022` especializa el contrato transversal de piloto humano y certifica comportamientos de ANIMA ya protegidos por requisitos vigentes del dominio, experiencia, autorización, integración, privacidad, recuperación y dispositivos. La tarea no introduce una obligación funcional material nueva; define cómo reunir evidencia humana y técnica suficiente para declarar PASS por package y globalmente.
+
+#### 61. Cobertura de prueba vigente reutilizada — ANIMA
+
+Sin modificar 04A se reutilizan:
+
+- `TREQ-ANIMA-001` — audiencia persistente de novedades;
+- `TREQ-ANIMA-002` — fallback/solo lectura sin mutaciones engañosas;
+- `TREQ-ANIMA-003` — marcación offline durable e idempotente;
+- `TREQ-ANIMA-004` — descansos idempotentes y reconciliables;
+- `TREQ-ANIMA-005` — documentos y datos laborales;
+- `TREQ-ANIMA-006` — catorce módulos de pantalla;
+- `TREQ-ANIMA-007` — identidades `ANIMA-SCREEN-001..014`;
+- `TREQ-ANIMA-008` — catorce patrones estáticos y cero dinámicos en el snapshot aprobado;
+- `TREQ-ANIMA-009` — separación de pantallas, layouts y superficies auxiliares;
+- `TREQ-ANIMA-010` — raíz, splash, home y login;
+- `TREQ-ANIMA-011` — iOS/Android y web-auth separado;
+- `TREQ-ANIMA-012` — providers y gate de actualización;
+- `TREQ-ANIMA-013` — nueve pestañas, siete generales y dos condicionadas;
+- `TREQ-ANIMA-014` — navegación permitida desde notificaciones;
+- `TREQ-ANIMA-015` — estados separados en Home;
+- `TREQ-ANIMA-016` — lectura personal versus gestión en Turnos;
+- `TREQ-ANIMA-017` — historial permitido del actor;
+- `TREQ-ANIMA-018` — documentos por alcance y permisos;
+- `TREQ-ANIMA-019` — carnet laboral del actor autenticado;
+- `TREQ-ANIMA-020` — coherencia audiencia/visibilidad/administración de Novedades;
+- `TREQ-ANIMA-021` — acceso directo coherente a `/operativo` y `/team`;
+- `TREQ-ANIMA-022` — soporte limitado a actor y territorio autorizados;
+- `TREQ-ANIMA-023` — configuración sobre cuenta autenticada;
+- `TREQ-ANIMA-024` — diagnóstico técnico con capacidad canónica;
+- `TREQ-ANIMA-025` — web-auth auxiliar, tokens y delta de superficies.
+
+La enumeración anterior es trazabilidad heredada y no actualiza el registro.
+
+#### 62. Cobertura transversal reutilizada
+
+También se reutilizan, según aplicabilidad:
+
+- requisitos `TREQ-UX-*` de tarea, error, recuperación, accesibilidad, privacidad, checkpoint semántico y validación con participantes;
+- requisitos `TREQ-AUTH-*` de actor, sesión, autorización, turno, territorio y fail-closed;
+- requisitos `TREQ-INTEGRATION-*` de idempotencia, retry, resultado desconocido y conciliación;
+- requisitos `TREQ-SHELL-*` de contratos compartidos de autorización/contexto cuando ANIMA consume esas fundaciones;
+- requisitos de información, datos, continuidad y dispositivos cuando correspondan a una superficie probada.
+
+No se modifica ninguna fila por el solo hecho de citarla como oracle.
+
+#### 63. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no ejecutó build de producto, package ni implementación física. |
+| LOCAL | NOT_EXECUTED | Los checks reales de formato, quality, delivery, TREQ y batería global corresponden al checkout actualizado durante la incorporación. |
+| REMOTA | PASS | Se revisaron `main` de `vento-shell`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner U, contratos ANIMA-UX y ANIMA-AUTH, fragmento 04A ANIMA con 25 requisitos, scripts de lifecycle/validación y `main` de `vento-anima` en `9843d202bf890ee00bdce24fd99d327a4e8a7365`, incluyendo Home, Turnos, Operativo, Team, Soporte, Configuración, diagnóstico y código de asistencia observado. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con trabajadores ni administradores, check-in/check-out reales, navegación administrativa, notificaciones, fallos offline ni pruebas de dispositivo. |
+| FÍSICA | NOT_APPLICABLE | El marcador documental define la certificación; las evidencias físicas corresponderán a futuras instancias `UX-QA-022::<package_id>` y `UX-QA-022::GLOBAL-FINAL`. |
+
+#### 64. Criterios de aceptación
+
+`UX-QA-022` queda documentalmente completa cuando:
+
+- [x] consume exactamente el handoff de `UX-QA-021`;
+- [x] conserva el contrato transversal de `UX-QA-020`;
+- [x] conserva `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [x] conserva gate `POST_E5_PACKAGE`;
+- [x] conserva exactamente catorce pantallas móviles;
+- [x] conserva distribución `8 + 2 + 1 + 3 = 14`;
+- [x] conserva nueve pestañas autenticadas, siete generales y dos condicionadas;
+- [x] mantiene trabajador y administración como carriles de intención, no actor types nuevos;
+- [x] impide que rol gerencial convierta toda ANIMA en administración;
+- [x] permite que una persona con capacidad administrativa conserve experiencia personal ordinaria;
+- [x] cubre las ocho superficies del trabajador;
+- [x] cubre `/operativo` y `/team` como superficies administrativas separadas;
+- [x] mantiene diagnóstico técnico fuera de administración laboral;
+- [x] conserva las tres superficies de acceso;
+- [x] incorpora `UX015-S01..S16` como subconjunto obligatorio cuando aplica asistencia;
+- [x] define matriz adicional de trabajador `UX022-W01..W20`;
+- [x] define matriz administrativa `UX022-A01..A18`;
+- [x] distingue ausencia, indisponibilidad, bloqueo, pendiente, conflicto y resultado incierto;
+- [x] conserva turno, sede, área y rol operativo como hechos autoritativos;
+- [x] prohíbe selected site, filtro o último turno como autoridad;
+- [x] cubre navegación directa y notificaciones;
+- [x] cubre cambio de carril y cambio de actor;
+- [x] cubre offline y recuperación sin duplicar efectos;
+- [x] cubre privacidad y minimización;
+- [x] cubre accesibilidad y protocolo neutral;
+- [x] define evidencia mínima por escenario;
+- [x] define métricas sin thresholds inventados;
+- [x] define findings con owner y salida;
+- [x] define severidad crítica y alta;
+- [x] define PASS por escenario y package;
+- [x] define `GLOBAL-FINAL`;
+- [x] reutiliza `TREQ-ANIMA-001..025` sin modificarlos;
+- [x] no crea ni modifica requisitos de prueba;
+- [x] no modifica 04A;
+- [x] no ejecuta cambios físicos;
+- [x] conserva `UX-QA-023` como responsabilidad separada de VISO.
+
+#### 65. Límites
+
+Esta tarea:
+
+- no modifica `ANIMA-UX-*`;
+- no modifica `ANIMA-AUTH-*`;
+- no modifica runtime de ANIMA;
+- no modifica Expo Router;
+- no modifica pantallas ni pestañas;
+- no modifica Home, Turnos, Historial, Documentos, Carnet, Novedades, Operativo, Team, Soporte, Configuración ni diagnóstico;
+- no modifica contratos de roles o permisos;
+- no modifica grants ni denies;
+- no crea roles;
+- no crea actor types;
+- no crea permisos;
+- no modifica autorización;
+- no modifica contexto laboral;
+- no modifica turnos;
+- no registra asistencia;
+- no modifica geocercas;
+- no modifica cola offline;
+- no emite notificaciones;
+- no modifica novedades;
+- no modifica documentos;
+- no modifica datos;
+- no modifica Supabase;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no modifica Edge Functions;
+- no crea cron;
+- no despliega;
+- no crea cuentas de prueba;
+- no abre acceso a usuarios reales;
+- no selecciona participantes;
+- no ejecuta piloto;
+- no ejecuta hypercare;
+- no certifica cierre de package;
+- no corrige hallazgos físicos;
+- no crea TREQ;
+- no modifica TREQ;
+- no modifica 04A;
+- no desarrolla VISO ni `UX-QA-023`.
+
+#### 66. Handoff a `UX-QA-023`
+
+`UX-QA-022` entrega a `UX-QA-023` únicamente contratos reutilizables de certificación:
+
+- método de especialización del piloto humano por aplicación;
+- identidad de escenario por package/candidato/ambiente;
+- separación entre actor, rol, capacidad e intención;
+- protocolo neutral y evidencia humana minimizada;
+- contrato de findings, severidad y retest;
+- tratamiento de sesión, navegación directa, bloqueo, conectividad y recuperación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que filtros y selección de contexto no crean territorio autoritativo;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar una población o escenario aplicable mediante agregación.
+
+No transfiere a VISO ownership de ANIMA, asistencia, carril trabajador, cola offline, Novedades ni Team.
+
+`UX-QA-023` deberá concretar VISO por rol administrativo usando sus propios contratos, superficies, territorios y owners.
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-021 — Probar SHELL por tipo de actor`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-022 — Probar ANIMA con trabajadores y administradores`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-023 — Probar VISO por rol administrativo`
 ### [ ] UX-QA-023 — Probar VISO por rol administrativo
 ### [ ] UX-QA-024 — Probar NEXO por rol operativo
 ### [ ] UX-QA-025 — Probar FOGO por área productiva
