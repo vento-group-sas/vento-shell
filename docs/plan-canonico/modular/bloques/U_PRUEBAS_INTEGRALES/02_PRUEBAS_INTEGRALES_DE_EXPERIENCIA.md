@@ -26587,7 +26587,1345 @@ No transfiere a VISO ownership de ANIMA, asistencia, carril trabajador, cola off
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-023 — Probar VISO por rol administrativo`
-### [ ] UX-QA-023 — Probar VISO por rol administrativo
+### ✅ UX-QA-023 — Probar VISO por rol administrativo
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-022 — Probar ANIMA con trabajadores y administradores
+**Tarea siguiente:** UX-QA-024 — Probar NEXO por rol operativo
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de VISO por perfil administrativo, demostrando por package y globalmente que propietario, gerente general, gerente de sede, auxiliar administrativa y contador reciben información, navegación, decisiones, controles, territorios y handoffs coherentes con su autoridad efectiva, sin convertir rol nominal, visibilidad, filtro, modo experto, agregado o selección de contexto en autorización, consumiendo `UX-QA-020`, `UX-QA-022`, `VISO-UX-001..020`, `VISO-AUTH-001..020`, `VISO-CORE-001..006` y la cobertura vigente sin reabrir ownership, autorización, programación, idempotencia ni fuente de verdad
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de VISO por rol administrativo definido; las ejecuciones `UX-QA-023::<package_id>` y `UX-QA-023::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física aplicable de VISO y del piloto sin ejecutar sesiones humanas, modificar runtime, datos, Supabase, configuración, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, navegación, contratos runtime, roles, grants, denies, permisos, matrices, territorios, trabajadores, turnos, programación, datos, Supabase, migraciones, RLS, RPC, Edge Functions, catálogos, configuración, packages, ambientes, despliegues ni cuentas de usuarios
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que VISO funciona correctamente para cada perfil administrativo primario sin convertir la experiencia diferenciada por rol en una segunda política de autorización.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿QUIÉN ES EL ACTOR EFECTIVO?
+¿CUÁL ES SU ROL BASE CANÓNICO?
+¿QUÉ CAPACIDAD ADMINISTRATIVA EFECTIVA ESTÁ EVALUANDO?
+¿QUÉ TERRITORIO ESTÁ AUTORIZADO?
+¿QUÉ PARTE DE LA PANTALLA ES PRESENTACIÓN Y QUÉ PARTE ES DECISIÓN AUTORITATIVA?
+¿EL FILTRO ACTUAL ESTÁ LIMITADO AL TERRITORIO REAL?
+¿LA ACCIÓN OBJETIVO REVALIDA AUTORIZACIÓN EN SERVIDOR?
+¿EL CAMBIO PROPUESTO MUESTRA SU EFECTO ANTES DE GUARDAR?
+¿LOS CONFLICTOS Y DENEGACIONES SE DISTINGUEN?
+¿EL ORIGEN DE LOS PERMISOS ES COMPRENSIBLE?
+¿LA VISTA PREVIA REFLEJA EL RESULTADO DEL TRABAJADOR EXACTO?
+¿LA INFORMACIÓN SENSIBLE ESTÁ MINIMIZADA?
+¿EL MODO EXPERTO AÑADE DETALLE SIN AÑADIR AUTORIDAD?
+¿LA APLICACIÓN PROPIETARIA CONSERVA DATO, REGLA Y MUTACIÓN CUANDO EL OWNER ES EXTERNO?
+¿EL HANDOFF REVALIDA EN DESTINO Y RETORNA SIN FABRICAR ÉXITO?
+¿EL RESULTADO DESCONOCIDO SE RECONCILIA SIN REPETIR EFECTOS?
+¿LOS HALLAZGOS TIENEN OWNER, SEVERIDAD Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+ACTOR EFECTIVO
++
+ROL BASE CANÓNICO
++
+CAPACIDADES EXPLÍCITAS
++
+TERRITORIO AUTORIZADO
++
+RECURSO Y CONTEXTO
++
+DENEGACIONES APLICABLES
+=
+AUTORIDAD ADMINISTRATIVA EFECTIVA
+```
+
+No es válido:
+
+```text
+ROL NOMINAL
+=
+WILDCARD ADMINISTRATIVO
+```
+
+ni:
+
+```text
+SEDE SELECCIONADA
+=
+TERRITORIO AUTORIZADO
+```
+
+ni:
+
+```text
+MODO EXPERTO
+=
+MÁS AUTORIDAD
+```
+
+ni:
+
+```text
+OPCIÓN VISIBLE
+=
+ACCIÓN AUTORIZADA
+```
+
+#### 2. Resultado documental
+
+`UX-QA-023` define el contrato específico de certificación de VISO para los cinco perfiles administrativos primarios aprobados:
+
+1. `propietario`;
+2. `gerente_general`;
+3. `gerente`;
+4. `auxiliar_administrativa`;
+5. `contador`.
+
+El resultado establece:
+
+- cobertura de los cinco perfiles sin tratarlos como cinco productos distintos;
+- reutilización íntegra de las veinticuatro familias mínimas `VA-01..VA-24` de `VISO-UX-020`;
+- especialización de Inicio, navegación, territorio, programación, seguridad, preview, ownership, handoff, errores, frescura, privacidad, recuperación, auditoría, accesibilidad y responsive;
+- cobertura positiva y negativa por rol;
+- separación entre rol base, permiso, capacidad, territorio, recurso y acción;
+- criterio de evidencia por escenario;
+- criterio PASS por escenario;
+- criterio PASS por package;
+- criterio `GLOBAL-FINAL`;
+- tratamiento explícito de perfiles no aplicables sin inventar permisos;
+- owner de hallazgos y obligación de reprueba;
+- handoff exacto hacia `UX-QA-024`.
+
+#### 3. Topología contractual
+
+Se conserva:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-023::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-023::GLOBAL-FINAL
+```
+
+La aprobación documental de este marcador no crea una instancia física.
+
+#### 4. Handoff recibido de `UX-QA-022`
+
+`UX-QA-022` entrega a `UX-QA-023` únicamente contratos reutilizables de certificación:
+
+- método de especialización del piloto humano por aplicación;
+- identidad de escenario por package/candidato/ambiente;
+- separación entre actor, rol, capacidad e intención;
+- protocolo neutral y evidencia humana minimizada;
+- contrato de findings, severidad y retest;
+- tratamiento de sesión, navegación directa, bloqueo, conectividad y recuperación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que filtros y selección de contexto no crean territorio autoritativo;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar una población o escenario aplicable mediante agregación.
+
+No transfiere a VISO ownership de ANIMA, asistencia, carril trabajador, cola offline, Novedades ni Team.
+
+`UX-QA-023` deberá concretar VISO por rol administrativo usando sus propios contratos, superficies, territorios y owners.
+
+#### 5. Contrato transversal heredado de `UX-QA-020`
+
+La especialización conserva sin redefinir:
+
+- definición de usuario real;
+- proporcionalidad de participantes y escenarios;
+- identidad del build probado;
+- evidencia humana y técnica correlacionable;
+- severidad de hallazgos;
+- owner de corrección;
+- reprueba obligatoria;
+- separación entre evidencia humana y validación automatizada;
+- criterio de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de presentar evidencia ausente como PASS.
+
+`UX-QA-023` no vuelve a ejecutar el piloto físico.
+
+#### 6. Base especializada heredada de `VISO-UX-020`
+
+`VISO-UX-020 — Ejecutar pruebas con administradores reales` ya define el contrato humano especializado de VISO.
+
+`UX-QA-023` lo consume como base mínima y no crea un segundo protocolo incompatible.
+
+Se preservan:
+
+```text
+PRIMARY_ADMIN_PROFILES = 5
+MINIMUM_SCENARIO_FAMILIES = 24
+SCENARIO_RESULTS = PASS | FAIL | BLOCKED | NOT_RUN | NOT_APPLICABLE
+FINDING_SEVERITIES = BLOCKING | MAJOR | MINOR | OBSERVATION
+```
+
+También se preservan los oráculos de:
+
+- comprensión;
+- autoridad;
+- territorialidad;
+- navegación;
+- privacidad;
+- recuperación;
+- accesibilidad;
+- resultado confirmado versus resultado desconocido.
+
+#### 7. Universo canónico de perfiles administrativos
+
+La cobertura primaria queda cerrada a estos cinco perfiles:
+
+| Perfil | Fuente especializada | Foco principal |
+| --- | --- | --- |
+| `propietario` | `VISO-UX-008` | gobierno organizacional sin wildcard |
+| `gerente_general` | `VISO-UX-009` | visión organizacional con permisos exactos |
+| `gerente` | `VISO-UX-010` | administración de sedes asignadas y límites territoriales |
+| `auxiliar_administrativa` | `VISO-UX-011` | ejecución administrativa guiada dentro de alcance delegado |
+| `contador` | `VISO-UX-012` | información financiera autorizada sin territorio implícito ni exposición excesiva |
+
+No se incorporan por inferencia a esta matriz:
+
+- `supervisor`;
+- `marketing`;
+- `trabajador_operativo`;
+- roles operativos temporales;
+- oficios legacy;
+- alias locales.
+
+Su existencia en otros contratos no los convierte automáticamente en perfiles administrativos primarios de esta certificación.
+
+#### 8. Rol administrativo no equivale a actor nuevo
+
+Los cinco perfiles son roles base de personas `EMPLOYEE`.
+
+No se crea:
+
+```text
+actor_type = ADMIN
+```
+
+La experiencia puede variar según rol y capacidad efectiva sin crear un actor paralelo.
+
+#### 9. Rol base no equivale a autorización
+
+La certificación deberá demostrar:
+
+```text
+ROL BASE
+!= PERMISO
+!= TERRITORIO
+!= CAPACIDAD EFECTIVA
+!= ACCIÓN AUTORIZADA
+```
+
+Un rol puede orientar la composición de Inicio.
+
+No puede sustituir:
+
+- PermissionKey;
+- grants;
+- denies;
+- alcance;
+- recurso;
+- validación server-side;
+- restricciones del owner.
+
+#### 10. Perfil de presentación no equivale a política
+
+Las variantes de Inicio pueden presentar prioridades distintas.
+
+No se permite que cada variante implemente una política de autorización independiente.
+
+Se conserva:
+
+```text
+5 VARIANTES DE INICIO
+=
+1 MODELO DE AUTORIZACIÓN
+```
+
+#### 11. `propietario`
+
+La certificación del perfil `propietario` deberá verificar:
+
+- visión organizacional autorizada;
+- decisiones y pendientes relevantes;
+- acceso a los seis dominios solo cuando exista capacidad aplicable;
+- ausencia de wildcard;
+- denegaciones vigentes;
+- handoffs hacia owners externos;
+- indicadores con procedencia;
+- información sensible minimizada;
+- modo experto sin elevación;
+- ausencia de mutaciones directas desde un resumen cuando el owner sea otro.
+
+#### 12. `gerente_general`
+
+La certificación del perfil `gerente_general` deberá verificar:
+
+- cobertura organizacional coherente con grants reales;
+- separación frente a gobierno exclusivo de propietario cuando exista;
+- pendientes, riesgos y decisiones dentro del alcance;
+- ausencia de permisos operativos derivados del nombre del rol;
+- handoffs hacia owners externos;
+- restricciones y denegaciones efectivas;
+- procedencia de datos y permisos.
+
+#### 13. `gerente`
+
+La certificación del perfil `gerente` deberá verificar:
+
+- sedes expresamente asignadas;
+- áreas autorizadas;
+- recursos compatibles con esas asignaciones;
+- opción `Todos` limitada al universo autorizado;
+- cero ampliación por sede primaria o sede seleccionada;
+- agregados multisede sin fuga de detalle;
+- programación cuando sea responsable;
+- handoff y retorno dentro de contexto;
+- acceso directo denegado fuera de alcance.
+
+#### 14. `auxiliar_administrativa`
+
+La certificación del perfil `auxiliar_administrativa` deberá verificar:
+
+- alcance delegado real;
+- trabajo administrativo guiado;
+- documentos y registros dentro de capacidad;
+- programación según responsabilidad;
+- ausencia de autoridad gerencial genérica;
+- ausencia de aprobación financiera implícita;
+- ausencia de seguridad avanzada por rol nominal;
+- escalamiento correcto cuando una decisión exceda su capacidad;
+- handoff hacia owner externo cuando corresponda.
+
+#### 15. `contador`
+
+La certificación del perfil `contador` deberá verificar:
+
+- información financiera autorizada;
+- procedencia de datos;
+- alcance funcional financiero sin territorio general implícito;
+- minimización de información laboral y operativa no necesaria;
+- separación entre consulta, procesamiento y aprobación;
+- handoff hacia NUMERA u otro owner cuando corresponda;
+- ausencia de capacidades de personal, seguridad u operación física no concedidas.
+
+#### 16. Universo mínimo de escenarios `VA-01..VA-24`
+
+La matriz mínima heredada permanece:
+
+| ID | Familia | Escenario |
+| --- | --- | --- |
+| `VA-01` | Inicio | variante por perfil |
+| `VA-02` | Navegación | dominio y destino hijo |
+| `VA-03` | Programación | alternar Semana/Mes |
+| `VA-04` | Calendario | 28/29/30/31 días |
+| `VA-05` | Programación | constructor multibloque |
+| `VA-06` | Programación | pertenencia de fecha |
+| `VA-07` | Programación | actual/nuevo/proyectado/límite |
+| `VA-08` | Programación | exceso |
+| `VA-09` | Programación | borrador/revisión/publicación |
+| `VA-10` | Programación | corrección |
+| `VA-11` | Preview | trabajador exacto |
+| `VA-12` | Territorio | multisede y agregado |
+| `VA-13` | Seguridad | procedencia |
+| `VA-14` | Seguridad | conflicto pre-save |
+| `VA-15` | Seguridad | guided/expert |
+| `VA-16` | Ownership | superficie cross-owner |
+| `VA-17` | Handoff | cambio de aplicación |
+| `VA-18` | Errores | estados negativos |
+| `VA-19` | Frescura | snapshot stale |
+| `VA-20` | Accesibilidad | teclado y semántica |
+| `VA-21` | Responsive | pantalla estrecha |
+| `VA-22` | Privacidad | información sensible |
+| `VA-23` | Recuperación | resultado desconocido |
+| `VA-24` | Auditoría | cambio confirmado |
+
+La matriz es mínima y puede ampliarse cuando el package tenga riesgos adicionales.
+
+#### 17. Regla de aplicabilidad por perfil
+
+Una celda puede resolverse como:
+
+```text
+APLICABLE
+NO_APLICABLE_CON_EVIDENCIA
+```
+
+No se permite crear permisos artificiales para transformar una celda legítimamente no aplicable en escenario ejecutable.
+
+#### 18. Matriz mínima por perfil
+
+Se preserva la matriz especializada:
+
+| Perfil | Inicio | Territorio | Programación | Seguridad | Handoff | Errores |
+| --- | --- | --- | --- | --- | --- | --- |
+| `propietario` | obligatorio | obligatorio | cuando aplique | obligatorio | obligatorio | obligatorio |
+| `gerente_general` | obligatorio | obligatorio | cuando aplique | según permiso | obligatorio | obligatorio |
+| `gerente` | obligatorio | obligatorio | obligatorio cuando sea responsable | según permiso | obligatorio | obligatorio |
+| `auxiliar_administrativa` | obligatorio | obligatorio | según responsabilidad | según permiso | obligatorio | obligatorio |
+| `contador` | obligatorio | según capacidad exacta | no se fuerza si no corresponde | según permiso | obligatorio cuando exista destino | obligatorio |
+
+#### 19. Identidad de escenario
+
+Cada ejecución deberá poder distinguir como mínimo:
+
+```text
+TASK_ID
+PACKAGE_ID
+CANDIDATE_ID
+ENVIRONMENT_ID
+BUILD_ID
+PROFILE_ID
+SCENARIO_ID
+SESSION_ID
+RESULT
+EVIDENCE_REF
+```
+
+La identidad evita mezclar evidencia de builds, roles, packages o ambientes distintos.
+
+#### 20. Condiciones de una sesión válida
+
+Una sesión humana solo puede contar cuando:
+
+- el participante pertenece al perfil que se pretende observar;
+- el build está identificado;
+- el ambiente es conocido;
+- el escenario tiene precondiciones definidas;
+- los datos usados están permitidos;
+- los efectos permitidos están acotados;
+- existe un oráculo previo;
+- la evidencia es correlacionable;
+- el moderador no guía los clics que pretende medir;
+- la seguridad prevalece sobre completar el escenario.
+
+#### 21. Inicio por perfil
+
+`VA-01` deberá verificar para cada perfil aplicable:
+
+- contenido inicial relevante;
+- pendientes y excepciones dentro de alcance;
+- accesos autorizados;
+- ausencia de capacidades no autorizadas;
+- territorio visible y comprensible;
+- procedencia material;
+- transición segura a dominio VISO;
+- transición segura a owner externo;
+- retorno sin pérdida de contexto material.
+
+#### 22. Seis dominios administrativos primarios
+
+La navegación primaria de VISO conserva exactamente:
+
+1. `Personal`;
+2. `Programación`;
+3. `Acceso y seguridad`;
+4. `Organización`;
+5. `Operación`;
+6. `Auditoría`.
+
+`Inicio` continúa siendo una entrada especial y no un séptimo dominio.
+
+#### 23. Dominio visible no equivale a autoridad
+
+Se preserva:
+
+```text
+DOMINIO VISIBLE
+!= ACCIÓN AUTORIZADA
+```
+
+Cada destino y acción revalida capacidad y contexto.
+
+#### 24. Dominio sin entradas autorizadas
+
+Si un perfil no posee ninguna entrada autorizada dentro de un dominio:
+
+```text
+VISIBLE_DOMAIN_WITH_ZERO_ALLOWED_ITEMS = NO
+```
+
+El acceso directo a una superficie restringida debe producir denegación coherente, no una pantalla vacía que sugiera fallo técnico.
+
+#### 25. Territorialidad
+
+La certificación debe distinguir:
+
+```text
+TERRITORIO AUTORIZADO
+FILTRO DE PRESENTACIÓN
+TERRITORIO DEL RECURSO
+TERRITORIO OPERATIVO
+```
+
+Ningún filtro puede ampliar el primero.
+
+#### 26. Opción `Todos`
+
+`Todos` significa exclusivamente:
+
+```text
+TODOS LOS RECURSOS DENTRO DEL UNIVERSO AUTORIZADO
+```
+
+No significa universo organizacional completo por defecto.
+
+#### 27. Sede seleccionada
+
+Seleccionar una sede cambia contexto de presentación cuando corresponde.
+
+No concede una sede nueva.
+
+#### 28. Área seleccionada
+
+Seleccionar un área no convierte esa área en alcance autoritativo.
+
+La autorización real debe seguir resolviéndose con el recurso y contexto vigentes.
+
+#### 29. Agregados cross-site
+
+Un agregado puede ser exacto dentro del universo autorizado sin revelar detalle de territorios ocultos.
+
+Se deberá comprobar:
+
+- total correcto;
+- cero filas fuera de alcance;
+- cero inferencia innecesaria de sedes no autorizadas;
+- drill-down limitado al detalle permitido.
+
+#### 30. Navegación y destinos hijos
+
+`VA-02` deberá demostrar:
+
+- dominio correcto;
+- destino hijo correcto;
+- contexto preservado cuando sea material;
+- estado activo coherente;
+- retorno seguro;
+- revalidación de autorización;
+- cero dependencia de memorizar un pathname técnico.
+
+#### 31. Navegación gobernada por datos
+
+El runtime actual usa configuración gobernada para navegación.
+
+La certificación no acepta un árbol paralelo hardcodeado que diverja de la configuración canónica.
+
+#### 32. Registro de superficies
+
+La existencia de una pantalla registrada no implica promoción automática a navegación primaria.
+
+Se conserva:
+
+```text
+SCREEN_EXISTS
+!= PRIMARY_NAV_ENTRY
+```
+
+#### 33. Programación — misma fuente Semana/Mes
+
+`VA-03` deberá demostrar que Semana y Mes representan la misma verdad de programación y no dos editores competidores.
+
+Cambiar la vista no puede cambiar ownership ni estado empresarial por sí solo.
+
+#### 34. Calendario real
+
+`VA-04` deberá cubrir meses de 28, 29, 30 y 31 días según sea aplicable.
+
+No se permite persistir una fecha inexistente.
+
+#### 35. Constructor multibloque
+
+`VA-05` deberá demostrar preservación de:
+
+- identidad de bloque;
+- fechas;
+- duración;
+- recurso;
+- trabajador;
+- resumen;
+- estado actual y propuesto.
+
+#### 36. Pertenencia única de fecha
+
+`VA-06` deberá demostrar que una fecha no queda silenciosamente asignada a bloques incompatibles.
+
+Los conflictos se resuelven antes de persistir cuando el contrato propietario lo exige.
+
+#### 37. Actual, nuevo, proyectado y límite
+
+`VA-07` deberá presentar de manera distinguible:
+
+```text
+ESTADO ACTUAL
+CAMBIO PROPUESTO
+RESULTADO PROYECTADO
+LÍMITE APLICABLE
+```
+
+No se fusionan en un único número ambiguo.
+
+#### 38. Exceso
+
+`VA-08` deberá demostrar advertencia, bloqueo o excepción exactamente según el contrato propietario.
+
+La UI no inventa la política.
+
+#### 39. Borrador, revisión y publicación
+
+`VA-09` deberá mantener estados diferenciados.
+
+No se permite:
+
+```text
+GUARDAR BORRADOR
+=
+PUBLICAR
+```
+
+#### 40. Corrección
+
+`VA-10` deberá preservar historia y estado cuando una programación confirmada requiera corrección.
+
+No se admite sobrescritura destructiva que elimine la evidencia relevante.
+
+#### 41. Vista previa por trabajador
+
+`VA-11` deberá presentar el trabajador exacto, distinguiendo:
+
+- estado actual;
+- estado propuesto;
+- rol base;
+- rol operativo cuando aplique;
+- sede;
+- área;
+- permisos efectivos;
+- procedencia;
+- conflictos;
+- simulación cuando aplique.
+
+#### 42. Preview no equivale a autoridad
+
+La vista previa explica.
+
+No ejecuta la autorización en nombre del destino.
+
+#### 43. Procedencia de permisos
+
+`VA-13` deberá permitir comprender si una capacidad proviene de:
+
+- rol base;
+- rol operativo;
+- asignación territorial;
+- permiso individual;
+- excepción;
+- deny;
+- política propietaria aplicable.
+
+La presentación no crea una fuente nueva.
+
+#### 44. Conflicto antes de guardar
+
+`VA-14` deberá demostrar que un conflicto material se presenta antes del efecto sensible cuando el owner exige bloqueo previo.
+
+Debe distinguirse:
+
+```text
+CONFLICTO
+!= DENEGACIÓN
+!= FALLO TÉCNICO
+```
+
+#### 45. Guided versus expert
+
+`VA-15` deberá demostrar:
+
+```text
+MODO EXPERTO
+=
+MÁS DETALLE AUTORIZADO
+```
+
+Nunca:
+
+```text
+MODO EXPERTO
+=
+MÁS AUTORIDAD
+```
+
+#### 46. Divulgación progresiva
+
+El contenido esencial permanece visible.
+
+La información avanzada se revela bajo demanda y autorización adecuada.
+
+Colapsar contenido no es una medida de seguridad.
+
+#### 47. Operaciones masivas
+
+Cuando un package incluya acciones masivas, la selección deberá estar limitada al universo autorizado.
+
+El total seleccionado, elegible y afectado debe permanecer distinguible.
+
+#### 48. Ownership
+
+`VA-16` deberá demostrar que VISO no mantiene un editor competidor cuando el owner empresarial es otra aplicación.
+
+Se conserva:
+
+```text
+PROYECCIÓN EN VISO
+!= FUENTE DE VERDAD EN VISO
+```
+
+#### 49. Aplicación propietaria
+
+La aplicación propietaria conserva, salvo contrato distribuido explícito:
+
+- dato principal;
+- regla;
+- mutación;
+- transición;
+- receipt;
+- corrección autoritativa.
+
+#### 50. Handoff cross-app
+
+`VA-17` deberá mostrar antes de cambiar de aplicación:
+
+- qué trabajo se va a realizar;
+- qué aplicación es propietaria;
+- qué contexto mínimo se transporta;
+- qué contexto deberá revalidarse;
+- qué retorno se espera.
+
+#### 51. Handoff no transporta autoridad
+
+El handoff puede transportar referencia e intención.
+
+No transporta una decisión de autorización autoritativa.
+
+#### 52. Retorno
+
+Al regresar a VISO:
+
+- el resultado se confirma desde la fuente correspondiente;
+- el contexto material se conserva o se explica su cambio;
+- un resultado desconocido no se presenta como éxito;
+- una denegación del owner no se convierte en mutación local alternativa.
+
+#### 53. Estados negativos
+
+`VA-18` deberá cubrir, según aplique:
+
+```text
+DENIED
+BLOCKED
+WAITING
+CONFLICT
+TECHNICAL_FAILURE
+VALIDATION_REQUIRED
+WARNING
+INFO
+```
+
+El mensaje humano debe explicar causa, estado preservado y siguiente acción sin depender de un código técnico como explicación principal.
+
+#### 54. Frescura
+
+`VA-19` deberá identificar snapshot o estado stale cuando una acción sensible requiera recalcular.
+
+Un dato stale no puede parecer vigente silenciosamente.
+
+#### 55. Resultado desconocido
+
+`VA-23` deberá demostrar:
+
+```text
+RESULTADO DESCONOCIDO
+-> CONSULTA O RECONCILIACIÓN
+```
+
+Nunca:
+
+```text
+RESULTADO DESCONOCIDO
+-> REPETIR MUTACIÓN A CIEGAS
+```
+
+#### 56. Privacidad
+
+`VA-22` deberá verificar minimización por perfil, territorio, recurso y propósito.
+
+Ocultar en la interfaz después de entregar un dato no autorizado al cliente no constituye protección suficiente.
+
+#### 57. Información financiera
+
+Para `contador` y cualquier otro perfil aplicable se deberá demostrar:
+
+- campos autorizados;
+- columnas minimizadas;
+- procedencia;
+- ausencia de detalle innecesario;
+- handoff correcto cuando NUMERA u otro owner conserve la verdad económica.
+
+#### 58. Información laboral
+
+La consulta administrativa de trabajadores deberá limitarse a los campos y territorios autorizados.
+
+El rol administrativo no concede por sí mismo acceso irrestricto a datos personales o sensibles.
+
+#### 59. Seguridad de navegación
+
+Conocer un destino, abrir un enlace directo o usar búsqueda no evita autorización.
+
+Se deberá verificar equivalencia entre acceso por navegación y acceso directo.
+
+#### 60. Accesibilidad
+
+`VA-20` deberá demostrar:
+
+- teclado;
+- foco visible;
+- nombres accesibles;
+- estados comprensibles sin depender solo de color;
+- asociación entre control y contexto;
+- lectura coherente de conflictos y bloqueos;
+- funcionamiento de disclosure progresivo con tecnologías de asistencia aplicables.
+
+#### 61. Responsive
+
+`VA-21` deberá preservar en pantalla estrecha:
+
+- actor;
+- territorio;
+- objeto;
+- acción;
+- estado;
+- owner;
+- controles materiales;
+- errores y bloqueos.
+
+No se acepta ocultar información crítica por falta de espacio.
+
+#### 62. Auditoría
+
+`VA-24` deberá permitir correlacionar un cambio confirmado con evidencia suficiente sin exponer secretos o datos innecesarios.
+
+Auditoría describe lo ocurrido.
+
+No sustituye el estado vigente.
+
+#### 63. Dispositivo compartido
+
+Cuando un package admita dispositivo compartido, el cambio de actor deberá impedir herencia de:
+
+- identidad anterior;
+- territorio anterior;
+- filtros autoritativos aparentes;
+- recurso sensible;
+- modo experto;
+- datos cargados que ya no estén autorizados;
+- acciones pendientes del actor anterior.
+
+#### 64. Sesión y reautenticación
+
+Una reautenticación o cambio de actor debe producir una experiencia coherente con el nuevo actor antes de permitir acciones sensibles.
+
+#### 65. Búsqueda
+
+Una búsqueda no debe revelar objetos fuera de alcance ni convertir conocimiento del identificador en acceso.
+
+La selección del resultado revalida autorización.
+
+#### 66. Exportación
+
+Cuando exista exportación, la capacidad de exportar debe evaluarse separadamente de la lectura ordinaria.
+
+El exporte debe respetar columnas, territorio y finalidad autorizados.
+
+#### 67. Evidencia por escenario
+
+Cada escenario ejecutado deberá conservar como mínimo:
+
+```text
+scenario_id
+profile_id
+package_id
+candidate_id
+environment_id
+build_id
+preconditions
+expected_oracle
+observed_result
+human_observation
+technical_evidence_refs
+finding_ids
+result
+executed_at
+```
+
+#### 68. Resultado por escenario
+
+Estados permitidos:
+
+```text
+PASS
+FAIL
+BLOCKED
+NOT_RUN
+NOT_APPLICABLE
+```
+
+`BLOCKED` no es PASS.
+
+`NOT_RUN` no es `NOT_APPLICABLE`.
+
+#### 69. Severidad de hallazgos
+
+Se conservan:
+
+```text
+BLOCKING
+MAJOR
+MINOR
+OBSERVATION
+```
+
+La severidad se determina por impacto material, no por si el participante logró completar el flujo con ayuda.
+
+#### 70. Owner del hallazgo
+
+Todo hallazgo debe resolver un owner exacto.
+
+Ejemplos:
+
+| Hallazgo | Owner esperado |
+| --- | --- |
+| navegación VISO | unidad física VISO correspondiente |
+| política de programación | contrato `VISO-SCH-*` propietario |
+| autorización | contrato AUTH propietario |
+| proyección administrativa | VISO propietario |
+| handoff compartido | contrato transversal propietario |
+| defecto del owner externo | aplicación propietaria correspondiente |
+| certificación integral | `UX-QA-023` y package aplicable |
+
+No se admite un hallazgo sin condición de salida.
+
+#### 71. Reprueba
+
+Una corrección deberá reejecutar:
+
+- escenario fallido;
+- recuperación asociada;
+- casos cercanos con riesgo de regresión;
+- autorización afectada;
+- territorialidad afectada;
+- privacidad afectada cuando corresponda.
+
+#### 72. PASS por escenario
+
+Un escenario es PASS únicamente cuando:
+
+1. el resultado empresarial o de experiencia coincide con el oráculo;
+2. no existe autoridad indebida;
+3. no existe fuga territorial;
+4. no existe exposición indebida;
+5. el estado final es comprensible;
+6. la recuperación es correcta cuando aplica;
+7. la evidencia es trazable.
+
+#### 73. PASS por perfil
+
+Un perfil es PASS dentro de un package cuando:
+
+- todos sus escenarios obligatorios aplicables terminaron en PASS;
+- cada `NOT_APPLICABLE` tiene justificación verificable;
+- no quedan hallazgos `BLOCKING` abiertos;
+- cualquier `MAJOR` cumple la política de resolución del gate propietario;
+- se ejecutaron casos negativos relevantes;
+- los hallazgos corregidos fueron reprobados.
+
+#### 74. PASS por package
+
+`UX-QA-023::<package_id>` solo puede cerrar PASS cuando:
+
+1. todos los perfiles aplicables al package están cubiertos;
+2. todos los escenarios mínimos aplicables están cubiertos;
+3. los escenarios adicionales derivados del riesgo del package están cubiertos;
+4. no existen hallazgos bloqueantes abiertos;
+5. no existen fugas de autorización, territorio o datos;
+6. navegación, programación, seguridad, ownership, handoff, recuperación y auditoría tienen evidencia donde apliquen;
+7. el build y ambiente están identificados;
+8. la evidencia es revisable;
+9. la cobertura no oculta un perfil aplicable mediante agregación.
+
+PASS de un package no certifica otro package.
+
+#### 75. `GLOBAL-FINAL`
+
+`UX-QA-023::GLOBAL-FINAL` exige demostrar:
+
+- cobertura de todos los packages VISO aplicables;
+- cobertura material de los cinco perfiles primarios donde correspondan;
+- cobertura de las veinticuatro familias mínimas en el conjunto aplicable;
+- cero hallazgos `BLOCKING` abiertos;
+- tratamiento explícito de `MAJOR` pendientes, si alguno fuese admisible por su gate propietario;
+- cero fuga de autorización;
+- cero fuga territorial;
+- cero exposición indebida de datos;
+- cero fuente de verdad competidora creada por VISO;
+- handoffs y retornos coherentes;
+- repruebas concluidas;
+- trazabilidad a requisitos vigentes y evidencia física propietaria.
+
+#### 76. Prohibición de agregación engañosa
+
+No se permite declarar PASS global ocultando:
+
+- un perfil no probado;
+- un package fallido;
+- un escenario obligatorio no ejecutado;
+- una fuga territorial aislada;
+- una denegación presentada como éxito;
+- un hallazgo bloqueante dentro de una métrica agregada favorable.
+
+#### 77. Casos negativos obligatorios
+
+Según el alcance del package se deberá probar al menos:
+
+- acción no autorizada;
+- recurso fuera de territorio;
+- acceso directo restringido;
+- opción visible sin permiso de acción;
+- modo experto sin elevación;
+- agregado sin fuga de detalle;
+- handoff destino denegado;
+- retorno con resultado desconocido;
+- dato sensible ausente;
+- exportación no permitida;
+- cambio de actor;
+- snapshot stale antes de acción sensible.
+
+#### 78. Runtime actual observado
+
+La certificación reconoce que el repositorio VISO actual conserva superficies físicas como:
+
+- administración de permisos por rol;
+- administración de navegación;
+- operaciones y preview;
+- configuración de roles por sede;
+- perfiles operativos por trabajador;
+- trabajadores;
+- programación semanal y mensual;
+- calendario;
+- control de acceso denegado.
+
+La existencia de esas superficies no demuestra por sí sola cumplimiento de este contrato.
+
+#### 79. Estado AS-IS no equivale a certificación
+
+Se conserva:
+
+```text
+PANTALLA EXISTE
+!= UX-QA-023 PASS
+```
+
+Y:
+
+```text
+PRUEBA AUTOMATIZADA PASA
+!= CERTIFICACIÓN HUMANA COMPLETA
+```
+
+La evidencia técnica y humana son complementarias.
+
+#### 80. Relación con `TREQ-VISO-001`
+
+La certificación consume la obligación vigente de coherencia administrativa de roles, permisos, sedes, áreas, perfiles, conflictos, origen y auditoría.
+
+Debe demostrarse que la configuración visible en VISO produce un resultado coherente con el consumido por las aplicaciones operativas.
+
+Esta tarea no modifica ese requisito.
+
+#### 81. Relación con autorización transversal
+
+La certificación reutiliza cobertura vigente relacionada con:
+
+- autoridad exacta;
+- territorialidad;
+- auditoría correlacionable;
+- experiencia administrativa;
+- seguridad de servidor;
+- restricciones de interfaz.
+
+No crea un nuevo modelo de autorización.
+
+#### 82. Packages directamente vinculados por la cobertura vigente
+
+La cobertura VISO vigente identifica, entre otros, packages administrativos donde `TREQ-VISO-001` debe materializarse y probarse.
+
+`UX-QA-023` no selecciona manualmente packages ni altera la frontera gobernada.
+
+Cada instancia usa el `package_id` que la topología y el expediente físico determinen.
+
+#### 83. Dependencia de evidencia física
+
+La ejecución de una instancia requiere evidencia física compatible con el package correspondiente.
+
+La ausencia de evidencia produce estado pendiente o bloqueado según el gate propietario.
+
+Nunca produce PASS por inferencia documental.
+
+#### 84. Relación con el piloto humano
+
+`UX-QA-020` y `VISO-UX-020` definen cómo observar usuarios reales.
+
+`UX-QA-023` agrega la decisión de certificación integral por rol administrativo y package.
+
+No crea una campaña humana adicional cuando la evidencia ya fue obtenida de manera válida durante el piloto controlado.
+
+#### 85. Evidencia técnica complementaria
+
+La evidencia humana puede correlacionarse con:
+
+- logs seguros;
+- correlation IDs;
+- request IDs;
+- receipts;
+- auditoría;
+- versión de build;
+- estado inicial y final;
+- resultados automatizados aplicables.
+
+La evidencia técnica no sustituye comprensión humana cuando el oráculo depende de ella.
+
+#### 86. Métricas de sesión
+
+Se pueden registrar:
+
+- escenario completado;
+- tiempo observado;
+- ayudas;
+- retrocesos;
+- errores de interpretación;
+- errores del sistema;
+- hallazgos por severidad;
+- abandono;
+- recuperación;
+- confianza declarada.
+
+Ninguna métrica aislada decide el PASS.
+
+#### 87. Ayuda del moderador
+
+La ayuda debe registrarse.
+
+Una tarea completada solo porque el moderador reveló el camino no demuestra descubribilidad autónoma.
+
+La ayuda tampoco reduce automáticamente la severidad de un defecto.
+
+#### 88. Seguridad prevalente
+
+El moderador debe detener una acción cuando exista riesgo de producir un efecto no autorizado.
+
+La seguridad de datos y operación prevalece sobre completar el escenario.
+
+#### 89. Datos reales y sintéticos
+
+Un usuario real no exige dato productivo real.
+
+Se pueden usar datos controlados cuando conserven el comportamiento material que se pretende observar.
+
+#### 90. Producción
+
+Esta tarea documental no autoriza producción.
+
+La exposición humana con efectos reales solo puede ocurrir bajo los packages y gates físicos aplicables.
+
+#### 91. Frontera con `UX-QA-022`
+
+`UX-QA-022` conserva la certificación especializada de ANIMA.
+
+VISO no absorbe:
+
+- asistencia personal;
+- carril trabajador;
+- cola offline de ANIMA;
+- Novedades;
+- Team;
+- experiencia móvil propietaria de ANIMA.
+
+#### 92. Frontera con `UX-QA-024`
+
+`UX-QA-024 — Probar NEXO por rol operativo` conserva la certificación especializada de NEXO.
+
+`UX-QA-023` no define:
+
+- rol operativo de NEXO;
+- retiro logístico;
+- transporte;
+- bodega;
+- inventario operativo de NEXO;
+- remisiones;
+- custodia logística propietaria de NEXO.
+
+#### 93. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa y certifica contratos ya protegidos por la cobertura vigente de VISO, autorización, experiencia e integración. No introduce una identidad, permiso, transición, owner, regla territorial, comportamiento empresarial ni obligación de prueba nueva que requiera ampliar el Registro Canónico de Requisitos de Prueba.
+
+#### 94. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar:
+
+- `TREQ-VISO-001`, para coherencia administrativa de roles, permisos, sedes, áreas, perfiles, conflictos, procedencia y auditoría;
+- `TREQ-AUTH-007`, para alcance territorial y seguridad administrativa relacionada;
+- `TREQ-AUTH-009`, para asignaciones y alcance;
+- `TREQ-AUTH-015`, para trazabilidad correlacionable;
+- `TREQ-UX-007`, para experiencia administrativa y validación con usuarios reales según la cobertura vigente relacionada.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación ni modificación del registro.
+
+#### 95. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea documental no ejecutó build del checkout local; la batería canónica permanece pendiente de ejecución local. |
+| LOCAL | NOT_EXECUTED | No se incorporó el bloque al checkout del usuario durante esta redacción anticipada y no se ejecutaron validadores locales del repositorio. |
+| REMOTA | PASS | Se verificaron en solo lectura `main` de `vento-shell`, continuidad, topología, owner U, `04A_08_VISO`, contratos `VISO-UX-001..020`, autorización VISO y el estado actual de superficies relevantes en `vento-viso`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con administradores ni escenarios sobre un ambiente físico; la evidencia operativa pertenece a las instancias posteriores. |
+| FÍSICA | NOT_EXECUTED | No se modificaron runtime, datos, Supabase, configuración, packages, ambientes ni despliegues; la materialización permanece detrás de `POST_E5_PACKAGE`. |
+
+#### 96. Criterios de aceptación
+
+- [ ] La tarea conserva exactamente cinco perfiles administrativos primarios.
+- [ ] Los cinco perfiles se mantienen como roles de `EMPLOYEE`, no como actor types nuevos.
+- [ ] Rol base, permiso, capacidad, territorio y autorización permanecen separados.
+- [ ] Las veinticuatro familias `VA-01..VA-24` se preservan como mínimo.
+- [ ] Cada package declara perfiles y escenarios aplicables sin inventar permisos.
+- [ ] `propietario` no funciona como wildcard.
+- [ ] `gerente_general` no recibe capacidades por nombre del rol.
+- [ ] `gerente` queda limitado a sedes y áreas autorizadas.
+- [ ] `auxiliar_administrativa` no adquiere aprobación gerencial genérica.
+- [ ] `contador` no adquiere territorio general ni administración de personal por su rol.
+- [ ] Los seis dominios primarios se preservan y `Inicio` no se convierte en séptimo dominio.
+- [ ] Navegación, acceso directo y búsqueda revalidan autorización.
+- [ ] Los filtros no amplían territorio.
+- [ ] `Todos` queda limitado al universo autorizado.
+- [ ] Semana y Mes consumen la misma fuente administrativa cuando aplican.
+- [ ] Borrador, revisión y publicación permanecen diferenciados.
+- [ ] La vista previa distingue actual, propuesto, permisos, procedencia y conflicto.
+- [ ] Conflicto, deny y fallo técnico permanecen diferenciados.
+- [ ] Modo experto añade detalle, no autoridad.
+- [ ] Una superficie cross-owner no mantiene una mutación competidora en VISO.
+- [ ] El handoff no transporta autorización autoritativa.
+- [ ] El retorno no fabrica éxito ante resultado desconocido.
+- [ ] La información sensible se minimiza antes de entregarse al cliente.
+- [ ] Accesibilidad y responsive conservan contexto material.
+- [ ] Los hallazgos tienen owner y reprueba.
+- [ ] PASS por package no se propaga automáticamente a otros packages.
+- [ ] `GLOBAL-FINAL` no oculta perfiles, packages o escenarios faltantes.
+- [ ] Se conservan cero cambios al Registro Canónico de Requisitos de Prueba.
+
+#### 97. Límites
+
+Esta tarea:
+
+- no modifica `VISO-UX-*`;
+- no modifica `VISO-AUTH-*`;
+- no modifica `VISO-CORE-*`;
+- no modifica `VISO-SCH-*`;
+- no modifica runtime de VISO;
+- no modifica Inicio;
+- no modifica Personal;
+- no modifica Programación;
+- no modifica Acceso y seguridad;
+- no modifica Organización;
+- no modifica Operación;
+- no modifica Auditoría;
+- no modifica permisos;
+- no modifica roles;
+- no modifica grants;
+- no modifica denies;
+- no modifica excepciones;
+- no modifica sedes;
+- no modifica áreas;
+- no modifica trabajadores;
+- no modifica perfiles operativos;
+- no modifica turnos;
+- no publica programación;
+- no corrige programación;
+- no modifica navegación;
+- no modifica registros de superficies;
+- no modifica ownership;
+- no modifica handoffs;
+- no modifica auditoría runtime;
+- no modifica datos;
+- no modifica Supabase;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no modifica Edge Functions;
+- no despliega;
+- no crea cuentas de prueba;
+- no abre acceso a usuarios reales;
+- no ejecuta piloto;
+- no ejecuta hypercare;
+- no certifica cierre de package por sí sola;
+- no corrige hallazgos físicos;
+- no crea TREQ;
+- no modifica TREQ;
+- no modifica 04A;
+- no desarrolla NEXO ni `UX-QA-024`.
+
+#### 98. Handoff a `UX-QA-024`
+
+`UX-QA-023` entrega a `UX-QA-024` únicamente contratos reutilizables de certificación:
+
+- método de especialización del piloto humano por aplicación;
+- identidad de escenario por package/candidato/ambiente;
+- separación entre actor, rol, capacidad, contexto e intención;
+- protocolo neutral y evidencia humana minimizada;
+- contrato de findings, severidad y retest;
+- tratamiento de navegación directa, bloqueo, frescura, resultado desconocido y recuperación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que filtros y selección de contexto no crean alcance autoritativo;
+- regla de que ownership y handoff no transfieren autoridad;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar un rol o escenario aplicable mediante agregación.
+
+No transfiere a NEXO ownership de VISO, administración laboral, programación, seguridad administrativa, matrices de acceso, preview de trabajadores ni auditoría VISO.
+
+`UX-QA-024` deberá concretar NEXO por rol operativo usando sus propios contratos, superficies, estados, territorios y owners.
+
+#### 99. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-022 — Probar ANIMA con trabajadores y administradores`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-023 — Probar VISO por rol administrativo`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-024 — Probar NEXO por rol operativo`
 ### [ ] UX-QA-024 — Probar NEXO por rol operativo
 ### [ ] UX-QA-025 — Probar FOGO por área productiva
 ### [ ] UX-QA-026 — Probar ORIGO por etapa de compra
