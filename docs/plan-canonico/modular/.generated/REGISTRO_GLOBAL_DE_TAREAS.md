@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1555** |
+| Aprobadas | **1556** |
 | En propuesta | **0** |
-| No iniciadas | **41** |
+| No iniciadas | **40** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.43% (1555/1596)** |
+| Porcentaje de completamiento | **97.49% (1556/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **41** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1456** |
+| ⏸ NO_EVALUADA | **40** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1457** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-002` — La acción principal se encuentra sin capacitación | ✅ APROBADA |
-| Tarea actual | `UX-QA-003` — El trabajador comprende el estado del proceso | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-004` — Los errores indican cómo continuar | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-003` — El trabajador comprende el estado del proceso | ✅ APROBADA |
+| Tarea actual | `UX-QA-004` — Los errores indican cómo continuar | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-005` — Un rol no ve opciones irrelevantes | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1387,7 +1387,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-030` | Ejecutar prueba de regresión completa | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-001` | El trabajador identifica su siguiente tarea | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-002` | La acción principal se encuentra sin capacitación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-003` | El trabajador comprende el estado del proceso | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-003` | El trabajador comprende el estado del proceso | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-004` | Los errores indican cómo continuar | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-005` | Un rol no ve opciones irrelevantes | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-006` | Las pantallas táctiles funcionan en tablet | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |

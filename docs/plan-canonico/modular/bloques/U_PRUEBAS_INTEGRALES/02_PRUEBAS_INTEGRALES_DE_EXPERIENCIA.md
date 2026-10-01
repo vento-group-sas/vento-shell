@@ -1654,7 +1654,1010 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-003 — El trabajador comprende el estado del proceso`
-### [ ] UX-QA-003 — El trabajador comprende el estado del proceso
+### ✅ UX-QA-003 — El trabajador comprende el estado del proceso
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-002 — La acción principal se encuentra sin capacitación
+**Tarea siguiente:** UX-QA-004 — Los errores indican cómo continuar
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que, una vez identificado el trabajo correcto y comprendida su acción principal, un trabajador puede comprender el estado actual del proceso, distinguir qué ya ocurrió, qué sigue pendiente, quién debe actuar, qué puede hacerse ahora y si la información está confirmada, pendiente, bloqueada, stale, offline o en conflicto, sin depender de enums, reason codes, colores, nombres técnicos ni inferencias del frontend, preservando fuente de verdad, autorización, accesibilidad, contexto, ownership y la frontera con la recuperación detallada de errores
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de comprensión del estado del proceso definido; las ejecuciones `UX-QA-003::<package_id>` y la certificación `UX-QA-003::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el foco ya resuelto por `UX-QA-001`, la acción primaria ya resuelta por `UX-QA-002`, las proyecciones humanas y contratos de estado aprobados en E2 y la cobertura UX vigente, pero no infiere que ningún package, aplicación, superficie, dispositivo o cohorte humana ya haya superado la prueba
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan sesiones con trabajadores, pruebas E2E, mediciones de comprensión, cambios de estados de dominio, copy, componentes, rutas, autorización, datos, Supabase, despliegues, configuración, telemetría ni instrumentación nueva
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que, una vez identificado el trabajo correcto y comprendida la acción principal correspondiente, la persona puede responder de forma correcta y verificable:
+
+```text
+¿EN QUÉ ESTADO ESTÁ ESTE PROCESO AHORA?
+¿QUÉ YA OCURRIÓ?
+¿QUÉ SIGUE PENDIENTE?
+¿QUIÉN DEBE ACTUAR?
+¿QUÉ PUEDO HACER AHORA?
+¿LO QUE VEO ESTÁ CONFIRMADO Y VIGENTE?
+```
+
+sin depender de interpretar enums, reason codes, colores aislados, nombres técnicos, efectos visuales ambiguos ni conocimiento interno del sistema.
+
+#### 2. Resultado canónico
+
+`UX-QA-003` establece `UX-QA-PROCESS-STATE-COMPREHENSION-001@1.0.0`.
+
+El contrato certifica conjuntamente que:
+
+1. el foco evaluado ya fue resuelto correctamente;
+2. la acción primaria ya fue identificada y comprendida cuando existe;
+3. el estado visible corresponde a una fuente autoritativa o declara claramente su naturaleza provisional;
+4. la persona distingue lo confirmado de lo pendiente;
+5. la persona distingue estado del proceso, disponibilidad de acción, autorización y conectividad;
+6. la persona reconoce qué parte ya ocurrió y cuál todavía no;
+7. la persona reconoce quién conserva la responsabilidad o quién debe actuar;
+8. una espera no se confunde con un bloqueo;
+9. una denegación no se presenta como simple espera;
+10. un fallo técnico no se presenta como estado empresarial consumado;
+11. una operación local pendiente de sincronización no se presenta como resultado confirmado;
+12. un estado stale, desconocido o en conflicto no se presenta como vigente;
+13. un proceso completado, cancelado o sustituido no se presenta como trabajo ejecutable;
+14. la proyección humana conserva diferencias materiales entre estados;
+15. la comprensión no depende únicamente de color, icono, animación, sonido o posición;
+16. la evidencia permite medir comprensión sin convertir errores aislados en mecanismo disciplinario;
+17. la certificación puede terminar en `PASS`, `FAIL`, `BLOCKED` o `STALE` sin falso verde.
+
+#### 3. Alcance exacto
+
+Esta tarea define:
+
+- qué significa comprender el estado de un proceso;
+- qué dimensiones mínimas debe poder explicar la persona;
+- cómo se separan estado del proceso, acción, autorización y conectividad;
+- cómo se distingue confirmado, pendiente y local;
+- cómo se representa responsabilidad y siguiente actor;
+- cómo se distinguen espera, bloqueo, denegación, conflicto y fallo técnico;
+- cómo se tratan estados sin trabajo, sin contexto o sin permiso;
+- cómo se trata frescura y evidencia stale;
+- cómo se trata trabajo offline o pendiente de sincronización;
+- cómo se conserva comprensión en saltos cross-app;
+- cómo se conserva accesibilidad;
+- qué escenarios, cohortes y oráculos se declaran;
+- qué evidencia y métricas se conservan;
+- la ejecución por package y la reconciliación `GLOBAL-FINAL`.
+
+No define todavía la recuperación detallada de errores, la redacción completa de instrucciones de reparación, el escalamiento operativo completo ni la lógica de retry. Esas responsabilidades permanecen en `UX-QA-004` y tareas posteriores del minibloque.
+
+#### 4. Handoff recibido de `UX-QA-002`
+
+`UX-QA-002` entrega a esta tarea:
+
+- foco ya identificado;
+- acción primaria inequívoca;
+- identidad semántica de la acción;
+- copy humano o nombre accesible;
+- owner funcional;
+- contexto de ejecución;
+- reautorización preservada;
+- formación permitida declarada;
+- superficie y dispositivo declarados;
+- casos donde la acción está disponible y casos donde no debe fabricarse.
+
+`UX-QA-003` no vuelve a decidir cuál trabajo debe atenderse ni cuál es la acción primaria. Evalúa si la persona comprende el estado que hace válida, pendiente, imposible, finalizada o incierta esa acción.
+
+#### 5. Frontera con `UX-QA-001`
+
+`UX-QA-001` responde:
+
+```text
+¿CUÁL ES EL TRABAJO QUE DEBO ATENDER?
+```
+
+`UX-QA-003` no vuelve a priorizar ni seleccionar ese trabajo.
+
+Una interfaz puede acertar el foco y aun fallar esta tarea si no permite saber si el trabajo está listo, en curso, esperando, bloqueado, completado, pendiente de confirmación o ya no vigente.
+
+#### 6. Frontera con `UX-QA-002`
+
+`UX-QA-002` responde:
+
+```text
+¿QUÉ ACCIÓN PRINCIPAL DEBO EJECUTAR?
+```
+
+`UX-QA-003` responde:
+
+```text
+¿QUÉ SIGNIFICA EL ESTADO ACTUAL Y QUÉ IMPLICA PARA ESA ACCIÓN?
+```
+
+Una acción puede ser perfectamente comprensible y, aun así, el estado puede ser ambiguo o engañoso.
+
+#### 7. Frontera con `UX-QA-004`
+
+`UX-QA-003` certifica que la persona comprende el estado, incluida la diferencia entre una condición ordinaria, una espera, un bloqueo, una denegación, un conflicto o un fallo técnico.
+
+`UX-QA-004` certificará que, cuando exista error o impedimento que requiera intervención, la persona entiende cómo continuar, corregir, reintentar, escalar o cancelar de forma segura.
+
+Por tanto:
+
+```text
+COMPRENDER QUÉ ESTÁ PASANDO
+≠
+CERTIFICAR TODA LA RECUPERACIÓN
+```
+
+#### 8. Definición de estado del proceso
+
+Para esta tarea, `estado del proceso` es la proyección humana de la situación vigente de una instancia, tarea, recurso o relación empresarial dentro de su ciclo, con suficiente información para distinguir:
+
+- qué ya ocurrió;
+- qué no ha ocurrido todavía;
+- si existe una acción válida ahora;
+- qué condición limita el avance;
+- quién conserva responsabilidad;
+- si el estado está confirmado, pendiente, stale o incierto;
+- qué siguiente transición o condición es esperable cuando sea material.
+
+No equivale automáticamente a un enum interno.
+
+#### 9. Estado, acción, autorización y conectividad son dimensiones distintas
+
+La certificación deberá impedir las siguientes equivalencias falsas:
+
+```text
+ESTADO DEL PROCESO
+≠ ACCIÓN SIGUIENTE
+
+ACCIÓN VISIBLE
+≠ AUTORIZACIÓN
+
+SIN CONEXIÓN
+≠ PROCESO FALLIDO
+
+BOTÓN DESHABILITADO
+≠ ESTADO EMPRESARIAL
+
+PANTALLA ABIERTA
+≠ TRABAJO INICIADO
+```
+
+Una persona debe poder reconocer esas diferencias sin conocimiento técnico.
+
+#### 10. Preguntas mínimas de comprensión
+
+Para cada caso aplicable, la persona deberá poder responder, con el nivel de detalle definido por el package:
+
+1. cuál es el estado actual;
+2. qué evidencia confirma ese estado;
+3. qué evento o acción relevante ya ocurrió;
+4. qué todavía está pendiente;
+5. quién debe actuar a continuación;
+6. si ella puede actuar ahora;
+7. si el estado es final o transitorio;
+8. si la información está vigente;
+9. si existe una condición que impide avanzar;
+10. si el resultado ya fue confirmado por la fuente de verdad.
+
+No todos los casos requieren diez respuestas verbales separadas; la prueba puede demostrar comprensión por decisiones correctas siempre que el oráculo sea trazable.
+
+#### 11. Fuente de verdad y proyección
+
+La interfaz puede proyectar un estado desde otra aplicación, caché o agregador.
+
+Siempre:
+
+```text
+PROYECCIÓN VISIBLE
+≠ FUENTE DE VERDAD POR SÍ SOLA
+```
+
+La evidencia debe poder resolver, cuando aplique:
+
+- aplicación o servicio propietario;
+- identidad de la instancia;
+- versión o referencia vigente;
+- timestamp relevante;
+- estado autoritativo observado;
+- estado humano presentado.
+
+Una proyección no puede inventar una transición.
+
+#### 12. Estado confirmado y estado pendiente
+
+La persona deberá distinguir claramente entre:
+
+```text
+CONFIRMADO
+```
+
+y:
+
+```text
+PENDIENTE DE CONFIRMACIÓN
+```
+
+Un comando enviado, un guardado local, una solicitud aceptada por el cliente o una animación de éxito no equivalen a resultado empresarial confirmado cuando todavía falta confirmación autoritativa.
+
+#### 13. Estado local y estado autoritativo
+
+Cuando exista estado local necesario para continuidad, la interfaz deberá indicar si representa:
+
+- borrador;
+- captura local;
+- envío pendiente;
+- confirmación del servidor;
+- resultado desconocido;
+- conflicto;
+- estado reconciliado.
+
+La tarea no crea una taxonomía runtime universal; exige que cada package demuestre una proyección humana inequívoca de sus estados reales.
+
+#### 14. Etapa o paso actual
+
+La persona debe poder identificar la etapa o paso relevante sin interpretar un identificador técnico.
+
+La proyección deberá diferenciar, cuando sea material:
+
+```text
+DÓNDE ESTOY
+QUÉ YA SE CUMPLIÓ
+QUÉ FALTA PARA AVANZAR
+```
+
+El frontend no deberá inferir una etapa nueva únicamente porque se pulsó un control.
+
+#### 15. Hecho ocurrido y efecto esperado
+
+La interfaz deberá distinguir:
+
+```text
+ACCIÓN SOLICITADA
+ACCIÓN ACEPTADA
+EFECTO EMPRESARIAL CONFIRMADO
+```
+
+cuando esos momentos sean materialmente distintos.
+
+Ejemplos conceptuales:
+
+```text
+Envío solicitado
+≠ entrega confirmada
+
+Cobro iniciado
+≠ pago confirmado
+
+Impresión enviada
+≠ documento impreso
+
+Conteo guardado localmente
+≠ conteo registrado en la fuente autoritativa
+```
+
+#### 16. Responsabilidad y siguiente actor
+
+Cuando la comprensión del estado dependa de ownership, la persona deberá poder reconocer:
+
+- quién conserva la responsabilidad;
+- si la responsabilidad ya cambió;
+- si existe un handoff pendiente;
+- si el siguiente actor es ella, otra persona, otro equipo o un proceso externo;
+- si una aceptación todavía no ocurrió.
+
+La interfaz no debe presentar responsabilidad transferida antes del evento que realmente la cambia.
+
+#### 17. Espera y bloqueo
+
+`WAITING` y `BLOCKED` permanecen semánticamente distintos.
+
+Una espera representa una condición normal de dependencia temporal, evento o actor externo.
+
+Un bloqueo representa una condición que impide avanzar y requiere resolución o decisión antes de continuar.
+
+La prueba certifica que la persona distingue ambos significados. La instrucción detallada de recuperación del bloqueo pertenece a `UX-QA-004`.
+
+#### 18. Denegación y bloqueo
+
+Una denegación de autorización no se presentará como simple bloqueo recuperable por insistencia.
+
+La persona deberá distinguir que:
+
+```text
+DENIED
+```
+
+significa que la acción no está permitida para el actor, alcance o recurso vigente, mientras que un bloqueo puede corresponder a una condición potencialmente resoluble.
+
+La prueba no autoriza revelar reglas sensibles ni ofrecer bypass.
+
+#### 19. Fallo técnico y estado empresarial
+
+`TECHNICAL_FAILURE` no se convertirá automáticamente en un estado empresarial final.
+
+La persona debe poder distinguir, cuando aplique:
+
+- lo último que el sistema sabe con certeza;
+- qué operación se intentó;
+- si existe resultado confirmado;
+- si el estado empresarial quedó desconocido;
+- si hace falta refrescar o reconciliar.
+
+No se mostrará `Completado` únicamente porque una solicitud salió del cliente.
+
+#### 20. Validación requerida
+
+Cuando el proceso requiere datos, evidencia o correcciones antes de avanzar, la presentación debe distinguir:
+
+```text
+FALTA VALIDAR O CORREGIR
+```
+
+de:
+
+```text
+PROCESO FALLIDO
+```
+
+La persona debe comprender qué parte sigue siendo válida y qué parte todavía no permite transición.
+
+#### 21. Estados sin trabajo o contexto
+
+Cuando aplique, la interfaz diferenciará al menos las situaciones canónicas ya definidas por cobertura vigente:
+
+- sin turno;
+- sin check-in;
+- sin contexto;
+- sin tareas;
+- solo tareas futuras;
+- solo tareas bloqueadas;
+- permiso insuficiente;
+- estación incompatible;
+- datos no sincronizados.
+
+No inventará una etapa operativa ni una siguiente acción falsa para llenar un estado vacío.
+
+#### 22. Trabajo completado, cancelado o sustituido
+
+Una obligación completada, cancelada o sustituida no deberá presentarse como ejecutable.
+
+La persona debe poder reconocer que:
+
+- el trabajo ya terminó;
+- dejó de ser válido;
+- fue reemplazado;
+- o pertenece únicamente a consulta histórica.
+
+Una notificación tardía o caché no revive automáticamente el trabajo.
+
+#### 23. Frescura del estado
+
+La proyección deberá conservar una señal de frescura compatible con el riesgo y el package.
+
+La persona no debe asumir que:
+
+```text
+VISIBLE
+=
+VIGENTE
+```
+
+cuando el sistema conoce que la información puede estar stale.
+
+#### 24. Estado stale
+
+Un estado `STALE` de evidencia o proyección no se contará como comprensión correcta del estado vigente.
+
+Cuando la información ya no represente el build, versión, contexto, actor, recurso o instancia actual, la certificación deberá degradarse y exigir actualización o nueva evidencia.
+
+#### 25. Offline y sincronización pendiente
+
+Cuando el package permita trabajo offline, la persona debe distinguir:
+
+```text
+CAPTURADO LOCALMENTE
+PENDIENTE DE SINCRONIZACIÓN
+CONFIRMADO POR LA FUENTE AUTORITATIVA
+```
+
+No se certifica un `PASS` si una operación pendiente de sincronización se presenta como efecto empresarial confirmado.
+
+#### 26. Conflicto y resultado desconocido
+
+Cuando existe conflicto de versión, concurrencia o resultado desconocido, la interfaz debe evitar una conclusión falsa.
+
+La persona debe poder reconocer que el estado necesita resolución o reconciliación y que repetir la acción puede ser inseguro.
+
+La recuperación detallada y el retry permanecen fuera de esta tarea.
+
+#### 27. Estado cross-app
+
+Cuando el proceso continúa entre aplicaciones, el significado del estado debe conservarse.
+
+El salto cross-app no puede:
+
+- cambiar silenciosamente el estado;
+- convertir una proyección en autoridad;
+- perder el owner;
+- perder la identidad de la instancia;
+- ocultar que una transición sigue pendiente.
+
+La aplicación propietaria conserva la resolución autoritativa.
+
+#### 28. Handoffs
+
+En un handoff, la persona deberá distinguir:
+
+```text
+HANDOFF INICIADO
+≠ HANDOFF ACEPTADO
+≠ RESPONSABILIDAD TRANSFERIDA
+```
+
+cuando esos momentos sean distintos en el contrato real.
+
+Un handoff rechazado, vencido o incierto permanece visible como tal.
+
+#### 29. Cambios de actor en dispositivo compartido
+
+Cambiar de trabajador no cambia retroactivamente:
+
+- efectos ya confirmados;
+- autoría;
+- estado del proceso;
+- ownership ya transferido.
+
+Los pendientes conservan su actor y evidencia conforme al contrato aplicable.
+
+La nueva persona no heredará una operación lista para confirmar como si la hubiera iniciado.
+
+#### 30. Lenguaje humano del estado
+
+Los estados internos se proyectarán mediante lenguaje humano versionado.
+
+La proyección deberá expresar, cuando sea necesario:
+
+```text
+SITUACIÓN HUMANA
++ CONSECUENCIA
++ SIGUIENTE CONDICIÓN O ACCIÓN
+```
+
+sin usar como mensaje ordinario:
+
+- enum interno;
+- reason code;
+- SQL;
+- stack;
+- permiso;
+- ruta;
+- identificador técnico.
+
+La acción detallada de recuperación pertenece a `UX-QA-004`.
+
+#### 31. Estados materialmente distintos no colapsan
+
+Dos estados con consecuencias distintas no compartirán una etiqueta que haga creer que son equivalentes.
+
+Ejemplos conceptuales:
+
+```text
+Pendiente de envío
+≠ Enviado
+
+Enviado
+≠ Confirmado
+
+Esperando
+≠ Bloqueado
+
+Bloqueado
+≠ Denegado
+
+Desconocido
+≠ Fallido
+
+Finalizado
+≠ Cancelado
+```
+
+El package debe mapear sus estados reales sin inventar equivalencias.
+
+#### 32. Accesibilidad del estado
+
+La comprensión deberá conservarse mediante:
+
+- texto o nombre accesible;
+- estructura semántica;
+- headings y regiones coherentes;
+- foco de teclado cuando aplique;
+- lector de pantalla cuando aplique;
+- señales redundantes;
+- orden comprensible;
+- anuncio de cambios relevantes.
+
+No dependerá únicamente de:
+
+- color;
+- icono;
+- posición;
+- animación;
+- sonido;
+- vibración;
+- cuenta regresiva sin texto;
+- cambio visual no anunciado.
+
+#### 33. Dispositivos y superficies aplicables
+
+La ejecución por package declarará las superficies incluidas, que pueden abarcar:
+
+- web de escritorio;
+- tablet;
+- kiosco;
+- móvil;
+- estación compartida;
+- launcher o Hub;
+- superficie propietaria del proceso;
+- proyección cross-app.
+
+Comprender el estado en escritorio no certifica automáticamente móvil, kiosco o lector de pantalla.
+
+#### 34. Actor y cohorte de prueba
+
+La cohorte deberá representar a una persona autorizable y suficientemente preparada para el trabajo real.
+
+La prueba no mezclará:
+
+```text
+NO COMPRENDE EL ESTADO PRESENTADO
+```
+
+con:
+
+```text
+NO CONOCE EL PROCESO EMPRESARIAL BÁSICO
+```
+
+Cuando el dominio exija formación obligatoria, la cohorte deberá cumplirla antes de evaluar la claridad del estado.
+
+#### 35. Punto inicial del caso
+
+Cada escenario declarará antes de ejecutarse:
+
+- package;
+- build o versión;
+- actor/cohorte;
+- formación permitida;
+- foco esperado;
+- acción primaria esperada;
+- instancia de proceso;
+- estado autoritativo de entrada;
+- superficie y dispositivo;
+- contexto;
+- ayudas permitidas;
+- preguntas u observables de comprensión;
+- criterio de aceptación.
+
+El caso no comenzará después de que el facilitador haya explicado el significado del estado exacto bajo prueba.
+
+#### 36. Oráculo previo
+
+Cada caso contará con un oráculo definido antes de observar al participante.
+
+Forma conceptual:
+
+```text
+PROCESS_INSTANCE = referencia canónica
+AUTHORITATIVE_STATE = identidad o clase real del estado
+HUMAN_MEANING = significado esperado
+CONFIRMATION_CLASS = confirmado, pendiente, local, stale o incierto según aplique
+RESPONSIBILITY = actor o owner esperado
+ACTION_AVAILABILITY = permitida, no disponible o condicionada
+```
+
+Los nombres físicos pueden especializarse por package.
+
+No se acepta declarar correcto el significado inferido por el participante únicamente porque coincidió con lo que la UI mostraba.
+
+#### 37. Ayuda durante la prueba
+
+La ayuda se clasificará, como mínimo, en:
+
+- ninguna;
+- aclaración del escenario sin explicar el estado;
+- ayuda de accesibilidad habitual;
+- explicación de término empresarial previamente permitido;
+- pista sobre dónde leer el estado;
+- explicación directa del significado;
+- instrucción de qué respuesta dar.
+
+Una explicación directa del significado impide contar ese caso como comprensión autónoma.
+
+#### 38. Casos positivos mínimos
+
+La ejecución por package incluirá, cuando apliquen:
+
+1. trabajo disponible y listo para acción;
+2. trabajo ya iniciado;
+3. acción solicitada y resultado confirmado;
+4. operación pendiente de confirmación;
+5. espera normal por evento o actor externo;
+6. bloqueo legítimo;
+7. denegación de autorización;
+8. validación requerida;
+9. estado final completado;
+10. estado cancelado o sustituido;
+11. proyección stale correctamente señalada;
+12. trabajo offline pendiente de sincronización;
+13. handoff iniciado pero no aceptado;
+14. handoff aceptado y responsabilidad transferida;
+15. conflicto visible sin falso estado final;
+16. estado cross-app consistente;
+17. estado comprensible por teclado;
+18. estado comprensible por lector de pantalla;
+19. estado visible en superficie táctil;
+20. estado vacío o sin contexto correctamente diferenciado.
+
+#### 39. Casos negativos mínimos
+
+La ejecución por package incluirá, cuando apliquen:
+
+1. enum técnico usado como única explicación;
+2. estado comunicado solo por color;
+3. estado comunicado solo por icono;
+4. acción enviada presentada como resultado confirmado;
+5. guardado local presentado como persistencia autoritativa;
+6. pendiente de sincronización presentado como completado;
+7. espera presentada como bloqueo;
+8. bloqueo presentado como denegación;
+9. denegación presentada como retry ordinario;
+10. fallo técnico presentado como cancelación empresarial;
+11. estado desconocido presentado como fallido;
+12. caché stale presentada como vigente;
+13. trabajo completado presentado como ejecutable;
+14. tarea sustituida reaparecida por sincronización tardía;
+15. handoff iniciado presentado como responsabilidad transferida;
+16. cambio de actor que atribuye pendientes al actor nuevo;
+17. cross-app que cambia el significado del estado;
+18. label genérico que colapsa dos estados con consecuencias distintas;
+19. animación de éxito usada como única evidencia de confirmación;
+20. participante que necesita explicación directa del estado para responder.
+
+#### 40. Métricas principales
+
+La ejecución registrará, cuando correspondan:
+
+- identificación correcta del estado;
+- explicación correcta de qué ya ocurrió;
+- explicación correcta de qué sigue pendiente;
+- identificación del responsable o siguiente actor;
+- identificación correcta de disponibilidad de acción;
+- distinción confirmado versus pendiente;
+- distinción waiting versus blocked;
+- distinción estado empresarial versus fallo técnico;
+- distinción vigente versus stale;
+- errores de interpretación;
+- solicitudes de ayuda;
+- tipo de ayuda;
+- tiempo de comprensión cuando sea útil;
+- decisiones inseguras provocadas por mala interpretación.
+
+No se fija un umbral global arbitrario en esta tarea documental.
+
+#### 41. Criterio de aceptación por package
+
+Cada package declarará su criterio antes de ejecutar.
+
+El criterio deberá considerar:
+
+- riesgo de interpretar mal el estado;
+- frecuencia del proceso;
+- complejidad;
+- dispositivo;
+- contexto físico;
+- población objetivo;
+- formación obligatoria;
+- accesibilidad;
+- consecuencia de una transición indebida;
+- criticidad de distinguir pendiente y confirmado.
+
+Un criterio creado después de observar resultados invalida la certificación.
+
+#### 42. Prohibición de uso disciplinario aislado
+
+Tiempo de comprensión, errores de interpretación o solicitudes de ayuda no se usarán de forma aislada para sancionar a una persona.
+
+La evidencia evalúa la calidad de la proyección de estado y del flujo bajo un escenario controlado.
+
+#### 43. Evidencia mínima por caso
+
+Cada caso conservará, cuando aplique:
+
+- `package_id`;
+- commit/build evaluado;
+- escenario;
+- actor/cohorte;
+- formación permitida;
+- superficie y dispositivo;
+- contexto;
+- process/work item de referencia;
+- estado autoritativo esperado;
+- estado humano presentado;
+- clase de confirmación;
+- owner o responsable esperado;
+- acción disponible esperada;
+- respuestas u observables del participante;
+- errores de interpretación;
+- ayuda solicitada;
+- tipo de ayuda;
+- resultado;
+- razón de fallo o bloqueo;
+- timestamps;
+- identificador de ejecución.
+
+#### 44. Identidad de evidencia
+
+Un `PASS` pertenece a una combinación concreta de:
+
+```text
+package_id
++ package version / commit
++ consumer build
++ fixture/data set
++ scenario
++ process/state version
++ surface/device class
++ actor/cohort definition
++ training allowance
++ terminology version
+```
+
+Cambiar materialmente cualquiera de esos elementos puede volver la evidencia `STALE`.
+
+#### 45. Estados de ejecución
+
+Estados permitidos para la instancia física futura:
+
+- `PASS` — todos los casos obligatorios aplicables cumplen;
+- `FAIL` — al menos un caso obligatorio produce una interpretación materialmente incorrecta del estado;
+- `BLOCKED` — falta una dependencia necesaria para ejecutar honestamente;
+- `STALE` — la evidencia existente ya no representa el build, estado, contrato, dispositivo, cohorte o contexto actual.
+
+No existe `PARTIAL_PASS` para habilitar cierre.
+
+#### 46. Ejecución por package
+
+Para cada `package_id` aplicable se materializará en el futuro una instancia con identidad conceptual:
+
+```text
+UX-QA-003::<package_id>
+```
+
+La instancia deberá registrar:
+
+- package exacto;
+- owner/repositorios consumidores;
+- superficies incluidas;
+- dispositivos incluidos;
+- actores/cohortes;
+- formación permitida;
+- estados y escenarios obligatorios;
+- oráculos;
+- evidencia;
+- resultado;
+- bloqueadores;
+- commit/build;
+- vigencia de evidencia.
+
+La aprobación documental actual no crea esas instancias.
+
+#### 47. Certificación `GLOBAL-FINAL`
+
+Cuando todas las instancias aplicables estén cerradas y la topología lo permita, podrá materializarse la certificación global final de `UX-QA-003`.
+
+El cierre global no promedia fallos entre packages.
+
+Un package obligatorio en `FAIL`, `BLOCKED` o `STALE` impide declarar `PASS` global mientras siga dentro del alcance requerido.
+
+#### 48. Regla de completitud
+
+`PASS` exige:
+
+```text
+FOCO CORRECTO YA RESUELTO
++ ACCIÓN PRIMARIA YA RESUELTA
++ ESTADO AUTORITATIVO ORACLE DEFINIDO
++ SIGNIFICADO HUMANO INEQUÍVOCO
++ CONFIRMADO Y PENDIENTE DIFERENCIADOS
++ ESTADO, ACCIÓN, AUTORIZACIÓN Y CONECTIVIDAD DIFERENCIADOS
++ RESPONSABILIDAD RESOLUBLE
++ WAITING Y BLOCKED NO COLAPSADOS
++ CERO FALSO COMPLETADO
++ CERO ESTADO STALE PRESENTADO COMO VIGENTE
++ ACCESIBILIDAD APLICABLE
++ EVIDENCIA REPRODUCIBLE
+= PASS
+```
+
+#### 49. Seguridad y autorización
+
+Comprender el estado no amplía autoridad.
+
+Una interfaz no puede convertir claridad en permiso.
+
+Si el actor no está autorizado, la proyección debe representar la situación sin revelar información sensible ni ofrecer bypass.
+
+La prueba no declarará `PASS` si un estado comprensible conduce a una acción que el servidor no debería permitir.
+
+#### 50. No inferencia desde implementación parcial
+
+No se declarará `PASS` porque:
+
+- existe un badge de estado;
+- el color parece correcto;
+- existe un enum;
+- una demo fue entendida por una persona experta;
+- hay un icono de check;
+- existe un spinner;
+- el frontend muestra `success`;
+- un snapshot coincide;
+- un test unitario valida un componente;
+- el backend devuelve un campo `status`;
+- una sola aplicación funciona;
+- el build compila.
+
+La certificación exige evidencia integral del package y sus casos obligatorios.
+
+#### 51. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea materializa una certificación ya exigida por cobertura UX vigente y no cambia el Registro Canónico de Requisitos de Prueba.
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, esta tarea reutiliza principalmente:
+
+- `TREQ-UX-001` — tarea, acción principal y estado del proceso identificables sin capacitación extensa;
+- `TREQ-UX-005` — fuente de verdad, estado confirmado o pendiente, actor y último cambio visibles;
+- `TREQ-UX-031` — separación semántica entre `WAITING` y `BLOCKED`;
+- `TREQ-UX-036` — frescura, offline, sincronización pendiente y revalidación;
+- `TREQ-UX-037` — estados sin turno, contexto, trabajo, permiso o sincronización diferenciados;
+- `TREQ-UX-038` — estado y foco comunicados mediante señales accesibles y redundantes;
+- `TREQ-UX-039` — métricas interpretadas con contexto y sin uso disciplinario aislado;
+- `TREQ-UX-054` — proyección humana versionada de estados internos sin inferir transiciones desde copy;
+- `TREQ-UX-055` — errores, bloqueos y falta de acceso expresados en lenguaje humano con capa técnica separada.
+
+Estas referencias son trazabilidad heredada y no una actualización del registro.
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+|---|---|---|
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido incorporado ni sometido a la batería documental del checkout local de `UX-QA-003`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía `format --write`, `format --check`, quality, delivery, topología, TREQ ni batería global sobre la rama local de `UX-QA-003`. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, manifest modular, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, marcadores `UX-QA-003` y `UX-QA-004`, contratos de foco, navegación, estado, bloqueo, conectividad y accesibilidad aplicables, y Registro Canónico UX; el handoff inmediato proviene además del artefacto completo aprobado de `UX-QA-002` suministrado para trabajo documental adelantado. |
+| OPERATIVA | NOT_EXECUTED | No se han ejecutado todavía sesiones controladas con trabajadores, mediciones de comprensión de estado ni escenarios de confirmed/pending/waiting/blocked/stale/offline sobre packages materializados. |
+| FÍSICA | NOT_EXECUTED | No se han materializado instancias físicas de `UX-QA-003` ni su certificación global final; la ejecución física permanece sujeta a `POST_E5_PACKAGE` y autorización física fuera de este carril. |
+
+#### 54. Criterios de aceptación
+
+- [ ] El título es exactamente `UX-QA-003 — El trabajador comprende el estado del proceso`.
+- [ ] La continuidad es `UX-QA-002 → UX-QA-003 → UX-QA-004`.
+- [ ] La topología permanece `PER_PACKAGE_AND_GLOBAL_FINAL`.
+- [ ] El gate físico permanece `POST_E5_PACKAGE`.
+- [ ] La tarea no declara ejecución física inexistente.
+- [ ] El foco y la acción primaria se consumen como handoff y no se redefinen.
+- [ ] El estado visible corresponde a una fuente real o declara su naturaleza provisional.
+- [ ] La persona distingue confirmado de pendiente.
+- [ ] La persona distingue estado del proceso de disponibilidad de acción.
+- [ ] La persona distingue estado del proceso de autorización.
+- [ ] La persona distingue estado del proceso de conectividad.
+- [ ] La persona reconoce qué ya ocurrió y qué sigue pendiente.
+- [ ] La persona puede resolver ownership o siguiente actor cuando sea material.
+- [ ] `WAITING` y `BLOCKED` no se vuelven equivalentes.
+- [ ] `DENIED` no se presenta como retry ordinario.
+- [ ] Un fallo técnico no se presenta como estado empresarial final.
+- [ ] Un resultado desconocido no se presenta como fallido ni completado sin evidencia.
+- [ ] Un estado stale no se presenta como vigente.
+- [ ] Trabajo offline pendiente de sincronización no se presenta como confirmado.
+- [ ] Estados finalizados, cancelados o sustituidos no se presentan como ejecutables.
+- [ ] Handoff iniciado no equivale a responsabilidad transferida.
+- [ ] El cambio de actor no reatribuye pendientes ni efectos confirmados.
+- [ ] Estados materialmente distintos conservan significados humanos distintos.
+- [ ] La comprensión no depende solo de color, icono, sonido o animación.
+- [ ] El oráculo del estado se define antes del caso.
+- [ ] Ayuda que explica directamente el significado no se cuenta como comprensión autónoma.
+- [ ] No se crea un umbral global arbitrario después de observar resultados.
+- [ ] Las métricas no se usan aisladamente para sancionar trabajadores.
+- [ ] `UX-QA-004` conserva la certificación específica de cómo continuar ante errores.
+- [ ] La sección `Requisitos de prueba derivados` declara literalmente cero cambios y no contiene IDs TREQ.
+- [ ] No se modifica 04A.
+
+#### 55. Condiciones de fallo o bloqueo físico futuro
+
+La instancia física futura no puede cerrar `PASS` si:
+
+- el estado autoritativo no puede determinarse;
+- el oráculo se deriva de la misma UI bajo prueba;
+- el participante confunde pendiente con confirmado;
+- un resultado local se interpreta como resultado empresarial definitivo;
+- una espera se interpreta como bloqueo;
+- un bloqueo se interpreta como denegación o viceversa;
+- un fallo técnico se interpreta como estado final del proceso;
+- un estado desconocido se presenta como completado o fallido;
+- un estado stale se presenta como vigente;
+- una tarea completada, cancelada o sustituida aparece ejecutable;
+- un handoff pendiente se presenta como responsabilidad transferida;
+- un cambio de actor modifica la autoría o ownership sin evento válido;
+- dos estados con consecuencias distintas usan una proyección indistinguible;
+- el estado solo se comunica mediante una señal no accesible;
+- la prueba requiere explicar directamente al participante el significado del estado;
+- el package no declara sus superficies o escenarios obligatorios;
+- la evidencia es `STALE`.
+
+#### 56. Handoff a `UX-QA-004`
+
+`UX-QA-003` entrega a `UX-QA-004`:
+
+- foco correcto;
+- acción principal correcta;
+- estado actual comprendido;
+- fuente de verdad identificable;
+- distinción entre confirmado, pendiente y local;
+- ownership o siguiente actor resoluble;
+- separación entre espera, bloqueo, denegación, conflicto y fallo técnico;
+- frescura y conectividad conocidas;
+- estados de error o impedimento que requieren una respuesta humana.
+
+`UX-QA-004` podrá evaluar si, ante un error o impedimento que requiera intervención, la persona comprende cómo continuar de forma segura sin reabrir la definición del foco, la acción ni el significado del estado.
+
+#### 57. Límites
+
+Esta tarea no:
+
+- cambia estados de dominio;
+- crea estados nuevos;
+- redefine state machines;
+- implementa componentes;
+- modifica copy en runtime;
+- crea rutas;
+- modifica navegación;
+- cambia prioridades;
+- crea work items;
+- ejecuta claims;
+- inicia o completa trabajo;
+- cambia ownership;
+- ejecuta handoffs;
+- modifica autorización;
+- ejecuta retries;
+- resuelve conflictos;
+- crea mecanismos offline;
+- modifica datos;
+- modifica Supabase;
+- modifica telemetría;
+- implementa observabilidad;
+- ejecuta estudios con trabajadores;
+- define un umbral universal de velocidad;
+- certifica `UX-QA-004`;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 58. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-002 — La acción principal se encuentra sin capacitación`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-003 — El trabajador comprende el estado del proceso`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-004 — Los errores indican cómo continuar`
 ### [ ] UX-QA-004 — Los errores indican cómo continuar
 ### [ ] UX-QA-005 — Un rol no ve opciones irrelevantes
 ### [ ] UX-QA-006 — Las pantallas táctiles funcionan en tablet
