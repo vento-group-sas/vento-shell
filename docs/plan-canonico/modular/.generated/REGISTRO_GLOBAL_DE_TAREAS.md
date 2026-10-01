@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1551** |
+| Aprobadas | **1552** |
 | En propuesta | **0** |
-| No iniciadas | **45** |
+| No iniciadas | **44** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.18% (1551/1596)** |
+| Porcentaje de completamiento | **97.24% (1552/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **45** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1452** |
+| ⏸ NO_EVALUADA | **44** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1453** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-QA-028` — Rollback funciona por aplicación | ✅ APROBADA |
-| Tarea actual | `AUTH-QA-029` — Auditoría conserva actor, turno, sede y área | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-QA-030` — Ejecutar prueba de regresión completa | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-QA-029` — Auditoría conserva actor, turno, sede y área | ✅ APROBADA |
+| Tarea actual | `AUTH-QA-030` — Ejecutar prueba de regresión completa | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-001` — El trabajador identifica su siguiente tarea | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1383,7 +1383,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-026` | Cola offline de ANIMA se revalida | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-027` | Actualización de paquete no rompe otros repositorios | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-028` | Rollback funciona por aplicación | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-029` | Auditoría conserva actor, turno, sede y área | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-QA-029` | Auditoría conserva actor, turno, sede y área | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-QA-030` | Ejecutar prueba de regresión completa | — | — | `bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-001` | El trabajador identifica su siguiente tarea | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-002` | La acción principal se encuentra sin capacitación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
