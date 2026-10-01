@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1557** |
+| Aprobadas | **1558** |
 | En propuesta | **0** |
-| No iniciadas | **39** |
+| No iniciadas | **38** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.56% (1557/1596)** |
+| Porcentaje de completamiento | **97.62% (1558/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **39** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1458** |
+| ⏸ NO_EVALUADA | **38** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1459** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-004` — Los errores indican cómo continuar | ✅ APROBADA |
-| Tarea actual | `UX-QA-005` — Un rol no ve opciones irrelevantes | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-006` — Las pantallas táctiles funcionan en tablet | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-005` — Un rol no ve opciones irrelevantes | ✅ APROBADA |
+| Tarea actual | `UX-QA-006` — Las pantallas táctiles funcionan en tablet | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-007` — Las vistas administrativas no contaminan la operación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1389,7 +1389,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-002` | La acción principal se encuentra sin capacitación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-003` | El trabajador comprende el estado del proceso | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-004` | Los errores indican cómo continuar | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-005` | Un rol no ve opciones irrelevantes | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-005` | Un rol no ve opciones irrelevantes | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-006` | Las pantallas táctiles funcionan en tablet | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-007` | Las vistas administrativas no contaminan la operación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-008` | El proceso continúa correctamente entre aplicaciones | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |

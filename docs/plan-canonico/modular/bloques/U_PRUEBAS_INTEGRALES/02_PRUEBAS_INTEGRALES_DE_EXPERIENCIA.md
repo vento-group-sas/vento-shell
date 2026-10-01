@@ -3794,7 +3794,1094 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-005 — Un rol no ve opciones irrelevantes`
-### [ ] UX-QA-005 — Un rol no ve opciones irrelevantes
+### ✅ UX-QA-005 — Un rol no ve opciones irrelevantes
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-004 — Los errores indican cómo continuar
+**Tarea siguiente:** UX-QA-006 — Las pantallas táctiles funcionan en tablet
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que la superficie presentada a un actor contiene únicamente capacidades, datos, navegación, acciones, alertas y controles pertinentes para su intención, tarea, etapa, autorización y contexto vigentes, sin construir una unión indiscriminada de permisos, sin reintroducir funciones irrelevantes por búsqueda, favoritos, deep links, caché o dispositivos compartidos, sin ocultar obligaciones materialmente necesarias y sin confundir relevancia con autorización, seguridad o diseño táctil
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de relevancia contextual por actor y rol definido; las ejecuciones `UX-QA-005::<package_id>` y la certificación `UX-QA-005::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume foco, acción, estado y recuperación ya definidos por `UX-QA-001` a `UX-QA-004`, el contrato aprobado `UX-CONTEXTUAL-RELEVANCE-CONTRACT-001` y la cobertura UX vigente, pero no infiere que ningún package, aplicación, superficie, rol, dispositivo o cohorte humana ya haya superado la prueba
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan sesiones con trabajadores, pruebas E2E, cambios de navegación, permisos, roles, componentes, copy, rutas, layouts, payloads, masking, datos, Supabase, caché, búsqueda, favoritos, deep links, dispositivos, instrumentación, despliegues ni modificaciones de producto
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que, para una persona situada en una tarea y contexto concretos, la experiencia responde de forma correcta y verificable:
+
+```text
+¿VEO SOLO LO QUE NECESITO PARA ESTA INTENCIÓN Y ESTE TRABAJO?
+¿LAS OPCIONES QUE NO ME CORRESPONDEN QUEDAN FUERA DEL FLUJO ORDINARIO?
+¿LAS OBLIGACIONES QUE SÍ ME CORRESPONDEN SIGUEN VISIBLES AUNQUE ESTÉN BLOQUEADAS?
+¿CAMBIAR DE ROL, TAREA O CONTEXTO RECONSTRUYE CORRECTAMENTE LA SUPERFICIE?
+```
+
+La certificación no busca producir una interfaz mínima por estética. Busca demostrar que la composición visible conserva relevancia, seguridad perceptual, obligaciones y contexto sin convertir el menú en una copia de todos los permisos del actor.
+
+#### 2. Resultado canónico
+
+`UX-QA-005` establece `UX-QA-CONTEXTUAL-RELEVANCE-CERTIFICATION-001@1.0.0`.
+
+Este resultado define:
+
+- la unidad certificable de relevancia;
+- las dimensiones que deben fijarse antes de observar la superficie;
+- la separación entre autorización, relevancia, visibilidad, descubrimiento, habilitación y obligación;
+- los estados de presentación esperados;
+- el oracle para decidir qué debe aparecer, relegarse, explicarse u ocultarse;
+- la cobertura mínima por actor, rol, carril, tarea, etapa, territorio, dispositivo y contexto;
+- la evidencia por package;
+- la evidencia global final;
+- los fallos que invalidan la certificación.
+
+No crea una policy runtime nueva ni un schema físico.
+
+#### 3. Alcance exacto de la certificación
+
+La prueba cubre, cuando existan en el package evaluado:
+
+- aplicaciones y accesos entre aplicaciones;
+- navegación primaria y secundaria;
+- destinos y rutas;
+- vistas, secciones, tabs y cards;
+- acciones primarias y secundarias;
+- acciones masivas;
+- campos, columnas y filtros;
+- indicadores, badges y agregados;
+- alertas y notificaciones;
+- búsqueda;
+- favoritos y recientes;
+- deep links y aliases;
+- estados vacíos;
+- opciones de configuración;
+- superficies de supervisión;
+- superficies administrativas;
+- superficies de auditoría;
+- experiencias personales, de cliente o candidato;
+- dispositivos personales y compartidos;
+- comportamiento con contexto fresco, cambiado u obsoleto.
+
+La cobertura se limita a superficies y capacidades realmente materializadas por cada package. No exige inventar una pantalla para probar una capacidad inexistente.
+
+#### 4. Handoff recibido de `UX-QA-004`
+
+La prueba recibe como precondiciones:
+
+- foco de trabajo correctamente identificado;
+- acción principal correctamente comprendida;
+- estado del proceso correctamente comprendido;
+- bloqueos, esperas, denegaciones, conflictos y fallos diferenciados;
+- recuperación segura disponible cuando corresponde;
+- distinción entre obligación bloqueada y capacidad irrelevante;
+- contexto, actor y dispositivo resueltos;
+- autorización y privacidad preservadas;
+- señal suficiente para saber qué controles son materialmente necesarios para continuar.
+
+`UX-QA-005` no vuelve a evaluar la calidad completa del mensaje de error. Evalúa si ese mensaje o control aparece únicamente cuando corresponde al actor y al contexto evaluados.
+
+#### 5. Frontera con autorización
+
+Regla canónica:
+
+```text
+AUTORIZADO
+≠ RELEVANTE AHORA
+
+VISIBLE
+≠ AUTORIZADO
+
+OCULTO
+≠ DENEGADO
+```
+
+La prueba no considera correcto mostrar una función únicamente porque exista permiso para ella.
+
+La superficie ordinaria deberá excluir capacidades que:
+
+- no pertenecen a la intención actual;
+- corresponden a otra etapa;
+- pertenecen a otro carril;
+- requieren otro territorio;
+- son propias de otro actor;
+- no aportan al resultado actual;
+- son excepcionales o avanzadas fuera de su entrada aprobada.
+
+La protección del servidor permanece obligatoria aunque una opción esté oculta.
+
+#### 6. Frontera con `UX-QA-006`
+
+`UX-QA-006` certificará que las pantallas táctiles aplicables funcionan correctamente en tablet.
+
+Por tanto, `UX-QA-005` puede exigir que la composición visible sea correcta en una superficie tablet, pero no certifica:
+
+- tamaño de objetivos táctiles;
+- separación física entre controles;
+- orientación;
+- zoom;
+- teclado virtual;
+- uso con guantes;
+- montaje físico;
+- postura;
+- brillo;
+- distancia de lectura;
+- interacción específica con periféricos.
+
+El handoff hacia `UX-QA-006` entrega una superficie ya depurada por relevancia.
+
+#### 7. Frontera con `UX-QA-007`
+
+`UX-QA-007` certificará que las vistas administrativas no contaminan la operación.
+
+`UX-QA-005` sí verifica que una opción administrativa irrelevante no aparezca ante un rol o tarea operativa concretos, pero no absorbe la certificación estructural completa de separación entre superficies administrativas y operativas reservada a `UX-QA-007`.
+
+#### 8. Qué significa rol en esta prueba
+
+El nombre del rol no es suficiente para construir el oracle.
+
+Cada caso fija como mínimo:
+
+- actor efectivo;
+- identidad de dominio;
+- rol base;
+- rol operativo efectivo, cuando aplique;
+- delegación o simulación, cuando aplique;
+- carril de experiencia;
+- intención actual;
+- tarea o caso actual;
+- proceso y etapa;
+- recurso;
+- empresa, sede y área;
+- turno y check-in cuando sean obligatorios;
+- dispositivo;
+- frescura;
+- sensibilidad;
+- vigencia.
+
+El rol es una dimensión de la proyección, no su única fuente.
+
+#### 9. Caso base de comparación
+
+Una certificación no se realiza con capturas aisladas de un único actor.
+
+Cada escenario relevante tendrá al menos un contraste entre:
+
+```text
+ACTOR A
+→ opción relevante
+
+ACTOR B O CONTEXTO B
+→ misma opción irrelevante, no revelable o relegada
+```
+
+cuando exista una variante real del proceso que permita esa comparación.
+
+El contraste puede variar rol, carril, etapa, territorio, custodia, turno, dispositivo o intención, siempre que el factor cambiado quede registrado.
+
+#### 10. Unidad mínima de relevancia
+
+El oracle no se limita a la existencia de una ruta.
+
+Puede evaluar individualmente:
+
+- aplicación;
+- grupo de navegación;
+- destino;
+- vista;
+- sección;
+- tab;
+- card;
+- campo;
+- columna;
+- filtro;
+- indicador;
+- alerta;
+- acción;
+- enlace cross-app;
+- notificación;
+- resultado de búsqueda;
+- badge;
+- agregado;
+- estado vacío.
+
+Una pantalla puede ser relevante y contener elementos irrelevantes. La aprobación de la pantalla no blanquea todos sus elementos internos.
+
+#### 11. Estados de presentación observables
+
+La evidencia utilizará las semánticas canónicas:
+
+```text
+PRIMARY
+SECONDARY
+DISCOVERABLE
+CONTEXTUAL_DISABLED
+REQUIRED_BLOCKED
+HIDDEN
+```
+
+Interpretación para la prueba:
+
+| Estado | Expectativa observable |
+| --- | --- |
+| `PRIMARY` | visible de inmediato como acción o destino dominante de la tarea |
+| `SECONDARY` | visible con menor jerarquía y vinculado al mismo resultado o proceso |
+| `DISCOVERABLE` | fuera del flujo principal; accesible únicamente mediante mecanismo autorizado y pertinente |
+| `CONTEXTUAL_DISABLED` | visible porque sigue siendo relevante, no accionable y acompañado de explicación |
+| `REQUIRED_BLOCKED` | obligación vigente visible aunque no pueda completarse aún |
+| `HIDDEN` | fuera de la superficie, tab order y árbol accesible ordinarios |
+
+#### 12. Oracle principal
+
+Para cada elemento evaluado se responde, en este orden:
+
+```text
+1. ¿EL ACTOR PUEDE CONOCER SU EXISTENCIA?
+2. ¿ESTÁ AUTORIZADO PARA EL ALCANCE CORRESPONDIENTE?
+3. ¿ES RELEVANTE PARA LA INTENCIÓN, TAREA Y ETAPA ACTUALES?
+4. ¿ES UNA OBLIGACIÓN QUE NO PUEDE OCULTARSE?
+5. ¿PUEDE EJECUTARSE AHORA?
+6. ¿REQUIERE UNA SUPERFICIE SEPARADA?
+7. ¿DEBE SER PRIMARY, SECONDARY, DISCOVERABLE, CONTEXTUAL_DISABLED, REQUIRED_BLOCKED O HIDDEN?
+```
+
+La respuesta esperada procede de contratos y estado autoritativos, no de lo que el frontend haya decidido renderizar.
+
+#### 13. Irrelevante no significa prohibido
+
+Una capacidad autorizada puede ser irrelevante en la superficie actual y convertirse en relevante después de un cambio explícito de intención o carril.
+
+Ejemplo:
+
+```text
+GERENTE REVISANDO HORARIOS
+→ horarios, cobertura, conflictos, publicación
+↛ inventario, recetas y proveedores
+```
+
+Que el gerente pueda acceder posteriormente a otro dominio no obliga a mostrar ese dominio dentro de la tarea actual.
+
+#### 14. Irrelevante no significa escondido para siempre
+
+`DISCOVERABLE` es válido cuando:
+
+- la capacidad está autorizada;
+- no compite con el flujo ordinario;
+- existe una razón legítima para conservar descubribilidad;
+- el mecanismo de acceso revalida contexto;
+- abrirla representa un cambio de intención coherente.
+
+La prueba falla si el mecanismo secundario se convierte en un menú universal disfrazado.
+
+#### 15. Obligación bloqueada no es irrelevante
+
+No se permite reducir ruido ocultando una obligación vigente.
+
+Debe permanecer visible como `REQUIRED_BLOCKED` cuando, por ejemplo:
+
+- existe una recepción bajo custodia pendiente;
+- debe resolverse un conteo rechazado;
+- falta completar un documento obligatorio;
+- hay una alerta de seguridad aplicable;
+- existe un cierre de jornada pendiente;
+- el actor conserva una responsabilidad que no puede ejecutar temporalmente.
+
+La prueba falla si una política de minimización hace desaparecer la obligación.
+
+#### 16. Acción relevante temporalmente deshabilitada
+
+Una capacidad `CONTEXTUAL_DISABLED` se conserva visible si:
+
+- pertenece al trabajo actual;
+- el actor sigue siendo el responsable adecuado;
+- una precondición temporal impide ejecutarla;
+- la causa puede explicarse sin revelar información indebida.
+
+Debe existir explicación perceptible y la opción no debe presentarse como si fuera irrelevante.
+
+#### 17. Superficie operativa
+
+En un caso operativo se espera priorizar:
+
+1. tarea actual;
+2. acción siguiente;
+3. recurso;
+4. evidencia necesaria;
+5. estado;
+6. bloqueo o handoff;
+7. obligaciones compatibles.
+
+La prueba busca como falsos positivos ordinarios:
+
+- catálogos maestros;
+- configuración global;
+- matrices de permisos;
+- reportes gerenciales densos;
+- exportaciones no relacionadas;
+- auditoría técnica;
+- acciones de otra etapa;
+- controles administrativos sin relación con el trabajo.
+
+#### 18. Superficie administrativa
+
+Una superficie administrativa no obtiene excepción a la regla de relevancia.
+
+Debe limitarse por:
+
+- territorio;
+- proceso;
+- periodo;
+- población;
+- decisión pendiente;
+- autoridad;
+- sensibilidad;
+- segregación de funciones.
+
+Un actor con permisos amplios no recibe automáticamente un catálogo completo de capacidades.
+
+#### 19. Supervisión
+
+La prueba verifica que supervisar no se convierta visualmente en ejecutar, configurar o corregir todo.
+
+Una superficie de supervisión puede mostrar:
+
+- estado operativo;
+- bloqueos;
+- riesgos;
+- carga;
+- SLA;
+- excepciones que requieren intervención;
+- evidencia necesaria para coordinar.
+
+No debe ofrecer por defecto acciones que fabriquen hechos operativos en nombre de otro actor ni controles globales no relacionados.
+
+#### 20. Configuración, gobierno y auditoría
+
+Estas capacidades no compiten con el flujo ordinario únicamente porque el actor tenga permisos.
+
+La prueba exige intención explícita y superficie apropiada para:
+
+- mantener catálogos;
+- cambiar políticas;
+- editar plantillas;
+- administrar reglas;
+- versionar configuración;
+- inspeccionar auditoría;
+- gobernar roles, permisos o integraciones.
+
+Ver evidencia de auditoría no convierte la observación en capacidad de corregir la fuente.
+
+#### 21. Experiencia personal, cliente y candidato
+
+Cuando una persona actúa sobre su propio caso, la superficie se limita a la información y acciones que le corresponden.
+
+La prueba busca exposición impropia de:
+
+- herramientas internas;
+- notas privadas;
+- scores internos;
+- comparaciones con terceros;
+- datos de otros actores;
+- estructuras técnicas internas;
+- acciones de backoffice.
+
+Una misma identidad técnica con relaciones diferentes no fusiona automáticamente sus menús.
+
+#### 22. Actores con múltiples roles
+
+Regla crítica:
+
+```text
+ROL A + ROL B + DELEGACIÓN + SIMULACIÓN
+≠ MENÚ ÚNICO CON TODO
+```
+
+La prueba verifica que:
+
+- el carril activo sea explícito;
+- la intención actual limite la superficie;
+- cambiar de carril reconstruya la proyección;
+- una simulación sea perceptible;
+- las capacidades de otro carril no permanezcan mezcladas;
+- los filtros administrativos no se conviertan en contexto operativo.
+
+#### 23. Proceso, etapa, recurso y custodia
+
+Ver un recurso no vuelve pertinentes todas sus acciones.
+
+La evidencia deberá cubrir, cuando aplique:
+
+- acciones válidas únicamente en una etapa;
+- acciones futuras que no deben aparecer como CTA actual;
+- recursos asignados a otro actor;
+- custodia vigente;
+- extremo correcto de un handoff;
+- territorio correcto;
+- cambios de estado que vuelven irrelevante un control previamente visible.
+
+#### 24. Cambios de contexto
+
+Se debe demostrar que la proyección se invalida ante un cambio material de:
+
+- actor;
+- rol operativo;
+- sede;
+- área;
+- turno;
+- check-in;
+- dispositivo;
+- permiso;
+- asignación;
+- estado;
+- custodia;
+- delegación;
+- simulación;
+- sensibilidad;
+- vigencia.
+
+Una opción del contexto anterior que permanezca visible después del cambio constituye fallo.
+
+#### 25. Dispositivos compartidos
+
+El dispositivo define límites, no identidad humana.
+
+Para un relevo de actor se prueba que:
+
+- se reconstruya la proyección;
+- desaparezcan opciones personales del actor anterior;
+- favoritos del actor anterior no sobrevivan como autoridad;
+- recientes no revelen datos anteriores;
+- búsquedas no conserven resultados de otro actor;
+- obligaciones del nuevo actor aparezcan según su propio contexto;
+- sin actor no se expongan capacidades humanas como si existiera una sesión válida.
+
+#### 26. Búsqueda
+
+La búsqueda no constituye bypass de relevancia.
+
+Debe:
+
+- filtrar antes de mostrar;
+- revalidar autorización;
+- revalidar contexto;
+- evitar títulos sensibles cuando el actor no debe conocerlos;
+- evitar resultados de otra sede, actor o carril;
+- devolver cero resultados de forma honesta cuando corresponda.
+
+#### 27. Favoritos y recientes
+
+Los favoritos conservan identidad semántica, no autoridad ni relevancia eterna.
+
+Un favorito o reciente debe:
+
+- revalidarse al abrir;
+- desaparecer o degradarse cuando deja de ser pertinente;
+- no conservar datos del actor anterior;
+- no reintroducir capacidades revocadas;
+- no saltar el cambio explícito de carril requerido.
+
+#### 28. Deep links y aliases
+
+Conocer una URL no convierte el destino en pertinente ni visible.
+
+La prueba verifica que:
+
+- se revalide actor;
+- se revalide contexto;
+- se revalide recurso;
+- se revalide estado;
+- no se muestre información sensible antes de resolver visibilidad;
+- aliases legacy no revivan funciones retiradas;
+- un enlace válido pero no pertinente redirija o responda de acuerdo con el contrato aprobado sin ampliar acceso.
+
+#### 29. Navegación cross-app
+
+Una opción cross-app solo aparece cuando la intención humana es relevante.
+
+La prueba falla si una aplicación muestra todos los destinos del ecosistema únicamente porque el actor puede abrirlos desde SHELL.
+
+El enlace permitido:
+
+- declara finalidad humana;
+- identifica la aplicación propietaria cuando sea útil;
+- no transporta autoridad;
+- no transporta un contexto inválido;
+- exige revalidación en destino.
+
+#### 30. Alertas y notificaciones
+
+Una alerta debe corresponder a una necesidad real de:
+
+- actuar;
+- decidir;
+- conocer;
+- seguir;
+- escalar;
+- cumplir.
+
+No basta con que el actor tenga acceso genérico al dominio.
+
+La prueba verifica que alertas dirigidas a otro rol, territorio, caso o etapa no aparezcan como propias.
+
+#### 31. Estados vacíos
+
+La prueba distingue:
+
+```text
+NO HAY DATOS EN EL ALCANCE
+NO HAY TRABAJO PARA ESTE ACTOR
+NO HAY TRABAJO EN ESTE CONTEXTO
+EXISTE TRABAJO PERO NO ES VISIBLE
+FALTA CONTEXTO
+LA INFORMACIÓN NO PUDO CARGARSE
+LA PROYECCIÓN ESTÁ DESACTUALIZADA
+```
+
+Un estado vacío falla si ofrece crear, configurar, importar o administrar cuando esas acciones no son pertinentes para el actor y contexto actuales.
+
+#### 32. Personalización
+
+Las preferencias pueden reorganizar elementos permitidos, pero no cambiar el universo autorizado y relevante.
+
+La prueba falla si personalización permite:
+
+- mostrar una función no autorizada;
+- fijar una opción que ya no es relevante;
+- ocultar una obligación crítica;
+- convertir una excepción en acción primaria;
+- heredar preferencias de otro actor en un dispositivo compartido;
+- revelar un campo que el contrato actual dejó de exponer.
+
+#### 33. Excepciones y opciones avanzadas
+
+Una excepción no es relevante por el solo hecho de que el actor pueda solicitarla.
+
+Cuando exista una salida excepcional válida:
+
+- no compite con la acción ordinaria;
+- se identifica como flujo separado;
+- conserva autoridad y motivo;
+- conserva evidencia y vigencia;
+- retorna al flujo cuando corresponde.
+
+Las opciones avanzadas legítimas deben permanecer fuera del flujo principal sin ocultar datos u obligaciones críticos.
+
+#### 34. Campos, columnas y filtros
+
+La relevancia se aplica dentro de la pantalla.
+
+La prueba verifica que el actor no reciba visualmente campos o columnas que:
+
+- no necesita para actuar o decidir;
+- pertenecen a otro carril;
+- pertenecen a otro territorio;
+- contienen información sensible innecesaria;
+- son configuración interna;
+- solo interesan a auditoría o soporte técnico.
+
+Esta tarea no certifica por sí sola toda la seguridad de datos de `UX-QA-016`; sí certifica que los datos irrelevantes no formen parte de la experiencia ordinaria observada.
+
+#### 35. Badges, totales y agregados
+
+Ocultar una lista no basta si un agregado revela el universo oculto.
+
+La prueba busca filtraciones de relevancia mediante:
+
+- contadores;
+- badges;
+- gráficos;
+- previews;
+- tooltips;
+- autocompletados;
+- nombres de archivo;
+- texto de notificación;
+- estados vacíos.
+
+Los agregados observados deben tener alcance igual o más restrictivo que el detalle autorizado para ese actor.
+
+#### 36. Accesibilidad de la relevancia
+
+La reducción de opciones debe conservar accesibilidad.
+
+La prueba exige que:
+
+- `HIDDEN` no permanezca en tab order;
+- `HIDDEN` no permanezca en árbol accesible ordinario;
+- `CONTEXTUAL_DISABLED` tenga explicación perceptible;
+- `REQUIRED_BLOCKED` permanezca navegable cuando sea una obligación;
+- la acción primaria mantenga orden lógico de foco;
+- no se dependa solo de color u opacidad;
+- la eliminación visual no destruya la única ruta usable por teclado o lector de pantalla.
+
+#### 37. Caché, offline y frescura
+
+Una proyección obsoleta no puede ampliar opciones.
+
+Se evalúan, cuando apliquen:
+
+```text
+FRESH
+STALE_READ_ONLY
+OFFLINE_ALLOWED
+REFRESH_REQUIRED
+REVOKED
+```
+
+La prueba falla si:
+
+- reaparece una capacidad por caché antigua;
+- una revocación se ignora al reconectar;
+- un actor nuevo recibe el menú cacheado del anterior;
+- una tarea iniciada conserva más información que la necesaria;
+- una acción local se sincroniza sin revalidación.
+
+#### 38. Clases mínimas de escenario
+
+Cada package seleccionará las clases aplicables y justificará las no aplicables:
+
+| Clase | Escenario |
+| --- | --- |
+| `R1_OPERATIONAL` | trabajador en ejecución ordinaria |
+| `R2_SUPERVISORY` | supervisor observando o resolviendo excepciones autorizadas |
+| `R3_ADMINISTRATIVE` | actor realizando decisión o mantenimiento administrativo |
+| `R4_PERSONAL` | persona actuando sobre su propio caso |
+| `R5_MULTI_ROLE` | actor con más de un rol o carril disponible |
+| `R6_CONTEXT_CHANGE` | cambio de sede, área, turno, etapa, custodia o asignación |
+| `R7_SHARED_DEVICE` | cambio de actor en tablet, kiosco o estación compartida |
+| `R8_DIRECT_ENTRY` | búsqueda, favorito, reciente, deep link o alias |
+| `R9_REQUIRED_BLOCKED` | obligación vigente temporalmente bloqueada |
+| `R10_STALE_OR_OFFLINE` | proyección obsoleta, offline o revocada |
+| `R11_CROSS_APP` | destino o alerta entre aplicaciones |
+| `R12_EMPTY_STATE` | ausencia de trabajo, falta de contexto o falta de visibilidad |
+
+No todos los packages deben materializar las doce clases. Sí deben declarar su matriz de aplicabilidad.
+
+#### 39. Casos positivos
+
+Un caso positivo demuestra, según corresponda:
+
+- acción principal visible;
+- opciones secundarias pertinentes con menor jerarquía;
+- obligación bloqueada visible y explicada;
+- función autorizada pero no ordinaria relegada a `DISCOVERABLE`;
+- superficie reconstruida correctamente tras cambiar de rol o contexto;
+- alerta pertinente dirigida al actor correcto;
+- enlace cross-app pertinente;
+- estado vacío que no inventa administración ni configuración;
+- personalización limitada al conjunto permitido.
+
+#### 40. Casos negativos
+
+Debe existir evidencia negativa para las fronteras de mayor riesgo aplicables.
+
+Ejemplos:
+
+- opción de otro rol ausente;
+- opción de otra etapa ausente;
+- configuración ausente durante operación;
+- función de otro territorio ausente;
+- capacidad del actor anterior ausente en dispositivo compartido;
+- resultado sensible ausente de búsqueda;
+- favorito obsoleto sin autoridad residual;
+- deep link sin revelación previa;
+- campo irrelevante ausente;
+- badge sin filtración de elementos ocultos;
+- obligación bloqueada no convertida en `HIDDEN`.
+
+#### 41. Oracle documental por elemento
+
+Cada elemento materialmente evaluado tendrá:
+
+```text
+semantic_id
+surface_id
+actor_fixture
+role_context
+intent
+process_stage
+resource_scope
+expected_presentation_state
+expected_visibility
+expected_actionability
+expected_reason
+observed_result
+verdict
+```
+
+La forma anterior es de evidencia documental. No obliga a crear un contrato runtime con estos campos.
+
+#### 42. Identidad de caso físico futuro
+
+Las ejecuciones usarán:
+
+```text
+UX-QA-005::<package_id>
+```
+
+para certificación por package, y:
+
+```text
+UX-QA-005::GLOBAL-FINAL
+```
+
+para el cierre transversal.
+
+No existe una única instancia global que sustituya las ejecuciones por package.
+
+#### 43. Evidencia por package
+
+Cada package aplicable deberá conservar como mínimo:
+
+- `package_id`;
+- aplicaciones y superficies evaluadas;
+- versión desplegada;
+- ambiente;
+- actor o fixture de actor;
+- rol y carril efectivos;
+- contexto relevante;
+- matriz de clases aplicables;
+- elementos positivos esperados;
+- elementos negativos esperados;
+- obligaciones bloqueadas esperadas;
+- método de observación;
+- evidencia de accesibilidad cuando aplique;
+- resultados observados;
+- defectos abiertos;
+- responsable de corrección;
+- estado final.
+
+#### 44. Evidencia automatizada
+
+Cuando la superficie permita inspección automatizada, la evidencia puede incluir:
+
+- navegación renderizada;
+- elementos accesibles;
+- ausencia de semantic IDs no permitidos;
+- estados de presentación;
+- deshabilitación de controles relevantes;
+- cambios tras modificar contexto;
+- respuestas a deep links;
+- resultados de búsqueda;
+- limpieza tras cambio de actor;
+- invariantes de caché.
+
+La automatización no sustituye la validación humana cuando la pregunta sea de carga cognitiva, pertinencia semántica o comprensión del carril.
+
+#### 45. Evidencia con actores reales
+
+Cuando el package llegue al gate físico correspondiente, los escenarios humanos aplicables observarán si la persona:
+
+- identifica rápidamente la acción relevante;
+- no explora opciones ajenas para completar la tarea;
+- no interpreta funciones administrativas como parte del flujo ordinario;
+- reconoce obligaciones bloqueadas como propias;
+- cambia de carril de manera explícita cuando necesita otra intención;
+- no depende de memorizar rutas ocultas para completar trabajo legítimo.
+
+El facilitador no debe indicar dónde está la opción correcta salvo que el caso haya sido clasificado como asistencia y quede separado de la medición autónoma.
+
+#### 46. Métricas obligatorias de integridad
+
+Se registran, cuando sean observables:
+
+```text
+irrelevant_visible_count
+forbidden_visible_count
+required_hidden_count
+stale_context_visible_count
+previous_actor_residue_count
+inaccessible_hidden_residue_count
+wrong_lane_primary_count
+wrong_stage_action_count
+```
+
+Para una ejecución PASS:
+
+```text
+irrelevant_visible_count = 0 para los elementos declarados irrelevantes por el oracle
+forbidden_visible_count = 0
+required_hidden_count = 0
+stale_context_visible_count = 0
+previous_actor_residue_count = 0
+inaccessible_hidden_residue_count = 0
+wrong_lane_primary_count = 0
+wrong_stage_action_count = 0
+```
+
+No se congela un máximo universal de opciones visibles. La cantidad correcta depende del package, tarea, carril y contexto.
+
+#### 47. Métricas de experiencia no usadas como gate aislado
+
+Pueden registrarse:
+
+- tiempo hasta la primera acción válida;
+- aperturas de menús secundarios;
+- búsquedas para encontrar trabajo;
+- cambios de carril;
+- intentos sobre funciones no pertinentes;
+- ayuda requerida;
+- retrocesos;
+- errores de selección.
+
+Estas métricas requieren interpretación con complejidad, volumen, entrenamiento previo y contexto. No se usarán de forma aislada para evaluar a una persona.
+
+#### 48. Severidad de hallazgos
+
+| Hallazgo | Severidad mínima |
+| --- | --- |
+| opción no autorizada presentada como ejecutable | crítica |
+| obligación vigente oculta | crítica |
+| residuo del actor anterior en dispositivo compartido | crítica |
+| control de otro contexto que conserva acción | crítica |
+| dato sensible irrelevante expuesto | crítica |
+| función irrelevante visible como CTA ordinario | alta |
+| configuración compitiendo con operación | alta |
+| alerta dirigida al rol equivocado | alta |
+| elemento `HIDDEN` todavía en tab order o árbol accesible | alta |
+| opción secundaria relevante con jerarquía imperfecta pero sin ambigüedad material | media |
+
+Una severidad menor no convierte automáticamente el package en PASS; el gate debe aplicar sus criterios de cierre.
+
+#### 49. Criterio por package
+
+`UX-QA-005::<package_id>` obtiene PASS únicamente cuando:
+
+- la matriz de aplicabilidad está completa;
+- existe oracle trazable;
+- los casos críticos y altos aplicables fueron ejecutados;
+- no quedan exposiciones irrelevantes críticas o altas sin resolver;
+- no existen obligaciones necesarias ocultas;
+- los cambios de contexto aplicables reconstruyen correctamente la superficie;
+- los mecanismos alternativos no reintroducen opciones inválidas;
+- la evidencia no está stale respecto de la versión certificada.
+
+#### 50. Criterio `GLOBAL-FINAL`
+
+`UX-QA-005::GLOBAL-FINAL` obtiene PASS cuando:
+
+- todos los packages aplicables tienen resultado final aceptable;
+- no existe package omitido sin justificación;
+- los contratos de presentación usados son compatibles;
+- las clases críticas tienen cobertura transversal suficiente;
+- no existe divergencia no explicada entre aplicaciones para la misma semántica;
+- los defectos bloqueantes están cerrados;
+- la evidencia corresponde a las versiones que se pretenden certificar.
+
+El cierre global no sustituye un package faltante con una demostración genérica.
+
+#### 51. Cambio de versión y stale evidence
+
+La evidencia deja de ser suficiente cuando cambia materialmente:
+
+- navegación;
+- permisos;
+- roles;
+- relevancia;
+- contexto;
+- presentación de estados;
+- composición de superficie;
+- masking;
+- búsqueda;
+- favoritos;
+- deep links;
+- dispositivo compartido;
+- aplicación propietaria;
+- contrato de proceso.
+
+Un cambio sin impacto demostrado puede conservar evidencia únicamente si el responsable registra por qué no altera el oracle ni el resultado observado.
+
+#### 52. Seguridad y privacidad
+
+Esta tarea no reemplaza pruebas específicas de autorización o privacidad.
+
+Sin embargo, un PASS exige que la experiencia observada no contradiga esos contratos.
+
+No se acepta como justificación:
+
+```text
+EL SERVIDOR LO BLOQUEA, ASÍ QUE PODEMOS MOSTRARLO
+```
+
+cuando la mera visibilidad contradice relevancia, minimización o no divulgación aprobadas.
+
+#### 53. No inferencia desde implementación parcial
+
+La existencia de componentes, estados de navegación, guards o políticas en código no certifica `UX-QA-005`.
+
+Del mismo modo, una captura visual limpia no demuestra por sí sola:
+
+- revalidación al cambiar contexto;
+- ausencia en búsqueda;
+- ausencia en árbol accesible;
+- ausencia después de cambiar actor;
+- comportamiento de deep links;
+- cobertura de otros roles;
+- coherencia entre packages.
+
+La certificación exige evidencia de los escenarios aplicables.
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea certifica cobertura ya registrada. No modifica el Registro Canónico de Requisitos de Prueba.
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+La trazabilidad principal reutiliza, sin modificarlos:
+
+- `TREQ-UX-003`;
+- `TREQ-UX-008`;
+- `TREQ-UX-013`;
+- `TREQ-UX-016`;
+- `TREQ-UX-017`;
+- `TREQ-UX-029`;
+- `TREQ-UX-037`;
+- `TREQ-UX-047`;
+- `TREQ-UX-049`;
+- `TREQ-UX-055`;
+- `TREQ-UX-059` a `TREQ-UX-076`;
+- `TREQ-UX-094`;
+- `TREQ-UX-097`;
+- `TREQ-UX-099`;
+- `TREQ-UX-102`;
+- `TREQ-UX-105`;
+- `TREQ-UX-143`;
+- `TREQ-UX-186`;
+- `TREQ-UX-229`;
+- `TREQ-UX-234`.
+
+La enumeración es trazabilidad de cobertura existente y no constituye alta ni modificación de requisitos.
+
+#### 56. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La aprobación documental no ejecuta build de producto ni certificación física. |
+| LOCAL | NOT_EXECUTED | El artefacto se prepara para incorporación mediante el lifecycle documental; los validadores del checkout permanecen pendientes hasta ejecutar la batería. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, manifest modular, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, marcadores `UX-QA-005` y `UX-QA-006`, `UX-CONTEXTUAL-RELEVANCE-CONTRACT-001`, cobertura UX 04A vigente y el handoff completo aprobado de `UX-QA-004` usado como base adelantada. |
+| OPERATIVA | NOT_EXECUTED | No se realizaron sesiones de observación con actores ni ejecución sobre superficies desplegadas. |
+| FÍSICA | NOT_EXECUTED | No se materializaron ni ejecutaron instancias `UX-QA-005::<package_id>` ni `UX-QA-005::GLOBAL-FINAL`. |
+
+#### 57. Criterios de aceptación
+
+`UX-QA-005` queda documentalmente definida cuando se confirma que:
+
+- [ ] la continuidad es `UX-QA-004 → UX-QA-005 → UX-QA-006`;
+- [ ] autorización y relevancia permanecen separadas;
+- [ ] el rol no se usa como única fuente de la proyección;
+- [ ] la unidad de evaluación cubre elementos internos, no solo rutas completas;
+- [ ] los seis estados de presentación tienen oracle explícito;
+- [ ] `HIDDEN` no se usa para ocultar obligaciones vigentes;
+- [ ] `REQUIRED_BLOCKED` y `CONTEXTUAL_DISABLED` permanecen distinguibles;
+- [ ] las superficies operativas no exhiben capacidades administrativas irrelevantes;
+- [ ] superficies administrativas siguen limitadas por intención y alcance;
+- [ ] supervisión no se convierte en ejecución universal;
+- [ ] múltiples roles no producen una unión indiscriminada de capacidades;
+- [ ] cambios de actor o contexto reconstruyen la superficie;
+- [ ] dispositivos compartidos no conservan opciones del actor anterior;
+- [ ] búsqueda, favoritos, recientes y deep links revalidan relevancia;
+- [ ] navegación cross-app muestra solo intenciones pertinentes;
+- [ ] alertas llegan únicamente a quien debe conocer, decidir o actuar;
+- [ ] estados vacíos no ofrecen acciones irrelevantes;
+- [ ] personalización no amplía el conjunto permitido ni oculta obligaciones;
+- [ ] campos, badges y agregados no reintroducen información irrelevante;
+- [ ] elementos ocultos no permanecen en tab order o árbol accesible;
+- [ ] caché y offline no amplían capacidades;
+- [ ] existe matriz de escenarios aplicables por package;
+- [ ] el resultado por package y `GLOBAL-FINAL` queda definido;
+- [ ] las métricas críticas tienen umbral cero;
+- [ ] no se fija un máximo universal arbitrario de opciones visibles;
+- [ ] la sección `Requisitos de prueba derivados` declara cero cambios y no contiene IDs TREQ;
+- [ ] la cobertura heredada está separada de la sección de cero cambios;
+- [ ] no se ejecutó implementación física durante esta aprobación documental;
+- [ ] `UX-QA-006` conserva íntegra la certificación táctil en tablet;
+- [ ] `UX-QA-007` conserva íntegra la certificación estructural de no contaminación administrativa.
+
+#### 58. Fallos que bloquean la certificación física
+
+Bloquean el PASS cuando sean aplicables:
+
+- una opción irrelevante aparece como `PRIMARY` o CTA ordinario;
+- una opción no autorizada se presenta como ejecutable;
+- una obligación requerida desaparece por simplificación;
+- un cambio de contexto deja controles accionables del contexto anterior;
+- un dispositivo compartido conserva navegación o datos del actor anterior;
+- búsqueda, favorito, reciente o deep link reintroduce una capacidad inválida;
+- un badge o agregado revela elementos que el actor no debe conocer;
+- un elemento `HIDDEN` permanece accesible por teclado o lector;
+- una caché antigua amplía capacidades;
+- la matriz de roles o escenarios aplicables está incompleta;
+- la evidencia pertenece a una versión materialmente distinta;
+- el package no puede explicar por qué un elemento observado es relevante;
+- el facilitador debe navegar por opciones irrelevantes para completar el caso;
+- la evidencia contradice autorización, privacidad o contratos de proceso.
+
+#### 59. Handoff a `UX-QA-006`
+
+`UX-QA-005` entrega a `UX-QA-006`:
+
+- foco principal depurado;
+- opciones secundarias pertinentes;
+- obligaciones bloqueadas preservadas;
+- opciones irrelevantes fuera del flujo ordinario;
+- contexto y actor correctos;
+- navegación y controles reconstruidos para el contexto vigente;
+- elementos ocultos fuera del foco y árbol accesible ordinario;
+- superficie lista para evaluar interacción táctil sin ruido funcional ajeno.
+
+`UX-QA-006` podrá evaluar tamaño, separación, interacción, orientación y condiciones físicas de tablet sin reabrir qué capacidades deben estar presentes para el rol.
+
+#### 60. Límites
+
+Esta tarea no:
+
+- crea roles;
+- crea permisos;
+- modifica autorización;
+- redefine RLS;
+- crea una policy runtime de relevancia;
+- crea componentes;
+- modifica navegación;
+- modifica rutas;
+- modifica copy;
+- cambia layouts;
+- cambia campos;
+- cambia masking;
+- modifica payloads;
+- cambia búsqueda;
+- modifica favoritos;
+- cambia deep links;
+- cambia caché;
+- modifica comportamiento offline;
+- modifica datos;
+- modifica Supabase;
+- ejecuta pruebas con usuarios;
+- ejecuta pruebas E2E;
+- certifica targets táctiles;
+- certifica `UX-QA-006`;
+- certifica la separación administrativa completa de `UX-QA-007`;
+- certifica en profundidad la ocultación de información sensible de `UX-QA-016`;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-004 — Los errores indican cómo continuar`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-005 — Un rol no ve opciones irrelevantes`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-006 — Las pantallas táctiles funcionan en tablet`
 ### [ ] UX-QA-006 — Las pantallas táctiles funcionan en tablet
 ### [ ] UX-QA-007 — Las vistas administrativas no contaminan la operación
 ### [ ] UX-QA-008 — El proceso continúa correctamente entre aplicaciones
