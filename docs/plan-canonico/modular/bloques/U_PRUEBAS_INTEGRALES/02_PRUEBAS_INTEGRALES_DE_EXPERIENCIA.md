@@ -6904,7 +6904,1055 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-008 — El proceso continúa correctamente entre aplicaciones`
-### [ ] UX-QA-008 — El proceso continúa correctamente entre aplicaciones
+### ✅ UX-QA-008 — El proceso continúa correctamente entre aplicaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-007 — Las vistas administrativas no contaminan la operación
+**Tarea siguiente:** UX-QA-009 — No se registra dos veces la misma información
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que un proceso que cruza aplicaciones conserva intención, tarea, recurso, versión, punto de continuidad y retorno sin reiniciarse, sin transportar autoridad implícita, sin desplazar la propiedad de la mutación y sin presentar éxito antes de la confirmación de la aplicación propietaria
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de continuidad cross-app definido; las ejecuciones `UX-QA-008::<package_id>` y la certificación `UX-QA-008::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff estructural de `UX-QA-007`, las reglas cross-app de `UX-BASE-008`, los contratos de pantalla y aplicación, los contratos `INT-APP-*` y la cobertura de prueba vigente, pero no infiere que ningún package, deep link, evento, ruta o integración desplegada haya demostrado continuidad real
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican rutas, deep links, componentes, clientes, eventos, colas, APIs, RPC, Server Actions, permisos, sesiones, contratos runtime, datos, Supabase, repositorios consumidores, despliegues ni aplicaciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que una persona puede continuar un mismo proceso cuando el siguiente trabajo pertenece a otra aplicación sin tener que reconstruir manualmente el caso y sin convertir el handoff en una transferencia de autoridad.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿EL CAMBIO DE APLICACIÓN CONSERVA EL MISMO PROCESO Y CASO?
+¿LA PERSONA LLEGA AL RECURSO, ETAPA Y ACCIÓN CORRECTOS?
+¿LA APLICACIÓN DESTINO REVALIDA AUTORIDAD Y ESTADO?
+¿LA ESCRITURA SIGUE PERTENECIENDO A SU PROPIETARIO?
+¿EL RETORNO O SIGUIENTE PASO SE RESUELVE SIN REINICIAR EL FLUJO?
+```
+
+La certificación no busca que todas las aplicaciones se comporten como una sola. Busca que sus fronteras sean explícitas y que cruzarlas no rompa el proceso.
+
+#### 2. Resultado canónico
+
+`UX-QA-008` establece `UX-QA-CROSS-APP-CONTINUITY-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de continuidad entre aplicaciones;
+- contrato observable de entrada al handoff;
+- referencias que deben conservarse;
+- referencias que nunca se interpretan como autoridad;
+- reglas de revalidación en destino;
+- propiedad de lectura, proyección y mutación;
+- reglas de retorno y siguiente paso;
+- tratamiento de cancelación, denegación, conflicto y versión obsoleta;
+- tratamiento de cambio de actor o contexto;
+- tratamiento de superficies transversales de SHELL;
+- continuidad en modos guiados y expertos cuando cruzan aplicaciones;
+- continuidad de borradores compatibles sin inventar persistencia compartida;
+- evidencia positiva y negativa;
+- criterio por package;
+- criterio `GLOBAL-FINAL`;
+- condiciones que invalidan evidencia previa.
+
+#### 3. Alcance exacto
+
+La certificación cubre, cuando apliquen:
+
+- SHELL hacia una aplicación propietaria;
+- una aplicación propietaria hacia otra aplicación propietaria;
+- retorno desde una aplicación destino hacia la aplicación origen;
+- continuación desde una bandeja transversal;
+- deep links semánticos;
+- navegación entre pantallas con distinta `primary_application_id`;
+- handoffs operativos;
+- handoffs administrativos;
+- transición de modo guiado a experto cuando exista cambio de aplicación;
+- transición de modo experto a guiado cuando exista cambio de aplicación;
+- proyecciones cross-app que conducen a una mutación propietaria;
+- pasos de proceso que dependen de hechos producidos por otra aplicación;
+- acciones pendientes que deben retomarse después del cambio de aplicación;
+- dispositivos personales y compartidos cuando el package los soporte;
+- estado confirmado, bloqueado, denegado, conflictivo o pendiente durante el handoff.
+
+No exige que cada proceso cruce aplicaciones. Solo certifica los handoffs realmente declarados por el package.
+
+#### 4. Handoff recibido de `UX-QA-007`
+
+`UX-QA-008` recibe una experiencia en la que:
+
+- el carril activo es explícito;
+- la operación ordinaria está separada del backoffice;
+- una superficie administrativa legítima está identificada como tal;
+- cambiar entre operación y administración no ocurre por accidente;
+- el contexto operativo debe reconstruirse antes de una acción física;
+- una vista comparativa no se convierte en área operativa por inferencia;
+- una aplicación no puede ampliar autoridad solo porque la anterior podía mostrar una capacidad.
+
+La tarea actual no reabre la separación operativo-administrativa.
+
+#### 5. Frontera con `UX-QA-007`
+
+Regla:
+
+```text
+CARRIL CORRECTO
+≠
+CONTINUIDAD CROSS-APP DEMOSTRADA
+```
+
+Una pantalla puede estar perfectamente clasificada y aun fallar `UX-QA-008` si el usuario pierde el recurso, vuelve al inicio de la aplicación o debe reconstruir el caso al cruzar la frontera.
+
+#### 6. Frontera con `UX-QA-009`
+
+`UX-QA-009` certificará que la misma información no se registre dos veces.
+
+`UX-QA-008` puede detectar como síntoma de un handoff roto que la persona tenga que volver a seleccionar o reconstruir datos ya conocidos, pero no certifica la política general de captura única, deduplicación funcional ni ausencia de doble registro.
+
+Regla:
+
+```text
+CONTINUAR EL MISMO CASO
+≠
+CERTIFICAR TODA LA POLÍTICA DE NO DUPLICACIÓN
+```
+
+#### 7. Frontera con `UX-QA-010`
+
+`UX-QA-010` certificará la trazabilidad de los cambios.
+
+`UX-QA-008` exige evidencia suficiente para demostrar origen, destino y continuidad, pero no reemplaza la auditoría histórica completa ni certifica por sí sola todos los eventos de trazabilidad.
+
+#### 8. Frontera con `UX-QA-011`
+
+`UX-QA-011` certificará tareas críticas bajo conectividad inestable.
+
+`UX-QA-008` únicamente exige que un handoff que no pueda resolverse no finja éxito ni pierda el punto de continuidad. La resiliencia completa frente a red inestable permanece fuera de alcance.
+
+#### 9. Regla principal
+
+```text
+CAMBIAR DE APLICACIÓN
+≠
+REINICIAR EL PROCESO
+```
+
+El flujo esperado es:
+
+```text
+TAREA EN APLICACIÓN A
+→ HANDOFF SEMÁNTICO
+→ APLICACIÓN PROPIETARIA B
+→ REVALIDACIÓN
+→ CONTINUACIÓN EN EL PUNTO CORRECTO
+→ RESULTADO CONFIRMADO
+→ RETORNO O SIGUIENTE PASO
+```
+
+#### 10. Regla de autoridad
+
+```text
+CONTEXTO TRANSPORTADO
+≠
+AUTORIDAD TRANSPORTADA
+```
+
+La aplicación origen puede transportar referencias suficientes para localizar el trabajo. La aplicación destino debe resolver nuevamente la autoridad efectiva.
+
+Nunca se considera prueba de autorización:
+
+- la URL de origen;
+- la existencia de un botón en la aplicación A;
+- un rol mostrado por el cliente;
+- un filtro activo;
+- una selección previa;
+- un estado objetivo enviado por query string;
+- un token funcional inventado por la UI;
+- que SHELL haya mostrado la aplicación;
+- que una aplicación anterior haya permitido leer el recurso.
+
+#### 11. Contrato mínimo de handoff de pantalla
+
+La certificación reconoce el contrato aprobado de composición entre aplicaciones:
+
+```text
+source_screen_id
+source_application_id
+destination_screen_id
+destination_application_id
+business_object_ref
+return_contract
+```
+
+Estos campos permiten localizar la transición, pero no sustituyen la revalidación de identidad, permiso, contexto, recurso, territorio, versión y estado.
+
+#### 12. Referencias funcionales que deben conservarse
+
+Cuando existan en el proceso, el handoff deberá conservar de forma segura y verificable referencias a:
+
+- proceso;
+- tarea o unidad de trabajo;
+- recurso empresarial;
+- versión relevante;
+- punto de continuidad;
+- origen del retorno;
+- acción pendiente;
+- pantalla origen;
+- aplicación origen;
+- pantalla destino;
+- aplicación destino;
+- referencia del objeto empresarial;
+- correlación existente cuando el proceso ya la define.
+
+Actor y contexto pueden viajar como referencias para orientación, pero nunca como autoridad final.
+
+#### 13. Datos que no se transportan como autoridad
+
+Queda prohibido que el handoff convierta en autoridad:
+
+- permisos;
+- roles efectivos no revalidados;
+- claims persistidos por el cliente;
+- tokens funcionales improvisados;
+- estado objetivo impuesto por la UI;
+- decisión de autorización;
+- resultado empresarial todavía no confirmado;
+- versión asumida sin relectura;
+- área operativa inferida desde una vista administrativa;
+- actor de una sesión anterior;
+- aprobación previa aplicada a otro recurso;
+- excepción o step-up vencido.
+
+#### 14. Revalidación obligatoria en destino
+
+La aplicación destino debe poder demostrar, antes de una acción material:
+
+```text
+IDENTIDAD
++
+ACTOR EFECTIVO
++
+PERMISO
++
+CONTEXTO
++
+RECURSO
++
+TERRITORIO
++
+VERSIÓN
++
+ESTADO
+```
+
+Si cualquiera cambia respecto de la referencia recibida, el destino usa la realidad vigente y no el supuesto del origen.
+
+#### 15. Propiedad de la pantalla
+
+Cada pantalla conserva una `primary_application_id` canónica.
+
+Un handoff:
+
+- no mueve la pantalla al SHELL;
+- no convierte a la aplicación origen en propietaria del destino;
+- no permite que el destino adopte maestros de la aplicación origen;
+- no duplica una pantalla por compartir componentes;
+- no cambia identidad de pantalla por una ruta temporal;
+- no convierte una proyección en fuente de verdad.
+
+#### 16. Propiedad de la mutación
+
+Regla:
+
+```text
+ORQUESTAR
+≠
+ESCRIBIR EN DOMINIO AJENO
+```
+
+La aplicación que presenta el flujo puede coordinar el siguiente paso, pero toda mutación empresarial debe seguir el contrato de su propietaria.
+
+La prueba falla si una aplicación:
+
+- escribe directamente una tabla ajena sin contrato aprobado;
+- mantiene un maestro paralelo para evitar el handoff;
+- aplica una transición empresarial cuya propiedad corresponde a otra aplicación;
+- presenta como confirmado un efecto que la propietaria no confirmó;
+- oculta cuál sistema es fuente del resultado.
+
+#### 17. Proyecciones cross-app
+
+Una proyección de otra aplicación solo es válida cuando:
+
+- es contractual;
+- es mínima para la finalidad;
+- identifica su fuente;
+- no crea un maestro paralelo;
+- no adquiere derechos de escritura por estar visible;
+- hace perceptibles retrasos o estados no confirmados cuando son materiales;
+- deriva a la propietaria para mutaciones.
+
+#### 18. SHELL como superficie transversal
+
+SHELL puede:
+
+- mostrar aplicaciones disponibles;
+- resolver entrada y contexto;
+- presentar tareas y notificaciones transversales;
+- conducir a la aplicación propietaria;
+- ofrecer soporte y diagnóstico transversal autorizado.
+
+SHELL no debe:
+
+- ejecutar en su bandeja la mutación empresarial propietaria;
+- duplicar formularios de NEXO, FOGO, ORIGO, PULSO, NUMERA, VISO, PASS o ANIMA;
+- convertir una notificación en autoridad;
+- inventar estado del proceso;
+- confirmar resultados que todavía pertenecen a otra aplicación.
+
+#### 19. Entrada correcta al destino
+
+El destino debe abrir, cuando el contrato lo permita:
+
+```text
+LA TAREA
++
+EL RECURSO
++
+LA ETAPA
++
+EL PUNTO DE CONTINUIDAD
+```
+
+No basta con abrir:
+
+- la portada de la aplicación;
+- un menú general;
+- una tabla sin el recurso seleccionado;
+- la última pantalla visitada;
+- una ruta genérica que obliga a reconstruir el caso.
+
+#### 20. Deep links semánticos
+
+Un deep link válido:
+
+- identifica una intención estable;
+- resuelve el destino canónico;
+- conserva referencia empresarial suficiente;
+- no codifica permisos como autoridad;
+- no salta revalidación;
+- no depende de una ruta legacy retirada sin compatibilidad;
+- no abre un recurso distinto ante colisión de identificadores;
+- no deja al usuario atrapado si el destino ya no es válido.
+
+#### 21. Retorno
+
+Todo handoff que declare retorno debe especificar un comportamiento comprensible después de:
+
+- éxito;
+- cancelación;
+- denegación;
+- conflicto;
+- versión obsoleta;
+- recurso inexistente;
+- sesión vencida;
+- resultado todavía pendiente.
+
+El retorno no debe depender únicamente del botón del navegador.
+
+#### 22. Retorno tras éxito
+
+Después de un resultado confirmado, la experiencia puede:
+
+- volver a la tarea origen;
+- avanzar al siguiente paso del proceso;
+- permanecer en la aplicación destino cuando el siguiente trabajo también le pertenece;
+- regresar a una bandeja transversal con estado actualizado.
+
+La elección debe estar determinada por el contrato del proceso, no por conveniencia de routing.
+
+#### 23. Cancelación
+
+Cancelar una acción en destino:
+
+- no equivale a completar el proceso;
+- no produce un receipt de éxito;
+- no cambia el estado empresarial salvo contrato explícito de cancelación;
+- conserva el origen de retorno cuando sigue vigente;
+- permite retomar el trabajo sin inventar un resultado.
+
+#### 24. Denegación
+
+Si la aplicación destino determina que la persona ya no puede continuar:
+
+- no ejecuta la acción;
+- no confía en la autorización de origen;
+- muestra causa segura y siguiente paso conforme a los contratos de error;
+- conserva referencia suficiente para soporte o retorno;
+- no transforma la denegación en error técnico genérico.
+
+#### 25. Versión obsoleta
+
+Si el recurso cambió entre origen y destino:
+
+```text
+REFERENCIA RECIBIDA
+≠
+VERSIÓN VIGENTE
+```
+
+La aplicación destino debe:
+
+- detectar la diferencia cuando sea material;
+- impedir una acción sobre estado obsoleto;
+- mostrar la versión vigente o mecanismo de conciliación permitido;
+- preservar el trabajo seguro cuando corresponda;
+- no forzar silenciosamente el estado enviado por el origen.
+
+#### 26. Recurso inexistente o retirado
+
+Si el recurso ya no existe, fue fusionado, sustituido, cancelado o retirado:
+
+- el destino no abre un recurso parecido por heurística;
+- no usa el primer resultado de búsqueda;
+- explica que la referencia dejó de ser válida;
+- aplica una ruta de recuperación gobernada cuando exista;
+- conserva la identidad original para diagnóstico.
+
+#### 27. Cambio de actor
+
+Un handoff no puede sobrevivir silenciosamente a un cambio de actor cuando la acción depende de identidad humana.
+
+Al cambiar actor:
+
+- se revalida la sesión;
+- se limpia autoridad heredada;
+- se protege información personal;
+- se reevalúa el permiso;
+- se decide si la tarea puede ser retomada por el nuevo actor;
+- no se reasigna un borrador personal por defecto.
+
+#### 28. Dispositivo compartido
+
+En tablet, kiosco o POS compartido:
+
+- la aplicación técnica puede permanecer disponible;
+- la identidad humana no permanece por comodidad;
+- el handoff conserva solo referencias compatibles con el relevo;
+- la siguiente mutación exige actor válido cuando corresponda;
+- datos personales del actor anterior no reaparecen;
+- el dispositivo no se convierte en aprobador.
+
+#### 29. Cambio de área o territorio
+
+Cuando el handoff conduce a trabajo en otro ámbito autorizado:
+
+- la aplicación destino calcula el territorio efectivo;
+- el filtro de origen no se convierte en territorio;
+- una vista administrativa multiárea no fija el área física;
+- la mutación conserva un territorio exacto;
+- los conflictos con turno, sede, área o dispositivo bloquean la acción material.
+
+#### 30. Estado del proceso
+
+La continuidad requiere distinguir:
+
+```text
+ESTADO DEL PROCESO
+ESTADO DE LA PANTALLA
+ESTADO DEL HANDOFF
+ESTADO DEL RESULTADO
+```
+
+Abrir el destino no significa que el proceso avanzó.
+
+Un spinner, navegación completada o carga de pantalla tampoco constituye confirmación empresarial.
+
+#### 31. Resultado confirmado
+
+La experiencia solo puede avanzar como si la acción hubiera ocurrido cuando existe confirmación autoritativa del resultado aplicable.
+
+Regla:
+
+```text
+NAVEGACIÓN COMPLETADA
+≠
+EFECTO EMPRESARIAL CONFIRMADO
+```
+
+#### 32. Resultado pendiente
+
+Cuando el destino inició trabajo pero el resultado todavía no está confirmado:
+
+- se muestra estado pendiente;
+- se conserva el recurso y la acción;
+- no se habilita una segunda ejecución equivalente por simple navegación;
+- el retorno explica que el proceso todavía espera confirmación;
+- no se inventa un estado final.
+
+La certificación detallada de idempotencia y doble registro permanece en sus tareas propietarias.
+
+#### 33. Conflicto
+
+Ante conflicto de versión, concurrencia, custodia o estado:
+
+- la continuidad se detiene en un punto seguro;
+- se preserva la información necesaria para reconciliar;
+- no se sobrescribe silenciosamente;
+- no se salta a otro recurso;
+- el retorno o recuperación permanece determinado.
+
+#### 34. Handoffs de modo guiado
+
+Cuando un flujo guiado cruza aplicaciones:
+
+- conserva el mismo caso o correlación existente;
+- conserva objeto y versión;
+- conserva el paso de origen y el punto de retorno;
+- cada escritura se ejecuta en su propietaria;
+- la aplicación destino revalida autoridad;
+- volver al asistente no reinicia los pasos ya confirmados.
+
+#### 35. Handoffs de modo experto
+
+Cuando una superficie experta deriva a otra aplicación:
+
+- conserva población, selección y objeto aplicables sin reinterpretarlos como permiso;
+- conserva la referencia al filtro o consulta cuando sea reproducible;
+- distingue filas visibles de universo autorizado;
+- envía la mutación a la propietaria;
+- recibe resultado por objeto cuando el contrato lo exija;
+- no transforma la tabla transversal en fuente maestra.
+
+#### 36. Cambio entre modo guiado y experto
+
+Cuando el cambio además cruza aplicaciones, la continuidad debe conservar, según aplique:
+
+- objeto;
+- versión;
+- alcance;
+- borrador compatible;
+- validaciones ya satisfechas que sigan vigentes;
+- diferencias detectadas;
+- simulación vigente;
+- punto de retorno.
+
+No puede utilizarse el cambio de modo para omitir revisión, segregación o aprobación.
+
+#### 37. Borradores
+
+La tarea no inventa un almacén transversal de borradores.
+
+Un borrador puede continuar entre aplicaciones únicamente si existe un contrato previo que determine:
+
+- propietario;
+- identidad estable;
+- versión;
+- campos transferibles;
+- sensibilidad;
+- vigencia;
+- política de cancelación;
+- limpieza en dispositivos compartidos.
+
+Sin ese contrato, el handoff transporta referencias, no el borrador completo por inferencia.
+
+#### 38. Ayuda y validaciones
+
+Un cambio de aplicación no debe eliminar:
+
+- errores ya detectados que sigan vigentes;
+- ayudas necesarias para el siguiente paso;
+- advertencias materiales;
+- vista previa de impacto todavía válida;
+- requisitos de confirmación;
+- información de versión o frescura.
+
+Si una validación depende de datos de destino, se recalcula allí.
+
+#### 39. Propiedad de datos
+
+La continuidad cross-app no autoriza:
+
+- copiar maestros para evitar llamadas;
+- persistir una segunda fuente de verdad;
+- escribir en almacenamiento ajeno desde el cliente;
+- corregir localmente un dato propietario de otra aplicación;
+- inferir que una proyección stale es el hecho actual.
+
+#### 40. Eventos y efectos posteriores
+
+Cuando el resultado de una aplicación genera efectos en otras mediante eventos:
+
+- el usuario debe distinguir el efecto confirmado del efecto todavía eventual cuando sea material;
+- la aplicación que recibe el evento no reescribe el hecho de origen;
+- una demora de proyección no convierte el commit propietario en inexistente;
+- una proyección fallida no debe mostrarse como si todos los consumidores estuvieran actualizados.
+
+La certificación técnica profunda de eventos permanece en `INT-APP-*`.
+
+#### 41. Causalidad observable
+
+La evidencia del caso debe permitir relacionar, sin exponer secretos:
+
+```text
+ORIGEN
+→ HANDOFF
+→ DESTINO
+→ DECISIÓN DE REVALIDACIÓN
+→ ACCIÓN O BLOQUEO
+→ RESULTADO
+→ RETORNO O SIGUIENTE PASO
+```
+
+No se exige que toda esta información sea visible simultáneamente al usuario final; debe ser demostrable durante la certificación.
+
+#### 42. Multi-hop
+
+Un proceso puede requerir:
+
+```text
+A → B → C → A
+```
+
+La prueba no considera correcto un multi-hop solo porque cada enlace funciona aislado.
+
+Debe demostrarse que:
+
+- el mismo proceso continúa;
+- cada destino recibe la referencia correcta;
+- cada paso revalida su autoridad;
+- no se pierde el recurso;
+- no se crea un segundo caso por navegación;
+- el retorno final llega al punto esperado.
+
+La política de doble registro general permanece en `UX-QA-009`.
+
+#### 43. Aplicación origen cerrada o recargada
+
+Si el origen deja de estar montado después del handoff:
+
+- el destino no depende de estado React o memoria efímera como única referencia;
+- el contrato de retorno debe poder resolverse o degradarse de forma explícita;
+- la pérdida de UI no convierte el proceso en inexistente;
+- no se simula que el usuario puede volver a un estado que ya no existe.
+
+La implementación concreta de persistencia pertenece a los packages propietarios.
+
+#### 44. Navegación hacia aplicación incorrecta
+
+Es fallo crítico cuando:
+
+- el objeto pertenece a otra aplicación propietaria;
+- el destino tiene una intención distinta;
+- una ruta legacy conduce a una pantalla no equivalente;
+- un alias resuelve un recurso de otro tipo;
+- SHELL abre una superficie transversal en lugar del workspace propietario;
+- el retorno lleva a un proceso diferente.
+
+#### 45. Fuente y destino explícitos en evidencia
+
+Cada caso de prueba debe registrar:
+
+- aplicación origen;
+- pantalla origen cuando exista identidad canónica;
+- intención de salida;
+- aplicación destino;
+- pantalla destino;
+- recurso de prueba;
+- versión o estado inicial relevante;
+- acción esperada;
+- resultado esperado;
+- comportamiento de retorno.
+
+#### 46. Casos positivos mínimos
+
+Por package aplicable se cubrirán, cuando existan:
+
+1. handoff A → B con acción confirmada y retorno correcto;
+2. apertura directa desde SHELL al recurso propietario;
+3. destino que revalida y permite continuar;
+4. destino que detecta versión nueva y obliga a reconciliar;
+5. destino que deniega sin perder referencia del caso;
+6. cancelación en destino con retorno seguro;
+7. actor válido que continúa después del handoff;
+8. cambio de actor que obliga a nueva resolución;
+9. proyección cross-app que deriva a la propietaria para escribir;
+10. multi-hop completo cuando el package lo declare.
+
+#### 47. Casos negativos mínimos
+
+La evidencia deberá intentar, cuando apliquen:
+
+- abrir solo la portada de destino en lugar de la tarea;
+- transportar permiso mediante URL o estado de cliente;
+- reutilizar autorización de la aplicación origen;
+- actuar sobre una versión obsoleta;
+- resolver un recurso ambiguo por primer resultado;
+- usar un filtro administrativo como territorio operativo;
+- escribir directamente un dominio ajeno;
+- mostrar éxito por navegación antes del commit;
+- volver a un origen equivocado;
+- perder la acción pendiente;
+- continuar con actor anterior en dispositivo compartido;
+- convertir una proyección en fuente de verdad;
+- esconder que un efecto consumidor continúa pendiente;
+- usar una ruta legacy no equivalente como destino.
+
+#### 48. Casos que no demuestran continuidad por sí solos
+
+No son evidencia suficiente:
+
+- que ambas aplicaciones abran;
+- que exista un enlace;
+- que la URL contenga el ID esperado;
+- que el usuario pueda copiar y pegar el identificador;
+- que el mismo componente visual exista en ambas apps;
+- que la navegación no arroje error JavaScript;
+- que el origen y destino compartan sesión técnica;
+- que un mock muestre el flujo feliz;
+- que un evento figure como emitido sin confirmar el efecto relevante;
+- que una persona experta sepa reconstruir manualmente el caso.
+
+#### 49. Oracle de continuidad
+
+El oracle de cada escenario compara:
+
+```text
+ANTES DEL HANDOFF
+vs
+DESPUÉS DEL HANDOFF
+vs
+DESPUÉS DEL RESULTADO
+vs
+RETORNO O SIGUIENTE PASO
+```
+
+Debe permanecer coherente:
+
+- identidad del proceso;
+- recurso empresarial;
+- versión vigente o reconciliada;
+- tarea o paso pendiente;
+- propiedad de la acción;
+- autoridad revalidada;
+- estado confirmado;
+- destino de retorno.
+
+#### 50. Métricas de soporte
+
+Podrán registrarse, sin crear un umbral global arbitrario:
+
+- `wrong_destination_count`;
+- `lost_business_object_count`;
+- `lost_process_context_count`;
+- `manual_reconstruction_count`;
+- `stale_version_action_count`;
+- `authority_transport_count`;
+- `owner_boundary_bypass_count`;
+- `false_success_count`;
+- `lost_return_count`;
+- `actor_context_leak_count`;
+- `multi_hop_break_count`;
+- tiempo adicional por handoff;
+- cantidad de pasos de reconstrucción manual.
+
+Los umbrales de rendimiento o fricción se fijan por package cuando exista línea base real.
+
+#### 51. Fallos críticos
+
+Bloquean el caso:
+
+- autorización heredada sin revalidación;
+- mutación ejecutada por propietaria incorrecta;
+- acción sobre recurso distinto al referenciado;
+- acción sobre versión obsoleta cuando el cambio es material;
+- éxito presentado antes de confirmación autoritativa;
+- pérdida del recurso o proceso que obliga a reconstrucción insegura;
+- filtración de actor o información privada del usuario anterior;
+- retorno a otro caso o proceso;
+- transición física basada en territorio administrativo no revalidado;
+- bypass de segregación por cambiar de aplicación.
+
+#### 52. Hallazgos no críticos
+
+Un hallazgo puede no bloquear el caso cuando:
+
+- aumenta fricción sin riesgo material;
+- el retorno es correcto pero añade un paso redundante;
+- la etiqueta del destino es mejorable sin ambigüedad;
+- existe una espera perceptible pero el estado permanece correcto;
+- la aplicación destino presenta una ayuda adicional no invasiva.
+
+Todo hallazgo diferido deberá tener propietario y condición de cierre dentro del package o tarea ya existente.
+
+#### 53. Unidad de certificación por package
+
+La identidad física posterior es:
+
+```text
+UX-QA-008::<package_id>
+```
+
+Cada package aplicable debe identificar:
+
+- handoffs realmente incluidos;
+- aplicaciones origen y destino;
+- pantallas o superficies aplicables;
+- procesos y recursos de prueba;
+- estados y versiones relevantes;
+- actores y territorios aplicables;
+- escenarios positivos;
+- escenarios negativos;
+- evidencia automatizada y/o manual requerida;
+- hallazgos;
+- decisión final.
+
+#### 54. Certificación global final
+
+La identidad final es:
+
+```text
+UX-QA-008::GLOBAL-FINAL
+```
+
+La certificación global no repite mecánicamente todos los casos. Comprueba que:
+
+- todos los packages aplicables cerraron su alcance;
+- no quedan handoffs canónicos sin package propietario;
+- las fronteras de aplicación son coherentes transversalmente;
+- las rutas cross-app no dependen de autoridad del cliente;
+- SHELL no absorbió mutaciones empresariales;
+- los patrones guiado/experto preservan continuidad;
+- no existe una excepción global sin propietario;
+- cambios posteriores no invalidaron evidencia relevante.
+
+#### 55. Invalidación de evidencia
+
+La evidencia debe repetirse para el alcance afectado cuando cambie materialmente:
+
+- aplicación propietaria de una pantalla;
+- ruta o deep link con semántica de handoff;
+- contrato `return_contract`;
+- identidad o versión del objeto transportado;
+- autorización de destino;
+- frontera de escritura;
+- proceso o paso primario;
+- política de actor o dispositivo compartido;
+- modo guiado/experto;
+- contrato de eventos que modifica el resultado visible;
+- alias legacy utilizado para compatibilidad.
+
+#### 56. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La conducta certificada ya está cubierta por contratos de UX, integración, pantalla, autorización, continuidad e idempotencia aprobados. Esta tarea define la forma integral de demostrar esa cobertura por package y globalmente, sin modificar el Registro 04A.
+
+#### 57. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, entre otra cobertura vigente aplicable:
+
+- `TREQ-UX-149` — transición cross-app conservando proceso, tarea, recurso, versión, retorno y acción pendiente sin transportar autoridad;
+- `TREQ-INTEGRATION-005` — preservación de contexto y revalidación en la aplicación receptora;
+- `TREQ-INTEGRATION-003` — identidad idempotente, resultado recuperable y tratamiento de reintento;
+- `TREQ-INTEGRATION-006` — fuente empresarial única y ausencia de fuentes competidoras;
+- `TREQ-UX-144` — entrada en tarea, recurso, etapa y punto de continuidad correctos;
+- `TREQ-UX-369` — continuidad de guías cross-app con caso o correlación y propietario de cada escritura;
+- `TREQ-UX-375` — interoperabilidad guiado/experto sin duplicar escrituras ni omitir controles;
+- `TREQ-UX-400` — superficie transversal que conserva fuente canónica y envía mutaciones a su propietaria;
+- `TREQ-UX-401` — cambio experto/guiado conservando objeto, población, borrador, alcance y versión;
+- `TREQ-UX-425` — validación transversal sin descargar datos no autorizados al cliente;
+- `TREQ-UX-434` — vista previa de efectos cross-app y estrategia ante rechazo parcial;
+- `TREQ-UX-446` — conservación de ayuda, errores, borrador, versión y simulación al cambiar de modo;
+- cobertura adicional UX vigente asociada a contexto, actor, tarea, errores, dispositivos, privacidad y pantallas.
+
+La enumeración es trazabilidad de cobertura existente y no constituye una modificación del registro.
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia documental de esta tarea |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecuta build de producto durante la definición documental del contrato |
+| LOCAL | NOT_EXECUTED | no se ejecutan casos cross-app en checkout o aplicaciones locales durante esta definición |
+| REMOTA | PASS | fuentes canónicas remotas, topología, contrato de entrega, políticas, bloque propietario, cobertura 04A y contratos cross-app fueron contrastados para redactar el contrato |
+| OPERATIVA | NOT_EXECUTED | los recorridos reales entre aplicaciones permanecen pendientes de cada package posterior a E5 |
+| FÍSICA | NOT_EXECUTED | no se ejecutan pruebas en tablets, POS, kioscos o puestos físicos durante esta tarea documental |
+
+#### 59. Evidencia mínima posterior por caso
+
+La ejecución posterior debe conservar, cuando aplique:
+
+- package y ambiente;
+- build o versión bajo prueba;
+- aplicación y pantalla origen;
+- aplicación y pantalla destino;
+- proceso;
+- recurso;
+- versión inicial;
+- actor y territorio de prueba;
+- acción de salida;
+- referencia transportada;
+- resultado de revalidación;
+- acción ejecutada o bloqueo;
+- resultado autoritativo;
+- retorno o siguiente paso;
+- evidencia de que la propietaria realizó la mutación;
+- hallazgos y decisión.
+
+No se exige exponer secretos, tokens ni datos sensibles en la evidencia.
+
+#### 60. Seguridad y privacidad de la evidencia
+
+La evidencia no debe almacenar innecesariamente:
+
+- tokens de sesión;
+- PIN;
+- credenciales;
+- headers de autorización;
+- secretos de deep link;
+- datos personales completos;
+- payloads sensibles cuando una referencia o hash sea suficiente.
+
+La prueba debe demostrar la frontera sin crear otra fuga.
+
+#### 61. Responsabilidad de un fallo
+
+La causa se asigna al propietario real:
+
+| Tipo de fallo | Propietario de corrección |
+| --- | --- |
+| ruta o deep link incorrecto | package o pantalla que produce la navegación |
+| destino equivocado | contrato de pantalla/aplicación o package consumidor |
+| autoridad heredada | autorización del destino o handoff técnico propietario |
+| mutación en dominio ajeno | aplicación/package que viola la frontera de escritura |
+| pérdida de proceso o recurso | contrato de handoff / SHELL / package de integración aplicable |
+| retorno incorrecto | flujo o package que declara el `return_contract` |
+| proyección desactualizada presentada como confirmada | package consumidor/proyección propietaria |
+| actor anterior heredado | dispositivo, sesión o package consumidor |
+| problema general de doble captura | `UX-QA-009` y propietarios de captura única |
+| trazabilidad incompleta del cambio | `UX-QA-010` y contratos de auditoría |
+| fallo bajo conectividad inestable | `UX-QA-011` y contratos de continuidad |
+
+#### 62. Casos fuera de alcance
+
+No se certifica aquí:
+
+- calidad visual general de cada aplicación;
+- separación operativo-administrativa ya cubierta por `UX-QA-007`;
+- política global de captura única de `UX-QA-009`;
+- trazabilidad completa de `UX-QA-010`;
+- comportamiento integral bajo red inestable de `UX-QA-011`;
+- rendimiento global de eventos;
+- consistencia de todas las proyecciones analíticas;
+- compensaciones completas;
+- disaster recovery;
+- disponibilidad de proveedores externos;
+- migración de rutas legacy no incluida en un package aplicable.
+
+#### 63. Criterio de aceptación por package
+
+Un package puede cerrar `UX-QA-008::<package_id>` cuando:
+
+- todos sus handoffs aplicables están identificados;
+- el origen entrega referencias suficientes y no autoridad;
+- el destino revalida identidad, permiso, contexto, recurso, territorio, versión y estado cuando corresponda;
+- el destino abre el punto correcto de continuidad;
+- la mutación permanece en su propietaria;
+- el resultado no se presenta confirmado antes de serlo;
+- éxito, cancelación, denegación, conflicto y versión obsoleta tienen salida determinada;
+- el retorno o siguiente paso es correcto;
+- los casos negativos críticos no logran bypass;
+- los hallazgos abiertos tienen propietario y condición de cierre;
+- la evidencia es reproducible y protege secretos.
+
+#### 64. Criterios de aceptación
+
+- [ ] El cambio de aplicación no reinicia el proceso.
+- [ ] El destino abre tarea, recurso, etapa y punto de continuidad correctos cuando el contrato lo permite.
+- [ ] Proceso, tarea, recurso, versión, retorno y acción pendiente se conservan mediante referencias seguras.
+- [ ] El handoff no transporta permisos ni autoridad implícita.
+- [ ] La aplicación destino revalida autoridad y estado.
+- [ ] Un filtro o cobertura administrativa no se convierte en contexto operativo.
+- [ ] La propiedad de pantalla y la propiedad de mutación permanecen explícitas.
+- [ ] SHELL conduce a la propietaria sin absorber la mutación empresarial.
+- [ ] Una proyección cross-app no se convierte en fuente maestra.
+- [ ] El resultado visual no se confunde con confirmación empresarial.
+- [ ] Las versiones obsoletas bloquean o reconcilian antes de actuar.
+- [ ] La cancelación no marca el proceso como completado.
+- [ ] La denegación no pierde la referencia necesaria para continuar o recuperar.
+- [ ] El cambio de actor no hereda autoridad ni datos personales del actor anterior.
+- [ ] Los dispositivos compartidos no convierten el principal técnico en actor humano.
+- [ ] Los handoffs guiados conservan caso y punto de retorno.
+- [ ] Los handoffs expertos conservan alcance sin convertir filtros en permiso.
+- [ ] Cambiar de modo no permite omitir segregación, revisión o aprobación.
+- [ ] El multi-hop completo conserva proceso, recurso y retorno cuando el package lo declara.
+- [ ] Existe evidencia positiva y negativa por package aplicable.
+- [ ] Los fallos críticos tienen dueño y bloquean el caso.
+- [ ] No se exige una métrica global de fricción sin línea base real.
+- [ ] Existe criterio `GLOBAL-FINAL`.
+- [ ] La sección `Requisitos de prueba derivados` declara cero cambios y no contiene identificadores de requisitos.
+- [ ] La cobertura heredada está separada de la sección de cero cambios.
+- [ ] No se ejecutó implementación física durante esta aprobación documental.
+- [ ] `UX-QA-009` conserva íntegra la certificación de no registrar dos veces la misma información.
+
+#### 65. Límites
+
+Esta tarea no:
+
+- modifica `UX-BASE-008`;
+- modifica contratos `PROC-SCREEN-*`;
+- modifica `INT-APP-*`;
+- redefine aplicaciones propietarias;
+- crea rutas o deep links;
+- crea schemas de handoff;
+- modifica eventos;
+- cambia idempotencia;
+- cambia retries;
+- crea colas;
+- modifica Server Actions, APIs o RPC;
+- cambia permisos;
+- cambia sesiones;
+- cambia RLS;
+- modifica Supabase;
+- crea maestros compartidos;
+- mueve pantallas entre aplicaciones;
+- resuelve rutas legacy físicamente;
+- ejecuta pruebas E2E;
+- ejecuta pruebas físicas;
+- certifica packages sin evidencia posterior a E5;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 66. Handoff a `UX-QA-009`
+
+`UX-QA-008` entrega a `UX-QA-009`:
+
+- proceso y recurso conservados entre aplicaciones;
+- propietaria de cada mutación identificada;
+- referencias cross-app ya revalidadas;
+- punto de continuidad conocido;
+- resultado y retorno distinguibles;
+- ausencia de autoridad transportada como condición previa;
+- lugares donde una reconstrucción o recaptura manual indicaría posible duplicación.
+
+`UX-QA-009` podrá certificar ausencia de doble registro sin reabrir la semántica del handoff cross-app.
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-007 — Las vistas administrativas no contaminan la operación`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-008 — El proceso continúa correctamente entre aplicaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-009 — No se registra dos veces la misma información`
 ### [ ] UX-QA-009 — No se registra dos veces la misma información
 ### [ ] UX-QA-010 — Los cambios conservan trazabilidad
 ### [ ] UX-QA-011 — Las tareas críticas soportan conectividad inestable
