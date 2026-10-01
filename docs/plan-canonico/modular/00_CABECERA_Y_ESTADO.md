@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1575** |
+| Tareas aprobadas | **1576** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **21** |
+| Tareas no iniciadas | **20** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **98.68% (1575/1596)** |
+| Porcentaje de completamiento | **98.75% (1576/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **UX-QA-022 — Probar ANIMA con trabajadores y administradores** |
-| Tarea actual | **UX-QA-023 — Probar VISO por rol administrativo** |
+| Última tarea aprobada | **UX-QA-023 — Probar VISO por rol administrativo** |
+| Tarea actual | **UX-QA-024 — Probar NEXO por rol operativo** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **UX-QA-024 — Probar NEXO por rol operativo** |
+| Siguiente tarea | **UX-QA-025 — Probar FOGO por área productiva** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 52 de 60 aprobadas; UX-QA-023 pendiente** |
+| Progreso del bloque | **BLOQUE U: 53 de 60 aprobadas; UX-QA-024 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — UX-QA-023** |
+| Carril documental | **ACTIVO — UX-QA-024** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `UX-QA-022` — Probar ANIMA con trabajadores y administradores |
-| Tarea actual | `UX-QA-023` — Probar VISO por rol administrativo — **NO INICIADA** |
-| Siguiente tarea | `UX-QA-024` — Probar NEXO por rol operativo |
+| Última aprobada | `UX-QA-023` — Probar VISO por rol administrativo |
+| Tarea actual | `UX-QA-024` — Probar NEXO por rol operativo — **NO INICIADA** |
+| Siguiente tarea | `UX-QA-025` — Probar FOGO por área productiva |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 52 DE 60 APROBADAS — ACTUAL UX-QA-023** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 53 DE 60 APROBADAS — ACTUAL UX-QA-024** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-UX-QA-022 — Probar ANIMA con trabajadores y administradores
-        ↓
-TAREA ACTUAL
 UX-QA-023 — Probar VISO por rol administrativo
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 UX-QA-024 — Probar NEXO por rol operativo
         ↓
+SIGUIENTE TAREA RESERVADA
+UX-QA-025 — Probar FOGO por área productiva
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 52 de 60 tareas aprobadas
+BLOQUE U — 53 de 60 tareas aprobadas
 ```
