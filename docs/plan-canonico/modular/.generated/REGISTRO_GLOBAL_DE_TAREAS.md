@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1565** |
+| Aprobadas | **1566** |
 | En propuesta | **0** |
-| No iniciadas | **31** |
+| No iniciadas | **30** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.06% (1565/1596)** |
+| Porcentaje de completamiento | **98.12% (1566/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **31** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1466** |
+| ⏸ NO_EVALUADA | **30** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1467** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-012` — El retorno entre aplicaciones conserva contexto | ✅ APROBADA |
-| Tarea actual | `UX-QA-013` — El retorno conserva el proceso cuando corresponde | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-014` — El trabajador completa la tarea dentro del tiempo objetivo | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-013` — El retorno conserva el proceso cuando corresponde | ✅ APROBADA |
+| Tarea actual | `UX-QA-014` — El trabajador completa la tarea dentro del tiempo objetivo | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-015` — Los bloqueos se entienden sin códigos técnicos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1397,7 +1397,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-010` | Los cambios conservan trazabilidad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-011` | Las tareas críticas soportan conectividad inestable | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-012` | El retorno entre aplicaciones conserva contexto | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-013` | El retorno conserva el proceso cuando corresponde | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-013` | El retorno conserva el proceso cuando corresponde | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-014` | El trabajador completa la tarea dentro del tiempo objetivo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-015` | Los bloqueos se entienden sin códigos técnicos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-016` | La información sensible se oculta correctamente | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
