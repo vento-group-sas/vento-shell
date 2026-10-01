@@ -11641,7 +11641,1349 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-012 — El retorno entre aplicaciones conserva contexto`
-### [ ] UX-QA-012 — El retorno entre aplicaciones conserva contexto
+### ✅ UX-QA-012 — El retorno entre aplicaciones conserva contexto
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-011 — Las tareas críticas soportan conectividad inestable
+**Tarea siguiente:** UX-QA-013 — El retorno conserva el proceso cuando corresponde
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por package y globalmente que un retorno entre aplicaciones conserva la identidad del trabajo, el objeto empresarial, el punto de retorno, el contexto humano necesario, el resultado y la evidencia aplicables, sin transportar autoridad, restaurar contexto obsoleto, depender del historial del navegador ni decidir todavía si el proceso debe permanecer reanudable
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de retorno cross-app con conservación de contexto definido; las ejecuciones `UX-QA-012::<package_id>` y `UX-QA-012::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff de `UX-QA-011`, `UX-QA-008`, `UX-BASE-008`, `UX-BASE-014`, contratos de pantalla, handoff e integración y cobertura vigente, pero no afirma que un package desplegado haya demostrado todavía retorno real entre aplicaciones
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican rutas, deep links, componentes, contratos runtime, consumidores, eventos, colas, checkpoints, permisos, sesiones, datos, Supabase, dispositivos, despliegues ni aplicaciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que una persona que sale de una aplicación para completar, revisar o intentar una parte del trabajo en otra aplicación puede regresar sin perder ni reconstruir manualmente el contexto que todavía es válido.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿A QUÉ TRABAJO SE ESTÁ REGRESANDO?
+¿A QUÉ PROCESO E INSTANCIA PERTENECE?
+¿QUÉ RECURSO Y VERSIÓN SON RELEVANTES?
+¿CUÁL ERA EL PUNTO DE ORIGEN Y EL RETORNO DECLARADO?
+¿QUÉ RESULTADO PRODUJO O NO PRODUJO LA APLICACIÓN DESTINO?
+¿QUÉ ESTADO PENDIENTE, CONFLICTO O RECEIPT DEBE SEGUIR VISIBLE?
+¿QUÉ CONTEXTO HUMANO PUEDE CONSERVARSE?
+¿QUÉ CONTEXTO DEBE REVALIDARSE?
+¿QUÉ INFORMACIÓN NO PUEDE RESTAURARSE COMO AUTORIDAD?
+¿QUÉ OCURRE SI EL RETORNO YA NO ES VÁLIDO?
+```
+
+Regla central:
+
+```text
+VOLVER A UNA APLICACIÓN
+!=
+VOLVER AL CONTEXTO CORRECTO
+```
+
+#### 2. Resultado canónico
+
+`UX-QA-012` establece `UX-QA-CROSS-APP-RETURN-CONTEXT-CERTIFICATION-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de retorno entre aplicaciones;
+- identidad mínima del trabajo que debe sobrevivir al viaje cross-app;
+- relación entre `return_contract`, origen, destino y siguiente superficie;
+- contexto humano preservable y contexto autoritativo revalidable;
+- tratamiento de éxito, rechazo, cancelación, expiración, aceptación parcial y reconciliación;
+- persistencia de resultado, receipt, conflicto y operación pendiente durante el retorno;
+- retorno válido, inválido, obsoleto y no aplicable;
+- comportamiento en actor, sesión, área, dispositivo o versión cambiados;
+- relación con `CrossAppHandoff` y checkpoints semánticos ya materializados;
+- casos positivos y negativos por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-013`.
+
+#### 3. Alcance exacto
+
+La certificación aplica cuando un flujo aprobado declara al menos una transición entre aplicaciones y un retorno o siguiente destino relacionado con el mismo trabajo.
+
+Incluye, cuando apliquen:
+
+- SHELL hacia una aplicación propietaria y retorno;
+- aplicación A hacia aplicación B y retorno a A;
+- aplicación A hacia aplicación B y retorno a una superficie transversal;
+- aplicación A hacia aplicación B y retorno a otra pantalla de A;
+- retorno después de una acción confirmada;
+- retorno después de cancelación o rechazo;
+- retorno con resultado pendiente;
+- retorno con aceptación parcial;
+- retorno con conflicto o reconciliación requerida;
+- deep link semántico con `return_contract`;
+- handoff desde tablet, kiosco, desktop o móvil cuando el package lo soporte;
+- retorno después de conectividad degradada cuando `UX-QA-011` ya entregó estado recuperable.
+
+No exige un retorno cuando el contrato del proceso determina legítimamente que el siguiente trabajo permanece en la aplicación destino o concluye allí.
+
+#### 4. Handoff recibido de `UX-QA-011`
+
+`UX-QA-011` entrega:
+
+- actor y contexto revalidados después de degradación;
+- aplicación propietaria;
+- proceso e instancia;
+- tarea y paso semántico;
+- recurso y versión;
+- estado de conectividad;
+- estado de sincronización;
+- operaciones pendientes;
+- receipts disponibles;
+- conflictos;
+- resultado confirmado, pendiente o desconocido;
+- checkpoint recuperable cuando existe;
+- evidencia de que la recuperación no heredó autoridad.
+
+`UX-QA-012` usa ese estado para evaluar el retorno cross-app sin reabrir la política de conectividad.
+
+#### 5. Frontera con `UX-QA-008`
+
+`UX-QA-008` certifica la continuidad completa de un proceso al cruzar aplicaciones:
+
+```text
+ORIGEN
+→ HANDOFF
+→ DESTINO
+→ REVALIDACIÓN
+→ ACCIÓN
+→ RESULTADO
+→ RETORNO O SIGUIENTE PASO
+```
+
+`UX-QA-012` especializa únicamente la parte:
+
+```text
+RESULTADO O ESTADO EN DESTINO
+→ RETORNO
+→ CONTEXTO CORRECTO EN LA SUPERFICIE RESULTANTE
+```
+
+Un package puede haber demostrado que llega correctamente al destino y aun fallar esta tarea si vuelve a una portada genérica, pierde el recurso, pierde el receipt, restaura filtros equivocados o reconstruye autoridad desde el origen.
+
+#### 6. Frontera con `UX-QA-011`
+
+`UX-QA-011` responde:
+
+```text
+¿LA TAREA CRÍTICA SIGUE SIENDO SEGURA Y RECUPERABLE
+CUANDO LA CONECTIVIDAD SE DEGRADA?
+```
+
+`UX-QA-012` responde:
+
+```text
+¿AL REGRESAR ENTRE APLICACIONES
+SE CONSERVA EL CONTEXTO CORRECTO DEL TRABAJO?
+```
+
+La conectividad puede ser estable y el retorno fallar por navegación, identidad, versión o contexto incorrectos.
+
+#### 7. Frontera con `UX-QA-013`
+
+`UX-QA-013` certificará si el retorno conserva el proceso cuando corresponde.
+
+`UX-QA-012` no decide todavía si el proceso debe:
+
+- continuar;
+- permanecer pausado;
+- cerrar;
+- avanzar a otra etapa;
+- quedar superseded;
+- exigir handoff;
+- exigir reasignación;
+- entrar en conciliación.
+
+Regla:
+
+```text
+CONTEXTO DE RETORNO CORRECTO
+!=
+DECISIÓN DE REANUDABILIDAD DEL PROCESO
+```
+
+Esta tarea certifica que el contexto que llega al retorno es correcto. `UX-QA-013` decidirá si ese contexto debe conservar un proceso activo o presentar otro estado de continuidad.
+
+#### 8. Unidad certificable
+
+La unidad mínima es:
+
+```text
+PACKAGE
++
+RELACIÓN CROSS-APP APLICABLE
++
+ESCENARIO DE RETORNO
++
+RESULTADO OBSERVABLE
+```
+
+Cada relación deberá identificar:
+
+- aplicación origen;
+- aplicación destino;
+- proceso;
+- instancia;
+- recurso;
+- acción o trabajo pendiente;
+- `return_contract` cuando exista;
+- resultado esperado del destino;
+- superficie esperada después del retorno.
+
+#### 9. Relación canónica antes de navegar
+
+La relación de handoff debe existir antes de renderizar o navegar.
+
+No se certifica una relación inferida por:
+
+- coincidencia de rutas;
+- nombre de pantalla;
+- que dos aplicaciones compartan un componente;
+- que el usuario tenga acceso a ambas;
+- historial del navegador;
+- query string arbitraria;
+- una URL copiada;
+- estado React;
+- una preferencia local.
+
+La relación debe provenir del contrato canónico aplicable.
+
+#### 10. Identidad mínima del trabajo
+
+Cuando existan, el retorno deberá conservar referencias suficientes a:
+
+```text
+process_id
+process_instance_id
+task_or_work_item_ref
+business_object_ref
+resource_version_or_observed_version
+source_application
+source_screen_or_surface
+destination_application
+destination_screen_or_surface
+return_contract
+pending_action_ref
+checkpoint_ref
+correlation_ref
+receipt_ref
+```
+
+La forma es conceptual. La tarea no crea un payload runtime nuevo.
+
+#### 11. Mismo proceso e instancia
+
+Un retorno válido no debe cambiar silenciosamente de proceso o instancia.
+
+Regla:
+
+```text
+MISMO RECURSO VISUAL
+!=
+MISMA INSTANCIA EMPRESARIAL
+```
+
+La prueba falla si el retorno abre un recurso parecido, otra orden, otro lote, otra entrega, otra persona o una instancia distinta por heurística.
+
+#### 12. Recurso exacto
+
+El retorno deberá preservar la identidad del recurso aplicable.
+
+No son sustitutos válidos:
+
+- primer resultado de búsqueda;
+- último recurso abierto;
+- fila seleccionada previamente sin verificación;
+- alias ambiguo;
+- nombre visible sin identificador estable;
+- recurso de otra área con la misma etiqueta.
+
+#### 13. Versión y estado observado
+
+La versión transportada permite detectar cambio, no imponer el estado anterior.
+
+Regla:
+
+```text
+VERSIÓN DE ORIGEN
+=
+REFERENCIA PARA COMPARAR
+
+VERSIÓN DE ORIGEN
+!=
+VERDAD AUTORITATIVA AL REGRESAR
+```
+
+Si el recurso cambió, la superficie de retorno deberá reflejar el estado vigente y explicar la diferencia cuando sea material.
+
+#### 14. `return_contract`
+
+El `return_contract` determina el destino semántico previsto después del handoff.
+
+Debe permitir resolver, según el contrato del proceso:
+
+- aplicación de retorno;
+- superficie o intención de retorno;
+- recurso o trabajo relacionado;
+- condición de retorno;
+- comportamiento ante éxito;
+- comportamiento ante cancelación;
+- comportamiento ante rechazo;
+- comportamiento ante resultado pendiente o incierto.
+
+No transporta permiso ni autoridad.
+
+#### 15. Retorno no equivalente al botón Atrás
+
+El botón Atrás del navegador, del sistema operativo o de una shell puede coincidir con el retorno correcto, pero no constituye su contrato.
+
+La prueba falla si la única estrategia de retorno es:
+
+```text
+HISTORY.BACK
+```
+
+sin demostrar identidad del trabajo y destino semántico.
+
+#### 16. Contexto persistente visible
+
+La experiencia deberá conservar, cuando aplique, contexto humano suficiente para reconocer:
+
+- de dónde viene el trabajo;
+- a qué aplicación se fue;
+- qué proceso o tarea sigue relacionada;
+- qué recurso se está tratando;
+- qué paso o acción motivó el handoff;
+- qué resultado se obtuvo;
+- qué queda pendiente;
+- qué bloqueo existe;
+- cuál es la siguiente acción segura.
+
+#### 17. `CrossAppHandoff`
+
+La materialización vigente `CrossAppHandoff` presenta siete estados:
+
+```text
+OFFERED
+ACCEPTED
+REJECTED
+EXPIRED
+CANCELLED
+PARTIALLY_ACCEPTED
+RECONCILIATION_REQUIRED
+```
+
+Y conserva siete slots semánticos:
+
+```text
+PERSISTENT_CONTEXT
+BLOCKING_STATE
+WORK_IDENTITY
+STEP_CONTENT
+PRIMARY_ACTION
+SECONDARY_SUPPORT
+RESULT_AND_RECEIPT
+```
+
+`UX-QA-012` no exige que todos los consumidores usen un componente específico, pero el comportamiento observable deberá preservar semántica equivalente cuando el package declare ese patrón.
+
+#### 18. `PERSISTENT_CONTEXT`
+
+El contexto persistente debe permitir que la persona reconozca la continuidad sin reconstruirla mentalmente.
+
+Puede incluir:
+
+- origen y destino humanos;
+- proceso o caso;
+- sede y área como contexto visible;
+- momento relevante;
+- estado del handoff;
+- información de retorno.
+
+No puede convertir esos valores en autoridad runtime.
+
+#### 19. `WORK_IDENTITY`
+
+La identidad del trabajo deberá seguir perceptible durante y después del retorno.
+
+Ejemplos conceptuales:
+
+```text
+Recepción OC-2026-00418
+Entrega RM-2026-00183
+Lote LOT-2026-00091
+Solicitud SOL-2026-00107
+```
+
+La etiqueta humana complementa, no reemplaza, la identidad estable.
+
+#### 20. `STEP_CONTENT`
+
+El paso presentado deberá corresponder al estado real del handoff.
+
+No se mostrará:
+
+- acción ya completada como pendiente;
+- acción rechazada como disponible;
+- aceptación parcial como éxito global;
+- resultado desconocido como confirmado;
+- una acción de otra aplicación por conveniencia visual.
+
+#### 21. `RESULT_AND_RECEIPT`
+
+Cuando exista resultado o receipt, deberá permanecer relacionado con el mismo trabajo durante el retorno.
+
+El receipt puede demostrar recepción o resultado según su contrato; no se interpreta genéricamente como éxito empresarial.
+
+#### 22. Contexto humano frente a autoridad
+
+Regla:
+
+```text
+CONTEXTO HUMANO PRESERVADO
+!=
+ACCESS CONTEXT REUTILIZADO SIN REVALIDACIÓN
+```
+
+Se puede mostrar como referencia:
+
+- actor anterior;
+- sede;
+- área;
+- turno;
+- aplicación origen;
+- filtro o agrupación;
+- recurso;
+- paso.
+
+La siguiente acción material debe usar autoridad vigente resuelta por su propietario.
+
+#### 23. Contexto que nunca se restaura como autoridad
+
+No se conservarán como autorización por el retorno:
+
+- permission codes vistos anteriormente;
+- roles efectivos no revalidados;
+- grants;
+- claims de UI;
+- tokens;
+- secretos;
+- PIN;
+- sesión asumida como válida;
+- actor autoritativo transportado por URL;
+- estado objetivo impuesto por cliente;
+- aprobación previa reutilizada en otro recurso;
+- excepción vencida;
+- step-up vencido.
+
+#### 24. Actor emisor y actor receptor
+
+El actor emisor permanece atribuible al handoff cuando corresponda.
+
+El actor que ejecutará una acción en destino o después del retorno deberá revalidarse.
+
+```text
+ACTOR EMISOR
+!=
+AUTORIDAD AUTOMÁTICA DEL ACTOR ACTUAL
+```
+
+#### 25. Mismo actor
+
+Cuando el mismo actor continúa:
+
+- la identidad puede mostrarse de forma consistente;
+- la sesión se revalida según política;
+- el contexto operativo se compara con el vigente;
+- las referencias del trabajo se conservan;
+- no se solicita recapturar información ya conocida sin causa.
+
+#### 26. Cambio de actor
+
+Si el actor cambia durante el handoff o antes del retorno:
+
+- el contexto anterior no se reasigna silenciosamente;
+- datos personales del actor anterior se protegen;
+- la nueva autoridad se resuelve desde cero según contrato;
+- el trabajo solo se muestra o acepta si el nuevo actor puede verlo;
+- un borrador personal no cambia de dueño por navegación.
+
+#### 27. Sesión expirada
+
+Si la sesión expira en destino o durante el retorno:
+
+- se conserva referencia segura al trabajo;
+- no se conserva autoridad vencida;
+- se reautentica cuando corresponda;
+- se resuelve contexto nuevo;
+- se vuelve al trabajo únicamente si sigue permitido y válido.
+
+#### 28. Sede y área
+
+Sede y área pueden formar parte del contexto humano preservado.
+
+La prueba deberá distinguir:
+
+```text
+ÁREA MOSTRADA
+!=
+ÁREA AUTORIZADA PARA LA SIGUIENTE MUTACIÓN
+```
+
+Si cambian sede o área, el retorno debe mostrar el cambio material y revalidar las condiciones aplicables.
+
+#### 29. Turno y check-in
+
+Cuando turno o check-in sean relevantes:
+
+- pueden viajar como referencia observada;
+- se comparan con el estado actual;
+- no se reactivan por volver a una pantalla;
+- una expiración no se oculta restaurando el contexto anterior.
+
+#### 30. Dispositivo compartido
+
+En dispositivos compartidos, el retorno deberá:
+
+- preservar la identidad del trabajo sin exponer información privada innecesaria;
+- revalidar actor;
+- no mostrar borradores de otro trabajador;
+- no recuperar autoridad desde el dispositivo;
+- limpiar datos personales conforme al contrato aplicable;
+- permitir continuidad solo si la política del dispositivo lo soporta.
+
+#### 31. Cambio de dispositivo
+
+Un retorno en otro dispositivo solo será válido cuando exista una referencia sincronizada o transferencia segura aprobada.
+
+No se prometerá recuperar:
+
+- borradores solo locales;
+- archivos no sincronizados;
+- selecciones efímeras;
+- estado UI que nunca salió del equipo anterior.
+
+#### 32. Éxito confirmado en destino
+
+Si la aplicación destino confirma un efecto empresarial:
+
+- el retorno conserva el mismo caso;
+- muestra el resultado vigente;
+- conserva receipt o referencia de resultado cuando aplique;
+- no ofrece repetir la misma intención por defecto;
+- puede conducir al siguiente paso definido por contrato.
+
+#### 33. Navegación completada sin éxito empresarial
+
+Regla:
+
+```text
+APLICACIÓN DESTINO ABIERTA
+!=
+HANDOFF ACEPTADO
+
+NAVEGACIÓN COMPLETADA
+!=
+EFECTO EMPRESARIAL CONFIRMADO
+```
+
+La UI no inferirá aceptación por abrir, visualizar o cerrar una aplicación.
+
+#### 34. `OFFERED`
+
+`OFFERED` conserva la oferta y el contexto, pero no transfiere responsabilidad ni confirma efecto.
+
+El retorno debe mostrar el trabajo como todavía no aceptado cuando esa sea la realidad.
+
+#### 35. `ACCEPTED`
+
+`ACCEPTED` requiere el resultado propietario aplicable y no se deduce de navegación.
+
+El retorno podrá avanzar únicamente sobre el estado confirmado.
+
+#### 36. `REJECTED`
+
+`REJECTED` no cancela todo el proceso por inferencia.
+
+El retorno deberá conservar:
+
+- identidad del caso;
+- rechazo;
+- causa segura cuando corresponda;
+- siguiente acción gobernada;
+- información preservada necesaria.
+
+La decisión sobre continuidad posterior pertenece a `UX-QA-013`.
+
+#### 37. `EXPIRED`
+
+Un handoff expirado:
+
+- no reutiliza autoridad vencida;
+- conserva identidad y evidencia necesarias;
+- no se presenta como aceptado;
+- vuelve a una superficie segura que explique la condición.
+
+#### 38. `CANCELLED`
+
+`CANCELLED` no se deriva de cerrar un modal, pestaña o aplicación.
+
+La cancelación debe provenir del contrato propietario y el retorno debe reflejar su estado real.
+
+#### 39. `PARTIALLY_ACCEPTED`
+
+Una aceptación parcial:
+
+- no se presenta como éxito global;
+- conserva elementos aceptados, rechazados y pendientes;
+- preserva correlación y evidencia;
+- impide repetir efectos ya aceptados;
+- muestra el estado residual que debe resolverse.
+
+#### 40. `RECONCILIATION_REQUIRED`
+
+Cuando el estado exige conciliación:
+
+- el retorno conserva la incertidumbre;
+- no corrige cross-app por inferencia;
+- no ofrece retry ciego;
+- preserva evidencia y referencias;
+- dirige a la responsabilidad propietaria correspondiente.
+
+#### 41. Resultado desconocido
+
+Si existe `RESULT_UNKNOWN` en un contrato relacionado:
+
+- se consulta idempotencia, receipt o estado antes de ofrecer repetición;
+- el retorno no crea una intención nueva;
+- la persona ve que el resultado sigue sin determinarse;
+- el siguiente paso permanece bloqueado o gobernado hasta clasificar el resultado.
+
+#### 42. Cancelar y volver
+
+Cuando la persona cancela legítimamente una acción en destino:
+
+- vuelve al contexto de origen todavía aplicable;
+- no se marca la acción como completada;
+- no desaparece el caso;
+- se conserva lo que pueda preservarse sin inventar efecto;
+- se muestra la siguiente acción segura.
+
+#### 43. Rechazo y volver
+
+El retorno después de rechazo debe permitir comprender:
+
+- qué fue rechazado;
+- qué permanece vigente;
+- qué trabajo no se perdió;
+- quién puede resolver;
+- si existe alternativa legítima.
+
+No se vuelve a una pantalla neutra que oculte el rechazo.
+
+#### 44. Conflicto y volver
+
+Ante conflicto:
+
+- el retorno conserva recurso y versiones relevantes;
+- muestra que el trabajo necesita revisión;
+- no sobrescribe el servidor;
+- no aplica `last write wins`;
+- no cambia a otro recurso para salir del bloqueo.
+
+#### 45. Recurso cerrado o sustituido
+
+Si el recurso fue completado, cancelado, fusionado, sustituido o retirado durante el handoff:
+
+- el retorno no reabre el recurso por restaurar UI;
+- conserva la identidad original para explicación;
+- muestra el estado vigente;
+- ofrece únicamente acciones permitidas por el contrato actual.
+
+#### 46. Ruta de retorno obsoleta
+
+Una ruta, pantalla o deep link retirados no podrán convertirse en una vuelta silenciosa a una superficie incorrecta.
+
+El sistema deberá:
+
+- resolver compatibilidad aprobada cuando exista;
+- fallar cerrado cuando no exista;
+- conservar el caso;
+- explicar que el destino anterior dejó de ser válido;
+- no adivinar un replacement por similitud de nombre.
+
+#### 47. Retorno inválido
+
+Un retorno es inválido cuando, por ejemplo:
+
+- apunta a otra aplicación sin relación canónica;
+- el proceso o instancia no coinciden;
+- el recurso no coincide;
+- la superficie fue retirada sin compatibilidad;
+- el actor no puede acceder al trabajo;
+- el contexto es incompatible;
+- el contrato de retorno expiró;
+- la evidencia recibida contradice el estado vigente.
+
+Un retorno inválido falla cerrado y preserva información suficiente para recuperación segura.
+
+#### 48. Retorno desde SHELL
+
+SHELL puede actuar como superficie transversal de entrada o retorno.
+
+SHELL puede mostrar:
+
+- contexto;
+- identidad del trabajo;
+- estado del handoff;
+- resultado o bloqueo;
+- siguiente destino permitido.
+
+SHELL no ejecuta por ello la mutación propietaria ni se convierte en fuente del estado empresarial.
+
+#### 49. Retorno hacia SHELL
+
+Volver a SHELL después de una aplicación propietaria deberá conservar, cuando aplique:
+
+- tarea o caso relacionado;
+- aplicación propietaria;
+- resultado confirmado o pendiente;
+- bloqueo;
+- siguiente acción;
+- receipt seguro;
+- referencia del contexto.
+
+No basta con volver al launcher general sin relación con el trabajo.
+
+#### 50. Retorno aplicación a aplicación
+
+Cuando una aplicación retorna directamente a otra:
+
+- la relación debe estar aprobada;
+- el destino de retorno debe estar resuelto;
+- la aplicación receptora revalida actor, contexto y permiso;
+- la identidad del trabajo se conserva;
+- la mutación sigue perteneciendo a su propietaria;
+- el retorno no crea una relación nueva.
+
+#### 51. Return target y navegación
+
+El target de retorno podrá materializarse mediante la tecnología apropiada del package, pero la certificación observa semántica, no implementación concreta.
+
+Puede ser:
+
+- deep link opaco;
+- navegación interna coordinada;
+- shell route;
+- intent móvil;
+- mecanismo equivalente aprobado.
+
+La tecnología no puede ser la fuente de autoridad.
+
+#### 52. Deep link opaco
+
+Un deep link válido no transporta:
+
+- permiso;
+- token;
+- actor autoritativo;
+- AccessContext completo;
+- estado objetivo a imponer;
+- secretos;
+- aprobación.
+
+Transporta únicamente referencias necesarias y no secretas según contrato.
+
+#### 53. Filtros y selección
+
+Un retorno puede conservar filtros o selección como ayuda de orientación cuando:
+
+- siguen siendo reproducibles;
+- no amplían el universo autorizado;
+- no ocultan cambios materiales;
+- no sustituyen territorio ni permiso;
+- la selección sigue correspondiendo al recurso esperado.
+
+#### 54. Contexto administrativo
+
+Si el origen era una superficie administrativa:
+
+- filtros, periodo, sede o agrupación pueden conservarse como presentación;
+- no se convierten en alcance autoritativo;
+- una fila seleccionada no equivale a permiso de mutación;
+- el retorno conserva la consulta solo si sigue siendo válida y segura.
+
+#### 55. Contexto operativo
+
+Si el origen era una tarea operativa:
+
+- se preserva la identidad exacta del trabajo;
+- se preserva área y estación como referencia;
+- se revalida actor y contexto;
+- no se obliga a volver a navegar desde una portada;
+- no se pierde el resultado producido en destino.
+
+#### 56. Trabajo pendiente
+
+El retorno debe conservar perceptible cualquier trabajo todavía pendiente.
+
+Ejemplos:
+
+- falta aceptación;
+- falta confirmación del servidor;
+- falta conciliación;
+- falta revisión de diferencia;
+- falta reautenticación;
+- falta acción de otro actor.
+
+No se oculta un pendiente porque la pantalla origen volvió a cargar.
+
+#### 57. Operaciones locales o pendientes de sincronización
+
+Cuando `UX-QA-011` haya dejado operaciones locales o pendientes:
+
+- el retorno conserva su identidad;
+- no las marca como completadas;
+- no genera duplicados;
+- muestra estado de sincronización;
+- revalida antes de ejecutar efectos posteriores.
+
+#### 58. Receipts
+
+El retorno conservará referencias a receipts que sean necesarias para explicar el resultado.
+
+Se distinguirá:
+
+```text
+RECEIPT DE RECEPCIÓN
+RECEIPT DE EFECTO
+RESULTADO EMPRESARIAL
+```
+
+cuando el contrato los separe.
+
+#### 59. Correlación y causalidad
+
+Cuando el proceso ya define correlación o causalidad, el retorno deberá conservarla.
+
+No se crea una correlación nueva solo por volver a otra aplicación.
+
+#### 60. Borradores
+
+Un retorno solo puede recuperar un borrador cross-app cuando existe un contrato que lo permita.
+
+Sin contrato:
+
+```text
+REFERENCIA AL TRABAJO
+SÍ
+
+COPIA ARBITRARIA DEL BORRADOR
+NO
+```
+
+#### 61. Archivos y evidencia
+
+Si un handoff incluye evidencia:
+
+- se conserva su referencia;
+- un archivo local no se declara subido;
+- un upload no vinculado no se declara evidencia confirmada;
+- el retorno muestra el estado real;
+- no se pierde la relación con el recurso.
+
+#### 62. Periféricos
+
+Si el destino interactúa con impresora, cámara, escáner, báscula o datáfono:
+
+- el retorno conserva el resultado conocido o desconocido;
+- no infiere ejecución física por navegación;
+- no repite el comando sin resolver estado cuando exista riesgo de doble efecto.
+
+#### 63. Conectividad inestable durante el retorno
+
+La pérdida de conectividad durante el retorno no cambia las reglas de contexto.
+
+Se conserva:
+
+- identidad del trabajo;
+- estado local o pendiente;
+- resultado conocido;
+- receipt disponible;
+- bloqueo;
+- checkpoint.
+
+La reanudación técnica permanece gobernada por `UX-QA-011` y contratos propietarios.
+
+#### 64. Reinicio durante el retorno
+
+Si la aplicación o dispositivo se reinicia entre destino y retorno:
+
+- la UI no reconstruye autoridad desde almacenamiento local;
+- recupera únicamente referencias permitidas;
+- revalida actor y contexto;
+- consulta estado vigente;
+- clasifica trabajo pendiente antes de continuar.
+
+#### 65. Actualización de aplicación
+
+Una actualización no puede hacer que un return target incompatible abra un contexto parecido por heurística.
+
+Si el contrato cambió:
+
+- se aplica compatibilidad explícita;
+- se migra referencia cuando exista regla aprobada;
+- o se falla cerrado conservando el caso.
+
+#### 66. Accesibilidad
+
+El contexto de retorno deberá ser perceptible por:
+
+- texto;
+- estructura semántica;
+- teclado cuando aplique;
+- lector de pantalla;
+- tacto en superficies compatibles.
+
+El estado no dependerá únicamente de color, animación, posición visual o icono.
+
+#### 67. Privacidad
+
+La continuidad no justifica mostrar información innecesaria de:
+
+- actor anterior;
+- cliente;
+- trabajador;
+- datos sensibles;
+- otros recursos;
+- filtros privados;
+- payloads técnicos.
+
+El retorno muestra solo lo necesario para reconocer y continuar de forma segura.
+
+#### 68. Caso positivo mínimo
+
+Un caso positivo demuestra:
+
+1. relación cross-app aprobada;
+2. misma instancia empresarial antes y después;
+3. mismo recurso esperado;
+4. `return_contract` o destino equivalente resuelto;
+5. resultado de destino correctamente clasificado;
+6. contexto humano preservado;
+7. autoridad revalidada;
+8. receipt o pendiente conservado cuando aplica;
+9. retorno a la superficie correcta;
+10. cero recaptura innecesaria del contexto conocido.
+
+#### 69. Casos positivos obligatorios por package
+
+Según alcance, deberán incluir:
+
+- éxito confirmado y retorno;
+- cancelación y retorno;
+- rechazo y retorno;
+- aceptación parcial y retorno;
+- reconciliación requerida y retorno;
+- sesión expirada;
+- versión cambiada;
+- retorno hacia SHELL;
+- retorno desde SHELL;
+- aplicación A → B → A;
+- aplicación A → B → superficie transversal;
+- dispositivo compartido cuando aplique;
+- conectividad degradada cuando aplique.
+
+Los casos no aplicables deberán justificarse por el package.
+
+#### 70. Casos negativos mínimos
+
+La certificación deberá detectar:
+
+- volver a portada genérica;
+- volver a recurso distinto;
+- perder proceso o instancia;
+- perder receipt;
+- perder estado pendiente;
+- restaurar permiso desde URL;
+- restaurar actor anterior como autoridad;
+- aceptar handoff por navegación;
+- presentar aceptación parcial como éxito;
+- ocultar rechazo;
+- ocultar conflicto;
+- usar browser back como única semántica;
+- recuperar borrador ajeno;
+- restaurar filtro como territorio autorizado;
+- repetir efecto ya confirmado;
+- abrir ruta retirada sin compatibilidad;
+- inferir recurso por heurística;
+- perder correlación;
+- exponer secreto en el enlace;
+- borrar contexto por reinicio.
+
+#### 71. Oracle de retorno
+
+Para cada caso:
+
+```text
+SI no existe relación cross-app aplicable
+→ N/A
+
+SI existe relación pero no existe retorno en el contrato
+→ N/A para retorno; no inventar uno
+
+SI el retorno cambia proceso, instancia o recurso sin contrato
+→ FAIL
+
+SI el retorno depende solo de historial de navegación
+→ FAIL
+
+SI se pierde resultado, receipt, pendiente o conflicto material
+→ FAIL
+
+SI se restaura autoridad desde el origen
+→ FAIL
+
+SI el destino de retorno dejó de ser válido y se abre otro por heurística
+→ FAIL
+
+SI se preserva identidad, contexto humano, resultado y siguiente destino seguro
+Y la autoridad se revalida
+→ PASS
+```
+
+#### 72. Identidad del caso de prueba
+
+Cada caso deberá declarar, como mínimo:
+
+- `case_id`;
+- package;
+- relación cross-app;
+- aplicación origen;
+- aplicación destino;
+- superficie origen;
+- superficie destino;
+- proceso;
+- instancia;
+- recurso;
+- versión observada;
+- estado del handoff;
+- resultado de destino;
+- `return_contract` o equivalente;
+- contexto esperado al retornar;
+- autoridad que debe revalidarse;
+- evidencia;
+- resultado observado;
+- veredicto.
+
+#### 73. Evidencia mínima posterior
+
+La evidencia posterior deberá permitir reconstruir:
+
+- origen;
+- destino;
+- relación canónica;
+- proceso e instancia;
+- recurso;
+- actor emisor;
+- actor actual cuando corresponda;
+- contexto visible;
+- contexto revalidado;
+- estado del handoff;
+- resultado o receipt;
+- destino de retorno;
+- superficie finalmente mostrada;
+- diferencias encontradas;
+- veredicto.
+
+#### 74. Evidencia de navegación no suficiente por sí sola
+
+No bastan por sí solos:
+
+- screenshot final;
+- URL final;
+- que la app correcta esté abierta;
+- que el usuario pueda pulsar Atrás;
+- que el componente renderice;
+- que el deep link responda;
+- que el route name coincida;
+- que exista un botón Volver.
+
+La evidencia debe relacionar navegación con el mismo trabajo y contexto.
+
+#### 75. Evidencia física actual y límite
+
+Existe materialización física compartida de contratos y presentación cross-app, incluyendo relaciones estáticas de handoff y `CrossAppHandoff`.
+
+Esa existencia:
+
+- permite inspección contractual;
+- permite pruebas unitarias o estáticas de componentes;
+- no demuestra por sí sola adopción por consumidores;
+- no demuestra retorno end-to-end de un package;
+- no sustituye la ejecución posterior `UX-QA-012::<package_id>`.
+
+#### 76. Estado de certificación por package
+
+Estados permitidos del caso o package:
+
+```text
+PASS
+FAIL
+BLOCKED
+STALE
+```
+
+`BLOCKED` exige dependencia externa o evidencia imposible de obtener todavía. Un comportamiento incorrecto observado es `FAIL`, no `BLOCKED`.
+
+#### 77. `STALE`
+
+La evidencia previa se vuelve stale cuando cambia materialmente:
+
+- `return_contract`;
+- relación de handoff;
+- ruta o deep link;
+- proceso;
+- recurso;
+- versión del contrato;
+- política de autorización;
+- aplicación propietaria;
+- superficie de retorno;
+- semántica de estado;
+- componente compartido consumido;
+- package evaluado.
+
+#### 78. Hallazgos diferibles
+
+Un hallazgo solo podrá diferirse si:
+
+- no cambia de recurso o proceso;
+- no pierde trabajo;
+- no oculta resultado o conflicto;
+- no amplía autoridad;
+- no provoca doble efecto;
+- no expone información sensible;
+- tiene owner canónico;
+- tiene condición exacta de salida;
+- su impacto sobre `GLOBAL-FINAL` queda documentado.
+
+#### 79. Criterio de PASS por package
+
+Un package obtiene PASS únicamente si:
+
+1. inventaria todas sus relaciones de retorno aplicables;
+2. demuestra mismo proceso, instancia y recurso donde corresponda;
+3. preserva contexto humano suficiente;
+4. revalida autoridad;
+5. conserva resultado, receipt, pendiente y conflicto cuando aplican;
+6. no depende del historial del navegador como contrato;
+7. no adivina return targets;
+8. trata correctamente los siete estados de handoff aplicables;
+9. protege privacidad en cambios de actor o dispositivo;
+10. no repite efectos confirmados;
+11. conserva evidencia suficiente;
+12. no mantiene fallos críticos abiertos.
+
+#### 80. Criterio de `GLOBAL-FINAL`
+
+`UX-QA-012::GLOBAL-FINAL` solo puede obtener PASS cuando:
+
+- todos los packages aplicables tienen decisión válida;
+- ningún flujo cross-app crítico conserva FAIL abierto;
+- los contratos de retorno son coherentes entre aplicaciones;
+- SHELL no actúa como writer universal;
+- no existen dos semánticas incompatibles para aceptación, retorno o receipt;
+- los consumidores que declaran retorno cuentan con evidencia suficiente;
+- los hallazgos diferidos no invalidan el contexto global;
+- la evidencia no está stale.
+
+#### 81. Identidad de ejecución física futura
+
+La topología es:
+
+```text
+MODE: PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE: POST_E5_PACKAGE
+```
+
+Identidades futuras:
+
+```text
+UX-QA-012::<package_id>
+UX-QA-012::GLOBAL-FINAL
+```
+
+Aprobar este contrato documental no crea ni ejecuta esas instancias.
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea certifica obligaciones ya definidas por contratos y requisitos vigentes. No introduce una obligación verificable nueva que requiera actualizar el registro 04A.
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+La cobertura principal reutilizada, sin modificación, incluye:
+
+- `TREQ-UX-034`;
+- `TREQ-UX-144`;
+- `TREQ-UX-149`;
+- `TREQ-UX-290`;
+- `TREQ-UX-369`;
+- `TREQ-INTEGRATION-005`;
+- `TREQ-INTEGRATION-023`;
+- requisitos propietarios de handoff, autorización, idempotencia, checkpoint, navegación y retorno que cada package declare aplicables.
+
+Esta lista es trazabilidad reutilizada y no representa requisitos creados o modificados por `UX-QA-012`.
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia documental disponible en esta aprobación |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecuta build físico ni de producto para aprobar el contrato documental. |
+| LOCAL | NOT_EXECUTED | La incorporación y los validadores reales del checkout corresponden a la batería posterior. |
+| REMOTA | PASS | Se revisaron fuentes canónicas remotas vigentes, continuidad, topología, `UX-QA-008`, `UX-BASE-008`, contratos de pantalla y handoff, 04A UX, materialización `CrossAppHandoff` y la base aprobada `UX-QA-011`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron recorridos end-to-end entre aplicaciones durante esta aprobación documental. |
+| FÍSICA | NOT_EXECUTED | Las instancias por package y `GLOBAL-FINAL` permanecen sujetas a `POST_E5_PACKAGE`. |
+
+#### 85. Seguridad de la evidencia
+
+La evidencia no deberá contener:
+
+- tokens;
+- secretos;
+- PIN;
+- credenciales;
+- payloads sensibles completos;
+- AccessContext serializado innecesariamente;
+- datos privados de otro actor;
+- URLs con información secreta;
+- contenido no necesario para demostrar el retorno.
+
+#### 86. Fallos críticos
+
+Bloquean PASS del package:
+
+- retorno a proceso o instancia incorrectos;
+- retorno a recurso incorrecto;
+- autoridad transportada o restaurada sin revalidación;
+- resultado pendiente presentado como confirmado;
+- aceptación inferida por navegación;
+- receipt o conflicto material perdido;
+- efecto duplicado al volver;
+- retorno inválido resuelto por heurística;
+- contexto de otro actor expuesto o heredado;
+- secreto transportado por enlace;
+- incapacidad de relacionar origen, destino y retorno con el mismo caso.
+
+#### 87. Casos fuera de alcance
+
+Quedan fuera de esta aprobación documental:
+
+- crear rutas;
+- crear deep links;
+- cambiar `return_contract` runtime;
+- implementar navegadores o routers;
+- migrar consumidores;
+- publicar `@vento/ui-web`;
+- implementar persistencia de checkpoints;
+- crear inbox u outbox;
+- modificar autorización;
+- modificar contratos de idempotencia;
+- cambiar aplicaciones;
+- modificar Supabase;
+- modificar datos;
+- ejecutar pruebas físicas;
+- certificar que el proceso debe permanecer activo después del retorno.
+
+#### 88. Criterios de aceptación
+
+- [ ] Se define un contrato de certificación de retorno cross-app por package y global final.
+- [ ] El retorno conserva proceso, instancia y recurso cuando el contrato así lo exige.
+- [ ] `return_contract` se trata como destino semántico y no como autoridad.
+- [ ] El retorno no depende únicamente del historial del navegador.
+- [ ] Contexto humano y autoridad runtime permanecen separados.
+- [ ] El actor receptor o actual se revalida antes de una acción material.
+- [ ] Sede, área, turno y check-in preservados como referencia no sustituyen el contexto vigente.
+- [ ] El resultado de destino permanece correctamente clasificado al volver.
+- [ ] Receipt, conflicto, pendiente y reconciliación no se pierden por navegación.
+- [ ] Abrir una aplicación no equivale a aceptar un handoff.
+- [ ] `OFFERED`, `ACCEPTED`, `REJECTED`, `EXPIRED`, `CANCELLED`, `PARTIALLY_ACCEPTED` y `RECONCILIATION_REQUIRED` mantienen semánticas distintas.
+- [ ] La aceptación parcial no se presenta como éxito global.
+- [ ] Un retorno inválido falla cerrado y no adivina destino por heurística.
+- [ ] Un recurso cerrado o sustituido no se reabre por restaurar UI.
+- [ ] Deep links no transportan permiso, token, actor autoritativo ni estado objetivo.
+- [ ] SHELL puede presentar contexto sin convertirse en writer universal.
+- [ ] Cambios de actor o dispositivo no transfieren borradores ni autoridad.
+- [ ] Conectividad inestable conserva contexto sin duplicar efectos.
+- [ ] La evidencia posterior relaciona origen, destino y retorno con el mismo trabajo.
+- [ ] La UI compartida existente no se trata como evidencia suficiente de adopción end-to-end.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos.
+- [ ] `UX-QA-013` conserva íntegramente la responsabilidad de certificar si el proceso debe permanecer conservado o reanudable después del retorno.
+
+#### 89. Límites
+
+Esta tarea:
+
+- no implementa navegación;
+- no implementa `return_contract`;
+- no crea relaciones de handoff;
+- no cambia ownership de aplicaciones;
+- no transporta autoridad;
+- no implementa retry;
+- no implementa idempotencia;
+- no resuelve conflictos empresariales;
+- no crea checkpoints;
+- no migra consumidores;
+- no publica componentes;
+- no modifica permisos;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta pruebas físicas;
+- no certifica packages sin evidencia posterior a E5;
+- no decide si el proceso debe continuar después del retorno.
+
+#### 90. Handoff a `UX-QA-013`
+
+`UX-QA-012` entrega a `UX-QA-013`:
+
+- relación cross-app validada;
+- aplicación origen y destino;
+- superficie de retorno;
+- proceso e instancia;
+- recurso y versión vigente observada;
+- actor actual revalidado cuando aplica;
+- contexto operativo vigente;
+- estado del handoff;
+- resultado confirmado, pendiente, rechazado, parcial o en conciliación;
+- receipt y correlación disponibles;
+- checkpoint o referencia recuperable cuando existe;
+- trabajo pendiente;
+- evidencia de que el retorno no transportó autoridad;
+- evidencia de que el contexto visible corresponde al mismo caso.
+
+`UX-QA-013` podrá decidir si ese retorno debe conservar o reanudar el proceso sin reabrir la identidad cross-app ni el contexto del retorno.
+
+#### 91. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-011 — Las tareas críticas soportan conectividad inestable`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-012 — El retorno entre aplicaciones conserva contexto`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-013 — El retorno conserva el proceso cuando corresponde`
 ### [ ] UX-QA-013 — El retorno conserva el proceso cuando corresponde
 ### [ ] UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
 ### [ ] UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
