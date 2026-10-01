@@ -24141,7 +24141,1229 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-021 — Probar SHELL por tipo de actor`
-### [ ] UX-QA-021 — Probar SHELL por tipo de actor
+### ✅ UX-QA-021 — Probar SHELL por tipo de actor
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-020 — Cada aplicación supera piloto con usuarios reales
+**Tarea siguiente:** UX-QA-022 — Probar ANIMA con trabajadores y administradores
+**Tipo de tarea:** documental; definición canónica de la certificación de experiencia de SHELL por actor efectivo que demuestra por package y globalmente que `EMPLOYEE`, `CUSTOMER`, `SYSTEM` y `UNRESOLVED` reciben exactamente la entrada, navegación, contexto, trabajo, bloqueo y ausencia de interfaz humana que les corresponde, estratificando `EMPLOYEE` sobre los roles base y operativos aplicables sin convertir roles en tipos de actor, consumiendo el piloto humano de `UX-QA-020` y los contratos de SHELL ya aprobados sin reabrir autorización, ownership, idempotencia ni recuperación
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de SHELL por actor efectivo definido; las ejecuciones `UX-QA-021::<package_id>` y `UX-QA-021::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física de piloto aplicable, los contratos de SHELL, autorización, contexto, navegación y dispositivos, sin ejecutar usuarios reales, cutover, piloto, hypercare, cambios de runtime ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, rutas, componentes, contratos runtime, roles, grants, denies, permisos, contexto, datos, Supabase, migraciones, RLS, RPC, sesiones, dispositivos, catálogo de aplicaciones, configuración, packages, ambientes, despliegues ni usuarios reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que SHELL presenta una experiencia correcta para cada tipo de actor efectivo sin mezclar identidad, rol, contexto, permiso o visibilidad de aplicaciones.
+
+La certificación deberá poder responder:
+
+```text
+¿QUÉ ACTOR EFECTIVO FUE RESUELTO?
+¿EL ACTOR PUEDE RECIBIR UNA INTERFAZ HUMANA DE SHELL?
+¿EL ACTOR PUEDE RECIBIR EL HUB LABORAL?
+¿LA SESIÓN Y EL CONTEXTO SON VÁLIDOS?
+¿EXISTE SHELL.ACCESS EFECTIVO CUANDO ES NECESARIO?
+¿EL ROL BASE O OPERATIVO SOLO MODIFICA DECISIONES PERMITIDAS SIN CREAR OTRO ACTOR?
+¿LA NAVEGACIÓN CORRESPONDE A LAS DECISIONES CANÓNICAS?
+¿EL FOCO DE TRABAJO Y EL CONTEXTO SON COMPRENSIBLES?
+¿LOS BLOQUEOS FALLAN CERRADOS?
+¿UN CAMBIO DE ACTOR LIMPIA EL ESTADO QUE NO PUEDE HEREDARSE?
+¿LA EXPERIENCIA SE SOSTIENE EN COMPUTADOR Y TABLET CUANDO APLICA?
+¿LOS HALLAZGOS TIENEN OWNER Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+ACTOR EFECTIVO
++
+CONTEXTO VIGENTE
++
+DECISIÓN DE AUTORIZACIÓN VIGENTE
++
+POLÍTICA DE PRESENTACIÓN
+=
+EXPERIENCIA SHELL OBSERVABLE
+```
+
+No es válido:
+
+```text
+NOMBRE DE ROL
+=
+TIPO DE ACTOR
+```
+
+ni:
+
+```text
+APLICACIÓN VISIBLE
+=
+AUTORIZACIÓN PARA OPERAR
+```
+
+#### 2. Resultado documental
+
+`UX-QA-021` define el contrato específico de certificación humana de SHELL por tipo de actor.
+
+El resultado establece:
+
+- universo cerrado de cuatro `actor_type`;
+- tratamiento esperado de cada actor;
+- estratificación de `EMPLOYEE` por roles base y operativos;
+- cobertura de navegación y visibilidad sin derivarla del nombre de rol;
+- cobertura de contexto, trabajo, estado y recuperación;
+- cobertura de computador, tablet y dispositivo compartido cuando aplique;
+- cobertura de entrada, bloqueo, retorno y cambio de actor;
+- evidencia mínima por escenario;
+- casos positivos y negativos;
+- criterios de PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-022`.
+
+#### 3. Topología contractual
+
+Se conserva:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-021::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-021::GLOBAL-FINAL
+```
+
+La aprobación documental de este marcador no crea ninguna instancia física.
+
+#### 4. Handoff recibido de `UX-QA-020`
+
+`UX-QA-020` entrega a `UX-QA-021`:
+
+- contrato común de certificación de piloto humano;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` y gate `POST_E5_PACKAGE`;
+- separación entre evidencia CI022 y certificación UX;
+- definición de usuario real;
+- reglas de proporcionalidad de participantes y escenarios;
+- matriz común de aplicabilidad;
+- esquema mínimo de evidencia por escenario;
+- criterios de observación de ayuda, fricción y recuperación;
+- reglas de métricas sin thresholds inventados;
+- reglas de privacidad y minimización de evidencia;
+- contrato de hallazgos con owner y condición de salida;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- universo de diez aplicaciones canónicas;
+- regla de que cada especialización posterior consume este contrato sin redefinirlo.
+
+`UX-QA-021` concreta SHELL sin volver a diseñar el piloto transversal.
+
+#### 5. Fuentes específicas de SHELL consumidas
+
+La certificación consume, según aplicabilidad del package:
+
+- `SHELL-APP-001..021`;
+- catálogo canónico de aplicaciones;
+- catálogo de ocho roles base;
+- catálogo de doce roles operativos;
+- `AccessContextV1` y proyecciones seguras aplicables;
+- decisiones de autorización vigentes;
+- contratos de navegación, bloqueo, contexto, trabajo pendiente, computador y tablet;
+- contratos de dispositivo compartido;
+- requisitos SHELL y UX existentes;
+- evidencia física de package y piloto cuando exista.
+
+Una tarea documental histórica no sustituye evidencia física del mismo candidato y ambiente.
+
+#### 6. Universo canónico de tipos de actor
+
+Se conservan exactamente cuatro tipos de actor efectivo:
+
+| `actor_type` | Naturaleza | Resultado primario de SHELL |
+| --- | --- | --- |
+| `EMPLOYEE` | persona con identidad laboral resoluble | puede recibir Hub laboral cuando cumple entrada y autorización |
+| `CUSTOMER` | identidad de cliente | no recibe Hub laboral |
+| `SYSTEM` | actor técnico no humano | no recibe interfaz humana |
+| `UNRESOLVED` | actor no resuelto con confianza suficiente | falla cerrado sin Hub laboral |
+
+Control:
+
+```text
+ACTOR_TYPES = 4
+```
+
+No se crea un quinto tipo.
+
+#### 7. Actor no equivale a rol
+
+La certificación conserva:
+
+```text
+ACTOR TYPE
+!=
+BASE ROLE
+!=
+OPERATIONAL ROLE
+!=
+CARGO
+!=
+NIVEL JERÁRQUICO
+!=
+APLICACIÓN VISIBLE
+```
+
+Una persona `EMPLOYEE` puede tener un rol base, un rol operativo aplicable y decisiones individuales sin cambiar su `actor_type`.
+
+#### 8. Universo canónico de roles base
+
+Se conservan exactamente ocho `BaseRoleCode`:
+
+1. `propietario`;
+2. `gerente_general`;
+3. `gerente`;
+4. `supervisor`;
+5. `auxiliar_administrativa`;
+6. `contador`;
+7. `marketing`;
+8. `trabajador_operativo`.
+
+Control:
+
+```text
+BASE_ROLES = 8
+```
+
+El rol base no crea una página inicial independiente.
+
+#### 9. Universo canónico de roles operativos
+
+Se conservan exactamente doce `OperationalRoleCode`:
+
+1. `cajero_satelite`;
+2. `barista_satelite`;
+3. `cocinero_satelite`;
+4. `servicio_salon`;
+5. `mostrador_satelite`;
+6. `operador_integral_satelite`;
+7. `produccion_cocina`;
+8. `produccion_panaderia`;
+9. `produccion_reposteria`;
+10. `bodeguero`;
+11. `conductor_logistica`;
+12. `gerencia_operativa`.
+
+Control:
+
+```text
+OPERATIONAL_ROLES = 12
+```
+
+Ninguno es un `actor_type`.
+
+#### 10. Oracles de navegación heredados
+
+La certificación no redefine las matrices de navegación ya cerradas.
+
+Conserva como oracles:
+
+```text
+CANONICAL_APPS = 10
+BASE_VISIBILITY_EDGES = 39
+OPERATIONAL_VISIBILITY_EDGES = 25
+BASE_ROLE_CASES = 8
+OPERATIONAL_ROLE_CASES = 12
+ROLE_CASES_TOTAL = 20
+```
+
+Para carril operativo:
+
+```text
+NEXO = 12 candidatos
+PULSO = 7 candidatos
+FOGO = 4 candidatos
+ORIGO = 2 candidatos
+```
+
+Estas cifras son control de reconciliación, no permisos concedidos por el nombre del rol.
+
+#### 11. Identidad mínima de un escenario
+
+Cada escenario de `UX-QA-021::<package_id>` deberá conservar, según aplicabilidad:
+
+```text
+package_id
+candidate_or_revision
+environment
+scenario_id
+actor_type
+participant_ref_or_nonhuman_ref
+base_role_code
+operational_role_code
+access_context_ref
+authorization_decision_ref
+device_profile
+surface_ref
+entry_mode
+expected_presentation
+observed_presentation
+work_item_ref_when_applicable
+navigation_targets_expected
+navigation_targets_observed
+blocking_state
+recovery_or_next_action
+evidence_refs
+finding_refs
+observed_at
+```
+
+Los campos no aplicables se declaran explícitamente; no se rellenan con valores inventados.
+
+#### 12. Relación con `SHELL-CI-022`
+
+Cuando el package posee exposición humana propia, `UX-QA-021` consume evidencia vigente de piloto físico de la misma identidad.
+
+Regla:
+
+```text
+CI022 VERIFIED
++
+PILOT_EXIT_DECISION COMPATIBLE
++
+EVIDENCIA HUMANA SHELL
+!=
+PASS AUTOMÁTICO
+```
+
+La decisión física es necesaria cuando corresponde, pero la certificación UX mantiene sus propios oracles.
+
+#### 13. Aplicabilidad por package
+
+Una instancia por package deberá declarar:
+
+- si SHELL es superficie afectada;
+- qué `actor_type` están dentro del alcance;
+- qué roles sirven como estratos de `EMPLOYEE`;
+- qué dispositivos y condiciones son relevantes;
+- qué flujos de entrada, navegación, bloqueo o retorno cambian;
+- qué escenarios de `UX-QA-001..020` se consumen;
+- qué escenarios no aplican y por qué.
+
+No se inventan actores ni roles para completar una tabla.
+
+#### 14. `EMPLOYEE` válido y elegible
+
+El caso nominal de `EMPLOYEE` exige, cuando corresponda:
+
+```text
+actor_type = EMPLOYEE
+employment_status válido
+shell.access efectivo
+contexto compatible
+sin bloqueo estructural global
+```
+
+Resultado esperado:
+
+```text
+HUB LABORAL SHELL
++
+CONTEXTO ESENCIAL
++
+FOCO ACTUAL O ESTADO DE TRABAJO
++
+ACCIÓN PRINCIPAL CUANDO EXISTA
++
+ACCESOS SECUNDARIOS AUTORIZADOS
+```
+
+#### 15. `EMPLOYEE` y rol base
+
+Los ocho roles base deberán estar representados de forma proporcional cuando sean aplicables al package o a la certificación global.
+
+La prueba demuestra que:
+
+- el home continúa siendo SHELL laboral;
+- la decisión de acceso se deriva de autorización vigente;
+- la baseline del rol sirve como oracle, no como autorización local;
+- un rol no redirige automáticamente a una aplicación;
+- una aplicación visible no concede capacidades internas.
+
+#### 16. `EMPLOYEE` y rol operativo
+
+Los doce roles operativos se prueban cuando el contexto del package los hace aplicables.
+
+La certificación deberá demostrar que:
+
+- el rol operativo no cambia `actor_type`;
+- el contexto puede modificar elegibilidad y navegación;
+- el carril operativo no reemplaza el carril base;
+- un rol operativo candidato no crea autorización si falta contexto o decisión válida;
+- turno, sede, área, dispositivo y demás precondiciones siguen gobernadas por sus contratos.
+
+#### 17. Grants y denies individuales
+
+Una baseline de rol no es resultado final por persona.
+
+Casos obligatorios cuando apliquen:
+
+```text
+BASELINE SIN ALLOW
++
+GRANT INDIVIDUAL VÁLIDO
+-> PUEDE PRODUCIR ALLOW
+```
+
+```text
+BASELINE CON ALLOW
++
+DENY APLICABLE
+-> NO CONSERVA ALLOW POR NOMBRE DE ROL
+```
+
+La UI no reconstruye grants o denies localmente.
+
+#### 18. `EMPLOYEE` inválido o inactivo
+
+Un empleado inválido, inactivo o no elegible no recibe el Hub laboral por la sola existencia de sesión autenticada.
+
+La experiencia debe:
+
+- fallar cerrada;
+- no presentar tareas como ejecutables;
+- no reutilizar contexto anterior;
+- explicar el estado mediante razón pública permitida cuando corresponda;
+- conservar una siguiente acción segura si existe.
+
+#### 19. `EMPLOYEE` sin `shell.access`
+
+La ausencia de `shell.access` efectivo impide la entrada laboral autorizada.
+
+No son sustitutos:
+
+- rol base conocido;
+- rol operativo conocido;
+- última aplicación abierta;
+- tarjeta visible en caché;
+- URL conocida;
+- decisión histórica `ALLOW`;
+- usuario autenticado sin decisión vigente.
+
+#### 20. `EMPLOYEE` sin turno vigente
+
+La ausencia de turno no convierte automáticamente al actor en cliente ni lo redirige a administración.
+
+Cuando el contrato permita entrada laboral sin turno vigente, SHELL deberá mostrar el estado correspondiente sin fabricar trabajo.
+
+Cuando el permiso exacto requiera turno o contexto adicional, la operación protegida permanece bloqueada.
+
+#### 21. `EMPLOYEE` sin tareas pendientes
+
+`NO_WORK_AVAILABLE` es un resultado válido.
+
+PASS exige que:
+
+- la ausencia provenga de una proyección confiable;
+- no se oculte una falla de la fuente como cero tareas;
+- los accesos secundarios no se presenten como tareas;
+- no se invente una obligación para llenar la pantalla.
+
+#### 22. Trabajo no disponible o parcial
+
+Una proyección incompleta no se presenta como “Sin tareas pendientes”.
+
+Cuando la fuente de trabajo no puede resolverse con confianza:
+
+```text
+UNKNOWN/PARTIAL WORK STATE
+!=
+ZERO WORK
+```
+
+La superficie deberá conservar la diferencia y orientar la recuperación conforme al contrato aplicable.
+
+#### 23. `CUSTOMER`
+
+Resultado obligatorio:
+
+```text
+CUSTOMER
+-> NO HUB LABORAL
+-> NO CONTEXTO LABORAL
+-> NO COLA LABORAL PROYECTADA POR SHELL
+```
+
+La certificación no convierte PASS en una aplicación laboral ni crea redirección automática a PASS por inferencia.
+
+#### 24. Persona con identidad cliente y laboral
+
+Una misma persona puede poseer más de una identidad o relación, pero la sesión utiliza el actor efectivo resuelto.
+
+Cuando el actor efectivo es `EMPLOYEE`, aplica la experiencia laboral.
+
+Cuando el actor efectivo es `CUSTOMER`, no se mezcla RBAC laboral para fabricar un home híbrido.
+
+La prueba deberá demostrar que un cambio de actor no hereda navegación o trabajo incompatibles.
+
+#### 25. `SYSTEM`
+
+`SYSTEM` no recibe:
+
+- Hub laboral;
+- launcher interactivo;
+- navegación humana;
+- foco de trabajo humano;
+- menú de sesión humano;
+- contexto laboral visual.
+
+Un actor técnico puede producir o consumir hechos mediante contratos técnicos sin convertirse en usuario de SHELL.
+
+#### 26. `UNRESOLVED`
+
+`UNRESOLVED` falla cerrado.
+
+Resultado esperado:
+
+```text
+NO HUB LABORAL
+NO TAREA EJECUTABLE
+NO APLICACIÓN CONCEDIDA POR FALLBACK
+NO CONTEXTO HEREDADO DE OTRO ACTOR
+```
+
+Una sesión autenticada no convierte por sí sola un actor no resuelto en `EMPLOYEE`.
+
+#### 27. Bloqueos estructurales
+
+Un bloqueo estructural global aplicable impide presentar una experiencia laboral autorizada aunque exista rol o sesión.
+
+La prueba deberá distinguir:
+
+- `DENIED`;
+- `CONTRACT_INVALID`;
+- `BACKEND_UNAVAILABLE`;
+- `BACKEND_RESPONSE_INVALID`;
+- bloqueo estructural de contexto;
+- ausencia legítima de trabajo;
+- ocultamiento por irrelevancia.
+
+No se colapsan todos los casos en “Sin acceso”.
+
+#### 28. Inicio `task-first`
+
+Para `EMPLOYEE` elegible, la entrada laboral conserva el orden conceptual:
+
+```text
+1. CONTEXTO ESENCIAL
+2. FOCO ACTUAL
+3. ACCIÓN PRINCIPAL
+4. ESTADO O BLOQUEO
+5. SIGUIENTES OBLIGACIONES RESUMIDAS
+6. ACCESOS SECUNDARIOS
+```
+
+El grid de aplicaciones no vuelve a ser el único home por conveniencia.
+
+#### 29. Foco actual
+
+SHELL muestra como máximo un foco principal `AHORA` cuando existe una obligación real elegible.
+
+La prueba verifica que el actor pueda comprender:
+
+- qué debe hacer;
+- qué aplicación posee la obligación;
+- qué estado tiene;
+- qué recurso o resultado está implicado cuando sea necesario;
+- qué acción procede;
+- por qué no puede proceder cuando esté bloqueado.
+
+#### 30. Aplicaciones como accesos secundarios
+
+La navegación hacia aplicaciones se subordina al trabajo y a las decisiones vigentes.
+
+No se certifica una experiencia donde el actor deba elegir primero una aplicación para descubrir qué hacer.
+
+#### 31. Universo de aplicaciones en el oracle
+
+Se conservan diez identidades canónicas:
+
+```text
+shell
+anima
+viso
+nexo
+fogo
+origo
+pulso
+numera
+aura
+pass
+```
+
+Reglas:
+
+- SHELL es la superficie propia;
+- AURA conserva su lifecycle diferido cuando corresponda;
+- PASS permanece fuera del grid laboral primario;
+- la visibilidad real depende de decisión y contexto, no de una lista local.
+
+#### 32. `HIDDEN` no equivale a `BLOCKED`
+
+Un destino irrelevante o no revelable puede estar oculto.
+
+Un destino materialmente relevante pero temporalmente no disponible puede requerir explicación de bloqueo.
+
+La prueba deberá conservar esta diferencia; no se llenará el Hub con tarjetas bloqueadas que el actor no debe conocer.
+
+#### 33. Navegación directa y deep links
+
+Una URL directa no omite autorización ni contexto.
+
+Cuando el destino explícito es válido y autorizado, puede preservarse conforme al contrato.
+
+Cuando no lo es:
+
+- no se ejecuta la operación protegida;
+- no se transforma en fallback permisivo;
+- no se pierde silenciosamente la razón pública aplicable;
+- no se reutiliza una decisión previa como capability token.
+
+#### 34. Retorno entre aplicaciones
+
+El retorno a SHELL debe preservar únicamente el contexto autorizado y la continuidad que corresponda.
+
+No debe:
+
+- fabricar un nuevo actor;
+- transferir autoridad de la aplicación propietaria;
+- marcar una tarea como completada por regresar;
+- perder un estado de recuperación material;
+- redirigir por nombre de rol.
+
+#### 35. Dispositivo compartido
+
+Cuando SHELL se use en dispositivo compartido, la prueba deberá verificar:
+
+```text
+principal_type = SHARED_DEVICE
+actor_type = EMPLOYEE
+actor attribution = actor session vigente
+```
+
+cuando corresponda al contrato.
+
+El dispositivo no se convierte en el actor humano y sus capacidades máximas no amplían las del trabajador.
+
+#### 36. Cambio de actor
+
+Al cambiar de actor en un dispositivo compartido deberán revalidarse, según corresponda:
+
+- identidad;
+- `AccessContext`;
+- trabajo pendiente;
+- aplicaciones visibles;
+- claims;
+- borradores;
+- custodia;
+- retorno;
+- acciones ejecutables.
+
+La prueba falla si el actor nuevo hereda autoridad, trabajo personal o navegación sensible del anterior.
+
+#### 37. Computador y tablet
+
+La semántica de actor, contexto, autorización, trabajo y bloqueo debe ser equivalente entre computador y tablet.
+
+La composición puede cambiar por dispositivo; el significado no.
+
+No se crea un actor “tablet” ni otro conjunto de permisos por breakpoint.
+
+#### 38. Expiración de sesión
+
+Ante expiración o pérdida de sesión:
+
+- se bloquea la operación protegida;
+- se conserva trabajo recuperable conforme al owner;
+- no se presenta éxito inexistente;
+- una reautenticación no revive automáticamente una decisión stale;
+- el actor y contexto se resuelven de nuevo cuando corresponde.
+
+#### 39. Contexto stale
+
+Un contexto obsoleto no sigue autorizando navegación o acción.
+
+Cambios materiales como actor, turno, sede, área, dispositivo, autorización o versión deberán producir revalidación antes de continuar.
+
+La UI no usa “último contexto conocido” como autoridad si dejó de ser vigente.
+
+#### 40. Conectividad inestable
+
+Cuando la conectividad afecte SHELL:
+
+- la superficie distingue caché de estado confirmado;
+- no inventa `ALLOW` por ausencia de backend;
+- no presenta trabajo desconocido como cero;
+- no duplica acciones por retry;
+- no pierde un borrador o checkpoint protegido por contrato;
+- explica la siguiente acción segura.
+
+#### 41. Interrupción y reanudación
+
+Los escenarios recuperables deberán consumir la clasificación vigente de reanudación.
+
+Antes de presentar `Continuar` como ejecutable se revalida lo necesario, incluido:
+
+- actor;
+- sesión;
+- dispositivo;
+- contexto;
+- obligación autoritativa;
+- recurso y versión;
+- checkpoint;
+- borrador;
+- claim o lease;
+- permiso exacto.
+
+#### 42. Error y bloqueo comprensibles
+
+La experiencia para `EMPLOYEE` deberá distinguir en lenguaje permitido:
+
+- qué ocurrió;
+- qué quedó conservado;
+- qué no puede continuar;
+- quién o qué debe resolverlo;
+- cuál es la siguiente acción segura.
+
+Los diagnósticos internos, SQLSTATE, stack traces, secretos y payloads sensibles no se convierten en mensajes humanos.
+
+#### 43. Fuente de verdad
+
+SHELL no se vuelve propietaria del proceso por mostrar una tarea.
+
+La certificación reutiliza el ownership ya cerrado:
+
+```text
+SHELL PRESENTA Y ORIENTA
+!=
+SHELL POSEE EL HECHO EMPRESARIAL
+```
+
+La aplicación propietaria confirma el resultado final de la operación.
+
+#### 44. Idempotencia en SHELL
+
+Doble click, retry de navegación, refresh o reanudación no deberán provocar un segundo efecto empresarial cuando el contrato protegido es idempotente.
+
+La UI puede prevenir interacción duplicada, pero esa prevención no sustituye la idempotencia del owner.
+
+#### 45. Fallos parciales
+
+Cuando una acción deja efectos parciales o resultado desconocido:
+
+- SHELL no declara éxito total;
+- no repite un efecto confirmado;
+- no interpreta timeout como ausencia de efecto;
+- muestra el estado humano permitido;
+- conserva owner y siguiente acción;
+- orienta conciliación o recuperación cuando corresponda.
+
+#### 46. Información sensible
+
+La certificación deberá comprobar que el actor no recibe información no autorizada por:
+
+- tarjetas;
+- nombres;
+- títulos;
+- mensajes de error;
+- navegación;
+- query params;
+- caché;
+- retorno cross-app;
+- cambio de actor;
+- dispositivo compartido.
+
+Las proyecciones seguras permanecen minimizadas.
+
+#### 47. Accesibilidad
+
+Cuando aplique a la superficie probada, la experiencia deberá conservar:
+
+- teclado;
+- foco visible;
+- semántica;
+- contraste;
+- targets adecuados;
+- errores asociados;
+- navegación comprensible;
+- recuperación sin pérdida innecesaria.
+
+La automatización de accesibilidad no reemplaza la evidencia humana exigida por `UX-QA-020`.
+
+#### 48. Soporte y ayuda
+
+La prueba distingue:
+
+```text
+AYUDA ESPERADA DE PILOTO
+!=
+SUPERVISIÓN ORDINARIA NECESARIA PARA OPERAR
+```
+
+Una intervención excepcional se registra.
+
+Si el actor necesita asistencia continua para encontrar su siguiente tarea o entender un bloqueo ordinario, se registra finding.
+
+#### 49. Capacitación
+
+No se exige que una persona conozca nombres de contratos, roles técnicos, estados internos o aplicaciones para operar SHELL.
+
+La capacitación puede explicar el objetivo general del piloto, pero no puede convertirse en instrucciones paso a paso que oculten una interfaz incomprensible.
+
+#### 50. Tiempo
+
+Se registra tiempo de tarea cuando el escenario tiene objetivo o baseline aplicable.
+
+No se inventa un threshold universal.
+
+El análisis distingue al menos:
+
+- tiempo hasta comprender el estado;
+- tiempo hasta identificar la acción;
+- tiempo hasta completar el objetivo cuando aplique;
+- tiempo de espera externo;
+- tiempo de soporte.
+
+#### 51. Evidencia cualitativa
+
+Puede registrarse de forma minimizada:
+
+- dificultad para encontrar el foco;
+- confusión actor/rol;
+- confusión sobre aplicación propietaria;
+- bloqueo incomprensible;
+- navegación inesperada;
+- dependencia de memoria o capacitación;
+- ayuda requerida;
+- workaround;
+- pérdida de contexto;
+- percepción de éxito cuando el resultado seguía incierto.
+
+La percepción no sustituye el resultado autoritativo.
+
+#### 52. Evidencia de identidad humana
+
+Para `EMPLOYEE` y `CUSTOMER`, la prueba necesita demostrar pertenencia a la población prevista sin almacenar información personal innecesaria.
+
+Puede usar una referencia pseudonimizada y una cohorte suficiente para atribuir el escenario.
+
+Para `SYSTEM` y `UNRESOLVED`, la prueba puede usar evidencia técnica o controlada apropiada al tipo; no inventa una persona real para un actor no humano o no resoluble.
+
+#### 53. Evidencia mínima por escenario
+
+Cada escenario ejecutado deberá conservar, según aplicabilidad:
+
+- package y candidato;
+- ambiente;
+- `actor_type`;
+- rol base y operativo cuando apliquen;
+- cohorte o referencia de participante;
+- dispositivo/superficie;
+- contexto relevante;
+- decisión de entrada;
+- aplicaciones esperadas y observadas;
+- foco/estado esperado;
+- acción esperada;
+- resultado observado;
+- ayuda recibida;
+- hallazgo;
+- evidencia de resultado;
+- timestamp o referencia temporal;
+- versión del criterio.
+
+#### 54. Casos positivos mínimos
+
+Cada package ejecutará los casos aplicables, incluyendo cuando corresponda:
+
+1. `EMPLOYEE` válido con `shell.access` entra al Hub laboral;
+2. empleado con rol base aplicable observa navegación coherente;
+3. empleado con rol operativo y contexto vigente observa candidatos coherentes;
+4. grant individual válido modifica la salida sin cambiar actor;
+5. deny aplicable bloquea aunque la baseline del rol permita;
+6. empleado sin tareas observa `NO_WORK_AVAILABLE` legítimo;
+7. trabajo parcial o fuente degradada permanece explícito;
+8. bloqueo relevante muestra siguiente acción segura;
+9. deep link válido conserva destino sin saltar autorización;
+10. retorno cross-app conserva contexto permitido;
+11. tablet mantiene semántica equivalente;
+12. cambio de actor limpia estado incompatible;
+13. interrupción recuperable permite reanudación segura;
+14. resultado incierto no se presenta como completado.
+
+#### 55. Casos negativos mínimos
+
+La certificación deberá bloquear o detectar, según aplicabilidad:
+
+1. `CUSTOMER` recibiendo Hub laboral;
+2. `SYSTEM` recibiendo interfaz humana;
+3. `UNRESOLVED` recibiendo aplicaciones por fallback;
+4. usuario autenticado tratado automáticamente como `EMPLOYEE`;
+5. rol base tratado como `actor_type`;
+6. rol operativo tratado como `actor_type`;
+7. redirección automática por nombre de rol;
+8. aplicación visible tratada como capability token;
+9. URL directa saltando autorización;
+10. `HIDDEN` mostrado como `BLOCKED` sin razón de revelación;
+11. bloqueo relevante ocultado para limpiar la UI;
+12. contexto stale usado como autoridad;
+13. actor nuevo heredando trabajo o navegación del anterior;
+14. tablet con semántica de permiso distinta del computador;
+15. fallo backend tratado como `ALLOW`;
+16. tarea desconocida presentada como cero tareas;
+17. timeout presentado como fracaso definitivo;
+18. reintento que duplica efecto;
+19. información sensible filtrada en error o navegación;
+20. soporte constante necesario para completar un escenario ordinario.
+
+#### 56. Matriz mínima por package
+
+Cada `UX-QA-021::<package_id>` deberá reconciliar:
+
+| Dimensión | Obligación |
+| --- | --- |
+| actor types aplicables | cobertura o no aplicabilidad explícita |
+| roles base aplicables | estratificación sin convertirlos en actores |
+| roles operativos aplicables | estratificación con contexto vigente |
+| aplicaciones visibles | oracle canónico + decisión efectiva |
+| navegación bloqueada | hidden/blocked/deny/technical failure separados |
+| contexto | vigente, stale o irresoluble |
+| dispositivo | computador/tablet/shared cuando aplique |
+| trabajo | foco, no-work, partial/unknown, recuperación |
+| ownership | resultado final confirmado por owner |
+| evidencia humana | requerida solo para actores humanos aplicables |
+| findings | owner + condición de salida |
+
+#### 57. Métricas de certificación
+
+Cada package deberá poder calcular o clasificar, según aplicabilidad:
+
+```text
+applicable_actor_type_count
+covered_actor_type_count
+missing_actor_type_count
+employee_base_role_strata_applicable
+employee_base_role_strata_covered
+employee_operational_role_strata_applicable
+employee_operational_role_strata_covered
+unexpected_labor_hub_count
+unauthorized_navigation_count
+stale_context_authority_count
+cross_actor_state_leak_count
+hidden_blocked_confusion_count
+unknown_as_zero_work_count
+unsafe_retry_count
+sensitive_exposure_count
+blocking_finding_open_count
+scenario_without_owner_count
+scenario_without_evidence_count
+```
+
+No se establece un threshold porcentual universal que pueda ocultar un caso crítico.
+
+#### 58. Contrato de hallazgos
+
+Cada finding deberá conservar:
+
+```text
+finding_id
+package_id
+scenario_id
+actor_type
+role_stratum_when_applicable
+surface_or_flow
+severity
+expected
+observed
+risk
+owner_task
+responsible_party
+required_change
+retest_scope
+exit_condition
+evidence_ref
+status
+```
+
+No se dejan findings narrativos sin owner.
+
+#### 59. Severidad
+
+Es **CRÍTICO** cuando pueda permitir, entre otros:
+
+- acceso laboral a actor no elegible;
+- operación sobre `DENY` o fallo técnico;
+- fuga sensible entre actores;
+- autoridad heredada entre dispositivos o sesiones;
+- efecto empresarial no autorizado;
+- duplicación material;
+- exposición de secretos o datos sensibles.
+
+Es **ALTO** cuando pueda producir navegación materialmente incorrecta, pérdida de contexto, bloqueo sin recuperación, ocultamiento de trabajo real o necesidad ordinaria de bypass/supervisión.
+
+Los hallazgos de menor severidad conservan owner y salida.
+
+#### 60. Corrección y retest
+
+Una corrección deberá volver a probar el alcance afectado y cualquier dependencia material.
+
+Si cambia candidato o contrato relevante, la evidencia anterior se conserva histórica y se revalida la nueva revisión.
+
+No se hereda PASS a un candidato materialmente distinto.
+
+#### 61. No existe PASS con bloqueadores
+
+No se usa:
+
+```text
+PASS CON PENDIENTES
+```
+
+cuando permanece abierto un finding que contradice un criterio obligatorio de actor, autorización, privacidad, continuidad o seguridad.
+
+#### 62. Criterio PASS por escenario
+
+Un escenario obtiene PASS cuando:
+
+- usa el candidato, package y ambiente correctos;
+- el `actor_type` esperado coincide con la resolución observada;
+- la presentación corresponde al actor;
+- las decisiones de navegación y trabajo corresponden al contexto vigente;
+- no se requirió bypass;
+- no apareció un efecto prohibido;
+- no hubo fuga entre actores;
+- la evidencia es suficiente;
+- cualquier finding asociado está cerrado o es no bloqueante conforme a contrato.
+
+#### 63. Criterio PASS por package
+
+`UX-QA-021::<package_id>` obtiene PASS únicamente cuando:
+
+1. los actor types aplicables están cubiertos o justificados;
+2. `EMPLOYEE` fue estratificado por roles relevantes del alcance;
+3. los roles base y operativos aplicables no alteran la taxonomía de actor;
+4. la navegación observada es compatible con decisiones vigentes;
+5. no existe acceso laboral indebido de `CUSTOMER`, `SYSTEM` o `UNRESOLVED`;
+6. no existe navegación autorizada por nombre de rol;
+7. no existe autoridad heredada por URL, caché o actor anterior;
+8. contexto, trabajo y bloqueo se presentan sin falsos ceros;
+9. los cambios de actor y sesión limpian estado incompatible;
+10. los escenarios de dispositivo aplicables conservan semántica;
+11. los resultados inciertos y fallos parciales conservan tratamiento seguro;
+12. no existe fuga sensible material;
+13. no existe finding crítico o alto aplicable abierto;
+14. la evidencia humana exigida por `UX-QA-020` es suficiente para las poblaciones humanas aplicables;
+15. la evidencia pertenece al mismo candidato, ambiente y alcance.
+
+#### 64. `GLOBAL-FINAL`
+
+`UX-QA-021::GLOBAL-FINAL` consolida las instancias por package sin repetir físicamente cada escenario.
+
+Debe demostrar:
+
+- todo package SHELL aplicable posee resultado trazable;
+- los cuatro `actor_type` tienen cobertura global suficiente o no aplicabilidad válida;
+- los ocho roles base aplicables están representados en la estratificación global;
+- los doce roles operativos aplicables están representados cuando existe contexto operativo;
+- las diez aplicaciones permanecen reconciliadas en el oracle de navegación;
+- no existe contradicción entre packages sobre actor, rol, hidden/blocked o autorización;
+- no existe finding crítico o alto abierto que invalide SHELL;
+- no existe evidencia stale usada para cerrar cobertura;
+- un PASS agregado no oculta un actor o estrato aplicable faltante.
+
+Si una instancia aplicable está ausente, stale, FAIL o UNKNOWN, `GLOBAL-FINAL` no concluye PASS.
+
+#### 65. Relación con `UX-QA-020`
+
+`UX-QA-020` define cómo certificar el piloto humano transversal.
+
+`UX-QA-021` especializa esa evidencia para SHELL.
+
+La frontera queda:
+
+```text
+UX-QA-020
+-> CONTRATO COMÚN DE PILOTO CON USUARIOS REALES
+
+UX-QA-021
+-> ORACLES Y COBERTURA ESPECÍFICOS DE SHELL POR ACTOR EFECTIVO
+```
+
+`UX-QA-021` no cambia la definición de usuario real, proporcionalidad, findings ni `GLOBAL-FINAL` común.
+
+#### 66. Frontera con `UX-QA-022`
+
+`UX-QA-022` pertenece a ANIMA.
+
+`UX-QA-021` no desarrolla:
+
+- asistencia o marcaciones de ANIMA;
+- experiencia móvil propia de ANIMA;
+- workers versus administradores de ANIMA;
+- flows propietarios de ANIMA;
+- roles o superficies que ANIMA deba certificar como aplicación.
+
+El handoff entrega únicamente contratos transversales que ANIMA pueda reutilizar sin convertir SHELL en su propietaria.
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Fragmentos 04A afectados:** 0
+
+**Justificación:** `UX-QA-021` especializa para SHELL obligaciones ya protegidas por requisitos vigentes de catálogo, actor, autorización, contexto, navegación, dispositivo, experiencia, seguridad y recuperación. No introduce una regla funcional material nueva ni cambia el registro.
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+La trazabilidad existente se reutiliza sin modificar 04A, incluyendo según aplicabilidad:
+
+- `TREQ-SHELL-001`, disponibilidad real y no ficticia de aplicaciones;
+- `TREQ-SHELL-002`, responsabilidades compartidas sin copias divergentes;
+- `TREQ-SHELL-003`, catálogo canónico único;
+- `TREQ-SHELL-014` a `TREQ-SHELL-016`, sesión, visibilidad y navegación bloqueada;
+- `TREQ-SHELL-020` a `TREQ-SHELL-022`, login, recuperación y accesibilidad;
+- `TREQ-SHELL-026` a `TREQ-SHELL-028`, identidad web, placeholders y catálogo único;
+- `TREQ-SHELL-040`, ocho roles base;
+- `TREQ-SHELL-041`, doce roles operativos;
+- `TREQ-SHELL-042`, scopes autorizados;
+- `TREQ-SHELL-043`, contexto y separación base/operativo;
+- `TREQ-SHELL-044`, razones y namespaces de error/bloqueo;
+- `TREQ-SHELL-067` a `TREQ-SHELL-069`, resolución/evaluación/autorización fail-closed;
+- `TREQ-SHELL-070` a `TREQ-SHELL-072`, proyecciones seguras y frontera cliente;
+- `TREQ-SHELL-073`, separación de deny, contrato inválido y fallos técnicos;
+- requisitos `TREQ-UX-*` vigentes de tarea, error, tablet, privacidad, navegación, continuidad y recuperación cuando sean aplicables.
+
+Esta sección es trazabilidad heredada y no actualiza el registro.
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no ejecutó build de producto, package ni implementación física. |
+| LOCAL | NOT_EXECUTED | Los checks reales de formato, quality, delivery, TREQ y batería global corresponden al checkout actualizado durante la incorporación. |
+| REMOTA | PASS | Se revisaron `main`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner U, contratos H2 de SHELL, cuatro tipos de actor, ocho roles base, doce roles operativos, matrices de navegación heredadas, 04A SHELL y scripts de lifecycle/validación aplicables. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con empleados, clientes, actores técnicos, dispositivos compartidos ni pruebas humanas reales. |
+| FÍSICA | NOT_APPLICABLE | El marcador documental define la certificación; las evidencias físicas corresponderán a futuras instancias `UX-QA-021::<package_id>` y `UX-QA-021::GLOBAL-FINAL`. |
+
+#### 70. Criterios de aceptación
+
+`UX-QA-021` queda documentalmente completa cuando:
+
+- [x] consume exactamente el handoff de `UX-QA-020`;
+- [x] conserva `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [x] conserva gate `POST_E5_PACKAGE`;
+- [x] cubre exactamente cuatro `actor_type`;
+- [x] mantiene `EMPLOYEE`, `CUSTOMER`, `SYSTEM` y `UNRESOLVED` separados;
+- [x] conserva exactamente ocho roles base;
+- [x] conserva exactamente doce roles operativos;
+- [x] no transforma roles en tipos de actor;
+- [x] conserva diez aplicaciones en el oracle;
+- [x] conserva 39 relaciones base y 25 operativas como controles heredados;
+- [x] exige `shell.access` efectivo cuando corresponde;
+- [x] impide que sesión o rol sustituyan autorización;
+- [x] cubre empleado válido, inválido, sin acceso, sin turno, sin tareas y con trabajo parcial;
+- [x] mantiene CUSTOMER fuera del Hub laboral;
+- [x] mantiene SYSTEM fuera de interfaz humana;
+- [x] hace fallar cerrado a UNRESOLVED;
+- [x] cubre grants y denies individuales;
+- [x] cubre hidden versus blocked;
+- [x] cubre deep links y retorno;
+- [x] cubre dispositivo compartido y cambio de actor;
+- [x] conserva paridad semántica computador/tablet;
+- [x] cubre sesión y contexto stale;
+- [x] cubre conectividad, interrupción y recuperación;
+- [x] conserva ownership de la aplicación propietaria;
+- [x] consume idempotencia y recuperación sin redefinirlas;
+- [x] protege información sensible;
+- [x] cubre accesibilidad cuando aplica;
+- [x] distingue soporte de supervisión ordinaria;
+- [x] define evidencia por escenario;
+- [x] define findings con owner y salida;
+- [x] define PASS por escenario y package;
+- [x] define `GLOBAL-FINAL`;
+- [x] no crea ni modifica requisitos de prueba;
+- [x] no modifica 04A;
+- [x] no ejecuta cambios físicos;
+- [x] conserva `UX-QA-022` como responsabilidad separada de ANIMA.
+
+#### 71. Límites
+
+Esta tarea:
+
+- no modifica `SHELL-APP-*`;
+- no modifica runtime de SHELL;
+- no modifica `src/app/page.tsx`;
+- no modifica `src/app/login/page.tsx`;
+- no modifica `middleware.ts`;
+- no modifica `packages/ui-web`;
+- no modifica catálogos de roles;
+- no modifica grants ni denies;
+- no crea roles;
+- no crea actor types;
+- no crea permisos;
+- no modifica autorización;
+- no modifica `AccessContext`;
+- no modifica proyecciones seguras;
+- no modifica navegación;
+- no crea rutas;
+- no crea páginas;
+- no modifica dispositivos;
+- no modifica datos;
+- no modifica Supabase;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no despliega;
+- no abre acceso a usuarios reales;
+- no selecciona participantes;
+- no ejecuta piloto;
+- no ejecuta hypercare;
+- no certifica cierre de package;
+- no corrige hallazgos físicos;
+- no crea TREQ;
+- no modifica TREQ;
+- no modifica 04A;
+- no desarrolla ANIMA ni `UX-QA-022`.
+
+#### 72. Handoff a `UX-QA-022`
+
+`UX-QA-021` entrega a `UX-QA-022` únicamente contratos reutilizables de certificación:
+
+- método de especialización del piloto humano por aplicación;
+- identidad de escenario por package/candidato/ambiente;
+- separación entre actor y rol;
+- reglas de evidencia humana minimizada;
+- contrato de findings y retest;
+- tratamiento de sesión, dispositivo, conectividad, bloqueo y recuperación;
+- regla de que navegación no transporta autoridad;
+- regla de que la aplicación propietaria conserva el resultado empresarial;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar un actor o población aplicable mediante agregación.
+
+`UX-QA-022` deberá concretar ANIMA con trabajadores y administradores usando sus propios contratos, superficies y owners.
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-020 — Cada aplicación supera piloto con usuarios reales`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-021 — Probar SHELL por tipo de actor`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-022 — Probar ANIMA con trabajadores y administradores`
 ### [ ] UX-QA-022 — Probar ANIMA con trabajadores y administradores
 ### [ ] UX-QA-023 — Probar VISO por rol administrativo
 ### [ ] UX-QA-024 — Probar NEXO por rol operativo
