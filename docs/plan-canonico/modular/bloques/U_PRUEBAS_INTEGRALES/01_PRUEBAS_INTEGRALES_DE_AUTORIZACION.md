@@ -23260,7 +23260,1055 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-QA-028 — Rollback funciona por aplicación`
-### [ ] AUTH-QA-028 — Rollback funciona por aplicación
+### ✅ AUTH-QA-028 — Rollback funciona por aplicación
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
+**Tarea siguiente:** AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
+**Tipo de tarea:** documental; definición canónica de la prueba integral de rollback independiente por aplicación y ambiente, reutilizable por paquete y certificable globalmente, para demostrar que Vento OS puede recuperar un consumidor afectado hacia un estado anterior conocido, soportado, compatible y verificable sin exigir rollback simultáneo del ecosistema, sin reescribir historia, sin restaurar bypasses o secretos revocados, sin perder datos o auditoría y sin ejecutar por inferencia recuperación de Supabase
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/01_PRUEBAS_INTEGRALES_DE_AUTORIZACION.md`
+**Estado físico resultante:** contrato de certificación definido; las ejecuciones `AUTH-QA-028::<package_id>` y la certificación `AUTH-QA-028::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; el contrato documental de rollback por aplicación de `SHELL-PKG-006`, los habilitadores globales `SHELL-CI-014::GLOBAL` y `SHELL-CI-015::GLOBAL` y la fundación local sintética de recuperación `AUTH-DB-029::GLOBAL` existen materializados y verificados, pero esta tarea no infiere que un rollback real de aplicación, ambiente, package, configuración, caché o base de datos haya sido ejecutado o certificado en producción
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se revierten commits, manifests, lockfiles, releases, artefactos, configuración, cachés, datos ni migraciones; no se ejecutan restores, PITR, down migrations, despliegues, rollback productivo, cambios Supabase, secretos, credenciales ni operaciones remotas
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral con el que Vento OS demostrará que una aplicación o repositorio afectado por un cambio puede recuperar un estado anterior conocido y soportado de forma independiente, reproducible, auditable y fail-closed, preservando compatibilidad con las demás aplicaciones que permanezcan en versiones diferentes y sin convertir rollback en una operación destructiva, global o implícita.
+
+La regla raíz queda:
+
+```text
+REPOSITORIO Y AMBIENTE EXACTOS
++ ESTADO ORIGEN OBSERVADO
++ OBJETIVO ANTERIOR CONOCIDO Y CERTIFICADO
++ COMPATIBILIDAD CON CONTRATOS, DATOS Y CONSUMIDORES VIGENTES
++ EVALUACIÓN DE CONFIGURACIÓN
++ ESTRATEGIA DE CACHÉ
++ FRONTERA DE SUPABASE RESUELTA
++ PRESERVACIÓN DE DATOS Y AUDITORÍA
++ AUTORIDAD DE EJECUCIÓN
++ VERIFICACIÓN POSTERIOR
++ EVIDENCIA VIGENTE
+= ROLLBACK POR APLICACIÓN CERTIFICABLE
+```
+
+Y, de forma fail-closed:
+
+```text
+COMMIT ANTIGUO
+O TAG ANTIGUO
+O DEPLOY FINALIZADO
+O RESTORE DE SNAPSHOT
+O DOWN MIGRATION
+O "ROLLBACK ALL"
+O VERSIÓN ANTERIOR CONOCIDA
+≠ ROLLBACK SEGURO
+```
+
+#### 2. Resultado canónico
+
+`AUTH-QA-028` establece que una certificación integral de rollback deberá demostrar simultáneamente:
+
+1. identidad exacta de aplicación, repositorio y ambiente;
+2. estado desplegado origen todavía vigente al iniciar la recuperación;
+3. objetivo de rollback exacto, existente, soportado y reproducible;
+4. snapshot anterior certificado;
+5. compatibilidad del objetivo con datos, contratos, servicios y consumidores actuales;
+6. reversión auditable mediante historia nueva, nunca reescritura histórica;
+7. tratamiento explícito de package, código, contrato, configuración, caché y dependencia de base de datos;
+8. preservación de datos válidos y auditoría creada durante la ventana del incidente;
+9. prohibición de restaurar bypasses, grants inseguros, fallbacks permisivos o vulnerabilidades conocidas;
+10. tratamiento seguro de secretos revocados o comprometidos;
+11. delegación de cualquier recuperación Supabase al owner canónico correspondiente;
+12. ausencia de rollback global implícito;
+13. soporte para version skew entre aplicaciones;
+14. pruebas posteriores atribuibles al ambiente y snapshot resultante;
+15. reconciliación de efectos parciales, colas, cachés y side effects cuando aplique;
+16. evidencia completa de intentos exitosos, fallidos, bloqueados, cancelados, timed out o stale;
+17. independencia de recuperación entre repositorios cuando la combinación intermedia esté soportada;
+18. criterio explícito para bloquear rollback y exigir corrección hacia adelante cuando volver sea inseguro.
+
+#### 3. Base vinculante
+
+La tarea consume sin redefinir:
+
+- `SHELL-PKG-006 — Definir rollback por aplicación`;
+- `SHELL-CI-014 — Permitir rollback por repositorio`;
+- `SHELL-CI-015 — Evitar despliegue simultáneo obligatorio`;
+- `AUTH-DB-029 — Validar respaldo, restauración y rollback antes del primer paquete`;
+- `SHELL-CI-005 — Crear matriz de compatibilidad`;
+- `SHELL-CI-006 — Crear actualización de consumidores mediante PR`;
+- `SHELL-CI-007..013` — líneas base específicas de consumidores;
+- la política de releases inmutables y versionado independiente de `SHELL-PKG-001..005`;
+- los contratos de contexto, invalidación, autorización y auditoría ya aprobados;
+- el Registro Canónico de Requisitos de Prueba vigente, sin modificarlo.
+
+#### 4. Topología de certificación
+
+La topología aplicable a la secuencia `PHASE-13-U-INTEGRAL-CERTIFICATION` permanece:
+
+```text
+PER_PACKAGE_AND_GLOBAL_FINAL
+```
+
+Por tanto:
+
+```text
+AUTH-QA-028::<package_id>
+→ certifica rollback aplicable al package y sus consumidores autorizados
+
+AUTH-QA-028::GLOBAL-FINAL
+→ certifica consistencia transversal del contrato de recuperación
+```
+
+El gate físico aplicable permanece:
+
+```text
+POST_E5_PACKAGE
+```
+
+Esta tarea documental no ejecuta ninguna de esas instancias.
+
+#### 5. Universo de repositorios gobernado
+
+La certificación reconoce ocho repositorios VENTO gobernados por el habilitador transversal de rollback:
+
+1. `vento-group-sas/vento-shell`;
+2. `vento-group-sas/vento-nexo`;
+3. `vento-group-sas/vento-fogo`;
+4. `vento-group-sas/vento-origo`;
+5. `vento-group-sas/vento-pulso`;
+6. `vento-group-sas/vento-viso`;
+7. `vento-group-sas/vento-numera`;
+8. `vento-group-sas/vento-anima`.
+
+La matriz web histórica conserva siete consumidores y veintiocho relaciones package–consumidor. ANIMA conserva su clasificación nativa `NATIVE_REACT_NATIVE_EXPO` y no se convierte en consumidor web por inferencia.
+
+#### 6. Familias de package relacionadas
+
+Cuando el rollback involucre adopción de packages compartidos, se conservan las cuatro familias canónicas:
+
+1. `@vento/contracts`;
+2. `@vento/os-context`;
+3. `@vento/supabase`;
+4. `@vento/ui-web`.
+
+Un rollback de aplicación no muta ni despublica esas releases. La aplicación restituye una combinación anterior exacta y soportada mediante su propio historial y lockfile.
+
+#### 7. Unidad exacta de rollback
+
+La unidad mínima certificable es:
+
+```text
+repository
++ environment
++ rollback_from_commit
++ rollback_from_artifact
++ rollback_to_commit
++ rollback_to_artifact
++ package_set_before
++ package_set_target
++ contract_set_before
++ contract_set_target
++ configuration_before_identity
++ configuration_target_identity
++ database_state_ref
++ cache_strategy
++ trigger
++ authorization
++ evidence
+```
+
+Una ejecución no puede reutilizar evidencia de otra unidad, otro ambiente, otro commit, otro target, otro package set o otra identidad de base de datos.
+
+#### 8. Rollback como operación hacia adelante
+
+Rollback significa crear una operación nueva y auditable que restaura un estado anterior soportado.
+
+No significa:
+
+- `force push`;
+- mover una rama protegida a un hash anterior;
+- reescribir un tag;
+- reasignar una release;
+- mutar un tarball ya publicado;
+- eliminar una versión del registry;
+- editar `node_modules` manualmente;
+- sobrescribir historia para ocultar el cambio defectuoso;
+- restaurar ciegamente un backup completo.
+
+La identidad defectuosa permanece en la historia.
+
+#### 9. Clases canónicas de rollback
+
+Se reconocen exactamente seis clases principales:
+
+| Clase | Alcance |
+| --- | --- |
+| `REPOSITORY_CODE` | código y artefacto desplegable del repositorio |
+| `PACKAGE_ADOPTION` | manifest, lockfile y versiones compartidas consumidas |
+| `CONTRACT_COMPATIBILITY` | retorno a un contrato soportado sin reescribir releases |
+| `CONFIGURATION` | configuración versionada y flags no secretos |
+| `CACHE` | invalidación, reconstrucción o cambio de namespace/versionado |
+| `DATABASE_DEPENDENCY` | dependencia de un estado de base de datos cuya reversión física pertenece a `AUTH-DB-029` |
+
+Varias clases pueden coexistir en una misma unidad de rollback.
+
+#### 10. Estados canónicos del intento
+
+La ejecución distingue al menos:
+
+```text
+PENDING
+RUNNING
+PASS
+FAIL
+BLOCKED
+CANCELLED
+TIMED_OUT
+STALE
+```
+
+`NOT_APPLICABLE` solo puede existir para una comprobación realmente condicional con justificación válida; no satisface un gate obligatorio.
+
+#### 11. Estado origen
+
+Antes de preparar o ejecutar rollback se debe observar nuevamente el estado real desplegado.
+
+Debe coincidir con:
+
+- repositorio esperado;
+- ambiente esperado;
+- commit origen;
+- artefacto origen;
+- manifest;
+- lockfile;
+- package set;
+- contract set;
+- configuración;
+- identidad de base de datos cuando aplique.
+
+Si cambia cualquiera de estas entradas materiales, el plan anterior queda `STALE`.
+
+#### 12. Snapshot anterior certificado
+
+El objetivo de rollback debe derivar de un snapshot previo que conserve, según aplique:
+
+- repositorio y ambiente;
+- commit exacto;
+- artefacto reproducible;
+- manifest;
+- lockfile;
+- versiones exactas de packages;
+- integridades de artefactos;
+- contract set;
+- configuración versionada;
+- identidad de migraciones aplicadas;
+- evidencia de build y pruebas;
+- compatibilidad package–consumidor;
+- línea base específica del consumidor;
+- referencia de rollback;
+- ausencia de invalidación vigente.
+
+Un hash aislado o una versión SemVer por sí solos no constituyen snapshot suficiente.
+
+#### 13. Elegibilidad del objetivo
+
+El objetivo de rollback es elegible solo si:
+
+1. existe físicamente o es reproducible;
+2. su artefacto tiene identidad verificable;
+3. corresponde al mismo repositorio;
+4. corresponde al ambiente o perfil aprobado;
+5. conserva manifest y lockfile coherentes;
+6. sus packages siguen disponibles e inmutables;
+7. los contratos requeridos siguen soportados;
+8. opera con el schema vigente o dispone de plan propietario de recuperación de base de datos;
+9. no exige restaurar un secreto revocado;
+10. no restaura un bypass o vulnerabilidad conocida;
+11. no exige rollback simultáneo no demostrado de otros repositorios;
+12. su evidencia no está stale.
+
+#### 14. Compatibilidad y version skew
+
+Rollback independiente presupone que otros repositorios pueden permanecer en versiones distintas.
+
+La certificación debe demostrar que:
+
+- la aplicación restituida puede convivir con consumidores ya actualizados;
+- los contratos compartidos soportan la combinación intermedia;
+- no se reutiliza evidencia de otra combinación;
+- una banda declarada no sustituye una prueba ejecutada;
+- un target que solo funciona si todos retroceden simultáneamente no se presenta como rollback independiente;
+- cualquier orden requerido queda explícito y verificable.
+
+#### 15. Rollback de código de repositorio
+
+Para `REPOSITORY_CODE`, la recuperación deberá:
+
+- conservar una mutación auditable;
+- producir un nuevo estado de branch o deployment;
+- preservar el commit defectuoso en historia;
+- identificar el artefacto anterior;
+- confirmar que el objetivo no depende de contratos ya retirados;
+- ejecutar pruebas posteriores;
+- impedir que un deploy terminado pero funcionalmente roto se declare `PASS`.
+
+#### 16. Rollback de adopción de package
+
+Para `PACKAGE_ADOPTION`:
+
+1. se restaura el conjunto exacto anterior de packages;
+2. manifest y lockfile cambian como unidad coherente;
+3. no se introducen rangos flotantes;
+4. no se usa una release distinta “parecida”;
+5. no se despublica la release defectuosa;
+6. se conserva `compatibility_evidence_identity` aplicable;
+7. CI006 puede servir de vehículo revisable si se requiere un PR consumidor;
+8. el rollback de un consumidor no obliga al rollback de otro.
+
+#### 17. Rollback de contrato
+
+Para `CONTRACT_COMPATIBILITY`, la tarea demuestra que el contrato objetivo:
+
+- sigue publicado o disponible conforme a la política vigente;
+- es compatible con el backend actual;
+- no reintroduce autoridad legacy prohibida;
+- no restaura un fallback permisivo;
+- no reabre un bypass retirado;
+- conserva las ventanas de compatibilidad aplicables;
+- tiene evidencia atribuible a la combinación exacta.
+
+#### 18. Rollback de configuración
+
+Para `CONFIGURATION`:
+
+- origen y destino deben estar versionados;
+- la configuración target debe corresponder al ambiente;
+- no puede incluir secretos en la evidencia;
+- no puede restaurar secretos revocados;
+- no puede reabrir feature flags retirados por seguridad;
+- no puede ampliar permisos;
+- no puede eliminar configuración requerida por otro componente vigente;
+- no puede contradecir schema o contrato ya cambiado.
+
+Configuración desconocida o no versionada bloquea el rollback.
+
+#### 19. Rollback de caché
+
+Para `CACHE`, la estrategia debe ser explícita y atribuible.
+
+Son estrategias válidas, según contrato:
+
+- invalidación aplicable;
+- reconstrucción desde fuente autoritativa;
+- cambio de namespace o versión;
+- restauración de snapshot únicamente cuando sea versionado, inmutable, no autoritativo y compatible;
+- no aplicabilidad justificada cuando realmente no exista caché material.
+
+Una caché vieja nunca puede restaurar autoridad obsoleta.
+
+#### 20. Frontera con Supabase y base de datos
+
+La regla vinculante es:
+
+```text
+ROLLBACK DE APLICACIÓN
+≠ DOWN MIGRATION AUTOMÁTICA
+≠ RESTORE AUTOMÁTICO DE BACKUP
+≠ CAMBIO RLS/RPC/SCHEMA DESDE EL CONSUMIDOR
+```
+
+Cuando el código objetivo no pueda operar con el estado actual de base de datos:
+
+1. la unidad declara `DATABASE_DEPENDENCY`;
+2. se identifica el estado de schema y migraciones relevante;
+3. CI014 no ejecuta la mutación;
+4. el owner de Supabase permanece `vento-group-sas/vento-shell`;
+5. la tarea propietaria de recuperación es `AUTH-DB-029` cuando corresponda rollback/restore;
+6. la evidencia propietaria debe existir antes de declarar `PASS` de la unidad dependiente;
+7. una corrección forward-compatible puede ser preferible a una down migration destructiva.
+
+#### 21. Alcance de `AUTH-DB-029`
+
+`AUTH-DB-029::GLOBAL` está materializada y `VERIFIED` como fundación local sintética de recuperación.
+
+Su evidencia demuestra, entre otros puntos:
+
+- controlador `scripts/supabase/recovery-drill.mjs`;
+- autocertificación aislada;
+- prueba local de rollback previo al punto de no retorno;
+- backup/restore sintético;
+- reconciliación de datos sintéticos;
+- comprobaciones posteriores de harness y drift;
+- resultado `PASS_ROLLBACK_VERIFIED` en entorno local sintético;
+- cero targets hosted utilizados.
+
+Esto no demuestra un restore productivo ni autoriza uno.
+
+#### 22. Punto de no retorno y estrategia de recuperación
+
+La certificación distingue escenarios donde volver literalmente es seguro de escenarios donde ya existe un punto de no retorno lógico, contractual o de datos.
+
+Después de un punto de no retorno:
+
+- no se ejecuta una down migration destructiva por conveniencia;
+- no se pierde información válida creada después;
+- se priorizan `FORWARD_FIX`, recuperación selectiva, compensación forward o plan propietario equivalente cuando sea más seguro;
+- una política RLS endurecida no se desactiva rutinariamente para recuperar funcionalidad;
+- un permiso revocado por seguridad no reaparece por rollback.
+
+#### 23. Preservación de datos
+
+Todo rollback debe clasificar los efectos producidos durante la ventana del incidente:
+
+- datos válidos;
+- datos inválidos confirmados;
+- efectos parciales;
+- eventos pendientes;
+- idempotency keys;
+- colas offline;
+- uploads;
+- side effects externos;
+- datos derivados reconstruibles;
+- evidencia auditable.
+
+Reglas:
+
+1. datos válidos se preservan;
+2. datos inválidos requieren reconciliación propietaria;
+3. no se usa restore ciego si elimina escrituras válidas;
+4. auditoría histórica se conserva;
+5. un estado no reconciliable bloquea el cierre;
+6. el resultado final debe explicar qué ocurrió antes, durante y después del rollback.
+
+#### 24. Preservación de auditoría
+
+Rollback nunca borra ni reescribe:
+
+- quién solicitó la recuperación;
+- quién la aprobó;
+- actor técnico efectivo;
+- trigger;
+- estado origen;
+- objetivo;
+- decisiones de compatibilidad;
+- intentos fallidos;
+- cambios aplicados;
+- efectos parciales;
+- evidencia de datos;
+- comprobaciones posteriores;
+- resultado final.
+
+La auditoría transversal definitiva permanece reservada a `AUTH-QA-029`.
+
+#### 25. Seguridad
+
+Ningún rollback certificado puede restaurar:
+
+- bypasses de autorización;
+- policies deliberadamente endurecidas por seguridad;
+- grants inseguros;
+- roles obsoletos que amplíen autoridad;
+- fallbacks permisivos;
+- allowlists usadas como autoridad final;
+- código con vulnerabilidad conocida no aceptada;
+- validadores retirados por inseguros;
+- credenciales comprometidas;
+- secretos revocados.
+
+Una versión funcional pero insegura no es target elegible.
+
+#### 26. Contexto y autorización después del rollback
+
+Después de recuperar una aplicación:
+
+- las decisiones de autorización se vuelven a evaluar contra fuentes vigentes;
+- no se reutilizan decisiones cacheadas de la versión anterior;
+- no se restaura contexto obsoleto;
+- las colas offline continúan reautorizándose cuando aplique;
+- los tokens derivados y cachés obedecen contratos actuales de frescura;
+- el rollback de UI no crea autoridad server-side;
+- un SDK anterior solo es válido si su contrato sigue soportado.
+
+#### 27. Secretos y credenciales
+
+El rollback de código o configuración no implica rollback de secretos.
+
+Reglas:
+
+1. los valores secretos no aparecen en evidencia determinista;
+2. una credencial revocada no se restaura;
+3. una credencial comprometida no se reactiva;
+4. el target debe poder resolver identidades de secreto vigentes;
+5. si solo funciona con una credencial revocada, el rollback queda bloqueado;
+6. rotación de secreto conserva owner y proceso propios.
+
+#### 28. Triggers de rollback
+
+Los triggers permitidos incluyen:
+
+- regresión funcional;
+- incompatibilidad de package;
+- error de despliegue;
+- incidente de seguridad;
+- configuración defectuosa;
+- degradación de rendimiento atribuible al cambio;
+- fallo operacional atribuible al cambio;
+- retiro o deprecación incorrectos;
+- decisión humana aprobada de contingencia.
+
+El trigger identifica el motivo; no concede autoridad para ejecutar.
+
+#### 29. Autoridad de ejecución
+
+Toda ejecución real futura deberá conservar:
+
+- solicitante;
+- aprobador;
+- owner técnico;
+- alcance exacto;
+- repositorio;
+- ambiente;
+- origen;
+- destino;
+- clases de rollback;
+- evidencia de compatibilidad;
+- evidencia de datos y Supabase;
+- separación de funciones aplicable.
+
+La aprobación de `AUTH-QA-028` no autoriza por sí sola ningún rollback real.
+
+#### 30. Concurrencia
+
+Antes de mutar, la ejecución vuelve a comprobar el estado actual.
+
+Si existe:
+
+- nuevo deploy;
+- hotfix;
+- cambio de manifest;
+- cambio de lockfile;
+- cambio de configuración;
+- cambio de schema;
+- otro rollback;
+- otra mutación incompatible;
+
+la preparación previa se invalida y debe recalcularse desde el estado real.
+
+#### 31. Idempotencia
+
+Una repetición de evaluación o verificación no debe duplicar la mutación.
+
+La evidencia debe distinguir:
+
+- preparación;
+- ejecución;
+- verificación posterior;
+- conciliación;
+- reintento técnico;
+- recuperación de resultado.
+
+Un reintento no elimina un intento fallido previo.
+
+#### 32. Independencia entre repositorios
+
+La recuperación ordinaria se modela por unidad de repositorio y ambiente.
+
+Se exige demostrar que, cuando la compatibilidad lo permite:
+
+- NEXO puede retroceder sin FOGO;
+- FOGO puede retroceder sin ORIGO;
+- ORIGO puede retroceder sin PULSO;
+- PULSO puede retroceder sin VISO;
+- VISO puede retroceder sin NUMERA;
+- NUMERA puede retroceder sin SHELL;
+- ANIMA puede retroceder dentro de su runtime nativo;
+- SHELL puede retroceder sin reescribir releases compartidas.
+
+No se usa simultaneidad como sustituto de compatibilidad.
+
+#### 33. Incidente multi-repositorio
+
+Un incidente multi-repositorio se representa como múltiples unidades explícitas:
+
+```text
+INCIDENTE
+→ ROLLBACK UNIT A
+→ ROLLBACK UNIT B
+→ ROLLBACK UNIT C
+```
+
+Cada unidad conserva origen, destino, owner, autoridad, pruebas, resultado y evidencia.
+
+Puede existir un orden explícito, pero nunca una operación implícita `ROLLBACK_ALL`.
+
+#### 34. Relación con `SHELL-CI-015`
+
+`SHELL-CI-015::GLOBAL` está `VERIFIED` y demuestra el habilitador de independencia de despliegue mediante estados intermedios soportados.
+
+`AUTH-QA-028` consume esa semántica para impedir que un rollback sea declarado independiente cuando:
+
+- requiere simultaneidad obligatoria;
+- un estado intermedio no es compatible;
+- el version skew no está soportado;
+- una dependencia de base de datos no está resuelta;
+- la configuración intermedia abre un bypass;
+- no existe rollback disponible para una unidad necesaria.
+
+#### 35. Relación con `AUTH-QA-027`
+
+`AUTH-QA-027` certifica compatibilidad package–consumidor y adopción independiente.
+
+`AUTH-QA-028` consume esa salida, pero no la reemplaza.
+
+Frontera:
+
+```text
+AUTH-QA-027
+→ demuestra que la combinación puede coexistir/adoptarse
+
+AUTH-QA-028
+→ demuestra que una aplicación puede recuperarse hacia una combinación anterior segura
+```
+
+Si la combinación objetivo no es compatible, el rollback queda bloqueado.
+
+#### 36. Frontera con `AUTH-QA-029`
+
+`AUTH-QA-028` conserva evidencia de la operación de rollback necesaria para certificarla.
+
+`AUTH-QA-029` conserva la certificación transversal de que la auditoría retiene actor, turno, sede y área de forma consistente en el ecosistema.
+
+Esta tarea no absorbe esa certificación transversal.
+
+#### 37. Frontera con `AUTH-QA-030`
+
+`AUTH-QA-030` conserva la regresión integral final.
+
+`AUTH-QA-028` entrega como handoff:
+
+- contrato de rollback cerrado;
+- casos positivos y negativos;
+- evidencia esperada por package y global final;
+- límites de seguridad y Supabase;
+- criterios de independencia y reconciliación.
+
+No ejecuta la regresión completa.
+
+#### 38. Casos positivos obligatorios
+
+La certificación deberá cubrir, como mínimo:
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-028-A` | código de una aplicación vuelve a artefacto anterior compatible | recuperación atribuible y verificable |
+| `AUTH-QA-028-B` | adopción de package vuelve al conjunto exacto anterior | manifest/lockfile coherentes y compatibilidad vigente |
+| `AUTH-QA-028-C` | configuración versionada vuelve a valor anterior seguro | configuración target válida para el ambiente |
+| `AUTH-QA-028-D` | caché se invalida y reconstruye | cero autoridad stale y resultado consistente |
+| `AUTH-QA-028-E` | datos válidos creados durante incidente permanecen | preservación demostrada |
+| `AUTH-QA-028-F` | un repositorio retrocede mientras otro permanece actualizado | version skew soportado |
+| `AUTH-QA-028-G` | ANIMA retrocede dentro del stack Expo/React Native | cero normalización falsa a web |
+| `AUTH-QA-028-H` | dependencia de DB no requiere cambio porque código anterior soporta schema actual | cero mutación Supabase innecesaria |
+| `AUTH-QA-028-I` | dependencia de DB sí requiere recovery | bloqueo CI014 hasta evidencia propietaria `AUTH-DB-029` |
+| `AUTH-QA-028-J` | misma verificación se repite | cero segunda mutación |
+| `AUTH-QA-028-K` | intento previo falla y luego se recupera | historia de ambos intentos preservada |
+| `AUTH-QA-028-L` | incidente afecta dos repositorios con orden explícito seguro | dos unidades independientes con estados intermedios válidos |
+
+#### 39. Casos negativos obligatorios
+
+La certificación deberá bloquear, como mínimo:
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| `AUTH-QA-028-M` | repositorio desconocido | `BLOCKED` |
+| `AUTH-QA-028-N` | ambiente desconocido | `BLOCKED` |
+| `AUTH-QA-028-O` | commit origen ya cambió | `STALE` |
+| `AUTH-QA-028-P` | target no existe | `BLOCKED` |
+| `AUTH-QA-028-Q` | artefacto target sin integridad | `BLOCKED` |
+| `AUTH-QA-028-R` | manifest/lockfile incoherentes | `BLOCKED` |
+| `AUTH-QA-028-S` | package anterior incompatible | `BLOCKED` |
+| `AUTH-QA-028-T` | target exige contrato retirado | `BLOCKED` |
+| `AUTH-QA-028-U` | target exige rollback simultáneo no probado | `BLOCKED` |
+| `AUTH-QA-028-V` | falta snapshot previo certificado | `BLOCKED` |
+| `AUTH-QA-028-W` | intento de `force push` | `FAIL` |
+| `AUTH-QA-028-X` | intento de mover tag/release histórica | `FAIL` |
+| `AUTH-QA-028-Y` | intento de restaurar bypass | `FAIL` |
+| `AUTH-QA-028-Z` | intento de restaurar secreto revocado | `FAIL` |
+| `AUTH-QA-028-AA` | configuración target no versionada | `BLOCKED` |
+| `AUTH-QA-028-AB` | caché vieja se usa como autoridad | `FAIL` |
+| `AUTH-QA-028-AC` | down migration no certificada | `BLOCKED` |
+| `AUTH-QA-028-AD` | consumidor intenta mutar Supabase | `FAIL` |
+| `AUTH-QA-028-AE` | restore de snapshot perdería datos válidos | `BLOCKED` |
+| `AUTH-QA-028-AF` | evidencia pertenece a otro ambiente | `FAIL` |
+| `AUTH-QA-028-AG` | no existen pruebas posteriores | `FAIL` |
+| `AUTH-QA-028-AH` | deploy termina pero validación falla | `FAIL` |
+| `AUTH-QA-028-AI` | hotfix posterior no incorporado | `STALE` |
+| `AUTH-QA-028-AJ` | fallo parcial se presenta como éxito | `FAIL` |
+| `AUTH-QA-028-AK` | versión anterior contiene vulnerabilidad conocida | `BLOCKED` / forward fix |
+| `AUTH-QA-028-AL` | incidente multi-repo se ejecuta como `ROLLBACK_ALL` | `FAIL` |
+
+#### 40. Regresiones que no pueden reaparecer
+
+La certificación debe impedir reintroducir:
+
+1. rollback identificado solo por commit;
+2. target seleccionado solo por SemVer;
+3. target por branch mutable;
+4. manifest sin lockfile;
+5. lockfile de otro commit;
+6. evidencia de compatibilidad de otro consumidor;
+7. línea base de otro consumidor;
+8. mezcla de ambientes;
+9. configuración de otro ambiente;
+10. caché stale;
+11. secretos en evidencia;
+12. datos productivos como fixture de autocertificación;
+13. schema drift ignorado;
+14. rollback DB implícito;
+15. bypass restaurado;
+16. historia Git reescrita;
+17. release histórica mutada;
+18. auto-merge;
+19. auto-deploy no autorizado;
+20. rollback global implícito;
+21. `PASS` antes de verificación posterior;
+22. eliminación de intentos fallidos;
+23. retry hasta verde sin diagnóstico;
+24. evidencia reutilizada después de un cambio material.
+
+#### 41. Matriz de decisión de datos y base de datos
+
+| Código target vs schema actual | Datos durante ventana | Acción |
+| --- | --- | --- |
+| compatible | preservables | rollback app sin cambio DB |
+| compatible | requieren reconciliación local | rollback app + reconciliación propietaria |
+| incompatible | recovery DB seguro y aprobado | esperar `AUTH-DB-029`, luego continuar |
+| incompatible | recovery DB no seguro | bloquear rollback y aplicar forward fix |
+| desconocido | cualquier estado | `BLOCKED`; obtener evidencia |
+
+No se elige la opción más destructiva por velocidad.
+
+#### 42. Matriz de decisión de caché
+
+| Estado | Acción |
+| --- | --- |
+| derivable desde fuente autoritativa | invalidar y reconstruir |
+| namespace/versionado incompatible | cambiar namespace/versión |
+| snapshot versionado, inmutable, no autoritativo y compatible | restauración permitida con evidencia |
+| contiene autoridad o decisión stale | prohibido restaurar |
+| estrategia desconocida | `BLOCKED` |
+
+#### 43. Matriz de independencia
+
+Para cada unidad certificada se deberá decidir:
+
+```text
+SINGLE_REPOSITORY
+ANY_ORDER
+ORDERED
+BLOCKED_LOCKSTEP
+```
+
+`BLOCKED_LOCKSTEP` nunca se presenta como independencia satisfecha.
+
+#### 44. Evidencia mínima por ejecución
+
+La evidencia futura deberá conservar, como mínimo:
+
+- `rollback_execution_id`;
+- repositorio;
+- ambiente;
+- trigger;
+- origen observado;
+- commit y artefacto origen;
+- objetivo;
+- commit y artefacto target;
+- clases de rollback;
+- package sets;
+- contract sets;
+- manifest y lockfile;
+- snapshot previo certificado;
+- referencias de release;
+- referencias de compatibilidad;
+- línea base de consumidor;
+- identidad de base de datos;
+- impacto Supabase;
+- configuración antes/target;
+- estrategia de caché;
+- impacto de datos;
+- evaluación de seguridad;
+- autoridad;
+- acciones planificadas;
+- resultado de mutación;
+- verificación posterior;
+- reconciliación;
+- estado final;
+- causa de bloqueo, fallo o stale cuando aplique;
+- referencias de evidencia.
+
+#### 45. Frescura de evidencia
+
+La evidencia queda stale si cambia materialmente cualquiera de estas entradas:
+
+- commit origen;
+- artefacto origen;
+- commit target;
+- artefacto target;
+- manifest;
+- lockfile;
+- package set;
+- contract set;
+- matriz de compatibilidad;
+- línea base del consumidor;
+- schema;
+- migraciones;
+- configuración;
+- estrategia de caché;
+- secreto requerido;
+- ambiente;
+- trigger material;
+- plan propietario de Supabase;
+- estado de seguridad;
+- datos que alteren la elegibilidad.
+
+#### 46. Secuencia obligatoria de certificación
+
+Cada ejecución futura deberá seguir, conceptualmente:
+
+1. resolver package y consumer scope;
+2. fijar repositorio y ambiente;
+3. observar estado origen;
+4. identificar trigger;
+5. resolver snapshot previo certificado;
+6. resolver objetivo exacto;
+7. clasificar clases de rollback;
+8. revalidar compatibilidad;
+9. revalidar línea base del consumidor;
+10. evaluar datos;
+11. evaluar Supabase;
+12. evaluar configuración;
+13. evaluar caché;
+14. evaluar seguridad y secretos;
+15. validar independencia respecto de otros repositorios;
+16. obtener autoridad de ejecución;
+17. volver a comprobar frescura;
+18. ejecutar únicamente la mutación autorizada;
+19. verificar identidad resultante;
+20. ejecutar pruebas posteriores;
+21. reconciliar datos, colas, caché y side effects;
+22. consolidar evidencia;
+23. decidir resultado;
+24. entregar handoff de auditoría a `AUTH-QA-029`.
+
+#### 47. Resultado `PASS`
+
+Una unidad solo puede quedar `PASS` cuando:
+
+- la mutación autorizada terminó;
+- el estado final coincide con el objetivo;
+- las pruebas posteriores obligatorias pasaron;
+- la compatibilidad sigue vigente;
+- no existe reconciliación crítica pendiente;
+- los datos válidos se preservaron;
+- la auditoría permanece disponible;
+- no reapareció un bypass o vulnerabilidad;
+- la dependencia Supabase, si existió, tiene evidencia propietaria válida;
+- la evidencia final está consolidada y no stale.
+
+#### 48. Resultado `BLOCKED` o forward fix
+
+El rollback queda bloqueado y se exige corrección hacia adelante o recuperación propietaria cuando:
+
+- el target anterior es inseguro;
+- el target anterior es incompatible;
+- los datos no pueden preservarse con seguridad;
+- una down migration sería destructiva o no demostrada;
+- el backend actual ya no soporta el contrato anterior;
+- el target exige un secreto revocado;
+- el único camino requiere rollback simultáneo no probado;
+- no existe snapshot previo certificado;
+- la evidencia no permite distinguir el estado real;
+- la recuperación de base de datos no tiene plan propietario válido.
+
+#### 49. Ejecución por package
+
+La futura instancia:
+
+```text
+AUTH-QA-028::<package_id>
+```
+
+deberá demostrar la aplicabilidad del contrato de rollback al package concreto y a sus consumidores autorizados.
+
+Deberá registrar:
+
+- package id;
+- familias compartidas afectadas;
+- consumidores afectados;
+- ambientes aplicables;
+- snapshots previos;
+- combinaciones target;
+- rollback classes;
+- dependencias DB;
+- casos ejecutados;
+- resultado;
+- evidencia.
+
+No existe `PASS` heredado de otro package.
+
+#### 50. Certificación global final
+
+La futura instancia:
+
+```text
+AUTH-QA-028::GLOBAL-FINAL
+```
+
+deberá reconciliar todas las ejecuciones por package y demostrar:
+
+1. cero packages obligatorios sin resultado;
+2. cero unidades obligatorias sin owner;
+3. cero resultados stale usados como evidencia;
+4. cero rollback global implícito;
+5. cero bypasses restaurados;
+6. cero secretos revocados restaurados;
+7. cero pérdida de datos válida aceptada silenciosamente;
+8. cero dependencias Supabase mutadas por consumidores;
+9. compatibilidad de version skew donde aplique;
+10. trazabilidad suficiente para `AUTH-QA-029` y `AUTH-QA-030`.
+
+#### 51. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea reutiliza cobertura vigente y no altera el Registro Canónico de Requisitos de Prueba.
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar, la cobertura existente de:
+
+- `TREQ-SHELL-006` — compatibilidad y adopción independiente por repositorio;
+- `TREQ-SHELL-007` — rollback independiente de código, contrato, caché, migración y configuración sin perder datos o auditoría;
+- `TREQ-SHELL-008` — evidencia reproducible por package y PR;
+- `TREQ-SHELL-009` — identidad verificable de repositorio, commit y ambiente;
+- `TREQ-SHELL-039` — retiro bloqueado hasta compatibilidad, pruebas y rollback soportado;
+- `TREQ-SHELL-098` — rollback de migración de consumidores sin resucitar deuda histórica ni evidencia ajena;
+- `TREQ-AUTH-014` — invalidación y reautorización frente a contexto stale;
+- `TREQ-AUTH-015` — evidencia correlacionable, incluido rollback;
+- `TREQ-AUTH-016` — revocación sin borrar historia ni restaurar autoridad previa.
+
+Estas referencias son trazabilidad heredada; no representan requisitos creados ni modificados por esta entrega.
+
+#### 53. Línea base física observada
+
+La línea base remota verificada conserva:
+
+- `SHELL-CI-014::GLOBAL` en estado `VERIFIED`;
+- implementación `scripts/quality/repository-rollback-gate.mjs`;
+- seis clases de rollback;
+- ocho repositorios gobernados;
+- 64 casos contractuales autocertificados: 12 positivos, 28 negativos y 24 regresiones;
+- `SHELL-CI-015::GLOBAL` en estado `VERIFIED`;
+- 56 casos contractuales de independencia: 12 positivos, 24 negativos y 20 regresiones;
+- `AUTH-DB-029::GLOBAL` en estado `VERIFIED`;
+- controlador local sintético de recuperación Supabase;
+- prueba local de rollback, restore y reconciliación sin targets hosted.
+
+Esta evidencia demuestra materialización de habilitadores, no una certificación física `AUTH-QA-028` de paquetes reales.
+
+#### 54. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no construye ni despliega aplicaciones, packages ni artefactos de rollback. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout del usuario ni ejecutado mediante los validadores documentales locales. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, contratos `SHELL-PKG-006`, `SHELL-CI-014`, `SHELL-CI-015`, `AUTH-DB-029`, implementaciones `VERIFIED`, código actual de los gates y cobertura 04A existente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó rollback, deploy, restore, reconciliación productiva ni incidente controlado real. |
+| FÍSICA | NOT_EXECUTED | Las instancias `AUTH-QA-028::<package_id>` y `AUTH-QA-028::GLOBAL-FINAL` permanecen pendientes del gate `POST_E5_PACKAGE` y de autorización física aplicable. |
+
+#### 55. Criterios de aceptación
+
+`AUTH-QA-028` queda documentalmente aceptable cuando:
+
+- [ ] El título canónico es exactamente `AUTH-QA-028 — Rollback funciona por aplicación`.
+- [ ] La continuidad usa `AUTH-QA-027` como anterior y `AUTH-QA-029` como siguiente reservada.
+- [ ] La topología permanece `PER_PACKAGE_AND_GLOBAL_FINAL`.
+- [ ] El gate permanece `POST_E5_PACKAGE`.
+- [ ] Se conserva el universo de ocho repositorios gobernados por CI014.
+- [ ] Se conservan las seis clases de rollback.
+- [ ] Rollback queda definido como operación nueva y auditable.
+- [ ] Un target requiere snapshot previo certificado.
+- [ ] Manifest y lockfile se tratan como unidad coherente.
+- [ ] Releases y artefactos históricos permanecen inmutables.
+- [ ] Se valida compatibilidad con version skew.
+- [ ] No existe rollback simultáneo implícito.
+- [ ] ANIMA conserva su clasificación nativa.
+- [ ] Configuración target debe estar versionada y corresponder al ambiente.
+- [ ] Caché nunca restaura autoridad stale.
+- [ ] Supabase permanece fuera de la autoridad de consumidores y CI014.
+- [ ] Recuperación DB se delega al owner canónico.
+- [ ] Datos válidos y auditoría se preservan.
+- [ ] Bypasses y secretos revocados no se restauran.
+- [ ] Se detecta concurrencia y evidencia stale.
+- [ ] Se exige verificación posterior al deploy.
+- [ ] Se conservan intentos fallidos y efectos parciales.
+- [ ] Se definen casos positivos, negativos y regresiones.
+- [ ] Se diferencia rollback seguro de forward fix.
+- [ ] `AUTH-QA-029` conserva auditoría transversal.
+- [ ] `AUTH-QA-030` conserva la regresión integral final.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecuta ningún cambio físico desde esta tarea documental.
+
+#### 56. Límites
+
+`AUTH-QA-028` no:
+
+- ejecuta rollback productivo;
+- revierte commits reales;
+- crea PR de rollback;
+- fusiona PR;
+- despliega;
+- modifica packages;
+- publica o despublica releases;
+- mueve tags;
+- modifica manifests o lockfiles reales;
+- restaura secretos;
+- modifica configuración real;
+- invalida o reconstruye cachés reales;
+- ejecuta backup o restore real;
+- ejecuta PITR;
+- crea o ejecuta down migrations;
+- modifica schema, RLS, RPC, triggers, grants, Storage, Realtime o Edge Functions;
+- modifica datos;
+- borra auditoría;
+- ejecuta `ROLLBACK_ALL`;
+- certifica auditoría transversal de `AUTH-QA-029`;
+- ejecuta la regresión completa de `AUTH-QA-030`;
+- selecciona un package físico;
+- aprueba ni ejecuta `E5-GATE-008`;
+- modifica el Registro 04A.
+
+---
+
+#### 57. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-QA-027 — Actualización de paquete no rompe otros repositorios`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-QA-028 — Rollback funciona por aplicación`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-QA-029 — Auditoría conserva actor, turno, sede y área`
 ### [ ] AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
 ### [ ] AUTH-QA-030 — Ejecutar prueba de regresión completa
 
