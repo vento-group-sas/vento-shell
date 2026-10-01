@@ -35856,7 +35856,1938 @@ No transfiere ownership financiero NUMERA a PASS ni convierte saldo, rewards, hi
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-029 — Probar PASS como cliente`
-### [ ] UX-QA-029 — Probar PASS como cliente
+### ✅ UX-QA-029 — Probar PASS como cliente
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-028 — Probar NUMERA por alcance financiero
+**Tarea siguiente:** UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de PASS como cliente, demostrando por package y globalmente que las diecinueve pantallas canónicas, las veintiuna superficies lógicas AS-IS, fidelización, QR personal, catálogo, acumulación visible, redención, historial, perfil y privacidad, compra, pago, pedidos, seguimiento, chat, servicio y recuperación pueden utilizarse con comprensión, seguridad, identidad, fuente de verdad, idempotencia, accesibilidad y evidencia humana suficientes, consumiendo `UX-QA-020`, `PASS-UX-001..013`, `PASS-INT-001..005`, `PASS-QA-001..002` y la cobertura vigente sin ejecutar ni reabrir los contratos físicos propietarios
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de PASS como cliente definido; las futuras ejecuciones `UX-QA-029::<package_id>` y `UX-QA-029::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia humana y física aplicable del piloto sin crear participantes, compras, pagos, puntos, redenciones, pedidos, reclamos, reservas, mensajes, datos, Supabase, packages, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican `vento-pass`, PULSO, código, navegación, componentes, aliases, feature flags, contratos de fidelización, ledger, saldo, tickets, recompensas, pedidos, pagos, perfil, consentimientos, datos, Supabase, migraciones, RLS, RPC, packages, ambientes, despliegues ni cuentas de prueba
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que PASS funciona correctamente **como experiencia de cliente** sobre el alcance realmente materializado, sin confundir una interfaz visible con una capacidad existente, un QR personal con autorización operativa, una previsualización con un efecto confirmado, un estado local con una verdad empresarial, un cliente con un trabajador ni una sesión documental con evidencia humana real.
+
+La certificación deberá responder, para cada escenario aplicable:
+
+```text
+¿QUE TAREA INTENTA COMPLETAR EL CLIENTE?
+¿QUE VSCREEN CANONICA REPRESENTA ESA TAREA?
+¿QUE SUPERFICIE RUNTIME LA MATERIALIZA HOY?
+¿LA CAPACIDAD ES REAL, PARCIAL, PROTOTIPO O NO MATERIALIZADA?
+¿EL CLIENTE ENTIENDE EL ESTADO Y LA SIGUIENTE ACCION SEGURA?
+¿EL RESULTADO VISIBLE PROVIENE DE LA FUENTE PROPIETARIA?
+¿EXISTE RIESGO DE REPETIR UNA MUTACION INCIERTA?
+¿LA IDENTIDAD CLIENTE PERMANECE SEPARADA DE IDENTIDAD LABORAL Y PRINCIPAL TECNICO?
+¿LA EXPERIENCIA CONSERVA PRIVACIDAD, ACCESIBILIDAD Y RECUPERACION?
+¿LA EVIDENCIA HUMANA Y TECNICA CORRESPONDE AL MISMO CANDIDATO Y ALCANCE?
+```
+
+Regla central:
+
+```text
+APP ABIERTA
++
+PANTALLA VISIBLE
+!=
+EXPERIENCIA PASS CERTIFICADA
+```
+
+Y también:
+
+```text
+CONTRATO PASS
++
+RUNTIME MATERIALIZADO
++
+USO REAL REPRESENTATIVO
++
+RESULTADO EMPRESARIAL VERIFICADO
++
+HALLAZGOS BLOQUEANTES CERRADOS
+=
+PASS CERTIFICABLE COMO CLIENTE
+```
+
+---
+
+#### 2. Resultado documental
+
+`UX-QA-029` define el contrato especializado que convierte la obligación `Probar PASS como cliente` en una certificación verificable por package y en una certificación agregada final.
+
+El resultado establece:
+
+- universo exacto de pantallas y superficies PASS;
+- frontera cliente versus operación laboral;
+- relación entre experiencia, PULSO y fuentes propietarias;
+- participantes y condiciones representativas;
+- matriz mínima de escenarios humanos;
+- integración de acumulación y redención sin duplicar `PASS-QA-001..002`;
+- criterios de comprensión, encontrabilidad, predicción, recuperación y confianza semántica;
+- estados de carga, stale, error, offline, pending y resultado desconocido;
+- tratamiento de capacidades no materializadas;
+- accesibilidad, privacidad y minimización de evidencia;
+- findings, severidad, owner y retest;
+- criterio PASS por escenario y por package;
+- criterio `UX-QA-029::GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-030` sin iniciar AURA.
+
+---
+
+#### 3. Topología contractual
+
+La topología vigente para el BLOQUE U es:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-029::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-029::GLOBAL-FINAL
+```
+
+La tarea documental define el contrato una sola vez.
+
+Cada ejecución física futura conserva identidad propia por package y solo puede usar evidencia del candidato, ambiente y alcance correspondientes.
+
+La definición documental no selecciona package ni cruza E5 por inferencia.
+
+---
+
+#### 4. Handoff recibido de `UX-QA-028`
+
+`UX-QA-028` entrega únicamente continuidad transversal del BLOQUE U:
+
+- contrato común `UX-QA-020`;
+- disciplina de evidencia por package;
+- findings y retest;
+- criterio `GLOBAL-FINAL`;
+- separación entre fuente propietaria y proyección;
+- tratamiento de resultado desconocido;
+- minimización de información sensible;
+- regla de que un consumidor no adquiere ownership por presentar información ajena.
+
+No transfiere ownership financiero NUMERA a PASS ni convierte puntos, rewards, historial, pedido o checkout en ledger financiero NUMERA.
+
+---
+
+#### 5. Contrato transversal consumido de `UX-QA-020`
+
+`UX-QA-029` hereda sin redefinir:
+
+- piloto humano integrado al piloto físico cuando corresponda;
+- usuario real compatible con la población prevista;
+- cobertura proporcional de escenarios y riesgos;
+- matriz `APPLICATION × ACTOR/COHORTE × PROCESS/SCENARIO × DEVICE/SURFACE × CONDITION`;
+- mismo candidato y mismo alcance;
+- evidencia humana, técnica y operativa complementaria;
+- hallazgos con owner y condición de salida;
+- retest proporcional a la corrección;
+- PASS por escenario y por package;
+- `GLOBAL-FINAL` sin ocultar fallos locales;
+- prohibición de sustituir observación humana por automatización.
+
+---
+
+#### 6. Base PASS consumida
+
+La especialización consume:
+
+```text
+PASS-UX-001..013
+PASS-INT-001..005
+PASS-QA-001..002
+```
+
+Responsabilidades resumidas:
+
+| Familia | Responsabilidad que `UX-QA-029` verifica sin redefinir |
+| --- | --- |
+| `PASS-UX-001..013` | experiencia cliente, superficies, semántica, navegación, estados, recuperación y contrato de validación humana |
+| `PASS-INT-001` | integración PULSO → PASS para acumulación |
+| `PASS-INT-002` | integración PULSO → PASS para redención |
+| `PASS-INT-003` | administración laboral de productos de fidelización |
+| `PASS-INT-004` | administración laboral de clientes cuando corresponda |
+| `PASS-INT-005` | separación cliente, trabajador, principal y actor efectivo |
+| `PASS-QA-001` | prueba completa materializada de acumulación por implementation unit |
+| `PASS-QA-002` | prueba completa materializada de redención por implementation unit |
+
+---
+
+#### 7. Snapshot remoto de referencia
+
+El runtime PASS observado como referencia AS-IS corresponde a:
+
+```text
+REPOSITORY = carlosibarraariza/vento-pass
+BRANCH = main
+COMMIT = b5a4aec908ef12226f798078577ab089a29ccda2
+```
+
+El snapshot se usa para reconciliar superficies presentes y brechas observables.
+
+No constituye por sí mismo certificación de implementación, staging, piloto ni producción.
+
+---
+
+#### 8. Universo canónico PASS
+
+La certificación conserva exactamente:
+
+```text
+PANTALLAS CANONICAS PASS = 19
+SUPERFICIES LOGICAS AS_IS = 21
+STACK_SCREEN AS_IS = 15
+VSCREEN CON EVIDENCIA RUNTIME DEDICADA, COMPARTIDA O EMBEBIDA = 16
+VSCREEN SIN SUPERFICIE RUNTIME DEDICADA DEMOSTRADA = 3
+```
+
+La cardinalidad 21 no sustituye la cardinalidad 19.
+
+Una superficie AS-IS puede servir a más de una identidad canónica y una identidad canónica puede apoyarse en más de una superficie runtime.
+
+---
+
+#### 9. Diecinueve pantallas canónicas
+
+| Identidad | Pantalla | Propósito cliente |
+| --- | --- | --- |
+| `VSCREEN-0107` | Inicio del cliente y resumen de beneficios | estado, puntos, beneficios y acciones personales |
+| `VSCREEN-0108` | QR personal de identificación | presentar identidad cliente sin ejecutar efecto operativo |
+| `VSCREEN-0109` | Catálogo de beneficios y recompensas | consultar beneficios, condiciones, costo y vigencia |
+| `VSCREEN-0110` | Ticket o QR de redención | crear/presentar intención de redención con estado y vigencia |
+| `VSCREEN-0111` | Historial de puntos y redenciones | consultar ledger personal y receipts |
+| `VSCREEN-0112` | Perfil, privacidad y consentimientos | autogestión de datos, preferencias y consentimientos |
+| `VSCREEN-0160` | Inicio y selección del portal de compras | escoger contexto de compra propio |
+| `VSCREEN-0161` | Menú y catálogo comercial del cliente | consultar oferta publicada |
+| `VSCREEN-0162` | Carrito y configuración del pedido | construir intención de compra |
+| `VSCREEN-0163` | Dirección, modalidad y programación de entrega | seleccionar fulfillment propio |
+| `VSCREEN-0164` | Revisión, checkout e inicio de pago | revisar e iniciar pago sin fabricar confirmación |
+| `VSCREEN-0165` | Confirmación de pedido y retorno de pago | presentar receipt y resultado confirmado o pendiente |
+| `VSCREEN-0166` | Mis pedidos y detalle | consultar pedidos propios |
+| `VSCREEN-0167` | Seguimiento de preparación y entrega del cliente | consultar avance sin gobernar la operación interna |
+| `VSCREEN-0168` | Chat y comunicación asociada al pedido | comunicarse sobre pedido propio |
+| `VSCREEN-0169` | Mis reclamos y casos de servicio | registrar y seguir caso propio |
+| `VSCREEN-0170` | Mis reservas y eventos | gestionar reserva/evento propio |
+| `VSCREEN-0171` | Calificación y satisfacción | registrar satisfacción separada de reclamo e incentivo |
+| `VSCREEN-0172` | Comunicaciones y notificaciones del cliente | consultar comunicaciones propias y consentidas |
+
+No puede omitirse una identidad por ausencia de runtime; en ese caso se clasifica correctamente como no materializada o parcial.
+
+---
+
+#### 10. Veintiuna superficies lógicas AS-IS
+
+| ID | Identidad AS-IS | Clase |
+| --- | --- | --- |
+| `PASS-CUSTOMER-SURFACE-001` | Auth | `PRE_NAVIGATION_GATE` |
+| `PASS-CUSTOMER-SURFACE-002` | CompleteProfile | `PRE_NAVIGATION_GATE` |
+| `PASS-CUSTOMER-SURFACE-003` | Home | `STACK_SCREEN` |
+| `PASS-CUSTOMER-SURFACE-004` | Club | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-005` | MyOrders | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-006` | ChooseSatellite | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-007` | DeliveryAddresses | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-008` | AccountSettings | `STACK_SCREEN` |
+| `PASS-CUSTOMER-SURFACE-009` | VentoCafe | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-010` | Saudo | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-011` | SatelliteExperience | `STACK_SCREEN` |
+| `PASS-CUSTOMER-SURFACE-012` | SatellitePass | `STACK_SCREEN` |
+| `PASS-CUSTOMER-SURFACE-013` | OrderHome | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-014` | OrderMenu | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-015` | OrderCheckout | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-016` | OrderPlaced | `STACK_SCREEN_FEATURE_FLAG_DEEP_LINK` |
+| `PASS-CUSTOMER-SURFACE-017` | OrderChat | `STACK_SCREEN_FEATURE_FLAG` |
+| `PASS-CUSTOMER-SURFACE-018` | QrModal | `GLOBAL_MODAL` |
+| `PASS-CUSTOMER-SURFACE-019` | AppUpdateGate | `GLOBAL_RECOVERY_SURFACE` |
+| `PASS-CUSTOMER-SURFACE-020` | App runtime gates | `GLOBAL_STATE_SURFACE` |
+| `PASS-CUSTOMER-SURFACE-021` | AppErrorBoundary | `GLOBAL_RECOVERY_SURFACE` |
+
+La certificación conserva estas identidades para detectar deriva entre contrato, navegación y runtime.
+
+---
+
+#### 11. Quince `Stack.Screen` observadas
+
+El stack principal conserva exactamente, en el snapshot aprobado:
+
+```text
+Home
+Club
+MyOrders
+ChooseSatellite
+DeliveryAddresses
+AccountSettings
+VentoCafe
+Saudo
+SatelliteExperience
+SatellitePass
+OrderHome
+OrderMenu
+OrderCheckout
+OrderPlaced
+OrderChat
+```
+
+Agregar, retirar o renombrar una identidad obliga a reconciliar el inventario antes de usar evidencia anterior.
+
+---
+
+#### 12. Cobertura AS-IS versus objetivo
+
+La reconciliación vigente es:
+
+```text
+16 VSCREEN
+→ evidencia runtime dedicada, compartida o embebida
+
+3 VSCREEN
+→ sin superficie runtime dedicada demostrada
+```
+
+Las tres identidades sin superficie dedicada demostrada son:
+
+- `VSCREEN-0169 — Mis reclamos y casos de servicio`;
+- `VSCREEN-0170 — Mis reservas y eventos`;
+- `VSCREEN-0172 — Comunicaciones y notificaciones del cliente`.
+
+Una ejecución de `UX-QA-029` no puede presentar estas tres capacidades como runtime certificado mientras esa brecha permanezca.
+
+---
+
+#### 13. Estado de materialización por escenario
+
+Cada escenario se clasifica antes de observar al cliente:
+
+```text
+DESIGN_ONLY
+INTERACTIVE_PROTOTYPE
+RUNTIME_AVAILABLE
+RUNTIME_PARTIAL
+NOT_MATERIALIZED
+```
+
+Reglas:
+
+1. `DESIGN_ONLY` solo puede demostrar comprensión visual y terminología.
+2. `INTERACTIVE_PROTOTYPE` puede demostrar flujo y reacción a estados simulados.
+3. `RUNTIME_AVAILABLE` puede aportar evidencia operacional real dentro del ambiente autorizado.
+4. `RUNTIME_PARTIAL` debe declarar exactamente qué es real y qué es simulado.
+5. `NOT_MATERIALIZED` no se presenta como función disponible.
+
+---
+
+#### 14. Frontera cliente versus operación interna
+
+Se conserva:
+
+```text
+EXPERIENCIA CLIENTE PASS
+!=
+SUPERFICIE LABORAL PASS
+!=
+OPERACION PULSO RELACIONADA CON PASS
+```
+
+Por tanto:
+
+- presentar QR personal no autoriza acumulación;
+- presentar ticket no consume una redención;
+- visualizar saldo no permite fijarlo;
+- compra y autoservicio cliente no infieren turno o rol operativo;
+- seguimiento cliente no gobierna preparación o distribución internas;
+- una identidad cliente no concede permisos laborales.
+
+---
+
+#### 15. Separación de identidades
+
+La certificación deberá conservar:
+
+```text
+CUSTOMER_IDENTITY
+!=
+EMPLOYEE_IDENTITY
+!=
+AUTH_PRINCIPAL
+!=
+ACTOR_EFFECTIVE
+```
+
+Cuando una misma persona sea cliente y trabajador, la experiencia deberá evitar fusiones por nombre, correo, teléfono, sesión o conveniencia de interfaz.
+
+---
+
+#### 16. Acceso y autenticación cliente
+
+La entrada a PASS deberá demostrar, según el escenario:
+
+- autenticación o sesión cliente válida;
+- retorno seguro después de autenticación;
+- ausencia de escalamiento desde contexto laboral;
+- manejo claro de sesión expirada;
+- datos minimizados antes de completar perfil;
+- continuidad del contexto legítimo sin conservar secretos o sujetos anteriores.
+
+Una sesión autenticada no demuestra por sí sola que una capacidad concreta esté disponible o autorizada.
+
+---
+
+#### 17. Perfil inicial y perfil mantenido
+
+`CompleteProfile` y `AccountSettings` no se tratan como duplicados automáticos.
+
+La certificación deberá comprobar:
+
+- onboarding inicial versus mantenimiento posterior;
+- datos obligatorios versus opcionales;
+- perfil versus preferencia;
+- preferencia versus consentimiento;
+- actualización versus verificación;
+- cierre de sesión versus eliminación de cuenta;
+- corrección versus borrado histórico no autorizado.
+
+---
+
+#### 18. Inicio, puntos y beneficios
+
+En `VSCREEN-0107` el cliente debe poder distinguir:
+
+```text
+SALDO CONFIRMADO
+SALDO STALE
+SALDO NO DISPONIBLE
+ACUMULADO HISTORICO
+NIVEL O TIER
+BENEFICIO
+RECOMPENSA
+ACCION PERSONAL
+```
+
+Un error de lectura no se muestra como saldo cero.
+
+Una cifra local no sustituye la fuente durable.
+
+---
+
+#### 19. QR personal
+
+`VSCREEN-0108` y `QrModal` representan identificación personal.
+
+El cliente debe comprender que:
+
+```text
+PRESENTAR QR PERSONAL
+!=
+ACUMULAR PUNTOS
+!=
+CREAR REDENCION
+!=
+CONSUMIR REDENCION
+!=
+AUTORIZAR UNA VENTA
+!=
+AUTORIZAR ACCESO LABORAL
+```
+
+Screenshots, copia o replay no pueden crear autoridad nueva.
+
+---
+
+#### 20. Catálogo de beneficios y recompensas
+
+`VSCREEN-0109` debe permitir entender:
+
+- recompensa visible;
+- costo en puntos;
+- vigencia;
+- disponibilidad;
+- contexto comercial;
+- elegibilidad;
+- estado stale cuando corresponda.
+
+```text
+VISIBLE
+!=
+ELEGIBLE
+!=
+ASEQUIBLE
+!=
+REDIMIDA
+```
+
+---
+
+#### 21. Acumulación visible
+
+La experiencia cliente solo presenta acumulación como confirmada cuando existe resultado durable del contrato propietario.
+
+Debe distinguir:
+
+- estimación;
+- procesamiento;
+- confirmado;
+- ya aplicado;
+- rechazado;
+- conflicto;
+- resultado desconocido;
+- error recuperable.
+
+La UI no incrementa saldo como verdad antes del resultado servidor.
+
+---
+
+#### 22. Redención visible
+
+`VSCREEN-0110` conserva:
+
+```text
+INTENCION DE REDENCION
+!=
+CONSUMO DE REDENCION
+```
+
+La experiencia debe separar:
+
+- previsualización;
+- confirmación explícita;
+- ticket creado;
+- pending;
+- usado;
+- cancelado;
+- vencido/no utilizable;
+- resultado desconocido;
+- conflicto.
+
+Crear el ticket no equivale a haber recibido el beneficio.
+
+---
+
+#### 23. Historial
+
+`VSCREEN-0111` debe conservar cronología y trazabilidad del ledger personal.
+
+El cliente deberá poder distinguir:
+
+```text
+VACIO REAL
+!=
+ERROR DE LECTURA
+!=
+VENTANA PARCIAL
+!=
+PAGINACION INCOMPLETA
+!=
+TRANSACCION SIN ATRIBUCION DE SEDE
+```
+
+No se omiten silenciosamente movimientos legítimos para mantener una narrativa visual limpia.
+
+---
+
+#### 24. Perfil, privacidad y consentimientos
+
+`VSCREEN-0112` debe mantener separados:
+
+- datos personales autogestionables;
+- preferencias;
+- consentimientos;
+- política y versiones aceptadas;
+- solicitudes de privacidad;
+- rectificación;
+- limpieza opcional;
+- eliminación de cuenta cuando proceda.
+
+La prueba no usa información privada de terceros ni ejecuta eliminaciones irreversibles para demostrar comprensión.
+
+---
+
+#### 25. Estados de redención
+
+El cliente debe diferenciar al menos:
+
+```text
+PENDING
+USADO
+CANCELADO
+VENCIDO / NO UTILIZABLE
+DESCONOCIDO / EN CONCILIACION
+```
+
+Estado de ticket y efecto de puntos permanecen separados.
+
+---
+
+#### 26. Mensajes y copy
+
+Los mensajes deben permitir responder:
+
+```text
+¿QUE OCURRIO?
+¿QUE QUEDO PRESERVADO?
+¿QUE SIGUE?
+¿DEBO ESPERAR, REINTENTAR O NO REPETIR?
+```
+
+El copy cliente no expone excepciones, traces, tokens, políticas RLS ni términos técnicos innecesarios.
+
+---
+
+#### 27. Carga, stale y refresco
+
+Se mantienen como estados distintos:
+
+```text
+CARGANDO
+REFRESCANDO
+DATO ANTERIOR / STALE
+VACIO CONFIRMADO
+ERROR RECUPERABLE
+```
+
+El último dato confirmado puede mostrarse como referencia cuando el contrato lo permite, pero debe conservar señal de frescura suficiente.
+
+---
+
+#### 28. Offline, Realtime y recuperación
+
+La certificación deberá demostrar que el cliente distingue:
+
+- offline confirmado;
+- Realtime degradado;
+- lectura stale;
+- mutación pendiente;
+- resultado unknown;
+- recuperación segura.
+
+Una pérdida de stream no se presenta automáticamente como ausencia total de red.
+
+---
+
+#### 29. Prevención de retry peligroso
+
+Para mutaciones críticas, la experiencia debe evitar que un resultado incierto induzca:
+
+- otro pago;
+- otra redención;
+- otra acumulación;
+- otro pedido;
+- otro mensaje con efecto empresarial equivalente.
+
+La siguiente acción segura se deriva del contrato propietario y de reconciliación, no de suposición visual.
+
+---
+
+#### 30. Navegación canónica
+
+El cliente debe reconocer una experiencia coherente entre:
+
+- home;
+- QR personal;
+- catálogo;
+- historial;
+- perfil;
+- compra;
+- pedido;
+- tracking;
+- chat.
+
+Una identidad de compatibilidad o alias técnico no se presenta como un concepto empresarial diferente.
+
+---
+
+#### 31. Deep links
+
+El snapshot aprobado conserva entradas externas para:
+
+```text
+Home -> raiz
+MyOrders -> orders
+OrderPlaced -> payment-return
+```
+
+Los prefijos observados son:
+
+```text
+vento-pass://
+vento-pass-dev://
+https://pass.ventogroup.co
+```
+
+La certificación verifica retorno al contexto correcto y no inventa deep links para identidades sin contrato externo.
+
+---
+
+#### 32. Feature flags
+
+`SHOW_CLUB_FEATURES` y `SHOW_PURCHASE_FEATURES` alteran disponibilidad runtime, no identidad documental.
+
+Una feature deshabilitada:
+
+```text
+NO AUTORIZA BORRAR LA SUPERFICIE DEL INVENTARIO
+NO DEMUESTRA NOT_APPLICABLE
+NO CONVIERTE UNA CAPACIDAD FUTURA EN PASS
+```
+
+La evidencia debe registrar flags relevantes del candidato observado.
+
+---
+
+#### 33. Aliases de implementación
+
+La certificación conserva las resoluciones observadas:
+
+- `Home` → `HomeOptimized.tsx` mediante Babel;
+- `ChooseSatellite` → `ChooseSatelliteScreenOptimized.tsx`;
+- `DeliveryAddresses` → `DeliveryAddressesScreenV2.tsx`;
+- `MyOrders` → `MyOrdersScreenV2.tsx`;
+- `OrderPlaced` → `OrderTrackingScreen.tsx`;
+- `OrderScheduleSelector` → `OrderScheduleSelectorFixed.tsx` como dependencia auxiliar.
+
+`OrderMenu` y `OrderCheckout` conservan además divergencias declaradas entre aliases TypeScript y resolución Babel.
+
+Una evidencia antigua sobre otro archivo efectivo se marca stale cuando el alias material cambia.
+
+---
+
+#### 34. Inicio del portal de compras
+
+`VSCREEN-0160` deberá permitir escoger contexto comercial sin presentar como disponible una marca, sede, canal o modalidad que la fuente propietaria no haya publicado.
+
+La selección del cliente es intención y contexto; no reserva inventario ni capacidad logística por sí sola.
+
+---
+
+#### 35. Menú y catálogo comercial
+
+`VSCREEN-0161` consume oferta publicada por propietarios comerciales.
+
+PASS no mantiene una fuente paralela de:
+
+- precio;
+- disponibilidad;
+- producto;
+- modificador;
+- restricción comercial.
+
+Un fallo de catálogo no se presenta como `sin productos` sin evidencia.
+
+---
+
+#### 36. Carrito
+
+`VSCREEN-0162` representa intención local de compra antes de crear el pedido.
+
+Se conserva:
+
+```text
+CARRITO LOCAL
+!=
+PEDIDO CREADO
+!=
+VENTA CONFIRMADA
+!=
+PAGO CONFIRMADO
+```
+
+Cambios concurrentes de precio/disponibilidad deben resolverse antes del efecto empresarial.
+
+---
+
+#### 37. Dirección, modalidad y programación
+
+`VSCREEN-0163` captura preferencia del cliente.
+
+La capacidad logística real pertenece a sus propietarios.
+
+Seleccionar una franja, dirección o modalidad no equivale a capacidad confirmada hasta obtener el resultado propietario correspondiente.
+
+---
+
+#### 38. Checkout e inicio de pago
+
+`VSCREEN-0164` debe presentar total y condiciones antes de iniciar el pago.
+
+Se conserva:
+
+```text
+ABRIR CHECKOUT
+!=
+INICIAR PAGO
+!=
+PAGO CONFIRMADO
+!=
+PEDIDO CONFIRMADO
+```
+
+El cliente debe reconocer qué dato todavía puede cambiar y qué acción produce el efecto siguiente.
+
+---
+
+#### 39. Confirmación y retorno de pago
+
+`VSCREEN-0165` no declara éxito basándose solo en retorno del proveedor o navegación local.
+
+Debe distinguir:
+
+- confirmado;
+- pendiente;
+- rechazado;
+- resultado desconocido;
+- receipt incompleto;
+- pedido recuperable por consulta posterior.
+
+Un timeout no se traduce automáticamente en fallo de pago ni en éxito.
+
+---
+
+#### 40. Mis pedidos
+
+`VSCREEN-0166` debe mostrar pedidos propios y diferenciar:
+
+- lista vacía real;
+- lectura fallida;
+- información parcial;
+- pedido todavía no sincronizado;
+- ownership incorrecto.
+
+La UI no oculta un pedido existente porque falte una proyección secundaria.
+
+---
+
+#### 41. Seguimiento
+
+`VSCREEN-0167` presenta una proyección del avance.
+
+PASS no cambia directamente preparación, despacho, entrega o ruta interna.
+
+El cliente debe distinguir stale, actualización pendiente, estado confirmado y evidencia terminal.
+
+---
+
+#### 42. Chat asociado al pedido
+
+`VSCREEN-0168` debe diferenciar:
+
+```text
+BORRADOR
+EN COLA LOCAL
+ENVIADO
+ENTREGADO / RECIBIDO SEGUN CONTRATO
+FALLO
+RESULTADO UNKNOWN
+```
+
+Abrir conversación o ver el texto local no demuestra entrega del mensaje.
+
+---
+
+#### 43. Reclamos
+
+`VSCREEN-0169` permanece canónica aunque no exista superficie runtime dedicada demostrada en el snapshot aprobado.
+
+Mientras siga no materializada:
+
+- no se presenta como funcionalidad productiva;
+- puede validarse como diseño/prototipo si existe representación autorizada;
+- no se registra éxito operativo;
+- la resolución y compensación permanecen en sus owners propietarios.
+
+---
+
+#### 44. Reservas y eventos
+
+`VSCREEN-0170` conserva la misma disciplina:
+
+```text
+SOLICITUD
+!=
+DISPONIBILIDAD
+!=
+RESERVA CONFIRMADA
+```
+
+Mientras no exista runtime dedicado verificable, la prueba no fabrica reservas reales.
+
+---
+
+#### 45. Calificación y satisfacción
+
+`VSCREEN-0171` existe como experiencia embebida mediante modales observados.
+
+Debe mantenerse separada de:
+
+- reclamo;
+- compensación;
+- incentivo;
+- soporte;
+- consentimiento de marketing.
+
+No se exige crear una pantalla standalone para certificar su identidad conceptual.
+
+---
+
+#### 46. Comunicaciones y notificaciones
+
+`VSCREEN-0172` permanece sin superficie runtime dedicada demostrada en el snapshot aprobado.
+
+La experiencia objetivo exige distinguir:
+
+- comunicación operativa;
+- comunicación comercial;
+- preferencia;
+- consentimiento;
+- vigencia;
+- origen;
+- entrega/lectura cuando exista contrato de receipt.
+
+---
+
+#### 47. Superficies globales
+
+Además de las 19 pantallas canónicas, los escenarios consideran cuando intervienen:
+
+- Auth;
+- CompleteProfile;
+- QrModal;
+- AppUpdateGate;
+- gates globales de runtime;
+- AppErrorBoundary.
+
+Estas superficies no crean nuevas `VSCREEN-*`.
+
+---
+
+#### 48. Participantes representativos
+
+La muestra futura no se limita a equipo interno, propietarios o personas entrenadas en VENTO.
+
+Según el alcance deberá cubrir:
+
+- clientes nuevos o con poca familiaridad;
+- clientes recurrentes;
+- clientes centrados en fidelización;
+- clientes que usan compra/pedido cuando aplique;
+- distintos niveles de familiaridad digital;
+- configuraciones de accesibilidad relevantes;
+- más de un contexto comercial cuando un mismo concepto se reutilice materialmente.
+
+No se exige que una persona recorra las 19 pantallas.
+
+---
+
+#### 49. Evidencia mínima por riesgo
+
+Se conserva el piso aprobado por `PASS-UX-013`:
+
+| Riesgo | Evidencia mínima |
+| --- | --- |
+| crítico | todos los participantes representativos del escenario actúan de forma segura y existe cero interpretación peligrosa |
+| alto | al menos cinco participantes relevantes, con dos niveles de familiaridad, sin patrón material de error |
+| medio | al menos tres participantes relevantes y comprensión consistente |
+| bajo | revisión contextual dentro del prototipo o flujo correspondiente |
+
+Una interpretación peligrosa aislada en un caso crítico no se compensa con promedio agregado.
+
+---
+
+#### 50. Protocolo de sesión
+
+Cada sesión conserva como mínimo:
+
+1. consentimiento y condiciones aplicables;
+2. explicación de que se evalúa el diseño;
+3. contexto realista sin enseñar la respuesta;
+4. ejecución por el participante;
+5. primera acción y camino;
+6. dudas, retrocesos, ayuda y errores;
+7. explicación espontánea de qué cree que ocurrió;
+8. identificación del estado y siguiente acción segura;
+9. escenario de bloqueo, espera o recuperación cuando aplique;
+10. decisión sobre qué repetir y qué no repetir;
+11. preguntas posteriores neutrales;
+12. registro de hallazgo y severidad;
+13. comparación por escenario y perfil;
+14. corrección, revalidación o aceptación conforme al contrato.
+
+---
+
+#### 51. Preguntas neutrales
+
+Son válidas preguntas como:
+
+```text
+¿Que crees que significa esta pantalla?
+¿Que harias ahora?
+¿Que esperas que ocurra si pulsas esta accion?
+¿Como sabrias que ya quedo confirmado?
+¿Que parte crees que sigue pendiente?
+¿Que harias si la aplicacion no confirma el resultado?
+```
+
+No se usa como evidencia principal `¿entiendes?`, `¿te gusta?` o `¿te parece fácil?`.
+
+---
+
+#### 52. Dimensiones humanas obligatorias
+
+Cada escenario humano busca evidencia separada de:
+
+| Dimensión | Oracle humano |
+| --- | --- |
+| comprensión | explica correctamente estado y significado |
+| encontrabilidad | encuentra destino o acción sin guía indebida |
+| predicción | anticipa correctamente el efecto antes de actuar |
+| recuperación | identifica qué conservar, repetir o no repetir |
+| confianza semántica | distingue conceptos cercanos sin capacitación previa |
+
+---
+
+#### 53. Métricas mínimas
+
+Se registran cuando apliquen:
+
+- finalización correcta;
+- acción correcta al primer intento;
+- navegación equivocada;
+- tiempo hasta encontrar acción;
+- predicción del efecto;
+- comprensión de estado final;
+- comprensión de pending/unknown/stale/error;
+- intentos de repetir una mutación incierta;
+- retrocesos;
+- ayuda requerida;
+- abandono;
+- confusión entre conceptos;
+- interpretación peligrosa;
+- capacidad de recuperación;
+- problemas de accesibilidad.
+
+Tiempo y número de toques son diagnósticos, no objetivos aislados.
+
+---
+
+#### 54. Umbrales de diseño heredados
+
+Se conservan:
+
+| Elemento | Criterio |
+| --- | --- |
+| acción crítica | cero interpretación peligrosa y ejecución segura por todos los participantes críticos |
+| CTA frecuente | al menos 90 % de elección correcta al primer intento y sin patrón de error por grupo |
+| estado visible | al menos 90 % distingue estado actual, siguiente acción y condición de cierre |
+| detalle secundario | al menos 80 % comprende o puede recuperarse mediante ayuda contextual |
+| término contextual | evidencia separada para cada contexto materialmente distinto |
+
+Una muestra pequeña conserva interpretación cualitativa; no se presenta el porcentaje como precisión estadística que la muestra no soporta.
+
+---
+
+#### 55. Severidad de hallazgos
+
+Se usa:
+
+```text
+S0_CRITICAL
+S1_HIGH
+S2_MEDIUM
+S3_LOW
+OBSERVATION
+```
+
+Ejemplos PASS:
+
+- `S0_CRITICAL`: riesgo de cobro, canje, privacidad, duplicidad o efecto irreversible incorrecto;
+- `S1_HIGH`: acción equivocada frecuente o incapacidad de distinguir un estado crítico;
+- `S2_MEDIUM`: fricción que exige ayuda sin efecto peligroso;
+- `S3_LOW`: fricción menor y recuperable;
+- `OBSERVATION`: preferencia sin impacto demostrado.
+
+---
+
+#### 56. Gate humano de una superficie
+
+Una superficie o escenario no queda validado mientras exista:
+
+- `S0_CRITICAL` abierto;
+- patrón `S1_HIGH` sin corrección y revalidación;
+- interpretación peligrosa de dinero, puntos, redención, privacidad o resultado unknown;
+- CTA crítica impredecible;
+- navegación hacia otro concepto;
+- copy que requiere explicación para ser seguro;
+- recuperación que induce retry ciego;
+- capacidad no materializada presentada como disponible.
+
+---
+
+#### 57. Accesibilidad
+
+Según aplicabilidad se observan:
+
+- texto ampliado;
+- contraste;
+- lector de pantalla;
+- foco;
+- objetivos táctiles;
+- uso con una mano;
+- movimiento reducido;
+- orientación/tamaño;
+- mensajes no dependientes solo de color o icono.
+
+Una experiencia no es comprensible si la seguridad depende de ver un color o recordar un icono sin label.
+
+---
+
+#### 58. Privacidad de la evidencia
+
+La certificación no requiere almacenar:
+
+- contraseñas;
+- OTP;
+- tokens;
+- tarjeta completa;
+- PIN real;
+- QR utilizable de otra persona;
+- información privada de terceros;
+- compras o eliminaciones reales para demostrar comprensión.
+
+La evidencia humana usa referencias minimizadas suficientes para trazabilidad.
+
+---
+
+#### 59. Identidad de la certificación por package
+
+Cada ejecución futura deberá conservar, como mínimo:
+
+```text
+package_id
+candidate_ref
+environment
+authorized_scope_ref
+pilot_evidence_ref
+application_code = pass
+process_ids[]
+scenario_ids[]
+participant_cohorts[]
+observed_surfaces[]
+observed_devices[]
+observed_conditions[]
+pass_screen_materialization[]
+findings[]
+result
+```
+
+---
+
+#### 60. Mismo candidato y mismo alcance
+
+Si cambia materialmente:
+
+- build o commit;
+- configuración;
+- feature flag;
+- navegación;
+- alias efectivo;
+- contrato de permiso;
+- integración;
+- estado de materialización;
+- flujo de pago o fidelización;
+- dispositivo objetivo;
+- copy crítico;
+
+la evidencia afectada se reevalúa.
+
+No se hereda por similitud visual.
+
+---
+
+#### 61. Matriz de aplicabilidad PASS
+
+Cada package aplicable debe poder relacionar:
+
+```text
+VSCREEN
+× SUPERFICIE RUNTIME
+× ESTADO DE MATERIALIZACION
+× COHORTE CLIENTE
+× TAREA / ESCENARIO
+× DISPOSITIVO
+× CONECTIVIDAD
+× FUENTE PROPIETARIA
+× RESULTADO ESPERADO
+× RESULTADO OBSERVADO
+× EVIDENCIA
+× FINDING
+```
+
+Todo cruce material se ejecuta o se justifica explícitamente.
+
+---
+
+#### 62. Escenario nominal
+
+El escenario nominal comprueba que el cliente completa la intención aplicable sin entrenamiento extraordinario, llega al resultado correcto y puede explicar qué ocurrió.
+
+Un caso feliz no es suficiente para cerrar la certificación, pero su ausencia impide demostrar la experiencia ordinaria.
+
+---
+
+#### 63. Error y bloqueo
+
+La certificación incluye escenarios donde:
+
+- falta una precondición;
+- la capacidad está denegada;
+- un dato dejó de ser válido;
+- una operación entra en conflicto;
+- una fuente no responde;
+- una pantalla no puede materializar el resultado.
+
+El cliente debe recibir una siguiente acción segura sin códigos técnicos.
+
+---
+
+#### 64. Recuperación
+
+La recuperación verifica que la persona:
+
+- conserva contexto válido;
+- no pierde trabajo material evitable;
+- no repite una mutación confirmada;
+- sabe cuándo refrescar;
+- sabe cuándo esperar;
+- sabe cuándo consultar otra superficie;
+- puede continuar después de reconexión cuando el contrato lo permite.
+
+---
+
+#### 65. Conectividad inestable
+
+Se prueban condiciones de red materialmente relevantes sin exigir degradaciones irrelevantes al package.
+
+El resultado debe evitar:
+
+- éxito fabricado;
+- vacío fabricado;
+- duplicidad;
+- pérdida de contexto;
+- confusión entre Realtime degradado y offline total.
+
+---
+
+#### 66. Dispositivo móvil y ergonomía
+
+La experiencia cliente se observa en dispositivo o viewport representativo.
+
+Se registran problemas de:
+
+- densidad;
+- scroll;
+- teclado;
+- safe area;
+- orientación;
+- tap target;
+- una mano;
+- lector de pantalla;
+- contraste;
+- carga/latencia percibida cuando sea material.
+
+---
+
+#### 67. Continuidad entre PASS y PULSO
+
+En acumulación y redención:
+
+```text
+PULSO = INTENCION OPERATIVA Y EJECUCION AUTORIZADA
+PASS = EXPERIENCIA CLIENTE, LEDGER/SALDO Y PROYECCION DE FIDELIZACION SEGUN CONTRATO
+```
+
+La certificación de PASS observa convergencia visible, pero no sustituye la certificación operativa de PULSO.
+
+---
+
+#### 68. Fuente de verdad
+
+PASS no crea fuentes paralelas para:
+
+- venta;
+- pago;
+- pedido;
+- inventario;
+- preparación;
+- entrega;
+- disponibilidad comercial;
+- capacidad logística.
+
+La experiencia puede proyectar esos hechos, pero una divergencia se registra como defecto o estado pendiente de reconciliación.
+
+---
+
+#### 69. Integración de acumulación
+
+`PASS-INT-001` exige que un hecho elegible originado en PULSO produzca exactamente un efecto autorizado e idempotente en PASS.
+
+`UX-QA-029` observa como cliente:
+
+- cuándo se presenta la confirmación;
+- cuándo cambia el saldo;
+- cómo aparece el movimiento;
+- qué ocurre ante retry o incertidumbre;
+- si PULSO y PASS convergen a la misma verdad.
+
+No vuelve a ejecutar el protocolo físico de `PASS-QA-001` por cuenta propia.
+
+---
+
+#### 70. Integración de redención
+
+`PASS-INT-002` separa intención de redención y consumo.
+
+`UX-QA-029` debe demostrar que el cliente entiende:
+
+- qué creó;
+- si el ticket es utilizable;
+- si fue consumido;
+- si está cancelado o vencido;
+- si el resultado permanece incierto;
+- qué puede hacer sin duplicar el efecto.
+
+No vuelve a ejecutar el protocolo físico de `PASS-QA-002` por cuenta propia.
+
+---
+
+#### 71. Relación con `PASS-QA-001`
+
+Cuando un package incluye acumulación materializada, la evidencia cliente debe ser compatible con la instancia física aplicable de `PASS-QA-001`.
+
+`PASS-QA-001` conserva:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+MINIMUM_SCENARIOS = 24
+```
+
+Un `PASS-QA-001` BLOCKED o FAIL no puede reinterpretarse como PASS de `UX-QA-029` para la misma capacidad.
+
+---
+
+#### 72. Matriz de acumulación `ACC_CASE_01..024`
+
+| ID | Foco que `UX-QA-029` debe respetar |
+| --- | --- |
+| `ACC_CASE_01` | acumulación feliz produce un único movimiento y saldo coherente |
+| `ACC_CASE_02` | retry secuencial no agrega puntos |
+| `ACC_CASE_03` | doble envío no duplica efecto |
+| `ACC_CASE_04` | concurrencia converge a un efecto |
+| `ACC_CASE_05` | identidad idempotente incompatible produce conflicto |
+| `ACC_CASE_06` | respuesta perdida se reconcilia sin duplicar |
+| `ACC_CASE_07` | timeout se presenta como unknown hasta reconciliar |
+| `ACC_CASE_08` | falta de permiso rechaza sin efecto |
+| `ACC_CASE_09` | sede fuera de alcance rechaza sin efecto |
+| `ACC_CASE_10` | sesión inválida rechaza sin efecto |
+| `ACC_CASE_11` | dispositivo compartido sin actor válido rechaza |
+| `ACC_CASE_12` | cliente inexistente/manipulado falla cerrado |
+| `ACC_CASE_13` | cliente y trabajador permanecen separados |
+| `ACC_CASE_14` | cambio de cliente limpia sujeto anterior |
+| `ACC_CASE_15` | compra no elegible no acumula |
+| `ACC_CASE_16` | monto manipulado en UI no gobierna servidor |
+| `ACC_CASE_17` | moneda incompatible no produce cálculo silencioso |
+| `ACC_CASE_18` | regla no vigente no confirma acumulación |
+| `ACC_CASE_19` | ledger sin saldo coherente es FAIL de integridad |
+| `ACC_CASE_20` | saldo sin movimiento durable es FAIL de integridad |
+| `ACC_CASE_21` | PULSO no muestra éxito antes de servidor |
+| `ACC_CASE_22` | PASS debe reflejar movimiento confirmado o exponer divergencia |
+| `ACC_CASE_23` | auditoría insuficiente es FAIL de trazabilidad |
+| `ACC_CASE_24` | evidencia no expone PIN, token o dato innecesario |
+
+`UX-QA-029` consume la clasificación física; no crea un segundo ledger ni un segundo test E2E de acumulación.
+
+---
+
+#### 73. Relación con `PASS-QA-002`
+
+Cuando un package incluye redención materializada, la evidencia cliente debe ser compatible con la instancia física aplicable de `PASS-QA-002`.
+
+`PASS-QA-002` conserva:
+
+```text
+MODE = PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE = POST_E5_PACKAGE
+MINIMUM_SCENARIOS = 24
+```
+
+Una redención físicamente no demostrada no puede certificarse solo porque el cliente entiende un prototipo.
+
+---
+
+#### 74. Matriz de redención `RED_CASE_01..024`
+
+| ID | Foco que `UX-QA-029` debe respetar |
+| --- | --- |
+| `RED_CASE_01` | redención válida produce un único consumo durable |
+| `RED_CASE_02` | retry secuencial conserva el mismo resultado |
+| `RED_CASE_03` | doble envío no duplica consumo |
+| `RED_CASE_04` | concurrencia sobre el mismo ticket produce un consumo |
+| `RED_CASE_05` | identidad incompatible produce conflicto |
+| `RED_CASE_06` | respuesta perdida recupera resultado existente |
+| `RED_CASE_07` | timeout permanece unknown hasta reconciliar |
+| `RED_CASE_08` | falta de permiso rechaza sin mutación |
+| `RED_CASE_09` | sede incompatible rechaza |
+| `RED_CASE_10` | sesión inválida rechaza |
+| `RED_CASE_11` | dispositivo sin actor válido rechaza |
+| `RED_CASE_12` | código inválido/manipulado falla cerrado |
+| `RED_CASE_13` | cliente y trabajador permanecen separados |
+| `RED_CASE_14` | cambio de modo/ticket limpia estado anterior |
+| `RED_CASE_15` | ticket usado no produce segundo consumo |
+| `RED_CASE_16` | ticket cancelado rechaza |
+| `RED_CASE_17` | ticket vencido rechaza |
+| `RED_CASE_18` | cliente/recompensa incompatible rechaza |
+| `RED_CASE_19` | incoherencia ledger/saldo impide consumir a ciegas |
+| `RED_CASE_20` | segundo débito/movimiento es FAIL crítico |
+| `RED_CASE_21` | PULSO no muestra éxito antes de confirmación servidor |
+| `RED_CASE_22` | PASS debe reflejar usado o exponer divergencia |
+| `RED_CASE_23` | auditoría insuficiente es FAIL de trazabilidad |
+| `RED_CASE_24` | evidencia no expone PIN, token o dato innecesario |
+
+---
+
+#### 75. Ledger y saldo
+
+El cliente puede observar saldo e historial, pero la certificación exige coherencia con la fuente durable aplicable.
+
+Se conserva:
+
+```text
+SALDO = PROYECCION
+LEDGER = EVIDENCIA DURABLE DEL MOVIMIENTO
+```
+
+Una discrepancia no se resuelve desde la UI para hacer pasar el escenario.
+
+---
+
+#### 76. Resultado desconocido
+
+Ante respuesta incierta de pago, acumulación, redención, pedido o mensaje crítico:
+
+```text
+UNKNOWN != SUCCESS
+UNKNOWN != FAILURE_FINAL
+```
+
+La interfaz debe guiar reconciliación antes de una repetición que pueda duplicar efecto.
+
+---
+
+#### 77. Idempotencia y replay
+
+La certificación humana observa que la experiencia no induce duplicados y que el resultado visible permanece compatible con el contrato idempotente.
+
+La prueba técnica propietaria conserva autoridad sobre claves, comandos, versiones y atomicidad.
+
+---
+
+#### 78. Concurrencia
+
+Cuando una capacidad materializada admita concurrencia relevante, el cliente no debe terminar con dos resultados empresariales válidos para una sola intención.
+
+La evidencia cliente se cruza con la fuente propietaria para detectar:
+
+- doble acumulación;
+- doble consumo;
+- doble pedido;
+- doble pago;
+- estado visual divergente.
+
+---
+
+#### 79. Parcialidad
+
+Una experiencia PASS puede mostrar partes disponibles y partes degradadas cuando el contrato lo permita.
+
+No debe convertir:
+
+```text
+SUBCONJUNTO DISPONIBLE
+=
+TODO EL FLUJO DISPONIBLE
+```
+
+La parcialidad conserva alcance, causa, siguiente acción y fuente propietaria.
+
+---
+
+#### 80. Ayuda y soporte durante piloto
+
+La ayuda recibida se registra.
+
+Un escenario no obtiene PASS si solo funciona porque un observador:
+
+- dicta la acción;
+- explica el significado crítico;
+- ejecuta un bypass;
+- corrige datos manualmente;
+- reinicia la aplicación de forma no prevista;
+- accede a una herramienta interna para completar el flujo del cliente.
+
+---
+
+#### 81. Workarounds
+
+Todo workaround material conserva:
+
+```text
+workaround_id
+scenario_id
+reason
+risk
+owner
+exit_condition
+```
+
+Un workaround crítico no se normaliza como experiencia final.
+
+---
+
+#### 82. Hallazgos
+
+Cada finding conserva:
+
+```text
+finding_id
+package_id
+application_code = pass
+vscreen_id
+surface_id
+scenario_id
+participant_cohort
+observed_condition
+expected_behavior
+observed_behavior
+risk
+severity
+owner_task_or_package
+exit_condition
+evidence_ref
+status
+```
+
+No se dejan pendientes narrativos sin owner.
+
+---
+
+#### 83. Hallazgo local no reabre todo PASS
+
+Un defecto se asigna a la frontera exacta cuando sea posible:
+
+- pantalla;
+- componente;
+- copy;
+- navegación;
+- integración;
+- contrato;
+- package;
+- dispositivo;
+- fuente propietaria.
+
+No se reabre toda la arquitectura por defecto.
+
+---
+
+#### 84. Corrección y retest
+
+Toda corrección material conserva:
+
+```text
+finding_id
+correction_ref
+candidate_before
+candidate_after
+scope_invalidated
+retest_scope
+retest_result
+```
+
+El retest debe cubrir el cambio y regresiones materialmente relacionadas.
+
+---
+
+#### 85. Evidencia mínima por escenario
+
+Cada escenario ejecutado conserva, cuando aplique:
+
+- package;
+- candidato y ambiente;
+- VSCREEN;
+- superficie runtime;
+- estado de materialización;
+- cohorte cliente;
+- contexto comercial;
+- dispositivo;
+- condición de conectividad;
+- objetivo;
+- resultado esperado;
+- resultado observado;
+- ayuda recibida;
+- fuente propietaria verificada;
+- finding;
+- evidencia;
+- referencia temporal;
+- criterio aplicado.
+
+---
+
+#### 86. Evidencia automatizada de apoyo
+
+Puede incluir:
+
+- logs minimizados;
+- eventos;
+- receipts;
+- métricas;
+- trazas correlacionadas;
+- estado propietario de pedido/pago;
+- ledger/saldo;
+- evidencia de CI022;
+- resultados de `PASS-QA-001..002` cuando apliquen.
+
+No sustituye observación humana cuando el criterio exige comprensión del cliente.
+
+---
+
+#### 87. Evidencia manual
+
+Puede incluir:
+
+- acta estructurada;
+- checklist del escenario;
+- notas minimizadas;
+- referencia a finding;
+- captura permitida sin información sensible;
+- confirmación de resultado por la fuente propietaria.
+
+La evidencia debe ser recuperable y atribuible.
+
+---
+
+#### 88. Evidencia de entorno real
+
+Cuando sea material se registra que el escenario ocurrió bajo condición representativa:
+
+- dispositivo móvil;
+- versión de aplicación;
+- red realista;
+- contexto comercial aplicable;
+- interacción con punto operativo cuando corresponda;
+- modalidad de entrega cuando corresponda.
+
+No se inventan condiciones físicas irrelevantes.
+
+---
+
+#### 89. Criterio PASS por escenario
+
+Un escenario obtiene PASS cuando:
+
+- usa candidato y alcance correctos;
+- el participante pertenece a la población prevista;
+- la capacidad está honestamente clasificada por materialización;
+- se alcanza el resultado esperado;
+- no se requiere bypass incompatible;
+- la ayuda es compatible con la experiencia prevista;
+- no aparece efecto prohibido;
+- la fuente propietaria confirma los hechos materiales;
+- la evidencia es suficiente;
+- los findings asociados están cerrados o son no bloqueantes conforme a su contrato.
+
+---
+
+#### 90. Criterio PASS por package
+
+`UX-QA-029::<package_id>` obtiene PASS únicamente cuando:
+
+- package, candidato, ambiente y alcance están resueltos;
+- existe evidencia física de piloto aplicable y vigente;
+- las VSCREEN y superficies afectadas están identificadas;
+- la materialización real de cada escenario está clasificada;
+- los participantes representan el alcance;
+- escenarios críticos fueron observados;
+- comprensión, encontrabilidad, predicción, recuperación y confianza semántica son suficientes;
+- estados de carga, error, stale, offline y unknown se comportan de forma segura;
+- fuentes propietarias convergen con lo mostrado;
+- no existe duplicidad material;
+- acumulación/redención consumen evidencia física aplicable cuando correspondan;
+- no existe exposición sensible material;
+- no existe capacidad no materializada presentada como real;
+- hallazgos bloqueantes están cerrados;
+- evidencia corresponde al candidato certificado.
+
+---
+
+#### 91. Frontera con `SHELL-CI-022`
+
+`SHELL-CI-022::<package_id>` gobierna cutover, ventana, candidato, ambiente, ola, decisiones y evidencia física de piloto.
+
+`UX-QA-029::<package_id>` gobierna suficiencia de experiencia cliente PASS.
+
+```text
+CI022 VERIFIED
+!=
+UX-QA-029 PASS AUTOMATICO
+```
+
+Tampoco se crea una segunda ventana de piloto cuando la observación puede integrarse a la misma exposición autorizada.
+
+---
+
+#### 92. Packages multi-app
+
+Si un package afecta PASS y otra aplicación, la instancia debe declarar:
+
+- escenarios PASS;
+- escenarios de la otra aplicación;
+- handoffs;
+- fuente propietaria de cada hecho;
+- evidencia humana por población;
+- evidencia compartida y específica.
+
+Un PASS agregado no puede ocultar fallo de PASS ni fallo de su contraparte.
+
+---
+
+#### 93. Packages sin exposición cliente propia
+
+Un package sin superficie ni cambio observable para cliente no inventa participantes.
+
+Debe justificar la no aplicabilidad humana y demostrar dónde se valida su efecto indirecto, si existe.
+
+La justificación no puede omitir una experiencia cliente realmente afectada.
+
+---
+
+#### 94. Evidencia stale
+
+La evidencia se marca stale cuando cambia materialmente una identidad que sustentaba el resultado, incluyendo:
+
+- commit;
+- build;
+- alias efectivo;
+- feature flag;
+- pantalla;
+- copy crítico;
+- contrato de integración;
+- versión de regla;
+- fuente propietaria;
+- dispositivo objetivo;
+- estado de materialización.
+
+---
+
+#### 95. `GLOBAL-FINAL`
+
+`UX-QA-029::GLOBAL-FINAL` certifica el cierre agregado de PASS como cliente.
+
+Debe comprobar:
+
+- todos los packages PASS aplicables tienen resultado final trazable;
+- ninguna VSCREEN activa quedó omitida sin justificación;
+- las 21 superficies AS-IS permanecen reconciliadas o su retiro/cambio tiene evidencia vigente;
+- las tres identidades sin runtime dedicado no se presentan como materializadas sin evidencia nueva;
+- no existe evidencia stale usada para cerrar;
+- acumulación y redención conservan resultados físicos aplicables;
+- no existe contradicción entre PASS y PULSO sobre efecto de fidelización;
+- no existe contradicción entre PASS y fuentes de pedido/pago/fulfillment;
+- no existe hallazgo bloqueante abierto;
+- la cobertura humana no fue sustituida por automatización;
+- los 42 requisitos PASS vigentes conservan evidencia trazable según aplicabilidad.
+
+El cierre global no sustituye una instancia por package faltante.
+
+---
+
+#### 96. Estado AS-IS observado al definir la certificación
+
+Se conserva como snapshot documental:
+
+```text
+PASS_STACK_SCREEN = 15
+PASS_LOGICAL_SURFACES = 21
+PASS_CANONICAL_VSCREEN = 19
+PASS_CANONICAL_VSCREEN_WITH_RUNTIME_EVIDENCE = 16
+PASS_CANONICAL_VSCREEN_WITHOUT_DEDICATED_RUNTIME = 3
+BABEL_STACK_ALIAS_COUNT = 5
+BABEL_AUXILIARY_ALIAS_COUNT = 1
+TYPESCRIPT_ADDITIONAL_ALIAS_DELTA_COUNT = 2
+PASS_TREQ_COUNT = 42
+PASS_QA_ACCUMULATION_MIN_CASES = 24
+PASS_QA_REDEMPTION_MIN_CASES = 24
+```
+
+Este estado describe el corte observado; no se interpreta como implementación completa.
+
+---
+
+#### 97. Hallazgos AS-IS y propietarios
+
+| Hallazgo | Impacto | Owner | Condición de salida |
+| --- | --- | --- | --- |
+| tres VSCREEN sin superficie runtime dedicada demostrada | no puede declararse cobertura runtime 19/19 | package de implementación propietario posterior, conforme al handoff de `PASS-UX-011` | superficie o representación objetivo materializada y verificable conforme a la decisión `UNMATERIALIZED_DESTINATION` vigente |
+| aliases Babel alteran cinco fuentes efectivas de stack | evidencia puede inspeccionar archivo equivocado | package de implementación propietario posterior, conforme al handoff de `PASS-UX-011` | tooling, runtime y pruebas reconocen una resolución única por import lógico |
+| divergencias TypeScript/Babel en `OrderMenu` y `OrderCheckout` | tooling y runtime pueden razonar sobre implementaciones distintas | package de implementación propietario posterior, conforme al handoff de `PASS-UX-011` | Babel/Metro y TypeScript convergen sobre la misma fuente o existe migración explícita verificable |
+| `OrderPlaced` comparte implementación efectiva con tracking | confirmación y seguimiento pueden confundirse si no se conserva la decisión aprobada | package de implementación propietario posterior, conforme al handoff de `PASS-UX-011` | pruebas demuestran receipt, pago, seguimiento, deep link y ownership sin regresión bajo `SHARED_CANONICAL_ROUTE` |
+| satisfacción sigue embebida | catálogo canónico no implica ruta propia | package de implementación propietario posterior, conforme al handoff de `PASS-UX-011` | `EMBEDDED_DESTINATION` continúa cumpliendo el contrato funcional sin fabricar una ruta propia |
+| `PASS-QA-001..002` dependen de unidades materializadas posteriores a E5 | acumulación/redención no pueden cerrarse por documentación | implementation units y packages propietarios | instancias físicas aplicables PASS/BLOCKED/FAIL resueltas con evidencia |
+| runtime de producto observado sigue siendo snapshot histórico respecto de futuras materializaciones | evidencia puede quedar stale | package aplicable | candidato exacto identificado en cada ejecución de certificación |
+
+No queda hallazgo sin owner o condición de salida.
+
+---
+
+#### 98. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la experiencia cliente PASS, navegación, superficies, estados, fidelización, acumulación, redención, historial, identidad, privacidad, compra, pedido, recuperación, accesibilidad, integración, idempotencia y pilotos con usuarios reales ya cuentan con obligaciones de prueba vigentes. Esta tarea organiza esa cobertura en una certificación transversal por package y global final sin introducir una obligación material nueva.
+
+---
+
+#### 99. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-PASS-001..042` como universo completo de requisitos PASS vigente;
+- `TREQ-UX-297..319` para protocolo, participantes, métricas, severidad, accesibilidad, feedback y revalidación de sesiones humanas;
+- contratos de integración y autorización ya referenciados por las filas PASS vigentes;
+- `UX-QA-020` como contrato transversal de piloto humano;
+- `PASS-QA-001` y `PASS-QA-002` como contratos físicos propietarios de acumulación y redención.
+
+Esta sección documenta cobertura existente y no modifica el Registro 04A.
+
+---
+
+#### 100. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la futura incorporación del artefacto en el checkout actualizado mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | El artefacto no ha sido incorporado en el checkout documental de la tarea ni sometido allí a formateador, quality, delivery check, topología, TREQ y batería global. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, continuidad hasta `UX-QA-028`, topología del BLOQUE U `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, `PASS-UX-001..013`, `PASS-INT-001..005`, `PASS-QA-001..002`, las 19 `VSCREEN-*`, el fragmento 04A PASS con 42 requisitos y el runtime de referencia `carlosibarraariza/vento-pass@b5a4aec908ef12226f798078577ab089a29ccda2`. |
+| OPERATIVA | `NOT_EXECUTED` | No se observaron clientes reales, compras, pagos, pedidos, acumulaciones, redenciones, tracking, chat, reclamos, reservas ni sesiones operativas nuevas durante esta tarea documental. |
+| FÍSICA | `NOT_EXECUTED` | No se autorizó ni ejecutó ninguna instancia `UX-QA-029::<package_id>`, `UX-QA-029::GLOBAL-FINAL`, `PASS-QA-001::<implementation_unit_id>` ni `PASS-QA-002::<implementation_unit_id>`. |
+
+---
+
+#### 101. Criterios de aceptación
+
+`UX-QA-029` queda documentalmente completa cuando:
+
+- [x] consume el handoff de `UX-QA-028` sin absorber NUMERA;
+- [x] conserva `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [x] conserva `POST_E5_PACKAGE`;
+- [x] consume el contrato común `UX-QA-020`;
+- [x] conserva exactamente 19 pantallas canónicas PASS;
+- [x] conserva exactamente 21 superficies lógicas AS-IS;
+- [x] conserva exactamente 15 `Stack.Screen` observadas;
+- [x] distingue las 16 pantallas con evidencia runtime de las 3 sin superficie dedicada demostrada;
+- [x] conserva identidad cliente separada de trabajador, principal y actor efectivo;
+- [x] separa QR personal de acumulación y redención;
+- [x] separa intención de redención de consumo;
+- [x] conserva ledger como evidencia durable y saldo como proyección;
+- [x] cubre home, catálogo, QR, historial, perfil y privacidad;
+- [x] cubre compra, carrito, checkout, pago, pedidos, tracking y chat;
+- [x] cubre reclamos, reservas, satisfacción y comunicaciones sin fabricar runtime;
+- [x] cubre carga, stale, error, offline, Realtime y resultado unknown;
+- [x] conserva deep links y aliases como propiedades del candidato observado;
+- [x] conserva feature flags sin borrar identidad documental;
+- [x] hereda participantes, protocolo y métricas de `PASS-UX-013`;
+- [x] conserva thresholds y severidad ya aprobados;
+- [x] cubre accesibilidad y minimización de evidencia;
+- [x] consume `PASS-INT-001..005` sin redefinirlos;
+- [x] consume las 24 pruebas mínimas de acumulación y 24 de redención sin duplicarlas físicamente;
+- [x] impide cerrar acumulación/redención cuando su evidencia física aplicable está FAIL o BLOCKED;
+- [x] conserva fuente propietaria de pedidos, pagos y fulfillment;
+- [x] define findings con owner y condición de salida;
+- [x] define retest proporcional;
+- [x] define PASS por escenario y package;
+- [x] define `GLOBAL-FINAL` sin ocultar packages o VSCREEN faltantes;
+- [x] no crea ni modifica requisitos de prueba;
+- [x] no modifica Registro 04A;
+- [x] no ejecuta cambios físicos.
+
+---
+
+#### 102. Límites
+
+Esta tarea no:
+
+- ejecuta sesiones con clientes;
+- recluta, contacta, compensa o perfila participantes;
+- procesa compras, pagos, puntos, redenciones o pedidos reales;
+- crea reclamos, reservas o mensajes reales;
+- modifica `vento-pass`;
+- modifica PULSO;
+- crea pantallas para `VSCREEN-0169`, `VSCREEN-0170` o `VSCREEN-0172`;
+- convierte `VSCREEN-0171` en ruta standalone;
+- modifica `App.js`, aliases, deep links o feature flags;
+- modifica contratos `PASS-INT-*`;
+- ejecuta `PASS-QA-001` ni `PASS-QA-002`;
+- crea o selecciona `implementation_unit_id`;
+- crea o selecciona package;
+- cruza E5;
+- modifica ledger, saldo, catálogo, elegibilidad, recompensas o tickets;
+- modifica perfil, preferencias o consentimientos;
+- crea tablas, funciones, triggers, RPC, RLS, Storage, Edge Functions, migraciones o datos Supabase;
+- modifica Registro 04A;
+- crea requisitos de prueba;
+- inicia `UX-QA-030`;
+- autoriza implementación física, cutover, rollout o producción.
+
+---
+
+#### 103. Handoff a `UX-QA-030`
+
+`UX-QA-029` entrega a `UX-QA-030` únicamente el contrato transversal común del BLOQUE U:
+
+- disciplina `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- gate `POST_E5_PACKAGE` cuando la topología de la tarea especializada lo permita;
+- evidencia por package;
+- mismo candidato y alcance;
+- findings con owner;
+- retest;
+- no sustitución de evidencia humana por automatización;
+- criterio `GLOBAL-FINAL`;
+- tratamiento explícito de capacidades no materializadas.
+
+No transfiere ownership PASS, fidelización, cliente, compra, pedido, puntos, ledger, saldo, rewards ni PULSO a AURA.
+
+`UX-QA-030` deberá decidir su propia aplicabilidad exclusivamente después de la continuidad canónica válida de AURA.
+
+---
+
+#### 104. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-028 — Probar NUMERA por alcance financiero`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-029 — Probar PASS como cliente`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad`
 ### [ ] UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad
 
 ### Subconjunto VISO mensual
