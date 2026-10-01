@@ -5,25 +5,25 @@
   "sequence_id": "PHASE-13-U-INTEGRAL-CERTIFICATION",
   "block_code": "BLOQUE U",
   "block_title": "Pruebas integrales y certificación transversal",
-  "previous_task_id": "UX-QA-009",
+  "previous_task_id": "UX-QA-010",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "AUTH-DB-030",
   "handoff_sequence_id": "PHASE-13-R3-LEGACY-RETIREMENT",
   "segments": [
     {
       "prefix": "UX-QA",
-      "from": 10,
+      "from": 11,
       "to": 30
     }
   ],
   "block_progress": {
     "total_tasks": 60,
-    "approved_tasks": 39,
-    "pending_tasks": 21
+    "approved_tasks": 40,
+    "pending_tasks": 20
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 34,
+    "pending_tasks": 33,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 31

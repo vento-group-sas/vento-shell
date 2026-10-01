@@ -9181,7 +9181,1337 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-010 — Los cambios conservan trazabilidad`
-### [ ] UX-QA-010 — Los cambios conservan trazabilidad
+### ✅ UX-QA-010 — Los cambios conservan trazabilidad
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-009 — No se registra dos veces la misma información
+**Tarea siguiente:** UX-QA-011 — Las tareas críticas soportan conectividad inestable
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por package y globalmente que todo cambio material conserva historia reconstruible, actor y contexto, estado anterior y posterior cuando aplica, motivo, autoridad, versiones, tiempos, correlación, causalidad, evidencia y resultado sin reescritura destructiva ni exposición indebida
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de trazabilidad de cambios definido; las ejecuciones por package y la certificación global final permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff de `UX-QA-009`, `NFR-REQ-006`, contratos de autorización, integración y auditoría y cobertura de prueba vigente, pero no afirma que un package desplegado conserve ya toda la evidencia requerida
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican componentes, flujos, eventos runtime, esquemas, tablas, triggers, logs, auditoría física, políticas de retención, permisos, datos, Supabase, integraciones, despliegues ni repositorios consumidores
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que un cambio material puede reconstruirse después sin depender de memoria humana, texto libre, estado actual aislado ni logs técnicos volátiles.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿QUÉ CAMBIÓ?
+¿SOBRE QUÉ RECURSO Y PROCESO?
+¿QUIÉN O QUÉ PRODUJO EL CAMBIO?
+¿CON QUÉ CONTEXTO Y AUTORIDAD?
+¿CUÁL ERA EL ESTADO ANTERIOR CUANDO CORRESPONDE?
+¿CUÁL QUEDÓ COMO ESTADO NUEVO?
+¿POR QUÉ SE CAMBIÓ?
+¿QUÉ VERSIÓN, POLÍTICA O REGLA ESTABA VIGENTE?
+¿CUÁNDO OCURRIÓ, SE REGISTRÓ, SE RECIBIÓ Y SE CONFIRMÓ?
+¿QUÉ COMANDO, EVENTO, RETRY, HANDOFF O EVIDENCIA LO CAUSÓ?
+¿EL HISTORIAL ANTERIOR SIGUE RECONSTRUIBLE?
+```
+
+La tarea certifica trazabilidad empresarial de cambios. No convierte toda actividad técnica en evento empresarial ni exige exponer el historial completo a cualquier actor.
+
+#### 2. Resultado canónico
+
+`UX-QA-010` establece `UX-QA-CHANGE-TRACEABILITY-CERTIFICATION-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de cambio por package;
+- evidencia mínima de atribución, temporalidad y causalidad;
+- relación entre estado vigente e historia;
+- tratamiento de corrección, reverso, cancelación, anulación y reapertura;
+- trazabilidad de acciones humanas, automáticas, administrativas e integradas;
+- regla de comparación entre vista previa y receipt final;
+- pruebas positivas, negativas y de frontera;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`;
+- identidad de ejecución por package y certificación global final;
+- criterios de invalidez de evidencia;
+- handoff exacto a `UX-QA-011`.
+
+#### 3. Alcance exacto
+
+La certificación aplica cuando el package produce o presenta cambios materiales en:
+
+- estado de proceso;
+- datos maestros;
+- datos de caso;
+- asignaciones;
+- permisos o alcance;
+- configuración;
+- inventario, custodia o ubicación;
+- cantidades o resultados de ejecución;
+- documentos y versiones;
+- aprobaciones, rechazos o excepciones;
+- pagos, conciliaciones o ajustes;
+- publicaciones;
+- archivos, evidencia o metadatos relevantes;
+- decisiones automáticas;
+- importaciones y operaciones masivas;
+- correcciones, reversos, cancelaciones, anulaciones y reaperturas;
+- handoffs que terminan en un efecto material;
+- acciones offline conciliadas posteriormente.
+
+No todo clic, lectura, hover o navegación constituye un cambio material. Las lecturas sensibles o privilegiadas podrán requerir auditoría por contratos propios aunque no alteren el recurso.
+
+#### 4. Handoff recibido de `UX-QA-009`
+
+`UX-QA-009` entrega como hechos de entrada:
+
+- fuente autoritativa identificada;
+- diferenciación entre hecho original, reutilización, observación nueva y corrección;
+- ausencia de maestro paralelo como condición deseable;
+- snapshots históricos preservables;
+- receipts únicos cuando aplican;
+- operaciones idempotentes cuando aplican;
+- lugares donde una corrección cambia maestro, caso o versión;
+- puntos donde un actor necesita comprender qué se corrigió y por qué.
+
+`UX-QA-010` usa esas decisiones para demostrar historia reconstruible. No vuelve a decidir si el dato debía capturarse una vez.
+
+#### 5. Frontera con `UX-QA-009`
+
+`UX-QA-009` responde:
+
+```text
+¿SE CAPTURA O PRODUCE EL MISMO HECHO UNA SOLA VEZ?
+```
+
+`UX-QA-010` responde:
+
+```text
+¿LOS CAMBIOS POSTERIORES SOBRE ESE HECHO CONSERVAN HISTORIA Y CAUSA?
+```
+
+Un package puede evitar doble digitación y aun así fallar `UX-QA-010` si sobrescribe silenciosamente valores, pierde al actor, no conserva versión o no puede relacionar corrección con el hecho anterior.
+
+#### 6. Frontera con `UX-QA-011`
+
+`UX-QA-011` certificará que tareas críticas soportan conectividad inestable.
+
+`UX-QA-010` solo exige que, cuando existan acciones offline, reintentos o conciliaciones, sus cambios conserven trazabilidad suficiente. No certifica disponibilidad, degradación, duración offline, capacidad de cola ni continuidad operativa bajo red inestable.
+
+#### 7. Regla principal
+
+Regla canónica:
+
+```text
+ESTADO VIGENTE
++
+HISTORIA NO DESTRUCTIVA
++
+ATRIBUCIÓN
++
+CAUSA
++
+TIEMPO
++
+VERSIÓN
++
+RESULTADO
+=
+CAMBIO TRAZABLE
+```
+
+Pero:
+
+```text
+ESTADO ACTUAL
+!= HISTORIAL SUFICIENTE
+```
+
+Y:
+
+```text
+LOG TÉCNICO
+!= AUDITORÍA EMPRESARIAL
+```
+
+#### 8. Unidad certificable de cambio
+
+La unidad mínima de evaluación será un cambio con significado empresarial identificable por:
+
+```text
+process_id
+process_version
+process_instance_id
+resource_type
+resource_id
+resource_version
+action
+outcome
+```
+
+Cuando alguno no aplique deberá existir una razón tipada o un contrato alternativo explícito. No se inventarán identificadores para completar la evidencia.
+
+#### 9. Identidad del recurso
+
+El caso deberá demostrar que el cambio pertenece al recurso correcto.
+
+La certificación falla si:
+
+- el historial mezcla dos recursos con identificadores reutilizados;
+- la corrección crea un segundo recurso sin relación explícita;
+- un identificador externo sustituye al identificador canónico;
+- un cambio de aplicación rompe la identidad;
+- una importación no puede relacionar fila, entidad y resultado;
+- un merge o consolidación pierde las identidades originales.
+
+#### 10. Estado vigente frente a historia
+
+La interfaz y el dominio deberán poder distinguir:
+
+```text
+ESTADO VIGENTE AUTORITATIVO
+HISTORIAL DE EVENTOS
+EVIDENCIA DE SOPORTE
+RELACIÓN DE CORRECCIÓN O SUSTITUCIÓN
+```
+
+Mostrar solo el valor actual no demuestra trazabilidad.
+
+#### 11. Historia no destructiva
+
+Queda prohibido como condición de aceptación:
+
+- sobrescribir un hecho anterior para dejar solo el valor nuevo;
+- borrar una aprobación válida porque fue revertida;
+- eliminar una transición para simplificar la línea de tiempo;
+- cambiar el timestamp original durante conciliación;
+- reutilizar un identificador para un hecho diferente;
+- convertir una anulación en ausencia histórica del hecho.
+
+Una corrección puede cambiar la verdad vigente sin destruir la verdad histórica.
+
+#### 12. Antes y después
+
+Cuando el tipo de cambio lo permita, la evidencia deberá conservar:
+
+```text
+previous_state
+new_state
+```
+
+La representación podrá ser estructurada, resumida o referenciada según sensibilidad y tamaño.
+
+No será obligatorio duplicar payloads completos para demostrar el cambio.
+
+#### 13. Campos materiales sin modificación
+
+Cuando una vista previa o revisión final sea material para la decisión, la experiencia deberá permitir distinguir:
+
+- campos modificados;
+- campos relevantes que permanecen iguales;
+- alcance afectado;
+- objetos afectados;
+- dependencias conocidas;
+- vigencia propuesta;
+- advertencias aplicables.
+
+La ausencia de un campo en la diferencia no podrá interpretarse automáticamente como confirmación de que se mantuvo igual si el contrato no lo garantiza.
+
+#### 14. Motivo
+
+Cambios sensibles, correctivos, reversibles, destructivos o excepcionales deberán conservar un motivo estructurado cuando el dominio lo exija.
+
+Se distinguirán:
+
+```text
+reason_code
+reason_detail_ref
+```
+
+El detalle no deberá utilizarse como depósito indiscriminado de información sensible.
+
+#### 15. Actor y autoridad
+
+La trazabilidad deberá distinguir, según aplicabilidad:
+
+- sujeto autenticado;
+- identidad empresarial;
+- actor efectivo;
+- rol base;
+- rol operativo efectivo;
+- actor de servicio;
+- actor simulado o delegado;
+- dispositivo;
+- sesión;
+- sede;
+- área;
+- turno;
+- check-in;
+- permiso o autoridad relevante.
+
+La última persona que usó un dispositivo no se inferirá como autora del cambio.
+
+#### 16. Acciones de sistema
+
+Cuando un proceso automático produzca un cambio material, la evidencia deberá identificar:
+
+- servicio, job o regla;
+- versión de regla o configuración;
+- evento o iniciador causal;
+- entradas referenciadas;
+- resultado;
+- límites o umbrales relevantes;
+- posibilidad de revisión humana cuando aplique;
+- corrección posterior y su relación causal.
+
+Una recomendación no se registrará como decisión final hasta que el proceso autorizado produzca el efecto correspondiente.
+
+#### 17. Correlación y causalidad
+
+La evidencia deberá conservar vínculos suficientes para reconstruir:
+
+```text
+COMANDO
+→ DECISIÓN
+→ EVENTO
+→ EFECTO
+→ RECEIPT O CONCILIACIÓN
+```
+
+Cuando exista distribución entre servicios o aplicaciones se conservarán, según aplique:
+
+- `command_id`;
+- `request_id`;
+- `correlation_id`;
+- `causation_id`;
+- `event_id`;
+- `idempotency_key`;
+- intento;
+- resultado.
+
+#### 18. Tiempo
+
+La certificación deberá distinguir cuando aplique:
+
+- momento de ocurrencia;
+- momento de registro;
+- momento de recepción;
+- momento de persistencia autoritativa;
+- momento de sincronización;
+- vigencia efectiva;
+- expiración.
+
+El orden técnico de inserción no sustituye el orden causal.
+
+#### 19. Zona horaria y reloj de dispositivo
+
+La evidencia deberá conservar una interpretación temporal inequívoca.
+
+Un reloj de dispositivo desviado:
+
+- no se corregirá silenciosamente;
+- podrá marcarse como no confiable;
+- no deberá alterar el momento original sin evidencia;
+- no deberá impedir reconstruir recepción y persistencia del servidor.
+
+#### 20. Versión
+
+Todo cambio material deberá conservar las versiones necesarias para interpretarlo históricamente.
+
+Según el caso:
+
+- versión del recurso;
+- versión del proceso;
+- versión del contrato;
+- versión de política;
+- versión de configuración;
+- versión de documento;
+- versión de regla automática;
+- versión de formato importado.
+
+Cambiar el sistema después no deberá volver ambiguo el significado del evento histórico.
+
+#### 21. Política vigente
+
+Cuando una política, permiso, configuración o regla determine el cambio, deberá poder identificarse cuál versión aplicó.
+
+No es suficiente almacenar el nombre actual de la política si su contenido cambió posteriormente.
+
+#### 22. Resultado
+
+La trazabilidad deberá distinguir, según aplicabilidad:
+
+```text
+SUCCEEDED
+REJECTED
+DENIED
+PARTIAL
+FAILED
+UNKNOWN
+CANCELLED
+REVERSED
+SUPERSEDED
+```
+
+Los nombres concretos podrán variar por dominio, pero un resultado desconocido no podrá presentarse como éxito.
+
+#### 23. Receipt final
+
+Cuando el cambio produzca un receipt o acuse material, este deberá permitir relacionar:
+
+- intención;
+- recurso;
+- alcance;
+- resultado real;
+- diferencias frente a la vista previa cuando aplique;
+- actor;
+- tiempo;
+- correlación;
+- fallos parciales;
+- siguiente acción.
+
+El receipt no sustituye el historial; es una evidencia consumible de su resultado.
+
+#### 24. Vista previa frente a resultado
+
+Para cambios administrativos o masivos de impacto, la certificación deberá poder comparar:
+
+```text
+PROPUESTA
+→ VALIDACIÓN AUTORITATIVA
+→ EJECUCIÓN
+→ RESULTADO REAL
+```
+
+Si el servidor modifica, rechaza o reduce el alcance, el receipt deberá hacerlo visible.
+
+#### 25. Corrección
+
+Una corrección deberá conservar, según aplicabilidad:
+
+- hecho corregido;
+- valor o estado anterior;
+- valor o estado nuevo;
+- motivo;
+- actor y autoridad;
+- tiempos;
+- evidencia;
+- versión de regla;
+- efecto sobre dependencias;
+- identificador del evento corregido.
+
+La corrección no edita silenciosamente el pasado.
+
+#### 26. Supersesión
+
+Cuando una versión sustituye a otra:
+
+- la anterior permanece identificable;
+- la nueva declara su relación;
+- se distingue vigencia de existencia histórica;
+- consumidores pueden resolver cuál es actual;
+- evidencia antigua sigue interpretable.
+
+#### 27. Reverso
+
+Un reverso deberá ser un hecho nuevo relacionado con el hecho original.
+
+```text
+HECHO ORIGINAL
+→ REVERSO
+```
+
+No:
+
+```text
+HECHO ORIGINAL
+→ DESAPARECE DEL HISTORIAL
+```
+
+#### 28. Cancelación y anulación
+
+Cancelación y anulación deberán conservar:
+
+- objeto original;
+- estado previo;
+- actor;
+- motivo;
+- tiempo;
+- autoridad;
+- efecto real;
+- documentos o efectos que permanecen válidos;
+- relación con procesos posteriores.
+
+#### 29. Reapertura
+
+Reabrir un proceso o expediente deberá crear una nueva transición auditable.
+
+La reapertura no podrá fingir que el cierre anterior nunca ocurrió.
+
+#### 30. Eliminación y retiro lógico
+
+Cuando un dominio permita retiro, archivo, desactivación o eliminación gobernada, la interfaz deberá distinguir la operación real.
+
+Una acción visual de ocultamiento no podrá presentarse como eliminación física si los datos permanecen por obligación o política.
+
+La certificación de disposición física pertenece a sus tareas propietarias; `UX-QA-010` solo exige que el cambio de estado sea trazable.
+
+#### 31. Documentos y evidencia
+
+Reemplazar un documento o evidencia deberá conservar, cuando corresponda:
+
+- versión anterior;
+- versión nueva;
+- motivo;
+- actor;
+- tiempo;
+- hash o referencia de integridad;
+- relación de supersesión;
+- finalidad y clasificación relevantes.
+
+La nueva versión no vuelve inexistente la anterior cuando el contrato exige preservación.
+
+#### 32. Cambios de configuración
+
+Cambios de configuración material deberán conservar:
+
+- configuración anterior;
+- propuesta;
+- configuración resultante;
+- objetos afectados;
+- dependencia relevante;
+- actor;
+- autoridad;
+- motivo;
+- vigencia;
+- receipt.
+
+#### 33. Cambios de autorización
+
+Cambios de rol, permiso, alcance, matriz o contexto deberán permitir reconstruir:
+
+- quién solicitó;
+- quién autorizó;
+- sujeto afectado;
+- permiso o alcance anterior;
+- nuevo permiso o alcance;
+- motivo;
+- vigencia;
+- evidencia de segregación cuando aplique.
+
+El acceso a esa información seguirá gobernado por autorización y minimización.
+
+#### 34. Cambios de maestros
+
+Una modificación de maestro deberá preservar la diferencia entre:
+
+```text
+MAESTRO ACTUAL
+SNAPSHOT HISTÓRICO
+CASO PARTICULAR
+```
+
+Actualizar el maestro no reescribe automáticamente casos cerrados que dependieron de la versión anterior.
+
+#### 35. Cambios de caso
+
+Corregir solo un caso deberá quedar diferenciado de corregir la fuente maestra.
+
+La interfaz no podrá inducir a creer que ambas operaciones tienen el mismo alcance.
+
+#### 36. Inventario y custodia
+
+Cambios en inventario, ubicación, lote o custodia deberán relacionar:
+
+- recurso;
+- ubicación o custodio anterior;
+- ubicación o custodio nuevo;
+- cantidad cuando aplique;
+- actor;
+- proceso;
+- evidencia;
+- resultado;
+- diferencias y conciliación cuando existan.
+
+#### 37. Producción
+
+Cambios de lote, estado, liberación, bloqueo, rendimiento, consumo o merma deberán conservar su procedencia y no sustituir silenciosamente valores previamente observados.
+
+#### 38. Compras y recepción
+
+Correcciones en orden, recepción, proveedor, presentación, cantidad o diferencia deberán mantener separados:
+
+- pedido;
+- hecho recibido;
+- diferencia;
+- corrección;
+- resolución.
+
+No se reescribe la recepción física para forzar coincidencia con la orden.
+
+#### 39. Ventas, pagos y devoluciones
+
+Cambios sobre venta, pago, devolución, caja o conciliación deberán preservar relación entre operación original y ajuste posterior.
+
+Un ajuste contable no reemplaza el evento comercial original.
+
+#### 40. NUMERA y conciliación
+
+Una conciliación deberá declarar:
+
+- fuentes comparadas;
+- periodo;
+- versión;
+- unidad;
+- tolerancia;
+- regla de equivalencia;
+- diferencias;
+- responsable;
+- decisión;
+- evidencia.
+
+La conciliación no podrá modificar datos fuente solo para hacer coincidir totales.
+
+#### 41. TALENTO, VISO y ANIMA
+
+Cambios de estado en candidato, postulación, oferta, empleado o episodio deberán conservar identidad y episodios históricos.
+
+Un reingreso, traslado, promoción, cancelación o corrección deberá distinguirse del evento original y conservar motivo y autoridad.
+
+#### 42. PASS
+
+Cambios en perfil, dirección, consentimiento, preferencia o datos de una transacción deberán distinguir maestro vigente de snapshot utilizado por una operación cerrada.
+
+Cambiar el perfil actual no debe alterar silenciosamente una entrega o factura histórica.
+
+#### 43. Cross-app
+
+Cuando un cambio atraviesa aplicaciones, la cadena deberá conservar:
+
+```text
+ORIGEN
+→ CONTRATO O EVENTO
+→ ENTREGA
+→ CONSUMIDOR
+→ EFECTO
+→ RECEIPT O CONCILIACIÓN
+```
+
+La aplicación consumidora no se convierte por ello en propietaria del dato.
+
+#### 44. Eventos e integraciones
+
+La evidencia cross-app deberá permitir reconstruir, según aplique:
+
+- productor;
+- consumidor;
+- versión de contrato;
+- evento;
+- correlación;
+- causalidad;
+- deduplicación;
+- transformación;
+- error;
+- compensación;
+- resultado final.
+
+#### 45. Retries
+
+Un retry conservará la identidad lógica de la operación.
+
+Cuando el contrato use idempotencia:
+
+- se reutiliza la misma clave;
+- aumenta el intento;
+- se conserva el resultado previo cuando exista;
+- no aparece un segundo efecto material;
+- cada intento puede quedar trazado sin multiplicar el hecho empresarial.
+
+#### 46. Resultado desconocido
+
+Ante resultado desconocido:
+
+```text
+CONSULTAR ESTADO
+→ RECONCILIAR
+→ DECIDIR
+```
+
+No:
+
+```text
+REPETIR CAMBIO A CIEGAS
+```
+
+La decisión final deberá conservar relación con el intento original.
+
+#### 47. Offline
+
+Cuando un cambio haya ocurrido offline, la trazabilidad deberá conservar, según aplique:
+
+- identificador local estable;
+- actor y contexto originales;
+- tiempo original;
+- secuencia local;
+- recurso y versión;
+- operación pendiente;
+- idempotencia;
+- estado de sincronización;
+- conflicto;
+- decisión de conciliación;
+- tiempos de recepción y persistencia.
+
+Esta sección no certifica la capacidad de trabajar offline; solo la trazabilidad de cambios que el package declare soportar.
+
+#### 48. Conflictos
+
+Un conflicto deberá generar evidencia de:
+
+- versiones comparadas;
+- campos o estados incompatibles;
+- regla aplicable;
+- actor o proceso que decide;
+- decisión final;
+- información preservada;
+- necesidad de escalamiento cuando corresponda.
+
+#### 49. Operaciones masivas
+
+Una operación masiva deberá permitir reconstruir:
+
+- intención común;
+- población objetivo;
+- filtros o selección;
+- versión base;
+- simulación o vista previa cuando aplique;
+- actor;
+- autorización;
+- resultado por elemento;
+- fallos parciales;
+- receipt global;
+- posibles reintentos sin duplicación.
+
+#### 50. Importaciones
+
+Una importación deberá conservar:
+
+- archivo o fuente;
+- versión de formato;
+- mapeo;
+- staging;
+- validaciones;
+- duplicados detectados;
+- comparación;
+- decisión;
+- resultado por fila;
+- recursos creados, modificados, omitidos o rechazados;
+- actor y tiempos.
+
+La importación no podrá borrar el origen de cada cambio.
+
+#### 51. Cambio entre modo guiado y experto
+
+Cambiar de superficie deberá conservar:
+
+- objeto;
+- alcance;
+- versión;
+- borrador compatible;
+- validaciones;
+- identidad de la operación;
+- receipt único.
+
+No se admite una segunda escritura material solo por cambiar de modo.
+
+#### 52. Dispositivos compartidos
+
+La trazabilidad deberá mantener separados:
+
+```text
+DISPOSITIVO
+ACTOR
+SESIÓN
+TURNO
+ÁREA
+```
+
+Cambiar actor deberá cerrar o aislar el contexto anterior. La siguiente persona no heredará autoría sobre cambios previos.
+
+#### 53. Denegaciones
+
+Cuando una acción material sea denegada y el contrato exija evidencia, la trazabilidad deberá conservar:
+
+- actor;
+- recurso;
+- acción intentada;
+- razón tipada minimizada;
+- permiso o política relevante;
+- tiempo;
+- correlación.
+
+La denegación no crea el efecto empresarial solicitado.
+
+#### 54. Fallos técnicos
+
+Un fallo técnico podrá generar evidencia de intento, pero no deberá presentarse como un cambio empresarial completado.
+
+Se distinguirá:
+
+```text
+INTENTO
+!= EFECTO CONFIRMADO
+```
+
+#### 55. Auditoría frente a observabilidad
+
+La certificación no acepta como sustituto único:
+
+- log de consola;
+- stack trace;
+- métrica agregada;
+- trace sin contexto empresarial;
+- screenshot aislado.
+
+Estas señales pueden complementar la prueba, pero el cambio debe relacionarse con proceso, recurso, actor o servicio, acción, resultado y causa.
+
+#### 56. Inmutabilidad de auditoría
+
+La superficie de auditoría será de solo lectura respecto del hecho histórico.
+
+Anotar, escalar, corregir o abrir un caso deberá producir una acción separada con identidad y autorización propias.
+
+#### 57. Acceso a auditoría
+
+Consultar o exportar auditoría deberá respetar:
+
+- autorización de servidor;
+- finalidad;
+- población mínima;
+- rango temporal;
+- filtros;
+- enmascaramiento;
+- límites de exportación;
+- clasificación;
+- registro de acceso cuando aplique.
+
+Tener permiso para operar un proceso no concede automáticamente acceso a su historial completo.
+
+#### 58. Privacidad y minimización
+
+La evidencia no deberá duplicar secretos, tokens, PIN, credenciales ni payloads completos sin necesidad.
+
+La trazabilidad suficiente no significa retener todos los datos visibles en una pantalla.
+
+#### 59. Datos sensibles
+
+Para datos sensibles podrán conservarse:
+
+- identificadores o referencias;
+- hashes;
+- reason codes;
+- hechos derivados permitidos;
+- clasificación;
+- evidencia minimizada.
+
+El historial no autoriza exposición irrestricta.
+
+#### 60. Vista de historial para usuario operativo
+
+Cuando el flujo requiera mostrar historial al trabajador, la interfaz deberá priorizar significado humano:
+
+- qué cambió;
+- cuándo;
+- quién o qué lo produjo cuando sea apropiado;
+- estado resultante;
+- razón relevante;
+- siguiente acción.
+
+No deberá exponer identificadores técnicos sin valor operativo como sustituto de explicación.
+
+#### 61. Vista administrativa
+
+Una vista administrativa podrá ofrecer mayor densidad y comparación, pero deberá conservar:
+
+- filtros visibles;
+- universo consultado;
+- versiones;
+- fuentes;
+- diferencias;
+- actor;
+- tiempos;
+- correlación;
+- receipt;
+- autorización.
+
+#### 62. Línea de tiempo
+
+Una línea de tiempo deberá diferenciar cuando corresponda:
+
+- tiempo de ocurrencia;
+- tiempo de recepción;
+- tiempo de persistencia;
+- tiempo de sincronización;
+- zona horaria;
+- actor;
+- principal técnico;
+- contexto;
+- antes;
+- después;
+- correlación;
+- receipt.
+
+Ordenar solo por creación técnica puede ser incorrecto en escenarios offline o distribuidos.
+
+#### 63. Comparadores
+
+Los comparadores deberán declarar:
+
+- fuente A;
+- fuente B;
+- periodo;
+- versión;
+- unidad;
+- tolerancia;
+- regla de equivalencia;
+- dueño;
+- acción permitida sobre cada diferencia.
+
+#### 64. Reconocimiento de advertencias
+
+El reconocimiento explícito de una advertencia solo será obligatorio cuando exista riesgo material justificable.
+
+Cuando se exige, deberá conservar razón y evidencia proporcional sin convertir toda acción ordinaria en una confirmación decorativa.
+
+#### 65. Caso positivo mínimo
+
+Un caso positivo mínimo demuestra:
+
+1. recurso y proceso identificados;
+2. cambio material ejecutado una vez;
+3. actor o servicio correcto;
+4. contexto efectivo correcto;
+5. estado anterior recuperable cuando aplica;
+6. estado nuevo recuperable;
+7. motivo cuando aplica;
+8. versión relevante;
+9. tiempos suficientes;
+10. correlación y causalidad cuando aplican;
+11. receipt o evidencia de resultado;
+12. historial anterior preservado.
+
+#### 66. Casos positivos obligatorios por package
+
+Cada package aplicable deberá incluir, según su alcance, casos de:
+
+- cambio ordinario exitoso;
+- cambio rechazado o denegado;
+- corrección;
+- reverso o cancelación;
+- cambio cross-app;
+- cambio automático;
+- retry;
+- cambio masivo o importación si existe;
+- historial consultable;
+- actor/contexto correcto.
+
+Los casos no aplicables deberán justificarse por el alcance real del package.
+
+#### 67. Casos negativos mínimos
+
+La certificación deberá intentar detectar:
+
+- sobrescritura silenciosa;
+- actor ausente o incorrecto;
+- contexto heredado de otra persona;
+- recurso equivocado;
+- motivo ausente donde es obligatorio;
+- timestamp reescrito;
+- versión ausente;
+- correlación rota;
+- receipt no relacionado;
+- segundo efecto por retry;
+- auditoría editable;
+- log técnico usado como única evidencia;
+- secreto expuesto en evento;
+- cambio sin estado anterior cuando el contrato exige comparación;
+- anulación que borra el hecho original;
+- importación sin resultado por fila;
+- operación masiva sin población reconstruible.
+
+#### 68. Casos que no demuestran trazabilidad por sí solos
+
+No bastan por sí solos:
+
+- que la pantalla muestre “guardado”;
+- que exista `updated_at`;
+- que exista `updated_by`;
+- que el log contenga un request;
+- que el recurso tenga versión;
+- que el usuario recuerde lo que hizo;
+- que exista un screenshot final;
+- que un evento tenga timestamp sin causalidad;
+- que el audit log exista pero no pueda relacionarse con el recurso;
+- que el historial muestre texto libre sin estructura.
+
+#### 69. Oracle de trazabilidad
+
+Para cada caso se aplicará:
+
+```text
+SI no existe cambio material
+→ N/A para esta certificación concreta
+
+SI existe cambio material y no puede identificarse recurso o proceso
+→ FAIL
+
+SI existe cambio material y no puede atribuirse actor o servicio
+→ FAIL
+
+SI el contrato exige estado anterior y este fue destruido
+→ FAIL
+
+SI el cambio no conserva resultado o causalidad suficiente
+→ FAIL
+
+SI un retry crea un segundo efecto material
+→ FAIL
+
+SI una corrección borra el hecho corregido
+→ FAIL
+
+SI la evidencia expone secretos innecesarios
+→ FAIL
+
+SI estado vigente, historia y corrección pueden reconstruirse con evidencia proporcional
+→ PASS
+```
+
+#### 70. Identidad del caso de prueba
+
+Cada caso deberá declarar como mínimo:
+
+- `case_id`;
+- package evaluado;
+- aplicación;
+- proceso;
+- recurso;
+- tipo de cambio;
+- actor o servicio esperado;
+- contexto esperado;
+- versión inicial;
+- acción;
+- resultado esperado;
+- campos de trazabilidad obligatorios;
+- evidencia producida;
+- resultado observado;
+- veredicto.
+
+#### 71. Unidad de certificación por package
+
+Cada package aplicable se certificará de forma independiente bajo una identidad equivalente a:
+
+`UX-QA-010::<package_id>`
+
+Un PASS de otro package no se hereda.
+
+#### 72. Cobertura mínima por package
+
+La cobertura deberá abarcar únicamente las superficies y efectos que el package declara materializar.
+
+No se exigirá una matriz de casos ajena a su alcance, pero no podrá omitirse un cambio material que sí produzca.
+
+#### 73. Certificación global final
+
+`UX-QA-010::GLOBAL-FINAL` solo podrá cerrarse cuando:
+
+- todos los packages aplicables tengan decisión válida;
+- no existan fallos críticos abiertos;
+- las excepciones estén gobernadas;
+- la correlación cross-app necesaria sea reconstruible;
+- los cambios automáticos estén cubiertos;
+- la evidencia permita reconstrucción extremo a extremo donde corresponda;
+- no existan familias completas de cambios sin owner ni prueba.
+
+La certificación global no sustituye los PASS por package.
+
+#### 74. Invalidación de evidencia
+
+La evidencia queda inválida si:
+
+- corresponde a otra versión material del package;
+- usa datos o contratos incompatibles con el estado evaluado;
+- omite actor, recurso o resultado cuando son obligatorios;
+- depende de logs ya rotados sin otra evidencia;
+- fue producida con permisos o contexto distintos al caso;
+- oculta un fallo parcial;
+- pierde correlación entre origen y destino;
+- fue editada manualmente sin procedencia;
+- expone información prohibida y no puede aceptarse como evidencia segura.
+
+#### 75. Métricas de soporte
+
+Métricas útiles:
+
+- porcentaje de cambios materiales con evento o evidencia correlacionable;
+- cambios sin actor resoluble;
+- cambios sin versión;
+- cambios sin motivo cuando aplica;
+- correcciones sin relación con hecho anterior;
+- eventos huérfanos;
+- cadenas de correlación rotas;
+- retries con efecto duplicado;
+- tiempos inconsistentes;
+- receipts sin efecto resoluble;
+- operaciones masivas con fallos no individualizados;
+- importaciones sin resultado por fila;
+- consultas de auditoría sin registro cuando aplica.
+
+Las métricas no sustituyen el oracle por caso.
+
+#### 76. Guardrail laboral
+
+La evidencia de trazabilidad se usa para comprender hechos, reconstruir procesos, investigar incidentes y demostrar controles.
+
+No se utilizará de forma aislada para inferir productividad, intención, culpa o desempeño individual sin contexto operacional, procedimiento aplicable y revisión humana correspondiente.
+
+#### 77. Fallos críticos
+
+Bloquean PASS del package:
+
+- cambio material sin recurso identificable;
+- cambio material sin actor o servicio atribuible;
+- corrección destructiva;
+- reverso que elimina historia;
+- retry que duplica efecto;
+- cadena cross-app no reconstruible para un efecto crítico;
+- autoridad o contexto no resolubles en un cambio protegido;
+- auditoría manipulable como si fuera el hecho original;
+- evidencia que incluye secretos prohibidos;
+- operación masiva cuyo impacto no puede reconstruirse;
+- resultado desconocido presentado como éxito.
+
+#### 78. Hallazgos no críticos
+
+Un hallazgo solo podrá diferirse si:
+
+- no destruye historia;
+- no rompe atribución;
+- no rompe causalidad material;
+- no genera efecto duplicado;
+- no expone información indebida;
+- no impide reconstruir el resultado;
+- tiene propietario canónico;
+- tiene condición exacta de salida;
+- su impacto está documentado en el package.
+
+No existe un pendiente narrativo sin dueño.
+
+#### 79. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea define cómo certificar conductas ya cubiertas por contratos y requisitos vigentes y no introduce una obligación verificable nueva que exija actualizar el registro.
+
+#### 80. Cobertura de prueba vigente reutilizada
+
+La certificación reutiliza, sin modificar, cobertura existente de fuente de verdad, historial, autorización, integración, vista previa, auditoría, comparación, receipts y cambios administrativos.
+
+Cobertura principal:
+
+- `TREQ-UX-005`;
+- `TREQ-UX-011`;
+- `TREQ-UX-334`;
+- `TREQ-UX-335`;
+- `TREQ-UX-360`;
+- `TREQ-UX-396`;
+- `TREQ-UX-398`;
+- `TREQ-UX-403`;
+- `TREQ-UX-429`;
+- `TREQ-UX-432`;
+- `TREQ-UX-445`;
+- `TREQ-AUTH-015`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-023`.
+
+Esta lista es trazabilidad reutilizada; no representa requisitos creados o modificados por `UX-QA-010`.
+
+#### 81. Evidencia de validación
+
+| Clase | Estado | Evidencia documental disponible en esta aprobación |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecuta build físico ni de producto para aprobar el contrato documental. |
+| LOCAL | NOT_EXECUTED | La incorporación y los validadores reales del checkout corresponden a la batería posterior. |
+| REMOTA | PASS | Se revisaron las fuentes canónicas remotas vigentes, continuidad, topología, `NFR-REQ-006`, 04A UX, AUTH e INTEGRATION y la base aprobada `UX-QA-009`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron recorridos operativos reales durante esta aprobación documental. |
+| FÍSICA | NOT_EXECUTED | Las instancias por package y `GLOBAL-FINAL` permanecen sujetas a `POST_E5_PACKAGE`. |
+
+#### 82. Evidencia mínima posterior por caso
+
+La ejecución posterior deberá conservar suficiente evidencia para demostrar:
+
+- identidad del recurso;
+- proceso e instancia;
+- versión;
+- estado previo cuando aplica;
+- estado nuevo;
+- actor o servicio;
+- contexto efectivo;
+- autoridad relevante;
+- motivo cuando aplica;
+- tiempos;
+- correlación y causalidad;
+- resultado;
+- receipt;
+- evidencia de no destrucción histórica;
+- evidencia de no duplicación ante retry cuando aplica.
+
+La evidencia deberá ser reproducible y proporcional.
+
+#### 83. Seguridad y privacidad de la evidencia
+
+La evidencia no deberá exponer:
+
+- PIN;
+- tokens;
+- secretos;
+- credenciales;
+- documentos completos cuando basta una referencia;
+- payloads no minimizados;
+- información clínica o sensible ajena al objetivo probatorio;
+- datos de actores no necesarios para la decisión.
+
+Los valores sensibles podrán representarse mediante referencias, hashes, categorías o redacción compatible con el objetivo de prueba.
+
+#### 84. Responsabilidad de un fallo
+
+Todo FAIL deberá identificar:
+
+- package;
+- proceso;
+- recurso;
+- tipo de cambio;
+- evidencia ausente o contradictoria;
+- severidad;
+- owner canónico;
+- condición exacta de salida;
+- impacto sobre `GLOBAL-FINAL`.
+
+El fallo no autoriza modificar contratos ajenos desde esta tarea.
+
+#### 85. Casos fuera de alcance
+
+Quedan fuera de esta aprobación documental:
+
+- crear tablas o esquemas de auditoría;
+- implementar outbox, inbox o event store;
+- definir partición o índices físicos;
+- modificar RLS;
+- configurar retención física;
+- ejecutar disposición de datos;
+- implementar observabilidad;
+- crear dashboards de auditoría;
+- desplegar componentes;
+- crear migraciones;
+- modificar Supabase;
+- ejecutar pruebas físicas;
+- certificar conectividad inestable;
+- certificar recuperación completa ante pérdida de red.
+
+#### 86. Criterio de aceptación por package
+
+Un package obtiene PASS únicamente si:
+
+1. todos sus cambios materiales aplicables están inventariados;
+2. cada caso obligatorio tiene evidencia válida;
+3. el historial no se destruye;
+4. actor o servicio y contexto son atribuibles;
+5. recurso y versión son resolubles;
+6. causa y resultado son reconstruibles;
+7. tiempos son interpretables;
+8. correcciones y reversos preservan relaciones;
+9. retries no duplican efectos;
+10. cross-app conserva correlación cuando aplica;
+11. evidencia está minimizada y protegida;
+12. no existe fallo crítico abierto.
+
+#### 87. Criterios de aceptación
+
+- [ ] Se define un contrato de certificación de trazabilidad de cambios por package y global final.
+- [ ] Se distingue estado vigente de historia suficiente.
+- [ ] Se distingue auditoría empresarial de logs técnicos.
+- [ ] Todo cambio material puede relacionarse con proceso y recurso cuando aplica.
+- [ ] Actor humano, servicio, dispositivo y contexto se distinguen correctamente.
+- [ ] Las correcciones conservan antes, después, motivo y relación con el hecho corregido cuando aplica.
+- [ ] Reversos, anulaciones y reaperturas no destruyen historia.
+- [ ] Los tiempos de ocurrencia, recepción, persistencia y sincronización pueden diferenciarse cuando aplica.
+- [ ] Correlación, causalidad e idempotencia se conservan en cambios distribuidos.
+- [ ] La vista previa puede compararse con el resultado real en cambios de impacto cuando aplica.
+- [ ] Receipts finales conservan resultado, actor, tiempo y correlación suficientes.
+- [ ] Las acciones automáticas identifican regla o servicio causal.
+- [ ] Las operaciones masivas conservan población y resultado por elemento.
+- [ ] Las importaciones conservan procedencia y resultado por fila.
+- [ ] La auditoría histórica no se edita como sustituto de una corrección nueva.
+- [ ] El acceso a auditoría respeta autorización y minimización.
+- [ ] La evidencia no expone secretos ni payloads completos innecesarios.
+- [ ] Los retries no crean un segundo efecto empresarial.
+- [ ] Resultado desconocido no se presenta como éxito.
+- [ ] Las instancias por package no se infieren como ejecutadas por aprobar este contrato documental.
+- [ ] `GLOBAL-FINAL` permanece pendiente hasta disponer de evidencia posterior suficiente.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos.
+- [ ] `UX-QA-011` conserva su responsabilidad sobre conectividad inestable.
+
+#### 88. Límites
+
+Esta tarea:
+
+- no implementa auditoría física;
+- no define tecnología única de event store;
+- no obliga a duplicar payloads completos;
+- no convierte logs en fuente de verdad empresarial;
+- no concede acceso general a historial;
+- no fija plazos legales de retención;
+- no implementa archivo, hold ni disposición;
+- no modifica permisos;
+- no modifica bases de datos;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta reconciliaciones reales;
+- no certifica resiliencia de red;
+- no certifica disponibilidad;
+- no certifica packages sin evidencia posterior a E5;
+- no crea una instancia física durante esta aprobación documental.
+
+#### 89. Handoff a `UX-QA-011`
+
+`UX-QA-010` entrega a `UX-QA-011`:
+
+- identidad de proceso y recurso;
+- actor y contexto originales;
+- tiempos diferenciados;
+- operación y resultado;
+- correlación y causalidad;
+- idempotencia e intento cuando aplican;
+- evidencia de conflicto o conciliación cuando existe;
+- estado pendiente, confirmado o desconocido;
+- preservación del historial durante retry o sincronización;
+- frontera entre intento y efecto confirmado.
+
+`UX-QA-011` podrá certificar conectividad inestable sin reabrir el contrato de trazabilidad de cambios.
+
+#### 90. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-009 — No se registra dos veces la misma información`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-010 — Los cambios conservan trazabilidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-011 — Las tareas críticas soportan conectividad inestable`
 ### [ ] UX-QA-011 — Las tareas críticas soportan conectividad inestable
 ### [ ] UX-QA-012 — El retorno entre aplicaciones conserva contexto
 ### [ ] UX-QA-013 — El retorno conserva el proceso cuando corresponde

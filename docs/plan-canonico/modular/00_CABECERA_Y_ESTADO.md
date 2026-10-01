@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1562** |
+| Tareas aprobadas | **1563** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **34** |
+| Tareas no iniciadas | **33** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **97.87% (1562/1596)** |
+| Porcentaje de completamiento | **97.93% (1563/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **UX-QA-009 — No se registra dos veces la misma información** |
-| Tarea actual | **UX-QA-010 — Los cambios conservan trazabilidad** |
+| Última tarea aprobada | **UX-QA-010 — Los cambios conservan trazabilidad** |
+| Tarea actual | **UX-QA-011 — Las tareas críticas soportan conectividad inestable** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **UX-QA-011 — Las tareas críticas soportan conectividad inestable** |
+| Siguiente tarea | **UX-QA-012 — El retorno entre aplicaciones conserva contexto** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 39 de 60 aprobadas; UX-QA-010 pendiente** |
+| Progreso del bloque | **BLOQUE U: 40 de 60 aprobadas; UX-QA-011 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — UX-QA-010** |
+| Carril documental | **ACTIVO — UX-QA-011** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `UX-QA-009` — No se registra dos veces la misma información |
-| Tarea actual | `UX-QA-010` — Los cambios conservan trazabilidad — **NO INICIADA** |
-| Siguiente tarea | `UX-QA-011` — Las tareas críticas soportan conectividad inestable |
+| Última aprobada | `UX-QA-010` — Los cambios conservan trazabilidad |
+| Tarea actual | `UX-QA-011` — Las tareas críticas soportan conectividad inestable — **NO INICIADA** |
+| Siguiente tarea | `UX-QA-012` — El retorno entre aplicaciones conserva contexto |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 39 DE 60 APROBADAS — ACTUAL UX-QA-010** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 40 DE 60 APROBADAS — ACTUAL UX-QA-011** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-UX-QA-009 — No se registra dos veces la misma información
-        ↓
-TAREA ACTUAL
 UX-QA-010 — Los cambios conservan trazabilidad
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 UX-QA-011 — Las tareas críticas soportan conectividad inestable
         ↓
+SIGUIENTE TAREA RESERVADA
+UX-QA-012 — El retorno entre aplicaciones conserva contexto
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 39 de 60 tareas aprobadas
+BLOQUE U — 40 de 60 tareas aprobadas
 ```
