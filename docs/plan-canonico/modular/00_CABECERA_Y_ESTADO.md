@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1550** |
+| Tareas aprobadas | **1551** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **46** |
+| Tareas no iniciadas | **45** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **97.12% (1550/1596)** |
+| Porcentaje de completamiento | **97.18% (1551/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-QA-027 — Actualización de paquete no rompe otros repositorios** |
-| Tarea actual | **AUTH-QA-028 — Rollback funciona por aplicación** |
+| Última tarea aprobada | **AUTH-QA-028 — Rollback funciona por aplicación** |
+| Tarea actual | **AUTH-QA-029 — Auditoría conserva actor, turno, sede y área** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-QA-029 — Auditoría conserva actor, turno, sede y área** |
+| Siguiente tarea | **AUTH-QA-030 — Ejecutar prueba de regresión completa** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 27 de 60 aprobadas; AUTH-QA-028 pendiente** |
+| Progreso del bloque | **BLOQUE U: 28 de 60 aprobadas; AUTH-QA-029 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-QA-028** |
+| Carril documental | **ACTIVO — AUTH-QA-029** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-QA-027` — Actualización de paquete no rompe otros repositorios |
-| Tarea actual | `AUTH-QA-028` — Rollback funciona por aplicación — **NO INICIADA** |
-| Siguiente tarea | `AUTH-QA-029` — Auditoría conserva actor, turno, sede y área |
+| Última aprobada | `AUTH-QA-028` — Rollback funciona por aplicación |
+| Tarea actual | `AUTH-QA-029` — Auditoría conserva actor, turno, sede y área — **NO INICIADA** |
+| Siguiente tarea | `AUTH-QA-030` — Ejecutar prueba de regresión completa |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 27 DE 60 APROBADAS — ACTUAL AUTH-QA-028** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 28 DE 60 APROBADAS — ACTUAL AUTH-QA-029** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-QA-027 — Actualización de paquete no rompe otros repositorios
-        ↓
-TAREA ACTUAL
 AUTH-QA-028 — Rollback funciona por aplicación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-QA-029 — Auditoría conserva actor, turno, sede y área
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-QA-030 — Ejecutar prueba de regresión completa
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 27 de 60 tareas aprobadas
+BLOQUE U — 28 de 60 tareas aprobadas
 ```
