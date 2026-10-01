@@ -33941,7 +33941,1921 @@ No transfiere ownership comercial PULSO a NUMERA ni convierte ventas, pagos o ci
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-028 — Probar NUMERA por alcance financiero`
-### [ ] UX-QA-028 — Probar NUMERA por alcance financiero
+### ✅ UX-QA-028 — Probar NUMERA por alcance financiero
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-027 — Probar PULSO por punto operativo
+**Tarea siguiente:** UX-QA-029 — Probar PASS como cliente
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de NUMERA por alcance financiero, demostrando por package y globalmente que el universo aprobado `CAP-12.01..CAP-12.15`, los siete procesos propietarios, las veinte superficies canónicas, la autorización financiera, la trazabilidad de fuentes, la conciliación, cartera, obligaciones, tesorería, costos, presupuestos, escenarios, periodos, reportes y fronteras contable/fiscal pueden utilizarse con comprensión, autoridad, scope, segregación, idempotencia, recuperación y evidencia suficientes, consumiendo `UX-QA-020`, `UX-QA-027`, `NUMERA-AUD-001..012`, `NUMERA-DOM-001..018`, `NUMERA-AUTH-001..015`, `NUMERA-UX-001..028`, `OPS-CST-001` y la cobertura vigente sin reabrir contratos empresariales ya aprobados
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de NUMERA por alcance financiero definido; las ejecuciones `UX-QA-028::<package_id>` y `UX-QA-028::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física y humana aplicable del piloto sin ejecutar hechos económicos, pagos, conciliaciones, cierres, exportaciones, presupuestos, escenarios, datos, Supabase, packages, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, procesos, permisos, datos financieros, hechos económicos, conciliaciones, cartera, obligaciones, bancos, tesorería, costos, presupuestos, escenarios, reportes, documentos fiscales, Supabase, migraciones, RLS, RPC, packages, ambientes, despliegues ni cuentas de prueba
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que NUMERA funciona correctamente para el alcance financiero aprobado sin confundir visibilidad con autoridad, agregado con fuente, estimación con hecho, conciliación con corrección, cierre económico con cierre contable o fiscal, ni runtime parcial con producto objetivo completo.
+
+La certificación deberá responder, para cada escenario aplicable:
+
+```text
+¿QUÉ CAPACIDAD FINANCIERA ESTÁ SIENDO PROBADA?
+¿QUÉ PROCESO Y SUPERFICIE CANÓNICA SON PROPIETARIOS?
+¿QUÉ ACTOR O PERSPECTIVA HUMANA INTERVIENE?
+¿QUÉ PERMISO, SCOPE, RECURSO, ESTADO Y VERSIÓN SON APLICABLES?
+¿CUÁL ES EL HECHO O DOCUMENTO FUENTE?
+¿LA CIFRA ES REAL, PRESUPUESTADA, FORECAST, ESCENARIO, SIMULADA, PROPUESTA O PUBLICADA?
+¿LA CONCILIACIÓN PRESERVA LA FUENTE?
+¿EL RESULTADO INCIERTO SE RECONCILIA ANTES DE REINTENTAR?
+¿LA CORRECCIÓN PRESERVA HISTORIA?
+¿LA PERSONA ENTIENDE LA DECISIÓN, EL ALCANCE Y EL SIGUIENTE PASO?
+¿EL RESULTADO RESPETA LA FRONTERA CONTABLE Y FISCAL?
+¿LA EVIDENCIA ES SUFICIENTE, FRESCA Y ATRIBUIBLE?
+```
+
+Regla central:
+
+```text
+CAPACIDAD FINANCIERA APLICABLE
++
+ACTOR / PERSPECTIVA COMPATIBLE
++
+AUTORIDAD EXACTA
++
+SCOPE / RECURSO / ESTADO / VERSIÓN
++
+FUENTE Y LINEAGE
++
+RESULTADO EMPRESARIAL OBSERVADO
++
+IDEMPOTENCIA / RECUPERACIÓN
++
+COMPRENSIÓN HUMANA
++
+EVIDENCIA TÉCNICA SUFICIENTE
+=
+ALCANCE FINANCIERO CERTIFICABLE
+```
+
+---
+
+#### 2. Handoff recibido de `UX-QA-027`
+
+`UX-QA-027` entrega únicamente continuidad transversal del BLOQUE U:
+
+- contrato común `UX-QA-020`;
+- disciplina de evidencia por package;
+- tratamiento de findings y reprueba;
+- criterio `GLOBAL-FINAL`;
+- separación entre runtime parcial y certificación;
+- frontera PULSO → NUMERA como integración sin transferencia de ownership.
+
+La certificación NUMERA no hereda ownership comercial de PULSO ni trata venta, pago, caja o cierre operativo como hechos financieros equivalentes por inferencia.
+
+---
+
+#### 3. Topología contractual
+
+La topología aplicable es:
+
+```text
+mode = PER_PACKAGE_AND_GLOBAL_FINAL
+execution_gate = POST_E5_PACKAGE
+instance_pattern = UX-QA-028::<package_id> + UX-QA-028::GLOBAL-FINAL
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato documental;
+2. cada package aplicable produce evidencia propia;
+3. `GLOBAL-FINAL` agrega únicamente evidencia vigente y compatible;
+4. ninguna ejecución física se autoriza desde esta tarea documental;
+5. la ausencia de una capacidad materializada produce `BLOCKED` cuando impide el escenario, no PASS inferido;
+6. el PASS de una superficie o package no certifica el resto de NUMERA.
+
+---
+
+#### 4. Contrato común heredado de `UX-QA-020`
+
+La tarea consume sin redefinir:
+
+- usuario real compatible con el escenario;
+- cobertura proporcional sin tamaño de muestra universal inventado;
+- mismo candidato, ambiente y alcance;
+- matriz de aplicabilidad;
+- escenarios nominales, error, bloqueo y recuperación;
+- conectividad y condiciones físicas cuando sean materiales;
+- fuente de verdad;
+- idempotencia y fallos parciales;
+- evidencia manual y automatizada;
+- findings con owner y condición de salida;
+- retest sobre el alcance afectado;
+- PASS por escenario y package;
+- `GLOBAL-FINAL`.
+
+---
+
+#### 5. Precondiciones de una ejecución positiva
+
+Una instancia `UX-QA-028::<package_id>` solo puede terminar en PASS cuando exista evidencia verificable de:
+
+- `package_id` exacto;
+- candidato y commit exactos;
+- ambiente autorizado;
+- alcance financiero afectado;
+- procesos y superficies materializados aplicables;
+- permisos y contratos necesarios materializados;
+- fuentes y fixtures identificados;
+- usuarios o cohortes compatibles con la intención probada;
+- evidencia de autorización y resultado;
+- ausencia de drift material no reconciliado.
+
+Una precondición faltante se registra como `BLOCKED` o `NOT_EXECUTED`.
+
+---
+
+#### 6. Identidad mínima de evidencia
+
+Cada ejecución conserva como mínimo:
+
+```text
+package_id
+candidate_ref
+environment
+authorized_scope_ref
+financial_capabilities[]
+process_ids[]
+screen_ids[]
+source_domains[]
+scenario_ids[]
+participant_cohorts[]
+observed_roles[]
+observed_legal_entities[]
+observed_sites_or_cost_centers[]
+observed_periods[]
+observed_devices_or_surfaces[]
+ux_qa_001_019_applicability[]
+findings[]
+result
+```
+
+Los valores no aplicables se justifican y no se completan con datos inventados.
+
+---
+
+#### 7. Alcance financiero aprobado
+
+`NUMERA-UX-025` cerró documentalmente el alcance objetivo:
+
+```text
+CAP_12_EXPECTED = 15
+CAP_12_APPROVED_IN_TARGET_SCOPE = 15
+CAP_12_REMOVED = 0
+CAP_12_OPTIONAL_BY_DEFAULT = 0
+```
+
+La certificación no vuelve a decidir si una capacidad pertenece a NUMERA. Comprueba que la materialización aplicable conserva el alcance aprobado y sus fronteras.
+
+---
+
+#### 8. Matriz obligatoria de las quince capacidades
+
+| Capacidad | Intención a certificar | Propiedad o frontera |
+| --- | --- | --- |
+| `CAP-12.01` | registrar hechos económicos | NUMERA registra efecto correlacionado; no recrea el hecho operativo |
+| `CAP-12.02` | gestionar caja | PULSO opera; NUMERA consolida y concilia |
+| `CAP-12.03` | gestionar bancos y pagos | NUMERA gobierna; banco/proveedor ejecuta externamente cuando corresponda |
+| `CAP-12.04` | gestionar cuentas por cobrar | NUMERA gobierna cartera, recaudo, aplicación y saldo |
+| `CAP-12.05` | gestionar cuentas por pagar | NUMERA gobierna obligación, aprobación financiera, pago y conciliación |
+| `CAP-12.06` | facturar y controlar documentos | autoridad fiscal externa conserva emisión oficial; NUMERA mantiene referencia y efecto |
+| `CAP-12.07` | conciliar ventas, pagos y entregas | NUMERA concilia; PULSO/NEXO/proveedores conservan hechos fuente |
+| `CAP-12.08` | conciliar compras y recepciones | NUMERA concilia; ORIGO/NEXO conservan compra, recepción y movimiento |
+| `CAP-12.09` | calcular costos | NUMERA calcula con método, entradas, versión y fuentes trazables |
+| `CAP-12.10` | distribuir costos compartidos | NUMERA gobierna pools, drivers, bases, destinos, aprobación y reversión |
+| `CAP-12.11` | gestionar presupuestos | NUMERA gobierna presupuesto, revisión, forecast, escenario, aprobación y desviación |
+| `CAP-12.12` | gestionar tesorería | NUMERA proyecta y gobierna; la ejecución bancaria conserva autoridad externa |
+| `CAP-12.13` | gestionar impuestos y obligaciones | NUMERA controla calendario, base, soporte y estado; autoridad oficial externa conserva determinación/presentación |
+| `CAP-12.14` | cerrar períodos y emitir reportes | NUMERA gobierna cierre económico y reportes; no implica cierre contable o fiscal oficial |
+| `CAP-12.15` | analizar rentabilidad | NUMERA calcula desde ingreso realizado y costo trazable |
+
+Toda capacidad aplicable debe quedar probada o justificada como fuera del package concreto.
+
+---
+
+#### 9. Tratamiento objetivo heredado
+
+La certificación conserva la clasificación aprobada:
+
+```text
+REUSE_OR_REFACTOR_COUNT = 5
+BUILD_COUNT = 8
+INTEGRATE_EXTERNAL_COUNT = 2
+TOTAL = 15
+```
+
+El tratamiento técnico no cambia el criterio empresarial de la capacidad.
+
+---
+
+#### 10. Siete procesos propietarios
+
+El universo propietario de experiencia NUMERA conserva exactamente:
+
+```text
+VPROC-0010
+VPROC-0051
+VPROC-0052
+VPROC-0053
+VPROC-0054
+VPROC-0061
+VPROC-0069
+```
+
+La prueba no sustituye procesos por rutas, tablas, permisos o componentes.
+
+---
+
+#### 11. Función de `VPROC-0010`
+
+`VPROC-0010` conserva el paquete laboral financiero para pagos y beneficios.
+
+La prueba debe demostrar que VISO/ANIMA conservan hechos laborales y que NUMERA prepara o concilia el resultado económico autorizado sin decidir novedades laborales.
+
+---
+
+#### 12. Función de `VPROC-0051`
+
+`VPROC-0051` conserva hechos económicos y conciliaciones.
+
+La prueba cubre recepción, clasificación, evidencia, ventas/pagos y compras/recepciones sin recrear la operación fuente.
+
+---
+
+#### 13. Función de `VPROC-0052`
+
+`VPROC-0052` conserva obligaciones, aprobación financiera, bancos, tesorería, pagos y cumplimiento.
+
+La emisión de una instrucción no equivale a resultado bancario confirmado.
+
+---
+
+#### 14. Función de `VPROC-0053`
+
+`VPROC-0053` conserva cartera, cobro, recaudo, aplicación, diferencia y saldo.
+
+Promesa, comprobante, recaudo observado y aplicación conciliada permanecen distintos.
+
+---
+
+#### 15. Función de `VPROC-0054`
+
+`VPROC-0054` conserva costos, asignaciones, variaciones, cierre económico y rentabilidad.
+
+Método, versión, fuente, periodo y condición de cierre permanecen explícitos.
+
+---
+
+#### 16. Función de `VPROC-0061`
+
+`VPROC-0061` conserva medición, posición financiera, reportes, indicadores, análisis y mejora.
+
+El dashboard es una proyección de lectura y nunca una fuente financiera editable.
+
+---
+
+#### 17. Función de `VPROC-0069`
+
+`VPROC-0069` conserva presupuesto, escenarios, forecast, versiones y desviaciones.
+
+Presupuesto, forecast, escenario, propuesta, publicación y hecho real no se colapsan.
+
+---
+
+#### 18. Universo de veinte superficies canónicas
+
+La certificación conserva exactamente estas veinte superficies NUMERA:
+
+| Pantalla | Cobertura principal |
+| --- | --- |
+| `VSCREEN-0094` | inicio financiero, posición, alertas y cobertura |
+| `VSCREEN-0095` | hechos económicos |
+| `VSCREEN-0096` | gasto y soporte |
+| `VSCREEN-0097` | aprobaciones financieras |
+| `VSCREEN-0098` | cuentas por pagar |
+| `VSCREEN-0099` | cuentas por cobrar y cartera |
+| `VSCREEN-0100` | caja, bancos y movimientos financieros |
+| `VSCREEN-0101` | conciliación de ventas y pagos |
+| `VSCREEN-0102` | conciliación de compras y recepciones |
+| `VSCREEN-0103` | conciliación de inventario, producción y variaciones |
+| `VSCREEN-0104` | costos, rentabilidad y escenarios |
+| `VSCREEN-0105` | cierre, reapertura y corrección |
+| `VSCREEN-0106` | reportes y exportaciones |
+| `VSCREEN-0153` | paquete laboral para pagos y beneficios |
+| `VSCREEN-0154` | facturas y documentos fiscales |
+| `VSCREEN-0155` | tesorería y programación de pagos |
+| `VSCREEN-0156` | presupuestos, escenarios y forecast |
+| `VSCREEN-0157` | impuestos y cumplimiento |
+| `VSCREEN-0158` | distribución y asignación de costos |
+| `VSCREEN-0159` | indicadores, análisis y planes de mejora |
+
+Una superficie ausente en AS-IS no se elimina del alcance objetivo por esa ausencia.
+
+---
+
+#### 19. Línea base AS-IS de `vento-numera`
+
+El snapshot remoto observado conserva siete páginas:
+
+```text
+/
+ /login
+ /no-access
+ /cost-centers
+ /expenses
+ /break-even
+ /profitability
+```
+
+Cardinalidad técnica heredada:
+
+```text
+PAGES = 7
+STATIC_PAGES = 7
+DYNAMIC_PAGES = 0
+PROTECTED_PAGES = 5
+PUBLIC_CONTROLLED = 2
+ROUTE_HANDLERS = 0
+NAVIGATION_CANDIDATES = 4
+```
+
+La certificación no transforma siete páginas AS-IS en equivalencia automática con veinte superficies objetivo.
+
+---
+
+#### 20. Doce superficies técnicas de baseline
+
+La baseline técnica conserva:
+
+1. identidad, sesión, SSO y denegación;
+2. contexto operativo, sede, área, actor y dispositivo;
+3. inventario de páginas y rutas;
+4. navegación declarativa y prebuild no mutante;
+5. panel raíz y semántica económica;
+6. centros de costo y presupuesto;
+7. gastos;
+8. punto de equilibrio;
+9. rentabilidad;
+10. trazabilidad económica y conciliación;
+11. Supabase, RLS, RPC y Server Actions;
+12. UI, SSR, interacción, accesibilidad y errores.
+
+Cada package justifica las superficies que no le aplican.
+
+---
+
+#### 21. Baseline contractual CI012
+
+La línea base reconocida conserva:
+
+```text
+CONTRACTUAL_TEST_COUNT = 42
+NUMERA_SURFACES = 12
+SOURCE_CONTRACTS = 10
+```
+
+Se mantiene:
+
+```text
+CI012 BASELINE PASS
+!=
+UX-QA-028 PASS
+```
+
+Las pruebas técnicas baseline apoyan la certificación; no sustituyen evidencia empresarial, humana o financiera.
+
+---
+
+#### 22. Runtime parcial y objetivo canónico
+
+Se congela:
+
+```text
+RUNTIME_AS_IS
+!=
+TARGET_FINANCIAL_SCOPE
+```
+
+Una página AS-IS puede aportar evidencia parcial, pero no demuestra por sí sola:
+
+- cartera completa;
+- cuentas por pagar completas;
+- tesorería;
+- conciliaciones integrales;
+- costo real completo;
+- periodos gobernados;
+- fiscalidad;
+- contabilidad formal;
+- visor económico objetivo;
+- permisos objetivo materializados.
+
+---
+
+#### 23. Perspectivas humanas obligatorias
+
+La certificación reutiliza las perspectivas documentales aprobadas:
+
+```text
+CONTABILIDAD
+DIRECCION
+```
+
+Cuando el package exponga una intención material para una de estas perspectivas, deberá existir evidencia humana compatible con su propósito.
+
+---
+
+#### 24. Perfiles NUMERA reutilizados
+
+Se reutilizan:
+
+```text
+PROTO-NUMERA-001 = OPERACION_FINANCIERA
+PROTO-NUMERA-002 = APROBACION_O_TESORERIA
+PROTO-NUMERA-003 = ANALISIS_O_AUDITORIA
+```
+
+Los perfiles describen intención de prueba; no conceden autoridad.
+
+---
+
+#### 25. Roles y funciones relacionadas
+
+Según el proceso y alcance, la evidencia puede involucrar:
+
+- `RESPONSABLE_FINANCIERO`;
+- `RESPONSABLE_ANALITICO`;
+- `GERENCIA_GENERAL`;
+- `GOBIERNO_Y_PROPIEDAD`;
+- `RESPONSABLE_DEL_PROCESO`;
+- `RESPONSABLE_DE_COMPRAS`;
+- `RESPONSABLE_COMERCIAL`;
+- `COORDINACION_DE_OPERACIONES`.
+
+La participación de un rol relacionado no transfiere ownership financiero ni crea permisos NUMERA.
+
+---
+
+#### 26. Rol nominal no es autoridad
+
+Se conserva:
+
+```text
+ROLE_NAME_IS_AUTHORIZATION = NO
+```
+
+Una persona solo ejecuta la acción cuando el contrato propietario resuelve permiso exacto, scope, recurso, estado, versión y cualquier requisito adicional.
+
+---
+
+#### 27. Entrada de aplicación
+
+`numera.access` permite entrada a la aplicación, no lectura universal ni mutación.
+
+```text
+APP ACCESS
+!=
+DATA ACCESS
+!=
+MUTATION AUTHORITY
+!=
+EXPORT AUTHORITY
+```
+
+La certificación debe probar esta separación cuando el package materialice la puerta de entrada.
+
+---
+
+#### 28. Scope organizacional
+
+La experiencia financiera debe respetar el alcance máximo permitido por:
+
+- entidad legal;
+- empresa o unidad;
+- sede;
+- área cuando corresponda;
+- centro de costo;
+- recurso;
+- periodo;
+- dimensión autorizada.
+
+Un filtro cliente no amplía autoridad.
+
+---
+
+#### 29. Agregados y miembros autorizados
+
+Se conserva:
+
+```text
+AGGREGATE_AUTHORIZATION_REQUIRES_AUTHORIZED_MEMBERS = YES
+```
+
+Una cifra consolidada no puede revelar indirectamente miembros fuera del scope salvo que exista una autoridad agregada explícita que lo permita.
+
+---
+
+#### 30. Fuente de verdad
+
+NUMERA recibe y reconcilia hechos; no reescribe dominios fuente para cuadrar un reporte.
+
+```text
+SOURCE_DOMAIN_OWNER = SOURCE_CORRECTION_OWNER
+NUMERA_MAY_RECONCILE_BUT_NOT_REWRITE_FOREIGN_SOURCE = YES
+```
+
+---
+
+#### 31. Hecho económico y hecho operativo
+
+Se conserva:
+
+```text
+ECONOMIC_FACT
+!=
+SOURCE_OPERATION
+```
+
+Registrar o corregir el efecto económico no crea, modifica ni borra por inferencia la venta, compra, recepción, movimiento físico, producción o servicio que lo originó.
+
+---
+
+#### 32. Real, presupuesto y escenarios
+
+La certificación debe conservar:
+
+```text
+REAL
+!= PRESUPUESTADO
+!= FORECAST
+!= ESCENARIO
+!= SIMULADO
+!= PROPUESTO
+!= PUBLICADO
+!= HECHO_CONTABLE
+```
+
+La persona debe poder distinguir estas capas sin depender únicamente de color.
+
+---
+
+#### 33. Alcance ejecutivo
+
+La prueba ejecutiva debe permitir comprender, cuando aplique:
+
+- posición económica y financiera;
+- obligaciones y derechos pendientes;
+- efectivo, bancos y compromisos;
+- costos y variaciones;
+- margen o pérdida;
+- presupuesto, forecast y desviaciones;
+- cierres, diferencias y conciliaciones pendientes;
+- naturaleza real, presupuestada, proyectada o simulada de cada indicador.
+
+La lectura ejecutiva no concede edición de hechos fuente.
+
+---
+
+#### 34. Alcance analítico
+
+La prueba analítica debe demostrar trazabilidad de:
+
+- costos de adquisición;
+- costos productivos;
+- costos logísticos;
+- costos directos;
+- distribuciones compartidas;
+- estándar o referencia frente a real;
+- variaciones;
+- margen;
+- punto de equilibrio;
+- rentabilidad;
+- presupuesto;
+- forecast;
+- escenarios;
+- metodología publicada.
+
+Cada resultado material conserva método, entradas, versión, vigencia, periodo y fuente.
+
+---
+
+#### 35. Alcance financiero operativo
+
+La experiencia financiera operativa debe mantener diferenciados:
+
+- hecho económico;
+- obligación;
+- cuenta por cobrar;
+- cuota o vencimiento;
+- saldo;
+- pago o recaudo;
+- aplicación;
+- diferencia;
+- anticipo;
+- disputa;
+- acuerdo o promesa;
+- castigo autorizado;
+- conciliación.
+
+Una evidencia parcial no cierra por inferencia el ciclo completo.
+
+---
+
+#### 36. Frontera contable
+
+El término contable se usa como preparación, trazabilidad y frontera hacia contabilidad formal.
+
+La certificación debe demostrar que:
+
+- un hecho económico no es automáticamente asiento;
+- un candidato contable no es asiento publicado;
+- NUMERA no se presenta como ledger oficial sin autoridad explícita;
+- las aplicaciones operativas no escriben libros por inferencia;
+- la historia permanece mapeable y reconciliable.
+
+---
+
+#### 37. Frontera fiscal
+
+Documento fiscal, obligación tributaria, pago, hecho económico y asiento permanecen identidades distintas.
+
+La prueba falla si NUMERA presenta como oficial una acción o reporte cuando la autoridad fiscal externa no ha confirmado el resultado requerido.
+
+---
+
+#### 38. `CAP-12.01` — registrar hechos económicos
+
+Debe demostrarse:
+
+- origen identificable;
+- correlación estable;
+- no redigitación del mismo hecho como segundo hecho;
+- clasificación y dimensiones válidas;
+- actor y autorización;
+- evidencia;
+- idempotencia;
+- corrección no destructiva.
+
+---
+
+#### 39. `CAP-12.02` — gestionar caja
+
+La certificación debe preservar:
+
+```text
+CAJA_OPERATIVA_PULSO
+!=
+POSICION_DE_CAJA_NUMERA
+```
+
+PULSO conserva apertura, cobro, arqueo y cierre operativo del punto. NUMERA consume y concilia el efecto económico sin apropiarse del control de caja física.
+
+---
+
+#### 40. `CAP-12.03` — bancos y pagos
+
+Debe distinguir:
+
+- obligación;
+- propuesta o programación;
+- aprobación;
+- instrucción;
+- resultado bancario;
+- conciliación;
+- reverso o corrección.
+
+Enviar una instrucción no significa pago confirmado.
+
+---
+
+#### 41. `CAP-12.04` — cuentas por cobrar
+
+La prueba debe cubrir, cuando aplique:
+
+- saldo;
+- vencimientos;
+- aging;
+- pago recibido;
+- aplicación;
+- anticipos o saldos a favor;
+- acuerdo o promesa;
+- disputa;
+- exposición;
+- cobranza;
+- castigo autorizado;
+- conciliación.
+
+Cliente, deudor y cuenta PASS permanecen distintos.
+
+---
+
+#### 42. `CAP-12.05` — cuentas por pagar
+
+Debe conservar:
+
+- origen de la obligación;
+- aceptación;
+- vencimiento;
+- aprobación;
+- programación;
+- pago;
+- resultado externo;
+- conciliación;
+- disputa;
+- saldo pendiente.
+
+Compra y recepción permanecen en ORIGO/NEXO según su ownership.
+
+---
+
+#### 43. `CAP-12.06` — documentos fiscales
+
+La prueba debe diferenciar:
+
+- documento fiscal;
+- obligación;
+- pago;
+- venta o compra;
+- referencia externa;
+- estado de emisión/recepción;
+- efecto económico.
+
+Una referencia no confirmada no se presenta como documento fiscal oficial.
+
+---
+
+#### 44. `CAP-12.07` — conciliación de ventas, pagos y entregas
+
+Debe demostrarse correspondencia entre:
+
+- venta;
+- componentes de pago;
+- caja;
+- entrega o fulfillment aplicable;
+- liquidación o soporte externo;
+- hecho económico;
+- diferencia.
+
+NUMERA concilia sin reescribir PULSO o NEXO.
+
+---
+
+#### 45. `CAP-12.08` — conciliación de compras y recepciones
+
+Debe separar:
+
+- orden;
+- recepción;
+- documento;
+- obligación;
+- pago;
+- movimiento físico cuando corresponda;
+- diferencia.
+
+Una factura no prueba recepción y una recepción no prueba pago.
+
+---
+
+#### 46. `CAP-12.09` — costos
+
+Todo costo probado declara:
+
+- tipo o método;
+- entradas;
+- versión;
+- vigencia;
+- entidad;
+- centro;
+- periodo;
+- fuente.
+
+Costo estándar, promedio, último, real, productivo, logístico, merma e interno no se colapsan.
+
+---
+
+#### 47. `CAP-12.10` — distribución de costos compartidos
+
+Debe conservar:
+
+- pool;
+- driver;
+- base;
+- origen;
+- destinos;
+- versión;
+- aprobación;
+- reversión;
+- explicación.
+
+La atribución directa precede una distribución compartida cuando exista evidencia suficiente.
+
+---
+
+#### 48. `CAP-12.11` — presupuestos
+
+Debe mantener distintos:
+
+- presupuesto aprobado;
+- revisión;
+- forecast;
+- escenario;
+- propuesta;
+- publicación;
+- hecho real.
+
+Aprobar no implica publicar y publicar no implica activar un precio operativo.
+
+---
+
+#### 49. `CAP-12.12` — tesorería
+
+La prueba debe permitir comprender:
+
+- liquidez;
+- vencimientos;
+- compromisos;
+- lotes de pago;
+- aprobaciones;
+- ejecución externa;
+- resultado;
+- conciliación.
+
+Presupuesto disponible no equivale a efectivo disponible.
+
+---
+
+#### 50. `CAP-12.13` — impuestos y obligaciones
+
+NUMERA puede gobernar calendario, base, soporte, vencimiento, revisión y estado.
+
+La presentación o determinación oficial permanece en la autoridad o sistema autorizado cuando corresponda.
+
+---
+
+#### 51. `CAP-12.14` — cierre de períodos y reportes
+
+La prueba debe mantener separados:
+
+```text
+PERIODO_OPERATIVO
+PERIODO_ECONOMICO
+PERIODO_CONTABLE
+PERIODO_FISCAL
+```
+
+Cerrar económicamente no declara cierre contable o fiscal.
+
+---
+
+#### 52. `CAP-12.15` — rentabilidad
+
+La rentabilidad debe utilizar:
+
+- ingreso realizado;
+- costo trazable;
+- dimensiones explícitas;
+- periodo;
+- reglas de consolidación;
+- tratamiento de transferencias internas;
+- evidencia de cobertura.
+
+Ingreso esperado y gasto agregado no sustituyen el cálculo trazable.
+
+---
+
+#### 53. Paquete laboral financiero
+
+`VSCREEN-0153` debe conservar el paquete laboral para pagos y beneficios sin decidir novedades laborales ni convertirse en maestro de identidad o tiempo.
+
+La prueba verifica reconciliación y handoff, no ownership laboral.
+
+---
+
+#### 54. Indicadores y planes de mejora
+
+`VSCREEN-0159` debe relacionar medición, análisis, decisión, acción y verificación con fuentes identificables.
+
+Una métrica no crea por sí sola una decisión de negocio ni una corrección de fuente.
+
+---
+
+#### 55. Perspectiva Contabilidad
+
+La evidencia debe permitir:
+
+- identificar fuente y correlación;
+- reconstruir documento y soporte;
+- distinguir hecho, obligación, pago y aplicación;
+- detectar duplicados;
+- conservar periodos y versiones;
+- resolver diferencias sin borrar historia;
+- saber qué owner corrige la fuente;
+- reconocer pendientes de cierre;
+- rastrear decisiones sensibles;
+- recuperar resultados inciertos antes de repetir.
+
+---
+
+#### 56. Perspectiva Dirección
+
+La evidencia debe permitir:
+
+- comprender la decisión pendiente;
+- conocer periodo y alcance;
+- distinguir dato real, pendiente, estimado o simulado;
+- visualizar impacto;
+- identificar bloqueo y owner;
+- navegar hasta evidencia autorizada;
+- comprender diferencias sin lenguaje técnico;
+- reconocer información incompleta;
+- separar cierre económico de cierre contable/fiscal;
+- distinguir aprobación, pago, conciliación, cierre y exportación.
+
+---
+
+#### 57. Dimensiones mínimas de validación
+
+La certificación debe cubrir, cuando aplique:
+
+1. fuente y lineage;
+2. identidad y duplicados;
+3. scope y contexto;
+4. segregación de funciones;
+5. periodo y versión;
+6. diferencias y conciliación;
+7. cierre, reapertura y corrección;
+8. exportación y minimización;
+9. recuperación y resultado desconocido;
+10. comprensión empresarial;
+11. costos y metodología;
+12. presupuestos y escenarios;
+13. cartera, obligaciones y tesorería;
+14. fronteras contable y fiscal;
+15. accesibilidad y presentación.
+
+---
+
+#### 58. Cobertura y conciliación antes de interpretar
+
+La experiencia debe permitir saber:
+
+- qué fuentes eran esperadas;
+- cuáles llegaron;
+- hasta qué corte;
+- cuáles están pendientes;
+- cuáles están stale;
+- qué diferencias siguen abiertas;
+- qué periodos o restatements afectan la lectura.
+
+Se conserva:
+
+```text
+NO_VISIBLE_CASES_IS_RECONCILIATION_COMPLETE = NO
+VISIBLE_SUBSET_COMPLETE_IS_GLOBAL_SCOPE_COMPLETE = NO
+```
+
+---
+
+#### 59. Estados de cobertura
+
+Los estados de cobertura heredados no se reducen a un booleano.
+
+La experiencia debe diferenciar al menos las condiciones canónicas de:
+
+- completo;
+- parcial;
+- fuente pendiente;
+- stale;
+- unknown;
+- no aplicable;
+- no autorizado;
+- requiere conciliación;
+- conflicto bloqueante.
+
+La certificación no renombra estas condiciones como éxito genérico.
+
+---
+
+#### 60. Cero, ausencia y desconocido
+
+Se conserva:
+
+```text
+ZERO
+!= NO_DATA
+!= NOT_AUTHORIZED
+!= NOT_APPLICABLE
+!= UNKNOWN
+!= STALE
+!= ERROR
+```
+
+La persona debe comprender la diferencia sin interpretar un valor vacío como cero confirmado.
+
+---
+
+#### 61. Duplicidad
+
+La prueba debe cubrir:
+
+- mismo evento redeliverado;
+- eventos distintos que representan el mismo efecto empresarial;
+- similitud superficial sin identidad suficiente;
+- registro manual que intenta sombrear un hecho fuente;
+- fuente recibida después de captura manual;
+- reverso o corrección;
+- evidencia insuficiente.
+
+Un duplicado confirmado no crea un segundo efecto y no borra la evidencia recibida.
+
+---
+
+#### 62. Idempotencia y replay
+
+Retry, replay, importación o redelivery no deben producir:
+
+- dos hechos económicos;
+- dos obligaciones;
+- dos pagos;
+- dos aplicaciones de recaudo;
+- dos distribuciones;
+- dos cierres;
+- dos publicaciones.
+
+La UI deshabilitada no sustituye una barrera server-side.
+
+---
+
+#### 63. Resultado desconocido
+
+Se conserva:
+
+```text
+RESULT_UNKNOWN != SUCCESS
+RESULT_UNKNOWN != FAILURE_FINAL
+RESULT_UNKNOWN_REQUIRES_QUERY_OR_RECONCILIATION = YES
+```
+
+La persona no recibe una instrucción para repetir ciegamente un pago, publicación u otra mutación material.
+
+---
+
+#### 64. Concurrencia y versión stale
+
+Si cambia materialmente:
+
+- recurso;
+- versión;
+- periodo;
+- fuente;
+- permiso;
+- scope;
+- baseline;
+- estado;
+
+una confirmación previa debe invalidarse cuando el contrato lo exija.
+
+No se certifica last-write-wins destructivo en decisiones financieras materiales.
+
+---
+
+#### 65. Autorización server-side
+
+Toda mutación protegida se revalida en el punto de efecto.
+
+La certificación debe demostrar que:
+
+```text
+UI ALLOW != SERVER ALLOW PROOF
+UI DENY != SERVER DENY PROOF
+```
+
+Una invocación directa no puede bypassar permiso, scope, recurso, estado o versión.
+
+---
+
+#### 66. Familias de permisos
+
+Cuando sean aplicables y materializadas, la prueba distingue:
+
+- entrada;
+- lectura;
+- registro/escritura;
+- aprobación/rechazo;
+- estados de periodo;
+- exportación;
+- cartera/bancos especializados;
+- planificación y publicación.
+
+Un permiso de una familia no autoriza otra por inferencia.
+
+---
+
+#### 67. Autorización de planificación
+
+La certificación conserva las acciones separadas para escenarios, presupuestos, forecast y versiones de precio:
+
+```text
+create
+update
+share
+request
+approve
+reject
+publish
+unpublish
+```
+
+No se crea ni acepta un permiso `manage` como sustituto final.
+
+---
+
+#### 68. Planificación y realidad
+
+Se mantiene:
+
+```text
+SCENARIO_PUBLISHED != SOURCE_FACT_MUTATED
+SCENARIO_PUBLISHED != OPERATIONAL_PRICE_ACTIVATED
+SCENARIO_PUBLISHED != MASTER_COST_CHANGED
+SCENARIO_PUBLISHED != ACCOUNTING_POSTED
+```
+
+La prueba falla si la UX induce a interpretar publicación analítica como activación operativa.
+
+---
+
+#### 69. Periodos y reapertura
+
+La prueba debe diferenciar:
+
+```text
+open
+locked
+closed
+```
+
+y mantener distintas:
+
+- liberar lock;
+- cerrar;
+- reabrir;
+- corregir;
+- reclasificar;
+- reversar;
+- restate.
+
+Reabrir no concede autoridad sobre todos los recursos del periodo.
+
+---
+
+#### 70. Corrección no destructiva
+
+Se conserva:
+
+```text
+CORRECTION != DELETE_ORIGINAL
+REOPEN != DELETE_PREVIOUS_CLOSE
+RESTATEMENT != MUTATE_PUBLISHED_VERSION_IN_PLACE
+```
+
+Toda corrección material conserva original, causa, acción posterior y evidencia.
+
+---
+
+#### 71. Exportación
+
+Visualizar no concede exportar.
+
+La prueba de exportación debe verificar:
+
+- permiso exacto;
+- scope de miembros;
+- minimización;
+- columnas autorizadas;
+- formato;
+- auditoría;
+- manejo de error.
+
+---
+
+#### 72. Datos sensibles
+
+La experiencia debe minimizar, cuando aplique:
+
+- información bancaria;
+- información fiscal;
+- datos laborales;
+- datos de terceros;
+- documentos financieros;
+- detalles de cartera;
+- evidencia sensible.
+
+Nunca se exponen secretos técnicos como parte de una proyección financiera ordinaria.
+
+---
+
+#### 73. Navegación y handoff
+
+Navegar desde NUMERA hacia un owner relacionado debe conservar:
+
+- proceso;
+- recurso;
+- contexto permitido;
+- versión o correlación;
+- retorno;
+- reautorización cuando corresponda.
+
+```text
+CONTEXT_HANDOFF_IS_AUTHORITY_HANDOFF = NO
+```
+
+---
+
+#### 74. Frontera PULSO
+
+PULSO conserva pedido, venta, pago comercial y caja operativa.
+
+NUMERA conserva el efecto económico, conciliación y análisis aplicable.
+
+La prueba falla si una corrección financiera reescribe la venta o caja comercial desde NUMERA.
+
+---
+
+#### 75. Frontera ORIGO
+
+ORIGO conserva compra y recepción comercial.
+
+NUMERA conserva obligación, conciliación financiera y pago.
+
+Una factura o pago no crea recepción ficticia.
+
+---
+
+#### 76. Frontera NEXO
+
+NEXO conserva movimiento físico, ubicación, cantidad y custodia.
+
+NUMERA consume el efecto económico y conciliación sin mantener un ledger físico paralelo.
+
+---
+
+#### 77. Frontera FOGO
+
+FOGO conserva receta, producción, consumo, rendimiento y merma.
+
+NUMERA calcula o reconcilia valorización sin convertir un cálculo financiero en ejecución productiva.
+
+---
+
+#### 78. Frontera con bancos y proveedores
+
+Banco o proveedor externo conserva su resultado técnico autoritativo.
+
+Una solicitud enviada, timeout o callback parcial no se convierte en pago confirmado.
+
+---
+
+#### 79. Visor económico principal
+
+`VSCREEN-0104` debe permitir comprender principalmente desde una sola pantalla:
+
+- precio;
+- costo;
+- margen;
+- variación;
+- punto de equilibrio;
+- presupuesto;
+- forecast;
+- escenarios.
+
+El visor no es una fuente editable paralela.
+
+---
+
+#### 80. Composición del visor
+
+Cuando `VSCREEN-0104` esté materializada conforme al contrato, la certificación verifica:
+
+- máximo seis zonas visibles simultáneamente;
+- cuatro a seis indicadores en el resumen;
+- una comparación central;
+- una visualización principal;
+- simulador plegable;
+- detalle bajo demanda.
+
+---
+
+#### 81. Cinco modos principales
+
+La interfaz principal conserva exactamente:
+
+```text
+REAL
+PRESUPUESTADO
+SIMULADO
+PROPUESTO
+PUBLICADO
+```
+
+Forecast y escenario siguen siendo conceptos semánticos propios y no se renombran como presupuesto o realidad.
+
+---
+
+#### 82. Los 42 escenarios del visor económico
+
+Cuando el visor aplique, la certificación debe cubrir el conjunto mínimo definido por `NUMERA-UX-028`:
+
+1. abrir `VSCREEN-0104` con contexto válido;
+2. mostrar cuatro a seis KPIs;
+3. conservar máximo seis zonas visibles;
+4. distinguir los cinco modos principales;
+5. mostrar forecast sin renombrarlo como presupuesto;
+6. cambiar producto y actualizar todos los indicadores;
+7. cambiar periodo y mantener corte coherente;
+8. cambiar escenario y mantener versión visible;
+9. comparar real contra presupuesto;
+10. comparar real contra periodo anterior;
+11. comparar dos escenarios en máximo tres acciones;
+12. abrir simulador plegable;
+13. modificar precio simulado sin mutar precio real;
+14. modificar costo hipotético sin mutar costo canónico;
+15. modificar volumen;
+16. modificar merma;
+17. modificar comisión;
+18. modificar descuento;
+19. restablecer sin side effect;
+20. abrir detalle de fórmula;
+21. abrir inputs;
+22. abrir lineage;
+23. mostrar fuente incompleta como limitación;
+24. no convertir missing en cero;
+25. no convertir stale en actual;
+26. mostrar error técnico distinto de deny;
+27. mostrar no autorizado sin filtrar detalle sensible;
+28. handoff a `VSCREEN-0156`;
+29. handoff a `VSCREEN-0158`;
+30. handoff a corrección de periodo;
+31. evitar fórmula local competidora;
+32. impedir publicación desde permiso view;
+33. invalidar confirmación stale;
+34. manejar resultado material desconocido sin retry ciego;
+35. mantener presupuesto aprobado distinto de draft;
+36. mantener propuesta distinta de publicación;
+37. mantener publicación NUMERA distinta de precio operativo;
+38. no presentar simulación como asiento contable;
+39. no presentar reporte NUMERA como estado estatutario;
+40. preservar accesibilidad sin depender solo de color;
+41. mantener textos de ayuda cortos y progresivos;
+42. completar comparación básica por usuario no técnico sin asistencia obligatoria.
+
+---
+
+#### 83. Comprensión del visor
+
+La certificación deberá medir, como mínimo cuando aplique:
+
+- tiempo para una comparación básica;
+- errores de interpretación;
+- necesidad de ayuda;
+- confusión entre real y supuestos;
+- comprensión de filtros;
+- comprensión de limitaciones de cobertura.
+
+No se inventan umbrales universales: se usan los objetivos canónicos existentes o se registra la observación sin fabricar una meta.
+
+---
+
+#### 84. Simulador
+
+Modificar un supuesto solo recalcula la versión simulada.
+
+Debe probarse que no modifica:
+
+- dato real;
+- costo maestro;
+- presupuesto aprobado;
+- precio operativo;
+- hecho contable;
+- fuente propietaria.
+
+Restablecer no produce side effect.
+
+---
+
+#### 85. Fórmula, inputs y lineage
+
+Todo indicador material debe permitir explicar bajo demanda:
+
+- definición;
+- fórmula o método;
+- entradas;
+- versión;
+- corte;
+- fuente;
+- limitaciones.
+
+El drill-down no amplía el scope autorizado.
+
+---
+
+#### 86. Tablero de cobertura
+
+`VSCREEN-0094` debe ayudar a responder si la información puede interpretarse con confianza.
+
+El tablero no ejecuta comandos financieros inline ni crea un ledger paralelo de cobertura.
+
+---
+
+#### 87. Cierre, reapertura y corrección
+
+`VSCREEN-0105` debe demostrar:
+
+- estado de periodo;
+- motivo;
+- autoridad;
+- diferencia o evento causal;
+- owner de la corrección;
+- preservación histórica;
+- nueva conciliación;
+- recierre o restatement cuando corresponda.
+
+---
+
+#### 88. Cartera y cobranza
+
+`VSCREEN-0099` y los contratos relacionados deben permitir comprender saldo, vencimiento, recaudo, aplicación, disputa y acuerdos sin convertir promesa en pago.
+
+Un castigo autorizado no borra el origen ni equivale a pago.
+
+---
+
+#### 89. Tesorería y bancos
+
+`VSCREEN-0100` y `VSCREEN-0155` deben permitir distinguir proyección, instrucción, resultado bancario y conciliación.
+
+La prueba incluye resultado externo incierto y recuperación.
+
+---
+
+#### 90. Aprobaciones financieras
+
+`VSCREEN-0097` debe preservar preparación, decisión y ejecución como hechos distintos.
+
+La persona que ve una bandeja no recibe automáticamente autoridad de aprobación.
+
+---
+
+#### 91. Reportes y exportaciones
+
+`VSCREEN-0106` debe conservar versión, corte, filtros, scope y lineage.
+
+Captura visual, dashboard o export local no sustituyen un reporte versionado cuando el contrato exija publicación formal.
+
+---
+
+#### 92. Fiscalidad y oficialidad
+
+`VSCREEN-0154` y `VSCREEN-0157` no deben hacer pasar una proyección NUMERA por documento fiscal, filing o decisión oficial cuando falta autoridad externa confirmada.
+
+---
+
+#### 93. Accesibilidad
+
+La certificación verifica, cuando aplique:
+
+- foco lógico;
+- nombres accesibles;
+- errores comprensibles;
+- contraste y semántica sin depender solo de color;
+- navegación por teclado;
+- lectura de tablas y estados;
+- responsive sin pérdida de contexto material.
+
+---
+
+#### 94. Ayuda y progresividad
+
+La experiencia debe usar lenguaje empresarial y divulgación progresiva.
+
+La prueba registra fricción si la persona necesita instrucciones extensas, interpreta RPC/tablas como conceptos de negocio o depende de capacitación extraordinaria no prevista.
+
+---
+
+#### 95. Findings
+
+Todo hallazgo registra como mínimo:
+
+```text
+finding_id
+package_id
+candidate_ref
+scope
+screen_or_process
+scenario
+severity
+evidence
+owner
+exit_condition
+status
+```
+
+No se deja un finding narrativo sin owner.
+
+---
+
+#### 96. Corrección y retest
+
+Una corrección conserva:
+
+```text
+finding_id
+correction_ref
+candidate_before
+candidate_after
+scope_invalidated
+retest_scope
+retest_result
+```
+
+El retest no borra el fallo anterior y no invalida escenarios independientes sin causa.
+
+---
+
+#### 97. Evidencia mínima por escenario
+
+Cada escenario ejecutado conserva, según aplicabilidad:
+
+- package;
+- candidato;
+- ambiente;
+- capacidad;
+- proceso;
+- pantalla;
+- actor/cohorte;
+- scope;
+- recurso;
+- periodo;
+- versión;
+- fuente;
+- objetivo;
+- resultado esperado;
+- resultado observado;
+- ayuda recibida;
+- incidente;
+- finding;
+- evidencia de resultado;
+- referencia temporal;
+- criterio aplicado.
+
+---
+
+#### 98. PASS por escenario
+
+Un escenario obtiene PASS únicamente cuando:
+
+- se ejecutó sobre el candidato correcto;
+- el participante o actor fue compatible;
+- el resultado esperado se alcanzó;
+- no existió bypass;
+- no apareció efecto prohibido;
+- la autoridad fue correcta;
+- la fuente y lineage fueron suficientes;
+- no se ocultó un resultado desconocido;
+- la evidencia es suficiente;
+- findings asociados están cerrados o demostrados como no bloqueantes.
+
+---
+
+#### 99. PASS por package
+
+`UX-QA-028::<package_id>` obtiene PASS únicamente cuando:
+
+- package, candidato, ambiente y alcance están resueltos;
+- la matriz de capacidades aplicables está completa;
+- los procesos y superficies afectadas están identificados;
+- las perspectivas humanas aplicables tienen evidencia;
+- autorización, scope y sensibilidad fueron evaluados;
+- fuentes y reconciliaciones aplicables son coherentes;
+- escenarios críticos fueron ejecutados;
+- no existen resultados desconocidos materiales sin resolver;
+- no existe duplicidad material;
+- no existe fuente propietaria ambigua;
+- no existe corrección destructiva;
+- no existe oficialidad contable/fiscal falsa;
+- findings bloqueantes están cerrados;
+- la evidencia pertenece al candidato certificado.
+
+---
+
+#### 100. `GLOBAL-FINAL`
+
+`UX-QA-028::GLOBAL-FINAL` solo puede PASS cuando:
+
+- todas las instancias package aplicables están resueltas;
+- no existe package aplicable omitido;
+- los veinte `VSCREEN-*` objetivo están cubiertos por materialización o justificación proporcional;
+- las quince `CAP-12` están cubiertas;
+- los siete procesos propietarios están representados;
+- no existen findings bloqueantes abiertos;
+- la evidencia no está stale;
+- no hay contradicción de ownership;
+- el resultado agregado no oculta un FAIL local.
+
+---
+
+#### 101. FAIL
+
+La certificación falla ante cualquier comportamiento material contrario al contrato, por ejemplo:
+
+- cifra sin fuente o fórmula trazable;
+- doble reconocimiento;
+- mutación sin permiso exacto;
+- expansión de scope;
+- fuga sensible;
+- pago incierto presentado como éxito;
+- conciliación que reescribe la fuente;
+- cierre que borra historia;
+- presupuesto confundido con real;
+- publicación confundida con activación operativa;
+- contabilidad/fiscalidad oficial falsamente afirmada;
+- agregado con miembros no autorizados;
+- resultado stale presentado como vigente;
+- finding bloqueante abierto.
+
+---
+
+#### 102. BLOCKED
+
+`BLOCKED` corresponde cuando falta una precondición material, incluyendo:
+
+- capacidad o permiso todavía no materializados;
+- superficie objetivo ausente;
+- package no elegible;
+- backend propietario pendiente;
+- fuente requerida no disponible;
+- fixture seguro inexistente;
+- ambiente no autorizado;
+- gate físico pendiente;
+- política empresarial propietaria todavía sin decisión.
+
+No se convierte ausencia de implementación en `NOT_APPLICABLE`.
+
+---
+
+#### 103. `NOT_APPLICABLE`
+
+Un caso es `NOT_APPLICABLE` solo cuando el package no toca realmente la capacidad, proceso, pantalla, rol o condición y existe justificación verificable.
+
+No se usa para evitar probar una responsabilidad incluida en el alcance.
+
+---
+
+#### 104. STALE
+
+La evidencia es `STALE` cuando cambia materialmente:
+
+- commit;
+- build;
+- package;
+- contratos;
+- permisos;
+- backend;
+- fuente;
+- datos de prueba;
+- configuración;
+- ambiente;
+- proceso;
+- superficie;
+- versión de criterio.
+
+La evidencia stale no participa en un PASS agregado.
+
+---
+
+#### 105. Estado AS-IS observado
+
+Al definir esta tarea se observa:
+
+```text
+VENTO_NUMERA_RUNTIME_PAGE_COUNT = 7
+NUMERA_TARGET_SCREEN_COUNT = 20
+NUMERA_BASELINE_SURFACE_COUNT = 12
+NUMERA_BASELINE_CONTRACTUAL_TEST_COUNT = 42
+NUMERA_TARGET_CAPABILITY_COUNT_AUTH_013 = 57
+NUMERA_AUTH_013_MATERIALIZED_ACTIVE_COUNT = 6
+NUMERA_AUTH_013_PENDING_SHARED_MATERIALIZATION_COUNT = 51
+NUMERA_AUTH_015_TARGET_CAPABILITY_COUNT_AFTER = 125
+NUMERA_AUTH_015_SHARED_PERMISSION_MATERIALIZED_COUNT = 6
+NUMERA_AUTH_015_SHARED_PERMISSION_PENDING_COUNT = 119
+```
+
+Consecuencia:
+
+```text
+CURRENT_AS_IS_CAN_SUPPORT_PARTIAL_EVIDENCE = YES
+CURRENT_AS_IS_PROVES_FULL_UX_QA_028_PASS = NO
+```
+
+---
+
+#### 106. Hallazgos y propietarios de salida
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| runtime actual conserva solo siete páginas frente a veinte superficies objetivo | no | packages NUMERA propietarios | superficies objetivo materializadas según contratos y package |
+| gran parte de permisos objetivo permanece pendiente de materialización | sí para ejecutar acciones afectadas | owners de autorización/packages NUMERA | capacidades publicadas, adoptadas y probadas |
+| `vento-numera` mantiene baseline parcial frente al alcance financiero completo | no para contrato; sí para PASS físico total | packages NUMERA + `UX-QA-028::<package_id>` | alcance aplicable materializado y evidencia suficiente |
+| pruebas humanas de comprensión del visor están pendientes | no para definición; sí para certificación aplicable | `UX-QA-028::<package_id>` | usuarios compatibles completan escenarios con evidencia |
+| contabilidad formal interna permanece diferida/condicionada | no | contratos propietarios NUMERA | autoridad y modelo formal aprobados antes de declararse oficial |
+| proveedor fiscal/contable externo no puede inferirse por UI | no | owner de integración/autoridad externa | binding autorizado y resultado verificable cuando aplique |
+
+No queda un pendiente narrativo sin owner y condición de salida.
+
+---
+
+#### 107. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos descartados:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la certificación especializada de NUMERA ya está protegida por requisitos vigentes que cubren integridad económica, alcance `CAP-12`, trazabilidad, rutas, autorización, conciliación, costos, presupuestos, escenarios, periodos, reportes, sensibilidad, integración y experiencia. Esta tarea organiza su ejecución por package y `GLOBAL-FINAL` sin introducir una obligación material nueva.
+
+---
+
+#### 108. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad y no modifica el Registro 04A.
+
+Se reutiliza, entre otra cobertura vigente:
+
+- `TREQ-NUMERA-001` para reconciliación con hechos y fuentes, ausencia de doble registro y trazabilidad;
+- `TREQ-NUMERA-002` para identidad, dimensiones, periodos y correcciones no destructivas;
+- `TREQ-NUMERA-003` para cartera, cuentas por pagar, bancos, caja consolidada, tesorería y segregación;
+- `TREQ-NUMERA-004` para costos, distribuciones, presupuestos, forecast, equilibrio, rentabilidad y visor económico;
+- `TREQ-NUMERA-005` a `TREQ-NUMERA-024` para inventario técnico de rutas, acceso, permisos, navegación, drift y separación de superficies;
+- `TREQ-INTEGRATION-013` para producción, inventario y costo correlacionados;
+- `TREQ-INTEGRATION-016` para costo logístico correlacionado sin doble efecto;
+- `TREQ-INTEGRATION-017` para hechos operativos hacia NUMERA correlacionados, versionados e idempotentes;
+- `TREQ-AUTH-013` y `TREQ-AUTH-015` para revalidación server-side y evidencia de decisiones protegidas;
+- cobertura UX vigente de fuente de verdad, recuperación, accesibilidad, piloto y findings.
+
+No se modifica ninguna fila del registro.
+
+---
+
+#### 109. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global, TREQ y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@8d9f2f29134895c92e2d5beda64100f1ae6e9436`, `vento-numera/main@c4d50282e30e46d0abb3d871f9604cf913ebbabd`, owner del BLOQUE U, topología `PER_PACKAGE_AND_GLOBAL_FINAL / POST_E5_PACKAGE`, `NUMERA-AUD-001..012`, `NUMERA-DOM-001..018`, `NUMERA-AUTH-001..015`, `NUMERA-UX-001..028`, veinte superficies canónicas, quince capacidades `CAP-12`, siete procesos propietarios, siete páginas AS-IS, doce superficies técnicas baseline y Registro 04A NUMERA con veinticuatro requisitos vigentes. El remoto aún conserva `UX-QA-027` pendiente; para la continuidad adelantada se usó como base inmediata el artefacto completo aprobado de `UX-QA-027`, conforme al protocolo documental vigente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron hechos económicos, conciliaciones, cartera, obligaciones, pagos, tesorería, costos, presupuestos, escenarios, cierres, reportes, exportaciones ni sesiones con usuarios reales. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó ninguna instancia `UX-QA-028::<package_id>` ni `UX-QA-028::GLOBAL-FINAL`. |
+
+---
+
+#### 110. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] consume sin reinterpretar el handoff de `UX-QA-027`;
+- [ ] conserva `PER_PACKAGE_AND_GLOBAL_FINAL / POST_E5_PACKAGE`;
+- [ ] conserva exactamente quince capacidades `CAP-12`;
+- [ ] conserva exactamente siete procesos propietarios;
+- [ ] conserva exactamente veinte superficies canónicas NUMERA;
+- [ ] diferencia siete páginas AS-IS del universo objetivo;
+- [ ] conserva doce superficies técnicas baseline y 42 casos contractuales como apoyo, no como PASS integral;
+- [ ] incorpora las perspectivas Contabilidad y Dirección;
+- [ ] reutiliza los tres perfiles NUMERA aprobados;
+- [ ] rol nominal no se trata como autorización;
+- [ ] `numera.access` no se trata como wildcard;
+- [ ] agregados respetan autorización de miembros;
+- [ ] fuente propietaria no se reescribe desde NUMERA;
+- [ ] hecho económico y hecho operativo permanecen distintos;
+- [ ] real, presupuesto, forecast, escenario, simulado, propuesto, publicado y hecho contable permanecen distintos;
+- [ ] se cubre alcance ejecutivo;
+- [ ] se cubre alcance analítico;
+- [ ] se cubre alcance financiero operativo;
+- [ ] se conserva frontera contable;
+- [ ] se conserva frontera fiscal;
+- [ ] `CAP-12.01..CAP-12.15` tienen criterio de certificación explícito;
+- [ ] `VSCREEN-0153` y `VSCREEN-0159` quedan incluidos en el universo objetivo;
+- [ ] cobertura y conciliación preceden a afirmaciones de completitud;
+- [ ] cero, ausencia, unknown, stale, deny y error permanecen distintos;
+- [ ] duplicidad e idempotencia se prueban;
+- [ ] resultado desconocido exige consulta o conciliación;
+- [ ] versión stale invalida decisiones materiales cuando corresponde;
+- [ ] toda mutación protegida se revalida server-side;
+- [ ] las familias de permisos permanecen separadas;
+- [ ] planificación conserva ocho acciones especializadas por familia cuando aplique;
+- [ ] publicación no implica activación operativa;
+- [ ] periodo, cierre, reapertura y corrección conservan historia;
+- [ ] lectura no concede exportación;
+- [ ] información sensible se minimiza;
+- [ ] handoff de contexto no concede autoridad;
+- [ ] fronteras PULSO, ORIGO, NEXO, FOGO y proveedores externos se preservan;
+- [ ] el visor económico conserva su composición y semántica;
+- [ ] se heredan los 42 escenarios mínimos de `NUMERA-UX-028`;
+- [ ] simulación no muta realidad;
+- [ ] fórmula, inputs y lineage están disponibles bajo demanda;
+- [ ] el tablero de cobertura no se vuelve ledger paralelo;
+- [ ] cartera, tesorería, aprobaciones, reportes y fiscalidad conservan fronteras;
+- [ ] accesibilidad y ayuda progresiva se prueban cuando aplican;
+- [ ] findings tienen owner y salida;
+- [ ] retest conserva historia;
+- [ ] PASS por escenario, package y `GLOBAL-FINAL` quedan definidos;
+- [ ] FAIL, BLOCKED, NOT_APPLICABLE y STALE permanecen distintos;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos;
+- [ ] la continuidad reserva únicamente `UX-QA-029`.
+
+---
+
+#### 111. Límites
+
+Esta tarea no:
+
+- implementa NUMERA;
+- modifica `vento-numera`;
+- modifica PULSO, ORIGO, NEXO, FOGO, PASS o VISO;
+- crea rutas, pantallas o componentes;
+- crea hechos económicos reales;
+- registra gastos reales;
+- aprueba pagos reales;
+- procesa cartera real;
+- ejecuta pagos o movimientos bancarios;
+- concilia ventas, compras, inventario o producción reales;
+- calcula o publica costos reales;
+- modifica centros de costo;
+- ejecuta distribuciones reales;
+- crea o publica presupuestos, forecast, escenarios o versiones de precio reales;
+- cierra o reabre periodos reales;
+- genera restatements reales;
+- publica reportes oficiales;
+- exporta datos financieros reales;
+- emite documentos fiscales;
+- presenta obligaciones tributarias;
+- activa contabilidad formal;
+- crea permisos, roles, grants o scopes;
+- crea tablas, columnas, constraints, índices, funciones, triggers, RPC, RLS, Storage, Edge Functions, cron o colas;
+- ejecuta migraciones;
+- modifica Supabase o datos;
+- modifica packages;
+- ejecuta cutover, rollout o rollback;
+- modifica Registro 04A;
+- crea una instancia física;
+- desarrolla `UX-QA-029`.
+
+---
+
+#### 112. Handoff a `UX-QA-029`
+
+`UX-QA-028` entrega a `UX-QA-029` únicamente continuidad transversal del BLOQUE U.
+
+El handoff conserva:
+
+- contrato común `UX-QA-020`;
+- disciplina de evidencia por package;
+- findings y retest;
+- criterio `GLOBAL-FINAL`;
+- separación entre fuente propietaria y proyección;
+- tratamiento de resultado desconocido;
+- minimización de información sensible;
+- regla de que una aplicación consumidora no adquiere ownership por presentar información de otra.
+
+No transfiere ownership financiero NUMERA a PASS ni convierte saldo, rewards, historial o experiencia cliente en ledger financiero.
+
+---
+
+#### 113. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-027 — Probar PULSO por punto operativo`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-028 — Probar NUMERA por alcance financiero`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-029 — Probar PASS como cliente`
 ### [ ] UX-QA-029 — Probar PASS como cliente
 ### [ ] UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad
 
