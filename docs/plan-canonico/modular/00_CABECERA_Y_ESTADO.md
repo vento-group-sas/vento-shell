@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1559** |
+| Tareas aprobadas | **1560** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **37** |
+| Tareas no iniciadas | **36** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **97.68% (1559/1596)** |
+| Porcentaje de completamiento | **97.74% (1560/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **UX-QA-006 — Las pantallas táctiles funcionan en tablet** |
-| Tarea actual | **UX-QA-007 — Las vistas administrativas no contaminan la operación** |
+| Última tarea aprobada | **UX-QA-007 — Las vistas administrativas no contaminan la operación** |
+| Tarea actual | **UX-QA-008 — El proceso continúa correctamente entre aplicaciones** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **UX-QA-008 — El proceso continúa correctamente entre aplicaciones** |
+| Siguiente tarea | **UX-QA-009 — No se registra dos veces la misma información** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 36 de 60 aprobadas; UX-QA-007 pendiente** |
+| Progreso del bloque | **BLOQUE U: 37 de 60 aprobadas; UX-QA-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — UX-QA-007** |
+| Carril documental | **ACTIVO — UX-QA-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `UX-QA-006` — Las pantallas táctiles funcionan en tablet |
-| Tarea actual | `UX-QA-007` — Las vistas administrativas no contaminan la operación — **NO INICIADA** |
-| Siguiente tarea | `UX-QA-008` — El proceso continúa correctamente entre aplicaciones |
+| Última aprobada | `UX-QA-007` — Las vistas administrativas no contaminan la operación |
+| Tarea actual | `UX-QA-008` — El proceso continúa correctamente entre aplicaciones — **NO INICIADA** |
+| Siguiente tarea | `UX-QA-009` — No se registra dos veces la misma información |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 36 DE 60 APROBADAS — ACTUAL UX-QA-007** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 37 DE 60 APROBADAS — ACTUAL UX-QA-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-UX-QA-006 — Las pantallas táctiles funcionan en tablet
-        ↓
-TAREA ACTUAL
 UX-QA-007 — Las vistas administrativas no contaminan la operación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 UX-QA-008 — El proceso continúa correctamente entre aplicaciones
         ↓
+SIGUIENTE TAREA RESERVADA
+UX-QA-009 — No se registra dos veces la misma información
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 36 de 60 tareas aprobadas
+BLOQUE U — 37 de 60 tareas aprobadas
 ```

@@ -5850,7 +5850,1060 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-007 — Las vistas administrativas no contaminan la operación`
-### [ ] UX-QA-007 — Las vistas administrativas no contaminan la operación
+### ✅ UX-QA-007 — Las vistas administrativas no contaminan la operación
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-006 — Las pantallas táctiles funcionan en tablet
+**Tarea siguiente:** UX-QA-008 — El proceso continúa correctamente entre aplicaciones
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que las superficies de ejecución operativa permanecen enfocadas en trabajo, contexto, estado, evidencia, bloqueo y siguiente acción, sin incorporar backoffice denso, configuración, auditoría, reportes, exportaciones, edición masiva, catálogos maestros ni controles administrativos por el solo hecho de que el actor tenga permisos amplios o el dispositivo sea un computador completo
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de separación operativo-administrativa definido; las ejecuciones `UX-QA-007::<package_id>` y la certificación `UX-QA-007::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff táctil de `UX-QA-006`, el contrato de densidad de `UX-BASE-012`, los patrones `UX-ADMIN-001` a `UX-ADMIN-005`, la cobertura UX vigente y los contratos de pantalla y autorización aplicables, pero no infiere que ningún package o superficie desplegada ya haya demostrado separación efectiva en runtime
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican rutas, menús, componentes, layouts, tablas, filtros, permisos, roles, superficies operativas o administrativas, exportaciones, dashboards, datos, Supabase, dispositivos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que las capacidades administrativas existen donde corresponden sin contaminar la experiencia ordinaria de quienes ejecutan trabajo operativo.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿LA OPERACIÓN CONSERVA FOCO EN LA TAREA ACTUAL?
+¿CONFIGURACIÓN, AUDITORÍA Y BACKOFFICE PERMANECEN FUERA DEL FLUJO ORDINARIO?
+¿TENER PERMISO ADMINISTRATIVO NO CONVIERTE LA PANTALLA OPERATIVA EN MENÚ UNIVERSAL?
+¿EL CAMBIO A ADMINISTRACIÓN ES EXPLÍCITO, AUTORIZADO Y CONTEXTUAL?
+¿VOLVER A OPERACIÓN RESTAURA UN CONTEXTO OPERATIVO EXACTO?
+```
+
+Una superficie administrativa correcta puede ser densa. El fallo de `UX-QA-007` aparece cuando esa densidad o sus capacidades invaden la ejecución ordinaria.
+
+#### 2. Resultado canónico
+
+`UX-QA-007` establece `UX-QA-OPERATION-ADMIN-SEPARATION-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de separación;
+- carriles evaluados;
+- niveles de densidad permitidos por intención;
+- contenido permitido en operación;
+- contenido administrativo incompatible con el flujo ordinario;
+- reglas para actores con múltiples responsabilidades;
+- reglas para supervisión operativa;
+- transición explícita entre operación y administración;
+- tratamiento de dispositivos compartidos y POS;
+- protección de datos, exportaciones y preferencias;
+- evidencia positiva y negativa;
+- criterio por package;
+- criterio `GLOBAL-FINAL`;
+- condiciones que invalidan evidencia previa.
+
+No elimina la administración ni obliga a que toda administración viva en una aplicación distinta.
+
+#### 3. Alcance exacto
+
+La certificación cubre, cuando apliquen:
+
+- superficies de `OPERATIONAL_EXECUTION`;
+- superficies de `OPERATIONAL_SUPERVISION`;
+- superficies de `ADMINISTRATIVE_WORK`;
+- superficies de `CONFIGURATION_GOVERNANCE`;
+- superficies de `AUDIT_ANALYTICS`;
+- estaciones compartidas;
+- computadores POS;
+- tablets operativas;
+- escritorio administrativo;
+- navegación, búsqueda, favoritos y accesos recientes;
+- enlaces profundos;
+- vistas de tabla, grid, dashboard y panel;
+- filtros, columnas, agregados y selección masiva;
+- configuración y catálogos maestros;
+- exportación, impresión y copia;
+- auditoría e historial;
+- cambio de rol o intención de trabajo.
+
+La prueba evalúa separación por propósito y contexto, no por nombre de aplicación ni tipo físico de dispositivo.
+
+#### 4. Handoff recibido de `UX-QA-006`
+
+La prueba recibe una superficie en la que, cuando es tablet:
+
+- la interacción táctil aplicable es operable;
+- el contexto y foco sobreviven reflow;
+- la acción principal permanece alcanzable;
+- actor y contexto están diferenciados;
+- la densidad táctil ya puede evaluarse por tarea;
+- la adaptación al dispositivo no justifica insertar backoffice denso.
+
+`UX-QA-007` no reabre targets, gestos, postura ni baseline táctil.
+
+#### 5. Frontera con `UX-QA-006`
+
+Regla:
+
+```text
+TOUCH_READY
+≠
+OPERATIONALLY_FOCUSED
+```
+
+Una tabla administrativa puede ser perfectamente táctil y aun fallar `UX-QA-007` si aparece en una estación cuya intención activa es ejecutar trabajo operativo.
+
+#### 6. Frontera con `UX-QA-008`
+
+`UX-QA-008` certificará que el proceso continúa correctamente entre aplicaciones.
+
+`UX-QA-007` solo exige que un handoff a una superficie administrativa o de vuelta a operación conserve una frontera explícita. No certifica todavía continuidad cross-app, entrega de contexto entre aplicaciones ni retorno técnico.
+
+#### 7. Regla principal
+
+```text
+PERMISO ADMINISTRATIVO
+≠
+RELEVANCIA OPERATIVA
+```
+
+```text
+PC GRANDE
+≠
+BACKOFFICE
+```
+
+```text
+CAPACIDAD DISPONIBLE
+≠
+CAPACIDAD QUE DEBE COMPETIR CON LA TAREA ACTUAL
+```
+
+La interfaz debe resolver primero intención, carril y contexto.
+
+#### 8. Carriles evaluados
+
+La certificación distingue:
+
+| Carril | Propósito | Densidad ordinaria |
+| --- | --- | --- |
+| `OPERATIONAL_EXECUTION` | ejecutar una tarea o paso empresarial | baja |
+| `OPERATIONAL_SUPERVISION` | coordinar, revisar bloqueos y priorizar | baja a media |
+| `ADMINISTRATIVE_WORK` | comparar, planificar, conciliar, revisar o aprobar | media a alta |
+| `CONFIGURATION_GOVERNANCE` | configurar reglas y parámetros | media a alta |
+| `AUDIT_ANALYTICS` | reconstruir, auditar y analizar | media a alta |
+| `PERSONAL_CUSTOMER_CANDIDATE` | gestionar caso propio | baja |
+
+El carril no se deriva del cargo ni de la aplicación.
+
+#### 9. Niveles de densidad
+
+La certificación usa:
+
+```text
+D0_FOCUSED
+D1_CONTEXTUAL
+D2_COMPARATIVE
+D3_ANALYTICAL
+D4_SPECIALIZED
+```
+
+Regla base:
+
+```text
+OPERACIÓN ORDINARIA
+→ D0 o D1
+
+SUPERVISIÓN OPERATIVA
+→ D1 y D2 SOLO CUANDO LA TAREA LO JUSTIFIQUE
+
+ADMINISTRACIÓN, CONFIGURACIÓN Y AUDITORÍA
+→ D2 a D4 SEGÚN NECESIDAD REAL
+```
+
+La cantidad de datos disponibles no aumenta por sí sola el nivel permitido.
+
+#### 10. Contenido mínimo permitido en operación
+
+Una superficie de ejecución operativa puede mostrar, según aplique:
+
+- actor;
+- sede y área activas;
+- turno o check-in;
+- tarea actual;
+- recurso actual;
+- estado;
+- evidencia necesaria;
+- cantidades o datos requeridos por el paso;
+- bloqueo;
+- contingencia;
+- siguiente acción;
+- resultado o receipt;
+- cola secundaria pertinente;
+- ayuda contextual proporcional.
+
+El objetivo es completar trabajo, no administrar el dominio completo.
+
+#### 11. Contenido que no compite ordinariamente con la operación
+
+Salvo necesidad operacional explícita y contrato específico, permanecen fuera del flujo ordinario:
+
+- tablas maestras completas;
+- catálogos empresariales generales;
+- administración de permisos;
+- configuración transversal;
+- edición de parámetros maestros;
+- costos y márgenes no necesarios para ejecutar;
+- salarios, información médica o datos sensibles ajenos a la tarea;
+- historial técnico completo;
+- dashboards analíticos;
+- auditoría avanzada;
+- exportaciones masivas;
+- importaciones administrativas;
+- operaciones masivas;
+- publicación global;
+- gestión de versiones administrativas;
+- mantenimiento técnico del dispositivo;
+- herramientas de soporte interno.
+
+#### 12. Existencia no equivale a contaminación
+
+Una capacidad administrativa puede existir en el mismo producto siempre que:
+
+- no compita con la acción operativa;
+- requiera intención explícita para abrirse;
+- revalide autoridad;
+- preserve la frontera de contexto;
+- no convierta un menú operativo en catálogo universal;
+- pueda abandonarse sin perder el trabajo operativo seguro;
+- no deje datos administrativos sensibles visibles al regresar.
+
+#### 13. Actor con múltiples roles
+
+Una persona con roles operativos y administrativos no recibirá la unión visual indiscriminada de ambos conjuntos.
+
+La certificación comprobará que:
+
+- el carril activo es perceptible;
+- la tarea activa determina la composición;
+- cambiar de carril es deliberado;
+- el cambio reconstruye relevancia;
+- permisos no utilizados permanecen fuera del foco;
+- volver a operación resuelve de nuevo actor, área, tarea y estado pertinentes.
+
+#### 14. Supervisión operativa
+
+Supervisar no equivale a administrar todo.
+
+Una superficie de supervisión puede incluir:
+
+- colas;
+- bloqueos;
+- carga;
+- cumplimiento;
+- asignaciones pertinentes;
+- alertas;
+- excepciones operativas;
+- coordinación entre áreas autorizadas.
+
+No obtiene automáticamente:
+
+- configuración global;
+- edición de permisos;
+- administración de catálogos;
+- exportación irrestricta;
+- aprobación universal;
+- corrección histórica.
+
+#### 15. Administración legítima
+
+Una vista administrativa puede ser densa cuando la tarea necesita:
+
+- comparar múltiples registros;
+- planificar;
+- conciliar;
+- revisar diferencias;
+- aprobar;
+- configurar;
+- auditar;
+- investigar;
+- analizar tendencias;
+- administrar catálogos o versiones;
+- ejecutar operaciones masivas controladas.
+
+`UX-QA-007` no penaliza densidad legítima en el carril correcto.
+
+#### 16. Workspace administrativo
+
+Una superficie administrativa deberá declarar al menos:
+
+- propósito;
+- actor o simulación;
+- rol;
+- cobertura;
+- territorio;
+- periodo;
+- filtros activos;
+- frescura;
+- modo de lectura o edición;
+- población o universo de trabajo cuando aplique.
+
+Este contexto no se transforma automáticamente en contexto operativo.
+
+#### 17. Filtros administrativos
+
+Regla:
+
+```text
+FILTRO ADMINISTRATIVO
+≠
+AREA OPERATIVA ACTIVA
+```
+
+Seleccionar `Todas las sedes`, una sede, un área o una población en backoffice:
+
+- no concede autoridad adicional;
+- no cambia automáticamente turno o check-in;
+- no cambia custodia;
+- no cambia claim;
+- no fija por sí solo el contexto de una mutación física.
+
+#### 18. Acciones físicas desde administración
+
+Cuando una decisión administrativa derive en una acción física o operacional:
+
+1. la interfaz identifica el caso u objeto;
+2. el actor solicita actuar;
+3. se cambia al carril operativo correspondiente;
+4. se resuelven área, estación, recurso y contexto exactos;
+5. se revalida autoridad;
+6. solo entonces se ofrece la acción física.
+
+La vista comparativa no actúa como sustituto del contexto operativo.
+
+#### 19. Tablas administrativas
+
+Las tablas administrativas legítimas conservarán:
+
+- identidad estable de fila;
+- encabezados comprensibles;
+- unidades;
+- origen;
+- frescura;
+- orden determinista;
+- sensibilidad;
+- estado de carga y vacío;
+- política de detalle;
+- acciones exactas;
+- paginación o virtualización;
+- política de exportación.
+
+Su existencia no justifica copiar la misma tabla a una estación operativa.
+
+#### 20. Tablas en operación
+
+Una tabla operativa solo es conforme cuando representa directamente el trabajo requerido y mantiene carga proporcional.
+
+Ejemplos admisibles:
+
+- cola de pedidos;
+- líneas que deben verificarse;
+- pendientes de producción;
+- ubicaciones de un retiro;
+- diferencias de una recepción.
+
+Ejemplos incompatibles con operación ordinaria:
+
+- maestro completo de productos;
+- historial total de recetas;
+- matriz global de permisos;
+- auditoría técnica;
+- listado completo de costos y márgenes;
+- tabla de configuración general.
+
+#### 21. Búsqueda
+
+La búsqueda del carril operativo:
+
+- prioriza trabajo y recursos pertinentes;
+- no expone destinos administrativos por mera coincidencia textual;
+- no revela títulos o datos sensibles de superficies no pertinentes;
+- revalida autorización y carril antes de abrir un resultado.
+
+Una búsqueda administrativa puede ser más amplia, pero se mantiene en su workspace.
+
+#### 22. Favoritos y recientes
+
+Favoritos, recientes y accesos rápidos:
+
+- conservan intención y carril;
+- no aparecen en operación si pertenecen a administración y no son pertinentes;
+- se revalidan al abrirse;
+- no reviven permisos ni contexto obsoletos;
+- no persisten entre actores en dispositivos compartidos cuando contengan información personal o sensible.
+
+#### 23. Deep links
+
+Un enlace directo a administración:
+
+- no se convierte en acción operativa;
+- revalida actor, permiso, territorio y contexto;
+- puede abrir el workspace administrativo solo si procede;
+- no introduce controles administrativos dentro de la pantalla operativa de origen;
+- no revela metadatos sensibles antes de autorizar.
+
+#### 24. Configuración
+
+Configurar es un carril distinto de ejecutar.
+
+Una configuración puede afectar operación, pero su edición:
+
+- se realiza en superficie apropiada;
+- identifica alcance y versión;
+- muestra impacto;
+- aplica autorización proporcional;
+- conserva auditoría;
+- no se expone como control ordinario junto al CTA de ejecución.
+
+#### 25. Auditoría
+
+Auditar no equivale a corregir el hecho fuente.
+
+La auditoría:
+
+- puede reconstruir historia;
+- puede investigar;
+- puede anotar o escalar cuando corresponda;
+- no modifica silenciosamente el hecho original;
+- abre una acción separada si se requiere corrección.
+
+La operación ordinaria no necesita cargar el historial técnico completo para funcionar.
+
+#### 26. Exportación
+
+Visualizar y exportar son capacidades separadas.
+
+La operación ordinaria no mostrará exportación masiva por el solo hecho de que el navegador pueda descargar archivos.
+
+Cuando una exportación sea legítima deberá validar:
+
+- finalidad;
+- columnas;
+- territorio;
+- periodo;
+- filtros;
+- masking;
+- volumen;
+- clasificación;
+- retención;
+- destinatario cuando aplique.
+
+#### 27. Selección y operaciones masivas
+
+Las operaciones masivas pertenecen ordinariamente al carril administrativo o experto.
+
+No deben competir con una tarea operacional individual salvo contrato expreso.
+
+Toda acción masiva válida identifica:
+
+- conjunto seleccionado;
+- territorio;
+- filtros;
+- elegibilidad;
+- efecto;
+- resultado parcial;
+- estrategia de reintento;
+- evidencia.
+
+#### 28. Edición inline
+
+La edición en línea no convierte una tabla en superficie operacional.
+
+Cuando exista en administración:
+
+- aplica solo a campos habilitados;
+- preserva control de versión;
+- permite cancelar;
+- muestra estado guardado;
+- no oculta validaciones dependientes.
+
+Receta, precio, permiso, salario, costo, publicación o configuración sensible requieren superficies adecuadas al riesgo.
+
+#### 29. Datos sensibles
+
+La separación de carriles protege además proyección de datos.
+
+Una superficie operativa no recibe información administrativa sensible porque:
+
+- exista en el mismo registro;
+- el actor tenga otro rol;
+- la pantalla sea grande;
+- un componente ya tenga la columna disponible;
+- un endpoint devuelva más datos de los necesarios.
+
+La minimización debe existir también en la fuente autoritativa aplicable.
+
+#### 30. Dispositivos compartidos
+
+En dispositivos compartidos:
+
+- `D0` y `D1` son la composición ordinaria;
+- `D2` requiere justificación limitada;
+- `D3` y `D4` quedan fuera del flujo ordinario;
+- una herramienta administrativa temporal requiere sesión personal o step-up cuando aplique;
+- se aplican masking y no persistencia;
+- se limpia el contexto al cerrar o cambiar actor;
+- la administración no queda abierta después del retorno a operación.
+
+#### 31. Computadores POS
+
+```text
+POS FISICAMENTE CAPAZ DE EJECUTAR UN NAVEGADOR COMPLETO
+≠
+WORKSTATION ADMINISTRATIVA
+```
+
+La certificación falla si cocina, caja, producción, recepción o bodega muestran de forma ordinaria backoffice completo solo porque el equipo sea un PC.
+
+#### 32. Tablet operativa
+
+La adaptación táctil de `UX-QA-006` no autoriza aumentar densidad administrativa.
+
+Una tablet puede:
+
+- operar `D0` o `D1`;
+- consultar una vista administrativa limitada cuando su tarea lo justifique;
+- derivar a equipo compatible para trabajo experto.
+
+No debe convertir tablas D3 o D4 en tarjetas operativas sin preservar la intención administrativa real.
+
+#### 33. Escritorio administrativo
+
+Un escritorio administrativo puede usar:
+
+- tablas;
+- paneles comparativos;
+- filtros avanzados;
+- selección múltiple;
+- vistas guardadas;
+- teclado y mouse;
+- acciones masivas controladas.
+
+No por ello debe mezclar ejecución física ordinaria en la misma superficie.
+
+#### 34. Recetario operativo y administración de recetas
+
+Para FOGO se conserva la frontera:
+
+```text
+RECETARIO OPERATIVO
+→ proyección por área y trabajo vigente
+
+ADMINISTRACIÓN DE RECETAS
+→ workspace administrativo separado
+```
+
+Una receta empresarial puede conservar una identidad y versión únicas sin obligar a administrar su ciclo completo desde el POS de producción.
+
+#### 35. Estación multiárea
+
+Una estación puede atender varias áreas autorizadas sin crear un área combinada.
+
+La certificación exige:
+
+- área visible por tarea;
+- cambio explícito cuando corresponda;
+- contexto autoritativo exacto por mutación;
+- ausencia de una lista plana que mezcle trabajo incompatible;
+- administración de configuración separada del selector operativo.
+
+#### 36. Excepciones administrativas
+
+Una excepción legítima puede abrir una capacidad administrativa desde operación únicamente cuando:
+
+- la necesidad sea real;
+- el actor tenga autoridad;
+- la intención cambie de forma visible;
+- el dato sensible esté protegido;
+- exista retorno controlado;
+- el flujo no convierta la excepción en ruta ordinaria.
+
+#### 37. Divulgación progresiva
+
+Las opciones avanzadas pueden permanecer descubribles sin competir con la operación.
+
+La certificación acepta:
+
+- enlace contextual;
+- menú secundario;
+- drawer o panel separado;
+- cambio de workspace;
+- handoff a superficie especializada.
+
+No acepta que todos los controles avanzados permanezcan siempre visibles alrededor del CTA operativo.
+
+#### 38. Administración dentro de la misma aplicación
+
+La separación no exige otra aplicación.
+
+Puede existir en el mismo producto si:
+
+- la navegación diferencia intención;
+- el workspace es identificable;
+- el contexto se reconstruye;
+- las acciones y datos cambian de forma gobernada;
+- existe retorno seguro;
+- no se presenta simultáneamente todo como un único tablero universal.
+
+#### 39. Administración en otra aplicación
+
+Si la capacidad administrativa vive en otra aplicación, `UX-QA-007` solo certifica la frontera conceptual y visual.
+
+La continuidad del proceso, transferencia de contexto, deep link y retorno cross-app pertenecen a `UX-QA-008` y contratos de integración aplicables.
+
+#### 40. Menús
+
+El menú operativo se organiza por:
+
+- trabajo;
+- obligación;
+- resultado;
+- siguiente paso;
+- destinos secundarios pertinentes.
+
+El menú administrativo se organiza por:
+
+- planificar;
+- revisar;
+- aprobar;
+- conciliar;
+- configurar;
+- auditar.
+
+No se genera un menú único a partir de tablas, schemas o permisos acumulados.
+
+#### 41. Oráculo positivo
+
+Un caso positivo demuestra que:
+
+1. el actor entra a operación;
+2. observa tarea, contexto y siguiente acción;
+3. capacidades administrativas no pertinentes no compiten;
+4. una necesidad administrativa se abre mediante transición explícita;
+5. el workspace administrativo muestra propósito y alcance;
+6. al volver, operación reconstruye contexto exacto;
+7. no quedan datos, filtros o controles administrativos contaminando la superficie operativa.
+
+#### 42. Oráculo negativo
+
+Un caso falla si cualquiera de estas conductas aparece sin justificación contractual:
+
+- tabla maestra completa dentro de ejecución;
+- costos o márgenes no necesarios visibles en producción;
+- configuración junto al CTA principal;
+- permisos o usuarios administrables desde estación ordinaria;
+- exportación masiva en POS compartido;
+- auditoría técnica mezclada con trabajo físico;
+- acciones masivas disponibles durante una tarea individual;
+- paneles analíticos compitiendo con el siguiente paso;
+- filtros administrativos usados como contexto operativo;
+- un rol amplio produce menú universal;
+- una pantalla grande eleva silenciosamente densidad;
+- un favorito administrativo reaparece como opción operativa principal;
+- una herramienta administrativa queda abierta al cambiar actor.
+
+#### 43. Casos mínimos por actor
+
+Cada package aplicable incluirá, cuando existan:
+
+- actor puramente operativo;
+- actor operativo con permisos administrativos adicionales;
+- supervisor operativo;
+- administrador especializado;
+- auditor;
+- actor con múltiples roles;
+- actor sin permiso administrativo;
+- actor en simulación o delegación si el package las soporta.
+
+La prueba no se limita al caso de máximo permiso.
+
+#### 44. Casos mínimos por dispositivo
+
+Según aplicabilidad:
+
+- escritorio administrativo;
+- portátil;
+- tablet personal;
+- tablet compartida;
+- POS táctil;
+- kiosco;
+- estación de producción;
+- móvil de apoyo.
+
+El tipo de hardware no sustituye la clasificación del carril.
+
+#### 45. Casos mínimos de navegación
+
+Se probarán cuando existan:
+
+- entrada por home;
+- entrada por cola;
+- búsqueda;
+- favorito;
+- reciente;
+- deep link;
+- notificación;
+- handoff contextual;
+- cambio de rol;
+- cambio de área;
+- retorno desde administración.
+
+Todas deben preservar la frontera correspondiente.
+
+#### 46. Casos mínimos de datos
+
+La prueba verificará que:
+
+- la operación recibe proyección mínima;
+- columnas administrativas no viajan innecesariamente al cliente operativo cuando la arquitectura permita evitarlo;
+- conteos sensibles no se filtran por badges;
+- previews no revelan información administrativa;
+- masking no es únicamente cosmético;
+- caché o preferencias no reintroducen datos del actor anterior.
+
+#### 47. Casos mínimos de autorización
+
+La prueba demuestra que:
+
+- ocultar administración no reemplaza controles de servidor;
+- conocer una URL no amplía permisos;
+- mostrar una capacidad administrativa no autoriza cada acción interna;
+- una persona autorizada para administrar puede seguir viendo una superficie operativa enfocada;
+- el cambio de carril revalida autoridad material.
+
+#### 48. Casos mínimos de accesibilidad
+
+La diferenciación de carriles no depende únicamente de color.
+
+Se verificará:
+
+- propósito nombrado;
+- estructura y encabezados;
+- jerarquía;
+- foco;
+- lectura por lector de pantalla;
+- navegación por teclado;
+- nombres accesibles;
+- estados de selección;
+- reflow;
+- zoom;
+- alternativas a iconos ambiguos.
+
+#### 49. Casos mínimos de estado vacío
+
+Una superficie operativa sin trabajo:
+
+- no muestra administración como relleno;
+- no ofrece configuración genérica;
+- no confunde falta de trabajo con falta de permiso;
+- conserva explicación y siguiente paso seguros.
+
+Una superficie administrativa vacía conserva alcance y filtros para explicar el universo consultado.
+
+#### 50. Casos mínimos de error
+
+Un error operacional:
+
+- no deriva automáticamente al backoffice;
+- no recomienda elevar permisos como solución genérica;
+- no abre configuración técnica al trabajador ordinario.
+
+Un error administrativo conserva su workspace y no transforma el contexto operativo de origen.
+
+#### 51. Evidencia por package
+
+Cada instancia `UX-QA-007::<package_id>` deberá conservar como mínimo:
+
+- package evaluado;
+- superficies operativas incluidas;
+- superficies administrativas relacionadas;
+- actores y roles representados;
+- dispositivos aplicables;
+- niveles de densidad observados;
+- rutas de transición entre carriles;
+- pruebas positivas;
+- pruebas negativas;
+- evidencia de autorización;
+- evidencia de proyección de datos cuando aplique;
+- hallazgos;
+- severidad;
+- owner;
+- resultado.
+
+#### 52. Resultado por package
+
+Estados de certificación:
+
+```text
+PASS
+FAIL
+NOT_APPLICABLE
+```
+
+`PASS` requiere que todas las superficies aplicables mantengan frontera coherente bajo los actores y accesos representativos definidos para el package.
+
+`NOT_APPLICABLE` requiere justificación verificable de que el package no expone ni consume una frontera operativo-administrativa material.
+
+#### 53. Fallos bloqueantes por package
+
+Bloquean `PASS` cuando sean aplicables:
+
+- backoffice denso dentro de ejecución ordinaria;
+- configuración o auditoría como CTA operacional común;
+- rol amplio que genera menú universal;
+- D3 o D4 ordinario en estación compartida;
+- datos administrativos sensibles presentes sin necesidad;
+- exportación o descarga masiva desde POS compartido;
+- filtro administrativo tratado como área activa;
+- retorno a operación con contexto administrativo residual;
+- cambio de actor que conserva vista, filtros o datos sensibles;
+- deep link que evita la frontera de intención;
+- acción física ejecutada directamente desde vista comparativa sin resolver contexto exacto;
+- configuración de recetas dentro del recetario operacional ordinario;
+- hardware usado como única justificación para densidad.
+
+#### 54. Hallazgos no bloqueantes
+
+Un hallazgo puede diferirse únicamente si:
+
+- no viola separación material;
+- no expone datos ni capacidades indebidas;
+- no introduce riesgo de acción accidental;
+- tiene owner exacto;
+- tiene tarea propietaria existente;
+- tiene condición de cierre;
+- tiene vencimiento o gate cuando corresponda.
+
+No se crean tareas narrativas nuevas para acomodar hallazgos ya cubiertos.
+
+#### 55. Certificación global final
+
+`UX-QA-007::GLOBAL-FINAL` requiere:
+
+1. todos los packages aplicables evaluados;
+2. cero fallos bloqueantes abiertos;
+3. consistencia del significado de carriles y niveles de densidad;
+4. ausencia de menús universales introducidos por integración;
+5. ausencia de estaciones compartidas convertidas en backoffice persistente;
+6. cobertura representativa de actores con permisos múltiples;
+7. consistencia de proyección de datos y privacidad;
+8. hallazgos diferidos trazables y aceptables;
+9. evidencia vigente respecto de la versión desplegada.
+
+#### 56. Frescura de evidencia
+
+La evidencia deberá repetirse o revalidarse cuando cambie materialmente:
+
+- navegación principal;
+- clasificación de carril;
+- nivel de densidad;
+- roles;
+- permisos;
+- superficies de administración;
+- tablas o dashboards reutilizados en operación;
+- proyección de datos;
+- búsqueda, favoritos o deep links;
+- comportamiento de dispositivo compartido;
+- handoff entre operación y administración;
+- versión desplegada del package.
+
+#### 57. Independencia respecto del nombre de aplicación
+
+No se presume que:
+
+- VISO sea siempre administrativo;
+- NEXO sea siempre operativo;
+- FOGO sea siempre operativo;
+- un módulo denominado configuración sea automáticamente correcto;
+- una ruta denominada dashboard sea automáticamente administrativa.
+
+La clasificación se resuelve por tarea, intención, actor, efecto y contexto.
+
+#### 58. Independencia respecto del cargo
+
+No se presume que:
+
+- gerente deba ver todo;
+- supervisor deba configurar;
+- administrador deba operar desde backoffice;
+- trabajador operativo nunca pueda abrir una tarea administrativa autorizada.
+
+La separación gobierna la experiencia activa, no una jerarquía rígida de personas.
+
+#### 59. Compatibilidad con modo guiado y experto
+
+Los patrones administrativos existentes permanecen válidos:
+
+- modo guiado para altas, configuración y decisiones complejas ocasionales;
+- modo experto para consulta, comparación, edición masiva y auditoría;
+- ayuda contextual, validación preventiva y vista previa de impacto;
+- prototipos administrativos representativos.
+
+`UX-QA-007` comprueba que esos patrones no aparezcan donde la intención activa sea ejecución ordinaria.
+
+#### 60. Telemetría y métricas
+
+Cuando exista instrumentación, puede observarse:
+
+- entradas accidentales a administración desde operación;
+- abandono después de un cambio de carril;
+- retorno correcto al contexto operativo;
+- controles administrativos seleccionados por error;
+- uso de exportación desde dispositivos no apropiados;
+- frecuencia de cambio entre carriles;
+- necesidad de ayuda;
+- errores por contexto o territorio.
+
+Estas métricas no sustituyen el oracle contractual.
+
+#### 61. Privacidad de métricas
+
+La telemetría no se utilizará para:
+
+- sancionar velocidad individual;
+- inferir incompetencia por usar ayuda;
+- registrar datos sensibles innecesarios;
+- conservar payloads administrativos completos;
+- perfilar al trabajador por su navegación cuando no sea necesario para seguridad o mejora del proceso.
+
+#### 62. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea certifica cobertura ya registrada y no modifica el Registro Canónico de Requisitos de Prueba.
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+La trazabilidad principal reutiliza, sin modificar:
+
+- `TREQ-UX-003`;
+- `TREQ-UX-010`;
+- `TREQ-UX-016`;
+- `TREQ-UX-021`;
+- `TREQ-UX-029`;
+- `TREQ-UX-047`;
+- `TREQ-UX-048`;
+- `TREQ-UX-062`;
+- `TREQ-UX-063`;
+- `TREQ-UX-064`;
+- `TREQ-UX-074`;
+- `TREQ-UX-227` a `TREQ-UX-249`;
+- `TREQ-UX-324`.
+
+La enumeración es trazabilidad de cobertura existente y no constituye alta ni modificación de requisitos.
+
+#### 64. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La aprobación documental no ejecuta build de producto ni prueba superficies desplegadas. |
+| LOCAL | NOT_EXECUTED | El artefacto se prepara para incorporación mediante el lifecycle documental; los validadores del checkout permanecen pendientes hasta ejecutar la batería. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, manifest modular, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, marcadores `UX-QA-007` y `UX-QA-008`, el contrato completo `UX-BASE-012`, los patrones `UX-ADMIN-001` a `UX-ADMIN-005`, cobertura UX 04A vigente y el handoff completo aprobado de `UX-QA-006` usado como base adelantada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron walkthroughs sobre aplicaciones desplegadas ni actores representativos en runtime. |
+| FÍSICA | NOT_EXECUTED | No se validaron estaciones, POS, tablets o escritorios reales y no se materializaron instancias `UX-QA-007::<package_id>` ni `UX-QA-007::GLOBAL-FINAL`. |
+
+#### 65. Criterios de aceptación
+
+`UX-QA-007` queda documentalmente definida cuando se confirma que:
+
+- [ ] la continuidad es `UX-QA-006 → UX-QA-007 → UX-QA-008`;
+- [ ] autorización y relevancia visual permanecen separadas;
+- [ ] los carriles operativos y administrativos tienen propósitos distintos;
+- [ ] `D0` a `D4` se usan según intención y no según tamaño del equipo;
+- [ ] la operación ordinaria permanece enfocada en tarea, contexto, evidencia, bloqueo y siguiente acción;
+- [ ] backoffice, configuración, auditoría y exportaciones no compiten con la ejecución ordinaria;
+- [ ] un actor con múltiples roles no recibe una unión indiscriminada de capacidades;
+- [ ] supervisión operativa no se convierte en administración universal;
+- [ ] una transición a administración es explícita y revalida autoridad;
+- [ ] una acción física desde administración resuelve un contexto operativo exacto;
+- [ ] filtros administrativos no se convierten en área operativa;
+- [ ] tablas administrativas legítimas permanecen permitidas en su carril;
+- [ ] tablas operativas se justifican por el trabajo y no por reutilización de backoffice;
+- [ ] búsqueda, favoritos, recientes y deep links conservan la frontera;
+- [ ] configuración y auditoría mantienen superficies apropiadas;
+- [ ] exportar es capacidad separada de visualizar;
+- [ ] acciones masivas permanecen fuera de la tarea operacional individual salvo contrato expreso;
+- [ ] datos sensibles se minimizan y no reaparecen por permisos acumulados;
+- [ ] dispositivos compartidos no conservan backoffice persistente;
+- [ ] un POS completo no se interpreta como workstation administrativa;
+- [ ] la adaptación táctil de `UX-QA-006` no aumenta densidad por inferencia;
+- [ ] recetario operativo y administración de recetas mantienen frontera;
+- [ ] una estación multiárea conserva área exacta por mutación;
+- [ ] excepciones administrativas no se convierten en ruta ordinaria;
+- [ ] la misma aplicación puede alojar ambos carriles solo con separación perceptible y gobernada;
+- [ ] otra aplicación no transfiere a esta tarea la certificación cross-app de `UX-QA-008`;
+- [ ] casos positivos y negativos quedan definidos por package;
+- [ ] existe criterio `GLOBAL-FINAL`;
+- [ ] la sección `Requisitos de prueba derivados` declara cero cambios y no contiene IDs TREQ;
+- [ ] la cobertura heredada está separada de la sección de cero cambios;
+- [ ] no se ejecutó implementación física durante esta aprobación documental;
+- [ ] `UX-QA-008` conserva íntegra la certificación de continuidad entre aplicaciones.
+
+#### 66. Límites
+
+Esta tarea no:
+
+- modifica `UX-BASE-012`;
+- rediseña `UX-ADMIN-001` a `UX-ADMIN-005`;
+- crea menús;
+- cambia rutas;
+- mueve componentes;
+- crea dashboards;
+- cambia tablas o grids;
+- modifica permisos;
+- cambia roles;
+- crea workspaces;
+- cambia filtros;
+- modifica exportaciones;
+- cambia configuración;
+- modifica auditoría;
+- altera FOGO, NEXO, ORIGO, PULSO, VISO, NUMERA, PASS, ANIMA o TALENTO;
+- modifica datos o Supabase;
+- ejecuta pruebas E2E;
+- ejecuta pruebas físicas;
+- certifica separación por mera inspección documental;
+- certifica continuidad cross-app reservada a `UX-QA-008`;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 67. Handoff a `UX-QA-008`
+
+`UX-QA-007` entrega a `UX-QA-008`:
+
+- carril activo explícito;
+- superficie operativa libre de contaminación administrativa ordinaria;
+- workspace administrativo identificado cuando corresponde;
+- transición entre carriles conceptual y gobernada;
+- contexto que debe reconstruirse al volver a operación;
+- prohibición de usar una vista comparativa como contexto físico implícito;
+- fronteras de datos y autoridad que un handoff cross-app no puede ampliar.
+
+`UX-QA-008` podrá certificar continuidad entre aplicaciones sin reabrir la separación estructural entre operación y administración.
+
+#### 68. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-006 — Las pantallas táctiles funcionan en tablet`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-007 — Las vistas administrativas no contaminan la operación`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-008 — El proceso continúa correctamente entre aplicaciones`
 ### [ ] UX-QA-008 — El proceso continúa correctamente entre aplicaciones
 ### [ ] UX-QA-009 — No se registra dos veces la misma información
 ### [ ] UX-QA-010 — Los cambios conservan trazabilidad
