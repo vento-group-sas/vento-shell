@@ -15452,7 +15452,1274 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-015 — Los bloqueos se entienden sin códigos técnicos`
-### [ ] UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
+### ✅ UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
+**Tarea siguiente:** UX-QA-016 — La información sensible se oculta correctamente
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por package y globalmente que bloqueos, denegaciones, esperas, conflictos, fallos técnicos, validaciones y estados relacionados se presentan en lenguaje humano, específico, accionable, seguro y accesible, sin exigir que la persona interprete reason codes, permission keys, SQLSTATE, errores de proveedor, nombres de tablas, enums internos o diagnósticos técnicos, y sin convertir el mensaje visible en fuente de autorización o estado empresarial
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de comprensibilidad de bloqueos definido; las ejecuciones `UX-QA-015::<package_id>` y `UX-QA-015::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff aprobado de `UX-QA-014`, el contrato `UX-HUMAN-BLOCKING-EXPLANATION-CONTRACT-001`, las políticas de explicación ya aprobadas por aplicaciones y la evidencia que cada package declare aplicable, sin afirmar que la existencia de `ContextDiagnostic`, catálogos de reason codes o copy documental certifique adopción end-to-end
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, copy productivo, rutas, componentes, contratos runtime, catálogos de mensajes, reason codes, autorización, telemetría, procesos, work items, datos, Supabase, dispositivos, configuración, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que una persona puede comprender un bloqueo o condición equivalente sin interpretar códigos técnicos y puede identificar con seguridad qué ocurrió, qué no ocurrió, qué quedó preservado, qué le impide continuar, qué puede hacer ahora y quién o qué condición resolverá el impedimento.
+
+La certificación deberá responder, para cada scenario aplicable:
+
+```text
+¿LA PERSONA ENTIENDE QUÉ LE IMPIDE CONTINUAR?
+¿ENTIENDE POR QUÉ OCURRE EN ESTE CASO?
+¿SABE QUÉ ACCIÓN O RESULTADO QUEDÓ BLOQUEADO?
+¿SABE QUÉ INFORMACIÓN O TRABAJO QUEDÓ GUARDADO?
+¿SABE QUÉ PUEDE HACER AHORA?
+¿SABE QUIÉN O QUÉ CONDICIÓN PUEDE RESOLVERLO?
+¿SABE CUÁNDO REVISAR, REINTENTAR O ESCALAR?
+¿PUEDE DAR UNA REFERENCIA SEGURA A SOPORTE SIN COPIAR DIAGNÓSTICO INTERNO?
+```
+
+Regla central:
+
+```text
+CAUSA ESTRUCTURADA Y AUDITABLE
++
+CONTEXTO SEGURO
++
+ESTADO REAL DE LA OPERACIÓN
++
+POLÍTICA DE RECUPERACIÓN
+→
+EXPLICACIÓN HUMANA ACCIONABLE
+```
+
+Y también:
+
+```text
+MENSAJE HUMANO
+!=
+REASON CODE
+!=
+DECISIÓN DE AUTORIZACIÓN
+!=
+ESTADO DE DOMINIO
+!=
+EXCEPCIÓN TÉCNICA
+```
+
+#### 2. Resultado documental
+
+`UX-QA-015` define el contrato de certificación integral de comprensibilidad de bloqueos para BLOQUE U.
+
+El resultado establece:
+
+- unidad certificable por package y escenario;
+- clasificación mínima de condiciones;
+- oracle humano de comprensión y acción;
+- frontera entre causa estructurada y copy visible;
+- reglas para estado preservado y siguiente acción;
+- tratamiento de denegaciones, esperas, conflictos y fallos técnicos;
+- reglas de reintento y resultado desconocido;
+- seguridad de referencias y diagnóstico secundario;
+- accesibilidad y lenguaje no punitivo;
+- pruebas con actores representativos;
+- criterios de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-016`.
+
+#### 3. Handoff recibido de `UX-QA-014`
+
+`UX-QA-014` entrega:
+
+- package y escenario;
+- actor o cohorte;
+- proceso y tarea;
+- contexto y estación;
+- objetivo temporal trazable;
+- tiempo end-to-end observado;
+- segmentación entre tiempo activo y esperas;
+- bloqueos encontrados;
+- momento y duración de cada bloqueo;
+- efecto del bloqueo sobre finalización, error, ayuda o abandono;
+- evidencia de si la persona pudo identificar el siguiente paso;
+- causa técnica o empresarial del bloqueo cuando ya esté resuelta;
+- hallazgos que requieren lenguaje humano, explicación o recuperación más clara.
+
+`UX-QA-015` usa ese handoff para certificar comprensión sin reinterpretar el objetivo temporal ni atribuir el bloqueo a la persona trabajadora.
+
+#### 4. Alcance exacto
+
+La certificación aplica a condiciones visibles o materialmente relevantes que:
+
+- impiden ejecutar una acción;
+- limitan una acción;
+- suspenden una acción;
+- retrasan una acción;
+- requieren corregir información;
+- exigen esperar otra condición o actor;
+- detectan conflicto o versión obsoleta;
+- informan un fallo técnico;
+- informan un resultado desconocido;
+- requieren escalamiento o revisión;
+- advierten un riesgo sin impedir continuar.
+
+No se certifica únicamente la presencia de un componente visual. Se certifica la experiencia completa desde la causa vigente hasta la comprensión y siguiente acción de la persona.
+
+#### 5. Frontera con `UX-QA-014`
+
+`UX-QA-014` responde:
+
+```text
+¿EL TRABAJO PUEDE COMPLETARSE
+DENTRO DEL TIEMPO OBJETIVO?
+```
+
+`UX-QA-015` responde:
+
+```text
+¿CUANDO EL FLUJO SE BLOQUEA O CAMBIA DE ESTADO,
+LA PERSONA ENTIENDE QUÉ PASA Y QUÉ HACER
+SIN INTERPRETAR CÓDIGOS TÉCNICOS?
+```
+
+Un bloqueo puede explicar parte de un incumplimiento temporal, pero `UX-QA-015` no recalcula ni redefine el tiempo objetivo de `UX-QA-014`.
+
+#### 6. Frontera con `UX-QA-016`
+
+`UX-QA-016` certificará que la información sensible se oculta correctamente.
+
+`UX-QA-015` sí exige que el mensaje visible no necesite exponer:
+
+- secretos;
+- tokens;
+- credenciales;
+- stack traces;
+- SQL;
+- payloads completos;
+- nombres internos innecesarios;
+- permisos de terceros;
+- diagnósticos sensibles.
+
+Pero no certifica por sí sola toda la política de masking, minimización o privacidad de datos del ecosistema. Esa responsabilidad permanece en `UX-QA-016`.
+
+#### 7. Autoridad de `UX-BASE-006`
+
+`UX-BASE-006` ya define `UX-HUMAN-BLOCKING-EXPLANATION-CONTRACT-001`.
+
+`UX-QA-015` no redefine ese contrato. Lo convierte en certificación integral posterior por package y globalmente.
+
+La separación canónica permanece:
+
+```text
+CAUSA ESTRUCTURADA Y AUDITABLE
+→ TRADUCCIÓN HUMANA SEGÚN ACTOR, CONTEXTO Y CANAL
+```
+
+#### 8. Autoridad de aplicaciones y superficies propietarias
+
+Las aplicaciones pueden especializar mensajes y presentación cuando conserven:
+
+- la misma causa estructurada vigente;
+- la misma semántica empresarial;
+- la misma frontera de autorización;
+- el estado real de la operación;
+- la política de recuperación autorizada;
+- minimización y accesibilidad equivalentes.
+
+Un copy local no puede inventar una causa distinta para hacer el mensaje más cómodo.
+
+#### 9. Evidencia compartida existente
+
+Existe una materialización compartida `ContextDiagnostic` capaz de presentar:
+
+- título;
+- resumen;
+- condiciones;
+- contexto preservado;
+- acciones bloqueadas;
+- instrucción de resolución;
+- responsable opcional;
+- condición de revisión opcional;
+- referencia de soporte opcional.
+
+Su validador físico mantiene reason codes, `blocked_reasons`, autoridad, contexto runtime, permisos, Supabase y recuperación fuera del componente.
+
+Esa materialización es evidencia de una pieza reutilizable, no evidencia de adopción integral por todos los consumidores ni de comprensión humana en todas las aplicaciones.
+
+#### 10. Unidad certificable
+
+La unidad futura será:
+
+```text
+UX-QA-015::<package_id>
+```
+
+Cada unidad certifica únicamente los escenarios de bloqueo aplicables a ese package.
+
+La certificación global final será:
+
+```text
+UX-QA-015::GLOBAL-FINAL
+```
+
+No existe PASS global si falta evidencia obligatoria de un package incluido en el universo final.
+
+#### 11. Topología y gate
+
+Se conserva:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+```
+
+La tarea documental no ejecuta esas instancias.
+
+#### 12. No existe un mensaje universal
+
+Queda prohibido tratar cualquiera de estos textos como solución universal:
+
+```text
+Ocurrió un error
+Acceso denegado
+No autorizado
+Algo salió mal
+No se pudo procesar
+Intenta nuevamente
+Operación inválida
+Contacta al administrador
+```
+
+Un mensaje puede ser breve, pero debe conservar la información necesaria para decidir con seguridad.
+
+#### 13. Taxonomía mínima obligatoria
+
+La certificación distingue al menos:
+
+| Clase | Significado |
+| --- | --- |
+| `BLOCKED` | La acción es pertinente, pero falta una condición obligatoria. |
+| `DENIED` | La autorización no permite la acción para el actor, alcance o recurso actuales. |
+| `WAITING` | La tarea depende normalmente de tiempo, evento o actor externo. |
+| `CONFLICT` | El recurso o versión cambió y no puede aplicarse la intención anterior sin revisión. |
+| `TECHNICAL_FAILURE` | Una dependencia técnica falló o no respondió. |
+| `VALIDATION_REQUIRED` | Falta información, evidencia o corrección que la persona puede aportar. |
+| `WARNING` | Puede continuarse, pero existe riesgo o consecuencia que debe comprenderse. |
+| `INFO` | Existe una condición relevante sin acción inmediata obligatoria. |
+
+Queda prohibido presentar todo resultado distinto de éxito como `TECHNICAL_FAILURE`.
+
+#### 14. Oracle humano de comprensión
+
+Para un bloqueo aplicable, la persona debe poder explicar con sus propias palabras, según corresponda:
+
+```text
+1. QUÉ PASÓ
+2. QUÉ NO PASÓ
+3. QUÉ QUEDÓ GUARDADO
+4. QUÉ IMPIDE CONTINUAR
+5. QUÉ PUEDE HACER AHORA
+6. QUIÉN O QUÉ LO RESUELVE
+7. CUÁNDO REVISAR O REINTENTAR
+8. QUÉ REFERENCIA SEGURA PUEDE DAR A SOPORTE
+```
+
+La prueba no debe enseñar previamente la respuesta ni traducir el mensaje durante la ejecución.
+
+#### 15. Título humano
+
+El título describe el efecto o condición visible para la persona.
+
+Ejemplos válidos:
+
+```text
+Falta identificar al trabajador
+La recepción espera la entrega del conductor
+Tu jornada terminó
+Las cantidades cambiaron mientras revisabas
+No pudimos confirmar el envío
+Este documento necesita una corrección
+```
+
+No es suficiente:
+
+```text
+AUTH_CHECKIN_REQUIRED
+RPC timeout
+42501
+PGRST116
+Version mismatch
+Constraint violation
+```
+
+#### 16. Causa segura
+
+La causa visible explica la condición necesaria sin exponer detalle interno innecesario.
+
+Debe distinguir, cuando aplique:
+
+- falta de una condición;
+- denegación real;
+- espera normal;
+- conflicto;
+- problema técnico;
+- dato corregible;
+- resultado desconocido;
+- estado stale o no disponible.
+
+#### 17. Efecto
+
+La explicación identifica qué acción, resultado o tramo queda afectado.
+
+No basta indicar que existe un problema.
+
+La persona debe poder saber si:
+
+- no puede iniciar;
+- no puede confirmar;
+- no puede modificar;
+- puede seguir leyendo;
+- puede continuar con otras tareas;
+- debe esperar;
+- debe revisar cambios;
+- debe escalar.
+
+#### 18. Estado preservado
+
+Cuando exista trabajo previo, la persona debe distinguir entre:
+
+```text
+NO SE GUARDÓ NINGÚN CAMBIO
+SE GUARDÓ UN BORRADOR LOCAL
+EL SERVIDOR CONFIRMÓ LOS CAMBIOS
+SE GUARDÓ SOLO UNA PARTE
+NO SE PUDO CONFIRMAR EL ESTADO
+```
+
+No se certifica un mensaje que obliga a adivinar si el trabajo se perdió.
+
+#### 19. Siguiente acción
+
+La acción propuesta debe ser:
+
+- concreta;
+- segura;
+- actualmente ejecutable;
+- coherente con el actor;
+- coherente con el estado de dominio;
+- coherente con la política de recuperación.
+
+Ejemplos válidos:
+
+```text
+Identificarme en este dispositivo
+Registrar el check-in
+Revisar las cantidades modificadas
+Actualizar la recepción antes de confirmar
+Guardar y continuar después
+Consultar el estado del envío
+Solicitar corrección al proveedor
+```
+
+#### 20. Acción genérica insuficiente
+
+No se certifica como suficiente una acción primaria que solo diga:
+
+```text
+Aceptar
+Continuar
+Resolver
+Reintentar
+Contactar administrador
+```
+
+cuando el usuario todavía no sabe qué condición debe resolver o por qué esa acción es segura.
+
+#### 21. Responsable
+
+Cuando la persona no pueda resolver el bloqueo directamente, la explicación identifica una clase de responsable o proceso coherente.
+
+Ejemplos:
+
+- responsable de la tarea anterior;
+- supervisor del área;
+- responsable de Compras;
+- Talento;
+- Contabilidad;
+- soporte técnico;
+- seguridad o privacidad;
+- conciliación automática.
+
+No se usa `administrador` como propietario universal.
+
+#### 22. Condición de revisión
+
+Cuando el bloqueo dependa de tiempo, evento o tercero, la explicación deberá indicar, cuando la fuente lo conozca:
+
+- evento esperado;
+- próxima revisión;
+- condición de desbloqueo;
+- ventana aplicable;
+- posibilidad de continuar con otra tarea;
+- condición de escalamiento.
+
+No se inventan tiempos cuando la fuente no los define.
+
+#### 23. Referencia segura de soporte
+
+La persona puede recibir una referencia segura y reproducible para soporte o auditoría.
+
+La referencia:
+
+- no sustituye el mensaje humano;
+- no revela secretos;
+- no exige copiar stack traces;
+- no exige copiar SQL;
+- no exige interpretar el reason code;
+- puede correlacionarse con evidencia técnica restringida.
+
+#### 24. Reason code como dato secundario
+
+Un reason code estable puede existir y ser necesario para:
+
+- lógica propietaria;
+- auditoría;
+- telemetría;
+- traducción;
+- soporte restringido;
+- consistencia entre canales.
+
+Pero:
+
+```text
+REASON CODE
+!=
+COPY PRINCIPAL PARA EL TRABAJADOR
+```
+
+Si se muestra como referencia secundaria, debe estar claramente separado del contenido necesario para comprender y actuar.
+
+#### 25. `BLOCKED`
+
+Para `BLOCKED`, la prueba debe demostrar que la persona entiende:
+
+- que la acción puede llegar a ser válida;
+- qué condición falta;
+- qué parte permanece disponible;
+- quién o qué la desbloquea;
+- qué hacer mientras tanto cuando exista alternativa.
+
+No se presenta como sanción, permiso faltante genérico ni fallo técnico si la causa real es contextual o empresarial.
+
+#### 26. `DENIED`
+
+Para `DENIED`, la explicación debe:
+
+- indicar la frontera funcional conocida;
+- no ofrecer bypass;
+- no sugerir usar una cuenta ajena;
+- no recomendar cambiar de rol como atajo;
+- no enumerar privilegios de otras personas;
+- no revelar recursos que el actor no debe conocer.
+
+La persona debe entender qué no está permitido sin recibir información sensible adicional.
+
+#### 27. `WAITING`
+
+Una espera normal no es un error.
+
+La prueba debe comprobar que la persona puede identificar:
+
+- qué evento se espera;
+- quién posee la próxima acción cuando sea conocido;
+- cuándo revisar o bajo qué condición cambia el estado;
+- si puede hacer otra tarea;
+- cómo escalar si se supera la condición prevista.
+
+#### 28. `CONFLICT`
+
+Ante conflicto o versión obsoleta, la explicación debe indicar:
+
+- qué cambió;
+- si el trabajo local quedó guardado;
+- qué versión o fuente es autoritativa;
+- qué se debe revisar;
+- si se puede reaplicar, comparar o descartar;
+- quién conserva el trabajo o custodia.
+
+Queda prohibido ocultar el conflicto y aplicar `last write wins` silencioso.
+
+#### 29. `TECHNICAL_FAILURE`
+
+Un fallo técnico distingue al menos, cuando aplique:
+
+```text
+FALLO ANTES DE ENVIAR
+DEPENDENCIA NO DISPONIBLE
+TIMEOUT CON RESULTADO DESCONOCIDO
+FALLO DESPUÉS DE CONFIRMACIÓN
+SINCRONIZACIÓN PARCIAL
+ERROR TERMINAL
+```
+
+La persona recibe el efecto conocido, el estado preservado, la acción segura y una referencia de soporte.
+
+#### 30. `VALIDATION_REQUIRED`
+
+Cuando la persona puede corregir el problema, el mensaje debe localizar la condición exacta.
+
+Ejemplos:
+
+```text
+Falta seleccionar el lote de origen
+Debes registrar una razón para esta diferencia
+La fecha debe ser posterior a la recepción
+Falta una fotografía legible
+```
+
+No se muestran errores de campos ocultos o que el actor no puede modificar.
+
+#### 31. `WARNING` e `INFO`
+
+`WARNING` e `INFO` no se convierten en bloqueos para aumentar severidad visual.
+
+La prueba verifica que:
+
+- una advertencia permita continuar cuando realmente está permitido;
+- una información no compita con la acción principal;
+- el copy no implique que el proceso falló cuando no falló;
+- la interfaz no obligue a confirmar repetidamente estados informativos.
+
+#### 32. Resultado desconocido
+
+Regla crítica:
+
+```text
+NO RECIBIR RESPUESTA
+!=
+OPERACIÓN NO EJECUTADA
+```
+
+Ante resultado desconocido, la explicación debe impedir que la persona interprete el estado como fracaso definitivo o repita una mutación como nueva intención.
+
+Debe orientar a consultar:
+
+- receipt;
+- estado de dominio;
+- idempotency key o scope;
+- conciliación;
+- resultado posterior.
+
+#### 33. Reintento
+
+`Reintentar` solo es una acción válida cuando:
+
+- la causa es transitoria;
+- repetir es seguro;
+- la operación es idempotente o no comenzó;
+- se conoce qué quedó guardado;
+- la política propietaria permite repetir;
+- existe límite o estrategia de reintento cuando corresponde.
+
+Un botón de reintento no convierte un resultado desconocido en operación fallida.
+
+#### 34. Conectividad y offline
+
+La persona debe distinguir, cuando aplique:
+
+```text
+TRABAJANDO SIN CONEXIÓN
+GUARDADO EN ESTE DISPOSITIVO
+EN COLA
+PENDIENTE DE CONFIRMACIÓN
+SINCRONIZANDO
+RESULTADO DESCONOCIDO
+CONFLICTO DE SINCRONIZACIÓN
+ACCIÓN REQUIERE CONEXIÓN
+```
+
+No se presenta `Completado` cuando el propietario todavía no confirmó el resultado.
+
+#### 35. Dispositivo compartido
+
+En estación, kiosco o tablet compartida, la prueba distingue:
+
+- dispositivo no autorizado;
+- actor no identificado;
+- actor sin turno;
+- rol incompatible;
+- aplicación no admitida;
+- sesión del actor vencida;
+- contexto stale.
+
+Un bloqueo del dispositivo no se presenta como fallo personal del trabajador.
+
+El cambio de actor no conserva mensajes ni referencias privadas del actor anterior.
+
+#### 36. Handoff y cross-app
+
+Cuando el bloqueo ocurre durante un flujo entre aplicaciones, el mensaje debe conservar la identidad empresarial del caso.
+
+La persona debe poder identificar:
+
+- qué proceso sigue activo;
+- qué aplicación o actor posee la siguiente acción;
+- qué quedó confirmado;
+- qué está pendiente;
+- qué puede hacer ahora.
+
+El texto no puede afirmar aceptación o finalización solo porque ocurrió navegación.
+
+#### 37. Operaciones masivas
+
+Una operación masiva muestra resultados parciales cuando existan.
+
+Ejemplo:
+
+```text
+18 completados
+2 bloqueados por cambio de estado
+1 fuera del alcance actual
+1 pendiente de conciliación
+```
+
+No se certifica un mensaje `Operación completada` cuando una parte relevante no terminó.
+
+#### 38. Frescura y estado stale
+
+Un mensaje puede quedar obsoleto cuando cambia:
+
+- actor;
+- contexto;
+- recurso;
+- versión;
+- claim;
+- autorización;
+- dependencia;
+- estado del proceso.
+
+La certificación comprueba que una explicación stale no siga instruyendo una acción inválida.
+
+#### 39. Autorización y razón pública
+
+Cuando una denegación visible deriva de autorización, la explicación consume la razón pública aprobada o proyección segura correspondiente.
+
+Queda prohibido reconstruir la causa visible desde:
+
+- un booleano `false`;
+- el nombre del rol;
+- `blocked_reasons` legacy;
+- coincidencia textual entre namespaces;
+- un error técnico;
+- una heurística local.
+
+#### 40. Namespaces técnicos separados
+
+Permanecen separados los namespaces y formas técnicas que posean significado contractual distinto.
+
+La prueba falla si una superficie mezcla o renombra por similitud:
+
+- reason codes públicos;
+- structural issues;
+- lane reasons;
+- errores técnicos;
+- códigos locales de consumidor.
+
+La persona no debe aprender esa taxonomía para poder completar su tarea.
+
+#### 41. Código desconocido o incompatible
+
+Si una causa técnica no puede traducirse de forma segura:
+
+```text
+VALOR DESCONOCIDO
+→ FALLAR CERRADO EN PRESENTACIÓN
+→ NO INVENTAR UNA EXPLICACIÓN ESPECÍFICA
+→ CONSERVAR REFERENCIA PARA DIAGNÓSTICO
+```
+
+La interfaz puede comunicar indisponibilidad o necesidad de soporte sin afirmar una causa no demostrada.
+
+#### 42. Frontera de seguridad con `UX-QA-016`
+
+`UX-QA-015` exige que la explicación sea segura para el actor actual.
+
+Eso implica, para esta tarea:
+
+- no depender de datos sensibles para entender la acción;
+- no revelar permiso de terceros;
+- no mostrar secretos o credenciales;
+- no exponer reglas antifraude;
+- no exponer diagnóstico técnico innecesario.
+
+La prueba exhaustiva de ocultamiento y masking queda en `UX-QA-016`.
+
+#### 43. Accesibilidad
+
+La explicación debe poder percibirse y operarse sin depender exclusivamente de:
+
+- color;
+- icono;
+- hover;
+- vibración;
+- sonido;
+- ubicación visual.
+
+Cuando aplique:
+
+- se asocia al control o región afectada;
+- existe orden de lectura coherente;
+- el foco no se pierde;
+- múltiples errores tienen resumen navegable;
+- la referencia de soporte puede leerse o copiarse;
+- actualizaciones automáticas no producen anuncios repetitivos inútiles.
+
+#### 44. Lenguaje no punitivo
+
+Quedan fuera de certificación positiva mensajes como:
+
+```text
+Cometiste un error
+No sabes hacer esta tarea
+Usuario inválido
+Operación ilegal
+Fallaste la validación
+```
+
+cuando la causa pertenece a configuración, dependencia, dato incompleto, concurrencia, autorización o sistema.
+
+El texto debe ser directo, neutral y específico.
+
+#### 45. Terminología validada
+
+La explicación usa vocabulario empresarial comprensible para la audiencia aplicable.
+
+Los términos internos pueden existir en auditoría, soporte o documentación técnica, pero no deben ser requisito de comprensión ordinaria.
+
+Cuando exista terminología ya validada por `UX-BASE-015`, la certificación no la sustituye por sinónimos técnicos locales.
+
+#### 46. Acción disponible realmente ejecutable
+
+La prueba no se limita a leer el copy.
+
+Si el mensaje ofrece una acción, se comprueba que la acción:
+
+- exista;
+- sea visible o alcanzable;
+- corresponda al actor;
+- no requiera una autoridad que el actor no tiene;
+- no produzca un efecto diferente al descrito;
+- no conduzca a otro bloqueo sin contexto.
+
+Un mensaje correcto con CTA inexistente falla la certificación.
+
+#### 47. Responsable realmente resoluble
+
+Si la explicación indica que otra persona, área o proceso resuelve el caso, la evidencia debe demostrar que ese responsable tiene un canal o flujo real de resolución cuando el package lo incluya.
+
+No se certifica una instrucción que envía al actor a un responsable genérico inexistente.
+
+#### 48. Recuperación coherente
+
+La recuperación visible debe coincidir con el estado real.
+
+Queda prohibido ofrecer:
+
+- reintento cuando el resultado es desconocido;
+- edición cuando el recurso ya cerró;
+- continuar cuando falta autorización;
+- cancelar cuando la operación no admite cancelación;
+- recargar como sustituto de conciliación;
+- volver a enviar como sustituto de consultar receipt.
+
+#### 49. Relación con idempotencia
+
+La comprensibilidad de un bloqueo no puede crear duplicados.
+
+La prueba comprueba, cuando aplique, que:
+
+- el usuario no interprete silencio como necesidad de pulsar otra vez;
+- el copy distinga pendiente de fallido;
+- el CTA de reintento conserve la intención correcta;
+- un doble toque no produzca un segundo efecto;
+- el mensaje de resultado desconocido conduzca a consulta o conciliación.
+
+#### 50. Relación con tiempo objetivo
+
+Los hallazgos de `UX-QA-014` pueden revelar que un bloqueo aumenta:
+
+- tiempo end-to-end;
+- ayuda requerida;
+- abandono;
+- reintentos;
+- correcciones.
+
+`UX-QA-015` usa esa evidencia para comprobar claridad, pero no convierte la velocidad de lectura del mensaje en KPI disciplinario.
+
+#### 51. Medición de comprensión
+
+La prueba observa, según el escenario:
+
+- interpretación correcta de la causa;
+- identificación correcta del efecto;
+- reconocimiento del estado preservado;
+- selección de siguiente acción;
+- capacidad de identificar responsable;
+- necesidad de ayuda externa;
+- reintentos incorrectos;
+- escalamiento incorrecto;
+- abandono;
+- recuperación correcta.
+
+El tiempo puede registrarse como contexto, pero la aprobación depende de comprensión y acción segura, no de velocidad individual aislada.
+
+#### 52. Participantes
+
+Cuando la certificación requiera prueba humana, el package selecciona participantes representativos de:
+
+- actor que ejecuta;
+- actor que supervisa cuando aplique;
+- personal nuevo y experimentado cuando la diferencia sea material;
+- dispositivo personal o compartido cuando aplique;
+- sedes o áreas materialmente distintas;
+- necesidades de accesibilidad representativas cuando correspondan.
+
+No se certifica comprensibilidad únicamente con personal de desarrollo o con quien redactó el mensaje.
+
+#### 53. Prueba sin enseñar la respuesta
+
+Durante la sesión, quien prueba no debe traducir previamente el código técnico ni explicar qué significa el bloqueo antes de medir.
+
+Se permite preguntar:
+
+```text
+¿Qué te impide continuar?
+¿Qué crees que pasó?
+¿Qué quedó guardado?
+¿Qué harías ahora?
+¿Quién tendría que resolverlo?
+¿Cómo sabrías cuándo volver a intentarlo?
+```
+
+No se considera evidencia válida una respuesta obtenida después de enseñar la solución.
+
+#### 54. Riesgo crítico
+
+Para bloqueos relacionados con:
+
+- seguridad;
+- dinero;
+- inventario;
+- custodia;
+- acceso;
+- privacidad;
+- inocuidad;
+- acciones irreversibles;
+- resultados desconocidos con riesgo de duplicación;
+
+una interpretación peligrosa bloquea PASS aunque otras observaciones sean correctas.
+
+Un promedio no compensa un malentendido crítico.
+
+#### 55. Mensaje consistente entre superficies
+
+Una misma causa estructurada no debe producir instrucciones materialmente contradictorias entre:
+
+- SHELL;
+- aplicación propietaria;
+- tablet;
+- kiosco;
+- móvil;
+- notificación;
+- vista administrativa;
+- recuperación posterior.
+
+La presentación puede variar por canal, pero el significado y la siguiente acción segura permanecen coherentes.
+
+#### 56. Estado actual frente a notificación histórica
+
+Una notificación o deep link puede contener un resumen histórico.
+
+Al abrirlo, la aplicación vuelve a resolver el estado vigente.
+
+No se certifica un flujo que conserve como verdad actual un mensaje antiguo cuando el proceso ya cambió.
+
+#### 57. Copy localizado y versionado
+
+Cuando exista localización:
+
+- el significado contractual no cambia por idioma;
+- el código estable no se traduce;
+- el copy sí puede localizarse;
+- la acción y el responsable conservan equivalencia;
+- la versión de mensaje puede correlacionarse con la evidencia.
+
+Una traducción no puede convertir `WAITING` en fallo ni `DENIED` en bloqueo recuperable.
+
+#### 58. Referencia técnica secundaria
+
+Para soporte autorizado puede existir detalle adicional.
+
+Ese detalle:
+
+- se presenta bajo demanda;
+- no desplaza el mensaje humano principal;
+- respeta autorización;
+- evita secretos;
+- conserva correlación;
+- no convierte la vista ordinaria en consola de depuración.
+
+#### 59. Antipatrones prohibidos
+
+Se consideran fallos de certificación, cuando aplican:
+
+```text
+BOOLEANO FALSE → "SIN ACCESO"
+REASON CODE → COPY PRINCIPAL
+ERROR HTTP → ESTADO EMPRESARIAL
+TIMEOUT → "NO SE EJECUTÓ"
+SPINNER DESAPARECE → "COMPLETADO"
+CONTACTA ADMINISTRADOR → RECUPERACIÓN UNIVERSAL
+BOTÓN DESHABILITADO SIN EXPLICACIÓN
+RLS DENIED → MENSAJE AL TRABAJADOR
+STACK TRACE → AYUDA
+REFRESH → CONCILIACIÓN
+```
+
+#### 60. Clases mínimas de escenario
+
+Cada package seleccionará las clases aplicables y justificará las no aplicables:
+
+| Clase | Escenario |
+| --- | --- |
+| `B1_CONTEXT` | falta de actor, turno, check-in, sede, área o contexto requerido |
+| `B2_AUTHORIZATION` | denegación canónica segura |
+| `B3_VALIDATION` | dato o evidencia corregible por el actor |
+| `B4_WAITING` | dependencia normal de tiempo, evento o tercero |
+| `B5_CONFLICT` | cambio concurrente, versión, claim o recurso |
+| `B6_TECHNICAL_PRE_SEND` | fallo técnico antes de iniciar efecto |
+| `B7_RESULT_UNKNOWN` | timeout o pérdida de respuesta después de enviar |
+| `B8_OFFLINE_SYNC` | estado local, cola, sincronización o conflicto |
+| `B9_SHARED_DEVICE` | actor/dispositivo/contexto en estación compartida |
+| `B10_CROSS_APP` | bloqueo durante handoff o retorno entre aplicaciones |
+| `B11_PARTIAL_BATCH` | operación masiva con resultados parciales |
+| `B12_STALE_MESSAGE` | mensaje o instrucción que quedó obsoleta |
+| `B13_ACCESSIBILITY` | bloqueo percibido mediante tecnología asistiva o modalidad alternativa |
+| `B14_SUPPORT_ESCALATION` | caso que requiere referencia y escalamiento |
+
+No todos los packages deben ejecutar catorce clases. Sí deben declarar su matriz de aplicabilidad.
+
+#### 61. Caso positivo mínimo
+
+Un caso positivo demuestra, según corresponda:
+
+```text
+CAUSA VIGENTE
+→ MENSAJE HUMANO CORRECTO
+→ ESTADO PRESERVADO CORRECTO
+→ ACCIÓN SEGURA
+→ RESPONSABLE O CONDICIÓN CORRECTOS
+→ RECUPERACIÓN COHERENTE
+```
+
+La persona puede completar la decisión sin conocer identificadores técnicos.
+
+#### 62. Casos negativos obligatorios
+
+Cuando apliquen, se deben incluir casos donde:
+
+- el reason code es visible sin traducción;
+- el mensaje es demasiado genérico;
+- el CTA no resuelve la causa;
+- se ofrece reintento inseguro;
+- el estado preservado es falso;
+- la causa visible no coincide con la causa estructurada;
+- el mensaje stale permanece después de cambiar el estado;
+- el actor cambia;
+- el dispositivo cambia;
+- el recurso cambia;
+- el resultado es desconocido;
+- el responsable visible no puede resolver;
+- el mensaje revela información que debería permanecer restringida.
+
+#### 63. Oracle por escenario
+
+Un escenario obtiene PASS únicamente cuando la evidencia demuestra simultáneamente:
+
+- clasificación correcta;
+- causa visible compatible con la causa autoritativa;
+- efecto correctamente explicado;
+- estado preservado correcto;
+- siguiente acción segura;
+- responsable o condición correctos cuando apliquen;
+- ausencia de dependencia de códigos técnicos;
+- accesibilidad aplicable;
+- ausencia de bypass;
+- ausencia de reintento inseguro;
+- ausencia de contradicción con el estado actual.
+
+#### 64. PASS por package
+
+`UX-QA-015::<package_id>` obtiene PASS cuando:
+
+1. existe matriz de aplicabilidad;
+2. todos los escenarios obligatorios aplicables fueron ejecutados;
+3. no existe malentendido crítico abierto;
+4. los mensajes se derivan de causas estructuradas vigentes;
+5. no existe CTA inseguro o imposible;
+6. los estados preservados coinciden con la realidad;
+7. los reintentos cumplen la política propietaria;
+8. los canales relevantes mantienen significado coherente;
+9. accesibilidad aplicable no introduce una explicación inferior;
+10. los hallazgos restantes tienen propietario y condición de salida compatibles con el gate del package.
+
+#### 65. No PASS por apariencia aislada
+
+No constituyen PASS por sí solos:
+
+- screenshot de un mensaje;
+- storybook aislado;
+- snapshot HTML;
+- existencia de `ContextDiagnostic`;
+- existencia de `RecoverableErrorState`;
+- catálogo de reason codes;
+- documento de copy;
+- prueba de render sin causa real;
+- validador unitario sin consumidor;
+- una demostración con datos ideales.
+
+#### 66. `GLOBAL-FINAL`
+
+`UX-QA-015::GLOBAL-FINAL` exige:
+
+- universe final de packages aplicables identificado;
+- cada package obligatorio con estado verificable;
+- cero malentendidos críticos abiertos;
+- cero bloqueos ordinarios cuyo único copy sea código técnico;
+- coherencia cross-app materialmente suficiente;
+- reglas de resultado desconocido y reintento conservadas;
+- accesibilidad y escalamiento sin huecos críticos;
+- hallazgos no bloqueantes con owner y cierre trazable.
+
+No se promedian fallos críticos para declarar PASS global.
+
+#### 67. Hallazgos y ownership
+
+Todo hallazgo registra como mínimo:
+
+```text
+finding_id
+package_id
+scenario_id
+process_id
+actor_profile
+blocking_class
+observed_message_version
+structured_cause_ref
+observed_behavior
+expected_behavior
+severity
+owner_task_or_package
+closure_condition
+evidence_refs
+status
+```
+
+No se deja un hallazgo narrativo sin dueño.
+
+#### 68. Severidad orientada a riesgo
+
+Una clasificación de severidad debe considerar:
+
+- riesgo de acción incorrecta;
+- posibilidad de duplicar efectos;
+- pérdida de trabajo;
+- exposición de información;
+- bloqueo completo de tarea;
+- escalamiento equivocado;
+- frecuencia;
+- disponibilidad de recuperación segura;
+- población afectada.
+
+El número de usuarios observados no reduce por sí solo una interpretación peligrosa.
+
+#### 69. Evidencia esperada por package
+
+La futura ejecución conserva evidencia suficiente para reconstruir:
+
+- versión del package;
+- ambiente;
+- escenario;
+- actor/cohorte;
+- causa estructurada;
+- mensaje presentado;
+- acción disponible;
+- estado preservado;
+- resultado de comprensión;
+- resultado de recuperación;
+- referencia de soporte cuando aplique;
+- defectos y cierre.
+
+La evidencia no requiere almacenar texto libre sensible de la persona cuando no sea necesario.
+
+#### 70. Observabilidad permitida
+
+Puede medirse de forma agregada y no disciplinaria:
+
+- bloqueos por causa y proceso;
+- tiempo hasta resolución;
+- reintentos evitables;
+- abandono después de bloqueo;
+- mensajes sin acción útil;
+- escalamiento incorrecto;
+- conflictos;
+- estados desconocidos;
+- causas de configuración o sistema.
+
+No se usa la telemetría para calificar a la persona por haber encontrado un bloqueo.
+
+#### 71. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Requisitos creados: 0
+
+Requisitos modificados: 0
+
+La tarea certifica cobertura existente y no altera el Registro Canónico de Requisitos de Prueba.
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, `UX-QA-015` reutiliza principalmente:
+
+- `TREQ-UX-097` a `TREQ-UX-117` — taxonomía, traducción humana, estado preservado, recuperación, denegaciones, contexto, esperas, conflictos, conectividad, fallos técnicos, seguridad, dispositivos compartidos, operaciones masivas, accesibilidad, lenguaje, auditoría y validación con trabajadores;
+- `TREQ-UX-002` — error, bloqueo o fallo parcial explicado en lenguaje humano con causa, estado preservado y recuperación;
+- cobertura de accesibilidad y errores ya vinculada a las tareas NFR y UX vigentes;
+- cobertura de autorización y reason codes ya vinculada a `AUTH-ERR-001` a `AUTH-ERR-020` y contratos compartidos correspondientes.
+
+Estas referencias son trazabilidad heredada. No representan cambios 04A de esta entrega.
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no ejecuta build físico de aplicaciones ni packages. |
+| LOCAL | NOT_EXECUTED | La incorporación en la rama `task/ux-qa-015` y los validadores reales del checkout permanecen pendientes; no se declaran ejecutados anticipadamente. |
+| REMOTA | PASS | Se verificaron `origin/main`, `active-sequence.json`, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner canónico, marcador `UX-QA-015`, sucesora `UX-QA-016`, `UX-BASE-006`, `SHELL-APP-010`, `ContextDiagnostic`, su validador y `package.json` vigente. |
+| OPERATIVA | PASS | El contrato fue contrastado documentalmente con la taxonomía de bloqueos, separación reason code/copy, estado preservado, recuperación, seguridad, accesibilidad, handoff de `UX-QA-014` y límites con `UX-QA-016`. |
+| FÍSICA | NOT_APPLICABLE | La tarea no ejecuta pruebas reales con packages o trabajadores; esas instancias pertenecen a `UX-QA-015::<package_id>` y `UX-QA-015::GLOBAL-FINAL` después de `POST_E5_PACKAGE`. |
+
+#### 74. Criterios de aceptación
+
+- [ ] Se define certificación por package y `GLOBAL-FINAL`.
+- [ ] Se consume el handoff completo de `UX-QA-014` sin reabrir su objetivo temporal.
+- [ ] Se conserva la taxonomía de `UX-BASE-006` sin colapsarla en error genérico.
+- [ ] Causa estructurada y mensaje humano permanecen separados.
+- [ ] El mensaje humano no se convierte en fuente de lógica ni autorización.
+- [ ] La persona puede identificar qué ocurrió y qué no ocurrió.
+- [ ] La persona puede identificar qué trabajo quedó preservado.
+- [ ] La persona puede identificar qué impide continuar.
+- [ ] La persona puede identificar una siguiente acción segura cuando exista.
+- [ ] La persona puede identificar responsable o condición de revisión cuando aplique.
+- [ ] Existe referencia segura para soporte cuando sea necesaria.
+- [ ] Reason codes, permission keys, SQLSTATE y excepciones técnicas no son copy principal ordinario.
+- [ ] `BLOCKED` y `DENIED` permanecen diferenciados.
+- [ ] `WAITING` no se presenta como fallo.
+- [ ] `CONFLICT` no sobrescribe cambios silenciosamente.
+- [ ] `TECHNICAL_FAILURE` distingue resultado desconocido de fallo antes de enviar.
+- [ ] `VALIDATION_REQUIRED` señala condiciones que el actor realmente puede corregir.
+- [ ] `WARNING` e `INFO` no se convierten artificialmente en bloqueos.
+- [ ] Un timeout no se presenta como operación no ejecutada sin evidencia.
+- [ ] `Reintentar` solo aparece cuando repetir es seguro.
+- [ ] Offline y sincronización distinguen local, pendiente, enviado, confirmado y conflicto.
+- [ ] Dispositivos compartidos separan actor, contexto y dispositivo.
+- [ ] Handoffs conservan proceso y no confunden navegación con resultado.
+- [ ] Operaciones masivas muestran parciales de forma explícita.
+- [ ] Un mensaje stale no continúa instruyendo acciones inválidas.
+- [ ] Denegaciones usan razones públicas aprobadas y no `blocked_reasons` legacy como copy.
+- [ ] Un código desconocido no produce una causa inventada.
+- [ ] La explicación visible no depende de datos sensibles para ser comprensible.
+- [ ] La accesibilidad no depende solo de color, icono, hover, sonido o posición.
+- [ ] El lenguaje es neutral, específico y no punitivo.
+- [ ] Los términos validados no se sustituyen por jerga técnica local.
+- [ ] Todo CTA ofrecido existe y es ejecutable por el actor actual.
+- [ ] Todo responsable visible corresponde a una vía real de resolución cuando el package la incluye.
+- [ ] La recuperación no contradice el estado real del proceso.
+- [ ] La comprensibilidad no crea reintentos o duplicados.
+- [ ] Las pruebas humanas no enseñan la respuesta antes de medir.
+- [ ] Un malentendido crítico bloquea PASS aunque el promedio sea favorable.
+- [ ] Canales diferentes no presentan instrucciones materialmente contradictorias para la misma causa.
+- [ ] La notificación histórica se revalida al abrir la superficie vigente.
+- [ ] El copy localizado conserva significado contractual.
+- [ ] El detalle técnico secundario permanece bajo demanda y protegido.
+- [ ] Cada package declara matriz de escenarios aplicables.
+- [ ] Los casos negativos incluyen código técnico, copy genérico, retry inseguro y estado preservado falso cuando apliquen.
+- [ ] PASS por package exige todos los escenarios obligatorios resueltos.
+- [ ] `GLOBAL-FINAL` no oculta fallos críticos mediante promedio.
+- [ ] Todos los hallazgos conservan owner y condición de salida.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos durante esta tarea documental.
+- [ ] `UX-QA-016` conserva íntegramente la responsabilidad de certificar ocultamiento de información sensible.
+
+#### 75. Límites
+
+Esta tarea:
+
+- no redacta todo el copy definitivo de cada pantalla;
+- no crea un catálogo nuevo de reason codes;
+- no modifica `AUTH-ERR-001` a `AUTH-ERR-020`;
+- no modifica `UX-BASE-006`;
+- no implementa `ContextDiagnostic`;
+- no migra consumidores;
+- no crea autorización;
+- no cambia permisos;
+- no ejecuta retries;
+- no ejecuta conciliación;
+- no cambia estado de dominio;
+- no modifica work items;
+- no modifica rutas;
+- no modifica notificaciones;
+- no modifica telemetría productiva;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta pruebas físicas;
+- no certifica packages antes de `POST_E5_PACKAGE`;
+- no certifica exhaustivamente masking, minimización ni privacidad global, responsabilidad de `UX-QA-016`.
+
+#### 76. Handoff a `UX-QA-016`
+
+`UX-QA-015` entrega a `UX-QA-016`:
+
+- package y escenario certificado;
+- actor/cohorte y contexto;
+- clase de bloqueo o condición;
+- causa estructurada de referencia;
+- versión de mensaje observada;
+- campos visibles necesarios para comprensión;
+- campos o datos omitidos deliberadamente por seguridad;
+- referencia segura de soporte cuando exista;
+- evidencia de que la persona comprendió causa, efecto y siguiente acción;
+- hallazgos donde la explicación fue correcta pero pudo exponer información innecesaria;
+- canales y superficies donde se presentó el bloqueo;
+- estado de accesibilidad y recuperación asociado.
+
+`UX-QA-016` podrá certificar ocultamiento de información sensible sin volver a decidir la comprensibilidad semántica ya certificada por `UX-QA-015`.
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-015 — Los bloqueos se entienden sin códigos técnicos`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-016 — La información sensible se oculta correctamente`
 ### [ ] UX-QA-016 — La información sensible se oculta correctamente
 ### [ ] UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
 ### [ ] UX-QA-018 — Los eventos idempotentes no duplican efectos

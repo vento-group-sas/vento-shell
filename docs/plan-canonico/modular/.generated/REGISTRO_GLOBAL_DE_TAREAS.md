@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1567** |
+| Aprobadas | **1568** |
 | En propuesta | **0** |
-| No iniciadas | **29** |
+| No iniciadas | **28** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.18% (1567/1596)** |
+| Porcentaje de completamiento | **98.25% (1568/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **29** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1468** |
+| ⏸ NO_EVALUADA | **28** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1469** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-014` — El trabajador completa la tarea dentro del tiempo objetivo | ✅ APROBADA |
-| Tarea actual | `UX-QA-015` — Los bloqueos se entienden sin códigos técnicos | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-016` — La información sensible se oculta correctamente | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-015` — Los bloqueos se entienden sin códigos técnicos | ✅ APROBADA |
+| Tarea actual | `UX-QA-016` — La información sensible se oculta correctamente | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-017` — La aplicación propietaria conserva la fuente de verdad | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1399,7 +1399,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-012` | El retorno entre aplicaciones conserva contexto | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-013` | El retorno conserva el proceso cuando corresponde | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-014` | El trabajador completa la tarea dentro del tiempo objetivo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-015` | Los bloqueos se entienden sin códigos técnicos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-015` | Los bloqueos se entienden sin códigos técnicos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-016` | La información sensible se oculta correctamente | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-017` | La aplicación propietaria conserva la fuente de verdad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-018` | Los eventos idempotentes no duplican efectos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
