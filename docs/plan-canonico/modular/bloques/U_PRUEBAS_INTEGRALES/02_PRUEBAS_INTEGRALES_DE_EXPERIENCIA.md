@@ -19783,7 +19783,1444 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-018 — Los eventos idempotentes no duplican efectos`
-### [ ] UX-QA-018 — Los eventos idempotentes no duplican efectos
+### ✅ UX-QA-018 — Los eventos idempotentes no duplican efectos
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
+**Tarea siguiente:** UX-QA-019 — Los fallos parciales permiten recuperación
+**Tipo de tarea:** documental; definición canónica de la certificación integral de idempotencia que demuestra por package y globalmente que reintentos, redelivery, concurrencia, replay, reanudación offline y repetición de una misma operación lógica conservan identidad y huella compatibles, recuperan el resultado durable previo sin repetir mutaciones, emisiones, entregas ni efectos confirmados, rechazan reutilizaciones incompatibles antes de un nuevo efecto y mantienen separados solicitud, comando, evento, entrega, efecto consumidor, correlación, orden y conciliación, sin absorber la recuperación de fallos parciales reservada a `UX-QA-019`
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de idempotencia y ausencia de efectos duplicados definido; las ejecuciones `UX-QA-018::<package_id>` y `UX-QA-018::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff aprobado de `UX-QA-017`, `INT-APP-004`, `SHELL-CON-023`, los contratos de integración, los 395 eventos normales, las 2.020 relaciones evento-consumidora, las ocho familias condicionales y la cobertura vigente aplicable, sin afirmar ejecución runtime ni exactamente una entrega de transporte
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, contratos runtime, tablas, índices, constraints, migraciones, RLS, RPC, APIs, Server Actions, workers, colas, outbox, inbox, claims, eventos, replays, datos, Supabase, consumidores, proveedores, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que una misma operación lógica no produce más de un efecto empresarial dentro de su alcance idempotente después de la implementación de un package.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿CUÁL ES LA OPERACIÓN LÓGICA?
+¿QUÉ ALCANCE IDEMPOTENTE LA PROTEGE?
+¿QUIÉN ES EL OWNER DEL ALCANCE?
+¿CUÁL ES LA IDENTIDAD ESTABLE ANTES DEL PRIMER EFECTO?
+¿CUÁL ES LA HUELLA LÓGICA VERSIONADA?
+¿QUÉ RESULTADO DURABLE EXISTE?
+¿UN RETRY CONSERVA LA MISMA IDENTIDAD?
+¿UN REDELIVERY CONSERVA EL MISMO EVENT_ID?
+¿DOS EJECUCIONES CONCURRENTES PRODUCEN UN SOLO GANADOR EMPRESARIAL?
+¿UN DUPLICADO COMPATIBLE RECUPERA EL RESULTADO SIN MUTAR?
+¿UNA HUELLA INCOMPATIBLE FALLA ANTES DE UN SEGUNDO EFECTO?
+¿UN TIMEOUT O RESULTADO DESCONOCIDO SE CONSULTA O CONCILIA ANTES DE REPETIR?
+```
+
+Regla central:
+
+```text
+MISMA OPERACIÓN LÓGICA
++
+MISMO ALCANCE
++
+MISMA IDENTIDAD
++
+MISMA HUELLA COMPATIBLE
+=
+RESULTADO PREVIO RECUPERADO
++
+CERO NUEVOS EFECTOS
+```
+
+Y también:
+
+```text
+MISMA IDENTIDAD
++
+HUELLA INCOMPATIBLE
+=
+CONFLICTING_REUSE
++
+CERO EFECTO DEL SEGUNDO CONTENIDO
+```
+
+#### 2. Resultado documental
+
+`UX-QA-018` define el contrato de certificación integral de idempotencia y ausencia de efectos duplicados para BLOQUE U.
+
+El resultado establece:
+
+- unidad certificable por package y escenario;
+- oracles de identidad, huella, claim, resultado y efecto;
+- cobertura de los siete alcances idempotentes;
+- cobertura de los ocho outcomes idempotentes;
+- cobertura de los siete estados de claim;
+- pruebas de concurrencia y único ganador empresarial;
+- pruebas de retry, redelivery y replay;
+- pruebas de resultado perdido o desconocido;
+- pruebas de conflicto por reutilización incompatible;
+- pruebas de orden y versión;
+- pruebas de offline y reanudación;
+- pruebas de evento externo y webhook;
+- pruebas de efecto consumidor y proyecciones;
+- pruebas de retención y expiración de identidad;
+- métricas de duplicación, conflicto y resultado recuperado;
+- criterios de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-019`.
+
+Topología contractual:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-018::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-018::GLOBAL-FINAL
+```
+
+#### 3. Handoff recibido de `UX-QA-017`
+
+`UX-QA-017` entrega a `UX-QA-018`:
+
+- package y escenarios certificados;
+- `process_id` y capacidad aplicables;
+- aplicación propietaria resuelta;
+- fuente de verdad resuelta;
+- estado de fuente objetivo;
+- representación observada por consumidora;
+- command path y query path observados;
+- eventos y handoffs que participan sin transferir propiedad;
+- recursos y efectos que solo la propietaria puede confirmar;
+- claves o identidades operativas observadas que deban conservarse entre retry/replay cuando el contrato aplicable las defina;
+- evidencia de que una consumidora no produce directamente el efecto propietario;
+- puntos de integración donde un retry o replay podría intentar repetir el mismo efecto;
+- transiciones de propietaria o dual-write controlado que condicionen la interpretación de duplicados;
+- hallazgos cerrados y excepciones vigentes.
+
+`UX-QA-018` consume ese handoff sin volver a decidir ownership. Una prueba de idempotencia que use una propietaria distinta de la certificada por `UX-QA-017` queda inválida.
+
+#### 4. Universo canónico protegido
+
+La certificación deberá conservar el universo vigente de `INT-APP-004` y `SHELL-CON-023`:
+
+| Dimensión | Cantidad |
+| --- | ---: |
+| procesos cubiertos | **69** |
+| definiciones normales de evento | **395** |
+| relaciones evento-consumidora | **2.020** |
+| familias condicionales | **8** |
+| alcances idempotentes | **7** |
+| outcomes idempotentes | **8** |
+| estados de claim | **7** |
+| perfiles de proyección heredados | **10** |
+| clave idempotente global de Vento OS | **0** |
+| clave idempotente global de venta | **0** |
+
+La cobertura de una instancia por package se limita a las identidades y escenarios aplicables al package, pero `GLOBAL-FINAL` deberá demostrar que el universo aplicable total no contiene huecos silenciosos.
+
+#### 5. Garantía que se certifica
+
+La entrega de transporte continúa siendo:
+
+```text
+AT_LEAST_ONCE
+```
+
+La garantía empresarial objetivo es:
+
+```text
+AT_MOST_ONCE_PER_SCOPE_WITH_RESULT_REPLAY
+```
+
+Por tanto:
+
+```text
+DELIVERY EXACTLY ONCE
+```
+
+no es una precondición ni una conclusión válida de esta tarea.
+
+La certificación demuestra que una redelivery, retry o repetición compatible puede ocurrir sin producir otra mutación empresarial dentro del alcance protegido.
+
+#### 6. Separación de identidades
+
+Estas identidades permanecen separadas:
+
+| Concepto | Identidad de referencia | Función |
+| --- | --- | --- |
+| solicitud | `request_id` o `client_event_id` | estabiliza la intención antes del primer envío |
+| comando propietario | `source_command_id` | identifica la mutación autorizada de la propietaria |
+| evento | `event_id` | identifica una emisión empresarial concreta |
+| entrega | `delivery_id` o equivalente | identifica un intento técnico de transporte |
+| efecto consumidor | clave propia del efecto | identifica una mutación derivada en la consumidora |
+| correlación | `correlation_id`, `causation_id` | une la cadena sin deduplicarla por sí misma |
+| orden | `aggregate_id`, `aggregate_version` | detecta stale y out-of-order |
+| conciliación | `IntegrationReconciliationRef` | identifica un caso de comparación de evidencia |
+
+No se certificará idempotencia cuando una implementación use una de estas identidades como sustituto universal de otra sin contrato explícito.
+
+#### 7. Alcances idempotentes canónicos
+
+Los siete alcances cerrados son:
+
+```text
+REQUEST_ACCEPTANCE
+OWNER_COMMAND
+EVENT_EMISSION
+CONSUMER_INBOX
+CONSUMER_EFFECT
+EXTERNAL_RECEIPT
+REPLAY_BATCH
+```
+
+Cada alcance deberá demostrar:
+
+- owner resoluble;
+- namespace resoluble;
+- clave fijada antes del primer efecto protegido;
+- huella lógica versionada cuando aplique;
+- claim o mecanismo de exclusión suficiente cuando exista concurrencia;
+- outcome cerrado;
+- resultado o referencia recuperable;
+- evidencia correlacionable.
+
+#### 8. `REQUEST_ACCEPTANCE`
+
+La prueba deberá demostrar que una solicitud reintentable obtiene identidad estable antes del primer envío.
+
+Escenarios mínimos cuando apliquen:
+
+1. doble click;
+2. submit repetido;
+3. refresh después de submit;
+4. pérdida de respuesta;
+5. caída y reinicio de cliente;
+6. reanudación de operación offline;
+7. dos pestañas o clientes enviando la misma intención;
+8. cambio material de la intención.
+
+PASS exige:
+
+```text
+MISMA INTENCIÓN
+→ MISMA IDENTIDAD
+→ CERO SEGUNDO EFECTO
+```
+
+Un cambio material deberá usar nueva intención e identidad; no reutilizar la clave anterior con otra huella.
+
+#### 9. `OWNER_COMMAND`
+
+La certificación deberá demostrar que el mismo comando propietario no ejecuta dos veces la mutación empresarial.
+
+Se verificará:
+
+- mismo `source_command_id` entre retries;
+- misma propietaria;
+- misma versión contractual;
+- misma huella lógica;
+- autorización revalidada;
+- resultado durable recuperable;
+- cero segunda mutación al repetir.
+
+Una clave conocida no concede autoridad y una autorización histórica no revive por retry.
+
+#### 10. `EVENT_EMISSION`
+
+La emisión idempotente deberá conservar:
+
+```text
+event_id
+producer_application
+process_id
+aggregate_id cuando aplique
+aggregate_version cuando aplique
+occurred_at
+contract_version
+logical_content_hash
+```
+
+Una respuesta perdida después del commit no autoriza crear otro evento empresarial para representar el mismo hecho confirmado.
+
+La segunda observación compatible recuperará la referencia del evento ya emitido o un resultado equivalente permitido.
+
+#### 11. `CONSUMER_INBOX`
+
+Cada consumidora mantiene deduplicación independiente.
+
+La clave conceptual permanece:
+
+```text
+consumer_application + event_id
+```
+
+La certificación deberá demostrar que:
+
+- una redelivery del mismo `event_id` no crea una segunda entrada lógica aplicable;
+- que NEXO haya procesado no acredita que NUMERA haya procesado;
+- una consumidora que no procesó conserva su trabajo pendiente;
+- una consumidora que ya procesó recupera su resultado previo;
+- el inbox no se usa como fuente de verdad del dominio emisor.
+
+#### 12. `CONSUMER_EFFECT`
+
+Cuando un evento produce una mutación propia en la consumidora, la prueba deberá distinguir inbox y efecto.
+
+Clave conceptual mínima:
+
+```text
+consumer_application
++
+event_id
++
+effect_code
+```
+
+Un mismo evento puede producir varios efectos legítimos únicamente cuando cada efecto tiene identidad distinta y contractual.
+
+Dos ejecuciones del mismo efecto compatible deben converger en un solo efecto durable.
+
+#### 13. `EXTERNAL_RECEIPT`
+
+Para webhooks, callbacks o eventos de terceros se probará que la recepción externa no se confunde con efecto empresarial interno.
+
+Cuando exista ID externo estable:
+
+```text
+source_system + external_event_id
+```
+
+Cuando no exista, el adaptador deberá persistir una identidad propia antes del primer procesamiento protegido y conservarla en los reintentos.
+
+Una autenticidad válida no reemplaza idempotencia y un `2xx` técnico no prueba el efecto empresarial final.
+
+#### 14. `REPLAY_BATCH`
+
+`replay_request_id` identifica la instrucción de replay, no reemplaza el `event_id` histórico de sus elementos.
+
+La certificación deberá demostrar:
+
+- misma instrucción de replay no crea otro batch lógico equivalente;
+- cada evento histórico conserva su identidad original;
+- nuevos intentos de entrega no crean nuevas emisiones;
+- consumidoras ya aplicadas recuperan resultado o reconstruyen únicamente proyecciones permitidas;
+- acciones irreversibles no se repiten por replay;
+- una audiencia histórica no se amplía silenciosamente.
+
+#### 15. Referencia idempotente compartida
+
+`IntegrationIdempotencyRef` conserva exactamente seis campos conceptuales:
+
+```text
+scope
+scope_owner_ref
+namespace_ref
+operation_key
+generation
+contract_version
+```
+
+La certificación deberá comprobar que `operation_key`:
+
+- existe antes del primer efecto;
+- no cambia por retry;
+- no cambia por redelivery;
+- no cambia por restart;
+- no cambia por worker;
+- no cambia por dispositivo;
+- no cambia por deployment;
+- no cambia por transporte;
+- no es secreto;
+- no concede autorización;
+- no se reutiliza entre namespaces incompatibles.
+
+#### 16. Huella lógica versionada
+
+La identidad responde:
+
+```text
+¿QUÉ OPERACIÓN ES?
+```
+
+La huella responde:
+
+```text
+¿EL CONTENIDO MATERIAL SIGUE SIENDO EQUIVALENTE?
+```
+
+La prueba deberá demostrar que la huella incluye únicamente campos empresariales materiales según el contrato propietario y excluye metadata técnica de intento.
+
+Cambiar canonicalización exige versión identificable; una actualización de parser o adapter no reinterpretará silenciosamente huellas históricas.
+
+#### 17. Duplicado compatible
+
+Condición:
+
+```text
+MISMO ALCANCE
++
+MISMO OWNER
++
+MISMO NAMESPACE
++
+MISMA OPERATION_KEY
++
+HUELLA COMPATIBLE
+```
+
+Resultado esperado:
+
+```text
+DUPLICATE_RESULT_RETURNED
+```
+
+Oracle obligatorio:
+
+```text
+NEW_MUTATION_COUNT = 0
+NEW_BUSINESS_EFFECT_COUNT = 0
+PRIOR_RESULT_RECOVERED = YES
+```
+
+#### 18. Reutilización incompatible
+
+Condición:
+
+```text
+MISMA IDENTIDAD
++
+HUELLA LÓGICA INCOMPATIBLE
+```
+
+Resultado esperado:
+
+```text
+CONFLICTING_REUSE
+```
+
+PASS exige:
+
+- rechazo determinista;
+- cero efecto parcial del segundo contenido;
+- no reemplazar el resultado previo;
+- no reinterpretar la primera operación;
+- no crear una nueva `generation` para esconder el conflicto;
+- evidencia segura del conflicto sin exponer payload sensible.
+
+#### 19. Outcomes idempotentes cerrados
+
+Los ocho outcomes son:
+
+```text
+APPLIED
+DUPLICATE_RESULT_RETURNED
+CONFLICTING_REUSE
+IN_PROGRESS_RECOVERABLE
+STALE_VERSION
+OUT_OF_ORDER_DEFERRED
+RECONCILIATION_REQUIRED
+REJECTED
+```
+
+La implementación no podrá introducir un outcome local ambiguo que permita repetir un efecto sin mapearlo a uno de estos resultados o a una especialización canónica compatible.
+
+#### 20. Estados de claim
+
+Los siete estados de claim son:
+
+```text
+CLAIMED
+SUCCEEDED
+FAILED_RETRYABLE
+FAILED_FINAL
+OUTCOME_UNKNOWN
+CANCELLED
+EXPIRED
+```
+
+El estado de claim no sustituye el outcome empresarial.
+
+En particular:
+
+```text
+OUTCOME_UNKNOWN
+!=
+RESULT_UNKNOWN
+```
+
+La prueba deberá preservar esa separación.
+
+#### 21. Claim concurrente
+
+Cuando el alcance protege un efecto mutante, deberá existir claim durable o mecanismo equivalente de exclusión.
+
+La certificación concurrente deberá probar:
+
+```text
+CONCURRENT_SAME_IDENTITY_BUSINESS_WINNER_COUNT = 1
+```
+
+No son garantías suficientes por sí solas:
+
+- lock en memoria de una sola instancia;
+- `select` seguido de efecto y registro sin protección equivalente;
+- upsert que no verifica identidad y huella;
+- flag local de frontend;
+- disabled button;
+- debounce de UI.
+
+#### 22. `IN_PROGRESS_RECOVERABLE`
+
+Cuando otra ejecución conserva el claim vigente:
+
+- no se ejecuta el mismo efecto en paralelo;
+- se espera, consulta o recupera el resultado conforme al contrato;
+- no se genera nueva identidad por impaciencia;
+- un timeout de espera no prueba ausencia de commit.
+
+El segundo actor no se convierte en segundo ganador empresarial.
+
+#### 23. Resultado durable recuperable
+
+Todo efecto confirmado deberá dejar resultado o referencia suficiente para responder a un duplicado sin reejecutar.
+
+El resultado recuperable puede ser:
+
+- referencia al recurso propietario;
+- receipt empresarial;
+- versión confirmada;
+- identificador de evento emitido;
+- estado terminal autorizado;
+- referencia segura a evidencia.
+
+No basta con registrar únicamente que “ya ocurrió” si el consumidor necesita distinguir el resultado correcto de un fallo o conflicto.
+
+#### 24. Resultado desconocido
+
+Estas condiciones NO prueban ausencia de efecto:
+
+- timeout;
+- socket reset;
+- proceso caído;
+- worker reiniciado;
+- respuesta perdida;
+- presupuesto de retry agotado;
+- lease expirado;
+- ACK no recibido.
+
+Ante incertidumbre se deberá consultar o conciliar antes de repetir un efecto potencialmente ya confirmado.
+
+#### 25. `RECONCILIATION_REQUIRED`
+
+Este outcome significa:
+
+```text
+NO HAY EVIDENCIA SUFICIENTE PARA REPETIR CON SEGURIDAD
+```
+
+No significa:
+
+```text
+RETRY AUTORIZADO
+```
+
+La tarea certifica que una incertidumbre no se convierte en otra mutación por defecto.
+
+El tratamiento completo de parcialidad y recuperación entre varias unidades queda reservado a `UX-QA-019`.
+
+#### 26. Retry
+
+Un retry técnico conservará:
+
+- operación;
+- alcance;
+- owner;
+- namespace;
+- identity/key;
+- huella;
+- contenido lógico;
+- recurso;
+- versión objetivo;
+- finalidad.
+
+Podrán cambiar:
+
+- `attempt_id`;
+- conexión;
+- worker;
+- trace/span;
+- timestamps técnicos del intento;
+- demora aplicada.
+
+Los tiempos, backoff, jitter, `Retry-After` y límites se consumen de sus contratos propietarios; `UX-QA-018` no los redefine.
+
+#### 27. Redelivery
+
+Una redelivery de evento deberá conservar `event_id`.
+
+La prueba deberá demostrar:
+
+```text
+NEW_DELIVERY_ATTEMPT = ALLOWED
+NEW_EVENT_EMISSION = NO
+NEW_CONFIRMED_CONSUMER_EFFECT = NO, SI YA EXISTÍA
+```
+
+Si el primer intento nunca produjo el efecto consumidor, la consumidora podrá aplicar el mismo efecto bajo la misma identidad y claim gobernados.
+
+#### 28. Replay
+
+Replay y redelivery no son nuevas intenciones empresariales.
+
+La certificación deberá detectar como fallo:
+
+- regenerar `event_id` para el mismo evento histórico;
+- cambiar productora histórica;
+- cambiar `occurred_at` para aparentar un evento nuevo;
+- reejecutar pagos, inventario, puntos, impresión o comunicaciones irreversibles ya confirmadas;
+- incorporar nuevas consumidoras por defecto a un replay histórico sin contrato.
+
+#### 29. Backfill
+
+Un backfill sintetizado deberá distinguirse del replay de un evento existente.
+
+Cuando aplique deberá conservar:
+
+- fuente histórica;
+- identidad determinista suficiente;
+- lote;
+- ventana temporal;
+- correlación;
+- marca de backfill o equivalente;
+- guardas de efectos.
+
+Un backfill no activará acciones físicas o financieras solo porque logró construir un evento canónico.
+
+#### 30. Orden y versión
+
+No existe orden global entre aplicaciones.
+
+Cuando aplique, se certificará mediante:
+
+```text
+aggregate_id
++
+aggregate_version
+```
+
+Casos mínimos:
+
+- duplicado exacto de la misma versión;
+- evento tardío de versión inferior;
+- evento de versión superior con predecesor faltante;
+- dos eventos distintos reclamando la misma versión;
+- redelivery después de que el agregado ya avanzó.
+
+`STALE_VERSION` y `OUT_OF_ORDER_DEFERRED` no podrán sobrescribir silenciosamente estado más nuevo.
+
+#### 31. Offline y reanudación
+
+Una operación offline protegida deberá crear y persistir identidad antes de considerarse encolada.
+
+La prueba deberá incluir, cuando aplique:
+
+1. pérdida de red antes de enviar;
+2. pérdida de red después de enviar;
+3. cierre de aplicación;
+4. reinicio del dispositivo;
+5. refresh de sesión;
+6. cambio de actor antes de sincronizar;
+7. expiración de autoridad;
+8. sincronización repetida;
+9. resultado ya aplicado durante la desconexión.
+
+La misma operación conserva identidad, pero autoridad y contexto se revalidan al sincronizar.
+
+#### 32. Webhooks y proveedores externos
+
+Para cada integración externa aplicable se certificará:
+
+- autenticidad separada de idempotencia;
+- external ID estable cuando exista;
+- namespace por sistema/ambiente/superficie/operación;
+- claim antes de efecto;
+- duplicado compatible;
+- mismo ID con contenido distinto;
+- evento tardío;
+- evento fuera de orden;
+- respuesta del proveedor perdida;
+- consulta autoritativa cuando exista resultado desconocido.
+
+No se deduplica un proveedor diferente únicamente porque reutilizó el mismo valor textual de ID.
+
+#### 33. Namespaces externos
+
+El namespace mínimo podrá incluir, según contrato:
+
+```text
+external_system_id
+environment
+surface
+operation_kind
+external_instance_id cuando sea necesario
+```
+
+Se prohíbe asumir que el mismo valor en dos sistemas o ambientes identifica la misma operación.
+
+#### 34. Campos insuficientes como identidad
+
+No se consideran suficientes por sí solos:
+
+- timestamp de recepción;
+- UUID generado después de una recepción ya no identificada;
+- filename;
+- posición de fila;
+- `source_row_number`;
+- correo;
+- teléfono;
+- sede aislada;
+- nombre de producto;
+- importe aislado;
+- coordenadas;
+- IP;
+- retry count;
+- `attempt_id`;
+- `delivery_id`;
+- `trace_id`;
+- mapping ID;
+- secreto o credencial.
+
+#### 35. Efectos físicos o irreversibles
+
+La certificación será especialmente estricta cuando el efecto involucre:
+
+- inventario;
+- recepción;
+- producción;
+- pago;
+- caja;
+- facturación;
+- fidelización;
+- impresión;
+- entrega;
+- notificación externa;
+- documentos;
+- compensación;
+- acciones de continuidad.
+
+Un duplicado en estos escenarios es crítico aunque la UI aparente un solo resultado.
+
+#### 36. ORIGO → NEXO → NUMERA
+
+Se deberán separar, cuando apliquen:
+
+```text
+RECEPCIÓN COMERCIAL
+MOVIMIENTO FÍSICO DE INVENTARIO
+HECHO ECONÓMICO / OBLIGACIÓN
+```
+
+Repetir la recepción no podrá volver a sumar inventario ni recrear el hecho financiero ya confirmado.
+
+Cada frontera conserva su propio alcance idempotente.
+
+#### 37. FOGO → NEXO → PULSO
+
+Producción, liberación, entrada de terminado, disponibilidad y cumplimiento permanecen efectos distintos.
+
+El mismo lote no funciona como clave universal.
+
+El mismo pedido no funciona como clave universal.
+
+Un retry de una etapa no reaplica otra etapa ya confirmada.
+
+#### 38. PULSO → PASS → NUMERA
+
+Venta, pago, puntos y hecho económico conservan identidades y efectos separados.
+
+Escenarios mínimos cuando apliquen:
+
+- venta repetida;
+- timeout de pago;
+- webhook duplicado;
+- acumulación de puntos repetida;
+- redención repetida;
+- reversión correlacionada;
+- reintento después de respuesta perdida.
+
+PASS exige cero doble cobro, doble saldo, doble punto o doble hecho económico por la misma operación lógica.
+
+#### 39. VISO → ANIMA → SHELL
+
+Turno, asistencia, novedad y contexto de acceso conservan identidades distintas.
+
+Una marcación offline repetida no crea otra asistencia.
+
+Recuperar un resultado idempotente no revive un permiso, turno o contexto vencidos.
+
+#### 40. NEXO e inventario
+
+Cuando un evento o comando mueva inventario se deberá probar:
+
+- cantidad antes;
+- operación lógica;
+- identity/key;
+- resultado esperado;
+- cantidad después del primer efecto;
+- cantidad después del duplicado;
+- versión o movimiento asociado;
+- ledger o referencia propietaria;
+- ausencia de segundo movimiento.
+
+El conteo final deberá ser compatible con exactamente un efecto empresarial.
+
+#### 41. Impresión y periféricos
+
+Cuando una operación envíe una impresión o comando a periférico, la certificación deberá distinguir:
+
+- solicitud empresarial;
+- job técnico;
+- reintento del job;
+- receipt/ACK del dispositivo;
+- resultado empresarial.
+
+Un reintento técnico no debe producir dos documentos físicos cuando el contrato exige una sola emisión.
+
+Si el dispositivo no permite demostrar resultado, se conserva incertidumbre y se aplica el mecanismo propietario; no se declara idempotencia por asumir que la primera impresión falló.
+
+#### 42. Notificaciones
+
+La deduplicación de una notificación deberá preservar la finalidad y audiencia.
+
+No se considera PASS si:
+
+- se envían dos mensajes al mismo destinatario por el mismo hecho;
+- se crea nueva identidad únicamente por retry;
+- se amplía audiencia en replay;
+- un canal alterno se activa sin distinguir fallback autorizado de duplicado.
+
+#### 43. Correcciones y compensaciones
+
+Dos correcciones o compensaciones legítimas distintas no son duplicados solo por referir al mismo recurso original.
+
+Cada nueva intención material deberá conservar identidad propia.
+
+Repetir la misma corrección o compensación con la misma identidad y huella deberá recuperar el resultado previo sin repetir el efecto.
+
+La semántica completa de compensación permanece en su contrato propietario.
+
+#### 44. Familias condicionales
+
+Las ocho familias condicionales heredadas deberán preservar idempotencia por acción concreta.
+
+Se certificará que la referencia exacta de excepción, cancelación, anulación, reversión, compensación, corrección o revisión forma parte de la interpretación del efecto cuando corresponda.
+
+No se colapsarán dos acciones legítimas sucesivas en una sola por coincidencia superficial.
+
+#### 45. Perfiles de proyección
+
+Los diez perfiles de proyección heredados no usan una política única ciega.
+
+La certificación deberá observar el patrón correspondiente:
+
+| Tipo de comportamiento | Patrón esperado |
+| --- | --- |
+| referencia/proyección | deduplicación + avance monotónico o versionado |
+| lifecycle | deduplicación + transición válida sin regresión |
+| hecho inmutable | append único por identidad |
+| handoff | inbox + efecto de aceptación separado |
+| confirmación de efecto | effect key obligatoria |
+| señal de ejecución | effect key obligatoria y no duplicación física |
+| conciliación | ingestión única y resultado reproducible |
+| analítica | ingestión reproducible sin mutación operacional |
+| marketing | ingestión no autoriza contacto o publicación por sí sola |
+
+#### 46. Autorización al recuperar resultado
+
+Idempotencia no es autorización.
+
+Al devolver un resultado previo deberá revalidarse qué parte puede conocer el actor actual.
+
+La respuesta podrá minimizar detalle o devolver referencia segura, pero no reejecutará el efecto para “recrear” el resultado visible.
+
+#### 47. Privacidad y sensibilidad
+
+Las pruebas y logs de idempotencia no expondrán:
+
+- payload sensible completo;
+- secretos;
+- credenciales;
+- hashes utilizables como oráculo de información sensible;
+- datos personales no necesarios;
+- información financiera fuera de finalidad.
+
+Un mensaje de `CONFLICTING_REUSE` deberá ser diagnóstico suficiente sin revelar el contenido previo protegido.
+
+#### 48. Retención
+
+La identidad y resultado idempotentes deberán mantenerse durante la máxima ventana aplicable de:
+
+- retry;
+- offline;
+- replay;
+- disputa;
+- compensación;
+- auditoría;
+- recuperación.
+
+Expirar metadata técnica no vuelve lícito repetir un efecto irreversible previamente confirmado.
+
+#### 49. Reinicios y despliegues
+
+La prueba deberá incluir, cuando aplique:
+
+- restart del worker;
+- restart de aplicación;
+- deploy entre intentos;
+- cambio de instancia;
+- cambio de dispositivo;
+- failover de infraestructura.
+
+La identidad empresarial no cambia por estos eventos técnicos.
+
+#### 50. Versiones contractuales
+
+Una nueva versión contractual no puede reinterpretar silenciosamente operaciones históricas.
+
+La evidencia deberá fijar:
+
+```text
+contract_version
+fingerprint_version
+owner
+scope
+namespace
+```
+
+La compatibilidad o migración de claves deberá ser explícita cuando exista.
+
+#### 51. AURA diferida
+
+Las relaciones AURA pueden conservar definición contractual idempotente, pero mientras AURA permanezca diferida no se certificará runtime inexistente.
+
+Se prohíbe fabricar:
+
+- keys operativas;
+- inbox;
+- efectos;
+- replay;
+- claims;
+- evidencia productiva.
+
+El escenario correspondiente queda `NOT_APPLICABLE` o pendiente de readiness conforme a la evidencia real del package.
+
+#### 52. Matriz mínima por escenario
+
+Cada escenario certificable deberá registrar como mínimo:
+
+```text
+scenario_id
+package_id
+process_id
+owner_application
+idempotency_scope
+scope_owner_ref
+namespace_ref
+operation_key_ref
+fingerprint_version
+fingerprint_ref
+resource_ref
+source_command_id_or_null
+event_id_or_null
+consumer_application_or_null
+effect_code_or_null
+external_system_id_or_null
+claim_state_before
+claim_state_after
+outcome
+result_ref
+mutation_count_before
+mutation_count_after_first_execution
+mutation_count_after_duplicate
+business_effect_count_after_duplicate
+reconciliation_ref_or_null
+evidence_refs
+status
+```
+
+No se almacenará material secreto dentro del expediente de certificación.
+
+#### 53. Oracle de primer efecto
+
+Para una operación válida nueva:
+
+```text
+EXPECTED_OUTCOME = APPLIED
+EXPECTED_NEW_EFFECTS = 1, CUANDO EL ESCENARIO ES MUTANTE
+EXPECTED_DURABLE_RESULT = PRESENTE
+```
+
+Un escenario de solo lectura o proyección podrá tener `EXPECTED_NEW_EFFECTS = 0`; la matriz deberá declararlo expresamente.
+
+#### 54. Oracle de duplicado
+
+Después del primer efecto confirmado:
+
+```text
+REPEAT_SAME_IDENTITY = YES
+REPEAT_SAME_COMPATIBLE_CONTENT = YES
+EXPECTED_OUTCOME = DUPLICATE_RESULT_RETURNED
+EXPECTED_NEW_EFFECTS = 0
+EXPECTED_PRIOR_RESULT = RECOVERED
+```
+
+#### 55. Oracle de conflicto
+
+```text
+REUSE_SAME_IDENTITY = YES
+CHANGE_MATERIAL_CONTENT = YES
+EXPECTED_OUTCOME = CONFLICTING_REUSE
+EXPECTED_NEW_EFFECTS = 0
+EXPECTED_PREVIOUS_RESULT = UNCHANGED
+```
+
+#### 56. Oracle de concurrencia
+
+Dos o más intentos simultáneos con misma identidad y huella compatible deberán terminar con:
+
+```text
+BUSINESS_WINNERS = 1
+TOTAL_CONFIRMED_EFFECTS = 1, CUANDO EL ESCENARIO ES MUTANTE
+OTHER_ATTEMPTS = RESULT_RECOVERY_OR_IN_PROGRESS_RECOVERABLE
+```
+
+La cantidad de requests HTTP o intentos técnicos puede ser mayor que uno.
+
+#### 57. Oracle de stale y out-of-order
+
+Un evento viejo o adelantado no se vuelve duplicado solo porque no pueda aplicarse.
+
+La prueba deberá distinguir:
+
+```text
+DUPLICATE_RESULT_RETURNED
+STALE_VERSION
+OUT_OF_ORDER_DEFERRED
+CONFLICTING_REUSE
+```
+
+Una clasificación incorrecta puede ocultar pérdida o doble aplicación.
+
+#### 58. Casos positivos mínimos
+
+Cada package deberá seleccionar los casos aplicables entre:
+
+1. primer submit exitoso;
+2. submit repetido;
+3. respuesta perdida después del commit;
+4. retry técnico;
+5. redelivery;
+6. concurrencia misma identidad;
+7. inbox duplicado;
+8. efecto consumidor duplicado;
+9. webhook duplicado;
+10. offline reanudado;
+11. replay del mismo evento;
+12. resultado durable recuperado;
+13. stale version manejada sin regresión;
+14. out-of-order diferido;
+15. recuperación de resultado con autorización vigente;
+16. deploy o restart entre intentos.
+
+#### 59. Casos negativos mínimos
+
+Cuando apliquen deberán probarse explícitamente:
+
+1. nueva key por cada retry;
+2. mismo key con contenido distinto;
+3. deduplicación solo en frontend;
+4. `select` luego efecto luego insert sin exclusión equivalente;
+5. lock solo en memoria;
+6. timeout interpretado como no-effect;
+7. lease expirado interpretado como no-effect;
+8. retry con otra tabla/RPC/aplicación para obtener éxito;
+9. redelivery con nuevo `event_id`;
+10. inbox compartido entre consumidoras;
+11. effect key omitida en mutación consumidora;
+12. `delivery_id` usado como operation key;
+13. `trace_id` usado como operation key;
+14. hash usado como identidad universal;
+15. dedup cross-environment;
+16. replay que reaplica efecto irreversible;
+17. backfill que dispara efecto sin autorización;
+18. clave expirada que habilita efecto irreversible otra vez;
+19. recuperación de resultado que evade autorización;
+20. AURA tratada como runtime activo sin readiness.
+
+#### 60. Evidencia por package
+
+La instancia deberá conservar evidencia suficiente para correlacionar:
+
+- commit o revisión;
+- versión de contratos;
+- package;
+- ambiente;
+- fixture;
+- operación;
+- identidad;
+- huella;
+- claim;
+- resultados de primer intento y duplicado;
+- conteos de mutación/efecto;
+- resultado durable;
+- eventos e inbox cuando apliquen;
+- evidencia de concurrencia;
+- reconciliación cuando exista incertidumbre;
+- hallazgos y cierres.
+
+No se mezclará evidencia de otro commit, versión o ambiente como si fuera equivalente sin demostración explícita.
+
+#### 61. Métricas por scenario y package
+
+La certificación deberá poder calcular, como mínimo:
+
+```text
+duplicate_attempts_observed
+compatible_duplicate_results_recovered
+conflicting_reuse_detected
+unexpected_duplicate_business_effects
+concurrent_business_winners
+unknown_outcomes
+reconciliation_required_count
+stale_version_count
+out_of_order_deferred_count
+idempotency_identity_changes_during_retry
+missing_durable_results
+unprotected_mutating_scenarios
+```
+
+Para PASS:
+
+```text
+unexpected_duplicate_business_effects = 0
+idempotency_identity_changes_during_retry = 0
+missing_durable_results = 0
+unprotected_mutating_scenarios = 0
+concurrent_business_winners <= 1 POR MISMA IDENTIDAD
+```
+
+#### 62. Severidad
+
+Hallazgos mínimos:
+
+| Condición | Severidad mínima |
+| --- | --- |
+| efecto financiero duplicado | CRÍTICA |
+| inventario duplicado | CRÍTICA |
+| fidelización duplicada | CRÍTICA |
+| entrega o estado empresarial duplicado | CRÍTICA |
+| escritura propietaria duplicada | CRÍTICA |
+| same key + different fingerprint aplicado parcialmente | CRÍTICA |
+| dos ganadores concurrentes | CRÍTICA |
+| retry cambia de identidad para misma intención | ALTA |
+| redelivery crea nuevo evento | ALTA |
+| duplicado no recupera resultado durable | ALTA |
+| clasificación stale/out-of-order incorrecta | ALTA |
+| evidencia insuficiente no material | MEDIA o según efecto |
+
+Un hallazgo crítico o alto aplicable abierto bloquea PASS del scenario y del package.
+
+#### 63. Condición de PASS por scenario
+
+Un scenario puede quedar PASS únicamente cuando:
+
+- identidad y alcance son resolubles;
+- owner es el certificado por `UX-QA-017`;
+- huella es reproducible;
+- primer efecto produce outcome esperado;
+- duplicado compatible produce cero efecto adicional;
+- reutilización incompatible produce conflicto sin segundo efecto;
+- concurrencia produce un solo ganador cuando se prueba;
+- resultado durable es recuperable;
+- autorización no se amplía por idempotencia;
+- evidencia corresponde al mismo commit/ambiente/contrato;
+- no quedan hallazgos críticos o altos abiertos.
+
+#### 64. Condición de PASS por package
+
+`UX-QA-018::<package_id>` puede quedar PASS cuando:
+
+1. todos los escenarios obligatorios del package están inventariados;
+2. todos los scopes aplicables están cubiertos;
+3. ninguna mutación reintentable carece de protección demostrada;
+4. todos los casos positivos aplicables pasan;
+5. todos los casos negativos aplicables bloquean correctamente;
+6. no existen efectos duplicados inesperados;
+7. los outcomes observados son clasificables;
+8. los resultados durables son recuperables;
+9. los casos desconocidos no se repiten ciegamente;
+10. los hallazgos críticos y altos están cerrados.
+
+#### 65. `GLOBAL-FINAL`
+
+`UX-QA-018::GLOBAL-FINAL` deberá certificar que:
+
+- todos los packages aplicables tienen instancia resuelta;
+- no existen packages omitidos por no tener fixture cómodo;
+- el universo total de eventos/relaciones aplicables está trazado;
+- no existe una política paralela de idempotencia incompatible;
+- los siete scopes permanecen semánticamente iguales entre packages;
+- los ocho outcomes permanecen semánticamente iguales;
+- los siete estados de claim permanecen semánticamente iguales;
+- no existe clave universal inventada;
+- no existen efectos duplicados críticos abiertos;
+- AURA diferida no se cuenta como runtime certificado;
+- evidencia stale no se usa para cerrar el global.
+
+`GLOBAL-FINAL` no promedia fallos.
+
+#### 66. Invalidez de evidencia
+
+La evidencia queda `STALE` cuando cambia materialmente cualquiera de:
+
+- owner de operación;
+- contrato idempotente;
+- scope;
+- namespace;
+- estrategia de fingerprint;
+- persistencia de claim;
+- esquema de resultado durable;
+- outbox/inbox relevante;
+- consumidor mutante;
+- código de efecto;
+- integración externa;
+- ambiente;
+- revisión desplegada.
+
+Cambios no materiales deberán justificar equivalencia antes de reutilizar evidencia.
+
+#### 67. Responsabilidad de hallazgos
+
+Cada hallazgo deberá conservar:
+
+```text
+finding_id
+package_id
+scenario_id
+scope
+operation_ref
+owner_application
+observed_identity_ref
+failure_mode
+severity
+owner_task_or_package
+exit_condition
+evidence_ref
+status
+```
+
+No se dejarán hallazgos narrativos sin owner ni condición de salida.
+
+#### 68. Relación con `UX-QA-019`
+
+`UX-QA-018` certifica que repetir una misma operación no duplica un efecto.
+
+`UX-QA-019` certificará qué ocurre cuando una operación compuesta o una cadena distribuida queda parcialmente confirmada, parcialmente fallida o con resultados desconocidos.
+
+Separación:
+
+```text
+UX-QA-018
+→ SAME OPERATION / DUPLICATE / RETRY / REDELIVERY
+→ NO SECOND EFFECT
+
+UX-QA-019
+→ PARTIAL OR UNKNOWN MULTI-UNIT OUTCOME
+→ RECOVERY / CONTINUATION / RECONCILIATION / COMPENSATION PATH
+```
+
+Esta tarea no certifica que un flujo parcialmente fallido pueda recuperarse end-to-end; únicamente entrega a la siguiente tarea la evidencia idempotente necesaria para hacerlo sin repetir unidades confirmadas.
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+Justificación: `UX-QA-018` materializa en BLOQUE U la certificación transversal de obligaciones de idempotencia, deduplicación, concurrencia, retry, redelivery, replay y resultado recuperable ya protegidas por requisitos vigentes. No introduce una nueva regla empresarial ejecutable, identidad, permiso, estado, algoritmo, transporte o efecto que requiera otra identidad de prueba.
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Esta sección es únicamente trazabilidad y no actualiza el Registro Canónico.
+
+La certificación reutiliza, entre otra cobertura específica de cada package:
+
+- `TREQ-INTEGRATION-003` — identidad estable, huella lógica, estado durable, resultado recuperable, conflicto, retry seguro y mecanismos de concurrencia;
+- `TREQ-INTEGRATION-004` — reconstrucción de disparadores, intentos, resultados, errores y efectos finales;
+- `TREQ-INTEGRATION-108` — cobertura completa del universo de eventos, relaciones y familias condicionales de `INT-APP-004`;
+- `TREQ-INTEGRATION-109` — transporte al menos una vez y efecto empresarial como máximo una vez por alcance;
+- `TREQ-INTEGRATION-110` — separación de identidades de solicitud, comando, evento y efecto;
+- `TREQ-INTEGRATION-111` — identidad estable antes del primer envío y durante reintentos/reanudación;
+- `TREQ-INTEGRATION-112` — duplicado compatible recupera el resultado original sin repetir efecto;
+- `TREQ-INTEGRATION-113` — misma clave con huella distinta produce conflicto sin aplicar el segundo contenido;
+- `TREQ-INTEGRATION-129` — `delivery_id`, `attempt_id`, retry count y trace no sustituyen operation key;
+- `TREQ-INTEGRATION-130` — familias condicionales conservan identidad propia de acción;
+- `TREQ-INTEGRATION-131` — replay conserva identidad histórica del evento;
+- `TREQ-INTEGRATION-132` — backfill controlado no dispara efectos sin autorización;
+- `TREQ-INTEGRATION-133` — recuperar resultado revalida autorización y sensibilidad;
+- `TREQ-INTEGRATION-134` — retención no habilita nuevamente efectos irreversibles;
+- `TREQ-INTEGRATION-135` — patrón idempotente correspondiente por perfil de proyección;
+- `TREQ-INTEGRATION-136` — AURA conserva contrato diferido sin runtime inventado;
+- `TREQ-INTEGRATION-137` — observabilidad y validación integral de la política de idempotencia.
+
+Los requisitos específicos de dominio, integración, autorización, continuidad y package siguen aplicando cuando su alcance los incluya.
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia canónica |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | la tarea documental no ejecuta builds de producto ni materialización física de idempotencia |
+| LOCAL | NOT_EXECUTED | la incorporación, formateo y validación local pertenecen a la batería documental del repositorio |
+| REMOTA | PASS | se contrastaron continuidad vigente, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, `INT-APP-004`, `SHELL-CON-023`, `@vento/contracts/integrations`, la cobertura 04A aplicable y el archivo propietario remoto |
+| OPERATIVA | NOT_EXECUTED | retry, concurrencia, redelivery, replay y efectos reales se certificarán por package después del gate físico aplicable |
+| FÍSICA | NOT_APPLICABLE | esta tarea define el contrato de certificación; no crea claims, claves, eventos, efectos, migraciones, datos, Supabase ni despliegues |
+
+#### 72. Criterios de aceptación
+
+- [ ] Se define certificación por package y `GLOBAL-FINAL`.
+- [ ] Se consume íntegramente el handoff de `UX-QA-017` sin reabrir ownership.
+- [ ] Se preservan 69 procesos, 395 eventos, 2.020 relaciones y ocho familias condicionales.
+- [ ] Se preservan siete scopes idempotentes.
+- [ ] Se preservan ocho outcomes idempotentes.
+- [ ] Se preservan siete estados de claim.
+- [ ] No se inventa una clave idempotente global de Vento OS.
+- [ ] No se inventa una clave idempotente global de venta.
+- [ ] Solicitud, comando, evento, entrega, efecto, correlación, orden y conciliación permanecen separados.
+- [ ] Una operation key se fija antes del primer efecto protegido.
+- [ ] Retry y redelivery conservan identidad compatible.
+- [ ] Metadata técnica de intento no crea otra operación.
+- [ ] Una huella lógica versionada protege compatibilidad de contenido.
+- [ ] Mismo scope + misma identidad + huella compatible recupera resultado previo.
+- [ ] `DUPLICATE_RESULT_RETURNED` produce cero nuevas mutaciones.
+- [ ] Misma identidad + huella incompatible produce `CONFLICTING_REUSE`.
+- [ ] `CONFLICTING_REUSE` aplica cero efecto del segundo contenido.
+- [ ] La concurrencia produce máximo un ganador empresarial por identidad.
+- [ ] Un lock solo en memoria no se acepta como garantía distribuida suficiente.
+- [ ] El resultado durable es recuperable.
+- [ ] Timeout no se interpreta como ausencia de efecto.
+- [ ] Lease expirado no se interpreta como ausencia de efecto.
+- [ ] `RECONCILIATION_REQUIRED` no autoriza retry ciego.
+- [ ] `OUTCOME_UNKNOWN` y `RESULT_UNKNOWN` permanecen diferenciados.
+- [ ] Cada consumidora mantiene inbox independiente.
+- [ ] Inbox y efecto consumidor permanecen separados.
+- [ ] Un effect code distinto representa un efecto legítimamente distinto.
+- [ ] Redelivery conserva `event_id`.
+- [ ] Replay conserva identidad histórica.
+- [ ] Backfill se diferencia de replay.
+- [ ] Backfill no activa efectos irreversibles sin autorización.
+- [ ] Orden y versión no se confunden con identidad de evento.
+- [ ] `STALE_VERSION` no sobrescribe estado más nuevo.
+- [ ] `OUT_OF_ORDER_DEFERRED` no se aplica silenciosamente.
+- [ ] Offline conserva identidad pero revalida autoridad al sincronizar.
+- [ ] Webhook autenticado no equivale a efecto empresarial aplicado.
+- [ ] Namespaces externos separan sistema, ambiente y operación.
+- [ ] IDs insuficientes no se promueven a claves por conveniencia.
+- [ ] Inventario, pagos, puntos, impresión y entrega no se duplican por retry.
+- [ ] Correcciones y compensaciones legítimas distintas conservan identidades distintas.
+- [ ] Repetir la misma corrección/compensación no repite su efecto.
+- [ ] La recuperación de resultado revalida autorización actual.
+- [ ] Logs y conflictos no exponen payload sensible.
+- [ ] Retención técnica no reabre efectos irreversibles.
+- [ ] Reinicios y despliegues no cambian identidad empresarial.
+- [ ] AURA diferida no se presenta como runtime idempotente certificado.
+- [ ] Cada scenario conserva oracle verificable.
+- [ ] Los casos negativos aplicables bloquean correctamente.
+- [ ] `unexpected_duplicate_business_effects = 0` para PASS.
+- [ ] `idempotency_identity_changes_during_retry = 0` para PASS.
+- [ ] `missing_durable_results = 0` para PASS.
+- [ ] `unprotected_mutating_scenarios = 0` para PASS.
+- [ ] Un hallazgo crítico o alto aplicable abierto bloquea PASS.
+- [ ] `GLOBAL-FINAL` no oculta packages omitidos ni duplica semánticas.
+- [ ] Evidencia stale no se usa como cierre.
+- [ ] Todos los hallazgos conservan owner y condición de salida.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos durante esta tarea documental.
+- [ ] `UX-QA-019` conserva íntegramente la responsabilidad de certificar recuperación de fallos parciales.
+
+#### 73. Límites
+
+Esta tarea:
+
+- no modifica `INT-APP-004`;
+- no modifica `SHELL-CON-023`;
+- no crea una nueva clave idempotente global;
+- no crea keys runtime;
+- no crea claims runtime;
+- no crea registros idempotentes runtime;
+- no crea casos de conciliación runtime;
+- no crea tablas ni índices;
+- no crea constraints;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no crea APIs ni Server Actions;
+- no crea workers;
+- no crea colas;
+- no crea outbox ni inbox;
+- no emite eventos;
+- no replaya eventos;
+- no ejecuta backfills;
+- no ejecuta retries;
+- no ejecuta compensaciones;
+- no muta inventario;
+- no procesa pagos;
+- no imprime documentos;
+- no entrega beneficios;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta despliegues;
+- no ejecuta pruebas físicas;
+- no certifica packages antes de `POST_E5_PACKAGE`;
+- no reabre ownership certificado en `UX-QA-017`;
+- no certifica exhaustivamente recuperación de parcialidad, responsabilidad de `UX-QA-019`.
+
+#### 74. Handoff a `UX-QA-019`
+
+`UX-QA-018` entrega a `UX-QA-019`:
+
+- package y escenarios certificados;
+- `process_id`, propietaria y fuente de verdad aplicables heredados de `UX-QA-017`;
+- operación lógica y alcance idempotente;
+- `scope_owner_ref`, namespace e identidad estable;
+- versión y referencia de huella lógica;
+- estado de claim observado;
+- outcome idempotente observado;
+- resultado durable o referencia recuperable;
+- `source_command_id`, `event_id`, consumidora y `effect_code` cuando apliquen;
+- unidades o efectos ya confirmados que no deberán repetirse;
+- unidades aún no confirmadas o con resultado desconocido;
+- evidencia de concurrencia, retry, redelivery, offline o replay aplicable;
+- referencia de conciliación cuando exista incertidumbre;
+- conflictos de reutilización detectados y rechazados;
+- hallazgos cerrados y excepciones vigentes.
+
+`UX-QA-019` podrá certificar recuperación de fallos parciales sin volver a decidir ownership ni repetir unidades o efectos cuya idempotencia y resultado durable ya fueron certificados por `UX-QA-018`.
+
+#### 75. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-017 — La aplicación propietaria conserva la fuente de verdad`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-018 — Los eventos idempotentes no duplican efectos`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-019 — Los fallos parciales permiten recuperación`
 ### [ ] UX-QA-019 — Los fallos parciales permiten recuperación
 ### [ ] UX-QA-020 — Cada aplicación supera piloto con usuarios reales
 ### [ ] UX-QA-021 — Probar SHELL por tipo de actor
