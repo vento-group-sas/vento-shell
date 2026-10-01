@@ -831,7 +831,829 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-002 — La acción principal se encuentra sin capacitación`
-### [ ] UX-QA-002 — La acción principal se encuentra sin capacitación
+### ✅ UX-QA-002 — La acción principal se encuentra sin capacitación
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-001 — El trabajador identifica su siguiente tarea
+**Tarea siguiente:** UX-QA-003 — El trabajador comprende el estado del proceso
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que, una vez identificado el trabajo correcto, un trabajador apto para el proceso puede localizar y comprender la acción principal ordinaria sin capacitación específica sobre rutas, nombres técnicos, marcas de aplicación, atajos, códigos internos o memorización de la interfaz, preservando autorización, seguridad, accesibilidad, contexto, lenguaje humano y separación respecto de la comprensión completa del estado
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de descubrimiento y comprensión de la acción principal definido; las ejecuciones `UX-QA-002::<package_id>` y la certificación `UX-QA-002::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el foco ya resuelto por `UX-QA-001`, la gramática de acción de `UX-BASE-002`, el lenguaje y navegación de `UX-BASE-003` y la cobertura UX vigente, pero no infiere que ningún package, aplicación, superficie, dispositivo o cohorte humana ya haya superado la prueba
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan sesiones con trabajadores, pruebas E2E, mediciones de usabilidad, cambios de copy, componentes, rutas, autorización, datos, Supabase, despliegues, configuración, telemetría ni instrumentación nueva
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que, una vez resuelto correctamente el foco de trabajo, la persona puede responder de forma correcta y verificable:
+
+```text
+¿QUÉ ACCIÓN PRINCIPAL DEBO EJECUTAR SOBRE ESTE TRABAJO?
+```
+
+sin depender de una capacitación específica cuyo único objetivo sea enseñar dónde está el botón, qué ruta abrir, qué marca memorizar, qué código interpretar o qué secuencia de interfaz recordar.
+
+La prueba no elimina la formación profesional, operativa, legal, de seguridad o de riesgo necesaria para realizar el trabajo real.
+
+#### 2. Resultado canónico
+
+`UX-QA-002` establece `UX-QA-PRIMARY-ACTION-DISCOVERABILITY-001@1.0.0`.
+
+El contrato certifica conjuntamente que:
+
+1. el foco evaluado ya fue resuelto por una fuente de trabajo válida;
+2. existe una acción primaria inequívoca para ese foco cuando el estado permite actuar;
+3. la acción utiliza lenguaje humano y no identificadores técnicos como instrucción ordinaria;
+4. el trabajador puede localizarla sin memorizar rutas, menús, aplicaciones o atajos;
+5. el trabajador puede comprender qué hará la acción antes de ejecutarla;
+6. la etiqueta diferencia acciones empresariales que tienen efectos distintos;
+7. una marca de aplicación no sustituye la instrucción humana;
+8. abreviaturas o términos especializados no excluyen a quien no conoce el código interno;
+9. la accesibilidad conserva la identidad de la acción sin depender de icono, color, posición o gesto implícito;
+10. una confirmación, step-up o reautorización posterior no vuelve ambigua la acción primaria;
+11. el cliente no obtiene autoridad por mostrar la acción ni por enviar un estado objetivo;
+12. la evidencia permite medir descubrimiento y comprensión sin convertir velocidad aislada en mecanismo disciplinario;
+13. la certificación puede terminar en `PASS`, `FAIL`, `BLOCKED` o `STALE` sin falso verde.
+
+#### 3. Alcance exacto
+
+Esta tarea define:
+
+- qué significa encontrar la acción principal sin capacitación específica de interfaz;
+- qué conocimiento previo puede asumirse y cuál invalida la prueba;
+- cómo se diferencia descubrir una acción de comprender todo el estado del proceso;
+- cómo se diferencia una acción primaria de navegación, ayuda, configuración y excepción;
+- cómo se formula la acción en lenguaje humano;
+- cómo se tratan verbos genéricos, marcas, códigos y abreviaturas;
+- cómo se trata una acción cross-app;
+- cómo se conserva autorización y revalidación;
+- cómo se prueba accesibilidad y distintos dispositivos;
+- qué cohortes y escenarios deben declararse;
+- qué oráculo previo define la acción correcta;
+- qué evidencia y métricas se conservan;
+- la ejecución por package y la reconciliación `GLOBAL-FINAL`.
+
+No certifica todavía que el trabajador comprenda completamente el estado del proceso, todos los bloqueos, todas las transiciones ni la recuperación de errores.
+
+#### 4. Handoff recibido de `UX-QA-001`
+
+`UX-QA-001` entrega a esta tarea:
+
+- un foco principal inequívoco;
+- un `work_item` real y trazable;
+- owner funcional resoluble;
+- contexto compatible;
+- prioridad y pertenencia explicables;
+- separación entre foco y cola secundaria;
+- una referencia de acción primaria asociada al foco;
+- casos con y sin trabajo válidos;
+- superficies y dispositivos declarados.
+
+`UX-QA-002` no vuelve a decidir cuál trabajo debe atenderse. Evalúa si, sobre el foco ya correcto, la persona encuentra y comprende la acción principal.
+
+#### 5. Frontera con `UX-QA-001`
+
+`UX-QA-001` responde:
+
+```text
+¿CUÁL ES EL TRABAJO QUE DEBO ATENDER?
+```
+
+`UX-QA-002` responde:
+
+```text
+¿QUÉ DEBO HACER AHORA SOBRE ESE TRABAJO?
+```
+
+Una interfaz puede acertar el foco y fallar esta tarea si obliga a adivinar el CTA, memorizar un menú o interpretar una etiqueta técnica.
+
+#### 6. Frontera con `UX-QA-003`
+
+`UX-QA-002` certifica la identidad y comprensión de la acción principal.
+
+`UX-QA-003` certificará la comprensión del estado del proceso y sus implicaciones.
+
+Por tanto, esta tarea puede comprobar que una acción no se presenta como disponible cuando estructuralmente no lo está, pero no absorbe la certificación completa de estados, transiciones, bloqueos o significado de cada estado.
+
+#### 7. Significado canónico de "sin capacitación"
+
+Para esta tarea, `sin capacitación` significa:
+
+```text
+SIN ENTRENAMIENTO ESPECÍFICO PARA DESCUBRIR LA INTERFAZ
+```
+
+No significa:
+
+```text
+SIN FORMACIÓN PARA EL TRABAJO REAL
+```
+
+La persona evaluada puede conocer su oficio, procedimiento empresarial, reglas de seguridad y responsabilidad laboral, pero no deberá necesitar que alguien le enseñe previamente:
+
+- la ruta exacta del sistema;
+- el nombre del repositorio o componente;
+- el código de permiso;
+- la tabla o RPC;
+- el nombre técnico del estado;
+- un atajo no visible;
+- una marca de aplicación como sustituto de la instrucción;
+- una secuencia arbitraria de clics que la interfaz no explique.
+
+#### 8. Formación previa permitida
+
+La prueba puede admitir, cuando el package lo declare antes de ejecutar:
+
+- formación obligatoria del oficio;
+- inducción de seguridad;
+- capacitación regulatoria;
+- habilitación para operar maquinaria o equipos;
+- conocimiento del proceso empresarial real;
+- familiaridad básica con el dispositivo;
+- uso habitual de ayudas de accesibilidad;
+- términos empresariales estables que hayan sido validados para la población objetivo.
+
+La presencia de esa formación no permite entrenar específicamente la respuesta del caso bajo prueba.
+
+#### 9. Formación que invalida la evidencia
+
+La evidencia no certifica esta tarea si, antes del caso evaluado, se enseña al participante:
+
+- qué botón seleccionar;
+- dónde aparece el CTA;
+- qué ruta o menú recorrer;
+- qué aplicación abrir por nombre sin explicar la finalidad;
+- qué icono representa la acción;
+- qué abreviatura técnica debe memorizar;
+- qué opción elegir en el escenario exacto;
+- cuál es la respuesta esperada del oráculo.
+
+Un tutorial mostrado inmediatamente antes del caso cuenta como capacitación específica si revela la solución.
+
+#### 10. Definición de acción principal
+
+La acción principal es el comando humano dominante que corresponde al siguiente efecto válido sobre el foco actual.
+
+Debe responder, cuando sea necesario, a:
+
+```text
+VERBO HUMANO
++ OBJETO O RESULTADO
++ ALCANCE O CONTEXTO RELEVANTE
+```
+
+Ejemplos conceptuales:
+
+```text
+Preparar remisión
+Confirmar recepción
+Registrar conteo
+Cobrar pedido
+Entregar pedido
+Continuar lote
+Confirmar asistencia
+Revisar solicitud
+```
+
+La etiqueta final depende del dominio y del estado vigente.
+
+#### 11. Una sola acción primaria ordinaria
+
+Cuando el foco permita una acción ordinaria dominante, la superficie no presentará varias acciones con el mismo peso como respuesta simultánea a "qué hago ahora".
+
+Debe existir:
+
+```text
+1 ACCIÓN PRIMARIA
++ ACCIONES SECUNDARIAS DIFERENCIADAS
++ EXCEPCIONES FUERA DEL CAMINO ORDINARIO
+```
+
+No se acepta que confirmar, cancelar, configurar, auditar, forzar y ejecutar compitan visualmente como acciones equivalentes.
+
+#### 12. Gramática de la acción
+
+La acción deberá utilizar verbo más objeto y, cuando sea necesario para desambiguar, alcance o resultado.
+
+No se consideran suficientes por sí solas etiquetas genéricas como:
+
+```text
+Abrir
+Ver
+Gestionar
+Procesar
+Aceptar
+Continuar
+Ir
+Hacer
+```
+
+Una forma breve puede ser válida cuando el nombre accesible y el contexto inmediato forman una instrucción inequívoca sin depender de posición visual.
+
+#### 13. Acción y efecto empresarial
+
+La etiqueta debe anticipar el efecto empresarial real sin prometer más autoridad o resultado del que el comando puede producir.
+
+No se utilizará una etiqueta que haga parecer equivalentes acciones materialmente distintas, por ejemplo:
+
+```text
+Preparar ≠ Despachar ≠ Recibir
+Contar ≠ Validar ≠ Ajustar
+Guardar ≠ Enviar ≠ Aprobar
+Abrir ≠ Ejecutar
+```
+
+#### 14. La acción no se deriva del texto del cliente
+
+El copy visible ayuda a la persona a comprender la acción, pero no define por sí mismo la transición autoritativa.
+
+La aplicación propietaria deberá resolver el comando desde identidad, estado, versión, autorización y contexto vigentes.
+
+No se acepta que el cliente envíe un estado objetivo o una etiqueta como autoridad para forzar la transición.
+
+#### 15. Navegar no equivale a ejecutar
+
+Un CTA que solamente navega deberá expresar el propósito de esa navegación cuando sea necesario.
+
+Abrir otra pantalla, aplicación o modal no se contará como ejecución del trabajo salvo que el contrato del proceso defina realmente ese efecto.
+
+```text
+NAVEGAR
+≠ CLAIM
+≠ START
+≠ COMPLETE
+≠ APPROVE
+```
+
+#### 16. Marcas de aplicación
+
+NEXO, FOGO, ORIGO, PULSO, VISO, NUMERA, ANIMA, TALENTO, PASS y SHELL pueden aparecer como contexto de producto.
+
+No son una instrucción suficiente por sí solas.
+
+No se certifica:
+
+```text
+Ir a NEXO
+```
+
+como equivalente a:
+
+```text
+Preparar la remisión seleccionada en NEXO
+```
+
+cuando el trabajador necesita conocer el resultado que se espera de él.
+
+#### 17. Nombres técnicos prohibidos como instrucción ordinaria
+
+La acción principal no dependerá de comprender como etiqueta primaria:
+
+- nombre de tabla;
+- schema;
+- RPC;
+- componente;
+- ruta;
+- permiso;
+- enum;
+- migration ID;
+- nombre de repositorio;
+- UUID;
+- reason code;
+- clave interna.
+
+Esos elementos pueden existir en diagnóstico separado y autorizado.
+
+#### 18. Términos especializados y abreviaturas
+
+Un término especializado puede aparecer de forma primaria cuando:
+
+1. representa un concepto empresarial real;
+2. tiene significado estable;
+3. es conocido o validado para la población objetivo;
+4. no se confunde con una identidad técnica interna;
+5. cuenta con contexto humano o divulgación progresiva cuando la población lo requiere.
+
+No se asumirá que conocer `LOC`, `LPN`, `SKU` u otra sigla interna es requisito universal para descubrir una acción.
+
+#### 19. Consistencia semántica
+
+El mismo comando empresarial utilizará una identidad semántica coherente entre aplicaciones y superficies.
+
+Acciones diferentes conservarán nombres diferentes aunque compartan pantalla, componente o ruta.
+
+La personalización por rol, dispositivo o contexto puede cambiar orden, visibilidad o descripción, pero no puede hacer que la misma etiqueta represente efectos incompatibles.
+
+#### 20. Acción cross-app
+
+Cuando la acción continúe en otra aplicación, la persona deberá identificar primero el resultado humano y secundariamente el owner que lo ejecutará.
+
+El handoff puede transportar referencias necesarias, pero no permiso, actor autoritativo, token, estado objetivo ni autoridad de ejecución.
+
+El destino revalida el comando antes de cualquier efecto.
+
+#### 21. Acciones sensibles y confirmaciones
+
+Una acción principal puede requerir después:
+
+- confirmación;
+- step-up;
+- firma;
+- doble control;
+- segregación;
+- reautorización;
+- lectura de consecuencia;
+- captura de evidencia.
+
+La existencia de esos gates no permite ocultar o volver ambigua la intención primaria.
+
+`UX-QA-002` certifica que la persona entiende qué acción intenta iniciar; no elimina controles posteriores.
+
+#### 22. Acción no disponible
+
+Si la acción esperada no puede ejecutarse, la superficie no deberá fabricar una alternativa peligrosa solo para mantener un CTA activo.
+
+La prueba puede comprobar que la acción pertinente sigue siendo identificable y que no se ofrece una acción falsa.
+
+La comprensión completa del motivo, estado y transición pertenece a `UX-QA-003`; la recuperación detallada pertenece a tareas posteriores del minibloque.
+
+#### 23. Configuración y excepciones
+
+Configuración, auditoría, soporte, override y acciones excepcionales no competirán al mismo nivel con la acción ordinaria.
+
+Una acción excepcional no se convierte en primaria únicamente porque exista técnicamente o porque el actor tenga permiso para usarla.
+
+#### 24. Accesibilidad de la acción
+
+La acción principal deberá conservar identidad comprensible mediante:
+
+- texto visible o nombre accesible completo;
+- jerarquía estructural;
+- foco de teclado donde aplique;
+- lector de pantalla donde aplique;
+- objetivo táctil adecuado;
+- orden de navegación predecible;
+- señales redundantes cuando exista urgencia o restricción.
+
+No dependerá únicamente de:
+
+- color;
+- posición;
+- icono;
+- sonido;
+- vibración;
+- animación;
+- gesto oculto;
+- hover no disponible en el dispositivo.
+
+#### 25. Dispositivos y superficies aplicables
+
+La ejecución por package declarará las superficies incluidas, que pueden abarcar:
+
+- web de escritorio;
+- tablet;
+- kiosco;
+- móvil;
+- estación compartida;
+- launcher o Hub;
+- superficie propietaria del proceso;
+- salto cross-app.
+
+Una acción clara en escritorio no certifica automáticamente móvil, kiosco o lector de pantalla.
+
+#### 26. Actor de prueba
+
+La cohorte debe representar a una persona autorizable para el proceso evaluado y suficientemente preparada para el trabajo real.
+
+La prueba no mezclará:
+
+```text
+NO CONOCE LA INTERFAZ
+```
+
+con:
+
+```text
+NO SABE HACER EL TRABAJO
+```
+
+Cuando el proceso exija formación obligatoria, la cohorte deberá cumplirla antes de evaluar descubrimiento de interfaz.
+
+#### 27. Punto inicial del caso
+
+Cada escenario declarará antes de ejecutarse:
+
+- package;
+- build o versión;
+- actor/cohorte;
+- formación permitida;
+- foco ya resuelto;
+- superficie y dispositivo;
+- contexto;
+- punto exacto de entrada;
+- acción esperada;
+- ayudas permitidas;
+- criterio de aceptación.
+
+El caso no comenzará después de que un facilitador haya señalado el control correcto.
+
+#### 28. Oráculo previo
+
+Cada caso contará con un oráculo definido antes de observar al participante.
+
+Forma conceptual:
+
+```text
+FOCUS_ID = referencia canónica del foco
+PRIMARY_ACTION_ID = identidad semántica de la acción
+EXPECTED_HUMAN_INTENT = intención humana esperada
+OWNER_APP = aplicación propietaria
+```
+
+No se acepta declarar correcta la acción que el trabajador eligió únicamente porque fue la que eligió.
+
+#### 29. Ayuda durante la prueba
+
+La ayuda se clasificará, como mínimo, en:
+
+- ninguna;
+- aclaración del escenario sin revelar la acción;
+- ayuda de accesibilidad habitual;
+- explicación de término empresarial ya permitido;
+- pista de navegación;
+- señalamiento del CTA;
+- instrucción directa de la respuesta.
+
+Una pista de navegación, señalamiento del CTA o instrucción directa impide contar ese caso como descubrimiento autónomo.
+
+#### 30. Casos positivos mínimos
+
+La ejecución por package incluirá, cuando apliquen:
+
+1. acción primaria ordinaria visible sobre un foco correcto;
+2. acción cuya etiqueta exige verbo y objeto para no ser ambigua;
+3. acción cross-app con finalidad humana explícita;
+4. acción sensible que después exige confirmación o step-up;
+5. acción con término especializado acompañado por contexto humano;
+6. acción accesible por teclado;
+7. acción comprensible por lector de pantalla;
+8. acción en superficie táctil;
+9. mismo comando con significado consistente entre dos superficies;
+10. persona nueva en la interfaz pero preparada para el proceso real;
+11. persona experimentada usada como cohorte comparativa cuando el package lo requiera.
+
+#### 31. Casos negativos mínimos
+
+La ejecución por package incluirá, cuando apliquen:
+
+1. CTA genérico sin objeto ni contexto suficiente;
+2. icono sin nombre accesible;
+3. acción ordinaria oculta en menú de excepciones;
+4. tres o más CTAs con el mismo peso visual y sin dominante;
+5. instrucción basada solo en nombre de aplicación;
+6. permiso, enum, ruta o código técnico usado como etiqueta principal;
+7. abreviatura no validada como única instrucción;
+8. mismo label que ejecuta efectos distintos según actor;
+9. labels distintos para el mismo efecto sin motivo contractual;
+10. navegación que se presenta como ejecución completada;
+11. CTA visible que intenta enviar un estado objetivo autoritativo desde cliente;
+12. acción que solo puede descubrirse por hover;
+13. acción que depende solo de color o posición;
+14. acción que requiere memorizar una ruta no expresada;
+15. tutorial previo que revela la respuesta del escenario;
+16. salto cross-app que solo dice la marca de destino;
+17. acción sensible cuyo texto oculta su impacto real;
+18. control que parece ejecutable aunque el owner no pueda resolverlo de forma segura;
+19. superficie que cambia el significado de la misma acción entre escritorio y móvil;
+20. participante que necesita que el facilitador señale el CTA para continuar.
+
+#### 32. Métricas principales
+
+La ejecución registrará, cuando correspondan:
+
+- identificación correcta de la acción primaria;
+- primera selección correcta;
+- tiempo hasta identificar la acción;
+- tiempo hasta iniciar la acción cuando sea seguro medirlo;
+- aperturas incorrectas;
+- número de pasos de navegación previos;
+- solicitudes de ayuda;
+- tipo de ayuda requerida;
+- dependencia de término técnico;
+- abandono;
+- acción equivocada seleccionada;
+- diferencia entre cohortes nuevas y experimentadas.
+
+No se fija un umbral global arbitrario en esta tarea documental.
+
+#### 33. Umbral y criterio de aceptación por package
+
+Cada package declarará su criterio antes de ejecutar la prueba.
+
+El criterio deberá considerar:
+
+- riesgo de la acción;
+- frecuencia;
+- dispositivo;
+- complejidad del proceso;
+- formación obligatoria;
+- población objetivo;
+- accesibilidad;
+- contexto físico;
+- consecuencias de una selección incorrecta.
+
+Un umbral creado después de ver los resultados invalida la certificación.
+
+#### 34. Prohibición de uso disciplinario aislado
+
+Tiempo para identificar, número de errores, solicitudes de ayuda o familiaridad con una marca no se usarán aisladamente para sancionar a una persona.
+
+La evidencia evalúa la calidad del sistema y del flujo bajo un escenario controlado.
+
+#### 35. Evidencia mínima por caso
+
+Cada caso conservará, cuando aplique:
+
+- `package_id`;
+- commit/build evaluado;
+- escenario;
+- actor/cohorte;
+- formación permitida;
+- superficie y dispositivo;
+- foco esperado;
+- identidad de acción esperada;
+- etiqueta visible;
+- nombre accesible;
+- owner de la acción;
+- acción seleccionada;
+- primera selección correcta o incorrecta;
+- tiempo de identificación;
+- pasos previos;
+- ayuda solicitada;
+- tipo de ayuda;
+- términos que generaron duda;
+- resultado;
+- razón de fallo o bloqueo;
+- timestamps;
+- identificador de ejecución.
+
+#### 36. Identidad de evidencia
+
+Un `PASS` pertenece a una combinación concreta de:
+
+```text
+package_id
++ package version / commit
++ consumer build
++ fixture/data set
++ scenario
++ surface/device class
++ actor/cohort definition
++ training allowance
++ terminology version
+```
+
+Cambiar materialmente cualquiera de esos elementos puede volver la evidencia `STALE`.
+
+#### 37. Estados de ejecución
+
+Estados permitidos para la instancia física futura:
+
+- `PASS` — todos los casos obligatorios aplicables cumplen;
+- `FAIL` — al menos un caso obligatorio exige ayuda prohibida, produce una acción incorrecta o no permite comprender la acción primaria;
+- `BLOCKED` — falta una dependencia necesaria para ejecutar honestamente;
+- `STALE` — la evidencia existente ya no representa el build, copy, contrato, dispositivo, cohorte o contexto actual.
+
+No existe `PARTIAL_PASS` para habilitar cierre.
+
+#### 38. Ejecución por package
+
+Para cada `package_id` aplicable se materializará en el futuro una instancia con identidad conceptual:
+
+```text
+UX-QA-002::<package_id>
+```
+
+La instancia deberá registrar:
+
+- package exacto;
+- owner/repositorios consumidores;
+- superficies incluidas;
+- dispositivos incluidos;
+- actores/cohortes;
+- formación permitida;
+- foco y acción oracle;
+- casos obligatorios;
+- evidencia;
+- resultado;
+- bloqueadores;
+- commit/build;
+- vigencia de evidencia.
+
+La aprobación documental actual no crea esas instancias.
+
+#### 39. Certificación `GLOBAL-FINAL`
+
+Cuando todas las instancias aplicables estén cerradas y la topología lo permita, podrá materializarse la certificación global final de `UX-QA-002`.
+
+El cierre global no promedia fallos entre packages.
+
+Un package obligatorio en `FAIL`, `BLOCKED` o `STALE` impide declarar `PASS` global mientras siga dentro del alcance requerido.
+
+#### 40. Regla de completitud
+
+`PASS` exige:
+
+```text
+FOCO CORRECTO YA RESUELTO
++ ACCIÓN PRIMARIA ORACLE DEFINIDA ANTES DE LA PRUEBA
++ COHORTE Y FORMACIÓN PERMITIDA DECLARADAS
++ ACCIÓN EN LENGUAJE HUMANO
++ CERO DEPENDENCIA OBLIGATORIA DE CÓDIGO TÉCNICO
++ CERO MEMORIZACIÓN DE NAVEGACIÓN COMO REQUISITO
++ CERO AYUDA QUE REVELE LA RESPUESTA EN CASOS AUTÓNOMOS
++ ACCESIBILIDAD APLICABLE
++ REAUTORIZACIÓN CONSERVADA
++ EVIDENCIA REPRODUCIBLE
+= PASS
+```
+
+#### 41. Seguridad y autorización
+
+Una interfaz más comprensible no puede ampliar autoridad.
+
+Si la acción no es válida para el actor, recurso, estado o contexto, la experiencia debe respetar el resultado autoritativo.
+
+La prueba no puede declarar `PASS` porque un CTA sea claro si ese CTA concede una operación que el servidor no debería permitir.
+
+#### 42. No inferencia desde implementación parcial
+
+No se declarará `PASS` porque:
+
+- existe un botón grande;
+- el CTA está primero en el DOM;
+- un diseñador entiende el copy;
+- una demo fue comprendida por una persona experta;
+- el botón tiene un icono conocido;
+- el nombre de la aplicación es visible;
+- existe un tooltip;
+- un snapshot visual luce limpio;
+- un test unitario valida el componente;
+- la acción funciona en una sola superficie;
+- el build compila.
+
+La certificación exige evidencia integral del package y sus casos obligatorios.
+
+#### 43. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea materializa una certificación ya exigida por cobertura UX vigente y no cambia el Registro Canónico de Requisitos de Prueba.
+
+#### 44. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, esta tarea reutiliza principalmente:
+
+- `TREQ-UX-001` — tarea, acción principal y estado identificables sin capacitación extensa;
+- `TREQ-UX-024` — foco derivado de un work item real;
+- `TREQ-UX-029` — foco dominante y obligaciones secundarias diferenciadas;
+- `TREQ-UX-030` — acción primaria humana y reautorización propietaria;
+- `TREQ-UX-038` — accesibilidad y señales redundantes;
+- `TREQ-UX-039` — métricas interpretadas con formación y contexto, sin uso disciplinario aislado;
+- `TREQ-UX-041` — exclusión de identificadores técnicos como etiquetas ordinarias;
+- `TREQ-UX-043` — gramática diferenciada y verbo más objeto para acciones;
+- `TREQ-UX-044` — términos especializados y abreviaturas validados con trabajadores;
+- `TREQ-UX-045` — consistencia semántica entre aplicaciones;
+- `TREQ-UX-046` — marca de aplicación acompañada por finalidad humana;
+- `TREQ-UX-052` — búsqueda y aliases sin exigir conocimiento técnico;
+- `TREQ-UX-056` — nombres accesibles completos y ausencia de dependencia de icono o color.
+
+Estas referencias son trazabilidad heredada y no una actualización del registro.
+
+#### 45. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+|---|---|---|
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido incorporado ni sometido a la batería documental del checkout local de `UX-QA-002`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía `format --write`, `format --check`, quality, delivery, topología, TREQ ni batería global sobre la rama local de `UX-QA-002`. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, manifest modular, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, marcadores `UX-QA-002` y `UX-QA-003`, contratos `UX-BASE-002` y `UX-BASE-003`, Registro Canónico UX y validadores documentales aplicables; el handoff inmediato proviene además del artefacto completo aprobado de `UX-QA-001` suministrado para trabajo documental adelantado. |
+| OPERATIVA | NOT_EXECUTED | No se han ejecutado todavía sesiones controladas con trabajadores, mediciones de descubrimiento, pruebas de comprensión de CTA ni escenarios de ayuda sobre packages materializados. |
+| FÍSICA | NOT_EXECUTED | No se han materializado instancias físicas de `UX-QA-002` ni su certificación global final; la ejecución física permanece sujeta a `POST_E5_PACKAGE` y autorización física fuera de este carril. |
+
+#### 46. Criterios de aceptación
+
+- [ ] El título es exactamente `UX-QA-002 — La acción principal se encuentra sin capacitación`.
+- [ ] La continuidad es `UX-QA-001 → UX-QA-002 → UX-QA-003`.
+- [ ] La topología permanece `PER_PACKAGE_AND_GLOBAL_FINAL`.
+- [ ] El gate físico permanece `POST_E5_PACKAGE`.
+- [ ] La tarea no declara ejecución física inexistente.
+- [ ] `sin capacitación` queda acotado a descubrimiento y comprensión de interfaz, no a eliminación de formación profesional, legal o de seguridad.
+- [ ] La acción primaria usa lenguaje humano y no exige memorizar rutas o identificadores técnicos.
+- [ ] La acción expresa verbo y objeto y agrega alcance cuando sea necesario para desambiguar.
+- [ ] Existe una acción primaria ordinaria dominante cuando el foco permite actuar.
+- [ ] Navegar no se confunde con claim, start, complete o approve.
+- [ ] La marca de aplicación no sustituye la instrucción humana.
+- [ ] Términos especializados y abreviaturas no se asumen universales sin validación.
+- [ ] La personalización no cambia silenciosamente el significado de una acción.
+- [ ] Los saltos cross-app conservan finalidad humana y revalidación.
+- [ ] Confirmaciones y step-up no se eliminan para hacer más simple el flujo.
+- [ ] La acción no obtiene autoridad del cliente ni del copy visible.
+- [ ] La acción es identificable por medios accesibles aplicables.
+- [ ] La cohorte de prueba diferencia desconocimiento de la interfaz de falta de competencia para el trabajo real.
+- [ ] La formación permitida se declara antes de ejecutar.
+- [ ] El oráculo de acción se define antes de observar al participante.
+- [ ] Ayuda que revela el CTA no se cuenta como descubrimiento autónomo.
+- [ ] No se crea un umbral global arbitrario después de observar resultados.
+- [ ] Las métricas no se usan aisladamente para sancionar trabajadores.
+- [ ] `UX-QA-003` conserva la certificación específica de comprensión del estado.
+- [ ] La sección `Requisitos de prueba derivados` declara literalmente cero cambios y no contiene IDs TREQ.
+- [ ] No se modifica 04A.
+
+#### 47. Condiciones de fallo o bloqueo físico futuro
+
+La instancia física futura no puede cerrar `PASS` si:
+
+- la acción oracle no fue definida antes del caso;
+- el foco de entrada no puede demostrarse;
+- el participante requiere que le señalen el CTA;
+- la respuesta depende de memorizar una ruta o marca;
+- la acción se expresa solo con un código técnico no validado;
+- una etiqueta genérica permite más de una interpretación material;
+- el mismo label ejecuta efectos incompatibles;
+- una acción distinta usa un label engañosamente equivalente;
+- el CTA es inaccesible en una modalidad obligatoria;
+- un salto cross-app pierde la finalidad humana;
+- la prueba elimina una confirmación o control de seguridad para facilitar el éxito;
+- el cliente intenta definir la transición autoritativa desde copy o estado objetivo;
+- la cohorte carece de formación obligatoria del trabajo real y eso contamina el resultado;
+- el participante fue entrenado con la respuesta exacta del caso;
+- el package no declara sus superficies obligatorias;
+- la evidencia no permite distinguir descubrimiento autónomo de ayuda del facilitador;
+- la evidencia es `STALE`.
+
+#### 48. Handoff a `UX-QA-003`
+
+`UX-QA-002` entrega a `UX-QA-003`:
+
+- foco ya identificado;
+- acción primaria inequívoca;
+- identidad semántica de la acción;
+- copy humano o nombre accesible;
+- owner funcional;
+- contexto de ejecución;
+- reautorización preservada;
+- formación permitida declarada;
+- superficie/dispositivo declarados;
+- casos donde la acción está disponible y casos donde no debe fabricarse.
+
+`UX-QA-003` podrá evaluar si el trabajador comprende el estado actual y sus implicaciones sin reabrir la decisión sobre cuál es el trabajo ni cuál es la acción principal correspondiente.
+
+#### 49. Límites
+
+Esta tarea no:
+
+- rediseña pantallas;
+- cambia copy en runtime;
+- crea rutas;
+- crea componentes;
+- implementa navegación;
+- cambia prioridades;
+- crea work items;
+- cambia estados de dominio;
+- ejecuta claims;
+- inicia o completa trabajo;
+- modifica autorización;
+- elimina confirmaciones;
+- elimina step-up;
+- elimina formación obligatoria;
+- certifica competencia laboral;
+- certifica seguridad ocupacional;
+- modifica datos;
+- modifica Supabase;
+- modifica telemetría;
+- ejecuta estudios con trabajadores;
+- define un umbral universal de velocidad;
+- certifica `UX-QA-003`;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 50. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-001 — El trabajador identifica su siguiente tarea`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-002 — La acción principal se encuentra sin capacitación`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-003 — El trabajador comprende el estado del proceso`
 ### [ ] UX-QA-003 — El trabajador comprende el estado del proceso
 ### [ ] UX-QA-004 — Los errores indican cómo continuar
 ### [ ] UX-QA-005 — Un rol no ve opciones irrelevantes
