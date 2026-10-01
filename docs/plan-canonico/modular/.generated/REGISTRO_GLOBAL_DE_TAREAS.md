@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1563** |
+| Aprobadas | **1564** |
 | En propuesta | **0** |
-| No iniciadas | **33** |
+| No iniciadas | **32** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.93% (1563/1596)** |
+| Porcentaje de completamiento | **97.99% (1564/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **33** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1464** |
+| ⏸ NO_EVALUADA | **32** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1465** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-010` — Los cambios conservan trazabilidad | ✅ APROBADA |
-| Tarea actual | `UX-QA-011` — Las tareas críticas soportan conectividad inestable | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-012` — El retorno entre aplicaciones conserva contexto | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-011` — Las tareas críticas soportan conectividad inestable | ✅ APROBADA |
+| Tarea actual | `UX-QA-012` — El retorno entre aplicaciones conserva contexto | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-013` — El retorno conserva el proceso cuando corresponde | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1395,7 +1395,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-008` | El proceso continúa correctamente entre aplicaciones | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-009` | No se registra dos veces la misma información | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-010` | Los cambios conservan trazabilidad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-011` | Las tareas críticas soportan conectividad inestable | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-011` | Las tareas críticas soportan conectividad inestable | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-012` | El retorno entre aplicaciones conserva contexto | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-013` | El retorno conserva el proceso cuando corresponde | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-014` | El trabajador completa la tarea dentro del tiempo objetivo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |

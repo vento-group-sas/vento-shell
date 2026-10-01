@@ -10512,7 +10512,1135 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-011 — Las tareas críticas soportan conectividad inestable`
-### [ ] UX-QA-011 — Las tareas críticas soportan conectividad inestable
+### ✅ UX-QA-011 — Las tareas críticas soportan conectividad inestable
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-010 — Los cambios conservan trazabilidad
+**Tarea siguiente:** UX-QA-012 — El retorno entre aplicaciones conserva contexto
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por package y globalmente que las tareas críticas mantienen un resultado mínimo seguro, estado comprensible, trabajo preservado, idempotencia, revalidación y recuperación gobernada ante conectividad lenta, intermitente, parcial, ausente o incierta, sin presentar efectos locales como confirmados ni ampliar autoridad
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de conectividad inestable definido; las ejecuciones por package y la certificación global final permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff de `UX-QA-010`, `NFR-REQ-001`, `NFR-REQ-004`, `UX-BASE-013`, `UX-BASE-014` y cobertura vigente, pero no afirma que un package desplegado sea ya offline-capable o resiliente
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican aplicaciones, colas, Service Workers, almacenamiento local, contratos runtime, RPC, RLS, Supabase, dispositivos, red, periféricos, datos, despliegues ni configuraciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que una tarea crítica conserva un comportamiento seguro y comprensible cuando la conectividad deja de ser estable, sin convertir una caída de red en pérdida silenciosa de trabajo, doble ejecución, autorización heredada, confirmación ficticia o conflicto resuelto destructivamente.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿QUÉ PARTE DE LA TAREA DEBE SEGUIR DISPONIBLE?
+¿QUÉ PARTE DEBE PAUSARSE?
+¿QUÉ PUEDE CONSULTARSE CON DATOS STALE?
+¿QUÉ PUEDE CAPTURARSE LOCALMENTE?
+¿QUÉ PUEDE QUEDAR EN COLA?
+¿QUÉ EXIGE RESPUESTA AUTORITATIVA?
+¿QUÉ RESULTADO ESTÁ CONFIRMADO Y CUÁL NO?
+¿QUÉ OCURRE SI LA RED CAE ANTES, DURANTE O DESPUÉS DEL ENVÍO?
+¿CÓMO SE EVITA DUPLICAR EL EFECTO?
+¿CÓMO SE REVALIDAN ACTOR, CONTEXTO, VERSIÓN Y AUTORIDAD AL VOLVER?
+¿CÓMO SE RECUPERA EL TRABAJO SIN LAST WRITE WINS?
+¿QUÉ EVIDENCIA DEMUESTRA EL RESULTADO?
+```
+
+#### 2. Resultado canónico
+
+`UX-QA-011` establece `UX-QA-CRITICAL-CONNECTIVITY-CERTIFICATION-001@1.0.0`.
+
+El resultado define:
+
+- universo de tareas críticas certificables;
+- modelo de estados de conectividad y disponibilidad;
+- política por capacidad y clase offline;
+- separación entre captura local y efecto empresarial;
+- idempotencia y tratamiento de resultado desconocido;
+- aislamiento por actor, contexto, área y dispositivo;
+- sincronización causal y deadlines heredados;
+- manejo de conflictos, reautorización y reconciliación;
+- pruebas adversariales de red, servicio, sesión, dispositivo, esquema, almacenamiento y periféricos;
+- evidencia por package y certificación global final;
+- topología `PER_PACKAGE_AND_GLOBAL_FINAL` con gate `POST_E5_PACKAGE`;
+- handoff exacto a `UX-QA-012`.
+
+#### 3. Alcance exacto
+
+La certificación aplica a tareas y etapas con criticidad efectiva `C0`, `C1` o `C2`, y a cualquier `critical_stage_overrides[]` que eleve una etapa a una de esas clases.
+
+También aplica a una capacidad no clasificada globalmente como crítica cuando su package declare que una dependencia, ventana, recurso o condición concreta eleva la etapa efectiva durante el escenario probado.
+
+`C3` y `C4` permanecen fuera del universo crítico primario, pero se incluyen como regresión cuando comparten colas, caché, sincronización, sesión, dispositivo o recursos con tareas críticas.
+
+#### 4. Handoff recibido de `UX-QA-010`
+
+`UX-QA-010` entrega:
+
+- identidad de proceso y recurso;
+- actor y contexto originales;
+- tiempos diferenciados;
+- operación y resultado;
+- correlación y causalidad;
+- idempotencia e intento cuando aplican;
+- evidencia de conflicto o conciliación;
+- estado pendiente, confirmado o desconocido;
+- preservación del historial durante retry o sincronización;
+- frontera entre intento y efecto confirmado.
+
+`UX-QA-011` usa esas referencias para someter la tarea a fallos de conectividad sin reabrir el contrato de trazabilidad.
+
+#### 5. Frontera con `UX-QA-010`
+
+`UX-QA-010` responde:
+
+```text
+¿PUEDO RECONSTRUIR EL CAMBIO Y SU CAUSA?
+```
+
+`UX-QA-011` responde:
+
+```text
+¿LA TAREA CRÍTICA SIGUE SIENDO SEGURA Y RECUPERABLE
+CUANDO LA CONECTIVIDAD SE DEGRADA?
+```
+
+Una tarea puede conservar trazabilidad y aun fallar `UX-QA-011` si pierde borradores, duplica una mutación, oculta datos stale, hereda autoridad o no distingue un resultado desconocido.
+
+#### 6. Frontera con `UX-QA-012`
+
+`UX-QA-012` certificará que el retorno entre aplicaciones conserva contexto.
+
+`UX-QA-011` puede atravesar varias aplicaciones durante un escenario, pero solo certifica conectividad, preservación de trabajo y reconciliación. No decide todavía si el retorno cross-app reconstruye correctamente el contexto de navegación.
+
+#### 7. Definición de tarea crítica
+
+Las clases heredadas son:
+
+```text
+C0  seguridad, inocuidad, acceso o continuidad
+C1  misión operativa
+C2  negocio y compromisos del ciclo
+C3  importante y recuperable
+C4  planificable o diferible
+```
+
+Para `UX-QA-011`, `C0`, `C1` y `C2` forman el universo crítico ordinario.
+
+Una etapa puede elevar su criticidad respecto de la clase base del proceso; la certificación deberá usar la criticidad efectiva del escenario, no únicamente la etiqueta global del proceso.
+
+#### 8. Regla principal
+
+```text
+SIN CONEXIÓN
+!= SIN CONTROL
+
+CAPTURA LOCAL
+!= EFECTO EMPRESARIAL CONFIRMADO
+
+REINTENTO
+!= NUEVA OPERACIÓN
+
+CONECTIVIDAD RECUPERADA
+!= OPERACIÓN YA RECONCILIADA
+```
+
+#### 9. Resultado mínimo seguro
+
+Una tarea crítica no necesita conservar todas sus capacidades durante degradación.
+
+Debe demostrar una de estas salidas gobernadas:
+
+```text
+RESULTADO MÍNIMO SEGURO
+PAUSA SEGURA
+CONTINGENCIA MANUAL GOBERNADA
+LECTURA DE REFERENCIA CONTROLADA
+CAPTURA LOCAL REVALIDABLE
+EJECUCIÓN BAJO ENVELOPE FINITO
+BLOQUEO EXPLÍCITO SIN PÉRDIDA DE TRABAJO
+```
+
+La degradación nunca autoriza omitir controles materiales.
+
+#### 10. Estados de disponibilidad empresarial
+
+Se reutilizan:
+
+```text
+AVAILABLE
+DEGRADED_SAFE
+UNAVAILABLE
+UNKNOWN
+RECOVERING
+RECONCILIATION_REQUIRED
+```
+
+`DEGRADED_SAFE` no equivale a disponibilidad plena ni a autorización para saltar validaciones.
+
+#### 11. Vector de conectividad de experiencia
+
+La certificación deberá observar por separado:
+
+```text
+network_reachability
+service_reachability
+session_validity
+context_freshness
+resource_freshness
+sync_health
+peripheral_health
+last_verified_at
+```
+
+El package falla si reduce todo el diagnóstico a Wi-Fi conectado/desconectado.
+
+#### 12. Estados de conectividad de experiencia
+
+Se reutilizan:
+
+```text
+ONLINE_HEALTHY
+ONLINE_DEGRADED
+INTERMITTENT
+OFFLINE_CONFIRMED
+CONNECTIVITY_UNKNOWN
+RECOVERING
+SYNC_BLOCKED
+```
+
+Estos estados pertenecen a la experiencia definida por `UX-BASE-013`.
+
+#### 13. Estados de disponibilidad no funcional
+
+`NFR-REQ-004` conserva su propio vector:
+
+```text
+ONLINE_STABLE
+ONLINE_DEGRADED
+PARTIAL_SERVICE
+OFFLINE_CONFIRMED
+CONNECTIVITY_UNKNOWN
+RECOVERING_SYNC
+SYNC_BLOCKED
+```
+
+La certificación no tratará ambos vocabularios como aliases automáticos. Cada package deberá documentar su proyección explícita entre estado no funcional y estado visible.
+
+#### 14. Dependencias obligatorias
+
+La disponibilidad de una operación puede depender de:
+
+- transporte de red;
+- identidad y sesión;
+- resolución de `AccessContext`;
+- servicio propietario del dominio;
+- sincronización;
+- reloj confiable;
+- almacenamiento local seguro;
+- proveedor externo;
+- periférico.
+
+La tarea se considera disponible solo si sus dependencias obligatorias están disponibles o existe un perfil degradado aprobado.
+
+#### 15. Política por capacidad
+
+Cada consulta o comando deberá declarar uno de estos modos:
+
+```text
+ONLINE_REQUIRED
+ONLINE_PREFERRED
+STALE_READ_ONLY
+OFFLINE_CAPTURE_ALLOWED
+OFFLINE_QUEUE_ALLOWED
+MANUAL_CONTINGENCY
+NOT_AVAILABLE_OFFLINE
+```
+
+No existe un modo offline global de aplicación.
+
+#### 16. Clases no funcionales offline
+
+Se reutilizan:
+
+```text
+OF0_ONLINE_ONLY
+OF1_CACHED_REFERENCE
+OF2_LOCAL_DRAFT
+OF3_LOCAL_CAPTURE
+OF4_LEASED_EXECUTION
+OF5_MANUAL_CONTINGENCY
+```
+
+La clase se evalúa por operación o etapa, no por pantalla completa.
+
+#### 17. Correspondencia entre política y clase
+
+La certificación no exige una correspondencia uno-a-uno universal entre los modos UX y las clases `OF*`.
+
+Cada package deberá demostrar que la combinación usada:
+
+- conserva el mismo efecto empresarial permitido;
+- no amplía autoridad;
+- no convierte borrador en mutación;
+- no convierte referencia stale en verdad vigente;
+- no convierte contingencia manual en un canal digital paralelo;
+- no omite la reconciliación requerida.
+
+#### 18. `C0`
+
+Para una etapa `C0`, la caída digital no puede eliminar la capacidad de contención o respuesta mínima necesaria para seguridad, inocuidad, acceso o continuidad.
+
+Si el efecto digital no puede producirse con seguridad, deberá existir pausa, contención o contingencia manual gobernada conforme al contrato propietario.
+
+#### 19. `C1`
+
+Para una etapa `C1`, la prueba debe demostrar que la degradación no pierde trabajo operativo material, custodia, venta, producción, entrega u obligación dentro de su ventana.
+
+Cuando el efecto final exija servidor, la preparación o evidencia permitida se preserva y la confirmación permanece pendiente.
+
+#### 20. `C2`
+
+Para una etapa `C2`, el package deberá conservar propietario, vencimiento, estado visible, backlog controlado y criterio de reconciliación dentro del ciclo empresarial aplicable.
+
+La tolerancia temporal no autoriza almacenamiento indefinido ni pérdida silenciosa.
+
+#### 21. Etapas críticas elevadas
+
+Cuando una etapa use `critical_stage_overrides[]`, el escenario deberá registrar:
+
+- proceso base;
+- clase base;
+- etapa exacta;
+- clase efectiva;
+- detonante de elevación;
+- ventana;
+- resultado mínimo;
+- dependencia que se degrada;
+- política de salida.
+
+#### 22. Red lenta
+
+La prueba deberá demostrar que latencia o respuestas tardías no generan doble envío, múltiples intenciones ni confirmación prematura.
+
+La interfaz mostrará progreso y resultado sin inducir toques repetidos como mecanismo de recuperación.
+
+#### 23. Pérdida antes de enviar
+
+Si la conectividad se pierde antes de que una intención salga del dispositivo:
+
+- no se afirmará recepción remota;
+- se conservará borrador o intención local solo cuando la política lo permita;
+- el estado será inequívoco;
+- el retry posterior conservará la misma intención cuando corresponda.
+
+#### 24. Pérdida durante el envío
+
+Si la red cae durante una mutación, la prueba deberá demostrar que el cliente no puede inferir por sí solo si el servidor ejecutó el efecto.
+
+El caso se clasifica antes de decidir cualquier retry.
+
+#### 25. Pérdida después de ejecutar y antes de responder
+
+Este escenario produce riesgo de `RESULT_UNKNOWN` o equivalente.
+
+La salida correcta es:
+
+```text
+CONSULTAR IDEMPOTENCY KEY
+→ CONSULTAR RECEIPT
+→ CONSULTAR ESTADO AUTORITATIVO
+→ CLASIFICAR
+→ REINTENTAR, CONCILIAR O DETENER
+```
+
+Crear una segunda intención independiente es FAIL.
+
+#### 26. Intermitencia
+
+La prueba deberá alternar disponibilidad durante la interacción y demostrar:
+
+- ausencia de retry ciego;
+- preservación de intentos;
+- estabilidad de la UI;
+- visibilidad del estado;
+- conservación del trabajo local autorizado;
+- no inversión del orden causal.
+
+#### 27. Servicio parcial
+
+Wi-Fi o Internet disponibles no bastan.
+
+La prueba deberá aislar fallos de identidad, contexto, servicio propietario, sincronización, proveedor o periférico y comprobar que solo las capacidades dependientes se bloquean o degradan.
+
+#### 28. Datos stale
+
+Una lectura stale deberá mostrar:
+
+- fuente;
+- versión;
+- última actualización;
+- vigencia o expiración;
+- limitaciones;
+- acciones bloqueadas por antigüedad.
+
+`STALE_READ_ONLY` nunca habilita una mutación que exige estado vigente.
+
+#### 29. Sesión expirada
+
+Una sesión expirada no se convierte en autorización offline.
+
+El trabajo preparatorio permitido podrá preservarse, pero la acción protegida requerirá reautenticación o envelope vigente según su contrato.
+
+#### 30. Permiso o dispositivo revocado
+
+La reaparición de conectividad deberá descargar o resolver revocaciones antes de vaciar colas protegidas.
+
+Una captura local revocada podrá conservarse como evidencia cuando el contrato lo permita, pero no obliga al servidor a ejecutar el efecto solicitado.
+
+#### 31. Cambio de actor
+
+Las colas y borradores estarán aislados por actor.
+
+Cambiar de trabajador:
+
+- detiene nuevas mutaciones del actor anterior;
+- conserva atribución original;
+- protege sus borradores;
+- no entrega pendientes al nuevo actor;
+- exige nuevo contexto;
+- bloquea mutaciones si no existe identidad offline aprobada.
+
+#### 32. Cambio de área, sede, turno o check-in
+
+El cambio invalida cualquier supuesto de contexto anterior.
+
+La prueba deberá resolver un `AccessContext` nuevo y demostrar que pendientes anteriores no cambian silenciosamente de territorio o responsabilidad.
+
+#### 33. Dispositivo compartido
+
+En estaciones compartidas se deberá demostrar aislamiento por:
+
+```text
+DISPOSITIVO
++
+ACTOR
++
+CONTEXTO
++
+ÁREA
+```
+
+No habrá herencia implícita de borradores, autorización, claim, custodia o cola.
+
+#### 34. Dos dispositivos sobre el mismo recurso
+
+La prueba deberá incluir cambios concurrentes desde dos dispositivos y demostrar:
+
+- detección de versión o conflicto;
+- no duplicación;
+- no `last write wins` empresarial;
+- preservación de ambas evidencias;
+- siguiente acción segura.
+
+#### 35. Idempotencia
+
+Toda mutación elegible para cola tendrá identidad estable por intención empresarial.
+
+```text
+MISMA INTENCIÓN
+→ MISMA IDEMPOTENCY KEY
+
+NUEVA INTENCIÓN
+→ NUEVA KEY
+```
+
+La protección debe existir más allá del estado visual del botón.
+
+#### 36. Dependencias y orden causal
+
+La sincronización deberá respetar dependencias explícitas.
+
+Un prerequisito rechazado bloquea sus dependientes, pero no monopoliza operaciones independientes.
+
+Las colas de actores o áreas diferentes no se fusionan y la prioridad no invierte causalidad.
+
+#### 37. Prioridades de sincronización
+
+Se reutilizan:
+
+```text
+SYNC-0_BLOCKING
+SYNC-1_URGENT
+SYNC-2_OPERATIONAL
+SYNC-3_CYCLE
+SYNC-4_DEFERRED
+```
+
+El package deberá respetar el deadline de su contrato; `SYNC-0` no permite acción dependiente antes de un resultado terminal.
+
+#### 38. `OF4_LEASED_EXECUTION`
+
+Una operación offline bajo envelope deberá demostrar:
+
+- actor exacto;
+- capacidad exacta;
+- recurso o alcance finito;
+- sede y área;
+- turno o ventana;
+- límites;
+- emisión;
+- vencimiento;
+- versión de política;
+- dispositivo;
+- condición de revalidación.
+
+El envelope no puede ampliar su propio alcance ni vigencia.
+
+#### 39. Acciones obligatoriamente en línea
+
+Sin contrato específico posterior, permanecen `ONLINE_REQUIRED`:
+
+- aprobaciones y rechazos sensibles;
+- anulaciones, reversas y reaperturas;
+- pagos, reembolsos y cierres financieros;
+- cambios de permiso, rol o dispositivo;
+- publicación de horarios, recetas, precios o configuración;
+- exportaciones sensibles;
+- lotes administrativos;
+- overrides;
+- cierre de conciliaciones.
+
+#### 40. Contingencia manual
+
+Toda contingencia manual deberá tener:
+
+- condición de activación;
+- responsable;
+- identificador o numeración;
+- datos mínimos;
+- control de duplicados;
+- custodia;
+- momento de digitalización;
+- responsable de conciliación;
+- criterio de cierre.
+
+La contingencia no se presenta como efecto digital confirmado.
+
+#### 41. Observación física
+
+Una observación offline conservará por separado:
+
+```text
+HECHO OBSERVADO
+HORA DE OBSERVACIÓN
+HORA DE REGISTRO LOCAL
+HORA DE SINCRONIZACIÓN
+```
+
+La hora de sincronización no sustituye el momento del hecho.
+
+#### 42. Claims, custodia y handoffs
+
+Por defecto son online:
+
+- tomar trabajo compartido;
+- iniciar trabajo excluyente;
+- transferir custodia;
+- aceptar recepción definitiva;
+- liberar al actor anterior;
+- completar un handoff.
+
+Una excepción exige lease previo, actor y recurso exactos, vencimiento, alcance, evidencia y reconciliación.
+
+#### 43. Periféricos
+
+Backend y periférico se evaluarán por separado.
+
+La prueba deberá distinguir:
+
+- comando preparado;
+- comando enviado;
+- recepción;
+- ejecución física;
+- receipt;
+- resultado desconocido;
+- posibilidad segura de retry.
+
+Un datáfono, impresora, escáner, cámara o báscula disponible localmente no demuestra que el efecto empresarial haya quedado confirmado.
+
+#### 44. Archivos y evidencia
+
+Se deberán diferenciar estados como:
+
+```text
+LOCAL_ONLY
+QUEUED
+UPLOADING
+UPLOADED_UNLINKED
+LINKED_AND_CONFIRMED
+FAILED_RETRYABLE
+FAILED_TERMINAL
+```
+
+Un archivo subido parcialmente o sin vínculo empresarial no cierra la tarea.
+
+#### 45. Reinicio y pérdida de energía
+
+Pendientes y borradores podrán sobrevivir únicamente bajo política explícita.
+
+Al volver, el sistema revalida actor, aplicación, esquema, dispositivo, conectividad, dependencias y cancelaciones antes de cualquier ejecución en segundo plano.
+
+#### 46. Actualización con operaciones pendientes
+
+La prueba deberá cubrir una aplicación o esquema nuevo con operaciones antiguas.
+
+Una incompatibilidad no elimina silenciosamente el pendiente ni lo ejecuta bajo un shape distinto. Deberá migrarse, cuarentenarse, descartarse con motivo o enviarse a soporte según contrato.
+
+#### 47. Almacenamiento bajo presión
+
+La prueba cubrirá almacenamiento cercano al límite, lleno o corrupto.
+
+El sistema no deberá confirmar trabajo que no pudo persistir de forma durable ni eliminar silenciosamente evidencia o pendientes para liberar espacio.
+
+#### 48. Reloj incorrecto
+
+Un reloj local inválido no podrá extender sesión, lease, turno, ventana, vigencia ni autorización.
+
+La evidencia conservará los tiempos disponibles y marcará la incertidumbre en vez de corregir silenciosamente el hecho original.
+
+#### 49. Backlog al reconectar
+
+La cola acumulada no debe degradar la tarea foreground crítica hasta volverla inutilizable.
+
+La prueba deberá observar:
+
+- profundidad;
+- edad del pendiente más antiguo;
+- prioridad;
+- dependencias;
+- tiempo hasta resultado o conflicto;
+- impacto sobre la interacción activa.
+
+#### 50. Secuencia de reconexión
+
+La secuencia canónica es:
+
+```text
+1. ESTABILIZAR CONECTIVIDAD
+2. VERIFICAR HORA Y SERVICIOS
+3. REVALIDAR SESIÓN Y DISPOSITIVO
+4. RESOLVER NUEVO ACCESS CONTEXT
+5. DESCARGAR REVOCACIONES Y VERSIONES
+6. CLASIFICAR OPERACIONES PENDIENTES
+7. SINCRONIZAR POR DEPENDENCIAS
+8. CONSULTAR RECEIPTS
+9. DETENER Y EXPLICAR CONFLICTOS
+10. ACTUALIZAR PROYECCIONES
+11. CONFIRMAR AL TRABAJADOR
+```
+
+El package falla si vacía la cola apenas detecta señal de red.
+
+#### 51. Conflictos
+
+Se probarán, según aplicabilidad:
+
+```text
+RESOURCE_VERSION_CONFLICT
+CONTEXT_CHANGED
+AUTHORIZATION_CHANGED
+DUPLICATE_OPERATION
+DEPENDENCY_REJECTED
+SCHEMA_INCOMPATIBLE
+BUSINESS_STATE_CHANGED
+QUANTITY_CONFLICT
+CUSTODY_CONFLICT
+TIME_WINDOW_EXPIRED
+```
+
+Ningún conflicto empresarial se resuelve por `last write wins` silencioso.
+
+#### 52. Resultado desconocido
+
+`CONNECTIVITY_UNKNOWN` o `RESULT_UNKNOWN` bloquean un nuevo intento independiente hasta consultar receipt, estado o evidencia suficiente.
+
+El package falla si el mensaje al usuario sugiere repetir para estar seguro.
+
+#### 53. Reautorización
+
+`REAUTH_REQUIRED` preserva el trabajo permitido, pero no conserva autoridad.
+
+La reautenticación debe producir contexto vigente y no reactivar automáticamente una intención que ya pudo expirar o perder elegibilidad.
+
+#### 54. Reconciliación
+
+`RECONCILIATION_REQUIRED` significa que existe trabajo físico, local o remoto que todavía debe compararse antes de declarar un resultado autoritativo.
+
+La conciliación deberá preservar ambas fuentes, diferencias, decisión, actor responsable y evidencia.
+
+#### 55. Local frente a autoritativo
+
+La interfaz deberá distinguir como mínimo:
+
+```text
+GUARDADO EN ESTE EQUIPO
+PENDIENTE DE SINCRONIZAR
+ENVIADO
+ESPERANDO CONFIRMACIÓN
+CONFIRMADO POR EL SERVIDOR
+NECESITA REVISIÓN
+```
+
+No se aceptará un `Guardado`, `Listo` o `Completado` ambiguo cuando el efecto real todavía sea incierto.
+
+#### 56. Lenguaje humano
+
+La interfaz explicará:
+
+- qué ocurrió;
+- qué trabajo se conserva;
+- qué está pendiente;
+- qué acción está bloqueada;
+- qué puede hacerse ahora;
+- quién debe intervenir;
+- cuándo se revisará;
+- referencia de soporte no secreta.
+
+No mostrará HTTP, SQL, stack, payload ni códigos técnicos como instrucción principal al trabajador.
+
+#### 57. Accesibilidad
+
+Los estados de conectividad y sincronización:
+
+- no dependerán de color;
+- tendrán texto;
+- serán anunciables;
+- no usarán modales repetitivos;
+- serán operables por teclado, tacto y lector;
+- permitirán revisar pendientes y conflictos;
+- distinguirán local, cola, conflicto y confirmado.
+
+#### 58. Privacidad local
+
+Una capacidad offline se descartará si el riesgo de almacenamiento local supera el beneficio operativo.
+
+La caché o cola aplicará minimización, aislamiento, expiración, protección y exclusión de secretos.
+
+#### 59. Observabilidad
+
+La evidencia posterior deberá poder medir, según aplique:
+
+```text
+time_offline
+queue_depth
+queue_bytes
+oldest_pending_age
+sync_attempts
+sync_latency
+conflicts_by_class
+unknown_results
+duplicates_prevented
+operations_expired
+operations_quarantined
+manual_contingencies
+reconciliation_duration
+local_storage_pressure
+schema_migration_failures
+```
+
+Las métricas no se utilizarán para responsabilizar al trabajador por fallas de infraestructura.
+
+#### 60. Evidencia técnica actual del repositorio
+
+El repositorio vigente ya contiene contratos y componentes parciales que distinguen estados como `RESULT_UNKNOWN` y `RECONCILIATION_REQUIRED`, y validadores que prohíben presentar una cola local como aceptación remota.
+
+Esa evidencia parcial no equivale a certificación de `UX-QA-011` para ningún package. La capacidad crítica deberá demostrar su comportamiento end-to-end en el entorno y dispositivos que le correspondan.
+
+#### 61. Inventario obligatorio por package
+
+Antes de ejecutar la certificación física, cada package deberá materializar una matriz que incluya por capacidad crítica:
+
+- `process_id`;
+- etapa;
+- clase base;
+- override efectivo si existe;
+- ventana de disponibilidad;
+- resultado mínimo;
+- política de conectividad;
+- clase `OF*`;
+- prioridad `SYNC-*`;
+- servicios requeridos;
+- recurso;
+- actor;
+- dispositivo;
+- periféricos;
+- idempotencia;
+- persistencia local;
+- frescura;
+- conciliación;
+- oracle;
+- evidencia.
+
+No se acepta una afirmación genérica de “soporta offline”.
+
+#### 62. Universo mínimo de escenarios
+
+Cada capacidad aplicable deberá probar, según corresponda:
+
+1. red lenta;
+2. pérdida antes de enviar;
+3. pérdida durante envío;
+4. ejecución del servidor seguida de pérdida de respuesta;
+5. reconexión breve y nueva caída;
+6. servicio parcial;
+7. sesión expirada;
+8. permiso o dispositivo revocado;
+9. cambio de actor;
+10. cambio de área, turno o check-in;
+11. dos dispositivos sobre el mismo recurso;
+12. duplicado;
+13. dependencia rechazada;
+14. operación expirada;
+15. esquema antiguo;
+16. actualización con pendientes;
+17. almacenamiento lleno o corrupto;
+18. reloj incorrecto;
+19. reinicio o pérdida de energía;
+20. archivo parcialmente cargado;
+21. backend y periférico divergentes;
+22. backlog de reconexión;
+23. contingencia manual;
+24. recuperación del checkpoint sin heredar autoridad.
+
+Cada package podrá añadir escenarios; no podrá omitir uno aplicable sin justificación contractual.
+
+#### 63. Perfiles de red de prueba
+
+La certificación deberá usar perfiles controlados que permitan reproducir:
+
+- latencia elevada;
+- pérdida;
+- cortes completos;
+- flapping;
+- recuperación parcial;
+- dependencia externa indisponible.
+
+Los valores cuantitativos pertenecen al package, ambiente o presupuesto de respuesta aplicable. Esta tarea no inventa umbrales universales.
+
+#### 64. Oracle
+
+Cada escenario tendrá un oracle que determine:
+
+- estado esperado visible;
+- efecto empresarial permitido;
+- efecto bloqueado;
+- persistencia esperada;
+- receipt esperado;
+- retry permitido o prohibido;
+- conflicto esperado;
+- criterio de reconciliación;
+- estado terminal válido.
+
+Sin oracle reproducible no existe PASS.
+
+#### 65. Evidencia por ejecución
+
+La evidencia deberá conservar, según aplicabilidad:
+
+- package;
+- proceso;
+- etapa;
+- criticidad efectiva;
+- dispositivo;
+- aplicación;
+- actor y contexto;
+- recurso y versión;
+- perfil de conectividad;
+- timestamps;
+- operación local;
+- idempotency key;
+- intentos;
+- receipt;
+- estado visible;
+- estado autoritativo;
+- conflicto;
+- decisión;
+- resultado;
+- capturas o trazas minimizadas.
+
+#### 66. Evidencia física
+
+Cuando la tarea dependa de red, dispositivo o periférico real, la ejecución posterior deberá incluir prueba física controlada.
+
+La emulación de navegador podrá complementar, pero no sustituir, la evidencia que dependa de hardware, radio, suspensión, energía, almacenamiento o periféricos.
+
+#### 67. Evidencia negativa
+
+La certificación deberá demostrar activamente que no ocurre:
+
+```text
+EFECTO DUPLICADO POR REINTENTO
+OPERACIÓN LOCAL MOSTRADA COMO CONFIRMADA
+BORRADOR TRANSFERIDO ENTRE ACTORES
+MUTACIÓN CON ENVELOPE VENCIDO
+LAST WRITE WINS EMPRESARIAL
+PÉRDIDA SILENCIOSA DE PENDIENTES
+RETRY DE RESULTADO DESCONOCIDO SIN CONSULTA
+VACÍO DE COLA ANTES DE REVALIDAR
+```
+
+#### 68. Fallo crítico
+
+Un caso es FAIL crítico cuando, entre otros:
+
+- duplica un efecto material;
+- pierde evidencia o trabajo autorizado;
+- confirma un resultado incierto;
+- amplía autoridad;
+- mezcla actores o áreas;
+- omite un bloqueo `ONLINE_REQUIRED`;
+- resuelve conflicto destructivamente;
+- no puede reconciliar un hecho crítico;
+- impide el resultado mínimo de un `C0` sin contingencia propietaria válida.
+
+#### 69. `BLOCKED`
+
+Una instancia podrá quedar `BLOCKED` únicamente cuando una dependencia obligatoria impida ejecutar el escenario y exista:
+
+- dependencia exacta;
+- propietario;
+- evidencia del bloqueo;
+- condición de salida;
+- impacto sobre el package y `GLOBAL-FINAL`.
+
+No se convierte un FAIL observado en `BLOCKED`.
+
+#### 70. `STALE`
+
+Una evidencia previa se considera stale cuando cambia materialmente:
+
+- package;
+- contrato de conectividad;
+- clase crítica;
+- operación;
+- esquema;
+- dispositivo;
+- política de autorización;
+- idempotencia;
+- dependencia;
+- mecanismo de persistencia o reconciliación.
+
+La evidencia stale no autoriza PASS.
+
+#### 71. Hallazgos diferibles
+
+Un hallazgo solo podrá diferirse si:
+
+- no habilita un efecto inseguro;
+- no duplica intención;
+- no pierde trabajo crítico;
+- no oculta resultado desconocido;
+- no amplía autoridad;
+- no elimina evidencia;
+- tiene propietario canónico;
+- tiene condición exacta de salida;
+- su impacto está documentado.
+
+#### 72. Responsabilidad de fallas
+
+Las fallas de red, proveedor, infraestructura, sincronización o dispositivo no se atribuyen disciplinariamente al trabajador por métricas de tiempo o retry.
+
+La evidencia deberá distinguir acción humana de condición técnica.
+
+#### 73. Criterio de PASS por package
+
+Un package obtiene PASS únicamente si:
+
+1. inventaria todas sus capacidades críticas aplicables;
+2. asigna política de conectividad y clase `OF*`;
+3. ejecuta todos los escenarios aplicables;
+4. preserva trabajo y atribución;
+5. no duplica efectos;
+6. distingue local de autoritativo;
+7. revalida autoridad al volver;
+8. respeta dependencias y prioridad;
+9. evita `last write wins` empresarial;
+10. resuelve o bloquea resultados desconocidos;
+11. conserva evidencia suficiente;
+12. no mantiene fallos críticos abiertos.
+
+#### 74. Criterio de `GLOBAL-FINAL`
+
+`UX-QA-011::GLOBAL-FINAL` solo puede obtener PASS cuando:
+
+- todos los packages aplicables tienen estado terminal válido;
+- ningún package crítico conserva FAIL abierto;
+- los escenarios compartidos son coherentes entre aplicaciones;
+- no existen dos semánticas incompatibles para local, queued, confirmed o unknown;
+- los dispositivos y estaciones aplicables cuentan con evidencia física suficiente;
+- los bloqueos restantes tienen propietario y no invalidan la certificación global;
+- la evidencia no está stale.
+
+#### 75. Identidad de ejecución física futura
+
+La topología es:
+
+```text
+MODE: PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE: POST_E5_PACKAGE
+```
+
+Identidades futuras:
+
+```text
+UX-QA-011::<package_id>
+UX-QA-011::GLOBAL-FINAL
+```
+
+Aprobar este contrato documental no crea ni ejecuta esas instancias.
+
+#### 76. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea certifica obligaciones ya definidas por contratos y requisitos vigentes. No introduce una nueva obligación que requiera actualizar el registro 04A.
+
+#### 77. Cobertura de prueba vigente reutilizada
+
+La cobertura principal reutilizada, sin modificación, incluye:
+
+- `TREQ-UX-036`;
+- `TREQ-UX-250` a `TREQ-UX-273`;
+- `TREQ-UX-274` a `TREQ-UX-296` en la frontera de checkpoint y reanudación;
+- `TREQ-INTEGRATION-023` y requisitos propietarios de idempotencia, cola, autorización, continuidad y dispositivo que cada package declare aplicables.
+
+Esta lista es trazabilidad reutilizada y no representa requisitos creados o modificados por `UX-QA-011`.
+
+#### 78. Evidencia de validación
+
+| Clase | Estado | Evidencia documental disponible en esta aprobación |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecuta build físico ni de producto para aprobar el contrato documental. |
+| LOCAL | NOT_EXECUTED | La incorporación y los validadores reales del checkout corresponden a la batería posterior. |
+| REMOTA | PASS | Se revisaron fuentes canónicas remotas vigentes, continuidad, topología, `NFR-REQ-001`, `NFR-REQ-004`, `UX-BASE-013`, `UX-BASE-014`, 04A UX, contratos de interfaz existentes y la base aprobada `UX-QA-010`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron recorridos operativos reales bajo degradación durante esta aprobación documental. |
+| FÍSICA | NOT_EXECUTED | Las instancias por package y `GLOBAL-FINAL` permanecen sujetas a `POST_E5_PACKAGE` y a pruebas controladas posteriores. |
+
+#### 79. Evidencia mínima posterior por caso
+
+Cada caso deberá permitir responder:
+
+- qué dependencia falló;
+- qué criticidad era efectiva;
+- qué política de conectividad aplicó;
+- qué trabajo se preservó;
+- qué efecto se bloqueó o produjo;
+- qué estado vio el trabajador;
+- qué evidencia local existió;
+- qué receipt existió;
+- si hubo retry;
+- si hubo conflicto;
+- si hubo reautorización;
+- cómo terminó la reconciliación.
+
+#### 80. Seguridad de la evidencia
+
+No se capturarán en artefactos de prueba:
+
+- PIN;
+- tokens;
+- secretos;
+- credenciales;
+- payloads sensibles completos;
+- información ajena al caso;
+- contenido de otros actores sin necesidad probatoria.
+
+Las referencias de soporte deberán ser no secretas.
+
+#### 81. Criterios de aceptación
+
+- [ ] Se define un contrato de certificación de conectividad inestable por package y global final.
+- [ ] `C0`, `C1`, `C2` y overrides críticos se evalúan por criticidad efectiva.
+- [ ] Red, servicio, sesión, contexto, frescura, sincronización y periféricos se distinguen.
+- [ ] Cada capacidad declara política de conectividad y clase offline aplicable.
+- [ ] Local, queued, sent, acknowledged, confirmed y unknown no se confunden.
+- [ ] Resultado desconocido nunca produce retry independiente ciego.
+- [ ] Las mutaciones reintentables conservan idempotencia estable.
+- [ ] Dependencias se sincronizan en orden causal.
+- [ ] La reconexión revalida sesión, dispositivo, contexto, versiones y revocaciones antes de enviar.
+- [ ] Cambios de actor, área, turno y dispositivo no transfieren autoridad ni borradores.
+- [ ] `ONLINE_REQUIRED` bloquea efectos sensibles cuando corresponde.
+- [ ] `OF4` exige envelope previo y finito.
+- [ ] Contingencia manual conserva numeración, custodia y reconciliación.
+- [ ] Conflictos no usan `last write wins` empresarial.
+- [ ] Datos stale muestran frescura y limitan acciones.
+- [ ] Reinicio, actualización y almacenamiento bajo presión no pierden silenciosamente trabajo.
+- [ ] Backend y periféricos se prueban de forma independiente.
+- [ ] La UI comunica estados de forma humana y accesible.
+- [ ] La evidencia posterior cubre escenarios adversariales aplicables.
+- [ ] La prueba física se exige cuando la operación depende de hardware o red real.
+- [ ] Las métricas no responsabilizan al trabajador por fallas técnicas.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos.
+- [ ] `UX-QA-012` conserva íntegramente la responsabilidad sobre retorno cross-app y contexto.
+
+#### 82. Límites
+
+Esta tarea:
+
+- no implementa modo offline;
+- no crea colas;
+- no crea Service Workers;
+- no define tecnología de almacenamiento local;
+- no modifica idempotencia runtime;
+- no crea envelopes de autorización;
+- no modifica permisos;
+- no modifica Supabase;
+- no modifica datos;
+- no configura red;
+- no compra ni configura hardware;
+- no ejecuta contingencias reales;
+- no certifica packages sin evidencia posterior a E5;
+- no convierte toda aplicación en offline-capable;
+- no redefine `NFR-REQ-004` ni `UX-BASE-013`;
+- no certifica todavía el retorno entre aplicaciones.
+
+#### 83. Handoff a `UX-QA-012`
+
+`UX-QA-011` entrega a `UX-QA-012`:
+
+- actor y contexto revalidados después de degradación;
+- aplicación propietaria;
+- proceso e instancia;
+- tarea y paso semántico;
+- recurso y versión;
+- estado de conectividad;
+- estado de sincronización;
+- operaciones pendientes;
+- receipts disponibles;
+- conflictos;
+- resultado confirmado, pendiente o desconocido;
+- checkpoint recuperable cuando existe;
+- evidencia de que la recuperación no heredó autoridad.
+
+`UX-QA-012` podrá certificar el retorno entre aplicaciones sin reabrir la política de conectividad.
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-010 — Los cambios conservan trazabilidad`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-011 — Las tareas críticas soportan conectividad inestable`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-012 — El retorno entre aplicaciones conserva contexto`
 ### [ ] UX-QA-012 — El retorno entre aplicaciones conserva contexto
 ### [ ] UX-QA-013 — El retorno conserva el proceso cuando corresponde
 ### [ ] UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
