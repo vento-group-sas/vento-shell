@@ -29133,7 +29133,1438 @@ No transfiere a FOGO ownership de inventario, remisiones, LOC, LPN, activos, imp
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-025 — Probar FOGO por área productiva`
-### [ ] UX-QA-025 — Probar FOGO por área productiva
+### ✅ UX-QA-025 — Probar FOGO por área productiva
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-024 — Probar NEXO por rol operativo
+**Tarea siguiente:** UX-QA-026 — Probar ORIGO por etapa de compra
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de FOGO por área productiva, demostrando por package y globalmente que Cocina Caliente, Galletería y Panadería y Repostería ejecutan únicamente trabajo productivo elegible dentro de su área, actor, turno, permiso, lote, receta, versión, recurso, estado y contexto efectivos, con separación entre planificación, ejecución, calidad, empaque, inventario y cierre, sin convertir el nombre del área, el rol operativo, una ruta visible, un dispositivo compartido, un estado de UI o un dato AS-IS en autorización o evidencia de PASS, consumiendo `UX-QA-020`, `UX-QA-024`, `FOGO-AUTH-001..016`, `FOGO-UX-001..015`, `OPS-REC-001`, `OPS-PLAN-001..004`, `OPS-PRD-001`, `OPS-TRZ-001`, `VPROC-0033..0037` y la cobertura vigente sin reabrir ownership, autorización, receta, trazabilidad ni fuente de verdad
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de FOGO por área productiva definido; las ejecuciones `UX-QA-025::<package_id>` y `UX-QA-025::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física aplicable de FOGO y del piloto sin ejecutar sesiones humanas, modificar runtime, datos, Supabase, recetas, lotes, producción, calidad, inventario, packages, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, navegación, áreas, roles, grants, denies, permisos, turnos, recetas, versiones, planes, órdenes, lotes, consumos, desperdicios, calidad, empaque, etiquetas, inventario, datos, Supabase, migraciones, RLS, RPC, Edge Functions, packages, ambientes, despliegues ni cuentas de prueba
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que FOGO funciona correctamente por área productiva sin convertir la identidad del área, el rol operativo local o el dispositivo de planta en una segunda política de autorización.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿QUÉ ÁREA PRODUCTIVA ESTÁ SIENDO PROBADA?
+¿QUIÉN ES EL ACTOR EFECTIVO?
+¿CUÁL ES SU ROL OPERATIVO ACTIVO?
+¿CUÁL ES SU TURNO Y CONTEXTO VIGENTE?
+¿QUÉ PLAN, ORDEN, LOTE, RECETA Y VERSIÓN SON APLICABLES?
+¿QUÉ ACCIÓN FOGO ESTÁ AUTORIZADA?
+¿EL TRABAJO PERTENECE REALMENTE A ESA ÁREA?
+¿LA TRANSICIÓN RESPETA EL ESTADO EMPRESARIAL VIGENTE?
+¿LA RECETA Y SU VERSIÓN SON LAS CORRECTAS PARA EL LOTE?
+¿LOS CONSUMOS Y RESULTADOS CONSERVAN OWNERSHIP E IDENTIDAD?
+¿FINALIZAR PRODUCCIÓN ESTÁ SEPARADO DE LIBERAR CALIDAD?
+¿EL PRODUCTO TERMINADO SE ENTREGA A NEXO SIN FABRICAR STOCK?
+¿LA CORRECCIÓN PRESERVA HISTORIA?
+¿EL RESULTADO DESCONOCIDO SE RECONCILIA SIN REPETIR EFECTOS?
+¿LOS HALLAZGOS TIENEN OWNER, SEVERIDAD Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+ÁREA PRODUCTIVA CANÓNICA
++
+ACTOR EFECTIVO
++
+ROL OPERATIVO ACTIVO
++
+PERMISO EXPLÍCITO
++
+TURNO Y CONTEXTO VÁLIDOS
++
+PLAN / ORDEN / LOTE / RECETA / VERSIÓN
++
+RECURSO Y ESTADO
++
+DENEGACIONES APLICABLES
+=
+AUTORIDAD PRODUCTIVA EFECTIVA EN FOGO
+```
+
+No es válido:
+
+```text
+ÁREA PRODUCTIVA
+=
+AUTORIZACIÓN
+```
+
+ni:
+
+```text
+ROL OPERATIVO
+=
+PERMISO
+```
+
+ni:
+
+```text
+DISPOSITIVO DE PRODUCCIÓN
+=
+ACTOR
+```
+
+ni:
+
+```text
+RUTA O BOTÓN VISIBLE
+=
+TRANSICIÓN AUTORIZADA
+```
+
+ni:
+
+```text
+LOTE COMPLETADO
+=
+PRODUCTO LIBERADO
+```
+
+#### 2. Resultado documental
+
+`UX-QA-025` define el contrato específico de certificación de FOGO por área productiva y por package.
+
+El resultado establece:
+
+- universo mínimo de áreas productivas canónicas;
+- separación entre área, rol operativo, permiso, actor y contexto;
+- cobertura de planificación, cola, preparación, inicio, ejecución parcial, finalización, calidad, empaque, trazabilidad y cierre cuando pertenezcan al package;
+- cobertura positiva y negativa por área;
+- criterio de evidencia por escenario;
+- criterio PASS por área productiva aplicable;
+- criterio PASS por package;
+- criterio `GLOBAL-FINAL`;
+- tratamiento de supervisor y capacidades cross-area sin bypass;
+- tratamiento de dispositivos compartidos de producción;
+- tratamiento de receta y versión;
+- frontera FOGO ↔ NEXO para materiales y producto terminado;
+- tratamiento de idempotencia, resultado desconocido y reconciliación;
+- owner de hallazgos y reprueba;
+- handoff exacto hacia `UX-QA-026`.
+
+#### 3. Topología contractual
+
+Se conserva:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-025::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-025::GLOBAL-FINAL
+```
+
+La aprobación documental de este marcador no crea una instancia física.
+
+#### 4. Handoff recibido de `UX-QA-024`
+
+`UX-QA-024` entrega a `UX-QA-025` únicamente contratos reutilizables de certificación:
+
+- método de especialización por aplicación y package;
+- identidad de escenario por actor, rol, contexto, recurso, build y ambiente;
+- separación entre rol y autorización;
+- tratamiento de estaciones y dispositivos compartidos;
+- protocolo de evidencia humana y técnica;
+- contrato de findings, severidad y retest;
+- tratamiento de stale, resultado desconocido, retry y reconciliación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que ownership y handoff no transfieren autoridad;
+- criterio PASS por escenario, cohorte y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar una superficie o escenario aplicable mediante agregación.
+
+No transfiere a FOGO ownership de inventario, remisiones, LOC, LPN, custodia logística ni movimientos NEXO.
+
+#### 5. Contrato transversal heredado de `UX-QA-020`
+
+La especialización conserva sin redefinir:
+
+- definición de usuario real;
+- proporcionalidad de participantes y escenarios;
+- identidad del build probado;
+- evidencia humana y técnica correlacionable;
+- severidad de hallazgos;
+- owner de corrección;
+- reprueba obligatoria;
+- separación entre evidencia humana y validación automatizada;
+- criterio de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de presentar evidencia ausente como PASS.
+
+`UX-QA-025` no vuelve a ejecutar el piloto físico.
+
+#### 6. Base especializada FOGO
+
+La certificación consume como mínimo:
+
+```text
+FOGO-AUTH-001..016
+FOGO-UX-001..015
+OPS-REC-001
+OPS-PLAN-001..004
+OPS-PRD-001
+OPS-TRZ-001
+VPROC-0033..0037
+```
+
+También consume contratos transversales de:
+
+- identidad y rol operativo;
+- contexto laboral y dispositivo;
+- ownership;
+- autorización server-side;
+- procesos y estados;
+- handoff;
+- idempotencia;
+- inventario y disponibilidad NEXO;
+- evidencia y auditoría;
+- accesibilidad;
+- recuperación y reconciliación.
+
+#### 7. Universo mínimo de áreas productivas
+
+La certificación reconoce como mínimo las tres áreas productivas centrales canónicas:
+
+| Área productiva | Rol operativo asociado | Dispositivo objetivo |
+| --- | --- | --- |
+| Cocina Caliente | `produccion_cocina` | `production_kitchen` |
+| Galletería y Panadería | `produccion_panaderia` | `production_bakery` |
+| Repostería | `produccion_reposteria` | `production_pastry` |
+
+Una instancia por package declara cuáles de estas áreas pertenecen realmente a su alcance.
+
+Una futura área adicional solo entra en la certificación cuando exista identidad canónica aprobada; no se inventa por texto libre, pantalla o sede.
+
+#### 8. Área productiva no equivale a rol
+
+La relación:
+
+```text
+ÁREA PRODUCTIVA
+↔
+ROL OPERATIVO
+```
+
+es una restricción contextual, no identidad única.
+
+La prueba debe demostrar simultáneamente:
+
+- área exacta;
+- actor exacto;
+- rol operativo exacto;
+- turno aplicable;
+- recurso objetivo;
+- permiso exacto;
+- estado aplicable.
+
+#### 9. Área productiva no equivale a permiso
+
+Estar físicamente en Cocina Caliente, Galletería y Panadería o Repostería no concede por sí solo:
+
+- crear un lote;
+- iniciar producción;
+- registrar un parcial;
+- finalizar producción;
+- corregir un lote;
+- aprobar receta;
+- liberar calidad;
+- transferir producto terminado.
+
+La autorización se resuelve por el contrato propietario.
+
+#### 10. Rol operativo no equivale a permiso
+
+`produccion_cocina`, `produccion_panaderia` y `produccion_reposteria` no son wildcards.
+
+La prueba debe demostrar que cada acción sensible requiere el permiso y el contexto correspondientes.
+
+No se certifica un área únicamente porque la persona pueda abrir FOGO.
+
+#### 11. Mapeo canónico de área y rol
+
+La línea base conserva:
+
+```text
+Centro de Producción / Cocina Caliente
+→ produccion_cocina
+
+Centro de Producción / Galletería y Panadería
+→ produccion_panaderia
+
+Centro de Producción / Repostería
+→ produccion_reposteria
+```
+
+La instancia física deberá validar el mapeo real vigente sin inferirlo desde el texto de una tarjeta o una ruta.
+
+#### 12. Contexto operativo productivo
+
+El contexto de una mutación FOGO puede requerir, según acción:
+
+- actor;
+- turno;
+- check-in cuando el permiso lo exija;
+- sede;
+- área;
+- rol operativo;
+- orden;
+- lote;
+- receta;
+- versión de receta;
+- recurso;
+- estado;
+- dispositivo;
+- material o resultado relacionado.
+
+La ausencia de un dato requerido falla cerrado.
+
+#### 13. Supervisor y alcance cross-area
+
+`FOGO-AUTH-008` define permisos de supervisor separados.
+
+Por tanto:
+
+```text
+SUPERVISOR
+!=
+ACCESO TOTAL IMPLÍCITO
+```
+
+Un supervisor o actor de coordinación solo puede consultar o actuar sobre varias áreas cuando exista capacidad explícita y territorio compatible.
+
+La prueba debe incluir al menos un caso donde el actor puede supervisar una segunda área y un caso donde debe ser denegado.
+
+#### 14. Dispositivo no concede autoridad
+
+Las plantillas:
+
+```text
+production_kitchen
+production_bakery
+production_pastry
+```
+
+establecen techos y contexto de dispositivo.
+
+No conceden autoridad adicional al actor identificado.
+
+#### 15. Estación compartida de producción
+
+En una estación compartida se separan:
+
+```text
+DISPOSITIVO
+ACTOR HUMANO
+ROL OPERATIVO
+ÁREA EFECTIVA
+TURNO
+SESIÓN DEL ACTOR
+CAPACIDADES
+```
+
+Cambiar actor obliga a recalcular:
+
+- área elegible;
+- trabajo visible;
+- permisos;
+- lote activo;
+- acciones disponibles;
+- datos sensibles;
+- autoría de eventos.
+
+Nunca se hereda el lote o autoridad del actor anterior.
+
+#### 16. Cola de producción por área
+
+La cola productiva deberá presentar trabajo compatible con:
+
+- sede;
+- área;
+- turno;
+- plan publicado;
+- orden ejecutable;
+- estado;
+- actor/capacidad;
+- restricciones actuales.
+
+La existencia de un lote en base de datos no lo convierte automáticamente en trabajo de la persona presente.
+
+#### 17. Planificación `VPROC-0033`
+
+La certificación debe respetar la separación entre:
+
+```text
+PRODUCTION_PLAN_DRAFT
+DEMAND_CONSOLIDATING
+CAPACITY_VALIDATING
+PLAN_UNDER_REVIEW
+PENDING_APPROVAL
+PUBLISHED
+REVISION_IN_PROGRESS
+PRODUCTION_PLAN_RELEASED
+```
+
+Una señal de demanda no crea por sí sola un plan aprobado.
+
+#### 18. Plan publicado no equivale a producción iniciada
+
+`PRODUCTION_PLAN_RELEASED` permite originar trabajo ejecutable según contrato.
+
+No significa:
+
+- materiales consumidos;
+- lote iniciado;
+- producto fabricado;
+- calidad aprobada;
+- inventario disponible.
+
+#### 19. Inicio por área productiva
+
+`FOGO-UX-003` obliga a que el inicio preserve área productiva.
+
+La persona debe reconocer sin ambigüedad:
+
+- área actual;
+- trabajo pendiente;
+- producto;
+- cantidad;
+- fecha/prioridad aplicable;
+- lote o acción siguiente cuando corresponda.
+
+#### 20. Producción pendiente del turno
+
+`FOGO-UX-004` exige mostrar producción pendiente del turno.
+
+La certificación debe comprobar que:
+
+- no aparece trabajo de otra área como ejecutable;
+- no se oculta trabajo obligatorio de la propia área;
+- trabajo bloqueado comunica su causa;
+- trabajo futuro no se presenta como iniciado;
+- trabajo completado no vuelve a la cola ejecutable.
+
+#### 21. Preparación e inicio de lote
+
+`VSCREEN-0057`, `VPROC-0034` y `FOGO-UX-005` separan preparación e inicio.
+
+Antes de iniciar deben resolverse, cuando apliquen:
+
+- orden;
+- receta y versión;
+- producto;
+- cantidad;
+- área;
+- materiales;
+- disponibilidad;
+- actor;
+- permiso;
+- estado.
+
+Abrir `/production-batches/new` no autoriza la creación.
+
+#### 22. Lote activo
+
+Una vez iniciada la ejecución, el lote debe conservar identidad estable.
+
+La experiencia debe permitir reconocer:
+
+- lote;
+- producto;
+- receta/versión;
+- área;
+- actor actual;
+- progreso;
+- cantidades;
+- desviaciones;
+- controles pendientes;
+- acción siguiente.
+
+#### 23. Producción parcial
+
+`FOGO-UX-006` y `FOGO-AUTH-010` separan el registro parcial del cierre.
+
+Un parcial:
+
+- no finaliza automáticamente el lote;
+- no libera producto;
+- no crea stock final disponible;
+- no borra mediciones anteriores;
+- conserva actor y timestamp;
+- conserva cantidad y unidad;
+- conserva relación con lote y versión.
+
+#### 24. Finalización de ejecución
+
+`FOGO-UX-007` y `FOGO-AUTH-011` gobiernan finalización.
+
+El hito de ejecución productiva:
+
+```text
+VPROC-0034.PRODUCTION_EXECUTION_COMPLETED
+```
+
+significa que la ejecución operativa quedó completada y entregada a la fase posterior.
+
+No equivale a liberación de calidad ni ingreso automático a inventario.
+
+#### 25. Calidad independiente
+
+La certificación conserva:
+
+```text
+FINALIZACIÓN PRODUCTIVA
+!=
+DECISIÓN DE CALIDAD
+!=
+LIBERACIÓN
+```
+
+`VPROC-0035` debe permitir, según alcance:
+
+- inspeccionar;
+- registrar resultados;
+- revisar técnicamente;
+- decidir disposición;
+- liberar;
+- retener;
+- rechazar;
+- corregir o enviar a reproceso.
+
+#### 26. Empaque y etiquetado
+
+`VSCREEN-0066` y `VPROC-0036` separan:
+
+```text
+PRODUCIDO
+EMPACADO
+ETIQUETADO
+LIBERADO
+TRANSFERIDO
+```
+
+Un dato `packaging_status` por sí solo no demuestra la experiencia completa.
+
+#### 27. Producto terminado y handoff a NEXO
+
+`FOGO-UX-013` conserva el handoff del producto terminado.
+
+Regla:
+
+```text
+FOGO CONSERVA
+lote + ejecución + presentación + empaque + etiqueta + resultado productivo
+
+NEXO CONSERVA
+stock físico + ubicación + disponibilidad + movimientos
+```
+
+FOGO no fabrica stock disponible mediante una actualización local.
+
+#### 28. Cierre productivo `VPROC-0037`
+
+El cierre conciliado debe diferenciarse de la mera finalización operativa.
+
+La certificación debe comprobar, cuando aplique:
+
+- resultado final;
+- consumos;
+- devoluciones;
+- merma;
+- reproceso;
+- calidad;
+- empaque;
+- movimientos NEXO;
+- pendientes;
+- diferencias;
+- actor de cierre.
+
+#### 29. Receta y versión
+
+Cada lote debe conservar la versión exacta de receta aplicable.
+
+Una edición posterior de la receta no cambia el lote histórico.
+
+La prueba debe poder reconstruir:
+
+```text
+LOTE
+→ RECIPE_VERSION_REF
+→ SNAPSHOT APLICABLE
+→ EJECUCIÓN
+```
+
+#### 30. Recetario operativo y administración
+
+`FOGO-UX-008` y `FOGO-UX-009` mantienen separados:
+
+```text
+CONSULTAR RECETA PARA EJECUTAR
+!=
+ADMINISTRAR RECETAS
+```
+
+Un operador de área no obtiene permisos de edición/publicación por necesitar la receta operativa.
+
+#### 31. Materiales y ownership NEXO
+
+NEXO conserva la fuente de:
+
+- stock;
+- disponibilidad;
+- ubicación;
+- lote físico;
+- condición;
+- reserva;
+- movimiento.
+
+FOGO consume esa verdad para ejecutar producción.
+
+#### 32. Consumo real
+
+FOGO captura el hecho operativo de uso dentro de la ejecución.
+
+El efecto físico sobre inventario se integra con NEXO mediante contrato correlacionado e idempotente.
+
+La prueba debe impedir doble contabilización.
+
+#### 33. Desperdicio y merma
+
+`FOGO-UX-010` exige registrar cantidades, desperdicio y resultado.
+
+La certificación no acepta inferir merma únicamente de:
+
+```text
+ESPERADO - PRODUCIDO
+```
+
+Se requiere clasificación y evidencia según el flujo aplicable.
+
+#### 34. Rendimiento
+
+Rendimiento esperado y rendimiento real permanecen separados.
+
+La prueba debe permitir reconocer:
+
+- valor esperado;
+- valor real;
+- unidad;
+- diferencia;
+- causa o clasificación cuando corresponda;
+- actor;
+- lote;
+- versión.
+
+#### 35. Sustituciones y desviaciones
+
+Una sustitución autorizada durante ejecución se registra como hecho del lote.
+
+No edita retroactivamente la receta publicada.
+
+Una desviación debe conservar:
+
+- motivo;
+- actor;
+- momento;
+- impacto;
+- aprobación cuando aplique.
+
+#### 36. Correcciones sin alterar historial
+
+`FOGO-UX-011` y `FOGO-AUTH-012` exigen correcciones trazables.
+
+No es aceptable:
+
+```text
+CORRECCIÓN
+=
+SOBRESCRIBIR HISTORIA
+```
+
+La prueba debe demostrar evento compensatorio, revisión o mecanismo equivalente aprobado.
+
+#### 37. Cancelación, reapertura y estados terminales
+
+Cancelar o reabrir requiere acción y autoridad propias cuando el contrato lo permita.
+
+Un texto de estado no basta para demostrar transición válida.
+
+La instancia deberá comprobar que una transición inválida falla cerrada.
+
+#### 38. Trazabilidad e investigación de lote
+
+`VSCREEN-0173` exige poder reconstruir, según alcance:
+
+- materiales;
+- receta y versión;
+- ejecución;
+- actores;
+- cantidades;
+- calidad;
+- empaque;
+- destinos;
+- movimientos relacionados;
+- evidencia.
+
+Datos dispersos sin reconstrucción no equivalen a una investigación completa.
+
+#### 39. Inocuidad
+
+`VSCREEN-0174` separa controles operativos de inocuidad.
+
+La certificación debe comprobar que los controles aplicables:
+
+- pertenecen al contexto correcto;
+- no se omiten por cambio de pantalla;
+- registran actor y momento;
+- no se confunden con una aprobación administrativa genérica.
+
+#### 40. Planes y controles de calidad
+
+Los controles aplicables deben usar especificaciones vigentes y evidencia trazable.
+
+La finalización del lote no puede saltarse la decisión independiente cuando el package incluye control de calidad.
+
+#### 41. Separación entre áreas
+
+La certificación debe incluir cruces negativos explícitos:
+
+- Cocina Caliente no adquiere Panadería;
+- Cocina Caliente no adquiere Repostería;
+- Galletería y Panadería no adquiere Cocina Caliente;
+- Galletería y Panadería no adquiere Repostería;
+- Repostería no adquiere Cocina Caliente;
+- Repostería no adquiere Galletería y Panadería.
+
+Una misma sede no basta para autorizar otra área.
+
+#### 42. Territorialidad
+
+La sede Centro de Producción no concede acceso a todas sus áreas.
+
+La prueba debe combinar al menos:
+
+```text
+SEDE CORRECTA + ÁREA CORRECTA = CANDIDATO VÁLIDO
+SEDE CORRECTA + ÁREA INCORRECTA = DENY
+SEDE INCORRECTA + ÁREA NOMINALMENTE IGUAL = DENY
+```
+
+salvo alcance superior explícito y autorizado.
+
+#### 43. Contexto seleccionado
+
+Cambiar una selección local de área no crea una asignación ni un permiso.
+
+La acción sensible vuelve a resolver el contexto efectivo.
+
+#### 44. Acceso directo por URL
+
+Conocer una ruta o un `id` no concede autoridad.
+
+El acceso directo revalida:
+
+- sesión;
+- FOGO access;
+- permiso;
+- actor;
+- sede;
+- área;
+- recurso;
+- estado;
+- relación aplicable.
+
+#### 45. Handoff cross-app
+
+Un handoff puede transportar referencias.
+
+No transporta autoridad.
+
+Cada propietaria revalida su acción.
+
+#### 46. Frontera FOGO ↔ NEXO
+
+FOGO no puede:
+
+- inventar stock;
+- editar saldo como fuente;
+- apropiarse de LOC/LPN;
+- confirmar movimiento NEXO sin contrato;
+- tratar reserva como consumo confirmado;
+- publicar terminado no liberado como disponible.
+
+NEXO no puede reescribir receta, lote productivo o decisión FOGO.
+
+#### 47. Frontera FOGO ↔ NUMERA
+
+NUMERA consume efectos económicos confirmados.
+
+No decide:
+
+- producción física;
+- cantidad producida;
+- merma productiva;
+- liberación de calidad;
+- cierre del lote.
+
+FOGO no sustituye el ledger económico de NUMERA.
+
+#### 48. Señales desde PULSO, ORIGO y VISO
+
+PULSO, ORIGO o VISO pueden aportar señales, demanda, capacidad o decisiones según contratos aprobados.
+
+Ninguna señal externa crea automáticamente:
+
+- plan aprobado;
+- lote iniciado;
+- producción terminada;
+- liberación de calidad.
+
+#### 49. Idempotencia
+
+Toda mutación aplicable que pueda reintentarse debe conservar identidad estable.
+
+La prueba debe verificar, según alcance:
+
+- doble clic;
+- reintento de red;
+- replay;
+- timeout;
+- refresh;
+- retorno a la pantalla.
+
+No se acepta doble consumo, doble terminado ni doble transición.
+
+#### 50. Resultado desconocido
+
+Si el cliente desconoce el resultado de una mutación:
+
+```text
+UNKNOWN
+!=
+FAILED
+```
+
+Debe reconciliar antes de repetir a ciegas.
+
+#### 51. Concurrencia
+
+La certificación debe cubrir, cuando aplique:
+
+- dos actores sobre el mismo lote;
+- supervisor y operador actuando simultáneamente;
+- cambio de estado mientras otra pantalla conserva una versión anterior;
+- intento de doble finalización;
+- corrección concurrente.
+
+El resultado debe ser determinista y auditable.
+
+#### 52. Conectividad y frescura
+
+La pérdida de conexión no habilita autoridad local nueva.
+
+Una superficie stale debe declarar su condición y bloquear mutaciones cuando ya no pueda demostrar actor, contexto, versión o estado.
+
+#### 53. Casos positivos mínimos
+
+Cada package incluye, cuando sean aplicables:
+
+1. ingreso del actor correcto a su área;
+2. cola correcta del turno;
+3. inicio de lote autorizado;
+4. ejecución de lote con receta/version correcta;
+5. captura parcial sin cierre prematuro;
+6. finalización operativa válida;
+7. control de calidad independiente cuando aplica;
+8. empaque/etiquetado válido cuando aplica;
+9. handoff a NEXO sin doble inventario;
+10. cierre conciliado;
+11. corrección trazable;
+12. cambio de actor en dispositivo compartido con recálculo completo.
+
+#### 54. Casos negativos mínimos
+
+Cada package incluye, cuando sean aplicables:
+
+1. actor de otra área;
+2. rol correcto con permiso insuficiente;
+3. permiso sin contexto territorial compatible;
+4. turno inválido;
+5. acceso directo por URL sin autoridad;
+6. lote de otra área;
+7. receta o versión no aplicable;
+8. lote ya finalizado intentando nuevo parcial;
+9. finalización sin prerrequisitos;
+10. producto no liberado intentando ingreso a inventario;
+11. doble clic/replay con segundo efecto;
+12. corrección destructiva;
+13. estado stale intentando mutación;
+14. actor anterior heredado en estación compartida;
+15. supervisor excediendo su alcance;
+16. Cocina operando Panadería/Repostería;
+17. Panadería operando Cocina/Repostería;
+18. Repostería operando Cocina/Panadería;
+19. señal externa tratada como plan aprobado;
+20. `completed` tratado como liberado.
+
+#### 55. Identidad de escenario
+
+Cada caso conserva, como mínimo:
+
+```text
+package_id
+package_version_or_commit
+consumer_build
+fixture_or_data_set
+area_productiva
+actor_id_or_pseudonymous_ref
+operational_role
+permission_or_action_under_test
+site
+shift_or_operational_context
+process_id
+work_item_or_order_ref
+batch_ref_when_applicable
+recipe_version_ref_when_applicable
+device_class
+expected_result
+observed_result
+execution_id
+timestamps
+```
+
+#### 56. Condiciones de una sesión válida
+
+Una sesión humana de certificación es válida únicamente si:
+
+- el actor pertenece legítimamente a la población del escenario;
+- el área es real y aplicable;
+- el contexto es autorizado;
+- el build está identificado;
+- el package está identificado;
+- el protocolo no cambia durante la sesión;
+- el moderador no ejecuta por el participante;
+- el resultado esperado se define antes de observar la salida;
+- la evidencia minimiza datos personales.
+
+#### 57. Evidencia por escenario
+
+La evidencia deberá permitir demostrar:
+
+- área esperada;
+- actor esperado;
+- acción esperada;
+- contexto esperado;
+- estado inicial;
+- precondiciones;
+- resultado esperado;
+- resultado observado;
+- mensaje o bloqueo cuando aplique;
+- efectos persistentes confirmados;
+- ausencia de efectos indebidos;
+- correlación con backend/integración cuando aplique;
+- hallazgo y owner si falla.
+
+#### 58. Resultado por escenario
+
+Estados permitidos:
+
+- `PASS` — comportamiento esperado demostrado;
+- `FAIL` — comportamiento incorrecto demostrado;
+- `BLOCKED` — falta una dependencia necesaria para ejecutar honestamente;
+- `STALE` — la evidencia ya no representa el build, contrato o contexto actual.
+
+No existe `PARTIAL_PASS` para habilitar cierre.
+
+#### 59. Severidad de hallazgos
+
+La certificación conserva la severidad del contrato transversal.
+
+Un hallazgo que permita:
+
+- actuar en otra área;
+- producir con receta/version incorrecta;
+- duplicar consumos o terminado;
+- liberar sin calidad requerida;
+- reescribir historia;
+- fabricar inventario;
+- atribuir una acción al actor equivocado;
+
+es bloqueante para el escenario y el package mientras permanezca sin resolver.
+
+#### 60. Owner del hallazgo
+
+Cada hallazgo debe indicar un owner concreto.
+
+Ejemplos de owners posibles según la causa:
+
+- FOGO runtime;
+- autorización compartida;
+- SHELL/contexto;
+- NEXO integración;
+- proceso/estado;
+- contrato de receta;
+- calidad/trazabilidad;
+- dispositivo compartido;
+- package E5 propietario.
+
+No se deja deuda narrativa sin dueño.
+
+#### 61. Reprueba
+
+Una corrección no cambia `FAIL` a `PASS` por existir commit.
+
+Debe repetirse el escenario afectado sobre el build corregido y, cuando corresponda, los escenarios de regresión relacionados.
+
+#### 62. PASS por área productiva
+
+Un área puede cerrar PASS dentro de un package solo si:
+
+```text
+TODOS LOS ESCENARIOS OBLIGATORIOS DEL ÁREA = PASS
+Y
+CERO HALLAZGO BLOQUEANTE ABIERTO
+Y
+CERO EVIDENCIA STALE USADA COMO VIGENTE
+Y
+AUTORIZACIÓN Y TERRITORIO DEMOSTRADOS
+Y
+OWNERSHIP ENTRE FOGO/NEXO DEMOSTRADO
+```
+
+#### 63. PASS por package
+
+Un package puede cerrar `UX-QA-025::<package_id> = PASS` únicamente cuando todas sus áreas, superficies, dispositivos y flujos obligatorios han cerrado PASS.
+
+Un área no aplicable debe estar documentada como fuera de alcance por contrato del package; no se omite silenciosamente.
+
+#### 64. `GLOBAL-FINAL`
+
+`UX-QA-025::GLOBAL-FINAL` solo puede cerrar PASS cuando:
+
+- todas las instancias obligatorias por package están cerradas;
+- las tres áreas productivas canónicas están cubiertas en el conjunto de packages donde correspondan;
+- no existe package obligatorio en `FAIL`, `BLOCKED` o `STALE`;
+- la cobertura de procesos FOGO exigida está completa;
+- no existen contradicciones entre evidencia humana y técnica sin resolver.
+
+No se promedian fallos.
+
+#### 65. Prohibición de agregación engañosa
+
+No se acepta un reporte que diga únicamente:
+
+```text
+FOGO = PASS
+```
+
+sin permitir reconstruir:
+
+- package;
+- área;
+- actor/cohorte;
+- superficie;
+- dispositivo;
+- proceso;
+- escenario;
+- build;
+- resultado.
+
+#### 66. Accesibilidad
+
+Las superficies probadas deben permitir identificar:
+
+- área;
+- lote;
+- estado;
+- acción;
+- bloqueo;
+- error;
+- confirmación;
+
+sin depender exclusivamente de color, animación o posición visual.
+
+#### 67. Responsive y ergonomía productiva
+
+Cuando el package incluya tablet, terminal compartido o estación táctil, la prueba deberá considerar:
+
+- tamaño táctil;
+- legibilidad;
+- densidad;
+- orientación;
+- interacción con guantes cuando sea un requisito del dispositivo;
+- teclado/lector cuando aplique;
+- continuidad ante periférico no disponible cuando el proceso tenga alternativa aprobada.
+
+#### 68. Privacidad y minimización
+
+La experiencia productiva muestra únicamente datos necesarios para ejecutar y auditar el trabajo.
+
+No se utiliza el piloto para exponer:
+
+- datos de otros trabajadores sin necesidad;
+- notas internas ajenas;
+- información financiera no requerida;
+- secretos de receta fuera del alcance autorizado.
+
+#### 69. Auditoría
+
+Una acción sensible debe poder atribuirse al actor real.
+
+La evidencia técnica debe permitir correlacionar, cuando aplique:
+
+- actor;
+- turno;
+- área;
+- acción;
+- lote;
+- estado anterior;
+- estado posterior;
+- timestamp;
+- correlación/idempotency key.
+
+#### 70. Métricas de sesión
+
+La ejecución podrá registrar, según escenario:
+
+- tiempo hasta identificar trabajo correcto;
+- aperturas incorrectas;
+- intentos sobre otra área;
+- solicitudes de ayuda;
+- errores de interpretación de estado;
+- reintentos;
+- bloqueos;
+- tiempo de recuperación;
+- diferencias entre esperado y observado.
+
+No se inventa un umbral global después de observar resultados.
+
+#### 71. Ayuda del moderador
+
+El moderador puede aclarar el protocolo.
+
+No puede:
+
+- indicar qué botón elegir para convertir un caso en PASS;
+- operar la pantalla por el participante;
+- ocultar un error;
+- cambiar el resultado esperado después del hecho.
+
+#### 72. Seguridad, inocuidad y calidad prevalentes
+
+La certificación de UX nunca exige ejecutar una acción insegura o no autorizada para completar una matriz.
+
+Si un control de seguridad, inocuidad o calidad impide el escenario, se documenta el bloqueo; no se desactiva el control.
+
+#### 73. Datos reales y sintéticos
+
+Los datos usados deben estar autorizados para el ambiente.
+
+Un fixture puede preparar un escenario técnico.
+
+No sustituye al usuario real cuando la evidencia exigida es humana.
+
+#### 74. Producción real
+
+`UX-QA-025` documental no autoriza pruebas en producción.
+
+Cualquier piloto real permanece sujeto a gates físicos, alcance, participantes, datos y reversión del package correspondiente.
+
+#### 75. Evidencia técnica complementaria
+
+La evidencia humana se complementa con, cuando aplique:
+
+- tests automatizados;
+- logs de autorización;
+- estados de proceso;
+- eventos de integración;
+- reconciliación NEXO;
+- auditoría de actor;
+- evidencia de idempotencia;
+- trazabilidad de lote;
+- screenshots o grabación controlada;
+- métricas del escenario.
+
+Ninguna fuente aislada reemplaza toda la certificación.
+
+#### 76. Runtime actual observado
+
+La revisión remota de `vento-fogo/main` confirma que el runtime actual contiene superficies reales de:
+
+- `production-batches`;
+- `production-batches/new`;
+- `recipe-book`;
+- `recipes`;
+- creación y edición de recetas;
+- exportación PDF de recetas.
+
+El inventario FOGO aprobado conserva una línea base de nueve páginas AS-IS, quince pantallas canónicas y setenta y cinco identidades de acción funcional.
+
+Esta existencia sirve como evidencia de implementación parcial, no como PASS de experiencia por área.
+
+#### 77. Estado AS-IS no equivale a certificación
+
+No se declarará PASS porque:
+
+- `/production-batches` lista lotes;
+- `/production-batches/new` crea un lote;
+- existe un recetario;
+- existe un editor de recetas;
+- aparece `completed`;
+- existe `packaging_status`;
+- se puede calcular rendimiento;
+- un operador conoce el sistema por experiencia previa.
+
+La certificación exige el flujo y evidencia completos del package.
+
+#### 78. Brechas AS-IS que deben tratarse honestamente
+
+La línea base documental vigente identifica, entre otras:
+
+- ausencia de una superficie completa de planeación publicada;
+- creación de lote colapsada con preparación/inicio;
+- ausencia observada de pantalla dedicada de lote en curso;
+- ausencia observada de captura parcial dedicada;
+- `completed` visible sin demostrar cierre canónico completo;
+- calidad/liberación sin superficie dedicada observada;
+- empaque parcialmente colapsado;
+- merma/reproceso/cierre sin workflow dedicado completo;
+- trazabilidad integral de lote sin superficie dedicada observada.
+
+Estas brechas no se corrigen dentro de `UX-QA-025`; determinan casos que una futura instancia no puede declarar PASS hasta estar materializados y probados cuando pertenezcan a su alcance.
+
+#### 79. Frontera con `UX-QA-024`
+
+`UX-QA-024` certifica NEXO por rol operativo.
+
+`UX-QA-025` certifica FOGO por área productiva.
+
+La frontera queda:
+
+```text
+NEXO
+stock + ubicación + movimientos + reservas + logística
+
+FOGO
+plan + orden + lote + receta/versión + ejecución + calidad + empaque + rendimiento + cierre productivo
+```
+
+#### 80. Frontera con `UX-QA-026`
+
+`UX-QA-026` certificará ORIGO por etapa de compra.
+
+`UX-QA-025` no prueba:
+
+- solicitud de compra;
+- proveedor;
+- oferta;
+- aprobación de compra;
+- orden de compra;
+- recepción ORIGO;
+- corrección de recepción.
+
+Una necesidad de materiales para producción no convierte a FOGO en propietaria de compras.
+
+#### 81. Frontera con VISO y administración
+
+FOGO puede consumir planificación, capacidad o decisiones administrativas según contratos aprobados.
+
+No adquiere por ello ownership de:
+
+- administración laboral;
+- programación general;
+- estructura organizacional;
+- permisos base;
+- decisiones gerenciales ajenas al proceso productivo.
+
+#### 82. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea materializa una certificación ya exigida por cobertura FOGO, integración, autorización y UX vigente; no introduce una nueva obligación de prueba ni cambia el Registro Canónico de Requisitos de Prueba.
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, esta tarea reutiliza principalmente:
+
+- `TREQ-FOGO-001` — ciclo completo de lote, actor, turno, cantidades, consumo, desperdicio, resultado, finalización, cancelación/corrección e inventario auditable;
+- `TREQ-FOGO-002` — receta publicada inmutable y versionada, con snapshot suficiente por lote;
+- `TREQ-FOGO-003` — planificación productiva versionada, deduplicada y aprobada sin convertir señales en plan automático;
+- `TREQ-FOGO-004` — ejecución, calidad, empaque, genealogía, reproceso y cierre conciliado;
+- `TREQ-FOGO-013` — acceso protegido falla cerrado cuando faltan sesión, contexto o permiso;
+- `TREQ-FOGO-016` — evidencia ligada a repositorio, rama, commit, patrón y fuente;
+- `TREQ-FOGO-020` — una ruta, guard, permiso local o enlace no demuestra autorización ni proceso completo;
+- `TREQ-FOGO-023` — abrir `/production-batches/new` no autoriza creación y la mutación revalida actor/contexto/idempotencia;
+- `TREQ-FOGO-024` — FOGO conserva inventario y evidencia separados de NEXO y SHELL;
+- `TREQ-INTEGRATION-011` — efectos de producción sobre inventario mediante contrato NEXO correlacionado e idempotente;
+- `TREQ-INTEGRATION-013` — cadena producción → calidad → inventario → costo correlacionada e idempotente;
+- `TREQ-AUTH-017` — protección de acciones sensibles productivas;
+- `TREQ-UX-004` y `TREQ-UX-006` — representación segura y recuperable de estados productivos aplicables.
+
+Estas referencias son trazabilidad heredada y no una actualización del registro.
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea documental no ejecutó build del checkout local; la batería canónica permanece pendiente de ejecución local. |
+| LOCAL | NOT_EXECUTED | No se incorporó el bloque al checkout del usuario durante esta redacción anticipada y no se ejecutaron validadores locales del repositorio. |
+| REMOTA | PASS | Se verificaron en solo lectura `main` de `vento-shell`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner U, familia FOGO, matrices de área/rol/dispositivo, procesos `VPROC-0033..0037`, cobertura 04A FOGO y el runtime actual de `vento-fogo`; la existencia de páginas, lotes y recetas no se trató como evidencia suficiente de PASS. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con personal productivo ni escenarios en Cocina Caliente, Galletería y Panadería o Repostería. |
+| FÍSICA | NOT_EXECUTED | No se modificaron runtime, recetas, lotes, inventario, datos, Supabase, configuración, packages, ambientes ni despliegues; la materialización permanece detrás de `POST_E5_PACKAGE`. |
+
+#### 85. Criterios de aceptación
+
+- [ ] La tarea conserva exactamente la topología `PER_PACKAGE_AND_GLOBAL_FINAL`.
+- [ ] El gate permanece `POST_E5_PACKAGE`.
+- [ ] Cocina Caliente, Galletería y Panadería y Repostería se conservan como áreas canónicas separadas.
+- [ ] `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria` no se interpretan como permisos globales.
+- [ ] Área, rol, permiso, actor, turno, sede, recurso y estado permanecen separados.
+- [ ] `production_kitchen`, `production_bakery` y `production_pastry` no conceden autoridad.
+- [ ] El cambio de actor en dispositivo compartido recalcula área, permisos, datos y lote visible.
+- [ ] La cola del turno no presenta otra área como trabajo ejecutable.
+- [ ] Plan publicado no equivale a lote iniciado.
+- [ ] Abrir `/production-batches/new` no autoriza crear un lote.
+- [ ] Lote iniciado conserva receta y versión exactas.
+- [ ] Producción parcial no finaliza ni libera automáticamente.
+- [ ] Finalización productiva no equivale a liberación de calidad.
+- [ ] Empaque, etiquetado, liberación y transferencia permanecen separados.
+- [ ] FOGO no fabrica stock disponible; el handoff a NEXO conserva ownership.
+- [ ] Consumo FOGO y efecto NEXO no producen doble contabilización.
+- [ ] Merma/desperdicio no se infieren únicamente de una diferencia matemática.
+- [ ] Correcciones preservan historia.
+- [ ] Acceso directo revalida autoridad completa.
+- [ ] Cruces entre áreas se deniegan salvo capacidad superior explícita.
+- [ ] Retry/replay no producen doble efecto.
+- [ ] Resultado desconocido se reconcilia antes de repetir.
+- [ ] Evidencia stale no se acepta como vigente.
+- [ ] Cada hallazgo tiene owner y reprueba.
+- [ ] PASS por área no se propaga a otra área.
+- [ ] PASS por package no se propaga a otro package.
+- [ ] `GLOBAL-FINAL` no oculta áreas, packages, superficies o escenarios faltantes.
+- [ ] Se conservan cero cambios al Registro Canónico de Requisitos de Prueba.
+
+#### 86. Condiciones de fallo o bloqueo físico futuro
+
+La instancia física futura no puede cerrar PASS si:
+
+- no puede identificarse el área productiva efectiva;
+- no puede identificarse el actor efectivo;
+- el permiso se deriva únicamente del rol o área;
+- el contexto requerido está ausente o es incompatible;
+- la UI permite trabajar sobre otra área sin autoridad explícita;
+- el lote usa receta o versión incorrecta;
+- un parcial cierra el lote indebidamente;
+- finalización se trata como liberación de calidad;
+- producto no liberado se publica como inventario disponible;
+- una operación duplicada produce dos efectos;
+- una corrección reescribe historia;
+- la evidencia no permite distinguir intento de resultado confirmado;
+- la evidencia es stale;
+- falta una superficie o dispositivo obligatorio del package;
+- existe un defecto crítico de autorización, inocuidad o calidad que impide ejecutar el escenario de forma segura.
+
+#### 87. Límites
+
+Esta tarea:
+
+- no modifica `FOGO-AUTH-*`;
+- no modifica `FOGO-UX-*`;
+- no modifica procesos `VPROC-*`;
+- no modifica estados de proceso;
+- no modifica runtime de FOGO;
+- no modifica permisos;
+- no modifica roles base;
+- no modifica roles operativos;
+- no modifica áreas;
+- no modifica grants ni denies;
+- no modifica turnos;
+- no modifica recetas;
+- no publica recetas;
+- no crea planes;
+- no publica planes;
+- no crea órdenes productivas;
+- no crea lotes;
+- no inicia producción;
+- no registra parciales;
+- no finaliza producción;
+- no libera calidad;
+- no registra merma;
+- no corrige lotes;
+- no ejecuta reproceso;
+- no empaca producto;
+- no imprime etiquetas;
+- no modifica inventario;
+- no crea movimientos NEXO;
+- no modifica costos NUMERA;
+- no modifica navegación;
+- no modifica ownership;
+- no modifica handoffs;
+- no modifica auditoría runtime;
+- no modifica datos;
+- no modifica Supabase;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no modifica Edge Functions;
+- no despliega;
+- no crea cuentas de prueba;
+- no abre acceso a usuarios reales;
+- no ejecuta piloto;
+- no ejecuta hypercare;
+- no certifica cierre de package por sí sola;
+- no corrige hallazgos físicos;
+- no crea TREQ;
+- no modifica TREQ;
+- no modifica 04A;
+- no desarrolla ORIGO ni `UX-QA-026`.
+
+#### 88. Handoff a `UX-QA-026`
+
+`UX-QA-025` entrega a `UX-QA-026` únicamente contratos reutilizables de certificación:
+
+- método de especialización por aplicación y package;
+- identidad de escenario por actor, contexto, recurso, build y ambiente;
+- separación entre dimensión operativa y autorización;
+- tratamiento de dispositivos compartidos;
+- protocolo de evidencia humana y técnica;
+- contrato de findings, severidad y retest;
+- tratamiento de stale, resultado desconocido, retry y reconciliación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que ownership y handoff no transfieren autoridad;
+- criterio PASS por dimensión aplicable y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar una etapa, superficie o escenario aplicable mediante agregación.
+
+No transfiere a ORIGO ownership de plan, orden productiva, lote, receta, ejecución, calidad, empaque, rendimiento ni cierre productivo FOGO.
+
+`UX-QA-026` deberá concretar ORIGO por etapa de compra usando sus propios contratos, estados, actores, superficies y owners.
+
+#### 89. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-024 — Probar NEXO por rol operativo`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-025 — Probar FOGO por área productiva`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-026 — Probar ORIGO por etapa de compra`
 ### [ ] UX-QA-026 — Probar ORIGO por etapa de compra
 ### [ ] UX-QA-027 — Probar PULSO por punto operativo
 ### [ ] UX-QA-028 — Probar NUMERA por alcance financiero

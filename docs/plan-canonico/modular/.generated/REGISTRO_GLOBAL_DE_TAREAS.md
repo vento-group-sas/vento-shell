@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1577** |
+| Aprobadas | **1578** |
 | En propuesta | **0** |
-| No iniciadas | **19** |
+| No iniciadas | **18** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.81% (1577/1596)** |
+| Porcentaje de completamiento | **98.87% (1578/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **19** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1478** |
+| ⏸ NO_EVALUADA | **18** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1479** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-024` — Probar NEXO por rol operativo | ✅ APROBADA |
-| Tarea actual | `UX-QA-025` — Probar FOGO por área productiva | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-026` — Probar ORIGO por etapa de compra | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-025` — Probar FOGO por área productiva | ✅ APROBADA |
+| Tarea actual | `UX-QA-026` — Probar ORIGO por etapa de compra | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-027` — Probar PULSO por punto operativo | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1409,7 +1409,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-022` | Probar ANIMA con trabajadores y administradores | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-023` | Probar VISO por rol administrativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-024` | Probar NEXO por rol operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-025` | Probar FOGO por área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-025` | Probar FOGO por área productiva | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-026` | Probar ORIGO por etapa de compra | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-027` | Probar PULSO por punto operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-028` | Probar NUMERA por alcance financiero | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
