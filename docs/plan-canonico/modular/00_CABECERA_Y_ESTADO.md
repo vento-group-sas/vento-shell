@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1566** |
+| Tareas aprobadas | **1567** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **30** |
+| Tareas no iniciadas | **29** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **98.12% (1566/1596)** |
+| Porcentaje de completamiento | **98.18% (1567/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **UX-QA-013 — El retorno conserva el proceso cuando corresponde** |
-| Tarea actual | **UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo** |
+| Última tarea aprobada | **UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo** |
+| Tarea actual | **UX-QA-015 — Los bloqueos se entienden sin códigos técnicos** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **UX-QA-015 — Los bloqueos se entienden sin códigos técnicos** |
+| Siguiente tarea | **UX-QA-016 — La información sensible se oculta correctamente** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 43 de 60 aprobadas; UX-QA-014 pendiente** |
+| Progreso del bloque | **BLOQUE U: 44 de 60 aprobadas; UX-QA-015 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — UX-QA-014** |
+| Carril documental | **ACTIVO — UX-QA-015** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `UX-QA-013` — El retorno conserva el proceso cuando corresponde |
-| Tarea actual | `UX-QA-014` — El trabajador completa la tarea dentro del tiempo objetivo — **NO INICIADA** |
-| Siguiente tarea | `UX-QA-015` — Los bloqueos se entienden sin códigos técnicos |
+| Última aprobada | `UX-QA-014` — El trabajador completa la tarea dentro del tiempo objetivo |
+| Tarea actual | `UX-QA-015` — Los bloqueos se entienden sin códigos técnicos — **NO INICIADA** |
+| Siguiente tarea | `UX-QA-016` — La información sensible se oculta correctamente |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 43 DE 60 APROBADAS — ACTUAL UX-QA-014** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 44 DE 60 APROBADAS — ACTUAL UX-QA-015** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-UX-QA-013 — El retorno conserva el proceso cuando corresponde
-        ↓
-TAREA ACTUAL
 UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
         ↓
+SIGUIENTE TAREA RESERVADA
+UX-QA-016 — La información sensible se oculta correctamente
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 43 de 60 tareas aprobadas
+BLOQUE U — 44 de 60 tareas aprobadas
 ```
