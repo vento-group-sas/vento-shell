@@ -30565,7 +30565,1703 @@ No transfiere a ORIGO ownership de plan, orden productiva, lote, receta, ejecuci
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-026 — Probar ORIGO por etapa de compra`
-### [ ] UX-QA-026 — Probar ORIGO por etapa de compra
+### ✅ UX-QA-026 — Probar ORIGO por etapa de compra
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-025 — Probar FOGO por área productiva
+**Tarea siguiente:** UX-QA-027 — Probar PULSO por punto operativo
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de ORIGO por etapa de compra, demostrando por package y globalmente que necesidad, solicitud, sourcing, preparación de orden, aprobación, emisión, seguimiento, recepción, resolución de diferencias, handoff a inventario, handoff económico, corrección y auditoría conservan su identidad, estado, actor, autoridad, versión, territorio, datos sensibles e idempotencia sin colapsar etapas ni transferir ownership entre ORIGO, NEXO y NUMERA, consumiendo `UX-QA-020`, `UX-QA-025`, `ORIGO-AUTH-001..015`, `ORIGO-UX-001..016`, `VPROC-0019..0022` y la cobertura vigente sin reabrir contratos empresariales ya aprobados
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de ORIGO por etapa de compra definido; las ejecuciones `UX-QA-026::<package_id>` y `UX-QA-026::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física aplicable de ORIGO y del piloto sin ejecutar sesiones humanas, modificar runtime, datos, Supabase, órdenes, proveedores, recepciones, inventario, hechos económicos, packages, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, navegación, procesos, estados, proveedores, contratos, precios, órdenes, aprobaciones, recepciones, inventario, datos, Supabase, migraciones, RLS, RPC, Storage, secretos, packages, ambientes, despliegues ni cuentas de prueba
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que ORIGO funciona correctamente por etapa de compra sin convertir la existencia de una orden, una ruta visible, un rol, un estado simplificado del runtime o un handoff técnico en evidencia suficiente de que el ciclo de abastecimiento completo está correcto.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿QUÉ ETAPA DEL CICLO DE COMPRA ESTÁ SIENDO PROBADA?
+¿QUÉ PROCESO CANÓNICO ES PROPIETARIO?
+¿QUÉ ACTOR Y FUNCIÓN INTERVIENEN?
+¿QUÉ VERSIÓN DEL OBJETO SE ESTÁ EVALUANDO?
+¿QUÉ PERMISO, TERRITORIO, RECURSO Y ESTADO SON APLICABLES?
+¿QUÉ PANTALLA O SUPERFICIE REPRESENTA ESA ETAPA?
+¿QUÉ ENTRADA AUTORIZA LA ETAPA?
+¿QUÉ RESULTADO PRODUCE?
+¿QUÉ RESULTADO NO PRODUCE TODAVÍA?
+¿EL HANDOFF CONSERVA OWNER E IDENTIDAD?
+¿UN REPLAY RECUPERA EL RESULTADO SIN DUPLICAR EFECTOS?
+¿UN RESULTADO DESCONOCIDO SE RECONCILIA ANTES DE REINTENTAR?
+¿LA CORRECCIÓN CONSERVA EL ORIGINAL?
+¿LOS DATOS ECONÓMICOS SE MINIMIZAN SEGÚN AUTORIDAD?
+¿LOS HALLAZGOS TIENEN OWNER, SEVERIDAD Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+ETAPA CANÓNICA
++
+ACTOR EFECTIVO
++
+FUNCIÓN APLICABLE
++
+AUTORIDAD EXPLÍCITA
++
+RECURSO / TERRITORIO / ESTADO / VERSIÓN
++
+EVIDENCIA DE ENTRADA
++
+TRANSICIÓN EMPRESARIAL
++
+HANDOFFS CORRELACIONADOS
++
+IDEMPOTENCIA Y RECUPERACIÓN
+=
+ETAPA DE COMPRA CERTIFICABLE
+```
+
+No es válido:
+
+```text
+ORDEN CREADA
+=
+COMPRA APROBADA
+```
+
+ni:
+
+```text
+ORDEN ENVIADA
+=
+COMPROMISO FORMALIZADO
+```
+
+ni:
+
+```text
+RECEPCIÓN REGISTRADA
+=
+STOCK NEXO CONFIRMADO
+```
+
+ni:
+
+```text
+ENTRADA DE INVENTARIO
+=
+OBLIGACIÓN ECONÓMICA
+```
+
+#### 2. Resultado documental
+
+`UX-QA-026` define el contrato específico de certificación de ORIGO por etapa de compra y por package.
+
+El resultado establece:
+
+- universo canónico de cuatro procesos ORIGO;
+- catorce pantallas canónicas de abastecimiento;
+- macroetapas de certificación derivadas de `VPROC-0019..0022` sin crear procesos nuevos;
+- separación entre etapa, función humana, rol, permiso y actor;
+- criterios positivos y negativos por etapa;
+- cobertura de recepción total, parcial, diferencia, corrección y contingencia;
+- frontera ORIGO ↔ NEXO;
+- frontera ORIGO ↔ NUMERA;
+- tratamiento de precios y datos sensibles;
+- tratamiento de versiones, concurrencia, idempotencia y resultado desconocido;
+- criterio PASS por etapa aplicable;
+- criterio PASS por package;
+- criterio `GLOBAL-FINAL`;
+- evidencia mínima por escenario y tratamiento de hallazgos;
+- lectura honesta del runtime AS-IS sin convertir cobertura parcial en certificación.
+
+#### 3. Topología contractual
+
+La etapa activa `PHASE-13-U-INTEGRAL-CERTIFICATION` aplica a `UX-QA-026`:
+
+```text
+mode = PER_PACKAGE_AND_GLOBAL_FINAL
+execution_gate = POST_E5_PACKAGE
+```
+
+Identidades físicas futuras:
+
+```text
+UX-QA-026::<package_id>
+UX-QA-026::GLOBAL-FINAL
+```
+
+Consecuencias:
+
+1. este marcador define el contrato una sola vez;
+2. cada package aplicable conserva su propia ejecución;
+3. la certificación agregada utiliza `GLOBAL-FINAL`;
+4. la aprobación documental no autoriza ninguna ejecución física;
+5. ninguna sesión humana, dato, compra, recepción o efecto real se ejecuta desde esta tarea documental.
+
+#### 4. Handoff recibido de `UX-QA-025`
+
+`UX-QA-025` entrega la disciplina transversal ya especializada para una aplicación operativa:
+
+- evidencia por escenario;
+- distinción entre contrato, runtime AS-IS y certificación real;
+- separación entre actor, rol, permiso, dispositivo, territorio y contexto;
+- criterio PASS por unidad aplicable;
+- criterio PASS por package;
+- criterio `GLOBAL-FINAL`;
+- tratamiento de hallazgos, reprueba, stale evidence y resultado desconocido;
+- prohibición de convertir la existencia de UI, estado o ruta en autoridad o PASS.
+
+`UX-QA-026` conserva esas invariantes y cambia el eje de especialización de **área productiva** a **etapa de compra**.
+
+#### 5. Contrato transversal heredado de `UX-QA-020`
+
+La certificación específica de ORIGO consume el contrato común de `UX-QA-020` para:
+
+- usuarios reales dentro de alcance;
+- evidencia atribuible al mismo candidato y ambiente;
+- cobertura de `UX-QA-001..019` cuando aplique;
+- selección proporcional de escenarios;
+- condiciones ordinarias y de recuperación;
+- errores comprensibles;
+- accesibilidad;
+- continuidad entre aplicaciones;
+- ausencia de doble registro manual;
+- idempotencia;
+- recuperación ante fallos parciales;
+- findings con owner y severidad;
+- no equivalencia entre tiempo transcurrido y suficiencia de evidencia.
+
+Esta tarea no redefine ese contrato transversal.
+
+#### 6. Base especializada ORIGO
+
+La certificación consume como fuente especializada:
+
+- `ORIGO-AUTH-001..015`;
+- `ORIGO-UX-001..016`;
+- `VPROC-0019..0022`;
+- `VSCREEN-0068..0079`;
+- `VSCREEN-0145..0146`;
+- contratos de integración ORIGO ↔ NEXO y ORIGO ↔ NUMERA;
+- contratos de dispositivo compartido y actor efectivo aplicables;
+- requisitos vigentes de autorización, UX, integración, NEXO, NUMERA y Supabase;
+- runtime observado de `vento-origo`.
+
+La tarea no reabre las decisiones empresariales ya cerradas por esos contratos.
+
+#### 7. Universo canónico de procesos ORIGO
+
+La certificación conserva exactamente cuatro procesos propietarios de ORIGO para el ciclo de abastecimiento externo:
+
+| Proceso | Nombre contractual | Verdad principal |
+| --- | --- | --- |
+| `VPROC-0019` | Capturar y priorizar necesidades de compra mediante una entrada única y trazable | necesidad válida transferida a abastecimiento |
+| `VPROC-0020` | Comparar proveedores y condiciones con evidencia suficiente para decidir | sourcing y selección sustentados |
+| `VPROC-0021` | Aprobar y emitir compras separando flujo ordinario, urgencia y excepción | compromiso de compra formalizado |
+| `VPROC-0022` | Recibir compras, verificar conformidad y resolver diferencias sin separar recepción física, documental y económica | recepción reconciliada dentro de su alcance |
+
+No se crea un quinto proceso por la palabra “aprobación”, “recepción parcial”, “diferencia”, “inventario” o “pago”.
+
+#### 8. Macroetapas de certificación
+
+Para organizar la prueba, `UX-QA-026` agrupa el ciclo en etapas de certificación sin cambiar los estados de proceso:
+
+```text
+E1 NECESIDAD Y SOLICITUD
+E2 SOURCING Y CONDICIONES
+E3 PREPARACIÓN DE COMPRA
+E4 APROBACIÓN Y EMISIÓN
+E5 SEGUIMIENTO DEL COMPROMISO
+E6 RECEPCIÓN Y VERIFICACIÓN
+E7 DIFERENCIAS Y ACEPTACIÓN
+E8 HANDOFF FÍSICO A NEXO
+E9 HANDOFF ECONÓMICO A NUMERA
+E10 CORRECCIÓN, CONCILIACIÓN Y AUDITORÍA
+```
+
+Estas etiquetas son organización de QA. No son enums persistidos, procesos nuevos ni estados adicionales.
+
+#### 9. Etapa no equivale a actor
+
+Una etapa puede involucrar más de una función humana.
+
+Por tanto:
+
+```text
+ETAPA
+!=
+ROL
+```
+
+Ejemplos:
+
+- sourcing puede involucrar comprador y autoridad revisora;
+- aprobación puede involucrar comprador como preparador y aprobador como decisor;
+- recepción puede involucrar receptor, supervisor y comprador ante diferencias;
+- auditoría puede ser consultada por varios actores autorizados.
+
+#### 10. Etapa no equivale a permiso
+
+La pertenencia de una acción a una etapa no concede capacidad.
+
+Debe conservarse:
+
+```text
+ETAPA
++
+ACTOR
++
+CARRIL DE AUTORIZACIÓN
++
+PERMISO EXACTO
++
+RECURSO
++
+TERRITORIO
++
+ESTADO
++
+VERSIÓN
++
+DENIES
+=
+AUTORIDAD EFECTIVA
+```
+
+La UX puede representar la etapa; la autoridad se decide en su propietario de autorización.
+
+#### 11. Funciones humanas mínimas
+
+La experiencia ORIGO distingue cuatro funciones funcionales sin crear roles nuevos:
+
+```text
+SOLICITANTE
+COMPRADOR
+APROBADOR
+RECEPTOR
+```
+
+Una misma persona puede ser elegible para más de una función únicamente cuando el modelo de autorización y segregación lo permita.
+
+#### 12. Segregación funcional
+
+La certificación deberá detectar y bloquear, cuando corresponda:
+
+- solicitante que se autoautoriza por haber creado la necesidad;
+- comprador que se autoaprueba por haber preparado la orden;
+- receptor que obtiene autoridad económica por estar físicamente en recepción;
+- administrador que recibe capacidad operativa por abrir una superficie;
+- rol operativo que adquiere permisos de compra administrativa por usar un dispositivo compartido.
+
+La visibilidad no sustituye segregación.
+
+#### 13. Etapa E1 — necesidad y solicitud
+
+`VPROC-0019` inicia en:
+
+```text
+VPROC-0019.PURCHASE_NEED_SUBMITTED
+```
+
+y puede recorrer:
+
+```text
+UNDER_VALIDATION
+PRIORITIZED
+APPROVED_FOR_SOURCING
+SOURCING_REQUESTED
+CONSOLIDATION_PENDING
+PURCHASE_NEED_HANDOFF_COMPLETED
+```
+
+La prueba deberá demostrar que la necesidad conserva origen, cantidad o resultado esperado, fecha requerida y justificación mínima.
+
+#### 14. Necesidad no equivale a orden
+
+Regla obligatoria:
+
+```text
+PURCHASE_NEED_SUBMITTED
+!=
+PURCHASE ORDER
+```
+
+Crear o priorizar una necesidad no debe:
+
+- seleccionar proveedor por sí sola;
+- emitir orden;
+- crear compromiso económico;
+- registrar recepción;
+- afectar inventario.
+
+#### 15. Pantallas de E1
+
+La etapa usa principalmente:
+
+```text
+VSCREEN-0068 — Bandeja de necesidades de compra
+VSCREEN-0069 — Solicitud de compra
+```
+
+La certificación debe comprobar que el solicitante puede distinguir:
+
+- qué necesita;
+- para cuándo;
+- para qué sede o centro aplicable;
+- estado de la solicitud;
+- siguiente acción disponible;
+- información que todavía no le corresponde decidir.
+
+#### 16. Etapa E2 — sourcing y condiciones
+
+`VPROC-0020` inicia en:
+
+```text
+VPROC-0020.SOURCING_CASE_OPENED
+```
+
+y recorre:
+
+```text
+MARKET_REVIEW_IN_PROGRESS
+QUOTES_PENDING
+COMPARISON_IN_PROGRESS
+RECOMMENDATION_PREPARED
+DECISION_PENDING
+SUPPLIER_SELECTED
+SOURCING_DECISION_COMPLETED
+```
+
+La prueba debe demostrar que la comparación conserva evidencia suficiente y no convierte una recomendación en una selección autorizada por defecto.
+
+#### 17. Pantallas de E2
+
+La etapa se apoya en:
+
+```text
+VSCREEN-0070 — Catálogo de proveedores
+VSCREEN-0071 — Alta y expediente de proveedor
+VSCREEN-0072 — Comparación de cotizaciones
+VSCREEN-0145 — Contratos, precios y condiciones de proveedor
+VSCREEN-0146 — Desempeño y reclamaciones de proveedor
+```
+
+La certificación no exige que todo actor vea todas esas superficies.
+
+#### 18. Proveedor CRUD no equivale a sourcing completo
+
+La existencia de alta, edición o consulta de proveedor no demuestra:
+
+- RFQ;
+- cotizaciones comparables;
+- vigencias;
+- costo total;
+- calidad o servicio;
+- riesgo;
+- recomendación;
+- decisión autorizada.
+
+Por tanto:
+
+```text
+PROVEEDOR CRUD
+!=
+VPROC-0020 COMPLETE
+```
+
+#### 19. Etapa E3 — preparación de compra
+
+La preparación de compra pertenece a `VPROC-0021` y debe partir de una propuesta suficientemente sustentada.
+
+Pantalla principal:
+
+```text
+VSCREEN-0073 — Editor de orden de compra
+```
+
+La etapa conserva:
+
+- necesidad;
+- proveedor;
+- condiciones;
+- líneas;
+- cantidades;
+- precios y moneda cuando el actor puede verlos;
+- sede o centro de costo;
+- evidencia de sourcing;
+- versión preparada.
+
+#### 20. Crear orden no equivale a aprobar
+
+La prueba debe impedir esta interpretación:
+
+```text
+CREATE PURCHASE ORDER
+=
+APPROVED PURCHASE
+```
+
+Una orden preparada puede existir sin autoridad de aprobación.
+
+La creación no concede:
+
+- approve;
+- issue;
+- receive;
+- reverse;
+- inventario;
+- pago.
+
+#### 21. Etapa E4 — aprobación y emisión
+
+`VPROC-0021` conserva la secuencia normal:
+
+```text
+PURCHASE_REQUEST_PENDING_APPROVAL
+→ UNDER_REVIEW
+→ PENDING_APPROVAL
+→ APPROVED
+→ ORDER_PREPARING
+→ ORDER_ISSUED
+→ SUPPLIER_ACK_PENDING
+→ PURCHASE_COMMITMENT_FORMALIZED
+```
+
+La experiencia de aprobación se representa principalmente en:
+
+```text
+VSCREEN-0074 — Bandeja de aprobaciones de compra
+VSCREEN-0075 — Detalle y seguimiento de orden
+```
+
+#### 22. Aprobación no equivale a emisión
+
+Debe conservarse:
+
+```text
+APPROVED
+!=
+ORDER_ISSUED
+```
+
+La aprobación autoriza la compra bajo una versión concreta; la emisión materializa el documento o comunicación correspondiente.
+
+#### 23. Emisión no equivale a confirmación del proveedor
+
+Debe conservarse:
+
+```text
+ORDER_ISSUED
+!=
+SUPPLIER_ACK_PENDING RESUELTO
+!=
+PURCHASE_COMMITMENT_FORMALIZED
+```
+
+Un documento enviado no prueba aceptación o reconocimiento del proveedor.
+
+#### 24. Versión evaluada
+
+Toda decisión de aprobación debe quedar asociada a una versión identificable.
+
+Si cambia materialmente:
+
+- proveedor;
+- cantidad;
+- precio;
+- impuestos;
+- flete;
+- condiciones de pago;
+- fecha;
+- sede;
+- centro de costo;
+- productos o presentaciones;
+- evidencia relevante;
+
+la certificación deberá demostrar el tratamiento de reaprobación aplicable.
+
+#### 25. Rechazo y devolución
+
+Rechazar o devolver una propuesta no debe:
+
+- borrar la propuesta evaluada;
+- sobrescribir la evidencia original;
+- convertir el rechazo en cancelación automática de otro proceso;
+- crear una orden nueva sin identidad;
+- ocultar quién decidió y sobre qué versión.
+
+#### 26. Compra ordinaria, urgente y excepcional
+
+Cuando el package incluya carriles urgentes o excepcionales, la prueba debe conservar:
+
+- causa;
+- límite;
+- autoridad;
+- plazo de regularización;
+- evidencia;
+- ausencia de bypass sobre proveedor, líneas, recepción y conciliación.
+
+Urgencia no equivale a ausencia de gobierno.
+
+#### 27. Etapa E5 — seguimiento del compromiso
+
+`VSCREEN-0075` debe permitir distinguir, según aplique:
+
+- versión aprobada;
+- orden emitida;
+- confirmación pendiente;
+- entrega esperada;
+- cambios materiales;
+- documentos;
+- pendientes;
+- recepción iniciada;
+- recepción parcial;
+- cierre pendiente.
+
+La etapa no sustituye la recepción.
+
+#### 28. Etapa E6 — recepción y verificación
+
+`VPROC-0022` inicia en:
+
+```text
+VPROC-0022.RECEIPT_EXPECTED
+```
+
+y conserva:
+
+```text
+ARRIVAL_REGISTERED
+PHYSICAL_CHECK_IN_PROGRESS
+DOCUMENT_CHECK_IN_PROGRESS
+DIFFERENCE_UNDER_REVIEW
+ACCEPTANCE_PENDING
+PUTAWAY_PENDING
+ECONOMIC_RECONCILIATION_PENDING
+RECEIPT_RECONCILED
+```
+
+Pantallas principales:
+
+```text
+VSCREEN-0076 — Cola de recepciones
+VSCREEN-0077 — Recepción total o parcial
+VSCREEN-0078 — Resolución de diferencias de recepción
+VSCREEN-0079 — Historial y auditoría de abastecimiento
+```
+
+#### 29. Recepción esperada no equivale a mercancía aceptada
+
+Debe conservarse:
+
+```text
+RECEIPT_EXPECTED
+!=
+ARRIVAL_REGISTERED
+!=
+ACCEPTANCE_PENDING RESUELTO
+!=
+RECEIPT_RECONCILED
+```
+
+La existencia de una entrega prevista no crea stock ni aceptación.
+
+#### 30. Llegada registrada
+
+La etapa de llegada debe permitir identificar, cuando aplique:
+
+- proveedor;
+- orden o referencia;
+- vehículo o entrega;
+- documento;
+- sede;
+- hora o momento de llegada;
+- actor receptor.
+
+Registrar llegada no acepta todavía cantidades, condición ni documentos.
+
+#### 31. Verificación física
+
+La certificación deberá comprobar que el receptor distingue lo esperado de lo observado.
+
+Pueden ser materiales, cuando apliquen:
+
+- producto;
+- presentación;
+- cantidad;
+- lote;
+- serial;
+- vencimiento;
+- condición;
+- temperatura;
+- evidencia.
+
+#### 32. Verificación documental
+
+La prueba deberá comprobar comparación contra los documentos pertinentes, por ejemplo:
+
+- orden;
+- factura;
+- remisión;
+- certificados;
+- condiciones pactadas.
+
+La presencia de un documento no prueba conformidad por sí sola.
+
+#### 33. Recepción total
+
+“Total” se evalúa contra el saldo recibible válido de la compra y no contra una suposición de “primera entrega”.
+
+Debe conservarse:
+
+```text
+TOTAL
+=
+ALCANCE ESPERADO ACEPTABLE COMPLETAMENTE CUBIERTO
+```
+
+no:
+
+```text
+TOTAL
+=
+PRIMERA RECEPCIÓN
+```
+
+#### 34. Recepción parcial
+
+Una recepción parcial conserva:
+
+- identidad propia de llegada;
+- cantidad observada;
+- cantidad aceptada;
+- acumulado previo;
+- saldo residual;
+- líneas todavía abiertas;
+- correlación con orden y recepciones anteriores.
+
+Parcialidad no equivale automáticamente a diferencia.
+
+#### 35. Parcialidad no equivale a diferencia
+
+Regla:
+
+```text
+RECEPCIÓN PARCIAL PLANIFICADA
+!=
+DIFERENCIA
+```
+
+Una entrega parcial puede ser válida y esperada.
+
+La certificación debe verificar que la UX no marque como error lo que es una entrega parcial legítima ni oculte una diferencia real detrás de una parcialidad.
+
+#### 36. Etapa E7 — diferencias y aceptación
+
+Las diferencias mínimas contempladas por el contrato incluyen:
+
+- cantidad;
+- exceso;
+- calidad o condición;
+- precio;
+- documento;
+- presentación.
+
+Pueden coexistir varias diferencias en una misma recepción.
+
+#### 37. Pedido, observado, diferencia, decisión y efecto
+
+La experiencia debe conservar la cadena:
+
+```text
+PEDIDO
+→ OBSERVADO
+→ DIFERENCIA
+→ DECISIÓN
+→ EFECTO
+```
+
+Resolver una diferencia no reescribe el pedido ni la observación original.
+
+#### 38. Aceptación
+
+La decisión de aceptar total, parcial o condicionalmente debe:
+
+- identificar alcance aceptado;
+- conservar diferencias no resueltas;
+- conservar actor;
+- conservar evidencia;
+- no crear stock directamente si el owner físico es NEXO;
+- no crear obligación económica por inferencia.
+
+#### 39. Precios y datos sensibles en recepción
+
+Un receptor que necesita verificar cantidades y documentos no adquiere automáticamente finalidad económica para ver:
+
+- costos unitarios;
+- margen;
+- comparativos internos;
+- contratos sensibles;
+- condiciones no necesarias;
+- datos bancarios;
+- scoring interno.
+
+La minimización debe aplicarse de extremo a extremo, no solo ocultando columnas visualmente.
+
+#### 40. Etapa E8 — handoff físico a NEXO
+
+Después de la aceptación aplicable:
+
+```text
+ORIGO
+→ publica / entrega hecho de recepción aceptada
+
+NEXO
+→ valida y materializa verdad física de inventario
+```
+
+Debe conservarse:
+
+```text
+RECEPCIÓN ORIGO
+!=
+ENTRADA NEXO
+```
+
+#### 41. No repetir recepción manualmente en NEXO
+
+La prueba debe comprobar que el usuario no vuelve a digitar como nuevo hecho de origen datos ya capturados correctamente por ORIGO.
+
+NEXO sí puede requerir datos físicos propietarios que ORIGO no controla, por ejemplo ubicación, LOC, condición física final o elementos propios del ledger de inventario.
+
+#### 42. `record_only`
+
+Cuando una recepción sea `record_only`:
+
+```text
+REGISTRO ORIGO
+!=
+MOVIMIENTO DE INVENTARIO
+```
+
+La certificación debe impedir que la modalidad cree stock ficticio o un handoff NEXO que el contrato no autoriza.
+
+#### 43. Recepción directa o de emergencia
+
+Cuando el alcance aprobado permita una recepción directa/emergencia sin orden, la experiencia debe:
+
+- identificar la modalidad;
+- exigir causa y autoridad aplicables;
+- conservar proveedor y evidencia;
+- no fabricar una orden retroactiva;
+- regularizar lo que el contrato exija;
+- conservar correlación posterior.
+
+No se usa para evadir el flujo ordinario.
+
+#### 44. Etapa E9 — handoff económico a NUMERA
+
+La recepción aceptada puede originar un evento económico correlacionable.
+
+Debe conservarse:
+
+```text
+ORIGO
+→ HECHO FUENTE DE COMPRA / RECEPCIÓN
+
+NUMERA
+→ CLASIFICA Y RECONCILIA EFECTO ECONÓMICO
+```
+
+Sin duplicar el hecho empresarial de origen.
+
+#### 45. Entrada NEXO no equivale a obligación
+
+Debe permanecer explícito:
+
+```text
+MOVIMIENTO FÍSICO NEXO
+!=
+OBLIGACIÓN NUMERA
+```
+
+Un movimiento físico puede ser evidencia complementaria, pero no crea por sí mismo deuda ni pago.
+
+#### 46. Hecho económico no equivale a pago
+
+Debe conservarse:
+
+```text
+HECHO ECONÓMICO
+!=
+OBLIGACIÓN APROBADA
+!=
+PAGO
+!=
+CONCILIACIÓN BANCARIA
+```
+
+`UX-QA-026` solo comprueba que la experiencia ORIGO no colapse esas verdades.
+
+#### 47. Etapa E10 — corrección, conciliación y auditoría
+
+La etapa final de certificación cubre, según alcance:
+
+- corrección;
+- reversión;
+- reemplazo;
+- replay;
+- contingencia;
+- reconciliación;
+- historial y auditoría.
+
+Ninguna de estas acciones debe borrar el hecho original.
+
+#### 48. Corrección no equivale a borrado
+
+Regla:
+
+```text
+CORRECCIÓN
+=
+ORIGINAL PRESERVADO
++
+EVENTO COMPENSATORIO / REEMPLAZO CORRELACIONADO
+```
+
+No se acepta una UX que haga parecer que el hecho incorrecto “nunca existió” cuando ya produjo consecuencias.
+
+#### 49. Reversión
+
+Una reversión debe demostrar, cuando aplique:
+
+- autoridad exacta;
+- causal;
+- estado elegible;
+- referencia al original;
+- efectos compensatorios;
+- tratamiento de inventario y economía;
+- resultado final reconciliable.
+
+#### 50. Historial y auditoría
+
+`VSCREEN-0079` debe permitir reconstruir, según alcance:
+
+```text
+NECESIDAD
+→ SOURCING
+→ SELECCIÓN
+→ PROPUESTA DE COMPRA
+→ APROBACIÓN / RECHAZO
+→ EMISIÓN
+→ CONFIRMACIÓN
+→ RECEPCIÓN
+→ DIFERENCIAS
+→ ACEPTACIÓN
+→ HANDOFF NEXO
+→ HANDOFF NUMERA
+→ CORRECCIÓN / REPLAY
+→ RESULTADO FINAL
+```
+
+Sin crear un ledger paralelo que sustituya a las aplicaciones propietarias.
+
+#### 51. Territorialidad
+
+La certificación debe comprobar que sede, centro de costo, destino y relación con el recurso se revalidan donde corresponda.
+
+No es válido:
+
+```text
+site_id EN QUERY
+=
+AUTORIZACIÓN TERRITORIAL
+```
+
+ni:
+
+```text
+ORDEN VISIBLE
+=
+ORDEN MUTABLE
+```
+
+#### 52. Acceso directo por URL
+
+Conocer un `id`, modificar query parameters o abrir una ruta dinámica no concede autoridad.
+
+La prueba negativa debe incluir accesos directos cuando el riesgo material del package lo exija.
+
+#### 53. Dispositivo compartido y actor efectivo
+
+Cuando recepción utilice un dispositivo compartido, debe preservarse:
+
+```text
+DISPOSITIVO
+!=
+ACTOR HUMANO
+```
+
+La evidencia deberá identificar al actor efectivo de la acción sensible y conservar contexto operativo aplicable.
+
+#### 54. Administración sin check-in artificial
+
+Las capacidades administrativas de compra que contractualmente son de carril base no deberán exigir artificialmente turno o check-in solo porque ORIGO también posea recepción operativa.
+
+La certificación separa:
+
+```text
+ADMINISTRACIÓN BASE
+!=
+RECEPCIÓN OPERATIVA
+```
+
+#### 55. Frontera ORIGO ↔ NEXO
+
+ORIGO conserva:
+
+- necesidad de compra;
+- sourcing;
+- proveedor y condiciones bajo su contrato;
+- propuesta y orden;
+- aprobación y emisión;
+- aceptación comercial/documental de recepción;
+- diferencias de compra;
+- correlación de handoff.
+
+NEXO conserva:
+
+- stock físico;
+- LOC;
+- ubicación;
+- movimientos;
+- saldo;
+- condición física del inventario;
+- custodia física posterior.
+
+#### 56. Frontera ORIGO ↔ NUMERA
+
+ORIGO conserva el hecho fuente de compra y recepción.
+
+NUMERA conserva:
+
+- hecho económico derivado;
+- obligación;
+- aprobación económica cuando corresponda;
+- pago;
+- tesorería;
+- conciliación;
+- contabilidad y cierre financiero aplicables.
+
+ORIGO no fabrica resultados financieros para presentar el ciclo como completo.
+
+#### 57. Frontera ORIGO ↔ FOGO
+
+FOGO puede originar necesidades o consumir disponibilidad de abastecimiento, pero:
+
+```text
+NECESIDAD PRODUCTIVA
+!=
+ORDEN DE COMPRA
+```
+
+ORIGO conserva el proceso de compra; FOGO conserva planificación y ejecución productiva.
+
+#### 58. Frontera ORIGO ↔ PULSO
+
+Una señal comercial o de demanda puede alimentar necesidad o prioridad, pero:
+
+```text
+VENTA / DEMANDA
+!=
+COMPRA APROBADA
+```
+
+Ninguna señal externa crea por sí sola un compromiso con proveedor.
+
+#### 59. Idempotencia
+
+Toda operación sensible cuyo replay pueda duplicar un efecto deberá demostrar una identidad estable.
+
+La certificación debe distinguir:
+
+```text
+MISMA INTENCIÓN + MISMO PAYLOAD
+→ RECUPERAR RESULTADO EXISTENTE
+```
+
+frente a:
+
+```text
+MISMA IDENTIDAD + PAYLOAD CONFLICTIVO
+→ FAIL CLOSED
+```
+
+#### 60. Segunda operación legítima
+
+Idempotencia no debe impedir una segunda operación empresarial real.
+
+Ejemplo:
+
+- segunda entrega legítima de una orden parcial;
+- segundo documento válido distinto;
+- nueva recepción con identidad propia.
+
+La prueba debe diferenciar replay de nueva realidad empresarial.
+
+#### 61. Resultado desconocido
+
+Si el cliente pierde la respuesta después de enviar una acción sensible:
+
+```text
+UNKNOWN
+!=
+FAIL CONFIRMADO
+```
+
+La UX debe consultar/reconciliar antes de permitir repetir a ciegas.
+
+#### 62. Concurrencia
+
+La certificación deberá incluir conflictos materiales cuando el package los permita, por ejemplo:
+
+- dos aprobadores sobre la misma versión;
+- aprobación mientras el comprador modifica la propuesta;
+- dos recepciones sobre el mismo saldo;
+- corrección mientras otro actor consulta o procesa el mismo hecho.
+
+El resultado debe ser determinista o reconciliable.
+
+#### 63. Conectividad y frescura
+
+La prueba debe distinguir:
+
+- dato vigente;
+- dato stale;
+- acción pendiente;
+- resultado desconocido;
+- operación confirmada;
+- operación fallida.
+
+Una pantalla renderizada con datos antiguos no puede producir un `PASS` de etapa si el estado material cambió.
+
+#### 64. Universo canónico de pantallas ORIGO
+
+La certificación conserva exactamente catorce pantallas:
+
+| Pantalla | Nombre | Proceso principal |
+| --- | --- | --- |
+| `VSCREEN-0068` | Bandeja de necesidades de compra | `VPROC-0019` |
+| `VSCREEN-0069` | Solicitud de compra | `VPROC-0019` |
+| `VSCREEN-0070` | Catálogo de proveedores | `VPROC-0020` |
+| `VSCREEN-0071` | Alta y expediente de proveedor | `VPROC-0020` |
+| `VSCREEN-0072` | Comparación de cotizaciones | `VPROC-0020` |
+| `VSCREEN-0073` | Editor de orden de compra | `VPROC-0021` |
+| `VSCREEN-0074` | Bandeja de aprobaciones de compra | `VPROC-0021` |
+| `VSCREEN-0075` | Detalle y seguimiento de orden | `VPROC-0021` |
+| `VSCREEN-0076` | Cola de recepciones | `VPROC-0022` |
+| `VSCREEN-0077` | Recepción total o parcial | `VPROC-0022` |
+| `VSCREEN-0078` | Resolución de diferencias de recepción | `VPROC-0022` |
+| `VSCREEN-0079` | Historial y auditoría de abastecimiento | `VPROC-0022` |
+| `VSCREEN-0145` | Contratos, precios y condiciones de proveedor | `VPROC-0020` |
+| `VSCREEN-0146` | Desempeño y reclamaciones de proveedor | `VPROC-0020` |
+
+Un package no debe declarar cobertura completa omitiendo silenciosamente una pantalla material para su alcance.
+
+#### 65. Cobertura mínima positiva
+
+Según el package, la certificación deberá incluir casos positivos de las etapas que materialice.
+
+Ejemplos obligatorios cuando sean aplicables:
+
+- crear necesidad sin crear orden;
+- comparar proveedores;
+- preparar orden;
+- aprobar una versión exacta;
+- emitir y seguir orden;
+- recibir total;
+- recibir parcial;
+- resolver diferencia;
+- continuar a NEXO sin doble captura;
+- producir handoff económico correlacionado;
+- reconstruir historial.
+
+#### 66. Cobertura mínima negativa
+
+Cuando sean aplicables al package, deben incluirse denegaciones como:
+
+- actor sin permiso;
+- sede o centro de costo fuera de alcance;
+- estado no elegible;
+- versión obsoleta;
+- autoaprobación prohibida;
+- receptor sin autoridad económica intentando ver precios protegidos;
+- URL directa por `id` sin relación;
+- replay conflictivo;
+- recepción duplicada;
+- operación sobre saldo ya consumido;
+- handoff repetido;
+- corrección que intenta borrar historia.
+
+Un caso negativo debe demostrar **cero efecto empresarial no autorizado**.
+
+#### 67. Escenarios humanos mínimos heredados de `ORIGO-UX-016`
+
+La futura validación con personas deberá cubrir, cuando pertenezcan al alcance del package, al menos estas dieciocho intenciones especializadas:
+
+1. solicitante crea necesidad;
+2. comprador identifica trabajo pendiente;
+3. comparación de proveedor/condiciones;
+4. preparación de orden;
+5. aprobación;
+6. rechazo/devolución;
+7. versión modificada después de aprobación;
+8. recepción total;
+9. recepción parcial;
+10. diferencia de cantidad;
+11. diferencia de calidad/condición;
+12. diferencia de documento/presentación;
+13. actor receptor sin precios;
+14. handoff hacia NEXO;
+15. resultado desconocido o replay;
+16. handoff económico hacia NUMERA;
+17. corrección o reversión;
+18. reconstrucción desde historial/auditoría.
+
+La lista es un mínimo especializado, no una excusa para omitir riesgos adicionales del package.
+
+#### 68. Identidad de escenario
+
+Cada escenario debe conservar, cuando aplique:
+
+```text
+scenario_id
+package_id
+candidate_ref
+environment
+process_id
+process_state
+purchase_stage
+screen_id
+actor_ref
+functional_role
+permission_ref
+resource_ref
+territory_ref
+object_ref
+object_version
+idempotency_ref
+expected_result
+observed_result
+evidence_ref
+finding_ref
+```
+
+Campos no aplicables se justifican; no se inventan.
+
+#### 69. Condiciones de sesión válida
+
+La sesión de prueba deberá usar:
+
+- candidato real del package;
+- ambiente autorizado;
+- actor o cohorte legítima;
+- permisos compatibles;
+- sede/contexto realista cuando aplique;
+- dispositivo objetivo cuando aplique;
+- datos realistas no sensibles;
+- versión del flujo identificable.
+
+#### 70. Evidencia por escenario
+
+La evidencia debe permitir reconstruir:
+
+- entrada;
+- estado inicial;
+- actor;
+- acción;
+- resultado esperado;
+- resultado observado;
+- siguiente estado o handoff;
+- errores o ayudas;
+- efecto empresarial relevante;
+- ausencia de efecto cuando el escenario es deny;
+- evidencia técnica complementaria cuando aplique.
+
+#### 71. Resultado por escenario
+
+Cada escenario produce uno de:
+
+```text
+PASS
+FAIL
+BLOCKED
+STALE
+NOT_APPLICABLE
+```
+
+`NOT_APPLICABLE` requiere justificación verificable.
+
+#### 72. Severidad de hallazgos
+
+Los hallazgos se clasifican proporcionalmente al riesgo.
+
+Un hallazgo es bloqueante para el alcance cuando puede causar, entre otros:
+
+- compra no autorizada;
+- autoaprobación prohibida;
+- orden sobre versión incorrecta;
+- exposición de datos sensibles;
+- recepción duplicada;
+- aceptación de cantidades incorrectas;
+- pérdida de diferencia;
+- doble inventario;
+- doble hecho económico;
+- replay destructivo;
+- imposibilidad de reconciliar el ciclo.
+
+#### 73. Owner del hallazgo
+
+Todo hallazgo debe registrar propietario existente.
+
+Posibles owners incluyen, según el problema:
+
+- package ORIGO aplicable;
+- ORIGO-AUTH;
+- ORIGO-UX;
+- integración ORIGO–NEXO;
+- integración ORIGO–NUMERA;
+- autorización transversal;
+- Supabase;
+- NEXO;
+- NUMERA;
+- UX transversal;
+- continuidad o resiliencia.
+
+No se inventa una tarea cuando ya existe owner.
+
+#### 74. Reprueba
+
+Un hallazgo corregido no pasa por declaración.
+
+Debe reejecutarse:
+
+- el escenario afectado;
+- su deny asociado cuando corresponda;
+- cualquier handoff afectado;
+- la regresión mínima necesaria.
+
+La evidencia antigua permanece histórica y no se reescribe como PASS.
+
+#### 75. PASS por etapa de compra
+
+Una etapa aplicable queda `PASS` únicamente cuando:
+
+- sus escenarios obligatorios aplicables pasaron;
+- no tiene hallazgos bloqueantes abiertos;
+- sus denies materiales pasaron;
+- sus handoffs aplicables son coherentes;
+- la evidencia pertenece al mismo candidato y alcance;
+- no existe drift material no reevaluado.
+
+#### 76. PASS por package
+
+`UX-QA-026::<package_id>` puede ser `PASS` únicamente cuando todas las etapas materiales del alcance están:
+
+```text
+PASS
+OR
+NOT_APPLICABLE JUSTIFICADO
+```
+
+No se permite promedio de etapas.
+
+#### 77. `GLOBAL-FINAL`
+
+`UX-QA-026::GLOBAL-FINAL` agrega únicamente packages aplicables ya certificados.
+
+Debe demostrar:
+
+- cobertura de los cuatro procesos donde exista materialización física;
+- cobertura de las etapas realmente desplegadas;
+- ausencia de huecos de ownership;
+- ausencia de findings bloqueantes globales;
+- coherencia ORIGO ↔ NEXO ↔ NUMERA;
+- evidencia fresca.
+
+#### 78. Prohibición de agregación engañosa
+
+No se aceptan conclusiones como:
+
+```text
+9 DE 10 ETAPAS PASS
+→ ORIGO PASS
+```
+
+si la etapa faltante es material.
+
+Tampoco se acepta:
+
+```text
+UI PASS
+→ RECEPCIÓN E2E PASS
+```
+
+cuando no se probaron efectos posteriores necesarios.
+
+#### 79. Accesibilidad
+
+La prueba humana deberá observar, según la superficie:
+
+- foco visible;
+- labels comprensibles;
+- navegación por teclado cuando aplique;
+- contraste suficiente;
+- mensajes de error accesibles;
+- estados no dependientes únicamente de color;
+- objetivos táctiles adecuados cuando aplique;
+- lectura comprensible de cantidades, unidades y presentaciones.
+
+#### 80. Responsive y ergonomía de compra
+
+La experiencia deberá ser adecuada al dispositivo objetivo.
+
+No se exige que una pantalla administrativa de comparación se comporte igual que una estación operativa de recepción.
+
+La certificación evalúa la modalidad prevista, no una universalidad artificial.
+
+#### 81. Privacidad y minimización
+
+La evidencia de prueba no debe copiar innecesariamente:
+
+- datos bancarios;
+- documentos tributarios completos;
+- secretos;
+- tokens completos;
+- precios o contratos sensibles fuera de finalidad;
+- información personal no necesaria.
+
+La certificación necesita trazabilidad, no exposición indiscriminada.
+
+#### 82. Auditoría de la sesión
+
+La evidencia agregada debe permitir responder:
+
+```text
+QUIÉN PROBÓ
+QUÉ PACKAGE
+QUÉ CANDIDATO
+QUÉ ETAPA
+QUÉ PROCESO
+QUÉ PANTALLA
+QUÉ RECURSO
+QUÉ VERSIÓN
+QUÉ RESULTADO
+QUÉ HALLAZGO
+QUÉ OWNER
+QUÉ REPRUEBA
+```
+
+#### 83. Métricas de sesión
+
+Cuando sean útiles y no inventen umbrales, pueden observarse:
+
+- tiempo hasta identificar la acción correcta;
+- errores de interpretación;
+- retrocesos;
+- necesidad de ayuda;
+- acciones repetidas;
+- confusión entre etapas;
+- confusión entre cantidad, unidad y presentación;
+- intento de repetir una operación ya enviada;
+- comprensión de estados pendiente/confirmado/desconocido.
+
+La métrica no sustituye el oracle contractual.
+
+#### 84. Ayuda del moderador
+
+Si el participante necesita una explicación que revele la respuesta correcta, el escenario no puede presentarse como éxito espontáneo.
+
+La ayuda debe quedar registrada y evaluada como finding o evidencia de fricción según el contrato aplicable.
+
+#### 85. Datos reales y sintéticos
+
+Se prefieren datos realistas no sensibles.
+
+Una prueba puede utilizar fixtures o datos controlados cuando eso preserve:
+
+- relaciones;
+- estados;
+- cantidades;
+- versiones;
+- permisos;
+- handoffs;
+- errores;
+- recuperación.
+
+No se necesitan compras productivas reales para demostrar la mayoría de oracles.
+
+#### 86. Evidencia técnica complementaria
+
+La evidencia humana puede complementarse con:
+
+- logs;
+- receipts de idempotencia;
+- eventos;
+- trazas de autorización;
+- registros de auditoría;
+- snapshots de estado;
+- resultados de E2E;
+- correlaciones ORIGO/NEXO/NUMERA.
+
+La evidencia técnica no sustituye la observación humana cuando el oracle es de comprensión o interacción.
+
+#### 87. Runtime actual observado
+
+El snapshot remoto verificado de `vento-origo` es:
+
+```text
+vento-group-sas/vento-origo
+main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+El runtime observado contiene superficies reales para:
+
+- proveedores;
+- alta y edición de proveedores;
+- órdenes de compra;
+- creación, detalle y edición de orden;
+- PDF de orden;
+- recepciones;
+- nueva recepción;
+- revisión de maestro de producto.
+
+Eso demuestra base funcional real, no paridad completa con el prototipo canónico.
+
+#### 88. Estado AS-IS no equivale a certificación
+
+La clasificación vigente permanece:
+
+```text
+AS_IS_REAL
++
+AS_IS_PARTIAL
+```
+
+La existencia de código o páginas no demuestra por sí sola:
+
+- necesidad/solicitud completas;
+- sourcing completo;
+- aprobación versionada completa;
+- lifecycle completo de orden;
+- recepción atómica e idempotente;
+- handoff NEXO exactamente una vez;
+- handoff NUMERA exactamente una vez;
+- protección económica end-to-end;
+- recuperación completa de fallos.
+
+#### 89. Brechas AS-IS que deben tratarse honestamente
+
+La certificación conserva como brechas materiales conocidas:
+
+- necesidad/solicitud no demostradas como experiencia canónica completa;
+- sourcing y comparación incompletos;
+- lifecycle runtime reducido alrededor de `draft/sent/received`;
+- aprobación dedicada no demostrada E2E;
+- recepción con responsabilidades físicas/económicas parcialmente colapsadas;
+- atomicidad e idempotencia física de recepción pendientes de evidencia;
+- autorización de órdenes y PDF pendiente de endurecimiento físico completo;
+- handoff ORIGO → NEXO no demostrado E2E;
+- handoff ORIGO → NUMERA no demostrado E2E;
+- auditoría completa del ciclo no demostrada por las vistas actuales.
+
+Ninguna se normaliza a PASS por existir infraestructura parcial.
+
+#### 90. Frontera con `UX-QA-025`
+
+`UX-QA-025` certifica FOGO por área productiva.
+
+`UX-QA-026` no vuelve a evaluar producción.
+
+Cuando una necesidad de compra provenga de producción, solo verifica que ORIGO reciba y procese la señal conforme al contrato de compra.
+
+#### 91. Frontera con `UX-QA-027`
+
+`UX-QA-027` certificará PULSO por punto operativo.
+
+`UX-QA-026` no certifica venta, caja ni punto de servicio.
+
+Se limita a señales o dependencias comerciales que alimenten necesidad o contexto de compra sin transferir ownership.
+
+#### 92. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+**Justificación:** la certificación por etapa de compra materializa criterios de ejecución y evidencia ya cubiertos por contratos y requisitos vigentes de ORIGO, autorización, integración, UX, NEXO, NUMERA y Supabase. No introduce una conducta empresarial nueva ni modifica el significado de una obligación de prueba existente.
+
+#### 93. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza, entre otros:
+
+- `TREQ-ORIGO-001` para modalidades de recepción y ausencia de duplicidad entre registro e inventario;
+- `TREQ-ORIGO-002` para autorización de órdenes y protección del documento externo;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, corrección y recepción durable;
+- `TREQ-ORIGO-004` para separación del ciclo de abastecimiento, aprobación y urgencia;
+- `TREQ-ORIGO-005` para proveedor, condiciones, vigencia, sensibilidad y desempeño;
+- `TREQ-ORIGO-006` a `TREQ-ORIGO-025` para inventario, identidad, clasificación y protección de superficies ORIGO;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-004`, `TREQ-INTEGRATION-005`, `TREQ-INTEGRATION-006` y `TREQ-INTEGRATION-017` para identidad, trazabilidad, contexto, fuente única y handoffs;
+- `TREQ-NEXO-011` para ledger físico y no doble contabilización;
+- `TREQ-NUMERA-001`, `TREQ-NUMERA-002` y `TREQ-NUMERA-003` para hechos económicos, correlación, obligación, pago y conciliación;
+- `TREQ-AUTH-013` y `TREQ-AUTH-015` para mutaciones protegidas y evidencia atribuible;
+- requisitos UX transversales aplicables a estado, accesibilidad, continuidad, recuperación y prueba con personas.
+
+Esta sección es trazabilidad existente y no una actualización del registro.
+
+#### 94. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global, TREQ y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@ce4ee2be980f15ad5c0e47025cb5d262a834fa8b`, `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, owner del bloque U, topología `PER_PACKAGE_AND_GLOBAL_FINAL / POST_E5_PACKAGE`, contratos ORIGO, cuatro procesos `VPROC-0019..0022`, catorce pantallas, registro 04A vigente y runtime ORIGO. El predecesor inmediato `UX-QA-025` se consume desde el artefacto completo aprobado todavía no incorporado en el remoto. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron necesidades, sourcing, órdenes, aprobaciones, recepciones, diferencias, handoffs, correcciones ni sesiones con usuarios reales. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó ninguna instancia `UX-QA-026::<package_id>` ni `UX-QA-026::GLOBAL-FINAL`. |
+
+#### 95. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] se conservan exactamente cuatro procesos propietarios `VPROC-0019..0022`;
+- [ ] se conservan exactamente catorce pantallas canónicas ORIGO;
+- [ ] las macroetapas de QA no crean estados ni procesos nuevos;
+- [ ] necesidad no se confunde con orden;
+- [ ] sourcing no se confunde con aprobación;
+- [ ] creación de orden no se confunde con aprobación;
+- [ ] aprobación no se confunde con emisión;
+- [ ] emisión no se confunde con confirmación del proveedor;
+- [ ] recepción esperada no se confunde con recepción aceptada;
+- [ ] recepción parcial no se confunde con diferencia;
+- [ ] recepción ORIGO no se confunde con entrada NEXO;
+- [ ] entrada NEXO no se confunde con hecho económico NUMERA;
+- [ ] hecho económico no se confunde con obligación ni pago;
+- [ ] cada decisión sensible conserva versión, actor y autoridad;
+- [ ] cambio material posterior a aprobación exige tratamiento de versión aplicable;
+- [ ] precios y datos sensibles se minimizan según finalidad;
+- [ ] `record_only` no crea inventario ficticio;
+- [ ] recepción directa/emergencia no evade gobierno;
+- [ ] handoff ORIGO → NEXO evita doble captura del hecho de origen;
+- [ ] handoff ORIGO → NUMERA es correlacionable e idempotente;
+- [ ] replay equivalente recupera resultado existente;
+- [ ] payload conflictivo con misma identidad falla cerrado;
+- [ ] resultado desconocido se consulta antes de repetir;
+- [ ] corrección y reversión preservan el original;
+- [ ] historial permite reconstruir el ciclo sin ledger competidor;
+- [ ] los dieciocho escenarios humanos mínimos quedan incluidos como piso especializado;
+- [ ] cada escenario conserva evidencia y outcome;
+- [ ] cada hallazgo tiene owner y condición de salida;
+- [ ] PASS por etapa no se obtiene por promedio;
+- [ ] PASS por package exige todas las etapas materiales cerradas o `NOT_APPLICABLE` justificado;
+- [ ] `GLOBAL-FINAL` no oculta gaps de packages;
+- [ ] el runtime AS-IS parcial no se presenta como certificación;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se modifica Registro 04A;
+- [ ] no se ejecuta ningún cambio físico.
+
+#### 96. Condiciones de fallo o bloqueo físico futuro
+
+Una ejecución futura no puede producir `PASS` si existe, dentro de su alcance:
+
+- etapa material sin evidencia;
+- autorización ambigua;
+- autoaprobación prohibida;
+- recurso o territorio no revalidado;
+- versión evaluada distinta de la aprobada;
+- recepción duplicada;
+- parcialidad tratada como total;
+- diferencia perdida o sobrescrita;
+- precio sensible expuesto sin finalidad;
+- doble captura ORIGO/NEXO;
+- doble efecto económico;
+- resultado desconocido reintentado a ciegas;
+- corrección destructiva;
+- handoff no correlacionable;
+- evidencia stale;
+- hallazgo bloqueante abierto.
+
+El resultado correcto será `FAIL`, `BLOCKED` o `STALE` según la causa demostrada.
+
+#### 97. Límites
+
+Esta tarea no:
+
+- implementa pantallas;
+- modifica `vento-origo`;
+- modifica `vento-nexo`;
+- modifica `vento-numera`;
+- modifica `vento-pulso`;
+- crea necesidades reales;
+- crea proveedores reales;
+- solicita cotizaciones reales;
+- crea órdenes reales;
+- aprueba compras reales;
+- emite documentos reales;
+- registra recepciones reales;
+- crea movimientos de inventario;
+- crea hechos económicos;
+- crea obligaciones o pagos;
+- modifica contratos o precios;
+- modifica permisos, roles, grants o scopes;
+- ejecuta sesiones con trabajadores;
+- certifica usabilidad física;
+- ejecuta E2E de staging;
+- corrige atomicidad o idempotencia del runtime;
+- implementa handoff ORIGO → NEXO;
+- implementa handoff ORIGO → NUMERA;
+- crea tablas, columnas, constraints, índices, funciones, triggers, RPC, RLS, Storage, Edge Functions, cron o colas;
+- ejecuta migraciones;
+- modifica Supabase o datos;
+- modifica packages;
+- modifica Registro 04A;
+- crea una instancia física;
+- desarrolla `UX-QA-027`.
+
+#### 98. Handoff a `UX-QA-027`
+
+`UX-QA-026` entrega a `UX-QA-027` únicamente la continuidad transversal del bloque U.
+
+El handoff conserva:
+
+- contrato común `UX-QA-020`;
+- disciplina de evidencia por package;
+- tratamiento de findings y reprueba;
+- criterio `GLOBAL-FINAL`;
+- separación entre runtime parcial y certificación.
+
+No transfiere ownership ORIGO a PULSO ni convierte etapas de compra en etapas de venta.
+
+#### 99. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-025 — Probar FOGO por área productiva`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-026 — Probar ORIGO por etapa de compra`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-027 — Probar PULSO por punto operativo`
 ### [ ] UX-QA-027 — Probar PULSO por punto operativo
 ### [ ] UX-QA-028 — Probar NUMERA por alcance financiero
 ### [ ] UX-QA-029 — Probar PASS como cliente

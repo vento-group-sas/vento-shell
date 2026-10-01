@@ -29,10 +29,10 @@
 - **Por qué:** GAP-PKG-002 debe completar identidad, unidades, evidencia y aprobación de gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
-### 3. Continúa la documentación — `UX-QA-026`
+### 3. Continúa la documentación — `UX-QA-027`
 
-- **Tarea exacta:** `UX-QA-026` — Probar ORIGO por etapa de compra
-- **Haz ahora:** Prueba ORIGO por etapa de compra en escenarios representativos y registra resultados y defectos reales.
+- **Tarea exacta:** `UX-QA-027` — Probar PULSO por punto operativo
+- **Haz ahora:** Prueba PULSO por punto operativo en escenarios representativos y registra resultados y defectos reales.
 - **Archivo propietario:** `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
 - **Regla:** si corre en paralelo con una corrección o un package, usar checkout independiente y serializar los cierres.
 
@@ -68,7 +68,7 @@
 
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
-| 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `UX-QA-026` — Probar ORIGO por etapa de compra | `UX-QA-027` — Probar PULSO por punto operativo | Una tarea documental activa |
+| 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `UX-QA-027` — Probar PULSO por punto operativo | `UX-QA-028` — Probar NUMERA por alcance financiero | Una tarea documental activa |
 | 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | `SHELL-CI-022::GAP-PKG-018` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
@@ -77,7 +77,7 @@
 
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
-| 🟦 **Documentación** | **1578/1596 aprobadas** | **18** no aprobadas (0 propuesta, 0 rechazadas) | `UX-QA-026` |
+| 🟦 **Documentación** | **1579/1596 aprobadas** | **17** no aprobadas (0 propuesta, 0 rechazadas) | `UX-QA-027` |
 | 🟧 **Implementación física conocida** | **104/108 VERIFIED** | **4** no terminales | `SHELL-CI-022::GAP-PKG-001` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
@@ -121,36 +121,24 @@
 
 | # | Estado | Tarea | Qué hace |
 | ---: | --- | --- | --- |
-| 1 | **ACTUAL** | `UX-QA-026` — Probar ORIGO por etapa de compra | Prueba ORIGO por etapa de compra en escenarios representativos y registra resultados y defectos reales. |
-| 2 | PENDIENTE | `UX-QA-027` — Probar PULSO por punto operativo | Prueba PULSO por punto operativo en escenarios representativos y registra resultados y defectos reales. |
-| 3 | PENDIENTE | `UX-QA-028` — Probar NUMERA por alcance financiero | Prueba NUMERA por alcance financiero en escenarios representativos y registra resultados y defectos reales. |
-| 4 | PENDIENTE | `UX-QA-029` — Probar PASS como cliente | Prueba PASS como cliente en escenarios representativos y registra resultados y defectos reales. |
-| 5 | PENDIENTE | `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad | Prueba AURA únicamente después de aprobar su continuidad en escenarios representativos y registra resultados y defectos reales. |
-| 6 | PENDIENTE | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada | Retira objetos legacy únicamente después de adopción comprobada solo después de verificar el reemplazo y el rollback. |
-| 7 | PENDIENTE | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | Certifica paridad entre documento, vento-shell, Supabase y aplicaciones con evidencia de paridad y cumplimiento. |
-| 8 | PENDIENTE | `EXT-GOV-001` — Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema | Verifica soporte documental de titulares, marcas y cuentas externas del ecosistema, registra brechas y deja evidencia del resultado. |
-| 9 | PENDIENTE | `VISO-SCH-001` — Definir contrato funcional de programación laboral | Define contrato funcional de programación laboral con reglas, responsables, excepciones y criterios verificables. |
-| 10 | PENDIENTE | `VISO-SCH-002` — Definir horizontes semanal y mensual | Define horizontes semanal y mensual con reglas, responsables, excepciones y criterios verificables. |
-| 11 | PENDIENTE | `VISO-SCH-003` — Definir bloques, fechas, duración y modalidad rápida | Define bloques, fechas, duración y modalidad rápida con reglas, responsables, excepciones y criterios verificables. |
-| 12 | PENDIENTE | `VISO-SCH-004` — Definir límites mensuales, advertencias, vigencia y excepciones | Define límites mensuales, advertencias, vigencia y excepciones con reglas, responsables, excepciones y criterios verificables. |
+| 1 | **ACTUAL** | `UX-QA-027` — Probar PULSO por punto operativo | Prueba PULSO por punto operativo en escenarios representativos y registra resultados y defectos reales. |
+| 2 | PENDIENTE | `UX-QA-028` — Probar NUMERA por alcance financiero | Prueba NUMERA por alcance financiero en escenarios representativos y registra resultados y defectos reales. |
+| 3 | PENDIENTE | `UX-QA-029` — Probar PASS como cliente | Prueba PASS como cliente en escenarios representativos y registra resultados y defectos reales. |
+| 4 | PENDIENTE | `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad | Prueba AURA únicamente después de aprobar su continuidad en escenarios representativos y registra resultados y defectos reales. |
+| 5 | PENDIENTE | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada | Retira objetos legacy únicamente después de adopción comprobada solo después de verificar el reemplazo y el rollback. |
+| 6 | PENDIENTE | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | Certifica paridad entre documento, vento-shell, Supabase y aplicaciones con evidencia de paridad y cumplimiento. |
+| 7 | PENDIENTE | `EXT-GOV-001` — Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema | Verifica soporte documental de titulares, marcas y cuentas externas del ecosistema, registra brechas y deja evidencia del resultado. |
+| 8 | PENDIENTE | `VISO-SCH-001` — Definir contrato funcional de programación laboral | Define contrato funcional de programación laboral con reglas, responsables, excepciones y criterios verificables. |
+| 9 | PENDIENTE | `VISO-SCH-002` — Definir horizontes semanal y mensual | Define horizontes semanal y mensual con reglas, responsables, excepciones y criterios verificables. |
+| 10 | PENDIENTE | `VISO-SCH-003` — Definir bloques, fechas, duración y modalidad rápida | Define bloques, fechas, duración y modalidad rápida con reglas, responsables, excepciones y criterios verificables. |
+| 11 | PENDIENTE | `VISO-SCH-004` — Definir límites mensuales, advertencias, vigencia y excepciones | Define límites mensuales, advertencias, vigencia y excepciones con reglas, responsables, excepciones y criterios verificables. |
+| 12 | PENDIENTE | `VISO-SCH-005` — Definir borrador, revisión, publicación y corrección | Define borrador, revisión, publicación y corrección con reglas, responsables, excepciones y criterios verificables. |
 
 ## 🟦 Preparación documental — próximas tareas
 
 > Dependencias, pruebas y cierre se leen de la tarea cuando ya están declarados. "Precedencia de ruta" y "perfil previsto" son ayudas derivadas y no amplían el contrato canónico.
 
-### 1. `UX-QA-026` — Probar ORIGO por etapa de compra
-
-- **Qué hace:** Prueba ORIGO por etapa de compra en escenarios representativos y registra resultados y defectos reales.
-- **Trabajo canónico ahora:** El marcador canónico define una sola vez el contrato de certificación.
-- **Ciclo:** Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL`
-- **Dependencias para desarrollar:** Precedencia de ruta: `UX-QA-025`
-- **Se ejecuta después de:** Las dependencias temporales se resuelven exclusivamente mediante execution_gate.
-- **Regla de repetición:** Se registra una ejecución por package_id y una certificación GLOBAL-FINAL agregada cuando corresponda.
-- **Pruebas:** Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo
-- **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
-- **Fuente:** `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
-
-### 2. `UX-QA-027` — Probar PULSO por punto operativo
+### 1. `UX-QA-027` — Probar PULSO por punto operativo
 
 - **Qué hace:** Prueba PULSO por punto operativo en escenarios representativos y registra resultados y defectos reales.
 - **Trabajo canónico ahora:** El marcador canónico define una sola vez el contrato de certificación.
@@ -162,7 +150,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
 
-### 3. `UX-QA-028` — Probar NUMERA por alcance financiero
+### 2. `UX-QA-028` — Probar NUMERA por alcance financiero
 
 - **Qué hace:** Prueba NUMERA por alcance financiero en escenarios representativos y registra resultados y defectos reales.
 - **Trabajo canónico ahora:** El marcador canónico define una sola vez el contrato de certificación.
@@ -174,7 +162,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
 
-### 4. `UX-QA-029` — Probar PASS como cliente
+### 3. `UX-QA-029` — Probar PASS como cliente
 
 - **Qué hace:** Prueba PASS como cliente en escenarios representativos y registra resultados y defectos reales.
 - **Trabajo canónico ahora:** El marcador canónico define una sola vez el contrato de certificación.
@@ -186,7 +174,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
 
-### 5. `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad
+### 4. `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad
 
 - **Qué hace:** Prueba AURA únicamente después de aprobar su continuidad en escenarios representativos y registra resultados y defectos reales.
 - **Trabajo canónico ahora:** El marcador canónico define una sola vez el contrato de certificación.
@@ -198,7 +186,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
 
-### 6. `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada
+### 5. `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada
 
 - **Qué hace:** Retira objetos legacy únicamente después de adopción comprobada solo después de verificar el reemplazo y el rollback.
 - **Trabajo canónico ahora:** El marcador canónico define una sola vez el cierre transversal.
@@ -210,7 +198,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md`
 
-### 7. `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones
+### 6. `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones
 
 - **Qué hace:** Certifica paridad entre documento, vento-shell, Supabase y aplicaciones con evidencia de paridad y cumplimiento.
 - **Trabajo canónico ahora:** El marcador canónico define una sola vez el cierre transversal.
@@ -222,7 +210,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md`
 
-### 8. `EXT-GOV-001` — Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema
+### 7. `EXT-GOV-001` — Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema
 
 - **Qué hace:** Verifica soporte documental de titulares, marcas y cuentas externas del ecosistema, registra brechas y deja evidencia del resultado.
 - **Trabajo canónico ahora:** El marcador canónico se desarrolla y aprueba una sola vez como contrato reutilizable.
@@ -234,7 +222,7 @@
 - **Cierre del marcador global:** OPS-GOV-001 podrá aprobarse cuando se confirme que:
 - **Fuente:** `bloques/E1_DESCUBRIMIENTO_OPERATIVO/02A_TAREAS_DERIVADAS_OPS_AUD_001.md`
 
-### 9. `VISO-SCH-001` — Definir contrato funcional de programación laboral
+### 8. `VISO-SCH-001` — Definir contrato funcional de programación laboral
 
 - **Qué hace:** Define contrato funcional de programación laboral con reglas, responsables, excepciones y criterios verificables.
 - **Trabajo canónico ahora:** El marcador canónico se desarrolla y aprueba una sola vez como contrato reutilizable.
@@ -246,7 +234,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md`
 
-### 10. `VISO-SCH-002` — Definir horizontes semanal y mensual
+### 9. `VISO-SCH-002` — Definir horizontes semanal y mensual
 
 - **Qué hace:** Define horizontes semanal y mensual con reglas, responsables, excepciones y criterios verificables.
 - **Trabajo canónico ahora:** El marcador canónico se desarrolla y aprueba una sola vez como contrato reutilizable.
@@ -258,7 +246,7 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md`
 
-### 11. `VISO-SCH-003` — Definir bloques, fechas, duración y modalidad rápida
+### 10. `VISO-SCH-003` — Definir bloques, fechas, duración y modalidad rápida
 
 - **Qué hace:** Define bloques, fechas, duración y modalidad rápida con reglas, responsables, excepciones y criterios verificables.
 - **Trabajo canónico ahora:** El marcador canónico se desarrolla y aprueba una sola vez como contrato reutilizable.
@@ -270,12 +258,24 @@
 - **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
 - **Fuente:** `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md`
 
-### 12. `VISO-SCH-004` — Definir límites mensuales, advertencias, vigencia y excepciones
+### 11. `VISO-SCH-004` — Definir límites mensuales, advertencias, vigencia y excepciones
 
 - **Qué hace:** Define límites mensuales, advertencias, vigencia y excepciones con reglas, responsables, excepciones y criterios verificables.
 - **Trabajo canónico ahora:** El marcador canónico se desarrolla y aprueba una sola vez como contrato reutilizable.
 - **Ciclo:** Definir una sola vez sin instancia física propia — `<task_id>`
 - **Dependencias para desarrollar:** Precedencia de ruta: `VISO-SCH-003`
+- **Se ejecuta después de:** No crea una instancia física propia.
+- **Regla de repetición:** Los consumidores reutilizan el contrato aprobado sin repetir esta tarea como ejecución.
+- **Pruebas:** Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar
+- **Cierre del marcador global:** Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables.
+- **Fuente:** `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md`
+
+### 12. `VISO-SCH-005` — Definir borrador, revisión, publicación y corrección
+
+- **Qué hace:** Define borrador, revisión, publicación y corrección con reglas, responsables, excepciones y criterios verificables.
+- **Trabajo canónico ahora:** El marcador canónico se desarrolla y aprueba una sola vez como contrato reutilizable.
+- **Ciclo:** Definir una sola vez sin instancia física propia — `<task_id>`
+- **Dependencias para desarrollar:** Precedencia de ruta: `VISO-SCH-004`
 - **Se ejecuta después de:** No crea una instancia física propia.
 - **Regla de repetición:** Los consumidores reutilizan el contrato aprobado sin repetir esta tarea como ejecución.
 - **Pruebas:** Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar
@@ -318,7 +318,7 @@ Para cerrar:
 
 | Orden | Etapa | Bloque | Activación | Primera tarea pendiente |
 | ---: | --- | --- | --- | --- |
-| 31 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | BLOQUE U — Pruebas integrales y certificación transversal | ACTIVE | `UX-QA-026` |
+| 31 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | BLOQUE U — Pruebas integrales y certificación transversal | ACTIVE | `UX-QA-027` |
 | 32 | `PHASE-13-R3-LEGACY-RETIREMENT` | BLOQUE R3 — Retiro legacy y certificación final | ACTIVE | `AUTH-DB-030` |
 | 3 | `PHASE-02-E1-EXTERNAL-GOVERNANCE-CONDITIONAL` | BLOQUE E1 — Expediente condicional de gobierno externo | DEFERRED | `EXT-GOV-001` |
 | 8 | `PHASE-02-VISO-SCHEDULE-DELTA` | BLOQUE G — Reconciliación de programación laboral VISO | DEFERRED | `VISO-SCH-001` |
@@ -329,21 +329,20 @@ Para cerrar:
 
 | Pendiente # | Orden canónico | Etapa | Estado | Identificador | Título canónico | Qué hace | Ciclo | Dependencias para desarrollar | Ejecución posterior | Pruebas / TREQ | Cierre global | Fragmento propietario |
 | ---: | ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 1590 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-026` | Probar ORIGO por etapa de compra | Prueba ORIGO por etapa de compra en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-025` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| 2 | 1591 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-027` | Probar PULSO por punto operativo | Prueba PULSO por punto operativo en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-026` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| 3 | 1592 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-028` | Probar NUMERA por alcance financiero | Prueba NUMERA por alcance financiero en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-027` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| 4 | 1593 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-029` | Probar PASS como cliente | Prueba PASS como cliente en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-028` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| 5 | 1594 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-030` | Probar AURA únicamente después de aprobar su continuidad | Prueba AURA únicamente después de aprobar su continuidad en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-029` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| 6 | 1595 | `PHASE-13-R3-LEGACY-RETIREMENT` | NO INICIADA | `AUTH-DB-030` | Retirar objetos legacy únicamente después de adopción comprobada | Retira objetos legacy únicamente después de adopción comprobada solo después de verificar el reemplazo y el rollback. | Una certificación global final — `<task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-030` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: paridad contractual y operativa, build por consumidor, regresión y rollback | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
-| 7 | 1596 | `PHASE-13-R3-LEGACY-RETIREMENT` | NO INICIADA | `AUTH-DB-031` | Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | Certifica paridad entre documento, vento-shell, Supabase y aplicaciones con evidencia de paridad y cumplimiento. | Una certificación global final — `<task_id>::GLOBAL-FINAL` | Precedencia de ruta: `AUTH-DB-030` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: paridad contractual y operativa, build por consumidor, regresión y rollback | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
-| 8 | 223 | `PHASE-02-E1-EXTERNAL-GOVERNANCE-CONDITIONAL` | NO INICIADA | `EXT-GOV-001` | Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema | Verifica soporte documental de titulares, marcas y cuentas externas del ecosistema, registra brechas y deja evidencia del resultado. | Definir una sola vez sin instancia física propia — `<task_id>` | `OPS-GOV-001` aprobada + expediente disponible | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | OPS-GOV-001 podrá aprobarse cuando se confirme que: | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/02A_TAREAS_DERIVADAS_OPS_AUD_001.md` |
-| 9 | 612 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-001` | Definir contrato funcional de programación laboral | Define contrato funcional de programación laboral con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `EXT-GOV-001` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: unitarias y contractuales, compatibilidad, serialización y consumo multiplataforma | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 10 | 613 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-002` | Definir horizontes semanal y mensual | Define horizontes semanal y mensual con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-001` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 11 | 614 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-003` | Definir bloques, fechas, duración y modalidad rápida | Define bloques, fechas, duración y modalidad rápida con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-002` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 12 | 615 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-004` | Definir límites mensuales, advertencias, vigencia y excepciones | Define límites mensuales, advertencias, vigencia y excepciones con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-003` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 13 | 616 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-005` | Definir borrador, revisión, publicación y corrección | Define borrador, revisión, publicación y corrección con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-004` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 14 | 617 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-006` | Definir conflictos, integridad, concurrencia y recuperación | Define conflictos, integridad, concurrencia y recuperación con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-005` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 15 | 618 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-007` | Definir autorización, auditoría, eventos y notificaciones | Define autorización, auditoría, eventos y notificaciones con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-006` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: contrato, integración, denegaciones, seguridad/RLS y regresión | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 16 | 619 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-008` | Aprobar contrato de programación antes de E5 | Aprueba contrato de programación antes de E5 solo después de revisar evidencia y bloqueos. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-007` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: unitarias y contractuales, compatibilidad, serialización y consumo multiplataforma | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
-| 17 | 620 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `CODE-AUD-021` | Reconciliar el delta técnico de programación mensual VISO | Reconcilia el delta técnico de programación mensual VISO con sus fuentes canónicas y resuelve cada diferencia. | Definir una sola vez sin instancia física propia — `<task_id>` | commit estable; migración documentada; snapshots CODE-AUD- aprobados | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04B_RECONCILIACION_DELTA_VISO_PROGRAMACION.md` |
-| 18 | 621 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `AUTH-UI-061` | Reconciliar rutas y superficies VISO posteriores al inventario aprobado | Reconcilia rutas y superficies VISO posteriores al inventario aprobado con sus fuentes canónicas y resuelve cada diferencia. | Definir una sola vez sin instancia física propia — `<task_id>` | `CODE-AUD-021`, commit estable, `VISO-SCH-008` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: contrato, integración, denegaciones, seguridad/RLS y regresión | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/I_NAVEGACION_Y_PANTALLAS/07_RECONCILIACION_DE_DERIVA_POSTERIOR.md` |
+| 1 | 1591 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-027` | Probar PULSO por punto operativo | Prueba PULSO por punto operativo en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-026` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| 2 | 1592 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-028` | Probar NUMERA por alcance financiero | Prueba NUMERA por alcance financiero en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-027` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| 3 | 1593 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-029` | Probar PASS como cliente | Prueba PASS como cliente en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-028` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| 4 | 1594 | `PHASE-13-U-INTEGRAL-CERTIFICATION` | NO INICIADA | `UX-QA-030` | Probar AURA únicamente después de aprobar su continuidad | Prueba AURA únicamente después de aprobar su continuidad en escenarios representativos y registra resultados y defectos reales. | Instancia por paquete y certificación global final — `<task_id>::<package_id> + <task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-029` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: unitarias/render, accesibilidad, regresión visual e integración del flujo | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| 5 | 1595 | `PHASE-13-R3-LEGACY-RETIREMENT` | NO INICIADA | `AUTH-DB-030` | Retirar objetos legacy únicamente después de adopción comprobada | Retira objetos legacy únicamente después de adopción comprobada solo después de verificar el reemplazo y el rollback. | Una certificación global final — `<task_id>::GLOBAL-FINAL` | Precedencia de ruta: `UX-QA-030` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: paridad contractual y operativa, build por consumidor, regresión y rollback | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
+| 6 | 1596 | `PHASE-13-R3-LEGACY-RETIREMENT` | NO INICIADA | `AUTH-DB-031` | Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | Certifica paridad entre documento, vento-shell, Supabase y aplicaciones con evidencia de paridad y cumplimiento. | Una certificación global final — `<task_id>::GLOBAL-FINAL` | Precedencia de ruta: `AUTH-DB-030` | Las dependencias temporales se resuelven exclusivamente mediante execution_gate. | Por definir al desarrollar · perfil previsto: paridad contractual y operativa, build por consumidor, regresión y rollback | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
+| 7 | 223 | `PHASE-02-E1-EXTERNAL-GOVERNANCE-CONDITIONAL` | NO INICIADA | `EXT-GOV-001` | Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema | Verifica soporte documental de titulares, marcas y cuentas externas del ecosistema, registra brechas y deja evidencia del resultado. | Definir una sola vez sin instancia física propia — `<task_id>` | `OPS-GOV-001` aprobada + expediente disponible | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | OPS-GOV-001 podrá aprobarse cuando se confirme que: | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/02A_TAREAS_DERIVADAS_OPS_AUD_001.md` |
+| 8 | 612 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-001` | Definir contrato funcional de programación laboral | Define contrato funcional de programación laboral con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `EXT-GOV-001` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: unitarias y contractuales, compatibilidad, serialización y consumo multiplataforma | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 9 | 613 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-002` | Definir horizontes semanal y mensual | Define horizontes semanal y mensual con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-001` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 10 | 614 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-003` | Definir bloques, fechas, duración y modalidad rápida | Define bloques, fechas, duración y modalidad rápida con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-002` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 11 | 615 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-004` | Definir límites mensuales, advertencias, vigencia y excepciones | Define límites mensuales, advertencias, vigencia y excepciones con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-003` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 12 | 616 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-005` | Definir borrador, revisión, publicación y corrección | Define borrador, revisión, publicación y corrección con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-004` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 13 | 617 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-006` | Definir conflictos, integridad, concurrencia y recuperación | Define conflictos, integridad, concurrencia y recuperación con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-005` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 14 | 618 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-007` | Definir autorización, auditoría, eventos y notificaciones | Define autorización, auditoría, eventos y notificaciones con reglas, responsables, excepciones y criterios verificables. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-006` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: contrato, integración, denegaciones, seguridad/RLS y regresión | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 15 | 619 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `VISO-SCH-008` | Aprobar contrato de programación antes de E5 | Aprueba contrato de programación antes de E5 solo después de revisar evidencia y bloqueos. | Definir una sola vez sin instancia física propia — `<task_id>` | Precedencia de ruta: `VISO-SCH-007` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: unitarias y contractuales, compatibilidad, serialización y consumo multiplataforma | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/G_VISO/01A_PROGRAMACION_LABORAL.md` |
+| 16 | 620 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `CODE-AUD-021` | Reconciliar el delta técnico de programación mensual VISO | Reconcilia el delta técnico de programación mensual VISO con sus fuentes canónicas y resuelve cada diferencia. | Definir una sola vez sin instancia física propia — `<task_id>` | commit estable; migración documentada; snapshots CODE-AUD- aprobados | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: consistencia documental, TREQ y validación funcional proporcional al materializar | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04B_RECONCILIACION_DELTA_VISO_PROGRAMACION.md` |
+| 17 | 621 | `PHASE-02-VISO-SCHEDULE-DELTA` | NO INICIADA | `AUTH-UI-061` | Reconciliar rutas y superficies VISO posteriores al inventario aprobado | Reconcilia rutas y superficies VISO posteriores al inventario aprobado con sus fuentes canónicas y resuelve cada diferencia. | Definir una sola vez sin instancia física propia — `<task_id>` | `CODE-AUD-021`, commit estable, `VISO-SCH-008` | No crea una instancia física propia. | Por definir al desarrollar · perfil previsto: contrato, integración, denegaciones, seguridad/RLS y regresión | Se concreta al desarrollar; requiere evidencia real de las pruebas aplicables. | `bloques/I_NAVEGACION_Y_PANTALLAS/07_RECONCILIACION_DE_DERIVA_POSTERIOR.md` |
