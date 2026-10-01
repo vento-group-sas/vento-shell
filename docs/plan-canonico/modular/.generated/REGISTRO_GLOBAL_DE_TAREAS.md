@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1560** |
+| Aprobadas | **1561** |
 | En propuesta | **0** |
-| No iniciadas | **36** |
+| No iniciadas | **35** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **97.74% (1560/1596)** |
+| Porcentaje de completamiento | **97.81% (1561/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **36** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1461** |
+| ⏸ NO_EVALUADA | **35** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1462** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-007` — Las vistas administrativas no contaminan la operación | ✅ APROBADA |
-| Tarea actual | `UX-QA-008` — El proceso continúa correctamente entre aplicaciones | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-009` — No se registra dos veces la misma información | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-008` — El proceso continúa correctamente entre aplicaciones | ✅ APROBADA |
+| Tarea actual | `UX-QA-009` — No se registra dos veces la misma información | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-010` — Los cambios conservan trazabilidad | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1392,7 +1392,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-005` | Un rol no ve opciones irrelevantes | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-006` | Las pantallas táctiles funcionan en tablet | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-007` | Las vistas administrativas no contaminan la operación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-008` | El proceso continúa correctamente entre aplicaciones | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-008` | El proceso continúa correctamente entre aplicaciones | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-009` | No se registra dos veces la misma información | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-010` | Los cambios conservan trazabilidad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-011` | Las tareas críticas soportan conectividad inestable | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
