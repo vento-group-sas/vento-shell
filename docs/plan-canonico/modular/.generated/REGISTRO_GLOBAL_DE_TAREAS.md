@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1569** |
+| Aprobadas | **1570** |
 | En propuesta | **0** |
-| No iniciadas | **27** |
+| No iniciadas | **26** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.31% (1569/1596)** |
+| Porcentaje de completamiento | **98.37% (1570/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **27** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1470** |
+| ⏸ NO_EVALUADA | **26** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1471** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-016` — La información sensible se oculta correctamente | ✅ APROBADA |
-| Tarea actual | `UX-QA-017` — La aplicación propietaria conserva la fuente de verdad | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-018` — Los eventos idempotentes no duplican efectos | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-017` — La aplicación propietaria conserva la fuente de verdad | ✅ APROBADA |
+| Tarea actual | `UX-QA-018` — Los eventos idempotentes no duplican efectos | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-019` — Los fallos parciales permiten recuperación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1401,7 +1401,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-014` | El trabajador completa la tarea dentro del tiempo objetivo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-015` | Los bloqueos se entienden sin códigos técnicos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-016` | La información sensible se oculta correctamente | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-017` | La aplicación propietaria conserva la fuente de verdad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-017` | La aplicación propietaria conserva la fuente de verdad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-018` | Los eventos idempotentes no duplican efectos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-019` | Los fallos parciales permiten recuperación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-020` | Cada aplicación supera piloto con usuarios reales | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
