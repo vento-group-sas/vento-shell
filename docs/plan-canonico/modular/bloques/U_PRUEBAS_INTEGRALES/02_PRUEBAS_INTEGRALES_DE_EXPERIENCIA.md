@@ -37788,8 +37788,1766 @@ No transfiere ownership PASS, fidelización, cliente, compra, pedido, puntos, le
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad`
-### [ ] UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad
+### ✅ UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad
 
-### Subconjunto VISO mensual
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-029 — Probar PASS como cliente
+**Tarea siguiente:** AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de AURA bajo la condición de continuidad ya aprobada por `AURA-AUD-010`, registrada mediante `ADR-AURA-001` y reconciliada por `AURA-AUD-012`, demostrando por package y globalmente que las experiencias objetivo de marca, brief, creación asistida, aprobación, publicación, campañas, oportunidades, reputación, resultados y recomendaciones pueden utilizarse con autoridad, comprensión, segregación, privacidad, recuperación, trazabilidad y evidencia humana suficientes únicamente cuando exista una materialización AURA real y certificable, sin confundir continuidad documental con runtime disponible
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación AURA definido con la precondición de continuidad satisfecha; las futuras ejecuciones `UX-QA-030::<package_id>` y `UX-QA-030::GLOBAL-FINAL` permanecen pendientes, sujetas a `POST_E5_PACKAGE` y bloqueadas mientras no exista producto AURA materializado, candidato verificable, ambiente habilitado, superficies propias, autorización efectiva y usuarios reales compatibles
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se crea repositorio AURA, runtime, host, navegación, pantalla, componente, base de datos, permiso, canal, proveedor, campaña, contenido, audiencia, integración, secreto, Supabase, package, ambiente, despliegue ni transferencia CMS
+**Requisitos de prueba creados o modificados:** 0
 
-`002`, `003`, `004`, `006`, `007`, `008`, `009`, `010`, `012`, `015`, `016`, `017`, `018`, `019`, `020` y `023` son obligatorias.
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará AURA desde la perspectiva de experiencia únicamente después de que la continuidad arquitectónica haya sido decidida y registrada, sin transformar esa decisión en evidencia de que el producto ya existe, está desplegado o puede pilotarse.
+
+La certificación deberá poder responder, para cada alcance materializado:
+
+```text
+¿LA CONTINUIDAD DE AURA ESTA REALMENTE APROBADA?
+¿EXISTE UN PRODUCTO AURA MATERIALIZADO PARA EL CANDIDATO EVALUADO?
+¿QUE EXPERIENCIA AURA SE ESTA PROBANDO?
+¿QUE ACTOR Y CAPACIDAD EXACTA SON APLICABLES?
+¿QUE EMPRESA, MARCA, RECURSO Y CONTEXTO GOBIERNAN LA ACCION?
+¿LA PERSONA COMPRENDE EL ESTADO Y LA SIGUIENTE ACCION SEGURA?
+¿LA INTERFAZ RESPETA SEGREGACION ENTRE CREAR, REVISAR, APROBAR Y PUBLICAR?
+¿LA IA DISTINGUE HECHO, INFERENCIA Y PROPUESTA Y PERMANECE BAJO REVISION HUMANA?
+¿LOS DATOS Y RESULTADOS PROVIENEN DE SUS FUENTES PROPIETARIAS?
+¿LOS HANDOFFS HACIA PULSO, PASS, NUMERA, NEXO, FOGO Y VISO CONSERVAN OWNERSHIP?
+¿LOS CANALES EXTERNOS, RETRIES Y RESULTADOS INCIERTOS SON RECONCILIABLES?
+¿LA EVIDENCIA HUMANA, TECNICA Y OPERATIVA CORRESPONDE AL MISMO CANDIDATO?
+```
+
+Regla central:
+
+```text
+CONTINUIDAD AURA APROBADA
+!=
+AURA IMPLEMENTADA
+!=
+AURA PILOTABLE
+!=
+UX-QA-030 PASS
+```
+
+Y también:
+
+```text
+CONTINUIDAD APROBADA
++
+PRODUCTO AURA MATERIALIZADO
++
+AUTORIZACION EFECTIVA
++
+USO HUMANO REAL REPRESENTATIVO
++
+RESULTADOS Y HANDOFFS VERIFICADOS
++
+HALLAZGOS BLOQUEANTES CERRADOS
+=
+AURA CERTIFICABLE
+```
+
+---
+
+#### 2. Resultado documental
+
+`UX-QA-030` define el contrato especializado que convierte `Probar AURA únicamente después de aprobar su continuidad` en una certificación verificable por package y en una certificación agregada final.
+
+El resultado establece:
+
+- precondición formal de continuidad;
+- separación entre continuidad documental y readiness físico;
+- universo objetivo AURA que deberá certificarse cuando exista materialización;
+- estado actual de producto, usuarios, rutas y superficies;
+- participantes representativos futuros;
+- ocho familias de experiencia derivadas de `AURA-UX-001..008`;
+- autorización por empresa, marca, función, capacidad, recurso y contexto;
+- segregación de creación, revisión, aprobación, programación, publicación, retiro y respuesta pública;
+- protección de audiencias, clientes, exportaciones, secretos y proveedores;
+- límites de asistencia de IA y grounding;
+- canales externos e integraciones internas;
+- métricas, atribución, confianza, incrementalidad y recomendaciones;
+- hallazgos, owners, retest y criterio de salida;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- condiciones actuales que impiden una ejecución física.
+
+---
+
+#### 3. Topología contractual
+
+La topología vigente es:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-030::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-030::GLOBAL-FINAL
+```
+
+La tarea documental define el contrato una sola vez.
+
+Cada ejecución física futura conserva identidad propia:
+
+```text
+UX-QA-030::<package_id>
+```
+
+La certificación agregada final conserva:
+
+```text
+UX-QA-030::GLOBAL-FINAL
+```
+
+La existencia de estas identidades no autoriza crear una instancia mientras AURA siga sin producto materializado certificable.
+
+---
+
+#### 4. Handoff recibido de `UX-QA-029`
+
+`UX-QA-029` entrega a esta tarea el patrón común de certificación especializada por aplicación:
+
+- package, candidato, ambiente y alcance como identidad de la evidencia;
+- separación entre contrato documental y ejecución física;
+- consumo del contrato transversal de `UX-QA-020`;
+- participantes reales compatibles con la población prevista;
+- matriz de aplicabilidad por escenario;
+- evidencia humana, técnica y operativa sobre el mismo candidato;
+- hallazgos con owner y condición de salida;
+- retest proporcional;
+- criterio PASS por escenario y por package;
+- certificación agregada `GLOBAL-FINAL`;
+- prohibición de convertir una capacidad no materializada en un PASS narrativo.
+
+No transfiere a AURA ownership de PASS, PULSO, NUMERA, NEXO, FOGO, VISO ni de sus hechos empresariales.
+
+---
+
+#### 5. Contrato transversal consumido de `UX-QA-020`
+
+`UX-QA-030` consume sin redefinir de `UX-QA-020`:
+
+- `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- `POST_E5_PACKAGE`;
+- relación con el piloto físico de `SHELL-CI-022::<package_id>`;
+- definición de usuario real;
+- proporcionalidad de participantes y escenarios;
+- mismo candidato y mismo alcance;
+- aplicabilidad de `UX-QA-001..019`;
+- error, bloqueo, recuperación y conectividad degradada;
+- evidencia de entorno real cuando sea material;
+- evidencia humana separada de automatización;
+- findings con owner y criterio de salida;
+- cierre por package;
+- cierre `GLOBAL-FINAL`.
+
+`UX-QA-030` especializa esas reglas para AURA y su condición de existencia material.
+
+---
+
+#### 6. Puerta de continuidad de AURA
+
+La condición explícita del título está satisfecha documentalmente.
+
+Se conserva como entrada canónica:
+
+```text
+AURA_CONTINUITY_DECISION = CONTINUE
+AURA_TARGET_APPLICATION = PRESERVED
+AURA_RUNTIME_STATE = DEFERRED
+AURA_REPLACEMENT = NO
+AURA_RETIREMENT = NO
+ADR_ID = ADR-AURA-001
+ADR_STATUS = ACCEPTED
+```
+
+`AURA-AUD-012` cerró la puerta documental previa de auditoría y permitió continuar la secuencia canónica.
+
+Por tanto:
+
+```text
+CONDICION "DESPUES DE APROBAR SU CONTINUIDAD" = SATISFECHA
+```
+
+pero:
+
+```text
+CONDICION DE CONTINUIDAD SATISFECHA
+!=
+CONDICION DE MATERIALIZACION SATISFECHA
+```
+
+---
+
+#### 7. Estado físico vigente de AURA
+
+La certificación debe partir del estado real aprobado, no del roadmap objetivo.
+
+```text
+REPOSITORIO STANDALONE AURA = ABSENT / NO_CONFIRMADO
+PRODUCTO AURA STANDALONE = NOT_IMPLEMENTED
+AURA_RUNTIME_STATE = DEFERRED
+AURA_WEB_AVAILABILITY = FALSE
+AURA_RUNTIME_ENTRY = UNAVAILABLE
+ENVIRONMENT = ENV-AURA-BLOCKED
+PLANIFICACION FISICA = BLOQUEADO_AURA_SIN_REPOSITORIO
+USUARIOS_EFECTIVOS_AURA = 0
+USUARIOS_PRODUCTIVOS_AURA = 0
+RUTAS_PROPIAS_AURA = 0
+PANTALLAS_PROPIAS_AURA = 0
+NAVEGACION_RUNTIME_AURA = 0
+PANTALLAS_REGISTRADAS_RUNTIME_AURA = 0
+```
+
+Este estado impide declarar una ejecución física de `UX-QA-030` como realizada en el momento de definir este contrato.
+
+---
+
+#### 8. Universo documental AURA consumido
+
+La certificación futura deberá respetar el bloque AURA completo ya definido documentalmente:
+
+```text
+AURA-AUD-001..012
+AURA-DOM-001..010
+AURA-AUTH-001..004
+AURA-UX-001..008
+AURA-INT-001..002
+```
+
+Además consume:
+
+- `VPROC-0056 — Gestionar contenido y promociones`;
+- `VPROC-0057 — Convertir interacciones digitales en oportunidades comerciales`;
+- contratos transversales de autorización;
+- contratos internos de integración;
+- contratos de canales externos;
+- requisitos vigentes de AURA y experiencia.
+
+La certificación prueba la materialización de esos contratos sin reescribirlos.
+
+---
+
+#### 9. Usuarios actuales y población elegible
+
+La auditoría de usuarios conserva:
+
+```text
+EMPLEADOS_REGISTRADOS = 63
+EMPLEADOS_ACTIVOS = 39
+USUARIOS_EFECTIVOS_AURA = 0
+USUARIOS_PRODUCTIVOS_AURA = 0
+```
+
+Roles canónicamente elegibles para `aura.access` en el snapshot aprobado:
+
+| Rol | Activos observados | Decisión canónica |
+| --- | ---: | --- |
+| `propietario` | 4 | asignable |
+| `gerente_general` | 4 | asignable |
+| `marketing` | 0 | asignable, actualmente dormido |
+
+Existen grants runtime observados también para `contador` y `gerente`, pero fueron registrados como drift de rol, y los cinco grants observados presentan alcance runtime distinto del `NT-APP` canónico.
+
+Ninguna de esas concesiones convierte por sí sola a una persona en usuario efectivo mientras el producto AURA no exista.
+
+---
+
+#### 10. Regla de participante válido
+
+Un participante físico de `UX-QA-030` deberá demostrar simultáneamente:
+
+```text
+PERSONA REAL
++
+POBLACION PREVISTA
++
+IDENTIDAD LABORAL VALIDA
++
+ACCESO AURA MATERIALIZADO
++
+CAPACIDAD EXACTA APLICABLE
++
+ALCANCE VALIDO
++
+PRODUCTO AURA DISPONIBLE EN EL CANDIDATO
+```
+
+El nombre de rol no sustituye la decisión de autorización.
+
+Un grant stale, drift de rol, permiso reservado, placeholder visual o cuenta sintética no constituye participante válido.
+
+---
+
+#### 11. Estado actual de rutas y pantallas
+
+El inventario vigente conserva:
+
+```text
+REPOSITORIOS_STANDALONE_AURA = 0
+RUTAS_PROPIAS_AURA = 0
+PANTALLAS_PROPIAS_AURA = 0
+REFERENCIAS_RUNTIME_AURA = 7
+REFERENCIAS_TEMPLATE_NO_RUNTIME = 1
+```
+
+Las siete referencias runtime son placeholders o metadata distribuidos entre AppSwitchers y login; no son producto AURA.
+
+Una tarjeta `soon`, un código `aura`, `aura.access`, un logo, una URL reservada o metadata de login no cuentan como superficie certificable.
+
+---
+
+#### 12. Custodia transitoria del CMS en VISO
+
+Se conserva como estado actual:
+
+```text
+CMS RUNTIME ACTUAL = VISO
+CMS_TRANSFER_STATUS = NOT_AUTHORIZED
+```
+
+El inventario aprobado registra en VISO:
+
+```text
+7 rutas administrativas relacionadas
+9 superficies interactivas subordinadas
+1 route handler de carga de media
+```
+
+`UX-QA-030` no certifica esas superficies como AURA solo porque implementen capacidades relacionadas.
+
+Si una futura transición las transfiere a AURA, la certificación deberá evaluar el producto resultante después de la transferencia autorizada y sobre el candidato real correspondiente.
+
+---
+
+#### 13. Consumidores públicos actuales
+
+La auditoría conserva siete rutas públicas relacionadas en `Vento-Group`:
+
+```text
+TOTAL = 7
+RENDER = 6
+REDIRECT = 1
+OWNER = Vento-Group
+```
+
+Esas rutas son consumidoras públicas de contenido; no son superficies administrativas AURA.
+
+Una publicación visible en `Vento-Group` puede ser evidencia de un resultado futuro de AURA cuando exista integración materializada y correlacionable, pero no demuestra por sí sola que AURA haya ejecutado o certificado la acción.
+
+---
+
+#### 14. Universo de experiencia objetivo
+
+La certificación especializada cubre exactamente las ocho familias documentales de `AURA-UX-001..008`:
+
+| Identidad | Experiencia objetivo |
+| --- | --- |
+| `AURA-UX-001` | inicio diario simple con prioridades, calendario, pendientes y oportunidades |
+| `AURA-UX-002` | sistema de marca, brief guiado y calendario visual |
+| `AURA-UX-003` | estudio creativo asistido y fábrica de variantes reutilizables |
+| `AURA-UX-004` | aprobación y publicación multicanal con estado y recuperación claros |
+| `AURA-UX-005` | campañas, promociones, cupones, experimentos y guardas |
+| `AURA-UX-006` | bandeja de oportunidades, B2B, catering y eventos |
+| `AURA-UX-007` | reputación, comentarios, respuestas y escalamiento |
+| `AURA-UX-008` | tablero de resultados, atribución y copiloto de recomendaciones |
+
+La certificación no inventa pantallas físicas para completar esta matriz.
+
+---
+
+#### 15. Frontera de ownership
+
+AURA conserva como ownership objetivo:
+
+- memoria de marca;
+- briefs;
+- campañas;
+- contenido y activos dentro de su dominio;
+- intención promocional;
+- oportunidades y aprendizaje de marketing;
+- reputación y respuesta pública gobernada;
+- atribución y recomendaciones según los contratos aprobados.
+
+No absorbe:
+
+| Dominio | Propietario preservado |
+| --- | --- |
+| cliente, consentimiento, fidelización, beneficios y redenciones | PASS |
+| oferta, pedido, venta, precio aplicado y validación comercial | PULSO |
+| presupuesto, costo, margen, obligación y verdad económica | NUMERA |
+| producto, inventario, disponibilidad física y logística | NEXO |
+| receta, capacidad, ejecución y hechos productivos | FOGO |
+| CMS runtime actual mientras no exista transferencia aprobada | VISO |
+| consumidores web públicos actuales | Vento-Group |
+
+La UX no puede ocultar ni reinterpretar esas fronteras.
+
+---
+
+#### 16. Identidad de la certificación por package
+
+Cada instancia futura deberá conservar como mínimo:
+
+```text
+package_id
+candidate_ref
+environment
+authorized_scope_ref
+pilot_evidence_ref
+continuity_decision_ref
+adr_ref
+aura_materialization_ref
+application_code = aura
+process_ids[]
+scenario_ids[]
+participant_cohorts[]
+observed_functions[]
+observed_brands_or_org_scopes[]
+observed_channels[]
+observed_conditions[]
+findings[]
+result
+```
+
+Los valores ausentes no se inventan.
+
+---
+
+#### 17. Precondiciones para ejecutar una instancia física
+
+`UX-QA-030::<package_id>` solo puede ejecutarse cuando pueda demostrarse simultáneamente:
+
+1. `AURA_CONTINUITY_DECISION = CONTINUE` permanece vigente;
+2. `ADR-AURA-001` permanece vigente o existe un ADR posterior compatible;
+3. existe package aplicable y candidato identificable;
+4. el gate `POST_E5_PACKAGE` aplicable está satisfecho;
+5. existe producto AURA materializado para ese package;
+6. existe repositorio o conjunto de artefactos propietarios identificables sin inferencia;
+7. existe ambiente autorizado y no `ENV-AURA-BLOCKED` para el alcance probado;
+8. existen rutas o superficies AURA reales para los escenarios incluidos;
+9. existe autorización efectiva por capacidad y alcance;
+10. existen participantes reales compatibles con la población prevista;
+11. las fuentes propietarias y handoffs requeridos están disponibles;
+12. las credenciales, canales o proveedores necesarios están gobernados cuando apliquen;
+13. puede capturarse evidencia humana, técnica y empresarial sin exponer secretos o datos innecesarios;
+14. los resultados inciertos pueden reconciliarse;
+15. no existe un bloqueador material conocido que invalide la exposición humana.
+
+Si falta una precondición, el escenario o package queda `BLOCKED`, nunca PASS por inferencia.
+
+---
+
+#### 18. Bloqueos físicos actuales
+
+En el estado vigente fallan varias precondiciones de ejecución:
+
+```text
+PRODUCTO AURA MATERIALIZADO = NO
+REPOSITORIO STANDALONE CONFIRMADO = NO
+AMBIENTE AURA HABILITADO = NO
+RUTAS AURA PROPIAS = 0
+PANTALLAS AURA PROPIAS = 0
+USUARIOS EFECTIVOS AURA = 0
+USUARIOS PRODUCTIVOS AURA = 0
+```
+
+Por tanto:
+
+```text
+UX-QA-030 DOCUMENTAL = DEFINIBLE
+UX-QA-030 FISICA = NOT_EXECUTED
+```
+
+La tarea no convierte ese bloqueo en `NOT_APPLICABLE`: AURA continúa como aplicación objetivo y la certificación permanece requerida cuando exista materialización.
+
+---
+
+#### 19. Participantes representativos futuros
+
+La selección de participantes se derivará del producto y package materializados.
+
+Debe incluir, según aplicabilidad:
+
+- actores autorizados de dirección o propiedad;
+- actores autorizados de marketing cuando exista población efectiva;
+- funciones de creación, revisión y aprobación materialmente distintas;
+- participantes responsables de oportunidades o reputación cuando el alcance lo incluya;
+- actores que consumen resultados o recomendaciones;
+- participantes con distintos niveles de familiaridad con la herramienta;
+- configuraciones de accesibilidad representativas cuando sean materiales.
+
+La certificación no exige que una sola persona tenga todas las capacidades ni que recorra todas las superficies.
+
+---
+
+#### 20. No existe tamaño de muestra inventado
+
+`UX-QA-030` no fija un número universal de participantes.
+
+La suficiencia se deriva de:
+
+- funciones y segregaciones materializadas;
+- empresas y marcas materialmente distintas;
+- capacidades críticas;
+- canales incluidos;
+- procesos incluidos;
+- riesgos del package;
+- variantes de dispositivo o contexto relevantes;
+- escenarios con dinero, clientes, publicación, privacidad, reputación o secretos;
+- patrones no equivalentes.
+
+Cuando exista un mínimo definido por otro contrato propietario, se aplica ese mínimo sin reemplazarlo por uno nuevo.
+
+---
+
+#### 21. Mismo candidato y mismo alcance
+
+La evidencia humana solo es válida para el candidato observado.
+
+Un cambio material de:
+
+- build o commit;
+- configuración;
+- feature flag;
+- permiso o alcance;
+- política de marca;
+- flujo de aprobación;
+- integración;
+- proveedor;
+- canal;
+- tratamiento de datos;
+- navegación;
+- comportamiento de retry o reconciliación;
+- handoff propietario;
+
+obliga a reevaluar la evidencia afectada.
+
+---
+
+#### 22. Matriz de aplicabilidad AURA
+
+Cada package deberá producir una matriz que relacione:
+
+```text
+AURA_UX_FAMILY
+x ACTOR / FUNCION
+x EMPRESA / MARCA / RECURSO
+x PROCESS / SCENARIO
+x CAPACIDAD EXACTA
+x CANAL / PROVEEDOR SI APLICA
+x EXPECTED RESULT
+x OBSERVED RESULT
+x OWNER DE LA VERDAD EMPRESARIAL
+x EVIDENCE
+x FINDING
+```
+
+No todos los cruces son obligatorios.
+
+Todo cruce material deberá quedar cubierto o explícitamente justificado.
+
+---
+
+#### 23. Inicio diario — `AURA-UX-001`
+
+Cuando la familia esté materializada, la prueba deberá comprobar que una persona autorizada puede identificar sin entrenamiento técnico extraordinario:
+
+- prioridades del día;
+- calendario inmediato;
+- aprobaciones pendientes;
+- alertas de canal;
+- oportunidades relevantes;
+- resultados que requieren acción.
+
+La experiencia deberá distinguir carga, vacío, falta de autorización, fuente no disponible, dato vencido, resultado parcial y error técnico.
+
+La prioridad no puede depender de un score opaco ni una recomendación puede ejecutarse por aparecer en el inicio.
+
+---
+
+#### 24. Sistema de marca, brief y calendario — `AURA-UX-002`
+
+La prueba deberá verificar que la persona distingue:
+
+```text
+MEMORIA DE MARCA
+!= BRIEF
+!= CAMPANA
+!= PIEZA
+!= PUBLICACION
+!= COLA DE PUBLICACION
+```
+
+Debe poder identificar:
+
+- marca y versión vigente;
+- reglas, claims y restricciones;
+- faltantes materiales del brief;
+- objetivo e hipótesis;
+- dependencias y guardas;
+- presupuesto como referencia proveniente de su fuente propietaria;
+- hitos temporales sin convertir el calendario en fuente de publicación.
+
+Mover visualmente un elemento no puede producir una mutación empresarial silenciosa.
+
+---
+
+#### 25. Estudio creativo asistido — `AURA-UX-003`
+
+La prueba deberá demostrar que el usuario puede distinguir:
+
+```text
+HECHO
+!= INFERENCIA
+!= PROPUESTA
+```
+
+Y:
+
+```text
+SALIDA GENERADA
+!= CONTENIDO APROBADO
+!= PUBLICACION
+```
+
+Debe conservarse:
+
+- brief y versión activos;
+- marca y restricciones;
+- fuentes y grounding;
+- derechos de activos;
+- original, derivado, variante y nueva versión material;
+- historial y comparación;
+- revisión humana;
+- fallos de proveedor diferenciados de rechazo editorial.
+
+---
+
+#### 26. Aprobación y publicación multicanal — `AURA-UX-004`
+
+La prueba deberá demostrar que el usuario comprende y la interfaz conserva:
+
+```text
+REVISAR
+!= APROBAR
+!= PROGRAMAR
+!= PUBLICAR
+!= CONFIRMAR EXTERNAMENTE
+!= RETIRAR
+```
+
+Cada target de publicación deberá conservar estado independiente.
+
+Un resultado ambiguo, timeout, fallo parcial o respuesta perdida deberá reconciliarse antes de reintentar un efecto que pueda duplicarse.
+
+Una aprobación no concede por sí sola autoridad para publicar ni acceso a credenciales.
+
+---
+
+#### 27. Campañas, promociones y experimentos — `AURA-UX-005`
+
+La prueba deberá verificar que campaña, promoción, cupón, experimento y regla transaccional permanecen conceptos distintos.
+
+La experiencia deberá mostrar, según el alcance materializado:
+
+- objetivo;
+- audiencia;
+- vigencia;
+- presupuesto o límite económico referenciado;
+- guardas económicas y operativas;
+- estado de aprobación;
+- estado de publicación o activación cuando corresponda;
+- evidencia del resultado;
+- restricciones y owner de cada efecto.
+
+AURA no puede aplicar por sí sola precio, descuento, beneficio, redención, venta, inventario o capacidad productiva.
+
+---
+
+#### 28. Oportunidades, B2B, catering y eventos — `AURA-UX-006`
+
+La prueba deberá demostrar que:
+
+```text
+INTERACCION
+!= CONSULTA
+!= LEAD
+!= CLIENTE
+!= OPORTUNIDAD
+!= PROPUESTA
+!= COTIZACION
+!= PEDIDO
+!= COMPROMISO OPERATIVO
+```
+
+Debe verificarse:
+
+- origen y clasificación;
+- finalidad y consentimiento aplicables;
+- responsable y etapa;
+- siguiente acción y vencimiento;
+- estimaciones separadas de hechos;
+- handoff explícito a PULSO cuando sea necesario;
+- resultados `aceptado`, `devuelto`, `rechazado`, `deduplicado` o `ambiguo` sin colapsarlos;
+- ausencia de promesas de precio, capacidad, inventario o fecha firme desde AURA.
+
+---
+
+#### 29. Reputación y escalamiento — `AURA-UX-007`
+
+La prueba deberá comprobar que:
+
+```text
+RESEÑA
+!= COMENTARIO
+!= MENCION
+!= FEEDBACK
+!= RECLAMO FORMAL
+!= CASO DE SERVICIO
+!= RESPUESTA PUBLICA
+!= RESOLUCION
+```
+
+Debe conservarse:
+
+- contenido original;
+- clasificación, severidad y confianza;
+- hechos separados de inferencias;
+- respuesta propuesta, revisada, aprobada y publicada;
+- escalamiento explícito a servicio;
+- vínculo con caso formal cuando exista;
+- estado externo reconciliado;
+- privacidad de clientes, trabajadores y terceros;
+- imposibilidad de que una respuesta pública cierre por sí sola un reclamo formal.
+
+---
+
+#### 30. Resultados, atribución y recomendaciones — `AURA-UX-008`
+
+La certificación deberá demostrar que la persona distingue:
+
+```text
+ACTIVIDAD
+!= INTERACCION
+!= CONVERSION
+!= VENTA CORRELACIONADA
+!= VENTA INCREMENTAL
+!= MARGEN
+!= RENTABILIDAD
+```
+
+Y:
+
+```text
+SEÑAL
+!= DIAGNOSTICO
+!= RECOMENDACION
+!= DECISION
+!= ACCION EJECUTADA
+!= RESULTADO
+```
+
+Toda conclusión material deberá mostrar fuente, frescura, completitud, método, confianza y limitaciones suficientes.
+
+Una recomendación aceptada no equivale a una acción ejecutada.
+
+---
+
+#### 31. Autorización base de AURA
+
+La certificación deberá observar que:
+
+```text
+aura.access
+=
+ACCESO BASE A LA SUPERFICIE GENERAL
+```
+
+pero:
+
+```text
+aura.access
+!= LEER TODO
+!= MUTAR TODO
+!= APROBAR
+!= PUBLICAR
+!= EXPORTAR
+!= ADMINISTRAR CREDENCIALES
+```
+
+Toda acción material deberá resolver capacidad exacta, recurso, empresa, marca, función, contexto, estado y restricciones.
+
+La UI no es autoridad final.
+
+---
+
+#### 32. Empresa, marca y función
+
+La experiencia deberá conservar:
+
+```text
+EMPRESA
+!= MARCA
+!= FUNCION EMPRESARIAL
+!= ROL NOMINAL
+```
+
+Un cambio de filtro no amplía autoridad.
+
+Una autorización sobre una empresa no concede automáticamente todas sus marcas.
+
+Una autorización sobre una marca no concede automáticamente todos los canales, campañas, activos, audiencias o resultados relacionados.
+
+---
+
+#### 33. Segregación del ciclo editorial
+
+La certificación deberá incluir casos que demuestren separación real entre:
+
+- creación;
+- revisión;
+- aprobación;
+- programación;
+- publicación;
+- retiro;
+- respuesta pública.
+
+Un actor que tenga varias capacidades no elimina las incompatibilidades específicas de una decisión crítica.
+
+Una versión aprobada no transfiere aprobación a otra versión o a otro canal por inferencia.
+
+---
+
+#### 34. Clientes, segmentos y acciones masivas
+
+La experiencia deberá demostrar que:
+
+- lead no equivale a cliente;
+- definición de segmento no equivale a membresía;
+- membresía no equivale a exportación;
+- exportación no equivale a contacto;
+- ver datos no equivale a poder exportarlos;
+- permiso individual no escala automáticamente a operación masiva;
+- finalidad, consentimiento, preferencia de canal y minimización se revalidan cuando corresponda;
+- una revocación aplicable bloquea nuevos efectos afectados.
+
+PASS conserva identidad y consentimiento dentro de su autoridad.
+
+---
+
+#### 35. Secretos, proveedores y datos enviados a terceros
+
+La certificación deberá demostrar que el usuario no necesita ni recibe secretos para operar la experiencia ordinaria.
+
+Se conserva:
+
+```text
+CUENTA
+!= CREDENCIAL
+!= SECRETO
+!= TOKEN
+!= AUTORIZACION
+```
+
+Y:
+
+```text
+DATO AUTORIZADO DENTRO DE VENTO
+!=
+TRANSFERENCIA A TERCERO AUTORIZADA
+```
+
+Proveedor, modelo, prompt, archivo y clase de datos deberán quedar gobernados cuando sean materiales.
+
+`service_role` nunca sustituye autorización empresarial.
+
+---
+
+#### 36. IA y revisión humana
+
+La experiencia deberá conservar:
+
+- grounding;
+- contexto versionado;
+- fuentes autorizadas;
+- frescura;
+- distinción entre hecho, inferencia y propuesta;
+- provider/model identificables cuando sean materiales;
+- minimización previa a terceros;
+- restricciones de marca y negocio;
+- revisión humana para acciones materiales.
+
+La IA no adquiere autoridad para publicar, promocionar, contactar, responder crisis, aprobar, alterar permisos o ejecutar recomendaciones por el solo hecho de generar una salida.
+
+---
+
+#### 37. Estados de carga, vacío, error y frescura
+
+Las superficies AURA materializadas deberán distinguir cuando aplique:
+
+```text
+CARGANDO
+SIN ELEMENTOS APLICABLES
+SIN AUTORIZACION
+FUENTE NO DISPONIBLE
+DATO VENCIDO
+RESULTADO PARCIAL
+RECONCILIACION PENDIENTE
+ERROR TECNICO
+RESULTADO VIGENTE
+```
+
+Queda prohibido interpretar:
+
+```text
+0 = AUSENTE = NULL = DESCONOCIDO = NO APLICA = DENEGADO = FALLO
+```
+
+Cada estado deberá conducir a una acción siguiente segura y comprensible.
+
+---
+
+#### 38. Recuperación y resultado incierto
+
+Cuando una operación pueda producir efecto externo o empresarial y la respuesta se pierda, la experiencia deberá:
+
+```text
+NO FABRICAR EXITO
+NO FABRICAR FALLO DEFINITIVO
+NO REPETIR CIEGAMENTE
+CONSERVAR IDENTIDAD Y CORRELACION
+RECONCILIAR ANTES DE REPETIR
+```
+
+Aplica especialmente a:
+
+- publicación;
+- retiro;
+- respuesta pública;
+- handoff comercial;
+- acciones masivas;
+- exportaciones;
+- integraciones externas;
+- efectos promocionales que dependan de otro dominio.
+
+---
+
+#### 39. Idempotencia y duplicidad
+
+La certificación deberá observar que reintentar una acción material con la misma identidad no crea un segundo efecto empresarial.
+
+La protección deberá cubrir, según aplicabilidad:
+
+- publicación duplicada;
+- respuesta pública duplicada;
+- handoff duplicado;
+- evento consumido dos veces;
+- exportación repetida;
+- acción masiva reintentada;
+- métricas o conversiones duplicadas;
+- recomendaciones materializadas dos veces.
+
+Una identidad repetida con contenido incompatible debe producir conflicto explícito, no overwrite silencioso.
+
+---
+
+#### 40. Concurrencia
+
+Cuando el package materialice edición o decisiones concurrentes, la prueba deberá verificar que:
+
+- versiones no se sobrescriben silenciosamente;
+- una aprobación no desaparece por edición concurrente;
+- dos publicaciones concurrentes no producen varios efectos válidos del mismo intento;
+- un cambio de estado invalida acciones obsoletas;
+- una decisión se revalida contra el estado vigente antes de ejecutar;
+- la persona recibe una explicación recuperable del conflicto.
+
+---
+
+#### 41. Canales externos
+
+Cuando `AURA-INT-001` tenga materialización aplicable, la certificación deberá observar:
+
+- cuenta y canal correctos;
+- identidad interna/externa correlacionable;
+- límites y cuotas cuando afecten la experiencia;
+- estado por target;
+- retry y backoff seguros;
+- webhook o confirmación externa cuando corresponda;
+- resultado parcial;
+- reconciliación;
+- retiro o corrección trazable;
+- ausencia de secretos en UI y evidencia ordinaria.
+
+Una respuesta técnica del proveedor no sustituye un resultado empresarial confirmado.
+
+---
+
+#### 42. Lecturas y eventos internos
+
+Cuando `AURA-INT-002` tenga materialización aplicable, la prueba deberá conservar ownership de seis aplicaciones propietarias:
+
+```text
+NEXO
+PULSO
+PASS
+NUMERA
+VISO
+FOGO
+```
+
+AURA podrá consumir referencias, proyecciones o eventos autorizados, pero no modificar directamente dominios ajenos.
+
+Evento recibido, lectura disponible y efecto propio de AURA permanecen conceptos distintos.
+
+---
+
+#### 43. Handoff comercial hacia PULSO
+
+Cuando una oportunidad requiera cotización, pedido, catering, evento, reserva o compromiso comercial, la prueba deberá demostrar que:
+
+```text
+AURA HANDOFF
+!=
+PEDIDO CREADO
+!=
+VENTA CONFIRMADA
+```
+
+La persona deberá poder distinguir:
+
+- handoff pendiente;
+- aceptado;
+- devuelto;
+- rechazado;
+- deduplicado;
+- resultado ambiguo;
+- caso comercial posterior.
+
+PULSO conserva el compromiso comercial y la verdad transaccional.
+
+---
+
+#### 44. Handoff reputacional hacia servicio
+
+La certificación deberá demostrar que un escalamiento desde reputación no cierra ni sustituye el proceso de servicio.
+
+AURA conserva:
+
+- señal pública;
+- clasificación;
+- respuesta;
+- seguimiento reputacional.
+
+El proceso propietario conserva:
+
+- reclamo formal;
+- investigación;
+- devolución;
+- compensación;
+- cierre de servicio.
+
+La experiencia deberá mostrar ambos estados sin fusionarlos.
+
+---
+
+#### 45. Guardas económicas y operativas
+
+Cuando campañas o recomendaciones dependan de costo, margen, presupuesto, inventario, disponibilidad o capacidad, la interfaz deberá consumir esos valores desde su fuente propietaria y mostrar su vigencia.
+
+AURA no podrá presentar:
+
+- margen desconocido como margen cero;
+- stock no consultable como cero;
+- capacidad no calculada como disponible;
+- presupuesto escrito en brief como saldo financiero autorizado;
+- venta correlacionada como rentabilidad;
+- campaña como regla transaccional aplicada.
+
+---
+
+#### 46. Métricas, atribución e incrementalidad
+
+La certificación deberá verificar que toda interpretación material conserva:
+
+- definición;
+- fuente;
+- fecha de corte;
+- zona horaria cuando corresponda;
+- frescura;
+- completitud;
+- método;
+- confianza;
+- limitaciones.
+
+Correlación temporal no equivale a atribución.
+
+Atribución no equivale a causalidad.
+
+Venta correlacionada no equivale a venta incremental.
+
+---
+
+#### 47. Recomendaciones
+
+Toda recomendación material deberá mostrar:
+
+- qué propone revisar o considerar;
+- por qué;
+- evidencia relevante;
+- confianza;
+- guardas;
+- restricciones;
+- owner de la decisión o acción posterior;
+- vigencia.
+
+La persona deberá poder rechazar, diferir o solicitar más evidencia.
+
+Aceptar una recomendación no ejecuta automáticamente una acción en otro dominio.
+
+---
+
+#### 48. Privacidad y minimización de evidencia
+
+La certificación deberá demostrar suficiente realidad humana sin almacenar más información de la necesaria.
+
+La evidencia podrá usar referencias minimizadas como:
+
+```text
+participant_ref
+actor_class
+function_or_scope
+brand_or_org_scope
+scenario_ref
+session_or_window_ref
+```
+
+No se almacenan en evidencia ordinaria:
+
+- secretos;
+- tokens;
+- contraseñas;
+- OTP;
+- credenciales de proveedor;
+- payloads personales completos;
+- archivos sensibles innecesarios;
+- prompts con secretos;
+- datos de clientes no necesarios para demostrar el escenario.
+
+---
+
+#### 49. Accesibilidad
+
+Las experiencias materializadas deberán validarse, según aplicabilidad, con:
+
+- navegación por teclado;
+- foco visible;
+- orden semántico;
+- contraste;
+- texto ampliable;
+- alternativas a color;
+- alternativas a hover;
+- alternativas a drag-and-drop;
+- controles con labels comprensibles;
+- mensajes de error recuperables;
+- gráficos con interpretación no exclusivamente visual.
+
+Una interfaz crítica no se considera comprensible si depende de color, posición o gesto fino para evitar una acción incorrecta.
+
+---
+
+#### 50. Evidencia humana mínima por escenario
+
+Cada escenario ejecutado deberá conservar, cuando aplique:
+
+```text
+PACKAGE
+CANDIDATE
+ENVIRONMENT
+AURA_UX_FAMILY
+PARTICIPANT_REF
+FUNCTION_OR_SCOPE
+BRAND_OR_ORG_SCOPE
+CAPABILITY
+SCENARIO
+EXPECTED_BEHAVIOR
+OBSERVED_BEHAVIOR
+FIRST_ACTION
+HELP_REQUIRED
+STATE_INTERPRETATION
+NEXT_SAFE_ACTION
+OWNER_SOURCE_RESULT
+FINDING
+EVIDENCE_REF
+```
+
+No basta una nota general como `AURA fue fácil de usar`.
+
+---
+
+#### 51. Evidencia automatizada de apoyo
+
+Puede incluir:
+
+- logs minimizados;
+- auditoría de autorización;
+- traces correlacionadas;
+- receipts de publicación o integración;
+- estados de handoff;
+- métricas de error;
+- registros de reconciliación;
+- eventos;
+- evidencia de CI022;
+- health checks;
+- snapshots permitidos.
+
+La automatización apoya, pero no sustituye la observación humana cuando el criterio exige experiencia real.
+
+---
+
+#### 52. Evidencia manual
+
+Puede incluir, cuando esté permitida:
+
+- acta estructurada de observación;
+- checklist de escenario;
+- notas minimizadas;
+- referencia a incidente;
+- confirmación de resultado por la fuente propietaria;
+- evidencia visual permitida de la superficie probada.
+
+La evidencia deberá ser recuperable, atribuible y compatible con privacidad y seguridad.
+
+---
+
+#### 53. Evidencia de entorno real
+
+Cuando sea material al riesgo, deberá demostrarse que el escenario ocurrió en una condición representativa:
+
+- estación administrativa;
+- portátil o escritorio previsto;
+- viewport estrecho cuando aplique;
+- condición realista de conectividad;
+- canal externo real de prueba cuando esté autorizado;
+- proveedor real de prueba cuando sea parte del riesgo;
+- configuración representativa de accesibilidad.
+
+No se inventan condiciones que no pertenecen al package.
+
+---
+
+#### 54. Escenario nominal
+
+Todo package con superficie AURA humana deberá incluir al menos un escenario nominal representativo que recorra:
+
+```text
+ENTRAR EN CONTEXTO AUTORIZADO
+-> IDENTIFICAR TAREA
+-> ACTUAR SEGUN CAPACIDAD
+-> RECIBIR RESULTADO
+-> VERIFICAR FUENTE PROPIETARIA O ESTADO EXTERNO
+-> ENTENDER SIGUIENTE ACCION
+```
+
+Completar el camino nominal no sustituye los casos de bloqueo, parcialidad, autorización y recuperación aplicables.
+
+---
+
+#### 55. Error y bloqueo
+
+La certificación deberá incluir estados donde la operación no pueda continuar de forma segura.
+
+La persona deberá comprender:
+
+- qué ocurrió;
+- qué quedó preservado;
+- qué no ocurrió;
+- por qué está bloqueado;
+- qué autoridad falta cuando sea apropiado mostrarlo;
+- qué puede hacer después;
+- cuándo no debe repetir.
+
+Los mensajes no deberán exponer secretos, SQL, stack traces, tokens ni detalles internos innecesarios.
+
+---
+
+#### 56. Fallo parcial
+
+Cuando un flujo tenga varias fuentes, targets o handoffs, la certificación deberá distinguir éxito parcial de éxito total.
+
+Ejemplos aplicables:
+
+- algunos targets publicados y otros fallidos;
+- datos económicos disponibles y datos operativos no disponibles;
+- handoff comercial aceptado pero downstream todavía pendiente;
+- respuesta pública confirmada pero caso de servicio abierto;
+- evento recibido pero lectura propietaria todavía no reconciliada.
+
+Una zona exitosa no oculta la condición fallida de otra zona material.
+
+---
+
+#### 57. Proveedor o canal no disponible
+
+Ante indisponibilidad externa, la experiencia deberá:
+
+- conservar el trabajo local seguro;
+- mostrar el target afectado;
+- no inventar confirmación;
+- aplicar retry/backoff según el contrato propietario;
+- evitar nuevos efectos duplicados;
+- permitir reconciliación posterior;
+- mantener independientes los targets no afectados cuando sea seguro.
+
+---
+
+#### 58. Cambio de actor o autorización
+
+Si cambia materialmente el actor, función, permiso, empresa, marca o alcance durante una operación, la aplicación deberá revalidar la acción protegida.
+
+Un estado cargado bajo una autoridad anterior no concede capacidad posterior.
+
+La certificación deberá comprobar que un cambio de contexto no mantiene acciones sensibles disponibles por caché o selección previa.
+
+---
+
+#### 59. Workarounds
+
+Todo workaround material observado deberá registrar:
+
+- escenario;
+- motivo;
+- frecuencia o condición observada;
+- riesgo;
+- owner;
+- salida prevista;
+- impacto sobre la certificación.
+
+Papel, hoja de cálculo, chat, contraseña compartida, publicación manual fuera del flujo, exportación paralela o acción directa en otro sistema no se normalizan como equivalentes al contrato AURA por conveniencia.
+
+---
+
+#### 60. Hallazgos
+
+Cada hallazgo deberá conservar como mínimo:
+
+```text
+finding_id
+package_id
+application_code = aura
+scenario_id
+participant_cohort
+observed_condition
+expected_behavior
+observed_behavior
+risk
+severity
+owner_task_or_package
+exit_condition
+evidence_ref
+status
+```
+
+No se dejan hallazgos narrativos sin owner.
+
+---
+
+#### 61. Severidad
+
+La severidad deberá reflejar el impacto real.
+
+Son materialmente bloqueantes, según aplicabilidad:
+
+- publicación no autorizada;
+- exposición de secretos o datos sensibles;
+- actor sin permiso capaz de ejecutar una acción;
+- actor autorizado bloqueado sin recuperación razonable;
+- autoaprobación prohibida;
+- reintento que duplica publicación, contacto o efecto;
+- recomendación presentada como hecho o ejecutada sin autoridad;
+- dato stale presentado como vigente en una decisión material;
+- presupuesto, margen, inventario o capacidad inventados;
+- reclamo formal tratado como resuelto por una respuesta pública;
+- resultado incierto presentado como éxito;
+- ownership ambiguo que permite mutación en dominio ajeno.
+
+La severidad no se reduce para cerrar calendario.
+
+---
+
+#### 62. Hallazgo local no reabre todo AURA
+
+Un hallazgo se asigna a su owner exacto.
+
+Puede pertenecer a:
+
+- superficie;
+- copy;
+- contrato UX;
+- autorización;
+- integración;
+- provider adapter;
+- fuente de datos;
+- package;
+- política;
+- proceso propietario externo.
+
+No se reabre todo el bloque AURA por defecto cuando la frontera del defecto es demostrable.
+
+---
+
+#### 63. Corrección y retest
+
+Una corrección exige evidencia nueva sobre el alcance afectado.
+
+Debe registrarse:
+
+```text
+finding_id
+correction_ref
+candidate_before
+candidate_after
+scope_invalidated
+retest_scope
+retest_result
+```
+
+Cambios materialmente independientes no invalidan escenarios que continúan siendo equivalentes y demostrables.
+
+---
+
+#### 64. Packages multi-app
+
+Un package puede materializar AURA junto con otra aplicación.
+
+La instancia deberá distinguir:
+
+- escenario propietario AURA;
+- handoffs a consumidoras o propietarias;
+- participantes por aplicación;
+- evidencia por aplicación;
+- resultado por aplicación;
+- findings locales y compartidos.
+
+Un PASS agregado no puede ocultar que AURA carece de evidencia suficiente.
+
+---
+
+#### 65. Packages sin superficie AURA humana
+
+Si un package relacionado con AURA no expone una superficie, actor o escenario humano AURA propio, no se inventan participantes.
+
+La instancia deberá justificar la no aplicabilidad del componente humano y señalar dónde se prueba la experiencia consumidora, si corresponde.
+
+La justificación no puede usarse para omitir una superficie AURA realmente incluida.
+
+---
+
+#### 66. Criterio PASS por escenario
+
+Un escenario obtiene PASS cuando:
+
+- fue ejecutado sobre el candidato y alcance correctos;
+- AURA estaba realmente materializada para ese escenario;
+- el participante pertenecía a la población prevista;
+- la autorización era compatible con la acción;
+- el resultado esperado se alcanzó;
+- la persona comprendió estado y siguiente acción;
+- no se requirió bypass incompatible;
+- no apareció un efecto prohibido;
+- las fuentes propietarias y handoffs convergieron;
+- la evidencia es suficiente;
+- cualquier finding asociado está cerrado o demostrado como no bloqueante según el contrato propietario.
+
+---
+
+#### 67. Criterio PASS por package
+
+`UX-QA-030::<package_id>` obtiene PASS únicamente cuando:
+
+1. continuidad AURA sigue aprobada y vigente;
+2. package, candidato, ambiente y alcance están resueltos;
+3. existe producto AURA materializado en el alcance probado;
+4. el gate `POST_E5_PACKAGE` está satisfecho;
+5. existe evidencia física de piloto aplicable;
+6. participantes reales son compatibles con las funciones previstas;
+7. autorización y alcance fueron evaluados correctamente;
+8. la matriz de aplicabilidad está completa;
+9. las familias `AURA-UX-*` afectadas tienen escenarios suficientes;
+10. segregación crítica fue observada cuando aplica;
+11. fuentes propietarias conservan ownership;
+12. canales y proveedores aplicables tienen resultado reconciliable;
+13. resultados inciertos materiales están resueltos;
+14. no existe duplicidad material no resuelta;
+15. no existe exposición sensible material no resuelta;
+16. no existe fuente de verdad competidora no resuelta;
+17. no existe workaround crítico sin owner y salida;
+18. no existe recomendación o IA con autoridad indebida;
+19. findings bloqueantes están cerrados;
+20. la evidencia corresponde al candidato certificado.
+
+---
+
+#### 68. Frontera con `SHELL-CI-022`
+
+`SHELL-CI-022::<package_id>` gobierna la ventana física de piloto.
+
+`UX-QA-030::<package_id>` gobierna si la experiencia AURA observada es suficiente.
+
+```text
+CI022 VERIFIED
+!=
+UX-QA-030 PASS AUTOMATICO
+```
+
+La observación UX debe integrarse a la exposición física autorizada cuando exista, sin crear un segundo piloto artificial.
+
+---
+
+#### 69. Evidencia stale
+
+Una evidencia no se reutiliza si cambió materialmente:
+
+- candidato;
+- autorización;
+- marca o ámbito;
+- estado de continuidad;
+- provider;
+- canal;
+- contrato de datos;
+- superficie;
+- flujo de aprobación;
+- comportamiento de retry;
+- lógica de recomendación;
+- handoff propietario;
+- CMS o ruta de origen.
+
+La similitud visual no convierte evidencia anterior en evidencia vigente.
+
+---
+
+#### 70. `GLOBAL-FINAL`
+
+`UX-QA-030::GLOBAL-FINAL` certifica el cierre agregado de experiencia AURA únicamente después de existir materialización suficiente para hacerlo.
+
+Debe comprobar:
+
+- todos los packages AURA aplicables tienen resultado trazable;
+- la continuidad vigente de AURA sigue siendo compatible con el producto certificado;
+- ninguna familia de experiencia activa quedó omitida sin justificación;
+- no existen packages AURA pendientes con evidencia humana material faltante;
+- no existe evidencia stale usada como sustituto;
+- segregación, privacidad, secretos, IA, canales y handoffs conservan sus contratos;
+- VISO no es tratado como AURA sin transferencia autorizada;
+- PASS, PULSO, NUMERA, NEXO y FOGO conservan ownership;
+- no existe hallazgo bloqueante abierto;
+- la cobertura humana no fue sustituida por automatización;
+- los requisitos aplicables conservan evidencia trazable.
+
+Mientras AURA no esté materializada, `GLOBAL-FINAL` permanece `NOT_EXECUTED`.
+
+---
+
+#### 71. Estado actual de ejecución
+
+Al aprobar este contrato documental se conserva:
+
+```text
+CONTINUIDAD AURA = APROBADA
+ADR-AURA-001 = ACCEPTED
+PUERTA DOCUMENTAL DE AUDITORIA = CERRADA
+CONTRATOS AURA DOM/AUTH/UX/INT = DEFINIDOS
+PRODUCTO AURA MATERIALIZADO = NO
+USUARIOS EFECTIVOS AURA = 0
+UX-QA-030::<package_id> EJECUTADAS = 0
+UX-QA-030::GLOBAL-FINAL = NOT_EXECUTED
+```
+
+No existe evidencia para declarar PASS físico.
+
+---
+
+#### 72. Condiciones que habilitarían la certificación futura
+
+La certificación se vuelve físicamente ejecutable únicamente cuando el package aplicable entregue evidencia de:
+
+- producto AURA real;
+- repositorio o artefactos propietarios identificables;
+- ambiente habilitado;
+- superficies AURA materializadas;
+- autorización efectiva;
+- actores reales compatibles;
+- integraciones necesarias;
+- fuentes propietarias accesibles bajo contrato;
+- canales/proveedores gobernados cuando apliquen;
+- candidato post-E5;
+- ventana de piloto autorizada;
+- mecanismos de observación y reconciliación.
+
+`UX-QA-030` no crea ninguna de esas condiciones.
+
+---
+
+#### 73. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la continuidad, ausencia de runtime, autorización, segregación, protección de datos, secretos, experiencia AURA, integraciones, fuentes propietarias, idempotencia, reconciliación, privacidad, UX transversal, pilotos y certificación ya están cubiertos por requisitos vigentes. Esta tarea organiza esa cobertura en una certificación especializada sin introducir una obligación material nueva.
+
+---
+
+#### 74. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-AURA-001` a `TREQ-AURA-027`, para dominio, continuidad, existencia, drift, disponibilidad, CMS, autorización, contenido, publicación, integraciones, reconciliación y experiencia AURA;
+- requisitos UX transversales aplicables a comprensión, estado, navegación, accesibilidad, error, recuperación y validación humana;
+- requisitos AUTH aplicables a identidad, capacidad, alcance, recurso, contexto y denegación segura;
+- requisitos de PASS aplicables cuando AURA consume identidad, consentimiento, segmentación o fidelización;
+- requisitos de PULSO aplicables a oferta, pedido, venta, precio aplicado y handoffs comerciales;
+- requisitos de NUMERA aplicables a presupuesto, costo, margen y verdad económica;
+- requisitos de integración aplicables a canales, proveedores, eventos, retry, idempotencia y reconciliación;
+- `UX-QA-020` como contrato transversal de piloto humano.
+
+Esta sección documenta trazabilidad existente y no actualiza el registro.
+
+---
+
+#### 75. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `UX-QA-030` en el checkout del usuario mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | El artefacto todavía no ha sido insertado, formateado ni sometido a quality, delivery check, topología y batería global en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron en `vento-shell/main` la decisión `CONTINUE` de `AURA-AUD-010`, `ADR-AURA-001 — ACCEPTED`, el cierre de auditoría de `AURA-AUD-012`, estado runtime `DEFERRED`, cero usuarios efectivos, cero rutas y pantallas propias, custodia CMS de VISO, los ocho contratos `AURA-UX-*`, autorización `AURA-AUTH-*`, integraciones `AURA-INT-*`, topología `PER_PACKAGE_AND_GLOBAL_FINAL / POST_E5_PACKAGE`, cobertura 04A AURA y continuidad hacia `AUTH-DB-030`. |
+| OPERATIVA | `NOT_EXECUTED` | No se observaron usuarios AURA reales, campañas, publicaciones, oportunidades, respuestas reputacionales, recomendaciones, handoffs ni sesiones de piloto. |
+| FÍSICA | `NOT_EXECUTED` | No existe todavía producto AURA materializado certificable ni instancia `UX-QA-030::<package_id>` ejecutada; el runtime permanece diferido y el ambiente AURA bloqueado. |
+
+---
+
+#### 76. Criterios de aceptación
+
+`UX-QA-030` queda documentalmente completa cuando:
+
+- [x] consume `UX-QA-029` sin reabrir PASS;
+- [x] consume el contrato transversal de `UX-QA-020`;
+- [x] conserva `PER_PACKAGE_AND_GLOBAL_FINAL`;
+- [x] conserva `POST_E5_PACKAGE`;
+- [x] verifica que la condición de continuidad de AURA ya fue satisfecha;
+- [x] conserva `AURA_CONTINUITY_DECISION = CONTINUE`;
+- [x] conserva `ADR-AURA-001 = ACCEPTED`;
+- [x] conserva AURA como aplicación objetivo preservada;
+- [x] conserva `AURA_RUNTIME_STATE = DEFERRED`;
+- [x] conserva `ENV-AURA-BLOCKED` mientras no exista materialización física;
+- [x] conserva cero usuarios efectivos actuales;
+- [x] conserva cero rutas y pantallas propias actuales;
+- [x] no convierte placeholders en producto;
+- [x] no convierte las superficies CMS de VISO en AURA;
+- [x] conserva VISO como custodia runtime transitoria del CMS actual;
+- [x] conserva transferencia CMS no autorizada;
+- [x] cubre exactamente `AURA-UX-001..008` como universo de experiencia objetivo;
+- [x] cubre inicio diario, marca/brief/calendario, estudio creativo, aprobación/publicación, campañas, oportunidades, reputación y resultados;
+- [x] cubre empresa, marca, función, capacidad, recurso y contexto;
+- [x] cubre segregación del ciclo editorial;
+- [x] cubre clientes, segmentos, exportaciones y acciones masivas;
+- [x] cubre secretos, proveedores y datos enviados a terceros;
+- [x] cubre IA, grounding y revisión humana;
+- [x] cubre carga, vacío, stale, parcialidad, error y reconciliación;
+- [x] cubre idempotencia, duplicidad y concurrencia cuando aplican;
+- [x] cubre canales externos e integraciones internas;
+- [x] conserva PASS, PULSO, NUMERA, NEXO, FOGO y VISO como fuentes propietarias dentro de sus fronteras;
+- [x] cubre handoff comercial hacia PULSO;
+- [x] cubre escalamiento reputacional sin cerrar servicio por inferencia;
+- [x] cubre guardas económicas y operativas sin inventar valores;
+- [x] cubre atribución, confianza e incrementalidad sin sobreafirmar evidencia;
+- [x] cubre recomendaciones sin autoridad automática;
+- [x] define evidencia humana, técnica y de entorno;
+- [x] define findings, severidad, owner, corrección y retest;
+- [x] define PASS por escenario y por package;
+- [x] define `GLOBAL-FINAL`;
+- [x] declara explícitamente que no existe ejecución física actual;
+- [x] no crea ni modifica requisitos de prueba;
+- [x] no modifica Registro 04A;
+- [x] no autoriza implementación física, Supabase, repositorio, canales, IA, campañas, datos, rollout ni despliegue;
+- [x] entrega continuidad exactamente a `AUTH-DB-030`.
+
+---
+
+#### 77. Límites
+
+Esta tarea no:
+
+- crea repositorio AURA;
+- asigna un repositorio actual a AURA por inferencia;
+- modifica `vento-shell`, `vento-viso`, `Vento-Group` ni otra aplicación de producto;
+- crea host, dominio, DNS, ruta, pantalla, componente, navegación, launcher ni deep link AURA;
+- transfiere CMS desde VISO;
+- crea o modifica tablas, vistas, funciones, RPC, triggers, RLS, Storage, Realtime, Edge Functions, cron, colas o migraciones;
+- crea permisos, grants, roles, alcances ni políticas runtime;
+- corrige los grants AURA observados en drift;
+- crea usuarios AURA;
+- conecta canales externos;
+- crea cuentas, credenciales, tokens o secretos;
+- selecciona o habilita proveedores de IA;
+- envía datos o archivos a terceros;
+- crea memoria persistente de IA;
+- crea campañas, briefs, piezas, activos, publicaciones, promociones, cupones o experimentos reales;
+- aprueba, programa, publica, retira o responde contenido real;
+- captura, importa, exporta o contacta clientes, leads, audiencias o prospectos reales;
+- crea cotizaciones, pedidos, reservas, ventas, pagos, compensaciones o reclamos;
+- altera identidad, consentimiento, fidelización, beneficios o redenciones PASS;
+- altera precio, pedido, venta o validación comercial PULSO;
+- altera presupuesto, costo, margen, cartera, obligación o rentabilidad NUMERA;
+- altera producto, inventario, disponibilidad o logística NEXO;
+- altera receta, capacidad, lote, calidad o producción FOGO;
+- declara causalidad o incrementalidad sin evidencia;
+- ejecuta `SHELL-CI-022`;
+- crea una instancia `UX-QA-030::<package_id>`;
+- declara `UX-QA-030::GLOBAL-FINAL`;
+- modifica 04A;
+- crea requisitos de prueba;
+- inicia `AUTH-DB-030`.
+
+---
+
+#### 78. Handoff a `AUTH-DB-030`
+
+`UX-QA-030` cierra la especialización de experiencia del BLOQUE U y entrega a `AUTH-DB-030` únicamente continuidad documental y evidencia contractual de certificación.
+
+El handoff conserva:
+
+- contrato transversal `UX-QA-020`;
+- especializaciones `UX-QA-021..030`;
+- estado real de AURA como continuidad aprobada pero runtime diferido;
+- regla de no fabricar evidencia física;
+- findings y owners que existan en futuras ejecuciones;
+- criterio de que cualquier retiro legacy posterior requiere su propio contrato y evidencia.
+
+No autoriza retirar objetos legacy ni considera adopción comprobada por el solo hecho de cerrar documentalmente `UX-QA-030`.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-029 — Probar PASS como cliente`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-030 — Probar AURA únicamente después de aprobar su continuidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada`

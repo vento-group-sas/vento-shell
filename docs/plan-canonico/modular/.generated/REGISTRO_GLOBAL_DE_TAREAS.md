@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1582** |
+| Aprobadas | **1583** |
 | En propuesta | **0** |
-| No iniciadas | **14** |
+| No iniciadas | **13** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **99.12% (1582/1596)** |
+| Porcentaje de completamiento | **99.19% (1583/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **14** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1483** |
+| ⏸ NO_EVALUADA | **13** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1484** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-029` — Probar PASS como cliente | ✅ APROBADA |
-| Tarea actual | `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-030` — Probar AURA únicamente después de aprobar su continuidad | ✅ APROBADA |
+| Tarea actual | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1414,7 +1414,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-027` | Probar PULSO por punto operativo | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-028` | Probar NUMERA por alcance financiero | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-029` | Probar PASS como cliente | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-030` | Probar AURA únicamente después de aprobar su continuidad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-030` | Probar AURA únicamente después de aprobar su continuidad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-001` | Inventariar pantallas actuales de cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-002` | Diseñar inicio de puntos y beneficios | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-003` | Diseñar QR personal | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
