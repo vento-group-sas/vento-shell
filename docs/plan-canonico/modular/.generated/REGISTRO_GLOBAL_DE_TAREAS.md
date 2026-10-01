@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1571** |
+| Aprobadas | **1572** |
 | En propuesta | **0** |
-| No iniciadas | **25** |
+| No iniciadas | **24** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **98.43% (1571/1596)** |
+| Porcentaje de completamiento | **98.50% (1572/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **25** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1472** |
+| ⏸ NO_EVALUADA | **24** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1473** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `UX-QA-018` — Los eventos idempotentes no duplican efectos | ✅ APROBADA |
-| Tarea actual | `UX-QA-019` — Los fallos parciales permiten recuperación | ⬜ NO INICIADA |
-| Siguiente reservada | `UX-QA-020` — Cada aplicación supera piloto con usuarios reales | ⬜ NO INICIADA |
+| Última aprobada | `UX-QA-019` — Los fallos parciales permiten recuperación | ✅ APROBADA |
+| Tarea actual | `UX-QA-020` — Cada aplicación supera piloto con usuarios reales | ⬜ NO INICIADA |
+| Siguiente reservada | `UX-QA-021` — Probar SHELL por tipo de actor | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1403,7 +1403,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-016` | La información sensible se oculta correctamente | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-017` | La aplicación propietaria conserva la fuente de verdad | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-018` | Los eventos idempotentes no duplican efectos | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-019` | Los fallos parciales permiten recuperación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `UX-QA-019` | Los fallos parciales permiten recuperación | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-020` | Cada aplicación supera piloto con usuarios reales | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-021` | Probar SHELL por tipo de actor | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `UX-QA-022` | Probar ANIMA con trabajadores y administradores | — | — | `bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md` |

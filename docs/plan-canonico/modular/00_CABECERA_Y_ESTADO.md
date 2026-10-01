@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1571** |
+| Tareas aprobadas | **1572** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **25** |
+| Tareas no iniciadas | **24** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **98.43% (1571/1596)** |
+| Porcentaje de completamiento | **98.50% (1572/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **UX-QA-018 — Los eventos idempotentes no duplican efectos** |
-| Tarea actual | **UX-QA-019 — Los fallos parciales permiten recuperación** |
+| Última tarea aprobada | **UX-QA-019 — Los fallos parciales permiten recuperación** |
+| Tarea actual | **UX-QA-020 — Cada aplicación supera piloto con usuarios reales** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **UX-QA-020 — Cada aplicación supera piloto con usuarios reales** |
+| Siguiente tarea | **UX-QA-021 — Probar SHELL por tipo de actor** |
 | Bloque actual | **BLOQUE U — Pruebas integrales y certificación transversal** |
-| Progreso del bloque | **BLOQUE U: 48 de 60 aprobadas; UX-QA-019 pendiente** |
+| Progreso del bloque | **BLOQUE U: 49 de 60 aprobadas; UX-QA-020 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — UX-QA-019** |
+| Carril documental | **ACTIVO — UX-QA-020** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `UX-QA-018` — Los eventos idempotentes no duplican efectos |
-| Tarea actual | `UX-QA-019` — Los fallos parciales permiten recuperación — **NO INICIADA** |
-| Siguiente tarea | `UX-QA-020` — Cada aplicación supera piloto con usuarios reales |
+| Última aprobada | `UX-QA-019` — Los fallos parciales permiten recuperación |
+| Tarea actual | `UX-QA-020` — Cada aplicación supera piloto con usuarios reales — **NO INICIADA** |
+| Siguiente tarea | `UX-QA-021` — Probar SHELL por tipo de actor |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE U: 48 DE 60 APROBADAS — ACTUAL UX-QA-019** |
+| CONTINUIDAD ACTIVA | **BLOQUE U: 49 DE 60 APROBADAS — ACTUAL UX-QA-020** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-UX-QA-018 — Los eventos idempotentes no duplican efectos
-        ↓
-TAREA ACTUAL
 UX-QA-019 — Los fallos parciales permiten recuperación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 UX-QA-020 — Cada aplicación supera piloto con usuarios reales
         ↓
+SIGUIENTE TAREA RESERVADA
+UX-QA-021 — Probar SHELL por tipo de actor
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE U — 48 de 60 tareas aprobadas
+BLOQUE U — 49 de 60 tareas aprobadas
 ```
