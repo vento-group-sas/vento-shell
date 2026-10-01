@@ -27926,7 +27926,1213 @@ No transfiere a NEXO ownership de VISO, administración laboral, programación, 
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-024 — Probar NEXO por rol operativo`
-### [ ] UX-QA-024 — Probar NEXO por rol operativo
+### ✅ UX-QA-024 — Probar NEXO por rol operativo
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-023 — Probar VISO por rol administrativo
+**Tarea siguiente:** UX-QA-025 — Probar FOGO por área productiva
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia de NEXO por rol operativo, demostrando por package y globalmente que cada actor operativo aplicable identifica y ejecuta únicamente las acciones logísticas, de inventario, remisión, custodia, traslado, recepción, LOC, LPN, activos, impresión y soporte físico que corresponden a su capacidad y contexto efectivos, sin convertir el nombre del rol, una ruta visible, un dispositivo compartido, una selección local, una ubicación física o un estado de la UI en autorización, y consumiendo `UX-QA-020`, `UX-QA-023`, `NEXO-DOM-001..038`, `NEXO-AUTH-001..032`, `NEXO-UX-001..048`, contratos transversales de actor/contexto/ownership/handoff y la cobertura vigente sin reabrir dominio, autorización, idempotencia ni fuente de verdad
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación integral de NEXO por rol operativo definido; las ejecuciones `UX-QA-024::<package_id>` y `UX-QA-024::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume evidencia física aplicable de NEXO y del piloto sin ejecutar sesiones humanas, modificar runtime, datos, Supabase, configuración, packages, ambientes ni despliegues
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, navegación, roles, grants, denies, permisos, contexto operativo, remisiones, inventario, LOC, LPN, activos, impresión, dispositivos, colas, datos, Supabase, migraciones, RLS, RPC, Edge Functions, packages, ambientes, despliegues ni cuentas de prueba
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que NEXO funciona correctamente para cada rol operativo aplicable sin convertir el nombre del rol o el contexto local de una estación en una segunda política de autorización.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿QUIÉN ES EL ACTOR EFECTIVO?
+¿CUÁL ES SU ROL BASE?
+¿CUÁL ES SU ROL OPERATIVO ACTIVO, SI APLICA?
+¿QUÉ CAPACIDAD NEXO EFECTIVA ESTÁ EVALUANDO?
+¿QUÉ TURNO, SEDE, ÁREA, RUTA, VEHÍCULO, LOC, LPN O RECURSO SON PARTE DEL CONTEXTO?
+¿LA ACCIÓN OBJETIVO ES REALMENTE ELEGIBLE PARA ESE ACTOR?
+¿LA AUTORIZACIÓN SE REVALIDA EN SERVIDOR?
+¿LA TRANSICIÓN RESPETA EL ESTADO EMPRESARIAL VIGENTE?
+¿LA MUTACIÓN ES IDEMPOTENTE O CONCILIABLE CUANDO CORRESPONDE?
+¿EL DISPOSITIVO, ESCÁNER O IMPRESORA ES SOLO MEDIO Y NO FUENTE DE AUTORIDAD?
+¿EL HANDOFF CONSERVA REFERENCIA SIN TRANSFERIR AUTORIDAD?
+¿EL RESULTADO DESCONOCIDO SE RECONCILIA SIN REPETIR EFECTOS A CIEGAS?
+¿LOS HALLAZGOS TIENEN OWNER, SEVERIDAD Y CONDICIÓN DE SALIDA?
+```
+
+Regla central:
+
+```text
+ACTOR EFECTIVO
++
+ROL BASE
++
+ROL OPERATIVO ACTIVO CUANDO APLICA
++
+CAPACIDAD EXPLÍCITA
++
+CONTEXTO OPERATIVO AUTORIZADO
++
+RECURSO Y ESTADO
++
+DENEGACIONES APLICABLES
+=
+AUTORIDAD OPERATIVA EFECTIVA EN NEXO
+```
+
+No es válido:
+
+```text
+NOMBRE DEL ROL
+=
+AUTORIZACIÓN
+```
+
+ni:
+
+```text
+DISPOSITIVO O ESTACIÓN
+=
+ACTOR
+```
+
+ni:
+
+```text
+UBICACIÓN VISIBLE
+=
+ALCANCE AUTORIZADO
+```
+
+ni:
+
+```text
+BOTÓN VISIBLE
+=
+TRANSICIÓN PERMITIDA
+```
+
+#### 2. Resultado documental
+
+`UX-QA-024` define el contrato específico de certificación de NEXO por rol operativo y por package.
+
+El resultado establece:
+
+- identificación del universo real de roles operativos aplicables por package;
+- separación entre rol base, rol operativo, capacidad, contexto, recurso y autorización;
+- cobertura de solicitud, preparación, despacho, tránsito, recepción, inventario, LOC, LPN, movimientos, retiros, activos, impresión y demás superficies NEXO que pertenezcan al package;
+- cobertura positiva y negativa por actor y responsabilidad;
+- criterio de evidencia por escenario;
+- criterio PASS por rol operativo aplicable;
+- criterio PASS por package;
+- criterio `GLOBAL-FINAL`;
+- tratamiento de estaciones y dispositivos compartidos;
+- tratamiento de escáner, impresión y conectividad;
+- owner de hallazgos y reprueba;
+- handoff exacto hacia `UX-QA-025`.
+
+#### 3. Topología contractual
+
+Se conserva:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-024::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-024::GLOBAL-FINAL
+```
+
+La aprobación documental de este marcador no crea una instancia física.
+
+#### 4. Handoff recibido de `UX-QA-023`
+
+`UX-QA-023` entrega a `UX-QA-024` únicamente contratos reutilizables de certificación:
+
+- método de especialización del piloto humano por aplicación;
+- identidad de escenario por package, candidato y ambiente;
+- separación entre actor, rol, capacidad, contexto e intención;
+- protocolo neutral y evidencia humana minimizada;
+- contrato de findings, severidad y retest;
+- tratamiento de navegación directa, bloqueo, frescura, resultado desconocido y recuperación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que filtros y selección de contexto no crean alcance autoritativo;
+- regla de que ownership y handoff no transfieren autoridad;
+- criterio PASS por escenario y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar un rol o escenario aplicable mediante agregación.
+
+No transfiere a NEXO ownership de VISO, administración laboral, programación, seguridad administrativa, matrices de acceso, preview de trabajadores ni auditoría VISO.
+
+#### 5. Contrato transversal heredado de `UX-QA-020`
+
+La especialización conserva sin redefinir:
+
+- definición de usuario real;
+- proporcionalidad de participantes y escenarios;
+- identidad del build probado;
+- evidencia humana y técnica correlacionable;
+- severidad de hallazgos;
+- owner de corrección;
+- reprueba obligatoria;
+- separación entre evidencia humana y validación automatizada;
+- criterio de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de presentar evidencia ausente como PASS.
+
+`UX-QA-024` no vuelve a ejecutar el piloto físico.
+
+#### 6. Base especializada NEXO
+
+La certificación consume como mínimo:
+
+```text
+NEXO-DOM-001..038
+NEXO-AUTH-001..032
+NEXO-UX-001..048
+```
+
+También consume contratos transversales de:
+
+- actor y rol operativo;
+- contexto laboral y dispositivo;
+- ownership;
+- handoff;
+- idempotencia;
+- colas y recuperación;
+- impresión;
+- integración con owners externos;
+- autorización server-side.
+
+#### 7. Universo de roles operativos
+
+No se fija una lista global artificial para todos los packages.
+
+Cada `UX-QA-024::<package_id>` deberá resolver el conjunto exacto de roles operativos que poseen una capacidad NEXO aplicable al package.
+
+Como identidades canónicas verificadas existen, entre otras:
+
+- `bodeguero`;
+- `conductor_logistica`.
+
+Otros roles operativos podrán ser aplicables cuando el catálogo de permisos, el package y el contexto les concedan una capacidad NEXO exacta.
+
+#### 8. Rol operativo no equivale a rol base
+
+Se conserva:
+
+```text
+ROL BASE
+!=
+ROL OPERATIVO ACTIVO
+```
+
+Un valor legacy similar no fusiona ambas capas.
+
+En particular, una identidad textual equivalente no autoriza a tratar un rol base como si fuera automáticamente el rol operativo vigente.
+
+#### 9. Rol operativo no equivale a permiso
+
+La certificación deberá demostrar:
+
+```text
+ROL OPERATIVO
+!= PERMISO
+!= CONTEXTO
+!= RECURSO
+!= ACCIÓN AUTORIZADA
+```
+
+El rol operativo participa en la decisión; no sustituye PermissionKey, grants, denies ni validación del recurso.
+
+#### 10. Capacidad efectiva
+
+Una prueba por rol debe evaluar la capacidad exacta que el actor pretende utilizar.
+
+Ejemplos de familias materiales incluyen:
+
+- solicitar remisión;
+- preparar remisión;
+- despachar;
+- aceptar custodia;
+- iniciar o continuar tránsito cuando el contrato vigente lo permita;
+- entregar o recibir;
+- consultar movimientos;
+- retirar inventario;
+- operar LOC/LPN;
+- contar;
+- imprimir o reimprimir;
+- operar activos y mantenimiento cuando correspondan al package.
+
+La lista concreta proviene del contrato vigente, no de esta tarea por inferencia.
+
+#### 11. Contexto operativo
+
+La certificación deberá poder demostrar el contexto material relevante según el caso:
+
+```text
+actor
+turno
+site_id
+area_id
+operational_role_code
+resource_id
+route_id cuando aplique
+vehicle_id cuando aplique
+location_id cuando aplique
+lpn_id cuando aplique
+package_id
+```
+
+La ausencia de un campo no aplicable no invalida el caso; la ausencia de un campo requerido por la acción sí lo bloquea.
+
+#### 12. Dispositivo no concede autoridad
+
+Se conserva:
+
+```text
+TABLET / KIOSCO / PC / ESCÁNER / IMPRESORA
+!=
+AUTORIDAD
+```
+
+Un dispositivo puede condicionar compatibilidad física.
+
+No puede crear grants.
+
+#### 13. Estación compartida
+
+En dispositivo compartido se distinguen:
+
+```text
+SESIÓN TÉCNICA DEL DISPOSITIVO
+ACTOR HUMANO ACTUAL
+ROL OPERATIVO ACTIVO
+CONTEXTO AUTORIZADO
+TRABAJO PRESENTADO
+```
+
+Cambiar actor obliga a recalcular capacidades y datos visibles antes de permitir una acción sensible.
+
+#### 14. Frontera de responsabilidades operativas
+
+La certificación no asume que solicitud, preparación, transporte y recepción pertenezcan a la misma persona.
+
+El mismo flujo puede involucrar actores distintos.
+
+Cada transición deberá acreditar quién podía ejecutarla y bajo qué contexto.
+
+#### 15. Remisiones como flujo multiactor
+
+Cuando el package incluya remisiones, la certificación deberá cubrir el flujo material desde solicitud hasta cierre sin convertir la UI en fuente de verdad.
+
+Estados canónicos observados dentro del ecosistema incluyen, según el contrato aplicable:
+
+```text
+REQUESTED
+IN_PRODUCTION
+READY_FOR_TRANSPORT
+IN_TRANSIT
+COMPLETED
+```
+
+La certificación consume la semántica propietaria vigente y no crea transiciones nuevas.
+
+#### 16. Estado no equivale a permiso
+
+Se conserva:
+
+```text
+ESTADO PERMITE QUE UNA TRANSICIÓN SEA CONSIDERADA
++
+ACTOR AUTORIZADO
++
+CONTEXTO VÁLIDO
+=
+TRANSICIÓN ELEGIBLE
+```
+
+Nunca:
+
+```text
+ESTADO VISIBLE
+=
+ACTOR AUTORIZADO
+```
+
+#### 17. Solicitud
+
+Cuando un rol posea capacidad de solicitud, la prueba deberá verificar:
+
+- sede y área correctas;
+- productos elegibles completos;
+- cantidades y unidades correctas;
+- política de solicitud aplicable;
+- destino correcto;
+- ausencia de permisos de preparación o despacho obtenidos por solicitar;
+- estado resultante trazable.
+
+#### 18. Preparación
+
+Cuando un rol posea capacidad de preparación, la prueba deberá verificar:
+
+- remisión elegible;
+- actor y contexto correctos;
+- cantidades preparadas;
+- diferencias explícitas;
+- disponibilidad real;
+- LOC y stock cuando correspondan;
+- idempotencia o protección contra doble efecto;
+- transición coherente con el contrato propietario.
+
+#### 19. Despacho
+
+Despachar es una capacidad distinta de preparar.
+
+La prueba deberá demostrar que una preparación exitosa no concede por sí sola autoridad de despacho.
+
+#### 20. Custodia y transporte
+
+Cuando el flujo entregue custodia a un conductor u otro actor autorizado, la prueba deberá demostrar:
+
+- identidad del actor;
+- recurso o remisión exacta;
+- contexto logístico aplicable;
+- aceptación de custodia cuando sea parte del contrato;
+- imposibilidad de heredar custodia de otra sesión;
+- trazabilidad del cambio.
+
+#### 21. `conductor_logistica`
+
+La certificación del rol operativo `conductor_logistica`, cuando aplique al package, deberá verificar únicamente capacidades efectivamente vigentes.
+
+No se admite inferir `dispatch`, `transit` u otra acción sensible solo por el nombre del rol.
+
+Cada permiso se evalúa separadamente.
+
+#### 22. `bodeguero`
+
+La certificación del rol operativo `bodeguero`, cuando aplique al package, deberá verificar:
+
+- acceso a NEXO únicamente dentro de contexto válido;
+- operaciones de inventario concedidas;
+- remisiones según capacidad exacta;
+- restricciones de sede y área;
+- LOC/LPN compatibles;
+- ausencia de autoridad logística adicional no concedida.
+
+#### 23. Roles solicitantes y receptores
+
+Los roles que solicitan o reciben abastecimiento no se convierten por ello en operadores completos de bodega o transporte.
+
+La certificación debe mantener la capacidad mínima necesaria para cada etapa.
+
+#### 24. Recepción
+
+Cuando el package incluya recepción, se deberá verificar:
+
+- destino correcto;
+- actor autorizado;
+- cantidades recibidas;
+- diferencias o rechazo parcial;
+- evidencia de custodia;
+- no duplicación de inventario;
+- resultado conciliable ante interrupción.
+
+#### 25. Retiro parcial
+
+Cuando el package incluya retiros, la certificación deberá demostrar que una operación parcial afecta unidades correctas y no paquetes completos por error.
+
+La experiencia debe mostrar el efecto antes de confirmar cuando sea material.
+
+#### 26. Stock y presentación
+
+La UI deberá distinguir, cuando aplique:
+
+```text
+CANTIDAD FÍSICA
+UNIDAD CANÓNICA
+PRESENTACIÓN
+PERFIL DE UNIDAD
+CANTIDAD SOLICITADA O MOVIDA
+```
+
+La prueba no acepta una conversión implícita que produzca una diferencia física silenciosa.
+
+#### 27. LOC
+
+Cuando un package use LOC, se deberá probar:
+
+- identidad exacta de ubicación;
+- pertenencia a sede y área;
+- estado y disponibilidad;
+- búsqueda;
+- asignación o movimiento permitido;
+- denegación fuera de contexto;
+- comportamiento ante etiqueta dañada o lectura fallida cuando aplique.
+
+#### 28. LPN
+
+Cuando un package use LPN, se deberá probar el tramo del ciclo aplicable sin doble contabilización.
+
+La prueba deberá conservar:
+
+- identidad del LPN;
+- contenido;
+- ubicación;
+- custodia;
+- estado;
+- movimiento;
+- cierre o disposición cuando corresponda;
+- relación con stock suelto sin duplicidad.
+
+#### 29. Escaneo
+
+Un escaneo es una entrada de identificación.
+
+No es una autorización.
+
+La prueba deberá distinguir:
+
+```text
+CÓDIGO LEÍDO
+OBJETO RESUELTO
+CONTEXTO AUTORIZADO
+ACCIÓN ELEGIBLE
+```
+
+#### 30. Etiqueta dañada
+
+Cuando una etiqueta no pueda leerse, la recuperación deberá permitir identificar el objeto por una vía autorizada sin crear un objeto nuevo accidentalmente ni saltar controles.
+
+#### 31. Impresión
+
+Cuando el package incluya impresión física, la prueba deberá demostrar que preview, trabajo de impresión, envío al dispositivo, confirmación y eventual reimpresión son estados distinguibles.
+
+La existencia de una vista previa no equivale a impresión confirmada.
+
+#### 32. Trabajo durable de impresión
+
+Una pérdida de conexión con la impresora no puede eliminar silenciosamente el trabajo ni producir duplicación no conciliable.
+
+La evidencia deberá poder distinguir:
+
+- trabajo creado;
+- dispositivo objetivo;
+- payload o referencia técnica autorizada;
+- resultado;
+- error;
+- reintento;
+- reimpresión y motivo cuando aplique.
+
+#### 33. Inventario inicial
+
+Cuando el package incluya conteo inicial, la certificación deberá demostrar:
+
+- alcance del conteo;
+- ubicación;
+- producto/activo correcto;
+- unidad correcta;
+- participante autorizado;
+- diferencia visible;
+- aprobación separada cuando corresponda;
+- trazabilidad del cierre.
+
+#### 34. Conteos posteriores
+
+Conteo físico no equivale automáticamente a ajuste.
+
+La prueba deberá respetar separación entre observación, diferencia, revisión y mutación autoritativa.
+
+#### 35. Movimientos
+
+Cada movimiento deberá conservar como mínimo origen, destino, objeto, cantidad, actor, timestamp y razón o contexto aplicable.
+
+Una pantalla que muestre el movimiento no puede fabricarlo ni corregirlo localmente sin contrato propietario.
+
+#### 36. Activos y reutilizables
+
+Cuando el package incluya activos, contenedores o reutilizables, la certificación deberá distinguir:
+
+- identidad individual o grupo por cantidad;
+- ubicación;
+- custodia;
+- condición;
+- disponibilidad;
+- movimiento;
+- conteo;
+- mantenimiento o baja cuando corresponda.
+
+#### 37. Mantenimiento e instalaciones
+
+Las superficies de mantenimiento, reparaciones, inspecciones, calibración, servicios o instalaciones solo se incluyen cuando el package las declara.
+
+No se agregan por el mero hecho de pertenecer a NEXO.
+
+#### 38. Búsqueda
+
+Cuando una búsqueda sea parte del flujo, deberá localizar el universo elegible completo dentro del alcance autorizado.
+
+La prueba no acepta que un límite de resultados o filtro local convierta objetos válidos en inexistentes.
+
+#### 39. Catálogo y disponibilidad
+
+La existencia de un producto en catálogo no equivale a disponibilidad física.
+
+La disponibilidad física no equivale a permiso para moverlo.
+
+Ambas dimensiones se prueban por separado.
+
+#### 40. Territorialidad
+
+La certificación deberá distinguir:
+
+```text
+SEDE AUTORIZADA
+ÁREA AUTORIZADA
+LOC DEL RECURSO
+RUTA LOGÍSTICA
+DESTINO
+FILTRO DE PRESENTACIÓN
+```
+
+Ningún filtro puede ampliar los primeros elementos.
+
+#### 41. Contexto seleccionado
+
+Seleccionar una sede, área, LOC, ruta o vista cambia presentación cuando el contrato lo permite.
+
+No concede ese contexto.
+
+#### 42. Acceso directo
+
+Conocer una URL de remisión, inventario, LOC, LPN, activo o impresión no evita autorización.
+
+Se deberá verificar equivalencia entre acceso por navegación y acceso directo.
+
+#### 43. Handoff cross-app
+
+Cuando NEXO reciba o entregue trabajo a otra aplicación, el handoff podrá transportar referencia e intención.
+
+No transportará una autorización ya decidida por el origen.
+
+#### 44. Ownership
+
+NEXO conserva la fuente de verdad de sus dominios propietarios y no adquiere fuentes ajenas por proyectarlas.
+
+De forma simétrica, una aplicación externa no puede mutar inventario NEXO por conservar una copia de presentación.
+
+#### 45. ORIGO, FOGO y PULSO
+
+Cuando un escenario consuma un hecho de ORIGO, FOGO o PULSO, la prueba deberá distinguir:
+
+- hecho externo confirmado;
+- efecto NEXO esperado;
+- correlación;
+- estado pendiente;
+- error;
+- reconciliación.
+
+No se permite doble registro manual para “asegurar” el efecto.
+
+#### 46. Idempotencia
+
+En operaciones con riesgo de duplicación, la evidencia deberá demostrar que retry, replay o doble envío no producen dos efectos empresariales.
+
+Un botón deshabilitado en frontend no constituye por sí solo evidencia de idempotencia.
+
+#### 47. Resultado desconocido
+
+Se conserva:
+
+```text
+RESULTADO DESCONOCIDO
+-> CONSULTA O RECONCILIACIÓN
+```
+
+Nunca:
+
+```text
+RESULTADO DESCONOCIDO
+-> REPETIR MUTACIÓN A CIEGAS
+```
+
+#### 48. Conectividad
+
+Cuando el package declare operación degradada u offline, la prueba deberá demostrar la política exacta aplicable.
+
+No se asume que toda acción NEXO pueda ejecutarse sin conexión.
+
+#### 49. Datos stale
+
+Un snapshot stale que no permite demostrar actor, contexto, stock, estado o elegibilidad debe bloquear o degradar la acción según contrato.
+
+No se presenta silenciosamente como vigente.
+
+#### 50. Concurrencia
+
+Cuando dos actores puedan operar sobre el mismo recurso, la certificación deberá cubrir la condición de carrera material aplicable.
+
+Un bloqueo local en el navegador no sustituye coordinación distribuida.
+
+#### 51. Casos negativos obligatorios
+
+Según el alcance del package se deberá probar al menos:
+
+- rol operativo incorrecto;
+- turno inválido cuando sea requerido;
+- sede o área incorrecta;
+- recurso fuera de alcance;
+- URL directa restringida;
+- botón visible sin permiso de acción;
+- remisión en estado incompatible;
+- LOC incompatible;
+- LPN ajeno o cerrado;
+- escaneo de objeto no autorizado;
+- dispositivo compartido con actor anterior;
+- impresión interrumpida;
+- retry después de resultado desconocido;
+- snapshot stale;
+- operación duplicada;
+- handoff destino denegado.
+
+#### 52. Casos positivos mínimos
+
+Según el alcance del package se deberá cubrir:
+
+- entrada con contexto válido;
+- identificación del trabajo correcto;
+- acción permitida por capacidad exacta;
+- continuidad del mismo actor o handoff explícito;
+- persistencia del resultado;
+- actualización visible desde la fuente de verdad;
+- recuperación segura cuando exista interrupción;
+- finalización o estado intermedio correcto.
+
+#### 53. Identidad de escenario
+
+Cada ejecución deberá poder distinguir como mínimo:
+
+```text
+TASK_ID
+PACKAGE_ID
+CANDIDATE_ID
+ENVIRONMENT_ID
+BUILD_ID
+ACTOR_ID_OR_PSEUDONYM
+BASE_ROLE
+OPERATIONAL_ROLE
+CAPABILITY_KEY
+SITE_ID
+AREA_ID
+RESOURCE_TYPE
+RESOURCE_ID
+SCENARIO_ID
+SESSION_ID
+RESULT
+EVIDENCE_REF
+```
+
+Los campos no aplicables pueden omitirse de la evidencia concreta, pero la identidad del escenario debe seguir siendo inequívoca.
+
+#### 54. Condiciones de una sesión válida
+
+Una sesión humana solo cuenta cuando:
+
+- el participante representa el rol o responsabilidad que se pretende observar;
+- el build está identificado;
+- el ambiente es conocido;
+- el package está identificado;
+- el escenario tiene precondiciones definidas;
+- los datos usados están permitidos;
+- los efectos están acotados;
+- existe un oráculo previo;
+- la evidencia es correlacionable;
+- la seguridad prevalece sobre completar el escenario.
+
+#### 55. Evidencia por escenario
+
+Cada escenario ejecutado deberá conservar como mínimo:
+
+```text
+scenario_id
+package_id
+actor/cohort
+base_role
+operational_role
+capability
+context
+resource
+build_id
+environment_id
+preconditions
+expected_oracle
+observed_result
+human_observation
+technical_evidence_refs
+finding_ids
+result
+executed_at
+```
+
+#### 56. Resultado por escenario
+
+Estados permitidos:
+
+```text
+PASS
+FAIL
+BLOCKED
+NOT_RUN
+NOT_APPLICABLE
+```
+
+`BLOCKED` no es PASS.
+
+`NOT_RUN` no es `NOT_APPLICABLE`.
+
+#### 57. Severidad de hallazgos
+
+Se conservan:
+
+```text
+BLOCKING
+MAJOR
+MINOR
+OBSERVATION
+```
+
+La severidad se determina por impacto material.
+
+#### 58. Owner del hallazgo
+
+Todo hallazgo debe resolver un owner exacto.
+
+Ejemplos:
+
+| Hallazgo | Owner esperado |
+| --- | --- |
+| autorización | contrato AUTH propietario |
+| rol/contexto operativo | contrato de contexto/rol propietario |
+| remisiones | NEXO y contrato propietario aplicable |
+| inventario/LOC/LPN | NEXO y unidad física propietaria |
+| impresión | contrato de impresión/cola y consumidor NEXO |
+| handoff | contrato transversal y owner destino |
+| integración | contrato de integración propietario |
+| certificación integral | `UX-QA-024` y package aplicable |
+
+No se admite un hallazgo sin condición de salida.
+
+#### 59. Reprueba
+
+Una corrección deberá reejecutar:
+
+- escenario fallido;
+- recuperación asociada;
+- autorización afectada;
+- contexto afectado;
+- idempotencia o concurrencia afectada;
+- casos vecinos con riesgo de regresión;
+- dispositivo o periférico afectado cuando corresponda.
+
+#### 60. PASS por rol operativo aplicable
+
+Un rol operativo o cohorte funcional es PASS dentro de un package cuando:
+
+- todos sus escenarios obligatorios aplicables terminaron en PASS;
+- cada `NOT_APPLICABLE` tiene justificación verificable;
+- no quedan hallazgos `BLOCKING` abiertos;
+- cualquier `MAJOR` cumple la política del gate propietario;
+- se ejecutaron casos negativos relevantes;
+- los hallazgos corregidos fueron reprobados.
+
+#### 61. PASS por package
+
+`UX-QA-024::<package_id>` solo puede cerrar PASS cuando:
+
+1. todos los roles operativos y cohortes aplicables al package están cubiertos;
+2. todas las capacidades NEXO aplicables están cubiertas;
+3. los escenarios de contexto y autorización aplicables están cubiertos;
+4. las transiciones empresariales aplicables son correctas;
+5. no existen hallazgos bloqueantes abiertos;
+6. no existen fugas de autorización, territorio, custodia o datos;
+7. idempotencia y reconciliación tienen evidencia donde apliquen;
+8. superficies y dispositivos obligatorios están cubiertos;
+9. el build y ambiente están identificados;
+10. la cobertura no oculta un rol o flujo mediante agregación.
+
+PASS de un package no certifica otro package.
+
+#### 62. `GLOBAL-FINAL`
+
+`UX-QA-024::GLOBAL-FINAL` exige demostrar:
+
+- cobertura de todos los packages NEXO aplicables;
+- cobertura material de los roles operativos aplicables;
+- cobertura de las capacidades y flujos materiales incluidos;
+- cero hallazgos `BLOCKING` abiertos;
+- tratamiento explícito de `MAJOR` pendientes, si alguno fuese admisible;
+- cero fuga de autorización;
+- cero cruce territorial indebido;
+- cero doble efecto empresarial no conciliado;
+- cero custodia atribuida al actor equivocado;
+- cero fuente de verdad competidora;
+- handoffs y retornos coherentes;
+- repruebas concluidas;
+- trazabilidad a requisitos vigentes y evidencia física propietaria.
+
+#### 63. Prohibición de agregación engañosa
+
+No se permite declarar PASS global ocultando:
+
+- un rol operativo no probado;
+- un package fallido;
+- una superficie obligatoria no ejecutada;
+- una transición crítica no probada;
+- una fuga territorial aislada;
+- una duplicación de efecto;
+- un fallo de impresión que pierde trabajo;
+- un hallazgo bloqueante dentro de una métrica agregada favorable.
+
+#### 64. Accesibilidad
+
+Cuando la superficie sea humana, la certificación deberá demostrar que actor, contexto, objeto, estado, acción, bloqueo y resultado pueden comprenderse sin depender únicamente del color.
+
+Los controles táctiles deberán ser utilizables en el dispositivo objetivo.
+
+#### 65. Responsive y estación
+
+La presentación deberá conservar información crítica en el factor de forma real del package.
+
+No se acepta ocultar actor, contexto, recurso, estado o bloqueo para que la pantalla “quepa”.
+
+#### 66. Privacidad y minimización
+
+La interfaz debe mostrar únicamente datos necesarios para la tarea.
+
+Un rol operativo de bodega o transporte no obtiene por ello acceso irrestricto a información administrativa, financiera o personal.
+
+#### 67. Auditoría
+
+Un cambio confirmado deberá poder correlacionarse con evidencia suficiente sin exponer secretos o payloads innecesarios.
+
+Auditoría describe lo ocurrido.
+
+No sustituye el estado vigente.
+
+#### 68. Métricas de sesión
+
+Se pueden registrar:
+
+- escenario completado;
+- tiempo observado;
+- ayudas;
+- retrocesos;
+- errores de interpretación;
+- errores del sistema;
+- duplicaciones evitadas;
+- reintentos;
+- hallazgos por severidad;
+- abandono;
+- recuperación.
+
+Ninguna métrica aislada decide el PASS.
+
+#### 69. Ayuda del moderador
+
+La ayuda debe registrarse.
+
+Una tarea completada solo porque el moderador reveló qué botón usar no demuestra descubribilidad autónoma.
+
+La ayuda nunca autoriza una acción que el actor real no podría ejecutar.
+
+#### 70. Seguridad prevalente
+
+El moderador debe detener una acción cuando exista riesgo de producir un efecto no autorizado, duplicado o destructivo.
+
+La seguridad de datos, inventario y custodia prevalece sobre completar el escenario.
+
+#### 71. Datos reales y sintéticos
+
+Un usuario real no exige datos productivos reales.
+
+Se pueden usar datos controlados cuando conserven el comportamiento material que se pretende observar.
+
+#### 72. Producción
+
+Esta tarea documental no autoriza producción.
+
+La exposición humana con efectos reales solo puede ocurrir bajo los packages y gates físicos aplicables.
+
+#### 73. Evidencia técnica complementaria
+
+La evidencia humana puede correlacionarse con:
+
+- logs seguros;
+- correlation IDs;
+- request IDs;
+- receipts;
+- auditoría;
+- versión de build;
+- estado inicial y final;
+- eventos o ledger aplicables;
+- resultados automatizados.
+
+La evidencia técnica no sustituye comprensión humana cuando el oráculo depende de ella.
+
+#### 74. Runtime actual observado
+
+El repositorio `vento-nexo` actual conserva superficies físicas relacionadas con:
+
+- inventario;
+- ajustes;
+- conteo inicial;
+- LOC y posiciones;
+- LPN;
+- movimientos;
+- remisiones;
+- preparación;
+- conductor;
+- tránsito;
+- recepción;
+- fulfillment;
+- activos;
+- retiros;
+- stock;
+- impresión y trabajos de impresión.
+
+La existencia de esas superficies no demuestra por sí sola cumplimiento de este contrato.
+
+#### 75. Estado AS-IS no equivale a certificación
+
+Se conserva:
+
+```text
+PANTALLA O ENDPOINT EXISTE
+!= UX-QA-024 PASS
+```
+
+Y:
+
+```text
+BUILD PASA
+!= CERTIFICACIÓN OPERATIVA COMPLETA
+```
+
+#### 76. Hallazgos AS-IS y deuda vigente
+
+Un package no puede declarar PASS ignorando deuda material que afecte el escenario bajo prueba.
+
+Entre las familias de riesgo ya identificadas existen catálogo, LPN, contratos de datos, remisiones, impresión y exactamente-una-vez.
+
+La tarea no reabre esos owners; exige que su estado sea compatible con el oráculo del package.
+
+#### 77. Frontera con `UX-QA-023`
+
+`UX-QA-023` conserva la certificación administrativa de VISO.
+
+NEXO no absorbe:
+
+- administración laboral;
+- programación VISO;
+- seguridad administrativa;
+- preview administrativo de trabajadores;
+- auditoría propietaria de VISO.
+
+#### 78. Frontera con `UX-QA-025`
+
+`UX-QA-025 — Probar FOGO por área productiva` conserva la certificación especializada de FOGO.
+
+`UX-QA-024` no define:
+
+- ejecución de receta;
+- paso productivo;
+- rendimiento productivo;
+- merma productiva propietaria;
+- experiencia de lote FOGO;
+- áreas productivas como objeto de certificación FOGO.
+
+#### 79. Frontera con ORIGO
+
+NEXO puede consumir o entregar hechos de recepción y abastecimiento.
+
+No adquiere ownership de la compra o recepción propietaria de ORIGO cuando el contrato lo mantiene allí.
+
+#### 80. Frontera con PULSO
+
+NEXO no convierte una venta o pedido POS en fuente local duplicada.
+
+Cuando PULSO origine un hecho con efecto de inventario, la correlación y el efecto propietario se prueban sin doble registro.
+
+#### 81. Frontera con SHELL
+
+SHELL puede presentar o navegar.
+
+No adquiere ownership funcional de remisiones, inventario, LOC, LPN, activos o impresión NEXO.
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa y certifica contratos ya protegidos por la cobertura vigente de NEXO, autorización, experiencia, dispositivos, impresión e integración. No introduce una identidad, permiso, transición, owner, regla territorial, estado empresarial ni obligación de prueba nueva que requiera ampliar el Registro Canónico de Requisitos de Prueba.
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar, la cobertura vigente del dominio NEXO, incluido el registro `TREQ-NEXO-001..314` según aplicabilidad del package.
+
+Entre las obligaciones ya trazadas que pueden ser relevantes según el alcance se encuentran:
+
+- retiro parcial correcto;
+- catálogo completo;
+- LPN y trazabilidad;
+- impresión durable;
+- exactamente-una-vez en remisiones;
+- contratos de datos y reconciliación;
+- autorización/contexto;
+- experiencia operativa transversal.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye creación ni modificación del registro.
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea documental no ejecutó build del checkout local; la batería canónica permanece pendiente de ejecución local. |
+| LOCAL | NOT_EXECUTED | No se incorporó el bloque al checkout del usuario durante esta redacción anticipada y no se ejecutaron validadores locales del repositorio. |
+| REMOTA | PASS | Se verificaron en solo lectura `main` de `vento-shell`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner U, familia NEXO, matrices de rol/contexto, cobertura 04A NEXO y el runtime actual de `vento-nexo`; se observaron superficies de remisiones, conductor, tránsito, recepción, inventario, LOC, LPN, activos e impresión sin tratarlas como evidencia suficiente de PASS. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con operadores ni escenarios sobre un ambiente físico; la evidencia operativa pertenece a las instancias posteriores. |
+| FÍSICA | NOT_EXECUTED | No se modificaron runtime, datos, Supabase, configuración, packages, ambientes ni despliegues; la materialización permanece detrás de `POST_E5_PACKAGE`. |
+
+#### 85. Criterios de aceptación
+
+- [ ] La tarea conserva exactamente la topología `PER_PACKAGE_AND_GLOBAL_FINAL`.
+- [ ] El gate permanece `POST_E5_PACKAGE`.
+- [ ] El universo de roles se resuelve por package y capacidad real, no por una lista inventada.
+- [ ] `bodeguero` y `conductor_logistica` se tratan como identidades operativas canónicas cuando apliquen, no como wildcards.
+- [ ] Rol base, rol operativo, permiso, contexto, recurso y autorización permanecen separados.
+- [ ] Dispositivo, estación, escáner e impresora no conceden autoridad.
+- [ ] El cambio de actor en dispositivo compartido recalcula capacidades y datos visibles.
+- [ ] Solicitud, preparación, despacho, custodia/transporte y recepción se prueban como responsabilidades separables.
+- [ ] El estado de una remisión no concede por sí solo la transición.
+- [ ] Los retiros parciales respetan unidades correctas cuando apliquen.
+- [ ] LOC y LPN conservan identidad, ubicación, custodia y alcance.
+- [ ] Un escaneo identifica; no autoriza.
+- [ ] La impresión distingue preview, trabajo, envío, resultado y reimpresión.
+- [ ] La pérdida de conexión no elimina ni duplica trabajo de impresión sin conciliación.
+- [ ] Conteo no equivale automáticamente a ajuste.
+- [ ] Catálogo, disponibilidad y autorización permanecen separados.
+- [ ] Acceso directo revalida autorización.
+- [ ] Los handoffs no transfieren autoridad.
+- [ ] Retry/replay no producen doble efecto cuando la operación exige idempotencia.
+- [ ] Resultado desconocido se reconcilia antes de repetir una mutación.
+- [ ] Evidencia stale no se acepta como vigente.
+- [ ] Cada hallazgo tiene owner y reprueba.
+- [ ] PASS por package no se propaga a otros packages.
+- [ ] `GLOBAL-FINAL` no oculta roles, packages, superficies o escenarios faltantes.
+- [ ] Se conservan cero cambios al Registro Canónico de Requisitos de Prueba.
+
+#### 86. Condiciones de fallo o bloqueo físico futuro
+
+La instancia física futura no puede cerrar PASS si:
+
+- no puede identificarse el actor efectivo;
+- no puede demostrarse el rol operativo aplicable;
+- el permiso se deriva únicamente del nombre del rol;
+- el contexto requerido está ausente o es incompatible;
+- la UI muestra o permite una acción fuera de alcance;
+- una transición contradice el estado propietario;
+- una operación duplicada produce dos efectos;
+- la evidencia no permite distinguir intento de resultado confirmado;
+- una remisión queda en estado materialmente incoherente;
+- LOC/LPN pierden identidad, custodia o trazabilidad;
+- la impresión pierde o duplica trabajo sin reconciliación;
+- la evidencia es stale;
+- falta una superficie o dispositivo obligatorio del package;
+- existe un defecto crítico de autorización que impide ejecutar el escenario de forma segura.
+
+#### 87. Límites
+
+Esta tarea:
+
+- no modifica `NEXO-DOM-*`;
+- no modifica `NEXO-AUTH-*`;
+- no modifica `NEXO-UX-*`;
+- no modifica runtime de NEXO;
+- no modifica permisos;
+- no modifica roles base;
+- no modifica roles operativos;
+- no modifica grants;
+- no modifica denies;
+- no modifica turnos;
+- no modifica sedes ni áreas;
+- no crea remisiones;
+- no cambia estados de remisiones;
+- no mueve inventario;
+- no crea ni cierra LPN;
+- no crea LOC;
+- no ejecuta conteos;
+- no ejecuta ajustes;
+- no modifica activos;
+- no imprime etiquetas;
+- no configura impresoras;
+- no modifica colas;
+- no modifica navegación;
+- no modifica ownership;
+- no modifica handoffs;
+- no modifica auditoría runtime;
+- no modifica datos;
+- no modifica Supabase;
+- no crea migraciones;
+- no modifica RLS ni RPC;
+- no modifica Edge Functions;
+- no despliega;
+- no crea cuentas de prueba;
+- no abre acceso a usuarios reales;
+- no ejecuta piloto;
+- no ejecuta hypercare;
+- no certifica cierre de package por sí sola;
+- no corrige hallazgos físicos;
+- no crea TREQ;
+- no modifica TREQ;
+- no modifica 04A;
+- no desarrolla FOGO ni `UX-QA-025`.
+
+#### 88. Handoff a `UX-QA-025`
+
+`UX-QA-024` entrega a `UX-QA-025` únicamente contratos reutilizables de certificación:
+
+- método de especialización por aplicación y package;
+- identidad de escenario por actor, rol, contexto, recurso, build y ambiente;
+- separación entre rol y autorización;
+- tratamiento de estaciones y dispositivos compartidos;
+- protocolo de evidencia humana y técnica;
+- contrato de findings, severidad y retest;
+- tratamiento de stale, resultado desconocido, retry y reconciliación;
+- regla de que visibilidad no sustituye autorización;
+- regla de que ownership y handoff no transfieren autoridad;
+- criterio PASS por escenario, cohorte y package;
+- criterio `GLOBAL-FINAL`;
+- prohibición de ocultar un rol, superficie o escenario aplicable mediante agregación.
+
+No transfiere a FOGO ownership de inventario, remisiones, LOC, LPN, activos, impresión, custodia logística ni movimientos NEXO.
+
+`UX-QA-025` deberá concretar FOGO por área productiva usando sus propios contratos, superficies, estados, actores y owners.
+
+#### 89. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-023 — Probar VISO por rol administrativo`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-024 — Probar NEXO por rol operativo`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-025 — Probar FOGO por área productiva`
 ### [ ] UX-QA-025 — Probar FOGO por área productiva
 ### [ ] UX-QA-026 — Probar ORIGO por etapa de compra
 ### [ ] UX-QA-027 — Probar PULSO por punto operativo
