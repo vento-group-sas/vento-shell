@@ -14285,7 +14285,1173 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo`
-### [ ] UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
+### ✅ UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-013 — El retorno conserva el proceso cuando corresponde
+**Tarea siguiente:** UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por package y globalmente que una persona trabajadora puede completar una tarea representativa dentro del tiempo objetivo previamente definido para su escenario, distinguiendo tiempo end-to-end, tiempo activo, latencia técnica, espera legítima, dependencia, reautenticación, handoff, interrupción, recuperación y conciliación, sin convertir la medición en vigilancia o evaluación punitiva individual
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de tiempo objetivo de tarea definido; las ejecuciones `UX-QA-014::<package_id>` y `UX-QA-014::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff aprobado de `UX-QA-013`, la línea base de fricción de `UX-BASE-008`, los presupuestos técnicos de `NFR-REQ-003`, los guardrails humanos y de accesibilidad vigentes y la evidencia que cada package declare aplicable, sin afirmar que ningún package desplegado cumpla todavía su tiempo objetivo
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, rutas, componentes, contratos runtime, telemetría productiva, procesos, work items, autorización, colas, datos, Supabase, dispositivos, configuración, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que una persona trabajadora puede completar una tarea representativa dentro del tiempo objetivo aprobado para el escenario, sin confundir velocidad humana con latencia técnica, espera empresarial o fallas de la plataforma.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿QUÉ TAREA EXACTA SE ESTÁ MIDIENDO?
+¿CUÁNDO EMPIEZA LEGÍTIMAMENTE LA MEDICIÓN?
+¿CUÁNDO TERMINA CON UN RESULTADO EMPRESARIAL O HANDOFF VÁLIDO?
+¿CUÁL ES EL TIEMPO OBJETIVO APROBADO PARA ESTE ESCENARIO?
+¿QUÉ PARTE DEL TIEMPO ES ACTIVA Y QUÉ PARTE ES ESPERA?
+¿QUÉ PARTE DEPENDE DE SISTEMA, DISPOSITIVO, RED, PERIFÉRICO O TERCERO?
+¿LA PERSONA COMPLETA EL TRABAJO SIN OMITIR CONTROLES, CREAR ERRORES O PEDIR AYUDA EVITABLE?
+¿EL RESULTADO SIGUE SIENDO CORRECTO, SEGURO, TRAZABLE Y RECUPERABLE?
+```
+
+Regla central:
+
+```text
+COMPLETAR MÁS RÁPIDO
+!=
+COMPLETAR MEJOR
+```
+
+Y también:
+
+```text
+TIEMPO OBJETIVO DE TAREA
+!=
+VELOCIDAD INDIVIDUAL DEL TRABAJADOR
+```
+
+#### 2. Resultado documental
+
+`UX-QA-014` define el contrato de certificación de tiempo objetivo de tarea para BLOQUE U.
+
+El resultado establece:
+
+- unidad certificable por package y escenario;
+- fuente obligatoria del tiempo objetivo;
+- frontera entre tiempo de tarea y tiempo de respuesta técnico;
+- eventos válidos de inicio y fin;
+- segmentación de tiempo activo y espera;
+- tratamiento de bloqueos, dependencias, handoffs, interrupciones y recuperación;
+- reglas de medición en estaciones, dispositivos y condiciones reales;
+- guardrails de accesibilidad, seguridad y calidad;
+- criterios de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-015`.
+
+#### 3. Handoff recibido de `UX-QA-013`
+
+`UX-QA-013` entrega:
+
+- package y caso certificado;
+- proceso e instancia;
+- work item u obligación aplicable;
+- estado autoritativo vigente;
+- clasificación de continuidad;
+- actor y contexto revalidados;
+- recurso y versión vigente;
+- claim, custodia y checkpoint relevantes;
+- resultados pendientes o desconocidos ya clasificados;
+- condición de espera, bloqueo, handoff, reasignación o conciliación cuando exista;
+- instante o referencia desde la cual el trabajo vuelve a ser ejecutable de forma legítima;
+- evidencia de que navegación y recuperación técnica no fueron tratadas como acción empresarial.
+
+`UX-QA-014` usa ese handoff para evitar atribuir al trabajador tiempo que pertenece a una espera o recuperación que el sistema ya clasificó.
+
+#### 4. Alcance exacto
+
+La certificación aplica a tareas humanas representativas incluidas en un package cuando exista:
+
+- actor objetivo definido;
+- proceso y paso identificables;
+- escenario reproducible;
+- contexto de sede, área, turno o modalidad cuando aplique;
+- estación o dispositivo objetivo;
+- resultado esperado;
+- tiempo objetivo aprobado y trazable;
+- criterios de calidad y seguridad que no pueden omitirse para ganar tiempo;
+- evidencia suficiente para distinguir actividad humana y espera no atribuible.
+
+No se certifica un tiempo si la tarea medida no tiene frontera funcional estable.
+
+#### 5. Frontera con `UX-QA-013`
+
+`UX-QA-013` responde:
+
+```text
+¿EL TRABAJO PUEDE CONTINUAR
+Y DE QUÉ FORMA?
+```
+
+`UX-QA-014` responde:
+
+```text
+¿CUANDO EL TRABAJO ES LEGÍTIMAMENTE EJECUTABLE,
+PUEDE COMPLETARSE DENTRO DEL TIEMPO OBJETIVO
+SIN DEGRADAR EL RESULTADO?
+```
+
+Una tarea no empieza a consumir tiempo atribuible al trabajador mientras el sistema aún está resolviendo si la obligación puede ejecutarse.
+
+#### 6. Frontera con `UX-QA-015`
+
+`UX-QA-015` certificará que los bloqueos se entienden sin códigos técnicos.
+
+`UX-QA-014` sí registra:
+
+- existencia del bloqueo;
+- duración observada;
+- punto del flujo afectado;
+- impacto sobre el tiempo end-to-end;
+- si la tarea pudo continuar o no.
+
+Pero no certifica todavía la calidad lingüística del mensaje de bloqueo.
+
+#### 7. Frontera con `UX-BASE-008`
+
+`UX-BASE-008` ya define que la mejora de tareas frecuentes se mide con:
+
+- tasa de finalización correcta;
+- tiempo end-to-end;
+- tiempo activo y de espera;
+- toques y campos manuales;
+- desplazamientos y cambios de estación;
+- aplicaciones y pantallas atravesadas;
+- retrocesos;
+- abandonos;
+- errores y correcciones;
+- reintentos;
+- conflictos;
+- recuperación;
+- satisfacción y comprensión.
+
+`UX-QA-014` no redefine esa base. La convierte en una certificación ejecutable posterior por package.
+
+#### 8. Frontera con `NFR-REQ-003`
+
+`NFR-REQ-003` establece explícitamente:
+
+```text
+TIEMPO DE RESPUESTA
+!=
+TIEMPO TOTAL DEL PROCESO
+!=
+TIEMPO DE ATENCIÓN HUMANA
+```
+
+Por tanto, `UX-QA-014` no usa presupuestos de render, navegación, API, job, escáner o periférico como sustituto del tiempo objetivo humano.
+
+Esos presupuestos se conservan como causas y componentes técnicos del tiempo end-to-end.
+
+#### 9. No existe un tiempo universal de trabajador
+
+Esta tarea no fija una duración única para todas las tareas de Vento OS.
+
+Queda prohibido declarar, por ejemplo:
+
+```text
+TODA TAREA DEBE DURAR X SEGUNDOS
+```
+
+El tiempo objetivo debe corresponder a:
+
+- tarea concreta;
+- actor o cohorte relevante;
+- contexto operativo;
+- estación o dispositivo;
+- frecuencia;
+- criticidad;
+- controles obligatorios;
+- modalidad física;
+- condiciones aprobadas del package.
+
+#### 10. Fuente obligatoria del tiempo objetivo
+
+Cada ejecución futura `UX-QA-014::<package_id>` deberá vincular el tiempo objetivo con una fuente aprobada y trazable.
+
+La fuente puede proceder, según el caso, de:
+
+- línea base y objetivo definidos al aplicar `UX-BASE-008`;
+- criterios de aceptación del proceso o superficie propietaria;
+- plan de prueba del package;
+- criterios aprobados de piloto;
+- requisito operativo o empresarial ya canónico;
+- evidencia histórica aprobada y suficientemente comparable.
+
+Si el package no puede demostrar de dónde sale el tiempo objetivo, `UX-QA-014` no inventa uno y la certificación queda bloqueada.
+
+#### 11. Una línea base no es automáticamente el objetivo
+
+El tiempo AS-IS observado puede contener:
+
+- recaptura;
+- pasos redundantes;
+- espera evitable;
+- navegación incorrecta;
+- copia manual entre aplicaciones;
+- errores de diseño;
+- entrenamiento informal;
+- contingencias permanentes.
+
+Por tanto:
+
+```text
+TIEMPO AS-IS
+!=
+TIEMPO OBJETIVO POR DEFINICIÓN
+```
+
+La línea base sirve para comparar y justificar el objetivo, no para congelar ineficiencias.
+
+#### 12. El objetivo no se reduce por deseo
+
+Un tiempo objetivo menor debe conservar:
+
+- mismo o mejor resultado;
+- misma o mejor seguridad;
+- misma autorización;
+- misma atribución;
+- misma evidencia;
+- mismo control de diferencias;
+- misma idempotencia;
+- recuperación no peor;
+- accesibilidad no peor.
+
+No se acepta un objetivo que solo pueda cumplirse omitiendo controles.
+
+#### 13. Unidad certificable
+
+La unidad mínima de evidencia deberá distinguir:
+
+- package;
+- proceso;
+- paso o tarea;
+- escenario;
+- actor o cohorte;
+- contexto;
+- estación y dispositivo;
+- datos utilizados;
+- condición de red y dependencias;
+- objetivo temporal aplicable;
+- resultado esperado;
+- resultado observado.
+
+Una cifra agregada de toda una aplicación no sustituye esa unidad.
+
+#### 14. Inicio de la medición
+
+El inicio debe ser un evento observable y reproducible.
+
+Para una tarea ordinaria puede corresponder al primer instante en que:
+
+- la obligación está disponible para el actor;
+- el actor ya fue identificado;
+- el contexto requerido está resuelto;
+- las precondiciones conocidas están disponibles;
+- la acción puede comenzar legítimamente.
+
+Si el package incluye descubrimiento o navegación dentro del objetivo, el inicio se ubica antes y esa decisión debe estar declarada.
+
+#### 15. Inicio después de una interrupción
+
+Cuando el escenario proviene de `UX-QA-013`, el reloj atribuible a ejecución no empieza mientras el estado esté siendo reconstruido o validado.
+
+Empieza cuando la obligación queda legítimamente:
+
+- reanudable;
+- reanudable con revisión ya presentada;
+- reasignada al actor actual;
+- disponible después de resolver la condición aplicable.
+
+La recuperación técnica previa se registra por separado.
+
+#### 16. Fin de la medición
+
+El fin debe corresponder a un resultado empresarial o handoff que el propietario reconozca como cierre de la obligación del actor medido.
+
+No se detiene el reloj únicamente porque:
+
+- cambió la URL;
+- desapareció un modal;
+- apareció un toast;
+- se cerró una pantalla;
+- se envió una solicitud sin receipt;
+- se inició un job cuyo resultado todavía pertenece a la misma obligación humana.
+
+#### 17. Handoff como final válido
+
+Un handoff puede cerrar la tarea del actor medido únicamente cuando el proceso propietario define que la responsabilidad de esa persona termina allí.
+
+En ese caso deben existir:
+
+- handoff válido;
+- destinatario o cola propietaria;
+- estado trazable;
+- resultado de entrega u oferta según contrato;
+- siguiente responsabilidad claramente separada.
+
+La espera posterior no se carga artificialmente al actor anterior.
+
+#### 18. Trabajo pendiente no es finalización
+
+No se considera tarea completada por el trabajador cuando el sistema únicamente muestra:
+
+- guardado local;
+- pendiente de sincronización;
+- resultado desconocido;
+- validando;
+- esperando receipt;
+- operación en cola sin que el proceso defina allí el fin de responsabilidad humana.
+
+La frontera exacta la conserva el proceso propietario.
+
+#### 19. Tiempo end-to-end
+
+La evidencia conserva el tiempo total observado desde el inicio declarado hasta el fin declarado.
+
+Este valor refleja la experiencia completa del escenario.
+
+Debe poder descomponerse para evitar atribuciones incorrectas.
+
+#### 20. Tiempo activo
+
+El tiempo activo comprende periodos en los que la persona puede avanzar materialmente la tarea mediante una acción esperada.
+
+Incluye, cuando corresponda:
+
+- lectura necesaria;
+- captura;
+- selección;
+- comparación;
+- verificación;
+- movimiento físico propio de la tarea;
+- uso de periféricos bajo control del actor;
+- corrección de errores propios del flujo observado.
+
+No significa productividad individual.
+
+#### 21. Espera técnica
+
+Se registra separadamente el tiempo en que la persona no puede avanzar por:
+
+- latencia de sistema;
+- carga de datos;
+- autenticación técnica;
+- procesamiento servidor;
+- cola técnica;
+- periférico;
+- dependencia externa;
+- sincronización;
+- recuperación de conectividad.
+
+Los presupuestos técnicos aplicables permanecen gobernados por `NFR-REQ-003` y contratos propietarios.
+
+#### 22. Espera empresarial legítima
+
+Se registra separadamente la espera causada por:
+
+- aprobación de otro actor;
+- dependencia de otro proceso;
+- recepción física;
+- enfriamiento, cocción, maduración u otra condición material;
+- ventana horaria;
+- proveedor externo;
+- conciliación;
+- investigación requerida;
+- handoff pendiente cuando la responsabilidad original todavía no terminó.
+
+No se presenta como lentitud humana.
+
+#### 23. Bloqueo
+
+Cuando existe un bloqueo real:
+
+- se conserva el instante de aparición;
+- se conserva su duración;
+- se registra si la tarea podía avanzar por otra vía válida;
+- se distingue de una espera ordinaria;
+- no se obliga a la persona a reintentar para “mantener el cronómetro”.
+
+La comprensibilidad del bloqueo pertenece a `UX-QA-015`.
+
+#### 24. Reautenticación y step-up
+
+Una reautenticación exigida por riesgo puede formar parte legítima del tiempo end-to-end.
+
+Debe registrarse separadamente cuando:
+
+- fue requerida por política;
+- el sistema la repitió innecesariamente;
+- falló por plataforma;
+- el actor no podía continuar sin ella.
+
+No se reduce seguridad para mejorar el tiempo.
+
+#### 25. Interrupción
+
+Una interrupción real debe separar:
+
+- tiempo anterior a la interrupción;
+- pausa;
+- recuperación;
+- tiempo posterior a la reanudación.
+
+La pausa no se atribuye al trabajador cuando el escenario establece que no podía avanzar.
+
+La continuidad debe conservar la semántica aprobada por `UX-QA-013`.
+
+#### 26. Cambio de actor
+
+Si la tarea cambia legítimamente de actor:
+
+- se cierra o segmenta la medición del actor anterior según el proceso;
+- no se transfiere automáticamente su tiempo activo al nuevo actor;
+- el objetivo del nuevo actor se evalúa contra su responsabilidad propia;
+- se conserva el tiempo end-to-end del proceso cuando sea una métrica adicional pertinente.
+
+No se construye un ranking individual combinando actores distintos.
+
+#### 27. Cambio de dispositivo o estación
+
+Cuando el flujo exige desplazamiento o cambio de estación, el tiempo se conserva como parte del escenario si el diseño aprobado lo requiere.
+
+Debe distinguirse si el cambio es:
+
+- necesario por operación;
+- provocado por limitación del sistema;
+- provocado por falta de periférico;
+- provocado por incompatibilidad;
+- evitable mediante un diseño posterior.
+
+#### 28. Condiciones físicas representativas
+
+La certificación posterior debe usar, cuando aplique:
+
+- tamaño y montaje de pantalla reales;
+- postura real;
+- guantes o manos ocupadas;
+- ruido;
+- iluminación;
+- humedad o grasa;
+- movilidad;
+- escáner;
+- impresora;
+- báscula;
+- datáfono;
+- red representativa;
+- cambio de actor en estación compartida.
+
+Un escritorio de desarrollo no sustituye automáticamente la estación objetivo.
+
+#### 29. Accesibilidad
+
+El tiempo objetivo no puede invalidar una alternativa accesible ni penalizar a quien la utilice.
+
+Se conserva:
+
+```text
+MÁS TIEMPO POR UNA MODALIDAD ACCESIBLE
+!=
+FALLO DEL TRABAJADOR
+```
+
+La certificación evalúa si la experiencia ofrece una ruta funcional, segura y razonable para los perfiles soportados.
+
+#### 30. Ajustes y necesidades representativas
+
+Cuando una persona usa:
+
+- lector de pantalla;
+- zoom;
+- teclado;
+- navegación por interruptor;
+- alto contraste;
+- texto grande;
+- reducción de movimiento;
+- alternativa a gesto o arrastre;
+
+la evidencia debe conservar esa modalidad.
+
+No se mezclan tiempos de modalidades materialmente distintas como si fueran idénticas.
+
+#### 31. Trabajadores nuevos y experimentados
+
+Cuando la tarea tenga curva de aprendizaje material, la evidencia debe distinguir, si aplica:
+
+- trabajadores nuevos;
+- trabajadores experimentados;
+- familiaridad digital relevante;
+- capacitación recibida;
+- práctica previa con el prototipo o sistema.
+
+El objetivo no se prueba únicamente con quienes diseñaron o implementaron la solución.
+
+#### 32. Capacitación
+
+La capacitación no puede usarse para compensar permanentemente:
+
+- navegación confusa;
+- términos técnicos no comprensibles;
+- pasos redundantes;
+- estados ambiguos;
+- errores recuperables mal diseñados.
+
+La evidencia deberá indicar qué conocimiento previo era legítimamente requerido por el puesto.
+
+#### 33. Primera ejecución y uso habitual
+
+Cuando sean materialmente diferentes, se distinguen:
+
+- primera ejecución;
+- uso habitual;
+- recuperación después de ausencia prolongada;
+- ejecución después de cambio de proceso o interfaz.
+
+No se aprueba una tarea frecuente solo porque el equipo experto la ejecuta rápido después de memorizarla.
+
+#### 34. Camino ordinario
+
+El tiempo objetivo del camino ordinario se mide sobre el flujo correcto y autorizado.
+
+No se permite acelerar mediante:
+
+- bypass de aprobación;
+- omisión de verificación;
+- ocultamiento de diferencias;
+- uso de datos stale;
+- reutilización de contexto inválido;
+- autoaprobación;
+- acciones masivas no autorizadas;
+- reintentos ciegos.
+
+#### 35. Excepciones
+
+Las acciones excepcionales no deben contaminar el tiempo objetivo del camino ordinario.
+
+Cuando el escenario incluye una excepción real:
+
+- se mide como escenario separado;
+- conserva su autoridad y controles;
+- se documenta su causa;
+- no se compara directamente con un caso ordinario como si fueran equivalentes.
+
+#### 36. Error y corrección
+
+Se registran por escenario:
+
+- errores de selección;
+- captura incorrecta;
+- retrocesos;
+- correcciones;
+- validaciones fallidas;
+- intentos repetidos;
+- deshacer o volver a intentar cuando sea legítimo.
+
+Una tarea que cumple el tiempo únicamente porque el participante no detectó un error no obtiene PASS.
+
+#### 37. Ayuda requerida
+
+Se registra si la persona necesitó:
+
+- instrucciones adicionales;
+- apoyo de otro trabajador;
+- soporte técnico;
+- documentación externa;
+- explicación del término;
+- ayuda para recuperar un error.
+
+La ayuda esperada por diseño debe estar declarada; la ayuda improvisada cuenta como fricción.
+
+#### 38. Abandono
+
+Un escenario abandonado no desaparece del análisis temporal.
+
+Debe conservar:
+
+- punto de abandono;
+- tiempo transcurrido;
+- causa observada;
+- estado del trabajo;
+- posibilidad de recuperación;
+- necesidad de ayuda.
+
+La ausencia de finalización es un resultado de la prueba.
+
+#### 39. Reintentos
+
+Un reintento por:
+
+- doble toque;
+- timeout;
+- pérdida de respuesta;
+- reconexión;
+- navegador;
+- periférico;
+
+no se presenta como trabajo adicional imputable al trabajador sin analizar su causa.
+
+Los efectos empresariales conservan idempotencia y resultado recuperable.
+
+#### 40. Offline y conectividad inestable
+
+Cuando el package admite trabajo offline:
+
+- se distingue captura local de confirmación autoritativa;
+- se mide el trabajo humano disponible offline;
+- se registra espera de sincronización por separado;
+- una reconexión no obliga a rehacer trabajo válido;
+- un estado pendiente no se cuenta como completado si el proceso exige confirmación.
+
+#### 41. Periféricos
+
+El escenario conserva por separado:
+
+- interacción humana;
+- lectura o captura del periférico;
+- procesamiento técnico;
+- confirmación autoritativa;
+- resultado físico cuando aplique.
+
+Un periférico lento puede hacer fallar el tiempo objetivo end-to-end sin convertir al trabajador en causa del incumplimiento.
+
+#### 42. Tareas por lote
+
+Cuando existe trabajo por lote, el objetivo debe declarar la unidad medida:
+
+- lote completo;
+- elemento individual;
+- preparación del lote;
+- tratamiento de excepciones;
+- cierre o conciliación.
+
+No se divide el tiempo por cantidad para afirmar artificialmente cumplimiento individual cuando existen costos fijos o excepciones materiales.
+
+#### 43. Tareas multiaplicación
+
+Una tarea que atraviesa aplicaciones conserva:
+
+- misma intención;
+- mismo proceso;
+- misma obligación o handoff trazable;
+- tiempos por tramo;
+- tiempo de transición;
+- tiempo de revalidación;
+- tiempo de espera.
+
+La navegación rápida no compensa pérdida de contexto o autoridad.
+
+#### 44. Búsqueda y descubrimiento
+
+Cuando encontrar la tarea forma parte del objetivo, se registra separadamente:
+
+- tiempo hasta encontrarla;
+- primera selección correcta;
+- búsqueda utilizada;
+- ruta equivocada;
+- retroceso;
+- ayuda terminológica.
+
+El tiempo de descubrimiento no se oculta iniciando el cronómetro después de que otra persona abrió la pantalla correcta.
+
+#### 45. Acción principal y cierre
+
+La tarea debe permitir que la persona identifique:
+
+- qué debe hacer;
+- sobre qué recurso;
+- con qué efecto;
+- cuándo terminó;
+- cuál es el siguiente paso.
+
+La falta de claridad que genera espera, duda o retroceso se conserva como evidencia.
+
+#### 46. Datos de prueba
+
+Los datos deben ser realistas respecto de:
+
+- cardinalidad;
+- estados;
+- diferencias;
+- unidades;
+- nombres;
+- cantidades;
+- excepciones;
+- historial relevante.
+
+Un fixture trivial no certifica una tarea que en operación trabaja con listas, variantes o diferencias materiales.
+
+#### 47. Datos sensibles
+
+La prueba no necesita exponer datos personales o secretos reales para medir tiempo.
+
+Se utilizan datos minimizados, sintéticos o protegidos cuando sea posible.
+
+La evidencia temporal no contiene:
+
+- PIN;
+- tokens;
+- secretos;
+- credenciales;
+- datos personales innecesarios;
+- contenido sensible completo.
+
+#### 48. Evidencia mínima por ejecución
+
+Cada ejecución física futura debe conservar suficiente evidencia para reconstruir:
+
+- qué se pidió hacer;
+- quién participó por cohorte o identificador minimizado;
+- dónde y con qué dispositivo;
+- qué datos se usaron;
+- cuál era el objetivo;
+- cuándo empezó;
+- cuándo terminó;
+- qué esperas ocurrieron;
+- qué errores ocurrieron;
+- qué ayuda fue necesaria;
+- cuál fue el resultado;
+- si el resultado fue correcto;
+- qué controles permanecieron activos.
+
+#### 49. Evidencia temporal
+
+La evidencia debe permitir distinguir al menos:
+
+- tiempo end-to-end;
+- tiempo activo;
+- espera técnica;
+- espera empresarial;
+- bloqueo;
+- interrupción;
+- recuperación;
+- handoff cuando aplique.
+
+No exige una implementación única de telemetría.
+
+#### 50. No se aprueba con un promedio aislado
+
+Un promedio puede ocultar:
+
+- abandonos;
+- outliers repetibles;
+- una cohorte que no puede completar;
+- latencia de cola;
+- errores graves;
+- fallos de accesibilidad;
+- dependencia de ayuda.
+
+La evidencia deberá conservar la distribución o los resultados individuales minimizados suficientes para explicar variación material.
+
+#### 51. Tamaño de muestra
+
+Esta tarea no inventa un tamaño universal de muestra humana.
+
+El package debe justificar el conjunto de participantes según:
+
+- riesgo;
+- frecuencia;
+- número de actores;
+- diferencias entre sedes o áreas;
+- experiencia;
+- modalidad física;
+- accesibilidad;
+- criticidad del resultado.
+
+Una muestra pequeña se interpreta cualitativamente y no se presenta como precisión estadística inexistente.
+
+#### 52. Comparación con baseline
+
+Cuando exista baseline comparable, la evidencia registra:
+
+- tiempo anterior;
+- tiempo nuevo;
+- cambio de errores;
+- cambio de ayuda;
+- cambio de pasos;
+- cambio de espera;
+- cambio de recuperación;
+- cambio de satisfacción o comprensión cuando aplique.
+
+La mejora temporal no compensa una degradación material de seguridad o calidad.
+
+#### 53. Condiciones de pico
+
+Las tareas sensibles a picos deben probarse en una carga representativa o mediante evidencia equivalente del package.
+
+Debe distinguirse si el incumplimiento proviene de:
+
+- concurrencia;
+- cola;
+- dependencia lenta;
+- estación compartida;
+- disponibilidad de periférico;
+- operación humana;
+- diseño de flujo.
+
+#### 54. Relación con presupuestos técnicos
+
+Cuando el tiempo end-to-end falla y existe una etapa técnica aplicable, se contrasta con los presupuestos de `NFR-REQ-003`.
+
+Esto permite determinar si el package incumple por:
+
+- sistema;
+- flujo humano;
+- ambos;
+- dependencia externa;
+- condición física.
+
+No permite reemplazar la prueba humana por un benchmark técnico.
+
+#### 55. Calidad antes que velocidad
+
+Bloquean PASS aunque el tiempo objetivo se cumpla:
+
+- resultado incorrecto;
+- omisión de control;
+- duplicado;
+- autorización inválida;
+- pérdida de evidencia;
+- bypass de segregación;
+- uso de dato stale como vigente;
+- pérdida de trabajo;
+- exposición de información;
+- acción irreversible no comprendida;
+- accesibilidad materialmente insuficiente.
+
+#### 56. Uso no punitivo
+
+La métrica de tiempo se utiliza para evaluar el sistema, el flujo y la operación diseñada.
+
+No se utiliza para:
+
+- ranking individual;
+- sanción disciplinaria;
+- inferir motivación;
+- inferir competencia general;
+- comparar personas sin contexto;
+- penalizar una discapacidad o ajuste;
+- penalizar el registro correcto de una diferencia;
+- incentivar omitir controles.
+
+#### 57. Privacidad de participantes
+
+La evidencia debe minimizar identidad personal.
+
+Cuando sea necesario relacionar varias ejecuciones de una misma cohorte, se utilizará un identificador de estudio o mecanismo equivalente aprobado, sin convertir el artefacto de certificación en monitoreo productivo permanente.
+
+#### 58. Observación y telemetría
+
+La telemetría existente puede apoyar la evidencia cuando:
+
+- sus eventos son semánticamente correctos;
+- el inicio y fin pueden demostrarse;
+- la versión de producto es conocida;
+- el contexto es comparable;
+- la privacidad está gobernada.
+
+La telemetría no sustituye por sí sola la observación de comprensión, error, ayuda, postura o condición física.
+
+#### 59. Resultado por escenario
+
+Cada escenario posterior debe quedar clasificado de forma explícita como:
+
+- cumple el objetivo y conserva calidad;
+- no cumple el objetivo;
+- no es comparable por cambio material de escenario;
+- queda bloqueado por falta de objetivo o evidencia;
+- no aplica al package.
+
+La causa del incumplimiento se documenta sin atribuirla automáticamente al trabajador.
+
+#### 60. Regla de PASS por package
+
+`UX-QA-014::<package_id>` solo puede obtener PASS cuando:
+
+- todos los escenarios obligatorios aplicables tienen objetivo trazable;
+- el inicio y fin están definidos;
+- la tarea se completa correctamente;
+- el tiempo objetivo aplicable se cumple según el criterio aprobado del escenario;
+- ningún guardrail crítico se degrada;
+- los incumplimientos no quedan ocultos por promedios;
+- toda excepción o hallazgo pendiente tiene propietario y condición de salida;
+- la evidencia no está stale respecto de la versión certificada.
+
+#### 61. Incumplimiento legítimamente no atribuible al trabajador
+
+Cuando la tarea supera su objetivo por una causa externa al actor, el package sigue registrando el incumplimiento end-to-end si corresponde.
+
+La evidencia debe asignar la causa al propietario correcto, por ejemplo:
+
+- latencia técnica;
+- dependencia externa;
+- periférico;
+- diseño de flujo;
+- falta de información;
+- bloqueo;
+- handoff;
+- contexto;
+- red;
+- capacidad.
+
+No se transforma el fallo del sistema en fallo humano.
+
+#### 62. Hallazgos diferidos
+
+Todo hallazgo que no bloquee inmediatamente debe declarar:
+
+- qué falta;
+- impacto sobre el tiempo o la calidad;
+- propietario canónico;
+- por qué no bloquea el package actual;
+- condición exacta de salida;
+- evidencia que deberá volver a medirse.
+
+No se crea una tarea nueva cuando ya existe un owner canónico.
+
+#### 63. Regresión
+
+Un package no conserva PASS indefinidamente si cambia materialmente:
+
+- flujo;
+- navegación;
+- copy;
+- número de pasos;
+- autorización;
+- dispositivo;
+- periférico;
+- red;
+- integración;
+- datos;
+- contexto;
+- política de reanudación;
+- tarea o proceso propietario.
+
+El cambio aplicable obliga a revalidar el escenario afectado.
+
+#### 64. Compatibilidad con rollback
+
+La evidencia de tiempo no puede impedir rollback cuando una nueva versión degrada:
+
+- calidad;
+- seguridad;
+- accesibilidad;
+- recuperación;
+- estabilidad;
+- tiempo objetivo de forma material.
+
+El package conserva su estrategia de reversa y comparación.
+
+#### 65. Certificación global final
+
+`UX-QA-014::GLOBAL-FINAL` exige demostrar que:
+
+- todos los packages aplicables fueron evaluados;
+- no existen packages obligatorios sin evidencia;
+- los objetivos utilizados son trazables y no contradictorios;
+- los escenarios comparables conservan reglas coherentes;
+- las diferencias legítimas por proceso, actor, estación o riesgo están declaradas;
+- no existe una regla global punitiva de velocidad individual;
+- no existen incumplimientos críticos abiertos sin propietario y salida;
+- la evidencia global corresponde a versiones vigentes.
+
+#### 66. No se promedia el ecosistema para ocultar fallos
+
+Un package o escenario crítico que incumple no obtiene cobertura por promedio global.
+
+```text
+MUCHAS TAREAS RÁPIDAS
++
+UNA TAREA CRÍTICA IMPOSIBLE O INSEGURA
+!=
+CERTIFICACIÓN GLOBAL
+```
+
+#### 67. Identidad de ejecución física futura
+
+La topología aplicable es:
+
+```text
+MODE: PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE: POST_E5_PACKAGE
+```
+
+Identidades futuras:
+
+```text
+UX-QA-014::<package_id>
+UX-QA-014::GLOBAL-FINAL
+```
+
+Esta aprobación documental no crea ni ejecuta esas instancias.
+
+#### 68. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea certifica obligaciones de eficiencia, finalización correcta, rendimiento técnico, accesibilidad, continuidad, estaciones y recuperación ya registradas. No introduce una obligación verificable nueva que requiera modificar el Registro Canónico de Requisitos de Prueba.
+
+#### 69. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, la cobertura reutilizada incluye:
+
+- `TREQ-UX-041` a `TREQ-UX-058` — navegación humana, búsqueda, retorno, telemetría y validación terminológica que afectan descubrimiento y transición hacia la tarea;
+- `TREQ-UX-139` a `TREQ-UX-159` — línea base de fricción end-to-end, camino ordinario mínimo, continuidad, latencia, idempotencia, recuperación, métricas y guardrails laborales derivados de `UX-BASE-008`;
+- `TREQ-UX-204` a `TREQ-UX-226` — perfil táctil, ergonomía, reflow, entradas, periféricos, ambiente, dispositivo compartido, conectividad, accesibilidad y prueba física;
+- `TREQ-UX-274` a `TREQ-UX-296` — checkpoint, interrupción, reanudación, actores, contexto, conflictos, dispositivos, aplicaciones y recuperación que permiten segmentar correctamente el tiempo después de una interrupción;
+- `TREQ-PROC-271` a `TREQ-PROC-294` — presupuestos de respuesta, inicio y fin técnico, percentiles, hard ceilings, trabajo asíncrono, timeout, idempotencia, dispositivos, periféricos, integraciones, carga y evidencia de `NFR-REQ-003`;
+- `TREQ-PROC-390` a `TREQ-PROC-424` — accesibilidad, ergonomía, tiempo suficiente, error, recuperación, dispositivos reales y validación con trabajadores derivados de `NFR-REQ-007`;
+- requisitos propietarios de proceso, estación, autorización, integración, contingencia y package que cada ejecución declare aplicables.
+
+Estas referencias son trazabilidad heredada y no representan cambios del registro.
+
+#### 70. Evidencia de validación
+
+| Clase | Estado | Evidencia documental disponible en esta aprobación |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecuta build de producto ni benchmark físico para aprobar este contrato documental. |
+| LOCAL | NOT_EXECUTED | La incorporación, formateo, quality, delivery check y batería real del checkout corresponden a la ejecución posterior. |
+| REMOTA | PASS | Se verificaron `main`, owner del BLOQUE U, marcador `UX-QA-014`, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, `UX-BASE-008`, `NFR-REQ-003`, guardrails de accesibilidad y la base aprobada `UX-QA-013`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron todavía sesiones humanas, mediciones end-to-end ni escenarios representativos de packages desplegados durante esta aprobación documental. |
+| FÍSICA | NOT_EXECUTED | Las instancias por package y `GLOBAL-FINAL` permanecen sujetas a `POST_E5_PACKAGE` y evidencia real posterior. |
+
+#### 71. Seguridad de la evidencia
+
+La evidencia temporal no debe exponer:
+
+- secretos;
+- credenciales;
+- PIN;
+- tokens;
+- payloads sensibles completos;
+- datos personales innecesarios;
+- diagnósticos o información de salud;
+- datos de otro actor;
+- texto libre no necesario para explicar el escenario.
+
+#### 72. Fallos críticos
+
+Bloquean PASS del package cuando aplican:
+
+- cumplir el tiempo omitiendo un control obligatorio;
+- completar con resultado incorrecto;
+- duplicar un efecto;
+- medir desde un punto artificialmente tardío;
+- detener el cronómetro antes del resultado válido;
+- ocultar espera o error para mejorar la cifra;
+- atribuir latencia técnica al trabajador;
+- penalizar una modalidad accesible;
+- depender de ayuda no declarada para completar el flujo;
+- usar una muestra no representativa para afirmar cobertura general;
+- excluir abandonos del resultado;
+- perder contexto o trabajo durante interrupción;
+- no tener fuente aprobada para el tiempo objetivo;
+- no poder explicar una desviación material.
+
+#### 73. Criterios de aceptación
+
+- [ ] Se define una certificación temporal por package y `GLOBAL-FINAL`.
+- [ ] La tarea consume el handoff de `UX-QA-013` sin reabrir continuidad ya clasificada.
+- [ ] Tiempo de tarea, tiempo de respuesta técnico, tiempo total del proceso y atención humana permanecen separados.
+- [ ] No existe una duración universal inventada para trabajadores.
+- [ ] Cada escenario exige un tiempo objetivo aprobado y trazable.
+- [ ] La línea base AS-IS no se confunde automáticamente con el objetivo.
+- [ ] Inicio y fin de la medición son observables y reproducibles.
+- [ ] El tiempo end-to-end se descompone en actividad y esperas relevantes.
+- [ ] Latencia técnica conserva ownership técnico y no se imputa automáticamente al trabajador.
+- [ ] Dependencias, handoffs y bloqueos se registran sin distorsionar la responsabilidad humana.
+- [ ] Interrupciones y reanudaciones conservan la semántica de `UX-QA-013`.
+- [ ] Cambio de actor no produce ranking ni transferencia artificial de tiempo.
+- [ ] Dispositivo, estación, periféricos y condiciones físicas se prueban cuando aplican.
+- [ ] Accesibilidad y ajustes no se penalizan por velocidad.
+- [ ] Trabajadores nuevos y experimentados se distinguen cuando la curva de aprendizaje es material.
+- [ ] La capacitación no compensa una interfaz permanentemente deficiente.
+- [ ] Excepciones se miden separadas del camino ordinario.
+- [ ] Errores, correcciones, ayuda y abandonos permanecen dentro de la evidencia.
+- [ ] Offline, retries y resultado desconocido no crean tiempo ficticio ni efectos duplicados.
+- [ ] Las tareas por lote declaran su unidad de medición.
+- [ ] Las tareas multiapp conservan trazabilidad por tramo.
+- [ ] Si descubrimiento forma parte del objetivo, no se inicia el cronómetro después de abrir la pantalla correcta.
+- [ ] El resultado correcto prevalece sobre velocidad.
+- [ ] No se aprueba por promedio aislado.
+- [ ] El tamaño de muestra se justifica por riesgo y contexto, sin falsa precisión estadística.
+- [ ] La métrica no se usa como vigilancia ni ranking individual.
+- [ ] Cada incumplimiento conserva propietario y condición de salida.
+- [ ] `UX-QA-014::<package_id>` solo obtiene PASS con todos sus escenarios obligatorios aplicables resueltos.
+- [ ] `GLOBAL-FINAL` no oculta un fallo crítico mediante promedio del ecosistema.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos durante esta tarea documental.
+- [ ] `UX-QA-015` conserva íntegramente la responsabilidad de certificar comprensibilidad de bloqueos.
+
+#### 74. Límites
+
+Esta tarea:
+
+- no define salarios, cuotas ni productividad laboral;
+- no crea ranking de trabajadores;
+- no establece un tiempo universal;
+- no implementa telemetría productiva;
+- no crea analytics nuevos;
+- no cambia rutas;
+- no modifica procesos;
+- no cambia autorización;
+- no implementa colas;
+- no modifica handoffs;
+- no cambia contratos de reanudación;
+- no modifica `NFR-REQ-003`;
+- no modifica `UX-BASE-008`;
+- no modifica dispositivos ni periféricos;
+- no publica componentes;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta pruebas físicas;
+- no certifica packages antes de `POST_E5_PACKAGE`;
+- no certifica todavía la comprensibilidad de bloqueos.
+
+#### 75. Handoff a `UX-QA-015`
+
+`UX-QA-014` entrega a `UX-QA-015`:
+
+- package y escenario;
+- actor o cohorte;
+- proceso y tarea;
+- contexto y estación;
+- objetivo temporal trazable;
+- tiempo end-to-end observado;
+- segmentación entre tiempo activo y esperas;
+- bloqueos encontrados;
+- momento y duración de cada bloqueo;
+- efecto del bloqueo sobre finalización, error, ayuda o abandono;
+- evidencia de si la persona pudo identificar el siguiente paso;
+- causa técnica o empresarial del bloqueo cuando ya esté resuelta;
+- hallazgos que requieren lenguaje humano, explicación o recuperación más clara.
+
+`UX-QA-015` podrá certificar la comprensibilidad de los bloqueos sin reinterpretar el objetivo temporal ni culpar al trabajador por la existencia del bloqueo.
+
+#### 76. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-013 — El retorno conserva el proceso cuando corresponde`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-014 — El trabajador completa la tarea dentro del tiempo objetivo`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-015 — Los bloqueos se entienden sin códigos técnicos`
 ### [ ] UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
 ### [ ] UX-QA-016 — La información sensible se oculta correctamente
 ### [ ] UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
