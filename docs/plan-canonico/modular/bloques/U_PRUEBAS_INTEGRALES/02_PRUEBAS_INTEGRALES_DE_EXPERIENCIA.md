@@ -16720,7 +16720,1544 @@ Esta tarea:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-016 — La información sensible se oculta correctamente`
-### [ ] UX-QA-016 — La información sensible se oculta correctamente
+### ✅ UX-QA-016 — La información sensible se oculta correctamente
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-015 — Los bloqueos se entienden sin códigos técnicos
+**Tarea siguiente:** UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia y exposición que demuestra por package y globalmente que Vento OS presenta únicamente la información necesaria para el actor, finalidad, recurso, territorio, contexto y canal vigentes, aplicando clasificación, proyección mínima, masking, supresión, no divulgación y limpieza de residuos sin confiar en ocultamiento visual como sustituto de autorización, sin exponer secretos o datos de otros actores y sin convertir esta tarea en propietaria de la fuente de verdad empresarial
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato documental de certificación de privacidad y exposición mínima definido; las ejecuciones `UX-QA-016::<package_id>` y `UX-QA-016::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff aprobado de `UX-QA-015`, `NFR-PRIVACY-SENSITIVITY-CONTRACT-001`, `NFR-INFORMATION-HANDLING-MATRIX-001`, `NFR-PROCESS-PRIVACY-PROFILE-001`, `NFR-DATA-EXPOSURE-BOUNDARY-001`, las decisiones de clasificación y sensibilidad vigentes y las proyecciones propietarias aplicables, sin afirmar que una UI limpia o un componente compartido prueben por sí solos protección end-to-end
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican código, pantallas, consultas, contratos runtime, RLS, RPC, permisos, roles, proyecciones, masking productivo, almacenamiento, cachés, exportaciones, archivos, logs, analytics, integraciones, datos, Supabase, consumidores, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS certificará que la información sensible se oculta, minimiza, enmascara o suprime correctamente para cada actor, finalidad, recurso, territorio, contexto, canal y estado, sin depender de una capa visual que haya recibido previamente el dato completo.
+
+La certificación deberá poder responder, para cada escenario aplicable:
+
+```text
+¿EL ACTOR VE SOLO LA INFORMACIÓN NECESARIA?
+¿LOS CAMPOS NO NECESARIOS NI SIQUIERA LLEGAN A LA PROYECCIÓN CLIENTE CUANDO NO DEBEN LLEGAR?
+¿EL MASKING CORRESPONDE A LA FINALIDAD Y NO SOLO AL ROL?
+¿LA AUSENCIA DE ACCESO EVITA FILTRAR EXISTENCIA, CONTEO O VALOR?
+¿EL ÁRBOL ACCESIBLE RESPETA LA MISMA FRONTERA QUE LA PANTALLA?
+¿BÚSQUEDA, AUTOCOMPLETE, BADGES, PREVIEWS Y NOTIFICACIONES RESPETAN LA MISMA FRONTERA?
+¿UN CAMBIO DE ACTOR O CONTEXTO ELIMINA RESIDUOS DEL ESTADO ANTERIOR?
+¿OFFLINE, CACHÉ Y STALE NO AMPLÍAN EXPOSICIÓN?
+¿ARCHIVOS, METADATOS, EXPORTACIONES E IMPRESIÓN RESPETAN CLASIFICACIÓN Y FINALIDAD?
+¿SECRETOS Y CREDENCIALES PERMANECEN FUERA DE LAS SUPERFICIES ORDINARIAS?
+```
+
+Regla central:
+
+```text
+AUTORIZACIÓN PARA UNA ACCIÓN
+!=
+AUTORIZACIÓN PARA VER TODOS LOS DATOS RELACIONADOS
+```
+
+Y también:
+
+```text
+PROYECCIÓN MÍNIMA
++
+AUTORIZACIÓN DE SERVIDOR
++
+MANEJO SEGÚN CLASIFICACIÓN
++
+PRESENTACIÓN SEGURA
+=
+FRONTERA DE EXPOSICIÓN CERTIFICABLE
+```
+
+#### 2. Resultado documental
+
+`UX-QA-016` define el contrato de certificación integral de privacidad visible, exposición mínima y no filtración para BLOQUE U.
+
+El resultado establece:
+
+- unidad certificable por package y escenario;
+- clasificación de sensibilidad aplicable;
+- oracle por actor, finalidad y superficie;
+- distinción entre omisión, masking, supresión, seudonimización, anonimización y agregación;
+- fronteras de DOM, árbol accesible, payload cliente, caché, notificación, archivo y exportación;
+- pruebas de anti-enumeración y no inferencia;
+- limpieza obligatoria al cambiar actor o contexto;
+- tratamiento de offline, stale y revocación;
+- evidencia automática y manual;
+- métricas de exposición prohibida;
+- criterios de PASS por package;
+- criterio `GLOBAL-FINAL`;
+- handoff exacto a `UX-QA-017`.
+
+Topología contractual:
+
+```text
+MODE = PER_PACKAGE_AND_GLOBAL_FINAL
+EXECUTION_GATE = POST_E5_PACKAGE
+PACKAGE_INSTANCE = UX-QA-016::<package_id>
+GLOBAL_FINAL_INSTANCE = UX-QA-016::GLOBAL-FINAL
+```
+
+#### 3. Handoff recibido de `UX-QA-015`
+
+`UX-QA-015` entrega:
+
+- package y escenario certificado;
+- actor o cohorte y contexto;
+- clase de bloqueo o condición;
+- causa estructurada de referencia;
+- versión de mensaje observada;
+- campos visibles necesarios para comprensión;
+- campos o datos omitidos deliberadamente por seguridad;
+- referencia segura de soporte cuando exista;
+- evidencia de comprensión de causa, efecto y siguiente acción;
+- hallazgos donde la explicación fue correcta pero pudo exponer información innecesaria;
+- canales y superficies donde se presentó la condición;
+- estado de accesibilidad y recuperación asociado.
+
+`UX-QA-016` usa ese handoff para verificar exposición y ocultamiento sin reabrir la comprensibilidad semántica ya certificada.
+
+#### 4. Alcance exacto
+
+La certificación aplica, cuando corresponda, a:
+
+- pantallas y componentes;
+- listas, tablas y tarjetas;
+- detalle de recursos;
+- formularios;
+- búsquedas;
+- autocomplete y sugerencias;
+- filtros;
+- badges y contadores;
+- gráficos y agregados;
+- estados vacíos;
+- mensajes y bloqueos;
+- notificaciones y previews;
+- navegación cross-app;
+- dispositivos compartidos;
+- mobile, tablet y kiosco;
+- contenido offline;
+- caché y borradores;
+- archivos y metadatos;
+- exportaciones e impresión;
+- soporte y diagnóstico;
+- logs o evidencia mostrados a usuarios autorizados;
+- superficies accesibles mediante tecnologías de asistencia.
+
+No se limita a datos personales. También cubre información financiera, laboral, médica, disciplinaria, comercial, recetas, fórmulas, costos, secretos, credenciales, configuración sensible, incidentes, hallazgos de seguridad y conocimiento propietario cuando su clasificación así lo exija.
+
+#### 5. Frontera con `UX-QA-015`
+
+`UX-QA-015` responde:
+
+```text
+¿LA PERSONA ENTIENDE EL BLOQUEO
+SIN INTERPRETAR CÓDIGOS TÉCNICOS?
+```
+
+`UX-QA-016` responde:
+
+```text
+¿ESA EXPLICACIÓN Y TODA LA SUPERFICIE
+REVELAN ÚNICAMENTE LA INFORMACIÓN PERMITIDA Y NECESARIA?
+```
+
+Un mensaje puede ser perfectamente comprensible y aun así fallar `UX-QA-016` si revela datos de terceros, nombres internos, existencia de recursos protegidos, información médica, financiera, disciplinaria o cualquier otro contenido fuera de la finalidad vigente.
+
+#### 6. Frontera con `UX-QA-017`
+
+`UX-QA-017` certificará que la aplicación propietaria conserva la fuente de verdad.
+
+`UX-QA-016` no decide qué aplicación es propietaria de cada dato ni crea una fuente de verdad nueva.
+
+Usa como entrada:
+
+- fuente y contrato propietarios ya resueltos;
+- clasificación vigente;
+- finalidad vigente;
+- actor y contexto;
+- proyección permitida;
+- política de masking o supresión.
+
+Certifica que la exposición observada respeta esas decisiones.
+
+#### 7. Autoridad de `NFR-REQ-005`
+
+`NFR-REQ-005 — Definir privacidad y sensibilidad` fija el contrato transversal de privacidad, clasificación, sensibilidad, minimización, exposición y manejo.
+
+`UX-QA-016` conserva las siguientes reglas:
+
+```text
+ACCESO A UN PROCESO
+!=
+ACCESO A TODO EL EXPEDIENTE
+```
+
+```text
+SELECT * + OCULTAR EN UI
+=
+CONTROL INVÁLIDO
+```
+
+```text
+PROYECCIÓN MÍNIMA
++
+AUTORIZACIÓN EN SERVIDOR
++
+PRESENTACIÓN SEGURA
+=
+FRONTERA ACEPTABLE
+```
+
+La certificación de BLOQUE U demuestra el comportamiento de esas reglas sobre packages y escenarios reales; no redefine el contrato NFR.
+
+#### 8. Autoridad de clasificación definitiva
+
+La clasificación definitiva y manejo por categoría permanecen bajo las tareas propietarias de gobierno de información, en especial `INFO-DOM-001` e `INFO-DOM-002`.
+
+`INFO-DOM-002` materializa como decisiones heredadas:
+
+- 69 perfiles individuales de privacidad por proceso;
+- 332 decisiones individuales de clasificación contextual `DOCCTX-*`;
+- 12 categorías mínimas de información con reglas de minimización y manejo;
+- una escala corporativa única `S0` a `S4`;
+- cinco reglas dominantes de propagación y elevación.
+
+`UX-QA-016` no reclasifica datos durante la prueba para obtener PASS ni deriva sensibilidad desde aplicación, tabla, bucket, carpeta o nombre técnico.
+
+Si la clasificación requerida no puede resolverse de forma trazable:
+
+```text
+CLASIFICACIÓN DESCONOCIDA
+->
+NO SE TRATA COMO PÚBLICA
+```
+
+La prueba falla cerrada para la exposición afectada o queda bloqueada hasta resolver la fuente propietaria.
+
+#### 9. Autoridad de pantalla
+
+`PROC-SCREEN-022 — Definir información sensible visible` conserva la responsabilidad de definir qué información sensible puede aparecer en una pantalla concreta.
+
+Ese contrato ya preserva:
+
+- 177 pantallas con contrato de visibilidad;
+- 31 perfiles cerrados de visibilidad;
+- 12 dominios canónicos de sensibilidad más `NONE`;
+- 177 políticas de dispositivo;
+- 177 políticas de salida;
+- 177 políticas de retención;
+- cero secretos autorizados para redisplay;
+- cero ampliaciones de alcance por presentación.
+
+Los dominios de visibilidad permanecen separados de la escala `S0..S4` y se conservan sin renombrar:
+
+```text
+PERSONAL_DATA
+WORKFORCE_CONTROL
+ACCESS_CONTROL
+AUTHORIZATION_SECURITY
+BUSINESS_SECRET
+FINANCIAL_DATA
+COMMERCIAL_CONFIDENTIALITY
+INVENTORY_INTEGRITY
+CUSTODY_CONFIRMATION
+EXCEPTIONAL_ACTION
+CONFIGURATION_INTEGRITY
+AUDIT_SECURITY
+NONE
+```
+
+`NONE` no significa público, sin permiso, sin alcance, sin auditoría ni apto para cualquier salida.
+
+`UX-QA-016` verifica que la implementación desplegada respete esa definición junto con:
+
+- permiso de lectura;
+- permisos por acción;
+- protección de servidor;
+- clasificación;
+- finalidad;
+- minimización;
+- contexto y territorio.
+
+La existencia de una pantalla autorizada no amplía por sí sola el conjunto de campos visibles.
+
+#### 10. Escala de sensibilidad
+
+La certificación reconoce las clases vigentes:
+
+| Clase | Nombre | Regla de prueba |
+| --- | --- | --- |
+| `S0_PUBLIC` | pública | solo contenido aprobado y vigente puede tratarse como público |
+| `S1_INTERNAL` | interna | no se divulga externamente por defecto |
+| `S2_CONFIDENTIAL` | confidencial | se limita por función, sede, relación y finalidad |
+| `S3_RESTRICTED` | restringida | requiere proyección estricta, segregación y masking cuando aplique |
+| `S4_HIGHLY_RESTRICTED` | altamente restringida | exposición mínima excepcional; secretos y credenciales no aparecen en superficies ordinarias |
+
+La clase de una aplicación completa no sustituye la clasificación más específica de campo, documento, evento, metadato, agregado o derivado.
+
+#### 11. Unidad mínima de evaluación
+
+La prueba no se limita a una pantalla completa.
+
+Puede evaluar individualmente:
+
+```text
+CAMPO
+VALOR
+COLUMNA
+CELDA
+ATRIBUTO
+DOCUMENTO
+ARCHIVO
+METADATO
+PREVIEW
+CONTADOR
+AGREGADO
+IDENTIFICADOR
+RELACIÓN
+INFERENCIA
+```
+
+Un package obtiene PASS únicamente cuando las unidades materialmente relevantes declaradas por su oracle cumplen la frontera esperada.
+
+#### 12. Sobre de manejo consumido
+
+Cuando la fuente propietaria lo provea, la prueba deberá poder relacionar la exposición con:
+
+```text
+classification
+information_owner
+custodian
+purpose
+allowed_actor_and_context
+allowed_fields
+masking_rule
+allowed_channels
+local_storage_policy
+offline_policy
+export_policy
+third_party_policy
+logging_policy
+retention_policy_reference
+incident_route
+classification_version
+```
+
+`UX-QA-016` no inventa valores ausentes de ese sobre.
+
+#### 13. Finalidad como condición de visibilidad
+
+Un mismo actor puede recibir proyecciones distintas del mismo recurso según la finalidad legítima actual.
+
+Ejemplos conceptuales:
+
+```text
+VER PERSONA PARA ASIGNAR TURNO
+!=
+VER EXPEDIENTE LABORAL COMPLETO
+```
+
+```text
+REVISAR PAGO
+!=
+VER TODOS LOS DATOS DEL CLIENTE
+```
+
+```text
+ATENDER INCIDENTE
+!=
+VER SECRETOS O PAYLOADS COMPLETOS
+```
+
+La prueba falla si un permiso amplio de aplicación sustituye finalidad específica.
+
+#### 14. Minimización por proyección
+
+El cliente no debe recibir un modelo completo únicamente para ocultar campos después.
+
+La evidencia deberá distinguir:
+
+```text
+DATO NO SOLICITADO
+DATO NO DEVUELTO
+DATO DEVUELTO ENMASCARADO POR CONTRATO
+DATO DEVUELTO COMPLETO POR NECESIDAD APROBADA
+```
+
+No se acepta como PASS una superficie visualmente limpia cuando el payload accesible al cliente contiene campos que el actor no necesita ni debe conocer.
+
+#### 15. Omisión, masking y supresión
+
+Se distinguen:
+
+| Tratamiento | Significado |
+| --- | --- |
+| `OMIT` | el dato no forma parte de la proyección entregada |
+| `MASK` | se presenta una parte controlada del valor |
+| `SUPPRESS` | se evita presentar valor y, cuando corresponda, existencia o conteo |
+| `TOKENIZE` | se usa una referencia controlada en lugar del valor |
+| `PSEUDONYMIZE` | se reduce asociación directa bajo control reversible |
+| `ANONYMIZE` | se declara únicamente después de evaluación de reidentificación aprobada |
+| `AGGREGATE` | se presenta información conjunta sin permitir inferencia indebida |
+
+La prueba no considera equivalentes estos tratamientos.
+
+#### 16. Ocultamiento exclusivamente visual prohibido
+
+No es suficiente:
+
+- `display: none`;
+- opacidad cero;
+- clipping;
+- mover contenido fuera del viewport;
+- colapsar una sección;
+- retirar un texto manteniendo el valor en atributos;
+- ocultar una columna que permanece en el DOM;
+- ocultar visualmente un control cuyo `aria-label` revela el dato;
+- enviar el dato completo y borrarlo después del render.
+
+La evidencia deberá demostrar la frontera adecuada para la arquitectura del consumidor.
+
+#### 17. Existencia del recurso
+
+No toda persona autorizada a usar una aplicación puede conocer la existencia de todos los recursos.
+
+La prueba distingue:
+
+```text
+NO EXISTE
+EXISTE PERO NO ES VISIBLE
+NO PUEDE CONFIRMARSE SU EXISTENCIA AL ACTOR
+EXISTE Y ES VISIBLE EN PROYECCIÓN AUTORIZADA
+```
+
+Mensajes, estados vacíos, códigos, latencias, contadores o diferencias de respuesta no deben revelar existencia cuando el contrato exige no divulgación.
+
+#### 18. Listas y detalle
+
+Una lista no puede revelar más que el detalle autorizado ni viceversa.
+
+Se prueban:
+
+- columnas;
+- ordenamiento;
+- filtros;
+- previews;
+- hover;
+- tooltips;
+- fila expandida;
+- acciones contextuales;
+- enlaces;
+- menús secundarios.
+
+Un valor oculto en detalle pero visible en tabla constituye FAIL.
+
+#### 19. Búsqueda y autocomplete
+
+La búsqueda no puede convertirse en canal de enumeración.
+
+La prueba verifica:
+
+- resultados;
+- sugerencias;
+- snippets;
+- conteos;
+- resaltados;
+- historial reciente;
+- términos autocompletados;
+- búsqueda parcial;
+- búsqueda por identificador;
+- búsqueda cross-app.
+
+Un actor no debe inferir un recurso protegido porque su nombre aparece como sugerencia aunque no pueda abrirlo.
+
+#### 20. Badges, conteos y agregados
+
+Ocultar filas no basta si un agregado revela el universo oculto.
+
+Se evalúan:
+
+- badges;
+- totales;
+- porcentajes;
+- gráficos;
+- promedios;
+- máximos y mínimos;
+- grupos pequeños;
+- series temporales;
+- drill-down;
+- comparaciones entre sedes o personas.
+
+Un agregado debe ser igual o más restrictivo que la población que lo alimenta.
+
+#### 21. Riesgo de reidentificación
+
+La prueba no acepta como anónimo un conjunto únicamente porque omite nombre o documento.
+
+Se consideran combinaciones de:
+
+- sede;
+- área;
+- turno;
+- rol;
+- timestamp;
+- ubicación;
+- trayectoria;
+- caso;
+- evento raro;
+- cantidad;
+- grupo pequeño;
+- relación con otro dataset.
+
+Cuando la inferencia permite identificar razonablemente a una persona o caso, la sensibilidad correspondiente permanece aplicable.
+
+#### 22. URLs, títulos e historial
+
+La información sensible no debe aparecer innecesariamente en:
+
+- path;
+- query string;
+- fragment;
+- título de página;
+- breadcrumb;
+- historial visible;
+- nombre de pestaña;
+- enlaces compartibles;
+- identificadores fácilmente interpretables.
+
+Una URL directa tampoco amplía autoridad ni evita masking.
+
+#### 23. Notificaciones y previews
+
+La prueba cubre notificaciones del sistema, banners, previews, correos o canales equivalentes cuando formen parte del package.
+
+Se verifica que no expongan innecesariamente:
+
+- nombres sensibles;
+- montos;
+- diagnósticos;
+- información disciplinaria;
+- salud;
+- documentos;
+- secretos;
+- texto completo de un caso;
+- datos de otro actor.
+
+Abrir una notificación obliga a reconstruir la proyección vigente antes de presentar detalle.
+
+#### 24. Árbol accesible
+
+La privacidad debe ser equivalente para lector de pantalla, teclado y otras tecnologías de asistencia.
+
+La prueba falla si información supuestamente oculta permanece en:
+
+- nombre accesible;
+- descripción accesible;
+- texto alternativo;
+- elemento oculto pero navegable;
+- relación `aria-describedby`;
+- región viva;
+- contenido fuera de pantalla;
+- orden de foco;
+- tooltip exclusivo de asistencia.
+
+La accesibilidad no justifica revelar más información que la superficie visual autorizada.
+
+#### 25. DOM y atributos cliente
+
+Cuando la arquitectura permita inspección cliente, se revisará que valores no autorizados no permanezcan en:
+
+- texto renderizado;
+- atributos `data-*`;
+- atributos HTML;
+- props serializadas;
+- JSON embebido;
+- hydration data;
+- estado de componente;
+- HTML oculto;
+- comentarios;
+- templates enviados al navegador.
+
+La prueba no exige una tecnología específica; exige ausencia de exposición evitable.
+
+#### 26. Payload cliente
+
+Cuando exista API, RPC, loader, Server Action u otra frontera de datos observable, el oracle deberá comparar:
+
+```text
+CAMPOS ESPERADOS
+vs
+CAMPOS DEVUELTOS
+```
+
+Un campo no renderizado puede seguir constituyendo fuga si fue entregado a un cliente que no lo necesita.
+
+La prueba de UX no sustituye las pruebas de autorización de servidor, pero no puede certificar PASS ignorando una exposición cliente conocida.
+
+#### 27. Caché y almacenamiento local
+
+La prueba verifica según el package:
+
+- memoria del navegador;
+- storage local autorizado;
+- IndexedDB o equivalente;
+- caché offline;
+- borradores;
+- cola pendiente;
+- archivos temporales;
+- portapapeles cuando aplique;
+- estado persistido de UI.
+
+Los datos conservan clasificación y actor. Cambiar sesión, actor o contexto no puede convertir caché previa en información vigente para otra persona.
+
+#### 28. Dispositivo compartido
+
+En tablet, kiosco, POS o estación compartida se exige:
+
+```text
+CAMBIO DE ACTOR
+->
+RETIRAR PROYECCIÓN ANTERIOR
+->
+RESOLVER NUEVA IDENTIDAD Y CONTEXTO
+->
+OBTENER PROYECCIÓN NUEVA
+```
+
+La prueba busca residuos en:
+
+- pantalla;
+- navegación atrás;
+- búsqueda reciente;
+- formularios;
+- previews;
+- notificaciones;
+- borradores;
+- autocomplete;
+- archivos temporales;
+- estados de error;
+- referencias de soporte.
+
+#### 29. Cambio de contexto
+
+Cambiar sede, área, turno, rol efectivo, custodia, relación con el caso o finalidad puede reducir información visible.
+
+La prueba falla si la UI conserva por comodidad datos que dejaron de pertenecer al contexto vigente.
+
+No existe derecho residual por haber visto legítimamente el dato en un contexto anterior.
+
+#### 30. Stale y revocación
+
+Una proyección stale no puede ampliar exposición.
+
+Se evalúan:
+
+```text
+FRESH
+STALE_READ_ONLY
+REFRESH_REQUIRED
+REVOKED
+```
+
+Según contrato, un estado stale podrá conservar una vista mínima segura o exigir retirar contenido. Nunca reutiliza una proyección más amplia después de revocación conocida.
+
+#### 31. Offline
+
+Offline no degrada privacidad.
+
+La prueba verifica:
+
+- qué clases pueden existir localmente;
+- aislamiento por actor;
+- expiración;
+- borrado al cambiar identidad cuando corresponda;
+- bloqueo de sincronización con autoridad anterior;
+- notificaciones locales minimizadas;
+- contenido de outbox;
+- tratamiento de `S3_RESTRICTED`;
+- prohibiciones de `S4_HIGHLY_RESTRICTED` cuando el contrato así lo establece.
+
+#### 32. Archivos y metadatos
+
+La privacidad alcanza:
+
+- nombre de archivo;
+- ruta lógica;
+- thumbnail;
+- preview;
+- EXIF u otros metadatos;
+- tamaño cuando permita inferencia;
+- autor;
+- comentarios;
+- versión;
+- etiquetas;
+- nombres de carpeta;
+- referencia externa.
+
+Ocultar el cuerpo de un documento no certifica PASS si el nombre o preview revela su contenido sensible.
+
+#### 33. Exportaciones
+
+Una exportación no hereda automáticamente todo lo visible en pantalla.
+
+La prueba exige, cuando aplique:
+
+- finalidad;
+- actor;
+- alcance;
+- filtros;
+- columnas;
+- clasificación;
+- destino;
+- vigencia;
+- volumen;
+- masking específico;
+- evidencia de generación.
+
+Permiso de lectura ordinaria no equivale a permiso de exportación masiva.
+
+#### 34. Impresión
+
+La impresión se trata como una divulgación adicional.
+
+Se verifica:
+
+- contenido mínimo;
+- masking;
+- clasificación visible cuando corresponda;
+- destino y dispositivo;
+- ausencia de columnas administrativas innecesarias;
+- manejo de copias temporales;
+- separación entre vista de pantalla e impresión.
+
+Una plantilla impresa no obtiene acceso adicional por ser generada en servidor.
+
+#### 35. Soporte y diagnóstico
+
+Soporte técnico no recibe acceso ilimitado por necesidad operativa genérica.
+
+La prueba cubre, cuando aplique:
+
+- vistas de diagnóstico;
+- referencias de caso;
+- capturas;
+- sesión remota;
+- logs mostrados en UI;
+- adjuntos de soporte;
+- exportación de evidencia.
+
+Se prefieren referencias seguras, redacción y datos mínimos frente a payloads completos.
+
+#### 36. Logs, errores y analytics visibles
+
+Un error no puede reproducir datos sensibles introducidos por la persona ni devolver secretos del backend.
+
+La prueba busca exposición mediante:
+
+- mensajes de error;
+- consola visible al operador;
+- panel de soporte;
+- analytics visibles;
+- identificadores correlacionables;
+- trazas mostradas en una superficie de producto.
+
+La observabilidad interna se prueba bajo sus contratos propietarios; `UX-QA-016` certifica las superficies humanas y cliente que el package expone.
+
+#### 37. Secretos y credenciales
+
+Queda prohibido presentar en superficies ordinarias:
+
+- contraseñas;
+- tokens;
+- refresh tokens;
+- API keys;
+- llaves privadas;
+- PIN;
+- códigos de recuperación;
+- secretos de firma;
+- credenciales técnicas.
+
+La prueba no acepta masking parcial de un secreto cuando el contrato exige no exposición.
+
+#### 38. Datos laborales y desempeño
+
+Información laboral, disciplinaria, de desempeño, asistencia detallada, investigaciones y evaluaciones se prueban como categorías restringidas cuando corresponda.
+
+Un supervisor puede necesitar una decisión o indicador sin requerir notas completas, diagnósticos, comentarios privados o información de procesos distintos.
+
+La certificación valida la proyección mínima, no la conveniencia de mostrar el expediente completo.
+
+#### 39. Salud y SST
+
+Datos médicos, diagnósticos, restricciones, incidentes de salud y evidencia especialmente sensible requieren aislamiento por participación y finalidad.
+
+La prueba falla ante:
+
+- diagnóstico mostrado donde basta una instrucción funcional;
+- información médica incluida en notificación ordinaria;
+- exposición a otro supervisor sin finalidad;
+- uso del dato sensible como texto de búsqueda global;
+- residuo en dispositivo compartido.
+
+#### 40. Finanzas y pagos
+
+Información financiera y de pago se prueba con segregación y masking reforzados según contrato.
+
+Se consideran:
+
+- cuentas;
+- medios de pago;
+- saldos;
+- costos;
+- márgenes;
+- nómina;
+- reembolsos;
+- referencias de proveedor;
+- documentos fiscales.
+
+El acceso a una operación comercial no implica acceso a toda la información financiera relacionada.
+
+#### 41. Clientes y fidelización
+
+La persona que atiende una transacción recibe únicamente datos de cliente necesarios para esa finalidad.
+
+La prueba verifica que puntos, contacto, historial, preferencias, consentimiento, reclamaciones y medios relacionados no se combinen sin necesidad aprobada.
+
+Una identidad conocida no convierte todo el perfil del cliente en información operativa ordinaria.
+
+#### 42. Recetas y conocimiento propietario
+
+Recetas, fórmulas, costos, rendimientos, procesos especiales y conocimiento propietario pueden requerir proyecciones distintas por estación, función y etapa.
+
+La prueba falla si una necesidad de ejecución productiva se usa para exponer:
+
+- fórmula completa cuando basta instrucción de paso;
+- costo o margen sin finalidad;
+- versión maestra editable a un actor de ejecución;
+- conocimiento de otra área sin relación con la tarea.
+
+#### 43. Seguridad e incidentes
+
+Vulnerabilidades, reglas antifraude, configuraciones sensibles, hallazgos de seguridad y mecanismos de detección no se presentan a actores ordinarios para explicar una denegación.
+
+La experiencia puede comunicar el límite seguro sin revelar cómo eludirlo.
+
+#### 44. Denegaciones y anti-enumeración
+
+La denegación debe evitar tanto sobreexposición como ambigüedad peligrosa.
+
+Según el contrato podrá decirse:
+
+```text
+TU ALCANCE NO INCLUYE ESTA SEDE
+```
+
+sin revelar:
+
+- quién sí tiene acceso;
+- cuántos recursos existen;
+- nombres de recursos secretos;
+- detalle de reglas antifraude;
+- estructura interna de permisos.
+
+Una persona sin derecho a conocer la existencia del recurso recibirá una respuesta no enumerativa.
+
+#### 45. Bloqueos y privacidad
+
+El resultado de `UX-QA-015` permanece vigente.
+
+`UX-QA-016` comprueba que la explicación humana no revele más información de la necesaria.
+
+Ejemplo conceptual:
+
+```text
+MENSAJE COMPRENSIBLE
++
+DATOS DE TERCEROS INNECESARIOS
+=
+FAIL UX-QA-016
+```
+
+La privacidad no justifica volver incomprensible el bloqueo; se requiere una explicación segura y suficiente.
+
+#### 46. Acciones sensibles
+
+Una confirmación sensible podrá necesitar mostrar recurso, consecuencia, cantidad o alcance antes de confirmar.
+
+La prueba verifica que el resumen previo:
+
+- contenga lo necesario para decidir;
+- omita información ajena;
+- no exponga secretos;
+- no amplíe alcance territorial;
+- no revele datos de otro actor;
+- desaparezca al perder autoridad o cambiar contexto.
+
+#### 47. Observación por terceros
+
+En superficies visibles a terceros se consideran riesgos de shoulder surfing.
+
+Cuando aplique se evalúan:
+
+- masking por defecto;
+- tamaño y permanencia del contenido;
+- previews;
+- bloqueo rápido;
+- navegación tras inactividad;
+- exposición en pantalla secundaria;
+- persistencia después de completar la tarea.
+
+No se inventa un modo universal de privacidad; se certifica el contrato aprobado para la estación.
+
+#### 48. Mobile, tablet y kiosco
+
+La adaptación responsive no puede reintroducir campos eliminados en otra plataforma.
+
+La prueba compara, cuando aplique:
+
+- web;
+- tablet;
+- kiosco;
+- móvil;
+- orientación;
+- densidad compacta;
+- panel colapsado;
+- drawer;
+- modal;
+- vista de impresión.
+
+Una variante más pequeña no obtiene permiso para simplificar masking.
+
+#### 49. Cross-app
+
+Una aplicación emisora no debe transportar al destino más información que la necesaria para identificar intención y correlación permitidas.
+
+La aplicación receptora vuelve a aplicar:
+
+- identidad;
+- contexto;
+- autorización;
+- finalidad;
+- masking;
+- frescura.
+
+La navegación cross-app no convierte datos de origen en autoridad ni en proyección válida del destino.
+
+#### 50. Integraciones y terceros visibles al usuario
+
+Cuando la experiencia muestre información proveniente de un tercero, la prueba verifica que la proyección local respete clasificación y finalidad.
+
+La presencia de un dato en un proveedor externo no autoriza mostrarlo completo.
+
+También se evita reenviar secretos internos o payloads completos por comodidad técnica.
+
+#### 51. Acceso administrativo
+
+El acceso administrativo se prueba por finalidad y acción, no por título de cargo.
+
+Se distinguen:
+
+- consulta;
+- corrección;
+- aprobación;
+- soporte;
+- auditoría;
+- investigación;
+- exportación;
+- administración técnica.
+
+Una capacidad administrativa no implica todas las demás.
+
+#### 52. Actor autorizado con proyección parcial
+
+Debe existir prueba positiva de casos donde el actor está autorizado a la tarea pero solo a parte de la información.
+
+Ejemplos de oracle:
+
+```text
+ACCIÓN = ALLOW
+CAMPO A = FULL
+CAMPO B = MASKED
+CAMPO C = OMITTED
+AGREGADO D = SUPPRESSED
+```
+
+Esto demuestra que autorización y exposición son dimensiones separadas.
+
+#### 53. Propia información frente a información de terceros
+
+Un actor puede tener derechos distintos sobre su propia información y sobre la de otras personas.
+
+La prueba no asume simetría entre:
+
+- trabajador sobre sí mismo;
+- supervisor sobre trabajador;
+- Talento sobre expediente;
+- soporte técnico;
+- auditor;
+- gerente;
+- cliente sobre su cuenta;
+- empleado atendiendo al cliente.
+
+Cada relación usa el contrato propietario.
+
+#### 54. Agregados pequeños
+
+Los agregados de grupos pequeños pueden revelar individuos aunque no muestren nombres.
+
+La prueba aplica supresión, agrupación o restricción cuando el contrato así lo exige.
+
+No se define aquí un tamaño universal de grupo; se usa el umbral aprobado por el dominio correspondiente.
+
+#### 55. Anonimización y seudonimización
+
+`UX-QA-016` no certifica anonimización por simple apariencia visual.
+
+Si un producto afirma que una vista es anónima, la evidencia deberá relacionarse con la evaluación propietaria de reidentificación.
+
+En ausencia de esa evidencia se describe como masked, tokenized, pseudonymized o aggregated según corresponda; no como anónima.
+
+#### 56. Capturas, grabaciones y evidencia de prueba
+
+La propia certificación debe minimizar la información que captura.
+
+La evidencia deberá preferir:
+
+- fixtures sintéticos;
+- valores enmascarados;
+- identificadores de escenario;
+- hashes o referencias cuando basten;
+- screenshots recortados cuando proceda;
+- registros estructurados sin secretos.
+
+No se copia un dato sensible real únicamente para demostrar que fue ocultado.
+
+#### 57. Datos de prueba
+
+Producción no se replica íntegramente a CI, demo o pruebas para certificar esta tarea.
+
+Se preferirán datos sintéticos con clasificación y relaciones equivalentes.
+
+Cuando un escenario excepcional requiera datos representativos, deberá existir autorización y manejo conforme al contrato propietario; `UX-QA-016` no crea esa excepción.
+
+#### 58. Clases mínimas de escenario
+
+Cada package seleccionará las clases aplicables y justificará las no aplicables:
+
+| Clase | Escenario |
+| --- | --- |
+| `P1_FULL_ALLOWED` | actor con finalidad válida ve el valor completo aprobado |
+| `P2_MASKED` | actor puede conocer parcialmente el valor |
+| `P3_OMITTED` | campo no necesario no llega a la proyección |
+| `P4_EXISTENCE_PROTECTED` | actor no debe confirmar existencia del recurso |
+| `P5_CROSS_TERRITORY` | sede, área o territorio ajenos permanecen fuera de alcance |
+| `P6_SHARED_DEVICE` | cambio de actor elimina residuos |
+| `P7_STALE_OR_REVOKED` | proyección stale o revocada no amplía exposición |
+| `P8_SEARCH_ENUMERATION` | búsqueda y autocomplete no filtran recursos |
+| `P9_AGGREGATE` | conteos y agregados respetan supresión y reidentificación |
+| `P10_EXPORT_PRINT` | exportación o impresión conserva finalidad y masking |
+| `P11_CROSS_APP` | handoff y destino vuelven a minimizar |
+| `P12_ACCESSIBILITY` | árbol accesible conserva la misma privacidad |
+| `P13_OFFLINE` | almacenamiento local y sincronización respetan clasificación |
+| `P14_SECRET` | secretos y credenciales no aparecen en superficies ordinarias |
+| `P15_SUPPORT` | soporte recibe referencia y contenido mínimo |
+| `P16_FILE_METADATA` | archivo, preview y metadatos no filtran contenido |
+
+No todos los packages deben ejecutar dieciséis clases. Sí deben declarar su matriz de aplicabilidad.
+
+#### 59. Casos positivos
+
+Un caso positivo demuestra, según corresponda:
+
+- actor correcto recibe la proyección mínima correcta;
+- masking conserva utilidad sin revelar el valor completo;
+- campo omitido no aparece en payload cliente ni UI;
+- dato completo aparece únicamente cuando existe finalidad aprobada;
+- búsqueda devuelve solo el universo permitido;
+- agregado conserva utilidad sin reidentificación indebida;
+- cambio de actor reconstruye una proyección limpia;
+- exportación contiene únicamente columnas autorizadas;
+- accesibilidad mantiene el mismo límite informativo.
+
+#### 60. Casos negativos
+
+Debe existir evidencia negativa para las fronteras críticas aplicables.
+
+Ejemplos:
+
+- actor de otra sede no observa el campo;
+- usuario sin finalidad no confirma existencia del recurso;
+- query string manipulada no amplía la proyección;
+- deep link no revela preview;
+- búsqueda parcial no enumera nombres protegidos;
+- autocomplete no muestra identificadores restringidos;
+- dato oculto no permanece en DOM o árbol accesible;
+- actor anterior no permanece en caché visible;
+- modo offline no muestra contenido después de revocación conocida;
+- exportación ordinaria no incluye columnas sensibles;
+- error no reproduce un secreto;
+- notificación de lock screen no expone contenido protegido;
+- agregado pequeño no permite inferencia prohibida.
+
+#### 61. Oracle documental por elemento
+
+Cada exposición materialmente evaluada tendrá, como mínimo cuando aplique:
+
+```text
+case_id
+package_id
+surface_id
+actor_fixture
+purpose
+resource_scope
+territory
+context
+information_category
+classification
+field_or_element_id
+expected_treatment
+expected_visibility
+expected_value_shape
+expected_existence_disclosure
+observed_client_presence
+observed_visual_presence
+observed_accessibility_presence
+observed_result
+verdict
+```
+
+La forma es de evidencia documental. No obliga a crear un contrato runtime con estos campos.
+
+#### 62. Oracle de tratamiento
+
+`expected_treatment` usará una decisión inequívoca, por ejemplo:
+
+```text
+FULL
+MASKED
+OMITTED
+SUPPRESSED
+TOKENIZED
+PSEUDONYMIZED
+AGGREGATED
+NOT_APPLICABLE
+```
+
+No se usa `HIDDEN` como sinónimo ambiguo de todas las anteriores.
+
+#### 63. Identidad de caso físico futuro
+
+Las ejecuciones usarán:
+
+```text
+UX-QA-016::<package_id>
+```
+
+para certificación por package, y:
+
+```text
+UX-QA-016::GLOBAL-FINAL
+```
+
+para el cierre transversal.
+
+No existe una única instancia global que sustituya las ejecuciones por package.
+
+#### 64. Evidencia por package
+
+Cada package aplicable deberá conservar como mínimo:
+
+- `package_id`;
+- aplicaciones y superficies evaluadas;
+- versión desplegada;
+- ambiente;
+- actor o fixture;
+- finalidad;
+- contexto y territorio;
+- clasificación aplicable;
+- fuente del oracle;
+- matriz de escenarios;
+- elementos positivos;
+- elementos negativos;
+- tratamiento esperado por campo o grupo;
+- resultado observado;
+- evidencia automática;
+- evidencia manual cuando aplique;
+- defectos abiertos;
+- responsable de corrección;
+- estado final.
+
+#### 65. Evidencia automatizada
+
+Cuando sea técnicamente viable, la evidencia automática puede inspeccionar:
+
+- respuesta de API o RPC;
+- props o payload serializado;
+- DOM;
+- árbol accesible;
+- búsqueda;
+- autocomplete;
+- rutas y parámetros;
+- caché controlada;
+- almacenamiento local autorizado;
+- exportación generada;
+- HTML de impresión;
+- metadatos de archivo;
+- cambio de actor;
+- stale y revocación;
+- invariantes de campos prohibidos.
+
+La automatización no declara por sí sola finalidad correcta o comprensión humana cuando esas preguntas requieren evaluación contextual.
+
+#### 66. Evidencia manual
+
+La revisión manual se requiere cuando la pregunta depende de:
+
+- inferencia humana;
+- shoulder surfing;
+- significado de un agregado;
+- adecuación de masking;
+- contenido de notificación del sistema;
+- lector de pantalla;
+- impresión física;
+- transición en dispositivo compartido;
+- facilidad de deducir un dato oculto por contexto.
+
+La prueba manual usa fixtures seguros y evita registrar información real innecesaria.
+
+#### 67. Métricas obligatorias de integridad
+
+Cuando sean observables se registran:
+
+```text
+unauthorized_full_value_count
+unnecessary_field_visible_count
+unnecessary_field_client_count
+secret_exposure_count
+previous_actor_residue_count
+accessible_hidden_residue_count
+search_enumeration_count
+notification_sensitive_exposure_count
+url_sensitive_exposure_count
+unauthorized_export_column_count
+stale_exposure_count
+cross_territory_exposure_count
+small_group_reidentification_count
+```
+
+Para PASS:
+
+```text
+unauthorized_full_value_count = 0
+unnecessary_field_visible_count = 0 para elementos definidos como no necesarios por el oracle
+unnecessary_field_client_count = 0 cuando el tratamiento esperado es OMITTED
+secret_exposure_count = 0
+previous_actor_residue_count = 0
+accessible_hidden_residue_count = 0
+search_enumeration_count = 0
+notification_sensitive_exposure_count = 0
+url_sensitive_exposure_count = 0
+unauthorized_export_column_count = 0
+stale_exposure_count = 0
+cross_territory_exposure_count = 0
+small_group_reidentification_count = 0 cuando la política exige supresión
+```
+
+No se congela un número universal de campos visibles. El conjunto correcto depende de finalidad, actor, contexto y package.
+
+#### 68. Severidad de hallazgos
+
+| Hallazgo | Severidad mínima |
+| --- | --- |
+| secreto, token, PIN o credencial expuesto | crítica |
+| dato `S4_HIGHLY_RESTRICTED` mostrado a actor o finalidad no autorizados | crítica |
+| residuo de actor anterior en dispositivo compartido | crítica |
+| dato completo enviado al cliente cuando el oracle exige `OMITTED` | crítica |
+| exposición cross-territory de dato restringido | crítica |
+| búsqueda que enumera personas o casos protegidos | crítica |
+| masking visual con valor completo en árbol accesible o atributo cliente | alta |
+| notificación que revela contenido sensible innecesario | alta |
+| exportación con columna sensible no autorizada | crítica |
+| agregado que permite reidentificación material | alta o crítica según categoría |
+| metadato o nombre de archivo que revela contenido restringido | alta |
+| campo interno no sensible pero innecesario expuesto | media o alta según riesgo |
+
+Una severidad menor no convierte automáticamente el package en PASS; el gate aplica sus criterios completos.
+
+#### 69. Criterio por package
+
+`UX-QA-016::<package_id>` obtiene PASS únicamente cuando:
+
+- existe matriz de aplicabilidad;
+- existe oracle trazable;
+- la clasificación y finalidad aplicables son resolubles;
+- los escenarios críticos y altos aplicables fueron ejecutados;
+- no quedan exposiciones críticas o altas sin resolver;
+- los campos `OMITTED` no llegan a la frontera cliente evaluada;
+- el masking esperado coincide con el observado;
+- secretos no aparecen en superficies ordinarias;
+- búsqueda, agregados y notificaciones respetan la frontera;
+- actor y contexto anteriores no dejan residuos;
+- accesibilidad respeta la misma privacidad;
+- la evidencia corresponde a la versión desplegada certificada.
+
+#### 70. Criterio `GLOBAL-FINAL`
+
+`UX-QA-016::GLOBAL-FINAL` obtiene PASS cuando:
+
+- todos los packages aplicables tienen resultado final aceptable;
+- no existe package omitido sin justificación;
+- las clases `S0` a `S4` aplicables tienen cobertura suficiente;
+- no existe divergencia no explicada entre plataformas o aplicaciones para la misma política;
+- los patrones de búsqueda, notificación, archivo, exportación, shared device y accesibilidad aplicables están cubiertos;
+- no quedan defectos críticos o altos abiertos;
+- la evidencia corresponde a las versiones que se pretenden certificar.
+
+El cierre global no puede ocultar una fuga crítica mediante promedio o mayoría de packages correctos.
+
+#### 71. Cambio de versión y stale evidence
+
+La evidencia deja de ser suficiente cuando cambia materialmente:
+
+- clasificación;
+- finalidad;
+- proyección;
+- permisos de lectura;
+- masking;
+- API o RPC;
+- payload cliente;
+- búsqueda;
+- autocomplete;
+- notificaciones;
+- exportación;
+- impresión;
+- caché;
+- dispositivo compartido;
+- almacenamiento offline;
+- accesibilidad;
+- owner o fuente empresarial;
+- integración cross-app.
+
+Un cambio sin impacto demostrado puede conservar evidencia únicamente si se registra por qué no altera el oracle ni el resultado observado.
+
+#### 72. Componentes compartidos y evidencia física existente
+
+Vento OS ya contiene primitivas y validadores compartidos que protegen algunas fronteras de privacidad, por ejemplo diagnósticos de contexto, errores recuperables y superficies tablet, kiosco, interrupción y handoff.
+
+Esa existencia:
+
+```text
+PRIMITIVA DISPONIBLE
+!=
+ADOPCIÓN POR CONSUMIDOR
+!=
+CERTIFICACIÓN END-TO-END
+```
+
+`UX-QA-016` exige evidencia del package real y no declara PASS por la mera existencia de validadores de componentes.
+
+#### 73. Evidencia de la propia certificación
+
+La evidencia de `UX-QA-016` también debe respetar privacidad.
+
+Queda prohibido construir un expediente de prueba que recopile innecesariamente:
+
+- secretos;
+- credenciales;
+- datos médicos reales;
+- documentos completos;
+- números de cuenta completos;
+- payloads productivos íntegros;
+- información de personas ajenas al escenario.
+
+La evidencia suficiente debe ser también minimizada.
+
+#### 74. Hallazgos y ownership
+
+Todo hallazgo conservará:
+
+```text
+finding_id
+package_id
+surface_id
+scenario
+classification
+expected_treatment
+observed_exposure
+severity
+owner
+blocking_status
+exit_condition
+```
+
+No se corrige un hallazgo cambiando el oracle para acomodar la implementación.
+
+Si la fuente de clasificación o finalidad es ambigua, el hallazgo se asigna a su tarea propietaria y la exposición afectada no obtiene PASS por inferencia.
+
+#### 75. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Requisitos creados: 0
+
+Requisitos modificados: 0
+
+La tarea certifica cobertura vigente y no altera el Registro Canónico de Requisitos de Prueba.
+
+#### 76. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, `UX-QA-016` reutiliza principalmente:
+
+- `TREQ-PROC-325` a `TREQ-PROC-354` — privacidad, sensibilidad, minimización, clases `S0` a `S4`, proyección mínima, masking, no filtración indirecta, dispositivos compartidos, offline, logs, exportaciones, archivos, terceros, datos de prueba, secretos, inferencias y guardrails;
+- `TREQ-UX-1131` a `TREQ-UX-1173` — las 177 pantallas y sus perfiles de visibilidad, proyección mínima, masking resistente a inspección cliente, limpieza entre actores, revelación controlada, dispositivos compartidos, salidas, offline, telemetría, no enumeración y accesibilidad sin anunciar valores ocultos;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización, con minimización;
+- `TREQ-UX-059` a `TREQ-UX-076` — protección de relevancia, contexto, campos y agregados con minimización y masking;
+- `TREQ-UX-227` a `TREQ-UX-249` — protección transversal aplicable a dispositivos, administración, masking y manejo de información en la experiencia;
+- `TREQ-AUTH-013` — validación de permiso, territorio, contexto, estado y columnas permitidas en acciones protegidas;
+- requisitos propietarios de cada aplicación, dominio y categoría sensible aplicables al package.
+
+Estas referencias son trazabilidad heredada. No representan cambios 04A de esta entrega.
+
+#### 77. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Esta tarea documental no ejecuta build físico de aplicaciones ni packages. |
+| LOCAL | NOT_EXECUTED | La incorporación en la rama `task/ux-qa-016` y los validadores reales del checkout permanecen pendientes; no se declaran ejecutados anticipadamente. |
+| REMOTA | PASS | Se verificaron `origin/main`, `active-sequence.json`, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, owner canónico, marcador `UX-QA-016`, sucesora `UX-QA-017`, `NFR-REQ-005`, decisiones de gobierno `INFO-DOM-002`, la responsabilidad de `PROC-SCREEN-022`, políticas de minimización y privacidad en componentes compartidos y `package.json` vigente. |
+| OPERATIVA | PASS | El contrato fue contrastado documentalmente con el handoff completo de `UX-QA-015`, clasificación `S0..S4`, proyección mínima, masking, anti-enumeración, shared device, accesibilidad, offline, búsqueda, agregados, archivos, exportaciones, secretos y límites con `UX-QA-017`. |
+| FÍSICA | NOT_APPLICABLE | La tarea no ejecuta pruebas reales con packages, personas, datos o dispositivos; esas instancias pertenecen a `UX-QA-016::<package_id>` y `UX-QA-016::GLOBAL-FINAL` después de `POST_E5_PACKAGE`. |
+
+#### 78. Criterios de aceptación
+
+- [ ] Se define certificación por package y `GLOBAL-FINAL`.
+- [ ] Se consume el handoff completo de `UX-QA-015` sin reabrir su certificación semántica.
+- [ ] Se conservan las clases `S0_PUBLIC` a `S4_HIGHLY_RESTRICTED` sin reclasificación local.
+- [ ] Autorización de acción y exposición de información permanecen separadas.
+- [ ] La finalidad condiciona la proyección visible.
+- [ ] `SELECT * + ocultar en UI` no se acepta como control suficiente.
+- [ ] Los tratamientos `FULL`, `MASKED`, `OMITTED`, `SUPPRESSED`, `TOKENIZED`, `PSEUDONYMIZED` y `AGGREGATED` no se confunden.
+- [ ] Un campo `OMITTED` no llega a la frontera cliente evaluada.
+- [ ] Un campo enmascarado no conserva el valor completo en atributos o árbol accesible.
+- [ ] La ausencia de acceso no filtra existencia cuando el contrato exige no divulgación.
+- [ ] Lista y detalle aplican una frontera coherente.
+- [ ] Búsqueda y autocomplete no enumeran recursos protegidos.
+- [ ] Badges, conteos y agregados no revelan universos ocultos.
+- [ ] Grupos pequeños no permiten reidentificación cuando la política exige supresión.
+- [ ] URL, título, historial y enlaces no incorporan datos sensibles innecesarios.
+- [ ] Notificaciones y previews se minimizan antes de presentar contenido.
+- [ ] Árbol accesible y pantalla conservan la misma frontera de privacidad.
+- [ ] DOM, atributos y estado cliente no conservan datos que el actor no debe recibir.
+- [ ] Payload cliente coincide con el conjunto de campos esperado.
+- [ ] Caché y almacenamiento local conservan clasificación y aislamiento.
+- [ ] Cambio de actor retira residuos de la proyección anterior.
+- [ ] Cambio de contexto reduce exposición cuando corresponde.
+- [ ] Stale y revocación no reutilizan una proyección más amplia.
+- [ ] Offline no degrada privacidad.
+- [ ] Nombre, preview y metadatos de archivo respetan sensibilidad.
+- [ ] Exportaciones aplican finalidad, columnas y masking propios.
+- [ ] Impresión no amplía acceso.
+- [ ] Soporte usa referencias seguras y datos mínimos.
+- [ ] Errores visibles no reproducen entradas sensibles o secretos.
+- [ ] Secretos, tokens, PIN y credenciales permanecen fuera de superficies ordinarias.
+- [ ] Información laboral y de desempeño usa proyección mínima.
+- [ ] Salud y SST permanecen aislados por caso y finalidad.
+- [ ] Información financiera usa segregación y masking aplicables.
+- [ ] Información de cliente no se combina por conveniencia.
+- [ ] Recetas y conocimiento propietario se limitan por necesidad productiva.
+- [ ] Seguridad e incidentes no revelan mecanismos de evasión.
+- [ ] Denegaciones aplican anti-enumeración cuando corresponde.
+- [ ] Comprensibilidad de bloqueo y privacidad permanecen simultáneamente correctas.
+- [ ] Confirmaciones sensibles muestran solo información necesaria para decidir.
+- [ ] Superficies visibles a terceros consideran shoulder surfing cuando aplique.
+- [ ] Web, móvil, tablet y kiosco no divergen en la política de exposición.
+- [ ] Cross-app vuelve a resolver y minimizar en destino.
+- [ ] Terceros no amplían por sí mismos la información visible.
+- [ ] Acceso administrativo permanece limitado por finalidad y acción.
+- [ ] Existen casos positivos de autorización con proyección parcial.
+- [ ] Se distinguen datos propios de datos de terceros.
+- [ ] Anonimización no se declara sin evidencia de reidentificación aplicable.
+- [ ] La evidencia de prueba también está minimizada.
+- [ ] Cada package declara matriz de escenarios aplicables.
+- [ ] Los casos negativos cubren las fronteras críticas aplicables.
+- [ ] El oracle identifica tratamiento esperado por elemento.
+- [ ] Las métricas críticas de exposición prohibida permanecen en cero.
+- [ ] PASS por package exige todos los escenarios críticos y altos resueltos.
+- [ ] `GLOBAL-FINAL` no oculta una fuga crítica mediante promedio.
+- [ ] La evidencia se invalida ante cambios materiales de política o proyección.
+- [ ] La existencia de primitivas compartidas no se trata como certificación end-to-end.
+- [ ] Todos los hallazgos conservan owner y condición de salida.
+- [ ] No se crea ni modifica ningún requisito de prueba.
+- [ ] No se ejecutan cambios físicos durante esta tarea documental.
+- [ ] `UX-QA-017` conserva íntegramente la responsabilidad de certificar la fuente de verdad propietaria.
+
+#### 79. Límites
+
+Esta tarea:
+
+- no define la clasificación definitiva de información;
+- no crea una política jurídica;
+- no crea finalidad nueva;
+- no modifica `NFR-REQ-005`;
+- no modifica `INFO-DOM-001` ni `INFO-DOM-002`;
+- no modifica `PROC-SCREEN-022`;
+- no crea permisos de lectura;
+- no cambia RLS ni RPC;
+- no implementa masking;
+- no implementa proyecciones;
+- no modifica APIs o payloads;
+- no implementa cifrado;
+- no implementa anonimización;
+- no cambia retención;
+- no modifica exportaciones;
+- no modifica impresión;
+- no cambia notificaciones;
+- no modifica caches u offline;
+- no cambia componentes compartidos;
+- no modifica datos;
+- no modifica Supabase;
+- no ejecuta pruebas físicas;
+- no certifica packages antes de `POST_E5_PACKAGE`;
+- no decide qué aplicación es fuente de verdad, responsabilidad de `UX-QA-017`.
+
+#### 80. Handoff a `UX-QA-017`
+
+`UX-QA-016` entrega a `UX-QA-017`:
+
+- package y escenarios certificados;
+- aplicaciones y superficies observadas;
+- actor, finalidad, territorio y contexto;
+- categorías y clases de información aplicables;
+- campos o elementos evaluados;
+- tratamiento esperado y observado;
+- proyección cliente observada;
+- masking, omisión, supresión y agregación aplicados;
+- fuente declarada por la superficie para cada dato material;
+- puntos donde una proyección fue correcta pero la procedencia o ownership requieren confirmación;
+- evidencia de búsqueda, notificación, shared device, offline, archivo, exportación y accesibilidad aplicable;
+- hallazgos de divergencia entre aplicaciones para el mismo dato;
+- defectos cerrados y excepciones vigentes.
+
+`UX-QA-017` podrá certificar la fuente de verdad propietaria sin reabrir la clasificación ni el tratamiento de exposición ya certificados por `UX-QA-016`.
+
+#### 81. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-015 — Los bloqueos se entienden sin códigos técnicos`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-016 — La información sensible se oculta correctamente`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-017 — La aplicación propietaria conserva la fuente de verdad`
 ### [ ] UX-QA-017 — La aplicación propietaria conserva la fuente de verdad
 ### [ ] UX-QA-018 — Los eventos idempotentes no duplican efectos
 ### [ ] UX-QA-019 — Los fallos parciales permiten recuperación
