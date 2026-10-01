@@ -7953,7 +7953,1234 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-009 — No se registra dos veces la misma información`
-### [ ] UX-QA-009 — No se registra dos veces la misma información
+### ✅ UX-QA-009 — No se registra dos veces la misma información
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-008 — El proceso continúa correctamente entre aplicaciones
+**Tarea siguiente:** UX-QA-010 — Los cambios conservan trazabilidad
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que cada hecho empresarial se captura o produce una sola vez en su fuente válida, se reutiliza con semántica y linaje correctos, no obliga a transcripción o carga redundante entre pasos o aplicaciones y conserva recapturas legítimas cuando representan una observación, atestación o verificación nueva
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación de captura única y reutilización segura definido; las ejecuciones `UX-QA-009::<package_id>` y la certificación `UX-QA-009::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume el handoff estructural de `UX-QA-008`, el contrato de captura única de `UX-BASE-007`, los contratos de integración, pantalla, fuente y evidencia y la cobertura de prueba vigente, pero no infiere que ningún package, formulario, importación, integración, dispositivo o flujo desplegado haya demostrado ausencia real de doble registro
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifican formularios, componentes, rutas, deep links, contratos runtime, eventos, APIs, RPC, Server Actions, tablas, maestros, archivos, documentos, colas, idempotencia, permisos, sesiones, RLS, datos, Supabase, repositorios consumidores, despliegues ni aplicaciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que una persona no debe registrar nuevamente información que ya existe como el mismo hecho empresarial y puede reutilizarse de forma vigente, autorizada y trazable.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿EL DATO PEDIDO YA EXISTE COMO EL MISMO HECHO EMPRESARIAL?
+¿EXISTE UNA FUENTE AUTORITATIVA IDENTIFICABLE?
+¿EL SISTEMA REUTILIZA O DERIVA EL HECHO EN VEZ DE PEDIR TRANSCRIPCIÓN?
+¿CUANDO SE PREGUNTA OTRA VEZ EXISTE UNA RAZÓN MATERIAL Y EXPLICABLE?
+¿LA RECAPTURA REPRESENTA UNA OBSERVACIÓN, ATESTACIÓN O VERIFICACIÓN NUEVA?
+¿LOS RETRIES, IMPORTACIONES Y CAMBIOS DE SUPERFICIE EVITAN CREAR UN SEGUNDO REGISTRO O EFECTO?
+```
+
+La tarea no busca minimizar campos a cualquier costo. Busca eliminar duplicación sin convertir hechos diferentes en uno solo ni contaminar verificaciones independientes.
+
+#### 2. Resultado canónico
+
+`UX-QA-009` establece `UX-QA-SINGLE-CAPTURE-CERTIFICATION-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de captura única por package;
+- identidad semántica mínima del hecho evaluado;
+- modos válidos de reutilización, confirmación y recaptura;
+- oracle para distinguir duplicación de observación legítima;
+- criterios cross-app y entre pasos;
+- tratamiento de fuentes, proyecciones, cachés y copias;
+- criterios de documentos y evidencia;
+- tratamiento de dispositivos compartidos;
+- tratamiento de offline, retries e idempotencia;
+- tratamiento de imports y operaciones masivas;
+- tratamiento de modos guiado y experto;
+- evidencia positiva y negativa requerida;
+- criterio por package;
+- criterio global final;
+- handoff a `UX-QA-010` sin absorber la trazabilidad de cambios.
+
+#### 3. Alcance exacto
+
+La certificación aplica cuando un flujo consume o produce información que puede existir previamente en:
+
+- el mismo paso;
+- un paso anterior del mismo proceso;
+- otra aplicación;
+- una fuente maestra;
+- una proyección;
+- un documento o archivo;
+- un borrador válido;
+- una cola offline;
+- una importación;
+- un dispositivo compartido;
+- una vista guiada o experta;
+- una operación repetitiva o masiva.
+
+El scope no se decide por el nombre visual de un campo. Se decide por identidad semántica del hecho.
+
+#### 4. Handoff recibido de `UX-QA-008`
+
+`UX-QA-008` entrega:
+
+- proceso y caso conservados al cambiar de aplicación;
+- tarea, recurso, versión, retorno y acción pendiente conocidos;
+- propietaria de la mutación identificada;
+- referencias cross-app revalidadas;
+- ausencia de autoridad transportada;
+- lugares donde una reconstrucción manual del contexto indica posible duplicación.
+
+`UX-QA-009` consume esas decisiones sin reabrir la semántica del handoff.
+
+#### 5. Frontera con `UX-QA-008`
+
+`UX-QA-008` responde:
+
+```text
+¿EL PROCESO CONTINÚA CORRECTAMENTE ENTRE APLICACIONES?
+```
+
+`UX-QA-009` responde:
+
+```text
+¿EL MISMO HECHO EMPRESARIAL EVITA SER CAPTURADO O PRODUCIDO DOS VECES?
+```
+
+Un handoff puede conservar correctamente el proceso y aun así obligar a una transcripción duplicada. Ese segundo problema pertenece a `UX-QA-009`.
+
+#### 6. Frontera con `UX-QA-010`
+
+`UX-QA-009` certifica ausencia de doble registro y reutilización semánticamente correcta.
+
+`UX-QA-010` conserva exclusivamente:
+
+- trazabilidad de cambios;
+- antes y después;
+- actor del cambio;
+- motivo;
+- versión;
+- supersesión;
+- reconstrucción histórica.
+
+`UX-QA-009` puede exigir que una reutilización tenga linaje suficiente para demostrar que no es una copia competidora, pero no redefine el contrato de auditoría de cambios de `UX-QA-010`.
+
+#### 7. Regla principal
+
+Regla canónica:
+
+```text
+UN HECHO EMPRESARIAL
+→ UNA FUENTE AUTORITATIVA
+→ UNA CAPTURA O PRODUCCIÓN ORIGINAL
+→ REUTILIZACIONES TRAZABLES
+```
+
+Pero:
+
+```text
+MISMO TEXTO
+O
+MISMO NÚMERO
+≠
+MISMO HECHO EMPRESARIAL
+```
+
+#### 8. Qué constituye el mismo hecho empresarial
+
+La equivalencia exige demostrar, como mínimo:
+
+```text
+DEFINICIÓN
++
+SUJETO
++
+UNIDAD
++
+MOMENTO
++
+ALCANCE
++
+FINALIDAD
++
+RESPONSABLE
++
+MÉTODO DE OBTENCIÓN
+```
+
+Dos campos con la etiqueta `cantidad`, `fecha`, `responsable`, `sede`, `estado` u `observación` no son equivalentes por compartir nombre.
+
+#### 9. Qué no constituye el mismo hecho
+
+Ejemplos obligatorios de hechos distintos aunque compartan valor:
+
+```text
+CANTIDAD SOLICITADA
+≠ CANTIDAD PRODUCIDA
+≠ CANTIDAD PREPARADA
+≠ CANTIDAD CARGADA
+≠ CANTIDAD RECIBIDA
+```
+
+```text
+FECHA SOLICITADA
+≠ FECHA PROMETIDA
+≠ FECHA EJECUTADA
+≠ FECHA REGISTRADA
+```
+
+```text
+RESPONSABLE ASIGNADO
+≠ ACTOR QUE EJECUTÓ
+≠ ACTOR QUE APROBÓ
+```
+
+La igualdad del valor no autoriza reutilización como hecho actual.
+
+#### 10. Unidad de certificación de información
+
+Cada caso deberá identificar suficientemente:
+
+- definición del dato;
+- sujeto;
+- fuente propietaria;
+- registro fuente;
+- versión;
+- momento de producción o captura;
+- vigencia;
+- propósito;
+- clasificación;
+- política de reutilización;
+- política de corrección;
+- package y proceso donde se prueba.
+
+No se exige que estos campos existan literalmente como una tabla runtime para aprobar la tarea documental.
+
+#### 11. Modos canónicos de tratamiento
+
+La prueba deberá reconocer los modos ya aprobados:
+
+```text
+DERIVE_AUTOMATICALLY
+REUSE_AS_FACT
+PREFILL_EDITABLE
+DISPLAY_FOR_CONFIRMATION
+REFERENCE_ONLY
+RECAPTURE_REQUIRED
+INDEPENDENT_OBSERVATION
+NOT_REUSABLE
+```
+
+No existe un modo válido `COPY_PREVIOUS_VALUE`.
+
+#### 12. Oracle de selección del modo
+
+Antes de considerar correcto un campo o dato del flujo se deberá demostrar:
+
+```text
+1. IDENTIFICAR EL HECHO REQUERIDO
+2. LOCALIZAR SU FUENTE O CANDIDATOS
+3. COMPARAR SEMÁNTICA, SUJETO, PROPÓSITO Y ALCANCE
+4. VALIDAR VERSIÓN, VIGENCIA, CLASIFICACIÓN Y DERECHO DE USO
+5. DETERMINAR SI ES HECHO, REFERENCIA O NUEVA OBSERVACIÓN
+6. ELEGIR EL MODO DE TRATAMIENTO
+7. MOSTRAR ORIGEN Y FRESCURA CUANDO SEA MATERIAL
+8. REGISTRAR LA ACCIÓN LEGÍTIMA SIN CREAR UNA SEGUNDA FUENTE
+```
+
+Si la equivalencia no puede demostrarse, la reutilización como hecho actual no es válida.
+
+#### 13. Fuente autoritativa
+
+Un hecho reutilizado deberá conservar una fuente propietaria identificable.
+
+Ejemplos contractuales:
+
+- identidad laboral desde identidad laboral canónica;
+- sede, área, turno y rol desde contexto de acceso resuelto;
+- proveedor y orden aprobada desde ORIGO;
+- remisión y custodia logística desde NEXO;
+- receta y lote productivo desde FOGO;
+- venta, pedido y pago desde PULSO;
+- decisión laboral desde su dominio propietario;
+- hechos económicos en NUMERA consumiendo hechos de origen.
+
+Una copia visible no se convierte en nueva fuente de verdad.
+
+#### 14. Proyecciones, cachés y réplicas
+
+Una proyección, caché o réplica podrá servir para lectura cuando conserve:
+
+- fuente;
+- versión;
+- frescura;
+- reconciliación;
+- límites de escritura.
+
+```text
+COPIA SIN LINAJE
+≠
+FUENTE AUTORITATIVA
+```
+
+La prueba deberá fallar si una pantalla corrige una copia local como sustituto de corregir o notificar a la fuente propietaria.
+
+#### 15. Herencia entre pasos
+
+La salida aprobada de un paso deberá convertirse en entrada referenciada del siguiente cuando represente el mismo hecho.
+
+```text
+PASO A PRODUCE
+→ REGISTRO AUTORITATIVO
+→ EVENTO O CONTRATO
+→ PASO B CONSUME
+```
+
+El actor B no deberá copiar manualmente identificadores, datos estructurados, evidencia o contexto ya resuelto.
+
+#### 16. Continuidad cross-app consumida de `UX-QA-008`
+
+Cuando el siguiente paso viva en otra aplicación:
+
+- la referencia al caso se conserva;
+- la propietaria del dato permanece identificada;
+- la receptora revalida autoridad y estado;
+- el dato estructurado se consume por contrato, referencia, evento, proyección, API o RPC protegido;
+- no se usa copy-paste como integración;
+- no se crea un maestro paralelo por aplicación.
+
+La continuidad no convierte a la consumidora en propietaria del dato.
+
+#### 17. Contexto de actor y estación
+
+La interfaz no deberá pedir manualmente hechos ya resueltos por contratos autoritativos, incluyendo cuando aplique:
+
+- nombre del trabajador;
+- identificador del trabajador;
+- rol operativo;
+- sede activa;
+- área activa;
+- turno;
+- check-in;
+- estación o dispositivo;
+- hora del servidor.
+
+Seleccionar un destino, tercero, lote o recurso sí puede ser una decisión empresarial nueva y no constituye duplicación por sí sola.
+
+#### 18. Valores de referencia frente a observaciones actuales
+
+Cuando el paso necesita una observación nueva, el valor previo deberá permanecer como referencia y no convertirse automáticamente en el valor actual.
+
+Ejemplo:
+
+```text
+ORDENADO: 24
+RECIBIDO FÍSICAMENTE: [captura actual]
+```
+
+La prueba falla si `24` se precarga como recibido y aparece confirmado sin observación real.
+
+#### 19. Observaciones físicas y hechos de ejecución
+
+Recapturar es obligatorio cuando el flujo necesita una realidad nueva que puede diferir de lo planificado o anterior.
+
+Casos:
+
+- cantidad física recibida;
+- cantidad producida;
+- temperatura observada;
+- peso real;
+- estado físico de un empaque;
+- ubicación física confirmada;
+- custodia aceptada;
+- pago efectivamente recibido;
+- asistencia o presencia;
+- activo devuelto;
+- inspección de calidad.
+
+El sistema puede reutilizar contexto y expectativa, pero no inventar la observación.
+
+#### 20. Verificación independiente
+
+Una segunda captura es válida cuando su propósito es obtener evidencia independiente.
+
+Casos:
+
+- conteo ciego;
+- doble control de caja;
+- verificación del receptor;
+- inspección independiente de calidad;
+- aprobación segregada;
+- confirmación de custodia por actor entrante;
+- segunda lectura crítica.
+
+La prueba exigirá que:
+
+1. el valor previo pueda ocultarse cuando exista riesgo de sesgo;
+2. la nueva observación tenga actor, momento y método propios;
+3. la segunda captura no sobrescriba automáticamente la primera;
+4. la comparación sea posterior;
+5. la interfaz explique por qué se solicita otra vez.
+
+#### 21. Confirmación y atestación
+
+Confirmar no significa reescribir.
+
+Una confirmación correcta conserva:
+
+```text
+HECHO MOSTRADO
++
+EFECTO EXPLICADO
++
+ACCIÓN EXPLÍCITA
++
+IDENTIDAD
++
+TIMESTAMP
+```
+
+La prueba falla si confirmar exige volver a escribir nombre, documento, monto o frase completa sin necesidad material.
+
+#### 22. Precarga editable
+
+`PREFILL_EDITABLE` será correcto cuando:
+
+- exista una fuente razonablemente vigente;
+- la persona pueda corregirla;
+- la corrección pertenezca al flujo;
+- no se reescriba el histórico;
+- el origen sea identificable.
+
+La evidencia deberá distinguir si la corrección afecta solo el caso, solicita actualizar el maestro, crea versión o exige revisión.
+
+#### 23. Corrección del dato
+
+Cuando un dato conocido sea incorrecto, la experiencia deberá distinguir entre:
+
+```text
+CORREGIR EL DATO MAESTRO
+CORREGIR SOLO ESTE CASO
+CREAR UNA VERSIÓN NUEVA
+REGISTRAR UNA EXCEPCIÓN
+SOLICITAR REVISIÓN A LA FUENTE
+```
+
+Editar una copia local de otro dominio para evitar el handoff es fallo crítico.
+
+#### 24. Snapshots históricos
+
+Un maestro vigente y el snapshot utilizado en una transacción cerrada son objetos semánticamente distintos.
+
+Ejemplo:
+
+```text
+DIRECCIÓN ACTUAL DEL CLIENTE
+≠
+DIRECCIÓN UTILIZADA EN UNA ENTREGA YA CERRADA
+```
+
+Actualizar el maestro no autoriza reescribir el histórico.
+
+#### 25. Documentos, archivos y evidencia
+
+El mismo archivo no deberá cargarse nuevamente por cada etapa o aplicación cuando puede reutilizarse de manera autorizada.
+
+La reutilización deberá distinguir:
+
+- identidad del documento;
+- versión;
+- objeto de archivo;
+- clasificación;
+- propósito;
+- vigencia;
+- derecho de acceso.
+
+Modos admisibles:
+
+```text
+REFERENCE
+COPY_WITH_LINEAGE
+DERIVED_FACT_ONLY
+NO_TRANSFER
+```
+
+#### 26. Nueva carga legítima de documento
+
+Una nueva carga puede ser correcta cuando:
+
+- el documento venció;
+- cambió materialmente;
+- se requiere una firma distinta;
+- la integridad o calidad no es suficiente;
+- la finalidad no permite reutilización;
+- existe reemplazo explícito.
+
+La prueba no confundirá una versión legítimamente nueva con duplicación documental.
+
+#### 27. Integración entre aplicaciones
+
+La información ajena se transportará mediante contratos gobernados, no mediante trabajo humano redundante.
+
+Válidos:
+
+- contratos versionados;
+- referencias;
+- eventos empresariales;
+- proyecciones controladas;
+- APIs o RPC protegidos;
+- receipts;
+- idempotency keys;
+- conciliación.
+
+Inválidos como flujo ordinario:
+
+- copy-paste;
+- texto libre usado como transporte de datos estructurados;
+- archivo intermedio no gobernado;
+- lectura directa no autorizada de tablas ajenas;
+- maestro paralelo;
+- parámetro de URL tratado como verdad.
+
+#### 28. NEXO
+
+En un caso de remisión, la prueba deberá diferenciar información reutilizable de observación nueva.
+
+Ejemplo:
+
+| Etapa | Reutiliza | Captura nueva |
+| --- | --- | --- |
+| solicitud | solicitante, sede, catálogo, unidad, políticas | cantidad solicitada y necesidad |
+| preparación | líneas solicitadas, producto, destino | lote, ubicación, cantidad preparada, faltantes |
+| carga | remisión preparada, vehículo y conductor autorizados | cantidad cargada y aceptación de custodia |
+| recepción | origen, destino, líneas, lote y trazabilidad | cantidad recibida, diferencias y estado físico |
+| cierre | evidencias previas | decisión de diferencia cuando corresponda |
+
+El receptor no debe reescribir número de remisión, productos, origen o conductor.
+
+#### 29. ORIGO
+
+Una recepción podrá reutilizar de la orden aprobada:
+
+- proveedor;
+- destino;
+- productos;
+- presentaciones;
+- cantidades ordenadas;
+- términos vigentes.
+
+La recepción seguirá capturando hechos propios como cantidad recibida, calidad, diferencia, documento real o aceptación cuando corresponda.
+
+#### 30. FOGO
+
+La orden o plan puede aportar receta, versión, producto, cantidad planificada, insumos esperados, área, prioridad y destino.
+
+El flujo deberá capturar como hechos nuevos cuando aplique:
+
+- lote real;
+- consumo real;
+- rendimiento real;
+- merma;
+- controles observados;
+- liberación o bloqueo.
+
+La receta no se duplicará como texto editable sin versión y linaje.
+
+#### 31. PULSO
+
+Pedido, mesa, cliente, total, canal y estado ya confirmados no deberán reconstruirse manualmente para una etapa posterior.
+
+Una nueva captura seguirá siendo necesaria cuando representa:
+
+- método de pago actual;
+- propina cuando aplique;
+- aceptación o entrega;
+- evidencia del cobro;
+- resultado actual de una interacción.
+
+Un timeout no autoriza repetir el cobro o recrear el pedido sin consultar el resultado anterior.
+
+#### 32. NUMERA
+
+NUMERA consumirá hechos económicos procedentes de sus fuentes operativas.
+
+```text
+IMPORTAR, CLASIFICAR Y CONCILIAR
+≠
+VOLVER A DIGITAR LA OPERACIÓN
+```
+
+Una intervención contable puede clasificar, conciliar, distribuir, aprobar o ajustar mediante el mecanismo propietario. No puede crear una copia manual del hecho de origen como sustituto del contrato.
+
+#### 33. TALENTO, VISO y ANIMA
+
+Los datos ya verificados entre persona, candidatura, oferta, pre-registro, empleado y episodio laboral se reutilizarán según finalidad y permiso.
+
+No se pedirá identidad, contacto o documento válido nuevamente solo porque cambió de aplicación.
+
+Sí permanecen como hechos nuevos cuando corresponda:
+
+- aceptación de oferta;
+- atestación actual;
+- observación ocupacional actual;
+- actualización explícita de un dato vigente;
+- decisión propia del nuevo proceso.
+
+#### 34. PASS y datos del cliente
+
+La prueba distinguirá:
+
+- perfil vigente;
+- dirección de una entrega concreta;
+- datos fiscales de una factura;
+- preferencia de comunicación;
+- consentimiento por finalidad;
+- snapshot histórico de una transacción.
+
+El perfil podrá precargarse cuando sea válido para la finalidad, pero no reemplaza snapshots ni consentimientos nuevos.
+
+#### 35. Dispositivos compartidos
+
+En una estación compartida puede reutilizarse contexto propio de estación y tarea.
+
+No se reutilizará del actor anterior:
+
+- identidad;
+- datos personales;
+- búsqueda;
+- favoritos;
+- PIN;
+- firma;
+- selecciones personales;
+- borradores privados.
+
+```text
+REUTILIZAR CONTEXTO DE ESTACIÓN
+≠
+REUTILIZAR IDENTIDAD DEL ACTOR ANTERIOR
+```
+
+#### 36. Offline, retries e idempotencia
+
+Cada captura offline aplicable deberá conservar identidad suficiente para no recrearse al sincronizar.
+
+Se espera, según el contrato del package:
+
+- identificador local estable;
+- actor y contexto de origen;
+- recurso y versión;
+- clave idempotente;
+- estado de sincronización;
+- campos producidos;
+- referencias reutilizadas;
+- conflicto o receipt.
+
+Al reconectar:
+
+```text
+CONSULTAR ESTADO
+→ REVALIDAR
+→ SINCRONIZAR UNA VEZ
+→ CONCILIAR
+```
+
+#### 37. Resultado desconocido
+
+Un timeout o pérdida de respuesta no demuestra que la operación no ocurrió.
+
+La experiencia deberá consultar o recuperar el resultado antes de invitar a recrear:
+
+- movimiento;
+- recepción;
+- pago;
+- pedido;
+- documento;
+- evento;
+- registro equivalente.
+
+Un segundo efecto por reintento no es solamente una falla UX; bloquea la certificación del caso.
+
+#### 38. Escaneo y captura automática
+
+Cuando un código o periférico aporta información confiable, la prueba deberá demostrar que sustituye transcripción manual sin ocultar el resultado.
+
+Ejemplos:
+
+- LOC;
+- LPN;
+- código de producto;
+- orden existente;
+- factura estructurada;
+- peso desde báscula;
+- fecha y hora del servidor.
+
+Captura automática no significa verdad incuestionable: el resultado debe poder validarse, corregirse o rechazarse cuando corresponda.
+
+#### 39. Importaciones
+
+Una importación no podrá convertirse en un mecanismo de duplicación masiva.
+
+La prueba de imports aplicables deberá observar:
+
+- staging separado;
+- versión del formato;
+- mapeo;
+- validación;
+- detección de duplicados;
+- comparación con fuente existente;
+- simulación;
+- resultado por fila;
+- rechazo o conciliación antes de afectar la fuente de verdad.
+
+#### 40. Operaciones repetitivas y masivas
+
+Un valor común podrá capturarse una vez cuando:
+
+- el alcance sea visible;
+- los elementos sean compatibles;
+- las excepciones puedan editarse;
+- exista resumen previo;
+- no se aplique silenciosamente a elementos incompatibles.
+
+La optimización no debe obligar a repetir línea por línea un mismo hecho común.
+
+#### 41. Cambio entre modo guiado y experto
+
+Cambiar de superficie deberá conservar, cuando sea compatible:
+
+- objeto;
+- población;
+- versión;
+- alcance;
+- borrador;
+- diferencias;
+- validaciones;
+- simulación.
+
+No deberá:
+
+- crear una segunda escritura;
+- crear un segundo receipt;
+- transportar autoridad implícita;
+- perder el registro ya confirmado;
+- obligar a volver a capturar el mismo hecho.
+
+#### 42. Filtros y vistas guardadas
+
+Los filtros y vistas guardadas son configuración de consulta, no una segunda copia empresarial del dato.
+
+La prueba deberá evitar que:
+
+- un filtro oculto haga parecer que falta información y provoque recreación manual;
+- una vista guardada incompatible conserve un universo obsoleto;
+- un filtro se interprete como fuente autoritativa;
+- la ausencia visual de una fila se trate como inexistencia del registro sin comprobar la fuente.
+
+#### 43. Predeterminados e inferencias
+
+Un default solo será válido si:
+
+- procede de una regla aprobada;
+- es visible;
+- no simula observación física;
+- puede cambiarse cuando corresponde;
+- no amplía autoridad.
+
+Queda prohibido usar como hechos actuales por conveniencia:
+
+- última sede;
+- cantidad planificada como recibida;
+- aceptación marcada;
+- fecha actual como fecha real de un hecho pasado;
+- responsable del último caso.
+
+#### 44. Privacidad, finalidad y minimización
+
+La existencia de un dato no autoriza su reutilización para cualquier finalidad.
+
+La prueba deberá considerar, según aplique:
+
+- finalidad;
+- base o autorización;
+- clasificación;
+- actor consumidor;
+- minimización;
+- territorio;
+- transferencia;
+- conservación;
+- revocación o restricción vigente.
+
+Si una pantalla no tiene derecho al original, no deberá pedir el mismo dato sensible nuevamente solo para reconstruirlo localmente.
+
+#### 45. Explicación de recaptura
+
+Cuando el modo correcto sea `RECAPTURE_REQUIRED` o `INDEPENDENT_OBSERVATION`, la interfaz deberá explicar por qué pregunta otra vez.
+
+Ejemplos válidos:
+
+```text
+Te mostramos la cantidad solicitada como referencia.
+Registra la cantidad que recibiste físicamente.
+```
+
+```text
+Este conteo es independiente.
+El valor anterior se oculta para evitar sesgo.
+```
+
+```text
+El documento anterior venció.
+Se requiere una versión vigente.
+```
+
+#### 46. Accesibilidad y eficiencia
+
+La prueba deberá comprobar que:
+
+- precargados y vacíos son distinguibles;
+- origen y frescura no dependen solo del color;
+- confirmar no exige copiar texto;
+- datos derivados son legibles;
+- errores se asocian a campos corregibles;
+- selección o escaneo reducen teclado cuando corresponde;
+- autocompletado no mueve el foco de forma impredecible;
+- una persona puede entender qué dato está reutilizado y cuál debe producir.
+
+#### 47. Casos positivos mínimos
+
+Todo package aplicable deberá incluir casos positivos representativos de su alcance.
+
+El conjunto deberá cubrir cuando existan en el package:
+
+1. reutilización de un hecho vigente;
+2. derivación automática de contexto;
+3. confirmación sin reescritura;
+4. referencia de valor anterior con observación nueva;
+5. handoff entre pasos;
+6. handoff cross-app;
+7. documento reutilizado por referencia o versión;
+8. borrador u operación offline recuperada una sola vez;
+9. importación con deduplicación;
+10. operación masiva con valor común visible.
+
+#### 48. Casos negativos mínimos
+
+La evidencia deberá intentar y bloquear cuando aplique:
+
+1. copy-paste de un identificador ya disponible;
+2. maestro paralelo en aplicación consumidora;
+3. precargar un valor planificado como observado;
+4. reutilizar dato vencido como vigente;
+5. reusar dato personal para finalidad incompatible;
+6. reusar información del actor anterior en dispositivo compartido;
+7. subir nuevamente el mismo documento sin causa material;
+8. crear un segundo registro tras timeout;
+9. cambiar guiado/experto y generar doble escritura;
+10. importar filas duplicadas sin detección;
+11. corregir una copia local en vez de la fuente;
+12. mostrar un valor previo durante verificación ciega cuando debe ocultarse.
+
+#### 49. Casos que no demuestran captura única por sí solos
+
+No bastan como certificación:
+
+- que el formulario tenga menos campos;
+- que dos pantallas se parezcan;
+- que exista autocompletado visual;
+- que un campo tenga valor inicial;
+- que una API responda 200;
+- que una tabla tenga constraint único sin demostrar semántica correcta;
+- que el frontend deshabilite el botón;
+- que no se observe duplicación en un solo happy path;
+- que el usuario recuerde el dato y lo escriba igual;
+- que una importación termine sin error;
+- que una segunda observación coincida numéricamente con la primera.
+
+#### 50. Oracle de captura única
+
+Un caso es conforme cuando puede responderse afirmativamente:
+
+```text
+MISMO_HECHO_IDENTIFICADO
+AND FUENTE_AUTORITATIVA_CONOCIDA
+AND MODO_DE_TRATAMIENTO_CORRECTO
+AND SIN_TRANSCRIPCION_REDUNDANTE
+AND SIN_SEGUNDA_FUENTE_COMPETIDORA
+AND RECAPTURA_SOLO_SI_ES_NUEVO_HECHO_O_VERIFICACION
+AND RESULTADO_REINTENTABLE_NO_DUPLICADO
+```
+
+Cuando el package no consume información previa en un determinado paso, la ausencia de reutilización no es automáticamente un fallo.
+
+#### 51. Identidad del caso de prueba
+
+Cada caso deberá conservar, según aplique:
+
+- `package_id`;
+- `case_id`;
+- proceso y paso;
+- pantalla o superficie;
+- actor y contexto;
+- definición del hecho;
+- fuente propietaria;
+- versión de fuente;
+- modo esperado;
+- valor de referencia cuando corresponda;
+- valor observado o producido cuando corresponda;
+- resultado;
+- receipt o correlación cuando corresponda;
+- evidencia de no duplicación;
+- hallazgos.
+
+#### 52. Unidad de certificación por package
+
+La identidad física futura es:
+
+```text
+UX-QA-009::<package_id>
+```
+
+Cada package aplicable deberá demostrar su propio universo de hechos reutilizados y recapturados.
+
+Un PASS en un package no certifica automáticamente otro package.
+
+#### 53. Cobertura mínima por package
+
+La ejecución posterior deberá inventariar al menos:
+
+- puntos de captura manual;
+- valores derivados;
+- valores precargados;
+- confirmaciones;
+- observaciones nuevas;
+- verificaciones independientes;
+- documentos;
+- imports;
+- handoffs;
+- retries u offline cuando existan;
+- fuentes propietarias involucradas.
+
+Todo punto manual deberá quedar clasificado como necesario o duplicado.
+
+#### 54. Certificación global final
+
+La identidad global futura es:
+
+```text
+UX-QA-009::GLOBAL-FINAL
+```
+
+La certificación global final requiere:
+
+- todos los packages aplicables evaluados;
+- ausencia de fallos críticos abiertos;
+- cobertura cross-app representativa;
+- ausencia de maestros paralelos no justificados;
+- ausencia de recapturas ordinarias sin razón;
+- ausencia de doble efecto conocido por retry en los casos cubiertos;
+- recapturas legítimas preservadas;
+- hallazgos diferidos con propietario y condición exacta de salida.
+
+#### 55. Invalidación de evidencia
+
+La evidencia queda inválida si:
+
+- cambia la semántica del dato;
+- cambia la fuente propietaria;
+- cambia el contrato de handoff;
+- cambia el modo de tratamiento;
+- cambia la política de privacidad o finalidad material;
+- cambia la importación o deduplicación relevante;
+- cambia el modelo offline o idempotente relevante;
+- cambia el dispositivo o actor de forma que afecte persistencia de contexto;
+- el caso usó datos precargados que no representan la versión vigente;
+- la evidencia fue producida antes de la versión E5 que se pretende certificar.
+
+#### 56. Métricas de soporte
+
+Métricas permitidas por package cuando exista instrumentación:
+
+- campos manuales por tarea;
+- porcentaje de hechos derivados o reutilizados;
+- recapturas justificadas;
+- recapturas no justificadas;
+- copy-paste detectado o pasos manuales equivalentes;
+- correcciones de precarga;
+- divergencias entre copias;
+- duplicados documentales;
+- filas importadas duplicadas o rechazadas;
+- retries con resultado recuperado;
+- efectos duplicados detectados;
+- errores de transcripción;
+- abandonos atribuibles a recaptura;
+- uso de contingencia manual.
+
+No existe un umbral global arbitrario que permita compensar un fallo crítico con un promedio favorable.
+
+#### 57. Guardrail laboral
+
+Las métricas no se utilizarán aisladamente para sancionar a una persona por:
+
+- corregir un dato precargado;
+- registrar una diferencia física real;
+- ejecutar una recaptura requerida;
+- realizar una verificación independiente;
+- detener una secuencia por inconsistencia;
+- rechazar información que no puede confirmar.
+
+El objeto de la certificación es el sistema y el flujo, no la velocidad individual.
+
+#### 58. Fallos críticos
+
+Bloquean el caso, según aplique:
+
+- maestro paralelo para el mismo hecho sin contrato;
+- copy-paste obligatorio entre aplicaciones para datos estructurados ya disponibles;
+- valor planificado usado como observación real;
+- segundo pago, movimiento, recepción o efecto equivalente por retry;
+- reutilización de actor o dato personal anterior en dispositivo compartido;
+- dato sensible reutilizado para finalidad incompatible;
+- segunda fuente competidora que puede divergir;
+- importación que crea duplicados sin control;
+- corrección local que deja la fuente autoritativa sin reconciliar;
+- verificación ciega contaminada por exposición del valor anterior cuando esa independencia es requisito.
+
+#### 59. Hallazgos no críticos
+
+Un hallazgo podrá diferirse únicamente si:
+
+- no genera segunda fuente;
+- no crea efecto duplicado;
+- no transforma un hecho distinto en reutilizado;
+- no expone información indebida;
+- no contamina verificación independiente;
+- tiene propietario canónico;
+- tiene condición exacta de salida;
+- su impacto está documentado en el package.
+
+No existe la categoría narrativa `mejorar después` sin dueño.
+
+#### 60. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea define cómo certificar conductas ya cubiertas por requisitos existentes y no introduce una obligación verificable nueva que exija actualizar el registro.
+
+#### 61. Cobertura de prueba vigente reutilizada
+
+La certificación reutiliza, sin modificar, la cobertura ya aprobada de captura única, fuente, semántica, documentos, cross-app, offline, imports y cambio de superficie.
+
+Cobertura principal:
+
+- `TREQ-UX-005`;
+- `TREQ-UX-118` a `TREQ-UX-138`;
+- `TREQ-UX-197`;
+- `TREQ-UX-375`;
+- `TREQ-UX-394`;
+- `TREQ-UX-401`;
+- `TREQ-INTEGRATION-003`;
+- `TREQ-INTEGRATION-005`;
+- `TREQ-INTEGRATION-006`.
+
+Esta lista es trazabilidad reutilizada; no representa requisitos creados o modificados por `UX-QA-009`.
+
+#### 62. Evidencia de validación
+
+| Clase | Estado | Evidencia documental disponible en esta aprobación |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecuta build físico ni de producto para aprobar el contrato documental. |
+| LOCAL | NOT_EXECUTED | La incorporación y los validadores reales del checkout corresponden a la batería posterior. |
+| REMOTA | PASS | Se revisaron las fuentes canónicas remotas vigentes, la continuidad, la topología, `UX-BASE-007`, 04A UX, contratos de integración y la base aprobada `UX-QA-008`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron recorridos operativos reales durante la aprobación documental. |
+| FÍSICA | NOT_EXECUTED | Las instancias por package y `GLOBAL-FINAL` permanecen sujetas a `POST_E5_PACKAGE`. |
+
+#### 63. Evidencia mínima posterior por caso
+
+La ejecución física posterior deberá conservar suficiente evidencia para demostrar:
+
+- hecho requerido;
+- fuente esperada;
+- modo esperado;
+- versión y frescura;
+- acción presentada al actor;
+- campos reutilizados o derivados;
+- campos realmente nuevos;
+- razón de recaptura cuando existe;
+- ausencia de segundo registro o efecto;
+- resultado del retry cuando aplica;
+- evidencia de deduplicación en import cuando aplica;
+- evidencia de limpieza entre actores cuando aplica;
+- resultado final.
+
+La evidencia puede ser automática, operativa o física según el package, pero deberá ser reproducible.
+
+#### 64. Seguridad y privacidad de la evidencia
+
+La evidencia no deberá exponer:
+
+- PIN;
+- tokens;
+- secretos;
+- documentos completos si no son necesarios;
+- datos personales ajenos al caso;
+- contenido clínico o sensible cuando basta un hecho derivado;
+- payloads no minimizados.
+
+Las capturas deberán redactar o pseudonimizar información sensible cuando sea compatible con el objetivo probatorio.
+
+#### 65. Responsabilidad de un fallo
+
+Un fallo deberá asignarse a la familia propietaria real, por ejemplo:
+
+- pantalla o formulario;
+- integración cross-app;
+- contrato de datos;
+- autorización;
+- fuente maestra;
+- importación;
+- offline o idempotencia;
+- dispositivo compartido;
+- evidencia o documento;
+- package E5 propietario.
+
+`UX-QA-009` no inventará una tarea administrativa nueva si ya existe un propietario canónico.
+
+#### 66. Casos fuera de alcance
+
+No pertenecen por sí solos a esta certificación:
+
+- rediseñar el esquema de datos;
+- implementar deduplicación física nueva;
+- crear constraints;
+- crear idempotency keys;
+- crear tablas o RPC;
+- fusionar maestros;
+- corregir duplicados históricos;
+- modificar eventos;
+- desplegar integraciones;
+- cambiar permisos;
+- cambiar política de retención;
+- diseñar auditoría de cambios;
+- certificar continuidad de red;
+- certificar rendimiento global.
+
+Las brechas encontradas se remiten al propietario existente.
+
+#### 67. Criterio de aceptación por package
+
+Un package puede declararse conforme únicamente cuando:
+
+- sus hechos reutilizables tienen fuente y modo correctos;
+- no obliga a transcripción redundante de hechos ya disponibles;
+- no mantiene fuentes competidoras del mismo hecho;
+- conserva hechos distintos aunque compartan valor;
+- las recapturas legítimas están justificadas y explicadas;
+- las verificaciones independientes permanecen independientes;
+- los documentos se reutilizan o versionan correctamente;
+- los handoffs no dependen de copy-paste;
+- offline, retry e import no crean duplicados en los casos aplicables;
+- cambio de actor o superficie no recrea ni reasigna información indebidamente;
+- los fallos críticos están cerrados;
+- la evidencia es reproducible y minimizada.
+
+#### 68. Criterios de aceptación
+
+- [ ] Se certifica por hecho empresarial y no por etiqueta visual del campo.
+- [ ] Cada hecho reutilizado conserva fuente propietaria identificable.
+- [ ] Se distinguen `DERIVE_AUTOMATICALLY`, `REUSE_AS_FACT`, `PREFILL_EDITABLE`, `DISPLAY_FOR_CONFIRMATION`, `REFERENCE_ONLY`, `RECAPTURE_REQUIRED`, `INDEPENDENT_OBSERVATION` y `NOT_REUSABLE`.
+- [ ] No existe reutilización implícita tipo copiar el valor anterior.
+- [ ] Los contextos autoritativos no se vuelven campos manuales.
+- [ ] Los pasos posteriores consumen referencias en lugar de transcribir salidas previas.
+- [ ] Los handoffs cross-app consumen contratos y no copy-paste.
+- [ ] Una aplicación consumidora no crea un maestro paralelo.
+- [ ] Los valores planificados no se convierten en observaciones reales.
+- [ ] Las verificaciones independientes no se eliminan como supuesta duplicación.
+- [ ] Confirmar no exige reescribir el dato.
+- [ ] Las correcciones distinguen maestro, caso, versión, excepción y revisión de fuente.
+- [ ] Los snapshots históricos no se reescriben al cambiar un maestro.
+- [ ] Los documentos no se cargan repetidamente sin razón material.
+- [ ] Una nueva versión documental legítima no se clasifica como duplicado.
+- [ ] Los dispositivos compartidos no heredan información del actor anterior.
+- [ ] Los retries y reconexiones consultan resultado antes de recrear efectos.
+- [ ] Las importaciones aplicables prueban detección de duplicados antes de afectar la fuente.
+- [ ] Las operaciones masivas capturan una vez los valores comunes compatibles.
+- [ ] Cambiar entre modo guiado y experto no genera una segunda escritura o receipt.
+- [ ] Los defaults no simulan observaciones ni autoridad.
+- [ ] La reutilización de información sensible valida finalidad y minimización.
+- [ ] Toda recaptura necesaria explica su razón.
+- [ ] Existe evidencia positiva y negativa por package aplicable.
+- [ ] Los fallos críticos tienen propietario y bloquean el caso.
+- [ ] Existe criterio `UX-QA-009::GLOBAL-FINAL`.
+- [ ] La sección `Requisitos de prueba derivados` declara cero cambios y no contiene identificadores de requisitos.
+- [ ] La cobertura heredada está separada de la sección de cero cambios.
+- [ ] No se ejecutó implementación física durante esta aprobación documental.
+- [ ] `UX-QA-010` conserva íntegramente la certificación de trazabilidad de cambios.
+
+#### 69. Límites
+
+Esta tarea no:
+
+- modifica `UX-BASE-007`;
+- modifica `UX-QA-008`;
+- modifica `INT-APP-*`;
+- modifica `PROC-SCREEN-*`;
+- crea fuentes maestras;
+- fusiona fuentes;
+- corrige duplicados históricos;
+- crea o modifica tablas;
+- crea constraints;
+- crea schemas de deduplicación;
+- crea idempotency keys;
+- cambia retries;
+- cambia colas;
+- crea imports;
+- modifica Server Actions, APIs o RPC;
+- cambia permisos;
+- cambia sesiones;
+- cambia RLS;
+- modifica Supabase;
+- modifica documentos o archivos reales;
+- cambia formularios o componentes;
+- ejecuta pruebas E2E;
+- ejecuta pruebas operativas;
+- ejecuta pruebas físicas;
+- certifica packages sin evidencia posterior a E5;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 70. Handoff a `UX-QA-010`
+
+`UX-QA-009` entrega a `UX-QA-010`:
+
+- fuentes autoritativas identificadas;
+- diferencias entre hecho original, reutilización, observación nueva y corrección;
+- puntos donde una corrección cambia maestro, caso o versión;
+- receipts y resultados únicos cuando aplican;
+- ausencia de maestros paralelos como condición previa;
+- snapshots históricos preservados;
+- lugares donde un cambio necesita demostrar actor, antes, después, motivo y versión.
+
+`UX-QA-010` podrá certificar trazabilidad de cambios sin reabrir la decisión de captura única.
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-008 — El proceso continúa correctamente entre aplicaciones`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-009 — No se registra dos veces la misma información`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-010 — Los cambios conservan trazabilidad`
 ### [ ] UX-QA-010 — Los cambios conservan trazabilidad
 ### [ ] UX-QA-011 — Las tareas críticas soportan conectividad inestable
 ### [ ] UX-QA-012 — El retorno entre aplicaciones conserva contexto
