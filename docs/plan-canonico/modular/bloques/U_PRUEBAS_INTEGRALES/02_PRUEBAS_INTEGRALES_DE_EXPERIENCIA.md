@@ -4882,7 +4882,974 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `UX-QA-006 — Las pantallas táctiles funcionan en tablet`
-### [ ] UX-QA-006 — Las pantallas táctiles funcionan en tablet
+### ✅ UX-QA-006 — Las pantallas táctiles funcionan en tablet
+
+**Estado:** APROBADA
+**Tarea anterior:** UX-QA-005 — Un rol no ve opciones irrelevantes
+**Tarea siguiente:** UX-QA-007 — Las vistas administrativas no contaminan la operación
+**Tipo de tarea:** documental; definición canónica de la certificación integral de experiencia que demuestra por paquete y globalmente que una superficie operativa materializada para tablet puede completarse mediante interacción táctil precisa, legible, accesible y segura bajo su perfil real de dispositivo, postura, orientación, montaje, ambiente, conectividad y periféricos, sin depender de precisión de mouse, hover, gestos ocultos, teclado físico, targets insuficientes, composición de escritorio encogida ni supuestos no comprobados sobre el puesto
+**Bloque:** U — Pruebas integrales y certificación transversal
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/U_PRUEBAS_INTEGRALES/02_PRUEBAS_INTEGRALES_DE_EXPERIENCIA.md`
+**Estado físico resultante:** contrato de certificación táctil en tablet definido; las ejecuciones `UX-QA-006::<package_id>` y la certificación `UX-QA-006::GLOBAL-FINAL` permanecen pendientes y sujetas al gate `POST_E5_PACKAGE`; la tarea consume la superficie depurada por relevancia de `UX-QA-005`, `TOUCH-BASELINE-1.0.0`, los contratos `UX-STATION-*`, la cobertura UX vigente y la materialización compartida actual `TabletTaskSurface` como evidencia técnica parcial, pero no infiere que ningún package, dispositivo, estación, montaje, cohorte humana o flujo desplegado ya haya superado una prueba táctil física
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se ejecutan pilotos, sesiones con trabajadores, pruebas sobre hardware real, cambios de componentes, CSS, layouts, targets, gestos, navegación, copy, flujos, periféricos, montaje, dispositivos, compras, permisos, datos, Supabase, despliegues ni modificaciones de producto
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo Vento OS demostrará que una pantalla destinada a operación en tablet no es únicamente responsive, sino realmente operable mediante tacto en el contexto físico para el que fue materializada.
+
+La certificación deberá responder, para cada package aplicable:
+
+```text
+¿PUEDO COMPLETAR LA TAREA CON TACTO SIN PRECISIÓN DE MOUSE?
+¿LOS CONTROLES SON ALCANZABLES, LEGIBLES Y DIFERENCIABLES?
+¿ORIENTACIÓN, TECLADO, ZOOM Y REFLOW CONSERVAN CONTEXTO Y ACCIÓN?
+¿DOBLE TOQUE, LATENCIA O RECONEXIÓN EVITAN EFECTOS DUPLICADOS?
+¿EL USO REAL DE LA TABLET ES SEGURO EN EL PUESTO Y LA POSTURA PREVISTOS?
+```
+
+`RESPONSIVE` no constituye por sí solo evidencia de `TOUCH_READY`.
+
+#### 2. Resultado canónico
+
+`UX-QA-006` establece `UX-QA-TABLET-TACTILE-CERTIFICATION-001@1.0.0`.
+
+El resultado define:
+
+- unidad certificable de tablet;
+- perfil mínimo de dispositivo y estación;
+- oracle de targets, espaciado, alcance y estabilidad;
+- oracle de orientación, reflow, zoom y teclado virtual;
+- alternativas obligatorias a gestos y precisión fina;
+- interacción con captura, periféricos y conectividad cuando apliquen;
+- evidencia de actor, contexto, privacidad y relevo en tablet compartida;
+- escenarios mínimos de error, latencia y repetición;
+- evidencia automatizada, operativa y física requerida;
+- criterio por package;
+- criterio `GLOBAL-FINAL`;
+- condiciones que vuelven stale una evidencia previa.
+
+No crea un componente nuevo ni redefine `TOUCH-BASELINE-1.0.0`.
+
+#### 3. Alcance exacto
+
+La certificación cubre las superficies materializadas que declaren uso operativo en tablet, incluidas cuando corresponda:
+
+- `PERSONAL_TABLET`;
+- `SHARED_TABLET`;
+- tablet sostenida con una o dos manos;
+- tablet montada en base, pared, mostrador, carro o estación;
+- orientación vertical y horizontal cuando estén permitidas;
+- tareas con teclado virtual;
+- tareas con escáner o cámara;
+- tareas que consumen impresora, báscula, datáfono u otro periférico;
+- operación online, degradada u offline cuando el contrato del package lo permita;
+- cambio de actor en dispositivo compartido;
+- accesibilidad por teclado, lector, switch, stylus o mouse cuando aplique.
+
+No convierte automáticamente un kiosco fijo o un escritorio en caso de tablet. La matriz de aplicabilidad de cada package debe declarar la clase real evaluada.
+
+#### 4. Handoff recibido de `UX-QA-005`
+
+La prueba recibe una superficie en la que ya se definieron:
+
+- foco principal pertinente;
+- opciones secundarias pertinentes;
+- obligaciones bloqueadas que no deben ocultarse;
+- opciones irrelevantes fuera del flujo ordinario;
+- actor y contexto correctos;
+- navegación correspondiente a la intención vigente;
+- elementos ocultos fuera del foco y árbol accesible ordinario.
+
+`UX-QA-006` no reabre qué capacidades deberían estar presentes para el actor. Evalúa si las capacidades correctas pueden utilizarse táctilmente en tablet.
+
+#### 5. Frontera con `UX-QA-005`
+
+Regla:
+
+```text
+CAPACIDAD CORRECTA PARA EL ACTOR
+≠
+INTERACCIÓN TÁCTIL CORRECTA
+```
+
+Una pantalla puede tener contenido perfectamente relevante y aun fallar `UX-QA-006` por targets pequeños, separación insegura, teclado que cubre el CTA, gesto no descubrible o montaje incompatible.
+
+#### 6. Frontera con `UX-QA-007`
+
+`UX-QA-007` certificará que las vistas administrativas no contaminan la operación.
+
+`UX-QA-006` puede detectar que densidad, tablas o controles administrativos vuelven inviable una tarea en tablet, pero no absorbe la certificación estructural completa de separación entre operación y administración.
+
+#### 7. Significado de “funciona en tablet”
+
+Un caso es conforme únicamente cuando la tarea aplicable puede completarse sin introducir riesgo material mediante:
+
+- tacto ordinario;
+- lectura suficiente;
+- targets y separación adecuados;
+- postura y alcance compatibles;
+- reflow sin pérdida funcional;
+- feedback perceptible;
+- entrada de datos proporcional;
+- manejo seguro de interrupciones y latencia;
+- controles accesibles;
+- protección de actor, contexto y privacidad.
+
+No significa solamente que la ruta abra, que no exista overflow visible o que un test de componente renderice.
+
+#### 8. Unidad certificable
+
+Cada ejecución física futura se identifica por:
+
+```text
+UX-QA-006::<package_id>
+```
+
+La unidad observada dentro del package se registra al menos con:
+
+```text
+package_id
+application_id
+surface_id
+process_id
+step_id
+actor_class
+station_profile
+surface_class
+device_class
+os_and_runtime
+orientation
+mounting_profile
+input_methods
+peripheral_profile
+connectivity_profile
+build_or_release
+scenario_id
+```
+
+`GLOBAL-FINAL` no sustituye una unidad aplicable omitida.
+
+#### 9. Matriz de aplicabilidad
+
+Antes de ejecutar casos, cada package clasificará sus superficies tablet como:
+
+```text
+APPLICABLE
+NOT_APPLICABLE
+PROFILE_INCOMPLETE
+BLOCKED_BY_PHYSICAL_DEPENDENCY
+```
+
+`NOT_APPLICABLE` requiere justificación trazable. `PROFILE_INCOMPLETE` no puede convertirse en PASS por emulación de escritorio.
+
+#### 10. Perfil mínimo del dispositivo y estación
+
+La evidencia debe conocer, según aplique:
+
+- clase de tablet;
+- sistema operativo y runtime;
+- tamaño y relación de aspecto;
+- orientación permitida;
+- montaje, altura e inclinación;
+- distancia de lectura;
+- postura;
+- una o dos manos;
+- mano dominante cuando sea material;
+- movilidad;
+- relevo entre actores;
+- guantes, humedad, grasa, harina, polvo o frío;
+- iluminación y reflejos;
+- ruido;
+- conectividad;
+- energía;
+- periféricos;
+- sensibilidad de la información;
+- frecuencia y criticidad de la tarea.
+
+Sin perfil suficiente, el caso permanece `PROFILE_INCOMPLETE`.
+
+#### 11. Oracle de targets táctiles
+
+Se conserva `TOUCH-BASELINE-1.0.0`:
+
+```text
+OBJETIVO PREFERENTE OPERATIVO
+48 × 48 unidades lógicas
+
+APPLE NATIVO
+mínimo 44 × 44 pt
+
+PISO WEB
+24 × 24 CSS px conforme a las condiciones WCAG aplicables
+```
+
+El piso web no se usa como tamaño ordinario objetivo de operación.
+
+La medición corresponde al área activable completa, no únicamente al icono visible.
+
+#### 12. Excepciones de tamaño
+
+Una excepción a la preferencia de `48 × 48` no obtiene PASS únicamente porque alcance el piso normativo.
+
+Debe demostrar:
+
+- justificación del control;
+- separación suficiente;
+- ausencia de activación accidental material;
+- equivalencia funcional accesible;
+- validación en la orientación y montaje aplicables;
+- compatibilidad con el caso real de uso.
+
+#### 13. Espaciado y áreas activables
+
+La certificación verifica que:
+
+- hit areas no se superponen;
+- targets vecinos no capturan el mismo toque;
+- acciones incompatibles están suficientemente separadas;
+- controles repetidos por fila mantienen alineación estable;
+- el target no se desplaza inesperadamente mientras el dedo está sobre la superficie;
+- confirmar y cancelar no forman una pareja propensa a toque accidental;
+- una acción destructiva no es el target más fácil de alcanzar por accidente.
+
+#### 14. Acción principal y alcance
+
+El CTA principal debe:
+
+- permanecer asociado al contenido que afecta;
+- ser alcanzable con la postura y montaje previstos;
+- no tapar información crítica;
+- conservar ubicación suficientemente estable;
+- seguir disponible al aparecer teclado o panel secundario;
+- no competir físicamente con cancelación, excepción o navegación.
+
+No se adopta una “zona universal del pulgar” sin validar el puesto real.
+
+#### 15. Postura y esfuerzo
+
+Bloquean la certificación cuando sean necesarios para completar el flujo:
+
+- precisión fina sostenida;
+- brazo elevado durante una parte material de la tarea;
+- alternancia repetida entre extremos de pantalla sin necesidad funcional;
+- escritura larga sosteniendo el dispositivo;
+- abandonar el puesto para alcanzar un control;
+- bloquear la visión del producto o zona de trabajo.
+
+El análisis debe considerar personas de distinta altura y lateralidad cuando el puesto sea compartido.
+
+#### 16. Orientación y reflow
+
+En orientaciones admitidas:
+
+- no habrá scroll horizontal ordinario para completar el flujo;
+- etiquetas, valores, errores y controles conservarán relación;
+- contexto y acción principal permanecerán disponibles;
+- el borrador no se perderá al cambiar tamaño u orientación;
+- no aparecerán CTAs duplicados por variantes de layout;
+- el punto de lectura no saltará de forma destructiva.
+
+Una orientación fija solo es válida cuando el perfil de estación la justifica.
+
+#### 17. Teclado virtual
+
+La aparición del teclado no puede:
+
+- ocultar el campo activo;
+- ocultar su error;
+- ocultar una confirmación material sin alternativa clara;
+- desplazar el CTA a una posición impredecible;
+- provocar pérdida de borrador;
+- crear scroll horizontal;
+- impedir volver al contenido contextual necesario.
+
+#### 18. Zoom y tamaño de texto
+
+La superficie debe conservar operación y comprensión ante los modos de zoom o tamaño de texto exigibles por su contrato de accesibilidad.
+
+No se aceptan como solución ordinaria:
+
+- clipping;
+- texto esencial truncado sin alternativa;
+- controles superpuestos;
+- contenido inaccesible fuera del viewport;
+- reducción de texto crítico para conservar densidad.
+
+#### 19. Gestos y alternativas
+
+No pueden constituir el único mecanismo de una función ordinaria o crítica:
+
+- hover;
+- swipe oculto;
+- arrastre preciso;
+- pulsación prolongada;
+- doble toque;
+- gesto de borde;
+- pinza para acceder a información esencial.
+
+Todo arrastre no esencial al significado debe tener alternativa de puntero simple.
+
+#### 20. Modalidades alternativas de entrada
+
+La certificación no penaliza el uso compatible de:
+
+- teclado;
+- mouse;
+- stylus;
+- switch access;
+- lector de pantalla;
+- escáner;
+- controles físicos autorizados.
+
+La tablet no debe bloquear esas modalidades cuando sean seguras y formen parte del perfil aplicable.
+
+#### 21. Minimización de teclado
+
+Las tareas operativas deben evitar transcripción innecesaria mediante, según corresponda:
+
+- contexto resuelto;
+- escaneo;
+- selección corta;
+- valores derivados;
+- controles de cantidad;
+- teclado numérico;
+- motivos estructurados;
+- captura automática desde periférico.
+
+Texto libre necesario debe conservar borrador y permitir revisión.
+
+#### 22. Cantidades y captura numérica
+
+Cuando el package capture cantidades, se verifican:
+
+- valor;
+- unidad;
+- presentación;
+- precisión;
+- límites;
+- referencia esperada sin convertirla en observación;
+- validación inmediata;
+- targets amplios para incremento o decremento;
+- entrada directa cuando el rango lo requiera;
+- conservación ante teclado, rotación y pérdida de foco.
+
+Cero, vacío y no observado permanecen distintos.
+
+#### 23. Escáner y cámara
+
+Cuando la tablet consuma escáner o cámara, la evidencia diferencia como mínimo:
+
+```text
+LISTO
+LEYENDO
+RECONOCIDO
+NO RECONOCIDO
+DUPLICADO
+FUERA DE CONTEXTO
+SIN PERIFÉRICO
+CONTINGENCIA MANUAL
+```
+
+Una lectura no prueba por sí sola una mutación empresarial confirmada.
+
+#### 24. Periféricos
+
+Si la tarea depende de impresora, báscula, datáfono, escáner, cámara u otro periférico, la superficie debe mostrar de forma comprensible:
+
+- dependencia seleccionada;
+- estado conocido;
+- acción enviada;
+- confirmación recibida;
+- resultado pendiente o desconocido;
+- alternativa segura;
+- referencia de soporte cuando corresponda.
+
+El PASS táctil no sustituye la certificación del hardware o del resultado físico.
+
+#### 25. Guantes, humedad, higiene y ambiente
+
+Cuando el perfil declare condiciones ambientales materiales, la prueba incluye las condiciones representativas aplicables.
+
+Un target grande no convierte una interacción antihigiénica o insegura en aceptable.
+
+Si el tacto directo no es apropiado, el caso debe usar la modalidad híbrida o alternativa definida por la estación.
+
+#### 26. Iluminación, ruido y movimiento
+
+La interfaz debe conservar comprensión con:
+
+- reflejos previsibles;
+- iluminación real del puesto;
+- ruido que invalide feedback exclusivamente sonoro;
+- vibración o movimiento aplicables;
+- distancia de lectura aplicable.
+
+Color, audio o vibración no serán la única señal de estado.
+
+#### 27. Seguridad física
+
+La certificación falla si completar la tarea exige interactuar con la tablet mientras la persona debe mantener atención física incompatible, por ejemplo durante:
+
+- conducción;
+- manipulación de cuchillos o calor;
+- maquinaria;
+- movimiento de cargas;
+- una acción que requiere ambas manos;
+- una maniobra de seguridad.
+
+El proceso debe ofrecer un punto seguro de interacción.
+
+#### 28. Actor y contexto visibles
+
+En tablet compartida deben poder comprenderse, según aplique:
+
+- estación o dispositivo;
+- sede;
+- área;
+- actor humano;
+- rol operativo;
+- turno;
+- check-in;
+- tarea o recurso;
+- conectividad;
+- simulación o delegación.
+
+El nombre técnico del dispositivo no sustituye al actor.
+
+#### 29. Cambio de actor
+
+El escenario de relevo verificará que:
+
+```text
+SE DETIENEN NUEVAS MUTACIONES
+→ SE RESUELVE TAREA, BORRADOR Y CUSTODIA
+→ SE CIERRA O TRANSFIERE LA SESIÓN SEGÚN CONTRATO
+→ SE LIMPIAN DATOS PERSONALES Y PREFERENCIAS
+→ SE IDENTIFICA EL NUEVO ACTOR
+→ SE RESUELVE NUEVO CONTEXTO
+→ SE RECONSTRUYE LA SUPERFICIE
+```
+
+No se heredan PIN, firma, favoritos, búsquedas, filtros, borradores ni datos sensibles incompatibles.
+
+#### 30. Privacidad visual
+
+En tablets visibles para clientes o terceros se verifican, cuando apliquen:
+
+- minimización;
+- masking;
+- bloqueo de previews sensibles;
+- limpieza al cambiar actor;
+- ausencia de notificaciones privadas innecesarias;
+- bloqueo o protección física proporcional.
+
+Modo tablet compartida no convierte datos internos en públicos.
+
+#### 31. Acciones sensibles y destructivas
+
+Las acciones financieras, destructivas, de custodia, publicación, acceso o excepción deben:
+
+- separarse del CTA ordinario;
+- mostrar recurso y efecto;
+- evitar proximidad peligrosa;
+- usar confirmación o step-up cuando corresponda;
+- permitir cancelar antes del efecto;
+- producir receipt cuando el contrato lo exija;
+- impedir ejecución duplicada.
+
+#### 32. Doble toque, latencia y concurrencia
+
+La prueba incluye, cuando apliquen:
+
+- doble toque;
+- taps durante latencia;
+- rotación durante trabajo;
+- callback tardío;
+- lectura duplicada;
+- reconexión;
+- actualización concurrente.
+
+Resultado obligatorio:
+
+```text
+UNA INTENCIÓN MATERIAL
+NO PRODUCE DOS EFECTOS EMPRESARIALES
+```
+
+Deshabilitar visualmente un botón no es la única defensa aceptable.
+
+#### 33. Feedback táctil y resultado
+
+Toda acción material debe mostrar una progresión perceptible compatible con:
+
+```text
+TOQUE RECONOCIDO
+→ PROCESANDO
+→ CONFIRMADO
+```
+
+O bien:
+
+```text
+TOQUE RECONOCIDO
+→ BLOQUEADO / PENDIENTE / RESULTADO DESCONOCIDO
+```
+
+La UI no mostrará éxito antes de una confirmación que el contrato requiera.
+
+#### 34. Conectividad
+
+Cuando el package permita operación degradada, la tablet debe mostrar:
+
+- estado de conexión;
+- frescura;
+- pendientes;
+- último punto confirmado;
+- limitaciones actuales;
+- acción segura disponible.
+
+No se acepta una mutación offline presentada como confirmada si aún depende del servidor.
+
+#### 35. Accesibilidad táctil
+
+La prueba incluye según aplicabilidad:
+
+- nombre accesible;
+- rol y estado;
+- orden lógico de foco;
+- lector de pantalla;
+- teclado;
+- switch access;
+- zoom;
+- tamaño de texto;
+- contraste;
+- reflow;
+- alternativa a gestos;
+- alternativa a audio y color;
+- tiempo suficiente;
+- autenticación accesible.
+
+Una hit area ampliada no debe capturar el toque o foco de un control vecino.
+
+#### 36. Tablet personal frente a tablet compartida
+
+`PERSONAL_TABLET` y `SHARED_TABLET` comparten el baseline táctil, pero no la misma política de sesión.
+
+En `SHARED_TABLET` son obligatorios, cuando apliquen:
+
+- identificación explícita del actor;
+- limpieza entre actores;
+- no persistencia de información personal incompatible;
+- reconstrucción de contexto;
+- protección de borradores y custodia;
+- no herencia de capacidades del actor anterior.
+
+#### 37. Implementación compartida observada
+
+El repositorio contiene actualmente `TabletTaskSurface` en `@vento/ui-web` con:
+
+- clases `PERSONAL_TABLET` y `SHARED_TABLET`;
+- slots para contexto persistente, bloqueo, identidad de trabajo, contenido de paso, acción primaria, soporte secundario y resultado/receipt;
+- reflow de una columna y composición amplia condicionada por media query;
+- `min-width: 0` y `max-width: 100%`;
+- targets interactivos con mínimo CSS de `48px` en ambas dimensiones dentro de la superficie;
+- foco visible y `scroll-margin` para controles;
+- ausencia de dependencia de hover en su CSS;
+- ausencia de lógica empresarial, autorización, conectividad, periféricos y sesión dentro del componente.
+
+Esto es evidencia técnica parcial de una fundación compartida. No constituye PASS físico de `UX-QA-006` para ningún package.
+
+#### 38. Evidencia automatizada permitida
+
+Antes de prueba física pueden aportar evidencia:
+
+- tests de componente;
+- tests de reflow;
+- validación de targets;
+- validación de orden semántico;
+- test de teclado y foco;
+- test de zoom y clipping;
+- test de alternativas a gesto;
+- E2E con viewport tablet;
+- pruebas de doble envío;
+- pruebas de rotación o resize cuando la plataforma lo permita;
+- validadores de `TabletTaskSurface`.
+
+La emulación de viewport no sustituye el dispositivo real para postura, alcance, guantes, brillo, montaje, fatiga o toque accidental.
+
+#### 39. Evidencia física futura
+
+Para obtener PASS físico cuando el package sea aplicable se requiere evidencia representativa del dispositivo o clase real prevista, incluyendo según corresponda:
+
+- orientación;
+- montaje;
+- postura;
+- trabajador representativo;
+- condiciones ordinarias y de pico;
+- guantes o ambiente real;
+- periféricos;
+- conectividad degradada;
+- cambio de actor;
+- iluminación y ruido;
+- interrupción y reanudación;
+- errores y excepciones;
+- tecnología de asistencia aplicable.
+
+#### 40. Proporcionalidad de validación humana
+
+La decisión aprobada de `UX-STATION-008` permite avanzar documental y técnicamente sin fingir una campaña formal de campo ya realizada.
+
+Por tanto:
+
+```text
+AUSENCIA DE SESIÓN FORMAL AHORA
+≠ PASS FÍSICO
+```
+
+La evidencia humana y física requerida para producción se conserva para piloto y certificación del BLOQUE U según el package y sus riesgos.
+
+#### 41. Clases mínimas de escenario
+
+Cuando sean aplicables, el dossier del package cubre:
+
+1. portrait ordinario;
+2. landscape ordinario;
+3. teclado virtual abierto;
+4. zoom o texto ampliado;
+5. una mano;
+6. tablet montada;
+7. doble toque;
+8. tap durante latencia;
+9. rotación durante captura;
+10. cambio de actor;
+11. conectividad degradada;
+12. periférico no disponible;
+13. error de validación;
+14. bloqueo material;
+15. acción sensible;
+16. lector o teclado cuando aplique;
+17. ambiente o guantes cuando apliquen;
+18. interrupción y reanudación.
+
+La matriz puede declarar `NOT_APPLICABLE` con justificación por escenario.
+
+#### 42. Casos positivos
+
+Ejemplos de evidencia conforme:
+
+- acción primaria alcanzable sin cubrir el dato crítico;
+- cantidad modificada con target amplio y unidad visible;
+- teclado abierto sin ocultar error ni confirmación;
+- rotación que conserva borrador y contexto;
+- escaneo reconocido sin confirmar automáticamente una mutación irreversible;
+- doble toque que produce un único efecto;
+- tablet compartida que limpia la sesión anterior;
+- pérdida de red que muestra el estado real y conserva trabajo según contrato;
+- lector de pantalla que mantiene el orden lógico de la tarea.
+
+#### 43. Casos negativos
+
+Ejemplos que bloquean PASS cuando apliquen:
+
+- botón esencial de tamaño o separación insuficiente para el puesto;
+- acción destructiva adyacente al CTA ordinario;
+- teclado que cubre el control necesario;
+- hover como única vía;
+- swipe oculto como único acceso a una obligación;
+- drag preciso sin alternativa;
+- scroll horizontal necesario para completar la tarea;
+- orientación que pierde borrador;
+- target que se mueve bajo el dedo durante actualización;
+- doble toque que duplica una mutación;
+- dispositivo compartido que conserva datos del actor anterior;
+- mensaje audible sin equivalente visible en ambiente ruidoso;
+- interacción requerida durante una maniobra físicamente insegura.
+
+#### 44. Métricas mínimas
+
+Se registran cuando sean observables:
+
+```text
+completion_success
+accidental_activation_count
+duplicate_effect_count
+hidden_or_unreachable_required_control_count
+horizontal_scroll_required_count
+context_loss_count
+draft_loss_count
+wrong_actor_residue_count
+unexplained_block_count
+peripheral_uncertainty_count
+help_required
+```
+
+Para un PASS no puede existir:
+
+```text
+duplicate_effect_count > 0
+hidden_or_unreachable_required_control_count > 0
+wrong_actor_residue_count > 0
+```
+
+Una activación accidental material de acción destructiva o de custodia bloquea el PASS aunque el conteo total de errores sea bajo.
+
+#### 45. Métricas de experiencia
+
+Pueden medirse:
+
+- tiempo de tarea;
+- toques erróneos;
+- retrocesos;
+- uso de teclado;
+- escaneos fallidos;
+- cambios de orientación;
+- necesidad de ayuda;
+- postura o fatiga observada;
+- tiempo hasta feedback;
+- recuperación tras interrupción.
+
+No se fija un umbral universal de velocidad. Estas métricas se interpretan por tarea, estación, complejidad, entorno y población.
+
+#### 46. Severidad de hallazgos
+
+| Hallazgo | Severidad mínima |
+| --- | --- |
+| doble toque produce efecto empresarial duplicado | crítica |
+| acción físicamente insegura exigida por el flujo | crítica |
+| actor anterior conserva capacidad o dato sensible | crítica |
+| acción destructiva activable accidentalmente de forma material | crítica |
+| control obligatorio inaccesible con modalidad aplicable | crítica |
+| pérdida de borrador o custodia al rotar o interrumpir | alta |
+| target operativo insuficiente con errores observables | alta |
+| teclado oculta la corrección o confirmación necesaria | alta |
+| gesto oculto como único mecanismo de obligación | alta |
+| layout requiere scroll horizontal ordinario para completar tarea | alta |
+| jerarquía táctil mejorable sin efecto material sobre ejecución | media |
+
+La severidad final se conserva en el sistema de defectos propietario del package.
+
+#### 47. Criterio por package
+
+`UX-QA-006::<package_id>` obtiene PASS únicamente cuando:
+
+- la matriz de aplicabilidad está completa;
+- los perfiles tablet aplicables están resueltos;
+- existe oracle trazable contra `TOUCH-BASELINE-1.0.0`;
+- los escenarios críticos aplicables fueron cubiertos;
+- no queda hallazgo crítico o alto abierto que invalide operación táctil;
+- no existen efectos duplicados por interacción repetida;
+- actor y contexto permanecen correctos en tablet compartida;
+- accesibilidad aplicable está cubierta;
+- la evidencia técnica y física requerida corresponde a la versión certificada.
+
+#### 48. Criterio `GLOBAL-FINAL`
+
+`UX-QA-006::GLOBAL-FINAL` obtiene PASS cuando:
+
+- todos los packages con superficie tablet aplicable poseen resultado final aceptable;
+- ningún package aplicable fue omitido sin justificación;
+- la línea base táctil se interpreta de forma compatible entre aplicaciones;
+- las excepciones de target o modalidad están justificadas y trazadas;
+- los defectos bloqueantes están cerrados;
+- la cobertura física representativa requerida fue completada;
+- la evidencia corresponde a las versiones que se pretenden certificar.
+
+La existencia de un componente compartido no reemplaza resultados por package.
+
+#### 49. Evidencia stale
+
+Debe revalidarse la parte afectada cuando cambie materialmente:
+
+- layout;
+- CSS que altere tamaño o posición;
+- componente táctil;
+- navegación;
+- foco;
+- teclado o captura;
+- orientación admitida;
+- perfil de dispositivo;
+- montaje;
+- periférico;
+- flujo de actor compartido;
+- conectividad;
+- acción sensible;
+- versión de proceso;
+- browser, runtime o sistema operativo cuando el cambio pueda afectar interacción.
+
+Un cambio sin impacto puede conservar evidencia únicamente con justificación trazable.
+
+#### 50. Seguridad y privacidad
+
+`UX-QA-006` no reemplaza autorización, privacidad ni hardening del dispositivo.
+
+Sin embargo, el PASS táctil no puede contradecirlos. No es válido mejorar usabilidad mostrando datos adicionales, manteniendo sesiones anteriores, relajando step-up o exponiendo configuración técnica.
+
+#### 51. No inferencia desde implementación parcial
+
+No constituyen certificación suficiente por sí solos:
+
+- media queries correctas;
+- `48px` declarado en CSS;
+- un Storybook funcional;
+- render server-side correcto;
+- un viewport emulado;
+- un screenshot sin overflow;
+- una demo con mouse;
+- un test unitario del componente.
+
+Cada evidencia demuestra únicamente su capa observada.
+
+#### 52. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea certifica cobertura ya registrada. No modifica el Registro Canónico de Requisitos de Prueba.
+
+#### 53. Cobertura de prueba vigente reutilizada
+
+La trazabilidad principal reutiliza, sin modificar:
+
+- `TREQ-UX-004`;
+- `TREQ-UX-015`;
+- `TREQ-UX-021`;
+- `TREQ-UX-033`;
+- `TREQ-UX-038`;
+- `TREQ-UX-056`;
+- `TREQ-UX-074`;
+- `TREQ-UX-088`;
+- `TREQ-UX-091`;
+- `TREQ-UX-093`;
+- `TREQ-UX-111`;
+- `TREQ-UX-114`;
+- `TREQ-UX-133`;
+- `TREQ-UX-137`;
+- `TREQ-UX-204` a `TREQ-UX-226`.
+
+La enumeración es trazabilidad de cobertura existente y no constituye alta ni modificación de requisitos.
+
+#### 54. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La aprobación documental no ejecuta build de producto ni prueba de la aplicación desplegada. |
+| LOCAL | NOT_EXECUTED | El artefacto se prepara para incorporación mediante el lifecycle documental; los validadores del checkout permanecen pendientes hasta ejecutar la batería. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, manifest modular, continuidad, topología `PER_PACKAGE_AND_GLOBAL_FINAL`, gate `POST_E5_PACKAGE`, archivo propietario, marcadores `UX-QA-006` y `UX-QA-007`, `TOUCH-BASELINE-1.0.0`, `UX-STATION-008`, cobertura UX 04A vigente, la implementación compartida actual `TabletTaskSurface` y el handoff completo aprobado de `UX-QA-005` usado como base adelantada. |
+| OPERATIVA | NOT_EXECUTED | No se realizaron walkthroughs sobre una aplicación desplegada ni sesiones con actores representativos. |
+| FÍSICA | NOT_EXECUTED | No se ejecutaron pruebas en tablet real, montaje, postura, ambiente o periféricos y no se materializaron instancias `UX-QA-006::<package_id>` ni `UX-QA-006::GLOBAL-FINAL`. |
+
+#### 55. Criterios de aceptación
+
+`UX-QA-006` queda documentalmente definida cuando se confirma que:
+
+- [ ] la continuidad es `UX-QA-005 → UX-QA-006 → UX-QA-007`;
+- [ ] la prueba distingue responsive de touch-ready;
+- [ ] existe unidad certificable por package;
+- [ ] la aplicabilidad de tablet queda explícita;
+- [ ] el perfil de dispositivo y estación es obligatorio;
+- [ ] `TOUCH-BASELINE-1.0.0` permanece como fuente del oracle táctil;
+- [ ] el objetivo preferente de 48 por 48 unidades lógicas se conserva sin convertirlo en equivalencia física universal;
+- [ ] el piso web y la referencia Apple no se confunden con objetivo ordinario;
+- [ ] targets y hit areas se evalúan como áreas activables reales;
+- [ ] espaciado y acciones incompatibles tienen tratamiento explícito;
+- [ ] postura, alcance y montaje forman parte de la evidencia;
+- [ ] orientación, reflow, zoom y teclado virtual conservan operación;
+- [ ] hover, drag preciso y gestos ocultos no son únicos mecanismos;
+- [ ] captura numérica, escaneo y periféricos tienen oracle cuando aplican;
+- [ ] ambiente, guantes, higiene, iluminación y ruido se cubren proporcionalmente;
+- [ ] seguridad física prevalece sobre reducción de pasos;
+- [ ] tablet compartida conserva actor y contexto sin residuos del anterior;
+- [ ] acciones sensibles permanecen separadas y protegidas;
+- [ ] doble toque y latencia no duplican efectos;
+- [ ] feedback diferencia procesando de confirmado;
+- [ ] conectividad y estado offline no producen falso éxito;
+- [ ] accesibilidad táctil está incluida;
+- [ ] la implementación `TabletTaskSurface` se trata solo como evidencia técnica parcial;
+- [ ] emulación y tests automatizados no sustituyen la evidencia física cuando sea requerida;
+- [ ] el criterio por package y `GLOBAL-FINAL` queda definido;
+- [ ] la sección `Requisitos de prueba derivados` declara cero cambios y no contiene IDs TREQ;
+- [ ] la cobertura heredada está separada de la sección de cero cambios;
+- [ ] no se ejecutó implementación física durante esta aprobación documental;
+- [ ] `UX-QA-007` conserva íntegra la certificación de separación administrativa.
+
+#### 56. Fallos que bloquean la certificación física
+
+Bloquean el PASS cuando sean aplicables:
+
+- perfil físico obligatorio ausente;
+- target o separación que produce activación accidental material;
+- acción crítica inaccesible mediante tacto;
+- CTA oculto por teclado sin alternativa segura;
+- pérdida de contexto o borrador al rotar;
+- scroll horizontal necesario para completar la tarea;
+- gesto oculto o hover como única ruta a una obligación;
+- doble interacción que duplica un efecto empresarial;
+- target que cambia de posición bajo el dedo durante una actualización;
+- tablet compartida con residuo del actor anterior;
+- estado offline presentado como confirmado sin evidencia;
+- operación que exige interacción durante una maniobra físicamente insegura;
+- dato sensible expuesto por adaptar la pantalla;
+- ausencia de prueba física requerida para una superficie crítica;
+- evidencia perteneciente a una versión materialmente distinta.
+
+#### 57. Handoff a `UX-QA-007`
+
+`UX-QA-006` entrega a `UX-QA-007`:
+
+- superficie táctil de tablet con interacción y targets definidos;
+- contexto y foco preservados durante reflow;
+- acción principal operable sin depender de controles administrativos;
+- densidad táctil evaluable por tarea;
+- tablet compartida con actor y contexto diferenciados;
+- evidencia de que la adaptación al dispositivo no justifica introducir backoffice denso en el flujo operativo.
+
+`UX-QA-007` podrá certificar separación estructural entre operación y administración sin reabrir el baseline de interacción táctil.
+
+#### 58. Límites
+
+Esta tarea no:
+
+- modifica `TOUCH-BASELINE-1.0.0`;
+- crea o modifica componentes;
+- cambia `TabletTaskSurface`;
+- modifica CSS;
+- cambia targets o layouts físicos;
+- diseña hardware;
+- selecciona marcas o modelos;
+- define compras;
+- cambia montaje;
+- modifica periféricos;
+- cambia drivers o firmware;
+- modifica autorización;
+- cambia roles;
+- modifica datos o Supabase;
+- ejecuta sesiones con trabajadores;
+- ejecuta pruebas E2E;
+- ejecuta pruebas en dispositivos reales;
+- certifica un package por mera inspección de código;
+- certifica kioscos fijos que no sean caso tablet aplicable;
+- certifica la contaminación administrativa reservada a `UX-QA-007`;
+- modifica el Registro 04A;
+- crea una instancia física durante esta aprobación documental.
+
+#### 59. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`UX-QA-005 — Un rol no ve opciones irrelevantes`
+
+**TAREA ACTUAL APROBADA**
+`UX-QA-006 — Las pantallas táctiles funcionan en tablet`
+
+**SIGUIENTE TAREA RESERVADA**
+`UX-QA-007 — Las vistas administrativas no contaminan la operación`
 ### [ ] UX-QA-007 — Las vistas administrativas no contaminan la operación
 ### [ ] UX-QA-008 — El proceso continúa correctamente entre aplicaciones
 ### [ ] UX-QA-009 — No se registra dos veces la misma información
