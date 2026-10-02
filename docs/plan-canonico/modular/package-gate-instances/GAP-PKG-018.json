@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-018",
-  "status": "MATURATION_DRAFT",
+  "status": "READY_FOR_APPROVAL",
   "created_at": "2026-09-10T05:05:40.074Z",
-  "updated_at": "2026-10-02T16:22:18.959Z",
+  "updated_at": "2026-10-02T17:28:29.055Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "DATABASE_RPC_BOUNDARY",
@@ -27,37 +27,73 @@
         "repository": "vento-group-sas/vento-shell",
         "path": "supabase/tests/packages/GAP-PKG-018.sql",
         "symbol_or_surface": "GAP-PKG-018 TP-DB-001 pgTAP adoption evidence for identity_access",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-018/contract.test.ts",
         "symbol_or_surface": "GAP-PKG-018 identity contract evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-018/integration.test.ts",
         "symbol_or_surface": "GAP-PKG-018 Auth-to-enterprise identity integration evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-018/security.test.ts",
         "symbol_or_surface": "GAP-PKG-018 identity security boundary evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-018/e2e.test.ts",
         "symbol_or_surface": "GAP-PKG-018 controlled identity resolution end-to-end evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-018/fixtures.json",
         "symbol_or_surface": "Deterministic TP-DB-001 fixtures for GAP-PKG-018 canonical TREQ evidence",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/auth-security-policy.json",
+        "symbol_or_surface": "Política versionada: rechazo de renovación bloqueada, assurance por sensibilidad, duración de sesión y protección de contraseña filtrada.",
         "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/auth-security-profile.mjs",
+        "symbol_or_surface": "Auditoría y configuración gobernada de Auth mediante interfaces soportadas; sin DML directo en auth.*; no imprimir tokens.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/auth-security.test.ts",
+        "symbol_or_surface": "TREQ-SUPABASE-128/136/238: fixtures de bloqueo, refresh rechazado, JWT residual, AAL1/AAL2, expiración y contraseña comprometida.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/config.toml",
+        "symbol_or_surface": "Configuración local Auth/MFA/sesiones y parity explícita con capacidad hosted; secure_password_change y assurance según política.",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260831233918_auth_db_035_context_freshness.sql",
+        "symbol_or_surface": "AUTH-DB-035 contexto de sesión y bridge privado administrado; reutilizar sin reescribir migración histórica.",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/database/042_auth_db_035_context_freshness.test.sql",
+        "symbol_or_surface": "Regresión AUTH-DB-035 de session_id, freshness, expiración y ausencia de datos secretos.",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
       }
     ]
   },
@@ -65,7 +101,7 @@
     {
       "unit_id": "identity_access",
       "repository": "vento-group-sas/vento-shell",
-      "change": "Adopt the already VERIFIED identity_access foundation from AUTH-DB-019 and materialize GAP-PKG-018 package-specific TP-DB-001 evidence for SUPA-ARC-008, SUPA-ARC-009 and SUPA-AUD-010 without changing Auth hosted objects, VITAL, legacy foreign keys or production."
+      "change": "Adopt the already VERIFIED identity_access foundation from AUTH-DB-019 and materialize GAP-PKG-018 package-specific TP-DB-001 evidence for SUPA-ARC-008, SUPA-ARC-009 and SUPA-AUD-010 without changing Auth hosted objects, VITAL, legacy foreign keys or production. Alcance ampliado: política Auth y adaptador soportado para TREQ-SUPABASE-128/136/238, con pruebas separadas; la evidencia identity_access previa no cubre esos requisitos."
     }
   ],
   "evidence_plan": {
@@ -97,6 +133,14 @@
       {
         "command": "npm test --silent",
         "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-018/auth-security.test.ts",
+        "expected_result": "PASS de los tres requisitos nuevos; fixtures anteriores no acreditan bloqueo, MFA o contraseñas filtradas."
+      },
+      {
+        "command": "node scripts/supabase/auth-security-profile.mjs --check --policy supabase/auth-security-policy.json",
+        "expected_result": "PASS contra política y capacidades reales; UNKNOWN, excepción vencida o feature ausente sin alternativa produce FAIL."
       }
     ],
     "observability": [
@@ -115,6 +159,10 @@
       {
         "signal": "Hosted/Auth/VITAL/production mutation delta",
         "expected_result": "Exactly zero direct hosted Auth mutations, VITAL mutations and production-target mutations during package evidence materialization."
+      },
+      {
+        "signal": "Auth security profile por ambiente y requisito",
+        "expected_result": "Decisiones de revocación, assurance, duración y password security con evidencia redactada; capacidad no soportada es bloqueo explícito."
       }
     ],
     "acceptance_criteria": [
@@ -125,13 +173,18 @@
       "Each of the eleven canonical TREQ IDs currently assigned to GAP-PKG-018 has explicit package-specific evidence in the six reserved TP-DB-001 artifacts.",
       "No database schema, hosted Auth configuration, VITAL object, legacy Auth foreign key or production environment is modified by this adoption package unless a later package-gate re-maturation explicitly authorizes a proven delta.",
       "All six package-specific evidence artifacts plus the clean local Supabase replay and canonical npm regression facade pass before physical verification.",
-      "Production remains unauthorized; the only remote deployment target declared by the dossier is STAGING project rcrxixmqhrndcervbllp under SUPA-TRANS-015 governance."
+      "Production remains unauthorized; the only remote deployment target declared by the dossier is STAGING project rcrxixmqhrndcervbllp under SUPA-TRANS-015 governance.",
+      "TREQ-SUPABASE-128: Cuenta bloqueada: refresh rechazado y revocación comprobada; un JWT previo no otorga acceso sensible sin validar sesión vigente. Tres cuentas y seis refresh tokens son fixture histórico, nunca objetivos actuales ni credenciales reales.",
+      "TREQ-SUPABASE-136: Política explícita por sensibilidad: AAL1 rechazado en operaciones que exigen step-up, AAL2 aceptado tras MFA vigente; duración y expiración verificables. La baseline de 174 sesiones no se conserva como conteo de aceptación. Capacidad hosted limitada por plan exige alternativa verificable o excepción acotada.",
+      "TREQ-SUPABASE-238: Registro y cambio de contraseña comprometida rechazados con fixture sintético. Protección hosted habilitada si está disponible; excepción temporal solo con riesgo, fecha, owner y prueba de alternativa, nunca PASS por ausencia de configuración.",
+      "No reescribir AUTH-DB-019/035 ni hacer DML sobre auth.users, auth.sessions o auth.refresh_tokens. Interfaces administrativas soportadas; cambio remoto requiere autorización física vigente distinta de este dossier."
     ],
     "rollback_steps": [
       "If package-specific evidence materialization fails, revert only the GAP-PKG-018 evidence files created by the authorized implementation instance; do not alter the already VERIFIED AUTH-DB-019 foundation.",
       "If tests prove that identity_access requires a product or schema delta, stop the implementation and re-mature GAP-PKG-018 with the exact new physical target before making that delta.",
       "No database rollback is required for the dossier as currently scoped because the physical product/schema operation is adoption without modification and the confirmed delta is package-specific evidence only.",
-      "After any evidence rollback, rerun the existing AUTH-DB-019 and AUTH-DB-033 local database tests to confirm the pre-package physical foundation remains unchanged."
+      "After any evidence rollback, rerun the existing AUTH-DB-019 and AUTH-DB-033 local database tests to confirm the pre-package physical foundation remains unchanged.",
+      "Restaurar política/configuración desde snapshot previo mediante interfaces soportadas y pruebas; no intentar recuperar tokens revocados. Si assurance o password security falla, mantener bloqueadas las operaciones sensibles."
     ]
   },
   "authorization": {
@@ -175,16 +228,235 @@
       "TREQ-SUPABASE-238"
     ],
     "previous_evidence_preserved": true,
-    "approval_required_for_extended_scope": true
+    "approval_required_for_extended_scope": true,
+    "requirement_coverage": [
+      {
+        "treq_id": "TREQ-SUPABASE-128",
+        "target_paths": [
+          "scripts/supabase/auth-security-profile.mjs",
+          "tests/packages/GAP-PKG-018/auth-security.test.ts"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-018/auth-security.test.ts",
+          "node scripts/supabase/auth-security-profile.mjs --check --policy supabase/auth-security-policy.json"
+        ],
+        "oracle": "Cuenta bloqueada: refresh rechazado y revocación comprobada; un JWT previo no otorga acceso sensible sin validar sesión vigente. Tres cuentas y seis refresh tokens son fixture histórico, nunca objetivos actuales ni credenciales reales.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-136",
+        "target_paths": [
+          "supabase/auth-security-policy.json",
+          "supabase/config.toml",
+          "tests/packages/GAP-PKG-018/auth-security.test.ts"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-018/auth-security.test.ts",
+          "node scripts/supabase/auth-security-profile.mjs --check --policy supabase/auth-security-policy.json"
+        ],
+        "oracle": "Política explícita por sensibilidad: AAL1 rechazado en operaciones que exigen step-up, AAL2 aceptado tras MFA vigente; duración y expiración verificables. La baseline de 174 sesiones no se conserva como conteo de aceptación. Capacidad hosted limitada por plan exige alternativa verificable o excepción acotada.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-238",
+        "target_paths": [
+          "supabase/auth-security-policy.json",
+          "scripts/supabase/auth-security-profile.mjs",
+          "tests/packages/GAP-PKG-018/auth-security.test.ts"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-018/auth-security.test.ts",
+          "node scripts/supabase/auth-security-profile.mjs --check --policy supabase/auth-security-policy.json"
+        ],
+        "oracle": "Registro y cambio de contraseña comprometida rechazados con fixture sintético. Protección hosted habilitada si está disponible; excepción temporal solo con riesgo, fecha, owner y prueba de alternativa, nunca PASS por ausencia de configuración.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      }
+    ]
   },
   "physical_discovery": {
-    "status": "PENDING",
-    "searches": [],
-    "findings": [],
-    "unresolved_findings": [
-      "TREQ-SUPABASE-128: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-136: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-238: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre."
-    ]
-  }
+    "status": "COMPLETE",
+    "searches": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "Identidad preexistente AUTH-DB-019/035; ampliación Auth sin mutación de tablas administradas",
+        "method": "rg --files; lectura de archivos y contratos; git ls-files",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; archivos existentes adoptados o modificados y archivos ausentes reservados como CREAR; no se afirma implementación de targets futuros."
+      }
+    ],
+    "findings": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260829200745_auth_db_019_identity_links.sql",
+        "symbol_or_surface": "identity_access.principals; identity_access.identity_resolution_cases; identity_access.enterprise_identity_links",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/migrations/20260829200745_auth_db_019_identity_links.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-018.sql",
+        "symbol_or_surface": "GAP-PKG-018 TP-DB-001 pgTAP adoption evidence for identity_access",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/tests/packages/GAP-PKG-018.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 identity contract evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-018/contract.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 Auth-to-enterprise identity integration evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-018/integration.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 identity security boundary evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-018/security.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 controlled identity resolution end-to-end evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-018/e2e.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-DB-001 fixtures for GAP-PKG-018 canonical TREQ evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-018/fixtures.json; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/auth-security-policy.json",
+        "symbol_or_surface": "Política versionada: rechazo de renovación bloqueada, assurance por sensibilidad, duración de sesión y protección de contraseña filtrada.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/auth-security-policy.json; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/auth-security-profile.mjs",
+        "symbol_or_surface": "Auditoría y configuración gobernada de Auth mediante interfaces soportadas; sin DML directo en auth.*; no imprimir tokens.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/supabase/auth-security-profile.mjs; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/auth-security.test.ts",
+        "symbol_or_surface": "TREQ-SUPABASE-128/136/238: fixtures de bloqueo, refresh rechazado, JWT residual, AAL1/AAL2, expiración y contraseña comprometida.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-018/auth-security.test.ts; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/config.toml",
+        "symbol_or_surface": "Configuración local Auth/MFA/sesiones y parity explícita con capacidad hosted; secure_password_change y assurance según política.",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/config.toml; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260831233918_auth_db_035_context_freshness.sql",
+        "symbol_or_surface": "AUTH-DB-035 contexto de sesión y bridge privado administrado; reutilizar sin reescribir migración histórica.",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/migrations/20260831233918_auth_db_035_context_freshness.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/database/042_auth_db_035_context_freshness.test.sql",
+        "symbol_or_surface": "Regresión AUTH-DB-035 de session_id, freshness, expiración y ausencia de datos secretos.",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/tests/database/042_auth_db_035_context_freshness.test.sql; lectura física realizada"
+      }
+    ],
+    "unresolved_findings": []
+  },
+  "physical_identity_history": [
+    {
+      "recorded_at": "2026-10-02T17:28:29.055Z",
+      "reason": "Targets ya implementados pasan de CREAR a MODIFICAR/adopción; se conserva la declaración histórica.",
+      "physical_identity": {
+        "targets": [
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/migrations/20260829200745_auth_db_019_identity_links.sql",
+            "symbol_or_surface": "identity_access.principals; identity_access.identity_resolution_cases; identity_access.enterprise_identity_links",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/tests/packages/GAP-PKG-018.sql",
+            "symbol_or_surface": "GAP-PKG-018 TP-DB-001 pgTAP adoption evidence for identity_access",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-018/contract.test.ts",
+            "symbol_or_surface": "GAP-PKG-018 identity contract evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-018/integration.test.ts",
+            "symbol_or_surface": "GAP-PKG-018 Auth-to-enterprise identity integration evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-018/security.test.ts",
+            "symbol_or_surface": "GAP-PKG-018 identity security boundary evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-018/e2e.test.ts",
+            "symbol_or_surface": "GAP-PKG-018 controlled identity resolution end-to-end evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-018/fixtures.json",
+            "symbol_or_surface": "Deterministic TP-DB-001 fixtures for GAP-PKG-018 canonical TREQ evidence",
+            "operation": "CREAR"
+          }
+        ]
+      }
+    }
+  ]
 }

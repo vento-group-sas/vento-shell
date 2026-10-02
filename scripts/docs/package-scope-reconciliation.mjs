@@ -91,6 +91,25 @@ export function validatePackageScopeReconciliation({ root = process.cwd(), optio
     if (gate.authorization?.decision === 'APROBADO') {
       require(Date.parse(gate.authorization.approved_at) > Date.parse(superseded?.superseded_at), `${change.package_id}: aprobación antigua reutilizada para alcance ampliado`);
     }
+    const coverage = gate.scope_reconciliation?.requirement_coverage;
+    if (coverage || ['READY_FOR_APPROVAL', 'APPROVED_FOR_IMPLEMENTATION'].includes(gate.status)) {
+      require(Array.isArray(coverage), `${change.package_id}: expediente maduro sin cobertura del alcance ampliado`);
+      const ids = (coverage ?? []).map((entry) => entry.treq_id).sort();
+      require(JSON.stringify(ids) === JSON.stringify(change.additional_treq_ids.slice().sort()), `${change.package_id}: cobertura incompleta del alcance ampliado`);
+      const paths = new Set((gate.physical_identity?.targets ?? []).map((entry) => entry.path));
+      const commands = new Set((gate.evidence_plan?.tests ?? []).map((entry) => entry.command));
+      for (const entry of coverage ?? []) {
+        require(Array.isArray(entry.target_paths) && entry.target_paths.length > 0 && entry.target_paths.every((target) => paths.has(target)), `${entry.treq_id}: cobertura apunta a target no declarado`);
+        require(Array.isArray(entry.validation_commands) && entry.validation_commands.length > 0 && entry.validation_commands.every((command) => commands.has(command)), `${entry.treq_id}: prueba fuera del expediente`);
+        require(typeof entry.oracle === 'string' && entry.oracle.length > 40, `${entry.treq_id}: oracle del alcance ampliado ausente`);
+        require(entry.legacy_evidence_covers_requirement === false, `${entry.treq_id}: evidencia histórica no cubre el requisito ampliado`);
+        const verified = entry.implementation_status === 'VERIFIED_WITH_EVIDENCE'
+          && entry.execution_evidence?.result === 'PASS'
+          && /^[a-f0-9]{40}$/u.test(entry.execution_evidence?.source_commit ?? '')
+          && Boolean(entry.execution_evidence?.reference);
+        require(entry.implementation_status === 'PLANNED_NOT_IMPLEMENTED' || verified, `${entry.treq_id}: implementación declarada sin evidencia atribuible`);
+      }
+    }
   }
   let transfers = 0;
   for (const item of ledger.packages ?? []) {
@@ -123,6 +142,18 @@ export function validatePackageScopeReconciliation({ root = process.cwd(), optio
       const gate = JSON.parse(read(gatePath));
       require(gate.canonical_snapshot?.dominant_task_id === item.dominant_task_id && gate.canonical_snapshot?.runtime_profile === item.runtime_profile, `${item.package_id}: snapshot del gate obsoleto`);
       for (const forbidden of item.removed_support_task_ids) require(!gate.canonical_snapshot?.task_ids?.includes(forbidden), `${item.package_id}: snapshot conserva soporte ajeno ${forbidden}`);
+      if (gate.publication_scope) {
+        const snapshot = JSON.parse(read(gate.publication_scope.discovery_ref));
+        const observations = snapshot.repositories ?? [];
+        const proposals = gate.publication_scope.repository_decisions ?? [];
+        require(observations.length === 10 && new Set(observations.map((entry) => entry.repository)).size === 10, `${item.package_id}: inventario GitHub incompleto o duplicado`);
+        require(JSON.stringify(observations.map((entry) => entry.repository).sort()) === JSON.stringify(proposals.map((entry) => entry.repository).sort()), `${item.package_id}: propuesta no cubre los diez repositorios observados`);
+        require(snapshot.mutation === false && snapshot.secret_values_collected === false, `${item.package_id}: discovery debe ser read-only sin valores secretos`);
+        for (const proposal of proposals) {
+          const observed = observations.find((entry) => entry.repository === proposal.repository);
+          require(observed?.visibility === proposal.observed_visibility && observed?.visibility === proposal.proposed_visibility, `${proposal.repository}: visibilidad propuesta divergente del inventario`);
+        }
+      }
     }
     for (const transfer of item.treq_transfers) {
       require(!seenTreq.has(transfer.treq_id), `${item.package_id}: traslado duplicado ${transfer.treq_id}`);

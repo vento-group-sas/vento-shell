@@ -176,6 +176,17 @@ function nextAction(pkg) {
       };
     }
 
+    if (pkg.package_gate.status === 'READY_FOR_APPROVAL') {
+      return {
+        type: 'APPROVE_PACKAGE_GATE',
+        target: packageId,
+        command: `npm run docs:package:gate:status -- --package-id ${packageId}`,
+        reason:
+          `${packageId} tiene el expediente completo; falta APROBADO humano explícito `
+          + 'para el gate. La aprobación del gate no autoriza implementación física.',
+      };
+    }
+
     if (pkg.package_gate.status !== 'APPROVED_FOR_IMPLEMENTATION') {
       return {
         type: 'MATURE_PACKAGE_GATE',

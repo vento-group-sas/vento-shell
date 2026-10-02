@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import fs from "node:fs"
 import test from "node:test"
+import { assessPackageGateRecord, readPackageGatePolicy } from "../../../scripts/docs/package-gate-control.mjs"
 
 const fixtures = JSON.parse(fs.readFileSync("tests/packages/GAP-PKG-018/fixtures.json", "utf8"))
 const gate = JSON.parse(fs.readFileSync("docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json", "utf8"))
@@ -49,8 +50,15 @@ function gap018TreqIds() {
     .sort()
 }
 
-test("GAP-PKG-018 binds exactly the eleven canonical TREQ contracts", () => {
-  assert.deepEqual(gap018TreqIds(), [...expectedTreqIds].sort())
+test("GAP-PKG-018 separates its historical fixtures from the three extended contracts", () => {
+  const extended = gate.scope_reconciliation.requirement_coverage
+  assert.deepEqual(extended.map(({ treq_id }) => treq_id).sort(), ["TREQ-SUPABASE-128", "TREQ-SUPABASE-136", "TREQ-SUPABASE-238"])
+  assert.deepEqual(gap018TreqIds(), [...expectedTreqIds, ...extended.map(({ treq_id }) => treq_id)].sort())
+  for (const requirement of extended) {
+    assert.equal(requirement.legacy_evidence_covers_requirement, false)
+    assert.ok(requirement.target_paths.length > 0)
+    assert.ok(requirement.validation_commands.every((command) => gate.evidence_plan.tests.some((entry) => entry.command === command)))
+  }
   assert.deepEqual([...fixtures.treq_ids].sort(), [...expectedTreqIds].sort())
   assert.equal(fixtures.requirements.length, 11)
   for (const requirement of fixtures.requirements) {
@@ -62,7 +70,7 @@ test("GAP-PKG-018 binds exactly the eleven canonical TREQ contracts", () => {
 
 test("GAP-PKG-018 source contract uses the current canonical semantic profile", () => {
   assert.equal(gate.package_id, "GAP-PKG-018")
-  assert.equal(gate.status, "APPROVED_FOR_IMPLEMENTATION")
+  assert.equal(gate.status, assessPackageGateRecord(gate, { policy: readPackageGatePolicy() }).status)
   assert.equal(gate.canonical_snapshot.repository_owner, "devVentoGroup/vento-shell")
   assert.equal(gate.canonical_snapshot.runtime_profile, "DATABASE_RPC_BOUNDARY")
   assert.equal(gate.canonical_snapshot.dominant_task_id, "SUPA-AUD-010")
@@ -78,10 +86,15 @@ test("GAP-PKG-018 source contract uses the current canonical semantic profile", 
   assert.equal(fixtures.source_contract_policy, "SEMANTIC_RUNTIME_GUARD_NO_RAW_FILE_PIN")
 })
 
-test("GAP-PKG-018 physical delta adopts AUTH-DB-019 and creates evidence only", () => {
-  const actual = gate.physical_identity.targets.map(({ path, operation }) => [path, operation])
-  assert.deepEqual(actual, expectedTargets)
-  assert.deepEqual(gate.evidence_plan.tests.map(({ command }) => command), expectedValidationCommands)
+test("GAP-PKG-018 preserves implemented identity and declares its separate Auth delta", () => {
+  const actual = new Map(gate.physical_identity.targets.map(({ path, operation }) => [path, operation]))
+  for (const [path, operation] of expectedTargets) {
+    assert.equal(actual.get(path), operation === "CREAR" ? "MODIFICAR" : operation)
+  }
+  assert.equal(actual.get("scripts/supabase/auth-security-profile.mjs"), "CREAR")
+  assert.equal(actual.get("supabase/config.toml"), "MODIFICAR")
+  const commands = gate.evidence_plan.tests.map(({ command }) => command)
+  assert.ok(expectedValidationCommands.every((command) => commands.includes(command)))
   assert.equal(gate.deployment_environment.environment_profile, "ENV-SUPABASE-LOCAL-CI-STAGING")
   assert.equal(gate.deployment_environment.production_authorized, false)
   assert.deepEqual(gate.deployment_environment.targets, [{

@@ -15,6 +15,7 @@ function fixture(t) {
   const tempBase = fs.realpathSync(os.tmpdir());
   const root = fs.mkdtempSync(path.join(tempBase, 'vento-scope-test-'));
   for (const name of [RECONCILIATION_PATH, treqPath, e5Path, gatePath,
+    'scripts/docs/package-readiness/evidence/gap-pkg-003-discovery.json',
     'docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json',
     'docs/plan-canonico/modular/package-gate-instances/GAP-PKG-019.json',
     `${blocks}/E1_DESCUBRIMIENTO_OPERATIVO/07_REGISTRO_CANONICO_DE_BRECHAS.md`,
@@ -96,4 +97,46 @@ test('impide reutilizar una aprobación anterior para un alcance ampliado', (t) 
     return JSON.stringify(value);
   });
   assert.throws(() => validatePackageScopeReconciliation({ root }), /aprobación antigua reutilizada/u);
+});
+
+test('rechaza dossier listo con un requisito ampliado sin cobertura', (t) => {
+  const root = fixture(t);
+  change(root, 'docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json', (text) => {
+    const value = JSON.parse(text);
+    value.scope_reconciliation.requirement_coverage.pop();
+    return JSON.stringify(value);
+  });
+  assert.throws(() => validatePackageScopeReconciliation({ root }), /cobertura incompleta del alcance ampliado/u);
+});
+
+test('rechaza cobertura apuntada a un target fuera del expediente', (t) => {
+  const root = fixture(t);
+  change(root, 'docs/plan-canonico/modular/package-gate-instances/GAP-PKG-019.json', (text) => {
+    const value = JSON.parse(text);
+    value.scope_reconciliation.requirement_coverage[0].target_paths = ['invented.sql'];
+    return JSON.stringify(value);
+  });
+  assert.throws(() => validatePackageScopeReconciliation({ root }), /target no declarado/u);
+});
+
+test('rechaza usar evidencia antigua para acreditar la implementación ampliada', (t) => {
+  const root = fixture(t);
+  change(root, 'docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json', (text) => {
+    const value = JSON.parse(text);
+    value.scope_reconciliation.requirement_coverage[0].implementation_status = 'VERIFIED_WITH_EVIDENCE';
+    value.scope_reconciliation.requirement_coverage[0].legacy_evidence_covers_requirement = true;
+    return JSON.stringify(value);
+  });
+  assert.throws(() => validatePackageScopeReconciliation({ root }), /evidencia histórica no cubre|sin evidencia atribuible/u);
+});
+
+test('rechaza presentar los diez repositorios como públicos cuando el inventario contiene privados', (t) => {
+  const root = fixture(t);
+  change(root, gatePath, (text) => {
+    const value = JSON.parse(text);
+    const privateRepo = value.publication_scope.repository_decisions.find((entry) => entry.observed_visibility === 'private');
+    privateRepo.proposed_visibility = 'public';
+    return JSON.stringify(value);
+  });
+  assert.throws(() => validatePackageScopeReconciliation({ root }), /visibilidad propuesta divergente/u);
 });
