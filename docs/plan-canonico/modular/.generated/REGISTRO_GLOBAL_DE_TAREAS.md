@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1584** |
+| Aprobadas | **1585** |
 | En propuesta | **0** |
-| No iniciadas | **12** |
+| No iniciadas | **11** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **99.25% (1584/1596)** |
+| Porcentaje de completamiento | **99.31% (1585/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **12** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1485** |
+| ⏸ NO_EVALUADA | **11** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1486** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,8 +65,8 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada | ✅ APROBADA |
-| Tarea actual | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | ✅ APROBADA |
+| Estado de secuencia | NINGUNA TAREA ACTUAL | ✅ SECUENCIA DOCUMENTAL COMPLETA |
 
 ## Registro completo
 
@@ -1309,7 +1309,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `INT-DB-007` | Crear auditoría de procesamiento, reintentos y compensaciones | — | — | `bloques/R_SUPABASE/05_INFRAESTRUCTURA_DE_INTEGRACIONES_EXTERNAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `INT-DB-008` | Crear mecanismos de conciliación por integración | — | — | `bloques/R_SUPABASE/05_INFRAESTRUCTURA_DE_INTEGRACIONES_EXTERNAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DB-030` | Retirar objetos legacy únicamente después de adopción comprobada | — | — | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-DB-031` | Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | — | — | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-DB-031` | Certificar paridad entre documento, vento-shell, Supabase y aplicaciones | — | — | `bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-ERR-001` | Sin sesión | — | — | `bloques/S_MENSAJES_BLOQUEO/01_IDENTIDAD_APLICACION_Y_TERRITORIO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-ERR-002` | Usuario inactivo | — | — | `bloques/S_MENSAJES_BLOQUEO/01_IDENTIDAD_APLICACION_Y_TERRITORIO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-ERR-003` | Sin acceso a la aplicación | — | — | `bloques/S_MENSAJES_BLOQUEO/01_IDENTIDAD_APLICACION_Y_TERRITORIO.md` |
