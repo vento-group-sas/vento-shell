@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   classifyPreflightFindings,
   parseWorktreePaths,
+  resolvePreflightTaskId,
   terminalSafeText,
   validatorsForPath,
   validatorsForPreflight,
@@ -15,6 +16,38 @@ test('normaliza salida operativa de terminal a ASCII seguro', () => {
   const normalized = terminalSafeText(source);
   assert.equal(normalized, '[PLAN CANONICO] -> ACCION PRINCIPAL: valido PASS');
   assert.doesNotMatch(normalized, /[^\x09\x0A\x0D\x20-\x7E]/u);
+});
+
+test('ruta completa usa la última aprobada como ancla sin inventar tarea actual', () => {
+  assert.equal(
+    resolvePreflightTaskId({
+      currentTaskId: null,
+      lastApprovedTaskId: 'AUTH-DB-031',
+    }),
+    'AUTH-DB-031',
+  );
+  assert.equal(
+    resolvePreflightTaskId({
+      requestedTaskId: 'AUTH-DB-030',
+      currentTaskId: null,
+      lastApprovedTaskId: 'AUTH-DB-031',
+    }),
+    'AUTH-DB-030',
+  );
+  assert.equal(resolvePreflightTaskId(), null);
+
+  const findings = classifyPreflightFindings({
+    requestedTaskId: null,
+    currentTaskId: null,
+    worktreePaths: [],
+    behind: 0,
+    ahead: 0,
+    activeSequenceCurrent: true,
+    formatState: 'OK',
+    contractErrors: [],
+  });
+
+  assert.deepEqual(findings.blockers, []);
 });
 
 test('asigna validadores globales a cualquier tarea documental', () => {

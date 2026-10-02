@@ -114,6 +114,19 @@ export function validatorsForPreflight({ relativePath, requestedInstance = null 
   return validatorsForPath(relativePath);
 }
 
+export function resolvePreflightTaskId({
+  requestedTaskId = null,
+  requestedInstanceTaskId = null,
+  currentTaskId = null,
+  lastApprovedTaskId = null,
+} = {}) {
+  return requestedTaskId
+    ?? requestedInstanceTaskId
+    ?? currentTaskId
+    ?? lastApprovedTaskId
+    ?? null;
+}
+
 export function classifyPreflightFindings({
   requestedTaskId = null,
   currentTaskId = null,
@@ -237,7 +250,12 @@ export function derivePreflight({
   if (requestedTaskId && requestedInstance && requestedTaskId !== requestedInstance.task_id) {
     fail(`${requestedInstanceId} pertenece a ${requestedInstance.task_id}, no a ${requestedTaskId}.`);
   }
-  const taskId = requestedTaskId ?? requestedInstance?.task_id ?? currentTaskId;
+  const taskId = resolvePreflightTaskId({
+    requestedTaskId,
+    requestedInstanceTaskId: requestedInstance?.task_id ?? null,
+    currentTaskId,
+    lastApprovedTaskId: continuity.lastApproved?.id ?? null,
+  });
   if (!taskId) fail('la ruta está completa y no existe una tarea actual.');
   const task = taskMap.get(taskId);
   if (!task) fail(`${taskId} no es una tarea canónica física disponible para preflight.`);
@@ -276,7 +294,7 @@ export function derivePreflight({
   const [behind, ahead] = divergenceRaw?.split(/\s+/u).map(Number) ?? [null, null];
   const activeSequenceCurrent = activeSource === expectedActiveSource;
   const { blockers, advisories } = classifyPreflightFindings({
-    requestedTaskId: taskId,
+    requestedTaskId: requestedTaskId ?? requestedInstance?.task_id ?? currentTaskId,
     currentTaskId,
     requestedInstance,
     worktreePaths: changedPaths,
