@@ -1,0 +1,382 @@
+{
+  "schema_version": 1,
+  "reconciliation_id": "IMPLEMENTATION-SCOPE-RECONCILIATION-001",
+  "phase": "POST_E5_PACKAGE",
+  "authorization_scope": "Corrección solicitada por el usuario; no aprueba gates ni ejecución remota.",
+  "packages": [
+    {
+      "package_id": "GAP-PKG-003",
+      "gap_id": "H-CODE-017-023",
+      "dominant_task_id": "CODE-AUD-020",
+      "capability_id": "CAP-15.01",
+      "runtime_profile": "CONTROL_NO_DIRECT_RUNTIME",
+      "test_profile": "TP-CONTROL-001",
+      "removed_support_task_ids": [
+        "AURA-AUTH-002",
+        "AURA-AUTH-003",
+        "AURA-AUTH-004"
+      ],
+      "original_treq_count": 25,
+      "treq_transfers": [
+        {
+          "treq_id": "TREQ-SUPABASE-006",
+          "previous_package_ids": [
+            "GAP-PKG-134",
+            "GAP-PKG-151",
+            "GAP-PKG-003",
+            "GAP-PKG-001"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-001",
+            "GAP-PKG-068",
+            "GAP-PKG-134",
+            "GAP-PKG-151"
+          ],
+          "reason": "Automatizaciones, secretos y fronteras privilegiadas; raíz SUPA-ARC-020.",
+          "original_rule": "Toda Edge Function con `verify_jwt=false` deberá declarar una razón aprobada y aplicar un control propio obligatorio y fail-closed; la ausencia de secreto, firma, token o identidad deberá bloquear la ejecución antes de crear un cliente `service_role` o leer y mutar datos."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-017",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "El inventario deberá reconciliar por schema los conteos de tablas, particiones, vistas, vistas materializadas, secuencias, tablas extranjeras, rutinas, enums, dominios y extensiones mediante catálogos PostgreSQL."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-020",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-019"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "La ubicación actual de cada extensión deberá quedar asociada al schema observado sin concluir todavía que su ubicación sea correcta, administrada, movible o reproducible."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-030",
+          "previous_package_ids": [
+            "GAP-PKG-134",
+            "GAP-PKG-151",
+            "GAP-PKG-003",
+            "GAP-PKG-068"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-068",
+            "GAP-PKG-134",
+            "GAP-PKG-151"
+          ],
+          "reason": "Automatizaciones, secretos y fronteras privilegiadas; raíz SUPA-ARC-020.",
+          "original_rule": "`cron`, `net`, `vault` y `extensions` deberán conservar clasificación administrada por extensión o contenedor de extensiones; habilitar una extensión no autorizará editar sus objetos internos ni almacenar allí entidades empresariales."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-031",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "`graphql` y `graphql_public` deberán permanecer clasificados como namespaces reservados de plataforma aun cuando `pg_graphql` esté deshabilitado, `graphql` esté vacío y `graphql_public.graphql(...)` sea una función de compatibilidad."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-055",
+          "previous_package_ids": [
+            "GAP-PKG-134",
+            "GAP-PKG-151",
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019",
+            "GAP-PKG-134",
+            "GAP-PKG-151"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "La persistencia deberá reconciliar 638 relaciones permanentes, 2 UNLOGGED y 0 temporales; net._http_response y net.http_request_queue deberán permanecer identificadas como las únicas relaciones UNLOGGED mientras el corte no cambie.",
+          "effective_rule": "El corte histórico de SUPA-AUD-004 conserva 638 relaciones permanentes, 2 UNLOGGED y 0 temporales, con net._http_response y net.http_request_queue identificadas como UNLOGGED. La implementación deberá reconciliar la persistencia vigente con el manifiesto aprobado del ambiente, detectar drift y justificar toda relación nueva, retirada o reclasificada; no exigirá conservar el conteo histórico como objetivo.",
+          "rule_change_reason": "Separar corte histórico reproducible y oracle actual de implementación; impedir PASS por conservar un defecto o conteo obsoleto."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-087",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-019"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "Las 348 funciones ubicadas en esquemas gobernados por Vento deberán reconciliarse como 211 SECURITY DEFINER y 137 SECURITY INVOKER, distinguiendo 344 funciones owner postgres y cuatro funciones unaccent administradas por extensión dentro de public.",
+          "effective_rule": "El corte histórico de SUPA-AUD-007 conserva 348 funciones en esquemas Vento: 211 SECURITY DEFINER y 137 SECURITY INVOKER, con 344 owner postgres y cuatro funciones unaccent administradas por extensión dentro de public. La implementación deberá reconciliar inventario, modo, owner y clase vigentes con contratos y manifiesto del ambiente; la corrección autorizada podrá cambiar esas cifras sin borrar el corte histórico ni apropiarse de objetos administrados.",
+          "rule_change_reason": "Separar corte histórico reproducible y oracle actual de implementación; impedir PASS por conservar un defecto o conteo obsoleto."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-092",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-019"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario y configuración de funciones Vento y administradas, bajo SUPA-AUD-016. No amplía el alcance del gate GAP-PKG-001 ya aprobado.",
+          "original_rule": "Las 211 funciones DEFINER Vento deberán conservar search_path fijado: 23 con pg_temp explícito al final, 188 sin pg_temp explícito y cero con search_path vacío; las tres funciones DEFINER administradas deberán conservar search_path vacío.",
+          "effective_rule": "El corte histórico conserva 211 funciones DEFINER Vento con search_path fijado: 23 con pg_temp al final y 188 sin pg_temp explícito; las tres DEFINER administradas conservaban search_path vacío. La implementación deberá probar search_path y ACL de cada función Vento contra su contrato aprobado y comprobar que las migraciones empresariales no alteran funciones administradas; la distribución histórica no será una condición obligatoria del estado corregido.",
+          "rule_change_reason": "Separar corte histórico reproducible y oracle actual de implementación; impedir PASS por conservar un defecto o conteo obsoleto."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-093",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "pgbouncer.get_auth, vault.create_secret y vault.update_secret deberán permanecer clasificadas como las tres SECURITY DEFINER administradas por Supabase, con owner supabase_admin, search_path vacío y sin ejecución para anon o authenticated."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-096",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "Las 137 funciones SECURITY INVOKER de esquemas Vento deberán conservar 95 directas y 42 de trigger; cuatro funciones unaccent sin search_path fijado deberán permanecer identificadas como objetos administrados por extensión y no como deuda funcional Vento.",
+          "effective_rule": "El corte histórico conserva 137 funciones SECURITY INVOKER Vento, 95 directas y 42 de trigger, y cuatro funciones unaccent sin search_path fijado como objetos administrados por extensión. La implementación deberá reconciliar el inventario vigente contra contratos y manifiesto aprobado, mantener la separación entre objetos Vento y administrados y detectar drift; no deberá conservar conteos históricos para aprobar una corrección.",
+          "rule_change_reason": "Separar corte histórico reproducible y oracle actual de implementación; impedir PASS por conservar un defecto o conteo obsoleto."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-108",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-019"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "Los seis event triggers administrados deberán conservar identidad, evento, tags, función owner supabase_admin y modo ORIGIN; no podrán alterarse mediante migraciones empresariales."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-116",
+          "previous_package_ids": [
+            "GAP-PKG-018",
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-018"
+          ],
+          "reason": "Identidad, sesiones, bloqueo, MFA y configuración de Auth; raíz SUPA-AUD-010.",
+          "original_rule": "Los atributos y membresías de roles deberán conservarse por huella; authenticator deberá mantener NOINHERIT y capacidad SET sobre anon, authenticated y service_role sin heredar simultáneamente sus privilegios."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-117",
+          "previous_package_ids": [
+            "GAP-PKG-018",
+            "GAP-PKG-134",
+            "GAP-PKG-151",
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-018",
+            "GAP-PKG-134",
+            "GAP-PKG-151"
+          ],
+          "reason": "Identidad, sesiones, bloqueo, MFA y configuración de Auth; raíz SUPA-AUD-010.",
+          "original_rule": "service_role y todo rol con BYPASSRLS deberán tratarse como identidades privilegiadas de backend; ninguna credencial, cliente público, dispositivo compartido o sesión de usuario podrá operar con ellas."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-126",
+          "previous_package_ids": [
+            "GAP-PKG-018",
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-018"
+          ],
+          "reason": "Identidad, sesiones, bloqueo, MFA y configuración de Auth; raíz SUPA-AUD-010.",
+          "original_rule": "La matriz de sesiones deberá reconciliar 174 sesiones AAL1, 172 con refresh token no revocado, 2 sin token renovable, 6.371 refresh tokens totales y 6.199 revocados, sin referencias huérfanas.",
+          "effective_rule": "El corte histórico de SUPA-AUD-010 conserva 174 sesiones AAL1, 172 con refresh token no revocado, 2 sin token renovable, 6.371 refresh tokens totales y 6.199 revocados. Estos datos serán un fixture de auditoría sanitizado; la implementación deberá reconciliar sesiones y tokens del ambiente vigente, sin referencias huérfanas, y probar revocación y renovación conforme al contrato de Auth. No se exigirá reproducir esos conteos en staging ni producción.",
+          "rule_change_reason": "Separar corte histórico reproducible y oracle actual de implementación; impedir PASS por conservar un defecto o conteo obsoleto."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-128",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-018"
+          ],
+          "reason": "Identidad, sesiones, bloqueo, MFA y configuración de Auth; raíz SUPA-AUD-010.",
+          "original_rule": "El bloqueo de una cuenta deberá reconciliar revocación y rechazo de renovación; las tres cuentas bloqueadas y seis refresh tokens no revocados deberán permanecer como caso de prueba hasta resolución."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-136",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-018"
+          ],
+          "reason": "Identidad, sesiones, bloqueo, MFA y configuración de Auth; raíz SUPA-AUD-010.",
+          "original_rule": "La política de aseguramiento deberá decidir MFA/step-up y duración por sensibilidad; la línea base de 174 sesiones AAL1, cero factores MFA, cero AAL2 y 174 not_after nulos deberá permanecer explícita hasta esa decisión."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-137",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-019"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "Los objetos administrados de Auth —audit logs, flow state, one-time tokens, MFA, SSO y OAuth— deberán auditarse sin migraciones empresariales y con retención/configuración resueltas en SUPA-AUD-015."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-145",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-060"
+          ],
+          "reason": "Autorización y credencial de actor humano/dispositivo compartido; incluye SUPA-ARC-008 y AUTH-SRV.",
+          "original_rule": "El PIN operativo no podrá almacenarse en texto plano: el registro laboral que conserva pin_code deberá migrarse a un mecanismo hash o credencial aprobada; no podrá coexistir texto y hash ni usarse el PIN como identidad primaria."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-164",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-082"
+          ],
+          "reason": "Límites y validación de Storage; raíz SUPA-AUD-012.",
+          "original_rule": "Todos los buckets con contenido activo deberán declarar file_size_limit y allowed_mime_types apropiados a su finalidad; documents y public-documents no podrán permanecer sin límites ni allowlist explícitos."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-192",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-068"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-068"
+          ],
+          "reason": "Automatizaciones, secretos y fronteras privilegiadas; raíz SUPA-ARC-020.",
+          "original_rule": "Las configuraciones legibles por anon o authenticated no podrán contener secretos, credenciales, firmas, tokens internos ni material equivalente; app_config deberá separar configuración pública de configuración privada y probar negativamente la lectura de cada clave sensible."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-193",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-068"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-068"
+          ],
+          "reason": "Automatizaciones, secretos y fronteras privilegiadas; raíz SUPA-ARC-020.",
+          "original_rule": "Toda credencial observada en cron.job.command o configuración públicamente legible deberá considerarse expuesta, rotarse y retirarse de SQL persistido; cron y productores internos deberán usar Vault, secret keys o una indirection privada con acceso mínimo y evidencia de rotación."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-194",
+          "previous_package_ids": [
+            "GAP-PKG-003",
+            "GAP-PKG-068"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-068"
+          ],
+          "reason": "Automatizaciones, secretos y fronteras privilegiadas; raíz SUPA-ARC-020.",
+          "original_rule": "Toda autenticación por secreto personalizado deberá ser fail-closed: ausencia, valor vacío, error de lectura o configuración incompleta deberán negar la ejecución privilegiada y generar alerta; nunca deberán convertir el endpoint en público."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-211",
+          "previous_package_ids": [
+            "GAP-PKG-019",
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "El validador integral deberá comprobar 24 Edge Functions activas, distribución 12 con verify_jwt=true y 12 false, siete cron jobs activos, cero pgmq, cero filas Vault, una ruta trigger HTTP activa, cero trigger de turnos remoto, cinco claves técnicas identificadas, cero requests pg_net pendientes, la exposición de app_config, la ausencia de credenciales literales y las huellas SHA-256 de SUPA-AUD-014.",
+          "effective_rule": "El validador integral deberá conservar como corte histórico de SUPA-AUD-014 las 24 Edge Functions, distribución 12 con verify_jwt=true y 12 false, siete cron jobs, cero pgmq, cero filas Vault, ruta trigger HTTP, cinco claves técnicas y huellas SHA-256 documentadas. Para la implementación vigente deberá comparar funciones, cron, colas, Vault, triggers y configuración con el manifiesto aprobado por ambiente, detectar drift y probar autenticación fail-closed. El oracle de seguridad deberá exigir ausencia de secretos legibles por anon/authenticated y de credenciales literales en SQL persistido; la exposición histórica de app_config se conserva como caso negativo, nunca como resultado esperado satisfactorio.",
+          "rule_change_reason": "Separar corte histórico reproducible y oracle actual de implementación; impedir PASS por conservar un defecto o conteo obsoleto."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-232",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-019"
+          ],
+          "reason": "Inventario, objetos administrados, configuración y paridad remoto/repositorio; raíz SUPA-AUD-016.",
+          "original_rule": "Timeouts de statement, lock, sesión e idle in transaction deberán tener valores por rol y ambiente, justificación, prueba de carga y alerta; cero o ilimitado solo se permitirá por decisión explícita."
+        },
+        {
+          "treq_id": "TREQ-SUPABASE-238",
+          "previous_package_ids": [
+            "GAP-PKG-003"
+          ],
+          "target_package_ids": [
+            "GAP-PKG-018"
+          ],
+          "reason": "Identidad, sesiones, bloqueo, MFA y configuración de Auth; raíz SUPA-AUD-010.",
+          "original_rule": "Supabase Auth deberá habilitar protección contra contraseñas filtradas o documentar excepción temporal con riesgo, fecha de cierre y prueba; el registro y cambio de contraseña deberán rechazar credenciales comprometidas."
+        }
+      ],
+      "acceptance_criteria": [
+        "Inventario actual de los diez repositorios y decisión explícita de visibilidad por repositorio; público no implica vulnerabilidad.",
+        "Controles de exposición, publicación y secretos con evidencia sanitizada y owner; excepción temporal con vencimiento cuando corresponda.",
+        "La auditoría documental no prueba ejecución del control; identidad y autorización se resuelven en el package gate vigente."
+      ],
+      "historical_baseline_policy": "Los cortes de auditoría se conservan como evidencia histórica. Ningún conteo, objeto, secreto expuesto o defecto histórico es un objetivo de implementación; el oracle del ambiente vigente se deriva del contrato aprobado y de su manifiesto actual."
+    }
+  ],
+  "baseline_commit": "950205cdd107c3248545ab13378581a4ea0c2ffc",
+  "source_evidence_refs": [
+    "CODE-AUD-017/H-CODE-017-023",
+    "CODE-AUD-020/BKL-XR-010",
+    "GAP-CTRL-006/GAP-PKG-003",
+    "DELIV-PKG-007..025",
+    "PACKAGE-GATE-LIFECYCLE-001"
+  ],
+  "implementation_stage_rule": "La ausencia de identidad para un artefacto nuevo se resuelve mediante el package gate vigente. Una contradicción del contrato se reconcilia explícitamente; no se trata como evidencia física ni se reinicia automáticamente una tarea documental aprobada.",
+  "affected_package_gates": [
+    {
+      "package_id": "GAP-PKG-018",
+      "additional_treq_ids": [
+        "TREQ-SUPABASE-128",
+        "TREQ-SUPABASE-136",
+        "TREQ-SUPABASE-238"
+      ],
+      "previous_approval_preserved_in_history": true,
+      "status": "MATURATION_DRAFT"
+    },
+    {
+      "package_id": "GAP-PKG-019",
+      "additional_treq_ids": [
+        "TREQ-SUPABASE-017",
+        "TREQ-SUPABASE-031",
+        "TREQ-SUPABASE-055",
+        "TREQ-SUPABASE-093",
+        "TREQ-SUPABASE-096",
+        "TREQ-SUPABASE-232"
+      ],
+      "previous_approval_preserved_in_history": true,
+      "status": "MATURATION_DRAFT"
+    }
+  ]
+}
