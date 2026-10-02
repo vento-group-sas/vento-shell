@@ -411,17 +411,15 @@ export function deriveImplementationControl({
         supplied: { skipDerivedReports: true },
       }).registry.package_execution;
   const operatorPolicy = control.execution_operator_policy;
-  const currentTask = workTopology.inventory.get(workTopology.currentId);
-  if (!suppliedPreflight && !currentTask) {
-    throw new Error('no se pudo resolver la tarea documental actual para el control de implementación.');
-  }
-  const preflight = suppliedPreflight ?? {
+  const currentTask = workTopology.inventory.get(workTopology.currentId) ?? null;
+  const documentaryComplete = currentTask === null;
+  const preflight = suppliedPreflight ?? (currentTask ? {
     task: {
       id: currentTask.id,
       title: currentTask.title,
       owner: currentTask.relativePath,
     },
-  };
+  } : null);
   const explicitById = new Map(control.instances.map((entry) => [entry.instance_id, entry]));
   const globalCandidates = workTopology.ordered
     .filter((task) => stateFromMarker(task.marker) === 'APROBADA')
@@ -667,21 +665,40 @@ export function deriveImplementationControl({
   };
   const primaryActions = actionableSet.map(actionForInstance);
   const compatibilitySelected = actionableSet[0] ?? null;
-  const documentary = {
-    taskId: preflight.task.id,
-    taskTitle: preflight.task.title,
-    actionType: 'DOCUMENTAR_TAREA',
-    state: 'ACTIVO',
-    parallelWithPhysical: actionableSet.length > 0,
-    owner: preflight.task.owner,
-  };
-  const primaryAction = primaryActions[0] ?? packagePrerequisiteAction ?? {
-    type: documentary.actionType,
-    target: documentary.taskId,
-    title: documentary.taskTitle,
-    instruction: `Desarrollar únicamente el contrato documental de ${documentary.taskId}; no iniciar su instancia física por inferencia.`,
-    why: 'No existe una instancia física gobernada autorizada, activa, pendiente de validación o lista para autorización.',
-  };
+  const documentary = documentaryComplete
+    ? {
+      taskId: 'NINGUNA',
+      taskTitle: 'SECUENCIA DOCUMENTAL COMPLETA',
+      actionType: 'DOCUMENTACION_COMPLETA',
+      state: 'COMPLETA',
+      parallelWithPhysical: false,
+      owner: 'NINGUNO',
+    }
+    : {
+      taskId: preflight.task.id,
+      taskTitle: preflight.task.title,
+      actionType: 'DOCUMENTAR_TAREA',
+      state: 'ACTIVO',
+      parallelWithPhysical: actionableSet.length > 0,
+      owner: preflight.task.owner,
+    };
+  const documentaryFallbackAction = documentaryComplete
+    ? {
+      type: documentary.actionType,
+      target: documentary.taskId,
+      title: documentary.taskTitle,
+      instruction: 'No abrir ni inferir otra tarea documental; continuar solo con trabajo gobernado por package o implementacion cuando corresponda.',
+      why: 'La continuidad canonica no contiene una tarea documental actual.',
+      command: null,
+    }
+    : {
+      type: documentary.actionType,
+      target: documentary.taskId,
+      title: documentary.taskTitle,
+      instruction: `Desarrollar únicamente el contrato documental de ${documentary.taskId}; no iniciar su instancia física por inferencia.`,
+      why: 'No existe una instancia física gobernada autorizada, activa, pendiente de validación o lista para autorización.',
+    };
+  const primaryAction = primaryActions[0] ?? packagePrerequisiteAction ?? documentaryFallbackAction;
   const modeByStatus = {
     IN_PROGRESS: 'GLOBAL_IMPLEMENTATION_ACTIVE',
     AUTHORIZED: 'GLOBAL_IMPLEMENTATION_AUTHORIZED',
@@ -694,7 +711,9 @@ export function deriveImplementationControl({
       : actionableSet.length > 1 ? 'GOVERNED_ACTIVE_SET' : modeByStatus[compatibilitySelected.status] ?? 'GLOBAL_IMPLEMENTATION_READY')
     : packagePrerequisiteAction
       ? 'IMPLEMENTATION_BLOCKED'
-      : 'DOCUMENTATION_ONLY';
+      : documentaryComplete
+        ? 'DOCUMENTATION_COMPLETE'
+        : 'DOCUMENTATION_ONLY';
   const authorized = instances.filter((instance) => (
     instance.stateIntegrityRecoveryRequired !== true
     && ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(instance.status)
@@ -722,12 +741,12 @@ export function deriveImplementationControl({
     primaryAction,
     primaryActions,
     coordination: {
-      mode: 'CONTROLLED_DUAL_LANE',
-      documentaryConcurrency: 'ONE_ACTIVE_TASK',
+      mode: documentaryComplete ? 'DOCUMENTATION_COMPLETE' : 'CONTROLLED_DUAL_LANE',
+      documentaryConcurrency: documentaryComplete ? 'NONE' : 'ONE_ACTIVE_TASK',
       physicalConcurrency: 'GOVERNED_ACTIVE_SET',
-      separateCheckoutsRequired: actionableSet.length > 0,
+      separateCheckoutsRequired: !documentaryComplete && actionableSet.length > 0,
       mergePolicy: 'SERIALIZED_CLOSE',
-      latestMainReconciliationRequired: actionableSet.length > 0,
+      latestMainReconciliationRequired: !documentaryComplete && actionableSet.length > 0,
       physicalContractFreeze: 'SOURCE_CONTRACT_SHA256',
     },
     documentary,
@@ -827,7 +846,7 @@ ${physicalRows}
 
 ## Regla operativa
 
-1. El carril documental conserva una sola tarea activa; el carril físico puede mantener un governed active set de instancias independientes, cada una en su checkout, sujeto a dependencias, autorización y resource locks.
+1. El carril documental conserva como máximo una tarea activa; cuando su estado es COMPLETA no se infiere ni se abre otra tarea por continuidad. El carril físico puede mantener un governed active set de instancias independientes, cada una en su checkout, sujeto a dependencias, autorización y resource locks.
 2. Aprobar un marcador documental crea elegibilidad, nunca autorización física automática.
 3. Código, migraciones, Supabase, despliegues o cambios remotos requieren una instancia explícitamente \`AUTHORIZED\`.
 4. \`AUTHORIZED\` habilita el trabajo físico, pero no concede al asistente permiso para escribirlo.

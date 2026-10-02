@@ -314,6 +314,61 @@ ${sourceContext(task)}
 `;
 }
 
+function renderTerminalDocumentationWork({ control, templateHash, repositoryRoot, ahead = false }) {
+  const physical = control.physical.active;
+  const physicalSet = control.physical.actionableSet ?? (physical ? [physical] : []);
+  return `INTENT_LOCK: DOCUMENTATION
+CONVERSATION_LANE: DOCUMENTARY
+DO_NOT_SWITCH_LANES: TRUE
+DOCUMENTATION_QUEUE: EMPTY
+DOCUMENTARY_STATE: ${control.documentary.state}
+DOCUMENTARY_TASK: ${control.documentary.taskId}
+DOCUMENTATION_VARIANT: ${ahead ? 'AHEAD_DISABLED_ROUTE_COMPLETE' : 'TERMINAL'}
+${ahead ? 'DOCUMENTATION_AHEAD_DISABLED: ROUTE_COMPLETE' : ''}
+
+REGLA CRÍTICA DE ESTA CONVERSACIÓN
+
+La secuencia documental canónica está completa. No existe una tarea documental actual ni una sucesora normal que pueda abrirse por inferencia.
+
+- No inventes una tarea documental.
+- Las tareas de etapas DEFERRED permanecen diferidas y no se promocionan a tarea actual.
+- NO autorices implementaciones desde este iniciador.
+- NO ejecutes implementaciones desde este iniciador.
+- Si el usuario solicita trabajo físico, usa el iniciador físico y su governed frontier.
+- Si una etapa diferida se reactiva mediante una decisión canónica posterior, regenera este iniciador desde el main vigente antes de trabajarla.
+
+ESTADO DOCUMENTAL TERMINAL
+
+- ID: NINGUNA
+- Título: SECUENCIA DOCUMENTAL COMPLETA
+- Estado: COMPLETA
+- Repositorio: ${repositoryRoot}
+- Siguiente tarea normal: NINGUNA
+- Handoff documental: NINGUNO
+
+FORMATO DE ENTREGA EN ESTE ESTADO
+
+- FORMATO_ENTREGA_VENTO_V1 continúa gobernando cualquier entrega VENTO solicitada.
+- No existe artefacto de tarea que reemplazar mientras la ruta documental permanezca completa.
+- No resuelvas ni ejecutes docs:task:start o docs:task:finish contra NINGUNA.
+- No conviertas preparación de package ni implementación física en una tarea documental ficticia.
+
+CARRIL FÍSICO — SOLO ESTADO INFORMATIVO
+
+- Puntero de compatibilidad: ${physical ? physical.instanceId : 'NINGUNA'}
+- Estado del puntero: ${physical ? physical.status : 'SIN INSTANCIA ACTIVA'}
+- Conjunto físico gobernado: ${physicalSet.map(({ instanceId, status }) => `${instanceId} — ${status}`).join('; ') || 'NINGUNO'}
+- Alcance dentro de esta conversación: FUERA DE ALCANCE. NO DESARROLLAR, NO AUTORIZAR, NO EJECUTAR.
+
+TRAZABILIDAD DEL INICIADOR
+
+- Intención: DOCUMENTATION
+- Plantilla SHA-256: ${templateHash}
+- Estado terminal derivado de task-work-topology + implementation-control.
+- No existe contrato documental objetivo que deba hashearse o incorporarse.
+`;
+}
+
 // C6_ADVANCE_ONLY_STARTER_PROJECTION
 export const IMPLEMENTATION_OPERATIONAL_PROJECTION_ID = 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1';
 
@@ -681,14 +736,17 @@ export function buildChatgptWorkStarter({ root = process.cwd() } = {}) {
   const templateHash = sha256(template);
 
   const selectorSource = renderSelector(control).replace(/\n*$/u, '\n');
+  const documentationRenderer = control.documentary.state === 'COMPLETA'
+    ? renderTerminalDocumentationWork
+    : renderDocumentationWork;
   const documentationSource = renderFromTemplate(
     template,
-    renderDocumentationWork({ control, workTopology, templateHash, repositoryRoot }),
+    documentationRenderer({ control, workTopology, templateHash, repositoryRoot }),
     'DOCUMENTATION',
   );
   const documentationAheadSource = renderFromTemplate(
     template,
-    renderDocumentationWork({ control, workTopology, templateHash, repositoryRoot, ahead: true }),
+    documentationRenderer({ control, workTopology, templateHash, repositoryRoot, ahead: true }),
     'DOCUMENTATION',
   );
   const implementationSource = renderFromTemplate(

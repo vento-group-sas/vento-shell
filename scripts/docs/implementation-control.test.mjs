@@ -107,6 +107,31 @@ test('elige una sola autorización física y mantiene activo el carril documenta
   assert.equal(result.physical.instances[1].status, 'WAITING_FOR_PREVIOUS_INSTANCE');
 });
 
+
+test('ruta documental terminal no inventa tarea actual y conserva el carril fisico', () => {
+  const workTopology = topology();
+  workTopology.currentId = null;
+  const result = deriveImplementationControl({
+    control: baseControl,
+    workTopology,
+  });
+
+  assert.equal(result.documentary.state, 'COMPLETA');
+  assert.equal(result.documentary.taskId, 'NINGUNA');
+  assert.equal(result.documentary.taskTitle, 'SECUENCIA DOCUMENTAL COMPLETA');
+  assert.equal(result.documentary.parallelWithPhysical, false);
+  assert.equal(result.coordination.mode, 'DOCUMENTATION_COMPLETE');
+  assert.equal(result.coordination.documentaryConcurrency, 'NONE');
+  assert.equal(result.coordination.separateCheckoutsRequired, false);
+  assert.equal(result.primaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
+  assert.equal(result.primaryAction.target, 'SHELL-CI-001::GLOBAL');
+
+  const directive = renderCurrentWorkDirective(result);
+  assert.match(directive, /Estado:\*\* COMPLETA/u);
+  assert.match(directive, /`NINGUNA` — SECUENCIA DOCUMENTAL COMPLETA/u);
+  assert.doesNotMatch(directive, /Tarea:\*\* `SHELL-CI-003`/u);
+});
+
 test('el borrador automático conserva identidad sin inferir autorización ni alcance', () => {
   const draft = pendingInstanceRecord({
     instanceId: 'SHELL-CI-001::GLOBAL',

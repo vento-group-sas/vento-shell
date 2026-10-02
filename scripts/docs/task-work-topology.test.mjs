@@ -58,6 +58,35 @@ test('conserva la resolución documental por segments en el flujo normal', () =>
   );
 });
 
+
+test('flujo normal avanza al primer segmento pendiente usando el inventario', () => {
+  const inventory = new Map([
+    ['AUTH-DB-030', { marker: '✅' }],
+    ['AUTH-DB-031', { marker: '[ ]' }],
+  ]);
+  assert.equal(
+    activeDocumentaryTaskId({
+      route_id: 'NORMAL-CANONICAL-FLOW-001',
+      segments: [{ prefix: 'AUTH-DB', from: 30, to: 31 }],
+    }, inventory),
+    'AUTH-DB-031',
+  );
+});
+
+test('flujo normal devuelve null cuando el segmento terminal ya quedo aprobado', () => {
+  const inventory = new Map([
+    ['AUTH-DB-030', { marker: '✅' }],
+    ['AUTH-DB-031', { marker: '✅' }],
+  ]);
+  assert.equal(
+    activeDocumentaryTaskId({
+      route_id: 'NORMAL-CANONICAL-FLOW-001',
+      segments: [{ prefix: 'AUTH-DB', from: 30, to: 31 }],
+    }, inventory),
+    null,
+  );
+});
+
 test('clasifica todas las tareas y separa definición, unidad, paquete y cierre global', () => {
   const result = resolveTaskWorkTopology();
   assert.equal(result.topology.size, result.ordered.length);

@@ -489,6 +489,9 @@ export function physicalLaneSummary(implementationControl, { limit = 12 } = {}) 
   };
 }
 function documentaryLaneSummary(tasks, implementationControl) {
+  if (implementationControl?.documentary?.state === 'COMPLETA') {
+    return { current: null, next: null };
+  }
   const priorityCurrent = tasks.find((task) => task.priorityRoute === true) ?? null;
   const currentId = priorityCurrent?.id ?? implementationControl?.documentary?.taskId ?? tasks[0]?.id ?? null;
   const currentIndex = tasks.findIndex(({ id }) => id === currentId);
@@ -809,13 +812,22 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
   const rejectedTasks = tasks.filter(({ state }) => state === 'RECHAZADA').length;
   const documentaryCurrent = documentary.current;
   const documentaryNext = documentary.next;
-  const activeTaskId = documentaryCurrent?.id
-    ?? (active.segments?.[0]
-      ? active.segments[0].prefix + '-' + String(active.segments[0].from).padStart(3, '0')
-      : implementationControl?.documentary?.taskId ?? 'NINGUNA');
+  const documentaryComplete = implementationControl?.documentary?.state === 'COMPLETA';
+  const activeTaskId = documentaryComplete
+    ? 'NINGUNA'
+    : documentaryCurrent?.id
+      ?? (active.segments?.[0]
+        ? active.segments[0].prefix + '-' + String(active.segments[0].from).padStart(3, '0')
+        : implementationControl?.documentary?.taskId ?? 'NINGUNA');
   const physicalCurrent = physical.current;
   const physicalNext = physical.next;
   const coordination = implementationControl?.coordination ?? {};
+  const documentaryRule = documentaryComplete
+    ? 'Ruta documental completa; los pendientes restantes permanecen diferidos'
+    : 'Una tarea documental activa';
+  const coordinationRule = documentaryComplete
+    ? 'La ruta documental esta completa; no requiere checkout paralelo. El carril fisico conserva su lifecycle gobernado.'
+    : 'Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` mas reciente antes de cerrar.';
   const actionableIds = new Set(physical.actionable.map(({ instanceId }) => instanceId));
   const physicalRows = physical.queue.length > 0
     ? physical.queue.map((instance, index) => {
@@ -834,10 +846,10 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
     '',
     '| Carril | Estado | Trabajo actual | Siguiente | Regla |',
     '| --- | --- | --- | --- | --- |',
-    `| 🟦 **DOCUMENTACIÓN** | \`${laneCell(implementationControl.documentary.state)}\` | ${documentaryCurrent ? `\`${laneCell(documentaryCurrent.id)}\` — ${laneCell(documentaryCurrent.title)}` : '—'} | ${documentaryNext ? `\`${laneCell(documentaryNext.id)}\` — ${laneCell(documentaryNext.title)}` : 'FIN DE RUTA'} | Una tarea documental activa |`,
+    `| 🟦 **DOCUMENTACIÓN** | \`${laneCell(implementationControl.documentary.state)}\` | ${documentaryCurrent ? `\`${laneCell(documentaryCurrent.id)}\` — ${laneCell(documentaryCurrent.title)}` : '—'} | ${documentaryNext ? `\`${laneCell(documentaryNext.id)}\` — ${laneCell(documentaryNext.title)}` : 'FIN DE RUTA'} | ${documentaryRule} |`,
     `| 🟧 **IMPLEMENTACIÓN FÍSICA** | ${physicalCurrent ? `\`${laneCell(physicalCurrent.status)}\`` : '`SIN_INSTANCIA_ACTIVA`'} | ${physicalCurrent ? `\`${laneCell(physicalCurrent.instanceId)}\` — ${laneCell(physicalCurrent.taskTitle)}` : '—'} | ${physicalNext ? `\`${laneCell(physicalNext.instanceId)}\`` : 'SIN SIGUIENTE PROYECTADA'} | Governed active set; prioridad ≠ exclusividad |`,
     '',
-    `> Coordinación: \`${laneCell(coordination.mode ?? 'CONTROLLED_DUAL_LANE')}\`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el \`main\` más reciente antes de cerrar.`,
+    `> Coordinación: \`${laneCell(coordination.mode ?? 'CONTROLLED_DUAL_LANE')}\`. ${coordinationRule}`,
     '',
     '## Progreso por carril',
     '',

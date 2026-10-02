@@ -12,6 +12,16 @@ import {
 
 test('iniciador manual permite entregar la sucesora antes del remoto sin adelantar Git', () => {
   const result = buildChatgptWorkStarter();
+  if (result.control.documentary.state === 'COMPLETA') {
+    assert.match(result.documentationSource, /DOCUMENTATION_QUEUE: EMPTY/u);
+    assert.match(result.documentationSource, /SECUENCIA DOCUMENTAL COMPLETA/u);
+    assert.match(result.documentationAheadSource, /DOCUMENTATION_AHEAD_DISABLED: ROUTE_COMPLETE/u);
+    assert.doesNotMatch(result.documentationSource, /MANUAL_DOCUMENTATION_AHEAD: ENABLED/u);
+    assert.doesNotMatch(result.documentationSource, /docs:task:start -- --task-id NINGUNA/u);
+    assert.doesNotMatch(result.documentationSource, /docs:task:finish -- --task-id NINGUNA/u);
+    assert.doesNotMatch(result.implementationSource, /MANUAL_DOCUMENTATION_AHEAD: ENABLED|MARCADOR Y CONTENIDO CANÓNICO DE REFERENCIA DE LA SUCESORA/u);
+    return;
+  }
   assert.match(result.documentationSource, /MANUAL_DOCUMENTATION_AHEAD: ENABLED/u);
   assert.match(result.documentationSource, /REMOTE_PUBLICATION_REQUIRED_FOR_DRAFT: FALSE/u);
   assert.match(result.documentationSource, /REPOSITORY_WRITE_BEFORE_PREDECESSOR_CLOSE: FALSE/u);
@@ -52,6 +62,25 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
   assert.match(result.source, /INICIADOR_VENTO_IMPLEMENTACION\.txt/u);
   assert.match(result.source, /Nunca cargues ambos/u);
   assert.doesNotMatch(result.source, /CONTENIDO CANÓNICO DE LA TAREA OBJETIVO/u);
+
+  if (result.control.documentary.state === 'COMPLETA') {
+    assert.match(result.documentationSource, /INTENT_LOCK: DOCUMENTATION/u);
+    assert.match(result.documentationSource, /CONVERSATION_LANE: DOCUMENTARY/u);
+    assert.match(result.documentationSource, /DO_NOT_SWITCH_LANES: TRUE/u);
+    assert.match(result.documentationSource, /DOCUMENTATION_QUEUE: EMPTY/u);
+    assert.match(result.documentationSource, /DOCUMENTARY_STATE: COMPLETA/u);
+    assert.match(result.documentationSource, /DOCUMENTARY_TASK: NINGUNA/u);
+    assert.match(result.documentationSource, /FORMATO_ENTREGA_VENTO_V1/u);
+    assert.match(result.documentationAheadSource, /DOCUMENTATION_AHEAD_DISABLED: ROUTE_COMPLETE/u);
+    assert.notEqual(result.documentationAheadSource, result.documentationSource);
+    assert.doesNotMatch(result.documentationSource, /CONTENIDO CANÓNICO DE LA TAREA OBJETIVO/u);
+    assert.doesNotMatch(result.documentationSource, /docs:task:start -- --task-id NINGUNA/u);
+    assert.doesNotMatch(result.documentationSource, /docs:task:finish -- --task-id NINGUNA/u);
+    assert.match(result.implementationSource, /INTENT_LOCK: PHYSICAL_IMPLEMENTATION/u);
+    assert.match(result.implementationSource, /CONVERSATION_LANE: PHYSICAL/u);
+    assert.match(result.implementationSource, /DO_NOT_SWITCH_LANES: TRUE/u);
+    return;
+  }
 
   assert.match(result.documentationSource, /INTENT_LOCK: DOCUMENTATION/u);
   assert.notEqual(result.documentationAheadSource, result.documentationSource);

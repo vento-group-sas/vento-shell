@@ -157,10 +157,32 @@ export function activeDocumentaryTaskId(active, inventory = null) {
     }
     return priorityTaskIds[0] ?? null;
   }
-  const segment = active?.segments?.[0];
-  return segment
-    ? `${segment.prefix}-${String(segment.from).padStart(3, '0')}`
-    : null;
+
+  const normalTaskIds = (active?.segments ?? []).flatMap((segment) => {
+    const prefix = String(segment?.prefix ?? '').trim();
+    const from = Number(segment?.from);
+    const to = Number(segment?.to ?? segment?.from);
+    if (!prefix || !Number.isInteger(from) || !Number.isInteger(to) || from < 1 || to < from) {
+      throw new Error('active-sequence.json contiene un segmento documental invalido.');
+    }
+    return Array.from(
+      { length: to - from + 1 },
+      (_, index) => `${prefix}-${String(from + index).padStart(3, '0')}`,
+    );
+  });
+
+  if (inventory instanceof Map) {
+    for (const id of normalTaskIds) {
+      const task = inventory.get(id);
+      if (!task) {
+        throw new Error('active-sequence.json referencia una tarea documental inexistente: ' + id + '.');
+      }
+      if (stateFromMarker(task.marker) !== 'APROBADA') return id;
+    }
+    return null;
+  }
+
+  return normalTaskIds[0] ?? null;
 }
 
 export function resolveTaskWorkTopology({ root = process.cwd() } = {}) {
