@@ -7,6 +7,7 @@ import {
   deriveLinearPackageExecution,
   readPackageExecutionPolicy,
 } from './package-execution-control.mjs';
+import { derivePackageExecutionRequirements } from './package-readiness-scanner.mjs';
 
 const policy = {
   schema_version: 1,
@@ -35,11 +36,11 @@ const policy = {
 };
 
 function scope(packageId, {
+  repository = 'vento-group-sas/vento-shell',
   path = `src/${packageId}.ts`,
   unit = packageId,
   shared = [],
 } = {}) {
-  const repository = 'vento-group-sas/vento-shell';
   return {
     target_paths: [path],
     target_path_keys: [`${repository}:${path}`],
@@ -52,6 +53,24 @@ function scope(packageId, {
       ...shared.map((key) => `SHARED::${repository}::${key}`),
     ],
   };
+}
+
+function multiRepositoryScope(packageId) {
+  const repositories = ['vento-group-sas/vento-shell', 'vento-group-sas/vento-nexo'];
+  return derivePackageExecutionRequirements({
+    packageGate: {
+      physical_identity: {
+        targets: repositories.map((repository) => ({
+          repository,
+          path: 'src/components/vento/standard/app-switcher.tsx',
+        })),
+      },
+      implementation_units: repositories.map((repository) => ({
+        repository,
+        unit_id: `${packageId}::CONSUMERS`,
+      })),
+    },
+  });
 }
 
 function pkg(packageId, layer, status = 'COMPILED', dependencies = [], extra = {}) {
@@ -168,6 +187,74 @@ test('scope probado y no conflictivo habilita handoff determinista', () => {
   assert.equal(result.physical_admission[0].status, 'ADMISSIBLE');
   assert.equal(result.current.package_id, 'GAP-PKG-001');
   assert.equal(result.current.next_action.type, 'MATERIALIZE_PHYSICAL_HANDOFF');
+});
+
+test('observación multirrepositorio con rutas repetidas permite un package independiente', () => {
+  const active = pkg('GAP-PKG-045', 1, 'DEPLOYED', [], {
+    next_execution: 'SHELL-CI-022::GAP-PKG-045',
+    execution_requirements: multiRepositoryScope('GAP-PKG-045'),
+  });
+  const candidate = pkg('GAP-PKG-003', 1, 'IMPLEMENTATION_READY');
+  const result = deriveLinearPackageExecution({ packages: [active, candidate] }, policy);
+  const holder = result.resource_holders.find(({ package_id: id }) => id === 'GAP-PKG-045');
+  const admission = result.physical_admission.find(({ package_id: id }) => id === 'GAP-PKG-003');
+
+  assert.equal(active.execution_requirements.target_paths.length, 1);
+  assert.equal(active.execution_requirements.target_path_keys.length, 2);
+  assert.equal(holder.proven, true);
+  assert.equal(holder.held_resource_keys.filter((key) => key.startsWith('PATH::')).length, 2);
+  assert.equal(admission.status, 'ADMISSIBLE');
+  assert.equal(result.current.package_id, 'GAP-PKG-003');
+  assert.equal(result.current.next_action.type, 'MATERIALIZE_PHYSICAL_HANDOFF');
+});
+
+test('candidato multirrepositorio conserva identidad física completa', () => {
+  const candidate = pkg('GAP-PKG-003', 1, 'IMPLEMENTATION_READY', [], {
+    execution_requirements: multiRepositoryScope('GAP-PKG-003'),
+  });
+  const result = deriveLinearPackageExecution({ packages: [candidate] }, policy);
+  assert.equal(result.physical_admission[0].status, 'ADMISSIBLE');
+  assert.equal(result.current.next_action.type, 'MATERIALIZE_PHYSICAL_HANDOFF');
+});
+
+test('observación multirrepositorio bloquea la edición de cada ruta reservada', () => {
+  const active = pkg('GAP-PKG-045', 1, 'DEPLOYED', [], {
+    next_execution: 'SHELL-CI-022::GAP-PKG-045',
+    execution_requirements: multiRepositoryScope('GAP-PKG-045'),
+  });
+  for (const repository of active.execution_requirements.target_repositories) {
+    const relativePath = active.execution_requirements.target_paths[0];
+    const candidate = pkg('GAP-PKG-003', 1, 'IMPLEMENTATION_READY', [], {
+      execution_requirements: scope('GAP-PKG-003', { repository, path: relativePath }),
+    });
+    const result = deriveLinearPackageExecution({ packages: [active, candidate] }, policy);
+    const admission = result.physical_admission.find(({ package_id: id }) => id === 'GAP-PKG-003');
+    assert.equal(admission.status, 'BLOCKED_CONFLICT');
+    assert.deepEqual(admission.conflicting_packages, ['GAP-PKG-045']);
+    assert.deepEqual(admission.conflicting_resource_keys, [`PATH::${repository}::${relativePath}`]);
+  }
+});
+
+test('identidad de rutas incompleta o inconsistente mantiene la admisión UNKNOWN', () => {
+  const repository = 'vento-group-sas/vento-shell';
+  const invalidScopes = [
+    { ...scope('GAP-PKG-003'), target_paths: ['src/GAP-PKG-003.ts', 'src/missing.ts'] },
+    { ...scope('GAP-PKG-003'), target_path_keys: [`${repository}:src/other.ts`] },
+    { ...scope('GAP-PKG-003'), target_path_keys: [':src/GAP-PKG-003.ts'] },
+    { ...scope('GAP-PKG-003'), target_path_keys: [`${repository}:`] },
+    { ...scope('GAP-PKG-003'), target_path_keys: [null] },
+    {
+      ...multiRepositoryScope('GAP-PKG-003'),
+      resource_keys: scope('GAP-PKG-003').resource_keys,
+    },
+  ];
+  for (const executionRequirements of invalidScopes) {
+    const candidate = pkg('GAP-PKG-003', 1, 'IMPLEMENTATION_READY', [], {
+      execution_requirements: executionRequirements,
+    });
+    const result = deriveLinearPackageExecution({ packages: [candidate] }, policy);
+    assert.equal(result.physical_admission[0].status, 'UNKNOWN');
+  }
 });
 
 test('PENDING_AUTHORIZATION reserva todos los admission locks', () => {

@@ -344,6 +344,24 @@ function resourceProfile(pkg) {
   const admission = [...new Set([...persistent, ...exclusiveTransition])]
     .sort((left, right) => left.localeCompare(right, 'en'));
 
+  // Paths are unique across the package, while qualified keys retain each
+  // repository. The same relative path can legitimately have several locks.
+  const scopedPaths = new Set(targetPaths);
+  const qualifiedTargets = targetPathKeys.map((key) => {
+    const separator = typeof key === 'string' ? key.indexOf(':') : -1;
+    if (separator <= 0 || separator === key.length - 1) return null;
+    const repository = key.slice(0, separator);
+    const relativePath = key.slice(separator + 1);
+    return { path: relativePath, resource_key: `PATH::${repository}::${relativePath}` };
+  });
+  const coveredPaths = new Set(qualifiedTargets.map((target) => target?.path));
+  const completeTargetIdentity = scopedPaths.size > 0
+    && qualifiedTargets.length > 0
+    && qualifiedTargets.every((target) => target
+      && scopedPaths.has(target.path)
+      && persistent.includes(target.resource_key))
+    && [...scopedPaths].every((relativePath) => coveredPaths.has(relativePath));
+
   const status = String(pkg?.status ?? '').trim().toUpperCase();
   const requiresPhysicalIdentity = pkg?.package_gate?.approval_complete === true
     || pkg?.package_gate?.status === 'APPROVED_FOR_IMPLEMENTATION'
@@ -351,8 +369,7 @@ function resourceProfile(pkg) {
     || ACTIVE_PHYSICAL_STATUSES.has(status);
 
   const proven = !requiresPhysicalIdentity || (
-    targetPaths.length > 0
-    && targetPathKeys.length === targetPaths.length
+    completeTargetIdentity
     && implementationUnits.length > 0
     && persistent.length > 0
   );
