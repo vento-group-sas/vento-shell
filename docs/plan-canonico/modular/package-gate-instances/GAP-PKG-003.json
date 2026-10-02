@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-003",
-  "status": "MATURATION_DRAFT",
+  "status": "READY_FOR_APPROVAL",
   "created_at": "2026-09-10T04:49:51.793Z",
-  "updated_at": "2026-10-02T15:50:53.537Z",
+  "updated_at": "2026-10-02T17:28:29.055Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "CONTROL_NO_DIRECT_RUNTIME",
@@ -17,14 +17,74 @@
     "missing_task_ids": []
   },
   "physical_identity": {
-    "targets": []
+    "targets": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "quality/repository-publication-policy.json",
+        "symbol_or_surface": "Decisión de visibilidad y controles por los diez repository IDs canónicos; excepciones con owner, motivo, vencimiento y prueba.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/quality/repository-publication-gate.mjs",
+        "symbol_or_surface": "Auditoría read-only de GitHub, validación de política y resumen redactado; UNKNOWN o findings abiertos bloquean publicación.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/quality/repository-publication-gate.test.mjs",
+        "symbol_or_surface": "TP-CONTROL-001: repositorio omitido, redirect de owner, estado UNKNOWN, secreto sintético, excepción vencida y permisos insuficientes.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": ".github/workflows/vento-repository-publication.yml",
+        "symbol_or_surface": "Ejecutar gate de publicación sin almacenar secretos ni otorgar permisos de escritura implícitos.",
+        "operation": "CREAR"
+      }
+    ]
   },
-  "implementation_units": [],
+  "implementation_units": [
+    {
+      "unit_id": "vento-shell:GAP-PKG-003:PUBLICATION-CONTROL-001",
+      "repository": "vento-group-sas/vento-shell",
+      "change": "Crear política y gate central de publicación para los diez repositorios. Conservar la visibilidad observada como propuesta pendiente de aprobación; validar accesos, contenidos y secretos antes de ampliar exposición. No crear runtime SQL ni transferir propietarios."
+    }
+  ],
   "evidence_plan": {
-    "tests": [],
-    "observability": [],
-    "acceptance_criteria": [],
-    "rollback_steps": []
+    "tests": [
+      {
+        "command": "node --test scripts/quality/repository-publication-gate.test.mjs",
+        "expected_result": "PASS: cobertura 10/10, normalización de redirect, permisos, secretos sintéticos, estados desconocidos y excepciones vencidas; todavía no implementado."
+      },
+      {
+        "command": "node scripts/quality/repository-publication-gate.mjs --check --policy quality/repository-publication-policy.json",
+        "expected_result": "PASS solo con decisión vigente por repositorio y evidencia de controles; no basta que GitHub devuelva public/private o scanning enabled."
+      },
+      {
+        "command": "npm run docs:package:scope:check",
+        "expected_result": "PASS: identidad, capacidad y perfil CONTROL_NO_DIRECT_RUNTIME; cero TREQ Supabase ajenos."
+      }
+    ],
+    "observability": [
+      {
+        "signal": "Inventario GitHub y gate de publicación por repository ID",
+        "expected_result": "10/10 decisiones; owner real resuelto; source commit y fecha; findings redactados; UNKNOWN o falta de evidencia produce BLOCK, sin imprimir secretos."
+      }
+    ],
+    "acceptance_criteria": [
+      "La propuesta por repositorio está en publication_scope.repository_decisions; ocho públicos y dos privados. Su aprobación requiere decisión humana explícita; el snapshot observado no es aprobación.",
+      "Mantener públicos solo bajo revisión de contenido, escaneo verificable y controles de publicación. Habilitar controles nativos disponibles o registrar excepción temporal con riesgo, responsable, vencimiento y cobertura alternativa verificable.",
+      "Mantener Pass y Talento privados; usar sus owner IDs resueltos, sin transferencia ni cambio de visibilidad implícito.",
+      "Probar que ningún secreto real ni dato personal se incorpora a reportes. Findings de secretos exigen remediación y rotación gobernada antes de publicar.",
+      "Autoridad OWN-SEG y suplencia OWN-GG; permiso admin comprobado en 10/10. Nunca inferir vulnerabilidad solo por visibilidad pública.",
+      "Este expediente define trabajo futuro de implementación; no acredita que los controles actuales hayan pasado."
+    ],
+    "rollback_steps": [
+      "Revertir únicamente política, gate y workflow de esta unidad; conservar snapshot y trazabilidad. No borrar reportes históricos.",
+      "Ante pérdida de controles, bloquear nuevas publicaciones hasta reconciliar permisos y evidencia; no cambiar automáticamente la visibilidad de repositorios.",
+      "La exposición previa no se revierte cambiando public/private; remediación de secretos o datos detectados se gobierna con evidencia y responsables."
+    ]
   },
   "authorization": {
     "decision": "PENDING",
@@ -33,5 +93,172 @@
     "approval_ref": null,
     "approval_statement": null
   },
-  "scope_reconciliation_ref": "docs/plan-canonico/modular/package-scope-reconciliation.json"
+  "scope_reconciliation_ref": "docs/plan-canonico/modular/package-scope-reconciliation.json",
+  "physical_discovery": {
+    "status": "COMPLETE",
+    "searches": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "H-CODE-017-023 / BKL-XR-010; gobierno de exposición y publicación",
+        "method": "rg --files; lectura de archivos y contratos; git ls-files",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; archivos existentes adoptados o modificados y archivos ausentes reservados como CREAR; no se afirma implementación de targets futuros."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "Diez repositorios GitHub y sus redirect de propietario",
+        "method": "git remote get-url origin en cada repositorio; gh api GET repos/{owner}/{repo}",
+        "evidence": "scripts/docs/package-readiness/evidence/gap-pkg-003-discovery.json; 10/10; 8 públicos y 2 privados; administrador disponible en 10/10; cero mutaciones remotas."
+      }
+    ],
+    "findings": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "quality/repository-publication-policy.json",
+        "symbol_or_surface": "Decisión de visibilidad y controles por los diez repository IDs canónicos; excepciones con owner, motivo, vencimiento y prueba.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; quality/repository-publication-policy.json; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/quality/repository-publication-gate.mjs",
+        "symbol_or_surface": "Auditoría read-only de GitHub, validación de política y resumen redactado; UNKNOWN o findings abiertos bloquean publicación.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/quality/repository-publication-gate.mjs; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/quality/repository-publication-gate.test.mjs",
+        "symbol_or_surface": "TP-CONTROL-001: repositorio omitido, redirect de owner, estado UNKNOWN, secreto sintético, excepción vencida y permisos insuficientes.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/quality/repository-publication-gate.test.mjs; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": ".github/workflows/vento-repository-publication.yml",
+        "symbol_or_surface": "Ejecutar gate de publicación sin almacenar secretos ni otorgar permisos de escritura implícitos.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; .github/workflows/vento-repository-publication.yml; ausencia verificada y operación CREAR definida"
+      }
+    ],
+    "unresolved_findings": []
+  },
+  "deployment_environment": {
+    "canonical_task_id": "DELIV-PKG-019",
+    "rollout_profile": "TP-CONTROL-001",
+    "environment_profile": "ENV-DOC-CI",
+    "targets": [
+      {
+        "environment_role": "CI",
+        "target_type": "GITHUB_REPOSITORY",
+        "target_id": "vento-group-sas/vento-shell",
+        "owner": "OWN-SEG"
+      }
+    ],
+    "production_authorized": false
+  },
+  "publication_scope": {
+    "discovery_ref": "scripts/docs/package-readiness/evidence/gap-pkg-003-discovery.json",
+    "repository_decisions": [
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "vento-group-sas/vento-numera",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "carlosibarraariza/vento-pass",
+        "observed_visibility": "private",
+        "proposed_visibility": "private",
+        "policy": "PRIVATE_WITH_ACCESS_REVIEW",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar la frontera privada observada y revisar accesos; no transferir propietario ni exponer el repositorio."
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      },
+      {
+        "repository": "carlosibarraariza/vento-talento",
+        "observed_visibility": "private",
+        "proposed_visibility": "private",
+        "policy": "PRIVATE_WITH_ACCESS_REVIEW",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar la frontera privada observada y revisar accesos; no transferir propietario ni exponer el repositorio."
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    ],
+    "physical_implementation_status": "PLANNED_NOT_IMPLEMENTED",
+    "remote_mutations_authorized": false
+  }
 }

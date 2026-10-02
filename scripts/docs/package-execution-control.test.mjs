@@ -112,6 +112,18 @@ test('un package bloqueado por fundación no monopoliza otro root independiente'
   assert.ok(result.waiting.some(({ package_id: id }) => id === 'GAP-PKG-001'));
 });
 
+test('expediente listo pide aprobación humana y no repite maduración', () => {
+  const ready = pkg('GAP-PKG-003', 1, 'COMPILED', [], {
+    package_gate: { status: 'READY_FOR_APPROVAL', approval_complete: false },
+  });
+  const result = deriveLinearPackageExecution({ packages: [ready] }, policy);
+  assert.equal(result.current.next_action.type, 'APPROVE_PACKAGE_GATE');
+  assert.equal(result.current.next_action.target, 'GAP-PKG-003');
+  assert.match(result.current.next_action.reason, /APROBADO humano explícito/u);
+  assert.equal(result.current.next_action.command, 'npm run docs:package:gate:status -- --package-id GAP-PKG-003');
+  assert.equal(ready.package_gate.approval_complete, false);
+});
+
 test('dependencia explícita no entra a frontier hasta que predecessor quede CLOSED', () => {
   const dependent = pkg('GAP-PKG-001', 1, 'COMPILED', ['GAP-PKG-002']);
   const predecessor = pkg('GAP-PKG-002', 1);

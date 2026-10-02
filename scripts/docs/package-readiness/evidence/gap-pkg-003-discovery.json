@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-003",
+  "source": "GitHub REST GET /repos/{owner}/{repo}; git remote get-url origin",
+  "mutation": false,
+  "baseline_commit": "7077e48882290f6b778116ffd1f678dcd2e0a9ee",
+  "repositories": [
+    {
+      "requested_repository": "vento-group-sas/vento-anima",
+      "repository": "vento-group-sas/vento-anima",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:06.103Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-fogo",
+      "repository": "vento-group-sas/vento-fogo",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:06.767Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-nexo",
+      "repository": "vento-group-sas/vento-nexo",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:07.369Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-numera",
+      "repository": "vento-group-sas/vento-numera",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:08.034Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-origo",
+      "repository": "vento-group-sas/vento-origo",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:08.627Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "devVentoGroup/vento-pass",
+      "repository": "carlosibarraariza/vento-pass",
+      "visibility": "private",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": null,
+      "observed_at": "2026-10-02T17:25:09.409Z",
+      "publication_decision": {
+        "proposed_visibility": "private",
+        "policy": "PRIVATE_WITH_ACCESS_REVIEW",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar la frontera privada observada y revisar accesos; no transferir propietario ni exponer el repositorio."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-pulso",
+      "repository": "vento-group-sas/vento-pulso",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:10.027Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-shell",
+      "repository": "vento-group-sas/vento-shell",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:10.682Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    },
+    {
+      "requested_repository": "devVentoGroup/vento-talento",
+      "repository": "carlosibarraariza/vento-talento",
+      "visibility": "private",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": null,
+      "observed_at": "2026-10-02T17:25:11.487Z",
+      "publication_decision": {
+        "proposed_visibility": "private",
+        "policy": "PRIVATE_WITH_ACCESS_REVIEW",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar la frontera privada observada y revisar accesos; no transferir propietario ni exponer el repositorio."
+      }
+    },
+    {
+      "requested_repository": "vento-group-sas/vento-viso",
+      "repository": "vento-group-sas/vento-viso",
+      "visibility": "public",
+      "archived": false,
+      "default_branch": "main",
+      "administrator_access": true,
+      "security_and_analysis": {
+        "secret_scanning": {
+          "status": "disabled"
+        },
+        "secret_scanning_push_protection": {
+          "status": "disabled"
+        },
+        "dependabot_security_updates": {
+          "status": "disabled"
+        },
+        "secret_scanning_non_provider_patterns": {
+          "status": "disabled"
+        },
+        "secret_scanning_validity_checks": {
+          "status": "disabled"
+        }
+      },
+      "observed_at": "2026-10-02T17:25:12.118Z",
+      "publication_decision": {
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "rationale": "Conservar visibilidad observada solo con escaneo verificable, push protection o excepción acotada y revisión de contenido; público no implica vulnerabilidad."
+      }
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "public": 8,
+    "private": 2
+  },
+  "secret_values_collected": false,
+  "security_findings_policy": "La configuración observada no constituye un inventario de secretos ni un PASS de seguridad. Secret scanning habilitado no sustituye revisar findings; UNKNOWN bloquea la publicación hasta resolver disponibilidad o excepción acotada."
+}

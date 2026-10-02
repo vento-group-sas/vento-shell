@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-019",
-  "status": "MATURATION_DRAFT",
+  "status": "READY_FOR_APPROVAL",
   "created_at": "2026-09-13T04:41:33.604Z",
-  "updated_at": "2026-10-02T16:22:18.961Z",
+  "updated_at": "2026-10-02T17:28:29.055Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "DATABASE_RPC_BOUNDARY",
@@ -25,43 +25,43 @@
         "repository": "vento-group-sas/vento-shell",
         "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
         "symbol_or_surface": "app_private.reconcile_analytic_aggregate(jsonb); app_private.apply_small_population_disclosure(jsonb); api.get_governed_analytic_aggregate(jsonb)",
-        "operation": "CREAR"
+        "operation": "ADOPTAR_SIN_MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "supabase/tests/packages/GAP-PKG-019.sql",
         "symbol_or_surface": "GAP-PKG-019 TP-DB-001 pgTAP evidence for governed analytics, reconciliation and disclosure",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-019/contract.test.ts",
         "symbol_or_surface": "GAP-PKG-019 canonical contract evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-019/integration.test.ts",
         "symbol_or_surface": "GAP-PKG-019 source-to-aggregate reconciliation integration evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-019/security.test.ts",
         "symbol_or_surface": "GAP-PKG-019 small-population disclosure and drill-down authorization evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-019/e2e.test.ts",
         "symbol_or_surface": "GAP-PKG-019 governed analytics end-to-end evidence",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
         "path": "tests/packages/GAP-PKG-019/fixtures.json",
         "symbol_or_surface": "Deterministic TP-DB-001 fixtures for aggregate reconciliation and small-population disclosure",
-        "operation": "CREAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
@@ -104,6 +104,36 @@
         "path": "supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql",
         "symbol_or_surface": "AUTH-DB-034 authorization evaluator regression evidence",
         "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/catalog-audit.mjs",
+        "symbol_or_surface": "Inventario read-only completo por schema desde pg_catalog: relaciones/persistencia/rutinas/tipos/extensiones; separación plataforma/Vento y ACL.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/catalog-audit-policy.json",
+        "symbol_or_surface": "Baseline versionada por ambiente; namespaces administrados, ACL y timeouts por rol; excepciones aprobadas con vencimiento.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/database-timeout-policy.mjs",
+        "symbol_or_surface": "Auditar timeouts efectivos y generar configuración reproducible para roles locales de prueba; cambios hosted se gobiernan por instancia autorizada, sin tocar roles administrados.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-019-catalog.sql",
+        "symbol_or_surface": "pgTAP: tipos de objetos, persistencia y fronteras administradas/extension-owned; cero ejecución cliente de rutinas administradas sensibles.",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/catalog.test.ts",
+        "symbol_or_surface": "Casos contractuales/adversariales para inventario omitido, namespace vacío, drift, ACL y timeout ilimitado sin excepción.",
+        "operation": "CREAR"
       }
     ]
   },
@@ -111,7 +141,7 @@
     {
       "unit_id": "vento-shell:GAP-PKG-019:DB-RPC-001",
       "repository": "vento-group-sas/vento-shell",
-      "change": "Create the GAP-PKG-019 package-specific governed analytics DB/RPC boundary: source-to-aggregate reconciliation, small-population disclosure enforcement, safe aggregate API and TP-DB-001 evidence; reuse existing VERIFIED migration, drift, recovery and authorization foundations without modifying them."
+      "change": "Conservar la unidad DB/RPC ya implementada: conciliación analítica, disclosure y autorización. Adoptar sin modificar sus migraciones históricas; ampliar evidencia existente y crear los auditores read-only de catálogo/ACL y el perfil de timeouts local. Los seis TREQ adicionales requieren pruebas y ejecución nuevas; su evidencia queda PLANNED_NOT_IMPLEMENTED."
     }
   ],
   "evidence_plan": {
@@ -143,6 +173,22 @@
       {
         "command": "npm test --silent",
         "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+        "expected_result": "PASS para seis TREQ nuevos con drift y casos negativos."
+      },
+      {
+        "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019-catalog.sql",
+        "expected_result": "PASS contra catálogos reales locales y fixtures; no aplicar conteos históricos."
+      },
+      {
+        "command": "node scripts/supabase/catalog-audit.mjs --check --policy supabase/catalog-audit-policy.json",
+        "expected_result": "PASS de inventario completo, clasificación y ACL contra baseline vigente."
+      },
+      {
+        "command": "node scripts/supabase/database-timeout-policy.mjs --check --policy supabase/catalog-audit-policy.json",
+        "expected_result": "PASS por rol/ambiente, carga, alerta y excepciones acotadas; unlimited sin decisión es FAIL."
       }
     ],
     "observability": [
@@ -161,23 +207,34 @@
       {
         "signal": "migration manifest + environment drift + recovery evidence",
         "expected_result": "The new package migration is traceable, replayable, drift-audited and recoverable without production mutation."
+      },
+      {
+        "signal": "Catalog audit + effective timeout profile",
+        "expected_result": "Totales reconciliados, discrepancias de persistencia/ACL/owner/namespace, overrides y alertas por rol/ambiente; sin contenido de secretos ni conteos históricos impuestos."
       }
     ],
     "acceptance_criteria": [
       "H-CAP-COVER-005-009 reuses AUTH-DB-015/027/028/029 and adds package-specific reproducible evidence rather than duplicating migration governance.",
-      "H-CAP-SCOPE-017-024 is implemented by an exact planned CREATE runtime that reconciles authoritative source facts with the governed aggregate result.",
+      "H-CAP-SCOPE-017-024 conserva el runtime analítico ya implementado; su migración se adopta sin reescribir y su evidencia se valida por regresión.",
       "H-CAP-SCOPE-017-029 reuses AUTH-DB-034 for authorization and creates explicit small-population disclosure enforcement; AGGREGATE authorization alone is not treated as suppression.",
-      "All seven CREATE targets are future implementation work reserved for SHELL-CI-020::GAP-PKG-019; their current absence is not a correction trigger.",
       "The implementation unit remains a single DATABASE_RPC_BOUNDARY unit for GAP-PKG-019 and does not merge unrelated packages.",
       "The six package-specific evidence artifacts plus clean local DB replay and canonical regression facade must pass before physical verification.",
       "No remote Supabase or production mutation is authorized by this gate dossier.",
-      "Production remains unauthorized; the only remote deployment target declared by this dossier is STAGING project rcrxixmqhrndcervbllp under SUPA-TRANS-015 governance."
+      "Production remains unauthorized; the only remote deployment target declared by this dossier is STAGING project rcrxixmqhrndcervbllp under SUPA-TRANS-015 governance.",
+      "TREQ-SUPABASE-017: Reconciliar todas las clases de objetos por schema contra catálogos PostgreSQL y baseline del ambiente; detectar tablas, particiones, vistas, materializadas, secuencias, extranjeras, rutinas, enums, dominios y extensiones omitidas.",
+      "TREQ-SUPABASE-031: graphql/graphql_public reservados a plataforma aun vacíos o con extensión deshabilitada; compatibilidad graphql_public.graphql no se clasifica como API empresarial ni se elimina.",
+      "TREQ-SUPABASE-055: Persistencia pg_class.relpersistence por ambiente; detectar relaciones nuevas/retiradas/reclasificadas y justificar drift. 638 permanentes/2 UNLOGGED es historial, no conteo vigente a imponer.",
+      "TREQ-SUPABASE-093: Owner, SECURITY DEFINER, search_path y EXECUTE de pgbouncer.get_auth/vault.create_secret/vault.update_secret comprobados por catálogo; no alterar objetos administrados ni aceptar ejecución anon/authenticated. Objeto ausente requiere evidencia de capacidad, no PASS ficticio.",
+      "TREQ-SUPABASE-096: Inventario vigente de SECURITY INVOKER con distinción Vento, trigger y extensión; comparar contratos/baseline y detectar drift. 137/95/42 y unaccent son observación histórica, nunca meta de implementación.",
+      "TREQ-SUPABASE-232: Valores efectivos de statement_timeout, lock_timeout, idle_session_timeout e idle_in_transaction_session_timeout por rol/ambiente, incluidos overrides de sesión. Exigir justificación, prueba de carga y alerta; cero/ilimitado solo por excepción explícita vigente. Fixture de rol local prueba timeout y recuperación sin cambiar roles de Supabase.",
+      "La implementación analítica anterior se conserva como historial; los seis TREQ ampliados siguen PLANNED_NOT_IMPLEMENTED hasta ejecución verificable. No reescribir migraciones aplicadas."
     ],
     "rollback_steps": [
-      "Before any remote migration apply, rollback consists of reverting only GAP-PKG-019 implementation-branch CREATE artifacts and rerunning the clean local DB harness; reused VERIFIED foundations remain unchanged.",
+      "Revertir únicamente nuevas superficies de auditoría/evidencia y configuración local de prueba de este alcance. No borrar ni revertir migraciones analíticas ya aplicadas; conservar las fundaciones VERIFIED.",
       "If a future authorized migration has already been applied to a governed remote environment, never rewrite that historical migration; recover with a separately governed forward migration and recovery evidence.",
       "If small-population disclosure or reconciliation tests fail, do not weaken acceptance criteria or authorization boundaries; keep the physical instance unverified and correct the package implementation within its approved CI020 scope.",
-      "After any rollback or forward recovery, rerun migration manifest, environment drift, recovery drill, GAP-PKG-019 package tests and the canonical regression facade before verification."
+      "After any rollback or forward recovery, rerun migration manifest, environment drift, recovery drill, GAP-PKG-019 package tests and the canonical regression facade before verification.",
+      "Retirar solo los nuevos auditores/configuración local de prueba; conservar analítica y migraciones aplicadas. Timeout de rol local se restaura de snapshot; toda corrección hosted requiere instancia y evidencia separadas."
     ]
   },
   "authorization": {
@@ -224,19 +281,375 @@
       "TREQ-SUPABASE-232"
     ],
     "previous_evidence_preserved": true,
-    "approval_required_for_extended_scope": true
+    "approval_required_for_extended_scope": true,
+    "requirement_coverage": [
+      {
+        "treq_id": "TREQ-SUPABASE-017",
+        "target_paths": [
+          "scripts/supabase/catalog-audit.mjs",
+          "supabase/tests/packages/GAP-PKG-019-catalog.sql"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+          "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019-catalog.sql",
+          "node scripts/supabase/catalog-audit.mjs --check --policy supabase/catalog-audit-policy.json"
+        ],
+        "oracle": "Reconciliar todas las clases de objetos por schema contra catálogos PostgreSQL y baseline del ambiente; detectar tablas, particiones, vistas, materializadas, secuencias, extranjeras, rutinas, enums, dominios y extensiones omitidas.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-031",
+        "target_paths": [
+          "supabase/catalog-audit-policy.json",
+          "supabase/tests/packages/GAP-PKG-019-catalog.sql"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+          "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019-catalog.sql",
+          "node scripts/supabase/catalog-audit.mjs --check --policy supabase/catalog-audit-policy.json"
+        ],
+        "oracle": "graphql/graphql_public reservados a plataforma aun vacíos o con extensión deshabilitada; compatibilidad graphql_public.graphql no se clasifica como API empresarial ni se elimina.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-055",
+        "target_paths": [
+          "scripts/supabase/catalog-audit.mjs",
+          "supabase/catalog-audit-policy.json"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+          "node scripts/supabase/catalog-audit.mjs --check --policy supabase/catalog-audit-policy.json"
+        ],
+        "oracle": "Persistencia pg_class.relpersistence por ambiente; detectar relaciones nuevas/retiradas/reclasificadas y justificar drift. 638 permanentes/2 UNLOGGED es historial, no conteo vigente a imponer.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-093",
+        "target_paths": [
+          "scripts/supabase/catalog-audit.mjs",
+          "supabase/tests/packages/GAP-PKG-019-catalog.sql"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+          "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019-catalog.sql",
+          "node scripts/supabase/catalog-audit.mjs --check --policy supabase/catalog-audit-policy.json"
+        ],
+        "oracle": "Owner, SECURITY DEFINER, search_path y EXECUTE de pgbouncer.get_auth/vault.create_secret/vault.update_secret comprobados por catálogo; no alterar objetos administrados ni aceptar ejecución anon/authenticated. Objeto ausente requiere evidencia de capacidad, no PASS ficticio.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-096",
+        "target_paths": [
+          "scripts/supabase/catalog-audit.mjs",
+          "supabase/catalog-audit-policy.json"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+          "node scripts/supabase/catalog-audit.mjs --check --policy supabase/catalog-audit-policy.json"
+        ],
+        "oracle": "Inventario vigente de SECURITY INVOKER con distinción Vento, trigger y extensión; comparar contratos/baseline y detectar drift. 137/95/42 y unaccent son observación histórica, nunca meta de implementación.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      },
+      {
+        "treq_id": "TREQ-SUPABASE-232",
+        "target_paths": [
+          "scripts/supabase/database-timeout-policy.mjs",
+          "supabase/catalog-audit-policy.json",
+          "tests/packages/GAP-PKG-019/catalog.test.ts"
+        ],
+        "validation_commands": [
+          "node --test tests/packages/GAP-PKG-019/catalog.test.ts",
+          "node scripts/supabase/database-timeout-policy.mjs --check --policy supabase/catalog-audit-policy.json"
+        ],
+        "oracle": "Valores efectivos de statement_timeout, lock_timeout, idle_session_timeout e idle_in_transaction_session_timeout por rol/ambiente, incluidos overrides de sesión. Exigir justificación, prueba de carga y alerta; cero/ilimitado solo por excepción explícita vigente. Fixture de rol local prueba timeout y recuperación sin cambiar roles de Supabase.",
+        "implementation_status": "PLANNED_NOT_IMPLEMENTED",
+        "legacy_evidence_covers_requirement": false
+      }
+    ]
   },
   "physical_discovery": {
-    "status": "PENDING",
-    "searches": [],
-    "findings": [],
-    "unresolved_findings": [
-      "TREQ-SUPABASE-017: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-031: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-055: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-093: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-096: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
-      "TREQ-SUPABASE-232: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre."
-    ]
-  }
+    "status": "COMPLETE",
+    "searches": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "Analítica existente y ampliación de auditoría PostgreSQL, superficies administradas y timeouts",
+        "method": "rg --files; lectura de archivos y contratos; git ls-files",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; archivos existentes adoptados o modificados y archivos ausentes reservados como CREAR; no se afirma implementación de targets futuros."
+      }
+    ],
+    "findings": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
+        "symbol_or_surface": "app_private.reconcile_analytic_aggregate(jsonb); app_private.apply_small_population_disclosure(jsonb); api.get_governed_analytic_aggregate(jsonb)",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-019.sql",
+        "symbol_or_surface": "GAP-PKG-019 TP-DB-001 pgTAP evidence for governed analytics, reconciliation and disclosure",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/tests/packages/GAP-PKG-019.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 canonical contract evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-019/contract.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 source-to-aggregate reconciliation integration evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-019/integration.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 small-population disclosure and drill-down authorization evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-019/security.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 governed analytics end-to-end evidence",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-019/e2e.test.ts; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-DB-001 fixtures for aggregate reconciliation and small-population disclosure",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-019/fixtures.json; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/MIGRATION_MANIFEST.md",
+        "symbol_or_surface": "AUTH-DB-015 canonical migration manifest authority",
+        "operation": "MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/MIGRATION_MANIFEST.md; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/migration-manifest.mjs",
+        "symbol_or_surface": "AUTH-DB-015 migration manifest generator",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/supabase/migration-manifest.mjs; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/quality/supabase-db-harness.mjs",
+        "symbol_or_surface": "AUTH-DB-027 clean local DB replay and pgTAP harness",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/quality/supabase-db-harness.mjs; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/environment-drift.mjs",
+        "symbol_or_surface": "AUTH-DB-028 expected-versus-observed environment drift controller",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/supabase/environment-drift.mjs; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/recovery-drill.mjs",
+        "symbol_or_surface": "AUTH-DB-029 local recovery and rollback evidence controller",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/supabase/recovery-drill.mjs; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql",
+        "symbol_or_surface": "AUTH-DB-034 app_private.evaluate_authorization(jsonb); api.get_safe_authorization_decision(jsonb)",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql",
+        "symbol_or_surface": "AUTH-DB-034 authorization evaluator regression evidence",
+        "operation": "ADOPTAR_SIN_MODIFICAR",
+        "exists": true,
+        "disposition": "SUPERFICIE_EXISTENTE_VERIFICADA",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql; lectura física realizada"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/catalog-audit.mjs",
+        "symbol_or_surface": "Inventario read-only completo por schema desde pg_catalog: relaciones/persistencia/rutinas/tipos/extensiones; separación plataforma/Vento y ACL.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/supabase/catalog-audit.mjs; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/catalog-audit-policy.json",
+        "symbol_or_surface": "Baseline versionada por ambiente; namespaces administrados, ACL y timeouts por rol; excepciones aprobadas con vencimiento.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/catalog-audit-policy.json; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/database-timeout-policy.mjs",
+        "symbol_or_surface": "Auditar timeouts efectivos y generar configuración reproducible para roles locales de prueba; cambios hosted se gobiernan por instancia autorizada, sin tocar roles administrados.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; scripts/supabase/database-timeout-policy.mjs; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-019-catalog.sql",
+        "symbol_or_surface": "pgTAP: tipos de objetos, persistencia y fronteras administradas/extension-owned; cero ejecución cliente de rutinas administradas sensibles.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; supabase/tests/packages/GAP-PKG-019-catalog.sql; ausencia verificada y operación CREAR definida"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/catalog.test.ts",
+        "symbol_or_surface": "Casos contractuales/adversariales para inventario omitido, namespace vacío, drift, ACL y timeout ilimitado sin excepción.",
+        "operation": "CREAR",
+        "exists": false,
+        "disposition": "TARGET_FUTURO_PLANIFICADO",
+        "evidence": "HEAD 7077e48882290f6b778116ffd1f678dcd2e0a9ee; tests/packages/GAP-PKG-019/catalog.test.ts; ausencia verificada y operación CREAR definida"
+      }
+    ],
+    "unresolved_findings": []
+  },
+  "physical_identity_history": [
+    {
+      "recorded_at": "2026-10-02T17:28:29.055Z",
+      "reason": "Operaciones de targets existentes reconciliadas con implementación ya desplegada; no se reescribe su migración.",
+      "physical_identity": {
+        "targets": [
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
+            "symbol_or_surface": "app_private.reconcile_analytic_aggregate(jsonb); app_private.apply_small_population_disclosure(jsonb); api.get_governed_analytic_aggregate(jsonb)",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/tests/packages/GAP-PKG-019.sql",
+            "symbol_or_surface": "GAP-PKG-019 TP-DB-001 pgTAP evidence for governed analytics, reconciliation and disclosure",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-019/contract.test.ts",
+            "symbol_or_surface": "GAP-PKG-019 canonical contract evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-019/integration.test.ts",
+            "symbol_or_surface": "GAP-PKG-019 source-to-aggregate reconciliation integration evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-019/security.test.ts",
+            "symbol_or_surface": "GAP-PKG-019 small-population disclosure and drill-down authorization evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-019/e2e.test.ts",
+            "symbol_or_surface": "GAP-PKG-019 governed analytics end-to-end evidence",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "tests/packages/GAP-PKG-019/fixtures.json",
+            "symbol_or_surface": "Deterministic TP-DB-001 fixtures for aggregate reconciliation and small-population disclosure",
+            "operation": "CREAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/MIGRATION_MANIFEST.md",
+            "symbol_or_surface": "AUTH-DB-015 canonical migration manifest authority",
+            "operation": "MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "scripts/supabase/migration-manifest.mjs",
+            "symbol_or_surface": "AUTH-DB-015 migration manifest generator",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "scripts/quality/supabase-db-harness.mjs",
+            "symbol_or_surface": "AUTH-DB-027 clean local DB replay and pgTAP harness",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "scripts/supabase/environment-drift.mjs",
+            "symbol_or_surface": "AUTH-DB-028 expected-versus-observed environment drift controller",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "scripts/supabase/recovery-drill.mjs",
+            "symbol_or_surface": "AUTH-DB-029 local recovery and rollback evidence controller",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql",
+            "symbol_or_surface": "AUTH-DB-034 app_private.evaluate_authorization(jsonb); api.get_safe_authorization_decision(jsonb)",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          },
+          {
+            "repository": "vento-group-sas/vento-shell",
+            "path": "supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql",
+            "symbol_or_surface": "AUTH-DB-034 authorization evaluator regression evidence",
+            "operation": "ADOPTAR_SIN_MODIFICAR"
+          }
+        ]
+      }
+    }
+  ]
 }
