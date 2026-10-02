@@ -1,10 +1,153 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-002",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "AUTHORIZED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql",
+      "change": "EXECUTE_ONLY",
+      "scope": "Package-gate physical target: AUTH-DB-002::GLOBAL verified forward RLS hardening migration; operation=ADOPTAR_SIN_MODIFICAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/packages/GAP-PKG-002.sql",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: GAP-PKG-002 TP-DB-001 pgTAP package evidence over the verified AUTH-DB-002 RLS foundation; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-002/contract.test.ts",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: GAP-PKG-002 contractual evidence for the fourteen TREQ assigned by DELIV-PKG-016; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-002/integration.test.ts",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: GAP-PKG-002 integration evidence for consumers of the hardened RLS boundary; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-002/security.test.ts",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: GAP-PKG-002 adversarial authorization and RLS security evidence; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-002/e2e.test.ts",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: GAP-PKG-002 controlled end-to-end evidence for the database authorization boundary; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-002/fixtures.json",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Deterministic TP-DB-001 fixtures and TREQ oracle mapping for GAP-PKG-002; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-002.json",
+      "change": "MODIFY",
+      "scope": "Record only authorization, lifecycle state and evidence for SHELL-CI-020::GAP-PKG-002."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/canonical-task-preflight.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:migrations:manifest:check",
+    "npm run supabase:db:test:clean",
+    "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+    "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+    "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+    "node --test tests/packages/GAP-PKG-002/security.test.ts",
+    "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+    "npm test --silent"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "usuario",
+    "approved_at": "2026-10-02T20:25:31.285Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-020::GAP-PKG-002: el usuario confirmó Ya quedó, aprobado después de consolidar el handoff en PR #994. Se aprueba el alcance físico CI020 definido en el package-gate, con adopción sin modificación de la fundación AUTH-DB-002 y creación de evidencia específica del paquete.",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ],
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-002 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO GAP-PKG-002",
+    "PHYSICAL_DISCOVERY COMPLETE searches=5 findings=7 unresolved=0",
+    "PHYSICAL_IDENTITY targets=7",
+    "IMPLEMENTATION_UNITS count=1",
+    "ENV_PROFILE ENV-SUPABASE-LOCAL-CI-STAGING"
+  ]
 }
