@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import fs from "node:fs"
 import test from "node:test"
+import { assessPackageGateRecord, readPackageGatePolicy } from "../../../scripts/docs/package-gate-control.mjs"
 
 const fixtures = JSON.parse(fs.readFileSync("tests/packages/GAP-PKG-019/fixtures.json", "utf8"))
 const gate = JSON.parse(
@@ -50,7 +51,7 @@ const expectedValidationCommands = [
 
 test("GAP-PKG-019 keeps one exact DB/RPC implementation unit", () => {
   assert.equal(gate.package_id, "GAP-PKG-019")
-  assert.equal(gate.status, "APPROVED_FOR_IMPLEMENTATION")
+  assert.equal(gate.status, assessPackageGateRecord(gate, { policy: readPackageGatePolicy() }).status)
   assert.equal(gate.canonical_snapshot.repository_owner, "devVentoGroup/vento-shell")
   assert.equal(gate.canonical_snapshot.runtime_profile, "DATABASE_RPC_BOUNDARY")
   assert.equal(gate.canonical_snapshot.dominant_task_id, "SUPA-AUD-016")
@@ -61,13 +62,21 @@ test("GAP-PKG-019 keeps one exact DB/RPC implementation unit", () => {
   assert.equal(gate.implementation_units[0].unit_id, "vento-shell:GAP-PKG-019:DB-RPC-001")
 })
 
-test("GAP-PKG-019 physical identity and validation commands remain exact", () => {
-  const actualTargets = gate.physical_identity.targets.map(({ path, operation }) => [path, operation])
-  assert.deepEqual(actualTargets, expectedTargets)
-  assert.deepEqual(
-    gate.evidence_plan.tests.map(({ command }) => command),
-    expectedValidationCommands,
-  )
+test("GAP-PKG-019 preserves deployed analytics and declares the catalog extension", () => {
+  const actualTargets = new Map(gate.physical_identity.targets.map(({ path, operation }) => [path, operation]))
+  for (const [path, operation] of expectedTargets) {
+    assert.equal(actualTargets.get(path), path.startsWith("supabase/migrations/") ? "ADOPTAR_SIN_MODIFICAR" : operation === "CREAR" ? "MODIFICAR" : operation)
+  }
+  assert.equal(actualTargets.get("scripts/supabase/catalog-audit.mjs"), "CREAR")
+  const commands = gate.evidence_plan.tests.map(({ command }) => command)
+  assert.ok(expectedValidationCommands.every((command) => commands.includes(command)))
+  assert.deepEqual(gate.scope_reconciliation.requirement_coverage.map(({ treq_id }) => treq_id).sort(), [
+    "TREQ-SUPABASE-017", "TREQ-SUPABASE-031", "TREQ-SUPABASE-055", "TREQ-SUPABASE-093", "TREQ-SUPABASE-096", "TREQ-SUPABASE-232",
+  ])
+  for (const requirement of gate.scope_reconciliation.requirement_coverage) {
+    assert.equal(requirement.legacy_evidence_covers_requirement, false)
+    assert.ok(requirement.validation_commands.every((command) => commands.includes(command)))
+  }
   assert.equal(fixtures.source_contract_policy, "SEMANTIC_RUNTIME_GUARD_NO_RAW_FILE_PIN")
 })
 
@@ -96,7 +105,7 @@ test("manifest tracks the package migration under AUTH-DB-015 governance", () =>
 
 test("gate does not authorize remote or production mutation", () => {
   assert.equal(gate.deployment_environment.production_authorized, false)
-  assert.match(gate.authorization.approval_statement, /No autoriza Supabase remoto ni producción/u)
+  assert.match(gate.authorization_history.findLast((entry) => entry.superseded_by === "IMPLEMENTATION_SCOPE_RECONCILIATION").approval_statement, /No autoriza Supabase remoto ni producción/u)
   assert.ok(
     gate.evidence_plan.acceptance_criteria.includes(
       "No remote Supabase or production mutation is authorized by this gate dossier.",
