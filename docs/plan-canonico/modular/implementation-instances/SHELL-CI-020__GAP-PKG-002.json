@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-002",
   "task_id": "SHELL-CI-020",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -133,7 +133,16 @@
     "approval_statement": "APROBADO SHELL-CI-020::GAP-PKG-002: el usuario confirmó Ya quedó, aprobado después de consolidar el handoff en PR #994. Se aprueba el alcance físico CI020 definido en el package-gate, con adopción sin modificación de la fundación AUTH-DB-002 y creación de evidencia específica del paquete.",
     "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
   },
-  "evidence": [],
+  "evidence": [
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=npm run supabase:migrations:manifest:check status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=npm run supabase:db:test:clean status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=node --test tests/packages/GAP-PKG-002/contract.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=node --test tests/packages/GAP-PKG-002/integration.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=node --test tests/packages/GAP-PKG-002/security.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=node --test tests/packages/GAP-PKG-002/e2e.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=dd512576654621a1f2b34ddf6a651802477667c6 command=npm test --silent status=PASS"
+  ],
   "target_environments": [
     {
       "environment_role": "STAGING",
