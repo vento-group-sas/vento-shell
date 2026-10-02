@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-002",
   "task_id": "SHELL-CI-020",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -141,7 +141,253 @@
     "LOCAL_VALIDATION candidate=37ac7b7a683d9659539e6abccae61987614b2039 command=node --test tests/packages/GAP-PKG-002/integration.test.ts status=PASS",
     "LOCAL_VALIDATION candidate=37ac7b7a683d9659539e6abccae61987614b2039 command=node --test tests/packages/GAP-PKG-002/security.test.ts status=PASS",
     "LOCAL_VALIDATION candidate=37ac7b7a683d9659539e6abccae61987614b2039 command=node --test tests/packages/GAP-PKG-002/e2e.test.ts status=PASS",
-    "LOCAL_VALIDATION candidate=37ac7b7a683d9659539e6abccae61987614b2039 command=npm test --silent status=PASS"
+    "LOCAL_VALIDATION candidate=37ac7b7a683d9659539e6abccae61987614b2039 command=npm test --silent status=PASS",
+    {
+      "type": "IMPLEMENTATION_EXECUTION_EVIDENCE_V1",
+      "schema_version": 1,
+      "instance_id": "SHELL-CI-020::GAP-PKG-002",
+      "candidate_commit": "37ac7b7a683d9659539e6abccae61987614b2039",
+      "lifecycle_head_commit": "5554a7de2f49e7a5e192eeab5eab81efeb0f7e57",
+      "candidate_lifecycle": {
+        "model_id": "VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1",
+        "decision": "REUSE_PHYSICAL_EVIDENCE",
+        "reason": "SAFE_LIFECYCLE_METADATA_ONLY",
+        "changed_paths": [
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-002.json"
+        ]
+      },
+      "observed_at": "2026-10-02T21:33:08.381Z",
+      "validation_commands": [
+        "npm run supabase:migrations:manifest:check",
+        "npm run supabase:db:test:clean",
+        "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+        "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+        "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+        "node --test tests/packages/GAP-PKG-002/security.test.ts",
+        "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+        "npm test --silent"
+      ],
+      "results": [
+        {
+          "command": "npm run supabase:migrations:manifest:check",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run supabase:db:test:clean",
+          "status": "PASS"
+        },
+        {
+          "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-002/security.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        }
+      ],
+      "environment_results": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015",
+          "status": "PASS",
+          "evidence": [
+            "STAGING_ADOPTION_READ_ONLY: Supabase catalog query on the exact authorized project; broad_policies_remaining=0; hardened_authenticated_policies=6; document_types_rls=true; observed_at=2026-10-02T21:33:08.381Z.",
+            "EVIDENCE_ONLY_DELTA: candidate 37ac7b7a683d9659539e6abccae61987614b2039 adopts the existing AUTH-DB-002 foundation; no deployment or remote mutation was performed or claimed. Internal policy definitions are not persisted."
+          ]
+        }
+      ],
+      "operational_evidence": [
+        "LOCAL_CLEAN_REPLAY: native validation passed; 22 migrations; 25 pgTAP files; 1951 assertions; remote_targets_used=NO.",
+        "PACKAGE_RUNTIME: 46 pgTAP assertions and contract/integration/security/e2e commands passed against local Supabase; transactional fixtures, policies and test-only bucket rolled back.",
+        "CANONICAL_REGRESSION: npm test --silent passed with 438 tests, zero failures and zero skips.",
+        "SCOPE_AND_IDENTITY: six reserved evidence files; fourteen assigned TREQ mapped to the adopted RLS component; migration and VERIFIED AUTH-DB-002::GLOBAL ledger preserved; no claim of full consumer workflow implementation.",
+        "TYPESCRIPT_SCOPE: zero diagnostics in GAP-PKG-002 after correcting parameter types and module imports; preexisting diagnostics in other package tests are unchanged. Full-repository TypeScript certification is not claimed."
+      ],
+      "validation_engine_repair_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_REPAIR_RECEIPT_V1",
+        "reusePolicy": "EXACT_REPAIRED_REPOSITORY_STATE_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-020::GAP-PKG-002",
+        "candidateCommit": "37ac7b7a683d9659539e6abccae61987614b2039",
+        "inputRepositoryStateSha256": "c418eaa05d264aea40eaf923e96a2dbabc10e4ab55884f452d928a186f63b05e",
+        "outputRepositoryStateSha256": "c418eaa05d264aea40eaf923e96a2dbabc10e4ab55884f452d928a186f63b05e",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "repairExecuted": false,
+        "repairedPaths": [],
+        "repairedAt": "2026-10-02T21:31:21.648Z",
+        "receiptSha256": "4bb38f1e0133a3b5444dc4c4a5f5a6862f796072cc5bf92e8171188521471d08"
+      },
+      "validation_engine_preverify_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_PREVERIFY_V1",
+        "reusePolicy": "EXACT_CANDIDATE_FINGERPRINT_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-020::GAP-PKG-002",
+        "candidateCommit": "37ac7b7a683d9659539e6abccae61987614b2039",
+        "lifecycleHeadCommit": "5554a7de2f49e7a5e192eeab5eab81efeb0f7e57",
+        "repositoryStateSha256": "8db9d71d5d7e60e1a44decee6d106531f3aeeda72e8c0f41c0c7b62b9d93f22e",
+        "validationCommandsSha256": "bb0cefee6bf8880ece1b623072e55569cbcfd6b4cf7f82fe6adcec494f838174",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "validatedAt": "2026-10-02T21:40:07.227Z",
+        "receiptSha256": "9985195b20f7c7f3b8f3a2ac03483967a398cffc6a4769799f7a523fb06b5835"
+      },
+      "validation_engine_shadow_impact": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F4_SHADOW_IMPACT_SELECTION",
+        "selectorId": "IMPLEMENTATION_SHADOW_IMPACT_SELECTOR_V1",
+        "planSha256": "bb7046481a374095d536c6af078b3c262a48a96078eb6fc072ea17bfa97a5082",
+        "executionMode": "FULL_SUITE_SHADOW_ONLY",
+        "selectiveExecution": false,
+        "fullSuiteExecuted": true,
+        "validationGatesSkipped": 0,
+        "fullSuiteStatus": "PASS",
+        "fullCommandCount": 8,
+        "selectedCommandCount": 8,
+        "omittedCommandCount": 0,
+        "potentialReductionPercent": 0,
+        "observedFailureCount": 0,
+        "observedFalseNegativeCount": 0,
+        "observedFalseNegatives": [],
+        "eligibleForSelectiveExecution": false,
+        "observationSha256": "d474f1de1698c4228c9f843d1b16fd5ca23bc55e7d65fb6521dd5507fba0a5a0"
+      },
+      "validation_engine_selective_validation": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F5_SAFE_SELECTIVE_VALIDATION",
+        "policyId": "PACKAGE_LOCAL_CLOSED_SCOPE_V1",
+        "candidateCommit": "37ac7b7a683d9659539e6abccae61987614b2039",
+        "planSha256": "bb7046481a374095d536c6af078b3c262a48a96078eb6fc072ea17bfa97a5082",
+        "decisionSha256": "af80514f46c485467c08fc0af706c1c38214c0c2e52d1776951c73680845df5d",
+        "changedPaths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-002.json",
+          "supabase/tests/packages/GAP-PKG-002.sql",
+          "tests/packages/GAP-PKG-002/contract.test.ts",
+          "tests/packages/GAP-PKG-002/e2e.test.ts",
+          "tests/packages/GAP-PKG-002/fixtures.json",
+          "tests/packages/GAP-PKG-002/integration.test.ts",
+          "tests/packages/GAP-PKG-002/security.test.ts"
+        ],
+        "validationCommands": [
+          "npm run supabase:migrations:manifest:check",
+          "npm run supabase:db:test:clean",
+          "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+          "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+          "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+          "node --test tests/packages/GAP-PKG-002/security.test.ts",
+          "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+          "npm test --silent"
+        ],
+        "executionMode": "FULL_FALLBACK",
+        "selectiveExecution": false,
+        "fullFallbackUsed": true,
+        "fullFallbackAvailable": true,
+        "validationGatesSkipped": 0,
+        "reason": "FULL_FALLBACK_NO_REDUCTION",
+        "packageId": null,
+        "candidateEligible": false,
+        "candidateReason": "NO_REDUCTION",
+        "potentialNotApplicableCommandCount": 0,
+        "certificationStatus": "PENDING_REAL_SHADOW_EVIDENCE",
+        "certificationSha256": "db1ece36b3c8e9510de2719259a504721621c1a0eacebe56ee3928cf74e9052a",
+        "certificationMinimumOmissionBearingSamples": 5,
+        "certificationMinimumDistinctPackages": 3,
+        "certificationObservedOmissionBearingSamples": 3,
+        "certificationObservedDistinctPackages": 3,
+        "certificationObservedFalseNegatives": 0,
+        "executedCommands": [
+          "npm run supabase:migrations:manifest:check",
+          "npm run supabase:db:test:clean",
+          "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+          "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+          "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+          "node --test tests/packages/GAP-PKG-002/security.test.ts",
+          "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+          "npm test --silent"
+        ],
+        "notApplicableCommands": [],
+        "results": [
+          {
+            "command": "npm run supabase:migrations:manifest:check",
+            "status": "PASS"
+          },
+          {
+            "command": "npm run supabase:db:test:clean",
+            "status": "PASS"
+          },
+          {
+            "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-002/security.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "npm test --silent",
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "recordSha256": "bf467502af2f0192ce033b2880380daaee7cdb0dfecf835b8b29cdcb42f6155e"
+      }
+    }
   ],
   "target_environments": [
     {
