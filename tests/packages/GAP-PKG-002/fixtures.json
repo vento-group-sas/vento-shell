@@ -1,0 +1,154 @@
+{
+  "package_id": "GAP-PKG-002",
+  "implementation_instance_id": "AUTH-DB-002::GLOBAL",
+  "implementation_unit_id": "20260826213609_auth_db_002_rls_hardening.sql",
+  "migration_sha256": "aca1a4b69e8f9c483b25a88a2c0ffc18a1a9f507fc5b3bcdb72dec7cdf0320b7",
+  "evidence_scope": "AUTH_DB_002_RLS_COMPONENT_ONLY",
+  "coverage_claim": "Each assigned requirement maps to its adopted RLS component. This package does not certify invitation activation, AURA publication, public CMS, B2B workflows, audit exports or consumer UI implementation.",
+  "environment": "ENV-SUPABASE-LOCAL-CI-STAGING",
+  "execution_target": "LOCAL_ONLY",
+  "production_authorized": false,
+  "sql_path": "supabase/tests/packages/GAP-PKG-002.sql",
+  "assertion_count": 46,
+  "transaction_policy": "BEGIN_FIXTURES_AUTHENTICATED_PROBES_FINISH_ROLLBACK",
+  "task_ids": [
+    "AUTH-DB-002",
+    "AUTH-DB-004",
+    "AUTH-SRV-005",
+    "PASS-INT-001",
+    "PASS-INT-002",
+    "PASS-INT-004",
+    "PULSO-AUTH-009",
+    "PULSO-AUTH-010"
+  ],
+  "actors": {
+    "client": "b0020000-0000-0000-0000-000000000001",
+    "cashier": "b0020000-0000-0000-0000-000000000002",
+    "site_manager": "b0020000-0000-0000-0000-000000000003",
+    "owner": "b0020000-0000-0000-0000-000000000004",
+    "peer": "b0020000-0000-0000-0000-000000000005"
+  },
+  "sites": [
+    "b0021000-0000-0000-0000-000000000001",
+    "b0021000-0000-0000-0000-000000000002"
+  ],
+  "oracle_mapping": [
+    {
+      "treq_id": "TREQ-AURA-010",
+      "component": "Direct authenticated access remains confined to the permitted resource; administrative service authorization remains a separate consumer obligation.",
+      "assertions": [
+        "same-site membership alone cannot read peer document",
+        "knowing peer storage path does not grant access"
+      ]
+    },
+    {
+      "treq_id": "TREQ-AURA-020",
+      "component": "AUTH-DB-002 retains its declared authenticated policy audience and minimum positive paths; this is not evidence of public CMS content publication.",
+      "assertions": [
+        "GAP-PKG-002 all six hardened policies retain authenticated audience",
+        "own document storage object remains visible"
+      ]
+    },
+    {
+      "treq_id": "TREQ-AURA-024",
+      "component": "Adopt the exact versioned RLS foundation and replay both denied and retained access paths; AURA client compatibility is outside this evidence-only delta.",
+      "assertions": [
+        "hardened documents policy exists",
+        "hardened document storage policy exists",
+        "own document remains visible"
+      ]
+    },
+    {
+      "treq_id": "TREQ-AUTH-005",
+      "component": "Client-managed role, state and metadata cannot elevate authority at the adopted database boundary; invitation state-machine validation is separate.",
+      "assertions": [
+        "GAP-PKG-002 client cannot elevate protected role",
+        "GAP-PKG-002 self-managed metadata cannot grant document authority"
+      ]
+    },
+    {
+      "treq_id": "TREQ-AUTH-006",
+      "component": "Identity fields and loyalty balance cannot be self-elevated; direct broad customer enumeration is removed.",
+      "assertions": [
+        "client cannot update protected own-row fields",
+        "GAP-PKG-002 client cannot mutate protected active state",
+        "cashier cannot enumerate customer rows"
+      ]
+    },
+    {
+      "treq_id": "TREQ-AUTH-007",
+      "component": "Site-manager role alone cannot administer global document configuration, while approved owner access remains available.",
+      "assertions": [
+        "site manager cannot administer global document types by role alone",
+        "owner retains approved document type administration"
+      ]
+    },
+    {
+      "treq_id": "TREQ-AUTH-018",
+      "component": "Client identity and territorial loyalty access are contained; consent, notification and export workflows remain consumer obligations.",
+      "assertions": [
+        "client cannot see foreign public.users row",
+        "client cannot insert loyalty ledger directly",
+        "cashier cannot see redemption in foreign site"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PASS-017",
+      "component": "Authenticated identity can read its own row and cannot select a third-party profile; PASS field projection is validated by its consuming process.",
+      "assertions": [
+        "client sees own public.users row",
+        "client cannot see foreign public.users row",
+        "GAP-PKG-002 client cannot elevate protected role"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PROC-076",
+      "component": "Sensitive employee documents and customer rows are withheld from an unentitled consumer at the RLS boundary.",
+      "assertions": [
+        "same-site membership alone cannot read peer document",
+        "cashier cannot enumerate customer rows"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PROC-101",
+      "component": "Reproducible security evidence uses synthetic identities and TAP descriptions instead of exposing protected document payloads; audit service redaction and export remain separate.",
+      "assertions": [
+        "knowing peer storage path does not grant access",
+        "GAP-PKG-002 metadata and known resource ID cannot expose peer document"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PROC-122",
+      "component": "A known foreign redemption ID does not extend an actor's assigned site for reading or validating loyalty operations.",
+      "assertions": [
+        "cashier sees redemption in authorized site",
+        "cashier cannot see redemption in foreign site",
+        "cashier cannot validate foreign-site redemption"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PROC-217",
+      "component": "Knowledge of a row or storage identifier does not establish a permitted relationship; B2B representation and commercial authority are not certified here.",
+      "assertions": [
+        "client cannot see foreign public.users row",
+        "knowing peer storage path does not grant access"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PROC-330",
+      "component": "Direct table reads cannot return unauthorized customer or employee document rows for later UI concealment; process-specific column projection remains separate.",
+      "assertions": [
+        "cashier cannot enumerate customer rows",
+        "same-site membership alone cannot read peer document"
+      ]
+    },
+    {
+      "treq_id": "TREQ-PROC-345",
+      "component": "A manipulated identity payload or known direct resource ID cannot bypass the same adopted document and storage boundary.",
+      "assertions": [
+        "GAP-PKG-002 metadata and known resource ID cannot expose peer document",
+        "knowing peer storage path does not grant access"
+      ]
+    }
+  ]
+}
