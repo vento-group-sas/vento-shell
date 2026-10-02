@@ -36,10 +36,10 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-020::GAP-PKG-002` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+- `SHELL-CI-020::GAP-PKG-002` — declared=`AUTHORIZED` — effective=`AUTHORIZED` — `EJECUTAR_IMPLEMENTACIÓN`
   - Contrato: Implementar y desplegar cada paquete aprobado por E5
   - Integridad: `VALID`
-  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Recovery: `START_IMPLEMENTATION_BRANCH`
   - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-020::GAP-PKG-002`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-002.json`
 - `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
@@ -72,7 +72,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `COMPLETA` | — | FIN DE RUTA | Ruta documental completa; los pendientes restantes permanecen diferidos |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-002` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `AUTHORIZED` | `SHELL-CI-020::GAP-PKG-002` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `DOCUMENTATION_COMPLETE`. La ruta documental esta completa; no requiere checkout paralelo. El carril fisico conserva su lifecycle gobernado.
 
@@ -86,11 +86,11 @@
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-13-R3-LEGACY-RETIREMENT` — Retiro legacy y certificación final
 - **Siguiente etapa documental:** `NINGUNA`
-- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-002`
+- **Puntero de compatibilidad del control de instancias:** `EJECUTAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-002`
 - **Entrada mutante normal:** `docs:implementation:advance`
-- **Estado físico declarado:** `PENDING_AUTHORIZATION`
-- **Estado físico efectivo:** `PENDING_AUTHORIZATION`
-- **Recovery físico:** `AWAIT_EXPLICIT_AUTHORIZATION`
+- **Estado físico declarado:** `AUTHORIZED`
+- **Estado físico efectivo:** `AUTHORIZED`
+- **Recovery físico:** `START_IMPLEMENTATION_BRANCH`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -100,7 +100,7 @@
 
 | # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-002` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-002` | Implementar y desplegar cada paquete aprobado por E5 | `AUTHORIZED` | `AUTHORIZED` | EN_CURSO — EJECUTAR_IMPLEMENTACIÓN |
 | 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 | 3 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-018` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 | 4 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-019` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
