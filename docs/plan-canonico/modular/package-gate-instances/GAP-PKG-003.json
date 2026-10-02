@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-003",
-  "status": "READY_FOR_APPROVAL",
+  "status": "APPROVED_FOR_IMPLEMENTATION",
   "created_at": "2026-09-10T04:49:51.793Z",
-  "updated_at": "2026-10-02T17:28:29.055Z",
+  "updated_at": "2026-10-02T18:57:12.811Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "CONTROL_NO_DIRECT_RUNTIME",
@@ -87,11 +87,11 @@
     ]
   },
   "authorization": {
-    "decision": "PENDING",
-    "approved_by": null,
-    "approved_at": null,
-    "approval_ref": null,
-    "approval_statement": null
+    "decision": "APROBADO",
+    "approved_by": "usuario",
+    "approved_at": "2026-10-02T18:57:12.811Z",
+    "approval_ref": "Conversación: APROBADO para GAP-PKG-003 tras PR #991",
+    "approval_statement": "APROBADO: el usuario aprueba el gate actual GAP-PKG-003 y su expediente consolidado en PR #991. La autorización física se registra por separado; esta aprobación no autoriza cambios remotos de GitHub, Supabase ni producción."
   },
   "scope_reconciliation_ref": "docs/plan-canonico/modular/package-scope-reconciliation.json",
   "physical_discovery": {

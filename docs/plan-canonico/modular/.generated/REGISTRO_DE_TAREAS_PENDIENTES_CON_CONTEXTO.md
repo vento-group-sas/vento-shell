@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar APPROVE_PACKAGE_GATE sobre GAP-PKG-003.
+> **Prioridad del checkout actual:** ejecutar MATURE_PACKAGE_GATE sobre GAP-PKG-004.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,17 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-003`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-004`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-003`
-- **Posición topológica:** **3/189**; prioridad derivada, sin selección humana.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-004`
+- **Posición topológica:** **4/189**; prioridad derivada, sin selección humana.
 - **Estado efectivo:** `COMPILED`
-- **Acción exacta:** `APPROVE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-003`
-- **Comando exacto:** `npm run docs:package:gate:status -- --package-id GAP-PKG-003`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-003.json` — `READY_FOR_APPROVAL`
+- **Acción exacta:** `MATURE_PACKAGE_GATE`
+- **Objetivo exacto:** `GAP-PKG-004`
+- **Comando exacto:** `npm run docs:package:gate:status -- --package-id GAP-PKG-004`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-004.json` — `MATURATION_DRAFT`
 - **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-003 tiene el expediente completo; falta APROBADO humano explícito para el gate. La aprobación del gate no autoriza implementación física.
+- **Por qué:** GAP-PKG-004 debe completar identidad, unidades, evidencia y aprobación de gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación canónica
