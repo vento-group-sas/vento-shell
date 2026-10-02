@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-002",
-  "status": "WAITING_DOCUMENTATION",
+  "status": "APPROVED_FOR_IMPLEMENTATION",
   "created_at": "2026-09-10T04:25:48.917Z",
-  "updated_at": "2026-09-10T04:25:48.917Z",
+  "updated_at": "2026-10-02T04:08:39.683Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "DATABASE_RPC_BOUNDARY",
@@ -18,29 +18,234 @@
       "PULSO-AUTH-009",
       "PULSO-AUTH-010"
     ],
-    "missing_task_ids": [
-      "PASS-INT-001",
-      "PASS-INT-002",
-      "PASS-INT-004",
-      "PULSO-AUTH-009",
-      "PULSO-AUTH-010"
-    ]
+    "missing_task_ids": []
   },
   "physical_identity": {
-    "targets": []
+    "targets": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql",
+        "symbol_or_surface": "AUTH-DB-002::GLOBAL verified forward RLS hardening migration",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-002.sql",
+        "symbol_or_surface": "GAP-PKG-002 TP-DB-001 pgTAP package evidence over the verified AUTH-DB-002 RLS foundation",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 contractual evidence for the fourteen TREQ assigned by DELIV-PKG-016",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 integration evidence for consumers of the hardened RLS boundary",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 adversarial authorization and RLS security evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 controlled end-to-end evidence for the database authorization boundary",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-DB-001 fixtures and TREQ oracle mapping for GAP-PKG-002",
+        "operation": "CREAR"
+      }
+    ]
   },
-  "implementation_units": [],
+  "implementation_units": [
+    {
+      "unit_id": "20260826213609_auth_db_002_rls_hardening.sql",
+      "repository": "vento-group-sas/vento-shell",
+      "change": "Use the exact canonical AUTH-DB-002 migration filename as the physical implementation_unit_id; adopt the existing VERIFIED AUTH-DB-002::GLOBAL RLS hardening foundation without modifying its migration, and materialize only the GAP-PKG-002 package-specific TP-DB-001 evidence reserved by DELIV-PKG-016. AUTH-DB-002::GLOBAL remains the verified implementation instance/evidence source and is not reused as an implementation_unit_id."
+    }
+  ],
   "evidence_plan": {
-    "tests": [],
-    "observability": [],
-    "acceptance_criteria": [],
-    "rollback_steps": []
+    "tests": [
+      {
+        "command": "npm run supabase:migrations:manifest:check",
+        "expected_result": "PASS with the existing AUTH-DB-002 migration present exactly once and unchanged in the canonical migration manifest."
+      },
+      {
+        "command": "npm run supabase:db:test:clean",
+        "expected_result": "PASS on the governed clean local Supabase replay, including the existing AUTH-DB-002 RLS containment regression, with no hosted or production mutation."
+      },
+      {
+        "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql",
+        "expected_result": "PASS for GAP-PKG-002 TP-DB-001 pgTAP assertions over the verified AUTH-DB-002 RLS foundation."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-002/contract.test.ts",
+        "expected_result": "PASS with explicit deterministic evidence for all fourteen TREQ assigned to GAP-PKG-002 by DELIV-PKG-016."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-002/integration.test.ts",
+        "expected_result": "PASS for integration between the hardened database/RLS boundary and the package consumers represented by the assigned canonical contracts."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-002/security.test.ts",
+        "expected_result": "PASS for adversarial RLS and authorization cases, including denial of direct broad access while preserving the approved minimum positive paths."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-002/e2e.test.ts",
+        "expected_result": "PASS for controlled end-to-end scenarios against the governed local/staging-safe database authorization boundary without production mutation."
+      },
+      {
+        "command": "npm test --silent",
+        "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      }
+    ],
+    "observability": [
+      {
+        "signal": "AUTH-DB-002::GLOBAL implementation ledger and migration manifest identity",
+        "expected_result": "AUTH-DB-002::GLOBAL remains VERIFIED and supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql remains the same canonical migration adopted by GAP-PKG-002."
+      },
+      {
+        "signal": "AUTH-DB-002 hardened RLS policy post-state in governed clean replay",
+        "expected_result": "The ten broad policies removed by AUTH-DB-002 remain absent and the six hardened replacement policies remain present with the approved authenticated audience and fail-closed semantics."
+      },
+      {
+        "signal": "GAP-PKG-002 canonical TREQ evidence coverage",
+        "expected_result": "All fourteen assigned TREQ have an explicit oracle and reproducible assertion or fixture mapping across the reserved package-specific evidence artifacts."
+      },
+      {
+        "signal": "GAP-PKG-002 product/schema mutation delta",
+        "expected_result": "Exactly zero modifications to the existing AUTH-DB-002 migration, migration manifest, grants, functions, buckets, production data or unrelated policies; the package materializes only its six reserved evidence files."
+      }
+    ],
+    "acceptance_criteria": [
+      "GAP-PKG-002 adopts the existing VERIFIED AUTH-DB-002::GLOBAL RLS hardening foundation and does not create, rewrite or replace another RLS migration for the same correction.",
+      "The implementation_unit_id is exactly 20260826213609_auth_db_002_rls_hardening.sql, reusing the exact canonical migration filename as the stable physical-unit identity; AUTH-DB-002::GLOBAL remains a distinct verified implementation_instance_id/evidence source.",
+      "The canonical migration manifest continues to identify version 20260826213609_auth_db_002_rls_hardening.sql exactly once and its repository-canonical content remains unchanged.",
+      "Governed clean replay continues to prove removal of users_update_self, staff_select_all_users, users_select_cashier, users_select_cashier_for_qr, the direct loyalty ledger insert policy, staff_select_all_redemptions, staff_validate_redemptions, employees_crud_purchase_orders, orders_update_staff and order_items_update_staff.",
+      "Governed clean replay continues to prove the six hardened policies for public.documents, storage.objects, public.document_types and public.required_document_rules while preserving approved minimum positive access paths.",
+      "TREQ-AURA-010, TREQ-AURA-020, TREQ-AURA-024, TREQ-AUTH-005, TREQ-AUTH-006, TREQ-AUTH-007, TREQ-AUTH-018, TREQ-PASS-017, TREQ-PROC-076, TREQ-PROC-101, TREQ-PROC-122, TREQ-PROC-217, TREQ-PROC-330 and TREQ-PROC-345 each have explicit GAP-PKG-002 package evidence.",
+      "The package-specific evidence uses the six exact paths reserved by DELIV-PKG-016 and deterministic fixtures without production data.",
+      "No package implementation change modifies grants, SECURITY DEFINER functions, buckets, unrelated policies, historical migrations, the existing AUTH-DB-002 migration, production data or production configuration.",
+      "If package evidence discovers that a product/schema delta is still required, CI020 must stop and GAP-PKG-002 must be re-matured with the newly proven exact physical target before any such mutation.",
+      "All package-specific tests, the governed clean database replay, migration manifest validation and canonical vento-shell regression facade pass before GAP-PKG-002 physical implementation can be verified.",
+      "Production remains unauthorized; the dossier declares only the governed STAGING target rcrxixmqhrndcervbllp under SUPA-TRANS-015."
+    ],
+    "rollback_steps": [
+      "If GAP-PKG-002 evidence materialization fails before verification, revert only the six package-specific evidence files created by the authorized CI020 instance.",
+      "Do not alter, delete, rewrite or roll back supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql or the VERIFIED AUTH-DB-002::GLOBAL ledger as part of a GAP-PKG-002 evidence rollback.",
+      "If any package test proves that the existing AUTH-DB-002 foundation is insufficient and requires a new product/schema change, stop the implementation and re-mature GAP-PKG-002 with the exact newly discovered physical target before making that change.",
+      "After any evidence rollback, rerun the canonical migration manifest check and governed clean Supabase database test to confirm the pre-package AUTH-DB-002 foundation remains unchanged.",
+      "No database rollback is required for the dossier as currently scoped because the database foundation is adopted without modification and the only planned package delta is package-specific evidence."
+    ]
   },
   "authorization": {
-    "decision": "PENDING",
-    "approved_by": null,
-    "approved_at": null,
-    "approval_ref": null,
-    "approval_statement": null
+    "decision": "APROBADO",
+    "approved_by": "usuario",
+    "approved_at": "2026-10-02T04:08:39.683Z",
+    "approval_ref": "APROBADO",
+    "approval_statement": "APROBADO GAP-PKG-002"
+  },
+  "physical_discovery": {
+    "status": "COMPLETE",
+    "searches": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-002 canonical E5 package contract",
+        "method": "direct inspection of DELIV-PKG-003, DELIV-PKG-007, DELIV-PKG-014, DELIV-PKG-016, DELIV-PKG-019 and DELIV-PKG-025",
+        "evidence": "GAP-PKG-002 is owned by devVentoGroup/vento-shell, dominant task AUTH-DB-002, runtime DATABASE_RPC_BOUNDARY, TP-DB-001 / ENV-SUPABASE-LOCAL-CI-STAGING, KEEP_AS_SINGLE_UNIT, with six package-specific evidence files reserved by DELIV-PKG-016."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "AUTH-DB-002::GLOBAL physical implementation ledger",
+        "method": "direct inspection of docs/plan-canonico/modular/implementation-instances/AUTH-DB-002__GLOBAL.json",
+        "evidence": "AUTH-DB-002::GLOBAL is VERIFIED and records the exact forward migration, database regression test, migration manifest, validation commands and consolidated evidence for the RLS hardening foundation."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "AUTH-DB-002 forward RLS migration and migration manifest",
+        "method": "direct inspection of supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql and supabase/MIGRATION_MANIFEST.md",
+        "evidence": "The existing migration is present in the canonical manifest as version 20260826213609 with repository-canonical SHA-256 aca1a4b69e8f9c483b25a88a2c0ffc18a1a9f507fc5b3bcdb72dec7cdf0320b7; its exact filename 20260826213609_auth_db_002_rls_hardening.sql is reused as the implementation_unit_id, while GAP-PKG-002 adopts the migration without modification."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "AUTH-DB-002 RLS regression foundation",
+        "method": "direct inspection of supabase/tests/database/021_auth_db_002_rls_containment.test.sql and the VERIFIED instance evidence",
+        "evidence": "The foundation regression suite proves removal of the broad RLS policies, presence of the six hardened policies and positive/negative authorization behavior; the VERIFIED ledger records 40 pgTAP assertions and zero remote mutation."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "GAP-PKG-002 reserved package-specific TP-DB-001 evidence paths",
+        "method": "exact path lookup on main",
+        "evidence": "supabase/tests/packages/GAP-PKG-002.sql and tests/packages/GAP-PKG-002/{contract.test.ts,integration.test.ts,security.test.ts,e2e.test.ts,fixtures.json} are absent on main and are explicitly reserved by DELIV-PKG-016, so CREATE is the supported physical operation."
+      }
+    ],
+    "findings": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql",
+        "symbol_or_surface": "AUTH-DB-002::GLOBAL verified forward RLS hardening migration",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-002.sql",
+        "symbol_or_surface": "GAP-PKG-002 TP-DB-001 pgTAP package evidence over the verified AUTH-DB-002 RLS foundation",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 contractual evidence for the fourteen TREQ assigned by DELIV-PKG-016",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 integration evidence for consumers of the hardened RLS boundary",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 adversarial authorization and RLS security evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-002 controlled end-to-end evidence for the database authorization boundary",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-002/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-DB-001 fixtures and TREQ oracle mapping for GAP-PKG-002",
+        "operation": "CREAR"
+      }
+    ],
+    "unresolved_findings": []
+  },
+  "deployment_environment": {
+    "canonical_task_id": "DELIV-PKG-019",
+    "rollout_profile": "TP-DB-001",
+    "environment_profile": "ENV-SUPABASE-LOCAL-CI-STAGING",
+    "targets": [
+      {
+        "environment_role": "STAGING",
+        "target_type": "SUPABASE_PROJECT_REF",
+        "target_id": "rcrxixmqhrndcervbllp",
+        "owner": "SUPA-TRANS-015"
+      }
+    ],
+    "production_authorized": false
   }
 }
