@@ -177,22 +177,22 @@
     {
       "package_id": "GAP-PKG-018",
       "source_kind": "CANONICAL_GAP_PACKAGE",
-      "status": "READY_FOR_GATE",
+      "status": "COMPILED",
       "status_scope": "DOCUMENTARY_READINESS",
       "detected_at": "2026-08-30T05:43:12.341Z",
       "ready_for_gate_at": "2026-09-11T19:27:20.527Z",
-      "last_status_change_at": "2026-09-11T19:27:20.527Z",
-      "updated_at": "2026-09-11T19:27:20.527Z"
+      "last_status_change_at": "2026-10-02T16:27:00.342Z",
+      "updated_at": "2026-10-02T16:27:00.342Z"
     },
     {
       "package_id": "GAP-PKG-019",
       "source_kind": "CANONICAL_GAP_PACKAGE",
-      "status": "READY_FOR_GATE",
+      "status": "COMPILED",
       "status_scope": "DOCUMENTARY_READINESS",
       "detected_at": "2026-08-30T05:43:12.341Z",
       "ready_for_gate_at": "2026-09-13T13:42:51.501Z",
-      "last_status_change_at": "2026-09-13T13:42:51.501Z",
-      "updated_at": "2026-09-13T13:42:51.501Z"
+      "last_status_change_at": "2026-10-02T16:27:00.342Z",
+      "updated_at": "2026-10-02T16:27:00.342Z"
     },
     {
       "package_id": "GAP-PKG-020",

@@ -1,25 +1,20 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-003",
-  "status": "WAITING_DOCUMENTATION",
+  "status": "MATURATION_DRAFT",
   "created_at": "2026-09-10T04:49:51.793Z",
-  "updated_at": "2026-09-10T04:49:51.793Z",
+  "updated_at": "2026-10-02T15:50:53.537Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
-    "runtime_profile": "DATABASE_RPC_BOUNDARY",
-    "dominant_task_id": "SUPA-AUD-015",
+    "runtime_profile": "CONTROL_NO_DIRECT_RUNTIME",
+    "dominant_task_id": "CODE-AUD-020",
     "task_ids": [
-      "AURA-AUTH-002",
-      "AURA-AUTH-003",
-      "AURA-AUTH-004",
+      "CODE-AUD-017",
+      "CODE-AUD-020",
       "GAP-CTRL-007",
       "SUPA-AUD-015"
     ],
-    "missing_task_ids": [
-      "AURA-AUTH-002",
-      "AURA-AUTH-003",
-      "AURA-AUTH-004"
-    ]
+    "missing_task_ids": []
   },
   "physical_identity": {
     "targets": []
@@ -37,5 +32,6 @@
     "approved_at": null,
     "approval_ref": null,
     "approval_statement": null
-  }
+  },
+  "scope_reconciliation_ref": "docs/plan-canonico/modular/package-scope-reconciliation.json"
 }

@@ -5,15 +5,15 @@ de superar `SHELL-CI-021`.
 
 ### ✅ CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover
 
-**Estado:** APROBADA  
-**Tarea anterior:** `READY-GATE-015 — Definir autoridad y criterio para aprobar la entrada al piloto operativo`  
-**Tarea siguiente:** `CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso`  
-**Tipo de tarea:** documental — definición normativa y materialización del criterio para seleccionar, por paquete y candidato autorizado, una fecha y ventana de cutover operativamente viable, resolver los responsables ya existentes que deberán estar disponibles durante esa ventana y dejar un expediente reproducible para la ejecución posterior; sin ejecutar cutover, piloto, despliegues, promociones, rollback, cambios de configuración, migraciones, DDL/DML, backfills, modificaciones de datos ni operaciones sobre Supabase  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>`  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** READY-GATE-015 — Definir autoridad y criterio para aprobar la entrada al piloto operativo
+**Tarea siguiente:** CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso
+**Tipo de tarea:** documental — definición normativa y materialización del criterio para seleccionar, por paquete y candidato autorizado, una fecha y ventana de cutover operativamente viable, resolver los responsables ya existentes que deberán estar disponibles durante esa ventana y dejar un expediente reproducible para la ejecución posterior; sin ejecutar cutover, piloto, despliegues, promociones, rollback, cambios de configuración, migraciones, DDL/DML, backfills, modificaciones de datos ni operaciones sobre Supabase
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>`
 
 ---
 
@@ -457,8 +457,8 @@ Esta tarea:
 
 **Justificación:** `CUTOVER-OPS-001` materializa un criterio documental de selección temporal y resolución de responsables para ejecutar posteriormente contratos ya aprobados. No crea comportamiento empresarial, transición de estado de negocio, autorización server-side, regla de cálculo, contrato de integración, persistencia, SLA, algoritmo de rollout, mecanismo de rollback ni conducta de runtime nueva. La ejecución y evidencia física permanecen asignadas a `SHELL-CI-022::<package_id>`, mientras rollout, rollback, alcance de piloto y readiness conservan sus autoridades propietarias.
 
-**Requisitos TREQ-* creados:** 0  
-**Requisitos TREQ-* modificados:** 0  
+**Requisitos TREQ-* creados:** 0
+**Requisitos TREQ-* modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 ---
@@ -499,21 +499,21 @@ Esta tarea:
 
 #### 22. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-READY-GATE-015 — Definir autoridad y criterio para aprobar la entrada al piloto operativo
+**ÚLTIMA TAREA APROBADA**
+`READY-GATE-015 — Definir autoridad y criterio para aprobar la entrada al piloto operativo`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso`
 
 
 ### ✅ CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover`  
-**Tarea siguiente:** `CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior`  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover
+**Tarea siguiente:** CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior
 **Tipo de tarea:** documental — definición normativa y materialización de la secuencia de activación por paquete dentro de la ventana de cutover ya seleccionada, resolviendo unidades y olas por sede, área, rol, proceso o intersección aplicable sin ampliar el alcance autorizado ni ejecutar activaciones, promociones, despliegues, rollback, cambios de configuración, migraciones, DDL/DML, backfills, modificaciones de datos u operaciones sobre Supabase
 
 ---
@@ -864,9 +864,9 @@ La secuencia por sede, área, rol o proceso tampoco sustituye la cohorte nominab
 
 | Modalidad heredada            | Cantidad | Decisión de secuenciación                                                                                  |
 | ----------------------------- | -------: | ---------------------------------------------------------------------------------------------------------- |
-| `PILOT-DIRECT-001`            |  **160** | `DIRECT_ORDERED_ACTIVATION` cuando exista ventana seleccionada y vigente                                   |
+| `PILOT-DIRECT-001`            |  **159** | `DIRECT_ORDERED_ACTIVATION` cuando exista ventana seleccionada y vigente                                   |
 | `PILOT-SHARED-001`            |    **3** | `CONSUMER_DERIVED_ACTIVATION`; sin secuencia directa independiente                                         |
-| `PILOT-CONTROL-001`           |   **26** | `GOVERNED_OBSERVATION`; sin activación artificial, salvo enforcement ejecutable ya permitido por su perfil |
+| `PILOT-CONTROL-001`           |   **27** | `GOVERNED_OBSERVATION`; sin activación artificial, salvo enforcement ejecutable ya permitido por su perfil |
 | AURA bloqueada                |   **14** | `BLOCKED_NO_SEQUENCE` mientras persista su gate                                                            |
 | dependencia externa bloqueada |    **2** | `BLOCKED_NO_SEQUENCE` mientras persista el gate externo                                                    |
 | TALENTO fuera de línea actual |    **2** | `OUT_OF_CURRENT_LINE`                                                                                      |
@@ -874,7 +874,7 @@ La secuencia por sede, área, rol o proceso tampoco sustituye la cohorte nominab
 Reconciliación:
 
 ```text
-160 + 3 + 26 + 14 + 2 + 2 = 207
+159 + 3 + 27 + 14 + 2 + 2 = 207
 ```
 
 Esta tabla materializa el tratamiento de las modalidades sin reasignar ninguna raíz ni cambiar su `package_id`.
@@ -1083,8 +1083,8 @@ Esta tarea no:
 
 **Justificación:** `CUTOVER-OPS-002` materializa el orden documental de exposición para ejecutar posteriormente contratos de rollout, piloto, autorización, observabilidad y recuperación ya aprobados. No introduce un comportamiento empresarial nuevo, una transición de estado de negocio, una regla de autorización, un contrato de integración, una persistencia, un cálculo, un algoritmo runtime, un umbral de promoción ni un mecanismo nuevo de rollback. Los comportamientos ejecutables y sus pruebas permanecen gobernados por los requisitos y matrices ya vinculados a los paquetes; esta tarea únicamente organiza su ejecución futura dentro de un alcance previamente autorizado.
 
-**Requisitos TREQ-* creados:** 0  
-**Requisitos TREQ-* modificados:** 0  
+**Requisitos TREQ-* creados:** 0
+**Requisitos TREQ-* modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 ---
@@ -1110,7 +1110,7 @@ Esta tarea no:
 15. no existe promoción automática por tiempo ni por completar una ola;
 16. se preservan los estados y perfiles de `DELIV-PKG-018/019`;
 17. la cohorte de piloto no se transforma en porcentaje;
-18. las 207 raíces quedan reconciliadas por modalidad como 160 directas, 3 shared, 26 control y 18 no ejecutables en la línea actual;
+18. las 207 raíces quedan reconciliadas por modalidad como 159 directas, 3 shared, 27 control y 18 no ejecutables en la línea actual;
 19. shared no recibe una activación independiente ficticia;
 20. control no recibe una activación ficticia y conserva su tratamiento de observación o enforcement aplicable;
 21. AURA, dependencia externa y línea futura conservan sus gates;
@@ -1127,27 +1127,27 @@ Esta tarea no:
 
 #### 27. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-001 — Definir criterio para seleccionar fecha, ventana y responsables del cutover`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior`
 
 
 ### ✅ CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso`  
-**Tarea siguiente:** `CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición`  
-**Tipo de tarea:** documental — definición normativa y materialización de la convivencia temporal entre el proceso anterior y el proceso objetivo para cada unidad y ola de activación ya secuenciada, preservando una autoridad inequívoca por alcance, la compatibilidad temporal aprobada y las rutas de recuperación existentes; sin ampliar el alcance, alterar la secuencia, ejecutar activaciones, diseñar todavía controles contra doble registro o doble efecto, conciliar resultados, decidir pausa/reversión/continuación, retirar el proceso anterior, desplegar cambios, modificar configuración, ejecutar migraciones, DDL/DML, backfills, modificaciones de datos ni operaciones sobre Supabase  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>`  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso
+**Tarea siguiente:** CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición
+**Tipo de tarea:** documental — definición normativa y materialización de la convivencia temporal entre el proceso anterior y el proceso objetivo para cada unidad y ola de activación ya secuenciada, preservando una autoridad inequívoca por alcance, la compatibilidad temporal aprobada y las rutas de recuperación existentes; sin ampliar el alcance, alterar la secuencia, ejecutar activaciones, diseñar todavía controles contra doble registro o doble efecto, conciliar resultados, decidir pausa/reversión/continuación, retirar el proceso anterior, desplegar cambios, modificar configuración, ejecutar migraciones, DDL/DML, backfills, modificaciones de datos ni operaciones sobre Supabase
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>`
 
 ---
 
@@ -1660,7 +1660,7 @@ La ejecución futura corresponde a `SHELL-CI-022::<package_id>` dentro de la rut
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0.  
+**Requisitos creados:** 0.
 **Requisitos modificados:** 0.
 
 **Justificación:** `CUTOVER-OPS-003` materializa, para la secuencia de cutover, la aplicación conjunta de reglas de transición, compatibilidad temporal, autoridad única de escritura, integración, autorización, rollout, shadow, rollback, recovery, soporte y observabilidad que ya están aprobadas y cubiertas por requisitos existentes. `DELIV-PKG-009`, `DELIV-PKG-019`, `DELIV-PKG-020` y `DELIV-PKG-022` ya determinan que sus decisiones documentales reutilizan el registro 04A vigente sin crear semántica ejecutable nueva. Esta tarea no cambia el contenido, identidad, estado, relación o criterio de ningún `TREQ-*` y no corresponde generar fragmentos 04A.
@@ -1706,27 +1706,27 @@ La ejecución futura corresponde a `SHELL-CI-022::<package_id>` dentro de la rut
 
 #### 28. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-002 — Definir secuencia de activación por sede, área, rol o proceso`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición`
 
 
 ### ✅ CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior`  
-**Tarea siguiente:** `CUTOVER-OPS-005 — Definir conciliaciones durante el piloto`  
-**Tipo de tarea:** documental — definición normativa y materialización de los controles contra doble registro y doble efecto sobre las unidades, olas y fronteras de autoridad ya definidas para el cutover, vinculando mecanismos canónicos existentes de identidad de operación, idempotencia, atomicidad, deduplicación, fencing, autorización, retry, trabajo diferido y efectos externos; sin implementar controles físicos, ejecutar activaciones, modificar routing, crear colas, cambiar feature flags, conciliar resultados, decidir pausa/reversión/continuación, retirar legacy, desplegar código, ejecutar migraciones, DDL/DML, backfills, modificar datos ni operar Supabase  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de completar los contratos CUTOVER aplicables  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior
+**Tarea siguiente:** CUTOVER-OPS-005 — Definir conciliaciones durante el piloto
+**Tipo de tarea:** documental — definición normativa y materialización de los controles contra doble registro y doble efecto sobre las unidades, olas y fronteras de autoridad ya definidas para el cutover, vinculando mecanismos canónicos existentes de identidad de operación, idempotencia, atomicidad, deduplicación, fencing, autorización, retry, trabajo diferido y efectos externos; sin implementar controles físicos, ejecutar activaciones, modificar routing, crear colas, cambiar feature flags, conciliar resultados, decidir pausa/reversión/continuación, retirar legacy, desplegar código, ejecutar migraciones, DDL/DML, backfills, modificar datos ni operar Supabase
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de completar los contratos CUTOVER aplicables
 
 ---
 
@@ -2183,7 +2183,7 @@ La clasificación de `CUTOVER-OPS-002` se conserva sin cambios:
 La cobertura heredada continúa reconciliando:
 
 ```text
-160 + 3 + 26 + 14 + 2 + 2 = 207
+159 + 3 + 27 + 14 + 2 + 2 = 207
 ```
 
 004 no cambia modalidad, paquete, perfil técnico ni gate.
@@ -2322,8 +2322,8 @@ La implementación física corresponde a las tareas y paquetes propietarios ya d
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos TREQ-* creados:** 0  
-**Requisitos TREQ-* modificados:** 0  
+**Requisitos TREQ-* creados:** 0
+**Requisitos TREQ-* modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Justificación:** `CUTOVER-OPS-004` no introduce una regla ejecutable nueva. Materializa, en la frontera concreta de cutover definida por `CUTOVER-OPS-002/003`, la ubicación y vinculación de controles ya protegidos por requisitos vigentes: identidad estable, idempotencia, reutilización de resultado, conflicto por contenido, retry controlado, atomicidad o mecanismo equivalente, captura única, prevención de fuentes competidoras, compatibilidad legacy, recuperación y trazabilidad. La implementación y prueba de esos comportamientos permanece vinculada a los paquetes mediante `DELIV-PKG-016` y a sus tareas técnicas propietarias. La tarea no cambia identidad, contenido, estado, relación, prioridad, paquete, repositorio, artefacto ni evidencia de ninguna fila `TREQ-*`.
@@ -2357,7 +2357,7 @@ La implementación física corresponde a las tareas y paquetes propietarios ya d
 21. toda superficie material sin control suficiente queda `BLOQUEADA`;
 22. todo bloqueo tiene causa, propietario y condición de salida;
 23. los cambios materiales invalidan el manifiesto y exigen revalidación;
-24. las modalidades heredadas reconcilian `160 + 3 + 26 + 14 + 2 + 2 = 207`;
+24. las modalidades heredadas reconcilian `159 + 3 + 27 + 14 + 2 + 2 = 207`;
 25. shared y control no reciben activaciones ficticias;
 26. AURA, EXT y TALENTO conservan sus gates;
 27. 005 recibe superficies de conciliación sin que 004 ejecute la conciliación;
@@ -2369,27 +2369,27 @@ La implementación física corresponde a las tareas y paquetes propietarios ya d
 
 #### 30. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-003 — Definir convivencia temporal con el proceso anterior`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-005 — Definir conciliaciones durante el piloto
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-005 — Definir conciliaciones durante el piloto`
 
 
 ### ✅ CUTOVER-OPS-005 — Definir conciliaciones durante el piloto
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición`  
-**Tarea siguiente:** `CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación`  
-**Tipo de tarea:** documental — definición normativa y materialización del plan de conciliación durante el piloto sobre las unidades, olas, operaciones, efectos, identidades, fuentes autoritativas, resultados inciertos y controles anti-duplicidad ya definidos, vinculando reglas canónicas existentes de correlación, comparación, idempotencia, fuentes de verdad, recuperación, compensación, observabilidad y evidencia; sin ejecutar conciliaciones, corregir datos, reintentar operaciones, compensar efectos, modificar autoridad, decidir pausa/reversión/continuación, registrar incidentes, retirar legacy, desplegar código, ejecutar migraciones, DDL/DML, backfills, cambios remotos ni operaciones sobre Supabase  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de completar los contratos CUTOVER aplicables  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición
+**Tarea siguiente:** CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación
+**Tipo de tarea:** documental — definición normativa y materialización del plan de conciliación durante el piloto sobre las unidades, olas, operaciones, efectos, identidades, fuentes autoritativas, resultados inciertos y controles anti-duplicidad ya definidos, vinculando reglas canónicas existentes de correlación, comparación, idempotencia, fuentes de verdad, recuperación, compensación, observabilidad y evidencia; sin ejecutar conciliaciones, corregir datos, reintentar operaciones, compensar efectos, modificar autoridad, decidir pausa/reversión/continuación, registrar incidentes, retirar legacy, desplegar código, ejecutar migraciones, DDL/DML, backfills, cambios remotos ni operaciones sobre Supabase
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de completar los contratos CUTOVER aplicables
 
 ---
 
@@ -2869,9 +2869,9 @@ No se registran secretos completos, credenciales ni payloads sensibles por conve
 
 | Modalidad heredada            | Cantidad | Tratamiento de conciliación                                                                                      |
 | ----------------------------- | -------: | ---------------------------------------------------------------------------------------------------------------- |
-| `PILOT-DIRECT-001`            |  **160** | evaluar todas las superficies de sus unidades efectivamente pilotadas que tengan regla de conciliación aplicable |
+| `PILOT-DIRECT-001`            |  **159** | evaluar todas las superficies de sus unidades efectivamente pilotadas que tengan regla de conciliación aplicable |
 | `PILOT-SHARED-001`            |    **3** | conciliar mediante consumidores directos y contratos compartidos; no crear un piloto independiente               |
-| `PILOT-CONTROL-001`           |   **26** | observar y conciliar únicamente las superficies gobernadas que el control deba verificar; no inventar mutaciones |
+| `PILOT-CONTROL-001`           |   **27** | observar y conciliar únicamente las superficies gobernadas que el control deba verificar; no inventar mutaciones |
 | AURA bloqueada                |   **14** | conservar el bloqueo; no ejecutar ni simular conciliaciones productivas                                          |
 | dependencia externa bloqueada |    **2** | conservar el gate externo; no inventar contraparte o resultado                                                   |
 | TALENTO fuera de línea actual |    **2** | mantener fuera de ejecución en esta línea                                                                        |
@@ -2879,7 +2879,7 @@ No se registran secretos completos, credenciales ni payloads sensibles por conve
 Reconciliación del universo:
 
 ```text
-160 + 3 + 26 + 14 + 2 + 2 = 207
+159 + 3 + 27 + 14 + 2 + 2 = 207
 ```
 
 Esta tarea no reasigna `package_id`, perfil, modalidad, alcance ni estado heredado.
@@ -3082,8 +3082,8 @@ La ejecución de cutover y piloto corresponde a `SHELL-CI-022::<package_id>` con
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0  
-**Requisitos modificados:** 0  
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Justificación:** `CUTOVER-OPS-005` no introduce una nueva regla ejecutable, algoritmo de comparación, tolerancia, transición de estado empresarial, fuente de verdad, mecanismo de idempotencia, retry, compensación o recuperación. Materializa dentro de la frontera concreta del piloto cuándo y contra qué fuentes deberán aplicarse obligaciones de conciliación ya existentes y ya vinculadas a los paquetes. Cuando una fuente no define identidad, comparación, tolerancia o tratamiento suficiente, esta tarea bloquea la superficie en lugar de crear una semántica nueva.
@@ -3118,7 +3118,7 @@ La ejecución de cutover y piloto corresponde a `SHELL-CI-022::<package_id>` con
 22. offline y trabajo diferido preservan identidad a través de la reconexión;
 23. conciliación manual no amplía autorización;
 24. evidencia permite reconstruir fuente, contraparte, identidad, regla y resultado;
-25. las 207 raíces conservan la distribución `160 + 3 + 26 + 14 + 2 + 2`;
+25. las 207 raíces conservan la distribución `159 + 3 + 27 + 14 + 2 + 2`;
 26. todas las unidades recibidas quedan cubiertas mediante conciliación aplicable o `NO_APLICA` fundamentado;
 27. todo bloqueo conserva causa, insumo, propietario y condición de salida;
 28. cambios materiales invalidan el manifiesto y obligan a revalidar;
@@ -3132,27 +3132,27 @@ La ejecución de cutover y piloto corresponde a `SHELL-CI-022::<package_id>` con
 
 #### 34. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-004 — Diseñar controles contra doble registro y doble efecto durante la transición`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-005 — Definir conciliaciones durante el piloto
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-005 — Definir conciliaciones durante el piloto`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación`
 
 
 ### ✅ CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-005 — Definir conciliaciones durante el piloto`  
-**Tarea siguiente:** `CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance`  
-**Tipo de tarea:** documental — definición normativa y materialización, por paquete y checkpoint de piloto, del criterio determinista para decidir continuidad, pausa o reversión a partir de señales, riesgos, conciliaciones, controles anti-duplicidad, evidencia, rollout y rollback ya aprobados; sin ejecutar piloto, promoción, pausa física, kill switch, rollback, restore, compensación, corrección, cambios de alcance, despliegues, migraciones, DDL/DML, backfills, cambios de configuración, modificaciones de datos ni operaciones sobre Supabase  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de completar los contratos CUTOVER aplicables  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-005 — Definir conciliaciones durante el piloto
+**Tarea siguiente:** CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance
+**Tipo de tarea:** documental — definición normativa y materialización, por paquete y checkpoint de piloto, del criterio determinista para decidir continuidad, pausa o reversión a partir de señales, riesgos, conciliaciones, controles anti-duplicidad, evidencia, rollout y rollback ya aprobados; sin ejecutar piloto, promoción, pausa física, kill switch, rollback, restore, compensación, corrección, cambios de alcance, despliegues, migraciones, DDL/DML, backfills, cambios de configuración, modificaciones de datos ni operaciones sobre Supabase
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de completar los contratos CUTOVER aplicables
 
 ---
 
@@ -3640,9 +3640,9 @@ La decisión no puede ampliar el alcance autorizado de `DELIV-PKG-022`.
 
 | Modalidad                     | Cantidad | Tratamiento 006                                                                                |
 | ----------------------------- | -------: | ---------------------------------------------------------------------------------------------- |
-| `PILOT-DIRECT-001`            |  **160** | evaluación directa por unidad/ola/checkpoint cuando la raíz haya entrado válidamente en piloto |
+| `PILOT-DIRECT-001`            |  **159** | evaluación directa por unidad/ola/checkpoint cuando la raíz haya entrado válidamente en piloto |
 | `PILOT-SHARED-001`            |    **3** | decisión derivada de consumidores directos; no se crea exposición o checkpoint independiente   |
-| `PILOT-CONTROL-001`           |   **26** | observa los pilotos gobernados y aporta señales/gates; no se fabrica una mutación propia       |
+| `PILOT-CONTROL-001`           |   **27** | observa los pilotos gobernados y aporta señales/gates; no se fabrica una mutación propia       |
 | AURA bloqueada                |   **14** | `BLOQUEADA`; sin decisión operativa ejecutada mientras persista el gate                        |
 | dependencia externa bloqueada |    **2** | `BLOQUEADA`; sin decisión operativa ejecutada mientras persista `EXT-GOV-001`                  |
 | TALENTO fuera de línea actual |    **2** | `FUERA_DE_LINEA`; sin decisión operativa en esta línea                                         |
@@ -3650,7 +3650,7 @@ La decisión no puede ampliar el alcance autorizado de `DELIV-PKG-022`.
 Reconciliación:
 
 ```text
-160 + 3 + 26 + 14 + 2 + 2 = 207
+159 + 3 + 27 + 14 + 2 + 2 = 207
 ```
 
 Las tres raíces compartidas siguen siendo `GAP-PKG-033`, `GAP-PKG-034` y `GAP-PKG-045`, conforme a `DELIV-PKG-022`.
@@ -3843,8 +3843,8 @@ Toda modificación futura de Supabase VENTO continúa perteneciendo a `vento-she
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0  
-**Requisitos modificados:** 0  
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Justificación:** 006 no introduce un nuevo comportamiento empresarial, umbral, severidad, métrica, algoritmo de recovery, mecanismo de rollback, estado de dominio, autorización ni tolerancia. Materializa la precedencia y el binding operativo entre condiciones ya definidas por readiness, NFR, observabilidad, rollout, rollback, controles anti-duplicidad y conciliación. Las obligaciones de rollback independiente, evidencia reproducible, idempotencia, resultado recuperable, conciliación y control de fuentes competidoras ya están protegidas por requisitos vigentes y vinculadas por `DELIV-PKG-016`. Si una decisión necesitara un criterio no existente en esas fuentes, la evaluación queda bloqueada en vez de crear una regla por inferencia.
@@ -3877,7 +3877,7 @@ Toda modificación futura de Supabase VENTO continúa perteneciendo a `vento-she
 20. la autoridad se hereda de 018, 019, 020, readiness y 017 sin crear roles nuevos;
 21. no se mezclan decisiones de paquetes, candidatos, ambientes, alcances, unidades, olas o checkpoints distintos;
 22. la cohorte queda congelada durante pausa o reversión;
-23. las 207 raíces conservan exactamente `160 + 3 + 26 + 14 + 2 + 2`;
+23. las 207 raíces conservan exactamente `159 + 3 + 27 + 14 + 2 + 2`;
 24. las 3 raíces shared conservan `GAP-PKG-033`, `GAP-PKG-034` y `GAP-PKG-045`;
 25. AURA, EXT y TALENTO conservan sus gates;
 26. un cambio material invalida la evaluación anterior;
@@ -3895,27 +3895,27 @@ Toda modificación futura de Supabase VENTO continúa perteneciendo a `vento-she
 
 #### 35. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-005 — Definir conciliaciones durante el piloto
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-005 — Definir conciliaciones durante el piloto`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance`
 
 
 ### ✅ CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación`  
-**Tarea siguiente:** `CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial`  
-**Tipo de tarea:** documental — diseño normativo y materialización completa del registro trazable que la ejecución futura del cutover y piloto utilizará para conservar incidentes, decisiones de continuar/pausar/revertir y cambios de alcance por paquete, candidato, ambiente, unidad, ola y checkpoint, preservando autoridad, cronología, evidencia, causalidad e historial sin ejecutar acciones operativas ni redefinir métricas, criterios de salida, rollback o retiro legacy  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de los contratos CUTOVER aplicables  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación
+**Tarea siguiente:** CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial
+**Tipo de tarea:** documental — diseño normativo y materialización completa del registro trazable que la ejecución futura del cutover y piloto utilizará para conservar incidentes, decisiones de continuar/pausar/revertir y cambios de alcance por paquete, candidato, ambiente, unidad, ola y checkpoint, preservando autoridad, cronología, evidencia, causalidad e historial sin ejecutar acciones operativas ni redefinir métricas, criterios de salida, rollback o retiro legacy
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de los contratos CUTOVER aplicables
 
 ---
 
@@ -4772,8 +4772,8 @@ La ejecución real y captura de evidencia corresponden a `SHELL-CI-022::<package
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0  
-**Requisitos modificados:** 0  
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Justificación:** `CUTOVER-OPS-007` no introduce un comportamiento empresarial nuevo, una severidad, una transición operativa nueva, una autoridad, una regla de autorización, un umbral, una métrica ni un mecanismo de rollback. La clasificación, autoridad, cronología, decisiones, escalamiento, comunicaciones, contención y recuperación de incidentes ya están protegidas por `TREQ-CONT-002`; las decisiones `CONTINUAR`, `PAUSAR` y `REVERTIR` ya fueron materializadas por `CUTOVER-OPS-006`; rollout y rollback permanecen gobernados por `DELIV-PKG-019/020`. 007 diseña el registro correlacionado y append-only que conserva esos hechos. Un defecto real futuro que exija una protección de regresión deberá crear o modificar su requisito en el flujo de corrección concreto, no de forma hipotética en esta tarea.
@@ -4812,7 +4812,7 @@ La ejecución real y captura de evidencia corresponden a `SHELL-CI-022::<package
 26. todo bloqueo conserva fuente responsable y condición de salida;
 27. las 207 raíces están materializadas exactamente una vez en la matriz de cobertura;
 28. existen 207 identificadores únicos, 0 faltantes y 0 duplicados;
-29. la distribución heredada `160 + 3 + 26 + 14 + 2 + 2 = 207` permanece intacta;
+29. la distribución heredada `159 + 3 + 27 + 14 + 2 + 2 = 207` permanece intacta;
 30. las raíces shared continúan siendo `GAP-PKG-033`, `GAP-PKG-034` y `GAP-PKG-045`;
 31. AURA, EXT y TALENTO conservan sus gates;
 32. 007 registra timestamps/fuentes para 008 sin definir métricas;
@@ -4827,27 +4827,27 @@ La ejecución real y captura de evidencia corresponden a `SHELL-CI-022::<package
 
 #### 33. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-006 — Definir criterio de pausa, reversión o continuación`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial`
 
 
 ### ✅ CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance`  
-**Tarea siguiente:** `CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones`  
-**Tipo de tarea:** documental — definición normativa y materialización del sistema de medición del cutover y piloto para tiempos, errores, adopción y resultado empresarial por paquete, candidato, ambiente, alcance y ventana comparable, con fórmulas reproducibles, denominadores explícitos, vínculo a línea base, reglas de calidad y segmentación, y tratamiento completo de las 207 raíces; sin ejecutar mediciones, inventar valores observados, crear umbrales de salida, aprobar la salida del piloto, promover paquetes ni retirar el proceso anterior  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de los contratos CUTOVER aplicables  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance
+**Tarea siguiente:** CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones
+**Tipo de tarea:** documental — definición normativa y materialización del sistema de medición del cutover y piloto para tiempos, errores, adopción y resultado empresarial por paquete, candidato, ambiente, alcance y ventana comparable, con fórmulas reproducibles, denominadores explícitos, vínculo a línea base, reglas de calidad y segmentación, y tratamiento completo de las 207 raíces; sin ejecutar mediciones, inventar valores observados, crear umbrales de salida, aprobar la salida del piloto, promover paquetes ni retirar el proceso anterior
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de los contratos CUTOVER aplicables
 
 ---
 
@@ -5512,7 +5512,7 @@ Semántica:
 | ------------- | ---------------------- | --------- | ---------------------------------- | ----------------------- | ----------------------- | ------------------- | ---------------------------- | ---------------- |
 | `GAP-PKG-001` | `PILOT-DIRECT-001`     | `DIR`     | `ESPECIFICADO_BLOQUEADO_014`       | `DIRECTA`               | `DIRECTA`               | `DIRECTA`           | `DIRECTA_CON_BASELINE`       | `ESPECIFICADO`   |
 | `GAP-PKG-002` | `PILOT-DIRECT-001`     | `DIR`     | `ESPECIFICADO_BLOQUEADO_014`       | `DIRECTA`               | `DIRECTA`               | `DIRECTA`           | `DIRECTA_CON_BASELINE`       | `ESPECIFICADO`   |
-| `GAP-PKG-003` | `PILOT-DIRECT-001`     | `DIR`     | `ESPECIFICADO_BLOQUEADO_014`       | `DIRECTA`               | `DIRECTA`               | `DIRECTA`           | `DIRECTA_CON_BASELINE`       | `ESPECIFICADO`   |
+| `GAP-PKG-003` | `PILOT-CONTROL-001`    | `CONTROL` | `OBSERVE_BLOQUEADO_014`       | `COBERTURA_GOBERNADA`   | `CONTROL_GOBERNADO`     | `NO_APLICA_DIRECTA` | `DERIVADA_ALCANCE_GOBERNADO` | `ESPECIFICADO`   |
 | `GAP-PKG-004` | `PILOT-DIRECT-001`     | `DIR`     | `ESPECIFICADO_BLOQUEADO_014`       | `DIRECTA`               | `DIRECTA`               | `DIRECTA`           | `DIRECTA_CON_BASELINE`       | `ESPECIFICADO`   |
 | `GAP-PKG-005` | `PILOT-DIRECT-001`     | `DIR`     | `ESPECIFICADO_BLOQUEADO_014`       | `DIRECTA`               | `DIRECTA`               | `DIRECTA`           | `DIRECTA_CON_BASELINE`       | `ESPECIFICADO`   |
 | `GAP-PKG-006` | `PILOT-BLOCK-AURA-001` | `AURA`    | `BLOQUEADO_AURA`                   | `BLOQUEADA`             | `BLOQUEADA`             | `BLOQUEADA`         | `BLOQUEADA`                  | `BLOQUEADO`      |
@@ -5899,8 +5899,8 @@ La captura real y el cálculo con evidencia ocurrirán durante la ejecución aut
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0  
-**Requisitos modificados:** 0  
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Requisitos existentes consumidos:** `TREQ-DATA-002`, `TREQ-DATA-003`, `TREQ-DATA-005`, `TREQ-CONT-002`.
@@ -5945,7 +5945,7 @@ La captura real y el cálculo con evidencia ocurrirán durante la ejecución aut
 30. guardrails de 013 y criterios de 023 no se compensan con adopción o resultado empresarial;
 31. las 207 raíces aparecen exactamente una vez;
 32. existen 207 identificadores únicos, 0 faltantes y 0 duplicados;
-33. la distribución reconcilia `160 + 3 + 26 + 14 + 2 + 2 = 207`;
+33. la distribución reconcilia `159 + 3 + 27 + 14 + 2 + 2 = 207`;
 34. las 3 shared siguen siendo 033, 034 y 045;
 35. los 4 controles bloqueados siguen siendo 062, 065, 140 y 172;
 36. AURA conserva 14 raíces bloqueadas;
@@ -5963,27 +5963,27 @@ La captura real y el cálculo con evidencia ocurrirán durante la ejecución aut
 
 #### 33. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-007 — Diseñar el registro de incidentes, decisiones y cambios de alcance`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones`
 
 
 ### ✅ CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial`  
-**Tarea siguiente:** `CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior`  
-**Tipo de tarea:** documental — definición normativa y materialización completa, por paquete y modalidad de piloto, de la autoridad final y del criterio determinista con el que la ejecución futura podrá aprobar la salida del piloto, exigir correcciones o bloquear la decisión cuando la evidencia sea insuficiente; sin ejecutar salida, promoción, correcciones, despliegues, rollback, retiro legacy, migraciones, DDL/DML, backfills, cambios de configuración, modificaciones de datos ni operaciones sobre Supabase  
-**Repositorio propietario:** `vento-shell`  
-**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`  
-**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de los contratos CUTOVER aplicables  
-**Cambios físicos autorizados:** ninguno  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial
+**Tarea siguiente:** CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior
+**Tipo de tarea:** documental — definición normativa y materialización completa, por paquete y modalidad de piloto, de la autoridad final y del criterio determinista con el que la ejecución futura podrá aprobar la salida del piloto, exigir correcciones o bloquear la decisión cuando la evidencia sea insuficiente; sin ejecutar salida, promoción, correcciones, despliegues, rollback, retiro legacy, migraciones, DDL/DML, backfills, cambios de configuración, modificaciones de datos ni operaciones sobre Supabase
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/04_CUTOVER_Y_PILOTO.md`
+**Cambios físicos autorizados:** ninguno
 **Requisitos de prueba creados o modificados:** 0
+**Ejecución posterior:** `SHELL-CI-022::<package_id>` después de `SHELL-CI-021::<package_id>` y de los contratos CUTOVER aplicables
 
 ---
 
@@ -6490,7 +6490,7 @@ Cada identidad aparece exactamente una vez. La matriz materializa **cómo deber�
 | ------------- | ---------------------- | ----------------- | --------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- |
 | `GAP-PKG-001` | `PILOT-DIRECT-001`     | `ACC-DIRECT-001`  | `BLOQUEADO_014_Y_EVIDENCIA` | evaluación directa de salida sobre su ventana propia                                    | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `ESPECIFICADO`        | evidencia ejecutada + criterios aplicables completos; sin salida automática por tiempo |
 | `GAP-PKG-002` | `PILOT-DIRECT-001`     | `ACC-DIRECT-001`  | `BLOQUEADO_014_Y_EVIDENCIA` | evaluación directa de salida sobre su ventana propia                                    | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `ESPECIFICADO`        | evidencia ejecutada + criterios aplicables completos; sin salida automática por tiempo |
-| `GAP-PKG-003` | `PILOT-DIRECT-001`     | `ACC-DIRECT-001`  | `BLOQUEADO_014_Y_EVIDENCIA` | evaluación directa de salida sobre su ventana propia                                    | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `ESPECIFICADO`        | evidencia ejecutada + criterios aplicables completos; sin salida automática por tiempo |
+| `GAP-PKG-003` | `PILOT-CONTROL-001`    | `ACC-CONTROL-001` | `BLOQUEADO_014_Y_EVIDENCIA`    | cierre del control sobre todas las ventanas gobernadas; sin salida empresarial ficticia | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `ESPECIFICADO`        | evidencia de control requerida sobre todas las ventanas gobernadas                     |
 | `GAP-PKG-004` | `PILOT-DIRECT-001`     | `ACC-DIRECT-001`  | `BLOQUEADO_014_Y_EVIDENCIA` | evaluación directa de salida sobre su ventana propia                                    | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `ESPECIFICADO`        | evidencia ejecutada + criterios aplicables completos; sin salida automática por tiempo |
 | `GAP-PKG-005` | `PILOT-DIRECT-001`     | `ACC-DIRECT-001`  | `BLOQUEADO_014_Y_EVIDENCIA` | evaluación directa de salida sobre su ventana propia                                    | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `ESPECIFICADO`        | evidencia ejecutada + criterios aplicables completos; sin salida automática por tiempo |
 | `GAP-PKG-006` | `PILOT-BLOCK-AURA-001` | `ACC-AURA-001`    | `BLOQUEADO_AURA`            | sin decisión de salida ejecutable mientras no exista piloto autorizado                  | Responsable de decisión de la fila homónima de `DELIV-PKG-017` | `BLOQUEADO`           | conserva bloqueo AURA propietario                                                      |
@@ -6827,8 +6827,8 @@ La evidencia real y la decisión futura pertenecen a la ejecución autorizada de
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0  
-**Requisitos modificados:** 0  
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Justificación:** 009 no introduce un comportamiento empresarial o técnico ejecutable nuevo, ni crea permisos, transiciones runtime, fórmulas, métricas, severidades, umbrales, mecanismos de recuperación o criterios de aceptación nuevos. Materializa el gobierno documental para resolver la autoridad final y combinar de forma determinista criterios, métricas y evidencia ya definidos por las fuentes canónicas de E5 y CUTOVER. Los comportamientos verificables subyacentes continúan protegidos por el registro canónico vigente; un defecto real futuro que requiera regresión se incorporará mediante su flujo de corrección propietario y no como requisito hipotético de esta tarea.
@@ -6873,7 +6873,7 @@ La evidencia real y la decisión futura pertenecen a la ejecución autorizada de
 32. TALENTO conserva `GAP-PKG-064` y `GAP-PKG-197` fuera de línea;
 33. las 207 raíces aparecen exactamente una vez;
 34. existen 207 identificadores únicos, 0 faltantes y 0 duplicados;
-35. la distribución reconcilia `160 + 3 + 26 + 14 + 2 + 2 = 207`;
+35. la distribución reconcilia `159 + 3 + 27 + 14 + 2 + 2 = 207`;
 36. las tres shared continúan siendo 033, 034 y 045;
 37. los cuatro controles bloqueados continúan siendo 062, 065, 140 y 172;
 38. `APROBAR_SALIDA` no ejecuta promoción;
@@ -6887,21 +6887,21 @@ La evidencia real y la decisión futura pertenecen a la ejecución autorizada de
 
 #### 33. Continuidad
 
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-008 — Definir métricas de tiempos, errores, adopción y resultado empresarial`
 
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones`
 
-##### SIGUIENTE TAREA RESERVADA
-CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior
+**SIGUIENTE TAREA RESERVADA**
+`CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior`
 
 
 ### ✅ CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior
 
-**Estado:** APROBADA  
-**Tarea anterior:** `CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones`  
-**Tarea siguiente:** `HYPERCARE-OPS-001 — Definir inicio, duración y salida del acompañamiento intensivo`  
+**Estado:** APROBADA
+**Tarea anterior:** CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones
+**Tarea siguiente:** HYPERCARE-OPS-001 — Definir inicio, duración y salida del acompañamiento intensivo
 **Tipo de tarea:** documental — definición de condiciones, evidencia, bloqueos y expediente de elegibilidad para retirar el proceso anterior después del piloto, sin ejecutar retiro lógico o físico, despliegues, migraciones ni cambios remotos
 
 ---
@@ -7453,8 +7453,8 @@ Este handoff no define inicio, duración ni salida de hypercare; esa materia com
 
 **Resultado:** NO GENERA REQUISITOS DE PRUEBA
 
-**Requisitos creados:** 0  
-**Requisitos modificados:** 0  
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
 **Fragmentos 04A afectados:** 0
 
 **Justificación:** 010 no crea un comportamiento empresarial, técnico, de autorización, cálculo, persistencia, integración, retry, compatibilidad, rollback o retiro ejecutable nuevo. Define un expediente documental que aplica al cierre de CUTOVER las puertas y evidencias ya aprobadas por `DELIV-PKG-009`, CUTOVER previo y el registro 04A vigente. En particular, no altera `ZERO_CONFIRMED`, no introduce umbrales nuevos, no redefine consumidores, no crea una secuencia de retiro paralela y no autoriza eliminación física. Los comportamientos verificables subyacentes ya están protegidos por requisitos existentes de SHELL, SUPABASE, INTEGRATION, DATA y dominios propietarios.
@@ -7502,21 +7502,20 @@ Este handoff no define inicio, duración ni salida de hypercare; esa materia com
 35. no se ejecutan retiros, borrados, despliegues, configuración, DDL/DML, migraciones, backfills, rollback, recovery, conciliaciones ni operaciones remotas;
 36. se crean cero requisitos de prueba, se modifican cero requisitos y se afectan cero fragmentos 04A.
 
----
-
-#### 32. Continuidad
-
-##### ÚLTIMA TAREA APROBADA
-CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones
-
-##### TAREA ACTUAL APROBADA
-CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior
-
-##### SIGUIENTE TAREA RESERVADA
-HYPERCARE-OPS-001 — Definir inicio, duración y salida del acompañamiento intensivo
-
-
 La ejecución real conservará paquete, versión, ambiente, ventana, actor,
 decisión y evidencia mediante `SHELL-CI-022`. Los defectos encontrados deberán
 generar una tarea de corrección exacta y un requisito de regresión antes de
 continuar o cerrar.
+
+---
+
+#### 32. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`CUTOVER-OPS-009 — Definir autoridad y criterio para aprobar salida del piloto o exigir correcciones`
+
+**TAREA ACTUAL APROBADA**
+`CUTOVER-OPS-010 — Definir condiciones y evidencia para retirar el proceso anterior`
+
+**SIGUIENTE TAREA RESERVADA**
+`HYPERCARE-OPS-001 — Definir inicio, duración y salida del acompañamiento intensivo`

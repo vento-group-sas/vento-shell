@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { readCanonicalTaskInventory } from './task-semantic-contract.mjs';
+import { validatePackageScopeReconciliation } from './package-scope-reconciliation.mjs';
 import {
   assertPackageGateRecordsValid,
   assessPackageGateRecord,
@@ -3433,6 +3434,7 @@ export function scanPackageReadiness({
   now = () => new Date().toISOString(),
   supplied = {},
 } = {}) {
+  validatePackageScopeReconciliation({ root, optional: true });
   const contract = validateContract(supplied.contract ?? readJson(root, READINESS_PATHS.contract));
   const capabilityIndex = validateCapabilityIndex(
     supplied.capabilityIndex ?? readJson(root, READINESS_PATHS.capabilityIndex),

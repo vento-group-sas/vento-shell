@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-019",
-  "status": "APPROVED_FOR_IMPLEMENTATION",
+  "status": "MATURATION_DRAFT",
   "created_at": "2026-09-13T04:41:33.604Z",
-  "updated_at": "2026-09-15T22:40:38.671Z",
+  "updated_at": "2026-10-02T16:22:18.961Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "DATABASE_RPC_BOUNDARY",
@@ -181,11 +181,11 @@
     ]
   },
   "authorization": {
-    "decision": "APROBADO",
-    "approved_by": "usuario",
-    "approved_at": "2026-09-13T13:42:47.250Z",
-    "approval_ref": "APROBADO GATE WAVE 1",
-    "approval_statement": "APROBADO GATE WAVE 1: autoriza GAP-PKG-019 únicamente porque su dossier queda completo; los targets CREATE son trabajo físico futuro de SHELL-CI-020 y no evidencia preexistente. No autoriza Supabase remoto ni producción."
+    "decision": "PENDING",
+    "approved_by": null,
+    "approved_at": null,
+    "approval_ref": null,
+    "approval_statement": null
   },
   "deployment_environment": {
     "canonical_task_id": "DELIV-PKG-019",
@@ -200,5 +200,43 @@
       }
     ],
     "production_authorized": false
+  },
+  "authorization_history": [
+    {
+      "decision": "APROBADO",
+      "approved_by": "usuario",
+      "approved_at": "2026-09-13T13:42:47.250Z",
+      "approval_ref": "APROBADO GATE WAVE 1",
+      "approval_statement": "APROBADO GATE WAVE 1: autoriza GAP-PKG-019 únicamente porque su dossier queda completo; los targets CREATE son trabajo físico futuro de SHELL-CI-020 y no evidencia preexistente. No autoriza Supabase remoto ni producción.",
+      "superseded_at": "2026-10-02T16:22:18.961Z",
+      "superseded_by": "IMPLEMENTATION_SCOPE_RECONCILIATION",
+      "reason": "La aprobación original no cubre los TREQ trasladados al alcance actual; se preservan identidad, unidades y evidencia del alcance previo."
+    }
+  ],
+  "scope_reconciliation": {
+    "ref": "docs/plan-canonico/modular/package-scope-reconciliation.json",
+    "additional_treq_ids": [
+      "TREQ-SUPABASE-017",
+      "TREQ-SUPABASE-031",
+      "TREQ-SUPABASE-055",
+      "TREQ-SUPABASE-093",
+      "TREQ-SUPABASE-096",
+      "TREQ-SUPABASE-232"
+    ],
+    "previous_evidence_preserved": true,
+    "approval_required_for_extended_scope": true
+  },
+  "physical_discovery": {
+    "status": "PENDING",
+    "searches": [],
+    "findings": [],
+    "unresolved_findings": [
+      "TREQ-SUPABASE-017: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
+      "TREQ-SUPABASE-031: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
+      "TREQ-SUPABASE-055: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
+      "TREQ-SUPABASE-093: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
+      "TREQ-SUPABASE-096: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre.",
+      "TREQ-SUPABASE-232: reconciliar identidad, unidades y evidencia para el alcance ampliado; la aprobación histórica no lo cubre."
+    ]
   }
 }
