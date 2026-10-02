@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1584** |
+| Tareas aprobadas | **1585** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **12** |
+| Tareas no iniciadas | **11** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **99.25% (1584/1596)** |
+| Porcentaje de completamiento | **99.31% (1585/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada** |
-| Tarea actual | **AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones** |
-| Estado de la tarea actual | **NO INICIADA** |
+| Última tarea aprobada | **AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones** |
+| Tarea actual | **NINGUNA — SECUENCIA DOCUMENTAL COMPLETA** |
+| Estado de la tarea actual | **SECUENCIA DOCUMENTAL COMPLETA** |
 | Siguiente tarea | **NINGUNA — CIERRE SIN HANDOFF DECLARADO** |
 | Bloque actual | **BLOQUE R3 — Retiro legacy y certificación final** |
-| Progreso del bloque | **BLOQUE R3: 1 de 2 aprobadas; AUTH-DB-031 pendiente** |
+| Progreso del bloque | **BLOQUE R3: 2 de 2 aprobadas; secuencia documental completa** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-DB-031** |
+| Carril documental | **ACTIVO — AUTH-DB-030** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,8 +44,8 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-DB-030` — Retirar objetos legacy únicamente después de adopción comprobada |
-| Tarea actual | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones — **NO INICIADA** |
+| Última aprobada | `AUTH-DB-031` — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones |
+| Tarea actual | NINGUNA — **SECUENCIA DOCUMENTAL COMPLETA** |
 | Siguiente tarea | NINGUNA — CIERRE SIN HANDOFF DECLARADO |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE R3: 1 DE 2 APROBADAS — ACTUAL AUTH-DB-031** |
+| CONTINUIDAD ACTIVA | **BLOQUE R3: 2 DE 2 APROBADAS — SECUENCIA DOCUMENTAL COMPLETA** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,11 +92,10 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada
-        ↓
-TAREA ACTUAL
 AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones
         ↓
+SECUENCIA DOCUMENTAL COMPLETA
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE R3 — 1 de 2 tareas aprobadas
+BLOQUE R3 — 2 de 2 tareas aprobadas
 ```

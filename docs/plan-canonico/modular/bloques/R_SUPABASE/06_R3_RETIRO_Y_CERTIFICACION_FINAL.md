@@ -1176,23 +1176,1120 @@ El handoff deberá permitir reconstruir:
 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones`
-### [ ] AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones
+### ✅ AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones
 
-Regla de cierre
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada
+**Tarea siguiente:** NINGUNA — CIERRE SIN HANDOFF DECLARADO
+**Tipo de tarea:** Documental — definición canónica de la certificación global final de paridad documental, técnica y operativa, con futura materialización física única de evidencia y sin mutaciones correctivas dentro de la instancia de certificación
+**Bloque:** BLOQUE R3 — Retiro legacy y certificación final
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/R_SUPABASE/06_R3_RETIRO_Y_CERTIFICACION_FINAL.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`; la futura instancia física es `AUTH-DB-031::GLOBAL-FINAL`
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; la futura instancia podrá capturar evidencia, ejecutar comprobaciones y emitir la certificación, pero no corregir documentación, código, datos, configuración, aplicaciones ni Supabase para alcanzar paridad
+**Requisitos de prueba creados o modificados:** 0
 
-AUTH-DB-030 y AUTH-DB-031 no se ejecutarán completamente durante
-la fundación inicial.
+---
 
-Se ejecutarán en la FASE 12 después de comprobar:
+#### 1. Propósito
 
-- adaptación de todos los consumidores;
-- finalización de los pilotos aplicables;
-- ausencia de lecturas legacy;
-- ausencia de escrituras legacy;
-- reconciliación de datos;
-- pruebas de seguridad;
-- pruebas de restauración;
-- rollback todavía disponible;
-- paridad local, staging y producción.
+Definir de forma cerrada cuándo VENTO OS puede afirmar que existe paridad final entre:
 
-Ningún objeto legacy se retirará únicamente porque exista su reemplazo.
+```text
+DOCUMENTO CANÓNICO
++
+VENTO-SHELL
++
+SUPABASE
++
+APLICACIONES Y CONSUMIDORES
+```
+
+La certificación protege tres afirmaciones distintas y acumulativas:
+
+```text
+PARIDAD DOCUMENTAL
+→ lo implementado corresponde a decisiones, contratos, catálogos y requisitos aprobados
+
+PARIDAD TÉCNICA
+→ repositorio, artefactos desplegados, contratos, migraciones y ambientes corresponden al mismo corte gobernado
+
+PARIDAD OPERATIVA
+→ las aplicaciones y procesos ejecutan el comportamiento aprobado sin depender de legacy retirado, bypasses o combinaciones incompatibles
+```
+
+No basta con que cada capa sea internamente válida. La certificación exige que todas describan y ejecuten el mismo sistema gobernado.
+
+---
+
+#### 2. Reconciliación topológica
+
+La topología vinculante es:
+
+```text
+mode = GLOBAL_FINAL
+execution_gate = POST_E5_PACKAGE
+instance_id = AUTH-DB-031::GLOBAL-FINAL
+```
+
+Consecuencias:
+
+1. existe una sola certificación global final;
+2. no se materializa una instancia por `package_id` ni por `implementation_unit_id`;
+3. la evidencia de packages e implementation units se consume como entrada, no se sustituye;
+4. la aprobación documental de este marcador no ejecuta la certificación física;
+5. la instancia global solo puede evaluarse después de la precedencia de ruta `AUTH-DB-030` y de los cierres físicos aplicables;
+6. `NOT_EXECUTED`, evidencia `STALE`, identidad ambigua o ambiente no atribuible bloquean la certificación.
+
+---
+
+#### 3. Precedencia obligatoria
+
+La secuencia final permanece:
+
+```text
+AUTH-QA-001..030
++
+UX-QA-001..030
++
+SHELL-AUTH-005
++
+R2 Y DEMÁS MATERIALIZACIONES APLICABLES
+        ↓
+AUTH-DB-030
+        ↓
+AUTH-DB-031
+```
+
+`AUTH-DB-031` no reemplaza ninguna prueba, piloto, migración, retiro, restore, rollback o validación propietaria anterior.
+
+---
+
+#### 4. Separación entre definición documental y certificación física
+
+Este marcador define:
+
+- el universo que debe reconciliarse;
+- el corte de certificación;
+- las relaciones de paridad;
+- los gates de entrada y salida;
+- el modelo de evidencia;
+- el tratamiento de divergencias;
+- la condición exacta para emitir o negar la certificación.
+
+No ejecuta:
+
+- queries remotas de certificación;
+- builds de consumidores;
+- pruebas E2E;
+- restore o rollback;
+- cambios de datos;
+- DDL o DML;
+- despliegues;
+- actualización de aplicaciones;
+- corrección de drift.
+
+---
+
+#### 5. Regla raíz de certificación
+
+La certificación global solo puede ser positiva cuando:
+
+```text
+MISMO CORTE GOBERNADO
++
+PARIDAD DOCUMENTAL
++
+PARIDAD TÉCNICA
++
+PARIDAD OPERATIVA
++
+CERO DRIFT BLOQUEANTE
++
+CERO CONSUMIDORES LEGACY RESIDUALES
++
+SEGURIDAD Y REGRESIÓN APROBADAS
++
+RESTORE Y ROLLBACK VIGENTES
++
+EVIDENCIA COMPLETA Y ATRIBUIBLE
+=
+CERTIFICACIÓN GLOBAL POSITIVA
+```
+
+Nunca:
+
+```text
+BUILD VERDE AISLADO
+→ CERTIFICACIÓN GLOBAL
+```
+
+ni:
+
+```text
+LOCAL = STAGING
+→ PRODUCCIÓN CERTIFICADA
+```
+
+ni:
+
+```text
+DOCUMENTO APROBADO
+→ IMPLEMENTACIÓN CONFORME
+```
+
+---
+
+#### 6. Corte único de certificación
+
+La futura instancia deberá fijar un `certification_cut` inmutable.
+
+El corte conserva como mínimo:
+
+```text
+instance_id
+certification_cut_timestamp
+vento_shell_commit
+canonical_documentation_digest
+migration_manifest_digest
+contract_bundle_versions
+package_and_lockfile_digests
+application_commits_or_release_ids
+environment_identities
+supabase_schema_and_object_fingerprints
+migration_history_identity
+auth005_evidence_reference
+auth_db_030_evidence_reference
+qa_global_evidence_references
+recovery_evidence_reference
+certification_bundle_digest
+```
+
+Cambiar cualquiera de las identidades gobernadas invalida el corte y exige una nueva captura; no se mezclan resultados de cortes distintos.
+
+---
+
+#### 7. Fuente documental autoritativa
+
+La capa documental de la certificación se compone exclusivamente de fuentes canónicas vigentes para el corte:
+
+- plan canónico modular;
+- ADR y decisiones aprobadas aplicables;
+- contratos y catálogos canónicos;
+- Registro 04A vigente;
+- contratos E3/E4/E5 aplicables;
+- definición de packages y gates;
+- contratos de `SHELL-*`, `AUTH-*`, `SUPA-*`, `DATA-*`, integración y aplicaciones aplicables;
+- manifiestos y evidencias canónicas aprobadas que sean entrada del cierre.
+
+Archivos generados o resúmenes no sustituyen sus fuentes propietarias.
+
+---
+
+#### 8. Fuente técnica autoritativa en `vento-shell`
+
+La capa `vento-shell` deberá reconciliar, según aplicabilidad:
+
+- commits y tags/release identities;
+- manifests y lockfiles;
+- packages compartidos;
+- contratos y schemas versionados;
+- migraciones Supabase versionadas;
+- migration manifest;
+- tipos generados;
+- configuración gobernada;
+- scripts y gates de CI;
+- fingerprints y evidence bundles producidos por tareas propietarias.
+
+Una definición presente únicamente en documentación y ausente del repositorio cuando debería estar materializada es drift bloqueante.
+
+---
+
+#### 9. Fuente técnica autoritativa en Supabase
+
+La capa Supabase deberá capturar, sin secretos y por ambiente aplicable:
+
+- versión e historia de migraciones;
+- schemas gobernados;
+- relaciones y vistas;
+- funciones y RPC;
+- triggers;
+- constraints e índices gobernados;
+- RLS y grants;
+- Storage gobernado;
+- Realtime gobernado;
+- Edge Functions gobernadas;
+- cron, colas o automatizaciones gobernadas cuando apliquen;
+- configuración técnica cuya identidad forme parte del contrato;
+- fingerprints exigidos por los owners correspondientes.
+
+La captura se compara con las identidades versionadas en `vento-shell` y con el contrato documental, no con una expectativa memorizada.
+
+---
+
+#### 10. Fuente operativa en aplicaciones y consumidores
+
+La capa de aplicaciones se resuelve desde el registro canónico de consumidores, packages materializados, repositorios y aplicaciones efectivamente desplegadas en el corte.
+
+Por cada consumidor aplicable deberá existir identidad suficiente para reconstruir:
+
+```text
+repository
+commit_or_release
+runtime
+manifest_and_lockfile
+shared_package_versions
+contract_versions
+backend_identity
+registered_consumer_identity
+environment
+build_and_test_evidence
+operational_or_pilot_evidence
+```
+
+No se congela un número permanente de aplicaciones en esta tarea. Todo consumidor nuevo legítimamente materializado después de baselines anteriores deberá estar registrado y entrar en la certificación.
+
+---
+
+#### 11. Universo mínimo de paridad
+
+El universo global incluye, cuando resulten aplicables al corte:
+
+1. contratos y catálogos documentales;
+2. paquetes compartidos;
+3. migraciones y objetos Supabase;
+4. autorización, contexto y decisiones;
+5. datos y reconciliaciones;
+6. interfaces RPC/RLS y server boundaries;
+7. clientes web y nativos;
+8. aplicaciones internas y de cliente materializadas;
+9. integraciones y automatizaciones;
+10. Storage, Realtime, Edge y cron gobernados;
+11. observabilidad y auditoría;
+12. evidencia de pruebas, piloto, rollback y retiro legacy.
+
+Una superficie materializada que no tenga owner o contrato no se excluye: bloquea.
+
+---
+
+#### 12. Seis relaciones obligatorias de paridad
+
+La certificación evalúa explícitamente las seis relaciones entre las cuatro capas:
+
+| Relación | Pregunta de certificación |
+| --- | --- |
+| Documento ↔ `vento-shell` | ¿El repositorio materializa exactamente los contratos, catálogos, versiones y reglas aprobados? |
+| Documento ↔ Supabase | ¿Los objetos y políticas desplegados corresponden a la arquitectura y contratos documentados? |
+| Documento ↔ aplicaciones | ¿Los consumidores ejecutan las fronteras, capacidades y restricciones documentadas? |
+| `vento-shell` ↔ Supabase | ¿Migraciones, tipos, objetos, firmas y configuración desplegada corresponden al mismo corte versionado? |
+| `vento-shell` ↔ aplicaciones | ¿Cada consumidor usa versiones, exports, contratos y adapters compatibles con el corte certificado? |
+| Supabase ↔ aplicaciones | ¿Cada aplicación consume objetos, RPC, políticas y datos compatibles con el ambiente y contrato desplegados? |
+
+Una relación bloqueada impide certificar el conjunto.
+
+---
+
+#### 13. Paridad no significa igualdad byte a byte entre ambientes
+
+Las diferencias de ambiente solo son admisibles cuando sean explícitamente esperadas y gobernadas.
+
+Clasificación permitida por identidad comparada:
+
+```text
+SAME_REQUIRED
+ENVIRONMENT_SPECIFIC_APPROVED
+NOT_APPLICABLE_WITH_EVIDENCE
+BLOCKING_DRIFT
+UNKNOWN_BLOCKING
+```
+
+Ejemplos de diferencias que pueden ser específicas del ambiente, sin convertirlas automáticamente en PASS:
+
+- identificadores de proyecto;
+- secretos y referencias de secretos;
+- dominios y endpoints propios del ambiente;
+- volúmenes o fixtures no productivos;
+- escalado o capacidad aprobados por ambiente.
+
+Schemas, contratos, migraciones aplicables, firmas, RLS/RPC, permisos, owners funcionales y versiones no pueden divergir silenciosamente.
+
+---
+
+#### 14. Paridad documental
+
+`PARIDAD_DOCUMENTAL = PASS` exige que:
+
+- toda identidad materializada tenga owner documental;
+- las versiones desplegadas correspondan a versiones aprobadas;
+- el Registro 04A conserve requisitos y estados coherentes con el corte;
+- no exista contrato físico activo que contradiga la decisión canónica vigente;
+- las excepciones y compatibilidades temporales estén registradas;
+- las superficies retiradas no continúen documentadas como arquitectura activa;
+- ningún derivado generado sea usado para ocultar una contradicción de fuente.
+
+---
+
+#### 15. Paridad de contratos, catálogos y tipos
+
+La certificación deberá demostrar, según aplicabilidad:
+
+```text
+contract_version(document)
+=
+contract_version(package)
+=
+contract_version(consumer)
+=
+contract_expected_by_backend
+```
+
+También deberá reconciliar:
+
+- schemas de validación;
+- catálogos de permisos y roles;
+- códigos empresariales canónicos;
+- DTO públicos;
+- firmas RPC;
+- tipos generados;
+- aliases o compatibilidades todavía permitidos.
+
+Un cast, alias local o string duplicado no constituye paridad contractual.
+
+---
+
+#### 16. Paridad de migraciones
+
+La historia de migraciones deberá ser atribuible al mismo corte de `vento-shell`.
+
+Se verifica como mínimo:
+
+- archivos gobernados presentes;
+- nombres y orden válidos;
+- contenido/digest esperado cuando el owner lo exija;
+- historia aplicada por ambiente;
+- ausencia de migraciones manuales no representadas;
+- ausencia de migraciones versionadas omitidas en un ambiente aplicable;
+- baseline y upgrade compatibles.
+
+Una migración aplicada fuera de `vento-shell` o no reconciliada es bloqueo.
+
+---
+
+#### 17. Paridad de schema y objetos
+
+Para cada identidad gobernada se compara:
+
+```text
+existence
+owner schema
+class
+definition/signature
+constraints
+indexes relevantes
+security posture
+relationships
+disposition
+lifecycle state
+```
+
+Un objeto con el mismo nombre pero definición distinta no es paridad.
+
+---
+
+#### 18. Paridad de RLS, grants y RPC
+
+La certificación no acepta inferencia desde TypeScript.
+
+RLS, grants y RPC solo pueden quedar `PASS` con:
+
+- objeto real;
+- ambiente real;
+- identidad y firma observadas;
+- pruebas aplicables ejecutadas;
+- resultados de seguridad y denegación;
+- correspondencia con contrato y consumidor.
+
+`NOT_EXECUTED` no equivale a ausencia de problema.
+
+---
+
+#### 19. Paridad de Storage, Realtime, Edge y automatizaciones
+
+Cuando sean aplicables, deberán reconciliarse contra `vento-shell`:
+
+- buckets y políticas;
+- publicaciones/suscripciones gobernadas;
+- Edge Functions y su versión desplegada;
+- cron/jobs/colas;
+- triggers de automatización;
+- autenticación y principal técnico;
+- retry/idempotencia;
+- observabilidad y owner.
+
+Un recurso solo remoto o solo local debe estar clasificado; no puede quedar activo indefinidamente sin representación canónica.
+
+---
+
+#### 20. Paridad de datos y reconciliación
+
+La certificación global no se reduce a schema.
+
+Toda migración o backfill que cambie estado empresarial deberá aportar evidencia propietaria de:
+
+- conteos y claves;
+- integridad referencial;
+- nulos y dominios;
+- dinero, tiempo y unidades;
+- duplicados y huérfanos;
+- historia y auditoría;
+- crosswalks;
+- cuarentena o excepciones;
+- checkpoints;
+- idempotencia y replay cuando apliquen.
+
+Un conteo total idéntico no demuestra equivalencia semántica.
+
+---
+
+#### 21. Paridad de autorización y contexto
+
+La certificación deberá consumir la evidencia material de las fundaciones de autorización/contexto y de sus consumidores.
+
+Debe quedar demostrado que:
+
+- las decisiones canónicas gobiernan;
+- no existe autoridad local residual fuera de excepciones expresamente permitidas;
+- los consumidores no fabrican actor, rol, sede, área, turno, check-in o bypass como hechos autoritativos;
+- cliente no autoriza mutaciones desde una proyección;
+- `DENY` y fallo técnico no hacen fallback permisivo;
+- la evidencia corresponde al mismo corte.
+
+---
+
+#### 22. Paridad por consumidor
+
+Cada consumidor registrado deberá cerrar una fila de certificación con:
+
+```text
+consumer_identity
+repository
+commit_or_release
+runtime
+shared_versions
+backend_versions
+registered_target
+build_result
+test_result
+security_result
+parity_result
+legacy_residual_result
+rollback_or_recovery_reference
+status
+```
+
+Estados finales permitidos:
+
+```text
+PASS
+NOT_APPLICABLE_WITH_EVIDENCE
+BLOCKED
+STALE
+```
+
+Solo `PASS` y `NOT_APPLICABLE_WITH_EVIDENCE` son compatibles con certificación positiva.
+
+---
+
+#### 23. Paridad de experiencia y operación
+
+La capa operativa reutiliza la evidencia física aplicable de `AUTH-QA-*`, `UX-QA-*`, pilotos y validaciones por aplicación.
+
+La certificación final exige que:
+
+- escenarios críticos tengan resultado atribuible;
+- los defectos bloqueantes estén resueltos o explícitamente clasificados fuera del corte;
+- ninguna aplicación dependa de una superficie retirada;
+- navegación, permisos, transiciones y side effects correspondan al contrato vigente;
+- errores técnicos no se disfracen como decisiones de negocio;
+- idempotencia, concurrencia y recuperación se hayan probado donde corresponda.
+
+---
+
+#### 24. Relación con `AUTH-DB-028`
+
+`AUTH-DB-028` aporta el baseline y control de drift entre ambientes.
+
+`AUTH-DB-031` consume evidencia fresca del corte final y no reutiliza una comparación histórica como si representara el estado actual.
+
+La paridad ambiental deberá incluir exactamente los ambientes requeridos por el owner aplicable, incluyendo local, staging y producción cuando formen parte de la superficie certificada.
+
+---
+
+#### 25. Relación con `AUTH-DB-029`
+
+`AUTH-DB-029` conserva propiedad de respaldo, restauración y rollback.
+
+La certificación exige evidencia vigente de que:
+
+- el respaldo aplicable existe;
+- el restore requerido fue validado conforme al contrato propietario;
+- el rollback o mecanismo de recuperación permitido permanece reproducible;
+- recuperar no reintroduce bypasses, deuda legacy histórica ni una combinación incompatible.
+
+`AUTH-DB-031` no vuelve a implementar recovery.
+
+---
+
+#### 26. Relación con `AUTH-DB-027`
+
+El harness de esquema, integridad, RLS, RPC y migraciones sigue perteneciendo a `AUTH-DB-027`.
+
+La certificación consume sus resultados atribuibles al corte y exige reejecución cuando un cambio posterior invalide su evidencia.
+
+---
+
+#### 27. Relación con `AUTH-DB-030`
+
+`AUTH-DB-030` entrega el estado material del retiro legacy.
+
+La certificación deberá poder reconstruir desde ese handoff:
+
+- objetos evaluados;
+- objetos retirados;
+- objetos históricos no ejecutables;
+- objetos no aplicables;
+- consumidores y ambientes comprobados;
+- migraciones/commits del retiro;
+- evidencia de cero dependencia legacy;
+- recovery/rollback aplicable;
+- discrepancias que impidan paridad total.
+
+La mera aprobación documental de `AUTH-DB-030` no certifica retiro físico.
+
+---
+
+#### 28. Relación con `SHELL-AUTH-005`
+
+La certificación consume el evidence matrix de consumidores y el handoff de retiro.
+
+Debe permanecer reconciliado:
+
+```text
+consumidores directos legacy = 0
+findings estáticos legacy = 0
+directos cliente legacy = 0
+consumidores no registrados = 0
+allowlist activa de deuda migrada = 0
+telemetría legacy = 0, solo con cobertura demostrada
+```
+
+Una métrica ausente no se interpreta como cero.
+
+---
+
+#### 29. Relación con packages y lineage
+
+Toda evidencia proveniente de packages deberá conservar:
+
+- `package_id`;
+- `implementation_unit_id` cuando aplique;
+- owner;
+- commit/candidate;
+- manifest y lockfile;
+- versions;
+- ambiente;
+- evidence digest;
+- gates asociados.
+
+Resultados de otra combinación son `STALE`.
+
+---
+
+#### 30. Gate de ausencia de drift bloqueante
+
+Antes de certificar deberán quedar en cero:
+
+```text
+unapproved_documentation_drift
+unapproved_repository_drift
+unapproved_database_drift
+unapproved_contract_drift
+unapproved_consumer_drift
+unapproved_environment_drift
+unowned_runtime_surface
+```
+
+Una diferencia aprobada por ambiente no cuenta como drift bloqueante únicamente cuando tenga owner, motivo, contrato y evidencia.
+
+---
+
+#### 31. Gate de ausencia de legacy residual
+
+No podrá emitirse certificación positiva si persiste una dependencia legacy que la arquitectura declare retirada.
+
+Se deberá cubrir:
+
+- imports y llamadas directas;
+- wrappers y aliases;
+- rutas dinámicas;
+- SQL/RLS/RPC;
+- configuraciones;
+- jobs/Edge/Realtime;
+- consumidores externos registrados;
+- telemetría aplicable;
+- writers residuales;
+- compatibilidad temporal vencida.
+
+---
+
+#### 32. Gate de seguridad
+
+La certificación deberá consumir evidencia de:
+
+- denegaciones;
+- RLS y grants;
+- SECURITY DEFINER aplicables;
+- secretos y principales técnicos;
+- fronteras cliente/servidor;
+- manipulación de actor/contexto/recurso;
+- replay/idempotencia cuando aplique;
+- aislamiento entre organizaciones/sedes/áreas/actores cuando corresponda.
+
+Un PASS funcional con fallo de seguridad no es certificable.
+
+---
+
+#### 33. Gate de builds y pruebas por consumidor
+
+Cada repositorio/consumidor materializado ejecutará su perfil real aplicable.
+
+La matriz deberá distinguir explícitamente:
+
+```text
+PASS
+FAIL
+NOT_APPLICABLE_WITH_EVIDENCE
+NOT_EXECUTED
+STALE
+```
+
+`NOT_EXECUTED` y `STALE` bloquean cuando el check sea obligatorio.
+
+Un build de otro repositorio no sustituye al consumidor actual.
+
+---
+
+#### 34. Gate de pruebas integrales
+
+La certificación global consume las materializaciones aplicables de `AUTH-QA-001..030` y `UX-QA-001..030`.
+
+Para la certificación final:
+
+- la evidencia por package debe pertenecer al package correspondiente;
+- la evidencia global final debe pertenecer al corte global;
+- un resultado documental no sustituye una ejecución física requerida;
+- defectos críticos abiertos bloquean;
+- una prueba no aplicable exige justificación contractual.
+
+---
+
+#### 35. Gate de pilotos y observación
+
+Cuando un package o aplicación tenga piloto/hypercare obligatorio, su cierre deberá estar disponible antes de certificar.
+
+Se exige que:
+
+- el piloto corresponda a la versión certificada;
+- observaciones bloqueantes estén resueltas;
+- no exista rollback pendiente por incidente no cerrado;
+- no se mezcle evidencia de una versión anterior con un deploy posterior.
+
+---
+
+#### 36. Gate de recovery
+
+La certificación requiere evidencia vigente de restore/rollback para el conjunto aplicable.
+
+Un mecanismo teórico, no ensayado cuando el contrato exige ensayo, no satisface el gate.
+
+La certificación tampoco puede depender de restaurar una arquitectura legacy ya prohibida como solución ordinaria.
+
+---
+
+#### 37. Gate de auditoría y observabilidad
+
+Deberá existir evidencia suficiente para reconstruir:
+
+- quién o qué produjo cada resultado;
+- versión y ambiente;
+- actor/principal cuando corresponda;
+- operación y outcome;
+- correlación sin fuga sensible;
+- errores y denegaciones;
+- transición de legacy a canónico;
+- resultados de gates.
+
+La ausencia de telemetría no se convierte en valor cero.
+
+---
+
+#### 38. Tratamiento de discrepancias
+
+Toda discrepancia queda en una de estas clases:
+
+```text
+DOCUMENTATION_DRIFT
+REPOSITORY_DRIFT
+CONTRACT_DRIFT
+DATABASE_DRIFT
+ENVIRONMENT_DRIFT
+CONSUMER_DRIFT
+DATA_DRIFT
+SECURITY_DRIFT
+LEGACY_RESIDUAL
+EVIDENCE_STALE
+EVIDENCE_MISSING
+UNKNOWN
+```
+
+Cada finding conserva:
+
+```text
+surface_identity
+class
+observed_value
+expected_value
+owner
+source_evidence
+blocking
+resolution_owner
+exit_condition
+```
+
+`UNKNOWN` es bloqueante hasta resolver la evidencia.
+
+---
+
+#### 39. AUTH-DB-031 no corrige findings
+
+La instancia global final es de certificación.
+
+Ante una discrepancia:
+
+```text
+DETECTAR
+→ ATRIBUIR
+→ BLOQUEAR CERTIFICACIÓN
+→ DEVOLVER AL OWNER CANÓNICO
+→ CORREGIR FUERA DE AUTH-DB-031
+→ GENERAR NUEVO CORTE
+→ RECERTIFICAR
+```
+
+Queda prohibido modificar directamente documentación, código, migraciones, datos, configuración, aplicaciones o recursos remotos dentro de la certificación para convertir un FAIL en PASS.
+
+---
+
+#### 40. No se permite waiver silencioso
+
+Una excepción solo puede ser compatible con certificación cuando:
+
+- existe contrato propietario que la permita;
+- tiene owner;
+- alcance exacto;
+- riesgo y motivo;
+- fecha/versión o condición de expiración cuando aplique;
+- evidencia;
+- no contradice una prohibición crítica de seguridad, autoridad o integridad.
+
+Una nota libre, comentario o aceptación implícita no cambia un drift bloqueante.
+
+---
+
+#### 41. Manifiesto de certificación global
+
+La futura instancia deberá producir un manifiesto reproducible con, como mínimo:
+
+```text
+certification_instance_id
+certification_cut
+route_id
+sequence_id
+vento_shell_commit
+documentation_digest
+registry_04a_digest
+migration_manifest_digest
+contract_versions
+environment_matrix
+supabase_fingerprints
+consumer_matrix
+package_lineage
+qa_evidence_refs
+retirement_evidence_ref
+recovery_evidence_ref
+drift_findings
+legacy_residuals
+security_result
+data_reconciliation_result
+operational_result
+global_result
+artifact_digest
+```
+
+El manifiesto no contiene secretos ni datos personales innecesarios.
+
+---
+
+#### 42. Doce gates de futura materialización
+
+La instancia `AUTH-DB-031::GLOBAL-FINAL` deberá superar los siguientes gates:
+
+| # | Gate | Condición de PASS |
+| ---: | --- | --- |
+| 1 | `IDENTITY_CUT` | un único corte con commits, versiones, ambientes y digests atribuibles |
+| 2 | `DOCUMENTATION_PARITY` | fuentes canónicas vigentes corresponden a las identidades materializadas |
+| 3 | `REPOSITORY_PARITY` | `vento-shell` y repositorios consumidores corresponden al corte certificado |
+| 4 | `SUPABASE_PARITY` | objetos, migraciones, seguridad y automatizaciones corresponden al corte por ambiente |
+| 5 | `CONSUMER_PARITY` | todos los consumidores registrados usan targets y versiones compatibles |
+| 6 | `DATA_RECONCILIATION` | backfills/migraciones aplicables tienen reconciliación atribuible y sin bloqueo |
+| 7 | `NO_BLOCKING_DRIFT` | cero drift no aprobado y cero superficies runtime sin owner |
+| 8 | `NO_LEGACY_RESIDUAL` | retiro/handoff demuestra cero dependencias legacy prohibidas aplicables |
+| 9 | `SECURITY_AND_REGRESSION` | seguridad, denegaciones, builds y regresión aplicables están en PASS |
+| 10 | `QA_AND_OPERATION` | certificaciones integrales, pilotos y evidencia operativa requerida están cerrados |
+| 11 | `RECOVERY` | restore/rollback requerido es vigente, reproducible y compatible |
+| 12 | `EVIDENCE_INTEGRITY` | evidence bundle completo, mismo corte, sin resultados missing/stale obligatorios |
+
+Todos los gates aplicables deben estar `PASS`.
+
+---
+
+#### 43. Resultado global permitido
+
+La instancia emite exactamente uno de estos resultados:
+
+```text
+CERTIFIED
+BLOCKED
+```
+
+`CERTIFIED` exige los doce gates aplicables en PASS.
+
+`BLOCKED` conserva findings, owner, evidencia disponible y condición de salida. No implica rollback automático ni autoriza corrección física.
+
+---
+
+#### 44. Evidencia histórica y reproducibilidad
+
+La certificación conservará:
+
+- manifiesto final;
+- digests;
+- resultados de checks;
+- referencias a packages/commits/releases;
+- fingerprints de ambientes;
+- matriz de consumidores;
+- resultados QA;
+- handoff de retiro;
+- referencia de recovery;
+- findings y su resolución previa al corte final.
+
+No se reescriben evidencias históricas para hacer coincidir un estado posterior.
+
+---
+
+#### 45. Condición de cierre de la ruta normal
+
+`AUTH-DB-031` es la última tarea de `PHASE-13-R3-LEGACY-RETIREMENT` y la última etapa de `NORMAL-CANONICAL-FLOW-001`.
+
+Su cierre documental no activa tareas diferidas por inferencia.
+
+En particular:
+
+- `EXT-GOV-001` permanece condicional y `DEFERRED` hasta que su regla propietaria se active;
+- `PHASE-02-VISO-SCHEDULE-DELTA` permanece diferida hasta su activación propietaria;
+- trabajo físico pendiente conserva su lifecycle independiente;
+- completar la ruta documental normal no autoriza implementar packages o instancias físicas.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: esta tarea consolida y certifica obligaciones ya existentes de paridad, drift, migración, compatibilidad, seguridad, pruebas integrales, retiro legacy, recovery y evidencia. No introduce una nueva regla funcional ni de seguridad que requiera una fila adicional del Registro 04A.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, la certificación consume especialmente:
+
+- `TREQ-SUPABASE-008`, para reconstrucción, upgrade, datos, constraints, RLS, RPC, tipos, rendimiento, backup, restore, rollback y drift de ambientes;
+- `TREQ-SUPABASE-010`, para Edge Functions, webhooks, cron, triggers y automatizaciones versionadas y reconciliadas con remoto;
+- `TREQ-SUPABASE-1763`, para bloquear compatibilidad con gates incompletos;
+- `TREQ-SUPABASE-1769` y `TREQ-SUPABASE-1770`, para handoff y evidence bundle integral de transición;
+- `TREQ-SHELL-004`, `TREQ-SHELL-006` a `TREQ-SHELL-009`, para retiro seguro, compatibilidad, rollback, trazabilidad y ambiente verificable;
+- `TREQ-SHELL-038`, `TREQ-SHELL-039` y `TREQ-SHELL-065`, para deprecación, uso residual y cinco familias legacy;
+- `TREQ-SHELL-083` a `TREQ-SHELL-090`, para registry/freeze/gates/métricas/seguridad/rollback de consumidores legacy;
+- `TREQ-SHELL-091` a `TREQ-SHELL-098`, para migración, paridad, evidencia por consumidor, handoff de retiro y lineage.
+
+Estas referencias son cobertura heredada, no cambios del registro.
+
+---
+
+#### 48. Perfil mínimo de pruebas de la futura instancia
+
+La materialización deberá ejecutar o consumir evidencia vigente de, según aplicabilidad:
+
+1. validación del plan y contratos;
+2. Registro 04A íntegro;
+3. migration manifest;
+4. drift local/staging/producción;
+5. schema/integridad;
+6. RLS/grants;
+7. RPC/functions/triggers;
+8. Storage/Realtime/Edge/cron;
+9. contracts/types/packages;
+10. builds y tests por consumidor;
+11. seguridad y denegaciones;
+12. reconciliación de datos;
+13. QA integral de autorización;
+14. QA integral de experiencia;
+15. pilotos/hypercare aplicables;
+16. retiro legacy;
+17. restore/rollback;
+18. evidencia y lineage.
+
+Un perfil obligatorio sin ejecución o con evidencia de otro corte bloquea.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | Este marcador documental no ejecuta builds ni materializa la futura certificación global. |
+| LOCAL | `PASS` | El artefacto documental fue verificado como una única tarea, con metadata obligatoria, continuidad terminal, secciones sustantivas, cero placeholders y cero cambios de requisitos de prueba. |
+| REMOTA | `PASS` | Lectura read-only de `vento-shell/main` confirmó owner R3, topología `GLOBAL_FINAL / POST_E5_PACKAGE`, `AUTH-DB-031` como última tarea de la ruta normal, fuentes de drift/recovery/paridad y requisitos vigentes consumidos. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó la certificación contra aplicaciones, pilotos o procesos desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador no materializa `AUTH-DB-031::GLOBAL-FINAL`; la ejecución física permanece condicionada a su gate y autorización propia. |
+
+---
+
+#### 50. Criterios de aceptación
+
+`AUTH-DB-031` queda documentalmente completa cuando:
+
+1. conserva el título y owner canónicos;
+2. fija `GLOBAL_FINAL` y `POST_E5_PACKAGE`;
+3. define una sola instancia futura `AUTH-DB-031::GLOBAL-FINAL`;
+4. separa definición documental de certificación física;
+5. define documento, `vento-shell`, Supabase y aplicaciones como cuatro capas reconciliadas;
+6. materializa las seis relaciones de paridad entre esas capas;
+7. exige un único corte inmutable y atribuible;
+8. distingue paridad documental, técnica y operativa;
+9. no confunde paridad con igualdad byte a byte entre ambientes;
+10. clasifica diferencias de ambiente de forma fail-closed;
+11. exige paridad de contratos, catálogos y tipos;
+12. exige paridad de migraciones y objetos;
+13. exige RLS/RPC reales, no inferidos;
+14. cubre Storage, Realtime, Edge y automatizaciones cuando apliquen;
+15. exige reconciliación de datos además de schema;
+16. exige paridad de autorización y contexto;
+17. exige una decisión por consumidor registrado;
+18. consume evidencia de `AUTH-QA-*` y `UX-QA-*` aplicable;
+19. consume baseline/drift de `AUTH-DB-028`;
+20. consume restore/rollback de `AUTH-DB-029`;
+21. consume harness de `AUTH-DB-027`;
+22. consume el handoff material de `AUTH-DB-030`;
+23. consume la convergencia de `SHELL-AUTH-005`;
+24. preserva package/implementation lineage;
+25. exige cero drift bloqueante;
+26. exige cero legacy residual prohibido;
+27. exige seguridad y regresión;
+28. exige builds/tests por consumidor;
+29. exige pilotos/observación cuando sean obligatorios;
+30. exige recovery vigente;
+31. exige observabilidad y auditoría suficientes;
+32. clasifica discrepancias con owner y condición de salida;
+33. prohíbe corregir findings dentro de la certificación;
+34. prohíbe waivers silenciosos;
+35. define un manifiesto global reproducible;
+36. define doce gates de materialización;
+37. limita el resultado físico a `CERTIFIED` o `BLOCKED`;
+38. conserva evidencia histórica;
+39. no activa tareas diferidas por cerrar la ruta normal;
+40. genera cero requisitos de prueba nuevos o modificados;
+41. no ejecuta ninguna mutación física desde el marcador documental.
+
+---
+
+#### 51. Límites
+
+Esta tarea no:
+
+- modifica `vento-shell`;
+- modifica repositorios consumidores;
+- modifica aplicaciones;
+- modifica Supabase;
+- crea SQL;
+- crea migraciones;
+- ejecuta DDL o DML;
+- repara drift;
+- cambia packages;
+- cambia manifests o lockfiles;
+- publica versiones;
+- genera tipos;
+- ejecuta builds físicos;
+- ejecuta pilotos;
+- ejecuta restore o rollback;
+- retira objetos legacy;
+- reabre una compatibilidad retirada;
+- crea excepciones para alcanzar PASS;
+- actualiza el Registro 04A;
+- activa `EXT-GOV-001`;
+- activa el delta VISO diferido;
+- autoriza packages o instancias físicas pendientes.
+
+Toda corrección material detectada por la futura certificación vuelve a su owner canónico y requiere un nuevo corte antes de recertificar.
+
+---
+
+#### 52. Handoff de cierre
+
+Una certificación física positiva deberá dejar un bundle suficiente para demostrar:
+
+```text
+qué corte fue certificado
+qué fuentes documentales gobernaron
+qué commits/releases fueron evaluados
+qué ambientes fueron observados
+qué objetos Supabase fueron reconciliados
+qué consumidores/aplicaciones fueron evaluados
+qué packages y implementation units aportaron evidencia
+qué QA/pilotos fueron consumidos
+qué legacy fue retirado o quedó históricamente no ejecutable
+qué recovery quedó vigente
+qué drift fue cero o aprobado explícitamente
+qué digest identifica el bundle final
+```
+
+Si el resultado es `BLOCKED`, el bundle conserva findings y owners sin afirmar cierre de VENTO OS.
+
+---
+
+#### 53. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DB-030 — Retirar objetos legacy únicamente después de adopción comprobada`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DB-031 — Certificar paridad entre documento, vento-shell, Supabase y aplicaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NINGUNA — CIERRE SIN HANDOFF DECLARADO`
