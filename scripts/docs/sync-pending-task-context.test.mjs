@@ -398,6 +398,49 @@ test('renderiza un tablero dual legible sin perder la identidad documental ni fi
   assert.match(source, /Cola física visible/u);
 });
 
+
+test('ruta terminal no promociona tareas DEFERRED como documentacion actual', () => {
+  const deferredTasks = [{
+    ...task('EXT-GOV-001'),
+    title: 'Gobierno externo diferido',
+    activationState: 'DEFERRED',
+  }];
+  const implementationControl = {
+    primaryAction: { type: 'AUTORIZAR_IMPLEMENTACION', target: 'SHELL-CI-022::GAP-PKG-001' },
+    coordination: { mode: 'DOCUMENTATION_COMPLETE' },
+    documentary: { state: 'COMPLETA', taskId: 'NINGUNA' },
+    physical: { active: null, instances: [] },
+  };
+
+  const summary = operationalActionSummary({
+    tasks: deferredTasks,
+    implementationControl,
+    correctionControl: { records: [] },
+    readiness: { registry: { package_execution: null } },
+  });
+  assert.equal(summary.documentary, null);
+
+  const source = renderDualLaneOverview(
+    deferredTasks,
+    { coverage_policy: 'ALL_CANONICAL_TASKS_EXACTLY_ONCE' },
+    {
+      route_id: 'NORMAL-CANONICAL-FLOW-001',
+      sequence_id: 'PHASE-13-R3-LEGACY-RETIREMENT',
+      block_title: 'Retiro legacy y certificacion final',
+      handoff_sequence_id: null,
+      segments: [{ prefix: 'AUTH-DB', from: 30, to: 31 }],
+    },
+    { ordered: [{ marker: '✅' }, { marker: '✅' }, { marker: '[ ]' }] },
+    implementationControl,
+  ).join('\n');
+
+  assert.match(source, /`COMPLETA`/u);
+  assert.match(source, /FIN DE RUTA/u);
+  assert.match(source, /`NINGUNA`/u);
+  assert.match(source, /Ruta documental completa/u);
+  assert.doesNotMatch(source, /EXT-GOV-001/u);
+});
+
 test('registro de pendientes prioriza la fundación sobre el package consumidor', () => {
   const readiness = { registry: {
     package_execution: {

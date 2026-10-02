@@ -29,12 +29,9 @@
 - **Por qué:** GAP-PKG-002 debe completar identidad, unidades, evidencia y aprobación de gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
-### 3. Continúa la documentación — `EXT-GOV-001`
+### 3. Continúa la documentación canónica
 
-- **Tarea exacta:** `EXT-GOV-001` — Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema
-- **Haz ahora:** Verifica soporte documental de titulares, marcas y cuentas externas del ecosistema, registra brechas y deja evidencia del resultado.
-- **Archivo propietario:** `bloques/E1_DESCUBRIMIENTO_OPERATIVO/02A_TAREAS_DERIVADAS_OPS_AUD_001.md`
-- **Regla:** si corre en paralelo con una corrección o un package, usar checkout independiente y serializar los cierres.
+- **Acción:** la ruta documental está completa.
 
 ### 4. Instancias físicas gobernadas en curso
 
@@ -68,16 +65,16 @@
 
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
-| 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `EXT-GOV-001` — Verificar soporte documental de titulares, marcas y cuentas externas del ecosistema | `VISO-SCH-001` — Definir contrato funcional de programación laboral | Una tarea documental activa |
+| 🟦 **DOCUMENTACIÓN** | `COMPLETA` | — | FIN DE RUTA | Ruta documental completa; los pendientes restantes permanecen diferidos |
 | 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | `SHELL-CI-022::GAP-PKG-018` | Governed active set; prioridad ≠ exclusividad |
 
-> Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
+> Coordinación: `DOCUMENTATION_COMPLETE`. La ruta documental esta completa; no requiere checkout paralelo. El carril fisico conserva su lifecycle gobernado.
 
 ## Progreso por carril
 
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
-| 🟦 **Documentación** | **1585/1596 aprobadas** | **11** no aprobadas (0 propuesta, 0 rechazadas) | `EXT-GOV-001` |
+| 🟦 **Documentación** | **1585/1596 aprobadas** | **11** no aprobadas (0 propuesta, 0 rechazadas) | `NINGUNA` |
 | 🟧 **Implementación física conocida** | **104/108 VERIFIED** | **4** no terminales | `SHELL-CI-022::GAP-PKG-001` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`

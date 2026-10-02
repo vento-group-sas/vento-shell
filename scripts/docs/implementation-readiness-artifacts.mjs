@@ -481,7 +481,8 @@ export function prepareImplementationReadinessArtifacts({
   write = true,
 } = {}) {
   const policy = validatePolicy(JSON.parse(fs.readFileSync(path.join(root, POLICY_PATH), 'utf8')));
-  const control = deriveImplementationControl({ root });
+  const workTopology = resolveTaskWorkTopology({ root });
+  const control = deriveImplementationControl({ root, workTopology });
   const catalogs = readCatalogs(root);
   const applicationRows = buildApplicationReadiness(
     catalogs.applications,
@@ -494,13 +495,19 @@ export function prepareImplementationReadinessArtifacts({
     }
   }
 
+  if (!workTopology.currentId) {
+    if (control.documentary.state !== 'COMPLETA') {
+      throw new Error('la topología documental terminal no coincide con implementation-control.');
+    }
+    return { skipped: true, applicationRows };
+  }
+
   const semantic = validateProspectiveTaskSemantics({ root });
   if (semantic.skipped) return { skipped: true, applicationRows };
   const inventory = readCanonicalTaskInventory(root);
   const current = inventory.get(semantic.preflight.task.id);
   const previous = inventory.get(semantic.preflight.continuity.previous);
   if (!current) throw new Error(`no se pudo resolver ${semantic.preflight.task.id} en el inventario canónico.`);
-  const workTopology = resolveTaskWorkTopology({ root });
   const lifecycle = workTopology.topology.get(current.id);
   const dependencies = workTopology.dependencies.get(current.id);
   if (!lifecycle || !dependencies) throw new Error(`no existe topología de trabajo para ${current.id}.`);
