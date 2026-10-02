@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar MATURE_PACKAGE_GATE sobre GAP-PKG-004.
+> **Prioridad del checkout actual:** ejecutar MATERIALIZE_PHYSICAL_HANDOFF sobre SHELL-CI-020::GAP-PKG-002.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,17 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-004`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-002`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-004`
-- **Posición topológica:** **4/189**; prioridad derivada, sin selección humana.
-- **Estado efectivo:** `COMPILED`
-- **Acción exacta:** `MATURE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-004`
-- **Comando exacto:** `npm run docs:package:gate:status -- --package-id GAP-PKG-004`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-004.json` — `MATURATION_DRAFT`
-- **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-004 debe completar identidad, unidades, evidencia y aprobación de gate.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-002`
+- **Posición topológica:** **2/189**; prioridad derivada, sin selección humana.
+- **Estado efectivo:** `IMPLEMENTATION_READY`
+- **Acción exacta:** `MATERIALIZE_PHYSICAL_HANDOFF`
+- **Objetivo exacto:** `SHELL-CI-020::GAP-PKG-002`
+- **Comando exacto:** `npm run docs:package:handoff -- --package-id GAP-PKG-002`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-002.json` — `APPROVED_FOR_IMPLEMENTATION`
+- **Gates:** **6/6 PASS**; faltan **0**.
+- **Por qué:** GAP-PKG-002 completó dossier, gate y dependencias; su handoff físico solo puede materializarse con admisión de recursos ADMISSIBLE.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación canónica
