@@ -6,18 +6,19 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { readCanonicalTreqRegistry } from "../../../scripts/docs/treq-registry-files.mjs";
+import type packageFixtures from "./fixtures.json";
 
 export const root = fileURLToPath(new URL("../../../", import.meta.url));
-export const read = (relativePath) =>
+export const read = (relativePath: string) =>
   fs.readFileSync(path.join(root, relativePath), "utf8");
-export const fixtures = JSON.parse(
+export const fixtures: typeof packageFixtures = JSON.parse(
   read("tests/packages/GAP-PKG-002/fixtures.json"),
 );
 export const sql = read(fixtures.sql_path);
 
 // Shared by the three runtime entrypoints without registering contract tests on import.
 // No hosted URL, project ref, connection secret, fallback or skip is accepted.
-export function queryLocalDatabase(source) {
+export function queryLocalDatabase(source: string) {
   assert.match(
     read("supabase/config.toml"),
     /^project_id\s*=\s*"vento-shell"/m,
@@ -70,7 +71,10 @@ export function runBoundarySuite() {
   return new Set(assertions.map((match) => match[2]));
 }
 
-export function assertRuntimeOracles(actual, requirementIds) {
+export function assertRuntimeOracles(
+  actual: Set<string>,
+  requirementIds: string[],
+) {
   for (const id of requirementIds) {
     const oracle = fixtures.oracle_mapping.find(
       (entry) => entry.treq_id === id,
@@ -126,10 +130,13 @@ if (
         `| ${fixtures.implementation_unit_id} | ${digest} |`,
       ),
     );
-    const targets = gate.physical_identity.targets;
+    const targets = gate.physical_identity.targets as Array<{
+      path: string;
+      operation: string;
+    }>;
     assert.equal(targets.length, 7);
     assert.equal(
-      targets.find((entry) => entry.path === migration).operation,
+      targets.find((entry) => entry.path === migration)?.operation,
       "ADOPTAR_SIN_MODIFICAR",
     );
     assert.deepEqual(

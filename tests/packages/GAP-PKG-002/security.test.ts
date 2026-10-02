@@ -1,5 +1,10 @@
 import test from "node:test";
-import { assertRuntimeOracles, runBoundarySuite } from "./contract.test.ts";
+const {
+  assertRuntimeOracles,
+  runBoundarySuite,
+}: typeof import("./contract.test") = await import(
+  new URL("./contract.test.ts", import.meta.url).href
+);
 
 test("GAP-PKG-002 denies privilege injection, foreign identities and territorial access on real RLS", () => {
   const actual = runBoundarySuite();

@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
+const {
   fixtures,
   queryLocalDatabase,
   runBoundarySuite,
-} from "./contract.test.ts";
+}: typeof import("./contract.test") = await import(
+  new URL("./contract.test.ts", import.meta.url).href
+);
 
 const snapshotQuery = `select json_build_object(
   'fixtures', (select count(*) from auth.users where id::text like 'b002%'),
