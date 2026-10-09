@@ -60,6 +60,46 @@ test('CI021 reutiliza lifecycle estándar y exige CI020 VERIFIED', () => {
 });
 
 
+
+function modernApprovedReadinessState() {
+  const gates = [];
+  for (let index = 1; index <= 15; index += 1) {
+    gates.push({
+      gate_id: `READY-GATE-${String(index).padStart(3, '0')}`,
+      status: 'PASS',
+      applicability_phase: 'NOW',
+      evidence: index === 15 ? ['PILOT_ENTRY_DECISION:APROBAR_ENTRADA'] : ['VALIDATED-PRE-PILOT-GATE'],
+    });
+  }
+  return {
+    type: 'IMPLEMENTATION_READINESS_GATE_STATE_V1',
+    instance_id: 'SHELL-CI-021::GAP-PKG-045',
+    candidate_commit: 'a'.repeat(40),
+    decision_owner: 'OWN-OPS',
+    summary: { fail_count: 0, blocked_count: 0, deferred_count: 0 },
+    gates,
+  };
+}
+
+function authorizeCi022WithReadinessState(state) {
+  const ci022 = { instanceId: 'SHELL-CI-022::GAP-PKG-045', taskId: 'SHELL-CI-022', packageId: 'GAP-PKG-045' };
+  const instance = { ...pending, instance_id: ci022.instanceId, task_id: ci022.taskId };
+  const previous = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-045', status: 'VERIFIED',
+    evidence: [{
+      type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
+      instance_id: 'SHELL-CI-021::GAP-PKG-045',
+      candidate_commit: 'a'.repeat(40),
+      pilot_entry_decision: 'APROBAR_ENTRADA',
+      readiness_gate_state: state,
+      operational_evidence: ['READY_GATE_015:APROBAR_ENTRADA owner=OWN-OPS'],
+    }],
+  };
+  return buildAuthorizedInstanceRecord({
+    instance, gate, identity: ci022, previous, approval, sourceContractSha256: 'b'.repeat(64),
+  });
+}
+
 test('CI022 no acepta una cadena APROBAR_ENTRADA dentro de evidencia denegada', () => {
   const ci022 = { instanceId: 'SHELL-CI-022::GAP-PKG-045', taskId: 'SHELL-CI-022', packageId: 'GAP-PKG-045' };
   const instance = { ...pending, instance_id: ci022.instanceId, task_id: ci022.taskId };
@@ -83,7 +123,7 @@ test('CI022 acepta exclusivamente el PASS estructurado de READY-GATE-015', () =>
     evidence: [{
       type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1', instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40),
       pilot_entry_decision: 'APROBAR_ENTRADA',
-      readiness_gate_state: { instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40), decision_owner: 'OWN-OPS', gates: [{ gate_id: 'READY-GATE-015', status: 'PASS', evidence: ['PILOT_ENTRY_DECISION:APROBAR_ENTRADA'] }] },
+      readiness_gate_state: modernApprovedReadinessState(),
       operational_evidence: ['READY_GATE_015:APROBAR_ENTRADA owner=OWN-OPS'],
     }],
   };
@@ -104,4 +144,43 @@ test('CI022 conserva las aprobaciones históricas estructuradas y rechaza las de
   assert.equal(verified.status, 'AUTHORIZED');
   const invalid = { ...receipt, ready_gate_015: { ...receipt.ready_gate_015, gate_result: 'BLOQUEADO' } };
   assert.throws(() => buildAuthorizedInstanceRecord({ instance, gate, identity: ci022, previous: { ...previous, evidence: [invalid] }, approval, sourceContractSha256: 'b'.repeat(64) }), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+
+test('CI022 rechaza el recibo parcial que solo muestra READY-GATE-015 en PASS', () => {
+  const state = modernApprovedReadinessState();
+  state.gates = state.gates.filter((gate) => gate.gate_id === 'READY-GATE-015');
+  assert.throws(() => authorizeCi022WithReadinessState(state), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+test('CI022 rechaza un gate LATER bloqueado aunque READY-GATE-015 y los contadores aleguen PASS', () => {
+  const state = modernApprovedReadinessState();
+  const support = state.gates.find((gate) => gate.gate_id === 'READY-GATE-010');
+  support.status = 'BLOQUEADO';
+  support.applicability_phase = 'LATER';
+  assert.throws(() => authorizeCi022WithReadinessState(state), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+test('CI022 rechaza un resumen con gates diferidos aunque todos los estados digan PASS', () => {
+  const state = modernApprovedReadinessState();
+  state.summary.deferred_count = 1;
+  assert.throws(() => authorizeCi022WithReadinessState(state), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+test('CI022 rechaza riesgos READY-GATE-014 sin fase NOW y decisiones sin fase NOW', () => {
+  const risk = modernApprovedReadinessState();
+  risk.gates.find((gate) => gate.gate_id === 'READY-GATE-014').applicability_phase = 'LATER';
+  assert.throws(() => authorizeCi022WithReadinessState(risk), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+  const entry = modernApprovedReadinessState();
+  entry.gates.find((gate) => gate.gate_id === 'READY-GATE-015').applicability_phase = 'LATER';
+  assert.throws(() => authorizeCi022WithReadinessState(entry), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+test('CI022 rechaza LATER no aplicable sin cierre real ni referencia', () => {
+  const state = modernApprovedReadinessState();
+  const integration = state.gates.find((gate) => gate.gate_id === 'READY-GATE-006');
+  integration.status = 'NO_APLICA';
+  integration.applicability_phase = 'LATER';
+  integration.evidence = [];
+  assert.throws(() => authorizeCi022WithReadinessState(state), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
 });

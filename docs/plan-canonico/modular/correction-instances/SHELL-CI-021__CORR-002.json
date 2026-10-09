@@ -5,7 +5,7 @@
   "target_instance_id": "SHELL-CI-021::GAP-PKG-045",
   "correction_type": "PHYSICAL",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021::GAP-PKG-002"
@@ -17,12 +17,181 @@
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-045.json",
     "target_instance_record_sha256": "d43a06a8381e1f0034c9fd6870a500596472e135bbf6950bfe3f3f5a7c0f4af7"
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-10-09T21:50:26.132Z"
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.test.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.test.mjs",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+    "npm run docs:implementation:accelerator:test",
+    "npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test"
+  ],
+  "affected_treq_ids": [
+    "TREQ-SHELL-005",
+    "TREQ-SHELL-007"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-09T22:21:38.901Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-021::CORR-002: corregir exclusivamente la aprobacion de piloto con gates diferidos y el control de entrada a CI022, sin modificar el canon ni ejecutar piloto.",
+    "source_contract_sha256": "e395b9fa825770cfc1fc735af82a12f15aaceeee915ced174e4e003dc341e31c"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-10-09T22:35:48.024Z",
+      "candidate_head_before": "e3a18980a2923ca941f639523ea7711bc5539e2d",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-10-09T22:36:00.529Z",
+      "execution_started_at": "2026-10-09T22:35:59.203Z",
+      "duration_ms": 1323,
+      "execution_candidate_head": "8e6bd6cda90f7291450c1345db50573bf680e39c",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-09T22:42:25.003Z",
+      "candidate_head": "6ec6687beb12b97265b6132a23eed9f6a3a8f305",
+      "commands": [
+        "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+        "npm run docs:implementation:accelerator:test",
+        "npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+          "duration_ms": 239,
+          "started_at": "2026-10-09T22:36:31.966Z",
+          "completed_at": "2026-10-09T22:36:32.205Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "a7b681a7223b8b9fb58040aa7ec38e00c87e356080aab5a7c798bfa6944daab6",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:accelerator:test",
+          "duration_ms": 1959,
+          "started_at": "2026-10-09T22:36:32.207Z",
+          "completed_at": "2026-10-09T22:36:34.167Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "8cf083e9bee54725dcd1aa8749f0e7ee690bfc376a30cd80a8bc8a8e880c5e58",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+          "duration_ms": 53568,
+          "started_at": "2026-10-09T22:36:34.168Z",
+          "completed_at": "2026-10-09T22:37:27.736Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "72c6a4846d560b8e65cc81b00a506c273cecb600346fbe94642742f4ee2f4c6d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 2362,
+          "started_at": "2026-10-09T22:37:27.737Z",
+          "completed_at": "2026-10-09T22:37:30.101Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "3b5890d6f7e16df9887d40fd0e500a1a875c59b34d41efa8f30c3e31519043bc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 246594,
+          "started_at": "2026-10-09T22:37:30.102Z",
+          "completed_at": "2026-10-09T22:41:36.697Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "6de9122e8cafb99fd61d35b99a5b449fbf790fe677c21cb97d34be42bd104477",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 43226,
+          "started_at": "2026-10-09T22:41:36.698Z",
+          "completed_at": "2026-10-09T22:42:19.927Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "015176f6d3dce6e95057ae2bf9ec7d9385aeb0bc66747da518f212ebc1642e88",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 4366,
+          "started_at": "2026-10-09T22:42:19.929Z",
+          "completed_at": "2026-10-09T22:42:24.296Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fae61db78684a0d99759837929da2020bc8f7bbb299cd4e402ae2c61330df253",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 705,
+          "started_at": "2026-10-09T22:42:24.297Z",
+          "completed_at": "2026-10-09T22:42:25.002Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "7faaa1bb4478c42a91f852129d6c0ae8e01f28016f6bdb7629fc785ca334b395",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-09T22:50:28.529Z",
+      "validated_candidate_head": "6ec6687beb12b97265b6132a23eed9f6a3a8f305",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-10-09T21:50:26.132Z",
+  "implemented_at": "2026-10-09T22:36:11.369Z",
+  "verified_at": "2026-10-09T22:50:28.529Z"
 }
