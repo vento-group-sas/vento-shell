@@ -58,3 +58,50 @@ test('CI021 reutiliza lifecycle estándar y exige CI020 VERIFIED', () => {
   ]);
   assert.ok(record.authorized_changes.every(({ path, change }) => path.includes('implementation-instances/') || change === 'EXECUTE_ONLY'));
 });
+
+
+test('CI022 no acepta una cadena APROBAR_ENTRADA dentro de evidencia denegada', () => {
+  const ci022 = { instanceId: 'SHELL-CI-022::GAP-PKG-045', taskId: 'SHELL-CI-022', packageId: 'GAP-PKG-045' };
+  const instance = { ...pending, instance_id: ci022.instanceId, task_id: ci022.taskId };
+  const previous = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-045', status: 'VERIFIED',
+    evidence: [{
+      type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1', instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40),
+      pilot_entry_decision: 'DENEGAR_ENTRADA',
+      readiness_gate_state: { instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40), decision_owner: 'OWN-OPS', gates: [{ gate_id: 'READY-GATE-015', status: 'FAIL', evidence: ['PILOT_ENTRY_DECISION:DENEGAR_ENTRADA'] }] },
+      operational_evidence: ['READY_GATE_015:APROBAR_ENTRADA owner=OWN-OPS', 'DECISION:DENEGAR_ENTRADA'],
+    }],
+  };
+  assert.throws(() => buildAuthorizedInstanceRecord({ instance, gate, identity: ci022, previous, approval, sourceContractSha256: 'a'.repeat(64) }), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+test('CI022 acepta exclusivamente el PASS estructurado de READY-GATE-015', () => {
+  const ci022 = { instanceId: 'SHELL-CI-022::GAP-PKG-045', taskId: 'SHELL-CI-022', packageId: 'GAP-PKG-045' };
+  const instance = { ...pending, instance_id: ci022.instanceId, task_id: ci022.taskId };
+  const previous = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-045', status: 'VERIFIED',
+    evidence: [{
+      type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1', instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40),
+      pilot_entry_decision: 'APROBAR_ENTRADA',
+      readiness_gate_state: { instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40), decision_owner: 'OWN-OPS', gates: [{ gate_id: 'READY-GATE-015', status: 'PASS', evidence: ['PILOT_ENTRY_DECISION:APROBAR_ENTRADA'] }] },
+      operational_evidence: ['READY_GATE_015:APROBAR_ENTRADA owner=OWN-OPS'],
+    }],
+  };
+  const result = buildAuthorizedInstanceRecord({ instance, gate, identity: ci022, previous, approval, sourceContractSha256: 'b'.repeat(64) });
+  assert.equal(result.status, 'AUTHORIZED');
+});
+
+test('CI022 conserva las aprobaciones históricas estructuradas y rechaza las degradadas', () => {
+  const ci022 = { instanceId: 'SHELL-CI-022::GAP-PKG-045', taskId: 'SHELL-CI-022', packageId: 'GAP-PKG-045' };
+  const instance = { ...pending, instance_id: ci022.instanceId, task_id: ci022.taskId };
+  const receipt = {
+    type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1', instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_commit: 'a'.repeat(40), lifecycle_head_commit: 'b'.repeat(40),
+    pilot_entry_decision: 'APROBAR_ENTRADA',
+    ready_gate_015: { instance_id: 'SHELL-CI-021::GAP-PKG-045', candidate_ref: 'a'.repeat(40), lifecycle_head_ref: 'b'.repeat(40), gate_id: 'READY-GATE-015', gate_result: 'PASS', freshness_state: 'VIGENTE', consistency_state: 'CONSISTENTE', pilot_entry_decision: 'APROBAR_ENTRADA', pilot_entry_authority: { authority_status: 'DEMONSTRATED', authority_scope: 'GAP-PKG-045' } },
+  };
+  const previous = { instance_id: 'SHELL-CI-021::GAP-PKG-045', status: 'VERIFIED', evidence: [receipt] };
+  const verified = buildAuthorizedInstanceRecord({ instance, gate, identity: ci022, previous, approval, sourceContractSha256: 'b'.repeat(64) });
+  assert.equal(verified.status, 'AUTHORIZED');
+  const invalid = { ...receipt, ready_gate_015: { ...receipt.ready_gate_015, gate_result: 'BLOQUEADO' } };
+  assert.throws(() => buildAuthorizedInstanceRecord({ instance, gate, identity: ci022, previous: { ...previous, evidence: [invalid] }, approval, sourceContractSha256: 'b'.repeat(64) }), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});

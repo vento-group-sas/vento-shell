@@ -178,7 +178,7 @@ function readinessProfileEntry(profile, gateId) {
 }
 
 function applyReadinessProfile(result, profile) {
-  if (profile.phase === 'NEVER') {
+  if (profile.phase === 'NEVER' && result.gate_id !== 'READY-GATE-015') {
     return Object.freeze({
       ...result,
       status: 'NO_APLICA',
@@ -201,7 +201,8 @@ function applyReadinessProfile(result, profile) {
     target_phase: profile.target_phase,
     applicability_rationale: profile.rationale,
     applicability_evidence: profile.evidence_refs,
-    blocks_current_phase: profile.phase === 'NOW' && ['FAIL', 'BLOQUEADO'].includes(result.status),
+    blocks_current_phase: (profile.phase === 'NOW' || (result.gate_id === 'READY-GATE-015' && profile.phase === 'NEVER'))
+      && ['FAIL', 'BLOQUEADO'].includes(result.status),
   });
 }
 
@@ -240,6 +241,12 @@ function requiredFieldsPresent(object, fields) {
     if (typeof value === 'boolean') return value === true;
     return Boolean(String(value ?? '').trim());
   });
+}
+
+function explicitEvidenceStatus(proof, fields = ['status', 'evidence_refs']) {
+  if (!requiredFieldsPresent(proof, fields)) return null;
+  const status = String(proof.status ?? '').trim().toUpperCase();
+  return ['PASS', 'FAIL'].includes(status) ? status : null;
 }
 
 function applicabilityFromCorpus(corpus, patterns) {
@@ -332,22 +339,25 @@ export function evaluateImplementationReadinessGates({
 
   const noDbEvidence = /SUPABASE_MUTATIONS=0[^\n]*DATABASE_MUTATIONS=0/u.test(corpus)
     || /NO SUPABASE MUTATION OR DATABASE MIGRATION/u.test(corpus);
-  if (noDbEvidence) set(gateResult({ id: 'READY-GATE-002', status: 'NO_APLICA', evidence: ['NO_DATABASE_MUTATION_DECLARED'] }));
-  else if (applicabilityFromCorpus(corpus, [/SUPABASE\//u, /MIGRATION/u, /DATABASE/u, /\bDDL\b/u, /\bDML\b/u])) {
-    const proof = input.database_readiness ?? null;
-    set(requiredFieldsPresent(proof, ['status', 'evidence_refs']) && String(proof.status).toUpperCase() === 'PASS'
-      ? gateResult({ id: 'READY-GATE-002', status: 'PASS', evidence: proof.evidence_refs })
-      : gateResult({ id: 'READY-GATE-002', status: 'BLOQUEADO', reason: 'DATABASE_READINESS_EVIDENCE_REQUIRED', requiredEvidence: ['database_readiness.status=PASS', 'database_readiness.evidence_refs[]'] }));
+  const databaseProof = input.database_readiness ?? null;
+  const databaseStatus = explicitEvidenceStatus(databaseProof);
+  if (databaseProof) {
+    set(databaseStatus
+      ? gateResult({ id: 'READY-GATE-002', status: databaseStatus, evidence: databaseProof.evidence_refs })
+      : gateResult({ id: 'READY-GATE-002', status: 'BLOQUEADO', reason: 'DATABASE_READINESS_EVIDENCE_REQUIRED', requiredEvidence: ['database_readiness.status=PASS/FAIL', 'database_readiness.evidence_refs[]'] }));
+  } else if (noDbEvidence) {
+    set(gateResult({ id: 'READY-GATE-002', status: 'NO_APLICA', evidence: ['NO_DATABASE_MUTATION_DECLARED'] }));
+  } else if (applicabilityFromCorpus(corpus, [/SUPABASE\//u, /MIGRATION/u, /DATABASE/u, /\bDDL\b/u, /\bDML\b/u])) {
+    set(gateResult({ id: 'READY-GATE-002', status: 'BLOQUEADO', reason: 'DATABASE_READINESS_EVIDENCE_REQUIRED', requiredEvidence: ['database_readiness.status=PASS/FAIL', 'database_readiness.evidence_refs[]'] }));
   } else set(gateResult({ id: 'READY-GATE-002', status: 'NO_APLICA', evidence: ['NO_DATABASE_SCOPE_DETECTED'] }));
 
   const conditionalGate = ({ id, patterns, inputKey, fields, label }) => {
-    const previousGate = reused(id);
-    if (previousGate) return set(previousGate);
-    if (!applicabilityFromCorpus(corpus, patterns)) return set(gateResult({ id, status: 'NO_APLICA', evidence: [`NO_${label}_SCOPE_DETECTED`] }));
+    // La evidencia humana se reevalua; un PASS persistido no puede ocultar un FAIL nuevo.
     const proof = input[inputKey] ?? null;
-    if (requiredFieldsPresent(proof, fields)) {
-      return set(gateResult({ id, status: 'PASS', evidence: proof.evidence_refs ?? [`${inputKey.toUpperCase()}_CONFIRMED`] }));
-    }
+    const status = explicitEvidenceStatus(proof, fields);
+    if (status === 'FAIL') return set(gateResult({ id, status: 'FAIL', evidence: proof.evidence_refs }));
+    if (!applicabilityFromCorpus(corpus, patterns)) return set(gateResult({ id, status: 'NO_APLICA', evidence: [`NO_${label}_SCOPE_DETECTED`] }));
+    if (status) return set(gateResult({ id, status, evidence: proof.evidence_refs }));
     return set(gateResult({ id, status: 'BLOQUEADO', reason: `${label}_EVIDENCE_REQUIRED`, requiredEvidence: fields.map((field) => `${inputKey}.${field}`) }));
   };
 
@@ -437,30 +447,65 @@ export function evaluateImplementationReadinessGates({
   ));
   const failCount = before014.filter((entry) => entry.status === 'FAIL').length;
   const blockedCount = before014.filter((entry) => entry.status === 'BLOQUEADO').length;
-  if (failCount > 0) set(gateResult({ id: 'READY-GATE-014', status: 'FAIL', dependencies: before014.filter((entry) => entry.status === 'FAIL').map((entry) => entry.gate_id), reason: 'PRIOR_READY_GATE_FAILED' }));
+  if (failCount > 0) set(gateResult({
+    id: 'READY-GATE-014', status: 'FAIL',
+    dependencies: before014.filter((entry) => entry.status === 'FAIL').map((entry) => entry.gate_id),
+    evidence: before014.filter((entry) => entry.status === 'FAIL').flatMap((entry) => entry.evidence.map((ref) => `${entry.gate_id}:${ref}`)),
+    reason: 'PRIOR_READY_GATE_FAILED',
+  }));
   else if (blockedCount > 0) set(gateResult({ id: 'READY-GATE-014', status: 'BLOQUEADO', dependencies: before014.filter((entry) => entry.status === 'BLOQUEADO').map((entry) => entry.gate_id), reason: 'PRIOR_READY_GATE_BLOCKED' }));
   else set(gateResult({ id: 'READY-GATE-014', status: 'PASS', dependencies: before014.map((entry) => entry.gate_id), evidence: ['READY_GATES_001_013_CLEAR'] }));
 
   const gate014 = gates.find((entry) => entry.gate_id === 'READY-GATE-014');
   const decision = input.pilot_entry_decision ?? null;
-  if (gate014?.status !== 'PASS') {
-    set(gateResult({ id: 'READY-GATE-015', status: 'BLOQUEADO', owner: decisionOwner, dependencies: ['READY-GATE-014'], reason: 'READY_GATE_014_NOT_PASS', requiredEvidence: ['READY-GATE-014 PASS'] }));
-  } else if (!decision) {
-    set(gateResult({ id: 'READY-GATE-015', status: 'BLOQUEADO', owner: decisionOwner, dependencies: ['READY-GATE-014'], reason: 'PILOT_ENTRY_HUMAN_DECISION_REQUIRED', requiredEvidence: ['pilot_entry_decision.decision', 'pilot_entry_decision.authority', 'pilot_entry_decision.approved_by', 'pilot_entry_decision.approved_at'] }));
+  const normalizedDecision = String(decision?.decision ?? '').trim().toUpperCase();
+  const decisionEvidence = Array.isArray(decision?.evidence_refs)
+    ? decision.evidence_refs.filter((ref) => typeof ref === 'string' && ref.trim()) : [];
+  const unresolvedPreviousGates = before014.some((entry) => entry.status === 'BLOQUEADO');
+  const evidencedFailures = before014.filter((entry) => entry.status === 'FAIL' && entry.evidence.length > 0);
+  const finalProfile = profileById.get('READY-GATE-015');
+  const blockDecision = (reason, requiredEvidence = []) => set(gateResult({
+    id: 'READY-GATE-015', status: 'BLOQUEADO', owner: decisionOwner,
+    dependencies: ['READY-GATE-014'], reason, requiredEvidence,
+  }));
+  if (!decision) {
+    blockDecision('PILOT_ENTRY_HUMAN_DECISION_REQUIRED', ['pilot_entry_decision.decision', 'pilot_entry_decision.authority', 'pilot_entry_decision.approved_by', 'pilot_entry_decision.approved_at']);
   } else {
-    const normalizedDecision = String(decision.decision ?? '').toUpperCase();
     const valid = ALLOWED_FINAL_DECISIONS.has(normalizedDecision)
+      && Boolean(decisionOwner)
       && decision.authority === decisionOwner
-      && String(decision.approved_by ?? '').trim()
+      && Boolean(String(decision.approved_by ?? '').trim())
       && Number.isFinite(Date.parse(String(decision.approved_at ?? '')));
     if (!valid) {
-      set(gateResult({ id: 'READY-GATE-015', status: 'BLOQUEADO', owner: decisionOwner, dependencies: ['READY-GATE-014'], reason: 'PILOT_ENTRY_DECISION_INVALID', requiredEvidence: [`authority=${decisionOwner ?? 'UNRESOLVED'}`, 'valid approved_by/approved_at/decision'] }));
+      blockDecision('PILOT_ENTRY_DECISION_INVALID', [`authority=${decisionOwner ?? 'UNRESOLVED'}`, 'valid approved_by/approved_at/decision']);
     } else if (normalizedDecision === 'APROBAR_ENTRADA') {
-      set(gateResult({ id: 'READY-GATE-015', status: 'PASS', owner: decisionOwner, dependencies: ['READY-GATE-014'], evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`, `APPROVED_BY:${decision.approved_by}`] }));
+      if (gate014?.status !== 'PASS' || finalProfile?.phase !== 'NOW') {
+        blockDecision('READY_GATE_014_NOT_PASS', ['READY-GATE-014 PASS', 'READY-GATE-015 NOW']);
+      } else {
+        set(gateResult({ id: 'READY-GATE-015', status: 'PASS', owner: decisionOwner, dependencies: ['READY-GATE-014'], evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`, `APPROVED_BY:${decision.approved_by}`] }));
+      }
+    } else if (normalizedDecision === 'DENEGAR_ENTRADA') {
+      if (gate014?.status !== 'FAIL' || evidencedFailures.length === 0 || unresolvedPreviousGates || decisionEvidence.length === 0 || finalProfile?.phase !== 'NOW') {
+        blockDecision('DENIAL_EVIDENCE_INCOMPLETE', ['material FAIL with references in READY-GATE-001..013', 'no unresolved READY-GATE', 'pilot_entry_decision.evidence_refs[]', 'READY-GATE-015 NOW']);
+      } else {
+        set(gateResult({
+          id: 'READY-GATE-015', status: 'FAIL', owner: decisionOwner,
+          dependencies: evidencedFailures.map((entry) => entry.gate_id),
+          evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`, `APPROVED_BY:${decision.approved_by}`, ...decisionEvidence],
+        }));
+      }
     } else if (normalizedDecision === 'NO_APLICA') {
-      set(gateResult({ id: 'READY-GATE-015', status: 'NO_APLICA', owner: decisionOwner, dependencies: ['READY-GATE-014'], evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`] }));
+      if (gate014?.status !== 'PASS' || finalProfile?.phase !== 'NEVER' || finalProfile.evidence_refs.length === 0 || decisionEvidence.length === 0) {
+        blockDecision('NO_APLICA_CANONICAL_EVIDENCE_REQUIRED', ['READY-GATE-014 PASS', 'READY-GATE-015 NEVER with canonical evidence_refs', 'pilot_entry_decision.evidence_refs[]']);
+      } else {
+        set(gateResult({
+          id: 'READY-GATE-015', status: 'NO_APLICA', owner: decisionOwner,
+          dependencies: ['READY-GATE-014'],
+          evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`, `APPROVED_BY:${decision.approved_by}`, ...finalProfile.evidence_refs, ...decisionEvidence],
+        }));
+      }
     } else {
-      set(gateResult({ id: 'READY-GATE-015', status: 'BLOQUEADO', owner: decisionOwner, dependencies: ['READY-GATE-014'], reason: `PILOT_ENTRY_DECISION_${normalizedDecision}`, evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`] }));
+      blockDecision(`PILOT_ENTRY_DECISION_${normalizedDecision}`);
     }
   }
 
@@ -529,25 +574,33 @@ export function evaluateImplementationReadinessGates({
     : proposedState;
 
   const finalGate = gates.find((entry) => entry.gate_id === 'READY-GATE-015');
-  const complete = finalGate?.applicability_phase === 'NOW' && finalGate?.status === 'PASS';
+  const terminalApproval = finalGate?.applicability_phase === 'NOW' && finalGate?.status === 'PASS'
+    && normalizedDecision === 'APROBAR_ENTRADA' && summary.fail_count === 0 && summary.blocked_count === 0;
+  const terminalDenial = finalGate?.applicability_phase === 'NOW' && finalGate?.status === 'FAIL'
+    && normalizedDecision === 'DENEGAR_ENTRADA' && summary.blocked_count === 0;
+  const terminalNotApplicable = finalGate?.applicability_phase === 'NEVER' && finalGate?.status === 'NO_APLICA'
+    && normalizedDecision === 'NO_APLICA' && summary.blocked_count === 0;
+  const complete = terminalApproval || terminalDenial || terminalNotApplicable;
   const technicalReady = summary.fail_count === 0
     && summary.blocked_count === 0
     && gates.find((entry) => entry.gate_id === 'READY-GATE-014')?.status === 'PASS';
   const finalReceipt = complete ? {
     ...request,
+    pilot_entry_decision: normalizedDecision,
     observed_at: now,
     environment_results: (request.target_environments ?? []).map((target) => ({
       ...target,
       status: 'PASS',
       evidence: [
+        `READINESS_EVALUATION_COMPLETED:${normalizedDecision}`,
         `READINESS_GATE_ENGINE:${IMPLEMENTATION_READINESS_GATE_ENGINE_MODEL_ID}`,
         `READINESS_STATE_SHA256:${sha256(stableJson(state))}`,
       ],
     })),
     operational_evidence: [
       `READINESS_GATE_ENGINE:${IMPLEMENTATION_READINESS_GATE_ENGINE_MODEL_ID}`,
-      `READINESS_GATES_001_014:PASS`,
-      `READY_GATE_015:APROBAR_ENTRADA owner=${decisionOwner}`,
+      `READINESS_GATE_014:${gate014?.status ?? 'UNKNOWN'}`,
+      `READY_GATE_015:${normalizedDecision} owner=${decisionOwner}`,
       `READINESS_STATE_SHA256:${sha256(stableJson(state))}`,
     ],
     readiness_gate_state: state,

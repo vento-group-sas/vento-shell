@@ -111,7 +111,48 @@ function previousTaskId(taskId) {
 }
 
 function evidenceContainsPilotApproval(previous) {
-  return JSON.stringify(previous?.evidence ?? []).includes('APROBAR_ENTRADA');
+  if (previous?.status !== 'VERIFIED') return false;
+  const prefix = `.delivery/${previous.instance_id.replace('::', '__')}__ready-gate-015/`;
+  return (previous.evidence ?? []).some((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)
+      || entry.type !== 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1'
+      || entry.instance_id !== previous.instance_id) return false;
+    const state = entry.readiness_gate_state;
+    if (state) {
+      const finalGate = state.gates?.find((gate) => gate.gate_id === 'READY-GATE-015');
+      const marker = `READY_GATE_015:APROBAR_ENTRADA owner=${state.decision_owner}`;
+      return state.instance_id === previous.instance_id
+        && state.candidate_commit === entry.candidate_commit
+        && Boolean(state.decision_owner)
+        && entry.pilot_entry_decision === 'APROBAR_ENTRADA'
+        && finalGate?.status === 'PASS'
+        && finalGate.evidence?.includes('PILOT_ENTRY_DECISION:APROBAR_ENTRADA')
+        && (entry.operational_evidence ?? []).includes(marker);
+    }
+    const legacy = entry.ready_gate_015;
+    if (legacy) {
+      return legacy.instance_id === previous.instance_id
+        && legacy.candidate_ref === entry.candidate_commit
+        && legacy.lifecycle_head_ref === entry.lifecycle_head_commit
+        && legacy.gate_id === 'READY-GATE-015'
+        && legacy.gate_result === 'PASS'
+        && legacy.freshness_state === 'VIGENTE'
+        && legacy.consistency_state === 'CONSISTENTE'
+        && legacy.pilot_entry_decision === 'APROBAR_ENTRADA'
+        && entry.pilot_entry_decision === 'APROBAR_ENTRADA'
+        && legacy.pilot_entry_authority?.authority_status === 'DEMONSTRATED'
+        && legacy.pilot_entry_authority?.authority_scope === previous.instance_id.split('::')[1];
+    }
+    // Compatibilidad con los expedientes históricos que guardaban tres referencias de READY-GATE-015.
+    const evidence = (entry.operational_evidence ?? []).filter((value) => typeof value === 'string');
+    const marker = 'READY_GATE_015 APROBAR_ENTRADA manifest=';
+    const manifest = evidence.find((value) => value.startsWith(`${marker}${prefix}`)
+      && value.endsWith('/pilot-entry-decision-manifest.json'));
+    if (!manifest) return false;
+    const folder = manifest.slice(marker.length).slice(0, -'pilot-entry-decision-manifest.json'.length);
+    return evidence.includes(`READY_GATE_015 decision=${folder}pilot-entry-decision.json`)
+      && evidence.includes(`READY_GATE_015 authority=${folder}pilot-entry-authority.json`);
+  });
 }
 
 export function buildAuthorizedInstanceRecord({ instance, gate, identity, previous = null, approval, sourceContractSha256 }) {
