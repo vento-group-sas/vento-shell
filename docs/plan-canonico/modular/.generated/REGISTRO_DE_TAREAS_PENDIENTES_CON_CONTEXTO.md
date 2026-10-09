@@ -8,32 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar SHELL-CI-021::CORR-001; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar MATERIALIZE_PHYSICAL_HANDOFF sobre SHELL-CI-020::GAP-PKG-003.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `SHELL-CI-021::CORR-001`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO SHELL-CI-021::CORR-001: corregir exclusivamente decisiones de readiness y el control de entrada a CI022, sin modificar el canon ni ejecutar piloto
-- **Edita solamente:**
-  - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.mjs`
-  - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-authorization-lifecycle.mjs`
-  - `MODIFY` `scripts/docs/implementation-authorization-lifecycle.test.mjs`
-- **Valida, en este orden:**
-  1. `node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs`
-  2. `npm run docs:implementation:accelerator:test`
-  3. `npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs`
-  4. `npm run docs:correction:check`
-  5. `npm run docs:plan:check`
-  6. `npm run docs:plan:test`
-  7. `npm run docs:treq:check`
-  8. `npm run docs:treq:test`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id SHELL-CI-021::CORR-001`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-003`
 
