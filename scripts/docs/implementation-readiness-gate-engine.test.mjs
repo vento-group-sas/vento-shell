@@ -313,3 +313,60 @@ test('una evidencia explicita de base de datos FAIL conserva FAIL', () => {
   assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-002').status, 'FAIL');
   assert.equal(result.complete, true);
 });
+
+
+test('CI021 LATER pendientes no permiten APROBAR_ENTRADA aunque READY-GATE-014 sea PASS', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixtureWithRls() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'PASS', evidence_refs: ['RLS-VERIFIED'] };
+  delete input.support;
+  delete input.rollback_exercise;
+  input.readiness_profile = { gates: [
+    { gate_id: 'READY-GATE-004', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'User and role readiness not yet demonstrated.' },
+    { gate_id: 'READY-GATE-006', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Integration credential readiness pending.' },
+    { gate_id: 'READY-GATE-010', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Nominal support remains unconfirmed.' },
+    { gate_id: 'READY-GATE-012', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Rollback exercise remains unproven.' },
+  ] };
+  const fx = fixtureWithRls({ input });
+  fx.supplied.ci020.evidence[0].operational_evidence.push('USER ROLE SITE INTEGRATION PROVIDER');
+  const evaluated = evaluateImplementationReadinessGates({ ...fx });
+  const gates = new Map(evaluated.state.gates.map((gate) => [gate.gate_id, gate]));
+  assert.equal(gates.get('READY-GATE-014').status, 'PASS');
+  assert.equal(gates.get('READY-GATE-015').status, 'BLOQUEADO');
+  assert.equal(gates.get('READY-GATE-015').blocking_reason, 'PILOT_ENTRY_PRIOR_GATES_UNRESOLVED');
+  assert.deepEqual(evaluated.state.summary.deferred_gates, [
+    'READY-GATE-004', 'READY-GATE-006', 'READY-GATE-010', 'READY-GATE-012',
+  ]);
+  assert.equal(evaluated.complete, false);
+  assert.equal(evaluated.finalReceipt, null);
+});
+
+test('CI021 no aprueba piloto con FAIL aplazado aunque la fase NOW este sana', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixtureWithRls() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'PASS', evidence_refs: ['RLS-VERIFIED'] };
+  input.operational_identity_readiness = { status: 'FAIL', evidence_refs: ['IDENTITY-ROLE-FAIL'] };
+  input.readiness_profile = { gates: [
+    { gate_id: 'READY-GATE-004', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Operational identities must be available for pilot.' },
+  ] };
+  const fx = fixtureWithRls({ input });
+  fx.supplied.ci020.evidence[0].operational_evidence.push('USER ROLE SITE');
+  const result = evaluateImplementationReadinessGates({ ...fx });
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-004').status, 'FAIL');
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-014').status, 'PASS');
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'BLOQUEADO');
+  assert.equal(result.complete, false);
+});
+
+test('CI021 exige READY-GATE-014 en NOW antes de declarar entrada al piloto', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixtureWithRls() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'PASS', evidence_refs: ['RLS-VERIFIED'] };
+  input.readiness_profile = { gates: [
+    { gate_id: 'READY-GATE-014', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Risk gate must reconcile for pilot.' },
+  ] };
+  const result = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-014').status, 'PASS');
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'BLOQUEADO');
+  assert.equal(result.complete, false);
+});

@@ -110,6 +110,27 @@ function previousTaskId(taskId) {
   return number <= 20 ? null : `SHELL-CI-${String(number - 1).padStart(3, '0')}`;
 }
 
+function reconciledPilotGateEvidence(state) {
+  if (state?.type !== 'IMPLEMENTATION_READINESS_GATE_STATE_V1'
+    || !Array.isArray(state.gates) || state.gates.length !== 15) return false;
+  const byId = new Map(state.gates.map((gate) => [gate?.gate_id, gate]));
+  if (byId.size !== 15) return false;
+  for (let index = 1; index <= 14; index += 1) {
+    const id = `READY-GATE-${String(index).padStart(3, '0')}`;
+    const gate = byId.get(id);
+    if (!gate || !(gate.status === 'PASS'
+      || (gate.status === 'NO_APLICA' && gate.applicability_phase !== 'LATER'
+        && Array.isArray(gate.evidence) && gate.evidence.length > 0))) return false;
+  }
+  const riskGate = byId.get('READY-GATE-014');
+  const entryGate = byId.get('READY-GATE-015');
+  return riskGate?.status === 'PASS' && riskGate.applicability_phase === 'NOW'
+    && entryGate?.status === 'PASS' && entryGate.applicability_phase === 'NOW'
+    && state.summary?.blocked_count === 0
+    && state.summary?.fail_count === 0
+    && state.summary?.deferred_count === 0;
+}
+
 function evidenceContainsPilotApproval(previous) {
   if (previous?.status !== 'VERIFIED') return false;
   const prefix = `.delivery/${previous.instance_id.replace('::', '__')}__ready-gate-015/`;
@@ -123,6 +144,7 @@ function evidenceContainsPilotApproval(previous) {
       const marker = `READY_GATE_015:APROBAR_ENTRADA owner=${state.decision_owner}`;
       return state.instance_id === previous.instance_id
         && state.candidate_commit === entry.candidate_commit
+        && reconciledPilotGateEvidence(state)
         && Boolean(state.decision_owner)
         && entry.pilot_entry_decision === 'APROBAR_ENTRADA'
         && finalGate?.status === 'PASS'

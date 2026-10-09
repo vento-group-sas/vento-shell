@@ -457,6 +457,17 @@ export function evaluateImplementationReadinessGates({
   else set(gateResult({ id: 'READY-GATE-014', status: 'PASS', dependencies: before014.map((entry) => entry.gate_id), evidence: ['READY_GATES_001_013_CLEAR'] }));
 
   const gate014 = gates.find((entry) => entry.gate_id === 'READY-GATE-014');
+  // Pilot entry reconciles every prior gate, including unresolved LATER gates.
+  // Technical readiness remains a separate, current-phase-only result.
+  const pilotPrerequisiteGates = gates.filter((entry) => (
+    /^READY-GATE-0(?:0[1-9]|1[0-4])$/u.test(entry.gate_id)
+  ));
+  const unresolvedPilotPrerequisites = pilotPrerequisiteGates.filter((entry) => (
+    ['FAIL', 'BLOQUEADO'].includes(entry.status)
+    || (entry.status === 'NO_APLICA' && entry.applicability_phase === 'LATER')
+  ));
+  const pilotPrerequisitesComplete = pilotPrerequisiteGates.length === 14
+    && unresolvedPilotPrerequisites.length === 0;
   const decision = input.pilot_entry_decision ?? null;
   const normalizedDecision = String(decision?.decision ?? '').trim().toUpperCase();
   const decisionEvidence = Array.isArray(decision?.evidence_refs)
@@ -479,8 +490,10 @@ export function evaluateImplementationReadinessGates({
     if (!valid) {
       blockDecision('PILOT_ENTRY_DECISION_INVALID', [`authority=${decisionOwner ?? 'UNRESOLVED'}`, 'valid approved_by/approved_at/decision']);
     } else if (normalizedDecision === 'APROBAR_ENTRADA') {
-      if (gate014?.status !== 'PASS' || finalProfile?.phase !== 'NOW') {
-        blockDecision('READY_GATE_014_NOT_PASS', ['READY-GATE-014 PASS', 'READY-GATE-015 NOW']);
+      if (gate014?.status !== 'PASS' || gate014?.applicability_phase !== 'NOW' || finalProfile?.phase !== 'NOW') {
+        blockDecision('READY_GATE_014_NOT_PASS', ['READY-GATE-014 PASS/NOW', 'READY-GATE-015 NOW']);
+      } else if (!pilotPrerequisitesComplete) {
+        blockDecision('PILOT_ENTRY_PRIOR_GATES_UNRESOLVED', unresolvedPilotPrerequisites.map((entry) => entry.gate_id));
       } else {
         set(gateResult({ id: 'READY-GATE-015', status: 'PASS', owner: decisionOwner, dependencies: ['READY-GATE-014'], evidence: [`PILOT_ENTRY_DECISION:${normalizedDecision}`, `APPROVED_BY:${decision.approved_by}`] }));
       }
@@ -575,7 +588,8 @@ export function evaluateImplementationReadinessGates({
 
   const finalGate = gates.find((entry) => entry.gate_id === 'READY-GATE-015');
   const terminalApproval = finalGate?.applicability_phase === 'NOW' && finalGate?.status === 'PASS'
-    && normalizedDecision === 'APROBAR_ENTRADA' && summary.fail_count === 0 && summary.blocked_count === 0;
+    && normalizedDecision === 'APROBAR_ENTRADA' && pilotPrerequisitesComplete
+    && summary.fail_count === 0 && summary.blocked_count === 0 && summary.deferred_count === 0;
   const terminalDenial = finalGate?.applicability_phase === 'NOW' && finalGate?.status === 'FAIL'
     && normalizedDecision === 'DENEGAR_ENTRADA' && summary.blocked_count === 0;
   const terminalNotApplicable = finalGate?.applicability_phase === 'NEVER' && finalGate?.status === 'NO_APLICA'
