@@ -80,6 +80,105 @@
       "exit_code": 0,
       "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-09T20:02:47.986Z",
+      "candidate_head": "df171d9da793370989f2902152d001a29c39c452",
+      "commands": [
+        "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+        "npm run docs:implementation:accelerator:test",
+        "npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+          "duration_ms": 241,
+          "started_at": "2026-10-09T19:55:51.169Z",
+          "completed_at": "2026-10-09T19:55:51.411Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "7a2420815aa155321e1582556b398b0f93f03337208c40dcf6a12d347573d952",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:accelerator:test",
+          "duration_ms": 2149,
+          "started_at": "2026-10-09T19:55:51.412Z",
+          "completed_at": "2026-10-09T19:55:53.562Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "309eff826252076056f6c79753f7adbe89e7bf625f22e6cd086b664e55c2d420",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+          "duration_ms": 63077,
+          "started_at": "2026-10-09T19:55:53.563Z",
+          "completed_at": "2026-10-09T19:56:56.641Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "72c6a4846d560b8e65cc81b00a506c273cecb600346fbe94642742f4ee2f4c6d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 2708,
+          "started_at": "2026-10-09T19:56:56.642Z",
+          "completed_at": "2026-10-09T19:56:59.351Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "bfc96677a7c076bbd218c87116ae5ca408d92747e46e49985c4e3b13b7a46d09",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 282988,
+          "started_at": "2026-10-09T19:56:59.353Z",
+          "completed_at": "2026-10-09T20:01:42.341Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "277640933a1a0d63cb22e67376fa6874c8e7705675628841791227ca890443c5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 58752,
+          "started_at": "2026-10-09T20:01:42.343Z",
+          "completed_at": "2026-10-09T20:02:41.100Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "89244776be66fae08551c1aa5b608d7981d139e88704190c2632fb8da38cfe27",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 5919,
+          "started_at": "2026-10-09T20:02:41.105Z",
+          "completed_at": "2026-10-09T20:02:47.026Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fae61db78684a0d99759837929da2020bc8f7bbb299cd4e402ae2c61330df253",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 956,
+          "started_at": "2026-10-09T20:02:47.028Z",
+          "completed_at": "2026-10-09T20:02:47.985Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f062f707b209988d09fbc903f8f7865f27f013eeaf33f5db1fc0a1cb8d8ec3cc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-10-09T18:42:40.824Z",

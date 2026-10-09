@@ -12,11 +12,11 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Termina la corrección abierta — `SHELL-CI-021::CORR-001`
+### 1. Valida y cierra la corrección implementada — `SHELL-CI-021::CORR-001`
 
-- **Estado:** `IN_PROGRESS`
-- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
-- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Estado:** `IMPLEMENTED`
+- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
+- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
 - **Contrato autorizado:** APROBADO SHELL-CI-021::CORR-001: corregir exclusivamente decisiones de readiness y el control de entrada a CI022, sin modificar el canon ni ejecutar piloto
 - **Edita solamente:**
   - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.mjs`
