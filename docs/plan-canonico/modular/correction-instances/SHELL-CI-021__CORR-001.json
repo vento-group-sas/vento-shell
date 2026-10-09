@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "correction_id": "SHELL-CI-021::CORR-001",
+  "task_id": "SHELL-CI-021",
+  "target_instance_id": "SHELL-CI-021::GAP-PKG-045",
+  "correction_type": "PHYSICAL",
+  "reason_code": "CONTRACT_NON_CONFORMANCE",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": true,
+  "blocked_targets": [
+    "SHELL-CI-021::GAP-PKG-002"
+  ],
+  "baseline": {
+    "main_commit": "c3c5003ea2e222d7f78bc1cf33012e7b025eaa98",
+    "target_task_path": "docs/plan-canonico/modular/bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md",
+    "target_task_sha256": "e395b9fa825770cfc1fc735af82a12f15aaceeee915ced174e4e003dc341e31c",
+    "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-045.json",
+    "target_instance_record_sha256": "d43a06a8381e1f0034c9fd6870a500596472e135bbf6950bfe3f3f5a7c0f4af7"
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-10-09T18:42:40.824Z"
+}
