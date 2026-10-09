@@ -5,7 +5,7 @@
   "target_instance_id": "SHELL-CI-021::GAP-PKG-045",
   "correction_type": "PHYSICAL",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021::GAP-PKG-002"
@@ -17,12 +17,54 @@
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-045.json",
     "target_instance_record_sha256": "d43a06a8381e1f0034c9fd6870a500596472e135bbf6950bfe3f3f5a7c0f4af7"
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.test.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.test.mjs",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+    "npm run docs:implementation:accelerator:test",
+    "npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test"
+  ],
+  "affected_treq_ids": [
+    "TREQ-SHELL-005",
+    "TREQ-SHELL-007"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-09T22:21:38.901Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-021::CORR-002: corregir exclusivamente la aprobacion de piloto con gates diferidos y el control de entrada a CI022, sin modificar el canon ni ejecutar piloto.",
+    "source_contract_sha256": "e395b9fa825770cfc1fc735af82a12f15aaceeee915ced174e4e003dc341e31c"
+  },
   "evidence": [],
   "opened_at": "2026-10-09T21:50:26.132Z"
 }

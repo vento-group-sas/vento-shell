@@ -12,17 +12,27 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `SHELL-CI-021::CORR-002`
+### 1. Termina la corrección abierta — `SHELL-CI-021::CORR-002`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO SHELL-CI-021::CORR-002: corregir exclusivamente la aprobacion de piloto con gates diferidos y el control de entrada a CI022, sin modificar el canon ni ejecutar piloto.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-authorization-lifecycle.mjs`
+  - `MODIFY` `scripts/docs/implementation-authorization-lifecycle.test.mjs`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `node --test scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs`
+  2. `npm run docs:implementation:accelerator:test`
+  3. `npm run lint -- scripts/docs/implementation-readiness-gate-engine.mjs scripts/docs/implementation-readiness-gate-engine.test.mjs scripts/docs/implementation-authorization-lifecycle.mjs scripts/docs/implementation-authorization-lifecycle.test.mjs`
+  4. `npm run docs:correction:check`
+  5. `npm run docs:plan:check`
+  6. `npm run docs:plan:test`
+  7. `npm run docs:treq:check`
+  8. `npm run docs:treq:test`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id SHELL-CI-021::CORR-002`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-003`
