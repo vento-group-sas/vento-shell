@@ -184,3 +184,132 @@ test('readiness profile NOW/LATER/NEVER separa readiness técnico de preparació
   });
   assert.strictEqual(resumed.state, result.state);
 });
+
+
+function fixtureWithRls({ input = null, previous = null } = {}) {
+  const fx = fixture({ input, previous });
+  fx.supplied.ci020.evidence[0].operational_evidence.push('RLS_CONTRACT_ASSERTED');
+  return fx;
+}
+
+test('una evidencia de permisos FAIL no se transforma en PASS y admite denegacion fundada', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'FAIL', evidence_refs: ['RLS-DENIAL-EVIDENCE'] };
+  input.pilot_entry_decision = {
+    decision: 'DENEGAR_ENTRADA', authority: 'OWN-OPS', approved_by: 'VENTO_OWNER',
+    approved_at: '2026-09-21T07:05:00Z', evidence_refs: ['DECISION-DENY-EVIDENCE'],
+  };
+  const result = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-003').status, 'FAIL');
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-014').status, 'FAIL');
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'FAIL');
+  assert.equal(result.complete, true);
+  assert.equal(result.technicalReady, false);
+  assert.match(result.finalReceipt.operational_evidence.join('\n'), /READY_GATE_015:DENEGAR_ENTRADA/u);
+  assert.doesNotMatch(result.finalReceipt.operational_evidence.join('\n'), /READY_GATE_015:APROBAR_ENTRADA/u);
+});
+
+test('una denegacion sin FAIL material o sin referencias queda BLOQUEADA', () => {
+  const first = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(first.state.physical_fingerprint);
+  input.pilot_entry_decision.decision = 'DENEGAR_ENTRADA';
+  input.pilot_entry_decision.evidence_refs = ['REF-DENY'];
+  const noFailure = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(noFailure.complete, false);
+  assert.equal(noFailure.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'BLOQUEADO');
+  input.permissions_readiness = { status: 'FAIL', evidence_refs: ['RLS-FAIL'] };
+  delete input.pilot_entry_decision.evidence_refs;
+  const missingProof = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(missingProof.complete, false);
+  assert.equal(missingProof.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'BLOQUEADO');
+});
+
+test('FAIL material con otras puertas sin resolver no cierra CI021', () => {
+  const first = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(first.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'FAIL', evidence_refs: ['RLS-FAIL'] };
+  input.pilot_entry_decision = {
+    decision: 'DENEGAR_ENTRADA', authority: 'OWN-OPS', approved_by: 'VENTO_OWNER',
+    approved_at: '2026-09-21T07:05:00Z', evidence_refs: ['DECISION-REF'],
+  };
+  delete input.support;
+  const result = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(result.complete, false);
+  assert.equal(result.finalReceipt, null);
+  assert.ok(result.state.summary.blocked_gates.includes('READY-GATE-010'));
+  assert.ok(result.state.summary.blocked_gates.includes('READY-GATE-015'));
+});
+
+test('NO_APLICA final requiere decision humana y evidencia de no aplicabilidad del paquete', () => {
+  const first = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(first.state.physical_fingerprint);
+  // El corpus declara RLS; su puerta requiere comprobacion independiente con evidencia PASS.
+  input.permissions_readiness = { status: 'PASS', evidence_refs: ['RLS-EVALUATED-PASS'] };
+  input.readiness_profile = { gates: [{
+    gate_id: 'READY-GATE-015', phase: 'NEVER',
+    rationale: 'El expediente E5 documenta que el paquete no entra a piloto.',
+    evidence_refs: ['E5-NO-PILOT-PROOF'],
+  }] };
+  input.pilot_entry_decision = {
+    decision: 'NO_APLICA', authority: 'OWN-OPS', approved_by: 'VENTO_OWNER',
+    approved_at: '2026-09-21T07:05:00Z', evidence_refs: ['OWNER-NO-APLICA'],
+  };
+  const result = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'NO_APLICA');
+  assert.equal(result.complete, true);
+  assert.match(result.finalReceipt.operational_evidence.join('\n'), /READY_GATE_015:NO_APLICA/u);
+  assert.doesNotMatch(result.finalReceipt.operational_evidence.join('\n'), /READY_GATE_015:APROBAR_ENTRADA/u);
+  const noEvidence = { ...input, readiness_profile: { gates: [{
+    gate_id: 'READY-GATE-015', phase: 'NEVER', rationale: 'No requiere piloto.',
+  }] } };
+  const invalid = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input: noEvidence }) });
+  assert.equal(invalid.complete, false);
+  assert.equal(invalid.state.gates.find((gate) => gate.gate_id === 'READY-GATE-015').status, 'BLOQUEADO');
+});
+
+test('no aplica sin contrato NEVER y bloqueo humano no cierran', () => {
+  const first = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(first.state.physical_fingerprint);
+  input.pilot_entry_decision.decision = 'NO_APLICA';
+  input.pilot_entry_decision.evidence_refs = ['OWNER-NO-PILOT'];
+  const withoutProfile = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(withoutProfile.complete, false);
+  input.pilot_entry_decision.decision = 'BLOQUEAR_DECISION';
+  const explicitBlock = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(explicitBlock.complete, false);
+  assert.equal(explicitBlock.finalReceipt, null);
+});
+
+test('reevaluar evidencias humanas invalida un PASS anterior del mismo candidato', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'PASS', evidence_refs: ['PREVIOUS-PASS'] };
+  const first = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  const nextInput = { ...input, permissions_readiness: { status: 'FAIL', evidence_refs: ['NEW-FAIL'] } };
+  const next = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input: nextInput, previous: first.state }) });
+  assert.equal(next.state.gates.find((gate) => gate.gate_id === 'READY-GATE-003').status, 'FAIL');
+});
+
+test('FAIL humano explicito prevalece frente a un NO_APLICA inferido por ausencia de texto', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  input.permissions_readiness = { status: 'FAIL', evidence_refs: ['POLICY-FAIL-EVIDENCE'] };
+  const result = evaluateImplementationReadinessGates({ ...fixture({ input }) });
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-003').status, 'FAIL');
+});
+
+test('una evidencia explicita de base de datos FAIL conserva FAIL', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixture() });
+  const input = completeInput(initial.state.physical_fingerprint);
+  // La evidencia RLS declarada debe evaluarse; aqui no es la causa de denegacion.
+  input.permissions_readiness = { status: 'PASS', evidence_refs: ['RLS-EVALUATED-PASS'] };
+  input.database_readiness = { status: 'FAIL', evidence_refs: ['DB-DRIFT-EVIDENCE'] };
+  input.pilot_entry_decision = {
+    decision: 'DENEGAR_ENTRADA', authority: 'OWN-OPS', approved_by: 'VENTO_OWNER',
+    approved_at: '2026-09-21T07:05:00Z', evidence_refs: ['DENIAL-DB'],
+  };
+  const result = evaluateImplementationReadinessGates({ ...fixtureWithRls({ input }) });
+  assert.equal(result.state.gates.find((gate) => gate.gate_id === 'READY-GATE-002').status, 'FAIL');
+  assert.equal(result.complete, true);
+});
