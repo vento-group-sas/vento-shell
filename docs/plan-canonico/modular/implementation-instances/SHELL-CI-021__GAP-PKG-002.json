@@ -99,9 +99,9 @@
       "instance_id": "SHELL-CI-021::GAP-PKG-002",
       "package_id": "GAP-PKG-002",
       "candidate_commit": "8f66de8ed25b5a741815f6a804a05cc767a07c95",
-      "lifecycle_head_commit": "8609eca4ec4802fe4a42ae97c9d131d7e6221548",
+      "lifecycle_head_commit": "a771bb0b7588c33efb8b6d1fae80206bf7bb5c66",
       "physical_fingerprint": "79dcb7d40b4bf5ef5f5cf8cafce3e48d911b9ffeae52ee17c2bb5768dc4d2043",
-      "observed_at": "2026-10-09T20:54:43.137Z",
+      "observed_at": "2026-10-09T21:11:21.157Z",
       "decision_owner": "OWN-SEG",
       "target_environments": [
         {
@@ -246,7 +246,7 @@
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -256,13 +256,16 @@
         {
           "gate_id": "READY-GATE-002",
           "evaluation_mode": "AUTO",
-          "status": "BLOQUEADO",
-          "evidence": [],
-          "blocking_reason": "DATABASE_READINESS_EVIDENCE_REQUIRED",
-          "required_evidence": [
-            "database_readiness.status=PASS/FAIL",
-            "database_readiness.evidence_refs[]"
+          "status": "PASS",
+          "evidence": [
+            "CI020_VERIFIED:docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-002.json;candidate=37ac7b7a683d9659539e6abccae61987614b2039",
+            "LOCAL_CLEAN_REPLAY: native validation passed; 22 migrations; 25 pgTAP files; 1951 assertions; remote_targets_used=NO.",
+            "PACKAGE_RUNTIME: 46 pgTAP assertions and contract/integration/security/e2e commands passed against local Supabase; transactional fixtures, policies and test-only bucket rolled back.",
+            "STAGING_ADOPTION_READ_ONLY: Supabase catalog query on the exact authorized project; broad_policies_remaining=0; hardened_authenticated_policies=6; document_types_rls=true; observed_at=2026-10-02T21:33:08.381Z. | EVIDENCE_ONLY_DELTA: candidate 37ac7b7a683d9659539e6abccae61987614b2039 adopts the existing AUTH-DB-002 foundation; no deployment or remote mutation was performed or claimed. Internal policy definitions are not persisted.",
+            "STAGING_READ_ONLY_2026-10-09T21:07:14Z: migration=20260826213609; broad_policies_remaining=0; hardened_authenticated_policies=6; document_types_rls=true"
           ],
+          "blocking_reason": null,
+          "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
@@ -270,18 +273,20 @@
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-003",
           "evaluation_mode": "HUMAN_EVIDENCE",
-          "status": "BLOQUEADO",
-          "evidence": [],
-          "blocking_reason": "PERMISSIONS_EVIDENCE_REQUIRED",
-          "required_evidence": [
-            "permissions_readiness.status",
-            "permissions_readiness.evidence_refs"
+          "status": "PASS",
+          "evidence": [
+            "CI020_RLS_CONTRACT_AND_SECURITY_TESTS:docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-002.json",
+            "PACKAGE_RUNTIME: 46 pgTAP assertions and contract/integration/security/e2e commands passed against local Supabase; transactional fixtures, policies and test-only bucket rolled back.",
+            "STAGING_ADOPTION_READ_ONLY: Supabase catalog query on the exact authorized project; broad_policies_remaining=0; hardened_authenticated_policies=6; document_types_rls=true; observed_at=2026-10-02T21:33:08.381Z. | EVIDENCE_ONLY_DELTA: candidate 37ac7b7a683d9659539e6abccae61987614b2039 adopts the existing AUTH-DB-002 foundation; no deployment or remote mutation was performed or claimed. Internal policy definitions are not persisted.",
+            "STAGING_RLS_READ_ONLY_2026-10-09: 6/6 policies authenticated; document and storage predicates verified; document_types admin and required_document_rules predicates verified"
           ],
+          "blocking_reason": null,
+          "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
@@ -289,7 +294,7 @@
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-004",
@@ -321,7 +326,7 @@
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -380,7 +385,7 @@
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -441,7 +446,7 @@
             "READY-GATE-001"
           ],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -485,7 +490,7 @@
             "READY-GATE-001"
           ],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -500,8 +505,6 @@
           "blocking_reason": "PRIOR_READY_GATE_BLOCKED",
           "required_evidence": [],
           "dependencies": [
-            "READY-GATE-002",
-            "READY-GATE-003",
             "READY-GATE-004",
             "READY-GATE-006",
             "READY-GATE-010",
@@ -540,14 +543,12 @@
         }
       ],
       "summary": {
-        "pass_count": 5,
+        "pass_count": 7,
         "fail_count": 0,
-        "blocked_count": 8,
+        "blocked_count": 6,
         "not_applicable_count": 2,
         "deferred_count": 0,
         "blocked_gates": [
-          "READY-GATE-002",
-          "READY-GATE-003",
           "READY-GATE-004",
           "READY-GATE-006",
           "READY-GATE-010",
