@@ -91,7 +91,474 @@
     "LOCAL_VALIDATION candidate=8f66de8ed25b5a741815f6a804a05cc767a07c95 command=npm run docs:package:gate:check -- --package-id GAP-PKG-002 status=PASS",
     "LOCAL_VALIDATION candidate=8f66de8ed25b5a741815f6a804a05cc767a07c95 command=npm run docs:package:readiness:check -- --package GAP-PKG-002 status=PASS",
     "LOCAL_VALIDATION candidate=8f66de8ed25b5a741815f6a804a05cc767a07c95 command=npm run docs:package:execution:check status=PASS",
-    "LOCAL_VALIDATION candidate=8f66de8ed25b5a741815f6a804a05cc767a07c95 command=npm run docs:implementation:check status=PASS"
+    "LOCAL_VALIDATION candidate=8f66de8ed25b5a741815f6a804a05cc767a07c95 command=npm run docs:implementation:check status=PASS",
+    {
+      "type": "IMPLEMENTATION_READINESS_GATE_STATE_V1",
+      "schema_version": 1,
+      "model_id": "VENTO-IMPLEMENTATION-READINESS-GATE-ENGINE-V1",
+      "instance_id": "SHELL-CI-021::GAP-PKG-002",
+      "package_id": "GAP-PKG-002",
+      "candidate_commit": "8f66de8ed25b5a741815f6a804a05cc767a07c95",
+      "lifecycle_head_commit": "8609eca4ec4802fe4a42ae97c9d131d7e6221548",
+      "physical_fingerprint": "79dcb7d40b4bf5ef5f5cf8cafce3e48d911b9ffeae52ee17c2bb5768dc4d2043",
+      "observed_at": "2026-10-09T20:54:43.137Z",
+      "decision_owner": "OWN-SEG",
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        }
+      ],
+      "readiness_profile": [
+        {
+          "gate_id": "READY-GATE-001",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-002",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-003",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-004",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-005",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-006",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-007",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-008",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-009",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-010",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-011",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-012",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-013",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-014",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-015",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "READY-GATE-001",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "STAGING_ADOPTION_READ_ONLY: Supabase catalog query on the exact authorized project; broad_policies_remaining=0; hardened_authenticated_policies=6; document_types_rls=true; observed_at=2026-10-02T21:33:08.381Z.",
+            "EVIDENCE_ONLY_DELTA: candidate 37ac7b7a683d9659539e6abccae61987614b2039 adopts the existing AUTH-DB-002 foundation; no deployment or remote mutation was performed or claimed. Internal policy definitions are not persisted."
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-002",
+          "evaluation_mode": "AUTO",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "DATABASE_READINESS_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "database_readiness.status=PASS/FAIL",
+            "database_readiness.evidence_refs[]"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-003",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "PERMISSIONS_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "permissions_readiness.status",
+            "permissions_readiness.evidence_refs"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-004",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "OPERATIONAL_IDENTITY_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "operational_identity_readiness.status",
+            "operational_identity_readiness.evidence_refs"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-005",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "PACKAGE_GATE:GAP-PKG-002:APPROVED_FOR_IMPLEMENTATION"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-006",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "INTEGRATION_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "integration_readiness.status",
+            "integration_readiness.evidence_refs"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-007",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "NO_APLICA",
+          "evidence": [
+            "NO_HARDWARE_SCOPE_DETECTED"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-008",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "PACKAGE_GATE_ROLLBACK_STEP:1:If GAP-PKG-002 evidence materialization fails before verification, revert only the six package-specific evidence files created by the authorized CI020 instance.",
+            "PACKAGE_GATE_ROLLBACK_STEP:2:Do not alter, delete, rewrite or roll back supabase/migrations/20260826213609_auth_db_002_rls_hardening.sql or the VERIFIED AUTH-DB-002::GLOBAL ledger as part of a GAP-PKG-002 evidence rollback.",
+            "PACKAGE_GATE_ROLLBACK_STEP:3:If any package test proves that the existing AUTH-DB-002 foundation is insufficient and requires a new product/schema change, stop the implementation and re-mature GAP-PKG-002 with the exact newly discovered physical target before making that change.",
+            "PACKAGE_GATE_ROLLBACK_STEP:4:After any evidence rollback, rerun the canonical migration manifest check and governed clean Supabase database test to confirm the pre-package AUTH-DB-002 foundation remains unchanged.",
+            "PACKAGE_GATE_ROLLBACK_STEP:5:No database rollback is required for the dossier as currently scoped because the database foundation is adopted without modification and the only planned package delta is package-specific evidence."
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-009",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "NO_APLICA",
+          "evidence": [
+            "NO_TRAINING_SCOPE_DETECTED"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-010",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "NOMINAL_SUPPORT_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "support.titular",
+            "support.suplente",
+            "support.coverage_window",
+            "support.levels",
+            "support.escalation",
+            "support.ownership_confirmed"
+          ],
+          "dependencies": [],
+          "owner": "OWN-SEG",
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-011",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "OBSERVABILITY_BOUND_TO_DEPLOYMENT_EVIDENCE"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [
+            "READY-GATE-001"
+          ],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-012",
+          "evaluation_mode": "EXTERNAL_EXERCISE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "AUTHORIZED_ROLLBACK_EXERCISE_REQUIRED",
+          "required_evidence": [
+            "rollback_exercise.result=PASS",
+            "rollback_exercise.executed_at",
+            "rollback_exercise.environment_id",
+            "rollback_exercise.candidate_commit",
+            "rollback_exercise.evidence_refs[]",
+            "rollback_exercise.restore_verified=true",
+            "rollback_exercise.production_mutations!=true"
+          ],
+          "dependencies": [],
+          "owner": "OWN-SEG",
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-013",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "LOCAL_VALIDATION_AND_ENVIRONMENT_BASELINE_PASS"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [
+            "READY-GATE-001"
+          ],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-014",
+          "evaluation_mode": "AUTO",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "PRIOR_READY_GATE_BLOCKED",
+          "required_evidence": [],
+          "dependencies": [
+            "READY-GATE-002",
+            "READY-GATE-003",
+            "READY-GATE-004",
+            "READY-GATE-006",
+            "READY-GATE-010",
+            "READY-GATE-012"
+          ],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-015",
+          "evaluation_mode": "HUMAN_DECISION",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "PILOT_ENTRY_HUMAN_DECISION_REQUIRED",
+          "required_evidence": [
+            "pilot_entry_decision.decision",
+            "pilot_entry_decision.authority",
+            "pilot_entry_decision.approved_by",
+            "pilot_entry_decision.approved_at"
+          ],
+          "dependencies": [
+            "READY-GATE-014"
+          ],
+          "owner": "OWN-SEG",
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        }
+      ],
+      "summary": {
+        "pass_count": 5,
+        "fail_count": 0,
+        "blocked_count": 8,
+        "not_applicable_count": 2,
+        "deferred_count": 0,
+        "blocked_gates": [
+          "READY-GATE-002",
+          "READY-GATE-003",
+          "READY-GATE-004",
+          "READY-GATE-006",
+          "READY-GATE-010",
+          "READY-GATE-012",
+          "READY-GATE-014",
+          "READY-GATE-015"
+        ],
+        "deferred_gates": []
+      },
+      "input_path": ".delivery/implementation-readiness-gate-input.json"
+    }
   ],
   "target_environments": [
     {
