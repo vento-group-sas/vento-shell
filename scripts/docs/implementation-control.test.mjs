@@ -246,6 +246,38 @@ test('rechaza habilitar escrituras automáticas del asistente por inferencia', (
   }), /assistant_repository_writes debe ser false/u);
 });
 
+test('habilita validaciones MCP gobernadas sin habilitar escrituras, Git ni remoto', () => {
+  const result = deriveImplementationControl({
+    control: {
+      ...baseControl,
+      execution_operator_policy: {
+        ...baseControl.execution_operator_policy,
+        assistant_validation_execution: true,
+      },
+      instances: [scope('AUTHORIZED')],
+    },
+    workTopology: topology(),
+  });
+  assert.equal(result.executionOperatorPolicy.assistantValidationExecution, true);
+  assert.equal(result.executionOperatorPolicy.assistantRepositoryWrites, false);
+  assert.equal(result.executionOperatorPolicy.assistantGitOperations, false);
+  assert.equal(result.executionOperatorPolicy.assistantRemoteMutations, false);
+  assert.match(renderCurrentWorkDirective(result), /PERMITIDA SOLO POR MCP/u);
+});
+
+test('rechaza assistant_validation_execution distinto de boolean', () => {
+  assert.throws(() => deriveImplementationControl({
+    control: {
+      ...baseControl,
+      execution_operator_policy: {
+        ...baseControl.execution_operator_policy,
+        assistant_validation_execution: 'true',
+      },
+    },
+    workTopology: topology(),
+  }), /assistant_validation_execution debe ser boolean/u);
+});
+
 test('rechaza autorizar una instancia sin evidencia humana completa', () => {
   const entry = scope('AUTHORIZED');
   delete entry.authorization;
