@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-003",
-  "status": "READY_FOR_APPROVAL",
+  "status": "APPROVED_FOR_IMPLEMENTATION",
   "created_at": "2026-09-10T04:49:51.793Z",
-  "updated_at": "2026-10-12T01:52:08.745Z",
+  "updated_at": "2026-10-12T02:33:07.783Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "CONTROL_NO_DIRECT_RUNTIME",
@@ -93,11 +93,11 @@
     ]
   },
   "authorization": {
-    "decision": "PENDING",
-    "approved_by": null,
-    "approved_at": null,
-    "approval_ref": null,
-    "approval_statement": null
+    "decision": "APROBADO",
+    "approved_by": "usuario",
+    "approved_at": "2026-10-12T02:33:07.783Z",
+    "approval_ref": "Conversación: aprobación explícita de remaduración GAP-PKG-003 y PR #1003, 2026-10-11 (America/Bogota)",
+    "approval_statement": "APROBADO: Apruebo la remaduración de GAP-PKG-003 propuesta en el PR #1003. Autorizo sustituir --check por --observe exclusivamente como validación técnica de SHELL-CI-020, conservando --check como certificación operativa posterior. Autorizo registrar esta nueva aprobación, preservar la aprobación histórica, regenerar derivados, ejecutar las validaciones y fusionar el PR #1003 únicamente si CI resulta PASS. No autorizo publicar ninguno de los diez repositorios ni cambiar visibilidad, permisos, propietarios, secretos, producción o Supabase. Conserva mis cambios locales y continúa la instancia SHELL-CI-020::GAP-PKG-003."
   },
   "scope_reconciliation_ref": "docs/plan-canonico/modular/package-scope-reconciliation.json",
   "physical_discovery": {
