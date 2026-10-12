@@ -3,7 +3,7 @@
   "package_id": "GAP-PKG-003",
   "status": "APPROVED_FOR_IMPLEMENTATION",
   "created_at": "2026-09-10T04:49:51.793Z",
-  "updated_at": "2026-10-02T18:57:12.811Z",
+  "updated_at": "2026-10-12T02:33:07.783Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "CONTROL_NO_DIRECT_RUNTIME",
@@ -58,8 +58,8 @@
         "expected_result": "PASS: cobertura 10/10, normalización de redirect, permisos, secretos sintéticos, estados desconocidos y excepciones vencidas; todavía no implementado."
       },
       {
-        "command": "node scripts/quality/repository-publication-gate.mjs --check --policy quality/repository-publication-policy.json",
-        "expected_result": "PASS solo con decisión vigente por repositorio y evidencia de controles; no basta que GitHub devuelva public/private o scanning enabled."
+        "command": "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+        "expected_result": "PASS tecnico de observacion read-only de 10/10 repositorios; reportar OBSERVATION_COMPLETE u OBSERVATION_PARTIAL sin fingir cobertura; publication_certification=NOT_GRANTED en ambos casos. UNKNOWN y hallazgos permanecen observables y nunca autorizan publicacion."
       },
       {
         "command": "npm run docs:package:scope:check",
@@ -70,6 +70,10 @@
       {
         "signal": "Inventario GitHub y gate de publicación por repository ID",
         "expected_result": "10/10 decisiones; owner real resuelto; source commit y fecha; findings redactados; UNKNOWN o falta de evidencia produce BLOCK, sin imprimir secretos."
+      },
+      {
+        "signal": "Separacion formal entre validacion tecnica CI020 y certificacion operativa de publicacion",
+        "expected_result": "En CI020, --observe puede terminar con observaciones parciales y publication_certification=NOT_GRANTED. En certificacion operativa posterior, --check permanece BLOCKED hasta completar decision humana, revisiones, controles y evidencia vigente para los 10 repositorios; no se acepta un BLOCKED como PASS."
       }
     ],
     "acceptance_criteria": [
@@ -78,7 +82,9 @@
       "Mantener Pass y Talento privados; usar sus owner IDs resueltos, sin transferencia ni cambio de visibilidad implícito.",
       "Probar que ningún secreto real ni dato personal se incorpora a reportes. Findings de secretos exigen remediación y rotación gobernada antes de publicar.",
       "Autoridad OWN-SEG y suplencia OWN-GG; permiso admin comprobado en 10/10. Nunca inferir vulnerabilidad solo por visibilidad pública.",
-      "Este expediente define trabajo futuro de implementación; no acredita que los controles actuales hayan pasado."
+      "Este expediente define trabajo futuro de implementación; no acredita que los controles actuales hayan pasado.",
+      "CI020 demuestra la funcionalidad de auditoria con --observe, sin convertir el estado observado, la ausencia de hallazgos ni el codigo de salida cero en autorizacion para publicar. La bateria de pruebas cubre que --observe no concede certificacion y que el gate falla cerrado ante aprobaciones PENDING o evidencia incompleta.",
+      "La certificacion de publicacion de los diez repositorios se efectua por separado mediante --check cuando existan aprobaciones APROBADO, revisiones ligadas al source_commit, controles requeridos y evidencia de GitHub; cualquier ausencia debe mantener BLOCKED. Prohibidos cambios automaticos de visibilidad, propietarios, permisos y secretos."
     ],
     "rollback_steps": [
       "Revertir únicamente política, gate y workflow de esta unidad; conservar snapshot y trazabilidad. No borrar reportes históricos.",
@@ -89,9 +95,9 @@
   "authorization": {
     "decision": "APROBADO",
     "approved_by": "usuario",
-    "approved_at": "2026-10-02T18:57:12.811Z",
-    "approval_ref": "Conversación: APROBADO para GAP-PKG-003 tras PR #991",
-    "approval_statement": "APROBADO: el usuario aprueba el gate actual GAP-PKG-003 y su expediente consolidado en PR #991. La autorización física se registra por separado; esta aprobación no autoriza cambios remotos de GitHub, Supabase ni producción."
+    "approved_at": "2026-10-12T02:33:07.783Z",
+    "approval_ref": "Conversación: aprobación explícita de remaduración GAP-PKG-003 y PR #1003, 2026-10-11 (America/Bogota)",
+    "approval_statement": "APROBADO: Apruebo la remaduración de GAP-PKG-003 propuesta en el PR #1003. Autorizo sustituir --check por --observe exclusivamente como validación técnica de SHELL-CI-020, conservando --check como certificación operativa posterior. Autorizo registrar esta nueva aprobación, preservar la aprobación histórica, regenerar derivados, ejecutar las validaciones y fusionar el PR #1003 únicamente si CI resulta PASS. No autorizo publicar ninguno de los diez repositorios ni cambiar visibilidad, permisos, propietarios, secretos, producción o Supabase. Conserva mis cambios locales y continúa la instancia SHELL-CI-020::GAP-PKG-003."
   },
   "scope_reconciliation_ref": "docs/plan-canonico/modular/package-scope-reconciliation.json",
   "physical_discovery": {
@@ -260,5 +266,16 @@
     ],
     "physical_implementation_status": "PLANNED_NOT_IMPLEMENTED",
     "remote_mutations_authorized": false
-  }
+  },
+  "authorization_history": [
+    {
+      "decision": "APROBADO",
+      "approved_by": "usuario",
+      "approved_at": "2026-10-02T18:57:12.811Z",
+      "approval_ref": "Conversación: APROBADO para GAP-PKG-003 tras PR #991",
+      "approval_statement": "APROBADO: el usuario aprueba el gate actual GAP-PKG-003 y su expediente consolidado en PR #991. La autorización física se registra por separado; esta aprobación no autoriza cambios remotos de GitHub, Supabase ni producción.",
+      "superseded_at": "2026-10-12T01:52:08.745Z",
+      "superseded_by": "REMATURE"
+    }
+  ]
 }
