@@ -33,6 +33,13 @@ test('iniciador manual permite entregar la sucesora antes del remoto sin adelant
   assert.doesNotMatch(result.implementationSource, /MANUAL_DOCUMENTATION_AHEAD: ENABLED|MARCADOR Y CONTENIDO CANÓNICO DE REFERENCIA DE LA SUCESORA/u);
 });
 
+test('iniciador fisico proyecta validaciones MCP gobernadas cuando la politica las permite', () => {
+  const result = buildChatgptWorkStarter();
+  assert.match(result.implementationSource, /validaciones MCP/u);
+  assert.match(result.implementationSource, /validation_commands/u);
+  assert.match(result.implementationSource, /confirmacion local/u);
+});
+
 test('referencia adelantada respeta la ruta entre bloques, omite aprobadas y no modifica tareas', () => {
   const current = { id: 'NEXO-099', title: 'Actual', marker: '[ ]', block: 'actual', relativePath: 'nexo.md' };
   const done = { id: 'NEXO-100', title: 'Aprobada', marker: '✅', block: 'aprobada', relativePath: 'nexo.md' };
