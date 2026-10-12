@@ -1,10 +1,130 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-003",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "IN_PROGRESS",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "quality/repository-publication-policy.json",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Decisión de visibilidad y controles por los diez repository IDs canónicos; excepciones con owner, motivo, vencimiento y prueba.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-publication-gate.mjs",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Auditoría read-only de GitHub, validación de política y resumen redactado; UNKNOWN o findings abiertos bloquean publicación.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-publication-gate.test.mjs",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: TP-CONTROL-001: repositorio omitido, redirect de owner, estado UNKNOWN, secreto sintético, excepción vencida y permisos insuficientes.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": ".github/workflows/vento-repository-publication.yml",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Ejecutar gate de publicación sin almacenar secretos ni otorgar permisos de escritura implícitos.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-003.json",
+      "change": "MODIFY",
+      "scope": "Record only authorization, lifecycle state and evidence for SHELL-CI-020::GAP-PKG-003."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/canonical-task-preflight.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/quality/repository-publication-gate.test.mjs",
+    "node scripts/quality/repository-publication-gate.mjs --check --policy quality/repository-publication-policy.json",
+    "npm run docs:package:scope:check"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-10T01:14:13.075Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-020::GAP-PKG-003: autorizo implementar exclusivamente los cuatro componentes del expediente aprobado, mediante el ciclo gobernado, sin modificar visibilidad, permisos o propietarios remotos, Supabase, produccion ni piloto.",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [],
+  "target_environments": [
+    {
+      "environment_role": "CI",
+      "target_type": "GITHUB_REPOSITORY",
+      "target_id": "vento-group-sas/vento-shell",
+      "owner": "OWN-SEG"
+    }
+  ],
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-003 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO: el usuario aprueba el gate actual GAP-PKG-003 y su expediente consolidado en PR #991. La autorización física se registra por separado; esta aprobación no autoriza cambios remotos de GitHub, Supabase ni producción.",
+    "PHYSICAL_DISCOVERY COMPLETE searches=2 findings=4 unresolved=0",
+    "PHYSICAL_IDENTITY targets=4",
+    "IMPLEMENTATION_UNITS count=1",
+    "ENV_PROFILE ENV-DOC-CI"
+  ]
 }
