@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-003",
   "task_id": "SHELL-CI-020",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -110,7 +110,11 @@
     "approval_statement": "APROBADO SHELL-CI-020::GAP-PKG-003: autorizo implementar exclusivamente los cuatro componentes del expediente aprobado, mediante el ciclo gobernado, sin modificar visibilidad, permisos o propietarios remotos, Supabase, produccion ni piloto.",
     "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
   },
-  "evidence": [],
+  "evidence": [
+    "LOCAL_VALIDATION candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a command=node --test scripts/quality/repository-publication-gate.test.mjs status=PASS",
+    "LOCAL_VALIDATION candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a command=node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json status=PASS",
+    "LOCAL_VALIDATION candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a command=npm run docs:package:scope:check status=PASS"
+  ],
   "target_environments": [
     {
       "environment_role": "CI",
