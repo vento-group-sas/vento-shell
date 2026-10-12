@@ -1,10 +1,324 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-003",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "VERIFIED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "quality/repository-publication-policy.json",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Decisión de visibilidad y controles por los diez repository IDs canónicos; excepciones con owner, motivo, vencimiento y prueba.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-publication-gate.mjs",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Auditoría read-only de GitHub, validación de política y resumen redactado; UNKNOWN o findings abiertos bloquean publicación.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-publication-gate.test.mjs",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: TP-CONTROL-001: repositorio omitido, redirect de owner, estado UNKNOWN, secreto sintético, excepción vencida y permisos insuficientes.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": ".github/workflows/vento-repository-publication.yml",
+      "change": "CREATE",
+      "scope": "Package-gate physical target: Ejecutar gate de publicación sin almacenar secretos ni otorgar permisos de escritura implícitos.; operation=CREAR"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-003.json",
+      "change": "MODIFY",
+      "scope": "Record only authorization, lifecycle state and evidence for SHELL-CI-020::GAP-PKG-003."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/canonical-task-preflight.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical governed implementation lifecycle without modifying this tooling."
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/quality/repository-publication-gate.test.mjs",
+    "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+    "npm run docs:package:scope:check"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-10T01:14:13.075Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-020::GAP-PKG-003: autorizo implementar exclusivamente los cuatro componentes del expediente aprobado, mediante el ciclo gobernado, sin modificar visibilidad, permisos o propietarios remotos, Supabase, produccion ni piloto.",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [
+    "LOCAL_VALIDATION candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a command=node --test scripts/quality/repository-publication-gate.test.mjs status=PASS",
+    "LOCAL_VALIDATION candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a command=node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json status=PASS",
+    "LOCAL_VALIDATION candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a command=npm run docs:package:scope:check status=PASS",
+    {
+      "type": "IMPLEMENTATION_EXECUTION_EVIDENCE_V1",
+      "schema_version": 1,
+      "instance_id": "SHELL-CI-020::GAP-PKG-003",
+      "candidate_commit": "9bc4a6ad3b7ac62a34264ec7c9b81096973d346a",
+      "lifecycle_head_commit": "0b006d1fc244213518d3e032f436b142ec50a34b",
+      "candidate_lifecycle": {
+        "model_id": "VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1",
+        "decision": "REUSE_PHYSICAL_EVIDENCE",
+        "reason": "SAFE_LIFECYCLE_METADATA_ONLY",
+        "changed_paths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-003.json"
+        ]
+      },
+      "observed_at": "2026-10-12T03:22:00.920Z",
+      "validation_commands": [
+        "node --test scripts/quality/repository-publication-gate.test.mjs",
+        "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+        "npm run docs:package:scope:check"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/quality/repository-publication-gate.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:package:scope:check",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "CI",
+          "target_type": "GITHUB_REPOSITORY",
+          "target_id": "vento-group-sas/vento-shell",
+          "owner": "OWN-SEG"
+        }
+      ],
+      "environment_results": [
+        {
+          "environment_role": "CI",
+          "target_type": "GITHUB_REPOSITORY",
+          "target_id": "vento-group-sas/vento-shell",
+          "owner": "OWN-SEG",
+          "status": "PASS",
+          "evidence": [
+            "GITHUB_ACTIONS_CI workflow=VENTO Required Gate run=https://github.com/vento-group-sas/vento-shell/actions/runs/38198406590 head=0b006d1fc244213518d3e032f436b142ec50a34b conclusion=success",
+            "GITHUB_ACTIONS_CI workflow=Validar plan canónico run=https://github.com/vento-group-sas/vento-shell/actions/runs/38198406508 head=0b006d1fc244213518d3e032f436b142ec50a34b conclusion=success"
+          ]
+        }
+      ],
+      "operational_evidence": [
+        "CANDIDATE_LIFECYCLE physical=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a lifecycle_head=0b006d1fc244213518d3e032f436b142ec50a34b decision=REUSE_PHYSICAL_EVIDENCE",
+        "LOCAL_VALIDATIONS candidate=9bc4a6ad3b7ac62a34264ec7c9b81096973d346a result=3/3_PASS",
+        "HOSTED_CI PR=1004 lifecycle_head=0b006d1fc244213518d3e032f436b142ec50a34b checks=2/2_PASS",
+        "PUBLICATION_CERTIFICATION=NOT_GRANTED; audit mode OBSERVE; ten repository publication decisions remain PENDING"
+      ],
+      "validation_engine_repair_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_REPAIR_RECEIPT_V1",
+        "reusePolicy": "EXACT_REPAIRED_REPOSITORY_STATE_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-020::GAP-PKG-003",
+        "candidateCommit": "9bc4a6ad3b7ac62a34264ec7c9b81096973d346a",
+        "inputRepositoryStateSha256": "df407c1e1a077b6cf59a5e0c77a8246bc76c0bff09e6913032c8633b86e5dc9d",
+        "outputRepositoryStateSha256": "df407c1e1a077b6cf59a5e0c77a8246bc76c0bff09e6913032c8633b86e5dc9d",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "repairExecuted": false,
+        "repairedPaths": [],
+        "repairedAt": "2026-10-12T02:53:59.635Z",
+        "receiptSha256": "9b98bd07af234a55f3d83dd18950b76454c845ab6c18ad7d1a975110cb4ca204"
+      },
+      "validation_engine_preverify_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_PREVERIFY_V1",
+        "reusePolicy": "EXACT_CANDIDATE_FINGERPRINT_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-020::GAP-PKG-003",
+        "candidateCommit": "9bc4a6ad3b7ac62a34264ec7c9b81096973d346a",
+        "lifecycleHeadCommit": "0b006d1fc244213518d3e032f436b142ec50a34b",
+        "repositoryStateSha256": "ff11fd007ace949427b54f4b7b68a2f39648be47ce30f708245ddcd1eed6fef2",
+        "validationCommandsSha256": "65dd27467d31628ed69793d1840711934575f1efce5b98a30d480b533d1af874",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "validatedAt": "2026-10-12T03:02:58.084Z",
+        "receiptSha256": "6fc11a7b24889ff9bc7a199999d26c5dfee947a563bd6ec25135a8e64932bf57"
+      },
+      "validation_engine_shadow_impact": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F4_SHADOW_IMPACT_SELECTION",
+        "selectorId": "IMPLEMENTATION_SHADOW_IMPACT_SELECTOR_V1",
+        "planSha256": "bf1f452bab4f02184d30bd28584fde7e0ffe1b14a98c44d6e154a150c5fd45d8",
+        "executionMode": "FULL_SUITE_SHADOW_ONLY",
+        "selectiveExecution": false,
+        "fullSuiteExecuted": true,
+        "validationGatesSkipped": 0,
+        "fullSuiteStatus": "PASS",
+        "fullCommandCount": 3,
+        "selectedCommandCount": 3,
+        "omittedCommandCount": 0,
+        "potentialReductionPercent": 0,
+        "observedFailureCount": 0,
+        "observedFalseNegativeCount": 0,
+        "observedFalseNegatives": [],
+        "eligibleForSelectiveExecution": false,
+        "observationSha256": "5e49a454f33e6d08ac36d2c312df69e9dfafea60d89e6e63c4b9dbfbf797c013"
+      },
+      "validation_engine_selective_validation": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F5_SAFE_SELECTIVE_VALIDATION",
+        "policyId": "PACKAGE_LOCAL_CLOSED_SCOPE_V1",
+        "candidateCommit": "9bc4a6ad3b7ac62a34264ec7c9b81096973d346a",
+        "planSha256": "bf1f452bab4f02184d30bd28584fde7e0ffe1b14a98c44d6e154a150c5fd45d8",
+        "decisionSha256": "986d701a2788dbc417456ce8e693009def32e5d73da8a87469c953c5315d8d72",
+        "changedPaths": [
+          ".github/workflows/vento-repository-publication.yml",
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-003.json",
+          "quality/repository-publication-policy.json",
+          "scripts/quality/repository-publication-gate.mjs",
+          "scripts/quality/repository-publication-gate.test.mjs"
+        ],
+        "validationCommands": [
+          "node --test scripts/quality/repository-publication-gate.test.mjs",
+          "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+          "npm run docs:package:scope:check"
+        ],
+        "executionMode": "FULL_FALLBACK",
+        "selectiveExecution": false,
+        "fullFallbackUsed": true,
+        "fullFallbackAvailable": true,
+        "validationGatesSkipped": 0,
+        "reason": "FULL_FALLBACK_NO_REDUCTION",
+        "packageId": null,
+        "candidateEligible": false,
+        "candidateReason": "NO_REDUCTION",
+        "potentialNotApplicableCommandCount": 0,
+        "certificationStatus": "PENDING_REAL_SHADOW_EVIDENCE",
+        "certificationSha256": "db1ece36b3c8e9510de2719259a504721621c1a0eacebe56ee3928cf74e9052a",
+        "certificationMinimumOmissionBearingSamples": 5,
+        "certificationMinimumDistinctPackages": 3,
+        "certificationObservedOmissionBearingSamples": 3,
+        "certificationObservedDistinctPackages": 3,
+        "certificationObservedFalseNegatives": 0,
+        "executedCommands": [
+          "node --test scripts/quality/repository-publication-gate.test.mjs",
+          "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+          "npm run docs:package:scope:check"
+        ],
+        "notApplicableCommands": [],
+        "results": [
+          {
+            "command": "node --test scripts/quality/repository-publication-gate.test.mjs",
+            "status": "PASS"
+          },
+          {
+            "command": "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
+            "status": "PASS"
+          },
+          {
+            "command": "npm run docs:package:scope:check",
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "recordSha256": "e8e99714c591b8b0e71c77b2b1b5fc836e6d84af4858db3e9be1609e180d4020"
+      }
+    }
+  ],
+  "target_environments": [
+    {
+      "environment_role": "CI",
+      "target_type": "GITHUB_REPOSITORY",
+      "target_id": "vento-group-sas/vento-shell",
+      "owner": "OWN-SEG"
+    }
+  ],
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-003 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO: el usuario aprueba el gate actual GAP-PKG-003 y su expediente consolidado en PR #991. La autorización física se registra por separado; esta aprobación no autoriza cambios remotos de GitHub, Supabase ni producción.",
+    "PHYSICAL_DISCOVERY COMPLETE searches=2 findings=4 unresolved=0",
+    "PHYSICAL_IDENTITY targets=4",
+    "IMPLEMENTATION_UNITS count=1",
+    "ENV_PROFILE ENV-DOC-CI"
+  ]
 }

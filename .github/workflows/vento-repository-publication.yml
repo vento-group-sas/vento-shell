@@ -1,0 +1,53 @@
+name: VENTO - Auditoria de publicacion de repositorios
+
+# Manually select OBSERVE for a redacted diagnostic or CERTIFY for a real gate.
+# A passing OBSERVE job never authorizes publication. The default GITHUB_TOKEN
+# may not access other repositories, especially private repositories.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Modo de auditoria; OBSERVE nunca certifica publicacion
+        required: true
+        default: OBSERVE
+        type: choice
+        options:
+          - OBSERVE
+          - CERTIFY
+
+permissions:
+  contents: read
+  security-events: read
+
+jobs:
+  repository-publication-gate:
+    name: TP-CONTROL-001 - GitHub publication readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Obtener fuente sin persistir credenciales
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js del repositorio
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Ejecutar regresiones deterministas
+        run: node --test scripts/quality/repository-publication-gate.test.mjs
+
+      - name: Observar los diez repositorios sin certificar publicacion
+        if: ${{ inputs.mode == 'OBSERVE' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROMPT_DISABLED: '1'
+        run: node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json
+
+      - name: Certificar publicacion solo con pruebas y decisiones vigentes
+        if: ${{ inputs.mode == 'CERTIFY' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROMPT_DISABLED: '1'
+        run: node scripts/quality/repository-publication-gate.mjs --check --policy quality/repository-publication-policy.json

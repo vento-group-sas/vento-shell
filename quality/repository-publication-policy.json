@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "policy_id": "VENTO-REPOSITORY-PUBLICATION-GATE-V1",
+  "package_id": "GAP-PKG-003",
+  "test_profile": "TP-CONTROL-001",
+  "source_package_gate": "docs/plan-canonico/modular/package-gate-instances/GAP-PKG-003.json",
+  "decision_owner": "OWN-SEG",
+  "deputy_owner": "OWN-GG",
+  "purpose": "Read-only publication readiness. No visibility, membership, ownership or credential mutations.",
+  "publication_scope": {
+    "repository_decisions": [
+      {
+        "repository": "vento-group-sas/vento-anima",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-numera",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "carlosibarraariza/vento-pass",
+        "observed_visibility": "private",
+        "proposed_visibility": "private",
+        "policy": "PRIVATE_WITH_ACCESS_REVIEW",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "carlosibarraariza/vento-talento",
+        "observed_visibility": "private",
+        "proposed_visibility": "private",
+        "policy": "PRIVATE_WITH_ACCESS_REVIEW",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "observed_visibility": "public",
+        "proposed_visibility": "public",
+        "policy": "PUBLIC_WITH_VERIFIED_PUBLICATION_CONTROLS",
+        "owner": "OWN-SEG",
+        "approval": "PENDING",
+        "approval_record": null,
+        "content_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "security_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "access_review": {
+          "status": "PENDING",
+          "reviewer": null,
+          "source_commit": null,
+          "reviewed_at": null,
+          "evidence_refs": []
+        },
+        "exceptions": []
+      }
+    ]
+  }
+}
