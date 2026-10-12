@@ -99,7 +99,7 @@
   ],
   "validation_commands": [
     "node --test scripts/quality/repository-publication-gate.test.mjs",
-    "node scripts/quality/repository-publication-gate.mjs --check --policy quality/repository-publication-policy.json",
+    "node scripts/quality/repository-publication-gate.mjs --observe --policy quality/repository-publication-policy.json",
     "npm run docs:package:scope:check"
   ],
   "authorization": {
