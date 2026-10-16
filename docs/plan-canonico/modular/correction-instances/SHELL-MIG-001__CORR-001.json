@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,34 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Solo se corrigen dos referencias nominales de continuidad de SHELL-UI-020; sin cambios de requisitos ni de pruebas TREQ.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-16T23:09:21.452Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "CONCILIEMOS LA DIFERENCIA, DEJEMOS LO QUE SEA DEFINITIVO: corregir solo dos referencias historicas de SHELL-UI-020 en SHELL-MIG-001 conforme a la instancia VERIFIED sin cambiar semantica.",
+    "source_contract_sha256": "f91f3aaf5eaed6caa1dcf961a70f428d8ecbe86cfac470dea9a732a020aa5c1d"
+  },
   "evidence": [],
   "opened_at": "2026-10-16T22:48:17.905Z"
 }

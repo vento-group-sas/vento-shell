@@ -12,17 +12,22 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `SHELL-MIG-001::CORR-001`
+### 1. Termina la corrección abierta — `SHELL-MIG-001::CORR-001`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** CONCILIEMOS LA DIFERENCIA, DEJEMOS LO QUE SEA DEFINITIVO: corregir solo dos referencias historicas de SHELL-UI-020 en SHELL-MIG-001 conforme a la instancia VERIFIED sin cambiar semantica.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `npm run docs:correction:check`
+  2. `npm run docs:plan:check`
+  3. `npm run docs:plan:test`
+  4. `npm run docs:treq:check`
+  5. `npm run docs:treq:test`
+  6. `git --no-pager diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id SHELL-MIG-001::CORR-001`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-004`
