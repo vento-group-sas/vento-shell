@@ -694,6 +694,7 @@ export function classifyInfraPath(filePath) {
     || normalized === 'docs/plan-canonico/modular/chatgpt-work-starter-template.txt'
     || normalized === 'docs/plan-canonico/modular/01_PROTOCOLO.md'
     || normalized === 'docs/plan-canonico/modular/package-gate-policy.json'
+    || normalized === 'docs/plan-canonico/modular/implementation-control.json'
     || normalized === 'docs/plan-canonico/modular/implementation-materialization-map.json'
     || isPlanDerivedProjection(normalized)
     || normalized.startsWith('scripts/docs/')

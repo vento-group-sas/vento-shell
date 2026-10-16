@@ -217,14 +217,14 @@ export function validateImplementationControl(control, workTopology) {
     for (const field of [
       'assistant_repository_writes',
       'assistant_git_operations',
-      'assistant_remote_mutations',
+      'assistant_validation_execution',
     ]) {
-      if (operatorPolicy[field] !== false) {
-        errors.push(`execution_operator_policy.${field} debe ser false.`);
+      if (typeof operatorPolicy[field] !== 'boolean') {
+        errors.push(`execution_operator_policy.${field} debe ser boolean.`);
       }
     }
-    if (typeof operatorPolicy.assistant_validation_execution !== 'boolean') {
-      errors.push('execution_operator_policy.assistant_validation_execution debe ser boolean.');
+    if (operatorPolicy.assistant_remote_mutations !== false) {
+      errors.push('execution_operator_policy.assistant_remote_mutations debe ser false.');
     }
     if (operatorPolicy.assistant_read_only_audit !== true) {
       errors.push('execution_operator_policy.assistant_read_only_audit debe ser true.');
@@ -814,11 +814,16 @@ export function renderCurrentWorkDirective(control) {
 
 - **Operador predeterminado:** USUARIO HUMANO
 - **Modo:** TRANSACCIÓN CONTINUA HASTA BLOQUEO REAL
-- **Escrituras del asistente:** PROHIBIDAS POR DEFECTO
+- **Escrituras locales del asistente:** ${control.executionOperatorPolicy.assistantRepositoryWrites
+  ? 'PERMITIDAS SOLO POR MCP CON INSTANCIA AUTORIZADA, ALCANCE Y CONFIRMACION LOCAL'
+  : 'PROHIBIDAS POR DEFECTO'}
 - **Ejecución de validaciones por el asistente:** ${control.executionOperatorPolicy.assistantValidationExecution
   ? 'PERMITIDA SOLO POR MCP, CON INSTANCIA APROBADA, VALIDATION_COMMANDS Y CONFIRMACION LOCAL'
   : 'PROHIBIDA POR DEFECTO'}
-- **Git, GitHub y mutaciones remotas del asistente:** PROHIBIDAS POR DEFECTO
+- **Git local del asistente:** ${control.executionOperatorPolicy.assistantGitOperations
+  ? 'PERMITIDO SOLO POR MCP CON SCOPE, HEAD VERIFICADO Y CONFIRMACION LOCAL'
+  : 'PROHIBIDO POR DEFECTO'}
+- **Push, PR, merge, despliegues y mutaciones remotas del asistente:** PROHIBIDAS
 - **Pausa:** solo cuando un comando fail-fast falla, existe una contradicción real o el siguiente paso requiere una decisión o permiso todavía desconocido
 - **Preflight PASS:** continúa localmente; no requiere volver al chat
 - **Batería final PASS:** continúa dentro de la misma transacción; si el contrato exige evidencia remota, completa commit/push de materialización y validación remota antes de VERIFIED

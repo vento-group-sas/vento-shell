@@ -233,19 +233,55 @@ test('la directiva conserva IMPLEMENTED hasta completar evidencia remota', () =>
   assert.match(source, /reconciliar el `main` más reciente/u);
 });
 
-test('rechaza habilitar escrituras automáticas del asistente por inferencia', () => {
+test('escritura y Git locales son booleanos gobernados; remoto sigue prohibido', () => {
+  const result = deriveImplementationControl({
+    control: {
+      ...baseControl,
+      execution_operator_policy: {
+        ...baseControl.execution_operator_policy,
+        assistant_repository_writes: true,
+        assistant_git_operations: true,
+        assistant_remote_mutations: false,
+      },
+      instances: [scope('AUTHORIZED')],
+    },
+    workTopology: topology(),
+  });
+  assert.equal(result.executionOperatorPolicy.assistantRepositoryWrites, true);
+  assert.equal(result.executionOperatorPolicy.assistantGitOperations, true);
+  assert.equal(result.executionOperatorPolicy.assistantRemoteMutations, false);
+  const source = renderCurrentWorkDirective(result);
+  assert.match(source, /PERMITIDAS SOLO POR MCP/u);
+  assert.match(source, /Git local del asistente/u);
+  assert.match(source, /mutaciones remotas del asistente/u);
+});
+
+test('escrituras y Git locales exigen booleanos verdaderos o falsos, nunca strings', () => {
+  for (const field of ['assistant_repository_writes', 'assistant_git_operations']) {
+    assert.throws(() => deriveImplementationControl({
+      control: {
+        ...baseControl,
+        execution_operator_policy: { ...baseControl.execution_operator_policy, [field]: "true" },
+      },
+      workTopology: topology(),
+    }), /debe ser boolean/u);
+  }
+});
+
+test('mutaciones remotas siguen fail-closed aun con escritura y Git local autorizados', () => {
   assert.throws(() => deriveImplementationControl({
     control: {
       ...baseControl,
       execution_operator_policy: {
         ...baseControl.execution_operator_policy,
         assistant_repository_writes: true,
+        assistant_git_operations: true,
+        assistant_remote_mutations: true,
       },
     },
     workTopology: topology(),
-  }), /assistant_repository_writes debe ser false/u);
+  }), /assistant_remote_mutations debe ser false/u);
 });
-
 test('habilita validaciones MCP gobernadas sin habilitar escrituras, Git ni remoto', () => {
   const result = deriveImplementationControl({
     control: {
