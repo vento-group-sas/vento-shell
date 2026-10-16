@@ -8,27 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar SHELL-MIG-001::CORR-001; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar MATURE_PACKAGE_GATE sobre GAP-PKG-004.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `SHELL-MIG-001::CORR-001`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** CONCILIEMOS LA DIFERENCIA, DEJEMOS LO QUE SEA DEFINITIVO: corregir solo dos referencias historicas de SHELL-UI-020 en SHELL-MIG-001 conforme a la instancia VERIFIED sin cambiar semantica.
-- **Edita solamente:**
-  - `MODIFY` `docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md`
-- **Valida, en este orden:**
-  1. `npm run docs:correction:check`
-  2. `npm run docs:plan:check`
-  3. `npm run docs:plan:test`
-  4. `npm run docs:treq:check`
-  5. `npm run docs:treq:test`
-  6. `git --no-pager diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id SHELL-MIG-001::CORR-001`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-004`
 
