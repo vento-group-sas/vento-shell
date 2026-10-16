@@ -8,30 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar AUTH-CAT-017::CORR-001; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar MATURE_PACKAGE_GATE sobre GAP-PKG-004.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `AUTH-CAT-017::CORR-001`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO: se autoriza AUTH-CAT-017::CORR-001 para corregir exclusivamente la contradiccion de cardinalidad historica 112 vs 140 en AUTH-CAT-017, AUTH-CAT-018 y AUTH-CAT-019 del archivo propietario; preservar el snapshot historico de 112, reconciliar las 29 incorporaciones y la retirada de nexo.inventory.remissions.dispatch sin reactivarla; respetar la version 1.0.0 congelada de AUTH-CAT-024 y el sucesor documental 1.1.0 de AUTH-CAT-025, sin alterar sus contratos; no crear permisos, metadata, grants, roles, TREQ, archivos 04A, migraciones, datasets, cambios de Supabase ni publicaciones fisicas; validar por el lifecycle gobernado antes de integrar.
-- **Edita solamente:**
-  - `MODIFY` `docs/plan-canonico/modular/bloques/C_CATALOGO/07_VERSIONADO_Y_CONSUMO.md`
-- **Valida, en este orden:**
-  1. `node scripts/docs/correction-control.mjs --check`
-  2. `npm run docs:plan:build`
-  3. `npm run docs:plan:check`
-  4. `npm run docs:plan:test`
-  5. `npm run docs:treq:check`
-  6. `npm run docs:treq:test`
-  7. `npm run docs:correction:test`
-  8. `npm run docs:eol:check`
-  9. `git --no-pager diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id AUTH-CAT-017::CORR-001`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-004`
 
