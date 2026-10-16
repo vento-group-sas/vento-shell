@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,139 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-10-16T22:48:17.905Z"
+  "zero_treq_reason": "Solo se corrigen dos referencias nominales de continuidad de SHELL-UI-020; sin cambios de requisitos ni de pruebas TREQ.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-16T23:09:21.452Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "CONCILIEMOS LA DIFERENCIA, DEJEMOS LO QUE SEA DEFINITIVO: corregir solo dos referencias historicas de SHELL-UI-020 en SHELL-MIG-001 conforme a la instancia VERIFIED sin cambiar semantica.",
+    "source_contract_sha256": "f91f3aaf5eaed6caa1dcf961a70f428d8ecbe86cfac470dea9a732a020aa5c1d"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-10-16T23:25:40.312Z",
+      "candidate_head_before": "905f463448fbff615fcd2ac4ec44e8940f2f94ae",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-10-16T23:25:55.353Z",
+      "execution_started_at": "2026-10-16T23:25:53.757Z",
+      "duration_ms": 1594,
+      "execution_candidate_head": "fb88eedb93796dc7227ba0b5c72475fa05496aed",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-16T23:33:00.787Z",
+      "candidate_head": "2c846c63d49e08e11acd2f39cc12606333d71778",
+      "commands": [
+        "npm run docs:correction:check",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "git --no-pager diff --check"
+      ],
+      "results": [
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 2589,
+          "started_at": "2026-10-16T23:26:32.577Z",
+          "completed_at": "2026-10-16T23:26:35.166Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "ecc73768d272ba55db52aafc77504a3e4c8f773a151e5ca194b31c5dfb8c62f8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 305777,
+          "started_at": "2026-10-16T23:26:35.167Z",
+          "completed_at": "2026-10-16T23:31:40.948Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "75f1056d743d885038da7e3f9b5efa69b99bd64db582405b2a0a944dd30c502d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 73201,
+          "started_at": "2026-10-16T23:31:40.951Z",
+          "completed_at": "2026-10-16T23:32:54.154Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "743fbe7aaa36919581eaf7ba5abf3584e1933d281aefa81cb2d776ac257c56e1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 5229,
+          "started_at": "2026-10-16T23:32:54.156Z",
+          "completed_at": "2026-10-16T23:32:59.385Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fae61db78684a0d99759837929da2020bc8f7bbb299cd4e402ae2c61330df253",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 1180,
+          "started_at": "2026-10-16T23:32:59.387Z",
+          "completed_at": "2026-10-16T23:33:00.617Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "cf2c60f89648a07abeb96d8c371f66cd828fa5d96c15fa966756ebecf3600d2d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git --no-pager diff --check",
+          "duration_ms": 166,
+          "started_at": "2026-10-16T23:33:00.618Z",
+          "completed_at": "2026-10-16T23:33:00.786Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-16T23:41:50.436Z",
+      "validated_candidate_head": "2c846c63d49e08e11acd2f39cc12606333d71778",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-10-16T22:48:17.905Z",
+  "implemented_at": "2026-10-16T23:26:07.820Z",
+  "verified_at": "2026-10-16T23:41:50.436Z"
 }
