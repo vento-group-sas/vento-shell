@@ -43,6 +43,15 @@
     "approval_statement": "CONCILIEMOS LA DIFERENCIA, DEJEMOS LO QUE SEA DEFINITIVO: corregir solo dos referencias historicas de SHELL-UI-020 en SHELL-MIG-001 conforme a la instancia VERIFIED sin cambiar semantica.",
     "source_contract_sha256": "f91f3aaf5eaed6caa1dcf961a70f428d8ecbe86cfac470dea9a732a020aa5c1d"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-10-16T23:25:40.312Z",
+      "candidate_head_before": "905f463448fbff615fcd2ac4ec44e8940f2f94ae",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-10-16T22:48:17.905Z"
 }
