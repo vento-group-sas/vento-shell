@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -60,5 +60,6 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "opened_at": "2026-10-16T22:48:17.905Z"
+  "opened_at": "2026-10-16T22:48:17.905Z",
+  "implemented_at": "2026-10-16T23:26:07.820Z"
 }
