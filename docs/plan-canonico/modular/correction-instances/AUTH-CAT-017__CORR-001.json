@@ -50,11 +50,18 @@
   "evidence": [
     {
       "type": "CORRECTION_QUALITY_REPAIR_V1",
-      "status": "STARTED",
+      "status": "PASS",
       "command": "npm run quality:repair",
       "started_at": "2026-10-16T05:00:51.810Z",
       "candidate_head_before": "0311fe502ee697bd59bddafcb524c3bd9fe73d5a",
-      "automatic_retry_forbidden": true
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-10-16T05:01:09.118Z",
+      "execution_started_at": "2026-10-16T05:01:07.592Z",
+      "duration_ms": 1525,
+      "execution_candidate_head": "6a0ca3b2bbcdc9e49e622c69e079e83771e7c00a",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
   "opened_at": "2026-10-16T04:16:54.105Z"
