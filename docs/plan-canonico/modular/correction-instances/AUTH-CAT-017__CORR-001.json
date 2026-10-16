@@ -47,6 +47,15 @@
     "approval_statement": "APROBADO: se autoriza AUTH-CAT-017::CORR-001 para corregir exclusivamente la contradiccion de cardinalidad historica 112 vs 140 en AUTH-CAT-017, AUTH-CAT-018 y AUTH-CAT-019 del archivo propietario; preservar el snapshot historico de 112, reconciliar las 29 incorporaciones y la retirada de nexo.inventory.remissions.dispatch sin reactivarla; respetar la version 1.0.0 congelada de AUTH-CAT-024 y el sucesor documental 1.1.0 de AUTH-CAT-025, sin alterar sus contratos; no crear permisos, metadata, grants, roles, TREQ, archivos 04A, migraciones, datasets, cambios de Supabase ni publicaciones fisicas; validar por el lifecycle gobernado antes de integrar.",
     "source_contract_sha256": "58be60bb0136404f103458cad015c407c3dace9656ac765b52bfaf2dd84dd045"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-10-16T05:00:51.810Z",
+      "candidate_head_before": "0311fe502ee697bd59bddafcb524c3bd9fe73d5a",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-10-16T04:16:54.105Z"
 }
