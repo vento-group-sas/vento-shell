@@ -12,11 +12,11 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Termina la corrección abierta — `SHELL-MIG-001::CORR-001`
+### 1. Valida y cierra la corrección implementada — `SHELL-MIG-001::CORR-001`
 
-- **Estado:** `IN_PROGRESS`
-- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
-- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Estado:** `IMPLEMENTED`
+- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
+- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
 - **Contrato autorizado:** CONCILIEMOS LA DIFERENCIA, DEJEMOS LO QUE SEA DEFINITIVO: corregir solo dos referencias historicas de SHELL-UI-020 en SHELL-MIG-001 conforme a la instancia VERIFIED sin cambiar semantica.
 - **Edita solamente:**
   - `MODIFY` `docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md`
