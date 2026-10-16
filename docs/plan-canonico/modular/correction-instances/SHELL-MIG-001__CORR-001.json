@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "correction_id": "SHELL-MIG-001::CORR-001",
+  "task_id": "SHELL-MIG-001",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "DOCUMENTARY_CONTRADICTION",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": false,
+  "blocked_targets": [],
+  "baseline": {
+    "main_commit": "5c56b21803321002755b4bc705f8c149bf9f8d5b",
+    "target_task_path": "docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md",
+    "target_task_sha256": "f91f3aaf5eaed6caa1dcf961a70f428d8ecbe86cfac470dea9a732a020aa5c1d",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-10-16T22:48:17.905Z"
+}
