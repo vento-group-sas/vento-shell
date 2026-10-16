@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "correction_id": "AUTH-CAT-017::CORR-001",
+  "task_id": "AUTH-CAT-017",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "DOCUMENTARY_CONTRADICTION",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": false,
+  "blocked_targets": [],
+  "baseline": {
+    "main_commit": "c3abb704ef4f5981911ba3bc75e438fa0c788879",
+    "target_task_path": "docs/plan-canonico/modular/bloques/C_CATALOGO/07_VERSIONADO_Y_CONSUMO.md",
+    "target_task_sha256": "58be60bb0136404f103458cad015c407c3dace9656ac765b52bfaf2dd84dd045",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "El registro inicial identifica una contradicción documental de cardinalidad sin crear ni modificar requisitos TREQ ni alterar el registro canónico 04A.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-10-16T04:16:54.105Z"
+}
