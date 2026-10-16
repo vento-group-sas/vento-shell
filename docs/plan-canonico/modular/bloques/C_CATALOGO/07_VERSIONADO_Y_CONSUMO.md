@@ -22,6 +22,28 @@ Esta sección reúne contenido canónico con una responsabilidad documental úni
 
 Esta tarea define la forma exacta que deberá tener el catálogo versionado en el repositorio `vento-shell`.
 
+#### Reconciliación documental aprobada — 2026-10-15
+
+El conjunto de **112 permisos** de AUTH-CAT-001..016 se conserva como **snapshot histórico aprobado**; no constituye la membresía vigente. La fuente física de identidad `SHELL-CON-003::GLOBAL` (`VERIFIED`) contiene **140 PermissionKey activas y únicas**, en `packages/contracts/authorization/catalog/versions/1.0.0/permissions.json`. La comparación clave a clave con la matriz original de AUTH-CAT-016 demuestra **112 históricas + 29 incorporadas − 1 retirada = 140 vigentes**.
+
+| Aplicación | Snapshot histórico | Incorporadas | Retiradas | Identidades vigentes |
+|---|---:|---:|---:|---:|
+| SHELL | 1 | 0 | 0 | 1 |
+| ANIMA | 10 | 0 | 0 | 10 |
+| AURA | 1 | 0 | 0 | 1 |
+| FOGO | 6 | 0 | 0 | 6 |
+| NEXO | 63 | 5 | 1 | 67 |
+| NUMERA | 6 | 0 | 0 | 6 |
+| ORIGO | 5 | 1 | 0 | 6 |
+| PASS | 1 | 0 | 0 | 1 |
+| PULSO | 2 | 9 | 0 | 11 |
+| VISO | 17 | 14 | 0 | 31 |
+| **Total** | **112** | **29** | **1** | **140** |
+
+La clave retirada es `nexo.inventory.remissions.dispatch` y no puede reactivarse ni convertirse en alias que conceda otras acciones. `nexo.inventory.remissions.accept_custody`, `nexo.inventory.remissions.start_transit` y `nexo.inventory.remissions.deliver` son permisos independientes. Las 29 incorporaciones se identifican inequívocamente mediante la diferencia entre las dos fuentes versionadas citadas; no se modifican aquí sus identidades.
+
+**Límite de aprobación y precedencia:** `SHELL-CON-003::GLOBAL` certificó solamente `permission_key`, `app_code` y `lifecycle_status`, **no** modalidades, alcances, contratos de recurso, metadatos completos ni grants. `AUTH-CAT-024` congeló documentalmente `vento.authorization@1.0.0` con 140 identidades activas; esta corrección no modifica en sitio el contenido semántico congelado. `AUTH-CAT-025` aprobó posteriormente el sucesor documental `vento.authorization@1.1.0` con los contratos completos de las 29 claves añadidas. Para la futura publicación física debe respetarse esa sucesión, comprobar propiedades, compatibilidades, aliases y hashes, y existir manifiesto `published` y `catalog/current.json`. La revisión 112 → 140 de los conteos prospectivos de AUTH-CAT-017..019 **no** publica ninguna versión ni habilita migraciones, grants, Supabase o despliegues.
+
 No realiza todavía:
 
 - creación de archivos en el repositorio;
@@ -37,7 +59,7 @@ La implementación posterior deberá respetar íntegramente este contrato.
 
 #### 2. Problema que se resuelve
 
-Las decisiones aprobadas en AUTH-CAT-001 a AUTH-CAT-016 ya definen, para los 112 permisos canónicos:
+Las decisiones aprobadas en AUTH-CAT-001 a AUTH-CAT-016 definen para el snapshot histórico de 112 permisos las propiedades siguientes. La membresía de identidad de 140 claves fue acreditada por SHELL-CON-003 y su ampliación de contratos completos quedó aprobada documentalmente en AUTH-CAT-025@1.1.0; ninguna de esas aprobaciones equivale a release física:
 
 - identidad técnica;
 - aplicación, módulo, recurso y acción;
@@ -132,8 +154,8 @@ La primera publicación técnica derivada de AUTH-CAT-001 a AUTH-CAT-016 tendrá
 | `catalog_version`         | `1.0.0`                                            |
 | `schema_version`          | `1.0.0`                                            |
 | `status`                  | `published` después de validación e implementación |
-| `source_range`            | `AUTH-CAT-001..AUTH-CAT-016`                       |
-| Permisos activos          | 112                                                |
+| `source_range`            | `AUTH-CAT-001..AUTH-CAT-024`                       |
+| Permisos activos          | 140                                                |
 | Aplicaciones              | 10                                                 |
 | Idioma humano principal   | `es-CO`                                            |
 | Formato técnico principal | JSON validado mediante JSON Schema                 |
@@ -278,8 +300,8 @@ Ejemplo conceptual:
   "published_at": "2026-07-18T00:00:00Z",
   "effective_at": "2026-07-18T00:00:00Z",
   "supersedes": null,
-  "source_tasks": ["AUTH-CAT-001", "AUTH-CAT-016"],
-  "permission_count": 112,
+  "source_tasks": ["AUTH-CAT-001", "AUTH-CAT-016", "AUTH-CAT-022", "AUTH-CAT-024"],
+  "permission_count": 140,
   "application_count": 10,
   "catalog_hash": "sha256:<HASH>",
   "compatibility": {
@@ -548,7 +570,7 @@ Reglas:
 
 Un permiso legacy:
 
-- no entra dentro de los 112 permisos canónicos;
+- no entra dentro de los 140 permisos canónicos activos;
 - no recibe contrato completo como si fuera una capacidad vigente;
 - no puede utilizarse para crear nuevas asignaciones;
 - no puede aparecer en editores normales de roles;
@@ -714,8 +736,8 @@ La versión `1.0.0` deberá superar como mínimo:
 
 ##### 23.1 Identidad y cobertura
 
-- exactamente 112 permisos activos;
-- exactamente 112 claves únicas;
+- exactamente 140 permisos activos;
+- exactamente 140 claves únicas;
 - exactamente 10 aplicaciones;
 - toda clave pertenece a una aplicación registrada;
 - toda clave cumple la convención aprobada;
@@ -1017,13 +1039,13 @@ Estos diagnósticos no reemplazan las razones de autorización del recurso; desc
 | ANIMA      |                         10 |
 | AURA       |                          1 |
 | FOGO       |                          6 |
-| NEXO       |                         63 |
+| NEXO       |                         67 |
 | NUMERA     |                          6 |
-| ORIGO      |                          5 |
+| ORIGO      |                          6 |
 | PASS       |                          1 |
-| PULSO      |                          2 |
-| VISO       |                         17 |
-| **Total**  |                    **112** |
+| PULSO      |                         11 |
+| VISO       |                         31 |
+| **Total**  |                    **140** |
 
 La publicación inicial también registrará por separado:
 
@@ -1045,7 +1067,7 @@ Los conteos legacy y técnicos deberán verificarse de nuevo contra la fuente vi
 - `schema_version` y `catalog_version` son conceptos separados.
 - Toda versión tiene manifiesto y checksums.
 - Toda versión tiene changelog.
-- Los 112 permisos activos están presentes exactamente una vez.
+- Los 140 permisos activos están presentes exactamente una vez.
 - Las diez aplicaciones están registradas exactamente una vez.
 - Todo permiso activo contiene todas las propiedades aprobadas.
 - Las propiedades derivadas se validan.
@@ -1079,7 +1101,7 @@ AUTH-CAT-017 podrá aprobarse cuando se acepte expresamente que:
 - la primera versión contractual será `1.0.0` cuando sea publicada;
 - `schema_version` y `catalog_version` se versionan por separado;
 - las versiones publicadas son inmutables;
-- los 112 permisos activos se serializan sin omisiones;
+- los 140 permisos activos se serializan sin omisiones;
 - las diez aplicaciones forman parte del manifiesto inicial;
 - aliases, legacy y retirados se almacenan por separado;
 - cada permiso conserva todas las propiedades aprobadas en AUTH-CAT-001 a AUTH-CAT-016;
@@ -1153,6 +1175,8 @@ No se avanza a AUTH-CAT-018 hasta recibir aprobación explícita.
 | Tarea posterior reservada | AUTH-CAT-019 — Evitar cadenas de permisos escritas manualmente |
 
 Esta tarea define el contrato que deberá utilizar `vento-shell` para generar y publicar tipos TypeScript a partir del catálogo canónico de autorización.
+
+**Reconciliación vinculante:** las 112 claves de AUTH-CAT-001..016 son el snapshot histórico. La membresía prospectiva publicada debe derivar exactamente 140 PermissionKey activas del catálogo interno de `SHELL-CON-003::GLOBAL`, sin rehabilitar `nexo.inventory.remissions.dispatch`. Los tipos internos existentes no son por sí mismos una publicación; las propiedades completas y su validez requieren certificación antes de exponer exports públicos.
 
 No realiza todavía:
 
@@ -1244,7 +1268,7 @@ Estos tipos cambian cuando cambia `schema_version`.
 Representan los valores concretos presentes en una versión contractual:
 
 - las diez aplicaciones publicadas;
-- las 112 claves canónicas activas;
+- las 140 claves canónicas activas;
 - aliases existentes;
 - identificadores de contratos;
 - tipos de recurso;
@@ -1446,7 +1470,7 @@ Para la versión inicial:
 
 ```text
 PermissionKey
-→ unión literal exacta de 112 claves canónicas activas
+→ unión literal exacta de 140 claves canónicas activas
 ```
 
 Queda prohibido definirlo como:
@@ -2278,8 +2302,8 @@ La conversión a `Date` pertenece a los consumidores y no modifica el valor cont
 
 La generación deberá verificar al menos:
 
-- 112 claves canónicas en `permissions.json`;
-- 112 miembros únicos en `PermissionKey`;
+- 140 claves canónicas en `permissions.json`;
+- 140 miembros únicos en `PermissionKey`;
 - diez aplicaciones en `applications.json`;
 - diez miembros únicos en `AppCode`;
 - todos los aliases en `PermissionAliasKey`;
@@ -2395,7 +2419,7 @@ Una versión `draft` o `candidate` podrá generar tipos temporales para validaci
 - la salida no es determinista;
 - los archivos generados tienen cambios no confirmados;
 - los archivos generados fueron modificados manualmente;
-- `PermissionKey` no coincide con las 112 claves activas;
+- `PermissionKey` no coincide con las 140 claves activas;
 - `AppCode` no coincide con las diez aplicaciones;
 - un alias aparece como permiso canónico;
 - un permiso retirado aparece como activo;
@@ -2800,7 +2824,7 @@ Estos temas corresponden a AUTH-CAT-019, BLOQUE D, BLOQUE E y las fases de imple
 - Cada versión publicada produce tipos inmutables propios.
 - `current` reexporta únicamente una versión publicada.
 - `PermissionKey` contiene solo permisos canónicos activos.
-- Las 112 claves aparecen exactamente una vez.
+- Las 140 claves aparecen exactamente una vez.
 - `AppCode` contiene exactamente las diez aplicaciones publicadas.
 - Alias, legacy y retirados son categorías incompatibles con `PermissionKey`.
 - No se acepta una clave solo porque cumple el patrón textual.
@@ -2830,7 +2854,7 @@ AUTH-CAT-018 podrá aprobarse cuando se acepte expresamente que:
 
 - los tipos se derivan del JSON Schema y del catálogo publicado;
 - no existirá una unión manual independiente de permisos;
-- `PermissionKey` contendrá exactamente las 112 claves activas de la versión inicial;
+- `PermissionKey` contendrá exactamente las 140 claves activas cuando la versión inicial sea publicada;
 - `AppCode` contendrá exactamente las diez aplicaciones;
 - alias, legacy y retirados tendrán tipos separados;
 - las modalidades se representarán mediante uniones discriminadas;
@@ -2956,7 +2980,7 @@ en `vento-shell`.
 
 #### 2. Problema que se resuelve
 
-Aunque el catálogo canónico ya define 112 permisos activos y AUTH-CAT-018
+Aunque el snapshot histórico define 112 permisos y el conjunto vigente tiene 140 identidades activas, AUTH-CAT-018
 establece tipos derivados, los consumidores todavía podrían escribir:
 
 ```text
@@ -3014,6 +3038,8 @@ VALIDACIÓN ESTÁTICA Y RUNTIME
 ```
 
 #### 4. Base normativa
+
+Esta propuesta conserva las decisiones históricas y aplica la reconciliación vinculante de AUTH-CAT-017: el snapshot de 112 claves se preserva como antecedente, mientras que los consumidores futuros deben utilizar el conjunto vigente de 140 identidades activas. Esta corrección no concede permisos ni publica contratos por sí misma.
 
 Esta propuesta conserva sin cambios:
 
