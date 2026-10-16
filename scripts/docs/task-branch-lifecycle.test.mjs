@@ -283,6 +283,8 @@ test('cambio transversal usa infra/<change-id> y bloquea archivos canonicos de t
 test('package-gate policy, protocol e instances son infraestructura transversal publicable', () => {
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/01_PROTOCOLO.md'), 'ALLOWED');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/package-gate-policy.json'), 'ALLOWED');
+  assert.equal(classifyInfraPath('docs/plan-canonico/modular/implementation-control.json'), 'ALLOWED');
+  assert.equal(classifyInfraPath('docs/plan-canonico/modular/package-execution-policy.json'), 'OTHER');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/implementation-materialization-map.json'), 'ALLOWED');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/package-gate-instances/GAP-PKG-061.json'), 'ALLOWED');
 });
