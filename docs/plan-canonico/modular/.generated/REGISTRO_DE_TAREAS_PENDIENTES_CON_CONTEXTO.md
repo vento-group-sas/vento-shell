@@ -12,11 +12,11 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Termina la corrección abierta — `AUTH-CAT-017::CORR-001`
+### 1. Valida y cierra la corrección implementada — `AUTH-CAT-017::CORR-001`
 
-- **Estado:** `IN_PROGRESS`
-- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
-- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Estado:** `IMPLEMENTED`
+- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
+- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
 - **Contrato autorizado:** APROBADO: se autoriza AUTH-CAT-017::CORR-001 para corregir exclusivamente la contradiccion de cardinalidad historica 112 vs 140 en AUTH-CAT-017, AUTH-CAT-018 y AUTH-CAT-019 del archivo propietario; preservar el snapshot historico de 112, reconciliar las 29 incorporaciones y la retirada de nexo.inventory.remissions.dispatch sin reactivarla; respetar la version 1.0.0 congelada de AUTH-CAT-024 y el sucesor documental 1.1.0 de AUTH-CAT-025, sin alterar sus contratos; no crear permisos, metadata, grants, roles, TREQ, archivos 04A, migraciones, datasets, cambios de Supabase ni publicaciones fisicas; validar por el lifecycle gobernado antes de integrar.
 - **Edita solamente:**
   - `MODIFY` `docs/plan-canonico/modular/bloques/C_CATALOGO/07_VERSIONADO_Y_CONSUMO.md`
