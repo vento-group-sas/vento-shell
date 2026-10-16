@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,176 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/C_CATALOGO/07_VERSIONADO_Y_CONSUMO.md",
+      "change": "MODIFY",
+      "scope": "Rectificacion de cardinalidad en AUTH-CAT-017..019, snapshot historico 112, 140 identidades vigentes verificadas, 29 altas/1 retirada; preservar frozen 1.0.0 y sucesor 1.1.0, sin cambios de autoridad fisica, permisos, TREQ o Supabase."
+    }
+  ],
+  "validation_commands": [
+    "node scripts/docs/correction-control.mjs --check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run docs:correction:test",
+    "npm run docs:eol:check",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "El registro inicial identifica una contradicción documental de cardinalidad sin crear ni modificar requisitos TREQ ni alterar el registro canónico 04A.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-10-16T04:16:54.105Z"
+  "zero_treq_reason": "Correccion documental de discrepancia de conteos aprobados 112/140 en AUTH-CAT-017..019, sin crear, modificar, retirar ni reclasificar requisitos del registro canonico 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-16T04:36:57.778Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: se autoriza AUTH-CAT-017::CORR-001 para corregir exclusivamente la contradiccion de cardinalidad historica 112 vs 140 en AUTH-CAT-017, AUTH-CAT-018 y AUTH-CAT-019 del archivo propietario; preservar el snapshot historico de 112, reconciliar las 29 incorporaciones y la retirada de nexo.inventory.remissions.dispatch sin reactivarla; respetar la version 1.0.0 congelada de AUTH-CAT-024 y el sucesor documental 1.1.0 de AUTH-CAT-025, sin alterar sus contratos; no crear permisos, metadata, grants, roles, TREQ, archivos 04A, migraciones, datasets, cambios de Supabase ni publicaciones fisicas; validar por el lifecycle gobernado antes de integrar.",
+    "source_contract_sha256": "58be60bb0136404f103458cad015c407c3dace9656ac765b52bfaf2dd84dd045"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-10-16T05:00:51.810Z",
+      "candidate_head_before": "0311fe502ee697bd59bddafcb524c3bd9fe73d5a",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-10-16T05:01:09.118Z",
+      "execution_started_at": "2026-10-16T05:01:07.592Z",
+      "duration_ms": 1525,
+      "execution_candidate_head": "6a0ca3b2bbcdc9e49e622c69e079e83771e7c00a",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-16T05:10:08.062Z",
+      "candidate_head": "10cba3c04a74df23f0316dd99efa0e0d776eca2b",
+      "commands": [
+        "node scripts/docs/correction-control.mjs --check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "npm run docs:correction:test",
+        "npm run docs:eol:check",
+        "git --no-pager diff --check"
+      ],
+      "results": [
+        {
+          "command": "node scripts/docs/correction-control.mjs --check",
+          "duration_ms": 2345,
+          "started_at": "2026-10-16T05:01:43.973Z",
+          "completed_at": "2026-10-16T05:01:46.319Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fef4177bb583bb7c988d32ae49767a2000d48be16c7f9190cfb07455c441673a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "duration_ms": 155162,
+          "started_at": "2026-10-16T05:01:46.321Z",
+          "completed_at": "2026-10-16T05:04:21.483Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0173a3464f4e0737582fad4a13c4cf05049b8024dac90e39d1f0bdd3ff45f795",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 259295,
+          "started_at": "2026-10-16T05:04:21.483Z",
+          "completed_at": "2026-10-16T05:08:40.779Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "52a2fca0b73fd06d12be016cf3a6ea0bf73f084566359a36e5f7df93cd114ed0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 50364,
+          "started_at": "2026-10-16T05:08:40.780Z",
+          "completed_at": "2026-10-16T05:09:31.145Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d5dfb91341ef1cee63af34e31b42799f9c677059cd60f71502918bc873f49f75",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 3971,
+          "started_at": "2026-10-16T05:09:31.146Z",
+          "completed_at": "2026-10-16T05:09:35.118Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fae61db78684a0d99759837929da2020bc8f7bbb299cd4e402ae2c61330df253",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 755,
+          "started_at": "2026-10-16T05:09:35.118Z",
+          "completed_at": "2026-10-16T05:09:35.875Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "ebfc5f87adc110a9fca285f0c9d479597da238caa47ec14becfc7ade17b7d486",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "duration_ms": 31182,
+          "started_at": "2026-10-16T05:09:35.875Z",
+          "completed_at": "2026-10-16T05:10:07.058Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b511dc76a8468a6f1f1092c30b4c19f3592733710cddc2c6e0b317f567f75f83",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:eol:check",
+          "duration_ms": 883,
+          "started_at": "2026-10-16T05:10:07.059Z",
+          "completed_at": "2026-10-16T05:10:07.943Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e4fd3ca9658517a3c6b1d5b85ac7914ddc814d60621bff99e8a42bd0585a4d1c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git --no-pager diff --check",
+          "duration_ms": 117,
+          "started_at": "2026-10-16T05:10:07.943Z",
+          "completed_at": "2026-10-16T05:10:08.061Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-10-16T05:16:52.929Z",
+      "validated_candidate_head": "10cba3c04a74df23f0316dd99efa0e0d776eca2b",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-10-16T04:16:54.105Z",
+  "implemented_at": "2026-10-16T05:01:21.469Z",
+  "verified_at": "2026-10-16T05:16:52.929Z"
 }
