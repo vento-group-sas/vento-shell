@@ -19,7 +19,7 @@ Esta sección organiza la adopción progresiva de contratos, componentes y paque
 ### ✅ SHELL-MIG-001 — Consolidar inventario ejecutable de consumidores
 
 **Estado:** APROBADA
-**Tarea anterior:** SHELL-UI-020 — Incorporar Skeleton, listas y paginación
+**Tarea anterior:** SHELL-UI-020 — Compartir patrón de traspaso entre aplicaciones
 **Tarea siguiente:** SHELL-MIG-002 — Definir lotes reversibles por repositorio
 **Tipo de tarea:** documental; consolidación ejecutable y trazable de consumidores web, extensiones, entrypoints, scripts y CI que deberán migrarse, conservarse o retirarse mediante paquetes de cambio reversibles, sin ejecutar migraciones físicas
 **Bloque:** H — Fundación compartida de VENTO-SHELL
@@ -541,7 +541,7 @@ Esta tarea no:
 #### 21. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
-`SHELL-UI-020 — Incorporar Skeleton, listas y paginación`
+`SHELL-UI-020 — Compartir patrón de traspaso entre aplicaciones`
 
 **TAREA ACTUAL APROBADA**
 `SHELL-MIG-001 — Consolidar inventario ejecutable de consumidores`
