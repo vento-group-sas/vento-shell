@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "AUTHORIZED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,38 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/C_CATALOGO/07_VERSIONADO_Y_CONSUMO.md",
+      "change": "MODIFY",
+      "scope": "Rectificacion de cardinalidad en AUTH-CAT-017..019, snapshot historico 112, 140 identidades vigentes verificadas, 29 altas/1 retirada; preservar frozen 1.0.0 y sucesor 1.1.0, sin cambios de autoridad fisica, permisos, TREQ o Supabase."
+    }
+  ],
+  "validation_commands": [
+    "node scripts/docs/correction-control.mjs --check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run docs:correction:test",
+    "npm run docs:eol:check",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "El registro inicial identifica una contradicción documental de cardinalidad sin crear ni modificar requisitos TREQ ni alterar el registro canónico 04A.",
-  "authorization": null,
+  "zero_treq_reason": "Correccion documental de discrepancia de conteos aprobados 112/140 en AUTH-CAT-017..019, sin crear, modificar, retirar ni reclasificar requisitos del registro canonico 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-10-16T04:36:57.778Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: se autoriza AUTH-CAT-017::CORR-001 para corregir exclusivamente la contradiccion de cardinalidad historica 112 vs 140 en AUTH-CAT-017, AUTH-CAT-018 y AUTH-CAT-019 del archivo propietario; preservar el snapshot historico de 112, reconciliar las 29 incorporaciones y la retirada de nexo.inventory.remissions.dispatch sin reactivarla; respetar la version 1.0.0 congelada de AUTH-CAT-024 y el sucesor documental 1.1.0 de AUTH-CAT-025, sin alterar sus contratos; no crear permisos, metadata, grants, roles, TREQ, archivos 04A, migraciones, datasets, cambios de Supabase ni publicaciones fisicas; validar por el lifecycle gobernado antes de integrar.",
+    "source_contract_sha256": "58be60bb0136404f103458cad015c407c3dace9656ac765b52bfaf2dd84dd045"
+  },
   "evidence": [],
   "opened_at": "2026-10-16T04:16:54.105Z"
 }
