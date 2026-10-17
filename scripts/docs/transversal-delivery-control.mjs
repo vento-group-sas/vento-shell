@@ -249,6 +249,37 @@ export function assessTransversalDelivery({ root = process.cwd(), policy = readT
   });
 }
 
+// Physical target checks are read-only and apply only to the local Shell repository.
+// Other repositories need independent checkout evidence before physical admission.
+function inspectPhysicalTargets(root, record) {
+  const blockers = [];
+  for (const target of record.physical_targets) {
+    if (target.repository !== 'vento-group-sas/vento-shell') {
+      blockers.push('EXTERNAL_REPOSITORY_REQUIRES_INDEPENDENT_CHECK:' + target.repository);
+      continue;
+    }
+    const targetPath = fileAt(root, target.path);
+    let entry = null;
+    try {
+      entry = fs.lstatSync(targetPath);
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    if (entry && (!entry.isFile() || entry.isSymbolicLink())) {
+      blockers.push('PHYSICAL_TARGET_NOT_A_REGULAR_FILE:' + target.path);
+      continue;
+    }
+    if (target.operation === 'CREATE' && entry) {
+      blockers.push('PHYSICAL_TARGET_CREATE_ALREADY_EXISTS:' + target.path);
+    } else if (target.operation === 'MODIFY' && !entry) {
+      blockers.push('PHYSICAL_TARGET_MODIFY_MISSING:' + target.path);
+    } else if (target.operation === 'DELETE') {
+      blockers.push('PHYSICAL_TARGET_DELETE_REQUIRES_SEPARATE_GATE:' + target.path);
+    }
+  }
+  return blockers;
+}
+
 // This inspection does not grant a physical instance or reserve any implementation locks.
 // A separate, reviewed authorization lifecycle must verify fresh external lock evidence.
 export function assessTransversalPreflight({
@@ -274,6 +305,7 @@ export function assessTransversalPreflight({
       || record.resource_conflict_evidence.some((entry) => !entry || entry.status !== 'NON_CONFLICTING')) {
       blockers.push('RESOURCE_CONFLICT_EVIDENCE_UNRESOLVED');
     }
+    blockers.push(...inspectPhysicalTargets(root, record));
   }
   return Object.freeze({
     package_name: packageName,

@@ -204,6 +204,38 @@ test('preflight blocks absent and incomplete dossiers without touching the packa
   assert.equal(fs.readFileSync(manifestPath, 'utf8'), before);
 });
 
+test('preflight checks real target existence, local ownership and rejects deletes without admission', (t) => {
+  const { root, policy: p } = fixture(t);
+  const record = draft();
+  record.target_repositories = ['vento-group-sas/vento-shell', 'vento-group-sas/vento-viso'];
+  record.physical_targets = [
+    {
+      repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/package.json',
+      operation: 'CREATE', symbol_or_surface: 'must not overwrite',
+    },
+    {
+      repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/src/does-not-exist.tsx',
+      operation: 'MODIFY', symbol_or_surface: 'must exist',
+    },
+    {
+      repository: 'vento-group-sas/vento-shell', path: 'packages/ui-web/README.md',
+      operation: 'DELETE', symbol_or_surface: 'requires separate gate',
+    },
+    {
+      repository: 'vento-group-sas/vento-viso', path: 'src/app/page.tsx',
+      operation: 'MODIFY', symbol_or_surface: 'requires separate checkout',
+    },
+  ];
+  file(root, deliveryRecordPath(p, '@vento/ui-web'), JSON.stringify(record));
+  const result = assessTransversalPreflight({ root, packageName: '@vento/ui-web' });
+  assert.equal(result.status, 'BLOCKED');
+  assert(result.blockers.includes('PHYSICAL_TARGET_CREATE_ALREADY_EXISTS:packages/ui-web/package.json'));
+  assert(result.blockers.includes('PHYSICAL_TARGET_MODIFY_MISSING:packages/ui-web/src/does-not-exist.tsx'));
+  assert(result.blockers.includes('PHYSICAL_TARGET_DELETE_REQUIRES_SEPARATE_GATE:packages/ui-web/README.md'));
+  assert(result.blockers.includes('EXTERNAL_REPOSITORY_REQUIRES_INDEPENDENT_CHECK:vento-group-sas/vento-viso'));
+  assert.equal(result.physical_authorized, false);
+});
+
 test('complete preflight is only READY_FOR_APPROVAL and never a physical authorization', (t) => {
   const { root, policy: p } = fixture(t);
   const record = draft();
