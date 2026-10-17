@@ -284,6 +284,7 @@ test('package-gate policy, protocol e instances son infraestructura transversal 
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/01_PROTOCOLO.md'), 'ALLOWED');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/package-gate-policy.json'), 'ALLOWED');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/implementation-control.json'), 'ALLOWED');
+  assert.equal(classifyInfraPath('docs/plan-canonico/modular/transversal-delivery-policy.json'), 'ALLOWED');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/package-execution-policy.json'), 'OTHER');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/implementation-materialization-map.json'), 'ALLOWED');
   assert.equal(classifyInfraPath('docs/plan-canonico/modular/package-gate-instances/GAP-PKG-061.json'), 'ALLOWED');

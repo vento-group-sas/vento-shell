@@ -42,6 +42,24 @@ test('clasifica fuentes canónicas y herramientas transversales por separado', (
   assert.equal(classifyCommitPath('docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md'), 'OPERATIONS_DOC');
 });
 
+test('la politica de entrega transversal es infraestructura, sin debilitar el rechazo de commits mixtos', () => {
+  assert.equal(classifyCommitPath('docs/plan-canonico/modular/transversal-delivery-policy.json'), 'TRANSVERSAL');
+  const result = analyzeCommitScope([
+    'docs/plan-canonico/modular/transversal-delivery-policy.json',
+    'package.json',
+    'scripts/docs/transversal-delivery-control.mjs',
+  ]);
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.scopes.CANONICAL_TASK, undefined);
+  const invalid = analyzeCommitScope([
+    'docs/plan-canonico/modular/transversal-delivery-policy.json',
+    'docs/plan-canonico/modular/bloques/H/tareas.md',
+  ]);
+  assert.deepEqual(invalid.errors, [
+    'el commit mezcla desarrollo de tarea canónica con infraestructura transversal.',
+  ]);
+});
+
 test('permite mapa de materializacion junto a tooling transversal', () => {
   const result = analyzeCommitScope([
     'docs/plan-canonico/modular/implementation-materialization-map.json',
