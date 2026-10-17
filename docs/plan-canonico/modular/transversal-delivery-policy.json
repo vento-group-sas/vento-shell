@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "policy_id": "TRANSVERSAL-DELIVERY-CONTROL-001",
+  "mode": "CANONICAL_TASK_COMPOSITION",
+  "execution_mode": "READ_ONLY_SCOPE_PREPARATION",
+  "automatic_authorization": false,
+  "assistant_remote_mutations": false,
+  "gap_package_selection": false,
+  "preserve_verified_instances": true,
+  "source_authority": "CANONICAL_TASK_OWNERS_AND_INSTANCE_LEDGERS",
+  "record_directory": "docs/plan-canonico/modular/transversal-delivery-instances",
+  "profiles": [
+    {
+      "package_name": "@vento/ui-web",
+      "package_manifest": "packages/ui-web/package.json",
+      "distribution_gate": "PHYSICAL_SCOPE_AND_HUMAN_APPROVAL_REQUIRED",
+      "source_groups": [
+        {
+          "prefix": "SHELL-PKG",
+          "from": 1,
+          "to": 8,
+          "owner_file": "docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/02_DISTRIBUCION_Y_PAQUETES_COMPARTIDOS.md",
+          "instance_requirement": "NONE"
+        },
+        {
+          "prefix": "SHELL-UI",
+          "from": 1,
+          "to": 20,
+          "owner_file": "docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_COMPONENTES_WEB_COMPARTIDOS.md",
+          "instance_requirement": "VERIFIED_GLOBAL"
+        },
+        {
+          "prefix": "SHELL-CI",
+          "from": 1,
+          "to": 6,
+          "owner_file": "docs/plan-canonico/modular/bloques/T_CALIDAD_Y_DESPLIEGUE/01_PAQUETES_RELEASES_Y_COMPATIBILIDAD.md",
+          "instance_requirement": "VERIFIED_GLOBAL"
+        },
+        {
+          "prefix": "SHELL-MIG",
+          "from": 1,
+          "to": 8,
+          "owner_file": "docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_01_MIGRACION_COORDINADA_DE_CONSUMIDORES_WEB.md",
+          "instance_requirement": "NONE"
+        }
+      ]
+    }
+  ]
+}
