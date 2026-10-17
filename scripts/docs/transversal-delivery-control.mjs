@@ -190,9 +190,14 @@ export function validateDraftDossier(record, { packageName, taskIds: expectedTas
   if (record.status === 'READY_FOR_APPROVAL') {
     if (record.physical_discovery.status !== 'COMPLETE'
       || record.physical_discovery.unresolved_findings.length !== 0
+      || record.physical_discovery.searches.length === 0
+      || record.physical_discovery.findings.length === 0
       || record.target_repositories.length === 0 || record.physical_targets.length === 0
       || record.validation_commands.length === 0 || record.resource_conflict_evidence.length === 0) {
       fail('READY_FOR_APPROVAL_WITH_INCOMPLETE_SCOPE');
+    }
+    if (record.resource_conflict_evidence.some((entry) => !entry || entry.status !== 'NON_CONFLICTING')) {
+      fail('READY_FOR_APPROVAL_WITH_UNRESOLVED_CONFLICTS');
     }
   }
   return true;
@@ -244,9 +249,44 @@ export function assessTransversalDelivery({ root = process.cwd(), policy = readT
   });
 }
 
+// This inspection does not grant a physical instance or reserve any implementation locks.
+// A separate, reviewed authorization lifecycle must verify fresh external lock evidence.
+export function assessTransversalPreflight({
+  root = process.cwd(),
+  policy = readTransversalPolicy(root),
+  packageName,
+} = {}) {
+  const report = assessTransversalDelivery({ root, policy, packageName });
+  const dossierPath = fileAt(root, report.dossier_path);
+  const blockers = [];
+  if (!fs.existsSync(dossierPath)) {
+    blockers.push('DOSSIER_MISSING');
+  } else {
+    const record = parseJsonAt(root, report.dossier_path);
+    if (record.status !== 'READY_FOR_APPROVAL') blockers.push('DOSSIER_NOT_READY_FOR_APPROVAL');
+    if (record.physical_discovery.status !== 'COMPLETE') blockers.push('PHYSICAL_DISCOVERY_INCOMPLETE');
+    if (record.physical_discovery.unresolved_findings.length !== 0) blockers.push('DISCOVERY_FINDINGS_UNRESOLVED');
+    if (record.target_repositories.length === 0 || record.physical_targets.length === 0) {
+      blockers.push('PHYSICAL_SCOPE_MISSING');
+    }
+    if (record.validation_commands.length === 0) blockers.push('VALIDATION_COMMANDS_MISSING');
+    if (record.resource_conflict_evidence.length === 0
+      || record.resource_conflict_evidence.some((entry) => !entry || entry.status !== 'NON_CONFLICTING')) {
+      blockers.push('RESOURCE_CONFLICT_EVIDENCE_UNRESOLVED');
+    }
+  }
+  return Object.freeze({
+    package_name: packageName,
+    status: blockers.length === 0 ? 'READY_FOR_APPROVAL' : 'BLOCKED',
+    blockers: Object.freeze(blockers),
+    physical_authorized: false,
+    remote_mutations_authorized: false,
+  });
+}
+
 function parseArgs(argv) {
   const [operation = 'status', ...rest] = argv;
-  if (!['status', 'check'].includes(operation)) fail(`UNSUPPORTED_OPERATION:${operation}`);
+  if (!['status', 'check', 'preflight'].includes(operation)) fail(`UNSUPPORTED_OPERATION:${operation}`);
   let packageName = null;
   for (let i = 0; i < rest.length; i += 1) {
     if (rest[i] !== '--package' || packageName || !rest[i + 1]) fail('INVALID_CLI_ARGUMENTS');
@@ -256,9 +296,22 @@ function parseArgs(argv) {
 }
 
 export function runTransversalControl({ root = process.cwd(), operation = 'status', packageName = null } = {}) {
+  if (!['status', 'check', 'preflight'].includes(operation)) fail(`UNSUPPORTED_OPERATION:${operation}`);
   const policy = readTransversalPolicy(root);
   const profiles = packageName ? [packageName] : policy.profiles.map((p) => p.package_name);
   const reports = profiles.map((value) => assessTransversalDelivery({ root, policy, packageName: value }));
+  if (operation === 'preflight') {
+    const readiness = profiles.map((value) => assessTransversalPreflight({ root, policy, packageName: value }));
+    for (const record of readiness) {
+      console.log(`TRANSVERSAL_PREFLIGHT_PACKAGE: ${record.package_name}`);
+      console.log(`TRANSVERSAL_PREFLIGHT_STATUS: ${record.status}`);
+      console.log(`TRANSVERSAL_PHYSICAL_AUTHORIZED: NO`);
+      for (const blocker of record.blockers) console.log(`TRANSVERSAL_PREFLIGHT_BLOCKER: ${blocker}`);
+    }
+    const blocked = readiness.filter((record) => record.blockers.length > 0);
+    if (blocked.length > 0) fail(`PREFLIGHT_BLOCKED:${blocked.map((r) => r.package_name).join(',')}`);
+    return readiness;
+  }
   if (operation === 'check') {
     console.log('TRANSVERSAL_DELIVERY_POLICY: PASS');
     console.log(`TRANSVERSAL_DELIVERY_SOURCES: ${reports.reduce((n, r) => n + r.canonical_sources, 0)}`);
