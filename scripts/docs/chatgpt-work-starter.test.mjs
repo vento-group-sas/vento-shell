@@ -40,11 +40,12 @@ test('iniciador fisico proyecta validaciones MCP gobernadas cuando la politica l
   assert.match(result.implementationSource, /confirmacion local/u);
 });
 
-test('iniciador fisico expone edicion MCP y Git local sin permitir remoto', () => {
+test('iniciador fisico permite PR gobernado sin push, merge ni despliegue', () => {
   const result = buildChatgptWorkStarter();
   assert.match(result.implementationSource, /ediciones locales MCP/u);
   assert.match(result.implementationSource, /Git local delegado/u);
-  assert.match(result.implementationSource, /nunca hace push, PR, merge/u);
+  assert.match(result.implementationSource, /crear PRs y editar titulo\/descripci/u);
+  assert.match(result.implementationSource, /nunca hace push, merge, auto-merge/u);
 });
 test('referencia adelantada respeta la ruta entre bloques, omite aprobadas y no modifica tareas', () => {
   const current = { id: 'NEXO-099', title: 'Actual', marker: '[ ]', block: 'actual', relativePath: 'nexo.md' };
