@@ -64,7 +64,10 @@ function governedImplementationProtocol(control) {
   if (operator?.assistantGitOperations === true) {
     result = result.replace(
       'Esa frase autoriza solamente el paso 3. No autoriza pasos anteriores, posteriores, comandos adicionales, Git, GitHub, despliegues ni cambios remotos no contenidos literalmente en ese paso.',
-      'Esa frase autoriza solamente el paso 3. El Git local delegado exige autorizacion y confirmacion CAS del MCP; el asistente nunca hace push, PR, merge, despliegues ni mutaciones remotas.',
+      operator?.assistantPullRequestOperations?.create === true
+        && operator?.assistantPullRequestOperations?.update_title_body === true
+        ? 'Esa frase autoriza solamente el paso 3. Git local delegado exige alcance y confirmacion CAS del MCP. Para tareas aprobadas y ramas publicadas, el asistente puede crear PRs y editar titulo/descripción; no hace push, merge ni despliegues sin aprobacion humana especifica por operacion y nunca activa auto-merge ni edita codigo remoto.'
+        : 'Esa frase autoriza solamente el paso 3. El Git local delegado exige autorizacion y confirmacion CAS del MCP; el asistente nunca hace push, PR, merge, despliegues ni mutaciones remotas.',
     );
   }
   return result;
@@ -468,9 +471,12 @@ function legacyActionResponseContract(control, sourceContractHash) {
       ? 'El asistente puede editar archivos LOCALES por MCP con permiso canonico, alcance exacto, revision y confirmacion visible en VS Code.'
       : 'El asistente no puede escribir archivos locales sin permiso canonico.',
     control.executionOperatorPolicy?.assistantGitOperations
-      ? 'El asistente puede realizar Git LOCAL por MCP con scope y confirmacion, pero nunca push, PR o merge.'
+      ? 'El asistente puede realizar Git LOCAL por MCP con scope y confirmacion; este permiso no autoriza push ni merge.'
       : 'El asistente no puede realizar Git local sin permiso canonico.',
-    'Push, PR, merge, despliegues y mutaciones remotas del asistente estan prohibidos.',
+    control.executionOperatorPolicy?.assistantPullRequestOperations?.create === true
+      && control.executionOperatorPolicy?.assistantPullRequestOperations?.update_title_body === true
+      ? 'Crear PRs y editar titulo/descripción se permite solo en tareas aprobadas y ramas publicadas. Push, merge y despliegues requieren aprobacion humana especifica por operacion; auto-merge y ediciones remotas de codigo siguen prohibidos.'
+      : 'Push, PR, merge, despliegues y mutaciones remotas del asistente estan prohibidos.',
     control.executionOperatorPolicy?.assistantValidationExecution
       ? 'Solo ejecuta validaciones MCP para instancia aprobada, comandos exactos de validation_commands y confirmacion local de VS Code; nunca uses terminal arbitraria.'
       : 'No ejecutes validaciones.',
