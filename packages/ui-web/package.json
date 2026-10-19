@@ -125,6 +125,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "validate": "node scripts/validate-distribution.mjs",
-    "test": "node --test scripts/validate-distribution.test.mjs"
+    "test": "node --test scripts/validate-distribution.test.mjs",
+    "test:next:qa": "node --test scripts/validate-next-app-router.test.mjs"
   }
 }

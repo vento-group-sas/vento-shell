@@ -67,14 +67,45 @@ export default function RootLayout({ children }) {
     React.createElement('body', null, children));
 }
 `, 'utf8');
+  fs.writeFileSync(path.join(temp, 'app', 'controls.js'), String.raw`
+'use client';
+import React from 'react';
+import { AreaSelector } from '@vento/ui-web/AreaSelector';
+import { SiteSelector } from '@vento/ui-web/SiteSelector';
+export default function ClientControls() {
+  const [areaId, setAreaId] = React.useState('area-a');
+  const [siteId, setSiteId] = React.useState('site-a');
+  return React.createElement('section', { id: 'controls' },
+    React.createElement(AreaSelector, {
+      label: 'QA_AREA_LABEL', confirmedAreaId: areaId,
+      options: [{ id: 'area-a', label: 'QA_AREA_INITIAL' },
+        { id: 'area-b', label: 'QA_AREA_ALTERNATE' }],
+      onRequestChange: setAreaId,
+    }),
+    React.createElement(SiteSelector, {
+      label: 'QA_SITE_LABEL', confirmedSiteId: siteId,
+      options: [{ id: 'site-a', label: 'QA_SITE_INITIAL' },
+        { id: 'site-b', label: 'QA_SITE_ALTERNATE' }],
+      onRequestChange: setSiteId,
+    }),
+    React.createElement('output', null, 'QA_SELECTION_' + areaId + '_' + siteId),
+  );
+}
+`, 'utf8');
   fs.writeFileSync(path.join(temp, 'app', 'page.js'), String.raw`
 import React from 'react';
+import ClientControls from './controls.js';
 import { AppShell } from '@vento/ui-web/AppShell';
 import { Alert } from '@vento/ui-web/Alert';
 export default function Page() {
   return React.createElement(AppShell, {
     brand: 'VENTO', skipToContentLabel: 'Skip to main content',
-  }, React.createElement(Alert, { variant: 'success' }, 'NEXT_APP_ROUTER_QA_OK'));
+    navigation: React.createElement('a', { href: '#controls' }, 'QA_NAVIGATION'),
+    navigationLabel: 'QA_NAVIGATION',
+  }, React.createElement(React.Fragment, null,
+    React.createElement(Alert, { variant: 'success' }, 'NEXT_APP_ROUTER_QA_OK'),
+    React.createElement(ClientControls),
+  ));
 }
 `, 'utf8');
 
@@ -102,7 +133,19 @@ export default function Page() {
   const emittedCss = walkFiles(path.join(temp, '.next', 'static'))
     .filter((name) => name.endsWith('.css'));
   assert.ok(emittedCss.length > 0, 'APP_ROUTER_CSS_NOT_EMITTED');
-  const cssText = emittedCss.map((name) => fs.readFileSync(name, 'utf8')).join('\n');
-  assert.ok(cssText.includes('ui-alert') && cssText.includes('ui-app-shell'),
-    'APP_ROUTER_COMPONENT_CSS_MISSING');
+  const html = prerender.map((name) => fs.readFileSync(name, 'utf8')).join('\n');
+  for (const marker of [
+    'QA_NAVIGATION', 'QA_AREA_INITIAL', 'QA_SITE_INITIAL',
+    'QA_SELECTION_area-a_site-a',
+  ]) {
+    assert.ok(html.includes(marker), 'APP_ROUTER_SSR_MARKER_MISSING:' + marker);
+  }
+  for (const selector of [
+    '.ui-alert', '.ui-app-shell', '.ui-area-selector', '.ui-site-selector',
+  ]) {
+    const matchingAssets = emittedCss.filter((name) =>
+      fs.readFileSync(name, 'utf8').includes(selector));
+    assert.equal(matchingAssets.length, 1,
+      'APP_ROUTER_CSS_MISSING_OR_DUPLICATED:' + selector);
+  }
 });
