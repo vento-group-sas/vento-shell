@@ -296,6 +296,7 @@ export function buildImplementationWorkPackage({
       assistant_validation_execution: operatorPolicy.assistantValidationExecution ?? false,
       assistant_git_operations: operatorPolicy.assistantGitOperations ?? false,
       assistant_remote_mutations: operatorPolicy.assistantRemoteMutations ?? false,
+      assistant_pull_request_operations: operatorPolicy.assistantPullRequestOperations ?? null,
       validation_gates_skipped: 0,
       fail_closed: validationPolicy.failClosed ?? true,
       full_fallback: validationPolicy.fullFallback ?? true,
