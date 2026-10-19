@@ -11,6 +11,18 @@
     "assistant_validation_execution": true,
     "assistant_git_operations": true,
     "assistant_remote_mutations": false,
+    "assistant_pull_request_operations": {
+      "create": true,
+      "update_title_body": true,
+      "read_checks": true,
+      "require_approved_scope": true,
+      "require_published_branch": true,
+      "push": false,
+      "merge": false,
+      "auto_merge": false,
+      "deploy": false,
+      "remote_code_edits": false
+    },
     "assistant_read_only_audit": true,
     "pause_only_when_next_step_depends_on_evidence": true,
     "evidence_reply_prefix": "RESULTADO DEL PASO ",
