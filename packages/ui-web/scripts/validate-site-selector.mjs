@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -110,9 +111,7 @@ function main() {
 
   assert(packageJson.name === '@vento/ui-web', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     "'use client';",
@@ -382,7 +381,7 @@ function main() {
   cover(32, () => excludesAll(source, ['simulationRole', 'roleOverride', 'isSimulated', 'startSimulation', 'stopSimulation'], 'simulation boundary'));
 
   cover(33, () => includesAll(readme, ['filtro administrativo', 'no cambia contexto operativo'], 'administrative filter separation'));
-  cover(34, () => includesAll(readme, ['SHELL-UI-008', 'AreaSelector', 'selector de area'], 'area selector separation'));
+  cover(34, () => includesAll(readme, ['SHELL-UI-008', 'AreaSelector', 'Los selectores de sede y area permanecen separados'], 'area selector separation'));
   cover(35, () => includesAll(readme, ['ContextIndicator', 'state="changing"'], 'ContextIndicator composition'));
   cover(36, () => includesAll(readme, ['revalida', 'servidor', 'confirmacion'], 'server-side revalidation boundary'));
   cover(37, () => includesAll(readme, ['invalidar', 'contexto anterior'], 'context invalidation boundary'));
@@ -429,28 +428,7 @@ function main() {
   cover(48, () => excludesAll(source, ['addEventListener(', 'removeEventListener(', 'document.', 'window.'], 'global listener boundary'));
 
   cover(49, () => {
-    assertGitUnchanged([
-      'src/components/ui',
-      'templates/app-shell-standard',
-      'packages/ui-web/src/Alert.tsx',
-      'packages/ui-web/src/alert.css',
-      'packages/ui-web/scripts/validate-alert.mjs',
-      'packages/ui-web/src/Button.tsx',
-      'packages/ui-web/src/button.css',
-      'packages/ui-web/scripts/validate-button.mjs',
-      'packages/ui-web/src/Card.tsx',
-      'packages/ui-web/src/card.css',
-      'packages/ui-web/scripts/validate-card.mjs',
-      'packages/ui-web/src/EmptyState.tsx',
-      'packages/ui-web/src/empty-state.css',
-      'packages/ui-web/scripts/validate-empty-state.mjs',
-      'packages/ui-web/src/ContextIndicator.tsx',
-      'packages/ui-web/src/context-indicator.css',
-      'packages/ui-web/scripts/validate-context-indicator.mjs',
-      'packages/contracts',
-      'packages/os-context',
-      'packages/supabase',
-    ]);
+    assertGitUnchanged(['src/components/ui', 'templates/app-shell-standard', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
     includesAll(readme, ['Consumidores migrados: 0'], 'consumer migration boundary');
   });
 
@@ -461,13 +439,9 @@ function main() {
     assert(covered.has(number), `future scenario not covered: ${number}`);
   }
 
-  assertGitUnchanged([
-    'package.json',
-    'package-lock.json',
-    'packages/ui-web/package.json',
-  ]);
+  assertGitUnchanged(['package.json', 'package-lock.json']);
 
-  console.log('PASS: SHELL-UI-007 SiteSelector validated; scenarios=50 native=select authority=request-only consumers=NOT_MIGRATED legacy=UNCHANGED exports=DEFERRED');
+  console.log('PASS: SHELL-UI-007 SiteSelector validated; scenarios=50 native=select authority=request-only consumers=NOT_MIGRATED legacy=UNCHANGED exports=PRIVATE_CANDIDATE');
 }
 
 try {

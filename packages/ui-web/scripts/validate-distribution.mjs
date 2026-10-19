@@ -1,0 +1,203 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+export const COMPONENTS = Object.freeze([
+  ['Alert', 'alert'], ['AppShell', 'app-shell'], ['AreaSelector', 'area-selector'],
+  ['Button', 'button'], ['Card', 'card'],
+  ['ContextDiagnostic', 'context-diagnostic'], ['ContextIndicator', 'context-indicator'],
+  ['CrossAppHandoff', 'cross-app-handoff'], ['EmptyState', 'empty-state'],
+  ['InterruptedProcessState', 'interrupted-process-state'],
+  ['KioskTaskSurface', 'kiosk-task-surface'],
+  ['PrimaryActionPanel', 'primary-action-panel'],
+  ['ProcessStatusLine', 'process-status-line'],
+  ['RecoverableErrorState', 'recoverable-error-state'],
+  ['SensitiveActionConfirmation', 'sensitive-action-confirmation'],
+  ['SimulatedRoleNotice', 'simulated-role-notice'],
+  ['SiteSelector', 'site-selector'], ['TabletTaskSurface', 'tablet-task-surface'],
+  ['TaskNavigation', 'task-navigation'],
+]);
+export const CLIENT_COMPONENTS = Object.freeze(['AppShell', 'AreaSelector', 'SiteSelector']);
+export const PACKAGE_ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
+export const REPOSITORY_ROOT = path.resolve(PACKAGE_ROOT, '../..');
+
+function assert(condition, message) {
+  if (!condition) throw new Error('UI_WEB_DISTRIBUTION:' + message);
+}
+
+function read(root, relative) {
+  const target = path.join(root, ...relative.split('/'));
+  const info = fs.lstatSync(target);
+  assert(info.isFile() && !info.isSymbolicLink(), 'NONREGULAR_ARTIFACT:' + relative);
+  return fs.readFileSync(target, 'utf8');
+}
+
+function publicEntry(name) {
+  const dir = './dist/' + name;
+  return { types: dir + '.d.ts', import: dir + '.js', default: dir + '.js' };
+}
+
+export function validateManifest(manifest) {
+  assert(manifest.name === '@vento/ui-web', 'PACKAGE_IDENTITY');
+  assert(manifest.type === 'module' && manifest.private === true, 'RELEASE_MUST_REMAIN_PRIVATE');
+  assert(manifest.version === '0.1.0-alpha.1', 'UNREVIEWED_PACKAGE_VERSION');
+  assert(manifest.main === './dist/index.js' && manifest.types === './dist/index.d.ts',
+    'ROOT_ENTRYPOINT_MISMATCH');
+  assert(Array.isArray(manifest.files) && manifest.files.length === 1
+    && manifest.files[0] === 'dist/', 'DISTRIBUTION_FILES_ALLOWLIST');
+  assert(Array.isArray(manifest.sideEffects) && manifest.sideEffects.length === 1
+    && manifest.sideEffects[0] === './dist/styles.css', 'CSS_TREE_SHAKE_POLICY');
+  assert(manifest.peerDependencies?.react === '>=19.2.3 <20'
+    && manifest.peerDependencies?.['react-dom'] === '>=19.2.3 <20', 'REACT_PEER_BAND');
+  assert(manifest.scripts?.build === 'node scripts/build.mjs'
+    && manifest.scripts?.validate === 'node scripts/validate-distribution.mjs'
+    && manifest.scripts?.test === 'node --test scripts/validate-distribution.test.mjs',
+  'PACKAGE_VALIDATION_SCRIPTS');
+  const keys = ['.', ...COMPONENTS.map(([name]) => './' + name), './styles.css'];
+  const received = Object.keys(manifest.exports ?? {});
+  assert(received.length === keys.length && received.every((key, i) => key === keys[i]),
+    'UNREVIEWED_PUBLIC_EXPORT');
+  for (const [name, entry] of [
+    ['index', manifest.exports['.']],
+    ...COMPONENTS.map(([component]) => [component, manifest.exports['./' + component]]),
+  ]) {
+    assert(JSON.stringify(entry) === JSON.stringify(publicEntry(name)),
+      'BAD_CONDITIONAL_EXPORT:' + name);
+  }
+  assert(manifest.exports['./styles.css'] === './dist/styles.css', 'CSS_EXPORT_MISSING');
+  assert(!('publishConfig' in manifest), 'REGISTRY_NOT_YET_CERTIFIED');
+  return keys.length;
+}
+
+export function validatePhysicalDist(root = PACKAGE_ROOT) {
+  const manifest = JSON.parse(read(root, 'package.json'));
+  const exportCount = validateManifest(manifest);
+  const names = [...COMPONENTS.map(([name]) => name), 'index'];
+  const expectedFiles = names.flatMap((name) => [name + '.js', name + '.d.ts']).concat('styles.css');
+  const actualFiles = fs.readdirSync(path.join(root, 'dist')).sort();
+  assert(actualFiles.length === 41
+    && expectedFiles.sort().every((file, i) => actualFiles[i] === file),
+  'UNEXPECTED_DIST_FILES');
+  const css = read(root, 'dist/styles.css');
+  const declarations = [];
+  for (const [name, stylesheet] of COMPONENTS) {
+    const output = read(root, 'dist/' + name + '.js');
+    const declaration = read(root, 'dist/' + name + '.d.ts');
+    assert(!/(?:^|\n)\s*import\s+['"][^'"]+\.css['"]/u.test(output),
+      'BUNDLED_CSS_DUPLICATION:' + name);
+    assert(!declaration.includes('.css'), 'CSS_DECLARATION_LEAK:' + name);
+    const hasDirective = /^['"]use client['"];?/u.test(output);
+    assert(hasDirective === CLIENT_COMPONENTS.includes(name), 'CLIENT_BOUNDARY:' + name);
+    const file = stylesheet + '.css';
+    const marker = '/* @vento/ui-web: ' + file + ' */';
+    assert(css.split(marker).length === 2, 'CSS_CARDINALITY:' + file);
+    const original = read(root, 'src/' + file).trim();
+    assert(css.includes(marker + '\n' + original + '\n'),
+      'CSS_BYTES_NOT_PRESERVED:' + file);
+    declarations.push(declaration);
+  }
+  const index = read(root, 'dist/index.js');
+  assert(!index.includes('use client') && !index.includes('.css'), 'INDEX_NOT_SERVER_SAFE');
+  for (const [name] of COMPONENTS) {
+    assert(index.includes('./' + name + '.js'), 'INDEX_EXPORT_MISSING:' + name);
+    assert(read(root, 'dist/index.d.ts').includes('./' + name + '.js'),
+      'TYPE_EXPORT_MISSING:' + name);
+  }
+  assert(declarations.length === 19 && exportCount === 21, 'COUNT_MISMATCH');
+  return { components: 19, clientBoundaries: CLIENT_COMPONENTS.length, cssSources: 19, outputs: 41, exports: exportCount };
+}
+
+export async function validateRuntime(root = PACKAGE_ROOT) {
+  const api = await import(pathToFileURL(path.join(root, 'dist/index.js')).href);
+  for (const [name] of COMPONENTS) {
+    assert(typeof api[name] === 'function', 'ESM_NAMED_EXPORT_MISSING:' + name);
+  }
+  const html = renderToStaticMarkup(React.createElement(api.Alert, {
+    variant: 'success',
+  }, 'VENTO_UI_WEB_SSR_SMOKE'));
+  assert(html.includes('VENTO_UI_WEB_SSR_SMOKE') && html.includes('ui-alert--success'),
+    'SERVER_SIDE_RENDER_SMOKE_FAILED');
+  const button = renderToStaticMarkup(React.createElement(api.Button, {
+    type: 'button',
+  }, 'Acción'));
+  assert(button.includes('Acción') && button.includes('button'), 'BUTTON_SSR_SMOKE_FAILED');
+  const appShell = renderToStaticMarkup(React.createElement(api.AppShell, {
+    brand: 'VENTO', skipToContentLabel: 'Saltar al contenido',
+  }, 'Inicio'));
+  assert(appShell.includes('VENTO') && appShell.includes('Inicio'), 'CLIENT_SSR_SMOKE_FAILED');
+  return { loadedModules: COMPONENTS.length, ssrSmokeCases: 3 };
+}
+
+export function validateNpmPack(root = PACKAGE_ROOT, repositoryRoot = REPOSITORY_ROOT) {
+  assert(root === PACKAGE_ROOT, 'PACK_PRODUCTION_ROOT_ONLY');
+  const npmCli = process.env.npm_execpath;
+  assert(npmCli && fs.existsSync(npmCli), 'NPM_CLI_FOR_PACK_NOT_AVAILABLE');
+  const result = spawnSync(process.execPath, [
+    npmCli, 'pack', '--workspace', '@vento/ui-web',
+    '--dry-run', '--json', '--ignore-scripts', '--offline',
+  ], {
+    cwd: repositoryRoot, encoding: 'utf8', windowsHide: true,
+    timeout: 120000, maxBuffer: 1024 * 1024 * 4,
+  });
+  assert(result.status === 0 && !result.error,
+    'NPM_PACK_DRY_RUN_FAILED:' + String(result.stderr ?? result.error?.message ?? ''));
+  let packed;
+  try {
+    packed = JSON.parse(result.stdout);
+  } catch {
+    throw new Error('UI_WEB_DISTRIBUTION:NPM_PACK_INVALID_JSON');
+  }
+  assert(Array.isArray(packed) && packed.length === 1, 'NPM_PACK_CARDINALITY');
+  const files = (packed[0].files ?? []).map((file) => file.path);
+  const required = ['package.json', ...[
+    ...COMPONENTS.map(([name]) => name), 'index',
+  ].flatMap((name) => ['dist/' + name + '.js', 'dist/' + name + '.d.ts']),
+  'dist/styles.css'];
+  assert(required.every((file) => files.includes(file)),
+    'NPM_PACK_MISSING_REQUIRED_DIST');
+  assert(files.every((file) => file === 'package.json' || file === 'README.md'
+    || file.startsWith('dist/')), 'NPM_PACK_LEAKS_PRIVATE_SOURCES');
+  return { packedFiles: files.length, dryRun: true, published: false };
+}
+
+export function validateLegacyValidators() {
+  const scripts = fs.readdirSync(path.join(PACKAGE_ROOT, 'scripts'))
+    .filter((name) => /^validate-(?!distribution)[a-z-]+\.mjs$/u.test(name))
+    .sort();
+  assert(scripts.length === 19, 'HISTORICAL_VALIDATOR_INVENTORY_CHANGED');
+  for (const script of scripts) {
+    const result = spawnSync(process.execPath, ['scripts/' + script], {
+      cwd: PACKAGE_ROOT,
+      encoding: 'utf8',
+      windowsHide: true,
+      timeout: 60000,
+      maxBuffer: 1024 * 1024,
+    });
+    assert(result.status === 0 && !result.error,
+      'HISTORICAL_VALIDATOR_FAILED:' + script + ':' +
+      String(result.stderr ?? '') + String(result.stdout ?? ''));
+  }
+  return { historicalValidators: scripts.length, historicalValidatorStatus: 'PASS' };
+}
+
+export async function validateDistribution() {
+  const physical = validatePhysicalDist();
+  const runtime = await validateRuntime();
+  const pack = validateNpmPack();
+  const historical = validateLegacyValidators();
+  console.log('UI_WEB_DISTRIBUTION:PASS');
+  console.log(JSON.stringify({ ...physical, ...runtime, ...pack, ...historical }));
+  return { ...physical, ...runtime, ...pack, ...historical };
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try {
+    await validateDistribution();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}

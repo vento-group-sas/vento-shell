@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -110,9 +111,7 @@ function main() {
 
   assert(packageJson.name === '@vento/ui-web', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     "'use client';",
@@ -425,31 +424,7 @@ function main() {
   cover(48, () => includesAll(readme, ['superficie de bloqueo', 'no puede reutilizar el selector como bypass'], 'blocking bypass boundary'));
 
   cover(49, () => {
-    assertGitUnchanged([
-      'src/components/ui',
-      'templates/app-shell-standard',
-      'packages/ui-web/src/Alert.tsx',
-      'packages/ui-web/src/alert.css',
-      'packages/ui-web/scripts/validate-alert.mjs',
-      'packages/ui-web/src/Button.tsx',
-      'packages/ui-web/src/button.css',
-      'packages/ui-web/scripts/validate-button.mjs',
-      'packages/ui-web/src/Card.tsx',
-      'packages/ui-web/src/card.css',
-      'packages/ui-web/scripts/validate-card.mjs',
-      'packages/ui-web/src/EmptyState.tsx',
-      'packages/ui-web/src/empty-state.css',
-      'packages/ui-web/scripts/validate-empty-state.mjs',
-      'packages/ui-web/src/ContextIndicator.tsx',
-      'packages/ui-web/src/context-indicator.css',
-      'packages/ui-web/scripts/validate-context-indicator.mjs',
-      'packages/ui-web/src/SiteSelector.tsx',
-      'packages/ui-web/src/site-selector.css',
-      'packages/ui-web/scripts/validate-site-selector.mjs',
-      'packages/contracts',
-      'packages/os-context',
-      'packages/supabase',
-    ]);
+    assertGitUnchanged(['src/components/ui', 'templates/app-shell-standard', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/ui-web/src/SiteSelector.tsx', 'packages/ui-web/src/site-selector.css', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
     includesAll(readme, ['paridad', 'Consumidores migrados: 0'], 'consumer migration boundary');
   });
 
@@ -460,13 +435,9 @@ function main() {
     assert(covered.has(number), `future scenario not covered: ${number}`);
   }
 
-  assertGitUnchanged([
-    'package.json',
-    'package-lock.json',
-    'packages/ui-web/package.json',
-  ]);
+  assertGitUnchanged(['package.json', 'package-lock.json']);
 
-  console.log('PASS: SHELL-UI-008 AreaSelector validated; scenarios=50 native=select authority=request-only options=EXTERNAL consumers=NOT_MIGRATED legacy=NOT_INFERRED exports=DEFERRED');
+  console.log('PASS: SHELL-UI-008 AreaSelector validated; scenarios=50 native=select authority=request-only options=EXTERNAL consumers=NOT_MIGRATED legacy=NOT_INFERRED exports=PRIVATE_CANDIDATE');
 }
 
 try {

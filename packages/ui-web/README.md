@@ -1,5 +1,21 @@
 # @vento/ui-web
 
+## Estado técnico actual — candidato privado de distribución
+
+**Versión candidata:** `0.1.0-alpha.1`. El paquete conserva `private: true`: no se ha publicado, no tiene un registro npm certificado ni acredita instalación en consumidores. El contenido de `PRE_E5_FOUNDATION` y las secciones `SHELL-UI-001..020` siguientes se preserva como **evidencia histórica del momento en que se aprobó cada componente**, no como descripción del manifiesto físico actual.
+
+El build materializa ESM y declaraciones TypeScript para 19 componentes con exports públicos explícitos (`@vento/ui-web` y 19 rutas `@vento/ui-web/<Componente>`), preservando los tipos públicos y los contratos de cada módulo. `AppShell`, `AreaSelector` y `SiteSelector` conservan la directiva `'use client'` en sus módulos JS individuales; las demás hojas son compatibles con renderizado de servidor según su API de presentación.
+
+**CSS:** importar `@vento/ui-web/styles.css` una sola vez desde el layout global de Next o la entrada equivalente del consumidor. El build consolida exactamente 19 estilos de componente, en orden determinista. Los archivos JS ESM y las declaraciones no importan CSS implícitamente; no combinar con imports privados `src/*.css`.
+
+**Validaciones locales de distribución:** `npm run build --workspace @vento/ui-web`, `npm run validate --workspace @vento/ui-web` y `node --test packages/ui-web/scripts/validate-distribution.test.mjs`. La verificación revisa 41 salidas, 21 entradas de exportación, 19 validadores históricos, tres hojas cliente, renderizado ESM/SSR de humo y 43 elementos del dry-run de npm pack. No demuestra todavía hidratación real en un consumidor Next independiente, ni instalación de tarball publicado, ni compatibilidad de los siete repositorios.
+
+**Dependencias candidatas:** React y React DOM `>=19.2.3 <20`; TypeScript `>=5 <6`; Next `>=16.1.1 <17` y Tailwind `>=4 <5` requieren certificación de consumidores, no se presumen compatibles solo por declararlas. Ninguna aplicación consumidora ha migrado a este candidato por este trabajo.
+
+**Pendiente de integración:** sincronizar `package-lock.json` del repositorio cuando se libere la exclusividad del recurso compartido con `GAP-PKG-004`, completar pruebas de hidratación/SSR con Next instalado desde tarball y resolver el proveedor y namespace de registry compatible con `@vento`. No se ejecutaron push, tags, publicación, despliegue ni migraciones de Supabase.
+
+---
+
 Raiz privada de autoria para la implementacion visual web compartida de Vento OS.
 
 ## Estado

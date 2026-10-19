@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -217,41 +218,10 @@ function main() {
   cover(64, () => {
     const manifest = JSON.parse(packageSource);
     assert(manifest.name === '@vento/ui-web' && manifest.private === true && manifest.type === 'module', 'ui-web package identity changed');
-    assert(!('exports' in manifest) && !('version' in manifest) && !('main' in manifest) && !('types' in manifest), 'public package surface must remain deferred');
-    assertGitUnchanged(['packages/ui-web/package.json', 'package.json', 'package-lock.json']);
+    validateManifest(manifest);
+    assertGitUnchanged(['package.json', 'package-lock.json']);
   });
-  cover(65, () => assertGitUnchanged([
-    'packages/ui-web/src/Alert.tsx',
-    'packages/ui-web/src/alert.css',
-    'packages/ui-web/scripts/validate-alert.mjs',
-    'packages/ui-web/src/Button.tsx',
-    'packages/ui-web/src/button.css',
-    'packages/ui-web/scripts/validate-button.mjs',
-    'packages/ui-web/src/Card.tsx',
-    'packages/ui-web/src/card.css',
-    'packages/ui-web/scripts/validate-card.mjs',
-    'packages/ui-web/src/EmptyState.tsx',
-    'packages/ui-web/src/empty-state.css',
-    'packages/ui-web/scripts/validate-empty-state.mjs',
-    'packages/ui-web/src/ContextIndicator.tsx',
-    'packages/ui-web/src/context-indicator.css',
-    'packages/ui-web/scripts/validate-context-indicator.mjs',
-    'packages/ui-web/src/SiteSelector.tsx',
-    'packages/ui-web/src/site-selector.css',
-    'packages/ui-web/scripts/validate-site-selector.mjs',
-    'packages/ui-web/src/AreaSelector.tsx',
-    'packages/ui-web/src/area-selector.css',
-    'packages/ui-web/scripts/validate-area-selector.mjs',
-    'packages/ui-web/src/SimulatedRoleNotice.tsx',
-    'packages/ui-web/src/simulated-role-notice.css',
-    'packages/ui-web/scripts/validate-simulated-role-notice.mjs',
-    'packages/ui-web/src/AppShell.tsx',
-    'packages/ui-web/src/app-shell.css',
-    'packages/ui-web/scripts/validate-app-shell.mjs',
-    'packages/ui-web/src/TaskNavigation.tsx',
-    'packages/ui-web/src/task-navigation.css',
-    'packages/ui-web/scripts/validate-task-navigation.mjs',
-  ]));
+  cover(65, () => assertGitUnchanged(['packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'packages/ui-web/src/ContextIndicator.tsx', 'packages/ui-web/src/context-indicator.css', 'packages/ui-web/src/SiteSelector.tsx', 'packages/ui-web/src/site-selector.css', 'packages/ui-web/src/AreaSelector.tsx', 'packages/ui-web/src/area-selector.css', 'packages/ui-web/src/SimulatedRoleNotice.tsx', 'packages/ui-web/src/simulated-role-notice.css', 'packages/ui-web/src/AppShell.tsx', 'packages/ui-web/src/app-shell.css', 'packages/ui-web/src/TaskNavigation.tsx', 'packages/ui-web/src/task-navigation.css']));
   cover(66, () => assertGitUnchanged([
     'docs/plan-canonico/modular/bloques/H_FUNDACION_COMPARTIDA/07_COMPONENTES_WEB_COMPARTIDOS.md',
     'docs/plan-canonico/modular/implementation-instances/SHELL-UI-011__GLOBAL.json',
@@ -264,15 +234,15 @@ function main() {
   cover(68, () => {
     assert(scenarios === 67, 'all prior scenarios must pass before completion');
     includesAll(readme, [
-      'ÚLTIMA TAREA APROBADA: `SHELL-UI-011`',
-      'TAREA ACTUAL APROBADA: `SHELL-UI-012`',
-      'SIGUIENTE TAREA RESERVADA: `SHELL-UI-013`',
+      'ÚLTIMA TAREA APROBADA: `SHELL-UI-019`',
+      'TAREA ACTUAL APROBADA: `SHELL-UI-020`',
+      'SIGUIENTE TAREA RESERVADA: `SHELL-MIG-001`',
     ], 'README continuity');
   });
 
   assert(scenarios === 68, `expected 68 scenarios, got ${scenarios}`);
   console.log(
-    'PASS: SHELL-UI-012 ProcessStatusLine validated; scenarios=68 server_safe=YES authority=NONE transitions=EXTERNAL consumers=0/7 exports=DEFERRED',
+    'PASS: SHELL-UI-012 ProcessStatusLine validated; scenarios=68 server_safe=YES authority=NONE transitions=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE',
   );
 }
 

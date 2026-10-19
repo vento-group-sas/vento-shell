@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -98,9 +99,7 @@ function main() {
 
   assert(packageJson.name === '@vento/ui-web', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
 
   includesAll(source, [
     'export function ContextIndicator',
@@ -354,28 +353,7 @@ function main() {
 
   cover(40, () => {
     includesAll(readme, ['paridad por consumidor', 'antes de retiro legacy', 'Consumidores migrados: 0'], 'consumer parity deferral');
-    assertGitUnchanged([
-      'package.json',
-      'package-lock.json',
-      'packages/ui-web/package.json',
-      'packages/ui-web/src/Alert.tsx',
-      'packages/ui-web/src/alert.css',
-      'packages/ui-web/scripts/validate-alert.mjs',
-      'packages/ui-web/src/Button.tsx',
-      'packages/ui-web/src/button.css',
-      'packages/ui-web/scripts/validate-button.mjs',
-      'packages/ui-web/src/Card.tsx',
-      'packages/ui-web/src/card.css',
-      'packages/ui-web/scripts/validate-card.mjs',
-      'packages/ui-web/src/EmptyState.tsx',
-      'packages/ui-web/src/empty-state.css',
-      'packages/ui-web/scripts/validate-empty-state.mjs',
-      'src/components/ui',
-      'templates/app-shell-standard',
-      'packages/contracts',
-      'packages/os-context',
-      'packages/supabase',
-    ]);
+    assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'packages/ui-web/src/Card.tsx', 'packages/ui-web/src/card.css', 'packages/ui-web/src/EmptyState.tsx', 'packages/ui-web/src/empty-state.css', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
   });
 
   includesAll(css, [
@@ -407,7 +385,7 @@ function main() {
     assert(covered.has(number), `scenario ${number} not covered`);
   }
 
-  console.log('PASS: SHELL-UI-006 ContextIndicator validated; scenarios=40 states=6 root=DIV list=DL order=PRESERVED ssr=SAFE consumers=NOT_MIGRATED legacy=UNCHANGED exports=DEFERRED');
+  console.log('PASS: SHELL-UI-006 ContextIndicator validated; scenarios=40 states=6 root=DIV list=DL order=PRESERVED ssr=SAFE consumers=NOT_MIGRATED legacy=UNCHANGED exports=PRIVATE_CANDIDATE');
 }
 
 try {

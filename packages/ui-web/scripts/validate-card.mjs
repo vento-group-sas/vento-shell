@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -97,9 +98,7 @@ function main() {
   ], 'physical topology reconciliation');
   assert(packageJson.name === '@vento/ui-web', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package identity mismatch');
-  for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-    assert(!(key in packageJson), `package public surface must remain deferred: ${key}`);
-  }
+  validateManifest(packageJson);
   includesAll(cardSource, [
     'export function Card',
     'export interface CardProps',
@@ -239,22 +238,7 @@ function main() {
   cover(49, () => includesAll(readme, ['componentes `*Card` de dominio', 'no se absorben'], 'domain Card boundary'));
   cover(50, () => {
     includesAll(readme, ['retiro legacy', 'evidencia de uso residual'], 'legacy retirement gate');
-    assertGitUnchanged([
-      'package.json',
-      'package-lock.json',
-      'packages/ui-web/package.json',
-      'packages/ui-web/src/Alert.tsx',
-      'packages/ui-web/src/alert.css',
-      'packages/ui-web/scripts/validate-alert.mjs',
-      'packages/ui-web/src/Button.tsx',
-      'packages/ui-web/src/button.css',
-      'packages/ui-web/scripts/validate-button.mjs',
-      'src/components/ui',
-      'templates/app-shell-standard',
-      'packages/contracts',
-      'packages/os-context',
-      'packages/supabase',
-    ]);
+    assertGitUnchanged(['package.json', 'package-lock.json', 'packages/ui-web/src/Alert.tsx', 'packages/ui-web/src/alert.css', 'packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css', 'src/components/ui', 'templates/app-shell-standard', 'packages/contracts', 'packages/os-context', 'packages/supabase']);
   });
 
   assert(cardSource.includes("variant = 'surface'"), 'surface default missing');
@@ -285,7 +269,7 @@ function main() {
     assert(covered.has(number), `scenario ${number} not covered`);
   }
 
-  console.log('PASS: SHELL-UI-004 Card validated; scenarios=50 variants=3 paddings=3 root=DIV ssr=SAFE consumers=NOT_MIGRATED legacy=UNCHANGED exports=DEFERRED');
+  console.log('PASS: SHELL-UI-004 Card validated; scenarios=50 variants=3 paddings=3 root=DIV ssr=SAFE consumers=NOT_MIGRATED legacy=UNCHANGED exports=PRIVATE_CANDIDATE');
 }
 
 try {

@@ -1,3 +1,4 @@
+import { validateManifest } from './validate-distribution.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createUiValidatorHarness } from './validator-harness.mjs';
@@ -157,17 +158,15 @@ function main() {
   cover(59, () => includesAll(readme, ['`actionId`', '`primaryControl`', '`secondaryControl`'], 'README API'));
   cover(60, () => includesAll(readme, ['`Button`', '`loading`', '`danger`'], 'README Button boundary'));
   cover(61, () => includesAll(readme, ['Consumidores migrados por UI013: 0/7.', 'SHELL', 'NEXO', 'FOGO', 'ORIGO', 'VISO', 'PULSO', 'NUMERA'], 'README consumer handoff'));
-  cover(62, () => includesAll(readme, ['LTIMA TAREA APROBADA: `SHELL-UI-012`', 'TAREA ACTUAL APROBADA: `SHELL-UI-013`', 'SIGUIENTE TAREA RESERVADA: `SHELL-UI-014`'], 'README continuity'));
+  cover(62, () => includesAll(readme, ['ÚLTIMA TAREA APROBADA: `SHELL-UI-019`', 'TAREA ACTUAL APROBADA: `SHELL-UI-020`', 'SIGUIENTE TAREA RESERVADA: `SHELL-MIG-001`'], 'README continuity'));
   cover(63, () => includesAll(readme, ['`PrimaryActionPanel` conserva region nombrada', 'no fuerza foco'], 'README accessibility'));
   cover(64, () => assert(!readme.includes('SIGUIENTE TAREA RESERVADA: `SHELL-UI-013`'), 'README must not retain UI013 as next reserved task'));
   cover(65, () => {
     const pkg = JSON.parse(packageSource);
     assert(pkg.name === '@vento/ui-web' && pkg.private === true && pkg.type === 'module', 'package identity changed');
-    for (const key of ['version', 'main', 'types', 'exports', 'dependencies', 'devDependencies', 'peerDependencies', 'scripts']) {
-      assert(!(key in pkg), `package manifest unexpectedly exposes ${key}`);
-    }
+    validateManifest(pkg);
   });
-  cover(66, () => assertGitUnchanged(['packages/ui-web/package.json']));
+  cover(66, () => validateManifest(JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'))));
   cover(67, () => assertGitUnchanged(['packages/ui-web/src/Button.tsx', 'packages/ui-web/src/button.css']));
   cover(68, () => assertGitUnchanged(['packages/ui-web/src/ProcessStatusLine.tsx', 'packages/ui-web/src/process-status-line.css']));
   cover(69, () => assertGitUnchanged(['packages/ui-web/src/TaskNavigation.tsx', 'packages/ui-web/src/task-navigation.css']));
@@ -177,7 +176,7 @@ function main() {
 
   assert(scenarios === 72, `expected 72 scenarios, got ${scenarios}`);
   console.log(
-    'PASS: SHELL-UI-013 PrimaryActionPanel validated; scenarios=72 server_safe=YES authority=NONE action_selection=EXTERNAL consumers=0/7 exports=DEFERRED',
+    'PASS: SHELL-UI-013 PrimaryActionPanel validated; scenarios=72 server_safe=YES authority=NONE action_selection=EXTERNAL consumers=0/7 exports=PRIVATE_CANDIDATE',
   );
 }
 

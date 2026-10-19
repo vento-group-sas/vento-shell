@@ -1,6 +1,130 @@
 {
   "name": "@vento/ui-web",
+  "version": "0.1.0-alpha.1",
   "private": true,
   "type": "module",
-  "description": "Raiz privada de autoria para la implementacion visual web compartida de Vento OS."
+  "description": "Componentes web compartidos de VENTO OS. Candidato ESM con API tipada; no publicado.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./Alert": {
+      "types": "./dist/Alert.d.ts",
+      "import": "./dist/Alert.js",
+      "default": "./dist/Alert.js"
+    },
+    "./AppShell": {
+      "types": "./dist/AppShell.d.ts",
+      "import": "./dist/AppShell.js",
+      "default": "./dist/AppShell.js"
+    },
+    "./AreaSelector": {
+      "types": "./dist/AreaSelector.d.ts",
+      "import": "./dist/AreaSelector.js",
+      "default": "./dist/AreaSelector.js"
+    },
+    "./Button": {
+      "types": "./dist/Button.d.ts",
+      "import": "./dist/Button.js",
+      "default": "./dist/Button.js"
+    },
+    "./Card": {
+      "types": "./dist/Card.d.ts",
+      "import": "./dist/Card.js",
+      "default": "./dist/Card.js"
+    },
+    "./ContextDiagnostic": {
+      "types": "./dist/ContextDiagnostic.d.ts",
+      "import": "./dist/ContextDiagnostic.js",
+      "default": "./dist/ContextDiagnostic.js"
+    },
+    "./ContextIndicator": {
+      "types": "./dist/ContextIndicator.d.ts",
+      "import": "./dist/ContextIndicator.js",
+      "default": "./dist/ContextIndicator.js"
+    },
+    "./CrossAppHandoff": {
+      "types": "./dist/CrossAppHandoff.d.ts",
+      "import": "./dist/CrossAppHandoff.js",
+      "default": "./dist/CrossAppHandoff.js"
+    },
+    "./EmptyState": {
+      "types": "./dist/EmptyState.d.ts",
+      "import": "./dist/EmptyState.js",
+      "default": "./dist/EmptyState.js"
+    },
+    "./InterruptedProcessState": {
+      "types": "./dist/InterruptedProcessState.d.ts",
+      "import": "./dist/InterruptedProcessState.js",
+      "default": "./dist/InterruptedProcessState.js"
+    },
+    "./KioskTaskSurface": {
+      "types": "./dist/KioskTaskSurface.d.ts",
+      "import": "./dist/KioskTaskSurface.js",
+      "default": "./dist/KioskTaskSurface.js"
+    },
+    "./PrimaryActionPanel": {
+      "types": "./dist/PrimaryActionPanel.d.ts",
+      "import": "./dist/PrimaryActionPanel.js",
+      "default": "./dist/PrimaryActionPanel.js"
+    },
+    "./ProcessStatusLine": {
+      "types": "./dist/ProcessStatusLine.d.ts",
+      "import": "./dist/ProcessStatusLine.js",
+      "default": "./dist/ProcessStatusLine.js"
+    },
+    "./RecoverableErrorState": {
+      "types": "./dist/RecoverableErrorState.d.ts",
+      "import": "./dist/RecoverableErrorState.js",
+      "default": "./dist/RecoverableErrorState.js"
+    },
+    "./SensitiveActionConfirmation": {
+      "types": "./dist/SensitiveActionConfirmation.d.ts",
+      "import": "./dist/SensitiveActionConfirmation.js",
+      "default": "./dist/SensitiveActionConfirmation.js"
+    },
+    "./SimulatedRoleNotice": {
+      "types": "./dist/SimulatedRoleNotice.d.ts",
+      "import": "./dist/SimulatedRoleNotice.js",
+      "default": "./dist/SimulatedRoleNotice.js"
+    },
+    "./SiteSelector": {
+      "types": "./dist/SiteSelector.d.ts",
+      "import": "./dist/SiteSelector.js",
+      "default": "./dist/SiteSelector.js"
+    },
+    "./TabletTaskSurface": {
+      "types": "./dist/TabletTaskSurface.d.ts",
+      "import": "./dist/TabletTaskSurface.js",
+      "default": "./dist/TabletTaskSurface.js"
+    },
+    "./TaskNavigation": {
+      "types": "./dist/TaskNavigation.d.ts",
+      "import": "./dist/TaskNavigation.js",
+      "default": "./dist/TaskNavigation.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist/"
+  ],
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "peerDependencies": {
+    "react": ">=19.2.3 <20",
+    "react-dom": ">=19.2.3 <20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "validate": "node scripts/validate-distribution.mjs",
+    "test": "node --test scripts/validate-distribution.test.mjs"
+  }
 }
