@@ -1,5 +1,8 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import React from 'react';
@@ -163,6 +166,104 @@ export function validateNpmPack(root = PACKAGE_ROOT, repositoryRoot = REPOSITORY
   return { packedFiles: files.length, dryRun: true, published: false };
 }
 
+function parseTarEntries(bytes) {
+  const raw = zlib.gunzipSync(bytes);
+  const entries = [];
+  let offset = 0;
+  const textField = (chunk, start, end) =>
+    chunk.subarray(start, end).toString('utf8').split('\0', 1)[0];
+  while (offset + 512 <= raw.length) {
+    const header = raw.subarray(offset, offset + 512);
+    if (header.every((value) => value === 0)) break;
+    const file = textField(header, 0, 100);
+    const prefix = textField(header, 345, 500);
+    const name = prefix ? prefix + '/' + file : file;
+    const octal = textField(header, 124, 136).trim();
+    const flag = String.fromCharCode(header[156]);
+    assert(/^[0-7]+$/u.test(octal) && (flag === '\0' || flag === '0'),
+      'UNSAFE_TARBALL_ENTRY:' + name);
+    const size = Number.parseInt(octal, 8);
+    const relative = name.startsWith('package/') ? name.slice(8) : '';
+    assert(relative && !relative.includes('..') && !relative.includes('\\')
+      && !relative.startsWith('/') && !relative.includes('//'), 'TAR_PATH_ESCAPE:' + name);
+    const begin = offset + 512;
+    assert(Number.isSafeInteger(size) && begin + size <= raw.length, 'TAR_SIZE_INVALID:' + name);
+    entries.push({ relative, content: raw.subarray(begin, begin + size) });
+    offset = begin + Math.ceil(size / 512) * 512;
+  }
+  assert(offset + 512 <= raw.length, 'TAR_TERMINATOR_MISSING');
+  return entries;
+}
+
+export function verifyPackedTarball(bytes, listedFiles, root = PACKAGE_ROOT) {
+  assert(Buffer.isBuffer(bytes) && bytes.length > 0, 'EMPTY_PACKED_BYTES');
+  assert(Array.isArray(listedFiles) && listedFiles.length === 43,
+    'PACKED_FILE_CARDINALITY');
+  const expected = [...listedFiles].sort();
+  const entries = parseTarEntries(bytes);
+  const actual = entries.map((item) => item.relative).sort();
+  assert(actual.length === expected.length && actual.every((name, index) =>
+    name === expected[index]), 'TARBALL_INVENTORY_MISMATCH');
+  assert(new Set(actual).size === actual.length, 'DUPLICATE_TARBALL_ENTRY');
+  assert(actual.every((name) => name === 'package.json' || name === 'README.md'
+    || /^dist\/[A-Za-z][A-Za-z0-9_-]*\.(?:js|d\.ts)$/u.test(name)
+    || name === 'dist/styles.css'), 'UNEXPECTED_TARBALL_ENTRY');
+  for (const entry of entries) {
+    const original = fs.readFileSync(path.join(root, ...entry.relative.split('/')));
+    assert(original.equals(entry.content), 'PACKED_BYTES_DIVERGE:' + entry.relative);
+  }
+  return { packedArchiveFiles: entries.length };
+}
+
+export function validateRealNpmPack(root = PACKAGE_ROOT, repositoryRoot = REPOSITORY_ROOT) {
+  assert(root === PACKAGE_ROOT, 'PACK_PRODUCTION_ROOT_ONLY');
+  const cli = process.env.npm_execpath;
+  assert(cli && fs.existsSync(cli), 'NPM_CLI_FOR_PACK_NOT_AVAILABLE');
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-ui-web-pack-'));
+  try {
+    const result = spawnSync(process.execPath, [
+      cli, 'pack', '--workspace', '@vento/ui-web', '--pack-destination', temp,
+      '--json', '--ignore-scripts', '--offline',
+    ], {
+      cwd: repositoryRoot,
+      encoding: 'utf8',
+      windowsHide: true,
+      timeout: 120000,
+      maxBuffer: 4 * 1024 * 1024,
+    });
+    assert(result.status === 0 && !result.error,
+      'NPM_REAL_PACK_FAILED:' + String(result.stderr ?? result.error?.message ?? ''));
+    let output;
+    try {
+      output = JSON.parse(result.stdout);
+    } catch {
+      throw new Error('UI_WEB_DISTRIBUTION:NPM_REAL_PACK_INVALID_JSON');
+    }
+    assert(Array.isArray(output) && output.length === 1,
+      'NPM_REAL_PACK_CARDINALITY');
+    const metadata = output[0];
+    assert(metadata.name === '@vento/ui-web' && metadata.version === '0.1.0-alpha.1',
+      'NPM_REAL_PACK_IDENTITY');
+    assert(typeof metadata.filename === 'string' &&
+      metadata.filename === path.basename(metadata.filename) &&
+      /^vento-ui-web-0\.1\.0-alpha\.1\.tgz$/u.test(metadata.filename),
+    'NPM_REAL_PACK_FILENAME');
+    const archive = fs.readFileSync(path.join(temp, metadata.filename));
+    const calculatedIntegrity = 'sha512-' +
+      crypto.createHash('sha512').update(archive).digest('base64');
+    const sha1 = crypto.createHash('sha1').update(archive).digest('hex');
+    const sha256 = crypto.createHash('sha256').update(archive).digest('hex');
+    assert(metadata.integrity === calculatedIntegrity && metadata.shasum === sha1,
+      'NPM_PACK_INTEGRITY_MISMATCH');
+    const packed = verifyPackedTarball(archive,
+      (metadata.files ?? []).map((entry) => entry.path), root);
+    return { ...packed, tarballSha256: sha256, tarballIntegrity: calculatedIntegrity,
+      tarballBytes: archive.length, tarballCreatedLocally: true, published: false };
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true });
+  }
+}
+
 export function validateLegacyValidators() {
   const scripts = fs.readdirSync(path.join(PACKAGE_ROOT, 'scripts'))
     .filter((name) => /^validate-(?!distribution)[a-z-]+\.mjs$/u.test(name))
@@ -187,10 +288,11 @@ export async function validateDistribution() {
   const physical = validatePhysicalDist();
   const runtime = await validateRuntime();
   const pack = validateNpmPack();
+  const tarball = validateRealNpmPack();
   const historical = validateLegacyValidators();
   console.log('UI_WEB_DISTRIBUTION:PASS');
-  console.log(JSON.stringify({ ...physical, ...runtime, ...pack, ...historical }));
-  return { ...physical, ...runtime, ...pack, ...historical };
+  console.log(JSON.stringify({ ...physical, ...runtime, ...pack, ...tarball, ...historical }));
+  return { ...physical, ...runtime, ...pack, ...tarball, ...historical };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

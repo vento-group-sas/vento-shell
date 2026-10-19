@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import zlib from 'node:zlib';
 import {
   PACKAGE_ROOT,
   COMPONENTS,
@@ -11,6 +12,7 @@ import {
   validateManifest,
   validatePhysicalDist,
   validateRuntime,
+  verifyPackedTarball,
 } from './validate-distribution.mjs';
 
 function fixture(t) {
@@ -126,3 +128,45 @@ test('build deterministically reproduces the same 41 output files', () => {
   assert.equal(build.status, 0, String(build.stderr ?? build.stdout));
   assert.deepEqual(identity(), before);
 });
+
+function syntheticTarball({ tamperPath = null, traversalPath = null, symlinkPath = null } = {}) {
+  const files = ['package.json', 'README.md', ...COMPONENTS.flatMap(([name]) => [
+    'dist/' + name + '.js', 'dist/' + name + '.d.ts',
+  ]), 'dist/index.js', 'dist/index.d.ts', 'dist/styles.css'];
+  const chunks = [];
+  for (const relative of files) {
+    const original = fs.readFileSync(path.join(PACKAGE_ROOT, ...relative.split('/')));
+    const content = Buffer.from(original);
+    if (relative === tamperPath) content[0] = content[0] ^ 1;
+    const filename = relative === traversalPath ? '../escape.js' : relative;
+    const header = Buffer.alloc(512);
+    header.write('package/' + filename, 0, 'utf8');
+    header.write(content.length.toString(8).padStart(11, '0') + '\0', 124, 'ascii');
+    header[156] = relative === symlinkPath ? 0x32 : 0x30;
+    const data = Buffer.alloc(Math.ceil(content.length / 512) * 512);
+    content.copy(data);
+    chunks.push(header, data);
+  }
+  chunks.push(Buffer.alloc(1024));
+  return { archive: zlib.gzipSync(Buffer.concat(chunks)), files };
+}
+
+test('tarball byte verification accepts exactly 43 matching package entries', () => {
+  const { archive, files } = syntheticTarball();
+  assert.deepEqual(verifyPackedTarball(archive, files), { packedArchiveFiles: 43 });
+});
+
+test('tarball byte verification catches corruption even when file names agree', () => {
+  const { archive, files } = syntheticTarball({ tamperPath: 'dist/Alert.js' });
+  assert.throws(() => verifyPackedTarball(archive, files), /PACKED_BYTES_DIVERGE:dist\/Alert\.js/u);
+});
+
+test('tarball rejects traversal and symlink entries even in an otherwise complete archive', () => {
+  const unsafePath = syntheticTarball({ traversalPath: 'dist/Alert.js' });
+  assert.throws(() => verifyPackedTarball(unsafePath.archive, unsafePath.files),
+    /TAR_PATH_ESCAPE/u);
+  const link = syntheticTarball({ symlinkPath: 'dist/Alert.js' });
+  assert.throws(() => verifyPackedTarball(link.archive, link.files),
+    /UNSAFE_TARBALL_ENTRY/u);
+});
+
