@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 
 // COMP-PKG-004 / SHELL-CI-005: read-only discovery, not a compatibility release certificate.
@@ -264,18 +265,18 @@ function createConsumerFixture(t, repository, discovered) {
     "import { AreaSelector } from '@vento/ui-web/AreaSelector';",
     "import { SiteSelector } from '@vento/ui-web/SiteSelector';",
     'export default function Controls() {',
-    "  const [area, setArea] = React.useState('a');",
-    "  const [site, setSite] = React.useState('s');",
-    "  return React.createElement('section', null,",
+    "  const [area, setArea] = React.useState('area-a');",
+    "  const [site, setSite] = React.useState('site-a');",
+    "  return React.createElement('section', { id: 'controls' },",
     "    React.createElement(AreaSelector, { label: 'QA_AREA',",
     '      confirmedAreaId: area, onRequestChange: setArea,',
-    "      options: [{ id: 'a', label: 'Area A' }, { id: 'b', label: 'Area B' }],",
+    "      options: [{ id: 'area-a', label: 'Area A' }, { id: 'area-b', label: 'Area B' }],",
     '    }),',
     "    React.createElement(SiteSelector, { label: 'QA_SITE',",
     '      confirmedSiteId: site, onRequestChange: setSite,',
-    "      options: [{ id: 's', label: 'Site S' }, { id: 't', label: 'Site T' }],",
+    "      options: [{ id: 'site-a', label: 'Site S' }, { id: 'site-b', label: 'Site T' }],",
     '    }),',
-    "    React.createElement('output', null, area + '-' + site),",
+    "    React.createElement('output', null, 'QA_SELECTION_' + area + '_' + site),",
     '  );',
     '}',
   ]);
@@ -298,7 +299,7 @@ function createConsumerFixture(t, repository, discovered) {
   return temp;
 }
 
-function buildWithConsumerToolchain(t, repository, discovered) {
+async function buildWithConsumerToolchain(t, repository, discovered) {
   const temp = createConsumerFixture(t, repository, discovered);
   const cli = path.join(temp, 'node_modules', 'next', 'dist', 'bin', 'next');
   assert.ok(fs.existsSync(cli), 'CONSUMER_NEXT_CLI_MISSING:' + repository);
@@ -332,9 +333,25 @@ function buildWithConsumerToolchain(t, repository, discovered) {
     next: discovered.installed_versions.next,
     react: discovered.installed_versions.react,
     build: 'PASS', static_ssr_css: 'PASS',
-    browser_hydration: 'NOT_RUN_FOR_THIS_CONSUMER',
+    browser_hydration: 'CHECKED_SEPARATELY_AFTER_BUILD',
     consumer_mutations: 0, evidence_scope: 'PILOT_NOT_RELEASE_CERTIFIED',
   }));
+  const chromiumExecutable = findChromiumExecutable();
+  assert.ok(chromiumExecutable, 'CHROMIUM_REQUIRED_FOR_REAL_CONSUMER_HYDRATION_QA');
+  await t.test('real Chromium hydration and interactions: ' + repository,
+    async (browserTest) => {
+      await runBrowserHydrationQa(browserTest, temp, cli, chromiumExecutable);
+      browserTest.diagnostic('CONSUMER_BROWSER_HYDRATION_PASS:' + JSON.stringify({
+        repository, commit: discovered.commit,
+        lockfile_sha256: discovered.lockfile_sha256,
+        next: discovered.locked_versions.next,
+        react: discovered.locked_versions.react,
+        navigation_toggle: 'PASS', escape: 'PASS',
+        area_selector: 'PASS', site_selector: 'PASS',
+        consumer_repository_mutations: 0,
+        scope: 'SYNTHETIC_FIXTURE_NOT_CONSUMER_APPLICATION',
+      }));
+    });
 }
 
 test('isolated Next builds with exact lock-matched consumer toolchains, without consumer writes', async (t) => {
@@ -344,11 +361,229 @@ test('isolated Next builds with exact lock-matched consumer toolchains, without 
     await t.test('locked Next build: ' + entry.repository, {
       skip: entry.runtime_toolchain_status !== 'PRESENT_MATCHES_LOCK'
         ? entry.runtime_blockers.join(',') : false,
-    }, (subtest) => {
-      buildWithConsumerToolchain(subtest, entry.repository, entry);
+    }, async (subtest) => {
+      await buildWithConsumerToolchain(subtest, entry.repository, entry);
       executed += 1;
     });
   }
   t.diagnostic('ISOLATED_CANDIDATE_BUILDS_EXECUTED:' + executed + '/7');
-  t.diagnostic('COMPATIBILITY_CERTIFICATION:NOT_CERTIFIED; ONLY_SYNTHETIC_FIXTURES_BUILT');
+  t.diagnostic('COMPATIBILITY_CERTIFICATION:NOT_CERTIFIED; SYNTHETIC_FIXTURE_BUILD_AND_REAL_CHROMIUM_HYDRATION_ONLY');
 });
+
+// Browser CDP fixture logic mirrors the already verified standalone Next 16 QA.
+function findChromiumExecutable() {
+  const paths = [process.env.CHROME_PATH, process.env.EDGE_PATH];
+  if (process.platform === 'win32') {
+    const bases = [
+      process.env.PROGRAMFILES,
+      process.env['PROGRAMFILES(X86)'],
+      process.env.LOCALAPPDATA,
+    ].filter(Boolean);
+    for (const base of bases) {
+      paths.push(path.join(base, 'Google', 'Chrome', 'Application', 'chrome.exe'));
+      paths.push(path.join(base, 'Microsoft', 'Edge', 'Application', 'msedge.exe'));
+    }
+  } else if (process.platform === 'darwin') {
+    paths.push('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome');
+    paths.push('/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge');
+  } else {
+    paths.push('/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser');
+    paths.push('/opt/google/chrome/chrome', '/usr/bin/microsoft-edge');
+  }
+  return paths.find((candidate) => candidate && fs.existsSync(candidate)) ?? null;
+}
+
+async function waitFor(predicate, timeoutMs, errorCode) {
+  const deadline = Date.now() + timeoutMs;
+  let lastError = null;
+  while (Date.now() < deadline) {
+    try {
+      const value = await predicate();
+      if (value) return value;
+    } catch (error) {
+      lastError = error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 150));
+  }
+  throw new Error(errorCode + (lastError ? ': ' + lastError.message : ''));
+}
+
+async function getFreeLocalPort() {
+  const server = net.createServer();
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const port = server.address().port;
+  await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  return port;
+}
+
+async function openCdp(webSocketUrl) {
+  const socket = new WebSocket(webSocketUrl);
+  await new Promise((resolve, reject) => {
+    socket.addEventListener('open', resolve, { once: true });
+    socket.addEventListener('error', reject, { once: true });
+  });
+  let nextId = 0;
+  async function send(method, params = {}) {
+    const id = ++nextId;
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        socket.removeEventListener('message', onMessage);
+        reject(new Error('CDP_RESPONSE_TIMEOUT:' + method));
+      }, 10000);
+      function onMessage(event) {
+        const message = JSON.parse(String(event.data));
+        if (message.id !== id) return;
+        clearTimeout(timeout);
+        socket.removeEventListener('message', onMessage);
+        if (message.error) reject(new Error('CDP_' + method + ':' + message.error.message));
+        else resolve(message.result);
+      }
+      socket.addEventListener('message', onMessage);
+      socket.send(JSON.stringify({ id, method, params }));
+    });
+  }
+  async function evaluate(expression) {
+    const response = await send('Runtime.evaluate', {
+      expression, returnByValue: true, awaitPromise: true,
+    });
+    if (response.exceptionDetails) throw new Error('BROWSER_JS_EXCEPTION:' + expression);
+    return response.result?.value;
+  }
+  return { socket, send, evaluate };
+}
+
+async function runBrowserHydrationQa(t, temp, nextCli, chromiumExecutable) {
+  const browserProfile = fs.mkdtempSync(path.join(temp, 'chrome-profile-'));
+  const port = await getFreeLocalPort();
+  const baseUrl = 'http://127.0.0.1:' + port;
+  const nextServer = spawn(process.execPath, [
+    nextCli, 'start', '-p', String(port), '-H', '127.0.0.1',
+  ], {
+    cwd: temp,
+    windowsHide: true,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, NEXT_TELEMETRY_DISABLED: '1' },
+  });
+  let serverOutput = '';
+  for (const output of [nextServer.stdout, nextServer.stderr]) {
+    output.on('data', (chunk) => {
+      serverOutput = (serverOutput + String(chunk)).slice(-1800);
+    });
+  }
+  let browser = null;
+  let client = null;
+  try {
+    await waitFor(async () => {
+      if (nextServer.exitCode !== null) throw new Error('NEXT_SERVER_EXITED:' + nextServer.exitCode);
+      const response = await fetch(baseUrl, {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(3000),
+      });
+      assert.equal(response.status, 200,
+        'ISOLATED_FIXTURE_HTTP_STATUS:' + response.status
+        + ':REDIRECT:' + (response.headers.get('location') ?? 'none'));
+      return true;
+    }, 25000, 'NEXT_SERVER_NOT_READY');
+
+    browser = spawn(chromiumExecutable, [
+      '--headless=new',
+      '--no-first-run',
+      '--no-default-browser-check',
+      '--disable-extensions',
+      '--disable-background-networking',
+      '--disable-gpu',
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+      '--remote-debugging-address=127.0.0.1',
+      '--remote-debugging-port=0',
+      '--remote-allow-origins=*',
+      '--user-data-dir=' + browserProfile,
+      'about:blank',
+    ], { windowsHide: true, stdio: 'ignore' });
+
+    const debugInfo = await waitFor(() => {
+      if (browser.exitCode !== null) throw new Error('CHROMIUM_EXITED:' + browser.exitCode);
+      const file = path.join(browserProfile, 'DevToolsActivePort');
+      return fs.existsSync(file) ? fs.readFileSync(file, 'utf8').trim() : null;
+    }, 15000, 'CHROMIUM_DEVTOOLS_NOT_READY');
+    const debuggerPort = Number(debugInfo.split(/\r?\n/u)[0]);
+    assert.ok(Number.isInteger(debuggerPort) && debuggerPort > 0,
+      'CHROMIUM_DEBUGGER_PORT_INVALID');
+
+    const target = await waitFor(async () => {
+      const response = await fetch('http://127.0.0.1:' + debuggerPort + '/json/list');
+      if (!response.ok) return null;
+      const tabs = await response.json();
+      return tabs.find((tab) => tab.type === 'page' && tab.webSocketDebuggerUrl);
+    }, 10000, 'CHROMIUM_PAGE_TARGET_MISSING');
+
+    client = await openCdp(target.webSocketDebuggerUrl);
+    await client.send('Page.enable');
+    await client.send('Runtime.enable');
+    await client.send('Page.navigate', { url: baseUrl });
+
+    try {
+      await waitFor(async () => client.evaluate(
+        "document.readyState === 'complete' && !!document.querySelector('.ui-area-selector__control')"
+        + " && !!document.querySelector('.ui-site-selector__control')"
+        + " && !!document.querySelector('.ui-app-shell__navigation-toggle')"
+      ), 20000, 'BROWSER_DOM_NOT_READY');
+    } catch (error) {
+      const page = await client.evaluate(
+        "JSON.stringify({ url: location.href, title: document.title,"
+        + " ready: document.readyState,"
+        + " content: document.body?.innerText?.slice(0, 800),"
+        + " areaCount: document.querySelectorAll('.ui-area-selector__control').length,"
+        + " siteCount: document.querySelectorAll('.ui-site-selector__control').length })"
+      ).catch((diagnosticError) => 'CDP_DIAGNOSTIC_FAILED:' + diagnosticError.message);
+      throw new Error(error.message + ' PAGE:' + page
+        + ' NEXT_OUTPUT:' + serverOutput.slice(-800));
+    }
+
+    await waitFor(async () => {
+      if (await client.evaluate(
+        "document.querySelector('.ui-app-shell__navigation-toggle').getAttribute('aria-expanded') === 'true'"
+      )) return true;
+      await client.evaluate("document.querySelector('.ui-app-shell__navigation-toggle').click()");
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      return client.evaluate(
+        "document.querySelector('.ui-app-shell__navigation-toggle').getAttribute('aria-expanded') === 'true'"
+      );
+    }, 12000, 'APP_SHELL_NOT_HYDRATED');
+
+    await client.evaluate(
+      "document.querySelector('nav.ui-app-shell__navigation')"
+      + ".dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))"
+    );
+    await waitFor(async () => client.evaluate(
+      "document.querySelector('.ui-app-shell__navigation-toggle').getAttribute('aria-expanded') === 'false'"
+    ), 6000, 'APP_SHELL_ESCAPE_NOT_HANDLED');
+
+    await client.evaluate(
+      "(() => { const el = document.querySelector('.ui-area-selector__control');"
+      + " el.value = 'area-b'; el.dispatchEvent(new Event('change', { bubbles: true })); })()"
+    );
+    await waitFor(async () => client.evaluate(
+      "document.querySelector('#controls output')?.textContent === 'QA_SELECTION_area-b_site-a'"
+    ), 6000, 'AREA_SELECTOR_NOT_HYDRATED');
+
+    await client.evaluate(
+      "(() => { const el = document.querySelector('.ui-site-selector__control');"
+      + " el.value = 'site-b'; el.dispatchEvent(new Event('change', { bubbles: true })); })()"
+    );
+    await waitFor(async () => client.evaluate(
+      "document.querySelector('#controls output')?.textContent === 'QA_SELECTION_area-b_site-b'"
+    ), 6000, 'SITE_SELECTOR_NOT_HYDRATED');
+
+    t.diagnostic('REAL_CHROMIUM_HYDRATION_PASS:' + path.basename(chromiumExecutable));
+  } finally {
+    client?.socket.close();
+    browser?.kill();
+    nextServer.kill();
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    fs.rmSync(browserProfile, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+  }
+}
