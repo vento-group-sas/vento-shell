@@ -45,7 +45,8 @@ test('iniciador fisico permite PR gobernado sin push, merge ni despliegue', () =
   assert.match(result.implementationSource, /ediciones locales MCP/u);
   assert.match(result.implementationSource, /Git local delegado/u);
   assert.match(result.implementationSource, /crear PRs y editar titulo\/descripci/u);
-  assert.match(result.implementationSource, /nunca hace push, merge, auto-merge/u);
+  assert.match(result.implementationSource, /no hace push, merge ni despliegues sin aprobacion humana especifica/u);
+  assert.match(result.implementationSource, /nunca activa auto-merge/u);
 });
 test('referencia adelantada respeta la ruta entre bloques, omite aprobadas y no modifica tareas', () => {
   const current = { id: 'NEXO-099', title: 'Actual', marker: '[ ]', block: 'actual', relativePath: 'nexo.md' };
