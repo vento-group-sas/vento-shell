@@ -234,10 +234,10 @@ export function validateImplementationControl(control, workTopology) {
         read_checks: true,
         require_approved_scope: true,
         require_published_branch: true,
-        push: false,
-        merge: false,
+        push: 'APPROVAL_REQUIRED_PER_ACTION',
+        merge: 'APPROVAL_REQUIRED_PER_ACTION',
         auto_merge: false,
-        deploy: false,
+        deploy: 'APPROVAL_REQUIRED_PER_ACTION',
         remote_code_edits: false,
       };
       if (!prOperations || typeof prOperations !== 'object' || Array.isArray(prOperations)) {
@@ -858,7 +858,12 @@ export function renderCurrentWorkDirective(control) {
   ? 'PERMITIDO SOLO CON TAREA APROBADA Y RAMA REMOTA PREEXISTENTE; SIN MODIFICAR CODIGO REMOTO'
   : 'PROHIBIDO'}
 - **Consulta de checks del PR:** ${prOperations?.read_checks === true ? 'PERMITIDA' : 'SOLO LECTURA GENERAL AUTORIZADA'}
-- **Push, merge, auto-merge, despliegues, ediciones remotas de código y mutaciones remotas del asistente fuera de los metadatos de PR:** PROHIBIDAS
+- **Push, merge y despliegues del asistente:** ${prOperations?.push === 'APPROVAL_REQUIRED_PER_ACTION'
+  && prOperations?.merge === 'APPROVAL_REQUIRED_PER_ACTION'
+  && prOperations?.deploy === 'APPROVAL_REQUIRED_PER_ACTION'
+    ? 'REQUIEREN AUTORIZACION HUMANA ESPECIFICA POR CADA OPERACION; NUNCA AUTOMATICOS'
+    : 'PROHIBIDOS'}
+- **Auto-merge, ediciones remotas de código y otras mutaciones remotas del asistente fuera del alcance aprobado:** PROHIBIDAS
 - **Pausa:** solo cuando un comando fail-fast falla, existe una contradicción real o el siguiente paso requiere una decisión o permiso todavía desconocido
 - **Preflight PASS:** continúa localmente; no requiere volver al chat
 - **Batería final PASS:** continúa dentro de la misma transacción; si el contrato exige evidencia remota, completa commit/push de materialización y validación remota antes de VERIFIED
@@ -892,7 +897,7 @@ ${physicalRows}
 
 1. El carril documental conserva como máximo una tarea activa; cuando su estado es COMPLETA no se infiere ni se abre otra tarea por continuidad. El carril físico puede mantener un governed active set de instancias independientes, cada una en su checkout, sujeto a dependencias, autorización y resource locks.
 2. Aprobar un marcador documental crea elegibilidad, nunca autorización física automática.
-3. Código, migraciones, Supabase y despliegues conservan su autorización física; la única excepción remota del asistente es crear PRs y editar título/descripción de ramas publicadas para tareas aprobadas, sin push, merge, auto-merge ni ediciones remotas de código.
+3. Código, migraciones y Supabase conservan su autorización física. Crear PRs y editar título/descripción sobre ramas publicadas requiere tarea aprobada; push, merge y despliegue requieren una aprobación humana independiente para cada operación. Auto-merge y ediciones remotas de código siguen prohibidos por este permiso.
 4. \`AUTHORIZED\` habilita el trabajo físico, pero no concede al asistente permiso para escribirlo.
 5. La única entrada mutante normal del carril físico es \`docs:implementation:advance\`; el coordinador abre o reanuda el lifecycle según el estado efectivo y nunca por el status bruto imposible.
 6. Un PASS local continúa por el mismo coordinador; solo FAIL, autorización humana pendiente o evidencia externa real producen una pausa.
