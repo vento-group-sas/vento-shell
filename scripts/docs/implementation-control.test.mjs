@@ -289,10 +289,10 @@ test('permite gestionar PRs aprobados sin habilitar push, merge ni despliegue', 
     read_checks: true,
     require_approved_scope: true,
     require_published_branch: true,
-    push: false,
-    merge: false,
+    push: 'APPROVAL_REQUIRED_PER_ACTION',
+    merge: 'APPROVAL_REQUIRED_PER_ACTION',
     auto_merge: false,
-    deploy: false,
+    deploy: 'APPROVAL_REQUIRED_PER_ACTION',
     remote_code_edits: false,
   };
   const result = deriveImplementationControl({
@@ -310,7 +310,9 @@ test('permite gestionar PRs aprobados sin habilitar push, merge ni despliegue', 
   const directive = renderCurrentWorkDirective(result);
   assert.match(directive, /Crear PRs y editar exclusivamente su título y descripción/u);
   assert.match(directive, /PERMITIDO SOLO CON TAREA APROBADA Y RAMA REMOTA PREEXISTENTE/u);
-  assert.match(directive, /Push, merge, auto-merge, despliegues/u);
+  assert.match(directive, /Push, merge y despliegues/u);
+  assert.match(directive, /REQUIEREN AUTORIZACION HUMANA ESPECIFICA POR CADA OPERACION/u);
+  assert.match(directive, /Auto-merge, ediciones remotas de código/u);
 });
 
 test('PRs no autorizan escalada de permisos remotos ni campos desconocidos', () => {
@@ -320,10 +322,10 @@ test('PRs no autorizan escalada de permisos remotos ni campos desconocidos', () 
     read_checks: true,
     require_approved_scope: true,
     require_published_branch: true,
-    push: false,
-    merge: false,
+    push: 'APPROVAL_REQUIRED_PER_ACTION',
+    merge: 'APPROVAL_REQUIRED_PER_ACTION',
     auto_merge: false,
-    deploy: false,
+    deploy: 'APPROVAL_REQUIRED_PER_ACTION',
     remote_code_edits: false,
   };
   for (const field of [
