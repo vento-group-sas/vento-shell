@@ -17,10 +17,10 @@
       "read_checks": true,
       "require_approved_scope": true,
       "require_published_branch": true,
-      "push": false,
-      "merge": false,
+      "push": "APPROVAL_REQUIRED_PER_ACTION",
+      "merge": "APPROVAL_REQUIRED_PER_ACTION",
       "auto_merge": false,
-      "deploy": false,
+      "deploy": "APPROVAL_REQUIRED_PER_ACTION",
       "remote_code_edits": false
     },
     "assistant_read_only_audit": true,
