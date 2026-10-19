@@ -66,7 +66,7 @@ function governedImplementationProtocol(control) {
       'Esa frase autoriza solamente el paso 3. No autoriza pasos anteriores, posteriores, comandos adicionales, Git, GitHub, despliegues ni cambios remotos no contenidos literalmente en ese paso.',
       operator?.assistantPullRequestOperations?.create === true
         && operator?.assistantPullRequestOperations?.update_title_body === true
-        ? 'Esa frase autoriza solamente el paso 3. Git LOCAL exige alcance y confirmacion CAS del MCP. Para tareas aprobadas y ramas publicadas, el asistente puede crear PRs y editar titulo/descripción; nunca hace push, merge, auto-merge, despliegues ni ediciones remotas de codigo.'
+        ? 'Esa frase autoriza solamente el paso 3. Git local delegado exige alcance y confirmacion CAS del MCP. Para tareas aprobadas y ramas publicadas, el asistente puede crear PRs y editar titulo/descripción; nunca hace push, merge, auto-merge, despliegues ni ediciones remotas de codigo.'
         : 'Esa frase autoriza solamente el paso 3. El Git local delegado exige autorizacion y confirmacion CAS del MCP; el asistente nunca hace push, PR, merge, despliegues ni mutaciones remotas.',
     );
   }
