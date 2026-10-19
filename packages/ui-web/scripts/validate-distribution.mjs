@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import ts from 'typescript';
 
 export const COMPONENTS = Object.freeze([
   ['Alert', 'alert'], ['AppShell', 'app-shell'], ['AreaSelector', 'area-selector'],
@@ -215,6 +216,112 @@ export function verifyPackedTarball(bytes, listedFiles, root = PACKAGE_ROOT) {
   return { packedArchiveFiles: entries.length };
 }
 
+function validateTemporaryConsumerInstall(temp, archiveFilename, packedFiles, root, repositoryRoot) {
+  assert(typeof archiveFilename === 'string' &&
+    archiveFilename === path.basename(archiveFilename), 'CONSUMER_ARCHIVE_PATH_INVALID');
+  const cli = process.env.npm_execpath;
+  assert(cli && fs.existsSync(cli), 'CONSUMER_NPM_CLI_UNAVAILABLE');
+  const consumerManifest = {
+    name: 'vento-ui-web-isolated-consumer-qa',
+    version: '1.0.0',
+    private: true,
+    type: 'module',
+  };
+  fs.writeFileSync(path.join(temp, 'package.json'),
+    JSON.stringify(consumerManifest, null, 2) + '\n', 'utf8');
+  const installed = spawnSync(process.execPath, [
+    cli, 'install', path.join(temp, archiveFilename), '--offline',
+    '--ignore-scripts', '--no-save', '--no-audit', '--no-fund',
+    '--no-package-lock', '--legacy-peer-deps',
+  ], {
+    cwd: temp,
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: 120000,
+    maxBuffer: 4 * 1024 * 1024,
+  });
+  assert(installed.status === 0 && !installed.error,
+    'ISOLATED_NPM_INSTALL_FAILED:' +
+    String(installed.stderr ?? installed.error?.message ?? ''));
+
+  const consumerPkg = path.join(temp, 'node_modules', '@vento', 'ui-web');
+  const metadata = JSON.parse(read(consumerPkg, 'package.json'));
+  validateManifest(metadata);
+  for (const relative of packedFiles) {
+    const installedBytes = fs.readFileSync(path.join(consumerPkg, ...relative.split('/')));
+    const originalBytes = fs.readFileSync(path.join(root, ...relative.split('/')));
+    assert(installedBytes.equals(originalBytes), 'ISOLATED_INSTALL_CONTENT_MISMATCH:' + relative);
+  }
+
+  // Offline runtime peers are copied ONLY into the temporary QA fixture.
+  // This is not a certification of consumer peer installation or registry access.
+  for (const peer of ['react', 'react-dom', 'scheduler']) {
+    const source = path.join(repositoryRoot, 'node_modules', peer);
+    if (fs.existsSync(source)) {
+      const destination = path.join(temp, 'node_modules', peer);
+      assert(!fs.existsSync(destination), 'UNEXPECTED_CONSUMER_PEER:' + peer);
+      fs.cpSync(source, destination, { recursive: true });
+    } else {
+      assert(peer === 'scheduler', 'MISSING_LOCAL_REACT_PEER:' + peer);
+    }
+  }
+  const fixtureFile = path.join(temp, 'consumer.mts');
+  fs.writeFileSync(fixtureFile, 'export {};\n', 'utf8');
+  const tsOptions = {
+    module: ts.ModuleKind.NodeNext,
+    moduleResolution: ts.ModuleResolutionKind.NodeNext,
+    target: ts.ScriptTarget.ES2022,
+  };
+  const entrypoints = [
+    ['@vento/ui-web', 'index.d.ts'],
+    ['@vento/ui-web/Alert', 'Alert.d.ts'],
+    ['@vento/ui-web/AppShell', 'AppShell.d.ts'],
+    ['@vento/ui-web/SiteSelector', 'SiteSelector.d.ts'],
+  ];
+  for (const [request, declaration] of entrypoints) {
+    const resolved = ts.resolveModuleName(request, fixtureFile, tsOptions, ts.sys)
+      .resolvedModule?.resolvedFileName;
+    assert(resolved && path.normalize(resolved).endsWith(path.join('dist', declaration)),
+      'ISOLATED_TYPESCRIPT_RESOLUTION_FAILED:' + request);
+  }
+
+  const esmProbe = String.raw`
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import * as publicApi from '@vento/ui-web';
+import { Alert } from '@vento/ui-web/Alert';
+import { AppShell } from '@vento/ui-web/AppShell';
+import { SiteSelector } from '@vento/ui-web/SiteSelector';
+if (typeof publicApi.Alert !== 'function' ||
+    typeof Alert !== 'function' ||
+    typeof AppShell !== 'function' ||
+    typeof SiteSelector !== 'function') {
+  throw new Error('ISOLATED_ESM_EXPORTS_MISSING');
+}
+const rendered = renderToStaticMarkup(React.createElement(AppShell, {
+  brand: 'VENTO', skipToContentLabel: 'Skip',
+}, React.createElement(Alert, { variant: 'success' }, 'ISOLATED_CONSUMER_OK')));
+if (!rendered.includes('ISOLATED_CONSUMER_OK') || !rendered.includes('VENTO')) {
+  throw new Error('ISOLATED_CONSUMER_SSR_MISMATCH');
+}
+`;
+  const probe = spawnSync(process.execPath, ['--input-type=module', '--eval', esmProbe], {
+    cwd: temp,
+    encoding: 'utf8',
+    windowsHide: true,
+    timeout: 30000,
+    maxBuffer: 1024 * 1024,
+  });
+  assert(probe.status === 0 && !probe.error,
+    'ISOLATED_ESM_SSR_PROBE_FAILED:' + String(probe.stderr ?? probe.error?.message ?? ''));
+  assert(fs.existsSync(path.join(consumerPkg, 'dist', 'styles.css')),
+    'ISOLATED_CONSUMER_CSS_MISSING');
+  return { installedFilesVerified: packedFiles.length,
+    installedTypeEntrypoints: entrypoints.length,
+    isolatedEsmSsrSmoke: 'PASS', installedTarballLocally: true,
+    nextHydrationCertified: false };
+}
+
 export function validateRealNpmPack(root = PACKAGE_ROOT, repositoryRoot = REPOSITORY_ROOT) {
   assert(root === PACKAGE_ROOT, 'PACK_PRODUCTION_ROOT_ONLY');
   const cli = process.env.npm_execpath;
@@ -255,10 +362,13 @@ export function validateRealNpmPack(root = PACKAGE_ROOT, repositoryRoot = REPOSI
     const sha256 = crypto.createHash('sha256').update(archive).digest('hex');
     assert(metadata.integrity === calculatedIntegrity && metadata.shasum === sha1,
       'NPM_PACK_INTEGRITY_MISMATCH');
-    const packed = verifyPackedTarball(archive,
-      (metadata.files ?? []).map((entry) => entry.path), root);
-    return { ...packed, tarballSha256: sha256, tarballIntegrity: calculatedIntegrity,
-      tarballBytes: archive.length, tarballCreatedLocally: true, published: false };
+    const packedFiles = (metadata.files ?? []).map((entry) => entry.path);
+    const packed = verifyPackedTarball(archive, packedFiles, root);
+    const installed = validateTemporaryConsumerInstall(
+      temp, metadata.filename, packedFiles, root, repositoryRoot);
+    return { ...packed, ...installed, tarballSha256: sha256,
+      tarballIntegrity: calculatedIntegrity, tarballBytes: archive.length,
+      tarballCreatedLocally: true, published: false };
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
