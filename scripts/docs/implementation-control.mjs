@@ -226,6 +226,35 @@ export function validateImplementationControl(control, workTopology) {
     if (operatorPolicy.assistant_remote_mutations !== false) {
       errors.push('execution_operator_policy.assistant_remote_mutations debe ser false.');
     }
+    const prOperations = operatorPolicy.assistant_pull_request_operations;
+    if (prOperations !== undefined) {
+      const expectedPrOperations = {
+        create: true,
+        update_title_body: true,
+        read_checks: true,
+        require_approved_scope: true,
+        require_published_branch: true,
+        push: false,
+        merge: false,
+        auto_merge: false,
+        deploy: false,
+        remote_code_edits: false,
+      };
+      if (!prOperations || typeof prOperations !== 'object' || Array.isArray(prOperations)) {
+        errors.push('execution_operator_policy.assistant_pull_request_operations debe ser un objeto.');
+      } else {
+        for (const field of Object.keys(prOperations)) {
+          if (!Object.hasOwn(expectedPrOperations, field)) {
+            errors.push(`execution_operator_policy.assistant_pull_request_operations.${field} no permitido.`);
+          }
+        }
+        for (const [field, expected] of Object.entries(expectedPrOperations)) {
+          if (prOperations[field] !== expected) {
+            errors.push(`execution_operator_policy.assistant_pull_request_operations.${field} debe ser ${expected}.`);
+          }
+        }
+      }
+    }
     if (operatorPolicy.assistant_read_only_audit !== true) {
       errors.push('execution_operator_policy.assistant_read_only_audit debe ser true.');
     }
@@ -733,6 +762,7 @@ export function deriveImplementationControl({
       assistantValidationExecution: operatorPolicy.assistant_validation_execution,
       assistantGitOperations: operatorPolicy.assistant_git_operations,
       assistantRemoteMutations: operatorPolicy.assistant_remote_mutations,
+      assistantPullRequestOperations: operatorPolicy.assistant_pull_request_operations ?? null,
       assistantReadOnlyAudit: operatorPolicy.assistant_read_only_audit,
       pauseOnlyWhenNextStepDependsOnEvidence:
         operatorPolicy.pause_only_when_next_step_depends_on_evidence,
@@ -781,6 +811,7 @@ export function deriveImplementationControl({
 
 export function renderCurrentWorkDirective(control) {
   const action = control.primaryAction;
+  const prOperations = control.executionOperatorPolicy.assistantPullRequestOperations;
   const governedActionRows = (control.primaryActions ?? []).length > 0
     ? control.primaryActions.map((entry) => (
       `- \`${entry.type}\` -> \`${entry.target}\` — ${markdown(entry.title)} — COMMAND=\`${entry.command ?? 'NONE'}\``
@@ -823,7 +854,11 @@ export function renderCurrentWorkDirective(control) {
 - **Git local del asistente:** ${control.executionOperatorPolicy.assistantGitOperations
   ? 'PERMITIDO SOLO POR MCP CON SCOPE, HEAD VERIFICADO Y CONFIRMACION LOCAL'
   : 'PROHIBIDO POR DEFECTO'}
-- **Push, PR, merge, despliegues y mutaciones remotas del asistente:** PROHIBIDAS
+- **Crear PRs y editar exclusivamente su título y descripción:** ${prOperations?.create === true && prOperations?.update_title_body === true
+  ? 'PERMITIDO SOLO CON TAREA APROBADA Y RAMA REMOTA PREEXISTENTE; SIN MODIFICAR CODIGO REMOTO'
+  : 'PROHIBIDO'}
+- **Consulta de checks del PR:** ${prOperations?.read_checks === true ? 'PERMITIDA' : 'SOLO LECTURA GENERAL AUTORIZADA'}
+- **Push, merge, auto-merge, despliegues, ediciones remotas de código y mutaciones remotas del asistente fuera de los metadatos de PR:** PROHIBIDAS
 - **Pausa:** solo cuando un comando fail-fast falla, existe una contradicción real o el siguiente paso requiere una decisión o permiso todavía desconocido
 - **Preflight PASS:** continúa localmente; no requiere volver al chat
 - **Batería final PASS:** continúa dentro de la misma transacción; si el contrato exige evidencia remota, completa commit/push de materialización y validación remota antes de VERIFIED
@@ -857,14 +892,14 @@ ${physicalRows}
 
 1. El carril documental conserva como máximo una tarea activa; cuando su estado es COMPLETA no se infiere ni se abre otra tarea por continuidad. El carril físico puede mantener un governed active set de instancias independientes, cada una en su checkout, sujeto a dependencias, autorización y resource locks.
 2. Aprobar un marcador documental crea elegibilidad, nunca autorización física automática.
-3. Código, migraciones, Supabase, despliegues o cambios remotos requieren una instancia explícitamente \`AUTHORIZED\`.
+3. Código, migraciones, Supabase y despliegues conservan su autorización física; la única excepción remota del asistente es crear PRs y editar título/descripción de ramas publicadas para tareas aprobadas, sin push, merge, auto-merge ni ediciones remotas de código.
 4. \`AUTHORIZED\` habilita el trabajo físico, pero no concede al asistente permiso para escribirlo.
 5. La única entrada mutante normal del carril físico es \`docs:implementation:advance\`; el coordinador abre o reanuda el lifecycle según el estado efectivo y nunca por el status bruto imposible.
 6. Un PASS local continúa por el mismo coordinador; solo FAIL, autorización humana pendiente o evidencia externa real producen una pausa.
 7. \`start\`, \`preverify\` y \`finish\` permanecen fail-closed como entradas directas normales y solo pueden ser invocados internamente por el coordinador; repair y validación se sellan por fingerprint exacto del candidato.
 8. La siguiente instancia global espera la verificación de la anterior; no se concilia trabajo duplicado al final.
 9. Los cierres y merges de los dos carriles se serializan. El segundo carril debe incorporar el \`main\` resultante del primero y repetir las validaciones finales sobre esa base.
-10. “Haz la acción principal” inicia la guía manual continua del carril correspondiente; nunca autoriza escrituras automáticas ni suspende el otro carril.
+10. “Haz la acción principal” no autoriza por sí mismo escrituras automáticas ni suspende el otro carril. Crear o actualizar metadatos de un PR exige autorización previa del alcance concreto.
 `;
 }
 
