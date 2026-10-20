@@ -1036,3 +1036,11 @@ La ejecución falla cerrado si falta un checkout, si `origin` no coincide con el
 
 La compatibilidad single-repo permanece sin cambios y `automatic_authorization=false`.
 <!-- CORR-018-MULTI-REPO-PHYSICAL-LIFECYCLE:END -->
+
+### Lectura de progreso por aplicación sin desviar la frontera gobernada
+
+La proyección `product_delivery` del controlador `package-execution-control.mjs` es una vista **solo informativa** para vincular los paquetes existentes con la aplicación propietaria de una capacidad. Toma `owner_application` de E5 y, solo cuando falta, el prefijo de `dominant_task_id`; las referencias de tareas de otros dominios se muestran como participantes transversales, nunca como titularidad de una funcionalidad.
+
+En modo `ADVISORY_ONLY`, el resultado puede mostrar un candidato de ANIMA u otra aplicación y su próximo gate, pero **no altera** `PRIMARY_PACKAGE`, `CURRENT_EXECUTABLE_WORK`, la prioridad por dependencias/capa/ID, los locks, `human_package_selection=false` ni `automatic_authorization=false`. Un candidato no es una app implementada, una prueba E2E ni una autorización para ejecutar `PACKAGE_START`, `SHELL-CI-020` o cualquier mutación fuera del primary.
+
+La selección física de capacidades por preferencia de aplicación queda expresamente fuera de esta proyección. Para habilitarla se requiere la rectificación formal, coordinada y validada de la tarea propietaria `DELIV-PKG-015`, el protocolo, la política ejecutable, el algoritmo y sus pruebas; no se realiza por cambio aislado del modo del controlador.
