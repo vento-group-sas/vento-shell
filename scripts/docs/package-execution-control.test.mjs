@@ -33,6 +33,12 @@ const policy = {
   independent_checkout_required: true,
   serialized_close: true,
   shared_resource_conflicts_serialized: true,
+  product_delivery: {
+    mode: 'ADVISORY_ONLY',
+    focus_application: 'ANIMA',
+    ownership_source: 'E5_OWNER_APPLICATION_WITH_DOMINANT_TASK_FALLBACK',
+    physical_authorization_unchanged: true,
+  },
 };
 
 function scope(packageId, {
@@ -489,3 +495,66 @@ test('PACKAGE_REMATURE solo admite el package reservado en authorization_frontie
   const result = deriveLinearPackageExecution({ packages: [pending] }, policy);
   assert.doesNotThrow(() => assertPackageMutationAllowed({ execution: result, packageId: 'GAP-PKG-001', operation: 'PACKAGE_REMATURE', openOrderCorrections: [] }));
 });
+
+test('la proyeccion de ANIMA usa propietario dominante y no confunde participacion transversal con una entrega de producto', () => {
+  const shared = pkg('GAP-PKG-004', 1, 'COMPILED', [], {
+    dominant_task_id: 'AUTH-DB-002',
+    task_prerequisites: {
+      missing_task_ids: [],
+      tasks: [{ task_id: 'ANIMA-AUTH-019' }, { task_id: 'AUTH-DB-002' }],
+    },
+  });
+  const anima = pkg('GAP-PKG-025', 1, 'COMPILED', [], {
+    dominant_task_id: 'ANIMA-AUTH-001',
+    task_prerequisites: { missing_task_ids: [], tasks: [{ task_id: 'ANIMA-AUTH-001' }] },
+  });
+  const result = deriveLinearPackageExecution({ packages: [anima, shared] }, policy);
+  assert.equal(result.current.package_id, 'GAP-PKG-004');
+  assert.equal(result.product_delivery.mode, 'ADVISORY_ONLY');
+  assert.equal(result.product_delivery.focus_application, 'ANIMA');
+  assert.equal(result.product_delivery.selected_candidate.package_id, 'GAP-PKG-025');
+  assert.equal(result.product_delivery.selected_candidate.dominant_task_id, 'ANIMA-AUTH-001');
+  assert.deepEqual(result.product_delivery.related_cross_app_packages.map((entry) => entry.package_id), ['GAP-PKG-004']);
+  assert.equal(result.product_delivery.mutation_authorized, false);
+  assert.equal(result.product_delivery.functional_readiness, 'NOT_CERTIFIED_BY_PACKAGE_FRONTIER');
+  assert.equal(result.product_delivery.authorization_foundation_requires_independent_verification, true);
+  assert.throws(() => assertPackageMutationAllowed({
+    execution: result, packageId: 'GAP-PKG-025', operation: 'PACKAGE_START',
+  }), /PACKAGE_OUTSIDE_GOVERNED_PRIMARY/u);
+});
+
+test('foco de ANIMA no propone trabajo bloqueado por dependencias ni convierte permisos en autorizaciones', () => {
+  const prerequisite = pkg('GAP-PKG-004', 1);
+  const blocked = pkg('GAP-PKG-025', 1, 'COMPILED', ['GAP-PKG-004'], {
+    dominant_task_id: 'ANIMA-UX-001',
+  });
+  const result = deriveLinearPackageExecution({ packages: [blocked, prerequisite] }, policy);
+  assert.equal(result.product_delivery.selected_candidate, null);
+  assert.equal(result.product_delivery.owned_packages.length, 1);
+  assert.equal(result.product_delivery.owned_packages[0].phase, 'WAITING');
+  assert.deepEqual(result.product_delivery.owned_packages[0].pending_dependency_ids, ['GAP-PKG-004']);
+  assert.equal(result.current.package_id, 'GAP-PKG-004');
+  assert.equal(result.safeguards.human_package_selection, false);
+});
+
+test('propietario de aplicacion E5 prevalece sobre coincidencias de nombres de tareas', () => {
+  const participant = pkg('GAP-PKG-004', 1, 'COMPILED', [], {
+    owner_application: 'VISO',
+    dominant_task_id: 'ANIMA-UX-001',
+    task_prerequisites: { missing_task_ids: [], tasks: [{ task_id: 'ANIMA-UX-001' }] },
+  });
+  const actualOwner = pkg('GAP-PKG-025', 1, 'COMPILED', [], {
+    owner_application: 'ANIMA',
+    dominant_task_id: 'AUTH-DB-002',
+    task_prerequisites: {
+      missing_task_ids: [],
+      tasks: [{ task_id: 'AUTH-DB-002', title: 'Titulo sintetico para la prueba' }],
+    },
+  });
+  const result = deriveLinearPackageExecution({ packages: [participant, actualOwner] }, policy);
+  assert.equal(result.product_delivery.selected_candidate.package_id, 'GAP-PKG-025');
+  assert.equal(result.product_delivery.selected_candidate.dominant_task_title, 'Titulo sintetico para la prueba');
+  assert.deepEqual(result.product_delivery.related_cross_app_packages.map(({ package_id: id }) => id), ['GAP-PKG-004']);
+  assert.equal(result.current.package_id, 'GAP-PKG-004');
+});
+
