@@ -32,7 +32,7 @@ on:
         type: boolean
         default: false
       audit_protection:
-        description: "Comprobar reglas de protección @vento/* solo con GET (activar audit_registry)"
+        description: "Verificar reglas @vento/* mediante GET; protegido y sin publicar"
         required: false
         type: boolean
         default: false
@@ -104,7 +104,10 @@ jobs:
 
   gitlab-registry-readonly:
     name: GitLab npm - autenticacion y versiones (solo GET)
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.audit_registry == true }}
+    # Never expose the protected Environment to pull requests. After a
+    # successful main-branch package QA, automatically audit both registry
+    # versions and protection rules using GET only; manual dispatch remains.
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.audit_registry == true || inputs.audit_protection == true))) }}
     needs: package-qa
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -127,7 +130,7 @@ jobs:
         run: node scripts/quality/shared-package-registry-preflight.mjs registry
 
       - name: Auditar protecciones GitLab npm para los cuatro paquetes (GET)
-        if: ${{ inputs.audit_protection == true }}
+        if: ${{ github.event_name == 'push' || inputs.audit_protection == true }}
         env:
           GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
           GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
