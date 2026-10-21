@@ -2,5 +2,48 @@
   "name": "@vento/supabase",
   "private": true,
   "type": "module",
-  "description": "Raíz privada de autoría para el acceso técnico compartido a Supabase de Vento OS."
+  "description": "SDK privado multiruntime para Supabase de VENTO OS; release aun no autorizada.",
+  "version": "0.1.0-alpha.1",
+  "exports": {
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js",
+      "default": "./dist/browser.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "default": "./dist/server.js"
+    },
+    "./native": {
+      "types": "./dist/native.d.ts",
+      "import": "./dist/native.js",
+      "default": "./dist/native.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "import": "./dist/runtime.js",
+      "default": "./dist/runtime.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js",
+      "default": "./dist/errors.js"
+    },
+    "./privileged": {
+      "types": "./dist/privileged.d.ts",
+      "node": "./dist/privileged.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "peerDependencies": {
+    "@supabase/supabase-js": "^2.90.1",
+    "@supabase/ssr": "^0.8.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "validate": "node ../../scripts/quality/shared-package-distribution-gate.mjs @vento/supabase"
+  }
 }

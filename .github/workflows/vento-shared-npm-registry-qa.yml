@@ -37,7 +37,7 @@ concurrency:
 
 jobs:
   package-qa:
-    name: Inventario npm y QA de tarball UI Web
+    name: QA de distribucion de los cuatro packages
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -60,6 +60,24 @@ jobs:
 
       - name: Inspeccionar los cuatro manifests sin declararlos publicables
         run: node scripts/quality/shared-package-registry-preflight.mjs inspect
+
+      - name: Compilar ESM y tipos de las tres fundaciones
+        run: |
+          npm run build --workspace @vento/contracts
+          npm run build --workspace @vento/os-context
+          npm run build --workspace @vento/supabase
+
+      - name: Verificar las superficies privadas y tarballs npm de las fundaciones
+        run: |
+          npm run validate --workspace @vento/contracts
+          npm run validate --workspace @vento/os-context
+          npm run validate --workspace @vento/supabase
+          node --test scripts/quality/shared-package-distribution-gate.test.mjs
+
+      - name: Revalidar fronteras Supabase y 86 casos canónicos de seguridad
+        run: |
+          node packages/supabase/scripts/validate-supabase-errors.mjs
+          node packages/supabase/scripts/validate-supabase-runtime-clients.mjs
 
       - name: Compilar candidato privado UI Web
         run: npm run build --workspace @vento/ui-web

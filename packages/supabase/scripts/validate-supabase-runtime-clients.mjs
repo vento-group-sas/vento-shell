@@ -125,9 +125,24 @@ async function main() {
     const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
     assert(packageJson.name === '@vento/supabase', 'package name mismatch');
     assert(packageJson.private === true && packageJson.type === 'module', 'package boundary mismatch');
-    assert(!('exports' in packageJson), 'package exports must remain deferred');
-    assert(!('version' in packageJson), 'package version must remain deferred');
-    assert(!('dependencies' in packageJson), 'package runtime dependencies must remain deferred');
+    assert(packageJson.version === '0.1.0-alpha.1', 'private candidate version mismatch');
+    assert(!('dependencies' in packageJson), 'package must not absorb runtime client dependencies');
+    assert(packageJson.files?.length === 1 && packageJson.files[0] === 'dist/',
+      'private package must distribute only compiled outputs');
+    assert(packageJson.peerDependencies?.['@supabase/ssr'] === '^0.8.0'
+      && packageJson.peerDependencies?.['@supabase/supabase-js'] === '^2.90.1',
+      'published peer compatibility contract mismatch');
+    for (const boundary of ['browser', 'server', 'native', 'runtime', 'errors']) {
+      const entry = packageJson.exports?.['./' + boundary];
+      assert(entry?.import === './dist/' + boundary + '.js'
+        && entry?.types === './dist/' + boundary + '.d.ts',
+        'runtime export must point to compiled ESM and typings:' + boundary);
+    }
+    assert(!packageJson.exports?.['.'], 'root runtime factory export must remain forbidden');
+    assert(packageJson.exports?.['./privileged']?.node === './dist/privileged.js'
+      && !packageJson.exports?.['./privileged']?.import
+      && !packageJson.exports?.['./privileged']?.default,
+      'privileged runtime must be Node-only');
 
     const rootPackage = JSON.parse(fs.readFileSync(rootPackagePath, 'utf8'));
     assert(rootPackage.dependencies?.['@supabase/ssr'] === '^0.8.0', 'root @supabase/ssr range mismatch');
@@ -179,7 +194,9 @@ async function main() {
         cover(4, () => includesAll(privileged, ["from '@supabase/supabase-js'", 'createPrivilegedClient'], 'privileged import'));
         cover(5, () => {
             assert(!fs.existsSync(path.join(srcRoot, 'index.ts')), 'runtime factory barrel must not exist');
-            assert(!('exports' in packageJson), 'root package exports runtime factories');
+            assert(!packageJson.exports?.['.'], 'root package must not combine runtime factories');
+            assert(!packageJson.exports?.['./privileged']?.import,
+              'privileged runtime must not resolve in browser import condition');
         });
         cover(6, () => excludesAll(browser, ['./server', './native', './privileged', 'next/'], 'browser boundary'));
         cover(7, () => excludesAll(server, ['./browser', './native', './privileged', 'next/'], 'server boundary'));

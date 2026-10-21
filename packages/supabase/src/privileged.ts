@@ -3,7 +3,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import {
     assertPrivilegedSupabaseKey,
     assertSupabaseUrl,
-} from './runtime';
+} from './runtime.js';
 
 export interface PrivilegedClientConfig {
     readonly url: string;

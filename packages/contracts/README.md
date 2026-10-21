@@ -1,5 +1,9 @@
 # @vento/contracts
 
+> **Estado operativo de distribución — 2026-10-21 (PR #1021, candidato privado).**
+> La compilación ESM y las declaraciones TypeScript se materializan desde los archivos generados sin editarlos. Los exports de `package.json` exponen únicamente familias y versiones canónicas mediante `dist/`; `npm run build --workspace @vento/contracts` y `npm run validate --workspace @vento/contracts` verifican el tarball. **No hay publicación ni adopción en consumidores.** Los apartados de tareas `SHELL-CON-*` describen el alcance histórico de cada materialización, no la certificación de una release actual.
+
+
 Raíz contractual compartida de Vento OS.
 
 ## Estado

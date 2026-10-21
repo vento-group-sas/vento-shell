@@ -426,11 +426,16 @@ async function main() {
   const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
   exactArray(
     Object.keys(packageJson).sort(),
-    ['description', 'name', 'private', 'type'],
+    ['description', 'exports', 'files', 'name', 'peerDependencies', 'private', 'scripts', 'type', 'version'],
     'package manifest keys',
   );
   assert(packageJson.name === '@vento/supabase', 'package name mismatch');
   assert(packageJson.private === true && packageJson.type === 'module', 'package boundary mismatch');
+  assert(packageJson.version === '0.1.0-alpha.1', 'package candidate version mismatch');
+  assert(packageJson.exports?.['./errors']?.import === './dist/errors.js',
+    'compiled technical error export missing');
+  assert(packageJson.files?.length === 1 && packageJson.files[0] === 'dist/',
+    'distribution allowlist mismatch');
 
   const owner = fs.readFileSync(ownerPath, 'utf8');
   const taskBlock = canonicalTaskBlock(owner, 'SHELL-DB-004');

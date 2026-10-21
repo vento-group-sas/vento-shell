@@ -4,7 +4,7 @@ import {
     assertNativeSessionStorage,
     assertPublicSupabaseConfig,
     type NativeSessionStorage,
-} from './runtime';
+} from './runtime.js';
 
 export interface NativeClientConfig {
     readonly url: string;
