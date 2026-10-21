@@ -125,7 +125,7 @@ export function requirePilotCompatibility({
     && input.pilot_relation_ids.length > 0,
   'CI005_APPROVED_PILOT_CONSUMER_REQUIRED');
   check(prepared.result === 'PASS' && prepared.phase === 'PREPARE'
-    && prepared.invalidatioՆ_reason !== 'STALE'
+    && prepared.invalidation_reason == null
     && prepared.release_channel_type === 'PRERELEASE',
   'CI005_PREPARE_NOT_PASS');
   const verified = comparePreparedEvidence(prepared, input);
