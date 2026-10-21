@@ -10,6 +10,11 @@ on:
       - "scripts/quality/shared-package-release-preparation.test.mjs"
       - "scripts/quality/shared-package-release-gate.mjs"
       - "scripts/quality/shared-package-release-gate.test.mjs"
+      - "scripts/quality/shared-package-test-gate.mjs"
+      - "scripts/quality/shared-package-test-gate.test.mjs"
+      - "scripts/quality/shared-package-build-gate.mjs"
+      - "scripts/quality/shared-package-build-gate.test.mjs"
+      - "scripts/quality/vento-contracts-pilot-*"
       - "packages/**"
       - "package.json"
       - "package-lock.json"
@@ -24,6 +29,11 @@ on:
       - "scripts/quality/shared-package-release-preparation.test.mjs"
       - "scripts/quality/shared-package-release-gate.mjs"
       - "scripts/quality/shared-package-release-gate.test.mjs"
+      - "scripts/quality/shared-package-test-gate.mjs"
+      - "scripts/quality/shared-package-test-gate.test.mjs"
+      - "scripts/quality/shared-package-build-gate.mjs"
+      - "scripts/quality/shared-package-build-gate.test.mjs"
+      - "scripts/quality/vento-contracts-pilot-*"
       - "packages/**"
       - "package.json"
       - "package-lock.json"
@@ -108,6 +118,32 @@ jobs:
         run: |
           node --test scripts/quality/shared-package-release-preparation.test.mjs
           node scripts/quality/shared-package-release-preparation.mjs stage
+
+      - name: Certificar CI001 real para @vento/contracts en el commit actual
+        run: |
+          node --test scripts/quality/shared-package-test-gate.test.mjs
+          node scripts/quality/shared-package-test-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-test-contract.json \
+            --evidence-root .delivery/shared-package-tests --json
+
+      - name: Certificar CI002 reproducible y 15 subpaths de @vento/contracts
+        run: |
+          node --test scripts/quality/shared-package-build-gate.test.mjs
+          node scripts/quality/shared-package-build-gate.mjs \
+            --package-root packages/contracts \
+            --contract scripts/quality/vento-contracts-pilot-build-contract.json \
+            --evidence-root .delivery/shared-package-builds --json
+
+      - name: Conservar evidencia CI001 CI002 sin tarball ni secretos
+        uses: actions/upload-artifact@v7
+        with:
+          name: vento-contracts-ci001-ci002-${{ github.sha }}
+          path: |
+            .delivery/shared-package-tests/vento__contracts/*.json
+            .delivery/shared-package-builds/vento__contracts/*.json
+          if-no-files-found: error
+          retention-days: 7
 
   gitlab-registry-readonly:
     name: GitLab npm - autenticacion y versiones (solo GET)
