@@ -151,7 +151,7 @@ test('tarballs reales: instalacion npm offline, import ESM y resolucion de tipos
     '--no-fund', '--no-package-lock', ...tarballs,
     '@supabase/ssr@0.8.0', '@supabase/supabase-js@2.90.1'], temp);
   assert.equal(install.status, 0,
-    'NPM_ISOLATED_INSTALL_FAILED:' + install.stderr?.slice(-750));
+    'NPM_ISOLATED_INSTALL_FAILED:' + install.stderr?.slice(0,4200));
 
   const imports = [
     '@vento/contracts/processes',
