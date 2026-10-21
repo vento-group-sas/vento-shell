@@ -16,6 +16,8 @@ import {
   normalizeSyntheticState,
   packageSlug,
   parseSemver,
+  privateReleaseCreateArgs,
+  privateReleaseNotes,
   planCoordinatedRelease,
   runGate,
   sriSha512,
@@ -669,4 +671,75 @@ test('helper 02 - secret detector ignores ordinary package text and coordinated 
     reasons: [],
     order: [],
   });
+});
+
+test('private GitHub Release contains verifiable metadata but no public npm tarball asset', () => {
+  const scenario = baseScenario({
+    manifest: baseManifest('@vento/contracts', '1.0.0-alpha.1'),
+    contract: { release_channel: 'next', release_channel_type: 'PRERELEASE' },
+  });
+  const candidate = evaluateReleaseCandidate(scenario).candidate;
+  const contract = {
+    github_repository: 'vento-group-sas/vento-shell',
+    registry_url: 'https://gitlab.com/api/v4/projects/87892751/packages/npm/',
+  };
+  const args = privateReleaseCreateArgs(candidate, contract);
+  const notes = privateReleaseNotes(candidate);
+  assert.deepEqual(args.slice(0, 3), ['release', 'create', candidate.tag_name]);
+  assert(args.includes('--prerelease'));
+  assert(args.includes('--verify-tag'));
+  assert(!args.some((arg) => /\.tgz$|\.json$/u.test(arg)));
+  assert.equal(args[args.indexOf('--notes') + 1], notes);
+  assert.match(notes, /^VENTO-PRIVATE-NPM-RELEASE-V1\n/u);
+  assert.match(notes, /artifact=PRIVATE_GITLAB_NPM_ONLY$/u);
+  assert(notes.includes(candidate.tarball_sha256));
+  assert(notes.includes(candidate.pack_integrity));
+  assert(!notes.includes('token='));
+});
+
+test('real publication cannot target a public npm registry or unrelated GitHub repository', () => {
+  const scenario = baseScenario({
+    contract: {
+      execution_mode: 'REAL',
+      github_repository: 'vento-group-sas/vento-shell',
+      registry_url: 'https://registry.npmjs.org/',
+    },
+  });
+  const errors = validateReleaseContract(scenario.contract, { manifest: scenario.manifest });
+  assert(errors.includes('REGISTRY_NOT_PRIVATE_GITLAB'));
+  assert.throws(() => privateReleaseCreateArgs(
+    evaluateReleaseCandidate(scenario).candidate, scenario.contract,
+  ), /PRIVATE_RELEASE_DESTINATION_INVALID/u);
+  const unrelated = {
+    ...scenario.contract,
+    registry_url: 'https://gitlab.com/api/v4/projects/87892751/packages/npm/',
+    github_repository: 'somewhere-else/not-vento',
+  };
+  assert(validateReleaseContract(unrelated, { manifest: scenario.manifest })
+    .includes('GITHUB_REPOSITORY_NOT_CANONICAL'));
+});
+
+test('public release metadata requires strict source commit and integrity', () => {
+  const scenario = baseScenario();
+  const candidate = evaluateReleaseCandidate(scenario).candidate;
+  assert.throws(() => privateReleaseNotes({
+    ...candidate, tarball_sha256: 'sha256:invalid',
+  }), /PRIVATE_RELEASE_METADATA_INVALID/u);
+  assert.throws(() => privateReleaseNotes({
+    ...candidate, pack_integrity: 'sha512-INVALID@',
+  }), /PRIVATE_RELEASE_METADATA_INVALID/u);
+  assert.throws(() => privateReleaseNotes({
+    ...candidate, source_commit: 'bad',
+  }), /PRIVATE_RELEASE_METADATA_INVALID/u);
+});
+
+test('stable metadata-only release is not marked prerelease', () => {
+  const scenario = baseScenario();
+  const candidate = evaluateReleaseCandidate(scenario).candidate;
+  const args = privateReleaseCreateArgs(candidate, {
+    github_repository: 'vento-group-sas/vento-shell',
+    registry_url: 'https://gitlab.com/api/v4/projects/87892751/packages/npm/',
+  });
+  assert(!args.includes('--prerelease'));
+  assert(args.includes('--verify-tag'));
 });
