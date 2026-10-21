@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 import {
   PRIVATE_CANDIDATES,
@@ -119,4 +121,88 @@ test('las entradas ESM y subpaths empaquetados se pueden importar en Node', asyn
   assert.equal(typeof server.createServerClient, 'function');
   const privileged = await import('@vento/supabase/privileged');
   assert.equal(typeof privileged.createPrivilegedClient, 'function');
+});
+
+
+test('tarballs reales: instalacion npm offline, import ESM y resolucion de tipos aisladas', (t) => {
+  const root = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-npm-consumer-'));
+  t.after(() => fs.rmSync(temp, { recursive: true, force: true }));
+  const npmCli = process.env.npm_execpath;
+  const cli = npmCli ? process.execPath : (process.platform === 'win32' ? 'npm.cmd' : 'npm');
+  const command = (args, cwd) => spawnSync(cli, npmCli ? [npmCli, ...args] : args, {
+    cwd, encoding: 'utf8', timeout: 180_000, windowsHide: true, maxBuffer: 8 * 1024 * 1024,
+  });
+  const tarballs = [];
+  for (const name of packages) {
+    const pack = command(['pack', '--workspace', name, '--json',
+      '--pack-destination', temp, '--offline', '--ignore-scripts'], root);
+    assert.equal(pack.status, 0, 'NPM_PACK_REAL_FAILED:' + name + ':' + pack.stderr?.slice(-500));
+    const output = JSON.parse(pack.stdout);
+    assert.equal(output.length, 1);
+    const tarball = path.join(temp, output[0].filename);
+    assert(fs.statSync(tarball).isFile());
+    tarballs.push(tarball);
+  }
+
+  fs.writeFileSync(path.join(temp, 'package.json'),
+    JSON.stringify({ name: 'isolated-vento-consumer', private: true, type: 'module' }));
+  const install = command(['install', '--offline', '--ignore-scripts', '--no-audit',
+    '--no-fund', '--no-package-lock', ...tarballs,
+    '@supabase/ssr@0.8.0', '@supabase/supabase-js@2.90.1'], temp);
+  assert.equal(install.status, 0,
+    'NPM_ISOLATED_INSTALL_FAILED:' + install.stderr?.slice(-750));
+
+  const imports = [
+    '@vento/contracts/processes',
+    '@vento/contracts/authorization/catalog/v1',
+    '@vento/os-context',
+    '@vento/supabase/browser',
+    '@vento/supabase/server',
+    '@vento/supabase/native',
+    '@vento/supabase/privileged',
+  ];
+  const source = [
+    ...imports.map((p, i) => "import * as pkg" + i + " from '" + p + "';"),
+    ...imports.map((_p, i) => "if (!pkg" + i + ") throw new Error('ESM_IMPORT_FAILED_" + i + "');"),
+    "if (typeof pkg0.isProcessId !== 'function') throw new Error('CONTRACT_RUNTIME_MISSING');",
+    "if (typeof pkg2.getEffectiveContext !== 'function') throw new Error('CONTEXT_RUNTIME_MISSING');",
+    "if (typeof pkg3.createBrowserClient !== 'function') throw new Error('BROWSER_RUNTIME_MISSING');",
+    "console.log('ISOLATED_CONSUMER_ESM:PASS');",
+  ].join('\n') + '\n';
+  const smoke = path.join(temp, 'consumer.mjs');
+  fs.writeFileSync(smoke, source);
+  const imported = spawnSync(process.execPath, [smoke], {
+    cwd: temp, encoding: 'utf8', timeout: 60000,
+  });
+  assert.equal(imported.status, 0, 'ISOLATED_ESM_IMPORT_FAILED:' + imported.stderr?.slice(-750));
+  assert.match(imported.stdout, /ISOLATED_CONSUMER_ESM:PASS/u);
+
+  const types = [
+    "import { isProcessId } from '@vento/contracts/processes';",
+    "import type { ProcessId } from '@vento/contracts/processes';",
+    "import type { EffectiveContext } from '@vento/os-context';",
+    "import type { BrowserClientConfig } from '@vento/supabase/browser';",
+    "import type { ServerClientConfig } from '@vento/supabase/server';",
+    "const id: ProcessId = 'VPROC-0001';",
+    'if (!isProcessId(id)) throw new Error("ID_INVALID");',
+    'declare const effective: EffectiveContext;',
+    'declare const browser: BrowserClientConfig;',
+    'declare const server: ServerClientConfig;',
+    'void effective; void browser; void server;',
+  ].join('\n') + '\n';
+  fs.writeFileSync(path.join(temp, 'consumer.mts'), types);
+  const config = path.join(temp, 'tsconfig.json');
+  fs.writeFileSync(config, JSON.stringify({
+    compilerOptions: {
+      module: 'NodeNext', moduleResolution: 'NodeNext', target: 'ES2022',
+      strict: true, skipLibCheck: true, noEmit: true, types: [],
+    },
+    include: ['consumer.mts'],
+  }));
+  const tsc = spawnSync(process.execPath, [
+    path.join(root, 'node_modules/typescript/bin/tsc'), '-p', config,
+  ], { cwd: temp, encoding: 'utf8', timeout: 60000 });
+  assert.equal(tsc.status, 0,
+    'ISOLATED_TS_CONSUMER_FAILED:' + tsc.stdout?.slice(-750) + tsc.stderr?.slice(-350));
 });
