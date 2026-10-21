@@ -236,6 +236,116 @@ function compareDependencySets(left, right) {
   return stableStringify(normalizeDependencySet(left)) === stableStringify(normalizeDependencySet(right));
 }
 
+
+function previewCheck(ok, code) {
+  if (!ok) throw new Error('VENTO_NPM_RELEASE_PREP:' + code);
+}
+
+function previewExportTargets(value) {
+  if (typeof value === 'string') {
+    previewCheck(/^\.\/dist\/[A-Za-z0-9_./-]+$/u.test(value)
+      && !value.includes('..') && !value.includes('//'), 'EXPORT_OUTSIDE_DIST');
+    return [value.slice(2)];
+  }
+  previewCheck(value && typeof value === 'object' && !Array.isArray(value), 'EXPORT_INVALID');
+  return Object.values(value).flatMap(previewExportTargets);
+}
+
+// One policy for the private authoring manifest and the public-internal
+// tarball. Neither the original package.json nor any source files are edited.
+export function releasePreviewManifest(source) {
+  previewCheck(source && typeof source === 'object' && !Array.isArray(source)
+    && CANONICAL_SHARED_PACKAGES.includes(source.name), 'NONCANONICAL_PACKAGE');
+  previewCheck(source.private === true && source.type === 'module',
+    'SOURCE_MUST_REMAIN_PRIVATE');
+  previewCheck(Boolean(parseSemver(source.version)), 'VERSION_INVALID');
+  previewCheck(!Object.hasOwn(source, 'publishConfig'), 'SOURCE_PUBLISH_CONFIG_FORBIDDEN');
+  previewCheck(Array.isArray(source.files) && source.files.length === 1
+    && source.files[0] === 'dist/', 'SOURCE_FILES_UNSAFE');
+  previewCheck(source.exports && typeof source.exports === 'object'
+    && !Array.isArray(source.exports), 'EXPORTS_MISSING');
+  const targets = [...new Set(previewExportTargets(source.exports))];
+  previewCheck(targets.length > 0, 'NO_EXPORTS');
+  for (const section of ['dependencies', 'peerDependencies', 'optionalDependencies']) {
+    for (const [name, version] of Object.entries(source[section] ?? {})) {
+      if (name.startsWith('@vento/')) previewCheck(Boolean(parseSemver(version)),
+        'INTERNAL_VERSION_NOT_EXACT');
+    }
+  }
+  const preview = {
+    name: source.name, version: source.version, type: 'module', private: false,
+    files: ['dist/'], exports: structuredClone(source.exports),
+    publishConfig: { registry: NPM_REGISTRY_URL },
+  };
+  for (const field of ['description', 'main', 'types', 'sideEffects',
+    'dependencies', 'optionalDependencies', 'peerDependencies',
+    'peerDependenciesMeta', 'engines', 'license']) {
+    if (Object.hasOwn(source, field)) preview[field] = structuredClone(source[field]);
+  }
+  return { preview, targets };
+}
+
+// CI002 attests the private-source pack. Its SHA512 deliberately differs
+// from the publishable preview, because the latter removes hooks and has
+// private:false. Verify every distributed dist byte against CI002 instead.
+export function assessPrivateReleasePreview({
+  sourceManifest, tarballBuffer, buildEvidence,
+}) {
+  const reasons = [];
+  let expected;
+  try {
+    expected = releasePreviewManifest(sourceManifest).preview;
+  } catch {
+    return ['PRIVATE_PREVIEW_SOURCE_INVALID'];
+  }
+  let entries;
+  try {
+    entries = readTarEntries(tarballBuffer);
+  } catch {
+    return ['PRIVATE_PREVIEW_ARCHIVE_INVALID'];
+  }
+  const names = entries.map((entry) => entry.path);
+  if (names.length === 0 || new Set(names).size !== names.length
+    || names.some((name) => name !== 'package/package.json'
+      && name !== 'package/README.md'
+      && (!/^package\/dist\/[A-Za-z0-9_./-]+$/u.test(name)
+        || name.includes('..')))) {
+    reasons.push('PRIVATE_PREVIEW_CONTENT_ALLOWLIST_FAILED');
+  }
+  const manifestEntries = entries.filter((entry) => entry.path === 'package/package.json');
+  if (manifestEntries.length !== 1) {
+    reasons.push('PRIVATE_PREVIEW_MANIFEST_MISSING');
+  } else {
+    let actual = null;
+    try { actual = JSON.parse(manifestEntries[0].content.toString('utf8')); } catch { /* invalid */ }
+    if (stableStringify(actual) !== stableStringify(expected)) {
+      reasons.push('PRIVATE_PREVIEW_MANIFEST_DIVERGENCE');
+    }
+  }
+  const files = buildEvidence?.artifact_file_manifest;
+  if (!Array.isArray(files) || files.length === 0
+    || files.some((item) => !/^dist\/[A-Za-z0-9_./-]+$/u.test(item?.path ?? '')
+      || item.path.includes('..')
+      || !/^sha256:[a-f0-9]{64}$/u.test(item?.sha256 ?? ''))) {
+    reasons.push('PRIVATE_PREVIEW_BUILD_MANIFEST_INVALID');
+  } else {
+    const actual = entries.filter((entry) => entry.path.startsWith('package/dist/'));
+    const expectedPaths = files.map((entry) => 'package/' + entry.path);
+    if (new Set(expectedPaths).size !== expectedPaths.length
+      || actual.length !== files.length
+      || actual.some((entry) => !expectedPaths.includes(entry.path))) {
+      reasons.push('PRIVATE_PREVIEW_DIST_FILESET_DIVERGENCE');
+    }
+    for (const item of files) {
+      const entry = actual.find((candidate) => candidate.path === 'package/' + item.path);
+      if (!entry || asSha256Identity(entry.content) !== item.sha256) {
+        reasons.push('PRIVATE_PREVIEW_DIST_BYTES_DIVERGENCE:' + item.path);
+      }
+    }
+  }
+  return unique(reasons);
+}
+
 export function validateReleaseContract(contract, { manifest } = {}) {
   const errors = [];
   if (!isPlainObject(contract)) return ['CONTRACT_NOT_OBJECT'];
@@ -247,6 +357,10 @@ export function validateReleaseContract(contract, { manifest } = {}) {
   if (!CHANNEL_TYPES.has(contract.release_channel_type)) errors.push('RELEASE_CHANNEL_TYPE_INVALID');
   if (!EXECUTION_MODES.has(contract.execution_mode)) errors.push('EXECUTION_MODE_INVALID');
   if (contract.distribution_change !== true) errors.push('DISTRIBUTION_CHANGE_REQUIRED');
+  if (contract.release_preview_mode !== undefined
+    && contract.release_preview_mode !== 'EPHEMERAL_PRIVATE_SOURCE') {
+    errors.push('RELEASE_PREVIEW_MODE_INVALID');
+  }
   if (contract.changelog_required === true && !nonEmptyString(contract.changelog_identity)) {
     errors.push('CHANGELOG_IDENTITY_REQUIRED');
   }
@@ -262,6 +376,12 @@ export function validateReleaseContract(contract, { manifest } = {}) {
   }
   if (manifest) {
     if (manifest.name !== contract.package_name) errors.push('MANIFEST_PACKAGE_MISMATCH');
+    if (manifest.private === true && contract.release_preview_mode !== 'EPHEMERAL_PRIVATE_SOURCE') {
+      errors.push('PRIVATE_SOURCE_PREVIEW_REQUIRED');
+    }
+    if (manifest.private !== true && contract.release_preview_mode === 'EPHEMERAL_PRIVATE_SOURCE') {
+      errors.push('PRIVATE_PREVIEW_REQUIRES_PRIVATE_SOURCE');
+    }
     if (manifest.version !== contract.release_version) errors.push('MANIFEST_VERSION_MISMATCH');
     const semver = parseSemver(contract.release_version);
     if (semver) {
@@ -501,7 +621,13 @@ export function evaluateReleaseCandidate({
   if (packageDirty) reasons.push('PACKAGE_WORKTREE_DIRTY');
   if (duplicateImplementations.length > 0) reasons.push(`DUPLICATE_GATE_IMPLEMENTATION:${duplicateImplementations.join(',')}`);
   const tarballIntegrity = sriSha512(tarballBuffer);
-  if (buildEvidence?.pack_integrity !== tarballIntegrity) reasons.push('TARBALL_INTEGRITY_MISMATCH');
+  if (manifest?.private === true && contract?.release_preview_mode === 'EPHEMERAL_PRIVATE_SOURCE') {
+    reasons.push(...assessPrivateReleasePreview({
+      sourceManifest: manifest, tarballBuffer, buildEvidence,
+    }));
+  } else if (buildEvidence?.pack_integrity !== tarballIntegrity) {
+    reasons.push('TARBALL_INTEGRITY_MISMATCH');
+  }
   const secretFindings = detectSecretsInTarball(tarballBuffer);
   if (secretFindings.length > 0) reasons.push(`SECRET_DETECTED_IN_ARTIFACT:${secretFindings.join(',')}`);
   let candidate = null;
