@@ -5,7 +5,8 @@ import test from 'node:test';
 
 import { NPM_REGISTRY_URL } from './shared-package-registry-preflight.mjs';
 import {
-  registryNpmrc, releaseContract, releaseEvidenceSummary, verifyDispatch,
+  registryNpmrc, releaseContract, releaseEvidenceSummary,
+  requirePilotCompatibility, verifyDispatch,
 } from './vento-contracts-private-release.mjs';
 
 const SHA = 'a'.repeat(40);
@@ -132,4 +133,46 @@ test('GitHub publication is manual, main-only, SHA-pinned and credential-isolate
   assert.match(workflow, /--mode "\$OPERATION"/u);
   assert.equal((workflow.match(/GITLAB_NPM_PUBLISH_TOKEN: \$\{\{/gu) ?? []).length, 1);
   assert.doesNotMatch(workflow, /npm publish|\.tgz|--force|sudo /u);
+});
+
+
+test('real private publication requires CI005 pilot identity and refuses uncertified compatibility', () => {
+  const release = releaseContract(SHA);
+  assert.equal(release.compatibility_required, false);
+  const ready = releaseContract(SHA, 'sha256:' + 'f'.repeat(64));
+  assert.equal(ready.compatibility_required, true);
+  assert.equal(ready.compatibility_evidence_identity, 'sha256:' + 'f'.repeat(64));
+  assert.throws(() => requirePilotCompatibility({}), /CI005_REAL_PILOT_EVIDENCE_REQUIRED/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: [] },
+    prepared: {},
+  }), /CI005_APPROVED_PILOT_CONSUMER_REQUIRED/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'BLOCKED', phase: 'PREPARE',
+      release_channel_type: 'PRERELEASE',
+    },
+  }), /CI005_PREPARE_NOT_PASS/u);
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'PASS', phase: 'PREPARE',
+      release_channel_type: 'STABLE',
+    },
+  }), /CI005_PREPARE_NOT_PASS/u);
+});
+
+test('synthetic CI005 PREPARE identity alone does not qualify as real pilot compatibility', () => {
+  assert.throws(() => requirePilotCompatibility({
+    input: { pilot_relation_ids: ['COMP-REL-001'] },
+    prepared: {
+      result: 'PASS', phase: 'PREPARE',
+      release_channel_type: 'PRERELEASE',
+      invalidation_reason: null,
+      compatibility_evidence_identity: 'sha256:' + '1'.repeat(64),
+    },
+    testEvidence: {}, buildEvidence: {}, sourceCommit: SHA,
+    manifestSource: '{}',
+  }), /CI005_EVIDENCE_STALE_OR_INCOMPATIBLE/u);
 });
