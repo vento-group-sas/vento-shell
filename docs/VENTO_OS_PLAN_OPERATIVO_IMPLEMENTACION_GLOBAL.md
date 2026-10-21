@@ -1,5 +1,7 @@
 # VENTO OS - Plan operativo consolidado de implementación global
 
+> **TABLERO OPERATIVO VIVO (consultar al iniciar y reanudar trabajo):** [GitHub Issue #1020 — Estado, pendientes, evidencia y continuidad](https://github.com/vento-group-sas/vento-shell/issues/1020). El issue contiene el estado ejecutivo mutable por fase y su historial mediante comentarios; este plan conserva el alcance integral y la autoridad canónica. Reconciliar ambos con la rama, CI y MCP actuales; actualizar el issue en checkpoints de fase, no por microtarea.
+
 > **ENTRADA OBLIGATORIA PARA TRABAJO EN VENTO SHELL:** Leer este plan en primer lugar al iniciar o reanudar cualquier inspección, auditoría, implementación, corrección o publicación del repositorio. Después leer el protocolo, las políticas y las tareas canónicas exactas que correspondan, recalcular el estado real y respetar su jerarquía de autoridad. Esta prioridad es **de consulta**, no de aprobación, ejecución ni modificación del orden canónico.
 
 **Corte de verificación:** 2026-10-14  
