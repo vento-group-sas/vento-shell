@@ -10,6 +10,9 @@ on:
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/validate-canonical-plan.yml"
+      - ".github/workflows/vento-shared-npm-registry-qa.yml"
+      - "scripts/quality/shared-package-release-preparation.mjs"
+      - "scripts/quality/shared-package-release-preparation.test.mjs"
   push:
     branches:
       - main
@@ -21,6 +24,9 @@ on:
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/validate-canonical-plan.yml"
+      - ".github/workflows/vento-shared-npm-registry-qa.yml"
+      - "scripts/quality/shared-package-release-preparation.mjs"
+      - "scripts/quality/shared-package-release-preparation.test.mjs"
 
 permissions:
   contents: read
