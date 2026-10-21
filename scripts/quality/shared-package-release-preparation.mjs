@@ -272,7 +272,7 @@ export async function auditPrivatePublicationAuthority({
   const project = await readGitLabJson(PRIVATE_GITLAB_PROJECT, token, fetchImpl,
     'PROJECT');
   check(project.id === 87892751 && project.visibility === 'private'
-    && project.archived !== true && project.packages_enabled !== false,
+    && project.archived === false && project.packages_enabled === true,
   'PROJECT_PRIVACY_OR_PACKAGE_ACCESS_INVALID');
   const identity = await readGitLabJson(GITLAB_API + 'user', token, fetchImpl,
     'TOKEN_USER');
