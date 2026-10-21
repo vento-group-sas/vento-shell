@@ -822,3 +822,38 @@ test('rechaza reintroducir autorización artesanal sin entrypoint nativo', () =>
   delete invalid.authorization_entrypoint;
   assert.throws(() => deriveImplementationControl({ control: invalid, workTopology: topology() }), /authorization_entrypoint/u);
 });
+
+test('autorizacion por fase agrupa pasos sin autorizar riesgos externos', () => {
+  const phase = {
+    mode: 'APPROVED_PACKAGE_PHASE', approval_granularity: 'ONCE_PER_PACKAGE_PHASE',
+    phase_source: 'APPROVED_PACKAGE_GATE',
+    in_phase_operations: ['EDIT_APPROVED_SCOPE', 'RUN_VALIDATIONS', 'FIX_DEFECTS', 'LOCAL_COMMIT', 'PUSH_APPROVED_BRANCH', 'CREATE_OR_UPDATE_PR'],
+    independent_decisions: ['EXPAND_SCOPE', 'MERGE', 'DEPLOY', 'PUBLISH_PACKAGE', 'REMOTE_DATABASE_MUTATION', 'CHANGE_CREDENTIALS'],
+    checkpoint_policy: 'PHASE_ENTRY_RISK_BOUNDARY_AND_CLOSE',
+    evidence_policy: 'FRESH_CANDIDATE_AND_PRESERVED_HISTORY',
+  };
+  const pr = {
+    create: true, update_title_body: true, read_checks: true,
+    require_approved_scope: true, require_published_branch: true,
+    push: 'PHASE_APPROVED_SCOPE', merge: 'APPROVAL_REQUIRED_PER_ACTION',
+    auto_merge: false, deploy: 'APPROVAL_REQUIRED_PER_ACTION', remote_code_edits: false,
+  };
+  const policy = {
+    ...baseControl, authorization_mode: 'EXPLICIT_PER_PHASE', phase_execution: phase,
+    execution_operator_policy: { ...baseControl.execution_operator_policy, assistant_pull_request_operations: pr },
+  };
+  const result = deriveImplementationControl({ control: policy, workTopology: topology() });
+  assert.equal(result.authorizationMode, 'EXPLICIT_PER_PHASE');
+  assert.match(renderCurrentWorkDirective(result), /PUSH EN RAMA APROBADA DE LA FASE/u);
+  assert.throws(() => deriveImplementationControl({
+    control: { ...policy, phase_execution: { ...phase, independent_decisions: ['MERGE'] } },
+    workTopology: topology(),
+  }), /phase_execution debe conservar/u);
+  assert.throws(() => deriveImplementationControl({
+    control: { ...policy, execution_operator_policy: {
+      ...policy.execution_operator_policy,
+      assistant_pull_request_operations: { ...pr, merge: 'PHASE_APPROVED_SCOPE' },
+    } },
+    workTopology: topology(),
+  }), /assistant_pull_request_operations/u);
+});
