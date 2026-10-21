@@ -5,8 +5,9 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import {
-  evaluateReleaseCandidate, normalizeSyntheticState, runGate,
+  asSha256Identity, evaluateReleaseCandidate, normalizeSyntheticState, runGate,
 } from './shared-package-release-gate.mjs';
+import { comparePreparedEvidence } from './shared-package-compatibility-gate.mjs';
 import {
   auditPrivatePublicationAuthority, packPilotPrivatePreview,
 } from './shared-package-release-preparation.mjs';
@@ -21,6 +22,7 @@ const PACKAGE_ROOT = path.join(ROOT, 'packages/contracts');
 const TEST_ROOT = path.join(ROOT, '.delivery/shared-package-tests/vento__contracts');
 const BUILD_ROOT = path.join(ROOT, '.delivery/shared-package-builds/vento__contracts');
 const RELEASE_ROOT = path.join(ROOT, '.delivery/shared-package-releases');
+const COMPATIBILITY_PILOT_ROOT = path.join(ROOT, '.delivery/shared-package-compatibility/contracts-pilot');
 const REGISTRY_NPMRC = '//gitlab.com/api/v4/projects/87892751/packages/npm/:_authToken=';
 
 function check(condition, code) {
@@ -36,7 +38,7 @@ function git(args) {
   return result.stdout.trim();
 }
 
-export function releaseContract(sourceCommit) {
+export function releaseContract(sourceCommit, compatibilityEvidenceIdentity = null) {
   check(SHA.test(sourceCommit ?? ''), 'SOURCE_SHA_INVALID');
   return {
     schema_version: 1,
@@ -52,7 +54,10 @@ export function releaseContract(sourceCommit) {
     registry_url: NPM_REGISTRY_URL,
     approved_internal_prereleases: [],
     changelog_required: false,
-    compatibility_required: false,
+    compatibility_required: compatibilityEvidenceIdentity !== null,
+    ...(compatibilityEvidenceIdentity !== null
+      ? { compatibility_evidence_identity: compatibilityEvidenceIdentity }
+      : {}),
   };
 }
 
@@ -109,6 +114,51 @@ function loadEvidenceJson(filename, label) {
   return value;
 }
 
+
+export function requirePilotCompatibility({
+  input, prepared, testEvidence, buildEvidence, sourceCommit, manifestSource,
+} = {}) {
+  check(input && typeof input === 'object'
+    && prepared && typeof prepared === 'object',
+  'CI005_REAL_PILOT_EVIDENCE_REQUIRED');
+  check(Array.isArray(input.pilot_relation_ids)
+    && input.pilot_relation_ids.length > 0,
+  'CI005_APPROVED_PILOT_CONSUMER_REQUIRED');
+  check(prepared.result === 'PASS' && prepared.phase === 'PREPARE'
+    && prepared.invalidatioՆ_reason !== 'STALE'
+    && prepared.release_channel_type === 'PRERELEASE',
+  'CI005_PREPARE_NOT_PASS');
+  const verified = comparePreparedEvidence(prepared, input);
+  check(verified.current === true && verified.outcome === 'PASS',
+    'CI005_EVIDENCE_STALE_OR_INCOMPATIBLE');
+  check(prepared.package_name === PACKAGE && prepared.package_version === VERSION
+    && prepared.package_source_commit === sourceCommit
+    && prepared.package_manifest_identity === asSha256Identity(manifestSource),
+  'CI005_PACKAGE_IDENTITY_MISMATCH');
+  check(prepared.artifact_content_identity === buildEvidence.artifact_content_hash
+    && prepared.artifact_integrity === buildEvidence.pack_integrity
+    && prepared.test_evidence_identity === testEvidence.material_identity_sha256
+    && prepared.build_evidence_identity === buildEvidence.material_identity_sha256,
+  'CI005_BUILD_TEST_LINEAGE_MISMATCH');
+  check(Array.isArray(prepared.required_relation_ids)
+    && prepared.required_relation_ids.length > 0
+    && prepared.required_relation_ids.every((id) => input.pilot_relation_ids.includes(id)),
+  'CI005_REQUIRED_PILOT_RELATIONS_INVALID');
+  check(/^sha256:[a-f0-9]{64}$/u.test(String(prepared.compatibility_evidence_identity)),
+    'CI005_COMPATIBILITY_IDENTITY_INVALID');
+  return prepared.compatibility_evidence_identity;
+}
+
+function loadPilotCompatibility({ testEvidence, buildEvidence, sourceCommit, manifestSource }) {
+  const input = loadEvidenceJson(
+    path.join(COMPATIBILITY_PILOT_ROOT, 'input.json'), 'CI005_INPUT');
+  const prepared = loadEvidenceJson(
+    path.join(COMPATIBILITY_PILOT_ROOT, 'prepared.json'), 'CI005_PREPARED');
+  return requirePilotCompatibility({
+    input, prepared, testEvidence, buildEvidence, sourceCommit, manifestSource,
+  });
+}
+
 function prevalidateRemoteGit(sourceCommit) {
   const branchLine = git(['ls-remote', 'origin', 'refs/heads/main']);
   const remoteSha = branchLine.split(/\s+/u)[0];
@@ -153,6 +203,8 @@ export function releaseEvidenceSummary(evaluation, report) {
     archived_tarball: false,
     registry_write_tested: false,
     publication_executed: false,
+    compatibility_status: 'PENDING_REAL_CI005_PILOT',
+    publish_eligible: false,
   };
 }
 
@@ -187,7 +239,13 @@ export async function executeRelease({
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-contracts-private-release-'));
   fs.chmodSync(temporaryRoot, 0o700);
   const contractPath = path.join(temporaryRoot, 'release-contract.json');
-  const contract = releaseContract(sourceCommit);
+  // TREQ-SHELL-006 applies to prerelease pilots as well: at least one
+  // CI005-certified consumer relation is mandatory before a real publish.
+  // Audits and technical preparation remain read-only and do not claim this gate.
+  const compatibilityIdentity = mode === 'publish'
+    ? loadPilotCompatibility({ testEvidence, buildEvidence, sourceCommit, manifestSource })
+    : null;
+  const contract = releaseContract(sourceCommit, compatibilityIdentity);
   fs.writeFileSync(contractPath, JSON.stringify(contract, null, 2) + '\n',
     { mode: 0o600 });
   try {
