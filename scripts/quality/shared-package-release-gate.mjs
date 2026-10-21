@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { NPM_REGISTRY_URL } from './shared-package-registry-preflight.mjs';
 import zlib from 'node:zlib';
 import {
   asSha256Identity as qualityAsSha256Identity,
@@ -255,7 +256,9 @@ export function validateReleaseContract(contract, { manifest } = {}) {
   if (!Array.isArray(contract.approved_internal_prereleases ?? [])) errors.push('APPROVED_INTERNAL_PRERELEASES_INVALID');
   if (contract.execution_mode === 'REAL') {
     if (!nonEmptyString(contract.github_repository)) errors.push('GITHUB_REPOSITORY_REQUIRED');
+    else if (contract.github_repository !== 'vento-group-sas/vento-shell') errors.push('GITHUB_REPOSITORY_NOT_CANONICAL');
     if (!nonEmptyString(contract.registry_url)) errors.push('REGISTRY_URL_REQUIRED');
+    else if (contract.registry_url !== NPM_REGISTRY_URL) errors.push('REGISTRY_NOT_PRIVATE_GITLAB');
   }
   if (manifest) {
     if (manifest.name !== contract.package_name) errors.push('MANIFEST_PACKAGE_MISMATCH');
@@ -573,11 +576,47 @@ function realTagCommit(repositoryRoot, tagName) {
   return chosen.split(/\s+/u)[0] ?? null;
 }
 
+export function privateReleaseNotes(candidate) {
+  if (!CANONICAL_SHARED_PACKAGES.includes(candidate?.package_name)
+    || !parseSemver(candidate?.release_version)
+    || !COMMIT_PATTERN.test(String(candidate?.source_commit ?? ''))
+    || !/^sha256:[0-9a-f]{64}$/u.test(String(candidate?.tarball_sha256 ?? ''))
+    || !/^sha512-[A-Za-z0-9+/]+=*$/u.test(String(candidate?.pack_integrity ?? ''))) {
+    throw new Error('PRIVATE_RELEASE_METADATA_INVALID');
+  }
+  return [
+    'VENTO-PRIVATE-NPM-RELEASE-V1',
+    `package=${candidate.package_name}`,
+    `version=${candidate.release_version}`,
+    `source_commit=${candidate.source_commit}`,
+    `tarball_sha256=${candidate.tarball_sha256}`,
+    `npm_integrity=${candidate.pack_integrity}`,
+    `registry=${NPM_REGISTRY_URL}`,
+    'artifact=PRIVATE_GITLAB_NPM_ONLY',
+  ].join('\n');
+}
+
+export function privateReleaseCreateArgs(candidate, contract) {
+  if (contract?.github_repository !== 'vento-group-sas/vento-shell'
+    || contract?.registry_url !== NPM_REGISTRY_URL) {
+    throw new Error('PRIVATE_RELEASE_DESTINATION_INVALID');
+  }
+  const args = [
+    'release', 'create', candidate.tag_name,
+    '--repo', contract.github_repository,
+    '--title', `${candidate.package_name} ${candidate.release_version}`,
+    '--notes', privateReleaseNotes(candidate),
+    '--verify-tag',
+  ];
+  if (parseSemver(candidate.release_version).prerelease) args.push('--prerelease');
+  return args;
+}
+
 function realReleaseInfo(contract, tagName) {
   const result = run('gh', [
     'release', 'view', tagName,
     '--repo', contract.github_repository,
-    '--json', 'tagName,targetCommitish,name,assets',
+    '--json', 'tagName,targetCommitish,name,assets,body',
   ]);
   if (result.error || result.status !== 0) return null;
   try {
@@ -612,9 +651,14 @@ function realObservedState(repositoryRoot, contract, candidate) {
   if (release) {
     if (release.ambiguous) synthetic.releases[candidate.tag_name] = { ambiguous: true };
     else {
+      const notesOk = typeof release.body === 'string'
+        && release.body.trim() === privateReleaseNotes(candidate).trim();
+      const noPublicAssets = Array.isArray(release.assets) && release.assets.length === 0;
       synthetic.releases[candidate.tag_name] = release.tagName === candidate.tag_name
+        && notesOk && noPublicAssets
         ? { ...expected, immutable: true }
-        : { ...expected, tag_name: release.tagName ?? 'UNKNOWN', immutable: true };
+        : { ambiguous: true, tag_name: release.tagName ?? 'UNKNOWN',
+          reason: 'PUBLIC_RELEASE_IDENTITY_OR_ASSETS_INVALID' };
     }
   }
   if (registry) {
@@ -643,20 +687,6 @@ function assertRealReleaseConfirmation(contract, allowRealRelease) {
   }
 }
 
-function createTempProvenance(candidate) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-release-provenance-'));
-  const filePath = path.join(directory, 'release-provenance.json');
-  writeJsonAtomic(filePath, sanitizeObject({
-    package_name: candidate.package_name,
-    release_version: candidate.release_version,
-    source_commit: candidate.source_commit,
-    artifact_sha256: candidate.tarball_sha256,
-    pack_integrity: candidate.pack_integrity,
-    material_identity_sha256: candidate.material_identity_sha256,
-  }));
-  return { directory, filePath };
-}
-
 function applyRealRelease({ repositoryRoot, contract, candidate, tarballPath, observed, allowRealRelease }) {
   assertRealReleaseConfirmation(contract, allowRealRelease);
   const phases = [];
@@ -665,30 +695,19 @@ function applyRealRelease({ repositoryRoot, contract, candidate, tarballPath, ob
     runChecked('git', ['push', 'origin', `refs/tags/${candidate.tag_name}`], { cwd: repositoryRoot });
     phases.push('TAG_CREATED');
   }
-  const provenance = createTempProvenance(candidate);
-  try {
-    if (!observed.release) {
-      runChecked('gh', [
-        'release', 'create', candidate.tag_name,
-        tarballPath,
-        provenance.filePath,
-        '--repo', contract.github_repository,
-        '--title', `${candidate.package_name} ${candidate.release_version}`,
-        '--notes', `Immutable package release for ${candidate.package_name}@${candidate.release_version}.`,
-        '--verify-tag',
-      ]);
-      phases.push('REMOTE_RELEASE_CREATED');
-    }
-    if (!observed.registry) {
-      runNpmChecked([
-        'publish', tarballPath,
-        '--tag', candidate.release_channel,
-        '--registry', contract.registry_url,
-      ]);
-      phases.push('REGISTRY_PUBLISHED');
-    }
-  } finally {
-    fs.rmSync(provenance.directory, { recursive: true, force: true });
+  // vento-shell is public: never attach private npm tarballs or provenance JSON
+  // to GitHub Releases. Only checksums and version metadata may be public.
+  if (!observed.release) {
+    runChecked('gh', privateReleaseCreateArgs(candidate, contract));
+    phases.push('REMOTE_RELEASE_METADATA_CREATED');
+  }
+  if (!observed.registry) {
+    runNpmChecked([
+      'publish', tarballPath,
+      '--tag', candidate.release_channel,
+      '--registry', contract.registry_url,
+    ]);
+    phases.push('PRIVATE_GITLAB_REGISTRY_PUBLISHED');
   }
   const verifiedState = realObservedState(repositoryRoot, contract, candidate);
   const verified = inspectObservedState(candidate, verifiedState);
