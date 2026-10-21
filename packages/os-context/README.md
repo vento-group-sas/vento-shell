@@ -1,5 +1,9 @@
 # @vento/os-context
 
+> **Estado operativo de distribución — 2026-10-21 (PR #1021, candidato privado).**
+> La API de RPC y contexto mantiene su semántica; ahora se compila como ESM tipado bajo `dist/` y se valida con `npm run build --workspace @vento/os-context` y `npm run validate --workspace @vento/os-context`. Los exports desde `src/*.ts` quedan reemplazados por outputs compilados. **No hay publicación ni migración de consumidores.**
+
+
 Contrato compartido para las aplicaciones web internas de Vento OS.
 
 ## Responsabilidad
