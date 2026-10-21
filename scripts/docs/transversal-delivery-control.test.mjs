@@ -26,7 +26,7 @@ function policy() {
     schema_version: 1,
     policy_id: 'TRANSVERSAL-DELIVERY-CONTROL-001',
     mode: 'CANONICAL_TASK_COMPOSITION',
-    execution_mode: 'READ_ONLY_SCOPE_PREPARATION',
+    execution_mode: 'PHASE_GOVERNED_IMPLEMENTATION',
     automatic_authorization: false,
     assistant_remote_mutations: false,
     gap_package_selection: false,
@@ -36,7 +36,7 @@ function policy() {
     profiles: [{
       package_name: '@vento/ui-web',
       package_manifest: 'packages/ui-web/package.json',
-      distribution_gate: 'PHYSICAL_SCOPE_AND_HUMAN_APPROVAL_REQUIRED',
+      distribution_gate: 'PHASE_SCOPE_PLUS_RELEASE_CERTIFICATION',
       source_groups: Object.entries(sourceFiles).map(([prefix, owner_file]) => ({
         prefix,
         from: 1,
@@ -287,7 +287,7 @@ test('preflight checks real target existence, local ownership and rejects delete
   assert.equal(result.physical_authorized, false);
 });
 
-test('complete preflight is only READY_FOR_APPROVAL and never a physical authorization', (t) => {
+test('complete preflight reports phase scope without granting physical authorization', (t) => {
   const { root, policy: p } = fixture(t);
   const record = draft();
   record.status = 'READY_FOR_APPROVAL';
@@ -307,7 +307,7 @@ test('complete preflight is only READY_FOR_APPROVAL and never a physical authori
   file(root, deliveryRecordPath(p, '@vento/ui-web'), JSON.stringify(record));
   const result = runTransversalControl({ root, operation: 'preflight' });
   assert.equal(result.length, 1);
-  assert.equal(result[0].status, 'READY_FOR_APPROVAL');
+  assert.equal(result[0].status, 'PHASE_SCOPE_READY');
   assert.equal(result[0].physical_authorized, false);
   assert.equal(result[0].remote_mutations_authorized, false);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root, 'packages/ui-web/package.json'), 'utf8')).private, true);
@@ -362,4 +362,13 @@ test('duplicated source range cannot create a second history owner', () => {
   const p = policy();
   p.profiles[0].source_groups.push({ ...p.profiles[0].source_groups[1] });
   assert.throws(() => validateTransversalPolicy(p), /DUPLICATE_OR_INVALID_TASK:SHELL-UI-001/u);
+});
+
+test('transversal inspector must not reintroduce a separate per-step approval gate', () => {
+  const p = policy();
+  assert.equal(p.execution_mode, 'PHASE_GOVERNED_IMPLEMENTATION');
+  assert.equal(p.profiles[0].distribution_gate, 'PHASE_SCOPE_PLUS_RELEASE_CERTIFICATION');
+  assert.equal(validateTransversalPolicy(p), true);
+  p.execution_mode = 'READ_ONLY_SCOPE_PREPARATION';
+  assert.throws(() => validateTransversalPolicy(p), /POLICY_EXECUTION_BOUNDARY_CHANGED/u);
 });
