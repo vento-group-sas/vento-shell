@@ -20,6 +20,9 @@
 # production
 /build
 
+# Outputs of the canonical contracts workspace (never authoring sources)
+/packages/contracts/dist/
+
 # misc
 .DS_Store
 *.pem
