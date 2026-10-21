@@ -6,6 +6,11 @@
 
 Raiz privada de autoria para el acceso tecnico compartido a Supabase de Vento OS.
 
+## Normalizacion tecnica de errores — SHELL-DB-004
+
+Contrato `VENTO_SUPABASE_TECHNICAL_ERROR_NORMALIZATION@1.0.0`.
+El validador historico comprueba **4/4 capas** semanticas, **11/11 familias** y **36/36 coberturas** de escenarios. El cliente publico no debe exponer diagnósticos protegidos y el dominio VITAL permanece excluido. Estos numeros son criterios de cobertura del contrato; los resultados PASS dependen de la ejecucion efectiva de CI.
+
 ## Estado fisico
 
 Este package permanece en fundacion `PRE_E5_FOUNDATION` y no esta publicado como superficie npm consumible.
