@@ -8,6 +8,7 @@ import {
   deriveImplementationControl,
   ensurePendingImplementationRecord,
   pendingInstanceRecord,
+  isPackagePhaseInstance,
   renderCurrentWorkDirective,
 } from './implementation-control.mjs';
 
@@ -852,8 +853,11 @@ test('autorizacion por fase agrupa pasos sin autorizar riesgos externos', () => 
     workTopology: topology(),
   });
   assert.equal(pending.primaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
-  assert.match(pending.primaryAction.command, /--from-phase-approval/u);
-  assert.doesNotMatch(pending.primaryAction.command, /--approval-statement/u);
+  assert.doesNotMatch(pending.primaryAction.command, /--from-phase-approval/u);
+  assert.match(pending.primaryAction.command, /--approval-statement/u);
+  assert.equal(isPackagePhaseInstance('SHELL-CI-021::GAP-PKG-045', 'EXPLICIT_PER_PHASE'), true);
+  assert.equal(isPackagePhaseInstance('SHELL-CI-001::GLOBAL', 'EXPLICIT_PER_PHASE'), false);
+  assert.equal(isPackagePhaseInstance('SHELL-CI-021::GAP-PKG-045', 'EXPLICIT_PER_INSTANCE'), false);
   assert.throws(() => deriveImplementationControl({
     control: { ...policy, phase_execution: { ...phase, independent_decisions: ['MERGE'] } },
     workTopology: topology(),
