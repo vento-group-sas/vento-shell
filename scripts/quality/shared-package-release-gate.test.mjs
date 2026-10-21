@@ -9,6 +9,7 @@ import zlib from 'node:zlib';
 
 import {
   asSha256Identity,
+  assessPrivateReleasePreview,
   collectInternalDependencies,
   detectSecretsInTarball,
   evaluateReleaseCandidate,
@@ -18,6 +19,7 @@ import {
   parseSemver,
   privateReleaseCreateArgs,
   privateReleaseNotes,
+  releasePreviewManifest,
   planCoordinatedRelease,
   runGate,
   sriSha512,
@@ -742,4 +744,104 @@ test('stable metadata-only release is not marked prerelease', () => {
   });
   assert(!args.includes('--prerelease'));
   assert(args.includes('--verify-tag'));
+});
+
+
+function privateSourcePilotScenario() {
+  const manifest = {
+    ...baseManifest('@vento/contracts', '1.0.0-alpha.1'),
+    private: true,
+    files: ['dist/'],
+  };
+  const { preview } = releasePreviewManifest(manifest);
+  const js = 'export const fixture = 1;\n';
+  const declarations = 'export declare const fixture: number;\n';
+  const tarballBuffer = makeTarball({
+    'package/package.json': JSON.stringify(preview),
+    'package/dist/index.js': js,
+    'package/dist/index.d.ts': declarations,
+  });
+  return baseScenario({
+    manifest,
+    tarballBuffer,
+    contract: {
+      release_preview_mode: 'EPHEMERAL_PRIVATE_SOURCE',
+      release_channel: 'next',
+      release_channel_type: 'PRERELEASE',
+    },
+    buildEvidence: {
+      // CI002 certified the private pack; private:false preview cannot match
+      // those full tarball bytes. The dist bytes must still match exactly.
+      pack_integrity: sriSha512(Buffer.from('private-source-build')),
+      artifact_file_manifest: [
+        { path: 'dist/index.js', sha256: hash(js) },
+        { path: 'dist/index.d.ts', sha256: hash(declarations) },
+      ],
+    },
+  });
+}
+
+test('private authoring manifest can release only an exact CI002-certified dist preview', () => {
+  const scenario = privateSourcePilotScenario();
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'READY', result.reasons.join(','));
+  assert.notEqual(scenario.buildEvidence.pack_integrity, sriSha512(scenario.tarballBuffer));
+  assert.deepEqual(assessPrivateReleasePreview({
+    sourceManifest: scenario.manifest,
+    tarballBuffer: scenario.tarballBuffer,
+    buildEvidence: scenario.buildEvidence,
+  }), []);
+});
+
+test('private package cannot use source tarball or bypass declared preview mode', () => {
+  const scenario = privateSourcePilotScenario();
+  scenario.contract.release_preview_mode = undefined;
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.includes('PRIVATE_SOURCE_PREVIEW_REQUIRED'));
+  scenario.contract.release_preview_mode = 'unapproved';
+  const invalid = evaluateReleaseCandidate(scenario);
+  assert(invalid.reasons.includes('RELEASE_PREVIEW_MODE_INVALID'));
+});
+
+test('private preview rejects a tampered dist file even with a valid npm tar manifest', () => {
+  const scenario = privateSourcePilotScenario();
+  const { preview } = releasePreviewManifest(scenario.manifest);
+  scenario.tarballBuffer = makeTarball({
+    'package/package.json': JSON.stringify(preview),
+    'package/dist/index.js': 'export const fixture = "tampered";\n',
+    'package/dist/index.d.ts': 'export declare const fixture: number;\n',
+  });
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.some((reason) => reason.startsWith('PRIVATE_PREVIEW_DIST_BYTES_DIVERGENCE:')));
+});
+
+test('private preview rejects extra dist files and undeclared manifest permissions', () => {
+  const scenario = privateSourcePilotScenario();
+  const { preview } = releasePreviewManifest(scenario.manifest);
+  scenario.tarballBuffer = makeTarball({
+    'package/package.json': JSON.stringify({
+      ...preview,
+      scripts: { prepublishOnly: 'node unsafe.mjs' },
+    }),
+    'package/dist/index.js': 'export const fixture = 1;\n',
+    'package/dist/index.d.ts': 'export declare const fixture: number;\n',
+    'package/dist/hidden.js': 'export const hidden = true;\n',
+  });
+  const result = evaluateReleaseCandidate(scenario);
+  assert.equal(result.outcome, 'BLOCKED');
+  assert(result.reasons.includes('PRIVATE_PREVIEW_MANIFEST_DIVERGENCE'));
+  assert(result.reasons.includes('PRIVATE_PREVIEW_DIST_FILESET_DIVERGENCE'));
+});
+
+test('preview policy rejects unpinned internal package version before release', () => {
+  const scenario = privateSourcePilotScenario();
+  const malformed = { ...scenario.manifest, dependencies: { '@vento/os-context': '^0.1.0' } };
+  assert.throws(() => releasePreviewManifest(malformed), /INTERNAL_VERSION_NOT_EXACT/u);
+  const evaluation = assessPrivateReleasePreview({
+    sourceManifest: malformed, tarballBuffer: scenario.tarballBuffer,
+    buildEvidence: scenario.buildEvidence,
+  });
+  assert(evaluation.includes('PRIVATE_PREVIEW_SOURCE_INVALID'));
 });
