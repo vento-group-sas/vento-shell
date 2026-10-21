@@ -207,9 +207,18 @@ export function validateImplementationControl(control, workTopology) {
       checkpoint_policy: 'PHASE_ENTRY_RISK_BOUNDARY_AND_CLOSE',
       evidence_policy: 'FRESH_CANDIDATE_AND_PRESERVED_HISTORY',
     };
-    if (!control?.phase_execution || typeof control.phase_execution !== 'object'
-      || Array.isArray(control.phase_execution)
-      || JSON.stringify(control.phase_execution) !== JSON.stringify(expected)) {
+    const actual = control?.phase_execution;
+    const matchesPhase = actual && typeof actual === 'object' && !Array.isArray(actual)
+      && Object.keys(actual).length === Object.keys(expected).length
+      && Object.entries(expected).every(([field, value]) => (
+        Array.isArray(value)
+          ? Array.isArray(actual[field])
+            && actual[field].length === value.length
+            && new Set(actual[field]).size === value.length
+            && value.every((entry) => actual[field].includes(entry))
+          : actual[field] === value
+      ));
+    if (!matchesPhase) {
       errors.push('phase_execution debe conservar el contrato completo de fase aprobada.');
     }
   }
