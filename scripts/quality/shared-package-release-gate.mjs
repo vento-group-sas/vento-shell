@@ -1059,16 +1059,27 @@ export function runGate({
         ? { ...preliminary, outcome: 'PASS', reasons: [] }
         : { ...preliminary, outcome: 'FAIL', reasons: ['SYNTHETIC_POST_READ_FAILED'] };
     } else {
-      const result = applyRealRelease({
-        repositoryRoot,
-        contract,
-        candidate: preliminary.candidate,
-        tarballPath: absoluteTarballPath,
-        observed: preliminary.observed,
-        allowRealRelease,
-      });
-      phases = result.phases;
-      finalEvaluation = { ...preliminary, outcome: 'PASS', reasons: [] };
+      try {
+        const result = applyRealRelease({
+          repositoryRoot,
+          contract,
+          candidate: preliminary.candidate,
+          tarballPath: absoluteTarballPath,
+          observed: preliminary.observed,
+          allowRealRelease,
+        });
+        phases = result.phases;
+        finalEvaluation = { ...preliminary, outcome: 'PASS', reasons: [] };
+      } catch {
+        // After the first remote write, failure might mean a PARTIAL release.
+        // Persist fail-closed evidence without echoing tokens or subprocess logs.
+        // Never report PASS until the tag, release and GitLab registry reconcile.
+        phases = ['REAL_RELEASE_INTERRUPTED_REMOTE_RECONCILIATION_REQUIRED'];
+        finalEvaluation = {
+          ...preliminary, outcome: 'BLOCKED',
+          reasons: ['REAL_RELEASE_NOT_CERTIFIED', 'REMOTE_STATE_RECONCILIATION_REQUIRED'],
+        };
+      }
     }
   } else if (preliminary.outcome === 'PASS' && preliminary.idempotent) {
     phases = ['IDEMPOTENT_NO_MUTATION'];
