@@ -2,7 +2,7 @@
   "schema_version": 1,
   "policy_id": "TRANSVERSAL-DELIVERY-CONTROL-001",
   "mode": "CANONICAL_TASK_COMPOSITION",
-  "execution_mode": "READ_ONLY_SCOPE_PREPARATION",
+  "execution_mode": "PHASE_GOVERNED_IMPLEMENTATION",
   "automatic_authorization": false,
   "assistant_remote_mutations": false,
   "gap_package_selection": false,
@@ -13,7 +13,7 @@
     {
       "package_name": "@vento/ui-web",
       "package_manifest": "packages/ui-web/package.json",
-      "distribution_gate": "PHYSICAL_SCOPE_AND_HUMAN_APPROVAL_REQUIRED",
+      "distribution_gate": "PHASE_SCOPE_PLUS_RELEASE_CERTIFICATION",
       "source_groups": [
         {
           "prefix": "SHELL-PKG",
