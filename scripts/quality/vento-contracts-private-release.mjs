@@ -150,10 +150,16 @@ export function requirePilotCompatibility({
 }
 
 function loadPilotCompatibility({ testEvidence, buildEvidence, sourceCommit, manifestSource }) {
-  const input = loadEvidenceJson(
-    path.join(COMPATIBILITY_PILOT_ROOT, 'input.json'), 'CI005_INPUT');
-  const prepared = loadEvidenceJson(
-    path.join(COMPATIBILITY_PILOT_ROOT, 'prepared.json'), 'CI005_PREPARED');
+  const inputPath = path.join(COMPATIBILITY_PILOT_ROOT, 'input.json');
+  const preparedPath = path.join(COMPATIBILITY_PILOT_ROOT, 'prepared.json');
+  for (const filePath of [inputPath, preparedPath]) {
+    check(fs.existsSync(filePath)
+      && fs.lstatSync(filePath).isFile()
+      && !fs.lstatSync(filePath).isSymbolicLink(),
+    'CI005_REAL_PILOT_EVIDENCE_REQUIRED');
+  }
+  const input = loadEvidenceJson(inputPath, 'CI005_INPUT');
+  const prepared = loadEvidenceJson(preparedPath, 'CI005_PREPARED');
   return requirePilotCompatibility({
     input, prepared, testEvidence, buildEvidence, sourceCommit, manifestSource,
   });
