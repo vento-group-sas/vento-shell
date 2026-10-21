@@ -8,6 +8,8 @@ on:
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - "scripts/quality/shared-package-release-gate.mjs"
+      - "scripts/quality/shared-package-release-gate.test.mjs"
       - "packages/**"
       - "package.json"
       - "package-lock.json"
@@ -20,6 +22,8 @@ on:
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - "scripts/quality/shared-package-release-gate.mjs"
+      - "scripts/quality/shared-package-release-gate.test.mjs"
       - "packages/**"
       - "package.json"
       - "package-lock.json"
@@ -96,6 +100,9 @@ jobs:
 
       - name: Ejecutar regresiones de distribucion UI Web
         run: npm run test --workspace @vento/ui-web
+
+      - name: Verificar gate CI003 y releases privados sin publicar
+        run: node --test scripts/quality/shared-package-release-gate.test.mjs
 
       - name: Verificar release previews sin acceso al registry ni secretos
         run: |
