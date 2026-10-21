@@ -206,8 +206,16 @@ test('canonical and package CI actions use maintained Node 24 runtime without ex
     const workflow = fs.readFileSync(path.join(root, filename), 'utf8');
     assert.match(workflow, /uses: actions\/checkout@v7/u, filename + ':CHECKOUT_V7_REQUIRED');
     assert.match(workflow, /uses: actions\/setup-node@v7/u, filename + ':SETUP_NODE_V7_REQUIRED');
-    assert.doesNotMatch(workflow, /uses: actions\/(?:checkout|setup-node)@v[1-6]\b/u,
+    assert.doesNotMatch(workflow, /uses: actions\/(?:checkout|setup-node|upload-artifact|download-artifact)@v[1-6]\b/u,
       filename + ':OUTDATED_ACTION_RUNTIME');
+    if (workflow.includes('uses: actions/upload-artifact@')) {
+      assert.match(workflow, /uses: actions\/upload-artifact@v7/u,
+        filename + ':UPLOAD_ARTIFACT_NODE24_REQUIRED');
+    }
+    if (workflow.includes('uses: actions/download-artifact@')) {
+      assert.match(workflow, /uses: actions\/download-artifact@v7/u,
+        filename + ':DOWNLOAD_ARTIFACT_NODE24_REQUIRED');
+    }
   }
   const qa = fs.readFileSync(path.join(root, paths[0]), 'utf8');
   assert.match(qa, /name: Configurar Node canonico\n\s+uses: actions\/setup-node@v7\n\s+with:\n\s+node-version-file: \.node-version\n\s+package-manager-cache: false/u,
