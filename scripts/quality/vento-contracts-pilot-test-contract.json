@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "package": "@vento/contracts",
+  "runner": {
+    "command": "$NODE",
+    "args": [
+      "../../scripts/quality/vento-contracts-pilot-test-runner.mjs",
+      "../../scripts/quality/vento-contracts-pilot-build-contract.json"
+    ],
+    "timeout_ms": 300000
+  },
+  "required_groups": [
+    {
+      "id": "unit",
+      "applicability": "REQUIRED"
+    },
+    {
+      "id": "contractual",
+      "applicability": "REQUIRED"
+    },
+    {
+      "id": "security",
+      "applicability": "REQUIRED"
+    }
+  ],
+  "fixtures": []
+}
