@@ -845,3 +845,25 @@ test('preview policy rejects unpinned internal package version before release', 
   });
   assert(evaluation.includes('PRIVATE_PREVIEW_SOURCE_INVALID'));
 });
+
+
+test('release preview rejects symlink entries even when regular dist hashes appear valid', () => {
+  const scenario = privateSourcePilotScenario();
+  const archive = zlib.gunzipSync(scenario.tarballBuffer);
+  const name = Buffer.from('package/dist/index.js');
+  const headerOffset = archive.indexOf(name);
+  assert(headerOffset >= 0 && headerOffset % 512 === 0);
+  archive[headerOffset + 156] = '2'.charCodeAt(0);
+  archive.fill(0x20, headerOffset + 148, headerOffset + 156);
+  const header = archive.subarray(headerOffset, headerOffset + 512);
+  let checksum = 0;
+  for (const byte of header) checksum += byte;
+  header.write(checksum.toString(8).padStart(6, '0') + '\0 ', 148, 'ascii');
+  scenario.tarballBuffer = zlib.gzipSync(archive, { mtime: 0 });
+  const errors = assessPrivateReleasePreview({
+    sourceManifest: scenario.manifest,
+    tarballBuffer: scenario.tarballBuffer,
+    buildEvidence: scenario.buildEvidence,
+  });
+  assert(errors.includes('PRIVATE_PREVIEW_ARCHIVE_INVALID'));
+});
