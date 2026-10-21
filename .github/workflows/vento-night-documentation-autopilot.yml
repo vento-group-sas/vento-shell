@@ -108,7 +108,7 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=no)"
 
       - name: Publicar evidencia de autorización
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization.json
@@ -142,7 +142,7 @@ jobs:
           git checkout --detach origin/main
 
       - name: Descargar autorización de este turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization
@@ -172,7 +172,7 @@ jobs:
 
       - name: Publicar evidencia FASE 2
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-phase2-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase2
@@ -208,13 +208,13 @@ jobs:
           git checkout --detach origin/main
 
       - name: Descargar autorización de este turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization
 
       - name: Descargar evidencia FASE 2 del mismo turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-phase2-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase2
@@ -238,7 +238,7 @@ jobs:
 
       - name: Publicar evidencia FASE 3
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-phase3-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase3
@@ -282,7 +282,7 @@ jobs:
           git config user.email "vento-documentation-autopilot@users.noreply.github.com"
 
       - name: Descargar autorización del turno
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: vento-night-documentation-authorization-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/authorization
@@ -297,7 +297,7 @@ jobs:
 
       - name: Publicar evidencia completa del turno
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: vento-night-documentation-turn-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/turn
