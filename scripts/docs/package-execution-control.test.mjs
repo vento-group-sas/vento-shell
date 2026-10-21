@@ -489,3 +489,18 @@ test('PACKAGE_REMATURE solo admite el package reservado en authorization_frontie
   const result = deriveLinearPackageExecution({ packages: [pending] }, policy);
   assert.doesNotThrow(() => assertPackageMutationAllowed({ execution: result, packageId: 'GAP-PKG-001', operation: 'PACKAGE_REMATURE', openOrderCorrections: [] }));
 });
+
+test('package autorizado hereda aprobación por fase en lugar de repetirla por etapa', () => {
+  const candidate = pkg('GAP-PKG-045', 1, 'IMPLEMENTATION_READY', [], {
+    package_gate: { status: 'APPROVED_FOR_IMPLEMENTATION', approval_complete: true },
+    physical_entry_instance: {
+      instance_id: 'SHELL-CI-020::GAP-PKG-045', status: 'PENDING_AUTHORIZATION',
+    },
+  });
+  const result = deriveLinearPackageExecution({ packages: [candidate] }, {
+    ...policy, authorization_granularity: 'PACKAGE_PHASE',
+  });
+  assert.equal(result.current.next_action.type, 'AUTHORIZE_PHYSICAL_IMPLEMENTATION');
+  assert.match(result.current.next_action.command, /--from-phase-approval/u);
+  assert.doesNotMatch(result.current.next_action.command, /--approval-statement/u);
+});

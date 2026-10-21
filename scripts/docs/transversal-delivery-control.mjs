@@ -68,7 +68,7 @@ export function validateTransversalPolicy(policy) {
   ], 'policy');
   if (policy.schema_version !== 1 || policy.policy_id !== 'TRANSVERSAL-DELIVERY-CONTROL-001'
     || policy.mode !== 'CANONICAL_TASK_COMPOSITION'
-    || policy.execution_mode !== 'READ_ONLY_SCOPE_PREPARATION'
+    || policy.execution_mode !== 'PHASE_GOVERNED_IMPLEMENTATION'
     || policy.automatic_authorization !== false || policy.assistant_remote_mutations !== false
     || policy.gap_package_selection !== false || policy.preserve_verified_instances !== true
     || policy.source_authority !== 'CANONICAL_TASK_OWNERS_AND_INSTANCE_LEDGERS'
@@ -87,7 +87,7 @@ export function validateTransversalPolicy(policy) {
     relativePath(profile.package_manifest);
     if (!profile.package_manifest.startsWith('packages/')
       || !profile.package_manifest.endsWith('/package.json')
-      || profile.distribution_gate !== 'PHYSICAL_SCOPE_AND_HUMAN_APPROVAL_REQUIRED') {
+      || profile.distribution_gate !== 'PHASE_SCOPE_PLUS_RELEASE_CERTIFICATION') {
       fail(`PROFILE_SCOPE_INVALID:${profile.package_name}`);
     }
     if (!Array.isArray(profile.source_groups) || profile.source_groups.length === 0) {
@@ -245,8 +245,9 @@ export function assessTransversalDelivery({ root = process.cwd(), policy = readT
     const record = parseJsonAt(root, recordPath);
     validateDraftDossier(record, { packageName, taskIds: sources });
   }
-  // This first control only prepares scope. An approved physical delivery must
-  // be admitted by a separate, reviewed lifecycle before the manifest changes.
+  // This inspector evaluates phase scope; it does not grant authorization.
+  // An approved package phase reuses its human approval; a distributable manifest
+  // additionally requires its independently certified npm release.
   if (manifest.private !== true) fail(`UNAUTHORIZED_DISTRIBUTABLE_MANIFEST:${packageName}`);
   return Object.freeze({
     package_name: packageName,
@@ -258,7 +259,7 @@ export function assessTransversalDelivery({ root = process.cwd(), policy = readT
     dossier_path: recordPath,
     physical_authorized: false,
     remote_mutations_authorized: false,
-    next_gate: 'PHYSICAL_DISCOVERY_AND_INDEPENDENT_HUMAN_APPROVAL',
+    next_gate: 'APPROVED_PHASE_SCOPE_AND_CERTIFIED_RELEASE',
   });
 }
 
@@ -294,7 +295,7 @@ function inspectPhysicalTargets(root, record) {
 }
 
 // This inspection does not grant a physical instance or reserve any implementation locks.
-// A separate, reviewed authorization lifecycle must verify fresh external lock evidence.
+// The approved package phase owns authorization; fresh locks and evidence are still required.
 export function assessTransversalPreflight({
   root = process.cwd(),
   policy = readTransversalPolicy(root),
@@ -322,7 +323,7 @@ export function assessTransversalPreflight({
   }
   return Object.freeze({
     package_name: packageName,
-    status: blockers.length === 0 ? 'READY_FOR_APPROVAL' : 'BLOCKED',
+    status: blockers.length === 0 ? 'PHASE_SCOPE_READY' : 'BLOCKED',
     blockers: Object.freeze(blockers),
     physical_authorized: false,
     remote_mutations_authorized: false,

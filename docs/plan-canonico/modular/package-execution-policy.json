@@ -33,5 +33,6 @@
   "long_observation_holds_global_turn": false,
   "independent_checkout_required": true,
   "serialized_close": true,
-  "shared_resource_conflicts_serialized": true
+  "shared_resource_conflicts_serialized": true,
+  "authorization_granularity": "PACKAGE_PHASE"
 }

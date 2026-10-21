@@ -264,11 +264,32 @@ export function buildAuthorizedInstanceRecord({ instance, gate, identity, previo
   };
 }
 
+export function phaseApprovalFromPackageGate(gate, identity, governanceMode) {
+  if (governanceMode !== 'EXPLICIT_PER_PHASE') fail('PHASE_APPROVAL_MODE_NOT_ACTIVE.');
+  if (gate?.package_id !== identity.packageId || gate?.status !== 'APPROVED_FOR_IMPLEMENTATION') {
+    fail('PHASE_APPROVAL_PACKAGE_SCOPE_MISMATCH.');
+  }
+  const source = gate?.authorization;
+  if (source?.decision !== 'APROBADO'
+    || !String(source.approved_by ?? '').trim()
+    || !/^\d{4}-\d{2}-\d{2}/u.test(String(source.approved_at ?? ''))
+    || !String(source.approval_statement ?? '').includes('APROBADO')) {
+    fail('PHASE_APPROVAL_HUMAN_EVIDENCE_MISSING.');
+  }
+  return {
+    approvedBy: source.approved_by,
+    approvedAt: source.approved_at,
+    timezone: 'America/Bogota',
+    approvalStatement: source.approval_statement,
+  };
+}
+
 function parseArgs(argv) {
-  const args = { instanceId: null, approvedBy: null, approvalStatement: null, timezone: null };
+  const args = { instanceId: null, approvedBy: null, approvalStatement: null, timezone: null, fromPhaseApproval: false };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     const value = argv[index + 1];
+    if (token === '--from-phase-approval') { args.fromPhaseApproval = true; continue; }
     if (token === '--instance-id') args.instanceId = value;
     else if (token === '--approved-by') args.approvedBy = value;
     else if (token === '--approval-statement') args.approvalStatement = value;
@@ -277,10 +298,19 @@ function parseArgs(argv) {
     if (!value || value.startsWith('--')) fail(`falta valor de ${token}.`);
     index += 1;
   }
-  if (!args.instanceId || !args.approvedBy || !args.approvalStatement || !args.timezone) {
-    fail('authorize exige --instance-id, --approved-by, --approval-statement y --timezone.');
+  if (!args.instanceId) fail('authorize exige --instance-id.');
+  if (args.fromPhaseApproval) {
+    if (args.approvedBy || args.approvalStatement || args.timezone) {
+      fail('PHASE_APPROVAL_CANNOT_OVERRIDE_HUMAN_EVIDENCE.');
+    }
+  } else {
+    if (!args.approvedBy || !args.approvalStatement || !args.timezone) {
+      fail('authorize exige --approved-by, --approval-statement y --timezone.');
+    }
+    if (!args.approvalStatement.includes('APROBADO')) {
+      fail('--approval-statement debe contener APROBADO explícito.');
+    }
   }
-  if (!args.approvalStatement.includes('APROBADO')) fail('--approval-statement debe contener APROBADO explícito.');
   return args;
 }
 
@@ -325,18 +355,17 @@ export function authorizeImplementationInstance({ root = process.cwd(), ...input
     ? JSON.parse(fs.readFileSync(abs(root, instanceRecordRelativePath(`${previousId}::${identity.packageId}`)), 'utf8'))
     : null;
   const sourceContractSha256 = computeBaselineAtRef({ root, ref: 'HEAD', taskId: identity.taskId }).target_task_sha256;
-  const next = buildAuthorizedInstanceRecord({
-    instance,
-    gate,
-    identity,
-    previous,
-    sourceContractSha256,
-    approval: {
+  const governance = loadImplementationControl({ root });
+  const approval = input.fromPhaseApproval
+    ? phaseApprovalFromPackageGate(gate, identity, governance.authorization_mode)
+    : {
       approvedBy: input.approvedBy,
       approvalStatement: input.approvalStatement,
       timezone: input.timezone,
       approvedAt: input.approvedAt ?? new Date().toISOString(),
-    },
+    };
+  const next = buildAuthorizedInstanceRecord({
+    instance, gate, identity, previous, sourceContractSha256, approval,
   });
   fs.writeFileSync(abs(root, instancePath), stableJson(next), 'utf8');
 

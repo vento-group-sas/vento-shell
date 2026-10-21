@@ -21,6 +21,7 @@ import {
 import {
   instanceRecordRelativePath,
   loadImplementationControl,
+  isPackagePhaseInstance,
   validateImplementationControl,
 } from './implementation-control.mjs';
 import { deriveCoordinatedImplementationStatus } from './implementation-readiness-coordinator.mjs';
@@ -1297,6 +1298,20 @@ async function printStatus({ root, explicitInstanceId }) {
   });
 }
 
+export function describePhaseAuthorizationGate({ instanceId, authorizationMode }) {
+  if (isPackagePhaseInstance(instanceId, authorizationMode)) {
+    return {
+      NEXT_GATE: 'REUSE_APPROVED_PACKAGE_PHASE',
+      NEXT_ACTION: `npm run docs:implementation:authorize -- --instance-id ${instanceId} --from-phase-approval`,
+      HUMAN_GATE: 'PHASE_APPROVAL_ALREADY_RECORDED',
+    };
+  }
+  return {
+    NEXT_GATE: 'EXPLICIT_PHYSICAL_AUTHORIZATION',
+    HUMAN_GATE: 'SI',
+  };
+}
+
 async function advance({ root, explicitInstanceId, materialized, evidenceFile }) {
   const coordinatedStatus = await deriveCoordinatedImplementationStatus({ root });
   const instanceId = resolveExecutorInstanceId({ explicitInstanceId, coordinatedStatus });
@@ -1318,10 +1333,14 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   let state = classifyExecutionState(instance);
 
   if (state === 'AUTHORIZATION_GATE') {
+    const gate = describePhaseAuthorizationGate({
+      instanceId,
+      authorizationMode: loadImplementationControl({ root }).authorization_mode,
+    });
     printResult({
       ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
-      STATUS: instance.status, EXECUTOR_STATE: state, NEXT_GATE: 'EXPLICIT_PHYSICAL_AUTHORIZATION',
-      HUMAN_GATE: 'SI', MUTATIONS: 'NO', RESUMABLE: 'SI',
+      STATUS: instance.status, EXECUTOR_STATE: state, ...gate,
+      MUTATIONS: 'NO', RESUMABLE: 'SI',
     });
     return;
   }

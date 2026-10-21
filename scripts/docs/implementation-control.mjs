@@ -26,6 +26,11 @@ const AUTHORIZED_LIFECYCLE_STATUSES = new Set([
   'VERIFIED',
 ]);
 
+export function isPackagePhaseInstance(instanceId, authorizationMode) {
+  return authorizationMode === 'EXPLICIT_PER_PHASE'
+    && /^SHELL-CI-02[0-4]::GAP-PKG-\d{3}$/u.test(String(instanceId ?? ''));
+}
+
 function fail(errors) {
   throw new Error(`implementation-control.json inválido:\n- ${errors.join('\n- ')}`);
 }
@@ -182,8 +187,40 @@ function matchesLifecycle(instanceId, taskId, lifecycle) {
 export function validateImplementationControl(control, workTopology) {
   const errors = [];
   if (control?.schema_version !== 1) errors.push('schema_version debe ser 1.');
-  if (control?.authorization_mode !== 'EXPLICIT_PER_INSTANCE') {
-    errors.push('authorization_mode debe ser EXPLICIT_PER_INSTANCE.');
+  const phaseMode = control?.authorization_mode === 'EXPLICIT_PER_PHASE';
+  if (!['EXPLICIT_PER_INSTANCE', 'EXPLICIT_PER_PHASE'].includes(control?.authorization_mode)) {
+    errors.push('authorization_mode debe ser EXPLICIT_PER_PHASE o EXPLICIT_PER_INSTANCE.');
+  }
+  if (phaseMode) {
+    const expected = {
+      mode: 'APPROVED_PACKAGE_PHASE',
+      approval_granularity: 'ONCE_PER_PACKAGE_PHASE',
+      phase_source: 'APPROVED_PACKAGE_GATE',
+      in_phase_operations: [
+        'EDIT_APPROVED_SCOPE', 'RUN_VALIDATIONS', 'FIX_DEFECTS', 'LOCAL_COMMIT',
+        'PUSH_APPROVED_BRANCH', 'CREATE_OR_UPDATE_PR',
+      ],
+      independent_decisions: [
+        'EXPAND_SCOPE', 'MERGE', 'DEPLOY', 'PUBLISH_PACKAGE',
+        'REMOTE_DATABASE_MUTATION', 'CHANGE_CREDENTIALS',
+      ],
+      checkpoint_policy: 'PHASE_ENTRY_RISK_BOUNDARY_AND_CLOSE',
+      evidence_policy: 'FRESH_CANDIDATE_AND_PRESERVED_HISTORY',
+    };
+    const actual = control?.phase_execution;
+    const matchesPhase = actual && typeof actual === 'object' && !Array.isArray(actual)
+      && Object.keys(actual).length === Object.keys(expected).length
+      && Object.entries(expected).every(([field, value]) => (
+        Array.isArray(value)
+          ? Array.isArray(actual[field])
+            && actual[field].length === value.length
+            && new Set(actual[field]).size === value.length
+            && value.every((entry) => actual[field].includes(entry))
+          : actual[field] === value
+      ));
+    if (!matchesPhase) {
+      errors.push('phase_execution debe conservar el contrato completo de fase aprobada.');
+    }
   }
   if (control?.automatic_authorization !== false) errors.push('automatic_authorization debe ser false.');
   if (control?.authorization_entrypoint !== 'docs:implementation:authorize') {
@@ -234,7 +271,7 @@ export function validateImplementationControl(control, workTopology) {
         read_checks: true,
         require_approved_scope: true,
         require_published_branch: true,
-        push: 'APPROVAL_REQUIRED_PER_ACTION',
+        push: phaseMode ? 'PHASE_APPROVED_SCOPE' : 'APPROVAL_REQUIRED_PER_ACTION',
         merge: 'APPROVAL_REQUIRED_PER_ACTION',
         auto_merge: false,
         deploy: 'APPROVAL_REQUIRED_PER_ACTION',
@@ -667,6 +704,7 @@ export function deriveImplementationControl({
       || left.instanceId.localeCompare(right.instanceId, 'en')
     ));
   const actionForInstance = (instance) => {
+    const reusePhaseApproval = isPackagePhaseInstance(instance.instanceId, control.authorization_mode);
     const integrityRecovery = instance.stateIntegrityRecoveryRequired === true;
     const type = integrityRecovery
       ? 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY'
@@ -678,7 +716,9 @@ export function deriveImplementationControl({
       instruction: integrityRecovery
         ? `El ledger declara ${instance.declaredStatus}, pero la evidencia efectiva solo soporta ${instance.effectiveStatus}. Reconciliar según ${instance.recoveryAction ?? 'MANUAL_RECONCILIATION_REQUIRED'} antes de cualquier mutación.`
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? `Autorizar ${instance.instanceId} exclusivamente mediante ${control.authorization_entrypoint}; el comando deriva scope y evidencia desde autoridades canónicas y conserva HUMAN_GATE explícito.`
+          ? reusePhaseApproval
+            ? `Reutilizar la aprobación humana vigente del package gate para ${instance.instanceId}; no solicitar aprobación nueva para la misma fase.`
+            : `Autorizar ${instance.instanceId} exclusivamente mediante ${control.authorization_entrypoint}; el comando deriva scope y evidencia desde autoridades canónicas y conserva HUMAN_GATE explícito.`
           : type === 'EJECUTAR_IMPLEMENTACION'
             ? `Reanudar ${instance.instanceId} desde ${instance.status} exclusivamente mediante ${IMPLEMENTATION_MUTATING_ENTRYPOINT}; el coordinador resuelve internamente start, preverify, repair y finish.`
             : `Guiar la resolución humana del bloqueo de ${instance.instanceId} sin ampliar el alcance.`,
@@ -688,7 +728,9 @@ export function deriveImplementationControl({
       command: integrityRecovery
         ? null
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --approved-by VENTO_OWNER --approval-statement "APROBADO ${instance.instanceId}" --timezone America/Bogota`
+          ? reusePhaseApproval
+            ? `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --from-phase-approval`
+            : `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --approved-by VENTO_OWNER --approval-statement "APROBADO ${instance.instanceId}" --timezone America/Bogota`
           : type === 'EJECUTAR_IMPLEMENTACION'
             ? `npm run ${IMPLEMENTATION_MUTATING_ENTRYPOINT} -- --instance-id ${instance.instanceId}`
             : null,
@@ -754,6 +796,7 @@ export function deriveImplementationControl({
     schemaVersion: 1,
     mode,
     authorizationMode: control.authorization_mode,
+    phaseExecution: control.phase_execution ?? null,
     authorizationEntrypoint: control.authorization_entrypoint,
     executionOperatorPolicy: {
       defaultOperator: operatorPolicy.default_operator,
@@ -845,6 +888,7 @@ export function renderCurrentWorkDirective(control) {
 
 - **Operador predeterminado:** USUARIO HUMANO
 - **Modo:** TRANSACCIÓN CONTINUA HASTA BLOQUEO REAL
+- **Unidad de autorización:** ${control.authorizationMode === 'EXPLICIT_PER_PHASE' ? 'UNA APROBACION POR FASE DE PACKAGE; PASOS RUTINARIOS AGRUPADOS' : 'INSTANCIA INDIVIDUAL HISTORICA'}
 - **Escrituras locales del asistente:** ${control.executionOperatorPolicy.assistantRepositoryWrites
   ? 'PERMITIDAS SOLO POR MCP CON INSTANCIA AUTORIZADA, ALCANCE Y CONFIRMACION LOCAL'
   : 'PROHIBIDAS POR DEFECTO'}
@@ -862,7 +906,11 @@ export function renderCurrentWorkDirective(control) {
   && prOperations?.merge === 'APPROVAL_REQUIRED_PER_ACTION'
   && prOperations?.deploy === 'APPROVAL_REQUIRED_PER_ACTION'
     ? 'REQUIEREN AUTORIZACION HUMANA ESPECIFICA POR CADA OPERACION; NUNCA AUTOMATICOS'
-    : 'PROHIBIDOS'}
+    : prOperations?.push === 'PHASE_APPROVED_SCOPE'
+      && prOperations?.merge === 'APPROVAL_REQUIRED_PER_ACTION'
+      && prOperations?.deploy === 'APPROVAL_REQUIRED_PER_ACTION'
+      ? 'PUSH EN RAMA APROBADA DE LA FASE SIN REAPROBACION POR PASO; MERGE Y DEPLOY REQUIEREN DECISION HUMANA INDEPENDIENTE'
+      : 'PROHIBIDOS'}
 - **Auto-merge, ediciones remotas de código y otras mutaciones remotas del asistente fuera del alcance aprobado:** PROHIBIDAS
 - **Pausa:** solo cuando un comando fail-fast falla, existe una contradicción real o el siguiente paso requiere una decisión o permiso todavía desconocido
 - **Preflight PASS:** continúa localmente; no requiere volver al chat
@@ -897,7 +945,9 @@ ${physicalRows}
 
 1. El carril documental conserva como máximo una tarea activa; cuando su estado es COMPLETA no se infiere ni se abre otra tarea por continuidad. El carril físico puede mantener un governed active set de instancias independientes, cada una en su checkout, sujeto a dependencias, autorización y resource locks.
 2. Aprobar un marcador documental crea elegibilidad, nunca autorización física automática.
-3. Código, migraciones y Supabase conservan su autorización física. Crear PRs y editar título/descripción sobre ramas publicadas requiere tarea aprobada; push, merge y despliegue requieren una aprobación humana independiente para cada operación. Auto-merge y ediciones remotas de código siguen prohibidos por este permiso.
+3. Código, migraciones y Supabase conservan su autorización física. ${control.authorizationMode === 'EXPLICIT_PER_PHASE'
+  ? 'La aprobación del package gate habilita pasos locales y push de rama aprobada durante la fase; no autoriza ampliar scope, merge, despliegue, publicación, cambios de credenciales ni datos remotos sin decisión humana diferenciada.'
+  : 'Crear PRs y editar título/descripción sobre ramas publicadas requiere tarea aprobada; push, merge y despliegue requieren una aprobación humana independiente para cada operación.'} Auto-merge y ediciones remotas de código siguen prohibidos por este permiso.
 4. \`AUTHORIZED\` habilita el trabajo físico, pero no concede al asistente permiso para escribirlo.
 5. La única entrada mutante normal del carril físico es \`docs:implementation:advance\`; el coordinador abre o reanuda el lifecycle según el estado efectivo y nunca por el status bruto imposible.
 6. Un PASS local continúa por el mismo coordinador; solo FAIL, autorización humana pendiente o evidencia externa real producen una pausa.

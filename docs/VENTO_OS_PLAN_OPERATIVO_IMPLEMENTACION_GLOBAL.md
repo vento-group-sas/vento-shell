@@ -7,6 +7,14 @@
 **Estado del presente instrumento:** guía operativa versionable para consulta y seguimiento; no equivale a `APROBADO`, `VERIFIED` ni autorización física o de despliegue.  
 **Trabajo físico vigente:** `GAP-PKG-004` en `MATURATION_DRAFT`; no se avanza a otro paquete por este documento.
 
+## Gobierno de ejecución por fases (actualización 2026-10-21)
+
+La aprobación humana del `package gate` determina el alcance de una fase de implementación. En las etapas `SHELL-CI-020..024`, cuando el package, el alcance y el contrato siguen vigentes, una nueva instancia física reutiliza esa aprobación mediante `--from-phase-approval`; no requiere otro `APROBADO` por cada paso rutinario.
+
+Dentro de una fase aprobada se agrupan análisis, edición dentro del alcance declarado, build, pruebas, correcciones, commit local, push a la rama aprobada y preparación de PR. Los controladores conservan validaciones programáticas, pero no deben convertir cada transición interna en un punto de aprobación humana. Los checkpoints de decisión humana se concentran en entrada de fase, ampliación de alcance, cambios de credenciales, merge, despliegue, publicación npm, cambios de datos remotos y cierre cuando haya efectos operativos.
+
+La política vigente de ejecución prevalece operativamente sobre prohibiciones históricas de preimplementación en registros cerrados, sin alterar registros `VERIFIED` ni permisos de plataformas externas. Siguen vigentes los controles de secretos, aislamiento de cambios ajenos, resource locks, SQL forward-only, revisión de seguridad, evidencia fresca y protección de `main`. Este documento es una guía de ejecución y no concede permisos por sí solo.
+
 ## 1. Objetivo, alcance y límites
 
 El resultado buscado es implementar y certificar el alcance integral de VENTO OS **sin perder ninguno de los compromisos aprobados**, no cerrar una cantidad arbitraria de GAP. La fuente de verdad de tareas permanece en el plan modular; las instancias de implementación quedan en sus expedientes y ledgers, y las migraciones SQL pertenecen a VENTO Shell.

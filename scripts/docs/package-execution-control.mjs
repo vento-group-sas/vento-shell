@@ -100,7 +100,7 @@ function prerequisiteAction(pkg) {
   };
 }
 
-function nextAction(pkg) {
+function nextAction(pkg, policy) {
   const packageId = normalizePackageId(pkg.package_id);
   const status = String(pkg.status ?? '').trim().toUpperCase();
 
@@ -123,10 +123,14 @@ function nextAction(pkg) {
       return {
         type: 'AUTHORIZE_PHYSICAL_IMPLEMENTATION',
         target: pkg.physical_entry_instance.instance_id,
-        command: `npm run docs:implementation:authorize -- --instance-id ${pkg.physical_entry_instance.instance_id} --approved-by VENTO_OWNER --approval-statement "APROBADO ${pkg.physical_entry_instance.instance_id}" --timezone America/Bogota`,
-        reason:
-          `${packageId} ya tiene handoff PENDING_AUTHORIZATION y reserva su scope probado; `
-          + 'falta autorización física humana explícita.',
+        command: policy?.authorization_granularity === 'PACKAGE_PHASE'
+          ? `npm run docs:implementation:authorize -- --instance-id ${pkg.physical_entry_instance.instance_id} --from-phase-approval`
+          : `npm run docs:implementation:authorize -- --instance-id ${pkg.physical_entry_instance.instance_id} --approved-by VENTO_OWNER --approval-statement "APROBADO ${pkg.physical_entry_instance.instance_id}" --timezone America/Bogota`,
+        reason: policy?.authorization_granularity === 'PACKAGE_PHASE'
+          ? `${packageId} reutiliza la aprobacion humana del package gate para la fase, `
+            + 'sin solicitar autorizacion nueva por cada etapa.'
+          : `${packageId} ya tiene handoff PENDING_AUTHORIZATION y reserva su scope probado; `
+            + 'falta autorización física humana explícita.',
       };
     }
 
@@ -667,6 +671,10 @@ export function readPackageExecutionPolicy(root = process.cwd()) {
   if (policy?.physical_authorization_required !== true) {
     errors.push('physical_authorization_required debe ser true.');
   }
+  if (policy?.authorization_granularity !== undefined
+    && !['PACKAGE_PHASE', 'PER_INSTANCE'].includes(policy.authorization_granularity)) {
+    errors.push('authorization_granularity debe ser PACKAGE_PHASE o PER_INSTANCE.');
+  }
   if (policy?.defer_without_canonical_order !== true) {
     errors.push('defer_without_canonical_order debe ser true.');
   }
@@ -762,7 +770,7 @@ export function deriveGovernedPackageExecution(registry, policy) {
       continue;
     }
 
-    const action = nextAction(pkg);
+    const action = nextAction(pkg, policy);
     const work = deriveCurrentWork(pkg, action);
     const base = {
       ...entryFor(pkg, position),

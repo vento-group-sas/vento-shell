@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildAuthorizedInstanceRecord, mapPhysicalOperation } from './implementation-authorization-lifecycle.mjs';
+import { buildAuthorizedInstanceRecord, mapPhysicalOperation, phaseApprovalFromPackageGate } from './implementation-authorization-lifecycle.mjs';
 
 const identity = { instanceId: 'SHELL-CI-020::GAP-PKG-045', taskId: 'SHELL-CI-020', packageId: 'GAP-PKG-045' };
 const pending = { instance_id: identity.instanceId, task_id: identity.taskId, status: 'PENDING_AUTHORIZATION', target_repositories: [], authorized_changes: [], validation_commands: [], authorization: null, evidence: [] };
@@ -183,4 +183,18 @@ test('CI022 rechaza LATER no aplicable sin cierre real ni referencia', () => {
   integration.applicability_phase = 'LATER';
   integration.evidence = [];
   assert.throws(() => authorizeCi022WithReadinessState(state), /CI022_AUTHORIZATION_REQUIRES_CI021_PILOT_ENTRY_APROBAR_ENTRADA/u);
+});
+
+test('reutiliza aprobacion real de package gate sin aprobacion adicional por etapa', () => {
+  const approved = { ...gate, authorization: {
+    decision: 'APROBADO', approved_by: 'VENTO_OWNER',
+    approved_at: '2026-10-20T22:00:00-05:00',
+    approval_statement: 'APROBADO para la implementacion acotada de GAP-PKG-045',
+  } };
+  const actual = phaseApprovalFromPackageGate(approved, identity, 'EXPLICIT_PER_PHASE');
+  assert.equal(actual.approvedBy, 'VENTO_OWNER');
+  assert.equal(actual.approvalStatement, approved.authorization.approval_statement);
+  assert.throws(() => phaseApprovalFromPackageGate(approved, identity, 'EXPLICIT_PER_INSTANCE'), /MODE_NOT_ACTIVE/u);
+  assert.throws(() => phaseApprovalFromPackageGate(approved, { ...identity, packageId: 'GAP-PKG-999' }, 'EXPLICIT_PER_PHASE'), /SCOPE_MISMATCH/u);
+  assert.throws(() => phaseApprovalFromPackageGate({ ...approved, authorization: { ...approved.authorization, decision: 'PENDING' } }, identity, 'EXPLICIT_PER_PHASE'), /HUMAN_EVIDENCE_MISSING/u);
 });
