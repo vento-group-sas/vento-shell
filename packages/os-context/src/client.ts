@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { ContextSimulationInput, EffectiveContext } from "./types";
+import type { ContextSimulationInput, EffectiveContext } from "./types.js";
 
 export async function getEffectiveContext(
   supabase: SupabaseClient,
