@@ -845,6 +845,15 @@ test('autorizacion por fase agrupa pasos sin autorizar riesgos externos', () => 
   const result = deriveImplementationControl({ control: policy, workTopology: topology() });
   assert.equal(result.authorizationMode, 'EXPLICIT_PER_PHASE');
   assert.match(renderCurrentWorkDirective(result), /PUSH EN RAMA APROBADA DE LA FASE/u);
+  const pending = deriveImplementationControl({
+    control: { ...policy, instances: [pendingInstanceRecord({
+      instanceId: 'SHELL-CI-001::GLOBAL', taskId: 'SHELL-CI-001',
+    })] },
+    workTopology: topology(),
+  });
+  assert.equal(pending.primaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
+  assert.match(pending.primaryAction.command, /--from-phase-approval/u);
+  assert.doesNotMatch(pending.primaryAction.command, /--approval-statement/u);
   assert.throws(() => deriveImplementationControl({
     control: { ...policy, phase_execution: { ...phase, independent_decisions: ['MERGE'] } },
     workTopology: topology(),
