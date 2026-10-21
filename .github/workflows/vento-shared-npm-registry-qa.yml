@@ -1,0 +1,95 @@
+name: VENTO - QA npm compartido (sin publicacion)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/vento-shared-npm-registry-qa.yml"
+      - "scripts/quality/shared-package-registry-preflight.mjs"
+      - "scripts/quality/shared-package-registry-preflight.test.mjs"
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".node-version"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/vento-shared-npm-registry-qa.yml"
+      - "scripts/quality/shared-package-registry-preflight.mjs"
+      - "scripts/quality/shared-package-registry-preflight.test.mjs"
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".node-version"
+  workflow_dispatch:
+    inputs:
+      audit_registry:
+        description: "Consultar el registro privado GitLab solo por GET (requiere entorno protegido)"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vento-npm-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-qa:
+    name: Inventario npm y QA de tarball UI Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Descargar codigo sin credenciales persistentes
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node y npm canonicos
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Instalar dependencias bloqueadas
+        run: npm ci --no-audit --no-fund
+
+      - name: Probar guardas de seguridad y lectura del registro
+        run: node --test scripts/quality/shared-package-registry-preflight.test.mjs
+
+      - name: Inspeccionar los cuatro manifests sin declararlos publicables
+        run: node scripts/quality/shared-package-registry-preflight.mjs inspect
+
+      - name: Compilar candidato privado UI Web
+        run: npm run build --workspace @vento/ui-web
+
+      - name: Verificar distribucion, tarball e instalacion aislada UI Web
+        run: npm run validate --workspace @vento/ui-web
+
+      - name: Ejecutar regresiones de distribucion UI Web
+        run: npm run test --workspace @vento/ui-web
+
+  gitlab-registry-readonly:
+    name: GitLab npm - autenticacion y versiones (solo GET)
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.audit_registry == true }}
+    needs: package-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm-packages-publish
+    steps:
+      - name: Descargar fuente validada sin credenciales persistentes
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node canonico
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - name: Verificar lectura autenticada y colisiones de versiones
+        env:
+          GITLAB_NPM_PUBLISH_TOKEN: ${{ secrets.GITLAB_NPM_PUBLISH_TOKEN }}
+          GITLAB_NPM_REGISTRY_URL: ${{ vars.GITLAB_NPM_REGISTRY_URL }}
+        run: node scripts/quality/shared-package-registry-preflight.mjs registry
