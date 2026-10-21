@@ -254,10 +254,26 @@ export function validateBuildContract(contract, { packageName = null } = {}) {
           errors.push(`TYPES_PATH_INVALID:${entry.subpath}`);
         }
       }
+      const typeOnly = entry.type_only === true;
+      if (entry.type_only !== undefined && typeof entry.type_only !== 'boolean') {
+        errors.push(`TYPE_ONLY_FLAG_INVALID:${entry.subpath}`);
+      }
       if (!Array.isArray(entry.expected_exports)
-        || entry.expected_exports.length === 0
+        || (!typeOnly && entry.expected_exports.length === 0)
+        || (typeOnly && entry.expected_exports.length !== 0)
         || entry.expected_exports.some((name) => !nonEmptyString(name))) {
         errors.push(`EXPECTED_EXPORTS_INVALID:${entry.subpath}`);
+      }
+      if (typeOnly) {
+        if (!nonEmptyString(entry.types)) errors.push(`TYPE_ONLY_DECLARATION_REQUIRED:${entry.subpath}`);
+        if (!Array.isArray(entry.expected_type_exports)
+          || entry.expected_type_exports.length === 0
+          || entry.expected_type_exports.some((name) => !/^[A-Za-z_$][\w$]*$/u.test(name))
+          || unique(entry.expected_type_exports).length !== entry.expected_type_exports.length) {
+          errors.push(`TYPE_ONLY_EXPORTS_INVALID:${entry.subpath}`);
+        }
+      } else if (entry.expected_type_exports !== undefined) {
+        errors.push(`UNEXPECTED_TYPE_ONLY_EXPORTS:${entry.subpath}`);
       }
     }
     if (unique(subpaths).length !== subpaths.length) errors.push('PUBLIC_SURFACE_SUBPATH_DUPLICATE');
@@ -400,6 +416,22 @@ export function exportedNames(source) {
   return [...names].sort();
 }
 
+export function exportedTypeNames(source) {
+  const names = new Set();
+  for (const match of source.matchAll(/\bexport\s+(?:declare\s+)?(?:interface|type)\s+([A-Za-z_$][\w$]*)/gu)) {
+    names.add(match[1]);
+  }
+  for (const match of source.matchAll(/\bexport\s+type\s*\{([^}]+)\}/gu)) {
+    for (const raw of match[1].split(',')) {
+      const text = raw.trim();
+      const alias = text.match(/\bas\s+([A-Za-z_$][\w$]*)$/u)?.[1];
+      const base = text.match(/^([A-Za-z_$][\w$]*)/u)?.[1];
+      if (alias || base) names.add(alias ?? base);
+    }
+  }
+  return [...names].sort();
+}
+
 export function detectUnsafeOutputText(source, { repositoryRoot = null, packageRoot = null } = {}) {
   const reasons = [];
   const normalized = normalizePath(source);
@@ -491,6 +523,15 @@ export function inspectBuiltSurface({ packageRoot, repositoryRoot, manifest, con
       }
     }
     const runtimeExports = exportedNames(runtimeSource);
+    if (entry.type_only === true) {
+      const body = runtimeSource
+        .replace(/\/\*[\s\S]*?\*\//gu, '')
+        .replace(/^\s*\/\/[^\n]*$/gmu, '')
+        .trim();
+      if (body !== 'export {};' && body !== 'export {}') {
+        reasons.push(`TYPE_ONLY_RUNTIME_NOT_EMPTY:${entry.subpath}`);
+      }
+    }
     const expected = [...entry.expected_exports].sort();
     if (stableStringify(runtimeExports) !== stableStringify(expected)) {
       reasons.push(`PUBLIC_EXPORT_MISMATCH:${entry.subpath}`);
@@ -506,14 +547,23 @@ export function inspectBuiltSurface({ packageRoot, repositoryRoot, manifest, con
         for (const unsafe of detectUnsafeOutputText(typeSource, { repositoryRoot, packageRoot })) {
           reasons.push(`${unsafe}:${entry.types}`);
         }
-        typeExports = exportedNames(typeSource);
-        for (const exported of expected) {
-          if (!typeExports.includes(exported)) reasons.push(`DECLARATION_EXPORT_MISSING:${entry.subpath}:${exported}`);
+        typeExports = entry.type_only === true
+          ? exportedTypeNames(typeSource)
+          : exportedNames(typeSource);
+        if (entry.type_only === true) {
+          if (stableStringify(typeExports) !== stableStringify([...entry.expected_type_exports].sort())) {
+            reasons.push(`TYPE_ONLY_EXPORT_MISMATCH:${entry.subpath}`);
+          }
+        } else {
+          for (const exported of expected) {
+            if (!typeExports.includes(exported)) reasons.push(`DECLARATION_EXPORT_MISSING:${entry.subpath}:${exported}`);
+          }
         }
       }
     }
     surface.push({
       subpath: entry.subpath,
+      type_only: entry.type_only === true,
       runtime: runtimeRelative,
       runtime_exports: runtimeExports,
       types: entry.types ? outputRelativeToRoot(contract, packageRoot, entry.types) : null,
