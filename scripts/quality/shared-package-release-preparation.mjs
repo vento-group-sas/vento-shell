@@ -5,8 +5,8 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import {
-  CANONICAL_SHARED_PACKAGES, detectSecretsInTarball,
-  parseSemver, readTarEntries, tagForPackageVersion,
+  detectSecretsInTarball, parseSemver, readTarEntries,
+  releasePreviewManifest, tagForPackageVersion,
 } from './shared-package-release-gate.mjs';
 import { NPM_REGISTRY_URL, PACKAGE_LOCATIONS } from './shared-package-registry-preflight.mjs';
 
@@ -18,49 +18,7 @@ const MIN_ROLES = new Set(['maintainer', 'owner', 'admin']);
 function check(ok, code) {
   if (!ok) throw new Error('VENTO_NPM_RELEASE_PREP:' + code);
 }
-function exportedPaths(value) {
-  if (typeof value === 'string') {
-    check(/^\.\/dist\/[A-Za-z0-9_./-]+$/u.test(value)
-      && !value.includes('..') && !value.includes('//'), 'EXPORT_OUTSIDE_DIST');
-    return [value.slice(2)];
-  }
-  check(value && typeof value === 'object' && !Array.isArray(value), 'EXPORT_INVALID');
-  return Object.values(value).flatMap(exportedPaths);
-}
-
-export function releasePreviewManifest(source) {
-  check(source && typeof source === 'object' && !Array.isArray(source)
-    && CANONICAL_SHARED_PACKAGES.includes(source.name), 'NONCANONICAL_PACKAGE');
-  check(source.private === true && source.type === 'module',
-    'SOURCE_MUST_REMAIN_PRIVATE');
-  check(Boolean(parseSemver(source.version)), 'VERSION_INVALID');
-  check(!Object.hasOwn(source, 'publishConfig'), 'SOURCE_PUBLISH_CONFIG_FORBIDDEN');
-  check(Array.isArray(source.files) && source.files.length === 1
-    && source.files[0] === 'dist/', 'SOURCE_FILES_UNSAFE');
-  check(source.exports && typeof source.exports === 'object'
-    && !Array.isArray(source.exports), 'EXPORTS_MISSING');
-  const targets = [...new Set(exportedPaths(source.exports))];
-  check(targets.length > 0, 'NO_EXPORTS');
-  for (const section of ['dependencies', 'peerDependencies', 'optionalDependencies']) {
-    for (const [name, version] of Object.entries(source[section] ?? {})) {
-      if (name.startsWith('@vento/')) check(Boolean(parseSemver(version)),
-        'INTERNAL_VERSION_NOT_EXACT');
-    }
-  }
-  // This manifest is created ONLY in os.tmpdir(), never in packages/*.
-  const preview = {
-    name: source.name, version: source.version, type: 'module', private: false,
-    files: ['dist/'], exports: structuredClone(source.exports),
-    publishConfig: { registry: NPM_REGISTRY_URL },
-  };
-  for (const field of ['description', 'main', 'types', 'sideEffects',
-    'dependencies', 'optionalDependencies', 'peerDependencies',
-    'peerDependenciesMeta', 'engines', 'license']) {
-    if (Object.hasOwn(source, field)) preview[field] = structuredClone(source[field]);
-  }
-  // Exclude scripts, bin, workspaces and all lifecycle hooks.
-  return { preview, targets };
-}
+export { releasePreviewManifest };
 
 function safeDist(root) {
   const stat = fs.lstatSync(root);
