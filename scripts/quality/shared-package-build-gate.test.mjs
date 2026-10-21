@@ -16,6 +16,8 @@ import {
   detectUnsafeOutputText,
   evaluateObservedBuild,
   exportedNames,
+  exportedTypeNames,
+  inspectBuiltSurface,
   findDuplicateBuildGateImplementations,
   runGate,
   sha256,
@@ -458,5 +460,78 @@ test('helper - snapshot directory hashes the normalized file set', () => {
     assert.match(snapshot.content_hash, /^sha256:/u);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('type-only entrypoint is an explicit, valid CI002 contract with declaration exports', () => {
+  const entry = {
+    subpath: './authorization/response-contracts/v1',
+    runtime: 'dist/index.js', types: 'dist/index.d.ts',
+    type_only: true, expected_exports: [], expected_type_exports: ['AccessContextV1', 'SimulationContextV1'],
+  };
+  assert.deepEqual(validateBuildContract(baseContract({ public_surface: [entry] })), []);
+  assert.deepEqual(exportedTypeNames(
+    "export type { AccessContextV1, SimulationContextV1 } from './contracts.js';",
+  ), ['AccessContextV1', 'SimulationContextV1']);
+});
+
+test('type-only entrypoint cannot masquerade as zero-export runtime without declared type surface', () => {
+  const entry = {
+    subpath: './types', runtime: 'dist/index.js', types: 'dist/index.d.ts',
+    expected_exports: [],
+  };
+  assert(validateBuildContract(baseContract({ public_surface: [entry] }))
+    .includes('EXPECTED_EXPORTS_INVALID:./types'));
+  const bad = { ...entry, type_only: true, expected_type_exports: [] };
+  assert(validateBuildContract(baseContract({ public_surface: [bad] }))
+    .includes('TYPE_ONLY_EXPORTS_INVALID:./types'));
+  const mixed = { ...entry, type_only: true, expected_exports: ['leak'],
+    expected_type_exports: ['AccessContextV1'] };
+  assert(validateBuildContract(baseContract({ public_surface: [mixed] }))
+    .includes('EXPECTED_EXPORTS_INVALID:./types'));
+});
+
+test('CI002 validates real type-only declaration names and an empty JavaScript module', () => {
+  const fixture = createFixture();
+  try {
+    const pkg = fixture.packageRoot;
+    fs.mkdirSync(path.join(pkg, 'dist'), { recursive: true });
+    fs.writeFileSync(path.join(pkg, 'dist/index.js'), 'export {};\n');
+    fs.writeFileSync(path.join(pkg, 'dist/index.d.ts'),
+      "export type { AccessContextV1, SimulationContextV1 } from './contracts.js';\n");
+    const contract = baseContract({
+      public_surface: [{
+        subpath: './response', runtime: 'dist/index.js', types: 'dist/index.d.ts',
+        type_only: true, expected_exports: [],
+        expected_type_exports: ['AccessContextV1', 'SimulationContextV1'],
+      }],
+    });
+    const observed = inspectBuiltSurface({
+      packageRoot: pkg, repositoryRoot: fixture.root,
+      manifest: baseManifest(), contract,
+      artifactSnapshot: snapshotDirectory(path.join(pkg, 'dist')),
+    });
+    assert.deepEqual(observed.reasons, []);
+    assert.deepEqual(observed.surface[0].runtime_exports, []);
+    assert.deepEqual(observed.surface[0].type_exports,
+      ['AccessContextV1', 'SimulationContextV1']);
+    fs.writeFileSync(path.join(pkg, 'dist/index.js'), "console.log('side effect');\nexport {};\n");
+    const unsafe = inspectBuiltSurface({
+      packageRoot: pkg, repositoryRoot: fixture.root,
+      manifest: baseManifest(), contract,
+      artifactSnapshot: snapshotDirectory(path.join(pkg, 'dist')),
+    });
+    assert(unsafe.reasons.includes('TYPE_ONLY_RUNTIME_NOT_EMPTY:./response'));
+    fs.writeFileSync(path.join(pkg, 'dist/index.js'), 'export {};\n');
+    fs.writeFileSync(path.join(pkg, 'dist/index.d.ts'),
+      "export type { AccessContextV1 } from './contracts.js';\n");
+    const missing = inspectBuiltSurface({
+      packageRoot: pkg, repositoryRoot: fixture.root,
+      manifest: baseManifest(), contract,
+      artifactSnapshot: snapshotDirectory(path.join(pkg, 'dist')),
+    });
+    assert(missing.reasons.includes('TYPE_ONLY_EXPORT_MISMATCH:./response'));
+  } finally {
+    fs.rmSync(fixture.root, { recursive: true, force: true });
   }
 });
