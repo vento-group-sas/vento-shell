@@ -169,3 +169,26 @@ test('stage four real compiled packages as ephemeral SHA-bound previews, without
     assert.equal(JSON.parse(before[index]).private, true);
   }
 });
+
+test('main push performs protected GET audit only after package QA; PRs cannot access secrets', () => {
+  const root = path.resolve(import.meta.dirname, '../..');
+  const qaWorkflow = fs.readFileSync(
+    path.join(root, '.github/workflows/vento-shared-npm-registry-qa.yml'), 'utf8');
+  const canonical = fs.readFileSync(
+    path.join(root, '.github/workflows/validate-canonical-plan.yml'), 'utf8');
+  assert(qaWorkflow.includes("github.ref == 'refs/heads/main'"));
+  assert(qaWorkflow.includes("github.event_name == 'push'"));
+  assert(qaWorkflow.includes('needs: package-qa'));
+  assert(qaWorkflow.includes('environment: npm-packages-publish'));
+  assert(qaWorkflow.includes('node scripts/quality/shared-package-registry-preflight.mjs registry'));
+  assert(qaWorkflow.includes('node scripts/quality/shared-package-release-preparation.mjs protection'));
+  assert(qaWorkflow.includes("github.event_name == 'push' || inputs.audit_protection == true"));
+  for (const covered of [
+    '.github/workflows/vento-shared-npm-registry-qa.yml',
+    'scripts/quality/shared-package-release-preparation.mjs',
+    'scripts/quality/shared-package-release-preparation.test.mjs',
+  ]) {
+    assert.equal(canonical.split('"' + covered + '"').length, 3,
+      'CANONICAL_PLAN_PR_AND_PUSH_MUST_COVER:' + covered);
+  }
+});
