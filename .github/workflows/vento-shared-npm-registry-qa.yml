@@ -8,6 +8,9 @@ on:
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - ".github/workflows/vento-contracts-private-npm-release.yml"
+      - "scripts/quality/vento-contracts-private-release.mjs"
+      - "scripts/quality/vento-contracts-private-release.test.mjs"
       - "scripts/quality/shared-package-release-gate.mjs"
       - "scripts/quality/shared-package-release-gate.test.mjs"
       - "scripts/quality/shared-package-test-gate.mjs"
@@ -28,6 +31,9 @@ on:
       - "scripts/quality/shared-package-registry-preflight.test.mjs"
       - "scripts/quality/shared-package-release-preparation.mjs"
       - "scripts/quality/shared-package-release-preparation.test.mjs"
+      - ".github/workflows/vento-contracts-private-npm-release.yml"
+      - "scripts/quality/vento-contracts-private-release.mjs"
+      - "scripts/quality/vento-contracts-private-release.test.mjs"
       - "scripts/quality/shared-package-release-gate.mjs"
       - "scripts/quality/shared-package-release-gate.test.mjs"
       - "scripts/quality/shared-package-test-gate.mjs"
@@ -152,6 +158,11 @@ jobs:
             --package-root packages/contracts \
             --contract scripts/quality/vento-contracts-pilot-build-contract.json \
             --verify-evidence "$1" --json
+
+      - name: Verificar politica de publicacion privada y preflight CI003 sin escribir
+        run: |
+          node --test scripts/quality/vento-contracts-private-release.test.mjs
+          node scripts/quality/vento-contracts-private-release.mjs --mode prepare
 
       - name: Conservar evidencia CI001 CI002 sin tarball ni secretos
         uses: actions/upload-artifact@v7
