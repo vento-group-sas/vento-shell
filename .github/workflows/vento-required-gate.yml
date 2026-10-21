@@ -79,13 +79,13 @@ jobs:
           NODE
 
       - name: Descargar commit exacto
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || inputs.source_commit || github.sha }}
           fetch-depth: 0
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.19.0
           cache: npm
@@ -109,15 +109,16 @@ jobs:
       baseline_identity: ${{ steps.registry.outputs.baseline_identity }}
     steps:
       - name: Descargar commit exacto
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha || inputs.source_commit || github.sha }}
           fetch-depth: 0
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24.19.0
+          package-manager-cache: false
 
       - name: Resolver declaración TREQ
         id: declaration
@@ -167,7 +168,7 @@ jobs:
 
       - name: Descargar autoridad canónica TREQ para consumidores
         if: ${{ github.repository != 'vento-group-sas/vento-shell' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: vento-group-sas/vento-shell
           ref: main
@@ -268,7 +269,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Descargar motor propietario CI019
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: vento-group-sas/vento-shell
           ref: main
@@ -353,7 +354,7 @@ jobs:
 
       - name: Publicar bundle CI019
         id: publish
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.evidence.outputs.artifact_name }}
           path: ${{ runner.temp }}/vento-ci019/evidence
@@ -406,7 +407,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Descargar motor propietario CI019
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: vento-group-sas/vento-shell
           ref: main
@@ -491,7 +492,7 @@ jobs:
 
       - name: Publicar bundle CI019
         id: publish
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.evidence.outputs.artifact_name }}
           path: ${{ runner.temp }}/vento-ci019/evidence

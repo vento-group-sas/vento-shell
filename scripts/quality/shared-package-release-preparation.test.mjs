@@ -192,3 +192,40 @@ test('main push performs protected GET audit only after package QA; PRs cannot a
       'CANONICAL_PLAN_PR_AND_PUSH_MUST_COVER:' + covered);
   }
 });
+
+test('canonical and package CI actions use maintained Node 24 runtime without exposing audit cache', () => {
+  const root = path.resolve(import.meta.dirname, '../..');
+  const paths = [
+    '.github/workflows/vento-shared-npm-registry-qa.yml',
+    '.github/workflows/validate-canonical-plan.yml',
+    '.github/workflows/vento-required-gate.yml',
+    '.github/workflows/vento-repository-publication.yml',
+    '.github/workflows/vento-night-documentation-autopilot.yml',
+  ];
+  for (const filename of paths) {
+    const workflow = fs.readFileSync(path.join(root, filename), 'utf8');
+    assert.match(workflow, /uses: actions\/checkout@v7/u, filename + ':CHECKOUT_V7_REQUIRED');
+    assert.match(workflow, /uses: actions\/setup-node@v7/u, filename + ':SETUP_NODE_V7_REQUIRED');
+    assert.doesNotMatch(workflow, /uses: actions\/(?:checkout|setup-node|upload-artifact|download-artifact)@v[1-6]\b/u,
+      filename + ':OUTDATED_ACTION_RUNTIME');
+    if (workflow.includes('uses: actions/upload-artifact@')) {
+      assert.match(workflow, /uses: actions\/upload-artifact@v7/u,
+        filename + ':UPLOAD_ARTIFACT_NODE24_REQUIRED');
+    }
+    if (workflow.includes('uses: actions/download-artifact@')) {
+      assert.match(workflow, /uses: actions\/download-artifact@v7/u,
+        filename + ':DOWNLOAD_ARTIFACT_NODE24_REQUIRED');
+    }
+  }
+  const qa = fs.readFileSync(path.join(root, paths[0]), 'utf8');
+  assert.match(qa, /name: Configurar Node canonico\n\s+uses: actions\/setup-node@v7\n\s+with:\n\s+node-version-file: \.node-version\n\s+package-manager-cache: false/u,
+    'PROTECTED_AUDIT_CACHING_MUST_BE_DISABLED');
+  assert.match(qa, /environment: npm-packages-publish/u);
+  assert.match(qa, /persist-credentials: false/u);
+  const publication = fs.readFileSync(path.join(root, paths[3]), 'utf8');
+  const autopilot = fs.readFileSync(path.join(root, paths[4]), 'utf8');
+  assert.match(publication, /package-manager-cache: false/u,
+    'PUBLICATION_WORKFLOW_CACHE_DISABLED');
+  assert.equal((autopilot.match(/package-manager-cache: false/gu) ?? []).length, 4,
+    'DOC_AUTOPILOT_JOBS_MUST_DISABLE_UNUSED_CACHE');
+});

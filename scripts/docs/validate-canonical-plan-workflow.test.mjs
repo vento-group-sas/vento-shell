@@ -72,7 +72,8 @@ test('verifica rango incremental de PR, fuentes antes del build y compilado rege
     workflow,
     /docs:commit-scope:check -- --range "\$\{\{ github\.event\.pull_request\.base\.sha \}\}\.\.\$\{\{ github\.sha \}\}"/u,
   );
-  assert.match(workflow, /uses: actions\/upload-artifact@v4/u);
+  assert.match(workflow, /uses: actions\/upload-artifact@v7/u);
+  assert.doesNotMatch(workflow, /uses: actions\/upload-artifact@v[1-6]\b/u);
   assert.match(workflow, /PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO\.md/u);
   assert.match(workflow, /retention-days: 7/u);
   assert.match(workflow, /fetch-depth: 0/u);

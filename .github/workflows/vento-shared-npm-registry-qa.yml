@@ -51,12 +51,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Descargar codigo sin credenciales persistentes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Configurar Node y npm canonicos
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -114,14 +114,15 @@ jobs:
     environment: npm-packages-publish
     steps:
       - name: Descargar fuente validada sin credenciales persistentes
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Configurar Node canonico
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
+          package-manager-cache: false
 
       - name: Verificar lectura autenticada y colisiones de versiones
         env:

@@ -26,14 +26,15 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Obtener fuente sin persistir credenciales
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Configurar Node.js del repositorio
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
+          package-manager-cache: false
 
       - name: Ejecutar regresiones deterministas
         run: node --test scripts/quality/repository-publication-gate.test.mjs
