@@ -1,5 +1,9 @@
 # @vento/supabase
 
+> **Estado operativo de distribución — 2026-10-21 (PR #1021, candidato privado).**
+> Este paquete incorpora versión candidata, `dist/`, builds ESM/TypeScript y exports explícitos `./browser`, `./server`, `./native`, `./runtime`, `./errors` y `./privileged` (este último solo bajo condición Node). Validaciones: `npm run build --workspace @vento/supabase` y `npm run validate --workspace @vento/supabase`. **No hay publicación ni adopción por consumidores.** Las declaraciones posteriores de ausencia de exports corresponden a los límites históricos de `SHELL-DB-004/005`.
+
+
 Raiz privada de autoria para el acceso tecnico compartido a Supabase de Vento OS.
 
 ## Estado fisico
