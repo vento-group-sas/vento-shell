@@ -4,7 +4,7 @@ import {
     assertPublicSupabaseConfig,
     resolveCanonicalCookieOptions,
     type CookiePolicy,
-} from './runtime';
+} from './runtime.js';
 
 export interface BrowserClientConfig {
     readonly url: string;
