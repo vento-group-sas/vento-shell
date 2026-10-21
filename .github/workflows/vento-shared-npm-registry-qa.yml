@@ -74,6 +74,11 @@ jobs:
           npm run validate --workspace @vento/supabase
           node --test scripts/quality/shared-package-distribution-gate.test.mjs
 
+      - name: Revalidar fronteras Supabase y 86 casos canónicos de seguridad
+        run: |
+          node packages/supabase/scripts/validate-supabase-errors.mjs
+          node packages/supabase/scripts/validate-supabase-runtime-clients.mjs
+
       - name: Compilar candidato privado UI Web
         run: npm run build --workspace @vento/ui-web
 
