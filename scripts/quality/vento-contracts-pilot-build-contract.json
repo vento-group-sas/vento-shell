@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "package": "@vento/contracts",
+  "candidate_version": "1.0.0-alpha.1",
+  "release_channel": "next",
+  "build": {
+    "command": "$NODE",
+    "args": [
+      "../../node_modules/typescript/bin/tsc",
+      "-p",
+      "tsconfig.build.json"
+    ],
+    "timeout_ms": 180000
+  },
+  "output_root": "dist",
+  "public_surface": [
+    {
+      "subpath": "./actions",
+      "runtime": "dist/actions/generated/index.js",
+      "types": "dist/actions/generated/index.d.ts",
+      "expected_exports": [
+        "FUNCTIONAL_ACTION_DEFINITIONS",
+        "FUNCTIONAL_ACTION_IDS",
+        "FUNCTIONAL_ACTION_ID_PATTERN",
+        "FUNCTIONAL_ACTION_ID_PATTERN_SOURCE",
+        "FUNCTIONAL_ACTION_KINDS",
+        "FUNCTIONAL_ACTION_REGISTRY_METADATA",
+        "FUNCTIONAL_ACTION_SOURCES",
+        "PRIMARY_FUNCTIONAL_ACTION_IDS",
+        "SECONDARY_FUNCTIONAL_ACTION_IDS",
+        "SECONDARY_FUNCTIONAL_ACTION_ORDINALS",
+        "assertFunctionalActionId",
+        "isFunctionalActionId",
+        "isFunctionalActionIdFormat",
+        "resolveFunctionalActionKind",
+        "resolveFunctionalActionScreenId",
+        "resolveFunctionalActionSecondaryOrdinal",
+        "resolveFunctionalActionSource"
+      ]
+    },
+    {
+      "subpath": "./events",
+      "runtime": "dist/events/generated/index.js",
+      "types": "dist/events/generated/index.d.ts",
+      "expected_exports": [
+        "BUSINESS_EVENT_CLASSES",
+        "BUSINESS_EVENT_DEFINITIONS",
+        "BUSINESS_EVENT_IDS",
+        "BUSINESS_EVENT_ID_PATTERN",
+        "BUSINESS_EVENT_ID_PATTERN_SOURCE",
+        "BUSINESS_EVENT_REGISTRY_METADATA",
+        "BUSINESS_EVENT_SENSITIVITIES",
+        "BUSINESS_EVENT_TYPES",
+        "CONDITIONAL_BUSINESS_EVENT_TYPE_TEMPLATES",
+        "assertBusinessEventId",
+        "isBusinessEventId",
+        "isBusinessEventIdFormat",
+        "isBusinessEventType",
+        "resolveBusinessEventClass",
+        "resolveBusinessEventProcessId",
+        "resolveBusinessEventSensitivity",
+        "resolveBusinessEventType"
+      ]
+    },
+    {
+      "subpath": "./handoffs",
+      "runtime": "dist/handoffs/generated/index.js",
+      "types": "dist/handoffs/generated/index.d.ts",
+      "expected_exports": [
+        "APPLICATION_HANDOFF_PARTICIPANT_CODES",
+        "APPLICATION_HANDOFF_PROCESS_IDS",
+        "APPLICATION_HANDOFF_REGISTRY_METADATA",
+        "APPLICATION_HANDOFF_RELATIONS",
+        "HANDOFF_CONSUMER_MODE",
+        "HANDOFF_EXCHANGE_FAMILY",
+        "HANDOFF_INTEGRATION_PROFILE",
+        "HANDOFF_PARTICIPATION_CLASSES",
+        "getApplicationHandoffRelation",
+        "getApplicationHandoffRelationsForProcess",
+        "isApplicationHandoffRelation"
+      ]
+    },
+    {
+      "subpath": "./integrations",
+      "runtime": "dist/integrations/generated/index.js",
+      "types": "dist/integrations/generated/index.d.ts",
+      "expected_exports": [
+        "EXTERNAL_CREDENTIAL_APPLICABILITY_STATUSES",
+        "EXTERNAL_CREDENTIAL_CONCEPTUAL_DIMENSIONS",
+        "EXTERNAL_CREDENTIAL_CONTRACT_METADATA",
+        "EXTERNAL_CREDENTIAL_FAILURE_POLICY",
+        "EXTERNAL_CREDENTIAL_IDENTITY_POLICY",
+        "EXTERNAL_CREDENTIAL_REFERENCE_APPLICABILITY",
+        "EXTERNAL_CREDENTIAL_REFERENCE_COVERAGE",
+        "EXTERNAL_CREDENTIAL_REFERENCE_FORBIDDEN_MATERIAL",
+        "EXTERNAL_CREDENTIAL_REFERENCE_POLICY",
+        "EXTERNAL_CREDENTIAL_ROTATION_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_APPLICABILITY",
+        "EXTERNAL_RECEIVED_EVENT_APPLICABILITY_DECISIONS",
+        "EXTERNAL_RECEIVED_EVENT_AUTHENTICITY_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_BOUNDARY_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_CONTRACT_METADATA",
+        "EXTERNAL_RECEIVED_EVENT_COVERAGE",
+        "EXTERNAL_RECEIVED_EVENT_EVIDENCE_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_FORBIDDEN_MATERIAL",
+        "EXTERNAL_RECEIVED_EVENT_IDENTITY_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_NORMALIZATION_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_PHYSICAL_STATUSES",
+        "EXTERNAL_RECEIVED_EVENT_REFERENCE_POLICY",
+        "EXTERNAL_RECEIVED_EVENT_TEMPORAL_POLICY",
+        "INTEGRATION_PRINCIPAL_CARDINALITY_POLICY",
+        "INTEGRATION_PRINCIPAL_CONCEPTUAL_DIMENSIONS",
+        "INTEGRATION_PRINCIPAL_CONTEXT_POLICY",
+        "INTEGRATION_PRINCIPAL_CONTRACT_METADATA",
+        "INTEGRATION_PRINCIPAL_FAILURE_POLICY",
+        "INTEGRATION_PRINCIPAL_IDENTITY_POLICY",
+        "INTEGRATION_PRINCIPAL_REFERENCE_ADOPTION",
+        "INTEGRATION_PRINCIPAL_SEPARATED_IDENTITIES",
+        "VENTO_CREDENTIAL_ENVIRONMENTS"
+      ]
+    },
+    {
+      "subpath": "./ownership",
+      "runtime": "dist/ownership/generated/index.js",
+      "types": "dist/ownership/generated/index.d.ts",
+      "expected_exports": [
+        "CAPABILITY_SOURCE_FAMILY_PROJECTIONS",
+        "COMPETING_FUNCTIONAL_OWNERSHIP_CASES",
+        "FUNCTIONAL_OWNERSHIP_CONCEPTUAL_DIMENSIONS",
+        "FUNCTIONAL_OWNERSHIP_EFFECTIVE_VERSION",
+        "FUNCTIONAL_OWNERSHIP_REGISTRY_METADATA",
+        "FUNCTIONAL_OWNERSHIP_REPRESENTATION_CLASSES",
+        "FUNCTIONAL_OWNERSHIP_SOURCE_STATUSES",
+        "PROCESS_OWNERSHIP_PROJECTIONS",
+        "PROCESS_OWNER_DISTRIBUTION",
+        "assertOwnershipProjectionFresh",
+        "isCanonicalOwner",
+        "resolveCapabilitySource",
+        "resolveProcessOwner"
+      ]
+    },
+    {
+      "subpath": "./processes",
+      "runtime": "dist/processes/generated/index.js",
+      "types": "dist/processes/generated/index.d.ts",
+      "expected_exports": [
+        "PROCESS_IDS",
+        "PROCESS_ID_PATTERN",
+        "PROCESS_ID_PATTERN_SOURCE",
+        "PROCESS_ID_REGISTRY_METADATA",
+        "isProcessId",
+        "isProcessIdFormat"
+      ]
+    },
+    {
+      "subpath": "./process-states",
+      "runtime": "dist/processes/generated/states/index.js",
+      "types": "dist/processes/generated/states/index.d.ts",
+      "expected_exports": [
+        "PROCESS_FINAL_TYPES",
+        "PROCESS_INTERMEDIATE_PHASES",
+        "PROCESS_STATE_DEFINITIONS",
+        "PROCESS_STATE_IDS",
+        "PROCESS_STATE_ID_PATTERN",
+        "PROCESS_STATE_ID_PATTERN_SOURCE",
+        "PROCESS_STATE_KINDS",
+        "PROCESS_STATE_REGISTRY_METADATA",
+        "getProcessIdForState",
+        "getProcessStateCode",
+        "getProcessStateDefinition",
+        "isProcessStateForProcess",
+        "isProcessStateId",
+        "isProcessStateIdFormat"
+      ]
+    },
+    {
+      "subpath": "./screens",
+      "runtime": "dist/screens/generated/index.js",
+      "types": "dist/screens/generated/index.d.ts",
+      "expected_exports": [
+        "SCREEN_IDS",
+        "SCREEN_ID_PATTERN",
+        "SCREEN_ID_PATTERN_SOURCE",
+        "SCREEN_ID_REGISTRY_METADATA",
+        "isScreenId",
+        "isScreenIdFormat"
+      ]
+    },
+    {
+      "subpath": "./work-items",
+      "runtime": "dist/work-items/generated/index.js",
+      "types": "dist/work-items/generated/index.d.ts",
+      "expected_exports": [
+        "WORK_ITEM_AUTHORITY_BINDINGS",
+        "WORK_ITEM_CONTRACT_METADATA",
+        "WORK_ITEM_FIELD_NAMES",
+        "WORK_ITEM_IDENTITY_POLICY",
+        "WORK_ITEM_IDENTITY_SEPARATIONS",
+        "WORK_ITEM_PRIORITY_LEVELS",
+        "WORK_ITEM_READINESS_STATUSES",
+        "WORK_ITEM_STATUSES",
+        "WORK_ITEM_TYPES",
+        "isWorkItemFieldName",
+        "isWorkItemReadinessStatus",
+        "isWorkItemStatus",
+        "isWorkItemType"
+      ]
+    },
+    {
+      "subpath": "./authorization/catalog/v1",
+      "runtime": "dist/authorization/generated/versions/1.0.0/index.js",
+      "types": "dist/authorization/generated/versions/1.0.0/index.d.ts",
+      "expected_exports": [
+        "APPLICATIONS",
+        "APPLICATION_BY_CODE",
+        "APPLICATION_CODES",
+        "PERMISSION_BY_KEY",
+        "PERMISSION_IDENTITIES",
+        "PERMISSION_KEYS",
+        "isAppCode",
+        "isPermissionKey"
+      ]
+    },
+    {
+      "subpath": "./authorization/base-roles/v1",
+      "runtime": "dist/authorization/generated/base-roles/versions/1.1.0/index.js",
+      "types": "dist/authorization/generated/base-roles/versions/1.1.0/index.d.ts",
+      "expected_exports": [
+        "BASE_ROLE_CODES",
+        "isBaseRoleCode"
+      ]
+    },
+    {
+      "subpath": "./authorization/operational-roles/v1",
+      "runtime": "dist/authorization/generated/operational-roles/versions/1.0.0/index.js",
+      "types": "dist/authorization/generated/operational-roles/versions/1.0.0/index.d.ts",
+      "expected_exports": [
+        "OPERATIONAL_ROLE_CODES",
+        "isOperationalRoleCode"
+      ]
+    },
+    {
+      "subpath": "./authorization/scopes/v1",
+      "runtime": "dist/authorization/generated/scopes/versions/1.0.0/index.js",
+      "types": "dist/authorization/generated/scopes/versions/1.0.0/index.d.ts",
+      "expected_exports": [
+        "NON_TERRITORIAL_SCOPE_CODES",
+        "OPERATIONAL_CONTEXT_SCOPE_CODES",
+        "OWNERSHIP_SCOPE_CODES",
+        "PERMISSION_SCOPE_BY_CODE",
+        "PERMISSION_SCOPE_CODES",
+        "PERMISSION_SCOPE_DEFINITIONS",
+        "TERRITORIAL_SCOPE_CODES",
+        "isAllowedScopeSet",
+        "isMaximumScope",
+        "isPermissionScopeCode"
+      ]
+    },
+    {
+      "subpath": "./authorization/reason-codes/v1",
+      "runtime": "dist/authorization/generated/reason-codes/versions/1.0.0/index.js",
+      "types": "dist/authorization/generated/reason-codes/versions/1.0.0/index.d.ts",
+      "expected_exports": [
+        "AUTHORIZATION_REASON_CODES",
+        "LANE_AVAILABILITY_REASON_CODES",
+        "LANE_REASON_CODES",
+        "STRUCTURAL_ISSUE_BY_CODE",
+        "STRUCTURAL_ISSUE_CATALOG",
+        "STRUCTURAL_ISSUE_CODES",
+        "STRUCTURAL_ISSUE_SEVERITIES",
+        "STRUCTURAL_ISSUE_SOURCES",
+        "STRUCTURAL_ISSUE_SUBJECT_TYPES",
+        "isAuthorizationReasonCode",
+        "isLaneAvailabilityReasonCode",
+        "isLaneReasonCode",
+        "isStructuralIssueCode"
+      ]
+    },
+    {
+      "subpath": "./authorization/response-contracts/v1",
+      "runtime": "dist/authorization/generated/response-contracts/versions/1.0.0/index.js",
+      "types": "dist/authorization/generated/response-contracts/versions/1.0.0/index.d.ts",
+      "type_only": true,
+      "expected_exports": [],
+      "expected_type_exports": [
+        "AccessContextReference",
+        "AccessContextV1",
+        "ActiveCheckinContext",
+        "ActiveShiftContext",
+        "AdministrativeCoverageContext",
+        "AssignedAreaContext",
+        "AssignedSiteContext",
+        "BaseRoleContext",
+        "ContractMetadata",
+        "DeviceContext",
+        "DomainIdentityContext",
+        "EffectiveActorContext",
+        "EmployeeContext",
+        "HypotheticalAccessContext",
+        "HypotheticalValue",
+        "LaneReadiness",
+        "OperationalAreaContext",
+        "OperationalRoleContext",
+        "OperationalSiteContext",
+        "PrincipalContext",
+        "RealSimulationActor",
+        "ResolutionMetadata",
+        "ResponseContractName",
+        "SimulatedAuthorizationDecisionV1",
+        "SimulatedLaneResult",
+        "SimulatedSubject",
+        "SimulatedSubjectType",
+        "SimulationAuditContext",
+        "SimulationAuthorization",
+        "SimulationContextV1",
+        "SimulationIssue",
+        "SimulationMatch",
+        "SimulationPurpose",
+        "SimulationResourceScenario",
+        "SimulationResultReference",
+        "SimulationStatus",
+        "StructuralIssue"
+      ]
+    }
+  ],
+  "assets": [],
+  "internal_dependencies": [],
+  "external_peers": {},
+  "runtime": {
+    "node_major": 24
+  },
+  "generated_inputs": [
+    "actions/generated/index.ts",
+    "events/generated/index.ts",
+    "handoffs/generated/index.ts",
+    "integrations/generated/index.ts",
+    "ownership/generated/index.ts",
+    "processes/generated/index.ts",
+    "processes/generated/states/index.ts",
+    "screens/generated/index.ts",
+    "work-items/generated/index.ts",
+    "authorization/generated/versions/1.0.0/index.ts",
+    "authorization/generated/base-roles/versions/1.1.0/index.ts",
+    "authorization/generated/operational-roles/versions/1.0.0/index.ts",
+    "authorization/generated/scopes/versions/1.0.0/index.ts",
+    "authorization/generated/reason-codes/versions/1.0.0/index.ts",
+    "authorization/generated/response-contracts/versions/1.0.0/index.ts"
+  ],
+  "exclusions": [
+    "src"
+  ],
+  "reproducibility_ignore": [],
+  "allow_source_files": false,
+  "contract_checks": [
+    "entrypoints",
+    "declarations",
+    "runtime_types_coherence",
+    "no_private_source_imports",
+    "no_absolute_paths",
+    "no_local_dependencies",
+    "peer_runtime_coherence",
+    "isolated_pack",
+    "isolated_import",
+    "public_surface_snapshot"
+  ]
+}
