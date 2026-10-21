@@ -282,6 +282,83 @@ test('mutaciones remotas siguen fail-closed aun con escritura y Git local autori
     workTopology: topology(),
   }), /assistant_remote_mutations debe ser false/u);
 });
+test('permite gestionar PRs aprobados sin habilitar push, merge ni despliegue', () => {
+  const allowed = {
+    create: true,
+    update_title_body: true,
+    read_checks: true,
+    require_approved_scope: true,
+    require_published_branch: true,
+    push: 'APPROVAL_REQUIRED_PER_ACTION',
+    merge: 'APPROVAL_REQUIRED_PER_ACTION',
+    auto_merge: false,
+    deploy: 'APPROVAL_REQUIRED_PER_ACTION',
+    remote_code_edits: false,
+  };
+  const result = deriveImplementationControl({
+    control: {
+      ...baseControl,
+      execution_operator_policy: {
+        ...baseControl.execution_operator_policy,
+        assistant_pull_request_operations: allowed,
+      },
+    },
+    workTopology: topology(),
+  });
+  assert.deepEqual(result.executionOperatorPolicy.assistantPullRequestOperations, allowed);
+  assert.equal(result.executionOperatorPolicy.assistantRemoteMutations, false);
+  const directive = renderCurrentWorkDirective(result);
+  assert.match(directive, /Crear PRs y editar exclusivamente su título y descripción/u);
+  assert.match(directive, /PERMITIDO SOLO CON TAREA APROBADA Y RAMA REMOTA PREEXISTENTE/u);
+  assert.match(directive, /Push, merge y despliegues/u);
+  assert.match(directive, /REQUIEREN AUTORIZACION HUMANA ESPECIFICA POR CADA OPERACION/u);
+  assert.match(directive, /Auto-merge, ediciones remotas de código/u);
+});
+
+test('PRs no autorizan escalada de permisos remotos ni campos desconocidos', () => {
+  const allowed = {
+    create: true,
+    update_title_body: true,
+    read_checks: true,
+    require_approved_scope: true,
+    require_published_branch: true,
+    push: 'APPROVAL_REQUIRED_PER_ACTION',
+    merge: 'APPROVAL_REQUIRED_PER_ACTION',
+    auto_merge: false,
+    deploy: 'APPROVAL_REQUIRED_PER_ACTION',
+    remote_code_edits: false,
+  };
+  for (const field of [
+    'require_approved_scope', 'require_published_branch', 'push',
+    'merge', 'auto_merge', 'deploy', 'remote_code_edits',
+  ]) {
+    const invalid = {
+      ...allowed,
+      [field]: !allowed[field],
+    };
+    assert.throws(() => deriveImplementationControl({
+      control: {
+        ...baseControl,
+        execution_operator_policy: {
+          ...baseControl.execution_operator_policy,
+          assistant_pull_request_operations: invalid,
+        },
+      },
+      workTopology: topology(),
+    }), new RegExp(`assistant_pull_request_operations\\.${field} debe ser`, 'u'));
+  }
+  assert.throws(() => deriveImplementationControl({
+    control: {
+      ...baseControl,
+      execution_operator_policy: {
+        ...baseControl.execution_operator_policy,
+        assistant_pull_request_operations: { ...allowed, force_push: true },
+      },
+    },
+    workTopology: topology(),
+  }), /assistant_pull_request_operations\.force_push no permitido/u);
+});
+
 test('habilita validaciones MCP gobernadas sin habilitar escrituras, Git ni remoto', () => {
   const result = deriveImplementationControl({
     control: {
