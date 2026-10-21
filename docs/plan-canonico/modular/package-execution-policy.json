@@ -33,5 +33,11 @@
   "long_observation_holds_global_turn": false,
   "independent_checkout_required": true,
   "serialized_close": true,
-  "shared_resource_conflicts_serialized": true
+  "shared_resource_conflicts_serialized": true,
+  "product_delivery": {
+    "mode": "ADVISORY_ONLY",
+    "focus_application": "ANIMA",
+    "ownership_source": "E5_OWNER_APPLICATION_WITH_DOMINANT_TASK_FALLBACK",
+    "physical_authorization_unchanged": true
+  }
 }

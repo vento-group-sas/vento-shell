@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 export const PACKAGE_EXECUTION_POLICY_PATH = 'docs/plan-canonico/modular/package-execution-policy.json';
 
 const ACTIVE_PHYSICAL_STATUSES = new Set(['IMPLEMENTING', 'DEPLOYED']);
+// Identities already defined by the application blocks; this does not create packages.
+const PRODUCT_APPLICATION_IDS = new Set([
+  'ANIMA', 'VISO', 'NEXO', 'FOGO', 'ORIGO', 'PULSO', 'NUMERA', 'SHELL', 'PASS',
+]);
 const WAIT_ACTIONS = new Set([
   'WAIT_FOR_DOCUMENTARY_PREREQUISITE',
   'WAIT_FOR_PHYSICAL_PREREQUISITE',
@@ -528,6 +532,88 @@ function entryFor(pkg, position) {
   };
 }
 
+// Product delivery is a read-only projection of the SAME governed frontier.
+// It never selects a package for mutation, creates a task, or waives a gate.
+function productApplicationOwner(pkg) {
+  // Prefer the approved E5 owner. A cross-app participant must never become
+  // the owner of a consumer feature merely because it references that feature.
+  const declared = String(pkg?.owner_application ?? '').trim().toUpperCase();
+  if (declared) return PRODUCT_APPLICATION_IDS.has(declared) ? declared : null;
+  const dominant = String(pkg?.dominant_task_id ?? '').trim().toUpperCase();
+  const application = dominant.split('-')[0];
+  return PRODUCT_APPLICATION_IDS.has(application) && dominant.startsWith(`${application}-`)
+    ? application
+    : null;
+}
+
+function projectProductDelivery({
+  ordered, schedulableFrontier, authorizationFrontier, activePhysical, waiting, policy,
+}) {
+  const focus = policy.product_delivery.focus_application;
+  const prefix = `${focus}-`;
+  const actionable = new Map(schedulableFrontier.map((entry) => [entry.package_id, entry]));
+  const awaitingApproval = new Map(authorizationFrontier.map((entry) => [entry.package_id, entry]));
+  const active = new Map(activePhysical.map((entry) => [entry.package_id, entry]));
+  const waitingById = new Map(waiting.map((entry) => [entry.package_id, entry]));
+  const owners = [];
+  const related = [];
+
+  for (const pkg of ordered) {
+    if (isTerminal(pkg, policy)) continue;
+    const id = normalizePackageId(pkg.package_id);
+    if (productApplicationOwner(pkg) === focus) {
+      const candidate = actionable.get(id) ?? awaitingApproval.get(id)
+        ?? active.get(id) ?? waitingById.get(id) ?? null;
+      const phase = actionable.has(id) ? 'SCHEDULABLE'
+        : awaitingApproval.has(id) ? 'AWAITING_AUTHORIZATION'
+          : active.has(id) ? 'ACTIVE_PHYSICAL' : 'WAITING';
+      const ownerTask = (pkg?.task_prerequisites?.tasks ?? [])
+        .find((task) => task?.task_id === pkg.dominant_task_id);
+      owners.push({
+        package_id: id,
+        dominant_task_id: pkg.dominant_task_id,
+        dominant_task_title: ownerTask?.title ?? null,
+        capability_ids: [...(pkg?.capability_ids ?? [])],
+        process_ids: [...(pkg?.process_ids ?? [])],
+        phase,
+        status: pkg.status,
+        next_action: candidate?.next_action ?? null,
+        pending_dependency_ids: candidate?.pending_dependency_ids ?? [],
+        waiting_kind: candidate?.kind ?? null,
+      });
+    } else if (
+      (pkg?.task_prerequisites?.tasks ?? [])
+        .some((task) => String(task?.task_id ?? '').startsWith(prefix))
+    ) {
+      related.push({
+        package_id: id,
+        dominant_task_id: pkg.dominant_task_id ?? null,
+        relationship: 'PARTICIPATING_NOT_OWNED',
+      });
+    }
+  }
+
+  const candidate = owners.find((entry) => entry.phase === 'SCHEDULABLE') ?? null;
+  return {
+    mode: policy.product_delivery.mode,
+    focus_application: focus,
+    ownership_source: policy.product_delivery.ownership_source,
+    advisory_only: true,
+    mutation_authorized: false,
+    // An eligible package gate is not proof that the shared authorization and
+    // contextual permission evaluation are published and adopted by consumers.
+    functional_readiness: 'NOT_CERTIFIED_BY_PACKAGE_FRONTIER',
+    authorization_foundation_requires_independent_verification:
+      policy.foundation_prerequisites_precede_consumer === true,
+    selected_candidate: candidate,
+    owned_packages: owners,
+    related_cross_app_packages: related,
+    explanation: candidate
+      ? 'Candidato orientado a producto derivado del paquete elegible; necesita gates y autorizacion propia.'
+      : 'No hay paquete de propietario dominante elegible para esta aplicacion; no se inventa una tarea ni se adelanta una dependencia.',
+  };
+}
+
 export function assertPackageMutationAllowed({
   execution,
   packageId,
@@ -707,6 +793,14 @@ export function readPackageExecutionPolicy(root = process.cwd()) {
   if (policy?.shared_resource_conflicts_serialized !== true) {
     errors.push('shared_resource_conflicts_serialized debe ser true.');
   }
+  if (
+    policy?.product_delivery?.mode !== 'ADVISORY_ONLY'
+    || policy?.product_delivery?.ownership_source !== 'E5_OWNER_APPLICATION_WITH_DOMINANT_TASK_FALLBACK'
+    || policy?.product_delivery?.physical_authorization_unchanged !== true
+    || !PRODUCT_APPLICATION_IDS.has(policy?.product_delivery?.focus_application)
+  ) {
+    errors.push('product_delivery exige foco de aplicacion conocida, solo lectura y autorizacion fisica intacta.');
+  }
 
   if (errors.length > 0) {
     fail(`Política de governed frontier inválida:\n- ${errors.join('\n- ')}`);
@@ -835,6 +929,10 @@ export function deriveGovernedPackageExecution(registry, policy) {
     };
   });
 
+  const productDelivery = projectProductDelivery({
+    ordered, schedulableFrontier, authorizationFrontier, activePhysical, waiting, policy,
+  });
+
   let state = 'BLOCKED_FRONTIER';
   if (sequence.length === 0 || sequence.every(({ status }) => status === 'CLOSED')) {
     state = 'COMPLETE';
@@ -854,6 +952,7 @@ export function deriveGovernedPackageExecution(registry, policy) {
     state,
     current,
     current_work: currentWork,
+    product_delivery: productDelivery,
     sequence,
     frontier,
     schedulable_frontier: schedulableFrontier,
@@ -900,6 +999,17 @@ function printExecution(execution) {
   console.log(`ACTION: ${execution.current?.next_action.type ?? 'NONE'}`);
   console.log(`TARGET: ${execution.current?.next_action.target ?? 'NONE'}`);
   console.log(`COMMAND: ${execution.current?.next_action.command ?? 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_APPLICATION: ${execution.product_delivery?.focus_application ?? 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_MODE: ${execution.product_delivery?.mode ?? 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_FUNCTIONAL_READINESS: ${execution.product_delivery?.functional_readiness ?? 'NOT_ASSESSED'}`);
+  console.log(`PRODUCT_FOCUS_AUTH_FOUNDATION_CHECK: ${execution.product_delivery?.authorization_foundation_requires_independent_verification ? 'REQUIRED' : 'NOT_PROJECTED'}`);
+  console.log(`PRODUCT_FOCUS_PACKAGE: ${execution.product_delivery?.selected_candidate?.package_id ?? 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_OWNER_TASK: ${execution.product_delivery?.selected_candidate?.dominant_task_id ?? 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_OWNER_TITLE: ${execution.product_delivery?.selected_candidate?.dominant_task_title ?? 'NOT_RESOLVED'}`);
+  console.log(`PRODUCT_FOCUS_CAPABILITIES: ${execution.product_delivery?.selected_candidate?.capability_ids?.join(', ') || 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_NEXT_ACTION: ${execution.product_delivery?.selected_candidate?.next_action?.type ?? 'NONE'}`);
+  console.log(`PRODUCT_FOCUS_OWNED_COUNT: ${execution.product_delivery?.owned_packages?.length ?? 0}`);
+  console.log(`PRODUCT_FOCUS_CROSS_APP_COUNT: ${execution.product_delivery?.related_cross_app_packages?.length ?? 0}`);
   console.log(`FRONTIER_COUNT: ${execution.frontier.length}`);
   console.log(`SCHEDULABLE_FRONTIER_COUNT: ${execution.schedulable_frontier.length}`);
   console.log(`AUTHORIZATION_FRONTIER_COUNT: ${execution.authorization_frontier.length}`);

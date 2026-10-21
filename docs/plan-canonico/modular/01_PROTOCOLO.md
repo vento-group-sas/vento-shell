@@ -1426,3 +1426,11 @@ La ejecución falla cerrado si falta un checkout, si `origin` no coincide con el
 
 La compatibilidad single-repo permanece sin cambios y `automatic_authorization=false`.
 <!-- CORR-018-MULTI-REPO-PHYSICAL-LIFECYCLE:END -->
+
+### Proyección informativa de entrega por aplicación
+
+El controlador puede informar una vista `product_delivery` a partir de `owner_application` y las tareas propietarias aprobadas, con el fin de que el responsable vea **qué funcionalidad se relaciona con qué paquete y gate**. En modo `ADVISORY_ONLY`, esta vista no reordena el paquete actual ni concede una instancia física. Un `PRODUCT_FOCUS_PACKAGE` diferente del `PRIMARY_PACKAGE` es **candidato informativo**, no permiso de mutación o despliegue.
+
+Las verificaciones incrementales pueden reutilizar evidencia vigente sobre el mismo código, entorno y comportamiento. Una modificación documental que no altere código no obliga a repetir pruebas de producto no afectadas; los gates completos de implementación, datos, seguridad y publicación siguen siendo obligatorios en su hito exacto. Ninguna simulación o prueba omitida se certifica como operación nativa real.
+
+La alteración efectiva del orden de paquetes necesita cambio canónico coordinado de `DELIV-PKG-015` y las fuentes ejecutables; el marcador `APROBADO` de una guía de producto no sustituye `E5-GATE-008` ni `SHELL-CI-020` del paquete correspondiente.

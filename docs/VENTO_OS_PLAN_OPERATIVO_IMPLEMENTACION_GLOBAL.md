@@ -7,6 +7,55 @@
 **Estado del presente instrumento:** guía operativa versionable para consulta y seguimiento; no equivale a `APROBADO`, `VERIFIED` ni autorización física o de despliegue.  
 **Trabajo físico vigente:** `GAP-PKG-004` en `MATURATION_DRAFT`; no se avanza a otro paquete por este documento.
 
+## 0. Método operativo orientado a aplicaciones — reforma propuesta por el responsable (2026-10-19)
+
+**Objetivo:** construir funcionalidades utilizables de extremo a extremo. El avance se comunica en términos de lo que una persona puede realizar en cada aplicación, no por número de GAP, tareas o pruebas generales. Esta guía es un **instrumento operativo**, no una autorización física nueva: las fuentes propietarias y sus gates prevalecen hasta su reforma explícita.
+
+### 0.1. Tres carriles de trabajo
+
+| Carril | Cuándo se activa | Entrega medible | Límite |
+| --- | --- | --- | --- |
+| **Producto**: ANIMA, VISO, NEXO, FOGO, ORIGO, PULSO, NUMERA, SHELL y PASS | Funcionalidad del bloque de aplicación con instancia elegible, dependencias y autorización | Recorrido usable: UI, lógica, datos, permisos, errores e integración | No equivale a aprobar todo el bloque ni sortear E5 |
+| **Transversal**: componentes, Next.js, TypeScript, dependencias, contratos y SDK | Compatibilidad o reutilización necesaria y comprobada | Artefacto versionado/compatible y adopción por consumidor autorizado | No repetir estandarización certificada ni importar UI web DOM en ANIMA |
+| **Seguridad y datos**: Auth, Supabase, RLS/RPC, migraciones, CI | Riesgo o dependencia real de un recorrido elegible | Control efectivo con positivos/negativos, recuperación y trazabilidad | Nada remoto, SQL persistente, publicación o cambio de privilegios sin sus gates |
+
+Los carriles pueden coexistir según locks y propietarios existentes. No crean paquetes, TREQ ni una segunda base de estados.
+
+### 0.2. Orden simple para cada intervención
+
+1. **Resultado visible**: definir actor, acción, entorno y resultado esperado de una funcionalidad.
+2. **Propietario y elegibilidad**: resolver su bloque, tarea, package/unidad y autorización desde fuentes actuales. No seleccionar GAP por conveniencia ni inventar tareas. Si la política impide la prioridad de producto, informar la restricción exacta y preparar su corrección formal.
+3. **Dependencias mínimas**: usar lo compartido disponible; crear o estandarizar una fundación solo si es prerrequisito demostrado.
+4. **Implementación vertical**: completar UI, lógica, datos, autorización y errores afectados; no fragmentar en trabajo documental sin resultado.
+5. **QA progresivo**: al cambiar código, typecheck/test afectado; al estabilizar el recorrido, QA integrado; antes de STAGING/publicación, toda la batería, E2E, rollback y aprobación exigidos. Nunca sumar SKIP o simulación como prueba real.
+6. **Cierre legible**: reportar qué puede hacerse, qué está probado y dónde, qué está bloqueado, qué se cambió y cuál es la próxima acción permitida. Los identificadores se conservan como trazabilidad secundaria.
+
+### 0.3. Cuándo probar y evitar repeticiones
+
+| Cambio | Prueba inmediata | Prueba completa posterior |
+| --- | --- | --- |
+| Componente, pantalla o lógica local | Tests y tipos del área afectada | QA del recorrido funcional y visual cuando sea estable |
+| Contrato transversal o dependencia | Compatibilidad, exports, consumidores afectados | Pruebas de adopción y rollback en su oleada autorizada |
+| Permisos, SQL o datos sensibles | Negativas/positivas, RLS, aislamiento y recuperación aplicables | E2E autenticado y gate de migración antes de integrar/publicar |
+| Corrección documental sin código | Validadores documentales, integridad y alcance | No repetir pruebas móviles o de servidor no afectadas |
+| Candidate final o despliegue | Batería exacta de consumidores y ambientes impactados | CI021..024, piloto/hypercare y certificación, según owner |
+
+Una capacidad no está terminada por pasar 59 pruebas generales: debe funcionar en el entorno correspondiente y aportar evidencia del escenario de usuario. Un QA nativo bloqueado no equivale a PASS ni impide pruebas independientes autorizadas.
+
+### 0.4. Límite exacto del GAP-PKG-004 respecto de ANIMA
+
+`GAP-PKG-004` tiene perfil predominante `DATABASE_RPC_BOUNDARY` e incluye targets de ANIMA/VISO y otros consumidores, pero **no constituye el Bloque F completo de ANIMA**. Las comprobaciones concretas de sus targets se mantienen dentro del expediente; la certificación completa de asistencia y ubicación Android pertenece al propietario funcional de ANIMA cuando sea elegible y esté autorizado. No confundir la regresión SecureStore simulada con seguimiento GPS real. La decisión final exige ubicación precisa y permiso background solo durante turno abierto; no reabrirla.
+
+**Dependencias compartidas de autorización — comprobación LOCAL 2026-10-19:** según `90_ORDEN_DE_IMPLEMENTACION.md` y `priority-delivery-lanes.json`, la precedencia de ANIMA es `R0_DATABASE_SAFETY → R1_AUTH_PHYSICAL_CORE → H_SHARED_CONTRACTS / H_AUTH_CONTEXT_BASE → H_AUTH_CONTEXT_CONVERGENCE → consumidores autorizados`. Los 9 expedientes `AUTH-DB` definidos para R0 y los 11 para R1 muestran `status=VERIFIED` en este checkout: **no repetir ese trabajo físico**. El catálogo de identidad de 140 permisos de `SHELL-CON-003::GLOBAL` es evidencia de claves, **no** certifica por sí solo roles, grants, evaluador, ámbito territorial, contexto ni adopción de consumidores. No se encontraron expedientes en `implementation-instances/` para `SHELL-AUTH-001..004` ni `SHELL-CTX-001..006` bajo sus nombres canónicos. Sin embargo, `implementation-materialization-map.json` los clasifica como `EXISTING_NEEDS_ADOPTION_EVIDENCE` (también `SHELL-AUTH-005`): **antes de reconstruirlos**, verificar el código existente, sus contratos y su adopción efectiva por los consumidores. Esta clasificación no demuestra que estén publicados o certificados para ANIMA; corresponde validar evidencia de integración y vigencia. La vista `PRODUCT_FOCUS_PACKAGE` solo identifica trabajo preparable y siempre muestra `functional_readiness=NOT_CERTIFIED_BY_PACKAGE_FRONTIER` y la obligación de comprobar la fundación de autorización. Ninguna de estas constataciones reabre decisiones ni crea prioridad física fuera de `DELIV-PKG-015`.
+
+### 0.5. Progreso legible desde fuentes únicas
+
+Toda actualización de trabajo debe comenzar por: **Aplicación + capacidad**, **resultado visible actual**, **pruebas reales ejecutadas/no ejecutadas**, **bloqueo verificable**, **siguiente acción autorizada**. Rama, SHA, GAP, unidad y TREQ se muestran después como evidencia. Recalcular desde repositorios y ledgers: una fotografía histórica de este documento no es estado vivo.
+
+**Estado del controlador reformado en LOCAL (2026-10-19):** `package-execution-control.mjs` y `package-execution-policy.json` ya proyectan `product_delivery` con foco ANIMA, propietario según `owner_application` E5 (o prefijo de tarea dominante únicamente cuando no existe propietario explícito), tareas y gates de paquetes existentes. La vista conserva separados propietario de aplicación y participante transversal, marca esperas por dependencias y nunca concede `PACKAGE_START` ni autorización física. La prueba local proyectó `GAP-PKG-056` / `ANIMA-AUTH-015` — **Revalidar permisos al sincronizar una cola offline** — con siguiente acción `PREPARE_PACKAGE_GATE`, distinto del `PRIMARY_PACKAGE GAP-PKG-004` y **NO aprobado para implementación**. Es una observación fechada, no prioridad permanente.
+
+**Reforma física que todavía requiere reconciliación canónica:** para alterar de verdad la selección determinista de paquetes o autorizaciones es necesario modificar la fuente propietaria aprobada `DELIV-PKG-015`, la política y el algoritmo con pruebas integrales, y preservar locks/gates. Los nuevos campos en `ADVISORY_ONLY` no habilitan esa transición por inferencia. La guia, la vista de aplicación y una preferencia humana de producto tampoco declaran `E5-GATE-008` ni `CI020` aprobados.
+
 ## 1. Objetivo, alcance y límites
 
 El resultado buscado es implementar y certificar el alcance integral de VENTO OS **sin perder ninguno de los compromisos aprobados**, no cerrar una cantidad arbitraria de GAP. La fuente de verdad de tareas permanece en el plan modular; las instancias de implementación quedan en sus expedientes y ledgers, y las migraciones SQL pertenecen a VENTO Shell.
@@ -473,6 +522,8 @@ STOP de mutaciones cuando aparezca: fuente canónica contradictoria no reconcili
 
 ## 9. Continuidad exacta del paquete actual: GAP-PKG-004
 
+**Advertencia de frescura:** los conteos, avances y pasos de esta sección son un corte histórico del 2026-10-14. No deben usarse como una lista de pruebas a repetir automaticamente ni como estado presente. En cada sesión deben prevalecer el expediente, sus hashes, el estado del ejecutor y la evidencia ya obtenida; primero identificar el único bloqueo verificable y la próxima acción autorizada.
+
 **Decision recomendada:** NO dejarlo abandonado en maduración indefinida. Continuar su **maduración dentro del mismo GAP** hasta `READY_FOR_APPROVAL`, pero no forzar `APPROVED_FOR_IMPLEMENTATION` ni `SHELL-CI-020` antes de cumplir todos los requisitos. No seleccionar manualmente otro package.
 
 ### 9.1. Estado probado
@@ -533,9 +584,9 @@ STOP de mutaciones cuando aparezca: fuente canónica contradictoria no reconcili
 - Dar por terminada AURA o TALENTO por estar diferidos sin documentar decision, riesgos y alcance que corresponda.
 - Agregar un nuevo GAP, marcador, TREQ o mapeo solo para reflejar un cambio ya cubierto por una identidad aprobada.
 
-## 12. Decisiones solicitadas al responsable y próximo handoff
+## 12. Dirección operativa elegida y condiciones de publicación
 
-1. **Revisar y aprobar este instrumento como guia operativa**, sin fingir que sustituye el `90_ORDEN_DE_IMPLEMENTACION.md` ni que esta integrado a una tarea canónicamente reservada. Incorporarlo al repo solamente mediante aprobación y owner existentes que autoricen ese cambio documental; no crear una tarea ad hoc.
+1. **Dirección expresamente solicitada el 2026-10-19:** organizar la implementación y su informe por aplicación/capacidad observable, manteniendo un carril transversal reutilizable y pruebas proporcionales. Esta decisión ya figura en la sección 0 y no debe preguntarse de nuevo. La actualización de esta guia en un worktree local no equivale a publicación, cambio del orden de `DELIV-PKG-015` ni autorización del gate E5. Cualquier reforma ejecutable de esas fuentes conserva el procedimiento formal y los propietarios existentes; no crear una tarea ad hoc.
 2. **Seguir madurando GAP-PKG-004** hasta cumplir el gate; no dejarlo en estado draft permanente ni saltar a un package arbitrario.
 3. **Crear/verificar una base local descartable aislada** para replay SQL cuando exista autorización física especifica; nunca sobre la base local principal sin respaldo y decision apropiados.
 4. **Resolver QA autentica y seguridad antes de deploy**. Positivos/negativos SITE/GLOBAL, privacidad, idempotencia de permisos y consumidores son condicion de cierre.
