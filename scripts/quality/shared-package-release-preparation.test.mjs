@@ -8,6 +8,7 @@ import {
 import {
   releasePreviewManifest, verifyPreview, stagePreviews,
   assessProtectionRules, auditProtectionRules,
+  auditPrivatePublicationAuthority,
 } from './shared-package-release-preparation.mjs';
 
 const SOURCE = {
@@ -228,4 +229,109 @@ test('canonical and package CI actions use maintained Node 24 runtime without ex
     'PUBLICATION_WORKFLOW_CACHE_DISABLED');
   assert.equal((autopilot.match(/package-manager-cache: false/gu) ?? []).length, 4,
     'DOC_AUTOPILOT_JOBS_MUST_DISABLE_UNUSED_CACHE');
+});
+
+
+function authorityFixture(overrides = {}) {
+  const calls = [];
+  const registryRows = overrides.registryRows ?? [];
+  const bodies = {
+    project: { id: 87892751, visibility: 'private',
+      packages_enabled: true, archived: false, ...overrides.project },
+    user: { id: 333, state: 'active', ...overrides.user },
+    token: { user_id: 333, active: true, revoked: false,
+      scopes: ['api'], expires_at: '2099-01-01', ...overrides.token },
+    member: { id: 333, state: 'active', access_level: 40,
+      expires_at: '2099-01-01', ...overrides.member },
+  };
+  const fetchImpl = async (url, options) => {
+    const u = String(url);
+    calls.push({ url: u, options });
+    if (overrides.status && u.includes(overrides.status.url)) {
+      return { ok: false, status: overrides.status.status };
+    }
+    if (u === 'https://gitlab.com/api/v4/projects/87892751') return okResponse(bodies.project);
+    if (u === 'https://gitlab.com/api/v4/user') return okResponse(bodies.user);
+    if (u === 'https://gitlab.com/api/v4/personal_access_tokens/self') return okResponse(bodies.token);
+    if (u === 'https://gitlab.com/api/v4/projects/87892751/members/all/333') return okResponse(bodies.member);
+    if (u.endsWith('/packages/protection/rules')) return okResponse(protectedRules);
+    if (u.includes('/projects/87892751/packages?')) {
+      return { ...okResponse(registryRows),
+        headers: { get: () => '' } };
+    }
+    throw new Error('UNEXPECTED_GITLAB_ENDPOINT');
+  };
+  return { calls, fetchImpl };
+}
+
+test('private GitLab publication audit checks token role, project, protection and exact collision using GET only', async () => {
+  const f = authorityFixture();
+  const report = await auditPrivatePublicationAuthority({
+    token: 'fixture-token-with-no-real-permission',
+    registryUrl: NPM_REGISTRY_URL,
+    fetchImpl: f.fetchImpl,
+  });
+  assert.equal(report.phase, 'PRIVATE_PUBLICATION_AUTHORITY_READ_ONLY');
+  assert.equal(report.project_private, true);
+  assert.equal(report.principal_has_maintainer_or_higher, true);
+  assert.equal(report.token_scope_api, true);
+  assert.equal(report.token_publish_permission, 'PRECONDITIONS_VERIFIED_NOT_WRITE_TESTED');
+  assert.equal(report.publication_executed, false);
+  assert(f.calls.length >= 6);
+  assert(f.calls.every((call) => call.options.method === 'GET'
+    && call.options.redirect === 'error'));
+  assert(!JSON.stringify(report).includes('fixture-token'));
+  assert(!JSON.stringify(report).includes('333'));
+});
+
+test('private audit blocks public GitLab project even with valid token and Maintainer role', async () => {
+  const f = authorityFixture({ project: { visibility: 'public' } });
+  await assert.rejects(
+    auditPrivatePublicationAuthority({
+      token: 'fixture', registryUrl: NPM_REGISTRY_URL, fetchImpl: f.fetchImpl,
+    }), /PROJECT_PRIVACY_OR_PACKAGE_ACCESS_INVALID/u);
+  assert.equal(f.calls.length, 1);
+});
+
+test('private audit rejects missing API scope, revoked or expired tokens', async () => {
+  for (const token of [
+    { scopes: ['read_api'] }, { revoked: true }, { active: false },
+    { expires_at: '2000-01-01' },
+  ]) {
+    const f = authorityFixture({ token });
+    await assert.rejects(auditPrivatePublicationAuthority({
+      token: 'fixture', registryUrl: NPM_REGISTRY_URL, fetchImpl: f.fetchImpl,
+    }), /TOKEN_SCOPE_OR_STATE_INSUFFICIENT|TOKEN_EXPIRED_OR_DATE_INVALID/u);
+  }
+});
+
+test('private audit enforces effective Maintainer role, even when token scopes include api', async () => {
+  const f = authorityFixture({ member: { access_level: 30 } });
+  await assert.rejects(auditPrivatePublicationAuthority({
+    token: 'fixture', registryUrl: NPM_REGISTRY_URL, fetchImpl: f.fetchImpl,
+  }), /PROJECT_MAINTAINER_ROLE_REQUIRED/u);
+});
+
+test('private audit refuses even one exact remote version collision', async () => {
+  const f = authorityFixture({ registryRows: [{
+    id: 999, package_type: 'npm', name: '@vento/contracts',
+    version: '1.0.0-alpha.1',
+  }] });
+  await assert.rejects(auditPrivatePublicationAuthority({
+    token: 'fixture', registryUrl: NPM_REGISTRY_URL, fetchImpl: f.fetchImpl,
+  }), /EXACT_PACKAGE_VERSION_COLLISION/u);
+});
+
+test('private audit refuses failed API requests and unapproved pilot identity', async () => {
+  const f = authorityFixture({ status: { url: '/members/all/', status: 403 } });
+  await assert.rejects(auditPrivatePublicationAuthority({
+    token: 'fixture', registryUrl: NPM_REGISTRY_URL, fetchImpl: f.fetchImpl,
+  }), /PROJECT_MEMBER_HTTP_403/u);
+  let calls = 0;
+  await assert.rejects(auditPrivatePublicationAuthority({
+    token: 'fixture', registryUrl: NPM_REGISTRY_URL,
+    packageName: '@vento/ui-web',
+    fetchImpl: async () => { calls++; return okResponse({}); },
+  }), /PILOT_IDENTITY_NOT_AUTHORIZED/u);
+  assert.equal(calls, 0);
 });
